@@ -108,3 +108,57 @@ by (induct_tac "n",auto)
 
 
 
+
+(* transitividad *)
+definition 
+  ZFtrans :: "i" where
+  "ZFtrans == Forall(Forall(Implies(And(Member(0,1),
+                            Member(1,2)),Member(0,2))))"
+
+definition
+  M1 :: "i" where
+  "M1 == {0 , 2 , {2 , 0}}"
+
+definition
+  M2 :: "i" where
+  "M2 == {0 , 1 , 2 , {2 , 0}}"
+
+
+lemma l1 :
+  "2 \<notin> 1"
+  apply auto
+  done
+
+lemma l2 :
+  "{2,0} \<noteq> 1"
+  apply (unfold extension)
+  apply (simp add: l1)
+  done
+
+lemma l1' :
+  "2 \<notin> 2"
+  apply auto
+  done
+
+lemma l2' :
+  "{2,0} \<noteq> 2"
+  apply (unfold extension)
+  apply (simp add: l1')
+  done
+
+
+lemma absolute_fail : 
+  "sats(M1,ZFtrans,[{2,0}])"
+  apply (unfold ZFtrans_def)
+  apply (unfold M1_def)
+  apply (simp)
+  apply (auto)
+  apply (simp add: l2, simp add: l2')
+  done
+
+lemma absolute_hold : 
+  "sats(M2,Neg(ZFtrans),[{2,0}])"
+  apply (unfold ZFtrans_def)
+  apply (unfold M2_def)
+  apply (simp)
+  done
