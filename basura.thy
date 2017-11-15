@@ -1,4 +1,4 @@
-theory Pedro imports Formula L_axioms begin
+theory basura imports Formula L_axioms Cardinal begin
 
 definition 
   pedro :: "i" where
@@ -15,7 +15,7 @@ lemma arityp: "arity(pedro) = 0"
   apply (unfold pedro_def)
   apply (simp add: choto)
   done
-
+    
 lemma pedroempty: "sats(a,pedro,[])"
   apply(unfold a_def)
   apply(unfold pedro_def)
@@ -162,3 +162,55 @@ lemma absolute_hold :
   apply (unfold M2_def)
   apply (simp)
   done
+    
+    
+lemma emptylist_is_pair :
+  "Nil = {{0}}"
+  apply (unfold Nil_def)
+  apply (unfold Inl_def)
+  apply (unfold Pair_def)
+  apply (auto)
+  done
+
+lemma formula_is_set :
+  "Member(0,0) \<noteq> 0"
+  apply (unfold Member_def)
+  apply (unfold Inl_def)
+  apply (auto)
+  done    
+  
+definition
+  rel :: "[i,i] \<Rightarrow> o" where
+  "rel(x,y) == \<exists>z . z \<in> y \<longrightarrow> (\<exists>w . w \<in> z \<longrightarrow> x \<in> w)"
+
+definition
+  relSet :: "i \<Rightarrow> i" where
+  "relSet(M) == {z\<in>M. \<exists>x. \<exists>y. z=\<langle>x,y\<rangle> \<and> rel(x,y)}"
+
+
+lemma WFrel : "wf(relSet(M))"
+  apply(unfold relSet_def)
+  apply(unfold wf_def)
+  apply(rule allI)
+  apply(auto)
+  (*apply(unfold rel_def)*)
+  apply(erule ballE)
+  apply(erule exE)
+  
+lemma WFrel :
+  fixes M :: i
+  shows "wf(relSet(M))"
+proof -
+  have wf({z \<in> M . \<exists>x y. z = \<langle>x, y\<rangle> \<and> rel(x, y)}) by apply(unfold relSet_def)
+
+  
+
+
+
+lemma card_of_pair :
+  "cardinal(Pair(x,y)) = 2"
+     
+lemma card_of_formula :
+  "cardinal(Member(1,2)) = 2"
+  apply (unfold Member_def)
+  apply (unfold Inl_def)
