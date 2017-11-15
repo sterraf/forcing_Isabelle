@@ -176,3 +176,33 @@ definition
 definition
   ZFCTh :: "i" where
   "ZFCTh == ZFC_fin \<union> ZFC_inf"
+
+(* satisfacción de un conjunto de fórmulas *)
+definition
+  satT :: "[i,i,i] => o" where
+  "satT(A,\<Phi>,env) == \<forall> p \<in> \<Phi>. sats(A,p,env)"
+
+
+
+(*
+lemma "sats(A,Forall(transset_fm(0)),[]) \<and> 
+       satT(A,ZFCTh,[])  
+       \<Longrightarrow> PROP M_trivial(##A)"
+*)
+
+definition
+  rel :: "[i,i] \<Rightarrow> o" where
+  "rel(x,y) == \<exists>z . z \<in> y \<longrightarrow> (\<exists>w . w \<in> z \<longrightarrow> x \<in> w)"
+
+definition
+  relSet :: "i \<Rightarrow> i" where
+  "relSet(M) == {z\<in>M. \<exists>x. \<exists>y. z=\<langle>x,y\<rangle> \<and> rel(x,y)}"
+
+lemma WFrel : "wf(relSet(M))"
+  apply(unfold relSet_def)
+  apply(unfold wf_def)
+  apply(rule allI)
+  
+  
+
+
