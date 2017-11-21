@@ -191,26 +191,31 @@ definition
 lemma WFrel : "wf(relSet(M))"
   apply(unfold relSet_def)
   apply(unfold wf_def)
-  apply(rule allI)
   apply(auto)
-  (*apply(unfold rel_def)*)
+(*  apply(unfold rel_def)*)    
   apply(erule ballE)
-  apply(erule exE)
+  oops
   
+    
 lemma WFrel :
   fixes M :: i
   shows "wf(relSet(M))"
 proof -
-  have wf({z \<in> M . \<exists>x y. z = \<langle>x, y\<rangle> \<and> rel(x, y)}) by apply(unfold relSet_def)
-
-  
-
+  fix X :: i
+    assume A: "X \<noteq> 0"
+    have "\<forall>x . (x\<in>X \<longrightarrow> (\<exists>y. (y\<in>X \<and> (\<forall>z .(z\<in>X \<longrightarrow> (z\<in>x \<longrightarrow> z\<notin>y))))))" 
+     by (simp add:foundation)
+       
+oops
 
 
 lemma card_of_pair :
   "cardinal(Pair(x,y)) = 2"
-     
+  sorry
+    
 lemma card_of_formula :
   "cardinal(Member(1,2)) = 2"
   apply (unfold Member_def)
   apply (unfold Inl_def)
+  apply (simp add:card_of_pair)
+  done
