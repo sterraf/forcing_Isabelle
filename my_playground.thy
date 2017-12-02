@@ -1,5 +1,6 @@
 theory my_playground imports Formula L_axioms Cardinal begin
 
+section\<open>Experiments with type formula\<close>
 definition 
   pedro :: "i" where
   "pedro == Exists(Exists(Neg(Equal(0,1))))"
@@ -38,6 +39,7 @@ definition
   satT :: "[i,i,i] => o" where
   "satT(A,\<Phi>,env) == \<forall> p \<in> \<Phi>. sats(A,p,env)"
 
+section\<open>ZFC axioms in type formula\<close>
 (* Axiomas ZF internalizados en ZF *)
 
 (* extension "A = B \<longleftrightarrow> A \<subseteq> B \<and> B \<subseteq> A" *)
@@ -107,8 +109,7 @@ by (induct_tac "n",auto)
 (* infinity "\<exists>X(\<emptyset>\<in>X \<and> \<forall>y(y\<in>X \<rightarrow> succ(y)\<in>X))" *)
 
 
-
-
+subsection\<open>Absoluteness of transitivity\<close>
 (* transitividad *)
 definition 
   ZFtrans :: "i" where
@@ -162,8 +163,94 @@ lemma absolute_hold :
   apply (unfold M2_def)
   apply (simp)
   done
+
+section\<open>Well founded relations\<close>
+definition
+  rel :: "[i,i] \<Rightarrow> o" where
+  "rel(x,y) == \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
+
+definition
+  relSet :: "i \<Rightarrow> i" where
+  "relSet(M) == {z\<in>M. \<exists>x. \<exists>y. z=\<langle>x,y\<rangle> \<and> rel(x,y)}"
+
+text\<open>The next lemma is just an experiment to have a proof of a proposition P==>P\<close>
+lemma trivial_FO_implication:
+  assumes "\<exists>x\<in>Z .  \<forall>y. P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
+  shows "\<exists>x\<in>Z .  \<forall>y. P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
+proof -
+  show ?thesis using assms .
+  text\<open>Otra opción es usar 
+  show ?thesis using assms by simp\<close>
+qed
+  
+(* Fake lemma to follow our arguments *)
+lemma WFrel_aux :
+  assumes "Z\<noteq>0" 
+  shows "\<exists>x\<in>Z .  \<forall>y. (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z "
+  sorry
+
+(* A true result of FO logic *)    
+lemma reinforce_antecedent:
+  assumes p:"\<exists>x\<in>Z .  \<forall>y. R \<and> P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
+  shows "\<exists>x\<in>Z .  \<forall>y. P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
+proof -
+  show ?thesis using p by blast
+qed
+
+(* Auxiliary result for showing rel well founded *)
+lemma WFrel_auxM :
+  assumes p:"Z\<noteq>0" 
+  shows q:"\<exists>x\<in>Z. \<forall>y. \<langle>y, x\<rangle> \<in> M \<and> (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z"
+    (* I plan to use reinforce_antecedent *)
+  apply(rule_tac 
+      Q="\<exists>x\<in>Z. \<forall>y. \<langle>y, x\<rangle> \<in> M \<and> (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z"
+      and 
+      P="\<exists>x\<in>Z .  \<forall>y. (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z" in impE) 
+proof -
+  from p
+  have
+    r:"\<exists>x\<in>Z .  \<forall>y. (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z" by(rule WFrel_aux)
+  then
+    (* I would like to quote "r" here, but I can't *)
+  show "\<exists>x\<in>Z .  \<forall>y. (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z" by this
+next
+  (* Can't I use something like "auto" here to get rid of this?: *)
+  show "\<exists>x\<in>Z. \<forall>y. \<langle>y, x\<rangle> \<in> M \<and> (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z
+        \<Longrightarrow> 
+        \<exists>x\<in>Z. \<forall>y. \<langle>y, x\<rangle> \<in> M \<and> (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z" .
+next
+  show 
+    "(\<exists>x\<in>Z. \<forall>y. (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z) \<longrightarrow>
+    (\<exists>x\<in>Z. \<forall>y. \<langle>y, x\<rangle> \<in> M \<and> (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z)"
+    by (rule_tac 
+        R="\<langle>y, x\<rangle> \<in> M" 
+        P="(\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w))"
+        Q="y \<notin> Z"
+        in WFFO_aux)
+qed
     
+lemma WFrel : "wf(relSet(M))"
+  apply(unfold wf_def)
+  apply(rule allI)
+  apply(case_tac "Z=0")
+  apply(rule disjI1;auto)
+  apply(rule disjI2)
+  apply(simp add:relSet_def add:rel_def add:WFrel_auxM)
+  done
+
+section\<open>Anomalous calculations\<close>
+text\<open>Here I put some anomalous lemmata, showing the typelessness of set theory.\<close>
+lemma card_of_pair :
+  "cardinal(Pair(x,y)) = 2"
+  sorry
     
+lemma card_of_formula :
+  "cardinal(Member(1,2)) = 2"
+  apply (unfold Member_def)
+  apply (unfold Inl_def)
+  apply (simp add:card_of_pair)
+  done
+            
 lemma emptylist_is_pair :
   "Nil = {{0}}"
   apply (unfold Nil_def)
@@ -178,38 +265,3 @@ lemma formula_is_set :
   apply (unfold Inl_def)
   apply (auto)
   done    
-  
-definition
-  rel :: "[i,i] \<Rightarrow> o" where
-  "rel(x,y) == \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
-
-definition
-  relSet :: "i \<Rightarrow> i" where
-  "relSet(M) == {z\<in>M. \<exists>x. \<exists>y. z=\<langle>x,y\<rangle> \<and> rel(x,y)}"
-
-lemma WFrel_aux [simp]:
-  assumes "Z\<noteq>0" 
-  shows "\<exists>x\<in>Z .  \<forall>y. (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z "
-  sorry
-
-lemma WFrel : "wf(relSet(M))"
-  apply(unfold wf_def)
-  apply(rule allI)
-  apply(case_tac "Z=0")
-  apply(rule disjI1;auto)
-  apply(rule disjI2)
-  (*apply(erule not_emptyE)*)
-  apply(simp add:relSet_def add:rel_def)
-  oops
-
-
-lemma card_of_pair :
-  "cardinal(Pair(x,y)) = 2"
-  sorry
-    
-lemma card_of_formula :
-  "cardinal(Member(1,2)) = 2"
-  apply (unfold Member_def)
-  apply (unfold Inl_def)
-  apply (simp add:card_of_pair)
-  done
