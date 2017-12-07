@@ -216,12 +216,13 @@ lemma WFrel_auxM :
 proof -
   from p
   show "\<exists>x\<in>Z .  \<forall>y. (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z" by(rule WFrel_aux)
+qed auto
+(*
 next
   show 
     "(\<exists>x\<in>Z. \<forall>y. (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z) \<longrightarrow>
     (\<exists>x\<in>Z. \<forall>y. \<langle>y, x\<rangle> \<in> M \<and> (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z)"
-    by auto
-(*    by (rule_tac
+    by (rule_tac
         Z="Z"
         and
         R="\<lambda> x y . \<langle>y, x\<rangle> \<in> M"
@@ -229,9 +230,9 @@ next
         P="\<lambda> x y Z . (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w))"
         and
         Q="\<lambda> x y Z . y \<notin> Z"
+        for Z and R and P and Q
         in reinforce_antecedent)
-*)
-qed
+qed *)
 
 definition
   bool_fun :: "[i,i] \<Rightarrow> o" where
