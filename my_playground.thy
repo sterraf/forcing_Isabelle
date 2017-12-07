@@ -191,12 +191,19 @@ lemma WFrel_aux :
 
 (* A true result of FO logic *)    
 lemma reinforce_antecedent:
-  assumes p:"\<exists>x\<in>Z .  \<forall>y. R \<and> P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
-  shows "\<exists>x\<in>Z .  \<forall>y. P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
+  assumes p:"\<exists>x\<in>Z .  \<forall>y. P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
+  shows "\<exists>x\<in>Z .  \<forall>y. R(x,y) \<and> P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
 proof -
   show ?thesis using p by blast
 qed
 
+lemma reinforce_antecedent_no_vars:
+  assumes p:"\<exists>x\<in>Z .  \<forall>y. (P \<longrightarrow> Q)"
+  shows "\<exists>x\<in>Z .  \<forall>y. (R \<and> P \<longrightarrow> Q)"
+proof -
+  show ?thesis using p by blast
+qed
+  
 (* Auxiliary result for showing rel well founded *)
 lemma WFrel_auxM :
   assumes p:"Z\<noteq>0" 
@@ -204,31 +211,33 @@ lemma WFrel_auxM :
     (* I plan to use reinforce_antecedent *)
   apply(rule_tac 
       Q="\<exists>x\<in>Z. \<forall>y. \<langle>y, x\<rangle> \<in> M \<and> (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z"
-      and 
-      P="\<exists>x\<in>Z .  \<forall>y. (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z" in impE) 
+      and
+      P="\<exists>x\<in>Z .  \<forall>y. (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z" in mp) 
 proof -
   from p
-  have
-    r:"\<exists>x\<in>Z .  \<forall>y. (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z" by(rule WFrel_aux)
-  then
-    (* I would like to quote "r" here, but I can't *)
-  show "\<exists>x\<in>Z .  \<forall>y. (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z" by this
-next
-  (* Can't I use something like "auto" here to get rid of this?: *)
-  show "\<exists>x\<in>Z. \<forall>y. \<langle>y, x\<rangle> \<in> M \<and> (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z
-        \<Longrightarrow> 
-        \<exists>x\<in>Z. \<forall>y. \<langle>y, x\<rangle> \<in> M \<and> (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z" .
+  show "\<exists>x\<in>Z .  \<forall>y. (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z" by(rule WFrel_aux)
 next
   show 
     "(\<exists>x\<in>Z. \<forall>y. (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z) \<longrightarrow>
     (\<exists>x\<in>Z. \<forall>y. \<langle>y, x\<rangle> \<in> M \<and> (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w)) \<longrightarrow> y \<notin> Z)"
-    by (rule_tac 
-        R="\<langle>y, x\<rangle> \<in> M" 
-        P="(\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w))"
-        Q="y \<notin> Z"
-        in WFFO_aux)
+    by auto
+(*    by (rule_tac
+        Z="Z"
+        and
+        R="\<lambda> x y . \<langle>y, x\<rangle> \<in> M"
+        and
+        P="\<lambda> x y Z . (\<exists>z. z \<in> x \<and> (\<exists>w. w \<in> z \<and> y \<in> w))"
+        and
+        Q="\<lambda> x y Z . y \<notin> Z"
+        in reinforce_antecedent)
+*)
 qed
-    
+
+definition
+  bool_fun :: "[i,i] \<Rightarrow> o" where
+  "bool_fun == \<lambda> x y . \<exists>z . z \<in> y \<longrightarrow> (\<exists>w . w \<in> z \<longrightarrow> x \<in> w)"
+
+  
 lemma WFrel : "wf(relSet(M))"
   apply(unfold wf_def)
   apply(rule allI)
@@ -265,3 +274,5 @@ lemma formula_is_set :
   apply (unfold Inl_def)
   apply (auto)
   done    
+
+end
