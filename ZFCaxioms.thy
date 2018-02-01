@@ -167,16 +167,29 @@ definition
   "ZFC_fin == {ZFextension,ZFfoundation,ZFpairing,
               ZFunion,ZFinfinity,ZFpowerset,ZFchoice}"
 
+lemma ZFC_fin_type : "ZFC_fin \<subseteq> formula"
+  by (simp add:ZFC_fin_def)
+  
 definition
   ZFC_inf :: "i" where
-  "ZFC_inf == (\<lambda>p \<in> formula. ZFseparation(p)) \<union>
-              (\<lambda>p \<in> formula. ZFreplacement(p))"
-
+  "ZFC_inf == {ZFseparation(p) . p \<in> formula } \<union> {ZFreplacement(p) . p \<in> formula }"
+              
+lemma unions : "A\<subseteq>formula \<and> B\<subseteq>formula \<Longrightarrow> A\<union>B \<subseteq> formula"
+  by auto
+  
+lemma ZFC_inf_type : "ZFC_inf \<subseteq> formula"
+  apply(unfold ZFC_inf_def)
+  apply(auto)
+  done
+    
 (* Teoría ZFC internalizada *)
 definition
   ZFCTh :: "i" where
   "ZFCTh == ZFC_fin \<union> ZFC_inf"
 
+lemma "ZFCTh \<subseteq> formula"
+  by (simp add:ZFCTh_def add:unions add:ZFC_inf_type add:ZFC_fin_type)
+  
 (* satisfacción de un conjunto de fórmulas *)
 definition
   satT :: "[i,i,i] => o" where
