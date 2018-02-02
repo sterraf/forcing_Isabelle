@@ -1,5 +1,31 @@
 theory my_playground imports Formula L_axioms Cardinal begin
 
+section\<open>Training in Isabelle proofs\<close>  
+text\<open>The next lemma is just an experiment to have a proof of a proposition P==>P\<close>
+lemma trivial_FO_implication:
+  assumes "\<exists>x\<in>Z .  \<forall>y. P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
+  shows "\<exists>x\<in>Z .  \<forall>y. P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
+proof -
+  show ?thesis using assms .
+  text\<open>Otra opción es usar 
+  show ?thesis using assms by simp\<close>
+qed
+  
+(* A true result of FO logic *)    
+lemma reinforce_antecedent:
+  assumes p:"\<exists>x\<in>Z .  \<forall>y. P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
+  shows "\<exists>x\<in>Z .  \<forall>y. R(x,y) \<and> P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
+proof -
+  show ?thesis using p by blast
+qed
+
+lemma reinforce_antecedent_no_vars:
+  assumes p:"\<exists>x\<in>Z .  \<forall>y. (P \<longrightarrow> Q)"
+  shows "\<exists>x\<in>Z .  \<forall>y. (R \<and> P \<longrightarrow> Q)"
+proof -
+  show ?thesis using p by blast
+qed
+  
 section\<open>Experiments with type formula\<close>
 definition 
   pedro :: "i" where
@@ -300,37 +326,64 @@ definition
 
 definition
   relSet :: "i \<Rightarrow> i" where
-  "relSet(M) == {z\<in>M. \<exists>x. \<exists>y. z=\<langle>x,y\<rangle> \<and> rel(x,y)}"
+  "relSet(M) == { z \<in> M*M . rel(fst(z),snd(z)) }"
 
-text\<open>The next lemma is just an experiment to have a proof of a proposition P==>P\<close>
-lemma trivial_FO_implication:
-  assumes "\<exists>x\<in>Z .  \<forall>y. P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
-  shows "\<exists>x\<in>Z .  \<forall>y. P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
-proof -
-  show ?thesis using assms .
-  text\<open>Otra opción es usar 
-  show ?thesis using assms by simp\<close>
+lemma relSet_coord : "<x,y>\<in>relSet(M) \<Longrightarrow> \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
+by (simp add:relSet_def rel_def )
+
+lemma fld_rel_sub_eclose : "\<lbrakk>xa \<in> M; y \<in> M ; z \<in> y ; w \<in> z; xa \<in> w\<rbrakk> \<Longrightarrow> 
+                            z \<in> eclose(M) \<and> w \<in> eclose(M)"
+  apply (simp add:ecloseD)
+proof - 
+  assume p:"y\<in>M"
+  assume q: "z\<in>y"
+  show "z\<in>eclose(M)"
+  proof - 
+  have r:"M\<subseteq>eclose(M)" by (rule arg_subset_eclose)
+  from p and r  have "y\<in>eclose(M)" by (simp add:subsetD)
+  then show ?thesis using q  by (simp add:ecloseD)
+  qed
 qed
+
+lemma rel_sub_memcomp : "relSet(M) \<subseteq> Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M))"
+  apply (unfold relSet_def)
+  apply (unfold rel_def)
+  apply (simp add:comp_def)
+  apply clarify
+  apply (simp add:snd_def)
+  (* relevant fact? comp_def *)
+sorry
   
-(* A true result of FO logic *)    
-lemma reinforce_antecedent:
-  assumes p:"\<exists>x\<in>Z .  \<forall>y. P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
-  shows "\<exists>x\<in>Z .  \<forall>y. R(x,y) \<and> P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
-proof -
-  show ?thesis using p by blast
-qed
-
-lemma reinforce_antecedent_no_vars:
-  assumes p:"\<exists>x\<in>Z .  \<forall>y. (P \<longrightarrow> Q)"
-  shows "\<exists>x\<in>Z .  \<forall>y. (R \<and> P \<longrightarrow> Q)"
-proof -
-  show ?thesis using p by blast
-qed
+lemma memcomp_sub_trmem : "Memrel(eclose(M)) O Memrel(eclose(M))O Memrel(eclose(M))
+                          \<subseteq> trancl(Memrel(eclose(M)))"
+  apply clarify
+  apply simp
+  apply (unfold trancl_def)
+(* proof -
+  assume p:"xb\<in>ya" and q:"xb\<in>eclose(M)" and r:"ya\<in>eclose(M)"
+  from p and q and r    
+  have s:"<xb,ya>\<in>Memrel(eclose(M))".. *)
+sorry
   
-definition
-  bool_fun :: "[i,i] \<Rightarrow> o" where
-  "bool_fun == \<lambda> x y . \<exists>z . z \<in> y \<longrightarrow> (\<exists>w . w \<in> z \<longrightarrow> x \<in> w)"
+lemma wf_trmem : "wf(trancl(Memrel(eclose(M))))"
+(*  apply (simp add:wf_trancl) no anda aquí *)
+  apply (rule wf_trancl)
+  apply (simp add:wf_Memrel)
+done
 
+lemma wf_memcomp : "wf(Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M)))"
+  apply (rule wf_subset)
+  apply (rule wf_trmem)
+  apply (rule memcomp_sub_trmem)
+done
+
+lemma wf_relSet : "wf(relSet(M))"
+  apply (rule wf_subset)
+  apply (rule wf_memcomp)
+  apply (rule rel_sub_memcomp)
+done
+
+  
 (*
 lemma WFrel : "wf(relSet(M))"
   apply(unfold wf_def)
