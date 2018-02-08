@@ -1,6 +1,7 @@
 theory WF_epseps imports Formula L_axioms Cardinal begin
 
 section\<open>Well founded relations\<close>
+text\<open>To Do: find a better name for rel.\<close>
 definition
   rel :: "[i,i] \<Rightarrow> o" where
   "rel(x,y) == \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
@@ -26,16 +27,31 @@ proof -
   qed
 qed
 
-lemma rel_sub_memcomp : "relSet(M) \<subseteq> Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M))"
-  apply (unfold relSet_def)
-  apply (unfold rel_def)
-  apply (simp add:comp_def)
-  apply clarify
-  apply (simp add:snd_def)
+lemma rel_sub_memcomp : 
+  "relSet(M) \<subseteq> Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M))"
+text\<open>To Do: esta prueba está feísima! Una forma de mejorarla 
+es utilizar a structured Isar proof (el otro estilo). \<close>
+  apply (unfold relSet_def, unfold rel_def)
+  apply clarsimp
+  apply (rule_tac b=z in compI)
+  apply (rule_tac b=w in compI)
+  apply (rule MemrelI, assumption) 
+  apply (rule arg_into_eclose,assumption)
+  apply (rule_tac A=z in ecloseD)
+  apply (rule_tac A=y in ecloseD)
+  apply (rule arg_into_eclose, assumption, assumption, assumption)
+  apply (rule MemrelI, assumption)   
+  apply (rule_tac A=z in ecloseD)
+  apply (rule_tac A=y in ecloseD)
+  apply (rule arg_into_eclose, assumption, assumption, assumption)
+  apply (rule_tac A=y in ecloseD)
+  apply (rule arg_into_eclose,assumption, assumption)
+  apply (rule MemrelI, assumption)   
+  apply (rule_tac A=y in ecloseD)
+  apply (rule arg_into_eclose,assumption, assumption)
+  apply (rule arg_into_eclose,assumption)
+done
     
-  (* relevant fact? comp_def *)
-sorry
-  
 lemma memcomp_sub_trmem : "Memrel(eclose(M)) O Memrel(eclose(M))O Memrel(eclose(M))
                           \<subseteq> trancl(Memrel(eclose(M)))"
   apply auto
