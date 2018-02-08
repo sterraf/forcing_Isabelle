@@ -10,11 +10,13 @@ definition
   relSet :: "i \<Rightarrow> i" where
   "relSet(M) == { z \<in> M*M . rel(fst(z),snd(z)) }"
 
-lemma relSet_coord : "<x,y>\<in>relSet(M) \<Longrightarrow> \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
+lemma relSet_coord : 
+  "<x,y>\<in>relSet(M) \<Longrightarrow> \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
 by (simp add:relSet_def rel_def )
 
-lemma fld_rel_sub_eclose : "\<lbrakk>xa \<in> M; y \<in> M ; z \<in> y ; w \<in> z; xa \<in> w\<rbrakk> \<Longrightarrow> 
-                            z \<in> eclose(M) \<and> w \<in> eclose(M)"
+lemma fld_rel_sub_eclose : 
+ "\<lbrakk>xa \<in> M; y \<in> M ; z \<in> y ; w \<in> z; xa \<in> w\<rbrakk> \<Longrightarrow> 
+                           z \<in> eclose(M) \<and> w \<in> eclose(M)"
   apply (simp add:ecloseD)
 proof - 
   assume p:"y\<in>M"
@@ -35,21 +37,15 @@ es utilizar a structured Isar proof (el otro estilo). \<close>
   apply clarsimp
   apply (rule_tac b=z in compI)
   apply (rule_tac b=w in compI)
+  apply (rule MemrelI, assumption)
+   apply (rule arg_into_eclose,assumption)
+  apply (simp add:fld_rel_sub_eclose)
+  apply (rule MemrelI, assumption)   
+  apply (simp add:fld_rel_sub_eclose)
+  apply (simp add:fld_rel_sub_eclose)
   apply (rule MemrelI, assumption) 
-  apply (rule arg_into_eclose,assumption)
-  apply (rule_tac A=z in ecloseD)
-  apply (rule_tac A=y in ecloseD)
-  apply (rule arg_into_eclose, assumption, assumption, assumption)
-  apply (rule MemrelI, assumption)   
-  apply (rule_tac A=z in ecloseD)
-  apply (rule_tac A=y in ecloseD)
-  apply (rule arg_into_eclose, assumption, assumption, assumption)
-  apply (rule_tac A=y in ecloseD)
-  apply (rule arg_into_eclose,assumption, assumption)
-  apply (rule MemrelI, assumption)   
-  apply (rule_tac A=y in ecloseD)
-  apply (rule arg_into_eclose,assumption, assumption)
-  apply (rule arg_into_eclose,assumption)
+  apply (simp add:fld_rel_sub_eclose)
+  apply (rule arg_into_eclose, assumption)
 done
     
 lemma memcomp_sub_trmem : "Memrel(eclose(M)) O Memrel(eclose(M))O Memrel(eclose(M))
