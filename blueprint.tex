@@ -12,6 +12,8 @@
 \DeclareUnicodeCharacter{27E6}{\mt\llbracket}
 \DeclareUnicodeCharacter{27E7}{\mt\rrbracket}
 \DeclareUnicodeCharacter{27F9}{\mt\Longrightarrow}
+\DeclareUnicodeCharacter{03A6}{\mt\Phi}
+%\DeclareUnicodeCharacter{}{\mt}
 
 
 \renewcommand{\PP}{\mathbb{P}}
@@ -134,6 +136,12 @@ equivalent. This is an \emph{absolutness result}:
 when $p,r\in M$, and the list $[p,r]$ is the environment or
 interpretation of free variables. 
 
+\begin{definition}
+  $G$ is \emph{$M$-generic for $\PP$} if it is $\calD$-generic for
+  $\PP$ for the family $\calD$ of all dense subsets of $\PP$ that live
+  in $M$.
+\end{definition}
+
 \section{Names}
 The following is mostly independent of the previous section, but we
 assume that $\1\in\PP\in M$, $M$ is transitive and $1\in G\sbq\PP$.
@@ -190,7 +198,28 @@ $x$ is a $\PP$-name, or $F(x)=0$ otherwise.
   \]
 \end{definition}
 The standard definition of $M[G]$ adds the clause that $\tau$ should be
-a $\PP$-name, but this is not necessary.
+a $\PP$-name, but this is not necessary. When $G$ is $M$-generic for
+$\PP$, we say that $M[G]$ is a \emph{generic extension}.
+
+\section{The forcing relation}
+In order to prove the independence of $\CH$, we will assume the
+existence of countable transitive model (ctm) $M$ of $\ZFC$. The
+satisfaction relation $M,\mathit{env}\models\Phi$ (where $\Phi$ is a set of
+sentences and $\mathit{env}$ is an interpretation for the free
+variables) is coded in Isabelle/ZF by using \verb|satT|:
+\begin{verbatim}
+definition
+  satT :: "[i,i,i] => o" where
+  "satT(A,Φ,env) == ∀ p ∈ Φ. sats(A,p,env)"
+\end{verbatim}
+The function \verb|satT| takes a subset of \formula{} as its second
+argument, and it is based on the already defined function \verb|sats|.
+
+Given a ctm $M$, and a $M$-generic filter $G\sbq\PP$, the Forcing
+Theorems relate satisfaction of a formula 
+$\phi$ in the generic extension $M[G]$ to the satisfaction of another formula
+$\phi'$ in $M$. The map $\phi\mapsto\phi'$ is defined by recursion on
+the structure of $\phi$.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
