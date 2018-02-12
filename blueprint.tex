@@ -3,6 +3,7 @@
   left=4cm, right=4cm]{geometry}             %% using 'ebook' style 
 
 \input{header-blueprint}
+%%%%%%%%%%%%%%%%%%% % %   Unicodings   % % %%%%%%%%%%%%%%%%%%%%%
 \newcommand{\mt}[1]{$\mathtt{#1}$}
 \DeclareUnicodeCharacter{21D2}{\mt\Rightarrow}
 \DeclareUnicodeCharacter{2208}{\mt\in}
@@ -17,6 +18,8 @@
 \newcommand{\formula}{\ensuremath{\mathtt{formula}}}
 \newcommand{\tyi}{\mathtt{i}}
 \newcommand{\tyo}{\mathtt{o}}
+\DeclareMathOperator{\val}{val}
+
 
 %%%%%%%%%%%%%%%%%%% Footnotemarks for "Thanks!" %%%%%%%%%%%%%%%%%%
 \makeatletter
@@ -129,7 +132,65 @@ equivalent. This is an \emph{absolutness result}:
 \phi(p,r) \lsii \phi^M(p,r) \lsii M;[p,r]\models\quine{\phi},
 \]
 when $p,r\in M$, and the list $[p,r]$ is the environment or
-interpretation of free variables.
+interpretation of free variables. 
+
+\section{Names}
+The following is mostly independent of the previous section, but we
+assume that $\1\in\PP\in M$, $M$ is transitive and $1\in G\sbq\PP$.
+(Note that, in general, $G\notin M$.)
+
+\begin{definition}
+  \begin{enumerate}
+  \item The relation \verb|eee|$(M)$ is the restriction to $M$ of the
+    relational composition 
+    ${\in}\circ{\in}\circ{\in}$. 
+  \item For $\tau\in M$, the \emph{$G$-value} or \emph{interpretation
+    under $G$} of $\tau$ is
+    \[
+    \val(\tau,\PP,G)\defi \{\val(\sigma,\PP,G) : \exists p\in \PP
+    (\lb\sigma,p\rb\in\tau \y p\in G)\}.
+    \]
+  \end{enumerate}
+\end{definition}
+
+The definition of $\val$ proceeds by well founded recursion on
+\verb|eee|$(M)$. Determining  $\val(\tau,\PP,G)$ uses the values
+$\val(\sigma,\PP,G)$ for smaller $\sigma$:
+\[
+\sigma\in\{\sigma\}\in\lb\sigma,p\rb\in\tau.
+\]
+
+\begin{remark}
+  Slightly generalizing the recursive scheme for $\val$ we have:
+  \[
+  F(\tau,\bx)\defi \{F(\sigma,\bx) : \phi(\sigma,\tau,\bx) \y
+  \sigma\mathrel{R}\tau\}, 
+  \]
+  where $R$ is some well-founded relation. Using this scheme the
+  \emph{Mostowski collapse} of $R$ can be defined:
+  \[
+  \mos(\tau)\defi \{\mos(\sigma) : \sigma\mathrel{R}\tau\},
+  \]
+  which is a tool of independent interest.
+\end{remark}
+
+\begin{definition}
+  $\tau$ is a \emph{$\PP$-name} if its elements are of the form
+  $\lb\sigma,p\rb$ where $p\in\PP$ and $\sigma$ is a $\PP$.
+\end{definition}
+The usual way to define a property by well-founded recursion is to
+define the ``characteristic function'' of that property. In this case,
+define by recursion the function $F:M\to\om$ such that $F(x)=1$  if
+$x$ is a $\PP$-name, or $F(x)=0$ otherwise.
+
+\begin{definition}
+  The \emph{extension of $M$ by $G$} is
+  \[
+  \verb|gen_ext|(M,\PP,G) = M[G] \defi \{\val(\tau,\PP,G): \tau\in M\}.
+  \]
+\end{definition}
+The standard definition of $M[G]$ adds the clause that $\tau$ should be
+a $\PP$-name, but this is not necessary.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{alpha}
