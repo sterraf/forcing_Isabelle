@@ -1,0 +1,70 @@
+\documentclass[11pt,english]{article}
+\usepackage[bottom=2cm, top=3cm, %% Comment if 
+  left=4cm, right=4cm]{geometry}             %% using 'ebook' style 
+
+\input{header-blueprint}
+
+%%%%%%%%%%%%%%%%%%% Footnotemarks for "Thanks!" %%%%%%%%%%%%%%%%%%
+\makeatletter
+\renewcommand*{\@fnsymbol}[1]{\ensuremath{\ifcase#1\or *\or \dagger\or \ddagger\or
+    \mathsection\or \mathparagraph\or \|\or **\or \dagger\dagger
+    \or \ddagger\ddagger \else\@ctrerr\fi}}
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\title{Forcing for Isabelle}
+\author{%
+  Pedro Sánchez Terraf%
+  \thanks{
+    Universidad Nacional de C\'ordoba. 
+    Facultad de Matem\'atica, Astronom\'{\i}a,  F\'{\i}sica y
+    Computaci\'on.}
+  \thanks{
+    Centro de Investigaci\'on y Estudios de Matem\'atica (CIEM-FaMAF).
+    C\'ordoba. Argentina.}
+}
+%
+\maketitle
+%
+\begin{abstract}
+  Basic definitions of the forcing technique and blueprint for an
+  Isabelle/ZF proof of the Forcing Theorems.   
+\end{abstract}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\section{Introduction}
+The proofs are mostly based on Chapter IV of
+Kunen's~\cite{kunen2011set}. 
+
+\section{Definitions}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{alpha}
+\bibliography{blueprint}
+
+\bigskip
+
+\begin{small}
+  \begin{quote}
+    \texttt{sterraf@famaf.unc.edu.ar}
+    
+    CIEM --- Facultad de Matem\'atica, Astronom\'{\i}a y F\'{\i}sica 
+    (Fa.M.A.F.) 
+    
+    Universidad Nacional de C\'ordoba --- Ciudad Universitaria
+    
+    C\'ordoba 5000. Argentina.
+  \end{quote}
+\end{small}
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% ispell-local-dictionary: "american"
+%%% End: 
