@@ -3,6 +3,20 @@
   left=4cm, right=4cm]{geometry}             %% using 'ebook' style 
 
 \input{header-blueprint}
+\newcommand{\mt}[1]{$\mathtt{#1}$}
+\DeclareUnicodeCharacter{21D2}{\mt\Rightarrow}
+\DeclareUnicodeCharacter{2208}{\mt\in}
+\DeclareUnicodeCharacter{2200}{\mt\forall}
+\DeclareUnicodeCharacter{27F6}{\mt\longrightarrow}
+\DeclareUnicodeCharacter{27E6}{\mt\llbracket}
+\DeclareUnicodeCharacter{27E7}{\mt\rrbracket}
+\DeclareUnicodeCharacter{27F9}{\mt\Longrightarrow}
+
+
+\renewcommand{\PP}{\mathbb{P}}
+\newcommand{\formula}{\ensuremath{\mathtt{formula}}}
+\newcommand{\tyi}{\mathtt{i}}
+\newcommand{\tyo}{\mathtt{o}}
 
 %%%%%%%%%%%%%%%%%%% Footnotemarks for "Thanks!" %%%%%%%%%%%%%%%%%%
 \makeatletter
@@ -29,7 +43,8 @@
 %
 \begin{abstract}
   Basic definitions of the forcing technique and blueprint for an
-  Isabelle/ZF proof of the Forcing Theorems.   
+  Isabelle/ZF proof of the Forcing Theorems, under the assumption of
+  the existence of countable transitive model of $\ZFC$.   
 \end{abstract}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -40,7 +55,74 @@
 The proofs are mostly based on Chapter IV of
 Kunen's~\cite{kunen2011set}. 
 
-\section{Definitions}
+\section{Forcing notions}
+We will need the following concepts:
+\begin{itemize}
+\item Forcing poset or \emph{notion}: a triple $\lb \PP, \1, \leq\rb$ where $\leq$ is a
+  partial (pre)order on $\PP$ with (a) top element $\1$.
+\item Compatible elements. Antichain in $\PP$. 
+\item Dense subset $D\sbq\PP$ of a forcing poset.
+\item Filter $G\sbq\PP$ in a poset.
+\item $\calD$-generic filter for $\PP$, where $\calD$ is a family of
+  dense subsets of $\PP$.
+\end{itemize}
+
+Most probably, we'll need two or three versions of each of these
+definitions: One internalized as an element of \formula;  a relativized
+one with a class parameter; and finally one without
+relativization. This is done in order to show absolutness and to take
+advantage of the Isabelle/ZF ability to operate with terms of type
+$\tyi$.
+
+As an example, consider $\PP,R \in M$,  and $R\sbq
+\PP\times\PP$. Reflexivity of the relation $R$ is 
+stated as follows.
+\[
+\forall p (p\in \PP \limp \lb p,p\rb \in R).
+\]
+In Isabelle/ZF, we write
+%
+\begin{verbatim}
+definition 
+  reflexivity_abs :: "[i,i] ⇒ o" where
+  "reflexivity_abs(P,r) == ∀p . p∈P ⟶ <p,p>∈r"
+\end{verbatim}
+
+This is different from what would $M$ see from ``within.'' In
+particular, the universal quantifier should range only over elements
+of $M$:
+\[
+\forall p\in M (p\in \PP \limp \lb p,p\rb \in R).
+\]
+In Isabelle/ZF, we will move to a more general setting, by allowing
+that $M$ is a class.
+\begin{verbatim}
+definition  
+  reflexivity_rel :: "[i⇒o,i,i] ⇒ o" where
+  "reflexivity_rel(M,P,r) == ∀p[M].  p∈P ⟶ <p,p>∈r"
+\end{verbatim}
+(Notice: There must be no spaces between \verb|[M]| and the following
+period.) This is the relativized version of
+\verb|reflexivity_abs|. 
+
+Finally, the internalized version of reflexivity is as follows:
+\begin{verbatim}
+definition
+  reflexivity_fm :: "[i,i]⇒i" where
+  "reflexivity_fm(x,y) == Forall(Implies(Member(0,succ(x)),
+          Exists(And(pair_fm(1,1,0),Member(0,succ(succ(y)))))))"
+
+lemma reflexivity_type : 
+        "⟦x∈nat ; y∈nat⟧ ⟹ reflexivity_fm(x,y)∈formula"
+  by (simp add:reflexivity_fm_def)
+\end{verbatim}
+
+The last lemma shows that indeed we have defined an element of the set
+\formula. The formula \verb|reflexivity_fm| is an internalization of
+the Isabelle/ZF formula \verb|reflexivity_abs|, not the relativized
+one.
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
