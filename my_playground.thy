@@ -344,6 +344,26 @@ proof -
   then show ?thesis using q  by (simp add:ecloseD)
   qed
 qed
+  
+lemma dom_memrel : "domain(Memrel(A))\<subseteq>A"
+  by clarify
+
+lemma ran_memrel : "range(Memrel(A))\<subseteq>A"
+  by clarify
+
+lemma dom_mem_eclo :"domain(Memrel(eclose(M)))=eclose(M)"
+(*proof
+  show "domain(Memrel(eclose(M)))\<subseteq>eclose(M)" by (rule_tac A="eclose(M)" in dom_memrel)
+  (* rule_tac se puede eliminar en favor de             *
+   *   (simp add:dom_memrel)                            *)
+*)
+  apply standard             
+  apply (rule_tac A="eclose(M)" in dom_memrel)
+  apply (unfold eclose_def)
+  apply (unfold domain_def)
+  apply clarify
+  (* apply (rule_tac nat_induct) *)
+oops
 
 lemma rel_sub_memcomp : "relSet(M) \<subseteq> Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M))"
   apply (unfold relSet_def)
@@ -394,6 +414,27 @@ lemma WFrel : "wf(relSet(M))"
   apply(simp add:relSet_def add:rel_def add:WFrel_auxM)
   done
 *)
+
+section\<open>Posets\<close>  
+text\<open>Reflexivity in three forms\<close>
+
+definition 
+  reflexivity_abs :: "[i,i] \<Rightarrow> o" where
+  "reflexivity_abs(P,r) == \<forall>p . p\<in>P \<longrightarrow> <p,p>\<in>r"
+
+definition  
+  reflexivity_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "reflexivity_rel(M,P,r) == \<forall>p[M].  p\<in>P \<longrightarrow> <p,p>\<in>r"
+
+definition
+  reflexivity_fm :: "[i,i]\<Rightarrow>i" where
+  "reflexivity_fm(x,y) == Forall(Implies(Member(0,succ(x)),
+                     Exists(And(pair_fm(1,1,0),Member(0,succ(succ(y)))))))"
+
+lemma reflexivity_type : "\<lbrakk>x\<in>nat ; y\<in>nat\<rbrakk> \<Longrightarrow> reflexivity_fm(x,y)\<in>formula"
+  by (simp add:reflexivity_fm_def)
+
+  
 section\<open>Anomalous calculations\<close>
 text\<open>Here I put some anomalous lemmata, showing the typelessness of set theory.\<close>
 
