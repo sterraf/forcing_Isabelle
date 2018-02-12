@@ -78,7 +78,7 @@ As an example, consider $\PP,R \in M$,  and $R\sbq
 \PP\times\PP$. Reflexivity of the relation $R$ is 
 stated as follows.
 \[
-\forall p (p\in \PP \limp \lb p,p\rb \in R).
+\phi\defi \forall p (p\in \PP \limp \lb p,p\rb \in R).
 \]
 In Isabelle/ZF, we write
 %
@@ -92,7 +92,7 @@ This is different from what would $M$ see from ``within.'' In
 particular, the universal quantifier should range only over elements
 of $M$:
 \[
-\forall p\in M (p\in \PP \limp \lb p,p\rb \in R).
+\phi^M\defi\forall p\in M (p\in \PP \limp \lb p,p\rb \in R).
 \]
 In Isabelle/ZF, we will move to a more general setting, by allowing
 that $M$ is a class.
@@ -105,7 +105,8 @@ definition
 period.) This is the relativized version of
 \verb|reflexivity_abs|. 
 
-Finally, the internalized version of reflexivity is as follows:
+Finally, the internalized version $\quine{\phi}$ of reflexivity is as
+follows: 
 \begin{verbatim}
 definition
   reflexivity_fm :: "[i,i]⇒i" where
@@ -122,8 +123,13 @@ The last lemma shows that indeed we have defined an element of the set
 the Isabelle/ZF formula \verb|reflexivity_abs|, not the relativized
 one.
 
-
-
+Under the assumption of transitivity of $M$, the three versions are
+equivalent. This is an \emph{absolutness result}:
+\[
+\phi(p,r) \lsii \phi^M(p,r) \lsii M;[p,r]\models\quine{\phi},
+\]
+when $p,r\in M$, and the list $[p,r]$ is the environment or
+interpretation of free variables.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{alpha}
