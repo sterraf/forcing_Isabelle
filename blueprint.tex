@@ -1,6 +1,7 @@
 \documentclass[11pt,english]{article}
 \usepackage[bottom=2cm, top=3cm, %% Comment if 
   left=4cm, right=4cm]{geometry}             %% using 'ebook' style 
+\usepackage{framed}
 
 \input{header-blueprint}
 %%%%%%%%%%%%%%%%%%% % %   Unicodings   % % %%%%%%%%%%%%%%%%%%%%%
@@ -13,6 +14,7 @@
 \DeclareUnicodeCharacter{27E7}{\mt\rrbracket}
 \DeclareUnicodeCharacter{27F9}{\mt\Longrightarrow}
 \DeclareUnicodeCharacter{03A6}{\mt\Phi}
+\DeclareUnicodeCharacter{03BB}{\mt\lambda}
 %\DeclareUnicodeCharacter{}{\mt}
 
 
@@ -20,6 +22,7 @@
 \newcommand{\formula}{\ensuremath{\mathtt{formula}}}
 \newcommand{\tyi}{\mathtt{i}}
 \newcommand{\tyo}{\mathtt{o}}
+\newcommand{\forceisa}{\mathtt{forces}}
 \DeclareMathOperator{\val}{val}
 
 
@@ -143,9 +146,14 @@ interpretation of free variables.
 \end{definition}
 
 \section{Names}
-The following is mostly independent of the previous section, but we
-assume that $\1\in\PP\in M$, $M$ is transitive and $1\in G\sbq\PP$.
-(Note that, in general, $G\notin M$.)
+\begin{framed}
+  The following is mostly independent of the previous section, but 
+  \begin{bfseries}
+    we assume that $\1\in\PP\in M$, $M$ is transitive and $1\in
+    G\sbq\PP$.
+  \end{bfseries}
+  (Note that, in general, $G\notin M$.)
+\end{framed}
 
 \begin{definition}
   \begin{enumerate}
@@ -215,11 +223,65 @@ definition
 The function \verb|satT| takes a subset of \formula{} as its second
 argument, and it is based on the already defined function \verb|sats|.
 
-Given a ctm $M$, and a $M$-generic filter $G\sbq\PP$, the Forcing
+\begin{framed}
+  It might be necessary to redefine \verb|sats| and the related
+  function \verb|satisfies| in order to have an independent argument $B$
+  to be the range of values of the environment. We would have, for
+  example, 
+\begin{verbatim}
+consts   satisfies :: "[i,i]=>i"
+primrec 
+  "satisfies(A,B,Member(x,y)) =
+      (λenv ∈ list(B). bool_of_o (nth(x,env) ∈ nth(y,env)))"
+\end{verbatim}
+  \dots
+  
+\noindent and then
+\begin{verbatim}
+abbreviation
+  sats :: "[i,i,i] => o" where
+  "sats(A,p,env) == satisfies(A,A,p)`env = 1"
+\end{verbatim}
+\end{framed}
+
+Given a ctm $M$, and an $M$-generic filter $G\sbq\PP$, the Forcing
 Theorems relate satisfaction of a formula 
 $\phi$ in the generic extension $M[G]$ to the satisfaction of another formula
 $\phi'$ in $M$. The map $\phi\mapsto\phi'$ is defined by recursion on
-the structure of $\phi$.
+the structure of $\phi$. The fact that this map works (in particular,
+in order to show that $M[G]\models\ZFC$), we must use the fact that
+$M\models\ZFC$. Since we can only assert the latter using internalized
+formulas, the aformentioned map will be defined as a function from the
+set \formula{} into itself. 
+
+Up to this point, the main reason for working with internalized
+versions is that  it is not possible to do recursion with formulas of
+type $\tyo$ (i.e., the formulas in the first-order logic of
+Isabelle/ZF).
+
+We will now make more precise the definition of the map
+$\phi\mapsto\phi'$ and how it relates satisfaction in $M$ to that in
+$M[G]$. Actually, if the formula $\phi$ has $n$ free variables,
+$\phi'$ will have $n+4$ free variables, where the first four account
+for the forcing notion and a particular condition. If
+$\phi=\phi(x_1,\dots,x_n)$, the standard notation for $\phi'$ is
+\[
+p\forces_{\PP,\leq,\1}^* \phi(\tau_1,\dots,\tau_n).
+\]
+Here, $\PP,\leq,\1,$ and $p\in\PP$ are the extra parameters. For the
+time being, we just consider $\tau_1,\dots,\tau_n$ to be ordinary
+variables. Informally, we call $\forces$ the \emph{forcing relation}.
+Given $\quine\phi\in\formula$, we will write the forcing relation in
+Isabelle/ZF by using  
+\[
+\forceisa(\quine\phi,\PP,\leq,\1)
+\]
+
+
+The base case (of atomic formulas) is famously the most
+complicated one. 
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
