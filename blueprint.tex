@@ -62,7 +62,7 @@ Kunen's~\cite{kunen2011set}.
 We will need the following concepts:
 \begin{itemize}
 \item Forcing poset or \emph{notion}: a triple $\lb \PP, \1, \leq\rb$ where $\leq$ is a
-  partial (pre)order on $\PP$ with (a) top element $\1$.
+  partial (pre)order on $\PP$ with (a distinguished) top element $\1$.
 \item Compatible elements. Antichain in $\PP$. 
 \item Dense subset $D\sbq\PP$ of a forcing poset.
 \item Filter $G\sbq\PP$ in a poset.
@@ -98,7 +98,7 @@ of $M$:
 \phi^M\defi\forall p\in M (p\in \PP \limp \lb p,p\rb \in R).
 \]
 In Isabelle/ZF, we will move to a more general setting, by allowing
-that $M$ is a class.
+ $M$ to be a class.
 \begin{verbatim}
 definition  
   reflexivity_rel :: "[i⇒o,i,i] ⇒ o" where
@@ -191,6 +191,7 @@ $x$ is a $\PP$-name, or $F(x)=0$ otherwise.
 \end{definition}
 The standard definition of $M[G]$ adds the clause that $\tau$ should be
 a $\PP$-name, but this is not necessary.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{alpha}
