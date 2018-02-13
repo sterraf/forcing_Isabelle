@@ -61,7 +61,8 @@
 %
 \section{Introduction}
 The proofs are mostly based on Chapter IV of
-Kunen's~\cite{kunen2011set}. 
+Kunen's~\cite{kunen2011set}, and the implementation will make use of
+the work by Paulson~\cite{paulson_2003}. 
 
 \section{Forcing notions}
 We will need the following concepts:
@@ -74,6 +75,7 @@ We will need the following concepts:
 \item $\calD$-generic filter for $\PP$, where $\calD$ is a family of
   dense subsets of $\PP$.
 \end{itemize}
+(Check \verb|ZF/Order.thy| before doing any work.)
 
 Most probably, we'll need two or three versions of each of these
 definitions: One internalized as an element of \formula;  a relativized
@@ -92,8 +94,8 @@ In Isabelle/ZF, we write
 %
 \begin{verbatim}
 definition 
-  reflexivity_abs :: "[i,i] ⇒ o" where
-  "reflexivity_abs(P,r) == ∀p . p∈P ⟶ <p,p>∈r"
+  reflexivity :: "[i,i] ⇒ o" where
+  "reflexivity(P,r) == ∀p . p∈P ⟶ <p,p>∈r"
 \end{verbatim}
 
 This is different from what would $M$ see from ``within.'' In
@@ -111,7 +113,7 @@ definition
 \end{verbatim}
 (Notice: There must be no spaces between \verb|[M]| and the following
 period.) This is the relativized version of
-\verb|reflexivity_abs|. 
+\verb|reflexivity|. 
 
 Finally, the internalized version $\quine{\phi}$ of reflexivity is as
 follows: 
@@ -128,7 +130,7 @@ lemma reflexivity_type :
 
 The last lemma shows that indeed we have defined an element of the set
 \formula. The formula \verb|reflexivity_fm| is an internalization of
-the Isabelle/ZF formula \verb|reflexivity_abs|, not the relativized
+the Isabelle/ZF formula \verb|reflexivity|, not the relativized
 one.
 
 Under the assumption of transitivity of $M$, the three versions are
@@ -272,15 +274,24 @@ Here, $\PP,\leq,\1,$ and $p\in\PP$ are the extra parameters.
 %% For the
 %% time being, we just consider $\tau_1,\dots,\tau_n$ to be ordinary
 %% variables. 
-Informally, we call $\forces$ the \emph{forcing relation}.
-Given $\quine\phi\in\formula$, we will write the forcing relation in
+Given $\quine\phi\in\formula$, we will write this  in
 Isabelle/ZF by using  
 \[
 \forceisa(\quine\phi,\PP,\leq,\1,p)
 \]
+Afterwards, the \emph{forcing relation} $\forces$ is defined by
+relativizing/interpreting $\forces^*$ in a ctm $M$, for fixed
+$\lb\PP,\leq,\1\rb\in M$:
+\[
+p\forces \phi(t_1,\dots,t_n) \defi 
+\bigl(p\forces_{\PP,\leq,\1}^* \phi(t_1,\dots,t_n)\bigr)^M\!.
+\]
 
-The base case (for atomic formulas) is famously the most
-complicated one. 
+\subsection{Forcing for atomic formulas}
+The base case of the definition of the forcing relation, that is, for
+atomic formulas, is (in)famously the most complicated one. 
+The definition adopted by Kunen~\cite[p.~257]{kunen2011set} is the
+following, with two mutually recursive clauses:
 \begin{multline}
   \forceisa(\quine{t_1= t_2},\PP,\leq,\1,p) \defi 
   \forall s\in\dom(t_1)\cup\dom(t_2)\;\forall q\leq p :\\
@@ -293,12 +304,48 @@ complicated one.
   \forceisa(\quine{t_1 =s},\PP,\leq,\1,q))\} \\
   \text{is dense below $p$.''}
 \end{multline}
+Other approaches, like the one in Neeman~\cite{neeman-course}, prefer
+to have a single, more complicated, clause for $t_1=t_2$ using
+well-founded recursion on $t_1$
+and $t_2$ and then define the case $t_1\in t_2$ explicitly. 
 
-Actually, these cases depend on the theorem of well-founded recursion,
+In any case, these definitions depend on the theorem of well-founded
+recursion,
 so the formula $\forceisa(\quine\phi,\PP,\leq,\1,p)$ for atomic $\phi$
-must be obtained from the proof of that theorem. This means that we need
-an internalized version of the theorem.
+must be obtained from the proof of that theorem. Below, a defined
+relation $R$ is \emph{set-like} if $R^{-1}\{a\}$ is a set for every $a$.
+%
+\begin{theorem}[{\cite[I.9.11]{kunen2011set}}]
+  Assume that $R$ is a
+  set-like well-founded defined relation on a class $A$, assume that 
+  $\forall  x,s\,\exists!y\,\phi(x,s,y)$ and write $G(x,s)$ for the
+  only $y$ such that $\phi(x,s,y)$. Then there exists another formula 
+   $\psi$ such that $\forall x\,\exists!y\,\psi(x,y)$ and if we write
+  $F(x)$ for the only $y$ satisfying $\psi(x,y)$, we have
+  \[
+  \forall a: F(a) = G(a,F\restr R^{-1}\{a\}).
+  \]
+\end{theorem}
+%
+Observe that since $F$ is a definable function, its restriction to the
+set $R^{-1}\{a\}$ must also be a set by the Replacement Axiom.
 
+There are several steps to apply this theorem to justify the
+definition of forcing for atomic formulas:
+\begin{enumerate}
+\item As mentioned before, $F$ will be the characteristic function of
+  the predicate $\forceisa$.
+  %
+\item The class $A$ is $V\times V = \{\lb x,y\rb : x,y\in V\}$,
+  i.e.\ the class of all ordered pairs. The relation $R$ must be
+  defined.
+  %
+\item Write down explicitly $\psi$ as an element of
+  $\formula$. 
+\end{enumerate}
+%
+Luckily, the definition of $R$ and the formula $\psi$ are spelled out
+in Kunen's.
 
 
 
