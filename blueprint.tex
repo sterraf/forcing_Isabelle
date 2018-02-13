@@ -19,10 +19,15 @@
 
 
 \renewcommand{\PP}{\mathbb{P}}
+\renewcommand{\app}{\mathrm{App}}
 \newcommand{\formula}{\ensuremath{\mathtt{formula}}}
 \newcommand{\tyi}{\mathtt{i}}
 \newcommand{\tyo}{\mathtt{o}}
 \newcommand{\forceisa}{\mathtt{forces}}
+\newcommand{\equ}{\mathbf{e}}
+\newcommand{\bel}{\mathbf{b}}
+\newcommand{\atr}{\mathit{atr}}
+\newcommand{\reee}{\mathrel{\mathtt{eee}}}
 \DeclareMathOperator{\val}{val}
 
 
@@ -292,13 +297,13 @@ The base case of the definition of the forcing relation, that is, for
 atomic formulas, is (in)famously the most complicated one. 
 The definition adopted by Kunen~\cite[p.~257]{kunen2011set} is the
 following, with two mutually recursive clauses:
-\begin{multline}
+\begin{multline}\label{eq:def-forcing-equality}
   \forceisa(\quine{t_1= t_2},\PP,\leq,\1,p) \defi 
   \forall s\in\dom(t_1)\cup\dom(t_2)\;\forall q\leq p :\\
   \forceisa(\quine{s\in t_1},\PP,\leq,\1,q)\lsii 
   \forceisa(\quine{s\in t_1},\PP,\leq,\1,q),
 \end{multline}
-\begin{multline}
+\begin{multline}\label{eq:def-forcing-membership}
   \forceisa(\quine{t_1\in t_2},\PP,\leq,\1,p) \defi  \\
   \text{``}\{q\leq p : \exists \lb s,r\rb\in t_2 (q\leq r \y
   \forceisa(\quine{t_1 =s},\PP,\leq,\1,q))\} \\
@@ -323,7 +328,7 @@ relation $R$ is \emph{set-like} if $R^{-1}\{a\}$ is a set for every $a$.
    $\psi$ such that $\forall x\,\exists!y\,\psi(x,y)$ and if we write
   $F(x)$ for the only $y$ satisfying $\psi(x,y)$, we have
   \[
-  \forall a: F(a) = G(a,F\restr R^{-1}\{a\}).
+  \forall a\in A: F(a) = G(a,F\restr R^{-1}\{a\}).
   \]
 \end{theorem}
 %
@@ -336,18 +341,86 @@ definition of forcing for atomic formulas:
 \item As mentioned before, $F$ will be the characteristic function of
   the predicate $\forceisa$.
   %
-\item The class $A$ is $V\times V = \{\lb x,y\rb : x,y\in V\}$,
-  i.e.\ the class of all ordered pairs. The relation $R$ must be
+\item The class $A$ and the relation $R$ must be
   defined.
   %
 \item Write down explicitly $\psi$ as an element of
   $\formula$. 
 \end{enumerate}
 %
-Luckily, the definition of $R$ and the formula $\psi$ are spelled out
-in Kunen's.
+Luckily, the formula $\psi$ is spelled out in Kunen's.
 
+Since the  function $F$ will essentially have 
+the same  arguments  of $\forceisa$, but we will deconstruct the
+formula and pack everything as a tuple. Namely, we will have
+\begin{align}
+  F(\lb\equ,t_1,t_2,\PP,\leq,\1,p\rb) =1 &\iff  
+  \forceisa(\quine{t_1=t_2},\PP,\leq,\1,p) \label{eq:forcing-F-equ}\\
+  F(\lb\bel,s,t_1,\PP,\leq,\1,p\rb) =1 &\iff  
+  \forceisa(\quine{s\in t_1},\PP,\leq,\1,q). \label{eq:forcing-F-bel}
+\end{align}
+Here, $\equ$ and $\bel$ are arbitrary sets that encode which type of
+formula we are considering. We can choose our $A$ to be
+$\{\equ,\bel\}\times V^6$ (i.e., all 7-tuples whose first coordinate
+are  $\equ$ or $\bel$).
 
+Rewriting the clauses (\ref{eq:def-forcing-equality}) and
+(\ref{eq:def-forcing-membership}), we might obtain a first
+approximation to $G$. Notice that its domain is $A\times V$.
+
+$G(\lb\atr,t_1,t_2,\PP,\leq,\1,p\rb,f) =1$ if one of the following hold:
+\begin{itemize}
+\item $\atr=\equ$ and   $\forall s\in\dom(t_1)\cup\dom(t_2)\;\forall q\leq p :
+  f(\lb\bel,s,t_1,\PP,\leq,\1,q\rb) =1  \lsii
+  f(\lb\bel,s,t_2,\PP,\leq,\1,q\rb) =1$; or
+\item $\atr=\bel$ and $\{q\leq p : \exists \lb s,r\rb\in t_2 (q\leq r \y
+  f(\lb\equ,t_1,s,\PP,\leq,\1,q\rb) =1)\}$ is dense below $p$.
+\end{itemize}
+In any other case, $G(\lb\atr,t_1,t_2,\PP,\leq,\1,p\rb,f) =0$. In the
+above, $f(v)=1$ should be interpreted as $\lb v,1\rb\in f$ (i.e., $f$
+must be defined for the argument at hand). From this scheme an element
+of $\formula$ must be produced.
+
+The definition of the relation $R$ is straightforward and follows the
+pattern of \cite[p.~257]{kunen2011set}. For instance, we have that 
+\[
+\lb\bel,s_1,t_1,\PP,\leq,\1,q\rb\mathrel{R}
+\lb\equ,s_2,t_2,\PP,\leq,\1,p\rb
+\]
+if and only if 
+\begin{itemize}
+\item $s_1 \reee  s_2$ or $s_1\reee t_2$; and
+\item $t_1 = s_2$ or $t_1 = t_2$.
+\end{itemize}
+%
+\begin{framed}
+  It seems necessary to prove that the relation $\reee$ is
+  well-founded independently of universe where one is working. We only
+  have a proof that ${\reee}(M)$ is well-founded for each $M$.
+\end{framed}
+
+With these elements we might reproduce the formula $\psi$ that defines
+$F$ as in \cite[p.~49]{kunen2011set}. Let  $\app(d,h)$  be the formula
+that states:
+\begin{enumerate}
+\item \label{item:dom-R-cerrado} $d$ is ``downwards $R$-closed'':
+  $\forall y \in d, 
+  R^{-1}\{y\}\subseteq d$;
+\item \label{item:4} $h$ is a function with $\dom h =d \subseteq A$; and
+\item \label{item:3} for all $y\in d$, $h(y) = G(y,h\restr(R^{-1}\{y\}))$.
+\end{enumerate}
+Then the formula defining $F$ is the following:
+\[
+(x\notin A \y y=0) \o \bigl(x\in A \y \exists d,h\, (\app(d,h)\y
+x\in d \y h(x)=y)\bigr).
+\]
+The well-foundedness of $R$ is used to show that this formula is indeed
+functional, and that it satisfies the required recursive equation
+involving $G$. Once this is all translated to an element of \formula,
+we'll be able to write the base case of the recursive definition of
+$\forceisa$ using Equations~(\ref{eq:forcing-F-equ})
+and~(\ref{eq:forcing-F-bel}).
+ 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{alpha}
