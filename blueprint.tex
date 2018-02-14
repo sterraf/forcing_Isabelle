@@ -301,7 +301,7 @@ p\forces \phi(t_1,\dots,t_n) \defi
 \bigl(p\forces_{\PP,\leq,\1}^* \phi(t_1,\dots,t_n)\bigr)^M\!.
 \]
 
-\subsection{Forcing for atomic formulas}
+\subsection{Forcing for atomic formulas}\label{sec:forcing-atomic-formulas}
 The base case of the definition of the forcing relation, that is, for
 atomic formulas, is (in)famously the most complicated one. 
 The definition adopted by Kunen~\cite[p.~257]{kunen2011set} is the
@@ -457,8 +457,8 @@ These are stated as two lemmas: \emph{Truth} and
 relation is definable. The previous recursive construction amounts to
 that. The Truth Lemma states that the forcing relation indeed relates
 satisfaction in $M[G]$ to that in $M$. 
-\begin{lemma}[Truth Lemma]
-  Let $M$ be a ctm of $\ZFC$ and $\lb\PP,\leq,\1\rb$ a forcing notion
+\begin{lemma}[Truth Lemma]\label{lem:truth-lemma}
+  Let $M$ be a ctm of $\ZFC$, $\lb\PP,\leq,\1\rb$ a forcing notion
   in $M$, $p\in\PP$, and $\phi(x_1,\dots,x_n)$ a formula in the
   language of set 
   theory with all free variables displayed. Then the
@@ -472,12 +472,57 @@ satisfaction in $M[G]$ to that in $M$.
 A bit more formally, one should write the parameters to the left of
 $\models$:
 \begin{gather*}
-  M[G],[\val(\tau_1,G),\dots,\val(\tau_n,G)]
+  \forall G : p\in G \limp M[G],[\val(\tau_1,G),\dots,\val(\tau_n,G)]
   \models\phi(x_1,\dots,x_n) \\
   \text{if and only if}\\
   M,[\tau_1,\dots,\tau_n,\PP,\leq,\1,p] 
   \models\forceisa(\phi(x_1,\dots,x_n),x_{n+1},x_{n+2},x_{n+3},x_{n+4})
 \end{gather*}
+The proof of the Truth Lemma is by recursion in elements of
+$\formula$. The following auxiliary result (adapted from
+\cite[IV.2.43]{kunen2011set}) is also proved by recursion in
+$\formula$.
+\begin{lemma}\label{lem:3-density}
+  Under the same hypothesis of Lemma~\ref{lem:truth-lemma}, we have
+  \begin{enumerate}
+  \item $M\models\forceisa(\phi,\PP,\leq,\1,p)$ and $p_1\leq p$
+    implies $M\models\forceisa(\phi,\PP,\leq,\1,p_1)$.
+  \item $M\models\forceisa(\phi,\dots)$ if and only if
+    $M\models$``$\{p_1\leq p : \forceisa(\phi,\PP,\leq,\1,p_1)\}$ is
+    dense below $p$.''
+  \item $M\models\forceisa(\phi,\dots)$ if and only if 
+    $M\models\neg\exists
+  q\leq p \,(\neg \forceisa(\phi,\PP,\leq,\1,q))$.
+  \end{enumerate}
+\end{lemma}
+
+\subsection{Truth for atomic formulas}
+We restate Lemma~\ref{lem:truth-lemma} in an alternative way, for
+atomic formulas.
+\begin{lemma}
+  Let $M$ be a ctm of $\ZFC$, $\lb\PP,\leq,\1\rb$ a forcing notion
+  in $M$, $p\in\PP$, $G\sbq\PP$ $M$-generic for $\PP$ and $\phi(x_1,x_2)$ an
+  atomic formula. Then the following hold for all
+  $\tau_1,\tau_2\in M$:
+  \begin{enumerate}
+  \item If $p\in G$ and
+    \begin{equation} \label{eq:M-sats-forces-atom}
+      M,[\tau_1,\tau_2,\PP,\leq,\1,p] 
+      \models\forceisa(\phi(x_1,x_2),x_{3},x_{4},x_{5},x_{6})
+    \end{equation}
+    then
+    \begin{equation} \label{eq:MG-sats-atom}
+      M[G],[\val(\tau_1,G),\val(\tau_2,G)]
+      \models\phi(x_1,x_2).
+    \end{equation}
+  \item If (\ref{eq:MG-sats-atom}) holds 
+    then there is some $p\in G$ such that
+    (\ref{eq:M-sats-forces-atom}) holds for that $p$.
+  \end{enumerate}
+\end{lemma}
+This proof consists of two cases for $\phi$ (namely, $x_1\in x_2$ and
+$x_1=x_2$) and it is done by well-founded recursion over $R$ (defined
+in Section~\ref{sec:forcing-atomic-formulas}).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
