@@ -424,7 +424,7 @@ definition
 
 definition  
   reflexivity_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "reflexivity_rel(M,P,r) == \<forall>p[M].  p\<in>P \<longrightarrow> <p,p>\<in>r"
+  "reflexivity_rel(M,P,r) == \<forall>p[M].  p\<in>P \<longrightarrow> (\<exists>x[M]. pair(M,p,p,x) \<and> x\<in>r)"
 
 definition
   reflexivity_fm :: "[i,i]\<Rightarrow>i" where
