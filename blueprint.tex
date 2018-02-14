@@ -9,6 +9,8 @@
 \DeclareUnicodeCharacter{21D2}{\mt\Rightarrow}
 \DeclareUnicodeCharacter{2208}{\mt\in}
 \DeclareUnicodeCharacter{2200}{\mt\forall}
+\DeclareUnicodeCharacter{2203}{\mt\exists}
+\DeclareUnicodeCharacter{2227}{\mt\wedge}
 \DeclareUnicodeCharacter{27F6}{\mt\longrightarrow}
 \DeclareUnicodeCharacter{27E6}{\mt\llbracket}
 \DeclareUnicodeCharacter{27E7}{\mt\rrbracket}
@@ -57,7 +59,7 @@
 \begin{abstract}
   Basic definitions of the forcing technique and blueprint for an
   Isabelle/ZF proof of the Forcing Theorems, under the assumption of
-  the existence of countable transitive model of $\ZFC$.   
+  the existence of a countable transitive model of $\ZFC$.   
 \end{abstract}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -107,14 +109,18 @@ This is different from what would $M$ see from ``within.'' In
 particular, the universal quantifier should range only over elements
 of $M$:
 \[
-\phi^M\defi\forall p\in M (p\in \PP \limp \lb p,p\rb \in R).
+\phi^M\defi\forall p\in M (p\in \PP \limp \lb p,p\rb^M \in R).
 \]
-In Isabelle/ZF, we will move to a more general setting, by allowing
- $M$ to be a class.
+The use of the relativized term $\lb p,p\rb^M$ implicitly assumes that
+there is an element of $M$ satisfying its defining formula. In
+Isabelle/ZF, we might move to a more general setting, by allowing  $M$
+to be a class. Here, the reference to the ordered pair  is through a
+relational definition.
 \begin{verbatim}
 definition  
   reflexivity_rel :: "[i⇒o,i,i] ⇒ o" where
-  "reflexivity_rel(M,P,r) == ∀p[M].  p∈P ⟶ <p,p>∈r"
+  "reflexivity_rel(M,P,r) == ∀p[M].  p∈P ⟶ 
+                             (∃x[M]. pair(M,p,p,x) ∧ x∈r)"
 \end{verbatim}
 (Notice: There must be no spaces between \verb|[M]| and the following
 period.) This is the relativized version of
@@ -151,7 +157,10 @@ interpretation of free variables.
   $\PP$ for the family $\calD$ of all dense subsets of $\PP$ that live
   in $M$.
 \end{definition}
-
+This last definition is \emph{not} to be relativized, since for
+nontrivial $\PP$, $G\notin M$. Absoluteness results as the one above
+always assume that the free variables range in the set or class to
+which one is relativizing.
 \section{Names}
 \begin{framed}
   The following is mostly independent of the previous section, but %
@@ -298,15 +307,15 @@ atomic formulas, is (in)famously the most complicated one.
 The definition adopted by Kunen~\cite[p.~257]{kunen2011set} is the
 following, with two mutually recursive clauses:
 \begin{multline}\label{eq:def-forcing-equality}
-  \forceisa(\quine{t_1= t_2},\PP,\leq,\1,p) \defi 
+  \forceisa({t_1= t_2},\PP,\leq,\1,p) \defi 
   \forall s\in\dom(t_1)\cup\dom(t_2)\;\forall q\leq p :\\
-  \forceisa(\quine{s\in t_1},\PP,\leq,\1,q)\lsii 
-  \forceisa(\quine{s\in t_1},\PP,\leq,\1,q),
+  \forceisa({s\in t_1},\PP,\leq,\1,q)\lsii 
+  \forceisa({s\in t_1},\PP,\leq,\1,q),
 \end{multline}
 \begin{multline}\label{eq:def-forcing-membership}
-  \forceisa(\quine{t_1\in t_2},\PP,\leq,\1,p) \defi  \\
+  \forceisa({t_1\in t_2},\PP,\leq,\1,p) \defi  \\
   \text{``}\{q\leq p : \exists \lb s,r\rb\in t_2 (q\leq r \y
-  \forceisa(\quine{t_1 =s},\PP,\leq,\1,q))\} \\
+  \forceisa({t_1 =s},\PP,\leq,\1,q))\} \\
   \text{is dense below $p$.''}
 \end{multline}
 Other approaches, like the one in Neeman~\cite{neeman-course}, prefer
@@ -314,9 +323,12 @@ to have a single, more complicated, clause for $t_1=t_2$ using
 well-founded recursion on $t_1$
 and $t_2$ and then define the case $t_1\in t_2$ explicitly. 
 
-In any case, these definitions depend on the theorem of well-founded
-recursion,
-so the formula $\forceisa(\quine\phi,\PP,\leq,\1,p)$ for atomic $\phi$
+In any case, these definitions assume that $t_i$ are \emph{names}.
+In fact, the intuitive definition is by recursion on \emph{sentences}
+that are written in the language $\{\in\}$ plus every name as a
+constant; thus they
+depend on the theorem of well-founded recursion,
+so $\forceisa(\phi,\PP,\leq,\1,p)$ for atomic $\phi$
 must be obtained from the proof of that theorem. Below, a defined
 relation $R$ is \emph{set-like} if $R^{-1}\{a\}$ is a set for every $a$.
 %
@@ -355,9 +367,9 @@ the same  arguments  of $\forceisa$, but we will deconstruct the
 formula and pack everything as a tuple. Namely, we will have
 \begin{align}
   F(\lb\equ,t_1,t_2,\PP,\leq,\1,p\rb) =1 &\iff  
-  \forceisa(\quine{t_1=t_2},\PP,\leq,\1,p) \label{eq:forcing-F-equ}\\
+  \forceisa(t_1=t_2,\PP,\leq,\1,p) \label{eq:forcing-F-equ}\\
   F(\lb\bel,s,t_1,\PP,\leq,\1,p\rb) =1 &\iff  
-  \forceisa(\quine{s\in t_1},\PP,\leq,\1,q). \label{eq:forcing-F-bel}
+  \forceisa(s\in t_1,\PP,\leq,\1,q). \label{eq:forcing-F-bel}
 \end{align}
 Here, $\equ$ and $\bel$ are arbitrary sets that encode which type of
 formula we are considering. We can choose our $A$ to be
@@ -395,7 +407,8 @@ if and only if
 %
 \begin{framed}
   It seems necessary to prove that the relation $\reee$ is
-  well-founded independently of universe where one is working. We only
+  well-founded independently of the universe $M$ where one is
+  working. We only
   have a proof that ${\reee}(M)$ is well-founded for each $M$.
 \end{framed}
 
@@ -421,6 +434,51 @@ we'll be able to write the base case of the recursive definition of
 $\forceisa$ using Equations~(\ref{eq:forcing-F-equ})
 and~(\ref{eq:forcing-F-bel}).
  
+\subsection{Inductive step}
+%
+The nexts steps in the definition of $\forceisa$ are straightforward
+\cite[IV.2.42]{kunen2011set}. We just highlight some of the cases.
+\begin{itemize}
+\item $\forceisa(\neg\phi,\PP,\leq,\1,p) \defi \neg\exists
+  q\leq p \,(\neg \forceisa(\phi,\PP,\leq,\1,q))$.
+\item
+  $\forceisa(\phi\y\psi,\dots)\defi\forceisa(\phi,\PP,\leq,\1,p)\y\forceisa(\psi,\PP,\leq,\1,p)$.
+\item $\forceisa(\forall x\,\phi(x),\PP,\leq,\1,p)\defi \forall x\,\forceisa(\phi(x),\PP,\leq,\1,p)$. 
+\item
+  $\forceisa(\phi\o\psi,\dots)\defi\text{``}\{q:\forceisa(\phi,\PP,\leq,\1,q)\o\forceisa(\psi,\PP,\leq,\1,q)\}$
+  is dense below $p$''. 
+\end{itemize}
+%
+Actually, we would be done with just the first three.
+
+\section{The fundamental theorems}
+These are stated as two lemmas: \emph{Truth} and
+\emph{Definability}. The second one ``simply'' says that the forcing
+relation is definable. The previous recursive construction amounts to
+that. The Truth Lemma states that the forcing relation indeed relates
+satisfaction in $M[G]$ to that in $M$. 
+\begin{lemma}[Truth Lemma]
+  Let $M$ be a ctm of $\ZFC$ and $\lb\PP,\leq,\1\rb$ a forcing notion
+  in $M$, $p\in\PP$, and $\phi(x_1,\dots,x_n)$ a formula in the
+  language of set 
+  theory with all free variables displayed. Then the
+  following are equivalent, for all $\tau_1,\dots,\tau_n\in M$: 
+  \begin{enumerate}
+  \item     $M[G]\models\phi(\val(\tau_1,G),\dots,\val(\tau_n,G))$ for
+    all filters $G$, $M$-generic for $\PP$, such that $p\in G$.
+  \item $M\models\forceisa(\phi(\tau_1,\dots,\tau_n),\PP,\leq,\1,p)$.
+  \end{enumerate}
+\end{lemma}
+A bit more formally, one should write the parameters to the left of
+$\models$:
+\begin{gather*}
+  M[G],[\val(\tau_1,G),\dots,\val(\tau_n,G)]
+  \models\phi(x_1,\dots,x_n) \\
+  \text{if and only if}\\
+  M,[\tau_1,\dots,\tau_n,\PP,\leq,\1,p] 
+  \models\forceisa(\phi(x_1,\dots,x_n),x_{n+1},x_{n+2},x_{n+3},x_{n+4})
+\end{gather*}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliographystyle{alpha}
