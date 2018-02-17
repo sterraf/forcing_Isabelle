@@ -449,7 +449,13 @@ The nexts steps in the definition of $\forceisa$ are straightforward
   is dense below $p$''. 
 \end{itemize}
 %
-Actually, we would be done with just the first three.
+Actually, recursion over $\formula$ uses only one propositional
+connective (``nand'') so we need the combination of the first two to
+obtain $\forceisa(\mathtt{Nand(\phi,\psi)},\dots)$:
+\[
+\neg\exists
+  q\leq p :\neg\bigl(\forceisa(\phi,\PP,\leq,\1,q)\y\forceisa(\psi,\PP,\leq,\1,q)\bigr).
+\]
 
 \section{The fundamental theorems}
 These are stated as two lemmas: \emph{Truth} and
