@@ -479,10 +479,10 @@ $\models$:
   \models\forceisa(\phi(x_1,\dots,x_n),x_{n+1},x_{n+2},x_{n+3},x_{n+4})
 \end{gather*}
 The proof of the Truth Lemma is by recursion in elements of
-$\formula$. The following auxiliary result (adapted from
+$\formula$. The following auxiliary results (adapted from
 \cite[IV.2.43]{kunen2011set}) is also proved by recursion in
 $\formula$.
-\begin{lemma}\label{lem:3-density}
+\begin{lemma}\label{lem:2-density}
   Under the same hypothesis of Lemma~\ref{lem:truth-lemma}, we have
   \begin{enumerate}
   \item $M\models\forceisa(\phi,\PP,\leq,\1,p)$ and $p_1\leq p$
@@ -490,13 +490,23 @@ $\formula$.
   \item $M\models\forceisa(\phi,\dots)$ if and only if
     $M\models$``$\{p_1\leq p : \forceisa(\phi,\PP,\leq,\1,p_1)\}$ is
     dense below $p$.''
-  \item $M\models\forceisa(\phi,\dots)$ if and only if 
-    $M\models\neg\exists
-  q\leq p \,(\neg \forceisa(\phi,\PP,\leq,\1,q))$.
   \end{enumerate}
+\end{lemma}
+\begin{lemma}\label{lem:forcing-negation}
+  Under the same hypothesis of Lemma~\ref{lem:truth-lemma}, we have
+  $M\models\forceisa(\phi,\dots)$ if and only if 
+  $M\models\neg\exists
+  q\leq p \,(\neg \forceisa(\phi,\PP,\leq,\1,q))$.
 \end{lemma}
 
 \subsection{Truth for atomic formulas}
+We start by proving  Lemma~\ref{lem:2-density} for atomic
+formulas.
+\begin{proof}[Proof of  Lemma~\ref{lem:2-density}]
+\end{proof}
+  
+  
+
 We restate Lemma~\ref{lem:truth-lemma} in an alternative way, for
 atomic formulas.
 \begin{lemma}
