@@ -488,15 +488,15 @@ The proof of the Truth Lemma is by recursion in elements of
 $\formula$. The following auxiliary results (adapted from
 \cite[IV.2.43]{kunen2011set}) is also proved by recursion in
 $\formula$.
-\begin{lemma}\label{lem:2-density}
-  Under the same hypothesis of Lemma~\ref{lem:truth-lemma}, we have
-  \begin{enumerate}
-  \item $M\models\forceisa(\phi,\PP,\leq,\1,p)$ and $p_1\leq p$
-    implies $M\models\forceisa(\phi,\PP,\leq,\1,p_1)$.
-  \item $M\models\forceisa(\phi,\dots)$ if and only if
+\begin{lemma}\label{lem:strengthen} 
+  Assume the same hypothesis of Lemma~\ref{lem:truth-lemma}.
+  $M\models\forceisa(\phi,\PP,\leq,\1,p)$ and $p_1\leq p$
+  implies $M\models\forceisa(\phi,\PP,\leq,\1,p_1)$.
+\end{lemma}
+\begin{lemma}\label{lem:density}
+  Assume the same hypothesis of Lemma~\ref{lem:truth-lemma}. $M\models\forceisa(\phi,\dots)$ if and only if
     $M\models$``$\{p_1\leq p : \forceisa(\phi,\PP,\leq,\1,p_1)\}$ is
     dense below $p$.''
-  \end{enumerate}
 \end{lemma}
 \begin{lemma}\label{lem:forcing-negation}
   Under the same hypothesis of Lemma~\ref{lem:truth-lemma}, we have
@@ -506,9 +506,18 @@ $\formula$.
 \end{lemma}
 
 \subsection{Truth for atomic formulas}
-We start by proving  Lemma~\ref{lem:2-density} for atomic
-formulas.
-\begin{proof}[Proof of  Lemma~\ref{lem:2-density}]
+We start by proving  Lemma~\ref{lem:strengthen}.% and~\ref{lem:density}.
+\begin{proof}[Proof of  Lemma~\ref{lem:strengthen} (atomic formulas)]
+  Let $M$, $\lb\PP,\leq,\1\rb$, $p\in\PP$ as in the hypothesis of
+  Lemma~\ref{lem:truth-lemma}, let $p_1\leq p$ and let $\phi(x_1,x_2)$
+  be atomic. We 
+  have to show that for every    $\tau_1,\tau_2\in M$,
+  \begin{equation} \label{eq:M-phi-atom}
+    M,[\tau_1,\tau_2,\PP,\leq,\1,p] 
+    \models\forceisa(\phi(x_1,x_2),x_{3},x_{4},x_{5},x_{6})
+  \end{equation}
+  then the same holds for the environment
+  $[\tau_1,\tau_2,\PP,\leq,\1,q]$.
 \end{proof}
   
   
