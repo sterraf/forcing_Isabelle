@@ -371,8 +371,9 @@ formula and pack everything as a tuple. Namely, we will have
   F(\lb\bel,s,t_1,\PP,\leq,\1,p\rb) =1 &\iff  
   \forceisa(s\in t_1,\PP,\leq,\1,q). \label{eq:forcing-F-bel}
 \end{align}
-Here, $\equ$ and $\bel$ are arbitrary sets that encode which type of
-formula we are considering. We can choose our $A$ to be
+Here, $\equ$ and $\bel$ are arbitrary definable sets that encode which type of
+formula we are considering (for instance, $0$ and $1$, 
+respectively). We can choose our $A$ to be 
 $\{\equ,\bel\}\times V^6$ (i.e., all 7-tuples whose first coordinate
 are  $\equ$ or $\bel$).
 
@@ -391,7 +392,8 @@ $G(\lb\atr,t_1,t_2,\PP,\leq,\1,p\rb,f) =1$ if one of the following hold:
 In any other case, $G(\lb\atr,t_1,t_2,\PP,\leq,\1,p\rb,f) =0$. In the
 above, $f(v)=1$ should be interpreted as $\lb v,1\rb\in f$ (i.e., $f$
 must be defined for the argument at hand). From this scheme an element
-of $\formula$ must be produced.
+of $\formula$ must be produced. (This is the reason why  $\equ,\bel$
+were chosen to be definable.)
 
 The definition of the relation $R$ is straightforward and follows the
 pattern of \cite[p.~257]{kunen2011set}. For instance, we have that 
@@ -429,7 +431,20 @@ x\in d \y h(x)=y)\bigr).
 \]
 The well-foundedness of $R$ is used to show that this formula is indeed
 functional, and that it satisfies the required recursive equation
-involving $G$. Once this is all translated to an element of \formula,
+involving $G$. The following intermediate result is needed in the
+sequel.
+\begin{lemma}[Uniqueness of approximations]\label{lem:uniq-approx}
+  Assume $\app(d,h)$ and $\app(d',h')$. Then
+  $h(x)=h'(x)$ for all  $x\in d \cap d'$. In particular,
+  \[
+  h\restr(\{x\}\cup R^{-1}\{x\})=h'\restr(\{x\}\cup R^{-1}\{x\})
+  \]
+  for  all $x\in d \cap d'$. 
+\end{lemma}
+
+  
+
+Once this is all translated to an element of \formula,
 we'll be able to write the base case of the recursive definition of
 $\forceisa$ using Equations~(\ref{eq:forcing-F-equ})
 and~(\ref{eq:forcing-F-bel}).
@@ -486,7 +501,7 @@ $\models$:
 \end{gather*}
 The proof of the Truth Lemma is by recursion in elements of
 $\formula$. The following auxiliary results (adapted from
-\cite[IV.2.43]{kunen2011set}) is also proved by recursion in
+\cite[IV.2.43]{kunen2011set}) are also proved by recursion in
 $\formula$.
 \begin{lemma}\label{lem:strengthen} 
   Assume the same hypothesis of Lemma~\ref{lem:truth-lemma}.
@@ -511,16 +526,87 @@ We start by proving  Lemma~\ref{lem:strengthen}.% and~\ref{lem:density}.
   Let $M$, $\lb\PP,\leq,\1\rb$, $p\in\PP$ as in the hypothesis of
   Lemma~\ref{lem:truth-lemma}, let $p_1\leq p$ and let $\phi(x_1,x_2)$
   be atomic. We 
-  have to show that for every    $\tau_1,\tau_2\in M$,
+  have to show that for every    $\tau_1,\tau_2\in M$, if
   \begin{equation} \label{eq:M-phi-atom}
     M,[\tau_1,\tau_2,\PP,\leq,\1,p] 
     \models\forceisa(\phi(x_1,x_2),x_{3},x_{4},x_{5},x_{6})
   \end{equation}
   then the same holds for the environment
-  $[\tau_1,\tau_2,\PP,\leq,\1,q]$.
+  $[\tau_1,\tau_2,\PP,\leq,\1,p_1]$. For this, we will deconstruct the
+  definition of $\forceisa$ in several steps to pin down where the
+  hypothesis of $p_1\leq p$ might be used.
+  
+  So, let $\phi$ be $x_1\in x_2$ and assume (\ref{eq:M-phi-atom}). By
+  our definition of $\forceisa$  for atomic formulas, we have
+  $F(\bx)=1$, where
+  $\bx=\lb\equ,\tau_1,\tau_2,\PP,\leq,\1,p\rb$. Expanding the
+  definition of $F$, we obtain that
+  \[
+  (\bx\notin A \y 1=0) \o \bigl(\bx\in A \y \exists d,h\, (\app(d,h)\y
+  \bx\in d \y h(\bx)=1)\bigr)
+  \]
+  holds in $M$. 
+  \begin{framed}
+    By using appropriate absoluteness results we might translate this
+    statement written as an element of $\formula$ to a sentence
+    written in Isabelle/ZF first order logic, making theorems to
+    simplify the statement available, as in the arguments
+    that follow.
+  \end{framed}
+  \noindent Simplifying, we obtain 
+  \begin{equation}\label{eq:1}
+    \exists d,h\, (\app(d,h)\y   \bx\in d \y h(\bx)=1).
+  \end{equation}
+  Take such $d,h\in M$; these will be added to the environment. We
+  will define $d',h'$ that satisfy 
+  $\app(d',h')\y   \by\in d' \y h(\by)=1$ for
+  $\by=\lb\equ,\tau_1,\tau_2,\PP,\leq,\1,p_1\rb$, thereby proving
+  $F(\by)=1$ and hence the thesis.
+
+  By  definition of $\app$ and the fact that $\bx\in d$, we have
+  \[
+  1= h(\bx) = G(\bx,h\restr(R^{-1}\{\bx\})).
+  \]
+  Now the  definition of $G$ for $\bx=\lb\equ,\dots\rb$, yields
+  \[
+  M,[d,h,\tau_1,\tau_2,\PP,\leq,\1,p]\models \forall
+  s\in\dom(x_1)\cup\dom(x_2)\;\forall q\leq x_6 : \Phi
+  \]
+  with $\Phi\defi
+  f(\lb\bel,s,x_1,x_{3},x_{4},x_{5},x_{6}\rb) =1  \lsii
+  f(\lb\bel,s,x_2,x_{3},x_{4},x_{5},x_{6}\rb) =1$ and 
+  $f\defi h\restr(R^{-1}\{\bx\})$.
+  By absoluteness we have
+  \[
+  \forall
+  \sigma\in\dom(\tau_1)\cup\dom(\tau_2)\;\forall q'\leq p :
+  M,[\sigma,q',d,h,\tau_1,\tau_2,\PP,\leq,\1,p]\models  \Phi.
+  \]
+  Since $q'\leq p_1$ implies $q'\leq p$, we have
+  \[
+  \forall
+  \sigma\in\dom(\tau_1)\cup\dom(\tau_2)\;\forall q'\leq p_1 :
+  M,[\sigma,q',d,h,\tau_1,\tau_2,\PP,\leq,\1,p_1]\models  \Phi.
+  \]
+  Using absoluteness again we have
+  \[
+  M,[d,h,\tau_1,\tau_2,\PP,\leq,\1,p_1]\models \forall
+  s\in\dom(x_1)\cup\dom(x_2)\;\forall q\leq p_1 : \Phi.
+  \]
+  Hence we obtain $G(\by,h\restr(R^{-1}\{\bx\}))=1$. 
+
+  Now define   $d'\defi d\cup \{\by\}$  and $h'\defi
+  h\cup\{\lb\by,1\rb\}$. Since
+  $R^{-1}\{\bx\} =R^{-1}\{\by\}$ and $\by\in A$, we obtain
+  $\app(d',h')$. This, together with the fact that $h(\by)=1$, shows
+  $F(\by)=1$ and hence (\ref{eq:M-phi-atom}).
+
+  The proof for $\phi= x_1\in x_2$ should be similar.
 \end{proof}
-  
-  
+Lemma~\ref{lem:density} also follows the same pattern, there is a bit
+more of mathematics to it. The same goes for
+Lemma~\ref{lem:forcing-negation}.
+
 
 We restate Lemma~\ref{lem:truth-lemma} in an alternative way, for
 atomic formulas.
