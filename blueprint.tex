@@ -95,7 +95,7 @@ As an example, consider $\PP,R \in M$,  and $R\sbq
 \PP\times\PP$. Reflexivity of the relation $R$ is 
 stated as follows.
 \[
-\phi\defi \forall p (p\in \PP \limp \lb p,p\rb \in R).
+\phi(\PP,R)\defi \forall p (p\in \PP \limp \lb p,p\rb \in R).
 \]
 In Isabelle/ZF, we write
 %
@@ -147,9 +147,9 @@ one.
 Under the assumption of transitivity of $M$, the three versions are
 equivalent. This is an \emph{absoluteness result}:
 \[
-\phi(p,r) \lsii \phi^M(p,r) \lsii M;[p,r]\models\quine{\phi},
+\phi(\PP,R) \lsii \phi^M(\PP,R) \lsii M;[\PP,R]\models\quine{\phi},
 \]
-when $p,r\in M$, and the list $[p,r]$ is the environment or
+when $\PP,R\in M$, and the list $[\PP,R]$ is the environment or
 interpretation of free variables. 
 
 \begin{definition}
@@ -371,7 +371,7 @@ formula and pack everything as a tuple. Namely, we will have
   F(\lb\bel,s,t_1,\PP,\leq,\1,p\rb) =1 &\iff  
   \forceisa(s\in t_1,\PP,\leq,\1,q). \label{eq:forcing-F-bel}
 \end{align}
-Here, $\equ$ and $\bel$ are arbitrary definable sets that encode which type of
+Here, $\equ$ and $\bel$ are absolute constants that encode which type of
 formula we are considering (for instance, $0$ and $1$, 
 respectively). We can choose our $A$ to be 
 $\{\equ,\bel\}\times V^6$ (i.e., all 7-tuples whose first coordinate
