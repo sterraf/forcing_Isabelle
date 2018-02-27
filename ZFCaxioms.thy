@@ -192,12 +192,12 @@ lemma ZFC_inf_type : "ZFC_inf \<subseteq> formula"
 (* Teoría ZFC internalizada *)
 definition
   ZFCTh :: "i" where
-  "ZFCTh == ZFC_fin \<union> ZFC_inf"
+  "ZFCTh == ZFC_inf \<union> ZFC_fin"
 
 (* Teoría ZF *)
 definition
   ZFTh :: "i" where
-  "ZFTh == ZF_fin \<union> ZFC_inf"
+  "ZFTh == ZFC_inf \<union> ZF_fin"
 
 (* Teoría ZF - partes *)
 definition 
@@ -215,34 +215,21 @@ definition
   satT :: "[i,i,i] => o" where
   "satT(A,\<Phi>,env) == \<forall> p \<in> \<Phi>. sats(A,p,env)"
 
-
-lemma unionAll: 
-  assumes "Q(\<phi>)"
-  and     "\<forall>\<psi> \<in> F . Q(\<psi>)"
-  shows   "\<forall>\<psi> \<in> F \<union> {\<phi>} . Q(x) "
-  apply (insert assms)
-  apply (unfold Ball_def)
-  
-
 lemma ACyZFimpZFC:
   assumes "sats(A,ZFchoice,env)"
   and     "satT(A,ZFTh,env)"
   shows  "satT(A,ZFCTh,env)"
+  apply (insert assms)
   apply (unfold satT_def)
-  apply (simp add: unionAll)
+  apply (unfold ZFCTh_def)
+  apply (unfold ZFTh_def)
+  apply (unfold ZF_fin_def)
+  apply (unfold ZFC_fin_def)
+  apply auto
+  done
 
-(*  apply (insert assms)
-  apply (unfold satT_def)
-  apply (unfold Ball_def)
-  apply (rule allI)
-  *)      
-
-
-(*
-lemma "sats(A,Forall(transset_fm(0)),[]) \<and> 
-       satT(A,ZFCTh,[])  
-       \<Longrightarrow> PROP M_trivial(##A)"
-*)
+  
+  
 
 definition
   rel :: "[i,i] \<Rightarrow> o" where
