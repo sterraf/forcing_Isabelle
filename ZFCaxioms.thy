@@ -163,6 +163,13 @@ lemma ZFchoice_type [TC]: "ZFchoice \<in> formula"
   by (simp add: ZFchoice_def)
 
 definition
+  ZF_fin :: "i" where
+  "ZF_fin == {ZFextension,ZFfoundation,ZFpairing,
+              ZFunion,ZFinfinity,ZFpowerset}"
+
+
+
+definition
   ZFC_fin :: "i" where
   "ZFC_fin == {ZFextension,ZFfoundation,ZFpairing,
               ZFunion,ZFinfinity,ZFpowerset,ZFchoice}"
@@ -187,6 +194,19 @@ definition
   ZFCTh :: "i" where
   "ZFCTh == ZFC_fin \<union> ZFC_inf"
 
+(* Teoría ZF *)
+definition
+  ZFTh :: "i" where
+  "ZFTh == ZF_fin \<union> ZFC_inf"
+
+(* Teoría ZF - partes *)
+definition 
+  ZFlessPower :: "i" where
+  "ZFlessPower == {ZFextension,ZFfoundation,ZFpairing,
+              ZFunion,ZFinfinity,ZFpowerset} \<union> ZFC_inf"
+
+
+
 lemma "ZFCTh \<subseteq> formula"
   by (simp add:ZFCTh_def add:unions add:ZFC_inf_type add:ZFC_fin_type)
   
@@ -195,6 +215,27 @@ definition
   satT :: "[i,i,i] => o" where
   "satT(A,\<Phi>,env) == \<forall> p \<in> \<Phi>. sats(A,p,env)"
 
+
+lemma unionAll: 
+  assumes "Q(\<phi>)"
+  and     "\<forall>\<psi> \<in> F . Q(\<psi>)"
+  shows   "\<forall>\<psi> \<in> F \<union> {\<phi>} . Q(x) "
+  apply (insert assms)
+  apply (unfold Ball_def)
+  
+
+lemma ACyZFimpZFC:
+  assumes "sats(A,ZFchoice,env)"
+  and     "satT(A,ZFTh,env)"
+  shows  "satT(A,ZFCTh,env)"
+  apply (unfold satT_def)
+  apply (simp add: unionAll)
+
+(*  apply (insert assms)
+  apply (unfold satT_def)
+  apply (unfold Ball_def)
+  apply (rule allI)
+  *)      
 
 
 (*
