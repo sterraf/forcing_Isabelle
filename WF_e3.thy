@@ -18,4 +18,7 @@ lemma falso1: "\<forall>k. k\<in> nat \<longrightarrow> 0\<notin>nat_rec(k,0,\<l
    apply assumption
    apply (rule mem_not_refl)
 done
-    
+
+lemma O_in_M : "{0}\<in>M \<Longrightarrow>
+  {z\<in>eclose(M) \<times> eclose(M) . \<exists>x y. z = \<langle>x, y\<rangle> \<and> x \<in> y}^+ -`` {{0}} = {0}"
+  apply 
