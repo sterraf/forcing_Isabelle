@@ -113,7 +113,7 @@ definition
 
 (* Ejercicios preliminares para check *)
 
-lemma check0 : "checkR(M,1,0) =  0"
+lemma check0 : "checkR(M,a,0) =  0"
   apply (unfold checkR_def)
   apply (unfold Hcheck_def)
   apply (unfold wfrec_def)
@@ -131,15 +131,19 @@ lemma aux_check0' : "{a}\<in>M \<Longrightarrow> {a}\<in>eclose(M)"
   apply simp
   done
 
+lemma in_dom : " relation(r) \<Longrightarrow> <a,b> \<in> r \<Longrightarrow> a\<in>domain(r)"
+  by blast
+
 lemma aux_check0'' : "\<lbrakk> a\<in>A ; b\<in>a \<rbrakk> \<Longrightarrow> b\<in>domain(Memrel(eclose(A)))"
-  apply (unfold domain_def)
-  sorry
+  apply (rule in_dom) 
+   apply (rule relation_Memrel)
+  apply (auto)
+  apply (rule_tac A="a" in ecloseD)
+  apply (rule arg_into_eclose,assumption+)+
+done 
 
 lemma aux_check0''' : "r \<subseteq> r' \<Longrightarrow> domain(r) \<subseteq> domain(r')"
-  apply (rule subsetI)
-  apply (unfold domain_def)
-  
-  sorry
+  by blast
 
 lemma aux_check0 : "{a} \<in> M \<Longrightarrow> a \<in> domain(Memrel(eclose(M))^+)"
   apply (rule_tac A="domain(Memrel(eclose(M)))" in subsetD)
@@ -160,15 +164,16 @@ lemma aux_check1 :
   apply (simp)
   done
 
-lemma check1 : "{0}\<in>M \<Longrightarrow> checkR(M,1,{0}) =  {<0,1>}"
+lemma check1 : "{0}\<in>M \<Longrightarrow> checkR(M,a,{0}) =  {<0,a>}"
   apply (rule trans)
-  apply (rule_tac h="checkR(M,1)" and r="trancl(Memrel(eclose(M)))" in
+   apply (rule_tac h="checkR(M,a)" and r="trancl(Memrel(eclose(M)))" 
+               and H="Hcheck(a)" in
   def_wfrec)
     apply (simp add: checkR_def)
    apply (rule wf_trancl)
    apply (rule wf_Memrel)
   apply (subst aux_check1)
-   apply (simp)
+   apply assumption
   apply (unfold Hcheck_def)
   apply (simp)
   apply (rule check0)
@@ -193,8 +198,18 @@ lemma val0: "valR(M,P,G,0) = 0"
   apply simp
   done
 
+lemma Ord_wfrank': "wf(r) ==> Ord(wfrank(r,a))"
+  apply (rule_tac a=a in wf_induct)
+  apply assumption
+  apply (subst wfrank)
+   apply assumption
+  apply (rule Ord_UN)
+  apply (rule Ord_succ)
+  apply blast
+done
+
 lemma "uno \<in> P \<Longrightarrow> uno \<in> G \<Longrightarrow> valR(M,P,G,checkR(M,uno,x)) = x"
-  apply (rule_tac r="trancl(Memrel(M))" in wf_induct)
+  apply (rule_tac r="trancl(Memrel(eclose(M)))" in wf_induct)
    apply (rule wf_trancl)
    apply (rule wf_Memrel)
   apply (rule trans)
@@ -202,7 +217,7 @@ lemma "uno \<in> P \<Longrightarrow> uno \<in> G \<Longrightarrow> valR(M,P,G,ch
    apply (simp add: valR_def)
    apply (rule wf_trancl)
    apply (rule wf_Memrel)
-  apply (unfold Hval_def) 
+  
   
   
 
