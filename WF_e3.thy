@@ -11,6 +11,8 @@ definition
   e3_set :: "i \<Rightarrow> i" where
   "e3_set(M) == { z \<in> M*M . e3(fst(z),snd(z)) }"
 
+(* z \<in> M*M . e3(fst(z),snd(z)) *)
+
 (* \<questiondown>Es útil? *)
 lemma e3_set_coord : 
   "<x,y>\<in>e3_set(M) \<Longrightarrow> \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
@@ -99,6 +101,115 @@ lemma wf_e3_set : "wf(e3_set(M))"
   apply (rule wf_memcomp)
   apply (rule rel_sub_memcomp)
 done
-  
-end
 
+
+definition 
+  Hcheck :: "[i,i,i] \<Rightarrow> i" where
+  "Hcheck(uno,z,f)  == { <f`y,uno> . y \<in> z}"
+
+definition
+  checkR :: "[i,i,i] \<Rightarrow> i" where
+  "checkR(M,uno,x) == wfrec(trancl(Memrel(eclose(M))), x , Hcheck(uno))"
+
+(* Ejercicios preliminares para check *)
+
+lemma check0 : "checkR(M,1,0) =  0"
+  apply (unfold checkR_def)
+  apply (unfold Hcheck_def)
+  apply (unfold wfrec_def)
+  apply (unfold wftrec_def)
+  apply (auto)
+  done
+
+lemma vimage_sing : "a\<in>M \<Longrightarrow> Memrel(eclose(M))^+ -`` {a} = 
+                             domain(Memrel(eclose(M))^+) \<inter> a"
+  sorry
+
+lemma aux_check0' : "{a}\<in>M \<Longrightarrow> {a}\<in>eclose(M)"
+  apply (rule_tac A="M" in subsetD)
+   apply (rule arg_subset_eclose)
+  apply simp
+  done
+
+lemma in_dom : " relation(r) \<Longrightarrow> <a,b> \<in> r \<Longrightarrow> a\<in>domain(r)"
+  by blast
+    
+lemma aux_check0'' : "\<lbrakk> a\<in>A ; b\<in>a \<rbrakk> \<Longrightarrow> b\<in>domain(Memrel(eclose(A)))"
+  apply (rule in_dom) 
+  apply (rule relation_Memrel)
+  apply (auto)
+  apply (rule_tac A="a" in ecloseD)
+  apply (rule arg_into_eclose,assumption+)+
+done 
+  
+
+lemma dom_monotone : "r \<subseteq> r' \<Longrightarrow> domain(r) \<subseteq> domain(r')"
+  by blast
+    
+  
+lemma aux_check0 : "{a} \<in> M \<Longrightarrow> a \<in> domain(Memrel(eclose(M))^+)"
+  apply (rule_tac A="domain(Memrel(eclose(M)))" in subsetD)
+   apply (rule dom_monotone)
+   apply (rule r_subset_trancl)
+   apply (rule relation_Memrel)
+  apply (rule_tac a="{a}" in aux_check0'')
+   apply auto
+  done
+  
+lemma aux_check1 : 
+  "{0}\<in>M \<Longrightarrow> Memrel(eclose(M))^+ -`` {{0}} = {0}"
+  apply (subst vimage_sing) 
+  apply (simp)
+  apply (rule equalityI)
+   apply (auto)
+  apply (rule aux_check0)
+  apply (simp)
+  done
+
+lemma check1 : "{0}\<in>M \<Longrightarrow> checkR(M,1,{0}) =  {<0,1>}"
+  apply (rule trans)
+  apply (rule_tac h="checkR(M,1)" and r="trancl(Memrel(eclose(M)))" in
+  def_wfrec)
+    apply (simp add: checkR_def)
+   apply (rule wf_trancl)
+   apply (rule wf_Memrel)
+  apply (subst aux_check1)
+   apply (simp)
+  apply (unfold Hcheck_def)
+  apply (simp)
+  apply (rule check0)
+  done
+
+
+(* Val *)
+definition
+  Hval :: "[i,i,i,i] \<Rightarrow> i" where
+  "Hval(P,G,x,f) == { f`y .y\<in>{w \<in> domain(x).(\<exists>p\<in>P. <w,p> \<in> x \<and> p \<in> G) }}"
+
+definition
+  valR :: "[i,i,i,i] \<Rightarrow> i" where
+  "valR(M,P,G,\<tau>) == wfrec(trancl(Memrel(eclose(M))), \<tau> ,Hval(P,G))"
+
+(* Ejercicios preliminares para val *)
+lemma val0: "valR(M,P,G,0) = 0"
+  apply (unfold valR_def)
+  apply (unfold Hval_def)
+  apply (unfold wfrec_def)
+  apply (unfold wftrec_def)
+  apply simp
+  done
+
+lemma "uno \<in> P \<Longrightarrow> uno \<in> G \<Longrightarrow> valR(M,P,G,checkR(M,uno,x)) = x"
+  apply (rule_tac r="trancl(Memrel(M))" in wf_induct)
+   apply (rule wf_trancl)
+   apply (rule wf_Memrel)
+  apply (rule trans)
+   apply (rule_tac h="valR(M,P,G)" and r="trancl(Memrel(eclose(M)))" in def_wfrec)
+   apply (simp add: valR_def)
+   apply (rule wf_trancl)
+   apply (rule wf_Memrel)
+  apply (unfold Hval_def) 
+  
+  
+
+end

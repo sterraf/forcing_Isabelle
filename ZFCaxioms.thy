@@ -163,6 +163,13 @@ lemma ZFchoice_type [TC]: "ZFchoice \<in> formula"
   by (simp add: ZFchoice_def)
 
 definition
+  ZF_fin :: "i" where
+  "ZF_fin == {ZFextension,ZFfoundation,ZFpairing,
+              ZFunion,ZFinfinity,ZFpowerset}"
+
+
+
+definition
   ZFC_fin :: "i" where
   "ZFC_fin == {ZFextension,ZFfoundation,ZFpairing,
               ZFunion,ZFinfinity,ZFpowerset,ZFchoice}"
@@ -185,7 +192,20 @@ lemma ZFC_inf_type : "ZFC_inf \<subseteq> formula"
 (* Teoría ZFC internalizada *)
 definition
   ZFCTh :: "i" where
-  "ZFCTh == ZFC_fin \<union> ZFC_inf"
+  "ZFCTh == ZFC_inf \<union> ZFC_fin"
+
+(* Teoría ZF *)
+definition
+  ZFTh :: "i" where
+  "ZFTh == ZFC_inf \<union> ZF_fin"
+
+(* Teoría ZF - partes *)
+definition 
+  ZFlessPower :: "i" where
+  "ZFlessPower == {ZFextension,ZFfoundation,ZFpairing,
+              ZFunion,ZFinfinity,ZFpowerset} \<union> ZFC_inf"
+
+
 
 lemma "ZFCTh \<subseteq> formula"
   by (simp add:ZFCTh_def add:unions add:ZFC_inf_type add:ZFC_fin_type)
@@ -195,13 +215,21 @@ definition
   satT :: "[i,i,i] => o" where
   "satT(A,\<Phi>,env) == \<forall> p \<in> \<Phi>. sats(A,p,env)"
 
+lemma ACyZFimpZFC:
+  assumes "sats(A,ZFchoice,env)"
+  and     "satT(A,ZFTh,env)"
+  shows  "satT(A,ZFCTh,env)"
+  apply (insert assms)
+  apply (unfold satT_def)
+  apply (unfold ZFCTh_def)
+  apply (unfold ZFTh_def)
+  apply (unfold ZF_fin_def)
+  apply (unfold ZFC_fin_def)
+  apply auto
+  done
 
-
-(*
-lemma "sats(A,Forall(transset_fm(0)),[]) \<and> 
-       satT(A,ZFCTh,[])  
-       \<Longrightarrow> PROP M_trivial(##A)"
-*)
+  
+  
 
 definition
   rel :: "[i,i] \<Rightarrow> o" where
