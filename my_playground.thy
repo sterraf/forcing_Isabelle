@@ -321,15 +321,34 @@ lemma absolute_hold :
 
 section\<open>Well founded relations\<close>
 definition
-  rel :: "[i,i] \<Rightarrow> o" where
-  "rel(x,y) == \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
+  eee :: "[i,i] \<Rightarrow> o" where
+  "eee(x,y) == \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
+  
+lemma eee_eclose : "eee(x,y) \<Longrightarrow> x\<in>eclose(y)"
+  apply (simp add:eee_def)
+  apply clarify
+sorry
+
+lemma eee_to_rank : "eee(x,y) \<Longrightarrow> rank(x)<rank(y)"
+  by (simp add:eee_eclose add:eclose_rank_lt)
+ 
+definition 
+  minimal_in_class :: "[i,[i,i] \<Rightarrow> o, i\<Rightarrow>o] \<Rightarrow> o" where
+  "minimal_in_class(y,R,M) == \<forall>z[M]. \<not>R(z,y)"
+   
+lemma eee_wf : "\<exists>x. M(x) \<Longrightarrow>  \<exists>y[M].minimal_in_class(y,eee,M)"
+  apply clarify
+  apply (case_tac "minimal_in_class(x,eee,M)")
+proof -
+  assume "M(x)"
+oops
 
 definition
   relSet :: "i \<Rightarrow> i" where
-  "relSet(M) == { z \<in> M*M . rel(fst(z),snd(z)) }"
-
+  "relSet(M) == { z \<in> M*M . eee(fst(z),snd(z)) }"
+ 
 lemma relSet_coord : "<x,y>\<in>relSet(M) \<Longrightarrow> \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
-by (simp add:relSet_def rel_def )
+by (simp add:relSet_def eee_def )
 
 lemma fld_rel_sub_eclose : "\<lbrakk>xa \<in> M; y \<in> M ; z \<in> y ; w \<in> z; xa \<in> w\<rbrakk> \<Longrightarrow> 
                             z \<in> eclose(M) \<and> w \<in> eclose(M)"
