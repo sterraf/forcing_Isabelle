@@ -17,7 +17,7 @@ lemma e3I [intro] : "x \<in> a \<Longrightarrow> a \<in> b \<Longrightarrow> b \
   by (simp add: e3_def,blast)
 
 
-lemma e3_Memrel : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> <x,y> \<in> Memrel(eclose(M))^+"
+lemma e3_Memrel : "y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> <x,y> \<in> Memrel(eclose(M))^+"
   sorry
 
 lemma e3_transM : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> x \<in> M"
@@ -258,10 +258,10 @@ lemma check_e3 : "w\<in>M \<Longrightarrow> x \<in> w \<Longrightarrow> e3(check
    apply (rule_tac x="x" in bexI,simp,assumption)
   done
 
-lemma check_in : "Transset(M) \<Longrightarrow> checkR(M,uno,w) \<in> M \<Longrightarrow>  w \<in> M \<Longrightarrow> x \<in> w \<Longrightarrow>
+lemma check_in : "checkR(M,uno,w) \<in> M \<Longrightarrow>  w \<in> M \<Longrightarrow> x \<in> w \<Longrightarrow>
                    checkR(M, uno, x) \<in> Memrel(eclose(M))^+ -`` {checkR(M, uno, w)}"
   apply (rule_tac b="checkR(M,uno,w)" in vimageI)
-   apply (rule e3_Memrel,assumption+)
+   apply (rule e3_Memrel,assumption)
   apply (rule check_e3,assumption+,simp)
   done
 
