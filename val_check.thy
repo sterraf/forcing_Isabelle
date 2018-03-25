@@ -108,8 +108,7 @@ lemma wf_e3_set : "wf(e3_set(M))"
   apply (rule wf_memcomp)
   apply (rule rel_sub_memcomp)
 done  
-  
-find_theorems "Transset(?M)" name:Transset_Memrel_iff
+
 
 lemma transD : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> y \<subseteq> M" 
   by (unfold Transset_def, blast) 
@@ -273,7 +272,7 @@ lemma check_in : "Transset(M) \<Longrightarrow> checkR(M,uno,w) \<in> M \<Longri
    apply (rule e3_Memrel,assumption+)
   apply (rule check_e3,assumption+,simp)
   done
-find_theorems "<?x,?y> \<in> Memrel(eclose(?M))^+"
+
 lemma check_in_M : "Transset(M) \<Longrightarrow> w \<in> M \<Longrightarrow> y \<in> w \<Longrightarrow> checkR(M,uno,w) \<in> M \<Longrightarrow>
                     checkR(M,uno,y) \<in> M"
   apply (rule_tac y="checkR(M,uno,w)" in transM_eclose,assumption+)
