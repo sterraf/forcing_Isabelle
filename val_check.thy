@@ -17,11 +17,6 @@ lemma e3I [intro] : "x \<in> a \<Longrightarrow> a \<in> b \<Longrightarrow> b \
   by (simp add: e3_def,blast)
 
 
-lemma e3_Memrel : "y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> <x,y> \<in> Memrel(eclose(M))^+"
-  sorry
-
-lemma e3_transM : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> x \<in> M"
-  sorry
 
 (* z \<in> M*M . e3(fst(z),snd(z)) *)
 
@@ -112,25 +107,34 @@ lemma wf_e3_set : "wf(e3_set(M))"
   apply (rule wf_subset)
   apply (rule wf_memcomp)
   apply (rule rel_sub_memcomp)
+done  
+  
+find_theorems "Transset(?M)" name:Transset_Memrel_iff
+
+lemma transD : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> y \<subseteq> M" 
+  by (unfold Transset_def, blast) 
+    
+lemma transM_eclose : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> x \<in> M"
+  apply (unfold e3_def, clarsimp)
+  apply (subgoal_tac "w \<subseteq> M",rule_tac A="w" in subsetD,assumption+)
+  apply (rule transD,assumption)
+  apply (subgoal_tac "z \<subseteq> M",rule_tac A="z" in subsetD,assumption+)
+  apply (rule transD,assumption)
+  apply (rule_tac A="y" in subsetD,erule transD,assumption+) 
+  done
+    
+lemma e3_trans : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> <x,y> \<in> e3_set(M)"
+  apply (unfold e3_def e3_set_def)
+  apply (clarsimp)
+  apply (erule transM_eclose,assumption,blast)
 done
 
-text\<open>Some properties about the transitive closure of Memrel.\<close>
-lemma "M\<noteq>0 \<Longrightarrow> 0 \<in> (eclose(M)) "
-  apply (rule_tac j="rank(eclose(M))" in ltE)
-   apply (rule Ord_0_lt,auto)
-  sorry 
+lemma e3_Memrel : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> <x,y> \<in> Memrel(eclose(M))^+"
+  apply (rule memcomp_sub_trmem [THEN subsetD])
+  apply (rule rel_sub_memcomp [THEN subsetD])
+  apply (rule e3_trans,assumption+)
+done  
     
-lemma "M\<noteq>0 \<Longrightarrow> 0 \<in> domain(Memrel(eclose(M))^+)"
-  apply (rule domainI,rule r_into_trancl)
-  find_theorems "?x \<in> eclose(?a)"
- apply (rule_tac b="{0}" in MemrelI,simp)
- apply (rule_tac B="{0}" in mem_eclose_trans)
-  sorry
-
-definition ed :: "[i,i] \<Rightarrow> o" where
-  "ed(x,y) == x \<in> domain(y)"  
-  
-  
 definition 
   Hcheck :: "[i,i,i] \<Rightarrow> i" where
   "Hcheck(uno,z,f)  == { <f`y,uno> . y \<in> z}"
@@ -182,13 +186,17 @@ lemma lam_dom : "A\<subseteq>B \<Longrightarrow> {Lambda(B,f)`y . y\<in>A } = {f
    apply auto
   done
 
-(*esto no es cierto: *)
-lemma lam_cons : "A\<subseteq>B \<Longrightarrow> {<Lambda(B,f)`y,a> . y\<in>A} = 
-                  {Lambda(B,\<lambda>x.<f(x),a>)`y . y\<in>A}"
-  apply (rule RepFun_cong)
-   apply auto
-  done
+lemma lam_cons : "A\<subseteq>B \<Longrightarrow> y \<in> A \<Longrightarrow> <Lambda(B,f)`y,a> = 
+                  Lambda(B,\<lambda>x.<f(x),a>)`y "
+  apply clarsimp
+  apply (erule_tac P="y\<in>B" in notE)
+  apply (erule subsetD,assumption)
+done
 
+lemma singleton_eqI : "a = b \<Longrightarrow> {a} = {b}" 
+  by (erule singleton_eq_iff [THEN iffD2])
+  
+  
 lemma check_simp : "y \<in> M \<Longrightarrow> checkR(M,uno,y) = { <checkR(M,uno,w),uno> . w \<in> y}"
   apply (rule trans)
   apply (rule_tac h="checkR(M,uno)" and H="Hcheck(uno)" 
@@ -197,14 +205,15 @@ lemma check_simp : "y \<in> M \<Longrightarrow> checkR(M,uno,y) = { <checkR(M,un
    apply (rule wf_Memrel [THEN wf_trancl])
   apply (fold checkR_def)
   apply (unfold Hcheck_def)
-  apply (rule trans,rule lam_cons)
-   apply (rule sub_e,assumption)
-  apply (rule lam_dom,rule sub_e,assumption)
+  apply (rule trans)
+  apply (rule_tac B="y" in RepFun_cong,rule refl)    
+  apply (rule lam_cons)
+   apply (rule sub_e,assumption+)
+  apply (rule lam_dom,erule sub_e)
   done
+    
 lemma dom_check : "y \<in> M \<Longrightarrow> domain(checkR(M,uno,y)) = { checkR(M,uno,w) . w \<in> y }"
-  apply (subst check_simp)
-  apply auto
-  done
+  by (subst check_simp,auto)
 
 
 lemma check_uno : "y \<in> M \<Longrightarrow> uno \<in> P \<Longrightarrow> uno \<in> G \<Longrightarrow> 
@@ -215,8 +224,8 @@ lemma check_uno : "y \<in> M \<Longrightarrow> uno \<in> P \<Longrightarrow> uno
     apply (subst check_simp,assumption)
     apply simp
     apply (subst (asm) dom_check,assumption)
-    apply (rule_tac b="x" and f="checkR(M,uno)" and A="y" in RepFunE,assumption)
-    apply (rule_tac x="xa" in bexI,assumption+)
+    apply (erule_tac b="x" and f="checkR(M,uno)" and A="y" in RepFunE)
+    apply (erule_tac x="xa" in bexI,assumption+)
   done
       
   
@@ -242,7 +251,7 @@ lemma pair_in2 : "{<f(z),b>.z\<in>x} \<in> M \<Longrightarrow> a \<in> x \<Longr
   apply (rule_tac A="{f(a)}" in ecloseD)
    apply (rule_tac A="<f(a),b>" in ecloseD)
     apply (rule_tac A="{\<langle>f(z), b\<rangle> . z \<in> x}" in ecloseD)
-  apply (rule arg_into_eclose,assumption)
+  apply (erule arg_into_eclose)
   apply (auto)
   apply (unfold Pair_def,simp)
   done
@@ -250,27 +259,27 @@ lemma pair_in2 : "{<f(z),b>.z\<in>x} \<in> M \<Longrightarrow> a \<in> x \<Longr
 (* para check_in: primero probar check(x) \<in>3 check(w), luego
 usar que \<in>3 \<subseteq> Memrel(eclose(M))+ *)
 
-lemma check_e3 : "w\<in>M \<Longrightarrow> x \<in> w \<Longrightarrow> e3(checkR(M,uno,x),checkR(M,uno,w))"
+lemma check_e3 : "Transset(M) \<Longrightarrow> w\<in>M \<Longrightarrow> x \<in> w \<Longrightarrow> e3(checkR(M,uno,x),checkR(M,uno,w))"
    apply (rule_tac a="{checkR(M,uno,x)}" and b="<checkR(M,uno,x),uno>" in e3I)
      apply simp
     apply (unfold Pair_def,simp,fold Pair_def)
    apply (subst (2) check_simp,assumption,simp)
-   apply (rule_tac x="x" in bexI,simp,assumption)
+   apply (rule_tac x="x" in bexI,simp,assumption+)
   done
 
-lemma check_in : "checkR(M,uno,w) \<in> M \<Longrightarrow>  w \<in> M \<Longrightarrow> x \<in> w \<Longrightarrow>
+lemma check_in : "Transset(M) \<Longrightarrow> checkR(M,uno,w) \<in> M \<Longrightarrow>  w \<in> M \<Longrightarrow> x \<in> w \<Longrightarrow>
                    checkR(M, uno, x) \<in> Memrel(eclose(M))^+ -`` {checkR(M, uno, w)}"
   apply (rule_tac b="checkR(M,uno,w)" in vimageI)
-   apply (rule e3_Memrel,assumption)
+   apply (rule e3_Memrel,assumption+)
   apply (rule check_e3,assumption+,simp)
   done
-
+find_theorems "<?x,?y> \<in> Memrel(eclose(?M))^+"
 lemma check_in_M : "Transset(M) \<Longrightarrow> w \<in> M \<Longrightarrow> y \<in> w \<Longrightarrow> checkR(M,uno,w) \<in> M \<Longrightarrow>
                     checkR(M,uno,y) \<in> M"
-  apply (rule_tac y="checkR(M,uno,w)" in e3_transM,assumption+)
+  apply (rule_tac y="checkR(M,uno,w)" in transM_eclose,assumption+)
   apply (rule check_e3,assumption+)
   done  
-
+    
 lemma valcheck : "y \<in> M \<Longrightarrow> Transset(M) \<Longrightarrow> uno \<in> P \<Longrightarrow> uno \<in> G \<Longrightarrow> 
        checkR(M,uno,y) \<in> M \<longrightarrow> valR(M,P,G,checkR(M,uno,y))  = y"
   apply (rule_tac r="trancl(Memrel(eclose(M)))" and a="y" and A="M" in wf_on_induct)
@@ -292,8 +301,7 @@ lemma valcheck : "y \<in> M \<Longrightarrow> Transset(M) \<Longrightarrow> uno 
   apply (rule trans)
   apply (rule_tac A="w" and B="w" and C="\<lambda>x . {valR(M,P,G,checkR(M,uno,x))}" and
          D="\<lambda>x. {x}" in UN_cong,simp)
-   apply (rule iffD2)
-  apply (rule singleton_eq_iff)
+   apply (rule singleton_eqI)
    apply (rule_tac P="x \<in> M \<and> \<langle>x, w\<rangle> \<in> Memrel(eclose(M))^+ \<and> checkR(M,uno,x) \<in> M" in mp)
     apply simp
    apply (rule conjI)
@@ -305,5 +313,5 @@ lemma valcheck : "y \<in> M \<Longrightarrow> Transset(M) \<Longrightarrow> uno 
   apply (rule_tac w="w" in check_in_M,fold Transset_def,assumption+)
   apply (rule UN_singleton)
   done
-  
+
 end
