@@ -177,8 +177,7 @@ lemma sub_e : "y \<in> M \<Longrightarrow> y \<subseteq> Memrel(eclose(M))^+ -``
     apply (rule_tac A="y" in ecloseD)
      apply ((rule arg_into_eclose,assumption+)+)
   apply simp
-  done
-  
+  done  
 
 lemma lam_dom : "A\<subseteq>B \<Longrightarrow> {Lambda(B,f)`y . y\<in>A } = {f(y) . y\<in>A}"
   apply (rule RepFun_cong)

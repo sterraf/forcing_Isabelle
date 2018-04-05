@@ -45,15 +45,18 @@ lemma nForall_type [TC]:
 (*
   Esquema de separación
   Sea \<Phi> fórmula, donde 'y' no es libre.
-  \<forall>v\<exists>y\<forall>x. x\<in>y \<leftrightarrow> x\<in>v \<and> \<Phi>
+  \<forall>a1...an\<forall>v\<exists>y\<forall>x. x\<in>y \<leftrightarrow> x\<in>v \<and> \<Phi>(x,v,a1,...,an)
+
+  Ejemplo: Si \<Phi> = x=a \<or> x=b entonces
+              p debe ser 0=2 \<or> 0=3
 *)
 definition
   ZFseparation :: "i \<Rightarrow> i" where
-  "ZFseparation(p) == nForall(pred(pred(arity(p))), 
+  "ZFseparation(p) == nForall(pred(arity(p)), 
                               Forall(Exists(Forall(
                               Iff(Member(0,1),And(Member(0,2),
                                               incr_bv(p)`1))))))"
-
+                                                
 lemma ZFsep_type [TC]: "p \<in> formula \<Longrightarrow> ZFseparation(p) \<in> formula"
   by (simp add: ZFseparation_def)
 
