@@ -89,10 +89,13 @@ lemma val_sigma : "\<tau> \<in> M \<Longrightarrow> \<rho> \<in> M \<Longrightar
 
 (*lemma pair_in_model :"sats(A,ZFpairing,[]) \<Longrightarrow> *)
 
-lemma sats_upair : "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> 
+lemma sats_upair : "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> {x,y} \<in> A \<Longrightarrow> 
                sats(A,upair_fm(0,1,2),[x,y,{x,y}])"
-  sorry
-
+  apply (unfold upair_fm_def)
+  apply (rule sats_And_iff [THEN iffD2])
+  apply (auto)
+done
+  
 lemma gen_ext : "x \<in> M \<Longrightarrow> valR(M,P,G,x) \<in> gen_ext(M,P,G)"
   apply (simp add: gen_ext_def)
   apply auto
@@ -121,3 +124,4 @@ theorem gen_ext_sats_pair :
   apply (rule_tac  A="P" in subsetD)
    apply (rule transD,assumption+)
   done
+end
