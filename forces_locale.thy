@@ -22,13 +22,16 @@ locale M_ctm =
       
 (* Prototyping Forcing relation and theorems as a locale*)
 locale forcing_thms = forcing_poset + M_ctm +
-  fixes forces
+  fixes forces :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i"
   assumes P_in_M:           "P \<in> list(M)"
       and forces_type:      "forces(\<phi>,x,y,z,w) \<in> formula"
-      and forces_example:   "\<forall>p\<in> P. forces(\<phi>,P,uno,leq,p)\<in>formula" (* only to fix types *)
       and truth_lemma:      "sats(M,forces(\<phi>,P,leq,uno,p),env @ [P,leq,uno,p]) \<longleftrightarrow>
                  (\<forall>G.(G\<subseteq>P \<and> generic(G)\<and> p\<in>G)\<longrightarrow>sats(gen_ext(M,P,G),\<phi>,map(valR(M,P,G),env)))"
       
+lemma (in forcing_thms) bounded_separation_in_genext:
+    "\<forall>p\<in>formula. arity(p)<5 \<longrightarrow> sats(gen_ext(M,P,G),ZFSeparation(p),[])"
+oops
+
 theorem (in forcing_thms) separation_in_genext:
     "\<forall>p\<in>formula. sats(gen_ext(M,P,G),ZFSeparation(p),[])"
 oops
