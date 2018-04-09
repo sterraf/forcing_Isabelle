@@ -9,22 +9,22 @@ locale forcing_poset =
 definition (in forcing_poset)
   dense :: "i\<Rightarrow>o" where
   "dense(D) == \<forall>p\<in>P. \<exists>d\<in>D . <d,p>\<in>leq"
-  
-definition (in forcing_poset)
-  generic :: "i\<Rightarrow>o" where
-  "generic(G) == \<forall>D. D\<subseteq>P \<and> dense(D)\<longrightarrow>D\<inter>G\<noteq>0"
-  
-locale M_ctm =
+    
+locale forcing_data = forcing_poset +
   fixes M enum
   assumes trans_M:          "Transset(M)"
       and M_model_ZF:       "satT(M,ZFTh,[])"
       and M_countable:      "enum\<in>bij(M,\<omega>)"
+      and P_in_M:           "P \<in> M"
+
+definition (in forcing_data)
+  generic :: "i\<Rightarrow>o" where
+  "generic(G) == \<forall>D\<in>M. D\<subseteq>P \<and> dense(D)\<longrightarrow>D\<inter>G\<noteq>0"
       
 (* Prototyping Forcing relation and theorems as a locale*)
-locale forcing_thms = forcing_poset + M_ctm +
+locale forcing_thms = forcing_poset + forcing_data +
   fixes forces :: "i \<Rightarrow> i"
-  assumes P_in_M:           "P \<in> list(M)"
-      and forces_type:      "forces(\<phi>) \<in> formula"
+  assumes forces_type:      "forces(\<phi>) \<in> formula"
       and truth_lemma:      "\<forall>env\<in>list(M).
                   sats(M,forces(\<phi>), [P,leq,uno,p] @ env) \<longleftrightarrow>
                   (\<forall>G.(G\<subseteq>P \<and> generic(G)\<and> p\<in>G)\<longrightarrow>sats(gen_ext(M,P,G),\<phi>,map(valR(M,P,G),env)))"
