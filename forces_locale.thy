@@ -10,6 +10,22 @@ definition (in forcing_poset)
   dense :: "i\<Rightarrow>o" where
   "dense(D) == \<forall>p\<in>P. \<exists>d\<in>D . <d,p>\<in>leq"
     
+definition (in forcing_poset)
+  increasing :: "i\<Rightarrow>o" where
+  "increasing(F) == \<forall>p\<in>P. \<forall>x\<in>P. x\<in>F \<and> <x,p>\<in>leq \<longrightarrow> p\<in>F"
+
+definition (in forcing_poset)
+  compat_in :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
+  "compat_in(p,q,G) == \<exists>d\<in>G . <d,p>\<in>leq \<and> <d,q>\<in>leq" 
+  
+definition (in forcing_poset)
+  compat :: "i\<Rightarrow>i\<Rightarrow>o" where
+  "compat(p,q) == compat_in(p,q,P)"
+
+definition (in forcing_poset)
+  filter :: "i\<Rightarrow>o" where
+  "filter(G) == G\<subseteq>P \<and> increasing(G) \<and> (\<forall>p\<in>G. \<forall>q\<in>G. compat_in(p,q,G))"
+
 locale forcing_data = forcing_poset +
   fixes M enum
   assumes trans_M:          "Transset(M)"
@@ -19,7 +35,7 @@ locale forcing_data = forcing_poset +
 
 definition (in forcing_data)
   generic :: "i\<Rightarrow>o" where
-  "generic(G) == \<forall>D\<in>M. D\<subseteq>P \<and> dense(D)\<longrightarrow>D\<inter>G\<noteq>0"
+  "generic(G) == filter(G) \<and> (\<forall>D\<in>M. D\<subseteq>P \<and> dense(D)\<longrightarrow>D\<inter>G\<noteq>0)"
       
 (* Prototyping Forcing relation and theorems as a locale*)
 locale forcing_thms = forcing_poset + forcing_data +
