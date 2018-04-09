@@ -246,7 +246,6 @@ lemma WFrel : "wf(relSet(M))"
   apply(unfold relSet_def)
   apply(unfold wf_def)
   apply(rule allI)
-  
-  
+  oops
 
-
+end
