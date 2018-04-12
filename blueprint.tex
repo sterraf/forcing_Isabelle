@@ -31,6 +31,7 @@
 \newcommand{\atr}{\mathit{atr}}
 \newcommand{\concat}{\mathbin{@}}
 \newcommand{\reee}{\mathrel{\mathtt{eee}}}
+\newcommand{\dB}[1]{\mathbf{#1}}
 \DeclareMathOperator{\val}{val}
 
 
@@ -653,7 +654,7 @@ in the generic extension $M[G]$.
   \[
   S\defi\{x\in c : M[G]\models \phi(x,c,w)\} \in M[G].
   \]
-  From this, using absoluteness, we will be able to derive
+  From this, using absoluteness, we will be able to derive the
   $\phi$-instance of Separation. Let $\pi,\sig\in M$ such that 
   $\val(\pi)=c$ and $\val(\sig)=w$.
   We will show that the name
@@ -685,8 +686,8 @@ in the generic extension $M[G]$.
   \end{framed}
   Writing this in de Bruijn notation, gives us something like this:
   \[
-  \psi \defi  \exists\,\exists\,\verb|pair_fm|(0,1,2) \y
-  \forceisa(4,5,6,7,0\in 1\y\phi(0,1,3)).
+  \psi \defi  \exists\,\exists\,\verb|pair_fm|(\dB{0},\dB{1},\dB{2}) \y
+  \forceisa(\dB{4},\dB{5},\dB{6},\dB{7},\dB{0}\in \dB{1}\y\phi(\dB{0},\dB{1},\dB{3})).
   \]
   From $M\models \mathtt{Separation}(\psi)$ we have
   \begin{multline*}
@@ -700,20 +701,20 @@ in the generic extension $M[G]$.
   environment.
   \[
   M,[\dom(\pi)\times\PP,\pi,\sig,\PP,\leq,\1] \models\exists y \forall x
-  (x\in y \lsii x\in 0 \y \psi(3,4,5,x,1)).
+  (x\in y \lsii x\in \dB{0} \y \psi(\dB{3},\dB{4},\dB{5},x,\dB{1})).
   \]
   Extracting the two outermost quantifiers and shifting indices, we get
   \begin{multline*}
     \exists y\in M \forall x\in M: \\
     M,[x,y,\dom(\pi)\times\PP,\pi,\sig,\PP,\leq,\1] \models
-    0\in 1 \lsii 0\in 2 \y \psi(5,6,7,0,3).
+    \dB{0}\in \dB{1} \lsii \dB{0}\in \dB{2} \y \psi(\dB{5},\dB{6},\dB{7},\dB{0},\dB{3}).
   \end{multline*}
   Let $\tau\in M$ witness the $\exists y$. So, by absoluteness,
   \begin{multline*}
     \forall x\in M: 
     x\in\tau \lsii  x\in\dom(\pi)\times\PP \y{}\\ 
   M,[x,\tau,\dom(\pi)\times\PP,\pi,\sig,\PP,\leq,\1] \models
-  \psi(5,6,7,0,3).
+  \psi(\dB{5},\dB{6},\dB{7},\dB{0},\dB{3}).
   \end{multline*}
   Let $\mathit{env}\defi
   [x,\tau,\dom(\pi)\times\PP,\pi,\sig,\PP,\leq,\1]$. By transitivity
@@ -721,7 +722,7 @@ in the generic extension $M[G]$.
   \[
   \tau = \{x\in\dom(\pi)\times\PP :
   M, \mathit{env}\models
-  \psi(5,6,7,0,3)\},
+  \psi(\dB{5},\dB{6},\dB{7},\dB{0},\dB{3})\},
   \]
   i.e., the relevant name is in $M$.
   
@@ -730,69 +731,86 @@ in the generic extension $M[G]$.
   Let's first focus into the predicate defining $\tau$ by separation. By expanding $\psi$ we have
   \[
    M, \mathit{env}\models
-   \exists \th,p : 0=\lb\th,p\rb \y
-   \forceisa(5,6,7,p,\th\in 3\y\phi(\th,3,4)).
+   \exists \th,p : \dB{0}=\lb\th,p\rb \y
+   \forceisa(\dB{5},\dB{6},\dB{7},p,\th\in \dB{3}\y\phi(\th,\dB{3},\dB{4})).
   \]
   We proceed as before, using absoluteness and replacing variables by
   corresponding indices.
   \[
   \exists \th,p : x =\lb\th,p\rb \y  M, [\th,p]\concat\mathit{env}\models
-  \forceisa(7,8,9,1,0\in 5\y\phi(0,5,6)).
+  \forceisa(\dB{7},\dB{8},\dB{9},\dB{1},\dB{0}\in \dB{5}\y\phi(\dB{0},\dB{5},\dB{6})).
   \]
     
   Considering that only a fraction of elements
   of the environment  are necessary to interpret
-  $\forceisa(7,8,9,1,0\in\pi\y\phi(0,5,6))$ and by permuting, we can
+  $\forceisa(\dB{7},\dB{8},\dB{9},\dB{1},\dB{0}\in\pi\y\phi(\dB{0},\dB{5},\dB{6}))$ and by permuting, we can
   replace
   \[
   M, [\th,p,x,\tau,\dom(\pi)\times\PP,\pi,\sig,\PP,\leq,\1]\models
-  \forceisa(7,8,9,1,0\in 5 \y\phi(0,5,6))
+  \forceisa(\dB{7},\dB{8},\dB{9},\dB{1},\dB{0}\in \dB{5} \y\phi(\dB{0},\dB{5},\dB{6}))
   \]
   by
   \[
   M,[\PP,\leq,\1,p,\th,\pi,\sig]\models
-  \forceisa(0,1,2,3,4\in 5 \y\phi(4,5,6))
+  \forceisa(\dB{0},\dB{1},\dB{2},\dB{3},\dB{4}\in \dB{5} \y\phi(\dB{4},\dB{5},\dB{6}))
   \]
   By the Truth Lemma, this is equivalent to
   \[
   \forall F\ \PP\text{-generic}, p\in F \limp
-  M[F],[\val(\th),\val(\pi),\val(\sig)]\models
-  0\in1  \y\phi(0,1,2).
+  M[F],[\val(\th,F),\val(\pi,F),\val(\sig,F)]\models
+  \dB{0}\in\dB{1}  \y\phi(\dB{0},\dB{1},\dB{2}).
   \]
 
-  Now we calculate $\val(\tau)$.
+  Now we calculate $\val(\tau,F)$.
   \begin{multline*}
-    \val(\tau) = \\
+    \val(\tau,G) = \\
     \val\bigl(\{x\in\dom(\pi)\times\PP : \exists \th,p : x =\lb\th,p\rb
     \y  \\
     \forall F\ \PP\text{-generic}, p\in F \limp
-    M[F],[\val(\th),\val(\pi),\val(\sig)]\models
-    0\in 1 \y\phi(0,1,2)\}\bigr).
+    M[F],[\val(\th,F),\val(\pi,F),\val(\sig,F)]\models
+    \dB{0}\in \dB{1} \y\phi(\dB{0},\dB{1},\dB{2})\}\bigr).
   \end{multline*}
   Hence
   \begin{multline*}
-    \val(\tau) = 
-    \{\val(\th): \th\in\dom(\pi) \y  p \in G 
+    \val(\tau,G) = 
+    \{\val(\th,G): \th\in\dom(\pi) \y  p \in G 
     \y \forall F\ \PP\text{-generic}, \\
    p\in F \longrightarrow
-  M[F],[\val(\th),\val(\pi),\val(\sig)]\models
-  0\in 1 \y\phi(0,1,2)\}.
+  M[F],[\val(\th,F),\val(\pi,F),\val(\sig,F)]\models
+  \dB{0}\in \dB{1} \y\phi(\dB{0},\dB{1},\dB{2})\}.
   \end{multline*}
-  This set includes
+  This is included in
   \begin{multline*}
-    \{\val(\th): \th\in\dom(\pi) \y  p \in G 
+    \{\val(\th,G): \th\in\dom(\pi) \y  p \in G 
     \y  \\
    p\in G \longrightarrow
-   M[G],[\val(\th),\val(\pi),\val(\sig)]\models
-   0\in 1 \y\phi(0,1,2)\},
+   M[G],[\val(\th,G),\val(\pi,G),\val(\sig,G)]\models
+   \dB{0}\in \dB{1} \y\phi(\dB{0},\dB{1},\dB{2})\},
   \end{multline*}
-  that is
-  \begin{multline*}
-    \{\val(\th): \th\in\dom(\pi) \y  p \in G 
+  and in turn,  replacing $\val(\pi,F),\val(\sig,F)$ by their values,
+  this is included  in 
+  \[ 
+    \{\val(\th,G): \th\in\dom(\pi)
     \y 
-   M[G],[\val(\th),\val(\pi),\val(\sig)]\models
-   0\in 1 \y\phi(0,1,2)\}
-  \end{multline*}
+   M[G],[\val(\th,G),c,w]\models
+   \dB{0}\in \dB{1} \y\phi(\dB{0},\dB{1},\dB{2})\}.
+  \]
+  By absoluteness, we have that $\val(\tau,G)$ is
+  \[
+    \{\val(\th,G): \th\in\dom(\pi)
+    \y \val(\th,G)\in c \y 
+   M[G],[\val(\th,G),c,w]\models
+   \phi(\dB{0},\dB{1},\dB{2})\}.
+  \]
+  which equals 
+  \[
+    \{x: x\in c \y 
+    M[G],[x,c,w]\models
+   \phi(\dB{0},\dB{1},\dB{2})\}.
+  \]
+  since for every $x\in c=\val(\pi,G)$ there must
+  exist some $\th\in\dom(\pi)$ with $\val(\th,G)=x$. Therefore
+  $\val(\tau,G)\subseteq S$.
 \end{proof}
 
 
