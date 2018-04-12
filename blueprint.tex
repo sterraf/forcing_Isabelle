@@ -29,6 +29,7 @@
 \newcommand{\equ}{\mathbf{e}}
 \newcommand{\bel}{\mathbf{b}}
 \newcommand{\atr}{\mathit{atr}}
+\newcommand{\concat}{\mathbin{@}}
 \newcommand{\reee}{\mathrel{\mathtt{eee}}}
 \DeclareMathOperator{\val}{val}
 
@@ -634,6 +635,165 @@ atomic formulas.
 This proof consists of two cases for $\phi$ (namely, $x_1\in x_2$ and
 $x_1=x_2$) and it is done by well-founded recursion over $R$ (defined
 in Section~\ref{sec:forcing-atomic-formulas}).
+
+\section{The axioms in the generic extension}
+\subsection{The axiom of Separation}
+In this subsection we will show that the Separation Axiom scheme holds
+in the generic extension $M[G]$. 
+
+\begin{lemma}
+  Let $G$ be $M$-generic for $\PP$. For every $\phi\in\formula$ with
+  three free variables, the $\phi$-instance of Separation holds in
+  $M[G]$.
+\end{lemma}
+\begin{proof}
+  Let $G$ as in the hypothesis, $\phi(x,z,v)$ be in \formula{} and let
+  $c,w\in M[G]$. Following Kunen \cite[Lemma IV.2.6]{kunen2011set},
+  we have to show that 
+  \[
+  S\defi\{x\in c : M[G]\models \phi(x,c,w)\} \in M[G].
+  \]
+  From this, using absoluteness, we will be able to derive
+  $\phi$-instance of Separation. Let $\pi,\sig\in M$ such that 
+  $\val(\pi)=c$ and $\val(\sig)=w$.
+  We will show that the name
+  \[
+  \tau \defi \{\lb\th,p\rb: \th\in\dom(\pi) \y p\in \PP\y
+  M\models p\forces(\th\in\pi\y\phi(\th,\pi,\sig)\}
+  \]
+  belongs to $M$; for this we will use that an appropriate instance of
+  Separation holds in $M$. Later we will see that $\tau$ names $S$.
+  
+  First, we slightly rewrite $\tau$:
+  \[
+  \tau \defi \{w\in\dom(\pi)\times\PP :\exists \th,p (w=\lb\th,p\rb \y 
+  M\models p \forces(\th\in\pi\y\phi(\th,\pi,\sig))\}
+  \]
+  
+  The formula giving the relevant instance of Separation in $M$ will be the
+  following:
+  \[
+  \psi \defi \exists \th,p : x=\lb\th,p\rb \y \forceisa(\PP,\leq,\1,p,\th\in\pi\y\phi(\th,\pi,\sig)),
+  \]
+  where $\PP,\leq,\1,\pi,\sig$ are parameters.
+  \begin{framed}
+    I'm changing the order of arguments of $\forceisa$. Also, we
+    will need to show that, in $M$, a version of separation for formulas
+    with  $5$ free variables holds.
+
+    Also, we need to show that $\dom(\pi)\times\PP\in M$.
+  \end{framed}
+  Writing this in de Bruijn notation, gives us something like this:
+  \[
+  \psi \defi  \exists\,\exists\,\verb|pair_fm|(0,1,2) \y
+  \forceisa(4,5,6,7,0\in 1\y\phi(0,1,3)).
+  \]
+  From $M\models \mathtt{Separation}(\psi)$ we have
+  \begin{multline*}
+    \forall u,l,P,s,r\in M \forall d\in M:\\ 
+    M,[d,r,s,P,l,u] \models\exists y \forall x
+    (x\in y \lsii x\in d \y \psi(P,l,u,x,r)).
+  \end{multline*}
+  We instantiate the universal quantifiers using the given parameters
+  and the domain $\dom(\pi)\times\PP$, while changing the free variables in
+  the formula with de Bruijn indices corresponding to the order in the
+  environment.
+  \[
+  M,[\dom(\pi)\times\PP,\pi,\sig,\PP,\leq,\1] \models\exists y \forall x
+  (x\in y \lsii x\in 0 \y \psi(3,4,5,x,1)).
+  \]
+  Extracting the two outermost quantifiers and shifting indices, we get
+  \begin{multline*}
+    \exists y\in M \forall x\in M: \\
+    M,[x,y,\dom(\pi)\times\PP,\pi,\sig,\PP,\leq,\1] \models
+    0\in 1 \lsii 0\in 2 \y \psi(5,6,7,0,3).
+  \end{multline*}
+  Let $\tau\in M$ witness the $\exists y$. So, by absoluteness,
+  \begin{multline*}
+    \forall x\in M: 
+    x\in\tau \lsii  x\in\dom(\pi)\times\PP \y{}\\ 
+  M,[x,\tau,\dom(\pi)\times\PP,\pi,\sig,\PP,\leq,\1] \models
+  \psi(5,6,7,0,3).
+  \end{multline*}
+  Let $\mathit{env}\defi
+  [x,\tau,\dom(\pi)\times\PP,\pi,\sig,\PP,\leq,\1]$. By transitivity
+  of $M$ we can dispense of the bound on $x$, and we get
+  \[
+  \tau = \{x\in\dom(\pi)\times\PP :
+  M, \mathit{env}\models
+  \psi(5,6,7,0,3)\},
+  \]
+  i.e., the relevant name is in $M$.
+  
+  Now we turn to the proof that $\val(\tau)=S$.
+  
+  Let's first focus into the predicate defining $\tau$ by separation. By expanding $\psi$ we have
+  \[
+   M, \mathit{env}\models
+   \exists \th,p : 0=\lb\th,p\rb \y
+   \forceisa(5,6,7,p,\th\in 3\y\phi(\th,3,4)).
+  \]
+  We proceed as before, using absoluteness and replacing variables by
+  corresponding indices.
+  \[
+  \exists \th,p : x =\lb\th,p\rb \y  M, [\th,p]\concat\mathit{env}\models
+  \forceisa(7,8,9,1,0\in 5\y\phi(0,5,6)).
+  \]
+    
+  Considering that only a fraction of elements
+  of the environment  are necessary to interpret
+  $\forceisa(7,8,9,1,0\in\pi\y\phi(0,5,6))$ and by permuting, we can
+  replace
+  \[
+  M, [\th,p,x,\tau,\dom(\pi)\times\PP,\pi,\sig,\PP,\leq,\1]\models
+  \forceisa(7,8,9,1,0\in 5 \y\phi(0,5,6))
+  \]
+  by
+  \[
+  M,[\PP,\leq,\1,p,\th,\pi,\sig]\models
+  \forceisa(0,1,2,3,4\in 5 \y\phi(4,5,6))
+  \]
+  By the Truth Lemma, this is equivalent to
+  \[
+  \forall F\ \PP\text{-generic}, p\in F \limp
+  M[F],[\val(\th),\val(\pi),\val(\sig)]\models
+  0\in1  \y\phi(0,1,2).
+  \]
+
+  Now we calculate $\val(\tau)$.
+  \begin{multline*}
+    \val(\tau) = \\
+    \val\bigl(\{x\in\dom(\pi)\times\PP : \exists \th,p : x =\lb\th,p\rb
+    \y  \\
+    \forall F\ \PP\text{-generic}, p\in F \limp
+    M[F],[\val(\th),\val(\pi),\val(\sig)]\models
+    0\in 1 \y\phi(0,1,2)\}\bigr).
+  \end{multline*}
+  Hence
+  \begin{multline*}
+    \val(\tau) = 
+    \{\val(\th): \th\in\dom(\pi) \y  p \in G 
+    \y \forall F\ \PP\text{-generic}, \\
+   p\in F \longrightarrow
+  M[F],[\val(\th),\val(\pi),\val(\sig)]\models
+  0\in 1 \y\phi(0,1,2)\}.
+  \end{multline*}
+  This set includes
+  \begin{multline*}
+    \{\val(\th): \th\in\dom(\pi) \y  p \in G 
+    \y  \\
+   p\in G \longrightarrow
+   M[G],[\val(\th),\val(\pi),\val(\sig)]\models
+   0\in 1 \y\phi(0,1,2)\},
+  \end{multline*}
+  that is
+  \begin{multline*}
+    \{\val(\th): \th\in\dom(\pi) \y  p \in G 
+    \y 
+   M[G],[\val(\th),\val(\pi),\val(\sig)]\models
+   0\in 1 \y\phi(0,1,2)\}
+  \end{multline*}
+\end{proof}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
