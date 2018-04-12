@@ -771,14 +771,14 @@ in the generic extension $M[G]$.
     \dB{0}\in \dB{1} \y\phi(\dB{0},\dB{1},\dB{2})\}\bigr).
   \end{multline*}
   Hence
-  \begin{multline*}
+  \begin{multline}\label{eq:val_tau}
     \val(\tau,G) = 
     \{\val(\th,G): \th\in\dom(\pi) \y  p \in G 
     \y \forall F\ \PP\text{-generic}, \\
    p\in F \longrightarrow
   M[F],[\val(\th,F),\val(\pi,F),\val(\sig,F)]\models
   \dB{0}\in \dB{1} \y\phi(\dB{0},\dB{1},\dB{2})\}.
-  \end{multline*}
+  \end{multline}
   This is included in
   \begin{multline*}
     \{\val(\th,G): \th\in\dom(\pi) \y  p \in G 
@@ -811,6 +811,36 @@ in the generic extension $M[G]$.
   since for every $x\in c=\val(\pi,G)$ there must
   exist some $\th\in\dom(\pi)$ with $\val(\th,G)=x$. Therefore
   $\val(\tau,G)\subseteq S$.
+
+  Now let $x\in S$. Hence there exists $\lb\th,q\rb\in\pi$ such that
+  $q\in G$ and $x=\val(\th,G)$. By the second version of the Truth
+  Lemma, since 
+  \[
+  M[G],[\val(\th,G),\val(\pi,G),\val(\sig,G)]\models
+  \dB{0}\in\dB{1}\y\phi(\dB{0},\dB{1},\dB{2}),
+  \]
+  there must exists $r\in G$ such that 
+  \[
+  M,[\PP,\leq,\1,r,\th,\pi,\sig]\models
+  \forceisa(\dB{0},\dB{1},\dB{2},\dB{3},
+  (\dB{4}\in\dB{5}\y\phi(\dB{4},\dB{5},\dB{6}))).
+  \]
+  Since $G$ is a filter, there is $p\in G$ such that $p\leq q, r$.
+  By Lemma~\ref{lem:strengthen}, we have
+  \[
+  M,[\PP,\leq,\1,p,\th,\pi,\sig]\models
+  \forceisa(\dB{0},\dB{1},\dB{2},\dB{3},
+  (\dB{4}\in\dB{5}\y \phi(\dB{4},\dB{5},\dB{6}))),
+  \]
+  which by the Truth Lemma gives us
+  \[
+  \forall F\ \PP\text{-generic}, \\
+   p\in F \longrightarrow
+  M[F],[\val(\th,F),\val(\pi,F),\val(\sig,F)]\models
+  \dB{0}\in \dB{1} \y\phi(\dB{0},\dB{1},\dB{2}).
+  \]
+  Using now (\ref{eq:val_tau}), this shows that $S\sbq \val(\tau,G)$,
+  since $\th\in\dom(\pi)$. 
 \end{proof}
 
 
