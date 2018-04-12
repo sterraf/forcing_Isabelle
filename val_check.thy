@@ -113,7 +113,7 @@ done
 lemma transD : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> y \<subseteq> M" 
   by (unfold Transset_def, blast) 
     
-lemma transM_eclose : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> x \<in> M"
+lemma transM_e3 : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> x \<in> M"
   apply (unfold e3_def, clarsimp)
   apply (subgoal_tac "w \<subseteq> M",rule_tac A="w" in subsetD,assumption+)
   apply (rule transD,assumption)
@@ -125,14 +125,20 @@ lemma transM_eclose : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow>
 lemma e3_trans : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> <x,y> \<in> e3_set(M)"
   apply (unfold e3_def e3_set_def)
   apply (clarsimp)
-  apply (erule transM_eclose,assumption,blast)
+  apply (erule transM_e3,assumption,blast)
 done
 
 lemma e3_Memrel : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> <x,y> \<in> Memrel(eclose(M))^+"
   apply (rule memcomp_sub_trmem [THEN subsetD])
   apply (rule rel_sub_memcomp [THEN subsetD])
   apply (rule e3_trans,assumption+)
-done  
+  done  
+
+lemma in_domain_e3 : "x \<in> domain(r) \<Longrightarrow> e3(x,r)"
+  apply (rule_tac a="x" and r="r" in domainE,assumption)
+  apply (rule_tac a="{x}" and b="<x,y>" in e3I,simp)
+  apply (unfold Pair_def,simp,assumption)
+  done
     
 definition 
   Hcheck :: "[i,i,i] \<Rightarrow> i" where
@@ -274,7 +280,7 @@ lemma check_in : "Transset(M) \<Longrightarrow> checkR(M,uno,w) \<in> M \<Longri
 
 lemma check_in_M : "Transset(M) \<Longrightarrow> w \<in> M \<Longrightarrow> y \<in> w \<Longrightarrow> checkR(M,uno,w) \<in> M \<Longrightarrow>
                     checkR(M,uno,y) \<in> M"
-  apply (rule_tac y="checkR(M,uno,w)" in transM_eclose,assumption+)
+  apply (rule_tac y="checkR(M,uno,w)" in transM_e3,assumption+)
   apply (rule check_e3,assumption+)
   done  
     

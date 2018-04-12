@@ -93,6 +93,10 @@ lemma (in M_model) def_gen_ext :
   apply (rule RepFun_iff [THEN iffD1],assumption)
   done
 
+lemma (in M_model) in_val :
+  "x \<in> valR(M,P,G,\<sigma>) \<Longrightarrow> \<exists>\<tau>\<in>domain(\<sigma>). x = valR(M,P,G,\<tau>)"
+  sorry
+
 lemma (in M_model) domain_sigma :
   "{w \<in> domain({\<langle>\<tau>, uno\<rangle>, \<langle>\<rho>, uno\<rangle>}) . 
    \<exists>p\<in>P. \<langle>w, p\<rangle> \<in> {\<langle>\<tau>, uno\<rangle>, \<langle>\<rho>, uno\<rangle>} \<and> p \<in> G} = {\<tau>,\<rho>}"
@@ -145,5 +149,28 @@ theorem (in M_model) gen_ext_sats_pair :
   apply (rule pairs_in_M,assumption+)
   apply (rule gen_ext,rule pairs_in_M,assumption+)
   done
+
+
+lemma (in M_model) gen_ext_trans : 
+  "Transset(gen_ext(M,P,G))"
+  apply (simp add: Transset_def)
+  apply (rule ballI)
+  apply (rule subsetI)
+  apply (rename_tac y x)
+  apply (drule def_gen_ext)
+  apply (rule_tac A="M" and P="\<lambda>w. y=valR(M,P,G,w)" in bexE,assumption)
+  apply (rename_tac y x \<sigma>)
+  apply (drule_tac a="y" and P="\<lambda>w. x \<in> w" in subst,assumption)
+  apply (drule in_val)
+  apply (rule_tac A="domain(\<sigma>)" and P="\<lambda>w. x=valR(M,P,G,w)" in bexE,assumption)
+  apply (rename_tac y x \<sigma> \<tau>)
+  apply (drule in_domain_e3)
+  apply (rule_tac a="valR(M,P,G,\<tau>)" and P="\<lambda>w. w \<in> gen_ext(M,P,G)" in ssubst,assumption)
+  apply (rule gen_ext)
+  apply (rule_tac x="\<tau>" and y="\<sigma>" in transM_e3)
+  apply (insert trans_M,assumption+)
+  done
+  
+  
 
 end
