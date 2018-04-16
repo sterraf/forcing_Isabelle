@@ -40,8 +40,23 @@ oops
     
 lemma  (in forcing_poset) chain_compat:
   "A\<subseteq>P \<Longrightarrow> linear(A,leq) \<Longrightarrow>  (\<forall>p\<in>A.\<forall>q\<in>A. compat(p,q))"
-oops      
-  
+oops
+
+theorem Ord_dependent_choice:
+    "Ord(A) \<Longrightarrow> \<forall>a\<in>A.\<exists>b\<in>A. <b,a> \<in> s  \<Longrightarrow>
+     \<forall>x\<in>A.\<exists>f\<in>(nat\<rightarrow>A).f`0=x \<and> (\<forall>n\<in>nat.(<f`n,f`(n+1)>\<in> s))"
+  apply (rule ballI)
+  apply (rule bexI)
+   apply (rule conjI)
+  oops
+    
+theorem wo_dependent_choice:
+    "well_ord(A,r) \<Longrightarrow> \<forall>a\<in>A.\<exists>b\<in>A. <b,a> \<in> s  \<Longrightarrow>
+     \<forall>x\<in>A.\<exists>f\<in>(nat\<rightarrow>A).f`0=x \<and> (\<forall>n\<in>nat.(<f`n,f`(n+1)>\<in> s))"
+  apply(drule well_ord_cardinal_eqpoll)
+    subgoal 
+  oops
+    
 locale countable_generic = forcing_poset +
   fixes \<D>
   assumes countable_subs_of_P:  "\<D> \<in> nat\<rightarrow>\<P>(P)"
