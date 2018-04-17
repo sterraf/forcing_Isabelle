@@ -14,13 +14,39 @@ definition (in forcing_poset)
   increasing :: "i\<Rightarrow>o" where
   "increasing(F) == \<forall>p\<in>P. \<forall>x\<in>P. x\<in>F \<and> <x,p>\<in>leq \<longrightarrow> p\<in>F"
 
-definition (in forcing_poset)
-  compat_in :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "compat_in(p,q,G) == \<exists>d\<in>G . <d,p>\<in>leq \<and> <d,q>\<in>leq" 
-  
+
+(* En esta definición habría que agregar que (A,r) es preorden? *)
+definition compat_in :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
+  "compat_in(A,r,p,q) == \<exists>d\<in>A . <d,p>\<in>r \<and> <d,q>\<in>r"
+
+lemma compat_inI : 
+      "\<lbrakk> d\<in>A ; <d,p>\<in>r ; <d,g>\<in>r \<rbrakk> \<Longrightarrow> compat_in(A,r,p,g)"
+  apply (simp add: compat_in_def)
+  apply (rule_tac x="d" in bexI,simp+)
+  done
+
+lemma refl_compat:
+  "\<lbrakk> refl(A,r) ; <p,q> \<in> r | p=q | <q,p> \<in> r ; p\<in>A ; q\<in>A\<rbrakk> \<Longrightarrow> compat_in(A,r,p,q)"
+  apply (simp add: refl_def)
+  apply (rule_tac P="<p,q>\<in>r" and Q="p=q \<or> <q,p>\<in>r" in disjE,assumption)
+  apply (rule_tac d="p" in compat_inI,assumption,simp+)
+  apply (rule_tac P="p=q" in disjE,assumption)
+   apply (rule_tac d="q" in compat_inI,assumption,simp+)
+  apply (rule_tac d="q" in compat_inI,assumption,simp)
+  apply (rule bspec,assumption+)
+  done
+ 
+lemma  chain_compat:
+  "refl(A,r) \<Longrightarrow> linear(A,r) \<Longrightarrow>  (\<forall>p\<in>A.\<forall>q\<in>A. compat_in(A,r,p,q))"
+  apply (rule ballI,rule ballI)
+  apply (unfold linear_def)
+  apply (drule_tac x="p" in bspec,assumption,drule_tac x="q" in bspec,assumption)
+  apply (rule refl_compat,assumption+)
+  done
+
 definition (in forcing_poset)
   compat :: "i\<Rightarrow>i\<Rightarrow>o" where
-  "compat(p,q) == compat_in(p,q,P)"
+  "compat(p,q) == compat_in(P,leq,p,q)"
 
 definition (in forcing_poset)
   antichain :: "i\<Rightarrow>o" where
@@ -28,20 +54,16 @@ definition (in forcing_poset)
 
 definition (in forcing_poset)
   filter :: "i\<Rightarrow>o" where
-  "filter(G) == G\<subseteq>P \<and> increasing(G) \<and> (\<forall>p\<in>G. \<forall>q\<in>G. compat_in(p,q,G))"
+  "filter(G) == G\<subseteq>P \<and> increasing(G) \<and> (\<forall>p\<in>G. \<forall>q\<in>G. compat_in(G,leq,p,q))"
 
 definition (in forcing_poset) 
   up_closure :: "i\<Rightarrow>i" where
   "up_closure(A) == {p\<in>P.\<exists>a\<in>A.<a,p>\<in>leq}"
 
 lemma (in forcing_poset) closure_compat_filter:
-  "A\<subseteq>P \<Longrightarrow> (\<forall>p\<in>A.\<forall>q\<in>A. compat_in(p,q,A)) \<Longrightarrow> filter(up_closure(A))"
+  "A\<subseteq>P \<Longrightarrow> (\<forall>p\<in>A.\<forall>q\<in>A. compat_in(A,leq,p,q)) \<Longrightarrow> filter(up_closure(A))"
 oops
     
-lemma  (in forcing_poset) chain_compat:
-  "A\<subseteq>P \<Longrightarrow> linear(A,leq) \<Longrightarrow>  (\<forall>p\<in>A.\<forall>q\<in>A. compat_in(p,q,A))"
-oops
-
 theorem Ord_dependent_choice:
     "Ord(A) \<Longrightarrow> \<forall>a\<in>A.\<exists>b\<in>A. <a,b> \<in> s  \<Longrightarrow>
      \<forall>x\<in>A.\<exists>f\<in>(nat\<rightarrow>A).f`0=x \<and> (\<forall>n\<in>nat.(<f`n,f`(n+1)>\<in> s))"
