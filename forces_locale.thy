@@ -35,32 +35,27 @@ definition (in forcing_poset)
   "up_closure(A) == {p\<in>P.\<exists>a\<in>A.<a,p>\<in>leq}"
 
 lemma (in forcing_poset) closure_compat_filter:
-  "A\<subseteq>P \<Longrightarrow> (\<forall>p\<in>A.\<forall>q\<in>A. compat(p,q)) \<Longrightarrow> filter(up_closure(A))"
+  "A\<subseteq>P \<Longrightarrow> (\<forall>p\<in>A.\<forall>q\<in>A. compat_in(p,q,A)) \<Longrightarrow> filter(up_closure(A))"
 oops
     
 lemma  (in forcing_poset) chain_compat:
-  "A\<subseteq>P \<Longrightarrow> linear(A,leq) \<Longrightarrow>  (\<forall>p\<in>A.\<forall>q\<in>A. compat(p,q))"
+  "A\<subseteq>P \<Longrightarrow> linear(A,leq) \<Longrightarrow>  (\<forall>p\<in>A.\<forall>q\<in>A. compat_in(p,q,A))"
 oops
 
 theorem Ord_dependent_choice:
-    "Ord(A) \<Longrightarrow> \<forall>a\<in>A.\<exists>b\<in>A. <b,a> \<in> s  \<Longrightarrow>
+    "Ord(A) \<Longrightarrow> \<forall>a\<in>A.\<exists>b\<in>A. <a,b> \<in> s  \<Longrightarrow>
      \<forall>x\<in>A.\<exists>f\<in>(nat\<rightarrow>A).f`0=x \<and> (\<forall>n\<in>nat.(<f`n,f`(n+1)>\<in> s))"
-  apply (rule ballI)
-  apply (rule bexI)
-   apply (rule conjI)
   oops
     
 theorem wo_dependent_choice:
-    "well_ord(A,r) \<Longrightarrow> \<forall>a\<in>A.\<exists>b\<in>A. <b,a> \<in> s  \<Longrightarrow>
+    "well_ord(A,r) \<Longrightarrow> \<forall>a\<in>A.\<exists>b\<in>A. <a,b> \<in> s  \<Longrightarrow>
      \<forall>x\<in>A.\<exists>f\<in>(nat\<rightarrow>A).f`0=x \<and> (\<forall>n\<in>nat.(<f`n,f`(n+1)>\<in> s))"
-  apply(drule well_ord_cardinal_eqpoll)
-    subgoal 
   oops
     
 locale countable_generic = forcing_poset +
   fixes \<D>
   assumes countable_subs_of_P:  "\<D> \<in> nat\<rightarrow>\<P>(P)"
-  and     seq_of_denses:        "dense(\<D>`n)"
+  and     seq_of_denses:        "\<forall>n \<in> nat. dense(\<D>`n)"
 
 definition (in countable_generic)
   D_generic :: "i\<Rightarrow>o" where
