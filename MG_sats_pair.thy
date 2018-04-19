@@ -1,4 +1,4 @@
-theory MG_sats_pair imports Formula val_check  begin
+theory MG_sats_pair imports Formula val_check ZFCaxioms begin
 
 (* Internalized version of Strong Pairing axiom *)
 definition
@@ -169,6 +169,16 @@ lemma (in M_model) gen_ext_trans :
   apply (rule gen_ext)
   apply (rule_tac x="\<tau>" and y="\<sigma>" in transM_e3)
   apply (insert trans_M,assumption+)
+  done
+
+
+lemma (in M_model) sep3params : 
+  "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) = 4 ; sats(M,ZFseparation(\<phi>),[]) \<rbrakk> \<Longrightarrow>
+  \<forall>a1\<in>M. \<forall>a2\<in>M. \<forall>a3\<in>M . \<forall>d\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. 
+  (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,\<phi>,[x,d,a3,a2,a1]))"
+  apply (unfold ZFseparation_def)
+  apply (simp, fold incr_bv1_def)
+  apply (simp add: sats_incr_bv1_iff)
   done
   
   
