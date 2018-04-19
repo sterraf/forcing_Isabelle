@@ -41,12 +41,14 @@ locale M_model =
   fixes M P G uno
   assumes trans_M:          "Transset(M)"
       and upair_M:          "upair_ax(##M)"
+      and Union_M:          "Union_ax(##M)"
       and P_in_M:           "P \<in> M"
       and uno_in_P:         "uno \<in> P"
       and uno_in_G:         "uno \<in> G"
 
 lemma is_M_model :
-  "Transset(A) \<Longrightarrow> upair_ax(##A) \<Longrightarrow> P \<in> A \<Longrightarrow> uno \<in> P \<Longrightarrow> uno \<in> G \<Longrightarrow>
+  "Transset(A) \<Longrightarrow> upair_ax(##A) \<Longrightarrow> Union_ax(##A) \<Longrightarrow> 
+   P \<in> A \<Longrightarrow> uno \<in> P \<Longrightarrow> uno \<in> G \<Longrightarrow>
    M_model(A,P,G,uno)"
   by (rule M_model.intro,assumption+)
 
@@ -59,6 +61,13 @@ lemma (in M_model) upair_abs [simp]:
   apply (simp add: upair_def)
   apply (insert trans_M)
   apply (blast intro: Transset_M)
+  done
+
+lemma (in M_model) Union_abs [simp]:
+  "[| A\<in>M; z\<in>M |] ==> big_union(##M,A,z) \<longleftrightarrow> z = \<Union>(A)"
+  apply (simp add: big_union_def)
+  apply (insert trans_M)
+  apply (blast dest: Transset_M)
   done
 
 
@@ -139,8 +148,7 @@ theorem (in M_model) gen_ext_sats_pair :
   apply (rule_tac x="valR(M,P,G,{<\<tau>,uno>,<\<rho>,uno>})" in bexI)
   apply (subst val_sigma,assumption+)
   apply (insert trans_M,insert upair_M,insert P_in_M,insert uno_in_P,insert uno_in_G)
-  apply (rule_tac M="M" and P="P" and G="G" 
-          in M_model.pairs_in_M,rule is_M_model,assumption+)
+  apply (rule_tac a="\<tau>" and b="\<rho>" in pairs_in_M,assumption+)
   apply (rule_tac b="x" in ssubst,assumption)
   apply (rule_tac b="y" in ssubst,assumption)
   apply (rule sats_upair)
@@ -173,14 +181,35 @@ lemma (in M_model) gen_ext_trans :
 
 
 lemma (in M_model) sep3params : 
-  "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) = 4 ; sats(M,ZFseparation(\<phi>),[]) \<rbrakk> \<Longrightarrow>
-  \<forall>a1\<in>M. \<forall>a2\<in>M. \<forall>a3\<in>M . \<forall>d\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. 
-  (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,\<phi>,[x,d,a3,a2,a1]))"
+  "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) = 4  \<rbrakk> \<Longrightarrow> sats(M,ZFseparation(\<phi>),[]) \<longleftrightarrow>
+  (\<forall>a1\<in>M. \<forall>a2\<in>M. \<forall>a3\<in>M . \<forall>d\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. 
+  (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,\<phi>,[x,d,a3,a2,a1])))"
   apply (unfold ZFseparation_def)
   apply (simp, fold incr_bv1_def)
   apply (simp add: sats_incr_bv1_iff)
   done
-  
-  
+
+definition 
+  ZF_big_union :: "i" where
+  "ZF_big_union == Forall(Exists(big_union_fm(1,0)))"
+
+lemma ZFbig_union_type [TC]: "ZF_big_union \<in> formula"
+  by (simp add: ZF_big_union_def)
+
+lemma ZF_union_fm[simp] : 
+   "sats(A,ZF_big_union,[])
+   \<longleftrightarrow>
+   (\<forall>x\<in>A. \<exists>z\<in>A . sats(A,big_union_fm(1,0),[z,x]))"
+  by (simp add: ZF_big_union_def)
+
+lemma big_union_fm_ax[simp] : 
+  "(\<forall>x\<in>A. \<exists>z\<in>A . sats(A,big_union_fm(1,0),[z,x]))
+  \<longleftrightarrow>
+   Union_ax(##A)"
+  by (simp add: Union_ax_def)
+
+lemma (in M_model) M_union_closed :
+  "A \<in> M \<Longrightarrow> \<Union>A \<in> M"
+  oops
 
 end
