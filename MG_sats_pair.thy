@@ -63,13 +63,6 @@ lemma (in M_model) upair_abs [simp]:
   apply (blast intro: Transset_M)
   done
 
-lemma (in M_model) Union_abs [simp]:
-  "[| A\<in>M; z\<in>M |] ==> big_union(##M,A,z) \<longleftrightarrow> z = \<Union>(A)"
-  apply (simp add: big_union_def)
-  apply (insert trans_M)
-  apply (blast dest: Transset_M)
-  done
-
 
 (* Definition of the generic extension of M (M[G]) *)
 definition 
@@ -179,6 +172,21 @@ lemma (in M_model) gen_ext_trans :
   apply (insert trans_M,assumption+)
   done
 
+lemma (in M_model) sep1params : 
+  "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) = 2  \<rbrakk> \<Longrightarrow> sats(M,ZFseparation(\<phi>),[]) \<longleftrightarrow>
+  (\<forall>a\<in>M . \<forall>d\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. 
+  (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,\<phi>,[x,d,a])))"
+  apply (unfold ZFseparation_def)
+  apply (simp, fold incr_bv1_def)
+  apply (simp add: sats_incr_bv1_iff)
+  done
+
+lemma (in M_model) abs_sep : 
+  "(\<forall>a\<in>M . \<forall>d\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. 
+  (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,\<phi>,[x,d,a]))) \<longleftrightarrow> 
+  (\<forall>a\<in>M . \<forall>d\<in>M. \<exists>y\<in>M. \<forall>x. 
+  (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,\<phi>,[x,d,a])))"
+  sorry
 
 lemma (in M_model) sep3params : 
   "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) = 4  \<rbrakk> \<Longrightarrow> sats(M,ZFseparation(\<phi>),[]) \<longleftrightarrow>
@@ -208,8 +216,16 @@ lemma big_union_fm_ax[simp] :
    Union_ax(##A)"
   by (simp add: Union_ax_def)
 
+lemma (in M_model) Union_abs [simp]:
+  "[| A\<in>M; z\<in>M |] ==> big_union(##M,A,z) \<longleftrightarrow> z = \<Union>(A)"
+  apply (simp add: big_union_def)
+  apply (insert trans_M)
+  apply (blast dest: Transset_M)
+  done
+
 lemma (in M_model) M_union_closed :
-  "A \<in> M \<Longrightarrow> \<Union>A \<in> M"
-  oops
+    "A \<in> M \<Longrightarrow> \<Union>A \<in> M"
+  by (insert Union_M, simp add: Union_ax_def)
+
 
 end
