@@ -986,11 +986,11 @@ assumes Inter_separation:
      "[| M(r); M(x) |] ==> separation(M, \<lambda>y. \<exists>p[M]. p\<in>r & pair(M,y,x,p))"
   and Memrel_separation:
      "separation(M, \<lambda>z. \<exists>x[M]. \<exists>y[M]. pair(M,x,y,z) & x \<in> y)"
-(*  and funspace_succ_replacement:
+  and funspace_succ_replacement:
      "M(n) ==>
       strong_replacement(M, \<lambda>p z. \<exists>f[M]. \<exists>b[M]. \<exists>nb[M]. \<exists>cnbf[M].
                 pair(M,f,b,p) & pair(M,n,b,nb) & is_cons(M,nb,f,cnbf) &
-                upair(M,cnbf,cnbf,z))" *)
+                upair(M,cnbf,cnbf,z))" 
   and is_recfun_separation:
      \<comment>\<open>for well-founded recursion: used to prove \<open>is_recfun_equal\<close>\<close>
      "[| M(r); M(f); M(g); M(a); M(b) |]
@@ -1351,7 +1351,7 @@ lemma (in M_basic_no_repl) succ_fun_eq2:
 apply (simp add: succ_fun_eq)
 apply (blast dest: transM)
 done
-(* Requires an instance of Replacement ****************
+(* Requires an instance of Replacement ****************)
 lemma (in M_basic_no_repl) funspace_succ:
      "[|M(n); M(B); M(n->B) |] ==> M(succ(n) -> B)"
 apply (insert funspace_succ_replacement [of n], simp)
@@ -1367,7 +1367,7 @@ apply (induct_tac n, simp)
 apply (simp add: funspace_succ nat_into_M)
 done
 
-*)
+(* End requires Replacement *)
 
 subsection\<open>Relativization and Absoluteness for Boolean Operators\<close>
 
