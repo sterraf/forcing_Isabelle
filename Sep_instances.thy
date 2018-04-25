@@ -46,24 +46,24 @@ lemma (in M_separation) sep2params :
     
 lemma (in M_separation) septest: 
   "((\<forall>a\<in>M . \<forall>d\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. 
-  (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,Member(0,2),[x,d,a])))) \<longrightarrow>
-   (\<forall>w\<in>M. Relative_hacked.separation(##M,\<lambda>x. x\<in>w))"
+  (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,Neg(Member(0,2)),[x,d,a])))) \<longrightarrow>
+   (\<forall>w\<in>M. Relative_hacked.separation(##M,\<lambda>x. x\<notin>w))"
   by (simp add: Relative_hacked.separation_def)  
 
 lemma aritm : "1\<union>3 =3 "
   by auto
     
 lemma (in M_separation) ZFsep_septest : 
-  "sats(M,ZFseparation(Member(0,2)),[])  \<longrightarrow>
-   (\<forall>w\<in>M. Relative_hacked.separation(##M,\<lambda>x. x\<in>w))"
+  "sats(M,ZFseparation(Neg(Member(0,2))),[])  \<longrightarrow>
+   (\<forall>w\<in>M. Relative_hacked.separation(##M,\<lambda>x. x\<notin>w))"
   apply (simp add: Relative_hacked.separation_def)
   apply (rule  impI)
-  apply (rule_tac Q="sats(M, ZFseparation(Member(0, 2)), [])" and
+  apply (rule_tac Q="sats(M, ZFseparation(Neg(Member(0, 2))), [])" and
                   P="((\<forall>b\<in>M .\<forall>a\<in>M . \<forall>d\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. 
-  (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,Member(0,2),[x,d,a,b]))))"
+  (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,Neg(Member(0,2)),[x,d,a,b]))))"
               in impE)
   apply (simp add:septest)
-  apply (rule_tac (* \<phi>="Member(0,2)" in*) sep2params [THEN iffD1])
+  apply (rule_tac  (* \<phi>="Neg(Member(0,2))" in *) sep2params [THEN iffD1])
   prefer 3 apply (assumption)
   apply (simp add:aritm)+
   apply (unfold ZFseparation_def)
