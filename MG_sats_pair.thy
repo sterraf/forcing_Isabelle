@@ -97,6 +97,7 @@ lemma (in M_model) def_gen_ext :
 
 lemma (in M_model) in_val :
   "x \<in> valR(M,P,G,\<sigma>) \<Longrightarrow> \<exists>\<tau>\<in>domain(\<sigma>). x = valR(M,P,G,\<tau>)"
+  apply (unfold valR_def)
   sorry
 
 lemma (in M_model) domain_sigma :

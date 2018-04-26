@@ -26,7 +26,7 @@ lemma (in M_separation) upair_abs [simp]:
   done
 
 
-lemma (in M_separation) sep1params : 
+lemma  sep1params : 
   "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) = 2  \<rbrakk> \<Longrightarrow> sats(M,ZFseparation(\<phi>),[]) \<longleftrightarrow>
   (\<forall>a\<in>M . \<forall>d\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. 
   (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,\<phi>,[x,d,a])))"
@@ -35,7 +35,7 @@ lemma (in M_separation) sep1params :
   apply (simp add: sats_incr_bv1_iff)
   done
 
-lemma (in M_separation) sep2params : 
+lemma  sep2params : 
   "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) = 3  \<rbrakk> \<Longrightarrow> sats(M,ZFseparation(\<phi>),[]) \<longleftrightarrow>
   (\<forall>b\<in>M. \<forall>a\<in>M . \<forall>d\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. 
   (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,\<phi>,[x,d,a,b])))"
@@ -63,11 +63,25 @@ lemma (in M_separation) ZFsep_septest :
   (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,Neg(Member(0,2)),[x,d,a,b]))))"
               in impE)
   apply (simp add:septest)
-  apply (rule_tac  (* \<phi>="Neg(Member(0,2))" in *) sep2params [THEN iffD1])
+  apply (rule iffD1)
+  apply (rule_tac  \<phi>="Neg(Member(0,2))" in sep2params)
   prefer 3 apply (assumption)
-  apply (simp add:aritm)+
+    apply (simp)+
+  prefer 2 
   apply (unfold ZFseparation_def)
-  apply (fold incr_bv1_def)
+   apply (fold incr_bv1_def)
+   apply (simp)
   apply (simp add: sats_incr_bv1_iff add:aritm)
   apply auto
-done
+  done
+    
+lemma sats_Inter_seps : 
+      "sats(M,ZFseparation(Forall(Implies(Member(0,2),Member(1,0)))),[])
+       \<longrightarrow> (\<forall>A\<in>M. Relative_hacked.separation(##M, \<lambda>x. \<forall>y\<in>M. y\<in>A \<longrightarrow> x\<in>y))" 
+  apply (unfold Relative_hacked.separation_def,simp_all)
+  apply (rule impI)
+  
+  apply (rule sep1params)
+(*  apply (rule_tac P="sats(M,ZFseparation(Forall(Implies(Member(0,2),Member(1,0)))),[])" in iffD1) *) 
+      
+end
