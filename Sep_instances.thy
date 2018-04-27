@@ -1,6 +1,6 @@
 theory Sep_instances imports Formula Relative_hacked ZFCaxioms begin
 
-(* We define a "locale" with the hipothesis about model M *)
+(* We define a "locale" with the hypothesis about model M *)
 locale M_separation =
   fixes M
   assumes trans_M:          "Transset(M)"
@@ -50,9 +50,6 @@ lemma (in M_separation) septest:
    (\<forall>w\<in>M. Relative_hacked.separation(##M,\<lambda>x. x\<notin>w))"
   by (simp add: Relative_hacked.separation_def)  
 
-lemma aritm : "1\<union>3 =3 "
-  by auto
-    
 lemma (in M_separation) ZFsep_septest : 
   "sats(M,ZFseparation(Neg(Member(0,2))),[])  \<longrightarrow>
    (\<forall>w\<in>M. Relative_hacked.separation(##M,\<lambda>x. x\<notin>w))"
@@ -71,7 +68,8 @@ lemma (in M_separation) ZFsep_septest :
   apply (unfold ZFseparation_def)
    apply (fold incr_bv1_def)
    apply (simp)
-  apply (simp add: sats_incr_bv1_iff add:aritm)
+    apply (subgoal_tac "1\<union>3=3") (* this works as a hint *)
+  apply (simp add: sats_incr_bv1_iff )
   apply auto
   done
     
