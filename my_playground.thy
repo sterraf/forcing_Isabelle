@@ -15,10 +15,24 @@ qed
 lemma reinforce_antecedent:
   assumes p:"\<exists>x\<in>Z .  \<forall>y. P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
   shows "\<exists>x\<in>Z .  \<forall>y. R(x,y) \<and> P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
-proof -
-  show ?thesis using p by blast
-qed
-
+  apply (insert p)
+  apply (drule_tac Q="\<exists>x\<in>Z .  \<forall>y. R(x,y) \<and> P(x,y,Z) \<longrightarrow> Q(x,y,Z)" in bexE)
+   apply (rename_tac w) 
+   prefer 2 apply assumption
+  apply (rule_tac x="w" in bexI)
+   prefer 2  apply assumption  
+  apply rotate_tac
+  apply (rule allI)
+  apply (drule_tac x="y" and R="R(w, y) \<and> P(w, y, Z) \<longrightarrow> Q(w, y, Z)" in allE)
+   apply (rule impI)
+   apply rotate_tac
+   apply (drule mp)
+   defer 1
+    apply assumption+
+    apply (drule_tac R="P(w,y,Z)" in conjE, assumption+)
+  done
+  
+    
 lemma reinforce_antecedent_no_vars:
   assumes p:"\<exists>x\<in>Z .  \<forall>y. (P \<longrightarrow> Q)"
   shows "\<exists>x\<in>Z .  \<forall>y. (R \<and> P \<longrightarrow> Q)"
