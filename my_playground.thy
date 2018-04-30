@@ -11,7 +11,47 @@ proof -
   show ?thesis using assms by simp\<close>
 qed
   
-(* A true result of FO logic *)    
+(* A true result of FO logic *)
+  
+lemma monotone_bexi : "\<forall>y w. P(y,w)\<longrightarrow>Q(y,w) \<Longrightarrow> \<exists>x\<in>Z. P(x,Z) \<Longrightarrow> \<exists>x\<in>Z. Q(x,Z)" 
+  apply (drule_tac Q="\<exists>x\<in>Z. Q(x,Z)" in bexE)
+  prefer 2 apply assumption
+  apply (rule_tac x="x" in bexI)
+   apply (thin_tac "x\<in>Z")
+    apply (drule_tac x="x" in spec)
+    apply (drule_tac x="Z" in spec)
+    apply (rotate_tac 1)
+  apply (drule mp)
+ apply ( assumption+)
+  done
+    
+lemma monotone_all : "\<forall>x. P(x)\<longrightarrow>Q(x) \<Longrightarrow> \<forall>x. P(x) \<Longrightarrow> \<forall>x. Q(x)" 
+  apply (rule allI)
+    apply (rename_tac w)
+    apply (drule_tac x="w" in spec)
+    apply (drule_tac x="w" in spec)
+  apply (rotate_tac,frule mp)
+  apply (assumption+)
+  done
+    
+lemma reinforce_antecedent_new:
+  assumes p:"\<exists>x\<in>Z .  \<forall>y. P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
+  shows "\<exists>x\<in>Z .  \<forall>y. R(x,y) \<and> P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
+  apply (insert p)
+ (*  apply (auto) *)  (* Lo hace auto *)
+  apply (rule_tac P="\<lambda>x Z. \<forall>y. P(x, y, Z) \<longrightarrow> Q(x, y, Z)"  in  monotone_bexi)
+ (* apply (simp, assumption+) *)  (* Acá ya lo hace simp *)
+   apply (rule allI)+
+    apply (rule impI)
+  apply (rename_tac z w)
+   apply (rule_tac P="\<lambda>y. P(z, y, w) \<longrightarrow> Q(z, y, w)" in  monotone_all)
+    defer 1
+    apply  assumption+ 
+  apply (rule allI, (rule impI)+)
+  apply (frule conjunct2)
+  apply (rule_tac P="P(z, x, w)" in mp, assumption+)
+  done
+    
 lemma reinforce_antecedent:
   assumes p:"\<exists>x\<in>Z .  \<forall>y. P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
   shows "\<exists>x\<in>Z .  \<forall>y. R(x,y) \<and> P(x,y,Z) \<longrightarrow> Q(x,y,Z)"
@@ -32,13 +72,6 @@ lemma reinforce_antecedent:
     apply (drule_tac R="P(w,y,Z)" in conjE, assumption+)
   done
   
-    
-lemma reinforce_antecedent_no_vars:
-  assumes p:"\<exists>x\<in>Z .  \<forall>y. (P \<longrightarrow> Q)"
-  shows "\<exists>x\<in>Z .  \<forall>y. (R \<and> P \<longrightarrow> Q)"
-proof -
-  show ?thesis using p by blast
-qed
   
 section\<open>Experiments with type formula\<close>
 definition 
