@@ -25,13 +25,21 @@ lemma monotone_bexi : "\<forall>y w. P(y,w)\<longrightarrow>Q(y,w) \<Longrightar
  apply ( assumption+)
   done
     
+lemma "(EX y. ALL x. Q(x,y)) --> (ALL x. EX y. Q(x,y))"
+  by (tactic "IntPr.fast_tac  @{context} 1")
+    
 lemma monotone_all : "\<forall>x. P(x)\<longrightarrow>Q(x) \<Longrightarrow> \<forall>x. P(x) \<Longrightarrow> \<forall>x. Q(x)" 
   apply (rule allI)
     apply (rename_tac w)
     apply (drule_tac x="w" in spec)
-    apply (drule_tac x="w" in spec)
+  apply (drule_tac x="w" in spec)
+  apply (tactic "mp_tac  @{context} 1")
+    apply assumption
+(* El anterior reemplaza las dos siguientes líneas más manuales *)
+(*
   apply (rotate_tac,frule mp)
   apply (assumption+)
+*)
   done
     
 lemma reinforce_antecedent_new:
