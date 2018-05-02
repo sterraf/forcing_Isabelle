@@ -129,16 +129,18 @@ definition
   M2 :: "i" where
   "M2 == {0 , 1 , 2 , {2 , 0}}"
 
-
+(* 
 lemma l1 :
   "2 \<notin> 1"
   apply auto
   done
-
+ *)
 lemma l2 :
   "{2,0} \<noteq> 1"
-  apply (unfold extension)
-  apply (simp add: l1)
+  apply (subst extension)
+  apply auto
+ (* antes requería l1 para simplificar *)  
+ (*  apply (simp add: l1) *)
   done
 
 lemma l1' :
@@ -148,8 +150,13 @@ lemma l1' :
 
 lemma l2' :
   "{2,0} \<noteq> 2"
-  apply (unfold extension)
-  apply (simp add: l1')
+  apply (rule notI)
+  apply (drule extension [THEN iffD1])
+    apply auto
+ (*  Otra opción, con un hint:
+  apply (subgoal_tac "2\<notin>2")
+    apply auto
+ *) 
   done
 
 
@@ -321,18 +328,5 @@ lemma formula_is_set :
   apply (unfold Inl_def)
   apply (auto)
   done    
-
-(*
-lemma card_of_pair :
-  "cardinal(Pair(x,y)) = 2"
-  sorry
-    
-lemma card_of_formula :
-  "cardinal(Member(1,2)) = 2"
-  apply (unfold Member_def)
-  apply (unfold Inl_def)
-  apply (simp add:card_of_pair)
-  done
-*)
 end
 
