@@ -129,16 +129,18 @@ definition
   M2 :: "i" where
   "M2 == {0 , 1 , 2 , {2 , 0}}"
 
-
+(* 
 lemma l1 :
   "2 \<notin> 1"
   apply auto
   done
-
+ *)
 lemma l2 :
   "{2,0} \<noteq> 1"
-  apply (unfold extension)
-  apply (simp add: l1)
+  apply (subst extension)
+  apply auto
+ (* antes requería l1 para simplificar *)  
+ (*  apply (simp add: l1) *)
   done
 
 lemma l1' :
@@ -148,8 +150,13 @@ lemma l1' :
 
 lemma l2' :
   "{2,0} \<noteq> 2"
-  apply (unfold extension)
-  apply (simp add: l1')
+  apply (rule notI)
+  apply (drule extension [THEN iffD1])
+    apply auto
+ (*  Otra opción, con un hint:
+  apply (subgoal_tac "2\<notin>2")
+    apply auto
+ *) 
   done
 
 
@@ -303,6 +310,48 @@ definition
 lemma reflexivity_type : "\<lbrakk>x\<in>nat ; y\<in>nat\<rbrakk> \<Longrightarrow> reflexivity_fm(x,y)\<in>formula"
   by (simp add:reflexivity_fm_def)
 
+lemma Un_table :
+  "1\<union>5=5 \<and> 3\<union>1=3 \<and> 4\<union>1=4 \<and> 4\<union>3=4 \<and> 1\<union>2=2 \<and> 2\<union>1=2 \<and> 2\<union>4=4 
+   \<and> 1\<union>6=6 \<and> 2\<union>6=6 \<and> 3\<union>6=6 \<and> 4\<union>6=6 \<and> 4\<union>2=4 \<and>4\<union>5=5 \<and> 5\<union>4=5 
+   \<and> 5\<union>3=5 \<and> 2\<union>3=3 \<and> 2\<union>5=5"
+  by auto
+    
+lemma Manu2: "1 \<union> 5 \<union>
+    Arith.pred
+     (1 \<union> 5 \<union>
+      Arith.pred
+       (3 \<union> 1 \<union> (3 \<union> 1 \<union> Arith.pred(1 \<union> 2 \<union> (1 \<union> 4))) \<union>
+        Arith.pred
+         (4 \<union> 1 \<union> (3 \<union> 1 \<union> Arith.pred(1 \<union> 2 \<union> (1 \<union> 5 \<union> (1 \<union> 4)))) \<union>
+          (2 \<union> 5 \<union> (1 \<union> 5 \<union> Arith.pred(1 \<union> 6 \<union> (1 \<union> 3 \<union> (1 \<union> 2)))))))) = 5"
+  apply (insert Un_table)
+  apply (simp add:Un_commute)
+done
+  
+    
+oops  
+lemma Manu: "1 \<union> 5 \<union>
+    Arith.pred
+     (1 \<union> 5 \<union>
+      Arith.pred
+       (3 \<union> 1 \<union> (3 \<union> 1 \<union> Arith.pred(1 \<union> 2 \<union> (1 \<union> 4))) \<union>
+        Arith.pred
+         (4 \<union> 1 \<union> (3 \<union> 1 \<union> Arith.pred(1 \<union> 2 \<union> (1 \<union> 5 \<union> (1 \<union> 4)))) \<union>
+          (2 \<union> 5 \<union> (1 \<union> 5 \<union> Arith.pred(1 \<union> 6 \<union> (1 \<union> 3 \<union> (1 \<union> 2)))))))) = 5"
+apply (simp add:Un_assoc [symmetric])
+  apply (subgoal_tac "1\<union>5=5" "3\<union>1=3" "4\<union>1=4" "4\<union>3=4")
+       apply (subgoal_tac "1\<union>2=2" "2\<union>1=2" "2\<union>4=4" )
+       apply (subgoal_tac "1\<union>6=6" "2\<union>6=6" "3\<union>6=6" "4\<union>6=6" )
+  apply (simp add:Un_commute)
+             apply (simp add:Un_assoc [symmetric])
+             apply (auto)+
+  apply (subgoal_tac "4\<union>2=4" "4\<union>5=5" )
+    apply (auto)+
+  apply (simp add:Un_assoc)
+      apply (subgoal_tac "5\<union>4=5"  "5\<union>3=5" )
+    apply (auto)+
+done
+  
   
 section\<open>Anomalous calculations\<close>
 text\<open>Here I put some anomalous lemmata, showing the typelessness of set theory.\<close>
@@ -321,18 +370,5 @@ lemma formula_is_set :
   apply (unfold Inl_def)
   apply (auto)
   done    
-
-(*
-lemma card_of_pair :
-  "cardinal(Pair(x,y)) = 2"
-  sorry
-    
-lemma card_of_formula :
-  "cardinal(Member(1,2)) = 2"
-  apply (unfold Member_def)
-  apply (unfold Inl_def)
-  apply (simp add:card_of_pair)
-  done
-*)
 end
 
