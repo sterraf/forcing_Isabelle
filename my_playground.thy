@@ -327,9 +327,7 @@ lemma Manu2: "1 \<union> 5 \<union>
   apply (insert Un_table)
   apply (simp add:Un_commute)
 done
-  
-    
-oops  
+
 lemma Manu: "1 \<union> 5 \<union>
     Arith.pred
      (1 \<union> 5 \<union>
