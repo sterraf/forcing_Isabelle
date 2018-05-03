@@ -36,13 +36,21 @@ lemma power_intf :
   by (simp add: powerset_ax_fm_def power_ax_def powerset_def subset_def subset_fm_def)
 
 (* Separation *)
-
+    
+lemma aux_pred2: "n\<le>2 \<Longrightarrow> Arith.pred(Arith.pred(n)) = 0"
+  apply (case_tac "n=0 \<or> n=1 \<or> n=2" )
+  prefer 2 apply (simp add: lt_def)
+  apply auto
+done    
+    
 lemma sep0params :
-  "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) = 2  \<rbrakk> \<Longrightarrow> sats(M,separation_ax_fm(\<phi>),[]) \<longleftrightarrow>
+  "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) \<le> 2  \<rbrakk> \<Longrightarrow> sats(M,separation_ax_fm(\<phi>),[]) \<longleftrightarrow>
   (\<forall>d\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. 
   (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,incr_bv1(\<phi>),[x,y,d])))"
-  by (simp add: separation_ax_fm_def sats_incr_bv1_iff)
-
+  apply (simp add: separation_ax_fm_def)
+  apply (subst aux_pred2,assumption,simp)
+done
+    
 lemma sep1params : 
   "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) = 3  \<rbrakk> \<Longrightarrow> sats(M,separation_ax_fm(\<phi>),[]) \<longleftrightarrow>
   (\<forall>a\<in>M . \<forall>d\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. 
@@ -63,6 +71,16 @@ lemma sep5params :
 
 (* Instances of separation for interface with M_basic *)
 
+    
+lemma nat_union_abs1 : 
+  "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> i \<union> j = j"
+  by (rule Un_absorb1,erule le_imp_subset)
+
+lemma nat_union_abs2 : 
+  "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> j \<union> i = j"
+  by (rule Un_absorb2,erule le_imp_subset)
+    
+    
 lemma maxnat1 : 
   "1 \<union> 4 \<union> (2 \<union> 1) = 4"
   by auto
@@ -80,10 +98,13 @@ lemma maxnat4 :
       \<union> arity(pair_fm(0, 1, 3))))) = 3"
   sorry
 
+    
 lemma maxnat5 :
   "Arith.pred(1 \<union> 4 \<union> Arith.pred(arity(pair_fm(1, 0, 2)))) = 3"
-  sorry
-
+  apply (unfold pair_fm_def upair_fm_def)
+  apply (simp add:Un_commute nat_union_abs1)
+done
+    
 lemma maxnat6 :
   "Arith.pred
      (Arith.pred
@@ -93,16 +114,22 @@ lemma maxnat6 :
              (arity(pair_fm(4, 2, 5)) \<union>
               (arity(pair_fm(4, 3, 1)) \<union> (arity(pair_fm(3, 2, 0)) \<union> (2 \<union> 8 \<union> (1 \<union> 9))))))))) =
     4"
-  sorry
-
+  apply (unfold pair_fm_def upair_fm_def)
+  apply (simp add:Un_commute nat_union_abs1)
+done
+    
 lemma maxnat7 :
   "Arith.pred(1 \<union> 5 \<union> arity(pair_fm(1, 3, 0))) = 4"
-  sorry
+  apply (unfold pair_fm_def upair_fm_def)
+  apply (simp add:Un_commute nat_union_abs1)
+done
 
 lemma maxnat8 :
-  "Arith.pred(Arith.pred(arity(pair_fm(1, 0, 2)) \<union> (2 \<union> 1))) = 2"
-  sorry
-
+  "Arith.pred(Arith.pred(arity(pair_fm(1, 0, 2)) \<union> (2 \<union> 1))) = 1"
+  apply (unfold pair_fm_def upair_fm_def)
+  apply (simp add:Un_commute nat_union_abs1)
+done
+    
 lemma maxnat9 :
   "Arith.pred
      (Arith.pred
@@ -114,7 +141,10 @@ lemma maxnat9 :
             (Arith.pred
               (arity(fun_apply_fm(9, 4, 1)) \<union> (arity(fun_apply_fm(8, 4, 0)) \<union> (2 \<union> 1))))))))) =
     7"
-  sorry
+   apply (unfold pair_fm_def upair_fm_def fun_apply_fm_def image_fm_def big_union_fm_def)
+  apply (simp add:Un_commute nat_union_abs1)
+done
+
 
 lemma inter_sep_intf :
   "sats(M,separation_ax_fm(Forall(Implies(Member(0,3),Member(1,0)))),[])
@@ -137,11 +167,6 @@ lemma diff_sep_intf :
   done
 
   
-lemma nat_union_abs : 
-  "\<lbrakk> i \<in> nat ; j \<in> nat ; i \<le> j \<rbrakk> \<Longrightarrow> i \<union> j = j"
-  sorry
- 
-
 definition
   cartprod_sep_fm :: "i" where
   "cartprod_sep_fm == 
@@ -249,7 +274,8 @@ lemma memrel_sep_intf :
   apply (rule iff_trans,rule sep0params,simp+)
   prefer 2
    apply (simp add: separation_def sats_incr_bv1_iff)
-  apply (rule maxnat8)
+    apply (unfold pair_fm_def upair_fm_def)
+  apply (simp add:Un_commute nat_union_abs1)
   done
 
 definition
