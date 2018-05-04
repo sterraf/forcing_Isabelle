@@ -149,6 +149,12 @@ apply (blast intro!: restrict_cons_eq_restrict)
 done
 
 lemma aux1 : "0\<in>domain(f`m) \<Longrightarrow> f ` m ` 0 = a \<Longrightarrow>  cons(\<langle>succ(m), z\<rangle>, f ` m) ` 0 = a"
+  apply (unfold apply_def)
+  apply  (unfold cons_def)
+  apply auto 
+  apply  (unfold Upair_def)
+  apply auto 
+ 
 sorry
   
 lemma (in imp_ptdDC) simplify_recursion: 
