@@ -16,6 +16,10 @@ lemma e3I [intro] : "x \<in> a \<Longrightarrow> a \<in> b \<Longrightarrow> b \
             e3(x,y)"
   by (simp add: e3_def,blast)
 
+lemma e3E [elim] : "e3(x,y) \<Longrightarrow> (\<And> a b . x \<in> a \<Longrightarrow> a \<in> b \<Longrightarrow> b \<in> y \<Longrightarrow> P) \<Longrightarrow> P"
+  by (simp add:e3_def,blast)
+    
+    
 (* \<questiondown>Es útil? *)
 lemma e3_set_coord : 
   "<x,y>\<in>e3_set(M) \<Longrightarrow> \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
