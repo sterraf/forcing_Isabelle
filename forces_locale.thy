@@ -1,4 +1,4 @@
-theory forces_locale imports Formula val_check ZFCaxioms begin
+theory forces_locale imports Formula val_check ZFCaxioms Pointed_DC begin
 
 locale forcing_poset =
   fixes P leq uno
@@ -57,13 +57,77 @@ definition (in forcing_poset)
   "filter(G) == G\<subseteq>P \<and> increasing(G) \<and> (\<forall>p\<in>G. \<forall>q\<in>G. compat_in(G,leq,p,q))"
 
 definition (in forcing_poset) 
-  up_closure :: "i\<Rightarrow>i" where
-  "up_closure(A) == {p\<in>P.\<exists>a\<in>A.<a,p>\<in>leq}"
+  upclosure :: "i\<Rightarrow>i" where
+  "upclosure(A) == {p\<in>P.\<exists>a\<in>A.<a,p>\<in>leq}"
+  
+lemma (in forcing_poset) upclosureI [intro] : "p\<in>P \<Longrightarrow> a\<in>A \<Longrightarrow> <a,p>\<in>leq \<Longrightarrow> p\<in>upclosure(A)"
+  by (simp add:upclosure_def, auto)
 
-lemma (in forcing_poset) closure_compat_filter:
-  "A\<subseteq>P \<Longrightarrow> (\<forall>p\<in>A.\<forall>q\<in>A. compat_in(A,leq,p,q)) \<Longrightarrow> filter(up_closure(A))"
-oops
+lemma (in forcing_poset) upclosureE [elim] :
+  "p\<in>upclosure(A) \<Longrightarrow> (\<And>x a. x\<in>P \<Longrightarrow> a\<in>A \<Longrightarrow> <a,x>\<in>leq \<Longrightarrow> R) \<Longrightarrow> R"
+  apply (simp add:upclosure_def)
+  apply (erule conjE)
+  apply (drule_tac P="\<lambda>a.\<langle>a, p\<rangle> \<in> leq" 
+               and Q="R" in bexE, assumption+)
+done
+
+lemma (in forcing_poset) upclosureD [dest] :
+   "p\<in>upclosure(A) \<Longrightarrow> \<exists>a\<in>A.(<a,p>\<in>leq) \<and> p\<in>P"
+  by (simp add:upclosure_def)
+   
+lemma  (in forcing_poset) upclosure_increasing :
+  "A\<subseteq>P \<Longrightarrow> increasing(upclosure(A))"
+  apply (unfold increasing_def upclosure_def, simp)
+  apply clarify
+  apply (rule_tac x="a" in bexI)
+  apply (insert leq_preord, unfold preorder_on_def)
+  apply (drule conjunct2, unfold trans_on_def) 
+  apply (drule_tac x="a" in bspec, fast)
+  apply (drule_tac x="x" in bspec, assumption) 
+  apply (drule_tac x="p" in bspec, assumption)
+  apply (simp, assumption)
+  done
+  
+lemma (in forcing_poset) upclosure_in_P: "A \<subseteq> P \<Longrightarrow> upclosure(A) \<subseteq> P"
+  apply (rule   subsetI)
+  apply (simp add:upclosure_def)  
+  done
+
+lemma (in forcing_poset) A_sub_upclosure: "A \<subseteq> P \<Longrightarrow> A\<subseteq>upclosure(A)"
+  apply (rule   subsetI)
+  apply (simp add:upclosure_def, auto)
+  apply (insert leq_preord, unfold preorder_on_def refl_def, auto)
+  done
     
+lemma (in forcing_poset) closure_compat_filter:
+  "A\<subseteq>P \<Longrightarrow> (\<forall>p\<in>A.\<forall>q\<in>A. compat_in(A,leq,p,q)) \<Longrightarrow> filter(upclosure(A))"
+  apply (unfold filter_def)
+  apply (intro conjI)
+  apply (rule upclosure_in_P, assumption)
+   apply (rule upclosure_increasing, assumption)
+  apply (unfold compat_in_def)
+  apply (rule ballI)+
+  apply (rename_tac x y)
+  apply (drule upclosureD)+
+  apply (erule bexE)+
+  apply (rename_tac a b)
+  apply (drule_tac A="A" 
+               and x="a" in bspec, assumption)
+  apply (drule_tac A="A" 
+               and x="b" in bspec, assumption)
+  apply (auto)
+  apply (rule_tac x="d" in bexI)
+  prefer 2 apply (simp add:A_sub_upclosure [THEN subsetD])
+  apply (insert leq_preord, unfold preorder_on_def trans_on_def,  drule conjunct2)
+  apply (rule conjI)
+  apply (drule_tac x="d" in bspec, rule_tac A="A" in subsetD, assumption+) 
+  apply (drule_tac x="a" in bspec, rule_tac A="A" in subsetD, assumption+) 
+  apply (drule_tac x="x" in bspec, assumption, auto)
+done
+
+(*****************************************
+ *  No use for these for a while         *
+ *                                       *
 theorem Ord_dependent_choice:
     "Ord(A) \<Longrightarrow> \<forall>a\<in>A.\<exists>b\<in>A. <a,b> \<in> s  \<Longrightarrow>
      \<forall>x\<in>A.\<exists>f\<in>(nat\<rightarrow>A).f`0=x \<and> (\<forall>n\<in>nat.(<f`n,f`(n+1)>\<in> s))"
@@ -73,7 +137,9 @@ theorem wo_dependent_choice:
     "well_ord(A,r) \<Longrightarrow> \<forall>a\<in>A.\<exists>b\<in>A. <a,b> \<in> s  \<Longrightarrow>
      \<forall>x\<in>A.\<exists>f\<in>(nat\<rightarrow>A).f`0=x \<and> (\<forall>n\<in>nat.(<f`n,f`(n+1)>\<in> s))"
   oops
-    
+ *                                       *
+ *****************************************)
+
 locale countable_generic = forcing_poset +
   fixes \<D>
   assumes countable_subs_of_P:  "\<D> \<in> nat\<rightarrow>\<P>(P)"
