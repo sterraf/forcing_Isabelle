@@ -62,5 +62,40 @@ theorem pointed_DC  : "(\<forall>x\<in>A. \<exists>y\<in>A. <x,y>\<in> R) \<Long
   apply (subst beta, simp)+
   apply (rule witness_related, simp+, blast)
   done
+
+lemma aux_seqDC : "\<forall>x\<in>A*nat. \<exists>y\<in>A. <x,<y,succ(snd(x))>> \<in> R \<Longrightarrow>
+                  \<forall>x\<in>A*nat. \<exists>y\<in>A*nat. <x,y> \<in> R"
+  apply (rule ballI, erule_tac x="x" in ballE, simp_all)
+  apply (erule_tac A="A" in bexE, rename_tac y)
+  apply (intro bexI, auto)
+  done
+lemma aux_seqDC2 : "\<forall>x\<in>A*nat. \<exists>y\<in>A. <x,<y,succ(snd(x))>> \<in> R \<Longrightarrow>
+                  \<forall>x\<in>A*nat. \<exists>y\<in>A*nat. <x,y> \<in> {<a,b>\<in>R. snd(b) = succ(snd(a))}"
+  apply (rule ballI, erule_tac x="x" in ballE, simp_all)
+  done
+
+lemma infer_snd : "c\<in> A*B \<Longrightarrow> snd(c) = k \<Longrightarrow> c=<fst(c),k>"
+  by auto
     
+corollary sequence_DC : 
+  "(\<forall>x\<in>A*nat. \<exists>y\<in>A. <x,<y,succ(snd(x))>> \<in> R) \<Longrightarrow>
+    \<forall>a\<in>A. (\<exists>f \<in> nat->A. f`0 = a \<and> (\<forall>n \<in> nat. <<f`n,n>,<f`succ(n),succ(n)>>\<in>R))"
+  apply (frule aux_seqDC2)
+  apply (drule_tac R="{<a,b>\<in>R. snd(b) = succ(snd(a))}" in  pointed_DC)
+  apply (rule ballI)
+  apply (rotate_tac)
+  apply (drule_tac x="<a,0>" in  bspec, simp)
+  apply (erule bexE, rename_tac g)  
+  apply (rule_tac x="\<lambda>x\<in>nat. fst(g`x)" and A="nat\<rightarrow>A" in bexI, auto)
+  apply (subgoal_tac "\<forall>n\<in>nat. g`n= \<langle>fst(g ` n), n\<rangle>")
+   prefer 2 apply (rule ballI, rename_tac m)
+   apply (induct_tac m, simp)
+   apply (rename_tac d, auto)
+  apply (frule_tac A="nat" and x="d" in bspec, simp)
+  apply (rule_tac A="A" and B="nat" in infer_snd, auto)
+  apply (rule_tac a="\<langle>fst(g ` d), d\<rangle>" and b="g ` d" in ssubst, assumption)
+    (* Notorio: simp, auto ni blast lo hacen aquí! *)
+  apply (subst snd_conv, simp)
+  done
+
 end
