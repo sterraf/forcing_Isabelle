@@ -63,13 +63,17 @@ theorem pointed_DC  : "(\<forall>x\<in>A. \<exists>y\<in>A. <x,y>\<in> R) \<Long
   apply (rule witness_related, simp+, blast)
   done
 
-lemma aux_seqDC : "\<forall>x\<in>A*nat. \<exists>y\<in>A. <x,<y,succ(snd(x))>> \<in> R \<Longrightarrow>
+(* Antes era necesario
+
+lemma aux_DC_on_AxNat1 : "\<forall>x\<in>A*nat. \<exists>y\<in>A. <x,<y,succ(snd(x))>> \<in> R \<Longrightarrow>
                   \<forall>x\<in>A*nat. \<exists>y\<in>A*nat. <x,y> \<in> R"
   apply (rule ballI, erule_tac x="x" in ballE, simp_all)
   apply (erule_tac A="A" in bexE, rename_tac y)
   apply (intro bexI, auto)
   done
-lemma aux_seqDC2 : "\<forall>x\<in>A*nat. \<exists>y\<in>A. <x,<y,succ(snd(x))>> \<in> R \<Longrightarrow>
+ *)
+    
+lemma aux_DC_on_AxNat2 : "\<forall>x\<in>A*nat. \<exists>y\<in>A. <x,<y,succ(snd(x))>> \<in> R \<Longrightarrow>
                   \<forall>x\<in>A*nat. \<exists>y\<in>A*nat. <x,y> \<in> {<a,b>\<in>R. snd(b) = succ(snd(a))}"
   apply (rule ballI, erule_tac x="x" in ballE, simp_all)
   done
@@ -77,10 +81,10 @@ lemma aux_seqDC2 : "\<forall>x\<in>A*nat. \<exists>y\<in>A. <x,<y,succ(snd(x))>>
 lemma infer_snd : "c\<in> A*B \<Longrightarrow> snd(c) = k \<Longrightarrow> c=<fst(c),k>"
   by auto
     
-corollary sequence_DC : 
+corollary DC_on_A_x_nat : 
   "(\<forall>x\<in>A*nat. \<exists>y\<in>A. <x,<y,succ(snd(x))>> \<in> R) \<Longrightarrow>
     \<forall>a\<in>A. (\<exists>f \<in> nat->A. f`0 = a \<and> (\<forall>n \<in> nat. <<f`n,n>,<f`succ(n),succ(n)>>\<in>R))"
-  apply (frule aux_seqDC2)
+  apply (frule aux_DC_on_AxNat2)
   apply (drule_tac R="{<a,b>\<in>R. snd(b) = succ(snd(a))}" in  pointed_DC)
   apply (rule ballI)
   apply (rotate_tac)
@@ -98,4 +102,30 @@ corollary sequence_DC :
   apply (subst snd_conv, simp)
   done
 
+lemma aux_sequence_DC : "\<And>R. \<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. <x,y> \<in> S`n \<Longrightarrow>
+                        R={<<x,n>,<y,m>>\<in>(A*nat)*(A*nat). <x,y>\<in>S`m } \<Longrightarrow>
+                        \<forall>x\<in>A*nat. \<exists>y\<in>A. <x,<y,succ(snd(x))>> \<in> R"
+  apply (rule ballI, rename_tac v)
+  apply (frule Pair_fst_snd_eq)  
+  apply (erule_tac x="fst(v)" in ballE)
+   apply (drule_tac x="succ(snd(v))" in bspec, auto)
+  done
+
+lemma aux_sequence_DC2 : "\<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. <x,y> \<in> S`n \<Longrightarrow>
+        \<forall>x\<in>A*nat. \<exists>y\<in>A. <x,<y,succ(snd(x))>> \<in> {<<x,n>,<y,m>>\<in>(A*nat)*(A*nat). <x,y>\<in>S`m }"
+  by auto
+    
+lemma sequence_DC: "\<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. <x,y> \<in> S`n \<Longrightarrow>
+    \<forall>a\<in>A. (\<exists>f \<in> nat->A. f`0 = a \<and> (\<forall>n \<in> nat. <f`n,f`succ(n)>\<in>S`succ(n)))"
+  apply (drule aux_sequence_DC2)
+  apply (drule DC_on_A_x_nat, auto)
+    (* Antes había hecho todo esto! 
+   apply (drule_tac x="a" and A="A" in bspec, assumption)
+  apply (erule bexE, rename_tac f) 
+  apply (rule_tac x="f" in bexI, simp_all)
+    apply (drule conjunct2)
+  apply (rule ballI,rename_tac n)
+    apply (drule_tac x="n" in bspec, simp_all)
+  *)
+  done
 end
