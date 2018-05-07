@@ -98,6 +98,9 @@ lemma (in forcing_poset) A_sub_upclosure: "A \<subseteq> P \<Longrightarrow> A\<
   apply (simp add:upclosure_def, auto)
   apply (insert leq_preord, unfold preorder_on_def refl_def, auto)
   done
+ 
+lemma (in forcing_poset) elem_upclosure: "A\<subseteq>P \<Longrightarrow> x\<in>A  \<Longrightarrow> x\<in>upclosure(A)"
+  by (blast dest:A_sub_upclosure)
     
 lemma (in forcing_poset) closure_compat_filter:
   "A\<subseteq>P \<Longrightarrow> (\<forall>p\<in>A.\<forall>q\<in>A. compat_in(A,leq,p,q)) \<Longrightarrow> filter(upclosure(A))"
@@ -165,7 +168,7 @@ theorem (in countable_generic) rasiowa_sikorski:
       apply (drule conjunct1) 
       prefer 2 apply (unfold D_generic_def, rule conjI)
     apply (rule closure_compat_filter)
-        apply (drule_tac C="nat" in image_fun, simp_all, blast)
+        apply (drule_tac C="nat" in image_fun,  simp_all, blast)
       apply (rule ballI)
       apply (rule_tac a="f`succ(n)" in not_emptyI, simp)
       apply (drule_tac conjunct2)
@@ -181,6 +184,25 @@ theorem (in countable_generic) rasiowa_sikorski:
       apply (subgoal_tac "\<D> ` Arith.pred(n)\<subseteq>P", blast)
       apply (rule  PowD)
       apply (rule_tac f="\<D>" in apply_funtype, simp+)
+     apply (rule elem_upclosure) 
+     (* Lo que sigue se repite abajo *)
+     apply (frule_tac C="nat" in image_fun, simp_all, auto)
+     apply (rule_tac a="{f`x. x \<in> nat}" in ssubst, auto)
+     apply (rule image_function)
+      apply (rule_tac A="nat" and B="\<lambda> _. P" in fun_is_function, auto)
+     apply (rename_tac x)
+     apply (drule_tac  c="x"  and A="nat" and B="domain(f)" in rev_subsetD)
+     apply ( drule Pi_iff [THEN iffD1], simp_all)
+    (* Notar la repetición con respecto a lo de arriba*)
+    apply (rule elem_upclosure) 
+     apply (frule_tac C="nat" in image_fun, simp_all, auto)
+    apply (rule_tac a="{f`x. x \<in> nat}" in ssubst, auto)
+    apply (rule image_function)
+     apply (rule_tac A="nat" and B="\<lambda> _. P" in fun_is_function, auto)
+    apply (rename_tac x)  
+    apply (drule_tac  c="x"  and A="nat" and B="domain(f)" in rev_subsetD)
+     apply ( drule Pi_iff [THEN iffD1], simp_all)
+    
     
 oops
   
