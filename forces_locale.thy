@@ -152,6 +152,35 @@ definition (in countable_generic)
   D_generic :: "i\<Rightarrow>o" where
   "D_generic(G) == filter(G) \<and> (\<forall>n\<in>nat.(\<D>`n)\<inter>G\<noteq>0)"
 
+lemma refl_monot_domain: "refl(B,r) \<Longrightarrow> A\<subseteq>B \<Longrightarrow> refl(A,r)"  
+  apply (drule subset_iff [THEN iffD1])
+  apply (unfold refl_def) 
+  apply (blast)
+  done
+    
+lemma ball_image: "f\<in>N\<rightarrow>B \<Longrightarrow> (\<forall>y\<in>f``N. P(y))\<longleftrightarrow>(\<forall>x\<in>N. P(f`x))"
+  apply (rule iffI, rule ballI, rename_tac x)
+   apply (drule_tac  x="f`x" in bspec)
+    apply (rule_tac a="{f`x. x \<in> N}" in ssubst, auto)
+   apply (rule image_function)
+    apply (rule_tac A="N" and B="\<lambda> _. B" in fun_is_function, assumption)
+    apply (drule Pi_iff [THEN iffD1], blast)
+  apply (drule_tac x="x" in bspec, simp_all add: apply_equality)
+  done
+ 
+
+lemma decr_seq_linear: "f \<in> nat -> P \<Longrightarrow>
+         \<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq \<Longrightarrow>
+           trans[P](leq) \<Longrightarrow> linear(f `` nat, leq)"
+  apply (unfold linear_def)
+  apply (rule ball_image [THEN iffD2], assumption, rule ballI)+
+  apply (rename_tac y)
+  sorry
+
+lemma ball_distr_conj_iff: "(\<forall>x\<in>A. P(x) \<and> Q(x)) \<longleftrightarrow> (\<forall>x\<in>A. P(x)) \<and> (\<forall>x\<in>A. Q(x))"
+ by blast
+    
+    
 theorem (in countable_generic) rasiowa_sikorski: 
   "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> D_generic(G)"
   apply (subgoal_tac 
@@ -202,10 +231,18 @@ theorem (in countable_generic) rasiowa_sikorski:
     apply (rename_tac x)  
     apply (drule_tac  c="x"  and A="nat" and B="domain(f)" in rev_subsetD)
      apply ( drule Pi_iff [THEN iffD1], simp_all)
+   apply (rule_tac a="{f`x. x \<in> nat}" 
+               and P="\<lambda>x. refl(x,leq)" in ssubst)
+    apply (frule_tac C="nat" in image_fun, simp_all)
+   apply (insert leq_preord, unfold preorder_on_def, drule conjunct1)
+   apply (rule_tac A="{f ` x . x \<in> nat}" 
+               and B="P" in refl_monot_domain, assumption, auto)
+  apply (rule_tac P="P" in decr_seq_linear, assumption)
+   apply (drule ball_distr_conj_iff [THEN iffD1], drule conjunct2)
+   apply (drule ball_distr_conj_iff [THEN iffD1], drule conjunct2)
+   apply (drule ball_distr_conj_iff [THEN iffD1], drule conjunct1, assumption+)
+  done
     
-    
-oops
-  
 locale forcing_data = forcing_poset +
   fixes M enum
   assumes trans_M:          "Transset(M)"
