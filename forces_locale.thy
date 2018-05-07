@@ -142,16 +142,46 @@ theorem wo_dependent_choice:
 
 locale countable_generic = forcing_poset +
   fixes \<D>
-  assumes countable_subs_of_P:  "\<D> \<in> nat\<rightarrow>\<P>(P)"
+  assumes countable_subs_of_P:  "\<D> \<in> nat\<rightarrow>Pow(P)"
   and     seq_of_denses:        "\<forall>n \<in> nat. dense(\<D>`n)"
 
 definition (in countable_generic)
   D_generic :: "i\<Rightarrow>o" where
   "D_generic(G) == filter(G) \<and> (\<forall>n\<in>nat.(\<D>`n)\<inter>G\<noteq>0)"
 
- 
 theorem (in countable_generic) rasiowa_sikorski: 
   "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> D_generic(G)"
+  apply (subgoal_tac 
+        "\<forall>x\<in>P. \<forall>n\<in>nat. 
+          \<exists>y\<in>P. <x,y> \<in> (\<lambda>m\<in>nat. {<x,y>\<in>P*P. <y,x>\<in>leq \<and> y\<in>\<D>`(pred(m))})`n")
+   apply (drule sequence_DC, simp)      
+   apply (drule_tac x="p" in bspec, assumption) 
+    apply (erule bexE, rename_tac f)
+   apply (subgoal_tac "linear(f``nat, leq)")
+   apply (subgoal_tac "refl(f``nat, leq)")
+     apply (drule chain_compat, assumption)
+     apply(rule_tac x="upclosure(f``nat)" in exI)
+     apply(rule conjI)
+      apply (drule conjunct1) 
+      prefer 2 apply (unfold D_generic_def, rule conjI)
+    apply (rule closure_compat_filter)
+        apply (drule_tac C="nat" in image_fun, simp_all, blast)
+      apply (rule ballI)
+      apply (rule_tac a="f`succ(n)" in not_emptyI, simp)
+      apply (drule_tac conjunct2)
+      apply (drule_tac x="n" and A="nat" in bspec, assumption)
+      prefer 5 apply (insert seq_of_denses)
+      apply (rule ballI)+
+      apply (rename_tac x n)
+      apply (drule_tac x="pred(n)" and A="nat" in bspec, simp_all add:dense_def)
+      apply (drule_tac x="x" in bspec, assumption)
+      apply (erule bexE, rename_tac d)
+      apply (rule_tac x="d" in bexI, simp)
+      apply (insert countable_subs_of_P)
+      apply (subgoal_tac "\<D> ` Arith.pred(n)\<subseteq>P", blast)
+      apply (rule  PowD)
+      apply (rule_tac f="\<D>" in apply_funtype, simp+)
+    
 oops
   
 locale forcing_data = forcing_poset +
