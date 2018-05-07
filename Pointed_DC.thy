@@ -119,7 +119,11 @@ lemma sequence_DC: "\<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. <x,y
     \<forall>a\<in>A. (\<exists>f \<in> nat->A. f`0 = a \<and> (\<forall>n \<in> nat. <f`n,f`succ(n)>\<in>S`succ(n)))"
   apply (drule aux_sequence_DC2)
   apply (drule DC_on_A_x_nat, auto)
-    (* Antes había hecho todo esto! 
+  (* 
+    (************************************
+      Antes había hecho todo esto!
+      POR CULPA de TIPEAR MAL el teorema
+     ************************************)  
    apply (drule_tac x="a" and A="A" in bspec, assumption)
   apply (erule bexE, rename_tac f) 
   apply (rule_tac x="f" in bexI, simp_all)
