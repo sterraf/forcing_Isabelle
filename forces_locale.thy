@@ -157,7 +157,8 @@ lemma refl_monot_domain: "refl(B,r) \<Longrightarrow> A\<subseteq>B \<Longrighta
   apply (unfold refl_def) 
   apply (blast)
   done
-    
+
+(* El siguiente ya está en func.thy *)    
 lemma ball_image: "f\<in>N\<rightarrow>B \<Longrightarrow> (\<forall>y\<in>f``N. P(y))\<longleftrightarrow>(\<forall>x\<in>N. P(f`x))"
   apply (rule iffI, rule ballI, rename_tac x)
    apply (drule_tac  x="f`x" in bspec)
@@ -180,6 +181,22 @@ lemma decr_seq_linear: "f \<in> nat -> P \<Longrightarrow>
 lemma ball_distr_conj_iff: "(\<forall>x\<in>A. P(x) \<and> Q(x)) \<longleftrightarrow> (\<forall>x\<in>A. P(x)) \<and> (\<forall>x\<in>A. Q(x))"
  by blast
     
+lemma subset_fun_image: "f:N\<rightarrow>P \<Longrightarrow> f``N\<subseteq>P"
+  apply (simp add: image_fun)
+  apply (rule subsetI, simp, erule bexE)
+  apply (simp add:apply_funtype)
+  done
+    
+(*  "[| f \<in> Pi(A,B);  C \<subseteq> A |] ==> f``C = {f`x. x \<in> C}"
+apply (simp add: Pi_iff)
+apply (blast intro: image_function)
+done
+*)
+lemma (in forcing_poset) aux_RS1:  "f \<in> N \<rightarrow> P \<Longrightarrow> n\<in>N \<Longrightarrow> f`n \<in> upclosure(f ``N)"
+  apply (rule_tac  elem_upclosure)
+   apply (rule subset_fun_image, assumption)
+  apply (simp add: image_fun, blast)
+  done
     
 theorem (in countable_generic) rasiowa_sikorski: 
   "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> D_generic(G)"
@@ -194,15 +211,15 @@ theorem (in countable_generic) rasiowa_sikorski:
      apply (drule chain_compat, assumption)
      apply(rule_tac x="upclosure(f``nat)" in exI)
      apply(rule conjI)
-      apply (drule conjunct1) 
-      prefer 2 apply (unfold D_generic_def, rule conjI)
-    apply (rule closure_compat_filter)
+      apply (rule_tac b="p" and a="f`0" in ssubst, simp)
+      apply (rule aux_RS1, simp_all)
+     apply (unfold D_generic_def, rule conjI)
+      apply (rule closure_compat_filter)
         apply (drule_tac C="nat" in image_fun,  simp_all, blast)
-      apply (rule ballI)
-      apply (rule_tac a="f`succ(n)" in not_emptyI, simp)
-      apply (drule_tac conjunct2)
-      apply (drule_tac x="n" and A="nat" in bspec, assumption)
-      prefer 5 apply (insert seq_of_denses)
+      apply (rule ballI, rename_tac n)
+     apply (rule_tac a="f`succ(n)" in not_emptyI, simp)
+      apply (rule aux_RS1, simp_all)
+      prefer 3 apply (insert seq_of_denses)
       apply (rule ballI)+
       apply (rename_tac x n)
       apply (drule_tac x="pred(n)" and A="nat" in bspec, simp_all add:dense_def)
@@ -213,30 +230,12 @@ theorem (in countable_generic) rasiowa_sikorski:
       apply (subgoal_tac "\<D> ` Arith.pred(n)\<subseteq>P", blast)
       apply (rule  PowD)
       apply (rule_tac f="\<D>" in apply_funtype, simp+)
-     apply (rule elem_upclosure) 
-     (* Lo que sigue se repite abajo *)
-     apply (frule_tac C="nat" in image_fun, simp_all, auto)
-     apply (rule_tac a="{f`x. x \<in> nat}" in ssubst, auto)
-     apply (rule image_function)
-      apply (rule_tac A="nat" and B="\<lambda> _. P" in fun_is_function, auto)
-     apply (rename_tac x)
-     apply (drule_tac  c="x"  and A="nat" and B="domain(f)" in rev_subsetD)
-     apply ( drule Pi_iff [THEN iffD1], simp_all)
-    (* Notar la repetición con respecto a lo de arriba*)
-    apply (rule elem_upclosure) 
-     apply (frule_tac C="nat" in image_fun, simp_all, auto)
-    apply (rule_tac a="{f`x. x \<in> nat}" in ssubst, auto)
-    apply (rule image_function)
-     apply (rule_tac A="nat" and B="\<lambda> _. P" in fun_is_function, auto)
-    apply (rename_tac x)  
-    apply (drule_tac  c="x"  and A="nat" and B="domain(f)" in rev_subsetD)
-     apply ( drule Pi_iff [THEN iffD1], simp_all)
    apply (rule_tac a="{f`x. x \<in> nat}" 
                and P="\<lambda>x. refl(x,leq)" in ssubst)
     apply (frule_tac C="nat" in image_fun, simp_all)
    apply (insert leq_preord, unfold preorder_on_def, drule conjunct1)
    apply (rule_tac A="{f ` x . x \<in> nat}" 
-               and B="P" in refl_monot_domain, assumption, auto)
+               and B="P" in refl_monot_domain, auto)
   apply (rule_tac P="P" in decr_seq_linear, assumption)
    apply (drule ball_distr_conj_iff [THEN iffD1], (erule conjE) | assumption)+
   done
