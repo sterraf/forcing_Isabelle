@@ -238,9 +238,7 @@ theorem (in countable_generic) rasiowa_sikorski:
    apply (rule_tac A="{f ` x . x \<in> nat}" 
                and B="P" in refl_monot_domain, assumption, auto)
   apply (rule_tac P="P" in decr_seq_linear, assumption)
-   apply (drule ball_distr_conj_iff [THEN iffD1], drule conjunct2)
-   apply (drule ball_distr_conj_iff [THEN iffD1], drule conjunct2)
-   apply (drule ball_distr_conj_iff [THEN iffD1], drule conjunct1, assumption+)
+   apply (drule ball_distr_conj_iff [THEN iffD1], (erule conjE) | assumption)+
   done
     
 locale forcing_data = forcing_poset +
