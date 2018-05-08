@@ -238,4 +238,12 @@ theorem (in countable_generic) rasiowa_sikorski:
    apply (drule ball_distr_conj_iff [THEN iffD1], (erule conjE) | assumption)+
   done
 
+definition 
+  antichain :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
+  "antichain(P,leq,A) == A\<subseteq>P \<and> (\<forall>p\<in>A.\<forall>q\<in>A.(\<not> compat_in(P,leq,p,q)))"
+
+definition 
+  ccc :: "i \<Rightarrow> i \<Rightarrow> o" where
+  "ccc(P,leq) == \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
+  
 end
