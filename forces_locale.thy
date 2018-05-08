@@ -158,14 +158,44 @@ lemma refl_monot_domain: "refl(B,r) \<Longrightarrow> A\<subseteq>B \<Longrighta
   apply (blast)
   done
 
-lemma decr_seq_linear: "f \<in> nat -> P \<Longrightarrow>
+lemma decr_succ_decr: "f \<in> nat -> P \<Longrightarrow> preorder_on(P,leq) \<Longrightarrow>
+         \<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq \<Longrightarrow>
+           n\<in>nat \<Longrightarrow> m\<in>nat \<Longrightarrow> n\<le>m \<longrightarrow> \<langle>f ` m, f ` n\<rangle> \<in> leq"
+  apply (unfold preorder_on_def, erule conjE)
+  apply (induct_tac m, simp add:refl_def, rename_tac x)
+  apply (rule impI)
+  apply (case_tac "n\<le>x", simp)
+    apply (drule_tac x="x" in bspec, assumption)
+   apply (unfold trans_on_def)
+   apply (drule_tac x="f`succ(x)" in bspec, simp)
+   apply (drule_tac x="f`x" in bspec, simp)
+   apply (drule_tac x="f`n" in bspec, auto)
+   apply (drule_tac le_succ_iff [THEN iffD1], simp add: refl_def)
+  done
+lemma not_le_imp_lt: "[| ~ i \<le> j ; Ord(i);  Ord(j) |] ==>  j<i"
+  by (simp add:not_le_iff_lt)
+
+lemma decr_seq_linear: "refl(P,leq) \<Longrightarrow> f \<in> nat -> P \<Longrightarrow>
          \<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq \<Longrightarrow>
            trans[P](leq) \<Longrightarrow> linear(f `` nat, leq)"
   apply (unfold linear_def)
   apply (rule ball_image_simp [THEN iffD2], assumption, simp, rule ballI)+
   apply (rename_tac y)
-  sorry
+    apply (case_tac "x\<le>y")
+   apply (drule_tac leq="leq" and n="x" and m="y" in decr_succ_decr)
+    (* probando que es preorder_on ... capaz sacar esto de todos lados *)
+       apply (simp add:preorder_on_def)
+    (* listo esa prueba *)
+      apply (simp+)
+  apply (drule not_le_imp_lt [THEN leI], simp_all)
+   apply (drule_tac leq="leq" and n="y" and m="x" in decr_succ_decr)
+    (* probando que es preorder_on ... capaz sacar esto de todos lados *)
+       apply (simp add:preorder_on_def)
+    (* listo esa prueba *)
+     apply (simp+)
+    done
 
+   
 lemma ball_distr_conj_iff: "(\<forall>x\<in>A. P(x) \<and> Q(x)) \<longleftrightarrow> (\<forall>x\<in>A. P(x)) \<and> (\<forall>x\<in>A. Q(x))"
  by blast
     
@@ -174,12 +204,7 @@ lemma subset_fun_image: "f:N\<rightarrow>P \<Longrightarrow> f``N\<subseteq>P"
   apply (rule subsetI, simp, erule bexE)
   apply (simp add:apply_funtype)
   done
-    
-(*  "[| f \<in> Pi(A,B);  C \<subseteq> A |] ==> f``C = {f`x. x \<in> C}"
-apply (simp add: Pi_iff)
-apply (blast intro: image_function)
-done
-*)
+
 lemma (in forcing_poset) aux_RS1:  "f \<in> N \<rightarrow> P \<Longrightarrow> n\<in>N \<Longrightarrow> f`n \<in> upclosure(f ``N)"
   apply (rule_tac  elem_upclosure)
    apply (rule subset_fun_image, assumption)
