@@ -158,23 +158,11 @@ lemma refl_monot_domain: "refl(B,r) \<Longrightarrow> A\<subseteq>B \<Longrighta
   apply (blast)
   done
 
-(* El siguiente ya está en func.thy *)    
-lemma ball_image: "f\<in>N\<rightarrow>B \<Longrightarrow> (\<forall>y\<in>f``N. P(y))\<longleftrightarrow>(\<forall>x\<in>N. P(f`x))"
-  apply (rule iffI, rule ballI, rename_tac x)
-   apply (drule_tac  x="f`x" in bspec)
-    apply (rule_tac a="{f`x. x \<in> N}" in ssubst, auto)
-   apply (rule image_function)
-    apply (rule_tac A="N" and B="\<lambda> _. B" in fun_is_function, assumption)
-    apply (drule Pi_iff [THEN iffD1], blast)
-  apply (drule_tac x="x" in bspec, simp_all add: apply_equality)
-  done
- 
-
 lemma decr_seq_linear: "f \<in> nat -> P \<Longrightarrow>
          \<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq \<Longrightarrow>
            trans[P](leq) \<Longrightarrow> linear(f `` nat, leq)"
   apply (unfold linear_def)
-  apply (rule ball_image [THEN iffD2], assumption, rule ballI)+
+  apply (rule ball_image_simp [THEN iffD2], assumption, simp, rule ballI)+
   apply (rename_tac y)
   sorry
 
