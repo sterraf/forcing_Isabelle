@@ -76,62 +76,6 @@ lemma perm_n_bij [TC] : "m \<in> nat \<Longrightarrow> f \<in> bij(m,m) \<Longri
   apply(rule Ord_succ_mem_iff [THEN iffD1],simp,assumption)
 done
     
-(* TODO: remove this *)
-
-definition 
-  sum_id :: "i \<Rightarrow> i" where
-  "sum_id(f) == id(1)\<union>(\<lambda> n \<in> nat-1 . succ(f`(pred(n))))"
-  
-lemma nat_dec : "nat = 1 \<union> (nat-1)"
-  by (auto)
-
-lemma suc_pred_z : "n \<in> nat \<Longrightarrow> succ(pred(n))\<noteq>n \<Longrightarrow> n=0"
- by (rule_tac n="n" in natE,auto)
-  
-lemma suc_comp [TC] : "f \<in> nat \<rightarrow> nat \<Longrightarrow> n \<in> nat-1 \<Longrightarrow> succ(f`(pred(n))) \<in> nat-1"
- by auto
-
-lemma suc_comp_fn [TC] : "f \<in> nat \<rightarrow> nat \<Longrightarrow> 
-   (\<lambda> n \<in> nat -1 . succ(f`(pred(n)))) \<in> nat-1 \<rightarrow> nat-1"
- by auto
-  
-lemma sum_id_tc [TC] : "f \<in> nat \<rightarrow> nat \<Longrightarrow>  sum_id(f) \<in> nat \<rightarrow> nat" 
- apply (subst (1 2) nat_dec)
- apply (unfold sum_id_def)
- apply (rule fun_disjoint_Un,rule id_type)
-   prefer 2 apply (auto)
-done
-
-lemma sum_id_char : "f \<in> nat \<rightarrow> nat \<Longrightarrow> sum_id(f) = (\<lambda> n \<in> nat . if n =0 then 0 else succ(f`(pred(n))))"    
- apply (rule_tac A=nat and B="\<lambda> n . nat" and D="\<lambda> n . nat" in fun_extension)
- apply (rule sum_id_tc,auto)
- apply (unfold sum_id_def)
- apply (subst fun_disjoint_apply1,auto)
- apply (subst fun_disjoint_apply2,auto)
-  done
-
-lemma suc_bij : "f \<in> nat \<rightarrow> nat \<Longrightarrow> 
-                 f \<in> bij(nat,nat) \<Longrightarrow> 
-                  (\<lambda>n\<in>nat - 1. succ(f ` Arith.pred(n))) \<in> bij(nat - 1, nat - 1)"  
- apply (rule_tac d="\<lambda> n. succ(converse(f)`(pred(n)))" in lam_bijective)
- apply (auto)
- apply (subgoal_tac "converse(f) \<in> nat \<rightarrow> nat",auto)
- apply (rule bij_converse_bij [THEN bij_is_fun],auto)   
- apply (subst (asm) left_inverse_bij,auto)  
- apply (erule suc_pred_z,assumption)
- apply (subst (asm) right_inverse_bij,auto)  
- apply (erule suc_pred_z,assumption)
-done
-
-lemma sum_id_bij [TC] : "f \<in> bij(nat,nat) \<Longrightarrow> sum_id(f) \<in> bij(nat,nat)" 
- apply (subst (1 2) nat_dec) 
-  apply (unfold sum_id_def)
-  apply (rule bij_disjoint_Un)
-  apply (simp add: id_bij)
-  defer apply (auto)
-  apply (rule suc_bij,erule bij_is_fun,assumption)    
-  done
-    
 definition perm_list :: "[i,i,i] \<Rightarrow> i" where
   "perm_list(f,l,i) ==  nat_rec(i,Nil,\<lambda> a e . e@[nth(f`a,l)])"
 
@@ -167,15 +111,6 @@ lemma nat_ord [TC] : "n \<in> nat \<Longrightarrow> Ord(n)"
  by (auto)
   
 lemmas Un_least_lt_iffn [TC] =  Un_least_lt_iff [OF nat_ord nat_ord]
-
-lemma pred_le_s [TC] : "n \<in> nat \<Longrightarrow> pred(n) \<le> n"
- by (erule natE,simp,simp)
-(*
-lemma pred_le [TC] : "m \<in> nat \<Longrightarrow> n < m \<Longrightarrow> pred(n) \<le> m"
-  apply (rule_tac j="n" in le_trans,rule pred_le_s)
-  apply (erule in_n_in_nat,erule ltD,erule leI)
-  done
-*)        
 
 lemma pred_le2 : "n\<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> pred(n) < m \<Longrightarrow> n \<le> m"
   by(subgoal_tac "n\<in>nat",rule_tac n="n" in natE,auto)
