@@ -48,7 +48,6 @@ theorem pointed_DC  : "(\<forall>x\<in>A. \<exists>y\<in>A. <x,y>\<in> R) \<Long
   apply (rule)
   apply (insert AC_func_Pow)
   apply (drule allI)
-  apply (rotate_tac 2)
   apply (drule_tac x="A" in spec)
   apply (drule_tac P="\<lambda>f .\<forall>x\<in>Pow(A) - {0}. f ` x \<in> x"
                and A="Pow(A)-{0}\<rightarrow> A" 
@@ -60,18 +59,9 @@ theorem pointed_DC  : "(\<forall>x\<in>A. \<exists>y\<in>A. <x,y>\<in> R) \<Long
   apply (rule  conjI, simp)
   apply (rule ballI, rename_tac m)
   apply (subst beta, simp)+
-  apply (rule witness_related, simp+, blast)
+  apply (rule witness_related, auto)
   done
 
-(* Antes era necesario
-
-lemma aux_DC_on_AxNat1 : "\<forall>x\<in>A*nat. \<exists>y\<in>A. <x,<y,succ(snd(x))>> \<in> R \<Longrightarrow>
-                  \<forall>x\<in>A*nat. \<exists>y\<in>A*nat. <x,y> \<in> R"
-  apply (rule ballI, erule_tac x="x" in ballE, simp_all)
-  apply (erule_tac A="A" in bexE, rename_tac y)
-  apply (intro bexI, auto)
-  done
- *)
     
 lemma aux_DC_on_AxNat2 : "\<forall>x\<in>A*nat. \<exists>y\<in>A. <x,<y,succ(snd(x))>> \<in> R \<Longrightarrow>
                   \<forall>x\<in>A*nat. \<exists>y\<in>A*nat. <x,y> \<in> {<a,b>\<in>R. snd(b) = succ(snd(a))}"
