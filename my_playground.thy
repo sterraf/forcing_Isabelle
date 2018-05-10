@@ -13,7 +13,7 @@ qed
   
 (* A true result of FO logic *)
   
-lemma monotone_bexi : "\<forall>y w. P(y,w)\<longrightarrow>Q(y,w) \<Longrightarrow> \<exists>x\<in>Z. P(x,Z) \<Longrightarrow> \<exists>x\<in>Z. Q(x,Z)" 
+lemma monotone_bex : "\<forall>y w. P(y,w)\<longrightarrow>Q(y,w) \<Longrightarrow> \<exists>x\<in>Z. P(x,Z) \<Longrightarrow> \<exists>x\<in>Z. Q(x,Z)" 
   apply (drule_tac Q="\<exists>x\<in>Z. Q(x,Z)" in bexE)
   prefer 2 apply assumption
   apply (rule_tac x="x" in bexI)
@@ -26,7 +26,7 @@ lemma monotone_bexi : "\<forall>y w. P(y,w)\<longrightarrow>Q(y,w) \<Longrightar
   done
 
 (* Prueba  más corta, sacando los \<exists> primero y después los \<forall> *)
-lemma monotone_bexi' : "\<forall>y w. P(y,w)\<longrightarrow>Q(y,w) \<Longrightarrow> \<exists>x\<in>Z. P(x,Z) \<Longrightarrow> \<exists>x\<in>Z. Q(x,Z)" 
+lemma monotone_bex' : "\<forall>y w. P(y,w)\<longrightarrow>Q(y,w) \<Longrightarrow> \<exists>x\<in>Z. P(x,Z) \<Longrightarrow> \<exists>x\<in>Z. Q(x,Z)" 
   apply (erule bexE)
   apply (rule bexI)
   apply (drule spec)+
@@ -194,7 +194,28 @@ lemma formula_is_set :
 section\<open>Isar training\<close>
 
 notepad begin
+(* Trying to re-do the proof of  lemma monotone_bexi' : 
+"\<forall>y w. P(y,w)\<longrightarrow>Q(y,w) \<Longrightarrow> \<exists>x\<in>Z. P(x,Z) \<Longrightarrow> \<exists>x\<in>Z. Q(x,Z)"  *)
   
+fix P::"i\<Rightarrow>i\<Rightarrow>o" and Q::"i\<Rightarrow>i\<Rightarrow>o"
+  assume a:"\<forall>y w. P(y,w)\<longrightarrow>Q(y,w)"   (* w,y instead y,w to make it easier *)
+  (* Apparently, this is the same as the next line 
+  assume "\<forall>y w. P(y,w)\<longrightarrow>Q(y,w)" for P::"i\<Rightarrow>i\<Rightarrow>o" and Q::"i\<Rightarrow>i\<Rightarrow>o" *)
+
+    (* Don't know if I can "open a new sub-block" using another "assume."
+       Otherwise I have to use "and":
+  and "\<exists>x\<in>Z. P(x,Z)" for Z *)
+  then have p: "\<forall>w y. P(y,w)\<longrightarrow>Q(y,w)" by (auto)
+  have "\<exists>x\<in>Z. P(x,Z) \<Longrightarrow> \<exists>x\<in>Z. Q(x,Z)" for Z
+  proof -
+    assume q: "\<exists>x\<in>Z. P(x, Z)"
+    obtain x where s:"P(x,Z)" and t:"x\<in>Z" using q by (rule bexE) (* or by blast *)
+    from p have r:"\<forall>y . P(y,Z)\<longrightarrow>Q(y,Z)" by (rule spec)
+    then have "P(x,Z)\<longrightarrow>Q(x,Z)" by (rule spec)
+    with s have "Q(x,Z)"  by (auto) (*  "by (rule mp)" doesn't work *)
+    then show  "\<exists>x\<in>Z. Q(x,Z)" using  t by (rule bexI)
+  qed
+
 end
   
 
