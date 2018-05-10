@@ -206,9 +206,11 @@ fix P::"i\<Rightarrow>i\<Rightarrow>o" and Q::"i\<Rightarrow>i\<Rightarrow>o"
        Otherwise I have to use "and":
   and "\<exists>x\<in>Z. P(x,Z)" for Z *)
   then have p: "\<forall>w y. P(y,w)\<longrightarrow>Q(y,w)" by (auto)
-  have "\<exists>x\<in>Z. P(x,Z) \<Longrightarrow> \<exists>x\<in>Z. Q(x,Z)" for Z
+  have "\<exists>x\<in>Z. Q(x,Z)" when q:"\<exists>x\<in>Z. P(x,Z)" for Z
   proof -
-    assume q: "\<exists>x\<in>Z. P(x, Z)"
+    (* Alternative: say 'have "\<exists>x\<in>Z. P(x,Z) \<Longrightarrow> \<exists>x\<in>Z. Q(x,Z)"'
+       and then use: 
+    assume q: "\<exists>x\<in>Z. P(x, Z)" *)
     obtain x where s:"P(x,Z)" and t:"x\<in>Z" using q by (rule bexE) (* or by blast *)
     from p have r:"\<forall>y . P(y,Z)\<longrightarrow>Q(y,Z)" by (rule spec)
     then have "P(x,Z)\<longrightarrow>Q(x,Z)" by (rule spec)
