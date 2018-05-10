@@ -1,6 +1,6 @@
 (* internalización de los axiomas de ZFC dentro de la teoría ZF *)
 
-theory ZFCAxioms_formula imports Formula L_axioms begin
+theory ZFCAxioms_formula imports Formula L_axioms Swap_vars begin
 
 (* 
    Extensionalidad 
@@ -97,7 +97,8 @@ lemma inter_type [TC]:
 (* Existe único *)
 definition
   ExistsU :: "i \<Rightarrow> i" where
-  "ExistsU(p) == Exists(And(p,Forall(Implies(Neg(Equal(0,1)),Neg(p)))))"
+  "ExistsU(p) == Exists(And(p,Forall(Implies(Neg
+                       (Equal(0,1)),Neg(incr_bv1(p))))))"
 
 lemma ExistsU_type [TC]: "p \<in> formula \<Longrightarrow> ExistsU(p) \<in> formula"
   by (simp add: ExistsU_def)
@@ -126,16 +127,6 @@ definition
 lemma choice_type [TC]: "choice_ax_fm \<in> formula"
   by (simp add: choice_ax_fm_def)
 
-
-definition
-  ZFC_fin :: "i" where
-  "ZFC_fin == {extension_ax_fm,foundation_ax_fm,pairing_ax_fm,
-              union_ax_fm,infinity_ax_fm,powerset_ax_fm,choice_ax_fm}"
-
-lemma ZFC_fin_type : "ZFC_fin \<subseteq> formula"
-  by (simp add:ZFC_fin_def)
-
-
 (* Esquemas *)
 
 (* fórmula compuesta por n veces Forall *)
@@ -159,7 +150,7 @@ lemma nForall_type [TC]:
 *)
 definition
   separation_ax_fm :: "i \<Rightarrow> i" where
-  "separation_ax_fm(\<phi>) == nForall(pred(pred(arity(\<phi>))), 
+  "separation_ax_fm(\<phi>) == nForall(pred(pred(arity(\<phi>))),
                               Forall(Exists(Forall(
                               Iff(Member(0,1),And(Member(0,2),
                                               incr_bv1(\<phi>)))))))"
@@ -169,70 +160,86 @@ lemma sep_type [TC]: "p \<in> formula \<Longrightarrow> separation_ax_fm(p) \<in
 
 (* Esquema de reemplazo (strong)
    Sea \<Phi> fórmula, donde B no es libre.
-   \<forall>A. \<forall>x(x\<in>A \<longrightarrow> \<exists>!y \<Phi>) \<longleftrightarrow> \<exists>B \<forall>x(x\<in>A \<longrightarrow> \<exists>y(y\<in>B \<and> \<Phi>))
+   \<forall>A. \<forall>x(x\<in>A \<longrightarrow> \<exists>!y \<Phi>(y,x)) \<longleftrightarrow> \<exists>B \<forall>y(y\<in>B \<longleftrightarrow> \<exists>x(x\<in>A \<and> \<Phi>(y,x)))
+*)
+
+  (*  
+    "univalent(M,A,P) ==
+        \<forall>x[M]. x\<in>A \<longrightarrow> (\<forall>y[M]. `\<forall>z[M]. P(x,y) & P(x,z) \<longrightarrow> y=z)" 
+    En la fórmula \<phi> la correspondencia entre las variables nombradas
+    es 0 \<longrightarrow> x
+       1 \<longrightarrow> y
+       2 \<longrightarrow> A
+       resto \<longrightarrow> params   *)
+definition
+  univalent_fm :: "i \<Rightarrow> i" where
+  "univalent_fm(\<phi>) == 
+      Forall(Implies(Member(0,1),
+      Forall(Forall(Implies(And(incr_bv(swap_0_1(\<phi>))`0,incr_bv1(swap_0_1(\<phi>))),Equal(1,0))))))"
+
+lemma univalent_fm_type [TC] : 
+  "\<lbrakk> \<phi> \<in> formula \<rbrakk> \<Longrightarrow> univalent_fm(\<phi>) \<in> formula"
+  by (simp add: univalent_fm_def)
+  
+
+(*
+"strong_replacement(M,P) ==
+      \<forall>A[M]. univalent(M,A,P) \<longrightarrow>
+      (\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>x[M]. x\<in>A & P(x,b)))"
+
+  \<phi> es de la forma \<phi>(x,y,A,p1..pn)
 *)
 definition
-  replacement_ax_fm :: "i \<Rightarrow> i" where
-  "replacement_ax_fm(p) == 
+  strong_replacement_ax_fm :: "i \<Rightarrow> i" where
+  "strong_replacement_ax_fm(p) == 
       nForall(pred(pred(pred(arity(p)))),
-      Forall(Implies(
-        Forall(Implies(Member(0,1),ExistsU(p))),
-        Exists(Forall(Iff(Member(0,2),
-                      Exists(And(Member(0,2),incr_bv(p)`2))))))))"
+      Forall(Implies(univalent_fm(p),
+        Exists(Forall(Iff(Member(0,1),Exists(And(Member(0,3),
+                      incr_bv(p)`2))))))))"
 
-lemma rep_type [TC]: "p \<in> formula \<Longrightarrow> replacement_ax_fm(p) \<in> formula"
-  by (simp add: replacement_ax_fm_def)
-
+lemma rep_type [TC]: "p \<in> formula \<Longrightarrow> strong_replacement_ax_fm(p) \<in> formula"
+  by (simp add: strong_replacement_ax_fm_def)
 
 definition
-  ZFC_inf :: "i" where
-  "ZFC_inf == {separation_ax_fm(p) . p \<in> formula } \<union> {replacement_ax_fm(p) . p \<in> formula }"
+  ZF_inf :: "i" where
+  "ZF_inf == {separation_ax_fm(p) . p \<in> formula } \<union> {strong_replacement_ax_fm(p) . p \<in> formula }"
               
 lemma unions : "A\<subseteq>formula \<and> B\<subseteq>formula \<Longrightarrow> A\<union>B \<subseteq> formula"
   by auto
   
-lemma ZFC_inf_type : "ZFC_inf \<subseteq> formula"
-  apply(unfold ZFC_inf_def)
+lemma ZF_inf_type : "ZF_inf \<subseteq> formula"
+  apply(unfold ZF_inf_def)
   apply(auto)
   done
     
-(* Teoría ZFC internalizada *)
-definition
-  ZFCTh :: "i" where
-  "ZFCTh == ZFC_inf \<union> ZFC_fin"
-
 (* Teoría ZF *)
 definition
   ZFTh :: "i" where
-  "ZFTh == ZFC_inf \<union> ZF_fin"
+  "ZFTh == ZF_inf \<union> ZF_fin"
 
-(* Teoría ZF - partes *)
-definition 
-  ZFlessPower :: "i" where
-  "ZFlessPower == {extension_ax_fm,foundation_ax_fm,pairing_ax_fm,
-              union_ax_fm,infinity_ax_fm,powerset_ax_fm} \<union> ZFC_inf"
+(* Teoría ZFC *)
+definition
+  ZFCTh :: "i" where
+  "ZFCTh == ZFTh \<union> {choice_ax_fm}"
 
-
-lemma "ZFCTh \<subseteq> formula"
-  by (simp add:ZFCTh_def add:unions add:ZFC_inf_type add:ZFC_fin_type)
   
 (* satisfacción de un conjunto de fórmulas *)
 definition
   satT :: "[i,i,i] => o" where
   "satT(A,\<Phi>,env) == \<forall> p \<in> \<Phi>. sats(A,p,env)"
 
-lemma ACyZFimpZFC:
-  assumes "sats(A,choice_ax_fm,env)"
-  and     "satT(A,ZFTh,env)"
-  shows  "satT(A,ZFCTh,env)"
-  apply (insert assms)
-  apply (unfold satT_def)
-  apply (unfold ZFCTh_def)
-  apply (unfold ZFTh_def)
-  apply (unfold ZF_fin_def)
-  apply (unfold ZFC_fin_def)
+lemma satT_sats : 
+  "\<lbrakk> satT(M,\<Phi>,env) ; \<phi> \<in> \<Phi> \<rbrakk> \<Longrightarrow> sats(M,\<phi>,env)"
+  by (simp add: satT_def)
+
+lemma sep_spec : 
+  "\<lbrakk> satT(M,ZFTh,env) ; \<phi> \<in> formula \<rbrakk> \<Longrightarrow>
+    sats(M,separation_ax_fm(\<phi>),env)"
+  apply (rule satT_sats,assumption)
+  apply (simp add: ZFTh_def ZF_inf_def)
   apply auto
   done
+    
 
 
 end
