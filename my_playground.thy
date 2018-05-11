@@ -227,7 +227,6 @@ proof -
   then have 
               1:  "\<forall>w y. P(y,w)\<longrightarrow>Q(y,w)" 
     by (auto)
-  fix Z
   assume
                   "\<exists>x\<in>Z. P(x,Z)" 
   then obtain x where 
