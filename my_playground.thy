@@ -197,7 +197,7 @@ notepad begin
 (* Trying to re-do the proof of  lemma monotone_bexi' : 
 "\<forall>y w. P(y,w)\<longrightarrow>Q(y,w) \<Longrightarrow> \<exists>x\<in>Z. P(x,Z) \<Longrightarrow> \<exists>x\<in>Z. Q(x,Z)"  *)
   
-fix P::"i\<Rightarrow>i\<Rightarrow>o" and Q::"i\<Rightarrow>i\<Rightarrow>o"
+fix P and Q::"i\<Rightarrow>i\<Rightarrow>o"
   assume a:"\<forall>y w. P(y,w)\<longrightarrow>Q(y,w)"   (* w,y instead y,w to make it easier *)
   (* Apparently, this is the same as the next line 
   assume "\<forall>y w. P(y,w)\<longrightarrow>Q(y,w)" for P::"i\<Rightarrow>i\<Rightarrow>o" and Q::"i\<Rightarrow>i\<Rightarrow>o" *)
@@ -219,7 +219,12 @@ fix P::"i\<Rightarrow>i\<Rightarrow>o" and Q::"i\<Rightarrow>i\<Rightarrow>o"
   qed
 
 end
-  
+
+lemma nat_included_inductive : "0 \<in> I \<and> (\<forall>y\<in>I. succ(y) \<in> I) \<Longrightarrow> nat \<subseteq> I"
+  apply (rule subsetI, rename_tac n)
+  apply (induct_tac n, auto) 
+  done
+    
 
 end
 
