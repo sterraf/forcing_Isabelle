@@ -198,7 +198,7 @@ notepad begin
 "\<forall>y w. P(y,w)\<longrightarrow>Q(y,w) \<Longrightarrow> \<exists>x\<in>Z. P(x,Z) \<Longrightarrow> \<exists>x\<in>Z. Q(x,Z)"  *)
   
 fix P and Q::"i\<Rightarrow>i\<Rightarrow>o"
-  assume a:"\<forall>y w. P(y,w)\<longrightarrow>Q(y,w)"   (* w,y instead y,w to make it easier *)
+  assume a:"\<forall>y w. P(y,w)\<longrightarrow>Q(y,w)"  
   (* Apparently, this is the same as the next line 
   assume "\<forall>y w. P(y,w)\<longrightarrow>Q(y,w)" for P::"i\<Rightarrow>i\<Rightarrow>o" and Q::"i\<Rightarrow>i\<Rightarrow>o" *)
 
@@ -217,14 +217,34 @@ fix P and Q::"i\<Rightarrow>i\<Rightarrow>o"
     with s have "Q(x,Z)"  by (auto) (*  "by (rule mp)" doesn't work *)
     then show  "\<exists>x\<in>Z. Q(x,Z)" using  t by (rule bexI)
   qed
-
 end
 
+(* Another try, minimizing references and labels *)
+lemma "\<forall>y w. P(y,w)\<longrightarrow>Q(y,w) \<Longrightarrow> \<exists>x\<in>Z. P(x,Z) \<Longrightarrow> \<exists>x\<in>Z. Q(x,Z)"
+proof -
+  assume 
+                  "\<forall>y w. P(y,w)\<longrightarrow>Q(y,w)"  
+  then have 
+              1:  "\<forall>w y. P(y,w)\<longrightarrow>Q(y,w)" 
+    by (auto)
+  fix Z
+  assume
+                  "\<exists>x\<in>Z. P(x,Z)" 
+  then obtain x where 
+              2:  "P(x,Z)" 
+  and 
+              3:  "x\<in>Z" 
+    by (rule bexE)
+  with 1 have "\<forall>y . P(y,Z)\<longrightarrow>Q(y,Z)" by (auto) (* rule spec doesn't work *)
+  then have "P(x,Z)\<longrightarrow>Q(x,Z)" by (rule spec)
+  with 2 have "Q(x,Z)"  by (auto)
+  then show  "\<exists>x\<in>Z. Q(x,Z)" using 3 by (rule bexI)
+qed
+  
 lemma nat_included_inductive : "0 \<in> I \<and> (\<forall>y\<in>I. succ(y) \<in> I) \<Longrightarrow> nat \<subseteq> I"
   apply (rule subsetI, rename_tac n)
   apply (induct_tac n, auto) 
   done
-    
 
 end
 
