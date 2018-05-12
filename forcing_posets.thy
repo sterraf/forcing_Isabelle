@@ -196,7 +196,7 @@ lemma (in forcing_poset) aux_RS1:  "f \<in> N \<rightarrow> P \<Longrightarrow> 
   apply (simp add: image_fun, blast)
   done
     
-theorem (in countable_generic) rasiowa_sikorski: 
+theorem (in countable_generic) (* Old proof of Rasiowa-Sikorski *)
   "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> D_generic(G)"
   apply (subgoal_tac 
         "\<forall>x\<in>P. \<forall>n\<in>nat. 
@@ -265,11 +265,11 @@ proof -
   then show ?thesis using 1 and 2 by auto
 qed
         
-theorem (in countable_generic) 
+theorem (in countable_generic) rasiowa_sikorski:
   "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> D_generic(G)"
 proof -
   assume 
-        0:  "p\<in>P"
+      Eq1:  "p\<in>P"
   let
             ?S="(\<lambda>m\<in>nat. {<x,y>\<in>P*P. <y,x>\<in>leq \<and> y\<in>\<D>`(pred(m))})"
   from RS_relation have
@@ -279,52 +279,52 @@ proof -
             "\<forall>a\<in>P. (\<exists>f \<in> nat->P. f`0 = a \<and> (\<forall>n \<in> nat. <f`n,f`succ(n)>\<in>?S`succ(n)))"
     by (blast)
   then obtain f where
-        8:  "f : nat\<rightarrow>P"
+      Eq2:  "f : nat\<rightarrow>P"
     and
-        4:  "f ` 0 = p \<and>
+      Eq3:  "f ` 0 = p \<and>
              (\<forall>n\<in>nat.
               f ` n \<in> P \<and> f ` succ(n) \<in> P \<and> \<langle>f ` succ(n), f ` n\<rangle> \<in> leq \<and> 
               f ` succ(n) \<in> \<D> ` n)"
-    using 0 by (auto)
+    using Eq1 by (auto)
   then have   
-       7:   "f``nat  \<subseteq> P"
+      Eq4:  "f``nat  \<subseteq> P"
     by (simp add:subset_fun_image)
   with leq_preord have 
-       5:   "refl(f``nat, leq) \<and> trans[P](leq)"
+      Eq5:  "refl(f``nat, leq) \<and> trans[P](leq)"
     unfolding preorder_on_def  by (blast intro:refl_monot_domain)
-  from 4 have
+  from Eq3 have
             "\<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq"
     by (simp)
-  with 8 and 5 and leq_preord and decr_seq_linear have
-       6:   "linear(f``nat, leq)"
+  with Eq2 and Eq5 and leq_preord and decr_seq_linear have
+      Eq6:  "linear(f``nat, leq)"
     unfolding preorder_on_def by (blast)
-  with 5 and chain_compat have 
+  with Eq5 and chain_compat have 
             "(\<forall>p\<in>f``nat.\<forall>q\<in>f``nat. compat_in(f``nat,leq,p,q))"             
     by (auto)
   then have
-     fil:   "filter(upclosure(f``nat))"
+      fil:  "filter(upclosure(f``nat))"
    (is "filter(?G)")
-    using closure_compat_filter and 7 by simp
+    using closure_compat_filter and Eq4 by simp
   have
-    gen:   "\<forall>n\<in>nat. \<D> ` n \<inter> ?G \<noteq> 0"
+      gen:  "\<forall>n\<in>nat. \<D> ` n \<inter> ?G \<noteq> 0"
   proof
     fix n
     assume  
-           "n\<in>nat"
-    with 8 and 4 have
+            "n\<in>nat"
+    with Eq2 and Eq3 have
             "f`succ(n) \<in> ?G \<and> f`succ(n) \<in> \<D> ` n"
       using aux_RS1 by simp
     then show 
-       9:   "\<D> ` n \<inter> ?G \<noteq> 0"
+            "\<D> ` n \<inter> ?G \<noteq> 0"
       by blast
   qed
-  from 4 and 8 have 
+  from Eq3 and Eq2 have 
             "p \<in> ?G"
     using aux_RS1 by auto
   with gen and fil show ?thesis  
     unfolding D_generic_def by auto
 qed
-      
+
     
 definition 
   antichain :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
