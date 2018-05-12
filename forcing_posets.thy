@@ -238,6 +238,94 @@ theorem (in countable_generic) rasiowa_sikorski:
    apply (drule ball_distr_conj_iff [THEN iffD1], (erule conjE) | assumption)+
   done
 
+lemma (in countable_generic) RS_relation:
+  assumes
+        1:  "x\<in>P"
+            and
+        2:  "n\<in>nat"
+  shows
+            "\<exists>y\<in>P. <x,y> \<in> (\<lambda>m\<in>nat. {<x,y>\<in>P*P. <y,x>\<in>leq \<and> y\<in>\<D>`(pred(m))})`n"
+proof -
+  from seq_of_denses and 2 have "dense(\<D> ` pred(n))" by (simp)
+  with 1 have
+            "\<exists>d\<in>\<D> ` Arith.pred(n). \<langle>d, x\<rangle> \<in> leq"
+    unfolding dense_def by (simp)
+  then obtain d where
+        3:  "d \<in> \<D> ` Arith.pred(n) \<and> \<langle>d, x\<rangle> \<in> leq"
+    by (rule bexE, simp)
+  from countable_subs_of_P have
+            "\<D> ` Arith.pred(n) \<in> Pow(P)"
+    using 2 by (blast dest:apply_funtype intro:pred_type) (* (rule apply_funtype [OF _ pred_type]) *)
+  then have
+            "\<D> ` Arith.pred(n) \<subseteq> P" 
+    by (rule PowD)
+  then have
+            "d \<in> P \<and> \<langle>d, x\<rangle> \<in> leq \<and> d \<in> \<D> ` Arith.pred(n)"
+    using 3 by auto
+  then show ?thesis using 1 and 2 by auto
+qed
+        
+theorem (in countable_generic) 
+  "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> D_generic(G)"
+proof -
+  assume 
+        0:  "p\<in>P"
+  let
+            ?S="(\<lambda>m\<in>nat. {<x,y>\<in>P*P. <y,x>\<in>leq \<and> y\<in>\<D>`(pred(m))})"
+  from RS_relation have
+            "\<forall>x\<in>P. \<forall>n\<in>nat. \<exists>y\<in>P. <x,y> \<in> ?S`n"
+    by (auto)
+  with sequence_DC have
+            "\<forall>a\<in>P. (\<exists>f \<in> nat->P. f`0 = a \<and> (\<forall>n \<in> nat. <f`n,f`succ(n)>\<in>?S`succ(n)))"
+    by (blast)
+  then obtain f where
+        8:  "f : nat\<rightarrow>P"
+    and
+        4:  "f ` 0 = p \<and>
+             (\<forall>n\<in>nat.
+              f ` n \<in> P \<and> f ` succ(n) \<in> P \<and> \<langle>f ` succ(n), f ` n\<rangle> \<in> leq \<and> 
+              f ` succ(n) \<in> \<D> ` n)"
+    using 0 by (auto)
+  then have   
+       7:   "f``nat  \<subseteq> P"
+    by (simp add:subset_fun_image)
+  with leq_preord have 
+       5:   "refl(f``nat, leq) \<and> trans[P](leq)"
+    unfolding preorder_on_def  by (blast intro:refl_monot_domain)
+  from 4 have
+            "\<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq"
+    by (simp)
+  with 8 and 5 and leq_preord and decr_seq_linear have
+       6:   "linear(f``nat, leq)"
+    unfolding preorder_on_def by (blast)
+  with 5 and chain_compat have 
+            "(\<forall>p\<in>f``nat.\<forall>q\<in>f``nat. compat_in(f``nat,leq,p,q))"             
+    by (auto)
+  then have
+     fil:   "filter(upclosure(f``nat))"
+   (is "filter(?G)")
+    using closure_compat_filter and 7 by simp
+  have
+    gen:   "\<forall>n\<in>nat. \<D> ` n \<inter> ?G \<noteq> 0"
+  proof
+    fix n
+    assume  
+           "n\<in>nat"
+    with 8 and 4 have
+            "f`succ(n) \<in> ?G \<and> f`succ(n) \<in> \<D> ` n"
+      using aux_RS1 by simp
+    then show 
+       9:   "\<D> ` n \<inter> ?G \<noteq> 0"
+      by blast
+  qed
+  from 4 and 8 have 
+            "p \<in> ?G"
+    using aux_RS1 by auto
+  with gen and fil show ?thesis  
+    unfolding D_generic_def by auto
+qed
+      
+    
 definition 
   antichain :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
   "antichain(P,leq,A) == A\<subseteq>P \<and> (\<forall>p\<in>A.\<forall>q\<in>A.(\<not> compat_in(P,leq,p,q)))"
