@@ -297,7 +297,32 @@ notepad begin
     qed
   qed
 end
-    
+
+(* Variant eliminating the "\<Longrightarrow>", and alternatives to "using" *)  
+notepad begin
+  fix f g
+  assume 
+     f_invol: "\<forall>n\<in>nat. f`(f`n) = n"
+  and 
+     g_idemp: "\<forall>n\<in>nat. g`(g`n) = g`n"
+  have
+              "\<forall>n\<in>nat. g`(g`(f`(f`(f`(f`n))))) = g`n"
+  proof 
+    show
+              "g`(g`(f`(f`(f`(f`n))))) = g`n" if 1:"n\<in>nat" for n
+    proof -
+      from 1 have 
+              "g`(g`(f`(f`(f`(f`n))))) = g`(g`(f`(f`n)))"
+        by (simp add:f_invol)
+      also with 1 have    
+              " ... = g`(g`n)"
+        by (simp add:f_invol)
+      finally show ?thesis                   (* can't use "with" here *)
+        by (simp add: 1 g_idemp)             (* Note the "1" in the simp set *) 
+    qed
+  qed
+end
+
     
 (* 
 theorem (in countable_generic) rasiowa_sikorski:
