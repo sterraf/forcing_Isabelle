@@ -246,6 +246,7 @@ lemma nat_included_inductive : "0 \<in> I \<and> (\<forall>y\<in>I. succ(y) \<in
   done
 
 (* trying to understand calculational reasoning *)
+(* (Actually, the next proof does not need 'also', since the last step is trivial) *)
 notepad begin
   fix f g
   assume 
@@ -263,15 +264,39 @@ notepad begin
         by (simp add:f_invol)
       also have    
               " ... = g`n"
-        (* using 1  *)
         by (simp add: g_idemp)
       finally show ?thesis
         by assumption
     qed
   qed
-
 end
   
+(* Now with ball instead of all *)  
+notepad begin
+  fix f g
+  assume 
+     f_invol: "\<forall>n\<in>nat. f`(f`n) = n"
+  and 
+     g_idemp: "\<forall>n\<in>nat. g`(g`n) = g`n"
+  have
+              "\<forall>n\<in>nat. g`(g`(f`(f`(f`(f`n))))) = g`n"
+  proof 
+    show
+              "n\<in>nat \<Longrightarrow> g`(g`(f`(f`(f`(f`n))))) = g`n" for n
+    proof -
+      assume 
+          1:  "n\<in>nat" 
+      then have 
+              "g`(g`(f`(f`(f`(f`n))))) = g`(g`(f`(f`n)))"
+        by (simp add:f_invol)
+      also have    
+              " ... = g`(g`n)"
+        using 1 by (simp add:f_invol)
+      finally show ?thesis
+        using 1 by (simp add:g_idemp)
+    qed
+  qed
+end
     
     
 (* 
