@@ -245,6 +245,36 @@ lemma nat_included_inductive : "0 \<in> I \<and> (\<forall>y\<in>I. succ(y) \<in
   apply (induct_tac n, auto) 
   done
 
+(* trying to understand calculational reasoning *)
+notepad begin
+  fix f g
+  assume 
+     f_invol: "\<forall>n. f`(f`n) = n"
+  and 
+     g_idemp: "\<forall>n. g`(g`n) = g`n"
+  have
+              "\<forall>n. g`(g`(f`(f`n))) = g`n"
+  proof 
+    show
+              "g`(g`(f`(f`n))) = g`n" for n 
+    proof -
+      have 
+              "g`(g`(f`(f`n))) = g`(g`n)"
+        by (simp add:f_invol)
+      also have    
+              " ... = g`n"
+        (* using 1  *)
+        by (simp add: g_idemp)
+      finally show ?thesis
+        by assumption
+    qed
+  qed
+
+end
+  
+    
+    
+(* 
 theorem (in countable_generic) rasiowa_sikorski:
   "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> D_generic(G)"
 proof -
@@ -332,6 +362,6 @@ proof -
     using aux_RS1 by auto
   with gen and fil show ?thesis  
     unfolding D_generic_def by auto
-qed
+qed *)
 end
 
