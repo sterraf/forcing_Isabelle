@@ -91,7 +91,7 @@ locale M_trancl_no_repl = M_basic_no_repl +
           separation (M, \<lambda>x. 
               \<exists>w[M]. \<exists>wx[M]. \<exists>rp[M]. 
                w \<in> Z & pair(M,w,x,wx) & tran_closure(M,r,rp) & wx \<in> rp)"
-      and M_nat : "M(nat)"
+      and M_nat [iff] : "M(nat)"
 
 lemma (in M_trancl_no_repl) rtran_closure_mem_iff:
      "[|M(A); M(r); M(p)|]

@@ -78,8 +78,7 @@ lemma sats_Inter_seps :
        \<longrightarrow> (\<forall>A\<in>M. Relative_hacked.separation(##M, \<lambda>x. \<forall>y\<in>M. y\<in>A \<longrightarrow> x\<in>y))" 
   apply (unfold Relative_hacked.separation_def,simp_all)
   apply (rule impI)
-  
   apply (rule sep1params)
 (*  apply (rule_tac P="sats(M,ZFseparation(Forall(Implies(Member(0,2),Member(1,0)))),[])" in iffD1) *) 
-      
+  oops  
 end

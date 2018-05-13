@@ -96,7 +96,7 @@ theorem M_trivial_L: "M_trivial_no_repl(L)"
      apply (rule Union_ax)
     apply (rule power_ax)
 (*   apply (rule replacement) *)
-  apply (rule L_nat)
+  apply (rule nonempty)
   done
 
 interpretation L?: M_trivial_no_repl L by (rule M_trivial_L)

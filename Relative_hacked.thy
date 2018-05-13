@@ -529,11 +529,11 @@ locale M_trivial_no_repl =
       and Union_ax:         "Union_ax(M)"
       and power_ax:         "power_ax(M)"
    (* and replacement:      "replacement(M,P)" *)
-      and M_nat [iff]:      "M(nat)"           (*i.e. the axiom of infinity*)
+      and M_inhabit [iff]:  "M(0)"          
 
 
 text\<open>Automatically discovers the proof using \<open>transM\<close>, \<open>nat_0I\<close>
-and \<open>M_nat\<close>.\<close>
+and \<open>M_inhabit\<close>.\<close>
 lemma (in M_trivial_no_repl) nonempty [simp]: "M(0)"
 by (blast intro: transM)
 
