@@ -311,14 +311,14 @@ notepad begin
     show
               "g`(g`(f`(f`(f`(f`n))))) = g`n" if 1:"n\<in>nat" for n
     proof -
-      from 1 have 
+      from 1 and f_invol have 
               "g`(g`(f`(f`(f`(f`n))))) = g`(g`(f`(f`n)))"
-        by (simp add:f_invol)
-      also with 1 have    
+        by (simp)
+      also with 1 and f_invol have    
               " ... = g`(g`n)"
-        by (simp add:f_invol)
+        by (simp)
       finally show ?thesis                   (* can't use "with" here *)
-        by (simp add: 1 g_idemp)             (* Note the "1" in the simp set *) 
+        using g_idemp by (simp add:1)             (* Note the "1" in the simp set *) 
     qed
   qed
 end
