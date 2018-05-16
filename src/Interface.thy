@@ -43,7 +43,7 @@ lemma aux_pred2: "n\<le>2 \<Longrightarrow> Arith.pred(Arith.pred(n)) = 0"
   apply auto
 done    
     
-lemma sep0params :
+lemma sep_0_params :
   "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) \<le> 2  \<rbrakk> \<Longrightarrow> sats(M,separation_ax_fm(\<phi>),[]) \<longleftrightarrow>
   (\<forall>d\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. 
   (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,incr_bv1(\<phi>),[x,y,d])))"
@@ -194,7 +194,7 @@ definition
 lemma comp_sep_fm_type [TC] : "comp_sep_fm \<in> formula"
   by (simp add: comp_sep_fm_def)
 
-lemma comp_sep_intf : 
+lemma comp_sep_intf :         
   "sats(M,separation_ax_fm(comp_sep_fm),[])
   \<longleftrightarrow>
   (\<forall>r\<in>M. \<forall>s\<in>M. 
@@ -222,7 +222,7 @@ lemma memrel_sep_intf :
   "sats(M,separation_ax_fm(Exists(Exists(And(pair_fm(1,0,2),Member(1,0))))),[])
   \<longleftrightarrow>
   separation(##M, \<lambda>z. \<exists>x\<in>M. \<exists>y\<in>M. pair(##M,x,y,z) & x \<in> y)"
-  apply (rule iff_trans,rule sep0params,simp+)
+  apply (rule iff_trans,rule sep_0_params,simp+)
   prefer 2
    apply (simp add: separation_def sats_incr_bv1_iff)
     apply (unfold pair_fm_def upair_fm_def)
@@ -235,6 +235,9 @@ definition
   Exists(Exists(And(pair_fm(2,5,1),And(Member(1,8),And(pair_fm(2,4,0),And(Member(0,8),
                 Exists(Exists(And(fun_apply_fm(9,4,1),And(fun_apply_fm(8,4,0),
                 Neg(Equal(1,0))))))))))))"
+
+lemma is_recfun_sep_fm [TC] : "is_recfun_sep_fm \<in> formula"
+  by (simp add: is_recfun_sep_fm_def)
 
 lemma is_recfun_sep_intf :
   "sats(M,separation_ax_fm(is_recfun_sep_fm),[])
@@ -251,6 +254,9 @@ lemma is_recfun_sep_intf :
   apply (simp add: pair_fm_def upair_fm_def fun_apply_fm_def big_union_fm_def image_fm_def
                   Un_commute nat_union_abs1)
   done
+
+
+
 
 (* Instances of replacement for interface with M_basic *)
 
@@ -317,28 +323,42 @@ lemma funspace_succ_rep_intf :
   apply (simp add: pair_fm_def upair_fm_def is_cons_fm_def union_fm_def Un_commute nat_union_abs1)
   done
 
+(* Inifinite *)
+
+lemma nat_included_inductive : 
+    "0 \<in> I \<and> (\<forall>y\<in>I. succ(y) \<in> I) \<Longrightarrow> nat \<subseteq> I"
+  apply (rule subsetI, rename_tac n)
+  apply (induct_tac n, auto) 
+  done
+
+lemma sep_finite_ord_intf :
+  "sats(M,separation_ax_fm(finite_ordinal_fm(0)),[])
+  \<longleftrightarrow>
+  (separation(##M, \<lambda>x. finite_ordinal(##M,x)))"
+  apply (rule iff_trans, rule sep_0_params,simp+)
+   prefer 2
+   apply (simp add: separation_def sats_incr_bv1_iff)
+  apply (simp add: finite_ordinal_fm_def limit_ordinal_fm_def empty_fm_def succ_fm_def cons_fm_def
+                   union_fm_def upair_fm_def Un_commute nat_union_abs1)
+  done
+
 (* Interface for Transset *)
 lemma Transset_intf :
   "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
   by (simp add: Transset_def,auto)
 
-lemma sats_inf_nat :
-  "sats(M,infinity_ax_fm,[]) \<Longrightarrow> nat \<in> M" 
-  sorry
-
-lemma interface_ZF : 
-  "\<lbrakk> Transset(M) ; satT(M,ZFTh,[]) ; \<And>P. replacement(##M,P) \<rbrakk> \<Longrightarrow> PROP M_basic(##M)"
+lemma interface_M_basic : 
+  "\<lbrakk> Transset(M) ; satT(M,ZFTh,[]) ; \<And>P. replacement(##M,P) ; nat \<in> M \<rbrakk> \<Longrightarrow> PROP M_basic(##M)"
   apply (rule M_basic.intro, rule M_trivial.intro)
     apply (simp,rule Transset_intf,assumption+)
     apply (simp_all add: pairing_intf[symmetric] union_intf[symmetric] power_intf[symmetric])
     apply (rule satT_sats,assumption,simp add: ZFTh_def ZF_fin_def)+
-    apply (rule sats_inf_nat,rule satT_sats,assumption,simp add: ZFTh_def ZF_fin_def)
-    apply (rule M_basic_axioms.intro,simp)
-      apply (rule inter_sep_intf[THEN iffD1 , THEN bspec],rule sep_spec,simp+)
-      apply (rule diff_sep_intf[THEN iffD1 , THEN bspec],rule sep_spec,simp+)
-      apply (rule cartprod_sep_intf[THEN iffD1 , THEN bspec , THEN bspec],rule sep_spec,simp+)
-      apply (rule image_sep_intf[THEN iffD1 , THEN bspec , THEN bspec],rule sep_spec,simp+)
-      apply (rule converse_sep_intf[THEN iffD1 , THEN bspec],rule sep_spec,simp+)
-       apply (rule restrict_sep_intf[THEN iffD1 , THEN bspec],rule sep_spec,simp+)
-       apply (rule comp_sep_intf[THEN iffD1 , THEN bspec , THEN bspec],rule sep_spec,simp+)
+    apply (insert inter_sep_intf[of M] diff_sep_intf[of M] cartprod_sep_intf[of M]
+                image_sep_intf[of M] converse_sep_intf[of M] restrict_sep_intf[of M]
+                pred_sep_intf[of M] memrel_sep_intf[of M] comp_sep_intf[of M] 
+                is_recfun_sep_intf[of M] funspace_succ_rep_intf[of M]
+                comp_sep_intf [of M] funspace_succ_rep_intf[of M] is_recfun_sep_intf[of M])
+    apply (rule M_basic_axioms.intro)
+    apply (simp_all add: sep_spec repl_spec)
+  done
 end

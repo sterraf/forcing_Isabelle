@@ -38,6 +38,7 @@ primrec
   "nForall(0,p) = p"
   "nForall(succ(n),p) = Forall(nForall(n,p))" 
 
+
 lemma nForall_type [TC]: 
       "[| n \<in> nat; p \<in> formula |] ==> nForall(n,p) \<in> formula"
   by (induct_tac "n",auto)
