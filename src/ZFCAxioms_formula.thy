@@ -55,7 +55,6 @@ lemma union_type [TC]: "union_ax_fm \<in> formula"
 
 (* Infinito
    \<exists>x. \<emptyset>\<in>x \<and> \<forall>y(y\<in>x \<rightarrow> y U {y} \<in> x)
-\<forall>x[M]. x\<in>A \<longrightarrow> (\<forall>y[M]. \<forall>z[M]. P(x,y) & P(x,z) \<longrightarrow> y=z)
 *)
 definition
   infinity_ax_fm :: "i" where
@@ -235,6 +234,14 @@ lemma satT_sats :
 lemma sep_spec : 
   "\<lbrakk> satT(M,ZFTh,env) ; \<phi> \<in> formula \<rbrakk> \<Longrightarrow>
     sats(M,separation_ax_fm(\<phi>),env)"
+  apply (rule satT_sats,assumption)
+  apply (simp add: ZFTh_def ZF_inf_def)
+  apply auto
+  done
+
+lemma repl_spec :
+  "\<lbrakk> satT(M,ZFTh,env) ; \<phi> \<in> formula \<rbrakk> \<Longrightarrow>
+    sats(M,strong_replacement_ax_fm(\<phi>),env)"
   apply (rule satT_sats,assumption)
   apply (simp add: ZFTh_def ZF_inf_def)
   apply auto
