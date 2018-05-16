@@ -180,9 +180,6 @@ lemma decr_seq_linear: "refl(P,leq) \<Longrightarrow> f \<in> nat -> P \<Longrig
      apply (simp+)
     done
 
-   
-lemmas ball_distr_conj_iff = upair.ball_conj_distrib 
-    
 lemma subset_fun_image: "f:N\<rightarrow>P \<Longrightarrow> f``N\<subseteq>P"
   apply (simp add: image_fun)
   apply (rule subsetI, simp, erule bexE)
@@ -194,7 +191,7 @@ lemma (in forcing_poset) aux_RS1:  "f \<in> N \<rightarrow> P \<Longrightarrow> 
    apply (rule subset_fun_image, assumption)
   apply (simp add: image_fun, blast)
   done
-    
+(*    
 theorem (in countable_generic) (* Old proof of Rasiowa-Sikorski *)
   "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> D_generic(G)"
   apply (subgoal_tac 
@@ -234,9 +231,9 @@ theorem (in countable_generic) (* Old proof of Rasiowa-Sikorski *)
    apply (rule_tac A="{f ` x . x \<in> nat}" 
                and B="P" in refl_monot_domain, auto)
   apply (rule_tac P="P" in decr_seq_linear, assumption)
-   apply (drule ball_distr_conj_iff [THEN iffD1], (erule conjE) | assumption)+
+   apply (drule ball_conj_distrib [THEN iffD1], (erule conjE) | assumption)+
   done
-
+*)
 lemma (in countable_generic) RS_relation:
   assumes
         1:  "x\<in>P"
