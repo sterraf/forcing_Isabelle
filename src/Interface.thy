@@ -69,6 +69,13 @@ lemma sep_5_params :
   (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,\<phi>,[x,d,a1,a2,a3,a4,a5])))"
   by (simp add: separation_ax_fm_def sats_incr_bv1_iff)
 
+(* VER ESTO! Importante cómo usamos el parámetro "d" *)
+lemma separ_5_params :
+  "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) = 7  \<rbrakk> \<Longrightarrow> sats(M,separation_ax_fm(\<phi>),[]) \<longleftrightarrow>
+  (\<forall>a5\<in>M. \<forall>a4\<in>M. \<forall>a3\<in>M. \<forall>a2\<in>M. \<forall>a1\<in>M. separation(##M,\<lambda>x. sats(M,\<phi>,[x,d,a1,a2,a3,a4,a5])))"
+  apply (simp add: sep_5_params separation_def)
+  sorry
+
 (* Instances of separation for interface with M_basic *)
 
     
@@ -361,4 +368,6 @@ lemma interface_M_basic :
     apply (rule M_basic_axioms.intro)
     apply (simp_all add: sep_spec repl_spec)
   done
+
+(* aprender lemmas, que es para agrupar lemmas *)
 end
