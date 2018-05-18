@@ -1,4 +1,4 @@
-theory Names imports Formula L_axioms Cardinal begin
+theory Names imports Formula begin
 
 section\<open>Relative composition of \<in>.\<close>
 text\<open>Names are defined by using well-founded recursion on the relation \<in>³ given
