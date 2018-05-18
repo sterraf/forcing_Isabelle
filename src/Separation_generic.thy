@@ -1,6 +1,21 @@
-theory Separation_generic imports Forces_locale begin
+theory Separation_generic imports  forcing_posets begin
 
-  locale forcing_thms = forcing_poset + forcing_data +
+locale forcing_data = forcing_poset +
+  fixes M enum
+  assumes trans_M:          "Transset(M)"
+      and M_model_ZF:       "satT(M,ZFTh,[])"
+      and M_countable:      "enum\<in>bij(nat,M)"
+      and P_in_M:           "P \<in> M"
+      (* TODO: Quitar estas assumptions cuando tengamos el Relative hacked *)
+      and M_repl:           "\<And>P. replacement(##M,P)"
+      and M_nat:            "nat \<in> M"
+  
+definition (in forcing_data)
+  generic :: "i\<Rightarrow>o" where
+  "generic(G) == filter(G) \<and> (\<forall>D\<in>M. D\<subseteq>P \<and> dense(D)\<longrightarrow>D\<inter>G\<noteq>0)"
+      
+(* Prototyping Forcing relation and theorems as a locale*)
+locale forcing_thms = forcing_poset + forcing_data +
   fixes forces :: "i \<Rightarrow> i"
   assumes definition_of_forces: "\<forall>env\<in>list(M).
                   sats(M,forces(\<phi>), [P,leq,uno,p] @ env) \<longleftrightarrow>
