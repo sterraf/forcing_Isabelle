@@ -1,4 +1,4 @@
-theory forcing_posets imports Formula Names ZFCAxioms_formula Pointed_DC begin
+theory forcing_posets imports Pointed_DC begin
 
 locale forcing_poset =
   fixes P leq uno
