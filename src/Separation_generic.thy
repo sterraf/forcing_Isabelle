@@ -40,8 +40,8 @@ lemma
   oops
     
       
-lemma bounded_separation_in_genext:
-    "\<forall>p\<in>formula. arity(p) = 3 \<longrightarrow> sats(gen_ext(M,P,G),Separation_ax_fm(p),[])"
+theorem separation_in_genext:
+    "\<forall>p\<in>formula. arity(p) = 3 \<longrightarrow> sats(gen_ext(M,P,G),separation_ax_fm(p),[])"
 oops
 end  
 end
