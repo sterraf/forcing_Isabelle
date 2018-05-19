@@ -1,6 +1,6 @@
 (* internalización de los axiomas de ZFC dentro de la teoría ZF *)
 
-theory ZFCAxioms_formula imports Formula L_axioms Swap_vars begin
+theory ZFCAxioms_formula imports Formula L_axioms_hacked Swap_vars begin
 
 (* 
    Extensionalidad 
@@ -142,21 +142,40 @@ lemma nForall_type [TC]:
 (*
   Esquema de separación
   Sea \<Phi> fórmula, donde 'y' no es libre.
-  \<forall>a1...an\<forall>v\<exists>y\<forall>x. x\<in>y \<leftrightarrow> x\<in>v \<and> \<Phi>(x,v,a1,...,an)
+  \<forall>v\<forall>z\<exists>y\<forall>x. x\<in>y \<leftrightarrow> x\<in>z \<and> \<Phi>(x,v)
 
   Ejemplo: Si \<Phi> = x=a \<or> x=b entonces
               p debe ser 0=2 \<or> 0=3
 *)
 definition
   separation_ax_fm :: "i \<Rightarrow> i" where
-  "separation_ax_fm(\<phi>) == nForall(pred(pred(arity(\<phi>))),
-                              Forall(Exists(Forall(
+  "separation_ax_fm(\<phi>) == 
+                    Forall(Forall(Exists(Forall(
                               Iff(Member(0,1),And(Member(0,2),
-                                              incr_bv1(\<phi>)))))))"
+                                              incr_bv1^2(\<phi>)))))))"
                                                 
 lemma sep_type [TC]: "p \<in> formula \<Longrightarrow> separation_ax_fm(p) \<in> formula"
   by (simp add: separation_ax_fm_def)
 
+
+(* TODO: pensar dónde poner este tipo de lemitas generales,
+         quizás algún archivo Utils, o algo así *)
+lemma nat_union_abs1 : 
+  "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> i \<union> j = j"
+  by (rule Un_absorb1,erule le_imp_subset)
+
+lemma nat_union_abs2 : 
+  "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> j \<union> i = j"
+  by (rule Un_absorb2,erule le_imp_subset)
+
+
+    
+lemma arity_sep[simp] : "\<lbrakk> p \<in> formula ; arity(p) = 1 \<or> arity(p) = 2 \<rbrakk> \<Longrightarrow> 
+                  arity(separation_ax_fm(p)) = 0"
+  apply (rule disjE,simp)
+  apply (simp_all add: separation_ax_fm_def arity_incr_bv1_eq Un_commute nat_union_abs1)
+  done
+    
 (* Esquema de reemplazo (strong)
    Sea \<Phi> fórmula, donde B no es libre.
    \<forall>A. \<forall>x(x\<in>A \<longrightarrow> \<exists>!y \<Phi>(y,x)) \<longleftrightarrow> \<exists>B \<forall>y(y\<in>B \<longleftrightarrow> \<exists>x(x\<in>A \<and> \<Phi>(y,x)))
@@ -199,9 +218,11 @@ definition
 lemma rep_type [TC]: "p \<in> formula \<Longrightarrow> strong_replacement_ax_fm(p) \<in> formula"
   by (simp add: strong_replacement_ax_fm_def)
 
+    
 definition
   ZF_inf :: "i" where
-  "ZF_inf == {separation_ax_fm(p) . p \<in> formula } \<union> {strong_replacement_ax_fm(p) . p \<in> formula }"
+  "ZF_inf == {separation_ax_fm(p). p \<in> {q \<in> formula. arity(q)=1 \<or> arity(q)=2 }} \<union> 
+             {strong_replacement_ax_fm(p) . p \<in> formula }"
               
 lemma unions : "A\<subseteq>formula \<and> B\<subseteq>formula \<Longrightarrow> A\<union>B \<subseteq> formula"
   by auto
@@ -232,7 +253,7 @@ lemma satT_sats :
   by (simp add: satT_def)
 
 lemma sep_spec : 
-  "\<lbrakk> satT(M,ZFTh,env) ; \<phi> \<in> formula \<rbrakk> \<Longrightarrow>
+  "\<lbrakk> satT(M,ZFTh,env) ; \<phi> \<in> formula ; arity(\<phi>)=1 \<or> arity(\<phi>)=2  \<rbrakk> \<Longrightarrow>
     sats(M,separation_ax_fm(\<phi>),env)"
   apply (rule satT_sats,assumption)
   apply (simp add: ZFTh_def ZF_inf_def)
