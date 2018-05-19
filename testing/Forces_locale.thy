@@ -6,13 +6,13 @@ locale forcing_data = forcing_poset +
       and M_model_ZF:       "satT(M,ZFTh,[])"
       and M_countable:      "enum\<in>bij(nat,M)"
       and P_in_M:           "P \<in> M"
-      and M_nat:            "0\<in> M"
+      and zero_in_M:        "0\<in> M"
 
 
 begin
 lemma to_M_basic_no_repl :
   "M_basic_no_repl(##M)"
-  by (insert trans_M M_model_ZF M_nat,rule interface_M_basic)
+  by (insert trans_M M_model_ZF zero_in_M,rule interface_M_basic)
 
 interpretation M?: M_basic_no_repl "##M" by (rule to_M_basic_no_repl)
 
