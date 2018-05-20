@@ -13,7 +13,7 @@ locale forcing_data = forcing_poset +
       and M_countable:      "enum\<in>bij(nat,M)"
       and P_in_M:           "P \<in> M"
       (* TODO: Quitar estas assumptions cuando tengamos el Relative hacked *)
-      and M_nonempty:       "0 \<in> M"
+      and zero_in_M:       "0 \<in> M"
 
 begin  (*************** CONTEXT: forcing_data *****************)
 definition
