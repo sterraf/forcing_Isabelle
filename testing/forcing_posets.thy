@@ -52,6 +52,13 @@ begin
 definition 
   dense :: "i\<Rightarrow>o" where
   "dense(D) == \<forall>p\<in>P. \<exists>d\<in>D . <d,p>\<in>leq"
+
+definition 
+  dense_below :: "i\<Rightarrow>i\<Rightarrow>o" where
+  "dense_below(D,q) == \<forall>p\<in>P. <p,q>\<in>leq \<longrightarrow> (\<exists>d\<in>D . <d,p>\<in>leq)"
+
+lemma P_dense: "dense(P)"
+  by (insert leq_preord, auto simp add: preorder_on_def refl_def dense_def)
     
 definition 
   increasing :: "i\<Rightarrow>o" where
