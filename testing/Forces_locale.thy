@@ -24,7 +24,6 @@ locale forcing_thms = forcing_data +
                                sats(M,forces(\<phi>), [P,leq,uno,p] @ env) \<Longrightarrow>
                                sats(M,forces(\<phi>), [P,leq,uno,q] @ env)"
       and density_lemma:     "p\<in>P \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow>
-                 \<forall>env\<in>list(M).
                     sats(M,forces(\<phi>), [P,leq,uno,p] @ env) \<longleftrightarrow> 
                     dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,uno,q] @ env)},p)"
 
