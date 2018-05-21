@@ -12,17 +12,15 @@ locale forcing_data = forcing_poset +
       and M_model_ZF:       "satT(M,ZFTh,[])"
       and M_countable:      "enum\<in>bij(nat,M)"
       and P_in_M:           "P \<in> M"
-      (* TODO: Quitar estas assumptions cuando tengamos el Relative hacked *)
-      and M_repl:           "\<And>P. replacement(##M,P)"
-      and M_nat:            "nat \<in> M"
+      and M_nempty:            "0 \<in> M"
 
 
 begin
 lemma to_M_basic :
-  "PROP M_basic(##M)"
-  by (insert trans_M M_model_ZF M_repl M_nat,rule interface_M_basic)
+  "M_basic_no_repl(##M)"
+  by (insert trans_M M_model_ZF M_nempty,rule interface_M_basic)
 
-interpretation M?: M_basic "##M" by (rule to_M_basic)
+interpretation M?: M_basic_no_repl "##M" by (rule to_M_basic)
 
 lemma sep_instance_abs:
   "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>) = 7 ; a1\<in>M ; a2\<in>M ; a3\<in>M ; a4\<in>M ; a5\<in>M ;A\<in>M\<rbrakk> \<Longrightarrow> 

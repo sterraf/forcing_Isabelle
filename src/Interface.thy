@@ -1,4 +1,4 @@
-theory Interface imports ZFCAxioms_formula Relative Names begin
+theory Interface imports ZFCAxioms_formula Relative_hacked Names begin
 
 (* Extensionality *)
 lemma extension_intf :
@@ -36,88 +36,55 @@ lemma power_intf :
   by (simp add: powerset_ax_fm_def power_ax_def powerset_def subset_def subset_fm_def)
 
 (* Separation *)
+
+lemma (in M_trivial_no_repl) tupling_sep :
+    "(\<forall>v[M]. separation(M,\<lambda>x. (\<forall>A[M]. \<forall>B[M]. pair(M,A,B,v) \<longrightarrow> P(x,A,B))))
+    \<longleftrightarrow>
+     (\<forall>A[M]. \<forall>B[M]. separation(M,\<lambda>x. P(x,A,B)))"
+  apply (simp add: separation_def)
+  apply rule
+   prefer 2 
+    
     
 lemma aux_pred2: "n\<le>2 \<Longrightarrow> Arith.pred(Arith.pred(n)) = 0"
   apply (case_tac "n=0 \<or> n=1 \<or> n=2" )
   prefer 2 apply (simp add: lt_def)
   apply auto
 done    
+
+lemma separation_intf : 
+      "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=1 \<or> arity(\<phi>)=2 \<rbrakk> \<Longrightarrow> 
+        sats(M,separation_ax_fm(\<phi>),[]) \<longleftrightarrow> 
+       (\<forall>a\<in>M. separation(##M,\<lambda>x. sats(M,\<phi>,[x,a])))"
+  by (simp add: separation_ax_fm_def separation_def sats_incr_bv1_iff)
     
-lemma sep_0_params :
-  "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) \<le> 2  \<rbrakk> \<Longrightarrow> sats(M,separation_ax_fm(\<phi>),[]) \<longleftrightarrow>
-  (\<forall>d\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. 
-  (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,incr_bv1(\<phi>),[x,y,d])))"
-  apply (simp add: separation_ax_fm_def)
-  apply (subst aux_pred2,assumption,simp)
-done
-    
-lemma sep_1_params : 
-  "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) = 3  \<rbrakk> \<Longrightarrow> sats(M,separation_ax_fm(\<phi>),[]) \<longleftrightarrow>
-  (\<forall>a\<in>M . \<forall>d\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. 
-  (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,incr_bv1(\<phi>),[x,y,d,a])))"
-  by (simp add: separation_ax_fm_def sats_incr_bv1_iff)
-
-lemma sep_2_params : 
-  "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) = 4  \<rbrakk> \<Longrightarrow> sats(M,separation_ax_fm(\<phi>),[]) \<longleftrightarrow>
-  (\<forall>b\<in>M. \<forall>a\<in>M. \<forall>d\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. 
-  (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,\<phi>,[x,d,a,b])))"
-  by (simp add: separation_ax_fm_def sats_incr_bv1_iff)
-
-lemma sep_5_params :
-  "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) = 7  \<rbrakk> \<Longrightarrow> sats(M,separation_ax_fm(\<phi>),[]) \<longleftrightarrow>
-  (\<forall>a5\<in>M. \<forall>a4\<in>M. \<forall>a3\<in>M. \<forall>a2\<in>M. \<forall>a1\<in>M. \<forall>d\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. 
-  (x\<in>y \<longleftrightarrow> x\<in>d \<and> sats(M,\<phi>,[x,d,a1,a2,a3,a4,a5])))"
-  by (simp add: separation_ax_fm_def sats_incr_bv1_iff)
-
-(* VER ESTO! Importante cómo usamos el parámetro "d" *)
-lemma separ_5_params :
-  "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) = 7  \<rbrakk> \<Longrightarrow> sats(M,separation_ax_fm(\<phi>),[]) \<longleftrightarrow>
-  (\<forall>a5\<in>M. \<forall>a4\<in>M. \<forall>a3\<in>M. \<forall>a2\<in>M. \<forall>a1\<in>M. separation(##M,\<lambda>x. sats(M,\<phi>,[x,d,a1,a2,a3,a4,a5])))"
-  apply (simp add: sep_5_params separation_def)
-  sorry
 
 (* Instances of separation for interface with M_basic *)
 
-    
-lemma nat_union_abs1 : 
-  "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> i \<union> j = j"
-  by (rule Un_absorb1,erule le_imp_subset)
-
-lemma nat_union_abs2 : 
-  "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> j \<union> i = j"
-  by (rule Un_absorb2,erule le_imp_subset)
-
 lemma inter_sep_intf :
-  "sats(M,separation_ax_fm(Forall(Implies(Member(0,3),Member(1,0)))),[])
+  "sats(M,separation_ax_fm(Forall(Implies(Member(0,2),Member(1,0)))),[])
   \<longleftrightarrow>
   (\<forall>A\<in>M. separation(##M,\<lambda>x . \<forall>y\<in>M . y\<in>A \<longrightarrow> x\<in>y))"
-  apply (rule iff_trans)
-   apply (rule sep_1_params,simp+)
-  apply (simp add: Un_commute nat_union_abs1)
-   apply (simp add: separation_def sats_incr_bv1_iff)
-  done
+  by (simp add: separation_def separation_intf separation_ax_fm_def sats_incr_bv1_iff)
 
 lemma diff_sep_intf :
-  "sats(M,separation_ax_fm(Neg(Member(0,2))),[])
+  "sats(M,separation_ax_fm(Neg(Member(0,1))),[])
   \<longleftrightarrow>
   (\<forall>B\<in>M. separation(##M,\<lambda>x . x\<notin>B))"
-  apply (rule iff_trans,rule sep_1_params,simp+)
-   prefer 2
-   apply (simp add: separation_def sats_incr_bv1_iff)
-  apply auto
-  done
-
-  
+  by (simp add: separation_def separation_intf separation_ax_fm_def sats_incr_bv1_iff)
+    
 definition
   cartprod_sep_fm :: "i" where
   "cartprod_sep_fm == 
-              Exists(And(Member(0,4),
-                     Exists(And(Member(0,4),pair_fm(1,0,2)))))"
+              Exists(And(Member(0,3),
+                     Exists(And(Member(0,3),pair_fm(1,0,2)))))"
 
 lemma cartprof_sep_fm_type [TC] : 
   "cartprod_sep_fm \<in> formula"
   by (simp add: cartprod_sep_fm_def)
 
+    
+    
 lemma cartprod_sep_intf :
   "sats(M,separation_ax_fm(cartprod_sep_fm),[])
   \<longleftrightarrow>
@@ -330,6 +297,10 @@ lemma funspace_succ_rep_intf :
   apply (simp add: pair_fm_def upair_fm_def is_cons_fm_def union_fm_def Un_commute nat_union_abs1)
   done
 
+lemmas M_basic_sep_instances = inter_sep_intf diff_sep_intf cartprod_sep_intf
+                image_sep_intf converse_sep_intf restrict_sep_intf
+                pred_sep_intf memrel_sep_intf comp_sep_intf is_recfun_sep_intf
+    
 (* Inifinite *)
 
 lemma nat_included_inductive : 
@@ -355,19 +326,15 @@ lemma Transset_intf :
   by (simp add: Transset_def,auto)
 
 lemma interface_M_basic : 
-  "\<lbrakk> Transset(M) ; satT(M,ZFTh,[]) ; \<And>P. replacement(##M,P) ; nat \<in> M \<rbrakk> \<Longrightarrow> PROP M_basic(##M)"
-  apply (rule M_basic.intro, rule M_trivial.intro)
+  "\<lbrakk> Transset(M) ; satT(M,ZFTh,[]) ; 0 \<in> M \<rbrakk> \<Longrightarrow> M_basic_no_repl(##M)"
+  apply (rule M_basic_no_repl.intro, rule M_trivial_no_repl.intro)
     apply (simp,rule Transset_intf,assumption+)
-    apply (simp_all add: pairing_intf[symmetric] union_intf[symmetric] power_intf[symmetric])
-    apply (rule satT_sats,assumption,simp add: ZFTh_def ZF_fin_def)+
-    apply (insert inter_sep_intf[of M] diff_sep_intf[of M] cartprod_sep_intf[of M]
-                image_sep_intf[of M] converse_sep_intf[of M] restrict_sep_intf[of M]
-                pred_sep_intf[of M] memrel_sep_intf[of M] comp_sep_intf[of M] 
-                is_recfun_sep_intf[of M] funspace_succ_rep_intf[of M]
-                comp_sep_intf [of M] funspace_succ_rep_intf[of M] is_recfun_sep_intf[of M])
-    apply (rule M_basic_axioms.intro)
+      apply (simp_all add: pairing_intf[symmetric] union_intf[symmetric] 
+                           power_intf[symmetric])
+     apply (rule satT_sats,assumption,simp add: ZFTh_def ZF_fin_def)+
+    apply (insert M_basic_sep_instances[of M] funspace_succ_rep_intf[of M])
+    apply (rule M_basic_no_repl_axioms.intro)
     apply (simp_all add: sep_spec repl_spec)
   done
 
-(* aprender lemmas, que es para agrupar lemmas *)
 end

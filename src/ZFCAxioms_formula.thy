@@ -144,8 +144,6 @@ lemma nForall_type [TC]:
   Sea \<Phi> fórmula, donde 'y' no es libre.
   \<forall>v\<forall>z\<exists>y\<forall>x. x\<in>y \<leftrightarrow> x\<in>z \<and> \<Phi>(x,v)
 
-  Ejemplo: Si \<Phi> = x=a \<or> x=b entonces
-              p debe ser 0=2 \<or> 0=3
 *)
 definition
   separation_ax_fm :: "i \<Rightarrow> i" where
