@@ -9,9 +9,12 @@ syntax
 translations
   "{b .. x\<in>A, Q}" => "CONST SepReplace(A, \<lambda>x. b, \<lambda>x. Q)"
 
-lemma "{b(x) .. x\<in>A, P(x) } = {b(x) . x\<in>{y\<in>A. P(y)}}"
-  apply (auto simp add:SepReplace_def RepFun_def)
-  done
+lemma Sep_and_Replace: "{b(x) .. x\<in>A, P(x) } = {b(x) . x\<in>{y\<in>A. P(y)}}"
+  by (auto simp add:SepReplace_def)
+
+lemma SepReplace_iff [simp]: "y\<in>{b(x) .. x\<in>A, P(x)} \<longleftrightarrow> (\<exists>x\<in>A. y=b(x) & P(x))"
+   by (auto simp add:SepReplace_def)
+ 
     
 context forcing_data
 begin  (*************** CONTEXT: forcing_data *****************)
@@ -20,9 +23,19 @@ definition
   "val == valR(M,P)"
 
 definition
+  Hv :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i" where
+  "Hv == Hval(P)"
+
+definition
     GenExt :: "i\<Rightarrow>i"     ("M[_]" 90)
   where "GenExt== gen_ext(M,P)"
 
+lemma "\<not>Q \<Longrightarrow> {x\<in>A . Q} = 0"     
+  by simp
+    
+lemma "Hv(G,x,f) = { f`y .. y\<in> domain(x), \<exists>p\<in>P. <y,p> \<in> x \<and> p \<in> G }"
+  by (simp add:Sep_and_Replace Hv_def Hval_def)    
+    
 end    (*************** CONTEXT: forcing_data *****************)
 
 
@@ -60,7 +73,11 @@ proof -
                {val(G,x) .. x\<in>domain(\<pi>)\<times>P, \<exists>\<theta> p. x=<\<theta>,p> \<and> (\<forall>F. M_generic(F) \<and> p\<in>F \<longrightarrow> 
                sats(M[F],\<phi>,[val(F,\<theta>),val(F,\<pi>),val(F,\<sigma>)]))}"  
               (is  "val(G,{x\<in>_. \<exists>\<theta> p. ?R(x,\<theta>,p) \<and> (\<forall>F. ?Q(F,p) \<longrightarrow> ?P(F,\<phi>,\<theta>,\<pi>,\<sigma>))}) = ?x")
-              
+  proof -
+    have
+              "val(G,{x\<in>domain(\<pi>)\<times>P. \<exists>\<theta> p. ?R(x,\<theta>,p) \<and> (\<forall>F. ?Q(F,p) \<longrightarrow> ?P(F,\<phi>,\<theta>,\<pi>,\<sigma>))}) =
+                "
+    
   oops
 end    (*************** CONTEXT: forcing_thms *****************)
 
