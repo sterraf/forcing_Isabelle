@@ -1,3 +1,5 @@
+(* Interface between internalized axiom formulas and 
+   ZF axioms *)
 theory Interface imports ZFCAxioms_formula Relative_hacked Names begin
 
 (* Extensionality *)
@@ -35,70 +37,115 @@ lemma power_intf :
   power_ax(##A)"
   by (simp add: powerset_ax_fm_def power_ax_def powerset_def subset_def subset_fm_def)
 
-(* Separation *)
+(* Interface for Transset *)
+lemma Transset_intf :
+  "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
+  by (simp add: Transset_def,auto)
+    
+locale M_ZF =  
+  fixes M
+  assumes trans_M:          "Transset(M)"
+      and M_model_ZF:       "satT(M,ZFTh,[])"
+      and M_nempty:         "0 \<in> M"
 
-lemma (in M_trivial_no_repl)  uniq_dec: "M(<C,D>)  \<Longrightarrow> 
-             \<forall>A[M]. \<forall>B[M]. <C,D> = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B)
+begin
+lemma intf_M_trivial :
+  "M_trivial_no_repl(##M)"
+  apply (insert trans_M M_model_ZF M_nempty)
+  apply (rule M_trivial_no_repl.intro)
+  apply (simp,rule Transset_intf,assumption+)
+  apply (simp_all add: pairing_intf[symmetric] union_intf[symmetric] 
+                       power_intf[symmetric] ZFTh_def ZF_fin_def satT_sats)
+done
+    
+interpretation Mtriv : M_trivial_no_repl "##M" by (rule intf_M_trivial)
+  
+
+(* Separation *)
+lemma uniq_dec: "<C,D> \<in> M \<Longrightarrow> 
+             \<forall>A\<in>M. \<forall>B\<in>M. <C,D> = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B)
             \<longleftrightarrow>
               P(x, C, D)"
   by simp
     
-lemma (in M_trivial_no_repl) tupling_sep :
-    "(\<forall>v[M]. separation(M,\<lambda>x. (\<forall>A[M]. \<forall>B[M]. pair(M,A,B,v) \<longrightarrow> P(x,A,B))))
+lemma tupling_sep_2p :
+    "(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>A\<in>M. \<forall>B\<in>M. pair(##M,A,B,v) \<longrightarrow> P(x,A,B))))
     \<longleftrightarrow>
-     (\<forall>A[M]. \<forall>B[M]. separation(M,\<lambda>x. P(x,A,B)))"
+     (\<forall>A\<in>M. \<forall>B\<in>M. separation(##M,\<lambda>x. P(x,A,B)))"
   apply (simp add: separation_def)
-proof (intro rallI iffI)
+proof (intro ballI iffI)
   fix A B z
   assume
-        Eq1:  "\<forall>v[M]. \<forall>z[M]. \<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> 
-               x \<in> z \<and> (\<forall>A[M]. \<forall>B[M]. v = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B))"
+        Eq1:  "\<forall>v\<in>M. \<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> 
+               x \<in> z \<and> (\<forall>A\<in>M. \<forall>B\<in>M. v = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B))"
      and
-        Eq2:  "M(A)" "M(B)" "M(z)"  (* no puedo poner la conjunción *)
+        Eq2:  "A\<in>M" "B\<in>M" "z\<in>M"  (* no puedo poner la conjunción *)
   then have 
-        Eq3:  "M(<A,B>)"
-    by simp
+        Eq3:  "<A,B>\<in>M"
+    by (simp del:setclass_iff add:setclass_iff[symmetric])
   with Eq1 have 
-              "\<forall>z[M]. \<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> 
-               x \<in> z \<and> (\<forall>C[M]. \<forall>D[M]. <A,B> = \<langle>C, D\<rangle> \<longrightarrow> P(x, C, D))"
-    by blast
+              "\<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> 
+               x \<in> z \<and> (\<forall>C\<in>M. \<forall>D\<in>M. <A,B> = \<langle>C, D\<rangle> \<longrightarrow> P(x, C, D))"
+    by (rule bspec)
   with uniq_dec and Eq3 and Eq2 show
-              "\<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> 
+              "\<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> 
                x \<in> z \<and>  P(x, A, B)"
     by simp
 next
   fix v z
   assume
-       asms:  "M(v)"   "M(z)"
-              "\<forall>A[M]. \<forall>B[M]. \<forall>z[M]. \<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> x \<in> z \<and> P(x, A, B)"
-  consider (a) "\<exists>A[M]. \<exists>B[M]. v = \<langle>A, B\<rangle>" | (b) "\<forall>A[M]. \<forall>B[M]. v \<noteq> \<langle>A, B\<rangle>" by auto
+       asms:  "v\<in>M"   "z\<in>M"
+              "\<forall>A\<in>M. \<forall>B\<in>M. \<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> P(x, A, B)"
+  consider (a) "\<exists>A\<in>M. \<exists>B\<in>M. v = \<langle>A, B\<rangle>" | (b) "\<forall>A\<in>M. \<forall>B\<in>M. v \<noteq> \<langle>A, B\<rangle>" by auto
   then show                (* "then" is important here *)
-              "\<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> x \<in> z \<and> 
-                    (\<forall>A[M]. \<forall>B[M]. v = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B))"
+              "\<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> 
+                    (\<forall>A\<in>M. \<forall>B\<in>M. v = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B))"
   proof cases
     case a
     then obtain A B where  (* also here *)
-        Eq4:  "M(A)" "M(B)" "v = \<langle>A, B\<rangle>"
+        Eq4:  "A\<in>M" "B\<in>M" "v = \<langle>A, B\<rangle>"
       by auto
     then have
-              "\<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> x \<in> z \<and> P(x, A, B)"
+              "\<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> P(x, A, B)"
       using asms by simp
     then show ?thesis using Eq4 and uniq_dec by simp
   next
     case b
     then have
-              "\<forall>x[M]. x \<in> z \<longleftrightarrow> x \<in> z \<and> (\<forall>A[M]. \<forall>B[M]. v = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B))"
+              "\<forall>x\<in>M. x \<in> z \<longleftrightarrow> x \<in> z \<and> (\<forall>A\<in>M. \<forall>B\<in>M. v = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B))"
       by simp
     then show ?thesis using b and asms by auto
   qed
 qed
-    
-lemma aux_pred2: "n\<le>2 \<Longrightarrow> Arith.pred(Arith.pred(n)) = 0"
-  apply (case_tac "n=0 \<or> n=1 \<or> n=2" )
-  prefer 2 apply (simp add: lt_def)
-  apply auto
-done    
+  
+lemma tupling_sep_5p : 
+"(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. 
+                  v = \<langle>A1, \<langle>A2, \<langle>A3, \<langle>A4, A5\<rangle>\<rangle>\<rangle>\<rangle> \<longrightarrow> P(x,A1,A2,A3,A4,A5))))
+    \<longleftrightarrow>
+ (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. separation(##M,\<lambda>x. P(x,A1,A2,A3,A4,A5)))"
+  sorry
+  
+  
+end
+  
+(* Tupling para fórmula para instancia de separación.
+   Se asume que la aridad es 3: las dos primeras variables son los
+   parámetros que se van a tuplear, la siguiente es el x de separación*)
+  
 
+
+definition 
+  tupling_fm_2_params :: "i \<Rightarrow> i" where
+  "tupling_fm_2_params(\<phi>) = Forall(Forall(Implies(pair_fm(1,0,3),\<phi>)))"
+
+lemma [TC] :  "\<lbrakk> \<phi> \<in> formula \<rbrakk> \<Longrightarrow> tupling_fm_2_params(\<phi>) \<in> formula"
+  by (simp add: tupling_fm_2_params_def)
+    
+lemma arity_tup2p :  
+  "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>) = 3 \<rbrakk> \<Longrightarrow> arity(tupling_fm_2_params(\<phi>)) = 2"
+  by (simp add: tupling_fm_2_params_def arity_incr_bv_lemma pair_fm_def 
+                upair_fm_def Un_commute nat_union_abs1)
+  
 lemma separation_intf : 
       "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=1 \<or> arity(\<phi>)=2 \<rbrakk> \<Longrightarrow> 
         sats(M,separation_ax_fm(\<phi>),[]) \<longleftrightarrow> 
@@ -107,7 +154,6 @@ lemma separation_intf :
     
 
 (* Instances of separation for interface with M_basic *)
-
 lemma inter_sep_intf :
   "sats(M,separation_ax_fm(Forall(Implies(Member(0,2),Member(1,0)))),[])
   \<longleftrightarrow>
@@ -120,136 +166,171 @@ lemma diff_sep_intf :
   (\<forall>B\<in>M. separation(##M,\<lambda>x . x\<notin>B))"
   by (simp add: separation_def separation_intf separation_ax_fm_def sats_incr_bv1_iff)
     
+  (* cartprod_sep_fm vars:
+     0 \<longrightarrow> B
+     1 \<longrightarrow> A
+     2 \<longrightarrow> x *)
 definition
   cartprod_sep_fm :: "i" where
   "cartprod_sep_fm == 
-              Exists(And(Member(0,3),
-                     Exists(And(Member(0,3),pair_fm(1,0,2)))))"
+              Exists(And(Member(0,2),
+                     Exists(And(Member(0,2),pair_fm(1,0,4)))))"
 
 lemma cartprof_sep_fm_type [TC] : 
   "cartprod_sep_fm \<in> formula"
   by (simp add: cartprod_sep_fm_def)
+    
+lemma [simp] : "arity(cartprod_sep_fm) = 3" 
+  by (simp add: cartprod_sep_fm_def pair_fm_def upair_fm_def 
+                Un_commute nat_union_abs1)
 
-    
-    
-lemma cartprod_sep_intf :
-  "sats(M,separation_ax_fm(cartprod_sep_fm),[])
+
+lemma (in M_ZF) cartprod_sep_intf :
+  "sats(M,separation_ax_fm(tupling_fm_2_params(cartprod_sep_fm)),[])
   \<longleftrightarrow>
   (\<forall>A\<in>M. \<forall>B\<in>M. separation(##M,\<lambda>z. \<exists>x\<in>M. x\<in>A \<and> (\<exists>y\<in>M. y\<in>B \<and> pair(##M,x,y,z))))"
   apply (rule iff_trans)
-   apply (rule sep_2_params)
-    apply (unfold cartprod_sep_fm_def,simp+)
+   apply (rule separation_intf,simp,rule disjI2,rule arity_tup2p,simp+)
+  apply (rule iff_trans) 
    prefer 2
-   apply (simp add: separation_def)
-  apply (simp add: pair_fm_def upair_fm_def Un_commute nat_union_abs1)
+   apply (rule tupling_sep_2p)
+  apply (simp add: separation_def tupling_fm_2_params_def cartprod_sep_fm_def)
   done
-
+  
 definition
   image_sep_fm :: "i" where
   "image_sep_fm == 
-    Exists(And(Member(0,3),
-              Exists(And(Member(0,5),pair_fm(0,2,1)))))"
-
+    Exists(And(Member(0,1),
+          Exists(And(Member(0,3),pair_fm(0,4,1)))))"
+  
 lemma image_sep_fm_type [TC] : 
   "image_sep_fm \<in> formula"
   by (simp add: image_sep_fm_def)
 
-lemma image_sep_intf :
-  "sats(M,separation_ax_fm(image_sep_fm),[])
+    
+lemma [simp] : "arity(image_sep_fm) = 3" 
+  by (simp add: image_sep_fm_def pair_fm_def upair_fm_def 
+                Un_commute nat_union_abs1)
+               
+
+lemma (in M_ZF) image_sep_intf :
+  "sats(M,separation_ax_fm(tupling_fm_2_params(image_sep_fm)),[])
   \<longleftrightarrow>
   (\<forall>A\<in>M. \<forall>r\<in>M. separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>r & (\<exists>x\<in>M. x\<in>A & pair(##M,x,y,p))))"
   apply (rule iff_trans)
-  apply (rule sep_2_params)
-    apply (unfold image_sep_fm_def,simp+)
+   apply (rule separation_intf,simp,rule disjI2,rule arity_tup2p,simp+)
+  apply (rule iff_trans)
    prefer 2
-   apply (simp add: separation_def)
-  apply (simp add: pair_fm_def upair_fm_def Un_commute nat_union_abs1)
+   apply (rule tupling_sep_2p)
+  apply (simp add: separation_def tupling_fm_2_params_def image_sep_fm_def)
   done
 
 definition
   converse_sep_fm :: "i" where
   "converse_sep_fm == 
-    Exists(And(Member(0,3),
+    Exists(And(Member(0,2),
       Exists(Exists(And(pair_fm(1,0,2),pair_fm(0,1,3))))))"
-
+  
 lemma converse_sep_fm_type [TC] : "converse_sep_fm \<in> formula"
   by (simp add: converse_sep_fm_def)
 
+lemma [simp] : "arity(converse_sep_fm) = 2"
+  by (simp add: converse_sep_fm_def pair_fm_def upair_fm_def 
+                Un_commute nat_union_abs1)
+    
 lemma converse_sep_intf : 
   "sats(M,separation_ax_fm(converse_sep_fm),[])
   \<longleftrightarrow>
   (\<forall>r\<in>M. separation(##M,\<lambda>z. \<exists>p\<in>M. p\<in>r & (\<exists>x\<in>M.
                       \<exists>y\<in>M. pair(##M,x,y,p) & pair(##M,y,x,z))))"
-  apply (rule iff_trans,rule sep_1_params)
-    apply (unfold converse_sep_fm_def,simp+)
-   prefer 2
-   apply (simp add: separation_def sats_incr_bv1_iff)
-  apply (simp add: pair_fm_def upair_fm_def Un_commute nat_union_abs1)
-  done
+  by (simp add: separation_def separation_intf separation_ax_fm_def 
+                     sats_incr_bv1_iff converse_sep_fm_def)
   
 definition
   restrict_sep_fm :: "i" where
-  "restrict_sep_fm == Exists(And(Member(0,3),Exists(pair_fm(1,0,2))))"
+  "restrict_sep_fm == Exists(And(Member(0,2),Exists(pair_fm(1,0,2))))"
 
 lemma restrict_sep_fm_type [TC] : "restrict_sep_fm \<in> formula"
   by (simp add: restrict_sep_fm_def)
- 
+    
+lemma [simp] : "arity(restrict_sep_fm) = 2"
+  by (simp add: restrict_sep_fm_def pair_fm_def upair_fm_def 
+                Un_commute nat_union_abs1)
+
 lemma restrict_sep_intf :
   "sats(M,separation_ax_fm(restrict_sep_fm),[])
   \<longleftrightarrow>
   (\<forall>A\<in>M. separation(##M,\<lambda>z. \<exists>x\<in>M. x\<in>A & (\<exists>y\<in>M. pair(##M,x,y,z))))"
-  apply (rule iff_trans,rule sep_1_params)
-    apply (unfold restrict_sep_fm_def,simp+)
-   prefer 2
-   apply (simp add: separation_def sats_incr_bv1_iff)
-  apply (simp add: pair_fm_def upair_fm_def Un_commute nat_union_abs1)
-  done
+  by (simp add: separation_def separation_intf separation_ax_fm_def 
+                     sats_incr_bv1_iff restrict_sep_fm_def)
 
 definition 
   comp_sep_fm :: "i" where
   "comp_sep_fm ==
     Exists(Exists(Exists(Exists(Exists
-      (And(pair_fm(4,2,5),And(pair_fm(4,3,1),
-          And(pair_fm(3,2,0),And(Member(1,7),Member(0,8))))))))))"
+      (And(pair_fm(4,2,7),And(pair_fm(4,3,1),
+          And(pair_fm(3,2,0),And(Member(1,5),Member(0,6))))))))))"
 
 lemma comp_sep_fm_type [TC] : "comp_sep_fm \<in> formula"
   by (simp add: comp_sep_fm_def)
 
-lemma comp_sep_intf :         
-  "sats(M,separation_ax_fm(comp_sep_fm),[])
+lemma [simp] : "arity(comp_sep_fm) = 3"
+  by (simp add: comp_sep_fm_def pair_fm_def upair_fm_def Un_commute nat_union_abs1)
+
+lemma (in M_ZF) comp_sep_intf :
+  "sats(M,separation_ax_fm(tupling_fm_2_params(comp_sep_fm)),[])
   \<longleftrightarrow>
   (\<forall>r\<in>M. \<forall>s\<in>M. 
     separation(##M,\<lambda>xz. \<exists>x\<in>M. \<exists>y\<in>M. \<exists>z\<in>M. \<exists>xy\<in>M. \<exists>yz\<in>M.
               pair(##M,x,z,xz) & pair(##M,x,y,xy) & pair(##M,y,z,yz) &
               xy\<in>s & yz\<in>r))"
-  apply (rule iff_trans,rule sep_2_params)
-    apply (unfold comp_sep_fm_def,simp+)
-  prefer 2
-   apply (simp add: separation_def)
-  apply (simp add: pair_fm_def upair_fm_def Un_commute nat_union_abs1)
+  apply (rule iff_trans)
+   apply (rule separation_intf,simp,rule disjI2,rule arity_tup2p,simp+)
+  apply (rule iff_trans)
+   prefer 2
+   apply (rule tupling_sep_2p)
+  apply (simp add: separation_def tupling_fm_2_params_def comp_sep_fm_def)
   done
 
-lemma pred_sep_intf :
-  "sats(M,separation_ax_fm(Exists(And(Member(0,4),pair_fm(1,3,0)))),[])
+lemma (in M_ZF) pred_sep_intf :
+  "sats(M,separation_ax_fm(
+       tupling_fm_2_params(Exists(And(Member(0,2),pair_fm(3,1,0))))),[])
   \<longleftrightarrow>
   (\<forall>r\<in>M. \<forall>x\<in>M. separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>r & pair(##M,y,x,p)))"
-  apply (rule iff_trans,rule sep_2_params,simp+)
-  prefer 2
-   apply (simp add: separation_def)
-  apply (simp add: pair_fm_def upair_fm_def Un_commute nat_union_abs1)
+   apply (rule iff_trans)
+   apply (rule separation_intf,simp,rule disjI2,rule arity_tup2p,simp+)
+   apply (simp add: pair_fm_def upair_fm_def Un_commute nat_union_abs1)
+  apply (rule iff_trans)
+   prefer 2
+   apply (rule tupling_sep_2p)
+  apply (simp add: separation_def tupling_fm_2_params_def comp_sep_fm_def)
   done
 
-lemma memrel_sep_intf :
-  "sats(M,separation_ax_fm(Exists(Exists(And(pair_fm(1,0,2),Member(1,0))))),[])
+definition
+  memrel_fm :: "i" where
+  "memrel_fm == Exists(Exists(And(pair_fm(1,0,2),Member(1,0))))"
+    
+lemma [TC] : "memrel_fm \<in> formula"
+  by (simp add: memrel_fm_def)
+  
+lemma [simp] : "arity(memrel_fm) = 1"
+  by (simp add: memrel_fm_def pair_fm_def upair_fm_def Un_commute nat_union_abs1)
+    
+lemma sats_memrel :
+   "\<lbrakk> a\<in>M ; x\<in>M  \<rbrakk>  \<Longrightarrow> 
+    sats(M,memrel_fm,[x,a]) \<longleftrightarrow> 
+    (\<exists>z\<in>M. \<exists>y\<in>M. pair(##M,z,y,x) & z \<in> y)"
+   by (simp add: memrel_fm_def)
+
+lemma (in M_ZF) memrel_sep_intf :
+  "sats(M,separation_ax_fm(memrel_fm),[])
   \<longleftrightarrow>
   separation(##M, \<lambda>z. \<exists>x\<in>M. \<exists>y\<in>M. pair(##M,x,y,z) & x \<in> y)"
-  apply (rule iff_trans,rule sep_0_params,simp+)
-  prefer 2
-   apply (simp add: separation_def sats_incr_bv1_iff)
-    apply (unfold pair_fm_def upair_fm_def)
-  apply (simp add:Un_commute nat_union_abs1)
+  apply (simp add: separation_def separation_intf sats_memrel)
+  apply (insert M_nempty,auto)
   done
 
+(*    
 definition
   is_recfun_sep_fm :: "i" where
   "is_recfun_sep_fm == 
@@ -267,7 +348,7 @@ lemma is_recfun_sep_intf :
     separation(##M,\<lambda>x. \<exists>xa\<in>M. \<exists>xb\<in>M.
                     pair(##M,x,a,xa) & xa \<in> r & pair(##M,x,b,xb) & xb \<in> r &
                     (\<exists>fx\<in>M. \<exists>gx\<in>M. fun_apply(##M,f,x,fx) & fun_apply(##M,g,x,gx) &
-                                     fx \<noteq> gx)))" 
+                                     fx \<noteq> gx)))"
   apply (rule iff_trans,rule sep_5_params)
     apply (unfold is_recfun_sep_fm_def,simp+)
   prefer 2
@@ -367,11 +448,6 @@ lemma sep_finite_ord_intf :
                    union_fm_def upair_fm_def Un_commute nat_union_abs1)
   done
 
-(* Interface for Transset *)
-lemma Transset_intf :
-  "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
-  by (simp add: Transset_def,auto)
-
 lemma interface_M_basic : 
   "\<lbrakk> Transset(M) ; satT(M,ZFTh,[]) ; 0 \<in> M \<rbrakk> \<Longrightarrow> M_basic_no_repl(##M)"
   apply (rule M_basic_no_repl.intro, rule M_trivial_no_repl.intro)
@@ -383,5 +459,5 @@ lemma interface_M_basic :
     apply (rule M_basic_no_repl_axioms.intro)
     apply (simp_all add: sep_spec repl_spec)
   done
-
+*)
 end

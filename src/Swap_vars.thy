@@ -73,5 +73,9 @@ lemma sats_swap_0_1 :
   apply (insert sats_swap_suc [of \<phi> b M a env "[]"])
   apply (simp add: swap_0_1_def)
   done
-
+(*
+definition
+  shift_2 :: "i \<Rightarrow> i" where
+  "shift_2(\<phi>) == swap_0_1(
+  *)  
 end
