@@ -754,7 +754,7 @@ in the generic extension $M[G]$.
   M,[\PP,\leq,\1,p,\th,\pi,\sig]\models
   \forceisa(\dB{0},\dB{1},\dB{2},\dB{3},\dB{4}\in \dB{5} \y\phi(\dB{4},\dB{5},\dB{6}))
   \]
-  By the Truth Lemma, this is equivalent to
+  By the Definition of Forcing, this is equivalent to
   \[
   \forall F\ \PP\text{-generic}, p\in F \limp
   M[F],[\val(\th,F),\val(\pi,F),\val(\sig,F)]\models
@@ -765,8 +765,7 @@ in the generic extension $M[G]$.
   \begin{multline*}
     \val(\tau,G) = \\
     \val\bigl(\{x\in\dom(\pi)\times\PP : \exists \th,p : x =\lb\th,p\rb
-    \y  \\
-    \forall F\ \PP\text{-generic}, p\in F \limp
+    \y \forall F\ \PP\text{-generic}, p\in F \limp \\    
     M[F],[\val(\th,F),\val(\pi,F),\val(\sig,F)]\models
     \dB{0}\in \dB{1} \y\phi(\dB{0},\dB{1},\dB{2})\}\bigr).
   \end{multline*}
@@ -813,13 +812,13 @@ in the generic extension $M[G]$.
   $\val(\tau,G)\subseteq S$.
 
   Now let $x\in S$. Hence there exists $\lb\th,q\rb\in\pi$ such that
-  $q\in G$ and $x=\val(\th,G)$. By the second version of the Truth
+  $q\in G$ and $x=\val(\th,G)$. By the  Truth
   Lemma, since 
   \[
   M[G],[\val(\th,G),\val(\pi,G),\val(\sig,G)]\models
   \dB{0}\in\dB{1}\y\phi(\dB{0},\dB{1},\dB{2}),
   \]
-  there must exists $r\in G$ such that 
+  there must exist $r\in G$ such that 
   \[
   M,[\PP,\leq,\1,r,\th,\pi,\sig]\models
   \forceisa(\dB{0},\dB{1},\dB{2},\dB{3},
