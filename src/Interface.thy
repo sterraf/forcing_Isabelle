@@ -62,7 +62,7 @@ interpretation Mtriv : M_trivial_no_repl "##M" by (rule intf_M_trivial)
   
 
 (* Separation *)
-lemma uniq_dec: "<C,D> \<in> M \<Longrightarrow> 
+lemma uniq_dec_2p: "<C,D> \<in> M \<Longrightarrow> 
              \<forall>A\<in>M. \<forall>B\<in>M. <C,D> = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B)
             \<longleftrightarrow>
               P(x, C, D)"
@@ -87,7 +87,7 @@ proof (intro ballI iffI)
               "\<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> 
                x \<in> z \<and> (\<forall>C\<in>M. \<forall>D\<in>M. <A,B> = \<langle>C, D\<rangle> \<longrightarrow> P(x, C, D))"
     by (rule bspec)
-  with uniq_dec and Eq3 and Eq2 show
+  with uniq_dec_2p and Eq3 and Eq2 show
               "\<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> 
                x \<in> z \<and>  P(x, A, B)"
     by simp
@@ -108,7 +108,7 @@ next
     then have
               "\<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> P(x, A, B)"
       using asms by simp
-    then show ?thesis using Eq4 and uniq_dec by simp
+    then show ?thesis using Eq4 and uniq_dec_2p by simp
   next
     case b
     then have
@@ -118,13 +118,68 @@ next
   qed
 qed
   
+lemma uniq_dec_5p: "<A',B',C',D',E'> \<in> M \<Longrightarrow> 
+             \<forall>A\<in>M. \<forall>B\<in>M. \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. <A',B',C',D',E'> = <A,B,C,D,E> \<longrightarrow> 
+                  P(x,A,B,C,D,E)
+                \<longleftrightarrow>
+                  P(x,A',B',C',D',E')"
+  by simp
+
 lemma tupling_sep_5p : 
 "(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. 
                   v = \<langle>A1, \<langle>A2, \<langle>A3, \<langle>A4, A5\<rangle>\<rangle>\<rangle>\<rangle> \<longrightarrow> P(x,A1,A2,A3,A4,A5))))
     \<longleftrightarrow>
  (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. separation(##M,\<lambda>x. P(x,A1,A2,A3,A4,A5)))"
-  sorry
-  
+  apply (simp add: separation_def)
+proof (intro ballI iffI)
+  fix A B C D E z
+  assume
+        Eq1:  "\<forall>v\<in>M. \<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> 
+               x \<in> z \<and> (\<forall>A\<in>M. \<forall>B\<in>M.  \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. v = \<langle>A, B,C,D,E\<rangle> 
+                   \<longrightarrow> P(x, A, B, C, D, E))"
+     and
+        Eq2:  "A\<in>M" "B\<in>M" "C\<in>M" "D\<in>M" "E\<in>M" "z\<in>M"  (* no puedo poner la conjunción *)
+  then have 
+        Eq3:  "<A,B,C,D,E>\<in>M"
+    by (simp del:setclass_iff add:setclass_iff[symmetric])
+  with Eq1 have 
+              "\<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> 
+               x \<in> z \<and> (\<forall>A'\<in>M. \<forall>B'\<in>M.  \<forall>C'\<in>M. \<forall>D'\<in>M. \<forall>E'\<in>M. <A,B,C,D,E> = \<langle>A',B',C',D',E'\<rangle> 
+                   \<longrightarrow> P(x, A', B', C', D', E'))"
+    by (rule bspec)
+  with uniq_dec_5p and Eq3 and Eq2 show
+              "\<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> 
+               x \<in> z \<and>  P(x,A,B,C,D,E)"
+    by simp
+next
+  fix v z
+  assume
+       asms:  "v\<in>M"   "z\<in>M"
+              "\<forall>A\<in>M. \<forall>B\<in>M. \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. \<forall>z\<in>M. \<exists>y\<in>M. 
+                  \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> P(x, A,B,C,D,E)"
+  consider (a) "\<exists>A\<in>M. \<exists>B\<in>M. \<exists>C\<in>M. \<exists>D\<in>M. \<exists>E\<in>M. v = \<langle>A,B,C,D,E\<rangle>" | 
+           (b) "\<forall>A\<in>M. \<forall>B\<in>M. \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. v \<noteq> \<langle>A,B,C,D,E\<rangle>" by blast
+  then show               
+              "\<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> 
+                    (\<forall>A\<in>M. \<forall>B\<in>M. \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. v = \<langle>A,B,C,D,E\<rangle> \<longrightarrow> P(x,A,B,C,D,E))"
+  proof cases
+    case a
+    then obtain A B C D E where 
+        Eq4:  "A\<in>M" "B\<in>M" "C\<in>M" "D\<in>M" "E\<in>M" "v = \<langle>A,B,C,D,E\<rangle>"
+      by auto
+    then have
+              "\<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> P(x,A,B,C,D,E)"
+      using asms by simp
+    then show ?thesis using Eq4 by simp
+  next
+    case b
+    then have
+              "\<forall>x\<in>M. x \<in> z \<longleftrightarrow> x \<in> z \<and> 
+                (\<forall>A\<in>M. \<forall>B\<in>M.  \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. v = \<langle>A,B,C,D,E\<rangle> \<longrightarrow> P(x,A,B,C,D,E))"
+      by simp
+    then show ?thesis using b and asms by auto
+  qed
+qed
   
 end
   
