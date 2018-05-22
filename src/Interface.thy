@@ -37,14 +37,40 @@ lemma power_intf :
 
 (* Separation *)
 
+lemma (in M_trivial_no_repl)  uniq_dec: "M(<C,D>)  \<Longrightarrow> 
+             \<forall>A[M]. \<forall>B[M]. <C,D> = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B)
+            \<longleftrightarrow>
+              P(x, C, D)"
+  by simp
+    
 lemma (in M_trivial_no_repl) tupling_sep :
     "(\<forall>v[M]. separation(M,\<lambda>x. (\<forall>A[M]. \<forall>B[M]. pair(M,A,B,v) \<longrightarrow> P(x,A,B))))
     \<longleftrightarrow>
      (\<forall>A[M]. \<forall>B[M]. separation(M,\<lambda>x. P(x,A,B)))"
   apply (simp add: separation_def)
-  apply rule
-   prefer 2 
-    
+proof (rule,rule,rule,rule)
+  fix A B z
+  assume
+        Eq1:  "\<forall>v[M]. \<forall>z[M]. \<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> 
+               x \<in> z \<and> (\<forall>A[M]. \<forall>B[M]. v = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B))"
+     and
+        Eq2:  "M(A)" "M(B)" "M(z)"  (* no puedo poner la conjunción *)
+  then have 
+        Eq3:  "M(<A,B>)"
+    by simp
+  with Eq1 have 
+              "\<forall>z[M]. \<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> 
+               x \<in> z \<and> (\<forall>C[M]. \<forall>D[M]. <A,B> = \<langle>C, D\<rangle> \<longrightarrow> P(x, C, D))"
+    by blast
+  with uniq_dec and Eq3 and Eq2 show
+              "\<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> 
+               x \<in> z \<and>  P(x, A, B)"
+    by simp
+next
+
+oops
+  
+      
     
 lemma aux_pred2: "n\<le>2 \<Longrightarrow> Arith.pred(Arith.pred(n)) = 0"
   apply (case_tac "n=0 \<or> n=1 \<or> n=2" )
