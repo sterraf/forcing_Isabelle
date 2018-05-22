@@ -29,12 +29,13 @@ definition
 definition
     GenExt :: "i\<Rightarrow>i"     ("M[_]" 90)
   where "GenExt== gen_ext(M,P)"
-
-lemma "\<not>Q \<Longrightarrow> {x\<in>A . Q} = 0"     
-  by simp
     
 lemma "Hv(G,x,f) = { f`y .. y\<in> domain(x), \<exists>p\<in>P. <y,p> \<in> x \<and> p \<in> G }"
-  by (simp add:Sep_and_Replace Hv_def Hval_def)    
+  by (simp add:Sep_and_Replace Hv_def Hval_def)  
+    
+lemma "val(G,{<t,p> .. <t,p>\<in>A\<times>B, Q(t,p)}) = {val(G,t) .. t\<in>A , p\<in>B & Q(t,p)}"
+apply (simp add:SepReplace_def)
+  oops
     
 end    (*************** CONTEXT: forcing_data *****************)
 
