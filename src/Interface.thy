@@ -48,7 +48,7 @@ lemma (in M_trivial_no_repl) tupling_sep :
     \<longleftrightarrow>
      (\<forall>A[M]. \<forall>B[M]. separation(M,\<lambda>x. P(x,A,B)))"
   apply (simp add: separation_def)
-proof (rule,rule,rule,rule)
+proof (intro rallI iffI)
   fix A B z
   assume
         Eq1:  "\<forall>v[M]. \<forall>z[M]. \<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> 
@@ -67,10 +67,31 @@ proof (rule,rule,rule,rule)
                x \<in> z \<and>  P(x, A, B)"
     by simp
 next
-
-oops
-  
-      
+  fix v z
+  assume
+       asms:  "M(v)"   "M(z)"
+              "\<forall>A[M]. \<forall>B[M]. \<forall>z[M]. \<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> x \<in> z \<and> P(x, A, B)"
+  consider (a) "\<exists>A[M]. \<exists>B[M]. v = \<langle>A, B\<rangle>" | (b) "\<forall>A[M]. \<forall>B[M]. v \<noteq> \<langle>A, B\<rangle>" by auto
+  then show                (* "then" is important here *)
+              "\<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> x \<in> z \<and> 
+                    (\<forall>A[M]. \<forall>B[M]. v = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B))"
+  proof cases
+    case a
+    then obtain A B where  (* also here *)
+        Eq4:  "M(A)" "M(B)" "v = \<langle>A, B\<rangle>"
+      by auto
+    then have
+              "\<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> x \<in> z \<and> P(x, A, B)"
+      using asms by simp
+    then show ?thesis using Eq4 and uniq_dec by simp
+  next
+    case b
+    then have
+              "\<forall>x[M]. x \<in> z \<longleftrightarrow> x \<in> z \<and> (\<forall>A[M]. \<forall>B[M]. v = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B))"
+      by simp
+    then show ?thesis using b and asms by auto
+  qed
+qed
     
 lemma aux_pred2: "n\<le>2 \<Longrightarrow> Arith.pred(Arith.pred(n)) = 0"
   apply (case_tac "n=0 \<or> n=1 \<or> n=2" )
