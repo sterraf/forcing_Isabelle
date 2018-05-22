@@ -1,4 +1,4 @@
-theory my_playground imports Formula ZFCaxioms L_axioms  Pointed_DC Cardinal begin
+theory my_playground imports Formula ZFCaxioms L_axioms Cardinal begin
 
 section\<open>Training in Isabelle proofs\<close>  
 text\<open>The next lemma is just an experiment to have a proof of a proposition P==>P\<close>
@@ -413,5 +413,79 @@ proof -
   with gen and fil show ?thesis  
     unfolding D_generic_def by auto
 qed *)
+
+definition
+  e3 :: "[i,i] \<Rightarrow> o" where
+  "e3(x,y) == \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
+
+definition
+  e3_set :: "i \<Rightarrow> i" where
+  "e3_set(M) == { z \<in> M*M . e3(fst(z),snd(z)) }"
+
+
+lemma e3I [intro] : "x \<in> a \<Longrightarrow> a \<in> b \<Longrightarrow> b \<in> y \<Longrightarrow>
+            e3(x,y)"
+  by (simp add: e3_def,blast)
+
+lemma e3E [elim] : "e3(x,y) \<Longrightarrow> (\<And> a b . x \<in> a \<Longrightarrow> a \<in> b \<Longrightarrow> b \<in> y \<Longrightarrow> P) \<Longrightarrow> P"
+  by (simp add:e3_def,blast)
+    
+    
+(* \<questiondown>Es útil? *)
+lemma e3_set_coord : 
+  "<x,y>\<in>e3_set(M) \<Longrightarrow> \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
+by (simp add:e3_set_def e3_def )
+
+(*\<questiondown>Qué significa fld?*)
+lemma fld_e3_sub_eclose : 
+ "\<lbrakk>y \<in> M ; z \<in> y ; w \<in> z\<rbrakk> \<Longrightarrow> z \<in> eclose(M) \<and> w \<in> eclose(M)"
+proof (simp add:ecloseD) 
+  assume p:"y\<in>M"
+     and q: "z\<in>y"
+  show "z\<in>eclose(M)"
+  proof - 
+  have r:"M\<subseteq>eclose(M)" by (rule arg_subset_eclose)
+  from p and r  have "y\<in>eclose(M)" by (simp add:subsetD)
+  then show ?thesis using q  by (simp add:ecloseD)
+  qed
+qed
+
+lemma fld_memrel:"\<lbrakk> y \<in> M ; z \<in> y ; w \<in> z\<rbrakk> \<Longrightarrow> 
+                           <w,z> \<in> Memrel(eclose(M))"
+  by  (rule MemrelI,assumption,simp add:fld_e3_sub_eclose,simp add:fld_e3_sub_eclose)
+
+
+lemma
+  "e3_set(M) \<subseteq> Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M))"
+proof (unfold e3_set_def, unfold e3_def,clarsimp)
+  fix x y z w
+  assume a:"x \<in> M" "y \<in> M" "z \<in> y" "w \<in> z" "x \<in> w"
+  then have p : "<x,w> \<in> Memrel(eclose(M))" 
+    by (simp add:fld_memrel fld_e3_sub_eclose arg_into_eclose)
+  from a have q : "<w,z> \<in> Memrel(eclose(M))"
+    by (simp add:MemrelI fld_e3_sub_eclose)
+  from a have r: "<z,y> \<in> Memrel(eclose(M))"
+    by (simp add:MemrelI fld_e3_sub_eclose arg_into_eclose)
+  with p q 
+    show "<x,y> \<in> Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M))"
+     by (rule_tac b=z in compI, rule_tac b=w in compI)
+qed
+
+lemma rel_sub_memcomp : 
+  "e3_set(M) \<subseteq> Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M))"
+proof (unfold e3_set_def, unfold e3_def,clarsimp)
+  fix x y z w
+  assume 
+          a:  "x \<in> M" "y \<in> M" "z \<in> y" "w \<in> z" "x \<in> w"
+  then have 
+          p:  "<x,w> \<in> Memrel(eclose(M))" 
+              "<w,z> \<in> Memrel(eclose(M))" 
+              "<z,y> \<in> Memrel(eclose(M))"
+    by (simp_all add:fld_memrel fld_e3_sub_eclose arg_into_eclose)
+  then show     
+    "<x,y> \<in> Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M))"
+    by (rule_tac b=z in compI, rule_tac b=w in compI)
+qed
+
 end
 
