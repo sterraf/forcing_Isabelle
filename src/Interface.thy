@@ -181,8 +181,97 @@ next
   qed
 qed
 
+(*  Misma prueba que el lema siguiente. 
+ *
+lemma tupling_simp2 :
+        "(\<forall>B\<in>M. \<forall>A\<in>M. 
+          \<langle>A, B\<rangle> \<in> M \<and> Q(A,B) \<longrightarrow> P(A,B))
+       \<longleftrightarrow>
+         (\<forall>B\<in>M. \<forall>A\<in>M. 
+          Q(A,B) \<longrightarrow> P(A,B))"
+proof (intro iffI ballI impI)
+  fix A B
+  assume 
+       asms:  "\<forall>B\<in>M. \<forall>A\<in>M. \<langle>A, B\<rangle> \<in> M \<and> Q(A, B) \<longrightarrow> P(A, B)"
+              "B \<in> M"
+              "A \<in> M" 
+              "Q(A, B)"
+  then have
+              "\<langle>A, B\<rangle> \<in> M \<and> Q(A, B) \<longrightarrow> P(A, B)"
+    by simp
+  with asms and Mtriv.pair_in_M_iff show "P(A,B)" 
+      by simp
+  next
+  fix A B
+  assume 
+       asms:  "\<forall>B\<in>M. \<forall>A\<in>M. Q(A, B) \<longrightarrow> P(A, B)"
+              "A \<in> M" 
+              "B \<in> M"
+              "\<langle>A, B\<rangle> \<in> M \<and> Q(A, B)"
+  then show               
+              "P(A,B)" 
+    by simp
+qed
+*)  
+lemma tupling_simp2_rule:
+         "B \<in> M \<Longrightarrow> 
+          (\<forall>A\<in>M. 
+          \<langle>A, B\<rangle> \<in> M \<and> Q(A,B) \<longrightarrow> P(A,B))
+       \<longleftrightarrow>
+         (\<forall>A\<in>M. 
+          Q(A,B) \<longrightarrow> P(A,B))"
+proof (intro iffI ballI impI)
+  fix A B
+  assume 
+       asms:  "\<forall>A\<in>M. \<langle>A, B\<rangle> \<in> M \<and> Q(A, B) \<longrightarrow> P(A, B)"
+              "B \<in> M"
+              "A \<in> M" 
+              "Q(A, B)"
+  then have
+              "\<langle>A, B\<rangle> \<in> M \<and> Q(A, B) \<longrightarrow> P(A, B)"
+    by simp
+  with asms and Mtriv.pair_in_M_iff show "P(A,B)" 
+      by simp
+  next
+  fix A B
+  assume 
+       asms:  "\<forall>A\<in>M. Q(A, B) \<longrightarrow> P(A, B)"
+              "A \<in> M" 
+              "B \<in> M"
+              "\<langle>A, B\<rangle> \<in> M \<and> Q(A, B)"
+  then show               
+              "P(A,B)" 
+    by simp
+qed
+    
+lemma tupling_simp3 :
+        "(\<forall>C\<in>M. \<forall>B\<in>M. \<forall>A\<in>M. 
+          \<langle>A, B, C\<rangle> \<in> M \<and> Q(A,B,C) \<longrightarrow> P(A,B,C))
+       \<longleftrightarrow>
+         (\<forall>C\<in>M. \<forall>B\<in>M. \<forall>A\<in>M. 
+          Q(A,B,C) \<longrightarrow> P(A,B,C))"
+proof (auto)
+  fix C B A
+  assume
+       asms:  "\<forall>C\<in>M. \<forall>B\<in>M. \<forall>A\<in>M. \<langle>A, B, C\<rangle> \<in> M \<and> Q(A, B, C) \<longrightarrow> P(A, B, C)"
+              "C \<in> M"
+              "B \<in> M"
+              "A \<in> M"
+              "Q(A, B, C)"
+  then have 
+          1:  "\<forall>A\<in>M. \<langle>A, B, C\<rangle> \<in> M \<and> Q(A, B, C) \<longrightarrow> P(A, B, C)"
+    by simp
+  from asms and Mtriv.pair_in_M_iff have
+              "<B,C> \<in> M"
+    by simp
+  with 1 and tupling_simp2_rule have
+              "\<forall>A\<in>M. \<langle>A, B, C\<rangle> \<in> M \<and> Q(A, B, C) \<longrightarrow> P(A, B, C)"
+    by simp
+  with asms and Mtriv.pair_in_M_iff show "P(A,B,C)" by simp
+qed
+  
 lemma tupling_sep_5p_rel : 
-"(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. 
+"(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. 
                     \<forall>B1\<in>M. \<forall>B2\<in>M. \<forall>B3\<in>M.   
                     pair(##M,A4,A5,B1) & 
                     pair(##M,A3,B1,B2) & 
@@ -190,28 +279,55 @@ lemma tupling_sep_5p_rel :
                     pair(##M,A1,B3,v)  
                \<longrightarrow> P(x,A1,A2,A3,A4,A5))))
     \<longleftrightarrow>
- (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. separation(##M,\<lambda>x. P(x,A1,A2,A3,A4,A5)))"
-proof -
-  have
-              "(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. 
+ (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. separation(##M,\<lambda>x. P(x,A1,A2,A3,A4,A5)))"
+(*proof (simp)
+have
+      "(\<forall>v\<in>M. separation
+             (##M,
+              \<lambda>x. \<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+        \<langle>A4, A5\<rangle> \<in> M \<and> \<langle>A3, A4, A5\<rangle> \<in> M \<and> \<langle>A2, A3, A4, A5\<rangle> \<in> M \<and> v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+        P(x, A1, A2, A3, A4, A5)))
+      \<longleftrightarrow>
+      (\<forall>v\<in>M. separation
+             (##M,
+              \<lambda>x. \<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+        \<langle>A4, A5\<rangle> \<in> M \<and> \<langle>A3, A4, A5\<rangle> \<in> M \<and> \<langle>A2, A3, A4, A5\<rangle> \<in> M \<and> v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+        P(x, A1, A2, A3, A4, A5)))"
+     *) 
+  sorry
+        
+notepad begin
+  fix x v P
+  assume 
+         1:   "v\<in>M"
+  have 
+              "(\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. 
                     \<forall>B1\<in>M. \<forall>B2\<in>M. \<forall>B3\<in>M.   
                     pair(##M,A4,A5,B1) & 
                     pair(##M,A3,B1,B2) & 
                     pair(##M,A2,B2,B3) & 
                     pair(##M,A1,B3,v)  
-                 \<longrightarrow> P(x,A1,A2,A3,A4,A5))))
-               \<longleftrightarrow>
-               (\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. 
-                  v = \<langle>A1, \<langle>A2, \<langle>A3, \<langle>A4, A5\<rangle>\<rangle>\<rangle>\<rangle> \<longrightarrow> P(x,A1,A2,A3,A4,A5))))"
-    apply (simp add:uniq_dec_2p)
-      
-      
-      
+                  \<longrightarrow> P(x::i,A1,A2,A3,A4,A5))
+              \<longleftrightarrow>
+               (\<forall>B1\<in>M. \<forall>B2\<in>M. \<forall>B3\<in>M.   
+                    \<forall>A5\<in>M. 
+                    \<forall>A4\<in>M. pair(##M,A4,A5,B1) \<longrightarrow>
+                    (\<forall>A3\<in>M. pair(##M,A3,B1,B2) \<longrightarrow>
+                    (\<forall>A2\<in>M. pair(##M,A2,B2,B3) \<longrightarrow>
+                    (\<forall>A1\<in>M. pair(##M,A1,B3,v)  \<longrightarrow>
+                  P(x,A1,A2,A3,A4,A5)))))" (is "?P \<longleftrightarrow> ?Q")
+    by auto
+  then have
+              "(\<forall>v\<in>M. separation(##M,\<lambda>x.?P))\<longleftrightarrow>(\<forall>v\<in>M. separation(##M,\<lambda>x.?Q))"
+    by simp
+  from 1 have
+              "?P\<longleftrightarrow>(\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+              \<langle>A4, A5\<rangle> \<in> M \<and> \<langle>A3, A4, A5\<rangle> \<in> M \<and> \<langle>A2, A3, A4, A5\<rangle> \<in> M
+               \<and> v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+                P(x, A1, A2, A3, A4, A5))"
+    by simp
+end
   
-    
-  
-  
-  oops
 
 end    (*************** CONTEXT: M_ZF  ************************)
   
