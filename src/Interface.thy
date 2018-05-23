@@ -327,28 +327,63 @@ notepad begin
                 P(x, A1, A2, A3, A4, A5))"
     by simp
 end
-  
+
+lemma tupling_sep_5p_rel2 : 
+"(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. 
+                    \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. \<forall>A1\<in>M.  
+                    pair(##M,A4,A5,B1) & 
+                    pair(##M,A3,B1,B2) & 
+                    pair(##M,A2,B2,B3) & 
+                    pair(##M,A1,B3,v)  
+               \<longrightarrow> P(x,A1,A2,A3,A4,A5))))
+    \<longleftrightarrow>
+ (\<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. \<forall>A1\<in>M. separation(##M,\<lambda>x. P(x,A1,A2,A3,A4,A5)))"
+sorry
 
 end    (*************** CONTEXT: M_ZF  ************************)
   
 (* Tupling para fórmula para instancia de separación.
    Se asume que la aridad es 3: las dos primeras variables son los
    parámetros que se van a tuplear, la siguiente es el x de separación*)
-  
-
 
 definition 
   tupling_fm_2_params :: "i \<Rightarrow> i" where
   "tupling_fm_2_params(\<phi>) = Forall(Forall(Implies(pair_fm(1,0,3),\<phi>)))"
-
+  
 lemma [TC] :  "\<lbrakk> \<phi> \<in> formula \<rbrakk> \<Longrightarrow> tupling_fm_2_params(\<phi>) \<in> formula"
   by (simp add: tupling_fm_2_params_def)
+    
     
 lemma arity_tup2p :  
   "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>) = 3 \<rbrakk> \<Longrightarrow> arity(tupling_fm_2_params(\<phi>)) = 2"
   by (simp add: tupling_fm_2_params_def arity_incr_bv_lemma pair_fm_def 
                 upair_fm_def Un_commute nat_union_abs1)
-  
+
+definition
+  tupling_fm_5p :: "i \<Rightarrow> i" where
+  "tupling_fm_5p(\<phi>) = 
+      Forall(Forall(Forall(Forall(Forall(Forall(Forall(Forall(
+        Implies(And(pair_fm(3,4,5),
+                And(pair_fm(2,5,6),
+                And(pair_fm(1,6,7),
+                    pair_fm(0,7,9)))),incr_bv(\<phi>)`8)))))))))"
+
+lemma [TC] :  "\<lbrakk> \<phi> \<in> formula \<rbrakk> \<Longrightarrow> tupling_fm_5p(\<phi>) \<in> formula"
+  by (simp add: tupling_fm_5p_def)
+
+lemma arity_tup5p :
+  "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>) = 6 \<rbrakk> \<Longrightarrow> arity(tupling_fm_5p(\<phi>)) = 2"
+  by (simp add: tupling_fm_5p_def arity_incr_bv_lemma pair_fm_def 
+                upair_fm_def Un_commute nat_union_abs1)
+    
+(* "(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. 
+                    \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. \<forall>A1\<in>M.  
+                    pair(##M,A4,A5,B1) & 
+                    pair(##M,A3,B1,B2) & 
+                    pair(##M,A2,B2,B3) & 
+                    pair(##M,A1,B3,v)  
+               \<longrightarrow> P(x,A1,A2,A3,A4,A5))))*)    
+          
 lemma separation_intf : 
       "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=1 \<or> arity(\<phi>)=2 \<rbrakk> \<Longrightarrow> 
         sats(M,separation_ax_fm(\<phi>),[]) \<longleftrightarrow> 
@@ -533,17 +568,23 @@ lemma (in M_ZF) memrel_sep_intf :
   apply (insert M_nempty,auto)
   done
 
-(*    
+
 definition
   is_recfun_sep_fm :: "i" where
   "is_recfun_sep_fm == 
-  Exists(Exists(And(pair_fm(2,5,1),And(Member(1,8),And(pair_fm(2,4,0),And(Member(0,8),
-                Exists(Exists(And(fun_apply_fm(9,4,1),And(fun_apply_fm(8,4,0),
+  Exists(Exists(And(pair_fm(7,3,1),And(Member(1,6),And(pair_fm(7,2,0),And(Member(0,6),
+                Exists(Exists(And(fun_apply_fm(7,9,1),And(fun_apply_fm(6,9,0),
                 Neg(Equal(1,0))))))))))))"
 
 lemma is_recfun_sep_fm [TC] : "is_recfun_sep_fm \<in> formula"
   by (simp add: is_recfun_sep_fm_def)
 
+lemma [simp] : "arity(is_recfun_sep_fm) = 6"
+  by (simp add: is_recfun_sep_fm_def fun_apply_fm_def upair_fm_def
+                image_fm_def big_union_fm_def pair_fm_def Un_commute nat_union_abs1)
+
+    
+(*
 lemma is_recfun_sep_intf :
   "sats(M,separation_ax_fm(is_recfun_sep_fm),[])
   \<longleftrightarrow>
