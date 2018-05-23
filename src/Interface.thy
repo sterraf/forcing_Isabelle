@@ -48,7 +48,7 @@ locale M_ZF =
       and M_model_ZF:       "satT(M,ZFTh,[])"
       and M_nempty:         "0 \<in> M"
 
-begin
+begin  (*************** CONTEXT: M_ZF  ************************)
 lemma intf_M_trivial :
   "M_trivial_no_repl(##M)"
   apply (insert trans_M M_model_ZF M_nempty)
@@ -180,8 +180,40 @@ next
     then show ?thesis using b and asms by auto
   qed
 qed
+
+lemma tupling_sep_5p_rel : 
+"(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. 
+                    \<forall>B1\<in>M. \<forall>B2\<in>M. \<forall>B3\<in>M.   
+                    pair(##M,A4,A5,B1) & 
+                    pair(##M,A3,B1,B2) & 
+                    pair(##M,A2,B2,B3) & 
+                    pair(##M,A1,B3,v)  
+               \<longrightarrow> P(x,A1,A2,A3,A4,A5))))
+    \<longleftrightarrow>
+ (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. separation(##M,\<lambda>x. P(x,A1,A2,A3,A4,A5)))"
+proof -
+  have
+              "(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. 
+                    \<forall>B1\<in>M. \<forall>B2\<in>M. \<forall>B3\<in>M.   
+                    pair(##M,A4,A5,B1) & 
+                    pair(##M,A3,B1,B2) & 
+                    pair(##M,A2,B2,B3) & 
+                    pair(##M,A1,B3,v)  
+                 \<longrightarrow> P(x,A1,A2,A3,A4,A5))))
+               \<longleftrightarrow>
+               (\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. 
+                  v = \<langle>A1, \<langle>A2, \<langle>A3, \<langle>A4, A5\<rangle>\<rangle>\<rangle>\<rangle> \<longrightarrow> P(x,A1,A2,A3,A4,A5))))"
+    apply (simp add:uniq_dec_2p)
+      
+      
+      
   
-end
+    
+  
+  
+  oops
+
+end    (*************** CONTEXT: M_ZF  ************************)
   
 (* Tupling para fórmula para instancia de separación.
    Se asume que la aridad es 3: las dos primeras variables son los
