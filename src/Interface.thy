@@ -270,6 +270,25 @@ proof (auto)
   with asms and Mtriv.pair_in_M_iff show "P(A,B,C)" by simp
 qed
   
+lemma tupling_sep_5p_aux :
+              "(\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+                \<langle>A4, A5\<rangle> \<in> M \<and> \<langle>A3, A4, A5\<rangle> \<in> M \<and> \<langle>A2, A3, A4, A5\<rangle> \<in> M \<and> 
+                v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+                P(x, A1, A2, A3, A4, A5))
+               \<longleftrightarrow>
+               (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M.
+                v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+                P(x, A1, A2, A3, A4, A5))" for x v
+proof (auto)
+  fix A5 A4 A3 A2 A1
+  assume asms: "A5 \<in> M" "A4 \<in> M" "A3 \<in> M" "A2 \<in> M" "A1 \<in> M" 
+  then show "\<langle>A4, A5\<rangle> \<in> M"  using Mtriv.pair_in_M_iff by simp
+  with asms show "\<langle>A3, A4, A5\<rangle> \<in> M"  using Mtriv.pair_in_M_iff by simp
+  with asms show "\<langle>A2, A3, A4, A5\<rangle> \<in> M"  using Mtriv.pair_in_M_iff by simp
+qed
+
+declare iff_trans [trans]
+  
 lemma tupling_sep_5p_rel : 
 "(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. 
                     \<forall>B1\<in>M. \<forall>B2\<in>M. \<forall>B3\<in>M.   
@@ -280,8 +299,17 @@ lemma tupling_sep_5p_rel :
                \<longrightarrow> P(x,A1,A2,A3,A4,A5))))
     \<longleftrightarrow>
  (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. separation(##M,\<lambda>x. P(x,A1,A2,A3,A4,A5)))"
-(*proof (simp)
-have
+proof (simp)
+  have
+      "(\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+        \<langle>A4, A5\<rangle> \<in> M \<and> \<langle>A3, A4, A5\<rangle> \<in> M \<and> \<langle>A2, A3, A4, A5\<rangle> \<in> M \<and> v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+        P(x, A1, A2, A3, A4, A5))
+      \<longleftrightarrow>
+      (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M.
+        v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+        P(x, A1, A2, A3, A4, A5))" for x v
+    by (rule tupling_sep_5p_aux)
+  then have
       "(\<forall>v\<in>M. separation
              (##M,
               \<lambda>x. \<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
@@ -290,12 +318,24 @@ have
       \<longleftrightarrow>
       (\<forall>v\<in>M. separation
              (##M,
-              \<lambda>x. \<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
-        \<langle>A4, A5\<rangle> \<in> M \<and> \<langle>A3, A4, A5\<rangle> \<in> M \<and> \<langle>A2, A3, A4, A5\<rangle> \<in> M \<and> v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+              \<lambda>x. \<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M.
+        v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
         P(x, A1, A2, A3, A4, A5)))"
-     *) 
-  sorry
-        
+    by simp
+  also have
+     "...   \<longleftrightarrow>
+ (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. separation(##M,\<lambda>x. P(x,A1,A2,A3,A4,A5)))"
+    using tupling_sep_5p by simp
+  finally  show
+    "(\<forall>v\<in>M. separation
+             (##M,
+              \<lambda>x. \<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+\<langle>A4, A5\<rangle> \<in> M \<and> \<langle>A3, A4, A5\<rangle> \<in> M \<and> \<langle>A2, A3, A4, A5\<rangle> \<in> M \<and> v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+P(x, A1, A2, A3, A4, A5))) \<longleftrightarrow>
+    (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. separation(##M, \<lambda>x. P(x, A1, A2, A3, A4, A5)))"
+    by auto
+qed
+    
 notepad begin
   fix x v P
   assume 
