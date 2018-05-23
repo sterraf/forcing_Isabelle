@@ -594,7 +594,6 @@ lemma swap_env : "l \<in> list(M) \<Longrightarrow> a \<in> M \<Longrightarrow> 
   "ext_fun(swap01,2, succ(succ(length(l)))) \<in> bij(length(Cons(a, Cons(b, l))), length(Cons(a, Cons(b, l))))")
 prefer 2 apply(simp,rule_tac m="succ(succ(length(l)))" in ext_fun_bije,simp+)
   apply(rule nth_equalityI,rule perm_list_tc,simp+)
-  apply(subst (asm) perm_list_length,simp+)
   apply(case_tac "i=0",simp)
   apply(case_tac "i=1",simp+) 
   apply(subst nth_perm,simp+,rule ltD,simp)
@@ -608,10 +607,6 @@ prefer 2 apply(simp,rule_tac m="succ(succ(length(l)))" in ext_fun_bije,simp+)
   prefer 2 apply(subst succ_pred_eq,simp+,auto)
   apply(drule pred0E,simp,auto)
 done
-
-definition
-  swap_0_1 :: "i \<Rightarrow> i" where
-  "swap_0_1(\<phi>) == \<lambda> m \<in> nat . rename(\<phi>)`m`ext_fun(m,2,swap01)"  
 
 (*        
 sats(M,p,env) \<longleftrightarrow> sats(M,rename(p)`length(env)`converse(f),perm_list(f,env))))"
@@ -632,3 +627,5 @@ lemma sats_swap_0_1 :
   apply(rule ext_fun_bije,simp+)
   apply(subst conv_swap,simp+)
 done
+    
+end
