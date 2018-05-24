@@ -88,6 +88,14 @@ section\<open>Involutions\<close>
 definition invol :: "[i,i] \<Rightarrow> o" where
   "invol(A,f) == f\<in>bij(A,A) \<and> f = converse(f)"
   
+lemma invol_bij : "invol(A,f) \<Longrightarrow> f\<in>bij(A,A)" by (unfold invol_def,simp)
+lemma invol_conv : "invol(A,f) \<Longrightarrow> f=converse(f)" by (unfold invol_def,simp)
+lemmas invol_conv_bij =  bij_converse_bij[OF invol_bij]
+lemmas invol_fun = bij_is_fun[OF invol_bij]
+lemmas invol_conv_fun = bij_is_fun[OF invol_conv_bij]
+  
+lemma invol_inverse [simp]: "invol(A,f) \<Longrightarrow> a \<in> A \<Longrightarrow> f`(f`a) = a"
+  by(unfold invol_def,clarsimp,subst sym[of "converse(f)"],simp,rule right_inverse_bij,simp+)
   
 section\<open>Renaming of free variables\<close>
 
@@ -498,22 +506,11 @@ lemma sat_env_eq : "p \<in> formula \<Longrightarrow> env \<in> list(M) \<Longri
    env=env' \<Longrightarrow>         sats(M,p,env) \<longleftrightarrow> sats(M,p,env')"
   by(auto)
     
-definition 
-  swap01 :: "i" where
-  "swap01 == \<lambda> n \<in> 2 . if n=0 then 1 else 0"
 
-lemma swap01_bij [TC] : "swap01 \<in> bij(2,2)"
-  by(unfold swap01_def,rule_tac  d="\<lambda> n. if n =0 then 1 else 0" in lam_bijective,auto)
-
+    
 definition ext_fun :: "[i,i,i] \<Rightarrow> i" where
     "ext_fun(f,k,m) == \<lambda> n \<in> m . if n <k then f`n else n"
 
-lemma swap_0 [simp]: "swap01`0 = 1"
-    by(unfold swap01_def,simp,auto)
-lemma swap_1 [simp]: "swap01`1 = 0"
-    by(unfold swap01_def,simp)
-lemma swap_auto [simp] : "x < 2 \<Longrightarrow> swap01`(swap01`x) = x" 
-  by(case_tac "x\<le>0",simp+,subgoal_tac "x=1",simp,rule leE[of "x" "1"],simp,auto)
       
 lemma ext_fun_bij : "k \<in> nat \<Longrightarrow> f\<in>bij(k,k) \<Longrightarrow> m \<in> nat \<Longrightarrow> k<m \<Longrightarrow> 
   ext_fun(f,k,m) \<in> bij(m,m)"
@@ -542,50 +539,138 @@ lemma ext_fun_bije [TC] : "k\<in>nat \<Longrightarrow> f\<in>bij(k,k) \<Longrigh
   apply(rule ltI,rule app_bij,simp+)
 done
 
-  
-lemma ext_fun_swap0 [simp]: "m \<in> nat \<Longrightarrow> 2\<le>m \<Longrightarrow> ext_fun(swap01,2,m)`0=1"
-  by(insert swap_0,unfold ext_fun_def,simp,rule ltD,rule_tac j="1"  in lt_trans,auto)
+lemma ext_fun_lek: "m \<in> nat \<Longrightarrow> f \<in> k \<rightarrow> k \<Longrightarrow> n \<in> k \<Longrightarrow> k\<le>m \<Longrightarrow> ext_fun(f,k,m)`n=f`n"
+  apply(unfold ext_fun_def,subst beta,rule ltD,drule ltI[of "n" "k"],simp,erule lt_trans2,assumption)
+  apply(auto,drule ltI[of "n" "k"],simp,auto)
+done
     
-lemma ext_fun_swap1 [simp]: "m \<in> nat \<Longrightarrow> 2\<le>m \<Longrightarrow> ext_fun(swap01,2,m)`1=0"  
- by(insert swap_1,unfold ext_fun_def,simp)
-  
-lemma ext_fun_swap_n : "m \<in> nat \<Longrightarrow> 1<n \<Longrightarrow> n \<in> m \<Longrightarrow> ext_fun(swap01,2,m)`n=n"  
-  by(unfold ext_fun_def,simp,rule impI,rule_tac i="n" and j="2" in ltE,simp,auto)
-
-lemma ext_swap_i0: "m \<in> nat \<Longrightarrow> n \<in> m \<Longrightarrow> 2\<le>m \<Longrightarrow> ext_fun(swap01,2,m)`n=1 \<Longrightarrow> n=0"
-  apply(rule inj_apply_equality,rule bij_is_inj,rule ext_fun_bije[of "2"],simp,rule swap01_bij,assumption+)
-  apply(simp+,rule ltD,rule lt_trans,rule nat_0_le,auto)
+lemma ext_fun_lek1: "m \<in> nat \<Longrightarrow> invol(k,f) \<Longrightarrow> n \<in> k \<Longrightarrow> k\<le>m \<Longrightarrow> ext_fun(f,k,m)`n=j \<Longrightarrow> f`j=n"
+  apply(rule inj_apply_equality,rule bij_is_inj,rule ext_fun_bije[of "k"],simp,erule invol_bij,assumption+)
+  apply(subst (asm) ext_fun_lek,assumption+,rule bij_is_fun[OF invol_bij],simp+)
+  apply(subst ext_fun_lek,assumption+,rule bij_is_fun[OF invol_bij],simp+)
+  apply(rule apply_type,rule  bij_is_fun[OF invol_bij],simp)
+  apply(subst sym[of "f`n" "j"],simp)
+  apply(rule apply_type,rule  bij_is_fun[OF invol_bij],simp+)
+  apply(subst ext_fun_lek,assumption+,rule bij_is_fun[OF invol_bij],simp+)
+  apply(subst invol_inverse,simp)  
+  apply(subst sym[of "f`n" "j"],simp)
+  apply(rule apply_type,rule  bij_is_fun[OF invol_bij],simp+)
+  apply(subst (asm) ext_fun_lek,assumption+,rule bij_is_fun[OF invol_bij],simp+)
+  apply(rule ltD,rule lt_trans2,rule ltI)
+  apply(rule apply_type,rule  bij_is_fun[OF invol_bij],simp)
+  apply(subst sym[of "f`n" "j"],simp)
+  apply(rule apply_type,rule  bij_is_fun[OF invol_bij],simp+)
+  apply(rule ltD,rule lt_trans2,erule ltI,simp+)
   done
     
+(* Cómo demostramos que converse(f) = g 
 
-lemma ext_swap_i1: "m \<in> nat \<Longrightarrow> n \<in> m \<Longrightarrow> 2\<le>m \<Longrightarrow> ext_fun(swap01,2,m)`n=0 \<Longrightarrow> n=1"
-  apply(rule inj_apply_equality,rule bij_is_inj,rule ext_fun_bije[of "2"],simp,rule swap01_bij,assumption+)
-  apply(simp+,erule ltD)
+Probamos converse(f)`n = y \<Longrightarrow> g`y=n
+
+*)
+    
+  
+  
+lemma ext_fun_gek: "m \<in> nat \<Longrightarrow> f \<in> k \<rightarrow> k \<Longrightarrow>  k \<le>n \<Longrightarrow> n\<in>m \<Longrightarrow> ext_fun(f,k,m)`n=n"
+  by(unfold ext_fun_def,subst beta,simp,auto,drule le_imp_not_lt,auto)
+
+lemma conv_ext_ltk : "m \<in> nat \<Longrightarrow> invol(k,f) \<Longrightarrow> n \<in> k \<Longrightarrow> k \<le> m \<Longrightarrow>
+    (converse(ext_fun(f,k,m))`n = ext_fun(f,k,m)`n)"  
+  apply(rule function_apply_equality,rule converseI)
+  apply(subst ext_fun_lek,simp)
+  apply(erule invol_fun,simp+)
+  apply(rule funcI,rule bij_is_fun[OF ext_fun_bije],simp+,erule invol_bij,simp+) 
+  apply(rule ltD,rule lt_trans2,rule ltI,rule apply_type)
+  apply(erule invol_fun,simp+,subst ext_fun_lek,simp+,erule invol_fun) 
+  apply(rule apply_type,erule invol_fun,simp+)
+  apply(rule bij_is_function,rule bij_converse_bij,rule ext_fun_bije,auto)
+  apply(erule invol_bij)
+done
+lemma conv_ext_gek : "m \<in> nat \<Longrightarrow> invol(k,f) \<Longrightarrow> k \<le> n \<Longrightarrow> n \<in> m \<Longrightarrow>
+    (converse(ext_fun(f,k,m))`n = ext_fun(f,k,m)`n)"  
+  apply(rule function_apply_equality,rule converseI)
+   apply(rule funcI,rule bij_is_fun[OF ext_fun_bije],rule in_n_in_nat,assumption)
+   apply(rule ltD,erule lt_trans1,rule ltI,simp+)
+  apply(erule invol_bij,simp) 
+   apply(rule lt_trans1,simp,drule ltI[of "n"],simp,erule leI) 
+    apply(rule apply_type,rule bij_is_fun,rule ext_fun_bije)
+    apply(rule in_n_in_nat,assumption)
+   apply(rule ltD,erule lt_trans1,rule ltI,simp+)
+  apply(erule invol_bij,simp) 
+   apply(rule lt_trans1,simp,drule ltI[of "n"],simp,erule leI,simp) 
+  apply(subst ext_fun_gek,auto)
+  apply(erule invol_fun)
+  apply(subst ext_fun_gek,auto,erule invol_fun)
+  apply(subst ext_fun_gek,auto,erule invol_fun)
+  apply(subst ext_fun_gek,auto,erule invol_fun)
+    apply(rule bij_is_function,rule bij_converse_bij,rule ext_fun_bije,auto)
+  apply(rule in_n_in_nat,assumption)
+   apply(rule ltD,erule lt_trans1,rule ltI,simp+,erule invol_bij)
+ apply(rule lt_trans1,simp,drule ltI[of "n"],simp,erule leI)
+done
+    
+    
+lemma conv_ext_ap : "m\<in>nat \<Longrightarrow> invol(k,f) \<Longrightarrow> k\<le> m \<Longrightarrow> n \<in> m \<Longrightarrow>
+  converse(ext_fun(f,k,m))`n = ext_fun(f,k,m)`n"
+  apply(case_tac "n<k")
+  apply(subst conv_ext_ltk,auto,erule ltD)
+  apply(subgoal_tac "k\<le>n")
+  apply(rule conv_ext_gek,auto)  
+  apply(rule_tac not_le_iff_lt[THEN iffD1],auto,rule nat_into_Ord,rule in_n_in_nat,auto)
 done
 
-lemma ext_swap_in : "m \<in> nat \<Longrightarrow> 1<n \<Longrightarrow> n \<in> m \<Longrightarrow> ext_fun(swap01,2,m)`n=j \<Longrightarrow> j=n"  
-  apply(rule inj_apply_equality,rule bij_is_inj,rule ext_fun_bije[of "2"],simp,rule swap01_bij,assumption+)
-  apply(rule le_trans[of _ "n"],simp,rule leI,erule ltI,erule nat_into_Ord)
-  apply(subst (asm) ext_fun_swap_n,assumption+,simp)
-  apply(subst (asm) ext_fun_swap_n,simp+)
+lemma conv_ext : "m\<in>nat \<Longrightarrow> invol(k,f) \<Longrightarrow> k\<le> m \<Longrightarrow> 
+  converse(ext_fun(f,k,m)) = ext_fun(f,k,m)"
+  apply(rule fun_extension,rule bij_is_fun)
+    apply(rule bij_converse_bij,rule ext_fun_bije,auto)
+    apply(erule invol_bij,rule bij_is_fun,rule ext_fun_bije,auto)
+   apply(erule invol_bij,erule conv_ext_ap,auto)
 done
-      
-lemma conv_swap : "m\<in>nat \<Longrightarrow> 2\<le> m \<Longrightarrow> converse(ext_fun(swap01,2,m)) = ext_fun(swap01,2,m)"
-  apply(rule fun_extension,rule bij_is_fun,rule bij_converse_bij,rule ext_fun_bije,simp+)
-  apply(rule bij_is_fun,rule ext_fun_bije,simp+)
-  apply(case_tac "x<2")
-  apply(rule leE[of _ "1"],assumption,simp,rule left_inverse_eq)  
-  apply(rule bij_is_inj,rule ext_fun_bije,simp+,rule ltD,simp)
-  apply(simp)
-  apply(rule left_inverse_eq)  
-  apply(rule bij_is_inj,rule ext_fun_bije,simp+,rule ltD,rule lt_trans)
-  prefer 2 apply(assumption,simp)
-  apply(subgoal_tac "2\<le>x")
-  apply(rule left_inverse_eq)  
-  apply(rule bij_is_inj,rule ext_fun_bije,simp+)
-  apply(subst ext_fun_swap_n,simp+)+
-  apply(rule_tac not_le_iff_lt[THEN iffD1],rule nat_into_Ord,erule in_n_in_nat,simp+)
+
+lemma inv_ext : "m\<in>nat \<Longrightarrow> invol(k,f) \<Longrightarrow> k\<le> m \<Longrightarrow>
+                   invol(m,ext_fun(f,k,m))"
+  apply(unfold invol_def,rule conjI)
+   apply(fold invol_def,rule ext_fun_bije,auto,erule invol_bij)  
+  apply(rule sym,rule conv_ext,auto)
 done
+    
+definition 
+  swap01 :: "i" where
+  "swap01 == \<lambda> n \<in> 2 . if n=0 then 1 else 0"
+
+lemma swap01_bij [TC] : "swap01 \<in> bij(2,2)"
+  by(unfold swap01_def,rule_tac  d="\<lambda> n. if n =0 then 1 else 0" in lam_bijective,auto)
+lemma swap_0 [simp]: "swap01`0 = 1"
+    by(unfold swap01_def,simp,auto)
+lemma swap_1 [simp]: "swap01`1 = 0"
+    by(unfold swap01_def,simp)
+lemma swap_auto [simp] : "x < 2 \<Longrightarrow> converse(swap01)`x = (swap01`x)" 
+  apply(rule function_apply_equality,rule converseI)    
+  apply(case_tac "x\<le>0",simp+,rule funcI,rule bij_is_fun,simp)
+  apply(blast,simp,simp,rule leE[of "x" "1"],simp,auto)
+  apply(rule funcI,rule bij_is_fun,simp+,blast,simp)
+done
+   
+lemma swap_conv : "converse(swap01) = swap01"
+  apply(rule fun_extension,rule bij_is_fun)
+  apply(rule bij_converse_bij,simp,rule bij_is_fun,simp,drule ltI,auto)
+    done
+lemma swap_invol : "invol(2,swap01)" 
+ by (unfold invol_def,rule conjI,simp,rule sym, rule swap_conv)
+
+lemma conv_swap_ext : "m\<in>nat \<Longrightarrow> 2\<le> m \<Longrightarrow> 
+ converse(ext_fun(swap01,2,m)) = ext_fun(swap01,2,m)"  
+  by(rule conv_ext,simp,rule swap_invol,simp)
+    
+lemma eswap0 [simp] : "m \<in> nat \<Longrightarrow> 2 \<le> m \<Longrightarrow> ext_fun(swap01,2,m)`0 = 1"
+  by(subst ext_fun_lek,auto,rule bij_is_fun,simp)
+
+lemma eswap1 [simp] : "m \<in> nat \<Longrightarrow> 2 \<le> m \<Longrightarrow> ext_fun(swap01,2,m)`1 = 0"
+  by(subst ext_fun_lek,auto,rule bij_is_fun,simp)
+
+lemma eswapn [simp] : "m \<in> nat \<Longrightarrow> 2 \<le> n \<Longrightarrow> n \<in> m \<Longrightarrow> ext_fun(swap01,2,m)`n = n"
+  by(subst ext_fun_gek,auto,rule bij_is_fun,simp)
+
     
 lemma swap_env : "l \<in> list(M) \<Longrightarrow> a \<in> M \<Longrightarrow> b \<in> M \<Longrightarrow> 
   perm_list(ext_fun(swap01,2,succ(succ(length(l)))),Cons(a,(Cons(b,l)))) =
@@ -596,12 +681,11 @@ prefer 2 apply(simp,rule_tac m="succ(succ(length(l)))" in ext_fun_bije,simp+)
   apply(rule nth_equalityI,rule perm_list_tc,simp+)
   apply(case_tac "i=0",simp)
   apply(case_tac "i=1",simp+) 
-  apply(subst nth_perm,simp+,rule ltD,simp)
-  apply(subst ext_fun_swap1,simp+)
+  apply(subst nth_perm,simp+,rule ltD,simp+)
   apply(subgoal_tac "\<exists> j . i = succ(succ(j))")
   apply(erule exE)
-  apply(subst nth_perm,simp+,rule ltD,simp)
-  apply(subst ext_fun_swap_n,simp+,rule ltD,simp+)
+  apply(subst nth_perm,simp+,rule ltD,simp+)
+  apply(subst eswapn,simp+,rule ltD,simp+)
   apply(rule_tac x="pred(pred(i))" in exI)
   apply(subst succ_pred_eq,erule pred_type)
   prefer 2 apply(subst succ_pred_eq,simp+,auto)
@@ -625,7 +709,7 @@ lemma sats_swap_0_1 :
   apply(rule iff_trans)
   apply(rule_tac f="ext_fun(swap01,2,succ(succ(length(env))))" in ren_sat,simp+)
   apply(rule ext_fun_bije,simp+)
-  apply(subst conv_swap,simp+)
+  apply(subst conv_swap_ext,simp+)
 done
     
 end
