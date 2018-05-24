@@ -704,5 +704,22 @@ lemma sats_swap_0_1 :
   apply(rule ext_fun_bije,simp+)
   apply(subst conv_swap_ext,simp+)
 done
-    
-end
+
+declare leD_cases [simp del]   succ_pred_eq [simp del]   invol_inverse [simp del]  
+  sum_id0 [simp del]
+  sum_idS [simp del] conv_sum_id [simp del]   
+	tab_length [simp del]   tab_length2 [simp del]   nth_eq [simp del]   
+	perm_list_length [simp del]
+  nth_tab_perm  [simp del]
+	perm_list_eq [simp del]   nth_perm_conv [simp del]   nth_perm [simp del]  
+ ren_mem [simp del]   ren_eq [simp del]   ren_nand [simp del]   
+	ren_forall [simp del]   swap_0 [simp del]  swap_1 [simp del] swap_auto [simp del] 
+ eswap0 [simp del]  eswap1 [simp del]  eswapn [simp del]
+
+declare  zero_in [TC del] in_succ_in_nat [TC del]  le_in_nat [TC del]
+ bij_is_function [TC del] Un_least_lt_iffn [TC del] 
+       		   app_bij [TC del] sum_id_bd [TC del] sum_id_ap [TC del] sum_id_tc [TC del]
+ sum_id_bij [TC del] tab_tc [TC del] nth_i_type [TC del] 
+		   nth_after_type [TC del] perm_list_tc [TC del] ren_tc2 [TC del] ext_fun_bije [TC del]
+ swap01_bij [TC del]
+end 

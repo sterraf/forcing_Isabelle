@@ -270,6 +270,9 @@ proof (auto)
   with asms and Mtriv.pair_in_M_iff show "P(A,B,C)" by simp
 qed
   
+lemma tuples_in_M: "A\<in>M \<Longrightarrow> B\<in>M \<Longrightarrow> <A,B>\<in>M" 
+   by (simp del:setclass_iff add:setclass_iff[symmetric])
+
 lemma tupling_sep_5p_aux :
               "(\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
                 \<langle>A4, A5\<rangle> \<in> M \<and> \<langle>A3, A4, A5\<rangle> \<in> M \<and> \<langle>A2, A3, A4, A5\<rangle> \<in> M \<and> 
@@ -279,13 +282,7 @@ lemma tupling_sep_5p_aux :
                (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M.
                 v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
                 P(x, A1, A2, A3, A4, A5))" for x v
-proof (auto)
-  fix A5 A4 A3 A2 A1
-  assume asms: "A5 \<in> M" "A4 \<in> M" "A3 \<in> M" "A2 \<in> M" "A1 \<in> M" 
-  then show "\<langle>A4, A5\<rangle> \<in> M"  using Mtriv.pair_in_M_iff by simp
-  with asms show "\<langle>A3, A4, A5\<rangle> \<in> M"  using Mtriv.pair_in_M_iff by simp
-  with asms show "\<langle>A2, A3, A4, A5\<rangle> \<in> M"  using Mtriv.pair_in_M_iff by simp
-qed
+ by (auto simp add:tuples_in_M)
 
 declare iff_trans [trans]
   
@@ -335,38 +332,6 @@ P(x, A1, A2, A3, A4, A5))) \<longleftrightarrow>
     (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. separation(##M, \<lambda>x. P(x, A1, A2, A3, A4, A5)))"
     by auto
 qed
-    
-notepad begin
-  fix x v P
-  assume 
-         1:   "v\<in>M"
-  have 
-              "(\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. 
-                    \<forall>B1\<in>M. \<forall>B2\<in>M. \<forall>B3\<in>M.   
-                    pair(##M,A4,A5,B1) & 
-                    pair(##M,A3,B1,B2) & 
-                    pair(##M,A2,B2,B3) & 
-                    pair(##M,A1,B3,v)  
-                  \<longrightarrow> P(x::i,A1,A2,A3,A4,A5))
-              \<longleftrightarrow>
-               (\<forall>B1\<in>M. \<forall>B2\<in>M. \<forall>B3\<in>M.   
-                    \<forall>A5\<in>M. 
-                    \<forall>A4\<in>M. pair(##M,A4,A5,B1) \<longrightarrow>
-                    (\<forall>A3\<in>M. pair(##M,A3,B1,B2) \<longrightarrow>
-                    (\<forall>A2\<in>M. pair(##M,A2,B2,B3) \<longrightarrow>
-                    (\<forall>A1\<in>M. pair(##M,A1,B3,v)  \<longrightarrow>
-                  P(x,A1,A2,A3,A4,A5)))))" (is "?P \<longleftrightarrow> ?Q")
-    by auto
-  then have
-              "(\<forall>v\<in>M. separation(##M,\<lambda>x.?P))\<longleftrightarrow>(\<forall>v\<in>M. separation(##M,\<lambda>x.?Q))"
-    by simp
-  from 1 have
-              "?P\<longleftrightarrow>(\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
-              \<langle>A4, A5\<rangle> \<in> M \<and> \<langle>A3, A4, A5\<rangle> \<in> M \<and> \<langle>A2, A3, A4, A5\<rangle> \<in> M
-               \<and> v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
-                P(x, A1, A2, A3, A4, A5))"
-    by simp
-end
 
 lemma tupling_sep_5p_rel2 : 
 "(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. 
