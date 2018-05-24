@@ -387,18 +387,49 @@ end    (*************** CONTEXT: M_ZF  ************************)
    parámetros que se van a tuplear, la siguiente es el x de separación*)
 
 definition 
-  tupling_fm_2_params :: "i \<Rightarrow> i" where
-  "tupling_fm_2_params(\<phi>) = Forall(Forall(Implies(pair_fm(1,0,3),\<phi>)))"
+  tupling_fm_2p :: "i \<Rightarrow> i" where
+  "tupling_fm_2p(\<phi>) = Forall(Forall(Implies(pair_fm(1,0,3),\<phi>)))"
   
-lemma [TC] :  "\<lbrakk> \<phi> \<in> formula \<rbrakk> \<Longrightarrow> tupling_fm_2_params(\<phi>) \<in> formula"
-  by (simp add: tupling_fm_2_params_def)
+lemma [TC] :  "\<lbrakk> \<phi> \<in> formula \<rbrakk> \<Longrightarrow> tupling_fm_2p(\<phi>) \<in> formula"
+  by (simp add: tupling_fm_2p_def)
     
     
 lemma arity_tup2p :  
-  "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>) = 3 \<rbrakk> \<Longrightarrow> arity(tupling_fm_2_params(\<phi>)) = 2"
-  by (simp add: tupling_fm_2_params_def arity_incr_bv_lemma pair_fm_def 
+  "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>) = 3 \<rbrakk> \<Longrightarrow> arity(tupling_fm_2p(\<phi>)) = 2"
+  by (simp add: tupling_fm_2p_def arity_incr_bv_lemma pair_fm_def 
                 upair_fm_def Un_commute nat_union_abs1)
 
+              
+(* quisiera que me salga esto, pero no me sale:
+consts incrn_bv :: "i=>i"
+primrec
+  "incrn_bv(0) =
+      (\<lambda>p \<in> formula. \<lambda> nq\<in>nat. p)"
+  
+  "incrn_bv(succ(n)) = 
+      (\<lambda>p \<in> formula. \<lambda> nq\<in>nat. (incrn_bv(n)`(incr_bv(p)`nq))`nq)"
+
+lemma incrn_bv_type [TC]: "n \<in> nat ==> incrn_bv(n) \<in> formula \<rightarrow> nat \<rightarrow> formula"
+  by (induct_tac n, simp_all)
+    
+lemma [TC] :"\<lbrakk> n\<in>nat ; \<phi>\<in>formula \<rbrakk> \<Longrightarrow> incrn_bv(n)`\<phi> \<in> nat \<rightarrow> formula"
+  by (simp)
+    
+lemma [TC] :"\<lbrakk> n\<in>nat ; \<phi>\<in>formula ; m\<in>nat \<rbrakk> \<Longrightarrow> (incrn_bv(n)`\<phi>)`m \<in> formula"
+  by (simp)
+    
+    
+lemma sats_incrn_bv_iff [rule_format]:
+  "[| p \<in> formula; env \<in> list(A) ; bvs' \<in> list(A) |]
+   ==> \<forall>bvs \<in> list(A).
+           sats(A, (incrn_bv(length(bvs'))`p)`(length(bvs)), 
+                          bvs@(bvs'@env)) \<longleftrightarrow>
+           sats(A, p, bvs@env)"
+  sorry
+
+*)
+
+              
 definition
   tupling_fm_5p :: "i \<Rightarrow> i" where
   "tupling_fm_5p(\<phi>) = 
@@ -406,23 +437,17 @@ definition
         Implies(And(pair_fm(3,4,5),
                 And(pair_fm(2,5,6),
                 And(pair_fm(1,6,7),
-                    pair_fm(0,7,9)))),incr_bv(\<phi>)`8)))))))))"
+                    pair_fm(0,7,9)))),\<phi>)))))))))"
 
+  
 lemma [TC] :  "\<lbrakk> \<phi> \<in> formula \<rbrakk> \<Longrightarrow> tupling_fm_5p(\<phi>) \<in> formula"
   by (simp add: tupling_fm_5p_def)
 
 lemma arity_tup5p :
-  "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>) = 6 \<rbrakk> \<Longrightarrow> arity(tupling_fm_5p(\<phi>)) = 2"
+  "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>) = 9 \<rbrakk> \<Longrightarrow> arity(tupling_fm_5p(\<phi>)) = 2"
   by (simp add: tupling_fm_5p_def arity_incr_bv_lemma pair_fm_def 
                 upair_fm_def Un_commute nat_union_abs1)
     
-(* "(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. 
-                    \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. \<forall>A1\<in>M.  
-                    pair(##M,A4,A5,B1) & 
-                    pair(##M,A3,B1,B2) & 
-                    pair(##M,A2,B2,B3) & 
-                    pair(##M,A1,B3,v)  
-               \<longrightarrow> P(x,A1,A2,A3,A4,A5))))*)    
           
 lemma separation_intf : 
       "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=1 \<or> arity(\<phi>)=2 \<rbrakk> \<Longrightarrow> 
@@ -464,7 +489,7 @@ lemma [simp] : "arity(cartprod_sep_fm) = 3"
 
 
 lemma (in M_ZF) cartprod_sep_intf :
-  "sats(M,separation_ax_fm(tupling_fm_2_params(cartprod_sep_fm)),[])
+  "sats(M,separation_ax_fm(tupling_fm_2p(cartprod_sep_fm)),[])
   \<longleftrightarrow>
   (\<forall>A\<in>M. \<forall>B\<in>M. separation(##M,\<lambda>z. \<exists>x\<in>M. x\<in>A \<and> (\<exists>y\<in>M. y\<in>B \<and> pair(##M,x,y,z))))"
   apply (rule iff_trans)
@@ -472,7 +497,7 @@ lemma (in M_ZF) cartprod_sep_intf :
   apply (rule iff_trans) 
    prefer 2
    apply (rule tupling_sep_2p)
-  apply (simp add: separation_def tupling_fm_2_params_def cartprod_sep_fm_def)
+  apply (simp add: separation_def tupling_fm_2p_def cartprod_sep_fm_def)
   done
   
 definition
@@ -492,7 +517,7 @@ lemma [simp] : "arity(image_sep_fm) = 3"
                
 
 lemma (in M_ZF) image_sep_intf :
-  "sats(M,separation_ax_fm(tupling_fm_2_params(image_sep_fm)),[])
+  "sats(M,separation_ax_fm(tupling_fm_2p(image_sep_fm)),[])
   \<longleftrightarrow>
   (\<forall>A\<in>M. \<forall>r\<in>M. separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>r & (\<exists>x\<in>M. x\<in>A & pair(##M,x,y,p))))"
   apply (rule iff_trans)
@@ -500,7 +525,7 @@ lemma (in M_ZF) image_sep_intf :
   apply (rule iff_trans)
    prefer 2
    apply (rule tupling_sep_2p)
-  apply (simp add: separation_def tupling_fm_2_params_def image_sep_fm_def)
+  apply (simp add: separation_def tupling_fm_2p_def image_sep_fm_def)
   done
 
 definition
@@ -556,7 +581,7 @@ lemma [simp] : "arity(comp_sep_fm) = 3"
   by (simp add: comp_sep_fm_def pair_fm_def upair_fm_def Un_commute nat_union_abs1)
 
 lemma (in M_ZF) comp_sep_intf :
-  "sats(M,separation_ax_fm(tupling_fm_2_params(comp_sep_fm)),[])
+  "sats(M,separation_ax_fm(tupling_fm_2p(comp_sep_fm)),[])
   \<longleftrightarrow>
   (\<forall>r\<in>M. \<forall>s\<in>M. 
     separation(##M,\<lambda>xz. \<exists>x\<in>M. \<exists>y\<in>M. \<exists>z\<in>M. \<exists>xy\<in>M. \<exists>yz\<in>M.
@@ -567,12 +592,12 @@ lemma (in M_ZF) comp_sep_intf :
   apply (rule iff_trans)
    prefer 2
    apply (rule tupling_sep_2p)
-  apply (simp add: separation_def tupling_fm_2_params_def comp_sep_fm_def)
+  apply (simp add: separation_def tupling_fm_2p_def comp_sep_fm_def)
   done
 
 lemma (in M_ZF) pred_sep_intf :
   "sats(M,separation_ax_fm(
-       tupling_fm_2_params(Exists(And(Member(0,2),pair_fm(3,1,0))))),[])
+       tupling_fm_2p(Exists(And(Member(0,2),pair_fm(3,1,0))))),[])
   \<longleftrightarrow>
   (\<forall>r\<in>M. \<forall>x\<in>M. separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>r & pair(##M,y,x,p)))"
    apply (rule iff_trans)
@@ -581,7 +606,7 @@ lemma (in M_ZF) pred_sep_intf :
   apply (rule iff_trans)
    prefer 2
    apply (rule tupling_sep_2p)
-  apply (simp add: separation_def tupling_fm_2_params_def comp_sep_fm_def)
+  apply (simp add: separation_def tupling_fm_2p_def comp_sep_fm_def)
   done
 
 definition
@@ -609,40 +634,46 @@ lemma (in M_ZF) memrel_sep_intf :
   done
 
 
+
 definition
   is_recfun_sep_fm :: "i" where
   "is_recfun_sep_fm == 
-  Exists(Exists(And(pair_fm(7,3,1),And(Member(1,6),And(pair_fm(7,2,0),And(Member(0,6),
-                Exists(Exists(And(fun_apply_fm(7,9,1),And(fun_apply_fm(6,9,0),
-                Neg(Equal(1,0))))))))))))"
+  Exists(Exists(And(pair_fm(succ(9),3,1),And(Member(1,6),And(pair_fm(succ(9),2,0),And(Member(0,6),
+                Exists(Exists(And(fun_apply_fm(7,succ(succ(succ(9))),1),
+                And(fun_apply_fm(6,succ(succ(succ(9))),0),Neg(Equal(1,0))))))))))))"
 
+  
+  
+(*(\<forall>r\<in>M. \<forall>f\<in>M. \<forall>g\<in>M. \<forall>a\<in>M. \<forall>b\<in>M. 
+##M,\<lambda>x. \<exists>xa\<in>M. \<exists>xb\<in>M.
+                    pair(##M,x,a,xa) & xa \<in> r & pair(##M,x,b,xb) & xb \<in> r &
+                    (\<exists>fx\<in>M. \<exists>gx\<in>M. fun_apply(##M,f,x,fx) & fun_apply(##M,g,x,gx) &
+                                     fx \<noteq> gx))*)
+  
 lemma is_recfun_sep_fm [TC] : "is_recfun_sep_fm \<in> formula"
   by (simp add: is_recfun_sep_fm_def)
 
-lemma [simp] : "arity(is_recfun_sep_fm) = 6"
+lemma [simp] : "arity(is_recfun_sep_fm) = 9"
   by (simp add: is_recfun_sep_fm_def fun_apply_fm_def upair_fm_def
                 image_fm_def big_union_fm_def pair_fm_def Un_commute nat_union_abs1)
-
-    
-(*
-lemma is_recfun_sep_intf :
-  "sats(M,separation_ax_fm(is_recfun_sep_fm),[])
+              
+              
+lemma (in M_ZF) is_recfun_sep_intf :
+  "sats(M,separation_ax_fm(tupling_fm_5p(is_recfun_sep_fm)),[])
   \<longleftrightarrow>
   (\<forall>r\<in>M. \<forall>f\<in>M. \<forall>g\<in>M. \<forall>a\<in>M. \<forall>b\<in>M. 
     separation(##M,\<lambda>x. \<exists>xa\<in>M. \<exists>xb\<in>M.
                     pair(##M,x,a,xa) & xa \<in> r & pair(##M,x,b,xb) & xb \<in> r &
                     (\<exists>fx\<in>M. \<exists>gx\<in>M. fun_apply(##M,f,x,fx) & fun_apply(##M,g,x,gx) &
                                      fx \<noteq> gx)))"
-  apply (rule iff_trans,rule sep_5_params)
-    apply (unfold is_recfun_sep_fm_def,simp+)
+  apply (rule iff_trans)
+  apply (rule separation_intf,simp,rule disjI2,rule arity_tup5p,simp+)
+  apply (rule iff_trans)
   prefer 2
-   apply (simp add: separation_def)
-  apply (simp add: pair_fm_def upair_fm_def fun_apply_fm_def big_union_fm_def image_fm_def
-                  Un_commute nat_union_abs1)
-  done
-
-
-
+   apply (rule tupling_sep_5p_rel2)
+  apply (simp add: separation_def tupling_fm_5p_def is_recfun_sep_fm_def)
+    done
+(*
 
 (* Instances of replacement for interface with M_basic *)
 

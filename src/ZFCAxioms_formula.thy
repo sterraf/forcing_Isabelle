@@ -188,33 +188,43 @@ lemma arity_sep[simp] : "\<lbrakk> p \<in> formula ; arity(p) = 1 \<or> arity(p)
        2 \<longrightarrow> A
        resto \<longrightarrow> params   *)
 definition
-  univalent_fm :: "i \<Rightarrow> i" where
-  "univalent_fm(\<phi>) == 
-      Forall(Implies(Member(0,1),
+  univalent_fm :: "[i,i] \<Rightarrow> i" where
+  "univalent_fm(\<phi>,A) == 
+      Forall(Implies(Member(0,succ(A)),
       Forall(Forall(Implies(And(incr_bv(swap_0_1(\<phi>))`0,incr_bv1(swap_0_1(\<phi>))),Equal(1,0))))))"
 
 lemma univalent_fm_type [TC] : 
-  "\<lbrakk> \<phi> \<in> formula \<rbrakk> \<Longrightarrow> univalent_fm(\<phi>) \<in> formula"
+  "\<lbrakk> \<phi> \<in> formula ; A\<in>nat\<rbrakk> \<Longrightarrow> univalent_fm(\<phi>,A) \<in> formula"
   by (simp add: univalent_fm_def)
   
+lemma arity_swap_0_1 :
+  "p\<in>formula \<Longrightarrow> arity(swap_0_1(p)) = arity(p)"
+    sorry
 
 (*
 "strong_replacement(M,P) ==
       \<forall>A[M]. univalent(M,A,P) \<longrightarrow>
       (\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>x[M]. x\<in>A & P(x,b)))"
 
-  \<phi> es de la forma \<phi>(x,y,A,p1..pn)
+  \<phi> es de la forma \<phi>(x,y,A,V), donde V es el parámetro
 *)
 definition
   strong_replacement_ax_fm :: "i \<Rightarrow> i" where
   "strong_replacement_ax_fm(p) == 
-      nForall(pred(pred(pred(arity(p)))),
-      Forall(Implies(univalent_fm(p),
+      Forall(Forall(Implies(univalent_fm(p,0),
         Exists(Forall(Iff(Member(0,1),Exists(And(Member(0,3),
-                      incr_bv(p)`2))))))))"
+                      incr_bv(p)`3))))))))"
 
 lemma rep_type [TC]: "p \<in> formula \<Longrightarrow> strong_replacement_ax_fm(p) \<in> formula"
   by (simp add: strong_replacement_ax_fm_def)
+
+lemma arity_repl[simp] : "\<lbrakk> p \<in> formula ; arity(p) = 1 \<or> arity(p) = 2 \<rbrakk> \<Longrightarrow> 
+                  arity(strong_replacement_ax_fm(p)) = 0"
+  apply (rule disjE,simp)
+  apply (simp_all add: strong_replacement_ax_fm_def univalent_fm_def 
+                        arity_incr_bv_lemma arity_incr_bv1_eq 
+                        arity_swap_0_1 Un_commute nat_union_abs1)
+  done
 
     
 definition
