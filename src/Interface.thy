@@ -400,48 +400,11 @@ proof -
   then have
         "separation(##M,\<lambda>x. ?P(x,v)) \<longleftrightarrow> separation(##M,\<lambda>x. ?Q(x,v))" for v
     by auto
-(*  then have
-        "separation(##M,\<lambda>x. (\<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. 
-                    \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. \<forall>A1\<in>M.  
-                    pair(##M,A4,A5,B1) & 
-                    pair(##M,A3,B1,B2) & 
-                    pair(##M,A2,B2,B3) & 
-                    pair(##M,A1,B3,v)  
-               \<longrightarrow> P(x,A1,A2,A3,A4,A5)))
-          \<longleftrightarrow>
-         separation(##M,\<lambda>x. (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. 
-                    \<forall>B1\<in>M. \<forall>B2\<in>M. \<forall>B3\<in>M.   
-                    pair(##M,A4,A5,B1) & 
-                    pair(##M,A3,B1,B2) & 
-                    pair(##M,A2,B2,B3) & 
-                    pair(##M,A1,B3,v)  
-               \<longrightarrow> P(x,A1,A2,A3,A4,A5)))" for v
-    by auto
-*)
   then have
         "(\<forall>v\<in>M. separation(##M,\<lambda>x. ?P(x,v)))
          \<longleftrightarrow> 
          (\<forall>v\<in>M. separation(##M,\<lambda>x. ?Q(x,v)))"
     by blast
-(*
-  then have
-        "(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. 
-                    \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. \<forall>A1\<in>M.  
-                    pair(##M,A4,A5,B1) & 
-                    pair(##M,A3,B1,B2) & 
-                    pair(##M,A2,B2,B3) & 
-                    pair(##M,A1,B3,v)  
-               \<longrightarrow> P(x,A1,A2,A3,A4,A5))))
-          \<longleftrightarrow>
-         (\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. 
-                    \<forall>B1\<in>M. \<forall>B2\<in>M. \<forall>B3\<in>M.   
-                    pair(##M,A4,A5,B1) & 
-                    pair(##M,A3,B1,B2) & 
-                    pair(##M,A2,B2,B3) & 
-                    pair(##M,A1,B3,v)  
-               \<longrightarrow> P(x,A1,A2,A3,A4,A5))))"
-    by blast
-*)
   also have
     " ... \<longleftrightarrow> (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. separation(##M,\<lambda>x. P(x,A1,A2,A3,A4,A5)))"
     using tupling_sep_5p_rel by simp
