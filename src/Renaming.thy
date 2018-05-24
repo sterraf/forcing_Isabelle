@@ -712,8 +712,11 @@ lemma sats_swap_0_1 :
   apply(subst conv_swap_ext,simp+)
 done
 
-declare	leD_cases   succ_pred_eq   invol_inverse  sum_id0 sum_idS conv_sum_id   
+lemas simpmiguel =  leD_cases   succ_pred_eq   invol_inverse  sum_id0 sum_idS conv_sum_id   
 	tab_length   tab_length2   nth_eq   perm_list_length  nth_tab_perm 
 	perm_list_eq   nth_perm_conv   nth_perm   ren_mem   ren_eq   ren_nand   
-	ren_forall   swap_0  swap_1 swap_auto  eswap0  eswap1  eswapn  [simp del]
+	ren_forall   swap_0  swap_1 swap_auto  eswap0  eswap1  eswapn 
+lemmas TCmiguel =  zero_in  in_succ_in_nat  le_in_nat bij_is_function Un_least_lt_iffn 
+       		   app_bij sum_id_bd sum_id_ap sum_id_tc sum_id_bij tab_tc nth_i_type 
+		   nth_after_type perm_list_tc ren_tc2 ext_fun_bije swap01_bij 
 end 
