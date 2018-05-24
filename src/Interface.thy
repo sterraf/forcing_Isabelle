@@ -1,6 +1,6 @@
 (* Interface between internalized axiom formulas and 
    ZF axioms *)
-theory Interface imports ZFCAxioms_formula Relative_hacked Names begin
+theory Interface imports ZFCAxioms_formula Relative_no_repl Names begin
 
 (* Extensionality *)
 lemma extension_intf :
@@ -425,6 +425,13 @@ lemma sats_incrn_bv_iff [rule_format]:
 
 *)
 
+(*
+0 \<longrightarrow> A1
+..
+4 \<longrightarrow> A5
+8 \<longrightarrow> x
+
+*)
               
 definition
   tupling_fm_5p :: "i \<Rightarrow> i" where
@@ -630,21 +637,27 @@ lemma (in M_ZF) memrel_sep_intf :
   done
 
 
+abbreviation
+ dec10  :: i   ("10") where "10 == succ(9)"
+    
+abbreviation
+ dec11  :: i   ("11") where "11 == succ(10)"
+
+abbreviation
+ dec12  :: i   ("12") where "12 == succ(11)"
+
+abbreviation
+ dec13  :: i   ("13") where "13 == succ(12)"
+
 
 definition
   is_recfun_sep_fm :: "i" where
   "is_recfun_sep_fm == 
-  Exists(Exists(And(pair_fm(succ(9),3,1),And(Member(1,6),And(pair_fm(succ(9),2,0),And(Member(0,6),
-                Exists(Exists(And(fun_apply_fm(7,succ(succ(succ(9))),1),
-                And(fun_apply_fm(6,succ(succ(succ(9))),0),Neg(Equal(1,0))))))))))))"
+  Exists(Exists(And(pair_fm(10,3,1),And(Member(1,6),And(pair_fm(10,2,0),And(Member(0,6),
+                Exists(Exists(And(fun_apply_fm(7,12,1),
+                And(fun_apply_fm(6,12,0),Neg(Equal(1,0))))))))))))"
 
   
-  
-(*(\<forall>r\<in>M. \<forall>f\<in>M. \<forall>g\<in>M. \<forall>a\<in>M. \<forall>b\<in>M. 
-##M,\<lambda>x. \<exists>xa\<in>M. \<exists>xb\<in>M.
-                    pair(##M,x,a,xa) & xa \<in> r & pair(##M,x,b,xb) & xb \<in> r &
-                    (\<exists>fx\<in>M. \<exists>gx\<in>M. fun_apply(##M,f,x,fx) & fun_apply(##M,g,x,gx) &
-                                     fx \<noteq> gx))*)
   
 lemma is_recfun_sep_fm [TC] : "is_recfun_sep_fm \<in> formula"
   by (simp add: is_recfun_sep_fm_def)
@@ -669,7 +682,7 @@ lemma (in M_ZF) is_recfun_sep_intf :
    apply (rule tupling_sep_5p_rel2)
   apply (simp add: separation_def tupling_fm_5p_def is_recfun_sep_fm_def)
     done
-(*
+
 
 (* Instances of replacement for interface with M_basic *)
 
@@ -678,20 +691,27 @@ lemma sats_incr_bv0_iff:
    ==> sats(A, incr_bv(p)`0, Cons(x, env)) \<longleftrightarrow>
        sats(A, p, env)"
   by(insert sats_incr_bv_iff [of p env A x "[]"],simp)
-
+(*
 lemma sats_incr_bv2_iff:
   "[| p \<in> formula; env \<in> list(A); x \<in> A ; y \<in> A ; z \<in> A |]
    ==> sats(A, incr_bv(p)`2, Cons(x, Cons(y,Cons(z,env)))) \<longleftrightarrow>
        sats(A, p, Cons(x,Cons(y,env)))"
   by (insert sats_incr_bv_iff [of p env A z "[x,y]"],simp)
+*)
 
+lemma nth_cons : 
+  "\<lbrakk>env\<in>list(A) ; env'\<in>list(A) ; x\<in>A \<rbrakk> \<Longrightarrow> 
+   nth(length(env),env@(Cons(x,env'))) = x"
+  apply (induct_tac env)
+  apply (simp)
+    
 lemma univalent_intf : 
   "\<lbrakk> \<phi> \<in> formula ; A \<in> M ; env \<in> list(M)\<rbrakk> \<Longrightarrow> 
-    sats(M,univalent_fm(\<phi>),Cons(A,env)) \<longleftrightarrow> 
-    univalent(##M,A,\<lambda>x. \<lambda>y. sats(M,\<phi>,[x,y,A]@env))"
-  by (simp add: univalent_fm_def univalent_def sats_incr_bv1_iff
-                   sats_incr_bv0_iff sats_swap_0_1)
-  
+    sats(M,univalent_fm(\<phi>,length(env)),env@[A]) \<longleftrightarrow> 
+    univalent(##M,A,\<lambda>x. \<lambda>y. sats(M,\<phi>,[x,y]@env@[A]))"
+  apply (simp add: univalent_fm_def univalent_def sats_incr_bv1_iff
+                   sats_incr_bv0_iff sats_swap_0_1 )
+  (*
 lemma repl_1_params :
   "\<lbrakk> \<phi>\<in>formula ; arity(\<phi>) = 4  \<rbrakk> \<Longrightarrow> 
     sats(M,strong_replacement_ax_fm(\<phi>),[]) \<longleftrightarrow>

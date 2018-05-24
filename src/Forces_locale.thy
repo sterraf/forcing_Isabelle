@@ -12,7 +12,7 @@ locale forcing_data = forcing_poset +
       and M_model_ZF:       "satT(M,ZFTh,[])"
       and M_countable:      "enum\<in>bij(nat,M)"
       and P_in_M:           "P \<in> M"
-      and M_nempty:            "0 \<in> M"
+      and M_nempty:         "0 \<in> M"
 
 
 begin

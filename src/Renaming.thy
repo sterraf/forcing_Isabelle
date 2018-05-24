@@ -712,7 +712,7 @@ lemma sats_swap_0_1 :
   apply(subst conv_swap_ext,simp+)
 done
 
-lemas simpmiguel =  leD_cases   succ_pred_eq   invol_inverse  sum_id0 sum_idS conv_sum_id   
+lemmas simpmiguel =  leD_cases   succ_pred_eq   invol_inverse  sum_id0 sum_idS conv_sum_id   
 	tab_length   tab_length2   nth_eq   perm_list_length  nth_tab_perm 
 	perm_list_eq   nth_perm_conv   nth_perm   ren_mem   ren_eq   ren_nand   
 	ren_forall   swap_0  swap_1 swap_auto  eswap0  eswap1  eswapn 

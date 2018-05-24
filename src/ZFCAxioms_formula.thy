@@ -1,6 +1,6 @@
 (* internalización de los axiomas de ZFC dentro de la teoría ZF *)
 
-theory ZFCAxioms_formula imports Formula L_axioms_hacked Swap_vars begin
+theory ZFCAxioms_formula imports Formula L_axioms_no_repl Swap_vars begin
 
 (* 
    Extensionalidad 
@@ -225,7 +225,6 @@ lemma arity_repl[simp] : "\<lbrakk> p \<in> formula ; arity(p) = 1 \<or> arity(p
                         arity_incr_bv_lemma arity_incr_bv1_eq 
                         arity_swap_0_1 Un_commute nat_union_abs1)
   done
-
     
 definition
   ZF_inf :: "i" where
