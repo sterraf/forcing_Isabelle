@@ -195,6 +195,14 @@ lemma conv_perm : "m \<in> nat \<Longrightarrow> f \<in> bij(m,m) \<Longrightarr
   apply(rule bij_is_fun,simp+,rule conv_perm_ap,simp+)
 done
 
+lemma sum_id_invol [TC] : "m \<in> nat \<Longrightarrow> invol(m,f) \<Longrightarrow> 
+  invol(succ(m),sum_id(m,f))"  
+  apply(unfold invol_def,rule conjI)
+   apply(fold invol_def,rule sum_id_bij,auto,erule invol_bij)
+  apply(subst conv_perm,simp+,erule invol_bij)
+  apply(subst invol_conv,simp+)
+done
+    
 text\<open>This function is a more general version of @{term upt}, which
 can be recovered as @{term "tabulate(id)"}.\<close>
 definition 
@@ -502,6 +510,13 @@ lemma renSat : "p \<in> formula \<Longrightarrow> (\<forall> env . env \<in> lis
   apply(subst perm_list_eq,simp+)
 done
 
+lemma ren_Sat_eq : "p \<in> formula \<Longrightarrow>  env \<in> list(M) \<Longrightarrow>
+         f \<in> bij(arity(p),arity(p)) \<Longrightarrow>
+        arity(p) = length(env) \<Longrightarrow>
+         sats(M,p,env) \<longleftrightarrow> 
+         sats(M,rename(p)`arity(p)`converse(f),perm_list(f,env))"
+ by(insert renSat,auto)
+  
 lemma sat_env_eq : "p \<in> formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow> env'\<in> list(M) \<Longrightarrow>
    env=env' \<Longrightarrow>         sats(M,p,env) \<longleftrightarrow> sats(M,p,env')"
   by(auto)
@@ -542,34 +557,8 @@ done
 lemma ext_fun_lek: "m \<in> nat \<Longrightarrow> f \<in> k \<rightarrow> k \<Longrightarrow> n \<in> k \<Longrightarrow> k\<le>m \<Longrightarrow> ext_fun(f,k,m)`n=f`n"
   apply(unfold ext_fun_def,subst beta,rule ltD,drule ltI[of "n" "k"],simp,erule lt_trans2,assumption)
   apply(auto,drule ltI[of "n" "k"],simp,auto)
-done
-    
-lemma ext_fun_lek1: "m \<in> nat \<Longrightarrow> invol(k,f) \<Longrightarrow> n \<in> k \<Longrightarrow> k\<le>m \<Longrightarrow> ext_fun(f,k,m)`n=j \<Longrightarrow> f`j=n"
-  apply(rule inj_apply_equality,rule bij_is_inj,rule ext_fun_bije[of "k"],simp,erule invol_bij,assumption+)
-  apply(subst (asm) ext_fun_lek,assumption+,rule bij_is_fun[OF invol_bij],simp+)
-  apply(subst ext_fun_lek,assumption+,rule bij_is_fun[OF invol_bij],simp+)
-  apply(rule apply_type,rule  bij_is_fun[OF invol_bij],simp)
-  apply(subst sym[of "f`n" "j"],simp)
-  apply(rule apply_type,rule  bij_is_fun[OF invol_bij],simp+)
-  apply(subst ext_fun_lek,assumption+,rule bij_is_fun[OF invol_bij],simp+)
-  apply(subst invol_inverse,simp)  
-  apply(subst sym[of "f`n" "j"],simp)
-  apply(rule apply_type,rule  bij_is_fun[OF invol_bij],simp+)
-  apply(subst (asm) ext_fun_lek,assumption+,rule bij_is_fun[OF invol_bij],simp+)
-  apply(rule ltD,rule lt_trans2,rule ltI)
-  apply(rule apply_type,rule  bij_is_fun[OF invol_bij],simp)
-  apply(subst sym[of "f`n" "j"],simp)
-  apply(rule apply_type,rule  bij_is_fun[OF invol_bij],simp+)
-  apply(rule ltD,rule lt_trans2,erule ltI,simp+)
-  done
-    
-(* Cómo demostramos que converse(f) = g 
-
-Probamos converse(f)`n = y \<Longrightarrow> g`y=n
-
-*)
-    
-  
+done    
+ 
   
 lemma ext_fun_gek: "m \<in> nat \<Longrightarrow> f \<in> k \<rightarrow> k \<Longrightarrow>  k \<le>n \<Longrightarrow> n\<in>m \<Longrightarrow> ext_fun(f,k,m)`n=n"
   by(unfold ext_fun_def,subst beta,simp,auto,drule le_imp_not_lt,auto)
@@ -700,23 +689,38 @@ lemma ren_sat : "p \<in> formula \<Longrightarrow> env \<in> list(M) \<Longright
         sats(M,p,env) \<longleftrightarrow> 
         sats(M,rename(p)`length(env)`converse(f),perm_list(f,env))"
  by(insert renSat,simp)
-  
+
+definition swap_0_1 :: "i \<Rightarrow> i" where
+  "swap_0_1(p) = rename(p)`arity(p)`ext_fun(swap01,2,arity(p))"   
+   
 lemma sats_swap_0_1 :
-  "\<lbrakk> \<phi> \<in> formula ; env \<in> list(M) ; a \<in> M ; b \<in> M ; arity(\<phi>) \<le> succ(succ(length(env))) \<rbrakk> \<Longrightarrow>
+  "\<lbrakk> \<phi> \<in> formula ; env \<in> list(M) ; a \<in> M ; b \<in> M ; arity(\<phi>) = succ(succ(length(env))) \<rbrakk> \<Longrightarrow>
   sats(M,\<phi>,Cons(b,Cons(a,env))) \<longleftrightarrow>
-  sats(M,rename(\<phi>)`succ(succ(length(env)))`ext_fun(swap01,2,succ(succ(length(env)))),Cons(a,Cons(b,env)))"
+  sats(M,swap_0_1(\<phi>),Cons(a,Cons(b,env)))"
   apply(subst swap_env[symmetric,of "env" "M" "b" "a"],simp+)
+  apply(unfold swap_0_1_def)
   apply(rule iff_trans)
-  apply(rule_tac f="ext_fun(swap01,2,succ(succ(length(env))))" in ren_sat,simp+)
+  apply(rule_tac f="ext_fun(swap01,2,arity(\<phi>))" in ren_Sat_eq,simp+)
   apply(rule ext_fun_bije,simp+)
   apply(subst conv_swap_ext,simp+)
 done
 
-lemmas simpmiguel =  leD_cases   succ_pred_eq   invol_inverse  sum_id0 sum_idS conv_sum_id   
-	tab_length   tab_length2   nth_eq   perm_list_length  nth_tab_perm 
-	perm_list_eq   nth_perm_conv   nth_perm   ren_mem   ren_eq   ren_nand   
-	ren_forall   swap_0  swap_1 swap_auto  eswap0  eswap1  eswapn 
-lemmas TCmiguel =  zero_in  in_succ_in_nat  le_in_nat bij_is_function Un_least_lt_iffn 
-       		   app_bij sum_id_bd sum_id_ap sum_id_tc sum_id_bij tab_tc nth_i_type 
-		   nth_after_type perm_list_tc ren_tc2 ext_fun_bije swap01_bij 
+declare leD_cases [simp del]   succ_pred_eq [simp del]   invol_inverse [simp del]  
+  sum_id0 [simp del]
+  sum_idS [simp del] conv_sum_id [simp del]   
+	tab_length [simp del]   tab_length2 [simp del]   nth_eq [simp del]   
+	perm_list_length [simp del]
+  nth_tab_perm  [simp del]
+	perm_list_eq [simp del]   nth_perm_conv [simp del]   nth_perm [simp del]  
+ ren_mem [simp del]   ren_eq [simp del]   ren_nand [simp del]   
+	ren_forall [simp del]   swap_0 [simp del]  swap_1 [simp del] swap_auto [simp del] 
+ eswap0 [simp del]  eswap1 [simp del]  eswapn [simp del]
+
+declare  zero_in [TC del] in_succ_in_nat [TC del]  le_in_nat [TC del]
+ bij_is_function [TC del] Un_least_lt_iffn [TC del] 
+       		   app_bij [TC del] sum_id_bd [TC del] sum_id_ap [TC del] sum_id_tc [TC del]
+ sum_id_bij [TC del] tab_tc [TC del] nth_i_type [TC del] 
+		   nth_after_type [TC del] perm_list_tc [TC del] ren_tc2 [TC del] ext_fun_bije [TC del]
+ swap01_bij [TC del]
+
 end 

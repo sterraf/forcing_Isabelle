@@ -1,5 +1,5 @@
 (* internalización de los axiomas de ZFC dentro de la teoría ZF *)
-
+                                                            
 theory ZFCAxioms_formula imports Formula L_axioms_no_repl Swap_vars begin
 
 (* 
@@ -185,40 +185,70 @@ lemma arity_sep[simp] : "\<lbrakk> p \<in> formula ; arity(p) = 1 \<or> arity(p)
     En la fórmula \<phi> la correspondencia entre las variables nombradas
     es 0 \<longrightarrow> x
        1 \<longrightarrow> y
-       2 \<longrightarrow> A
-       resto \<longrightarrow> params   *)
+       2 \<longrightarrow> param   *)
 definition
-  univalent_fm :: "[i,i] \<Rightarrow> i" where
-  "univalent_fm(\<phi>,A) == 
-      Forall(Implies(Member(0,succ(A)),
-      Forall(Forall(Implies(And(incr_bv(swap_0_1(\<phi>))`0,incr_bv1(swap_0_1(\<phi>))),Equal(1,0))))))"
+  univalent_fm :: "i \<Rightarrow> i" where
+  "univalent_fm(\<phi>) == 
+      Forall(Implies(Member(0,1),
+      Forall(Forall(Implies(And(incr_bv(incr_bv(swap_0_1(\<phi>))`0)`3,
+                                incr_bv(incr_bv1(swap_0_1(\<phi>)))`3),Equal(1,0))))))"
 
 lemma univalent_fm_type [TC] : 
-  "\<lbrakk> \<phi> \<in> formula ; A\<in>nat\<rbrakk> \<Longrightarrow> univalent_fm(\<phi>,A) \<in> formula"
+  "\<lbrakk> \<phi> \<in> formula \<rbrakk> \<Longrightarrow> univalent_fm(\<phi>) \<in> formula"
   by (simp add: univalent_fm_def)
   
 lemma arity_swap_0_1 :
   "p\<in>formula \<Longrightarrow> arity(swap_0_1(p)) = arity(p)"
-    sorry
-
+  sorry
+    
+(* Incrementar índice n veces *)
+definition
+  incr_n_bv :: "[i,i,i] \<Rightarrow> i" where
+  "incr_n_bv(\<phi>,n,i) == iterates(\<lambda>p. incr_bv(p)`i,n,\<phi>)"
+  
+lemma incr_n_bv_type[TC] :
+  "\<lbrakk> \<phi>\<in>formula ; n\<in>nat ; i\<in>nat \<rbrakk>  \<Longrightarrow>
+    incr_n_bv(\<phi>,n,i) \<in> formula" 
+  by (simp add: incr_n_bv_def)
+ 
+lemma arity_incr_n_bv[simp] :
+   "\<lbrakk> \<phi>\<in>formula ; n\<in>nat ; i\<in>nat \<rbrakk>  \<Longrightarrow>
+      arity(incr_n_bv(\<phi>,n,i)) = 
+          (if i < arity(\<phi>) then n #+ arity(\<phi>) else arity(\<phi>))"
+  apply (simp add: incr_n_bv_def)
+  apply (induct_tac n)
+  apply (simp_all add: arity_incr_bv_lemma)
+  apply (simp add: not_lt_iff_le)               
+  apply (blast intro: le_trans add_le_self2 arity_type)
+done
+    
+lemma sats_incr_n_bv_iff :
+  "\<lbrakk> xs\<in>list(A) ; ys\<in>list(A) ; env\<in>list(A) ; \<phi>\<in>formula\<rbrakk> \<Longrightarrow> 
+    sats(A,incr_n_bv(\<phi>,length(ys),length(xs)),xs@ys@env) \<longleftrightarrow>
+    sats(A,\<phi>,xs@env)" 
+  apply (simp add: incr_n_bv_def)
+  apply (induct_tac ys,simp+)
+  by (simp add: sats_incr_bv_iff)
+  
+  
 (*
 "strong_replacement(M,P) ==
       \<forall>A[M]. univalent(M,A,P) \<longrightarrow>
       (\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>x[M]. x\<in>A & P(x,b)))"
 
-  \<phi> es de la forma \<phi>(x,y,A,V), donde V es el parámetro
+  \<phi> es de la forma \<phi>(x,y,V), donde V es el parámetro
 *)
 definition
   strong_replacement_ax_fm :: "i \<Rightarrow> i" where
   "strong_replacement_ax_fm(p) == 
-      Forall(Forall(Implies(univalent_fm(p,0),
+      Forall(Forall(Implies(univalent_fm(p),
         Exists(Forall(Iff(Member(0,1),Exists(And(Member(0,3),
-                      incr_bv(p)`3))))))))"
+                      incr_n_bv(p,2,2)))))))))"
 
 lemma rep_type [TC]: "p \<in> formula \<Longrightarrow> strong_replacement_ax_fm(p) \<in> formula"
   by (simp add: strong_replacement_ax_fm_def)
 
-lemma arity_repl[simp] : "\<lbrakk> p \<in> formula ; arity(p) = 1 \<or> arity(p) = 2 \<rbrakk> \<Longrightarrow> 
+lemma arity_repl[simp] : "\<lbrakk> p \<in> formula ; arity(p) = 2 \<or> arity(p) = 3 \<rbrakk> \<Longrightarrow> 
                   arity(strong_replacement_ax_fm(p)) = 0"
   apply (rule disjE,simp)
   apply (simp_all add: strong_replacement_ax_fm_def univalent_fm_def 
@@ -229,7 +259,8 @@ lemma arity_repl[simp] : "\<lbrakk> p \<in> formula ; arity(p) = 1 \<or> arity(p
 definition
   ZF_inf :: "i" where
   "ZF_inf == {separation_ax_fm(p). p \<in> {q \<in> formula. arity(q)=1 \<or> arity(q)=2 }} \<union> 
-             {strong_replacement_ax_fm(p) . p \<in> formula }"
+             {strong_replacement_ax_fm(p) . 
+                            p \<in> {q \<in> formula. arity(q)=2 \<or> arity(q)=3} }"
               
 lemma unions : "A\<subseteq>formula \<and> B\<subseteq>formula \<Longrightarrow> A\<union>B \<subseteq> formula"
   by auto
@@ -260,7 +291,7 @@ lemma satT_sats :
   by (simp add: satT_def)
 
 lemma sep_spec : 
-  "\<lbrakk> satT(M,ZFTh,env) ; \<phi> \<in> formula ; arity(\<phi>)=1 \<or> arity(\<phi>)=2  \<rbrakk> \<Longrightarrow>
+  "\<lbrakk> satT(M,ZFTh,env) ; \<phi> \<in> formula ; arity(\<phi>)=2  \<rbrakk> \<Longrightarrow>
     sats(M,separation_ax_fm(\<phi>),env)"
   apply (rule satT_sats,assumption)
   apply (simp add: ZFTh_def ZF_inf_def)
@@ -268,7 +299,7 @@ lemma sep_spec :
   done
 
 lemma repl_spec :
-  "\<lbrakk> satT(M,ZFTh,env) ; \<phi> \<in> formula \<rbrakk> \<Longrightarrow>
+  "\<lbrakk> satT(M,ZFTh,env) ; \<phi> \<in> formula ; arity(\<phi>)=2 \<or> arity(\<phi>)=3\<rbrakk> \<Longrightarrow>
     sats(M,strong_replacement_ax_fm(\<phi>),env)"
   apply (rule satT_sats,assumption)
   apply (simp add: ZFTh_def ZF_inf_def)
