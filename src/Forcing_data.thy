@@ -1,4 +1,4 @@
-theory Forcing_data imports  ZFCAxioms_formula Forcing_posets begin
+theory Forcing_data imports  ZFCAxioms_formula Forcing_posets Interface begin
 
 lemma lam_codomain: "\<forall>n\<in>N. (\<lambda>x\<in>N. b(x))`n \<in> B \<Longrightarrow>  (\<lambda>x\<in>N. b(x)) : N\<rightarrow>B"
   apply (rule fun_weaken_type)
@@ -6,14 +6,10 @@ lemma lam_codomain: "\<forall>n\<in>N. (\<lambda>x\<in>N. b(x))`n \<in> B \<Long
    apply (auto simp add:lam_funtype)
   done
     
-locale forcing_data = forcing_poset +
-  fixes M enum
-  assumes trans_M:          "Transset(M)"
-      and M_model_ZF:       "satT(M,ZFTh,[])"
-      and M_countable:      "enum\<in>bij(nat,M)"
+locale forcing_data = forcing_poset + M_ZF +
+  fixes enum
+  assumes M_countable:      "enum\<in>bij(nat,M)"
       and P_in_M:           "P \<in> M"
-      (* TODO: Quitar estas assumptions cuando tengamos el Relative hacked *)
-      and zero_in_M:       "0 \<in> M"
 
 begin  (*************** CONTEXT: forcing_data *****************)
 definition
