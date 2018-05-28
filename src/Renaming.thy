@@ -693,6 +693,11 @@ lemma ren_sat : "p \<in> formula \<Longrightarrow> env \<in> list(M) \<Longright
 definition swap_0_1 :: "i \<Rightarrow> i" where
   "swap_0_1(p) = rename(p)`arity(p)`ext_fun(swap01,2,arity(p))"   
    
+lemma arity_swap_0_1 :
+  "p\<in>formula \<Longrightarrow> arity(swap_0_1(p)) = arity(p)"
+  sorry
+
+  
 lemma sats_swap_0_1 :
   "\<lbrakk> \<phi> \<in> formula ; env \<in> list(M) ; a \<in> M ; b \<in> M ; arity(\<phi>) = succ(succ(length(env))) \<rbrakk> \<Longrightarrow>
   sats(M,\<phi>,Cons(b,Cons(a,env))) \<longleftrightarrow>

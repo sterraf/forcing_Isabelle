@@ -452,34 +452,48 @@ lemma arity_tup5p :
                 upair_fm_def Un_commute nat_union_abs1)
     
           
-lemma separation_intf : 
+lemma (in M_ZF) separation_intf : 
       "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=1 \<or> arity(\<phi>)=2 \<rbrakk> \<Longrightarrow> 
         sats(M,separation_ax_fm(\<phi>),[]) \<longleftrightarrow> 
        (\<forall>a\<in>M. separation(##M,\<lambda>x. sats(M,\<phi>,[x,a])))"
   by (simp add: separation_ax_fm_def separation_def sats_incr_bv1_iff)
     
+    
+lemma (in M_ZF) separation_intf2:
+    "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=1 \<or> arity(\<phi>)=2 ; a\<in>M \<rbrakk> \<Longrightarrow>
+      separation(##M,\<lambda>x. sats(M,\<phi>,[x,a]))"
+  apply (rule_tac A=M and P="\<lambda>b. separation(##M,\<lambda>x. sats(M,\<phi>,[x,b]))" in bspec)
+   apply (rule iffD1,rule separation_intf)
+  apply (insert M_model_ZF)
+  apply (simp_all add: sep_spec)
+done  
 
-lemma [simp] :
+lemma arity_inter_fm :
   "arity(Forall(Implies(Member(0,2),Member(1,0)))) = 2"
   by (simp add: Un_commute nat_union_abs1)
     
 (* Instances of separation for interface with M_basic *)
 lemma (in M_ZF) inter_sep_intf :
-  "sats(M,separation_ax_fm(Forall(Implies(Member(0,2),Member(1,0)))),[])
-  \<longleftrightarrow>
-  (\<forall>A\<in>M. separation(##M,\<lambda>x . \<forall>y\<in>M . y\<in>A \<longrightarrow> x\<in>y))"
-  by (simp add: separation_def separation_intf separation_ax_fm_def sats_incr_bv1_iff)
+  "\<lbrakk> A\<in>M \<rbrakk> \<Longrightarrow> separation(##M,\<lambda>x . \<forall>y\<in>M . y\<in>A \<longrightarrow> x\<in>y)"
+  apply (rule iffD1)
+   prefer 2
+   apply (rule_tac \<phi>="Forall(Implies(Member(0,2),Member(1,0)))" in separation_intf2)
+   apply (simp,rule disjI2,rule arity_inter_fm,simp)
+   apply (simp add: separation_def)
+done
 
-    
-lemma [simp] : 
+lemma arity_diff_fm: 
   "arity(Neg(Member(0,1))) = 2"
   by (simp add: nat_union_abs1)
     
 lemma (in M_ZF) diff_sep_intf :
-  "sats(M,separation_ax_fm(Neg(Member(0,1))),[])
-  \<longleftrightarrow>
-  (\<forall>B\<in>M. separation(##M,\<lambda>x . x\<notin>B))"
-  by (simp add: separation_def separation_intf separation_ax_fm_def sats_incr_bv1_iff)
+    "\<lbrakk> B\<in>M \<rbrakk> \<Longrightarrow> separation(##M,\<lambda>x . x\<notin>B)"
+  apply (rule iffD1)
+   prefer 2
+   apply (rule_tac \<phi>="Neg(Member(0,1))" in separation_intf2)
+   apply (simp,rule disjI2,rule arity_diff_fm,simp)
+  apply (simp add: separation_def)
+  done
     
   (* cartprod_sep_fm vars:
      0 \<longrightarrow> B
@@ -495,12 +509,11 @@ lemma cartprof_sep_fm_type [TC] :
   "cartprod_sep_fm \<in> formula"
   by (simp add: cartprod_sep_fm_def)
     
-lemma [simp] : "arity(cartprod_sep_fm) = 3" 
+lemma arity_cartprod_fm [simp] : "arity(cartprod_sep_fm) = 3" 
   by (simp add: cartprod_sep_fm_def pair_fm_def upair_fm_def 
                 Un_commute nat_union_abs1)
 
-
-lemma (in M_ZF) cartprod_sep_intf :
+lemma (in M_ZF) cartprod_sep_intf' :
   "sats(M,separation_ax_fm(tupling_fm_2p(cartprod_sep_fm)),[])
   \<longleftrightarrow>
   (\<forall>A\<in>M. \<forall>B\<in>M. separation(##M,\<lambda>z. \<exists>x\<in>M. x\<in>A \<and> (\<exists>y\<in>M. y\<in>B \<and> pair(##M,x,y,z))))"
@@ -511,7 +524,16 @@ lemma (in M_ZF) cartprod_sep_intf :
    apply (rule tupling_sep_2p)
   apply (simp add: separation_def tupling_fm_2p_def cartprod_sep_fm_def)
   done
-  
+
+lemma (in M_ZF) cartprod_sep_intf :
+  "\<lbrakk> A\<in>M ; B\<in>M \<rbrakk> \<Longrightarrow> 
+    separation(##M,\<lambda>z. \<exists>x\<in>M. x\<in>A \<and> (\<exists>y\<in>M. y\<in>B \<and> pair(##M,x,y,z)))"
+  apply (rule_tac x=B and A=M in bspec,rule_tac x=A and A=M in bspec)
+    apply (rule iffD1,rule cartprod_sep_intf')
+  apply (insert M_model_ZF)
+  apply (rule sep_spec,simp+,rule disjI2,rule arity_tup2p,simp+)
+done
+    
 definition
   image_sep_fm :: "i" where
   "image_sep_fm == 
@@ -528,7 +550,7 @@ lemma [simp] : "arity(image_sep_fm) = 3"
                 Un_commute nat_union_abs1)
                
 
-lemma (in M_ZF) image_sep_intf :
+lemma (in M_ZF) image_sep_intf' :
   "sats(M,separation_ax_fm(tupling_fm_2p(image_sep_fm)),[])
   \<longleftrightarrow>
   (\<forall>A\<in>M. \<forall>r\<in>M. separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>r & (\<exists>x\<in>M. x\<in>A & pair(##M,x,y,p))))"
@@ -539,7 +561,16 @@ lemma (in M_ZF) image_sep_intf :
    apply (rule tupling_sep_2p)
   apply (simp add: separation_def tupling_fm_2p_def image_sep_fm_def)
   done
+lemma (in M_ZF) image_sep_intf :
+  "\<lbrakk> A\<in>M ; r\<in>M \<rbrakk> \<Longrightarrow> 
+    separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>r & (\<exists>x\<in>M. x\<in>A & pair(##M,x,y,p)))"
+  apply (rule_tac x=r and A=M in bspec,rule_tac x=A and A=M in bspec)
+    apply (rule iffD1,rule image_sep_intf')
+  apply (insert M_model_ZF)
+  apply (rule sep_spec,simp+,rule disjI2,rule arity_tup2p,simp+)
+done
 
+    
 definition
   converse_sep_fm :: "i" where
   "converse_sep_fm == 
@@ -553,7 +584,7 @@ lemma [simp] : "arity(converse_sep_fm) = 2"
   by (simp add: converse_sep_fm_def pair_fm_def upair_fm_def 
                 Un_commute nat_union_abs1)
     
-lemma (in M_ZF) converse_sep_intf : 
+lemma (in M_ZF) converse_sep_intf' : 
   "sats(M,separation_ax_fm(converse_sep_fm),[])
   \<longleftrightarrow>
   (\<forall>r\<in>M. separation(##M,\<lambda>z. \<exists>p\<in>M. p\<in>r & (\<exists>x\<in>M.
@@ -561,6 +592,16 @@ lemma (in M_ZF) converse_sep_intf :
   by (simp add: separation_def separation_intf separation_ax_fm_def 
                      sats_incr_bv1_iff converse_sep_fm_def)
   
+lemma (in M_ZF) converse_sep_intf :
+"\<lbrakk> r\<in>M \<rbrakk> \<Longrightarrow> 
+    separation(##M,\<lambda>z. \<exists>p\<in>M. p\<in>r & (\<exists>x\<in>M.
+                      \<exists>y\<in>M. pair(##M,x,y,p) & pair(##M,y,x,z)))"
+  apply (rule_tac x=r and A=M in bspec)
+    apply (rule iffD1,rule converse_sep_intf')
+  apply (insert M_model_ZF)
+  apply (rule sep_spec,simp+)
+done
+                   
 definition
   restrict_sep_fm :: "i" where
   "restrict_sep_fm == Exists(And(Member(0,2),Exists(pair_fm(1,0,2))))"
@@ -572,13 +613,22 @@ lemma [simp] : "arity(restrict_sep_fm) = 2"
   by (simp add: restrict_sep_fm_def pair_fm_def upair_fm_def 
                 Un_commute nat_union_abs1)
 
-lemma (in M_ZF) restrict_sep_intf :
+lemma (in M_ZF) restrict_sep_intf' :
   "sats(M,separation_ax_fm(restrict_sep_fm),[])
   \<longleftrightarrow>
   (\<forall>A\<in>M. separation(##M,\<lambda>z. \<exists>x\<in>M. x\<in>A & (\<exists>y\<in>M. pair(##M,x,y,z))))"
   by (simp add: separation_def separation_intf separation_ax_fm_def 
                      sats_incr_bv1_iff restrict_sep_fm_def)
 
+lemma (in M_ZF) restrict_sep_intf :
+  "\<lbrakk> A\<in>M \<rbrakk> \<Longrightarrow> 
+    separation(##M,\<lambda>z. \<exists>x\<in>M. x\<in>A & (\<exists>y\<in>M. pair(##M,x,y,z)))"
+  apply (rule_tac x=A and A=M in bspec)
+    apply (rule iffD1,rule restrict_sep_intf')
+  apply (insert M_model_ZF)
+  apply (rule sep_spec,simp+)
+done
+                   
 definition 
   comp_sep_fm :: "i" where
   "comp_sep_fm ==
@@ -592,7 +642,7 @@ lemma comp_sep_fm_type [TC] : "comp_sep_fm \<in> formula"
 lemma [simp] : "arity(comp_sep_fm) = 3"
   by (simp add: comp_sep_fm_def pair_fm_def upair_fm_def Un_commute nat_union_abs1)
 
-lemma (in M_ZF) comp_sep_intf :
+lemma (in M_ZF) comp_sep_intf' :
   "sats(M,separation_ax_fm(tupling_fm_2p(comp_sep_fm)),[])
   \<longleftrightarrow>
   (\<forall>r\<in>M. \<forall>s\<in>M. 
@@ -607,11 +657,22 @@ lemma (in M_ZF) comp_sep_intf :
   apply (simp add: separation_def tupling_fm_2p_def comp_sep_fm_def)
   done
 
-lemma [simp] : 
+lemma (in M_ZF) comp_sep_intf :
+    "\<lbrakk> r\<in>M ; s\<in>M \<rbrakk> \<Longrightarrow> 
+    separation(##M,\<lambda>xz. \<exists>x\<in>M. \<exists>y\<in>M. \<exists>z\<in>M. \<exists>xy\<in>M. \<exists>yz\<in>M.
+              pair(##M,x,z,xz) & pair(##M,x,y,xy) & pair(##M,y,z,yz) &
+              xy\<in>s & yz\<in>r)"
+  apply (rule_tac x=s and A=M in bspec,rule_tac x=r and A=M in bspec)
+    apply (rule iffD1,rule comp_sep_intf')
+  apply (insert M_model_ZF)
+  apply (rule sep_spec,simp+,rule disjI2,rule arity_tup2p,simp+)
+done
+    
+lemma arity_pred_fm [simp] : 
   "arity(Exists(And(Member(0,2),pair_fm(3,1,0)))) = 3"
   by (simp add: pair_fm_def upair_fm_def Un_commute nat_union_abs1)
     
-lemma (in M_ZF) pred_sep_intf :
+lemma (in M_ZF) pred_sep_intf' :
   "sats(M,separation_ax_fm(
        tupling_fm_2p(Exists(And(Member(0,2),pair_fm(3,1,0))))),[])
   \<longleftrightarrow>
@@ -625,6 +686,15 @@ lemma (in M_ZF) pred_sep_intf :
   apply (simp add: separation_def tupling_fm_2p_def comp_sep_fm_def)
   done
 
+lemma (in M_ZF) pred_sep_intf :
+    "\<lbrakk> r\<in>M ; x\<in>M \<rbrakk> \<Longrightarrow> separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>r & pair(##M,y,x,p))"
+  apply (rule_tac x=x and A=M in bspec,rule_tac x=r and A=M in bspec)
+  apply (rule iffD1,rule pred_sep_intf')
+  apply (insert M_model_ZF)
+  apply (rule sep_spec,simp+,rule disjI2,rule arity_tup2p,simp,rule arity_pred_fm,simp+)
+done
+
+    
 definition
   memrel_fm :: "i" where
   "memrel_fm == Exists(Exists(And(pair_fm(1,0,2),Member(1,0))))"
@@ -641,15 +711,20 @@ lemma sats_memrel :
     (\<exists>z\<in>M. \<exists>y\<in>M. pair(##M,z,y,x) & z \<in> y)"
    by (simp add: memrel_fm_def)
 
-lemma (in M_ZF) memrel_sep_intf :
+lemma (in M_ZF) memrel_sep_intf' :
   "sats(M,separation_ax_fm(memrel_fm),[])
   \<longleftrightarrow>
   separation(##M, \<lambda>z. \<exists>x\<in>M. \<exists>y\<in>M. pair(##M,x,y,z) & x \<in> y)"
   apply (simp add: separation_def separation_intf sats_memrel)
   apply (insert M_nempty,auto)
   done
-
-
+    
+lemma (in M_ZF) memrel_sep_intf :
+  "separation(##M, \<lambda>z. \<exists>x\<in>M. \<exists>y\<in>M. pair(##M,x,y,z) & x \<in> y)"
+  apply (rule iffD1,rule memrel_sep_intf')
+  apply (insert M_model_ZF,simp add: sep_spec)
+  done
+    
 abbreviation
  dec10  :: i   ("10") where "10 == succ(9)"
     
@@ -678,7 +753,7 @@ lemma [simp] : "arity(is_recfun_sep_fm) = 9"
                 image_fm_def big_union_fm_def pair_fm_def Un_commute nat_union_abs1)
               
               
-lemma (in M_ZF) is_recfun_sep_intf :
+lemma (in M_ZF) is_recfun_sep_intf' :
   "sats(M,separation_ax_fm(tupling_fm_5p(is_recfun_sep_fm)),[])
   \<longleftrightarrow>
   (\<forall>r\<in>M. \<forall>f\<in>M. \<forall>g\<in>M. \<forall>a\<in>M. \<forall>b\<in>M. 
@@ -694,6 +769,18 @@ lemma (in M_ZF) is_recfun_sep_intf :
   apply (simp add: separation_def tupling_fm_5p_def is_recfun_sep_fm_def)
     done
 
+lemma (in M_ZF) is_recfun_sep_intf :
+  "\<lbrakk> r\<in>M ; f\<in>M ; g\<in>M ; a\<in>M ; b\<in>M \<rbrakk> \<Longrightarrow> 
+      separation(##M,\<lambda>x. \<exists>xa\<in>M. \<exists>xb\<in>M.
+                    pair(##M,x,a,xa) & xa \<in> r & pair(##M,x,b,xb) & xb \<in> r &
+                    (\<exists>fx\<in>M. \<exists>gx\<in>M. fun_apply(##M,f,x,fx) & fun_apply(##M,g,x,gx) &
+                                     fx \<noteq> gx))"
+  apply (rule_tac x=b and A=M in bspec,rule_tac x=a and A=M in bspec,rule_tac x=g and A=M in bspec)
+  apply (rule_tac x=f and A=M in bspec,rule_tac x=r and A=M in bspec)
+  apply (rule iffD1,rule is_recfun_sep_intf')
+  apply (insert M_model_ZF)
+  apply (rule sep_spec,simp+,rule disjI2,rule arity_tup5p,simp+)
+done
 
 (* Instances of replacement for interface with M_basic *)
 
@@ -733,8 +820,7 @@ lemma (in M_ZF) replacement_intf :
   by (simp add: strong_replacement_ax_fm_def strong_replacement_def 
                  univalent_fm_def univalent_def sats_incr_bv3_iff
                  sats_incr_bv0_iff sats_swap_0_1 sats_incr_bv1_iff sats_incr_n_bv2)
-                  
-    
+                      
 definition 
   is_cons_fm :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
  "is_cons_fm(a,b,z) == Exists(And(upair_fm(succ(a),succ(a),0),union_fm(0,succ(b),succ(z))))"
@@ -764,7 +850,7 @@ lemma [simp] : "arity(funspace_succ_fm) = 3"
                     union_fm_def Un_commute nat_union_abs1)
 
     
-lemma (in M_ZF) funspace_succ_rep_intf : 
+lemma (in M_ZF) funspace_succ_rep_intf' : 
   "sats(M,strong_replacement_ax_fm(funspace_succ_fm),[])
   \<longleftrightarrow>
   (\<forall>n\<in>M. strong_replacement(##M,
@@ -775,19 +861,36 @@ lemma (in M_ZF) funspace_succ_rep_intf :
   apply (simp add: funspace_succ_fm_def strong_replacement_def univalent_def) 
   done
     
+lemma (in M_ZF) funspace_succ_rep_intf :
+    "\<lbrakk> n\<in>M \<rbrakk> \<Longrightarrow> 
+     strong_replacement(##M,
+          \<lambda>p z. \<exists>f\<in>M. \<exists>b\<in>M. \<exists>nb\<in>M. \<exists>cnbf\<in>M.
+                pair(##M,f,b,p) & pair(##M,n,b,nb) & is_cons(##M,nb,f,cnbf) &
+                upair(##M,cnbf,cnbf,z))"
+  apply (rule_tac x=n and A=M in bspec)
+   apply (rule iffD1,rule funspace_succ_rep_intf')
+  apply (insert M_model_ZF)
+   apply (rule repl_spec,simp+)
+done
+    
 lemmas (in M_ZF) M_basic_sep_instances = 
                 inter_sep_intf diff_sep_intf cartprod_sep_intf
                 image_sep_intf converse_sep_intf restrict_sep_intf
                 pred_sep_intf memrel_sep_intf comp_sep_intf is_recfun_sep_intf
     
 
-lemma (in M_ZF) interface_M_basic : 
+context M_ZF
+begin
+lemma interface_M_basic : 
   "M_basic_no_repl(##M)"
   apply (insert trans_M M_model_ZF M_nempty)
   apply (rule M_basic_no_repl.intro,rule intf_M_trivial)
-  apply (insert M_basic_sep_instances funspace_succ_rep_intf)
   apply (rule M_basic_no_repl_axioms.intro)
-  apply (simp_all add: sep_spec repl_spec)
-  done
+  apply (insert M_basic_sep_instances funspace_succ_rep_intf)
+  apply (simp_all)
+done
 
+interpretation Mbasic : M_basic_no_repl "##M" by (rule interface_M_basic)
+end
+  
 end

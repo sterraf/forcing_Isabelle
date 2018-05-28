@@ -291,8 +291,8 @@ lemma satT_sats :
   by (simp add: satT_def)
 
 lemma sep_spec : 
-  "\<lbrakk> satT(M,ZFTh,env) ; \<phi> \<in> formula ; arity(\<phi>)=2  \<rbrakk> \<Longrightarrow>
-    sats(M,separation_ax_fm(\<phi>),env)"
+  "\<lbrakk> satT(M,ZFTh,[]) ; \<phi> \<in> formula ; arity(\<phi>)=1 \<or> arity(\<phi>)=2  \<rbrakk> \<Longrightarrow>
+    sats(M,separation_ax_fm(\<phi>),[])"
   apply (rule satT_sats,assumption)
   apply (simp add: ZFTh_def ZF_inf_def)
   apply auto
