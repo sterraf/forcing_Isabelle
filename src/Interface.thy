@@ -30,6 +30,13 @@ lemma union_intf :
   Union_ax(##A)"
   by (simp add: union_ax_fm_def Union_ax_def)
 
+(* Emptyset  *)
+lemma empty_intf :
+  "sats(A,infinity_ax_fm,[])
+  \<longrightarrow>
+  (\<exists>z\<in>A . empty(##A,z))"
+  by (auto simp add: infinity_ax_fm_def empty_def)
+
 (* Powerset *)
 lemma power_intf :
   "sats(A,powerset_ax_fm,[])
@@ -46,12 +53,29 @@ locale M_ZF =
   fixes M
   assumes trans_M:          "Transset(M)"
       and M_model_ZF:       "satT(M,ZFTh,[])"
-      and M_nempty:         "0 \<in> M"
 
 begin  (*************** CONTEXT: M_ZF  ************************)
+
+lemma zero_in_M:         "0 \<in> M"
+proof -
+  have 
+        "sats(M,infinity_ax_fm,[])"
+    by (rule satT_sats, rule M_model_ZF, simp add: ZFTh_def ZF_fin_def)
+  then have
+        "(\<exists>z\<in>M . empty(##M,z))"
+    by (simp add: empty_intf)      
+  then obtain z where
+        zm: "empty(##M,z)"  "z\<in>M"
+    by auto
+  with trans_M have "z=0"
+    by (simp  add: empty_def, blast intro: Transset_intf )
+  with zm show ?thesis 
+      by simp
+  qed
+    
 lemma intf_M_trivial :
   "M_trivial_no_repl(##M)"
-  apply (insert trans_M M_model_ZF M_nempty)
+  apply (insert trans_M M_model_ZF zero_in_M)
   apply (rule M_trivial_no_repl.intro)
   apply (simp,rule Transset_intf,assumption+)
   apply (simp_all add: pairing_intf[symmetric] union_intf[symmetric] 
@@ -716,7 +740,7 @@ lemma (in M_ZF) memrel_sep_intf' :
   \<longleftrightarrow>
   separation(##M, \<lambda>z. \<exists>x\<in>M. \<exists>y\<in>M. pair(##M,x,y,z) & x \<in> y)"
   apply (simp add: separation_def separation_intf sats_memrel)
-  apply (insert M_nempty,auto)
+  apply (insert zero_in_M,auto)
   done
     
 lemma (in M_ZF) memrel_sep_intf :
@@ -883,7 +907,7 @@ context M_ZF
 begin
 lemma interface_M_basic : 
   "M_basic_no_repl(##M)"
-  apply (insert trans_M M_model_ZF M_nempty)
+  apply (insert trans_M M_model_ZF zero_in_M)
   apply (rule M_basic_no_repl.intro,rule intf_M_trivial)
   apply (rule M_basic_no_repl_axioms.intro)
   apply (insert M_basic_sep_instances funspace_succ_rep_intf)
