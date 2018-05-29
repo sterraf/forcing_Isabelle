@@ -1,4 +1,4 @@
-theory Forces_locale imports Interface Forcing_data MG_sats_pair begin
+theory Forces_locale imports Interface Forcing_data Names begin
 
 definition
   SepReplace :: "[i, i\<Rightarrow>i, i\<Rightarrow> o] \<Rightarrow>i" where
@@ -28,13 +28,13 @@ definition
 
 definition
     GenExt :: "i\<Rightarrow>i"     ("M[_]" 90)
-  where "GenExt== gen_ext(M,P)"
+  where "GenExt(G)== {val(G,\<tau>). \<tau> \<in> M}"
+
     
 lemma "Hv(G,x,f) = { f`y .. y\<in> domain(x), \<exists>p\<in>P. <y,p> \<in> x \<and> p \<in> G }"
   by (simp add:Sep_and_Replace Hv_def Hval_def)  
     
-lemma "val(G,{<t,p> .. <t,p>\<in>A\<times>B, Q(t,p)}) = {val(G,t) .. t\<in>A , p\<in>B & Q(t,p)}"
-apply (simp add:SepReplace_def)
+lemma "B\<subseteq>P \<Longrightarrow> val(G,{x .. x\<in>A\<times>B, Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>B .  Q(<t,p>)}"
   oops
     
 end    (*************** CONTEXT: forcing_data *****************)
