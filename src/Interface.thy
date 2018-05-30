@@ -87,9 +87,16 @@ lemma intf_M_trivial :
   apply (simp_all add: pairing_intf[symmetric] union_intf[symmetric] 
                        power_intf[symmetric] ZFTh_def ZF_fin_def satT_sats)
 done
+end
+  
+sublocale M_ZF \<subseteq> M_trivial_no_repl "##M" 
+  by (rule intf_M_trivial)
+  
+(* interpretation Mtriv : M_trivial_no_repl "##M" by (rule intf_M_trivial) *)
 
-interpretation Mtriv : M_trivial_no_repl "##M" by (rule intf_M_trivial)
-    
+
+context M_ZF
+begin
 (* Separation *)
 lemma uniq_dec_2p: "<C,D> \<in> M \<Longrightarrow> 
              \<forall>A\<in>M. \<forall>B\<in>M. <C,D> = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B)
@@ -210,6 +217,7 @@ next
   qed
 qed
 
+  
 (*  Misma prueba que el lema siguiente. 
  *
 lemma tupling_simp2 :
@@ -259,7 +267,7 @@ proof (intro iffI ballI impI)
   then have
               "\<langle>A, B\<rangle> \<in> M \<and> Q(A, B) \<longrightarrow> P(A, B)"
     by simp
-  with asms and Mtriv.pair_in_M_iff show "P(A,B)" 
+  with asms and pair_in_M_iff show "P(A,B)" 
       by simp
   next
   fix A B
@@ -290,13 +298,13 @@ proof (auto)
   then have 
           1:  "\<forall>A\<in>M. \<langle>A, B, C\<rangle> \<in> M \<and> Q(A, B, C) \<longrightarrow> P(A, B, C)"
     by simp
-  from asms and Mtriv.pair_in_M_iff have
+  from asms and pair_in_M_iff have
               "<B,C> \<in> M"
     by simp
   with 1 and tupling_simp2_rule have
               "\<forall>A\<in>M. \<langle>A, B, C\<rangle> \<in> M \<and> Q(A, B, C) \<longrightarrow> P(A, B, C)"
     by simp
-  with asms and Mtriv.pair_in_M_iff show "P(A,B,C)" by simp
+  with asms and pair_in_M_iff show "P(A,B,C)" by simp
 qed
   
 lemma tuples_in_M: "A\<in>M \<Longrightarrow> B\<in>M \<Longrightarrow> <A,B>\<in>M" 
@@ -406,7 +414,7 @@ proof -
 qed
 
 end    (*************** CONTEXT: M_ZF  ************************)
-  
+
 (* Tupling para fórmula para instancia de separación.
    Se asume que la aridad es 3: las dos primeras variables son los
    parámetros que se van a tuplear, la siguiente es el x de separación*)
@@ -551,7 +559,7 @@ lemma (in M_ZF) cartprod_sep_intf' :
   apply (rule iff_trans) 
    prefer 2
    apply (rule tupling_sep_2p)
-  apply (simp add: separation_def tupling_fm_2p_def cartprod_sep_fm_def)
+  apply (simp add: separation_def tupling_fm_2p_def cartprod_sep_fm_def del: pair_abs)
   done
 
 lemma (in M_ZF) cartprod_sep_intf :
@@ -584,12 +592,13 @@ lemma (in M_ZF) image_sep_intf' :
   \<longleftrightarrow>
   (\<forall>A\<in>M. \<forall>r\<in>M. separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>r & (\<exists>x\<in>M. x\<in>A & pair(##M,x,y,p))))"
   apply (rule iff_trans)
-   apply (rule separation_intf,simp,rule disjI2,rule arity_tup2p,simp+)
+   apply (rule separation_intf,simp,rule disjI2,rule arity_tup2p,simp,simp)
   apply (rule iff_trans)
    prefer 2
    apply (rule tupling_sep_2p)
-  apply (simp add: separation_def tupling_fm_2p_def image_sep_fm_def)
+  apply (simp add: separation_def tupling_fm_2p_def image_sep_fm_def del: pair_abs)
   done
+    
 lemma (in M_ZF) image_sep_intf :
   "\<lbrakk> A\<in>M ; r\<in>M \<rbrakk> \<Longrightarrow> 
     separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>r & (\<exists>x\<in>M. x\<in>A & pair(##M,x,y,p)))"
@@ -619,7 +628,7 @@ lemma (in M_ZF) converse_sep_intf' :
   (\<forall>r\<in>M. separation(##M,\<lambda>z. \<exists>p\<in>M. p\<in>r & (\<exists>x\<in>M.
                       \<exists>y\<in>M. pair(##M,x,y,p) & pair(##M,y,x,z))))"
   by (simp add: separation_def separation_intf separation_ax_fm_def 
-                     sats_incr_bv1_iff converse_sep_fm_def)
+                     sats_incr_bv1_iff converse_sep_fm_def del: pair_abs)
   
 lemma (in M_ZF) converse_sep_intf :
 "\<lbrakk> r\<in>M \<rbrakk> \<Longrightarrow> 
@@ -679,11 +688,11 @@ lemma (in M_ZF) comp_sep_intf' :
               pair(##M,x,z,xz) & pair(##M,x,y,xy) & pair(##M,y,z,yz) &
               xy\<in>s & yz\<in>r))"
   apply (rule iff_trans)
-   apply (rule separation_intf,simp,rule disjI2,rule arity_tup2p,simp+)
+   apply (rule separation_intf,simp,rule disjI2,rule arity_tup2p,simp,simp)
   apply (rule iff_trans)
    prefer 2
    apply (rule tupling_sep_2p)
-  apply (simp add: separation_def tupling_fm_2p_def comp_sep_fm_def)
+  apply (simp add: separation_def tupling_fm_2p_def comp_sep_fm_def del: pair_abs)
   done
 
 lemma (in M_ZF) comp_sep_intf :
@@ -707,12 +716,12 @@ lemma (in M_ZF) pred_sep_intf' :
   \<longleftrightarrow>
   (\<forall>r\<in>M. \<forall>x\<in>M. separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>r & pair(##M,y,x,p)))"
    apply (rule iff_trans)
-   apply (rule separation_intf,simp,rule disjI2,rule arity_tup2p,simp+)
+   apply (rule separation_intf,simp,rule disjI2,rule arity_tup2p,simp,simp)
    apply (simp add: pair_fm_def upair_fm_def Un_commute nat_union_abs1)
   apply (rule iff_trans)
    prefer 2
    apply (rule tupling_sep_2p)
-  apply (simp add: separation_def tupling_fm_2p_def)
+  apply (simp add: separation_def tupling_fm_2p_def del: pair_abs)
   done
 
 lemma (in M_ZF) pred_sep_intf :
@@ -791,11 +800,11 @@ lemma (in M_ZF) is_recfun_sep_intf' :
                     (\<exists>fx\<in>M. \<exists>gx\<in>M. fun_apply(##M,f,x,fx) & fun_apply(##M,g,x,gx) &
                                      fx \<noteq> gx)))"
   apply (rule iff_trans)
-  apply (rule separation_intf,simp,rule disjI2,rule arity_tup5p,simp+)
+  apply (rule separation_intf,simp,rule disjI2,rule arity_tup5p,simp,simp)
   apply (rule iff_trans)
   prefer 2
    apply (rule tupling_sep_5p_rel2)
-  apply (simp add: separation_def tupling_fm_5p_def is_recfun_sep_fm_def)
+  apply (simp add: separation_def tupling_fm_5p_def is_recfun_sep_fm_def del: pair_abs)
     done
 
 lemma (in M_ZF) is_recfun_sep_intf :
@@ -886,8 +895,8 @@ lemma (in M_ZF) funspace_succ_rep_intf' :
           \<lambda>p z. \<exists>f\<in>M. \<exists>b\<in>M. \<exists>nb\<in>M. \<exists>cnbf\<in>M.
                 pair(##M,f,b,p) & pair(##M,n,b,nb) & is_cons(##M,nb,f,cnbf) &
                 upair(##M,cnbf,cnbf,z)))"
-  apply (simp add: replacement_intf)
-  apply (simp add: funspace_succ_fm_def strong_replacement_def univalent_def) 
+  apply (simp add: replacement_intf del: pair_abs)
+  apply (simp add: funspace_succ_fm_def strong_replacement_def univalent_def del: pair_abs)
   done
     
 lemma (in M_ZF) funspace_succ_rep_intf :
@@ -906,10 +915,10 @@ lemmas (in M_ZF) M_basic_sep_instances =
                 inter_sep_intf diff_sep_intf cartprod_sep_intf
                 image_sep_intf converse_sep_intf restrict_sep_intf
                 pred_sep_intf memrel_sep_intf comp_sep_intf is_recfun_sep_intf
-    
 
+                
 context M_ZF
-begin
+begin 
 lemma interface_M_basic : 
   "M_basic_no_repl(##M)"
   apply (insert trans_M M_model_ZF zero_in_M)
@@ -919,9 +928,9 @@ lemma interface_M_basic :
   apply (simp_all)
 done
 
-interpretation Mbasic : M_basic_no_repl "##M" by (rule interface_M_basic)
-
 end (* End context M_ZF *)
+
+sublocale M_ZF \<subseteq> M_basic_no_repl "##M" by (rule interface_M_basic)
   
 (* interface with M_trancl *)
     
@@ -1051,7 +1060,7 @@ lemma (in M_ZF) rtrancl_sep_intf' :
   apply (rule iff_trans)
    prefer 2
    apply (rule tupling_sep_2p)
-  apply (simp add: separation_def tupling_fm_2p_def)
+  apply (simp add: separation_def tupling_fm_2p_def del: pair_abs)
 done
 
 lemma (in M_ZF) rtrancl_sep_intf :
@@ -1090,11 +1099,11 @@ lemma (in M_ZF) wf_trancl_sep_intf' :
               \<exists>w\<in>M. \<exists>wx\<in>M. \<exists>rp\<in>M. 
                w \<in> Z & pair(##M,w,x,wx) & tran_closure(##M,r,rp) & wx \<in> rp))"
   apply (rule iff_trans)
-  apply (rule separation_intf,simp,rule disjI2,rule arity_tup2p,simp+)
+  apply (rule separation_intf,simp,rule disjI2,rule arity_tup2p,simp,simp)
   apply (rule iff_trans)
    prefer 2
    apply (rule tupling_sep_2p)
-  apply (simp add: separation_def tupling_fm_2p_def wf_trancl_fm_def)
+  apply (simp add: separation_def tupling_fm_2p_def wf_trancl_fm_def del: pair_abs)
 done
 
 lemma (in M_ZF) wf_trancl_sep_intf :
@@ -1108,20 +1117,80 @@ lemma (in M_ZF) wf_trancl_sep_intf :
 done
 
 (* nat \<in> M *)
- 
+     
+lemma (in M_ZF) inf_zero:
+  "\<lbrakk> I\<in>M ; z\<in>M ; empty(##M, z) ; z\<in>I \<rbrakk> \<Longrightarrow> 0 \<in> I"
+  by (simp)
+  
+lemma (in M_ZF) inf_suc:
+  "\<lbrakk> I\<in>M ; y\<in>M ; sy\<in>M ; y\<in>I ; successor(##M,y,sy) ; sy\<in>I \<rbrakk> \<Longrightarrow> succ(y) \<in> I" 
+  by simp
+  
 lemma (in M_ZF) inf_abs :
-  "\<exists>I\<in>M. 0\<in>I \<and> (\<forall>x\<in>I. succ(x)\<in>I)"
-  apply (rule iffD1)
+  "\<exists>I\<in>M. 0\<in>I \<and> (\<forall>x\<in>M. x\<in>I \<longrightarrow> succ(x)\<in>I)"
+  apply (subgoal_tac "(\<exists>I\<in>M. (\<exists>z\<in>M. empty(##M,z) \<and> z\<in>I) \<and>  (\<forall>y\<in>M. y\<in>I \<longrightarrow> 
+                                                            (\<exists>sy\<in>M. successor(##M,y,sy) \<and> sy\<in>I)))")
    prefer 2
-   apply (rule iffD1,rule_tac A=M in infinite_intf)
+   apply (rule infinite_intf[THEN iffD1])
    apply (insert M_model_ZF,rule satT_sats,simp add: ZFTh_def ZF_fin_def,simp)
-    sorry
+   apply auto
+  done
   
   
-lemma (in M_ZF) nat_in_I : 
+lemma (in M_ZF) nat_subset_I' : 
   "\<lbrakk> I\<in>M ; 0\<in>I ; \<And>x. x\<in>I \<Longrightarrow> succ(x)\<in>I \<rbrakk> \<Longrightarrow> nat \<subseteq> I"
   by (rule subsetI,induct_tac x,simp+)
   
+lemma (in M_ZF) nat_subset_I :
+  "\<exists>I\<in>M. nat \<subseteq> I" 
+  apply (insert inf_abs)
+  apply (rule bexE,assumption,rename_tac I)  
+  apply (rule bexI)
+   prefer 2
+   apply (assumption)
+  apply (rule nat_subset_I',simp+)
+  apply (drule conjunct2)
+  apply (rule mp,rule_tac x=x in bspec,assumption)
+   apply (insert trans_M,rule Transset_intf,simp+)
+  done
+    
+lemma [simp] : "arity(finite_ordinal_fm(0)) = 1"
+  by (simp add: finite_ordinal_fm_def limit_ordinal_fm_def empty_fm_def succ_fm_def
+                   cons_fm_def union_fm_def upair_fm_def Un_commute nat_union_abs1)
+    
+lemma (in M_ZF) finite_sep_intf':
+  "sats(M,separation_ax_fm(finite_ordinal_fm(0)),[]) \<longleftrightarrow>
+  separation(##M,\<lambda>x. x\<in>nat)"
+  apply (simp add: separation_def separation_intf)
+  apply (insert zero_in_M,auto)
+  done
+    
+lemma (in M_ZF) finite_sep_intf :
+  "separation(##M,\<lambda>x. x\<in>nat)"
+  apply (rule iffD1,rule finite_sep_intf')
+  apply (insert M_model_ZF,simp add: sep_spec)
+  done
 
-  
+lemma collect_subset [simp]:
+  " A\<subseteq>B \<Longrightarrow> {x \<in> B . x \<in> A} = A" 
+  by auto
+    
+lemma (in M_ZF) nat_in_M:
+  "nat \<in> M"
+  apply (insert nat_subset_I,rule bexE,assumption,rename_tac I)
+  apply (insert finite_sep_intf)
+  apply (subgoal_tac "{x\<in>I. x\<in>nat} \<in> M")
+   prefer 2
+   apply (simp add: setclass_iff[symmetric] del: setclass_iff)
+   apply (rule_tac a="{x \<in> I . x \<in> nat}" and b="nat" in subst,simp+)
+  done
+
+sublocale M_ZF \<subseteq> M_trancl_no_repl "##M" 
+  apply (insert trans_M M_model_ZF zero_in_M)
+  apply (rule M_trancl_no_repl.intro,rule interface_M_basic)
+  apply (insert rtrancl_sep_intf wf_trancl_sep_intf nat_in_M)
+  apply (rule M_trancl_no_repl_axioms.intro)
+    apply simp_all
+  done
+    
 end
