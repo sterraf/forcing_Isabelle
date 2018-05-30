@@ -1,6 +1,6 @@
 (* Interface between internalized axiom formulas and 
    ZF axioms *)
-theory Interface imports ZFCAxioms_formula Relative_no_repl Names begin
+theory Interface imports ZFCAxioms_formula Relative_no_repl Names WF_absolute_no_repl begin
 
 (* Extensionality *)
 lemma extension_intf :
@@ -30,6 +30,12 @@ lemma union_intf :
   Union_ax(##A)"
   by (simp add: union_ax_fm_def Union_ax_def)
 
+(* Infinite *)
+lemma infinite_intf : 
+  "sats(A,infinity_ax_fm,[]) \<longleftrightarrow>
+   (\<exists>I\<in>A. (\<exists>z\<in>A. empty(##A,z) \<and> z\<in>I) \<and>  (\<forall>y\<in>A. y\<in>I \<longrightarrow> (\<exists>sy\<in>A. successor(##A,y,sy) \<and> sy\<in>I)))"
+  by (simp add: infinity_ax_fm_def)
+  
 (* Emptyset  *)
 lemma empty_intf :
   "sats(A,infinity_ax_fm,[])
@@ -55,7 +61,7 @@ locale M_ZF =
       and M_model_ZF:       "satT(M,ZFTh,[])"
 
 begin  (*************** CONTEXT: M_ZF  ************************)
-
+    
 lemma zero_in_M:         "0 \<in> M"
 proof -
   have 
@@ -72,7 +78,7 @@ proof -
   with zm show ?thesis 
       by simp
   qed
-    
+  
 lemma intf_M_trivial :
   "M_trivial_no_repl(##M)"
   apply (insert trans_M M_model_ZF zero_in_M)
@@ -81,10 +87,9 @@ lemma intf_M_trivial :
   apply (simp_all add: pairing_intf[symmetric] union_intf[symmetric] 
                        power_intf[symmetric] ZFTh_def ZF_fin_def satT_sats)
 done
-    
-interpretation Mtriv : M_trivial_no_repl "##M" by (rule intf_M_trivial)
-  
 
+interpretation Mtriv : M_trivial_no_repl "##M" by (rule intf_M_trivial)
+    
 (* Separation *)
 lemma uniq_dec_2p: "<C,D> \<in> M \<Longrightarrow> 
              \<forall>A\<in>M. \<forall>B\<in>M. <C,D> = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B)
@@ -418,7 +423,7 @@ lemma arity_tup2p :
   "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>) = 3 \<rbrakk> \<Longrightarrow> arity(tupling_fm_2p(\<phi>)) = 2"
   by (simp add: tupling_fm_2p_def arity_incr_bv_lemma pair_fm_def 
                 upair_fm_def Un_commute nat_union_abs1)
-
+     
               
 (* quisiera que me salga esto, pero no me sale:
 consts incrn_bv :: "i=>i"
@@ -707,7 +712,7 @@ lemma (in M_ZF) pred_sep_intf' :
   apply (rule iff_trans)
    prefer 2
    apply (rule tupling_sep_2p)
-  apply (simp add: separation_def tupling_fm_2p_def comp_sep_fm_def)
+  apply (simp add: separation_def tupling_fm_2p_def)
   done
 
 lemma (in M_ZF) pred_sep_intf :
@@ -915,6 +920,208 @@ lemma interface_M_basic :
 done
 
 interpretation Mbasic : M_basic_no_repl "##M" by (rule interface_M_basic)
-end
+
+end (* End context M_ZF *)
+  
+(* interface with M_trancl *)
+    
+definition 
+  rtran_closure_mem_fm :: "[i,i,i] \<Rightarrow> i" where
+  "rtran_closure_mem_fm(A,r,p) == 
+    Exists(Exists(Exists(
+      And(omega_fm(2),And(Member(1,2),And(succ_fm(1,0),
+          Exists(And(typed_function_fm(1,4#+A,0),
+                 And(Exists(Exists(Exists(And(pair_fm(2,1,7#+p),And(empty_fm(0),
+                                          And(fun_apply_fm(3,0,2),fun_apply_fm(3,5,1))))))),
+            Forall(Implies(Member(0,3),Exists(Exists(Exists(Exists(
+                And(fun_apply_fm(5,4,3),And(succ_fm(4,2),And(fun_apply_fm(5,2,1),
+                And(pair_fm(3,1,0),Member(0,9#+r))))))))))))))))))))"
+
+lemma rtran_closure_mem_fm_type [TC] :
+  "\<lbrakk> A\<in>nat ; r\<in>nat ; p\<in>nat \<rbrakk> \<Longrightarrow> rtran_closure_mem_fm(A,r,p) \<in> formula" 
+  by (simp add: rtran_closure_mem_fm_def)
+  
+lemma arity_rtran_closure_mem_fm0 [simp] : 
+  "arity(rtran_closure_mem_fm(0,1,2)) = 3" 
+  by (simp add: rtran_closure_mem_fm_def succ_fm_def omega_fm_def limit_ordinal_fm_def
+                empty_fm_def is_cons_fm_def typed_function_fm_def fun_apply_fm_def
+                cons_fm_def image_fm_def upair_fm_def big_union_fm_def union_fm_def pair_fm_def
+                relation_fm_def domain_fm_def function_fm_def Un_commute nat_union_abs1)
+
+lemma sats_rtran_closure_mem_fm [simp]:
+   "[| x \<in> nat; y \<in> nat; z \<in> nat; env \<in> list(A)|]
+    ==> sats(A, rtran_closure_mem_fm(x,y,z), env) \<longleftrightarrow>
+        rtran_closure_mem(##A, nth(x,env), nth(y,env), nth(z,env))"
+  by (simp add: rtran_closure_mem_fm_def rtran_closure_mem_def)
+
+(*"is_domain(M,r,z) == \<forall>x[M]. x \<in> z \<longleftrightarrow> (\<exists>w[M]. w\<in>r & (\<exists>y[M]. pair(M,x,y,w)))"*)
+definition 
+  is_domain_fm :: "[i,i] \<Rightarrow> i" where
+  "is_domain_fm(r,z) == Forall(Iff(Member(0,succ(z)),
+                          Exists(And(Member(0,succ(succ(r))),
+                                     Exists(pair_fm(2,0,1))))))"
+  
+lemma is_domain_type [TC]:
+  "\<lbrakk> r\<in>nat ; z\<in>nat \<rbrakk> \<Longrightarrow> is_domain_fm(r,z) \<in> formula"
+  by (simp add: is_domain_fm_def)
+    
+lemma sats_is_domain_fm [simp] :
+   "[| x \<in> nat; y \<in> nat; env \<in> list(A)|]
+    ==> sats(A, is_domain_fm(x,y), env) \<longleftrightarrow>
+        is_domain(##A, nth(x,env), nth(y,env))"
+  by (simp add: is_domain_fm_def is_domain_def)
+    
+(*"is_range(M,r,z) == \<forall>y[M]. y \<in> z \<longleftrightarrow> (\<exists>w[M]. w\<in>r & (\<exists>x[M]. pair(M,x,y,w)))"*)
+definition
+  is_range_fm :: "[i,i] \<Rightarrow> i" where
+  "is_range_fm(x,y) == Forall(Iff(Member(0,succ(y)),
+                              Exists(And(Member(0,succ(succ(x))),
+                                     Exists(pair_fm(0,2,1))))))"
+  
+lemma is_range_type [TC]:
+  "\<lbrakk> r\<in>nat ; z\<in>nat \<rbrakk> \<Longrightarrow> is_range_fm(r,z) \<in> formula"
+  by (simp add: is_range_fm_def)
+    
+lemma sats_is_range_fm [simp] :
+   "[| x \<in> nat; y \<in> nat; env \<in> list(A)|]
+    ==> sats(A, is_range_fm(x,y), env) \<longleftrightarrow>
+        is_range(##A, nth(x,env), nth(y,env))"
+  by (simp add: is_range_fm_def is_range_def)
+  
+  
+    
+(*"is_field(M,r,z) == \<exists>dr[M]. \<exists>rr[M]. is_domain(M,r,dr) & is_range(M,r,rr) & union(M,dr,rr,z)"*)
+definition
+  is_field_fm :: "[i,i] \<Rightarrow> i" where
+  "is_field_fm(r,z) == Exists(Exists(And(is_domain_fm(succ(succ(r)),1),
+                                     And(is_range_fm(succ(succ(r)),0),
+                                         union_fm(1,0,succ(succ(z)))))))"
+    
+lemma is_field_type [TC]:
+  "\<lbrakk> r\<in>nat ; z\<in>nat \<rbrakk> \<Longrightarrow> is_field_fm(r,z) \<in> formula"
+  by (simp add: is_field_fm_def)
+    
+lemma sats_is_field_fm [simp] :
+   "[| x \<in> nat; y \<in> nat; env \<in> list(A)|]
+    ==> sats(A, is_field_fm(x,y), env) \<longleftrightarrow>
+        is_field(##A, nth(x,env), nth(y,env))"
+  by (simp add: is_field_fm_def is_field_def)
+    
+(*"rtran_closure(M,r,s) == \<forall>A[M]. is_field(M,r,A) \<longrightarrow> 
+                                  (\<forall>p[M]. p \<in> s \<longleftrightarrow> rtran_closure_mem(M,A,r,p))"*)
+definition
+  rtran_closure_fm :: "[i,i] \<Rightarrow> i" where
+  "rtran_closure_fm(r,s) == Forall(Implies(is_field_fm(succ(r),0),
+                                  Forall(Iff(Member(0,succ(succ(s))),
+                                         rtran_closure_mem_fm(1,succ(succ(r)),0)))))"
+  
+lemma rtran_closure_type [TC]:
+  "\<lbrakk> r\<in>nat ; z\<in>nat \<rbrakk> \<Longrightarrow> rtran_closure_fm(r,z) \<in> formula"
+  by (simp add: rtran_closure_fm_def)
+    
+lemma sats_rtran_closure_fm [simp] :
+   "[| x \<in> nat; y \<in> nat; env \<in> list(A)|]
+    ==> sats(A, rtran_closure_fm(x,y), env) \<longleftrightarrow>
+        rtran_closure(##A, nth(x,env), nth(y,env))"
+  by (simp add: rtran_closure_fm_def rtran_closure_def)
+
+(*"tran_closure(M,r,t) == \<exists>s[M]. rtran_closure(M,r,s) & composition(M,r,s,t)"*)
+
+definition
+  tran_closure_fm :: "[i,i] \<Rightarrow> i" where
+  "tran_closure_fm(r,t) == Exists(And(rtran_closure_fm(succ(r),0),
+                                      composition_fm(succ(r),0,succ(t))))"
+
+lemma tran_closure_type [TC]:
+  "\<lbrakk> r\<in>nat ; t\<in>nat \<rbrakk> \<Longrightarrow> tran_closure_fm(r,t) \<in> formula"
+  by (simp add: tran_closure_fm_def)
+    
+lemma sats_tran_closure_fm [simp] :
+   "[| x \<in> nat; y \<in> nat; env \<in> list(A)|]
+    ==> sats(A, tran_closure_fm(x,y), env) \<longleftrightarrow>
+        tran_closure(##A, nth(x,env), nth(y,env))"
+  by (simp add: tran_closure_fm_def tran_closure_def)
+  
+    
+lemma (in M_ZF) rtrancl_sep_intf' :
+  "sats(M,separation_ax_fm(tupling_fm_2p(rtran_closure_mem_fm(0,1,2))),[]) \<longleftrightarrow> 
+   (\<forall>r\<in>M. \<forall>A\<in>M. separation(##M,rtran_closure_mem(##M,A,r)))"
+  apply (rule iff_trans)
+  apply (rule separation_intf,simp,rule disjI2,rule arity_tup2p,simp+)
+  apply (rule iff_trans)
+   prefer 2
+   apply (rule tupling_sep_2p)
+  apply (simp add: separation_def tupling_fm_2p_def)
+done
+
+lemma (in M_ZF) rtrancl_sep_intf :
+    "\<lbrakk> r\<in>M ; A\<in>M \<rbrakk> \<Longrightarrow> separation(##M,rtran_closure_mem(##M,A,r))"
+  apply (rule_tac x=A and A=M in bspec,rule_tac x=r and A=M in bspec)
+  apply (rule iffD1,rule rtrancl_sep_intf')
+  apply (insert M_model_ZF)
+  apply (rule sep_spec,simp+,rule disjI2,rule arity_tup2p,simp,rule arity_rtran_closure_mem_fm0,simp+)
+done
+
+  
+definition
+  wf_trancl_fm :: "i" where
+  "wf_trancl_fm == Exists(Exists(Exists(And(Member(2,3),
+                                        And(pair_fm(2,5,1),
+                                        And(tran_closure_fm(4,0),
+                                            Member(1,0)))))))"
+  
+lemma wf_trancl_fm_type [TC] :
+  "wf_trancl_fm \<in> formula"
+  by (simp add: wf_trancl_fm_def)
+    
+lemma arity_wf_trancl_fm_type [simp] :
+  "arity(wf_trancl_fm) = 3"
+  by (simp add: wf_trancl_fm_def pair_fm_def upair_fm_def tran_closure_fm_def 
+                rtran_closure_fm_def is_field_fm_def rtran_closure_mem_fm_def fun_apply_fm_def
+                image_fm_def empty_fm_def big_union_fm_def composition_fm_def
+                is_cons_fm_def union_fm_def is_domain_fm_def is_range_fm_def 
+                typed_function_fm_def function_fm_def relation_fm_def omega_fm_def 
+                limit_ordinal_fm_def succ_fm_def cons_fm_def domain_fm_def Un_commute nat_union_abs1)
+
+  
+lemma (in M_ZF) wf_trancl_sep_intf' :
+  "sats(M,separation_ax_fm(tupling_fm_2p(wf_trancl_fm)),[]) \<longleftrightarrow> 
+   (\<forall>r\<in>M. \<forall>Z\<in>M. separation (##M, \<lambda>x. 
+              \<exists>w\<in>M. \<exists>wx\<in>M. \<exists>rp\<in>M. 
+               w \<in> Z & pair(##M,w,x,wx) & tran_closure(##M,r,rp) & wx \<in> rp))"
+  apply (rule iff_trans)
+  apply (rule separation_intf,simp,rule disjI2,rule arity_tup2p,simp+)
+  apply (rule iff_trans)
+   prefer 2
+   apply (rule tupling_sep_2p)
+  apply (simp add: separation_def tupling_fm_2p_def wf_trancl_fm_def)
+done
+
+lemma (in M_ZF) wf_trancl_sep_intf :
+    "\<lbrakk> r\<in>M ; Z\<in>M \<rbrakk> \<Longrightarrow> separation (##M, \<lambda>x. 
+              \<exists>w\<in>M. \<exists>wx\<in>M. \<exists>rp\<in>M. 
+               w \<in> Z & pair(##M,w,x,wx) & tran_closure(##M,r,rp) & wx \<in> rp)"
+  apply (rule_tac x=Z and A=M in bspec,rule_tac x=r and A=M in bspec)
+  apply (rule iffD1,rule wf_trancl_sep_intf')
+  apply (insert M_model_ZF)
+  apply (rule sep_spec,simp+,rule disjI2,rule arity_tup2p,simp,rule arity_wf_trancl_fm_type,simp+)
+done
+
+(* nat \<in> M *)
+ 
+lemma (in M_ZF) inf_abs :
+  "\<exists>I\<in>M. 0\<in>I \<and> (\<forall>x\<in>I. succ(x)\<in>I)"
+  apply (rule iffD1)
+   prefer 2
+   apply (rule iffD1,rule_tac A=M in infinite_intf)
+   apply (insert M_model_ZF,rule satT_sats,simp add: ZFTh_def ZF_fin_def,simp)
+    sorry
+  
+  
+lemma (in M_ZF) nat_in_I : 
+  "\<lbrakk> I\<in>M ; 0\<in>I ; \<And>x. x\<in>I \<Longrightarrow> succ(x)\<in>I \<rbrakk> \<Longrightarrow> nat \<subseteq> I"
+  by (rule subsetI,induct_tac x,simp+)
+  
+
   
 end
