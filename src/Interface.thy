@@ -1117,15 +1117,6 @@ lemma (in M_ZF) wf_trancl_sep_intf :
 done
 
 (* nat \<in> M *)
-     
-lemma (in M_ZF) inf_zero:
-  "\<lbrakk> I\<in>M ; z\<in>M ; empty(##M, z) ; z\<in>I \<rbrakk> \<Longrightarrow> 0 \<in> I"
-  by (simp)
-  
-lemma (in M_ZF) inf_suc:
-  "\<lbrakk> I\<in>M ; y\<in>M ; sy\<in>M ; y\<in>I ; successor(##M,y,sy) ; sy\<in>I \<rbrakk> \<Longrightarrow> succ(y) \<in> I" 
-  by simp
-  
 lemma (in M_ZF) inf_abs :
   "\<exists>I\<in>M. 0\<in>I \<and> (\<forall>x\<in>M. x\<in>I \<longrightarrow> succ(x)\<in>I)"
   apply (subgoal_tac "(\<exists>I\<in>M. (\<exists>z\<in>M. empty(##M,z) \<and> z\<in>I) \<and>  (\<forall>y\<in>M. y\<in>I \<longrightarrow> 
@@ -1171,7 +1162,7 @@ lemma (in M_ZF) finite_sep_intf :
   apply (insert M_model_ZF,simp add: sep_spec)
   done
 
-lemma collect_subset [simp]:
+lemma collect_subset_eq [simp]:
   " A\<subseteq>B \<Longrightarrow> {x \<in> B . x \<in> A} = A" 
   by auto
     
