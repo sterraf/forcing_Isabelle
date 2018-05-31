@@ -1162,9 +1162,11 @@ lemma (in M_ZF) finite_sep_intf :
   apply (insert M_model_ZF,simp add: sep_spec)
   done
 
+(* 
 lemma collect_subset_eq [simp]:
   " A\<subseteq>B \<Longrightarrow> {x \<in> B . x \<in> A} = A" 
-  by auto
+  by auto 
+*)
     
 lemma (in M_ZF) nat_in_M:
   "nat \<in> M"
@@ -1173,7 +1175,7 @@ lemma (in M_ZF) nat_in_M:
   apply (subgoal_tac "{x\<in>I. x\<in>nat} \<in> M")
    prefer 2
    apply (simp add: setclass_iff[symmetric] del: setclass_iff)
-   apply (rule_tac a="{x \<in> I . x \<in> nat}" and b="nat" in subst,simp+)
+   apply (rule_tac a="{x \<in> I . x \<in> nat}" and b="nat" in subst, auto)
   done
 
 sublocale M_ZF \<subseteq> M_trancl_no_repl "##M" 

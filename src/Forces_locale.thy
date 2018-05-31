@@ -12,6 +12,18 @@ translations
 lemma Sep_and_Replace: "{b(x) .. x\<in>A, P(x) } = {b(x) . x\<in>{y\<in>A. P(y)}}"
   by (auto simp add:SepReplace_def)
 
+lemma SepReplace_subset : "A\<subseteq>A'\<Longrightarrow> {b .. x\<in>A, Q}\<subseteq>{b .. x\<in>A', Q}"
+  by (auto simp add:SepReplace_def)
+
+lemma aux : "N\<in>M \<Longrightarrow>  domain(N) \<subseteq> trancl(Memrel(eclose(M)))-``{N}"
+  apply clarify
+  apply (rule vimageI)
+   apply (rule MemrelI [THEN r_into_trancl])
+    apply (rule ecloseD)
+     apply (rule arg_into_eclose)
+sorry
+  
+    
 lemma SepReplace_iff [simp]: "y\<in>{b(x) .. x\<in>A, P(x)} \<longleftrightarrow> (\<exists>x\<in>A. y=b(x) & P(x))"
    by (auto simp add:SepReplace_def)
  
@@ -30,11 +42,39 @@ definition
     GenExt :: "i\<Rightarrow>i"     ("M[_]" 90)
   where "GenExt(G)== {val(G,\<tau>). \<tau> \<in> M}"
 
-    
-lemma "Hv(G,x,f) = { f`y .. y\<in> domain(x), \<exists>p\<in>P. <y,p> \<in> x \<and> p \<in> G }"
+lemma aux2: "Hv(G,x,f) = { f`y .. y\<in> domain(x), \<exists>p\<in>P. <y,p> \<in> x \<and> p \<in> G }"
   by (simp add:Sep_and_Replace Hv_def Hval_def)  
     
-lemma "B\<subseteq>P \<Longrightarrow> val(G,{x .. x\<in>A\<times>B, Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>B .  Q(<t,p>)}"
+lemma "{x\<in>A\<times>P. Q(x)}\<in>M \<Longrightarrow> 
+       val(G,{x\<in>A\<times>P. Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>P .  Q(<t,p>) \<and> p \<in> G }"
+proof 
+  let
+              ?n="{x\<in>A\<times>P. Q(x)}" and
+              ?r="trancl(Memrel(eclose(M)))"
+  assume
+         asm:    "?n\<in>M"
+  let
+              ?f="\<lambda>z\<in>?r-``{?n}. valR(M,P,G,z)"
+  have
+              "wf(?r)"
+    by (rule wf_Memrel [THEN wf_trancl])
+  with val_def have
+              "val(G,?n) = Hv(G,?n,?f)"
+    unfolding Hv_def 
+    apply (simp)
+    apply (rule def_wfrec [of  _ _ "Hval(P,G)"], simp_all add: valR_def)
+    done
+  also have
+              "... = {?f`t .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+    using aux2 by simp
+  also with asm have
+              "... = { val(G,t) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+    by (auto simp add:aux beta)
+      
+  
+  finally have
+              "val(G,?n)= {?f`t .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+    by simp
   oops
     
 end    (*************** CONTEXT: forcing_data *****************)
