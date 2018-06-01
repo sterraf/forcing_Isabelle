@@ -15,6 +15,19 @@ lemma Sep_and_Replace: "{b(x) .. x\<in>A, P(x) } = {b(x) . x\<in>{y\<in>A. P(y)}
 lemma SepReplace_subset : "A\<subseteq>A'\<Longrightarrow> {b .. x\<in>A, Q}\<subseteq>{b .. x\<in>A', Q}"
   by (auto simp add:SepReplace_def)
 
+(*
+lemma SepReplace_cong1 : "(\<And>x. b(x) = b'(x))\<Longrightarrow> {b(x) .. x\<in>A, Q(x)}={b'(x) .. x\<in>A, Q(x)}"
+  by (auto simp add:SepReplace_def)
+*)
+    
+lemma SepReplace_dom_implies :
+   "\<forall>x\<in>A. b(x) = b'(x)\<Longrightarrow> {b(x) .. x\<in>A, Q(x)}={b'(x) .. x\<in>A, Q(x)}"
+  by  (simp add:SepReplace_def)
+    
+lemma SepReplace_pred_implies :
+   "\<forall>x. Q(x)\<longrightarrow> b(x) = b'(x)\<Longrightarrow> {b(x) .. x\<in>A, Q(x)}={b'(x) .. x\<in>A, Q(x)}"
+  by  (force simp add:SepReplace_def)
+   
 lemma aux : "N\<in>M \<Longrightarrow>  domain(N) \<subseteq> trancl(Memrel(eclose(M)))-``{N}"
   apply clarify
   apply (rule vimageI)
@@ -23,6 +36,10 @@ lemma aux : "N\<in>M \<Longrightarrow>  domain(N) \<subseteq> trancl(Memrel(eclo
      apply (rule arg_into_eclose)
 sorry
   
+lemma [trans] : "x=y \<Longrightarrow> y\<subseteq>z \<Longrightarrow> x\<subseteq>z"
+                "x\<subseteq>y \<Longrightarrow> y=z \<Longrightarrow> x\<subseteq>z"
+  by simp_all
+    
     
 lemma SepReplace_iff [simp]: "y\<in>{b(x) .. x\<in>A, P(x)} \<longleftrightarrow> (\<exists>x\<in>A. y=b(x) & P(x))"
    by (auto simp add:SepReplace_def)
@@ -44,8 +61,9 @@ definition
 
 lemma aux2: "Hv(G,x,f) = { f`y .. y\<in> domain(x), \<exists>p\<in>P. <y,p> \<in> x \<and> p \<in> G }"
   by (simp add:Sep_and_Replace Hv_def Hval_def)  
+
     
-lemma "{x\<in>A\<times>P. Q(x)}\<in>M \<Longrightarrow> 
+lemma val_of_name : "{x\<in>A\<times>P. Q(x)}\<in>M \<Longrightarrow> 
        val(G,{x\<in>A\<times>P. Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>P .  Q(<t,p>) \<and> p \<in> G }"
 proof 
   let
@@ -54,7 +72,10 @@ proof
   assume
          asm:    "?n\<in>M"
   let
-              ?f="\<lambda>z\<in>?r-``{?n}. valR(M,P,G,z)"
+              ?f="\<lambda>z\<in>?r-``{?n}. val(G,z)"
+  from aux and asm have
+              "domain(?n)\<subseteq>?r-``{?n}"
+    by simp
   have
               "wf(?r)"
     by (rule wf_Memrel [THEN wf_trancl])
@@ -67,15 +88,32 @@ proof
   also have
               "... = {?f`t .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
     using aux2 by simp
-  also with asm have
-              "... = { val(G,t) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
-    by (auto simp add:aux beta)
-      
-  
-  finally have
-              "val(G,?n)= {?f`t .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
-    by simp
-  oops
+  also have
+              "... = { (if t\<in>?r-``{?n} then val(G,t) else 0) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+    by (simp)
+  also have
+        Eq1:  "... = { val(G,t) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+  proof -
+    from asm and aux have
+              "domain(?n) \<subseteq> ?r-``{?n}"
+      by simp
+    then have
+              "\<forall>t\<in>domain(?n). (if t\<in>?r-``{?n} then val(G,t) else 0) = val(G,t)"
+      by auto
+    then show 
+              "{ (if t\<in>?r-``{?n} then val(G,t) else 0) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G} =
+               { val(G,t) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+      by auto
+  qed
+  also have
+              " ... \<subseteq> { val(G,t) .. t\<in>A, \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+    by force
+  finally show
+              " val(G,?n)  \<subseteq> { val(G,t) .. t\<in>A, \<exists>p\<in>P . Q(<t,p>) \<and> p\<in>G}"
+    by auto
+next
+
+oops      
     
 end    (*************** CONTEXT: forcing_data *****************)
 
