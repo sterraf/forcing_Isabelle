@@ -48,20 +48,16 @@ lemma rel_sub_memcomp :
   "e3_set(M) \<subseteq> Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M))"
 proof (unfold e3_set_def, unfold e3_def,clarsimp)
   fix x y z w
-  assume a:"x \<in> M"
-   and b:"y \<in> M"
-   and c:"z \<in> y"
-   and d:"w \<in> z"
-   and e:"x \<in> w"
-  from a b c d e have p : "<x,w> \<in> Memrel(eclose(M))" 
-    by (simp add:fld_memrel fld_e3_sub_eclose arg_into_eclose)
-   from b c d have q : "<w,z> \<in> Memrel(eclose(M))"
-    by (simp add:MemrelI fld_e3_sub_eclose)
-  from b c d have r : "<z,y> \<in> Memrel(eclose(M))"
-    by (simp add:MemrelI fld_e3_sub_eclose arg_into_eclose)
-  from p q r 
-    show "<x,y> \<in> Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M))"
-     by (rule_tac b=z in compI, rule_tac b=w in compI)
+  assume 
+          a:  "x \<in> M" "y \<in> M" "z \<in> y" "w \<in> z" "x \<in> w"
+  then have 
+          p:  "<x,w> \<in> Memrel(eclose(M))" 
+              "<w,z> \<in> Memrel(eclose(M))" 
+              "<z,y> \<in> Memrel(eclose(M))"
+    by (simp_all add:fld_memrel fld_e3_sub_eclose arg_into_eclose)
+  then show     
+    "<x,y> \<in> Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M))"
+    by (rule_tac b=z in compI, rule_tac b=w in compI)
 qed
 
 lemma memcomp_sub_trmem : 
