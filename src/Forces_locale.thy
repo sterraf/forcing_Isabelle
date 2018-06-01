@@ -28,13 +28,25 @@ lemma SepReplace_pred_implies :
    "\<forall>x. Q(x)\<longrightarrow> b(x) = b'(x)\<Longrightarrow> {b(x) .. x\<in>A, Q(x)}={b'(x) .. x\<in>A, Q(x)}"
   by  (force simp add:SepReplace_def)
    
-lemma aux : "N\<in>M \<Longrightarrow>  domain(N) \<subseteq> trancl(Memrel(eclose(M)))-``{N}"
+lemma aux_VoN : "N\<in>M \<Longrightarrow>  domain(N) \<subseteq> trancl(Memrel(eclose(M)))-``{N}"
   apply clarify
-  apply (rule vimageI)
-   apply (rule MemrelI [THEN r_into_trancl])
-    apply (rule ecloseD)
+  apply (rule vimageI [of _ N], simp_all)
+   apply (rule_tac b="<x,y>" in rtrancl_into_trancl1, rule trancl_into_rtrancl)
+   apply (rule_tac b="{x}" in rtrancl_into_trancl1, rule trancl_into_rtrancl)
+    apply (rule MemrelI [THEN r_into_trancl], simp)
+       prefer 3 apply (rule  MemrelI)
+         prefer 6 apply (rule  MemrelI)
+      apply (tactic {* distinct_subgoals_tac *})
+       apply auto
+      prefer 5  apply (rule_tac A="{x}" in ecloseD)
+       apply (tactic {* distinct_subgoals_tac *})
+       apply (rule_tac A="<x,y>" in ecloseD)
+       apply (tactic {* distinct_subgoals_tac *})
+     apply (rule_tac A="N" in ecloseD)
+      apply (tactic {* distinct_subgoals_tac *})
      apply (rule arg_into_eclose)
-sorry
+     apply (simp_all add:Pair_def)
+  done
   
 lemma [trans] : "x=y \<Longrightarrow> y\<subseteq>z \<Longrightarrow> x\<subseteq>z"
                 "x\<subseteq>y \<Longrightarrow> y=z \<Longrightarrow> x\<subseteq>z"
@@ -73,9 +85,6 @@ proof
          asm:    "?n\<in>M"
   let
               ?f="\<lambda>z\<in>?r-``{?n}. val(G,z)"
-  from aux and asm have
-              "domain(?n)\<subseteq>?r-``{?n}"
-    by simp
   have
               "wf(?r)"
     by (rule wf_Memrel [THEN wf_trancl])
@@ -94,7 +103,7 @@ proof
   also have
         Eq1:  "... = { val(G,t) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
   proof -
-    from asm and aux have
+    from asm and aux_VoN have
               "domain(?n) \<subseteq> ?r-``{?n}"
       by simp
     then have
