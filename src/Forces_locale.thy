@@ -77,7 +77,7 @@ lemma aux2: "Hv(G,x,f) = { f`y .. y\<in> domain(x), \<exists>p\<in>P. <y,p> \<in
     
 lemma val_of_name : "{x\<in>A\<times>P. Q(x)}\<in>M \<Longrightarrow> 
        val(G,{x\<in>A\<times>P. Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>P .  Q(<t,p>) \<and> p \<in> G }"
-proof 
+proof -
   let
               ?n="{x\<in>A\<times>P. Q(x)}" and
               ?r="trancl(Memrel(eclose(M)))"
@@ -115,15 +115,14 @@ proof
       by auto
   qed
   also have
-              " ... \<subseteq> { val(G,t) .. t\<in>A, \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+              " ... = { val(G,t) .. t\<in>A, \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
     by force
   finally show
-              " val(G,?n)  \<subseteq> { val(G,t) .. t\<in>A, \<exists>p\<in>P . Q(<t,p>) \<and> p\<in>G}"
+              " val(G,?n)  = { val(G,t) .. t\<in>A, \<exists>p\<in>P . Q(<t,p>) \<and> p\<in>G}"
     by auto
-next
+qed
 
-oops      
-    
+  
 end    (*************** CONTEXT: forcing_data *****************)
 
 
