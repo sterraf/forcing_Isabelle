@@ -95,10 +95,15 @@ lemma un_leI : "i \<in> nat \<Longrightarrow> j\<in> nat \<Longrightarrow> k \<i
 
 lemma gt1 : "n \<in> nat \<Longrightarrow> i \<in> n \<Longrightarrow> i \<noteq> 0 \<Longrightarrow> i \<noteq> 1 \<Longrightarrow> 1<i"
   by(rule_tac n="i" in natE,erule in_n_in_nat,simp,auto,rule Ord_0_lt,simp+)
-    
+
 lemma app_bij [TC] : "f \<in> bij(A,B) \<Longrightarrow> a \<in> A \<Longrightarrow> f`a \<in> B"
   by (frule  bij_is_fun,auto)
-        
+
+lemma bij_app_n : "n\<in>nat \<Longrightarrow> f\<in>bij(n,n) \<Longrightarrow> x \<in> nat \<Longrightarrow> f`x \<in> nat"  
+  apply(case_tac "x\<in>n",rule_tac m="n" in in_n_in_nat,simp+)
+  apply(subst apply_0,drule bij_is_fun,subst  domain_of_fun,assumption+,auto)
+done
+    
 section\<open>Involutions\<close>
 
 definition invol :: "[i,i] \<Rightarrow> o" where
@@ -432,8 +437,7 @@ lemma ren_tc : "p \<in> formula \<Longrightarrow>
   apply(subgoal_tac "arity(p) \<le> succ(n)")    
   apply (auto,rule pred_le2,simp+)
 done
-   
-  
+
 lemma ren_lib_tc[rule_format] : "p \<in> formula \<Longrightarrow> 
   (\<And> n f . n \<in> nat \<Longrightarrow>  f \<in> bij(n,n) \<Longrightarrow>  rename(p)`n`f \<in> formula)"
   by (induct set:formula,auto simp add: bij_app_n)
