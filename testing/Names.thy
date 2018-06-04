@@ -221,7 +221,7 @@ proof (intro allI, rule_tac r="r" and a="y" in wf_induct_raw, assumption)
       by (simp add:underD)
     with trr and yrx have
               "<z,x>\<in>r"
-      sorry
+      unfolding trans_def by blast
     with IH and zry show
               "wfrec(r, z, H) = wfrec(s, z, H)"
       by simp
