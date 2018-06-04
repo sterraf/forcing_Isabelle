@@ -855,10 +855,15 @@ lemma (in M_ZF) replacement_intf :
       "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=2 \<or> arity(\<phi>)=3 \<rbrakk> \<Longrightarrow> 
         sats(M,strong_replacement_ax_fm(\<phi>),[]) \<longleftrightarrow> 
        (\<forall>a\<in>M. strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y,a])))"
-  by (simp add: strong_replacement_ax_fm_def strong_replacement_def 
+  apply(erule disjE) 
+  apply (simp add: strong_replacement_ax_fm_def strong_replacement_def 
+                 univalent_fm_def univalent_def  sats_incr_bv3_iff sats_incr_n_bv2
+                 sats_incr_bv0_iff sats_swap_0_12 sats_incr_bv1_iff)
+  apply (simp add: strong_replacement_ax_fm_def strong_replacement_def 
                  univalent_fm_def univalent_def sats_incr_bv3_iff
-                 sats_incr_bv0_iff sats_swap_0_1 sats_incr_bv1_iff sats_incr_n_bv2)
-                      
+                 sats_incr_bv0_iff sats_swap_0_13 sats_incr_bv1_iff sats_incr_n_bv2)
+done 
+               
 definition 
   is_cons_fm :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
  "is_cons_fm(a,b,z) == Exists(And(upair_fm(succ(a),succ(a),0),union_fm(0,succ(b),succ(z))))"

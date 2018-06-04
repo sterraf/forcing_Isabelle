@@ -1,6 +1,6 @@
 (* internalización de los axiomas de ZFC dentro de la teoría ZF *)
                                                             
-theory ZFCAxioms_formula imports Formula L_axioms_no_repl Swap_vars begin
+theory ZFCAxioms_formula imports Formula L_axioms_no_repl Renaming begin
 
 (* 
    Extensionalidad 
@@ -195,11 +195,8 @@ definition
 
 lemma univalent_fm_type [TC] : 
   "\<lbrakk> \<phi> \<in> formula \<rbrakk> \<Longrightarrow> univalent_fm(\<phi>) \<in> formula"
-  by (simp add: univalent_fm_def)
-  
-lemma arity_swap_0_1 :
-  "p\<in>formula \<Longrightarrow> arity(swap_0_1(p)) = arity(p)"
-  sorry
+  by (simp add: univalent_fm_def )
+   
     
 (* Incrementar índice n veces *)
 definition
@@ -248,13 +245,24 @@ definition
 lemma rep_type [TC]: "p \<in> formula \<Longrightarrow> strong_replacement_ax_fm(p) \<in> formula"
   by (simp add: strong_replacement_ax_fm_def)
 
+
 lemma arity_repl[simp] : "\<lbrakk> p \<in> formula ; arity(p) = 2 \<or> arity(p) = 3 \<rbrakk> \<Longrightarrow> 
                   arity(strong_replacement_ax_fm(p)) = 0"
-  apply (rule disjE,simp)
-  apply (simp_all add: strong_replacement_ax_fm_def univalent_fm_def 
-                        arity_incr_bv_lemma arity_incr_bv1_eq 
-                        arity_swap_0_1 Un_commute nat_union_abs1)
-  done
+  apply(erule disjE)
+  apply (unfold  strong_replacement_ax_fm_def univalent_fm_def)
+  apply(rule disjE,rule arity_2,simp+)
+  apply(simp add: arity_incr_bv_lemma arity_incr_bv1_eq Un_commute nat_union_abs1)
+  apply(erule disjE)  
+  apply(simp add: arity_incr_bv_lemma arity_incr_bv1_eq Un_commute nat_union_abs1)
+  apply(simp add: arity_incr_bv_lemma arity_incr_bv1_eq Un_commute nat_union_abs1)
+  apply(rule disjE,rule arity_3,simp+)
+  apply(simp add: arity_incr_bv_lemma arity_incr_bv1_eq Un_commute nat_union_abs1)
+  apply(erule disjE)  
+  apply(simp add: arity_incr_bv_lemma arity_incr_bv1_eq Un_commute nat_union_abs1)
+  apply(erule disjE) 
+  apply(simp add: arity_incr_bv_lemma arity_incr_bv1_eq Un_commute nat_union_abs1)
+  apply(simp add: arity_incr_bv_lemma arity_incr_bv1_eq Un_commute nat_union_abs1)
+done
     
 definition
   ZF_inf :: "i" where
