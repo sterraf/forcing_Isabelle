@@ -244,30 +244,43 @@ proof (intro allI, rule_tac r="r" and a="y" in wf_induct_raw, assumption)
               "wfrec(r, y, \<lambda>a b. H(a, b)) = wfrec(s, y, \<lambda>a b. H(a, b))".
   qed
 qed
-
+  
+lemmas equal_segm_wfrec_rule =  equal_segm_wfrec [THEN spec, THEN mp]
+  
 lemma Memrel_segments :
   assumes 
       "z\<in>(Memrel(eclose({x}))^+)-``{x}" (is "_\<in>?r(x)-``{x}")
     shows
-      "\<forall>y. <y,x>\<in>r \<longrightarrow> ?r(x)-``{y} = ?r(z)-``{y}"
+      "\<forall>y. <y,x>\<in>?r(x) \<longrightarrow> ?r(x)-``{y} = ?r(z)-``{y}"
   sorry
-    
+   
 lemma check_simp : "checkR(uno,y) = { <checkR(uno,w),uno> . w \<in> y}"
 proof -
   let 
-              ?r="trancl(Memrel(eclose({y})))"
+              ?r="\<lambda>y. trancl(Memrel(eclose({y})))"
+  from trans_trancl have
+       trr:   "\<forall>w . trans(?r(w))" ..
   from wf_trmem have
-              "wf(?r)"
-    by simp
-  with wfrec [of ?r y "Hcheck(uno)"] have
+       wfr:   "\<forall>w . wf(?r(w))" ..
+  with wfrec [of "?r(y)" y "Hcheck(uno)"] have
               "checkR(uno,y)= 
-               Hcheck(uno, y, \<lambda>x\<in>?r -`` {y}. wfrec(?r, x, Hcheck(uno)))"
+               Hcheck(uno, y, \<lambda>x\<in>?r(y) -`` {y}. wfrec(?r(y), x, Hcheck(uno)))"
     by (simp add:checkR_def)
   also have 
-              " ... = Hcheck(uno, y, \<lambda>x\<in>?r -`` {y}. checkR(uno,x))"
-  (* proof (simp add:checkR_def)
-    have *)
-    sorry
+              " ... = Hcheck(uno, y, \<lambda>x\<in>?r(y) -`` {y}. checkR(uno,x))"              
+  proof (simp add:checkR_def)
+    have
+              "(\<lambda>x\<in>?r(y)-``{y}. wfrec(?r(y), x, Hcheck(uno))) =
+               (\<lambda>x\<in>?r(y)-``{y}. wfrec(?r(x), x, Hcheck(uno)))"
+      apply (insert trr wfr, rule lam_cong, simp)
+      apply (rule_tac xa="y" in  equal_segm_wfrec_rule)
+           prefer 5 apply (rule Memrel_segments, simp_all, blast)
+      done
+    then show 
+              "Hcheck(uno, y, \<lambda>x\<in>?r(y) -`` {y}. wfrec(?r(y), x, Hcheck(uno))) =
+               Hcheck(uno, y, \<lambda>x\<in>?r(y) -`` {y}. wfrec(?r(x), x, Hcheck(uno)))" 
+      by simp
+  qed
   also have
               " ... = {\<langle>if w \<in> Memrel(eclose({y}))^+ -`` {y} then checkR(uno, w) else 0, uno\<rangle> . w \<in> y}"
     by  (simp add:Hcheck_def)
