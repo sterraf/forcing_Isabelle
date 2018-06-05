@@ -286,7 +286,8 @@ lemma check_uno : "y \<in> M \<Longrightarrow> uno \<in> P \<Longrightarrow> uno
                   \<exists>p\<in>P . <x,p> \<in> checkR(uno,y) \<and> p \<in> G"
   apply (rule_tac x="uno" in bexI)
    apply (rule conjI)
-    apply (subst check_simp,assumption)
+    defer 1 apply assumption+
+    apply (subst check_simp)
     apply simp
     apply (subst (asm) dom_check,assumption)
     apply (erule_tac b="x" and f="checkR(uno)" and A="y" in RepFunE)
@@ -325,7 +326,8 @@ lemma check_e3 : "Transset(M) \<Longrightarrow> w\<in>M \<Longrightarrow> x \<in
    apply (rule_tac a="{checkR(uno,x)}" and b="<checkR(uno,x),uno>" in e3I)
      apply simp
     apply (unfold Pair_def,simp,fold Pair_def)
-   apply (subst (2) check_simp,assumption,simp)
+  apply (subst (2) check_simp)
+  apply simp
    apply (rule_tac x="x" in bexI,simp,assumption+)
   done
 
