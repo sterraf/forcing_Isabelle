@@ -193,23 +193,25 @@ lemma singleton_eqI : "a = b \<Longrightarrow> {a} = {b}"
 
 lemma equal_segm_wfrec : 
   "wf(r) \<Longrightarrow> wf(s) \<Longrightarrow> trans(r) \<Longrightarrow> trans(s) \<Longrightarrow>
-   \<forall>y. <y,x>\<in>r \<longrightarrow> r-``{y} = s-``{y} \<Longrightarrow>
-   \<forall>y. <y,x>\<in>r \<longrightarrow> wfrec(r, y, H)=wfrec(s, y, H)"
+  \<forall>y\<in>A. \<forall>z. <z,y>\<in>r \<longrightarrow> z\<in>A \<Longrightarrow> 
+   \<forall>y\<in>A.  r-``{y} = s-``{y} \<Longrightarrow>
+   \<forall>y . y\<in>A \<longrightarrow>  wfrec(r, y, H)=wfrec(s, y, H)"
 proof (intro allI, rule_tac r="r" and a="y" in wf_induct_raw, assumption)
-  fix y 
+  fix y x
   assume
         asm:  "wf(r)" "wf(s)" "trans(s)" 
-              "\<forall>t. <t,x>\<in>r \<longrightarrow> r-``{t} = s-``{t}"
+              "  \<forall>y\<in>A. \<forall>z. <z,y>\<in>r \<longrightarrow> z\<in>A"
+              "\<forall>t\<in>A. r-``{t} = s-``{t}"
      and
         trr:  "trans(r)" 
      and               
-        IH:   "\<forall>w. \<langle>w, y\<rangle> \<in> r \<longrightarrow> \<langle>w, x\<rangle> \<in> r \<longrightarrow>
+        IH:   "\<forall>w. \<langle>w, y\<rangle> \<in> r \<longrightarrow> w\<in>A \<longrightarrow>
                  wfrec(r, w, \<lambda>a b. H(a, b)) = wfrec(s, w, \<lambda>a b. H(a, b))"
   have
-       pr_eq: "\<langle>y, x\<rangle> \<in> r \<longrightarrow> (\<lambda>w\<in>r-``{y}. wfrec(r, w, H)) = (\<lambda>w\<in>s-``{y}. wfrec(s, w, H))"
+       pr_eq: "y\<in> A \<longrightarrow> (\<lambda>w\<in>r-``{y}. wfrec(r, w, H)) = (\<lambda>w\<in>s-``{y}. wfrec(s, w, H))"
   proof (intro impI, rule lam_cong)
     assume 
-         yrx: "\<langle>y, x\<rangle> \<in> r"
+         yrx: "y\<in> A"
     with asm show 
         rs:   "r -`` {y} = s -`` {y}"
       by simp
@@ -219,18 +221,18 @@ proof (intro allI, rule_tac r="r" and a="y" in wf_induct_raw, assumption)
     with rs have
         zry: "<z,y>\<in>r"
       by (simp add:underD)
-    with trr and yrx have
-              "<z,x>\<in>r"
+    with asm and yrx have
+              "z\<in>A"
       unfolding trans_def by blast
     with IH and zry show
               "wfrec(r, z, H) = wfrec(s, z, H)"
       by simp
   qed
   show
-              "\<langle>y, x\<rangle> \<in> r \<longrightarrow> wfrec(r, y, \<lambda>a b. H(a, b)) = wfrec(s, y, \<lambda>a b. H(a, b))"
+              "y \<in> A \<longrightarrow> wfrec(r, y, \<lambda>a b. H(a, b)) = wfrec(s, y, \<lambda>a b. H(a, b))"
   proof (intro impI)
     assume 
-         yrx:  "\<langle>y, x\<rangle> \<in> r"
+         yrx:  "y \<in> A"
     from asm have
               "wfrec(r, y, \<lambda>a b. H(a, b)) = H(y, \<lambda>w\<in>r-``{y}. wfrec(r, w, H))"
       by (simp add: wfrec)
@@ -243,17 +245,10 @@ proof (intro allI, rule_tac r="r" and a="y" in wf_induct_raw, assumption)
     finally show
               "wfrec(r, y, \<lambda>a b. H(a, b)) = wfrec(s, y, \<lambda>a b. H(a, b))".
   qed
-qed
+qed  
   
 lemmas equal_segm_wfrec_rule =  equal_segm_wfrec [THEN spec, THEN mp]
   
-lemma Memrel_segments :
-  assumes 
-      "z\<in>(Memrel(eclose({x}))^+)-``{x}" (is "_\<in>?r(x)-``{x}")
-    shows
-      "\<forall>y. <y,x>\<in>?r(x) \<longrightarrow> ?r(x)-``{y} = ?r(z)-``{y}"
-  sorry
-   
 lemma check_simp : "checkR(uno,y) = { <checkR(uno,w),uno> . w \<in> y}"
 proof -
   let 
@@ -288,8 +283,8 @@ proof -
               " ... = {<checkR(uno,w),uno> . w \<in> y}"
     by (auto simp add:sub_e [THEN subsetD])
   finally show ?thesis .
-qed
-    
+oops
+      
 lemma dom_check : "y \<in> M \<Longrightarrow> domain(checkR(uno,y)) = { checkR(uno,w) . w \<in> y }"
   by (subst check_simp,auto)
 
