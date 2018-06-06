@@ -297,27 +297,80 @@ proof -
   finally show ?thesis 
     unfolding is_recfun_def by simp
 qed
-    
-lemma wftrec:
-    "[| wf(r);  trans(r) |] ==>
-          wftrec(r,a,H) = H(a, \<lambda>x\<in>r-``{a}. wftrec(r,x,H))"
-apply (unfold wftrec_def)
-apply (subst unfold_the_recfun [unfolded is_recfun_def])
-apply (simp_all add: vimage_singleton_iff [THEN iff_sym] the_recfun_cut)
-done
-  
-  
-lemma wfrec:
-    "wf(r) ==> wfrec(r,a,H) = H(a, \<lambda>x\<in>r-``{a}. wfrec(r,x,H))"
-apply (unfold wfrec_def)
-apply (erule wf_trancl [THEN wftrec, THEN ssubst])
- apply (rule trans_trancl)
-apply (rule vimage_pair_mono [THEN restrict_lam_eq, THEN subst_context])
- apply (erule r_into_trancl)
-apply (rule subset_refl)
-done
 
+lemma [trans] : "p\<longrightarrow>q \<Longrightarrow> q\<longrightarrow>r \<Longrightarrow> p\<longrightarrow>r"
+  by simp
   
+lemma is_recfun_H_segment :
+  "trans(r) \<Longrightarrow> is_recfun(r,a,H,f) \<longrightarrow> is_recfun(r,a,H,restrict(f,r-``{a}))"
+proof -
+  assume
+      asm:    "trans(r)"
+  let
+              ?rf="restrict(f,r-``{a})"
+  have
+              "is_recfun(r,a,H,f) \<longrightarrow> f = (\<lambda>x\<in>r-``{a}. H(x, restrict(f, r-``{x})))"
+    unfolding is_recfun_def ..
+  also have
+              "... \<longrightarrow> ?rf = (\<lambda>x\<in>r-``{a}. H(x, restrict(?rf, r-``{x})))"
+  proof 
+    assume 
+        ff:   "f = (\<lambda>x\<in>r-``{a}. H(x, restrict(f, r-``{x})))" (is "f = ?f")
+    have
+              "restrict(?f,r-``{a}) = ?f"
+      by (rule  domain_restrict_idem, auto simp add: relation_lam)
+    with ff show
+              "restrict(f,r-``{a}) = 
+               (\<lambda>x\<in>r-``{a}. H(x, restrict(restrict(f,r-``{a}), r-``{x})))" 
+      by simp
+  qed
+  finally show ?thesis
+    unfolding is_recfun_def .
+qed
+  
+          
+(*
+lemma the_recfun_segment :
+  "trans(r) \<Longrightarrow> the_recfun(r,a,H) = the_recfun(restrict(r,{a}\<union>r-``{a}),a,H)"
+  by (simp add:the_recfun_def is_recfun_segment wftrec_def )
+
+lemma wftrec_segment :
+  "trans(r) \<Longrightarrow> wftrec(r,a,H) = wftrec(restrict(r,{a}\<union>r-``{a}),a,H)"  
+  by (simp add:wftrec_def the_recfun_segment)
+    
+*)
+  
+lemma wftrec_segment :
+  "trans(r) \<Longrightarrow> the_recfun(r,a,H) = the_recfun(restrict(r,{a}\<union>r-``{a}),a,H)"
+  "trans(r) \<Longrightarrow> wftrec(r,a,H) = wftrec(restrict(r,{a}\<union>r-``{a}),a,H)"  
+  by (simp_all add:the_recfun_def is_recfun_segment wftrec_def )
+  
+lemma trans_restrict:
+  "trans(r) \<Longrightarrow> trans(restrict(r,A))" (is "_ \<Longrightarrow> trans(?rr)")
+proof (unfold trans_def, intro allI impI)
+  fix x y z
+  assume 
+        asm:  "\<forall>x y z. \<langle>x, y\<rangle> \<in> r \<longrightarrow> \<langle>y, z\<rangle> \<in> r \<longrightarrow> \<langle>x, z\<rangle> \<in> r"
+              "\<langle>y, z\<rangle> \<in> ?rr" "\<langle>x, y\<rangle> \<in> ?rr"   
+  with restrict_iff have
+              "x\<in>A"  "\<langle>x, z\<rangle> \<in> r"
+      by auto
+  with restrict_iff show 
+              "\<langle>x, z\<rangle> \<in> ?rr"
+    by simp 
+qed
+    
+lemma wfrec_segment:
+  "relation(r) \<Longrightarrow> trans(r) \<Longrightarrow> wfrec(r,a,H) = wfrec(restrict(r,{a}\<union>r-``{a}),a,H)"
+proof (simp add:wfrec_def wftrec_segment trancl_eq_r)
+  let
+              ?rr="restrict(r,{a}\<union>r-``{a})"
+  have
+              "wftrec(?rr, a, \<lambda>x f. H(x, restrict(f, r -`` {x}))) =
+               wftrec(?rr, a, \<lambda>x f. H(x, restrict(f, r -`` {x})))" ..
+  oops
+   
+    
 lemma check_simp : "checkR(uno,y) = { <checkR(uno,w),uno> . w \<in> y}"
 proof -
   let 
