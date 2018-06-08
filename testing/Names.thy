@@ -298,11 +298,14 @@ proof -
     unfolding is_recfun_def by simp
 qed
 
-lemma [trans] : "p\<longrightarrow>q \<Longrightarrow> q\<longrightarrow>r \<Longrightarrow> p\<longrightarrow>r"
+lemma imp_trans : "p\<longrightarrow>q \<Longrightarrow> q\<longrightarrow>r \<Longrightarrow> p\<longrightarrow>r"
   by simp
-  
-lemma is_recfun_H_segment :
-  "trans(r) \<Longrightarrow> is_recfun(r,a,H,f) \<longrightarrow> is_recfun(r,a,H,restrict(f,r-``{a}))"
+
+    (* Lo siguiente debería salir con is_recfun_type *)
+
+lemma is_recfun_f_segment :
+  notes imp_trans [trans]
+  shows  "trans(r) \<Longrightarrow> is_recfun(r,a,H,f) \<longrightarrow> is_recfun(r,a,H,restrict(f,r-``{a}))"
 proof -
   assume
       asm:    "trans(r)"
@@ -328,7 +331,12 @@ proof -
     unfolding is_recfun_def .
 qed
   
-          
+lemma the_recfun_f_segment :
+  "trans(r) \<Longrightarrow> the_recfun(r,a,H) = restrict(the_recfun(r,a,H),r-``{a})"
+proof ( simp add:the_recfun_def is_recfun_f_segment)
+  
+oops
+
 (*
 lemma the_recfun_segment :
   "trans(r) \<Longrightarrow> the_recfun(r,a,H) = the_recfun(restrict(r,{a}\<union>r-``{a}),a,H)"
