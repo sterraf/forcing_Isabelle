@@ -136,7 +136,7 @@ definition
 
 definition
   checkR :: "[i,i] \<Rightarrow> i" where
-  "checkR(uno,x) == wfrec(trancl(Memrel(eclose({x}))), x , Hcheck(uno))"
+  "checkR(uno,x) == wfrec(Memrel(eclose({x})), x , Hcheck(uno))"
 
 
 (* Val *)
@@ -377,43 +377,34 @@ proof (simp add:wfrec_def wftrec_segment trancl_eq_r)
               "wftrec(?rr, a, \<lambda>x f. H(x, restrict(f, r -`` {x}))) =
                wftrec(?rr, a, \<lambda>x f. H(x, restrict(f, r -`` {x})))" ..
   oops
-   
+    
+lemma  aux_check_simp:
+  "(\<lambda>x\<in>y. wfrec(Memrel(eclose({y})), x, Hcheck(uno))) = 
+   (\<lambda>x\<in>y. wfrec(Memrel(eclose({x})), x, Hcheck(uno)))"
+      apply (rule lam_cong, simp)
+      apply ( rule wfrec_eclose_eq)
+       apply (simp add: arg_into_eclose )
+        apply (rule ecloseD, auto simp add: arg_into_eclose)
+  done
     
 lemma check_simp : "checkR(uno,y) = { <checkR(uno,w),uno> . w \<in> y}"
 proof -
   let 
-              ?r="\<lambda>y. trancl(Memrel(eclose({y})))"
-  from trans_trancl have
-       trr:   "\<forall>w . trans(?r(w))" ..
-  from wf_trmem have
+              ?r="\<lambda>y. Memrel(eclose({y}))"
+  from wf_Memrel have
        wfr:   "\<forall>w . wf(?r(w))" ..
   with wfrec [of "?r(y)" y "Hcheck(uno)"] have
               "checkR(uno,y)= 
                Hcheck(uno, y, \<lambda>x\<in>?r(y) -`` {y}. wfrec(?r(y), x, Hcheck(uno)))"
     by (simp add:checkR_def)
   also have 
-              " ... = Hcheck(uno, y, \<lambda>x\<in>?r(y) -`` {y}. checkR(uno,x))"              
-  proof (simp add:checkR_def)
-    have
-              "(\<lambda>x\<in>?r(y)-``{y}. wfrec(?r(y), x, Hcheck(uno))) =
-               (\<lambda>x\<in>?r(y)-``{y}. wfrec(?r(x), x, Hcheck(uno)))"
-      apply (insert trr wfr, rule lam_cong, simp)
-      apply (rule_tac xa="y" in  equal_segm_wfrec_rule)
-           prefer 5 apply (rule Memrel_segments, simp_all, blast)
-      done
-    then show 
-              "Hcheck(uno, y, \<lambda>x\<in>?r(y) -`` {y}. wfrec(?r(y), x, Hcheck(uno))) =
-               Hcheck(uno, y, \<lambda>x\<in>?r(y) -`` {y}. wfrec(?r(x), x, Hcheck(uno)))" 
-      by simp
-  qed
-  also have
-              " ... = {\<langle>if w \<in> Memrel(eclose({y}))^+ -`` {y} then checkR(uno, w) else 0, uno\<rangle> . w \<in> y}"
-    by  (simp add:Hcheck_def)
-  also have
-              " ... = {<checkR(uno,w),uno> . w \<in> y}"
-    by (auto simp add:sub_e [THEN subsetD])
-  finally show ?thesis .
-oops
+              " ... = Hcheck(uno, y, \<lambda>x\<in>y. wfrec(?r(y), x, Hcheck(uno)))"
+    by (simp add:under_Memrel_eclose arg_into_eclose)
+  also have 
+              " ... = Hcheck(uno, y, \<lambda>x\<in>y. checkR(uno,x))"
+    using aux_check_simp by (simp add:checkR_def)
+  finally show ?thesis by (simp add:Hcheck_def)
+qed
       
 lemma dom_check : "y \<in> M \<Longrightarrow> domain(checkR(uno,y)) = { checkR(uno,w) . w \<in> y }"
   by (subst check_simp,auto)
