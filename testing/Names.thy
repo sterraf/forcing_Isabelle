@@ -1,4 +1,4 @@
-theory Names imports Formula begin
+theory Names imports Int_ZF begin
 
 section\<open>Relative composition of \<in>.\<close>
 text\<open>Names are defined by using well-founded recursion on the relation \<in>³ given
@@ -166,15 +166,6 @@ val(check(y))
 y
 \<close>
 
-lemma sub_e : "y \<subseteq> Memrel(eclose({y}))^+-`` {y}"
-  apply clarsimp
-  apply (rule_tac b="y" in vimageI)
-   apply (rule MemrelI [THEN r_into_trancl],assumption)
-    apply (rule_tac A="y" in ecloseD)
-     apply (tactic {* distinct_subgoals_tac *})
-     apply (rule arg_into_eclose)
-  apply simp_all
-  done
     
 lemma lam_dom : "A\<subseteq>B \<Longrightarrow> {Lambda(B,f)`y . y\<in>A } = {f(y) . y\<in>A}"
   apply (rule RepFun_cong)
