@@ -1,4 +1,4 @@
-theory Names imports Int_ZF begin
+theory Names imports Epsilon begin
 
 section\<open>Relative composition of \<in>.\<close>
 text\<open>Names are defined by using well-founded recursion on the relation \<in>³ given
@@ -28,7 +28,7 @@ by (simp add:e3_set_def e3_def )
 (*\<questiondown>Qué significa fld?*)
 lemma fld_e3_sub_eclose : 
  "\<lbrakk>y \<in> M ; z \<in> y ; w \<in> z\<rbrakk> \<Longrightarrow> z \<in> eclose(M) \<and> w \<in> eclose(M)"
-proof (simp add:ecloseD) 
+proof (simp add:ecloseD cong:conj_cong) 
   assume p:"y\<in>M"
      and q: "z\<in>y"
   show "z\<in>eclose(M)"
