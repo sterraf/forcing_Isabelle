@@ -6,34 +6,18 @@ definition compat_in :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow
 
 lemma compat_inI : 
       "\<lbrakk> d\<in>A ; <d,p>\<in>r ; <d,g>\<in>r \<rbrakk> \<Longrightarrow> compat_in(A,r,p,g)"
-  apply (simp add: compat_in_def)
-  apply (rule_tac x="d" in bexI,simp+)
-  done
+  by (auto simp add: compat_in_def)
 
 lemma refl_compat:
   "\<lbrakk> refl(A,r) ; <p,q> \<in> r | p=q | <q,p> \<in> r ; p\<in>A ; q\<in>A\<rbrakk> \<Longrightarrow> compat_in(A,r,p,q)"
-  apply (simp add: refl_def)
-  apply (rule_tac P="<p,q>\<in>r" and Q="p=q \<or> <q,p>\<in>r" in disjE,assumption)
-  apply (rule_tac d="p" in compat_inI,assumption,simp+)
-  apply (rule_tac P="p=q" in disjE,assumption)
-   apply (rule_tac d="q" in compat_inI,assumption,simp+)
-  apply (rule_tac d="q" in compat_inI,assumption,simp)
-  apply (rule bspec,assumption+)
-  done
+  by (auto simp add: refl_def compat_inI)
  
 lemma  chain_compat:
   "refl(A,r) \<Longrightarrow> linear(A,r) \<Longrightarrow>  (\<forall>p\<in>A.\<forall>q\<in>A. compat_in(A,r,p,q))"
-  apply (rule ballI,rule ballI)
-  apply (unfold linear_def)
-  apply (drule_tac x="p" in bspec,assumption,drule_tac x="q" in bspec,assumption)
-  apply (rule refl_compat,assumption+)
-  done
+  by (simp add: refl_compat linear_def)
 
 lemma subset_fun_image: "f:N\<rightarrow>P \<Longrightarrow> f``N\<subseteq>P"
-  apply (simp add: image_fun)
-  apply (rule subsetI, simp, erule bexE)
-  apply (simp add:apply_funtype)
-  done
+  by (auto simp add: image_fun apply_funtype)
     
 definition 
   antichain :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
@@ -86,11 +70,7 @@ lemma  upclosureI [intro] : "p\<in>P \<Longrightarrow> a\<in>A \<Longrightarrow>
 
 lemma  upclosureE [elim] :
   "p\<in>upclosure(A) \<Longrightarrow> (\<And>x a. x\<in>P \<Longrightarrow> a\<in>A \<Longrightarrow> <a,x>\<in>leq \<Longrightarrow> R) \<Longrightarrow> R"
-  apply (simp add:upclosure_def)
-  apply (erule conjE)
-  apply (drule_tac P="\<lambda>a.\<langle>a, p\<rangle> \<in> leq" 
-               and Q="R" in bexE, assumption+)
-done
+  by (auto simp add:upclosure_def)
 
 lemma  upclosureD [dest] :
    "p\<in>upclosure(A) \<Longrightarrow> \<exists>a\<in>A.(<a,p>\<in>leq) \<and> p\<in>P"
@@ -296,5 +276,4 @@ proof -
     unfolding D_generic_def by auto
 qed
 
-  
 end
