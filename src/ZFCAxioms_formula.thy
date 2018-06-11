@@ -314,6 +314,10 @@ lemma repl_spec :
   apply auto
   done
     
+locale M_ZF =  
+  fixes M
+  assumes trans_M:          "Transset(M)"
+      and M_model_ZF:       "satT(M,ZFTh,[])"
 
 
 end
