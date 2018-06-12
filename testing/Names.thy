@@ -185,9 +185,8 @@ lemma singleton_eqI : "a = b \<Longrightarrow> {a} = {b}"
 lemma  aux_check_simp:
   "(\<lambda>x\<in>y. wfrec(Memrel(eclose({y})), x, Hcheck(uno))) = 
    (\<lambda>x\<in>y. wfrec(Memrel(eclose({x})), x, Hcheck(uno)))"
-  apply (rule lam_cong)
-   defer 1 apply (rule wfrec_eclose_eq)
-    defer 1 apply (rule ecloseD, auto simp add: arg_into_eclose)
+  apply (rule lam_cong, rule_tac [2] wfrec_eclose_eq, rule_tac [3] ecloseD)
+     apply (auto simp add: arg_into_eclose)
   done
     
 lemma check_simp : "checkR(uno,y) = { <checkR(uno,w),uno> . w \<in> y}"
