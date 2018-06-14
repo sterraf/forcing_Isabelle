@@ -94,7 +94,7 @@ definition
   check :: "i \<Rightarrow> i" where
   "check(x) == wfrec(Memrel(eclose({x})), x , Hcheck)"
 
-lemma  aux_check_simp:
+lemma  aux_def_check:
   "(\<lambda>x\<in>y. wfrec(Memrel(eclose({y})), x, Hcheck)) = 
    (\<lambda>x\<in>y. wfrec(Memrel(eclose({x})), x, Hcheck))"
   apply (rule lam_cong)
@@ -102,7 +102,7 @@ lemma  aux_check_simp:
     defer 1 apply (rule ecloseD, auto simp add: arg_into_eclose)
   done
     
-lemma check_simp : "check(y) = { <check(w),uno> . w \<in> y}"
+lemma def_check : "check(y) = { <check(w),uno> . w \<in> y}"
 proof -
   let 
               ?r="\<lambda>y. Memrel(eclose({y}))"
@@ -117,7 +117,7 @@ proof -
     by (simp add:under_Memrel_eclose arg_into_eclose)
   also have 
               " ... = Hcheck( y, \<lambda>x\<in>y. check(x))"
-    using aux_check_simp by (simp add:check_def)
+    using aux_def_check by (simp add:check_def)
   finally show ?thesis by (simp add:Hcheck_def)
 qed
 
@@ -132,7 +132,36 @@ definition
 definition
   GenExt :: "i\<Rightarrow>i"     ("M[_]" 90)
   where "GenExt(G)== {val(G,\<tau>). \<tau> \<in> M}"
+
+lemma dom_under_edrel_eclose: "edrel(eclose({x})) -`` {x}= domain(x)" 
+  sorry
     
+lemma aux_def_val: 
+  "(\<lambda>z\<in>domain(x). wfrec(edrel(eclose({x})),z,Hv(G))) =
+   (\<lambda>z\<in>domain(x). wfrec(edrel(eclose({z})),z,Hv(G)))"
+  sorry
+  
+lemma def_val:  "val(G,x) = {val(G,t) .. t\<in>domain(x) , \<exists>p\<in>P .  <t,p>\<in>x \<and> p \<in> G }"
+proof -
+  let
+            ?r="\<lambda>\<tau> . edrel(eclose({\<tau>}))"
+  let
+            ?f="\<lambda>z\<in>?r(x)-``{x}. wfrec(?r(x),z,Hv(G))"
+  have
+            "\<forall>\<tau>. wf(?r(\<tau>))"
+    by (simp add: wf_edrel)
+  with wfrec [of "?r(x)" x "Hv(G)"] have
+            "val(G,x) = Hv(G,x,?f)"
+    by (simp add:val_def)
+  also have
+            " ... = Hv(G,x,\<lambda>z\<in>domain(x). wfrec(?r(x),z,Hv(G)))"
+    by (simp add:dom_under_edrel_eclose)
+  also have
+            " ... = Hv(G,x,\<lambda>z\<in>domain(x). val(G,z))"
+    using aux_def_val by (simp add:val_def)
+  finally show ?thesis by (simp add:Hv_def SepReplace_def)
+qed
+  
     
 lemma val_of_name : 
        "val(G,{x\<in>A\<times>P. Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>P .  Q(<t,p>) \<and> p \<in> G }"
@@ -174,14 +203,7 @@ proof -
    (* by force *)
   finally show
               " val(G,?n)  = { val(G,t) .. t\<in>A, \<exists>p\<in>P . Q(<t,p>) \<and> p\<in>G}"
-    by auto
-qed
-
-lemma val_check : "val(G,check(y)) = y"
-proof -
-  have
-              "val(G,check(y)) = val"
-    oops
+oops
       
 end    (*************** CONTEXT: forcing_data *****************)
 
