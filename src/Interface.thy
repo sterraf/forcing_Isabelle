@@ -1,6 +1,7 @@
 (* Interface between internalized axiom formulas and 
    ZF axioms *)
-theory Interface imports ZFCAxioms_formula Relative_no_repl Names WF_absolute_no_repl begin
+theory Interface imports ZFCAxioms_formula Relative_no_repl Names WF_absolute_no_repl
+                         Internalize_no_repl begin
 
 (* Extensionality *)
 lemma extension_intf :
@@ -1190,5 +1191,170 @@ sublocale M_ZF \<subseteq> M_trancl_no_repl "##M"
   apply (rule M_trancl_no_repl_axioms.intro)
     apply simp_all
   done
+    
+    
+(* Interface con M_eclose *)
+    
+(* number1(M,a) == \<exists>x[M]. empty(M,x) & successor(M,x,a) *)
+definition
+  number1_fm :: "i \<Rightarrow> i" where
+  "number1_fm(a) == Exists(And(empty_fm(0),succ_fm(0,succ(a))))" 
+  
+lemma number1_type [TC] : 
+  "a\<in>nat \<Longrightarrow> number1_fm(a)\<in>formula"
+  by (simp add: number1_fm_def)
+    
+lemma sats_number1 [simp] :
+  "\<lbrakk> a\<in>nat ; env\<in>list(A) \<rbrakk> \<Longrightarrow> 
+    sats(A,number1_fm(a),env) \<longleftrightarrow> number1(##A,nth(a,env))"
+  by (simp add: number1_fm_def number1_def)
+  
+(* is_sum(M,A,B,Z) ==
+       \<exists>A0[M]. \<exists>n1[M]. \<exists>s1[M]. \<exists>B1[M].
+       number1(M,n1) & cartprod(M,n1,A,A0) & upair(M,n1,n1,s1) &
+       cartprod(M,s1,B,B1) & union(M,A0,B1,Z)" *)
+definition
+  is_sum_fm :: "[i,i,i] \<Rightarrow> i" where
+  "is_sum_fm(A,B,Z) == Exists(Exists(Exists(Exists(
+                                  And(number1_fm(2),
+                                  And(cartprod_fm(2,4#+A,3),
+                                  And(upair_fm(2,2,1),
+                                  And(cartprod_fm(1,4#+B,0),union_fm(3,0,4#+Z)))))))))"
+  
+lemma is_sum_fm_type [TC] :
+  "\<lbrakk> a\<in>nat ; b\<in>nat ; z\<in>nat \<rbrakk> \<Longrightarrow> is_sum_fm(a,b,z) \<in> formula"
+  by (simp add: is_sum_fm_def)
+    
+lemma sats_is_sum_fm [simp] :
+  "\<lbrakk> a\<in>nat ; b\<in>nat ; z\<in>nat ; env\<in>list(A)\<rbrakk> \<Longrightarrow>
+     sats(A,is_sum_fm(a,b,z),env) \<longleftrightarrow> is_sum(##A,nth(a,env),nth(b,env),nth(z,env)) "
+  by (simp add: is_sum_fm_def is_sum_def)
+    
+(* is_list_functor(M,A,X,Z) == 
+        \<exists>n1[M]. \<exists>AX[M]. number1(M,n1) & cartprod(M,A,X,AX) & is_sum(M,n1,AX,Z) *)
+definition 
+  is_list_functor_fm :: "[i,i,i] \<Rightarrow> i" where
+  "is_list_functor_fm(A,X,Z) ==  
+        Exists(Exists(And(number1_fm(1),
+                      And(cartprod_fm(2#+A,2#+X,0),is_sum_fm(1,0,2#+Z)))))"
+  
+lemma is_list_functor_fm_type [TC] :
+  "\<lbrakk> a\<in>nat ; x\<in>nat ; z\<in>nat \<rbrakk> \<Longrightarrow> is_list_functor_fm(a,x,z) \<in> formula"
+  by (simp add: is_list_functor_fm_def)
+    
+lemma sats_is_list_functor_fm [simp] :
+  "\<lbrakk> a\<in>nat ; x\<in>nat ; z\<in>nat ; env\<in>list(A)\<rbrakk> \<Longrightarrow>
+     sats(A,is_list_functor_fm(a,x,z),env) \<longleftrightarrow> 
+          is_list_functor(##A,nth(a,env),nth(x,env),nth(z,env))"
+  by (simp add: is_list_functor_fm_def is_list_functor_def)
+    
+    
+(*
+definition
+  is_wfrec :: "[i=>o, [i,i,i]=>o, i, i, i] => o" where
+   "is_wfrec(M,MH,r,a,z) == 
+      \<exists>f[M]. M_is_recfun(M,MH,r,a,f) & MH(a,f,z)"
+
+definition
+  wfrec_replacement :: "[i=>o, [i,i,i]=>o, i] => o" where
+   "wfrec_replacement(M,MH,r) ==
+        strong_replacement(M, 
+             \<lambda>x z. \<exists>y[M]. pair(M,x,y,z) & is_wfrec(M,MH,r,x,y))"
+*)
+
+    
+definition
+  wfrec_rep_fm :: "i \<Rightarrow> i" where
+  "wfrec_rep_fm(mh_fm) == strong_replacement_ax_fm(Exists(And(pair_fm(1,0,2),
+                                                 is_wfrec_fm(mh_fm,3,1,0))))"
+  
+lemma wfrec_rep_fm_type [TC] :
+  "\<lbrakk> MH \<in> formula \<rbrakk> \<Longrightarrow> wfrec_rep_fm(MH) \<in> formula"
+  by (simp add: wfrec_rep_fm_def)
+
+lemma (in M_ZF) sats_wfrec_rep_fm :
+  assumes MH_iff_sats:
+    "!!a0 a1 a2. 
+        [|a0\<in>M; a1\<in>M; a2\<in>M; mh_fm \<in> formula|] 
+        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(M, mh_fm, [a0,a1,a2])"
+  shows
+    "\<lbrakk> mh_fm \<in> formula ; arity(mh_fm) = 3\<rbrakk> \<Longrightarrow>
+     sats(M,wfrec_rep_fm(mh_fm),[]) \<longleftrightarrow> 
+     (\<forall>r\<in>M. wfrec_replacement(##M,MH,r))"
+  apply (simp add: wfrec_rep_fm_def wfrec_replacement_def)
+  apply (rule iff_trans)
+   apply (rule replacement_intf,simp)
+   prefer 2
+   apply (subgoal_tac "\<And>xa x y a. \<lbrakk> xa\<in>M ; x\<in>M ; y\<in>M ; a\<in>M \<rbrakk> \<Longrightarrow> 
+                        sats(M, is_wfrec_fm(mh_fm, 3, 1, 0), [xa, x, y, a]) \<longleftrightarrow> 
+                       (is_wfrec(##M, MH, a, x, xa))")
+    apply (simp add: strong_replacement_def univalent_def del: pair_abs)
+   apply (insert MH_iff_sats,subst sats_is_wfrec_fm,simp_all)
+   apply (subst arity_sats_iff[symmetric],simp_all)
+  apply (simp add: is_wfrec_fm_def is_recfun_fm_def pre_image_fm_def restriction_fm_def
+                    pair_fm_def upair_fm_def Un_commute nat_union_abs1)
+  done
+     
+    
+(*
+ assumes list_replacement1:
+   "M(A) ==> iterates_replacement(M, is_list_functor(M,A), 0)"
+    
+"iterates_replacement(M,isF,v) ==
+      \<forall>n[M]. n\<in>nat \<longrightarrow> 
+         wfrec_replacement(M, iterates_MH(M,isF,v), Memrel(succ(n))) 
+
+lemma sats_iterates_MH_fm:
+  assumes is_F_iff_sats:
+      "!!a b c d. [| a \<in> A; b \<in> A; c \<in> A; d \<in> A|]
+              ==> is_F(a,b) \<longleftrightarrow>
+                  sats(A, p, Cons(b, Cons(a, Cons(c, Cons(d,env)))))"
+  shows 
+      "[|v \<in> nat; x \<in> nat; y \<in> nat; z < length(env); env \<in> list(A)|]
+       ==> sats(A, iterates_MH_fm(p,v,x,y,z), env) \<longleftrightarrow>
+           iterates_MH(##A, is_F, nth(v,env), nth(x,env), nth(y,env), nth(z,env))"
+
+lemma sats_is_wfrec_fm:
+  assumes MH_iff_sats: 
+      "!!a0 a1 a2 a3 a4. 
+        [|a0\<in>A; a1\<in>A; a2\<in>A; a3\<in>A; a4\<in>A|] 
+        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(A, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
+  shows 
+      "[|x \<in> nat; y < length(env); z < length(env); env \<in> list(A)|]
+       ==> sats(A, is_wfrec_fm(p,x,y,z), env) \<longleftrightarrow> 
+           is_wfrec(##A, MH, nth(x,env), nth(y,env), nth(z,env))"
+apply (frule_tac x=z in lt_length_in_nat, assumption)  
+apply (frule lt_length_in_nat, assumption)  
+apply (simp add: is_wfrec_fm_def sats_is_recfun_fm is_wfrec_def MH_iff_sats [THEN iff_sym], blast) 
+done
+
+ "wfrec_replacement(M,MH,r) ==
+        strong_replacement(M, 
+             \<lambda>x z. \<exists>y[M]. pair(M,x,y,z) & is_wfrec(M,MH,r,x,y))
+
+is_list_functor :: "[i=>o,i,i,i] => o" where
+    "is_list_functor(M,A,X,Z) == 
+        \<exists>n1[M]. \<exists>AX[M]. 
+         number1(M,n1) & cartprod(M,A,X,AX) & is_sum(M,n1,AX,Z)
+
+
+ "iterates_replacement(M,isF,v) ==
+      \<forall>n[M]. n\<in>nat \<longrightarrow> 
+         wfrec_replacement(M, iterates_MH(M,isF,v), Memrel(succ(n))) 
+
+ assumes list_replacement1:
+   "M(A) ==> iterates_replacement(M, is_list_functor(M,A), 0)"
+  and list_replacement2:
+   "M(A) ==> strong_replacement(M,
+         \<lambda>n y. n\<in>nat & is_iterates(M, is_list_functor(M,A), 0, n, y))"
+  and formula_replacement1:
+   "iterates_replacement(M, is_formula_functor(M), 0)"
+  and formula_replacement2:
+   "strong_replacement(M,
+         \<lambda>n y. n\<in>nat & is_iterates(M, is_formula_functor(M), 0, n, y))"
+  and nth_replacement:
+   "M(l) ==> iterates_replacement(M, %l t. is_tl(M,l,t), l)"
+
+ *)
     
 end
