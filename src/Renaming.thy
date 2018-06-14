@@ -905,7 +905,7 @@ lemma arity_3 :
 
 
   
-lemma swap_0_1_tc :
+lemma swap_0_1_tc[TC] :
   "p\<in>formula \<Longrightarrow> swap_0_1(p) \<in> formula"
   apply (simp add: swap_0_1_def) 
   apply(rule ren_lib_tc,simp+)
