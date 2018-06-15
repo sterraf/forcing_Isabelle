@@ -71,9 +71,6 @@ definition
     GenExt :: "i\<Rightarrow>i"     ("M[_]" 90)
     where "GenExt(G)== {val(G,\<tau>). \<tau> \<in> M}"
       
-lemma  elem_genext : 
-  "x \<in> M[G] \<Longrightarrow> \<exists>\<tau>\<in>M. x = val(G,\<tau>)"
-  by (simp add: GenExt_def)
 
 lemma aux2: "Hv(G,x,f) = { f`y .. y\<in> domain(x), \<exists>p\<in>P. <y,p> \<in> x \<and> p \<in> G }"
   by (simp add:Sep_and_Replace Hv_def Hval_def)  
@@ -137,7 +134,7 @@ locale forcing_thms = forcing_data +
   assumes definition_of_forces: "p\<in>P \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow>
                   sats(M,forces(\<phi>), [P,leq,uno,p] @ env) \<longleftrightarrow>
                   (\<forall>G.(generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],\<phi>,map(val(G),env)))"
-      and  definability:     "\<phi>\<in>formula \<Longrightarrow> forces(\<phi>) \<in> formula"
+      and  definability[TC]: "\<phi>\<in>formula \<Longrightarrow> forces(\<phi>) \<in> formula"
       and   truth_lemma:     "p\<in>P \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow>
                  \<forall>G.(generic(G) \<and> p\<in>G)\<longrightarrow>
                   ((\<exists>p\<in>P.(sats(M,forces(\<phi>), [P,leq,uno,p] @ env))) \<longleftrightarrow>
