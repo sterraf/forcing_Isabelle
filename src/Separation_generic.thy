@@ -1,47 +1,58 @@
-theory Separation_generic imports   Formula Names ZFCAxioms_formula forcing_posets begin
+theory Separation_generic imports   Forces_locale begin
 
-locale forcing_data = forcing_poset +
-  fixes M enum
-  assumes trans_M:          "Transset(M)"
-      and M_model_ZF:       "satT(M,ZFTh,[])"
-      and M_countable:      "enum\<in>bij(nat,M)"
-      and P_in_M:           "P \<in> M"
-      (* TODO: Quitar estas assumptions cuando tengamos el Relative hacked *)
-      and M_repl:           "\<And>P. replacement(##M,P)"
-      and M_nat:            "nat \<in> M"
-begin  
-definition
-  generic :: "i\<Rightarrow>o" where
-  "generic(G) == filter(G) \<and> (\<forall>D\<in>M. D\<subseteq>P \<and> dense(D)\<longrightarrow>D\<inter>G\<noteq>0)"
-  
-end      
-(* Prototyping Forcing relation and theorems as a locale*)
-locale forcing_thms = forcing_poset + forcing_data +
-  fixes forces :: "i \<Rightarrow> i"
-  assumes definition_of_forces: "\<forall>env\<in>list(M).
-                  sats(M,forces(\<phi>), [P,leq,uno,p] @ env) \<longleftrightarrow>
-                  (\<forall>G.(generic(G)\<and> p\<in>G)\<longrightarrow>sats(gen_ext(M,P,G),\<phi>,map(valR(M,P,G),env)))"
-      and definability:      "forces(\<phi>) \<in> formula"
-      and truth_lemma:      "\<forall>env\<in>list(M).\<forall>G.(generic(G) \<and> p\<in>G)\<longrightarrow>
-                  ((\<exists>p\<in>P.(sats(M,forces(\<phi>), [P,leq,uno,p] @ env))) \<longleftrightarrow>
-                  (sats(gen_ext(M,P,G),\<phi>,map(valR(M,P,G),env))))"
-begin
-lemma
-  "\<phi>\<in>formula \<Longrightarrow> \<psi>\<in>formula \<Longrightarrow> 
-    \<forall>u\<in>M. \<forall>l\<in>M. \<forall>Q\<in>M. \<forall>s\<in>M. \<forall>r\<in>M. \<forall>d\<in>M.
-      sats(M,[d,r,s,Q,l,u],
-        Exists(Exists(And(pair_fm(0,1,2),
-          forces(And(Member(0,1),\<phi>))))))" 
-  oops
-   
-lemma
-    "sats(M,forces(And(Member(0,1),\<phi>)),[P,leq,uno,p,\<theta>,\<pi>,\<sigma>])
-      \<Longrightarrow> valR(M,P,G,{w\<in>domain(\<pi>)\<times>P. x=x}) =x"  (* Enunciado mal *)
-  oops
-    
-      
+context forcing_thms begin  
+
 theorem separation_in_genext:
-    "\<forall>p\<in>formula. arity(p) = 3 \<longrightarrow> sats(gen_ext(M,P,G),separation_ax_fm(p),[])"
+ (* assumes "\<phi>\<in>formula"  and "arity(\<phi>) = 1 \<or> arity(\<phi>)=2" 
+  shows  "sats(M[G],separation_ax_fm(\<phi>),[])" *)
+  shows
+  "\<phi>\<in>formula \<Longrightarrow> arity(\<phi>) = 1 \<or> arity(\<phi>)=2 \<Longrightarrow> sats(M[G],separation_ax_fm(\<phi>),[])"
+proof -
+  assume 
+      "arity(\<phi>) = 1 \<or> arity(\<phi>)=2" (is "?P \<or> ?Q")
+  then consider (1) ?P | (2) ?Q ..
+  then show ?thesis
+  proof cases
+    case 1
+    then show ?thesis sorry
+  next
+    case 2
+    fix c w
+    assume
+         asm: "c\<in>M[G]" "w\<in>M[G]" "\<phi>\<in>formula"
+    then have
+              "{x\<in>c. sats(M[G],\<phi>,[x,w])}\<in>M[G]"  (is "?S\<in>_")
+    proof -
+      from asm obtain \<pi> \<sigma> where
+         Eq1: "\<pi>\<in>M" "\<sigma>\<in>M" "val(G,\<pi>) = c" "val(G,\<sigma>) = w" 
+        by (auto simp add: GenExt_def)
+      with P_in_M have
+         Eq2: "domain(\<pi>)*P\<in>M"
+        by (simp del:setclass_iff add:setclass_iff [symmetric])
+      let
+              ?\<chi>="And(Member(0,1),\<phi>)"
+        and   ?env="[P,leq,uno]"
+      let
+              ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),forces(?\<chi>))))"
+      from asm P_in_M leq_in_M uno_in_P have
+         Eq3: "?\<chi>\<in>formula" "?\<psi>\<in>formula" "\<phi>\<in>formula" "?env\<in>list(M)"
+        by (auto simp add: Transset_intf trans_M)
+      with Eq1 and Eq2 have
+              "{u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?env @ [\<pi>,\<sigma>])} = 
+               {u\<in>domain(\<pi>)*P . \<exists>\<theta>\<in>M. \<exists>p\<in>M. u =<\<theta>,p> \<and> sats(M,forces(?\<chi>),[\<theta>,p,u]@?env@[\<pi>,\<sigma>])}"
+        by (auto simp add: Transset_intf trans_M)
+(*      also have
+              " ... =  {u\<in>domain(\<pi>)*P . \<exists>\<theta> p. u =<\<theta>,p> \<and> sats(M,forces(?\<chi>),[\<theta>,p,u,\<pi>,\<sigma>])}"
+        using Eq2 Pair_def apply (auto simp add:  Transset_intf trans_M) *)
+      also have
+              " ... =  
+              {u\<in>domain(\<pi>)*P . \<exists>\<theta> p. u =<\<theta>,p> \<and> sats(M,forces(?\<chi>),?env@[\<theta>,p,u,\<pi>,\<sigma>])}"
+          
+  find_theorems "sats(M,?x,?y)"              
+        sorry
+    then show ?thesis sorry
+  qed
+  
 oops
 end  
 end
