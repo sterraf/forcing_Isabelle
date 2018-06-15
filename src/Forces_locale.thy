@@ -69,7 +69,11 @@ definition
 
 definition
     GenExt :: "i\<Rightarrow>i"     ("M[_]" 90)
-  where "GenExt(G)== {val(G,\<tau>). \<tau> \<in> M}"
+    where "GenExt(G)== {val(G,\<tau>). \<tau> \<in> M}"
+      
+lemma  elem_genext : 
+  "x \<in> M[G] \<Longrightarrow> \<exists>\<tau>\<in>M. x = val(G,\<tau>)"
+  by (simp add: GenExt_def)
 
 lemma aux2: "Hv(G,x,f) = { f`y .. y\<in> domain(x), \<exists>p\<in>P. <y,p> \<in> x \<and> p \<in> G }"
   by (simp add:Sep_and_Replace Hv_def Hval_def)  
@@ -160,12 +164,11 @@ proof -
                {val(G,x) .. x\<in>domain(\<pi>)\<times>P, \<exists>\<theta> p. x=<\<theta>,p> \<and> (\<forall>F. M_generic(F) \<and> p\<in>F \<longrightarrow> 
                sats(M[F],\<phi>,[val(F,\<theta>),val(F,\<pi>),val(F,\<sigma>)]))}"  
               (is  "val(G,{x\<in>_. \<exists>\<theta> p. ?R(x,\<theta>,p) \<and> (\<forall>F. ?Q(F,p) \<longrightarrow> ?P(F,\<phi>,\<theta>,\<pi>,\<sigma>))}) = ?x")
-  proof -
-    have
-              "val(G,{x\<in>domain(\<pi>)\<times>P. \<exists>\<theta> p. ?R(x,\<theta>,p) \<and> (\<forall>F. ?Q(F,p) \<longrightarrow> ?P(F,\<phi>,\<theta>,\<pi>,\<sigma>))}) =
-                "
-    
   oops
 end    (*************** CONTEXT: forcing_thms *****************)
 
+(* sublocale forcing_thms \<subseteq> M_basic_no_repl "##M" by (rule interface_M_basic) *)
+sublocale forcing_thms \<subseteq> M_ZF
+  by (unfold_locales, insert trans_M M_model_ZF, simp_all)
+  
 end
