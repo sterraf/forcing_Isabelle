@@ -10,6 +10,7 @@ locale forcing_data = forcing_poset + M_ZF +
   fixes enum
   assumes M_countable:      "enum\<in>bij(nat,M)"
       and P_in_M:           "P \<in> M"
+      and leq_in_M:         "leq \<in> M"
 
 begin  (*************** CONTEXT: forcing_data *****************)
 definition
