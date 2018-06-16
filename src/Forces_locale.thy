@@ -133,10 +133,10 @@ locale forcing_thms = forcing_data +
   fixes forces :: "i \<Rightarrow> i"
   assumes definition_of_forces: "p\<in>P \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow>
                   sats(M,forces(\<phi>), [P,leq,uno,p] @ env) \<longleftrightarrow>
-                  (\<forall>G.(generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],\<phi>,map(val(G),env)))"
+                  (\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],\<phi>,map(val(G),env)))"
       and  definability[TC]: "\<phi>\<in>formula \<Longrightarrow> forces(\<phi>) \<in> formula"
       and   truth_lemma:     "p\<in>P \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow>
-                 \<forall>G.(generic(G) \<and> p\<in>G)\<longrightarrow>
+                 \<forall>G.(M_generic(G) \<and> p\<in>G)\<longrightarrow>
                   ((\<exists>p\<in>P.(sats(M,forces(\<phi>), [P,leq,uno,p] @ env))) \<longleftrightarrow>
                   (sats(M[G],\<phi>,map(val(G),env))))"
       and  streghtening:     "p\<in>P \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow> q\<in>P \<Longrightarrow> <q,p>\<in>leq \<Longrightarrow>
