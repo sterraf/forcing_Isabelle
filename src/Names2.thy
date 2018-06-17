@@ -162,6 +162,8 @@ proof -
   finally show ?thesis by (simp add:Hv_def SepReplace_def)
 qed
   
+lemma val_mono : "x\<subseteq>y \<Longrightarrow> val(G,x) \<subseteq> val(G,y)"
+  by (subst (1 2) def_val, force)
     
 lemma val_of_name : 
        "val(G,{x\<in>A\<times>P. Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>P .  Q(<t,p>) \<and> p \<in> G }"
