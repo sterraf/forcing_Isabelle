@@ -32,84 +32,25 @@ Isabelle/ZF, forcing, preorder, Rasiowa-Sikorski lemma, names, generic extension
 \end{frontmatter}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Introduction}\label{sec:introduction}
+\input{intro}
 
-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
-\subsection{Models of ZFC}
+\input{posets}
 
-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
-\subsection{Isabelle/ZF}
+\input{rs}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{names}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Forcing notions}\label{sec:forcing-posets}
-\textit{Para no confundir, directamente usamos este nombre en lugar de
-  ``forcing posets'' para los preórdenes con un máximo distinguido}
-
-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
-\subsection{The Rasiowa-Sikorski lemma}
-In order to formalize of the proof of the Rasiowa-Sikorski lemma in
-general, a version of the Axiom of Choice ($\AC$) must be proved. This
-version is known as the \emph{Principle of Dependent choices}:
-\begin{quote}
-  ($\DC$) Let $\rr$ be a binary relation on $A$, and $a\in A$. If
-  $\forall x\in A\,  \exists y\in A\, x\rr y$, then there exists
-  $f:\om\to A$ such that $f(0)=a$ and $f(n)\rr f(n+1)$ for all
-  $n\in\om$.
-\end{quote}
-
-A different version of $\DC$ (without the constraint $f(0)=a$, but
-allowing a parameter that allows to prove an equivalence with $\AC$) was
-formalized as part of the Isabelle/ZF library, along with many
-statements that follow from or are equivalent to $\AC$. Since the
-proofs there required a greater generality, it would have been very
-contrived to derived this ``pointed'' version of $\DC$ from that
-development. Instead, we preferred to give a direct proof based in the
-one that appears in Moschovakis \cite{moschovakis1994notes}. Another
-advantage is that this proof depends on the following version of $\AC$
-(existence of choice functions on $\P(X)\sm \{\mty\}$):
-\[
-\exists f:\P(X)\sm \{\mty\}\to X \, \forall A\sbq X.\ A\neq \mty \limp
-f(A) \in A.
-\]
-This statement is more standard than the one deemed ``$\AC$'' in the
-Isabelle/ZF development, that involves a silent use of Replacement
-since it is written as an axiom scheme.
+\input{gen-ext}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Names}
+\input{conclusion}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The generic extension}
-Forcing is a technique to extend countable transitive models of
-$\ZFC$. This process is guaranteed to preserve the $\ZFC$
-axioms but allows to fine-tune what other first order properties the
-extension will have. The first, both historically and in importance,
-application of forcing was the proof that $\AC$ and $\CH$ were not
-derivable from $\ZFC$; this was done by Cohen in its seminal work
-\cite{Cohen-CH-PNAS}.
-
- 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Future work}
-\begin{itemize}
-\item Develop an interface between Paulson's relativization results
-  and countable models $M$ of $\ZFC$. This will show
-  that every such $M$ is closed under well-founded recursion and, in
-  particular, that contains names for each of its
-  elements. Consequently, $M\sbq M[G]$.
-\item Prove that the basic axioms of $\ZFC$ hold in the generic
-  extension. 
-\item After prototyping the forcing relation, prove the Axiom Scheme
-  of Separation (the first that needs to use the machinery of forcing
-  nontrivially).
-\end{itemize}
 \bibliographystyle{entcs}
-\bibliography{citados,journals&preprints,conferencias}
+\bibliography{first_steps_into_forcing}
 \end{document}
 
 %%% Local Variables:
