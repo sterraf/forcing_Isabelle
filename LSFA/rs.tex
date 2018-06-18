@@ -20,12 +20,75 @@ one that appears in Moschovakis \cite{moschovakis1994notes}. Another
 advantage is that this proof depends on the following version of $\AC$
 (existence of choice functions on $\P(X)\sm \{\mty\}$):
 \[
-\exists f:\P(X)\sm \{\mty\}\to X \, \forall A\sbq X.\ A\neq \mty \limp
-f(A) \in A.
+\exists s: \P(A)\sm \{\mty\}\to A \, \forall X\sbq A.\ X\neq \mty \limp
+s(X) \in X.
 \]
 This statement is more standard than the one deemed ``$\AC$'' in the
 Isabelle/ZF development, that involves a silent use of Replacement
-since it is written as an axiom scheme.
+since it is written as an axiom scheme. 
+
+The strategy is to define $f$ above by primitive recursion. 
+
+\begin{isabellebody}\isamarkuptrue%
+\isanewline
+\isacommand{consts}\isamarkupfalse%
+\ dc{\isacharunderscore}witness\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ i{\isachardoublequoteclose}\isanewline
+\isacommand{primrec}\isamarkupfalse%
+\isanewline
+\ \ wit{\isadigit{0}}\ \ \ {\isacharcolon}\ {\isachardoublequoteopen}dc{\isacharunderscore}witness{\isacharparenleft}{\isadigit{0}}{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}\ {\isacharequal}\ a{\isachardoublequoteclose}\isanewline
+\ \ witrec\ {\isacharcolon}{\isachardoublequoteopen}dc{\isacharunderscore}witness{\isacharparenleft}succ{\isacharparenleft}n{\isacharparenright}{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}\ {\isacharequal}\ s{\isacharbackquote}{\isacharbraceleft}x{\isasymin}A{\isachardot}\ {\isasymlangle}dc{\isacharunderscore}witness{\isacharparenleft}n{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}{\isacharcomma}x{\isasymrangle}{\isasymin}R\ {\isacharbraceright}{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
+
+The function \verb|dc_witness| has, appart from $A$, $a$ and $R$, a
+function $s$ as a parameter. If this function is a selector for
+$\P(A)\sm \{\mty\}$, the function $f\defi$\verb|dc_witness|$(A,a,s,R)$
+will satify $\DC$.
+
+The proof is mostly routine; after a few lemmas we obtain the
+following theorem:
+
+\begin{isabellebody}
+\isanewline
+\isacommand{theorem}\isamarkupfalse%
+\ pointed{\isacharunderscore}DC\ \ {\isacharcolon}\ {\isachardoublequoteopen}{\isacharparenleft}{\isasymforall}x{\isasymin}A{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}{\isasymin}\ R{\isacharparenright}\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymforall}a{\isasymin}A{\isachardot}\ {\isacharparenleft}{\isasymexists}f\ {\isasymin}\ nat{\isasymrightarrow}A{\isachardot}\ f{\isacharbackquote}{\isadigit{0}}\ {\isacharequal}\ a\ {\isasymand}\ {\isacharparenleft}{\isasymforall}n\ {\isasymin}\ nat{\isachardot}\ {\isasymlangle}f{\isacharbackquote}n{\isacharcomma}f{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isasymrangle}{\isasymin}R{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
+
+We need a further, ``diagonal'' version of $\DC$  to prove
+Rasiowa-Sikorski. That is, if the assumption holds for a sequence of
+relations $S_n$,  then $f(n) \mathrel{S_{n+1}} f(n+1)$.
+
+We first obtain a corollary of $\DC$ changing $A$ for
+$A\times\mathtt{nat}$:
+
+\begin{isabellebody}
+\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ aux{\isacharunderscore}DC{\isacharunderscore}on{\isacharunderscore}AxNat{\isadigit{2}}\ {\isacharcolon}\ {\isachardoublequoteopen}{\isasymforall}x{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}{\isasymlangle}y{\isacharcomma}succ{\isacharparenleft}snd{\isacharparenleft}x{\isacharparenright}{\isacharparenright}{\isasymrangle}{\isasymrangle}\ {\isasymin}\ R\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymforall}x{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ {\isacharbraceleft}{\isasymlangle}a{\isacharcomma}b{\isasymrangle}{\isasymin}R{\isachardot}\ snd{\isacharparenleft}b{\isacharparenright}\ {\isacharequal}\ succ{\isacharparenleft}snd{\isacharparenleft}a{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
+%
+The following lemma is then proved automatically:
+
+\begin{isabellebody}
+\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ aux{\isacharunderscore}sequence{\isacharunderscore}DC{\isadigit{2}}\ {\isacharcolon}\ {\isachardoublequoteopen}{\isasymforall}x{\isasymin}A{\isachardot}\ {\isasymforall}n{\isasymin}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ S{\isacharbackquote}n\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ {\isasymforall}x{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}{\isasymlangle}y{\isacharcomma}succ{\isacharparenleft}snd{\isacharparenleft}x{\isacharparenright}{\isacharparenright}{\isasymrangle}{\isasymrangle}\ {\isasymin}\ {\isacharbraceleft}{\isasymlangle}{\isasymlangle}x{\isacharcomma}n{\isasymrangle}{\isacharcomma}{\isasymlangle}y{\isacharcomma}m{\isasymrangle}{\isasymrangle}{\isasymin}{\isacharparenleft}A{\isasymtimes}nat{\isacharparenright}{\isasymtimes}{\isacharparenleft}A{\isasymtimes}nat{\isacharparenright}{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}{\isasymin}S{\isacharbackquote}m\ {\isacharbraceright}{\isachardoublequoteclose}\isanewline
+\ \ %
+\isacommand{by}\isamarkupfalse%
+\ auto%
+\isanewline
+\end{isabellebody}
+%
+And finally, we arrive to $\DC$ for a sequence of relations.
+
+\begin{isabellebody}
+\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ sequence{\isacharunderscore}DC{\isacharcolon}\ {\isachardoublequoteopen}{\isasymforall}x{\isasymin}A{\isachardot}\ {\isasymforall}n{\isasymin}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ S{\isacharbackquote}n\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ {\isasymforall}a{\isasymin}A{\isachardot}\ {\isacharparenleft}{\isasymexists}f\ {\isasymin}\ nat{\isasymrightarrow}A{\isachardot}\ f{\isacharbackquote}{\isadigit{0}}\ {\isacharequal}\ a\ {\isasymand}\ {\isacharparenleft}{\isasymforall}n\ {\isasymin}\ nat{\isachardot}\ {\isasymlangle}f{\isacharbackquote}n{\isacharcomma}f{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isasymrangle}{\isasymin}S{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
 
 
 %%% Local Variables:
