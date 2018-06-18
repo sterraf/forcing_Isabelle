@@ -70,12 +70,12 @@ one that appears in Moschovakis \cite{moschovakis1994notes}. Another
 advantage is that this proof depends on the following version of $\AC$
 (existence of choice functions on $\P(X)\sm \{\mty\}$):
 \[
-\exists f:\P(X)\sm \{\mty\}\to X \, \forall A\in \P(X)\sm \{\mty\}\ f(A)
-    \in A.
+\exists f:\P(X)\sm \{\mty\}\to X \, \forall A\sbq X.\ A\neq \mty \limp
+f(A) \in A.
 \]
 This statement is more standard than the one deemed ``$\AC$'' in the
-Isabelle/ZF development, that involves a formula parameter and thus
-involves a silent use of Replacement.
+Isabelle/ZF development, that involves a silent use of Replacement
+since it is written as an axiom scheme.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
