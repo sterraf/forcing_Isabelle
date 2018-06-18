@@ -18,7 +18,7 @@ contrived to derived this ``pointed'' version of $\DC$ from that
 development. Instead, we preferred to give a direct proof based in the
 one that appears in Moschovakis \cite{moschovakis1994notes}. Another
 advantage is that this proof depends on the following version of $\AC$
-(existence of choice functions on $\P(X)\sm \{\mty\}$):
+(existence of choice functions on $\P(A)\sm \{\mty\}$):
 \[
 \exists s: \P(A)\sm \{\mty\}\to A \, \forall X\sbq A.\ X\neq \mty \limp
 s(X) \in X.
@@ -39,7 +39,7 @@ The strategy is to define $f$ above by primitive recursion.
 \ \ witrec\ {\isacharcolon}{\isachardoublequoteopen}dc{\isacharunderscore}witness{\isacharparenleft}succ{\isacharparenleft}n{\isacharparenright}{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}\ {\isacharequal}\ s{\isacharbackquote}{\isacharbraceleft}x{\isasymin}A{\isachardot}\ {\isasymlangle}dc{\isacharunderscore}witness{\isacharparenleft}n{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}{\isacharcomma}x{\isasymrangle}{\isasymin}R\ {\isacharbraceright}{\isachardoublequoteclose}\isanewline
 \end{isabellebody}
 
-The function \verb|dc_witness| has, appart from $A$, $a$ and $R$, a
+The function \verb|dc_witness| has, apart from $A$, $a$ and $R$, a
 function $s$ as a parameter. If this function is a selector for
 $\P(A)\sm \{\mty\}$, the function $f\defi$\verb|dc_witness|$(A,a,s,R)$
 will satify $\DC$.
