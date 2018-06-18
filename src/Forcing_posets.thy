@@ -2,14 +2,14 @@ theory Forcing_posets imports Pointed_DC  begin
 
 (* En esta definición habría que agregar que (A,r) es preorden? *)
 definition compat_in :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "compat_in(A,r,p,q) == \<exists>d\<in>A . <d,p>\<in>r \<and> <d,q>\<in>r"
+  "compat_in(A,r,p,q) == \<exists>d\<in>A . \<langle>d,p\<rangle>\<in>r \<and> \<langle>d,q\<rangle>\<in>r"
 
 lemma compat_inI : 
-      "\<lbrakk> d\<in>A ; <d,p>\<in>r ; <d,g>\<in>r \<rbrakk> \<Longrightarrow> compat_in(A,r,p,g)"
+  "\<lbrakk> d\<in>A ; \<langle>d,p\<rangle>\<in>r ; \<langle>d,g\<rangle>\<in>r \<rbrakk> \<Longrightarrow> compat_in(A,r,p,g)"
   by (auto simp add: compat_in_def)
 
 lemma refl_compat:
-  "\<lbrakk> refl(A,r) ; <p,q> \<in> r | p=q | <q,p> \<in> r ; p\<in>A ; q\<in>A\<rbrakk> \<Longrightarrow> compat_in(A,r,p,q)"
+  "\<lbrakk> refl(A,r) ; \<langle>p,q\<rangle> \<in> r | p=q | \<langle>q,p\<rangle> \<in> r ; p\<in>A ; q\<in>A\<rbrakk> \<Longrightarrow> compat_in(A,r,p,q)"
   by (auto simp add: refl_def compat_inI)
  
 lemma  chain_compat:
@@ -31,22 +31,22 @@ locale forcing_poset =
   fixes P leq uno
   assumes uno_in_P:         "uno \<in> P"
       and leq_preord:       "preorder_on(P,leq)"
-      and uno_max:          "\<forall>p\<in>P. <p,uno>\<in>leq"
+      and uno_max:          "\<forall>p\<in>P. \<langle>p,uno\<rangle>\<in>leq"
 begin
 definition 
   dense :: "i\<Rightarrow>o" where
-  "dense(D) == \<forall>p\<in>P. \<exists>d\<in>D . <d,p>\<in>leq"
+  "dense(D) == \<forall>p\<in>P. \<exists>d\<in>D . \<langle>d,p\<rangle>\<in>leq"
 
 definition 
   dense_below :: "i\<Rightarrow>i\<Rightarrow>o" where
-  "dense_below(D,q) == \<forall>p\<in>P. <p,q>\<in>leq \<longrightarrow> (\<exists>d\<in>D . <d,p>\<in>leq)"
+  "dense_below(D,q) == \<forall>p\<in>P. \<langle>p,q\<rangle>\<in>leq \<longrightarrow> (\<exists>d\<in>D . \<langle>d,p\<rangle>\<in>leq)"
 
 lemma P_dense: "dense(P)"
   by (insert leq_preord, auto simp add: preorder_on_def refl_def dense_def)
     
 definition 
   increasing :: "i\<Rightarrow>o" where
-  "increasing(F) == \<forall>p\<in>P. \<forall>x\<in>P. x\<in>F \<and> <x,p>\<in>leq \<longrightarrow> p\<in>F"
+  "increasing(F) == \<forall>p\<in>P. \<forall>x\<in>P. x\<in>F \<and> \<langle>x,p\<rangle>\<in>leq \<longrightarrow> p\<in>F"
 
 
 definition 
@@ -63,17 +63,17 @@ definition
 
 definition  
   upclosure :: "i\<Rightarrow>i" where
-  "upclosure(A) == {p\<in>P.\<exists>a\<in>A.<a,p>\<in>leq}"
+  "upclosure(A) == {p\<in>P.\<exists>a\<in>A.\<langle>a,p\<rangle>\<in>leq}"
   
-lemma  upclosureI [intro] : "p\<in>P \<Longrightarrow> a\<in>A \<Longrightarrow> <a,p>\<in>leq \<Longrightarrow> p\<in>upclosure(A)"
+lemma  upclosureI [intro] : "p\<in>P \<Longrightarrow> a\<in>A \<Longrightarrow> \<langle>a,p\<rangle>\<in>leq \<Longrightarrow> p\<in>upclosure(A)"
   by (simp add:upclosure_def, auto)
 
 lemma  upclosureE [elim] :
-  "p\<in>upclosure(A) \<Longrightarrow> (\<And>x a. x\<in>P \<Longrightarrow> a\<in>A \<Longrightarrow> <a,x>\<in>leq \<Longrightarrow> R) \<Longrightarrow> R"
+  "p\<in>upclosure(A) \<Longrightarrow> (\<And>x a. x\<in>P \<Longrightarrow> a\<in>A \<Longrightarrow> \<langle>a,x\<rangle>\<in>leq \<Longrightarrow> R) \<Longrightarrow> R"
   by (auto simp add:upclosure_def)
 
 lemma  upclosureD [dest] :
-   "p\<in>upclosure(A) \<Longrightarrow> \<exists>a\<in>A.(<a,p>\<in>leq) \<and> p\<in>P"
+   "p\<in>upclosure(A) \<Longrightarrow> \<exists>a\<in>A.(\<langle>a,p\<rangle>\<in>leq) \<and> p\<in>P"
   by (simp add:upclosure_def)
    
 lemma   upclosure_increasing :
@@ -151,7 +151,7 @@ lemma refl_monot_domain: "refl(B,r) \<Longrightarrow> A\<subseteq>B \<Longrighta
   apply (blast)
   done
 
-lemma decr_succ_decr: "f \<in> nat -> P \<Longrightarrow> preorder_on(P,leq) \<Longrightarrow>
+lemma decr_succ_decr: "f \<in> nat \<rightarrow> P \<Longrightarrow> preorder_on(P,leq) \<Longrightarrow>
          \<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq \<Longrightarrow>
            n\<in>nat \<Longrightarrow> m\<in>nat \<Longrightarrow> n\<le>m \<longrightarrow> \<langle>f ` m, f ` n\<rangle> \<in> leq"
   apply (unfold preorder_on_def, erule conjE)
@@ -165,10 +165,10 @@ lemma decr_succ_decr: "f \<in> nat -> P \<Longrightarrow> preorder_on(P,leq) \<L
    apply (drule_tac x="f`n" in bspec, auto)
    apply (drule_tac le_succ_iff [THEN iffD1], simp add: refl_def)
   done
-lemma not_le_imp_lt: "[| ~ i \<le> j ; Ord(i);  Ord(j) |] ==>  j<i"
+lemma not_le_imp_lt: "\<lbrakk> ~ i \<le> j ; Ord(i);  Ord(j) \<rbrakk> \<Longrightarrow>  j<i"
   by (simp add:not_le_iff_lt)
 
-lemma decr_seq_linear: "refl(P,leq) \<Longrightarrow> f \<in> nat -> P \<Longrightarrow>
+lemma decr_seq_linear: "refl(P,leq) \<Longrightarrow> f \<in> nat \<rightarrow> P \<Longrightarrow>
          \<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq \<Longrightarrow>
            trans[P](leq) \<Longrightarrow> linear(f `` nat, leq)"
   apply (unfold linear_def)
@@ -195,7 +195,7 @@ lemma (in countable_generic) RS_relation:
             and
         2:  "n\<in>nat"
   shows
-            "\<exists>y\<in>P. <x,y> \<in> (\<lambda>m\<in>nat. {<x,y>\<in>P*P. <y,x>\<in>leq \<and> y\<in>\<D>`(pred(m))})`n"
+            "\<exists>y\<in>P. \<langle>x,y\<rangle> \<in> (\<lambda>m\<in>nat. {\<langle>x,y\<rangle>\<in>P*P. \<langle>y,x\<rangle>\<in>leq \<and> y\<in>\<D>`(pred(m))})`n"
 proof -
   from seq_of_denses and 2 have "dense(\<D> ` pred(n))" by (simp)
   with 1 have
@@ -222,12 +222,12 @@ proof -
   assume 
       Eq1:  "p\<in>P"
   let
-            ?S="(\<lambda>m\<in>nat. {<x,y>\<in>P*P. <y,x>\<in>leq \<and> y\<in>\<D>`(pred(m))})"
+            ?S="(\<lambda>m\<in>nat. {\<langle>x,y\<rangle>\<in>P*P. \<langle>y,x\<rangle>\<in>leq \<and> y\<in>\<D>`(pred(m))})"
   from RS_relation have
-            "\<forall>x\<in>P. \<forall>n\<in>nat. \<exists>y\<in>P. <x,y> \<in> ?S`n"
+            "\<forall>x\<in>P. \<forall>n\<in>nat. \<exists>y\<in>P. \<langle>x,y\<rangle> \<in> ?S`n"
     by (auto)
   with sequence_DC have
-            "\<forall>a\<in>P. (\<exists>f \<in> nat->P. f`0 = a \<and> (\<forall>n \<in> nat. <f`n,f`succ(n)>\<in>?S`succ(n)))"
+            "\<forall>a\<in>P. (\<exists>f \<in> nat\<rightarrow>P. f`0 = a \<and> (\<forall>n \<in> nat. \<langle>f`n,f`succ(n)\<rangle>\<in>?S`succ(n)))"
     by (blast)
   then obtain f where
       Eq2:  "f : nat\<rightarrow>P"
