@@ -1,8 +1,25 @@
 \section{Forcing notions}\label{sec:forcing-posets}
-\textit{Para no confundir, directamente usamos este nombre en lugar de
-  ``forcing posets'' para los preórdenes con un máximo distinguido}
+%\textit{Para no confundir, directamente usamos este nombre en lugar de
+% ``forcing posets'' para los preórdenes con un máximo distinguido}
 
+Our first goal is to formalize some version of Martin's Axiom (MA), for
+example to show that if the cardinal $\kappa$ satisfies some property
+about partial orders then $\kappa < \aleph_1$. Let us first introduce
+some definitions about orders. We will also use this section to exhibit
+how to encode some definitions in Isabelle/ZF.
 
+\begin{definition}
+  A pre-order on a set $P$ is a binary relation $\leqslant$ which is
+  reflexive and transitive.
+\end{definition}
+
+In Isabelle/ZF sets are \emph{individuals}, that is terms of type $i$; since
+relations are also sets, the relation $\leqslant$ cannot be defined as
+a predicate on $P$.
+
+\begin{example}
+  Isabelle/ZF has already defined the set of naturals \isatt{nat}.
+\end{example}
 
 %%% Local Variables:
 %%% mode: latex
