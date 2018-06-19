@@ -1,0 +1,12 @@
+session "src" = "ZF" +
+  options [document = pdf, document_output = "output"]
+  theories [document = true]
+    "Pointed_DC"
+    "Forcing_posets"
+    "Forcing_data"
+    "Names"
+    "Forces_locale"
+  theories
+    (* Baz *)
+  document_files
+    "root.tex"
