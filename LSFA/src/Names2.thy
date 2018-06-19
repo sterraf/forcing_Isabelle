@@ -239,7 +239,7 @@ proof (induct rule:eps_induct)
           Eq2: "?C\<in>M" 
       by auto
     with 1 transD subsetD  have 
-        w_in_M : "\<forall> w \<in> y . w \<in> M" by auto
+        w_in_M : "\<forall> w \<in> y . w \<in> M" by force
     from Eq1 have
                "val(G,check(y)) = val(G, {\<langle>check(w), one\<rangle> . w \<in> y})"
       by simp
