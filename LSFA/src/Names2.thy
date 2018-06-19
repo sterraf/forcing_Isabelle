@@ -221,30 +221,37 @@ proof -
     by auto
 qed
 
-lemma valcheck : "y \<in> M \<Longrightarrow> Transset(M) \<Longrightarrow> one \<in> P \<Longrightarrow> one \<in> G \<Longrightarrow> 
-       check(y) \<in> M \<longrightarrow> val(G,check(y))  = y"
-proof 
-  fix y
-  assume
-        asm:  "y\<in>M" "one\<in>G" "one\<in>P" "check(y)\<in>M"
-  from def_check have
-        Eq1: "check(y) = { \<langle>check(w), one\<rangle> . w \<in> y}"  (is "_ = ?C") .
-  with asm have
-        Eq2: "?C\<in>M" 
-    by simp
-  from Eq1 have
-             "val(G,check(y)) = val(G, {\<langle>check(w), one\<rangle> . w \<in> y})"
-    by simp
-  also have
-              " ...  = {val(G,t) .. t\<in>domain(?C) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>?C \<and> p \<in> G }"
-    using def_val and Eq2 by simp
-  also have
-              " ... =  {val(G,t) .. t\<in>domain(?C) , \<exists>w\<in>y. t=check(w) }"
-    using asm by simp
-  also have
-              " ... = {val(G,check(w)) . w\<in>y }"
-    by force
-  finally show "val(G,check(y))  = y"
+lemma valcheck : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> one \<in> P \<Longrightarrow> one \<in> G \<Longrightarrow> 
+       \<forall>x\<in>M. check(x) \<in> M \<Longrightarrow> val(G,check(y))  = y"
+proof (induct rule:eps_induct)
+  case (1 y)
+  then show ?case
+  proof -
+    assume
+          asm:  "y\<in>M" "one\<in>P" "one\<in>G" "\<forall>x\<in>M. check(x)\<in>M" "Transset(M)"
+          and
+          IH:   "\<forall>x\<in>y. x \<in> M \<longrightarrow> Transset(M) \<longrightarrow> one \<in> P \<longrightarrow> 
+                  one \<in> G \<longrightarrow> check(x) \<in> M \<longrightarrow> val(G, check(x)) = x"
+    from def_check have
+          Eq1: "check(y) = { \<langle>check(w), one\<rangle> . w \<in> y}"  (is "_ = ?C") .
+    with asm have
+          Eq2: "?C\<in>M" 
+      by auto
+    from Eq1 have
+               "val(G,check(y)) = val(G, {\<langle>check(w), one\<rangle> . w \<in> y})"
+      by simp
+    also have
+                " ...  = {val(G,t) .. t\<in>domain(?C) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>?C \<and> p \<in> G }"
+      using def_val and Eq2 by simp
+    also have
+                " ... =  {val(G,t) .. t\<in>domain(?C) , \<exists>w\<in>y. t=check(w) }"
+      using asm by simp
+    also have
+                " ... = {val(G,check(w)) . w\<in>y }"
+      by force
+    finally have "val(G,check(y)) = y" (* show? *)
+      using IH and asm 
+        apply auto
     oops
       
       
