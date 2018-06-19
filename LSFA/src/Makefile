@@ -3,7 +3,8 @@ clean:
 
 root: clean
 	isabelle mkroot -d
+	isabelle build -D .
 	/bin/cp -f ROOTFILE ROOT
 
-build: ROOT
+build: 
 	isabelle build -D .
