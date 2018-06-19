@@ -20,7 +20,8 @@ ${\leqslant}$ is reflexive (on $P$) is a formula.
 \isanewline
 \isacommand{definition}\isamarkupfalse%
 \ refl{\isacharunderscore}on\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbrackleft}i{\isacharcomma}i{\isacharbrackright}\ {\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ {\isachardoublequoteopen}refl{\isacharunderscore}on{\isacharparenleft}P{\isacharcomma} leq {\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}\ x\ {\isasymin}\ A\ {\isachardot}\ {\isacharless}x{\isacharcomma}x{\isachargreater}\ {\isasymin}\ leq{\isachardoublequoteclose}\isanewline
+\ \ {\isachardoublequoteopen}refl{\isacharunderscore}on{\isacharparenleft}P{\isacharcomma}leq{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}\ x\ {\isasymin}\ P\ {\isachardot}\ {\isasymlangle}x{\isacharcomma}x{\isasymrangle}\ {\isasymin}\ leq{\isachardoublequoteclose}\isanewline
+\isanewline
 \end{isabellebody}
 
 Let us remark that the relation is ``untyped'', we cannot assert a
@@ -49,7 +50,7 @@ elements in $A$ are incompatible.
 \end{isabellebody}
 
 A poset $(P,\leqslant)$ has the \emph{countable chain condition} (ccc)
-if every antichanin in $P$ is countable.
+if every antichain in $P$ is countable.
 \begin{isabellebody}
   \isanewline
   \isacommand{definition}\isamarkupfalse%
@@ -100,16 +101,11 @@ dense.
 
 We say that $F\subseteq P$ is increasing (or up-set or upward closed) if every
 extension of any element in $F$ is also in $F$.
-%% así como lo explico yo esperaría esta definición:
-%% ∀ x ∈ P . x ∈ F → ∀ p ∈ P . (x,p) ∈ leq → p ∈ F
-%% y dado el uso que hacemos cuantificaría directamente sobre F:
-%% ∀ x ∈ F . ∀ p ∈ P . (x,p) ∈ leq → p ∈ F
-
 \begin{isabellebody}
 \isanewline
 \isacommand{definition}\isamarkupfalse%
 \ increasing\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ {\isachardoublequoteopen}increasing{\isacharparenleft}F{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}p{\isasymin}P{\isachardot}\ {\isasymforall}x{\isasymin}P{\isachardot}\ x{\isasymin}F\ {\isasymand}\ {\isasymlangle}x{\isacharcomma}p{\isasymrangle}{\isasymin}leq\ {\isasymlongrightarrow}\ p{\isasymin}F{\isachardoublequoteclose}\isanewline
+\ \ {\isachardoublequoteopen}increasing{\isacharparenleft}F{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}x{\isasymin}F{\isachardot}\ {\isasymforall}\ p\ {\isasymin}\ P\ {\isachardot}\ {\isasymlangle}x{\isacharcomma}p{\isasymrangle}{\isasymin}leq\ {\isasymlongrightarrow}\ p{\isasymin}F{\isachardoublequoteclose}\isanewline
 \end{isabellebody}
 A filter is an increasing set $G$ with all its elements being compatible in $G$.
 \begin{isabellebody}
@@ -120,15 +116,15 @@ A filter is an increasing set $G$ with all its elements being compatible in $G$.
 \end{isabellebody}
 
 We conclude this section by introducing the upward closure of a set
-and proving that the closure is a filter if the set elements are
-compatible.
+and proving that the closure of $A$ is a filter if its elements are
+compatible in $A$.
 \begin{isabellebody}
 \isanewline
 \isacommand{definition}\isamarkupfalse%
 \ upclosure\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
 \ \ {\isachardoublequoteopen}upclosure{\isacharparenleft}A{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isacharbraceleft}p{\isasymin}P{\isachardot}{\isasymexists}a{\isasymin}A{\isachardot}{\isasymlangle}a{\isacharcomma}p{\isasymrangle}{\isasymin}leq{\isacharbraceright}{\isachardoublequoteclose}\isanewline
 \isacommand{lemma}\isamarkupfalse%
-\ \ closure{\isacharunderscore}compat{\isacharunderscore}filter{\isacharcolon}\isanewline
+\ \ closure{\isacharunderscore}compat{\isacharunderscore}filter{\isacharcolon}
 \ \ {\isachardoublequoteopen}A{\isasymsubseteq}P\ {\isasymLongrightarrow}\ {\isacharparenleft}{\isasymforall}p{\isasymin}A{\isachardot}{\isasymforall}q{\isasymin}A{\isachardot}\ compat{\isacharunderscore}in{\isacharparenleft}A{\isacharcomma}leq{\isacharcomma}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}\ {\isasymLongrightarrow}\ filter{\isacharparenleft}upclosure{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \end{isabellebody}
 

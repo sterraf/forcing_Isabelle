@@ -51,7 +51,7 @@ proof -
     qed
   qed
   from Eq3 and Eq4 interpret 
-          cg: countable_generic P leq uno ?D 
+          cg: countable_generic P leq one ?D 
     by (unfold_locales, auto)
   from cg.rasiowa_sikorski and Eq1 obtain G where 
          Eq6: "p\<in>G \<and> filter(G) \<and> (\<forall>n\<in>nat.(?D`n)\<inter>G\<noteq>0)"
