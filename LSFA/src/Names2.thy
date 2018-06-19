@@ -88,7 +88,7 @@ begin  (*************** CONTEXT: forcing_data *****************)
 
 definition 
   Hcheck :: "[i,i] \<Rightarrow> i" where
-  "Hcheck(z,f)  == { <f`y,uno> . y \<in> z}"
+  "Hcheck(z,f)  == { <f`y,one> . y \<in> z}"
 
 definition
   check :: "i \<Rightarrow> i" where
@@ -102,7 +102,7 @@ lemma  aux_def_check:
     defer 1 apply (rule ecloseD, auto simp add: arg_into_eclose)
   done
     
-lemma def_check : "check(y) = { <check(w),uno> . w \<in> y}"
+lemma def_check : "check(y) = { <check(w),one> . w \<in> y}"
 proof -
   let 
               ?r="\<lambda>y. Memrel(eclose({y}))"
@@ -221,16 +221,16 @@ proof -
     by auto
 qed
 
-lemma valcheck : "y \<in> M \<Longrightarrow> Transset(M) \<Longrightarrow> uno \<in> P \<Longrightarrow> uno \<in> G \<Longrightarrow> 
+lemma valcheck : "y \<in> M \<Longrightarrow> Transset(M) \<Longrightarrow> one \<in> P \<Longrightarrow> one \<in> G \<Longrightarrow> 
        check(y) \<in> M \<longrightarrow> val(G,check(y))  = y"
 proof 
   fix y
   assume
-        asm:  "y\<in>M" "uno\<in>G" "uno\<in>P"
+        asm:  "y\<in>M" "one\<in>G" "one\<in>P"
   from def_check have
-              "check(y) = { \<langle>check(w), uno\<rangle> . w \<in> y}"  (is "_ = ?C") .
+              "check(y) = { \<langle>check(w), one\<rangle> . w \<in> y}"  (is "_ = ?C") .
   then have
-              "val(G,check(y)) = val(G, {\<langle>check(w), uno\<rangle> . w \<in> y})" 
+              "val(G,check(y)) = val(G, {\<langle>check(w), one\<rangle> . w \<in> y})" 
     by simp
   also have
               " ...  = {val(G,t) .. t\<in>domain(?C) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>?C \<and> p \<in> G }"
