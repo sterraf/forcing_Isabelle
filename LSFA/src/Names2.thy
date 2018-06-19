@@ -241,6 +241,8 @@ proof
   also have
               " ... = {val(G,check(w)) . w\<in>y }"
     by force
+  finally show "val(G,check(y))  = y"
+    
   oops
     
 
