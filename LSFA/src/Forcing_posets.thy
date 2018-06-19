@@ -1,6 +1,10 @@
 theory Forcing_posets imports Pointed_DC  begin
 
 (* En esta definición habría que agregar que (A,r) es preorden? *)
+
+definition refl_on :: "[i,i] \<Rightarrow>o" where
+  "refl_on(P,leq) == \<forall> x \<in> P . \<langle>x,x\<rangle> \<in> leq"
+
 definition compat_in :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
   "compat_in(A,r,p,q) == \<exists>d\<in>A . \<langle>d,p\<rangle>\<in>r \<and> \<langle>d,q\<rangle>\<in>r"
 
@@ -28,10 +32,10 @@ definition
   "ccc(P,leq) == \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
 
 locale forcing_notion =
-  fixes P leq uno
-  assumes uno_in_P:         "uno \<in> P"
+  fixes P leq one
+  assumes one_in_P:         "one \<in> P"
       and leq_preord:       "preorder_on(P,leq)"
-      and uno_max:          "\<forall>p\<in>P. \<langle>p,uno\<rangle>\<in>leq"
+      and one_max:          "\<forall>p\<in>P. \<langle>p,one\<rangle>\<in>leq"
 begin
 definition 
   dense :: "i\<Rightarrow>o" where
@@ -46,7 +50,7 @@ lemma P_dense: "dense(P)"
     
 definition 
   increasing :: "i\<Rightarrow>o" where
-  "increasing(F) == \<forall>p\<in>P. \<forall>x\<in>P. x\<in>F \<and> \<langle>x,p\<rangle>\<in>leq \<longrightarrow> p\<in>F"
+  "increasing(F) == \<forall>x\<in>F. \<forall> p \<in> P . \<langle>x,p\<rangle>\<in>leq \<longrightarrow> p\<in>F"
 
 
 definition 

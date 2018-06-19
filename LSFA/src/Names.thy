@@ -19,7 +19,7 @@ lemma e3E [elim] : "e3(x,y) \<Longrightarrow> (\<And> a b . x \<in> a \<Longrigh
     
 (* \<questiondown>Es útil? *)
 lemma e3_set_coord : 
-  "<x,y>\<in>e3_set(M) \<Longrightarrow> \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
+  "\<langle>x,y\<rangle>\<in>e3_set(M) \<Longrightarrow> \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
 by (simp add:e3_set_def e3_def )
 
 (*\<questiondown>Qué significa fld?*)
@@ -37,7 +37,7 @@ proof (simp add:ecloseD cong:conj_cong)
 qed
 
 lemma fld_memrel:"\<lbrakk> y \<in> M ; z \<in> y ; w \<in> z\<rbrakk> \<Longrightarrow> 
-                           <w,z> \<in> Memrel(eclose(M))"
+                           \<langle>w,z\<rangle> \<in> Memrel(eclose(M))"
   by  (rule MemrelI,assumption,simp add:fld_e3_sub_eclose,simp add:fld_e3_sub_eclose)
 
 
@@ -48,12 +48,12 @@ proof (unfold e3_set_def, unfold e3_def,clarsimp)
   assume 
           a:  "x \<in> M" "y \<in> M" "z \<in> y" "w \<in> z" "x \<in> w"
   then have 
-          p:  "<x,w> \<in> Memrel(eclose(M))" 
-              "<w,z> \<in> Memrel(eclose(M))" 
-              "<z,y> \<in> Memrel(eclose(M))"
+          p:  "\<langle>x,w\<rangle> \<in> Memrel(eclose(M))" 
+              "\<langle>w,z\<rangle> \<in> Memrel(eclose(M))" 
+              "\<langle>z,y\<rangle> \<in> Memrel(eclose(M))"
     by (simp_all add:fld_memrel fld_e3_sub_eclose arg_into_eclose)
   then show     
-    "<x,y> \<in> Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M))"
+    "\<langle>x,y\<rangle> \<in> Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M))"
     by (rule_tac b=z in compI, rule_tac b=w in compI)
 qed
 
@@ -70,10 +70,10 @@ proof (auto,unfold trancl_def)
     and c: "w \<in> eclose(M)"
     and o: "z \<in> eclose(M)"
     and d: "w \<in> z"
-  from a b c have p:"<x,w> \<in> ?M'" by (simp add:MemrelI)
-  from m n o have q: "<z,y> \<in> ?M'" by (simp add:MemrelI)
-  from c d o have r:"<w,z> \<in> ?M'" by (simp add:MemrelI)
-  from p have s: "<x,w> \<in> ?M'^*" by (rule r_into_rtrancl)
+  from a b c have p:"\<langle>x,w\<rangle> \<in> ?M'" by (simp add:MemrelI)
+  from m n o have q: "\<langle>z,y\<rangle> \<in> ?M'" by (simp add:MemrelI)
+  from c d o have r:"\<langle>w,z\<rangle> \<in> ?M'" by (simp add:MemrelI)
+  from p have s: "\<langle>x,w\<rangle> \<in> ?M'^*" by (rule r_into_rtrancl)
   from s r have t:"\<langle>x, z\<rangle> \<in> ?M'^*"  by
     (rule_tac b=w in rtrancl_into_rtrancl)
   from q t show "\<langle>x, y\<rangle> \<in> ?M' O ?M'^*" by (rule_tac b=z in compI)
@@ -108,13 +108,13 @@ lemma transM_e3 : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(
   apply (rule_tac A="y" in subsetD,erule transD,assumption+) 
   done
     
-lemma e3_trans : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> <x,y> \<in> e3_set(M)"
+lemma e3_trans : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> \<langle>x,y\<rangle> \<in> e3_set(M)"
   apply (unfold e3_def e3_set_def)
   apply (clarsimp)
   apply (erule transM_e3,assumption,blast)
 done
 
-lemma e3_Memrel : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> <x,y> \<in> Memrel(eclose(M))^+"
+lemma e3_Memrel : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> \<langle>x,y\<rangle> \<in> Memrel(eclose(M))^+"
   apply (rule memcomp_sub_trmem [THEN subsetD])
   apply (rule rel_sub_memcomp [THEN subsetD])
   apply (rule e3_trans,assumption+)
@@ -122,14 +122,14 @@ lemma e3_Memrel : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(
 
 lemma in_domain_e3 : "x \<in> domain(r) \<Longrightarrow> e3(x,r)"
   apply (rule_tac a="x" and r="r" in domainE,assumption)
-  apply (rule_tac a="{x}" and b="<x,y>" in e3I,simp)
+  apply (rule_tac a="{x}" and b="\<langle>x,y\<rangle>" in e3I,simp)
   apply (unfold Pair_def,simp,assumption)
   done
 
 
 definition 
   Hcheck :: "[i,i,i] \<Rightarrow> i" where
-  "Hcheck(uno,z,f)  == { <f`y,uno> . y \<in> z}"
+  "Hcheck(uno,z,f)  == { \<langle>f`y,uno\<rangle> . y \<in> z}"
 
 definition
   checkR :: "[i,i,i] \<Rightarrow> i" where
@@ -139,7 +139,7 @@ definition
 (* Val *)
 definition
   Hval :: "[i,i,i,i] \<Rightarrow> i" where
-  "Hval(P,G,x,f) == { f`y .y\<in>{w \<in> domain(x).(\<exists>p\<in>P. <w,p> \<in> x \<and> p \<in> G) }}"
+  "Hval(P,G,x,f) == { f`y .y\<in>{w \<in> domain(x).(\<exists>p\<in>P. \<langle>w,p\<rangle> \<in> x \<and> p \<in> G) }}"
 
 definition
   valR :: "[i,i,i,i] \<Rightarrow> i" where
@@ -150,7 +150,7 @@ assume y\<in>M, uno \<in>P\<inter>G
 
 val(check(y)) 
 ={ definition of val }
-{val(x) . \<exists> p <x,p> \<in> check(y) \<and> p \<in> G}
+{val(x) . \<exists> p \<langle>x,p\<rangle> \<in> check(y) \<and> p \<in> G}
 ={ characterization of dom . check }
 {val(x) . x\<in>dom(check(y)) }
 ={ definition of check }
@@ -177,8 +177,8 @@ lemma lam_dom : "A\<subseteq>B \<Longrightarrow> {Lambda(B,f)`y . y\<in>A } = {f
    apply auto
   done
 
-lemma lam_cons : "A\<subseteq>B \<Longrightarrow> y \<in> A \<Longrightarrow> <Lambda(B,f)`y,a> = 
-                  Lambda(B,\<lambda>x.<f(x),a>)`y "
+lemma lam_cons : "A\<subseteq>B \<Longrightarrow> y \<in> A \<Longrightarrow> \<langle>Lambda(B,f)`y,a\<rangle> = 
+                  Lambda(B,\<lambda>x.\<langle>f(x),a\<rangle>)`y "
   apply clarsimp
   apply (erule_tac P="y\<in>B" in notE)
   apply (erule subsetD,assumption)
@@ -188,7 +188,7 @@ lemma singleton_eqI : "a = b \<Longrightarrow> {a} = {b}"
   by (erule singleton_eq_iff [THEN iffD2])
   
   
-lemma check_simp : "y \<in> M \<Longrightarrow> checkR(M,uno,y) = { <checkR(M,uno,w),uno> . w \<in> y}"
+lemma check_simp : "y \<in> M \<Longrightarrow> checkR(M,uno,y) = { \<langle>checkR(M,uno,w),uno\<rangle> . w \<in> y}"
   apply (rule trans)
   apply (rule_tac h="checkR(M,uno)" and H="Hcheck(uno)" 
           in def_wfrec)
@@ -209,7 +209,7 @@ lemma dom_check : "y \<in> M \<Longrightarrow> domain(checkR(M,uno,y)) = { check
 
 lemma check_uno : "y \<in> M \<Longrightarrow> uno \<in> P \<Longrightarrow> uno \<in> G \<Longrightarrow> 
                   x \<in> domain(checkR(M,uno,y)) \<Longrightarrow>
-                  \<exists>p\<in>P . <x,p> \<in> checkR(M,uno,y) \<and> p \<in> G"
+                  \<exists>p\<in>P . \<langle>x,p\<rangle> \<in> checkR(M,uno,y) \<and> p \<in> G"
   apply (rule_tac x="uno" in bexI)
    apply (rule conjI)
     apply (subst check_simp,assumption)
@@ -237,9 +237,9 @@ lemma apply2_repfun : "RepFun(RepFun(B,g),f) = Union({{f(g(x))}. x\<in>B})"
 lemma lam_apply : "a\<in>B \<Longrightarrow> Lambda(B,f)`a = f(a)"
   by simp
 
-lemma pair_in2 : "{<f(z),b>.z\<in>x} \<in> M \<Longrightarrow> a \<in> x \<Longrightarrow> f(a) \<in> eclose(M)"
+lemma pair_in2 : "{\<langle>f(z),b\<rangle>.z\<in>x} \<in> M \<Longrightarrow> a \<in> x \<Longrightarrow> f(a) \<in> eclose(M)"
   apply (rule_tac A="{f(a)}" in ecloseD)
-   apply (rule_tac A="<f(a),b>" in ecloseD)
+   apply (rule_tac A="\<langle>f(a),b\<rangle>" in ecloseD)
     apply (rule_tac A="{\<langle>f(z), b\<rangle> . z \<in> x}" in ecloseD)
   apply (erule arg_into_eclose)
   apply (auto)
@@ -248,7 +248,7 @@ lemma pair_in2 : "{<f(z),b>.z\<in>x} \<in> M \<Longrightarrow> a \<in> x \<Longr
 
 
 lemma check_e3 : "Transset(M) \<Longrightarrow> w\<in>M \<Longrightarrow> x \<in> w \<Longrightarrow> e3(checkR(M,uno,x),checkR(M,uno,w))"
-   apply (rule_tac a="{checkR(M,uno,x)}" and b="<checkR(M,uno,x),uno>" in e3I)
+   apply (rule_tac a="{checkR(M,uno,x)}" and b="\<langle>checkR(M,uno,x),uno\<rangle>" in e3I)
      apply simp
     apply (unfold Pair_def,simp,fold Pair_def)
    apply (subst (2) check_simp,assumption,simp)
