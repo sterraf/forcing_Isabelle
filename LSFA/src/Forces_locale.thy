@@ -31,7 +31,7 @@ lemma SepReplace_pred_implies :
 lemma aux_VoN : "N\<in>M \<Longrightarrow>  domain(N) \<subseteq> trancl(Memrel(eclose(M)))-``{N}"
   apply clarify
   apply (rule vimageI [of _ N], simp_all)
-   apply (rule_tac b="<x,y>" in rtrancl_into_trancl1, rule trancl_into_rtrancl)
+   apply (rule_tac b="\<langle> x,y\<rangle>" in rtrancl_into_trancl1, rule trancl_into_rtrancl)
    apply (rule_tac b="{x}" in rtrancl_into_trancl1, rule trancl_into_rtrancl)
     apply (rule MemrelI [THEN r_into_trancl], simp)
        prefer 3 apply (rule  MemrelI)
@@ -40,7 +40,7 @@ lemma aux_VoN : "N\<in>M \<Longrightarrow>  domain(N) \<subseteq> trancl(Memrel(
        apply auto
       prefer 5  apply (rule_tac A="{x}" in ecloseD)
        apply (tactic {* distinct_subgoals_tac *})
-       apply (rule_tac A="<x,y>" in ecloseD)
+       apply (rule_tac A="\langle x,y\rangle" in ecloseD)
        apply (tactic {* distinct_subgoals_tac *})
      apply (rule_tac A="N" in ecloseD)
       apply (tactic {* distinct_subgoals_tac *})
@@ -72,12 +72,12 @@ definition
     where "GenExt(G)== {val(G,\<tau>). \<tau> \<in> M}"
       
 
-lemma aux2: "Hv(G,x,f) = { f`y .. y\<in> domain(x), \<exists>p\<in>P. <y,p> \<in> x \<and> p \<in> G }"
+lemma aux2: "Hv(G,x,f) = { f`y .. y\<in> domain(x), \<exists>p\<in>P. \langle y,p\rangle \<in> x \<and> p \<in> G }"
   by (simp add:Sep_and_Replace Hv_def Hval_def)  
 
     
 lemma val_of_name : "{x\<in>A\<times>P. Q(x)}\<in>M \<Longrightarrow> 
-       val(G,{x\<in>A\<times>P. Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>P .  Q(<t,p>) \<and> p \<in> G }"
+       val(G,{x\<in>A\<times>P. Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>P .  Q(\langle t,p\rangle) \<and> p \<in> G }"
 proof -
   let
               ?n="{x\<in>A\<times>P. Q(x)}" and
@@ -96,13 +96,13 @@ proof -
     apply (rule def_wfrec [of  _ _ "Hval(P,G)"], simp_all add: valR_def)
     done
   also have
-              "... = {?f`t .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+              "... = {?f`t .. t\<in>domain(?n), \<exists>p\<in>P . \langle t,p\rangle\<in>?n \<and> p\<in>G}"
     using aux2 by simp
   also have
-              "... = { (if t\<in>?r-``{?n} then val(G,t) else 0) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+              "... = { (if t\<in>?r-``{?n} then val(G,t) else 0) .. t\<in>domain(?n), \<exists>p\<in>P . \langle t,p\rangle\<in>?n \<and> p\<in>G}"
     by (simp)
   also have
-        Eq1:  "... = { val(G,t) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+        Eq1:  "... = { val(G,t) .. t\<in>domain(?n), \<exists>p\<in>P . \langle t,p\rangle\<in>?n \<and> p\<in>G}"
   proof -
     from asm and aux_VoN have
               "domain(?n) \<subseteq> ?r-``{?n}"
@@ -111,15 +111,15 @@ proof -
               "\<forall>t\<in>domain(?n). (if t\<in>?r-``{?n} then val(G,t) else 0) = val(G,t)"
       by auto
     then show 
-              "{ (if t\<in>?r-``{?n} then val(G,t) else 0) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G} =
-               { val(G,t) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+              "{ (if t\<in>?r-``{?n} then val(G,t) else 0) .. t\<in>domain(?n), \<exists>p\<in>P . \langle t,p\rangle\<in>?n \<and> p\<in>G} =
+               { val(G,t) .. t\<in>domain(?n), \<exists>p\<in>P . \langle t,p\rangle\<in>?n \<and> p\<in>G}"
       by auto
   qed
   also have
-              " ... = { val(G,t) .. t\<in>A, \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+              " ... = { val(G,t) .. t\<in>A, \<exists>p\<in>P . \langle t,p\rangle\<in>?n \<and> p\<in>G}"
     by force
   finally show
-              " val(G,?n)  = { val(G,t) .. t\<in>A, \<exists>p\<in>P . Q(<t,p>) \<and> p\<in>G}"
+              " val(G,?n)  = { val(G,t) .. t\<in>A, \<exists>p\<in>P . Q(\langle t,p\rangle) \<and> p\<in>G}"
     by auto
 qed
 

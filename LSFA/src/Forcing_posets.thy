@@ -46,7 +46,7 @@ lemma P_dense: "dense(P)"
     
 definition 
   increasing :: "i\<Rightarrow>o" where
-  "increasing(F) == \<forall>p\<in>P. \<forall>x\<in>P. x\<in>F \<and> \<langle>x,p\<rangle>\<in>leq \<longrightarrow> p\<in>F"
+  "increasing(F) == \<forall>x\<in>F. \<forall> p \<in> P . \<langle>x,p\<rangle>\<in>leq \<longrightarrow> p\<in>F"
 
 
 definition 

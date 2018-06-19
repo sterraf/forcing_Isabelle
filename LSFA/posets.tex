@@ -7,24 +7,24 @@ in the rest of the paper. They are useful to explain some aspects of
 Isabelle/ZF.
 
 \begin{definition}
-  A preorder on a set $P$ is a binary relation $\leqslant$ which is
+  A preorder on a set $P$ is a binary relation ${\leqslant}$ which is
   reflexive and transitive.
 \end{definition}
 
 In Isabelle/ZF sets are \emph{individuals}, that is terms of type
-\isatt{i}; since relations are also sets, the relation $\leqslant$
+\isatt{i}; since relations are also sets, the relation ${\leqslant}$
 also has type \isatt{i}. The other type of Isabelle/ZF is \isatt{o},
 which corresponds to formulas; for example the property that
-$\leqslant$ is reflexive (on $P$) is a formula.
+${\leqslant}$ is reflexive (on $P$) is a formula.
 \begin{isabellebody}
- \isanewline
+\isanewline
 \isacommand{definition}\isamarkupfalse%
 \ refl{\isacharunderscore}on\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbrackleft}i{\isacharcomma}i{\isacharbrackright}\ {\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
 \ \ {\isachardoublequoteopen}refl{\isacharunderscore}on{\isacharparenleft}P{\isacharcomma} leq {\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}\ x\ {\isasymin}\ A\ {\isachardot}\ {\isacharless}x{\isacharcomma}x{\isachargreater}\ {\isasymin}\ leq{\isachardoublequoteclose}\isanewline
 \end{isabellebody}
 
 Let us remark that the relation is ``untyped'', we cannot assert a
-priori that $\leqslant \subseteq P \times P$, therefore we need to
+priori that ${\leqslant} \subseteq P \times P$, therefore we need to
 restrict the notion of ``reflexive'' with respect to the set $P$.
 \begin{definition}
   Given a preorder $(P,\leqslant)$ we say that two elements $p,q$ are
@@ -69,6 +69,7 @@ if every antichanin in $P$ is countable.
 \ \ \ \ \ \ \isakeyword{and}\ one{\isacharunderscore}max{\isacharcolon}\ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}{\isasymforall}p{\isasymin}P{\isachardot}\ {\isasymlangle}p{\isacharcomma}one{\isasymrangle}{\isasymin}leq{\isachardoublequoteclose}\isanewline
 \end{isabellebody}
 \end{definition}
+%% REVISAR si queremos hablar de "extensión".
 \noindent The locale \isatt{forcing poset} introduces a mathematical
 context where we work assuming the forcing notion
 $(P,\leqslant, \mathbbm{1})$. It is customary to refer to the elements
@@ -80,8 +81,9 @@ the locale \isatt{forcing poset}.
 
 A set $D$ is \emph{dense} if every element $p\in P$ has a lower bound
 in $D$ and there is also a weaker definition which asks for a lower
-bound in $D$ only for those $p \leqslant q$, for a fixed $q$. Since the
-relation $\leqslant$ is reflexive, it is obvious that $P$ is dense.
+bound in $D$ only for the elements below some fixed element $q$. Since
+the relation $\leqslant$ is reflexive, it is obvious that $P$ is
+dense.
 \begin{isabellebody}
   \isanewline
   \isacommand{definition}\isamarkupfalse%
@@ -109,7 +111,7 @@ extension of any element in $F$ is also in $F$.
 \ increasing\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
 \ \ {\isachardoublequoteopen}increasing{\isacharparenleft}F{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}p{\isasymin}P{\isachardot}\ {\isasymforall}x{\isasymin}P{\isachardot}\ x{\isasymin}F\ {\isasymand}\ {\isasymlangle}x{\isacharcomma}p{\isasymrangle}{\isasymin}leq\ {\isasymlongrightarrow}\ p{\isasymin}F{\isachardoublequoteclose}\isanewline
 \end{isabellebody}
-A filter is an increasing set with all its elements being compatible.
+A filter is an increasing set $G$ with all its elements being compatible in $G$.
 \begin{isabellebody}
 \isanewline
 \isacommand{definition}\isamarkupfalse%
