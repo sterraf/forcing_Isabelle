@@ -41,8 +41,25 @@ definition
 lemma edrelI [intro!]: "x\<in>A \<Longrightarrow> y\<in>A \<Longrightarrow> x \<in> domain(y) \<Longrightarrow> <x,y>\<in>edrel(A)"
   by (simp add:edrel_def)
     
+lemma edrelD [dest] : "<x,y>\<in>edrel(A)\<Longrightarrow> x \<in> domain(y)"
+  by (simp add:edrel_def)
+    
 lemma edrel_trans: "Transset(A) \<Longrightarrow> y\<in>A \<Longrightarrow> x \<in> domain(y) \<Longrightarrow> <x,y>\<in>edrel(A)"
    by (rule edrelI, auto simp add:Transset_def domain_def Pair_def)
+
+lemma edrel_trans_iff: "Transset(A) \<Longrightarrow> y\<in>A \<Longrightarrow> x \<in> domain(y) \<longleftrightarrow> <x,y>\<in>edrel(A)"
+  by (auto simp add: edrel_trans, auto simp add:Transset_def Pair_def)
+
+lemma edrel_domain: "x\<in> M \<Longrightarrow> edrel(eclose(M)) -`` {x} = domain(x)"
+  apply (rule equalityI, auto , subgoal_tac "Transset(eclose(M))", rule vimageI)
+    apply (auto simp add: edrelI Transset_eclose)
+   apply (rename_tac y z)
+   apply (rule_tac A="{y}" in ecloseD)
+    apply (rule_tac A="\<langle>y, z\<rangle>" in ecloseD)
+    apply (rule_tac A="x" in ecloseD)
+     apply (tactic {* distinct_subgoals_tac *})
+    apply (auto simp add: Pair_def arg_into_eclose)
+  done
 
 lemma edrel_sub_memrel: "edrel(A) \<subseteq> trancl(Memrel(eclose(A)))" 
 proof
@@ -127,69 +144,52 @@ definition
 
 definition
   val :: "i\<Rightarrow>i\<Rightarrow>i" where
-  "val(G,\<tau>) == wfrec(trancl(Memrel(eclose(M))), \<tau> ,Hv(G))"
+  "val(G,\<tau>) == wfrec(edrel(eclose(M)), \<tau> ,Hv(G))"
 
 definition
   GenExt :: "i\<Rightarrow>i"     ("M[_]" 90)
   where "GenExt(G)== {val(G,\<tau>). \<tau> \<in> M}"
 
   
-lemma def_val:  "val(G,x) = {val(G,t) .. t\<in>domain(x) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>x \<and> p \<in> G }"
+lemma def_val:  "x\<in>M \<Longrightarrow> val(G,x) = {val(G,t) .. t\<in>domain(x) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>x \<and> p \<in> G }"
 proof -
+  assume
+      asm:  "x\<in>M"
   let
-            ?r="trancl(Memrel(eclose(M)))"
+            ?r="edrel(eclose(M))"
   let
             ?f="\<lambda>z\<in>?r-``{x}. wfrec(?r,z,Hv(G))"
   have
             "\<forall>\<tau>. wf(?r)"
             find_theorems "wf(trancl(?M))"
-    by (simp add: wf_Memrel wf_trancl)
+    by (simp add: wf_edrel)
   with wfrec [of "?r" x "Hv(G)"] have
             "val(G,x) = Hv(G,x,?f)"
     by (simp add:val_def)
   also have
             " ... = Hv(G,x,\<lambda>z\<in>domain(x). wfrec(?r,z,Hv(G)))"
-    sorry
+    using asm and edrel_domain by (simp) 
+      find_theorems "Transset(eclose(?M))"
   also have
             " ... = Hv(G,x,\<lambda>z\<in>domain(x). val(G,z))"
     by (simp add:val_def)
   finally show ?thesis by (simp add:Hv_def SepReplace_def)
 qed
   
-lemma val_mono : "x\<subseteq>y \<Longrightarrow> val(G,x) \<subseteq> val(G,y)"
-  by (subst (1 2) def_val, force)
-    
-lemma aux_VoN : "N\<in>M \<Longrightarrow>  domain(N) \<subseteq> trancl(Memrel(eclose(M)))-``{N}"
-  apply clarify
-  apply (rule vimageI [of _ N], simp_all)
-   apply (rule_tac b="<x,y>" in rtrancl_into_trancl1, rule trancl_into_rtrancl)
-   apply (rule_tac b="{x}" in rtrancl_into_trancl1, rule trancl_into_rtrancl)
-    apply (rule MemrelI [THEN r_into_trancl], simp)
-       prefer 3 apply (rule  MemrelI)
-         prefer 6 apply (rule  MemrelI)
-      apply (tactic {* distinct_subgoals_tac *})
-       apply auto
-      prefer 5  apply (rule_tac A="{x}" in ecloseD)
-       apply (tactic {* distinct_subgoals_tac *})
-       apply (rule_tac A="<x,y>" in ecloseD)
-       apply (tactic {* distinct_subgoals_tac *})
-     apply (rule_tac A="N" in ecloseD)
-      apply (tactic {* distinct_subgoals_tac *})
-     apply (rule arg_into_eclose)
-     apply (simp_all add:Pair_def)
-  done
-
 lemma val_of_name : 
-       "val(G,{x\<in>A\<times>P. Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>P .  Q(<t,p>) \<and> p \<in> G }"
+  "{x\<in>A\<times>P. Q(x)} \<in> M \<Longrightarrow>
+   val(G,{x\<in>A\<times>P. Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>P .  Q(<t,p>) \<and> p \<in> G }"
 proof -
   let
               ?n="{x\<in>A\<times>P. Q(x)}" and
-              ?r="trancl(Memrel(eclose(M)))"
+              ?r="edrel(eclose(M))"
+  assume
+        asm:  "?n \<in> M"
   let
               ?f="\<lambda>z\<in>?r-``{?n}. val(G,z)"
   have
               "\<forall>\<tau>. wf(?r)"
-    by (simp add: wf_Memrel wf_trancl)
+    by (simp add: wf_edrel)
   with val_def have
               "val(G,?n) = Hv(G,?n,?f)"
     by (rule_tac def_wfrec [of _ "?r" "Hv(G)"], simp_all)
@@ -202,9 +202,9 @@ proof -
   also have
         Eq1:  "... = { val(G,t) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
   proof -
-    from aux_VoN have
-              "domain(?n) \<subseteq> ?r-``{?n}"
-      sorry
+    from edrel_domain and asm have
+              "domain(?n) \<subseteq> ?r-``{?n}" 
+      by simp
     then have
               "\<forall>t\<in>domain(?n). (if t\<in>?r-``{?n} then val(G,t) else 0) = val(G,t)"
       by auto
@@ -226,15 +226,18 @@ lemma valcheck : "y \<in> M \<Longrightarrow> Transset(M) \<Longrightarrow> one 
 proof 
   fix y
   assume
-        asm:  "y\<in>M" "one\<in>G" "one\<in>P"
+        asm:  "y\<in>M" "one\<in>G" "one\<in>P" "check(y)\<in>M"
   from def_check have
-              "check(y) = { \<langle>check(w), one\<rangle> . w \<in> y}"  (is "_ = ?C") .
-  then have
-              "val(G,check(y)) = val(G, {\<langle>check(w), one\<rangle> . w \<in> y})" 
+        Eq1: "check(y) = { \<langle>check(w), one\<rangle> . w \<in> y}"  (is "_ = ?C") .
+  with asm have
+        Eq2: "?C\<in>M" 
+    by simp
+  from Eq1 have
+             "val(G,check(y)) = val(G, {\<langle>check(w), one\<rangle> . w \<in> y})"
     by simp
   also have
               " ...  = {val(G,t) .. t\<in>domain(?C) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>?C \<and> p \<in> G }"
-    using def_val .
+    using def_val and Eq2 by simp
   also have
               " ... =  {val(G,t) .. t\<in>domain(?C) , \<exists>w\<in>y. t=check(w) }"
     using asm by simp
@@ -242,10 +245,9 @@ proof
               " ... = {val(G,check(w)) . w\<in>y }"
     by force
   finally show "val(G,check(y))  = y"
-    
-  oops
-    
-
+    oops
+      
+      
 end    (*************** CONTEXT: forcing_data *****************)
 
 
