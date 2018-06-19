@@ -1,5 +1,9 @@
 theory Names2 imports Forcing_data  begin
 
+lemma transD : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> y \<subseteq> M" 
+  by (unfold Transset_def, blast) 
+
+  
 definition
   SepReplace :: "[i, i\<Rightarrow>i, i\<Rightarrow> o] \<Rightarrow>i" where
   "SepReplace(A,b,Q) == {y . x\<in>A, y=b(x) \<and> Q(x)}"
@@ -177,8 +181,6 @@ proof -
 qed
 
 
-lemma transD : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> y \<subseteq> M" 
-  by (unfold Transset_def, blast) 
   
 lemma val_of_name : 
   "{x\<in>A\<times>P. Q(x)} \<in> M \<Longrightarrow>
@@ -231,16 +233,12 @@ proof (induct rule:eps_induct)
   case (1 y)
   then show ?case
   proof -
-    assume
-          asm:  "y\<in>M" "one\<in>P" "one\<in>G" "\<forall>x\<in>M. check(x)\<in>M" "Transset(M)"
-                "\<forall>x\<in>y. x \<in> M \<longrightarrow> Transset(M) \<longrightarrow> one \<in> P \<longrightarrow> 
-                  one \<in> G \<longrightarrow> check(x) \<in> M \<longrightarrow> (\<forall>z\<in>M. check(z) \<in> M) \<longrightarrow> val(G, check(x)) = x"
     from def_check have
           Eq1: "check(y) = { \<langle>check(w), one\<rangle> . w \<in> y}"  (is "_ = ?C") .
-    with asm have
+    with 1 have
           Eq2: "?C\<in>M" 
       by auto
-    with asm transD subsetD  have 
+    with 1 transD subsetD  have 
         w_in_M : "\<forall> w \<in> y . w \<in> M" by auto
     from Eq1 have
                "val(G,check(y)) = val(G, {\<langle>check(w), one\<rangle> . w \<in> y})"
@@ -250,20 +248,18 @@ proof (induct rule:eps_induct)
       using def_val and Eq2 by simp
     also have
                 " ... =  {val(G,t) .. t\<in>domain(?C) , \<exists>w\<in>y. t=check(w) }"
-      using asm by simp
+      using 1 by simp
     also have
                 " ... = {val(G,check(w)) . w\<in>y }"
       by force
     also have
                 " ... = y"
-      using asm and w_in_M by simp        
+      using 1 and w_in_M by simp        
     finally have "val(G,check(y)) = y" (* show? *)
-      using asm by simp
+      using 1 by simp
     then show ?thesis .
     qed
-      
+   qed
 end    (*************** CONTEXT: forcing_data *****************)
-
-
 
 end
