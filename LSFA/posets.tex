@@ -2,24 +2,133 @@
 %\textit{Para no confundir, directamente usamos este nombre en lugar de
 % ``forcing posets'' para los preórdenes con un máximo distinguido}
 
-Our first goal is to formalize some version of Martin's Axiom (MA), for
-example to show that if the cardinal $\kappa$ satisfies some property
-about partial orders then $\kappa < \aleph_1$. Let us first introduce
-some definitions about orders. We will also use this section to exhibit
-how to encode some definitions in Isabelle/ZF.
+In this section we introduce some elementary definitions that are used
+in the rest of the paper. They are useful to explain some aspects of
+Isabelle/ZF.
 
 \begin{definition}
-  A pre-order on a set $P$ is a binary relation $\leqslant$ which is
+  A preorder on a set $P$ is a binary relation $\leqslant$ which is
   reflexive and transitive.
 \end{definition}
 
-In Isabelle/ZF sets are \emph{individuals}, that is terms of type $i$; since
-relations are also sets, the relation $\leqslant$ cannot be defined as
-a predicate on $P$.
+In Isabelle/ZF sets are \emph{individuals}, that is terms of type
+\isatt{i}; since relations are also sets, the relation $\leqslant$
+also has type \isatt{i}. The other type of Isabelle/ZF is \isatt{o},
+which corresponds to formulas; for example the property that
+$\leqslant$ is reflexive (on $P$) is a formula.
+\begin{isabellebody}
+ \isanewline
+\isacommand{definition}\isamarkupfalse%
+\ refl{\isacharunderscore}on\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbrackleft}i{\isacharcomma}i{\isacharbrackright}\ {\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}refl{\isacharunderscore}on{\isacharparenleft}P{\isacharcomma} leq {\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}\ x\ {\isasymin}\ A\ {\isachardot}\ {\isacharless}x{\isacharcomma}x{\isachargreater}\ {\isasymin}\ leq{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
 
-\begin{example}
-  Isabelle/ZF has already defined the set of naturals \isatt{nat}.
-\end{example}
+Let us remark that the relation is ``untyped'', we cannot assert a
+priori that $\leqslant \subseteq P \times P$, therefore we need to
+restrict the notion of ``reflexive'' with respect to the set $P$.
+\begin{definition}
+  Given a preorder $(P,\leqslant)$ we say that two elements $p,q$ are
+  \emph{compatible} if they have a lower-bound in $P$. Notice that
+  the elements of $P$ are also sets, therefore they have type
+  \isatt{i}.
+  \begin{isabellebody}%
+    \isanewline
+  \isacommand{definition}\isamarkupfalse%
+\ compat{\isacharunderscore}in\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}compat{\isacharunderscore}in{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}p{\isacharcomma}q{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymexists}d{\isasymin}P\ {\isachardot}\ {\isasymlangle}d{\isacharcomma}p{\isasymrangle}{\isasymin}leq\ {\isasymand}\ {\isasymlangle}d{\isacharcomma}q{\isasymrangle}{\isasymin}leq{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
+\end{definition}
+
+A subset $A \subseteq P$ is an \emph{antichain} if every pair of
+elements in $A$ are incompatible.
+\begin{isabellebody}
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ antichain\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}antichain{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}A{\isacharparenright}\ {\isacharequal}{\isacharequal}\ A{\isasymsubseteq}P\ {\isasymand}\ {\isacharparenleft}{\isasymforall}p{\isasymin}A{\isachardot}{\isasymforall}q{\isasymin}A{\isachardot}{\isacharparenleft}{\isasymnot}\ compat{\isacharunderscore}in{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
+
+A poset $(P,\leqslant)$ has the \emph{countable chain condition} (ccc)
+if every antichanin in $P$ is countable.
+\begin{isabellebody}
+  \isanewline
+  \isacommand{definition}\isamarkupfalse%
+  \ ccc\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}ccc{\isacharparenleft}P{\isacharcomma}leq{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}A{\isachardot}\ antichain{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}A{\isacharparenright}\ {\isasymlongrightarrow}\ {\isacharbar}A{\isacharbar}\ {\isasymle}\ nat{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
+
+\begin{definition}
+  A \emph{forcing notion} is a preorder $(P,\leqslant)$ with a maximal element $\mathbbm{1} \in P$.
+  \begin{isabellebody}
+\isanewline
+\isacommand{locale}\isamarkupfalse%
+\ forcing{\isacharunderscore}poset\ {\isacharequal}\isanewline
+\ \ \isakeyword{fixes}\ P\ leq\ one\isanewline
+\ \ \isakeyword{assumes}\ one{\isacharunderscore}in{\isacharunderscore}P{\isacharcolon}\ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}one\ {\isasymin}\ P{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeyword{and}\ leq{\isacharunderscore}preord{\isacharcolon}\ \ \ \ \ \ \ {\isachardoublequoteopen}preorder{\isacharunderscore}on{\isacharparenleft}P{\isacharcomma}leq{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeyword{and}\ one{\isacharunderscore}max{\isacharcolon}\ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}{\isasymforall}p{\isasymin}P{\isachardot}\ {\isasymlangle}p{\isacharcomma}one{\isasymrangle}{\isasymin}leq{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
+\end{definition}
+\noindent The locale \isatt{forcing poset} introduces a mathematical
+context where we work assuming the forcing notion
+$(P,\leqslant, \mathbbm{1})$. It is customary to refer to the elements
+of $P$ as \emph{forcing conditions} and think the relation $\leqslant$
+as a notion of extension, thus $(p,q) \in \leqslant$ is read as ``$p$
+extends $q$''; which is justified because often $\leqslant$ is
+instantiated to $\supseteq$. In the following definitions we are in
+the locale \isatt{forcing poset}.
+
+A set $D$ is \emph{dense} if every element $p\in P$ has a lower bound
+in $D$ and there is also a weaker definition which asks for a lower
+bound in $D$ only for those $p \leqslant q$, for a fixed $q$. Since the
+relation $\leqslant$ is reflexive, it is obvious that $P$ is dense.
+\begin{isabellebody}
+  \isanewline
+  \isacommand{definition}\isamarkupfalse%
+\ dense\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}dense{\isacharparenleft}D{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}p{\isasymin}P{\isachardot}\ {\isasymexists}d{\isasymin}D\ {\isachardot}\ {\isasymlangle}d{\isacharcomma}p{\isasymrangle}{\isasymin}leq{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ dense{\isacharunderscore}below\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}dense{\isacharunderscore}below{\isacharparenleft}D{\isacharcomma}q{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}p{\isasymin}P{\isachardot}\ {\isasymlangle}p{\isacharcomma}q{\isasymrangle}{\isasymin}leq\ {\isasymlongrightarrow}\ {\isacharparenleft}{\isasymexists}d{\isasymin}D\ {\isachardot}\ {\isasymlangle}d{\isacharcomma}p{\isasymrangle}{\isasymin}leq{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ P{\isacharunderscore}dense{\isacharcolon}\ {\isachardoublequoteopen}dense{\isacharparenleft}P{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
+
+We say that $F\subseteq P$ is increasing (or up-set or upward closed) if every
+extension of any element in $F$ is also in $F$.
+%% así como lo explico yo esperaría esta definición:
+%% ∀ x ∈ P . x ∈ F → ∀ p ∈ P . (x,p) ∈ leq → p ∈ F
+%% y dado el uso que hacemos cuantificaría directamente sobre F:
+%% ∀ x ∈ F . ∀ p ∈ P . (x,p) ∈ leq → p ∈ F
+
+\begin{isabellebody}
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ increasing\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}increasing{\isacharparenleft}F{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}p{\isasymin}P{\isachardot}\ {\isasymforall}x{\isasymin}P{\isachardot}\ x{\isasymin}F\ {\isasymand}\ {\isasymlangle}x{\isacharcomma}p{\isasymrangle}{\isasymin}leq\ {\isasymlongrightarrow}\ p{\isasymin}F{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
+A filter is an increasing set with all its elements being compatible.
+\begin{isabellebody}
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ filter\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}filter{\isacharparenleft}G{\isacharparenright}\ {\isacharequal}{\isacharequal}\ G{\isasymsubseteq}P\ {\isasymand}\ increasing{\isacharparenleft}G{\isacharparenright}\ {\isasymand}\ {\isacharparenleft}{\isasymforall}p{\isasymin}G{\isachardot}\ {\isasymforall}q{\isasymin}G{\isachardot}\ compat{\isacharunderscore}in{\isacharparenleft}G{\isacharcomma}leq{\isacharcomma}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
+
+We conclude this section by introducing the upward closure of a set
+and proving that the closure is a filter if the set elements are
+compatible.
+\begin{isabellebody}
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ upclosure\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}upclosure{\isacharparenleft}A{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isacharbraceleft}p{\isasymin}P{\isachardot}{\isasymexists}a{\isasymin}A{\isachardot}{\isasymlangle}a{\isacharcomma}p{\isasymrangle}{\isasymin}leq{\isacharbraceright}{\isachardoublequoteclose}\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ \ closure{\isacharunderscore}compat{\isacharunderscore}filter{\isacharcolon}\isanewline
+\ \ {\isachardoublequoteopen}A{\isasymsubseteq}P\ {\isasymLongrightarrow}\ {\isacharparenleft}{\isasymforall}p{\isasymin}A{\isachardot}{\isasymforall}q{\isasymin}A{\isachardot}\ compat{\isacharunderscore}in{\isacharparenleft}A{\isacharcomma}leq{\isacharcomma}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}\ {\isasymLongrightarrow}\ filter{\isacharparenleft}upclosure{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
 
 %%% Local Variables:
 %%% mode: latex
