@@ -27,7 +27,7 @@ definition
   ccc :: "i \<Rightarrow> i \<Rightarrow> o" where
   "ccc(P,leq) == \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
 
-locale forcing_poset =
+locale forcing_notion =
   fixes P leq uno
   assumes uno_in_P:         "uno \<in> P"
       and leq_preord:       "preorder_on(P,leq)"
@@ -136,7 +136,7 @@ lemma  aux_RS1:  "f \<in> N \<rightarrow> P \<Longrightarrow> n\<in>N \<Longrigh
   done    
 end
   
-locale countable_generic = forcing_poset +
+locale countable_generic = forcing_notion +
   fixes \<D>
   assumes countable_subs_of_P:  "\<D> \<in> nat\<rightarrow>Pow(P)"
   and     seq_of_denses:        "\<forall>n \<in> nat. dense(\<D>`n)"

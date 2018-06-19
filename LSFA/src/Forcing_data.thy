@@ -6,7 +6,7 @@ lemma lam_codomain: "\<forall>n\<in>N. (\<lambda>x\<in>N. b(x))`n \<in> B \<Long
    apply (auto simp add:lam_funtype)
   done
     
-locale forcing_data = forcing_poset +
+locale forcing_data = forcing_notion +
   fixes M enum
   assumes M_countable:      "enum\<in>bij(nat,M)"
       and P_in_M:           "P \<in> M"
