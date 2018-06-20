@@ -5,6 +5,6 @@ session "forcing" = "ZF" +
     "Forcing_posets"
     "Forcing_data"
     "Names"
-    "Forces_locale"
+    "GenExt_pair"
   document_files
     "root.tex"

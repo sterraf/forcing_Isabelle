@@ -5,13 +5,19 @@ lemma lam_codomain: "\<forall>n\<in>N. (\<lambda>x\<in>N. b(x))`n \<in> B \<Long
    apply (subgoal_tac " (\<lambda>x\<in>N. b(x)) : N \<rightarrow> {b(x).x\<in>N}", assumption)
    apply (auto simp add:lam_funtype)
   done
+
+lemma Transset_M :
+  "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
+  by (simp add: Transset_def,auto)  
+  
     
 locale forcing_data = forcing_notion +
   fixes M enum
   assumes M_countable:      "enum\<in>bij(nat,M)"
       and P_in_M:           "P \<in> M"
       and leq_in_M:         "leq \<in> M"
-
+      and trans_M:          "Transset(M)"
+      
 begin  (*************** CONTEXT: forcing_data *****************)
 definition
   M_generic :: "i\<Rightarrow>o" where
