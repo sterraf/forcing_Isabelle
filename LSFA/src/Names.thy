@@ -1,305 +1,269 @@
-theory Names imports Epsilon begin
-
-definition
-  e3 :: "[i,i] \<Rightarrow> o" where
-  "e3(x,y) == \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
-
-definition
-  e3_set :: "i \<Rightarrow> i" where
-  "e3_set(M) == { z \<in> M*M . e3(fst(z),snd(z)) }"
-
-
-lemma e3I [intro] : "x \<in> a \<Longrightarrow> a \<in> b \<Longrightarrow> b \<in> y \<Longrightarrow>
-            e3(x,y)"
-  by (simp add: e3_def,blast)
-
-lemma e3E [elim] : "e3(x,y) \<Longrightarrow> (\<And> a b . x \<in> a \<Longrightarrow> a \<in> b \<Longrightarrow> b \<in> y \<Longrightarrow> P) \<Longrightarrow> P"
-  by (simp add:e3_def,blast)
-    
-    
-(* \<questiondown>Es útil? *)
-lemma e3_set_coord : 
-  "\<langle>x,y\<rangle>\<in>e3_set(M) \<Longrightarrow> \<exists>z . z \<in> y \<and> (\<exists>w . w \<in> z \<and> x \<in> w)"
-by (simp add:e3_set_def e3_def )
-
-(*\<questiondown>Qué significa fld?*)
-lemma fld_e3_sub_eclose : 
- "\<lbrakk>y \<in> M ; z \<in> y ; w \<in> z\<rbrakk> \<Longrightarrow> z \<in> eclose(M) \<and> w \<in> eclose(M)"
-proof (simp add:ecloseD cong:conj_cong) 
-  assume p:"y\<in>M"
-     and q: "z\<in>y"
-  show "z\<in>eclose(M)"
-  proof - 
-  have r:"M\<subseteq>eclose(M)" by (rule arg_subset_eclose)
-  from p and r  have "y\<in>eclose(M)" by (simp add:subsetD)
-  then show ?thesis using q  by (simp add:ecloseD)
-  qed
-qed
-
-lemma fld_memrel:"\<lbrakk> y \<in> M ; z \<in> y ; w \<in> z\<rbrakk> \<Longrightarrow> 
-                           \<langle>w,z\<rangle> \<in> Memrel(eclose(M))"
-  by  (rule MemrelI,assumption,simp add:fld_e3_sub_eclose,simp add:fld_e3_sub_eclose)
-
-
-lemma rel_sub_memcomp : 
-  "e3_set(M) \<subseteq> Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M))"
-proof (unfold e3_set_def, unfold e3_def,clarsimp)
-  fix x y z w
-  assume 
-          a:  "x \<in> M" "y \<in> M" "z \<in> y" "w \<in> z" "x \<in> w"
-  then have 
-          p:  "\<langle>x,w\<rangle> \<in> Memrel(eclose(M))" 
-              "\<langle>w,z\<rangle> \<in> Memrel(eclose(M))" 
-              "\<langle>z,y\<rangle> \<in> Memrel(eclose(M))"
-    by (simp_all add:fld_memrel fld_e3_sub_eclose arg_into_eclose)
-  then show     
-    "\<langle>x,y\<rangle> \<in> Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M))"
-    by (rule_tac b=z in compI, rule_tac b=w in compI)
-qed
-
-lemma memcomp_sub_trmem : 
-  "Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M))
-         \<subseteq> trancl(Memrel(eclose(M)))"
-proof (auto,unfold trancl_def)
-  let ?M'="Memrel(eclose(M))"
-  fix y x w z
-  assume m: "y \<in> eclose(M)"
-    and n: "z \<in> y"
-    and a: "x \<in> eclose(M)"
-    and b: "x \<in> w"
-    and c: "w \<in> eclose(M)"
-    and o: "z \<in> eclose(M)"
-    and d: "w \<in> z"
-  from a b c have p:"\<langle>x,w\<rangle> \<in> ?M'" by (simp add:MemrelI)
-  from m n o have q: "\<langle>z,y\<rangle> \<in> ?M'" by (simp add:MemrelI)
-  from c d o have r:"\<langle>w,z\<rangle> \<in> ?M'" by (simp add:MemrelI)
-  from p have s: "\<langle>x,w\<rangle> \<in> ?M'^*" by (rule r_into_rtrancl)
-  from s r have t:"\<langle>x, z\<rangle> \<in> ?M'^*"  by
-    (rule_tac b=w in rtrancl_into_rtrancl)
-  from q t show "\<langle>x, y\<rangle> \<in> ?M' O ?M'^*" by (rule_tac b=z in compI)
-qed
-  
-lemma wf_trmem : "wf(trancl(Memrel(eclose(M))))"
-  apply (rule wf_trancl)
-  apply (simp add:wf_Memrel)
-done
-  
-lemma wf_memcomp : "wf(Memrel(eclose(M)) O Memrel(eclose(M)) O Memrel(eclose(M)))"
-  apply (rule wf_subset)
-  apply (rule wf_trmem)
-  apply (rule memcomp_sub_trmem)
-done
-
-lemma wf_e3_set : "wf(e3_set(M))"
-  apply (rule wf_subset)
-  apply (rule wf_memcomp)
-  apply (rule rel_sub_memcomp)
-done  
+theory Names imports Forcing_data  begin
 
 lemma transD : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> y \<subseteq> M" 
   by (unfold Transset_def, blast) 
+
+definition
+  SepReplace :: "[i, i\<Rightarrow>i, i\<Rightarrow> o] \<Rightarrow>i" where
+  "SepReplace(A,b,Q) == {y . x\<in>A, y=b(x) \<and> Q(x)}"
+  
+syntax
+  "_SepReplace"  :: "[i, pttrn, i, o] => i"  ("(1{_ ../ _ \<in> _, _})")
+translations
+  "{b .. x\<in>A, Q}" => "CONST SepReplace(A, \<lambda>x. b, \<lambda>x. Q)"
+
+lemma Sep_and_Replace: "{b(x) .. x\<in>A, P(x) } = {b(x) . x\<in>{y\<in>A. P(y)}}"
+  by (auto simp add:SepReplace_def)
+
+lemma SepReplace_subset : "A\<subseteq>A'\<Longrightarrow> {b .. x\<in>A, Q}\<subseteq>{b .. x\<in>A', Q}"
+  by (auto simp add:SepReplace_def)
+
     
-lemma transM_e3 : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> x \<in> M"
-  apply (unfold e3_def, clarsimp)
-  apply (subgoal_tac "w \<subseteq> M",rule_tac A="w" in subsetD,assumption+)
-  apply (rule transD,assumption)
-  apply (subgoal_tac "z \<subseteq> M",rule_tac A="z" in subsetD,assumption+)
-  apply (rule transD,assumption)
-  apply (rule_tac A="y" in subsetD,erule transD,assumption+) 
+lemma SepReplace_dom_implies :
+   "\<forall>x\<in>A. b(x) = b'(x)\<Longrightarrow> {b(x) .. x\<in>A, Q(x)}={b'(x) .. x\<in>A, Q(x)}"
+  by  (simp add:SepReplace_def)
+    
+lemma SepReplace_pred_implies :
+   "\<forall>x. Q(x)\<longrightarrow> b(x) = b'(x)\<Longrightarrow> {b(x) .. x\<in>A, Q(x)}={b'(x) .. x\<in>A, Q(x)}"
+  by  (force simp add:SepReplace_def)
+   
+text\<open>The well founded relation on which @{term val} is defined\<close>
+
+definition
+  ed :: "[i,i] \<Rightarrow> o" where
+  "ed(x,y) == x \<in> domain(y)"
+  
+definition
+  edrel :: "i \<Rightarrow> i" where
+  "edrel(A) == {<x,y> \<in> A*A . x \<in> domain(y)}"
+
+lemma edrelI [intro!]: "x\<in>A \<Longrightarrow> y\<in>A \<Longrightarrow> x \<in> domain(y) \<Longrightarrow> <x,y>\<in>edrel(A)"
+  by (simp add:edrel_def)
+    
+lemma edrelD [dest] : "<x,y>\<in>edrel(A)\<Longrightarrow> x \<in> domain(y)"
+  by (simp add:edrel_def)
+    
+lemma edrel_trans: "Transset(A) \<Longrightarrow> y\<in>A \<Longrightarrow> x \<in> domain(y) \<Longrightarrow> <x,y>\<in>edrel(A)"
+   by (rule edrelI, auto simp add:Transset_def domain_def Pair_def)
+
+lemma edrel_trans_iff: "Transset(A) \<Longrightarrow> y\<in>A \<Longrightarrow> x \<in> domain(y) \<longleftrightarrow> <x,y>\<in>edrel(A)"
+  by (auto simp add: edrel_trans, auto simp add:Transset_def Pair_def)
+
+lemma edrel_domain: "x\<in> M \<Longrightarrow> edrel(eclose(M)) -`` {x} = domain(x)"
+  apply (rule equalityI, auto , subgoal_tac "Transset(eclose(M))", rule vimageI)
+    apply (auto simp add: edrelI Transset_eclose)
+   apply (rename_tac y z)
+   apply (rule_tac A="{y}" in ecloseD)
+    apply (rule_tac A="\<langle>y, z\<rangle>" in ecloseD)
+    apply (rule_tac A="x" in ecloseD)
+     apply (tactic {* distinct_subgoals_tac *})
+    apply (auto simp add: Pair_def arg_into_eclose)
+  done
+
+lemma edrel_sub_memrel: "edrel(A) \<subseteq> trancl(Memrel(eclose(A)))" 
+proof
+  fix z
+  assume
+              "z\<in>edrel(A)"
+  then obtain x y where
+       Eq1:   "x\<in>A" "y\<in>A" "z=<x,y>" "x\<in>domain(y)"
+    by (auto simp add: edrel_def)
+  then obtain u v where
+       Eq2:   "x\<in>u" "u\<in>v" "v\<in>y"
+    unfolding domain_def Pair_def by auto
+  with Eq1 have
+       Eq3:   "x\<in>eclose(A)" "y\<in>eclose(A)" "u\<in>eclose(A)" "v\<in>eclose(A)"
+    by (auto, rule_tac [3-4] ecloseD, rule_tac [3] ecloseD, simp_all add:arg_into_eclose)
+  let
+              ?r="trancl(Memrel(eclose(A)))"
+  from Eq2 and Eq3 have
+              "<x,u>\<in>?r" "<u,v>\<in>?r" "<v,y>\<in>?r"
+    by (auto simp add: r_into_trancl)
+  then  have
+              "<x,y>\<in>?r"
+    by (rule_tac trancl_trans, rule_tac [2] trancl_trans, simp)
+  with Eq1 show "z\<in>?r" by simp
+qed
+  
+lemma wf_edrel : "wf(edrel(A))"
+  apply (rule_tac wf_subset [of "trancl(Memrel(eclose(A)))"])
+  apply (auto simp add:edrel_sub_memrel wf_trancl wf_Memrel)
   done
     
-lemma e3_trans : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> \<langle>x,y\<rangle> \<in> e3_set(M)"
-  apply (unfold e3_def e3_set_def)
-  apply (clarsimp)
-  apply (erule transM_e3,assumption,blast)
-done
+lemma eq_sub_trans :  "x=y \<Longrightarrow> y\<subseteq>z \<Longrightarrow> x\<subseteq>z"
+                "x\<subseteq>y \<Longrightarrow> y=z \<Longrightarrow> x\<subseteq>z"
+  by simp_all
+    
+    
+lemma SepReplace_iff [simp]: "y\<in>{b(x) .. x\<in>A, P(x)} \<longleftrightarrow> (\<exists>x\<in>A. y=b(x) & P(x))"
+   by (auto simp add:SepReplace_def)
 
-lemma e3_Memrel : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> e3(x,y) \<Longrightarrow> \<langle>x,y\<rangle> \<in> Memrel(eclose(M))^+"
-  apply (rule memcomp_sub_trmem [THEN subsetD])
-  apply (rule rel_sub_memcomp [THEN subsetD])
-  apply (rule e3_trans,assumption+)
-  done  
-
-lemma in_domain_e3 : "x \<in> domain(r) \<Longrightarrow> e3(x,r)"
-  apply (rule_tac a="x" and r="r" in domainE,assumption)
-  apply (rule_tac a="{x}" and b="\<langle>x,y\<rangle>" in e3I,simp)
-  apply (unfold Pair_def,simp,assumption)
-  done
-
+    
+context forcing_data
+begin  (*************** CONTEXT: forcing_data *****************)
 
 definition 
-  Hcheck :: "[i,i,i] \<Rightarrow> i" where
-  "Hcheck(uno,z,f)  == { \<langle>f`y,uno\<rangle> . y \<in> z}"
+  Hcheck :: "[i,i] \<Rightarrow> i" where
+  "Hcheck(z,f)  == { <f`y,one> . y \<in> z}"
 
 definition
-  checkR :: "[i,i,i] \<Rightarrow> i" where
-  "checkR(M,uno,x) == wfrec(trancl(Memrel(eclose(M))), x , Hcheck(uno))"
+  check :: "i \<Rightarrow> i" where
+  "check(x) == wfrec(Memrel(eclose({x})), x , Hcheck)"
 
-
-(* Val *)
-definition
-  Hval :: "[i,i,i,i] \<Rightarrow> i" where
-  "Hval(P,G,x,f) == { f`y .y\<in>{w \<in> domain(x).(\<exists>p\<in>P. \<langle>w,p\<rangle> \<in> x \<and> p \<in> G) }}"
-
-definition
-  valR :: "[i,i,i,i] \<Rightarrow> i" where
-  "valR(M,P,G,\<tau>) == wfrec(trancl(Memrel(eclose(M))), \<tau> ,Hval(P,G))"
-
-(* The idea of the "valcheck" theorem is as follows. We 
-assume y\<in>M, uno \<in>P\<inter>G
-
-val(check(y)) 
-={ definition of val }
-{val(x) . \<exists> p \<langle>x,p\<rangle> \<in> check(y) \<and> p \<in> G}
-={ characterization of dom . check }
-{val(x) . x\<in>dom(check(y)) }
-={ definition of check }
-{val(x) . x \<in> {check(w) . w \<in> y}}
-={ lemma? }
-\<union>_{w \<in> y} {val(check(w)}
-={ hi }
-\<union>_{w \<in> y} {w}
-= { UN_singleton }
-y
-*)
-
-lemma sub_e : "y \<in> M \<Longrightarrow> y \<subseteq> Memrel(eclose(M))^+ -`` {y}"
-  apply clarsimp
-  apply (rule_tac b="y" in vimageI)
-   apply (rule MemrelI [THEN r_into_trancl],assumption)
-    apply (rule_tac A="y" in ecloseD)
-     apply ((rule arg_into_eclose,assumption+)+)
-  apply simp
-  done  
-
-lemma lam_dom : "A\<subseteq>B \<Longrightarrow> {Lambda(B,f)`y . y\<in>A } = {f(y) . y\<in>A}"
-  apply (rule RepFun_cong)
-   apply auto
+lemma  aux_def_check:
+  "(\<lambda>x\<in>y. wfrec(Memrel(eclose({y})), x, Hcheck)) = 
+   (\<lambda>x\<in>y. wfrec(Memrel(eclose({x})), x, Hcheck))"
+  apply (rule lam_cong)
+   defer 1 apply (rule wfrec_eclose_eq)
+    defer 1 apply (rule ecloseD, auto simp add: arg_into_eclose)
   done
+    
+lemma def_check : "check(y) = { <check(w),one> . w \<in> y}"
+proof -
+  let 
+              ?r="\<lambda>y. Memrel(eclose({y}))"
+  from wf_Memrel have
+       wfr:   "\<forall>w . wf(?r(w))" ..
+  with wfrec [of "?r(y)" y "Hcheck"] have
+              "check(y)= 
+               Hcheck( y, \<lambda>x\<in>?r(y) -`` {y}. wfrec(?r(y), x, Hcheck))"
+    by (simp add:check_def)
+  also have 
+              " ... = Hcheck( y, \<lambda>x\<in>y. wfrec(?r(y), x, Hcheck))"
+    by (simp add:under_Memrel_eclose arg_into_eclose)
+  also have 
+              " ... = Hcheck( y, \<lambda>x\<in>y. check(x))"
+    using aux_def_check by (simp add:check_def)
+  finally show ?thesis by (simp add:Hcheck_def)
+qed
 
-lemma lam_cons : "A\<subseteq>B \<Longrightarrow> y \<in> A \<Longrightarrow> \<langle>Lambda(B,f)`y,a\<rangle> = 
-                  Lambda(B,\<lambda>x.\<langle>f(x),a\<rangle>)`y "
-  apply clarsimp
-  apply (erule_tac P="y\<in>B" in notE)
-  apply (erule subsetD,assumption)
+definition
+  Hv :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i" where
+  "Hv(G,x,f) == { f`y .. y\<in> domain(x), \<exists>p\<in>P. <y,p> \<in> x \<and> p \<in> G }"
+
+definition
+  val :: "i\<Rightarrow>i\<Rightarrow>i" where
+  "val(G,\<tau>) == wfrec(edrel(eclose(M)), \<tau> ,Hv(G))"
+
+definition
+  GenExt :: "i\<Rightarrow>i"     ("M[_]" 90)
+  where "GenExt(G)== {val(G,\<tau>). \<tau> \<in> M}"
+  
+lemma def_val:  "x\<in>M \<Longrightarrow> val(G,x) = {val(G,t) .. t\<in>domain(x) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>x \<and> p \<in> G }"
+proof -
+  assume
+      asm:  "x\<in>M"
+  let
+            ?r="edrel(eclose(M))"
+  let
+            ?f="\<lambda>z\<in>?r-``{x}. wfrec(?r,z,Hv(G))"
+  have
+            "\<forall>\<tau>. wf(?r)"
+            find_theorems "wf(trancl(?M))"
+    by (simp add: wf_edrel)
+  with wfrec [of "?r" x "Hv(G)"] have
+            "val(G,x) = Hv(G,x,?f)"
+    by (simp add:val_def)
+  also have
+            " ... = Hv(G,x,\<lambda>z\<in>domain(x). wfrec(?r,z,Hv(G)))"
+    using asm and edrel_domain by (simp) 
+      find_theorems "Transset(eclose(?M))"
+  also have
+            " ... = Hv(G,x,\<lambda>z\<in>domain(x). val(G,z))"
+    by (simp add:val_def)
+  finally show ?thesis by (simp add:Hv_def SepReplace_def)
+qed
+
+lemma def_GenExt1 : 
+  "x \<in> M[G] \<Longrightarrow> \<exists>\<tau>\<in>M. x = val(G,\<tau>)"
+  apply (unfold GenExt_def)
+  apply (rule RepFun_iff [THEN iffD1],assumption)
+  done
+    
+lemma def_GenExt2 : 
+  "x \<in> M \<Longrightarrow> val(G,x) \<in> M[G]"
+  apply (simp add: GenExt_def)
+  apply auto
 done
-
-lemma singleton_eqI : "a = b \<Longrightarrow> {a} = {b}" 
-  by (erule singleton_eq_iff [THEN iffD2])
   
-  
-lemma check_simp : "y \<in> M \<Longrightarrow> checkR(M,uno,y) = { \<langle>checkR(M,uno,w),uno\<rangle> . w \<in> y}"
-  apply (rule trans)
-  apply (rule_tac h="checkR(M,uno)" and H="Hcheck(uno)" 
-          in def_wfrec)
-    apply (unfold checkR_def,simp)
-   apply (rule wf_Memrel [THEN wf_trancl])
-  apply (fold checkR_def)
-  apply (unfold Hcheck_def)
-  apply (rule trans)
-  apply (rule_tac B="y" in RepFun_cong,rule refl)    
-  apply (rule lam_cons)
-   apply (rule sub_e,assumption+)
-  apply (rule lam_dom,erule sub_e)
-  done
-    
-lemma dom_check : "y \<in> M \<Longrightarrow> domain(checkR(M,uno,y)) = { checkR(M,uno,w) . w \<in> y }"
-  by (subst check_simp,auto)
+lemma val_of_name : 
+  "{x\<in>A\<times>P. Q(x)} \<in> M \<Longrightarrow>
+   val(G,{x\<in>A\<times>P. Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>P .  Q(<t,p>) \<and> p \<in> G }"
+proof -
+  let
+              ?n="{x\<in>A\<times>P. Q(x)}" and
+              ?r="edrel(eclose(M))"
+  assume
+        asm:  "?n \<in> M"
+  let
+              ?f="\<lambda>z\<in>?r-``{?n}. val(G,z)"
+  have
+              "\<forall>\<tau>. wf(?r)"
+    by (simp add: wf_edrel)
+  with val_def have
+              "val(G,?n) = Hv(G,?n,?f)"
+    by (rule_tac def_wfrec [of _ "?r" "Hv(G)"], simp_all)
+  also have
+              "... = {?f`t .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+    unfolding Hv_def by simp
+  also have
+              "... = { (if t\<in>?r-``{?n} then val(G,t) else 0) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+    by (simp)
+  also have
+        Eq1:  "... = { val(G,t) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+  proof -
+    from edrel_domain and asm have
+              "domain(?n) \<subseteq> ?r-``{?n}" 
+      by simp
+    then have
+              "\<forall>t\<in>domain(?n). (if t\<in>?r-``{?n} then val(G,t) else 0) = val(G,t)"
+      by auto
+    then show 
+              "{ (if t\<in>?r-``{?n} then val(G,t) else 0) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G} =
+               { val(G,t) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+      by auto
+  qed
+  also have
+              " ... = { val(G,t) .. t\<in>A, \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
+   by force 
+  finally show
+              " val(G,?n)  = { val(G,t) .. t\<in>A, \<exists>p\<in>P . Q(<t,p>) \<and> p\<in>G}"
+    by auto
+qed
 
-
-lemma check_uno : "y \<in> M \<Longrightarrow> uno \<in> P \<Longrightarrow> uno \<in> G \<Longrightarrow> 
-                  x \<in> domain(checkR(M,uno,y)) \<Longrightarrow>
-                  \<exists>p\<in>P . \<langle>x,p\<rangle> \<in> checkR(M,uno,y) \<and> p \<in> G"
-  apply (rule_tac x="uno" in bexI)
-   apply (rule conjI)
-    apply (subst check_simp,assumption)
-    apply simp
-    apply (subst (asm) dom_check,assumption)
-    apply (erule_tac b="x" and f="checkR(M,uno)" and A="y" in RepFunE)
-    apply (erule_tac x="xa" in bexI,assumption+)
-  done
-      
-  
-lemma domain_check : "y \<in> M \<Longrightarrow> uno \<in> P \<Longrightarrow> uno \<in> G \<Longrightarrow> 
-   {x \<in> domain(checkR(M, uno, y)) .  \<exists>p\<in>P. \<langle>x, p\<rangle> \<in> checkR(M, uno, y) \<and> p \<in> G}
-    = domain(checkR(M,uno,y))" 
-  apply (rule trans)
-   apply (rule_tac B="domain(checkR(M,uno,y))" and Q="\<lambda>x. True" in Collect_cong,simp)
-   apply simp
-   apply (rule check_uno,assumption+)
-  apply (simp)
-  done
-
-  
-lemma apply2_repfun : "RepFun(RepFun(B,g),f) = Union({{f(g(x))}. x\<in>B})"
-  by auto
-  
-lemma lam_apply : "a\<in>B \<Longrightarrow> Lambda(B,f)`a = f(a)"
-  by simp
-
-lemma pair_in2 : "{\<langle>f(z),b\<rangle>.z\<in>x} \<in> M \<Longrightarrow> a \<in> x \<Longrightarrow> f(a) \<in> eclose(M)"
-  apply (rule_tac A="{f(a)}" in ecloseD)
-   apply (rule_tac A="\<langle>f(a),b\<rangle>" in ecloseD)
-    apply (rule_tac A="{\<langle>f(z), b\<rangle> . z \<in> x}" in ecloseD)
-  apply (erule arg_into_eclose)
-  apply (auto)
-  apply (unfold Pair_def,simp)
-  done
-
-
-lemma check_e3 : "Transset(M) \<Longrightarrow> w\<in>M \<Longrightarrow> x \<in> w \<Longrightarrow> e3(checkR(M,uno,x),checkR(M,uno,w))"
-   apply (rule_tac a="{checkR(M,uno,x)}" and b="\<langle>checkR(M,uno,x),uno\<rangle>" in e3I)
-     apply simp
-    apply (unfold Pair_def,simp,fold Pair_def)
-   apply (subst (2) check_simp,assumption,simp)
-   apply (rule_tac x="x" in bexI,simp,assumption+)
-  done
-
-lemma check_in : "Transset(M) \<Longrightarrow> checkR(M,uno,w) \<in> M \<Longrightarrow>  w \<in> M \<Longrightarrow> x \<in> w \<Longrightarrow>
-                   checkR(M, uno, x) \<in> Memrel(eclose(M))^+ -`` {checkR(M, uno, w)}"
-  apply (rule_tac b="checkR(M,uno,w)" in vimageI)
-   apply (rule e3_Memrel,assumption+)
-  apply (rule check_e3,assumption+,simp)
-  done
-
-lemma check_in_M : "Transset(M) \<Longrightarrow> w \<in> M \<Longrightarrow> y \<in> w \<Longrightarrow> checkR(M,uno,w) \<in> M \<Longrightarrow>
-                    checkR(M,uno,y) \<in> M"
-  apply (rule_tac y="checkR(M,uno,w)" in transM_e3,assumption+)
-  apply (rule check_e3,assumption+)
-  done  
-    
-lemma valcheck : "y \<in> M \<Longrightarrow> Transset(M) \<Longrightarrow> uno \<in> P \<Longrightarrow> uno \<in> G \<Longrightarrow> 
-       checkR(M,uno,y) \<in> M \<longrightarrow> valR(M,P,G,checkR(M,uno,y))  = y"
-  apply (rule_tac r="trancl(Memrel(eclose(M)))" and a="y" and A="M" in wf_on_induct)
-   apply (rule wf_imp_wf_on,rule wf_trancl)
-    apply (rule wf_Memrel,assumption)
-  apply (rule impI)
-  apply (rule trans)
-   apply (rule_tac h="valR(M,P,G)" and r="trancl(Memrel(eclose(M)))" in def_wfrec)
-   apply (simp add: valR_def)
-   apply (rule wf_Memrel [THEN wf_trancl],rename_tac "w")
-  apply (unfold Hval_def)
-  apply (subst domain_check,assumption+)
-  apply (subst dom_check,assumption)
-  apply (subst apply2_repfun)
-  apply (rule trans)
-  apply (rule_tac  A="w" and B="w" and D="\<lambda>x . {valR(M,P,G,checkR(M,uno,x))}" in UN_cong,simp)
-  apply (subst lam_apply,auto)
-   apply (rule check_in,assumption+)
-  apply (rule trans)
-  apply (rule_tac A="w" and B="w" and C="\<lambda>x . {valR(M,P,G,checkR(M,uno,x))}" and
-         D="\<lambda>x. {x}" in UN_cong,simp)
-   apply (rule singleton_eqI)
-   apply (rule_tac P="x \<in> M \<and> \<langle>x, w\<rangle> \<in> Memrel(eclose(M))^+ \<and> checkR(M,uno,x) \<in> M" in mp)
-    apply simp
-   apply (rule conjI)
-    apply (rule_tac A="w" in subsetD)
-     apply (unfold Transset_def,simp,assumption)
-   apply (rule conjI)
-    apply (rule r_into_trancl,rule MemrelI,assumption)
-  apply (rule_tac A="w" in ecloseD,(rule arg_into_eclose,assumption+)+)
-  apply (rule_tac w="w" in check_in_M,fold Transset_def,assumption+)
-  apply (rule UN_singleton)
-  done
+lemma valcheck : "y \<in> M \<Longrightarrow> Transset(M) \<Longrightarrow> one \<in> P \<Longrightarrow> one \<in> G \<Longrightarrow> 
+       \<forall>x\<in>M. check(x) \<in> M \<Longrightarrow> val(G,check(y))  = y"
+proof (induct rule:eps_induct)
+  case (1 y)
+  then show ?case
+  proof -
+    from def_check have
+          Eq1: "check(y) = { \<langle>check(w), one\<rangle> . w \<in> y}"  (is "_ = ?C") .
+    with 1 have
+          Eq2: "?C\<in>M" 
+      by auto
+    with 1 transD subsetD  have 
+        w_in_M : "\<forall> w \<in> y . w \<in> M" by force
+    from Eq1 have
+               "val(G,check(y)) = val(G, {\<langle>check(w), one\<rangle> . w \<in> y})"
+      by simp
+    also have
+                " ...  = {val(G,t) .. t\<in>domain(?C) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>?C \<and> p \<in> G }"
+      using def_val and Eq2 by simp
+    also have
+                " ... =  {val(G,t) .. t\<in>domain(?C) , \<exists>w\<in>y. t=check(w) }"
+      using 1 by simp
+    also have
+                " ... = {val(G,check(w)) . w\<in>y }"
+      by force
+    also have
+                " ... = y"
+      using 1 and w_in_M by simp        
+    finally have "val(G,check(y)) = y" (* show? *)
+      using 1 by simp
+    then show ?thesis .
+    qed
+   qed
+end    (*************** CONTEXT: forcing_data *****************)
 
 end
