@@ -1,0 +1,41 @@
+\section{The generic extension preserves pairing}
+
+An important goal of our work is to formalize the preservation of the $\ZFC$ axioms in
+the generic extension of the universe $M$. We show in this section the proof of preservation
+of the pairing axiom.
+
+The pairing axiom relative to $L$ asserts that for all pair of elements in $L$ there exists another that
+contains exactly them. This is defined in Paulson's library where $L$ can be any class:
+
+\begin{isabellebody}
+\isanewline
+\ \ \isanewline
+\isacommand{definition}\isamarkupfalse%
+\isanewline
+\ \ upair\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbrackleft}i{\isacharequal}{\isachargreater}o{\isacharcomma}i{\isacharcomma}i{\isacharcomma}i{\isacharbrackright}\ {\isacharequal}{\isachargreater}\ o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ \ \ {\isachardoublequoteopen}upair{\isacharparenleft}M{\isacharcomma}a{\isacharcomma}b{\isacharcomma}z{\isacharparenright}\ {\isacharequal}{\isacharequal}\ a\ {\isasymin}\ z\ {\isasymand}\ b\ {\isasymin}\ z\ {\isasymand}\ {\isacharparenleft}{\isasymforall}x{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ x{\isasymin}z\ {\isasymlongrightarrow}\ x\ {\isacharequal}\ a\ {\isasymor}\ x\ {\isacharequal}\ b{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isanewline
+\isacommand{definition}\isamarkupfalse%
+\isanewline
+\ \ upair{\isacharunderscore}ax\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharparenleft}i{\isacharequal}{\isachargreater}o{\isacharparenright}\ {\isacharequal}{\isachargreater}\ o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ \ \ {\isachardoublequoteopen}upair{\isacharunderscore}ax{\isacharparenleft}M{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}x{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isasymforall}y{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isasymexists}z{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ upair{\isacharparenleft}M{\isacharcomma}x{\isacharcomma}y{\isacharcomma}z{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
+
+
+We need a couple of lemmas:
+
+
+\begin{itemize}
+  \item Absoluteness of pairing.
+\begin{isabellebody}
+\ \ \isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ upair{\isacharunderscore}abs\ {\isacharbrackleft}simp{\isacharbrackright}{\isacharcolon}\isanewline
+\ \ \ \ \ {\isachardoublequoteopen}z\ {\isasymin}\ M\ {\isasymLongrightarrow}\ upair{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharcomma}a{\isacharcomma}b{\isacharcomma}z{\isacharparenright}\ \ {\isasymlongleftrightarrow}\ z{\isacharequal}{\isacharbraceleft}a{\isacharcomma}b{\isacharbraceright}{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
+
+blablabla
+
+  \item 
+
+\end{itemize}
