@@ -1,7 +1,7 @@
 \section{Introduction}\label{sec:introduction}
 Set Theory play a double role in Mathematics: It is one of its
 possible foundations, and also an active research area.
-
+%
 As it is widely known, Georg Cantor introduced its main concepts and in
 particular showed the fundamental result that the real line, $\R$  is not
 coordinable with the natural numbers. Soon after this, he posed the
@@ -10,27 +10,22 @@ most important question in the field, written as a conjecture:
   The \emph{Continuum Hypothesis} ($\CH$). Every uncountable subset of $\R$ is
   coordinable with $\R$.
 \end{quote}
-\bigskip
 
-\hrule
-\bigskip
+The current  axiomatic foundation of Set Theory is through 
+first-order logic and uses the axioms by  Zermelo, Fraenkel, and
+including the Axiom of Choice ($\AC$) among its axioms. This theory is
+known by the $\ZFC$ acronym. G\"odel showed that $\CH$ can't be
+refuted using the $\ZFC$, unless the latter are inconsistent (we say
+that \emph{$\CH$ is relatively 
+  consistent with  $\ZFC$}). For a while, this result left the
+possibility that one might be able show that $\ZFC\models \CH$, but in
+a groundbreaking work \cite{Cohen-CH-PNAS}, Paul Cohen discovered the
+technique of 
+\emph{forcing} and showed that $\neg\CH$ is relatively consistent with
+$\ZFC$. Forcing has since then been used for showing innumerable
+independence results and perform mathematical constructions.
 
 
-The most widely accepted foundation of mathematics is through Set
-Theory. More precisely, using the first-order theory axiomatized by
-Zermelo, Fraenkel, and including the Axiom of Choice ($\AC$) among its
-axioms. This theory is known by the $\ZFC$ acronym.
-\bigskip
-
-\hrule
-\bigskip
-
-The first, both historically and in importance,
-    application of forcing was the proof that $\AC$ and $\CH$ were not
-    derivable from $\ZFC$; this was done by Cohen in its seminal work \cite{Cohen-CH-PNAS}.
-
-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
-\subsection{Models of ZFC}
 \begin{enumerate}
 \item $\CH$ is (Platonistically) undecidable.
   \begin{enumerate}
@@ -75,12 +70,3 @@ The first, both historically and in importance,
 
 \end{enumerate}
 
-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
-\subsection{Isabelle/ZF}
-
-
-%%% Local Variables:
-%%% mode: latex
-%%% ispell-local-dictionary: "american"
-%%% TeX-master: "first_steps_into_forcing"
-%%% End:
