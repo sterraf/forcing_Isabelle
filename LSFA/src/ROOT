@@ -1,4 +1,4 @@
-session "forcing" = "ZF" +
+session "forcing" = "ZF-Constructible" +
   options [document = pdf, document_output = "output"]
   theories [document = true]
     "Pointed_DC"
