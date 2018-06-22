@@ -1,41 +1,88 @@
 \section{The generic extension preserves pairing}
 
-An important goal of our work is to formalize the preservation of the $\ZFC$ axioms in
-the generic extension of the universe $M$. We show in this section the proof of preservation
-of the pairing axiom.
+An important goal of our work is to formalize the preservation of the $\ZFC$
+axioms in the generic extension of the universe $M$. We show in this section
+the proof of preservation of the pairing axiom.
 
-The pairing axiom relative to $L$ asserts that for all pair of elements in $L$ there exists another that
-contains exactly them. This is defined in Paulson's library where $L$ can be any class:
+The pairing axiom relative to a class $C$ asserts that for all pair of elements
+in $C$ there exists another containing exactly them. This is defined in
+Paulson's library:
 
 \begin{isabellebody}
 \isanewline
-\ \ \isanewline
 \isacommand{definition}\isamarkupfalse%
 \isanewline
-\ \ upair\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbrackleft}i{\isacharequal}{\isachargreater}o{\isacharcomma}i{\isacharcomma}i{\isacharcomma}i{\isacharbrackright}\ {\isacharequal}{\isachargreater}\ o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ \ \ {\isachardoublequoteopen}upair{\isacharparenleft}M{\isacharcomma}a{\isacharcomma}b{\isacharcomma}z{\isacharparenright}\ {\isacharequal}{\isacharequal}\ a\ {\isasymin}\ z\ {\isasymand}\ b\ {\isasymin}\ z\ {\isasymand}\ {\isacharparenleft}{\isasymforall}x{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ x{\isasymin}z\ {\isasymlongrightarrow}\ x\ {\isacharequal}\ a\ {\isasymor}\ x\ {\isacharequal}\ b{\isacharparenright}{\isachardoublequoteclose}\isanewline
-\ \ \isanewline
+\ \ upair\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbrackleft}i{\isasymRightarrow}o{\isacharcomma}i{\isacharcomma}i{\isacharcomma}i{\isacharbrackright}\ {\isasymRightarrow}\ o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ \ \ {\isachardoublequoteopen}upair{\isacharparenleft}C{\isacharcomma}a{\isacharcomma}b{\isacharcomma}z{\isacharparenright}\ {\isacharequal}{\isacharequal}\ a\ {\isasymin}\ z\ {\isasymand}\ b\ {\isasymin}\ z\ {\isasymand}\ {\isacharparenleft}{\isasymforall}x{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ x{\isasymin}z\ {\isasymlongrightarrow}\ x\ {\isacharequal}\ a\ {\isasymor}\ x\ {\isacharequal}\ b{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\isanewline
 \isacommand{definition}\isamarkupfalse%
 \isanewline
-\ \ upair{\isacharunderscore}ax\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharparenleft}i{\isacharequal}{\isachargreater}o{\isacharparenright}\ {\isacharequal}{\isachargreater}\ o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ \ \ {\isachardoublequoteopen}upair{\isacharunderscore}ax{\isacharparenleft}M{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}x{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isasymforall}y{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isasymexists}z{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ upair{\isacharparenleft}M{\isacharcomma}x{\isacharcomma}y{\isacharcomma}z{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ upair{\isacharunderscore}ax\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharparenleft}i{\isasymRightarrow}o{\isacharparenright}\ {\isasymRightarrow}\ o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ \ \ {\isachardoublequoteopen}upair{\isacharunderscore}ax{\isacharparenleft}C{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}x{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ {\isasymforall}y{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ {\isasymexists}z{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ upair{\isacharparenleft}C{\isacharcomma}x{\isacharcomma}y{\isacharcomma}z{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \end{isabellebody}
 
+We enunciate the preservation of pairing in the context \isatt{forcing data}. $M$ is a countable and transitive set, containing the
+poset $P$. We uses the operator \isatt{\#\#} to convert the set $M$ into a class:
 
-We need a couple of lemmas:
-
-
-\begin{itemize}
-  \item Absoluteness of pairing.
 \begin{isabellebody}
-\ \ \isanewline
+  \isanewline
+  \isanewline
 \isacommand{lemma}\isamarkupfalse%
-\ upair{\isacharunderscore}abs\ {\isacharbrackleft}simp{\isacharbrackright}{\isacharcolon}\isanewline
-\ \ \ \ \ {\isachardoublequoteopen}z\ {\isasymin}\ M\ {\isasymLongrightarrow}\ upair{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharcomma}a{\isacharcomma}b{\isacharcomma}z{\isacharparenright}\ \ {\isasymlongleftrightarrow}\ z{\isacharequal}{\isacharbraceleft}a{\isacharcomma}b{\isacharbraceright}{\isachardoublequoteclose}\isanewline
+\ pair{\isacharunderscore}preserv\ {\isacharcolon}\ \isanewline
+\ \ {\isachardoublequoteopen}one\ {\isasymin}\ G\ {\isasymLongrightarrow}\ upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}\ {\isasymLongrightarrow}\ upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \end{isabellebody}
 
-blablabla
+Let $x$ and $y$ in $M[G]$, by definition of generic extension, there exists
+elements $\tau$ and $\rho$ in $M$ such that $x = val(G,\tau)$ and
+$y = val(G,\rho)$.  We need to find an element in $M[G]$ that contains exactly
+this elements, ie, an element $\sigma$ in $M$ such that
+$val(G,\sigma) = \{ val(G,\tau) , val(G,\rho) \}$. Finding this element the proof
+is complete. 
 
-  \item 
+The candidate is
+$\sigma = \{\langle \tau , one \rangle , \langle \rho , one \rangle \}$.
+Therefore, all work is reduced to prove the following lemmas:
+\begin{enumerate}
+  \item $\sigma \in M$, and
+  \item $val(G,\sigma) = \{ val(G,\tau) , val(G,\rho) \}$
+\end{enumerate}
 
-\end{itemize}
+In the first lemma, we have a set containing two ordered pairs with elements that
+belong to $M$. We proved that a set consisting of pairs of elements in $M$ belongs to $M$.
+The proof uses strongly that pairing axiom holds in $M$ and the absoluteness of pairing
+thanks to $M$ is transitive. 
+
+\begin{isabellebody}
+\ \isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ pairs{\isacharunderscore}in{\isacharunderscore}M\ {\isacharcolon}\ \isanewline
+\ \ {\isachardoublequoteopen}\ {\isasymlbrakk}\ upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}\ {\isacharsemicolon}\ a\ {\isasymin}\ M\ {\isacharsemicolon}\ b\ {\isasymin}\ M\ {\isacharsemicolon}\ c\ {\isasymin}\ M\ {\isacharsemicolon}\ d\ {\isasymin}\ M\ {\isasymrbrakk}\ {\isasymLongrightarrow}\ {\isacharbraceleft}{\isasymlangle}a{\isacharcomma}c{\isasymrangle}{\isacharcomma}{\isasymlangle}b{\isacharcomma}d{\isasymrangle}{\isacharbraceright}\ {\isasymin}\ M{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
+
+Thus, (i) is an instance of this, because $\tau$, $\rho$ and
+$one$ belong to $M$ (the last fact holds because $one \in P$, $P \in M$ and
+$M$ is transitive):
+
+\begin{isabellebody}
+\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ sigma{\isacharunderscore}in{\isacharunderscore}M\ {\isacharcolon}\isanewline
+\ \ {\isachardoublequoteopen}upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}\ {\isasymLongrightarrow}\ one\ {\isasymin}\ G\ {\isasymLongrightarrow}\ {\isasymtau}\ {\isasymin}\ M\ {\isasymLongrightarrow}\ {\isasymrho}\ {\isasymin}\ M\ {\isasymLongrightarrow}\ {\isacharbraceleft}{\isasymlangle}{\isasymtau}{\isacharcomma}one{\isasymrangle}{\isacharcomma}{\isasymlangle}{\isasymrho}{\isacharcomma}one{\isasymrangle}{\isacharbraceright}\ {\isasymin}\ M{\isachardoublequoteclose}
+
+\isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}rule\ pairs{\isacharunderscore}in{\isacharunderscore}M{\isacharcomma}simp{\isacharunderscore}all\ add{\isacharcolon}\ upair{\isacharunderscore}ax{\isacharunderscore}def\ one{\isacharunderscore}in{\isacharunderscore}M{\isacharparenright}%
+\isanewline
+\end{isabellebody}
+
+In order to prove (ii), we used the following lemma, characterizing the $val$ function:
+
+\begin{isabellebody}
+\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ def{\isacharunderscore}val{\isacharcolon}\ \ {\isachardoublequoteopen}x{\isasymin}M\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}\ {\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}t{\isacharparenright}\ {\isachardot}{\isachardot}\ t{\isasymin}domain{\isacharparenleft}x{\isacharparenright}\ {\isacharcomma}\ {\isasymexists}p{\isasymin}P\ {\isachardot}\ \ {\isasymlangle}t{\isacharcomma}\ p{\isasymrangle}{\isasymin}x\ {\isasymand}\ p\ {\isasymin}\ G\ {\isacharbraceright}{\isachardoublequoteclose}\isanewline
+\end{isabellebody}
+
+
+
+
+
