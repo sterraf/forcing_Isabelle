@@ -5,3 +5,44 @@
 %%% ispell-local-dictionary: "american"
 %%% TeX-master: "first_steps_into_forcing"
 %%% End:
+
+
+The forcing idea consists of finding a model extending $M$ such that
+it satisfies $ZFC + \neg CH$. This model is called the $\textit{generic extension}$
+$M[G]$, where $G$ is a \emph{$\calD$-generic} filter in $P$.
+
+The elements of $M[G]$ will be constructed by the following function $\val$:
+
+\begin{isabelle}
+\isacommand{definition}\isamarkupfalse%
+\isanewline
+\ \ Hv\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}Hv{\isacharparenleft}G{\isacharcomma}x{\isacharcomma}f{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isacharbraceleft}\ f{\isacharbackquote}y\ {\isachardot}{\isachardot}\ y{\isasymin}\ domain{\isacharparenleft}x{\isacharparenright}{\isacharcomma}\ {\isasymexists}p{\isasymin}P{\isachardot}\ {\isacharless}y{\isacharcomma}p{\isachargreater}\ {\isasymin}\ x\ {\isasymand}\ p\ {\isasymin}\ G\ {\isacharbraceright}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\isanewline
+\ \ val\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}\ {\isacharequal}{\isacharequal}\ wfrec{\isacharparenleft}edrel{\isacharparenleft}eclose{\isacharparenleft}M{\isacharparenright}{\isacharparenright}{\isacharcomma}\ {\isasymtau}\ {\isacharcomma}Hv{\isacharparenleft}G{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\isanewline
+\end{isabelle}
+
+
+This definition proceeds by well-founded recursion on relation $edrel(eclose(M))$:
+
+\begin{isabelle}
+\isacommand{definition}\isamarkupfalse%
+\isanewline
+\ \ edrel\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}edrel{\isacharparenleft}A{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isacharbraceleft}{\isacharless}x{\isacharcomma}y{\isachargreater}\ {\isasymin}\ A{\isacharasterisk}A\ {\isachardot}\ x\ {\isasymin}\ domain{\isacharparenleft}y{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+
+We can characterize the definition of $\val$ with the following lemma:
+
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ def{\isacharunderscore}val{\isacharcolon}\ \ {\isachardoublequoteopen}x{\isasymin}M\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}\ {\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}t{\isacharparenright}\ {\isachardot}{\isachardot}\ t{\isasymin}domain{\isacharparenleft}x{\isacharparenright}\ {\isacharcomma}\ {\isasymexists}p{\isasymin}P\ {\isachardot}\ \ {\isasymlangle}t{\isacharcomma}\ p{\isasymrangle}{\isasymin}x\ {\isasymand}\ p\ {\isasymin}\ G\ {\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+
+Thus, determining $\val(G,\tau)$ uses the values $\val(G,\sigma)$ for smaller $\sigma$ :
+
+    $\langle \sigma , \tau \rangle \in edrel(Memrel(M)) $ iff $\langle \sigma , p \rangle \in \tau$ with $p \in G$. 

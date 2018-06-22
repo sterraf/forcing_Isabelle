@@ -10,7 +10,6 @@ lemma upair_abs [simp]:
   apply (blast intro: Transset_M)
 done
 
-  
 lemma upairs_in_M :
   "upair_ax(##M) \<Longrightarrow> a \<in> M \<Longrightarrow> b \<in> M \<Longrightarrow> {a,b} \<in> M"
   apply (simp add: upair_ax_def)
@@ -30,7 +29,7 @@ lemma sigma_in_M :
   by (rule pairs_in_M,simp_all add: upair_ax_def one_in_M)
   
 lemma valsigma :
-  "one \<in> G \<Longrightarrow> \<tau> \<in> M \<Longrightarrow> \<rho> \<in> M \<Longrightarrow> {\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>} \<in> M \<Longrightarrow>
+  "one \<in> G \<Longrightarrow> {\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>} \<in> M \<Longrightarrow>
    val(G,{\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>}) = {val(G,\<tau>),val(G,\<rho>)}"
   apply (insert one_in_P)
   apply (rule trans)
