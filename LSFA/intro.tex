@@ -60,7 +60,7 @@ finite fragment of $\ZFC$. More precisely,
 \begin{theorem}\label{th:ctm-finite-axioms}
   For each finite subset
   $\Phi\sbq \ZFC$, the statement \emph{``there exists a countable
-  transitive model of $\Phi$''} is a theorem of $\ZFC$.
+    transitive model of $\Phi$''} is a theorem of $\ZFC$.
 \end{theorem}
 %
 This follows by a
@@ -118,71 +118,33 @@ It can be shown elementarily that if $M$ and $N$ are transitive,
 $\phi^N$ holds if and only if $\phi^M$ holds,  for $x,y,z\in N$. We
 say then that $\phi$ is \emph{absolute between $N$ and $M$.}
 
-The concept of relativization and absoluteness are central to task of
-transferring truth of axioms in $M$ to  $L^M$. At this point we 
-point out that although $L^M$ is a subset of $M$. 
-\bigskip
-
-\hrule
-\bigskip
-
-In general, one can relativized
-
-It can be shown elementarily that if $M$ and $N$ are transitive,
-formula $\phi$ holds for $x,y,z\in N$ 
-
-It is noteworthy that 
+The concepts of relativization and absoluteness are central to task of
+transferring truth of axioms in $M$ to  $L^M$. 
 
 
+\subsection{Forcing}
+Forcing is a technique to extend countable transitive models of
+$\ZFC$. This process is guaranteed to preserve the $\ZFC$
+axioms but allows to fine-tune what other first order properties the
+extension will have. Given a ctm $M$ of $\ZFC$, a new set $G$ is
+adjoined to $M$ and under some hypothesis ($G$ being ``generic''),
+there exists a smallest model $M[G]$ of $\ZFC$ that includes $M$ and
+contains $G$. 
 
- One of the main
-technical tools designed by him 
+\fbox{The next should be spread accross the other sections}
 
+The easiest way to define genericity is by using preorders.
+Given a preorder with top $\lb\PP,\leq,\1\rb$ in $M$, define
+\emph{filter} $G$ ... , \emph{dense} ...  $G$ is an $M$-\emph{generic}
+if it intersects every dense subset of $\PP$ that lies in $M$.
 
-  
-\begin{enumerate}
-\item $\CH$ is (Platonistically) undecidable.
-  \begin{enumerate}
-  \item By G\"odel's Second Incompleteness Theorems, we can't show
-    that a model of $\ZFC$ exists.
-  \item G\"odel showed that $\CH$ is relatively consistent with
-    $\ZFC$. ``Easy.''
-  \item Cohen showed that  $\neg\CH$ is relatively consistent with
-    $\ZFC$. Not ``easy.'' Formalization Open.
-  \end{enumerate}
-\item Using $\ZF$, G\"odel defined the constructible universe,
-  $L$. G\"odel showed that $\lb L,\in\rb\models \ZFC+\CH$. Paulson formalized $L$
-  for the consistency of $\AC$.
-\item The main concept for G\"odel's proofs is
-  \emph{relativization}. This is the core of Paulson's development.
-  \begin{enumerate}
-  \item \dots
-  \end{enumerate}
-  %
-\item 
-\item Cohen invented Forcing.
-  \begin{enumerate}
-  \item Countable transitive models $M$. These are enough for consistency
-    proofs by the L\"owenheim-Skolem Theorem, the Reflection
-    Principle, and the Mostowksi Collapse.
-    %
-  \item 
-    %
-  \item Forcing is a technique to extend countable transitive models of
-    $\ZFC$. This process is guaranteed to preserve the $\ZFC$
-    axioms but allows to fine-tune what other first order properties the
-    extension will have. 
-    %
-  \item Given a preorder with top $\lb\PP,\leq,\1\rb$ in $M$, define
-    \emph{filter} $G$, \emph{dense}. In general, there is no  $G\in M$
-    that intersects every dense
-    subset of $\PP$ that lies in $M$ (``generic'').
-  \item Rasiowa-Sikorski states that there is such $G$ for every
-    family of countable dense subsets. Thus, there are generic filters
-    for countable transitive models.
-  \end{enumerate}
+But since $M$ is countable, 
 
-\end{enumerate}
+The  Rasiowa-Sikorski theorem  states that that for every countable 
+family of dense subsets there is a filter that intersects them
+all. Thus, there are generic filters $G$ for countable transitive models.  In
+general, no such  $G$ belongs to $M$ and therefore the extension
+$M[G]$ is proper. 
 
 
 %%% Local Variables:
