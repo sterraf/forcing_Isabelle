@@ -1,6 +1,66 @@
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
 \subsection{Isabelle/ZF}
 
+Let us introduce briefly Paulson's formalization of ZF
+\cite{paulson2017isabelle} in Isabelle and aspects of his formal proof
+for the relative consistency of the Axiom of Choice
+\cite{paulson_2003}; we will only focus on those aspects that are
+essential to keep this paper self-contained, and refer the interested
+reader to Paulson's articles. Isabelle/ZF is a theory built upon the
+core library FOL of classical first order logic.
+
+In Isabelle/ZF sets are \emph{individuals}, that is terms of type
+\isatt{i} and formulas have type \isatt{o}. As in usual presentations
+of ZF, Isabelle/ZF has only one relation symbol
+\isatt{\ensuremath{\epsilon}} (equality and inclusion are defined
+using membership); it also features one constant \isatt{\isadigit{0}}
+for the empty set and \isatt{inf} for an infinite set and some other
+set constructors, again terms of type \isatt{i}, to ease the
+developments. The axioms, being formulas, are terms of type \isatt{o};
+the foundation axiom, for example, is formalized as:
+\isa{{\isachardoublequoteopen}A\ {\isacharequal}\ {\isadigit{0}}\
+  {\isasymor}%
+  \ {\isacharparenleft}{\isasymexists}x{\isasymin}A{\isachardot}\ %
+  {\isasymforall}y{\isasymin}x{\isachardot}\ %
+  y{\isasymnotin}A{\isacharparenright}%
+  {\isachardoublequoteclose}}. Besides the axioms, Isabelle/ZF also
+introduces several definitions (for example, pairs and sets defined by
+comprehension using separation) and syntactic abbreviations to keep
+the formalization close to the customary manner of doing mathematics.
+Working with the library and extendig it is quite
+straightforward. Since we find a need to combine the replacement and
+separation schemes to speak of the image of a function over some set
+defined by comprehension, we introduced a new term-former:
+\begin{isabelle}
+  \isacommand{definition}\isamarkupfalse%
+  \ SepReplace\ {\isacharcolon}{\isacharcolon}\
+  {\isachardoublequoteopen}{\isacharbrackleft}i{\isacharcomma}\
+  i{\isasymRightarrow}i{\isacharcomma}\ i{\isasymRightarrow}\
+  o{\isacharbrackright}\
+  {\isasymRightarrow}i{\isachardoublequoteclose}\
+  \isakeyword{where}\isanewline \ \
+  {\isachardoublequoteopen}SepReplace{\isacharparenleft}A{\isacharcomma}b{\isacharcomma}Q{\isacharparenright}\
+  {\isacharequal}{\isacharequal}\ {\isacharbraceleft}y\ {\isachardot}\
+  x{\isasymin}A{\isacharcomma}\
+  y{\isacharequal}b{\isacharparenleft}x{\isacharparenright}\
+  {\isasymand}\
+  Q{\isacharparenleft}x{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+\noindent It is more convenient to add an abbreviation for a simpler
+writing and a nicer reading, so we use \isa{{\isacharbraceleft}b\
+  {\isachardot}{\isachardot}\ x{\isasymin}A{\isacharcomma}\
+  Q{\isacharbraceright}} for
+\isa{SepReplace{\isacharparenleft}A{\isacharcomma}b{\isacharcomma}Q{\isacharparenright}}. The
+characterization of our new constructor is given by
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ Sep{\isacharunderscore}and{\isacharunderscore}Replace{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbraceleft}b{\isacharparenleft}x{\isacharparenright}\ {\isachardot}{\isachardot}\ x{\isasymin}A{\isacharcomma}\ P{\isacharparenleft}x{\isacharparenright}\ {\isacharbraceright}\ {\isacharequal}\ {\isacharbraceleft}b{\isacharparenleft}x{\isacharparenright}\ {\isachardot}\ x{\isasymin}{\isacharbraceleft}y{\isasymin}A{\isachardot}\ P{\isacharparenleft}y{\isacharparenright}{\isacharbraceright}{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+
+
+% ∀x[c]
+% locales
+
 
 %%% Local Variables:
 %%% mode: latex
