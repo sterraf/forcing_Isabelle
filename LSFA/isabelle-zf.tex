@@ -6,11 +6,16 @@ Let us introduce briefly Paulson's formalization of ZF
 for the relative consistency of the Axiom of Choice
 \cite{paulson_2003}; we will only focus on those aspects that are
 essential to keep this paper self-contained, and refer the interested
-reader to Paulson's articles. Isabelle/ZF is a theory built upon the
-core library FOL of classical first order logic.
+reader to Paulson's articles. 
+%% Isabelle/ZF is a theory built upon the
+%% core library FOL of classical first order logic.
+Isabelle/ZF includes a development of classical first order logic,
+FOL. Both of them are  built upon the core library \emph{Pure}. 
 
 In Isabelle/ZF sets are \emph{individuals}, that is terms of type
-\isatt{i} and formulas have type \isatt{o}. As in usual presentations
+\isatt{i} and formulas have type \isatt{o} 
+(akin to a \emph{Bool} type, but at the object level). 
+As in usual presentations
 of ZF, Isabelle/ZF has only one relation symbol
 \isatt{\ensuremath{\in}} (equality and inclusion are defined
 using membership); it also features one constant \isatt{\isadigit{0}}
@@ -28,9 +33,13 @@ introduces several definitions (for example, pairs and sets defined by
 comprehension using separation) and syntactic abbreviations to keep
 the formalization close to the customary manner of doing mathematics.
 Working with the library and extendig it is quite
-straightforward. Since we find a need to combine the replacement and
-separation schemes to speak of the image of a function over some set
-defined by comprehension, we introduced a new term-former:
+straightforward. 
+As an example, we introduce  a new term-former which is combination of
+instances of replacement and separation to speak of the image of a function over some set
+defined by comprehension, namely $\{b(x): x\in A\text{ and }Q(x)\}$:
+%% Since we find a need to combine the replacement and
+%% separation schemes to speak of the image of a function over some set
+%% defined by comprehension, we introduced a new term-former:
 \begin{isabelle}
   \isacommand{definition}\isamarkupfalse%
   \ SepReplace\ {\isacharcolon}{\isacharcolon}\
@@ -46,10 +55,13 @@ defined by comprehension, we introduced a new term-former:
   {\isasymand}\
   Q{\isacharparenleft}x{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
-\noindent It is more convenient to add an abbreviation for a simpler
-writing and a nicer reading, so we use \isa{{\isacharbraceleft}b\
+\noindent %% It is more convenient to add an abbreviation for a simpler
+%% writing and a nicer reading, so we use
+We are then able to add an abbreviation resembling the usual
+mathematical writing by setting 
+\isa{{\isacharbraceleft}b\
   {\isachardot}{\isachardot}\ x{\isasymin}A{\isacharcomma}\
-  Q{\isacharbraceright}} for
+  Q{\isacharbraceright}} as a notation for
 \isa{SepReplace{\isacharparenleft}A{\isacharcomma}b{\isacharcomma}Q{\isacharparenright}}. The
 characterization of our new constructor is given by
 \begin{isabelle}
@@ -60,10 +72,16 @@ characterization of our new constructor is given by
 We are not discussing how, if possible at all, to express that some
 set satisfies some axiom. For example, we might well be interested in
 proving $\emptyset \models \mathit{foundation}$, but there is no
-sensible way to state this, whithout encoding formulas and axioms in
+sensible way to state this, without encoding formulas and axioms in
 ZFC.\footnote{Indeed Paulson has encoded formulas using a very general
   method to encode recursive definitions. In our development, although
-  not reported in this paper, we use this internalization.} In
+  not reported in this paper, we use this internalization.}
+
+\fbox{ You need this in order to formalize $\models$ as a predicate of
+  type $i\ent i \ent o$. (Don't know how to put that here.)
+}
+
+ In
 Isabelle/ZF there are, however, relativized versions of the
 axioms. This alternative statement of the axioms are relativized with
 respect to classes, which in Isabelle/ZF corresponds to predicates over
