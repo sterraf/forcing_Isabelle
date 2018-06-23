@@ -1,4 +1,4 @@
-\subsection{A sequence version of $\DC$}
+\subsection{A sequence version of $\DC$}\label{sec:sequence-version-dc}
 In order to prove the Rasiowa-Sikorski lemma in
 general, a version of the Axiom of Choice ($\AC$) must be proved. This
 version is known as the \emph{Principle of Dependent choices}:
@@ -38,10 +38,16 @@ The strategy is to define $f$ above by primitive recursion.
 \ \ witrec\ {\isacharcolon}{\isachardoublequoteopen}dc{\isacharunderscore}witness{\isacharparenleft}succ{\isacharparenleft}n{\isacharparenright}{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}\ {\isacharequal}\ s{\isacharbackquote}{\isacharbraceleft}x{\isasymin}A{\isachardot}\ {\isasymlangle}dc{\isacharunderscore}witness{\isacharparenleft}n{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}{\isacharcomma}x{\isasymrangle}{\isasymin}R\ {\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
 
-The function \verb|dc_witness| has, apart from $A$, $a$ and $R$, a
+The function \isatt{dc{\isacharunderscore}witness} has, apart from $A$, $a$ and $R$, a
 function $s$ as a parameter. If this function is a selector for
-$\P(A)\sm \{\mty\}$, the function $f\defi$\verb|dc_witness|$(A,a,s,R)$
-will satify $\DC$.
+$\P(A)\sm \{\mty\}$, the function $f\defi {}$\isatt{dc{\isacharunderscore}witness}$(A,a,s,R)$
+will satify $\DC$. Notice that $s$ is a term of type \isatt{i} (a
+function construed as a set of pairs) and an expression
+\isatt{s{\isacharbackquote}b} is notation for  \isatt{apply(s,b)},
+where
+\isatt{apply\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ i{\isachardoublequoteclose}}
+is the operation of function application. We will not make a
+distinction in our prose and simply write \isatt{s}(\isatt{b}) in this case.
 
 The proof is mostly routine; after a few lemmas we obtain the
 following theorem:
@@ -84,7 +90,7 @@ And finally, we arrive to $\DC$ for a sequence of relations.
 \ \ \ \ {\isasymforall}a{\isasymin}A{\isachardot}\ {\isacharparenleft}{\isasymexists}f\ {\isasymin}\ nat{\isasymrightarrow}A{\isachardot}\ f{\isacharbackquote}{\isadigit{0}}\ {\isacharequal}\ a\ {\isasymand}\ {\isacharparenleft}{\isasymforall}n\ {\isasymin}\ nat{\isachardot}\ {\isasymlangle}f{\isacharbackquote}n{\isacharcomma}f{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isasymrangle}{\isasymin}S{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-\subsection{The Rasiowa-Sikorski lemma}
+\subsection{The Rasiowa-Sikorski lemma}\label{sec:rasiowa-sikorski-lemma}
 In order to state this Lemma, we gather the relevant hypotheses into a locale:
 
 \begin{isabelle}%

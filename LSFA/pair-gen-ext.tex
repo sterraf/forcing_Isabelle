@@ -1,10 +1,10 @@
-\section{The generic extension preserves pairing}
+\section{The generic extension satisfies Pairing}
 
-An important goal of our work is to formalize the preservation of the $\ZFC$
-axioms in the generic extension of the universe $M$. We show in this section
-the proof of preservation of the pairing axiom.
+An important goal of our work is to show that the  $\ZFC$
+axioms hold in the generic extension. We formalize in this section
+the corresponding proof for the  Pairing Axiom.
 
-The pairing axiom relative to a class $C$ asserts that for all pair of elements
+The Pairing Axiom relative to a class $C$ asserts that for all pair of elements
 in $C$ there exists another containing exactly them. This is defined in
 Paulson's library:
 
@@ -20,8 +20,9 @@ Paulson's library:
 \ \ \ \ {\isachardoublequoteopen}upair{\isacharunderscore}ax{\isacharparenleft}C{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}x{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ {\isasymforall}y{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ {\isasymexists}z{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ upair{\isacharparenleft}C{\isacharcomma}x{\isacharcomma}y{\isacharcomma}z{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-We enunciate the preservation of pairing in the context \isatt{forcing data}. $M$ is a countable and transitive set, containing the
-poset $P$. We uses the operator \isatt{\#\#} to convert the set $M$ into a class:
+We state the main result of this Section in the context
+\isatt{forcing{\isacharunderscore}data}.  Recall that the operator
+\isatt{\#\#}  converts a set into a  set into a class (i.e., a predicate):
 
 \begin{isabelle}
   \isanewline
@@ -30,26 +31,24 @@ poset $P$. We uses the operator \isatt{\#\#} to convert the set $M$ into a class
 \ \ {\isachardoublequoteopen}one\ {\isasymin}\ G\ {\isasymLongrightarrow}\ upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}\ {\isasymLongrightarrow}\ upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-Let $x$ and $y$ be elements in $M[G]$, by definition of generic extension, there exists
-elements $\tau$ and $\rho$ in $M$ such that $x = val(G,\tau)$ and
-$y = val(G,\rho)$.  We need to find an element in $M[G]$ that contains exactly
-this elements, ie, an element $\sigma$ in $M$ such that
-$val(G,\sigma) = \{ val(G,\tau) , val(G,\rho) \}$. Finding this element the proof
-is complete. 
+Let $x$ and $y$ be elements in $M[G]$. By definition of the generic extension, there exist
+elements $\tau$ and $\rho$ in $M$ such that $x = \val(G,\tau)$ and
+$y = \val(G,\rho)$.  We need to find an element in $M[G]$ that contains exactly
+these elements; for that we should construct a name $\sigma\in M$ such that
+$\val(G,\sigma) = \{ \val(G,\tau) , \val(G,\rho) \}$. 
 
-The candidate is
-$\sigma = \{\langle \tau , one \rangle , \langle \rho , one \rangle \}$. The construction of
-this element is similar to those obtained by $check$ function. 
-Therefore, all work is reduced to prove the following lemmas:
+The candidate, motivated by the definition of $\chk$,  is
+$\sigma = \{\langle \tau , one \rangle , \langle \rho , one \rangle \}$. 
+Our remaining tasks are to show 
 \begin{enumerate}
-  \item $\sigma \in M$, and
-  \item $val(G,\sigma) = \{ val(G,\tau) , val(G,\rho) \}$
+  \item \label{item:1}$\sigma \in M$, and
+  \item \label{item:2} $\val(G,\sigma) = \{ \val(G,\tau) , \val(G,\rho) \}$
 \end{enumerate}
 
-In the first lemma, we have a set containing two ordered pairs with elements that
-belong to $M$. We proved that a set consisting of pairs of elements in $M$ belongs to $M$.
-The proof uses strongly that pairing axiom holds in $M$ and the absoluteness of pairing
-thanks to $M$ is transitive. 
+Recall that in $\ZFC$, an ordered pair $\lb x,y \rb$ is the set
+$\{\{x\},\{x,y\}\}$. Thus, to show (\ref{item:1}) have to use that the
+pairing axiom holds in $M$ and the absoluteness of pairing
+thanks to $M$ being transitive. 
 
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
@@ -57,9 +56,9 @@ thanks to $M$ is transitive.
 \ \ {\isachardoublequoteopen}\ {\isasymlbrakk}\ upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}\ {\isacharsemicolon}\ a\ {\isasymin}\ M\ {\isacharsemicolon}\ b\ {\isasymin}\ M\ {\isacharsemicolon}\ c\ {\isasymin}\ M\ {\isacharsemicolon}\ d\ {\isasymin}\ M\ {\isasymrbrakk}\ {\isasymLongrightarrow}\ {\isacharbraceleft}{\isasymlangle}a{\isacharcomma}c{\isasymrangle}{\isacharcomma}{\isasymlangle}b{\isacharcomma}d{\isasymrangle}{\isacharbraceright}\ {\isasymin}\ M{\isachardoublequoteclose}
 \end{isabelle}
 
-Thus, (i) is an instance of this, because $\tau$, $\rho$ and
+Item (i) then follows because $\tau$, $\rho$ and
 $one$ belong to $M$ (the last fact holds because $one \in P$, $P \in M$ and
-$M$ is transitive):
+$M$ is transitive).
 
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
@@ -70,7 +69,7 @@ $M$ is transitive):
 \ {\isacharparenleft}rule\ pairs{\isacharunderscore}in{\isacharunderscore}M{\isacharcomma}simp{\isacharunderscore}all\ add{\isacharcolon}\ upair{\isacharunderscore}ax{\isacharunderscore}def\ one{\isacharunderscore}in{\isacharunderscore}M{\isacharparenright}%
 \end{isabelle}
 
-In order to prove (ii), we need the following lemma, characterizing the $val$ function:
+In order to prove (ii), we need the following lemma, characterizing the $\val$ function:
 
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
