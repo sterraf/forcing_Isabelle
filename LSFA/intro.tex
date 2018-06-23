@@ -25,6 +25,10 @@ technique of
 $\ZFC$. Forcing has since then been used for showing innumerable
 independence results and to perform mathematical constructions.
 
+A great part of G\"odel's work on this subject has been formalized in
+Isabelle by Lawrence Paulson. This paper formalizes a first part of
+the machinery of forcing. In the next Subsections we discuss some of
+the set-theoretical  details involved.   
 
 \subsection{Models of $\ZFC$}
 By G\"odel's Second Incompleteness Theorem, we can't  prove that
@@ -121,7 +125,8 @@ $\phi^N$ holds if and only if $\phi^M$ holds,  for $x,y,z\in N$. We
 say then that $\phi$ is \emph{absolute between $N$ and $M$.}
 
 The concepts of relativization and absoluteness are central to task of
-transferring truth of axioms in $M$ to  $L^M$. 
+transferring truth of axioms in $M$ to  $L^M$, and consitute the
+hardest part of Paulson's development. 
 
 
 \subsection{Forcing}
@@ -145,7 +150,7 @@ family of dense subsets of a preorder there is a filter that intersects them
 all. Thus, there are generic filters $G$ for countable transitive models.  In
 general, no such  $G$ belongs to $M$ and therefore the extension
 $M[G]$ is proper. We formalize the proof of the Rasiowa-Sikorski lemma
-in Section~\ref{sec:rasiowa-sikorski-lemma}. A preliminary result on
+in Section~\ref{sec:rasiowa-sikorski-lemma}. A requisite result on
 a version of the Axiom of Choice is formalized in
 Section~\ref{sec:sequence-version-dc}.
 
@@ -155,7 +160,19 @@ as a parameter. In order to show
 that $M[G]$ does  extend $M$, we formalize the function \isatt{check}
 that given an element $x\in M$ provides with a code (a ``name'') for
 it.  This is explained in Section~\ref{sec:names}.
+
+A central part of this formalization project involves showing that the
+$\ZFC$ holds in the generic extension. This is most relevant since
+forcing is essentially the only known way to \emph{extend} models of
+$\ZFC$ (while preserving ordinals). The most difficult step to achieve
+this goal is to define the \emph{forcing relation}, that allows to
+connect satisfaction in $M$ to that of $M[G]$; this is needed to show
+that the axiom schemes of Separation and Replacement hold in $M[G]$,
+as well as the Powerset axiom. In this work we tackle the Pairing
+Axiom. This doesn't require the 
+forcing relation, but provides an illustration of the use of names.  
    
+We continue with a brief description of the Isabelle framework. 
 %%% Local Variables:
 %%% mode: latex
 %%% ispell-local-dictionary: "american"
