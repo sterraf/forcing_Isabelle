@@ -12,7 +12,7 @@ core library FOL of classical first order logic.
 In Isabelle/ZF sets are \emph{individuals}, that is terms of type
 \isatt{i} and formulas have type \isatt{o}. As in usual presentations
 of ZF, Isabelle/ZF has only one relation symbol
-\isatt{\ensuremath{\epsilon}} (equality and inclusion are defined
+\isatt{\ensuremath{\in}} (equality and inclusion are defined
 using membership); it also features one constant \isatt{\isadigit{0}}
 for the empty set and \isatt{inf} for an infinite set and some other
 set constructors, again terms of type \isatt{i}, to ease the
@@ -57,8 +57,49 @@ characterization of our new constructor is given by
 \ Sep{\isacharunderscore}and{\isacharunderscore}Replace{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbraceleft}b{\isacharparenleft}x{\isacharparenright}\ {\isachardot}{\isachardot}\ x{\isasymin}A{\isacharcomma}\ P{\isacharparenleft}x{\isacharparenright}\ {\isacharbraceright}\ {\isacharequal}\ {\isacharbraceleft}b{\isacharparenleft}x{\isacharparenright}\ {\isachardot}\ x{\isasymin}{\isacharbraceleft}y{\isasymin}A{\isachardot}\ P{\isacharparenleft}y{\isacharparenright}{\isacharbraceright}{\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
 
+We are not discussing how, if possible at all, to express that some
+set satisfies some axiom. For example, we might well be interested in
+proving $\emptyset \models \mathit{foundation}$, but there is no
+sensible way to state this, whithout encoding formulas and axioms in
+ZFC.\footnote{Indeed Paulson has encoded formulas using a very general
+  method to encode recursive definitions. In our development, although
+  not reported in this paper, we use this internalization.} In
+Isabelle/ZF there are, however, relativized versions of the
+axioms. This alternative statement of the axioms are relativized with
+respect to classes, which in Isabelle/ZF corresponds to predicates over
+sets. For example, the relativized axiom of foundation is:
+\begin{isabelle}
+\isacommand{definition}\isamarkupfalse%
+\ foundation{\isacharunderscore}ax\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharparenleft}i{\isacharequal}{\isachargreater}o{\isacharparenright}\ {\isacharequal}{\isachargreater}\ o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ \ \ {\isachardoublequoteopen}foundation{\isacharunderscore}ax{\isacharparenleft}M{\isacharparenright}\ {\isacharequal}{\isacharequal}\isanewline
+\ \ \ \ \ \ \ \ {\isasymforall}x{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isacharparenleft}{\isasymexists}y{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ y{\isasymin}x{\isacharparenright}\ {\isasymlongrightarrow}\ {\isacharparenleft}{\isasymexists}y{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ y{\isasymin}x\ {\isacharampersand}\ {\isachartilde}{\isacharparenleft}{\isasymexists}z{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ z{\isasymin}x\ {\isacharampersand}\ z\ {\isasymin}\ y{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
 
 % ∀x[c]
+\noindent The relativized quantifier
+\isa{{\isasymforall}x{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\
+  P(x)} is a shorthand for \isa{{\isasymforall}x{\isachardot}\ M(x)
+  {\isasymlongrightarrow} P(x)}. We are one step further to be able to
+express that the empty set satisfies foundation; but we must turn the
+set \isa{0 :: i} into a predicate. Isabelle/ZF provides the coercion
+\isa{{\isacharhash}{\isacharhash} :: i ={\isachargreater} (i ={\isachargreater} o)}, thus we can write and prove:
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ emp{\isacharunderscore}foundation\ {\isacharcolon}\ {\isachardoublequoteopen}foundation{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}{\isadigit{0}}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+
+% Let us ponder if one can state, let alone prove, that some set \isa{M
+%   :: i} satisfies a statement \isa{\ensuremath{\phi} :: o}. Since
+% \isa{o} does not have an inductive definition, we cannot define the
+% satisfaction of \isa{\ensuremath{\phi}}. 
+
+% As we have outlined above, relativization is a key concept when
+% proving that axioms satisfied by some model $M$ are also satisfied in
+% another model constructed from $M$. In this paper, we show the complete
+% proof that if a set \isa{M :: i} satisfies the 
+
+
 % locales
 
 
