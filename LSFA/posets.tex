@@ -65,14 +65,18 @@ if every antichain in $P$ is countable.
 \end{isabelle}
 \end{definition}
 %% REVISAR si queremos hablar de "extensión".
-\noindent The locale \isatt{forcing poset} introduces a mathematical
+\noindent The locale \isatt{forcing{\isacharunderscore}poset} 
+
+\fbox{Global replace \isatt{poset}$\to$\isatt{notion} ?}
+
+introduces a mathematical
 context where we work assuming the forcing notion
 $(P,\leqslant, \mathbbm{1})$. It is customary to refer to the elements
 of $P$ as \emph{forcing conditions} and think the relation $\leqslant$
 as a notion of extension, thus $(p,q) \in \leqslant$ is read as ``$p$
 extends $q$''; which is justified because often $\leqslant$ is
 instantiated to $\supseteq$. In the following definitions we are in
-the locale \isatt{forcing poset}.
+the locale \isatt{forcing{\isacharunderscore}poset}.
 
 A set $D$ is \emph{dense} if every element $p\in P$ has a lower bound
 in $D$ and there is also a weaker definition which asks for a lower
