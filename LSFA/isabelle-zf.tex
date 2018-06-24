@@ -15,21 +15,15 @@ FOL. Both of them are  built upon the core library \emph{Pure}.
 In Isabelle/ZF sets are \emph{individuals}, that is terms of type
 \isatt{i} and formulas have type \isatt{o} 
 (akin to a \emph{Bool} type, but at the object level). 
-
-\fbox{Change all this}
-
-As in usual presentations
-of ZF, Isabelle/ZF is has only one relation symbol
-\isatt{\ensuremath{\in}} (equality and inclusion are defined
-using membership); 
-
-\fbox{End complaint}
-
-it also features one constant \isatt{\isadigit{0}}
-for the empty set and \isatt{inf} for an infinite set and some other
-set constructors, again terms of type \isatt{i}, to ease the
-developments. The axioms, being formulas, are terms of type \isatt{o};
-the foundation axiom, for example, is formalized as:
+The  axiomatization 
+of $\ZFC$ in Isabelle/ZF proceeds by postulating  a binary predicate
+\isatt{\ensuremath{\in}} and   several set
+constructors (terms and function with values in \isatt{i}) corresponding to the  empty set
+(the constant \isatt{\isadigit{0}}), powersets, and one further constant
+\isatt{inf} for an infinite set. The axioms, being formulas, are terms
+of type \isatt{o}; 
+the foundation axiom, for example, is formalized as (the universal
+closure of) 
 \isa{{\isachardoublequoteopen}A\ {\isacharequal}\ {\isadigit{0}}\
   {\isasymor}%
   \ {\isacharparenleft}{\isasymexists}x{\isasymin}A{\isachardot}\ %
