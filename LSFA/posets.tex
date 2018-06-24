@@ -11,23 +11,21 @@ Isabelle/ZF.
   reflexive and transitive.
 \end{definition}
 
-In Isabelle/ZF sets are \emph{individuals}, that is terms of type
-\isatt{i}; since relations are also sets, the relation ${\leqslant}$
-also has type \isatt{i}. The other type of Isabelle/ZF is \isatt{o},
-which corresponds to formulas; for example the property that
-${\leqslant}$ is reflexive (on $P$) is a formula.
-\begin{isabelle}
-\isacommand{definition}\isamarkupfalse%
-\ refl{\isacharunderscore}on\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbrackleft}i{\isacharcomma}i{\isacharbrackright}\ {\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ {\isachardoublequoteopen}refl{\isacharunderscore}on{\isacharparenleft}P{\isacharcomma}leq{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}\ x\ {\isasymin}\ P\ {\isachardot}\ {\isasymlangle}x{\isacharcomma}x{\isasymrangle}\ {\isasymin}\ leq{\isachardoublequoteclose}
-\end{isabelle}
-
-Let us remark that the relation is ``untyped'', we cannot assert a
-priori that ${\leqslant} \subseteq P \times P$, therefore we need to
-restrict the notion of ``reflexive'' with respect to the set $P$.
+The preorder relation will be represented as a set of pairs, and hence
+it is a term of type
+\isatt{i}.
+%% \begin{isabelle}
+%% \isacommand{definition}\isamarkupfalse%
+%% \ refl{\isacharunderscore}on\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbrackleft}i{\isacharcomma}i{\isacharbrackright}\ {\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+%% \ \ {\isachardoublequoteopen}refl{\isacharunderscore}on{\isacharparenleft}P{\isacharcomma}leq{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}\ x\ {\isasymin}\ P\ {\isachardot}\ {\isasymlangle}x{\isacharcomma}x{\isasymrangle}\ {\isasymin}\ leq{\isachardoublequoteclose}
+%% \end{isabelle}
+%%
+%% Let us remark that the relation is ``untyped'', we cannot assert a
+%% priori that ${\leqslant} \subseteq P \times P$, therefore we need to
+%% restrict the notion of ``reflexive'' with respect to the set $P$.
 \begin{definition}
   Given a preorder $(P,\leqslant)$ we say that two elements $p,q$ are
-  \emph{compatible} if they have a lower-bound in $P$. Notice that
+  \emph{compatible} if they have a lower bound in $P$. Notice that
   the elements of $P$ are also sets, therefore they have type
   \isatt{i}.
   \begin{isabelle}%
@@ -37,21 +35,24 @@ restrict the notion of ``reflexive'' with respect to the set $P$.
 \end{isabelle}
 \end{definition}
 
-A subset $A \subseteq P$ is an \emph{antichain} if every pair of
-elements in $A$ are incompatible.
-\begin{isabelle}
-\isacommand{definition}\isamarkupfalse%
-\ antichain\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ {\isachardoublequoteopen}antichain{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}A{\isacharparenright}\ {\isacharequal}{\isacharequal}\ A{\isasymsubseteq}P\ {\isasymand}\ {\isacharparenleft}{\isasymforall}p{\isasymin}A{\isachardot}{\isasymforall}q{\isasymin}A{\isachardot}{\isacharparenleft}{\isasymnot}\ compat{\isacharunderscore}in{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
-\end{isabelle}
-
-A poset $(P,\leqslant)$ has the \emph{countable chain condition} (ccc)
-if every antichain in $P$ is countable.
-\begin{isabelle}
-  \isacommand{definition}\isamarkupfalse%
-  \ ccc\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ {\isachardoublequoteopen}ccc{\isacharparenleft}P{\isacharcomma}leq{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}A{\isachardot}\ antichain{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}A{\isacharparenright}\ {\isasymlongrightarrow}\ {\isacharbar}A{\isacharbar}\ {\isasymle}\ nat{\isachardoublequoteclose}
-\end{isabelle}
+%% We now define two notions that will not be used in this paper but are
+%% very important for subsequent
+%% developments; here, they serve as examples of  Isabelle/ZF notation.
+%% A subset $A \subseteq P$ is an \emph{antichain} if every pair of
+%% elements in $A$ are incompatible. 
+%% \begin{isabelle}
+%% \isacommand{definition}\isamarkupfalse%
+%% \ antichain\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+%% \ \ {\isachardoublequoteopen}antichain{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}A{\isacharparenright}\ {\isacharequal}{\isacharequal}\ A{\isasymsubseteq}P\ {\isasymand}\ {\isacharparenleft}{\isasymforall}p{\isasymin}A{\isachardot}{\isasymforall}q{\isasymin}A{\isachardot}{\isacharparenleft}{\isasymnot}\ compat{\isacharunderscore}in{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+%% \end{isabelle}
+%% 
+%% A poset $(P,\leqslant)$ has the \emph{countable chain condition} (ccc)
+%% if every antichain in $P$ is countable.
+%% \begin{isabelle}
+%%   \isacommand{definition}\isamarkupfalse%
+%%   \ ccc\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+%% \ \ {\isachardoublequoteopen}ccc{\isacharparenleft}P{\isacharcomma}leq{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}A{\isachardot}\ antichain{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}A{\isacharparenright}\ {\isasymlongrightarrow}\ {\isacharbar}A{\isacharbar}\ {\isasymle}\ nat{\isachardoublequoteclose}
+%% \end{isabelle}
 
 \begin{definition}
   A \emph{forcing notion} is a preorder $(P,\leqslant)$ with a maximal element $\mathbbm{1} \in P$.
@@ -106,7 +107,7 @@ A filter is an increasing set $G$ with all its elements being compatible in $G$.
 \ \ {\isachardoublequoteopen}filter{\isacharparenleft}G{\isacharparenright}\ {\isacharequal}{\isacharequal}\ G{\isasymsubseteq}P\ {\isasymand}\ increasing{\isacharparenleft}G{\isacharparenright}\ {\isasymand}\ {\isacharparenleft}{\isasymforall}p{\isasymin}G{\isachardot}\ {\isasymforall}q{\isasymin}G{\isachardot}\ compat{\isacharunderscore}in{\isacharparenleft}G{\isacharcomma}leq{\isacharcomma}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-We conclude this section by introducing the upward closure of a set
+We finally introduce the upward closure of a set
 and proving that the closure of $A$ is a filter if its elements are
 compatible in $A$.
 \begin{isabelle}
