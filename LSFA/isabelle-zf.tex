@@ -107,10 +107,11 @@ We now discuss relativization in Isabelle/ZF. Relativized versions of the
 \noindent The relativized quantifier
 \isa{{\isasymforall}x{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\
   P(x)} is a shorthand for \isa{{\isasymforall}x{\isachardot}\ M(x)
-  {\isasymlongrightarrow} P(x)}. In order to express that a (set)
-satisfies this axiom we use  the coercion
+  {\isasymlongrightarrow} P(x)}. In order to express that a (set) model
+satisfies this axiom we use  the ``coercion''
 \isa{{\isacharhash}{\isacharhash} :: i ={\isachargreater} (i
-  ={\isachargreater} o)} provided by Isabelle/ZF. As a trivial example we
+  ={\isachargreater} o)} (that sends a set $A$ to the predicate
+$\lambda x . (x\in A)$) provided by Isabelle/ZF. As a trivial example we
 can show that the empty set satisfies Foundation:
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
