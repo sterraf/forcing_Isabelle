@@ -15,10 +15,17 @@ FOL. Both of them are  built upon the core library \emph{Pure}.
 In Isabelle/ZF sets are \emph{individuals}, that is terms of type
 \isatt{i} and formulas have type \isatt{o} 
 (akin to a \emph{Bool} type, but at the object level). 
+
+\fbox{Change all this}
+
 As in usual presentations
-of ZF, Isabelle/ZF has only one relation symbol
+of ZF, Isabelle/ZF is has only one relation symbol
 \isatt{\ensuremath{\in}} (equality and inclusion are defined
-using membership); it also features one constant \isatt{\isadigit{0}}
+using membership); 
+
+\fbox{End complaint}
+
+it also features one constant \isatt{\isadigit{0}}
 for the empty set and \isatt{inf} for an infinite set and some other
 set constructors, again terms of type \isatt{i}, to ease the
 developments. The axioms, being formulas, are terms of type \isatt{o};
@@ -32,7 +39,7 @@ the foundation axiom, for example, is formalized as:
 introduces several definitions (for example, pairs and sets defined by
 comprehension using separation) and syntactic abbreviations to keep
 the formalization close to the customary manner of doing mathematics.
-Working with the library and extendig it is quite
+Working with the library and extending it is quite
 straightforward. 
 As an example, we introduce  a new term-former which is combination of
 instances of replacement and separation to speak of the image of a function over some set
@@ -87,7 +94,7 @@ characterization of our new constructor is given by
 %% respect to classes, which in Isabelle/ZF corresponds to predicates over
 %% sets
 We now discuss relativization in Isabelle/ZF. Relativized versions of the
- axioms can be found in the formalization of constructibility. For
+ axioms can be found in the formalization of constructibility \cite{paulson_2003}. For
  example, the relativized Axiom of Foundation is
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
