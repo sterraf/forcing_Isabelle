@@ -1,5 +1,5 @@
 \section{Introduction}\label{sec:introduction}
-Set Theory plays a double role in Mathematics: it is one of its
+Set Theory plays a double role in Mathematics: It is one of its
 possible foundations and also an active research area.
 %
 As it is widely known, Georg Cantor introduced its main concepts and in
@@ -60,6 +60,7 @@ out a very special kind of models:
 model by the underlying set because the relation is fixed.
 %% MIGUEL: feísimo este corte. Quizás refrasear la oración anterior
 %% para que entre en un renglón.
+
 %% MIGUEL: lo que sigue implica que para tener aritmética en ZFC son
 %% necesarios una cantidad infinita de axiomas de ZFC?
 In spite of G\"odel's Second Incompleteness Theorem, one can find
@@ -79,10 +80,14 @@ L\"owenheim-Skolem Theorem, and the Mostowksi Collapse. The reader can
 consult the details in \cite{kunen2011set}. Consistency arguments that
 assume the existence of a ctm $M$ of $\ZFC$ can usually be replaced by
 a model as in Theorem~\ref{th:ctm-finite-axioms}, since a first-order
-proof (e.g.\ of a contradiction)\footnote{We purportedly mention this
-  example because results about the independence of some axiom $A$
-  with respect to $\ZFC$ can be stated as transforming a proof
+proof (e.g.\ of a contradiction)%
+%%%%%%%%%%%%%
+\footnote{It is relevant to this point that 
+  both the approaches by G\"odel and Cohen for showing
+  relative independence of an axiom $A$ 
+  can be use to obtain an algorithm transforming a proof
   concluding a contradiction from $\ZFC+A$ to one from $\ZFC$.}
+%%%%%%%%%%%%%
 involves only finitely many axioms.
 
 %% MIGUEL: Qué significa "portrayal convenient"?
@@ -93,7 +98,8 @@ $L^M$ of the same ``height'' (i.e.\ having the same ordinals)
 that satisfies $\ZFC+\CH$. The sets in $L^M$ are called
 \emph{constructible} and are in a sense ``definable.'' In fact, there
 is a first-order formula $L$ such that $L^M = \{x\in M : M\models
-L(x)\}$.
+L(x)\}$. To show that  $L^M\models \ZFC+\CH$, one uses that the
+$\ZFC+\CH$ holds in $M$.
 
 %% MIGUEL: acá me parece que hay un salto medio abrupto. Por que
 %% es una necesidad primaria? Lo podés relacionar con lo que venía
@@ -101,7 +107,7 @@ L(x)\}$.
 %% MIGUEL: quizás lo que querés decir acá es para probar que vamos
 %% a construir un modelo N a partir de un modelo M; y para probar
 %% que N satisface un axioma, vamos a utilizar que M lo satisface.
-It is a primary need to have a means to correlate  (first-order)
+It is therefore a primary need to have a means to correlate  (first-order)
 properties satisfied by a model $M$ and those of a 
 submodel $N\sbq M$. As a simple example on this, consider 
 %% $M\defi \{\emptyset,\{\emptyset\},\{\{\emptyset\}\}\}$ and
@@ -144,7 +150,7 @@ say then that $\phi$ is \emph{absolute between $N$ and $M$.}
 %% MIGUEL: "truth of axioms in $M$" significa que $M$ satisface los
 %% axiomas?
 The concepts of relativization and absoluteness are central to the
-task of transferring truth of axioms in $M$ to $L^M$, and consitute
+task of transferring truth of axioms in $M$ to $L^M$, and constitute
 the hardest part of Paulson's development.
 
 
@@ -154,11 +160,11 @@ the hardest part of Paulson's development.
 %% MIGUEL: este párrafo necesita correcciones.
 Forcing is a technique to extend countable transitive models of
 $\ZFC$. This process is guaranteed to preserve the $\ZFC$
-axioms but allows to fine-tune what other first order properties the
-extension will have. Given a ctm $M$ of $\ZFC$, a new set $G$ is
-adjoined to $M$ and under some hypothesis ($G$ being ``generic''),
-there exists a smallest model $M[G]$ of $\ZFC$ that includes $M$ and
-contains $G$. 
+axioms while allowing to fine-tune what other first order properties the
+extension will have. Given a ctm $M$  of $\ZFC$ and a set $G$, a new
+ctm  $M[G]$  that includes $M$ and
+contains $G$ is constructed, and under some hypotheses ($G$ being ``generic''),
+$M[G]$ satisfies $\ZFC$.
 
 The easiest way to define genericity is by using a preorder with top
 $\lb\PP,\leq,\1\rb$ in $M$.   
@@ -175,8 +181,7 @@ if it intersects every dense subset of $\PP$ that lies in $M$.
 The Rasiowa-Sikorski lemma states that, fixed a preorder $\PP$, for
 any countable family of dense subsets of $\PP$ there is a filter
 intersecting all of them. Thus, there are generic filters $G$ for
-countable transitive models; the extension of a ctm $M$ by the filter
-$G$ is denoted by $M[G]$. In general, no such $G$ belongs to $M$ and
+countable transitive models. In general, no such $G$ belongs to $M$ and
 therefore the extension $M[G]$ is proper. We formalize the proof of
 the Rasiowa-Sikorski lemma in
 Section~\ref{sec:rasiowa-sikorski-lemma}. A requisite result on a
@@ -184,24 +189,18 @@ version of the Axiom of Choice is formalized in
 Section~\ref{sec:sequence-version-dc}.
 
 %% MIGUEL: redacción alternativa del párrafo siguiente.
-% The elements of $M[G]$ are the decodification of certain elements of
-% $M$, called \emph{names}. The decoding is given by the function
-% $\isa{val}$ which takes the generic filter $G$ as a parameter. To
-% prove that $M$ is contained in $M[G]$ it suffices to give a name for
-% each element of $M$; we define the function \isa{check} which assigns
-% a name for each $x\in M$. Showing that \isa{check(x)\ \isasymin\ M}
-% when \isa{x\ \isasymin\ M} involves some technical issues that will
-% be formalized in a further work. We explain names, \isa{val}, and
-% \isa{check} in Section~\ref{sec:names}.
+Every  $y \in M[G]$ is obtained from an element $\dot y$ of $M$, thus
+elements of $M$ are construed as \emph{names} or codes for elements of
+$M[G]$.
+The decoding is given by the function
+$\val$ which takes the generic filter $G$ as a parameter. To
+prove that $M$ is contained in $M[G]$ it suffices to give a name for
+each element of $M$; we define the function $\chk$ which assigns
+a name for each $x\in M$. Showing that $\chk(x)\in M$
+when $x\in M$ involves some technical issues that will
+be addressed/formalized in a further work. We explain names, $\val$, and
+$\chk$ in Section~\ref{sec:names}.
 
-Elements of $M[G]$ are coded by elements of $M$, and are obtained from
-them by applying a function \isa{val} that uses the generic filter as
-a parameter. In order to show that $M[G]$ does extend $M$, we
-formalize the function \isa{check} that given an element $x\in M$
-provides with a code (a ``name'') for it. Show that this name belongs
-to $M$ involves some technical issues that will be addressed in a
-further work. This is all explained in Section~\ref{sec:names}.
- 
 A central part of this formalization project involves showing that
 $\ZFC$ holds in the generic extension. This is most relevant since
 forcing is essentially the only known way to \emph{extend} models of
