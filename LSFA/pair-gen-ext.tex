@@ -17,7 +17,7 @@ other two:
 \ \ \ \ {\isachardoublequoteopen}upair{\isacharparenleft}C{\isacharcomma}a{\isacharcomma}b{\isacharcomma}z{\isacharparenright}\ {\isacharequal}{\isacharequal}\ a\ {\isasymin}\ z\ {\isasymand}\ b\ {\isasymin}\ z\ {\isasymand}\ {\isacharparenleft}{\isasymforall}x{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ x{\isasymin}z\ {\isasymlongrightarrow}\ x\ {\isacharequal}\ a\ {\isasymor}\ x\ {\isacharequal}\ b{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 %
-Then the fact that Pairing axiom holds in $C$ is stated as follows.
+Then the fact that Pairing axiom holds in \isa{C} is stated as follows.
 %
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
@@ -74,34 +74,15 @@ $M$ is transitive).
 \ {\isacharparenleft}rule\ pairs{\isacharunderscore}in{\isacharunderscore}M{\isacharcomma}simp{\isacharunderscore}all\ add{\isacharcolon}\ upair{\isacharunderscore}ax{\isacharunderscore}def\ one{\isacharunderscore}in{\isacharunderscore}M{\isacharparenright}%
 \end{isabelle}
 
-In order to prove (\ref{item:2}), we need the following lemma, characterizing the $\val$ function:
-
-\begin{isabelle}
-\isacommand{lemma}\isamarkupfalse%
-\ def{\isacharunderscore}val{\isacharcolon}\ \ {\isachardoublequoteopen}x{\isasymin}M\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}\ {\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}t{\isacharparenright}\ {\isachardot}{\isachardot}\ t{\isasymin}domain{\isacharparenleft}x{\isacharparenright}\ {\isacharcomma}\ {\isasymexists}p{\isasymin}P\ {\isachardot}\ \ {\isasymlangle}t{\isacharcomma}\ p{\isasymrangle}{\isasymin}x\ {\isasymand}\ p\ {\isasymin}\ G\ {\isacharbraceright}{\isachardoublequoteclose}
-\end{isabelle}
-
-
-Using this lemma and asumming $one \in G$ and $\sigma \in M$, the rest of the proof of (ii) is done almost automatically, 
+Under the assumption that \isa{one} belongs to the set \isa{G},
+(\ref{item:2}) follows from \isa{def\_val} almost automatically:
 
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ valsigma\ {\isacharcolon}\isanewline
 \ \ {\isachardoublequoteopen}one\ {\isasymin}\ G\ {\isasymLongrightarrow}\ {\isacharbraceleft}{\isasymlangle}{\isasymtau}{\isacharcomma}one{\isasymrangle}{\isacharcomma}{\isasymlangle}{\isasymrho}{\isacharcomma}one{\isasymrangle}{\isacharbraceright}\ {\isasymin}\ M\ {\isasymLongrightarrow}\isanewline
 \ \ \ val{\isacharparenleft}G{\isacharcomma}{\isacharbraceleft}{\isasymlangle}{\isasymtau}{\isacharcomma}one{\isasymrangle}{\isacharcomma}{\isasymlangle}{\isasymrho}{\isacharcomma}one{\isasymrangle}{\isacharbraceright}{\isacharparenright}\ {\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isacharcomma}val{\isacharparenleft}G{\isacharcomma}{\isasymrho}{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
-
-\isacommand{apply}\isamarkupfalse%
-\ {\isacharparenleft}insert\ one{\isacharunderscore}in{\isacharunderscore}P{\isacharparenright}\isanewline
-\ \ \isacommand{apply}\isamarkupfalse%
-\ {\isacharparenleft}rule\ trans{\isacharparenright}\isanewline
-\ \ \ \isacommand{apply}\isamarkupfalse%
-\ {\isacharparenleft}rule\ def{\isacharunderscore}val{\isacharcomma}assumption{\isacharparenright}\isanewline
-\ \ \isacommand{apply}\isamarkupfalse%
-\ {\isacharparenleft}auto\ simp\ add{\isacharcolon}\ Sep{\isacharunderscore}and{\isacharunderscore}Replace{\isacharparenright}\isanewline
-\isacommand{done}\isamarkupfalse%
 \end{isabelle}
 
-Thereby, with (i) and (ii) the preservation of pairing in $M[G]$ is proved. The rest
-of the proof is only bureaucracy so we don't show it.
-
+This ends the proof of the Pairing Axiom in $M[G]$.
 
