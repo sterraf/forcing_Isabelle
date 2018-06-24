@@ -1,12 +1,59 @@
 \section{Names}
 \label{sec:names}
+In this section we formalize the function $\val$ that allows to
+construct the elements of the generic extension $M[G]$ from elements
+the ctm $M$ and the generic filter $G$. The definition of $\val$
+can be written succintly as
+%
+\begin{equation}\label{eq:def-val}
+\val(G,\tau)\defi \{\val(G,\sigma) : \exists p\in \PP
+(\lb\sigma,p\rb\in\tau \y p\in G)\}.
+\end{equation}
+%
+This proceeds by well-founded recursion on the relation
+$\mathit{ed}$:
+\[
+x \mathrel{\mathit{ed}} y \iff \exists p : \lb x,p\rb\in y.
+\]
+Recall that in $\ZFC$, an ordered pair $\lb x,y \rb$ is the set
+$\{\{x\},\{x,y\}\}$. Hence this relation is well-founded since $\in$
+is by the Foundation Axiom.
 
+The  formalization of $\val$ in Isabelle/ZF involves the function
+\isa{wfrec}, which takes as an argument a well-founded relation of
+type \isa{i}, i.e.\ a set of pairs. Therefore we restrict
+$\mathit{ed}$ above to a set.
+%
+\begin{isabelle}
+\isacommand{definition}\isamarkupfalse%
+\isanewline
+\ \ edrel\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}edrel{\isacharparenleft}A{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isacharbraceleft}{\isacharless}x{\isacharcomma}y{\isachargreater}\ {\isasymin}\ A{\isacharasterisk}A\ {\isachardot}\ x\ {\isasymin}\ domain{\isacharparenleft}y{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+%
+Since \isa{edrel(A)} is a subset of a  well-founded relation (the
+transitive closure of the membership relation restricted to \isa{A}),
+then it is well-founded as well.
 
-The forcing idea consists of finding a model extending $M$ such that
-it satisfies $\ZFC + \neg \CH$. This model is called the $\textit{generic extension}$
-$M[G]$, where $G$ is a \emph{$\calD$-generic} filter in $P$.
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ edrel{\isacharunderscore}sub{\isacharunderscore}memrel{\isacharcolon}\ {\isachardoublequoteopen}edrel{\isacharparenleft}A{\isacharparenright}\ {\isasymsubseteq}\ trancl{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+\dots
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ wf{\isacharunderscore}edrel\ {\isacharcolon}\ {\isachardoublequoteopen}wf{\isacharparenleft}edrel{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+%
+%
+\isacommand{apply}\isamarkupfalse%
+\ {\isacharparenleft}rule{\isacharunderscore}tac\ wf{\isacharunderscore}subset\ {\isacharbrackleft}of\ {\isachardoublequoteopen}trancl{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}{\isacharbrackright}{\isacharparenright}\isanewline
+\ \ \isacommand{apply}\isamarkupfalse%
+\ {\isacharparenleft}auto\ simp\ add{\isacharcolon}edrel{\isacharunderscore}sub{\isacharunderscore}memrel\ wf{\isacharunderscore}trancl\ wf{\isacharunderscore}Memrel{\isacharparenright}\isanewline
+\ \ \isacommand{done}\isamarkupfalse%
+%
+\end{isabelle}
 
-The elements of $M[G]$ will be constructed by the following function $\val$:
+We now turn to the definition of $\val$.
 
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
@@ -17,30 +64,16 @@ The elements of $M[G]$ will be constructed by the following function $\val$:
 \isacommand{definition}\isamarkupfalse%
 \isanewline
 \ \ val\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}\ {\isacharequal}{\isacharequal}\ wfrec{\isacharparenleft}edrel{\isacharparenleft}eclose{\isacharparenleft}M{\isacharparenright}{\isacharparenright}{\isacharcomma}\ {\isasymtau}\ {\isacharcomma}Hv{\isacharparenleft}G{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
-\isanewline
+\ \ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}\ {\isacharequal}{\isacharequal}\ wfrec{\isacharparenleft}edrel{\isacharparenleft}eclose{\isacharparenleft}M{\isacharparenright}{\isacharparenright}{\isacharcomma}\ {\isasymtau}\ {\isacharcomma}Hv{\isacharparenleft}G{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-
-This definition proceeds by well-founded recursion on relation $\edrel(\eclose(M))$:
-
-\begin{isabelle}
-\isacommand{definition}\isamarkupfalse%
-\isanewline
-\ \ edrel\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ {\isachardoublequoteopen}edrel{\isacharparenleft}A{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isacharbraceleft}{\isacharless}x{\isacharcomma}y{\isachargreater}\ {\isasymin}\ A{\isacharasterisk}A\ {\isachardot}\ x\ {\isasymin}\ domain{\isacharparenleft}y{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
-\end{isabelle}
-
-We can characterize the definition of $\val$ with the following lemma:
-
+Then we can obtain the recursive expression~(\ref{eq:def-val}) in the
+following lemma:
+%
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ def{\isacharunderscore}val{\isacharcolon}\ \ {\isachardoublequoteopen}x{\isasymin}M\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}\ {\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}t{\isacharparenright}\ {\isachardot}{\isachardot}\ t{\isasymin}domain{\isacharparenleft}x{\isacharparenright}\ {\isacharcomma}\ {\isasymexists}p{\isasymin}P\ {\isachardot}\ \ {\isasymlangle}t{\isacharcomma}\ p{\isasymrangle}{\isasymin}x\ {\isasymand}\ p\ {\isasymin}\ G\ {\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
-
-Thus, determining $\val(G,\tau)$ uses the values $\val(G,\sigma)$ for smaller $\sigma$ :
-
-    $\langle \sigma , \tau \rangle \in \edrel(\Memrel(M)) $ iff $\langle \sigma , p \rangle \in \tau$ with $p \in G$. 
 
 %%% Local Variables:
 %%% mode: latex
