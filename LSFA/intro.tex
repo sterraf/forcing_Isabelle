@@ -1,6 +1,6 @@
 \section{Introduction}\label{sec:introduction}
-Set Theory play a double role in Mathematics: It is one of its
-possible foundations, and also an active research area.
+Set Theory plays a double role in Mathematics: it is one of its
+possible foundations and also an active research area.
 %
 As it is widely known, Georg Cantor introduced its main concepts and in
 particular showed the fundamental result that the real line, $\R$  is not
@@ -11,37 +11,38 @@ most important question in the field, written as a conjecture:
   coordinable with $\R$.
 \end{quote}
 
-The current  axiomatic foundation of Set Theory is through 
-first-order logic and uses the axioms by  Zermelo, Fraenkel, and
-including the Axiom of Choice ($\AC$) among them. This theory is
-known by the $\ZFC$ acronym. G\"odel showed that $\CH$ can't be
-refuted using the $\ZFC$, unless the latter are inconsistent (we say
-that \emph{$\CH$ is relatively 
-  consistent with  $\ZFC$}). For a while, this result left the
-possibility that one might be able show that $\ZFC\models \CH$, but in
-a groundbreaking work \cite{Cohen-CH-PNAS}, Paul Cohen discovered the
-technique of 
-\emph{forcing} and showed that $\neg\CH$ is relatively consistent with
-$\ZFC$. Forcing has since then been used for showing innumerable
-independence results and to perform mathematical constructions.
+The current axiomatic foundation of Set Theory is through first-order
+logic and uses the axioms devised by Zermelo and Fraenkel, including
+the Axiom of Choice ($\AC$) among them. This theory is known by the
+$\ZFC$ acronym. G\"odel \cite{godel-L} showed that $\CH$ cannot be refuted using
+$\ZFC$, unless this theory itself is inconsistent (we say that
+\emph{$\CH$ is relatively consistent with $\ZFC$}). For a while, this
+result left the possibility that one might be able to show
+$\ZFC\models \CH$, but in a groundbreaking work \cite{Cohen-CH-PNAS},
+Paul Cohen discovered the technique of \emph{forcing} and proved that
+$\neg\CH$ is relatively consistent with $\ZFC$. Forcing has been used
+since then for showing innumerable independence results and to perform
+mathematical constructions.
 
 A great part of G\"odel's work on this subject has been formalized in
-Isabelle by Lawrence Paulson. This paper formalizes a first part of
-the machinery of forcing. In the next Subsections we discuss some of
-the set-theoretical  details involved.   
+Isabelle by Larry Paulson. This paper formalizes a first part of the
+machinery of forcing. In the rest of the introduction we discuss some
+of the set-theoretical details involved and explain briefly Paulson's
+formalization.
 
 \subsection{Models of $\ZFC$}
-By G\"odel's Second Incompleteness Theorem, we can't  prove that
+By G\"odel's Second Incompleteness Theorem, we cannot  prove that
 there exists a model of $\ZFC$. More formally, if we assume that
 mathematical proofs can be encoded as theorems of $\ZFC$ and that
 the latter do not lead to contradictions (i.e., $\ZFC$ is
-\emph{consistent}), then we can't prove that there exists a set $M$
+\emph{consistent}), then we cannot prove that there exists a set $M$
 and a binary relation $E$ such that $\lb M,E\rb$ satisfies the $\ZFC$
 axioms.
 
-A relative consistency proof for an axiom $A$ is then obtained by assuming that such a
-$\lb M,E\rb$ exists, and constructing another $\lb M',E'\rb$
-satisfying $\ZFC + A$. We single out a very special kind of models:
+A relative consistency proof for an axiom $A$ is then obtained by
+assuming that there exists a model of ZFC, say $\lb M,E\rb$, and
+constructing another model $\lb M',E'\rb$ for $\ZFC + A$. We single
+out a very special kind of models:
 %
 \begin{definition}\label{def:transitive-model}
   \begin{enumerate}
@@ -55,11 +56,14 @@ satisfying $\ZFC + A$. We single out a very special kind of models:
   \end{enumerate}
 \end{definition}
 %
-As in the last sentence, one usually uses the underlying set to refer to a transitive
-model, since the relation is fixed. 
-
-Despite G\"odel's Second, we can find transitive models for every
-finite fragment of $\ZFC$. More precisely, 
+\noindent As in the last sentence, one usually refer to a transitive
+model by the underlying set because the relation is fixed.
+%% MIGUEL: feísimo este corte. Quizás refrasear la oración anterior
+%% para que entre en un renglón.
+%% MIGUEL: lo que sigue implica que para tener aritmética en ZFC son
+%% necesarios una cantidad infinita de axiomas de ZFC?
+In spite of G\"odel's Second Incompleteness Theorem, one can find
+transitive models for every finite fragment of $\ZFC$. More precisely,
 %
 \begin{theorem}\label{th:ctm-finite-axioms}
   For each finite subset
@@ -67,14 +71,22 @@ finite fragment of $\ZFC$. More precisely,
     transitive model of $\Phi$''} is a theorem of $\ZFC$.
 \end{theorem}
 %
-This follows by a
-combination of three results (the Reflection Principle,
-L\"owenheim-Skolem Theorem, and the Mostowksi Collapse). The reader
-can consult the details in \cite{kunen2011set}. Consistency arguments that assume
-the existence of a ctm $M$ of $\ZFC$ can usually be replaced by a
-model as in Theorem~\ref{th:ctm-finite-axioms}, since a first-order
-proof (e.g.\ of contradiction) involves only finitely many axioms.
+%% MIGUEL: controlar que tiene sentido lo que menciono en la nota al pie!
+%% MIGUEL: Me da la sensación que podemos promover lo de la nota al pie
+%% al cuerpo y luego explicar que por eso es importante el teorema.
+This follows by a combination of the Reflection Principle, the
+L\"owenheim-Skolem Theorem, and the Mostowksi Collapse. The reader can
+consult the details in \cite{kunen2011set}. Consistency arguments that
+assume the existence of a ctm $M$ of $\ZFC$ can usually be replaced by
+a model as in Theorem~\ref{th:ctm-finite-axioms}, since a first-order
+proof (e.g.\ of a contradiction)\footnote{We purportedly mention this
+  example because results about the independence of some axiom $A$
+  with respect to $\ZFC$ can be stated as transforming a proof
+  concluding a contradiction from $\ZFC+A$ to one from $\ZFC$.}
+involves only finitely many axioms.
 
+%% MIGUEL: Qué significa "portrayal convenient"?
+%% MIGUEL: ¿por qué esto es conveniente para esta introducción?
 Assume that $M$ is a ctm of $\ZFC$. In a portrayal convenient for this
 introduction, G\"odel showed that $M$ contains a minimal submodel
 $L^M$ of the same ``height'' (i.e.\ having the same ordinals)
@@ -83,6 +95,12 @@ that satisfies $\ZFC+\CH$. The sets in $L^M$ are called
 is a first-order formula $L$ such that $L^M = \{x\in M : M\models
 L(x)\}$.
 
+%% MIGUEL: acá me parece que hay un salto medio abrupto. Por que
+%% es una necesidad primaria? Lo podés relacionar con lo que venía
+%% del párrafo anterior?
+%% MIGUEL: quizás lo que querés decir acá es para probar que vamos
+%% a construir un modelo N a partir de un modelo M; y para probar
+%% que N satisface un axioma, vamos a utilizar que M lo satisface.
 It is a primary need to have a means to correlate  (first-order)
 properties satisfied by a model $M$ and those of a 
 submodel $N\sbq M$. As a simple example on this, consider 
@@ -123,13 +141,17 @@ straightforward way:
 It can be shown elementarily that if $M$ and $N$ are transitive,
 $\phi^N$ holds if and only if $\phi^M$ holds,  for $x,y,z\in N$. We
 say then that $\phi$ is \emph{absolute between $N$ and $M$.}
-
-The concepts of relativization and absoluteness are central to task of
-transferring truth of axioms in $M$ to  $L^M$, and consitute the
-hardest part of Paulson's development. 
+%% MIGUEL: "truth of axioms in $M$" significa que $M$ satisface los
+%% axiomas?
+The concepts of relativization and absoluteness are central to the
+task of transferring truth of axioms in $M$ to $L^M$, and consitute
+the hardest part of Paulson's development.
 
 
 \subsection{Forcing}
+%% MIGUEL: no veo la necesidad del adversativo but, pondría and.
+%% MIGUEL: Qué significa "a new set $G$ is adjoined to $M$"?
+%% MIGUEL: este párrafo necesita correcciones.
 Forcing is a technique to extend countable transitive models of
 $\ZFC$. This process is guaranteed to preserve the $\ZFC$
 axioms but allows to fine-tune what other first order properties the
@@ -145,37 +167,54 @@ In Section~\ref{sec:forcing-notions} we formalize the definitions of
 is an $M$-generic filter
 if it intersects every dense subset of $\PP$ that lies in $M$.
 
-The  Rasiowa-Sikorski lemma  states that that for every countable 
-family of dense subsets of a preorder there is a filter that intersects them
-all. Thus, there are generic filters $G$ for countable transitive models.  In
-general, no such  $G$ belongs to $M$ and therefore the extension
-$M[G]$ is proper. We formalize the proof of the Rasiowa-Sikorski lemma
-in Section~\ref{sec:rasiowa-sikorski-lemma}. A requisite result on
-a version of the Axiom of Choice is formalized in
+%% MIGUEL: Tenemos que dado un ctm M, existe un filtro genérico G.
+%% ¿Dónde existe? Una primera lectura de ignorante me dice "existe
+%% en M", pero eso me lo desmiente la siguiente oración. ¿Juega algún
+%% rol absolutez? Si es así estaría bien explicitarlo.
+%% MIGUEL: la última oración me resulta un poco difícil de entender.
+The Rasiowa-Sikorski lemma states that, fixed a preorder $\PP$, for
+any countable family of dense subsets of $\PP$ there is a filter
+intersecting all of them. Thus, there are generic filters $G$ for
+countable transitive models; the extension of a ctm $M$ by the filter
+$G$ is denoted by $M[G]$. In general, no such $G$ belongs to $M$ and
+therefore the extension $M[G]$ is proper. We formalize the proof of
+the Rasiowa-Sikorski lemma in
+Section~\ref{sec:rasiowa-sikorski-lemma}. A requisite result on a
+version of the Axiom of Choice is formalized in
 Section~\ref{sec:sequence-version-dc}.
 
-Elements of $M[G]$ are coded by the elements of $M$, and are obtained
-from them by applying a function \isatt{val} that uses the generic filter
-as a parameter. In order to show
-that $M[G]$ does  extend $M$, we formalize the function \isatt{check}
-that given an element $x\in M$ provides with a code (a ``name'') for
-it. Show that this name belongs to $M$ involves some technical issues
-that will be addressed in a further work. This is all explained in
-Section~\ref{sec:names}.
- 
+%% MIGUEL: redacción alternativa del párrafo siguiente.
+% The elements of $M[G]$ are the decodification of certain elements of
+% $M$, called \emph{names}. The decoding is given by the function
+% $\isa{val}$ which takes the generic filter $G$ as a parameter. To
+% prove that $M$ is contained in $M[G]$ it suffices to give a name for
+% each element of $M$; we define the function \isa{check} which assigns
+% a name for each $x\in M$. Showing that \isa{check(x)\ \isasymin\ M}
+% when \isa{x\ \isasymin\ M} involves some technical issues that will
+% be formalized in a further work. We explain names, \isa{val}, and
+% \isa{check} in Section~\ref{sec:names}.
 
-A central part of this formalization project involves showing that the
+Elements of $M[G]$ are coded by elements of $M$, and are obtained from
+them by applying a function \isa{val} that uses the generic filter as
+a parameter. In order to show that $M[G]$ does extend $M$, we
+formalize the function \isa{check} that given an element $x\in M$
+provides with a code (a ``name'') for it. Show that this name belongs
+to $M$ involves some technical issues that will be addressed in a
+further work. This is all explained in Section~\ref{sec:names}.
+ 
+A central part of this formalization project involves showing that
 $\ZFC$ holds in the generic extension. This is most relevant since
 forcing is essentially the only known way to \emph{extend} models of
 $\ZFC$ (while preserving ordinals). The most difficult step to achieve
 this goal is to define the \emph{forcing relation}, that allows to
 connect satisfaction in $M$ to that of $M[G]$; this is needed to show
-that the axiom schemes of Separation and Replacement hold in $M[G]$,
-as well as the Powerset axiom. In this work we tackle the Pairing
-Axiom. This doesn't require the 
-forcing relation, but provides an illustration of the use of names.  
+that the Powerset axiom and the axiom schemes of Separation and
+Replacement hold in $M[G]$. In this work we tackle the Pairing
+Axiom. This doesn't require the forcing relation, but provides an
+illustration of the use of names.
    
-We continue with a brief description of the Isabelle framework. 
+%We continue with a brief description of the Isabelle framework. 
+
 %%% Local Variables:
 %%% mode: latex
 %%% ispell-local-dictionary: "american"
