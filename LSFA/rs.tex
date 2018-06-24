@@ -108,7 +108,7 @@ the sequence.
 
 \begin{isabelle}%
 \isacommand{definition}\isamarkupfalse%
-\ {\isacharparenleft}\isakeyword{in}\ countable{\isacharunderscore}generic{\isacharparenright}\isanewline
+
 \ \ D{\isacharunderscore}generic\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
 \ \ {\isachardoublequoteopen}D{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}\ {\isacharequal}{\isacharequal}\ filter{\isacharparenleft}G{\isacharparenright}\ {\isasymand}\ {\isacharparenleft}{\isasymforall}n{\isasymin}nat{\isachardot}{\isacharparenleft}{\isasymD}{\isacharbackquote}n{\isacharparenright}{\isasyminter}G{\isasymnoteq}{\isadigit{0}}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
@@ -116,7 +116,7 @@ the sequence.
 We can now state the Rasiowa-Sikorski Lemma.
 \begin{isabelle}%
 \isacommand{theorem}\isamarkupfalse%
-\ {\isacharparenleft}\isakeyword{in}\ countable{\isacharunderscore}generic{\isacharparenright}\ rasiowa{\isacharunderscore}sikorski{\isacharcolon}\isanewline
+\ rasiowa{\isacharunderscore}sikorski{\isacharcolon}\isanewline
 \ \ {\isachardoublequoteopen}p{\isasymin}P\ {\isasymLongrightarrow}\ {\isasymexists}G{\isachardot}\ p{\isasymin}G\ {\isasymand}\ D{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
@@ -130,7 +130,7 @@ satisfies its hypothesis:
 
 \begin{isabelle}%
 \isacommand{lemma}\isamarkupfalse%
-\ {\isacharparenleft}\isakeyword{in}\ countable{\isacharunderscore}generic{\isacharparenright}\ RS{\isacharunderscore}relation{\isacharcolon}\isanewline
+\  RS{\isacharunderscore}relation{\isacharcolon}\isanewline
 \ \ \isakeyword{assumes}\isanewline
 \ \ \ \ \ \ \ \ {\isadigit{1}}{\isacharcolon}\ \ {\isachardoublequoteopen}x{\isasymin}P{\isachardoublequoteclose}\isanewline
 \ \ \ \ \ \ \ \ \ \ \ \ \isakeyword{and}\isanewline

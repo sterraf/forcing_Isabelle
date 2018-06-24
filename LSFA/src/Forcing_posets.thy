@@ -139,15 +139,6 @@ lemma  aux_RS1:  "f \<in> N \<rightarrow> P \<Longrightarrow> n\<in>N \<Longrigh
   apply (simp add: image_fun, blast)
   done    
 end
-  
-locale countable_generic = forcing_notion +
-  fixes \<D>
-  assumes countable_subs_of_P:  "\<D> \<in> nat\<rightarrow>Pow(P)"
-  and     seq_of_denses:        "\<forall>n \<in> nat. dense(\<D>`n)"
-
-definition (in countable_generic)
-  D_generic :: "i\<Rightarrow>o" where
-  "D_generic(G) == filter(G) \<and> (\<forall>n\<in>nat.(\<D>`n)\<inter>G\<noteq>0)"
 
 lemma refl_monot_domain: "refl(B,r) \<Longrightarrow> A\<subseteq>B \<Longrightarrow> refl(A,r)"  
   apply (drule subset_iff [THEN iffD1])
@@ -192,8 +183,21 @@ lemma decr_seq_linear: "refl(P,leq) \<Longrightarrow> f \<in> nat \<rightarrow> 
      apply (simp+)
     done
 
+  
+locale countable_generic = forcing_notion +
+  fixes \<D>
+  assumes countable_subs_of_P:  "\<D> \<in> nat\<rightarrow>Pow(P)"
+  and     seq_of_denses:        "\<forall>n \<in> nat. dense(\<D>`n)"
 
-lemma (in countable_generic) RS_relation:
+begin
+  
+definition
+  D_generic :: "i\<Rightarrow>o" where
+  "D_generic(G) == filter(G) \<and> (\<forall>n\<in>nat.(\<D>`n)\<inter>G\<noteq>0)"
+
+
+
+lemma RS_relation:
   assumes
         1:  "x\<in>P"
             and
@@ -220,7 +224,7 @@ proof -
   then show ?thesis using 1 and 2 by auto
 qed
         
-theorem (in countable_generic) rasiowa_sikorski:
+theorem rasiowa_sikorski:
   "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> D_generic(G)"
 proof -
   assume 
@@ -279,5 +283,7 @@ proof -
   with gen and fil show ?thesis  
     unfolding D_generic_def by auto
 qed
-
+  
+end
+  
 end
