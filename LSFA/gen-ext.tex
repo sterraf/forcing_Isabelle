@@ -9,7 +9,7 @@ derivable from $\ZFC$; this was done by Cohen in its seminal work
 
 \subsection{The generic filter}
 The following locale gathers the data needed to ensure the 
-existence of an $M$-generic filter for a poset $P$.
+existence of an $M$-generic filter for a poset \isa{P}.
 
 \begin{isabelle}
 \isacommand{locale}\isamarkupfalse%
@@ -22,7 +22,7 @@ existence of an $M$-generic filter for a poset $P$.
 \end{isabelle}
 
 An immediate consequence of the Rasiowa-Sikorski Lemma is the
-existence of an $M$-generic filter for a poset $P$.
+existence of an $M$-generic filter for a poset \isa{P}.
 
 \begin{isabellebody}
 \isanewline
@@ -31,7 +31,7 @@ existence of an $M$-generic filter for a poset $P$.
 \ \ {\isachardoublequoteopen}p{\isasymin}P\ {\isasymLongrightarrow}\ {\isasymexists}G{\isachardot}\ p{\isasymin}G\ {\isasymand}\ M{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \end{isabellebody}
 
-By defining an appropriate countable sequence of dense subsets of $P$,
+By defining an appropriate countable sequence of dense subsets of \isa{P},
 \begin{isabellebody}
 \isanewline
 \ \ \isacommand{let}\isamarkupfalse%
