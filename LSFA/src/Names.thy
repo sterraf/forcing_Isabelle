@@ -231,8 +231,7 @@ proof -
     by auto
 qed
 
-lemma valcheck : "y \<in> M \<Longrightarrow> one \<in> P \<Longrightarrow> one \<in> G \<Longrightarrow> 
-       \<forall>x\<in>M. check(x) \<in> M \<Longrightarrow> val(G,check(y))  = y"
+lemma valcheck : "y \<in> M \<Longrightarrow> one \<in> G \<Longrightarrow> \<forall>x\<in>M. check(x) \<in> M \<Longrightarrow> val(G,check(y))  = y"
 proof (induct rule:eps_induct)
   case (1 y)
   then show ?case
@@ -252,18 +251,17 @@ proof (induct rule:eps_induct)
       using def_val and Eq2 by simp
     also have
                 " ... =  {val(G,t) .. t\<in>domain(?C) , \<exists>w\<in>y. t=check(w) }"
-      using 1 by simp
+      using 1 and one_in_P by simp
     also have
                 " ... = {val(G,check(w)) . w\<in>y }"
       by force
     also have
                 " ... = y"
       using 1 and w_in_M by simp        
-    finally have "val(G,check(y)) = y" (* show? *)
+    finally show "val(G,check(y)) = y" 
       using 1 by simp
-    then show ?thesis .
-    qed
-   qed
+  qed
+qed
 end    (*************** CONTEXT: forcing_data *****************)
 
 end
