@@ -1,32 +1,36 @@
 \section{Pairing in the generic extension}
 \label{sec:pairing-generic-extension}
+Given a predicate
+\isa{C\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}},
+we can consider the \emph{class} of all sets \isa{x} such that
+\isa{C(x)}. In \cite{MR2507047} a large corpus of set-theoretical
+concepts are expressed in relative form.
 
-An important goal of our work is to show that the  $\ZFC$
-axioms hold in the generic extension. We formalize in this section
-the corresponding proof for the  Pairing Axiom.
-
-The Pairing Axiom relative to a class $C$ asserts that for all pair of elements
-in $C$ there exists another containing exactly them. This is defined in
-Paulson's library:
-
+In the case of the Pairing Axiom the following definition in 
+Paulson's formalization captures
+what a class \isa{C} believes about a set being the unordered pair of
+other two:
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
 \isanewline
 \ \ upair\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbrackleft}i{\isasymRightarrow}o{\isacharcomma}i{\isacharcomma}i{\isacharcomma}i{\isacharbrackright}\ {\isasymRightarrow}\ o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ \ \ {\isachardoublequoteopen}upair{\isacharparenleft}C{\isacharcomma}a{\isacharcomma}b{\isacharcomma}z{\isacharparenright}\ {\isacharequal}{\isacharequal}\ a\ {\isasymin}\ z\ {\isasymand}\ b\ {\isasymin}\ z\ {\isasymand}\ {\isacharparenleft}{\isasymforall}x{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ x{\isasymin}z\ {\isasymlongrightarrow}\ x\ {\isacharequal}\ a\ {\isasymor}\ x\ {\isacharequal}\ b{\isacharparenright}{\isachardoublequoteclose}\isanewline
-\isanewline
+\ \ \ \ {\isachardoublequoteopen}upair{\isacharparenleft}C{\isacharcomma}a{\isacharcomma}b{\isacharcomma}z{\isacharparenright}\ {\isacharequal}{\isacharequal}\ a\ {\isasymin}\ z\ {\isasymand}\ b\ {\isasymin}\ z\ {\isasymand}\ {\isacharparenleft}{\isasymforall}x{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ x{\isasymin}z\ {\isasymlongrightarrow}\ x\ {\isacharequal}\ a\ {\isasymor}\ x\ {\isacharequal}\ b{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+%
+Then the fact that Pairing axiom holds in $C$ is stated as follows.
+%
+\begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
 \isanewline
 \ \ upair{\isacharunderscore}ax\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharparenleft}i{\isasymRightarrow}o{\isacharparenright}\ {\isasymRightarrow}\ o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
 \ \ \ \ {\isachardoublequoteopen}upair{\isacharunderscore}ax{\isacharparenleft}C{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}x{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ {\isasymforall}y{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ {\isasymexists}z{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ upair{\isacharparenleft}C{\isacharcomma}x{\isacharcomma}y{\isacharcomma}z{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-We state the main result of this Section in the context
-\isatt{forcing{\isacharunderscore}data}.  Recall that the operator
-\isatt{\#\#}  converts a set into a  set into a class (i.e., a predicate):
-
+In order use the \isa{upair{\isacharunderscore}ax} for a set model, we
+use the \isatt{\#\#}  operator.  We state the main result of this
+Section in the context \isatt{forcing{\isacharunderscore}data}.  
+%
 \begin{isabelle}
-  \isanewline
 \isacommand{lemma}\isamarkupfalse%
 \ pair{\isacharunderscore}preserv\ {\isacharcolon}\ \isanewline
 \ \ {\isachardoublequoteopen}one\ {\isasymin}\ G\ {\isasymLongrightarrow}\ upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}\ {\isasymLongrightarrow}\ upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharparenright}{\isachardoublequoteclose}
