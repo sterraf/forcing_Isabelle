@@ -1,4 +1,21 @@
-\section{Future work}
+\section{Conclusions and future work}
+There are several technical milestones that have to be traversed in the
+course of a formalization of the theory of forcing. The first and
+obvious one is the bulk of set- and meta-theoretical concepts needed to work
+with. This pushed us, in a sense,  into building on top of Isabelle/ZF,
+since we know of no other development in set theory of such
+depth. In this paper we worked on setting the stage for the work with
+generic extensions; in particular, this involves some purely mathematical
+results, as the Rasiowa-Sikorski lemma. 
+
+Other milestones in this formalization project involve the definition
+of the forcing relation, proving the Fundamental Theorem of forcing
+(that relates truth in $M$ to that in $M[G]$), and using it to show
+that $M[G]\models \ZFC$. The theory is extremely modular in the sense
+that the last goal does not depend on the proof of the Fundamental
+Theorem nor on the definition of the forcing relation. In a next work,
+we will obtain the last goal.
+
 \begin{itemize}
 \item Write Isar versions of most proofs in the development.
 \item Develop an interface between Paulson's relativization results
