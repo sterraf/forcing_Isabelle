@@ -8,27 +8,31 @@ depth. In this paper we worked on setting the stage for the work with
 generic extensions; in particular, this involves some purely mathematical
 results, as the Rasiowa-Sikorski lemma. 
 
-Other milestones in this formalization project involve the definition
-of the forcing relation, proving the Fundamental Theorem of forcing
-(that relates truth in $M$ to that in $M[G]$), and using it to show
-that $M[G]\models \ZFC$. The theory is extremely modular in the sense
+Other milestones in this formalization project
+involve 
+\begin{enumerate}
+\item the definition
+  of the forcing relation, 
+\item proving the Fundamental Theorem of forcing
+  (that relates truth in $M$ to that in $M[G]$), and 
+\item using it to show
+  that $M[G]\models \ZFC$. 
+\end{enumerate}
+The theory is very modular and this is
+witnessed by the fact 
 that the last goal does not depend on the proof of the Fundamental
-Theorem nor on the definition of the forcing relation. In a next work,
-we will obtain the last goal.
+Theorem nor on the definition of the forcing relation. Our next task
+will be to obtain the last goal enumerated. 
 
-\begin{itemize}
-\item Write Isar versions of most proofs in the development.
-\item Develop an interface between Paulson's relativization results
-  and countable models $M$ of $\ZFC$. This will show
-  that every such $M$ is closed under well-founded recursion and, in
-  particular, that contains names for each of its
-  elements. Consequently, $M\sbq M[G]$.
-\item Prove that the basic axioms of $\ZFC$ hold in the generic
-  extension. 
-\item After prototyping the forcing relation, prove the Axiom Scheme
-  of Separation (the first that needs to use the machinery of forcing
-  nontrivially).
-\end{itemize}
+To this end, we will develop  an interface between Paulson's
+relativization results and countable models $M$ of $\ZFC$. This will show
+that every such $M$ is closed under well-founded recursion and, in
+particular, that contains names for each of its
+elements. Consequently, the proof of  $M\sbq M[G]$ will be
+complete. A landmark will be to prove the Axiom Scheme
+of Separation (the first that needs to use the machinery of forcing
+nontrivially). As a part of the new formalization, we will provide
+Isar versions of the longer applicative proofs presented in this work
 
 %%% Local Variables:
 %%% mode: latex
