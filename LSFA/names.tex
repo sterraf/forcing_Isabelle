@@ -66,7 +66,6 @@ We now turn to the definition of $\val$.
 \ \ val\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
 \ \ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}\ {\isacharequal}{\isacharequal}\ wfrec{\isacharparenleft}edrel{\isacharparenleft}eclose{\isacharparenleft}M{\isacharparenright}{\isacharparenright}{\isacharcomma}\ {\isasymtau}\ {\isacharcomma}Hv{\isacharparenleft}G{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
-
 Then we can obtain the recursive expression~(\ref{eq:def-val}) in the
 following lemma:
 %
@@ -75,13 +74,24 @@ following lemma:
 \ def{\isacharunderscore}val{\isacharcolon}\ \ {\isachardoublequoteopen}x{\isasymin}M\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}\ {\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}t{\isacharparenright}\ {\isachardot}{\isachardot}\ t{\isasymin}domain{\isacharparenleft}x{\isacharparenright}\ {\isacharcomma}\ {\isasymexists}p{\isasymin}P\ {\isachardot}\ \ {\isasymlangle}t{\isacharcomma}\ p{\isasymrangle}{\isasymin}x\ {\isasymand}\ p\ {\isasymin}\ G\ {\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
 
+We can finally define the generic extension of $M$ by $G$, also
+setting up the notation $M[G]$ for it:
+\begin{isabelle}
+\isacommand{definition}\isamarkupfalse%
+\isanewline
+\ \ GenExt\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \ \ \ \ {\isacharparenleft}{\isachardoublequoteopen}M{\isacharbrackleft}{\isacharunderscore}{\isacharbrackright}{\isachardoublequoteclose}\ {\isadigit{9}}{\isadigit{0}}{\isacharparenright}\isanewline
+\ \ \isakeyword{where}\ {\isachardoublequoteopen}GenExt{\isacharparenleft}G{\isacharparenright}{\isacharequal}{\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isachardot}\ {\isasymtau}\ {\isasymin}\ M{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+
 %% It is to be noted that this results holds under the assumption that
 %% the name \isa{t} is in $M$.
 
 We now provide names for elements in $M$. That is, for each $x\in M$,
 we define $\chk(x)$ (usually denoted by $\check{x}$ in the literature)
 such that $\val(G,\chk(x))=x$. This will show that $M\sbq M[G]$, with
-a caveat we make explicit in the end of this section.
+a caveat we make explicit in the end of this section. As explained in
+the introduction, the fact that $M[G]$ extends $M$ is crucial to show
+that $\ZFC$ holds in the former.
 
 The definition of $\chk(x)$ is a straightforward $\in$-recursion:
 \begin{equation}
@@ -103,7 +113,24 @@ relation restricted to a set \isa{A}, \isa{Memrel(A)}.
 \ \ {\isachardoublequoteopen}check{\isacharparenleft}x{\isacharparenright}\ {\isacharequal}{\isacharequal}\ wfrec{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}{\isacharbraceleft}x{\isacharbraceright}{\isacharparenright}{\isacharparenright}{\isacharcomma}\ x\ {\isacharcomma}\ Hcheck{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 Here, \isa{eclose} returns the (downward) $\in$-closure of its
-argument.
+argument. The main result is stated as follows:
+
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ valcheck\ {\isacharcolon}\ {\isachardoublequoteopen}y\ {\isasymin}\ M\ {\isasymLongrightarrow}\ one\ {\isasymin}\ G\ {\isasymLongrightarrow}\ {\isasymforall}x{\isasymin}M{\isachardot}\ check{\isacharparenleft}x{\isacharparenright}\ {\isasymin}\ M\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}check{\isacharparenleft}y{\isacharparenright}{\isacharparenright}\ \ {\isacharequal}\ y{\isachardoublequoteclose}
+\end{isabelle}
+
+On the one hand, the only requirement on the set  \isatt{G} is that it 
+contains the top \isa{one} of the poset \isa{P}. On the other hand, it
+is necessary that all the relevant names are indeed in $M$. It
+requires a serious development  to fulfill this assumption. One of the
+hardest parts of Paulson's formalization of constructibility involves
+showing that models are closed under recursive construction. We will
+eventually formalize the that if $M\models\ZFC$ and the arguments of
+\isa{wfrec} are in $M$, then its value also is. This will require
+to adapt to models $M$ several locales defined in \cite{MR2507047}
+that were intended to be used for the class of constructible sets.
+
 
 
 
