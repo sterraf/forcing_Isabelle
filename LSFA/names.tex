@@ -1,14 +1,9 @@
 \section{Names}
 \label{sec:names}
-%%% Local Variables:
-%%% mode: latex
-%%% ispell-local-dictionary: "american"
-%%% TeX-master: "first_steps_into_forcing"
-%%% End:
 
 
 The forcing idea consists of finding a model extending $M$ such that
-it satisfies $ZFC + \neg CH$. This model is called the $\textit{generic extension}$
+it satisfies $\ZFC + \neg \CH$. This model is called the $\textit{generic extension}$
 $M[G]$, where $G$ is a \emph{$\calD$-generic} filter in $P$.
 
 The elements of $M[G]$ will be constructed by the following function $\val$:
@@ -27,7 +22,7 @@ The elements of $M[G]$ will be constructed by the following function $\val$:
 \end{isabelle}
 
 
-This definition proceeds by well-founded recursion on relation $edrel(eclose(M))$:
+This definition proceeds by well-founded recursion on relation $\edrel(\eclose(M))$:
 
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
@@ -45,4 +40,10 @@ We can characterize the definition of $\val$ with the following lemma:
 
 Thus, determining $\val(G,\tau)$ uses the values $\val(G,\sigma)$ for smaller $\sigma$ :
 
-    $\langle \sigma , \tau \rangle \in edrel(Memrel(M)) $ iff $\langle \sigma , p \rangle \in \tau$ with $p \in G$. 
+    $\langle \sigma , \tau \rangle \in \edrel(\Memrel(M)) $ iff $\langle \sigma , p \rangle \in \tau$ with $p \in G$. 
+
+%%% Local Variables:
+%%% mode: latex
+%%% ispell-local-dictionary: "american"
+%%% TeX-master: "first_steps_into_forcing"
+%%% End:
