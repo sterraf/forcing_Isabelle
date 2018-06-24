@@ -118,18 +118,17 @@ set \isa{0 :: i} into a predicate. Isabelle/ZF provides the coercion
 % proof that if a set \isa{M :: i} satisfies the 
 
 Mathematical texts usually start by fixing the context which defines
-both the theory, sometimes one explicitly introduces also the axioms
-of the theory, and syntactical conventions. One might then either
-prove that some structure satisfies the axioms and conclude some
-result about the structure or extend and refine the theory
-itself. \emph{Locales}~\cite{ballarin2010tutorial} are Isabelle's
-facilities to define contexts; there are also operations to
-\emph{extend} a locale with further assumptions (for example, moving
-from lattices to distributive lattices), to \emph{interpret} locales
-(roughly related to signature morphisms of universal algebra), and to
-\emph{instantiate} locales on concrete structures. In our work, we
-use locales to organize the formalization and to make explicit the
-assumptions of the most important results.
+parameters and assumptions necessary to develop theorems
+and results. In Isabelle the way of defining contexts is through
+\emph{locales}~\cite{ballarin2010tutorial}.
+Locales can be combined and extended adding more parameters and assuming
+more facts, leading to a new locale. For example a context describing
+lattices can be extended to distributive lattices.
+The way to instantiate a locale is \emph{interpreting} it, which consists
+of giving concrete values to parameters and proving the assumptions.
+In our work, we use locales to organize the formalization and to make
+explicit the assumptions of the most important results.
+
 % locales
 
 
