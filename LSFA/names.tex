@@ -1,8 +1,8 @@
-\section{Names}
+\subsection{Names}
 \label{sec:names}
 In this section we formalize the function $\val$ that allows to
 construct the elements of the generic extension $M[G]$ from elements
-the ctm $M$ and the generic filter $G$. The definition of $\val$
+of the ctm $M$ and the generic filter $G$. The definition of $\val$
 can be written succintly as
 %
 \begin{equation}\label{eq:def-val}
@@ -10,7 +10,7 @@ can be written succintly as
 (\lb\sigma,p\rb\in\tau \y p\in G)\}.
 \end{equation}
 %
-This proceeds by well-founded recursion on the relation
+This definition proceeds by well-founded recursion on the relation
 $\mathit{ed}$:
 \[
 x \mathrel{\mathit{ed}} y \iff \exists p : \lb x,p\rb\in y.
@@ -74,6 +74,38 @@ following lemma:
 \isacommand{lemma}\isamarkupfalse%
 \ def{\isacharunderscore}val{\isacharcolon}\ \ {\isachardoublequoteopen}x{\isasymin}M\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}\ {\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}t{\isacharparenright}\ {\isachardot}{\isachardot}\ t{\isasymin}domain{\isacharparenleft}x{\isacharparenright}\ {\isacharcomma}\ {\isasymexists}p{\isasymin}P\ {\isachardot}\ \ {\isasymlangle}t{\isacharcomma}\ p{\isasymrangle}{\isasymin}x\ {\isasymand}\ p\ {\isasymin}\ G\ {\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
+
+%% It is to be noted that this results holds under the assumption that
+%% the name \isa{t} is in $M$.
+
+We now provide names for elements in $M$. That is, for each $x\in M$,
+we define $\chk(x)$ (usually denoted by $\check{x}$ in the literature)
+such that $\val(G,\chk(x))=x$. This will show that $M\sbq M[G]$, with
+a caveat we make explicit in the end of this section.
+
+The definition of $\chk(x)$ is a straightforward $\in$-recursion:
+\begin{equation}
+  \label{eq:def-check}
+  \chk(x)\defi\{\lb\chk(y),\1\rb : y\in x\}
+\end{equation}
+Now the set-relation argument for \isa{wfrec} is the membership
+relation restricted to a set \isa{A}, \isa{Memrel(A)}.
+
+\begin{isabelle}
+\isacommand{definition}\isamarkupfalse%
+\ \isanewline
+\ \ Hcheck\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbrackleft}i{\isacharcomma}i{\isacharbrackright}\ {\isasymRightarrow}\ i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}Hcheck{\isacharparenleft}z{\isacharcomma}f{\isacharparenright}\ \ {\isacharequal}{\isacharequal}\ {\isacharbraceleft}\ {\isacharless}f{\isacharbackquote}y{\isacharcomma}one{\isachargreater}\ {\isachardot}\ y\ {\isasymin}\ z{\isacharbraceright}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\isanewline
+\ \ check\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}check{\isacharparenleft}x{\isacharparenright}\ {\isacharequal}{\isacharequal}\ wfrec{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}{\isacharbraceleft}x{\isacharbraceright}{\isacharparenright}{\isacharparenright}{\isacharcomma}\ x\ {\isacharcomma}\ Hcheck{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+Here, \isa{eclose} returns the (downward) $\in$-closure of its
+argument.
+
+
 
 %%% Local Variables:
 %%% mode: latex
