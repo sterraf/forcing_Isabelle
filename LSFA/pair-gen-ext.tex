@@ -43,7 +43,7 @@ these elements; for that we should construct a name $\sigma\in M$ such that
 $\val(G,\sigma) = \{ \val(G,\tau) , \val(G,\rho) \}$. 
 
 The candidate, motivated by the definition of $\chk$,  is
-$\sigma = \{\langle \tau , one \rangle , \langle \rho , one \rangle \}$. 
+$\sigma = \{\langle \tau , \mathrm{one} \rangle , \langle \rho , \mathrm{one} \rangle \}$. 
 Our remaining tasks are to show 
 \begin{enumerate}
   \item \label{item:1}$\sigma \in M$, and
@@ -61,9 +61,9 @@ thanks to $M$ being transitive.
 \ \ {\isachardoublequoteopen}\ {\isasymlbrakk}\ upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}\ {\isacharsemicolon}\ a\ {\isasymin}\ M\ {\isacharsemicolon}\ b\ {\isasymin}\ M\ {\isacharsemicolon}\ c\ {\isasymin}\ M\ {\isacharsemicolon}\ d\ {\isasymin}\ M\ {\isasymrbrakk}\ {\isasymLongrightarrow}\ {\isacharbraceleft}{\isasymlangle}a{\isacharcomma}c{\isasymrangle}{\isacharcomma}{\isasymlangle}b{\isacharcomma}d{\isasymrangle}{\isacharbraceright}\ {\isasymin}\ M{\isachardoublequoteclose}
 \end{isabelle}
 
-Item (\ref{item:1}) then follows because $\tau$, $\rho$ and
-$one$ belong to $M$ (the last fact holds because $one \in P$, $P \in M$ and
-$M$ is transitive).
+Item (\ref{item:1}) then follows because \isa{\isasymtau}, \isa{\isasymrho} and
+\isa{one} belong to \isa{M} (the last fact holds because \isa{one\isasymin P}, \isa{P\isasymin M} and
+\isa{M} is transitive).
 
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
