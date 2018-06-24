@@ -11,21 +11,15 @@ derivable from $\ZFC$; this was done by Cohen in its seminal work
 The following locale gathers the data needed to ensure the 
 existence of an $M$-generic filter for a poset $P$.
 
-\begin{isabellebody}
-\isanewline
+\begin{isabelle}
 \isacommand{locale}\isamarkupfalse%
-\ forcing{\isacharunderscore}data\ {\isacharequal}\ forcing{\isacharunderscore}poset\ {\isacharplus}\isanewline
+\ forcing{\isacharunderscore}data\ {\isacharequal}\ forcing{\isacharunderscore}notion\ {\isacharplus}\isanewline
 \ \ \isakeyword{fixes}\ M\ enum\isanewline
 \ \ \isakeyword{assumes}\ M{\isacharunderscore}countable{\isacharcolon}\ \ \ \ \ \ {\isachardoublequoteopen}enum{\isasymin}bij{\isacharparenleft}nat{\isacharcomma}M{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \ \ \ \ \ \ \isakeyword{and}\ P{\isacharunderscore}in{\isacharunderscore}M{\isacharcolon}\ \ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}P\ {\isasymin}\ M{\isachardoublequoteclose}\isanewline
 \ \ \ \ \ \ \isakeyword{and}\ leq{\isacharunderscore}in{\isacharunderscore}M{\isacharcolon}\ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}leq\ {\isasymin}\ M{\isachardoublequoteclose}\isanewline
-\isanewline
-\isakeyword{begin}\ \ \isanewline
-\isacommand{definition}\isamarkupfalse%
-\isanewline
-\ \ M{\isacharunderscore}generic\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ {\isachardoublequoteopen}M{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}\ {\isacharequal}{\isacharequal}\ filter{\isacharparenleft}G{\isacharparenright}\ {\isasymand}\ {\isacharparenleft}{\isasymforall}D{\isasymin}M{\isachardot}\ D{\isasymsubseteq}P\ {\isasymand}\ dense{\isacharparenleft}D{\isacharparenright}{\isasymlongrightarrow}D{\isasyminter}G{\isasymnoteq}{\isadigit{0}}{\isacharparenright}{\isachardoublequoteclose}\isanewline
-\end{isabellebody}
+\ \ \ \ \ \ \isakeyword{and}\ trans{\isacharunderscore}M{\isacharcolon}\ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}Transset{\isacharparenleft}M{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
 
 An immediate consequence of the Rasiowa-Sikorski Lemma is the
 existence of an $M$-generic filter for a poset $P$.
