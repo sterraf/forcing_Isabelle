@@ -231,7 +231,7 @@ proof -
     by auto
 qed
 
-lemma valcheck : "y \<in> M \<Longrightarrow> Transset(M) \<Longrightarrow> one \<in> P \<Longrightarrow> one \<in> G \<Longrightarrow> 
+lemma valcheck : "y \<in> M \<Longrightarrow> one \<in> P \<Longrightarrow> one \<in> G \<Longrightarrow> 
        \<forall>x\<in>M. check(x) \<in> M \<Longrightarrow> val(G,check(y))  = y"
 proof (induct rule:eps_induct)
   case (1 y)
@@ -242,7 +242,7 @@ proof (induct rule:eps_induct)
     with 1 have
           Eq2: "?C\<in>M" 
       by auto
-    with 1 transD subsetD  have 
+    with 1 transD subsetD trans_M have 
         w_in_M : "\<forall> w \<in> y . w \<in> M" by force
     from Eq1 have
                "val(G,check(y)) = val(G, {\<langle>check(w), one\<rangle> . w \<in> y})"
