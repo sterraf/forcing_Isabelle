@@ -2,7 +2,7 @@ session "forcing" = "ZF-Constructible" +
   options [document = pdf, document_output = "output"]
   theories [document = true]
     "Pointed_DC"
-    "Forcing_posets"
+    "Forcing_notions"
     "Forcing_data"
     "Names"
     "GenExt_pair"
