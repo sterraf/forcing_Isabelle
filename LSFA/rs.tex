@@ -29,11 +29,12 @@ Isabelle/ZF development, which involves a silent use of Replacement
 since it is written as an axiom scheme. 
 
 The strategy is to define $f$ above by primitive recursion on the
-natural, which can be done easily thanks to the package for
-definitions by recursion provided by Isabelle/ZF
-\cite{paulson1995set,paulson2000fixedpoint}.\footnote{The package
-  checks that the recursive definition makes sense; for example, it
-  rejects definitions with a missing case.}
+naturals, which can be done easily thanks to the package of
+Isabelle/ZF \cite{paulson1995set,paulson2000fixedpoint} for
+definitions by recursion on inductively defined sets.\footnote{The
+  package figures out the inductive set at hand and checks that the
+  recursive definition makes sense; for example, it rejects
+  definitions with a missing case.}
 
 \begin{isabelle}\isamarkuptrue%
 \isacommand{consts}\isamarkupfalse%
@@ -113,7 +114,6 @@ the sequence.
 
 \begin{isabelle}%
 \isacommand{definition}\isamarkupfalse%
-
 \ \ D{\isacharunderscore}generic\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
 \ \ {\isachardoublequoteopen}D{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}\ {\isacharequal}{\isacharequal}\ filter{\isacharparenleft}G{\isacharparenright}\ {\isasymand}\ {\isacharparenleft}{\isasymforall}n{\isasymin}nat{\isachardot}{\isacharparenleft}{\isasymD}{\isacharbackquote}n{\isacharparenright}{\isasyminter}G{\isasymnoteq}{\isadigit{0}}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}

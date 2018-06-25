@@ -22,10 +22,12 @@ $\{\{x\},\{x,y\}\}$. It is trivial to deduce the well-foundedness of
 $\mathit{ed}$ from the fact that $\in$ is well-founded, which follows
 from the Foundation Axiom.
 
-The  formalization of $\val$ in Isabelle/ZF involves the function
-\isa{wfrec}, which takes as an argument a well-founded relation of
-type \isa{i}, i.e.\ a set of pairs. Therefore we restrict
-$\mathit{ed}$ above to a set.
+The formalization of $\val$ in Isabelle/ZF involves the function
+\isa{wfrec},\footnote{Notice that this form of recursive
+  definitions is more general than the one used in the previous
+  section to define \isa{dc{\isacharunderscore}witness}.} which takes as an argument a
+well-founded relation of type \isa{i}, i.e.\ a set of pairs. Therefore
+we restrict $\mathit{ed}$ above to a set.
 %
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
