@@ -10,14 +10,17 @@ can be written succintly as
 (\lb\sigma,p\rb\in\tau \y p\in G)\}.
 \end{equation}
 %
-This definition proceeds by well-founded recursion on the relation
+As with any recursive definition, to justify that the definition makes
+sense (i.e., it defines anything at all) one has to explicit the
+well-founded relation which is used. In this case, we use the relation
 $\mathit{ed}$:
 \[
-x \mathrel{\mathit{ed}} y \iff \exists p : \lb x,p\rb\in y.
+x \mathrel{\mathit{ed}} y \iff \exists p . \lb x,p\rb\in y.
 \]
 Recall that in $\ZFC$, an ordered pair $\lb x,y \rb$ is the set
-$\{\{x\},\{x,y\}\}$. Hence this relation is well-founded since $\in$
-is by the Foundation Axiom.
+$\{\{x\},\{x,y\}\}$. It is trivial to deduce the well-foundedness of
+$\mathit{ed}$ from the fact that $\in$ is well-founded, which follows
+from the Foundation Axiom.
 
 The  formalization of $\val$ in Isabelle/ZF involves the function
 \isa{wfrec}, which takes as an argument a well-founded relation of
@@ -43,17 +46,16 @@ then it is well-founded as well.
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ wf{\isacharunderscore}edrel\ {\isacharcolon}\ {\isachardoublequoteopen}wf{\isacharparenleft}edrel{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
-%
-%
-\isacommand{apply}\isamarkupfalse%
-\ {\isacharparenleft}rule{\isacharunderscore}tac\ wf{\isacharunderscore}subset\ {\isacharbrackleft}of\ {\isachardoublequoteopen}trancl{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}{\isacharbrackright}{\isacharparenright}\isanewline
+\ \ \isacommand{apply}\isamarkupfalse%
+\ {\isacharparenleft}rule\ wf{\isacharunderscore}subset\ {\isacharbrackleft}of\ {\isachardoublequoteopen}trancl{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}{\isacharbrackright}{\isacharparenright}\isanewline
 \ \ \isacommand{apply}\isamarkupfalse%
 \ {\isacharparenleft}auto\ simp\ add{\isacharcolon}edrel{\isacharunderscore}sub{\isacharunderscore}memrel\ wf{\isacharunderscore}trancl\ wf{\isacharunderscore}Memrel{\isacharparenright}\isanewline
 \ \ \isacommand{done}\isamarkupfalse%
 %
 \end{isabelle}
 
-We now turn to the definition of $\val$.
+\noindent We now turn to the definition of $\val$. In order to use
+\isa{wfrec} we need to define a functional \isa{Hv}.
 
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
@@ -64,14 +66,16 @@ We now turn to the definition of $\val$.
 \isacommand{definition}\isamarkupfalse%
 \isanewline
 \ \ val\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}\ {\isacharequal}{\isacharequal}\ wfrec{\isacharparenleft}edrel{\isacharparenleft}eclose{\isacharparenleft}M{\isacharparenright}{\isacharparenright}{\isacharcomma}\ {\isasymtau}\ {\isacharcomma}Hv{\isacharparenleft}G{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\ \ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}\ {\isacharequal}{\isacharequal}\ wfrec{\isacharparenleft}edrel{\isacharparenleft}eclose{\isacharparenleft}M{\isacharparenright}{\isacharparenright}{\isacharcomma}\ {\isasymtau}{\isacharcomma}\ Hv{\isacharparenleft}G{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
-Then we can obtain the recursive expression~(\ref{eq:def-val}) in the
+Then we can recover the recursive expression~(\ref{eq:def-val}) thanks to the
 following lemma:
 %
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
-\ def{\isacharunderscore}val{\isacharcolon}\ \ {\isachardoublequoteopen}x{\isasymin}M\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}\ {\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}t{\isacharparenright}\ {\isachardot}{\isachardot}\ t{\isasymin}domain{\isacharparenleft}x{\isacharparenright}\ {\isacharcomma}\ {\isasymexists}p{\isasymin}P\ {\isachardot}\ \ {\isasymlangle}t{\isacharcomma}\ p{\isasymrangle}{\isasymin}x\ {\isasymand}\ p\ {\isasymin}\ G\ {\isacharbraceright}{\isachardoublequoteclose}
+\ def{\isacharunderscore}val{\isacharcolon}
+\isanewline
+\ \ \ \ \ \ \ \  {\isachardoublequoteopen}x{\isasymin}M\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}\ {\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}t{\isacharparenright}\ {\isachardot}{\isachardot}\ t{\isasymin}domain{\isacharparenleft}x{\isacharparenright}\ {\isacharcomma}\ {\isasymexists}p{\isasymin}P\ {\isachardot}\ \ {\isasymlangle}t{\isacharcomma}\ p{\isasymrangle}{\isasymin}x\ {\isasymand}\ p\ {\isasymin}\ G\ {\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
 
 We can finally define the generic extension of $M$ by $G$, also
@@ -79,8 +83,8 @@ setting up the notation $M[G]$ for it:
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
 \isanewline
-\ \ GenExt\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \ \ \ \ {\isacharparenleft}{\isachardoublequoteopen}M{\isacharbrackleft}{\isacharunderscore}{\isacharbrackright}{\isachardoublequoteclose}\ {\isadigit{9}}{\isadigit{0}}{\isacharparenright}\isanewline
-\ \ \isakeyword{where}\ {\isachardoublequoteopen}GenExt{\isacharparenleft}G{\isacharparenright}{\isacharequal}{\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isachardot}\ {\isasymtau}\ {\isasymin}\ M{\isacharbraceright}{\isachardoublequoteclose}
+\ \ GenExt\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \ \ \ \ {\isacharparenleft}{\isachardoublequoteopen}M{\isacharbrackleft}{\isacharunderscore}{\isacharbrackright}{\isachardoublequoteclose}\ {\isadigit{9}}{\isadigit{0}}{\isacharparenright}\ \isakeyword{where} \isanewline
+\ \ {\isachardoublequoteopen}GenExt{\isacharparenleft}G{\isacharparenright}{\isacharequal}{\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isachardot}\ {\isasymtau}\ {\isasymin}\ M{\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
 
 %% It is to be noted that this results holds under the assumption that
@@ -92,7 +96,7 @@ such that $\val(G,\chk(x))=x$. This will show that $M\sbq M[G]$, with
 a caveat we make explicit in the end of this section. As explained in
 the introduction, the fact that $M[G]$ extends $M$ is crucial to show
 that $\ZFC$ holds in the former.
-
+%
 The definition of $\chk(x)$ is a straightforward $\in$-recursion:
 \begin{equation}
   \label{eq:def-check}
@@ -120,16 +124,17 @@ argument. The main result is stated as follows:
 \ valcheck\ {\isacharcolon}\ {\isachardoublequoteopen}y\ {\isasymin}\ M\ {\isasymLongrightarrow}\ one\ {\isasymin}\ G\ {\isasymLongrightarrow}\ {\isasymforall}x{\isasymin}M{\isachardot}\ check{\isacharparenleft}x{\isacharparenright}\ {\isasymin}\ M\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}check{\isacharparenleft}y{\isacharparenright}{\isacharparenright}\ \ {\isacharequal}\ y{\isachardoublequoteclose}
 \end{isabelle}
 
-On the one hand, the only requirement on the set  \isatt{G} is that it 
-contains the top \isa{one} of the poset \isa{P}. On the other hand, it
-is necessary that all the relevant names are indeed in $M$. It
-requires a serious development  to fulfill this assumption. One of the
-hardest parts of Paulson's formalization of constructibility involves
-showing that models are closed under recursive construction. We will
-eventually formalize the that if $M\models\ZFC$ and the arguments of
-\isa{wfrec} are in $M$, then its value also is. This will require
-to adapt to models $M$ several locales defined in \cite{paulson_2003}
-that were intended to be used for the class of constructible sets.
+On the one hand, the only requirement on the set \isa{G} is that it
+contains the top element of the poset \isa{P}. On the other hand, it
+is necessary that all the relevant names are indeed in $M$ (i.e.,
+$\chk(x) \in M$ if $x\in M$). It requires a serious development to
+fulfill this assumption. One of the hardest parts of Paulson's
+formalization of constructibility involves showing that models are
+closed under recursive construction. We will eventually formalize that
+if $M\models\ZFC$ and the arguments of \isa{wfrec} are in $M$, then
+its value also is. This will require to adapt to ctm models several
+locales defined in \cite{paulson_2003} that were intended to be used
+for the class of constructible sets.
 
 
 
