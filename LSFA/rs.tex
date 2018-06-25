@@ -1,7 +1,7 @@
 \subsection{A sequence version of $\DC$}\label{sec:sequence-version-dc}
 In order to prove the Rasiowa-Sikorski lemma in
 general, a version of the Axiom of Choice ($\AC$) must be proved. This
-version is known as the \emph{Principle of Dependent choices}:
+version is known as the \emph{Principle of Dependent Choices}:
 \begin{quote}
   ($\DC$) Let $\rr$ be a binary relation on $A$, and $a\in A$. If
   $\forall x\in A\,  \exists y\in A\, x\rr y$, then there exists
@@ -15,20 +15,25 @@ formalized by Krzysztof Grabczewski as part of the Isabelle/ZF
 library, along with many 
 statements that follow from or are equivalent to $\AC$. Since the
 proofs there required a greater generality, it would have been very
-contrived to derived this ``pointed'' version of $\DC$ from that
+contrived to derive this ``pointed'' version of $\DC$ from that
 development. Instead, we preferred to give a direct proof based in the
 one that appears in Moschovakis \cite{moschovakis1994notes}. Another
 advantage is that this proof depends on the following version of $\AC$
 (existence of choice functions on $\P(A)\sm \{\mty\}$):
 \[
-\exists s: \P(A)\sm \{\mty\}\to A \, \forall X\sbq A.\ X\neq \mty \limp
+\exists (s: \P(A)\sm \{\mty\}\to A). \, \forall X\sbq A.\ X\neq \mty \limp
 s(X) \in X.
 \]
-This statement is more standard than the one deemed ``$\AC$'' in the
-Isabelle/ZF development, that involves a silent use of Replacement
+This statement is more standard than ``$\AC$'' as stated in the
+Isabelle/ZF development, which involves a silent use of Replacement
 since it is written as an axiom scheme. 
 
-The strategy is to define $f$ above by primitive recursion. 
+The strategy is to define $f$ above by primitive recursion on the
+natural, which can be done easily thanks to the package for
+definitions by recursion provided by Isabelle/ZF
+\cite{paulson1995set,paulson2000fixedpoint}.\footnote{The package
+  checks that the recursive definition makes sense; for example, it
+  rejects definitions with a missing case.}
 
 \begin{isabelle}\isamarkuptrue%
 \isacommand{consts}\isamarkupfalse%
@@ -36,12 +41,12 @@ The strategy is to define $f$ above by primitive recursion.
 \isacommand{primrec}\isamarkupfalse%
 \isanewline
 \ \ wit{\isadigit{0}}\ \ \ {\isacharcolon}\ {\isachardoublequoteopen}dc{\isacharunderscore}witness{\isacharparenleft}{\isadigit{0}}{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}\ {\isacharequal}\ a{\isachardoublequoteclose}\isanewline
-\ \ witrec\ {\isacharcolon}{\isachardoublequoteopen}dc{\isacharunderscore}witness{\isacharparenleft}succ{\isacharparenleft}n{\isacharparenright}{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}\ {\isacharequal}\ s{\isacharbackquote}{\isacharbraceleft}x{\isasymin}A{\isachardot}\ {\isasymlangle}dc{\isacharunderscore}witness{\isacharparenleft}n{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}{\isacharcomma}x{\isasymrangle}{\isasymin}R\ {\isacharbraceright}{\isachardoublequoteclose}
+\ \ witrec\ {\isacharcolon}\ {\isachardoublequoteopen}dc{\isacharunderscore}witness{\isacharparenleft}succ{\isacharparenleft}n{\isacharparenright}{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}\ {\isacharequal}\ s{\isacharbackquote}{\isacharbraceleft}x{\isasymin}A{\isachardot}\ {\isasymlangle}dc{\isacharunderscore}witness{\isacharparenleft}n{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}{\isacharcomma}x{\isasymrangle}{\isasymin}R\ {\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
 
 The function \isatt{dc{\isacharunderscore}witness} has, apart from $A$, $a$ and $R$, a
 function $s$ as a parameter. If this function is a selector for
-$\P(A)\sm \{\mty\}$, the function $f\defi {}$\isatt{dc{\isacharunderscore}witness}$(A,a,s,R)$
+$\P(A)\sm \{\mty\}$, the function $f(n)\defi {}$\isatt{dc{\isacharunderscore}witness}$(n,A,a,s,R)$
 will satify $\DC$. Notice that $s$ is a term of type \isatt{i} (a
 function construed as a set of pairs) and an expression
 \isatt{s{\isacharbackquote}b} is notation for  \isatt{apply(s,b)},
