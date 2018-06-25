@@ -5,7 +5,7 @@ admits a generic filter, and develop the machinery of names.
 \subsection{The generic filter}
 \label{sec:generic-filter}
 The following locale gathers the data needed to ensure the 
-existence of an $M$-generic filter for a poset \isa{P}.
+existence of an $M$-generic filter for a poset \isa{P}. 
 
 \begin{isabelle}
 \isacommand{locale}\isamarkupfalse%
@@ -20,24 +20,24 @@ existence of an $M$-generic filter for a poset \isa{P}.
 An immediate consequence of the Rasiowa-Sikorski Lemma is the
 existence of an $M$-generic filter for a poset \isa{P}.
 
-\begin{isabellebody}
-\isanewline
+\begin{isabelle}
+
 \isacommand{lemma}\isamarkupfalse%
 \ generic{\isacharunderscore}filter{\isacharunderscore}existence{\isacharcolon}\ \isanewline
-\ \ {\isachardoublequoteopen}p{\isasymin}P\ {\isasymLongrightarrow}\ {\isasymexists}G{\isachardot}\ p{\isasymin}G\ {\isasymand}\ M{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}{\isachardoublequoteclose}\isanewline
-\end{isabellebody}
+\ \ {\isachardoublequoteopen}p{\isasymin}P\ {\isasymLongrightarrow}\ {\isasymexists}G{\isachardot}\ p{\isasymin}G\ {\isasymand}\ M{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
 
-By defining an appropriate countable sequence of dense subsets of \isa{P},
-\begin{isabellebody}
-\isanewline
+\noindent By defining an appropriate countable sequence of dense subsets of \isa{P},
+\begin{isabelle}
+
 \ \ \isacommand{let}\isamarkupfalse%
 \isanewline
-\ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharquery}D{\isacharequal}{\isachardoublequoteopen}{\isasymlambda}n{\isasymin}nat{\isachardot}\ {\isacharparenleft}if\ {\isacharparenleft}enum{\isacharbackquote}n{\isasymsubseteq}P\ {\isasymand}\ dense{\isacharparenleft}enum{\isacharbackquote}n{\isacharparenright}{\isacharparenright}\ \ then\ enum{\isacharbackquote}n\ else\ P{\isacharparenright}{\isachardoublequoteclose}\isanewline
-\end{isabellebody}
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharquery}D{\isacharequal}{\isachardoublequoteopen}{\isasymlambda}n{\isasymin}nat{\isachardot}\ {\isacharparenleft}if\ {\isacharparenleft}enum{\isacharbackquote}n{\isasymsubseteq}P\ {\isasymand}\ dense{\isacharparenleft}enum{\isacharbackquote}n{\isacharparenright}{\isacharparenright}\ \ then\ enum{\isacharbackquote}n\ else\ P{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
 \noindent we can instantiate the locale \isatt{countable{\isacharunderscore}generic}
 
-\begin{isabellebody}
-\isanewline
+\begin{isabelle}
+
 \ \ \isacommand{have}\isamarkupfalse%
 \ \isanewline
 \ \ \ \ \ \ \ \ \ Eq{\isadigit{2}}{\isacharcolon}\ {\isachardoublequoteopen}{\isasymforall}n{\isasymin}nat{\isachardot}\ {\isacharquery}D{\isacharbackquote}n\ {\isasymin}\ Pow{\isacharparenleft}P{\isacharparenright}{\isachardoublequoteclose}\isanewline
@@ -52,22 +52,22 @@ By defining an appropriate countable sequence of dense subsets of \isa{P},
 \ \ \isacommand{have}\isamarkupfalse%
 \isanewline
 \ \ \ \ \ \ \ \ \ Eq{\isadigit{4}}{\isacharcolon}\ {\isachardoublequoteopen}{\isasymforall}n{\isasymin}nat{\isachardot}\ dense{\isacharparenleft}{\isacharquery}D{\isacharbackquote}n{\isacharparenright}{\isachardoublequoteclose}
-\end{isabellebody}
+\end{isabelle}
 \dots
-\begin{isabellebody}
-\isanewline
+\begin{isabelle}
+
 \ \ \isacommand{from}\isamarkupfalse%
 \ Eq{\isadigit{3}}\ \isakeyword{and}\ Eq{\isadigit{4}}\ \isacommand{interpret}\isamarkupfalse%
 \ \isanewline
 \ \ \ \ \ \ \ \ \ \ cg{\isacharcolon}\ countable{\isacharunderscore}generic\ P\ leq\ uno\ {\isacharquery}D\ \isanewline
 \ \ \ \ \isacommand{by}\isamarkupfalse%
-\ {\isacharparenleft}unfold{\isacharunderscore}locales{\isacharcomma}\ auto{\isacharparenright}\isanewline
-\end{isabellebody}
+\ {\isacharparenleft}unfold{\isacharunderscore}locales{\isacharcomma}\ auto{\isacharparenright}
+\end{isabelle}
 \noindent
 and then a  $\calD$-generic filter given by Rasiowa-Sikorski will be $M$-generic by construction. 
 
-\begin{isabellebody}
-\isanewline
+\begin{isabelle}
+
 \ \ \isacommand{from}\isamarkupfalse%
 \ cg{\isachardot}rasiowa{\isacharunderscore}sikorski\ \isakeyword{and}\ Eq{\isadigit{1}}\ \isacommand{obtain}\isamarkupfalse%
 \ G\ \isakeyword{where}\ \isanewline
@@ -78,10 +78,10 @@ and then a  $\calD$-generic filter given by Rasiowa-Sikorski will be $M$-generic
 \ \ \isacommand{then}\isamarkupfalse%
 \ \isacommand{have}\isamarkupfalse%
 \isanewline
-\ \ \ \ \ \ \ \ \ Eq{\isadigit{7}}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharparenleft}{\isasymforall}D{\isasymin}M{\isachardot}\ D{\isasymsubseteq}P\ {\isasymand}\ dense{\isacharparenleft}D{\isacharparenright}{\isasymlongrightarrow}D{\isasyminter}G{\isasymnoteq}{\isadigit{0}}{\isacharparenright}{\isachardoublequoteclose}\isanewline
-\end{isabellebody}
+\ \ \ \ \ \ \ \ \ Eq{\isadigit{7}}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharparenleft}{\isasymforall}D{\isasymin}M{\isachardot}\ D{\isasymsubseteq}P\ {\isasymand}\ dense{\isacharparenleft}D{\isacharparenright}{\isasymlongrightarrow}D{\isasyminter}G{\isasymnoteq}{\isadigit{0}}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
 
-We omit the rest of this Isar proof.
+\noindent We omit the rest of this Isar proof.
 
 %%% Local Variables:
 %%% mode: latex

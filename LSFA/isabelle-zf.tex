@@ -58,9 +58,7 @@ defined by comprehension, namely $\{b(x): x\in A\text{ and }Q(x)\}$:
 \end{isabelle}
 \noindent %% It is more convenient to add an abbreviation for a simpler
 %% writing and a nicer reading, so we use
-We are then able to add an abbreviation resembling the usual
-mathematical writing by setting 
-\isa{{\isacharbraceleft}b\
+We are then able to add the abbreviation \isa{{\isacharbraceleft}b\
   {\isachardot}{\isachardot}\ x{\isasymin}A{\isacharcomma}\
   Q{\isacharbraceright}} as a notation for
 \isa{SepReplace{\isacharparenleft}A{\isacharcomma}b{\isacharcomma}Q{\isacharparenright}}. The
@@ -104,7 +102,7 @@ We now discuss relativization in Isabelle/ZF. Relativized versions of the
   {\isasymlongrightarrow} P(x)}. In order to express that a (set) model
 satisfies this axiom we use  the ``coercion''
 \isa{{\isacharhash}{\isacharhash} :: i ={\isachargreater} (i
-  ={\isachargreater} o)} (that sends a set $A$ to the predicate
+  ={\isachargreater} o)} (that maps a set $A$ to the predicate
 $\lambda x . (x\in A)$) provided by Isabelle/ZF. As a trivial example we
 can show that the empty set satisfies Foundation:
 \begin{isabelle}
@@ -130,7 +128,7 @@ and results. In Isabelle the way of defining contexts is through
 Locales can be combined and extended adding more parameters and assuming
 more facts, leading to a new locale. For example a context describing
 lattices can be extended to distributive lattices.
-The way to instantiate a locale is \emph{interpreting} it, which consists
+The way to instantiate a locale is by \emph{interpreting} it, which consists
 of giving concrete values to parameters and proving the assumptions.
 In our work, we use locales to organize the formalization and to make
 explicit the assumptions of the most important results.

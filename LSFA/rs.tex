@@ -4,37 +4,39 @@ general, a version of the Axiom of Choice ($\AC$) must be proved. This
 version is known as the \emph{Principle of Dependent Choices}:
 \begin{quote}
   ($\DC$) Let $\rr$ be a binary relation on $A$, and $a\in A$. If
-  $\forall x\in A\,  \exists y\in A\, x\rr y$, then there exists
+  $\forall x\in A.\,  \exists y\in A.\, x\rr y$, then there exists
   $f:\om\to A$ such that $f(0)=a$ and $f(n)\rr f(n+1)$ for all
   $n\in\om$.
 \end{quote}
 
 A different version of $\DC$ (without the constraint $f(0)=a$, but
-allowing a parameter that allows to prove an equivalence with $\AC$) was
-formalized by Krzysztof Grabczewski as part of the Isabelle/ZF
-library, along with many 
-statements that follow from or are equivalent to $\AC$. Since the
-proofs there required a greater generality, it would have been very
-contrived to derive this ``pointed'' version of $\DC$ from that
-development. Instead, we preferred to give a direct proof based in the
-one that appears in Moschovakis \cite{moschovakis1994notes}. Another
-advantage is that this proof depends on the following version of $\AC$
-(existence of choice functions on $\P(A)\sm \{\mty\}$):
+allowing a parameter that permits to prove an equivalence with $\AC$)
+was formalized by Krzysztof
+Grabczewski~\cite{DBLP:journals/jar/PaulsonG96} as part of the
+Isabelle/ZF library, along with many statements that follow from or
+are equivalent to $\AC$. Since the proofs there required a greater
+generality, it would have been very contrived to derive this
+``pointed'' version of $\DC$ from that development. Instead, we
+preferred to give a direct proof based on the one in
+Moschovakis' notes \cite{moschovakis1994notes}. Another advantage is that
+this proof depends on the following version of $\AC$ (existence of
+choice functions on $\P(A)\sm \{\mty\}$):
 \[
 \exists (s: \P(A)\sm \{\mty\}\to A). \, \forall X\sbq A.\ X\neq \mty \limp
 s(X) \in X.
 \]
-This statement is more standard than ``$\AC$'' as stated in the
+This statement is more standard than $\AC$ as stated in the
 Isabelle/ZF development, which involves a silent use of Replacement
 since it is written as an axiom scheme. 
 
-The strategy is to define $f$ above by primitive recursion on the
-naturals, which can be done easily thanks to the package of
-Isabelle/ZF \cite{paulson1995set,paulson2000fixedpoint} for
-definitions by recursion on inductively defined sets.\footnote{The
-  package figures out the inductive set at hand and checks that the
-  recursive definition makes sense; for example, it rejects
-  definitions with a missing case.}
+The strategy is to define the function $f$ discussed above by
+primitive recursion on the naturals, which can be done easily thanks
+to the package of Isabelle/ZF
+\cite{paulson1995set,paulson2000fixedpoint} for definitions by
+recursion on inductively defined sets.\footnote{The package figures
+  out the inductive set at hand and checks that the recursive
+  definition makes sense; for example, it rejects definitions with a
+  missing case.}
 
 \begin{isabelle}\isamarkuptrue%
 \isacommand{consts}\isamarkupfalse%
@@ -53,8 +55,9 @@ function construed as a set of pairs) and an expression
 \isatt{s{\isacharbackquote}b} is notation for  \isatt{apply(s,b)},
 where
 \isatt{apply\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ i{\isachardoublequoteclose}}
-is the operation of function application. We will not make a
-distinction in our prose and simply write \isatt{s}(\isatt{b}) in this case.
+is the operation of function application.
+% We will not make a distinction in our prose and simply write
+% \isatt{s}(\isatt{b}) in this case.
 
 The proof is mostly routine; after a few lemmas we obtain the
 following theorem:
@@ -144,8 +147,8 @@ satisfies its hypothesis:
 \ \ \ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}{\isasymexists}y{\isasymin}P{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ {\isacharparenleft}{\isasymlambda}m{\isasymin}nat{\isachardot}\ {\isacharbraceleft}{\isasymlangle}x{\isacharcomma}y{\isasymrangle}{\isasymin}P{\isacharasterisk}P{\isachardot}\ {\isasymlangle}y{\isacharcomma}x{\isasymrangle}{\isasymin}leq\ {\isasymand}\ y{\isasymin}{\isasymD}{\isacharbackquote}{\isacharparenleft}pred{\isacharparenleft}m{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isacharbackquote}n{\isachardoublequoteclose}
 \end{isabelle}
 %
-Both of the proofs written in the Isar language.
-
+As these two proofs are interesting, we have proved them using the
+Isar proof language~\cite{DBLP:conf/tphol/Wenzel99}.
 
 
 %%% Local Variables:

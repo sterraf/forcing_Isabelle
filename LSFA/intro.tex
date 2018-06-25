@@ -25,10 +25,10 @@ since then for showing innumerable independence results and to perform
 mathematical constructions.
 
 A great part of G\"odel's work on this subject has been formalized in
-Isabelle by Lawrence Paulson. This paper formalizes a first part of the
-machinery of forcing. In the rest of the introduction we discuss some
-of the set-theoretical details involved and explain briefly Paulson's
-formalization.
+Isabelle~\cite{Isabelle} by Lawrence Paulson~\cite{paulson_2003}. This paper formalizes
+a first part of the machinery of forcing. In the rest of the
+introduction we discuss some of the set-theoretical details involved
+and explain briefly Paulson's formalization.
 
 \subsection{Models of $\ZFC$}
 By G\"odel's Second Incompleteness Theorem, we cannot  prove that
@@ -72,10 +72,7 @@ transitive models for every finite fragment of $\ZFC$. More precisely,
     transitive model of $\Phi$''} is a theorem of $\ZFC$.
 \end{theorem}
 %
-%% MIGUEL: controlar que tiene sentido lo que menciono en la nota al pie!
-%% MIGUEL: Me da la sensación que podemos promover lo de la nota al pie
-%% al cuerpo y luego explicar que por eso es importante el teorema.
-This follows by a combination of the Reflection Principle, the
+\noindent This follows by a combination of the Reflection Principle, the
 L\"owenheim-Skolem Theorem, and the Mostowksi Collapse. The reader can
 consult the details in \cite{kunen2011set}. Consistency arguments that
 assume the existence of a ctm $M$ of $\ZFC$ can usually be replaced by
@@ -90,16 +87,14 @@ proof (e.g.\ of a contradiction)%
 %%%%%%%%%%%%%
 involves only finitely many axioms.
 
-%% MIGUEL: Qué significa "portrayal convenient"?
-%% MIGUEL: ¿por qué esto es conveniente para esta introducción?
-Assume that $M$ is a ctm of $\ZFC$. In a portrayal convenient for this
-introduction, G\"odel showed that $M$ contains a minimal submodel
-$L^M$ of the same ``height'' (i.e.\ having the same ordinals)
-that satisfies $\ZFC+\CH$. The sets in $L^M$ are called
-\emph{constructible} and are in a sense ``definable.'' In fact, there
-is a first-order formula $L$ such that $L^M = \{x\in M : M\models
-L(x)\}$. To show that  $L^M\models \ZFC+\CH$, one uses that the
-$\ZFC+\CH$ holds in $M$.
+Assume that $M$ is a ctm of $\ZFC$. It is instructive to sketch
+G\"odel's argument of the relative consistency of $\CH$: he showed
+that $M$ contains a minimal submodel $L^M$ of the same ``height''
+(i.e.\ having the same ordinals) that satisfies $\ZFC+\CH$. The sets
+in $L^M$ are called \emph{constructible} and are in a sense
+``definable.'' In fact, there is a first-order formula $L$ such that
+$L^M = \{x\in M : M\models L(x)\}$. To show that
+$L^M\models \ZFC+\CH$, one uses that the $\ZFC+\CH$ holds in $M$.
 
 %% MIGUEL: acá me parece que hay un salto medio abrupto. Por que
 %% es una necesidad primaria? Lo podés relacionar con lo que venía
@@ -122,7 +117,7 @@ submodel $N\sbq M$. As a simple example on this, consider
 $M\defi \{a,b,c, \{a,b\},\{a,b,c\}\}$ and
 $N\defi\{a,b,\{a,b,c\}\}$, and let 
 \[
-\phi(x,y,z)\defi \forall w \,( w\in z \lsii w=x \o w=y).
+\phi(x,y,z)\defi \forall w.\,( w\in z \lsii w=x \o w=y).
 \]
 %% It is clear that  $M\models \phi(\{a,b\})$; but we have
 Then we have
@@ -161,9 +156,9 @@ the hardest part of Paulson's development.
 Forcing is a technique to extend countable transitive models of
 $\ZFC$. This process is guaranteed to preserve the $\ZFC$
 axioms while allowing to fine-tune what other first order properties the
-extension will have. Given a ctm $M$  of $\ZFC$ and a set $G$, a new
+extension will have. Given a ctm $M$  of $\ZFC$ and a set $G$, one constructs a new
 ctm  $M[G]$  that includes $M$ and
-contains $G$ is constructed, and under some hypotheses ($G$ being ``generic''),
+contains $G$, and proves that under some hypotheses ($G$ being ``generic''),
 $M[G]$ satisfies $\ZFC$.
 
 The easiest way to define genericity is by using a preorder with top
@@ -212,8 +207,9 @@ that the Powerset axiom and the axiom schemes of Separation and
 Replacement hold in $M[G]$. In
 Section~\ref{sec:pairing-generic-extension}
  we tackle the Pairing
-Axiom. This doesn't require the forcing relation, but provides an
-illustration of the use of names.
+Axiom. This does not require the forcing relation, but provides an
+illustration of the use of names. The development can be downloaded
+from \url{https://cs.famaf.unc.edu.ar/~mpagano/forcing/}.
    
 %We continue with a brief description of the Isabelle framework. 
 

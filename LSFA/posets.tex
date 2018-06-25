@@ -95,12 +95,12 @@ dense.
 \ P{\isacharunderscore}dense{\isacharcolon}\ {\isachardoublequoteopen}dense{\isacharparenleft}P{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-We say that $F\subseteq P$ is increasing (or up-set or upward closed) if every
+We say that $F\subseteq P$ is increasing (or upward closed) if every
 extension of any element in $F$ is also in $F$.
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
 \ increasing\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ {\isachardoublequoteopen}increasing{\isacharparenleft}F{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}x{\isasymin}F{\isachardot}\ {\isasymforall}\ p\ {\isasymin}\ P\ {\isachardot}\ {\isasymlangle}x{\isacharcomma}p{\isasymrangle}{\isasymin}leq\ {\isasymlongrightarrow}\ p{\isasymin}F{\isachardoublequoteclose}
+\ \ {\isachardoublequoteopen}increasing{\isacharparenleft}F{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}x{\isasymin}F{\isachardot}\ {\isasymforall}\ p{\isasymin}P\ {\isachardot}\ {\isasymlangle}x{\isacharcomma}p{\isasymrangle}{\isasymin}leq\ {\isasymlongrightarrow}\ p{\isasymin}F{\isachardoublequoteclose}
 \end{isabelle}
 A filter is an increasing set $G$ with all its elements being compatible in $G$.
 \begin{isabelle}
@@ -110,7 +110,7 @@ A filter is an increasing set $G$ with all its elements being compatible in $G$.
 \end{isabelle}
 
 We finally introduce the upward closure of a set
-and proving that the closure of $A$ is a filter if its elements are
+and prove that the closure of $A$ is a filter if its elements are
 compatible in $A$.
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
