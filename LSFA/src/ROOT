@@ -5,6 +5,6 @@ session "forcing" = "ZF-Constructible" +
     "Forcing_notions"
     "Forcing_data"
     "Names"
-    "GenExt_pair"
+    "Gen_ext_pair"
   document_files
     "root.tex"
