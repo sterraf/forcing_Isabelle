@@ -1,4 +1,4 @@
-theory Forcing_data imports   Forcing_posets  begin
+theory Forcing_data imports   Forcing_notions  begin
 
 lemma lam_codomain: "\<forall>n\<in>N. (\<lambda>x\<in>N. b(x))`n \<in> B \<Longrightarrow>  (\<lambda>x\<in>N. b(x)) : N\<rightarrow>B"
   apply (rule fun_weaken_type)
