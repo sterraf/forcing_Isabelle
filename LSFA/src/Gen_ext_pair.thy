@@ -1,4 +1,4 @@
-theory GenExt_pair imports Names Forcing_data Relative begin
+theory Gen_ext_pair imports Names Forcing_data Relative begin
 
 context forcing_data
 begin

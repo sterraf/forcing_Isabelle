@@ -1,4 +1,4 @@
-theory Forcing_posets imports Pointed_DC  begin
+theory Forcing_notions imports Pointed_DC  begin
 
 (* En esta definición habría que agregar que (A,r) es preorden? *)
 
