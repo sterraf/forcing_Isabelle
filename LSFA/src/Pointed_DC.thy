@@ -88,9 +88,6 @@ corollary DC_on_A_x_nat :
   apply (frule_tac A="nat" and x="d" in bspec, simp)
   apply (rule_tac A="A" and B="nat" in infer_snd, auto)
   apply (rule_tac a="\<langle>fst(g ` d), d\<rangle>" and b="g ` d" in ssubst, assumption)
-    (* Notorio: simp, auto ni blast lo hacen aquí! 
-       El problema es que está usando "mal" las assumptions: esta sí sirve
-       apply (simp (no_asm)) *)
   apply (subst snd_conv, simp)
   done
 
@@ -112,4 +109,5 @@ lemma sequence_DC: "\<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. \<la
   apply (drule aux_sequence_DC2)
   apply (drule DC_on_A_x_nat, auto)
   done
+
 end

@@ -159,7 +159,6 @@ proof -
             ?f="\<lambda>z\<in>?r-``{x}. wfrec(?r,z,Hv(G))"
   have
             "\<forall>\<tau>. wf(?r)"
-            find_theorems "wf(trancl(?M))"
     by (simp add: wf_edrel)
   with wfrec [of "?r" x "Hv(G)"] have
             "val(G,x) = Hv(G,x,?f)"
@@ -167,7 +166,6 @@ proof -
   also have
             " ... = Hv(G,x,\<lambda>z\<in>domain(x). wfrec(?r,z,Hv(G)))"
     using asm and edrel_domain by (simp) 
-      find_theorems "Transset(eclose(?M))"
   also have
             " ... = Hv(G,x,\<lambda>z\<in>domain(x). val(G,z))"
     by (simp add:val_def)
