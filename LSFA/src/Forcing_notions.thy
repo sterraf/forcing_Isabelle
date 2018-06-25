@@ -2,9 +2,6 @@ theory Forcing_notions imports Pointed_DC  begin
 
 (* En esta definición habría que agregar que (A,r) es preorden? *)
 
-definition refl_on :: "[i,i] \<Rightarrow>o" where
-  "refl_on(P,leq) == \<forall> x \<in> P . \<langle>x,x\<rangle> \<in> leq"
-
 definition compat_in :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
   "compat_in(A,r,p,q) == \<exists>d\<in>A . \<langle>d,p\<rangle>\<in>r \<and> \<langle>d,q\<rangle>\<in>r"
 
