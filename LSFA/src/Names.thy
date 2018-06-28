@@ -253,13 +253,12 @@ proof (induct rule:eps_induct)
     also have
                 " ... = {val(G,check(w)) . w\<in>y }"
       by force
-    also have
-                " ... = y"
-      using 1 and w_in_M by simp        
-    finally show "val(G,check(y)) = y" 
-      using 1 by simp
+    finally show 
+                "val(G,check(y)) = y" 
+      using 1 and w_in_M by simp      
   qed
 qed
+
 end    (*************** CONTEXT: forcing_data *****************)
 
 end
