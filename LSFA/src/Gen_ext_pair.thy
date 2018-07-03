@@ -1,3 +1,12 @@
+(*
+----------------------------------------------
+First steps towards a formalization of Forcing
+---------------------------------------------
+
+Proof of preservation of the axiom of Pairing in the generic
+extension M[G].
+
+*)
 theory Gen_ext_pair imports Names Forcing_data Relative begin
 
 context forcing_data

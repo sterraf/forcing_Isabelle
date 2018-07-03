@@ -1,3 +1,12 @@
+(*
+----------------------------------------------
+First steps towards a formalization of Forcing
+---------------------------------------------
+
+Definition of forcing notions: preorders with top,
+dense subsets, generic filters. Proof of the
+Rasiowa-Sikorski theorem.
+*)
 theory Forcing_notions imports Pointed_DC  begin
 
 definition compat_in :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where

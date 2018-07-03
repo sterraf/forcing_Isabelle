@@ -1,3 +1,13 @@
+(*
+----------------------------------------------
+First steps towards a formalization of Forcing
+---------------------------------------------
+
+Definition of locale forcing_data: A transitive and countable
+set containing the preorder with top.
+Proof of the existence of a generic filter.
+
+*)
 theory Forcing_data imports   Forcing_notions  begin
 
 lemma lam_codomain: "\<forall>n\<in>N. (\<lambda>x\<in>N. b(x))`n \<in> B \<Longrightarrow>  (\<lambda>x\<in>N. b(x)) : N\<rightarrow>B"

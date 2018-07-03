@@ -1,3 +1,12 @@
+(*
+----------------------------------------------
+First steps towards a formalization of Forcing
+---------------------------------------------
+
+Definition of Generic extension of a model M of ZFC: M[G].
+Definition of function val and check, and properties about them.
+
+*)
 theory Names imports Forcing_data  begin
 
 lemma transD : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> y \<subseteq> M" 

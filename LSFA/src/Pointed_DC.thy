@@ -1,3 +1,12 @@
+(*
+----------------------------------------------
+First steps towards a formalization of Forcing
+---------------------------------------------
+
+Proof of a version of the Axiom of Choice:
+the Principle of Dependent Choices.
+
+*)
 theory Pointed_DC imports AC
 
 begin
