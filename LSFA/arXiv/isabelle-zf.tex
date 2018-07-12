@@ -1,4 +1,4 @@
-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
+%
 \section{Isabelle/ZF}
 
 Let us introduce briefly Paulson's formalization of ZF
@@ -7,8 +7,8 @@ for the relative consistency of the Axiom of Choice
 \cite{paulson_2003}; we will only focus on those aspects that are
 essential to keep this paper self-contained, and refer the interested
 reader to Paulson's articles. 
-%% Isabelle/ZF is a theory built upon the
-%% core library FOL of classical first order logic.
+%
+%
 Isabelle/ZF includes a development of classical first order logic,
 FOL. Both of them are  built upon the core library \emph{Pure}. 
 
@@ -38,9 +38,9 @@ straightforward.
 As an example, we introduce  a new term-former which is combination of
 instances of replacement and separation to speak of the image of a function over some set
 defined by comprehension, namely $\{b(x): x\in A\text{ and }Q(x)\}$:
-%% Since we find a need to combine the replacement and
-%% separation schemes to speak of the image of a function over some set
-%% defined by comprehension, we introduced a new term-former:
+%
+%
+%
 \begin{isabelle}
   \isacommand{definition}\isamarkupfalse%
   \ SepReplace\ {\isacharcolon}{\isacharcolon}\
@@ -56,8 +56,8 @@ defined by comprehension, namely $\{b(x): x\in A\text{ and }Q(x)\}$:
   {\isasymand}\
   Q{\isacharparenleft}x{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
-\noindent %% It is more convenient to add an abbreviation for a simpler
-%% writing and a nicer reading, so we use
+\noindent %
+%
 We are then able to add the abbreviation \isa{{\isacharbraceleft}b\
   {\isachardot}{\isachardot}\ x{\isasymin}A{\isacharcomma}\
   Q{\isacharbraceright}} as a notation for
@@ -68,23 +68,23 @@ characterization of our new constructor is given by
 \ Sep{\isacharunderscore}and{\isacharunderscore}Replace{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbraceleft}b{\isacharparenleft}x{\isacharparenright}\ {\isachardot}{\isachardot}\ x{\isasymin}A{\isacharcomma}\ P{\isacharparenleft}x{\isacharparenright}\ {\isacharbraceright}\ {\isacharequal}\ {\isacharbraceleft}b{\isacharparenleft}x{\isacharparenright}\ {\isachardot}\ x{\isasymin}{\isacharbraceleft}y{\isasymin}A{\isachardot}\ P{\isacharparenleft}y{\isacharparenright}{\isacharbraceright}{\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
 
-%% We are not discussing how, if possible at all, to express that some
-%% set satisfies some axiom. For example, we might well be interested in
-%% proving $\emptyset \models \mathit{foundation}$, but there is no
-%% sensible way to state this, without encoding formulas and axioms in
-%% ZFC.\footnote{Indeed Paulson has encoded formulas using a very general
-%%   method to encode recursive definitions. In our development, although
-%%   not reported in this paper, we use this internalization.}
-%% 
-%% \fbox{ You need this in order to formalize $\models$ as a predicate of
-%%   type $i\ent i \ent o$. (Don't know how to put that here.)
-%% }
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
 
-%% In
-%% Isabelle/ZF there are, however, relativized versions of the
-%% axioms. This alternative statement of the axioms are relativized with
-%% respect to classes, which in Isabelle/ZF corresponds to predicates over
-%% sets
+%
+%
+%
+%
+%
 We now discuss relativization in Isabelle/ZF. Relativized versions of the
  axioms can be found in the formalization of constructibility \cite{paulson_2003}. For
  example, the relativized Axiom of Foundation is
@@ -95,7 +95,7 @@ We now discuss relativization in Isabelle/ZF. Relativized versions of the
   {\isasymforall}x{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isacharparenleft}{\isasymexists}y{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ y{\isasymin}x{\isacharparenright}\ {\isasymlongrightarrow}\ {\isacharparenleft}{\isasymexists}y{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ y{\isasymin}x\ {\isacharampersand}\ {\isachartilde}{\isacharparenleft}{\isasymexists}z{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ z{\isasymin}x\ {\isacharampersand}\ z\ {\isasymin}\ y{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-% ∀x[c]
+%
 \noindent The relativized quantifier
 \isa{{\isasymforall}x{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\
   P(x)} is a shorthand for \isa{{\isasymforall}x{\isachardot}\ M(x)
@@ -111,15 +111,15 @@ can show that the empty set satisfies Foundation:
 \end{isabelle}
 
 
-% Let us ponder if one can state, let alone prove, that some set \isa{M
-%   :: i} satisfies a statement \isa{\ensuremath{\phi} :: o}. Since
-% \isa{o} does not have an inductive definition, we cannot define the
-% satisfaction of \isa{\ensuremath{\phi}}. 
+%
+%
+%
+%
 
-% As we have outlined above, relativization is a key concept when
-% proving that axioms satisfied by some model $M$ are also satisfied in
-% another model constructed from $M$. In this paper, we show the complete
-% proof that if a set \isa{M :: i} satisfies the 
+%
+%
+%
+%
 
 Mathematical texts usually start by fixing the context which defines
 parameters and assumptions necessary to develop theorems
@@ -133,11 +133,11 @@ of giving concrete values to parameters and proving the assumptions.
 In our work, we use locales to organize the formalization and to make
 explicit the assumptions of the most important results.
 
-% locales
+%
 
 
-%%% Local Variables:
-%%% mode: latex
-%%% ispell-local-dictionary: "american"
-%%% TeX-master: "first_steps_into_forcing"
-%%% End:
+%
+%
+%
+%
+%

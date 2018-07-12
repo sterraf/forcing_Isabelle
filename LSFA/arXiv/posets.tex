@@ -1,6 +1,6 @@
 \section{Forcing notions}\label{sec:forcing-notions}
-%\textit{Para no confundir, directamente usamos este nombre en lugar de
-% ``forcing posets'' para los preórdenes con un máximo distinguido}
+%
+%
 
 In this section we introduce some elementary definitions that are used
 in the rest of the paper. They are useful to explain some aspects of
@@ -14,15 +14,15 @@ Isabelle/ZF.
 The preorder relation will be represented as a set of pairs, and hence
 it is a term of type
 \isatt{i}.
-%% \begin{isabelle}
-%% \isacommand{definition}\isamarkupfalse%
-%% \ refl{\isacharunderscore}on\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbrackleft}i{\isacharcomma}i{\isacharbrackright}\ {\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-%% \ \ {\isachardoublequoteopen}refl{\isacharunderscore}on{\isacharparenleft}P{\isacharcomma}leq{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}\ x\ {\isasymin}\ P\ {\isachardot}\ {\isasymlangle}x{\isacharcomma}x{\isasymrangle}\ {\isasymin}\ leq{\isachardoublequoteclose}
-%% \end{isabelle}
-%%
-%% Let us remark that the relation is ``untyped'', we cannot assert a
-%% priori that ${\leqslant} \subseteq P \times P$, therefore we need to
-%% restrict the notion of ``reflexive'' with respect to the set $P$.
+%
+%
+%
+%
+%
+%
+%
+%
+%
 \begin{definition}
   Given a preorder $(P,\leqslant)$ we say that two elements $p,q$ are
   \emph{compatible} if they have a lower bound in $P$. Notice that
@@ -35,24 +35,24 @@ it is a term of type
 \end{isabelle}
 \end{definition}
 
-%% We now define two notions that will not be used in this paper but are
-%% very important for subsequent
-%% developments; here, they serve as examples of  Isabelle/ZF notation.
-%% A subset $A \subseteq P$ is an \emph{antichain} if every pair of
-%% elements in $A$ are incompatible. 
-%% \begin{isabelle}
-%% \isacommand{definition}\isamarkupfalse%
-%% \ antichain\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-%% \ \ {\isachardoublequoteopen}antichain{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}A{\isacharparenright}\ {\isacharequal}{\isacharequal}\ A{\isasymsubseteq}P\ {\isasymand}\ {\isacharparenleft}{\isasymforall}p{\isasymin}A{\isachardot}{\isasymforall}q{\isasymin}A{\isachardot}{\isacharparenleft}{\isasymnot}\ compat{\isacharunderscore}in{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
-%% \end{isabelle}
-%% 
-%% A poset $(P,\leqslant)$ has the \emph{countable chain condition} (ccc)
-%% if every antichain in $P$ is countable.
-%% \begin{isabelle}
-%%   \isacommand{definition}\isamarkupfalse%
-%%   \ ccc\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-%% \ \ {\isachardoublequoteopen}ccc{\isacharparenleft}P{\isacharcomma}leq{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}A{\isachardot}\ antichain{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}A{\isacharparenright}\ {\isasymlongrightarrow}\ {\isacharbar}A{\isacharbar}\ {\isasymle}\ nat{\isachardoublequoteclose}
-%% \end{isabelle}
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
 
 \begin{definition}
   A \emph{forcing notion} is a preorder $(P,\leqslant)$ with a maximal element $\mathbbm{1} \in P$.
@@ -65,15 +65,15 @@ it is a term of type
  \ \ \isakeyword{and}\ one{\isacharunderscore}max{\isacharcolon}  \ \ {\isachardoublequoteopen}{\isasymforall}p{\isasymin}P{\isachardot}\ {\isasymlangle}p{\isacharcomma}one{\isasymrangle}{\isasymin}leq{\isachardoublequoteclose}
 \end{isabelle}
 \end{definition}
-%% REVISAR si queremos hablar de "extensión".
+%
 \noindent The locale \isatt{forcing{\isacharunderscore}notion}  introduces a mathematical
 context where we work assuming the forcing notion
 $(P,\leqslant, \mathbbm{1})$. 
-%% It is customary to refer to the elements
-%% of $P$ as \emph{forcing conditions} and think the relation $\leqslant$
-%% as a notion of extension, thus $\lb p,q\rb \in {\leqslant}$ is read as ``$p$
-%% extends $q$''; which is justified because often $\leqslant$ is
-%% instantiated to $\supseteq$. 
+%
+%
+%
+%
+%
 In the following definitions we are in
 the locale \isatt{forcing{\isacharunderscore}notion}.
 
@@ -121,10 +121,10 @@ compatible in $A$.
 \ \ {\isachardoublequoteopen}A{\isasymsubseteq}P\ {\isasymLongrightarrow}\isanewline\ \ {\isacharparenleft}{\isasymforall}p{\isasymin}A{\isachardot}{\isasymforall}q{\isasymin}A{\isachardot}\ compat{\isacharunderscore}in{\isacharparenleft}A{\isacharcomma}leq{\isacharcomma}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}\ {\isasymLongrightarrow}\ filter{\isacharparenleft}upclosure{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-%%% Local Variables:
-%%% mode: latex
-%%% ispell-local-dictionary: "american"
-%%% TeX-master: "first_steps_into_forcing"
-%%% End:
+%
+%
+%
+%
+%
 
 
