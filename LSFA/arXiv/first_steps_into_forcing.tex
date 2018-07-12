@@ -1,0 +1,62 @@
+\documentclass{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{hyperref}
+
+\input{header-draft}
+
+\begin{document}
+\title{First steps towards a formalization of Forcing}
+\author{Emmanuel Gunther
+  \and 
+  Miguel Pagano
+  \and 
+  Pedro S\'anchez Terraf}
+\maketitle
+
+\begin{abstract} 
+  We lay the ground for an Isabelle/ZF formalization of Cohen's technique of
+  \emph{forcing}. We formalize the definition of forcing notions as
+  preorders with top, dense subsets, and generic filters. We formalize
+  a version of the principle of Dependent Choices and using it
+  we prove the Rasiowa-Sikorski lemma on the existence of generic filters.
+  
+  Given a transitive set $M$, we define its generic extension $M[G]$,
+  the canonical names for elements of $M$, and finally show that if $M$
+  satisfy the axiom of pairing, then $M[G]$ also does.
+\end{abstract}
+\keywords{
+Isabelle/ZF, forcing, preorder, Rasiowa-Sikorski lemma, names, generic extension.
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{intro}
+
+\input{isabelle-zf}
+
+\input{posets}
+
+\input{rs}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{gen-ext}
+
+
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%--%-%-%-%-%-%-%-%
+\input{names}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{pair-gen-ext}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{conclusion}
+
+\bibliographystyle{plain}
+\bibliography{draft}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% ispell-local-dictionary: "american"
+%%% End:

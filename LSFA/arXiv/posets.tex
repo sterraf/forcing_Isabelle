@@ -1,0 +1,130 @@
+\section{Forcing notions}\label{sec:forcing-notions}
+%\textit{Para no confundir, directamente usamos este nombre en lugar de
+% ``forcing posets'' para los preórdenes con un máximo distinguido}
+
+In this section we introduce some elementary definitions that are used
+in the rest of the paper. They are useful to explain some aspects of
+Isabelle/ZF.
+
+\begin{definition}
+  A preorder on a set $P$ is a binary relation ${\leqslant}$ which is
+  reflexive and transitive.
+\end{definition}
+
+The preorder relation will be represented as a set of pairs, and hence
+it is a term of type
+\isatt{i}.
+%% \begin{isabelle}
+%% \isacommand{definition}\isamarkupfalse%
+%% \ refl{\isacharunderscore}on\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbrackleft}i{\isacharcomma}i{\isacharbrackright}\ {\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+%% \ \ {\isachardoublequoteopen}refl{\isacharunderscore}on{\isacharparenleft}P{\isacharcomma}leq{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}\ x\ {\isasymin}\ P\ {\isachardot}\ {\isasymlangle}x{\isacharcomma}x{\isasymrangle}\ {\isasymin}\ leq{\isachardoublequoteclose}
+%% \end{isabelle}
+%%
+%% Let us remark that the relation is ``untyped'', we cannot assert a
+%% priori that ${\leqslant} \subseteq P \times P$, therefore we need to
+%% restrict the notion of ``reflexive'' with respect to the set $P$.
+\begin{definition}
+  Given a preorder $(P,\leqslant)$ we say that two elements $p,q$ are
+  \emph{compatible} if they have a lower bound in $P$. Notice that
+  the elements of $P$ are also sets, therefore they have type
+  \isatt{i}.
+  \begin{isabelle}%
+  \isacommand{definition}\isamarkupfalse%
+\ compat{\isacharunderscore}in\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}compat{\isacharunderscore}in{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}p{\isacharcomma}q{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymexists}d{\isasymin}P\ {\isachardot}\ {\isasymlangle}d{\isacharcomma}p{\isasymrangle}{\isasymin}leq\ {\isasymand}\ {\isasymlangle}d{\isacharcomma}q{\isasymrangle}{\isasymin}leq{\isachardoublequoteclose}
+\end{isabelle}
+\end{definition}
+
+%% We now define two notions that will not be used in this paper but are
+%% very important for subsequent
+%% developments; here, they serve as examples of  Isabelle/ZF notation.
+%% A subset $A \subseteq P$ is an \emph{antichain} if every pair of
+%% elements in $A$ are incompatible. 
+%% \begin{isabelle}
+%% \isacommand{definition}\isamarkupfalse%
+%% \ antichain\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+%% \ \ {\isachardoublequoteopen}antichain{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}A{\isacharparenright}\ {\isacharequal}{\isacharequal}\ A{\isasymsubseteq}P\ {\isasymand}\ {\isacharparenleft}{\isasymforall}p{\isasymin}A{\isachardot}{\isasymforall}q{\isasymin}A{\isachardot}{\isacharparenleft}{\isasymnot}\ compat{\isacharunderscore}in{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+%% \end{isabelle}
+%% 
+%% A poset $(P,\leqslant)$ has the \emph{countable chain condition} (ccc)
+%% if every antichain in $P$ is countable.
+%% \begin{isabelle}
+%%   \isacommand{definition}\isamarkupfalse%
+%%   \ ccc\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+%% \ \ {\isachardoublequoteopen}ccc{\isacharparenleft}P{\isacharcomma}leq{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}A{\isachardot}\ antichain{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}A{\isacharparenright}\ {\isasymlongrightarrow}\ {\isacharbar}A{\isacharbar}\ {\isasymle}\ nat{\isachardoublequoteclose}
+%% \end{isabelle}
+
+\begin{definition}
+  A \emph{forcing notion} is a preorder $(P,\leqslant)$ with a maximal element $\mathbbm{1} \in P$.
+  \begin{isabelle}
+\isacommand{locale}\isamarkupfalse%
+\ forcing{\isacharunderscore}notion\ {\isacharequal}\isanewline
+\ \ \isakeyword{fixes}\ P\ leq\ one\isanewline
+\ \ \isakeyword{assumes}\ one{\isacharunderscore}in{\isacharunderscore}P{\isacharcolon}  \ {\isachardoublequoteopen}one\ {\isasymin}\ P{\isachardoublequoteclose}\isanewline
+ \ \ \isakeyword{and}\ leq{\isacharunderscore}preord{\isacharcolon} \ \ \ {\isachardoublequoteopen}preorder{\isacharunderscore}on{\isacharparenleft}P{\isacharcomma}leq{\isacharparenright}{\isachardoublequoteclose}\isanewline
+ \ \ \isakeyword{and}\ one{\isacharunderscore}max{\isacharcolon}  \ \ {\isachardoublequoteopen}{\isasymforall}p{\isasymin}P{\isachardot}\ {\isasymlangle}p{\isacharcomma}one{\isasymrangle}{\isasymin}leq{\isachardoublequoteclose}
+\end{isabelle}
+\end{definition}
+%% REVISAR si queremos hablar de "extensión".
+\noindent The locale \isatt{forcing{\isacharunderscore}notion}  introduces a mathematical
+context where we work assuming the forcing notion
+$(P,\leqslant, \mathbbm{1})$. 
+%% It is customary to refer to the elements
+%% of $P$ as \emph{forcing conditions} and think the relation $\leqslant$
+%% as a notion of extension, thus $\lb p,q\rb \in {\leqslant}$ is read as ``$p$
+%% extends $q$''; which is justified because often $\leqslant$ is
+%% instantiated to $\supseteq$. 
+In the following definitions we are in
+the locale \isatt{forcing{\isacharunderscore}notion}.
+
+A set $D$ is \emph{dense} if every element $p\in P$ has a lower bound
+in $D$ and there is also a weaker definition which asks for a lower
+bound in $D$ only for the elements below some fixed element $q$. Since
+the relation $\leqslant$ is reflexive, it is obvious that $P$ is
+dense.
+\begin{isabelle}
+  \isacommand{definition}\isamarkupfalse%
+\ dense\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}dense{\isacharparenleft}D{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}p{\isasymin}P{\isachardot}\ {\isasymexists}d{\isasymin}D\ {\isachardot}\ {\isasymlangle}d{\isacharcomma}p{\isasymrangle}{\isasymin}leq{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{definition}\isamarkupfalse%
+\ dense{\isacharunderscore}below\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}dense{\isacharunderscore}below{\isacharparenleft}D{\isacharcomma}q{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}p{\isasymin}P{\isachardot}\ {\isasymlangle}p{\isacharcomma}q{\isasymrangle}{\isasymin}leq\ {\isasymlongrightarrow}\ {\isacharparenleft}{\isasymexists}d{\isasymin}D\ {\isachardot}\ {\isasymlangle}d{\isacharcomma}p{\isasymrangle}{\isasymin}leq{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ P{\isacharunderscore}dense{\isacharcolon}\ {\isachardoublequoteopen}dense{\isacharparenleft}P{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+We say that $F\subseteq P$ is increasing (or upward closed) if every
+extension of any element in $F$ is also in $F$.
+\begin{isabelle}
+\isacommand{definition}\isamarkupfalse%
+\ increasing\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}increasing{\isacharparenleft}F{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}x{\isasymin}F{\isachardot}\ {\isasymforall}\ p{\isasymin}P\ {\isachardot}\ {\isasymlangle}x{\isacharcomma}p{\isasymrangle}{\isasymin}leq\ {\isasymlongrightarrow}\ p{\isasymin}F{\isachardoublequoteclose}
+\end{isabelle}
+A filter is an increasing set $G$ with all its elements being compatible in $G$.
+\begin{isabelle}
+\isacommand{definition}\isamarkupfalse%
+\ filter\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}filter{\isacharparenleft}G{\isacharparenright}\ {\isacharequal}{\isacharequal}\ G{\isasymsubseteq}P\ {\isasymand}\ increasing{\isacharparenleft}G{\isacharparenright}\ {\isasymand}\isanewline \ \ {\isacharparenleft}{\isasymforall}p{\isasymin}G{\isachardot}\ {\isasymforall}q{\isasymin}G{\isachardot}\ compat{\isacharunderscore}in{\isacharparenleft}G{\isacharcomma}leq{\isacharcomma}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+We finally introduce the upward closure of a set
+and prove that the closure of $A$ is a filter if its elements are
+compatible in $A$.
+\begin{isabelle}
+\isacommand{definition}\isamarkupfalse%
+\ upclosure\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}upclosure{\isacharparenleft}A{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isacharbraceleft}p{\isasymin}P{\isachardot}{\isasymexists}a{\isasymin}A{\isachardot}{\isasymlangle}a{\isacharcomma}p{\isasymrangle}{\isasymin}leq{\isacharbraceright}{\isachardoublequoteclose}\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ \ closure{\isacharunderscore}compat{\isacharunderscore}filter{\isacharcolon}
+\ \ {\isachardoublequoteopen}A{\isasymsubseteq}P\ {\isasymLongrightarrow}\isanewline\ \ {\isacharparenleft}{\isasymforall}p{\isasymin}A{\isachardot}{\isasymforall}q{\isasymin}A{\isachardot}\ compat{\isacharunderscore}in{\isacharparenleft}A{\isacharcomma}leq{\isacharcomma}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}\ {\isasymLongrightarrow}\ filter{\isacharparenleft}upclosure{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+%%% Local Variables:
+%%% mode: latex
+%%% ispell-local-dictionary: "american"
+%%% TeX-master: "first_steps_into_forcing"
+%%% End:
+
+
