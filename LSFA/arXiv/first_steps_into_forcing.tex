@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage{isabelle,isabellesym}
 \usepackage{hyperref}
+\usepackage[numbers]{natbib}
 
 \input{header-draft}
 
@@ -22,7 +23,7 @@
   
   Given a transitive set $M$, we define its generic extension $M[G]$,
   the canonical names for elements of $M$, and finally show that if $M$
-  satisfy the axiom of pairing, then $M[G]$ also does.
+  satisfies the axiom of pairing, then $M[G]$ also does.
 \end{abstract}
 \keywords{
 Isabelle/ZF, forcing, preorder, Rasiowa-Sikorski lemma, names, generic extension.
@@ -52,8 +53,9 @@ Isabelle/ZF, forcing, preorder, Rasiowa-Sikorski lemma, names, generic extension
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \input{conclusion}
 
-\bibliographystyle{plain}
+\bibliographystyle{mi-estilo-else}
 \bibliography{draft}
+%\input{first_steps_into_forcing.bbl}
 \end{document}
 
 %%% Local Variables:
