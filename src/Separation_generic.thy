@@ -9,12 +9,45 @@ definition
   perm_sep_forces :: "i" where
   "perm_sep_forces == {\<langle>0, 4\<rangle>, \<langle>1, 3\<rangle>, \<langle>2, 7\<rangle>, \<langle>3, 0\<rangle>, \<langle>4, 1\<rangle>, \<langle>5, 2\<rangle>, \<langle>6, 5\<rangle>, \<langle>7, 6\<rangle>}"
 
-lemma perm_sep_bij: "perm_sep_forces \<in> bij(8,8)" 
-  sorry
-    
-lemma perm_sep_env : "perm_list(perm_sep_forces,[p,q,r,s,t,u,v,w]) = [t,s,w,p,q,r,u,v]"
-  sorry
+lemma perm_sep_ftc : "perm_sep_forces \<in> 8 -||> 8"
+  apply(unfold perm_sep_forces_def)
+  apply(rule consI,auto)+
+  apply(rule emptyI)
+  done
+
+lemma dom_perm_sep : "domain(perm_sep_forces) = 8"     
+  by(unfold perm_sep_forces_def,auto)
  
+  
+lemma perm_sep_tc : "perm_sep_forces \<in> 8 \<rightarrow> 8"
+  by(subst dom_perm_sep[symmetric],rule FiniteFun_is_fun,rule perm_sep_ftc)
+
+lemma apply_fun: "f \<in> Pi(A,B) ==> <a,b>: f \<Longrightarrow> f`a = b"
+  by(auto simp add: apply_iff)
+    
+lemma perm_sep_inj: "perm_sep_forces \<in> inj(8,8)"   
+  apply(auto simp add:apply_fun inj_def  perm_sep_forces_def)
+  apply(fold perm_sep_forces_def, simp add:  perm_sep_tc)
+  done
+    
+lemma perm_sep_surj: "perm_sep_forces \<in> surj(8,8)" 
+  apply(auto simp add:apply_fun perm_sep_forces_def surj_def)
+  apply(fold perm_sep_forces_def, simp add: perm_sep_tc)
+  done
+
+lemma perm_sep_bij: "perm_sep_forces \<in> bij(8,8)" 
+  by(simp add: bij_def perm_sep_inj perm_sep_surj)
+    
+lemma perm_sep_env : "
+  {p,q,r,s,t,u,v,w} \<subseteq> A \<Longrightarrow>
+perm_list(perm_sep_forces,[p,q,r,s,t,u,v,w]) = [t,s,w,p,q,r,u,v]"
+  apply(rule nth_equalityI)
+  apply(auto simp add: perm_list_tc perm_sep_bij  perm_list_length)
+  apply(subst nth_perm,simp,simp add:perm_sep_bij,simp,erule ltD)
+  apply(rule_tac natE,simp+,subst apply_fun,rule perm_sep_tc,simp add:perm_sep_forces_def,simp)+
+  apply(auto,subst apply_fun,rule perm_sep_tc,simp add:perm_sep_forces_def,simp)
+done
+    
 (*
 lemma small_arity: "[pp,l,o,p,\<theta>,\<pi>,\<sigma>,u]\<in>list(M) \<Longrightarrow> \<chi>\<in>formula \<Longrightarrow> arity(\<chi>) = 2 \<Longrightarrow> 
             sats(M,forces(\<chi>),[pp,l,o,p,\<theta>,\<pi>,\<sigma>]@[u]) \<longleftrightarrow>
