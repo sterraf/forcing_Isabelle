@@ -1,0 +1,175 @@
+----------------------- REVIEW 1 ---------------------
+PAPER: 10
+TITLE: First steps towards a formalization of Forcing
+AUTHORS: Emmanuel Gunther, Miguel Pagano and Pedro Sánchez Terraf
+
+Overall evaluation: 1 (weak accept)
+
+----------- Overall evaluation -----------
+
+This paper reports on an ongoing work aiming at formalizing Cohen's
+technique of forcing, a technique used to show results as e.g., the
+independence of the continuum hypothesis. Relaying on previous
+developments by L. Paulson (formalizing in Isabelle ZF set theory),
+the authors outline the procedures needed to mechanize the needed
+definitions of forcing, the principle of Dependent Choices, the
+Rasiowa-Sikorski lemma (existence of generic filters) and proving the
+fundamental theorem relating M and its extension M[G].
+
+The authors first define genericity to show how to extend countable
+transitive models of ZFC. Before proving the Rasiowa-Sikorski lemma,
+it is needed to formalize the Axiom of Choice (Principle of Dependent
+Choices). For that, the authors mechanized a particular proof due to
+Moschovakis. The proof that M is contained in its extension M[G]
+relies on a naming function "check". Apparently, there are a still
+some technical problems not yet addressed about this function. Then a
+forcing relation is defined to relate satisfaction in M and in its
+extension M[G]. Furthermore, the authors formalize the Pairing Axiom
+that does not require the forcing relation but it illustrates the
+technique of names used to prove the previous results.
+
+Pros: The authors did a good job in introducing the needed
+mathematical concepts and then introducing the machinery needed in
+Isabelle to complete the proofs. As a short paper and preliminary
+work, I think it deserves to be presented at the conference.
+
+Cons:
+- It is difficult to assess the effort needed to complete the
+proofs. The authors only highlighted some proofs that were finished by
+"auto". However, the source files available at the authors' webpage
+show that this effort is reasonable for an ongoing work.
+- The paper should provide general sketches of the proofs and give
+  some more information about the formalization (lines of code, number
+  of theorems, theorems proved automatically, etc).
+- Finally, some intuitions and explanations are missing in Section 4
+  in order to better understand the developments.
+
+
+Minor Details
+- Abstract: M satisfy -> satisfies 
+- I'm not an expert in set theory but I found curios the term
+  "coordinable". Do you mean "countable" (it appears several times in
+  the paper). In fact, Def 1.1, item (ii) seems to show that
+  coordinable with N means countable.
+- one usually refer -> refers
+- M is a ctm of ZFC, Gödel showed -> ZFC. Gödel showed ...
+- one uses that the => one uses the fact ...
+- to have a meanS -> to have a mean
+- Section 1.2, fixed a preorder P => given a fixed preorder F, ...
+- Sec 1.2 and aspects=> and the main aspects of ?
+- Sec2: that is terms => i.e., terms of type
+- to speak of the image [check this sentence]
+- Sec 2: which defines parameters => that defines the parameters
+- assumptions necessary => needed
+- Sec 4: to justify -> in order to justify
+- has to explicit -> has to make explicit
+- what does it mean "..." after lemma edrel_sub_memrel ? More lemmas
+  are needed in between ?
+- Some intuitions about the  functions Hv and wfrec are needed.
+- Sec5 of this Section -> section
+
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 10
+TITLE: First steps towards a formalization of Forcing
+AUTHORS: Emmanuel Gunther, Miguel Pagano and Pedro Sánchez Terraf
+
+Overall evaluation: 1 (weak accept)
+
+----------- Overall evaluation -----------
+
+This paper delineates the first steps towards a formalization of
+forcing in Isabelle. The formalization extends Paulson’s Isabelle/ZF
+development. The main proved result is the Rasiowa-Sikorski Lemma on
+the existence of generic filters. The technique uses preorders over
+countable transitive sets for which dense subsets and filters are
+specified.  The Rasiowa-Sikorski Lemma states that once a preorder is
+fixed, any countable family of dense subsets of it, will have a filter
+intersecting all of them, which implies the existence of generic
+filters for countable transitive models.
+
+Authors made available the associated development, which is very well
+documented, as expected for this kind of formalizations.
+
+The paper is a nice report on interesting work in progress. I suggest
+it be accepted for presentation, but I will be much too positive about
+its eventual inclusion in the post proceedings if the authors include
+additional results such as those pointed out in the conclusion.
+
+Specific comments to the authors
+
+Presentation could be improved if the paper establishes more
+precisely, which elements cannot be used directly and why from
+Isabelle/ZF. Also, how these elements were adapted. For instance,
+Axiom of Choice versus Principle of Dependent Choices is in the end
+explained in a very superficial manner in section 3.1 (“it would have
+been very contrived to derive DC from the Isabelle/ZF development”). I
+suggest you show explicitly how it can be derived to contrast with
+your direct adaptation.
+
+Also, it is necessary the inclusion of related work on formalizations
+of set theory in other proof assistants of course ratifying
+inexistence of other formalizations of forcing techniques.
+
+Subsections 1.1 and 1.2 might be extended as a background section in
+which also, elements available and not available in Isabelle/ZF are
+classified by the authors.
+
+Descriptions of sections 3, 4 and 5 could be written in more detail.
+
+Use only P or only Q in Sep_and_Replace Lemma and the associated
+discussion. As it is written is not wrong, but using the same symbol
+will increase readability.
+
+In general the paper is clear and readable, but in some parts few
+errors appear. For instance, abstract: satisfies; SS 1.1: one refers;
+conclusion: use “neither depends … nor …”, etc.
+
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 10
+TITLE: First steps towards a formalization of Forcing
+AUTHORS: Emmanuel Gunther, Miguel Pagano and Pedro Sánchez Terraf
+
+Overall evaluation: 0 (borderline paper)
+
+----------- Overall evaluation -----------
+Cohen’s technique of Forcing is an important tool for proving
+consistency and independence results in set theory. A formalisation in
+an interactive theorem prover of forcing would constitute a
+considerable and interesting project. In this paper, the first steps
+are presented. Specifically, the authors take Isabelle/ZF as a
+starting point and then formalise the definitions of forcing notions
+as preorders with top, dense subsets, and generic filters. They then
+formalise a version of the principle of Dependent Choice and use that
+to formalise the proof of the Rasiowa-Sikorski lemma on the existence
+of generic filters.
+
+The paper is generally well-written. I would point out that while the
+paper has a friendly introduction from the set-theoretic perspective,
+it is lacking is a discussion on the interest in a formalisation in
+set theory/forcing, a description of the tools that are used for this
+purpose, and details on the formalisation of mathematics in
+related/other areas (not just in Isabelle). After all, this is a paper
+on the *formalisation of mathematics* (with forcing being the area of
+application). This would make the paper more appealing to a reader not
+from this community (and also credit the prior work in this field). I
+would also like to a see a more precise discussion on what was already
+in Isabelle/ZF and what was redeveloped here (and for what
+reason). Are you formalising a specific presentation of the forcing? I
+did not see this identified in the text.
+
+The main content of this paper (a formalisation of the set-theoretic
+and meta-theoretic definitions and some results) is obviously a
+pre-requisite to a formalisation of forcing. A concern that I have is
+that it is unclear how close the authors are (in terms of time,
+effort, technical difficulty) to achieving the full task. In Section 6
+the authors do describe the remaining tasks and also the next task,
+but it is not clear why a paper is being submitted now, rather than at
+the end of the formalisation. Is this paper intended as a 'status
+report’ or is it because the completed tasks are already so demanding
+that they benefit from being written up? I am sympathetic to the fact
+that the set-up of the formalisation is already a challenging task
+which necessitates many design decision; nevertheless it is worth
+noting that most formalisations require such a set up.
+
