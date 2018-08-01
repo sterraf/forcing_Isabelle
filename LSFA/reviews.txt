@@ -47,22 +47,58 @@ show that this effort is reasonable for an ongoing work.
 
 Minor Details
 - Abstract: M satisfy -> satisfies 
+ya estaba
+
 - I'm not an expert in set theory but I found curios the term
   "coordinable". Do you mean "countable" (it appears several times in
   the paper). In fact, Def 1.1, item (ii) seems to show that
   coordinable with N means countable.
+
+R is not coordinable with the natural numbers (i.e., there is no
+bijection from R to N).
+
 - one usually refer -> refers
+done
+
 - M is a ctm of ZFC, Gödel showed -> ZFC. Gödel showed ...
+cambiado ligeramente
+
 - one uses that the => one uses the fact ...
+corregido
+
 - to have a meanS -> to have a mean
+cambiado (está mal la observación)
+
 - Section 1.2, fixed a preorder P => given a fixed preorder F, ...
+Alternativa:
+The Rasiowa-Sikorski lemma (RSL) states that for any preorder $\PP$
+and any countable family $\mathcal{D}_{n\in\mathbb{N}}$ of dense
+subsets of $\PP$ there is a filter intersecting every
+$\mathcal{D}_i$.
+
 - Sec 1.2 and aspects=> and the main aspects of ?
+cambiado
+
 - Sec2: that is terms => i.e., terms of type
+cambiado (sin la coma después de la e)
+
 - to speak of the image [check this sentence]
+Alternativa:
+As an example, we introduce a new term-former denoting the image of a function
+over a set defined by comprehension, namely...
+
 - Sec 2: which defines parameters => that defines the parameters
+cambiado
+
 - assumptions necessary => needed
+cambiado
+
 - Sec 4: to justify -> in order to justify
+cambiado (con un poco de reticencia)
+
 - has to explicit -> has to make explicit
+cambiado (explicit NO es un verbo)
+
 - what does it mean "..." after lemma edrel_sub_memrel ? More lemmas
   are needed in between ?
 - Some intuitions about the  functions Hv and wfrec are needed.
@@ -120,6 +156,7 @@ Descriptions of sections 3, 4 and 5 could be written in more detail.
 Use only P or only Q in Sep_and_Replace Lemma and the associated
 discussion. As it is written is not wrong, but using the same symbol
 will increase readability.
+MIGUEL: cambiado
 
 In general the paper is clear and readable, but in some parts few
 errors appear. For instance, abstract: satisfies; SS 1.1: one refers;

@@ -56,7 +56,7 @@ out a very special kind of models:
   \end{enumerate}
 \end{definition}
 %
-\noindent As in the last sentence, one usually refer to a transitive
+\noindent As in the last sentence, one usually refers to a transitive
 model by the underlying set because the relation is fixed.
 %% MIGUEL: feísimo este corte. Quizás refrasear la oración anterior
 %% para que entre en un renglón.
@@ -88,13 +88,13 @@ proof (e.g.\ of a contradiction)%
 involves only finitely many axioms.
 
 It is instructive to sketch G\"odel's argument of the relative
-consistency of $\CH$: Assume that $M$ is a ctm of $\ZFC$, G\"odel
+consistency of $\CH$: Assuming that $M$ is a ctm of $\ZFC$, G\"odel
 showed that $M$ contains a minimal submodel $L^M$ of the same
 ``height'' (i.e.\ having the same ordinals) that satisfies
 $\ZFC+\CH$. The sets in $L^M$ are called \emph{constructible} and are
 in a sense ``definable.'' In fact, there is a first-order formula $L$
 such that $L^M = \{x\in M : M\models L(x)\}$. To show that
-$L^M\models \ZFC+\CH$, one uses that the $\ZFC+\CH$ holds in $M$.
+$L^M\models \ZFC+\CH$, one uses the fact that $\ZFC$ holds in $M$.
 
 %% MIGUEL: acá me parece que hay un salto medio abrupto. Por que
 %% es una necesidad primaria? Lo podés relacionar con lo que venía
@@ -173,16 +173,16 @@ if it intersects every dense subset of $\PP$ that lies in $M$.
 %% en M", pero eso me lo desmiente la siguiente oración. ¿Juega algún
 %% rol absolutez? Si es así estaría bien explicitarlo.
 %% MIGUEL: la última oración me resulta un poco difícil de entender.
-The Rasiowa-Sikorski lemma (RSL) states that, fixed a preorder $\PP$, for
-any countable family of dense subsets of $\PP$ there is a filter
-intersecting all of them. Thus, there are generic filters $G$ for
-countable transitive models. In general, no such $G$ belongs to $M$ and
+The Rasiowa-Sikorski lemma (RSL) states that for any preorder $\PP$
+and any countable family $\mathcal{D}_{n\in\mathbb{N}}$ of dense
+subsets of $\PP$ there is a filter intersecting every
+$\mathcal{D}_i$. Thus, there are generic filters $G$ for countable
+transitive models. In general, no such $G$ belongs to $M$ and
 therefore the extension $M[G]$ is proper. We formalize the proof of
-RSL in
-Section~\ref{sec:rasiowa-sikorski-lemma}. A requisite result on a
-version of the Axiom of Choice is formalized in
-Section~\ref{sec:sequence-version-dc}. We then apply RSL to prove the existence of generic
-filters in Section~\ref{sec:generic-filter}. 
+RSL in Section~\ref{sec:rasiowa-sikorski-lemma}. A requisite result on
+a version of the Axiom of Choice is formalized in
+Section~\ref{sec:sequence-version-dc}. We then apply RSL to prove the
+existence of generic filters in Section~\ref{sec:generic-filter}.
 
 %% MIGUEL: redacción alternativa del párrafo siguiente.
 Every  $y \in M[G]$ is obtained from an element $\dot y$ of $M$, thus
