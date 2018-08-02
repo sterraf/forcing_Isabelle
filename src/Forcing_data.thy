@@ -1,17 +1,38 @@
-theory Forcing_data imports  ZFCAxioms_formula Forcing_posets  begin
+theory Forcing_data imports  Forcing_notions Relative_no_repl Formula 
+                             Interface2 begin
 
 lemma lam_codomain: "\<forall>n\<in>N. (\<lambda>x\<in>N. b(x))`n \<in> B \<Longrightarrow>  (\<lambda>x\<in>N. b(x)) : N\<rightarrow>B"
   apply (rule fun_weaken_type)
    apply (subgoal_tac " (\<lambda>x\<in>N. b(x)) : N \<rightarrow> {b(x).x\<in>N}", assumption)
    apply (auto simp add:lam_funtype)
   done
+
+lemma Transset_M :
+  "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
+  by (simp add: Transset_def,auto)  
+  
     
-locale forcing_data = forcing_poset + M_ZF +
+locale M_ZF = 
+  fixes M 
+  assumes 
+          upair_ax:         "upair_ax(##M)"
+      and Union_ax:         "Union_ax(##M)"
+      and power_ax:         "power_ax(##M)"
+      and extensionality:   "extensionality(##M)"
+      and foundation_ax:    "foundation_ax(##M)"
+      and infinity_ax:      "infinity_ax(##M)"
+      and separation:       "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=1 \<or> arity(\<phi>)=2 \<rbrakk> \<Longrightarrow> 
+                              (\<forall>a\<in>M. separation(##M,\<lambda>x. sats(M,\<phi>,[x,a])))" 
+      and replacement:      "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=2 \<or> arity(\<phi>)=succ(2) \<rbrakk> \<Longrightarrow>
+                            (\<forall>a\<in>M. strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y,a])))" 
+    
+locale forcing_data = forcing_notion + M_ZF +
   fixes enum
   assumes M_countable:      "enum\<in>bij(nat,M)"
       and P_in_M:           "P \<in> M"
       and leq_in_M:         "leq \<in> M"
-
+      and trans_M:          "Transset(M)"
+          
 begin  (*************** CONTEXT: forcing_data *****************)
 definition
   M_generic :: "i\<Rightarrow>o" where
@@ -51,7 +72,7 @@ proof -
     qed
   qed
   from Eq3 and Eq4 interpret 
-          cg: countable_generic P leq uno ?D 
+          cg: countable_generic P leq one ?D 
     by (unfold_locales, auto)
   from cg.rasiowa_sikorski and Eq1 obtain G where 
          Eq6: "p\<in>G \<and> filter(G) \<and> (\<forall>n\<in>nat.(?D`n)\<inter>G\<noteq>0)"
@@ -83,7 +104,19 @@ proof -
   qed
   with Eq6 show ?thesis 
     unfolding M_generic_def by auto
-qed     
+qed
+  
+  
+lemma mtriv :  
+  "M_trivial_no_repl(##M)"
+  apply (insert trans_M upair_ax Union_ax power_ax infinity_ax)
+  apply (rule M_trivial_no_repl.intro)
+  apply (simp_all add: zero_in_M)
+  apply (rule Transset_intf,simp+)
+done
+    
 end    (*************** CONTEXT: forcing_data *****************)      
 
+sublocale forcing_data \<subseteq> M_basic_no_repl "##M" sorry
+  
 end

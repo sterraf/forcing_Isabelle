@@ -1,81 +1,81 @@
-theory forcing_posets imports Pointed_DC begin
+theory Forcing_notions imports Pointed_DC  begin
 
-locale forcing_poset =
-  fixes P leq uno
-  assumes uno_in_P:         "uno \<in> P"
-      and leq_preord:       "preorder_on(P,leq)"
-      and uno_max:          "\<forall>p\<in>P. <p,uno>\<in>leq"
-
-definition (in forcing_poset)
-  dense :: "i\<Rightarrow>o" where
-  "dense(D) == \<forall>p\<in>P. \<exists>d\<in>D . <d,p>\<in>leq"
-    
-definition (in forcing_poset)
-  increasing :: "i\<Rightarrow>o" where
-  "increasing(F) == \<forall>p\<in>P. \<forall>x\<in>P. x\<in>F \<and> <x,p>\<in>leq \<longrightarrow> p\<in>F"
-
-
-(* En esta definición habría que agregar que (A,r) es preorden? *)
 definition compat_in :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "compat_in(A,r,p,q) == \<exists>d\<in>A . <d,p>\<in>r \<and> <d,q>\<in>r"
+  "compat_in(A,r,p,q) == \<exists>d\<in>A . \<langle>d,p\<rangle>\<in>r \<and> \<langle>d,q\<rangle>\<in>r"
 
 lemma compat_inI : 
-      "\<lbrakk> d\<in>A ; <d,p>\<in>r ; <d,g>\<in>r \<rbrakk> \<Longrightarrow> compat_in(A,r,p,g)"
-  apply (simp add: compat_in_def)
-  apply (rule_tac x="d" in bexI,simp+)
-  done
+  "\<lbrakk> d\<in>A ; \<langle>d,p\<rangle>\<in>r ; \<langle>d,g\<rangle>\<in>r \<rbrakk> \<Longrightarrow> compat_in(A,r,p,g)"
+  by (auto simp add: compat_in_def)
 
 lemma refl_compat:
-  "\<lbrakk> refl(A,r) ; <p,q> \<in> r | p=q | <q,p> \<in> r ; p\<in>A ; q\<in>A\<rbrakk> \<Longrightarrow> compat_in(A,r,p,q)"
-  apply (simp add: refl_def)
-  apply (rule_tac P="<p,q>\<in>r" and Q="p=q \<or> <q,p>\<in>r" in disjE,assumption)
-  apply (rule_tac d="p" in compat_inI,assumption,simp+)
-  apply (rule_tac P="p=q" in disjE,assumption)
-   apply (rule_tac d="q" in compat_inI,assumption,simp+)
-  apply (rule_tac d="q" in compat_inI,assumption,simp)
-  apply (rule bspec,assumption+)
-  done
+  "\<lbrakk> refl(A,r) ; \<langle>p,q\<rangle> \<in> r | p=q | \<langle>q,p\<rangle> \<in> r ; p\<in>A ; q\<in>A\<rbrakk> \<Longrightarrow> compat_in(A,r,p,q)"
+  by (auto simp add: refl_def compat_inI)
  
 lemma  chain_compat:
   "refl(A,r) \<Longrightarrow> linear(A,r) \<Longrightarrow>  (\<forall>p\<in>A.\<forall>q\<in>A. compat_in(A,r,p,q))"
-  apply (rule ballI,rule ballI)
-  apply (unfold linear_def)
-  apply (drule_tac x="p" in bspec,assumption,drule_tac x="q" in bspec,assumption)
-  apply (rule refl_compat,assumption+)
-  done
+  by (simp add: refl_compat linear_def)
 
-definition (in forcing_poset)
+lemma subset_fun_image: "f:N\<rightarrow>P \<Longrightarrow> f``N\<subseteq>P"
+  by (auto simp add: image_fun apply_funtype)
+    
+definition 
+  antichain :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
+  "antichain(P,leq,A) == A\<subseteq>P \<and> (\<forall>p\<in>A.\<forall>q\<in>A.(\<not> compat_in(P,leq,p,q)))"
+
+definition 
+  ccc :: "i \<Rightarrow> i \<Rightarrow> o" where
+  "ccc(P,leq) == \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
+
+locale forcing_notion =
+  fixes P leq one
+  assumes one_in_P:         "one \<in> P"
+      and leq_preord:       "preorder_on(P,leq)"
+      and one_max:          "\<forall>p\<in>P. \<langle>p,one\<rangle>\<in>leq"
+begin
+definition 
+  dense :: "i\<Rightarrow>o" where
+  "dense(D) == \<forall>p\<in>P. \<exists>d\<in>D . \<langle>d,p\<rangle>\<in>leq"
+
+definition 
+  dense_below :: "i\<Rightarrow>i\<Rightarrow>o" where
+  "dense_below(D,q) == \<forall>p\<in>P. \<langle>p,q\<rangle>\<in>leq \<longrightarrow> (\<exists>d\<in>D . \<langle>d,p\<rangle>\<in>leq)"
+
+lemma P_dense: "dense(P)"
+  by (insert leq_preord, auto simp add: preorder_on_def refl_def dense_def)
+    
+definition 
+  increasing :: "i\<Rightarrow>o" where
+  "increasing(F) == \<forall>x\<in>F. \<forall> p \<in> P . \<langle>x,p\<rangle>\<in>leq \<longrightarrow> p\<in>F"
+
+
+definition 
   compat :: "i\<Rightarrow>i\<Rightarrow>o" where
   "compat(p,q) == compat_in(P,leq,p,q)"
 
-definition (in forcing_poset)
+definition 
   antichain :: "i\<Rightarrow>o" where
   "antichain(A) == A\<subseteq>P \<and> (\<forall>p\<in>A.\<forall>q\<in>A.(\<not>compat(p,q)))"
 
-definition (in forcing_poset)
+definition 
   filter :: "i\<Rightarrow>o" where
   "filter(G) == G\<subseteq>P \<and> increasing(G) \<and> (\<forall>p\<in>G. \<forall>q\<in>G. compat_in(G,leq,p,q))"
 
-definition (in forcing_poset) 
+definition  
   upclosure :: "i\<Rightarrow>i" where
-  "upclosure(A) == {p\<in>P.\<exists>a\<in>A.<a,p>\<in>leq}"
+  "upclosure(A) == {p\<in>P.\<exists>a\<in>A.\<langle>a,p\<rangle>\<in>leq}"
   
-lemma (in forcing_poset) upclosureI [intro] : "p\<in>P \<Longrightarrow> a\<in>A \<Longrightarrow> <a,p>\<in>leq \<Longrightarrow> p\<in>upclosure(A)"
+lemma  upclosureI [intro] : "p\<in>P \<Longrightarrow> a\<in>A \<Longrightarrow> \<langle>a,p\<rangle>\<in>leq \<Longrightarrow> p\<in>upclosure(A)"
   by (simp add:upclosure_def, auto)
 
-lemma (in forcing_poset) upclosureE [elim] :
-  "p\<in>upclosure(A) \<Longrightarrow> (\<And>x a. x\<in>P \<Longrightarrow> a\<in>A \<Longrightarrow> <a,x>\<in>leq \<Longrightarrow> R) \<Longrightarrow> R"
-  apply (simp add:upclosure_def)
-  apply (erule conjE)
-  apply (drule_tac P="\<lambda>a.\<langle>a, p\<rangle> \<in> leq" 
-               and Q="R" in bexE, assumption+)
-done
+lemma  upclosureE [elim] :
+  "p\<in>upclosure(A) \<Longrightarrow> (\<And>x a. x\<in>P \<Longrightarrow> a\<in>A \<Longrightarrow> \<langle>a,x\<rangle>\<in>leq \<Longrightarrow> R) \<Longrightarrow> R"
+  by (auto simp add:upclosure_def)
 
-lemma (in forcing_poset) upclosureD [dest] :
-   "p\<in>upclosure(A) \<Longrightarrow> \<exists>a\<in>A.(<a,p>\<in>leq) \<and> p\<in>P"
+lemma  upclosureD [dest] :
+   "p\<in>upclosure(A) \<Longrightarrow> \<exists>a\<in>A.(\<langle>a,p\<rangle>\<in>leq) \<and> p\<in>P"
   by (simp add:upclosure_def)
    
-lemma  (in forcing_poset) upclosure_increasing :
+lemma   upclosure_increasing :
   "A\<subseteq>P \<Longrightarrow> increasing(upclosure(A))"
   apply (unfold increasing_def upclosure_def, simp)
   apply clarify
@@ -88,21 +88,21 @@ lemma  (in forcing_poset) upclosure_increasing :
   apply (simp, assumption)
   done
   
-lemma (in forcing_poset) upclosure_in_P: "A \<subseteq> P \<Longrightarrow> upclosure(A) \<subseteq> P"
+lemma  upclosure_in_P: "A \<subseteq> P \<Longrightarrow> upclosure(A) \<subseteq> P"
   apply (rule   subsetI)
   apply (simp add:upclosure_def)  
   done
 
-lemma (in forcing_poset) A_sub_upclosure: "A \<subseteq> P \<Longrightarrow> A\<subseteq>upclosure(A)"
+lemma  A_sub_upclosure: "A \<subseteq> P \<Longrightarrow> A\<subseteq>upclosure(A)"
   apply (rule   subsetI)
   apply (simp add:upclosure_def, auto)
   apply (insert leq_preord, unfold preorder_on_def refl_def, auto)
   done
  
-lemma (in forcing_poset) elem_upclosure: "A\<subseteq>P \<Longrightarrow> x\<in>A  \<Longrightarrow> x\<in>upclosure(A)"
+lemma  elem_upclosure: "A\<subseteq>P \<Longrightarrow> x\<in>A  \<Longrightarrow> x\<in>upclosure(A)"
   by (blast dest:A_sub_upclosure)
     
-lemma (in forcing_poset) closure_compat_filter:
+lemma  closure_compat_filter:
   "A\<subseteq>P \<Longrightarrow> (\<forall>p\<in>A.\<forall>q\<in>A. compat_in(A,leq,p,q)) \<Longrightarrow> filter(upclosure(A))"
   apply (unfold filter_def)
   apply (intro conjI)
@@ -126,16 +126,14 @@ lemma (in forcing_poset) closure_compat_filter:
   apply (drule_tac x="d" in bspec, rule_tac A="A" in subsetD, assumption+) 
   apply (drule_tac x="a" in bspec, rule_tac A="A" in subsetD, assumption+) 
   apply (drule_tac x="x" in bspec, assumption, auto)
-done
-
-locale countable_generic = forcing_poset +
-  fixes \<D>
-  assumes countable_subs_of_P:  "\<D> \<in> nat\<rightarrow>Pow(P)"
-  and     seq_of_denses:        "\<forall>n \<in> nat. dense(\<D>`n)"
-
-definition (in countable_generic)
-  D_generic :: "i\<Rightarrow>o" where
-  "D_generic(G) == filter(G) \<and> (\<forall>n\<in>nat.(\<D>`n)\<inter>G\<noteq>0)"
+  done
+    
+lemma  aux_RS1:  "f \<in> N \<rightarrow> P \<Longrightarrow> n\<in>N \<Longrightarrow> f`n \<in> upclosure(f ``N)"
+  apply (rule_tac  elem_upclosure)
+   apply (rule subset_fun_image, assumption)
+  apply (simp add: image_fun, blast)
+  done    
+end
 
 lemma refl_monot_domain: "refl(B,r) \<Longrightarrow> A\<subseteq>B \<Longrightarrow> refl(A,r)"  
   apply (drule subset_iff [THEN iffD1])
@@ -143,7 +141,7 @@ lemma refl_monot_domain: "refl(B,r) \<Longrightarrow> A\<subseteq>B \<Longrighta
   apply (blast)
   done
 
-lemma decr_succ_decr: "f \<in> nat -> P \<Longrightarrow> preorder_on(P,leq) \<Longrightarrow>
+lemma decr_succ_decr: "f \<in> nat \<rightarrow> P \<Longrightarrow> preorder_on(P,leq) \<Longrightarrow>
          \<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq \<Longrightarrow>
            n\<in>nat \<Longrightarrow> m\<in>nat \<Longrightarrow> n\<le>m \<longrightarrow> \<langle>f ` m, f ` n\<rangle> \<in> leq"
   apply (unfold preorder_on_def, erule conjE)
@@ -157,10 +155,10 @@ lemma decr_succ_decr: "f \<in> nat -> P \<Longrightarrow> preorder_on(P,leq) \<L
    apply (drule_tac x="f`n" in bspec, auto)
    apply (drule_tac le_succ_iff [THEN iffD1], simp add: refl_def)
   done
-lemma not_le_imp_lt: "[| ~ i \<le> j ; Ord(i);  Ord(j) |] ==>  j<i"
+lemma not_le_imp_lt: "\<lbrakk> ~ i \<le> j ; Ord(i);  Ord(j) \<rbrakk> \<Longrightarrow>  j<i"
   by (simp add:not_le_iff_lt)
 
-lemma decr_seq_linear: "refl(P,leq) \<Longrightarrow> f \<in> nat -> P \<Longrightarrow>
+lemma decr_seq_linear: "refl(P,leq) \<Longrightarrow> f \<in> nat \<rightarrow> P \<Longrightarrow>
          \<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq \<Longrightarrow>
            trans[P](leq) \<Longrightarrow> linear(f `` nat, leq)"
   apply (unfold linear_def)
@@ -180,25 +178,27 @@ lemma decr_seq_linear: "refl(P,leq) \<Longrightarrow> f \<in> nat -> P \<Longrig
      apply (simp+)
     done
 
-lemma subset_fun_image: "f:N\<rightarrow>P \<Longrightarrow> f``N\<subseteq>P"
-  apply (simp add: image_fun)
-  apply (rule subsetI, simp, erule bexE)
-  apply (simp add:apply_funtype)
-  done
+  
+locale countable_generic = forcing_notion +
+  fixes \<D>
+  assumes countable_subs_of_P:  "\<D> \<in> nat\<rightarrow>Pow(P)"
+  and     seq_of_denses:        "\<forall>n \<in> nat. dense(\<D>`n)"
 
-lemma (in forcing_poset) aux_RS1:  "f \<in> N \<rightarrow> P \<Longrightarrow> n\<in>N \<Longrightarrow> f`n \<in> upclosure(f ``N)"
-  apply (rule_tac  elem_upclosure)
-   apply (rule subset_fun_image, assumption)
-  apply (simp add: image_fun, blast)
-  done
+begin
+  
+definition
+  D_generic :: "i\<Rightarrow>o" where
+  "D_generic(G) == filter(G) \<and> (\<forall>n\<in>nat.(\<D>`n)\<inter>G\<noteq>0)"
 
-lemma (in countable_generic) RS_relation:
+
+
+lemma RS_relation:
   assumes
         1:  "x\<in>P"
             and
         2:  "n\<in>nat"
   shows
-            "\<exists>y\<in>P. <x,y> \<in> (\<lambda>m\<in>nat. {<x,y>\<in>P*P. <y,x>\<in>leq \<and> y\<in>\<D>`(pred(m))})`n"
+            "\<exists>y\<in>P. \<langle>x,y\<rangle> \<in> (\<lambda>m\<in>nat. {\<langle>x,y\<rangle>\<in>P*P. \<langle>y,x\<rangle>\<in>leq \<and> y\<in>\<D>`(pred(m))})`n"
 proof -
   from seq_of_denses and 2 have "dense(\<D> ` pred(n))" by (simp)
   with 1 have
@@ -219,18 +219,18 @@ proof -
   then show ?thesis using 1 and 2 by auto
 qed
         
-theorem (in countable_generic) rasiowa_sikorski:
+theorem rasiowa_sikorski:
   "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> D_generic(G)"
 proof -
   assume 
       Eq1:  "p\<in>P"
   let
-            ?S="(\<lambda>m\<in>nat. {<x,y>\<in>P*P. <y,x>\<in>leq \<and> y\<in>\<D>`(pred(m))})"
+            ?S="(\<lambda>m\<in>nat. {\<langle>x,y\<rangle>\<in>P*P. \<langle>y,x\<rangle>\<in>leq \<and> y\<in>\<D>`(pred(m))})"
   from RS_relation have
-            "\<forall>x\<in>P. \<forall>n\<in>nat. \<exists>y\<in>P. <x,y> \<in> ?S`n"
+            "\<forall>x\<in>P. \<forall>n\<in>nat. \<exists>y\<in>P. \<langle>x,y\<rangle> \<in> ?S`n"
     by (auto)
   with sequence_DC have
-            "\<forall>a\<in>P. (\<exists>f \<in> nat->P. f`0 = a \<and> (\<forall>n \<in> nat. <f`n,f`succ(n)>\<in>?S`succ(n)))"
+            "\<forall>a\<in>P. (\<exists>f \<in> nat\<rightarrow>P. f`0 = a \<and> (\<forall>n \<in> nat. \<langle>f`n,f`succ(n)\<rangle>\<in>?S`succ(n)))"
     by (blast)
   then obtain f where
       Eq2:  "f : nat\<rightarrow>P"
@@ -278,14 +278,7 @@ proof -
   with gen and fil show ?thesis  
     unfolding D_generic_def by auto
 qed
-
-    
-definition 
-  antichain :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "antichain(P,leq,A) == A\<subseteq>P \<and> (\<forall>p\<in>A.\<forall>q\<in>A.(\<not> compat_in(P,leq,p,q)))"
-
-definition 
-  ccc :: "i \<Rightarrow> i \<Rightarrow> o" where
-  "ccc(P,leq) == \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
+  
+end
   
 end
