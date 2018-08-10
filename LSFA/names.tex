@@ -42,11 +42,6 @@ then it is well-founded as well.
 
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
-\ edrel{\isacharunderscore}sub{\isacharunderscore}memrel{\isacharcolon}\ {\isachardoublequoteopen}edrel{\isacharparenleft}A{\isacharparenright}\ {\isasymsubseteq}\ trancl{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
-\end{isabelle}
-\dots
-\begin{isabelle}
-\isacommand{lemma}\isamarkupfalse%
 \ wf{\isacharunderscore}edrel\ {\isacharcolon}\ {\isachardoublequoteopen}wf{\isacharparenleft}edrel{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \ \ \isacommand{apply}\isamarkupfalse%
 \ {\isacharparenleft}rule\ wf{\isacharunderscore}subset\ {\isacharbrackleft}of\ {\isachardoublequoteopen}trancl{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}{\isacharbrackright}{\isacharparenright}\isanewline
@@ -54,6 +49,13 @@ then it is well-founded as well.
 \ {\isacharparenleft}auto\ simp\ add{\isacharcolon}edrel{\isacharunderscore}sub{\isacharunderscore}memrel\ wf{\isacharunderscore}trancl\ wf{\isacharunderscore}Memrel{\isacharparenright}\isanewline
 \ \ \isacommand{done}\isamarkupfalse%
 %
+\end{isabelle}
+
+\noindent We omit the proof of the following lemma used above:
+
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ edrel{\isacharunderscore}sub{\isacharunderscore}memrel{\isacharcolon}\ {\isachardoublequoteopen}edrel{\isacharparenleft}A{\isacharparenright}\ {\isasymsubseteq}\ trancl{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
 \noindent We now turn to the definition of $\val$. In order to use

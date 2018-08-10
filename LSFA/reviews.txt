@@ -102,6 +102,8 @@ cambiado (explicit NO es un verbo)
 - what does it mean "..." after lemma edrel_sub_memrel ? More lemmas
   are needed in between ?
 - Some intuitions about the  functions Hv and wfrec are needed.
++ Miguel
+
 - Sec5 of this Section -> section
 
 
@@ -142,16 +144,20 @@ explained in a very superficial manner in section 3.1 (“it would have
 been very contrived to derive DC from the Isabelle/ZF development”). I
 suggest you show explicitly how it can be derived to contrast with
 your direct adaptation.
++ Pedro se encarga
 
 Also, it is necessary the inclusion of related work on formalizations
 of set theory in other proof assistants of course ratifying
 inexistence of other formalizations of forcing techniques.
++ Pedro se encarga
 
 Subsections 1.1 and 1.2 might be extended as a background section in
 which also, elements available and not available in Isabelle/ZF are
 classified by the authors.
 
+
 Descriptions of sections 3, 4 and 5 could be written in more detail.
++ en cada sección repetir un poco. Se encarga Manu.
 
 Use only P or only Q in Sep_and_Replace Lemma and the associated
 discussion. As it is written is not wrong, but using the same symbol
