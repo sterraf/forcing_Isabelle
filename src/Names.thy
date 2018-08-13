@@ -98,10 +98,29 @@ lemma eq_sub_trans :  "x=y \<Longrightarrow> y\<subseteq>z \<Longrightarrow> x\<
 lemma SepReplace_iff [simp]: "y\<in>{b(x) .. x\<in>A, P(x)} \<longleftrightarrow> (\<exists>x\<in>A. y=b(x) & P(x))"
    by (auto simp add:SepReplace_def)
 
-    
+              
 context forcing_data
 begin  (*************** CONTEXT: forcing_data *****************)
 
+lemma upairM : "x \<in> M \<Longrightarrow> y \<in> M \<Longrightarrow> {x,y} \<in> M"
+   by(insert upair_ax, auto simp add: upair_ax_def)
+
+lemma pairM : "x \<in>  M \<Longrightarrow> y \<in> M \<Longrightarrow> <x,y> \<in> M"
+  by(unfold Pair_def, rule upairM,(rule upairM,simp+)+)
+
+lemma funApp : "(\<And>x . x \<in> u \<Longrightarrow> f(x) \<in> M) \<Longrightarrow> a \<in> M \<Longrightarrow> u \<in> M \<Longrightarrow>
+  (##M)(Replace(u, \<lambda> y z . z = <f(y),a>))"
+ apply(rule_tac P="\<lambda> y z . z = <f(y),a>" in strong_replacement_closed)
+ prefer 2 apply(simp)
+ prefer 3 apply(simp_all,rule pairM)
+ apply((simp add: trans_M Transset_M)+)
+ apply(insert replacement)
+  apply(unfold strong_replacement_def,simp,clarsimp)
+  sorry
+
+lemma funApp2 : "Replace(u,\<lambda> y z . z = <f(y),a>) = { <f(y),a> . y \<in> u}"
+  by(auto)
+    
 definition 
   Hcheck :: "[i,i] \<Rightarrow> i" where
   "Hcheck(z,f)  == { <f`y,one> . y \<in> z}"
@@ -137,6 +156,24 @@ proof -
   finally show ?thesis by (simp add:Hcheck_def)
 qed
 
+  
+lemma checkin : "x \<in> M \<Longrightarrow> (\<forall> y  \<in> x . check(y) \<in> M) \<Longrightarrow> (##M)(check(x))"
+  apply(subst def_check)
+  apply(subst funApp2[symmetric])
+  apply(rule funApp,auto)
+  apply(insert one_in_P P_in_M transM,simp)
+done
+    
+lemma check_M_aux : "(##M)(x) \<longrightarrow> (##M)(check(x))"
+  apply(rule_tac P="\<lambda> z . (##M)(z) \<longrightarrow> (##M)(check(z))" and a="x" in eps_induct)
+  apply(rule impI,rule checkin,simp+)
+  apply(subgoal_tac "\<forall> y \<in> x . y \<in> M",simp)
+  apply(insert one_in_P P_in_M transM,simp)
+done  
+
+theorem check_M : "x \<in> M \<Longrightarrow> check(x) \<in> M"
+  by(insert check_M_aux,simp)
+    
 definition
   Hv :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i" where
   "Hv(G,x,f) == { f`y .. y\<in> domain(x), \<exists>p\<in>P. <y,p> \<in> x \<and> p \<in> G }"
