@@ -1,15 +1,15 @@
 \section{Pairing in the generic extension}
 \label{sec:pairing-generic-extension}
-Given a predicate
-\isa{C\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}},
-we can consider the \emph{class} of all sets \isa{x} such that
-\isa{C(x)}. In \cite{paulson_2003} a large corpus of set-theoretical
-concepts are expressed in relative form.
 
-In the case of the Pairing Axiom the following definition in 
-Paulson's formalization captures
-what a class \isa{C} believes about a set being the unordered pair of
-other two:
+Once the preliminary concepts are defined, one of the main tasks in order to
+formalize the Independence of the Continuum Hypothesis
+is to prove that the generic extension $M[G]$ is a model of $ZFC$. So, we need to show that
+every axiom of $ZFC$ holds in $M[G]$, i.e, that the relative version of each axiom $\phi$ to
+$M[G]$ ($\phi^{M[G]}$) holds. In this section we show the case of the Pairing Axiom.
+
+In Paulson's library, there exist relative versions of the $ZFC$ axioms. The definition
+\isa{upair{\isacharunderscore}ax} corresponds to the Pairing Axiom:
+
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
 \isanewline
@@ -17,7 +17,7 @@ other two:
 \ \ \ \ {\isachardoublequoteopen}upair{\isacharparenleft}C{\isacharcomma}a{\isacharcomma}b{\isacharcomma}z{\isacharparenright}\ {\isacharequal}{\isacharequal}\ a\ {\isasymin}\ z\ {\isasymand}\ b\ {\isasymin}\ z\ {\isasymand}\ {\isacharparenleft}{\isasymforall}x{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ x{\isasymin}z\ {\isasymlongrightarrow}\ x\ {\isacharequal}\ a\ {\isasymor}\ x\ {\isacharequal}\ b{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 %
-Then the fact that Pairing axiom holds in \isa{C} is stated as follows.
+%% Then the fact that Pairing axiom holds in \isa{C} is stated as follows.
 %
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
@@ -25,6 +25,21 @@ Then the fact that Pairing axiom holds in \isa{C} is stated as follows.
 \ \ upair{\isacharunderscore}ax\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharparenleft}i{\isasymRightarrow}o{\isacharparenright}\ {\isasymRightarrow}\ o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
 \ \ \ \ {\isachardoublequoteopen}upair{\isacharunderscore}ax{\isacharparenleft}C{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}x{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ {\isasymforall}y{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ {\isasymexists}z{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ upair{\isacharparenleft}C{\isacharcomma}x{\isacharcomma}y{\isacharcomma}z{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
+
+\noindent where \isa{C\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}}
+formalizes a class of sets: all sets \isa{x} such that \isa{C(x)} holds.
+
+
+% Given a predicate
+% \isa{C\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}},
+% we can consider the \emph{class} of all sets \isa{x} such that
+% \isa{C(x)}. In \cite{paulson_2003} a large corpus of set-theoretical
+% concepts are expressed in relative form.
+
+% In the case of the Pairing Axiom the following definition in 
+% Paulson's formalization captures
+% what a class \isa{C} believes about a set being the unordered pair of
+% other two:
 
 In order use the \isa{upair{\isacharunderscore}ax} for a set model, we
 use the \isatt{\#\#}  operator.  We state the main result of this
