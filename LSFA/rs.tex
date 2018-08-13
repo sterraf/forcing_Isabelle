@@ -76,16 +76,18 @@ We first obtain a corollary of $\DC$ changing $A$ for
 $A\times\mathtt{nat}$:
 
 \begin{isabelle}
-\isacommand{lemma}\isamarkupfalse%
-\ aux{\isacharunderscore}DC{\isacharunderscore}on{\isacharunderscore}AxNat{\isadigit{2}}\ {\isacharcolon}\ {\isachardoublequoteopen}{\isasymforall}x{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}{\isasymlangle}y{\isacharcomma}succ{\isacharparenleft}snd{\isacharparenleft}x{\isacharparenright}{\isacharparenright}{\isasymrangle}{\isasymrangle}\ {\isasymin}\ R\ {\isasymLongrightarrow}\isanewline
-\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymforall}x{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ {\isacharbraceleft}{\isasymlangle}a{\isacharcomma}b{\isasymrangle}{\isasymin}R{\isachardot}\ snd{\isacharparenleft}b{\isacharparenright}\ {\isacharequal}\ succ{\isacharparenleft}snd{\isacharparenleft}a{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
+\isacommand{corollary}\isamarkupfalse%
+\ DC{\isacharunderscore}on{\isacharunderscore}A{\isacharunderscore}x{\isacharunderscore}nat\ {\isacharcolon}\ \isanewline
+\ \ {\isachardoublequoteopen}{\isacharparenleft}{\isasymforall}x{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}{\isasymlangle}y{\isacharcomma}succ{\isacharparenleft}snd{\isacharparenleft}x{\isacharparenright}{\isacharparenright}{\isasymrangle}{\isasymrangle}\ {\isasymin}\ R{\isacharparenright}\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ {\isasymforall}a{\isasymin}A{\isachardot}\ {\isacharparenleft}{\isasymexists}f\ {\isasymin}\ nat{\isasymrightarrow}A{\isachardot}\ f{\isacharbackquote}{\isadigit{0}}\ {\isacharequal}\ a\ {\isasymand}\ {\isacharparenleft}{\isasymforall}n\ {\isasymin}\ nat{\isachardot}\ {\isasymlangle}{\isasymlangle}f{\isacharbackquote}n{\isacharcomma}n{\isasymrangle}{\isacharcomma}{\isasymlangle}f{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isacharcomma}succ{\isacharparenleft}n{\isacharparenright}{\isasymrangle}{\isasymrangle}{\isasymin}R{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
+
 %
 The following lemma is then proved automatically:
 
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
-\ aux{\isacharunderscore}sequence{\isacharunderscore}DC{\isadigit{2}}\ {\isacharcolon}\ {\isachardoublequoteopen}{\isasymforall}x{\isasymin}A{\isachardot}\ {\isasymforall}n{\isasymin}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ S{\isacharbackquote}n\ {\isasymLongrightarrow}\isanewline
+\ aux{\isacharunderscore}sequence{\isacharunderscore}DC\ {\isacharcolon}\ {\isachardoublequoteopen}{\isasymforall}x{\isasymin}A{\isachardot}\ {\isasymforall}n{\isasymin}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ S{\isacharbackquote}n\ {\isasymLongrightarrow}\isanewline
 \ \ \ \ \ \ \ \ {\isasymforall}x{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}{\isasymlangle}y{\isacharcomma}succ{\isacharparenleft}snd{\isacharparenleft}x{\isacharparenright}{\isacharparenright}{\isasymrangle}{\isasymrangle}\ {\isasymin}\ {\isacharbraceleft}{\isasymlangle}{\isasymlangle}x{\isacharcomma}n{\isasymrangle}{\isacharcomma}{\isasymlangle}y{\isacharcomma}m{\isasymrangle}{\isasymrangle}{\isasymin}{\isacharparenleft}A{\isasymtimes}nat{\isacharparenright}{\isasymtimes}{\isacharparenleft}A{\isasymtimes}nat{\isacharparenright}{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}{\isasymin}S{\isacharbackquote}m\ {\isacharbraceright}{\isachardoublequoteclose}\isanewline
 \ \ %
 \isacommand{by}\isamarkupfalse%
