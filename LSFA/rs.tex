@@ -22,14 +22,21 @@ already been formalized  by Krzysztof
 Grabczewski~\cite{DBLP:journals/jar/PaulsonG96}, as part of a
 study of equivalents to $\AC$ (following Rubin and Rubin
 \cite{rubin1985equivalents}). Nevertheless, those are not convenient
-for our purposes for the reasons we now explain. The axiom $\DC0$
+for our purposes for reasons we now explain. The axiom $\DC0$
 corresponds essentially to our Pointed $\DC$ but without the
 constraint $f(0)=a$; it is a nice exercise to show that $\DC0$ implies
-Pointed $\DC$, but a formalization would have a moderate length. On
-the other hand, the shortest path from $\AC$ as stated in the
-corresponding Isabelle theory to $\DC0$ using the already formalized
+Pointed $\DC$, but a formalization would have a moderate
+length. $\DC(\kappa)$ is rather different in nature and it is tailored
+to  obtain another proposition
+equivalent to the axiom of choice (actually,
+$\AC\longleftrightarrow (\forall \kappa
+.\; \mathrm{Card}(\kappa)\longrightarrow \DC(\kappa))$. 
+Finally, the shortest path from $\AC$ %% as stated in the 
+%% corresponding Isabelle theory
+to $\DC0$ using already formalized
 material involves a complicated detour (130+ proof commands spanning
-various files of the \isatt{ZF-AC} theory), compared to the mere 11 commands from $\AC$ to
+various files of the \isatt{ZF-AC} theory and going through the Well
+Ordering Theorem and  $\DC(\omega)$), compared to the mere 11 commands from $\AC$ to
 \isatt{AC{\isacharunderscore}func{\isacharunderscore}Pow}. This last
 one is the
 choice principle that we use in our formalization of Pointed $\DC$, and states 
@@ -77,7 +84,7 @@ is the operation of function application.
 % We will not make a distinction in our prose and simply write
 % \isatt{s}(\isatt{b}) in this case.
 
-The proof is mostly routine; after a few lemmas (having 26 proof
+The proof is mostly routine; after a few lemmas (26 proof
 commands in total) we obtain the
 following theorem:
 
