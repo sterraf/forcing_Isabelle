@@ -101,7 +101,7 @@ corollary DC_on_A_x_nat :
   done
 
 lemma aux_sequence_DC : "\<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. \<langle>x,y\<rangle> \<in> S`n \<Longrightarrow>
-        \<forall>x\<in>A\<times>nat. \<exists>y\<in>A. \<langle>x,\<langle>y,succ(snd(x))\<rangle>\<rangle> \<in> {\<langle>\<langle>x,n\<rangle>,\<langle>y,m\<rangle>\<rangle>\<in>(A\<times>nat)\<times>(A\<times>nat). \<langle>x,y\<rangle>\<in>S`m }"
+        \<forall>x\<in>A\<times>nat. \<exists>y\<in>A. \<langle>x,\<langle>y,succ(snd(x))\<rangle>\<rangle> \<in> {\<langle>\<langle>w,n\<rangle>,\<langle>y,m\<rangle>\<rangle>\<in>(A\<times>nat)\<times>(A\<times>nat). \<langle>w,y\<rangle>\<in>S`m }"
   by auto
     
 lemma sequence_DC: "\<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. \<langle>x,y\<rangle> \<in> S`n \<Longrightarrow>
