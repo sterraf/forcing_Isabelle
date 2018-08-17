@@ -3,17 +3,37 @@
 We formalize the function $\val$ that allows to
 construct the elements of the generic extension $M[G]$ from elements
 of the ctm $M$ and the generic filter $G$. The definition of $\val$
-can be written succintly as
+can be written succintly as a recursive equation
 %
 \begin{equation}\label{eq:def-val}
 \val(G,\tau)\defi \{\val(G,\sigma) : \exists p\in \PP.\,
 (\lb\sigma,p\rb\in\tau \y p\in G)\}.
 \end{equation}
 %
-As with any recursive definition, in order to justify that the
-definition makes sense (i.e., that it defines anything at all) one has
-to make explicit the well-founded relation which is used. In this
-case, we use the relation $\mathit{ed}$:
+The justification that $\val$ is well-defined comes from a general
+result (transfinite recursion on well-founded
+relations~\cite[p. 48]{kunen2011set}). Given a well-founded relation
+$R \subseteq A \times A$ and a functional
+$H : A \times (A \to A) \to A$, the principle asserts the existence of
+a function $F : A \to A$ satisfying
+$F(a) = H(a,F\uparrow\,(R^{-1}(a)))$. This principle is formalized in
+Isabelle/ZF and one can use the operator \isa{wfrec}\footnote{Notice
+  that this form of recursive definitions is more general than the one
+  used in the previous section to define
+  \isa{dc{\isacharunderscore}witness}.} to define functions using
+transfinite recursion. To be precise, \isa{wfrec :: [i, i, [i,i]=>i]
+  => i} is a slight variation, where the first argument is the
+relation, the third is the functional, and the second corresponds to
+the argument of $F$. Notice that the relation and the function argument
+of the functional are internalized as terms of type \isa{i}.
+
+In our case the functional $H$ takes an additional argument for the
+parameter $G$:
+\[
+  H(G,y,f) = \{f(x) : x \in dom(y) \y \exists p\in \PP.\,
+(\lb x,p\rb\in y \y p\in G)\}
+\]
+while the relation is given by:
 \[
 x \mathrel{\mathit{ed}} y \iff \exists p . \lb x,p\rb\in y.
 \]
@@ -22,13 +42,9 @@ $\{\{x\},\{x,y\}\}$. It is trivial to deduce the well-foundedness of
 $\mathit{ed}$ from the fact that $\in$ is well-founded, which follows
 from the Foundation Axiom.
 
-The formalization of $\val$ in Isabelle/ZF involves the function
-\isa{wfrec},\footnote{Notice that this form of recursive
-  definitions is more general than the one used in the previous
-  section to define \isa{dc{\isacharunderscore}witness}.} which takes as an argument a
-well-founded relation of type \isa{i}, i.e.\ a set of pairs. Therefore
-we restrict $\mathit{ed}$ above to a set.
-%
+In the formalization of $\mathit{ed}$ is restricted to a set,
+so to have a term of type \isa{i}:
+% 
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
 \isanewline
@@ -58,14 +74,13 @@ then it is well-founded as well.
 \ edrel{\isacharunderscore}sub{\isacharunderscore}memrel{\isacharcolon}\ {\isachardoublequoteopen}edrel{\isacharparenleft}A{\isacharparenright}\ {\isasymsubseteq}\ trancl{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-\noindent We now turn to the definition of $\val$. In order to use
-\isa{wfrec} we need to define a functional \isa{Hv}.
-
+\noindent The formalizaton of the functional $H$ is straightforward and $\val$ is defined using \isa{wfrec}:
+%
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
 \isanewline
 \ \ Hv\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ {\isachardoublequoteopen}Hv{\isacharparenleft}G{\isacharcomma}x{\isacharcomma}f{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isacharbraceleft}\ f{\isacharbackquote}y\ {\isachardot}{\isachardot}\ y{\isasymin}\ domain{\isacharparenleft}x{\isacharparenright}{\isacharcomma}\ {\isasymexists}p{\isasymin}P{\isachardot}\ {\isacharless}y{\isacharcomma}p{\isachargreater}\ {\isasymin}\ x\ {\isasymand}\ p\ {\isasymin}\ G\ {\isacharbraceright}{\isachardoublequoteclose}\isanewline
+\ \ {\isachardoublequoteopen}Hv{\isacharparenleft}G{\isacharcomma}y{\isacharcomma}f{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isacharbraceleft}\ f{\isacharbackquote}x\ {\isachardot}{\isachardot}\ x{\isasymin}\ domain{\isacharparenleft}y{\isacharparenright}{\isacharcomma}\ {\isasymexists}p{\isasymin}P{\isachardot}\ {\isacharless}x{\isacharcomma}p{\isachargreater}\ {\isasymin}\ y\ {\isasymand}\ p\ {\isasymin}\ G\ {\isacharbraceright}{\isachardoublequoteclose}\isanewline
 \isanewline
 \isacommand{definition}\isamarkupfalse%
 \isanewline
