@@ -1,6 +1,40 @@
 \subsection{Related work}\label{sec:related-work}
+Before we proceed, we will discuss very succinctly recent related
+formalizations.
 
-   
+There is another major framework in Isabelle based on higher order
+logic, Isabelle/HOL. This framework is very active, and as a 
+consequence more automated tools are available. Isabelle/HOL has 
+basic chapters on set theory. One of those, by Steven Obua, proceeds up to
+well founded relations and provides translations between types in HOL
+(for instance \isatt{nat}) to  sets  (elements of type
+\isatt{ZF}). Another one, by A.~Popescu and D.~Traytel, reaches
+cardinal artihmetic. This is fairly limited for our purposes.
+
+Concerning automation, B.~Zhan has developed a new tool called
+\texttt{auto2} and applied it to untyped set theory
+\cite{10.1007/978-3-319-66107-0_32}. He has redeveloped essentially
+the basic results in Isabelle/ZF, but goes in a different
+direction. Nevertheless, a majority of results in
+Isabelle/ZF are not yet implemented using this tool, and a another
+downside is that proofs using it do not follow the standard Isar
+language.
+
+Finally, there are some forcing-related formalizations in the theory
+of types. Most relevant is the work by K.~Quirin \cite{Quirin}, where
+a sheaf-theoretic initial approach to forcing is implemented in
+Coq. This language is extremely different to the standard approach of
+constructing models of $\ZFC$, and it might be difficult (once the
+forcing machinery is set) to translate results in the literature using
+ctms to this one. In any case, the translation to set theory of what
+Quirin accomplishes is to define a generic extension (where $\CH$
+should fail) and to construct a set $K$ (a candidate counterexample)
+and injections $\N\to K$ and $K\to\R$. But the most important part,
+that is, that there are no surjections
+
+\begin{enumerate}
+\item Jaber et al.\ \cite{jaber:hal-01319066}.
+\end{enumerate}
 %We continue with a brief description of the Isabelle framework. 
 
 %%% Local Variables:
