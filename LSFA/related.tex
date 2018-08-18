@@ -20,7 +20,7 @@ Isabelle/ZF are not yet implemented using this tool, and a another
 downside is that proofs using it do not follow the standard Isar
 language.
 
-Finally, there are some forcing-related formalizations in the theory
+There are some forcing-related formalizations in the theory
 of types. Most relevant is the work by K.~Quirin \cite{Quirin}, where
 a sheaf-theoretic initial approach to forcing is implemented in
 Coq. This language is extremely different to the standard approach of
@@ -29,13 +29,11 @@ forcing machinery is set) to translate results in the literature using
 ctms to this one. In any case, the translation to set theory of what
 Quirin accomplishes is to define a generic extension (where $\CH$
 should fail) and to construct a set $K$ (a candidate counterexample)
-and injections $\N\to K$ and $K\to\R$. But the most important part,
-that is, that there are no surjections
+and injections $\N\hookrightarrow K$ and $K\hookrightarrow\R$. But the
+most important part, that is, that there are no surjections 
+$\N\twoheadrightarrow K$ and $K\twoheadrightarrow\R$, is left for a future
+work. % Finally,  Jaber et al.\ \cite{jaber:hal-01319066} 
 
-\begin{enumerate}
-\item Jaber et al.\ \cite{jaber:hal-01319066}.
-\end{enumerate}
-%We continue with a brief description of the Isabelle framework. 
 
 %%% Local Variables:
 %%% mode: latex
