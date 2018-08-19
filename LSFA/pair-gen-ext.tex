@@ -3,11 +3,16 @@
 
 Once the preliminary concepts are defined, one of the main tasks in order to
 formalize the Independence of the Continuum Hypothesis
-is to prove that the generic extension $M[G]$ is a model of $ZFC$. So, we need to show that
-every axiom of $ZFC$ holds in $M[G]$, i.e, that the relative version of each axiom $\phi$ to
-$M[G]$ ($\phi^{M[G]}$) holds. In this section we show the case of the Pairing Axiom.
+is to prove that the generic extension $M[G]$ is a model of $ZFC$, i.e, that
+the realtive version to $M[G]$ of each axiom of $ZFC$ holds. In this section
+we develop the proof of the satisfaction of the Pairing Axiom in the generic extension.
 
-In Paulson's library, there exist relative versions of the $ZFC$ axioms. The definition
+
+% So, we need to show that
+% every axiom of $ZFC$ holds in $M[G]$, i.e, that the relative version of each axiom $\phi$ to
+% $M[G]$ ($\phi^{M[G]}$) holds. In this section we show the case of the Pairing Axiom.
+
+In Paulson's library, there are defined relative versions of the $ZFC$ axioms. The definition
 \isa{upair{\isacharunderscore}ax} corresponds to the Pairing Axiom:
 
 \begin{isabelle}
@@ -41,7 +46,7 @@ formalizes a class of sets: all sets \isa{x} such that \isa{C(x)} holds.
 % what a class \isa{C} believes about a set being the unordered pair of
 % other two:
 
-In order use the \isa{upair{\isacharunderscore}ax} for a set model, we
+In order to use \isa{upair{\isacharunderscore}ax} for a set model, we
 use the \isatt{\#\#}  operator.  We state the main result of this
 section in the context \isatt{forcing{\isacharunderscore}data}.  
 %
