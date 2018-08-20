@@ -18,20 +18,20 @@ The statement we are interested in is the following:
 \end{quote}
 
 Two different versions of $\DC$ (called $\DC0$ and $\DC(\kappa)$) have
-already been formalized  by Krzysztof 
-Grabczewski~\cite{DBLP:journals/jar/PaulsonG96}, as part of a
-study of equivalents to $\AC$ (following Rubin and Rubin
+already been formalized by Krzysztof
+Grabczewski~\cite{DBLP:journals/jar/PaulsonG96}, as part of a study of
+equivalents of $\AC$ (following Rubin and Rubin
 \cite{rubin1985equivalents}). Nevertheless, those are not convenient
-for our purposes for reasons we now explain. The axiom $\DC0$
-corresponds essentially to our Pointed $\DC$ but without the
-constraint $f(0)=a$; it is a nice exercise to show that $\DC0$ implies
-Pointed $\DC$, but a formalization would have a moderate
-length. $\DC(\kappa)$ is rather different in nature and it is tailored
-to  obtain another proposition
-equivalent to the axiom of choice (actually,
-$\AC\longleftrightarrow (\forall \kappa
-.\; \mathrm{Card}(\kappa)\longrightarrow \DC(\kappa))$). 
-Finally, the shortest path from $\AC$ %% as stated in the 
+for our purposes. In fact, the axiom $\DC0$ corresponds essentially to
+our Pointed $\DC$ but without the constraint $f(0)=a$; it is a nice
+exercise to show that $\DC0$ implies Pointed $\DC$, but a
+formalization would have a moderate length. On the other hand,
+$\DC(\kappa)$ is rather different in nature and it is tailored to
+obtain another proposition equivalent to the axiom of choice
+(actually,
+$\AC\longleftrightarrow (\forall \kappa .\;
+\mathrm{Card}(\kappa)\longrightarrow \DC(\kappa))$).  Finally, the
+shortest path from $\AC$ %% as stated in the
 %% corresponding Isabelle theory
 to $\DC0$ using already formalized
 material involves a complicated detour (130+ proof commands spanning
@@ -72,15 +72,18 @@ recursion on inductively defined sets.\footnote{The package figures
 \ \ witrec\ {\isacharcolon}\ {\isachardoublequoteopen}dc{\isacharunderscore}witness{\isacharparenleft}succ{\isacharparenleft}n{\isacharparenright}{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}\ {\isacharequal}\ s{\isacharbackquote}{\isacharbraceleft}x{\isasymin}A{\isachardot}\ {\isasymlangle}dc{\isacharunderscore}witness{\isacharparenleft}n{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}{\isacharcomma}x{\isasymrangle}{\isasymin}R\ {\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
 
-The function \isatt{dc{\isacharunderscore}witness} has, apart from $A$, $a$ and $R$, a
-function $s$ as a parameter. If this function is a selector for
-$\P(A)\sm \{\mty\}$, the function $f(n)\defi {}$\isatt{dc{\isacharunderscore}witness}$(n,A,a,s,R)$
-will satify $\DC$. Notice that $s$ is a term of type \isatt{i} (a
-function construed as a set of pairs) and an expression
-\isatt{s{\isacharbackquote}b} is notation for  \isatt{apply(s,b)},
-where
-\isatt{apply\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ i{\isachardoublequoteclose}}
-is the operation of function application.
+Besides the natural argument and the parameters $A$, $a$, and $R$, the
+function \isatt{dc{\isacharunderscore}witness} has a function $s$ as a
+parameter. If this function is a selector for $\P(A)\sm \{\mty\}$, the
+function
+$f(n)\defi {}$\isatt{dc{\isacharunderscore}witness}$(n,A,a,s,R)$ will
+satify $\DC$. Notice that $s$ is a term of type \isatt{i} (a function
+construed as a set of pairs) and an expression
+\isatt{s{\isacharbackquote}b} is notation for \isatt{apply(s,b)},
+where \isatt{apply\ {\isacharcolon}{\isacharcolon}\
+  {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i\
+  {\isasymRightarrow}\ i{\isachardoublequoteclose}} is the operation
+of function application.
 % We will not make a distinction in our prose and simply write
 % \isatt{s}(\isatt{b}) in this case.
 
