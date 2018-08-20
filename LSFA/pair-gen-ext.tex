@@ -1,11 +1,17 @@
 \section{Pairing in the generic extension}
 \label{sec:pairing-generic-extension}
 
-Once the preliminary concepts are defined, one of the main tasks in order to
-formalize the Independence of the Continuum Hypothesis
-is to prove that the generic extension $M[G]$ is a model of $ZFC$, i.e, that
-the realtive version to $M[G]$ of each axiom of $ZFC$ holds. In this section
-we develop the proof of the satisfaction of the Pairing Axiom in the generic extension.
+In the previous section we defined the generic extension $M[G]$, we
+have yet to prove that $M[G]$ is a model of $ZFC$. This is equivalent
+to show that each axiom relativized with respect to $M[G]$ holds. In
+this section we show that the generic extension satisfies the pairing
+axiom, after explaining relativization in Isabelle/ZF.
+
+% Once the preliminary concepts are defined, one of the main tasks in order to
+% formalize the Independence of the Continuum Hypothesis
+% is to prove that the generic extension $M[G]$ is a model of $ZFC$, i.e, that
+% the realtive version to $M[G]$ of each axiom of $ZFC$ holds. In this section
+% we develop the proof of the satisfaction of the Pairing Axiom in the generic extension.
 
 
 % So, we need to show that
@@ -106,3 +112,9 @@ Under the assumption that \isa{one} belongs to the set \isa{G},
 
 This ends the proof of the Pairing Axiom in $M[G]$.
 
+
+%%% Local Variables:
+%%% mode: latex
+%%% ispell-local-dictionary: "american"
+%%% TeX-master: "first_steps_into_forcing"
+%%% End:
