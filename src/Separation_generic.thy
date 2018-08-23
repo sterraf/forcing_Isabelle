@@ -2,9 +2,6 @@ theory Separation_generic imports   Forces_locale begin
 
 context forcing_thms begin  
 
-lemma val_mono : "x\<subseteq>y \<Longrightarrow> val(G,x) \<subseteq> val(G,y)"
-  sorry
-
 definition 
   perm_sep_forces :: "i" where
   "perm_sep_forces == {\<langle>0, 4\<rangle>, \<langle>1, 3\<rangle>, \<langle>2, 7\<rangle>, \<langle>3, 0\<rangle>, \<langle>4, 1\<rangle>, \<langle>5, 2\<rangle>, \<langle>6, 5\<rangle>, \<langle>7, 6\<rangle>}"
