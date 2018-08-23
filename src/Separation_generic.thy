@@ -1,7 +1,5 @@
 theory Separation_generic imports   Forces_locale begin
 
-context forcing_thms begin  
-
 definition 
   perm_sep_forces :: "i" where
   "perm_sep_forces == {\<langle>0, 4\<rangle>, \<langle>1, 3\<rangle>, \<langle>2, 7\<rangle>, \<langle>3, 0\<rangle>, \<langle>4, 1\<rangle>, \<langle>5, 2\<rangle>, \<langle>6, 5\<rangle>, \<langle>7, 6\<rangle>}"
@@ -54,6 +52,8 @@ lemma small_arity: "[pp,l,o,p,\<theta>,\<pi>,\<sigma>,u]\<in>list(M) \<Longright
   done
 *)
     
+context forcing_thms begin  
+
 lemmas transitivity = Transset_intf trans_M
 
 lemma one_in_M: "one \<in> M"
@@ -210,7 +210,7 @@ proof -
                   (is "?n\<subseteq>?m") 
         by auto
       with val_mono have
-         Eq7: "val(G,?n) \<subseteq> val(G,?m)"
+         Eq7: "?n\<in>M \<Longrightarrow> ?m\<in>M \<Longrightarrow> val(G,?n) \<subseteq> val(G,?m)" 
         by simp
       assume 
               "?m \<in> M"
@@ -219,11 +219,10 @@ proof -
                {val(G,t) .. t\<in>domain(\<pi>) , \<exists>q\<in>P .  
                     (\<exists>\<theta>\<in>M. \<exists>p\<in>P. <t,p> = \<langle>\<theta>, p\<rangle> \<and> p \<in> G \<longrightarrow> 
                       val(G, \<theta>) \<in> c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c, w])) \<and> q \<in> G }"
-        sorry
-    then show ?thesis sorry
-  qed
-  
-  oops
+              sorry
+            then show ?thesis sorry 
+                qed
+   oops
     
 lemma
   "And(Member(0, 1), \<phi>) \<in> formula \<Longrightarrow>
