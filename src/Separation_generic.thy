@@ -59,8 +59,8 @@ lemma small_arity: "[pp,l,o,p,\<theta>,\<pi>,\<sigma>,u]\<in>list(M) \<Longright
     
 lemmas transitivity = Transset_intf trans_M
 
-lemma uno_in_M: "uno \<in> M"
-  by (insert uno_in_P P_in_M, simp add: transitivity)
+lemma one_in_M: "one \<in> M"
+  by (insert one_in_P P_in_M, simp add: transitivity)
 
 lemma iff_impl_trans: "Q\<longleftrightarrow>R \<Longrightarrow> R\<longrightarrow>S \<Longrightarrow> Q \<longrightarrow>S"
                       "Q\<longrightarrow>R \<Longrightarrow> R\<longleftrightarrow>S \<Longrightarrow> Q \<longrightarrow>S"
@@ -98,10 +98,10 @@ proof -
         by (simp del:setclass_iff add:setclass_iff [symmetric])
       let
               ?\<chi>="And(Member(0,1),\<phi>)"
-        and   ?env="[P,leq,uno]"
+        and   ?env="[P,leq,one]"
       let
               ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),forces(?\<chi>))))"
-      from asm P_in_M leq_in_M uno_in_P 2 have
+      from asm P_in_M leq_in_M one_in_P 2 have
          Eq3: "?\<chi>\<in>formula" "?\<psi>\<in>formula" "\<phi>\<in>formula" "?env\<in>list(M)" "arity(?\<chi>) =2"
         by (auto simp add: transitivity)
       have
@@ -140,7 +140,7 @@ proof -
                 \<longleftrightarrow>
                      sats(M,forces(?\<chi>),?env@[p,\<theta>,\<pi>,\<sigma>,u])"
               for \<theta> p
-             using asm P_in_M leq_in_M uno_in_P Eq1  2 transD trans_M
+             using asm P_in_M leq_in_M one_in_P Eq1  2 transD trans_M
              apply(rule_tac ren_Sat_leq [symmetric])
                 apply(auto simp add: perm_sep_bij arity_forces nat_union_abs1)
              done
@@ -161,7 +161,7 @@ proof -
              with 2 a Eq1 Eq2 Eq5 asm have
                 "sats(M,forces(?\<chi>),(?env@[p,\<theta>,\<pi>,\<sigma>])@[u]) \<longleftrightarrow>
                  sats(M,forces(?\<chi>),?env@[p,\<theta>,\<pi>,\<sigma>])"
-               using P_in_M leq_in_M uno_in_M arity_forces definability 
+               using P_in_M leq_in_M one_in_M arity_forces definability 
                by (rule_tac arity_sats_iff, simp_all, subgoal_tac "1\<union>2\<union>2=2", auto)
            }
            then show ?thesis by auto
@@ -230,10 +230,10 @@ proof -
     
 lemma
   "And(Member(0, 1), \<phi>) \<in> formula \<Longrightarrow>
-    P \<in> M \<and> leq \<in> M \<and> uno \<in> M \<Longrightarrow>
+    P \<in> M \<and> leq \<in> M \<and> one \<in> M \<Longrightarrow>
     u \<in> domain(\<pi>) \<times> P \<Longrightarrow>
   \<pi> \<in> M \<and> \<sigma> \<in> M \<Longrightarrow>
-      (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> sats(M, forces(And(Member(0, 1), \<phi>)), [P, leq, uno] @ [p, \<theta>, \<pi>, \<sigma>])) \<longleftrightarrow>
+      (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> sats(M, forces(And(Member(0, 1), \<phi>)), [P, leq, one] @ [p, \<theta>, \<pi>, \<sigma>])) \<longleftrightarrow>
       (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and>            (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow>
                        sats(M[F], And(Member(0, 1), \<phi>), map(val(F), [\<theta>, \<pi>, \<sigma>]))))"
 apply (insert definition_of_forces)
