@@ -183,7 +183,7 @@ definition
   "val(G,\<tau>) == wfrec(edrel(eclose(M)), \<tau> ,Hv(G))"
 
 definition
-  GenExt :: "i\<Rightarrow>i"     ("M[_]" 90)
+  GenExt :: "i\<Rightarrow>i"     ("M[_]")
   where "GenExt(G)== {val(G,\<tau>). \<tau> \<in> M}"
   
 lemma def_val:  "x\<in>M \<Longrightarrow> val(G,x) = {val(G,t) .. t\<in>domain(x) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>x \<and> p \<in> G }"
@@ -209,6 +209,9 @@ proof -
   finally show ?thesis by (simp add:Hv_def SepReplace_def)
 qed
 
+lemma val_mono : "x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> x\<subseteq>y \<Longrightarrow> val(G,x) \<subseteq> val(G,y)"
+  by (force simp add: def_val)
+  
 lemma def_GenExt1 : 
   "x \<in> M[G] \<Longrightarrow> \<exists>\<tau>\<in>M. x = val(G,\<tau>)"
   apply (unfold GenExt_def)
