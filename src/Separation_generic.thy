@@ -158,7 +158,7 @@ proof -
              with 2 a Eq1 Eq2 Eq5 asm have
                 "sats(M,forces(?\<chi>),(?env@[p,\<theta>,\<pi>,\<sigma>])@[u]) \<longleftrightarrow>
                  sats(M,forces(?\<chi>),?env@[p,\<theta>,\<pi>,\<sigma>])"
-               using P_in_M leq_in_M one_in_M arity_forces definability 
+               using P_in_M leq_in_M one_in_M arity_forces 
                by (rule_tac arity_sats_iff, simp_all, subgoal_tac "1\<union>2\<union>2=2", auto)
            }
            then show ?thesis by auto
