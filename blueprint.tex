@@ -181,15 +181,15 @@ which one is relativizing.
   \item For $\tau\in M$, the \emph{$G$-value} or \emph{interpretation
     under $G$} of $\tau$ is
     \[
-    \val(\tau,\PP,G)\defi \{\val(\sigma,\PP,G) : \exists p\in \PP
+    \val(\PP,G,\tau)\defi \{\val(\PP,G,\sigma) : \exists p\in \PP
     (\lb\sigma,p\rb\in\tau \y p\in G)\}.
     \]
   \end{enumerate}
 \end{definition}
 
 The definition of $\val$ proceeds by well-founded recursion on
-\verb|eee|$(M)$. Determining  $\val(\tau,\PP,G)$ uses the values
-$\val(\sigma,\PP,G)$ for smaller $\sigma$:
+\verb|eee|$(M)$. Determining  $\val(\PP,G,\tau)$ uses the values
+$\val(\PP,G,\sigma)$ for smaller $\sigma$:
 \[
 \sigma\in\{\sigma\}\in\lb\sigma,p\rb\in\tau.
 \]
@@ -220,7 +220,7 @@ $x$ is a $\PP$-name, or $F(x)=0$ otherwise.
 \begin{definition}
   The \emph{extension of $M$ by $G$} is
   \[
-  \verb|gen_ext|(M,\PP,G) = M[G] \defi \{\val(\tau,\PP,G): \tau\in M\}.
+  \verb|gen_ext|(M,\PP,G) = M[G] \defi \{\val(\PP,G,\tau): \tau\in M\}.
   \]
 \end{definition}
 The standard definition of $M[G]$ adds the clause that $\tau$ should be
@@ -487,7 +487,7 @@ satisfaction in $M[G]$ to that in $M$.
   theory with all free variables displayed. Then the
   following are equivalent, for all $\tau_1,\dots,\tau_n\in M$: 
   \begin{enumerate}
-  \item     $M[G]\models\phi(\val(\tau_1,G),\dots,\val(\tau_n,G))$ for
+  \item     $M[G]\models\phi(\val(G,\tau_1),\dots,\val(G,\tau_n))$ for
     all filters $G$, $M$-generic for $\PP$, such that $p\in G$.
   \item $M\models\forceisa(\phi(\tau_1,\dots,\tau_n),\PP,\leq,\1,p)$.
   \end{enumerate}
@@ -495,7 +495,7 @@ satisfaction in $M[G]$ to that in $M$.
 A bit more formally, one should write the parameters to the left of
 $\models$:
 \begin{gather*}
-  \forall G : p\in G \limp M[G],[\val(\tau_1,G),\dots,\val(\tau_n,G)]
+  \forall G : p\in G \limp M[G],[\val(G,\tau_1),\dots,\val(G,\tau_n)]
   \models\phi(x_1,\dots,x_n) \\
   \text{if and only if}\\
   M,[\tau_1,\dots,\tau_n,\PP,\leq,\1,p] 
@@ -625,7 +625,7 @@ atomic formulas.
     \end{equation}
     then
     \begin{equation} \label{eq:MG-sats-atom}
-      M[G],[\val(\tau_1,G),\val(\tau_2,G)]
+      M[G],[\val(G,\tau_1),\val(G,\tau_2)]
       \models\phi(x_1,x_2).
     \end{equation}
   \item If (\ref{eq:MG-sats-atom}) holds 
@@ -656,7 +656,7 @@ in the generic extension $M[G]$.
   \]
   From this, using absoluteness, we will be able to derive the
   $\phi$-instance of Separation. Let $\pi,\sig\in M$ such that 
-  $\val(\pi)=c$ and $\val(\sig)=w$.
+  $\val(G,\pi)=c$ and $\val(G,\sig)=w$.
   We will show that the name
   \[
   \tau \defi \{\lb\th,p\rb: \th\in\dom(\pi) \y p\in \PP\y
@@ -757,48 +757,48 @@ in the generic extension $M[G]$.
   By the Definition of Forcing, this is equivalent to
   \[
   \forall F\ \PP\text{-generic}, p\in F \limp
-  M[F],[\val(\th,F),\val(\pi,F),\val(\sig,F)]\models
+  M[F],[\val(F,\th),\val(F,\pi),\val(F,\sig)]\models
   \dB{0}\in\dB{1}  \y\phi(\dB{0},\dB{1},\dB{2}).
   \]
 
-  Now we calculate $\val(\tau,F)$.
+  Now we calculate $\val(G,\tau)$.
   \begin{multline*}
-    \val(\tau,G) = \\
+    \val(G,\tau) = \\
     \val\bigl(\{x\in\dom(\pi)\times\PP : \exists \th,p : x =\lb\th,p\rb
     \y \forall F\ \PP\text{-generic}, p\in F \limp \\    
-    M[F],[\val(\th,F),\val(\pi,F),\val(\sig,F)]\models
+    M[F],[\val(F,\th),\val(F,\pi),\val(F,\sig)]\models
     \dB{0}\in \dB{1} \y\phi(\dB{0},\dB{1},\dB{2})\}\bigr).
   \end{multline*}
   Hence
   \begin{multline}\label{eq:val_tau}
-    \val(\tau,G) = 
-    \{\val(\th,G): \th\in\dom(\pi) \y  p \in G 
+    \val(G,\tau) = 
+    \{\val(G,\th): \th\in\dom(\pi) \y  p \in G 
     \y \forall F\ \PP\text{-generic}, \\
    p\in F \longrightarrow
-  M[F],[\val(\th,F),\val(\pi,F),\val(\sig,F)]\models
+  M[F],[\val(F,\th),\val(F,\pi),\val(F,\sig)]\models
   \dB{0}\in \dB{1} \y\phi(\dB{0},\dB{1},\dB{2})\}.
   \end{multline}
   This is included in
   \begin{multline*}
-    \{\val(\th,G): \th\in\dom(\pi) \y  p \in G 
+    \{\val(G,\th): \th\in\dom(\pi) \y  p \in G 
     \y  \\
    p\in G \longrightarrow
-   M[G],[\val(\th,G),\val(\pi,G),\val(\sig,G)]\models
+   M[G],[\val(G,\th),\val(G,\pi),\val(G,\sig)]\models
    \dB{0}\in \dB{1} \y\phi(\dB{0},\dB{1},\dB{2})\},
   \end{multline*}
-  and in turn,  replacing $\val(\pi,F),\val(\sig,F)$ by their values,
+  and in turn,  replacing $\val(G,\pi),\val(G,\sig)$ by their values,
   this is included  in 
-  \[ 
-    \{\val(\th,G): \th\in\dom(\pi)
+  \begin{equation}\label{eq:2}
+    \{\val(G,\th): \th\in\dom(\pi)
     \y 
-   M[G],[\val(\th,G),c,w]\models
+   M[G],[\val(G,\th),c,w]\models
    \dB{0}\in \dB{1} \y\phi(\dB{0},\dB{1},\dB{2})\}.
-  \]
-  By absoluteness, we have that $\val(\tau,G)$ is
+  \end{equation}
+  By absoluteness, we have that (\ref{eq:2}) is the same as
   \[
-    \{\val(\th,G): \th\in\dom(\pi)
-    \y \val(\th,G)\in c \y 
-   M[G],[\val(\th,G),c,w]\models
+    \{\val(G,\th): \th\in\dom(\pi)
+    \y \val(G,\th)\in c \y 
+   M[G],[\val(G,\th),c,w]\models
    \phi(\dB{0},\dB{1},\dB{2})\}.
   \]
   which equals 
@@ -807,15 +807,15 @@ in the generic extension $M[G]$.
     M[G],[x,c,w]\models
    \phi(\dB{0},\dB{1},\dB{2})\}.
   \]
-  since for every $x\in c=\val(\pi,G)$ there must
-  exist some $\th\in\dom(\pi)$ with $\val(\th,G)=x$. Therefore
-  $\val(\tau,G)\subseteq S$.
+  since for every $x\in c=\val(G,\pi)$ there must
+  exist some $\th\in\dom(\pi)$ with $\val(G,\th)=x$. Therefore
+  $\val(G,\tau)\subseteq S$.
 
   Now let $x\in S$. Hence there exists $\lb\th,q\rb\in\pi$ such that
-  $q\in G$ and $x=\val(\th,G)$. By the  Truth
+  $q\in G$ and $x=\val(G,\th)$. By the  Truth
   Lemma, since 
   \[
-  M[G],[\val(\th,G),\val(\pi,G),\val(\sig,G)]\models
+  M[G],[\val(G,\th),\val(G,\pi),\val(G,\sig)]\models
   \dB{0}\in\dB{1}\y\phi(\dB{0},\dB{1},\dB{2}),
   \]
   there must exist $r\in G$ such that 
@@ -835,10 +835,10 @@ in the generic extension $M[G]$.
   \[
   \forall F\ \PP\text{-generic}, \\
    p\in F \longrightarrow
-  M[F],[\val(\th,F),\val(\pi,F),\val(\sig,F)]\models
+  M[F],[\val(F,\th),\val(F,\pi),\val(F,\sig)]\models
   \dB{0}\in \dB{1} \y\phi(\dB{0},\dB{1},\dB{2}).
   \]
-  Using now (\ref{eq:val_tau}), this shows that $S\sbq \val(\tau,G)$,
+  Using now (\ref{eq:val_tau}), this shows that $S\sbq \val(G,\tau)$,
   since $\th\in\dom(\pi)$. 
 \end{proof}
 
