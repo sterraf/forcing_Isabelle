@@ -209,6 +209,9 @@ proof -
   finally show ?thesis by (simp add:Hv_def SepReplace_def)
 qed
 
+lemma elem_of_val: "\<pi> \<in> M \<Longrightarrow> x\<in>val(G,\<pi>) \<longrightarrow> (\<exists>\<theta>\<in>domain(\<pi>). val(G,\<theta>) = x)"
+  by (auto simp add:def_val)
+
 lemma val_mono : "x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> x\<subseteq>y \<Longrightarrow> val(G,x) \<subseteq> val(G,y)"
   by (force simp add: def_val)
   
@@ -300,6 +303,7 @@ proof (induct rule:eps_induct)
       using 1 by simp
   qed
 qed
+  
 end    (*************** CONTEXT: forcing_data *****************)
 
 end
