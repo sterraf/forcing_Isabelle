@@ -33,6 +33,9 @@ lemma perm_sep_surj: "perm_sep_forces \<in> surj(8,8)"
 lemma perm_sep_bij: "perm_sep_forces \<in> bij(8,8)" 
   by(simp add: bij_def perm_sep_inj perm_sep_surj)
     
+lemma conv_perm_sep_bij: "converse(perm_sep_forces) \<in> bij(8,8)" 
+  by (rule perm_sep_bij [THEN bij_converse_bij])
+
 lemma perm_sep_env : "
   {p,q,r,s,t,u,v,w} \<subseteq> A \<Longrightarrow>
 perm_list(perm_sep_forces,[p,q,r,s,t,u,v,w]) = [t,s,w,p,q,r,u,v]"
@@ -96,6 +99,8 @@ proof -
       let
               ?\<chi>="And(Member(0,1),\<phi>)"
         and   ?env="[P,leq,one]"
+      let
+              ?new_form="rename(forces(?\<chi>))`8`converse(perm_sep_forces)"
       let
               ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),forces(?\<chi>))))"
       from asm P_in_M leq_in_M one_in_P 2 have
