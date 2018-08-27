@@ -36,7 +36,7 @@ lemma perm_sep_bij: "perm_sep_forces \<in> bij(8,8)"
 lemma conv_perm_sep_bij: "converse(perm_sep_forces) \<in> bij(8,8)" 
   by (rule perm_sep_bij [THEN bij_converse_bij])
 
-lemma perm_sep_env : "
+lemma perm_sep_env_aux : "
   {p,q,r,s,t,u,v,w} \<subseteq> A \<Longrightarrow>
 perm_list(perm_sep_forces,[p,q,r,s,t,u,v,w]) = [t,s,w,p,q,r,u,v]"
   apply(rule nth_equalityI)
@@ -44,7 +44,11 @@ perm_list(perm_sep_forces,[p,q,r,s,t,u,v,w]) = [t,s,w,p,q,r,u,v]"
   apply(subst nth_perm,simp,simp add:perm_sep_bij,simp,erule ltD)
   apply(rule_tac natE,simp+,subst apply_fun,rule perm_sep_tc,simp add:perm_sep_forces_def,simp)+
   apply(auto,subst apply_fun,rule perm_sep_tc,simp add:perm_sep_forces_def,simp)
-done
+  done
+
+lemma perm_sep_env: 
+  "perm_list(perm_sep_forces,[p,q,r,s,t,u,v,w]) = [t,s,w,p,q,r,u,v]"
+  by (auto simp add: perm_sep_env_aux [of _ _ _ _ _ _ _ _ "{p,q,r,s,t,u,v,w}"])
     
 (*
 lemma small_arity: "[pp,l,o,p,\<theta>,\<pi>,\<sigma>,u]\<in>list(M) \<Longrightarrow> \<chi>\<in>formula \<Longrightarrow> arity(\<chi>) = 2 \<Longrightarrow> 
@@ -150,7 +154,7 @@ proof -
                    \<longleftrightarrow> sats(M,?new_form,[\<theta>,p,u]@?env@[\<pi>,\<sigma>])"
               (* using Eq4 P_in_M by (auto simp add:transitivity)*) sorry
             also have
-                  " ... \<longleftrightarrow> sats(M,?new_form,?new_env)" using in_M
+                  " ... \<longleftrightarrow> sats(M,?new_form,?new_env)" 
               by (auto simp add: perm_sep_env)
             also have
                   " ... \<longleftrightarrow> sats(M,forces(?\<chi>),?env@[p,\<theta>,\<pi>,\<sigma>,u])"
@@ -263,12 +267,13 @@ notepad begin
   with phi conv_perm_sep_bij arity_forces  have
     "?new_form \<in> formula"
     using ren_tc by (simp)
-  from in_M have "{P, leq, one, p, \<theta>, \<pi>, \<sigma>, u} \<subseteq> M" 
-    by simp
-  then have
+  have
     "[\<theta>,p,u]@?env@[\<pi>,\<sigma>] = ?new_env"
     by (auto simp add: perm_sep_env)
-      
+  assume
+    "sats(M,?new_form,[\<theta>,p,u]@?env@[\<pi>,\<sigma>])"
+  have
+    "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>), val(F, \<sigma>)])" 
 
 end
      
