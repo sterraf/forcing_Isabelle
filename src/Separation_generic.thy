@@ -143,13 +143,15 @@ proof -
             with P_in_M have
                   "p\<in>M"
               by (simp add:transitivity)
-            then have
+            note
+              in_M = P_in_M one_in_M leq_in_M \<open>\<pi>\<in>M\<close>  \<open>\<sigma>\<in>M\<close> \<open>\<theta> \<in> M\<close> \<open>p\<in>M\<close> \<open>u\<in>M\<close>
+            from \<open>p\<in>M\<close> have
                   " sats(M,forces(?\<chi>),[\<theta>,p,u]@?env@[\<pi>,\<sigma>])
                    \<longleftrightarrow> sats(M,?new_form,[\<theta>,p,u]@?env@[\<pi>,\<sigma>])"
               (* using Eq4 P_in_M by (auto simp add:transitivity)*) sorry
             also have
-                  " ... \<longleftrightarrow> sats(M,?new_form,?new_env)"
-              by (simp add: perm_sep_env)
+                  " ... \<longleftrightarrow> sats(M,?new_form,?new_env)" using in_M
+              by (auto simp add: perm_sep_env)
             also have
                   " ... \<longleftrightarrow> sats(M,forces(?\<chi>),?env@[p,\<theta>,\<pi>,\<sigma>,u])"
               using asm a P_in_M leq_in_M one_in_P Eq1 Eq5 2 transD trans_M
@@ -237,21 +239,37 @@ notepad begin
     ?\<chi>="And(Member(0,1),\<phi>)"
     and   
     ?env="[P,leq,one]"
+  fix u p \<theta> 
+  assume
+    "u \<in> domain(\<pi>) \<times> P"
+  assume 
+    "u \<in> M" "\<theta> \<in> M" "p\<in>M" 
+  note
+    in_M = P_in_M one_in_M leq_in_M \<open>\<pi>\<in>M\<close>  \<open>\<sigma>\<in>M\<close> \<open>\<theta> \<in> M\<close> \<open>p\<in>M\<close> \<open>u\<in>M\<close>
   let
     ?new_form="rename(forces(?\<chi>))`8`converse(perm_sep_forces)"
+    and
+    ?new_env="perm_list(perm_sep_forces,?env@[p,\<theta>,\<pi>,\<sigma>,u])"
   let
     ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
   from phi  have
     "?\<chi> \<in> formula" "arity(?\<chi>) = 2"
     by auto
-  from P_in_M one_in_M leq_in_M have
+  from in_M have
     "?env \<in> list(M)"
     by simp
   have "1 \<union> 2 \<union> 2 = 2" by auto    
   then have "1 \<union> 2 \<union> 2 \<le> 4" by auto
   with phi conv_perm_sep_bij arity_forces  have
     "?new_form \<in> formula"
-    using ren_tc by (simp_all) 
+    using ren_tc by (simp)
+  from in_M have "{P, leq, one, p, \<theta>, \<pi>, \<sigma>, u} \<subseteq> M" 
+    by simp
+  then have
+    "[\<theta>,p,u]@?env@[\<pi>,\<sigma>] = ?new_env"
+    by (auto simp add: perm_sep_env)
+      
+
 end
      
   
