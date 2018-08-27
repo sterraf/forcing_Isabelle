@@ -67,6 +67,8 @@ lemma iff_impl_trans: "Q\<longleftrightarrow>R \<Longrightarrow> R\<longrightarr
                       "Q\<longrightarrow>R \<Longrightarrow> R\<longrightarrow> S \<Longrightarrow> Q\<longrightarrow> S"
   by simp_all  
 
+  
+    
 theorem separation_in_genext:
   notes iff_impl_trans [trans] 
  (* assumes "\<phi>\<in>formula"  and "arity(\<phi>) = 1 \<or> arity(\<phi>)=2" 
@@ -221,22 +223,36 @@ proof -
             then show ?thesis sorry 
                 qed
    oops
-    
-lemma
-  "And(Member(0, 1), \<phi>) \<in> formula \<Longrightarrow>
-    P \<in> M \<and> leq \<in> M \<and> one \<in> M \<Longrightarrow>
-    u \<in> domain(\<pi>) \<times> P \<Longrightarrow>
-  \<pi> \<in> M \<and> \<sigma> \<in> M \<Longrightarrow>
-      (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> sats(M, forces(And(Member(0, 1), \<phi>)), [P, leq, one] @ [p, \<theta>, \<pi>, \<sigma>])) \<longleftrightarrow>
-      (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and>            (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow>
-                       sats(M[F], And(Member(0, 1), \<phi>), map(val(F), [\<theta>, \<pi>, \<sigma>]))))"
-apply (insert definition_of_forces)
-  apply (simp_all)
-proof -
-  fix F
-  have
-        "map(val(F), [\<theta>, \<pi>, \<sigma>]) =[val(F, \<theta>), val(F, \<pi>), val(F, \<sigma>)]"
-    apply simp
-    oops
-end  
+
+notepad begin
+  fix G \<phi> 
+  assume
+    "M_generic(G)" 
+  assume
+    phi: "\<phi>\<in>formula" "arity(\<phi>) = 2"
+  fix c w \<pi> \<sigma> 
+  assume
+    "\<pi>\<in>M" "\<sigma>\<in>M" "val(G,\<pi>) = c" "val(G,\<sigma>) = w" 
+  let
+    ?\<chi>="And(Member(0,1),\<phi>)"
+    and   
+    ?env="[P,leq,one]"
+  let
+    ?new_form="rename(forces(?\<chi>))`8`converse(perm_sep_forces)"
+  let
+    ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
+  from phi  have
+    "?\<chi> \<in> formula" "arity(?\<chi>) = 2"
+    by auto
+  from P_in_M one_in_M leq_in_M have
+    "?env \<in> list(M)"
+    by simp
+  have "1 \<union> 2 \<union> 2 = 2" by auto    
+  then have "1 \<union> 2 \<union> 2 \<le> 4" by auto
+  with phi conv_perm_sep_bij arity_forces  have
+    "?new_form \<in> formula"
+    using ren_tc by (simp_all) 
+end
+     
+  
 end
