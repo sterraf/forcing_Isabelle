@@ -24,7 +24,7 @@ lemma SepReplace_dom_implies :
   by  (simp add:SepReplace_def)
     
 lemma SepReplace_pred_implies :
-   "\<forall>x. Q(x)\<longrightarrow> b(x) = b'(x)\<Longrightarrow> {b(x) .. x\<in>A, Q(x)}={b'(x) .. x\<in>A, Q(x)}"
+   "(\<And>x. Q(x) \<Longrightarrow> b(x) = b'(x))\<Longrightarrow> {b(x) .. x\<in>A, Q(x)}={b'(x) .. x\<in>A, Q(x)}"
   by  (force simp add:SepReplace_def)
    
 text\<open>The well founded relation on which @{term val} is defined\<close>
