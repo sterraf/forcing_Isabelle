@@ -222,15 +222,14 @@ proof -
       with val_of_name and Eq7 have
               "val(G,?n) \<subseteq>
                {val(G,t) .. t\<in>domain(\<pi>) , \<exists>q\<in>P .  
-                    (\<exists>\<theta>\<in>M. \<exists>p\<in>P. <t,p> = \<langle>\<theta>, p\<rangle> \<and> p \<in> G \<longrightarrow> 
+                    (\<exists>\<theta>\<in>M. \<exists>p\<in>P. <t,q> = \<langle>\<theta>, p\<rangle> \<and> p \<in> G \<longrightarrow> 
                       val(G, \<theta>) \<in> c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c, w])) \<and> q \<in> G }"
-        sorry
-          
+             by auto
             then show ?thesis sorry 
                 qed
    oops
 
-notepad begin
+notepad begin   (************** notepad **************)
   fix G \<phi> 
   assume
     "M_generic(G)" 
@@ -366,24 +365,84 @@ notepad begin
     with Eq1  [THEN iffD1] in_M1 have
       "sats(M,?\<psi>,[u, P, leq, one, \<pi>,\<sigma>]) \<Longrightarrow>
           (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
-                p \<in> G \<longrightarrow> 
-               val(G, \<theta>)\<in> val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)]))"
-      by (auto)
+                (p \<in> G \<longrightarrow> 
+               val(G, \<theta>)\<in> val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)])))"
+      by simp
   }
   with \<open>domain(\<pi>)*P\<in>M\<close> have
     "\<forall>u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>,\<sigma>])  \<longrightarrow>
       (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
-        p \<in> G \<longrightarrow> val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)]))"
+        (p \<in> G \<longrightarrow> val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)])))"
     by (simp add:transitivity)
   then have
     "{u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>,\<sigma>]) } \<subseteq>
      {u\<in>domain(\<pi>)*P . \<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
-       p \<in> G \<longrightarrow> val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)])}"
+       (p \<in> G \<longrightarrow> val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)]))}"
     (is "?n\<subseteq>?m") 
     by auto
   with val_mono have
-    Eq7: "?n\<in>M \<Longrightarrow> ?m\<in>M \<Longrightarrow> val(G,?n) \<subseteq> val(G,?m)" 
+    first_incl: "?n\<in>M \<Longrightarrow> ?m\<in>M \<Longrightarrow> val(G,?n) \<subseteq> val(G,?m)" 
     by simp
+  fix c w
+  assume 
+    "val(G,\<pi>) = c" "val(G,\<sigma>) = w"
+  assume
+    "domain(\<pi>)\<in>M"
+  assume
+    "Transset(M[G])" "G\<noteq>0"
+  from \<open>M_generic(G)\<close> have "G\<subseteq>P" 
+      unfolding M_generic_def filter_def by simp
+  assume 
+    "?n \<in> M"  "?m \<in> M" 
+  with val_of_name and \<open>val(G,\<pi>) = c\<close> have
+    "val(G,?m) =
+               {val(G,t) .. t\<in>domain(\<pi>) , \<exists>q\<in>P .  
+                    (\<exists>\<theta>\<in>M. \<exists>p\<in>P. <t,q> = \<langle>\<theta>, p\<rangle> \<and> 
+            (p \<in> G \<longrightarrow> val(G, \<theta>) \<in> c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c])) \<and> q \<in> G)}"
+    by auto
+  also have
+    "... =  {val(G,t) .. t\<in>domain(\<pi>) , \<exists>q\<in>P. 
+                   val(G, t) \<in> c \<and> sats(M[G], \<phi>, [val(G, t), c]) \<and> q \<in> G}" 
+  proof -
+    have
+      "t\<in>M \<Longrightarrow>
+      (\<exists>q\<in>P. (\<exists>\<theta>\<in>M. \<exists>p\<in>P. <t,q> = \<langle>\<theta>, p\<rangle> \<and> 
+              (p \<in> G \<longrightarrow> val(G, \<theta>) \<in> c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c])) \<and> q \<in> G)) 
+      \<longleftrightarrow> 
+      (\<exists>q\<in>P. val(G, t) \<in> c \<and> sats(M[G], \<phi>, [val(G, t), c]) \<and> q \<in> G)" for t
+      by auto
+    then show ?thesis using \<open>domain(\<pi>)\<in>M\<close> by (auto simp add:transitivity)
+  qed
+  also have
+    "... =  {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x, c]) \<and> q \<in> G}"
+  proof
+    show 
+      "... \<subseteq> {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x, c]) \<and> q \<in> G}"
+      by auto
+  next 
+    (* 
+      {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x, c]) \<and> q \<in> G}
+      \<subseteq>
+      {val(G,t)..t\<in>domain(\<pi>),\<exists>q\<in>P.val(G,t)\<in>c\<and>sats(M[G],\<phi>,[val(G,t),c])\<and>q\<in>G}
+    *)
+    {
+      fix x
+      assume
+        "x\<in>{x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x, c]) \<and> q \<in> G}"
+      then have
+        "\<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x, c]) \<and> q \<in> G"
+        by simp
+      with \<open>val(G,\<pi>) = c\<close> \<open>\<pi>\<in>M\<close> have 
+        "\<exists>q\<in>P. \<exists>t\<in>domain(\<pi>). val(G,t) =x \<and> sats(M[G], \<phi>, [val(G,t), c]) \<and> q \<in> G" 
+        using Sep_and_Replace def_val by auto
+    }
+    then show 
+      " {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x, c]) \<and> q \<in> G} \<subseteq> ..."
+      by (force simp add: SepReplace_iff [THEN iffD2])
+  qed
+  also have
+    " ... = {x\<in>c. sats(M[G], \<phi>, [x, c])}"
+    using \<open>G\<subseteq>P\<close> \<open>G\<noteq>0\<close> by force
 
-end
+end  (************** notepad **************)
 end
