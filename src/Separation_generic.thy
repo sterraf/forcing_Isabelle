@@ -104,16 +104,16 @@ proof -
         by (simp del:setclass_iff add:setclass_iff [symmetric])
       let
               ?\<chi>="And(Member(0,1),\<phi>)"
-        and   ?env="[P,leq,one]"
+        and   ?Pl1="[P,leq,one]"
       let
               ?new_form="rename(forces(?\<chi>))`8`converse(perm_sep_forces)"
       let
               ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),forces(?\<chi>))))"
       from asm P_in_M leq_in_M one_in_P 2 have
-         Eq3: "?\<chi>\<in>formula" "?\<psi>\<in>formula" "\<phi>\<in>formula" "?env\<in>list(M)" "arity(?\<chi>) =2"
+         Eq3: "?\<chi>\<in>formula" "?\<psi>\<in>formula" "\<phi>\<in>formula" "?Pl1\<in>list(M)" "arity(?\<chi>) =2"
         by (auto simp add: transitivity)
       have
-        "\<forall>u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?env @ [\<pi>,\<sigma>])  \<longrightarrow>
+        "\<forall>u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>,\<sigma>])  \<longrightarrow>
           (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
                             p \<in> G \<longrightarrow> 
                            val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c, w ]))"
@@ -125,13 +125,13 @@ proof -
          Eq5: "u \<in> M"
              unfolding Transset_def by auto
         from Eq4 Eq1 and Eq2 and Eq3 have
-         Eq6: "sats(M,?\<psi>,[u] @ ?env @ [\<pi>,\<sigma>]) \<longleftrightarrow> 
+         Eq6: "sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>,\<sigma>]) \<longleftrightarrow> 
                         (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
-                          sats(M,forces(?\<chi>),[\<theta>,p,u]@?env@[\<pi>,\<sigma>]))"
+                          sats(M,forces(?\<chi>),[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>]))"
           by (auto simp add: transitivity)
         have
          Eq7: "(\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
-                    sats(M,forces(?\<chi>),[\<theta>,p,u]@?env@[\<pi>,\<sigma>]))
+                    sats(M,forces(?\<chi>),[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>]))
                \<longrightarrow> 
                (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
                     p \<in> G \<longrightarrow> val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c, w ]))"
@@ -139,9 +139,9 @@ proof -
           {
             fix \<theta> p
             let
-                ?new_form="rename(forces(?\<chi>))`length(?env@[p,\<theta>,\<pi>,\<sigma>,u])`converse(perm_sep_forces)"
+                ?new_form="rename(forces(?\<chi>))`length(?Pl1@[p,\<theta>,\<pi>,\<sigma>,u])`converse(perm_sep_forces)"
                 and
-                ?new_env="perm_list(perm_sep_forces,?env@[p,\<theta>,\<pi>,\<sigma>,u])"
+                ?new_env="perm_list(perm_sep_forces,?Pl1@[p,\<theta>,\<pi>,\<sigma>,u])"
             assume
                a: "\<theta>\<in>M" "p\<in>P" "u = <\<theta>,p>"
             with P_in_M have
@@ -150,14 +150,14 @@ proof -
             note
               in_M = P_in_M one_in_M leq_in_M \<open>\<pi>\<in>M\<close>  \<open>\<sigma>\<in>M\<close> \<open>\<theta> \<in> M\<close> \<open>p\<in>M\<close> \<open>u\<in>M\<close>
             from \<open>p\<in>M\<close> have
-                  " sats(M,forces(?\<chi>),[\<theta>,p,u]@?env@[\<pi>,\<sigma>])
-                   \<longleftrightarrow> sats(M,?new_form,[\<theta>,p,u]@?env@[\<pi>,\<sigma>])"
+                  " sats(M,forces(?\<chi>),[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>])
+                   \<longleftrightarrow> sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>])"
               (* using Eq4 P_in_M by (auto simp add:transitivity)*) sorry
             also have
                   " ... \<longleftrightarrow> sats(M,?new_form,?new_env)" 
               by (auto simp add: perm_sep_env)
             also have
-                  " ... \<longleftrightarrow> sats(M,forces(?\<chi>),?env@[p,\<theta>,\<pi>,\<sigma>,u])"
+                  " ... \<longleftrightarrow> sats(M,forces(?\<chi>),?Pl1@[p,\<theta>,\<pi>,\<sigma>,u])"
               using  \<open>\<phi> \<in> formula\<close> in_M 2 transD trans_M
               apply(rule_tac ren_Sat_leq [symmetric])
                  apply(auto simp add: perm_sep_bij arity_forces nat_union_abs1)
@@ -189,7 +189,7 @@ proof -
                 by auto
             qed
             finally have
-                  " sats(M,forces(?\<chi>),[\<theta>,p,u]@?env@[\<pi>,\<sigma>])
+                  " sats(M,forces(?\<chi>),[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>])
                    \<longrightarrow> M_generic(G) \<and> p \<in> G \<longrightarrow> 
                                val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c, w ])" .
           }
@@ -201,14 +201,14 @@ proof -
           then show ?thesis by auto
         qed
         from Eq6 Eq7 show
-        Eq8: "sats(M,?\<psi>,[u] @ ?env @ [\<pi>,\<sigma>]) \<longrightarrow>
+        Eq8: "sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>,\<sigma>]) \<longrightarrow>
                (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
                            p \<in> G \<longrightarrow> 
                            val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c, w ]))" 
           by simp
       qed
       then have
-              "{u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?env @ [\<pi>,\<sigma>]) } \<subseteq>
+              "{u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>,\<sigma>]) } \<subseteq>
                {u\<in>domain(\<pi>)*P . \<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
                             p \<in> G \<longrightarrow> 
                            val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c, w ])}"
@@ -239,7 +239,7 @@ notepad begin
   let
     ?\<chi>="And(Member(0,1),\<phi>)"
     and   
-    ?env="[P,leq,one]"
+    ?Pl1="[P,leq,one]"
   let
     ?new_form="rename(forces(?\<chi>))`8`converse(perm_sep_forces)"
   let
@@ -261,9 +261,9 @@ notepad begin
     assume
       "u \<in> domain(\<pi>) \<times> P" "u \<in> M"
     with in_M1 \<open>?new_form \<in> formula\<close> \<open>?\<psi>\<in>formula\<close> have
-      Eq1: "sats(M,?\<psi>,[u] @ ?env @ [\<pi>,\<sigma>]) \<longleftrightarrow> 
+      Eq1: "sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>,\<sigma>]) \<longleftrightarrow> 
                         (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
-                          sats(M,?new_form,[\<theta>,p,u]@?env@[\<pi>,\<sigma>]))"
+                          sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>]))"
       by (auto simp add: transitivity)
     {
       fix p \<theta> 
@@ -273,9 +273,9 @@ notepad begin
       note
         in_M = in_M1 \<open>\<theta> \<in> M\<close> \<open>p\<in>M\<close> \<open>u \<in> domain(\<pi>) \<times> P\<close> \<open>u \<in> M\<close>
       then have
-        "[\<theta>,\<pi>,\<sigma>,u] \<in> list(M)" by simp (* "[u]\<in> list(M)" by simp_all *)
+        "[\<theta>,\<pi>,\<sigma>,u] \<in> list(M)" by simp
       let
-        ?new_env="perm_list(perm_sep_forces,?env@[p,\<theta>,\<pi>,\<sigma>,u])"
+        ?new_env="perm_list(perm_sep_forces,?Pl1@[p,\<theta>,\<pi>,\<sigma>,u])"
       let
         ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
       from phi  have
@@ -284,20 +284,20 @@ notepad begin
         "arity(forces(?\<chi>)) \<le> 6" 
         by simp
       from in_M have
-        "?env \<in> list(M)" by simp
+        "?Pl1 \<in> list(M)" by simp
       have
-        "[\<theta>,p,u]@?env@[\<pi>,\<sigma>] = ?new_env"
+        "[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>] = ?new_env"
         by (auto simp add: perm_sep_env)
       have
-        len : "8 = length(?env@[p,\<theta>,\<pi>,\<sigma>,u])" 
+        len : "8 = length(?Pl1@[p,\<theta>,\<pi>,\<sigma>,u])" 
         by simp
       assume
-        "sats(M,?new_form,[\<theta>,p,u]@?env@[\<pi>,\<sigma>])"
+        "sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>])"
       with perm_sep_env have
-        "sats(M,?new_form,perm_list(perm_sep_forces,?env@[p,\<theta>,\<pi>,\<sigma>,u]))" 
+        "sats(M,?new_form,perm_list(perm_sep_forces,?Pl1@[p,\<theta>,\<pi>,\<sigma>,u]))" 
         by simp
       then have
-        "sats(M,forces(?\<chi>),?env@[p,\<theta>,\<pi>,\<sigma>,u])"
+        "sats(M,forces(?\<chi>),?Pl1@[p,\<theta>,\<pi>,\<sigma>,u])"
         using phi in_M transD trans_M  ren_Sat_leq [THEN iffD2]  perm_sep_bij
         by (auto simp add: arity_forces nat_union_abs1) 
       with in_M \<open>arity(forces(?\<chi>)) \<le> 6\<close> \<open>forces(?\<chi>)\<in>formula\<close> have
@@ -336,14 +336,14 @@ notepad begin
     }
     with \<open>M_generic(G)\<close> have
       Eq3: "\<theta>\<in>M \<Longrightarrow> p\<in>P \<Longrightarrow>
-      sats(M,?new_form,[\<theta>,p,u]@?env@[\<pi>,\<sigma>]) \<Longrightarrow>
+      sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>]) \<Longrightarrow>
       p \<in> G \<Longrightarrow> 
       val(G, \<theta>) \<in> val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>),val(G, \<pi>)])" 
       for \<theta> p 
       by auto
     with \<open>u\<in>M\<close> have
       "(\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
-          sats(M,?new_form,[\<theta>,p,u]@?env@[\<pi>,\<sigma>]))
+          sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>]))
        \<Longrightarrow>
         (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
                 (p \<in> G \<longrightarrow> 
@@ -351,9 +351,9 @@ notepad begin
     proof -
       assume
         "\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
-          sats(M,?new_form,[\<theta>,p,u]@?env@[\<pi>,\<sigma>])"
+          sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>])"
       then obtain \<theta> p where
-        obt: "\<theta>\<in>M" "p\<in>P" "u =<\<theta>,p> \<and> sats(M,?new_form,[\<theta>,p,u]@?env@[\<pi>,\<sigma>])"
+        obt: "\<theta>\<in>M" "p\<in>P" "u =<\<theta>,p> \<and> sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>])"
         by (auto)
       from \<open>P\<in>M\<close> \<open>p\<in>P\<close> have "p\<in>M" 
         by (simp add:transitivity)
@@ -371,17 +371,19 @@ notepad begin
       by (auto)
   }
   with \<open>domain(\<pi>)*P\<in>M\<close> have
-    "\<forall>u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?env @ [\<pi>,\<sigma>])  \<longrightarrow>
+    "\<forall>u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>,\<sigma>])  \<longrightarrow>
       (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
-        p \<in> G \<longrightarrow> 
-         val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)]))"
+        p \<in> G \<longrightarrow> val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)]))"
     by (simp add:transitivity)
   then have
-    "{u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?env @ [\<pi>,\<sigma>]) } \<subseteq>
+    "{u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>,\<sigma>]) } \<subseteq>
      {u\<in>domain(\<pi>)*P . \<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
-                            p \<in> G \<longrightarrow> 
-                           val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)])}"
+       p \<in> G \<longrightarrow> val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)])}"
     (is "?n\<subseteq>?m") 
     by auto
+  with val_mono have
+    Eq7: "?n\<in>M \<Longrightarrow> ?m\<in>M \<Longrightarrow> val(G,?n) \<subseteq> val(G,?m)" 
+    by simp
+
 end
 end
