@@ -266,21 +266,25 @@ notepad begin
                           sats(M,?new_form,[\<theta>,p,u]@?env@[\<pi>,\<sigma>]))"
       by (auto simp add: transitivity)
     {
-      fix  p \<theta> 
+      fix p \<theta> 
       assume 
-        "\<theta> \<in> M" "p\<in>M" 
+        "\<theta> \<in> M" "p\<in>P"
+      with P_in_M have "p\<in>M" by (simp add: transitivity)
       note
         in_M = in_M1 \<open>\<theta> \<in> M\<close> \<open>p\<in>M\<close> \<open>u \<in> domain(\<pi>) \<times> P\<close> \<open>u \<in> M\<close>
+      then have
+        "[\<theta>,\<pi>,\<sigma>,u] \<in> list(M)" by simp (* "[u]\<in> list(M)" by simp_all *)
       let
         ?new_env="perm_list(perm_sep_forces,?env@[p,\<theta>,\<pi>,\<sigma>,u])"
       let
         ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
       from phi  have
-        "?\<chi> \<in> formula" "arity(?\<chi>) = 2"
-        by auto
-      from in_M have
-        "?env \<in> list(M)"
+        chi: "?\<chi> \<in> formula" "arity(?\<chi>) = 2" "forces(?\<chi>)\<in> formula" by auto
+      with arity_forces have
+        "arity(forces(?\<chi>)) \<le> 6" 
         by simp
+      from in_M have
+        "?env \<in> list(M)" by simp
       have
         "[\<theta>,p,u]@?env@[\<pi>,\<sigma>] = ?new_env"
         by (auto simp add: perm_sep_env)
@@ -296,52 +300,88 @@ notepad begin
         "sats(M,forces(?\<chi>),?env@[p,\<theta>,\<pi>,\<sigma>,u])"
         using phi in_M transD trans_M  ren_Sat_leq [THEN iffD2]  perm_sep_bij
         by (auto simp add: arity_forces nat_union_abs1) 
-      then have
-        "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>), val(F, \<sigma>)])" 
-        sorry
+      with in_M \<open>arity(forces(?\<chi>)) \<le> 6\<close> \<open>forces(?\<chi>)\<in>formula\<close> have
+        Eq2: "sats(M,forces(?\<chi>), [P, leq, one,p]@[\<theta>,\<pi>])"
+        by (rule_tac arity_sats_iff [THEN iffD1], auto) (* Enhance this ! *)
+      from in_M have
+        th_pi: "[\<theta>,\<pi>] \<in> list(M)" by simp
+      have
+        "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>)])"
+      proof -
+        note definition_of_forces [THEN iffD1] 
+        then have
+          "p \<in> P \<Longrightarrow> ?\<chi>\<in>formula \<Longrightarrow> [\<theta>,\<pi>] \<in> list(M) \<Longrightarrow>
+           sats(M, forces(?\<chi>), [P, leq, one, p] @ [\<theta>,\<pi>]) \<Longrightarrow> 
+          \<forall>G. M_generic(G) \<and> p \<in> G \<longrightarrow> sats(M[G], ?\<chi>, map(val(G), [\<theta>,\<pi>]))" .
+        then show ?thesis using  phi chi \<open>p\<in>P\<close> Eq2 th_pi by simp
+      qed
       then have
         "M_generic(G) \<longrightarrow> p \<in> G \<longrightarrow> 
-     val(G, \<theta>) \<in>  val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>), val(G, \<sigma>)])"
+          val(G, \<theta>) \<in>  val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)])"
       proof (intro impI)
         assume
           "(\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
-                 sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>), val(F, \<sigma>)]))"
+                 sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>)]))"
           "p \<in> G" 
         with \<open>M_generic(G)\<close> \<open>u \<in> M\<close> have
-          sat_chi: "sats(M[G], ?\<chi>, [val(G, \<theta>), val(G, \<pi>), val(G, \<sigma>)])"
+          sat_chi: "sats(M[G], ?\<chi>, [val(G, \<theta>), val(G, \<pi>)])"
           by simp
         from in_M have
-          "val(G, \<theta>) \<in> M[G]" "val(G, \<pi>) \<in> M[G]" "val(G, \<sigma>) \<in> M[G]"
+          "val(G, \<theta>) \<in> M[G]" "val(G, \<pi>) \<in> M[G]" 
           unfolding GenExt_def by(auto)
         with sat_chi show
-          "val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>), val(G, \<sigma>)])"
+          "val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)])"
           by simp
       qed
     }
     with \<open>M_generic(G)\<close> have
-      "p\<in>M \<Longrightarrow>
-     \<theta>\<in>M \<Longrightarrow> sats(M,?new_form,[\<theta>,p,u]@?env@[\<pi>,\<sigma>]) \<Longrightarrow>
-     p \<in> G \<Longrightarrow> 
-     val(G, \<theta>) \<in> val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>),val(G, \<pi>), val(G, \<sigma>)])" 
+      Eq3: "\<theta>\<in>M \<Longrightarrow> p\<in>P \<Longrightarrow>
+      sats(M,?new_form,[\<theta>,p,u]@?env@[\<pi>,\<sigma>]) \<Longrightarrow>
+      p \<in> G \<Longrightarrow> 
+      val(G, \<theta>) \<in> val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>),val(G, \<pi>)])" 
       for \<theta> p 
       by auto
-    then have
-      " (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
+    with \<open>u\<in>M\<close> have
+      "(\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
           sats(M,?new_form,[\<theta>,p,u]@?env@[\<pi>,\<sigma>]))
-      \<Longrightarrow>
+       \<Longrightarrow>
         (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
-                p \<in> G \<longrightarrow> 
-               val(G, \<theta>)\<in> val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>), val(G, \<sigma>) ]))"
-      sorry
-      with Eq1  [THEN iffD1] in_M1 have
-      "sats(M,?\<psi>,[u] @ ?env @ [\<pi>,\<sigma>]) \<Longrightarrow>
+                (p \<in> G \<longrightarrow> 
+               val(G, \<theta>)\<in> val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)])))"
+    proof -
+      assume
+        "\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
+          sats(M,?new_form,[\<theta>,p,u]@?env@[\<pi>,\<sigma>])"
+      then obtain \<theta> p where
+        obt: "\<theta>\<in>M" "p\<in>P" "u =<\<theta>,p> \<and> sats(M,?new_form,[\<theta>,p,u]@?env@[\<pi>,\<sigma>])"
+        by (auto)
+      from \<open>P\<in>M\<close> \<open>p\<in>P\<close> have "p\<in>M" 
+        by (simp add:transitivity)
+      with obt Eq3 have
+        "u =<\<theta>,p> \<and> (p \<in> G \<longrightarrow> 
+          val(G, \<theta>)\<in> val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)]))"
+        by simp
+      with \<open>\<theta>\<in>M\<close> \<open>p\<in>P\<close> show ?thesis by simp
+    qed
+    with Eq1  [THEN iffD1] in_M1 have
+      "sats(M,?\<psi>,[u, P, leq, one, \<pi>,\<sigma>]) \<Longrightarrow>
           (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
                 p \<in> G \<longrightarrow> 
-               val(G, \<theta>)\<in> val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>), val(G, \<sigma>) ]))"
-      by (simp)
+               val(G, \<theta>)\<in> val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)]))"
+      by (auto)
   }
-   
+  with \<open>domain(\<pi>)*P\<in>M\<close> have
+    "\<forall>u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?env @ [\<pi>,\<sigma>])  \<longrightarrow>
+      (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
+        p \<in> G \<longrightarrow> 
+         val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)]))"
+    by (simp add:transitivity)
+  then have
+    "{u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?env @ [\<pi>,\<sigma>]) } \<subseteq>
+     {u\<in>domain(\<pi>)*P . \<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
+                            p \<in> G \<longrightarrow> 
+                           val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)])}"
+    (is "?n\<subseteq>?m") 
+    by auto
 end
-     
-  
 end
