@@ -443,6 +443,31 @@ notepad begin   (************** notepad **************)
   also have
     " ... = {x\<in>c. sats(M[G], \<phi>, [x, c])}"
     using \<open>G\<subseteq>P\<close> \<open>G\<noteq>0\<close> by force
-
+  finally have
+    "val(G,?m) = {x\<in>c. sats(M[G], \<phi>, [x, c])}" by simp
+  {
+    fix x
+    assume
+      Eq4: "x \<in> {x\<in>c. sats(M[G], \<phi>, [x, c])}"
+    with \<open>val(G,\<pi>) = c\<close> have 
+      "x \<in> val(G,\<pi>)" by simp
+    with \<open>\<pi>\<in>M\<close> have
+       "\<exists>\<theta>. \<exists>q\<in>G. <\<theta>,q>\<in>\<pi> \<and> val(G,\<theta>) =x" 
+      using elem_of_val_pair by auto
+    then obtain \<theta> q where
+      "<\<theta>,q>\<in>\<pi>" "q\<in>G" "val(G,\<theta>)=x" by auto
+    with  Eq4 \<open>val(G,\<pi>) = c\<close>  have
+      Eq5: "sats(M[G], \<phi>, [val(G,\<theta>), val(G,\<pi>)])" 
+      by simp
+    from \<open><\<theta>,q>\<in>\<pi>\<close> \<open>\<pi>\<in>M\<close> have 
+      "\<theta>\<in>M" 
+      unfolding Pair_def apply (auto simp add:transitivity) sorry
+    with \<open>\<pi>\<in>M\<close> and truth_lemma and Eq5 have
+      "(\<exists>r\<in>G. sats(M,forces(\<phi>), [P,leq,one,r,\<theta>,\<pi>]))"
+      using \<open>M_generic(G)\<close> \<open>\<phi>\<in>formula\<close> by auto
+    then obtain r where      (* I can't "obtain" this directly *)
+      "r\<in>G" "sats(M,forces(\<phi>), [P,leq,one,r,\<theta>,\<pi>])" by auto
+  }
+    
 end  (************** notepad **************)
 end
