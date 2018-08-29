@@ -66,6 +66,16 @@ lemmas transitivity = Transset_intf trans_M
 lemma one_in_M: "one \<in> M"
   by (insert one_in_P P_in_M, simp add: transitivity)
 
+lemma G_nonempty: "M_generic(G) \<Longrightarrow> G\<noteq>0"
+proof -
+  have "P\<subseteq>P" ..
+  assume
+    "M_generic(G)"
+  with P_in_M P_dense \<open>P\<subseteq>P\<close> show
+    "G \<noteq> 0"
+    unfolding M_generic_def by auto
+qed
+    
 lemma iff_impl_trans: "Q\<longleftrightarrow>R \<Longrightarrow> R\<longrightarrow>S \<Longrightarrow> Q \<longrightarrow>S"
                       "Q\<longrightarrow>R \<Longrightarrow> R\<longleftrightarrow>S \<Longrightarrow> Q \<longrightarrow>S"
                       "Q\<longrightarrow>R \<Longrightarrow> R\<longrightarrow> S \<Longrightarrow> Q\<longrightarrow> S"
@@ -233,6 +243,8 @@ notepad begin   (************** notepad **************)
   fix G \<phi> 
   assume
     "M_generic(G)" 
+  with G_nonempty have 
+    "G\<noteq>0" .
   assume
     phi: "\<phi>\<in>formula" "arity(\<phi>) = 2"
   let
@@ -389,7 +401,7 @@ notepad begin   (************** notepad **************)
   assume
     "domain(\<pi>)\<in>M"
   assume
-    "Transset(M[G])" "G\<noteq>0"
+    "Transset(M[G])"
   from \<open>M_generic(G)\<close> have "G\<subseteq>P" 
       unfolding M_generic_def filter_def by simp
   assume 
