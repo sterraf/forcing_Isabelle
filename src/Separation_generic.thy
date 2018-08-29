@@ -402,8 +402,9 @@ notepad begin   (************** notepad **************)
     "domain(\<pi>)\<in>M"
   assume
     "Transset(M[G])"
-  from \<open>M_generic(G)\<close> have "G\<subseteq>P" 
-      unfolding M_generic_def filter_def by simp
+  from \<open>M_generic(G)\<close> have 
+    "filter(G)" "G\<subseteq>P" 
+      unfolding M_generic_def filter_def by simp_all
   assume 
     "?n \<in> M"  "?m \<in> M" 
   with val_of_name and \<open>val(G,\<pi>) = c\<close> have
@@ -471,14 +472,27 @@ notepad begin   (************** notepad **************)
     with  Eq4 \<open>val(G,\<pi>) = c\<close>  have
       Eq5: "sats(M[G], \<phi>, [val(G,\<theta>), val(G,\<pi>)])" 
       by simp
-    from \<open><\<theta>,q>\<in>\<pi>\<close> \<open>\<pi>\<in>M\<close> have 
-      "\<theta>\<in>M" 
-      unfolding Pair_def apply (auto simp add:transitivity) sorry
+    from \<open><\<theta>,q>\<in>\<pi>\<close> \<open>\<pi>\<in>M\<close> transD trans_M have 
+        "\<theta>\<in>M" 
+      unfolding Pair_def  sorry
     with \<open>\<pi>\<in>M\<close> and truth_lemma and Eq5 have
       "(\<exists>r\<in>G. sats(M,forces(\<phi>), [P,leq,one,r,\<theta>,\<pi>]))"
       using \<open>M_generic(G)\<close> \<open>\<phi>\<in>formula\<close> by auto
     then obtain r where      (* I can't "obtain" this directly *)
       "r\<in>G" "sats(M,forces(\<phi>), [P,leq,one,r,\<theta>,\<pi>])" by auto
+    with \<open>filter(G)\<close> and \<open>q\<in>G\<close> obtain p where
+      "p\<in>G" "<p,q>\<in>leq" "<p,r>\<in>leq" 
+      unfolding filter_def compat_in_def by force
+    with \<open>r\<in>G\<close> P_in_M have
+      "p\<in>P" "r\<in>P"
+      using \<open>G\<subseteq>P\<close>  by auto
+    with \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>sats(M,forces(\<phi>), [P,leq,one,r,\<theta>,\<pi>])\<close> have
+      "sats(M,forces(\<phi>), [P,leq,one,p,\<theta>,\<pi>])"
+      using \<open><p,r>\<in>leq\<close> streghtening by simp
+    with \<open>p\<in>P\<close> \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> have
+      "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
+                 sats(M[F], \<phi>, [val(F, \<theta>), val(F, \<pi>)])"
+      using definition_of_forces by simp
   }
     
 end  (************** notepad **************)
