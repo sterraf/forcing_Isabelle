@@ -209,7 +209,10 @@ proof -
   finally show ?thesis by (simp add:Hv_def SepReplace_def)
 qed
 
-lemma elem_of_val: "\<pi> \<in> M \<Longrightarrow> x\<in>val(G,\<pi>) \<longrightarrow> (\<exists>\<theta>\<in>domain(\<pi>). val(G,\<theta>) = x)"
+lemma elem_of_val: "\<pi> \<in> M \<Longrightarrow> x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>\<in>domain(\<pi>). val(G,\<theta>) = x"
+  by (auto simp add:def_val)
+
+lemma elem_of_val_pair: "\<pi> \<in> M \<Longrightarrow> x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>. \<exists>p\<in>G.  <\<theta>,p>\<in>\<pi> \<and> val(G,\<theta>) = x"
   by (auto simp add:def_val)
 
 lemma val_mono : "x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> x\<subseteq>y \<Longrightarrow> val(G,x) \<subseteq> val(G,y)"
