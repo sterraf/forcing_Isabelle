@@ -276,6 +276,11 @@ notepad begin   (************** notepad **************)
   with G_nonempty have 
     "G\<noteq>0" .
   assume
+    "Transset(M[G])"
+  from \<open>M_generic(G)\<close> have 
+    "filter(G)" "G\<subseteq>P" 
+      unfolding M_generic_def filter_def by simp_all
+  assume
     phi: "\<phi>\<in>formula" "arity(\<phi>) = 2"
   let
     ?\<chi>="And(Member(0,1),\<phi>)"
@@ -356,25 +361,36 @@ notepad begin   (************** notepad **************)
           \<forall>G. M_generic(G) \<and> p \<in> G \<longrightarrow> sats(M[G], ?\<chi>, map(val(G), [\<theta>,\<pi>]))" .
         then show ?thesis using  phi chi \<open>p\<in>P\<close> Eq2 th_pi by simp
       qed
-      then have
-        "M_generic(G) \<longrightarrow> p \<in> G \<longrightarrow> 
-          val(G, \<theta>) \<in>  val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)])"
-      proof (intro impI)
-        assume
-          "(\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
-                 sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>)]))"
-          "p \<in> G" 
-        with \<open>M_generic(G)\<close> \<open>u \<in> M\<close> have
-          sat_chi: "sats(M[G], ?\<chi>, [val(G, \<theta>), val(G, \<pi>)])"
-          by simp
-        from in_M have
-          "val(G, \<theta>) \<in> M[G]" "val(G, \<pi>) \<in> M[G]" 
-          unfolding GenExt_def by(auto)
-        with sat_chi show
-          "val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)])"
-          by simp
-      qed
     }
+    then have
+      Eq3: "\<theta>\<in>M \<Longrightarrow> p\<in>P \<Longrightarrow>
+      sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>]) \<Longrightarrow>
+      \<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>)])" 
+      for \<theta> p 
+      by simp
+    have
+        "\<theta>\<in>M \<Longrightarrow> sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>]) \<Longrightarrow> p \<in> G \<longrightarrow> 
+          val(G, \<theta>) \<in>  val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)])" for \<theta> p
+    proof (intro impI)
+      assume 
+        "p \<in> G"
+      with \<open>G\<subseteq>P\<close> have "p\<in>P" by auto 
+      assume
+        "sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>])"
+        "\<theta> \<in> M"   
+      with Eq3  \<open>p\<in>P\<close> have
+        "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
+                 sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>)])" by simp
+      with \<open>M_generic(G)\<close> \<open>p\<in>G\<close> have
+        sat_chi: "sats(M[G], ?\<chi>, [val(G, \<theta>), val(G, \<pi>)])"
+        by simp
+      from in_M1 \<open>\<theta>\<in>M\<close> have
+        "val(G, \<theta>) \<in> M[G]" "val(G, \<pi>) \<in> M[G]" 
+        unfolding GenExt_def by(auto)
+      with sat_chi show
+        "val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)])"
+        by simp
+    qed
     with \<open>M_generic(G)\<close> have
       Eq3: "\<theta>\<in>M \<Longrightarrow> p\<in>P \<Longrightarrow>
       sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>]) \<Longrightarrow>
@@ -430,11 +446,6 @@ notepad begin   (************** notepad **************)
     "val(G,\<pi>) = c" "val(G,\<sigma>) = w"
   assume
     "domain(\<pi>)\<in>M"
-  assume
-    "Transset(M[G])"
-  from \<open>M_generic(G)\<close> have 
-    "filter(G)" "G\<subseteq>P" 
-      unfolding M_generic_def filter_def by simp_all
   assume 
     "?n \<in> M"  "?m \<in> M" 
   with val_of_name and \<open>val(G,\<pi>) = c\<close> have
