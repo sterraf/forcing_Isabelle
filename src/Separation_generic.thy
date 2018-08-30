@@ -482,9 +482,9 @@ notepad begin   (************** notepad **************)
   assume 
     "?n \<in> M"  "?m \<in> M" 
   then have
-    in_val_n: "<\<theta>,p>\<in>domain(\<pi>)*P \<Longrightarrow> <\<theta>,p>\<in>M \<Longrightarrow> p\<in>G \<Longrightarrow> 
+    in_val_n: "<\<theta>,p>\<in>domain(\<pi>)*P \<Longrightarrow> <\<theta>,p>\<in>M \<Longrightarrow> p\<in>G \<Longrightarrow> p\<in>P \<Longrightarrow> 
       sats(M,?\<psi>,[<\<theta>,p>] @ ?Pl1 @ [\<pi>,\<sigma>]) \<Longrightarrow> val(G,\<theta>)\<in>val(G,?n)" for \<theta> p
-    sorry
+    using val_of_elem by simp
   from \<open>?m\<in>M\<close> val_of_name and \<open>val(G,\<pi>) = c\<close> have
     "val(G,?m) =
                {val(G,t) .. t\<in>domain(\<pi>) , \<exists>q\<in>P .  
@@ -566,8 +566,8 @@ notepad begin   (************** notepad **************)
       "p\<in>G" "<p,q>\<in>leq" "<p,r>\<in>leq" 
       unfolding filter_def compat_in_def by force
     with \<open>r\<in>G\<close>  \<open>q\<in>G\<close> P_in_M have
-      "p\<in>P" "r\<in>P" "q\<in>P"
-      using \<open>G\<subseteq>P\<close>  by auto
+      "p\<in>P" "r\<in>P" "q\<in>P" "p\<in>M"
+      using \<open>G\<subseteq>P\<close>  by (auto simp add:transitivity)
     with \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>sats(M,forces(And(Member(0,1),\<phi>)), [P,leq,one,r,\<theta>,\<pi>])\<close> have
       "sats(M,forces(?\<chi>), [P,leq,one,p,\<theta>,\<pi>])"
       using \<open><p,r>\<in>leq\<close> streghtening by simp
@@ -580,9 +580,9 @@ notepad begin   (************** notepad **************)
                  sats(M[F], ?\<chi>, [val(F, \<theta>'), val(F, \<pi>)]))" by auto
     from \<open>\<pi>\<in>M\<close> \<open><\<theta>,q>\<in>\<pi>\<close> have
       "<\<theta>,q> \<in> M" by (simp add:transitivity)
-    have
+    from \<open><\<theta>,q>\<in>\<pi>\<close> \<open>\<theta>\<in>M\<close> \<open>p\<in>P\<close>  \<open>p\<in>M\<close> have
       "<\<theta>,p>\<in>M" "<\<theta>,p>\<in>domain(\<pi>)\<times>P" 
-      sorry
+      using pairM by auto
     with \<open>\<theta>\<in>M\<close> Eq6 \<open>p\<in>P\<close> have
       "sats(M,?\<psi>,[<\<theta>,p>] @ ?Pl1 @ [\<pi>,\<sigma>])"
       using Equivalence [THEN iffD2]  by auto
