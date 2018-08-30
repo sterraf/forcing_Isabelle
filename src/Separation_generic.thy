@@ -122,11 +122,16 @@ proof -
       from asm P_in_M leq_in_M one_in_P 2 have
          Eq3: "?\<chi>\<in>formula" "?\<psi>\<in>formula" "\<phi>\<in>formula" "?Pl1\<in>list(M)" "arity(?\<chi>) =2"
         by (auto simp add: transitivity)
+      then have
+        chi: "?\<chi> \<in> formula" "arity(?\<chi>) = 2" "forces(?\<chi>)\<in> formula" by auto
+      with arity_forces have
+        "arity(forces(?\<chi>)) \<le> 6" 
+        by simp
       have
         "\<forall>u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>,\<sigma>])  \<longrightarrow>
           (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
                             p \<in> G \<longrightarrow> 
-                           val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c, w ]))"
+                           val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c]))"
       proof (intro ballI)
         fix u
         assume 
@@ -144,7 +149,7 @@ proof -
                     sats(M,forces(?\<chi>),[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>]))
                \<longrightarrow> 
                (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
-                    p \<in> G \<longrightarrow> val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c, w ]))"
+                    p \<in> G \<longrightarrow> val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c]))"
         proof -
           {
             fix \<theta> p
@@ -173,40 +178,65 @@ proof -
                  apply(auto simp add: perm_sep_bij arity_forces nat_union_abs1)
               done
             also have
-                  " ... \<longleftrightarrow> (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
-                                sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>), val(F, \<sigma>)]))"
-              using Eq1 Eq3 Eq4 Eq5 a and definition_of_forces 
-              sorry
+              "... \<longleftrightarrow> sats(M,forces(?\<chi>), [P, leq, one,p,\<theta>,\<pi>]@[\<sigma>,u])" by auto
             also have
+              "... \<longleftrightarrow> sats(M,forces(?\<chi>), [P, leq, one,p,\<theta>,\<pi>])"
+              using  in_M \<open>arity(forces(?\<chi>)) \<le> 6\<close> \<open>forces(?\<chi>)\<in>formula\<close>
+              by (rule_tac arity_sats_iff, auto)
+            also have
+              " ... \<longleftrightarrow> (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
+                           sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>)]))"
+              using Eq1 Eq3 Eq4 Eq5 a and definition_of_forces 
+            proof (intro iffI)
+              assume
+                a1: "sats(M, forces(?\<chi>), [P, leq, one,p,\<theta>,\<pi>])"
+              note definition_of_forces [THEN iffD1] 
+              then have
+                "p \<in> P \<Longrightarrow> ?\<chi>\<in>formula \<Longrightarrow> [\<theta>,\<pi>] \<in> list(M) \<Longrightarrow>
+                  sats(M, forces(?\<chi>), [P, leq, one, p] @ [\<theta>,\<pi>]) \<Longrightarrow> 
+              \<forall>G. M_generic(G) \<and> p \<in> G \<longrightarrow> sats(M[G], ?\<chi>, map(val(G), [\<theta>,\<pi>]))" .
+              then show
+                "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
+                  sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>)])"
+                using  \<open>?\<chi>\<in>formula\<close> \<open>p\<in>P\<close> a1 \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> by auto
+            next
+              assume
+                "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
+                   sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>)])"
+              with definition_of_forces [THEN iffD2] show
+                "sats(M, forces(?\<chi>), [P, leq, one,p,\<theta>,\<pi>])"
+                using  \<open>?\<chi>\<in>formula\<close> \<open>p\<in>P\<close> in_M by auto
+            qed              
+              also have
                   " ... \<longrightarrow> M_generic(G) \<and> p \<in> G \<longrightarrow> 
-                                sats(M[G], ?\<chi>, [val(G, \<theta>), c, w ])"
+                                sats(M[G], ?\<chi>, [val(G, \<theta>), c])"
               using Eq1 by auto
             also have
                   " ... \<longrightarrow> M_generic(G) \<and> p \<in> G \<longrightarrow> 
-                               val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c, w ])"
+                               val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c ])"
             proof (intro impI)
               assume
-                  "M_generic(G) \<and> p \<in> G \<longrightarrow> sats(M[G], And(Member(0, 1), \<phi>), [val(G, \<theta>), c, w])"
+                  "M_generic(G) \<and> p \<in> G \<longrightarrow> sats(M[G], And(Member(0, 1), \<phi>), [val(G, \<theta>), c])"
                   "M_generic(G) \<and> p \<in> G"
               then have
-                  sat_and: "sats(M[G], And(Member(0, 1), \<phi>), [val(G, \<theta>), c, w])"  "p\<in>G" 
+                  sat_and: "sats(M[G], And(Member(0, 1), \<phi>), [val(G, \<theta>), c])"  "p\<in>G" 
                 by simp_all
               from a have
                   "val(G, \<theta>) \<in> M[G]"
                 unfolding GenExt_def by(auto)
               with asm sat_and show  
-                "val(G, \<theta>) \<in> c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c, w])"
+                "val(G, \<theta>) \<in> c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c])"
                 by auto
             qed
             finally have
                   " sats(M,forces(?\<chi>),[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>])
                    \<longrightarrow> M_generic(G) \<and> p \<in> G \<longrightarrow> 
-                               val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c, w ])" .
+                               val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c ])" .
           }
           then have
             "\<theta>\<in>M \<Longrightarrow> p\<in>P \<Longrightarrow>
              u = \<langle>\<theta>, p\<rangle> \<and> sats(M, forces(And(Member(0, 1), \<phi>)), [\<theta>, p, u] @ [P, leq, one] @ [\<pi>, \<sigma>]) \<longrightarrow>
-             u = \<langle>\<theta>, p\<rangle> \<and> p \<in> G \<longrightarrow> val(G, \<theta>) \<in> c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c, w])" for \<theta> p
+             u = \<langle>\<theta>, p\<rangle> \<and> p \<in> G \<longrightarrow> val(G, \<theta>) \<in> c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c])" for \<theta> p
             using asm by simp
           then show ?thesis by auto
         qed
@@ -214,14 +244,14 @@ proof -
         Eq8: "sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>,\<sigma>]) \<longrightarrow>
                (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
                            p \<in> G \<longrightarrow> 
-                           val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c, w ]))" 
+                           val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c ]))" 
           by simp
       qed
       then have
               "{u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>,\<sigma>]) } \<subseteq>
                {u\<in>domain(\<pi>)*P . \<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
                             p \<in> G \<longrightarrow> 
-                           val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c, w ])}"
+                           val(G, \<theta>)\<in>c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c ])}"
                   (is "?n\<subseteq>?m") 
         by auto
       with val_mono have
@@ -233,7 +263,7 @@ proof -
               "val(G,?n) \<subseteq>
                {val(G,t) .. t\<in>domain(\<pi>) , \<exists>q\<in>P .  
                     (\<exists>\<theta>\<in>M. \<exists>p\<in>P. <t,q> = \<langle>\<theta>, p\<rangle> \<and> p \<in> G \<longrightarrow> 
-                      val(G, \<theta>) \<in> c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c, w])) \<and> q \<in> G }"
+                      val(G, \<theta>) \<in> c \<and> sats(M[G], \<phi>, [val(G, \<theta>), c])) \<and> q \<in> G }"
              by auto
             then show ?thesis sorry 
                 qed
@@ -459,7 +489,7 @@ notepad begin   (************** notepad **************)
   finally have
     "val(G,?m) = {x\<in>c. sats(M[G], \<phi>, [x, c])}" by simp
   {
-    fix x
+(*    fix x
     assume
       Eq4: "x \<in> {x\<in>c. sats(M[G], \<phi>, [x, c])}"
     with \<open>val(G,\<pi>) = c\<close> have 
@@ -492,6 +522,46 @@ notepad begin   (************** notepad **************)
     with \<open>p\<in>P\<close> \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> have
       "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
                  sats(M[F], \<phi>, [val(F, \<theta>), val(F, \<pi>)])"
+      using definition_of_forces by simp *)
+
+    (*********** The same as before but  for And(Member(0,1),\<phi>) ***************)
+    fix x
+    assume
+      Eq4: "x \<in> {x\<in>c. sats(M[G], \<phi>, [x, c])}"
+    with \<open>val(G,\<pi>) = c\<close> have 
+      "x \<in> val(G,\<pi>)" by simp
+    with \<open>\<pi>\<in>M\<close> have
+       "\<exists>\<theta>. \<exists>q\<in>G. <\<theta>,q>\<in>\<pi> \<and> val(G,\<theta>) =x" 
+      using elem_of_val_pair by auto
+    then obtain \<theta> q where
+      "<\<theta>,q>\<in>\<pi>" "q\<in>G" "val(G,\<theta>)=x" by auto
+    from \<open><\<theta>,q>\<in>\<pi>\<close> \<open>\<pi>\<in>M\<close> transD trans_M have 
+        "\<theta>\<in>M" 
+      unfolding Pair_def  sorry
+    with \<open>\<pi>\<in>M\<close> have
+      "[val(G,\<theta>), val(G,\<pi>)]\<in>list(M[G])" 
+      using GenExt_def by auto
+    with  Eq4 \<open>val(G,\<theta>)=x\<close> \<open>val(G,\<pi>) = c\<close> \<open>x \<in> val(G,\<pi>)\<close> have
+      Eq5: "sats(M[G], And(Member(0,1),\<phi>), [val(G,\<theta>), val(G,\<pi>)])" 
+      by simp
+        (* Recall ?\<chi> = And(Member(0,1),\<phi>) *)
+    with \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> and truth_lemma and Eq5 have
+      "(\<exists>r\<in>G. sats(M,forces(?\<chi>), [P,leq,one,r,\<theta>,\<pi>]))"
+      using \<open>M_generic(G)\<close> \<open>\<phi>\<in>formula\<close> by auto
+    then obtain r where      (* I can't "obtain" this directly *)
+      "r\<in>G" "sats(M,forces(?\<chi>), [P,leq,one,r,\<theta>,\<pi>])" by auto
+    with \<open>filter(G)\<close> and \<open>q\<in>G\<close> obtain p where
+      "p\<in>G" "<p,q>\<in>leq" "<p,r>\<in>leq" 
+      unfolding filter_def compat_in_def by force
+    with \<open>r\<in>G\<close> P_in_M have
+      "p\<in>P" "r\<in>P"
+      using \<open>G\<subseteq>P\<close>  by auto
+    with \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>sats(M,forces(And(Member(0,1),\<phi>)), [P,leq,one,r,\<theta>,\<pi>])\<close> have
+      "sats(M,forces(?\<chi>), [P,leq,one,p,\<theta>,\<pi>])"
+      using \<open><p,r>\<in>leq\<close> streghtening by simp
+    with \<open>p\<in>P\<close> \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> have
+      "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
+                 sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>)])"
       using definition_of_forces by simp
   }
     
