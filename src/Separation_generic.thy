@@ -332,12 +332,59 @@ notepad begin   (************** notepad **************)
       from in_M have
         "?Pl1 \<in> list(M)" by simp
       have
-        "[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>] = ?new_env"
-        by (auto simp add: perm_sep_env)
-      have
         len : "8 = length(?Pl1@[p,\<theta>,\<pi>,\<sigma>,u])" 
         by simp
-      assume
+      have
+        Eq1': "[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>] = ?new_env"
+        by (auto simp add: perm_sep_env)
+      then have
+        "sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>]) \<longleftrightarrow> sats(M,?new_form,?new_env)"
+        by simp
+      also have
+        "sats(M,?new_form,?new_env) \<longleftrightarrow> 
+        sats(M,rename(forces(?\<chi>))`length(?Pl1@[p,\<theta>,\<pi>,\<sigma>,u])`converse(perm_sep_forces),?new_env)" 
+        using len
+        by simp
+      also have
+        "... \<longleftrightarrow> sats(M,forces(?\<chi>),?Pl1@[p,\<theta>,\<pi>,\<sigma>,u])"
+        using  phi in_M  transD trans_M
+        apply(rule_tac ren_Sat_leq [symmetric])
+        apply(auto simp add: perm_sep_bij arity_forces nat_union_abs1)
+        done
+      also have
+        "... \<longleftrightarrow> sats(M,forces(?\<chi>), [P, leq, one,p,\<theta>,\<pi>]@[\<sigma>,u])" by auto
+      also have
+        "... \<longleftrightarrow> sats(M,forces(?\<chi>), [P, leq, one,p,\<theta>,\<pi>])"
+        using  in_M \<open>arity(forces(?\<chi>)) \<le> 6\<close> \<open>forces(?\<chi>)\<in>formula\<close>
+        by (rule_tac arity_sats_iff, auto)
+      also have
+        " ... \<longleftrightarrow> (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
+                           sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>)]))"
+        using in_M phi chi and definition_of_forces 
+      proof (intro iffI)
+        assume
+          a1: "sats(M, forces(?\<chi>), [P, leq, one,p,\<theta>,\<pi>])"
+        note definition_of_forces [THEN iffD1] 
+        then have
+          "p \<in> P \<Longrightarrow> ?\<chi>\<in>formula \<Longrightarrow> [\<theta>,\<pi>] \<in> list(M) \<Longrightarrow>
+                  sats(M, forces(?\<chi>), [P, leq, one, p] @ [\<theta>,\<pi>]) \<Longrightarrow> 
+              \<forall>G. M_generic(G) \<and> p \<in> G \<longrightarrow> sats(M[G], ?\<chi>, map(val(G), [\<theta>,\<pi>]))" .
+        then show
+          "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
+                  sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>)])"
+          using  \<open>?\<chi>\<in>formula\<close> \<open>p\<in>P\<close> a1 \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> by auto
+      next
+        assume
+          "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
+                   sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>)])"
+        with definition_of_forces [THEN iffD2] show
+          "sats(M, forces(?\<chi>), [P, leq, one,p,\<theta>,\<pi>])"
+          using  \<open>?\<chi>\<in>formula\<close> \<open>p\<in>P\<close> in_M by auto
+      qed
+      finally have
+        "sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>]) \<longleftrightarrow> (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
+                           sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>)]))" by simp
+(*      assume
         "sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>])"
       with perm_sep_env have
         "sats(M,?new_form,perm_list(perm_sep_forces,?Pl1@[p,\<theta>,\<pi>,\<sigma>,u]))" 
@@ -360,14 +407,13 @@ notepad begin   (************** notepad **************)
            sats(M, forces(?\<chi>), [P, leq, one, p] @ [\<theta>,\<pi>]) \<Longrightarrow> 
           \<forall>G. M_generic(G) \<and> p \<in> G \<longrightarrow> sats(M[G], ?\<chi>, map(val(G), [\<theta>,\<pi>]))" .
         then show ?thesis using  phi chi \<open>p\<in>P\<close> Eq2 th_pi by simp
-      qed
+      qed*)
     }
     then have
       Eq3: "\<theta>\<in>M \<Longrightarrow> p\<in>P \<Longrightarrow>
-      sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>]) \<Longrightarrow>
-      \<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>)])" 
-      for \<theta> p 
-      by simp
+      sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>]) \<longleftrightarrow>
+      (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>)]))" 
+      for \<theta> p by simp
     have
         "\<theta>\<in>M \<Longrightarrow> sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>,\<sigma>]) \<Longrightarrow> p \<in> G \<longrightarrow> 
           val(G, \<theta>) \<in>  val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)])" for \<theta> p
