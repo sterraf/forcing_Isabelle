@@ -209,6 +209,20 @@ proof -
   finally show ?thesis by (simp add:Hv_def SepReplace_def)
 qed
 
+lemma val_of_elem: "\<pi> \<in> M \<Longrightarrow> \<theta>\<in>M \<Longrightarrow> <\<theta>,p> \<in> \<pi> \<Longrightarrow> p\<in>G \<Longrightarrow> p\<in>P \<Longrightarrow> val(G,\<theta>) \<in> val(G,\<pi>)"
+proof -
+  assume
+    "<\<theta>,p> \<in> \<pi>" 
+  then have "\<theta>\<in>domain(\<pi>)" by auto
+  assume
+      "p\<in>G" "p\<in>P" "\<pi> \<in> M"
+  with \<open>\<theta>\<in>domain(\<pi>)\<close> \<open><\<theta>,p> \<in> \<pi>\<close> have
+    "val(G,\<theta>) \<in> {val(G,t) .. t\<in>domain(\<pi>) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>\<pi> \<and> p \<in> G }"
+    by auto
+  with \<open>\<pi>\<in>M\<close> show ?thesis
+    using def_val by simp
+qed
+  
 lemma elem_of_val: "\<pi> \<in> M \<Longrightarrow> x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>\<in>domain(\<pi>). val(G,\<theta>) = x"
   by (auto simp add:def_val)
 
