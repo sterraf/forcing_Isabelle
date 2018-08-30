@@ -209,7 +209,7 @@ proof -
   finally show ?thesis by (simp add:Hv_def SepReplace_def)
 qed
 
-lemma val_of_elem: "\<pi> \<in> M \<Longrightarrow> \<theta>\<in>M \<Longrightarrow> <\<theta>,p> \<in> \<pi> \<Longrightarrow> p\<in>G \<Longrightarrow> p\<in>P \<Longrightarrow> val(G,\<theta>) \<in> val(G,\<pi>)"
+lemma val_of_elem: "\<pi> \<in> M \<Longrightarrow> <\<theta>,p> \<in> \<pi> \<Longrightarrow> p\<in>G \<Longrightarrow> p\<in>P \<Longrightarrow> val(G,\<theta>) \<in> val(G,\<pi>)"
 proof -
   assume
     "<\<theta>,p> \<in> \<pi>" 
