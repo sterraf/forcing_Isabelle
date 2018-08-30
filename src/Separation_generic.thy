@@ -481,7 +481,11 @@ notepad begin   (************** notepad **************)
     "domain(\<pi>)\<in>M"
   assume 
     "?n \<in> M"  "?m \<in> M" 
-  with val_of_name and \<open>val(G,\<pi>) = c\<close> have
+  then have
+    in_val_n: "<\<theta>,p>\<in>domain(\<pi>)*P \<Longrightarrow> <\<theta>,p>\<in>M \<Longrightarrow> p\<in>G \<Longrightarrow> 
+      sats(M,?\<psi>,[<\<theta>,p>] @ ?Pl1 @ [\<pi>,\<sigma>]) \<Longrightarrow> val(G,\<theta>)\<in>val(G,?n)" for \<theta> p
+    sorry
+  from \<open>?m\<in>M\<close> val_of_name and \<open>val(G,\<pi>) = c\<close> have
     "val(G,?m) =
                {val(G,t) .. t\<in>domain(\<pi>) , \<exists>q\<in>P .  
                     (\<exists>\<theta>\<in>M. \<exists>p\<in>P. <t,q> = \<langle>\<theta>, p\<rangle> \<and> 
@@ -531,44 +535,8 @@ notepad begin   (************** notepad **************)
     " ... = {x\<in>c. sats(M[G], \<phi>, [x, c])}"
     using \<open>G\<subseteq>P\<close> \<open>G\<noteq>0\<close> by force
   finally have
-    "val(G,?m) = {x\<in>c. sats(M[G], \<phi>, [x, c])}" by simp
+    val_m: "val(G,?m) = {x\<in>c. sats(M[G], \<phi>, [x, c])}" by simp
   {
-(*    fix x
-    assume
-      Eq4: "x \<in> {x\<in>c. sats(M[G], \<phi>, [x, c])}"
-    with \<open>val(G,\<pi>) = c\<close> have 
-      "x \<in> val(G,\<pi>)" by simp
-    with \<open>\<pi>\<in>M\<close> have
-       "\<exists>\<theta>. \<exists>q\<in>G. <\<theta>,q>\<in>\<pi> \<and> val(G,\<theta>) =x" 
-      using elem_of_val_pair by auto
-    then obtain \<theta> q where
-      "<\<theta>,q>\<in>\<pi>" "q\<in>G" "val(G,\<theta>)=x" by auto
-    with  Eq4 \<open>val(G,\<pi>) = c\<close>  have
-      Eq5: "sats(M[G], \<phi>, [val(G,\<theta>), val(G,\<pi>)])" 
-      by simp
-    from \<open><\<theta>,q>\<in>\<pi>\<close> \<open>\<pi>\<in>M\<close> transD trans_M have 
-        "\<theta>\<in>M" 
-      unfolding Pair_def  sorry
-    with \<open>\<pi>\<in>M\<close> and truth_lemma and Eq5 have
-      "(\<exists>r\<in>G. sats(M,forces(\<phi>), [P,leq,one,r,\<theta>,\<pi>]))"
-      using \<open>M_generic(G)\<close> \<open>\<phi>\<in>formula\<close> by auto
-    then obtain r where      (* I can't "obtain" this directly *)
-      "r\<in>G" "sats(M,forces(\<phi>), [P,leq,one,r,\<theta>,\<pi>])" by auto
-    with \<open>filter(G)\<close> and \<open>q\<in>G\<close> obtain p where
-      "p\<in>G" "<p,q>\<in>leq" "<p,r>\<in>leq" 
-      unfolding filter_def compat_in_def by force
-    with \<open>r\<in>G\<close> P_in_M have
-      "p\<in>P" "r\<in>P"
-      using \<open>G\<subseteq>P\<close>  by auto
-    with \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>sats(M,forces(\<phi>), [P,leq,one,r,\<theta>,\<pi>])\<close> have
-      "sats(M,forces(\<phi>), [P,leq,one,p,\<theta>,\<pi>])"
-      using \<open><p,r>\<in>leq\<close> streghtening by simp
-    with \<open>p\<in>P\<close> \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> have
-      "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
-                 sats(M[F], \<phi>, [val(F, \<theta>), val(F, \<pi>)])"
-      using definition_of_forces by simp *)
-
-    (*********** The same as before but  for And(Member(0,1),\<phi>) ***************)
     fix x
     assume
       Eq4: "x \<in> {x\<in>c. sats(M[G], \<phi>, [x, c])}"
@@ -597,8 +565,8 @@ notepad begin   (************** notepad **************)
     with \<open>filter(G)\<close> and \<open>q\<in>G\<close> obtain p where
       "p\<in>G" "<p,q>\<in>leq" "<p,r>\<in>leq" 
       unfolding filter_def compat_in_def by force
-    with \<open>r\<in>G\<close> P_in_M have
-      "p\<in>P" "r\<in>P"
+    with \<open>r\<in>G\<close>  \<open>q\<in>G\<close> P_in_M have
+      "p\<in>P" "r\<in>P" "q\<in>P"
       using \<open>G\<subseteq>P\<close>  by auto
     with \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>sats(M,forces(And(Member(0,1),\<phi>)), [P,leq,one,r,\<theta>,\<pi>])\<close> have
       "sats(M,forces(?\<chi>), [P,leq,one,p,\<theta>,\<pi>])"
@@ -607,7 +575,28 @@ notepad begin   (************** notepad **************)
       "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
                  sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<pi>)])"
       using definition_of_forces by simp
+    with \<open>p\<in>P\<close> \<open>\<theta>\<in>M\<close>  have
+      Eq6: "\<exists>\<theta>'\<in>M. \<exists>p'\<in>P.  <\<theta>,p> = <\<theta>',p'> \<and> (\<forall>F. M_generic(F) \<and> p' \<in> F \<longrightarrow> 
+                 sats(M[F], ?\<chi>, [val(F, \<theta>'), val(F, \<pi>)]))" by auto
+    from \<open>\<pi>\<in>M\<close> \<open><\<theta>,q>\<in>\<pi>\<close> have
+      "<\<theta>,q> \<in> M" by (simp add:transitivity)
+    have
+      "<\<theta>,p>\<in>M" "<\<theta>,p>\<in>domain(\<pi>)\<times>P" 
+      sorry
+    with \<open>\<theta>\<in>M\<close> Eq6 \<open>p\<in>P\<close> have
+      "sats(M,?\<psi>,[<\<theta>,p>] @ ?Pl1 @ [\<pi>,\<sigma>])"
+      using Equivalence [THEN iffD2]  by auto
+    (* with \<open><\<theta>,p>\<in>domain(\<pi>)\<times>P\<close> have
+      "\<exists>u\<in>domain(\<pi>)\<times>P. sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>,\<sigma>])" by auto *)
+    with \<open><\<theta>,p>\<in>domain(\<pi>)\<times>P\<close>  \<open><\<theta>,p>\<in>M\<close> \<open>p\<in>G\<close> \<open>val(G,\<theta>)=x\<close> have
+      "x\<in>val(G,?n)"   
+      using in_val_n by auto
   }
-    
+  with val_m  have 
+    "val(G,?m) \<subseteq> val(G,?n)" by auto
+  with \<open>?n\<in>M\<close> \<open>?m\<in>M\<close> val_m first_incl have
+    "val(G,?n) = {x\<in>c. sats(M[G], \<phi>, [x, c])}" by auto
+  with \<open>?n\<in>M\<close> GenExt_def have
+    " {x\<in>c. sats(M[G], \<phi>, [x, c])}\<in> M[G]" by force
 end  (************** notepad **************)
 end
