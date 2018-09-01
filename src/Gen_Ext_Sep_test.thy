@@ -52,7 +52,7 @@ notepad begin   (************** notepad **************)
       "filter(G)" "G\<subseteq>P" 
       unfolding M_generic_def filter_def by simp_all
     assume
-      phi: "\<phi>\<in>formula" "arity(\<phi>) = 2"
+      phi: "\<phi>\<in>formula" "arity(\<phi>) \<le> 2"
     let
       ?\<chi>="And(Member(0,1),\<phi>)"
       and   
@@ -66,11 +66,15 @@ notepad begin   (************** notepad **************)
       ?new_form="rename(forces(?\<chi>))`?lenenv`converse(perm_sep_forces(?lenenv))"
     let
       ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
-    have
-      "?lenenv \<in> nat"
-      by simp
-    have "1 \<union> 2 \<union> 2 = 2" by auto    
-    then have "1 \<union> 2 \<union> 2 \<le> length(params)#+3" by auto
+    from \<open>params\<in>list(M)\<close> have
+      "?lenenv \<in> nat" (*"length(params) \<in> nat"*) by simp_all
+    with phi have 
+      "arity(?\<chi>) \<le> length(params)#+3" 
+      sorry
+    then have
+      "arity(forces(?\<chi>)) \<le> ?lenenv"
+      using arity_forces 
+      sorry
     with phi conv_perm_sep_bij arity_forces \<open>?lenenv \<in> nat\<close> have
       "?new_form \<in> formula"
       using ren_tc by simp
@@ -103,8 +107,12 @@ notepad begin   (************** notepad **************)
           ?new_env="perm_list(perm_sep_forces(?lenenv),?Pl1@[p,\<theta>,\<pi>]@params@[u])"
         let
           ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
-        from phi  have
-          chi: "?\<chi> \<in> formula" "arity(?\<chi>) = 2" "forces(?\<chi>)\<in> formula" by auto
+        have
+          arit_fact: "n\<in>nat \<Longrightarrow> n\<le>2 \<Longrightarrow> 2 \<union> n = 2" "1 \<union> 2 = 2" for n
+          sorry
+        with phi  have
+          chi: "?\<chi> \<in> formula" "arity(?\<chi>) \<le> 2" "forces(?\<chi>)\<in> formula" 
+          by (auto)
         with arity_forces have
           "arity(forces(?\<chi>)) \<le> 6" 
           by simp
@@ -126,7 +134,7 @@ notepad begin   (************** notepad **************)
           by simp
         also have
           "... \<longleftrightarrow> sats(M,forces(?\<chi>),?Pl1@[p,\<theta>,\<pi>]@params@[u])"
-          using  phi in_M  transD trans_M
+          using  phi in_M  transD trans_M arit_fact
           apply(rule_tac ren_Sat_leq [symmetric])
              apply(auto simp add: perm_sep_bij arity_forces nat_union_abs1)
           done
@@ -346,7 +354,7 @@ notepad begin   (************** notepad **************)
   }
   then have
     "M_generic(G) \<Longrightarrow> Transset(M[G]) \<Longrightarrow>
-     \<phi> \<in> formula \<Longrightarrow> arity(\<phi>) = 2 \<Longrightarrow> val(G, \<pi>) = c \<Longrightarrow> params \<in> list(M) \<Longrightarrow> 
+     \<phi> \<in> formula \<Longrightarrow> arity(\<phi>) \<le> 2 \<Longrightarrow> val(G, \<pi>) = c \<Longrightarrow> params \<in> list(M) \<Longrightarrow> 
      \<pi> \<in> M \<Longrightarrow> \<sigma> \<in> M \<Longrightarrow> domain(\<pi>) \<times> P \<in> M \<Longrightarrow>  domain(\<pi>) \<in> M \<Longrightarrow>
      {u \<in> domain(\<pi>) \<times> P .
         sats(M, Exists(Exists(And(pair_fm(0, 1, 2), rename(forces(And(Member(0, 1), \<phi>))) ` 
