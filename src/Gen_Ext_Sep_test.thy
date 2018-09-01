@@ -70,11 +70,10 @@ notepad begin   (************** notepad **************)
       "?lenenv \<in> nat" (*"length(params) \<in> nat"*) by simp_all
     with phi have 
       "arity(?\<chi>) \<le> length(params)#+3" 
-      sorry
-    then have
+      by (simp add:nat_union_abs1, simp add:nat_union_abs2)
+    with phi have
       "arity(forces(?\<chi>)) \<le> ?lenenv"
-      using arity_forces 
-      sorry
+      using arity_forces by simp
     with phi conv_perm_sep_bij arity_forces \<open>?lenenv \<in> nat\<close> have
       "?new_form \<in> formula"
       using ren_tc by simp
@@ -109,7 +108,7 @@ notepad begin   (************** notepad **************)
           ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
         have
           arit_fact: "n\<in>nat \<Longrightarrow> n\<le>2 \<Longrightarrow> 2 \<union> n = 2" "1 \<union> 2 = 2" for n
-          sorry
+           by (auto simp add:nat_union_abs2)
         with phi  have
           chi: "?\<chi> \<in> formula" "arity(?\<chi>) \<le> 2" "forces(?\<chi>)\<in> formula" 
           by (auto)
