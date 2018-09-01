@@ -352,7 +352,7 @@ notepad begin   (************** notepad **************)
       "{x\<in>c. sats(M[G], \<phi>, [x, c])}\<in> M[G]" by force
   }
   then have
-    "M_generic(G) \<Longrightarrow> Transset(M[G]) \<Longrightarrow>
+    sep_aux: "M_generic(G) \<Longrightarrow> Transset(M[G]) \<Longrightarrow>
      \<phi> \<in> formula \<Longrightarrow> arity(\<phi>) \<le> 2 \<Longrightarrow> val(G, \<pi>) = c \<Longrightarrow> params \<in> list(M) \<Longrightarrow> 
      \<pi> \<in> M \<Longrightarrow> \<sigma> \<in> M \<Longrightarrow> domain(\<pi>) \<times> P \<in> M \<Longrightarrow>  domain(\<pi>) \<in> M \<Longrightarrow>
      {u \<in> domain(\<pi>) \<times> P .
@@ -363,6 +363,34 @@ notepad begin   (************** notepad **************)
        \<exists>\<theta>\<in>M. \<exists>p\<in>P. u = \<langle>\<theta>, p\<rangle> \<and> (p \<in> G \<longrightarrow> val(G, \<theta>) \<in> val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)]))} \<in> M 
       \<Longrightarrow>
       {x\<in>c. sats(M[G], \<phi>, [x, c])}\<in> M[G]" for G \<pi> c \<sigma> \<phi> params by simp
+  fix \<phi> G \<pi> c \<sigma> params   
+  assume 
+    asm: "arity(\<phi>)= 1" "M_generic(G)" "Transset(M[G])" "
+     \<phi> \<in> formula " "val(G, \<pi>) = c" "params \<in> list(M)" "
+     \<pi> \<in> M" "\<sigma> \<in> M" "domain(\<pi>) \<times> P \<in> M" " domain(\<pi>) \<in> M" "
+     {u \<in> domain(\<pi>) \<times> P .
+        sats(M, Exists(Exists(And(pair_fm(0, 1, 2), rename(forces(And(Member(0, 1), \<phi>))) ` 
+          (length(params)#+7) ` converse(perm_sep_forces(length(params)#+7))))),
+         [u] @ [P, leq, one] @ [\<pi>] @ params)} \<in>  M" "
+     {u \<in> domain(\<pi>) \<times> P .
+       \<exists>\<theta>\<in>M. \<exists>p\<in>P. u = \<langle>\<theta>, p\<rangle> \<and> (p \<in> G \<longrightarrow> val(G, \<theta>) \<in> val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<pi>)]))} \<in> M"
+    "c\<in>M[G]"
+  then have
+    "arity(\<phi>)\<le> 2"  by simp_all
+  with asm sep_aux have
+    S_in_MG: "{x\<in>c. sats(M[G], \<phi>, [x,c])}\<in> M[G]"  by simp
+  {
+    fix x
+    assume 
+      "x\<in>c"
+    with asm have
+      "x\<in>M[G]"
+      by (simp add:\<open>Transset(M[G])\<close> Transset_intf)
+    with \<open>arity(\<phi>) = 1\<close> \<open>\<phi> \<in> formula\<close> \<open>c\<in>M[G]\<close> have
+      "sats(M[G], \<phi>, [x]@[c]) \<longleftrightarrow> sats(M[G], \<phi>, [x])" 
+      by (rule_tac arity_sats_iff, simp_all)   (* Enhance this *)
+  }
+  with S_in_MG have
+   "{x\<in>c. sats(M[G], \<phi>, [x])}\<in> M[G]"  by simp   
 end
 end
-  
