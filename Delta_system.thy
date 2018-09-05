@@ -12,8 +12,8 @@ lemma le_aleph1_nat: "Card(k) \<Longrightarrow> k<\<aleph>1 \<Longrightarrow> k 
 lemma card_le_imp_surj: "|Y| \<le> |X| \<Longrightarrow> \<exists>f. f \<in> surj(X,Y)"
   sorry
     
-lemma fun_is_function: "f:A\<rightarrow>B \<Longrightarrow> function(f)"
-  sorry
+lemma func_is_function: "f:A\<rightarrow>B \<Longrightarrow> function(f)"
+  by (blast intro:fun_is_function)
   
 lemma cof_aleph1_aux: "function(G) \<Longrightarrow> domain(G) \<lesssim> nat \<Longrightarrow> 
   \<forall>n\<in>domain(G). |G`n|<\<aleph>1 \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<le>nat"
@@ -117,7 +117,7 @@ proof -
     "f:\<aleph>1\<rightarrow>nat"
   then have
     Eq0: "function(f)" "domain(f) = \<aleph>1" "range(f)\<subseteq>nat"
-    by (simp_all add: domain_of_fun fun_is_function range_of_function)
+    by (simp_all add: domain_of_fun func_is_function range_of_function)
   let
     ?G="\<lambda>n\<in>range(f). f-``{n}"
   from \<open>f:\<aleph>1\<rightarrow>nat\<close> have
