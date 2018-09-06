@@ -4,14 +4,19 @@ lemma nat_le_aleph1: "nat<\<aleph>1"
   by (simp add: Aleph_def lt_csucc)
 
 lemma zero_le_aleph1: "0<\<aleph>1"
-  sorry
-    
+  by(rule lt_trans[of _ "nat"], auto simp add: ltI nat_le_aleph1)
+
 lemma le_aleph1_nat: "Card(k) \<Longrightarrow> k<\<aleph>1 \<Longrightarrow> k \<le> nat"    
   by (simp add: Aleph_def  Card_lt_csucc_iff Card_nat)
-  
+
+(* Cosas que deberían servir "\<lesssim>" y surj_implies_inj *)
 lemma card_le_imp_surj: "|Y| \<le> |X| \<Longrightarrow> \<exists>f. f \<in> surj(X,Y)"
+  apply(drule Card_le_imp_lepoll, unfold lepoll_def)
+  (* \<questiondown>cómo seguiría? Sea g la inyección. 
+     Defino f(x) = THE y . g(y) = x. Pero, qué pasa si x no está
+     en la imagen de f?
+ *)
   sorry
-    
 lemma func_is_function: "f:A\<rightarrow>B \<Longrightarrow> function(f)"
   by (blast intro:fun_is_function)
   
@@ -108,8 +113,11 @@ proof -
     by (rule le_trans) (* "by (simp add:le_trans)" takes 15 seconds *)
 qed
     
+lemma fun_sub : "f:A\<rightarrow>B \<Longrightarrow> f \<subseteq> Sigma(A,\<lambda> _ . B)"
+  by(auto simp add: Pi_iff)
+  
 lemma range_of_function: "f:A\<rightarrow>B \<Longrightarrow> range(f) \<subseteq> B"
-  sorry
+  by(rule range_rel_subset,erule fun_sub[of _ "A"])
     
 lemma "f:\<aleph>1\<rightarrow>nat \<Longrightarrow> \<exists>n\<in>nat. \<aleph>1 \<le> |f-``{n}|"
 proof -
