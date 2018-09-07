@@ -1,5 +1,31 @@
 theory Delta_system imports Normal Cardinal_AC begin
   
+lemma cardinal_lt_csucc_iff: "Card(K) ==> |K'| < csucc(K) \<longleftrightarrow> |K'| \<le> K"
+  by (simp add: Card_lt_csucc_iff)
+    
+lemma cardinal_UN_le_InfCard:
+     "[| InfCard(K);  \<And>i. i\<in>K \<Longrightarrow> |X(i)| \<le> K |]
+      ==> |\<Union>i\<in>K. X(i)| \<le> K"
+proof -
+  assume
+    "InfCard(K)"
+  assume
+    Eq1: "i\<in>K \<Longrightarrow> |X(i)| \<le> K" for i
+  {
+    fix i
+    assume
+      "i\<in>K"
+    with Eq1 have
+      "|X(i)| \<le> K" by simp
+    with \<open>InfCard(K)\<close> InfCard_is_Card have
+      "|X(i)| < csucc(K)"
+      using  cardinal_lt_csucc_iff by auto
+  }
+  with \<open>InfCard(K)\<close>  InfCard_is_Card cardinal_lt_csucc_iff show 
+    "|\<Union>i\<in>K. X(i)| \<le> K" 
+    using  cardinal_UN_lt_csucc  by (auto)
+qed
+
 lemma nat_le_aleph1: "nat<\<aleph>1"
   by (simp add: Aleph_def lt_csucc)
 
