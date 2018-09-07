@@ -323,7 +323,7 @@ notepad begin   (************** notepad **************)
         "<\<theta>,q>\<in>\<pi>" "q\<in>G" "val(G,\<theta>)=x" by auto
       from \<open><\<theta>,q>\<in>\<pi>\<close> \<open>\<pi>\<in>M\<close> trans_M have 
         "\<theta>\<in>M" 
-        by (auto simp add: Pair_def Transset_def)
+        unfolding Pair_def Transset_def by auto
       with \<open>\<pi>\<in>M\<close> have
         "[val(G,\<theta>), val(G,\<pi>)]\<in>list(M[G])" 
         using GenExt_def by auto
