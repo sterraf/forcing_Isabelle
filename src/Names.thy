@@ -1,4 +1,4 @@
-theory Names imports Forcing_data  begin
+theory Names imports Forcing_data Interface2  begin
 
 lemma transD : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> y \<subseteq> M" 
   by (unfold Transset_def, blast) 

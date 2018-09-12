@@ -10,17 +10,15 @@ lemma empty_intf :
   (\<exists>z[M]. empty(M,z))"
   by (auto simp add: empty_def infinity_ax_def)
 
-lemma zero_in_M:  "\<lbrakk> infinity_ax(##M) ; Transset(M) \<rbrakk> \<Longrightarrow> 0 \<in> M"
+lemma (in forcing_data) zero_in_M:  "0 \<in> M"
 proof -
-  assume inf: "infinity_ax(##M)" and
-         trans: "Transset(M)"
-  from inf have
+  from infinity_ax have
         "(\<exists>z[##M]. empty(##M,z))"
     by (rule empty_intf)
   then obtain z where
         zm: "empty(##M,z)"  "z\<in>M"
     by auto
-  with trans have "z=0"
+  with trans_M have "z=0"
     by (simp  add: empty_def, blast intro: Transset_intf )
   with zm show ?thesis 
       by simp
@@ -31,14 +29,17 @@ lemma nat_union_abs :
   by (rule Un_absorb1,erule le_imp_subset)
   
 (* Interface with M_trivial *)
+    
 lemma (in forcing_data) mtriv :  
   "M_trivial_no_repl(##M)"
-  apply (insert trans_M upair_ax Union_ax power_ax infinity_ax)
+  apply (insert trans_M upair_ax Union_ax power_ax)
   apply (rule M_trivial_no_repl.intro)
   apply (simp_all add: zero_in_M)
   apply (rule Transset_intf,simp+)
 done
 
+sublocale forcing_data \<subseteq> M_trivial_no_repl "##M"
+  by (rule mtriv)
   
 (* tupling *)
   
@@ -105,6 +106,21 @@ lemma uniq_dec_5p: "<A',B',C',D',E'> \<in> M \<Longrightarrow>
                   P(x,A',B',C',D',E')"
   by simp
 
+lemma (in forcing_data) tuples_in_M: "A\<in>M \<Longrightarrow> B\<in>M \<Longrightarrow> <A,B>\<in>M" 
+   by (simp del:setclass_iff add:setclass_iff[symmetric])
+
+lemma (in forcing_data) tupling_sep_5p_aux :
+              "(\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+                \<langle>A4, A5\<rangle> \<in> M \<and> \<langle>A3, A4, A5\<rangle> \<in> M \<and> \<langle>A2, A3, A4, A5\<rangle> \<in> M \<and> 
+                v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+                Q(x, A1, A2, A3, A4, A5))
+               \<longleftrightarrow>
+               (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M.
+                v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+                Q(x, A1, A2, A3, A4, A5))" for x v
+ by (auto simp add:tuples_in_M)
+
+
 lemma (in forcing_data) tupling_sep_5p : 
 "(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. 
                   v = \<langle>A1, \<langle>A2, \<langle>A3, \<langle>A4, A5\<rangle>\<rangle>\<rangle>\<rangle> \<longrightarrow> Q(x,A1,A2,A3,A4,A5))))
@@ -161,6 +177,98 @@ next
   qed
 qed
 
+   
+lemma (in forcing_data) tupling_sep_5p_rel : 
+"(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. 
+                    \<forall>B1\<in>M. \<forall>B2\<in>M. \<forall>B3\<in>M.   
+                    pair(##M,A4,A5,B1) & 
+                    pair(##M,A3,B1,B2) & 
+                    pair(##M,A2,B2,B3) & 
+                    pair(##M,A1,B3,v)  
+               \<longrightarrow> Q(x,A1,A2,A3,A4,A5))))
+    \<longleftrightarrow>
+ (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. separation(##M,\<lambda>x. Q(x,A1,A2,A3,A4,A5)))"
+proof (simp)
+  have
+      "(\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+        \<langle>A4, A5\<rangle> \<in> M \<and> \<langle>A3, A4, A5\<rangle> \<in> M \<and> \<langle>A2, A3, A4, A5\<rangle> \<in> M \<and> v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+        Q(x, A1, A2, A3, A4, A5))
+      \<longleftrightarrow>
+      (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M.
+        v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+        Q(x, A1, A2, A3, A4, A5))" for x v
+    by (rule tupling_sep_5p_aux)
+  then have
+      "(\<forall>v\<in>M. separation
+             (##M,
+              \<lambda>x. \<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+        \<langle>A4, A5\<rangle> \<in> M \<and> \<langle>A3, A4, A5\<rangle> \<in> M \<and> \<langle>A2, A3, A4, A5\<rangle> \<in> M \<and> v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+        Q(x, A1, A2, A3, A4, A5)))
+      \<longleftrightarrow>
+      (\<forall>v\<in>M. separation
+             (##M,
+              \<lambda>x. \<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M.
+        v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+        Q(x, A1, A2, A3, A4, A5)))"
+    by simp
+  also have
+     "...   \<longleftrightarrow>
+ (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. separation(##M,\<lambda>x. Q(x,A1,A2,A3,A4,A5)))"
+    using tupling_sep_5p by simp
+  finally  show
+    "(\<forall>v\<in>M. separation
+             (##M,
+              \<lambda>x. \<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+\<langle>A4, A5\<rangle> \<in> M \<and> \<langle>A3, A4, A5\<rangle> \<in> M \<and> \<langle>A2, A3, A4, A5\<rangle> \<in> M \<and> v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+Q(x, A1, A2, A3, A4, A5))) \<longleftrightarrow>
+    (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. separation(##M, \<lambda>x. Q(x, A1, A2, A3, A4, A5)))"
+    by auto
+qed
+
+lemma (in forcing_data) tupling_sep_5p_rel2 : 
+"(\<forall>v\<in>M. separation(##M,\<lambda>x. (\<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. 
+                    \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. \<forall>A1\<in>M.  
+                    pair(##M,A4,A5,B1) & 
+                    pair(##M,A3,B1,B2) & 
+                    pair(##M,A2,B2,B3) & 
+                    pair(##M,A1,B3,v)  
+               \<longrightarrow> Q(x,A1,A2,A3,A4,A5))))
+    \<longleftrightarrow>
+ (\<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. \<forall>A1\<in>M. separation(##M,\<lambda>x. Q(x,A1,A2,A3,A4,A5)))"
+proof -
+  have
+        "(\<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. 
+                    \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. \<forall>A1\<in>M.  
+                    pair(##M,A4,A5,B1) & 
+                    pair(##M,A3,B1,B2) & 
+                    pair(##M,A2,B2,B3) & 
+                    pair(##M,A1,B3,v)  
+               \<longrightarrow> Q(x,A1,A2,A3,A4,A5))
+          \<longleftrightarrow>
+         (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. 
+                    \<forall>B1\<in>M. \<forall>B2\<in>M. \<forall>B3\<in>M.   
+                    pair(##M,A4,A5,B1) & 
+                    pair(##M,A3,B1,B2) & 
+                    pair(##M,A2,B2,B3) & 
+                    pair(##M,A1,B3,v)  
+               \<longrightarrow> Q(x,A1,A2,A3,A4,A5))" 
+        (is "?P\<longleftrightarrow>?Q") for x v 
+    by auto
+  then have
+        "separation(##M,\<lambda>x. ?P(x,v)) \<longleftrightarrow> separation(##M,\<lambda>x. ?Q(x,v))" for v
+    by auto
+  then have
+        "(\<forall>v\<in>M. separation(##M,\<lambda>x. ?P(x,v)))
+         \<longleftrightarrow> 
+         (\<forall>v\<in>M. separation(##M,\<lambda>x. ?Q(x,v)))"
+    by blast
+  also have
+    " ... \<longleftrightarrow> (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. separation(##M,\<lambda>x. Q(x,A1,A2,A3,A4,A5)))"
+    using tupling_sep_5p_rel by simp
+  finally show ?thesis by auto
+qed
+
+
 (* Internalized tupling *) 
 definition 
   tupling_fm_2p :: "i \<Rightarrow> i" where
@@ -174,8 +282,26 @@ lemma arity_tup2p :
   by (simp add: tupling_fm_2p_def arity_incr_bv_lemma pair_fm_def 
                 upair_fm_def Un_commute nat_union_abs)
 
+definition
+  tupling_fm_5p :: "i \<Rightarrow> i" where
+  "tupling_fm_5p(\<phi>) = 
+      Forall(Forall(Forall(Forall(Forall(Forall(Forall(Forall(
+        Implies(And(pair_fm(3,4,5),
+                And(pair_fm(2,5,6),
+                And(pair_fm(1,6,7),
+                    pair_fm(0,7,9)))),\<phi>)))))))))"
+
   
-  
+lemma [TC] :  "\<lbrakk> \<phi> \<in> formula \<rbrakk> \<Longrightarrow> tupling_fm_5p(\<phi>) \<in> formula"
+  by (simp add: tupling_fm_5p_def)
+
+lemma arity_tup5p :
+  "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>) = 9 \<rbrakk> \<Longrightarrow> arity(tupling_fm_5p(\<phi>)) = 2"
+  by (simp add: tupling_fm_5p_def arity_incr_bv_lemma pair_fm_def 
+                upair_fm_def Un_commute nat_union_abs)
+
+(* end tupling *)
+
 (* Instances of separation of M_basic *)
 
 (* Inter_separation: "M(A) ==> separation(M, \<lambda>x. \<forall>y[M]. y\<in>A \<longrightarrow> x\<in>y)" *)
@@ -186,17 +312,17 @@ lemma arity_inter_fm :
   
 lemma (in forcing_data) inter_sep_intf :
   assumes
-      1: "A\<in>M"
+      "A\<in>M"
   shows
       "separation(##M,\<lambda>x . \<forall>y\<in>M . y\<in>A \<longrightarrow> x\<in>y)"
 proof -
-    have 
+    from separation_ax arity_inter_fm have 
         "\<forall>a\<in>M. separation(##M, \<lambda>x. sats(M, Forall(Implies(Member(0,2),Member(1,0))), [x, a]))"
-    by (rule separation_ax,simp,rule disjI2,rule arity_inter_fm)
-  then have 
+    by simp
+  with \<open>A\<in>M\<close> have 
         "separation(##M, \<lambda>x. sats(M, Forall(Implies(Member(0,2),Member(1,0))), [x, A]))"
-    by (simp add: 1)
-  then show ?thesis by (simp add: separation_def 1)
+    by simp
+  with \<open>A\<in>M\<close> show ?thesis unfolding separation_def by simp
 qed
 
   
@@ -207,17 +333,17 @@ by (simp add: nat_union_abs)
     
 lemma (in forcing_data) diff_sep_intf :
   assumes
-      1: "B\<in>M"
+      "B\<in>M"
   shows
       "separation(##M,\<lambda>x . x\<notin>B)"
 proof -
-  have 
+  from separation_ax arity_diff_fm have 
         "\<forall>a\<in>M. separation(##M, \<lambda>x. sats(M, Neg(Member(0,1)), [x, a]))"
-    by (rule separation_ax,simp,rule disjI2,rule arity_diff_fm)
-  then have 
+    by simp
+  with \<open>B\<in>M\<close> have 
         "separation(##M, \<lambda>x. sats(M, Neg(Member(0,1)), [x, B]))"
-    by (simp add: 1)
-  then show ?thesis by (simp add: separation_def 1)
+    by simp
+  with \<open>B\<in>M\<close> show ?thesis unfolding separation_def by simp
 qed
   
   
@@ -239,23 +365,23 @@ lemma arity_cartprod_fm [simp] : "arity(cartprod_sep_fm) = 3"
               
 lemma (in forcing_data) cartprod_sep_intf :
   assumes
-        1:  "A\<in>M"
+            "A\<in>M"
             and
-        2:  "B\<in>M"
+            "B\<in>M"
    shows
             "separation(##M,\<lambda>z. \<exists>x\<in>M. x\<in>A \<and> (\<exists>y\<in>M. y\<in>B \<and> pair(##M,x,y,z)))"
 proof -
-  have
+  from separation_ax arity_tup2p have
     "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,tupling_fm_2p(cartprod_sep_fm),[x,v])))"
-  by (rule separation_ax,simp,rule disjI2,rule arity_tup2p,simp_all)
+  by simp
   then have
     "(\<forall>v\<in>M. separation(##M, \<lambda>x. \<forall>A\<in>M. \<forall>B\<in>M. pair(##M, A, B, v) \<longrightarrow> 
                       (\<exists>xa\<in>M. xa \<in> A \<and> (\<exists>y\<in>M. y \<in> B \<and> pair(##M, xa, y, x)))))"
-  by (simp add: separation_def tupling_fm_2p_def cartprod_sep_fm_def del: pair_abs)
-  then have 
+  unfolding separation_def tupling_fm_2p_def cartprod_sep_fm_def by (simp del: pair_abs)
+  with tupling_sep_2p have 
     "(\<forall>A\<in>M. \<forall>B\<in>M. separation(##M, \<lambda>z. \<exists>x\<in>M. x \<in> A \<and> (\<exists>y\<in>M. y \<in> B \<and> pair(##M, x, y, z))))"
-  by (rule tupling_sep_2p [THEN iffD1])
-  then show ?thesis by (simp add: 1 2)
+  by simp
+  with \<open>A\<in>M\<close> \<open>B\<in>M\<close> show ?thesis by simp
 qed
 
 (*image_separation: 
@@ -277,23 +403,23 @@ lemma [simp] : "arity(image_sep_fm) = 3"
   
 lemma (in forcing_data) image_sep_intf :
   assumes
-        1:  "A\<in>M"
+            "A\<in>M"
             and
-        2:  "r\<in>M"
+            "r\<in>M"
    shows
             "separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>r & (\<exists>x\<in>M. x\<in>A & pair(##M,x,y,p)))"
 proof -
-  have
+  from separation_ax arity_tup2p have
     "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,tupling_fm_2p(image_sep_fm),[x,v])))"
-  by (rule separation_ax,simp,rule disjI2,rule arity_tup2p,simp_all)
+  by simp
   then have
     "(\<forall>v\<in>M. separation(##M, \<lambda>x. \<forall>A\<in>M. \<forall>B\<in>M. pair(##M, A, B, v) \<longrightarrow> 
           (\<exists>p\<in>M. p \<in> B \<and> (\<exists>xa\<in>M. xa \<in> A \<and> pair(##M, xa, x, p)))))"
-  by (simp add: separation_def tupling_fm_2p_def image_sep_fm_def del: pair_abs)
-  then have 
+  unfolding separation_def tupling_fm_2p_def image_sep_fm_def by (simp del: pair_abs)
+  with tupling_sep_2p have 
     "(\<forall>A\<in>M. \<forall>r\<in>M. separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>r & (\<exists>x\<in>M. x\<in>A & pair(##M,x,y,p))))"
-  by (rule tupling_sep_2p [THEN iffD1])
-  then show ?thesis by (simp add: 1 2)
+  by simp
+  with \<open>A\<in>M\<close> \<open>r\<in>M\<close> show ?thesis by simp
 qed
    
 (* converse_separation:
@@ -313,17 +439,17 @@ lemma [simp] : "arity(converse_sep_fm) = 2"
        
 lemma (in forcing_data) converse_sep_intf :
   assumes
-      1: "R\<in>M"
+         "R\<in>M"
   shows
          "separation(##M,\<lambda>z. \<exists>p\<in>M. p\<in>R & (\<exists>x\<in>M.\<exists>y\<in>M. pair(##M,x,y,p) & pair(##M,y,x,z)))"
 proof -
-  have 
+  from separation_ax have 
         "\<forall>r\<in>M. separation(##M, \<lambda>x. sats(M,converse_sep_fm, [x, r]))"
-    by (rule separation_ax,simp,rule disjI2,simp)
-  then have 
+    by simp
+  with \<open>R\<in>M\<close> have 
         "separation(##M, \<lambda>x. sats(M,converse_sep_fm, [x, R]))"
-    by (simp add: 1)
-  then show ?thesis by (simp add: separation_def converse_sep_fm_def 1 del: pair_abs)
+    by simp
+  with \<open>R\<in>M\<close> show ?thesis unfolding separation_def converse_sep_fm_def  by (simp del: pair_abs)
 qed
               
 (* restrict_separation:
@@ -341,17 +467,17 @@ lemma [simp] : "arity(restrict_sep_fm) = 2"
 
 lemma (in forcing_data) restrict_sep_intf :
   assumes
-      1: "A\<in>M"
+         "A\<in>M"
   shows
          "separation(##M,\<lambda>z. \<exists>x\<in>M. x\<in>A & (\<exists>y\<in>M. pair(##M,x,y,z)))"
 proof -
-  have 
+  from separation_ax have 
         "\<forall>a\<in>M. separation(##M, \<lambda>x. sats(M,restrict_sep_fm, [x, a]))"
-    by (rule separation_ax,simp,rule disjI2,simp)
-  then have 
+    by simp
+  with \<open>A\<in>M\<close> have 
         "separation(##M, \<lambda>x. sats(M,restrict_sep_fm, [x, A]))"
-    by (simp add: 1)
-  then show ?thesis by (simp add: separation_def restrict_sep_fm_def 1 del: pair_abs)
+    by simp
+  with \<open>A\<in>M\<close> show ?thesis unfolding separation_def restrict_sep_fm_def by (simp del: pair_abs)
 qed
   
 (* comp_separation:
@@ -373,28 +499,226 @@ lemma [simp] : "arity(comp_sep_fm) = 3"
 
 lemma (in forcing_data) comp_sep_intf :
   assumes
-        1:  "R\<in>M"
-            and
-        2:  "S\<in>M"
-   shows
-            "separation(##M,\<lambda>xz. \<exists>x\<in>M. \<exists>y\<in>M. \<exists>z\<in>M. \<exists>xy\<in>M. \<exists>yz\<in>M.
+    "R\<in>M"
+    and
+    "S\<in>M"
+  shows
+    "separation(##M,\<lambda>xz. \<exists>x\<in>M. \<exists>y\<in>M. \<exists>z\<in>M. \<exists>xy\<in>M. \<exists>yz\<in>M.
               pair(##M,x,z,xz) & pair(##M,x,y,xy) & pair(##M,y,z,yz) & xy\<in>S & yz\<in>R)"
 proof -
-  have
+  from separation_ax arity_tup2p have
     "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,tupling_fm_2p(comp_sep_fm),[x,v])))"
-  by (rule separation_ax,simp,rule disjI2,rule arity_tup2p,simp_all)
+    by simp
   then have
     "(\<forall>v\<in>M. separation
              (##M, \<lambda>x. \<forall>A\<in>M. \<forall>B\<in>M. pair(##M, A, B, v) \<longrightarrow>
                                     (\<exists>xa\<in>M. \<exists>y\<in>M. \<exists>z\<in>M. \<exists>xy\<in>M. \<exists>yz\<in>M. pair(##M, xa, z, x) \<and>
               pair(##M, xa, y, xy) \<and> pair(##M, y, z, yz) \<and> xy \<in> B \<and> yz \<in> A)))"
-  by (simp add: separation_def tupling_fm_2p_def comp_sep_fm_def del: pair_abs)
-  then have 
+  unfolding separation_def tupling_fm_2p_def comp_sep_fm_def by (simp del: pair_abs)
+  with tupling_sep_2p have 
     "(\<forall>r\<in>M. \<forall>s\<in>M. separation
          (##M, \<lambda>xz. \<exists>x\<in>M. \<exists>y\<in>M. \<exists>z\<in>M. \<exists>xy\<in>M. \<exists>yz\<in>M. pair(##M, x, z, xz) \<and>
                                     pair(##M, x, y, xy) \<and> pair(##M, y, z, yz) \<and> xy \<in> s \<and> yz \<in> r))"
-  by (rule tupling_sep_2p [THEN iffD1])
-  then show ?thesis by (simp add: 1 2)
+    by simp
+  with \<open>S\<in>M\<close> \<open>R\<in>M\<close> show ?thesis by simp
 qed
+ 
+(* pred_separation:
+   "[| M(r); M(x) |] ==> separation(M, \<lambda>y. \<exists>p[M]. p\<in>r & pair(M,y,x,p))"
+*)
+  
+lemma arity_pred_fm [simp] : 
+  "arity(Exists(And(Member(0,2),pair_fm(3,1,0)))) = 3"
+  by (simp add: pair_fm_def upair_fm_def Un_commute nat_union_abs)
+
+lemma (in forcing_data) pred_sep_intf:
+    assumes
+      "R\<in>M"
+    and
+      "X\<in>M"
+    shows
+      "separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>R & pair(##M,y,X,p))"
+proof -
+  from separation_ax arity_tup2p arity_pred_fm have
+    "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,tupling_fm_2p(Exists(And(Member(0,2),
+                                                                  pair_fm(3,1,0)))),[x,v])))"
+  by simp
+  then have
+    "(\<forall>v\<in>M. separation(##M, \<lambda>x. \<forall>A\<in>M. \<forall>B\<in>M. pair(##M, A, B, v) \<longrightarrow> 
+                                                        (\<exists>p\<in>M. p \<in> A \<and> pair(##M, x, B, p))))"
+  unfolding separation_def tupling_fm_2p_def by (simp del: pair_abs)
+  with tupling_sep_2p have
+    "\<forall>r\<in>M. \<forall>x\<in>M. separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>r & pair(##M,y,x,p))"
+  by simp
+  with \<open>R\<in>M\<close> \<open>X\<in>M\<close> show ?thesis by simp
+qed
+  
+  
+   
+(* Memrel_separation:
+     "separation(M, \<lambda>z. \<exists>x[M]. \<exists>y[M]. pair(M,x,y,z) & x \<in> y)"
+*)
+definition
+  memrel_fm :: "i" where
+  "memrel_fm == Exists(Exists(And(pair_fm(1,0,2),Member(1,0))))"
+    
+lemma [TC] : "memrel_fm \<in> formula"
+  by (simp add: memrel_fm_def)
+  
+lemma [simp] : "arity(memrel_fm) = 1"
+  by (simp add: memrel_fm_def pair_fm_def upair_fm_def Un_commute nat_union_abs)
+
+lemma (in forcing_data) memrel_sep_intf:
+  "separation(##M, \<lambda>z. \<exists>x\<in>M. \<exists>y\<in>M. pair(##M,x,y,z) & x \<in> y)"
+proof -
+  from separation_ax have
+    "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,memrel_fm,[x,v])))"
+    by simp
+  then have      
+    "(\<forall>v\<in>M. separation(##M, \<lambda>z. \<exists>x\<in>M. \<exists>y\<in>M. pair(##M,x,y,z) & x \<in> y))"
+    unfolding separation_def memrel_fm_def by (simp del: pair_abs)
+  with zero_in_M show ?thesis by auto
+qed
+
+(*is_recfun_separation:
+     \<comment>\<open>for well-founded recursion: used to prove \<open>is_recfun_equal\<close>\<close>
+     "[| M(r); M(f); M(g); M(a); M(b) |]
+     ==> separation(M,
+            \<lambda>x. \<exists>xa[M]. \<exists>xb[M].
+                pair(M,x,a,xa) & xa \<in> r & pair(M,x,b,xb) & xb \<in> r &
+                (\<exists>fx[M]. \<exists>gx[M]. fun_apply(M,f,x,fx) & fun_apply(M,g,x,gx) &
+                                   fx \<noteq> gx))"
+*)
+  
+abbreviation
+ dec10  :: i   ("10") where "10 == succ(9)"
+    
+abbreviation
+ dec11  :: i   ("11") where "11 == succ(10)"
+
+abbreviation
+ dec12  :: i   ("12") where "12 == succ(11)"
+
+abbreviation
+ dec13  :: i   ("13") where "13 == succ(12)"
+
+
+definition
+  is_recfun_sep_fm :: "i" where
+  "is_recfun_sep_fm == 
+  Exists(Exists(And(pair_fm(10,3,1),And(Member(1,6),And(pair_fm(10,2,0),And(Member(0,6),
+                Exists(Exists(And(fun_apply_fm(7,12,1),
+                And(fun_apply_fm(6,12,0),Neg(Equal(1,0))))))))))))"
+  
+lemma is_recfun_sep_fm [TC] : "is_recfun_sep_fm \<in> formula"
+  by (simp add: is_recfun_sep_fm_def)
+
+lemma [simp] : "arity(is_recfun_sep_fm) = 9"
+  by (simp add: is_recfun_sep_fm_def fun_apply_fm_def upair_fm_def
+                image_fm_def big_union_fm_def pair_fm_def Un_commute nat_union_abs)
+
+
+lemma (in forcing_data) is_recfun_sep_intf :
+  assumes
+        "r\<in>M" "f\<in>M" "g\<in>M" "a\<in>M" "b\<in>M"
+   shows
+      "separation(##M,\<lambda>x. \<exists>xa\<in>M. \<exists>xb\<in>M.
+                    pair(##M,x,a,xa) & xa \<in> r & pair(##M,x,b,xb) & xb \<in> r &
+                    (\<exists>fx\<in>M. \<exists>gx\<in>M. fun_apply(##M,f,x,fx) & fun_apply(##M,g,x,gx) &
+                                     fx \<noteq> gx))"
+proof -
+  from separation_ax arity_tup5p have
+    "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,tupling_fm_5p(is_recfun_sep_fm),[x,v])))"
+    by simp
+  then have
+      "(\<forall>v\<in>M. separation
+             (##M, \<lambda>x. \<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+                    \<forall>A1\<in>M. pair(##M, A4, A5, B1) \<and> pair(##M, A3, B1, B2) \<and> pair(##M, A2, B2, B3) \<and> 
+                            pair(##M, A1, B3, v) \<longrightarrow>
+         (\<exists>xa\<in>M. \<exists>xb\<in>M. pair(##M, x, A2, xa) \<and> xa \<in> A5 \<and> pair(##M, x, A1, xb) \<and> xb \<in> A5 \<and> 
+              (\<exists>fx\<in>M. \<exists>gx\<in>M. fun_apply(##M, A4, x, fx) \<and> fun_apply(##M, A3, x, gx) \<and> fx \<noteq> gx))))" 
+    unfolding separation_def tupling_fm_5p_def is_recfun_sep_fm_def by (simp del: pair_abs)
+  with tupling_sep_5p_rel2 have
+    "(\<forall>r\<in>M. \<forall>f\<in>M. \<forall>g\<in>M. \<forall>a\<in>M. \<forall>b\<in>M. 
+    separation(##M,\<lambda>x. \<exists>xa\<in>M. \<exists>xb\<in>M.
+                    pair(##M,x,a,xa) & xa \<in> r & pair(##M,x,b,xb) & xb \<in> r &
+                    (\<exists>fx\<in>M. \<exists>gx\<in>M. fun_apply(##M,f,x,fx) & fun_apply(##M,g,x,gx) &
+                                     fx \<noteq> gx)))"
+  by simp 
+  with \<open>r\<in>M\<close> \<open>f\<in>M\<close> \<open>g\<in>M\<close> \<open>a\<in>M\<close> \<open>b\<in>M\<close> show ?thesis by simp
+qed
+ 
+(* Instance of Replacement for M_basic *)
+  
+(* funspace_succ_replacement:
+     "M(n) ==>
+      strong_replacement(M, \<lambda>p z. \<exists>f[M]. \<exists>b[M]. \<exists>nb[M]. \<exists>cnbf[M].
+                pair(M,f,b,p) & pair(M,n,b,nb) & is_cons(M,nb,f,cnbf) &
+                upair(M,cnbf,cnbf,z))" 
+*)
+definition 
+  is_cons_fm :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
+ "is_cons_fm(a,b,z) == Exists(And(upair_fm(succ(a),succ(a),0),union_fm(0,succ(b),succ(z))))"
+
+lemma is_cons_type [TC]:
+     "[| x \<in> nat; y \<in> nat; z \<in> nat |] ==> is_cons_fm(x,y,z) \<in> formula"
+by (simp add: is_cons_fm_def)
+
+lemma is_cons_fm [simp] :
+  "\<lbrakk> a \<in> nat ; b \<in> nat ; z \<in> nat ; env \<in> list(A) \<rbrakk> \<Longrightarrow> 
+    sats(A,is_cons_fm(a,b,z),env) \<longleftrightarrow> 
+    is_cons(##A,nth(a,env),nth(b,env),nth(z,env))"
+  by (simp add: is_cons_fm_def is_cons_def)
+
+definition 
+  funspace_succ_fm :: "i" where
+  "funspace_succ_fm == 
+    Exists(Exists(Exists(Exists(And(pair_fm(3,2,4),And(pair_fm(6,2,1),
+        And(is_cons_fm(1,3,0),upair_fm(0,0,5))))))))"
+  
+lemma funspace_succ_fm_type [TC] : 
+  "funspace_succ_fm \<in> formula"
+  by (simp add: funspace_succ_fm_def)
+
+lemma [simp] : "arity(funspace_succ_fm) = 3" 
+  by (simp add: funspace_succ_fm_def pair_fm_def upair_fm_def is_cons_fm_def 
+                    union_fm_def Un_commute nat_union_abs)
+
+lemma (in forcing_data) funspace_succ_rep_intf :
+  assumes
+      "n\<in>M"
+  shows
+     "strong_replacement(##M,
+          \<lambda>p z. \<exists>f\<in>M. \<exists>b\<in>M. \<exists>nb\<in>M. \<exists>cnbf\<in>M.
+                pair(##M,f,b,p) & pair(##M,n,b,nb) & is_cons(##M,nb,f,cnbf) &
+                upair(##M,cnbf,cnbf,z))"
+proof -
+  from replacement_ax have 
+       "(\<forall>a\<in>M. strong_replacement(##M,\<lambda>x y. sats(M,funspace_succ_fm,[x,y,a])))"      
+    by simp
+  then have
+    "(\<forall>n\<in>M. strong_replacement(##M,
+          \<lambda>p z. \<exists>f\<in>M. \<exists>b\<in>M. \<exists>nb\<in>M. \<exists>cnbf\<in>M.
+                pair(##M,f,b,p) & pair(##M,n,b,nb) & is_cons(##M,nb,f,cnbf) &
+                upair(##M,cnbf,cnbf,z)))"
+    unfolding funspace_succ_fm_def strong_replacement_def univalent_def by (simp del: pair_abs)
+  with \<open>n\<in>M\<close> show ?thesis by simp
+qed
+
+
+(* Interface with M_basic *)
+  
+lemmas (in forcing_data) M_basic_sep_instances = 
+                inter_sep_intf diff_sep_intf cartprod_sep_intf
+                image_sep_intf converse_sep_intf restrict_sep_intf
+                pred_sep_intf memrel_sep_intf comp_sep_intf is_recfun_sep_intf
+  
+sublocale forcing_data \<subseteq> M_basic_no_repl "##M"
+  apply (insert trans_M zero_in_M)
+  apply (rule M_basic_no_repl.intro,rule mtriv)
+  apply (rule M_basic_no_repl_axioms.intro)
+  apply (insert M_basic_sep_instances funspace_succ_rep_intf)
+  apply (simp_all)
+done
   
 end
