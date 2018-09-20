@@ -1,5 +1,4 @@
-theory Forcing_data imports  Forcing_notions Relative_no_repl Formula 
-                             Interface2 begin
+theory Forcing_data imports  Forcing_notions Relative_no_repl Formula begin
 
 lemma lam_codomain: "\<forall>n\<in>N. (\<lambda>x\<in>N. b(x))`n \<in> B \<Longrightarrow>  (\<lambda>x\<in>N. b(x)) : N\<rightarrow>B"
   apply (rule fun_weaken_type)
@@ -10,8 +9,12 @@ lemma lam_codomain: "\<forall>n\<in>N. (\<lambda>x\<in>N. b(x))`n \<in> B \<Long
 lemma Transset_M :
   "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
   by (simp add: Transset_def,auto)  
-  
-    
+
+definition 
+  infinity_ax :: "(i \<Rightarrow> o) \<Rightarrow> o" where
+  "infinity_ax(M) ==  
+      (\<exists>I[M]. (\<exists>z[M]. empty(M,z) \<and> z\<in>I) \<and>  (\<forall>y[M]. y\<in>I \<longrightarrow> (\<exists>sy[M]. successor(M,y,sy) \<and> sy\<in>I)))"
+
 locale M_ZF = 
   fixes M 
   assumes 
@@ -21,9 +24,9 @@ locale M_ZF =
       and extensionality:   "extensionality(##M)"
       and foundation_ax:    "foundation_ax(##M)"
       and infinity_ax:      "infinity_ax(##M)"
-      and separation:       "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=1 \<or> arity(\<phi>)=2 \<rbrakk> \<Longrightarrow> 
+      and separation_ax:       "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=1 \<or> arity(\<phi>)=2 \<rbrakk> \<Longrightarrow> 
                               (\<forall>a\<in>M. separation(##M,\<lambda>x. sats(M,\<phi>,[x,a])))" 
-      and replacement:      "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=2 \<or> arity(\<phi>)=succ(2) \<rbrakk> \<Longrightarrow>
+      and replacement_ax:      "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=2 \<or> arity(\<phi>)=succ(2) \<rbrakk> \<Longrightarrow>
                             (\<forall>a\<in>M. strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y,a])))" 
     
 locale forcing_data = forcing_notion + M_ZF +
@@ -106,17 +109,7 @@ proof -
     unfolding M_generic_def by auto
 qed
   
-  
-lemma mtriv :  
-  "M_trivial_no_repl(##M)"
-  apply (insert trans_M upair_ax Union_ax power_ax infinity_ax)
-  apply (rule M_trivial_no_repl.intro)
-  apply (simp_all add: zero_in_M)
-  apply (rule Transset_intf,simp+)
-done
-    
+     
 end    (*************** CONTEXT: forcing_data *****************)      
-
-sublocale forcing_data \<subseteq> M_basic_no_repl "##M" sorry
   
 end
