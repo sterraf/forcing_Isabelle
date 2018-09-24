@@ -284,6 +284,8 @@ lemma perm_sep_env2: "{p,q,r,s,t,u,w} \<subseteq> M \<Longrightarrow> env \<in> 
   apply(subst nth_perm_conv[of _ "M"],simp add:app_type,(subst env_len2,assumption+)+)
   apply(rule fUg_bij,simp,(subst env_len2,assumption+)+,simp)
 done
+
+(* Results to be exported: fUg_bij conv_fUgInv_eq  conv_fUg_eq fUgInv_bij *)
   
 context forcing_thms begin  
 
