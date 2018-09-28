@@ -108,17 +108,7 @@ lemma upairM : "x \<in> M \<Longrightarrow> y \<in> M \<Longrightarrow> {x,y} \<
 lemma pairM : "x \<in>  M \<Longrightarrow> y \<in> M \<Longrightarrow> <x,y> \<in> M"
   by(unfold Pair_def, rule upairM,(rule upairM,simp+)+)
 
-lemma funApp : "(\<And>x . x \<in> u \<Longrightarrow> f(x) \<in> M) \<Longrightarrow> a \<in> M \<Longrightarrow> u \<in> M \<Longrightarrow>
-  (##M)(Replace(u, \<lambda> y z . z = <f(y),a>))"
- apply(rule_tac P="\<lambda> y z . z = <f(y),a>" in strong_replacement_closed)
- prefer 2 apply(simp)
- prefer 3 apply(simp_all,rule pairM)
- apply((simp add: trans_M Transset_M)+)
- apply(insert replacement)
-  apply(unfold strong_replacement_def,simp,clarsimp)
-  sorry
-
-lemma funApp2 : "Replace(u,\<lambda> y z . z = <f(y),a>) = { <f(y),a> . y \<in> u}"
+lemma Rep_simp : "Replace(u,\<lambda> y z . z = f(y)) = { f(y) . y \<in> u}"
   by(auto)
     
 definition 
@@ -156,23 +146,110 @@ proof -
   finally show ?thesis by (simp add:Hcheck_def)
 qed
 
-  
-lemma checkin : "x \<in> M \<Longrightarrow> (\<forall> y  \<in> x . check(y) \<in> M) \<Longrightarrow> (##M)(check(x))"
-  apply(subst def_check)
-  apply(subst funApp2[symmetric])
-  apply(rule funApp,auto)
-  apply(insert one_in_P P_in_M transM,simp)
-done
     
-lemma check_M_aux : "(##M)(x) \<longrightarrow> (##M)(check(x))"
-  apply(rule_tac P="\<lambda> z . (##M)(z) \<longrightarrow> (##M)(check(z))" and a="x" in eps_induct)
-  apply(rule impI,rule checkin,simp+)
-  apply(subgoal_tac "\<forall> y \<in> x . y \<in> M",simp)
-  apply(insert one_in_P P_in_M transM,simp)
-done  
+lemma field_Memrel : "x \<in> M \<Longrightarrow> field(Memrel(eclose({x}))) \<subseteq> M"
+apply(rule subset_trans,rule field_rel_subset,rule Ordinal.Memrel_type)
+apply(rule eclose_least,rule trans_M,auto)
+  done
+    
+definition Hc_body_fm :: "i" where
+  "Hc_body_fm == 
+  Exists(Exists(
+    And(pair_fm(1,0,4),
+     Exists(And(fun_apply_fm(2,3,0),Exists(And(pair_fm(1,2,0),Equal(5,0))))))))" 
+  
+lemma [TC] : "Hc_body_fm \<in> formula"
+  by (simp add: Hc_body_fm_def)
+  
+lemma [simp] : "arity(Hc_body_fm) = 3"
+  by (simp add: Hc_body_fm_def pair_fm_def big_union_fm_def image_fm_def
+        fun_apply_fm_def upair_fm_def Un_commute nat_union_abs)
 
-theorem check_M : "x \<in> M \<Longrightarrow> check(x) \<in> M"
-  by(insert check_M_aux,simp)
+lemma pair_D1 : "<x,y> \<in> M \<Longrightarrow> x \<in> M"
+  apply(subgoal_tac "{x} \<in> <x,y>")
+   apply(rule subsetD,rule transD,rule trans_M)
+    apply(rule subsetD,rule transD,rule trans_M)
+  apply(auto simp add:Pair_def)
+done
+
+lemma one_in_M : "one \<in> M"
+ by(rule subsetD,rule transD, rule trans_M, rule P_in_M,rule one_in_P)
+
+lemma Hc_fm_sat : 
+"f \<in> M \<Longrightarrow> (\<And> z y . \<lbrakk> (##M)(z) ;  (##M)(y) \<rbrakk> \<Longrightarrow>
+  sats(M,Hc_body_fm,[z,y,<f,one>]) \<longleftrightarrow> y = <f`z, one>)"
+  apply(rule iffI)
+  apply(subgoal_tac "[z,y,<f,one>] \<in> list(M)", simp add: Hc_body_fm_def)
+   apply(insert one_in_M, simp add:  pairM)
+  apply(auto, auto simp add: one_in_M pair_D1)
+  apply(subgoal_tac "[z,<f`z,one>,<f,one>] \<in> list(M)", simp add: Hc_body_fm_def)
+   apply(simp add: one_in_M pairM)
+  apply(auto, simp add:  pair_D1)
+  apply(simp add: one_in_M pairM)
+done
+
+lemma Hc_type : 
+    assumes "f\<in>M"
+    and     "z\<in>M"    
+    shows   "strong_replacement(##M, \<lambda> z y. y = <f`z,one>)"
+proof -
+  from pairM and one_in_M and assms have
+    \<open><f,one> \<in> M\<close>
+    by simp
+  from replacement_ax have
+    "\<forall> a\<in> M . strong_replacement(##M, \<lambda> z y . sats(M,Hc_body_fm,[z,y,a]))"
+    by simp  
+  with \<open><f,one> \<in> M\<close> have  
+   A : "strong_replacement(##M, \<lambda> z y . sats(M,Hc_body_fm,[z,y,<f,one>]))" 
+    by simp
+  with \<open>f\<in>M\<close> show ?thesis 
+    by(subst strong_replacement_cong[symmetric],simp add:Hc_fm_sat[symmetric],simp)
+qed
+
+(* Se puede borrar.
+ 
+lemma Mem_ecloseI : 
+  assumes "z \<in> x"
+    and   "u \<in> z"
+  shows "u \<in> Memrel(eclose({x})) -`` {z}"
+proof -
+   let ?ex = "eclose({x})"
+    from \<open>z \<in> x\<close> and \<open>u \<in> z\<close>
+    have "x \<in> ?ex"
+      by (simp add: arg_into_eclose)
+    then have \<open>z \<in> ?ex\<close> using \<open>z \<in> x\<close>
+      by (rule ecloseD)
+    then have \<open>u \<in> ?ex\<close> using \<open>u \<in> z\<close>
+      by (rule ecloseD)
+    then have \<open><u,z> \<in> Memrel(?ex)\<close> using \<open>u \<in> z\<close> and \<open>z \<in> ?ex\<close>
+      by simp
+    then show ?thesis by (simp add: underI)
+qed
+*)
+
+lemma Hc_col_tc : "f \<in> M \<Longrightarrow> z \<in> M \<Longrightarrow>
+     f \<in> Memrel(eclose({x})) -`` {z} -> M \<Longrightarrow> 
+        (##M)(Replace(z,\<lambda> u y . y= <f`u,one>))"
+  apply(rule strong_replacement_closed,simp add:Hc_type,simp+)
+  apply(rule pairM)
+  prefer 2 apply(simp add:one_in_M) 
+  apply(case_tac "xa \<in> Memrel(eclose({x}))-``{z}",erule apply_type,simp)
+  apply(subst apply_0,subst domain_of_fun,assumption+,rule zero_in_M)
+  done
+
+lemma Hc_col_tc' : "f \<in> M \<Longrightarrow> z \<in> M \<Longrightarrow>
+     f \<in> Memrel(eclose({x})) -`` {z} -> M \<Longrightarrow> 
+        (Replace(z,\<lambda> u y . y= <f`u,one>)) \<in> M" 
+  by(insert Hc_col_tc,auto)
+    
+lemma checkin_M : "x \<in> M \<Longrightarrow> check(x) \<in> M"
+  apply(unfold check_def,rule wfrec_type)
+  apply(rule wf_Memrel,assumption)
+  apply(erule field_Memrel)
+  apply(rename_tac z f)
+  apply(unfold Hcheck_def,subgoal_tac "f \<in> M")
+  apply(subst Rep_simp[symmetric],simp add: Hc_col_tc')
+  oops
     
 definition
   Hv :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i" where
