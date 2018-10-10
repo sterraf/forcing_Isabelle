@@ -41,6 +41,30 @@ definition
   M_generic :: "i\<Rightarrow>o" where
   "M_generic(G) == filter(G) \<and> (\<forall>D\<in>M. D\<subseteq>P \<and> dense(D)\<longrightarrow>D\<inter>G\<noteq>0)"
 
+lemma G_nonempty: "M_generic(G) \<Longrightarrow> G\<noteq>0"
+proof -
+  have "P\<subseteq>P" ..
+  assume
+    "M_generic(G)"
+  with P_in_M P_dense \<open>P\<subseteq>P\<close> show
+    "G \<noteq> 0"
+    unfolding M_generic_def by auto
+qed
+
+lemma one_in_G : 
+  assumes "M_generic(G)"
+  shows  "one \<in> G" 
+proof -
+  from assms have "G\<subseteq>P" 
+    unfolding M_generic_def and filter_def by simp
+  from \<open>M_generic(G)\<close> have "increasing(G)" 
+    unfolding M_generic_def and filter_def by simp
+  with \<open>G\<subseteq>P\<close> and \<open>M_generic(G)\<close> 
+  show ?thesis 
+    using G_nonempty and one_in_P and one_max 
+    unfolding increasing_def by blast
+qed
+  
 declare iff_trans [trans]
 
 lemma generic_filter_existence: 

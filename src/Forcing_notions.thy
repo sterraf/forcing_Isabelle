@@ -47,7 +47,6 @@ definition
   increasing :: "i\<Rightarrow>o" where
   "increasing(F) == \<forall>x\<in>F. \<forall> p \<in> P . \<langle>x,p\<rangle>\<in>leq \<longrightarrow> p\<in>F"
 
-
 definition 
   compat :: "i\<Rightarrow>i\<Rightarrow>o" where
   "compat(p,q) == compat_in(P,leq,p,q)"

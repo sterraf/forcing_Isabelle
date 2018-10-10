@@ -1,4 +1,4 @@
-theory Gen_Ext_Sep_test imports Forces_locale begin
+theory Gen_Ext_Sep_test imports Forces_locale Renaming Gen_ext_pair begin
 
 definition 
   f :: "i\<Rightarrow>i" where
@@ -293,23 +293,48 @@ lemmas transitivity = Transset_intf trans_M
 
 lemma one_in_M: "one \<in> M"
   by (insert one_in_P P_in_M, simp add: transitivity)
-
-lemma G_nonempty: "M_generic(G) \<Longrightarrow> G\<noteq>0"
-proof -
-  have "P\<subseteq>P" ..
-  assume
-    "M_generic(G)"
-  with P_in_M P_dense \<open>P\<subseteq>P\<close> show
-    "G \<noteq> 0"
-    unfolding M_generic_def by auto
-qed
     
 lemma iff_impl_trans: "Q\<longleftrightarrow>R \<Longrightarrow> R\<longrightarrow>S \<Longrightarrow> Q \<longrightarrow>S"
                       "Q\<longrightarrow>R \<Longrightarrow> R\<longleftrightarrow>S \<Longrightarrow> Q \<longrightarrow>S"
                       "Q\<longrightarrow>R \<Longrightarrow> R\<longrightarrow> S \<Longrightarrow> Q\<longrightarrow> S"
   by simp_all  
 
-(* theorem separation_in_genext: *)
+    
+lemma zero_in_Gen_Ext : 
+  "0 \<in> M[G]" 
+proof -
+  from zero_in_M and def_val have 
+    "0 = val(G,0)" 
+    by auto
+  also from def_GenExt2 and zero_in_M have 
+    "... \<in> M[G]" 
+  by simp
+  finally show ?thesis .
+qed
+    
+     
+lemma Gen_Ext_mtriv :  
+  "M_generic(G) \<Longrightarrow> Union_ax(##M[G]) \<Longrightarrow> M_trivial_no_repl(##M[G])"
+  sorry
+    
+(* theorem separation_in_genext: *)    
+theorem separation_preserv:
+  assumes 
+      "M_generic(G)" and "\<phi>\<in>formula"  and "arity(\<phi>) = 1 \<or> arity(\<phi>)=2" 
+    shows  
+      "(\<forall>a\<in>M. separation(##M[G],\<lambda>x. sats(M[G],\<phi>,[x,a])))"
+proof -
+  note 
+      \<open>arity(\<phi>) = 1 \<or> arity(\<phi>)=2\<close>
+  then consider (1) "arity(\<phi>) = 1" | (2) "arity(\<phi>) = 2" ..
+  then show ?thesis
+  proof cases
+    case (1)
+  next
+    case (2)
+      then show ?thesis sorry
+    
+    
 (* lemma    *) 
 
 notepad begin   (************** notepad **************)
@@ -668,5 +693,6 @@ notepad begin   (************** notepad **************)
   }
   with S_in_MG have
    "{x\<in>c. sats(M[G], \<phi>, [x])}\<in> M[G]"  by simp   
+end
 end
 end

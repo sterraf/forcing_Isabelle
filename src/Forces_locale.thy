@@ -1,4 +1,4 @@
-theory Forces_locale imports Interface Forcing_data Interface2 Names begin
+theory Forces_locale imports Forcing_data Interface2 Names begin
    
 lemma aux_VoN : "N\<in>M \<Longrightarrow>  domain(N) \<subseteq> trancl(Memrel(eclose(M)))-``{N}"
   apply clarify

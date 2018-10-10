@@ -24,15 +24,19 @@ proof -
       by simp
 qed
 
-lemma nat_union_abs : 
+lemma nat_union_abs1 : 
   "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> i \<union> j = j"
   by (rule Un_absorb1,erule le_imp_subset)
-  
+
+lemma nat_union_abs2 : 
+  "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> j \<union> i = j"
+  by (rule Un_absorb2,erule le_imp_subset)
+    
 (* Interface with M_trivial *)
     
 lemma (in forcing_data) mtriv :  
   "M_trivial_no_repl(##M)"
-  apply (insert trans_M upair_ax Union_ax power_ax)
+  apply (insert trans_M upair_ax Union_ax)
   apply (rule M_trivial_no_repl.intro)
   apply (simp_all add: zero_in_M)
   apply (rule Transset_intf,simp+)
@@ -280,7 +284,7 @@ lemma [TC] :  "\<lbrakk> \<phi> \<in> formula \<rbrakk> \<Longrightarrow> tuplin
 lemma arity_tup2p :  
   "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>) = 3 \<rbrakk> \<Longrightarrow> arity(tupling_fm_2p(\<phi>)) = 2"
   by (simp add: tupling_fm_2p_def arity_incr_bv_lemma pair_fm_def 
-                upair_fm_def Un_commute nat_union_abs)
+                upair_fm_def Un_commute nat_union_abs1)
 
 definition
   tupling_fm_5p :: "i \<Rightarrow> i" where
@@ -298,7 +302,7 @@ lemma [TC] :  "\<lbrakk> \<phi> \<in> formula \<rbrakk> \<Longrightarrow> tuplin
 lemma arity_tup5p :
   "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>) = 9 \<rbrakk> \<Longrightarrow> arity(tupling_fm_5p(\<phi>)) = 2"
   by (simp add: tupling_fm_5p_def arity_incr_bv_lemma pair_fm_def 
-                upair_fm_def Un_commute nat_union_abs)
+                upair_fm_def Un_commute nat_union_abs1)
 
 (* end tupling *)
 
@@ -308,7 +312,7 @@ lemma arity_tup5p :
               
 lemma arity_inter_fm :
   "arity(Forall(Implies(Member(0,2),Member(1,0)))) = 2"
-  by (simp add: Un_commute nat_union_abs)
+  by (simp add: Un_commute nat_union_abs1)
   
 lemma (in forcing_data) inter_sep_intf :
   assumes
@@ -329,7 +333,7 @@ qed
 (* Diff_separation: "M(B) ==> separation(M, \<lambda>x. x \<notin> B)" *)
 lemma arity_diff_fm: 
   "arity(Neg(Member(0,1))) = 2"
-by (simp add: nat_union_abs)
+by (simp add: nat_union_abs1)
     
 lemma (in forcing_data) diff_sep_intf :
   assumes
@@ -361,7 +365,7 @@ lemma cartprof_sep_fm_type [TC] :
     
 lemma arity_cartprod_fm [simp] : "arity(cartprod_sep_fm) = 3" 
   by (simp add: cartprod_sep_fm_def pair_fm_def upair_fm_def 
-                Un_commute nat_union_abs)
+                Un_commute nat_union_abs1)
               
 lemma (in forcing_data) cartprod_sep_intf :
   assumes
@@ -399,7 +403,7 @@ lemma image_sep_fm_type [TC] :
     
 lemma [simp] : "arity(image_sep_fm) = 3" 
   by (simp add: image_sep_fm_def pair_fm_def upair_fm_def 
-                Un_commute nat_union_abs)
+                Un_commute nat_union_abs1)
   
 lemma (in forcing_data) image_sep_intf :
   assumes
@@ -435,7 +439,7 @@ lemma converse_sep_fm_type [TC] : "converse_sep_fm \<in> formula"
 
 lemma [simp] : "arity(converse_sep_fm) = 2"
   by (simp add: converse_sep_fm_def pair_fm_def upair_fm_def 
-                Un_commute nat_union_abs)
+                Un_commute nat_union_abs1)
        
 lemma (in forcing_data) converse_sep_intf :
   assumes
@@ -463,7 +467,7 @@ lemma restrict_sep_fm_type [TC] : "restrict_sep_fm \<in> formula"
     
 lemma [simp] : "arity(restrict_sep_fm) = 2"
   by (simp add: restrict_sep_fm_def pair_fm_def upair_fm_def 
-                Un_commute nat_union_abs)
+                Un_commute nat_union_abs1)
 
 lemma (in forcing_data) restrict_sep_intf :
   assumes
@@ -495,7 +499,7 @@ lemma comp_sep_fm_type [TC] : "comp_sep_fm \<in> formula"
   by (simp add: comp_sep_fm_def)
 
 lemma [simp] : "arity(comp_sep_fm) = 3"
-  by (simp add: comp_sep_fm_def pair_fm_def upair_fm_def Un_commute nat_union_abs)
+  by (simp add: comp_sep_fm_def pair_fm_def upair_fm_def Un_commute nat_union_abs1)
 
 lemma (in forcing_data) comp_sep_intf :
   assumes
@@ -529,7 +533,7 @@ qed
   
 lemma arity_pred_fm [simp] : 
   "arity(Exists(And(Member(0,2),pair_fm(3,1,0)))) = 3"
-  by (simp add: pair_fm_def upair_fm_def Un_commute nat_union_abs)
+  by (simp add: pair_fm_def upair_fm_def Un_commute nat_union_abs1)
 
 lemma (in forcing_data) pred_sep_intf:
     assumes
@@ -566,7 +570,7 @@ lemma [TC] : "memrel_fm \<in> formula"
   by (simp add: memrel_fm_def)
   
 lemma [simp] : "arity(memrel_fm) = 1"
-  by (simp add: memrel_fm_def pair_fm_def upair_fm_def Un_commute nat_union_abs)
+  by (simp add: memrel_fm_def pair_fm_def upair_fm_def Un_commute nat_union_abs1)
 
 lemma (in forcing_data) memrel_sep_intf:
   "separation(##M, \<lambda>z. \<exists>x\<in>M. \<exists>y\<in>M. pair(##M,x,y,z) & x \<in> y)"
@@ -615,7 +619,7 @@ lemma is_recfun_sep_fm [TC] : "is_recfun_sep_fm \<in> formula"
 
 lemma [simp] : "arity(is_recfun_sep_fm) = 9"
   by (simp add: is_recfun_sep_fm_def fun_apply_fm_def upair_fm_def
-                image_fm_def big_union_fm_def pair_fm_def Un_commute nat_union_abs)
+                image_fm_def big_union_fm_def pair_fm_def Un_commute nat_union_abs1)
 
 
 lemma (in forcing_data) is_recfun_sep_intf :
@@ -682,7 +686,7 @@ lemma funspace_succ_fm_type [TC] :
 
 lemma [simp] : "arity(funspace_succ_fm) = 3" 
   by (simp add: funspace_succ_fm_def pair_fm_def upair_fm_def is_cons_fm_def 
-                    union_fm_def Un_commute nat_union_abs)
+                    union_fm_def Un_commute nat_union_abs1)
 
 lemma (in forcing_data) funspace_succ_rep_intf :
   assumes
@@ -714,7 +718,7 @@ lemmas (in forcing_data) M_basic_sep_instances =
                 pred_sep_intf memrel_sep_intf comp_sep_intf is_recfun_sep_intf
   
 sublocale forcing_data \<subseteq> M_basic_no_repl "##M"
-  apply (insert trans_M zero_in_M)
+  apply (insert trans_M zero_in_M power_ax)
   apply (rule M_basic_no_repl.intro,rule mtriv)
   apply (rule M_basic_no_repl_axioms.intro)
   apply (insert M_basic_sep_instances funspace_succ_rep_intf)

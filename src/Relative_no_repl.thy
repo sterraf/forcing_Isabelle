@@ -527,7 +527,7 @@ locale M_trivial_no_repl =
   assumes transM:           "[| y\<in>x; M(x) |] ==> M(y)"
       and upair_ax:         "upair_ax(M)"
       and Union_ax:         "Union_ax(M)"
-      and power_ax:         "power_ax(M)"
+   (* and power_ax:         "power_ax(M)"  *)
    (* and replacement:      "replacement(M,P)" *)
       and M_inhabit [iff]:  "M(0)"          
 
@@ -999,6 +999,7 @@ assumes Inter_separation:
                 pair(M,x,a,xa) & xa \<in> r & pair(M,x,b,xb) & xb \<in> r &
                 (\<exists>fx[M]. \<exists>gx[M]. fun_apply(M,f,x,fx) & fun_apply(M,g,x,gx) &
                                    fx \<noteq> gx))"
+     and power_ax:         "power_ax(M)"
 
 lemma (in M_basic_no_repl) cartprod_iff_lemma:
      "[| M(C);  \<forall>u[M]. u \<in> C \<longleftrightarrow> (\<exists>x\<in>A. \<exists>y\<in>B. u = {{x}, {x,y}});
