@@ -371,7 +371,7 @@ notepad begin   (************** notepad **************)
       "?lenenv \<in> nat" (*"length(params) \<in> nat"*) by simp_all
     with phi have 
       "arity(?\<chi>) \<le> length(params)#+3" 
-      by (simp add:nat_union_abs1, simp add:nat_union_abs2)
+      by (simp add:nat_union_abs1 nat_union_abs2)
     with phi have
       "arity(forces(?\<chi>)) \<le> ?lenenv#+7"
       using arity_forces by simp
