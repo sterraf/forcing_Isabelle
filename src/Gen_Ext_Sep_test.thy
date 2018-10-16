@@ -1,4 +1,4 @@
-theory Gen_Ext_Sep_test imports Forces_locale Renaming Gen_ext_pair begin
+theory Gen_Ext_Sep_test imports Forces_locale Renaming  begin
 
 definition 
   f :: "i\<Rightarrow>i" where
@@ -329,11 +329,14 @@ proof -
   then consider (1) "arity(\<phi>) = 1" | (2) "arity(\<phi>) = 2" ..
   then show ?thesis
   proof cases
-    case (1)
+    case (1) 
+    then show ?thesis sorry
   next
     case (2)
-      then show ?thesis sorry
-    
+    then show ?thesis sorry
+  qed
+qed
+
     
 (* lemma    *) 
 
