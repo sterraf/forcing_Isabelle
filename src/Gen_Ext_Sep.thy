@@ -1,4 +1,4 @@
-theory Gen_Ext_Sep imports Forces_locale begin
+theory Gen_Ext_Sep imports Forces_locale Renaming begin
 
 definition 
   perm_sep_forces :: "i" where
