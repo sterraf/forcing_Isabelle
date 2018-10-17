@@ -30,20 +30,26 @@ lemma Gen_Ext_mtriv :
   "M_generic(G) \<Longrightarrow> Union_ax(##M[G]) \<Longrightarrow> M_trivial_no_repl(##M[G])"
   sorry
     
+    
 (* theorem separation_in_genext: *)    
 theorem separation_preserv:
   assumes 
-      "M_generic(G)" and "\<phi>\<in>formula"  and "arity(\<phi>) = 1 \<or> arity(\<phi>)=2" 
-    shows  
-      "(\<forall>a\<in>M. separation(##M[G],\<lambda>x. sats(M[G],\<phi>,[x,a])))"
+    (* Real assumptions *)
+    "M_generic(G)" and "\<phi>\<in>formula" and "arity(\<phi>) = 1 \<or> arity(\<phi>)=2"
+    (* Assumptions to be removed *)
+  shows  
+    "(\<forall>a\<in>M. separation(##M[G],\<lambda>x. sats(M[G],\<phi>,[x,a])))"
 proof -
   note 
-      \<open>arity(\<phi>) = 1 \<or> arity(\<phi>)=2\<close>
+    \<open>arity(\<phi>) = 1 \<or> arity(\<phi>)=2\<close>
   then consider (1) "arity(\<phi>) = 1" | (2) "arity(\<phi>) = 2" ..
   then show ?thesis
   proof cases
     case (1) 
-    then show ?thesis sorry
+    then show ?thesis 
+    proof -
+      show ?thesis sorry
+    qed
   next
     case (2)
     then show ?thesis sorry
