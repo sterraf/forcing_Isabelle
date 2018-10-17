@@ -165,6 +165,31 @@ qed
 lemma val_mono : "x\<subseteq>y \<Longrightarrow> val(G,x) \<subseteq> val(G,y)"
   by (subst (1 2) def_val, force)
     
+lemma valcheck : "uno \<in> G \<Longrightarrow> val(G,check(y))  = y"
+proof (induct rule:eps_induct)
+  case (1 y)
+  then show ?case
+  proof -
+    from def_check have
+          Eq1: "check(y) = { \<langle>check(w), uno\<rangle> . w \<in> y}"  (is "_ = ?C") .
+    from Eq1 have
+               "val(G,check(y)) = val(G, {\<langle>check(w), uno\<rangle> . w \<in> y})"
+      by simp
+    also have
+                " ...  = {val(G,t) .. t\<in>domain(?C) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>?C \<and> p \<in> G }"
+      using def_val by blast
+    also have
+                " ... =  {val(G,t) .. t\<in>domain(?C) , \<exists>w\<in>y. t=check(w) }"
+      using 1 and uno_in_P by simp
+    also have
+                " ... = {val(G,check(w)) . w\<in>y }"
+      by force
+    finally show 
+                "val(G,check(y)) = y" 
+      using 1  by simp
+  qed
+qed
+
 lemma val_of_name : 
        "val(G,{x\<in>A\<times>P. Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>P .  Q(<t,p>) \<and> p \<in> G }"
 proof -
