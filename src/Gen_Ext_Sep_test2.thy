@@ -1,33 +1,40 @@
 theory Gen_Ext_Sep_test2 imports Forces_locale Renaming begin
 
+(*  [P, leq, one] @ [p, \<theta>, \<sigma>, \<pi>] @ params @ [u]) =
+    [\<theta>, p, u, P, leq, one, \<sigma>, \<pi>] @ params 
+<0,3>,<1,4>,<2,5>,<3,1>,<4,0>,<5,6>,<6,7>,<7#+n,2>,
+
+*)
+  
 definition 
   f :: "i\<Rightarrow>i" where
-  "f(n) == {\<langle>0, 3\<rangle>, \<langle>1, 4\<rangle>, \<langle>2, 5\<rangle>, \<langle>3, 1\<rangle>, \<langle>4, 0\<rangle>, \<langle>5, 6\<rangle>, \<langle>6#+n, 2\<rangle>}"
+  "f(n) == {<0,3>,<1,4>,<2,5>,<3,1>,<4,0>,<5,6>,<6,7>,<7#+n,2>}" 
+(*\<langle>0, 3\<rangle>, \<langle>1, 4\<rangle>, \<langle>2, 5\<rangle>, \<langle>3, 1\<rangle>, \<langle>4, 0\<rangle>, \<langle>5, 6\<rangle>, \<langle>6#+n, 2\<rangle>}"*)
 
-lemma f_range : "range(f(n)) = 7"
+lemma f_range : "range(f(n)) = 8"
   by(unfold f_def,auto)
     
 definition 
   fInv :: "i\<Rightarrow>i" where
-  "fInv(n) == {\<langle>3,0\<rangle>, \<langle>4,1\<rangle>, \<langle>5,2\<rangle>, \<langle>1,3\<rangle>, \<langle>0,4\<rangle>, \<langle>6,5\<rangle>, \<langle>2,6#+n\<rangle>}"
+  "fInv(n) == {<3,0>,<4,1>,<5,2>,<1,3>,<0,4>,<6,5>,<7,6>,<2,7#+n>}"
 
-lemma f_ftc : "n \<in> nat \<Longrightarrow> f(n) \<in> (6 \<union> {6#+n}) -||> 7"
+lemma f_ftc : "n \<in> nat \<Longrightarrow> f(n) \<in> (7 \<union> {7#+n}) -||> 8"
   by (simp add : f_def,(rule consI,auto)+,rule emptyI)
   
-lemma fInv_ftc : "n \<in> nat \<Longrightarrow> fInv(n) \<in> 7 -||> (6 \<union> {6#+n})"
+lemma fInv_ftc : "n \<in> nat \<Longrightarrow> fInv(n) \<in> 8 -||> (7 \<union> {7#+n})"
   by (simp add : fInv_def,(rule consI,auto)+,rule emptyI)
 
     
-lemma dom_f : "domain(f(n)) = 6 \<union> {6#+n}"
+lemma dom_f : "domain(f(n)) = 7 \<union> {7#+n}"
   by(unfold f_def,auto)
 
-lemma dom_fInv : "domain(fInv(n)) = 7"     
+lemma dom_fInv : "domain(fInv(n)) = 8"     
   by(unfold fInv_def,auto)
     
-lemma f_tc: "n \<in> nat \<Longrightarrow> f(n) \<in> (6 \<union> {6#+n}) -> 7"
+lemma f_tc: "n \<in> nat \<Longrightarrow> f(n) \<in> (7 \<union> {7#+n}) -> 8"
   by(subst dom_f[symmetric],rule FiniteFun_is_fun,erule f_ftc)  
 
-lemma fInv_tc: "n \<in> nat \<Longrightarrow> fInv(n) \<in> 7 \<rightarrow> (6 \<union> {6#+n})"
+lemma fInv_tc: "n \<in> nat \<Longrightarrow> fInv(n) \<in> 8 \<rightarrow> (7 \<union> {7#+n})"
   by(subst dom_fInv[symmetric],rule FiniteFun_is_fun,erule fInv_ftc)  
      
 lemma conv_f_eq : "n \<in> nat \<Longrightarrow> fInv(n) = converse(f(n))"
@@ -44,37 +51,37 @@ lemma ble1 :  "j \<in> nat \<Longrightarrow> j \<noteq> 0 \<Longrightarrow> i \<
     
 definition 
   gInv :: "i \<Rightarrow> i" where
-  "gInv(n) == \<lambda> j \<in> (7#+n)-7 . pred(j)"
+  "gInv(n) == \<lambda> j \<in> (8#+n)-8 . pred(j)"
 
 definition 
   g :: "i \<Rightarrow> i" where
-  "g(n) == \<lambda> j \<in> (6#+n)-6 . succ(j)"
+  "g(n) == \<lambda> j \<in> (7#+n)-7 . succ(j)"
 
     
-lemma g_tc : " g(n) \<in> ((6#+n)-6) \<rightarrow> (7#+n)-7"
+lemma g_tc : " g(n) \<in> ((7#+n)-7) \<rightarrow> (8#+n)-8"
   apply(unfold g_def,rule lam_type)
-  apply(subgoal_tac "succ(j)< 7#+n" "j\<notin>6", rule DiffI,erule ltD)
+  apply(subgoal_tac "succ(j)< 8#+n" "j\<notin>7", rule DiffI,erule ltD)
   apply(rule notI,simp add:ble2,rule notI,frule DiffD2,simp)
   apply(frule DiffD1,subst add_succ,rule succ_leI,erule ltI,simp)
 done
 
-lemma gInv_tc : " gInv(n) \<in>  (7#+n)-7 \<rightarrow> ((6#+n)-6)"
+lemma gInv_tc : " gInv(n) \<in>  (8#+n)-8 \<rightarrow> ((7#+n)-7)"
   apply(unfold gInv_def,rule lam_type)
-  apply(subgoal_tac "j \<notin> 7" "j \<noteq> 0" "j \<in> nat" "7#+ n =(6#+n)#+1",rule DiffI,rule ble1,simp+) 
-  apply(rule notI,subgoal_tac "j\<in>7",simp,frule ltI[of _ "6"],simp,subst succ_pred_eq[symmetric],simp+,rule nat_succI,simp+)
+  apply(subgoal_tac "j \<notin> 8" "j \<noteq> 0" "j \<in> nat" "8#+ n =(7#+n)#+1",rule DiffI,rule ble1,simp+) 
+  apply(rule notI,subgoal_tac "j\<in>8",simp,frule ltI[of _ "7"],simp,subst succ_pred_eq[symmetric],simp+,rule nat_succI,simp+)
   apply(rule in_n_in_nat,auto)
 done
   
 lemma compUnEq : "B \<subseteq> A \<Longrightarrow> (A - B) \<union> B = A"
   by(auto)
 
-lemma ble3 : "n \<in> nat \<Longrightarrow> 7#+n = ((6#+n) - 6) \<union> (6 \<union> {6#+n})"
-  apply (subgoal_tac "6 \<subseteq> 6#+n", subst Un_assoc[symmetric],subst compUnEq,simp,force)  
+lemma ble3 : "n \<in> nat \<Longrightarrow> 8#+n = ((7#+n) - 7) \<union> (7 \<union> {7#+n})"
+  apply (subgoal_tac "7 \<subseteq> 7#+n", subst Un_assoc[symmetric],subst compUnEq,simp,force)  
   apply(rule le_imp_subset, rule add_le_self,simp)
 done
     
-lemma ble4 : "n \<in> nat \<Longrightarrow> 7#+n = ((7#+n) - 7) \<union> 7"
-  by(subgoal_tac "7 \<subseteq> 7#+n",simp add:compUnEq,rule le_imp_subset, rule add_le_self,simp)
+lemma ble4 : "n \<in> nat \<Longrightarrow> 8#+n = ((8#+n) - 8) \<union> 8"
+  by(subgoal_tac "8 \<subseteq> 8#+n",simp add:compUnEq,rule le_imp_subset, rule add_le_self,simp)
     
 lemma disjI : "(\<forall> x \<in> A . x \<notin> B) \<Longrightarrow> (\<forall> x \<in> B . x \<notin> A) \<Longrightarrow> A \<inter> B \<subseteq> 0"
   by(clarsimp)
@@ -97,7 +104,7 @@ definition fUg :: "i \<Rightarrow> i" where
 definition fUgInv :: "i \<Rightarrow> i" where
   "fUgInv(n) = gInv(n) \<union> fInv(n)"
 
-lemma fUg_tc : "n \<in> nat \<Longrightarrow> fUg(n) \<in> (7#+n) -> 7#+n"
+lemma fUg_tc : "n \<in> nat \<Longrightarrow> fUg(n) \<in> (8#+n) -> 8#+n"
   apply(subst (1) ble3,assumption+)
   apply(subst ble4,assumption+,unfold fUg_def)
   apply(rule fun_disjoint_Un,rule g_tc,erule f_tc,rule ble5)
@@ -113,7 +120,7 @@ lemma congIn : "a \<in> A \<Longrightarrow> A = B \<Longrightarrow> a\<in> B"
 lemma notSuccIn : "x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> x \<notin> y \<Longrightarrow> succ(x) \<notin> succ(y)"
   by(auto,drule ltI[of _ "y"],simp,subgoal_tac "x\<in>y",simp,rule ltD,rule lt_trans[of _ "succ(x)"],simp+)
     
-lemma g_inj : "n \<in> nat \<Longrightarrow> g(n) \<in> inj((6#+n)-6,(7#+n)-7)"
+lemma g_inj : "n \<in> nat \<Longrightarrow> g(n) \<in> inj((7#+n)-7,(8#+n)-8)"
   apply(rule_tac d="\<lambda> x . gInv(n)`x" in f_imp_injective,rule g_tc)
   apply(rule ballI)
   apply(unfold gInv_def,subst beta,rule apply_type,rule g_tc,assumption)
@@ -122,33 +129,33 @@ lemma g_inj : "n \<in> nat \<Longrightarrow> g(n) \<in> inj((6#+n)-6,(7#+n)-7)"
 done
 
 
-lemma ble8 : "n \<in> nat \<Longrightarrow> y \<in> 7 #+ n - 7 \<Longrightarrow> Arith.pred(y) \<in> 6 #+ n - 6"
-  apply(subgoal_tac "y \<noteq>0",rule DiffI,rule ble1,rule in_n_in_nat[of "7#+n"],simp+)
-  prefer 2   apply(rule notI,simp,subgoal_tac "0\<in>7",simp,rule zero_in,simp)
-  apply(rule notI,subgoal_tac "succ(pred(y)) \<in> 7",subst (asm) succ_pred_eq)
-  apply(rule in_n_in_nat[of "7#+n"],simp+,rule nat_succI,simp+)
+lemma ble8 : "n \<in> nat \<Longrightarrow> y \<in> 8 #+ n - 8 \<Longrightarrow> Arith.pred(y) \<in> 7 #+ n - 7"
+  apply(subgoal_tac "y \<noteq>0",rule DiffI,rule ble1,rule in_n_in_nat[of "8#+n"],simp+)
+  prefer 2   apply(rule notI,simp,subgoal_tac "0\<in>8",simp,rule zero_in,simp)
+  apply(rule notI,subgoal_tac "succ(pred(y)) \<in> 8",subst (asm) succ_pred_eq)
+  apply(rule in_n_in_nat[of "8#+n"],simp+,rule nat_succI,simp+)
 done
     
-lemma g_surj : "n \<in> nat\<Longrightarrow> g(n) \<in> surj(6#+n-6,7#+n-7)"
+lemma g_surj : "n \<in> nat\<Longrightarrow> g(n) \<in> surj(7#+n-7,8#+n-8)"
   apply(rule_tac d="\<lambda> x . gInv(n)`x" in f_imp_surjective,rule g_tc)
   apply(unfold gInv_def,subst beta,simp,rule ble8,simp+)
   apply(unfold g_def,subst beta,rule ble8,simp+)
-  apply(subgoal_tac "y\<noteq>0",rule succ_pred_eq,rule in_n_in_nat[of "7#+n"],simp+)
-  apply(rule notI,simp,subgoal_tac "0\<in>7",simp,rule zero_in,simp)
+  apply(subgoal_tac "y\<noteq>0",rule succ_pred_eq,rule in_n_in_nat[of "8#+n"],simp+)
+  apply(rule notI,simp,subgoal_tac "0\<in>8",simp,rule zero_in,simp)
 done
 
-lemma g_bij : "n \<in> nat\<Longrightarrow> g(n) \<in> bij(6#+n-6,7#+n-7)"
+lemma g_bij : "n \<in> nat\<Longrightarrow> g(n) \<in> bij(7#+n-7,8#+n-8)"
   by(unfold bij_def,rule IntI,rule g_inj,simp, rule g_surj,simp)
     
-lemma g_range : "n \<in> nat \<Longrightarrow> range(g(n)) = (7#+n)-7"
+lemma g_range : "n \<in> nat \<Longrightarrow> range(g(n)) = (8#+n)-8"
   by(rule surj_range,erule g_surj)
 
-lemma conv_g_ap : "n \<in> nat \<Longrightarrow> i \<in> 7#+n -7 \<Longrightarrow> converse(g(n))`i = gInv(n)`i"
+lemma conv_g_ap : "n \<in> nat \<Longrightarrow> i \<in> 8#+n -8 \<Longrightarrow> converse(g(n))`i = gInv(n)`i"
   apply(rule left_inverse_eq,erule g_inj)
    apply(unfold gInv_def,subst beta,assumption)
   apply(unfold g_def,subst beta,rule ble8,simp+)  
-  apply(subgoal_tac "i\<noteq>0",rule succ_pred_eq,rule in_n_in_nat[of "7#+n"],simp+)
-  apply(rule notI,simp,subgoal_tac "0\<in>7",simp,rule zero_in,simp,subst beta,simp,rule ble8,simp+)
+  apply(subgoal_tac "i\<noteq>0",rule succ_pred_eq,rule in_n_in_nat[of "8#+n"],simp+)
+  apply(rule notI,simp,subgoal_tac "0\<in>8",simp,rule zero_in,simp,subst beta,simp,rule ble8,simp+)
 done
 
 lemma conv_g_eq : "n \<in> nat \<Longrightarrow> converse(g(n)) = gInv(n)"
@@ -157,7 +164,7 @@ lemma conv_g_eq : "n \<in> nat \<Longrightarrow> converse(g(n)) = gInv(n)"
   apply(rule conv_g_ap,simp,subst (asm) g_range,simp+)
 done
   
-lemma fUg_inj: "n \<in> nat \<Longrightarrow> fUg(n) \<in> inj(7#+n,7#+n)"   
+lemma fUg_inj: "n \<in> nat \<Longrightarrow> fUg(n) \<in> inj(8#+n,8#+n)"   
   apply(rule_tac d="\<lambda> x . fUgInv(n)`x" in f_imp_injective, erule fUg_tc)
   apply(clarify,drule_tac a="x" in congIn,erule ble3,rule_tac c="x" in UnE,assumption)
    apply(unfold fUg_def fUgInv_def)
@@ -172,22 +179,22 @@ lemma fUg_inj: "n \<in> nat \<Longrightarrow> fUg(n) \<in> inj(7#+n,7#+n)"
      apply(rule notI,drule DiffD2,rule notE,assumption,rule apply_type,rule f_tc,simp+)
     apply(subst conv_f_eq,simp,rule left_inverse_lemma,erule f_tc)
   apply(subst conv_f_eq[symmetric],simp,erule fInv_tc,simp,rule DiffI,drule DiffD1)
-    apply(simp add: nat_succI,rule notSuccIn,simp,rule in_n_in_nat[of "6#+n"],simp+)
-    apply(subst dom_fInv,rule notSuccIn,rule in_n_in_nat[of "6#+n"],simp+)
+    apply(simp add: nat_succI,rule notSuccIn,simp,rule in_n_in_nat[of "7#+n"],simp+)
+    apply(subst dom_fInv,rule notSuccIn,rule in_n_in_nat[of "7#+n"],simp+)
   done
 
     
-lemma fUg_range : "n \<in> nat \<Longrightarrow> range(fUg(n)) = 7#+n"
+lemma fUg_range : "n \<in> nat \<Longrightarrow> range(fUg(n)) = 8#+n"
   apply(unfold fUg_def,subst range_Un_eq,subst ble4,simp,subst g_range,simp)
   apply(subst f_range,simp)
 done
-lemma fUg_surj: "n \<in> nat \<Longrightarrow> fUg(n) \<in> surj(7#+n,7#+n)" 
+lemma fUg_surj: "n \<in> nat \<Longrightarrow> fUg(n) \<in> surj(8#+n,8#+n)" 
   by(subst (2) fUg_range[symmetric],simp,rule fun_is_surj,erule fUg_tc)
   
-lemma fUg_bij: "n \<in> nat \<Longrightarrow> fUg(n) \<in> bij(7#+n,7#+n)" 
+lemma fUg_bij: "n \<in> nat \<Longrightarrow> fUg(n) \<in> bij(8#+n,8#+n)" 
   by(unfold bij_def,rule IntI,erule fUg_inj,erule fUg_surj)
     
-lemma fUg_conv_bij: "n \<in> nat \<Longrightarrow> converse(fUg(n)) \<in> bij(7#+n,7#+n)" 
+lemma fUg_conv_bij: "n \<in> nat \<Longrightarrow> converse(fUg(n)) \<in> bij(8#+n,8#+n)" 
   by (erule fUg_bij [THEN bij_converse_bij])
 
 lemma conv_fUg_eq: "n \<in> nat \<Longrightarrow> converse(fUg(n)) = fUgInv(n)" 
@@ -211,23 +218,28 @@ lemma conv_fUgInv_eq: "n \<in> nat \<Longrightarrow> fUg(n) = converse(fUgInv(n)
 done
 
   
-lemma fUgInv_bij : "n \<in> nat \<Longrightarrow> fUgInv(n) \<in>  bij(7#+n,7#+n)"
+lemma fUgInv_bij : "n \<in> nat \<Longrightarrow> fUgInv(n) \<in>  bij(8#+n,8#+n)"
   by(subst conv_fUg_eq[symmetric],simp,erule fUg_conv_bij)
   
-lemma env_len : "{p,q,r,s,t,u,w} \<subseteq> M \<Longrightarrow> env \<in> list(M) \<Longrightarrow> length([p, q, r, s, t, u] @ env @ [w]) = 7#+length(env)"
+lemma env_len : "{p,q,r,s,t,u,v,w} \<subseteq> M \<Longrightarrow> env \<in> list(M) \<Longrightarrow> length([p, q, r, s, t, u,v] @ env @ [w]) = 8#+length(env)"
   by(simp)
-lemma env_len2 : "{p,q,r,s,t,u,w} \<subseteq> M \<Longrightarrow> env \<in> list(M) \<Longrightarrow> length([t,s,w,p,q,r,u] @ env) = 7#+length(env)"
+lemma env_len2 : "{p,q,r,s,t,u,v,w} \<subseteq> M \<Longrightarrow> env \<in> list(M) \<Longrightarrow> length([t,s,w,p,q,r,u,v]@env) = 8#+length(env)"
   by(simp)
     
-lemma in7 : "i \<in> 7 \<Longrightarrow> i = 0 \<or> i = 1 \<or> i = 2 \<or> i = 3 \<or> i = 4 \<or> i = 5 \<or> i =6" 
+lemma in8 : "i \<in> 8 \<Longrightarrow> i = 0 \<or> i = 1 \<or> i = 2 \<or> i = 3 \<or> i = 4 \<or> i = 5 \<or> i =6 \<or> i=7" 
 by (auto)
-lemma in6 : "i \<in> 6 \<Longrightarrow> i = 0 \<or> i = 1 \<or> i = 2 \<or> i = 3 \<or> i = 4 \<or> i = 5" 
+lemma in7 : "i \<in> 7 \<Longrightarrow> i = 0 \<or> i = 1 \<or> i = 2 \<or> i = 3 \<or> i = 4 \<or> i = 5 \<or> i=6" 
 by (auto)
-lemma tonto : "xf \<in> nat \<Longrightarrow> x \<in> nat \<Longrightarrow> succ(succ(succ(succ(succ(succ(xf)))))) \<in> succ(succ(succ(succ(succ(succ(succ(x))))))) \<Longrightarrow> xf \<le> x"
-  by(rule ltI,rule ltD,auto,rule lt_trans[of _ "succ(succ(succ(succ(succ(succ(xf))))))"],simp,rule leI,rule ltI,assumption,simp)
+lemma tonto : "xf \<in> nat \<Longrightarrow> x \<in> nat \<Longrightarrow> succ(succ(succ(succ(succ(succ(succ(xf))))))) \<in> succ(succ(succ(succ(succ(succ(succ(succ(x)))))))) \<Longrightarrow> xf \<le> x"
+  by(rule ltI,rule ltD,auto,rule lt_trans[of _ "succ(succ(succ(succ(succ(succ(succ(xf)))))))"],simp,rule leI,rule ltI,assumption,simp)
   
-lemma perm_sep_env: "{p,q,r,s,t,u,w} \<subseteq> M \<Longrightarrow> env \<in> list(M) \<Longrightarrow>
-  perm_list(fUg(length(env)),[t,s,w,p,q,r,u]@env) = [p,q,r,s,t,u]@env@[w]"
+    
+(*
+ [P, leq, one] @ [p, \<theta>, \<sigma>, \<pi>] @ params @ [u]) 
+ [\<theta>, p, u, P, leq, one, \<sigma>, \<pi>] @ params 
+*)
+lemma perm_sep_env: "{p,q,r,s,t,u,v,w} \<subseteq> M \<Longrightarrow> env \<in> list(M) \<Longrightarrow>
+  perm_list(fUg(length(env)),[t,s,w,p,q,r,u,v]@env) = [p,q,r,s,t,u,v]@env@[w]"
   apply(rule nth_equalityI)
   apply(rule perm_list_tc[of _ "M"],simp,(subst env_len2,assumption+)+)
   apply(rule fUg_bij,simp,simp add:app_type)
@@ -245,30 +257,32 @@ lemma perm_sep_env: "{p,q,r,s,t,u,w} \<subseteq> M \<Longrightarrow> env \<in> l
     prefer 3
     apply(subst fun_disjoint_apply2,subst domain_of_fun,rule g_tc)
      prefer 2
-    apply(rule_tac c="i" and A="6" in UnE,assumption) 
-    apply(drule in6)
-    apply(rule disjE,assumption,subst apply_fun,rule f_tc,simp,simp add:f_def,simp)
+    apply(rule_tac c="i" and A="7" in UnE,assumption) 
+    apply(drule in7)
+    apply(erule disjE,simp,subst apply_fun,rule f_tc,(simp add:f_def,simp)+)
     apply(rule_tac P="i=1" in disjE,assumption,subst apply_fun,rule f_tc,simp,simp add:f_def,simp)
    apply(rule_tac P="i=2" in disjE,assumption,subst apply_fun,rule f_tc,simp,simp add:f_def,simp add:nth_append)
     apply(rule_tac P="i=3" in disjE,assumption,subst apply_fun,rule f_tc,simp,simp add:f_def,simp)
     apply(rule_tac P="i=4" in disjE,assumption,subst apply_fun,rule f_tc,simp,simp add:f_def,simp)
+    apply(rule_tac P="i=5" in disjE,assumption,subst apply_fun,rule f_tc,simp,simp add:f_def,simp)
     apply(subst apply_fun,rule f_tc,simp,simp add:f_def,simp)
    apply(subst apply_fun,rule f_tc,simp,simp add:f_def,simp,simp add:nth_append,clarsimp)
-    apply(rule ble7,rule ble5,simp,rule ble6,rule ble5,simp)
+   apply(rule ble7,rule ble5,simp,rule ble6,rule ble5,simp)
   apply(unfold g_def,subst beta,assumption)
   apply(simp)
   apply(rule_tac n="length(env)" in natE,simp+)
-  apply(rule_tac n="i" in natE,simp+,subgoal_tac "i\<in>6",clarsimp,rule ltD,simp)  
-  apply(rule_tac n="xa" in natE,simp+,subgoal_tac "xa\<in>6",clarsimp,rule ltD,simp)
-  apply(rule_tac n="xb" in natE,simp+,subgoal_tac "xa\<in>6",clarsimp,rule ltD,simp+)
-  apply(rule_tac n="xc" in natE,simp+,subgoal_tac "xa\<in>6",clarsimp,rule ltD,simp+)
-  apply(rule_tac n="xd" in natE,simp+,subgoal_tac "xa\<in>6",clarsimp,rule ltD,simp+)
-  apply(rule_tac n="xe" in natE,simp+,clarsimp)
-  apply(subst (asm) nth_append,simp+,drule_tac xf="xf" and x="x" in tonto,simp+)
+  apply(rule_tac n="i" in natE,simp+,subgoal_tac "i\<in>7",clarsimp,rule ltD,simp)  
+  apply(rule_tac n="xa" in natE,simp+,subgoal_tac "xa\<in>7",clarsimp,rule ltD,simp)
+  apply(rule_tac n="xb" in natE,simp+,subgoal_tac "xa\<in>7",clarsimp,rule ltD,simp+)
+  apply(rule_tac n="xc" in natE,simp+,subgoal_tac "xa\<in>7",clarsimp,rule ltD,simp+)
+  apply(rule_tac n="xd" in natE,simp+,subgoal_tac "xa\<in>7",clarsimp,rule ltD,simp+)
+  apply(erule_tac n="xe" in natE,simp)    
+  apply(rule_tac n="xf" in natE,simp+,clarsimp)
+  apply(subst (asm) nth_append,simp+,drule_tac xf="xg" and x="x" in tonto,simp+)
 done
 
-lemma perm_sep_env2: "{p,q,r,s,t,u,w} \<subseteq> M \<Longrightarrow> env \<in> list(M) \<Longrightarrow>
-  perm_list(converse(fUg(length(env))),[p,q,r,s,t,u]@env@[w]) = [t,s,w,p,q,r,u]@env"
+lemma perm_sep_env2: "{p,q,r,s,t,u,v,w} \<subseteq> M \<Longrightarrow> env \<in> list(M) \<Longrightarrow>
+  perm_list(converse(fUg(length(env))),[p,q,r,s,t,u,v]@env@[w]) = [t,s,w,p,q,r,u,v]@env"
  apply(rule nth_equalityI)
   apply(rule perm_list_tc[of _ "M"],simp,simp add:app_type,(subst env_len,assumption+)+)
   apply(rule fUg_conv_bij,simp,simp add:app_type)
@@ -336,18 +350,18 @@ notepad begin   (************** notepad **************)
     let 
       ?lenenv="length(params)"    
     let
-      ?new_form="rename(forces(?\<chi>))`(7#+?lenenv)`fUg(?lenenv)"
+      ?new_form="rename(forces(?\<chi>))`(8#+?lenenv)`fUg(?lenenv)"
     let
       ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
     from \<open>params\<in>list(M)\<close> have
       "?lenenv \<in> nat" (*"length(params) \<in> nat"*) by simp_all
     with phi have 
       "arity(?\<chi>) \<le> length(params)#+3" 
-      (* by (simp add:nat_union_abs1 nat_union_abs2) *)
-      sorry
+      by (simp add:nat_union_abs1,subst nat_union_abs2,(simp add: leI)+)
     with phi have
-      "arity(forces(?\<chi>)) \<le> ?lenenv#+7"
-      using arity_forces by simp
+      "arity(forces(?\<chi>)) \<le> ?lenenv#+8"
+      using arity_forces 
+        by(simp add:nat_union_abs1,subst nat_union_abs2,(simp add: leI)+)
     with phi definability[of "?\<chi>"] fUg_bij[of ?lenenv] arity_forces \<open>?lenenv \<in> nat\<close> have
       nf_form : "?new_form \<in> formula"
       using ren_lib_tc[of "forces(?\<chi>)" _ "fUg(?lenenv)"]  \<open>?lenenv \<in> nat\<close>
@@ -382,12 +396,13 @@ notepad begin   (************** notepad **************)
         let
           ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
         have 
-          "n\<in>nat \<Longrightarrow> n\<le>2 \<Longrightarrow> 3 \<union> n = 3" for n   
-          sorry
+          "n\<in>nat \<Longrightarrow> n<3 \<Longrightarrow> 3 \<union> n = 3" for n   
+          by(rule nat_union_abs2,(simp add: leI)+)
         moreover have  
           "1 \<union> 3 = 3" by auto
         ultimately have
           chi: "?\<chi> \<in> formula" "arity(?\<chi>) \<le> 3" "forces(?\<chi>)\<in> formula" 
+          and cho: "\<And> n  . n \<in> nat \<Longrightarrow>  3 \<union> arity(\<phi>) \<le> succ(succ(succ(succ(n))))" 
           using phi by (auto)
         with arity_forces have
           "arity(forces(?\<chi>)) \<le> 7" 
@@ -400,23 +415,23 @@ notepad begin   (************** notepad **************)
         have
           Eq1': "?new_env = [\<theta>,p,u,P,leq,one,\<sigma>,\<pi>]@params"
           using in_M perm_sep_env2 app_type
-          sorry
+          by simp
         then have
           "sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<sigma>,\<pi>]@params) \<longleftrightarrow> sats(M,?new_form,?new_env)"
           by simp
         also have
           "sats(M,?new_form,?new_env) \<longleftrightarrow> 
-           sats(M,rename(forces(?\<chi>))`(7#+length(params))`fUg(length(params)),?new_env)"           
+           sats(M,rename(forces(?\<chi>))`(8#+length(params))`fUg(length(params)),?new_env)"           
           by simp
         have
           "... \<longleftrightarrow> sats(M,forces(?\<chi>),?Pl1@[p,\<theta>,\<sigma>,\<pi>]@params@[u])"
-          using  phi in_M  transD trans_M arit_fact
+          using  phi in_M  transD trans_M  chi cho 
           apply(subst conv_fUgInv_eq,simp,subst conv_fUg_eq,simp)
           apply(subst len,rule ren_Sat_leq[symmetric],simp,simp add:app_type)
           apply(subst (1 2) len[symmetric],rule fUgInv_bij)
            apply(auto simp add: arity_forces nat_union_abs1)
-          sorry
-        also have
+           done
+          also have
           "... \<longleftrightarrow> sats(M,forces(?\<chi>), [P, leq, one,p,\<theta>,\<sigma>,\<pi>]@(params@[u]))" by simp
         also have
           "... \<longleftrightarrow> sats(M,forces(?\<chi>), [P, leq, one,p,\<theta>,\<sigma>,\<pi>])"
