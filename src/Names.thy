@@ -163,7 +163,7 @@ lemma [TC] : "Hc_body_fm \<in> formula"
   
 lemma [simp] : "arity(Hc_body_fm) = 3"
   by (simp add: Hc_body_fm_def pair_fm_def big_union_fm_def image_fm_def
-        fun_apply_fm_def upair_fm_def Un_commute nat_union_abs)
+        fun_apply_fm_def upair_fm_def Un_commute nat_union_abs1)
 
 lemma pair_D1 : "<x,y> \<in> M \<Longrightarrow> x \<in> M"
   apply(subgoal_tac "{x} \<in> <x,y>")
