@@ -1,4 +1,4 @@
-theory Separation_generic imports Forces_locale begin
+theory Separation_generic imports Forces_locale Renaming begin
 
 definition 
   perm_sep_forces :: "i" where
