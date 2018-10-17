@@ -1,4 +1,4 @@
-theory Gen_Ext_Sep_test imports Forces_locale Renaming Separation_Lemmas begin
+theory Gen_Ext_Sep_test imports Forces_locale Separation_Lemmas begin
 
 context forcing_thms begin  
 
