@@ -328,7 +328,7 @@ lemma iff_impl_trans: "Q\<longleftrightarrow>R \<Longrightarrow> R\<longrightarr
     (* lemma    *) 
     
 lemma separation_aux :
-  "M_generic(G) \<Longrightarrow> Transset(M[G]) \<Longrightarrow>
+  "M_generic(G) \<Longrightarrow> 
      \<phi> \<in> formula \<Longrightarrow> arity(\<phi>) \<le> 2 \<Longrightarrow> val(G, \<pi>) = c \<Longrightarrow> val(G, \<sigma>) = w \<Longrightarrow> params \<in> list(M) \<Longrightarrow> 
      \<pi> \<in> M \<Longrightarrow> \<sigma> \<in> M \<Longrightarrow> domain(\<pi>) \<times> P \<in> M \<Longrightarrow>  domain(\<pi>) \<in> M \<Longrightarrow>
      {u \<in> domain(\<pi>) \<times> P .
@@ -344,8 +344,6 @@ proof -
     "M_generic(G)" 
   with G_nonempty have 
     "G\<noteq>0" .
-  assume
-    "Transset(M[G])"
   from \<open>M_generic(G)\<close> have 
     "filter(G)" "G\<subseteq>P" 
     unfolding M_generic_def filter_def by simp_all
@@ -654,8 +652,8 @@ qed
 notepad begin
   fix \<phi> G \<pi> c \<sigma> w params   
   assume 
-    asm: "arity(\<phi>)= 1" "M_generic(G)" "Transset(M[G])" "
-     \<phi> \<in> formula " "val(G, \<pi>) = c" "val(G, \<sigma>) = w" "params \<in> list(M)" 
+    asm: "arity(\<phi>)= 1" "M_generic(G)"  
+    "\<phi> \<in> formula " "val(G, \<pi>) = c" "val(G, \<sigma>) = w" "params \<in> list(M)" 
     "\<pi> \<in> M" "\<sigma> \<in> M" "domain(\<pi>) \<times> P \<in> M" " domain(\<pi>) \<in> M" "
      {u \<in> domain(\<pi>) \<times> P .
         sats(M, Exists(Exists(And(pair_fm(0, 1, 2), rename(forces(And(Member(0, 2), \<phi>))) ` 
@@ -674,7 +672,7 @@ notepad begin
       "x\<in>c"
     with asm have
       "x\<in>M[G]"
-      by (simp add:\<open>Transset(M[G])\<close> Transset_intf)
+      by (simp add:trans_Gen_Ext Transset_intf)
     with \<open>arity(\<phi>) = 1\<close> \<open>\<phi> \<in> formula\<close> \<open>c\<in>M[G]\<close> \<open>w\<in>M[G]\<close> have
       "sats(M[G], \<phi>, [x]@[w, c]) \<longleftrightarrow> sats(M[G], \<phi>, [x])" 
       by (rule_tac arity_sats_iff, simp_all)   (* Enhance this *)
@@ -684,8 +682,8 @@ notepad begin
   {
     fix \<phi> G \<pi> c \<sigma> w params   
     assume 
-      asm: "arity(\<phi>)= 2" "M_generic(G)" "Transset(M[G])" "
-     \<phi> \<in> formula " "val(G, \<pi>) = c" "val(G, \<sigma>) = w" "params \<in> list(M)" 
+      asm: "arity(\<phi>)= 2" "M_generic(G)" 
+      "\<phi> \<in> formula " "val(G, \<pi>) = c" "val(G, \<sigma>) = w" "params \<in> list(M)" 
       "\<pi> \<in> M" "\<sigma> \<in> M" "domain(\<pi>) \<times> P \<in> M" " domain(\<pi>) \<in> M" "
      {u \<in> domain(\<pi>) \<times> P .
         sats(M, Exists(Exists(And(pair_fm(0, 1, 2), rename(forces(And(Member(0, 2), \<phi>))) ` 
@@ -704,7 +702,7 @@ notepad begin
         "x\<in>c" 
       with asm have
         "x\<in>M[G]"
-        by (simp add:\<open>Transset(M[G])\<close> Transset_intf)
+        by (simp add:trans_Gen_Ext Transset_intf)
       with \<open>arity(\<phi>)= 2\<close> \<open>\<phi> \<in> formula\<close> \<open>c\<in>M[G]\<close> \<open>w\<in>M[G]\<close> have
         "sats(M[G], \<phi>, [x,w]@[c]) \<longleftrightarrow> sats(M[G], \<phi>, [x,w])" 
         by (rule_tac arity_sats_iff, simp_all)   (* Enhance this *)
