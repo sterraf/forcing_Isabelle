@@ -302,7 +302,7 @@ lemma perm_sep_env2: "{p,q,r,s,t,u,v,w} \<subseteq> M \<Longrightarrow> env \<in
     
     (* Results to be exported: fUg_bij conv_fUgInv_eq  conv_fUg_eq fUgInv_bij *)
     
-context forcing_thms begin  
+context forcing_thms begin (*********** CONTEXT: forcing_theorems ************)
   
 lemmas transitivity = Transset_intf trans_M
   
@@ -324,13 +324,10 @@ lemma iff_impl_trans: "Q\<longleftrightarrow>R \<Longrightarrow> R\<longrightarr
   "Q\<longrightarrow>R \<Longrightarrow> R\<longrightarrow> S \<Longrightarrow> Q\<longrightarrow> S"
   by simp_all  
     
-    (* theorem separation_in_genext: *)
-    (* lemma    *) 
-    
 lemma separation_aux :
   "M_generic(G) \<Longrightarrow> 
-     \<phi> \<in> formula \<Longrightarrow> arity(\<phi>) \<le> 2 \<Longrightarrow> val(G, \<pi>) = c \<Longrightarrow> val(G, \<sigma>) = w \<Longrightarrow> params \<in> list(M) \<Longrightarrow> 
-     \<pi> \<in> M \<Longrightarrow> \<sigma> \<in> M \<Longrightarrow> domain(\<pi>) \<times> P \<in> M \<Longrightarrow>  domain(\<pi>) \<in> M \<Longrightarrow>
+     \<phi> \<in> formula \<Longrightarrow> arity(\<phi>) \<le> 2 \<Longrightarrow> val(G, \<pi>) = c \<Longrightarrow> val(G, \<sigma>) = w 
+    \<Longrightarrow> params \<in> list(M) \<Longrightarrow> \<pi> \<in> M \<Longrightarrow> \<sigma> \<in> M \<Longrightarrow>
      {u \<in> domain(\<pi>) \<times> P .
         sats(M, Exists(Exists(And(pair_fm(0, 1, 2), rename(forces(And(Member(0, 2), \<phi>))) ` 
           (8#+length(params)) ` fUg(length(params))))),
@@ -378,7 +375,10 @@ proof -
     "?\<psi> \<in> formula"
     by simp
   assume
-    "\<pi>\<in>M" "\<sigma>\<in>M" "domain(\<pi>) \<times> P \<in> M"
+    "\<pi>\<in>M" "\<sigma>\<in>M" 
+  with P_in_M have
+    "domain(\<pi>)\<in>M" "domain(\<pi>) \<times> P \<in> M"
+    by (simp_all del:setclass_iff add:setclass_iff[symmetric])
   note in_M1 = \<open>\<pi>\<in>M\<close> \<open>\<sigma>\<in>M\<close> \<open>params\<in>list(M)\<close> \<open>domain(\<pi>) \<times> P \<in> M\<close>  P_in_M one_in_M leq_in_M
   {
     fix u
@@ -526,8 +526,6 @@ proof -
   fix c w
   assume 
     "val(G,\<pi>) = c" "val(G,\<sigma>) = w"
-  assume
-    "domain(\<pi>)\<in>M"
   assume 
     "?n \<in> M"  "?m \<in> M" 
   then have
@@ -654,8 +652,8 @@ notepad begin
   assume 
     asm: "arity(\<phi>)= 1" "M_generic(G)"  
     "\<phi> \<in> formula " "val(G, \<pi>) = c" "val(G, \<sigma>) = w" "params \<in> list(M)" 
-    "\<pi> \<in> M" "\<sigma> \<in> M" "domain(\<pi>) \<times> P \<in> M" " domain(\<pi>) \<in> M" "
-     {u \<in> domain(\<pi>) \<times> P .
+    "\<pi> \<in> M" "\<sigma> \<in> M" 
+     "{u \<in> domain(\<pi>) \<times> P .
         sats(M, Exists(Exists(And(pair_fm(0, 1, 2), rename(forces(And(Member(0, 2), \<phi>))) ` 
           (8#+length(params)) ` fUg(length(params))))),
          [u] @ [P, leq, one] @ [\<sigma>,\<pi>] @ params)} \<in>  M" "
@@ -684,8 +682,8 @@ notepad begin
     assume 
       asm: "arity(\<phi>)= 2" "M_generic(G)" 
       "\<phi> \<in> formula " "val(G, \<pi>) = c" "val(G, \<sigma>) = w" "params \<in> list(M)" 
-      "\<pi> \<in> M" "\<sigma> \<in> M" "domain(\<pi>) \<times> P \<in> M" " domain(\<pi>) \<in> M" "
-     {u \<in> domain(\<pi>) \<times> P .
+      "\<pi> \<in> M" "\<sigma> \<in> M" 
+      "{u \<in> domain(\<pi>) \<times> P .
         sats(M, Exists(Exists(And(pair_fm(0, 1, 2), rename(forces(And(Member(0, 2), \<phi>))) ` 
           (8#+length(params)) ` fUg(length(params))))),
          [u] @ [P, leq, one] @ [\<sigma>,\<pi>] @ params)} \<in>  M" "
@@ -711,6 +709,7 @@ notepad begin
       "{x\<in>c. sats(M[G], \<phi>, [x,w])}\<in> M[G]"  by simp   
   }
 end
-end
+  
+end   (*********** CONTEXT: forcing_theorems ************)
 end
   
