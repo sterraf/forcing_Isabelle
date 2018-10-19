@@ -1,5 +1,28 @@
 theory Recursion_Thms imports WF begin
 
+  
+definition tdown :: "[i,i] \<Rightarrow> i"
+  where "tdown(r,a) = (r^+)-``{a}"
+
+lemma pred_down : "relation(r) \<Longrightarrow> r-``{a} \<subseteq> tdown(r,a)"
+ by(simp add: tdown_def vimage_mono r_subset_trancl)
+
+lemma rest_eq : 
+  assumes "r-``{a} \<subseteq> B"
+  shows "r-``{a} = restrict(r,B)-``{a}"
+ sorry
+ 
+   
+lemma wfrec_restr : 
+  assumes "relation(r)" "wf(r)"
+  shows  "wfrec(r,a,H) = wfrec(restrict(r,tdown(r,a)),a,H)"
+proof -
+  have "wfrec(r,a,H) = H(a,\<lambda> x \<in> r-``{a} . wfrec(r,x,H))"
+    using assms by (simp add: wfrec)
+  then have "... = H(a,\<lambda> x \<in> restrict(r,tdown(r,a))-``{a} . wfrec(r,x,H))"
+    using assms by (subst rest_eq[of "r" "a" "tdown(r,a)"],simp add:pred_down,simp)
+  
+      
 lemma equal_segm_wfrec : 
   "wf(r) \<Longrightarrow> wf(s) \<Longrightarrow> trans(r) \<Longrightarrow> trans(s) \<Longrightarrow>
   \<forall>y\<in>A. \<forall>z. <z,y>\<in>r \<longrightarrow> z\<in>A \<Longrightarrow> 
@@ -171,5 +194,29 @@ proof (unfold trans_def, intro allI impI)
               "\<langle>x, z\<rangle> \<in> ?rr"
     by simp 
 qed
+  
+lemma pavo : 
+  assumes ir : "<a,b> \<in>r" "domain(r) \<subseteq> A"
+  shows "<a,b> \<in> restrict(r,A)"
+  proof -
+    from assms ir have "a \<in> A" by auto
+    then have ab: "<a,b> \<in> restrict(r,A)" using ir restrict_def
+      by simp
+    then  show ?thesis by auto
+qed
     
+lemma restrict_dom :
+  assumes "relation(r)" "domain(r) \<subseteq> A"
+  shows "restrict(r,A) = r"
+  proof (rule equalityI[OF  restrict_subset],rule subsetI)
+    fix x
+    assume xr: "x \<in> r"
+    from xr assms have "\<exists> a b . x = <a,b>" by (simp add: relation_def)
+    then obtain a b where "<a,b> \<in> r" "<a,b> \<in> restrict(r,A)" "x \<in> restrict(r,A)" using assms xr pavo 
+      by(auto)
+    then show "x\<in>restrict(r,A)" by simp
+qed
 end
+(*  
+        
+*)
