@@ -4,6 +4,9 @@ lemma Transset_intf :
   "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
   by (simp add: Transset_def,auto)
 
+lemma TranssetI :
+  "(\<And>y x. y\<in>x \<Longrightarrow> x\<in>M \<Longrightarrow> y\<in>M) \<Longrightarrow> Transset(M)"
+  by (auto simp add: Transset_def)
     
 lemma empty_intf :
   "infinity_ax(M) \<Longrightarrow>
