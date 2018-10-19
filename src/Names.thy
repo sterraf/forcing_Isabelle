@@ -46,6 +46,9 @@ lemma edrelD [dest] : "<x,y>\<in>edrel(A)\<Longrightarrow> x \<in> domain(y)"
 lemma edrel_trans: "Transset(A) \<Longrightarrow> y\<in>A \<Longrightarrow> x \<in> domain(y) \<Longrightarrow> <x,y>\<in>edrel(A)"
    by (rule edrelI, auto simp add:Transset_def domain_def Pair_def)
 
+lemma domain_trans: "Transset(A) \<Longrightarrow> y\<in>A \<Longrightarrow> x \<in> domain(y) \<Longrightarrow> x\<in>A"
+  by (auto simp add: Transset_def domain_def Pair_def)
+     
 lemma edrel_trans_iff: "Transset(A) \<Longrightarrow> y\<in>A \<Longrightarrow> x \<in> domain(y) \<longleftrightarrow> <x,y>\<in>edrel(A)"
   by (auto simp add: edrel_trans, auto simp add:Transset_def Pair_def)
 
@@ -398,6 +401,36 @@ proof (induct rule:eps_induct)
   qed
 qed
   
+lemma trans_Gen_Ext' :
+  assumes "vc \<in> M[G]"
+    "y \<in> vc" 
+  shows
+    "y \<in> M[G]" 
+proof -
+  from \<open>vc\<in>M[G]\<close> and def_GenExt1 have
+    "\<exists>c\<in>M. vc = val(G,c)"
+    by simp
+  then obtain c where
+    "c\<in>M" "vc = val(G,c)" by auto
+  with \<open>vc \<in> M[G]\<close> have
+    "val(G,c)\<in>M[G]" by simp
+  from \<open>y \<in> vc\<close> and \<open>vc = val(G,c)\<close> have
+    "y \<in> val(G,c)" by simp
+  with \<open>c\<in>M\<close> and elem_of_val have
+    "\<exists>\<theta>\<in>domain(c). val(G,\<theta>) = y" by simp
+  then obtain \<theta> where
+    "\<theta>\<in>domain(c)" "val(G,\<theta>) = y" by auto
+  from \<open>\<theta>\<in>domain(c)\<close> trans_M \<open>c\<in>M\<close> domain_trans have
+    "\<theta>\<in>M" by simp
+  with def_GenExt2 have
+    "val(G,\<theta>) \<in> M[G]" by simp
+  with \<open>val(G,\<theta>) = y\<close> show ?thesis by simp
+qed
+      
+lemma trans_Gen_Ext:
+  "Transset(M[G])"
+  by (auto simp add: Transset_def trans_Gen_Ext')
+    
 end    (*************** CONTEXT: forcing_data *****************)
 
 end
