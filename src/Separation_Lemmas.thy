@@ -328,11 +328,9 @@ lemma separation_aux :
   "M_generic(G) \<Longrightarrow> 
      \<phi> \<in> formula \<Longrightarrow> arity(\<phi>) \<le> 2 \<Longrightarrow> val(G, \<pi>) = c \<Longrightarrow> val(G, \<sigma>) = w 
     \<Longrightarrow> params \<in> list(M) \<Longrightarrow> \<pi> \<in> M \<Longrightarrow> \<sigma> \<in> M \<Longrightarrow>
-     {u \<in> domain(\<pi>) \<times> P .
-        sats(M, Exists(Exists(And(pair_fm(0, 1, 2), rename(forces(And(Member(0, 2), \<phi>))) ` 
-          (8#+length(params)) ` fUg(length(params))))),
-         [u] @ [P, leq, one] @ [\<sigma>,\<pi>] @ params)} \<in>  M \<Longrightarrow>
-     {u \<in> domain(\<pi>) \<times> P .
+    (\<And>\<psi> b env. b \<in> M \<Longrightarrow> env \<in> list(M) \<Longrightarrow> \<psi>\<in>formula    
+        \<Longrightarrow> {u \<in> b. sats(M,\<psi>,[u] @ env)} \<in> M ) \<Longrightarrow>
+    {u \<in> domain(\<pi>) \<times> P .
        \<exists>\<theta>\<in>M. \<exists>p\<in>P. u = \<langle>\<theta>, p\<rangle> \<and> (p \<in> G \<longrightarrow> val(G, \<theta>) \<in> val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<sigma>),val(G,\<pi>)]))} \<in> M 
       \<Longrightarrow>
       {x\<in>c. sats(M[G], \<phi>, [x, w, c])}\<in> M[G]" for G \<pi> c w \<sigma> \<phi> params 
@@ -526,9 +524,15 @@ proof -
   fix c w
   assume 
     "val(G,\<pi>) = c" "val(G,\<sigma>) = w"
-  assume 
-    "?n \<in> M"  "?m \<in> M" 
-  then have
+  assume
+    "b \<in> M \<Longrightarrow> env \<in> list(M) \<Longrightarrow> \<psi>\<in>formula    
+        \<Longrightarrow> {u \<in> b. sats(M,\<psi>,[u] @ env)} \<in> M" for \<psi> b env
+  with \<open>?\<psi>\<in>formula\<close> in_M1 have 
+    "?n\<in>M" by simp
+  moreover assume 
+    "?m \<in> M" 
+  moreover note \<open>?m\<in>M\<close> 
+  ultimately have
     in_val_n: "<\<theta>,p>\<in>domain(\<pi>)*P \<Longrightarrow> <\<theta>,p>\<in>M \<Longrightarrow> p\<in>G \<Longrightarrow> p\<in>P \<Longrightarrow> 
       sats(M,?\<psi>,[<\<theta>,p>] @ ?Pl1 @ [\<sigma>,\<pi>]@params) \<Longrightarrow> val(G,\<theta>)\<in>val(G,?n)" for \<theta> p
     using val_of_elem by simp
@@ -653,10 +657,8 @@ notepad begin
     asm: "arity(\<phi>)= 1" "M_generic(G)"  
     "\<phi> \<in> formula " "val(G, \<pi>) = c" "val(G, \<sigma>) = w" "params \<in> list(M)" 
     "\<pi> \<in> M" "\<sigma> \<in> M" 
-     "{u \<in> domain(\<pi>) \<times> P .
-        sats(M, Exists(Exists(And(pair_fm(0, 1, 2), rename(forces(And(Member(0, 2), \<phi>))) ` 
-          (8#+length(params)) ` fUg(length(params))))),
-         [u] @ [P, leq, one] @ [\<sigma>,\<pi>] @ params)} \<in>  M" "
+     "(\<And> \<psi> b env. b \<in> M \<Longrightarrow> env \<in> list(M) \<Longrightarrow> \<psi>\<in>formula    
+        \<Longrightarrow> {u \<in> b. sats(M,\<psi>,[u] @ env)} \<in> M )" "
      {u \<in> domain(\<pi>) \<times> P .
        \<exists>\<theta>\<in>M. \<exists>p\<in>P. u = \<langle>\<theta>, p\<rangle> \<and> (p \<in> G \<longrightarrow> val(G, \<theta>) \<in> val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<sigma>),val(G,\<pi>)]))} \<in> M"
     "c\<in>M[G]" "w\<in>M[G]"
@@ -683,10 +685,8 @@ notepad begin
       asm: "arity(\<phi>)= 2" "M_generic(G)" 
       "\<phi> \<in> formula " "val(G, \<pi>) = c" "val(G, \<sigma>) = w" "params \<in> list(M)" 
       "\<pi> \<in> M" "\<sigma> \<in> M" 
-      "{u \<in> domain(\<pi>) \<times> P .
-        sats(M, Exists(Exists(And(pair_fm(0, 1, 2), rename(forces(And(Member(0, 2), \<phi>))) ` 
-          (8#+length(params)) ` fUg(length(params))))),
-         [u] @ [P, leq, one] @ [\<sigma>,\<pi>] @ params)} \<in>  M" "
+      "(\<And> \<psi> b env. b \<in> M \<Longrightarrow> env \<in> list(M) \<Longrightarrow> \<psi>\<in>formula    
+        \<Longrightarrow> {u \<in> b. sats(M,\<psi>,[u] @ env)} \<in> M )" "
      {u \<in> domain(\<pi>) \<times> P .
        \<exists>\<theta>\<in>M. \<exists>p\<in>P. u = \<langle>\<theta>, p\<rangle> \<and> (p \<in> G \<longrightarrow> val(G, \<theta>) \<in> val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<sigma>),val(G,\<pi>)]))} \<in> M"
       "c\<in>M[G]" "w\<in>M[G]"
