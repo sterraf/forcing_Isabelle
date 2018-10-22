@@ -1,28 +1,101 @@
 theory Recursion_Thms imports WF begin
 
-  
-definition tdown :: "[i,i] \<Rightarrow> i"
-  where "tdown(r,a) = (r^+)-``{a}"
+lemma restrict_mono :
+  assumes "relation(r)" and "A \<subseteq> B"
+  shows  "restrict(r,A) \<subseteq> restrict(r,B)"
+proof 
+  fix x
+  assume xr:"x \<in> restrict(r,A)"
+  from xr assms have "\<exists> a \<in> A . \<exists> b . x = <a,b>" by (simp add: restrict_def)
+  then obtain a b where "<a,b> \<in> r" "<a,b> \<in> restrict(r,A)" "a \<in> B" "x \<in> restrict(r,B)" using assms xr 
+      by(auto simp add: restrict_def)
+  then show "x\<in> restrict(r,B)" by auto
+qed     
 
-lemma pred_down : "relation(r) \<Longrightarrow> r-``{a} \<subseteq> tdown(r,a)"
- by(simp add: tdown_def vimage_mono r_subset_trancl)
-
-lemma rest_eq : 
-  assumes "r-``{a} \<subseteq> B"
-  shows "r-``{a} = restrict(r,B)-``{a}"
- sorry
- 
+lemma pavo : 
+  assumes ir : "<a,b> \<in>r" "domain(r) \<subseteq> A"
+  shows "<a,b> \<in> restrict(r,A)"
+  proof -
+    from assms ir have "a \<in> A" by auto
+    then have ab: "<a,b> \<in> restrict(r,A)" using ir restrict_def
+      by simp
+    then  show ?thesis by auto
+qed
    
-lemma wfrec_restr : 
-  assumes "relation(r)" "wf(r)"
-  shows  "wfrec(r,a,H) = wfrec(restrict(r,tdown(r,a)),a,H)"
-proof -
-  have "wfrec(r,a,H) = H(a,\<lambda> x \<in> r-``{a} . wfrec(r,x,H))"
-    using assms by (simp add: wfrec)
-  then have "... = H(a,\<lambda> x \<in> restrict(r,tdown(r,a))-``{a} . wfrec(r,x,H))"
-    using assms by (subst rest_eq[of "r" "a" "tdown(r,a)"],simp add:pred_down,simp)
+lemma restrict_dom :
+  assumes "relation(r)" "domain(r) \<subseteq> A"
+  shows "restrict(r,A) = r"
+  proof (rule equalityI[OF  restrict_subset],rule subsetI)
+    fix x
+    assume xr: "x \<in> r"
+    from xr assms have "\<exists> a b . x = <a,b>" by (simp add: relation_def)
+    then obtain a b where "<a,b> \<in> r" "<a,b> \<in> restrict(r,A)" "x \<in> restrict(r,A)" using assms xr pavo 
+      by(auto)
+    then show "x\<in>restrict(r,A)" by simp
+qed
+
+definition tr_down :: "[i,i] \<Rightarrow> i"
+  where "tr_down(r,a) = (r^+)-``{a}"
+
+lemma pred_down : "relation(r) \<Longrightarrow> r-``{a} \<subseteq> tr_down(r,a)"
+ by(simp add: tr_down_def vimage_mono r_subset_trancl)
+
+lemma tr_down_mono : "relation(r) \<Longrightarrow> x \<in> r-``{a} \<Longrightarrow> tr_down(r,x) \<subseteq> tr_down(r,a)"
+  by(rule subsetI,simp add:tr_down_def,(drule underD)+,force simp add: underI r_into_trancl trancl_trans)
+    
+lemma rest_eq : 
+  assumes "relation(r)" and "r-``{a} \<subseteq> B"
+  shows "r-``{a} = restrict(r,B)-``{a}"
+proof 
+  { fix x 
+    assume 1: "x \<in> r-``{a}"
+    then have 3:"x \<in> B" using assms by (simp add: subsetD)
+    from 1 underD have 2: "<x,a> \<in> r" by simp
+    then have "x \<in> restrict(r,B)-``{a}" using 3 underI restrict_def by force
+  }
+  then show "r -`` {a} \<subseteq> restrict(r, B) -`` {a}" by auto
+  from restrict_subset vimage_mono
+  show " restrict(r, B) -`` {a} \<subseteq> r -`` {a}" by simp
+qed
   
-      
+lemma wfrec_restr : 
+  assumes rr: "relation(r)" and wfr:"wf(r)"
+  shows  "tr_down(r,a) \<subseteq> A \<Longrightarrow> wfrec(r,a,H) = wfrec(restrict(r,A),a,H)"
+proof (induct a arbitrary:A rule:wf_induct_raw[OF wfr] )
+  case (1 a)
+  from pred_down rr have "r -`` {a} \<subseteq> tr_down(r, a)"  .
+  then have ra_A: "r-``{a} \<subseteq> A" using 1 by (force simp add: subset_trans)
+  {
+    fix x
+    assume x_a : "x \<in> r-``{a}"
+    from  pred_down rr have b : "r -``{x} \<subseteq> tr_down(r,x)" .
+    then have p: "tr_down(r,x) \<subseteq>tr_down(r,a)" using  tr_down_mono x_a rr by simp
+    then have rx_A : "tr_down(r,x) \<subseteq> A" using 1 p by (force simp add:subset_trans)
+    have "<x,a> \<in> r" using x_a by (simp add : underD)
+    then have "wfrec(r,x,H) = wfrec(restrict(r,A),x,H)" using 1 rx_A p
+     by simp
+  }
+  then have "\<And> x . x\<in> r-``{a} \<Longrightarrow> wfrec(r,x,H) =  wfrec(restrict(r,A),x,H)"
+    by simp
+   then have q:"(\<lambda> x \<in> r-``{a} . wfrec(r,x,H)) = (\<lambda> x \<in> r-``{a} . wfrec(restrict(r,A),x,H))" 
+     by(rule lam_cong[OF refl],simp)
+   from wf_subset restrict_subset wfr have wfRa : "wf(restrict(r,A))" by simp
+       
+  from assms have "wfrec(r,a,H) = H(a,\<lambda> x \<in> r-``{a} . wfrec(r,x,H))"
+     by (simp add: wfrec)
+  also have "... = H(a,\<lambda> x \<in> r-``{a} . wfrec(restrict(r,A),x,H))"
+    using assms q  by simp
+  also have "... = H(a,\<lambda> x \<in> restrict(r,A)-``{a} . wfrec(restrict(r,A),x,H))"
+    using assms rest_eq ra_A by simp
+  also have "... = wfrec(restrict(r,A),a,H)" using wfRa 
+    by (simp add: wfrec)      
+  finally have "wfrec(r,a,H) = wfrec(restrict(r,A),a,H)" by simp
+  then show ?case by simp
+qed
+
+lemmas wfrec_tr_down = wfrec_restr[OF _ _ subset_refl]
+  
+  
 lemma equal_segm_wfrec : 
   "wf(r) \<Longrightarrow> wf(s) \<Longrightarrow> trans(r) \<Longrightarrow> trans(s) \<Longrightarrow>
   \<forall>y\<in>A. \<forall>z. <z,y>\<in>r \<longrightarrow> z\<in>A \<Longrightarrow> 
@@ -195,27 +268,7 @@ proof (unfold trans_def, intro allI impI)
     by simp 
 qed
   
-lemma pavo : 
-  assumes ir : "<a,b> \<in>r" "domain(r) \<subseteq> A"
-  shows "<a,b> \<in> restrict(r,A)"
-  proof -
-    from assms ir have "a \<in> A" by auto
-    then have ab: "<a,b> \<in> restrict(r,A)" using ir restrict_def
-      by simp
-    then  show ?thesis by auto
-qed
-    
-lemma restrict_dom :
-  assumes "relation(r)" "domain(r) \<subseteq> A"
-  shows "restrict(r,A) = r"
-  proof (rule equalityI[OF  restrict_subset],rule subsetI)
-    fix x
-    assume xr: "x \<in> r"
-    from xr assms have "\<exists> a b . x = <a,b>" by (simp add: relation_def)
-    then obtain a b where "<a,b> \<in> r" "<a,b> \<in> restrict(r,A)" "x \<in> restrict(r,A)" using assms xr pavo 
-      by(auto)
-    then show "x\<in>restrict(r,A)" by simp
-qed
+
 end
 (*  
         
