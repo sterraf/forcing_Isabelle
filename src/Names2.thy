@@ -219,9 +219,6 @@ proof (induct rule:eps_induct)
       using 1  by simp
   qed
 qed
-
-lemma dom_edrel : "domain(A) \<subseteq> edrel(eclose({A}))-``{A}"
-  sorry
     
 lemma val_of_name : 
        "val(G,{x\<in>A\<times>P. Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>P .  Q(<t,p>) \<and> p \<in> G }"
@@ -235,9 +232,17 @@ proof -
               wfR : "wf(?r(\<tau>))" for \<tau>
     by (simp add: wf_edrel)
   have "domain(?n) \<subseteq> A" by auto
-  have Eq1 : "t \<in> domain({x \<in> A \<times> P . Q(x)}) \<Longrightarrow> 
-    val(G,t) = (\<lambda>z\<in>edrel(eclose({{x \<in> A \<times> P . Q(x)}})) -`` {{x \<in> A \<times> P . Q(x)}}. val(G, z)) ` t"  for t
-    using dom_edrel  sorry
+  { fix t
+    assume H:"t \<in> domain({x \<in> A \<times> P . Q(x)})"
+    then have "(\<lambda>z\<in>edrel(eclose({{x \<in> A \<times> P . Q(x)}})) -`` {{x \<in> A \<times> P . Q(x)}}. val(G, z)) ` t = 
+          (if t \<in> edrel(eclose({{x \<in> A \<times> P . Q(x)}})) -`` {{x \<in> A \<times> P . Q(x)}} then val(G,t) else 0)"
+      by simp
+    moreover have "... = val(G,t)"
+      using dom_under_edrel_eclose H if_P by auto
+  }
+  then have Eq1: "t \<in> domain({x \<in> A \<times> P . Q(x)}) \<Longrightarrow> 
+    val(G,t) = (\<lambda>z\<in>edrel(eclose({{x \<in> A \<times> P . Q(x)}})) -`` {{x \<in> A \<times> P . Q(x)}}. val(G, z)) ` t"  for t 
+    by simp
   have
               "val(G,?n) = {val(G,t) .. t\<in>domain(?n), \<exists>p \<in> P . <t,p> \<in> ?n \<and> p \<in> G}"
       by (subst def_val,simp) 
@@ -251,7 +256,7 @@ proof -
   also have
         Eq2:  "... = { val(G,t) .. t\<in>domain(?n), \<exists>p\<in>P . <t,p>\<in>?n \<and> p\<in>G}"
   proof -
-    from dom_edrel have
+    from dom_under_edrel_eclose have
               "domain(?n) \<subseteq> ?r(?n)-``{?n}"                     
       by simp
     then have

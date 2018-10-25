@@ -1,28 +1,36 @@
 theory Recursion_Thms imports WF begin
 
+
+(* Restrict the relation r to the domain A *)
+definition rel_restrict :: "[i, i] \<Rightarrow> i"
+  where "rel_restrict(r,A) == {z \<in> r. \<exists>x\<in>A. \<exists>y\<in>A. z = \<langle>x,y\<rangle>}"
+  
+  
 lemma restrict_mono :
   assumes "relation(r)" and "A \<subseteq> B"
-  shows  "restrict(r,A) \<subseteq> restrict(r,B)"
+  shows  "rel_restrict(r,A) \<subseteq> rel_restrict(r,B)"
 proof 
   fix x
-  assume xr:"x \<in> restrict(r,A)"
-  from xr have "\<exists> a \<in> A . \<exists> b . x = <a,b>" by (simp add: restrict_def)
-  then obtain a b where "<a,b> \<in> restrict(r,A)" "a \<in> B" "x \<in> restrict(r,B)" using assms xr 
-      by(auto simp add: restrict_def)
-  then show "x\<in> restrict(r,B)" by auto
+  assume xr:"x \<in> rel_restrict(r,A)"
+  from xr have "\<exists> a \<in> A . \<exists> b \<in> A . x = <a,b>" by (simp add: rel_restrict_def)
+  then obtain a b where "<a,b> \<in> rel_restrict(r,A)" "a \<in> B" "b \<in> B" "x \<in> rel_restrict(r,B)" using assms xr 
+      unfolding rel_restrict_def by blast
+  then show "x\<in> rel_restrict(r,B)" by auto
 qed     
+lemma rel_restrict_subset: "rel_restrict(f,A) \<subseteq> f"
+by (unfold rel_restrict_def, blast)
 
-lemma restrict_dom :
-  assumes "relation(r)" "domain(r) \<subseteq> A"
-  shows "restrict(r,A) = r"
-  proof (rule equalityI[OF restrict_subset],rule subsetI)
+lemma rel_restrict_dom :
+  assumes "relation(r)" "domain(r) \<subseteq> A" "range(r)\<subseteq> A"
+  shows "rel_restrict(r,A) = r"
+  proof (rule equalityI[OF rel_restrict_subset],rule subsetI)
     fix x
     assume xr: "x \<in> r"
     from xr assms have "\<exists> a b . x = <a,b>" by (simp add: relation_def)
-    then obtain a b where "<a,b> \<in> r" "<a,b> \<in> restrict(r,A)" "x \<in> restrict(r,A)" 
-      using assms xr restrict_def
-      by auto
-    then show "x\<in>restrict(r,A)" by simp
+    then obtain a b where "<a,b> \<in> r" "<a,b> \<in> rel_restrict(r,A)" "x \<in> rel_restrict(r,A)" 
+      using assms xr rel_restrict_def 
+      by force
+    then show "x\<in>rel_restrict(r,A)" by simp
 qed
 
 definition tr_down :: "[i,i] \<Rightarrow> i"
@@ -35,60 +43,64 @@ lemma tr_down_mono : "relation(r) \<Longrightarrow> x \<in> r-``{a} \<Longrighta
   by(rule subsetI,simp add:tr_down_def,(drule underD)+,force simp add: underI r_into_trancl trancl_trans)
     
 lemma rest_eq : 
-  assumes "relation(r)" and "r-``{a} \<subseteq> B"
-  shows "r-``{a} = restrict(r,B)-``{a}"
+  assumes "relation(r)" and "r-``{a} \<subseteq> B" and "a \<in> B"
+  shows "r-``{a} = rel_restrict(r,B)-``{a}"
 proof 
   { fix x 
-    assume 1: "x \<in> r-``{a}"
-    then have 3:"x \<in> B" using assms by (simp add: subsetD)
-    from 1 underD have 2: "<x,a> \<in> r" by simp
-    then have "x \<in> restrict(r,B)-``{a}" using 3 underI restrict_def by force
+    assume "x \<in> r-``{a}"
+    then have "x \<in> B" using assms by (simp add: subsetD)
+    from \<open>x\<in> r-``{a}\<close> underD have "<x,a> \<in> r" by simp
+    then have "x \<in> rel_restrict(r,B)-``{a}" using \<open>x \<in> B\<close> assms underI rel_restrict_def by force
   }
-  then show "r -`` {a} \<subseteq> restrict(r, B) -`` {a}" by auto
-  from restrict_subset vimage_mono
-  show " restrict(r, B) -`` {a} \<subseteq> r -`` {a}" by simp
+  then show "r -`` {a} \<subseteq> rel_restrict(r, B) -`` {a}" by auto
+next
+  from rel_restrict_subset vimage_mono assms
+  show "rel_restrict(r, B) -`` {a} \<subseteq> r -`` {a}" by simp
 qed
   
-lemma wfrec_restr : 
-  assumes rr: "relation(r)" and wfr:"wf(r)"
-  shows  "tr_down(r,a) \<subseteq> A \<Longrightarrow> wfrec(r,a,H) = wfrec(restrict(r,A),a,H)"
+lemma wfrec_restr :
+  assumes rr: "relation(r)" and wfr:"wf(r)" 
+  shows  "a \<in> A \<Longrightarrow> tr_down(r,a) \<subseteq> A \<Longrightarrow> wfrec(r,a,H) = wfrec(rel_restrict(r,A),a,H)"
 proof (induct a arbitrary:A rule:wf_induct_raw[OF wfr] )
   case (1 a)
-  from wf_subset restrict_subset wfr have wfRa : "wf(restrict(r,A))" by simp
+  from wf_subset rel_restrict_subset wfr have wfRa : "wf(rel_restrict(r,A))" by simp
   from pred_down rr have "r -`` {a} \<subseteq> tr_down(r, a)"  .
-  then have ra_A: "r-``{a} \<subseteq> A" using 1 by (force simp add: subset_trans)
+  then have "r-``{a} \<subseteq> A" using 1 by (force simp add: subset_trans)
   {
     fix x
     assume x_a : "x \<in> r-``{a}"
+    with \<open>r-``{a} \<subseteq> A\<close> have "x \<in> A" ..        
     from pred_down rr have b : "r -``{x} \<subseteq> tr_down(r,x)" .
-    then have "tr_down(r,x) \<subseteq> tr_down(r,a)" using tr_down_mono x_a rr by simp
-    then have rx_A : "tr_down(r,x) \<subseteq> A" using 1 subset_trans by force
+    then have "tr_down(r,x) \<subseteq> tr_down(r,a)" 
+      using tr_down_mono x_a rr by simp
+    then have "tr_down(r,x) \<subseteq> A" using 1 subset_trans by force
     have "<x,a> \<in> r" using x_a  underD by simp
-    then have "wfrec(r,x,H) = wfrec(restrict(r,A),x,H)" using 1 rx_A by simp
+    then have "wfrec(r,x,H) = wfrec(rel_restrict(r,A),x,H)" 
+      using 1 \<open>tr_down(r,x) \<subseteq> A\<close> \<open>x \<in> A\<close> by simp
   }
-  then have "\<And> x . x\<in> r-``{a} \<Longrightarrow> wfrec(r,x,H) =  wfrec(restrict(r,A),x,H)"  . 
-  then have Eq1 :"(\<lambda> x \<in> r-``{a} . wfrec(r,x,H)) = (\<lambda> x \<in> r-``{a} . wfrec(restrict(r,A),x,H))" 
-     using lam_cong by simp
-             
+  then have "x\<in> r-``{a} \<Longrightarrow> wfrec(r,x,H) =  wfrec(rel_restrict(r,A),x,H)" for x  . 
+  then have Eq1 :"(\<lambda> x \<in> r-``{a} . wfrec(r,x,H)) = (\<lambda> x \<in> r-``{a} . wfrec(rel_restrict(r,A),x,H))" 
+    using lam_cong by simp
+      
   from assms have 
     "wfrec(r,a,H) = H(a,\<lambda> x \<in> r-``{a} . wfrec(r,x,H))" by (simp add:wfrec)
-  also have "... = H(a,\<lambda> x \<in> r-``{a} . wfrec(restrict(r,A),x,H))"
+  also have "... = H(a,\<lambda> x \<in> r-``{a} . wfrec(rel_restrict(r,A),x,H))"
     using assms Eq1 by simp
-  also have "... = H(a,\<lambda> x \<in> restrict(r,A)-``{a} . wfrec(restrict(r,A),x,H))"
-    using assms rest_eq ra_A by simp
-  also have "... = wfrec(restrict(r,A),a,H)" using wfRa wfrec by simp
-  finally have "wfrec(r,a,H) = wfrec(restrict(r,A),a,H)" by simp
+  also have "... = H(a,\<lambda> x \<in> rel_restrict(r,A)-``{a} . wfrec(rel_restrict(r,A),x,H))"
+    using 1 assms rest_eq \<open>r-``{a} \<subseteq> A\<close> by simp
+  also have "... = wfrec(rel_restrict(r,A),a,H)" using wfRa wfrec by simp
+  finally have "wfrec(r,a,H) = wfrec(rel_restrict(r,A),a,H)" by simp
   then show ?case .
 qed
 
-lemmas wfrec_tr_down = wfrec_restr[OF _ _ subset_refl]
+lemmas wfrec_tr_down = wfrec_restr[OF _ _ _ subset_refl]
 
 lemma wfrec_trans_restr : "relation(r) \<Longrightarrow> wf(r) \<Longrightarrow> trans(r) \<Longrightarrow> r-``{a}\<subseteq>A \<Longrightarrow>
-  wfrec(r, a, H) = wfrec(restrict(r, A), a, H)"
-  by(subgoal_tac "tr_down(r,a) \<subseteq> A",simp add : wfrec_restr,simp add : tr_down_def trancl_eq_r)  
+  wfrec(r, a, H) = wfrec(rel_restrict(r, A), a, H)"
+  by(subgoal_tac "tr_down(r,a) \<subseteq> A",auto simp add : wfrec_restr tr_down_def trancl_eq_r)  
       
 lemma equal_segm_wfrec : 
-  "wf(r) \<Longrightarrow> wf(s) \<Longrightarrow> trans(r) \<Longrightarrow> trans(s) \<Longrightarrow>
+  "wf(r) \<Longrightarrow> wf(s) \<Longrightarrow> trans(r) \<Longrightarrow> trans(s) \<Longrightarrow> 
   \<forall>y\<in>A. \<forall>z. <z,y>\<in>r \<longrightarrow> z\<in>A \<Longrightarrow> 
    \<forall>y\<in>A.  r-``{y} = s-``{y} \<Longrightarrow>
    \<forall>y . y\<in>A \<longrightarrow>  wfrec(r, y, H)=wfrec(s, y, H)"
@@ -146,46 +158,46 @@ qed
 lemmas equal_segm_wfrec_rule =  equal_segm_wfrec [THEN spec, THEN mp]
  
 lemma segment_vimage : "\<forall>y\<in>A. \<forall>z. <z,y>\<in>r \<longrightarrow> z\<in>A \<Longrightarrow> B\<subseteq>A \<Longrightarrow>
-       restrict(r,A)-`` B  = r-``B " 
+       rel_restrict(r,A)-`` B  = r-``B " 
   by (rule equalityI, simp add: restrict_subset vimage_mono, force simp add:restrict_iff)
     
 lemma trans_restrict_down :
-  "trans(r) \<Longrightarrow> <x,a>\<in>r \<Longrightarrow> r-``{x} = restrict(r,{a}\<union>r-``{a})-``{x}"
+  "trans(r) \<Longrightarrow> <x,a>\<in>r \<Longrightarrow> r-``{x} = rel_restrict(r,{a}\<union>r-``{a})-``{x}"
   by (rule segment_vimage [symmetric], auto simp:trans_def)
 
 lemma restrict_with_root :
-  "restrict(r,{a}\<union>r-``{a})-``{a} = r-``{a}"
+  "rel_restrict(r,{a}\<union>r-``{a})-``{a} = r-``{a}"
   by (rule equalityI, simp add: restrict_subset vimage_mono, force simp add:restrict_iff )
     
 declare iff_trans [trans]
 
 lemma is_recfun_segment :
-  "trans(r) \<Longrightarrow> is_recfun(r,a,H,f) \<longleftrightarrow> is_recfun(restrict(r,{a}\<union>r-``{a}),a,H,f)"
+  "trans(r) \<Longrightarrow> is_recfun(r,a,H,f) \<longleftrightarrow> is_recfun(rel_restrict(r,{a}\<union>r-``{a}),a,H,f)"
 proof -
   assume
       asm:    "trans(r)"
   let
-              ?rr="restrict(r,{a}\<union>r-``{a})"
+              ?rr="rel_restrict(r,{a}\<union>r-``{a})"
   have
-              "is_recfun(r,a,H,f) \<longleftrightarrow> f = (\<lambda>x\<in>r-``{a}. H(x, restrict(f, r-``{x})))"
+              "is_recfun(r,a,H,f) \<longleftrightarrow> f = (\<lambda>x\<in>r-``{a}. H(x, rel_restrict(f, r-``{x})))"
     unfolding is_recfun_def ..
   also have
-              "... \<longleftrightarrow> f = (\<lambda>x\<in>r-``{a}. H(x, restrict(f, ?rr-``{x})))"
+              "... \<longleftrightarrow> f = (\<lambda>x\<in>r-``{a}. H(x, rel_restrict(f, ?rr-``{x})))"
   proof -
     have 
-              "\<forall>x. x\<in>r-``{a}\<longrightarrow> H(x, restrict(f, r -`` {x})) = H(x, restrict(f, ?rr -`` {x}))"
+              "\<forall>x. x\<in>r-``{a}\<longrightarrow> H(x, rel_restrict(f, r -`` {x})) = H(x, rel_restrict(f, ?rr -`` {x}))"
       using asm and trans_restrict_down  by auto
     with lam_cong have
-              "(\<lambda>x\<in>r-``{a}. H(x, restrict(f, r-``{x}))) =
-                (\<lambda>x\<in>r-``{a}. H(x, restrict(f, ?rr-``{x})))"  
+              "(\<lambda>x\<in>r-``{a}. H(x, rel_restrict(f, r-``{x}))) =
+                (\<lambda>x\<in>r-``{a}. H(x, rel_restrict(f, ?rr-``{x})))"  
       by simp
     then show
-              "f = (\<lambda>x\<in>r -`` {a}. H(x, restrict(f, r -`` {x}))) \<longleftrightarrow>
-                f = (\<lambda>x\<in>r -`` {a}. H(x, restrict(f, ?rr -`` {x})))" 
+              "f = (\<lambda>x\<in>r -`` {a}. H(x, rel_restrict(f, r -`` {x}))) \<longleftrightarrow>
+                f = (\<lambda>x\<in>r -`` {a}. H(x, rel_restrict(f, ?rr -`` {x})))" 
       by simp
   qed
   also have
-              "... \<longleftrightarrow> f = (\<lambda>x\<in>?rr-``{a}. H(x, restrict(f, ?rr-``{x})))"
+              "... \<longleftrightarrow> f = (\<lambda>x\<in>?rr-``{a}. H(x, rel_restrict(f, ?rr-``{x})))"
     by (simp add: restrict_with_root)
   finally show ?thesis 
     unfolding is_recfun_def by simp
@@ -198,26 +210,26 @@ lemma imp_trans : "p\<longrightarrow>q \<Longrightarrow> q\<longrightarrow>r \<L
 
 lemma is_recfun_f_segment :
   notes imp_trans [trans]
-  shows  "trans(r) \<Longrightarrow> is_recfun(r,a,H,f) \<longrightarrow> is_recfun(r,a,H,restrict(f,r-``{a}))"
+  shows  "trans(r) \<Longrightarrow> is_recfun(r,a,H,f) \<longrightarrow> is_recfun(r,a,H,rel_restrict(f,r-``{a}))"
 proof -
   assume
       asm:    "trans(r)"
   let
-              ?rf="restrict(f,r-``{a})"
+              ?rf="rel_restrict(f,r-``{a})"
   have
-              "is_recfun(r,a,H,f) \<longrightarrow> f = (\<lambda>x\<in>r-``{a}. H(x, restrict(f, r-``{x})))"
+              "is_recfun(r,a,H,f) \<longrightarrow> f = (\<lambda>x\<in>r-``{a}. H(x, rel_restrict(f, r-``{x})))"
     unfolding is_recfun_def ..
   also have
-              "... \<longrightarrow> ?rf = (\<lambda>x\<in>r-``{a}. H(x, restrict(?rf, r-``{x})))"
+              "... \<longrightarrow> ?rf = (\<lambda>x\<in>r-``{a}. H(x, rel_restrict(?rf, r-``{x})))"
   proof 
     assume 
-        ff:   "f = (\<lambda>x\<in>r-``{a}. H(x, restrict(f, r-``{x})))" (is "f = ?f")
+        ff:   "f = (\<lambda>x\<in>r-``{a}. H(x, rel_restrict(f, r-``{x})))" (is "f = ?f")
     have
-              "restrict(?f,r-``{a}) = ?f"
+              "rel_restrict(?f,r-``{a}) = ?f"
       by (rule  domain_restrict_idem, auto simp add: relation_lam)
     with ff show
-              "restrict(f,r-``{a}) = 
-               (\<lambda>x\<in>r-``{a}. H(x, restrict(restrict(f,r-``{a}), r-``{x})))" 
+              "rel_restrict(f,r-``{a}) = 
+               (\<lambda>x\<in>r-``{a}. H(x, rel_restrict(rel_restrict(f,r-``{a}), r-``{x})))" 
       by simp
   qed
   finally show ?thesis
@@ -227,22 +239,22 @@ qed
 
 (*
 lemma the_recfun_segment :
-  "trans(r) \<Longrightarrow> the_recfun(r,a,H) = the_recfun(restrict(r,{a}\<union>r-``{a}),a,H)"
+  "trans(r) \<Longrightarrow> the_recfun(r,a,H) = the_recfun(rel_restrict(r,{a}\<union>r-``{a}),a,H)"
   by (simp add:the_recfun_def is_recfun_segment wftrec_def )
 
 lemma wftrec_segment :
-  "trans(r) \<Longrightarrow> wftrec(r,a,H) = wftrec(restrict(r,{a}\<union>r-``{a}),a,H)"  
+  "trans(r) \<Longrightarrow> wftrec(r,a,H) = wftrec(rel_restrict(r,{a}\<union>r-``{a}),a,H)"  
   by (simp add:wftrec_def the_recfun_segment)
     
 *)
   
 lemma wftrec_segment :
-  "trans(r) \<Longrightarrow> the_recfun(r,a,H) = the_recfun(restrict(r,{a}\<union>r-``{a}),a,H)"
-  "trans(r) \<Longrightarrow> wftrec(r,a,H) = wftrec(restrict(r,{a}\<union>r-``{a}),a,H)"  
+  "trans(r) \<Longrightarrow> the_recfun(r,a,H) = the_recfun(rel_restrict(r,{a}\<union>r-``{a}),a,H)"
+  "trans(r) \<Longrightarrow> wftrec(r,a,H) = wftrec(rel_restrict(r,{a}\<union>r-``{a}),a,H)"  
   by (simp_all add:the_recfun_def is_recfun_segment wftrec_def )
   
 lemma trans_restrict:
-  "trans(r) \<Longrightarrow> trans(restrict(r,A))" (is "_ \<Longrightarrow> trans(?rr)")
+  "trans(r) \<Longrightarrow> trans(rel_restrict(r,A))" (is "_ \<Longrightarrow> trans(?rr)")
 proof (unfold trans_def, intro allI impI)
   fix x y z
   assume 
