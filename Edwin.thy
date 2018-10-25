@@ -1,0 +1,198 @@
+theory Edwin imports L_axioms
+begin
+
+lemma "\<forall>x\<in>{4,5,6} . 0<x"
+proof 
+  {
+    fix x
+    assume "x\<in>{4,4,5,6}"
+    then have "0<x" 
+      by auto
+  }
+  then have
+    "x \<in> {4, 4, 5, 6} \<Longrightarrow> 0 < x" for x .
+  fix x
+  assume
+    "x \<in> {4,5,6}"
+  then have
+oops
+
+lemma "{0} \<union> {1} = {0,1}"
+proof 
+oops  
+  
+lemma "{x\<in>{0,1,2} . 0<x} = { x #+1 . x\<in>{0,1}}"
+  by auto
+
+txt\<open>Proof by contradiction\<close>    
+lemma "\<forall>x \<in> nat-{0,1,2}. 2<x"
+proof
+  fix x
+  assume "x\<in> nat-{0,1,2}"
+  then have 
+    one : "x\<in>nat" "x\<noteq>0" "x\<noteq>1" "x\<noteq>2"
+    by auto
+  {
+    assume "\<not> 2<x"
+    with \<open>x\<in>nat\<close>  not_lt_iff_le have "x\<le>2" by simp
+    then have "x=0 \<or> x=1 \<or> x=2" 
+      unfolding lt_def by auto
+    with one have "False" by simp
+  }
+  then show "2<x" by auto
+qed
+
+txt\<open>Direct proof\<close>    
+lemma "\<forall>x \<in> nat-{0,1,2}. 2<x"
+proof
+  fix x
+  assume "x\<in> nat-{0,1,2}"
+  then have 
+    "x\<in>nat" "x\<noteq>0" "x\<noteq>1" "x\<noteq>2"
+    by auto
+  then have 
+    "\<not>(x\<le>2)" 
+    unfolding lt_def by auto
+  with \<open>x\<in>nat\<close>  show  "2<x" 
+    using not_lt_iff_le by simp
+qed
+  
+txt\<open>One-liner\<close>    
+lemma "\<forall>x \<in> nat-{0,1,2}. 2<x"
+  by (clarsimp simp add:not_lt_iff_le, auto simp add:lt_def)
+
+lemma "\<forall>x \<in> nat-succ(2). 2<x"
+  by (clarsimp simp add:not_lt_iff_le, auto simp add:lt_def)
+
+lemma "n\<in>nat \<Longrightarrow> \<forall>x \<in> nat-succ(n). n<x"
+  by (clarsimp simp add:not_lt_iff_le, auto simp add:lt_def)
+    
+
+lemma lt_dest [dest!] :"i<j \<Longrightarrow> i\<in>j \<and> Ord(j)"  
+  by (simp add: lt_def)
+    
+lemma lt_intro [intro!] : "i\<in>j \<Longrightarrow> Ord(j) \<Longrightarrow> i<j"  
+  by (simp add: lt_def)
+
+lemma limit_is_union: "Limit(a) \<Longrightarrow> a = \<Union> a"
+  sorry
+    
+definition
+  Succ :: "i \<Rightarrow> o" where
+  "Succ(\<alpha>) == \<exists>\<beta>. Ord(\<beta>) \<and> \<alpha> = succ(\<beta>)"
+(*
+eps_induct: \<lbrakk> \<And>x. \<forall>y\<in>x. P(y) \<Longrightarrow> P(x) \<rbrakk>  \<Longrightarrow>  P(a)
+
+oadd_0: Ord(?i) \<Longrightarrow> ?i ++ 0 = ?i
+oadd_succ: Ord(?j) \<Longrightarrow> ?i ++ succ(?j) = succ(?i ++ ?j)
+oadd_Limit: Limit(?j) \<Longrightarrow> ?i ++ ?j = (\<Union>k\<in>?j. ?i ++ k)
+*)
+
+
+lemma 
+  "Ord(a) \<Longrightarrow> 0 ++ a = a"
+proof (induct a rule:eps_induct)
+  case (1 a)
+  then show ?case
+    proof (cases "a =0")
+      case True
+      then show ?thesis 
+        using oadd_0 by simp
+    next
+      case False
+      then show ?thesis 
+        proof (cases "Limit(a)")
+          case True
+          then have
+            "0 ++ a = (\<Union>k\<in>a. 0 ++ k)"
+            using oadd_Limit by simp
+          also have
+            "   ... = (\<Union>k\<in>a. k)" 
+            using 1 Ord_in_Ord by simp
+          also have 
+            "   ... = a" 
+            using \<open>Limit(a)\<close> limit_is_union by simp
+          finally show ?thesis .
+        next
+          case False
+          then have
+            "\<exists>y. y<a \<and> \<not>(succ(y) < a)"
+            using 1 \<open>a\<noteq>0\<close> not_lt_iff_le unfolding Limit_def  by simp
+          then obtain y where
+            "y<a" "\<not>(succ(y) < a)"  "Ord(y)"
+             using 1 Ord_in_Ord by auto
+          then have
+            "succ(y) = a"
+            using succ_leI  by blast
+          then have 
+            "0 ++ a = 0 ++ succ(y)" by simp
+          also have
+            "   ... = succ(0 ++ y)" 
+            using \<open>Ord(y)\<close> oadd_succ  by simp
+          also have
+            "   ... = succ(y)"
+            using 1 \<open>Ord(y)\<close> by  simp
+          finally  show ?thesis 
+            using \<open>succ(y) = a\<close> by simp
+        qed
+    qed
+qed
+
+lemma 
+  "Ord(a) \<Longrightarrow> 0 ++ a = a"
+proof (induct a rule:eps_induct)
+  case (1 a)
+  then show ?case
+  proof -
+    consider (a) "a=0" | (b) "a\<noteq>0 \<and> Limit(a)" | (c) "a\<noteq>0 \<and> \<not>Limit(a)" by blast
+    then show ?thesis
+    proof cases
+      case (a)
+      then show ?thesis 
+        using oadd_0 by simp
+    next
+      case (b)
+      then have
+        "0 ++ a = (\<Union>k\<in>a. 0 ++ k)"
+        using oadd_Limit by simp
+      also have
+        "   ... = (\<Union>k\<in>a. k)" 
+        using 1 Ord_in_Ord by simp
+      also have 
+        "   ... = a" 
+        using b limit_is_union by simp
+      finally show ?thesis .
+    next
+      case (c)
+      then have
+        "\<exists>y. y<a \<and> \<not>(succ(y) < a)"
+        using 1 c not_lt_iff_le unfolding Limit_def  by simp
+      then obtain y where
+        "y<a" "\<not>(succ(y) < a)"  "Ord(y)"
+        using 1 Ord_in_Ord  by auto
+      then have
+        "succ(y) = a"
+        using succ_leI  by blast
+      then have 
+        "0 ++ a = 0 ++ succ(y)" by simp
+      also have
+        "   ... = succ(0 ++ y)" 
+        using \<open>Ord(y)\<close> oadd_succ  by simp
+      also have
+        "   ... = succ(y)"
+        using 1 \<open>Ord(y)\<close> by  simp
+      finally  show ?thesis 
+        using \<open>succ(y) = a\<close> by simp
+    qed
+  qed
+qed
+
+lemma 
+  assumes "Ord(a)" "Ord(b)" "Ord(c)" 
+  shows "a ++ (b ++ c) = (a ++ b) ++ c"
+proof (induct a rule:eps_induct)
+  case (1 a)
+  then show ?case sorry
+qed  
+end
+  
