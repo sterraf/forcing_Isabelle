@@ -111,6 +111,9 @@ lemma upairM : "x \<in> M \<Longrightarrow> y \<in> M \<Longrightarrow> {x,y} \<
 lemma pairM : "x \<in>  M \<Longrightarrow> y \<in> M \<Longrightarrow> <x,y> \<in> M"
   by(unfold Pair_def, rule upairM,(rule upairM,simp+)+)
 
+lemma P_sub_M : "P \<subseteq> M"
+  by (simp add: P_in_M trans_M transD)
+    
 lemma Rep_simp : "Replace(u,\<lambda> y z . z = f(y)) = { f(y) . y \<in> u}"
   by(auto)
     
@@ -252,7 +255,7 @@ lemma checkin_M : "x \<in> M \<Longrightarrow> check(x) \<in> M"
   apply(rename_tac z f)
   apply(unfold Hcheck_def,subgoal_tac "f \<in> M")
   apply(subst Rep_simp[symmetric],simp add: Hc_col_tc')
-  oops
+  sorry
     
 definition
   Hv :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i" where
@@ -431,6 +434,81 @@ lemma trans_Gen_Ext:
   "Transset(M[G])"
   by (auto simp add: Transset_def trans_Gen_Ext')
     
+
+definition
+  G_dot :: "i" where
+  "G_dot == {<check(p),p> . p\<in>P}"
+    
+lemma G_dot_in_M :
+  "G_dot \<in> M" 
+proof -
+  have 0:"G_dot = { y . p\<in>P , y = <check(p),p> }"
+    unfolding G_dot_def by auto
+  from P_in_M checkin_M pairM P_sub_M have "\<And> p . p\<in>P \<Longrightarrow> <check(p),p> \<in> M" 
+    by auto
+  then have
+    1:"\<And>x y. \<lbrakk> x\<in>P ; y = <check(x),x> \<rbrakk> \<Longrightarrow> y\<in>M"
+    by simp
+  have 2:"strong_replacement(##M,\<lambda>p y. y =<check(p),p>)"
+    sorry
+  then have
+    "\<forall>A\<in>M.(\<exists>Y\<in>M. \<forall>b\<in>M. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>M. x\<in>A & b = <check(x),x>))"
+    unfolding strong_replacement_def by simp
+  then have
+    "(\<exists>Y\<in>M. \<forall>b\<in>M. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>M. x\<in>P & b = <check(x),x>))"
+    using P_in_M by simp
+  with 1 2 P_in_M strong_replacement_closed have
+    "{ y . p\<in>P , y = <check(p),p> } \<in> M" by simp
+  then show ?thesis using 0 by simp
+qed
+  
+lemma domain_G_dot :
+  "domain(G_dot) = {check(p) . p \<in> P}" 
+  by (auto simp add: G_dot_def domain_def)
+  
+    
+lemma val_G_dot :
+  assumes "G \<subseteq> P"
+          "one \<in> G" 
+  shows "val(G,G_dot) = G"
+proof -
+  from \<open>G\<subseteq>P\<close> P_sub_M \<open>one\<in>G\<close> checkin_M valcheck have
+    1:"\<And>p. p\<in>G \<Longrightarrow> val(G,check(p)) = p"
+    by auto
+  from G_dot_in_M and def_val have
+    "val(G,G_dot) = {val(G,t) .. t\<in>domain(G_dot) , \<exists>p\<in>P .  \<langle>t, p\<rangle> \<in> G_dot \<and> p \<in> G }"
+    by simp
+  also have
+    "... = {val(G,t) . t \<in> { r \<in> {check(p) . p \<in> P} . (\<exists>p\<in>P .  \<langle>r, p\<rangle> \<in> G_dot \<and> p \<in> G )} }"
+    using Sep_and_Replace domain_G_dot by simp 
+  also have
+    "... = {val(G,t) . t \<in> { check(q) .. q \<in> P , (\<exists>p\<in>P .  \<langle>check(q), p\<rangle> \<in> G_dot \<and> p \<in> G )} }"
+    unfolding SepReplace_def by auto
+  also have
+    "... = {val(G,t) . t \<in> {check(p) . p \<in> G} }"
+    sorry 
+  also have
+    "... = {val(G,check(p)) . p\<in>G}"
+    by auto
+  also have 
+    "... = {p . p\<in>G}"
+    using 1 by simp
+  finally show ?thesis by simp
+qed
+
+lemma G_in_Gen_Ext :
+  assumes "G \<subseteq> P"
+          "one \<in> G"
+  shows   "G \<in> M[G]" 
+proof -
+  from def_GenExt2 G_dot_in_M have
+    "val(G,G_dot) \<in> M[G]" by simp
+  with assms val_G_dot 
+  show ?thesis by simp
+qed
+  
 end    (*************** CONTEXT: forcing_data *****************)
+
+
 
 end

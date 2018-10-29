@@ -66,7 +66,7 @@ proof -
 qed
   
 declare iff_trans [trans]
-
+  
 lemma generic_filter_existence: 
   "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> M_generic(G)"
 proof -
