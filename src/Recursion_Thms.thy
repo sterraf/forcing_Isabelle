@@ -5,7 +5,12 @@ theory Recursion_Thms imports WF begin
 definition rel_restrict :: "[i, i] \<Rightarrow> i"
   where "rel_restrict(r,A) == {z \<in> r. \<exists>x\<in>A. \<exists>y\<in>A. z = \<langle>x,y\<rangle>}"
   
-  
+lemma rel_restrictI : "<x,y> \<in> r \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> <x,y> \<in> rel_restrict(r,A)"
+  by (simp add : rel_restrict_def)
+    
+lemma rel_restrictD : "x \<in> rel_restrict(r,A) \<Longrightarrow> \<exists> a \<in> A . \<exists> b \<in> A . x = <a,b>"
+  by (simp add:rel_restrict_def)
+    
 lemma restrict_mono :
   assumes "relation(r)" and "A \<subseteq> B"
   shows  "rel_restrict(r,A) \<subseteq> rel_restrict(r,B)"
@@ -36,6 +41,9 @@ qed
 definition tr_down :: "[i,i] \<Rightarrow> i"
   where "tr_down(r,a) = (r^+)-``{a}"
 
+lemma tr_downD : "x \<in> tr_down(r,a) \<Longrightarrow> <x,a> \<in> r^+"
+  by (simp add: tr_down_def vimage_singleton_iff)
+    
 lemma pred_down : "relation(r) \<Longrightarrow> r-``{a} \<subseteq> tr_down(r,a)"
  by(simp add: tr_down_def vimage_mono r_subset_trancl)
 
