@@ -103,7 +103,7 @@ qed
 
 lemmas wfrec_tr_down = wfrec_restr[OF _ _ _ subset_refl]
 
-lemma wfrec_trans_restr : "relation(r) \<Longrightarrow> wf(r) \<Longrightarrow> trans(r) \<Longrightarrow> r-``{a}\<subseteq>A \<Longrightarrow>
+lemma wfrec_trans_restr : "relation(r) \<Longrightarrow> wf(r) \<Longrightarrow> trans(r) \<Longrightarrow> r-``{a}\<subseteq>A \<Longrightarrow> a \<in> A \<Longrightarrow>
   wfrec(r, a, H) = wfrec(rel_restrict(r, A), a, H)"
   by(subgoal_tac "tr_down(r,a) \<subseteq> A",auto simp add : wfrec_restr tr_down_def trancl_eq_r)  
       
@@ -166,46 +166,46 @@ qed
 lemmas equal_segm_wfrec_rule =  equal_segm_wfrec [THEN spec, THEN mp]
  
 lemma segment_vimage : "\<forall>y\<in>A. \<forall>z. <z,y>\<in>r \<longrightarrow> z\<in>A \<Longrightarrow> B\<subseteq>A \<Longrightarrow>
-       rel_restrict(r,A)-`` B  = r-``B " 
+       restrict(r,A)-`` B  = r-``B " 
   by (rule equalityI, simp add: restrict_subset vimage_mono, force simp add:restrict_iff)
     
 lemma trans_restrict_down :
-  "trans(r) \<Longrightarrow> <x,a>\<in>r \<Longrightarrow> r-``{x} = rel_restrict(r,{a}\<union>r-``{a})-``{x}"
+  "trans(r) \<Longrightarrow> <x,a>\<in>r \<Longrightarrow> r-``{x} = restrict(r,{a}\<union>r-``{a})-``{x}"
   by (rule segment_vimage [symmetric], auto simp:trans_def)
 
 lemma restrict_with_root :
-  "rel_restrict(r,{a}\<union>r-``{a})-``{a} = r-``{a}"
+  "restrict(r,{a}\<union>r-``{a})-``{a} = r-``{a}"
   by (rule equalityI, simp add: restrict_subset vimage_mono, force simp add:restrict_iff )
     
 declare iff_trans [trans]
 
 lemma is_recfun_segment :
-  "trans(r) \<Longrightarrow> is_recfun(r,a,H,f) \<longleftrightarrow> is_recfun(rel_restrict(r,{a}\<union>r-``{a}),a,H,f)"
+  "trans(r) \<Longrightarrow> is_recfun(r,a,H,f) \<longleftrightarrow> is_recfun(restrict(r,{a}\<union>r-``{a}),a,H,f)"
 proof -
   assume
       asm:    "trans(r)"
   let
-              ?rr="rel_restrict(r,{a}\<union>r-``{a})"
+              ?rr="restrict(r,{a}\<union>r-``{a})"
   have
-              "is_recfun(r,a,H,f) \<longleftrightarrow> f = (\<lambda>x\<in>r-``{a}. H(x, rel_restrict(f, r-``{x})))"
+              "is_recfun(r,a,H,f) \<longleftrightarrow> f = (\<lambda>x\<in>r-``{a}. H(x, restrict(f, r-``{x})))"
     unfolding is_recfun_def ..
   also have
-              "... \<longleftrightarrow> f = (\<lambda>x\<in>r-``{a}. H(x, rel_restrict(f, ?rr-``{x})))"
+              "... \<longleftrightarrow> f = (\<lambda>x\<in>r-``{a}. H(x, restrict(f, ?rr-``{x})))"
   proof -
     have 
-              "\<forall>x. x\<in>r-``{a}\<longrightarrow> H(x, rel_restrict(f, r -`` {x})) = H(x, rel_restrict(f, ?rr -`` {x}))"
+              "\<forall>x. x\<in>r-``{a}\<longrightarrow> H(x, restrict(f, r -`` {x})) = H(x, restrict(f, ?rr -`` {x}))"
       using asm and trans_restrict_down  by auto
     with lam_cong have
-              "(\<lambda>x\<in>r-``{a}. H(x, rel_restrict(f, r-``{x}))) =
-                (\<lambda>x\<in>r-``{a}. H(x, rel_restrict(f, ?rr-``{x})))"  
+              "(\<lambda>x\<in>r-``{a}. H(x, restrict(f, r-``{x}))) =
+                (\<lambda>x\<in>r-``{a}. H(x, restrict(f, ?rr-``{x})))"  
       by simp
     then show
-              "f = (\<lambda>x\<in>r -`` {a}. H(x, rel_restrict(f, r -`` {x}))) \<longleftrightarrow>
-                f = (\<lambda>x\<in>r -`` {a}. H(x, rel_restrict(f, ?rr -`` {x})))" 
+              "f = (\<lambda>x\<in>r -`` {a}. H(x,  restrict(f, r -`` {x}))) \<longleftrightarrow>
+                f = (\<lambda>x\<in>r -`` {a}. H(x, restrict(f, ?rr -`` {x})))" 
       by simp
   qed
   also have
-              "... \<longleftrightarrow> f = (\<lambda>x\<in>?rr-``{a}. H(x, rel_restrict(f, ?rr-``{x})))"
+              "... \<longleftrightarrow> f = (\<lambda>x\<in>?rr-``{a}. H(x, restrict(f, ?rr-``{x})))"
     by (simp add: restrict_with_root)
   finally show ?thesis 
     unfolding is_recfun_def by simp
@@ -218,26 +218,26 @@ lemma imp_trans : "p\<longrightarrow>q \<Longrightarrow> q\<longrightarrow>r \<L
 
 lemma is_recfun_f_segment :
   notes imp_trans [trans]
-  shows  "trans(r) \<Longrightarrow> is_recfun(r,a,H,f) \<longrightarrow> is_recfun(r,a,H,rel_restrict(f,r-``{a}))"
+  shows  "trans(r) \<Longrightarrow> is_recfun(r,a,H,f) \<longrightarrow> is_recfun(r,a,H,restrict(f,r-``{a}))"
 proof -
   assume
       asm:    "trans(r)"
   let
-              ?rf="rel_restrict(f,r-``{a})"
+              ?rf="restrict(f,r-``{a})"
   have
-              "is_recfun(r,a,H,f) \<longrightarrow> f = (\<lambda>x\<in>r-``{a}. H(x, rel_restrict(f, r-``{x})))"
+              "is_recfun(r,a,H,f) \<longrightarrow> f = (\<lambda>x\<in>r-``{a}. H(x, restrict(f, r-``{x})))"
     unfolding is_recfun_def ..
   also have
-              "... \<longrightarrow> ?rf = (\<lambda>x\<in>r-``{a}. H(x, rel_restrict(?rf, r-``{x})))"
+              "... \<longrightarrow> ?rf = (\<lambda>x\<in>r-``{a}. H(x, restrict(?rf, r-``{x})))"
   proof 
     assume 
-        ff:   "f = (\<lambda>x\<in>r-``{a}. H(x, rel_restrict(f, r-``{x})))" (is "f = ?f")
+        ff:   "f = (\<lambda>x\<in>r-``{a}. H(x, restrict(f, r-``{x})))" (is "f = ?f")
     have
-              "rel_restrict(?f,r-``{a}) = ?f"
+              "restrict(?f,r-``{a}) = ?f"
       by (rule  domain_restrict_idem, auto simp add: relation_lam)
     with ff show
-              "rel_restrict(f,r-``{a}) = 
-               (\<lambda>x\<in>r-``{a}. H(x, rel_restrict(rel_restrict(f,r-``{a}), r-``{x})))" 
+              "restrict(f,r-``{a}) = 
+               (\<lambda>x\<in>r-``{a}. H(x, restrict(restrict(f,r-``{a}), r-``{x})))" 
       by simp
   qed
   finally show ?thesis
@@ -247,22 +247,22 @@ qed
 
 (*
 lemma the_recfun_segment :
-  "trans(r) \<Longrightarrow> the_recfun(r,a,H) = the_recfun(rel_restrict(r,{a}\<union>r-``{a}),a,H)"
+  "trans(r) \<Longrightarrow> the_recfun(r,a,H) = the_recfun(restrict(r,{a}\<union>r-``{a}),a,H)"
   by (simp add:the_recfun_def is_recfun_segment wftrec_def )
 
 lemma wftrec_segment :
-  "trans(r) \<Longrightarrow> wftrec(r,a,H) = wftrec(rel_restrict(r,{a}\<union>r-``{a}),a,H)"  
+  "trans(r) \<Longrightarrow> wftrec(r,a,H) = wftrec(restrict(r,{a}\<union>r-``{a}),a,H)"  
   by (simp add:wftrec_def the_recfun_segment)
     
 *)
   
 lemma wftrec_segment :
-  "trans(r) \<Longrightarrow> the_recfun(r,a,H) = the_recfun(rel_restrict(r,{a}\<union>r-``{a}),a,H)"
-  "trans(r) \<Longrightarrow> wftrec(r,a,H) = wftrec(rel_restrict(r,{a}\<union>r-``{a}),a,H)"  
+  "trans(r) \<Longrightarrow> the_recfun(r,a,H) = the_recfun(restrict(r,{a}\<union>r-``{a}),a,H)"
+  "trans(r) \<Longrightarrow> wftrec(r,a,H) = wftrec(restrict(r,{a}\<union>r-``{a}),a,H)"  
   by (simp_all add:the_recfun_def is_recfun_segment wftrec_def )
   
 lemma trans_restrict:
-  "trans(r) \<Longrightarrow> trans(rel_restrict(r,A))" (is "_ \<Longrightarrow> trans(?rr)")
+  "trans(r) \<Longrightarrow> trans(restrict(r,A))" (is "_ \<Longrightarrow> trans(?rr)")
 proof (unfold trans_def, intro allI impI)
   fix x y z
   assume 
