@@ -19,9 +19,9 @@ proof -
   from zero_in_M and def_val have 
     "0 = val(G,0)" 
     by auto
-  also from def_GenExt2 and zero_in_M have 
+  also from zero_in_M have 
     "... \<in> M[G]" 
-  by simp
+  by blast
   finally show ?thesis .
 qed
     
