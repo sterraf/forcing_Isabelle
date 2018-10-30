@@ -315,17 +315,13 @@ lemma elem_of_val_pair: "\<pi> \<in> M \<Longrightarrow> x\<in>val(G,\<pi>) \<Lo
 lemma val_mono : "x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> x\<subseteq>y \<Longrightarrow> val(G,x) \<subseteq> val(G,y)"
   by (force simp add: def_val)
   
-lemma def_GenExt1 : 
+lemma GenExtD [dest]: 
   "x \<in> M[G] \<Longrightarrow> \<exists>\<tau>\<in>M. x = val(G,\<tau>)"
-  apply (unfold GenExt_def)
-  apply (rule RepFun_iff [THEN iffD1],assumption)
-  done
+  by (simp add:GenExt_def)
     
-lemma def_GenExt2 : 
+lemma GenExtI [intro]: 
   "x \<in> M \<Longrightarrow> val(G,x) \<in> M[G]"
-  apply (simp add: GenExt_def)
-  apply auto
-done
+  by (auto simp add: GenExt_def)
   
 lemma val_of_name : 
   "{x\<in>A\<times>P. Q(x)} \<in> M \<Longrightarrow>
@@ -410,9 +406,9 @@ lemma trans_Gen_Ext' :
   shows
     "y \<in> M[G]" 
 proof -
-  from \<open>vc\<in>M[G]\<close> and def_GenExt1 have
+  from \<open>vc\<in>M[G]\<close> have
     "\<exists>c\<in>M. vc = val(G,c)"
-    by simp
+    by blast
   then obtain c where
     "c\<in>M" "vc = val(G,c)" by auto
   with \<open>vc \<in> M[G]\<close> have
@@ -425,8 +421,9 @@ proof -
     "\<theta>\<in>domain(c)" "val(G,\<theta>) = y" by auto
   from \<open>\<theta>\<in>domain(c)\<close> trans_M \<open>c\<in>M\<close> domain_trans have
     "\<theta>\<in>M" by simp
-  with def_GenExt2 have
-    "val(G,\<theta>) \<in> M[G]" by simp
+  then have
+    "val(G,\<theta>) \<in> M[G]" 
+    by blast
   with \<open>val(G,\<theta>) = y\<close> show ?thesis by simp
 qed
       
@@ -501,14 +498,13 @@ lemma G_in_Gen_Ext :
           "one \<in> G"
   shows   "G \<in> M[G]" 
 proof -
-  from def_GenExt2 G_dot_in_M have
-    "val(G,G_dot) \<in> M[G]" by simp
+  from G_dot_in_M have
+    "val(G,G_dot) \<in> M[G]" 
+    by blast
   with assms val_G_dot 
   show ?thesis by simp
 qed
   
 end    (*************** CONTEXT: forcing_data *****************)
-
-
 
 end
