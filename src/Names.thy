@@ -466,10 +466,7 @@ lemma domain_G_dot :
   "domain(G_dot) = {check(p) . p \<in> P}" 
   by (auto simp add: G_dot_def domain_def)
   
-
-lemma check_inj : "check(x) = check(y) \<Longrightarrow> x = y"    
-  sorry
-
+    
 lemma val_G_dot :
   assumes "G \<subseteq> P"
           "one \<in> G" 
@@ -478,20 +475,6 @@ proof -
   from \<open>G\<subseteq>P\<close> P_sub_M \<open>one\<in>G\<close> checkin_M valcheck have
     1:"\<And>p. p\<in>G \<Longrightarrow> val(G,check(p)) = p"
     by auto
-  {fix p
-    assume "p \<in> G"
-    with assms have  "p \<in> P \<and> (\<exists>q\<in>P .  \<langle>check(p), q\<rangle> \<in> G_dot \<and> q \<in> G )"
-      by(auto,rule_tac x="p" in bexI,simp add:G_dot_def,blast+)
-  }
-  then have A : "p \<in> G \<longrightarrow> p \<in> P \<and> (\<exists>q\<in>P .  \<langle>check(p), q\<rangle> \<in> G_dot \<and> q \<in> G)" for p by simp
-  {fix p
-    assume 2: "p \<in> P" "\<exists>q\<in>P .  \<langle>check(p), q\<rangle> \<in> G_dot \<and> q \<in> G "
-    then obtain q where 3 : "\<langle>check(p), q\<rangle> \<in> G_dot" "q \<in> G" by blast
-    with \<open>p\<in>P\<close> G_dot_def have "check(p) = check(q)" "p=q" using check_inj by auto
-    with 2 3 have "p \<in> G" by blast
-  }
-  with A have Eq: "p \<in> G \<longleftrightarrow> p \<in> P \<and> (\<exists>q\<in>P .  \<langle>check(p), q\<rangle> \<in> G_dot \<and> q \<in> G)" for p by blast
-      
   from G_dot_in_M and def_val have
     "val(G,G_dot) = {val(G,t) .. t\<in>domain(G_dot) , \<exists>p\<in>P .  \<langle>t, p\<rangle> \<in> G_dot \<and> p \<in> G }"
     by simp
@@ -499,11 +482,11 @@ proof -
     "... = {val(G,t) . t \<in> { r \<in> {check(p) . p \<in> P} . (\<exists>p\<in>P .  \<langle>r, p\<rangle> \<in> G_dot \<and> p \<in> G )} }"
     using Sep_and_Replace domain_G_dot by simp 
   also have
-    "... = {val(G,t) . t \<in> { check(p) .. p \<in> P , (\<exists>q\<in>P .  \<langle>check(p), q\<rangle> \<in> G_dot \<and> q \<in> G )} }"
+    "... = {val(G,t) . t \<in> { check(q) .. q \<in> P , (\<exists>p\<in>P .  \<langle>check(q), p\<rangle> \<in> G_dot \<and> p \<in> G )} }"
     unfolding SepReplace_def by auto
   also have
     "... = {val(G,t) . t \<in> {check(p) . p \<in> G} }"
-    using Eq unfolding SepReplace_def by auto
+    sorry 
   also have
     "... = {val(G,check(p)) . p\<in>G}"
     by auto
