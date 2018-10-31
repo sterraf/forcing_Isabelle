@@ -463,8 +463,7 @@ lemma val_G_dot :
   assumes "G \<subseteq> P"
           "one \<in> G" 
   shows "val(G,G_dot) = G"
-proof
-  {
+proof (intro equalityI subsetI) 
   fix x
   assume "x\<in>val(G,G_dot)"
   then have 
@@ -476,13 +475,10 @@ proof
   then have
     "r = check(p)" 
     unfolding G_dot_def by simp
-  with \<open>one\<in>G\<close> \<open>G\<subseteq>P\<close> \<open>p\<in>G\<close> \<open>val(G,r) = x\<close> have
+  with \<open>one\<in>G\<close> \<open>G\<subseteq>P\<close> \<open>p\<in>G\<close> \<open>val(G,r) = x\<close> show
       "x \<in> G" 
     using valcheck P_sub_M  checkin_M by auto
-  }
-  then show "val(G, G_dot) \<subseteq> G" by auto
 next
-  {
   fix p
   assume "p\<in>G" 
   have "\<forall>q\<in>P. <check(q),q> \<in> G_dot" 
@@ -490,11 +486,9 @@ next
   with \<open>p\<in>G\<close> \<open>G\<subseteq>P\<close> have
     "val(G,check(p)) \<in> val(G,G_dot)"
     using val_of_elem G_dot_in_M by blast
-  with \<open>p\<in>G\<close> \<open>G\<subseteq>P\<close> \<open>one\<in>G\<close> have
+  with \<open>p\<in>G\<close> \<open>G\<subseteq>P\<close> \<open>one\<in>G\<close> show
     "p \<in> val(G,G_dot)" 
     using P_sub_M checkin_M valcheck by auto
-}
-  then show "G \<subseteq> val(G, G_dot)" by auto
 qed
     
 lemma G_in_Gen_Ext :
