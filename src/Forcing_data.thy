@@ -28,8 +28,16 @@ locale M_ZF =
                               (\<forall>a\<in>M. separation(##M,\<lambda>x. sats(M,\<phi>,[x,a])))" 
       and replacement_ax:      "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=2 \<or> arity(\<phi>)=succ(2) \<rbrakk> \<Longrightarrow>
                             (\<forall>a\<in>M. strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y,a])))" 
-    
-locale forcing_data = forcing_notion + M_ZF +
+
+(* Other assumptions over M. This will be removed
+   when Interface is completed *)
+locale M_assms = M_ZF +
+  assumes
+        check_in_M : "\<And>x. x \<in> M \<Longrightarrow> check(x) \<in> M"
+    and repl_check_pair : "strong_replacement(##M,\<lambda>p y. y =<check(p),p>)"
+      
+      
+locale forcing_data = forcing_notion + M_assms +
   fixes enum
   assumes M_countable:      "enum\<in>bij(nat,M)"
       and P_in_M:           "P \<in> M"

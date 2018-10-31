@@ -229,10 +229,7 @@ proof -
     using aux_def_check check_def by simp
   finally show ?thesis using Hcheck_def by simp
 qed
-  
-lemma checkin_M : "x \<in> M \<Longrightarrow> check(x) \<in> M"
-  sorry
-    
+      
 lemma field_Memrel : "x \<in> M \<Longrightarrow> field(Memrel(eclose({x}))) \<subseteq> M"
   apply(rule subset_trans,rule field_rel_subset,rule Ordinal.Memrel_type)
   apply(rule eclose_least,rule trans_M,auto)
@@ -435,20 +432,18 @@ lemma G_dot_in_M :
 proof -
   have 0:"G_dot = { y . p\<in>P , y = <check(p),p> }"
     unfolding G_dot_def by auto
-  from P_in_M checkin_M pairM P_sub_M have "\<And> p . p\<in>P \<Longrightarrow> <check(p),p> \<in> M" 
+  from P_in_M check_in_M pairM P_sub_M have "\<And> p . p\<in>P \<Longrightarrow> <check(p),p> \<in> M" 
     by auto
   then have
     1:"\<And>x y. \<lbrakk> x\<in>P ; y = <check(x),x> \<rbrakk> \<Longrightarrow> y\<in>M"
     by simp
-  have 2:"strong_replacement(##M,\<lambda>p y. y =<check(p),p>)"
-    sorry
   then have
     "\<forall>A\<in>M.(\<exists>Y\<in>M. \<forall>b\<in>M. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>M. x\<in>A & b = <check(x),x>))"
-    unfolding strong_replacement_def by simp
+    using repl_check_pair unfolding strong_replacement_def by simp
   then have
     "(\<exists>Y\<in>M. \<forall>b\<in>M. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>M. x\<in>P & b = <check(x),x>))"
     using P_in_M by simp
-  with 1 2 P_in_M strong_replacement_closed have
+  with 1 repl_check_pair P_in_M strong_replacement_closed have
     "{ y . p\<in>P , y = <check(p),p> } \<in> M" by simp
   then show ?thesis using 0 by simp
 qed
@@ -471,7 +466,7 @@ proof (intro equalityI subsetI)
     unfolding G_dot_def by simp
   with \<open>one\<in>G\<close> \<open>G\<subseteq>P\<close> \<open>p\<in>G\<close> \<open>val(G,r) = x\<close> show
       "x \<in> G" 
-    using valcheck P_sub_M  checkin_M by auto
+    using valcheck P_sub_M  check_in_M by auto
 next
   fix p
   assume "p\<in>G" 
@@ -482,7 +477,7 @@ next
     using val_of_elem G_dot_in_M by blast
   with \<open>p\<in>G\<close> \<open>G\<subseteq>P\<close> \<open>one\<in>G\<close> show
     "p \<in> val(G,G_dot)" 
-    using P_sub_M checkin_M valcheck by auto
+    using P_sub_M check_in_M valcheck by auto
 qed
   
   
