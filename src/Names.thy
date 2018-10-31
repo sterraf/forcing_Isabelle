@@ -458,41 +458,45 @@ proof -
     "{ y . p\<in>P , y = <check(p),p> } \<in> M" by simp
   then show ?thesis using 0 by simp
 qed
-  
-lemma domain_G_dot :
-  "domain(G_dot) = {check(p) . p \<in> P}" 
-  by (auto simp add: G_dot_def domain_def)
-  
-    
+   
 lemma val_G_dot :
   assumes "G \<subseteq> P"
           "one \<in> G" 
   shows "val(G,G_dot) = G"
-proof -
-  from \<open>G\<subseteq>P\<close> P_sub_M \<open>one\<in>G\<close> checkin_M valcheck have
-    1:"\<And>p. p\<in>G \<Longrightarrow> val(G,check(p)) = p"
+proof
+  {
+  fix x
+  assume "x\<in>val(G,G_dot)"
+  then have 
+      "\<exists>\<theta>. \<exists>p\<in>G.  <\<theta>,p>\<in>G_dot \<and> val(G,\<theta>) = x"
+    using elem_of_val_pair G_dot_in_M by simp
+  then obtain r p where 
+    "p\<in>G" "<r,p> \<in> G_dot" "val(G,r) = x" 
     by auto
-  from G_dot_in_M and def_val have
-    "val(G,G_dot) = {val(G,t) .. t\<in>domain(G_dot) , \<exists>p\<in>P .  \<langle>t, p\<rangle> \<in> G_dot \<and> p \<in> G }"
-    by simp
-  also have
-    "... = {val(G,t) .. t\<in>{check(q) . q \<in> P} , \<exists>p\<in>P .  \<langle>t, p\<rangle> \<in> G_dot \<and> p \<in> G }"
-    using domain_G_dot by simp 
-  also have
-    "... = {val(G,t) . t \<in> { check(q) .. q \<in> P , (\<exists>p\<in>P .  \<langle>check(q), p\<rangle> \<in> G_dot \<and> p \<in> G )} }"
-    unfolding SepReplace_def by auto
-  also have
-    "... = {val(G,t) . t \<in> {check(p) . p \<in> G} }"
-    sorry 
-  also have
-    "... = {val(G,check(p)) . p\<in>G}"
-    by auto
-  also have 
-    "... = {p . p\<in>G}"
-    using 1 by simp
-  finally show ?thesis by simp
+  then have
+    "r = check(p)" 
+    unfolding G_dot_def by simp
+  with \<open>one\<in>G\<close> \<open>G\<subseteq>P\<close> \<open>p\<in>G\<close> \<open>val(G,r) = x\<close> have
+      "x \<in> G" 
+    using valcheck P_sub_M  checkin_M by auto
+  }
+  then show "val(G, G_dot) \<subseteq> G" by auto
+next
+  {
+  fix p
+  assume "p\<in>G" 
+  have "\<forall>q\<in>P. <check(q),q> \<in> G_dot" 
+    unfolding G_dot_def by simp
+  with \<open>p\<in>G\<close> \<open>G\<subseteq>P\<close> have
+    "val(G,check(p)) \<in> val(G,G_dot)"
+    using val_of_elem G_dot_in_M by blast
+  with \<open>p\<in>G\<close> \<open>G\<subseteq>P\<close> \<open>one\<in>G\<close> have
+    "p \<in> val(G,G_dot)" 
+    using P_sub_M checkin_M valcheck by auto
+}
+  then show "G \<subseteq> val(G, G_dot)" by auto
 qed
-
+    
 lemma G_in_Gen_Ext :
   assumes "G \<subseteq> P"
           "one \<in> G"
@@ -504,29 +508,7 @@ proof -
   with assms val_G_dot 
   show ?thesis by simp
 qed
-  
-  
-notepad
-begin
-  fix x G
-  assume "x \<in> val(G,G_dot)" "G \<subseteq> P" "one \<in> G"
-  then have 
-    "\<exists>\<theta>. \<exists>p\<in>G.  <\<theta>,p>\<in>G_dot \<and> val(G,\<theta>) = x"
-   using elem_of_val_pair G_dot_in_M by simp
-  then obtain r p where 
-    "p\<in>G" "<r,p> \<in> G_dot" "val(G,r) = x" 
-    by auto
-  then have 
-    "r = check(p)" 
-    unfolding G_dot_def by simp
-  with \<open>one\<in>G\<close> \<open>G\<subseteq>P\<close> \<open>p\<in>G\<close> \<open>val(G,r) = x\<close> have
-    "x \<in> G" 
-    using valcheck P_sub_M  checkin_M by auto
-end
-  
-    
-  
-  
+   
 end    (*************** CONTEXT: forcing_data *****************)
 
 end
