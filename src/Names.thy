@@ -484,6 +484,8 @@ next
     "p \<in> val(G,G_dot)" 
     using P_sub_M checkin_M valcheck by auto
 qed
+  
+  
 lemma G_in_Gen_Ext :
   assumes "G \<subseteq> P"
     "one \<in> G"
@@ -495,25 +497,6 @@ proof -
   with assms val_G_dot 
   show ?thesis by simp
 qed
-  
-  
-notepad
-begin
-  fix x G
-  assume "x \<in> val(G,G_dot)" "G \<subseteq> P" "one \<in> G"
-  then have 
-    "\<exists>\<theta>. \<exists>p\<in>G.  <\<theta>,p>\<in>G_dot \<and> val(G,\<theta>) = x"
-    using elem_of_val_pair G_dot_in_M by simp
-  then obtain r p where 
-    "p\<in>G" "<r,p> \<in> G_dot" "val(G,r) = x" 
-    by auto
-  then have 
-    "r = check(p)" 
-    unfolding G_dot_def by simp
-  with \<open>one\<in>G\<close> \<open>G\<subseteq>P\<close> \<open>p\<in>G\<close> \<open>val(G,r) = x\<close> have
-    "x \<in> G" 
-    using valcheck P_sub_M  checkin_M by auto
-end
 
 end    (*************** CONTEXT: forcing_data *****************)
   
