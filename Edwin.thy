@@ -74,9 +74,6 @@ lemma lt_dest [dest!] :"i<j \<Longrightarrow> i\<in>j \<and> Ord(j)"
 lemma lt_intro [intro!] : "i\<in>j \<Longrightarrow> Ord(j) \<Longrightarrow> i<j"  
   by (simp add: lt_def)
 
-lemma limit_is_union: "Limit(a) \<Longrightarrow> a = \<Union> a"
-  sorry
-    
 definition
   Succ :: "i \<Rightarrow> o" where
   "Succ(\<alpha>) == \<exists>\<beta>. Ord(\<beta>) \<and> \<alpha> = succ(\<beta>)"
@@ -111,7 +108,7 @@ proof (induct a rule:eps_induct)
             using 1 Ord_in_Ord by simp
           also have 
             "   ... = a" 
-            using \<open>Limit(a)\<close> limit_is_union by simp
+            using \<open>Limit(a)\<close> Limit_Union_eq by simp
           finally show ?thesis .
         next
           case False
@@ -139,7 +136,8 @@ proof (induct a rule:eps_induct)
 qed
 
 lemma 
-  "Ord(a) \<Longrightarrow> 0 ++ a = a"
+  assumes "Ord(a)"
+  shows "0 ++ a = a" using assms
 proof (induct a rule:eps_induct)
   case (1 a)
   then show ?case
@@ -160,7 +158,7 @@ proof (induct a rule:eps_induct)
         using 1 Ord_in_Ord by simp
       also have 
         "   ... = a" 
-        using b limit_is_union by simp
+        using b Limit_Union_eq by simp
       finally show ?thesis .
     next
       case (c)
@@ -188,11 +186,39 @@ proof (induct a rule:eps_induct)
 qed
 
 lemma 
+  assumes "Ord(a)"
+  shows "0 ++ a = a" using assms
+proof (induct rule:trans_induct3)
+  case 0
+  then show ?case using oadd_0 by simp
+next
+  case (succ y)
+  have
+    " 0 ++ succ(y) = succ(0 ++ y)" 
+    using \<open>Ord(y)\<close> oadd_succ  by simp
+  also have
+    "   ... = succ(y)"
+    using succ \<open>Ord(y)\<close> by  simp
+  finally show ?case .
+next
+  case (limit a)
+  then have
+    "0 ++ a = (\<Union>k\<in>a. 0 ++ k)"
+    using oadd_Limit by simp
+  also have
+    "   ... = (\<Union>k\<in>a. k)" 
+    using limit Ord_in_Ord by simp
+  also have 
+    "   ... = a" 
+    using limit Limit_Union_eq by simp
+  finally show ?case .
+qed
+  
+lemma 
   assumes "Ord(a)" "Ord(b)" "Ord(c)" 
-  shows "a ++ (b ++ c) = (a ++ b) ++ c"
-proof (induct a rule:eps_induct)
-  case (1 a)
-  then show ?case sorry
-qed  
+  shows "a ++ (b ++ c) = (a ++ b) ++ c" 
+    using assms
+    
+    oops
 end
   
