@@ -421,8 +421,21 @@ qed
 lemma trans_Gen_Ext:
   "Transset(M[G])"
   by (auto simp add: Transset_def trans_Gen_Ext')
+
+end (* context forcing_data *)
+  
+(* Other assumptions over M. This will be removed
+   when Interface is completed *)
+locale M_extra_assms = forcing_data +
+  assumes
+        check_in_M : "\<And>x. x \<in> M \<Longrightarrow> check(x) \<in> M"
+    and repl_check_pair : "strong_replacement(##M,\<lambda>p y. y =<check(p),p>)"
+    and sixp_sep: "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)\<le>6 \<rbrakk> \<Longrightarrow> 
+                     (\<forall>a1\<in>M. \<forall>a2\<in>M. \<forall>a3\<in>M. \<forall>a4\<in>M. \<forall>a5\<in>M. 
+                      separation(##M,\<lambda>x. sats(M,\<phi>,[x,a1,a2,a3,a4,a5])))" 
     
     
+begin 
 definition
   G_dot :: "i" where
   "G_dot == {<check(p),p> . p\<in>P}"
@@ -493,6 +506,6 @@ proof -
   show ?thesis by simp
 qed
 
-end    (*************** CONTEXT: forcing_data *****************)
+end    (*************** CONTEXT: M_extra_assms *****************)
   
 end

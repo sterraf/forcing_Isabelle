@@ -58,14 +58,7 @@ lemma perm_sep_env:
   by (auto simp add: perm_sep_env_aux [of _ _ _ _ _ _ _ _ "{p,q,r,s,t,u,v,w}"])
 
     
-locale six_param_separation = forcing_thms +
-  assumes
-    sixp_sep: "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)\<le>6 \<rbrakk> \<Longrightarrow> 
-                  (\<forall>a1\<in>M. \<forall>a2\<in>M. \<forall>a3\<in>M. \<forall>a4\<in>M. \<forall>a5\<in>M. 
-                    separation(##M,\<lambda>x. sats(M,\<phi>,[x,a1,a2,a3,a4,a5])))" 
-  
-    
-context six_param_separation begin (*********** CONTEXT: six_param_separation ************)
+context forcing_thms begin (*********** CONTEXT: six_param_separation ************)
 
 lemmas transitivity = Transset_intf trans_M
   

@@ -26,7 +26,7 @@ lemma [trans] : "x=y \<Longrightarrow> y\<subseteq>z \<Longrightarrow> x\<subset
  
     
 (* Prototyping Forcing relation and theorems as a locale*)
-locale forcing_thms = forcing_data +
+locale forcing_thms = M_extra_assms +
   fixes forces :: "i \<Rightarrow> i"
   assumes definition_of_forces: "p\<in>P \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow>
                   sats(M,forces(\<phi>), [P,leq,one,p] @ env) \<longleftrightarrow>
