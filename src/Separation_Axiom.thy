@@ -1,4 +1,4 @@
-theory Separation_Lemmas imports Forces_locale Renaming Eisbach_Old_Appl_Syntax begin
+theory Separation_Axiom imports Forces_locale Renaming Eisbach_Old_Appl_Syntax begin
 
 lemma pred_mono : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> pred(n) \<le> pred(m)"
   by(rule_tac n="n" in natE,auto simp add:le_in_nat,erule_tac n="m" in natE,auto)
