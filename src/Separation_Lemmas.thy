@@ -431,8 +431,60 @@ proof -
   with \<open>?n\<in>M\<close> GenExt_def show
     "{x\<in>c. sats(M[G], \<phi>, [x, w, c])}\<in> M[G]" by force
 qed
- 
+
+lemma zero_in_Gen_Ext : 
+  "0 \<in> M[G]" 
+proof -
+  from zero_in_M and elem_of_val have 
+    "0 = val(G,0)" 
+    by auto
+  also from GenExtI and zero_in_M have 
+    "... \<in> M[G]" 
+  by simp
+  finally show ?thesis .
+qed 
+     
+lemma Gen_Ext_mtriv :  
+  "M_generic(G) \<Longrightarrow> Union_ax(##M[G]) \<Longrightarrow> M_trivial_no_repl(##M[G])"
+  sorry
+    
+interpretation MGtriv :  M_trivial_no_repl "##M[G]" sorry
   
+theorem separation_in_MG:
+  assumes 
+    "M_generic(G)" and "\<phi>\<in>formula" and "arity(\<phi>) = 1 \<or> arity(\<phi>)=2"
+  shows  
+    "(\<forall>a\<in>(M[G]). separation(##M[G],\<lambda>x. sats(M[G],\<phi>,[x,a])))"
+proof -
+  from assms have
+    "arity(\<phi>)\<le>2" by auto
+  { 
+    fix c w 
+    assume 
+      "c\<in>M[G]" "w\<in>M[G]"
+    then obtain \<pi> \<sigma> where
+      "val(G, \<pi>) = c" "val(G, \<sigma>) = w" "\<pi> \<in> M" "\<sigma> \<in> M" 
+      using GenExt_def by auto
+    with assms have
+      Eq1: "{x\<in>c. sats(M[G], \<phi>, [x,w,c])} \<in> M[G]"
+      using separation_aux  by auto
+    {
+      fix x
+      assume 
+        "x\<in>c"
+      with \<open>c\<in>M[G]\<close> have
+        "x\<in>M[G]"
+        by (simp add:trans_Gen_Ext Transset_intf)
+      with \<open>arity(\<phi>)\<le>2\<close> \<open>\<phi> \<in> formula\<close> \<open>c\<in>M[G]\<close> \<open>w\<in>M[G]\<close> have
+        "sats(M[G], \<phi>, [x,w]@[c]) \<longleftrightarrow> sats(M[G], \<phi>, [x,w])" 
+        by (rule_tac arity_sats_iff, simp_all)   (* Enhance this *)
+    }
+    with Eq1 have
+      "{x\<in>c. sats(M[G], \<phi>, [x,w])} \<in> M[G]"
+      by simp
+    }
+    then show ?thesis using separation_iff by auto
+qed
 
 end   (*********** CONTEXT: six_param_separation ************)
 end
