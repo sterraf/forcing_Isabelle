@@ -383,11 +383,11 @@ lemma elem_of_val: "x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>\<in>d
 lemma elem_of_val_pair: "x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>. \<exists>p\<in>G.  <\<theta>,p>\<in>\<pi> \<and> val(G,\<theta>) = x"
   by (subst (asm) def_val,auto)
   
-lemma GenExtD [dest]: 
+lemma GenExtD: 
   "x \<in> M[G] \<Longrightarrow> \<exists>\<tau>\<in>M. x = val(G,\<tau>)"
   by (simp add:GenExt_def)
     
-lemma GenExtI [intro]: 
+lemma GenExtI: 
   "x \<in> M \<Longrightarrow> val(G,x) \<in> M[G]"
   by (auto simp add: GenExt_def)
     
@@ -399,7 +399,7 @@ lemma trans_Gen_Ext' :
 proof -
   from \<open>vc\<in>M[G]\<close> have
     "\<exists>c\<in>M. vc = val(G,c)"
-    by blast
+    by (blast dest:GenExtD)
   then obtain c where
     "c\<in>M" "vc = val(G,c)" by auto
   with \<open>vc \<in> M[G]\<close> have
@@ -414,7 +414,7 @@ proof -
     "\<theta>\<in>M" by simp
   then have
     "val(G,\<theta>) \<in> M[G]" 
-    by blast
+    by (blast intro:GenExtI)
   with \<open>val(G,\<theta>) = y\<close> show ?thesis by simp
 qed
   
@@ -488,7 +488,7 @@ lemma G_in_Gen_Ext :
 proof -
   from G_dot_in_M have
     "val(G,G_dot) \<in> M[G]" 
-    by auto
+    by (auto intro:GenExtI)
   with assms val_G_dot 
   show ?thesis by simp
 qed
