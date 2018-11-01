@@ -198,7 +198,7 @@ next
     using \<open>Ord(y)\<close> oadd_succ  by simp
   also have
     "   ... = succ(y)"
-    using succ \<open>Ord(y)\<close> by  simp
+    using succ by  simp
   finally show ?case .
 next
   case (limit a)
