@@ -171,9 +171,6 @@ proof -
   with P_in_M have
     "domain(\<pi>)\<in>M" "domain(\<pi>) \<times> P \<in> M"
     by (simp_all del:setclass_iff add:setclass_iff[symmetric])
-  from \<open>\<pi>\<in>M\<close> \<open>\<sigma>\<in>M\<close> have 
-    "\<pi>\<subseteq>M" "\<sigma>\<subseteq>M"
-    using trans_M transD by simp_all
   note in_M1 = \<open>\<pi>\<in>M\<close> \<open>\<sigma>\<in>M\<close> \<open>domain(\<pi>) \<times> P \<in> M\<close>  P_in_M one_in_M leq_in_M
   {
     fix u
@@ -308,7 +305,7 @@ proof -
     (is "?n\<subseteq>?m") 
     by auto
   with val_mono have
-    first_incl: "?n\<subseteq>M \<Longrightarrow> ?m\<subseteq>M \<Longrightarrow> val(G,?n) \<subseteq> val(G,?m)" 
+    first_incl: "val(G,?n) \<subseteq> val(G,?m)" 
     by simp
   fix c w
   assume 
@@ -316,17 +313,11 @@ proof -
   with \<open>?\<psi>\<in>formula\<close> \<open>arity(?\<psi>) \<le> 6\<close> in_M1 have 
     "?n\<in>M" 
     using six_sep_aux by simp
-  from \<open>domain(\<pi>) \<times> P \<in> M\<close> have
-    "?n \<subseteq> M"
-    using trans_M transD by blast    
-  moreover have 
-    \<open>?m \<subseteq> M\<close>
-    using \<open>domain(\<pi>) \<times> P \<in> M\<close> trans_M transD by blast   
-  ultimately have
+  have
     in_val_n: "<\<theta>,p>\<in>domain(\<pi>)*P \<Longrightarrow> <\<theta>,p>\<in>M \<Longrightarrow> p\<in>G \<Longrightarrow> p\<in>P \<Longrightarrow> 
       sats(M,?\<psi>,[<\<theta>,p>] @ ?Pl1 @ [\<sigma>,\<pi>]) \<Longrightarrow> val(G,\<theta>)\<in>val(G,?n)" for \<theta> p
     using val_of_elem by simp
-  from \<open>?m\<subseteq>M\<close> val_of_name and \<open>val(G,\<pi>) = c\<close> \<open>val(G,\<sigma>) = w\<close> have
+  from val_of_name and \<open>val(G,\<pi>) = c\<close> \<open>val(G,\<sigma>) = w\<close> have
     "val(G,?m) =
                {val(G,t) .. t\<in>domain(\<pi>) , \<exists>q\<in>P .  
                     (\<exists>\<theta>\<in>M. \<exists>p\<in>P. <t,q> = \<langle>\<theta>, p\<rangle> \<and> 
@@ -364,9 +355,9 @@ proof -
       then have
         "\<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x, w, c]) \<and> q \<in> G"
         by simp
-      with \<open>val(G,\<pi>) = c\<close> \<open>\<pi>\<subseteq>M\<close> have 
+      with \<open>val(G,\<pi>) = c\<close>  have 
         "\<exists>q\<in>P. \<exists>t\<in>domain(\<pi>). val(G,t) =x \<and> sats(M[G], \<phi>, [val(G,t), w, c]) \<and> q \<in> G" 
-        using Sep_and_Replace def_val by auto
+        using Sep_and_Replace def_val sorry
     }
     then show 
       " {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x, w, c]) \<and> q \<in> G} \<subseteq> ..."
@@ -383,7 +374,7 @@ proof -
       Eq4: "x \<in> {x\<in>c. sats(M[G], \<phi>, [x, w, c])}"
     with \<open>val(G,\<pi>) = c\<close> have 
       "x \<in> val(G,\<pi>)" by simp
-    with \<open>\<pi>\<subseteq>M\<close> have
+    then have
       "\<exists>\<theta>. \<exists>q\<in>G. <\<theta>,q>\<in>\<pi> \<and> val(G,\<theta>) =x" 
       using elem_of_val_pair by auto
     then obtain \<theta> q where
@@ -435,7 +426,7 @@ proof -
   }
   with val_m  have 
     "val(G,?m) \<subseteq> val(G,?n)" by auto
-  with \<open>?n\<subseteq>M\<close> \<open>?m\<subseteq>M\<close> val_m first_incl have
+  with  val_m first_incl have
     "val(G,?n) = {x\<in>c. sats(M[G], \<phi>, [x, w, c])}" by auto
   with \<open>?n\<in>M\<close> GenExt_def show
     "{x\<in>c. sats(M[G], \<phi>, [x, w, c])}\<in> M[G]" by force
