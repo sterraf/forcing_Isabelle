@@ -106,7 +106,7 @@ named_theorems sndpass
     
 method simp_altnt declares fstpass sndpass = (simp add:fstpass ; simp add:sndpass)+
 method abs_simp = (simp_altnt fstpass:nat_union_abs1 sndpass: nat_union_abs2)
-    
+
 lemma separation_aux :
   "M_generic(G) \<Longrightarrow> \<pi> \<in> M \<Longrightarrow> \<sigma> \<in> M \<Longrightarrow>
     val(G, \<pi>) = c \<Longrightarrow> val(G, \<sigma>) = w \<Longrightarrow>
@@ -357,7 +357,7 @@ proof -
         by simp
       with \<open>val(G,\<pi>) = c\<close>  have 
         "\<exists>q\<in>P. \<exists>t\<in>domain(\<pi>). val(G,t) =x \<and> sats(M[G], \<phi>, [val(G,t), w, c]) \<and> q \<in> G" 
-        using Sep_and_Replace def_val sorry
+        using Sep_and_Replace elem_of_val by auto
     }
     then show 
       " {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x, w, c]) \<and> q \<in> G} \<subseteq> ..."
@@ -431,6 +431,8 @@ proof -
   with \<open>?n\<in>M\<close> GenExt_def show
     "{x\<in>c. sats(M[G], \<phi>, [x, w, c])}\<in> M[G]" by force
 qed
+ 
+  
 
 end   (*********** CONTEXT: six_param_separation ************)
 end
