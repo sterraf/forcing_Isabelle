@@ -58,7 +58,7 @@ lemma perm_sep_env:
   by (auto simp add: perm_sep_env_aux [of _ _ _ _ _ _ _ _ "{p,q,r,s,t,u,v,w}"])
 
     
-context forcing_thms begin (*********** CONTEXT: six_param_separation ************)
+context forcing_thms begin (*********** CONTEXT: forcing_thms ************)
 
 lemmas transitivity = Transset_intf trans_M
   
@@ -479,5 +479,5 @@ proof -
     then show ?thesis using separation_iff by auto
 qed
 
-end   (*********** CONTEXT: six_param_separation ************)
+end   (*********** CONTEXT: forcing_thms ************)
 end
