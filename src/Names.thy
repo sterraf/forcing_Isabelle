@@ -134,23 +134,23 @@ lemma tr_edrel_eclose : "<y,z> \<in> edrel(eclose({x}))^+ \<Longrightarrow> y \<
     
 lemma restrict_edrel_eq : 
   assumes "z \<in> domain(x)"
-  shows "rel_restrict(edrel(eclose({x})), eclose({z})) = edrel(eclose({z}))"
+  shows "fld_restrict(edrel(eclose({x})), eclose({z})) = edrel(eclose({z}))"
 proof -
   let ?ec="\<lambda> y . edrel(eclose({y}))"
   let ?ez="eclose({z})"
-  let ?rr="rel_restrict(?ec(x), ?ez)"  
+  let ?rr="fld_restrict(?ec(x), ?ez)"  
   { fix y
     assume yr:"y \<in> ?rr"
-    with yr obtain a b where 1:"<a,b> \<in> rel_restrict(?rr,?ez)" 
+    with yr obtain a b where 1:"<a,b> \<in> fld_restrict(?rr,?ez)" 
       "a \<in> ?ez" "b \<in> ?ez" "<a,b> \<in> ?ec(x)" "y=<a,b>"
-      unfolding rel_restrict_def Ord_induct by blast
+      unfolding fld_restrict_def Ord_induct by blast
     then have "a \<in> domain(b)" using edrelD by blast
     with 1 have "y \<in> edrel(eclose({z}))" by blast
   }
-  then have A:"rel_restrict(edrel(eclose({x})), eclose({z})) \<subseteq> edrel(eclose({z}))" by blast
+  then have A:"fld_restrict(edrel(eclose({x})), eclose({z})) \<subseteq> edrel(eclose({z}))" by blast
   let ?ec="\<lambda> y . edrel(eclose({y}))"
   let ?ez="eclose({z})"
-  let ?rr="rel_restrict(?ec(x), ?ez)"  
+  let ?rr="fld_restrict(?ec(x), ?ez)"  
   { fix y
     assume yr:"y \<in> edrel(?ez)"
     then obtain a b where 1: "a \<in> ?ez" "b \<in> ?ez" "y=<a,b>" "a \<in> domain(b)"
@@ -158,10 +158,10 @@ proof -
     with assms have "z \<in> eclose(x)" using in_dom_in_eclose by simp
     with assms 1 have "a \<in> eclose({x})" "b \<in> eclose({x})" using in_eclose_sing by simp+
     with \<open>a\<in>domain(b)\<close> have "<a,b> \<in> edrel(eclose({x}))" by blast
-    with 1 have "<a,b> \<in> rel_restrict(edrel(eclose({x})),eclose({z}))" using rel_restrictI by simp
-    with 1 have "y \<in> rel_restrict(edrel(eclose({x})),eclose({z}))" by simp 
+    with 1 have "<a,b> \<in> fld_restrict(edrel(eclose({x})),eclose({z}))" using fld_restrictI by simp
+    with 1 have "y \<in> fld_restrict(edrel(eclose({x})),eclose({z}))" by simp 
   }
-  then have B: "edrel(eclose({z})) \<subseteq> rel_restrict(edrel(eclose({x})), eclose({z}))" by blast
+  then have B: "edrel(eclose({z})) \<subseteq> fld_restrict(edrel(eclose({x})), eclose({z}))" by blast
   with A show ?thesis by auto
 qed
   
@@ -253,7 +253,7 @@ proof -
   moreover have "wf(?r(x))" using wf_edrel .    
   moreover from assms have "tr_down(?r(x),z) \<subseteq> eclose({z})" using tr_edrel_subset by simp
   ultimately have 
-    "wfrec(?r(x),z,Hv(G)) = wfrec(rel_restrict(?r(x),eclose({z})),z,Hv(G))"
+    "wfrec(?r(x),z,Hv(G)) = wfrec(fld_restrict(?r(x),eclose({z})),z,Hv(G))"
     using wfrec_restr by simp
   also with assms have "... = wfrec(?r(z),z,Hv(G))" using restrict_edrel_eq by simp
   finally show ?thesis .
