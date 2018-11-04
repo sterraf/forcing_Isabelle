@@ -1,52 +1,6 @@
-theory Renaming imports Formula begin
+theory Renaming imports Nat_Miscelanea Formula begin
 
 section\<open>Auxiliary results\<close>
-
-lemmas nat_succI =  Ord_succ_mem_iff [THEN iffD2,OF nat_into_Ord]
-
-lemma nat_succD : "m \<in> nat \<Longrightarrow>  succ(n) \<in> succ(m) \<Longrightarrow> n \<in> m"
-  by (drule_tac j="succ(m)" in ltI,auto,erule ltD)
-    
-lemmas zero_in =  ltD [OF nat_0_le]
-
-lemma in_n_in_nat :  "m \<in> nat \<Longrightarrow> n \<in> m \<Longrightarrow> n \<in> nat"
- by(rule_tac A="m" in subsetD,erule naturals_subset_nat,assumption)
-
-    
-lemma in_succ_in_nat : "m \<in> nat \<Longrightarrow> n \<in> succ(m) \<Longrightarrow> n \<in> nat"
-  by(rule le_in_nat[OF leI],erule ltI,simp+)
-  
-lemma ltI_neg : "x \<in> nat \<Longrightarrow> j \<le> x \<Longrightarrow> j \<noteq> x \<Longrightarrow> j < x"
-  by (simp add: le_iff)
-
-lemma leD_cases : "x \<in> nat \<Longrightarrow> j \<le> x \<Longrightarrow> j = x \<or> j < x"
-  by(auto simp add: le_iff)
-
-lemma leI_nat : "x \<in> nat \<Longrightarrow> j \<le> x \<Longrightarrow> j \<in> nat"
-  by(erule leE,erule in_n_in_nat,erule ltD,simp)
-    
-lemma succ_pred_eq  :  "m \<in> nat \<Longrightarrow> m \<noteq> 0  \<Longrightarrow> succ(pred(m)) = m"
- by (erule_tac n="m" in natE,auto)
-
-lemma succ_mono : "j \<le> n \<Longrightarrow> succ(j) \<le> succ(n)"
-  by (auto)
-    
-lemma succ_ltI : "n \<in> nat \<Longrightarrow> succ(j) < n \<Longrightarrow> j < n"
-  apply (rule_tac j="succ(j)" in lt_trans,rule le_refl,rule Ord_succD)
-  apply (rule nat_into_Ord,erule in_n_in_nat,erule ltD,simp)
-done
-      
-lemma succ_In : "n \<in> nat \<Longrightarrow> succ(j) \<in> n \<Longrightarrow> j \<in> n"
- by (rule ltD,rule succ_ltI,simp,rule ltI,auto)
-    
-lemmas succ_leD = succ_leE[OF leI]
-    
-lemma succpred_leI : "n \<in> nat \<Longrightarrow>  n \<le> succ(pred(n))"
-  by (erule natE,simp+)
-
-lemma succpred_n0 : "p \<in> nat \<Longrightarrow>  succ(n) \<in> p \<Longrightarrow> p\<noteq>0"
-  by (erule natE,simp+)
-
 
 lemma funcI : "f \<in> A \<rightarrow> B \<Longrightarrow> a \<in> A \<Longrightarrow> b= f ` a \<Longrightarrow> \<langle>a, b\<rangle> \<in> f"
   by(simp,rule apply_Pair,simp+)
@@ -54,47 +8,8 @@ lemma funcI : "f \<in> A \<rightarrow> B \<Longrightarrow> a \<in> A \<Longright
 lemma bij_is_function  : "f\<in>bij(A,B) \<Longrightarrow> function(f)"
   by(drule bij_is_fun,simp add: Pi_iff)
 
-lemmas natEin = natE [OF lt_nat_in_nat]  
-
-lemma trich_nat : "\<lbrakk> m \<in> nat ; n \<le> m ; n \<noteq> m ; \<not> n < m \<rbrakk> \<Longrightarrow> P"
-  apply(subgoal_tac "Ord(n)" "Ord(m)" "\<not> m < n")
-  apply(rule_tac i="n" and j="m" in Ord_linear_lt,blast+)
-  apply(erule le_imp_not_lt,erule nat_into_Ord)
-  apply(rule nat_into_Ord[OF le_in_nat],assumption+)
-done
-
-lemma pred0E : "i \<in> nat \<Longrightarrow> pred(i) = 0 \<Longrightarrow> i = 1 | i = 0"
-  by(rule natE,simp+)
-
-lemma succ_in : "succ(x) \<le> y  \<Longrightarrow> x \<in> y"
- by (auto,rule ltD) 
-  
-lemmas Un_least_lt_iffn =  Un_least_lt_iff [OF nat_into_Ord nat_into_Ord]
-
-lemma pred_le2 : "n\<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> pred(n) \<le> m \<Longrightarrow> n \<le> succ(m)"
-  by(subgoal_tac "n\<in>nat",rule_tac n="n" in natE,auto)
-
-    
-lemma pred_le : "n\<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> n \<le> succ(m) \<Longrightarrow> pred(n) \<le> m"
-  by(subgoal_tac "pred(n)\<in>nat",rule_tac n="n" in natE,auto)
-    
-lemma un_leD1 : "i \<in> nat \<Longrightarrow> j\<in> nat \<Longrightarrow> k \<in> nat \<Longrightarrow>  i \<union> j \<le> k \<Longrightarrow> i \<le> k"   
-  by (rule conjunct1,rule  iffD1, rule_tac j="j" in Un_least_lt_iffn,assumption+)
-
-    
-lemma un_leD2 : "i \<in> nat \<Longrightarrow> j\<in> nat \<Longrightarrow> k \<in> nat \<Longrightarrow>  i \<union> j \<le>k \<Longrightarrow> j \<le> k"   
-  by (rule conjunct2,rule  iffD1, rule_tac j="j" in Un_least_lt_iffn,assumption+)
-
-lemma un_leI : "i \<in> nat \<Longrightarrow> j\<in> nat \<Longrightarrow> k \<in> nat \<Longrightarrow> i \<le> k \<Longrightarrow> j \<le> k \<Longrightarrow> i \<union> j \<le> k"   
-  by(subst Un_def, rule Union_le,auto) 
-lemma un_leI' : "k \<in> nat \<Longrightarrow> i \<le> k \<Longrightarrow> j \<le> k \<Longrightarrow> i \<union> j \<le> k"   
-  by(subst Un_def, rule Union_le,auto) 
-
-lemma gt1 : "n \<in> nat \<Longrightarrow> i \<in> n \<Longrightarrow> i \<noteq> 0 \<Longrightarrow> i \<noteq> 1 \<Longrightarrow> 1<i"
-  by(rule_tac n="i" in natE,erule in_n_in_nat,simp,auto,rule Ord_0_lt,simp+)
-
 lemma app_bij : "f \<in> bij(A,B) \<Longrightarrow> a \<in> A \<Longrightarrow> f`a \<in> B"
-  by (frule  bij_is_fun,auto)
+  by (frule  bij_is_fun,simp)
 
 lemma bij_app_n : "n\<in>nat \<Longrightarrow> f\<in>bij(n,n) \<Longrightarrow> x \<in> nat \<Longrightarrow> f`x \<in> nat"  
   apply(case_tac "x\<in>n",rule_tac m="n" in in_n_in_nat,(simp add:app_bij)+)
@@ -112,7 +27,7 @@ lemmas invol_conv_bij =  bij_converse_bij[OF invol_bij]
 lemmas invol_fun = bij_is_fun[OF invol_bij]
 lemmas invol_conv_fun = bij_is_fun[OF invol_conv_bij]
   
-lemma invol_inverse : "invol(A,f) \<Longrightarrow> a \<in> A \<Longrightarrow> f`(f`a) = a"
+lemma invol_inverse : "invol(A,f) \<Longrightarrow> a \<in> A \<Longrightarrow> f`(f`a) = a"  
   by(simp add: invol_def,clarsimp,subst sym[of "converse(f)"],
       simp,rule right_inverse_bij,simp+)
   
@@ -750,12 +665,12 @@ lemma conv_ext_ltk : "m \<in> nat \<Longrightarrow> invol(k,f) \<Longrightarrow>
   apply(rule function_apply_equality,rule converseI)
   apply(subst ext_fun_lek,simp)
   apply(erule invol_fun,simp+)
-  apply(rule funcI,rule bij_is_fun[OF ext_fun_bije],simp add: leI_nat,erule invol_bij,simp+) 
+  apply(rule funcI,rule bij_is_fun[OF ext_fun_bije],simp add: le_in_nat,erule invol_bij,simp+) 
   apply(rule ltD,rule lt_trans2,rule ltI,rule apply_type)
-  apply(erule invol_fun,simp,rule nat_into_Ord,erule leI_nat,simp+,subst ext_fun_lek,simp) 
+  apply(erule invol_fun,simp,rule nat_into_Ord,erule le_in_nat,simp+,subst ext_fun_lek,simp) 
   apply(rule invol_fun,simp+,rule apply_type,erule invol_fun,simp+,simp add: invol_inverse)
   apply(rule bij_is_function,rule bij_converse_bij,rule ext_fun_bije,auto)
-  apply(simp add:leI_nat,erule invol_bij)
+  apply(simp add:le_in_nat,erule invol_bij)
   done
     
 lemma conv_ext_gek : "m \<in> nat \<Longrightarrow> invol(k,f) \<Longrightarrow> k \<le> n \<Longrightarrow> n \<in> m \<Longrightarrow>
@@ -789,22 +704,22 @@ lemma conv_ext_ap : "m\<in>nat \<Longrightarrow> invol(k,f) \<Longrightarrow> k\
   apply(subst conv_ext_ltk,auto,erule ltD)
   apply(subgoal_tac "k\<le>n")
   apply(rule conv_ext_gek,auto)  
-  apply(rule_tac not_le_iff_lt[THEN iffD1],auto,(rule nat_into_Ord,rule in_n_in_nat,rule leI_nat,auto+))
-  apply(rule nat_into_Ord,erule leI_nat,simp)
+  apply(rule_tac not_le_iff_lt[THEN iffD1],auto,(rule nat_into_Ord,rule in_n_in_nat,rule le_in_nat,auto+))
+  apply(rule nat_into_Ord,erule le_in_nat,simp)
 done
 
 lemma conv_ext : "m\<in>nat \<Longrightarrow> invol(k,f) \<Longrightarrow> k\<le> m \<Longrightarrow> 
   converse(ext_fun(f,k,m)) = ext_fun(f,k,m)"
   apply(rule fun_extension,rule bij_is_fun)
-    apply(rule bij_converse_bij,rule ext_fun_bije,auto simp add:leI_nat)
-    apply(erule invol_bij,rule bij_is_fun,rule ext_fun_bije,auto simp add:leI_nat invol_bij)
+    apply(rule bij_converse_bij,rule ext_fun_bije,auto simp add:le_in_nat)
+    apply(erule invol_bij,rule bij_is_fun,rule ext_fun_bije,auto simp add:le_in_nat invol_bij)
    apply(simp add: conv_ext_ap)
 done
 
 lemma inv_ext : "m\<in>nat \<Longrightarrow> invol(k,f) \<Longrightarrow> k\<le> m \<Longrightarrow>
                    invol(m,ext_fun(f,k,m))"
   apply(unfold invol_def,rule conjI)
-   apply(fold invol_def,rule ext_fun_bije,simp add:leI_nat,erule invol_bij,simp+) 
+   apply(fold invol_def,rule ext_fun_bije,simp add:le_in_nat,erule invol_bij,simp+) 
   apply(rule sym,rule conv_ext,auto)
 done
     
@@ -957,6 +872,5 @@ lemma sats_swap_0_13 :
   apply(insert sats_swap_0_1,simp)
   apply(simp+) 
 done
-
 
 end 
