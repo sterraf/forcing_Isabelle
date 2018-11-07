@@ -1,0 +1,143 @@
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
+\section{Isabelle/ZF}
+
+Let us introduce briefly Paulson's formalization of ZF
+\cite{paulson2017isabelle} in Isabelle and the main aspects of his
+formal proof for the relative consistency of the Axiom of Choice
+\cite{paulson_2003}; we will only focus on those aspects that are
+essential to keep this paper self-contained, and refer the interested
+reader to Paulson's articles.
+%% Isabelle/ZF is a theory built upon the
+%% core library FOL of classical first order logic.
+Isabelle/ZF includes a development of classical first order logic,
+FOL. Both of them are  built upon the core library \emph{Pure}. 
+
+In Isabelle/ZF sets are \emph{individuals}, i.e.\ terms of type
+\isatt{i} and formulas have type \isatt{o} 
+(akin to a \emph{Bool} type, but at the object level). 
+The  axiomatization 
+of $\ZFC$ in Isabelle/ZF proceeds by postulating  a binary predicate
+\isatt{\ensuremath{\in}} and   several set
+constructors (terms and function with values in \isatt{i}) corresponding to the  empty set
+(the constant \isatt{\isadigit{0}}), powersets, and one further constant
+\isatt{inf} for an infinite set. The axioms, being formulas, are terms
+of type \isatt{o}; 
+the foundation axiom, for example, is formalized as (the universal
+closure of) 
+\isa{{\isachardoublequoteopen}A\ {\isacharequal}\ {\isadigit{0}}\
+  {\isasymor}%
+  \ {\isacharparenleft}{\isasymexists}x{\isasymin}A{\isachardot}\ %
+  {\isasymforall}y{\isasymin}x{\isachardot}\ %
+  y{\isasymnotin}A{\isacharparenright}%
+  {\isachardoublequoteclose}}. %
+Besides the axioms, Isabelle/ZF also introduces several definitions
+(for example, pairs and sets defined by comprehension using
+separation) and syntactic abbreviations to keep the formalization
+close to the customary manner of doing mathematics.  Working with the
+library and extending it is quite straightforward.  As an example, we
+introduce a new term-former denoting the image of a function
+over a set defined by comprehension, namely
+$\{b(x): x\in A\text{ and }Q(x)\}$:
+%% Since we find a need to combine the replacement and
+%% separation schemes to speak of the image of a function over some set
+%% defined by comprehension, we introduced a new term-former:
+\begin{isabelle}
+  \isacommand{definition}\isamarkupfalse%
+  \ SepReplace\ {\isacharcolon}{\isacharcolon}\
+  {\isachardoublequoteopen}{\isacharbrackleft}i{\isacharcomma}\
+  i{\isasymRightarrow}i{\isacharcomma}\ i{\isasymRightarrow}\
+  o{\isacharbrackright}\
+  {\isasymRightarrow}i{\isachardoublequoteclose}\
+  \isakeyword{where}\isanewline \ \
+  {\isachardoublequoteopen}SepReplace{\isacharparenleft}A{\isacharcomma}b{\isacharcomma}Q{\isacharparenright}\
+  {\isacharequal}{\isacharequal}\ {\isacharbraceleft}y\ {\isachardot}\
+  x{\isasymin}A{\isacharcomma}\
+  y{\isacharequal}b{\isacharparenleft}x{\isacharparenright}\
+  {\isasymand}\
+  Q{\isacharparenleft}x{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+\noindent %% It is more convenient to add an abbreviation for a simpler
+%% writing and a nicer reading, so we use
+We are then able to add the abbreviation \isa{{\isacharbraceleft}b\
+  {\isachardot}{\isachardot}\ x{\isasymin}A{\isacharcomma}\
+  Q{\isacharbraceright}} as a notation for
+\isa{SepReplace{\isacharparenleft}A{\isacharcomma}b{\isacharcomma}Q{\isacharparenright}}. The
+characterization of our new constructor is given by
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ Sep{\isacharunderscore}and{\isacharunderscore}Replace{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbraceleft}b{\isacharparenleft}x{\isacharparenright}\ {\isachardot}{\isachardot}\ x{\isasymin}A{\isacharcomma}\ Q{\isacharparenleft}x{\isacharparenright}\ {\isacharbraceright}\ {\isacharequal}\ {\isacharbraceleft}b{\isacharparenleft}x{\isacharparenright}\ {\isachardot}\ x{\isasymin}{\isacharbraceleft}y{\isasymin}A{\isachardot}\ Q{\isacharparenleft}y{\isacharparenright}{\isacharbraceright}{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+
+%% We are not discussing how, if possible at all, to express that some
+%% set satisfies some axiom. For example, we might well be interested in
+%% proving $\emptyset \models \mathit{foundation}$, but there is no
+%% sensible way to state this, without encoding formulas and axioms in
+%% ZFC.\footnote{Indeed Paulson has encoded formulas using a very general
+%%   method to encode recursive definitions. In our development, although
+%%   not reported in this paper, we use this internalization.}
+%% 
+%% \fbox{ You need this in order to formalize $\models$ as a predicate of
+%%   type $i\ent i \ent o$. (Don't know how to put that here.)
+%% }
+
+%% In
+%% Isabelle/ZF there are, however, relativized versions of the
+%% axioms. This alternative statement of the axioms are relativized with
+%% respect to classes, which in Isabelle/ZF corresponds to predicates over
+%% sets
+We now discuss relativization in Isabelle/ZF. Relativized versions of the
+ axioms can be found in the formalization of constructibility \cite{paulson_2003}. For
+ example, the relativized Axiom of Foundation is
+\begin{isabelle}
+\isacommand{definition}\isamarkupfalse%
+\ foundation{\isacharunderscore}ax\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharparenleft}i{\isacharequal}{\isachargreater}o{\isacharparenright}\ {\isacharequal}{\isachargreater}\ o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ \ \ {\isachardoublequoteopen}foundation{\isacharunderscore}ax{\isacharparenleft}M{\isacharparenright}\ {\isacharequal}{\isacharequal}\isanewline
+\ \ \ \ \ \ \ \ {\isasymforall}x{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isacharparenleft}{\isasymexists}y{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ y{\isasymin}x{\isacharparenright}\ {\isasymlongrightarrow}\ {\isacharparenleft}{\isasymexists}y{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ y{\isasymin}x\ {\isacharampersand}\ {\isachartilde}{\isacharparenleft}{\isasymexists}z{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ z{\isasymin}x\ {\isacharampersand}\ z\ {\isasymin}\ y{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+% ∀x[c]
+\noindent The relativized quantifier
+\isa{{\isasymforall}x{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\
+  P(x)} is a shorthand for \isa{{\isasymforall}x{\isachardot}\ M(x)
+  {\isasymlongrightarrow} P(x)}. In order to express that a (set) model
+satisfies this axiom we use  the ``coercion''
+\isa{{\isacharhash}{\isacharhash} :: i ={\isachargreater} (i
+  ={\isachargreater} o)} (that maps a set $A$ to the predicate
+$\lambda x . (x\in A)$) provided by Isabelle/ZF. As a trivial example we
+can show that the empty set satisfies Foundation:
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ emp{\isacharunderscore}foundation\ {\isacharcolon}\ {\isachardoublequoteopen}foundation{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}{\isadigit{0}}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+
+% Let us ponder if one can state, let alone prove, that some set \isa{M
+%   :: i} satisfies a statement \isa{\ensuremath{\phi} :: o}. Since
+% \isa{o} does not have an inductive definition, we cannot define the
+% satisfaction of \isa{\ensuremath{\phi}}. 
+
+% As we have outlined above, relativization is a key concept when
+% proving that axioms satisfied by some model $M$ are also satisfied in
+% another model constructed from $M$. In this paper, we show the complete
+% proof that if a set \isa{M :: i} satisfies the 
+
+Mathematical texts usually start by fixing the context that defines
+parameters and assumptions needed to develop theorems
+and results. In Isabelle the way of defining contexts is through
+\emph{locales}~\cite{ballarin2010tutorial}.
+Locales can be combined and extended adding more parameters and assuming
+more facts, leading to a new locale. For example a context describing
+lattices can be extended to distributive lattices.
+The way to instantiate a locale is by \emph{interpreting} it, which consists
+of giving concrete values to parameters and proving the assumptions.
+In our work, we use locales to organize the formalization and to make
+explicit the assumptions of the most important results.
+
+% locales
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% ispell-local-dictionary: "american"
+%%% TeX-master: "first_steps_into_forcing"
+%%% End:

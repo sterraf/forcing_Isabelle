@@ -1,0 +1,158 @@
+\subsection{A sequence version of $\DC$}\label{sec:sequence-version-dc}
+In order to prove the Rasiowa-Sikorski lemma in
+general, a version of the Axiom of Choice ($\AC$) must be proved. This
+version is known as the \emph{Principle of Dependent Choices}:
+\begin{quote}
+  ($\DC$) Let $\rr$ be a binary relation on $A$, and $a\in A$. If
+  $\forall x\in A.\,  \exists y\in A.\, x\rr y$, then there exists
+  $f:\om\to A$ such that $f(0)=a$ and $f(n)\rr f(n+1)$ for all
+  $n\in\om$.
+\end{quote}
+
+A different version of $\DC$ (without the constraint $f(0)=a$, but
+allowing a parameter that permits to prove an equivalence with $\AC$)
+was formalized by Krzysztof
+Grabczewski~\cite{DBLP:journals/jar/PaulsonG96} as part of the
+Isabelle/ZF library, along with many statements that follow from or
+are equivalent to $\AC$. Since the proofs there required a greater
+generality, it would have been very contrived to derive this
+``pointed'' version of $\DC$ from that development. Instead, we
+preferred to give a direct proof based on the one in
+Moschovakis' notes \cite{moschovakis1994notes}. Another advantage is that
+this proof depends on the following version of $\AC$ (existence of
+choice functions on $\P(A)\sm \{\mty\}$):
+\[
+\exists (s: \P(A)\sm \{\mty\}\to A). \, \forall X\sbq A.\ X\neq \mty \limp
+s(X) \in X.
+\]
+This statement is more standard than $\AC$ as stated in the
+Isabelle/ZF development, which involves a silent use of Replacement
+since it is written as an axiom scheme. 
+
+The strategy is to define the function $f$ discussed above by
+primitive recursion on the naturals, which can be done easily thanks
+to the package of Isabelle/ZF
+\cite{paulson1995set,paulson2000fixedpoint} for definitions by
+recursion on inductively defined sets.\footnote{The package figures
+  out the inductive set at hand and checks that the recursive
+  definition makes sense; for example, it rejects definitions with a
+  missing case.}
+
+\begin{isabelle}\isamarkuptrue%
+\isacommand{consts}\isamarkupfalse%
+\ dc{\isacharunderscore}witness\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ i{\isachardoublequoteclose}\isanewline
+\isacommand{primrec}\isamarkupfalse%
+\isanewline
+\ \ wit{\isadigit{0}}\ \ \ {\isacharcolon}\ {\isachardoublequoteopen}dc{\isacharunderscore}witness{\isacharparenleft}{\isadigit{0}}{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}\ {\isacharequal}\ a{\isachardoublequoteclose}\isanewline
+\ \ witrec\ {\isacharcolon}\ {\isachardoublequoteopen}dc{\isacharunderscore}witness{\isacharparenleft}succ{\isacharparenleft}n{\isacharparenright}{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}\ {\isacharequal}\ s{\isacharbackquote}{\isacharbraceleft}x{\isasymin}A{\isachardot}\ {\isasymlangle}dc{\isacharunderscore}witness{\isacharparenleft}n{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}{\isacharcomma}x{\isasymrangle}{\isasymin}R\ {\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+
+The function \isatt{dc{\isacharunderscore}witness} has, apart from $A$, $a$ and $R$, a
+function $s$ as a parameter. If this function is a selector for
+$\P(A)\sm \{\mty\}$, the function $f(n)\defi {}$\isatt{dc{\isacharunderscore}witness}$(n,A,a,s,R)$
+will satify $\DC$. Notice that $s$ is a term of type \isatt{i} (a
+function construed as a set of pairs) and an expression
+\isatt{s{\isacharbackquote}b} is notation for  \isatt{apply(s,b)},
+where
+\isatt{apply\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ i{\isachardoublequoteclose}}
+is the operation of function application.
+% We will not make a distinction in our prose and simply write
+% \isatt{s}(\isatt{b}) in this case.
+
+The proof is mostly routine; after a few lemmas we obtain the
+following theorem:
+
+\begin{isabelle}
+\isacommand{theorem}\isamarkupfalse%
+\ pointed{\isacharunderscore}DC\ \ {\isacharcolon}\ {\isachardoublequoteopen}{\isacharparenleft}{\isasymforall}x{\isasymin}A{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}{\isasymin}\ R{\isacharparenright}\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymforall}a{\isasymin}A{\isachardot}\ {\isacharparenleft}{\isasymexists}f\ {\isasymin}\ nat{\isasymrightarrow}A{\isachardot}\ f{\isacharbackquote}{\isadigit{0}}\ {\isacharequal}\ a\ {\isasymand}\ {\isacharparenleft}{\isasymforall}n\ {\isasymin}\ nat{\isachardot}\ {\isasymlangle}f{\isacharbackquote}n{\isacharcomma}f{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isasymrangle}{\isasymin}R{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+We need a further, ``diagonal'' version of $\DC$  to prove
+Rasiowa-Sikorski. That is, if the assumption holds for a sequence of
+relations $S_n$,  then $f(n) \mathrel{S_{n+1}} f(n+1)$.
+
+We first obtain a corollary of $\DC$ changing $A$ for
+$A\times\mathtt{nat}$:
+
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ aux{\isacharunderscore}DC{\isacharunderscore}on{\isacharunderscore}AxNat{\isadigit{2}}\ {\isacharcolon}\ {\isachardoublequoteopen}{\isasymforall}x{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}{\isasymlangle}y{\isacharcomma}succ{\isacharparenleft}snd{\isacharparenleft}x{\isacharparenright}{\isacharparenright}{\isasymrangle}{\isasymrangle}\ {\isasymin}\ R\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymforall}x{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ {\isacharbraceleft}{\isasymlangle}a{\isacharcomma}b{\isasymrangle}{\isasymin}R{\isachardot}\ snd{\isacharparenleft}b{\isacharparenright}\ {\isacharequal}\ succ{\isacharparenleft}snd{\isacharparenleft}a{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+%
+The following lemma is then proved automatically:
+
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ aux{\isacharunderscore}sequence{\isacharunderscore}DC{\isadigit{2}}\ {\isacharcolon}\ {\isachardoublequoteopen}{\isasymforall}x{\isasymin}A{\isachardot}\ {\isasymforall}n{\isasymin}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ S{\isacharbackquote}n\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ {\isasymforall}x{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}{\isasymlangle}y{\isacharcomma}succ{\isacharparenleft}snd{\isacharparenleft}x{\isacharparenright}{\isacharparenright}{\isasymrangle}{\isasymrangle}\ {\isasymin}\ {\isacharbraceleft}{\isasymlangle}{\isasymlangle}x{\isacharcomma}n{\isasymrangle}{\isacharcomma}{\isasymlangle}y{\isacharcomma}m{\isasymrangle}{\isasymrangle}{\isasymin}{\isacharparenleft}A{\isasymtimes}nat{\isacharparenright}{\isasymtimes}{\isacharparenleft}A{\isasymtimes}nat{\isacharparenright}{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}{\isasymin}S{\isacharbackquote}m\ {\isacharbraceright}{\isachardoublequoteclose}\isanewline
+\ \ %
+\isacommand{by}\isamarkupfalse%
+\ auto%
+\end{isabelle}
+%
+And finally, we arrive to $\DC$ for a sequence of relations.
+
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ sequence{\isacharunderscore}DC{\isacharcolon}\ {\isachardoublequoteopen}{\isasymforall}x{\isasymin}A{\isachardot}\ {\isasymforall}n{\isasymin}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ S{\isacharbackquote}n\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ {\isasymforall}a{\isasymin}A{\isachardot}\ {\isacharparenleft}{\isasymexists}f\ {\isasymin}\ nat{\isasymrightarrow}A{\isachardot}\ f{\isacharbackquote}{\isadigit{0}}\ {\isacharequal}\ a\ {\isasymand}\ {\isacharparenleft}{\isasymforall}n\ {\isasymin}\ nat{\isachardot}\ {\isasymlangle}f{\isacharbackquote}n{\isacharcomma}f{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isasymrangle}{\isasymin}S{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+\subsection{The Rasiowa-Sikorski lemma}\label{sec:rasiowa-sikorski-lemma}
+In order to state this Lemma, we gather the relevant hypotheses into a locale:
+
+\begin{isabelle}%
+\isacommand{locale}\isamarkupfalse%
+\ countable{\isacharunderscore}generic\ {\isacharequal}\ forcing{\isacharunderscore}notion\ {\isacharplus}\isanewline
+\ \ \isakeyword{fixes}\ {\isasymD}\isanewline
+\ \ \isakeyword{assumes}\ countable{\isacharunderscore}subs{\isacharunderscore}of{\isacharunderscore}P{\isacharcolon}\ \ {\isachardoublequoteopen}{\isasymD}\ {\isasymin}\ nat{\isasymrightarrow}Pow{\isacharparenleft}P{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{and}\ \ \ \ \ seq{\isacharunderscore}of{\isacharunderscore}denses{\isacharcolon}\ \ \ \ \ \ \ \ {\isachardoublequoteopen}{\isasymforall}n\ {\isasymin}\ nat{\isachardot}\ dense{\isacharparenleft}{\isasymD}{\isacharbackquote}n{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+%
+That is, $\calD$ is a sequence of dense subsets of the poset $P$. A
+filter is \emph{$\calD$-generic} if it intersects every dense set in
+the sequence.
+
+\begin{isabelle}%
+\isacommand{definition}\isamarkupfalse%
+\ \ D{\isacharunderscore}generic\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}D{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}\ {\isacharequal}{\isacharequal}\ filter{\isacharparenleft}G{\isacharparenright}\ {\isasymand}\ {\isacharparenleft}{\isasymforall}n{\isasymin}nat{\isachardot}{\isacharparenleft}{\isasymD}{\isacharbackquote}n{\isacharparenright}{\isasyminter}G{\isasymnoteq}{\isadigit{0}}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+We can now state the Rasiowa-Sikorski Lemma.
+\begin{isabelle}%
+\isacommand{theorem}\isamarkupfalse%
+\ rasiowa{\isacharunderscore}sikorski{\isacharcolon}\isanewline
+\ \ {\isachardoublequoteopen}p{\isasymin}P\ {\isasymLongrightarrow}\ {\isasymexists}G{\isachardot}\ p{\isasymin}G\ {\isasymand}\ D{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+The intuitive argument for the result is simple: Once $p_0=p\in P$ is
+fixed, we can recursively choose $p_{n+1}$ such that 
+$p_n \geq p_{n+1}\in \calD_n$, since $\calD_n$ is dense in $P$. Then
+the filter generated by $\{p_n : n\in \om\}$ intersects each set in
+the sequence $\{\calD_n\}_n$. This argument appeals to the sequence
+version of $\DC$; we have to prove first that the relevant relation
+satisfies its hypothesis:
+
+\begin{isabelle}%
+\isacommand{lemma}\isamarkupfalse%
+\  RS{\isacharunderscore}relation{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ \ \ \ \ {\isadigit{1}}{\isacharcolon}\ \ {\isachardoublequoteopen}x{\isasymin}P{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \isakeyword{and}\isanewline
+\ \ \ \ \ \ \ \ {\isadigit{2}}{\isacharcolon}\ \ {\isachardoublequoteopen}n{\isasymin}nat{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}{\isasymexists}y{\isasymin}P{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ {\isacharparenleft}{\isasymlambda}m{\isasymin}nat{\isachardot}\ {\isacharbraceleft}{\isasymlangle}x{\isacharcomma}y{\isasymrangle}{\isasymin}P{\isacharasterisk}P{\isachardot}\ {\isasymlangle}y{\isacharcomma}x{\isasymrangle}{\isasymin}leq\ {\isasymand}\ y{\isasymin}{\isasymD}{\isacharbackquote}{\isacharparenleft}pred{\isacharparenleft}m{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isacharbackquote}n{\isachardoublequoteclose}
+\end{isabelle}
+%
+As these two proofs are interesting, we have proved them using the
+Isar proof language~\cite{DBLP:conf/tphol/Wenzel99}.
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% ispell-local-dictionary: "american"
+%%% TeX-master: "first_steps_into_forcing"
+%%% End:

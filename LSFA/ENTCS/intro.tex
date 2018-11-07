@@ -1,0 +1,220 @@
+\section{Introduction}\label{sec:introduction}
+Set Theory plays a double role in Mathematics: It is one of its
+possible foundations and also an active research area.
+%
+As it is widely known, Georg Cantor introduced its main concepts and in
+particular showed the fundamental result that the real line, $\R$  is not
+coordinable with the natural numbers. Soon after this, he posed the
+most important question in the field, written as a conjecture:
+\begin{quote}
+  The \emph{Continuum Hypothesis} ($\CH$). Every uncountable subset of $\R$ is
+  coordinable with $\R$.
+\end{quote}
+
+The current axiomatic foundation of Set Theory is through first-order
+logic and uses the axioms devised by Zermelo and Fraenkel, including
+the Axiom of Choice ($\AC$) among them. This theory is known by the
+$\ZFC$ acronym. G\"odel \cite{godel-L} showed that $\CH$ cannot be refuted using
+$\ZFC$, unless this theory itself is inconsistent (we say that
+\emph{$\CH$ is relatively consistent with $\ZFC$}). For a while, this
+result left the possibility that one might be able to show
+$\ZFC\models \CH$, but in a groundbreaking work \cite{Cohen-CH-PNAS},
+Paul Cohen discovered the technique of \emph{forcing} and proved that
+$\neg\CH$ is relatively consistent with $\ZFC$. Forcing has been used
+since then for showing innumerable independence results and to perform
+mathematical constructions.
+
+A great part of G\"odel's work on this subject has been formalized in
+Isabelle~\cite{Isabelle} by Lawrence Paulson~\cite{paulson_2003}. This paper formalizes
+a first part of the machinery of forcing. In the rest of the
+introduction we discuss some of the set-theoretical details involved
+and explain briefly Paulson's formalization.
+
+\subsection{Models of $\ZFC$}
+By G\"odel's Second Incompleteness Theorem, we cannot  prove that
+there exists a model of $\ZFC$. More formally, if we assume that
+mathematical proofs can be encoded as theorems of $\ZFC$ and that
+the latter do not lead to contradictions (i.e., $\ZFC$ is
+\emph{consistent}), then we cannot prove that there exists a set $M$
+and a binary relation $E$ such that $\lb M,E\rb$ satisfies the $\ZFC$
+axioms.
+
+A relative consistency proof for an axiom $A$ is then obtained by
+assuming that there exists a model of ZFC, say $\lb M,E\rb$, and
+constructing another model $\lb M',E'\rb$ for $\ZFC + A$. We single
+out a very special kind of models:
+%
+\begin{definition}\label{def:transitive-model}
+  \begin{enumerate}
+  \item A set $M$ (of sets) is \emph{transitive} if for all $x\in M$ and 
+    $y\in x$, we have $y\in M$ (i.e., every element of $M$ is a subset
+    of $M$).
+  \item $\lb M,E\rb$ is a \emph{transitive model} if $M$ is transitive
+     and  $E$ is the membership relation $\in$ restricted to
+    $M$. It is \emph{countable} if $M$ is coordinable with a subset of
+    $\N$; we then say that the model  $M$ is a \emph{ctm}. 
+  \end{enumerate}
+\end{definition}
+%
+\noindent As in the last sentence, one usually refers to a transitive
+model by the underlying set because the relation is fixed.
+%% MIGUEL: feísimo este corte. Quizás refrasear la oración anterior
+%% para que entre en un renglón.
+
+%% MIGUEL: lo que sigue implica que para tener aritmética en ZFC son
+%% necesarios una cantidad infinita de axiomas de ZFC?
+In spite of G\"odel's Second Incompleteness Theorem, one can find
+transitive models for every finite fragment of $\ZFC$. More precisely,
+%
+\begin{theorem}\label{th:ctm-finite-axioms}
+  For each finite subset
+  $\Phi\sbq \ZFC$, the statement \emph{``there exists a countable
+    transitive model of $\Phi$''} is a theorem of $\ZFC$.
+\end{theorem}
+%
+\noindent This follows by a combination of the Reflection Principle, the
+L\"owenheim-Skolem Theorem, and the Mostowksi Collapse. The reader can
+consult the details in \cite{kunen2011set}. Consistency arguments that
+assume the existence of a ctm $M$ of $\ZFC$ can usually be replaced by
+a model as in Theorem~\ref{th:ctm-finite-axioms}, since a first-order
+proof (e.g.\ of a contradiction)%
+%%%%%%%%%%%%%
+\footnote{It is relevant to this point that 
+  both the approaches by G\"odel and Cohen for showing
+  relative consistency of an axiom $A$ 
+  can be used to obtain an algorithm transforming a proof
+  concluding a contradiction from $\ZFC+A$ to one from $\ZFC$.}
+%%%%%%%%%%%%%
+involves only finitely many axioms.
+
+It is instructive to sketch G\"odel's argument of the relative
+consistency of $\CH$: Assuming that $M$ is a ctm of $\ZFC$, G\"odel
+showed that $M$ contains a minimal submodel $L^M$ of the same
+``height'' (i.e.\ having the same ordinals) that satisfies
+$\ZFC+\CH$. The sets in $L^M$ are called \emph{constructible} and are
+in a sense ``definable.'' In fact, there is a first-order formula $L$
+such that $L^M = \{x\in M : M\models L(x)\}$. To show that
+$L^M\models \ZFC+\CH$, one uses the fact that $\ZFC$ holds in $M$.
+
+%% MIGUEL: acá me parece que hay un salto medio abrupto. Por que
+%% es una necesidad primaria? Lo podés relacionar con lo que venía
+%% del párrafo anterior?
+%% MIGUEL: quizás lo que querés decir acá es para probar que vamos
+%% a construir un modelo N a partir de un modelo M; y para probar
+%% que N satisface un axioma, vamos a utilizar que M lo satisface.
+It is therefore a primary need to have a means to correlate  (first-order)
+properties satisfied by a model $M$ and those of a 
+submodel $N\sbq M$. As a simple example on this, consider 
+%% $M\defi \{\emptyset,\{\emptyset\},\{\{\emptyset\}\}\}$ and
+%% $N\defi\{\{\emptyset\},\{\{\emptyset\}\}\}$, and let 
+%% $\phi(x)\defi \neg\exists y (y \in x)$. It is clear that 
+%% $M\models \phi(\emptyset)$; but we have
+%% \[
+%% M\not\models \phi(\{\emptyset\}) \quad\text{ but }\quad N\models \phi(\{\emptyset\}).
+%% \]
+%% There is a discrepancy between what $M$ and $N$ \emph{believe} about
+%% their common element $\{\emptyset\}$.
+$M\defi \{a,b,c, \{a,b\},\{a,b,c\}\}$ and
+$N\defi\{a,b,\{a,b,c\}\}$, and let 
+\[
+\phi(x,y,z)\defi \forall w.\,( w\in z \lsii w=x \o w=y).
+\]
+%% It is clear that  $M\models \phi(\{a,b\})$; but we have
+Then we have
+\[
+M\not\models \phi(a,b,\{a,b,c\}) \quad\text{ but }\quad N\models \phi(a,b,\{a,b,c\}).
+\]
+There is a discrepancy between  $M$ and $N$ about $\{a,b,c\}$ being ``the
+(unordered) pair of $a$ and $b$.'' We say that $\phi$ holds for
+$a,b,\{a,b,c\}$ \emph{relative} to $N$. It is immediate to see that
+$\phi$ holds  for $x,y,z$ relative to $N$ if and only if
+\[
+\phi^N(x,y,z)\defi \forall w.\ w\in N\limp ( w\in z \lsii w=x \o w=y)
+\] 
+holds. $\phi^N$ is called the \emph{relativization of $\phi$ to
+  $N$}. One can generalize this operation of relativization to the
+class of all sets satisfying a first-order predicate $C$ in a
+straightforward way:
+\[
+\phi^C(x,y,z)\defi \forall w.\ C(w)\limp ( w\in z \lsii w=x \o w=y)
+\] 
+
+It can be shown elementarily that if $M$ and $N$ are transitive,
+$\phi^N$ holds if and only if $\phi^M$ holds,  for $x,y,z\in N$. We
+say then that $\phi$ is \emph{absolute between $N$ and $M$.}
+%% MIGUEL: "truth of axioms in $M$" significa que $M$ satisface los
+%% axiomas?
+The concepts of relativization and absoluteness are central to the
+task of transferring truth of axioms in $M$ to $L^M$, and constitute
+the hardest part of Paulson's development.
+
+
+\subsection{Forcing}
+%% MIGUEL: no veo la necesidad del adversativo but, pondría and.
+%% MIGUEL: Qué significa "a new set $G$ is adjoined to $M$"?
+%% MIGUEL: este párrafo necesita correcciones.
+Forcing is a technique to extend countable transitive models of
+$\ZFC$. This process is guaranteed to preserve the $\ZFC$
+axioms while allowing to fine-tune what other first order properties the
+extension will have. Given a ctm $M$  of $\ZFC$ and a set $G$, one constructs a new
+ctm  $M[G]$  that includes $M$ and
+contains $G$, and proves that under some hypotheses ($G$ being ``generic''),
+$M[G]$ satisfies $\ZFC$.
+
+The easiest way to define genericity is by using a preorder with top
+$\lb\PP,\leq,\1\rb$ in $M$.   
+In Section~\ref{sec:forcing-notions} we formalize the definitions of
+\emph{dense} subset and  \emph{filter} of  $\PP$, and we say that  $G$
+is an $M$-generic filter
+if it intersects every dense subset of $\PP$ that lies in $M$.
+
+%% MIGUEL: Tenemos que dado un ctm M, existe un filtro genérico G.
+%% ¿Dónde existe? Una primera lectura de ignorante me dice "existe
+%% en M", pero eso me lo desmiente la siguiente oración. ¿Juega algún
+%% rol absolutez? Si es así estaría bien explicitarlo.
+%% MIGUEL: la última oración me resulta un poco difícil de entender.
+The Rasiowa-Sikorski lemma (RSL) states that for any preorder $\PP$
+and any countable family $\mathcal{D}_{n\in\mathbb{N}}$ of dense
+subsets of $\PP$ there is a filter intersecting every
+$\mathcal{D}_i$. Thus, there are generic filters $G$ for countable
+transitive models. In general, no such $G$ belongs to $M$ and
+therefore the extension $M[G]$ is proper. We formalize the proof of
+RSL in Section~\ref{sec:rasiowa-sikorski-lemma}. A requisite result on
+a version of the Axiom of Choice is formalized in
+Section~\ref{sec:sequence-version-dc}. We then apply RSL to prove the
+existence of generic filters in Section~\ref{sec:generic-filter}.
+
+%% MIGUEL: redacción alternativa del párrafo siguiente.
+Every  $y \in M[G]$ is obtained from an element $\dot y$ of $M$, thus
+elements of $M$ are construed as \emph{names} or codes for elements of
+$M[G]$.
+The decoding is given by the function
+$\val$, which takes the generic filter $G$ as a parameter. To
+prove that $M$ is contained in $M[G]$ it suffices to give a name for
+each element of $M$; we define the function $\chk$ which assigns
+a name for each $x\in M$. Showing that $\chk(x)\in M$
+when $x\in M$ involves some technical issues that will
+be addressed in a further work. We explain names, $\val$, and
+$\chk$ in Section~\ref{sec:names}.
+
+A central part of this formalization project involves showing that
+$\ZFC$ holds in the generic extension. This is most relevant since
+forcing is essentially the only known way to \emph{extend} models of
+$\ZFC$ (while preserving ordinals). The most difficult step to achieve
+this goal is to define the \emph{forcing relation}, that allows to
+connect satisfaction in $M$ to that of $M[G]$; this is needed to show
+that the Powerset axiom and the axiom schemes of Separation and
+Replacement hold in $M[G]$. In
+Section~\ref{sec:pairing-generic-extension}
+ we tackle the Pairing
+Axiom. This does not require the forcing relation, but provides an
+illustration of the use of names. The development can be downloaded
+from \url{https://cs.famaf.unc.edu.ar/~mpagano/forcing/}.
+   
+%We continue with a brief description of the Isabelle framework. 
+
+%%% Local Variables:
+%%% mode: latex
+%%% ispell-local-dictionary: "american"
+%%% TeX-master: "first_steps_into_forcing"
+%%% End:
