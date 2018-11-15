@@ -8,7 +8,7 @@ extension M[G].
 
 *)
 
-theory Gen_ext_pair imports Names Forcing_data Relative begin
+theory Gen_ext_pair imports Names Forcing_data begin
 
 context M_extra_assms
 begin
