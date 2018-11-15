@@ -7,6 +7,7 @@ Proof of preservation of the axiom of Pairing in the generic
 extension M[G].
 
 *)
+
 theory Gen_ext_pair imports Names Forcing_data Relative begin
 
 context forcing_data
@@ -50,14 +51,14 @@ lemma pair_preserv :
   "one \<in> G \<Longrightarrow> upair_ax(##M) \<Longrightarrow> upair_ax(##M[G])"
   apply (simp add: upair_ax_def)
   apply (rule ballI)+
-  apply (drule def_GenExt1)+
+  apply (drule GenExtD)+
   apply (rule bexE,assumption)
   apply (rule_tac A="M" and P="\<lambda>w. y=val(G,w)" in bexE,assumption)
   apply (rename_tac x y \<tau> \<rho>)
   apply (rule_tac x="val(G,{\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>})" in bexI)
    apply (subst valsigma,assumption+)
    defer 1 apply (simp add: upair_def)
-   apply (rule def_GenExt2)
+   apply (rule GenExtI)
    apply (insert sigma_in_M,simp_all add: upair_ax_def)
 done
 
