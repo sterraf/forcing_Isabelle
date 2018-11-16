@@ -14,7 +14,7 @@ context M_extra_assms
 begin
   
 lemma one_in_M : "one \<in> M"
-  by (insert trans_M,insert one_in_P,insert P_in_M,rule Transset_M)
+  by (insert trans_M,insert one_in_P,insert P_in_M,rule Transset_intf)
  
 lemma pairs_in_M : 
   " \<lbrakk> a \<in> M ; b \<in> M ; c \<in> M ; d \<in> M \<rbrakk> \<Longrightarrow> {\<langle>a,c\<rangle>,\<langle>b,d\<rangle>} \<in> M"
