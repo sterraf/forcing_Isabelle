@@ -1,5 +1,5 @@
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
-\section{Isabelle/ZF}
+\section{Isabelle/ZF}\label{sec:isabellezf}
 
 Let us introduce briefly Paulson's formalization of ZF
 \cite{paulson2017isabelle} in Isabelle and the main aspects of his
@@ -131,8 +131,34 @@ of giving concrete values to parameters and proving the assumptions.
 In our work, we use locales to organize the formalization and to make
 explicit the assumptions of the most important results.
 
-% locales
+We make a final comment about the implementation tools provided by the
+Isabelle framework.
 
+An IDE called \texttt{jEdit} is bundled with the standard Isabelle
+distribution and it offers the user a fair amount of tools in order to
+manage theory files, searching for theorems and concepts spread
+through the source files, and includes tracing utilities for the
+automatic tools. A main feature is a window showing the \emph{proof
+  state}, where the active (sub)goals are shown, along with the already
+obtained results and possibly errors. 
+
+Isabelle proofs can be written in two dialects. 
+The most basic one and older (in which most of the original
+work by Paulson is written) follows a procedural approach, where one
+applies several tactics in order to decompose the goal into simpler
+ones and then solving them (with the aid of automation). This approach
+has the drawback that a proof akin to mathematical writing can't be
+read out from the code, since the intermediate steps are only shown in
+the proof state. For this reason, the proof language
+\emph{Isar} was developed, starting with Wenzel's
+work~\cite{DBLP:conf/tphol/Wenzel99}. Isar is mostly declarative, and
+its main purpose is to construct \emph{proof documents} that (in
+principle) can be read and understood without the need of running the
+code. 
+
+We started this development by using the procedural approach, but soon
+we realized that for our purposes the Isar language was far more
+appropriate.
 
 %%% Local Variables:
 %%% mode: latex
