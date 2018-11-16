@@ -324,7 +324,7 @@ proof -
   with 1 show ?thesis by simp
 qed
 
-end
+end    (*************** CONTEXT: forcing_data *****************)
 
 (* definitions from Relative by Paulson *)
 definition
@@ -358,13 +358,18 @@ locale M_extra_assms = forcing_data +
     and upair_ax:         "upair_ax(##M)"
     and repl_check_pair : "strong_replacement(##M,\<lambda>p y. y =<check(p),p>)"
     
-begin
+begin  (*************** CONTEXT: M_extra_assms *****************)
   
+(* The next lemma is needed to provide an interface between 
+   Paulson's lemmas for classes and our set models *)
 lemma Transset_intf :
   "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
   by (simp add: Transset_def,auto)
 
-
+(* The following five lemmas are extracted from Relative by Paulson.
+   upairM and pairM are variants of upair_in_M_iff and pair_in_M_iff,
+   respectively, written for the set model M instead of the class ##M 
+*)
 lemma upair_abs [simp]:
      "z\<in>M ==> upair(##M,a,b,z) \<longleftrightarrow> z={a,b}"
   apply (simp add: upair_def)
@@ -475,6 +480,6 @@ proof -
 qed
 
   
-end    (*************** CONTEXT: forcing_data *****************)
+end    (*************** CONTEXT: M_extra_assms *****************)
 
 end
