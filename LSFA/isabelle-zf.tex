@@ -1,5 +1,5 @@
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
-\section{Isabelle/ZF}
+\section{Isabelle/ZF}\label{sec:isabellezf}
 
 Let us introduce briefly Paulson's formalization of ZF
 \cite{paulson2017isabelle} in Isabelle and the main aspects of his
@@ -13,19 +13,16 @@ Isabelle/ZF includes a development of classical first order logic,
 FOL. Both of them are  built upon the core library \emph{Pure}. 
 
 In Isabelle/ZF sets are \emph{individuals}, i.e.\ terms of type
-\isatt{i} and formulas have type \isatt{o} 
-(akin to a \emph{Bool} type, but at the object level). 
-The  axiomatization 
-of $\ZFC$ in Isabelle/ZF proceeds by postulating  a binary predicate
-\isatt{\ensuremath{\in}} and   several set
-constructors (terms and function with values in \isatt{i}) corresponding to the  empty set
-(the constant \isatt{\isadigit{0}}), powersets, and one further constant
+\isatt{i} and formulas have type \isatt{o} (akin to a \emph{Bool}
+type, but at the object level).  The axiomatization of $\ZFC$ in
+Isabelle/ZF proceeds by postulating a binary predicate
+\isatt{\ensuremath{\in}} and several set constructors (terms and
+functions with values in \isatt{i}) corresponding to the empty set (the
+constant \isatt{\isadigit{0}}), powersets, and one further constant
 \isatt{inf} for an infinite set. The axioms, being formulas, are terms
-of type \isatt{o}; 
-the foundation axiom, for example, is formalized as (the universal
-closure of) 
-\isa{{\isachardoublequoteopen}A\ {\isacharequal}\ {\isadigit{0}}\
-  {\isasymor}%
+of type \isatt{o}; the foundation axiom, for example, is formalized as
+(the universal closure of) \isa{{\isachardoublequoteopen}A\
+  {\isacharequal}\ {\isadigit{0}}\ {\isasymor}%
   \ {\isacharparenleft}{\isasymexists}x{\isasymin}A{\isachardot}\ %
   {\isasymforall}y{\isasymin}x{\isachardot}\ %
   y{\isasymnotin}A{\isacharparenright}%
@@ -35,8 +32,9 @@ Besides the axioms, Isabelle/ZF also introduces several definitions
 separation) and syntactic abbreviations to keep the formalization
 close to the customary manner of doing mathematics.  Working with the
 library and extending it is quite straightforward.  As an example, we
-introduce a new term-former denoting the image of a function
-over a set defined by comprehension, namely
+introduce a new term-former (which is a combination of instances of
+replacement and separation) denoting the image of a function over a
+set defined by comprehension, namely
 $\{b(x): x\in A\text{ and }Q(x)\}$:
 %% Since we find a need to combine the replacement and
 %% separation schemes to speak of the image of a function over some set
@@ -121,7 +119,7 @@ can show that the empty set satisfies Foundation:
 % another model constructed from $M$. In this paper, we show the complete
 % proof that if a set \isa{M :: i} satisfies the 
 
-Mathematical texts usually start by fixing the context that defines
+Mathematical texts usually start by fixing a context that defines
 parameters and assumptions needed to develop theorems
 and results. In Isabelle the way of defining contexts is through
 \emph{locales}~\cite{ballarin2010tutorial}.
@@ -133,8 +131,34 @@ of giving concrete values to parameters and proving the assumptions.
 In our work, we use locales to organize the formalization and to make
 explicit the assumptions of the most important results.
 
-% locales
+We make a final comment about the implementation tools provided by the
+Isabelle framework.
 
+An IDE called \texttt{jEdit} is bundled with the standard Isabelle
+distribution and it offers the user a fair amount of tools in order to
+manage theory files, searching for theorems and concepts spread
+through the source files, and includes tracing utilities for the
+automatic tools. A main feature is a window showing the \emph{proof
+  state}, where the active (sub)goals are shown, along with the already
+obtained results and possibly errors. 
+
+Isabelle proofs can be written in two dialects. 
+The most basic one and older (in which most of the original
+work by Paulson is written) follows a procedural approach, where one
+applies several tactics in order to decompose the goal into simpler
+ones and then solving them (with the aid of automation). This approach
+has the drawback that a proof akin to mathematical writing can't be
+read out from the code, since the intermediate steps are only shown in
+the proof state. For this reason, the proof language
+\emph{Isar} was developed, starting with Wenzel's
+work~\cite{DBLP:conf/tphol/Wenzel99}. Isar is mostly declarative, and
+its main purpose is to construct \emph{proof documents} that (in
+principle) can be read and understood without the need of running the
+code. 
+
+We started this development by using the procedural approach, but soon
+we realized that for our purposes the Isar language was far more
+appropriate.
 
 %%% Local Variables:
 %%% mode: latex

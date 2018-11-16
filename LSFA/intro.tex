@@ -4,11 +4,11 @@ possible foundations and also an active research area.
 %
 As it is widely known, Georg Cantor introduced its main concepts and in
 particular showed the fundamental result that the real line, $\R$  is not
-coordinable with the natural numbers. Soon after this, he posed the
+equipotent to the natural numbers. Soon after this, he posed the
 most important question in the field, written as a conjecture:
 \begin{quote}
   The \emph{Continuum Hypothesis} ($\CH$). Every uncountable subset of $\R$ is
-  coordinable with $\R$.
+  equipotent to $\R$.
 \end{quote}
 
 The current axiomatic foundation of Set Theory is through first-order
@@ -26,7 +26,8 @@ mathematical constructions.
 
 A great part of G\"odel's work on this subject has been formalized in
 Isabelle~\cite{Isabelle} by Lawrence Paulson~\cite{paulson_2003}. This paper formalizes
-a first part of the machinery of forcing. In the rest of the
+a first part of the machinery of forcing, mostly by following the new
+edition of the classical book on the subject by Kunen \cite{kunen2011set}. In the rest of the
 introduction we discuss some of the set-theoretical details involved
 and explain briefly Paulson's formalization.
 
@@ -51,7 +52,7 @@ out a very special kind of models:
     of $M$).
   \item $\lb M,E\rb$ is a \emph{transitive model} if $M$ is transitive
      and  $E$ is the membership relation $\in$ restricted to
-    $M$. It is \emph{countable} if $M$ is coordinable with a subset of
+    $M$. It is \emph{countable} if $M$ is equipotent to a subset of
     $\N$; we then say that the model  $M$ is a \emph{ctm}. 
   \end{enumerate}
 \end{definition}
@@ -102,7 +103,7 @@ $L^M\models \ZFC+\CH$, one uses the fact that $\ZFC$ holds in $M$.
 %% MIGUEL: quizás lo que querés decir acá es para probar que vamos
 %% a construir un modelo N a partir de un modelo M; y para probar
 %% que N satisface un axioma, vamos a utilizar que M lo satisface.
-It is therefore a primary need to have a means to correlate  (first-order)
+It is therefore a primary need to have means to correlate  (first-order)
 properties satisfied by a model $M$ and those of a 
 submodel $N\sbq M$. As a simple example on this, consider 
 %% $M\defi \{\emptyset,\{\emptyset\},\{\{\emptyset\}\}\}$ and
@@ -174,7 +175,7 @@ if it intersects every dense subset of $\PP$ that lies in $M$.
 %% rol absolutez? Si es así estaría bien explicitarlo.
 %% MIGUEL: la última oración me resulta un poco difícil de entender.
 The Rasiowa-Sikorski lemma (RSL) states that for any preorder $\PP$
-and any countable family $\mathcal{D}_{n\in\mathbb{N}}$ of dense
+and any countable family $\{\mathcal{D}_n : n\in\mathbb{N}\}$ of dense
 subsets of $\PP$ there is a filter intersecting every
 $\mathcal{D}_i$. Thus, there are generic filters $G$ for countable
 transitive models. In general, no such $G$ belongs to $M$ and

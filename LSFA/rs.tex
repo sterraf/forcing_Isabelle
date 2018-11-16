@@ -1,35 +1,60 @@
-\subsection{A sequence version of $\DC$}\label{sec:sequence-version-dc}
-In order to prove the Rasiowa-Sikorski lemma in
-general, a version of the Axiom of Choice ($\AC$) must be proved. This
-version is known as the \emph{Principle of Dependent Choices}:
+\subsection{A sequence version of Dependent
+  Choices}\label{sec:sequence-version-dc} 
+%% In order to prove the Rasiowa-Sikorski lemma in
+%% general, a consequence of the Axiom of Choice ($\AC$) must be invoked. This
+%% consequence is known as the \emph{Principle of Dependent Choices}:
+The Rasiowa-Sikorski lemma follows naturally from a ``pointed''
+version of   the \emph{Principle of Dependent Choices ($\DC$)} which,
+in turn, is a consequence of the Axiom of Choice ($\AC$). It is
+therefore natural to take as a starting point the theory \isatt{AC}
+which adds the latter axiom to the toolkit of Isabelle/ZF.
+
+The statement we are interested in is the following:
 \begin{quote}
-  ($\DC$) Let $\rr$ be a binary relation on $A$, and $a\in A$. If
+  (Pointed $\DC$) Let $\rr$ be a binary relation on $A$, and $a\in A$. If
   $\forall x\in A.\,  \exists y\in A.\, x\rr y$, then there exists
   $f:\om\to A$ such that $f(0)=a$ and $f(n)\rr f(n+1)$ for all
   $n\in\om$.
 \end{quote}
 
-A different version of $\DC$ (without the constraint $f(0)=a$, but
-allowing a parameter that permits to prove an equivalence with $\AC$)
-was formalized by Krzysztof
-Grabczewski~\cite{DBLP:journals/jar/PaulsonG96} as part of the
-Isabelle/ZF library, along with many statements that follow from or
-are equivalent to $\AC$. Since the proofs there required a greater
-generality, it would have been very contrived to derive this
-``pointed'' version of $\DC$ from that development. Instead, we
-preferred to give a direct proof based on the one in
-Moschovakis' notes \cite{moschovakis1994notes}. Another advantage is that
-this proof depends on the following version of $\AC$ (existence of
+Two different versions of $\DC$ (called $\DC0$ and $\DC(\kappa)$) have
+already been formalized by Krzysztof
+Grabczewski~\cite{DBLP:journals/jar/PaulsonG96}, as part of a study of
+equivalents of $\AC$ (following Rubin and Rubin
+\cite{rubin1985equivalents}). Nevertheless, those are not convenient
+for our purposes. In fact, the axiom $\DC0$ corresponds essentially to
+our Pointed $\DC$ but without the constraint $f(0)=a$; it is a nice
+exercise to show that $\DC0$ implies Pointed $\DC$, but a
+formalization would have a moderate length. On the other hand,
+$\DC(\kappa)$ is rather different in nature and it is tailored to
+obtain another proposition equivalent to the axiom of choice
+(actually,
+$\AC\longleftrightarrow (\forall \kappa .\;
+\mathrm{Card}(\kappa)\longrightarrow \DC(\kappa))$).  Finally, the
+shortest path from $\AC$ %% as stated in the
+%% corresponding Isabelle theory
+to $\DC0$ using already formalized
+material involves a complicated detour (130+ proof commands spanning
+various files of the \isatt{ZF-AC} theory and going through the Well
+Ordering Theorem and  $\DC(\omega)$), compared to the mere 11 commands from $\AC$ to
+\isatt{AC{\isacharunderscore}func{\isacharunderscore}Pow}. This last
+one is the
+choice principle that we use in our formalization of Pointed $\DC$, and states 
+the existence of
 choice functions on $\P(A)\sm \{\mty\}$):
 \[
 \exists (s: \P(A)\sm \{\mty\}\to A). \, \forall X\sbq A.\ X\neq \mty \limp
 s(X) \in X.
 \]
-This statement is more standard than $\AC$ as stated in the
-Isabelle/ZF development, which involves a silent use of Replacement
-since it is written as an axiom scheme. 
+Another advantage of taking
+\isatt{AC{\isacharunderscore}func{\isacharunderscore}Pow} as a
+starting point is that it does not involve proper classes: The version
+of  $\AC$ in Isabelle/ZF corresponds to an axiom scheme of first order
+logic and as such is not a standard formulation. 
+%% 26 commands to get Pointed $\DC$.
 
-The strategy is to define the function $f$ discussed above by
+The strategy to prove Pointed $\DC$ (following a proof in Moschovakis
+\cite{moschovakis1994notes}) is to define the function $f$ discussed above by
 primitive recursion on the naturals, which can be done easily thanks
 to the package of Isabelle/ZF
 \cite{paulson1995set,paulson2000fixedpoint} for definitions by
@@ -47,19 +72,23 @@ recursion on inductively defined sets.\footnote{The package figures
 \ \ witrec\ {\isacharcolon}\ {\isachardoublequoteopen}dc{\isacharunderscore}witness{\isacharparenleft}succ{\isacharparenleft}n{\isacharparenright}{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}\ {\isacharequal}\ s{\isacharbackquote}{\isacharbraceleft}x{\isasymin}A{\isachardot}\ {\isasymlangle}dc{\isacharunderscore}witness{\isacharparenleft}n{\isacharcomma}A{\isacharcomma}a{\isacharcomma}s{\isacharcomma}R{\isacharparenright}{\isacharcomma}x{\isasymrangle}{\isasymin}R\ {\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
 
-The function \isatt{dc{\isacharunderscore}witness} has, apart from $A$, $a$ and $R$, a
-function $s$ as a parameter. If this function is a selector for
-$\P(A)\sm \{\mty\}$, the function $f(n)\defi {}$\isatt{dc{\isacharunderscore}witness}$(n,A,a,s,R)$
-will satify $\DC$. Notice that $s$ is a term of type \isatt{i} (a
-function construed as a set of pairs) and an expression
-\isatt{s{\isacharbackquote}b} is notation for  \isatt{apply(s,b)},
-where
-\isatt{apply\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i\ {\isasymRightarrow}\ i{\isachardoublequoteclose}}
-is the operation of function application.
+Besides the natural argument and the parameters $A$, $a$, and $R$, the
+function \isatt{dc{\isacharunderscore}witness} has a function $s$ as a
+parameter. If this function is a selector for $\P(A)\sm \{\mty\}$, the
+function
+$f(n)\defi {}$\isatt{dc{\isacharunderscore}witness}$(n,A,a,s,R)$ will
+satify $\DC$. Notice that $s$ is a term of type \isatt{i} (a function
+construed as a set of pairs) and an expression
+\isatt{s{\isacharbackquote}b} is notation for \isatt{apply(s,b)},
+where \isatt{apply\ {\isacharcolon}{\isacharcolon}\
+  {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i\
+  {\isasymRightarrow}\ i{\isachardoublequoteclose}} is the operation
+of function application.
 % We will not make a distinction in our prose and simply write
 % \isatt{s}(\isatt{b}) in this case.
 
-The proof is mostly routine; after a few lemmas we obtain the
+The proof is mostly routine; after a few lemmas (26 proof
+commands in total) we obtain the
 following theorem:
 
 \begin{isabelle}
@@ -76,17 +105,19 @@ We first obtain a corollary of $\DC$ changing $A$ for
 $A\times\mathtt{nat}$:
 
 \begin{isabelle}
-\isacommand{lemma}\isamarkupfalse%
-\ aux{\isacharunderscore}DC{\isacharunderscore}on{\isacharunderscore}AxNat{\isadigit{2}}\ {\isacharcolon}\ {\isachardoublequoteopen}{\isasymforall}x{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}{\isasymlangle}y{\isacharcomma}succ{\isacharparenleft}snd{\isacharparenleft}x{\isacharparenright}{\isacharparenright}{\isasymrangle}{\isasymrangle}\ {\isasymin}\ R\ {\isasymLongrightarrow}\isanewline
-\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymforall}x{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ {\isacharbraceleft}{\isasymlangle}a{\isacharcomma}b{\isasymrangle}{\isasymin}R{\isachardot}\ snd{\isacharparenleft}b{\isacharparenright}\ {\isacharequal}\ succ{\isacharparenleft}snd{\isacharparenleft}a{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
+\isacommand{corollary}\isamarkupfalse%
+\ DC{\isacharunderscore}on{\isacharunderscore}A{\isacharunderscore}x{\isacharunderscore}nat\ {\isacharcolon}\ \isanewline
+\ \ {\isachardoublequoteopen}{\isacharparenleft}{\isasymforall}x{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}{\isasymlangle}y{\isacharcomma}succ{\isacharparenleft}snd{\isacharparenleft}x{\isacharparenright}{\isacharparenright}{\isasymrangle}{\isasymrangle}\ {\isasymin}\ R{\isacharparenright}\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ {\isasymforall}a{\isasymin}A{\isachardot}\ {\isacharparenleft}{\isasymexists}f\ {\isasymin}\ nat{\isasymrightarrow}A{\isachardot}\ f{\isacharbackquote}{\isadigit{0}}\ {\isacharequal}\ a\ {\isasymand}\ {\isacharparenleft}{\isasymforall}n\ {\isasymin}\ nat{\isachardot}\ {\isasymlangle}{\isasymlangle}f{\isacharbackquote}n{\isacharcomma}n{\isasymrangle}{\isacharcomma}{\isasymlangle}f{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isacharcomma}succ{\isacharparenleft}n{\isacharparenright}{\isasymrangle}{\isasymrangle}{\isasymin}R{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
+
 %
 The following lemma is then proved automatically:
 
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
-\ aux{\isacharunderscore}sequence{\isacharunderscore}DC{\isadigit{2}}\ {\isacharcolon}\ {\isachardoublequoteopen}{\isasymforall}x{\isasymin}A{\isachardot}\ {\isasymforall}n{\isasymin}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ S{\isacharbackquote}n\ {\isasymLongrightarrow}\isanewline
-\ \ \ \ \ \ \ \ {\isasymforall}x{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}{\isasymlangle}y{\isacharcomma}succ{\isacharparenleft}snd{\isacharparenleft}x{\isacharparenright}{\isacharparenright}{\isasymrangle}{\isasymrangle}\ {\isasymin}\ {\isacharbraceleft}{\isasymlangle}{\isasymlangle}x{\isacharcomma}n{\isasymrangle}{\isacharcomma}{\isasymlangle}y{\isacharcomma}m{\isasymrangle}{\isasymrangle}{\isasymin}{\isacharparenleft}A{\isasymtimes}nat{\isacharparenright}{\isasymtimes}{\isacharparenleft}A{\isasymtimes}nat{\isacharparenright}{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}{\isasymin}S{\isacharbackquote}m\ {\isacharbraceright}{\isachardoublequoteclose}\isanewline
+\ aux{\isacharunderscore}sequence{\isacharunderscore}DC\ {\isacharcolon}\ {\isachardoublequoteopen}{\isasymforall}x{\isasymin}A{\isachardot}\ {\isasymforall}n{\isasymin}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ S{\isacharbackquote}n\ {\isasymLongrightarrow}\isanewline
+ \ \ {\isasymforall}x{\isasymin}A{\isasymtimes}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}{\isasymlangle}y{\isacharcomma}succ{\isacharparenleft}snd{\isacharparenleft}x{\isacharparenright}{\isacharparenright}{\isasymrangle}{\isasymrangle}\ {\isasymin}\ {\isacharbraceleft}{\isasymlangle}{\isasymlangle}w{\isacharcomma}n{\isasymrangle}{\isacharcomma}{\isasymlangle}y{\isacharcomma}m{\isasymrangle}{\isasymrangle}{\isasymin}{\isacharparenleft}A{\isasymtimes}nat{\isacharparenright}{\isasymtimes}{\isacharparenleft}A{\isasymtimes}nat{\isacharparenright}{\isachardot}\ {\isasymlangle}w{\isacharcomma}y{\isasymrangle}{\isasymin}S{\isacharbackquote}m\ {\isacharbraceright}{\isachardoublequoteclose}\isanewline
 \ \ %
 \isacommand{by}\isamarkupfalse%
 \ auto%
