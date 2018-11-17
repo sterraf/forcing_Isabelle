@@ -75,27 +75,34 @@ lemma domain_trans: "Transset(A) \<Longrightarrow> y\<in>A \<Longrightarrow> x \
     
 lemma edrel_sub_memrel: "edrel(A) \<subseteq> trancl(Memrel(eclose(A)))" 
 proof
+  let
+              ?r="trancl(Memrel(eclose(A)))"
   fix z
   assume
               "z\<in>edrel(A)"
   then obtain x y where
-       Eq1:   "x\<in>A" "y\<in>A" "z=<x,y>" "x\<in>domain(y)"
-    by (auto simp add: edrel_def)
+              "x\<in>A" "y\<in>A" "z=<x,y>" "x\<in>domain(y)"
+    unfolding edrel_def by (auto)
   then obtain u v where
-       Eq2:   "x\<in>u" "u\<in>v" "v\<in>y"
+       Eq1:   "x\<in>u" "u\<in>v" "v\<in>y"
     unfolding domain_def Pair_def by auto
-  with Eq1 have
-       Eq3:   "x\<in>eclose(A)" "y\<in>eclose(A)" "u\<in>eclose(A)" "v\<in>eclose(A)"
-    by (auto, rule_tac [3-4] ecloseD, rule_tac [3] ecloseD, simp_all add:arg_into_eclose)
-  let
-              ?r="trancl(Memrel(eclose(A)))"
-  from Eq2 and Eq3 have
+  with \<open>x\<in>A\<close> \<open>y\<in>A\<close> have
+              "x\<in>eclose(A)" "y\<in>eclose(A)" 
+    using  arg_into_eclose by auto
+  moreover with  \<open>v\<in>y\<close> have
+              "v\<in>eclose(A)" 
+    using  ecloseD by simp
+  moreover with  \<open>u\<in>v\<close> have
+              "u\<in>eclose(A)" 
+    using  ecloseD arg_into_eclose by simp
+  ultimately have
               "<x,u>\<in>?r" "<u,v>\<in>?r" "<v,y>\<in>?r"
-    by (auto simp add: r_into_trancl)
-  then  have
+    using Eq1 r_into_trancl by auto
+  then have
               "<x,y>\<in>?r"
-    by (rule_tac trancl_trans, rule_tac [2] trancl_trans, simp)
-  with Eq1 show "z\<in>?r" by simp
+    by (rule_tac trancl_trans; simp)+
+  with \<open>z=<x,y>\<close> show 
+              "z\<in>?r" by simp
 qed
   
 lemma wf_edrel : "wf(edrel(A))"
