@@ -166,7 +166,7 @@ definition
   "val(G,\<tau>) == wfrec(edrel(eclose(M)), \<tau> ,Hv(G))"
 
 definition
-  GenExt :: "i\<Rightarrow>i"     ("M[_]" 90)
+  GenExt :: "i\<Rightarrow>i"     ("M[_]")
   where "GenExt(G)== {val(G,\<tau>). \<tau> \<in> M}"
   
 lemma def_val:  "x\<in>M \<Longrightarrow> val(G,x) = {val(G,t) .. t\<in>domain(x) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>x \<and> p \<in> G }"
