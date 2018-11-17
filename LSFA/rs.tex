@@ -102,7 +102,7 @@ Rasiowa-Sikorski. That is, if the assumption holds for a sequence of
 relations $S_n$,  then $f(n) \mathrel{S_{n+1}} f(n+1)$ for all $n$.
 
 We first obtain a corollary of $\DC$ changing $A$ for
-$A\times\mathtt{nat}$:
+$A\times\mathtt{nat}$, whose procedural proof takes 16 lines:
 
 \begin{isabelle}
 \isacommand{corollary}\isamarkupfalse%
@@ -123,12 +123,24 @@ The following lemma is then proved automatically:
 \ auto%
 \end{isabelle}
 %
-And finally, we arrive to $\DC$ for a sequence of relations.
+And after a short proof we arrive to $\DC$ for a sequence of relations:
 
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ sequence{\isacharunderscore}DC{\isacharcolon}\ {\isachardoublequoteopen}{\isasymforall}x{\isasymin}A{\isachardot}\ {\isasymforall}n{\isasymin}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ S{\isacharbackquote}n\ {\isasymLongrightarrow}\isanewline
-\ \ \ \ {\isasymforall}a{\isasymin}A{\isachardot}\ {\isacharparenleft}{\isasymexists}f\ {\isasymin}\ nat{\isasymrightarrow}A{\isachardot}\ f{\isacharbackquote}{\isadigit{0}}\ {\isacharequal}\ a\ {\isasymand}\ {\isacharparenleft}{\isasymforall}n\ {\isasymin}\ nat{\isachardot}\ {\isasymlangle}f{\isacharbackquote}n{\isacharcomma}f{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isasymrangle}{\isasymin}S{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\ \ \ \ {\isasymforall}a{\isasymin}A{\isachardot}\ {\isacharparenleft}{\isasymexists}f\ {\isasymin}\ nat{\isasymrightarrow}A{\isachardot}\ f{\isacharbackquote}{\isadigit{0}}\ {\isacharequal}\ a\ {\isasymand}\ {\isacharparenleft}{\isasymforall}n\ {\isasymin}\ nat{\isachardot}\ {\isasymlangle}f{\isacharbackquote}n{\isacharcomma}f{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isasymrangle}{\isasymin}S{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+%
+%\isadelimproof
+\ \ %
+%\endisadelimproof
+%
+%\isatagproof
+\isacommand{apply}\isamarkupfalse%
+\ {\isacharparenleft}drule\ aux{\isacharunderscore}sequence{\isacharunderscore}DC{\isacharparenright}\isanewline
+\ \ \isacommand{apply}\isamarkupfalse%
+\ {\isacharparenleft}drule\ DC{\isacharunderscore}on{\isacharunderscore}A{\isacharunderscore}x{\isacharunderscore}nat{\isacharcomma}\ auto{\isacharparenright}\isanewline
+\ \ \isacommand{done}\isamarkupfalse%
+%
 \end{isabelle}
 
 \subsection{The Rasiowa-Sikorski lemma}\label{sec:rasiowa-sikorski-lemma}
