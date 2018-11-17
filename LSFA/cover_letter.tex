@@ -1,5 +1,6 @@
-\documentclass[12pt,english]{article}
+\documentclass[11pt,english]{article}
 \usepackage{babel}
+\usepackage[numbers]{natbib}
 %
 \input{header-draft}
 %
@@ -15,7 +16,7 @@
 \date{}
 \maketitle
 
-In first place we want to thank the referee for reading the paper very
+In first place we want to thank the referees for reading the paper very
 carefully and for his detailed and constructive criticism. Below we
 detail the main changes that have been made%; also, a diff-PDF is
 %provided that shows all the changes in color
@@ -27,14 +28,30 @@ notice of all the typos indicated in the report.
 The Introduction has many changes. A whole new section (``Related
 work'') has been added, where the formalization of mathematics in
 general and of forcing and set theory in particular are discussed.
-We also remark that our  development follows the
-presentation by Kunen \cite{kunen2011set}.
+Also, at the end of the subsection on Isabelle we describe the tools
+available for implementation, and a comparison
+between the two dialects available, the basic procedural style and the
+declarative \emph{Isar}. At some point of the Introduction, we also
+remark that our 
+development follows the presentation by Kunen \cite{kunen2011set}. 
 
+We added several comments on the implementation details, especially in
+the section on forcing notions; this includes a description of the
+complexity in number of lines and proof commands, and some hints on
+the mechanics of the use Isabelle.
 
+A thorough comparison between the available results on $\AC$ and
+$\DC$, and the need for reimplementing some of those was included in
+the subsection on Dependent Choices.
 
+The section on ``Names'' includes two new applications. One is the
+proof that the generic
+extension $M[G]$ is a transitive set. The second one is even more basic  and
+was missing in the two previous versions of the manuscript: The
+generic filter $G$ belongs to $M[G]$. 
 %
 %
-\bibliographystyle{mi-estilo-else}
+\bibliographystyle{arXiv/mi-estilo-else}
 \bibliography{citados}
 \end{document}
 %%% Local Variables: 
