@@ -80,9 +80,7 @@ the locale \isatt{forcing{\isacharunderscore}notion}.
 
 A set $D$ is \emph{dense} if every element $p\in P$ has a lower bound
 in $D$ and there is also a weaker definition which asks for a lower
-bound in $D$ only for the elements below some fixed element $q$. Since
-the relation $\leqslant$ is reflexive, it is obvious that $P$ is
-dense.
+bound in $D$ only for the elements below some fixed element $q$. 
 \begin{isabelle}
   \isacommand{definition}\isamarkupfalse%
 \ dense\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
@@ -90,12 +88,35 @@ dense.
 \isanewline
 \isacommand{definition}\isamarkupfalse%
 \ dense{\isacharunderscore}below\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}o{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ {\isachardoublequoteopen}dense{\isacharunderscore}below{\isacharparenleft}D{\isacharcomma}q{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}p{\isasymin}P{\isachardot}\ {\isasymlangle}p{\isacharcomma}q{\isasymrangle}{\isasymin}leq\ {\isasymlongrightarrow}\ {\isacharparenleft}{\isasymexists}d{\isasymin}D\ {\isachardot}\ {\isasymlangle}d{\isacharcomma}p{\isasymrangle}{\isasymin}leq{\isacharparenright}{\isachardoublequoteclose}\isanewline
-\isanewline
-\isacommand{lemma}\isamarkupfalse%
-\ P{\isacharunderscore}dense{\isacharcolon}\ {\isachardoublequoteopen}dense{\isacharparenleft}P{\isacharparenright}{\isachardoublequoteclose}
+\ \ {\isachardoublequoteopen}dense{\isacharunderscore}below{\isacharparenleft}D{\isacharcomma}q{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}p{\isasymin}P{\isachardot}\ {\isasymlangle}p{\isacharcomma}q{\isasymrangle}{\isasymin}leq\ {\isasymlongrightarrow}\ {\isacharparenleft}{\isasymexists}d{\isasymin}D\ {\isachardot}\ {\isasymlangle}d{\isacharcomma}p{\isasymrangle}{\isasymin}leq{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
-
+Since
+the relation $\leqslant$ is reflexive, it is obvious that $P$ is
+dense. Actually, this follows automatically once the appropriate definitions are
+unfolded:
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ P{\isacharunderscore}dense{\isacharcolon}\ {\isachardoublequoteopen}dense{\isacharparenleft}P{\isacharparenright}{\isachardoublequoteclose}\isanewline
+%
+%\isadelimproof
+\ \ %
+%\endisadelimproof
+%
+%\isatagproof
+\isacommand{using}\isamarkupfalse%
+\ leq{\isacharunderscore}preord\isanewline
+\ \ \isacommand{unfolding}\isamarkupfalse%
+\ preorder{\isacharunderscore}on{\isacharunderscore}def\ refl{\isacharunderscore}def\ dense{\isacharunderscore}def\isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ blast%
+%\endisatagproof
+\end{isabelle}
+Here, the automatic tactic \isa{blast} solves the goal. In the
+procedural, goals are refined with the command
+\textbf{apply}~\emph{tactic}, and proofs are finished using \textbf{done}. 
+Then \textbf{by $\dots$} is an idiom for 
+\textbf{apply $\dots$ done}.
+ 
 We say that $F\subseteq P$ is increasing (or upward closed) if every
 extension of any element in $F$ is also in $F$.
 \begin{isabelle}
@@ -121,6 +142,14 @@ compatible in $A$.
 \ \ closure{\isacharunderscore}compat{\isacharunderscore}filter{\isacharcolon}
 \ \ {\isachardoublequoteopen}A{\isasymsubseteq}P\ {\isasymLongrightarrow}\ {\isacharparenleft}{\isasymforall}p{\isasymin}A{\isachardot}{\isasymforall}q{\isasymin}A{\isachardot}\ compat{\isacharunderscore}in{\isacharparenleft}A{\isacharcomma}leq{\isacharcomma}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}\ {\isasymLongrightarrow}\ filter{\isacharparenleft}upclosure{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
+As usual
+with procedural proofs, the refinement process goes ``backwards,''
+from the main goal to simpler ones. The proof of this last lemma takes
+21 lines and 34 proof commands and is one of the longest procedural
+proofs in the development.  It was  at
+the moment of its implementation that we realized that a declarative
+approach was best because, appart from being more readable, the
+reasoning follows mostly in a forward fashion.
 
 %%% Local Variables:
 %%% mode: latex
