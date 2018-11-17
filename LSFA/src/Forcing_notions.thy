@@ -125,10 +125,8 @@ lemma  closure_compat_filter:
   apply (drule upclosureD)+
   apply (erule bexE)+
   apply (rename_tac a b)
-  apply (drule_tac A="A" 
-               and x="a" in bspec, assumption)
-  apply (drule_tac A="A" 
-               and x="b" in bspec, assumption)
+  apply (drule_tac A="A" and x="a" in bspec, assumption)
+  apply (drule_tac A="A" and x="b" in bspec, assumption)
   apply (auto)
   apply (rule_tac x="d" in bexI)
   prefer 2 apply (simp add:A_sub_upclosure [THEN subsetD])
