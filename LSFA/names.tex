@@ -27,10 +27,10 @@ relation, the third is the functional, and the second corresponds to
 the argument of $F$. Notice that the relation and the function argument
 of the functional are internalized as terms of type \isa{i}.
 
-In our case the functional $H$ takes an additional argument for the
+In our case the functional is called $Hv$ and takes an additional argument for the
 parameter $G$:
 \[
-  H(G,y,f) = \{f(x) : x \in dom(y) \y \exists p\in \PP.\,
+  \mathit{Hv}(G,y,f) = \{f(x) : x \in dom(y) \y \exists p\in \PP.\,
 (\lb x,p\rb\in y \y p\in G)\}
 \]
 while the relation is given by:
@@ -42,8 +42,9 @@ $\{\{x\},\{x,y\}\}$. It is trivial to deduce the well-foundedness of
 $\mathit{ed}$ from the fact that $\in$ is well-founded, which follows
 from the Foundation Axiom.
 
-In the formalization of $\mathit{ed}$ is restricted to a set,
-so to have a term of type \isa{i}:
+In our formalization of this recursion,  the first argument of
+\isa{wfrec} is the term of type  \isa{i} obtained by restricting the
+relation $\mathit{ed}$ to  a set:
 % 
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
@@ -66,15 +67,20 @@ then it is well-founded as well.
 \ \ \isacommand{done}\isamarkupfalse%
 %
 \end{isabelle}
-
-\noindent We omit the proof of the following lemma used above:
-
+%
+All but one lemma used in the above proof
+(\isa{wf{\isacharunderscore}subset},
+\isa{wf{\isacharunderscore}trancl}, and
+\isa{wf{\isacharunderscore}Memrel}) are already
+present in Isabelle/ZF. The remaining technical result has
+been proved using the Isar language:
+%
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ edrel{\isacharunderscore}sub{\isacharunderscore}memrel{\isacharcolon}\ {\isachardoublequoteopen}edrel{\isacharparenleft}A{\isacharparenright}\ {\isasymsubseteq}\ trancl{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-\noindent The formalizaton of the functional $H$ is straightforward and $\val$ is defined using \isa{wfrec}:
+The formalizaton of the functional $\mathit{Hv}$ is straightforward and $\val$ is defined using \isa{wfrec}:
 %
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
@@ -102,7 +108,7 @@ setting up the notation $M[G]$ for it:
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
 \isanewline
-\ \ GenExt\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \ \ \ \ {\isacharparenleft}{\isachardoublequoteopen}M{\isacharbrackleft}{\isacharunderscore}{\isacharbrackright}{\isachardoublequoteclose}\ {\isadigit{9}}{\isadigit{0}}{\isacharparenright}\ \isakeyword{where} \isanewline
+\ \ GenExt\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \ \ \ \ {\isacharparenleft}{\isachardoublequoteopen}M{\isacharbrackleft}{\isacharunderscore}{\isacharbrackright}{\isachardoublequoteclose}{\isacharparenright}\ \isakeyword{where} \isanewline
 \ \ {\isachardoublequoteopen}GenExt{\isacharparenleft}G{\isacharparenright}{\isacharequal}{\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isachardot}\ {\isasymtau}\ {\isasymin}\ M{\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
 

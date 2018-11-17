@@ -1,24 +1,24 @@
 \section{Pairing in the generic extension}
 \label{sec:pairing-generic-extension}
 
-In the previous section we defined the generic extension $M[G]$, we
-have yet to prove that $M[G]$ is a model of $ZFC$. This is equivalent
+In the previous section we defined the generic extension $M[G]$; we
+have yet to prove that $M[G]$ is a model of $\ZFC$. This is equivalent
 to show that each axiom relativized with respect to $M[G]$ holds. In
 this section we show that the generic extension satisfies the pairing
 axiom, after explaining relativization in Isabelle/ZF.
 
 % Once the preliminary concepts are defined, one of the main tasks in order to
 % formalize the Independence of the Continuum Hypothesis
-% is to prove that the generic extension $M[G]$ is a model of $ZFC$, i.e, that
-% the realtive version to $M[G]$ of each axiom of $ZFC$ holds. In this section
+% is to prove that the generic extension $M[G]$ is a model of $\ZFC$, i.e, that
+% the realtive version to $M[G]$ of each axiom of $\ZFC$ holds. In this section
 % we develop the proof of the satisfaction of the Pairing Axiom in the generic extension.
 
 
 % So, we need to show that
-% every axiom of $ZFC$ holds in $M[G]$, i.e, that the relative version of each axiom $\phi$ to
+% every axiom of $\ZFC$ holds in $M[G]$, i.e, that the relative version of each axiom $\phi$ to
 % $M[G]$ ($\phi^{M[G]}$) holds. In this section we show the case of the Pairing Axiom.
 
-In Paulson's library, there are defined relative versions of the $ZFC$ axioms. The definition
+In Paulson's library, there are defined relative versions of the $\ZFC$ axioms. The definition
 \isa{upair{\isacharunderscore}ax} corresponds to the Pairing Axiom:
 
 \begin{isabelle}

@@ -41,7 +41,7 @@ Ordering Theorem and  $\DC(\omega)$), compared to the mere 11 commands from $\AC
 one is the
 choice principle that we use in our formalization of Pointed $\DC$, and states 
 the existence of
-choice functions on $\P(A)\sm \{\mty\}$):
+choice functions (``selectors'') on $\P(A)\sm \{\mty\}$):
 \[
 \exists (s: \P(A)\sm \{\mty\}\to A). \, \forall X\sbq A.\ X\neq \mty \limp
 s(X) \in X.
@@ -99,7 +99,7 @@ following theorem:
 
 We need a further, ``diagonal'' version of $\DC$  to prove
 Rasiowa-Sikorski. That is, if the assumption holds for a sequence of
-relations $S_n$,  then $f(n) \mathrel{S_{n+1}} f(n+1)$.
+relations $S_n$,  then $f(n) \mathrel{S_{n+1}} f(n+1)$ for all $n$.
 
 We first obtain a corollary of $\DC$ changing $A$ for
 $A\times\mathtt{nat}$:
