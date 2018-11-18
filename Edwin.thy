@@ -187,7 +187,7 @@ qed
 
 lemma 
   assumes "Ord(a)"
-  shows "0 ++ a = a" using assms
+  shows "0++a = a" using assms
 proof (induct rule:trans_induct3)
   case 0
   then show ?case using oadd_0 by simp
@@ -198,7 +198,7 @@ next
     using \<open>Ord(y)\<close> oadd_succ  by simp
   also have
     "   ... = succ(y)"
-    using succ by  simp
+    using succ  by  simp
   finally show ?case .
 next
   case (limit a)
@@ -213,12 +213,98 @@ next
     using limit Limit_Union_eq by simp
   finally show ?case .
 qed
+     
+lemma 
+  assumes "Ord(c)" "Ord(b)" "Ord(a)" 
+  shows "a ++ (b ++ c) = (a ++ b) ++ c" 
+  using assms
+proof (induct rule:trans_induct3)
+  case 0
+  then have "a++(b++0) = a++b" using  oadd_0  by simp
+  also have "... = (a++b)++0" using assms  by simp
+  finally show ?case .
+next
+  case (succ y)
+  then have "(a++b)++succ(y) = succ((a++b)++y)" using oadd_succ by simp
+  also have "... = succ(a++(b++y))" using succ by simp
+  also have "... = a++succ(b++y)" using oadd_succ by simp
+  also have "... = a++(b++succ(y))" using \<open>Ord(y)\<close>  oadd_succ by simp
+  finally show ?case ..
+next
+  case (limit c)
+  then have "a++b++c=(\<Union>w\<in>c.(a++b++w))" using oadd_Limit by simp
+  also have "... = (\<Union>w\<in>c. (a++(b++w)))" using limit by simp
+  also have "... = (\<Union>w\<in>b++c. a++w)" (*using limit oadd_Limit oadd_lt_mono apply auto sorry*)
+  proof (intro equalityI subsetI)
+    fix x
+    assume "x \<in> (\<Union>w\<in>c. a ++ (b ++ w))" 
+    then obtain w where "w\<in>c" "x\<in> a++(b++w)" using UN_E by auto
+    with limit have "b++w\<in>b++c" 
+      unfolding Limit_def using oadd_lt_mono (* [of b b]*) by blast
+    with \<open>x\<in> a++(b++w)\<close> have "\<exists>v\<in>b++c. x\<in>a++v" by auto
+    then show " x \<in> (\<Union>v\<in>b ++ c. a ++ v)" by simp
+  next
+    fix x
+    assume " x \<in> (\<Union>w\<in>b ++ c. a ++ w)"
+    then obtain v where "v\<in>b++c" "x\<in>a++v" using UN_E by auto
+    then have   "v\<in>(\<Union>w\<in>c. b++w)" using limit oadd_Limit  by auto
+    then obtain z where "z\<in>c" "v\<in>b++z" by auto
+    then have "a++v\<in>a++(b++z)" using \<open>Ord(a)\<close> \<open>Ord(b)\<close> oadd_lt_mono  by blast
+    with \<open>x\<in>a++v\<close> have "x\<in>a++(b++z)" using Ord_trans  by blast
+    with \<open>x\<in>a++(b++z)\<close> \<open>z\<in>c\<close> have \<open>\<exists>w\<in>c. x\<in>a++(b++w)\<close> by auto 
+    then show "x\<in>(\<Union>w\<in>c. a ++ (b ++ w))"  by simp
+  qed
+  also have "... = a++(b++c)" using limit oadd_Limit oadd_LimitI by simp
+  finally show ?case ..
+qed
+
   
 lemma 
-  assumes "Ord(a)" "Ord(b)" "Ord(c)" 
+  assumes "Ord(c)" "Ord(b)" "Ord(a)" 
   shows "a ++ (b ++ c) = (a ++ b) ++ c" 
-    using assms
+  using assms
+(*
+  In the following proof, it seems that we can't help but following
+  the scheme of proof of the induct method. We tried to start with
     
-    oops
+  proof (induct rule:trans_induct3,simp_all)
+
+  and the simplifier ruled out the trivial base and successor cases,
+  but then the limit case could not be matched to the remaining goal 
+*)  
+proof (induct rule:trans_induct3)
+  case 0 
+  then show ?case by simp
+next
+  case succ 
+  then show ?case by simp
+next
+  case (limit c) 
+   then have "a++b++c=(\<Union>w\<in>c.(a++b++w))" using oadd_Limit by simp
+  also have "... = (\<Union>w\<in>c. (a++(b++w)))" using limit by simp
+  also have "... = (\<Union>w\<in>b++c. a++w)" (*using limit oadd_Limit oadd_lt_mono apply auto sorry*)
+  proof (intro equalityI subsetI)
+    fix x
+    assume "x \<in> (\<Union>w\<in>c. a ++ (b ++ w))" 
+    then obtain w where "w\<in>c" "x\<in> a++(b++w)" using UN_E by auto
+    with limit have "b++w\<in>b++c" 
+      unfolding Limit_def using oadd_lt_mono (* [of b b]*) by blast
+    with \<open>x\<in> a++(b++w)\<close> have "\<exists>v\<in>b++c. x\<in>a++v" by auto
+    then show " x \<in> (\<Union>v\<in>b ++ c. a ++ v)" by simp
+  next
+    fix x
+    assume " x \<in> (\<Union>w\<in>b ++ c. a ++ w)"
+    then obtain v where "v\<in>b++c" "x\<in>a++v" using UN_E by auto
+    then have   "v\<in>(\<Union>w\<in>c. b++w)" using limit oadd_Limit  by auto
+    then obtain z where "z\<in>c" "v\<in>b++z" by auto
+    then have "a++v\<in>a++(b++z)" using \<open>Ord(a)\<close> \<open>Ord(b)\<close> oadd_lt_mono  by blast
+    with \<open>x\<in>a++v\<close> have "x\<in>a++(b++z)" using Ord_trans  by blast
+    with \<open>x\<in>a++(b++z)\<close> \<open>z\<in>c\<close> have \<open>\<exists>w\<in>c. x\<in>a++(b++w)\<close> by auto 
+    then show "x\<in>(\<Union>w\<in>c. a ++ (b ++ w))"  by simp
+  qed
+  also have "... = a++(b++c)" using  limit oadd_Limit oadd_LimitI by simp
+  finally show ?case ..
+qed
+  
 end
   
