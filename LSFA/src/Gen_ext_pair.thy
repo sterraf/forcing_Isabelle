@@ -35,7 +35,7 @@ lemma valsigma :
   apply (auto simp add: Sep_and_Replace)
 done
       
-lemma pair_preserv : 
+lemma pairing_axiom : 
   "one \<in> G \<Longrightarrow> upair_ax(##M[G])"
   apply (simp add: upair_ax_def)
   apply (rule ballI)+
