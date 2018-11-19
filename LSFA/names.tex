@@ -111,6 +111,19 @@ setting up the notation $M[G]$ for it:
 \ \ GenExt\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \ \ \ \ {\isacharparenleft}{\isachardoublequoteopen}M{\isacharbrackleft}{\isacharunderscore}{\isacharbrackright}{\isachardoublequoteclose}{\isacharparenright}\ \isakeyword{where} \isanewline
 \ \ {\isachardoublequoteopen}GenExt{\isacharparenleft}G{\isacharparenright}{\isacharequal}{\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isachardot}\ {\isasymtau}\ {\isasymin}\ M{\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
+It is conventional in Isabelle/ZF to define introduction and
+destruction rules for definitions like \isa{GenExt}; in our case, it is
+enough to know $x\in M$ in order to know $\val(G,x) \in M[G]$:
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ GenExtI{\isacharcolon}\ \ {\isachardoublequoteopen}x\ {\isasymin}\ M\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}\ {\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
+\end{isabelle}
+\noindent The destruction rule corresponding to the generic extension says
+that any $x \in M[G]$ comes from some $\tau \in M$ via $\val$. 
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ GenExtD{\isacharcolon}\ \ {\isachardoublequoteopen}x\ {\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}\ {\isasymLongrightarrow}\ {\isasymexists}{\isasymtau}{\isasymin}M{\isachardot}\ x\ {\isacharequal}\ val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
 
 %% It is to be noted that this results holds under the assumption that
 %% the name \isa{t} is in $M$.
@@ -142,26 +155,89 @@ relation restricted to a set \isa{A}, \isa{Memrel(A)}.
 \ \ {\isachardoublequoteopen}check{\isacharparenleft}x{\isacharparenright}\ {\isacharequal}{\isacharequal}\ wfrec{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}{\isacharbraceleft}x{\isacharbraceright}{\isacharparenright}{\isacharparenright}{\isacharcomma}\ x\ {\isacharcomma}\ Hcheck{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 Here, \isa{eclose} returns the (downward) $\in$-closure of its
-argument. The main result is stated as follows:
+argument. The main lemmas about $\val$ and $\chk$ require some
+instances of replacement for $M$; we set up a locale to assemble these
+assumptions:
+\begin{isabelle}
+\isacommand{locale}\isamarkupfalse%
+\ M{\isacharunderscore}extra{\isacharunderscore}assms\ {\isacharequal}\ forcing{\isacharunderscore}data\ {\isacharplus}\isanewline
+\ \ \isakeyword{assumes}\ check{\isacharunderscore}in{\isacharunderscore}M\ {\isacharcolon}\ \ \ \ \ \  {\isachardoublequoteopen}{\isasymAnd}x{\isachardot}\ x\ {\isasymin}\ M\ {\isasymLongrightarrow}\ check{\isacharparenleft}x{\isacharparenright}\ {\isasymin}\ M{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeyword{and}\ sats{\isacharunderscore}upair{\isacharunderscore}ax{\isacharcolon}\ \ \ \ {\isachardoublequoteopen}upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeyword{and}\ repl{\isacharunderscore}check{\isacharunderscore}pair\ {\isacharcolon}\ {\isachardoublequoteopen}strong{\isacharunderscore}replacement{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharcomma}{\isasymlambda}p\ y{\isachardot}\ y\ {\isacharequal}{\isacharless}check{\isacharparenleft}p{\isacharparenright}{\isacharcomma}p{\isachargreater}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+The first assumption asserts that all the relevant names are indeed in
+$M$ (i.e., $\chk(x) \in M$ if $x\in M$) and it is needed to prove that
+$\val(G,\chk(x))=x$. It will take a serious effort to fulfill this
+assumption: One of the hardest parts of Paulson's formalization of
+constructibility involves showing that models are closed under
+recursive construction. We will eventually formalize that if
+$M\models\ZFC$ and the arguments of \isa{wfrec} are in $M$, then its
+value also is. This will require to adapt to ctm models several
+locales defined in \cite{paulson_2003} that were intended to be used
+for the class of constructible sets. Notice that the only requirement
+on the set \isa{G} is that it contains the top element of the poset
+\isa{P}.
 
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
-\ valcheck\ {\isacharcolon}\ {\isachardoublequoteopen}y\ {\isasymin}\ M\ {\isasymLongrightarrow}\ one\ {\isasymin}\ G\ {\isasymLongrightarrow}\ {\isasymforall}x{\isasymin}M{\isachardot}\ check{\isacharparenleft}x{\isacharparenright}\ {\isasymin}\ M\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}check{\isacharparenleft}y{\isacharparenright}{\isacharparenright}\ \ {\isacharequal}\ y{\isachardoublequoteclose}
+\ valcheck\ {\isacharcolon}\ \isanewline
+\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}one\ {\isasymin}\ G{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}y\ {\isasymin}\ M\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}check{\isacharparenleft}y{\isacharparenright}{\isacharparenright}\ \ {\isacharequal}\ y{\isachardoublequoteclose}
 \end{isabelle}
 
-On the one hand, the only requirement on the set \isa{G} is that it
-contains the top element of the poset \isa{P}. On the other hand, it
-is necessary that all the relevant names are indeed in $M$ (i.e.,
-$\chk(x) \in M$ if $x\in M$). It requires a serious development to
-fulfill this assumption. One of the hardest parts of Paulson's
-formalization of constructibility involves showing that models are
-closed under recursive construction. We will eventually formalize that
-if $M\models\ZFC$ and the arguments of \isa{wfrec} are in $M$, then
-its value also is. This will require to adapt to ctm models several
-locales defined in \cite{paulson_2003} that were intended to be used
-for the class of constructible sets.
 
+\subsection{Basic results about the generic extension}
 
+We turn now to prove that $M[G]$ is transitive and $G\in
+M[G]$. Showing that $M[G]$ is transitive amounts to prove $y \in M[G]$
+for any $x \in M[G]$ and $y \in x$. 
+% \begin{isabelle}
+% \isacommand{definition}\isamarkupfalse%
+% \isanewline
+% \ \ Transset\ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isacharequal}{\isachargreater}o{\isachardoublequoteclose}\ \ \isakeyword{where}\isanewline
+% \ \ \ \ {\isachardoublequoteopen}Transset{\isacharparenleft}i{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}x{\isasymin}i{\isachardot}\ x{\isacharless}{\isacharequal}i{\isachardoublequoteclose}
+% \end{isabelle}
+
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ trans{\isacharunderscore}Gen{\isacharunderscore}Ext{\isacharprime}\ {\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ \ {\isachardoublequoteopen}x\ {\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}\ \ \isakeyword{and}\ \ {\isachardoublequoteopen}y\ {\isasymin}\ x{\isachardoublequoteclose}\ \isanewline
+\ \ \isakeyword{shows}\ \ \ \ {\isachardoublequoteopen}y\ {\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
+\end{isabelle}
+The proof of this lemma is straightforward because from $x \in M[G]$
+we can obtain $\tau \in M$ such that $x = \val(G,\tau)$. Notice also
+that using the characterization of $\val$ given by
+\isa{def{\isacharunderscore}val} we can extract some
+$\theta \in \dom(\tau)$ such that $y =\val(G,\theta)$; to conclude
+$\val(G,\theta) \in M[G]$ it is enough to prove $\theta \in M$, which
+follows from the transitivity of $M$.
+
+In contrast, the proof that $G\in M[G]$ is more demanding. In fact, we
+set $\dot{G} = \{ \langle \check{p},p\rangle \,|\, p \in P \}$ as a
+putative name for $G$. Proving that $\dot{G}$ is in fact a name for
+$G$ requires to prove that $\dot{G} \in M$, using an instance of
+replacement for $M$ (\noindent namely that given by the assumption
+\isa{repl{\isacharunderscore}check{\isacharunderscore}pair}), and
+then proving that $\val(G,\dot{G})=G$.
+
+\begin{isabelle}
+\isacommand{definition}\isamarkupfalse%
+\isanewline
+\ \ G{\isacharunderscore}dot\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}G{\isacharunderscore}dot\ {\isacharequal}{\isacharequal}\ {\isacharbraceleft}{\isacharless}check{\isacharparenleft}p{\isacharparenright}{\isacharcomma}p{\isachargreater}\ {\isachardot}\ p{\isasymin}P{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ G{\isacharunderscore}dot{\isacharunderscore}in{\isacharunderscore}M\ {\isacharcolon} {\isachardoublequoteopen}G{\isacharunderscore}dot\ {\isasymin}\ M{\isachardoublequoteclose}
+\isanewline\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ val{\isacharunderscore}G{\isacharunderscore}dot\ {\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}G\ {\isasymsubseteq}\ P{\isachardoublequoteclose}\ \ \isakeyword{and}\ \ 
+{\isachardoublequoteopen}one\ {\isasymin}\ G{\isachardoublequoteclose}\ \isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}G{\isacharunderscore}dot{\isacharparenright}\ {\isacharequal}\ G{\isachardoublequoteclose}
+\end{isabelle}
 
 
 %%% Local Variables:

@@ -25,9 +25,15 @@ translations
 lemma Sep_and_Replace: "{b(x) .. x\<in>A, P(x) } = {b(x) . x\<in>{y\<in>A. P(y)}}"
   by (auto simp add:SepReplace_def)
 
+lemma Sep_and_Replace2: "{b(x) .. x\<in>{c(y) . y \<in> A}, P(x) } = {b(c(y)) .. y \<in> A, P(c(y))}"
+  by (auto simp add:SepReplace_def)
+
+    
 lemma SepReplace_subset : "A\<subseteq>A'\<Longrightarrow> {b .. x\<in>A, Q}\<subseteq>{b .. x\<in>A', Q}"
   by (auto simp add:SepReplace_def)
 
+lemma SepReplace_cong : "A=A'\<Longrightarrow> {b .. x\<in>A, Q}={b .. x\<in>A', Q}"
+  by (auto simp add:SepReplace_def)
     
 lemma SepReplace_dom_implies :
    "\<forall>x\<in>A. b(x) = b'(x)\<Longrightarrow> {b(x) .. x\<in>A, Q(x)}={b'(x) .. x\<in>A, Q(x)}"
@@ -251,69 +257,6 @@ proof -
     by auto
 qed
 
-lemma valcheck : "y \<in> M \<Longrightarrow> one \<in> G \<Longrightarrow> \<forall>x\<in>M. check(x) \<in> M \<Longrightarrow> val(G,check(y))  = y"
-proof (induct rule:eps_induct)
-  case (1 y)
-  then show ?case
-  proof -
-    from def_check have
-          Eq1: "check(y) = { \<langle>check(w), one\<rangle> . w \<in> y}"  (is "_ = ?C") .
-    with 1 have
-          Eq2: "?C\<in>M" 
-      by auto
-    with 1 transD subsetD trans_M have 
-        w_in_M : "\<forall> w \<in> y . w \<in> M" by force
-    from Eq1 have
-               "val(G,check(y)) = val(G, {\<langle>check(w), one\<rangle> . w \<in> y})"
-      by simp
-    also have
-                " ...  = {val(G,t) .. t\<in>domain(?C) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>?C \<and> p \<in> G }"
-      using def_val and Eq2 by simp
-    also have
-                " ... =  {val(G,t) .. t\<in>domain(?C) , \<exists>w\<in>y. t=check(w) }"
-      using 1 and one_in_P by simp
-    also have
-                " ... = {val(G,check(w)) . w\<in>y }"
-      by force
-    also have
-                " ... = y"
-      using 1 and w_in_M by simp        
-    finally show "val(G,check(y)) = y" 
-      using 1 by simp
-  qed
-qed
-  
-(* M[G] is transitive *)
-lemma trans_Gen_Ext' :
-  assumes "vc \<in> M[G]"
-    "y \<in> vc" 
-  shows
-    "y \<in> M[G]" 
-proof -
-  from \<open>vc\<in>M[G]\<close> have
-    "\<exists>c\<in>M. vc = val(G,c)"
-    by (blast dest:GenExtD)
-  then obtain c where
-    "c\<in>M" "vc = val(G,c)" by auto
-  with \<open>vc \<in> M[G]\<close> have
-    "val(G,c)\<in>M[G]" by simp
-  from \<open>y \<in> vc\<close> and \<open>vc = val(G,c)\<close> have
-    "y \<in> val(G,c)" by simp
-  with \<open>c\<in>M\<close> and elem_of_val have
-    "\<exists>\<theta>\<in>domain(c). val(G,\<theta>) = y" by simp
-  then obtain \<theta> where
-    "\<theta>\<in>domain(c)" "val(G,\<theta>) = y" by auto
-  from \<open>\<theta>\<in>domain(c)\<close> trans_M \<open>c\<in>M\<close> domain_trans have
-    "\<theta>\<in>M" by simp
-  then have
-    "val(G,\<theta>) \<in> M[G]" 
-    by (blast intro:GenExtI)
-  with \<open>val(G,\<theta>) = y\<close> show ?thesis by simp
-qed
-  
-lemma trans_Gen_Ext:
-  "Transset(M[G])"
-  by (auto simp add: Transset_def trans_Gen_Ext')
 
 lemma val_of_elem: 
   assumes 
@@ -331,6 +274,24 @@ proof -
   with 1 show ?thesis by simp
 qed
 
+(* M[G] is transitive *)
+lemma trans_Gen_Ext : "Transset(M[G])"
+proof -
+  { fix "x" "y"
+    assume  "x \<in> M[G]"  and  "y \<in> x"  
+    from \<open>x \<in> M[G]\<close> \<open>y \<in> x\<close> GenExtD obtain c where
+      "c\<in>M" "val(G,c) \<in> M[G]" "y \<in> val(G,c)" by blast
+    with \<open>c\<in>M\<close> and elem_of_val obtain \<theta> where
+      "\<theta>\<in>domain(c)" "val(G,\<theta>) = y" by blast
+    from \<open>\<theta>\<in>domain(c)\<close> trans_M \<open>c\<in>M\<close> domain_trans have
+      "\<theta>\<in>M" by simp
+    with GenExtI \<open>val(G,\<theta>) = y\<close>have
+      "y \<in> M[G]" 
+    by blast
+  } 
+  then show ?thesis unfolding Transset_def by auto
+qed
+  
 end    (*************** CONTEXT: forcing_data *****************)
 
 (* definitions from Relative by Paulson *)
@@ -362,10 +323,43 @@ by (simp add: univalent_def)
 locale M_extra_assms = forcing_data +
   assumes
         check_in_M : "\<And>x. x \<in> M \<Longrightarrow> check(x) \<in> M"
-    and upair_ax:         "upair_ax(##M)"
+    and sats_upair_ax:         "upair_ax(##M)"
     and repl_check_pair : "strong_replacement(##M,\<lambda>p y. y =<check(p),p>)"
     
 begin  (*************** CONTEXT: M_extra_assms *****************)
+lemma valcheck : 
+  assumes "one \<in> G"
+  shows "y \<in> M \<Longrightarrow> val(G,check(y))  = y"
+proof (induct rule:eps_induct)
+  case (1 y)
+  then show ?case
+  proof -
+    from def_check have
+          Eq1: "check(y) = { \<langle>check(w), one\<rangle> . w \<in> y}"  (is "_ = ?C") .
+    with 1 check_in_M[OF \<open>y\<in>M\<close>] have
+          Eq2: "?C\<in>M" 
+      by auto
+    with 1 transD subsetD trans_M have 
+        w_in_M : "\<forall> w \<in> y . w \<in> M" by force
+    from Eq1 have
+               "val(G,check(y)) = val(G, {\<langle>check(w), one\<rangle> . w \<in> y})"
+      by simp
+    also have
+                " ...  = {val(G,t) .. t\<in>domain(?C) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>?C \<and> p \<in> G }"
+      using def_val and Eq2 by simp
+    also have
+                " ... =  {val(G,t) .. t\<in>domain(?C) , \<exists>w\<in>y. t=check(w) }"
+      using 1 assms one_in_P by simp
+    also have
+                " ... = {val(G,check(w)) . w\<in>y }"
+      by force
+    also have
+                " ... = y"
+      using 1 and w_in_M by simp        
+    finally show "val(G,check(y)) = y" 
+      using 1 by simp
+  qed
+qed
   
 (* The next lemma is needed to provide an interface between 
    Paulson's lemmas for classes and our set models *)
@@ -385,7 +379,7 @@ lemma upair_abs [simp]:
 done
 
 lemma upairM : "x \<in> M \<Longrightarrow> y \<in> M \<Longrightarrow> {x,y} \<in> M"
-  by(insert upair_ax, auto simp add: upair_ax_def)
+  by(insert sats_upair_ax, auto simp add: upair_ax_def)
     
 lemma pairM : "x \<in>  M \<Longrightarrow> y \<in> M \<Longrightarrow> <x,y> \<in> M"
   by(unfold Pair_def, rule upairM,(rule upairM,simp+)+)
@@ -423,9 +417,10 @@ definition
 lemma G_dot_in_M :
     "G_dot \<in> M" 
 proof -
-  have 0:"G_dot = { y . p\<in>P , y = <check(p),p> }"
+  have Eq0:"G_dot = { y . p\<in>P , y = <check(p),p> }"
     unfolding G_dot_def by auto
-  from P_in_M check_in_M pairM P_sub_M have "\<And> p . p\<in>P \<Longrightarrow> <check(p),p> \<in> M" 
+  from P_in_M check_in_M pairM P_sub_M 
+  have "\<And> p . p\<in>P \<Longrightarrow> <check(p),p> \<in> M" 
     by auto
   then have
     1:"\<And>x y. \<lbrakk> x\<in>P ; y = <check(x),x> \<rbrakk> \<Longrightarrow> y\<in>M"
@@ -438,8 +433,11 @@ proof -
     using P_in_M by simp
   with 1 repl_check_pair P_in_M strong_replacement_closed have
     "{ y . p\<in>P , y = <check(p),p> } \<in> M" by simp
-  then show ?thesis using 0 by simp
+  then show ?thesis using Eq0 by simp
 qed
+
+lemma dom_G_dot : "domain(G_dot) = { check(p) . p \<in> P}"
+  by(auto simp add: G_dot_def)
   
 lemma val_G_dot :
   assumes "G \<subseteq> P"
@@ -470,7 +468,7 @@ next
     using val_of_elem G_dot_in_M by blast
   with \<open>p\<in>G\<close> \<open>G\<subseteq>P\<close> \<open>one\<in>G\<close> show
     "p \<in> val(G,G_dot)" 
-    using P_sub_M check_in_M valcheck by auto
+    using P_sub_M check_in_M valcheck by auto 
 qed
   
   
@@ -479,13 +477,11 @@ lemma G_in_Gen_Ext :
     "one \<in> G"
   shows   "G \<in> M[G]" 
 proof -
-  from G_dot_in_M have
-    "val(G,G_dot) \<in> M[G]" 
-    by (auto intro:GenExtI)
+  from G_dot_in_M GenExtI have
+    "val(G,G_dot) \<in> M[G]"  by simp
   with assms val_G_dot 
   show ?thesis by simp
 qed
-
   
 end    (*************** CONTEXT: M_extra_assms *****************)
 

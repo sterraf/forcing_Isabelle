@@ -1,24 +1,26 @@
 \section{Pairing in the generic extension}
 \label{sec:pairing-generic-extension}
 
-In the previous section we defined the generic extension $M[G]$; we
-have yet to prove that $M[G]$ is a model of $\ZFC$. This is equivalent
-to show that each axiom relativized with respect to $M[G]$ holds. In
-this section we show that the generic extension satisfies the pairing
-axiom, after explaining relativization in Isabelle/ZF.
+In this section we show that the generic extension satisfies the
+pairing axiom; the purpose of this section is to show how to prove
+that $M[G]$ models one of the axioms of $\ZFC$, assuming that $M$
+satisfies $\ZFC$.\footnote{The proof that $M[G]$ satisfies pairing
+  only needs that $M$ satisfies pairing.} In the locale
+\isa{M{\isacharunderscore}extra{\isacharunderscore}assms} we stated
+the assumption \isa{sats{\isacharunderscore}upair{\isacharunderscore}ax} which captures that
+$M$ satisfies pairing. We use \emph{relativized} versions of the axioms
+in order to express satisfaction.
 
-% Once the preliminary concepts are defined, one of the main tasks in order to
-% formalize the Independence of the Continuum Hypothesis
-% is to prove that the generic extension $M[G]$ is a model of $\ZFC$, i.e, that
-% the realtive version to $M[G]$ of each axiom of $\ZFC$ holds. In this section
-% we develop the proof of the satisfaction of the Pairing Axiom in the generic extension.
+%% MIGUEL: versión vieja
+% In the previous section we defined the generic extension $M[G]$; we
+% have yet to prove that $M[G]$ is a model of $\ZFC$. This is equivalent
+% to show that each axiom relativized with respect to $M[G]$ holds. In
+% this section we show that the generic extension satisfies the pairing
+% axiom, after explaining relativization in Isabelle/ZF.
 
-
-% So, we need to show that
-% every axiom of $\ZFC$ holds in $M[G]$, i.e, that the relative version of each axiom $\phi$ to
-% $M[G]$ ($\phi^{M[G]}$) holds. In this section we show the case of the Pairing Axiom.
-
-In Paulson's library, there are defined relative versions of the $\ZFC$ axioms. The definition
+As we have already mentioned, in Paulson's library, the relativized
+versions of the $\ZFC$ axioms are defined for classes (which are
+defined as meta-level predicates over sets). The definition
 \isa{upair{\isacharunderscore}ax} corresponds to the Pairing Axiom:
 
 \begin{isabelle}
@@ -37,10 +39,6 @@ In Paulson's library, there are defined relative versions of the $\ZFC$ axioms. 
 \ \ \ \ {\isachardoublequoteopen}upair{\isacharunderscore}ax{\isacharparenleft}C{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}x{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ {\isasymforall}y{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ {\isasymexists}z{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ upair{\isacharparenleft}C{\isacharcomma}x{\isacharcomma}y{\isacharcomma}z{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-\noindent where \isa{C\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}}
-formalizes a class of sets: all sets \isa{x} such that \isa{C(x)} holds.
-
-
 % Given a predicate
 % \isa{C\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}o{\isachardoublequoteclose}},
 % we can consider the \emph{class} of all sets \isa{x} such that
@@ -52,14 +50,13 @@ formalizes a class of sets: all sets \isa{x} such that \isa{C(x)} holds.
 % what a class \isa{C} believes about a set being the unordered pair of
 % other two:
 
-In order to use \isa{upair{\isacharunderscore}ax} for a set model, we
-use the \isatt{\#\#}  operator.  We state the main result of this
-section in the context \isatt{forcing{\isacharunderscore}data}.  
+We state the main result of this section in the context
+\isa{M{\isacharunderscore}extra{\isacharunderscore}assms}.
 %
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ pair{\isacharunderscore}preserv\ {\isacharcolon}\ \isanewline
-\ \ {\isachardoublequoteopen}one\ {\isasymin}\ G\ {\isasymLongrightarrow}\ upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}\ {\isasymLongrightarrow}\ upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharparenright}{\isachardoublequoteclose}
+\ \ {\isachardoublequoteopen}one\ {\isasymin}\ G\ {\isasymLongrightarrow}\ upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
 Let $x$ and $y$ be elements in $M[G]$. By definition of the generic extension, there exist
@@ -84,7 +81,7 @@ thanks to $M$ being transitive.
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ pairs{\isacharunderscore}in{\isacharunderscore}M\ {\isacharcolon}\ \isanewline
-\ \ {\isachardoublequoteopen}\ {\isasymlbrakk}\ upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}\ {\isacharsemicolon}\ a\ {\isasymin}\ M\ {\isacharsemicolon}\ b\ {\isasymin}\ M\ {\isacharsemicolon}\ c\ {\isasymin}\ M\ {\isacharsemicolon}\ d\ {\isasymin}\ M\ {\isasymrbrakk}\ {\isasymLongrightarrow}\ {\isacharbraceleft}{\isasymlangle}a{\isacharcomma}c{\isasymrangle}{\isacharcomma}{\isasymlangle}b{\isacharcomma}d{\isasymrangle}{\isacharbraceright}\ {\isasymin}\ M{\isachardoublequoteclose}
+\ \ {\isachardoublequoteopen}\ {\isasymlbrakk}\ a\ {\isasymin}\ M\ {\isacharsemicolon}\ b\ {\isasymin}\ M\ {\isacharsemicolon}\ c\ {\isasymin}\ M\ {\isacharsemicolon}\ d\ {\isasymin}\ M\ {\isasymrbrakk}\ {\isasymLongrightarrow}\ {\isacharbraceleft}{\isasymlangle}a{\isacharcomma}c{\isasymrangle}{\isacharcomma}{\isasymlangle}b{\isacharcomma}d{\isasymrangle}{\isacharbraceright}\ {\isasymin}\ M{\isachardoublequoteclose}
 \end{isabelle}
 
 Item (\ref{item:1}) then follows because \isa{\isasymtau}, \isa{\isasymrho} and
@@ -94,7 +91,7 @@ Item (\ref{item:1}) then follows because \isa{\isasymtau}, \isa{\isasymrho} and
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ sigma{\isacharunderscore}in{\isacharunderscore}M\ {\isacharcolon}\isanewline
-\ \ {\isachardoublequoteopen}upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}\ {\isasymLongrightarrow}\ one\ {\isasymin}\ G\ {\isasymLongrightarrow}\ {\isasymtau}\ {\isasymin}\ M\ {\isasymLongrightarrow}\ {\isasymrho}\ {\isasymin}\ M\ {\isasymLongrightarrow}\ {\isacharbraceleft}{\isasymlangle}{\isasymtau}{\isacharcomma}one{\isasymrangle}{\isacharcomma}{\isasymlangle}{\isasymrho}{\isacharcomma}one{\isasymrangle}{\isacharbraceright}\ {\isasymin}\ M{\isachardoublequoteclose}
+\ \ {\isachardoublequoteopen} one\ {\isasymin}\ G\ {\isasymLongrightarrow}\ {\isasymtau}\ {\isasymin}\ M\ {\isasymLongrightarrow}\ {\isasymrho}\ {\isasymin}\ M\ {\isasymLongrightarrow}\ {\isacharbraceleft}{\isasymlangle}{\isasymtau}{\isacharcomma}one{\isasymrangle}{\isacharcomma}{\isasymlangle}{\isasymrho}{\isacharcomma}one{\isasymrangle}{\isacharbraceright}\ {\isasymin}\ M{\isachardoublequoteclose}
 
 \isacommand{by}\isamarkupfalse%
 \ {\isacharparenleft}rule\ pairs{\isacharunderscore}in{\isacharunderscore}M{\isacharcomma}simp{\isacharunderscore}all\ add{\isacharcolon}\ upair{\isacharunderscore}ax{\isacharunderscore}def\ one{\isacharunderscore}in{\isacharunderscore}M{\isacharparenright}%
@@ -109,8 +106,6 @@ Under the assumption that \isa{one} belongs to the set \isa{G},
 \ \ {\isachardoublequoteopen}one\ {\isasymin}\ G\ {\isasymLongrightarrow}\ {\isacharbraceleft}{\isasymlangle}{\isasymtau}{\isacharcomma}one{\isasymrangle}{\isacharcomma}{\isasymlangle}{\isasymrho}{\isacharcomma}one{\isasymrangle}{\isacharbraceright}\ {\isasymin}\ M\ {\isasymLongrightarrow}\isanewline
 \ \ \ val{\isacharparenleft}G{\isacharcomma}{\isacharbraceleft}{\isasymlangle}{\isasymtau}{\isacharcomma}one{\isasymrangle}{\isacharcomma}{\isasymlangle}{\isasymrho}{\isacharcomma}one{\isasymrangle}{\isacharbraceright}{\isacharparenright}\ {\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isacharcomma}val{\isacharparenleft}G{\isacharcomma}{\isasymrho}{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
-
-This ends the proof of the Pairing Axiom in $M[G]$.
 
 
 %%% Local Variables:

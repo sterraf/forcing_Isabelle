@@ -3,7 +3,7 @@
 mkdir diff_dir
 rm -rf diff_dir/*
 mkdir diff_dir/LSFA_old/ diff_dir/LSFA_new/
-git checkout 80e6d1835fc9da4394d0c805d70c3032f6ba297d
+git archive 80e6d1835fc9da4394d0c805d70c3032f6ba297d | tar -x -C diff_dir/LSFA_old
 cp * diff_dir/LSFA_old/
 git checkout new_design
 cp * diff_dir/LSFA_new/
