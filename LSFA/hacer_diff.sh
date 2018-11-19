@@ -4,8 +4,8 @@ mkdir diff_dir
 rm -rf diff_dir/*
 mkdir diff_dir/LSFA_old/ diff_dir/LSFA_new/
 git archive 80e6d1835fc9da4394d0c805d70c3032f6ba297d | tar -x -C diff_dir/LSFA_old
-cp * diff_dir/LSFA_old/
-git checkout new_design
+# cp * diff_dir/LSFA_old/
+# git checkout new_design
 cp * diff_dir/LSFA_new/
 cd diff_dir
 latexdiff --flatten LSFA_old/first_steps_into_forcing.tex LSFA_new/first_steps_into_forcing.tex > LSFA_new/diff.tex
