@@ -15,7 +15,7 @@ sed -i -- 's/bibliographystyle{entcs}/bibliographystyle{mi-estilo-else}/g' diff.
 cp ../../arXiv/mi-estilo-else.bst .
 cp diff.tex diff.tmp
 cat ../../header-of-diff.tex > diff.tex
-tail -n +66 diff.tmp >> diff.tex
+tail -n +67 diff.tmp >> diff.tex
 pdflatex diff.tex
 pdflatex diff.tex
 bibtex diff.aux
