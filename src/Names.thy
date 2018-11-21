@@ -445,17 +445,15 @@ lemma G_dot_in_M :
 proof -
   have 0:"G_dot = { y . p\<in>P , y = <check(p),p> }"
     unfolding G_dot_def by auto
-  from P_in_M check_in_M pairM P_sub_M have "\<And> p . p\<in>P \<Longrightarrow> <check(p),p> \<in> M" 
+  from P_in_M check_in_M pairM P_sub_M have 
+     "p\<in>P \<Longrightarrow> <check(p),p> \<in> M" for p
     by auto
   then have
-    1:"\<And>x y. \<lbrakk> x\<in>P ; y = <check(x),x> \<rbrakk> \<Longrightarrow> y\<in>M"
+    1:"\<lbrakk> x\<in>P ; y = <check(x),x> \<rbrakk> \<Longrightarrow> y\<in>M" for x y
     by simp
   then have
-    "\<forall>A\<in>M.(\<exists>Y\<in>M. \<forall>b\<in>M. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>M. x\<in>A & b = <check(x),x>))"
-    using repl_check_pair unfolding strong_replacement_def by simp
-  then have
-    "(\<exists>Y\<in>M. \<forall>b\<in>M. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>M. x\<in>P & b = <check(x),x>))"
-    using P_in_M by simp
+    "\<exists>Y\<in>M. \<forall>b\<in>M. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>M. x\<in>P & b = <check(x),x>)"
+    using P_in_M repl_check_pair unfolding strong_replacement_def by simp
   with 1 repl_check_pair P_in_M strong_replacement_closed have
     "{ y . p\<in>P , y = <check(p),p> } \<in> M" by simp
   then show ?thesis using 0 by simp
@@ -495,17 +493,11 @@ qed
   
   
 lemma G_in_Gen_Ext :
-  assumes "G \<subseteq> P"
-    "one \<in> G"
+  assumes "G \<subseteq> P" and "one \<in> G"
   shows   "G \<in> M[G]" 
-proof -
-  from G_dot_in_M have
-    "val(G,G_dot) \<in> M[G]" 
-    by (auto intro:GenExtI)
-  with assms val_G_dot 
-  show ?thesis by simp
-qed
-
+ using assms val_G_dot GenExtI[of _ G] G_dot_in_M 
+  by force
+  
 end    (*************** CONTEXT: M_extra_assms *****************)
   
 end
