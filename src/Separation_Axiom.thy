@@ -431,8 +431,8 @@ proof -
       "{x\<in>c. sats(M[G], \<phi>, [x,w])} \<in> M[G]"
       by simp
   }
-  then show ?thesis using separation_iff rev_bexI is_Collect_def
-      by force
+  then show ?thesis using separation_iff rev_bexI 
+    unfolding is_Collect_def by force
   qed
 end   (*********** CONTEXT: G_generic ************)
 end

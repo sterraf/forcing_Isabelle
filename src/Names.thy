@@ -401,7 +401,7 @@ proof -
     "\<theta>\<in>domain(c)" "val(G,\<theta>) = y" by blast
   with trans_M \<open>c\<in>M\<close> domain_trans GenExtI
   have "y \<in> M[G]" by blast
-}
+  }
   then show ?thesis using Transset_def by auto
 qed
 
