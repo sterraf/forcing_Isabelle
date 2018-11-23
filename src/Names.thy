@@ -418,7 +418,7 @@ proof -
   with \<open>val(G,\<theta>) = y\<close> show ?thesis by simp
 qed
   
-lemma trans_Gen_Ext:
+lemma Transset_MG:
   "Transset(M[G])"
   by (auto simp add: Transset_def trans_Gen_Ext')
 

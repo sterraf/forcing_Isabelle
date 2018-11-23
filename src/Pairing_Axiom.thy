@@ -29,7 +29,7 @@ lemma valsigma :
 done
       
 (* de la siguiente assumption solo usamos one \<in> G *)
-lemma pair_preserv : 
+lemma pairing_in_MG : 
   "M_generic(G) \<Longrightarrow> upair_ax(##M[G])"
   apply (insert upair_ax)
   apply (simp add: upair_ax_def)
