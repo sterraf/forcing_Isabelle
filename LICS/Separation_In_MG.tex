@@ -1,56 +1,3 @@
-
-%% bare_conf.tex
-%% V1.4b
-%% 2015/08/26
-%% by Michael Shell
-%% See:
-%% http://www.michaelshell.org/
-%% for current contact information.
-%%
-%% This is a skeleton file demonstrating the use of IEEEtran.cls
-%% (requires IEEEtran.cls version 1.8b or later) with an IEEE
-%% conference paper.
-%%
-%% Support sites:
-%% http://www.michaelshell.org/tex/ieeetran/
-%% http://www.ctan.org/pkg/ieeetran
-%% and
-%% http://www.ieee.org/
-
-%%*************************************************************************
-%% Legal Notice:
-%% This code is offered as-is without any warranty either expressed or
-%% implied; without even the implied warranty of MERCHANTABILITY or
-%% FITNESS FOR A PARTICULAR PURPOSE! 
-%% User assumes all risk.
-%% In no event shall the IEEE or any contributor to this code be liable for
-%% any damages or losses, including, but not limited to, incidental,
-%% consequential, or any other damages, resulting from the use or misuse
-%% of any information contained here.
-%%
-%% All comments are the opinions of their respective authors and are not
-%% necessarily endorsed by the IEEE.
-%%
-%% This work is distributed under the LaTeX Project Public License (LPPL)
-%% ( http://www.latex-project.org/ ) version 1.3, and may be freely used,
-%% distributed and modified. A copy of the LPPL, version 1.3, is included
-%% in the base LaTeX documentation of all distributions of LaTeX released
-%% 2003/12/01 or later.
-%% Retain all contribution notices and credits.
-%% ** Modified files should be clearly indicated as such, including  **
-%% ** renaming them and changing author support contact information. **
-%%*************************************************************************
-
-
-% *** Authors should verify (and, if needed, correct) their LaTeX system  ***
-% *** with the testflow diagnostic prior to trusting their LaTeX platform ***
-% *** with production work. The IEEE's font choices and paper sizes can   ***
-% *** trigger bugs that do not appear when using other class files.       ***                          ***
-% The testflow support page is at:
-% http://www.michaelshell.org/tex/testflow/
-
-
-
 \documentclass[conference]{IEEEtran}
 % Some Computer Society conferences also require the compsoc mode option,
 % but others use the standard conference format.
@@ -66,6 +13,8 @@
 % Some very useful LaTeX packages include:
 % (uncomment the ones you want to load)
 \usepackage[numbers]{natbib}
+\usepackage{isabelle,isabellesym}
+\input{header-draft}
 
 % *** MISC UTILITY PACKAGES ***
 %
@@ -320,7 +269,7 @@
 % not capitalized unless they are the first or last word of the title.
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{Separation in Generic Extensions}
+\title{Separation in generic extensions}
 
 
 % author names and affiliations
@@ -403,8 +352,52 @@ Separation Axiom holds in generic extensions.
 \section{Introduction}
 % no \IEEEPARstart
 We follow \cite{kunen2011set}. An introduction to the issues discussed
-in this paper can be found in \cite{2018arXiv180705174G}.
+in this paper can be found in \cite{2018arXiv180705174G}. An
+introduction to forcing can be found at \cite{2007arXiv0712.1320C},
+and the book \cite{weaver2014forcing} contains a thorough treament
+minimizing the technicalities.
 
+\section{Forcing}
+Given a ctm $M$, and an $M$-generic filter $G\sbq\PP$, the Forcing
+Theorems relate satisfaction of a formula 
+$\phi$ in the generic extension $M[G]$ to the satisfaction of another formula
+$\phi'$ in $M$. The map $\phi\mapsto\phi'$ is defined by recursion on
+the structure of $\phi$. The fact that this map works (in particular,
+in order to show that $M[G]\models\ZFC$), we must use the fact that
+$M\models\ZFC$. Since we can only assert the latter using internalized
+formulas, the aformentioned map will be defined as a function from the
+set \formula{} into itself. 
+
+Up to this point, the main reason for working with internalized
+versions is that  it is not possible to do recursion with formulas of
+type $\tyo$ (i.e., the formulas in the first-order logic of
+Isabelle/ZF).
+
+We will now make more precise the definition of the map
+$\phi\mapsto\phi'$ and how it relates satisfaction in $M$ to that in
+$M[G]$. Actually, if the formula $\phi$ has $n$ free variables,
+$\phi'$ will have $n+4$ free variables, where the first four account
+for the forcing notion and a particular condition. If
+$\phi=\phi(x_1,\dots,x_n)$, the standard notation for $\phi'$ is
+\[
+p\forces_{\PP,\leq,\1}^* \phi(t_1,\dots,t_n).
+\]
+Here, $\PP,\leq,\1,$ and $p\in\PP$ are the extra parameters. 
+%% For the
+%% time being, we just consider $\tau_1,\dots,\tau_n$ to be ordinary
+%% variables. 
+Given $\quine\phi\in\formula$, we will write this  in
+Isabelle/ZF by using  
+\[
+\forceisa(\quine\phi,\PP,\leq,\1,p)
+\]
+Afterwards, the \emph{forcing relation} $\forces$ is defined by
+relativizing/interpreting $\forces^*$ in a ctm $M$, for fixed
+$\lb\PP,\leq,\1\rb\in M$:
+\[
+p\forces \phi(t_1,\dots,t_n) \defi 
+\bigl(p\forces_{\PP,\leq,\1}^* \phi(t_1,\dots,t_n)\bigr)^M\!.
+\]
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
