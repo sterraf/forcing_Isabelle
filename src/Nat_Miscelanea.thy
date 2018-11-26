@@ -87,4 +87,15 @@ lemma un_leI' : "k \<in> nat \<Longrightarrow> i \<le> k \<Longrightarrow> j \<l
 lemma gt1 : "n \<in> nat \<Longrightarrow> i \<in> n \<Longrightarrow> i \<noteq> 0 \<Longrightarrow> i \<noteq> 1 \<Longrightarrow> 1<i"
   by(rule_tac n="i" in natE,erule in_n_in_nat,simp,auto,rule Ord_0_lt,simp+)
 
+
+lemma pred_mono : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> pred(n) \<le> pred(m)"
+  by(rule_tac n="n" in natE,auto simp add:le_in_nat,erule_tac n="m" in natE,auto)
+    
+lemma pred2_Un: assumes "j \<in> nat" "m \<le> j" "n \<le> j" 
+  shows "pred(pred(m \<union> n)) \<le> pred(pred(j))" 
+proof -
+  from assms assms show ?thesis 
+    using pred_mono[of "j"] le_in_nat un_leI' pred_mono by simp
+qed    
+    
 end 

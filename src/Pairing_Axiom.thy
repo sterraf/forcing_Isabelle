@@ -13,9 +13,7 @@ lemma one_in_M : "one \<in> M"
  
 lemma pairs_in_M : 
   " \<lbrakk> a \<in> M ; b \<in> M ; c \<in> M ; d \<in> M \<rbrakk> \<Longrightarrow> {\<langle>a,c\<rangle>,\<langle>b,d\<rangle>} \<in> M"
-  apply (insert upair_ax,unfold Pair_def)
-  apply ((rule upairs_in_M)+,assumption+)+
-done
+  by (insert upair_ax,unfold Pair_def,((rule upairs_in_M)+,assumption+)+)
 
 lemma sigma_in_M :
   "one \<in> G \<Longrightarrow> \<tau> \<in> M \<Longrightarrow> \<rho> \<in> M \<Longrightarrow> {\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>} \<in> M"
@@ -31,7 +29,7 @@ lemma valsigma :
 done
       
 (* de la siguiente assumption solo usamos one \<in> G *)
-lemma pair_preserv : 
+lemma pairing_in_MG : 
   "M_generic(G) \<Longrightarrow> upair_ax(##M[G])"
   apply (insert upair_ax)
   apply (simp add: upair_ax_def)

@@ -2,16 +2,6 @@ theory Separation_Axiom
   imports Forces_locale Renaming "~~/src/HOL/Eisbach/Eisbach_Old_Appl_Syntax" 
 begin
 
-lemma pred_mono : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> pred(n) \<le> pred(m)"
-  by(rule_tac n="n" in natE,auto simp add:le_in_nat,erule_tac n="m" in natE,auto)
-    
-lemma pred2_Un: assumes "j \<in> nat" "m \<le> j" "n \<le> j" 
-  shows "pred(pred(m \<union> n)) \<le> pred(pred(j))" 
-proof -
-  from assms assms show ?thesis 
-    using pred_mono[of "j"] le_in_nat un_leI' pred_mono by simp
-qed
-
 definition 
   perm_sep_forces :: "i" where
   "perm_sep_forces == {<3,0>,<4,1>,<5,2>,<1,3>,<0,4>,<6,5>,<7,6>,<2,7>}"
@@ -60,7 +50,7 @@ lemma perm_sep_env:
   by (auto simp add: perm_sep_env_aux [of _ _ _ _ _ _ _ _ "{p,q,r,s,t,u,v,w}"])
 
     
-context forcing_thms begin (*********** CONTEXT: forcing_thms ************)
+context G_generic begin (*********** CONTEXT: G_generic ************)
 
 lemmas transitivity = Transset_intf trans_M
   
@@ -80,22 +70,7 @@ proof -
     using separation_iff by auto
 qed
       
-lemma G_nonempty: "M_generic(G) \<Longrightarrow> G\<noteq>0"
-proof -
-  have "P\<subseteq>P" ..
-  assume
-    "M_generic(G)"
-  with P_in_M P_dense \<open>P\<subseteq>P\<close> show
-    "G \<noteq> 0"
-    unfolding M_generic_def by auto
-qed
   
-lemma iff_impl_trans: "Q\<longleftrightarrow>R \<Longrightarrow> R\<longrightarrow>S \<Longrightarrow> Q \<longrightarrow>S"
-  "Q\<longrightarrow>R \<Longrightarrow> R\<longleftrightarrow>S \<Longrightarrow> Q \<longrightarrow>S"
-  "Q\<longrightarrow>R \<Longrightarrow> R\<longrightarrow> S \<Longrightarrow> Q\<longrightarrow> S"
-  by simp_all  
-
-
 named_theorems fstpass
 named_theorems sndpass
     
@@ -103,16 +78,12 @@ method simp_altnt declares fstpass sndpass = (simp add:fstpass ; simp add:sndpas
 method abs_simp = (simp_altnt fstpass:nat_union_abs1 sndpass: nat_union_abs2)
 
 lemma separation_aux :
-  "M_generic(G) \<Longrightarrow> \<pi> \<in> M \<Longrightarrow> \<sigma> \<in> M \<Longrightarrow>
+  "\<pi> \<in> M \<Longrightarrow> \<sigma> \<in> M \<Longrightarrow>
     val(G, \<pi>) = c \<Longrightarrow> val(G, \<sigma>) = w \<Longrightarrow>
     \<phi> \<in> formula \<Longrightarrow> arity(\<phi>) \<le> 2 \<Longrightarrow>
-    {x\<in>c. sats(M[G], \<phi>, [x, w, c])}\<in> M[G]" for G \<pi> c w \<sigma> \<phi>
-proof -
-  assume
-    "M_generic(G)" 
-  with G_nonempty have 
-    "G\<noteq>0" .
-  from \<open>M_generic(G)\<close> have 
+    {x\<in>c. sats(M[G], \<phi>, [x, w, c])}\<in> M[G]" for  \<pi> c w \<sigma> \<phi>
+proof -  
+  from generic have 
     "filter(G)" "G\<subseteq>P" 
     unfolding M_generic_def filter_def by simp_all
   assume
@@ -360,7 +331,7 @@ proof -
   qed
   also have
     " ... = {x\<in>c. sats(M[G], \<phi>, [x, w, c])}"
-    using \<open>G\<subseteq>P\<close> \<open>G\<noteq>0\<close> by force
+    using \<open>G\<subseteq>P\<close> G_nonempty by force
   finally have
     val_m: "val(G,?m) = {x\<in>c. sats(M[G], \<phi>, [x, w, c])}" by simp
   {
@@ -426,28 +397,10 @@ proof -
   with \<open>?n\<in>M\<close> GenExt_def show
     "{x\<in>c. sats(M[G], \<phi>, [x, w, c])}\<in> M[G]" by force
 qed
-
-lemma zero_in_Gen_Ext : 
-  "0 \<in> M[G]" 
-proof -
-  from zero_in_M and elem_of_val have 
-    "0 = val(G,0)" 
-    by auto
-  also from GenExtI and zero_in_M have 
-    "... \<in> M[G]" 
-  by simp
-  finally show ?thesis .
-qed 
-     
-lemma Gen_Ext_mtriv :  
-  "M_generic(G) \<Longrightarrow> Union_ax(##M[G]) \<Longrightarrow> M_trivial_no_repl(##M[G])"
-  sorry
-    
-interpretation MGtriv :  M_trivial_no_repl "##M[G]" sorry
   
 theorem separation_in_MG:
   assumes 
-    "M_generic(G)" and "\<phi>\<in>formula" and "arity(\<phi>) = 1 \<or> arity(\<phi>)=2"
+    "\<phi>\<in>formula" and "arity(\<phi>) = 1 \<or> arity(\<phi>)=2"
   shows  
     "(\<forall>a\<in>(M[G]). separation(##M[G],\<lambda>x. sats(M[G],\<phi>,[x,a])))"
 proof -
@@ -469,7 +422,7 @@ proof -
         "x\<in>c"
       with \<open>c\<in>M[G]\<close> have
         "x\<in>M[G]"
-        by (simp add:trans_Gen_Ext Transset_intf)
+        by (simp add:Transset_MG Transset_intf)
       with \<open>arity(\<phi>)\<le>2\<close> \<open>\<phi> \<in> formula\<close> \<open>c\<in>M[G]\<close> \<open>w\<in>M[G]\<close> have
         "sats(M[G], \<phi>, [x,w]@[c]) \<longleftrightarrow> sats(M[G], \<phi>, [x,w])" 
         by (rule_tac arity_sats_iff, simp_all)   (* Enhance this *)
@@ -477,9 +430,9 @@ proof -
     with Eq1 have
       "{x\<in>c. sats(M[G], \<phi>, [x,w])} \<in> M[G]"
       by simp
-    }
-    then show ?thesis using separation_iff by auto
-qed
-
-end   (*********** CONTEXT: forcing_thms ************)
+  }
+  then show ?thesis using separation_iff rev_bexI 
+    unfolding is_Collect_def by force
+  qed
+end   (*********** CONTEXT: G_generic ************)
 end

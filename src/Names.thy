@@ -391,36 +391,19 @@ lemma GenExtI:
   "x \<in> M \<Longrightarrow> val(G,x) \<in> M[G]"
   by (auto simp add: GenExt_def)
     
-lemma trans_Gen_Ext' :
-  assumes "vc \<in> M[G]"
-    "y \<in> vc" 
-  shows
-    "y \<in> M[G]" 
+lemma Transset_MG : "Transset(M[G])"
 proof -
-  from \<open>vc\<in>M[G]\<close> have
-    "\<exists>c\<in>M. vc = val(G,c)"
-    by (blast dest:GenExtD)
-  then obtain c where
-    "c\<in>M" "vc = val(G,c)" by auto
-  with \<open>vc \<in> M[G]\<close> have
-    "val(G,c)\<in>M[G]" by simp
-  from \<open>y \<in> vc\<close> and \<open>vc = val(G,c)\<close> have
-    "y \<in> val(G,c)" by simp
-  with \<open>c\<in>M\<close> and elem_of_val have
-    "\<exists>\<theta>\<in>domain(c). val(G,\<theta>) = y" by simp
-  then obtain \<theta> where
-    "\<theta>\<in>domain(c)" "val(G,\<theta>) = y" by auto
-  from \<open>\<theta>\<in>domain(c)\<close> trans_M \<open>c\<in>M\<close> domain_trans have
-    "\<theta>\<in>M" by simp
-  then have
-    "val(G,\<theta>) \<in> M[G]" 
-    by (blast intro:GenExtI)
-  with \<open>val(G,\<theta>) = y\<close> show ?thesis by simp
+  { fix vc y 
+    assume "vc \<in> M[G]" and  "y \<in> vc" 
+  from \<open>vc\<in>M[G]\<close> and \<open>y \<in> vc\<close> and GenExtD  obtain c where
+    "c\<in>M" "val(G,c)\<in>M[G]" "y \<in> val(G,c)" by auto
+  from \<open>y \<in> val(G,c)\<close> and elem_of_val obtain \<theta> where
+    "\<theta>\<in>domain(c)" "val(G,\<theta>) = y" by blast
+  with trans_M \<open>c\<in>M\<close> domain_trans GenExtI
+  have "y \<in> M[G]" by blast
+  }
+  then show ?thesis using Transset_def by auto
 qed
-  
-lemma trans_Gen_Ext:
-  "Transset(M[G])"
-  by (auto simp add: Transset_def trans_Gen_Ext')
 
 end (* context forcing_data *)
   
@@ -445,17 +428,9 @@ lemma G_dot_in_M :
 proof -
   have 0:"G_dot = { y . p\<in>P , y = <check(p),p> }"
     unfolding G_dot_def by auto
-  from P_in_M check_in_M pairM P_sub_M have "\<And> p . p\<in>P \<Longrightarrow> <check(p),p> \<in> M" 
+  from P_in_M check_in_M pairM P_sub_M have 
+     1: "p\<in>P \<Longrightarrow> <check(p),p> \<in> M" for p
     by auto
-  then have
-    1:"\<And>x y. \<lbrakk> x\<in>P ; y = <check(x),x> \<rbrakk> \<Longrightarrow> y\<in>M"
-    by simp
-  then have
-    "\<forall>A\<in>M.(\<exists>Y\<in>M. \<forall>b\<in>M. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>M. x\<in>A & b = <check(x),x>))"
-    using repl_check_pair unfolding strong_replacement_def by simp
-  then have
-    "(\<exists>Y\<in>M. \<forall>b\<in>M. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>M. x\<in>P & b = <check(x),x>))"
-    using P_in_M by simp
   with 1 repl_check_pair P_in_M strong_replacement_closed have
     "{ y . p\<in>P , y = <check(p),p> } \<in> M" by simp
   then show ?thesis using 0 by simp
@@ -468,22 +443,16 @@ lemma val_G_dot :
 proof (intro equalityI subsetI) 
   fix x
   assume "x\<in>val(G,G_dot)"
-  then have 
-      "\<exists>\<theta>. \<exists>p\<in>G.  <\<theta>,p>\<in>G_dot \<and> val(G,\<theta>) = x"
-    using elem_of_val_pair G_dot_in_M by simp
-  then obtain r p where 
-    "p\<in>G" "<r,p> \<in> G_dot" "val(G,r) = x" 
-    by auto
-  then have
-    "r = check(p)" 
-    unfolding G_dot_def by simp
-  with \<open>one\<in>G\<close> \<open>G\<subseteq>P\<close> \<open>p\<in>G\<close> \<open>val(G,r) = x\<close> show
+  with elem_of_val_pair G_dot_in_M obtain \<theta> p where 
+    "p\<in>G" "<\<theta>,p> \<in> G_dot" "val(G,\<theta>) = x" "\<theta> = check(p)" 
+    unfolding G_dot_def by force
+  with \<open>one\<in>G\<close> \<open>G\<subseteq>P\<close> show
       "x \<in> G" 
-    using valcheck P_sub_M  check_in_M by auto
+    using valcheck P_sub_M check_in_M by auto
 next
   fix p
   assume "p\<in>G" 
-  have "\<forall>q\<in>P. <check(q),q> \<in> G_dot" 
+  have "q\<in>P \<Longrightarrow> <check(q),q> \<in> G_dot" for q
     unfolding G_dot_def by simp
   with \<open>p\<in>G\<close> \<open>G\<subseteq>P\<close> have
     "val(G,check(p)) \<in> val(G,G_dot)"
@@ -495,17 +464,11 @@ qed
   
   
 lemma G_in_Gen_Ext :
-  assumes "G \<subseteq> P"
-    "one \<in> G"
+  assumes "G \<subseteq> P" and "one \<in> G"
   shows   "G \<in> M[G]" 
-proof -
-  from G_dot_in_M have
-    "val(G,G_dot) \<in> M[G]" 
-    by (auto intro:GenExtI)
-  with assms val_G_dot 
-  show ?thesis by simp
-qed
-
+ using assms val_G_dot GenExtI[of _ G] G_dot_in_M 
+  by force
+  
 end    (*************** CONTEXT: M_extra_assms *****************)
   
 end
