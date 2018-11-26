@@ -395,12 +395,13 @@ lemma Transset_MG : "Transset(M[G])"
 proof -
   { fix vc y 
     assume "vc \<in> M[G]" and  "y \<in> vc" 
-  from \<open>vc\<in>M[G]\<close> and \<open>y \<in> vc\<close> and GenExtD  obtain c where
-    "c\<in>M" "val(G,c)\<in>M[G]" "y \<in> val(G,c)" by auto
-  from \<open>y \<in> val(G,c)\<close> and elem_of_val obtain \<theta> where
-    "\<theta>\<in>domain(c)" "val(G,\<theta>) = y" by blast
-  with trans_M \<open>c\<in>M\<close> domain_trans GenExtI
-  have "y \<in> M[G]" by blast
+  from \<open>vc\<in>M[G]\<close> and \<open>y \<in> vc\<close>   obtain c where
+    "c\<in>M" "val(G,c)\<in>M[G]" "y \<in> val(G,c)" 
+    using  GenExtD by auto
+  from \<open>y \<in> val(G,c)\<close>  obtain \<theta> where
+    "\<theta>\<in>domain(c)" "val(G,\<theta>) = y" using elem_of_val by blast
+  with trans_M \<open>c\<in>M\<close> 
+  have "y \<in> M[G]" using domain_trans GenExtI by blast
   }
   then show ?thesis using Transset_def by auto
 qed
@@ -443,9 +444,10 @@ lemma val_G_dot :
 proof (intro equalityI subsetI) 
   fix x
   assume "x\<in>val(G,G_dot)"
-  with elem_of_val_pair G_dot_in_M obtain \<theta> p where 
+  then obtain \<theta> p where 
     "p\<in>G" "<\<theta>,p> \<in> G_dot" "val(G,\<theta>) = x" "\<theta> = check(p)" 
-    unfolding G_dot_def by force
+    unfolding G_dot_def using elem_of_val_pair G_dot_in_M 
+    by force
   with \<open>one\<in>G\<close> \<open>G\<subseteq>P\<close> show
       "x \<in> G" 
     using valcheck P_sub_M check_in_M by auto
@@ -468,7 +470,7 @@ lemma G_in_Gen_Ext :
   shows   "G \<in> M[G]" 
  using assms val_G_dot GenExtI[of _ G] G_dot_in_M 
   by force
-  
+
 end    (*************** CONTEXT: M_extra_assms *****************)
   
 end
