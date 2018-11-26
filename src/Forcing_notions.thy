@@ -59,6 +59,19 @@ definition
   filter :: "i\<Rightarrow>o" where
   "filter(G) == G\<subseteq>P \<and> increasing(G) \<and> (\<forall>p\<in>G. \<forall>q\<in>G. compat_in(G,leq,p,q))"
 
+lemma filterD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> x \<in> P"
+  by (auto simp add : subsetD filter_def)
+    
+lemma low_bound_filter : 
+  assumes "filter(G)" and "p\<in>G" and "q\<in>G"
+  shows "\<exists>r\<in>G. <r,p> \<in> leq \<and> <r,q> \<in> leq" 
+  proof -
+  from \<open>p \<in> G\<close> and \<open>q\<in>G\<close> \<open>filter(G)\<close> obtain r where
+    "r\<in>G" "<r,p> \<in> leq" "<r,q> \<in> leq"
+  unfolding compat_in_def filter_def by blast
+  then show ?thesis by blast
+qed
+  
 definition  
   upclosure :: "i\<Rightarrow>i" where
   "upclosure(A) == {p\<in>P.\<exists>a\<in>A.\<langle>a,p\<rangle>\<in>leq}"
