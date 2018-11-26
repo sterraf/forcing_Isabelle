@@ -61,6 +61,9 @@ definition
 
 lemma filterD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> x \<in> P"
   by (auto simp add : subsetD filter_def)
+
+lemma filter_leqD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> y \<in> P \<Longrightarrow> <x,y> \<in> leq \<Longrightarrow> y \<in> G"
+  by (simp add: filter_def increasing_def)
     
 lemma low_bound_filter : 
   assumes "filter(G)" and "p\<in>G" and "q\<in>G"
