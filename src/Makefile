@@ -7,4 +7,5 @@ html:
 	isabelle env ISABELLE_BROWSER_INFO=./output/html  isabelle build -c -d . -o browser_info -v separation
 
 tar:    html
+	sh fix_links.sh
 	tar --show-transformed-names -cvzf forcing.tar.gz $(THY_FILES) ROOT Makefile document/ output/html/Unsorted/separation/ --transform s,output/html/Unsorted/separation,html,
