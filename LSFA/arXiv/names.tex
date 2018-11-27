@@ -1,19 +1,39 @@
 \subsection{Names}
 \label{sec:names}
-In this section we formalize the function $\val$ that allows to
+We formalize the function $\val$ that allows to
 construct the elements of the generic extension $M[G]$ from elements
 of the ctm $M$ and the generic filter $G$. The definition of $\val$
-can be written succintly as
+can be written succinctly as a recursive equation
 %
 \begin{equation}\label{eq:def-val}
 \val(G,\tau)\defi \{\val(G,\sigma) : \exists p\in \PP.\,
 (\lb\sigma,p\rb\in\tau \y p\in G)\}.
 \end{equation}
 %
-As with any recursive definition, to justify that the definition makes
-sense (i.e., it defines anything at all) one has to explicit the
-well-founded relation which is used. In this case, we use the relation
-$\mathit{ed}$:
+The justification that $\val$ is well-defined comes from a general
+result (transfinite recursion on well-founded
+relations~\cite[p. 48]{kunen2011set}). Given a well-founded relation
+$R \subseteq A \times A$ and a functional
+$H : A \times (A \to A) \to A$, the principle asserts the existence of
+a function $F : A \to A$ satisfying
+$F(a) = H(a,F\uparrow\,(R^{-1}(a)))$. This principle is formalized in
+Isabelle/ZF and one can use the operator \isa{wfrec}\footnote{Notice
+  that this form of recursive definitions is more general than the one
+  used in the previous section to define
+  \isa{dc{\isacharunderscore}witness}.} to define functions using
+transfinite recursion. To be precise, \isa{wfrec :: [i, i, [i,i]=>i]
+  => i} is a slight variation, where the first argument is the
+relation, the third is the functional, and the second corresponds to
+the argument of $F$. Notice that the relation and the function argument
+of the functional are internalized as terms of type \isa{i}.
+
+In our case the functional is called $Hv$ and takes an additional argument for the
+parameter $G$:
+\[
+  \mathit{Hv}(G,y,f) = \{f(x) : x \in dom(y) \y \exists p\in \PP.\,
+(\lb x,p\rb\in y \y p\in G)\}
+\]
+while the relation is given by:
 \[
 x \mathrel{\mathit{ed}} y \iff \exists p . \lb x,p\rb\in y.
 \]
@@ -22,13 +42,10 @@ $\{\{x\},\{x,y\}\}$. It is trivial to deduce the well-foundedness of
 $\mathit{ed}$ from the fact that $\in$ is well-founded, which follows
 from the Foundation Axiom.
 
-The formalization of $\val$ in Isabelle/ZF involves the function
-\isa{wfrec},\footnote{Notice that this form of recursive
-  definitions is more general than the one used in the previous
-  section to define \isa{dc{\isacharunderscore}witness}.} which takes as an argument a
-well-founded relation of type \isa{i}, i.e.\ a set of pairs. Therefore
-we restrict $\mathit{ed}$ above to a set.
-%
+In our formalization of this recursion,  the first argument of
+\isa{wfrec} is the term of type  \isa{i} obtained by restricting the
+relation $\mathit{ed}$ to  a set:
+% 
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
 \isanewline
@@ -42,11 +59,6 @@ then it is well-founded as well.
 
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
-\ edrel{\isacharunderscore}sub{\isacharunderscore}memrel{\isacharcolon}\ {\isachardoublequoteopen}edrel{\isacharparenleft}A{\isacharparenright}\ {\isasymsubseteq}\ trancl{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
-\end{isabelle}
-\dots
-\begin{isabelle}
-\isacommand{lemma}\isamarkupfalse%
 \ wf{\isacharunderscore}edrel\ {\isacharcolon}\ {\isachardoublequoteopen}wf{\isacharparenleft}edrel{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \ \ \isacommand{apply}\isamarkupfalse%
 \ {\isacharparenleft}rule\ wf{\isacharunderscore}subset\ {\isacharbrackleft}of\ {\isachardoublequoteopen}trancl{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}{\isacharbrackright}{\isacharparenright}\isanewline
@@ -55,15 +67,26 @@ then it is well-founded as well.
 \ \ \isacommand{done}\isamarkupfalse%
 %
 \end{isabelle}
+%
+All but one lemma used in the above proof
+(\isa{wf{\isacharunderscore}subset},
+\isa{wf{\isacharunderscore}trancl}, 
+\isa{wf{\isacharunderscore}Memrel}) are already
+present in Isabelle/ZF. The remaining technical result has
+been proved using the Isar language:
+%
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ edrel{\isacharunderscore}sub{\isacharunderscore}memrel{\isacharcolon}\ {\isachardoublequoteopen}edrel{\isacharparenleft}A{\isacharparenright}\ {\isasymsubseteq}\ trancl{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
 
-\noindent We now turn to the definition of $\val$. In order to use
-\isa{wfrec} we need to define a functional \isa{Hv}.
-
+The formalization of the functional $\mathit{Hv}$ is straightforward and $\val$ is defined using \isa{wfrec}:
+%
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
 \isanewline
 \ \ Hv\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
-\ \ {\isachardoublequoteopen}Hv{\isacharparenleft}G{\isacharcomma}x{\isacharcomma}f{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isacharbraceleft}\ f{\isacharbackquote}y\ {\isachardot}{\isachardot}\ y{\isasymin}\ domain{\isacharparenleft}x{\isacharparenright}{\isacharcomma}\ {\isasymexists}p{\isasymin}P{\isachardot}\ {\isacharless}y{\isacharcomma}p{\isachargreater}\ {\isasymin}\ x\ {\isasymand}\ p\ {\isasymin}\ G\ {\isacharbraceright}{\isachardoublequoteclose}\isanewline
+\ \ {\isachardoublequoteopen}Hv{\isacharparenleft}G{\isacharcomma}y{\isacharcomma}f{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isacharbraceleft}\ f{\isacharbackquote}x\ {\isachardot}{\isachardot}\ x{\isasymin}\ domain{\isacharparenleft}y{\isacharparenright}{\isacharcomma}\ {\isasymexists}p{\isasymin}P{\isachardot}\ {\isacharless}x{\isacharcomma}p{\isachargreater}\ {\isasymin}\ y\ {\isasymand}\ p\ {\isasymin}\ G\ {\isacharbraceright}{\isachardoublequoteclose}\isanewline
 \isanewline
 \isacommand{definition}\isamarkupfalse%
 \isanewline
@@ -85,8 +108,21 @@ setting up the notation $M[G]$ for it:
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
 \isanewline
-\ \ GenExt\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isachardoublequoteclose} \ {\isacharparenleft}{\isachardoublequoteopen}M{\isacharbrackleft}{\isacharunderscore}{\isacharbrackright}{\isachardoublequoteclose}\ {\isadigit{9}}{\isadigit{0}}{\isacharparenright}\ \isakeyword{where} \isanewline
+\ \ GenExt\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isachardoublequoteclose}\ {\isacharparenleft}{\isachardoublequoteopen}M{\isacharbrackleft}{\isacharunderscore}{\isacharbrackright}{\isachardoublequoteclose}{\isacharparenright}\ \isakeyword{where} \isanewline
 \ \ {\isachardoublequoteopen}GenExt{\isacharparenleft}G{\isacharparenright}{\isacharequal}{\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isachardot}\ {\isasymtau}\ {\isasymin}\ M{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+It is conventional in Isabelle/ZF to define introduction and
+destruction rules for definitions like \isa{GenExt}; in our case, it is
+enough to know $x\in M$ in order to know $\val(G,x) \in M[G]$:
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ GenExtI{\isacharcolon}\ \ {\isachardoublequoteopen}x\ {\isasymin}\ M\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}\ {\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
+\end{isabelle}
+\noindent The destruction rule corresponding to the generic extension says
+that any $x \in M[G]$ comes from some $\tau \in M$ via $\val$. 
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ GenExtD{\isacharcolon}\ \ {\isachardoublequoteopen}x\ {\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}\ {\isasymLongrightarrow}\ {\isasymexists}{\isasymtau}{\isasymin}M{\isachardot}\ x\ {\isacharequal}\ val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
 %% It is to be noted that this results holds under the assumption that
@@ -119,26 +155,89 @@ relation restricted to a set \isa{A}, \isa{Memrel(A)}.
 \ \ {\isachardoublequoteopen}check{\isacharparenleft}x{\isacharparenright}\ {\isacharequal}{\isacharequal}\ wfrec{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}{\isacharbraceleft}x{\isacharbraceright}{\isacharparenright}{\isacharparenright}{\isacharcomma}\ x\ {\isacharcomma}\ Hcheck{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 Here, \isa{eclose} returns the (downward) $\in$-closure of its
-argument. The main result is stated as follows:
+argument. The main lemmas about $\val$ and $\chk$ require some
+instances of replacement for $M$; we set up a locale to assemble these
+assumptions:
+\begin{isabelle}
+\isacommand{locale}\isamarkupfalse%
+\ M{\isacharunderscore}extra{\isacharunderscore}assms\ {\isacharequal}\ forcing{\isacharunderscore}data\ {\isacharplus}\isanewline
+\ \ \isakeyword{assumes}\ check{\isacharunderscore}in{\isacharunderscore}M\ {\isacharcolon}\ \ \  {\isachardoublequoteopen}{\isasymAnd}x{\isachardot}\ x\ {\isasymin}\ M\ {\isasymLongrightarrow}\ check{\isacharparenleft}x{\isacharparenright}\ {\isasymin}\ M{\isachardoublequoteclose}\isanewline
+\ \ \ \isakeyword{and}\ sats{\isacharunderscore}upair{\isacharunderscore}ax{\isacharcolon}\ \ \ \ {\isachardoublequoteopen}upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \isakeyword{and}\ repl{\isacharunderscore}check{\isacharunderscore}pair{\isacharcolon}\ {\isachardoublequoteopen}strong{\isacharunderscore}replacement{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharcomma}{\isasymlambda}p\ y{\isachardot}\ y\ {\isacharequal}{\isacharless}check{\isacharparenleft}p{\isacharparenright}{\isacharcomma}p{\isachargreater}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+The first assumption asserts that all the relevant names are indeed in
+$M$ (i.e., $\chk(x) \in M$ if $x\in M$) and it is needed to prove that
+$\val(G,\chk(x))=x$. It will take a serious effort to fulfill this
+assumption: One of the hardest parts of Paulson's formalization of
+constructibility involves showing that models are closed under
+recursive construction. We will eventually formalize that if
+$M\models\ZFC$ and the arguments of \isa{wfrec} are in $M$, then its
+value also is. This will require to adapt to ctm models several
+locales defined in \cite{paulson_2003} that were intended to be used
+for the class of constructible sets. Notice that the only requirement
+on the set \isa{G} is that it contains the top element of the poset
+\isa{P}.
 
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
-\ valcheck\ {\isacharcolon}\ {\isachardoublequoteopen}y\ {\isasymin}\ M\ {\isasymLongrightarrow}\ one\ {\isasymin}\ G\ {\isasymLongrightarrow}\ {\isasymforall}x{\isasymin}M{\isachardot}\ check{\isacharparenleft}x{\isacharparenright}\ {\isasymin}\ M\ {\isasymLongrightarrow}\isanewline \ \ \ \  \ \  \ \  \ \  val{\isacharparenleft}G{\isacharcomma}check{\isacharparenleft}y{\isacharparenright}{\isacharparenright}\ \ {\isacharequal}\ y{\isachardoublequoteclose}
+\ valcheck\ {\isacharcolon}\ \isanewline
+\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}one\ {\isasymin}\ G{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}y\ {\isasymin}\ M\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}check{\isacharparenleft}y{\isacharparenright}{\isacharparenright}\ \ {\isacharequal}\ y{\isachardoublequoteclose}
 \end{isabelle}
 
-On the one hand, the only requirement on the set \isa{G} is that it
-contains the top element of the poset \isa{P}. On the other hand, it
-is necessary that all the relevant names are indeed in $M$ (i.e.,
-$\chk(x) \in M$ if $x\in M$). It requires a serious development to
-fulfill this assumption. One of the hardest parts of Paulson's
-formalization of constructibility involves showing that models are
-closed under recursive construction. We will eventually formalize that
-if $M\models\ZFC$ and the arguments of \isa{wfrec} are in $M$, then
-its value also is. This will require to adapt to ctm models several
-locales defined in \cite{paulson_2003} that were intended to be used
-for the class of constructible sets.
 
+\subsection{Basic results about the generic extension}
 
+We turn now to prove that $M[G]$ is transitive and $G\in
+M[G]$. Showing that $M[G]$ is transitive amounts to prove $y \in M[G]$
+for any $x \in M[G]$ and $y \in x$. 
+% \begin{isabelle}
+% \isacommand{definition}\isamarkupfalse%
+% \isanewline
+% \ \ Transset\ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isacharequal}{\isachargreater}o{\isachardoublequoteclose}\ \ \isakeyword{where}\isanewline
+% \ \ \ \ {\isachardoublequoteopen}Transset{\isacharparenleft}i{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isasymforall}x{\isasymin}i{\isachardot}\ x{\isacharless}{\isacharequal}i{\isachardoublequoteclose}
+% \end{isabelle}
+
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ trans{\isacharunderscore}Gen{\isacharunderscore}Ext{\isacharprime}\ {\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ \ {\isachardoublequoteopen}x\ {\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}\ \ \isakeyword{and}\ \ {\isachardoublequoteopen}y\ {\isasymin}\ x{\isachardoublequoteclose}\ \isanewline
+\ \ \isakeyword{shows}\ \ \ \ {\isachardoublequoteopen}y\ {\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
+\end{isabelle}
+The proof of this lemma is straightforward because from $x \in M[G]$
+we can obtain $\tau \in M$ such that $x = \val(G,\tau)$. Notice also
+that using the characterization of $\val$ given by
+\isa{def{\isacharunderscore}val} we can extract some
+$\theta \in \dom(\tau)$ such that $y =\val(G,\theta)$; to conclude
+$\val(G,\theta) \in M[G]$ it is enough to prove $\theta \in M$, which
+follows from the transitivity of $M$.
+
+In contrast, the proof that $G\in M[G]$ is more demanding. In fact, we
+set $\dot{G} = \{ \langle \check{p},p\rangle \,|\, p \in P \}$ as a
+putative name for $G$. Proving that $\dot{G}$ is in fact a name for
+$G$ requires to prove that $\dot{G} \in M$, using an instance of
+replacement for $M$ (\noindent namely that given by the assumption
+\isa{repl{\isacharunderscore}check{\isacharunderscore}pair}), and
+then proving that $\val(G,\dot{G})=G$.
+
+\begin{isabelle}
+\isacommand{definition}\isamarkupfalse%
+\isanewline
+\ \ G{\isacharunderscore}dot\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}G{\isacharunderscore}dot\ {\isacharequal}{\isacharequal}\ {\isacharbraceleft}{\isacharless}check{\isacharparenleft}p{\isacharparenright}{\isacharcomma}p{\isachargreater}\ {\isachardot}\ p{\isasymin}P{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ G{\isacharunderscore}dot{\isacharunderscore}in{\isacharunderscore}M\ {\isacharcolon} {\isachardoublequoteopen}G{\isacharunderscore}dot\ {\isasymin}\ M{\isachardoublequoteclose}
+\isanewline\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ val{\isacharunderscore}G{\isacharunderscore}dot\ {\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}G\ {\isasymsubseteq}\ P{\isachardoublequoteclose}\ \ \isakeyword{and}\ \ 
+{\isachardoublequoteopen}one\ {\isasymin}\ G{\isachardoublequoteclose}\ \isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}G{\isacharunderscore}dot{\isacharparenright}\ {\isacharequal}\ G{\isachardoublequoteclose}
+\end{isabelle}
 
 
 %%% Local Variables:

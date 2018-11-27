@@ -1,0 +1,68 @@
+\subsection{Related work}\label{sec:related-work}
+Formalization of mathematics serves many purposes
+\cite{simpson-theorem-proving-math}. The most obvious one is to
+increase reliability in a result and/or its proof. This has been the
+original motivation that lead Voevodsky to gather many researchers
+around \emph{homotopy type theory} and its formalization in Coq
+\cite{hottbook}; the same applies to the four color theorem (checked
+by Gonthier \cite{MR2463991}) and the formidable \emph{Flyspeck}
+project \cite{MR3659768} by the team conducted by Hales.
+
+In our particular case, forcing and the set theoretic techniques that
+are being formalized can be regarded as a mature technology and thus
+the main goal is not to increase confidence. Nevertheless, the level
+of detail in a formalization of this sort always provide additional
+information about the inner workings of the theory: It is expected, for
+instance, to have a detailed account of which axioms are necessary to
+define and use forcing. Finally, we support the vision that a growing
+corpus of formalized mathematics can be a useful library for the
+future generations. The question of how to systematize this corpus is
+an ongoing project by Paulson \cite{ALEXANDRIA}.
+
+We will now discuss very succinctly recent formalizations of
+set theory and forcing. The closest formalizations are those based on
+Isabelle. Let us remark that Isabelle allows for different logical
+foundations; in particular, Paulson carried out his formalizations
+on top of Isabelle/FOL which is based on first-order logic.
+
+There is another major framework in Isabelle based on higher order
+logic, Isabelle/HOL. This framework is very active, and as a 
+consequence more automated tools are available. Isabelle/HOL has 
+basic chapters on set theory. One of those, by Steven Obua, proceeds up to
+well founded relations and provides translations between types in HOL
+(for instance \isatt{nat}) to  sets  (elements of type
+\isatt{ZF}). Another one, by A.~Popescu and D.~Traytel, reaches
+cardinal arithmetic. This is fairly limited for our purposes.
+
+Concerning automation, B.~Zhan has developed a new tool called
+\texttt{auto2} and applied it to untyped set theory
+\cite{10.1007/978-3-319-66107-0_32}. He has redeveloped essentially
+the basic results in Isabelle/ZF, but goes in a different
+direction. Nevertheless, a majority of results in
+Isabelle/ZF are not yet implemented using this tool, and  another
+downside is that proofs using it do not follow the standard Isar
+language (see Section~\ref{sec:isabellezf}).
+
+As far as we know, there is little progress on formalizations of
+forcing in type theory. Most relevant is the work by K.~Quirin
+\cite{Quirin}, where a sheaf-theoretic initial approach to forcing is
+implemented in Coq. This language is extremely different to the
+standard approach of constructing models of $\ZFC$, and it might be
+difficult (once the forcing machinery is set) to translate results in
+the literature using ctms to this one. In any case, the translation to
+set theory of what Quirin accomplishes is to define a generic
+extension (where $\CH$ should fail) and to construct a set $K$ (a
+candidate counterexample) and injections $\N\hookrightarrow K$ and
+$K\hookrightarrow\R$. But the most important part, that is, that there
+are no surjections $\N\twoheadrightarrow K$ and
+$K\twoheadrightarrow\R$, is left for a future
+work. % Finally, Jaber et al.\ \cite{jaber:hal-01319066}
+% port forcing to type theory; notice that this is not a formalization
+% of forcing. Instead, they construct new logics from type theory
+% by means of forcing conditions.
+
+%%% Local Variables:
+%%% mode: latex
+%%% ispell-local-dictionary: "american"
+%%% TeX-master: "first_steps_into_forcing"
+%%% End:
