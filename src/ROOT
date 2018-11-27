@@ -1,0 +1,18 @@
+session "separation" = "ZF-Constructible" +
+  options [document = pdf, document_output = "output",quick_and_dirty]
+  theories [document = true]
+    "Pointed_DC"
+    "Forcing_notions"
+    "Forcing_data"
+    "Forces_locale"
+    "Names"
+    "Interface2"
+    "Renaming"
+    "Nat_Miscelanea"
+    "Pairing_Axiom"
+    "Union_Axiom"
+    "Separation_Axiom"
+  theories
+    (* Baz *)
+  document_files
+    "root.tex"

@@ -47,7 +47,7 @@ proof -
 qed
     
 interpretation MGtriv :  M_trivial_no_repl"##M[G]"
-  using generic union_in_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
+  using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
   unfolding M_trivial_no_repl_def by simp    
 
 end

@@ -94,7 +94,6 @@ theorem M_trivial_L: "M_trivial_no_repl(L)"
        apply (erule (1) transL)
       apply (rule upair_ax)
      apply (rule Union_ax)
-    apply (rule power_ax)
 (*   apply (rule replacement) *)
   apply (rule nonempty)
   done
