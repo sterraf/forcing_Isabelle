@@ -46,10 +46,33 @@ lemma domD : assumes "\<tau> \<in> M" and "\<sigma> \<in> domain(\<tau>)"
     using Transset_M trans_M by blast
   then show ?thesis by simp
 qed
+
+lemma Union_abs_trans : 
+  assumes "Transset(Q)" "a \<in> Q" "z \<in> Q" "\<Union> a = z"
+  shows "big_union(##Q,a,z)"
+ proof -
+  {
+    fix x
+    assume "x \<in> z"
+    with \<open>\<Union> a=z\<close> have "x \<in> \<Union> a" by simp
+    then obtain y where
+      "y \<in> a" "x \<in> y"
+      by blast
+    with \<open>Transset(Q)\<close> \<open>a\<in>Q\<close> have "y \<in> Q" unfolding Transset_def using subsetD by blast
+    with \<open>y \<in> a\<close> \<open>x \<in> y\<close> have "\<exists> y[##Q].x\<in>y \<and> y \<in>a" by auto
+  }
+  then have 1: "x \<in> z \<Longrightarrow> \<exists> y[##Q].x\<in>y \<and> y \<in>a" for x .
+  { fix x 
+    assume "\<exists>y[##Q]. y \<in> a \<and> x \<in> y"
+    with \<open>\<Union> a=z\<close> have "x\<in>z" by blast
+  }
+  then show ?thesis
+    using 1 unfolding big_union_def by blast
+qed
   
-lemma Union_MG : 
+lemma Union_MG_Eq : 
   assumes "a \<in> M[G]" and "a = val(G,\<tau>)" and "filter(G)" and "\<tau> \<in> M"
-  shows "\<Union> a = val(G,Union_name(\<tau>)) \<and> big_union(##M[G],a,val(G,Union_name(\<tau>)))"
+  shows "\<Union> a = val(G,Union_name(\<tau>))"
 proof -
   {
     fix x
@@ -71,14 +94,6 @@ proof -
     with \<open>val(G,\<theta>)=x\<close> have "x \<in> val(G,Union_name(\<tau>))" by simp
   }
   with \<open>a=val(G,\<tau>)\<close> have 1: "x \<in> \<Union> a \<Longrightarrow> x \<in> val(G,Union_name(\<tau>))" for x by simp
-  { fix x 
-    assume "\<exists>y[##M[G]]. y \<in> a \<and> x \<in> y"
-    then obtain y where
-      "y \<in> M[G]" "y \<in> a" "x \<in> y" by force
-    then have "x \<in> \<Union> a" by blast
-    then have "x \<in> val(G,Union_name(\<tau>))" using 1 by simp
-  }
-  then have 2:"\<exists>y[##M[G]]. y \<in> a \<and> x \<in> y \<Longrightarrow> x \<in> val(G,Union_name(\<tau>))" for x .
   {
     fix x
     assume "x \<in> (val(G,Union_name(\<tau>)))"
@@ -90,26 +105,16 @@ proof -
       "\<sigma> \<in> M" "q \<in> P" "r \<in> P" "<\<sigma>,q> \<in> \<tau> " "<\<theta>,r> \<in> \<sigma>" "<p,r> \<in> leq" "<p,q> \<in> leq"
       unfolding Union_name_def by force
     with \<open>p\<in>G\<close> \<open>filter(G)\<close> have "r \<in> G" "q \<in> G"
-    using filter_leqD by auto
+    using filter_leqD by force+
   with \<open><\<theta>,r> \<in> \<sigma>\<close> \<open><\<sigma>,q>\<in>\<tau>\<close> \<open>q\<in>P\<close> \<open>r\<in>P\<close> have
     "val(G,\<sigma>) \<in> val(G,\<tau>)" "val(G,\<theta>) \<in> val(G,\<sigma>)"
-    using val_of_elem by simp_all
+    using val_of_elem by simp+
   then have "val(G,\<theta>) \<in> \<Union> val(G,\<tau>)" by blast
   with \<open>val(G,\<theta>)=x\<close> \<open>a=val(G,\<tau>)\<close> have
     "x \<in> \<Union> a" by simp
-  from \<open>val(G,\<theta>) = x\<close> \<open>\<sigma>\<in>M\<close> \<open>val(G,\<theta>) \<in> val(G,\<sigma>)\<close> have 
-    "(##M[G])(val(G,\<sigma>))" "x \<in> val(G,\<sigma>)" using GenExtI by simp_all
-  with \<open>a=val(G,\<tau>)\<close> \<open>val(G,\<sigma>) \<in> val(G,\<tau>)\<close> have 
-    "val(G,\<sigma>) \<in> a" by simp
-  with \<open>(##M[G])(val(G,\<sigma>))\<close> \<open>x \<in> val(G,\<sigma>)\<close> have
-    "\<exists>y[##M[G]]. x \<in> y \<and> y \<in> a" by blast
-  with \<open>x \<in> \<Union> a\<close> have "\<exists>y[##M[G]]. x \<in> y \<and> y \<in> a" "x \<in> \<Union> a" by simp_all
 }
-  with \<open>a=val(G,\<tau>)\<close> have 3: "x \<in> val(G,Union_name(\<tau>)) \<Longrightarrow> x \<in> \<Union> a \<and> 
-                             (\<exists>y[##M[G]]. x \<in> y \<and> y \<in> a)" for x by blast
-  then have 4: "\<Union> a = val(G,Union_name(\<tau>))" using 1 by blast
-  then have "big_union(##M[G],a,val(G,Union_name(\<tau>)))" unfolding big_union_def using 2 3 by blast
-  then show ?thesis using 4 by simp
+  with \<open>a=val(G,\<tau>)\<close> have 3: "x \<in> val(G,Union_name(\<tau>)) \<Longrightarrow> x \<in> \<Union> a" for x by blast
+  then show ?thesis using 1 by blast
 qed
         
 lemma union_in_MG : assumes "filter(G)"
@@ -123,13 +128,17 @@ lemma union_in_MG : assumes "filter(G)"
    then have "Union_name(\<tau>) \<in> M" (is "?\<pi> \<in> _") using Union_name_M by simp
    then have "val(G,?\<pi>) \<in> M[G]" (is "?U \<in> _") using GenExtI by simp
    then have 1:"(##M[G])(val(G,?\<pi>))" by simp
-   with \<open>a\<in>M[G]\<close> \<open>\<tau> \<in> M\<close> \<open>filter(G)\<close> \<open>a=val(G,\<tau>)\<close>  have "big_union(##M[G],a,?U)" 
-     using Union_MG by blast
+   with \<open>a\<in>M[G]\<close> \<open>\<tau> \<in> M\<close> \<open>filter(G)\<close> \<open>?U \<in> M[G]\<close> \<open>a=val(G,\<tau>)\<close> Transset_MG[of G]
+   have "big_union(##M[G],a,?U)" 
+     using Union_MG_Eq Union_abs_trans by blast
    then  have "\<exists>z[##M[G]]. big_union(##M[G],a,z)" using 1 by blast
   }
   then have "Union_ax(##M[G])" unfolding Union_ax_def by force
   then show ?thesis by simp
  qed
 
+theorem Union_MG : "M_generic(G) \<Longrightarrow> Union_ax(##M[G])"
+  by (simp add:M_generic_def union_in_MG)
+    
 end
 end
