@@ -68,12 +68,8 @@ lemma filter_leqD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> y \
 lemma low_bound_filter : 
   assumes "filter(G)" and "p\<in>G" and "q\<in>G"
   shows "\<exists>r\<in>G. <r,p> \<in> leq \<and> <r,q> \<in> leq" 
-  proof -
-  from \<open>p \<in> G\<close> and \<open>q\<in>G\<close> \<open>filter(G)\<close> obtain r where
-    "r\<in>G" "<r,p> \<in> leq" "<r,q> \<in> leq"
+  using assms 
   unfolding compat_in_def filter_def by blast
-  then show ?thesis by blast
-qed
   
 definition  
   upclosure :: "i\<Rightarrow>i" where
