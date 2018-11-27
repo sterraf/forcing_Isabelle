@@ -90,25 +90,25 @@ proof -
       "\<sigma> \<in> M" "q \<in> P" "r \<in> P" "<\<sigma>,q> \<in> \<tau> " "<\<theta>,r> \<in> \<sigma>" "<p,r> \<in> leq" "<p,q> \<in> leq"
       unfolding Union_name_def by force
     with \<open>p\<in>G\<close> \<open>filter(G)\<close> have "r \<in> G" "q \<in> G"
-    using filter_leqD by force+
+    using filter_leqD by auto
   with \<open><\<theta>,r> \<in> \<sigma>\<close> \<open><\<sigma>,q>\<in>\<tau>\<close> \<open>q\<in>P\<close> \<open>r\<in>P\<close> have
     "val(G,\<sigma>) \<in> val(G,\<tau>)" "val(G,\<theta>) \<in> val(G,\<sigma>)"
-    using val_of_elem by simp+
+    using val_of_elem by simp_all
   then have "val(G,\<theta>) \<in> \<Union> val(G,\<tau>)" by blast
   with \<open>val(G,\<theta>)=x\<close> \<open>a=val(G,\<tau>)\<close> have
     "x \<in> \<Union> a" by simp
   from \<open>val(G,\<theta>) = x\<close> \<open>\<sigma>\<in>M\<close> \<open>val(G,\<theta>) \<in> val(G,\<sigma>)\<close> have 
-    "(##M[G])(val(G,\<sigma>))" "x \<in> val(G,\<sigma>)" using GenExtI by simp+
+    "(##M[G])(val(G,\<sigma>))" "x \<in> val(G,\<sigma>)" using GenExtI by simp_all
   with \<open>a=val(G,\<tau>)\<close> \<open>val(G,\<sigma>) \<in> val(G,\<tau>)\<close> have 
     "val(G,\<sigma>) \<in> a" by simp
   with \<open>(##M[G])(val(G,\<sigma>))\<close> \<open>x \<in> val(G,\<sigma>)\<close> have
     "\<exists>y[##M[G]]. x \<in> y \<and> y \<in> a" by blast
-  with \<open>x \<in> \<Union> a\<close> have "\<exists>y[##M[G]]. x \<in> y \<and> y \<in> a" "x \<in> \<Union> a" by simp+
+  with \<open>x \<in> \<Union> a\<close> have "\<exists>y[##M[G]]. x \<in> y \<and> y \<in> a" "x \<in> \<Union> a" by simp_all
 }
   with \<open>a=val(G,\<tau>)\<close> have 3: "x \<in> val(G,Union_name(\<tau>)) \<Longrightarrow> x \<in> \<Union> a \<and> 
-                             (\<exists>y[##M[G]]. x \<in> y \<and> y \<in> a)" for x by blast+
+                             (\<exists>y[##M[G]]. x \<in> y \<and> y \<in> a)" for x by blast
   then have 4: "\<Union> a = val(G,Union_name(\<tau>))" using 1 by blast
-  then have "big_union(##M[G],a,val(G,Union_name(\<tau>)))" unfolding big_union_def using 2 3 by blast+
+  then have "big_union(##M[G],a,val(G,Union_name(\<tau>)))" unfolding big_union_def using 2 3 by blast
   then show ?thesis using 4 by simp
 qed
         
