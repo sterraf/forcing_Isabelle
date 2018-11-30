@@ -98,11 +98,10 @@ proof -
     ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
   from phi have 
     "arity(?\<chi>) \<le> 3" 
-    by (simp add:nat_union_abs1,subst nat_union_abs2,(simp add: leI)+)
+    using leI by abs_simp
   with phi have
     "arity(forces(?\<chi>)) \<le> 8"
-    using arity_forces 
-    by(simp add:nat_union_abs1,subst nat_union_abs2,(simp add: leI)+)
+    using arity_forces leI by abs_simp
   with phi definability[of "?\<chi>"] arity_forces  have
     nf_form : "?new_form \<in> formula"
     using ren_lib_tc[of "forces(?\<chi>)" _ "converse(perm_sep_forces)"] conv_perm_sep_bij 
