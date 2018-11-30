@@ -78,16 +78,19 @@ method simp_altnt declares fstpass sndpass = (simp add:fstpass ; simp add:sndpas
 method abs_simp = (simp_altnt fstpass:nat_union_abs1 sndpass: nat_union_abs2)
 
 lemma separation_aux :
-  "\<pi> \<in> M \<Longrightarrow> \<sigma> \<in> M \<Longrightarrow>
+  assumes
+    "\<pi> \<in> M" "\<sigma> \<in> M" "val(G, \<pi>) = c" "val(G, \<sigma>) = w"
+    "\<phi> \<in> formula" "arity(\<phi>) \<le> 2"
+  shows    
+    "{x\<in>c. sats(M[G], \<phi>, [x, w, c])}\<in> M[G]"
+(*  "\<pi> \<in> M \<Longrightarrow> \<sigma> \<in> M \<Longrightarrow>
     val(G, \<pi>) = c \<Longrightarrow> val(G, \<sigma>) = w \<Longrightarrow>
     \<phi> \<in> formula \<Longrightarrow> arity(\<phi>) \<le> 2 \<Longrightarrow>
-    {x\<in>c. sats(M[G], \<phi>, [x, w, c])}\<in> M[G]" for  \<pi> c w \<sigma> \<phi>
+    {x\<in>c. sats(M[G], \<phi>, [x, w, c])}\<in> M[G]" for  \<pi> c w \<sigma> \<phi> *)
 proof -  
   from generic have 
     "filter(G)" "G\<subseteq>P" 
     unfolding M_generic_def filter_def by simp_all
-  assume
-    phi: "\<phi>\<in>formula" "arity(\<phi>) \<le> 2"
   let
     ?\<chi>="And(Member(0,2),\<phi>)"
     and   
@@ -96,7 +99,8 @@ proof -
     ?new_form="rename(forces(?\<chi>))`8`converse(perm_sep_forces)"
   let
     ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
-  from phi have 
+  note phi = \<open>\<phi>\<in>formula\<close> \<open>arity(\<phi>) \<le> 2\<close> 
+  then have 
     "arity(?\<chi>) \<le> 3" 
     using leI by abs_simp
   with phi have
@@ -131,9 +135,7 @@ proof -
     ultimately  show ?thesis 
       using \<open>arity(?new_form) \<le> 8\<close> by simp
   qed
-  assume
-    "\<pi>\<in>M" "\<sigma>\<in>M" 
-  with P_in_M have
+  from \<open>\<pi>\<in>M\<close> \<open>\<sigma>\<in>M\<close> P_in_M have
     "domain(\<pi>)\<in>M" "domain(\<pi>) \<times> P \<in> M"
     by (simp_all del:setclass_iff add:setclass_iff[symmetric])
   note in_M1 = \<open>\<pi>\<in>M\<close> \<open>\<sigma>\<in>M\<close> \<open>domain(\<pi>) \<times> P \<in> M\<close>  P_in_M one_in_M leq_in_M
@@ -272,9 +274,8 @@ proof -
   with val_mono have
     first_incl: "val(G,?n) \<subseteq> val(G,?m)" 
     by simp
-  fix c w
-  assume 
-    "val(G,\<pi>) = c" "val(G,\<sigma>) = w"
+  note  -- \<open>from assumptions\<close> 
+    \<open>val(G,\<pi>) = c\<close> \<open>val(G,\<sigma>) = w\<close>
   with \<open>?\<psi>\<in>formula\<close> \<open>arity(?\<psi>) \<le> 6\<close> in_M1 have 
     "?n\<in>M" 
     using six_sep_aux by simp
@@ -308,7 +309,7 @@ proof -
       "... \<subseteq> {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x, w, c]) \<and> q \<in> G}"
       by auto
   next 
-    (* 
+    (* Now we show the inclusion:
       {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x, w, c]) \<and> q \<in> G}
       \<subseteq>
       {val(G,t)..t\<in>domain(\<pi>),\<exists>q\<in>P.val(G,t)\<in>c\<and>sats(M[G],\<phi>,[val(G,t),w])\<and>q\<in>G}
@@ -383,8 +384,6 @@ proof -
     with \<open>\<theta>\<in>M\<close> Eq6 \<open>p\<in>P\<close> have
       "sats(M,?\<psi>,[<\<theta>,p>] @ ?Pl1 @ [\<sigma>,\<pi>])"
       using Equivalence [THEN iffD2]  by auto
-        (* with \<open><\<theta>,p>\<in>domain(\<pi>)\<times>P\<close> have
-      "\<exists>u\<in>domain(\<pi>)\<times>P. sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>]@?params)" by auto *)
     with \<open><\<theta>,p>\<in>domain(\<pi>)\<times>P\<close>  \<open><\<theta>,p>\<in>M\<close> \<open>p\<in>G\<close> \<open>val(G,\<theta>)=x\<close> have
       "x\<in>val(G,?n)"   
       using in_val_n by auto
