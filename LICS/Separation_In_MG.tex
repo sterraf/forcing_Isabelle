@@ -335,7 +335,7 @@ Separation Axiom holds in generic extensions.
 % no keywords
 
 
-
+\input{intro}
 
 % For peer review papers, you can put extra information on the cover
 % page as needed:
@@ -349,90 +349,7 @@ Separation Axiom holds in generic extensions.
 
 
 
-\section{Introduction}
-% no \IEEEPARstart
-We follow \cite{kunen2011set}. An introduction to the issues discussed
-in this paper can be found in \cite{2018arXiv180705174G}. An
-introduction to forcing can be found at \cite{chow-beginner-forcing},
-and the book \cite{weaver2014forcing} contains a thorough treament
-minimizing the technicalities.
-
-An enumeration of achievements to be presented:
-\begin{enumerate}
-\item Discussion of the Isabelle view of life.
-  \begin{enumerate}
-  \item Meta (Pure) vs Object (FOL+ZF) theory.
-  \item Object theory is presented axiomatically; in particular,
-    first-order ``formulas'' are not such (i.e., the \emph{initial}
-    algebra of formulas is \textbf{not} being specified). Thus, we are
-    not able to perform recursion on terms of type \tyo.
-  \end{enumerate}
-\item Discussion of locales.
-  \begin{enumerate}
-  \item How they help presenting complex results.
-  \item Their key role in stating the Fundamental Theorems (without
-    defining \isatt{forces}).
-  \item \isatt{forces} is defined for elements of \formula.
-  \end{enumerate}
-\item Enhancements in the recursion machinery.
-\item Hacking of \isatt{ZF-Constructible}.
-  \begin{enumerate}
-  \item Elimination of the \tyo-schematic Replacement Axiom from
-    locales.
-  \item Replacing \isatt{M(nat)} by \isatt{M(0)} (merely non
-    emptiness) from Relative (and other places?).
-  \end{enumerate}
-\item Inteface between first-order properties of $M$ and those of
-  $\#\#M$.
-  \begin{enumerate}
-  \item Enumerate properties and statistics.
-  \end{enumerate}
-\item Details of the proof of Separation.
-\end{enumerate}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
-\section{Forcing}
-Given a ctm $M$, and an $M$-generic filter $G\sbq\PP$, the Forcing
-Theorems relate satisfaction of a formula 
-$\phi$ in the generic extension $M[G]$ to the satisfaction of another
-formula $\phi'$ in $M$. The map $\phi\mapsto\phi'$ is defined by
-recursion on 
-the structure of $\phi$. The fact that this map works (in particular,
-in order to show that $M[G]\models\ZFC$), we must use the fact that
-$M\models\ZFC$. Since we can only assert the latter using internalized
-formulas, the aformentioned map will be defined as a function from the
-set \formula{} into itself. 
-
-Up to this point, the main reason for working with internalized
-versions is that  it is not possible to do recursion with formulas of
-type $\tyo$ (i.e., the formulas in the first-order logic of
-Isabelle/ZF).
-
-We will now make more precise the definition of the map
-$\phi\mapsto\phi'$ and how it relates satisfaction in $M$ to that in
-$M[G]$. Actually, if the formula $\phi$ has $n$ free variables,
-$\phi'$ will have $n+4$ free variables, where the first four account
-for the forcing notion and a particular condition. If
-$\phi=\phi(x_1,\dots,x_n)$, the standard notation for $\phi'$ is
-\[
-p\forces_{\PP,\leq,\1}^* \phi(t_1,\dots,t_n).
-\]
-Here, $\PP,\leq,\1,$ and $p\in\PP$ are the extra parameters. 
-%% For the
-%% time being, we just consider $\tau_1,\dots,\tau_n$ to be ordinary
-%% variables. 
-Given $\quine\phi\in\formula$, we will write this  in
-Isabelle/ZF by using  
-\[
-\forceisa(\quine\phi,\PP,\leq,\1,p)
-\]
-Afterwards, the \emph{forcing relation} $\forces$ is defined by
-relativizing/interpreting $\forces^*$ in a ctm $M$, for fixed
-$\lb\PP,\leq,\1\rb\in M$:
-\[
-p\forces \phi(t_1,\dots,t_n) \defi 
-\bigl(p\forces_{\PP,\leq,\1}^* \phi(t_1,\dots,t_n)\bigr)^M\!.
-\]
+\input{forcing}
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
@@ -530,8 +447,7 @@ p\forces \phi(t_1,\dots,t_n) \defi
 
 
 
-
-\section{Conclusion}
+\input{conclusion}
 
 
 
@@ -539,9 +455,6 @@ p\forces \phi(t_1,\dots,t_n) \defi
 
 
 % use section* for acknowledgment
-\section*{Acknowledgment}
-
-
 
 
 

@@ -1,0 +1,49 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
+\section{Introduction}
+% no \IEEEPARstart
+We follow \cite{kunen2011set}. An introduction to the issues discussed
+in this paper can be found in \cite{2018arXiv180705174G}. An
+introduction to forcing can be found at \cite{chow-beginner-forcing},
+and the book \cite{weaver2014forcing} contains a thorough treament
+minimizing the technicalities.
+
+An enumeration of achievements to be presented:
+\begin{enumerate}
+\item Discussion of the Isabelle view of life.
+  \begin{enumerate}
+  \item Meta (Pure) vs Object (FOL+ZF) theory.
+  \item Object theory is presented axiomatically; in particular,
+    first-order ``formulas'' are not such (i.e., the \emph{initial}
+    algebra of formulas is \textbf{not} being specified). Thus, we are
+    not able to perform recursion on terms of type \tyo.
+  \end{enumerate}
+\item Discussion of locales.
+  \begin{enumerate}
+  \item How they help presenting complex results.
+  \item Their key role in stating the Fundamental Theorems (without
+    defining \isatt{forces}).
+  \item \isatt{forces} is defined for elements of \formula.
+  \end{enumerate}
+\item Enhancements in the recursion machinery.
+  \begin{enumerate}
+  \item Impact on names.
+  \end{enumerate}
+\item Hacking of \isatt{ZF-Constructible}.
+  \begin{enumerate}
+  \item Elimination of the \tyo-schematic Replacement Axiom from
+    locales.
+  \item Replacing \isatt{M(nat)} by \isatt{M(0)} (merely non
+    emptiness) from Relative (and other places?).
+  \end{enumerate}
+\item Inteface between first-order properties of $M$ and those of
+  $\#\#M$.
+  \begin{enumerate}
+  \item Enumerate properties and statistics.
+  \end{enumerate}
+\item Details of the proof of Separation.
+\end{enumerate}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "Separation_In_MG"
+%%% End: 
