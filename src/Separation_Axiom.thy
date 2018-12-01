@@ -219,11 +219,6 @@ proof -
         "sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<sigma>,\<pi>]) \<longleftrightarrow> (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
                            sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<sigma>), val(F, \<pi>)]))" by simp
     qed
-    then have
-      Eq3: "\<theta>\<in>M \<Longrightarrow> p\<in>P \<Longrightarrow>
-       sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<sigma>,\<pi>]) \<longleftrightarrow>
-          (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<sigma>), val(F, \<pi>)]))" 
-      for \<theta> p by simp
     with Eq1 have
       "sats(M,?\<psi>,[u] @ ?Pl1 @ [\<sigma>,\<pi>]) \<longleftrightarrow> 
          (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> 
