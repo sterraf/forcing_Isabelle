@@ -82,7 +82,7 @@ lemma Collect_sats_in_MG :
     "\<pi> \<in> M" "\<sigma> \<in> M" "val(G, \<pi>) = c" "val(G, \<sigma>) = w"
     "\<phi> \<in> formula" "arity(\<phi>) \<le> 2"
   shows    
-    "{x\<in>c. sats(M[G], \<phi>, [x, w, c])}\<in> M[G]"
+    "{x\<in>c. sats(M[G], \<phi>, [x, w])}\<in> M[G]"
 proof -  
   let
     ?\<chi>="And(Member(0,2),\<phi>)"
@@ -391,8 +391,28 @@ proof -
   qed (* proof of "val(G,?m) \<subseteq> val(G,?n)" *)
   with val_m first_incl have
     "val(G,?n) = {x\<in>c. sats(M[G], \<phi>, [x, w, c])}" by auto
-  with \<open>?n\<in>M\<close> GenExt_def show
-    "{x\<in>c. sats(M[G], \<phi>, [x, w, c])}\<in> M[G]" by force
+  also have 
+    " ... = {x\<in>c. sats(M[G], \<phi>, [x, w])}"
+  proof -
+    {
+      fix x
+      assume 
+        "x\<in>c"
+      moreover from assms have
+        "c\<in>M[G]" "w\<in>M[G]"
+        unfolding GenExt_def by auto
+      moreover with \<open>x\<in>c\<close> have
+        "x\<in>M[G]"
+        by (simp add:Transset_MG Transset_intf)
+      ultimately have
+        "sats(M[G], \<phi>, [x,w]@[c]) \<longleftrightarrow> sats(M[G], \<phi>, [x,w])" 
+        using phi by (rule_tac arity_sats_iff, simp_all)   (* Enhance this *)
+    }
+    then show ?thesis by auto
+  qed      
+  finally show
+    "{x\<in>c. sats(M[G], \<phi>, [x, w])}\<in> M[G]" 
+    using \<open>?n\<in>M\<close> GenExt_def by force
 qed
   
 theorem separation_in_MG:
@@ -401,8 +421,6 @@ theorem separation_in_MG:
   shows  
     "(\<forall>a\<in>(M[G]). separation(##M[G],\<lambda>x. sats(M[G],\<phi>,[x,a])))"
 proof -
-  from assms have
-    "arity(\<phi>)\<le>2" by auto
   { 
     fix c w 
     assume 
@@ -411,22 +429,8 @@ proof -
       "val(G, \<pi>) = c" "val(G, \<sigma>) = w" "\<pi> \<in> M" "\<sigma> \<in> M" 
       using GenExt_def by auto
     with assms have
-      Eq1: "{x\<in>c. sats(M[G], \<phi>, [x,w,c])} \<in> M[G]"
+      Eq1: "{x\<in>c. sats(M[G], \<phi>, [x,w])} \<in> M[G]"
       using Collect_sats_in_MG  by auto
-    {
-      fix x
-      assume 
-        "x\<in>c"
-      with \<open>c\<in>M[G]\<close> have
-        "x\<in>M[G]"
-        by (simp add:Transset_MG Transset_intf)
-      with \<open>arity(\<phi>)\<le>2\<close> \<open>\<phi> \<in> formula\<close> \<open>c\<in>M[G]\<close> \<open>w\<in>M[G]\<close> have
-        "sats(M[G], \<phi>, [x,w]@[c]) \<longleftrightarrow> sats(M[G], \<phi>, [x,w])" 
-        by (rule_tac arity_sats_iff, simp_all)   (* Enhance this *)
-    }
-    with Eq1 have
-      "{x\<in>c. sats(M[G], \<phi>, [x,w])} \<in> M[G]"
-      by simp
   }
   then show ?thesis using separation_iff rev_bexI 
     unfolding is_Collect_def by force
