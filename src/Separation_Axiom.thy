@@ -50,7 +50,7 @@ lemma perm_sep_env:
   by (auto simp add: perm_sep_env_aux [of _ _ _ _ _ _ _ _ "{p,q,r,s,t,u,v,w}"])
 
     
-context G_generic begin (*********** CONTEXT: G_generic ************)
+context G_generic begin
 
 lemmas transitivity = Transset_intf trans_M
   
@@ -77,7 +77,7 @@ named_theorems sndpass
 method simp_altnt declares fstpass sndpass = (simp add:fstpass ; simp add:sndpass)+
 method abs_simp = (simp_altnt fstpass:nat_union_abs1 sndpass: nat_union_abs2)
 
-lemma separation_aux :
+lemma Collect_sats_in_MG :
   assumes
     "\<pi> \<in> M" "\<sigma> \<in> M" "val(G, \<pi>) = c" "val(G, \<sigma>) = w"
     "\<phi> \<in> formula" "arity(\<phi>) \<le> 2"
@@ -100,9 +100,9 @@ proof -
     "arity(forces(?\<chi>)) \<le> 8"
     using arity_forces leI by abs_simp
   with phi definability[of "?\<chi>"] arity_forces  have
-    nf_form : "?new_form \<in> formula"
+    "?new_form \<in> formula"
     using ren_lib_tc[of "forces(?\<chi>)" _ "converse(perm_sep_forces)"] conv_perm_sep_bij 
-    by(simp)
+    by simp
   then have
     "?\<psi> \<in> formula"
     by simp
@@ -138,10 +138,15 @@ proof -
       "u \<in> domain(\<pi>) \<times> P" "u \<in> M"
     with in_M \<open>?new_form \<in> formula\<close> \<open>?\<psi>\<in>formula\<close> have
       Eq1: "sats(M,?\<psi>,[u] @ ?Pl1 @ [\<sigma>,\<pi>]) \<longleftrightarrow> 
-                        (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
+                        (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> 
                           sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<sigma>,\<pi>]))"
       by (auto simp add: transitivity)
-    {
+    have
+      Eq3: "\<theta>\<in>M \<Longrightarrow> p\<in>P \<Longrightarrow>
+       sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<sigma>,\<pi>]) \<longleftrightarrow>
+          (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<sigma>), val(F, \<pi>)]))" 
+      for \<theta> p 
+    proof -
       fix p \<theta> 
       assume 
         "\<theta> \<in> M" "p\<in>P"
@@ -210,37 +215,33 @@ proof -
           "sats(M, forces(?\<chi>), [P, leq, one,p,\<theta>,\<sigma>,\<pi>])"
           using  \<open>?\<chi>\<in>formula\<close> \<open>p\<in>P\<close> in_M' by auto
       qed
-      finally have
+      finally show
         "sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<sigma>,\<pi>]) \<longleftrightarrow> (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
                            sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<sigma>), val(F, \<pi>)]))" by simp
-    }
+    qed
     then have
       Eq3: "\<theta>\<in>M \<Longrightarrow> p\<in>P \<Longrightarrow>
-      sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<sigma>,\<pi>]) \<longleftrightarrow>
-      (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<sigma>), val(F, \<pi>)]))" 
+       sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<sigma>,\<pi>]) \<longleftrightarrow>
+          (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<sigma>), val(F, \<pi>)]))" 
       for \<theta> p by simp
     with Eq1 have
       "sats(M,?\<psi>,[u] @ ?Pl1 @ [\<sigma>,\<pi>]) \<longleftrightarrow> 
-            (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
-                           (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<sigma>), val(F, \<pi>)])))"
-      "\<theta>\<in>M \<Longrightarrow> p\<in>P \<Longrightarrow>
-      sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<sigma>,\<pi>]) \<longleftrightarrow>
-      (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<sigma>), val(F, \<pi>)]))"  for \<theta> p
-      by auto
+         (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> 
+          (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<sigma>), val(F, \<pi>)])))"
+      by auto 
   }
-  with in_M \<open>?new_form \<in> formula\<close> \<open>?\<psi>\<in>formula\<close> have
+  then have
     Equivalence: "u\<in> domain(\<pi>) \<times> P \<Longrightarrow> u \<in> M \<Longrightarrow> 
-            sats(M,?\<psi>,[u] @ ?Pl1 @ [\<sigma>,\<pi>]) \<longleftrightarrow> 
-            (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
-               (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<sigma>), val(F, \<pi>)])))" 
+       sats(M,?\<psi>,[u] @ ?Pl1 @ [\<sigma>,\<pi>]) \<longleftrightarrow> 
+         (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> 
+          (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<sigma>), val(F, \<pi>)])))" 
     for u 
     by simp
   with generic have
     "u \<in> domain(\<pi>) \<times> P \<Longrightarrow> u \<in> M \<Longrightarrow>
-        sats(M,?\<psi>,[u, P, leq, one,\<sigma>, \<pi>]) \<Longrightarrow>
-          (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
-                (p \<in> G \<longrightarrow> 
-                sats(M[G], ?\<chi>, [val(G, \<theta>), val(G, \<sigma>), val(G, \<pi>)])))" for u
+       sats(M,?\<psi>,[u, P, leq, one,\<sigma>, \<pi>]) \<Longrightarrow>
+         (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> 
+          (p \<in> G \<longrightarrow> sats(M[G], ?\<chi>, [val(G, \<theta>), val(G, \<sigma>), val(G, \<pi>)])))" for u
     by force
   moreover have
     "val(G,\<sigma>)\<in>M[G]" and "\<theta>\<in>M \<Longrightarrow> val(G,\<theta>)\<in>M[G]" for \<theta>
@@ -248,18 +249,18 @@ proof -
   ultimately have
     "u \<in> domain(\<pi>) \<times> P \<Longrightarrow> u \<in> M \<Longrightarrow>
         sats(M,?\<psi>,[u, P, leq, one,\<sigma>, \<pi>]) \<Longrightarrow>
-          (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
+          (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> 
                 (p \<in> G \<longrightarrow> 
                 val(G,\<theta>) \<in> val(G,\<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<sigma>), val(G, \<pi>)])))" for u
     using \<open>\<pi>\<in>M\<close> by auto
-  with \<open>domain(\<pi>)*P\<in>M\<close> have
-    "\<forall>u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?Pl1 @ [\<sigma>,\<pi>])  \<longrightarrow>
-      (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
+  with \<open>domain(\<pi>)\<times>P\<in>M\<close> have
+    "\<forall>u\<in>domain(\<pi>)\<times>P . sats(M,?\<psi>,[u] @ ?Pl1 @ [\<sigma>,\<pi>])  \<longrightarrow>
+      (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> 
         (p \<in> G \<longrightarrow> val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<sigma>), val(G, \<pi>)])))"
     by (simp add:transitivity)
   then have
-    "{u\<in>domain(\<pi>)*P . sats(M,?\<psi>,[u] @ ?Pl1 @ [\<sigma>,\<pi>]) } \<subseteq>
-     {u\<in>domain(\<pi>)*P . \<exists>\<theta>\<in>M. \<exists>p\<in>P. u =<\<theta>,p> \<and> 
+    "{u\<in>domain(\<pi>)\<times>P . sats(M,?\<psi>,[u] @ ?Pl1 @ [\<sigma>,\<pi>]) } \<subseteq>
+     {u\<in>domain(\<pi>)\<times>P . \<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> 
        (p \<in> G \<longrightarrow> val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, [val(G, \<theta>), val(G, \<sigma>), val(G, \<pi>)]))}"
     (is "?n\<subseteq>?m") 
     by auto
@@ -300,7 +301,7 @@ proof -
       "... \<subseteq> {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x, w, c]) \<and> q \<in> G}"
       by auto
   next 
-    (* Now we show the inclusion:
+    (* Now we show the other inclusion:
       {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x, w, c]) \<and> q \<in> G}
       \<subseteq>
       {val(G,t)..t\<in>domain(\<pi>),\<exists>q\<in>P.val(G,t)\<in>c\<and>sats(M[G],\<phi>,[val(G,t),w])\<and>q\<in>G}
@@ -318,25 +319,29 @@ proof -
     }
     then show 
       " {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x, w, c]) \<and> q \<in> G} \<subseteq> ..."
-      by (force simp add: SepReplace_iff [THEN iffD2])
+      using SepReplace_iff by force
   qed
   also have
     " ... = {x\<in>c. sats(M[G], \<phi>, [x, w, c])}"
     using \<open>G\<subseteq>P\<close> G_nonempty by force
   finally have
     val_m: "val(G,?m) = {x\<in>c. sats(M[G], \<phi>, [x, w, c])}" by simp
-  {
+  have 
+    "val(G,?m) \<subseteq> val(G,?n)" 
+  proof
     fix x
     assume
-      Eq4: "x \<in> {x\<in>c. sats(M[G], \<phi>, [x, w, c])}"
+      "x \<in> val(G,?m)"
+    with val_m have 
+      Eq4: "x \<in> {x\<in>c. sats(M[G], \<phi>, [x, w, c])}" by simp
     with \<open>val(G,\<pi>) = c\<close> have 
       "x \<in> val(G,\<pi>)" by simp
     then have
-      "\<exists>\<theta>. \<exists>q\<in>G. <\<theta>,q>\<in>\<pi> \<and> val(G,\<theta>) =x" 
+      "\<exists>\<theta>. \<exists>q\<in>G. \<langle>\<theta>,q\<rangle>\<in>\<pi> \<and> val(G,\<theta>) =x" 
       using elem_of_val_pair by auto
     then obtain \<theta> q where
-      "<\<theta>,q>\<in>\<pi>" "q\<in>G" "val(G,\<theta>)=x" by auto
-    from \<open><\<theta>,q>\<in>\<pi>\<close> \<open>\<pi>\<in>M\<close> trans_M have 
+      "\<langle>\<theta>,q\<rangle>\<in>\<pi>" "q\<in>G" "val(G,\<theta>)=x" by auto
+    from \<open>\<langle>\<theta>,q\<rangle>\<in>\<pi>\<close> \<open>\<pi>\<in>M\<close> trans_M have 
       "\<theta>\<in>M"
       unfolding Pair_def Transset_def by auto 
     with \<open>\<pi>\<in>M\<close> \<open>\<sigma>\<in>M\<close> have
@@ -366,26 +371,24 @@ proof -
                  sats(M[F], ?\<chi>, [val(F, \<theta>), val(F, \<sigma>), val(F,\<pi>)])"
       using definition_of_forces by simp
     with \<open>p\<in>P\<close> \<open>\<theta>\<in>M\<close>  have
-      Eq6: "\<exists>\<theta>'\<in>M. \<exists>p'\<in>P.  <\<theta>,p> = <\<theta>',p'> \<and> (\<forall>F. M_generic(F) \<and> p' \<in> F \<longrightarrow> 
+      Eq6: "\<exists>\<theta>'\<in>M. \<exists>p'\<in>P.  \<langle>\<theta>,p\<rangle> = <\<theta>',p'> \<and> (\<forall>F. M_generic(F) \<and> p' \<in> F \<longrightarrow> 
                  sats(M[F], ?\<chi>, [val(F, \<theta>'), val(F, \<sigma>), val(F,\<pi>)]))" by auto
-    from \<open>\<pi>\<in>M\<close> \<open><\<theta>,q>\<in>\<pi>\<close> have
-      "<\<theta>,q> \<in> M" by (simp add:transitivity)
-    from \<open><\<theta>,q>\<in>\<pi>\<close> \<open>\<theta>\<in>M\<close> \<open>p\<in>P\<close>  \<open>p\<in>M\<close> have
-      "<\<theta>,p>\<in>M" "<\<theta>,p>\<in>domain(\<pi>)\<times>P" 
+    from \<open>\<pi>\<in>M\<close> \<open>\<langle>\<theta>,q\<rangle>\<in>\<pi>\<close> have
+      "\<langle>\<theta>,q\<rangle> \<in> M" by (simp add:transitivity)
+    from \<open>\<langle>\<theta>,q\<rangle>\<in>\<pi>\<close> \<open>\<theta>\<in>M\<close> \<open>p\<in>P\<close>  \<open>p\<in>M\<close> have
+      "\<langle>\<theta>,p\<rangle>\<in>M" "\<langle>\<theta>,p\<rangle>\<in>domain(\<pi>)\<times>P" 
       using pairM by auto
     with \<open>\<theta>\<in>M\<close> Eq6 \<open>p\<in>P\<close> have
-      "sats(M,?\<psi>,[<\<theta>,p>] @ ?Pl1 @ [\<sigma>,\<pi>])"
+      "sats(M,?\<psi>,[\<langle>\<theta>,p\<rangle>] @ ?Pl1 @ [\<sigma>,\<pi>])"
       using Equivalence  by auto
-    with \<open><\<theta>,p>\<in>domain(\<pi>)\<times>P\<close> have
-      "<\<theta>,p>\<in>?n" by simp
+    with \<open>\<langle>\<theta>,p\<rangle>\<in>domain(\<pi>)\<times>P\<close> have
+      "\<langle>\<theta>,p\<rangle>\<in>?n" by simp
     with \<open>p\<in>G\<close> \<open>p\<in>P\<close> have
       "val(G,\<theta>)\<in>val(G,?n)" 
       using  val_of_elem[of \<theta> p] by simp
-    with \<open>val(G,\<theta>)=x\<close> have
+    with \<open>val(G,\<theta>)=x\<close> show
       "x\<in>val(G,?n)" by simp
-  }
-  with val_m  have 
-    "val(G,?m) \<subseteq> val(G,?n)" by auto
+  qed (* proof of "val(G,?m) \<subseteq> val(G,?n)" *)
   with val_m first_incl have
     "val(G,?n) = {x\<in>c. sats(M[G], \<phi>, [x, w, c])}" by auto
   with \<open>?n\<in>M\<close> GenExt_def show
@@ -409,7 +412,7 @@ proof -
       using GenExt_def by auto
     with assms have
       Eq1: "{x\<in>c. sats(M[G], \<phi>, [x,w,c])} \<in> M[G]"
-      using separation_aux  by auto
+      using Collect_sats_in_MG  by auto
     {
       fix x
       assume 
@@ -428,5 +431,5 @@ proof -
   then show ?thesis using separation_iff rev_bexI 
     unfolding is_Collect_def by force
   qed
-end   (*********** CONTEXT: G_generic ************)
+end   (* context: G_generic *)
 end
