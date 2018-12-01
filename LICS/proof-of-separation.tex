@@ -1,0 +1,76 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
+\section{Proof of Separation}
+
+This proof can be found in the file \verb|Separation_Axiom.thy| of the
+development, which we proceed to discuss.
+
+The key technical result is the following:
+\begin{isabelle}
+  \isacommand{lemma}\isamarkupfalse%
+  \ Collect{\isacharunderscore}sats{\isacharunderscore}in{\isacharunderscore}MG\ {\isacharcolon}\isanewline
+  \ \ \isakeyword{assumes}\isanewline
+  \ \ \ \ {\isachardoublequoteopen}{\isasympi}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymsigma}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}\ {\isasympi}{\isacharparenright}\ {\isacharequal}\ c{\isachardoublequoteclose}\ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}\ {\isasymsigma}{\isacharparenright}\ {\isacharequal}\ w{\isachardoublequoteclose}\isanewline
+  \ \ \ \ {\isachardoublequoteopen}{\isasymphi}\ {\isasymin}\ formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymle}\ {\isadigit{2}}{\isachardoublequoteclose}\isanewline
+  \ \ \isakeyword{shows}\ \ \ \ \isanewline
+  \ \ \ \ {\isachardoublequoteopen}{\isacharbraceleft}x{\isasymin}c{\isachardot}\ sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}\ {\isasymphi}{\isacharcomma}\ {\isacharbrackleft}x{\isacharcomma}\ w{\isacharbrackright}{\isacharparenright}{\isacharbraceright}{\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
+\end{isabelle}
+%
+From this, using absoluteness, we will be able to derive the
+$\phi$-instance of Separation. 
+
+To show that   
+\[
+S\defi\{x\in c : M[G]\models \phi(x,w)\} \in M[G],
+\]
+it is enough to provide a name $n\in M$ for this set.
+ 
+The candidate name is
+\[
+n \defi \{u \in\dom(\pi)\times\PP :M,[u,\PP,\leq,\1,\sig,\pi]\models \psi\}
+\]
+where
+\[
+\psi \defi \exists \th\, p.\ x_0=\lb\th,p\rb \y 
+   \forceisa(\th\in x_5\y\phi(\th,x_4)).
+\]
+The fact that $n\in M$ follows by an application of a six-variable
+instance of Separation in $M$ (lemma \isatt{six{\isacharunderscore}sep{\isacharunderscore}aux}).
+
+Almost a third part of the proof involves the syntactic handling of
+internalized formulas and permutation of variables. The more
+substantive portion concerns proving that actually $\val(G,n)=S$.
+
+Let's first focus into the predicate 
+\[
+M,[u,\PP,\leq,\1,\sig,\pi]\models \psi
+\]
+defining $n$ by separation. By definition of the satisfaction
+relation and permuting variables, we have it is equivalent to the fact
+that there exist $\th,p\in M$ with   $u=\lb\th,p\rb$  and 
+\[
+M,[\PP,\leq,\1,p,\th,\sig,\pi]\models \forceisa(x_4\in
+x_6\y\phi(x_4,x_5)). 
+\]
+% (Note that the variable $x_7$ is not used.)
+This, in turn is equivalent by the Definition of Forcing to: For all $M$-generic
+filters $F$ such that $p\in F$, 
+\[
+M,[\val(G,\th),\val(G,\sig),\val(G,\pi)]\models x_4\in
+x_6\y\phi(x_4,x_5). 
+\] 
+
+
+%% The proof of
+%% \isatt{Collect{\isacharunderscore}sats{\isacharunderscore}in{\isacharunderscore}MG}
+%% has three parts:
+%% \begin{enumerate}
+%% \item Definition of the name $n$;
+%% \item Proving that 
+%% \item 
+%% \end{enumerate}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "Separation_In_MG"
+%%% ispell-local-dictionary: "american"
+%%% End: 
