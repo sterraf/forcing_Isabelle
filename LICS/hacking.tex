@@ -1,0 +1,40 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
+\section{Hacking of \isatt{ZF-Constructible}}
+
+There are several lemmas that were declared, in later developments, as
+introduction/simplification rules (notably, the rule
+\isatt{equalityI}). They raised a warning, and we have 
+eliminated some of them, but in some cases we had to keep them because
+the proof works because it is insisted that the rule is \emph{safe}.
+
+The most notable changes, located in the theory \texttt{Relative}, are
+the following:
+\begin{enumerate}
+\item\label{item:1} We eliminated the requirement that the relative Axiom of Replacement
+  is satisfied by a class $M$ to be in the locale \isatt{M\_trivial}. 
+\item\label{item:2} We moved the requirement of the Powerset Axiom to \isatt{M\_basic}. 
+\item\label{item:3} We replaced the need that the set of natural numbers is in $M$ by the
+  milder hypothesis that $M(0)$.
+\end{enumerate}
+
+As a consequence of Item~\ref{item:1}, the lemma
+\isatt{strong\_replacementI} is no longer valid and was commented
+out.
+
+We moved the requirement $M(\mathtt{nat})$ to the locale
+\isatt{M\_trancl}, where it is needed for the first time. Some results,
+for instance \isatt{rtran\_closure\_mem\_iff} and 
+\isatt{iterates\_imp\_wfrec\_replacement} had to be moved inside that
+locale.
+
+The proof, for instance, that the constructible universe $L$ satisfies
+the new locale \isatt{M\_trivial\_no\_repl} hold with minor
+modifications.
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "Separation_In_MG"
+%%% ispell-local-dictionary: "american"
+%%% End: 

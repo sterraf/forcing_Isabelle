@@ -53,31 +53,53 @@ Here, the extra parameters are $\PP,\leq,\1,$ and $p\in\PP$, and the
 first three are usually omitted. %(since the forcing notion is fixed
 % throughout the discussion).  
 Afterwards, the \emph{forcing relation}
-$\forces$ is defined by 
-relativizing/interpreting $\forces^*$ in a ctm $M$, for fixed
+$\forces$ can be obtained by 
+interpreting $\forces^*$ in a ctm $M$, for fixed
 $\lb\PP,\leq,\1\rb\in M$: $p\forces \phi(\tau_0,\dots,\tau_n)$ holds
 if and only if
-\[ 
+\begin{equation}\label{eq:3}
 M,[\PP,\leq,\1,p,\tau_0,\dots,\tau_n]\models \forceisa(x_4,\dots,x_{n+4}).
-\]
+\end{equation}
 
 \subsection{The fundamental theorems}
-These are stated as two lemmas: \emph{Truth} and
-\emph{Definability}. The second one ``simply'' says that the forcing
-relation is definable. The Truth Lemma states that the forcing
-relation indeed relates 
-satisfaction in $M[G]$ to that in $M$. 
-\begin{lemma}[Truth Lemma]\label{lem:truth-lemma}
+These are stated in \cite{kunen2011set} as two lemmas: \emph{Truth} and
+\emph{Definability}.  Modern treatments of the theory of forcing start
+by defining the 
+forcing relation semantically and later it is proved  that the
+characterization given by (\ref{eq:3}) indeed holds, and hence the
+forcing relation is \emph{definable}. In our case, definability merely
+stands for a typing condition:
+\begin{isabelle}
+{\isachardoublequoteopen}{\isasymphi}{\isasymin}formula\ {\isasymLongrightarrow}\ forces{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymin}\ formula{\isachardoublequoteclose}
+\end{isabelle}
+
+Then the definition of the forcing relation is stated as a
+\begin{lemma}[Definition of Forcing]\label{lem:definition-of-forcing}
   Let $M$ be a ctm of $\ZFC$, $\lb\PP,\leq,\1\rb$ a forcing notion
   in $M$, $p\in\PP$, and $\phi(x_0,\dots,x_n)$ a formula in the
   language of set 
   theory with all free variables displayed. Then the
-  following are equivalent, for all $\tau_0,\dots,\tau_n\in M$: 
+  following are equivalent, for all $\tau_0,\dots,\tau_n\in M$:
+  \begin{enumerate}
+  \item $M,[\PP,\leq,\1,p,\tau_0,\dots,\tau_n] 
+  \models\forceisa(\phi(x_4,\dots,x_{n+4}))$.
+  \item For all $M$-generic filters $G$ such that $p\in G$,
+    $M[G],[\val(G,\tau_0),\dots,\val(G,\tau_n)] \models\phi(x_0,\dots,x_n)$.
+  \end{enumerate}
+\end{lemma}
+  
+The Truth Lemma states that the forcing
+relation indeed relates 
+satisfaction in $M[G]$ to that in $M$. 
+\begin{lemma}[Truth Lemma]\label{lem:truth-lemma}
+  Assume the same hypothesis of
+  Lemma~\ref{lem:definition-of-forcing}. Then the
+  following are equivalent, for all $\tau_0,\dots,\tau_n\in M$, and
+  $M$-generic $G$: 
   \begin{enumerate}
   \item $M[G],[\val(G,\tau_0),\dots,\val(G,\tau_n)]
-  \models\phi(x_0,\dots,x_n)$ for 
-    all filters $G$, $M$-generic for $\PP$, such that $p\in G$.
-  \item $  M,[\PP,\leq,\1,p,\tau_0,\dots,\tau_n] 
+  \models\phi(x_0,\dots,x_n)$.
+  \item  There exists $p\in G$ such that $M,[\PP,\leq,\1,p,\tau_0,\dots,\tau_n] 
   \models\forceisa(\phi(x_4,\dots,x_{n+4}))$.
   \end{enumerate}
 \end{lemma}
@@ -85,14 +107,14 @@ The proof of the Truth Lemma is by recursion in elements of
 $\formula$. The following auxiliary results (adapted from
 \cite[IV.2.43]{kunen2011set}) are also proved by recursion in
 $\formula$.
-\begin{lemma}[Strenghtening]\label{lem:strengthen} 
-  Assume the same hypothesis of Lemma~\ref{lem:truth-lemma}.
+\begin{lemma}[Strengthening]\label{lem:strengthen} 
+  Assume the same hypothesis of Lemma~\ref{lem:definition-of-forcing}.
   $M, [\PP,\leq,\1,p,\dots]\models\forceisa(\phi)$ and $p_1\leq p$
   implies $M, [\PP,\leq,\1,p_1,\dots]\models\forceisa(\phi)$.
 \end{lemma}
 \begin{lemma}[Density]\label{lem:density}
   Assume the same hypothesis of
-  Lemma~\ref{lem:truth-lemma}. $M,[\dots]\models\forceisa(\phi)$ 
+  Lemma~\ref{lem:definition-of-forcing}. $M,[\dots]\models\forceisa(\phi)$ 
   if and only if 
   $M,[\dots]\models$``$\{p_1\leq p : \forceisa(\phi,\PP,\leq,\1,p_1)\}$ is
   dense below $p$.''
