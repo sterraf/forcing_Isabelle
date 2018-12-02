@@ -1,5 +1,3 @@
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
 \section{Forcing}
 Given a ctm $M$, and an $M$-generic filter $G\sbq\PP$, the Forcing
@@ -43,6 +41,43 @@ $\lb\PP,\leq,\1\rb\in M$:
 p\forces \phi(t_1,\dots,t_n) \defi 
 \bigl(p\forces_{\PP,\leq,\1}^* \phi(t_1,\dots,t_n)\bigr)^M\!.
 \]
+
+\subsection{The fundamental theorems}
+These are stated as two lemmas: \emph{Truth} and
+\emph{Definability}. The second one ``simply'' says that the forcing
+relation is definable. The previous recursive construction amounts to
+that. The Truth Lemma states that the forcing relation indeed relates
+satisfaction in $M[G]$ to that in $M$. 
+\begin{lemma}[Truth Lemma]\label{lem:truth-lemma}
+  Let $M$ be a ctm of $\ZFC$, $\lb\PP,\leq,\1\rb$ a forcing notion
+  in $M$, $p\in\PP$, and $\phi(x_1,\dots,x_n)$ a formula in the
+  language of set 
+  theory with all free variables displayed. Then the
+  following are equivalent, for all $\tau_1,\dots,\tau_n\in M$: 
+  \begin{enumerate}
+  \item $M[G],[\val(G,\tau_0),\dots,\val(G,\tau_n)]
+  \models\phi(x_0,\dots,x_n)$ for 
+    all filters $G$, $M$-generic for $\PP$, such that $p\in G$.
+  \item $  M,[\PP,\leq,\1,p,\tau_0,\dots,\tau_n] 
+  \models\forceisa(\phi(x_4,\dots,x_{n+4}))$.
+  \end{enumerate}
+\end{lemma}
+The proof of the Truth Lemma is by recursion in elements of
+$\formula$. The following auxiliary results (adapted from
+\cite[IV.2.43]{kunen2011set}) are also proved by recursion in
+$\formula$.
+\begin{lemma}[Strenghtening]\label{lem:strengthen} 
+  Assume the same hypothesis of Lemma~\ref{lem:truth-lemma}.
+  $M, [\PP,\leq,\1,p]\models\forceisa(\phi)$ and $p_1\leq p$
+  implies $M, [\PP,\leq,\1,p_1]\models\forceisa(\phi)$.
+\end{lemma}
+\begin{lemma}[Density]\label{lem:density}
+  Assume the same hypothesis of
+  Lemma~\ref{lem:truth-lemma}. $M\models\forceisa(\phi,\dots)$ 
+  if and only if 
+  $M\models$``$\{p_1\leq p : \forceisa(\phi,\PP,\leq,\1,p_1)\}$ is
+  dense below $p$.''
+\end{lemma}
 
 %%% Local Variables: 
 %%% mode: latex

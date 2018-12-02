@@ -20,7 +20,7 @@ $\phi$-instance of Separation.
 
 To show that   
 \[
-S\defi\{x\in c : M[G]\models \phi(x,w)\} \in M[G],
+S\defi\{x\in c : M[G],[x,w]\models \phi(x_0,x_1)\} \in M[G],
 \]
 it is enough to provide a name $n\in M$ for this set.
  
@@ -41,34 +41,85 @@ internalized formulas and permutation of variables. The more
 substantive portion concerns proving that actually $\val(G,n)=S$.
 
 Let's first focus into the predicate 
-\[
+\begin{equation}\label{eq:1}
 M,[u,\PP,\leq,\1,\sig,\pi]\models \psi
-\]
+\end{equation}
 defining $n$ by separation. By definition of the satisfaction
-relation and permuting variables, we have it is equivalent to the fact
+relation and %% permuting variables
+absoluteness, we have that it is equivalent to the fact
 that there exist $\th,p\in M$ with   $u=\lb\th,p\rb$  and 
 \[
 M,[\PP,\leq,\1,p,\th,\sig,\pi]\models \forceisa(x_4\in
 x_6\y\phi(x_4,x_5)). 
 \]
 % (Note that the variable $x_7$ is not used.)
-This, in turn is equivalent by the Definition of Forcing to: For all $M$-generic
-filters $F$ such that $p\in F$, 
+This, in turn, is equivalent by the Definition of Forcing to: \emph{For all $M$-generic
+filters $F$ such that $p\in F$,} 
+\begin{equation}\label{eq:2}
+M[F],[\val(F,\th),\val(F,\sig),\val(F,\pi)]\models x_0\in
+x_2\y\phi(x_0,x_1). 
+\end{equation}
+We can instantiate this statement with $G$ and obtain
 \[
-M,[\val(G,\th),\val(G,\sig),\val(G,\pi)]\models x_4\in
-x_6\y\phi(x_4,x_5). 
+p\in G \impl M[G],[\val(G,\th),w,c]\models x_0\in
+x_2\y\phi(x_0,x_1). 
 \] 
+Let $Q(\th,p)$ be the last statement. We have just seen that
+(\ref{eq:1}) implies 
+\[
+\exists \th,p\in M.\ u=\lb\th,p\rb \y Q(\th,p).
+\]
+Hence $n$ is included in 
+\[
+m\defi \{u \in\dom(\pi)\times\PP : \exists \th,p\in M.\ u=\lb\th,p\rb
+\y Q(\th,p)\}. 
+\]
 
+It can be seen that
+\begin{lemma}
+  $\val(G,m) = S$.
+\end{lemma}
+\noindent And by monotonicity of $\val$ we obtain
+\begin{lemma}
+  $\val(G,n)\sbq \val(G,m)$.
+\end{lemma}
+To complete the proof, it is therefore enough to show that
+$S\sbq \val(G,n)$. For this, let $x\in S$. Hence there exists
+$\lb\th,q\rb\in\pi$ such that 
+$q\in G$ and $x=\val(G,\th)$. 
 
-%% The proof of
-%% \isatt{Collect{\isacharunderscore}sats{\isacharunderscore}in{\isacharunderscore}MG}
-%% has three parts:
-%% \begin{enumerate}
-%% \item Definition of the name $n$;
-%% \item Proving that 
-%% \item 
-%% \end{enumerate}
-
+On the other hand, since 
+\[
+M[G],[\val(G,\th),\val(G,\sig),\val(G,\pi)]\models
+ x_0\in x_2\y\phi( x_0, x_1),
+\]
+by the  Truth Lemma there must exist $r\in G$ such that
+\[
+M,[\PP,\leq,\1,r,\th,\sig,\pi]\models
+\forceisa(x_4\in x_6\y\phi( x_4, x_5)).
+\]
+Since $G$ is a filter, there is $p\in G$ such that $p\leq q, r$.
+By Strenghtening, we have
+\[
+M,[\PP,\leq,\1,p,\th,\sig,\pi]\models
+\forceisa(x_4\in x_6\y \phi( x_4, x_5)),
+\]
+which by the Truth Lemma gives us: \emph{for all $M$-generic $F$,
+  $p\in F$ implies} 
+\[
+M[F],[\val(F,\th),\val(F,\sig),\val(F,\pi)]\models
+ x_0\in  x_2 \y\phi( x_0, x_1).
+\]
+Note this is the same as (\ref{eq:2}). In fact, we have that
+\begin{lemma}
+  $\val(G,n)$ equals
+  \[
+  \{\val(G,\th): \th\in\dom(\pi) \y  p \in G 
+  \y \text{(\ref{eq:2}) holds}\}.
+  \]
+\end{lemma}
+This shows that $S\sbq \val(G,n)$, since $\th\in\dom(\pi)$ by construction. 
+   
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "Separation_In_MG"
