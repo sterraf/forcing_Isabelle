@@ -32,7 +32,6 @@ assumes well_ord_iso_separation:
              \<lambda>a z. \<exists>x[M]. \<exists>g[M]. \<exists>mx[M]. \<exists>par[M].
              ordinal(M,x) & pair(M,a,x,z) & membership(M,x,mx) &
              pred_set(M,A,a,r,par) & order_isomorphism(M,par,r,x,mx,g))"
-  and M_nat [iff] : "M(nat)"
 
 text\<open>Inductive argument for Kunen's Lemma I 6.1, etc.
       Simple proof from Halmos, page 72\<close>

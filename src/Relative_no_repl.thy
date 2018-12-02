@@ -534,9 +534,10 @@ locale M_trivial_no_repl =
 
 text\<open>Automatically discovers the proof using \<open>transM\<close>, \<open>nat_0I\<close>
 and \<open>M_inhabit\<close>.\<close>
+(*
 lemma (in M_trivial_no_repl) nonempty [simp]: "M(0)"
 by (blast intro: transM)
-
+*)
 lemma (in M_trivial_no_repl) rall_abs [simp]:
      "M(A) ==> (\<forall>x[M]. x\<in>A \<longrightarrow> P(x)) \<longleftrightarrow> (\<forall>x\<in>A. P(x))"
 by (blast intro: transM)
@@ -1352,7 +1353,7 @@ lemma (in M_basic_no_repl) succ_fun_eq2:
 apply (simp add: succ_fun_eq)
 apply (blast dest: transM)
 done
-(* Requires an instance of Replacement ****************)
+
 lemma (in M_basic_no_repl) funspace_succ:
      "[|M(n); M(B); M(n->B) |] ==> M(succ(n) -> B)"
 apply (insert funspace_succ_replacement [of n], simp)
@@ -1368,7 +1369,6 @@ apply (induct_tac n, simp)
 apply (simp add: funspace_succ nat_into_M)
 done
 
-(* End requires Replacement *)
 
 subsection\<open>Relativization and Absoluteness for Boolean Operators\<close>
 
