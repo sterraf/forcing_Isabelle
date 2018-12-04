@@ -15,6 +15,7 @@
 \usepackage[numbers]{natbib}
 \usepackage{isabelle,isabellesym}
 \input{header-draft}
+\renewcommand{\ttdefault}{cmtt}
 
 % *** MISC UTILITY PACKAGES ***
 %
@@ -347,7 +348,9 @@ Separation Axiom holds in generic extensions.
 % creates the second title. It will be ignored for other modes.
 \IEEEpeerreviewmaketitle
 
+\input{zfc-axioms}
 
+\input{generic-extensions}
 
 \input{forcing}
 
