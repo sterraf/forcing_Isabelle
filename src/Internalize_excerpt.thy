@@ -2,7 +2,7 @@
     Author:     Lawrence C Paulson, Cambridge University Computer Laboratory
 *)
 
-theory Internalize_no_repl_no_pow imports L_axioms_no_repl_no_pow Datatype_absolute_no_repl_no_pow begin
+theory Internalize_excerpt imports L_axioms_excerpt Datatype_absolute begin
 
 subsection\<open>Internalized Forms of Data Structuring Operators\<close>
 
@@ -29,13 +29,6 @@ lemma Inl_iff_sats:
        ==> is_Inl(##A, x, z) \<longleftrightarrow> sats(A, Inl_fm(i,k), env)"
 by simp
 
-theorem Inl_reflection:
-     "REFLECTS[\<lambda>x. is_Inl(L,f(x),h(x)),
-               \<lambda>i x. is_Inl(##Lset(i),f(x),h(x))]"
-apply (simp only: is_Inl_def)
-apply (intro FOL_reflections function_reflections)
-done
-
 
 subsubsection\<open>The Formula @{term is_Inr}, Internalized\<close>
 
@@ -59,13 +52,6 @@ lemma Inr_iff_sats:
        ==> is_Inr(##A, x, z) \<longleftrightarrow> sats(A, Inr_fm(i,k), env)"
 by simp
 
-theorem Inr_reflection:
-     "REFLECTS[\<lambda>x. is_Inr(L,f(x),h(x)),
-               \<lambda>i x. is_Inr(##Lset(i),f(x),h(x))]"
-apply (simp only: is_Inr_def)
-apply (intro FOL_reflections function_reflections)
-done
-
 
 subsubsection\<open>The Formula @{term is_Nil}, Internalized\<close>
 
@@ -87,13 +73,6 @@ lemma Nil_iff_sats:
       "[| nth(i,env) = x; i \<in> nat; env \<in> list(A)|]
        ==> is_Nil(##A, x) \<longleftrightarrow> sats(A, Nil_fm(i), env)"
 by simp
-
-theorem Nil_reflection:
-     "REFLECTS[\<lambda>x. is_Nil(L,f(x)),
-               \<lambda>i x. is_Nil(##Lset(i),f(x))]"
-apply (simp only: is_Nil_def)
-apply (intro FOL_reflections function_reflections Inl_reflection)
-done
 
 
 subsubsection\<open>The Formula @{term is_Cons}, Internalized\<close>
@@ -121,13 +100,6 @@ lemma Cons_iff_sats:
        ==>is_Cons(##A, x, y, z) \<longleftrightarrow> sats(A, Cons_fm(i,j,k), env)"
 by simp
 
-theorem Cons_reflection:
-     "REFLECTS[\<lambda>x. is_Cons(L,f(x),g(x),h(x)),
-               \<lambda>i x. is_Cons(##Lset(i),f(x),g(x),h(x))]"
-apply (simp only: is_Cons_def)
-apply (intro FOL_reflections pair_reflection Inr_reflection)
-done
-
 subsubsection\<open>The Formula @{term is_quasilist}, Internalized\<close>
 
 (* is_quasilist(M,xs) == is_Nil(M,z) | (\<exists>x[M]. \<exists>l[M]. is_Cons(M,x,l,z))" *)
@@ -149,13 +121,6 @@ lemma quasilist_iff_sats:
       "[| nth(i,env) = x; i \<in> nat; env \<in> list(A)|]
        ==> is_quasilist(##A, x) \<longleftrightarrow> sats(A, quasilist_fm(i), env)"
 by simp
-
-theorem quasilist_reflection:
-     "REFLECTS[\<lambda>x. is_quasilist(L,f(x)),
-               \<lambda>i x. is_quasilist(##Lset(i),f(x))]"
-apply (simp only: is_quasilist_def)
-apply (intro FOL_reflections Nil_reflection Cons_reflection)
-done
 
 
 subsection\<open>Absoluteness for the Function @{term nth}\<close>
@@ -189,14 +154,6 @@ lemma hd_iff_sats:
        ==> is_hd(##A, x, y) \<longleftrightarrow> sats(A, hd_fm(i,j), env)"
 by simp
 
-theorem hd_reflection:
-     "REFLECTS[\<lambda>x. is_hd(L,f(x),g(x)), 
-               \<lambda>i x. is_hd(##Lset(i),f(x),g(x))]"
-apply (simp only: is_hd_def)
-apply (intro FOL_reflections Nil_reflection Cons_reflection
-             quasilist_reflection empty_reflection)  
-done
-
 
 subsubsection\<open>The Formula @{term is_tl}, Internalized\<close>
 
@@ -225,14 +182,6 @@ lemma tl_iff_sats:
           i \<in> nat; j \<in> nat; env \<in> list(A)|]
        ==> is_tl(##A, x, y) \<longleftrightarrow> sats(A, tl_fm(i,j), env)"
 by simp
-
-theorem tl_reflection:
-     "REFLECTS[\<lambda>x. is_tl(L,f(x),g(x)),
-               \<lambda>i x. is_tl(##Lset(i),f(x),g(x))]"
-apply (simp only: is_tl_def)
-apply (intro FOL_reflections Nil_reflection Cons_reflection
-             quasilist_reflection empty_reflection)
-done
 
 
 subsubsection\<open>The Operator @{term is_bool_of_o}\<close>
@@ -263,14 +212,6 @@ lemma is_bool_of_o_iff_sats:
   "[| P \<longleftrightarrow> sats(A, p, env); nth(k,env) = z; k \<in> nat; env \<in> list(A)|]
    ==> is_bool_of_o(##A, P, z) \<longleftrightarrow> sats(A, bool_of_o_fm(p,k), env)"
 by (simp add: sats_bool_of_o_fm)
-
-theorem bool_of_o_reflection:
-     "REFLECTS [P(L), \<lambda>i. P(##Lset(i))] ==>
-      REFLECTS[\<lambda>x. is_bool_of_o(L, P(L,x), f(x)),  
-               \<lambda>i x. is_bool_of_o(##Lset(i), P(##Lset(i),x), f(x))]"
-apply (simp (no_asm) only: is_bool_of_o_def)
-apply (intro FOL_reflections function_reflections, assumption+)
-done
 
 
 subsection\<open>More Internalizations\<close>
@@ -310,16 +251,6 @@ lemma sats_lambda_fm:
            is_lambda(##A, nth(x,env), is_b, nth(y,env))"
 by (simp add: lambda_fm_def is_lambda_def is_b_iff_sats [THEN iff_sym]) 
 
-theorem is_lambda_reflection:
-  assumes is_b_reflection:
-    "!!f g h. REFLECTS[\<lambda>x. is_b(L, f(x), g(x), h(x)), 
-                     \<lambda>i x. is_b(##Lset(i), f(x), g(x), h(x))]"
-  shows "REFLECTS[\<lambda>x. is_lambda(L, A(x), is_b(L,x), f(x)), 
-               \<lambda>i x. is_lambda(##Lset(i), A(x), is_b(##Lset(i),x), f(x))]"
-apply (simp (no_asm_use) only: is_lambda_def)
-apply (intro FOL_reflections is_b_reflection pair_reflection)
-done
-
 subsubsection\<open>The Operator @{term is_Member}, Internalized\<close>
 
 (*    "is_Member(M,x,y,Z) ==
@@ -345,13 +276,6 @@ lemma Member_iff_sats:
           i \<in> nat; j \<in> nat; k \<in> nat; env \<in> list(A)|]
        ==> is_Member(##A, x, y, z) \<longleftrightarrow> sats(A, Member_fm(i,j,k), env)"
 by (simp add: sats_Member_fm)
-
-theorem Member_reflection:
-     "REFLECTS[\<lambda>x. is_Member(L,f(x),g(x),h(x)),
-               \<lambda>i x. is_Member(##Lset(i),f(x),g(x),h(x))]"
-apply (simp only: is_Member_def)
-apply (intro FOL_reflections pair_reflection Inl_reflection)
-done
 
 subsubsection\<open>The Operator @{term is_Equal}, Internalized\<close>
 
@@ -379,13 +303,6 @@ lemma Equal_iff_sats:
        ==> is_Equal(##A, x, y, z) \<longleftrightarrow> sats(A, Equal_fm(i,j,k), env)"
 by (simp add: sats_Equal_fm)
 
-theorem Equal_reflection:
-     "REFLECTS[\<lambda>x. is_Equal(L,f(x),g(x),h(x)),
-               \<lambda>i x. is_Equal(##Lset(i),f(x),g(x),h(x))]"
-apply (simp only: is_Equal_def)
-apply (intro FOL_reflections pair_reflection Inl_reflection Inr_reflection)
-done
-
 subsubsection\<open>The Operator @{term is_Nand}, Internalized\<close>
 
 (*    "is_Nand(M,x,y,Z) ==
@@ -412,13 +329,6 @@ lemma Nand_iff_sats:
        ==> is_Nand(##A, x, y, z) \<longleftrightarrow> sats(A, Nand_fm(i,j,k), env)"
 by (simp add: sats_Nand_fm)
 
-theorem Nand_reflection:
-     "REFLECTS[\<lambda>x. is_Nand(L,f(x),g(x),h(x)),
-               \<lambda>i x. is_Nand(##Lset(i),f(x),g(x),h(x))]"
-apply (simp only: is_Nand_def)
-apply (intro FOL_reflections pair_reflection Inl_reflection Inr_reflection)
-done
-
 subsubsection\<open>The Operator @{term is_Forall}, Internalized\<close>
 
 (* "is_Forall(M,p,Z) == \<exists>u[M]. is_Inr(M,p,u) & is_Inr(M,u,Z)" *)
@@ -442,13 +352,6 @@ lemma Forall_iff_sats:
           i \<in> nat; j \<in> nat; env \<in> list(A)|]
        ==> is_Forall(##A, x, y) \<longleftrightarrow> sats(A, Forall_fm(i,j), env)"
 by (simp add: sats_Forall_fm)
-
-theorem Forall_reflection:
-     "REFLECTS[\<lambda>x. is_Forall(L,f(x),g(x)),
-               \<lambda>i x. is_Forall(##Lset(i),f(x),g(x))]"
-apply (simp only: is_Forall_def)
-apply (intro FOL_reflections pair_reflection Inr_reflection)
-done
 
 
 subsubsection\<open>The Operator @{term is_and}, Internalized\<close>
@@ -476,13 +379,6 @@ lemma is_and_iff_sats:
           i \<in> nat; j \<in> nat; k \<in> nat; env \<in> list(A)|]
        ==> is_and(##A, x, y, z) \<longleftrightarrow> sats(A, and_fm(i,j,k), env)"
 by simp
-
-theorem is_and_reflection:
-     "REFLECTS[\<lambda>x. is_and(L,f(x),g(x),h(x)),
-               \<lambda>i x. is_and(##Lset(i),f(x),g(x),h(x))]"
-apply (simp only: is_and_def)
-apply (intro FOL_reflections function_reflections)
-done
 
 
 subsubsection\<open>The Operator @{term is_or}, Internalized\<close>
@@ -512,13 +408,6 @@ lemma is_or_iff_sats:
        ==> is_or(##A, x, y, z) \<longleftrightarrow> sats(A, or_fm(i,j,k), env)"
 by simp
 
-theorem is_or_reflection:
-     "REFLECTS[\<lambda>x. is_or(L,f(x),g(x),h(x)),
-               \<lambda>i x. is_or(##Lset(i),f(x),g(x),h(x))]"
-apply (simp only: is_or_def)
-apply (intro FOL_reflections function_reflections)
-done
-
 
 
 subsubsection\<open>The Operator @{term is_not}, Internalized\<close>
@@ -545,20 +434,6 @@ lemma is_not_iff_sats:
           i \<in> nat; k \<in> nat; env \<in> list(A)|]
        ==> is_not(##A, x, z) \<longleftrightarrow> sats(A, not_fm(i,k), env)"
 by simp
-
-theorem is_not_reflection:
-     "REFLECTS[\<lambda>x. is_not(L,f(x),g(x)),
-               \<lambda>i x. is_not(##Lset(i),f(x),g(x))]"
-apply (simp only: is_not_def)
-apply (intro FOL_reflections function_reflections)
-done
-
-
-lemmas extra_reflections = 
-    Inl_reflection Inr_reflection Nil_reflection Cons_reflection
-    quasilist_reflection hd_reflection tl_reflection bool_of_o_reflection
-    is_lambda_reflection Member_reflection Equal_reflection Nand_reflection
-    Forall_reflection is_and_reflection is_or_reflection is_not_reflection
 
 subsection\<open>Well-Founded Recursion!\<close>
 
@@ -636,16 +511,6 @@ by (simp add: sats_is_recfun_fm [OF MH_iff_sats])
 text\<open>The additional variable in the premise, namely @{term f'}, is essential.
 It lets @{term MH} depend upon @{term x}, which seems often necessary.
 The same thing occurs in \<open>is_wfrec_reflection\<close>.\<close>
-theorem is_recfun_reflection:
-  assumes MH_reflection:
-    "!!f' f g h. REFLECTS[\<lambda>x. MH(L, f'(x), f(x), g(x), h(x)), 
-                     \<lambda>i x. MH(##Lset(i), f'(x), f(x), g(x), h(x))]"
-  shows "REFLECTS[\<lambda>x. M_is_recfun(L, MH(L,x), f(x), g(x), h(x)), 
-             \<lambda>i x. M_is_recfun(##Lset(i), MH(##Lset(i),x), f(x), g(x), h(x))]"
-apply (simp (no_asm_use) only: M_is_recfun_def)
-apply (intro FOL_reflections function_reflections
-             restriction_reflection MH_reflection)
-done
 
 subsubsection\<open>The Operator @{term is_wfrec}\<close>
 
@@ -699,16 +564,6 @@ lemma is_wfrec_iff_sats:
    ==> is_wfrec(##A, MH, x, y, z) \<longleftrightarrow> sats(A, is_wfrec_fm(p,i,j,k), env)" 
 by (simp add: sats_is_wfrec_fm [OF MH_iff_sats])
 
-theorem is_wfrec_reflection:
-  assumes MH_reflection:
-    "!!f' f g h. REFLECTS[\<lambda>x. MH(L, f'(x), f(x), g(x), h(x)), 
-                     \<lambda>i x. MH(##Lset(i), f'(x), f(x), g(x), h(x))]"
-  shows "REFLECTS[\<lambda>x. is_wfrec(L, MH(L,x), f(x), g(x), h(x)), 
-               \<lambda>i x. is_wfrec(##Lset(i), MH(##Lset(i),x), f(x), g(x), h(x))]"
-apply (simp (no_asm_use) only: is_wfrec_def)
-apply (intro FOL_reflections MH_reflection is_recfun_reflection)
-done
-
 
 subsection\<open>For Datatypes\<close>
 
@@ -739,13 +594,6 @@ lemma cartprod_iff_sats:
           i \<in> nat; j \<in> nat; k \<in> nat; env \<in> list(A)|]
        ==> cartprod(##A, x, y, z) \<longleftrightarrow> sats(A, cartprod_fm(i,j,k), env)"
 by (simp add: sats_cartprod_fm)
-
-theorem cartprod_reflection:
-     "REFLECTS[\<lambda>x. cartprod(L,f(x),g(x),h(x)),
-               \<lambda>i x. cartprod(##Lset(i),f(x),g(x),h(x))]"
-apply (simp only: cartprod_def)
-apply (intro FOL_reflections pair_reflection)
-done
 
 
 subsubsection\<open>Binary Sums, Internalized\<close>
@@ -780,13 +628,6 @@ lemma sum_iff_sats:
        ==> is_sum(##A, x, y, z) \<longleftrightarrow> sats(A, sum_fm(i,j,k), env)"
 by simp
 
-theorem sum_reflection:
-     "REFLECTS[\<lambda>x. is_sum(L,f(x),g(x),h(x)),
-               \<lambda>i x. is_sum(##Lset(i),f(x),g(x),h(x))]"
-apply (simp only: is_sum_def)
-apply (intro FOL_reflections function_reflections cartprod_reflection)
-done
-
 
 subsubsection\<open>The Operator @{term quasinat}\<close>
 
@@ -809,13 +650,6 @@ lemma quasinat_iff_sats:
           i \<in> nat; env \<in> list(A)|]
        ==> is_quasinat(##A, x) \<longleftrightarrow> sats(A, quasinat_fm(i), env)"
 by simp
-
-theorem quasinat_reflection:
-     "REFLECTS[\<lambda>x. is_quasinat(L,f(x)),
-               \<lambda>i x. is_quasinat(##Lset(i),f(x))]"
-apply (simp only: is_quasinat_def)
-apply (intro FOL_reflections function_reflections)
-done
 
 
 subsubsection\<open>The Operator @{term is_nat_case}\<close>
@@ -867,17 +701,6 @@ by (simp add: sats_is_nat_case_fm [of A is_b])
 text\<open>The second argument of @{term is_b} gives it direct access to @{term x},
   which is essential for handling free variable references.  Without this
   argument, we cannot prove reflection for @{term iterates_MH}.\<close>
-theorem is_nat_case_reflection:
-  assumes is_b_reflection:
-    "!!h f g. REFLECTS[\<lambda>x. is_b(L, h(x), f(x), g(x)),
-                     \<lambda>i x. is_b(##Lset(i), h(x), f(x), g(x))]"
-  shows "REFLECTS[\<lambda>x. is_nat_case(L, f(x), is_b(L,x), g(x), h(x)),
-               \<lambda>i x. is_nat_case(##Lset(i), f(x), is_b(##Lset(i), x), g(x), h(x))]"
-apply (simp (no_asm_use) only: is_nat_case_def)
-apply (intro FOL_reflections function_reflections
-             restriction_reflection is_b_reflection quasinat_reflection)
-done
-
 
 subsection\<open>The Operator @{term iterates_MH}, Needed for Iteration\<close>
 
@@ -930,17 +753,6 @@ by (simp add: sats_iterates_MH_fm [OF is_F_iff_sats])
 text\<open>The second argument of @{term p} gives it direct access to @{term x},
   which is essential for handling free variable references.  Without this
   argument, we cannot prove reflection for @{term list_N}.\<close>
-theorem iterates_MH_reflection:
-  assumes p_reflection:
-    "!!f g h. REFLECTS[\<lambda>x. p(L, h(x), f(x), g(x)),
-                     \<lambda>i x. p(##Lset(i), h(x), f(x), g(x))]"
- shows "REFLECTS[\<lambda>x. iterates_MH(L, p(L,x), e(x), f(x), g(x), h(x)),
-               \<lambda>i x. iterates_MH(##Lset(i), p(##Lset(i),x), e(x), f(x), g(x), h(x))]"
-apply (simp (no_asm_use) only: iterates_MH_def)
-apply (intro FOL_reflections function_reflections is_nat_case_reflection
-             restriction_reflection p_reflection)
-done
-
 
 subsubsection\<open>The Operator @{term is_iterates}\<close>
 
@@ -1006,17 +818,6 @@ by (simp add: sats_is_iterates_fm [OF is_F_iff_sats])
 text\<open>The second argument of @{term p} gives it direct access to @{term x},
   which is essential for handling free variable references.  Without this
   argument, we cannot prove reflection for @{term list_N}.\<close>
-theorem is_iterates_reflection:
-  assumes p_reflection:
-    "!!f g h. REFLECTS[\<lambda>x. p(L, h(x), f(x), g(x)),
-                     \<lambda>i x. p(##Lset(i), h(x), f(x), g(x))]"
- shows "REFLECTS[\<lambda>x. is_iterates(L, p(L,x), f(x), g(x), h(x)),
-               \<lambda>i x. is_iterates(##Lset(i), p(##Lset(i),x), f(x), g(x), h(x))]"
-apply (simp (no_asm_use) only: is_iterates_def)
-apply (intro FOL_reflections function_reflections p_reflection
-             is_wfrec_reflection iterates_MH_reflection)
-done
-
 
 subsubsection\<open>The Formula @{term is_eclose_n}, Internalized\<close>
 
@@ -1046,13 +847,6 @@ lemma eclose_n_iff_sats:
        ==> is_eclose_n(##A, x, y, z) \<longleftrightarrow> sats(A, eclose_n_fm(i,j,k), env)"
 by (simp add: sats_eclose_n_fm)
 
-theorem eclose_n_reflection:
-     "REFLECTS[\<lambda>x. is_eclose_n(L, f(x), g(x), h(x)),  
-               \<lambda>i x. is_eclose_n(##Lset(i), f(x), g(x), h(x))]"
-apply (simp only: is_eclose_n_def)
-apply (intro FOL_reflections function_reflections is_iterates_reflection) 
-done
-
 
 subsubsection\<open>Membership in @{term "eclose(A)"}\<close>
 
@@ -1081,13 +875,6 @@ lemma mem_eclose_iff_sats:
        ==> mem_eclose(##A, x, y) \<longleftrightarrow> sats(A, mem_eclose_fm(i,j), env)"
 by simp
 
-theorem mem_eclose_reflection:
-     "REFLECTS[\<lambda>x. mem_eclose(L,f(x),g(x)),
-               \<lambda>i x. mem_eclose(##Lset(i),f(x),g(x))]"
-apply (simp only: mem_eclose_def)
-apply (intro FOL_reflections finite_ordinal_reflection eclose_n_reflection)
-done
-
 
 subsubsection\<open>The Predicate ``Is @{term "eclose(A)"}''\<close>
 
@@ -1111,13 +898,6 @@ lemma is_eclose_iff_sats:
           i \<in> nat; j \<in> nat; env \<in> list(A)|]
        ==> is_eclose(##A, x, y) \<longleftrightarrow> sats(A, is_eclose_fm(i,j), env)"
 by simp
-
-theorem is_eclose_reflection:
-     "REFLECTS[\<lambda>x. is_eclose(L,f(x),g(x)),
-               \<lambda>i x. is_eclose(##Lset(i),f(x),g(x))]"
-apply (simp only: is_eclose_def)
-apply (intro FOL_reflections mem_eclose_reflection)
-done
 
 
 subsubsection\<open>The List Functor, Internalized\<close>
@@ -1147,14 +927,6 @@ lemma list_functor_iff_sats:
       i \<in> nat; j \<in> nat; k \<in> nat; env \<in> list(A)|]
    ==> is_list_functor(##A, x, y, z) \<longleftrightarrow> sats(A, list_functor_fm(i,j,k), env)"
 by simp
-
-theorem list_functor_reflection:
-     "REFLECTS[\<lambda>x. is_list_functor(L,f(x),g(x),h(x)),
-               \<lambda>i x. is_list_functor(##Lset(i),f(x),g(x),h(x))]"
-apply (simp only: is_list_functor_def)
-apply (intro FOL_reflections number1_reflection
-             cartprod_reflection sum_reflection)
-done
 
 
 subsubsection\<open>The Formula @{term is_list_N}, Internalized\<close>
@@ -1189,14 +961,6 @@ lemma list_N_iff_sats:
        ==> is_list_N(##A, x, y, z) \<longleftrightarrow> sats(A, list_N_fm(i,j,k), env)"
 by (simp add: sats_list_N_fm)
 
-theorem list_N_reflection:
-     "REFLECTS[\<lambda>x. is_list_N(L, f(x), g(x), h(x)),  
-               \<lambda>i x. is_list_N(##Lset(i), f(x), g(x), h(x))]"
-apply (simp only: is_list_N_def)
-apply (intro FOL_reflections function_reflections 
-             is_iterates_reflection list_functor_reflection) 
-done
-
 
 
 subsubsection\<open>The Predicate ``Is A List''\<close>
@@ -1226,13 +990,6 @@ lemma mem_list_iff_sats:
        ==> mem_list(##A, x, y) \<longleftrightarrow> sats(A, mem_list_fm(i,j), env)"
 by simp
 
-theorem mem_list_reflection:
-     "REFLECTS[\<lambda>x. mem_list(L,f(x),g(x)),
-               \<lambda>i x. mem_list(##Lset(i),f(x),g(x))]"
-apply (simp only: mem_list_def)
-apply (intro FOL_reflections finite_ordinal_reflection list_N_reflection)
-done
-
 
 subsubsection\<open>The Predicate ``Is @{term "list(A)"}''\<close>
 
@@ -1256,13 +1013,6 @@ lemma is_list_iff_sats:
           i \<in> nat; j \<in> nat; env \<in> list(A)|]
        ==> is_list(##A, x, y) \<longleftrightarrow> sats(A, is_list_fm(i,j), env)"
 by simp
-
-theorem is_list_reflection:
-     "REFLECTS[\<lambda>x. is_list(L,f(x),g(x)),
-               \<lambda>i x. is_list(##Lset(i),f(x),g(x))]"
-apply (simp only: is_list_def)
-apply (intro FOL_reflections mem_list_reflection)
-done
 
 
 subsubsection\<open>The Formula Functor, Internalized\<close>
@@ -1299,14 +1049,6 @@ lemma formula_functor_iff_sats:
    ==> is_formula_functor(##A, x, y) \<longleftrightarrow> sats(A, formula_functor_fm(i,j), env)"
 by simp
 
-theorem formula_functor_reflection:
-     "REFLECTS[\<lambda>x. is_formula_functor(L,f(x),g(x)),
-               \<lambda>i x. is_formula_functor(##Lset(i),f(x),g(x))]"
-apply (simp only: is_formula_functor_def)
-apply (intro FOL_reflections omega_reflection
-             cartprod_reflection sum_reflection)
-done
-
 
 subsubsection\<open>The Formula @{term is_formula_N}, Internalized\<close>
 
@@ -1339,14 +1081,6 @@ lemma formula_N_iff_sats:
        ==> is_formula_N(##A, x, y) \<longleftrightarrow> sats(A, formula_N_fm(i,j), env)"
 by (simp add: sats_formula_N_fm)
 
-theorem formula_N_reflection:
-     "REFLECTS[\<lambda>x. is_formula_N(L, f(x), g(x)),  
-               \<lambda>i x. is_formula_N(##Lset(i), f(x), g(x))]"
-apply (simp only: is_formula_N_def)
-apply (intro FOL_reflections function_reflections 
-             is_iterates_reflection formula_functor_reflection) 
-done
-
 
 
 subsubsection\<open>The Predicate ``Is A Formula''\<close>
@@ -1375,13 +1109,6 @@ lemma mem_formula_iff_sats:
        ==> mem_formula(##A, x) \<longleftrightarrow> sats(A, mem_formula_fm(i), env)"
 by simp
 
-theorem mem_formula_reflection:
-     "REFLECTS[\<lambda>x. mem_formula(L,f(x)),
-               \<lambda>i x. mem_formula(##Lset(i),f(x))]"
-apply (simp only: mem_formula_def)
-apply (intro FOL_reflections finite_ordinal_reflection formula_N_reflection)
-done
-
 
 
 subsubsection\<open>The Predicate ``Is @{term "formula"}''\<close>
@@ -1404,13 +1131,6 @@ lemma is_formula_iff_sats:
       "[| nth(i,env) = x; i \<in> nat; env \<in> list(A)|]
        ==> is_formula(##A, x) \<longleftrightarrow> sats(A, is_formula_fm(i), env)"
 by simp
-
-theorem is_formula_reflection:
-     "REFLECTS[\<lambda>x. is_formula(L,f(x)),
-               \<lambda>i x. is_formula(##Lset(i),f(x))]"
-apply (simp only: is_formula_def)
-apply (intro FOL_reflections mem_formula_reflection)
-done
 
 
 subsubsection\<open>The Operator @{term is_transrec}\<close>
@@ -1470,15 +1190,5 @@ lemma is_transrec_iff_sats:
    ==> is_transrec(##A, MH, x, z) \<longleftrightarrow> sats(A, is_transrec_fm(p,i,k), env)" 
 by (simp add: sats_is_transrec_fm [OF MH_iff_sats])
 
-theorem is_transrec_reflection:
-  assumes MH_reflection:
-    "!!f' f g h. REFLECTS[\<lambda>x. MH(L, f'(x), f(x), g(x), h(x)), 
-                     \<lambda>i x. MH(##Lset(i), f'(x), f(x), g(x), h(x))]"
-  shows "REFLECTS[\<lambda>x. is_transrec(L, MH(L,x), f(x), h(x)), 
-               \<lambda>i x. is_transrec(##Lset(i), MH(##Lset(i),x), f(x), h(x))]"
-apply (simp (no_asm_use) only: is_transrec_def)
-apply (intro FOL_reflections function_reflections MH_reflection 
-             is_wfrec_reflection is_eclose_reflection)
-done
 
 end

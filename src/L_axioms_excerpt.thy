@@ -4,10 +4,10 @@
 
 section \<open>The ZF Axioms (Except Separation) in L\<close>
 
-theory L_axioms_no_repl 
+theory L_axioms_excerpt 
   imports 
     "~~/src/ZF/Constructible/Formula"
-    Relative_no_repl   
+    Relative   
 begin
 
 
@@ -264,7 +264,7 @@ real concepts such as @{term Ord}.  Now that we have instantiated the locale
 lemma sats_subset_fm':
    "[|x \<in> nat; y \<in> nat; env \<in> list(A)|]
     ==> sats(A, subset_fm(x,y), env) \<longleftrightarrow> subset(##A, nth(x,env), nth(y,env))"
-by (simp add: subset_fm_def Relative_no_repl.subset_def)
+by (simp add: subset_fm_def Relative.subset_def)
 
 lemma sats_transset_fm':
    "[|x \<in> nat; env \<in> list(A)|]
@@ -444,7 +444,7 @@ lemma sats_image_fm [simp]:
    "[| x \<in> nat; y \<in> nat; z \<in> nat; env \<in> list(A)|]
     ==> sats(A, image_fm(x,y,z), env) \<longleftrightarrow>
         image(##A, nth(x,env), nth(y,env), nth(z,env))"
-by (simp add: image_fm_def Relative_no_repl.image_def)
+by (simp add: image_fm_def Relative.image_def)
 
 lemma image_iff_sats:
       "[| nth(i,env) = x; nth(j,env) = y; nth(k,env) = z;
@@ -473,7 +473,7 @@ lemma sats_pre_image_fm [simp]:
    "[| x \<in> nat; y \<in> nat; z \<in> nat; env \<in> list(A)|]
     ==> sats(A, pre_image_fm(x,y,z), env) \<longleftrightarrow>
         pre_image(##A, nth(x,env), nth(y,env), nth(z,env))"
-by (simp add: pre_image_fm_def Relative_no_repl.pre_image_def)
+by (simp add: pre_image_fm_def Relative.pre_image_def)
 
 lemma pre_image_iff_sats:
       "[| nth(i,env) = x; nth(j,env) = y; nth(k,env) = z;

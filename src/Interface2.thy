@@ -1,4 +1,4 @@
-theory Interface2 imports Forcing_data Relative_no_repl Internalize_no_repl begin
+theory Interface2 imports Forcing_data Relative Internalize_excerpt begin
 
 lemma Transset_intf :
   "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
@@ -38,14 +38,14 @@ lemma nat_union_abs2 :
 (* Interface with M_trivial *)
     
 lemma (in forcing_data) mtriv :  
-  "M_trivial_no_repl(##M)"
+  "M_trivial(##M)"
   apply (insert trans_M upair_ax Union_ax)
-  apply (rule M_trivial_no_repl.intro)
+  apply (rule M_trivial.intro)
   apply (simp_all add: zero_in_M)
   apply (rule Transset_intf,simp+)
 done
 
-sublocale forcing_data \<subseteq> M_trivial_no_repl "##M"
+sublocale forcing_data \<subseteq> M_trivial "##M"
   by (rule mtriv)
   
 (* tupling *)
@@ -720,10 +720,10 @@ lemmas (in forcing_data) M_basic_sep_instances =
                 image_sep_intf converse_sep_intf restrict_sep_intf
                 pred_sep_intf memrel_sep_intf comp_sep_intf is_recfun_sep_intf
   
-sublocale forcing_data \<subseteq> M_basic_no_repl "##M"
+sublocale forcing_data \<subseteq> M_basic "##M"
   apply (insert trans_M zero_in_M power_ax)
-  apply (rule M_basic_no_repl.intro,rule mtriv)
-  apply (rule M_basic_no_repl_axioms.intro)
+  apply (rule M_basic.intro,rule mtriv)
+  apply (rule M_basic_axioms.intro)
   apply (insert M_basic_sep_instances funspace_succ_rep_intf)
   apply (simp_all)
 done
