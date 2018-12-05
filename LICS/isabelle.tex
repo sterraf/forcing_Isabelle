@@ -1,0 +1,36 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
+\section{Isabelle}
+Isabelle provides a meta-language called \emph{Pure} that consists of
+a fragment of higher order logic. The meta-Boolean type is called
+\isatt{prop}. Meta connectives
+\isatt{\isasymLongrightarrow} and \isatt{\&\&\&} fulfill the role of
+implication and conjunction, and the meta-binder \isatt{\isasymAnd}
+corresponds to universal quantification. 
+
+On top of \emph{Pure}, theories/object logics can be defined, with
+their own types, connectives and rules. Rules can be written  using
+meta-implication: ``$P$, $Q$, and $R$ yield $S$'' can be written
+\[
+P \ \isatt{\isasymLongrightarrow}\ Q\ \isatt{\isasymLongrightarrow}\ R\ \isatt{\isasymLongrightarrow}\ S
+\]
+(as usual,  \isatt{\isasymLongrightarrow} asociates to the right), and
+syntactic sugar is provided to curry the previous as follows:
+\[
+\isasymlbrakk P; Q; R \isasymrbrakk \ \isatt{\isasymLongrightarrow}\ S.
+\]
+
+We work in the object theory \emph{Isabelle/ZF}. Two types are defined
+in this theory: \tyo, the object-Booleans, and \tyi,
+sets. It must be insisted that the types are defined axiomatically, not
+recursively. That is, although there are constants and functions that
+generate elements of both types, neither of them are 
+\emph{initial}, in the sense that they are not the least types
+obtained by combining the given constants and operations. This will
+have concrete consequences in our strategy to approach the development.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "Separation_In_MG"
+%%% ispell-local-dictionary: "american"
+%%% End: 
