@@ -1,4 +1,8 @@
-theory Renaming imports Nat_Miscelanea Formula begin
+theory Renaming 
+  imports 
+    Nat_Miscelanea 
+    "~~/src/ZF/Constructible/Formula"
+begin
 
 section\<open>Auxiliary results\<close>
 
