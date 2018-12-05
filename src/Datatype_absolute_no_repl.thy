@@ -4,8 +4,11 @@
                                                
 section \<open>Absoluteness Properties for Recursive Datatypes\<close>
 
-theory Datatype_absolute_no_repl imports Formula WF_absolute_no_repl begin
-
+theory Datatype_absolute_no_repl 
+  imports 
+    "~~/src/ZF/Constructible/Formula"
+    WF_absolute_no_repl 
+begin
 
 subsection\<open>The lfp of a continuous function can be expressed as a union\<close>
 
