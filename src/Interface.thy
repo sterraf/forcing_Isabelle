@@ -1,7 +1,10 @@
 (* Interface between internalized axiom formulas and 
    ZF axioms *)
-theory Interface imports ZFCAxioms_formula Relative_no_repl  WF_absolute_no_repl
-                         Internalize_no_repl begin
+theory Interface 
+  imports 
+    ZFCAxioms_formula Relative (* Names *) WF_absolute
+    Internalize_excerpt 
+begin
 
 (* Extensionality *)
 lemma extension_intf :
@@ -81,19 +84,19 @@ proof -
   qed
   
 lemma intf_M_trivial :
-  "M_trivial_no_repl(##M)"
+  "M_trivial(##M)"
   apply (insert trans_M M_model_ZF zero_in_M)
-  apply (rule M_trivial_no_repl.intro)
+  apply (rule M_trivial.intro)
   apply (simp,rule Transset_intf,assumption+)
   apply (simp_all add: pairing_intf[symmetric] union_intf[symmetric] 
                        power_intf[symmetric] ZFTh_def ZF_fin_def satT_sats)
 done
 end
   
-sublocale M_ZF \<subseteq> M_trivial_no_repl "##M" 
+sublocale M_ZF \<subseteq> M_trivial "##M" 
   by (rule intf_M_trivial)
   
-(* interpretation Mtriv : M_trivial_no_repl "##M" by (rule intf_M_trivial) *)
+(* interpretation Mtriv : M_trivial "##M" by (rule intf_M_trivial) *)
 
 
 context M_ZF
@@ -926,17 +929,17 @@ lemmas (in M_ZF) M_basic_sep_instances =
 context M_ZF
 begin 
 lemma interface_M_basic : 
-  "M_basic_no_repl(##M)"
+  "M_basic(##M)"
   apply (insert trans_M M_model_ZF zero_in_M)
-  apply (rule M_basic_no_repl.intro,rule intf_M_trivial)
-  apply (rule M_basic_no_repl_axioms.intro)
+  apply (rule M_basic.intro,rule intf_M_trivial)
+  apply (rule M_basic_axioms.intro)
   apply (insert M_basic_sep_instances funspace_succ_rep_intf)
   apply (simp_all)
 done
 
 end (* End context M_ZF *)
 
-sublocale M_ZF \<subseteq> M_basic_no_repl "##M" by (rule interface_M_basic)
+sublocale M_ZF \<subseteq> M_basic "##M" by (rule interface_M_basic)
   
 (* interface with M_trancl *)
     
@@ -1184,11 +1187,11 @@ lemma (in M_ZF) nat_in_M:
    apply (rule_tac a="{x \<in> I . x \<in> nat}" and b="nat" in subst, auto)
   done
 
-sublocale M_ZF \<subseteq> M_trancl_no_repl "##M" 
+sublocale M_ZF \<subseteq> M_trancl "##M" 
   apply (insert trans_M M_model_ZF zero_in_M)
-  apply (rule M_trancl_no_repl.intro,rule interface_M_basic)
+  apply (rule M_trancl.intro,rule interface_M_basic)
   apply (insert rtrancl_sep_intf wf_trancl_sep_intf nat_in_M)
-  apply (rule M_trancl_no_repl_axioms.intro)
+  apply (rule M_trancl_axioms.intro)
     apply simp_all
   done
     
