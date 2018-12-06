@@ -5,16 +5,11 @@ Theorems relate satisfaction of a formula
 $\phi$ in the generic extension $M[G]$ to the satisfaction of another
 formula $\forceisa(\phi)$ in $M$. The map $\forceisa$ is defined by
 recursion on 
-the structure of $\phi$. The fact that this map works (in particular,
-in order to show that $M[G]\models\ZFC$), we must use the fact that
-$M\models\ZFC$. Since we can only assert the latter using internalized
-formulas, the aformentioned map will be defined as a function from the
-set \formula{} into itself. 
-
-Up to this point, the main reason for working with internalized
-versions is that  it is not possible to do recursion with formulas of
-type $\tyo$ (i.e., the formulas in the first-order logic of
-Isabelle/ZF).
+the structure of $\phi$. In order to state the properties of this map
+in sufficient generality to prove that  $M[G]$ satisfies $\ZFC$, we work with
+internalized formulas, because it is not possible to carry inductive
+arguments over \tyo. These internalized versions are the elements of
+the recursively constructed set \formula{} (of type \tyi).
 
 We will now make more precise the definition of the map
 $\forceisa$ and how it relates satisfaction in $M$ to that in
@@ -45,7 +40,8 @@ M,[\PP,\leq,\1,p,\tau,\rho] \models \forceisa(x_5\in x_4).
 \]
 
 If
-$\phi=\phi(x_0,\dots,x_n)$, the standard notation for $\forceisa(\phi)$ is
+$\phi=\phi(x_0,\dots,x_n)$, the notation used by Kunen
+\cite{kunen2011set,kunen1980} for $\forceisa(\phi)$ is 
 \[
 p\forces_{\PP,\leq,\1}^* \phi(x_0,\dots,x_n).
 \]
@@ -70,7 +66,7 @@ characterization given by (\ref{eq:3}) indeed holds, and hence the
 forcing relation is \emph{definable}. In our case, definability merely
 stands for a typing condition:
 \begin{isabelle}
-{\isachardoublequoteopen}{\isasymphi}{\isasymin}formula\ {\isasymLongrightarrow}\ forces{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymin}\ formula{\isachardoublequoteclose}
+{\isachardoublequoteopen}{\isasymphi}\ {\isasymin}\ formula\ {\isasymLongrightarrow}\ forces{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymin}\ formula{\isachardoublequoteclose}
 \end{isabelle}
 
 Then the definition of the forcing relation is stated as a
