@@ -18,6 +18,14 @@ syntactic sugar is provided to curry the previous as follows:
 \[
 \isasymlbrakk P; Q; R \isasymrbrakk \ \isatt{\isasymLongrightarrow}\ S.
 \]
+A further example is given by induction on the natural numbers
+\isatt{nat},
+\[
+\isasymlbrakk P(0);\ (\textstyle\isasymAnd
+x.\ P(x)\ \isasymLongrightarrow\ P(\isatt{succ}(x))) \isasymrbrakk
+\ \isasymLongrightarrow\ P(n), 
+\]
+where we are omitting the ``typing'' assumtions on $n$ and $x$.
 
 We work in the object theory \emph{Isabelle/ZF}. Two types are defined
 in this theory: \tyo, the object-Booleans, and \tyi,
