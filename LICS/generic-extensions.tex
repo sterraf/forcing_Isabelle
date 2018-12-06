@@ -2,7 +2,30 @@
 \section{Generic extensions}
 
 We will swiftly review some definitions in order to reach the concept
-of \emph{generic extension}. 
+of \emph{generic extension}. Given a ctm $M$ of $\ZFC$, a forcing
+notion $\lb\PP,\leq,\1\rb$, and 
+$G\in\P(\PP)\sm M$, a new set $M[G]$ is defined. Each element $a\in M[G]$ is
+determined by an element $\dot a$ of $M$. Actually, the structure of
+each $\dot a$ is used to construct $a$. They are related by a
+map $\val$ that takes $G$ a parameter:
+\[
+\val(G,\dot a) = a.
+\] 
+Then the extension is defined by the image of the map $\val(G,\cdot)$:
+\[
+M[G] \defi \{\val(G,\tau): \tau\in M\}.
+\]
+Metatheoretically, it is straightforward to see that $M[G]$ is a
+transitive set that satisfies the axioms of Pairing and Union and
+includes $M\cup\{G\}$. Nevertheless there are no a priori reasons for
+$M[G]$ to satisfy the rest of the $\ZFC$ 
+axioms. The original insight by Cohen was to define the notion of
+\emph{genericity} for a filter $G\sbq\PP$ and to prove that whenever
+$G$ is generic, $M[G]$ will satisfy $\ZFC$.
+
+The Separation Axiom scheme is the first that requires the notion of
+genericity and the use of the forcing machinery, which we review in
+the next section.
 
 %%% Local Variables: 
 %%% mode: latex
