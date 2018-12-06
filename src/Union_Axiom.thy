@@ -1,11 +1,57 @@
 theory Union_Axiom 
-  imports Forcing_data Names  
+  imports Forcing_data Names "~~/src/HOL/Eisbach/Eisbach_Old_Appl_Syntax" 
 begin
+  
+named_theorems fstpass
+named_theorems sndpass
+    
+method simp_altnt declares fstpass sndpass = (simp add:fstpass ; simp add:sndpass)+
+method abs_simp = (simp_altnt fstpass:nat_union_abs1 sndpass: nat_union_abs2)
 
 context forcing_data
 begin
 
+lemma domD : assumes "\<tau> \<in> M" and "\<sigma> \<in> domain(\<tau>)"
+  shows "\<sigma> \<in> M"
+ proof - 
+  from \<open>\<tau> \<in> M\<close> have "domain(\<tau>) \<in> M"
+    using domain_closed by simp
+  with \<open>\<sigma> \<in> domain(\<tau>)\<close> have "\<sigma> \<in> M" 
+    using Transset_M trans_M by blast
+  then show ?thesis by simp
+qed
 
+definition dom_dom :: "i \<Rightarrow> i" where
+  "dom_dom(\<tau>) == { domain(\<sigma>) . \<sigma> \<in> domain(\<tau>)}" 
+
+lemma dom_dom_closed : 
+  assumes "\<tau> \<in> M" 
+  shows   "dom_dom(\<tau>) \<in> M"
+  unfolding dom_dom_def proof -
+  { 
+    fix \<tau>
+    assume "\<tau> \<in> M"
+    then have "domain(\<tau>) \<in> M" 
+      using domain_closed by simp
+    {fix \<sigma> assume "\<sigma> \<in> domain(\<tau>)" 
+      with \<open>\<tau> \<in> M\<close> have "\<sigma> \<in> M" using domD by simp
+      then have "domain(\<sigma>) \<in> M" using domain_closed by simp
+    }
+    then have B:"\<sigma> \<in> domain(\<tau>) \<Longrightarrow> (##M)(domain(\<sigma>))" for \<sigma> by simp
+    have ar: "arity(domain_fm(0,1)) = 2" (is "arity(?\<phi>) = _") 
+      unfolding domain_fm_def pair_fm_def upair_fm_def by (simp add:nat_union_abs1 nat_union_abs2)+
+    have "?\<phi> \<in> formula" by simp
+    with \<open>\<tau>\<in>M\<close> have A:"\<And> x y . (##M)(x) \<Longrightarrow> (##M)(y) \<Longrightarrow>  sats(M,?\<phi>,[x,y,\<tau>]) \<longleftrightarrow> is_domain(##M,x,y)"  
+      using domain_iff_sats arity_sats_iff by force
+    with ar \<open>\<tau>\<in>M\<close> have "strong_replacement(##M,\<lambda>x y. sats(M, ?\<phi>, [x, y,\<tau>]))" 
+      using replacement_ax by simp
+    with A have "strong_replacement(##M,\<lambda> x y . is_domain(##M,x,y))" 
+      by (rule strong_replacement_cong[THEN iffD1],auto)
+    have "univalent(##M,domain(\<tau>), \<lambda> x y . is_domain(##M,x,y))" sorry
+    with \<open>domain(\<tau>) \<in> M\<close> B have "(##M)(Replace(domain(\<tau>), \<lambda> x y . is_domain(##M,x,y)))"
+      using domain_abs strong_replacement_closed[of "\<lambda> x y . is_domain(##M,x,y)" "domain(\<tau>)"] 
+      by blast
+  
 lemma Union_aux : 
   assumes "a \<in> M[G]"
   shows "\<exists> b \<in> M[G] . \<Union> a \<subseteq> b"
@@ -38,15 +84,6 @@ lemma Union_name_M : assumes "\<tau> \<in> M"
     (* We need to internalize the poset in order to use separation_closed. *)
 sorry
 
-lemma domD : assumes "\<tau> \<in> M" and "\<sigma> \<in> domain(\<tau>)"
-  shows "\<sigma> \<in> M"
- proof - 
-  from \<open>\<tau> \<in> M\<close> have "domain(\<tau>) \<in> M"
-    using domain_closed by simp
-  with \<open>\<sigma> \<in> domain(\<tau>)\<close> have "\<sigma> \<in> M" 
-    using Transset_M trans_M by blast
-  then show ?thesis by simp
-qed
 
 lemma Union_abs_trans : 
   assumes "Transset(Q)" "a \<in> Q" "z \<in> Q" "\<Union> a = z"
@@ -131,6 +168,6 @@ lemma union_in_MG : assumes "filter(G)"
 
 theorem Union_MG : "M_generic(G) \<Longrightarrow> Union_ax(##M[G])"
   by (simp add:M_generic_def union_in_MG)
-    
+
 end
 end
