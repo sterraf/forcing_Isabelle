@@ -12,8 +12,15 @@ context forcing_data
 begin
 
 lemma domD : assumes "\<tau> \<in> M" and "\<sigma> \<in> domain(\<tau>)"
-  shows "\<sigma> \<in> M"
- proof - 
+  shows "\<sigma> \<in> M" 
+(* Ésta es otro tipo de prueba que está bueno que conozcas.
+   Comparála con la que hiciste.
+ 
+  using assms Transset_M trans_M
+  by (simp del:setclass_iff  add:setclass_iff[symmetric]) 
+
+*)
+proof - 
   from \<open>\<tau> \<in> M\<close> have "domain(\<tau>) \<in> M"
     using domain_closed by simp
   with \<open>\<sigma> \<in> domain(\<tau>)\<close> have "\<sigma> \<in> M" 
