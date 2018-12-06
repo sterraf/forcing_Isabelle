@@ -50,8 +50,9 @@ lemma dom_dom_closed :
     have "univalent(##M,domain(\<tau>), \<lambda> x y . is_domain(##M,x,y))" sorry
     with \<open>domain(\<tau>) \<in> M\<close> B have "(##M)(Replace(domain(\<tau>), \<lambda> x y . is_domain(##M,x,y)))"
       using domain_abs strong_replacement_closed[of "\<lambda> x y . is_domain(##M,x,y)" "domain(\<tau>)"] 
-      by blast
-  
+      (* by blast *)
+      oops
+        
 lemma Union_aux : 
   assumes "a \<in> M[G]"
   shows "\<exists> b \<in> M[G] . \<Union> a \<subseteq> b"
