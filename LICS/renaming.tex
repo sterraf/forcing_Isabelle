@@ -1,13 +1,47 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
 \section{Renaming}
+\newcommand{\renaming}[2]{#1[#2]}
+\newcommand{\inFm}[2]{\mathsf{Member}(#1,#2)}
+\newcommand{\eqFm}[2]{\mathsf{Equal}(#1,#2)}
+\newcommand{\nandFm}[2]{\mathsf{Nand}(#1,#2)}
+\newcommand{\forallFm}[1]{\mathsf{Forall(#1)}}
 
 In the course of our work we need to reason about renaming of formulas
-and its effect on their satisfiability. Since internalized formulas
-are implemented using de Bruijn indices, thus the arity of a formula
-$\phi$ gives the least set containing all the free variables in
-$\phi$. Following \citet{fiore-abssyn}, one can understand the arity
-of a formula as the context of the free variables and renamings are,
-consequently, mappings changing the context.
+and its effect on their satisfiability. Internalized formulas are
+implemented using de Bruijn indices for variables and the arity of a
+formula $\phi$ gives the least natural number containing all the free
+variables in $\phi$. Following \citet{fiore-abssyn}, one can
+understand the arity of a formula as the context of the free
+variables; notice that the arity of $\forallFm{\phi}$ is the
+predecessor of the arity of $\phi$. Renamings are, consequently,
+mappings between finite sets; since we can think of $\mathsf{succ}(n)$
+as the co-product $1+n$, then given a renaming $f \colon n \to m$, the
+unique morphism $\mathsf{id}_1+f \colon 1+n \to 1+m$ is used to
+rename free variables in a quantified formula:
+
+\begin{definition}[Renaming]
+  Let $\phi$ be a formula of arity $n$ and let $f \colon n \to m$, the
+  renaming of $\phi$ by $f$, denoted $\renaming{\phi}{f}$, is defined
+  by recursion on $\phi$:
+  \begin{gather*}
+    \renaming{\inFm{i}{j}}{f} = \inFm{f\,i}{f\,j}\\
+    \renaming{\eqFm{i}{j}}{f} = \eqFm{f\,i}{f\,j}\\
+    \renaming{\nandFm{\phi}{\psi}}{f} = \nandFm{\renaming{\phi}{f}}{\renaming{\psi}{f}}\\
+    \renaming{\forallFm{\phi}}{f} = \forallFm{\renaming{\phi}{\mathsf{id}+f}}
+  \end{gather*}
+\end{definition}
+
+Environments can be thought, then, as mappings from a finite set to
+the model $M$; the action of renaming on environments is simply given
+by composition.
+
+\begin{lemma}
+  Let $\phi$ be a formula of arity $n$, $f \colon n \to m$ be a
+  renaming, and let $\rho \colon n \to M$ and $\rho' \colon m \to M$
+  be environments. If for all $i \in n$, $\rho\,i = \rho'(f\,i)$, then
+  $M,\rho\models \phi$ is equivalent to
+  $M,\rho' \models \renaming{\phi}{f}$.
+\end{lemma}
 
 
 %%% Local Variables: 
