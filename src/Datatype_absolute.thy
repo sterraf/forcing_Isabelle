@@ -1,7 +1,7 @@
 (*  Title:      ZF/Constructible/Datatype_absolute.thy
     Author:     Lawrence C Paulson, Cambridge University Computer Laboratory
 *)
-                                               
+
 section \<open>Absoluteness Properties for Recursive Datatypes\<close>
 
 theory Datatype_absolute 
@@ -464,7 +464,7 @@ definition
   is_formula :: "[i=>o,i] => o" where
     "is_formula(M,Z) == \<forall>p[M]. p \<in> Z \<longleftrightarrow> mem_formula(M,p)"
 
-locale M_datatype = M_trancl +
+locale M_datatypes = M_trancl +
  assumes list_replacement1:
    "M(A) ==> iterates_replacement(M, is_list_functor(M,A), 0)"
   and list_replacement2:
@@ -481,7 +481,7 @@ locale M_datatype = M_trancl +
 
 subsubsection\<open>Absoluteness of the List Construction\<close>
 
-lemma (in M_datatype) list_replacement2':
+lemma (in M_datatypes) list_replacement2':
   "M(A) ==> strong_replacement(M, \<lambda>n y. n\<in>nat & y = (\<lambda>X. {0} + A * X)^n (0))"
 apply (insert list_replacement2 [of A])
 apply (rule strong_replacement_cong [THEN iffD1])
@@ -489,7 +489,7 @@ apply (rule conj_cong [OF iff_refl iterates_abs [of "is_list_functor(M,A)"]])
 apply (simp_all add: list_replacement1 relation1_def)
 done
 
-lemma (in M_datatype) list_closed [intro,simp]:
+lemma (in M_datatypes) list_closed [intro,simp]:
      "M(A) ==> M(list(A))"
 apply (insert list_replacement1)
 by  (simp add: RepFun_closed2 list_eq_Union
@@ -497,9 +497,9 @@ by  (simp add: RepFun_closed2 list_eq_Union
                iterates_closed [of "is_list_functor(M,A)"])
 
 text\<open>WARNING: use only with \<open>dest:\<close> or with variables fixed!\<close>
-lemmas (in M_datatype) list_into_M = transM [OF _ list_closed]
+lemmas (in M_datatypes) list_into_M = transM [OF _ list_closed]
 
-lemma (in M_datatype) list_N_abs [simp]:
+lemma (in M_datatypes) list_N_abs [simp]:
      "[|M(A); n\<in>nat; M(Z)|]
       ==> is_list_N(M,A,n,Z) \<longleftrightarrow> Z = list_N(A,n)"
 apply (insert list_replacement1)
@@ -507,21 +507,21 @@ apply (simp add: is_list_N_def list_N_def relation1_def nat_into_M
                  iterates_abs [of "is_list_functor(M,A)" _ "\<lambda>X. {0} + A*X"])
 done
 
-lemma (in M_datatype) list_N_closed [intro,simp]:
+lemma (in M_datatypes) list_N_closed [intro,simp]:
      "[|M(A); n\<in>nat|] ==> M(list_N(A,n))"
 apply (insert list_replacement1)
 apply (simp add: is_list_N_def list_N_def relation1_def nat_into_M
                  iterates_closed [of "is_list_functor(M,A)"])
 done
 
-lemma (in M_datatype) mem_list_abs [simp]:
+lemma (in M_datatypes) mem_list_abs [simp]:
      "M(A) ==> mem_list(M,A,l) \<longleftrightarrow> l \<in> list(A)"
 apply (insert list_replacement1)
 apply (simp add: mem_list_def list_N_def relation1_def list_eq_Union
                  iterates_closed [of "is_list_functor(M,A)"])
 done
 
-lemma (in M_datatype) list_abs [simp]:
+lemma (in M_datatypes) list_abs [simp]:
      "[|M(A); M(Z)|] ==> is_list(M,A,Z) \<longleftrightarrow> Z = list(A)"
 apply (simp add: is_list_def, safe)
 apply (rule M_equalityI, simp_all)
@@ -529,7 +529,7 @@ done
 
 subsubsection\<open>Absoluteness of Formulas\<close>
 
-lemma (in M_datatype) formula_replacement2':
+lemma (in M_datatypes) formula_replacement2':
   "strong_replacement(M, \<lambda>n y. n\<in>nat & y = (\<lambda>X. ((nat*nat) + (nat*nat)) + (X*X + X))^n (0))"
 apply (insert formula_replacement2)
 apply (rule strong_replacement_cong [THEN iffD1])
@@ -537,7 +537,7 @@ apply (rule conj_cong [OF iff_refl iterates_abs [of "is_formula_functor(M)"]])
 apply (simp_all add: formula_replacement1 relation1_def)
 done
 
-lemma (in M_datatype) formula_closed [intro,simp]:
+lemma (in M_datatypes) formula_closed [intro,simp]:
      "M(formula)"
 apply (insert formula_replacement1)
 apply  (simp add: RepFun_closed2 formula_eq_Union
@@ -545,9 +545,9 @@ apply  (simp add: RepFun_closed2 formula_eq_Union
                   iterates_closed [of "is_formula_functor(M)"])
 done
 
-lemmas (in M_datatype) formula_into_M = transM [OF _ formula_closed]
+lemmas (in M_datatypes) formula_into_M = transM [OF _ formula_closed]
 
-lemma (in M_datatype) formula_N_abs [simp]:
+lemma (in M_datatypes) formula_N_abs [simp]:
      "[|n\<in>nat; M(Z)|]
       ==> is_formula_N(M,n,Z) \<longleftrightarrow> Z = formula_N(n)"
 apply (insert formula_replacement1)
@@ -556,21 +556,21 @@ apply (simp add: is_formula_N_def formula_N_def relation1_def nat_into_M
                                   "\<lambda>X. ((nat*nat) + (nat*nat)) + (X*X + X)"])
 done
 
-lemma (in M_datatype) formula_N_closed [intro,simp]:
+lemma (in M_datatypes) formula_N_closed [intro,simp]:
      "n\<in>nat ==> M(formula_N(n))"
 apply (insert formula_replacement1)
 apply (simp add: is_formula_N_def formula_N_def relation1_def nat_into_M
                  iterates_closed [of "is_formula_functor(M)"])
 done
 
-lemma (in M_datatype) mem_formula_abs [simp]:
+lemma (in M_datatypes) mem_formula_abs [simp]:
      "mem_formula(M,l) \<longleftrightarrow> l \<in> formula"
 apply (insert formula_replacement1)
 apply (simp add: mem_formula_def relation1_def formula_eq_Union formula_N_def
                  iterates_closed [of "is_formula_functor(M)"])
 done
 
-lemma (in M_datatype) formula_abs [simp]:
+lemma (in M_datatypes) formula_abs [simp]:
      "[|M(Z)|] ==> is_formula(M,Z) \<longleftrightarrow> Z = formula"
 apply (simp add: is_formula_def, safe)
 apply (rule M_equalityI, simp_all)
@@ -605,7 +605,7 @@ definition
     "is_eclose(M,A,Z) == \<forall>u[M]. u \<in> Z \<longleftrightarrow> mem_eclose(M,A,u)"
 
 
-locale M_eclose = M_datatype +
+locale M_eclose = M_datatypes +
  assumes eclose_replacement1:
    "M(A) ==> iterates_replacement(M, big_union(M), A)"
   and eclose_replacement2:
@@ -708,7 +708,7 @@ definition
         successor(M,n,sn) & is_list_N(M,A,sn,list_sn) & l \<in> list_sn"
 
 
-lemma (in M_datatype) length_abs [simp]:
+lemma (in M_datatypes) length_abs [simp]:
      "[|M(A); l \<in> list(A); n \<in> nat|] ==> is_length(M,A,l,n) \<longleftrightarrow> n = length(l)"
 apply (subgoal_tac "M(l) & M(n)")
  prefer 2 apply (blast dest: transM)
@@ -741,7 +741,7 @@ apply (simp add: tl'_Cons tl'_closed)
 done
 
 text\<open>Immediate by type-checking\<close>
-lemma (in M_datatype) nth_closed [intro,simp]:
+lemma (in M_datatypes) nth_closed [intro,simp]:
      "[|xs \<in> list(A); n \<in> nat; M(A)|] ==> M(nth(n,xs))"
 apply (case_tac "n < length(xs)")
  apply (blast intro: nth_type transM)
@@ -753,7 +753,7 @@ definition
     "is_nth(M,n,l,Z) ==
       \<exists>X[M]. is_iterates(M, is_tl(M), l, n, X) & is_hd(M,X,Z)"
 
-lemma (in M_datatype) nth_abs [simp]:
+lemma (in M_datatypes) nth_abs [simp]:
      "[|M(A); n \<in> nat; l \<in> list(A); M(Z)|]
       ==> is_nth(M,n,l,Z) \<longleftrightarrow> Z = nth(n,l)"
 apply (subgoal_tac "M(l)")
@@ -864,13 +864,13 @@ definition
         successor(M,n,sn) & is_formula_N(M,sn,formula_sn) & p \<in> formula_sn"
 
 
-lemma (in M_datatype) depth_abs [simp]:
+lemma (in M_datatypes) depth_abs [simp]:
      "[|p \<in> formula; n \<in> nat|] ==> is_depth(M,p,n) \<longleftrightarrow> n = depth(p)"
 apply (subgoal_tac "M(p) & M(n)")
  prefer 2 apply (blast dest: transM)
 apply (simp add: is_depth_def)
 apply (blast intro: formula_imp_formula_N nat_into_Ord formula_N_imp_eq_depth
-             dest: formula_N_imp_depth_lt) 
+             dest: formula_N_imp_depth_lt)
 done
 
 text\<open>Proof is trivial since @{term depth} returns natural numbers.\<close>
@@ -894,7 +894,7 @@ definition
                      is_Nand(M,x,y,p) \<longrightarrow> is_c(x,y,z)) &
       (\<forall>x[M]. mem_formula(M,x) \<longrightarrow> is_Forall(M,x,p) \<longrightarrow> is_d(x,z))"
 
-lemma (in M_datatype) formula_case_abs [simp]:
+lemma (in M_datatypes) formula_case_abs [simp]:
      "[| Relation2(M,nat,nat,is_a,a); Relation2(M,nat,nat,is_b,b);
          Relation2(M,formula,formula,is_c,c); Relation1(M,formula,is_d,d);
          p \<in> formula; M(z) |]
@@ -905,7 +905,7 @@ apply (erule formula.cases)
    apply (simp_all add: Relation1_def Relation2_def)
 done
 
-lemma (in M_datatype) formula_case_closed [intro,simp]:
+lemma (in M_datatypes) formula_case_closed [intro,simp]:
   "[|p \<in> formula;
      \<forall>x[M]. \<forall>y[M]. x\<in>nat \<longrightarrow> y\<in>nat \<longrightarrow> M(a(x,y));
      \<forall>x[M]. \<forall>y[M]. x\<in>nat \<longrightarrow> y\<in>nat \<longrightarrow> M(b(x,y));
@@ -926,7 +926,7 @@ definition
 
 text\<open>Sufficient conditions to relativize the instance of @{term formula_case}
       in @{term formula_rec}\<close>
-lemma (in M_datatype) Relation1_formula_rec_case:
+lemma (in M_datatypes) Relation1_formula_rec_case:
      "[|Relation2(M, nat, nat, is_a, a);
         Relation2(M, nat, nat, is_b, b);
         Relation2 (M, formula, formula,
@@ -1010,5 +1010,6 @@ theorem (in Formula_Rec) formula_rec_abs:
 by (simp add: is_formula_rec_def formula_rec_eq transM [OF _ formula_closed]
               transrec_abs [OF fr_replace MH_rel2] depth_type
               fr_transrec_closed formula_rec_lam_closed eq_commute)
+
 
 end

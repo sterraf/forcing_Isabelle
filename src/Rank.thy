@@ -33,6 +33,7 @@ assumes well_ord_iso_separation:
              ordinal(M,x) & pair(M,a,x,z) & membership(M,x,mx) &
              pred_set(M,A,a,r,par) & order_isomorphism(M,par,r,x,mx,g))"
 
+
 text\<open>Inductive argument for Kunen's Lemma I 6.1, etc.
       Simple proof from Halmos, page 72\<close>
 lemma  (in M_ordertype) wellordered_iso_subset_lemma: 
