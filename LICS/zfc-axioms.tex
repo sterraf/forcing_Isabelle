@@ -1,7 +1,55 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
 \section{Axioms of set theory}
 
+\medskip
+\fbox{\em \dots\ discussion of axioms \dots }
+\medskip
 
+An equivalent formulation of the Foundation Axiom states that the
+universe of sets can be decomposed in a transfinite hierarchy of
+sets. 
+\begin{theorem}
+  Let $V_{\al}\defi\union\{\P(V_\be) : \be<\al\}$ for each ordinal
+  $\al$. Then each $V_\al$ is a set and 
+  $\forall x. \exists\al .\ \Ord(\al) \y x\in V_\al$.  
+\end{theorem}
+
+\medskip
+\fbox{\em \dots\ discussion of axioms \dots }
+\medskip
+
+Models of the theory $\ZFC$ consist of a pair $\lb M,E\rb$ where $M$
+is a set and $E$ is a binary relation on $M$. Forcing is a technique
+to extend very special kind of models, where $M$ is a countable
+transitive set (i.e., every element of $M$ is a subset of $M$) and
+$E$ is the membership relation $\in$ restricted to $M$. In this case
+we simply refer to $M$ as a \emph{countable transitive model} or
+\emph{ctm}.
+
+The existence of a ctm of $\ZFC$ can be proved from the existence of a
+model  $\lb N,E\rb$ such that the relation $E$ is well founded. The
+L\"owenheim-Skolem 
+Theorem ensures that there is an countable elementary submodel 
+$\lb N',E\restr N'\rb\preccurlyeq  \lb N,E\rb$ which must also be
+well founded; then the 
+Mostowski collapsing function \cite[Def.~I.9.31]{kunen2011set} sends $\lb
+N',E\restr N'\rb$ 
+isomorphically to an $\lb M,\in\rb$ where $M$ is transitive.
+
+By G\"odel's Second Incompleteness Theorem we cannot  prove that
+there exists a model of $\ZFC$  (assuming that our base theory is not
+stronger than $\ZFC$ to start with), but for consistency proofs,
+usually a model of only a finite subset of $\ZFC$ suffices. Hence the
+following meta-theoretic result by Montague applies:
+%
+\begin{theorem}[Reflection Principle]\label{th:reflection-principle}
+  For every finite $\Phi\sbq\ZFC$, $\ZFC$ proves: ``There exists
+    unboundedly many $\al$ such that $V_\al\models \Phi$.''
+\end{theorem}
+%
+Since the sets $V_\al$ are well founded, we can repeat the above
+argument to obtain a ctm of $\Phi$.
+%
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "Separation_In_MG"
