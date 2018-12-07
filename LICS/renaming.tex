@@ -1,10 +1,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
 \section{Renaming}
-\newcommand{\renaming}[2]{#1[#2]}
-\newcommand{\inFm}[2]{\mathsf{Member}(#1,#2)}
-\newcommand{\eqFm}[2]{\mathsf{Equal}(#1,#2)}
-\newcommand{\nandFm}[2]{\mathsf{Nand}(#1,#2)}
-\newcommand{\forallFm}[1]{\mathsf{Forall(#1)}}
+\newcommand{\renaming}[2]{(#1)[#2]}
+\newcommand{\inFm}[2]{#1 \in #2}
+\newcommand{\eqFm}[2]{#1 = #2}
+\newcommand{\negFm}[1]{\neg #1}
+\newcommand{\andFm}[2]{#1 \wedge #2}
+\newcommand{\forallFm}[1]{\forall #1}
+
+\newcommand{\inIFm}[2]{\mathsf{Member}(#1,#2)}
+\newcommand{\eqIFm}[2]{\mathsf{Equal}(#1,#2)}
+\newcommand{\nandIFm}[2]{\mathsf{Nand}(#1,#2)}
+\newcommand{\forallIFm}[1]{\mathsf{Forall(#1)}}
+
 
 In the course of our work we need to reason about renaming of formulas
 and its effect on their satisfiability. Internalized formulas are
@@ -16,8 +23,8 @@ variables; notice that the arity of $\forallFm{\phi}$ is the
 predecessor of the arity of $\phi$. Renamings are, consequently,
 mappings between finite sets; since we can think of $\mathsf{succ}(n)$
 as the co-product $1+n$, then given a renaming $f \colon n \to m$, the
-unique morphism $\mathsf{id}_1+f \colon 1+n \to 1+m$ is used to
-rename free variables in a quantified formula:
+unique morphism $\mathsf{id}_1+f \colon 1+n \to 1+m$ is used to rename
+free variables in a quantified formula.
 
 \begin{definition}[Renaming]
   Let $\phi$ be a formula of arity $n$ and let $f \colon n \to m$, the
@@ -26,22 +33,83 @@ rename free variables in a quantified formula:
   \begin{gather*}
     \renaming{\inFm{i}{j}}{f} = \inFm{f\,i}{f\,j}\\
     \renaming{\eqFm{i}{j}}{f} = \eqFm{f\,i}{f\,j}\\
-    \renaming{\nandFm{\phi}{\psi}}{f} = \nandFm{\renaming{\phi}{f}}{\renaming{\psi}{f}}\\
+    \renaming{\negFm{\phi}}{f} = \negFm{\renaming{\phi}{f}}\\
+    \renaming{\andFm{\phi}{\psi}}{f} = \andFm{\renaming{\phi}{f}}{\renaming{\psi}{f}}\\
     \renaming{\forallFm{\phi}}{f} = \forallFm{\renaming{\phi}{\mathsf{id}+f}}
   \end{gather*}
 \end{definition}
 
 Environments can be thought, then, as mappings from a finite set to
 the model $M$; the action of renaming on environments is simply given
-by composition.
-
+by composition. An easy proof connects satisfaction with renamings.
 \begin{lemma}
+  \label{lem:renaming}
   Let $\phi$ be a formula of arity $n$, $f \colon n \to m$ be a
   renaming, and let $\rho \colon n \to M$ and $\rho' \colon m \to M$
-  be environments. If for all $i \in n$, $\rho\,i = \rho'(f\,i)$, then
-  $M,\rho\models \phi$ is equivalent to
-  $M,\rho' \models \renaming{\phi}{f}$.
+  be environments. If for all $i \in n$,
+  $\rho\,i = (\rho' \circ f)\,i)$, then $M,\rho\models \phi$ is
+  equivalent to $M,\rho' \models \renaming{\phi}{f}$.
 \end{lemma}
+
+An important resource in Isabelle/ZF is the facility for defining
+inductive sets \cite{paulson2000fixedpoint,paulson1995set} together
+with a principle for defining functions by structural recursion.
+Internalized formulas are a prime example of this, so we define
+a function \isa{ren} that associates to each formula an internalized
+function that can be later applied to suitable arguments.
+\begin{isabelle}
+  \ \isacommand{consts}\isamarkupfalse%
+\ \ \ ren\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isacharequal}{\isachargreater}i{\isachardoublequoteclose}\isanewline
+\ \isacommand{primrec}\isamarkupfalse%
+\isanewline
+\ {\isachardoublequoteopen}ren{\isacharparenleft}Member{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
+\ \ {\isacharparenleft}{\isasymlambda}n{\isasymin}nat{\isachardot}{\isasymlambda}f\ {\isasymin}\ bij{\isacharparenleft}n{\isacharcomma}n{\isacharparenright}{\isachardot}\ Member\ {\isacharparenleft}f{\isacharbackquote}x{\isacharcomma}\ f{\isacharbackquote}y{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ {\isachardoublequoteopen}ren{\isacharparenleft}Equal{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
+\ \ {\isacharparenleft}{\isasymlambda}n{\isasymin}nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ bij{\isacharparenleft}n{\isacharcomma}n{\isacharparenright}{\isachardot}\ Equal\ {\isacharparenleft}f{\isacharbackquote}x{\isacharcomma}\ f{\isacharbackquote}y{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \isanewline
+\ {\isachardoublequoteopen}ren{\isacharparenleft}Nand{\isacharparenleft}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
+\ \ {\isacharparenleft}{\isasymlambda}n{\isasymin}nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ bij{\isacharparenleft}n{\isacharcomma}n{\isacharparenright}{\isachardot}\isanewline
+\ \ \ \ \ \ \ \ Nand\ {\isacharparenleft}ren{\isacharparenleft}p{\isacharparenright}{\isacharbackquote}n{\isacharbackquote}f{\isacharcomma}\ ren{\isacharparenleft}q{\isacharparenright}{\isacharbackquote}n{\isacharbackquote}f{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \isanewline
+\ {\isachardoublequoteopen}ren{\isacharparenleft}Forall{\isacharparenleft}p{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
+\ \ {\isacharparenleft}{\isasymlambda}n{\isasymin}nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ bij{\isacharparenleft}n{\isacharcomma}n{\isacharparenright}{\isachardot}\isanewline
+\ \ \ \ \ \ \ \ Forall\ {\isacharparenleft}ren{\isacharparenleft}p{\isacharparenright}\ {\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isacharbackquote}\ sum{\isacharunderscore}id{\isacharparenleft}n{\isacharcomma}f{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+Notice that our implementation of renaming is more restricted as we
+work with bijections; \isa{sum{\isacharunderscore}id} corresponds to
+the co-product morfism $\mathsf{id}_{1}+f \colon 1 + n \to 1 +
+n$. This definition of renaming exposes some inconveniences of working
+in the untyped realm of set theory, for example to use \isa{ren} we
+will need to prove that the renaming is a bijection. Another
+inconvenience is that environments are not finite mappings but lists
+(yet another inductively defined set); given an environment and a
+bijection, the following definition returns the composition
+$\rho \circ f$ as a list:
+\begin{isabelle}
+  \isacommand{definition}\isamarkupfalse%
+\ perm{\isacharunderscore}list\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}{\isacharbrackleft}i{\isacharcomma}i{\isacharbrackright}\ {\isasymRightarrow}\ i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ {\isachardoublequoteopen}perm{\isacharunderscore}list{\isacharparenleft}f{\isacharcomma}\isasymrho{\isacharparenright}\ {\isacharequal}{\isacharequal}tab{\isacharparenleft}nth{\isacharunderscore}i{\isacharparenleft}\isasymrho{\isacharparenright}\ O\ f{\isacharcomma}length{\isacharparenleft}\isasymrho{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+In the previous definition \isa{tab(g,n)} creates a list tabulating the
+image of the function \isa{g} on the elements of \isa{n}. 
+% \begin{isabelle}
+% \isacommand{lemma}\isamarkupfalse%
+% \ perm{\isacharunderscore}list{\isacharunderscore}tc\ \ {\isacharcolon}\ {\isachardoublequoteopen}\ \isasymrho\ {\isasymin}\ list{\isacharparenleft}A{\isacharparenright}\ {\isasymLongrightarrow}\ \isanewline
+% \ \ \ \ f{\isasymin}\ bij{\isacharparenleft}length{\isacharparenleft}\isasymrho{\isacharparenright}{\isacharcomma}length{\isacharparenleft}\isasymrho{\isacharparenright}{\isacharparenright}\ {\isasymLongrightarrow}\ \isanewline
+% \ \ \ \ perm{\isacharunderscore}list{\isacharparenleft}f{\isacharcomma}\isasymrho{\isacharparenright}\ {\isasymin}\ list{\isacharparenleft}A{\isacharparenright}{\isachardoublequoteclose}
+% \end{isabelle}
+The result connecting renaming with satisfiability, as in
+\ref{lem:renaming}, is the following:
+\fbox{Miguel: esto hay que acomodarlo o no mostrarlo!}
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ renSat\ {\isacharcolon}\ \isanewline
+\ \ \isakeyword{fixes}\ {\isachardoublequoteopen}{\isasymphi}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}{\isasymphi}\ {\isasymin}\ formula{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ \ {\isachardoublequoteopen}{\isasymAnd}\ {\isasymrho}\ f\ {\isachardot}\ {\isasymlbrakk}\ {\isasymrho}\ {\isasymin}\ list{\isacharparenleft}M{\isacharparenright}\ {\isacharsemicolon}\ f\ {\isasymin}\ bij{\isacharparenleft}length{\isacharparenleft}{\isasymrho}{\isacharparenright}{\isacharcomma}length{\isacharparenleft}{\isasymrho}{\isacharparenright}{\isacharparenright}\ {\isacharsemicolon}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymle}\ length{\isacharparenleft}{\isasymrho}{\isacharparenright}\ {\isasymrbrakk}\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ sats{\isacharparenleft}M{\isacharcomma}{\isasymphi}{\isacharcomma}{\isasymrho}{\isacharparenright}\ {\isasymlongleftrightarrow}\ sats{\isacharparenleft}M{\isacharcomma}rename{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharbackquote}length{\isacharparenleft}{\isasymrho}{\isacharparenright}{\isacharbackquote}converse{\isacharparenleft}f{\isacharparenright}{\isacharcomma}{\isasymrho}{\isasymcirc}f{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
 
 
 %%% Local Variables: 
