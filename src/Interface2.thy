@@ -886,10 +886,7 @@ lemma sixp_perm_env :
   apply(rule natE,simp,subst apply_fun,rule sixp_perm_tc,simp add:sixp_sep_perm_def,simp+)+
   apply(subst apply_fun,rule sixp_perm_tc,simp add:sixp_sep_perm_def,simp+,drule ltD,auto)
   done
-    
-lemma arity_sixp_perm: "True"
-  oops
-    
+
 lemma (in forcing_data) sixp_sep: 
   assumes
     "\<phi> \<in> formula" "arity(\<phi>)\<le>6" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "a5\<in>M"
@@ -919,7 +916,6 @@ proof -
     assume
       "x\<in>M" "v\<in>M"
       "B3\<in>M" "B2\<in>M" "B1\<in>M" "A5\<in>M" "A4\<in>M" "A3\<in>M" "A2\<in>M" "A1\<in>M"
-      (* "sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x,v])" is "sats(_,_,?env1)"*)
     with assms have
       "sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x,v]) \<longleftrightarrow> sats(M,\<phi>,[x,A1,A2,A3,A4,A5])" 
       (is "sats(_,_,?env1) \<longleftrightarrow> sats(_,_,?env2)")

@@ -15,9 +15,6 @@ lemma dom_perm_sep : "domain(perm_sep_forces) = 8"
 lemma perm_sep_tc : "perm_sep_forces \<in> 8 \<rightarrow> 8"
   by(subst dom_perm_sep[symmetric],rule FiniteFun_is_fun,rule perm_sep_ftc)
 
-lemma apply_fun: "f \<in> Pi(A,B) ==> <a,b>: f \<Longrightarrow> f`a = b"
-  by(auto simp add: apply_iff)
-
 lemma perm_sep_env : 
   "{p,q,r,s,t,u,v,w} \<subseteq> A \<Longrightarrow> j<8 \<Longrightarrow>
   nth(j,[t,s,w,p,q,r,u,v]) = nth(perm_sep_forces`j,[q,p,v,t,s,w,r,u])"
