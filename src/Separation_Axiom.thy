@@ -4,7 +4,7 @@ begin
 
 definition 
   perm_sep_forces :: "i" where
-  "perm_sep_forces == {<3,0>,<4,1>,<5,2>,<1,3>,<0,4>,<6,5>,<7,6>,<2,7>}"
+  "perm_sep_forces == {<0,3>,<1,4>,<2,5>,<3,1>,<4,0>,<5,6>,<6,7>,<7,2>}" 
 
 lemma perm_sep_ftc : "perm_sep_forces \<in> 8 -||> 8"
   by(unfold perm_sep_forces_def,(rule consI,auto)+,rule emptyI)
@@ -17,39 +17,15 @@ lemma perm_sep_tc : "perm_sep_forces \<in> 8 \<rightarrow> 8"
 
 lemma apply_fun: "f \<in> Pi(A,B) ==> <a,b>: f \<Longrightarrow> f`a = b"
   by(auto simp add: apply_iff)
-    
-lemma perm_sep_inj: "perm_sep_forces \<in> inj(8,8)"   
-  apply(auto simp add:apply_fun inj_def  perm_sep_forces_def)
-  apply(fold perm_sep_forces_def, simp add:  perm_sep_tc)
+
+lemma perm_sep_env : 
+  "{p,q,r,s,t,u,v,w} \<subseteq> A \<Longrightarrow> j<8 \<Longrightarrow>
+  nth(j,[t,s,w,p,q,r,u,v]) = nth(perm_sep_forces`j,[q,p,v,t,s,w,r,u])"
+  apply(subgoal_tac "j\<in>nat")
+  apply(rule natE,simp,subst apply_fun,rule perm_sep_tc,simp add:perm_sep_forces_def,simp+)+
+  apply(subst apply_fun,rule perm_sep_tc,simp add:perm_sep_forces_def,simp+,drule ltD,auto)
   done
-    
-lemma perm_sep_surj: "perm_sep_forces \<in> surj(8,8)" 
-  apply(auto simp add:apply_fun perm_sep_forces_def surj_def)
-  apply(fold perm_sep_forces_def, simp add: perm_sep_tc)
-  done
-
-lemma perm_sep_bij: "perm_sep_forces \<in> bij(8,8)" 
-  by(simp add: bij_def perm_sep_inj perm_sep_surj)
-    
-lemma conv_perm_sep_bij: "converse(perm_sep_forces) \<in> bij(8,8)" 
-  by (rule perm_sep_bij [THEN bij_converse_bij])
-
-
-lemma perm_sep_env_aux : "
-  {p,q,r,s,t,u,v,w} \<subseteq> A \<Longrightarrow>                           
-perm_list(perm_sep_forces,[t,s,w,p,q,r,u,v]) = [q,p,v,t,s,w,r,u]"
-  apply(rule nth_equalityI)
-  apply(auto simp add: perm_list_tc perm_sep_bij  perm_list_length)
-  apply(subst nth_perm,simp,simp add:perm_sep_bij,simp,erule ltD)
-  apply(rule_tac natE,simp+,subst apply_fun,rule perm_sep_tc,simp add:perm_sep_forces_def,simp)+
-  apply(auto,subst apply_fun,rule perm_sep_tc,simp add:perm_sep_forces_def,simp)
-  done
-
-lemma perm_sep_env: 
-  "perm_list(perm_sep_forces,[t,s,w,p,q,r,u,v]) = [q,p,v,t,s,w,r,u]"
-  by (auto simp add: perm_sep_env_aux [of _ _ _ _ _ _ _ _ "{p,q,r,s,t,u,v,w}"])
-
-    
+  
 context G_generic begin
 
 lemmas transitivity = Transset_intf trans_M
@@ -89,9 +65,10 @@ proof -
     and   
     ?Pl1="[P,leq,one]"
   let
-    ?new_form="rename(forces(?\<chi>))`8`converse(perm_sep_forces)"
+    ?new_form="ren(forces(?\<chi>))`8`8`perm_sep_forces"
   let
     ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
+  have "8\<in>nat" by simp
   note phi = \<open>\<phi>\<in>formula\<close> \<open>arity(\<phi>) \<le> 2\<close> 
   then have 
     "arity(?\<chi>) \<le> 3" 
@@ -101,7 +78,7 @@ proof -
     using arity_forces leI by abs_simp
   with phi definability[of "?\<chi>"] arity_forces  have
     "?new_form \<in> formula"
-    using ren_lib_tc[of "forces(?\<chi>)" _ "converse(perm_sep_forces)"] conv_perm_sep_bij 
+    using ren_tc[of "forces(?\<chi>)" 8 8 "perm_sep_forces"] perm_sep_tc 
     by simp
   then have
     "?\<psi> \<in> formula"
@@ -111,7 +88,7 @@ proof -
     using definability by simp
   with \<open>arity(forces(?\<chi>)) \<le> 8\<close> have
     "arity(?new_form) \<le> 8"
-    using ren_arity conv_perm_sep_bij definability by simp
+    using ren_arity perm_sep_tc definability by simp
   then have
     "arity(?\<psi>) \<le> 6" 
   proof -
@@ -158,7 +135,7 @@ proof -
       let
         ?env="?Pl1@[p,\<theta>,\<sigma>,\<pi>,u]"
       let
-        ?new_env="perm_list(perm_sep_forces,?env)"
+        ?new_env=" [\<theta>,p,u,P,leq,one,\<sigma>,\<pi>]"
       let
         ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
       have  
@@ -174,18 +151,16 @@ proof -
         "?Pl1 \<in> list(M)" by simp
       from in_M' have "?env \<in> list(M)" by simp
       have
-        Eq1': "?new_env = [\<theta>,p,u,P,leq,one,\<sigma>,\<pi>]"
-        using in_M' perm_sep_env by simp 
+        Eq1': "?new_env \<in> list(M)" using in_M'  by simp 
       then have
         "sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<sigma>,\<pi>]) \<longleftrightarrow> sats(M,?new_form,?new_env)"
         by simp
-      also have
-        "sats(M,?new_form,?new_env) \<longleftrightarrow> 
-           sats(M,rename(forces(?\<chi>))`length(?env)`converse(perm_sep_forces),?new_env)"           
-        by simp
-      also from \<open>arity(forces(?\<chi>)) \<le> 8\<close> and \<open>forces(?\<chi>) \<in> formula\<close> and in_M' have
+      also from \<open>forces(?\<chi>)\<in>formula\<close> \<open>8\<in>nat\<close>  \<open>?env\<in>list(M)\<close> 
+        \<open>?new_env\<in>list(M)\<close> perm_sep_tc \<open>arity(forces(?\<chi>)) \<le> 8\<close>
+      have
         "... \<longleftrightarrow> sats(M,forces(?\<chi>),?env)"
-        using  perm_sep_bij ren_Sat_leq by auto
+        using renSat[of _ 8 8 ?env M ?new_env] perm_sep_env
+        by auto
       also have
         "... \<longleftrightarrow> sats(M,forces(?\<chi>), [P, leq, one,p,\<theta>,\<sigma>,\<pi>]@[u])" by simp
       also from \<open>arity(forces(?\<chi>)) \<le> 7\<close> \<open>forces(?\<chi>)\<in>formula\<close> in_M'  phi have

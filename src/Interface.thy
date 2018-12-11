@@ -1,6 +1,6 @@
 (* Interface between internalized axiom formulas and 
    ZF axioms *)
-theory Interface imports ZFCAxioms_formula Relative_no_repl Names WF_absolute_no_repl
+theory Interface imports ZFCAxioms_formula Relative_no_repl  WF_absolute_no_repl
                          Internalize_no_repl begin
 
 (* Extensionality *)
@@ -857,14 +857,14 @@ lemma (in M_ZF) replacement_intf :
         sats(M,strong_replacement_ax_fm(\<phi>),[]) \<longleftrightarrow> 
        (\<forall>a\<in>M. strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y,a])))"
   apply(erule disjE) 
-  apply (simp add: strong_replacement_ax_fm_def strong_replacement_def 
+  apply ( simp add: strong_replacement_ax_fm_def strong_replacement_def 
                  univalent_fm_def univalent_def  sats_incr_bv3_iff sats_incr_n_bv2
-                 sats_incr_bv0_iff sats_swap_0_12 sats_incr_bv1_iff)
+                 sats_incr_bv0_iff sats_incr_bv1_iff sats_swap_0_12)
   apply (simp add: strong_replacement_ax_fm_def strong_replacement_def 
                  univalent_fm_def univalent_def sats_incr_bv3_iff
                  sats_incr_bv0_iff sats_swap_0_13 sats_incr_bv1_iff sats_incr_n_bv2)
 done 
-               
+
 definition 
   is_cons_fm :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
  "is_cons_fm(a,b,z) == Exists(And(upair_fm(succ(a),succ(a),0),union_fm(0,succ(b),succ(z))))"
