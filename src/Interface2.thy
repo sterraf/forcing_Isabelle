@@ -1,4 +1,4 @@
-theory Interface2 imports Forcing_data Relative_no_repl Internalize_no_repl begin
+theory Interface2 imports Forcing_data Relative_no_repl Internalize_no_repl Renaming begin
 
 lemma Transset_intf :
   "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
@@ -61,7 +61,6 @@ abbreviation
 abbreviation
  dec13  :: i   ("13") where "13 == succ(12)"
 
-  
 lemma uniq_dec_2p: "<C,D> \<in> M \<Longrightarrow> 
              \<forall>A\<in>M. \<forall>B\<in>M. <C,D> = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B)
             \<longleftrightarrow>
@@ -492,6 +491,15 @@ lemma arity_tup5p :
   by (simp add: tupling_fm_5p_def arity_incr_bv_lemma pair_fm_def 
                 upair_fm_def Un_commute nat_union_abs1)
 
+lemma leq_9:
+  "n\<le>9 \<Longrightarrow> n=0 | n=1 | n=2 | n=3 | n=4 | n=5 | n=6| n=7 | n=8 | n=9"
+  by (clarsimp simp add:not_lt_iff_le, auto simp add:lt_def)
+
+lemma arity_tup5p_leq :
+  "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>) \<le> 9 \<rbrakk> \<Longrightarrow> arity(tupling_fm_5p(\<phi>)) = 2"
+  by (drule leq_9, elim disjE, simp_all add:tupling_fm_5p_def arity_incr_bv_lemma pair_fm_def 
+                upair_fm_def Un_commute nat_union_abs1)
+
 definition
   tupling_fm_6p :: "i \<Rightarrow> i" where
   "tupling_fm_6p(\<phi>) = 
@@ -854,7 +862,91 @@ proof -
   by simp 
   with \<open>r\<in>M\<close> \<open>f\<in>M\<close> \<open>g\<in>M\<close> \<open>a\<in>M\<close> \<open>b\<in>M\<close> show ?thesis by simp
 qed
- 
+
+definition 
+  sixp_sep_perm :: "i" where
+  "sixp_sep_perm == {<0,8>,<1,0>,<2,1>,<3,2>,<4,3>,<5,4>}" 
+
+lemma sixp_perm_ftc : "sixp_sep_perm \<in> 6 -||> 9"
+  by(unfold sixp_sep_perm_def,(rule consI,auto)+,rule emptyI)
+
+lemma dom_sixp_perm : "domain(sixp_sep_perm) = 6"
+  by(unfold sixp_sep_perm_def,auto)
+  
+lemma sixp_perm_tc : "sixp_sep_perm \<in> 6 \<rightarrow> 9"
+  by(subst dom_sixp_perm[symmetric],rule FiniteFun_is_fun,rule sixp_perm_ftc)
+
+lemma apply_fun: "f \<in> Pi(A,B) ==> <a,b>: f \<Longrightarrow> f`a = b"
+  by(auto simp add: apply_iff)
+
+lemma sixp_perm_env : 
+  "{x,a1,a2,a3,a4,a5} \<subseteq> A \<Longrightarrow> j<6 \<Longrightarrow>
+  nth(j,[x,a1,a2,a3,a4,a5]) = nth(sixp_sep_perm`j,[a1,a2,a3,a4,a5,b1,b2,b3,x,v])"
+  apply(subgoal_tac "j\<in>nat")
+  apply(rule natE,simp,subst apply_fun,rule sixp_perm_tc,simp add:sixp_sep_perm_def,simp+)+
+  apply(subst apply_fun,rule sixp_perm_tc,simp add:sixp_sep_perm_def,simp+,drule ltD,auto)
+  done
+    
+lemma arity_sixp_perm: "True"
+  oops
+    
+lemma (in forcing_data) sixp_sep: 
+  assumes
+    "\<phi> \<in> formula" "arity(\<phi>)\<le>6" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "a5\<in>M"
+  shows 
+    "separation(##M,\<lambda>x. sats(M,\<phi>,[x,a1,a2,a3,a4,a5]))"
+proof -
+  let 
+    ?f="sixp_sep_perm"
+  let
+    ?\<phi>'="ren(\<phi>)`6`9`?f"
+  from assms have
+    "arity(?\<phi>')\<le>9" "?\<phi>' \<in> formula"
+    using sixp_perm_tc ren_arity ren_tc by simp_all
+  then have
+    "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,tupling_fm_5p(?\<phi>'),[x,v])))"
+    using separation_ax arity_tup5p_leq by simp
+  then have
+    Eq1: "(\<forall>v\<in>M. separation
+             (##M, \<lambda>x. \<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+                    \<forall>A1\<in>M. pair(##M, A4, A5, B1) \<and> pair(##M, A3, B1, B2) \<and> pair(##M, A2, B2, B3) \<and> 
+                            pair(##M, A1, B3, v) \<longrightarrow>
+               sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x,v])))" 
+    (is "\<forall>v\<in>M. separation(_ , \<lambda>x. ?P(x,v))")
+    unfolding separation_def tupling_fm_5p_def by (simp del: pair_abs)
+  {
+    fix B1 B2 B3 A1 A2 A3 A4 A5 x v
+    assume
+      "x\<in>M" "v\<in>M"
+      "B3\<in>M" "B2\<in>M" "B1\<in>M" "A5\<in>M" "A4\<in>M" "A3\<in>M" "A2\<in>M" "A1\<in>M"
+      (* "sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x,v])" is "sats(_,_,?env1)"*)
+    with assms have
+      "sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x,v]) \<longleftrightarrow> sats(M,\<phi>,[x,A1,A2,A3,A4,A5])" 
+      (is "sats(_,_,?env1) \<longleftrightarrow> sats(_,_,?env2)")
+      using renSat[of \<phi> 6 9 ?env2 M ?env1 ?f] sixp_perm_tc sixp_perm_env [of _ _ _ _ _ _ "M"]  
+      by auto
+  }
+  then have
+    Eq2: "x\<in>M \<Longrightarrow> v\<in>M \<Longrightarrow> ?P(x,v) \<longleftrightarrow> (\<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+                    \<forall>A1\<in>M. pair(##M, A4, A5, B1) \<and> pair(##M, A3, B1, B2) \<and> pair(##M, A2, B2, B3) \<and> 
+                            pair(##M, A1, B3, v) \<longrightarrow>
+               sats(M,\<phi>,[x,A1,A2,A3,A4,A5]))" (is "_ \<Longrightarrow> _\<Longrightarrow> _ \<longleftrightarrow> ?Q(x,v)") for x v 
+    by (simp del: pair_abs)
+  define PP where "PP \<equiv> ?P"
+  define QQ where "QQ \<equiv> ?Q"
+  from Eq2 have
+      "x\<in>M \<Longrightarrow> v\<in>M \<Longrightarrow> PP(x,v) \<longleftrightarrow> QQ(x,v)" for x v 
+      unfolding PP_def QQ_def .
+  then have
+    "v\<in>M \<Longrightarrow> 
+     (\<forall>z[##M]. \<exists>y[##M]. \<forall>x[##M]. x \<in> y \<longleftrightarrow> x \<in> z \<and> PP(x,v)) \<longleftrightarrow>
+     (\<forall>z[##M]. \<exists>y[##M]. \<forall>x[##M]. x \<in> y \<longleftrightarrow> x \<in> z \<and> QQ(x,v))" for v by (simp del: pair_abs)
+  with Eq1 have
+    "(\<forall>v\<in>M. separation (##M, \<lambda>x. QQ(x,v)))"
+    unfolding separation_def PP_def by (simp del: pair_abs)
+  with assms show ?thesis unfolding QQ_def using tupling_sep_5p_rel2  by simp
+qed 
+  
 (* Instance of Replacement for M_basic *)
   
 (* funspace_succ_replacement:
