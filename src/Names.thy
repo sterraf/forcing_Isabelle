@@ -205,7 +205,11 @@ definition
   
 definition
   check :: "i \<Rightarrow> i" where
-  "check(x) == wfrec(Memrel(eclose({x})), x , Hcheck)"
+  "check(x) == transrec(x , Hcheck)"
+  
+lemma checkD:
+  "check(x) =  wfrec(Memrel(eclose({x})), x, Hcheck)"
+  unfolding check_def transrec_def ..
   
 lemma  aux_def_check: "x \<in> y \<Longrightarrow>
   wfrec(Memrel(eclose({y})), x, Hcheck) = 
@@ -220,13 +224,13 @@ proof -
     wfr:   "\<forall>w . wf(?r(w))" ..
   with wfrec [of "?r(y)" y "Hcheck"] have
     "check(y)= Hcheck( y, \<lambda>x\<in>?r(y) -`` {y}. wfrec(?r(y), x, Hcheck))"
-    using check_def by simp 
+    using checkD by simp 
   also have 
     " ... = Hcheck( y, \<lambda>x\<in>y. wfrec(?r(y), x, Hcheck))"
     using under_Memrel_eclose arg_into_eclose by simp
   also have 
     " ... = Hcheck( y, \<lambda>x\<in>y. check(x))"
-    using aux_def_check check_def by simp
+    using aux_def_check checkD by simp
   finally show ?thesis using Hcheck_def by simp
 qed
       
