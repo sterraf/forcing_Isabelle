@@ -1,6 +1,6 @@
 #!/bin/bash
 old_dir=$PWD
-html_dir="output/html/Unsorted/separation/"
+html_dir="output/html/Unsorted/Separation-Generic/"
 
 cd $html_dir
 sed -i -- 's/a href="..\/..\/ZF\/ZF\/Main.html/a href="https:\/\/www.cl.cam.ac.uk\/research\/hvg\/Isabelle\/dist\/library\/ZF\/ZF\/ZF.html/g' *.html

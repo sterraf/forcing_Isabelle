@@ -1,4 +1,4 @@
-session "separation" = "ZF-Constructible" +
+session "Separation-Generic" = "ZF-Constructible" +
   options [document = pdf, document_output = "output",quick_and_dirty]
   theories [document = true]
     "Pointed_DC"
@@ -12,7 +12,5 @@ session "separation" = "ZF-Constructible" +
     "Pairing_Axiom"
     "Union_Axiom"
     "Separation_Axiom"
-  theories
-    (* Baz *)
   document_files
     "root.tex"
