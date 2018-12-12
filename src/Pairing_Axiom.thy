@@ -1,4 +1,4 @@
-theory Pairing_Axiom imports Names Forcing_data Interface2 begin
+theory Pairing_Axiom imports Names Forcing_data Interface begin
 
 context forcing_data
 begin

@@ -1,4 +1,4 @@
-theory Forces_locale imports Interface2 Pairing_Axiom Union_Axiom begin
+theory Forces_locale imports Interface Pairing_Axiom Union_Axiom begin
    
 (* Prototyping Forcing relation and theorems as a locale*)
 locale forcing_thms = M_extra_assms +

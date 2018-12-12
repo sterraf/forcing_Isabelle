@@ -1,4 +1,4 @@
-theory Internalize_More imports Internalize_excerpt Formula begin
+theory Internalize_More imports Internalizations Formula begin
 
 (*  "dense_below(D,q) == \<forall>p\<in>P. \<langle>p,q\<rangle>\<in>leq \<longrightarrow> (\<exists>d\<in>D . \<langle>d,p\<rangle>\<in>leq)" *)
 
