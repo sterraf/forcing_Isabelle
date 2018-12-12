@@ -1,9 +1,35 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
 \section{Axioms of set theory}
 
+The axioms of Zermelo and Fraenkel with Choice ($\ZFC$) are a
+countably infinite list of first-order sentences.
 \medskip
 \fbox{\em \dots\ discussion of axioms \dots }
 \medskip
+
+We chose a presentation of the $\ZFC$ axioms that would be most
+compatible with the development of relativization by Paulson:
+\begin{isabelle}
+\isacommand{locale}\isamarkupfalse%
+\ M{\isacharunderscore}ZF\ {\isacharequal}\ \isanewline
+\ \isakeyword{fixes}\ M\ \isanewline
+\ \isakeyword{assumes}\ \isanewline
+\ \ \ \ \ \ upair{\isacharunderscore}ax{\isacharcolon}\ \ \ \ {\isachardoublequoteopen}upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{and}\ Union{\isacharunderscore}ax{\isacharcolon}\ \ \ \ {\isachardoublequoteopen}Union{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{and}\ power{\isacharunderscore}ax{\isacharcolon}\ \ \ \ {\isachardoublequoteopen}power{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{and}\ extensionality{\isacharcolon}\ \ \ {\isachardoublequoteopen}extensionality{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{and}\ foundation{\isacharunderscore}ax{\isacharcolon}\ \ \ \ {\isachardoublequoteopen}foundation{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{and}\ infinity{\isacharunderscore}ax{\isacharcolon}\ {\isachardoublequoteopen}infinity{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{and}\ separation{\isacharunderscore}ax{\isacharcolon}\isanewline
+\ \ {\isachardoublequoteopen}{\isasymlbrakk}\ {\isasymphi}\ {\isasymin}\ formula\ {\isacharsemicolon}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharequal}{\isadigit{1}}\ {\isasymor}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharequal}{\isadigit{2}}\ {\isasymrbrakk}\isanewline\ \ \ \ {\isasymLongrightarrow}\isanewline
+\ \ {\isacharparenleft}{\isasymforall}a{\isasymin}M{\isachardot}\ separation{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharcomma}{\isasymlambda}x{\isachardot}\ sats{\isacharparenleft}M{\isacharcomma}{\isasymphi}{\isacharcomma}{\isacharbrackleft}x{\isacharcomma}a{\isacharbrackright}{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{and}\ replacement{\isacharunderscore}ax{\isacharcolon}\isanewline 
+\ \ {\isachardoublequoteopen}{\isasymlbrakk}\ {\isasymphi}\ {\isasymin}\ formula{\isacharsemicolon}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharequal}{\isadigit{2}}\ {\isasymor}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharequal}{\isadigit{3}}\ {\isasymrbrakk}\isanewline
+\ \ \ \ {\isasymLongrightarrow}\isanewline
+\ \ {\isacharparenleft}{\isasymforall}a{\isasymin}M{\isachardot}\ strong{\isacharunderscore}replacement{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharcomma}\isanewline
+\ \ \ \ {\isasymlambda}x\ y{\isachardot}\ sats{\isacharparenleft}M{\isacharcomma}{\isasymphi}{\isacharcomma}{\isacharbrackleft}x{\isacharcomma}y{\isacharcomma}a{\isacharbrackright}{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
 
 An equivalent formulation of the Foundation Axiom states that the
 universe of sets can be decomposed in a transfinite hierarchy of
@@ -34,7 +60,7 @@ $\lb N',E\restr N'\rb\preccurlyeq  \lb N,E\rb$ which must also be
 well founded; then the 
 Mostowski collapsing function \cite[Def.~I.9.31]{kunen2011set} sends $\lb
 N',E\restr N'\rb$ 
-isomorphically to an $\lb M,\in\rb$ where $M$ is transitive.
+isomorphically to some $\lb M,\in\rb$ with  $M$ transitive.
 
 By G\"odel's Second Incompleteness Theorem we cannot  prove that
 there exists a model of $\ZFC$  (assuming that our base theory is not

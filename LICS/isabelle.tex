@@ -1,8 +1,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
 \section{Isabelle}
+
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-
+\subsection{Logics}
+
 Isabelle provides a meta-language called \emph{Pure} that consists of
 a fragment of higher order logic. The meta-Boolean type is called
-\isatt{prop}. Meta connectives
+\isatt{prop}. Meta-connectives
 \isatt{\isasymLongrightarrow} and \isatt{\&\&\&} fulfill the role of
 implication and conjunction, and the meta-binder \isatt{\isasymAnd}
 corresponds to universal quantification. 
@@ -35,6 +39,22 @@ generate elements of both types, neither of them are
 \emph{initial}, in the sense that they are not the least types
 obtained by combining the given constants and operations. This will
 have concrete consequences in our strategy to approach the development.
+
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-
+\subsection{Locales}
+
+Locales \cite{ballarin2010tutorial} provide a neat facility to
+encapsulate a context (fixed objects and assumptions on them) that is
+to be used in proving several theorems, as in usual mathematical
+practice. 
+
+In this paper, locales have a further use. The \emph{Fundamental
+  Theorems of Forcing} we use talk about a specific map $\forceisa$
+from formulas to formulas. The definition of $\forceisa$ is involved
+and we will not dwell on this now; but applications of those theorems
+do not require to know how it is defined. Therefore, we black-box it
+and package everything in a locale that assumes that there is such a
+map that satisfies the Fundamental Theorems.
 
 
 %%% Local Variables: 
