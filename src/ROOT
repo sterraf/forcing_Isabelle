@@ -11,6 +11,7 @@ session "Separation-Generic" = "ZF-Constructible" +
     "Nat_Miscelanea"
     "Pairing_Axiom"
     "Union_Axiom"
+    "Foundation_Axiom"
     "Separation_Axiom"
   document_files
     "root.tex"
