@@ -179,11 +179,6 @@ proof -
 qed
   
   
-  (* KEEP? *)    
-lemma eq_sub_trans :  "x=y \<Longrightarrow> y\<subseteq>z \<Longrightarrow> x\<subseteq>z"
-  "x\<subseteq>y \<Longrightarrow> y=z \<Longrightarrow> x\<subseteq>z"
-  by simp_all
-    
 context forcing_data
 begin  (*************** CONTEXT: forcing_data *****************)
   
@@ -233,7 +228,28 @@ proof -
     using aux_def_check checkD by simp
   finally show ?thesis using Hcheck_def by simp
 qed
-      
+
+lemma check0 : "check(0) = 0"
+  by(subst def_check,simp)
+
+lemma singletonM : "a \<in> M \<Longrightarrow> {a} \<in> M"
+  by(insert upairM,force)
+    
+lemma def_checkS : 
+  fixes n
+  assumes "n \<in> nat"
+  shows "check(succ(n)) = check(n) \<union> {<check(n),one>}"
+proof -
+  have "check(succ(n)) = {<check(i),one> . i \<in> succ(n)} " 
+    using def_check by blast
+  also have "... = {<check(i),one> . i \<in> n} \<union> {<check(n),one>}"
+    by auto
+  also have "... = check(n) \<union> {<check(n),one>}"
+    using def_check[of n,symmetric] by simp
+  finally have "check(succ(n)) = check(n) \<union> {<check(n),one>}" .
+  then show ?thesis .
+qed
+
 lemma field_Memrel : "x \<in> M \<Longrightarrow> field(Memrel(eclose({x}))) \<subseteq> M"
   apply(rule subset_trans,rule field_rel_subset,rule Ordinal.Memrel_type)
   apply(rule eclose_least,rule trans_M,auto)
@@ -471,6 +487,23 @@ lemma G_in_Gen_Ext :
  using assms val_G_dot GenExtI[of _ G] G_dot_in_M 
   by force
 
+lemma check_n_M :
+  fixes n
+  assumes "n \<in> nat"
+  shows "check(n) \<in> M"
+  using assms proof (induct n)
+  case 0
+  then show ?case using zero_in_M check0 by simp
+  next
+    case (succ x)
+    have "one \<in> M" using one_in_P Transset_M[OF trans_M] P_in_M by simp
+    with \<open>check(x)\<in>M\<close> have "<check(x),one> \<in> M" using pairM by simp
+    then have "{<check(x),one>} \<in> M" using singletonM by simp
+    with \<open>check(x)\<in>M\<close> have "check(x) \<union> {<check(x),one>} \<in> M" using Un_closed by simp
+    then show ?case using \<open>x\<in>nat\<close> def_checkS by simp
+qed
+    
+    
 end    (*************** CONTEXT: M_extra_assms *****************)
   
 end
