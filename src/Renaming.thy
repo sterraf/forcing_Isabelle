@@ -151,23 +151,23 @@ qed
 lemma renSat : 
   fixes "\<phi>"
   assumes "\<phi> \<in> formula"
-  shows  "\<And> n m \<rho> \<rho>' f . \<lbrakk>  n \<in> nat ; m \<in> nat ; \<rho> \<in> list(M) ; \<rho>' \<in> list(M) ; f \<in> n \<rightarrow> m ;
+  shows  "\<lbrakk>  n \<in> nat ; m \<in> nat ; \<rho> \<in> list(M) ; \<rho>' \<in> list(M) ; f \<in> n \<rightarrow> m ;
             arity(\<phi>) \<le> n ;
             \<And> i . i < n \<Longrightarrow> nth(i,\<rho>) = nth(f`i,\<rho>') \<rbrakk> \<Longrightarrow>
          sats(M,\<phi>,\<rho>) \<longleftrightarrow> sats(M,ren(\<phi>)`n`m`f,\<rho>')"
   using \<open>\<phi> \<in> formula\<close> 
-proof(induct \<phi>)
+proof(induct \<phi> arbitrary:n m \<rho> \<rho>' f)
   case (Member x y)
   have 0: "ren(Member(x,y))`n`m`f = Member(f`x,f`y)" using Member assms arity_type by force
   have 1: "x \<in> n" using Member arity_meml by simp
   have "y \<in> n" using Member arity_memr by simp
-  then show ?case using Member assms 1 0 ltI by simp      
+  then show ?case using Member 1 0 ltI by simp      
 next
   case (Equal x y)
   have 0: "ren(Equal(x,y))`n`m`f = Equal(f`x,f`y)" using Equal assms arity_type by force
   have 1: "x \<in> n" using Equal arity_eql by simp
   have "y \<in> n" using Equal arity_eqr by simp
-  then show ?case using Equal assms 1 0 ltI by simp      
+  then show ?case using Equal 1 0 ltI by simp      
 next
   case (Nand p q)
   have 0:"ren(Nand(p,q))`n`m`f = Nand(ren(p)`n`m`f,ren(q)`n`m`f)" using Nand by simp

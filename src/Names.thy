@@ -183,7 +183,7 @@ context forcing_data
 begin  (*************** CONTEXT: forcing_data *****************)
   
 lemma upairM : "x \<in> M \<Longrightarrow> y \<in> M \<Longrightarrow> {x,y} \<in> M"
-  by(insert upair_ax, auto simp add: upair_ax_def)
+  by(insert omega_def upair_ax, auto simp add: upair_ax_def)
     
 lemma pairM : "x \<in>  M \<Longrightarrow> y \<in> M \<Longrightarrow> <x,y> \<in> M"
   by(unfold Pair_def, rule upairM,(rule upairM,simp+)+)
@@ -210,7 +210,7 @@ lemma  aux_def_check: "x \<in> y \<Longrightarrow>
   wfrec(Memrel(eclose({y})), x, Hcheck) = 
   wfrec(Memrel(eclose({x})), x, Hcheck)"
   by (rule wfrec_eclose_eq,auto simp add: arg_into_eclose eclose_sing)
-    
+
 lemma def_check : "check(y) = { <check(w),one> . w \<in> y}"
 proof -
   let 
@@ -229,12 +229,9 @@ proof -
   finally show ?thesis using Hcheck_def by simp
 qed
 
-lemma check0 : "check(0) = 0"
-  by(subst def_check,simp)
-
 lemma singletonM : "a \<in> M \<Longrightarrow> {a} \<in> M"
-  by(insert upairM,force)
-    
+  by(insert upairM ,force)
+
 lemma def_checkS : 
   fixes n
   assumes "n \<in> nat"
@@ -243,11 +240,10 @@ proof -
   have "check(succ(n)) = {<check(i),one> . i \<in> succ(n)} " 
     using def_check by blast
   also have "... = {<check(i),one> . i \<in> n} \<union> {<check(n),one>}"
-    by auto
+    by blast
   also have "... = check(n) \<union> {<check(n),one>}"
     using def_check[of n,symmetric] by simp
-  finally have "check(succ(n)) = check(n) \<union> {<check(n),one>}" .
-  then show ?thesis .
+  finally show ?thesis .
 qed
 
 lemma field_Memrel : "x \<in> M \<Longrightarrow> field(Memrel(eclose({x}))) \<subseteq> M"
@@ -277,7 +273,8 @@ proof -
     using wfrec_restr by simp
   also with assms have "... = wfrec(?r(z),z,Hv(G))" using restrict_edrel_eq by simp
   finally show ?thesis .
-qed  
+qed
+
 lemma def_val:  "val(G,x) = {val(G,t) .. t\<in>domain(x) , \<exists>p\<in>P .  <t,p>\<in>x \<and> p \<in> G }"
 proof -
   let
@@ -426,6 +423,22 @@ proof -
   then show ?thesis using Transset_def by auto
 qed
 
+lemma check_n_M :
+  fixes n
+  assumes "n \<in> nat"
+  shows "check(n) \<in> M"
+  using \<open>n\<in>nat\<close> proof (induct n)
+  case 0
+  then show ?case using zero_in_M by (subst def_check,simp)
+  next
+    case (succ x)
+    have "one \<in> M" using one_in_P P_sub_M subsetD by simp
+    with \<open>check(x)\<in>M\<close> have "<check(x),one> \<in> M" using pairM by simp
+    then have "{<check(x),one>} \<in> M" using singletonM by simp
+    with \<open>check(x)\<in>M\<close> have "check(x) \<union> {<check(x),one>} \<in> M" using Un_closed by simp
+    then show ?case using \<open>x\<in>nat\<close> def_checkS by simp
+qed
+
 end (* context forcing_data *)
   
 (* Other assumptions over M. This will be removed
@@ -486,23 +499,6 @@ lemma G_in_Gen_Ext :
   shows   "G \<in> M[G]" 
  using assms val_G_dot GenExtI[of _ G] G_dot_in_M 
   by force
-
-lemma check_n_M :
-  fixes n
-  assumes "n \<in> nat"
-  shows "check(n) \<in> M"
-  using assms proof (induct n)
-  case 0
-  then show ?case using zero_in_M check0 by simp
-  next
-    case (succ x)
-    have "one \<in> M" using one_in_P Transset_M[OF trans_M] P_in_M by simp
-    with \<open>check(x)\<in>M\<close> have "<check(x),one> \<in> M" using pairM by simp
-    then have "{<check(x),one>} \<in> M" using singletonM by simp
-    with \<open>check(x)\<in>M\<close> have "check(x) \<union> {<check(x),one>} \<in> M" using Un_closed by simp
-    then show ?case using \<open>x\<in>nat\<close> def_checkS by simp
-qed
-    
     
 end    (*************** CONTEXT: M_extra_assms *****************)
   
