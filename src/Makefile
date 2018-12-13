@@ -1,4 +1,4 @@
-THY_FILES = Pointed_DC.thy Forcing_notions.thy Forcing_data.thy Forces_locale.thy Names.thy Interface.thy Renaming.thy Nat_Miscelanea.thy Pairing_Axiom.thy Union_Axiom.thy Separation_Axiom.thy Foundation_Axiom.thy
+THY_FILES = Datatype_absolute  Forces_locale.thy Forcing_data.thy Forcing_notions.thy Infinity_Axiom.thy Interface.thy Internalizations.thy Names.thy Nat_Miscelanea.thy Pairing_Axiom.thy Pointed_DC.thy Recursion_Thms.thy Relative.thy Renaming.thy Separation_Axiom.thy Union_Axiom.thy Wellorderings.thy WF_absolute.thy WFrec.thy Foundation_Axiom.thy
 
 build: 
 	isabelle build -c -D .
