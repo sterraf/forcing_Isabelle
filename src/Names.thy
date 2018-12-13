@@ -134,35 +134,33 @@ lemma tr_edrel_eclose : "<y,z> \<in> edrel(eclose({x}))^+ \<Longrightarrow> y \<
     
 lemma restrict_edrel_eq : 
   assumes "z \<in> domain(x)"
-  shows "fld_restrict(edrel(eclose({x})), eclose({z})) = edrel(eclose({z}))"
-proof -
+  shows "edrel(eclose({x}))\<inter> eclose({z})*eclose({z}) = edrel(eclose({z}))"
+proof 
   let ?ec="\<lambda> y . edrel(eclose({y}))"
   let ?ez="eclose({z})"
-  let ?rr="fld_restrict(?ec(x), ?ez)"  
+  let ?rr="?ec(x)\<inter>?ez*?ez"  
   { fix y
     assume yr:"y \<in> ?rr"
-    with yr obtain a b where 1:"<a,b> \<in> fld_restrict(?rr,?ez)" 
-      "a \<in> ?ez" "b \<in> ?ez" "<a,b> \<in> ?ec(x)" "y=<a,b>"
-      unfolding fld_restrict_def Ord_induct by blast
+    with yr obtain a b where 1:"<a,b> \<in> ?rr\<inter>?ez*?ez" 
+      "a \<in> ?ez" "b \<in> ?ez" "<a,b> \<in> ?ec(x)" "y=<a,b>" by blast
     then have "a \<in> domain(b)" using edrelD by blast
     with 1 have "y \<in> edrel(eclose({z}))" by blast
   }
-  then have A:"fld_restrict(edrel(eclose({x})), eclose({z})) \<subseteq> edrel(eclose({z}))" by blast
+  then show "?rr \<subseteq> edrel(?ez)" using subsetI by auto 
+next
   let ?ec="\<lambda> y . edrel(eclose({y}))"
   let ?ez="eclose({z})"
-  let ?rr="fld_restrict(?ec(x), ?ez)"  
+  let ?rr="?ec(x)\<inter>?ez*?ez"  
   { fix y
     assume yr:"y \<in> edrel(?ez)"
     then obtain a b where 1: "a \<in> ?ez" "b \<in> ?ez" "y=<a,b>" "a \<in> domain(b)"
       using edrelD by blast 
     with assms have "z \<in> eclose(x)" using in_dom_in_eclose by simp
-    with assms 1 have "a \<in> eclose({x})" "b \<in> eclose({x})" using in_eclose_sing by simp+
+    with assms 1 have "a \<in> eclose({x})" "b \<in> eclose({x})" using in_eclose_sing by simp_all
     with \<open>a\<in>domain(b)\<close> have "<a,b> \<in> edrel(eclose({x}))" by blast
-    with 1 have "<a,b> \<in> fld_restrict(edrel(eclose({x})),eclose({z}))" using fld_restrictI by simp
-    with 1 have "y \<in> fld_restrict(edrel(eclose({x})),eclose({z}))" by simp 
+    with 1 have "y \<in> ?rr" by simp
   }
-  then have B: "edrel(eclose({z})) \<subseteq> fld_restrict(edrel(eclose({x})), eclose({z}))" by blast
-  with A show ?thesis by auto
+  then show "edrel(eclose({z})) \<subseteq> ?rr" by blast
 qed
   
 lemma tr_edrel_subset :
@@ -183,7 +181,7 @@ context forcing_data
 begin  (*************** CONTEXT: forcing_data *****************)
   
 lemma upairM : "x \<in> M \<Longrightarrow> y \<in> M \<Longrightarrow> {x,y} \<in> M"
-  by(insert omega_def upair_ax, auto simp add: upair_ax_def)
+  by(insert  upair_ax, auto simp add: upair_ax_def)
     
 lemma pairM : "x \<in>  M \<Longrightarrow> y \<in> M \<Longrightarrow> <x,y> \<in> M"
   by(unfold Pair_def, rule upairM,(rule upairM,simp+)+)
@@ -269,9 +267,10 @@ proof -
   moreover have "wf(?r(x))" using wf_edrel .    
   moreover from assms have "tr_down(?r(x),z) \<subseteq> eclose({z})" using tr_edrel_subset by simp
   ultimately have 
-    "wfrec(?r(x),z,Hv(G)) = wfrec(fld_restrict(?r(x),eclose({z})),z,Hv(G))"
+    "wfrec(?r(x),z,Hv(G)) = wfrec[eclose({z})](?r(x),z,Hv(G))"
     using wfrec_restr by simp
-  also with assms have "... = wfrec(?r(z),z,Hv(G))" using restrict_edrel_eq by simp
+  also from \<open>z\<in>domain(x)\<close> have "... = wfrec(?r(z),z,Hv(G))" 
+      using restrict_edrel_eq wfrec_restr_eq by simp
   finally show ?thesis .
 qed
 
