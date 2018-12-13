@@ -30,15 +30,15 @@ lemma succ_ltI : "n \<in> nat \<Longrightarrow> succ(j) < n \<Longrightarrow> j 
 done
       
 lemma succ_In : "n \<in> nat \<Longrightarrow> succ(j) \<in> n \<Longrightarrow> j \<in> n"
- by (rule ltD, rule succ_ltI, auto intro: succ_ltI ltI)
+ by (rule succ_ltI[THEN ltD], auto intro: ltI)
     
 lemmas succ_leD = succ_leE[OF leI]
     
 lemma succpred_leI : "n \<in> nat \<Longrightarrow>  n \<le> succ(pred(n))"
-  by (erule natE,simp_all)
+  by (auto elim: natE)
 
 lemma succpred_n0 : "p \<in> nat \<Longrightarrow>  succ(n) \<in> p \<Longrightarrow> p\<noteq>0"
-  by (erule natE,simp_all)
+  by (auto elim: natE)
 
 
 lemma funcI : "f \<in> A \<rightarrow> B \<Longrightarrow> a \<in> A \<Longrightarrow> b= f ` a \<Longrightarrow> \<langle>a, b\<rangle> \<in> f"
@@ -71,20 +71,13 @@ lemma pred_le : "n\<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> n \<
   by(subgoal_tac "pred(n)\<in>nat",rule_tac n="n" in natE,auto)
     
 lemma un_leD1 : "i \<in> nat \<Longrightarrow> j\<in> nat \<Longrightarrow> k \<in> nat \<Longrightarrow>  i \<union> j \<le> k \<Longrightarrow> i \<le> k"   
-  by (rule conjunct1,rule  iffD1, rule_tac j="j" in Un_least_lt_iffn,assumption)
+  by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct1]],simp_all)
   
 lemma un_leD2 : "i \<in> nat \<Longrightarrow> j\<in> nat \<Longrightarrow> k \<in> nat \<Longrightarrow>  i \<union> j \<le>k \<Longrightarrow> j \<le> k"   
-  by (rule conjunct2,rule  iffD1, rule_tac j="j" in Un_least_lt_iffn,assumption)
-
-lemma un_leI : "i \<in> nat \<Longrightarrow> j\<in> nat \<Longrightarrow> k \<in> nat \<Longrightarrow> i \<le> k \<Longrightarrow> j \<le> k \<Longrightarrow> i \<union> j \<le> k"   
-  by(subst Un_def, rule Union_le,auto) 
-
-lemma un_leI' : "k \<in> nat \<Longrightarrow> i \<le> k \<Longrightarrow> j \<le> k \<Longrightarrow> i \<union> j \<le> k"   
-  by(subst Un_def, rule Union_le,auto) 
+  by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct2]],simp_all)
 
 lemma gt1 : "n \<in> nat \<Longrightarrow> i \<in> n \<Longrightarrow> i \<noteq> 0 \<Longrightarrow> i \<noteq> 1 \<Longrightarrow> 1<i"
   by(rule_tac n="i" in natE,erule in_n_in_nat,auto intro: Ord_0_lt)
-
 
 lemma pred_mono : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> pred(n) \<le> pred(m)"
   by(rule_tac n="n" in natE,auto simp add:le_in_nat,erule_tac n="m" in natE,auto)
@@ -92,6 +85,6 @@ lemma pred_mono : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> pre
 lemma pred2_Un: 
   assumes "j \<in> nat" "m \<le> j" "n \<le> j" 
   shows "pred(pred(m \<union> n)) \<le> pred(pred(j))" 
-  using assms pred_mono[of "j"] le_in_nat un_leI' pred_mono by simp
+  using assms pred_mono[of "j"] le_in_nat Un_least_lt pred_mono by simp
     
 end 

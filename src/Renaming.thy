@@ -90,12 +90,12 @@ proof (induct set:formula)
   case (Member x y) 
   then have "f`x \<in> m" "f`y \<in> m"
     using Member assms by (simp add: arity_meml apply_funtype,simp add:arity_memr apply_funtype) 
-  then show ?case using Member by (simp add: un_leI' ltI)  
+  then show ?case using Member by (simp add: Un_least_lt ltI)  
 next
   case (Equal x y)
   then have "f`x \<in> m" "f`y \<in> m" 
     using Equal assms by (simp add: arity_eql apply_funtype,simp add:arity_eqr apply_funtype)     
-  then show ?case using Equal by (simp add: un_leI' ltI)
+  then show ?case using Equal by (simp add: Un_least_lt ltI)
 next
   case (Nand p q) 
   then have "arity(p)\<le>arity(Nand(p,q))" 
@@ -106,7 +106,7 @@ next
     by (rule_tac j="arity(Nand(p,q))" in le_trans,simp,simp)+
   then have "arity(ren(p)`n`m`f) \<le> m" and  "arity(ren(q)`n`m`f) \<le> m" 
     using Nand by auto
-  then show ?case using Nand by (simp add:un_leI')
+  then show ?case using Nand by (simp add:Un_least_lt)
 next
   case (Forall p)
   from Forall have "succ(n)\<in>nat"  "succ(m)\<in>nat" by auto
