@@ -7,7 +7,7 @@ consisting of an only binary relation symbol $\in$. These include the
 axioms of Pairing, Union, Powerset, Foundation, Infinity, and two
 axiom-schemes collectively referred to as Axiom of Separation:
 \emph{For every $A$, $a_1,\dots,a_n$,  and  a formula
-  $\psi(x_0,x_1,\dots,x_n)$, there exists $\{x\in  A:
+  $\psi(x_0,x_1,\dots,x_n)$, there exists $\{a\in  A:
   \psi(a,a_1,\dots,a_n)\}$}, 
 and Axiom of Replacement: \emph{For every $A$, $a_1,\dots,a_n$,  and
   a formula   $\psi(x,z,x_1\dots,x_n)$, if 
@@ -16,7 +16,7 @@ and Axiom of Replacement: \emph{For every $A$, $a_1,\dots,a_n$,  and
 An excellent introduction to the axioms and the motivation behind them
 can be found in Shoenfield \cite{MR3727410}. 
 
-Models of the theory $\ZF$ consist of a pair $\lb M,E\rb$ where $M$
+A model of the theory $\ZF$ consists of a pair $\lb M,E\rb$ where $M$
 is a set and $E$ is a binary relation on $M$. Forcing is a technique
 to extend very special kind of models, where $M$ is a countable
 transitive set (i.e., every element of $M$ is a subset of $M$) and
@@ -70,7 +70,7 @@ upair{\isacharunderscore}ax{\isacharparenleft}C{\isacharparenright}{\isacharequa
 Here, $\forall x[C]. \phi$ stands for
 $\forall x. C(x) \longrightarrow \phi$, \emph{relative}
 quantification. All of the development of relativization by Paulson is
-written for class arguments, so we set up a locale fixing a set $M$
+written for a class model, so we set up a locale fixing a set $M$
 and using the class $\#\#M\defi \lambda x. \ x\in M$ as the argument. 
 \begin{isabelle}
 \isacommand{locale}\isamarkupfalse%
@@ -96,11 +96,11 @@ and using the class $\#\#M\defi \lambda x. \ x\in M$ as the argument.
 The rest of the axioms are also
 included. We single out Separation and Replacement: these are written
 for formulas with at most one extra parameter (meaning $n\leq 1$ in the
-above $\phi$). Thanks to Pairing, these
+above $\psi$). Thanks to Pairing, these
 versions are equivalent to the usual formulations. We are only able to
 prove that the extension satisfies Separation for any particular
 number of parameters, but not in general. This is a consequence that
-induction on terms of typo \tyo{} is not available.
+induction on terms of type \tyo{} is not available.
 
 
 %
