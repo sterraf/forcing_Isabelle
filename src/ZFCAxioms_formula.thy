@@ -1,6 +1,6 @@
 (* internalización de los axiomas de ZFC dentro de la teoría ZF *)
                                                             
-theory ZFCAxioms_formula imports Formula L_axioms_no_repl Renaming begin
+theory ZFCAxioms_formula imports Formula L_axioms_excerpt Renaming begin
 
 (* 
    Extensionalidad 

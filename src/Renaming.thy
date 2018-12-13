@@ -1,5 +1,9 @@
-theory Renaming imports Nat_Miscelanea Formula begin
-  
+theory Renaming 
+  imports 
+    Nat_Miscelanea 
+    "~~/src/ZF/Constructible/Formula"
+begin
+
 section\<open>Auxiliary results\<close>
   
 lemma app_nm : "n\<in>nat \<Longrightarrow> m\<in>nat \<Longrightarrow> f\<in>n\<rightarrow>m \<Longrightarrow> x \<in> nat \<Longrightarrow> f`x \<in> nat"  

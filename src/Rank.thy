@@ -5,11 +5,11 @@
 section \<open>Absoluteness for Order Types, Rank Functions and Well-Founded 
          Relations\<close>
 
-theory Rank_no_repl imports WF_absolute_no_repl begin
+theory Rank imports WF_absolute begin
 
 subsection \<open>Order Types: A Direct Construction by Replacement\<close>
 
-locale M_ordertype = M_basic_no_repl +
+locale M_ordertype = M_basic +
 assumes well_ord_iso_separation:
      "[| M(A); M(f); M(r) |]
       ==> separation (M, \<lambda>x. x\<in>A \<longrightarrow> (\<exists>y[M]. (\<exists>p[M].
@@ -32,6 +32,7 @@ assumes well_ord_iso_separation:
              \<lambda>a z. \<exists>x[M]. \<exists>g[M]. \<exists>mx[M]. \<exists>par[M].
              ordinal(M,x) & pair(M,a,x,z) & membership(M,x,mx) &
              pred_set(M,A,a,r,par) & order_isomorphism(M,par,r,x,mx,g))"
+
 
 text\<open>Inductive argument for Kunen's Lemma I 6.1, etc.
       Simple proof from Halmos, page 72\<close>
@@ -674,7 +675,7 @@ text\<open>Relativized to @{term M}: Every well-founded relation is a subset of 
 inverse image of an ordinal.  Key step is the construction (in @{term M}) of a
 rank function.\<close>
 
-locale M_wfrank = M_trancl_no_repl +
+locale M_wfrank = M_trancl +
   assumes wfrank_separation:
      "M(r) ==>
       separation (M, \<lambda>x. 

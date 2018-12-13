@@ -1,4 +1,4 @@
-theory Internalize_More imports Internalize_no_repl Formula begin
+theory Internalize_More imports Internalizations Formula begin
 
 (*  "dense_below(D,q) == \<forall>p\<in>P. \<langle>p,q\<rangle>\<in>leq \<longrightarrow> (\<exists>d\<in>D . \<langle>d,p\<rangle>\<in>leq)" *)
 
@@ -30,8 +30,8 @@ lemma sats_is_dense_below_fm :
   unfolding is_dense_below_fm_def  is_dense_below_def
   by (simp)
 
-context M_trivial_no_repl 
-begin  (************** CONTEXT: M_trivial_no_repl ***************)
+context M_trivial 
+begin  (************** CONTEXT: M_trivial ***************)
   
 lemma is_dense_below_abs :
   "\<lbrakk> M(P); M(leq); M(leq); M(D); M(q) \<rbrakk> \<Longrightarrow> 
@@ -40,6 +40,6 @@ lemma is_dense_below_abs :
   by (simp)
 
 
-end    (************** CONTEXT: M_trivial_no_repl ***************)
+end    (************** CONTEXT: M_trivial ***************)
   
 end

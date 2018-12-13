@@ -1,4 +1,4 @@
-theory Forces_locale imports Interface2 Pairing_Axiom Union_Axiom begin
+theory Forces_locale imports Interface Pairing_Axiom Union_Axiom begin
    
 (* Prototyping Forcing relation and theorems as a locale*)
 locale forcing_thms = M_extra_assms +
@@ -46,9 +46,9 @@ proof -
     using generic unfolding M_generic_def by auto
 qed
     
-interpretation MGtriv :  M_trivial_no_repl"##M[G]"
+interpretation MGtriv :  M_trivial"##M[G]"
   using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
-  unfolding M_trivial_no_repl_def by simp    
+  unfolding M_trivial_def by simp    
 
 end
 end
