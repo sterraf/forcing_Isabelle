@@ -1,9 +1,9 @@
 theory Foundation_Axiom
 imports
-  Forces_locale
+  Names
 begin
 
-context forcing_thms
+context forcing_data
 begin
   
 (* Same proof by Paulson for L *)  
