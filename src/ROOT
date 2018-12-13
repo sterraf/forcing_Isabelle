@@ -3,5 +3,6 @@ session "Separation" = "ZF" +
   theories [document = true]
     "Foundation_Axiom"
     "Separation_Axiom"
+    "Infinity_Axiom"
   document_files
     "root.tex"
