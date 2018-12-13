@@ -213,7 +213,7 @@ proof -
   with val_mono have
     first_incl: "val(G,?n) \<subseteq> val(G,?m)" 
     by simp
-  note  -- \<open>from the assumptions\<close> 
+  note  (* from the assumptions *)
     \<open>val(G,\<pi>) = c\<close> \<open>val(G,\<sigma>) = w\<close>
   with \<open>?\<psi>\<in>formula\<close> \<open>arity(?\<psi>) \<le> 6\<close> in_M have 
     "?n\<in>M" 
