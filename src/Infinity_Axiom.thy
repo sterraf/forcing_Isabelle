@@ -5,10 +5,6 @@ begin
 locale G_generic_extra = G_generic + M_extra_assms  
 begin
 
-interpretation MGtriv :  M_trivial"##M[G]"
-  using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
-  unfolding M_trivial_def by simp    
-
 lemma infinty_in_MG : "infinity_ax(##M[G])"
 proof -
   from infinity_ax obtain I where
@@ -37,12 +33,10 @@ proof -
       "succ(y) \<in> M[G]"
       using valcheck generic one_in_G one_in_P 
         check_in_M GenExtI[of "check(succ(y))" G ] by simp
-  qed        
-  with Eq1 have 
-    "(\<exists>z\<in>(M[G]). empty(##(M[G]), z) \<and> z \<in> I) \<and> 
-    (\<forall>y\<in>(M[G]). y \<in> I \<longrightarrow> (\<exists>sy\<in>(M[G]). successor(##(M[G]), y, sy) \<and> sy \<in> I))"
-    using MGtriv.successor_abs zero_in_MG by auto
-  with \<open>I\<in>M[G]\<close> show ?thesis  unfolding infinity_ax_def by auto
+  qed     
+  with Eq1 \<open>I\<in>M[G]\<close>  show ?thesis 
+    unfolding infinity_ax_def using zero_in_MG by auto
 qed
+
 end   (* context: G_generic_extra *)
 end
