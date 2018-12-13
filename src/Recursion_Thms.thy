@@ -1,4 +1,4 @@
-theory Recursion_Thms imports WF begin
+theory Recursion_Thms imports ZF.WF begin
 
 (* Restrict the relation r to the field A*A *)
     
