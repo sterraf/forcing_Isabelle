@@ -46,11 +46,17 @@ proof -
     using generic unfolding M_generic_def by auto
 qed
     
-(* It seems that the following interpretation is 
-   only file-local *)
+(*
+  (* It seems that an interpretation like the following
+     is only file-local *)
 interpretation MGtriv :  M_trivial"##M[G]"
   using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
   unfolding M_trivial_def by simp 
+*)
+end    (* context: G_generic *)
 
-end
+sublocale G_generic \<subseteq> M_trivial"##M[G]"
+  using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
+  unfolding M_trivial_def by simp 
+
 end
