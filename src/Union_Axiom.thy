@@ -2,12 +2,6 @@ theory Union_Axiom
   imports Names "~~/src/HOL/Eisbach/Eisbach_Old_Appl_Syntax" 
 begin
   
-named_theorems fstpass
-named_theorems sndpass
-    
-method simp_altnt declares fstpass sndpass = (simp add:fstpass ; simp add:sndpass)+
-method abs_simp = (simp_altnt fstpass:nat_union_abs1 sndpass: nat_union_abs2)
-
 context forcing_data
 begin
 
