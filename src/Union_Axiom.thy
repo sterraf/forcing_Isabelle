@@ -1,5 +1,5 @@
 theory Union_Axiom 
-  imports Names "~~/src/HOL/Eisbach/Eisbach_Old_Appl_Syntax" 
+  imports Names 
 begin
   
 context forcing_data
