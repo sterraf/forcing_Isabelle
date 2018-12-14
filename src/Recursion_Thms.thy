@@ -89,16 +89,11 @@ proof (induct a arbitrary:A rule:wf_induct_raw[OF wfr] )
   also have "... = wfrec[A](r,a,H)" using \<open>wf[A](r)\<close> \<open>a\<in>A\<close> wfrec_on by simp 
   finally show ?case .
 qed
-
-lemma wfrec_restr' :
-  assumes "relation(r)" "wf(r)" 
-  shows  "a \<in> A \<Longrightarrow> (r^+)-``{a} \<subseteq> A \<Longrightarrow> wfrec(r,a,H) = wfrec[A](r,a,H)"
-using assms by (auto simp add :wfrec_restr tr_down_def)
   
 lemmas wfrec_tr_down = wfrec_restr[OF _ _ _ subset_refl]
 
 lemma wfrec_trans_restr : "relation(r) \<Longrightarrow> wf(r) \<Longrightarrow> trans(r) \<Longrightarrow> r-``{a}\<subseteq>A \<Longrightarrow> a \<in> A \<Longrightarrow>
   wfrec(r, a, H) = wfrec[A](r, a, H)"
   by(subgoal_tac "tr_down(r,a) \<subseteq> A",auto simp add : wfrec_restr tr_down_def trancl_eq_r)  
-      
+
 end
