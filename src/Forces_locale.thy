@@ -1,4 +1,4 @@
-theory Forces_locale imports Interface Pairing_Axiom Union_Axiom begin
+theory Forcing_Theorems imports Interface Pairing_Axiom Union_Axiom begin
    
 (* Prototyping Forcing relation and theorems as a locale*)
 locale forcing_thms = forcing_data +
@@ -45,18 +45,7 @@ proof -
     "G \<noteq> 0"
     using generic unfolding M_generic_def by auto
 qed
-    
-(*
-  (* It seems that an interpretation like the following
-     is only file-local *)
-interpretation MGtriv :  M_trivial"##M[G]"
-  using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
-  unfolding M_trivial_def by simp 
-*)
-end    (* context: G_generic *)
 
-sublocale G_generic \<subseteq> M_trivial"##M[G]"
-  using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
-  unfolding M_trivial_def by simp 
+end    (* context: G_generic *)
 
 end
