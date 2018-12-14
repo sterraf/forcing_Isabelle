@@ -1,5 +1,5 @@
 theory Separation_Axiom 
-  imports Forces_locale Renaming "~~/src/HOL/Eisbach/Eisbach_Old_Appl_Syntax" 
+  imports Forcing_Theorems Renaming "~~/src/HOL/Eisbach/Eisbach_Old_Appl_Syntax" 
 begin
 
 definition 

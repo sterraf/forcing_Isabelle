@@ -1,7 +1,11 @@
 theory Infinity_Axiom 
-  imports Forces_locale 
+  imports Forcing_Theorems 
 begin
-
+  
+sublocale G_generic \<subseteq> M_trivial"##M[G]"
+  using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
+  unfolding M_trivial_def by simp 
+    
 locale G_generic_extra = G_generic + M_extra_assms  
 begin
 
