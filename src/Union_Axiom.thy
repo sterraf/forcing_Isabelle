@@ -1,5 +1,5 @@
 theory Union_Axiom 
-  imports Forcing_data Names "~~/src/HOL/Eisbach/Eisbach_Old_Appl_Syntax" 
+  imports Names "~~/src/HOL/Eisbach/Eisbach_Old_Appl_Syntax" 
 begin
   
 named_theorems fstpass

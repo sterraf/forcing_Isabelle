@@ -1,4 +1,4 @@
-theory Forcing_Theorems imports Interface Pairing_Axiom Union_Axiom begin
+theory Forcing_Theorems imports Interface Names begin
    
 (* Prototyping Forcing relation and theorems as a locale*)
 locale forcing_thms = forcing_data +
