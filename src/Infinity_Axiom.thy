@@ -1,5 +1,5 @@
 theory Infinity_Axiom 
-  imports Forcing_Theorems 
+  imports Forcing_Theorems Pairing_Axiom Union_Axiom
 begin
   
 sublocale G_generic \<subseteq> M_trivial"##M[G]"
