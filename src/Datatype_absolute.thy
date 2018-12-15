@@ -6,7 +6,7 @@ section \<open>Absoluteness Properties for Recursive Datatypes\<close>
 
 theory Datatype_absolute 
   imports 
-    "~~/src/ZF/Constructible/Formula"
+    "ZF-Constructible.Formula"
     WF_absolute 
 begin
 
