@@ -5,7 +5,7 @@
 
 theory Internalizations 
   imports 
-    "~~/src/ZF/Constructible/Formula"
+    "ZF-Constructible.Formula"
     Relative  Datatype_absolute 
 begin
 
