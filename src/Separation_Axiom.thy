@@ -1,5 +1,5 @@
 theory Separation_Axiom 
-  imports Forcing_Theorems Renaming "~~/src/HOL/Eisbach/Eisbach_Old_Appl_Syntax" 
+  imports Forcing_Theorems Renaming 
 begin
 
 definition 
@@ -42,14 +42,7 @@ proof -
   with \<open>b \<in> M\<close> show ?thesis
     using separation_iff by auto
 qed
-      
   
-named_theorems fstpass
-named_theorems sndpass
-    
-method simp_altnt declares fstpass sndpass = (simp add:fstpass ; simp add:sndpass)+
-method abs_simp = (simp_altnt fstpass:nat_union_abs1 sndpass: nat_union_abs2)
-
 lemma Collect_sats_in_MG :
   assumes
     "\<pi> \<in> M" "\<sigma> \<in> M" "val(G, \<pi>) = c" "val(G, \<sigma>) = w"
@@ -69,10 +62,10 @@ proof -
   note phi = \<open>\<phi>\<in>formula\<close> \<open>arity(\<phi>) \<le> 2\<close> 
   then have 
     "arity(?\<chi>) \<le> 3" 
-    using leI by abs_simp
+    using nat_un_max nat_un_ty nat_max_ty max_def leI by simp
   with phi have
     "arity(forces(?\<chi>)) \<le> 8"
-    using arity_forces leI by abs_simp
+    using nat_un_max nat_un_ty nat_max_ty max_def arity_forces leI by simp
   with phi definability[of "?\<chi>"] arity_forces  have
     "?new_form \<in> formula"
     using ren_tc[of "forces(?\<chi>)" 8 8 "perm_sep_forces"] perm_sep_tc 
@@ -98,7 +91,8 @@ proof -
     moreover have 
       "arity(pair_fm(0,1,2)) = 3" 
       unfolding pair_fm_def upair_fm_def 
-      by abs_simp
+      using  nat_un_max nat_un_ty nat_max_ty max_def 
+      by simp
     ultimately  show ?thesis 
       using \<open>arity(?new_form) \<le> 8\<close> by simp
   qed
