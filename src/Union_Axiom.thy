@@ -61,27 +61,23 @@ proof -
   then have "?d \<times> P \<in> M" using cartprod_closed P_in_M by simp 
   have "arity(Union_name_fm)\<le>6" using Union_name_fm_arity by simp
   from assms P_in_M leq_in_M  Union_name_fm_arity have
-    "[\<tau>,leq] \<in> list(M)" "[P,\<tau>,leq] \<in> list(M)" "arity(Union_name_fm)\<le>length([P,\<tau>,leq,leq])" by auto
+    "[\<tau>,leq] \<in> list(M)" "[P,\<tau>,leq] \<in> list(M)" by auto
   with assms assms P_in_M leq_in_M  \<open>arity(Union_name_fm)\<le>6\<close> have 
-    "(\<forall>u\<in>M. separation(##M,?P))" 
+    "\<forall>u\<in>M . separation(##M,?P)" 
     using sixp_sep[of Union_name_fm \<tau> leq P \<tau> leq] by simp
-  with \<open>?d \<times> P \<in> M\<close> have A:"{ u \<in> ?d \<times> P . sats(M,Union_name_fm,[u,\<tau>,leq]@[P,\<tau>,leq]) } \<in> M" 
+  with \<open>?d \<times> P \<in> M\<close> have A:"{ u \<in> ?d \<times> P . ?P(u) } \<in> M" 
     using  separation_iff by force
   {fix x 
     assume "x \<in> ?d\<times>P"
     then have "x = <fst(x),snd(x)>" using Pair_fst_snd_eq by simp
-    then have "fst(x) \<in> M" "snd(x) \<in> M" using \<open>x\<in>?d\<times>P\<close> transM \<open>?d\<in>M\<close> fst_type snd_type P_in_M by auto
-    then have "sats(M,Union_name_fm,[<fst(x),snd(x)>,\<tau>,leq,P]@[\<tau>,leq]) \<longleftrightarrow>  Union_name_body(P,leq,\<tau>,<fst(x),snd(x)>)"
+    with \<open>x\<in>?d\<times>P\<close> \<open>?d\<in>M\<close>  have 
+      "fst(x) \<in> M" "snd(x) \<in> M" using transM fst_type snd_type P_in_M by auto
+    then have "?P(<fst(x),snd(x)>) \<longleftrightarrow>  ?Q(<fst(x),snd(x)>)"
       using P_in_M sats_Union_name_fm P_in_M \<open>\<tau>\<in>M\<close> leq_in_M by simp  
-    with \<open>x = <fst(x),snd(x)>\<close> have 
-      "sats(M,Union_name_fm,[x,\<tau>,leq,P]@[\<tau>,leq]) \<longleftrightarrow>  Union_name_body(P,leq,\<tau>,x)" by simp
+    with \<open>x = <fst(x),snd(x)>\<close> have "?P(x) \<longleftrightarrow> ?Q(x)" by simp
   }
-  then have 
-    B:"\<And> x. x\<in> ?d\<times>P \<Longrightarrow>  ?P(x)\<longleftrightarrow> ?Q(x)" 
-    by simp
-  then have "{u \<in> ?d \<times> P . Union_name_body(P,leq,\<tau>,u)} \<in> M" 
-    using  Collect_cong B A by simp
-  then show ?thesis .
+  then have "?P(x)\<longleftrightarrow> ?Q(x)" if "x\<in> ?d\<times>P" for x using that by simp
+  then show ?thesis using Collect_cong A by simp
 qed
     
 lemma Union_abs_trans : 
