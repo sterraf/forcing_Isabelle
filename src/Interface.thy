@@ -28,14 +28,6 @@ proof -
   with zm show ?thesis 
       by simp
 qed
-
-lemma nat_union_abs1 : 
-  "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> i \<union> j = j"
-  by (rule Un_absorb1,erule le_imp_subset)
-
-lemma nat_union_abs2 : 
-  "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> j \<union> i = j"
-  by (rule Un_absorb2,erule le_imp_subset)
     
 (* Interface with M_trivial *)
     

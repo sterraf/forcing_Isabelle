@@ -86,5 +86,25 @@ lemma pred2_Un:
   assumes "j \<in> nat" "m \<le> j" "n \<le> j" 
   shows "pred(pred(m \<union> n)) \<le> pred(pred(j))" 
   using assms pred_mono[of "j"] le_in_nat Un_least_lt pred_mono by simp
+
+lemma nat_union_abs1 : 
+  "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> i \<union> j = j"
+  by (rule Un_absorb1,erule le_imp_subset)
+
+lemma nat_union_abs2 : 
+  "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> j \<union> i = j"
+  by (rule Un_absorb2,erule le_imp_subset)
+    
+lemma nat_un_max : "i \<in> nat \<Longrightarrow> j \<in> nat \<Longrightarrow> i \<union> j = max(i,j)"
+  apply(auto simp add:max_def nat_union_abs1)
+  apply(auto simp add:  not_lt_iff_le leI nat_union_abs2)
+done
+
+lemma nat_un_ty : "i\<in>nat \<Longrightarrow>j\<in>nat \<Longrightarrow> i\<union>j \<in> nat"
+  by simp  
+
+lemma nat_max_ty : "i\<in>nat \<Longrightarrow>j\<in>nat \<Longrightarrow> max(i,j) \<in> nat"
+  unfolding max_def by simp
+
     
 end 
