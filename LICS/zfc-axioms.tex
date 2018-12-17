@@ -1,10 +1,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
-\section{Models and axioms of set theory}
+\section{Axioms and models of set theory}
 
 The axioms of Zermelo and Fraenkel ($\ZF$) form a
 countably infinite list of first-order sentences in a language
 consisting of an only binary relation symbol $\in$. These include the
-axioms of Pairing, Union, Powerset, Foundation, Infinity, and two
+axioms of Extensionality, Pairing, Union, Powerset, Foundation, Infinity, and two
 axiom-schemes collectively referred to as Axiom of Separation:
 \emph{For every $A$, $a_1,\dots,a_n$,  and  a formula
   $\psi(x_0,x_1,\dots,x_n)$, there exists $\{a\in  A:
@@ -94,11 +94,11 @@ and using the class $\#\#M\defi \lambda x. \ x\in M$ as the argument.
 \ \ \ \ {\isasymlambda}x\ y{\isachardot}\ sats{\isacharparenleft}M{\isacharcomma}{\isasymphi}{\isacharcomma}{\isacharbrackleft}x{\isacharcomma}y{\isacharcomma}a{\isacharbrackright}{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 The rest of the axioms are also
-included. We single out Separation and Replacement: these are written
+included. We single out Separation and Replacement: These are written
 for formulas with at most one extra parameter (meaning $n\leq 1$ in the
 above $\psi$). Thanks to Pairing, these
 versions are equivalent to the usual formulations. We are only able to
-prove that the extension satisfies Separation for any particular
+prove that the generic extension satisfies Separation for any particular
 number of parameters, but not in general. This is a consequence that
 induction on terms of type \tyo{} is not available.
 

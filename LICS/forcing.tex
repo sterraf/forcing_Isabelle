@@ -70,11 +70,7 @@ These are stated in \cite{kunen2011set} as two lemmas: \emph{Truth} and
 by defining the 
 forcing relation semantically and later it is proved  that the
 characterization given by (\ref{eq:3}) indeed holds, and hence the
-forcing relation is \emph{definable}. In our case, definability merely
-stands for a typing condition:
-\begin{isabelle}
-{\isachardoublequoteopen}{\isasymphi}\ {\isasymin}\ formula\ {\isasymLongrightarrow}\ forces{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymin}\ formula{\isachardoublequoteclose}
-\end{isabelle}
+forcing relation is \emph{definable}.
 
 Then the definition of the forcing relation is stated as a
 \begin{lemma}[Definition of Forcing]\label{lem:definition-of-forcing}
@@ -122,6 +118,30 @@ $\formula$.
   $M,[\dots]\models$``$\{p_1\leq p : \forceisa(\phi,\PP,\leq,\1,p_1)\}$ is
   dense below $p$.''
 \end{lemma}
+
+The locale \isatt{forcing\_thms} includes all these results as assumptions on the
+mapping $\forceisa$, plus a typing condition  and its
+effect on arities:
+\begin{isabelle}
+\isacommand{locale}\isamarkupfalse%
+\ forcing{\isacharunderscore}thms\ {\isacharequal}\ forcing{\isacharunderscore}data\ {\isacharplus}\isanewline
+\ \isakeyword{fixes}\ forces\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i{\isachardoublequoteclose}\isanewline
+\ \isakeyword{assumes}\
+definition{\isacharunderscore}of{\isacharunderscore}forces{\isacharcolon}\isanewline 
+\ \ {\isachardoublequoteopen}p{\isasymin}P\ {\isasymLongrightarrow}\ {\isasymphi}{\isasymin}formula\ {\isasymLongrightarrow}\ env{\isasymin}list{\isacharparenleft}M{\isacharparenright}\ {\isasymLongrightarrow}\isanewline
+\ \ \ \  sats{\isacharparenleft}M{\isacharcomma}forces{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharcomma}\ {\isacharbrackleft}P{\isacharcomma}leq{\isacharcomma}one{\isacharcomma}p{\isacharbrackright}\ {\isacharat}\ env{\isacharparenright}\ {\isasymlongleftrightarrow}\isanewline
+\ \ \ \ \ \
+{\isacharparenleft}{\isasymforall}G{\isachardot}{\isacharparenleft}M{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}{\isasymand}\
+p{\isasymin}G{\isacharparenright}\ {\isasymlongrightarrow}\isanewline 
+\ \ \ \ \ \ sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymphi}{\isacharcomma}map{\isacharparenleft}val{\isacharparenleft}G{\isacharparenright}{\isacharcomma}env{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{and}\ \ definability{\isacharbrackleft}TC{\isacharbrackright}{\isacharcolon}\ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \  forces{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymin}\ formula{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{and}\ \ \ arity{\isacharunderscore}forces{\isacharcolon}\ \ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \
+arity{\isacharparenleft}forces{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharparenright}\
+{\isacharequal}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isacharhash}{\isacharplus}\ {\isadigit{4}}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{and}\ \dots
+\end{isabelle}
 
 \fbox{poner acá lo de formal abstracts y el locale \texttt{forcing\_thms}}
 %%% Local Variables: 

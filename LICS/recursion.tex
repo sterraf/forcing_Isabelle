@@ -52,6 +52,13 @@ all of its predecessesors are also in $A$.
 \ \ \isakeyword{shows}\ \ {\isachardoublequoteopen}a{\isasymin}A\ {\isasymLongrightarrow}\ {\isacharparenleft}r{\isacharcircum}{\isacharplus}{\isacharparenright}{\isacharminus}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}a{\isacharbraceright}\ {\isasymsubseteq}\ A\ {\isasymLongrightarrow}\ \isanewline
 \ \ \ \ \ \ \ \ \ \ wfrec{\isacharparenleft}r{\isacharcomma}a{\isacharcomma}H{\isacharparenright}\ {\isacharequal}\ wfrec{\isacharparenleft}r{\isasyminter}A{\isasymtimes}A{\isacharcomma}a{\isacharcomma}H{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
+
+\medskip
+\noindent\fbox{Para que el resultado anterior tenga utilidad hay\ \dots\
+}
+\fbox{\dots\ que pedir que la relaci\'on \texttt{"i=>i=>o"} sea set-like}
+\medskip
+
 Using this lemma we can prove Equation~\eqref{eq:val}:
 \begin{isabelle}
   \isacommand{lemma}\isamarkupfalse%
@@ -59,8 +66,16 @@ Using this lemma we can prove Equation~\eqref{eq:val}:
   \ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}\ {\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}t{\isacharparenright}\ {\isachardot}{\isachardot}\ t{\isasymin}domain{\isacharparenleft}x{\isacharparenright}\ {\isacharcomma}\isanewline
 \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymexists}p{\isasymin}P{\isachardot}\ {\isacharless}t{\isacharcomma}p{\isachargreater}{\isasymin}x\ {\isasymand}\ p{\isasymin}G\ {\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
-\fbox{Pedro: ¿esto sirve cuando la relación
-  es una clase pero set-like on $A$?}
+and the monotonicity of $\val$ follows automatically after a
+substitution.
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ val{\isacharunderscore}mono{\isacharcolon}\ {\isachardoublequoteopen}x{\isasymsubseteq}y\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}\ {\isasymsubseteq}\ val{\isacharparenleft}G{\isacharcomma}y{\isacharparenright}{\isachardoublequoteclose}\isanewline
+%
+\ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}subst\ {\isacharparenleft}{\isadigit{1}}\ {\isadigit{2}}{\isacharparenright}\ def{\isacharunderscore}val{\isacharcomma}\ force{\isacharparenright}%
+\end{isabelle}
+
 
 
 %%% Local Variables: 

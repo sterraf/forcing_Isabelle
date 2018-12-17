@@ -1,7 +1,10 @@
-theory Internalize_More imports Internalizations Formula begin
+theory Internalize_More 
+  imports 
+    Internalizations 
+    "~~/src/ZF/Constructible/Formula"
+begin
 
 (*  "dense_below(D,q) == \<forall>p\<in>P. \<langle>p,q\<rangle>\<in>leq \<longrightarrow> (\<exists>d\<in>D . \<langle>d,p\<rangle>\<in>leq)" *)
-
 definition
   dense_below :: "[i,i,i,i] \<Rightarrow> o" where
   "dense_below(P,leq,D,q) == \<forall>p\<in>P. \<langle>p,q\<rangle>\<in>leq \<longrightarrow> (\<exists>d\<in>D . \<langle>d,p\<rangle>\<in>leq)"
