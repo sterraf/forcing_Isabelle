@@ -1,13 +1,43 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
 \section{Extensionality, Foundation, Union, Infinity}
 \label{sec:easy-axioms}
-
+\newcommand{\forallRel}[2]{\forall #1\kern -1pt[#2]}
 It is straightforward to show that the generic extension $M[G]$
-satisfies foundation, union, and infinity. The easiest one is
-foundation which does not depend on the satisfaction by $M$.
+satisfies extensionality, foundation, union, and infinity. % It is
+% well-known that extensionality is satisfied by any
+% transitive class.\footnote{We plan to define a new hierarchy of
+%   locales for ZF where transitive classes will be at the base.}
+To say that $A$ satisfies some axiom, say extensionality, means
+that the relativized version of extensionality is true in $A$:
+\[
+\forallRel{x}{A}. \forallRel{y}{A}. (\forallRel{w}{A} . w \in x \leftrightarrow w\in y) \rightarrow x = y
+\]
 
+Extensionality for $M[G]$ is straightforward because $M[G]$ is
+transitive. %\footnote{We generalized slightly some results by Paulson:
+%  in fact, several basic lemmas are valid for any transitive class
+%  (for instance, absoluteness of Union). We plan to define a new
+%  hierarchy of locales for ZF where transitive classes will be at the
+%  base.}
+In fact, for $x,y\in M[G]$, we can prove
+$\forall w. w\in x \leftrightarrow w\in y$ (notice that the binding
+$w$ is not relativized), because $M[G]$ is transitive; therefore by
+extensionality we conclude $x=y$.
 
-\fbox{Hablar de \texttt{M\_trivial} y del uso de interfaz para instanciar}
+Foundation for $M[G]$ does not depend on $M[G]$ being transitive: in
+this case we take $x\in M[G]$ and prove that there is an
+$\in$\kern -1pt-minimal element, relativized to $M[G]$, in $x$. Using
+foundation for $x\cap M[G]$ we get a minimal $y$ (which is not
+relativized to $M[G]$), so it is still minimal when relativized to
+$M[G]$.
+
+The Union axiom asserts that if $x$ is a set, then there exists
+another set (the union of $x$) containing all the elements in each
+element of $x$. The relativized version of Union asks to give a name
+$\pi_a$ for each $a\in M[G]$ and proving $\val(G,\pi)=\bigcup a$.
+
+\fbox{Hablar de \texttt{M\_trivial} y del uso de interfaz para
+  instanciar}
 
 \fbox{Falta \texttt{check\_in\_M} para completar Infinity}
 
