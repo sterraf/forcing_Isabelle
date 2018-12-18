@@ -20,9 +20,6 @@ lemma ltI_neg : "x \<in> nat \<Longrightarrow> j \<le> x \<Longrightarrow> j \<n
     
 lemma succ_pred_eq  :  "m \<in> nat \<Longrightarrow> m \<noteq> 0  \<Longrightarrow> succ(pred(m)) = m"
  by (auto elim: natE)
-
-lemma succ_mono : "j \<le> n \<Longrightarrow> succ(j) \<le> succ(n)"
-  by (auto)
     
 lemma succ_ltI : "n \<in> nat \<Longrightarrow> succ(j) < n \<Longrightarrow> j < n"
   apply (rule_tac j="succ(j)" in lt_trans,rule le_refl,rule Ord_succD)
@@ -44,20 +41,7 @@ lemma succpred_n0 : "p \<in> nat \<Longrightarrow>  succ(n) \<in> p \<Longrighta
 lemma funcI : "f \<in> A \<rightarrow> B \<Longrightarrow> a \<in> A \<Longrightarrow> b= f ` a \<Longrightarrow> \<langle>a, b\<rangle> \<in> f"
   by(simp_all add: apply_Pair)
 
-lemma bij_is_function  : "f\<in>bij(A,B) \<Longrightarrow> function(f)"
-  by(drule bij_is_fun,simp add: Pi_iff)
-
-lemmas natEin = natE [OF lt_nat_in_nat]  
-
-lemma trich_nat : "\<lbrakk> m \<in> nat ; n \<le> m ; n \<noteq> m ; \<not> n < m \<rbrakk> \<Longrightarrow> P"
-  apply(subgoal_tac "Ord(n)" "Ord(m)" "\<not> m < n")
-  apply(rule_tac i="n" and j="m" in Ord_linear_lt;blast)
-  apply(erule le_imp_not_lt,erule nat_into_Ord)
-  apply(rule nat_into_Ord[OF le_in_nat];assumption)
-done
-
-lemma pred0E : "i \<in> nat \<Longrightarrow> pred(i) = 0 \<Longrightarrow> i = 1 | i = 0"
-  by(rule natE,simp+)
+lemmas natEin = natE [OF lt_nat_in_nat]
 
 lemma succ_in : "succ(x) \<le> y  \<Longrightarrow> x \<in> y"
  by (auto dest:ltD) 
@@ -106,5 +90,6 @@ lemma nat_un_ty : "i\<in>nat \<Longrightarrow>j\<in>nat \<Longrightarrow> i\<uni
 lemma nat_max_ty : "i\<in>nat \<Longrightarrow>j\<in>nat \<Longrightarrow> max(i,j) \<in> nat"
   unfolding max_def by simp
 
-    
+lemmas nat_simp_union = nat_un_max nat_un_ty nat_max_ty max_def
+
 end 
