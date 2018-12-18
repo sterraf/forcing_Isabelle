@@ -19,8 +19,8 @@ lemma perm_sep_env :
   "{p,q,r,s,t,u,v,w} \<subseteq> A \<Longrightarrow> j<8 \<Longrightarrow>
   nth(j,[t,s,w,p,q,r,u,v]) = nth(perm_sep_forces`j,[q,p,v,t,s,w,r,u])"
   apply(subgoal_tac "j\<in>nat")
-  apply(rule natE,simp,subst apply_fun,rule perm_sep_tc,simp add:perm_sep_forces_def,simp+)+
-  apply(subst apply_fun,rule perm_sep_tc,simp add:perm_sep_forces_def,simp+,drule ltD,auto)
+  apply(rule natE,simp,subst apply_fun,rule perm_sep_tc,simp add:perm_sep_forces_def,simp_all)+
+  apply(subst apply_fun,rule perm_sep_tc,simp add:perm_sep_forces_def,simp_all,drule ltD,auto)
   done
   
 context G_generic begin
@@ -81,21 +81,8 @@ proof -
     using ren_arity perm_sep_tc definability by simp
   then have
     "arity(?\<psi>) \<le> 6" 
-  proof -
-    have "n \<le> 8 \<Longrightarrow> pred(pred(3 \<union> n)) \<le> 6" for n
-      using pred2_Un[of "8"]
-      by simp        
-    with \<open>arity(?new_form)  \<le> 8\<close> \<open>?new_form \<in> formula\<close> have
-      "pred(pred(3 \<union> arity(?new_form))) \<le> 6"
-      by (simp add:arity_type)
-    moreover have 
-      "arity(pair_fm(0,1,2)) = 3" 
-      unfolding pair_fm_def upair_fm_def 
-      using  nat_un_max nat_un_ty nat_max_ty max_def 
-      by simp
-    ultimately  show ?thesis 
-      using \<open>arity(?new_form) \<le> 8\<close> by simp
-  qed
+    unfolding pair_fm_def upair_fm_def 
+    using  nat_un_max nat_un_ty nat_max_ty max_def pred2_Un[of "8"] by simp
   from \<open>\<pi>\<in>M\<close> \<open>\<sigma>\<in>M\<close> P_in_M have
     "domain(\<pi>)\<in>M" "domain(\<pi>) \<times> P \<in> M"
     by (simp_all del:setclass_iff add:setclass_iff[symmetric])
@@ -129,11 +116,9 @@ proof -
         ?new_env=" [\<theta>,p,u,P,leq,one,\<sigma>,\<pi>]"
       let
         ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
-      have  
-        "1 \<union> 3 = 3" using nat_union_abs2 leI by auto
-      then have
+      have
          "?\<chi> \<in> formula" "arity(?\<chi>) \<le> 3" "forces(?\<chi>)\<in> formula"  
-        using phi  nat_union_abs2[of _ "3"] leI by auto
+        using phi nat_un_max nat_un_ty nat_max_ty max_def leI by auto
       with arity_forces have
         "arity(forces(?\<chi>)) \<le> 7" 
         by simp     
