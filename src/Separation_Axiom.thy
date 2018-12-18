@@ -62,10 +62,10 @@ proof -
   note phi = \<open>\<phi>\<in>formula\<close> \<open>arity(\<phi>) \<le> 2\<close> 
   then have 
     "arity(?\<chi>) \<le> 3" 
-    using nat_un_max nat_un_ty nat_max_ty max_def leI by simp
+    using nat_simp_union leI by simp
   with phi have
     "arity(forces(?\<chi>)) \<le> 8"
-    using nat_un_max nat_un_ty nat_max_ty max_def arity_forces leI by simp
+    using nat_simp_union arity_forces leI by simp
   with phi definability[of "?\<chi>"] arity_forces  have
     "?new_form \<in> formula"
     using ren_tc[of "forces(?\<chi>)" 8 8 "perm_sep_forces"] perm_sep_tc 
@@ -82,7 +82,7 @@ proof -
   then have
     "arity(?\<psi>) \<le> 6" 
     unfolding pair_fm_def upair_fm_def 
-    using  nat_un_max nat_un_ty nat_max_ty max_def pred2_Un[of "8"] by simp
+    using  nat_simp_union pred2_Un[of "8"] by simp
   from \<open>\<pi>\<in>M\<close> \<open>\<sigma>\<in>M\<close> P_in_M have
     "domain(\<pi>)\<in>M" "domain(\<pi>) \<times> P \<in> M"
     by (simp_all del:setclass_iff add:setclass_iff[symmetric])
@@ -118,7 +118,7 @@ proof -
         ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
       have
          "?\<chi> \<in> formula" "arity(?\<chi>) \<le> 3" "forces(?\<chi>)\<in> formula"  
-        using phi nat_un_max nat_un_ty nat_max_ty max_def leI by auto
+        using phi nat_simp_union leI by auto
       with arity_forces have
         "arity(forces(?\<chi>)) \<le> 7" 
         by simp     

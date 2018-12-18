@@ -30,7 +30,7 @@ lemma Union_name_fm_type [TC]:
 lemma Union_name_fm_arity :
   "arity(Union_name_fm) = 4"
   unfolding Union_name_fm_def upair_fm_def pair_fm_def 
-  by(auto simp add: nat_un_max nat_un_ty nat_max_ty max_def)
+  by(auto simp add: nat_simp_union)
     
 lemma sats_Union_name_fm : 
   "\<lbrakk> a \<in> M; b \<in> M ; P' \<in> M ; p \<in> M ; \<theta> \<in> M ; \<tau> \<in> M ; leq' \<in> M \<rbrakk> \<Longrightarrow>
