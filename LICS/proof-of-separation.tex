@@ -2,14 +2,18 @@
 \section{Proof of Separation}
 
 This proof can be found in the file \verb|Separation_Axiom.thy| of the
-development, which we proceed to discuss.
+development, which we proceed to discuss. The order chose to implement
+the proof sought to minimize the crossreference of facts;  it is
+not entirely appropriate for a text version, so we depart from it in
+this presentation.
 
 The key technical result is the following:
 \begin{isabelle}
   \isacommand{lemma}\isamarkupfalse%
   \ Collect{\isacharunderscore}sats{\isacharunderscore}in{\isacharunderscore}MG\ {\isacharcolon}\isanewline
   \ \ \isakeyword{assumes}\isanewline
-  \ \ \ \ {\isachardoublequoteopen}{\isasympi}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymsigma}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}\ {\isasympi}{\isacharparenright}\ {\isacharequal}\ c{\isachardoublequoteclose}\ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}\ {\isasymsigma}{\isacharparenright}\ {\isacharequal}\ w{\isachardoublequoteclose}\isanewline
+  \ \ \ \ {\isachardoublequoteopen}{\isasympi}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymsigma}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}\ {\isasympi}{\isacharparenright}\ {\isacharequal}\ c{\isachardoublequoteclose}\isanewline
+  \ \ \ \  {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}\ {\isasymsigma}{\isacharparenright}\ {\isacharequal}\ w{\isachardoublequoteclose}\isanewline
   \ \ \ \ {\isachardoublequoteopen}{\isasymphi}\ {\isasymin}\ formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymle}\ {\isadigit{2}}{\isachardoublequoteclose}\isanewline
   \ \ \isakeyword{shows}\ \ \ \ \isanewline
   \ \ \ \ {\isachardoublequoteopen}{\isacharbraceleft}x{\isasymin}c{\isachardot}\ sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}\ {\isasymphi}{\isacharcomma}\ {\isacharbrackleft}x{\isacharcomma}\ w{\isacharbrackright}{\isacharparenright}{\isacharbraceright}{\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
@@ -25,16 +29,23 @@ S\defi\{x\in c : M[G],[x,w]\models \phi(x_0,x_1)\} \in M[G],
 it is enough to provide a name $n\in M$ for this set.
  
 The candidate name is
-\[
+\begin{equation}\label{eq:4}
 n \defi \{u \in\dom(\pi)\times\PP :M,[u,\PP,\leq,\1,\sig,\pi]\models \psi\}
-\]
+\end{equation}
 where
 \[
 \psi \defi \exists \th\, p.\ x_0=\lb\th,p\rb \y 
    \forceisa(\th\in x_5\y\phi(\th,x_4)).
 \]
-The fact that $n\in M$ follows by an application of a six-variable
-instance of Separation in $M$ (lemma \isatt{six{\isacharunderscore}sep{\isacharunderscore}aux}).
+The fact that $n\in M$ follows (lines 216--220 of the source file) by
+an application of a six-variable instance of Separation in $M$ (lemma
+\isatt{six{\isacharunderscore}sep{\isacharunderscore}aux}). We note in
+passing that it is possible to  abbreviate expressions in Isabelle by
+the use of the  \textbf{let} statement or the \textbf{is} qualifier,
+and metavariables (whose
+identifiers start with a question mark). In this way, the definition in
+(\ref{eq:4}) appears in the sources as letting \isatt{?n} to be that
+set (lines 208--211).
 
 Almost a third part of the proof involves the syntactic handling of
 internalized formulas and permutation of variables. The more
@@ -46,7 +57,7 @@ M,[u,\PP,\leq,\1,\sig,\pi]\models \psi
 \end{equation}
 defining $n$ by separation. By definition of the satisfaction
 relation and %% permuting variables
-absoluteness, we have that it is equivalent to the fact
+absoluteness, we have (lines 92--98) that it is equivalent to the fact
 that there exist $\th,p\in M$ with   $u=\lb\th,p\rb$  and 
 \[
 M,[\PP,\leq,\1,p,\th,\sig,\pi]\models \forceisa(x_4\in
@@ -59,7 +70,8 @@ filters $F$ such that $p\in F$,}
 M[F],[\val(F,\th),\val(F,\sig),\val(F,\pi)]\models x_0\in
 x_2\y\phi(x_0,x_1). 
 \end{equation}
-We can instantiate this statement with $G$ and obtain
+(lines 99--185). We can instantiate this statement with $G$ and obtain
+(lines 186--206)
 \[
 p\in G \impl M[G],[\val(G,\th),w,c]\models x_0\in
 x_2\y\phi(x_0,x_1). 
@@ -69,18 +81,18 @@ Let $Q(\th,p)$ be the last displayed statement. We have just seen that
 \[
 \exists \th,p\in M.\ u=\lb\th,p\rb \y Q(\th,p).
 \]
-Hence $n$ is included in 
+Hence (lines 207-212) $n$ is included in 
 \[
 m\defi \{u \in\dom(\pi)\times\PP : \exists \th,p\in M.\ u=\lb\th,p\rb
 \y Q(\th,p)\}. 
 \]
 
-It can be seen that
+It can be seen (lines 221--274) that
 \begin{lemma}
   $\val(G,m) = S$.
 \end{lemma}
 Also by monotonicity of $\val$ we obtain 
-  $\val(G,n)\sbq \val(G,m)$.
+  $\val(G,n)\sbq \val(G,m)$ (lines 213--215).
 To complete the proof, it is therefore enough to show that
 $S\sbq \val(G,n)$. For this, let $x\in S$. Hence there exists
 $\lb\th,q\rb\in\pi$ such that 
@@ -102,7 +114,7 @@ By Strengthening, we have
 M,[\PP,\leq,\1,p,\th,\sig,\pi]\models
 \forceisa(x_4\in x_6\y \phi( x_4, x_5)),
 \]
-which by the Truth Lemma gives us: \emph{for all $M$-generic $F$,
+which by the Definition of Forcing gives us: \emph{for all $M$-generic $F$,
   $p\in F$ implies} 
 \[
 M[F],[\val(F,\th),\val(F,\sig),\val(F,\pi)]\models
