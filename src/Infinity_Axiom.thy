@@ -20,26 +20,13 @@ proof -
   then have 
     "I\<in> M[G]" 
     using valcheck generic one_in_G one_in_P GenExtI[of "check(I)" G] by simp
-  have
-    "y\<in>M[G] \<Longrightarrow>  y \<in> I \<Longrightarrow> succ(y) \<in> I \<inter> M[G]" for y
-  proof
-    assume 
-      "y\<in>M[G]" "y \<in> I"
-    with Eq1 have
-      "y\<in>M" 
-      using trans_M Transset_intf by blast
-    with Eq1 \<open>y\<in>I\<close> show 
-      "succ(y)\<in>I" by simp
-    with \<open>y\<in>I\<close> \<open>I\<in>M\<close> have
-      "succ(y)\<in>M" 
-      using trans_M Transset_intf by blast
-    then show
-      "succ(y) \<in> M[G]"
-      using valcheck generic one_in_G one_in_P 
-        check_in_M GenExtI[of "check(succ(y))" G ] by simp
-  qed     
-  with Eq1 \<open>I\<in>M[G]\<close>  show ?thesis 
-    unfolding infinity_ax_def using zero_in_MG by auto
+  with \<open>0\<in>I\<close> have "0\<in>M[G]" using Transset_MG Transset_intf by simp
+  with \<open>I\<in>M\<close> have "y \<in> M" if "y \<in> I" for y
+    using  Transset_intf[OF trans_M _ \<open>I\<in>M\<close>] that by simp
+  with \<open>I\<in>M[G]\<close> have "succ(y) \<in> I \<inter> M[G]" if  "y \<in> I" for y
+    using that Eq1 Transset_MG Transset_intf by blast
+  with Eq1 \<open>I\<in>M[G]\<close> \<open>0\<in>M[G]\<close> show ?thesis 
+    unfolding infinity_ax_def by auto
 qed
 
 end   (* context: G_generic_extra *)
