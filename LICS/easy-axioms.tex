@@ -6,7 +6,7 @@
 \newcommand{\existsRel}[2]{\quantRel{\exists}{#1}{#2}}
 
 It is straightforward to show that the generic extension $M[G]$
-satisfies extensionality and foundation. Showing that $M[G]$ is closed
+satisfies extensionality and foundation. Showing that it is closed
 under Union depends on $G$ being a filter. On the other hand, infinity
 takes some more effort.
 
@@ -37,11 +37,11 @@ $M[G]$.
 The Union Axiom asserts that if $x$ is a set, then there exists
 another set (the union of $x$) containing all the elements in each
 element of $x$. The relativized version of Union asks to give a name
-$\pi_a$ for each $a\in M[G]$ and proving $\val(G,\pi_a)=\bigcup a$.
+$\pi_a$ for each $a\in M[G]$ and proving $\val(G,\pi_a)=\union a$.
 Let $\tau$ be the name for $a$, i.e.\ $a=\val(G,\tau)$; 
 \citet{kunen2011set} gives $\pi_a$ in terms of $\tau$:
 \begin{align*}
-  \pi_a = \{\langle\theta,p \rangle &\in \dom(\bigcup(\dom(\tau))) \times \PP : \\
+  \pi_a = \{\langle\theta,p \rangle &\in \dom(\union(\dom(\tau))) \times \PP : \\
 &\exists \langle\sigma,q\rangle  \in \tau .
  \exists r \in \PP . \langle \theta,r\rangle \in \sigma \wedge
     p\leqslant r \wedge p \leqslant q \}
@@ -50,7 +50,7 @@ Our formal definition is slightly different in order to ease the proof of
 $\pi_a \in M$.  Since $\pi_a$ it is defined using Separation, one
 needs to internalize $\pi_a$ as a formula
 \isa{union{\isacharunderscore}name{\isacharunderscore}fm}. The
-equation $\val(G,\pi_a)=\bigcup a$ is proved by showing the mutual
+equation $\val(G,\pi_a)=\union a$ is proved by showing the mutual
 inclusion; in both cases one uses that $G$ is a filter.
 \begin{isabelle}
   \isacommand{lemma}\isamarkupfalse%
