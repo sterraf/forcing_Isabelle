@@ -1,11 +1,39 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
 \section{Hacking of \isatt{ZF-Constructible}}
 
-There are several lemmas that were declared, in later developments, as
-introduction/simplification rules (notably, the rule
-\isatt{equalityI}). They raised a warning, and we have 
-eliminated some of them, but in some cases we had to keep them because
-the proof works because it is insisted that the rule is \emph{safe}.
+In \cite{paulson_2003}, Paulson presented his formalization of the
+relative consistency of the Axiom of Choice. This development is
+included inside the Isabelle distribution with session name
+\isatt{ZF-Constructible}. The main technical devices, invented by
+G\"odel for this purpose, are \emph{relativization} and
+\emph{absoluteness}. In a nutshell, to relativize a formula $\phi$ to
+a class $C$, it is enough to restrict its quantifiers to $C$. The
+example of \isatt{upair\_ax} in
+Section~\ref{sec:axioms-models-set-theory}, the relativized version of
+the Pairing Axiom, is extracted from \texttt{Relative}, one of the
+core theories of \isatt{ZF-Constructible}. On the other hand, $\phi$
+is \emph{absolute} for $C$ if it is equivalent to its relativization,
+meaning that the statement made $\phi$ coincides with what $C$
+``believes'' $\phi$ is saying. Paulson shows that under certain
+hypothesis  on a class $M$ (condensed in the locale \isatt{M\_trivial}), a plethora of
+absoluteness and closure results can be proved about $M$.
+
+The development of forcing, and the study of ctms in general, takes
+absoluteness as a starting point. We were not able to work with
+\isatt{ZF-Constructible} right out-of-the-box. The main reason is that
+we can't expect state the ``class version'' of Replacement for a
+\emph{set} $M$ by
+using first-order formulas, since predicates \isatt{P::"i=>o"} can't
+be proved to be only the definable ones. Therefore, we had to make
+some modifications to the various sets of hypothesis in several
+locales to make the results available as tools for the present and
+future developments.
+
+%% There are several lemmas that were declared, in later developments, as
+%% introduction/simplification rules (notably, the rule
+%% \isatt{equalityI}). They raised a warning, and we have 
+%% eliminated some of them, but in some cases we had to keep them because
+%% the proof works because it is insisted that the rule is \emph{safe}.
 
 The most notable changes, located in the theory \texttt{Relative}, are
 the following:
@@ -14,7 +42,8 @@ the following:
   is satisfied by a class $M$ to be in the locale \isatt{M\_trivial}. 
 \item\label{item:2} We moved the requirement of the Powerset Axiom to \isatt{M\_basic}. 
 \item\label{item:3} We replaced the need that the set of natural numbers is in $M$ by the
-  milder hypothesis that $M(0)$.
+  milder hypothesis that $M(0)$. Actually, most results should follow
+  by only assuming that $M$ is nonempty.
 \end{enumerate}
 
 As a consequence of Item~\ref{item:1}, the lemma
@@ -32,13 +61,21 @@ the modified locale \isatt{M\_trivial} holds with minor
 modifications. Nevertheless, in order to have a neater presentation,
 we have stripped off several sections concerning $L$ from the theories
 \isatt{L\_axioms} and \isatt{Internalize}, and we merged them to form
-the new file  \isatt{Internalizations}. Actually we believe that the
+the new file  \isatt{Internalizations}. 
+
+\medskip
+\fbox{>>>Poner lo que sigue en las conclusiones???}
+\medskip
+
+We believe that the
 \isatt{ZF-Constructible} session  would benefit from some changes in
 the way some results are organized accross theory files; for
 intance, by cataloging all or most of the internalized formulas in one
-file.
-
-
+file. Another, most basic example would be to start out with an even
+more locale that only assumes $M$ to be a nonempty transitive class,
+as many absoluteness results follow from these hypothesis.  
+It is our desire to advocate a future work to a thorough
+revision of the development of constructibility to maximize modularity.
 
 %%% Local Variables: 
 %%% mode: latex
