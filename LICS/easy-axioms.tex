@@ -16,23 +16,23 @@ takes some more effort.
 % \forallRel{x}{A}. \forallRel{y}{A}. (\forallRel{w}{A} . w \in x \leftrightarrow w\in y) \rightarrow x = y
 % \]
 
-Extensionality for $M[G]$ is straightforward because $M[G]$ is
-transitive. %\footnote{We generalized slightly some results by Paulson:
+For Extensionality in $M[G]$, the assumption 
+$\forall w[M[G]]. w\in x \leftrightarrow w\in y$ yields 
+$\forall w. w\in x \leftrightarrow w\in y$ by transitivity of $M[G]$. %\footnote{We generalized slightly some results by Paulson:
 %  in fact, several basic lemmas are valid for any transitive class
 %  (for instance, absoluteness of Union). We plan to define a new
 %  hierarchy of locales for ZF where transitive classes will be at the
 %  base.}
-In fact, for $x,y\in M[G]$, we can prove
-$\forall w. w\in x \leftrightarrow w\in y$ (notice that the binding
-$w$ is not relativized), because $M[G]$ is transitive; therefore by
-extensionality we conclude $x=y$.
+Therefore, by (ambient) Extensionality we conclude $x=y$. 
 
 Foundation for $M[G]$ does not depend on $M[G]$ being transitive: in
-this case we take $x\in M[G]$ and prove that there is an
-$\in$\kern -1pt-minimal element, relativized to $M[G]$, in $x$. Using
-foundation for $x\cap M[G]$ we get a minimal $y$ (which is not
-relativized to $M[G]$), so it is still minimal when relativized to
-$M[G]$.
+this case we take $x\in M[G]$ and prove, relativized to $M[G]$,  that there is an
+$\in$\kern -1pt-minimal element in $x$. Instantiating the global Foundation
+Axiom for $x\cap M[G]$ we get a minimal $y$, so it is still minimal
+when considered relative to $M[G]$. 
+
+It is noteworthy that the proofs in the Isar dialect of Isabelle
+strictly follow the argumentation of the two previous paragraphs.
 
 The Union Axiom asserts that if $x$ is a set, then there exists
 another set (the union of $x$) containing all the elements in each
