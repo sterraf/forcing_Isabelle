@@ -15,12 +15,20 @@ Incompleteness Theorem that says that no consistent formal system that
 includes arithmetic can prove its own consistency. As a matter of
 fact, many problem within the area of Set Theory, not directly related
 to consistency or logic, have been proved to be undecided by the
-theory. Two techniques have been developed to do this. One is G\"odel
+theory. Two techniques have been developed to do this. One is Kurt G\"odel's
 theory of \emph{inner models}, which started with his model $L$ of
-\emph{Axiom of Constructibility} and was used to proved the relative
+\emph{Axiom of Constructibility} \cite{godel-L} and was used to proved the relative
 consistency of the Axiom of Choice and the Generalized Continuum
-Hypothesis with $\ZF$.  he has been formalized by Lawrence
-Paulson\cite{paulson_2003} in the proof assistant \emph{Isabelle}, 
+Hypothesis with $\ZF$. The second one is the technique of
+\emph{forcing}, which was developed 30 years later by Paul
+J. Cohen~\cite{Cohen-CH-PNAS}.
+
+The constructible universe  has been formalized by Lawrence
+Paulson \cite{paulson_2003} in the proof assistant \emph{Isabelle}, and
+the present paper is part of a project of formalizing the whole of the
+forcing machinery, continuing the work by Paulson. The starting point
+of this project is our paper \cite{2018arXiv180705174G}, to which we
+refer the reader for further details on basic matters.
 
 We follow \cite{kunen2011set}. An introduction to the issues discussed
 in this paper can be found in \cite{2018arXiv180705174G}. An
@@ -28,16 +36,30 @@ introduction to forcing can be found at \cite{chow-beginner-forcing},
 and the book \cite{weaver2014forcing} contains a thorough treament
 minimizing the technicalities.
 
+We briefly describe the contents of each
+section. Section~\ref{sec:isabelle} contains the bare minimun
+requirements to understand the (meta)logics used in Isabelle. Next, an
+overview of the model theory of set theory is presented in
+Section~\ref{sec:axioms-models-set-theory}. There is an ``internal''
+representation of first-order formulas as sets, implemented by
+Paulson; Section~\ref{sec:renaming} discusses syntactical
+transformations of the former, mainly permutation of variables. 
+In Section~\ref{sec:generic-extensions} the generic extensions are
+succintly reviewed and how the treatment of well founded recursion in
+Isabelle was enhanced. We take care of the ``easy axioms'' in
+Section~\ref{sec:easy-axioms}; these are the ones that
+do not depend on the forcing theorems. We describe the latter in
+Section~\ref{sec:forcing}. We adapted the  work by Paulson to our
+needs, and this is described in
+Section~\ref{sec:hack-constructible}. We present the proof
+of the Separation Axiom Scheme in Section~\ref{sec:proof-separation},
+which follows closely its implementation. A plan for future work and
+some immediate conclusions are offered in
+Section~\ref{sec:conclusions-future-work}.
+
+
 An enumeration of achievements to be presented:
 \begin{enumerate}
-\item Discussion of the Isabelle view of life.
-  \begin{enumerate}
-  \item Meta (Pure) vs Object (FOL+ZF) theory.
-  \item Object theory is presented axiomatically; in particular,
-    first-order ``formulas'' are not such (i.e., the \emph{initial}
-    algebra of formulas is \textbf{not} being specified). Thus, we are
-    not able to perform recursion on terms of type \tyo.
-  \end{enumerate}
 \item Discussion of locales.
   \begin{enumerate}
   \item How they help presenting complex results.
@@ -49,19 +71,8 @@ An enumeration of achievements to be presented:
   \begin{enumerate}
   \item Impact on names.
   \end{enumerate}
-\item Hacking of \isatt{ZF-Constructible}.
-  \begin{enumerate}
-  \item Elimination of the \tyo-schematic Replacement Axiom from
-    locales.
-  \item Replacing \isatt{M(nat)} by \isatt{M(0)} (merely non
-    emptiness) from Relative (and other places?).
-  \end{enumerate}
 \item Inteface between first-order properties of $M$ and those of
   $\#\#M$.
-  \begin{enumerate}
-  \item Enumerate properties and statistics.
-  \end{enumerate}
-\item Details of the proof of Separation.
 \end{enumerate}
 
 %%% Local Variables: 
