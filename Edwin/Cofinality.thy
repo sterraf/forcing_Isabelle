@@ -1,4 +1,8 @@
-theory Cofinality imports Normal Cardinal_AC begin
+theory Cofinality 
+  imports 
+    Cardinal_AC
+    "~~/src/ZF/Constructible/Normal"
+begin
 
 definition
   cofinal :: "[i,i,i] \<Rightarrow> o" where
