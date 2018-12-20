@@ -80,6 +80,7 @@ proof -
   then show ?thesis using Collect_cong A by simp
 qed
     
+(* We prefer to avoid the dependency on M_trivial yet. *)  
 lemma Union_abs_trans : 
   assumes "Transset(Q)" "a \<in> Q" "z \<in> Q" "\<Union> a = z"
   shows "big_union(##Q,a,z)"
