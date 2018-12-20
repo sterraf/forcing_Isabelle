@@ -429,13 +429,13 @@ lemma check_n_M :
   using \<open>n\<in>nat\<close> proof (induct n)
   case 0
   then show ?case using zero_in_M by (subst def_check,simp)
-  next
-    case (succ x)
-    have "one \<in> M" using one_in_P P_sub_M subsetD by simp
-    with \<open>check(x)\<in>M\<close> have "<check(x),one> \<in> M" using pairM by simp
-    then have "{<check(x),one>} \<in> M" using singletonM by simp
-    with \<open>check(x)\<in>M\<close> have "check(x) \<union> {<check(x),one>} \<in> M" using Un_closed by simp
-    then show ?case using \<open>x\<in>nat\<close> def_checkS by simp
+next
+  case (succ x)
+  have "one \<in> M" using one_in_P P_sub_M subsetD by simp
+  with \<open>check(x)\<in>M\<close> have "<check(x),one> \<in> M" using pairM by simp
+  then have "{<check(x),one>} \<in> M" using singletonM by simp
+  with \<open>check(x)\<in>M\<close> have "check(x) \<union> {<check(x),one>} \<in> M" using Un_closed by simp
+  then show ?case using \<open>x\<in>nat\<close> def_checkS by simp
 qed
 
 end (* context forcing_data *)
