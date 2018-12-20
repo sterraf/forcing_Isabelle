@@ -41,9 +41,9 @@ $\pi_a$ for each $a\in M[G]$ and proving $\val(G,\pi_a)=\union a$.
 Let $\tau$ be the name for $a$, i.e.\ $a=\val(G,\tau)$; 
 \citet{kunen2011set} gives $\pi_a$ in terms of $\tau$:
 \begin{align*}
-  \pi_a = \{\langle\theta,p \rangle &\in \dom(\union(\dom(\tau))) \times \PP : \\
-&\exists \langle\sigma,q\rangle  \in \tau .
- \exists r \in \PP . \langle \theta,r\rangle \in \sigma \wedge
+  \pi_a = \{\langle\theta,p \rangle :  %&\in \dom(\union(\dom(\tau))) \times \PP : \\
+\exists \langle\sigma,q\rangle  \in \tau .
+ \exists r . \langle \theta,r\rangle \in \sigma \wedge
     p\leqslant r \wedge p \leqslant q \}
 \end{align*}
 Our formal definition is slightly different in order to ease the proof of
@@ -59,24 +59,8 @@ inclusion; in both cases one uses that $G$ is a filter.
 \ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}filter{\isacharparenleft}G{\isacharparenright}{\isachardoublequoteclose}\ \isakeyword{and}\ {\isachardoublequoteopen}{\isasymtau}\ {\isasymin}\ M{\isachardoublequoteclose}\isanewline
 \ \ \isakeyword{shows}\ {\isachardoublequoteopen}{\isasymUnion}\ a\ {\isacharequal}\ val{\isacharparenleft}G{\isacharcomma}Union{\isacharunderscore}name{\isacharparenleft}{\isasymtau}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
-
-
-Since Union is absolute for any transitive class
-\medskip
-
-\fbox{No generaliza a Paulson porque \'el prueba el sii.}
-
-\fbox{Y capaz su prueba de dos l\'{\i}neas tambi\'en lo hace}
-
-\fbox{ac\'a (como Fundaci\'on), as\'{\i} que cuidado.}
-\begin{isabelle}
-\isacommand{lemma}\isamarkupfalse%
-\ Union{\isacharunderscore}abs{\isacharunderscore}trans\ {\isacharcolon}\ \isanewline
-\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}Transset{\isacharparenleft}Q{\isacharparenright}{\isachardoublequoteclose}\ \isakeyword{and}\ {\isachardoublequoteopen}a\ {\isasymin}\ Q{\isachardoublequoteclose}\ \isakeyword{and}\isanewline
-\ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}z\ {\isasymin}\ Q{\isachardoublequoteclose}\ \isakeyword{and}\ {\isachardoublequoteopen}{\isasymUnion}\ a\ {\isacharequal}\ z{\isachardoublequoteclose}\isanewline
-\ \ \isakeyword{shows}\ {\isachardoublequoteopen}big{\isacharunderscore}union{\isacharparenleft}{\isacharhash}{\isacharhash}Q{\isacharcomma}a{\isacharcomma}z{\isacharparenright}{\isachardoublequoteclose}
-\end{isabelle}
-\noindent we may conclude that $M[G]$ is closed under Union:
+Since Union is absolute for any transitive class we may conclude that
+$M[G]$ is closed under Union:
 \begin{isabelle}
   \isacommand{lemma}\isamarkupfalse%
   \ union{\isacharunderscore}in{\isacharunderscore}MG\ {\isacharcolon}\ \isanewline
@@ -84,10 +68,30 @@ Since Union is absolute for any transitive class
 \ \ \isakeyword{shows}\ {\isachardoublequoteopen}Union{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-\fbox{Hablar de \texttt{M\_trivial} y del uso de interfaz para
-  instanciar}
-
-\fbox{Falta \texttt{check\_in\_M} para completar Infinity}
+The proof of Infinity for $M[G]$ takes advantage of some absoluteness
+results proved in the locale \isa{M{\isacharunderscore}trivial}. Since
+we have already proved that $M[G]$ is transitive, $\emptyset\in M[G]$
+assuming $G$ being generic, and also that it satisfies Pairing and
+Union, we can instantiate \isa{M{\isacharunderscore}trivial}:
+\begin{isabelle}
+\isacommand{sublocale}\isamarkupfalse%
+\ G{\isacharunderscore}generic\ {\isasymsubseteq}\ M{\isacharunderscore}trivial{\isachardoublequoteopen}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
+\end{isabelle}
+We assume that $M$ satisfies Infinity,\footnote{This is equivalent to
+  say that there is an $I\in M$ having an empty set relativized to $M$
+  and closed under successor, again relativized to $M$.} therefore we
+obtain $I \in M$ such that $\emptyset\in I$ and, $x \in I$ implies
+$\mathit{succ}(x)\in I$; this follows by absoluteness of empty and
+succesor for $M$. Using one further assumption, namely that
+$\chk(x) \in M$ if $x\in M$, we deduce $\val(G,\chk(I)) = I \in M[G]$.
+Now we can use absoluteness of emptyness and successor, this time for
+$M[G]$, to conclude that $M[G]$ satisfies Infinity.
+\begin{isabelle}
+  \isacommand{lemma}\isamarkupfalse%
+\ infinty{\isacharunderscore}in{\isacharunderscore}MG\ {\isacharcolon}\ {\isachardoublequoteopen}infinity{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+\noindent\fbox{En Generic Extensions decimos que es fácil ver que $M[G]$}
+\fbox{ ... incluye a $M \cup {G}$, por qué no sacar $I\in M[G]$ de ahí?}
 
 %%% Local Variables: 
 %%% mode: latex
