@@ -1,11 +1,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
 \section{Proof of Separation}
+\label{sec:proof-separation}
 
 This proof can be found in the file \verb|Separation_Axiom.thy| of the
-development, which we proceed to discuss. The order chose to implement
-the proof sought to minimize the crossreference of facts;  it is
+development, which we proceed to discuss in detail. The order chosen to
+implement
+the proof sought to minimize the cross-reference of facts;  it is
 not entirely appropriate for a text version, so we depart from it in
-this presentation.
+this presentation. Nevertheless, we will refer to each specific block
+of the code by line numer for ease of reference.
 
 The key technical result is the following:
 \begin{isabelle}
@@ -87,10 +90,17 @@ m\defi \{u \in\dom(\pi)\times\PP : \exists \th,p\in M.\ u=\lb\th,p\rb
 \y Q(\th,p)\}. 
 \]
 
-It can be seen (lines 221--274) that
-\begin{lemma}
-  $\val(G,m) = \{x\in c : M[G],[x,w,c]\models \phi(x_0,x_1)\}$.
-\end{lemma}
+A result from the theory \isatt{Names} allows to calculate the value
+of sets such as $m$ that frequently are used in forcing arguments: 
+$\val(G,\{x\in A\times \PP.\ Q(x)\})$ equals
+\[
+\{\val(G,t) : t\in A , \exists
+  p\in \PP .\ Q(\lb t,p\rb) \y p \in G\}.
+\]
+This is then used to show  (lines 221--274 of \isatt{Separation\_Axiom}) that 
+\[
+  \val(G,m) = \{x\in c : M[G],[x,w,c]\models \phi(x_0,x_1)\}.
+\]
 The right-hand side is trivially equal to $S$, but as a consequence of
 the definition of 
 \isatt{separation\_ax}, the result contains an extra $c$ in the
@@ -128,7 +138,19 @@ M[F],[\val(F,\th),\val(F,\sig),\val(F,\pi)]\models
 \]
 Note this is the same as (\ref{eq:2}). Hence, tracing the equivalence
 up to (\ref{eq:1}), we can show that $x=\val(G,\th)\in \val(G,n)$
-(lines 319--337) and we are done.
+(lines 319--337), finishing the main lemma.
+
+The last 20 lines of the theory show, using absoluteness, the two
+instances of Separation for $M[G]$:
+
+\begin{isabelle}
+\isacommand{theorem}\isamarkupfalse%
+\ separation{\isacharunderscore}in{\isacharunderscore}MG{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ \isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\ \isakeyword{and}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isacharequal}\ {\isadigit{1}}\ {\isasymor}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharequal}{\isadigit{2}}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ \ \isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isacharparenleft}{\isasymforall}a{\isasymin}{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharparenright}{\isachardot}\ separation{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymlambda}x{\isachardot}\ sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymphi}{\isacharcomma}{\isacharbrackleft}x{\isacharcomma}a{\isacharbrackright}{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
    
 %%% Local Variables: 
 %%% mode: latex

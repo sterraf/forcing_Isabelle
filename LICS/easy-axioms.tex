@@ -77,12 +77,11 @@ Union, we can instantiate \isa{M{\isacharunderscore}trivial}:
 \isacommand{sublocale}\isamarkupfalse%
 \ G{\isacharunderscore}generic\ {\isasymsubseteq}\ M{\isacharunderscore}trivial{\isachardoublequoteopen}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
 \end{isabelle}
-We assume that $M$ satisfies Infinity,\footnote{This is equivalent to
-  say that there is an $I\in M$ having an empty set relativized to $M$
-  and closed under successor, again relativized to $M$.} therefore we
+We assume that $M$ satisfies Infinity, i.e., that Infinity
+relativized to $M$ holds; therefore we
 obtain $I \in M$ such that $\emptyset\in I$ and, $x \in I$ implies
-$\mathit{succ}(x)\in I$; this follows by absoluteness of empty and
-succesor for $M$. Using one further assumption, namely that
+$\mathit{succ}(x)\in I$  by absoluteness of empty and
+successor for $M$. Using one further assumption, namely that
 $\chk(x) \in M$ if $x\in M$, we deduce $\val(G,\chk(I)) = I \in M[G]$.
 Now we can use absoluteness of emptyness and successor, this time for
 $M[G]$, to conclude that $M[G]$ satisfies Infinity.
@@ -92,7 +91,11 @@ $M[G]$, to conclude that $M[G]$ satisfies Infinity.
 \end{isabelle}
 \noindent\fbox{En Generic Extensions decimos que es fácil ver que $M[G]$}
 \fbox{ ... incluye a $M \cup {G}$, por qué no sacar $I\in M[G]$ de ahí?}
+\medskip
 
+\fbox{Puede ser, pero eso est\'a dentro de  un locale}
+
+\fbox{que asume más cosas (una instancia de Repl)}
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "Separation_In_MG"
