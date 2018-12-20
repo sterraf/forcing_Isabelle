@@ -1,4 +1,5 @@
-theory Edwin imports L_axioms
+theory Edwin imports 
+  "~~/src/ZF/Constructible/L_axioms"
 begin
 
 lemma "\<forall>x\<in>{4,5,6} . 0<x"
