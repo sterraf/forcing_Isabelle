@@ -89,16 +89,22 @@ m\defi \{u \in\dom(\pi)\times\PP : \exists \th,p\in M.\ u=\lb\th,p\rb
 
 It can be seen (lines 221--274) that
 \begin{lemma}
-  $\val(G,m) = S$.
+  $\val(G,m) = \{x\in c : M[G],[x,w,c]\models \phi(x_0,x_1)\}$.
 \end{lemma}
-Also by monotonicity of $\val$ we obtain 
-  $\val(G,n)\sbq \val(G,m)$ (lines 213--215).
-To complete the proof, it is therefore enough to show that
-$S\sbq \val(G,n)$. For this, let $x\in S$. Hence there exists
-$\lb\th,q\rb\in\pi$ such that 
-$q\in G$ and $x=\val(G,\th)$. 
+The right-hand side is trivially equal to $S$, but as a consequence of
+the definition of 
+\isatt{separation\_ax}, the result contains an extra $c$ in the
+environment.
 
-On the other hand, since 
+Also, by monotonicity of $\val$ we obtain 
+  $\val(G,n)\sbq \val(G,m)$ (lines 213--215).
+To complete the proof, it is therefore enough to show the other
+inclusion (starting at line 275).
+%$\val(G,m)\sbq \val(G,n)$ 
+For this, let $x\in \val(G,m) = S$ and then $x\in c$. Hence there exists
+$\lb\th,q\rb\in\pi$ such that $q\in G$ and $x=\val(G,\th)$. 
+
+On the other hand, since (line 297)
 \[
 M[G],[\val(G,\th),\val(G,\sig),\val(G,\pi)]\models
  x_0\in x_2\y\phi( x_0, x_1),
@@ -114,21 +120,15 @@ By Strengthening, we have
 M,[\PP,\leq,\1,p,\th,\sig,\pi]\models
 \forceisa(x_4\in x_6\y \phi( x_4, x_5)),
 \]
-which by the Definition of Forcing gives us: \emph{for all $M$-generic $F$,
+which by the Definition of Forcing gives us (lines 315--318): \emph{for all $M$-generic $F$,
   $p\in F$ implies} 
 \[
 M[F],[\val(F,\th),\val(F,\sig),\val(F,\pi)]\models
  x_0\in  x_2 \y\phi( x_0, x_1).
 \]
-Note this is the same as (\ref{eq:2}). In fact, we have that
-\begin{lemma}
-  $\val(G,n)$ equals
-  \[
-  \{\val(G,\th): \th\in\dom(\pi) \y  p \in G 
-  \y \text{(\ref{eq:2}) holds}\}.
-  \]
-\end{lemma}
-This shows that $S\sbq \val(G,n)$, since $\th\in\dom(\pi)$ by construction. 
+Note this is the same as (\ref{eq:2}). Hence, tracing the equivalence
+up to (\ref{eq:1}), we can show that $x=\val(G,\th)\in \val(G,n)$
+(lines 319--337) and we are done.
    
 %%% Local Variables: 
 %%% mode: latex
