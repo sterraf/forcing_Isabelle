@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
 \section{Introduction}
 % no \IEEEPARstart
-Zermelo-Fraenkel Set Theory $\ZF$) has a prominent place among formal
+Zermelo-Fraenkel Set Theory ($\ZF$) has a prominent place among formal
 theories. The reason for this is that it formalizes many intuitive
 properties of the notion of set. As such, it can be used as a
 foundation for mathematics and thus it has been
@@ -10,10 +10,10 @@ thoroughly studied.
 One of the main initial concerns was to decide if this foundation
 completely axiomatized all of mathematics. As it was shown by G\"odel
 in 1931, no  such axiomatization (therefore, including artihmetic) can
-be complete. A refinement of this result, is G\"odel's Second
-Incompleteness Theorem that says that no consistent formal system that
+be complete. A refinement of this result, G\"odel's Second
+Incompleteness Theorem, says that no consistent formal system that
 includes arithmetic can prove its own consistency. As a matter of
-fact, many problem within the area of Set Theory, not directly related
+fact, many problems within the area of Set Theory, not directly related
 to consistency or logic, have been proved to be undecided by the
 theory. Two techniques have been developed to do this. One is Kurt G\"odel's
 theory of \emph{inner models}, which started with his model $L$ of
@@ -21,20 +21,35 @@ theory of \emph{inner models}, which started with his model $L$ of
 consistency of the Axiom of Choice and the Generalized Continuum
 Hypothesis with $\ZF$. The second one is the technique of
 \emph{forcing}, which was developed 30 years later by Paul
-J. Cohen~\cite{Cohen-CH-PNAS}.
+J. Cohen~\cite{Cohen-CH-PNAS}. In essence, forcing is the only known
+way of \emph{extending} models of $\ZF$. 
 
 The constructible universe  has been formalized by Lawrence
 Paulson \cite{paulson_2003} in the proof assistant \emph{Isabelle}, and
 the present paper is part of a project of formalizing the whole of the
 forcing machinery, continuing the work by Paulson. The starting point
-of this project is our paper \cite{2018arXiv180705174G}, to which we
-refer the reader for further details on basic matters.
+of this project is our previous paper 
+\cite{2018arXiv180705174G}, to which we 
+refer the reader for further details on basic matters. 
 
-We follow \cite{kunen2011set}. An introduction to the issues discussed
-in this paper can be found in \cite{2018arXiv180705174G}. An
-introduction to forcing can be found at \cite{chow-beginner-forcing},
-and the book \cite{weaver2014forcing} contains a thorough treament
-minimizing the technicalities.
+
+In a gross simplification, there are two aspects to a formalization
+project like this one: thematic and programmatic. The first concerns
+the handling of all the theoretical concepts and results in the
+subject, while the second involves the practical issues of the
+implementation and design. In the case of forcing, the main intricacy
+lies in the first aspect. In this sense, following a sensible
+presentation of the material is key.  The authoritative reference 
+on the subject during the last 30 years has been Kunen's classical
+\cite{kunen1980}. In our
+formalizaton we have followed a recent rewrite \cite{kunen2011set}
+of that  textbook,which presents the material in the same sharp 
+style but offering a lot of details. In some sense this project
+wouldn't exist without this book. The reader interested in an
+introduction to the subject can check
+\cite{chow-beginner-forcing}; also, the book \cite{weaver2014forcing}
+contains a thorough treament minimizing the technicalities.
+
 
 We briefly describe the contents of each
 section. Section~\ref{sec:isabelle} contains the bare minimun
