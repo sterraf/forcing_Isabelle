@@ -80,11 +80,12 @@ $M[G]$ is closed under Union:
 
 The proof of Infinity for $M[G]$ takes advantage of some absoluteness
 results proved in the locale \isa{M{\isacharunderscore}trivial}; this
-proof is easy because we assume $\chk(x) \in M$ whenever $x\in
-M$. Since we have already proved that $M[G]$ is transitive,
-$\emptyset\in M[G]$ assuming $G$ being generic, and also that it
-satisfies Pairing and Union, we can instantiate
-\isa{M{\isacharunderscore}trivial}:
+proof is easy because we work in the context of the locale
+\isa{M{\isacharunderscore}extra{\isacharunderscore}assms} which states
+the assumption $\chk(x) \in M$ whenever $x\in M$. Since we have
+already proved that $M[G]$ is transitive, $\emptyset\in M[G]$ assuming
+$G$ being generic, and also that it satisfies Pairing and Union, we
+can instantiate \isa{M{\isacharunderscore}trivial}:
 \begin{isabelle}
 \isacommand{sublocale}\isamarkupfalse%
 \ G{\isacharunderscore}generic\ {\isasymsubseteq}\ M{\isacharunderscore}trivial{\isachardoublequoteopen}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}

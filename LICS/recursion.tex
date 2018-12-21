@@ -87,9 +87,21 @@ $\chk(x)$ is a straightforward $\in$-recursion:
   \chk(x)\defi\{\lb\chk(y),\1\rb : y\in x\}
 \end{equation*}
 It can be easily proved by $\in$-induction that $\val(G,\chk(x))=x$.
-To conclude $M\subseteq M[G]$ one also needs to have $\chk(x) \in M$;
-this result requires the internalization of recursively defined
-functions. We indicate explicitly where we use this assumption.
+But to conclude $M\subseteq M[G]$ one also needs to have
+$\chk(x) \in M$; this result requires the internalization of
+recursively defined functions. This is also needd to prove
+$G \in M[G]$; let us define
+$\dot G= \{\lb \chk(p),p\rb : p \in \PP \}$, it is easy to prove
+$\val(G,\dot G) = G$. Proving $\dot G\in M$ involves
+knowing $\chk(x) \in M$ and using one instance of Replacement.
+
+Paulson proved absoluteness results for definitions by recursion and
+one of our next goals is to instantiate the appropiate locale
+\isa{M{\isacharunderscore}eclose} which is the last layer of a pile of
+locales; it will take us some time to prove that any ctm satisfies the
+assumptions involved in those locales. In the meantime, we declare a
+locale \isa{M{\isacharunderscore}extra{\isacharunderscore}assms}
+assembling both assumptions.
 
 %%% Local Variables: 
 %%% mode: latex
