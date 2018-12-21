@@ -1,20 +1,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
 \section{Extensionality, Foundation, Union, Infinity}
 \label{sec:easy-axioms}
-\newcommand{\quantRel}[3]{#1 #2\kern -1pt[#3]}
-\newcommand{\forallRel}[2]{\quantRel{\forall}{#1}{#2}}
-\newcommand{\existsRel}[2]{\quantRel{\exists}{#1}{#2}}
 
-It is straightforward to show that the generic extension $M[G]$
-satisfies extensionality and foundation. Showing that it is closed
-under Union depends on $G$ being a filter. On the other hand, infinity
-takes some more effort.
+In our first presentation of this project \cite{2018arXiv180705174G},
+we proved tha $M[G]$ satisfies Pairing. It is straightforward to show
+that the generic extension $M[G]$ satisfies extensionality and
+foundation. Showing that it is closed under Union depends on $G$ being
+a filter. Infinity is also easy, but it depends in one further
+assumption.
 
-% To say that $A$ satisfies some axiom, say extensionality, means
-% that the relativized version of extensionality is true in $A$:
-% \[
-% \forallRel{x}{A}. \forallRel{y}{A}. (\forallRel{w}{A} . w \in x \leftrightarrow w\in y) \rightarrow x = y
-% \]
 
 For Extensionality in $M[G]$, the assumption 
 $\forall w[M[G]]. w\in x \leftrightarrow w\in y$ yields 
@@ -46,12 +40,28 @@ Let $\tau$ be the name for $a$, i.e.\ $a=\val(G,\tau)$;
  \exists r . \langle \theta,r\rangle \in \sigma \wedge
     p\leqslant r \wedge p \leqslant q \}
 \end{align*}
-Our formal definition is slightly different in order to ease the proof of
-$\pi_a \in M$.  Since $\pi_a$ it is defined using Separation, one
-needs to internalize $\pi_a$ as a formula
-\isa{union{\isacharunderscore}name{\isacharunderscore}fm}. The
-equation $\val(G,\pi_a)=\union a$ is proved by showing the mutual
-inclusion; in both cases one uses that $G$ is a filter.
+Our formal definition is slightly different in order to ease the proof
+of $\pi_a \in M$; as it is defined using Separation, so one needs to
+define the domain of separation and also internalize the predicate as
+a formula
+\isa{union{\isacharunderscore}name{\isacharunderscore}fm}. Instead of
+working directly with the internalized formula, we define a predicate
+\isa{Unioin{\isacharunderscore}name{\isacharunderscore}body} and prove the equivalence between
+\isa{sats(M,union{\isacharunderscore}name{\isacharunderscore}fm,[P,leq,\isasymtau,x])}
+and
+\isa{Union{\isacharunderscore}Name{\isacharunderscore}body(P,leq,\isasymtau,x)}. The
+definition of $\pi_a$ in our formalization is:
+\begin{isabelle}
+\isacommand{definition}\isamarkupfalse%
+\ Union{\isacharunderscore}name\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}Union{\isacharunderscore}name{\isacharparenleft}{\isasymtau}{\isacharparenright}\ {\isacharequal}{\isacharequal}\ \isanewline
+\ \ \ \ {\isacharbraceleft}u\ {\isasymin}\ domain{\isacharparenleft}{\isasymUnion}{\isacharparenleft}domain{\isacharparenleft}{\isasymtau}{\isacharparenright}{\isacharparenright}{\isacharparenright}\ {\isasymtimes}\ P\ {\isachardot}\isanewline
+\ \ \ \  \ \ \ \ Union{\isacharunderscore}name{\isacharunderscore}body{\isacharparenleft}P{\isacharcomma}leq{\isacharcomma}{\isasymtau}{\isacharcomma}u{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+
+Once we know $\pi_a \in M$, the equation $\val(G,\pi_a)=\union a$ is
+proved by showing the mutual inclusion; in both cases one uses that
+$G$ is a filter.
 \begin{isabelle}
   \isacommand{lemma}\isamarkupfalse%
 \ Union{\isacharunderscore}MG{\isacharunderscore}Eq\ {\isacharcolon}\ \isanewline
@@ -69,33 +79,28 @@ $M[G]$ is closed under Union:
 \end{isabelle}
 
 The proof of Infinity for $M[G]$ takes advantage of some absoluteness
-results proved in the locale \isa{M{\isacharunderscore}trivial}. Since
-we have already proved that $M[G]$ is transitive, $\emptyset\in M[G]$
-assuming $G$ being generic, and also that it satisfies Pairing and
-Union, we can instantiate \isa{M{\isacharunderscore}trivial}:
+results proved in the locale \isa{M{\isacharunderscore}trivial}; this
+proof is easy because we assume $\chk(x) \in M$ whenever $x\in
+M$. Since we have already proved that $M[G]$ is transitive,
+$\emptyset\in M[G]$ assuming $G$ being generic, and also that it
+satisfies Pairing and Union, we can instantiate
+\isa{M{\isacharunderscore}trivial}:
 \begin{isabelle}
 \isacommand{sublocale}\isamarkupfalse%
 \ G{\isacharunderscore}generic\ {\isasymsubseteq}\ M{\isacharunderscore}trivial{\isachardoublequoteopen}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
 \end{isabelle}
-We assume that $M$ satisfies Infinity, i.e., that Infinity
-relativized to $M$ holds; therefore we
-obtain $I \in M$ such that $\emptyset\in I$ and, $x \in I$ implies
-$\mathit{succ}(x)\in I$  by absoluteness of empty and
-successor for $M$. Using one further assumption, namely that
-$\chk(x) \in M$ if $x\in M$, we deduce $\val(G,\chk(I)) = I \in M[G]$.
-Now we can use absoluteness of emptyness and successor, this time for
-$M[G]$, to conclude that $M[G]$ satisfies Infinity.
-\begin{isabelle}
-  \isacommand{lemma}\isamarkupfalse%
-\ infinty{\isacharunderscore}in{\isacharunderscore}MG\ {\isacharcolon}\ {\isachardoublequoteopen}infinity{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharparenright}{\isachardoublequoteclose}
-\end{isabelle}
-\noindent\fbox{En Generic Extensions decimos que es fácil ver que $M[G]$}
-\fbox{ ... incluye a $M \cup {G}$, por qué no sacar $I\in M[G]$ de ahí?}
-\medskip
+We assume that $M$ satisfies Infinity, i.e., that Infinity relativized
+to $M$ holds; therefore we obtain $I \in M$ such that $\emptyset\in I$
+and, $x \in I$ implies $\mathit{succ}(x)\in I$ by absoluteness of
+empty and successor for $M$. Using the assumption that $M$ is closed
+under $\chk$, we deduce $\val(G,\chk(I)) = I \in M[G]$.  Now we can
+use absoluteness of emptyness and successor, this time for $M[G]$, to
+conclude that $M[G]$ satisfies Infinity.
+% \begin{isabelle}
+%   \isacommand{lemma}\isamarkupfalse%
+% \ infinty{\isacharunderscore}in{\isacharunderscore}MG\ {\isacharcolon}\ {\isachardoublequoteopen}infinity{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharparenright}{\isachardoublequoteclose}
+% \end{isabelle}
 
-\fbox{Puede ser, pero eso est\'a dentro de  un locale}
-
-\fbox{que asume más cosas (una instancia de Repl)}
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "Separation_In_MG"
