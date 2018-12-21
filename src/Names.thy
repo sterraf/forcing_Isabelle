@@ -181,10 +181,13 @@ context forcing_data
 begin  (*************** CONTEXT: forcing_data *****************)
   
 lemma upairM : "x \<in> M \<Longrightarrow> y \<in> M \<Longrightarrow> {x,y} \<in> M"
-  by(insert  upair_ax, auto simp add: upair_ax_def)
+ by (simp del:setclass_iff  add:setclass_iff[symmetric]) 
     
+lemma singletonM : "a \<in> M \<Longrightarrow> {a} \<in> M"
+ by (simp del:setclass_iff  add:setclass_iff[symmetric]) 
+
 lemma pairM : "x \<in>  M \<Longrightarrow> y \<in> M \<Longrightarrow> <x,y> \<in> M"
-  by(unfold Pair_def, rule upairM,(rule upairM,simp+)+)
+ by (simp del:setclass_iff  add:setclass_iff[symmetric]) 
     
 lemma P_sub_M : "P \<subseteq> M"
   by (simp add: P_in_M trans_M transD)
@@ -227,8 +230,6 @@ proof -
   finally show ?thesis using Hcheck_def by simp
 qed
 
-lemma singletonM : "a \<in> M \<Longrightarrow> {a} \<in> M"
-  by(insert upairM ,force)
 
 lemma def_checkS : 
   fixes n
@@ -334,14 +335,13 @@ proof -
   have "domain(?n) \<subseteq> A" by auto
   { fix t
     assume H:"t \<in> domain({x \<in> A \<times> P . Q(x)})"
-    then have "(\<lambda>z\<in>edrel(eclose({{x \<in> A \<times> P . Q(x)}})) -`` {{x \<in> A \<times> P . Q(x)}}. val(G, z)) ` t = 
-          (if t \<in> edrel(eclose({{x \<in> A \<times> P . Q(x)}})) -`` {{x \<in> A \<times> P . Q(x)}} then val(G,t) else 0)"
+    then have "?f ` t = (if t \<in> ?r(?n)-``{?n} then val(G,t) else 0)"
       by simp
     moreover have "... = val(G,t)"
       using dom_under_edrel_eclose H if_P by auto
   }
   then have Eq1: "t \<in> domain({x \<in> A \<times> P . Q(x)}) \<Longrightarrow> 
-    val(G,t) = (\<lambda>z\<in>edrel(eclose({{x \<in> A \<times> P . Q(x)}})) -`` {{x \<in> A \<times> P . Q(x)}}. val(G, z)) ` t"  for t 
+    val(G,t) = ?f` t"  for t 
     by simp
   have
     "val(G,?n) = {val(G,t) .. t\<in>domain(?n), \<exists>p \<in> P . <t,p> \<in> ?n \<and> p \<in> G}"
@@ -374,6 +374,10 @@ proof -
     " val(G,?n)  = { val(G,t) .. t\<in>A, \<exists>p\<in>P . Q(<t,p>) \<and> p\<in>G}"
     by auto
 qed
+
+lemma val_of_name_alt : 
+  "val(G,{x\<in>A\<times>P. Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>P\<inter>G .  Q(<t,p>) }"
+using val_of_name by force
   
 definition
   GenExt :: "i\<Rightarrow>i"     ("M[_]")
@@ -478,7 +482,7 @@ proof (intro equalityI subsetI)
     by force
   with \<open>one\<in>G\<close> \<open>G\<subseteq>P\<close> show
       "x \<in> G" 
-    using valcheck P_sub_M check_in_M by auto
+    using valcheck P_sub_M by auto
 next
   fix p
   assume "p\<in>G" 
@@ -489,7 +493,7 @@ next
     using val_of_elem G_dot_in_M by blast
   with \<open>p\<in>G\<close> \<open>G\<subseteq>P\<close> \<open>one\<in>G\<close> show
     "p \<in> val(G,G_dot)" 
-    using P_sub_M check_in_M valcheck by auto
+    using P_sub_M valcheck by auto
 qed
   
   
