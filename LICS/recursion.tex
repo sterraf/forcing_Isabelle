@@ -78,8 +78,18 @@ then
 \val(G,B) = \{\val(G,t) : t\in A , \exists p\in \PP \cap G.\ Q(\lb t,p\rb) \} \label{eq:val-name-sep}
 \end{equation}
 
-
-\fbox{Creo que deberíamos poner acá \isa{check} y \isa{check\_in\_M} }
+We close our discussion of names and their values by making explicit
+the names for elements in $M$, once more we refer to
+\cite{2018arXiv180705174G} for our formalization. The definition of
+$\chk(x)$ is a straightforward $\in$-recursion:
+\begin{equation*}
+  \label{eq:def-check}
+  \chk(x)\defi\{\lb\chk(y),\1\rb : y\in x\}
+\end{equation*}
+It can be easily proved by $\in$-induction that $\val(G,\chk(x))=x$.
+To conclude $M\subseteq M[G]$ one also needs to have $\chk(x) \in M$;
+this result requires the internalization of recursively defined
+functions. We indicate explicitly where we use this assumption.
 
 %%% Local Variables: 
 %%% mode: latex
