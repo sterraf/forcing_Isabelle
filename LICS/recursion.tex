@@ -98,10 +98,22 @@ $\chk(x) \in M$ and using one instance of Replacement.
 Paulson proved absoluteness results for definitions by recursion and
 one of our next goals is to instantiate the appropiate locale
 \isa{M{\isacharunderscore}eclose} which is the last layer of a pile of
-locales; it will take us some time to prove that any ctm satisfies the
-assumptions involved in those locales. In the meantime, we declare a
-locale \isa{M{\isacharunderscore}extra{\isacharunderscore}assms}
-assembling both assumptions.
+locales. It will take us some time to prove that any ctm satisfies the
+assumptions involved in those locales; as we mentioned, Paulson work
+is mostly done at the meta-level, i.e. the assumptions are instances
+of Separation and Replacement where the predicates and functions are
+Isabelle functions of type \isa{i{\isasymRightarrow}i} and
+\isa{i{\isasymRightarrow}o}, respectively. In contrast, we assume that
+$M$ is a model of $ZF$, therefore to deduce that $M$ satisfies a
+Separation instance, we have to define an internalized formula whose
+satisfaction is equivalent to the meta-level predicate (cf. the
+interface described in Section~\ref{sec:axioms-models-set-theory} and
+also the concrete example given in the proof of Union).
+
+In the meantime, we declare a locale
+\isa{M{\isacharunderscore}extra{\isacharunderscore}assms} assembling
+both assumptions ($M$ closed under $\chk$ and the instance of
+Replacement); in this paper we explicitly mention where we use them.
 
 %%% Local Variables: 
 %%% mode: latex
