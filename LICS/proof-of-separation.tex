@@ -90,17 +90,9 @@ m\defi \{u \in\dom(\pi)\times\PP : \exists \th,p\in M.\ u=\lb\th,p\rb
 \y Q(\th,p)\}. 
 \]
 
-\fbox{Mover lo siguiente a lo de Values?}
-\medskip
-
-A result from the theory \isatt{Names} allows to calculate the value
-of sets such as $m$ that frequently are used in forcing arguments: 
-$\val(G,\{x\in A\times \PP.\ Q(x)\})$ equals
-\[
-\{\val(G,t) : t\in A , \exists
-  p\in \PP .\ Q(\lb t,p\rb) \y p \in G\}.
-\]
-This is then used to show  (lines 221--274 of \isatt{Separation\_Axiom}) that 
+Since $m$ is a name defined using Separation, we may use
+(\ref{eq:val-name-sep}) to show (lines 221--274 of
+\isatt{Separation\_Axiom})
 \[
   \val(G,m) = \{x\in c : M[G],[x,w,c]\models \phi(x_0,x_1)\}.
 \]

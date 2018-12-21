@@ -290,6 +290,9 @@
 %% \newcommand{\caso}[1]{\item[\fbox{#1}]}
 \newenvironment{proofofclaim}{\begin{proof}[Proof of Claim]}{\end{proof}}
 
+\newcommand{\quantRel}[3]{#1 #2\kern -1pt[#3]}
+\newcommand{\forallRel}[2]{\quantRel{\forall}{#1}{#2}}
+\newcommand{\existsRel}[2]{\quantRel{\exists}{#1}{#2}}
 
 %%% Local Variables: 
 %%% mode: latex

@@ -5,7 +5,7 @@ We will swiftly review some definitions in order to reach the concept
 of \emph{generic extension}. Given a ctm $M$ of $\ZF$, a forcing
 notion $\lb\PP,\leq,\1\rb$, and a filter
 $G\sbq\PP$, a new set $M[G]$ is defined. Each element $a\in M[G]$ is
-determined by an element $\dot a$ of $M$. Actually, the structure of
+determined by its \emph{name} $\dot a$ of $M$. Actually, the structure of
 each $\dot a$ is used to construct $a$. They are related by a
 map $\val$ that takes $G$ a parameter:
 \[
@@ -16,13 +16,15 @@ Then the extension is defined by the image of the map $\val(G,\cdot)$:
 M[G] \defi \{\val(G,\tau): \tau\in M\}.
 \]
 Metatheoretically, it is straightforward to see that $M[G]$ is a
-transitive set that satisfies the some of axioms of $\ZF$ (see
-Section~\ref{sec:easy-axioms}) and 
-includes $M\cup\{G\}$. Nevertheless there are no a priori reasons for
-$M[G]$ to satisfy the rest of the $\ZF$ 
-axioms. The original insight by Cohen was to define the notion of
-\emph{genericity} for a filter $G\sbq\PP$ and to prove that whenever
-$G$ is generic, $M[G]$ will satisfy $\ZF$.
+transitive set that satisfies some axioms of $\ZF$ (see
+Section~\ref{sec:easy-axioms}) and includes $M\cup\{G\}$. Nevertheless
+there is no a priori reason for $M[G]$ to satisfy the rest of the
+$\ZF$ axioms. The original insight by Cohen was to define the notion
+of \emph{genericity} for a filter $G\sbq\PP$ and to prove that
+whenever $G$ is generic, $M[G]$ will satisfy $\ZF$. Remember that a
+filter is generic if it intersects all the dense sets in $M$; in
+\cite{2018arXiv180705174G} we formalized Rassiowa-Sikorski lemma which
+proves the existence of generic filters for ctms.
 
 The Separation Axiom  is the first that requires the notion of
 genericity and the use of the forcing machinery, which we review in
