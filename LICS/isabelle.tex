@@ -38,7 +38,25 @@ recursively. That is, although there are constants and functions that
 generate elements of both types, neither of them are 
 \emph{initial}, in the sense that they are not the least types
 obtained by combining the given constants and operations. This will
-have concrete consequences in our strategy to approach the development.
+have concrete consequences in our strategy to approach the
+development.
+
+\medskip
+\fbox{Portar a \textbf{Isabelle2018} antes de enviar.}
+
+\fbox{Hacer benchmark para compararlos.}
+
+\medksip
+
+The source code is written for the 2018 version of Isabelle (with
+minor modifications, it can be run in Isabelle2016-1). Most of it is
+presented in the (nowadays standard) declarative flavour called
+\emph{Isar} \cite{DBLP:conf/tphol/Wenzel99}, where intermediate
+statements in the course 
+of a proof are explicitly stated, interspersed with automatic 
+tactics handling more trivial steps. The goal is that the resulting
+text, a \emph{proof document}, can be understood without the need of
+running it.
 
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-
 \subsection{Locales}
