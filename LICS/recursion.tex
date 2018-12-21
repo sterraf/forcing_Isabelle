@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
-\subsection*{Value of names}
+\subsection*{Recursion and Values of Names}
 
 The map $\val$ used in the definition of the generic extension is
 characterized by the recursive equation
@@ -42,9 +42,10 @@ transitive closure of the actual parameter:
 \ val\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
 \ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isacharequal}{\isacharequal}\ wfrec{\isacharparenleft}edrel{\isacharparenleft}eclose{\isacharparenleft}{\isacharbraceleft}{\isasymtau}{\isacharbraceright}{\isacharparenright}{\isacharparenright}{\isacharcomma}{\isasymtau}{\isacharcomma}Hv{\isacharparenleft}G{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
-When computing the value of a recursive function on some argument $a$,
-one can restrict the relation to some ambient set $A$ if $a$ and
-all of its predecessesors are also in $A$.
+A key result, albeit intuitive and rather easy, to make this
+definition work is that when computing the value of a recursive
+function on some argument $a$, one can restrict the relation to some
+ambient set if it includes $a$ and all of its predecessesors.
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ wfrec{\isacharunderscore}restr\ {\isacharcolon}\isanewline
@@ -53,13 +54,8 @@ all of its predecessesors are also in $A$.
 \ \ \ \ \ \ \ \ \ \ wfrec{\isacharparenleft}r{\isacharcomma}a{\isacharcomma}H{\isacharparenright}\ {\isacharequal}\ wfrec{\isacharparenleft}r{\isasyminter}A{\isasymtimes}A{\isacharcomma}a{\isacharcomma}H{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-\medskip
-\noindent\fbox{Para que el resultado anterior tenga utilidad hay\ \dots\
-}
-\fbox{\dots\ que pedir que la relaci\'on \texttt{"i=>i=>o"} sea set-like}
-\medskip
-
-Using this lemma we can prove Equation~\eqref{eq:val}:
+This lemma gives rise to some useful results about values of
+names. First, we characterize $\val$ as in Equation~(\ref{eq:val}):
 \begin{isabelle}
   \isacommand{lemma}\isamarkupfalse%
   \ def{\isacharunderscore}val{\isacharcolon}\isanewline
@@ -75,6 +71,13 @@ substitution.
 \ \ \isacommand{by}\isamarkupfalse%
 \ {\isacharparenleft}subst\ {\isacharparenleft}{\isadigit{1}}\ {\isadigit{2}}{\isacharparenright}\ def{\isacharunderscore}val{\isacharcomma}\ force{\isacharparenright}%
 \end{isabelle}
+More interestingly we can give a neat equation for values of
+names defined by Separation, say $B = \{x\in A\times \PP.\ Q(x)\}$,
+then
+\begin{equation}
+\val(G,B) = \{\val(G,t) : t\in A , \exists p\in \PP \cap G.\ Q(\lb t,p\rb) \} \label{eq:val-name-sep}
+\end{equation}
+
 
 \fbox{Creo que deberíamos poner acá \isa{check} y \isa{check\_in\_M} }
 
