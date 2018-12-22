@@ -79,7 +79,7 @@ then
 \end{equation}
 
 We close our discussion of names and their values by making explicit
-the names for elements in $M$, once more we refer to
+the names for elements in $M$; once more, we refer to
 \cite{2018arXiv180705174G} for our formalization. The definition of
 $\chk(x)$ is a straightforward $\in$-recursion:
 \begin{equation*}
@@ -96,10 +96,12 @@ $\val(G,\dot G) = G$. Proving $\dot G\in M$ involves knowing
 $\chk(x) \in M$ and using one instance of Replacement.
 
 Paulson proved absoluteness results for definitions by recursion and
-one of our next goals is to instantiate the appropiate locale
+one of our next goals is to instantiate at $\#\#M$ the appropriate
+locale 
 \isa{M{\isacharunderscore}eclose} which is the last layer of a pile of
-locales. It will take us some time to prove that any ctm satisfies the
-assumptions involved in those locales; as we mentioned, Paulson work
+locales. It will take us some time to prove that any ctm of $\ZF$ 
+satisfies the
+assumptions involved in those locales; as we mentioned, Paulson's work
 is mostly done at the meta-level, i.e. the assumptions are instances
 of Separation and Replacement where the predicates and functions are
 Isabelle functions of type \isa{i{\isasymRightarrow}i} and
