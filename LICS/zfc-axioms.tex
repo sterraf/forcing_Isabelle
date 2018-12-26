@@ -23,40 +23,23 @@ to extend very special kind of models, where $M$ is a countable
 transitive set (i.e., every element of $M$ is a subset of $M$) and
 $E$ is the membership relation $\in$ restricted to $M$. In this case
 we simply refer to $M$ as a \emph{countable transitive model} or
-\emph{ctm}.
-
-The existence of a ctm of $\ZF$ can be proved from the existence of a
-model  $\lb N,E\rb$ such that the relation $E$ is well founded. The
-L\"owenheim-Skolem 
-Theorem ensures that there is an countable elementary submodel 
-$\lb N',E\restr N'\rb\preccurlyeq  \lb N,E\rb$ which must also be
-well founded; then the 
-Mostowski collapsing function \cite[Def.~I.9.31]{kunen2011set} sends $\lb
-N',E\restr N'\rb$ 
-isomorphically to some $\lb M,\in\rb$ with  $M$ transitive.
-
-By G\"odel's Second Incompleteness Theorem we cannot  prove that
-there exists a model of $\ZF$  (assuming that our base theory is not
-stronger than $\ZF$ to start with), but for consistency proofs,
-usually a model of only a finite subset of $\ZF$ suffices. Recall that
-an equivalent formulation of the Foundation Axiom states that the 
-universe of sets can be decomposed in a transfinite hierarchy of
-sets. 
-\begin{theorem}
-  Let $V_{\al}\defi\union\{\P(V_\be) : \be<\al\}$ for each ordinal
-  $\al$. Then each $V_\al$ is a set and 
-  $\forall x. \exists\al .\ \Ord(\al) \y x\in V_\al$.  
-\end{theorem}
+\emph{ctm}. The following result shows how to obtain ctms from weaker
+hypotheses. 
 %
-Then the following meta-theoretic result by Montague applies:
-%
-\begin{theorem}[Reflection Principle]\label{th:reflection-principle}
-  For every finite $\Phi\sbq\ZF$, $\ZF$ proves: ``There exists
-    unboundedly many $\al$ such that $V_\al\models \Phi$.''
-\end{theorem}
-%
-Since the sets $V_\al$ are well founded, we can repeat the above
-argument to obtain a ctm of $\Phi$.
+\begin{lemma}\label{lem:wf-model-implies-ctm}
+  If there exists  a
+  model  $\lb N,E\rb$  of $\ZF$ such that the relation $E$ is well
+  founded, then there exists a countable transitive one.
+\end{lemma}
+\begin{proof}
+  (Sketch) The L\"owenheim-Skolem 
+  Theorem ensures that there is an countable elementary submodel 
+  $\lb N',E\restr N'\rb\preccurlyeq  \lb N,E\rb$ which must also be
+  well founded; then the 
+  Mostowski collapsing function \cite[Def.~I.9.31]{kunen2011set} sends $\lb
+  N',E\restr N'\rb$ 
+  isomorphically to some $\lb M,\in\rb$ with  $M$ transitive.
+\end{proof}
 
 In this stage of our implementation, we chose a presentation of the
 $\ZF$ axioms that would be most
