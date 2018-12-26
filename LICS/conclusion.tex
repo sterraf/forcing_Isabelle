@@ -4,6 +4,30 @@
 
 The proof of the Powerset Axiom does not present difficulties.
 
+By G\"odel's Second Incompleteness Theorem we cannot  prove that
+there exists a model of $\ZF$  (assuming that our base theory is not
+stronger than $\ZF$ to start with), but for consistency proofs,
+usually a model of only a finite subset of $\ZF$ suffices. Recall that
+an equivalent formulation of the Foundation Axiom states that the 
+universe of sets can be decomposed in a transfinite hierarchy of
+sets. 
+\begin{theorem}
+  Let $V_{\al}\defi\union\{\P(V_\be) : \be<\al\}$ for each ordinal
+  $\al$. Then each $V_\al$ is a set and 
+  $\forall x. \exists\al .\ \Ord(\al) \y x\in V_\al$.  
+\end{theorem}
+%
+Then the following meta-theoretic result by Montague applies:
+%
+\begin{theorem}[Reflection Principle]\label{th:reflection-principle}
+  For every finite $\Phi\sbq\ZF$, $\ZF$ proves: ``There exists
+    unboundedly many $\al$ such that $V_\al\models \Phi$.''
+\end{theorem}
+%
+Since the sets $V_\al$ are well founded, we can repeat the
+proof of Lemma~\ref{lem:wf-model-implies-ctm} to obtain a ctm of
+$\Phi$. 
+
 The proof of the Replacement Axiom, both in Kunen and in
 other presentations \cite{neeman-course} require a relativized proof
 of the Reflection Principle. 
@@ -12,6 +36,19 @@ of the Reflection Principle.
 \fbox{Decir que Separaci\'on con 6 variables en $M$}
 
 \fbox{implica Separaci\'on con a lo sumo 2 en $M[G]$}
+\medskip
+
+
+We believe that the
+\isatt{ZF-Constructible} session  would benefit from some changes in
+the way some results are organized accross theory files; for
+intance, by cataloging all or most of the internalized formulas in one
+file. Another, most basic example would be to start out with an even
+more locale that only assumes $M$ to be a nonempty transitive class,
+as many absoluteness results follow from these hypotheses.  
+It is our desire to advocate a future work to a thorough
+revision of the development of constructibility to maximize modularity.
+
 \section*{Acknowledgment}
 
 
