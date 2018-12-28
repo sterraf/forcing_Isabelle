@@ -3,13 +3,11 @@
 % no \IEEEPARstart
 Zermelo-Fraenkel Set Theory ($\ZF$) has a prominent place among formal
 theories; in particular, it provides a foundation for mathematics and
-most of the toolkit used everyday by the computer scientist has also
-Set Theory at its base (although much of it can be based in other
-formalisms, such as Category Theory) \fbox{citation needed,
-  Aczel?}. In this time of mechanization of
-mathematics~\cite{avigad2018mechanization}, it seems natural to ask
-for a mechanization of the most salient results of Set Theory.
-\fbox{Y entra de lleno en la intersección de lógica  y cs}
+most of the formal toolkit used everyday by the computer scientist has
+also Set Theory at its base (cf.~\cite{paulson1995set}). In this time
+of mechanization of mathematics~\cite{avigad2018mechanization}, it
+seems natural to ask for a mechanization of the most salient results
+of Set Theory.
 
 After G\"odel's Incompleteness Theorems, we cannot expect to have a
 formal proof of the consistency of Set Theory in $ZF$. Besides its own
@@ -54,6 +52,20 @@ generic extension is independent of the \emph{proofs} of the
 of the forces relation is, by itself, quite demanding; the
 formalization of it and of the fundamental theorems of forcing roughly
 comprises little less than a half of our full project.
+
+It might be a little surprising the lack of formalizations of forcing
+and generic extensions. As far as we know, the development of
+\citet{JFR6232} in homotopy type theory for constructing generic
+extensions in a sheaf-theoretic setting is the unique mechanization of
+forcing. This contrast with the fruitful use of forcing techniques to
+extend the Curry-Howard isomorphism to classical axioms
+\cite{Miquel:2011:FPT:2058525.2059614,lmcs:1070}. Moreover, the
+combination of forcing with intuitionistic type theory
+\cite{coquand2010note,coquand2012computational} gives rise to an
+algorithm to obtain witnesses of the continuity of definable
+functionals.
+
+% moreover forcing translations \cite{jaber:hal-01319066}.
 
 \fbox{Parece mucho comienzo sólo para introducir a Kunen}
 \fbox{¿lo puedo achurar un poco?}
