@@ -2,12 +2,30 @@
 \section{Conclusions and future work}
 \label{sec:conclusions-future-work}
 
-The proof of the Powerset Axiom does not present difficulties.
+The proof that the axioms of $\ZF$ hold in generic extensions is 
+the first important landmark in the path of formalization of the
+theory of forcing. The task of proving the Fundamental Theorems can be
+considered a part of that landmark, but from a workflow point of view
+this can be done independently, and one of our design decisions was to
+postpone that task.  Next, various forcing notions must be developed
+in order to obtain extensions satisfying diverse properties. This
+yields relative consistency results.
 
-By G\"odel's Second Incompleteness Theorem we cannot  prove that
-there exists a model of $\ZF$  (assuming that our base theory is not
-stronger than $\ZF$ to start with), but for consistency proofs,
-usually a model of only a finite subset of $\ZF$ suffices. Recall that
+We first discuss the axioms we are now missing. The proof of the
+Powerset Axiom does not present difficulties, and it is one of the
+first goals in the immediate future. This is also the case with the
+Axiom of Infinity; it can be proved in a direct but cumbersome way. We
+preferred to wait to have a full-fledged inteface between ctms and the
+locales providing recursive constructions from Paulson's
+\isatt{Constructibility} session. Then the current proof will hold
+with no extra assumptions. The same goes for the results $M\sbq M[G]$
+and $G\in M[G]$.
+
+The Replacement Axiom, however, requires some more work to be
+done. Both in Kunen and in other presentations \cite{neeman-course}
+it requires a relativized version (i.e., showing that it holds for $M$) of
+the \emph{Reflection Principle}. In order to state this meta-theoretic
+result by Montague, recall that
 an equivalent formulation of the Foundation Axiom states that the 
 universe of sets can be decomposed in a transfinite hierarchy of
 sets. 
@@ -16,21 +34,15 @@ sets.
   $\al$. Then each $V_\al$ is a set and 
   $\forall x. \exists\al .\ \Ord(\al) \y x\in V_\al$.  
 \end{theorem}
-%
-Then the following meta-theoretic result by Montague applies:
-%
 \begin{theorem}[Reflection Principle]\label{th:reflection-principle}
   For every finite $\Phi\sbq\ZF$, $\ZF$ proves: ``There exists
-    unboundedly many $\al$ such that $V_\al\models \Phi$.''
+  unboundedly many $\al$ such that $V_\al\models \Phi$.''
 \end{theorem}
-%
-Since the sets $V_\al$ are well founded, we can repeat the
-proof of Lemma~\ref{lem:wf-model-implies-ctm} to obtain a ctm of
-$\Phi$. 
 
-The proof of the Replacement Axiom, both in Kunen and in
-other presentations \cite{neeman-course} require a relativized proof
-of the Reflection Principle. 
+This result has also other applications; in particular, it dispenses
+the need of ctms of the whole of $\ZF$ for consistency proofs (by
+repeating  the proof of Lemma~\ref{lem:wf-model-implies-ctm}, now
+starting with a  $V_\al$ satisfying $\Phi$). 
 
 \medskip
 \fbox{Decir que Separaci\'on con 6 variables en $M$}
@@ -55,4 +67,5 @@ revision of the development of constructibility to maximize modularity.
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "Separation_In_MG"
+%%% ispell-local-dictionary: "american"
 %%% End: 
