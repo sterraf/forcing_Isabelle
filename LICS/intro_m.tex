@@ -14,7 +14,7 @@ for a mechanization of the most salient results of Set Theory.
 After G\"odel's Incompleteness Theorems, we cannot expect to have a
 formal proof of the consistency of Set Theory in $ZF$. Besides its own
 consistency, there are other results which are undecided by $ZF$: the
-undecidability of Continuum Hypothesis lead to the development of
+undecidability of Continuum Hypothesis leads to the development of
 techniques for independence proofs. First G\"odel introduced the
 theory of \emph{inner models}, which gives rise to his model $L$ of
 the \emph{Axiom of Constructibility} \cite{godel-L} and proved the
@@ -31,20 +31,32 @@ given by forcing also satisfies $\ZF$. As remarked by
 \citet[][p.250]{kunen2011set} \enquote{[...] in verifying that $M[G]$
   is a model for set theory, the hardest axiom to verify is
   Comprehension.}  The most important achievement of this paper is the
-mechanization in Isabelle of this result; en route to this, we also
-formalized the satisfaction by $M[G]$ of Extensionality, Foundation,
-Union, Infinity.
+mechanization in Isabelle of a substantial part of this result; en
+route to this, we also formalized the satisfaction by $M[G]$ of
+Extensionality, Foundation, Union, and Infinity. 
 
 Our development benefited from the extraordinary work done by Lawrence
 Paulson \cite{paulson_2003} on the formalization of G\"odel's
-constructible universe in the proof assistant \emph{Isabelle}. In the
-spirit of the \emph{formal abstract} project~\cite{hales-fabstracts},
-we explicit the technical assumptions of forcing that are involved in
-the proof of Separation for $M[G]$. It seems that this work is
-\emph{Es un lindo test a la capacidad de implementación formal de
-  matemática con la tecnología actual}.
+constructible universe in the proof assistant \emph{Isabelle}. The
+ultimate goal of our project is the formalization of forcing to
+complete the mechanization of the independence of the Continuum
+Hypothesis. We think that this project constitutes an interesting case
+which stresses how feasible is to formally implement mathematics that
+involve several leves of reasoning.
 
-\fbox{Acá viene una oración introduciendo lo que sigue.}
+The \emph{Formal Abstract} project~\cite{hales-fabstracts} proposes
+that the mechanization of mathematics can advance by formalizing some
+main result under the explicit assumption of the material
+(definitions, propositions, lemmas) on which it is based. In line with
+this advice, we profited that the proof that those axioms hold in
+generic extension is independent of the \emph{proofs} of the
+``fundamental'' theorems of forcing. Let us remark that the definition
+of the forces relation is, by itself, quite demanding; the
+formalization of it and of the fundamental theorems of forcing roughly
+comprises little less than a half of our full project.
+
+\fbox{Parece mucho comienzo sólo para introducir a Kunen}
+\fbox{¿lo puedo achurar un poco?}
 
 In a gross simplification, there are two aspects to a formalization
 project like this one: thematic and programmatic. The first concerns
@@ -62,35 +74,6 @@ wouldn't exist without this book. As alternative, introductory
 resources, the  interested reader can check
 \cite{chow-beginner-forcing}; also, the book \cite{weaver2014forcing}
 contains a thorough treament minimizing the technicalities.
-
-\fbox{El párrafo que sigue lo sacaría}
-
-In this work we address a substantial part the problem of formalizing
-the proof that given a model of $\ZF$, its extensions by forcing, 
-\emph{generic extensions},
-satisfy the same axioms. In particular, the first axiom that
-genuinely calls for a use of the forcing machinery is that of
-\emph{Separation} (\emph{Aussonderungsaxiom}), otherwise known as
-``Axiom of (Restricted) Comprehension''  or ``Specification.'' In
-\cite{2018arXiv180705174G} it was shown that  generic extensions of
-models of $\ZF$ 
-satisfy the Axiom of Pairing, and in this work we show that also
-Extensionality, Foundation, Union, Infinity (under extra assumptions),
-and Separation go through. The
-Axiom of Powerset is not treated in the present paper but it poses no
-extra difficulties; we discuss the Axiom of Replacement in the
-conclusions. 
-
-The proof that these axioms hold in generic extension is independent
-of the \emph{proofs} of the ``fundamental'' theorems of forcing. In
-particular, one of the most complex parts of those proofs is the
-definition of the \emph{forcing relation}. It turns out that the
-particular (``implementation'') details of this  definition  does not
-appear in the statement of the fundamental theorems, and our
-formalization works inside a \emph{locale} (set of assumptions) that
-includes the statement of these theorems. The formalization of the
-fundamental theorems of forcing roughly comprises little less than a
-half of our full project. 
 
 We briefly describe the contents of each
 section. Section~\ref{sec:isabelle} contains the bare minimun
