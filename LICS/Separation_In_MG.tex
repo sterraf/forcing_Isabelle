@@ -17,6 +17,12 @@
 \input{header-draft}
 \renewcommand{\ttdefault}{cmtt}
 \usepackage{csquotes}
+\usepackage{enumitem}
+
+\newlist{inlinelist}{enumerate*}{1}
+\setlist*[inlinelist,1]{%
+  label=(\roman*),
+}
 % *** MISC UTILITY PACKAGES ***
 %
 %\usepackage{ifpdf}
@@ -358,7 +364,7 @@ Separation Axiom holds in generic extensions.
 
 \input{recursion}
 
-\input{prior-results}
+% \input{prior-results}
 
 \input{hacking}
 

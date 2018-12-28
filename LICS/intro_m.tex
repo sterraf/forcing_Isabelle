@@ -31,7 +31,9 @@ given by forcing also satisfies $\ZF$. As remarked by
   Comprehension.}  The most important achievement of this paper is the
 mechanization in Isabelle a considerable part of this result; en route
 to this, we also formalized the satisfaction by $M[G]$ of
-Extensionality, Foundation, Union, and Infinity.
+Extensionality, Foundation, Union, and Infinity. % We have already
+% proved Pairing in the first report of our project
+% \cite{2018arXiv180705174G}.
 
 Our development benefited from the remarkable work done by Lawrence
 Paulson \cite{paulson_2003} on the formalization of G\"odel's
@@ -70,26 +72,39 @@ view of proof theory \cite{avigad_2004} are the conservative
 extensions of CoC with forcing conditions
 \cite{jaber:hal-01319066,Jaber:2012:ETT:2358958.2359524}.
 
+% \fbox{Parece mucho comienzo sólo para introducir a Kunen}
+% \fbox{¿lo puedo achurar un poco?}
 
-\fbox{Parece mucho comienzo sólo para introducir a Kunen}
-\fbox{¿lo puedo achurar un poco?}
+% In a gross simplification, there are two aspects to a formalization
+% project like this one: thematic and programmatic. The first concerns
+% the handling of all the theoretical concepts and results in the
+% subject, while the second involves the practical issues of the
+% implementation and design. In the case of forcing, the main intricacy
+% lies in the first aspect. In this sense, following a sensible
+% presentation of the material is key.  The authoritative reference 
+% on the subject during the last 30 years has been Kunen's classical
+% \cite{kunen1980}. In our
+% formalizaton we have followed a recent rewrite \cite{kunen2011set}
+% of that  textbook, which presents the material in the same sharp 
+% style but offering a lot of details. In some sense this project
+% wouldn't exist without this book. As alternative, introductory
+% resources, the  interested reader can check
+% \cite{chow-beginner-forcing}; also, the book \cite{weaver2014forcing}
+% contains a thorough treament minimizing the technicalities.
 
-In a gross simplification, there are two aspects to a formalization
-project like this one: thematic and programmatic. The first concerns
-the handling of all the theoretical concepts and results in the
-subject, while the second involves the practical issues of the
-implementation and design. In the case of forcing, the main intricacy
-lies in the first aspect. In this sense, following a sensible
-presentation of the material is key.  The authoritative reference 
-on the subject during the last 30 years has been Kunen's classical
-\cite{kunen1980}. In our
-formalizaton we have followed a recent rewrite \cite{kunen2011set}
-of that  textbook, which presents the material in the same sharp 
-style but offering a lot of details. In some sense this project
-wouldn't exist without this book. As alternative, introductory
-resources, the  interested reader can check
-\cite{chow-beginner-forcing}; also, the book \cite{weaver2014forcing}
-contains a thorough treament minimizing the technicalities.
+In pursuing the proof of preservation on generic extensions we
+extended Paulson's library with:
+\begin{inlinelist}
+\item renaming of variables, which with little effort can be extended
+  to substitutions;
+\item an improvement on definitions by recursion on well-founded
+  relations; 
+\item a better hierarchy of locales; and
+\item a new choice principle and a version of Rassiowa-Sikorski which
+  ensure the existence of generic filters for countable and transitive
+  models of $\ZF$; these points were already communicated in the
+  first report \cite{2018arXiv180705174G}.
+\end{inlinelist} 
 
 We briefly describe the contents of each
 section. Section~\ref{sec:isabelle} contains the bare minimun
