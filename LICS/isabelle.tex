@@ -5,7 +5,8 @@
 \subsection{Logics}
 \label{sec:logics}
 Isabelle provides a meta-language called \emph{Pure} that consists of
-a fragment of higher order logic. The meta-Boolean type is called
+a fragment of higher order logic, where \isatt{\isasymRightarrow} is
+the function-space arrow. The meta-Boolean type is called
 \isatt{prop}. Meta-connectives
 \isatt{\isasymLongrightarrow} and \isatt{\&\&\&} fulfill the role of
 implication and conjunction, and the meta-binder \isatt{\isasymAnd}
@@ -39,7 +40,18 @@ generate elements of both types, neither of them are
 \emph{initial}, in the sense that they are not the least types
 obtained by combining the given constants and operations. This will
 have concrete consequences in our strategy to approach the
-development.
+development. From the beginning, we had to resort to
+\emph{internalized} formulas, i.e.\ elements of type $\tyi$ that
+encode first-order formulas with a binary relation symbol, and the
+satisfaction predicate \isatt{sats\,::\,"i\isasymRightarrow i\isasymRightarrow i\isasymRightarrow o"}  between a set
+model with an environment and an internalized formula (where the
+relation symbol is interpreted as membership). The set 
+\isatt{formula::"\tyi"}
+ of internalized
+formulas is defined by recursion and hence it is possible to perform
+inductive arguments using them. In this sense, the object-logic level
+is further divided into \emph{internal} and \emph{external}
+sublevels. 
 
 \medskip
 \fbox{Portar a \textbf{Isabelle2018} antes de enviar.}
