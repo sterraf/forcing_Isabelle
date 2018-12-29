@@ -81,19 +81,20 @@ In this paper, locales have a further use. The \emph{Fundamental
 from formulas to formulas. The definition of $\forceisa$ is involved
 and we will not dwell on this now; but applications of those theorems
 do not require to know how it is defined. Therefore, we black-box it
-and pack everything in a locale that assumes that there is such a
+and pack everything in a locale called \texttt{forcing\_thms} that
+assumes that there is such a 
 map that satisfies the Fundamental Theorems.
 
-\begin{description}
-\item[\texttt{forcing\_notion}] preorden con top
-\item[\texttt{countable\_generic}] lo anterior con una familia contable de densos.
-\item[\texttt{M\_ZF}] axiomas.
-\item[\texttt{forcing\_data}]: lo anterior contable transitivo y una notion.
-\item[\texttt{forcing\_thms}]: eso.
-\item[\texttt{G\_generic}]: lo anterior y G es genérico.
-\item[\texttt{M\_extra\_assms}]: check in M e instancia de reemplazo para G.
-\item[\texttt{G\_generic\_extra}]: los dos anteriores (no sé si sigue estando)
-\end{description}
+%% \begin{description}
+%% \item[\texttt{forcing\_notion}] preorden con top
+%% \item[\texttt{countable\_generic}] lo anterior con una familia contable de densos.
+%% \item[\texttt{M\_ZF}] axiomas.
+%% \item[\texttt{forcing\_data}]: lo anterior contable transitivo y una notion.
+%% \item[\texttt{forcing\_thms}]: eso.
+%% \item[\texttt{G\_generic}]: lo anterior y G es genérico.
+%% \item[\texttt{M\_extra\_assms}]: check in M e instancia de reemplazo para G.
+%% \item[\texttt{G\_generic\_extra}]: los dos anteriores (no sé si sigue estando)
+%% \end{description}
 
 
 %%% Local Variables: 
