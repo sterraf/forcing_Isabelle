@@ -12,7 +12,8 @@ in order to obtain extensions satisfying diverse properties. This
 yields relative consistency results.
 
 We first discuss the axioms we are now missing. The proof of the
-Powerset Axiom does not present difficulties, and it is one of the
+Powerset Axiom does not present new difficulties but  has to
+take care of absoluteness issues; it is one of the
 first goals in the immediate future. This is also the case with the
 Axiom of Infinity; it can be proved in a direct but cumbersome way. We
 preferred to wait to have a full-fledged inteface between ctms and the
@@ -38,18 +39,31 @@ sets.
   For every finite $\Phi\sbq\ZF$, $\ZF$ proves: ``There exists
   unboundedly many $\al$ such that $V_\al\models \Phi$.''
 \end{theorem}
+%% This result has also other applications; in particular, it dispenses
+%% the need of ctms of the whole of $\ZF$ for consistency proofs (by
+%% repeating  the proof of Lemma~\ref{lem:wf-model-implies-ctm}, now
+%% starting with a  $V_\al$ satisfying $\Phi$). 
 
-This result has also other applications; in particular, it dispenses
-the need of ctms of the whole of $\ZF$ for consistency proofs (by
-repeating  the proof of Lemma~\ref{lem:wf-model-implies-ctm}, now
-starting with a  $V_\al$ satisfying $\Phi$). 
+This statement is straightforwardly equivalent to that with $\Phi$
+consisting of a single formula. The schematic nature of this result
+hints at a proof by induction on formulas, and hence it must be shown
+internally. 
 
-\medskip
-\fbox{Decir que Separaci\'on con 6 variables en $M$}
+This  is an appropriate spot to insist that the internal/external
+dichotomy has been a powerful agent in the shaping of our
+project. It traces back to the definition of the formula-transformer
+$\forceisa$, which must be done by recursion, and this requirement
+spills indirectly to the proof of the Separation Axiom (despite this
+is not by induction). Now the need of using internalized formulas
+reappears with the need of having a general version of the Reflection
+Principle (because the $\Phi$ there depends on the instance of Replacement
+being proved).
 
-\fbox{implica Separaci\'on con a lo sumo 2 en $M[G]$}
-\medskip
-
+A secondary goal of this project is to assess which assumptions on the
+original ctm $M$ are needed to develop the forcing machinery. Up to this
+point we have some anecdotal data; for example, to show that a
+2-variable instance of Separation holds in $M[G]$, one needs to use a
+6-variable instance in $M$. 
 
 We believe that the
 \isatt{ZF-Constructible} session  would benefit from some changes in
