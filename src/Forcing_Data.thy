@@ -1,6 +1,6 @@
-theory Forcing_data 
+theory Forcing_Data 
   imports  
-    Forcing_notions 
+    Forcing_Notions 
     Relative 
     "~~/src/ZF/Constructible/Formula"
 
