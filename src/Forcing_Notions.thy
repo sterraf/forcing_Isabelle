@@ -1,4 +1,4 @@
-theory Forcing_notions imports Pointed_DC  begin
+theory Forcing_Notions imports Pointed_DC  begin
 
 definition compat_in :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
   "compat_in(A,r,p,q) == \<exists>d\<in>A . \<langle>d,p\<rangle>\<in>r \<and> \<langle>d,q\<rangle>\<in>r"

@@ -1,5 +1,5 @@
 theory Interface 
-  imports Forcing_data Relative Internalizations Renaming
+  imports Forcing_Data Relative Internalizations Renaming
 begin
 
 lemma Transset_intf :

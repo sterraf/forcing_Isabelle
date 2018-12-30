@@ -1,4 +1,4 @@
-theory Names imports Forcing_data Interface Recursion_Thms begin
+theory Names imports Forcing_Data Interface Recursion_Thms begin
   
 lemma transD : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> y \<subseteq> M" 
   by (unfold Transset_def, blast) 
