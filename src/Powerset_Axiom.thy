@@ -1,5 +1,5 @@
 theory Powerset_Axiom 
-  imports Forcing_Theorems Renaming 
+  imports Separation_Axiom 
 begin
 lemma (in M_trivial)  
     "\<lbrakk> powerset(M,x,y); M(y) \<rbrakk> \<Longrightarrow> y = {a\<in>Pow(x) . M(a)}"
@@ -9,6 +9,10 @@ lemma (in M_trivial) powerset_abs:
     "\<lbrakk> M(x); M(y) \<rbrakk> \<Longrightarrow> powerset(M,x,y) \<longleftrightarrow> y = {a\<in>Pow(x) . M(a)}"
   sorry
 
+definition
+  powerset_fm :: "i"  where
+  "powerset_fm == 0" 
+    
 context G_generic begin
   
 lemma fst_Pair_in_M:
@@ -20,6 +24,9 @@ notepad begin
   fix \<tau> a
   assume 
     "\<tau> \<in> M" "val(G, \<tau>) = a"
+  then have
+    "a \<in> M[G]"
+    using GenExtI by blast
   let
     ?Q="Pow(domain(\<tau>)\<times>P) \<inter> M"
   from \<open>\<tau>\<in>M\<close> have
@@ -33,6 +40,10 @@ notepad begin
     ?\<pi>="?Q\<times>{one}"
   let
     ?b="val(G,?\<pi>)"
+  from \<open>?Q\<in>M\<close> have
+    "?\<pi>\<in>M"
+    using one_in_P P_in_M Transset_intf transM  
+    by (simp del:setclass_iff add:setclass_iff[symmetric])
   have
     "Pow(a) \<inter> M[G] \<subseteq> ?b"
   proof
@@ -50,6 +61,13 @@ notepad begin
     then have 
       "?\<theta> \<in> ?Q"
       by auto
+    then have
+      "val(G,?\<theta>) \<in> ?b"
+      using one_in_G one_in_P generic val_of_elem [of ?\<theta> one ?\<pi> G]
+      by auto
+    from \<open>?\<pi>\<in>M\<close> have
+      "?b \<in> M[G]" 
+      using GenExtI by simp
     have
       "val(G,?\<theta>) = c"
     proof
@@ -109,7 +127,8 @@ notepad begin
         moreover have
           "Member(0,1)\<in>formula" by simp
         moreover have
-            "\<sigma>\<in>M" sorry
+          "\<sigma>\<in>M" 
+          sorry
         moreover note \<open>\<chi> \<in> M\<close>
         ultimately obtain p where
           "p\<in>G" "sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<chi>])"
@@ -129,7 +148,20 @@ notepad begin
         "c \<subseteq> val(G,?\<theta>)"
         by auto
     qed
-            
+    with \<open>val(G,?\<theta>) \<in> ?b\<close> show
+      "c\<in>?b"
+      by simp
+  qed
+  then have
+    "Pow(a) \<inter> M[G] = {x\<in>?b . x\<subseteq>a & x\<in>M[G]}" 
+    by auto 
+  from \<open>a\<in>M[G]\<close> have
+    "{x\<in>?b . x\<subseteq>a}  = {x\<in>?b . sats(M[G],subset_fm(0,1),[x,a])}"
+    using Transset_MG[of G] 
+  
+    also have
+      "{x\<in>?b . x\<subseteq>a & x\<in>M[G]} \<in> M[G]"
+      using separation_in_MG
 end
   
 end
