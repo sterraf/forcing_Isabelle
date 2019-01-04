@@ -1,32 +1,90 @@
 theory Powerset_Axiom 
-  imports Separation_Axiom 
+  imports Separation_Axiom  Pairing_Axiom Union_Axiom
 begin
-lemma (in M_trivial)  
-    "\<lbrakk> powerset(M,x,y); M(y) \<rbrakk> \<Longrightarrow> y = {a\<in>Pow(x) . M(a)}"
-  sorry
+  
+lemma (in M_trivial) powerset_subset_Pow:
+  assumes 
+    "powerset(M,x,y)" "\<And>z. z\<in>y \<Longrightarrow> M(z)"
+  shows 
+    "y \<subseteq> Pow(x)"
+  using assms unfolding powerset_def
+  by (auto)
     
 lemma (in M_trivial) powerset_abs: 
-    "\<lbrakk> M(x); M(y) \<rbrakk> \<Longrightarrow> powerset(M,x,y) \<longleftrightarrow> y = {a\<in>Pow(x) . M(a)}"
-  sorry
-
-definition
-  powerset_fm :: "i"  where
-  "powerset_fm == 0" 
-    
-context G_generic begin
-  
-lemma fst_Pair_in_M:
-  assumes "<\<sigma>,p>\<in>\<theta>" "\<theta> \<in> M"
-  shows   "\<sigma>\<in>M"
-  sorry
-  
-notepad begin
-  fix \<tau> a
+  assumes
+    "M(x)" "\<And>z. z\<in>y \<Longrightarrow> M(z)"
+  shows
+    "powerset(M,x,y) \<longleftrightarrow> y = {a\<in>Pow(x) . M(a)}"
+proof (intro iffI equalityI)
+  (* First show the converse implication by double inclusion *)
   assume 
+    "powerset(M,x,y)"
+  with assms have
+    "y \<subseteq> Pow(x)" 
+    using powerset_subset_Pow by simp
+  with assms show
+    "y \<subseteq> {a\<in>Pow(x) . M(a)}"
+    by blast
+  {
+    fix a
+    assume 
+      "a \<subseteq> x" "M(a)"
+    then have 
+      "subset(M,a,x)" by simp
+    with \<open>M(a)\<close> \<open>powerset(M,x,y)\<close> have
+      "a \<in> y"
+      unfolding powerset_def by simp
+  }
+  then show 
+    "{a\<in>Pow(x) . M(a)} \<subseteq> y"
+    by auto
+next (* we show the direct implication *)
+  assume 
+    "y = {a \<in> Pow(x) . M(a)}"
+  then show
+    "powerset(M, x, y)"
+    unfolding powerset_def
+    by simp
+qed
+  
+lemma Collect_inter_Transset:
+  assumes 
+    "Transset(M)" "b \<in> M"
+  shows
+    "{x\<in>b . P(x)} = {x\<in>b . P(x)} \<inter> M"
+    using assms unfolding Transset_def
+  by (auto)  
+
+context G_generic begin
+    
+lemma name_components_in_M:
+  assumes "<\<sigma>,p>\<in>\<theta>" "\<theta> \<in> M"
+  shows   "\<sigma>\<in>M" "p\<in>M"
+  using assms unfolding Pair_def 
+proof -
+  from assms obtain a where
+    "\<sigma> \<in> a" "p \<in> a" "a\<in><\<sigma>,p>"
+    unfolding Pair_def by auto
+  moreover from assms have
+    "<\<sigma>,p>\<in>M"
+    using trans_M  Transset_intf[of _ "<\<sigma>,p>"] by simp
+  moreover from calculation have
+    "a\<in>M" 
+    using trans_M  Transset_intf[of _ _ "<\<sigma>,p>"] by simp
+  ultimately show
+    "\<sigma>\<in>M" "p\<in>M" 
+    using trans_M  Transset_intf[of _ _ "a"] by simp_all
+qed
+    
+lemma Pow_inter_MG:
+  assumes
+    "a\<in>M[G]"
+  shows
+    "Pow(a) \<inter> M[G] \<in> M[G]" 
+proof -
+  from assms obtain \<tau> where
     "\<tau> \<in> M" "val(G, \<tau>) = a"
-  then have
-    "a \<in> M[G]"
-    using GenExtI by blast
+    using GenExtD by blast
   let
     ?Q="Pow(domain(\<tau>)\<times>P) \<inter> M"
   from \<open>\<tau>\<in>M\<close> have
@@ -35,7 +93,24 @@ notepad begin
     by simp
   then have
     "?Q \<in> M"
-    sorry
+  proof -
+    from power_ax \<open>domain(\<tau>)\<times>P \<in> M\<close> obtain Q where
+      "powerset(##M,domain(\<tau>)\<times>P,Q)" "Q \<in> M"
+      unfolding power_ax_def by auto
+    moreover from calculation have
+      "z\<in>Q  \<Longrightarrow> z\<in>M" for z
+      using Transset_intf trans_M by blast
+    ultimately have
+      "Q = {a\<in>Pow(domain(\<tau>)\<times>P) . a\<in>M}"
+      using \<open>domain(\<tau>)\<times>P \<in> M\<close> powerset_abs[of "domain(\<tau>)\<times>P" Q]     
+      by (simp del:setclass_iff add:setclass_iff[symmetric])
+    also have
+      " ... = ?Q"
+      by auto
+    finally show
+      "?Q \<in> M" 
+      using \<open>Q\<in>M\<close> by simp
+  qed
   let
     ?\<pi>="?Q\<times>{one}"
   let
@@ -44,6 +119,9 @@ notepad begin
     "?\<pi>\<in>M"
     using one_in_P P_in_M Transset_intf transM  
     by (simp del:setclass_iff add:setclass_iff[symmetric])
+  from \<open>?\<pi>\<in>M\<close> have
+    "?b \<in> M[G]" 
+    using GenExtI by simp
   have
     "Pow(a) \<inter> M[G] \<subseteq> ?b"
   proof
@@ -65,9 +143,6 @@ notepad begin
       "val(G,?\<theta>) \<in> ?b"
       using one_in_G one_in_P generic val_of_elem [of ?\<theta> one ?\<pi> G]
       by auto
-    from \<open>?\<pi>\<in>M\<close> have
-      "?b \<in> M[G]" 
-      using GenExtI by simp
     have
       "val(G,?\<theta>) = c"
     proof
@@ -82,7 +157,7 @@ notepad begin
           by blast
         moreover from \<open><\<sigma>,p>\<in>?\<theta>\<close> \<open>?\<theta> \<in> M\<close> have
           "\<sigma>\<in>M"
-          using fst_Pair_in_M[of _ _ ?\<theta>]  by auto
+          using name_components_in_M[of _ _ ?\<theta>]  by auto
         moreover from 1 have
           "sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<chi>])" "p\<in>P" 
           "Member(0,1)\<in>formula"
@@ -128,7 +203,13 @@ notepad begin
           "Member(0,1)\<in>formula" by simp
         moreover have
           "\<sigma>\<in>M" 
-          sorry
+        proof -
+          from \<open>\<sigma>\<in>domain(\<tau>)\<close> obtain p where
+            "<\<sigma>,p> \<in> \<tau>" 
+            by auto
+          with \<open>\<tau>\<in>M\<close> show ?thesis 
+            using name_components_in_M by blast
+        qed
         moreover note \<open>\<chi> \<in> M\<close>
         ultimately obtain p where
           "p\<in>G" "sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<chi>])"
@@ -155,13 +236,59 @@ notepad begin
   then have
     "Pow(a) \<inter> M[G] = {x\<in>?b . x\<subseteq>a & x\<in>M[G]}" 
     by auto 
-  from \<open>a\<in>M[G]\<close> have
-    "{x\<in>?b . x\<subseteq>a}  = {x\<in>?b . sats(M[G],subset_fm(0,1),[x,a])}"
-    using Transset_MG[of G] 
-  
-    also have
-      "{x\<in>?b . x\<subseteq>a & x\<in>M[G]} \<in> M[G]"
-      using separation_in_MG
+  also from \<open>a\<in>M[G]\<close> have
+    " ... = {x\<in>?b . sats(M[G],subset_fm(0,1),[x,a]) & x\<in>M[G]}"
+    using Transset_MG by force
+  also have 
+    " ... = {x\<in>?b . sats(M[G],subset_fm(0,1),[x,a])} \<inter> M[G]"
+    by auto
+  also from \<open>?b\<in>M[G]\<close> have
+    " ... = {x\<in>?b . sats(M[G],subset_fm(0,1),[x,a])}"
+    using Collect_inter_Transset Transset_MG 
+    by simp
+  also have
+    " ... \<in> M[G]"
+  proof -
+    have
+      "arity(subset_fm(0,1)) \<le> 2"
+      by (simp add:  not_lt_iff_le leI nat_union_abs1)
+    moreover note
+      \<open>?\<pi>\<in>M\<close> \<open>\<tau>\<in>M\<close> \<open>val(G,\<tau>) = a\<close>
+    ultimately show ?thesis
+      using Collect_sats_in_MG by auto
+  qed
+  finally show ?thesis .
+qed
 end
   
+sublocale G_generic \<subseteq> M_trivial"##M[G]"
+  using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
+  unfolding M_trivial_def by simp 
+
+    
+context G_generic begin
+theorem power_in_MG :
+  "power_ax(##(M[G]))"
+  unfolding power_ax_def
+proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
+  fix a
+  assume 
+    "a \<in> M[G]"
+  have
+    "{x\<in>Pow(a) . x \<in> M[G]} = Pow(a) \<inter> M[G]"
+    by auto
+  also from \<open>a\<in>M[G]\<close> have
+    " ... \<in> M[G]" 
+    using Pow_inter_MG by simp
+  finally have
+    "{x\<in>Pow(a) . x \<in> M[G]} \<in> M[G]" .
+  moreover from \<open>a\<in>M[G]\<close> have
+    "powerset(##M[G], a, {x\<in>Pow(a) . x \<in> M[G]})"
+    using powerset_abs[of a "{x\<in>Pow(a) . x \<in> M[G]}"]
+    by simp
+  ultimately show 
+    "\<exists>x\<in>M[G] . powerset(##M[G], a, x)"
+    by auto
+qed
+end
 end
