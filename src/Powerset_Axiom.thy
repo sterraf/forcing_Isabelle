@@ -103,7 +103,7 @@ lemma sats_fst_snd_in_M:
     "A\<in>M" "B\<in>M" "\<phi> \<in> formula" "p\<in>M" "l\<in>M" "o\<in>M" "\<chi>\<in>M"
     "arity(\<phi>) \<le> 6"
   shows
-    "{<s,q>\<in>A\<times>B . sats(M,\<phi>,[p,l,o,q,s,\<chi>])} \<in> M" 
+    "{sq \<in>A\<times>B . sats(M,\<phi>,[p,l,o,snd(sq),fst(sq),\<chi>])} \<in> M" 
     (is "?\<theta> \<in> M")
 proof -
   have "6\<in>nat" "7\<in>nat" by simp_all
@@ -174,7 +174,7 @@ proof -
     with assms \<open>A\<times>B\<in>M\<close> show
       "{x \<in> A\<times>B . sats(M, ?\<psi>, [x, p, l, o, \<chi>, 0])} \<in> M"
       using zero_in_M sixp_sep [of ?\<psi> p l o \<chi> 0]  Collect_abs[of "A\<times>B"] separation_iff
-      by simp
+      by auto
   qed
   finally show ?thesis .
 qed
@@ -235,7 +235,7 @@ proof -
       "c\<in>M[G]" "\<chi> \<in> M" "val(G,\<chi>) = c"
       using GenExtD by blast
     let
-      ?\<theta>="{<s,q>\<in>domain(\<tau>)\<times>P . sats(M,forces(Member(0,1)),[P,leq,one,snd(p),fst(sp),\<chi>])}"
+      ?\<theta>="{sp \<in>domain(\<tau>)\<times>P . sats(M,forces(Member(0,1)),[P,leq,one,snd(sp),fst(sp),\<chi>])}"
     have
       "arity(forces(Member(0,1))) = 6"
       using arity_forces by auto
