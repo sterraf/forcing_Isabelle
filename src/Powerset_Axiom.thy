@@ -77,10 +77,63 @@ qed
 
 lemma sats_fst_snd_in_M:
   assumes 
-    "A\<in>M" "\<phi> \<in> formula" "p\<in>M" "l\<in>M" "o\<in>M" "\<chi>\<in>M"  
+    "A\<in>M" "B\<in>M" "\<phi> \<in> formula" "p\<in>M" "l\<in>M" "o\<in>M" "\<chi>\<in>M"
+    "arity(\<phi>) \<le> 6"
   shows
-    "{sp\<in>A . sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])} \<in> M"
-  sorry
+    "{sp\<in>A\<times>B . sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])} \<in> M" 
+    (is "?\<theta> \<in> M")
+proof -
+  from \<open>A\<in>M\<close> \<open>B\<in>M\<close> have
+    "A\<times>B \<in> M" 
+    using cartprod_closed by simp
+  from  \<open>arity(\<phi>) \<le> 6\<close> have
+    1: "arity(Exists(Exists(And(pair_fm(0,1,5),\<phi>))))\<le>5"
+    sorry
+  {
+    fix sp
+    note \<open>A\<times>B \<in> M\<close>
+    moreover assume 
+      "sp \<in> A\<times>B"
+   (*  moreover from calculation have
+      "sp \<in> M"
+      by (simp add:trans_M Transset_intf) *)
+    moreover from calculation have
+      "fst(sp) \<in> A" "snd(sp) \<in> B"
+      using fst_type snd_type by simp_all
+    ultimately have 
+      "sp \<in> M" "fst(sp) \<in> M" "snd(sp) \<in> M" 
+      using  \<open>A\<in>M\<close> \<open>B\<in>M\<close> 
+      by (simp_all add: trans_M Transset_intf)
+    with 1 zero_in_M assms \<open>sp \<in> M\<close> have
+      "sats(M,Exists(Exists(And(pair_fm(0,1,5),\<phi>))),[sp,p,l,o,\<chi>]@[0]) \<longleftrightarrow> 
+      sats(M,Exists(Exists(And(pair_fm(0,1,5),\<phi>))),[sp,p,l,o,\<chi>])"
+      by (rule_tac arity_sats_iff, simp_all) 
+     also have
+      " ... \<longleftrightarrow>
+       sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
+       sorry
+     finally have
+      "sats(M,Exists(Exists(And(pair_fm(0,1,5),\<phi>))),[sp,p,l,o,\<chi>,0]) \<longleftrightarrow> 
+       sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
+      by simp
+  }
+  then have
+    "?\<theta> = {sp\<in>A\<times>B . sats(M,Exists(Exists(And(pair_fm(0,1,5),\<phi>))),[sp,p,l,o,\<chi>,0])}"
+    (is "_ = {_\<in>_ . sats(_,?\<psi>,_)}")
+    by simp
+  also from assms \<open>A\<times>B\<in>M\<close> have
+    " ... \<in> M"
+  proof -
+    from 1 have
+      "arity(?\<psi>) \<le> 6" 
+      by (simp add:  not_lt_iff_le leI nat_union_abs1)
+    with assms \<open>A\<times>B\<in>M\<close> show
+      "{x \<in> A\<times>B . sats(M, ?\<psi>, [x, p, l, o, \<chi>, 0])} \<in> M"
+      using zero_in_M sixp_sep [of ?\<psi> p l o \<chi> 0]  Collect_abs[of "A\<times>B"] separation_iff
+      by simp
+  qed
+  finally show ?thesis .
+qed
     
 lemma Pow_inter_MG:
   assumes
@@ -94,9 +147,9 @@ proof -
   let
     ?Q="Pow(domain(\<tau>)\<times>P) \<inter> M"
   from \<open>\<tau>\<in>M\<close> have
-    "domain(\<tau>)\<times>P \<in> M"
+    "domain(\<tau>)\<times>P \<in> M" "domain(\<tau>) \<in> M"
     using domain_closed cartprod_closed P_in_M   
-    by simp
+    by simp_all
   then have
     "?Q \<in> M"
   proof -
@@ -139,7 +192,10 @@ proof -
       using GenExtD by blast
     let
       ?\<theta>="{sp\<in>domain(\<tau>)\<times>P . sats(M,forces(Member(0,1)),[P,leq,one,snd(sp),fst(sp),\<chi>])}"
-    from \<open>domain(\<tau>)\<times>P \<in> M\<close> \<open>\<chi> \<in> M\<close> have
+    have
+      "arity(forces(Member(0,1))) = 6"
+      using arity_forces by auto
+    with \<open>domain(\<tau>) \<in> M\<close> \<open>\<chi> \<in> M\<close> have
       "?\<theta> \<in> M"
       using P_in_M one_in_M leq_in_M sats_fst_snd_in_M 
       by simp
