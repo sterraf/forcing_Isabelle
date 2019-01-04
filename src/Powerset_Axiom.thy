@@ -74,6 +74,13 @@ proof -
     "\<sigma>\<in>M" "p\<in>M" 
     using trans_M  Transset_intf[of _ _ "a"] by simp_all
 qed
+
+lemma sats_fst_snd_in_M:
+  assumes 
+    "A\<in>M" "\<phi> \<in> formula" "p\<in>M" "l\<in>M" "o\<in>M" "\<chi>\<in>M"  
+  shows
+    "{sp\<in>A . sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])} \<in> M"
+  sorry
     
 lemma Pow_inter_MG:
   assumes
@@ -132,9 +139,10 @@ proof -
       using GenExtD by blast
     let
       ?\<theta>="{sp\<in>domain(\<tau>)\<times>P . sats(M,forces(Member(0,1)),[P,leq,one,snd(sp),fst(sp),\<chi>])}"
-    have  
+    from \<open>domain(\<tau>)\<times>P \<in> M\<close> \<open>\<chi> \<in> M\<close> have
       "?\<theta> \<in> M"
-      sorry
+      using P_in_M one_in_M leq_in_M sats_fst_snd_in_M 
+      by simp
     then have 
       "?\<theta> \<in> ?Q"
       by auto
@@ -159,7 +167,6 @@ proof -
           using name_components_in_M[of _ _ ?\<theta>]  by auto
         moreover from 1 have
           "sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<chi>])" "p\<in>P" 
-          "Member(0,1)\<in>formula"
           by simp_all
         moreover note
           \<open>val(G,\<chi>) = c\<close>       
