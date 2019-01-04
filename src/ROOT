@@ -4,6 +4,7 @@ session "Separation" = "ZF" +
     "Extensionality_Axiom"
     "Foundation_Axiom"
     "Separation_Axiom"
+    "Powerset_Axiom"
     "Infinity_Axiom"
   document_files
     "root.tex"
