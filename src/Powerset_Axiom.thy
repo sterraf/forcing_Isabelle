@@ -2,6 +2,29 @@ theory Powerset_Axiom
   imports Separation_Axiom Pairing_Axiom Union_Axiom
 begin
   
+
+definition 
+  perm_pow :: "i" where
+  "perm_pow == {<0,3>,<1,4>,<2,5>,<3,0>,<4,1>,<5,6>}" 
+
+lemma perm_pow_ftc : "perm_pow \<in> 6 -||> 7"
+  by(unfold perm_pow_def,(rule consI,auto)+,rule emptyI)
+
+lemma dom_perm_pow : "domain(perm_pow) = 6"     
+  by(unfold perm_pow_def,auto)
+  
+lemma perm_pow_tc : "perm_pow \<in> 6 \<rightarrow> 7"
+  by(subst dom_perm_pow[symmetric],rule FiniteFun_is_fun,rule perm_pow_ftc)
+
+lemma perm_pow_env : 
+  "{p,q,r,s,t,u,v} \<subseteq> A \<Longrightarrow> j<6 \<Longrightarrow>
+  nth(j,[s,t,u,p,q,v]) = nth(perm_pow`j,[p,q,r,s,t,u,v])"
+  apply(subgoal_tac "j\<in>nat")
+  apply(rule natE,simp,subst apply_fun,rule perm_pow_tc,simp add:perm_pow_def,simp_all)+
+  apply(subst apply_fun,rule perm_pow_tc,simp add:perm_pow_def,simp_all,drule ltD,auto)
+  done
+  
+  
 lemma (in M_trivial) powerset_subset_Pow:
   assumes 
     "powerset(M,x,y)" "\<And>z. z\<in>y \<Longrightarrow> M(z)"
@@ -80,16 +103,26 @@ lemma sats_fst_snd_in_M:
     "A\<in>M" "B\<in>M" "\<phi> \<in> formula" "p\<in>M" "l\<in>M" "o\<in>M" "\<chi>\<in>M"
     "arity(\<phi>) \<le> 6"
   shows
-    "{sp\<in>A\<times>B . sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])} \<in> M" 
+    "{<s,q>\<in>A\<times>B . sats(M,\<phi>,[p,l,o,q,s,\<chi>])} \<in> M" 
     (is "?\<theta> \<in> M")
 proof -
+  let ?\<phi>' = "ren(\<phi>)`6`7`perm_pow"
   from \<open>A\<in>M\<close> \<open>B\<in>M\<close> have
     "A\<times>B \<in> M" 
     using cartprod_closed by simp
-  from  \<open>arity(\<phi>) \<le> 6\<close> have
-    1: "arity(Exists(Exists(And(pair_fm(0,1,2),\<phi>))))\<le>5" (* NO ES \<phi> !!!*)
-    sorry
-  {
+  from  \<open>arity(\<phi>) \<le> 6\<close> \<open>\<phi>\<in> formula\<close> have
+    "?\<phi>' \<in> formula" "arity(?\<phi>')\<le>7" 
+    using perm_pow_tc ren_arity[of \<phi> 6 7 perm_pow] nat_simp_union ren_tc by simp_all
+  then have
+     "arity(And(pair_fm(0,1,2),?\<phi>'))\<le>7" (is "?ar \<le> _")
+    unfolding pair_fm_def upair_fm_def using nat_simp_union by auto
+  then have 
+    "arity(Exists(And(pair_fm(0,1,2),?\<phi>')))\<le>6" 
+    using pred_le[OF _ _ \<open>?ar \<le>7\<close>] arity_type \<open>?\<phi>' \<in> formula\<close> by auto
+  then have
+    1: "arity(Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))))\<le>5" 
+    using pred_le[of _ 5] arity_type \<open>?\<phi>' \<in> formula\<close> by auto  
+    {
     fix sp
     note \<open>A\<times>B \<in> M\<close>
     moreover assume 
@@ -104,11 +137,11 @@ proof -
       "sp \<in> M" "fst(sp) \<in> M" "snd(sp) \<in> M" 
       using  \<open>A\<in>M\<close> \<open>B\<in>M\<close> 
       by (simp_all add: trans_M Transset_intf)
-    with 1 zero_in_M assms \<open>sp \<in> M\<close> have
-      "sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>))),[sp,p,l,o,\<chi>]@[0]) \<longleftrightarrow> 
-      sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>))),[sp,p,l,o,\<chi>])"(* NO ES \<phi> !!!*)
-      by (rule_tac arity_sats_iff, simp_all) 
-        
+    with 1 zero_in_M assms \<open>sp \<in> M\<close> \<open>?\<phi>' \<in> formula\<close> have
+      "sats(M,Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))),[sp,p,l,o,\<chi>]@[0]) \<longleftrightarrow> 
+      sats(M,Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))),[sp,p,l,o,\<chi>])"
+      by (rule_tac arity_sats_iff,simp_all)
+      
         (* 
 
         El paso que sigue contiene la propiedad que define a la \<phi>':
@@ -124,7 +157,7 @@ proof -
        sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
        sorry
      finally have(* NO ES \<phi> !!! la primera, la segunda sí*)
-      "sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>))),[sp,p,l,o,\<chi>,0]) \<longleftrightarrow> 
+      "sats(M,Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))),[sp,p,l,o,\<chi>,0]) \<longleftrightarrow> 
        sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
       by simp
   }
@@ -202,7 +235,7 @@ proof -
       "c\<in>M[G]" "\<chi> \<in> M" "val(G,\<chi>) = c"
       using GenExtD by blast
     let
-      ?\<theta>="{sp\<in>domain(\<tau>)\<times>P . sats(M,forces(Member(0,1)),[P,leq,one,snd(sp),fst(sp),\<chi>])}"
+      ?\<theta>="{<s,q>\<in>domain(\<tau>)\<times>P . sats(M,forces(Member(0,1)),[P,leq,one,snd(p),fst(sp),\<chi>])}"
     have
       "arity(forces(Member(0,1))) = 6"
       using arity_forces by auto
