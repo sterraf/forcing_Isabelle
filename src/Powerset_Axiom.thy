@@ -1,5 +1,5 @@
 theory Powerset_Axiom 
-  imports Separation_Axiom  Pairing_Axiom Union_Axiom
+  imports Separation_Axiom Pairing_Axiom Union_Axiom
 begin
   
 lemma (in M_trivial) powerset_subset_Pow:
@@ -60,7 +60,6 @@ context G_generic begin
 lemma name_components_in_M:
   assumes "<\<sigma>,p>\<in>\<theta>" "\<theta> \<in> M"
   shows   "\<sigma>\<in>M" "p\<in>M"
-  using assms unfolding Pair_def 
 proof -
   from assms obtain a where
     "\<sigma> \<in> a" "p \<in> a" "a\<in><\<sigma>,p>"
@@ -264,8 +263,7 @@ end
 sublocale G_generic \<subseteq> M_trivial"##M[G]"
   using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
   unfolding M_trivial_def by simp 
-
-    
+ 
 context G_generic begin
 theorem power_in_MG :
   "power_ax(##(M[G]))"
