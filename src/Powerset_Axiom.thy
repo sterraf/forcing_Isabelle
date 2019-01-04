@@ -5,25 +5,28 @@ begin
 
 definition 
   perm_pow :: "i" where
-  "perm_pow == {<0,3>,<1,4>,<2,5>,<3,0>,<4,1>,<5,6>}" 
+  "perm_pow == {<0,3>,<1,4>,<2,5>,<3,1>,<4,0>,<5,6>}"  
 
 lemma perm_pow_ftc : "perm_pow \<in> 6 -||> 7"
-  by(unfold perm_pow_def,(rule consI,auto)+,rule emptyI)
+  unfolding perm_pow_def
+  by (blast intro: consI emptyI)
 
 lemma dom_perm_pow : "domain(perm_pow) = 6"     
-  by(unfold perm_pow_def,auto)
+  unfolding perm_pow_def
+  by auto
   
 lemma perm_pow_tc : "perm_pow \<in> 6 \<rightarrow> 7"
-  by(subst dom_perm_pow[symmetric],rule FiniteFun_is_fun,rule perm_pow_ftc)
+  using dom_perm_pow FiniteFun_is_fun perm_pow_ftc
+  by force
 
 lemma perm_pow_env : 
-  "{p,q,r,s,t,u,v} \<subseteq> A \<Longrightarrow> j<6 \<Longrightarrow>
-  nth(j,[s,t,u,p,q,v]) = nth(perm_pow`j,[p,q,r,s,t,u,v])"
+   "{p,l,o,ss,fs,\<chi>} \<subseteq> A \<Longrightarrow> j<6 \<Longrightarrow>
+  nth(j,[p,l,o,ss,fs,\<chi>]) = nth(perm_pow`j,[fs,ss,sp,p,l,o,\<chi>])" 
   apply(subgoal_tac "j\<in>nat")
   apply(rule natE,simp,subst apply_fun,rule perm_pow_tc,simp add:perm_pow_def,simp_all)+
-  apply(subst apply_fun,rule perm_pow_tc,simp add:perm_pow_def,simp_all,drule ltD,auto)
+   apply(subst apply_fun,rule perm_pow_tc,simp add:perm_pow_def,simp_all,drule ltD,auto)
   done
-  
+
   
 lemma (in M_trivial) powerset_subset_Pow:
   assumes 
@@ -153,16 +156,12 @@ proof -
     also from inM \<open>sp \<in> A\<times>B\<close> have 
       "... \<longleftrightarrow> sats(M,\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>])"
       using Pair_fst_snd_eq by force
-    also have
+    also from inM \<open>\<phi> \<in> formula\<close> \<open>arity(\<phi>) \<le> 6\<close> have
       " ... \<longleftrightarrow> sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
-      using assms renSat[of \<phi> 6 7 ?env M  ?new_env perm_pow,symmetric]  
-            perm_pow_tc inM
-            \<open>?env\<in>list(M)\<close> \<open>?new_env\<in>list(M)\<close> 
-            \<open>6\<in>nat\<close> \<open>7\<in>nat\<close>
-            perm_pow_env[of "snd(sp)" "fst(sp)"  sp p l o \<chi> M] 
-            unfolding \<phi>'_def
-            apply auto
-      sorry  (* histérica! *)
+      (is "sats(_,_,?env1) \<longleftrightarrow> sats(_,_,?env2)")
+      using renSat[of \<phi> 6 7 ?env2 M ?env1 perm_pow] perm_pow_tc perm_pow_env [of _ _ _ _ _ _ "M"]
+        unfolding \<phi>'_def
+      by simp
      finally have
       "sats(M,?\<psi>,[sp,p,l,o,\<chi>,0]) \<longleftrightarrow> 
        sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
