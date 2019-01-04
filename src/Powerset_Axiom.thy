@@ -87,7 +87,7 @@ proof -
     "A\<times>B \<in> M" 
     using cartprod_closed by simp
   from  \<open>arity(\<phi>) \<le> 6\<close> have
-    1: "arity(Exists(Exists(And(pair_fm(0,1,5),\<phi>))))\<le>5"
+    1: "arity(Exists(Exists(And(pair_fm(0,1,2),\<phi>))))\<le>5" (* NO ES \<phi> !!!*)
     sorry
   {
     fix sp
@@ -105,20 +105,31 @@ proof -
       using  \<open>A\<in>M\<close> \<open>B\<in>M\<close> 
       by (simp_all add: trans_M Transset_intf)
     with 1 zero_in_M assms \<open>sp \<in> M\<close> have
-      "sats(M,Exists(Exists(And(pair_fm(0,1,5),\<phi>))),[sp,p,l,o,\<chi>]@[0]) \<longleftrightarrow> 
-      sats(M,Exists(Exists(And(pair_fm(0,1,5),\<phi>))),[sp,p,l,o,\<chi>])"
+      "sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>))),[sp,p,l,o,\<chi>]@[0]) \<longleftrightarrow> 
+      sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>))),[sp,p,l,o,\<chi>])"(* NO ES \<phi> !!!*)
       by (rule_tac arity_sats_iff, simp_all) 
-     also have
+        
+        (* 
+
+        El paso que sigue contiene la propiedad que define a la \<phi>':
+
+        sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>'))),[sp,p,l,o,\<chi>])
+     \<longleftrightarrow>
+        sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])
+
+         *)
+
+    also have
       " ... \<longleftrightarrow>
        sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
        sorry
-     finally have
-      "sats(M,Exists(Exists(And(pair_fm(0,1,5),\<phi>))),[sp,p,l,o,\<chi>,0]) \<longleftrightarrow> 
+     finally have(* NO ES \<phi> !!! la primera, la segunda sí*)
+      "sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>))),[sp,p,l,o,\<chi>,0]) \<longleftrightarrow> 
        sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
       by simp
   }
   then have
-    "?\<theta> = {sp\<in>A\<times>B . sats(M,Exists(Exists(And(pair_fm(0,1,5),\<phi>))),[sp,p,l,o,\<chi>,0])}"
+    "?\<theta> = {sp\<in>A\<times>B . sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>))),[sp,p,l,o,\<chi>,0])}"(* NO ES \<phi> !!!*)
     (is "_ = {_\<in>_ . sats(_,?\<psi>,_)}")
     by simp
   also from assms \<open>A\<times>B\<in>M\<close> have
