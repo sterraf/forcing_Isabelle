@@ -1,4 +1,9 @@
-THY_FILES = Datatype_absolute  Forces_locale.thy Forcing_Data.thy Forcing_Notions.thy Infinity_Axiom.thy Interface.thy Internalizations.thy Names.thy Nat_Miscelanea.thy Pairing_Axiom.thy Pointed_DC.thy Recursion_Thms.thy Relative.thy Renaming.thy Separation_Axiom.thy Union_Axiom.thy Wellorderings.thy WF_absolute.thy WFrec.thy Foundation_Axiom.thy
+THY_FILES = Datatype_absolute.thy Forcing_Theorems.thy Forcing_Data.thy\
+ Forcing_Notions.thy Infinity_Axiom.thy Interface.thy\
+ Internalizations.thy Names.thy Nat_Miscelanea.thy Pairing_Axiom.thy\
+ Pointed_DC.thy Powerset_Axiom.thy Recursion_Thms.thy Relative.thy\
+ Renaming.thy Separation_Axiom.thy Union_Axiom.thy Wellorderings.thy\
+ WF_absolute.thy WFrec.thy Foundation_Axiom.thy
 
 build: 
 	isabelle build -c -D .
