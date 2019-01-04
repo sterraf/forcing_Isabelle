@@ -1,5 +1,5 @@
 theory Powerset_Axiom 
-  imports Separation_Axiom Pairing_Axiom Union_Axiom
+  imports Separation_Axiom Pairing_Axiom Union_Axiom 
 begin
   
 
@@ -106,6 +106,7 @@ lemma sats_fst_snd_in_M:
     "{<s,q>\<in>A\<times>B . sats(M,\<phi>,[p,l,o,q,s,\<chi>])} \<in> M" 
     (is "?\<theta> \<in> M")
 proof -
+  have "6\<in>nat" "7\<in>nat" by simp_all
   let ?\<phi>' = "ren(\<phi>)`6`7`perm_pow"
   from \<open>A\<in>M\<close> \<open>B\<in>M\<close> have
     "A\<times>B \<in> M" 
@@ -124,47 +125,46 @@ proof -
     using pred_le[of _ 5] arity_type \<open>?\<phi>' \<in> formula\<close> by auto  
     {
     fix sp
+    let ?env="[p,l,o,snd(sp),fst(sp),\<chi>]"
+    let ?new_env="[fst(sp), snd(sp), sp, p, l, o, \<chi>]"
     note \<open>A\<times>B \<in> M\<close>
     moreover assume 
       "sp \<in> A\<times>B"
-   (*  moreover from calculation have
-      "sp \<in> M"
-      by (simp add:trans_M Transset_intf) *)
     moreover from calculation have
       "fst(sp) \<in> A" "snd(sp) \<in> B"
       using fst_type snd_type by simp_all
     ultimately have 
       "sp \<in> M" "fst(sp) \<in> M" "snd(sp) \<in> M" 
       using  \<open>A\<in>M\<close> \<open>B\<in>M\<close> 
-      by (simp_all add: trans_M Transset_intf)
+      by (simp_all add: trans_M Transset_intf)    
+    then have "?env \<in> list(M)" "?new_env\<in>list(M)" using assms by simp_all
     with 1 zero_in_M assms \<open>sp \<in> M\<close> \<open>?\<phi>' \<in> formula\<close> have
       "sats(M,Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))),[sp,p,l,o,\<chi>]@[0]) \<longleftrightarrow> 
       sats(M,Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))),[sp,p,l,o,\<chi>])"
       by (rule_tac arity_sats_iff,simp_all)
-      
-        (* 
-
-        El paso que sigue contiene la propiedad que define a la \<phi>':
-
-        sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>'))),[sp,p,l,o,\<chi>])
-     \<longleftrightarrow>
-        sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])
-
-         *)
-
+    also have "... \<longleftrightarrow> (\<exists> u\<in>M. \<exists>v\<in>M . sats(M,And(pair_fm(0,1,2),?\<phi>'),[v,u,sp,p,l,o,\<chi>]))" 
+      using assms \<open>sp\<in>M\<close> by simp
+    also have "... \<longleftrightarrow> sats(M,?\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>]) \<and> sp=<fst(sp),snd(sp)>"
+      using assms \<open>sp\<in>M\<close> \<open>fst(sp)\<in>M\<close> \<open>snd(sp)\<in>M\<close> by force
+    also have "... \<longleftrightarrow> sats(M,?\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>])"
+      using assms \<open>sp\<in>M\<close> \<open>fst(sp)\<in>M\<close> \<open>snd(sp)\<in>M\<close> \<open>sp \<in> A\<times>B\<close> Pair_fst_snd_eq by force
     also have
       " ... \<longleftrightarrow>
        sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
-       sorry
-     finally have(* NO ES \<phi> !!! la primera, la segunda sí*)
+      using assms renSat[of \<phi> 6 7 ?env M  ?new_env perm_pow,symmetric]  
+            perm_pow_tc \<open>snd(sp)\<in> M\<close> \<open>fst(sp)\<in>M\<close> \<open>sp\<in>M\<close>
+            \<open>?env\<in>list(M)\<close> \<open>?new_env\<in>list(M)\<close> 
+            \<open>6\<in>nat\<close> \<open>7\<in>nat\<close>
+            perm_pow_env[of "snd(sp)" "fst(sp)"  sp p l o \<chi> M] sorry  (* histérica! *)
+     finally have
       "sats(M,Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))),[sp,p,l,o,\<chi>,0]) \<longleftrightarrow> 
        sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
       by simp
   }
   then have
-    "?\<theta> = {sp\<in>A\<times>B . sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>))),[sp,p,l,o,\<chi>,0])}"(* NO ES \<phi> !!!*)
+    "?\<theta> = {sp\<in>A\<times>B . sats(M,Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))),[sp,p,l,o,\<chi>,0])}"
     (is "_ = {_\<in>_ . sats(_,?\<psi>,_)}")
-    by simp
+    using arity_sats_iff by simp
   also from assms \<open>A\<times>B\<in>M\<close> have
     " ... \<in> M"
   proof -
