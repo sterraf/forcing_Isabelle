@@ -1,7 +1,6 @@
 theory Powerset_Axiom 
   imports Separation_Axiom Pairing_Axiom Union_Axiom 
 begin
-  
 
 definition 
   perm_pow :: "i" where
@@ -160,9 +159,9 @@ proof -
       " ... \<longleftrightarrow> sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
       (is "sats(_,_,?env1) \<longleftrightarrow> sats(_,_,?env2)")
       using renSat[of \<phi> 6 7 ?env2 M ?env1 perm_pow] perm_pow_tc perm_pow_env [of _ _ _ _ _ _ "M"]
-        unfolding \<phi>'_def
+      unfolding \<phi>'_def
       by simp
-     finally have
+    finally have
       "sats(M,?\<psi>,[sp,p,l,o,\<chi>,0]) \<longleftrightarrow> 
        sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
       by simp
@@ -385,6 +384,9 @@ theorem power_in_MG :
   "power_ax(##(M[G]))"
   unfolding power_ax_def
 proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
+  (* After simplification, we have to show that for every 
+     a\<in>M[G] there exists some x\<in>M[G] with powerset(##M[G],a,x)
+  *)
   fix a
   assume 
     "a \<in> M[G]"
