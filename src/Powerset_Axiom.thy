@@ -107,22 +107,22 @@ lemma sats_fst_snd_in_M:
     (is "?\<theta> \<in> M")
 proof -
   have "6\<in>nat" "7\<in>nat" by simp_all
-  let ?\<phi>' = "ren(\<phi>)`6`7`perm_pow"
+  define \<phi>' where "\<phi>'\<equiv>ren(\<phi>)`6`7`perm_pow"
   from \<open>A\<in>M\<close> \<open>B\<in>M\<close> have
     "A\<times>B \<in> M" 
     using cartprod_closed by simp
   from  \<open>arity(\<phi>) \<le> 6\<close> \<open>\<phi>\<in> formula\<close> have
-    "?\<phi>' \<in> formula" "arity(?\<phi>')\<le>7" 
-    using perm_pow_tc ren_arity[of \<phi> 6 7 perm_pow] nat_simp_union ren_tc by simp_all
+    "\<phi>' \<in> formula" "arity(\<phi>')\<le>7" 
+    using \<phi>'_def perm_pow_tc ren_arity[of \<phi> 6 7 perm_pow] nat_simp_union ren_tc by simp_all
   then have
-     "arity(And(pair_fm(0,1,2),?\<phi>'))\<le>7" (is "?ar \<le> _")
+     "arity(And(pair_fm(0,1,2),\<phi>'))\<le>7" (is "?ar \<le> _")
     unfolding pair_fm_def upair_fm_def using nat_simp_union by auto
   then have 
-    "arity(Exists(And(pair_fm(0,1,2),?\<phi>')))\<le>6" 
-    using pred_le[OF _ _ \<open>?ar \<le>7\<close>] arity_type \<open>?\<phi>' \<in> formula\<close> by auto
+    "arity(Exists(And(pair_fm(0,1,2),\<phi>')))\<le>6" 
+    using pred_le[OF _ _ \<open>?ar \<le>7\<close>] arity_type \<open>\<phi>' \<in> formula\<close> by auto
   then have
-    1: "arity(Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))))\<le>5" 
-    using pred_le[of _ 5] arity_type \<open>?\<phi>' \<in> formula\<close> by auto  
+    1: "arity(Exists(Exists(And(pair_fm(0,1,2),\<phi>'))))\<le>5" 
+    using pred_le[of _ 5] arity_type \<open>\<phi>' \<in> formula\<close> by auto  
     {
     fix sp
     let ?env="[p,l,o,snd(sp),fst(sp),\<chi>]"
@@ -138,15 +138,15 @@ proof -
       using  \<open>A\<in>M\<close> \<open>B\<in>M\<close> 
       by (simp_all add: trans_M Transset_intf)    
     then have "?env \<in> list(M)" "?new_env\<in>list(M)" using assms by simp_all
-    with 1 zero_in_M assms \<open>sp \<in> M\<close> \<open>?\<phi>' \<in> formula\<close> have
-      "sats(M,Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))),[sp,p,l,o,\<chi>]@[0]) \<longleftrightarrow> 
-      sats(M,Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))),[sp,p,l,o,\<chi>])"
+    with 1 zero_in_M assms \<open>sp \<in> M\<close> \<open>\<phi>' \<in> formula\<close> have
+      "sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>'))),[sp,p,l,o,\<chi>]@[0]) \<longleftrightarrow> 
+      sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>'))),[sp,p,l,o,\<chi>])"
       by (rule_tac arity_sats_iff,simp_all)
-    also have "... \<longleftrightarrow> (\<exists> u\<in>M. \<exists>v\<in>M . sats(M,And(pair_fm(0,1,2),?\<phi>'),[v,u,sp,p,l,o,\<chi>]))" 
+    also have "... \<longleftrightarrow> (\<exists> u\<in>M. \<exists>v\<in>M . sats(M,And(pair_fm(0,1,2),\<phi>'),[v,u,sp,p,l,o,\<chi>]))" 
       using assms \<open>sp\<in>M\<close> by simp
-    also have "... \<longleftrightarrow> sats(M,?\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>]) \<and> sp=<fst(sp),snd(sp)>"
+    also have "... \<longleftrightarrow> sats(M,\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>]) \<and> sp=<fst(sp),snd(sp)>"
       using assms \<open>sp\<in>M\<close> \<open>fst(sp)\<in>M\<close> \<open>snd(sp)\<in>M\<close> by force
-    also have "... \<longleftrightarrow> sats(M,?\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>])"
+    also have "... \<longleftrightarrow> sats(M,\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>])"
       using assms \<open>sp\<in>M\<close> \<open>fst(sp)\<in>M\<close> \<open>snd(sp)\<in>M\<close> \<open>sp \<in> A\<times>B\<close> Pair_fst_snd_eq by force
     also have
       " ... \<longleftrightarrow>
@@ -157,24 +157,28 @@ proof -
             \<open>6\<in>nat\<close> \<open>7\<in>nat\<close>
             perm_pow_env[of "snd(sp)" "fst(sp)"  sp p l o \<chi> M] sorry  (* histérica! *)
      finally have
-      "sats(M,Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))),[sp,p,l,o,\<chi>,0]) \<longleftrightarrow> 
+      "sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>'))),[sp,p,l,o,\<chi>,0]) \<longleftrightarrow> 
        sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
       by simp
   }
   then have
-    "?\<theta> = {sp\<in>A\<times>B . sats(M,Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))),[sp,p,l,o,\<chi>,0])}"
+    "?\<theta> = {sp\<in>A\<times>B . sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>'))),[sp,p,l,o,\<chi>,0])}"
     (is "_ = {_\<in>_ . sats(_,?\<psi>,_)}")
-    using arity_sats_iff by simp
+    by auto
   also from assms \<open>A\<times>B\<in>M\<close> have
     " ... \<in> M"
   proof -
     from 1 have
       "arity(?\<psi>) \<le> 6" 
       by (simp add:  not_lt_iff_le leI nat_union_abs1)
-    with assms \<open>A\<times>B\<in>M\<close> show
+    moreover from \<open>\<phi>' \<in> formula\<close> have
+      "?\<psi> \<in> formula"
+      by simp
+    moreover note assms \<open>A\<times>B\<in>M\<close> 
+    ultimately show
       "{x \<in> A\<times>B . sats(M, ?\<psi>, [x, p, l, o, \<chi>, 0])} \<in> M"
       using zero_in_M sixp_sep [of ?\<psi> p l o \<chi> 0]  Collect_abs[of "A\<times>B"] separation_iff
-      by auto
+      by simp
   qed
   finally show ?thesis .
 qed
