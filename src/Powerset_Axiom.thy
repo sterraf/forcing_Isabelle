@@ -121,7 +121,7 @@ proof -
     "arity(Exists(And(pair_fm(0,1,2),\<phi>')))\<le>6" 
     using pred_le[OF _ _ \<open>?ar \<le>7\<close>] arity_type \<open>\<phi>' \<in> formula\<close> by auto
   then have
-    1: "arity(Exists(Exists(And(pair_fm(0,1,2),\<phi>'))))\<le>5" 
+    1: "arity(Exists(Exists(And(pair_fm(0,1,2),\<phi>'))))\<le>5"     (is "arity(?\<psi>)\<le>5")
     using pred_le[of _ 5] arity_type \<open>\<phi>' \<in> formula\<close> by auto  
     {
     fix sp
@@ -138,32 +138,38 @@ proof -
       using  \<open>A\<in>M\<close> \<open>B\<in>M\<close> 
       by (simp_all add: trans_M Transset_intf)    
     then have "?env \<in> list(M)" "?new_env\<in>list(M)" using assms by simp_all
-    with 1 zero_in_M assms \<open>sp \<in> M\<close> \<open>\<phi>' \<in> formula\<close> have
-      "sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>'))),[sp,p,l,o,\<chi>]@[0]) \<longleftrightarrow> 
-      sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>'))),[sp,p,l,o,\<chi>])"
+    note
+      inM =  \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>p\<in>M\<close> \<open>l\<in>M\<close> \<open>o\<in>M\<close> \<open>\<chi>\<in>M\<close>
+             \<open>sp\<in>M\<close> \<open>fst(sp)\<in>M\<close> \<open>snd(sp)\<in>M\<close> 
+    from 1 zero_in_M assms \<open>sp \<in> M\<close> \<open>\<phi>' \<in> formula\<close> have
+      "sats(M,?\<psi>,[sp,p,l,o,\<chi>]@[0]) \<longleftrightarrow> sats(M,?\<psi>,[sp,p,l,o,\<chi>])"
       by (rule_tac arity_sats_iff,simp_all)
-    also have "... \<longleftrightarrow> (\<exists> u\<in>M. \<exists>v\<in>M . sats(M,And(pair_fm(0,1,2),\<phi>'),[v,u,sp,p,l,o,\<chi>]))" 
-      using assms \<open>sp\<in>M\<close> by simp
-    also have "... \<longleftrightarrow> sats(M,\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>]) \<and> sp=<fst(sp),snd(sp)>"
-      using assms \<open>sp\<in>M\<close> \<open>fst(sp)\<in>M\<close> \<open>snd(sp)\<in>M\<close> by force
-    also have "... \<longleftrightarrow> sats(M,\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>])"
-      using assms \<open>sp\<in>M\<close> \<open>fst(sp)\<in>M\<close> \<open>snd(sp)\<in>M\<close> \<open>sp \<in> A\<times>B\<close> Pair_fst_snd_eq by force
+    also from inM have 
+      "... \<longleftrightarrow> (\<exists> u\<in>M. \<exists>v\<in>M . sats(M,And(pair_fm(0,1,2),\<phi>'),[v,u,sp,p,l,o,\<chi>]))" 
+      by simp
+    also from inM have 
+      "... \<longleftrightarrow> sats(M,\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>]) \<and> sp=<fst(sp),snd(sp)>"
+      by force
+    also from inM \<open>sp \<in> A\<times>B\<close> have 
+      "... \<longleftrightarrow> sats(M,\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>])"
+      using Pair_fst_snd_eq by force
     also have
-      " ... \<longleftrightarrow>
-       sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
+      " ... \<longleftrightarrow> sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
       using assms renSat[of \<phi> 6 7 ?env M  ?new_env perm_pow,symmetric]  
-            perm_pow_tc \<open>snd(sp)\<in> M\<close> \<open>fst(sp)\<in>M\<close> \<open>sp\<in>M\<close>
+            perm_pow_tc inM
             \<open>?env\<in>list(M)\<close> \<open>?new_env\<in>list(M)\<close> 
             \<open>6\<in>nat\<close> \<open>7\<in>nat\<close>
-            perm_pow_env[of "snd(sp)" "fst(sp)"  sp p l o \<chi> M] sorry  (* histérica! *)
+            perm_pow_env[of "snd(sp)" "fst(sp)"  sp p l o \<chi> M] 
+            unfolding \<phi>'_def
+            apply auto
+      sorry  (* histérica! *)
      finally have
-      "sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>'))),[sp,p,l,o,\<chi>,0]) \<longleftrightarrow> 
+      "sats(M,?\<psi>,[sp,p,l,o,\<chi>,0]) \<longleftrightarrow> 
        sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
       by simp
   }
   then have
-    "?\<theta> = {sp\<in>A\<times>B . sats(M,Exists(Exists(And(pair_fm(0,1,2),\<phi>'))),[sp,p,l,o,\<chi>,0])}"
-    (is "_ = {_\<in>_ . sats(_,?\<psi>,_)}")
+    "?\<theta> = {sp\<in>A\<times>B . sats(M,?\<psi>,[sp,p,l,o,\<chi>,0])}"
     by auto
   also from assms \<open>A\<times>B\<in>M\<close> have
     " ... \<in> M"
@@ -177,7 +183,7 @@ proof -
     moreover note assms \<open>A\<times>B\<in>M\<close> 
     ultimately show
       "{x \<in> A\<times>B . sats(M, ?\<psi>, [x, p, l, o, \<chi>, 0])} \<in> M"
-      using zero_in_M sixp_sep [of ?\<psi> p l o \<chi> 0]  Collect_abs[of "A\<times>B"] separation_iff
+      using zero_in_M sixp_sep  Collect_abs separation_iff
       by simp
   qed
   finally show ?thesis .
