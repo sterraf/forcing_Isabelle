@@ -154,7 +154,10 @@ instances of Separation for $M[G]$:
 \end{isabelle}
    
 We now turn to the Powerset Axiom. We followed the proof of
-\cite[IV.2.27]{kunen2011set}, and actually the main technical result,
+\cite[IV.2.27]{kunen2011set}, to which we refer the reader for further
+details, trying to  preserve the
+names of variables used in the textbook (with the occasional question
+mark that distinguishes meta-variables). Actually, the main technical result
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ Pow{\isacharunderscore}inter{\isacharunderscore}MG{\isacharcolon}\isanewline
@@ -165,13 +168,12 @@ We now turn to the Powerset Axiom. We followed the proof of
 \end{isabelle}
 keeps most of the structure of the printed proof; this ``skeleton'' of the
 argument takes around 120 (short) lines. There are approximately 30
-more lines of bureaucracy in the proof of the last lemma. We preserved the
-names of variables used in the textbook, with the occasional question
-mark that distinguishes meta-variables. 
+more lines of bureaucracy in the proof of the last lemma. 
 
 Two more
-absoluteness results concerning powersets were needed: These are
-refinements of results located in \isatt{Relative} that assume that
+absoluteness lemmas concerning powersets were needed: These are
+refinements of results (\isatt{powerset\_Pow} and
+\isatt{powerset\_imp\_subset\_Pow}) located in the theory \isatt{Relative} which assume that
 $y$ below is in the class $M$.
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
@@ -188,6 +190,22 @@ $y$ below is in the class $M$.
 \ \ \ \ {\isachardoublequoteopen}M{\isacharparenleft}x{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymAnd}z{\isachardot}\ z{\isasymin}y\ {\isasymLongrightarrow}\ M{\isacharparenleft}z{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \ \ \isakeyword{shows}\isanewline
 \ \ {\isachardoublequoteopen}powerset{\isacharparenleft}M{\isacharcomma}x{\isacharcomma}y{\isacharparenright}\ {\isasymlongleftrightarrow}\ y\ {\isacharequal}\ {\isacharbraceleft}a{\isasymin}Pow{\isacharparenleft}x{\isacharparenright}\ {\isachardot}\ M{\isacharparenleft}a{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+
+Of the rest of the theory file \verb|Powerset_Axiom.thy|, a
+considerable fraction is taken by the proof of a closure property of
+the ctm $M$, that involves renaming of an internalized formula; also,
+the handling of the projections \isatt{fst} and \isatt{snd} must be
+done internally. 
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ sats{\isacharunderscore}fst{\isacharunderscore}snd{\isacharunderscore}in{\isacharunderscore}M{\isacharcolon}\isanewline
+\ \isakeyword{assumes}\ \isanewline
+\  \ {\isachardoublequoteopen}A{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}B{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymphi}\ {\isasymin}\ formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}p{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}l{\isasymin}M{\isachardoublequoteclose}\isanewline
+\ \  {\isachardoublequoteopen}o{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymchi}{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymle}\ {\isadigit{6}}{\isachardoublequoteclose}\isanewline
+\  \isakeyword{shows}\isanewline
+\  \ {\isachardoublequoteopen}{\isacharbraceleft}sq\ {\isasymin}\ A{\isasymtimes}B\ {\isachardot}\isanewline
+\ \ \ \ \ sats{\isacharparenleft}M{\isacharcomma}{\isasymphi}{\isacharcomma}{\isacharbrackleft}p{\isacharcomma}l{\isacharcomma}o{\isacharcomma}snd{\isacharparenleft}sq{\isacharparenright}{\isacharcomma}fst{\isacharparenleft}sq{\isacharparenright}{\isacharcomma}{\isasymchi}{\isacharbrackright}{\isacharparenright}{\isacharbraceright}\ {\isasymin}\ M{\isachardoublequoteclose}\ \isanewline
 \end{isabelle}
 
 
