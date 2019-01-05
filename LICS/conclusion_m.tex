@@ -90,15 +90,19 @@ consisting of a single formula. The schematic nature of this result
 hints at a proof by induction on formulas, and hence it must be shown
 internally. 
 
-This is an appropriate spot to insist that the internal/external
-dichotomy has been a powerful agent in the shaping of our project. It
-traces back to the definition of the formula-transformer $\forceisa$,
-which must be done by recursion, and this requirement spills
-indirectly to the proof of the Separation Axiom (despite the latter is
-not by induction). Now the need of using internalized formulas
-reappears with the need of having a general version of the Reflection
-Principle (because the $\Phi$ there depends on the instance of
-Replacement being proved).
+This is an appropriate point to insist that the internal/external
+dichotomy has been a powerful agent in the shaping of our project.
+This tension was also pondered by Paulson in his formalization of
+Gödel's constructible universe \cite{MR2051585}; after choosing a
+shallow embedding of $\ZF$, every argument proved by induction on
+formulas (or functions defined by recursion) should be done using
+internalized formulas. Working on top of Paulson's library, we
+prototyped the formula-transformer $\forceisa$ is defined for
+internalized formulas and this affects indirectly the proof of the
+Separation Axiom (despite the latter is not by induction). The need of
+using internalized formulas reappears with the need of a general
+version of the Reflection Principle (because the $\Phi$ there depends
+on the instance of Replacement being proved).
 
 A secondary outcome of this project is to assess which assumptions on
 the ground model $M$ are needed to develop the forcing machinery. Up
