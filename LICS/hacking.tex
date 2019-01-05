@@ -3,7 +3,7 @@
 \label{sec:hack-constructible}
 In \cite{paulson_2003}, Paulson presented his formalization of the
 relative consistency of the Axiom of Choice. This development is
-included inside the Isabelle distribution with session name
+included inside the Isabelle distribution under the session 
 \isatt{ZF-Constructible}. The main technical devices, invented by
 G\"odel for this purpose, are \emph{relativization} and
 \emph{absoluteness}. In a nutshell, to relativize a formula $\phi$ to
@@ -21,12 +21,12 @@ absoluteness and closure results can be proved about $M$.
 The development of forcing, and the study of ctms in general, takes
 absoluteness as a starting point. We were not able to work with
 \isatt{ZF-Constructible} right out-of-the-box. The main reason is that
-we can't expect state the ``class version'' of Replacement for a
+we can't expect to state the ``class version'' of Replacement for a
 \emph{set} $M$ by
 using first-order formulas, since predicates
 \isatt{P::"i\isasymRightarrow o"} can't
 be proved to be only the definable ones. Therefore, we had to make
-some modifications to the various sets of hypotheses in several
+some modifications in several
 locales to make the results available as tools for the present and
 future developments.
 
@@ -36,26 +36,29 @@ future developments.
 %% eliminated some of them, but in some cases we had to keep them because
 %% the proof works because it is insisted that the rule is \emph{safe}.
 
-The most notable changes, located in the theory \texttt{Relative}, are
+The most notable changes, located in the theories \texttt{Relative}
+and \isatt{WF\_absolute}, are
 the following:
 \begin{enumerate}
-\item\label{item:1} We eliminated the requirement that the relative Axiom of Replacement
-  is satisfied by a class $M$ to be in the locale \isatt{M\_trivial}. 
-\item\label{item:2} We moved the requirement of the Powerset Axiom to \isatt{M\_basic}. 
-\item\label{item:3} We replaced the need that the set of natural numbers is in $M$ by the
-  milder hypothesis that $M(0)$. Actually, most results should follow
+\item\label{item:1} The locale \isatt{M\_trivial}
+  does not assume that the underlying class $M$ satisfies the relative
+  Axiom of replacement.  As a consequence, the lemma
+  \isatt{strong\_replacementI} is no longer valid and was commented
+  out.
+\item\label{item:2}  Originally the Powerset Axiom was assumed by the
+  locale \isatt{M\_trivial},   we moved this requirement to \isatt{M\_basic}. 
+\item\label{item:3} We replaced the need that the set of natural
+  numbers is in $M$ by the   milder hypothesis that $M(0)$. Actually,
+  most results should follow 
   by only assuming that $M$ is nonempty.
+\item We moved the requirement $M(\mathtt{nat})$ to the locale
+  \isatt{M\_trancl}, where it is needed for the first time. Some results,
+  for instance \isatt{rtran\_closure\_mem\_iff} and 
+  \isatt{iterates\_imp\_wfrec\_replacement} had to be moved inside that
+  locale. 
 \end{enumerate}
-
-As a consequence of Item~\ref{item:1}, the lemma
-\isatt{strong\_replacementI} is no longer valid and was commented
-out.
-
-We moved the requirement $M(\mathtt{nat})$ to the locale
-\isatt{M\_trancl} (inside the theory \isatt{WF\_absolute}), where it is needed for the first time. Some results,
-for instance \isatt{rtran\_closure\_mem\_iff} and 
-\isatt{iterates\_imp\_wfrec\_replacement} had to be moved inside that
-locale.
+Because of these changes, some theory files from the
+\isatt{ZF-Constructible} session have been included among ours.
 
 The proof, for instance, that the constructible universe $L$ satisfies
 the modified locale \isatt{M\_trivial} holds with minor
