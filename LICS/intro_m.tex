@@ -2,26 +2,31 @@
 \section{Introduction}
 % no \IEEEPARstart
 Zermelo-Fraenkel Set Theory ($\ZF$) has a prominent place among formal
-theories; in particular, it provides a foundation for mathematics and
-most of the formal toolkit used everyday by the computer scientist has
-also some form of set theory at its base
-(cf.~\cite{paulson1995set}). Considering the current trend 
+theories. The reason for this is that it formalizes many intuitive
+properties of the notion of set. As such, it can be used as a
+foundation for mathematics and thus it has been
+thoroughly studied. 
+Considering the current trend 
 of mechanization of mathematics~\cite{avigad2018mechanization}, it
 seems natural to ask for a mechanization of the most salient results
 of Set Theory.
 
 The results we are interested in originally arose in connection to
-(relative) consistency proofs.
-After G\"odel's Incompleteness Theorems, we cannot expect to have a
-formal proof of the consistency of Set Theory in $\ZF$. Besides its own
-consistency, there are other statements which are undecided by $\ZF$.
-Perhaps the most prominent  is the
-\emph{Continuum Hypothesis}, which lead to the development of powerful
+\emph{relative consistency} proofs in set theory; that is, showing
+that if $\ZF$ is 
+consistent, the addition of a new axiom $A$ won't make the system
+inconsistent; this is as much as we can expect to obtain, since
+G\"odel's Incompleteness Theorems precludes a  
+formal proof of the consistency of set theory in $\ZF$, unless the
+latter is indeed inconsistent. There are statements $A$ which are
+\emph{undecided} by $\ZF$, in the sense that both $A$ and $\neg A$ are
+consistent relative to $\ZF$; perhaps the most prominent  is the
+\emph{Continuum Hypothesis}, which led to the development of powerful
 techniques for independence proofs. First, G\"odel inaugurated the
 theory of \emph{inner models} by introducing his model $L$ of
 the \emph{Axiom of Constructibility} \cite{godel-L} and proved the
 relative consistency of the Axiom of Choice and the Generalized
-Continuum Hypothesis with $\ZF$. Thirty years later, Paul
+Continuum Hypothesis with $\ZF$. More than twenty years later, Paul
 J.~Cohen~\cite{Cohen-CH-PNAS} devised the technique of \emph{forcing},
 which is the only known way of \emph{extending} models of $\ZF$; this
 was used to prove the relative consistency of the 
@@ -29,7 +34,7 @@ negation of the Continuum Hypothesis.
 
 In this work we address a substantial part of formalizing the proof
 that given a model $M$ of $\ZF$, any \emph{generic extension} $M[G]$
-given by forcing also satisfies $\ZF$. As remarked by
+obtained by forcing also satisfies $\ZF$. As remarked by
 \citet[][p.250]{kunen2011set} \enquote{[...] in verifying that $M[G]$
   is a model for set theory, the hardest axiom to verify is
   [Separation].}  
@@ -39,14 +44,18 @@ Axiom of Separation in
 generic extensions by using the ``fundamental'' theorems of forcing.
 En route
 to this, we also formalized the satisfaction by $M[G]$ of
-Extensionality, Foundation, Union, and Infinity. % We have already
+Extensionality, Foundation, and Union. As a consequence of Separation
+we were able to formalize the proof of the Powerset Axiom; finally,
+the Axiom of Infinity was proved under extra assumptions. % We have already
 % proved Pairing in the first report of our project
 % \cite{2018arXiv180705174G}.
-We have  followed \cite{kunen2011set} for this purpose.
-
-Our development benefited from the remarkable work done by Lawrence
+The theoretical support for this work has been 
+the fine textbook by Kunen \cite{kunen2011set} and our development
+benefited from the remarkable work done by Lawrence 
 Paulson \cite{paulson_2003} on the formalization of G\"odel's
-constructible universe in Isabelle. The
+constructible universe in Isabelle. 
+
+The
 ultimate goal of our project is the formalization of the forcing
 techniques needed to show the independence of the Continuum
 Hypothesis. 
@@ -62,8 +71,8 @@ propositions, lemmas), but ommiting the proofs. In this work we
 partially adhere to this vision to delineate our formalization
 strategy:
 Since the proofs that the  axioms hold in generic extensions
-is independent of the \emph{proofs} of the fundamental theorems of
-forcing, we assumed these results for the time being. Let us remark
+are independent of the \emph{proofs} of the fundamental theorems of
+forcing, we assumed the latter for the time being. Let us remark
 that those theorems depend on the definition of a function $\forceisa$
 from formulas to formulas which is, by itself, quite demanding; the
 formalization of it and of the fundamental theorems of forcing % roughly
