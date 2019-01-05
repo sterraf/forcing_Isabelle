@@ -4,13 +4,13 @@
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-
 \subsection{Logics}
 \label{sec:logics}
-Isabelle provides a meta-language called \emph{Pure} that consists of
-a fragment of higher order logic, where \isatt{\isasymRightarrow} is
-the function-space arrow. The meta-Boolean type is called
-\isatt{prop}. Meta-connectives
+Isabelle \cite{Isabelle,DBLP:books/sp/Paulson94} provides a
+meta-language called \emph{Pure} that consists of a fragment of higher
+order logic, where \isatt{\isasymRightarrow} is the function-space
+arrow. The meta-Boolean type is called \isatt{prop}. Meta-connectives
 \isatt{\isasymLongrightarrow} and \isatt{\&\&\&} fulfill the role of
 implication and conjunction, and the meta-binder \isatt{\isasymAnd}
-corresponds to universal quantification. 
+corresponds to universal quantification.
 
 On top of \emph{Pure}, theories/object logics can be defined, with
 their own types, connectives and rules. Rules can be written  using
@@ -62,11 +62,11 @@ The source code is written for the 2018 version of Isabelle (with
 minor modifications, it can be run in Isabelle2016-1). Most of it is
 presented in the (nowadays standard) declarative flavour called
 \emph{Isar} \cite{DBLP:conf/tphol/Wenzel99}, where intermediate
-statements in the course 
-of a proof are explicitly stated, interspersed with automatic 
-tactics handling more trivial steps. The goal is that the resulting
-text, a \emph{proof document}, can be understood without the need of
-running it.
+statements in the course of a proof are explicitly stated,
+interspersed with automatic tactics handling more trivial steps. The
+goal is that the resulting text, a \emph{proof document}, can be
+understood without the need of re-playing it viewing the proof state
+at each point.
 
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-
 \subsection{Locales}
