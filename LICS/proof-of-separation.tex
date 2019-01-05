@@ -1,9 +1,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
-\section{Proof of Separation}
+\section{Separation and Powerset}
 \label{sec:proof-separation}
+We proceed to describe in detail the main goal of this paper, the formalization
+of the proof of the Separation Axiom. Afterwards, we sketch  the
+implementation of the Powerset Axiom.
 
-This proof can be found in the file \verb|Separation_Axiom.thy| of the
-development, which we proceed to discuss in detail. The order chosen to
+This proof of Separation can be found in the file
+\verb|Separation_Axiom.thy|. The order chosen to
 implement
 the proof sought to minimize the cross-reference of facts;  it is
 not entirely appropriate for a text version, so we depart from it in
@@ -150,6 +153,44 @@ instances of Separation for $M[G]$:
  \ \ \ \ \  separation{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymlambda}x{\isachardot}sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymphi}{\isacharcomma}{\isacharbrackleft}x{\isacharcomma}a{\isacharbrackright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
    
+We now turn to the Powerset Axiom. We followed the proof of
+\cite[IV.2.27]{kunen2011set}, and actually the main technical result,
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ Pow{\isacharunderscore}inter{\isacharunderscore}MG{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isachardoublequoteopen}a{\isasymin}M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ \ \ {\isachardoublequoteopen}Pow{\isacharparenleft}a{\isacharparenright}\ {\isasyminter}\ M{\isacharbrackleft}G{\isacharbrackright}\ {\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
+\end{isabelle}
+keeps most of the structure of the printed proof; this ``skeleton'' of the
+argument takes around 120 (short) lines. There are approximately 30
+more lines of bureaucracy in the proof of the last lemma. We preserved the
+names of variables used in the textbook, with the occasional question
+mark that distinguishes meta-variables. 
+
+Two more
+absoluteness results concerning powersets were needed: These are
+refinements of results located in \isatt{Relative} that assume that
+$y$ below is in the class $M$.
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ {\isacharparenleft}\isakeyword{in}\ M{\isacharunderscore}trivial{\isacharparenright}\ powerset{\isacharunderscore}subset{\isacharunderscore}Pow{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ \isanewline
+\ \ \ \ {\isachardoublequoteopen}powerset{\isacharparenleft}M{\isacharcomma}x{\isacharcomma}y{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymAnd}z{\isachardot}\ z{\isasymin}y\ {\isasymLongrightarrow}\ M{\isacharparenleft}z{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ \isanewline
+\ \ \ \ {\isachardoublequoteopen}y\ {\isasymsubseteq}\ Pow{\isacharparenleft}x{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ {\isacharparenleft}\isakeyword{in}\ M{\isacharunderscore}trivial{\isacharparenright}\ powerset{\isacharunderscore}abs{\isacharcolon}\ \isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isachardoublequoteopen}M{\isacharparenleft}x{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymAnd}z{\isachardot}\ z{\isasymin}y\ {\isasymLongrightarrow}\ M{\isacharparenleft}z{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ {\isachardoublequoteopen}powerset{\isacharparenleft}M{\isacharcomma}x{\isacharcomma}y{\isacharparenright}\ {\isasymlongleftrightarrow}\ y\ {\isacharequal}\ {\isacharbraceleft}a{\isasymin}Pow{\isacharparenleft}x{\isacharparenright}\ {\isachardot}\ M{\isacharparenleft}a{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "Separation_In_MG"
