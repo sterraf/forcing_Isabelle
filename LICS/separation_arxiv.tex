@@ -1,0 +1,84 @@
+\documentclass{article}
+\usepackage{isabelle,isabellesym}
+\renewcommand{\ttdefault}{cmtt}
+\usepackage{csquotes}
+\usepackage{enumitem}
+
+\newlist{inlinelist}{enumerate*}{1}
+\setlist*[inlinelist,1]{%
+  label=(\roman*),
+}
+\usepackage{hyperref}
+\usepackage[numbers]{natbib}
+\input{header-draft}
+\makeatletter
+\def\foottext{\gdef\@thefnmark{}\@footnotetext}
+\makeatother
+\newcommand{\keywords}[1]{\foottext{\emph{Keywords:} #1}}
+\newcommand{\ack}[1]{\par\bigskip \noindent \emph{Acknowledgment:} #1}
+
+\begin{document}
+\title{Separation in Generic Extensions for Isabelle}
+\author{Emmanuel Gunther
+  \and 
+  Miguel Pagano
+  \and 
+  Pedro S\'anchez Terraf}
+\maketitle
+
+\begin{abstract}
+  We mechanize, in the proof assistant
+  Isabelle, a proof of the
+  axiom-scheme of Separation in 
+  generic extensions of models of set theory  
+  by using the fundamental theorems of forcing.
+  We also formalize the satisfaction of the axioms of
+  Extensionality, Foundation, Union, and Powerset. The axiom of
+  Infinity is likewise treated, under additional assumptions on the ground
+  model.
+  We also  extend Paulson's library on constructibility  with
+  renaming of variables for internalized formulas, an improvement on
+  definitions by recursion on well-founded  relations and sharpening
+  of the hypotheses in his development of relativization and
+  absoluteness.
+\end{abstract}
+\keywords{
+Isabelle/ZF, forcing, names, generic extension, constructibility.
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{intro_m}
+
+\input{isabelle}
+
+\input{zfc-axioms}
+
+\input{renaming}
+
+\input{generic-extensions}
+
+\input{recursion}
+
+% \input{prior-results}
+
+\input{hacking}
+
+\input{easy-axioms}
+
+\input{forcing}
+
+\input{proof-of-separation}
+
+\input{conclusion}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{mi-estilo-else}
+\bibliography{../LSFA/citados}
+%\input{separation_arxiv.bbl}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% ispell-local-dictionary: "american"
+%%% End:
