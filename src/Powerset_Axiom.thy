@@ -6,16 +6,12 @@ definition
   perm_pow :: "i" where
   "perm_pow == {<0,3>,<1,4>,<2,5>,<3,1>,<4,0>,<5,6>}"  
 
-lemma perm_pow_ftc : "perm_pow \<in> 6 -||> 7"
+lemma perm_pow_ftc : "perm_pow \<in> 6 -||> 7" "domain(perm_pow) = 6"
   unfolding perm_pow_def
-  by (blast intro: consI emptyI)
-
-lemma dom_perm_pow : "domain(perm_pow) = 6"     
-  unfolding perm_pow_def
-  by auto
+  by (blast intro: consI emptyI,auto)
   
 lemma perm_pow_tc : "perm_pow \<in> 6 \<rightarrow> 7"
-  using dom_perm_pow FiniteFun_is_fun perm_pow_ftc
+  using  FiniteFun_is_fun perm_pow_ftc
   by force
 
 lemma perm_pow_env : 
@@ -109,26 +105,19 @@ lemma sats_fst_snd_in_M:
     (is "?\<theta> \<in> M")
 proof -
   have "6\<in>nat" "7\<in>nat" by simp_all
-  define \<phi>' where "\<phi>'\<equiv>ren(\<phi>)`6`7`perm_pow"
+  let ?\<phi>' = "ren(\<phi>)`6`7`perm_pow"
   from \<open>A\<in>M\<close> \<open>B\<in>M\<close> have
     "A\<times>B \<in> M" 
     using cartprod_closed by simp
   from  \<open>arity(\<phi>) \<le> 6\<close> \<open>\<phi>\<in> formula\<close> have
-    "\<phi>' \<in> formula" "arity(\<phi>')\<le>7" 
-    using \<phi>'_def perm_pow_tc ren_arity[of \<phi> 6 7 perm_pow] nat_simp_union ren_tc by simp_all
-  then have
-     "arity(And(pair_fm(0,1,2),\<phi>'))\<le>7" (is "?ar \<le> _")
-    unfolding pair_fm_def upair_fm_def using nat_simp_union by auto
-  then have 
-    "arity(Exists(And(pair_fm(0,1,2),\<phi>')))\<le>6" 
-    using pred_le[OF _ _ \<open>?ar \<le>7\<close>] arity_type \<open>\<phi>' \<in> formula\<close> by auto
-  then have
-    1: "arity(Exists(Exists(And(pair_fm(0,1,2),\<phi>'))))\<le>5"     (is "arity(?\<psi>)\<le>5")
-    using pred_le[of _ 5] arity_type \<open>\<phi>' \<in> formula\<close> by auto  
+    "?\<phi>' \<in> formula" "arity(?\<phi>')\<le>7" 
+    using perm_pow_tc ren_arity ren_tc by simp_all
+  with \<open>?\<phi>' \<in> formula\<close> have
+    1: "arity(Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))))\<le>5"     (is "arity(?\<psi>)\<le>5")
+    unfolding pair_fm_def upair_fm_def 
+    using nat_simp_union pred_le arity_type by auto  
     {
     fix sp
-    let ?env="[p,l,o,snd(sp),fst(sp),\<chi>]"
-    let ?new_env="[fst(sp), snd(sp), sp, p, l, o, \<chi>]"
     note \<open>A\<times>B \<in> M\<close>
     moreover assume 
       "sp \<in> A\<times>B"
@@ -139,49 +128,41 @@ proof -
       "sp \<in> M" "fst(sp) \<in> M" "snd(sp) \<in> M" 
       using  \<open>A\<in>M\<close> \<open>B\<in>M\<close> 
       by (simp_all add: trans_M Transset_intf)    
-    then have "?env \<in> list(M)" "?new_env\<in>list(M)" using assms by simp_all
     note
       inM =  \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>p\<in>M\<close> \<open>l\<in>M\<close> \<open>o\<in>M\<close> \<open>\<chi>\<in>M\<close>
              \<open>sp\<in>M\<close> \<open>fst(sp)\<in>M\<close> \<open>snd(sp)\<in>M\<close> 
-    from 1 zero_in_M assms \<open>sp \<in> M\<close> \<open>\<phi>' \<in> formula\<close> have
-      "sats(M,?\<psi>,[sp,p,l,o,\<chi>]@[0]) \<longleftrightarrow> sats(M,?\<psi>,[sp,p,l,o,\<chi>])"
-      by (rule_tac arity_sats_iff,simp_all)
-    also from inM have 
-      "... \<longleftrightarrow> (\<exists> u\<in>M. \<exists>v\<in>M . sats(M,And(pair_fm(0,1,2),\<phi>'),[v,u,sp,p,l,o,\<chi>]))" 
-      by simp
-    also from inM have 
-      "... \<longleftrightarrow> sats(M,\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>]) \<and> sp=<fst(sp),snd(sp)>"
-      by force
+    with 1 \<open>sp \<in> M\<close> \<open>?\<phi>' \<in> formula\<close> have
+      "sats(M,?\<psi>,[sp,p,l,o,\<chi>]@[p]) \<longleftrightarrow> sats(M,?\<psi>,[sp,p,l,o,\<chi>])" (is "sats(M,_,?env0@_) \<longleftrightarrow> _")
+      using arity_sats_iff[of ?\<psi> "[p]" M ?env0] by auto
     also from inM \<open>sp \<in> A\<times>B\<close> have 
-      "... \<longleftrightarrow> sats(M,\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>])"
-      using Pair_fst_snd_eq by force
+      "... \<longleftrightarrow> sats(M,?\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>])"
+       by auto
     also from inM \<open>\<phi> \<in> formula\<close> \<open>arity(\<phi>) \<le> 6\<close> have
       " ... \<longleftrightarrow> sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
       (is "sats(_,_,?env1) \<longleftrightarrow> sats(_,_,?env2)")
       using renSat[of \<phi> 6 7 ?env2 M ?env1 perm_pow] perm_pow_tc perm_pow_env [of _ _ _ _ _ _ "M"]
-      unfolding \<phi>'_def
       by simp
     finally have
-      "sats(M,?\<psi>,[sp,p,l,o,\<chi>,0]) \<longleftrightarrow> 
+      "sats(M,?\<psi>,[sp,p,l,o,\<chi>,p]) \<longleftrightarrow> 
        sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
       by simp
   }
   then have
-    "?\<theta> = {sp\<in>A\<times>B . sats(M,?\<psi>,[sp,p,l,o,\<chi>,0])}"
+    "?\<theta> = {sp\<in>A\<times>B . sats(M,?\<psi>,[sp,p,l,o,\<chi>,p])}"
     by auto
   also from assms \<open>A\<times>B\<in>M\<close> have
     " ... \<in> M"
   proof -
     from 1 have
       "arity(?\<psi>) \<le> 6" 
-      by (simp add:  not_lt_iff_le leI nat_union_abs1)
-    moreover from \<open>\<phi>' \<in> formula\<close> have
+      using leI by simp
+    moreover from \<open>?\<phi>' \<in> formula\<close> have
       "?\<psi> \<in> formula"
       by simp
     moreover note assms \<open>A\<times>B\<in>M\<close> 
     ultimately show
-      "{x \<in> A\<times>B . sats(M, ?\<psi>, [x, p, l, o, \<chi>, 0])} \<in> M"
-      using zero_in_M sixp_sep  Collect_abs separation_iff
+      "{x \<in> A\<times>B . sats(M, ?\<psi>, [x, p, l, o, \<chi>, p])} \<in> M"
+      using sixp_sep Collect_abs separation_iff
       by simp
   qed
   finally show ?thesis .
