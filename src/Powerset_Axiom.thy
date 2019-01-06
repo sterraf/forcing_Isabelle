@@ -140,7 +140,7 @@ proof -
     also from inM \<open>\<phi> \<in> formula\<close> \<open>arity(\<phi>) \<le> 6\<close> have
       " ... \<longleftrightarrow> sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
       (is "sats(_,_,?env1) \<longleftrightarrow> sats(_,_,?env2)")
-      using renSat[of \<phi> 6 7 ?env2 M ?env1 perm_pow] perm_pow_tc perm_pow_env [of _ _ _ _ _ _ "M"]
+      using sats_iff_sats_ren[of \<phi> 6 7 ?env2 M ?env1 perm_pow] perm_pow_tc perm_pow_env [of _ _ _ _ _ _ "M"]
       by simp
     finally have
       "sats(M,?\<psi>,[sp,p,l,o,\<chi>,p]) \<longleftrightarrow> 

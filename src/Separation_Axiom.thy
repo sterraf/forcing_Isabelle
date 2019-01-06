@@ -135,7 +135,7 @@ proof -
         \<open>?new_env\<in>list(M)\<close> perm_sep_tc \<open>arity(forces(?\<chi>)) \<le> 8\<close>
       have
         "... \<longleftrightarrow> sats(M,forces(?\<chi>),?env)"
-        using renSat[of _ 8 8 ?env M ?new_env] perm_sep_env
+        using sats_iff_sats_ren[of _ 8 8 ?env M ?new_env] perm_sep_env
         by auto
       also have
         "... \<longleftrightarrow> sats(M,forces(?\<chi>), [P, leq, one,p,\<theta>,\<sigma>,\<pi>]@[u])" by simp
