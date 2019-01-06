@@ -30,19 +30,11 @@ $M[G]$. Actually, if the formula $\phi$ has $n$ free variables,
 $\forceisa(\phi)$ will have $n+4$ free variables, where the first four account
 for the forcing notion and a particular element of it. 
 
-In referring to formulas with free variables and their interpretation,
-we use the following conventions. If  $M$ is a set, $a_0,\dots,a_n$
-are elements of $M$, and $\phi$ has its free variables
-among $x_0,\dots,x_n$, we write
-\[
-M,[a_0,\dots,a_n] \models \phi(x_0,\dots,x_n)
-\]
-to denote that $\phi$ is satisfied by $M$ when $x_i$ is interpreted
-as $a_i$ ($i=0,\dots,n$). We call the list $[a_0,\dots,a_n]$ the
-\emph{environment}. In the case of a formula of the form
-$\forceisa(\phi)$, we'll make an abuse of notation and indicate the
-variables inside the argument of $\forceisa$. As an example, take the
-formula $\phi\defi x_1\in x_0$. Then
+We write $\phi(x_0,\dots,x_n)$ to indicate that the free variables of
+$\phi$ are among $\{x_0,\dots,x_n\}$. In the case of a formula of the
+form $\forceisa(\phi)$, we will make an abuse of notation and indicate
+the variables inside the argument of $\forceisa$. As an example, take
+the formula $\phi\defi x_1\in x_0$. Then
 \[
 M,[a,b] \models x_1\in x_0
 \]
