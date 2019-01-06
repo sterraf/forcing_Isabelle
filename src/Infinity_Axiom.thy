@@ -1,14 +1,31 @@
 theory Infinity_Axiom 
-  imports Forcing_Theorems Pairing_Axiom Union_Axiom
+  imports Pairing_Axiom Union_Axiom
+begin  
+  
+locale G_generic = forcing_data +
+    fixes G :: "i"
+    assumes generic : "M_generic(G)" 
 begin
+  
+lemma zero_in_MG : 
+  "0 \<in> M[G]" 
+proof -
+  from zero_in_M and elem_of_val have 
+    "0 = val(G,0)" 
+    by auto
+  also from GenExtI and zero_in_M have 
+    "... \<in> M[G]" 
+  by simp
+  finally show ?thesis .
+qed 
+end
   
 sublocale G_generic \<subseteq> M_trivial"##M[G]"
   using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
   unfolding M_trivial_def by simp 
     
 locale G_generic_extra = G_generic + M_extra_assms  
-begin
-
+  begin
 lemma infinty_in_MG : "infinity_ax(##M[G])"
 proof -
   from infinity_ax obtain I where
