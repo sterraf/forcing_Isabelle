@@ -713,7 +713,7 @@ proof -
     with assms have
       "sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x,v]) \<longleftrightarrow> sats(M,\<phi>,[x,A1,A2,A3,A4,A5])" 
       (is "sats(_,_,?env1) \<longleftrightarrow> sats(_,_,?env2)")
-      using renSat[of \<phi> 6 9 ?env2 M ?env1 ?f] sixp_perm_tc sixp_perm_env [of _ _ _ _ _ _ "M"]  
+      using sats_iff_sats_ren[of \<phi> 6 9 ?env2 M ?env1 ?f] sixp_perm_tc sixp_perm_env [of _ _ _ _ _ _ "M"]  
       by auto
   }
   then have
