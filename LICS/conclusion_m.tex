@@ -4,14 +4,15 @@
 
 The ultimate goal of our project is a complete mechanization of
 forcing allowing for further developments (formalization of the
-relative consistency of $\CH$) and even as a research tool for the
-working set-theorist. \fbox{un poquito jugado lo anterior, lo vemos} In the current paper we reported a first major
+relative consistency of $\CH$), with the long-term hope that 
+working set-theorists will adopt these formal tools as an aid to their
+research. In the current paper we reported a first major
 milestone towards that goal; viz. a formal proof in Isabelle/ZF of the
 satisfaction by generic extensions of most of the $\ZF$ axioms, except
 for the axiom-scheme of Replacement.
 
-We cannot overstate the importance of following the detailed
-presentation of forcing, even in its sharp style, given by
+We cannot overstate the importance of following the sharp and detailed 
+presentation of forcing given by
 \citet{kunen2011set}. In fact, it helped us to delineate the
 \emph{thematic} aspects of our formalization; i.e.~the handling of all
 the theoretical concepts and results in the subject and it informed
@@ -45,14 +46,16 @@ the structure of locales organizing our development.
 % obtain extensions satisfying diverse properties (v.g., the Continuum
 % Hypothesis). This yields relative consistency results.
 
-% We first discuss the axioms we are now missing. We preferred to wait
-% to have a full-fledged interface between ctms and the locales
-% providing recursive constructions from Paulson's
-% \isatt{Constructibility} session. Then the current proof will hold
-% with no extra assumptions. The same goes for the results $M\sbq M[G]$
-% and $G\in M[G]$.
+Two axioms have not been treated in full. Infinity was proved under
+two extra assumptions on the model; when we develop a full-fledged
+interface between ctms of $\ZF$  and the locales 
+providing recursive constructions from Paulson's
+\isatt{ZF-Constructible} session, the same current proof will hold
+with no extra assumptions. The same goes for the results $M\sbq M[G]$
+and $G\in M[G]$. 
 
-Let us discuss in more detail the proof of the Replacement Axiom. Both
+The Replacement Axiom, however, requires some more work to be
+done. Both
 in Kunen and in other presentations (e.g. \cite{neeman-course}) it
 requires a relativized version (i.e., showing that it holds for $M$)
 of the \emph{Reflection Principle}. In order to state this
@@ -101,12 +104,12 @@ assess which assumptions on the ground model $M$ are needed to develop
 the forcing machinery. The obvious are transitivity and $M$ being
 countable (but keep in mind Lemma~\ref{lem:wf-model-implies-ctm}); the
 first because many absoluteness results follows from this, the latter
-for the existence of generic filters.  \fbox{Se me hace que la
-  anécdota empieza con forces} \fbox{que agrega cuatro variables} A
-more anecdotal one is that to show that any instance of Separation
-with at most two parameters holds in $M[G]$, one needs to assume every
-instance with six parameters in $M$ \fbox{Chequear los usos de any y
-  every}. The purpose of identifying those assumptions is to assemble
+for the existence of generic filters. A
+more anecdotal one is that to show that an instance of Separation
+with at most two parameters holds in $M[G]$, one needs to assume a
+particular  six-parameter
+instance in $M$ (four extra parameters can be directly blamed on
+$\forceisa$).  The purpose of identifying those assumptions is to assemble
 in a locale the specific (instances of) axioms that should satisfy the
 ground model in order to perform forcing constructions; this list will
 likely include all the instances of Separation and Replacement that
@@ -116,25 +119,23 @@ are needed to satisfy the requirements of the locales in the
 We have already commented on our hacking of \isatt{ZF-Constructible}
 to maximize its modularity and thus the re-usability in other
 formalizations. We think it would be desirable to organize it
-somewhat differently: a trivial change is to catalogue in one file all
-the internalized formulas \fbox{No tiene la desventaja de que puede
-  llegar a ser necesario} \fbox{ agregar más en un futuro.}. A more
+somewhat differently: a trivial change is to catalog in one file all
+the internalized formulas. A more
 conceptual modification would be to start out with an even more basic
 locale that only assumes $M$ to be a non-empty transitive class, as
-many absoluteness results follow from this hypothesis \fbox{Estaba en
-  plural hipótesis, por qué?}. Furthermore, as Paulson comments in the
+many absoluteness results follow from this hypothesis. Furthermore, as
+Paulson comments in the 
 sources, it would have been better to minimize the use of the Powerset
 Axiom in locales and proofs. There are useful natural models that
-satisfy a sub-theory of $\ZF$ not including Powersete, and to ensure a
+satisfy a sub-theory of $\ZF$ not including Powerset, and to ensure a
 broader applicability, it would be convenient to have absoluteness
-results not assuming it. Once we gained more confidence that these
-ideas, we plan to contribute back to the official distribution of
-Isabelle/ZF with a thorough revision of the development of
+results not assuming it. We plan to contribute back to the official
+distribution of Isabelle/ZF with a thorough revision of the development of
 constructibility.
 
-\section*{Acknowledgment}
+%% \section*{Acknowledgment}
+%% 
 
-The second author is grateful to the others two. They are very nice persons.
 
 %%% Local Variables: 
 %%% mode: latex
