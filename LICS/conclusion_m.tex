@@ -18,10 +18,10 @@
 
 The ultimate goal of our project is a complete mechanization of
 forcing allowing for further developments (formalization of the
-relative consistency of CH) and even as a research tool for the
-working set-theorist. In the current paper we reported a first major
+relative consistency of $\CH$) and even as a research tool for the
+working set-theorist. \fbox{un poquito jugado lo anterior, lo vemos} In the current paper we reported a first major
 milestone towards that goal; viz. a formal proof in Isabelle/ZF of the
-satisfaction by generic extensions of most of the ZFC axioms, except
+satisfaction by generic extensions of most of the $\ZF$ axioms, except
 for the axiom-scheme of Replacement.
 
 We cannot overstate the importance of following the detailed
@@ -45,8 +45,15 @@ the structure of locales organizing our development.
 % style but offering a lot of details. In some sense this project
 % wouldn't exist without this book.
 
+
+\medskip
+\fbox{Repite intro el p\'arrafo  que sigue}
+
+\medskip
+
+
 The proof of Separation depends on the Fundamental Theorems of
-forcing; in the spirit of the Formal Abstract project we have only
+Forcing; in the spirit of the Formal Abstracts project we have only
 stated those theorems in our current development, because from a
 engineering point of view this can be done independently. The task of
 proving the Fundamental Theorems is another landmark of our project,
@@ -93,12 +100,12 @@ internally.
 This is an appropriate point to insist that the internal/external
 dichotomy has been a powerful agent in the shaping of our project.
 This tension was also pondered by Paulson in his formalization of
-Gödel's constructible universe \cite{MR2051585}; after choosing a
+G\"odel's constructible universe \cite{MR2051585}; after choosing a
 shallow embedding of $\ZF$, every argument proved by induction on
 formulas (or functions defined by recursion) should be done using
 internalized formulas. Working on top of Paulson's library, we
-prototyped the formula-transformer $\forceisa$ is defined for
-internalized formulas and this affects indirectly the proof of the
+prototyped the formula-transformer $\forceisa$, which is defined for
+internalized formulas, and this affects indirectly the proof of the
 Separation Axiom (despite the latter is not by induction). The need of
 using internalized formulas reappears with the need of a general
 version of the Reflection Principle (because the $\Phi$ there depends
@@ -120,7 +127,7 @@ We believe that this  session  would benefit from some changes in
 the way some results are organized accross theory files; for
 intance, by cataloging all or most of the internalized formulas in one
 file. Another, most basic example would be to start out with an even
-more locale that only assumes $M$ to be a nonempty transitive class,
+more basic locale that only assumes $M$ to be a nonempty transitive class,
 as many absoluteness results follow from these hypotheses.
 As Paulson comments in the sources, it would have been better to
 minimize the use of the Powerset Axiom in locales and proofs. There
