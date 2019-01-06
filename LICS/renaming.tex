@@ -72,20 +72,22 @@ Paulson used \isa{Nand} because it is more economical.
 \begin{isabelle}
 \isamarkuptrue%
 \isacommand{consts}\isamarkupfalse%
-\ \ \ ren\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isacharequal}{\isachargreater}i{\isachardoublequoteclose}\isanewline
+\ ren\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isacharequal}{\isachargreater}i{\isachardoublequoteclose}\isanewline
 \isacommand{primrec}\isamarkupfalse%
 \isanewline
-\ \ {\isachardoublequoteopen}ren{\isacharparenleft}Member{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
-\ \ \ \ \ \ {\isacharparenleft}{\isasymlambda}\ n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ Member\ {\isacharparenleft}f{\isacharbackquote}x{\isacharcomma}\ f{\isacharbackquote}y{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
-\ \ \isanewline
-\ \ {\isachardoublequoteopen}ren{\isacharparenleft}Equal{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
-\ \ \ \ \ \ {\isacharparenleft}{\isasymlambda}\ n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ Equal\ {\isacharparenleft}f{\isacharbackquote}x{\isacharcomma}\ f{\isacharbackquote}y{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
-\ \ \isanewline
-\ \ {\isachardoublequoteopen}ren{\isacharparenleft}Nand{\isacharparenleft}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
-\ \ \ \ \ \ {\isacharparenleft}{\isasymlambda}\ n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ Nand\ {\isacharparenleft}ren{\isacharparenleft}p{\isacharparenright}{\isacharbackquote}n{\isacharbackquote}m{\isacharbackquote}f{\isacharcomma}\ ren{\isacharparenleft}q{\isacharparenright}{\isacharbackquote}n{\isacharbackquote}m{\isacharbackquote}f{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
-\ \ \isanewline
-\ \ {\isachardoublequoteopen}ren{\isacharparenleft}Forall{\isacharparenleft}p{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
-\ \ \ \ \ \ {\isacharparenleft}{\isasymlambda}\ n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ Forall\ {\isacharparenleft}ren{\isacharparenleft}p{\isacharparenright}{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isacharbackquote}succ{\isacharparenleft}m{\isacharparenright}{\isacharbackquote}sum{\isacharunderscore}id{\isacharparenleft}n{\isacharcomma}f{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\ {\isachardoublequoteopen}ren{\isacharparenleft}Member{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
+\ \ {\isacharparenleft}{\isasymlambda}\ n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ Member\ {\isacharparenleft}f{\isacharbackquote}x{\isacharcomma}\ f{\isacharbackquote}y{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \isanewline
+\ {\isachardoublequoteopen}ren{\isacharparenleft}Equal{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
+\ \ {\isacharparenleft}{\isasymlambda}\ n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ Equal\ {\isacharparenleft}f{\isacharbackquote}x{\isacharcomma}\ f{\isacharbackquote}y{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \isanewline
+\ {\isachardoublequoteopen}ren{\isacharparenleft}Nand{\isacharparenleft}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
+\ \ {\isacharparenleft}{\isasymlambda}\ n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ \isanewline
+\ \ \ Nand\ {\isacharparenleft}ren{\isacharparenleft}p{\isacharparenright}{\isacharbackquote}n{\isacharbackquote}m{\isacharbackquote}f{\isacharcomma}\ ren{\isacharparenleft}q{\isacharparenright}{\isacharbackquote}n{\isacharbackquote}m{\isacharbackquote}f{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \isanewline
+\ {\isachardoublequoteopen}ren{\isacharparenleft}Forall{\isacharparenleft}p{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
+\ \  {\isacharparenleft}{\isasymlambda}\ n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ \isanewline
+\ \ \ Forall\ {\isacharparenleft}ren{\isacharparenleft}p{\isacharparenright}{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isacharbackquote}succ{\isacharparenleft}m{\isacharparenright}{\isacharbackquote}sum{\isacharunderscore}id{\isacharparenleft}n{\isacharcomma}f{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
 In the last equation, \isa{sum{\isacharunderscore}id} corresponds to
