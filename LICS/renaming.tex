@@ -23,7 +23,8 @@ understand the arity of a formula as the context of the free
 variables; notice that the arity of $\forallFm{\phi}$ is the
 predecessor of the arity of $\phi$. Renamings are, consequently,
 mappings between finite sets; since we can think of $\mathsf{succ}(n)$
-as the co-product $1+n$, then given a renaming $f \colon n \to m$, the
+as the coproduct $1+n = \{0\} \cup \{1,\dots,n\}$, then given a
+renaming $f \colon n \to m$, the 
 unique morphism $\mathsf{id}_1+f \colon 1+n \to 1+m$ is used to rename
 free variables in a quantified formula.
 
@@ -78,7 +79,7 @@ function that can be later applied to suitable arguments.
 \end{isabelle}
 
 In the last equation, \isa{sum{\isacharunderscore}id} corresponds to
-the co-product morfism $\mathsf{id}_{1}+f \colon 1 + n \to 1 +
+the coproduct morphism $\mathsf{id}_{1}+f \colon 1 + n \to 1 +
 n$. This definition of renaming exposes some inconveniences of working
 in the untyped realm of set theory, for example to use \isa{ren} we
 will need to prove that the renaming is a function. Since environments
