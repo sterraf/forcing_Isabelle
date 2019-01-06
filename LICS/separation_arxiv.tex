@@ -4,6 +4,7 @@
 \usepackage{xcolor}
 \usepackage{csquotes}
 \usepackage{enumitem}
+\usepackage{pdfpages}
 
 \newlist{inlinelist}{enumerate*}{1}
 \setlist*[inlinelist,1]{%
@@ -72,6 +73,11 @@ Isabelle/ZF, forcing, names, generic extension, constructibility.
 \bibliographystyle{mi-estilo-else}
 \bibliography{../LSFA/citados}
 %\input{separation_arxiv.bbl}
+
+\newpage
+\appendix
+\section*{A short overview of our development}
+\input{appendix}
 \end{document}
 
 %%% Local Variables:

@@ -1,8 +1,11 @@
-\appendix[A short overview of our development]
-In this appendix we succintly describe the contents of each file. In
-the next page we include a dependency graph of our formalization. The
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Appendix
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In this appendix we succintly describe the contents of each file. We
+include in 
+Figure~\ref{fig:deps}  a dependency graph of our formalization. The
 theories on a grayish background are directly from Paulson; we
-highlight with light-blue/cyan those of Paulson that we modified. We
+highlight with blue/cyan those of Paulson that we modified. We
 have developed from scratch the rest, in white.
 
 \begin{description}
@@ -10,7 +13,8 @@ have developed from scratch the rest, in white.
   needed for renamings.
 \item[\texttt{Renaming}] Renaming of internalized formulas, see
   Section \ref{sec:renaming}.
-\item[\texttt{Pointed\_DC}] A new choice principle.
+\item[\texttt{Pointed\_DC}] A pointed version of the Principle of
+  Dependent Choices.
 \item[\texttt{Recursion\_Thms}] Enhancements about recursively defined
   functions.
 \item[\texttt{Forcing\_Notions}] Definition of Posets with maximal
@@ -18,8 +22,8 @@ have developed from scratch the rest, in white.
 \item[\texttt{Forcing\_Data}] Definition of the locales:
   \begin{inlinelist}
   \item \texttt{M\_ZF} satisfaction of axioms; and 
-  \item \texttt{Forcing\_Data} extending the previous one with
-    \texttt{Forcing\_notion}, transitivity, and being countable.
+  \item \texttt{forcing\_data} extending the previous one with
+    \texttt{forcing\_notion}, transitivity, and being countable.
   \end{inlinelist}
 \item[\texttt{Interface}] Instantiation of locales \texttt{M\_trivial}
   and \texttt{M\_basic} for every instance of \texttt{Forcing\_Data}.
@@ -30,9 +34,14 @@ have developed from scratch the rest, in white.
 \item[\texttt{*\_Axiom}] Proof of the satisfaction of the
   corresponding axiom in the generic extension.
 \end{description}
-
-\includepdf{session_graph_colored.pdf}
-
+%
+\begin{figure*}[!b]
+  \begin{center}
+    \includegraphics[height=14.8cm]{session_graph_colored.pdf}
+  \end{center}
+  \caption{Dependency graph of the \isatt{Separation} session.}
+  \label{fig:deps}
+\end{figure*}
 
 %%% Local Variables: 
 %%% mode: latex
