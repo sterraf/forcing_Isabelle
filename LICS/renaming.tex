@@ -26,7 +26,7 @@ mappings between finite sets; since we can think of $\mathsf{succ}(n)$
 as the coproduct $1+n = \{0\} \cup \{1,\dots,n\}$, then given a
 renaming $f \colon n \to m$, the 
 unique morphism $\mathsf{id}_1+f \colon 1+n \to 1+m$ is used to rename
-free variables in a quantified formula.
+free variables in a quantified formula. 
 
 \begin{definition}[Renaming]
   Let $\phi$ be a formula of arity $n$ and let $f \colon n \to m$, the
@@ -41,16 +41,25 @@ free variables in a quantified formula.
   \end{gather*}
 \end{definition}
 
-Environments can be thought, then, as mappings from a finite set to
-the model $M$; the action of renaming on environments is simply given
-by composition. An easy proof connects satisfaction with renamings.
+As usual, if $M$ is a set, $a_0,\dots,a_{n-1}$ are elements of $M$, and
+$\phi$ is a formula of arity $n$, we write
+\[
+M,[a_0,\dots,a_{n-1}] \models \phi
+\]
+to denote that $\phi$ is satisfied by $M$ when $i$ is interpreted
+as $a_i$ ($i=0,\dots,n-1$). We call the list $[a_0,\dots,a_{n-1}]$ the
+\emph{environment}.
+
+The action of renaming on environments re-indexes the variables. An
+easy proof connects satisfaction with renamings.
 \begin{lemma}
   \label{lem:renaming}
   Let $\phi$ be a formula of arity $n$, $f \colon n \to m$ be a
-  renaming, and let $\rho \colon n \to M$ and $\rho' \colon m \to M$
-  be environments. If for all $i \in n$,
-  $\rho\,i = (\rho' \circ f)\,i)$, then $M,\rho\models \phi$ is
-  equivalent to $M,\rho' \models \renaming{\phi}{f}$.
+  renaming, and let $\rho=[a_1,\ldots,a_n]$ and
+  $\rho'=[b_1,\ldots,b_m]$ be environments of length $n$ and $m$,
+  respectively. If for all $i \in n$, $a_i = b_{j}$ where $j=f\,i$,
+  then $M,\rho\models \phi$ is equivalent to
+  $M,\rho' \models \renaming{\phi}{f}$.
 \end{lemma}
 
 An important resource in Isabelle/ZF is the facility for defining
@@ -58,7 +67,8 @@ inductive sets \cite{paulson2000fixedpoint,paulson1995set} together
 with a principle for defining functions by structural recursion.
 Internalized formulas are a prime example of this, so we define
 a function \isa{ren} that associates to each formula an internalized
-function that can be later applied to suitable arguments.
+function that can be later applied to suitable arguments. Notice the
+Paulson used \isa{Nand} because it is more economical.
 \begin{isabelle}
 \isamarkuptrue%
 \isacommand{consts}\isamarkupfalse%
@@ -80,12 +90,14 @@ function that can be later applied to suitable arguments.
 
 In the last equation, \isa{sum{\isacharunderscore}id} corresponds to
 the coproduct morphism $\mathsf{id}_{1}+f \colon 1 + n \to 1 +
-n$. This definition of renaming exposes some inconveniences of working
-in the untyped realm of set theory, for example to use \isa{ren} we
-will need to prove that the renaming is a function. Since environments
-are not finite mappings but lists (yet another inductively defined
-set), the main hypothesis of Lem.~\ref{lem:renaming} is expressed with
-the \isa{nth} function for indexing elements of lists:
+n$. Since the schema for recursively defined functions does not allow
+parameters, we are forced to return a function of three arguments
+(\isa{n,m,f}). This also exposes some inconveniences of working in the
+untyped realm of set theory; for example to use \isa{ren} we will need
+to prove that the renaming is a function. Besides some auxiliary
+results (the application of renaming to suitable arguments yields a
+formula), the main result corresponding to Lemma~\ref{lem:renaming}
+is:
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ sats{\isacharunderscore}iff{\isacharunderscore}sats{\isacharunderscore}ren\ {\isacharcolon}\ \isanewline
@@ -97,6 +109,11 @@ the \isa{nth} function for indexing elements of lists:
 \ \ \ {\isasymAnd}\ i\ {\isachardot}\ i{\isacharless}n\ {\isasymLongrightarrow}\ nth{\isacharparenleft}i{\isacharcomma}{\isasymrho}{\isacharparenright}\ {\isacharequal}\ nth{\isacharparenleft}f{\isacharbackquote}i{\isacharcomma}{\isasymrho}{\isacharprime}{\isacharparenright}\ {\isasymrbrakk}\ {\isasymLongrightarrow}\isanewline
 \ \ sats{\isacharparenleft}M{\isacharcomma}{\isasymphi}{\isacharcomma}{\isasymrho}{\isacharparenright}\ {\isasymlongleftrightarrow}\ sats{\isacharparenleft}M{\isacharcomma}ren{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharbackquote}n{\isacharbackquote}m{\isacharbackquote}f{\isacharcomma}{\isasymrho}{\isacharprime}{\isacharparenright}{\isachardoublequoteclose}\end{isabelle}
 
+% All our uses of this lemma involve concrete renamings on small
+% numbers, but we also tested it with more abstract renamings for
+% arbitrary numbers. We think that it should be possible, and clearer,
+% to express all the current renamings in the theory \isa{Formula} using
+% our approach. 
 
 %%% Local Variables: 
 %%% mode: latex
