@@ -173,8 +173,11 @@ more lines of bureaucracy in the proof of the last lemma.
 Two more
 absoluteness lemmas concerning powersets were needed: These are
 refinements of results (\isatt{powerset\_Pow} and
-\isatt{powerset\_imp\_subset\_Pow}) located in the theory \isatt{Relative} which assumed that
-$y$ below is in the class $M$.
+\isatt{powerset\_imp\_subset\_Pow}) located in the theory
+\isatt{Relative} 
+% which assumed that $y$ below is in the class $M$.
+where we weakened the assumption ``$y\in M$'' (\isatt{M(y)}) to 
+``$y\sbq  M$'' (second assumption below).  
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ {\isacharparenleft}\isakeyword{in}\ M{\isacharunderscore}trivial{\isacharparenright}\ powerset{\isacharunderscore}subset{\isacharunderscore}Pow{\isacharcolon}\isanewline
