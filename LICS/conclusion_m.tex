@@ -105,7 +105,14 @@ Separation Axiom (despite the latter is not by induction). The proof
 of Replacement also calls for internalized formulas, because one needs
 a general version of the Reflection Principle (since the formula
 $\phi$ involved depends on the specific instance of Replacement being
-proved).
+proved). Other formalizations, v.g.\ that of Barras
+\cite{barras-habilit} and Kaiser \cite{kaiser-set-theory-coq}, take
+advantage of a better articulation between the metatheory (Coq in both
+cases) and the set theory. An alternative road would be to redevelop
+absoluteness 
+results in a more structured metatheory that already includes a
+recursively defined type of first order formulas. Needless to say, this
+comprises an extensive re-engineering.   
 
 A secondary, more prosaic, outcome of this project is to precisely
 assess which assumptions on the ground model $M$ are needed to develop
