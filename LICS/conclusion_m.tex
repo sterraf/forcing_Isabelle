@@ -8,15 +8,20 @@ relative consistency of $\CH$), with the long-term hope that
 working set-theorists will adopt these formal tools as an aid to their
 research. In the current paper we reported a first major
 milestone towards that goal; viz. a formal proof in Isabelle/ZF of the
-satisfaction by generic extensions of most of the $\ZF$ axioms, except
-for the axiom-scheme of Replacement.
+satisfaction by generic extensions of most of the $\ZF$ axioms.%% , except
+%% for the axiom-scheme of Replacement.
 
 We cannot overstate the importance of following the sharp and detailed 
 presentation of forcing given by
 \citet{kunen2011set}. In fact, it helped us to delineate the
 \emph{thematic} aspects of our formalization; i.e.~the handling of all
 the theoretical concepts and results in the subject and it informed
-the structure of locales organizing our development.
+the structure of locales organizing our development. This had an
+impact, in particular, in the formal statement of the Fundamental
+Theorems. We consider that the writing of the \isatt{forcing\_thms}
+locale, though only taking a few lines of code, is the second most
+important achievement of this work, since there is no obvious
+reference from which to translate this directly. 
 
 % In a gross simplification, there are two aspects to a formalization
 % project like this one: thematic and programmatic. The first concerns
