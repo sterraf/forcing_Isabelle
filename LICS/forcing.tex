@@ -131,10 +131,13 @@ The following auxiliary results (adapted from
 \end{lemma}
 \begin{lemma}[Density]\label{lem:density}
   Assume the same hypothesis of
-  Lemma~\ref{lem:definition-of-forcing}. $M,[\dots]\models\forceisa(\phi)$ 
+  Lemma~\ref{lem:definition-of-forcing}. $M,[\PP,\leq,\1,p,\dots]\models\forceisa(\phi)$   
   if and only if 
-  $M,[\dots]\models$``$\{p_1\leq p : \forceisa(\phi,\PP,\leq,\1,p_1)\}$ is
-  dense below $p$.''
+  \[
+  \{p_1\in \PP : M,[\PP,\leq,\1,p_1,\dots]\models
+  \forceisa(\phi)\}
+  \]
+  is dense below $p$.
 \end{lemma}
 %
 All these results are proved by recursion in
