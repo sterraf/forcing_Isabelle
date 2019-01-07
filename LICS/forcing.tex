@@ -82,7 +82,16 @@ Then the definition of the forcing relation is stated as a
   \item $M,[\PP,\leq,\1,p,\tau_0,\dots,\tau_n] 
   \models\forceisa(\phi(x_4,\dots,x_{n+4}))$.
   \item For all $M$-generic filters $G$ such that $p\in G$,
-    $M[G],[\val(G,\tau_0),\dots,\val(G,\tau_n)] \models\phi(x_0,\dots,x_n)$.
+    \ifIEEE
+    $M[G],[\val(G,\tau_0),\dots,\val(G,\tau_n)]
+    \models\phi(x_0,\dots,x_n)$.
+    \fi
+    \ifarXiv
+    \[
+    M[G],[\val(G,\tau_0),\dots,\val(G,\tau_n)]
+    \models\phi(x_0,\dots,x_n).
+    \]
+    \fi
   \end{enumerate}
 \end{lemma}
 
@@ -97,8 +106,17 @@ satisfaction in $M[G]$ to that in $M$.
   \begin{enumerate}
   \item $M[G],[\val(G,\tau_0),\dots,\val(G,\tau_n)]
   \models\phi(x_0,\dots,x_n)$.
-  \item  There exists $p\in G$ such that $M,[\PP,\leq,\1,p,\tau_0,\dots,\tau_n] 
-  \models\forceisa(\phi(x_4,\dots,x_{n+4}))$.
+  \item  There exists $p\in G$ such that 
+    \ifIEEE 
+    $M,[\PP,\leq,\1,p,\tau_0,\dots,\tau_n] 
+    \models\forceisa(\phi(x_4,\dots,x_{n+4}))$.
+    \fi
+    \ifarXiv 
+    \[ 
+    M,[\PP,\leq,\1,p,\tau_0,\dots,\tau_n] 
+    \models\forceisa(\phi(x_4,\dots,x_{n+4})).
+    \]
+    \fi
   \end{enumerate}
 \end{lemma}
 \noindent The previous two results combined are the ones usually called the
