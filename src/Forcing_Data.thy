@@ -2,7 +2,7 @@ theory Forcing_Data
   imports  
     Forcing_Notions 
     Relative 
-    "~~/src/ZF/Constructible/Formula"
+    "ZF-Constructible.Formula"
 
 begin
 
