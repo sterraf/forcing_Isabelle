@@ -63,13 +63,12 @@ with no extra assumptions. The same goes for the results $M\sbq M[G]$
 and $G\in M[G]$. 
 
 The Replacement Axiom, however, requires some more work to be
-done. Both
-in Kunen and in other presentations (e.g. \cite{neeman-course}) it
+done. In Kunen it
 requires a relativized version (i.e., showing that it holds for $M$)
 of the \emph{Reflection Principle}. In order to state this
 meta-theoretic result by Montague, recall that an equivalent
 formulation of the Foundation Axiom states that the universe of sets
-can be decomposed in a transfinite hierarchy of sets:
+can be decomposed in a transfinite, cumulative hierarchy of sets:
 \begin{theorem}
   Let $V_{\al}\defi\union\{\P(V_\be) : \be<\al\}$ for each ordinal
   $\al$. Then each $V_\al$ is a set and 
@@ -93,7 +92,10 @@ hints at a proof by induction on formulas, and hence it must be shown
 internally. It is to be noted that Paulson
 \cite{DBLP:conf/cade/Paulson02} also formalized the
 Reflection principle in Isabelle/ZF, but it is not clear if the
-relativized version follows directly from it.
+relativized version follows directly from it. (It may be possible to
+sidestep Reflection, since in Neeman \cite{neeman-course}, only the
+relativization of the cumulative hierarchy is needed; nevertheless, it
+is a nontrivial task.)
 
 This is an appropriate point to insist that the internal/external
 dichotomy has been a powerful agent in the shaping of our project.
