@@ -120,7 +120,7 @@ qed
 lemma forall_arityE : "p \<in> formula \<Longrightarrow> m \<in> nat \<Longrightarrow> arity(Forall(p)) \<le> m \<Longrightarrow> arity(p) \<le> succ(m)"
   by(rule_tac n="arity(p)" in natE,erule arity_type,simp+)
     
-lemma B : 
+lemma env_coincidence_sum_id : 
   assumes "m \<in> nat" "n \<in> nat"  
     "\<rho> \<in> list(A)" "\<rho>' \<in> list(A)"
     "f \<in> n \<rightarrow> m"
@@ -193,7 +193,7 @@ next
     using Forall le_trans[of _ "succ(pred(arity(p)))"] succpred_leI by simp
   have "succ(n)\<in>nat" "succ(m)\<in>nat" using Forall by auto
   then have A:"\<And> j .j < succ(n) \<Longrightarrow> nth(j, Cons(a, \<rho>)) = nth(?g`j, Cons(a, \<rho>'))" if "a\<in>M" for a
-    using that B Forall ltD by force
+    using that env_coincidence_sum_id Forall ltD by force
   have 4:
     "sats(M,p,Cons(a,\<rho>)) \<longleftrightarrow> sats(M,ren(p)`succ(n)`succ(m)`?g,Cons(a,\<rho>'))" if "a\<in>M" for a
   proof - 
