@@ -34,11 +34,16 @@ where we are omitting the ``typing'' assumtions on $n$ and $x$.
 
 We work in the object theory \emph{Isabelle/ZF}. Two types are defined
 in this theory: \tyo, the object-Booleans, and \tyi,
-sets. It must be insisted that the types are defined axiomatically, not
-recursively. That is, although there are constants and functions that
-generate elements of both types, neither of them is 
-\emph{initial}, in the sense that they are not the least types
-obtained by combining the given constants and operations. This will
+sets. 
+%% It must be insisted that the types are defined axiomatically, not
+%% recursively. That is, although there are constants and functions that
+%% generate elements of both types, neither of them is 
+%% \emph{initial}, in the sense that they are not the least types
+%% obtained by combining the given constants and operations. 
+It must be observed that predicates (functions with arguments of
+type \tyi{} with values in \tyo) do not correspond to first-order formulas;
+in particular, those are not recursively constructed.
+This will
 have concrete consequences in our strategy to approach the
 development. From the beginning, we had to resort to
 \emph{internalized} formulas \cite[Sect.~6]{paulson_2003}, i.e.\ elements of type $\tyi$ that
@@ -74,7 +79,7 @@ at each point.
 Locales \cite{ballarin2010tutorial} provide a neat facility to
 encapsulate a context (fixed objects and assumptions on them) that is
 to be used in proving several theorems, as in usual mathematical
-practice. 
+practice. Furthermore, locales can be organized in hierarchies. 
 
 In this paper, locales have a further use. The \emph{Fundamental
   Theorems of Forcing} we use talk about a specific map $\forceisa$
