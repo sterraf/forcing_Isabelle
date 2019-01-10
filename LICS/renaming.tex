@@ -67,7 +67,7 @@ inductive sets \cite{paulson2000fixedpoint,paulson1995set} together
 with a principle for defining functions by structural recursion.
 Internalized formulas are a prime example of this, so we define
 a function \isa{ren} that associates to each formula an internalized
-function that can be later applied to suitable arguments. Notice the
+function that can be later applied to suitable arguments. Notice that
 Paulson used \isa{Nand} because it is more economical.
 \begin{isabelle}
 \isamarkuptrue%
@@ -97,9 +97,9 @@ parameters, we are forced to return a function of three arguments
 (\isa{n,m,f}). This also exposes some inconveniences of working in the
 untyped realm of set theory; for example to use \isa{ren} we will need
 to prove that the renaming is a function. Besides some auxiliary
-results (the application of renaming to suitable arguments yields a
-formula), the main result corresponding to Lemma~\ref{lem:renaming}
-is:
+results (for example that the application of renaming to suitable
+arguments yields a formula), the main result corresponding to
+Lemma~\ref{lem:renaming} is:
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ sats{\isacharunderscore}iff{\isacharunderscore}sats{\isacharunderscore}ren\ {\isacharcolon}\ \isanewline
