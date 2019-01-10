@@ -1,6 +1,6 @@
 theory Renaming 
   imports 
-    Nat_Miscelanea 
+    Nat_Miscellanea 
     "~~/src/ZF/Constructible/Formula"
 begin
 
