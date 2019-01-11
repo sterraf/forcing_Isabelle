@@ -1,4 +1,4 @@
-theory Pointed_DC imports ZF.AC
+theory Pointed_DC imports AC
 
 begin
 txt\<open>This proof of DC is from Moschovakis "Notes on Set Theory"\<close>
