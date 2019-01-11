@@ -1,7 +1,7 @@
 THY_FILES = Datatype_absolute.thy Extensionality_Axiom.thy\
  Forcing_Theorems.thy Forcing_Data.thy Forcing_Notions.thy\
  Foundation_Axiom.thy Infinity_Axiom.thy Interface.thy\
- Internalizations.thy Names.thy Nat_Miscelanea.thy Pairing_Axiom.thy\
+ Internalizations.thy Names.thy Nat_Miscellanea.thy Pairing_Axiom.thy\
  Pointed_DC.thy Powerset_Axiom.thy Recursion_Thms.thy Relative.thy\
  Renaming.thy Separation_Axiom.thy Union_Axiom.thy Wellorderings.thy\
  WF_absolute.thy WFrec.thy 
