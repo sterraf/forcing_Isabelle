@@ -1,4 +1,4 @@
-theory Nat_Miscellanea imports ZF begin
+theory Nat_Miscellanea imports Main begin
 
 section\<open>Auxiliary results\<close>
 
