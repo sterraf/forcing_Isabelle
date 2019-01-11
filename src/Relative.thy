@@ -1,4 +1,4 @@
-theory Relative imports Main begin
+theory Relative imports ZF begin
   
 section \<open>Relativization and Absoluteness\<close>
 
