@@ -6,17 +6,25 @@ NEW_DIR=$DIFF_DIR/$PREFIX"_new"
 OLDSHA=73ed3222f1edb01dd260f7ea7f9bfe4acb785fa5
 MAIN=Separation_In_MG
 
+function clear_appendix {
+    sed -i -- 's@\\appendix\[A short overview of our development\]@@g' $1
+    sed -i -- 's@\\input{appendix}@@g' $1
+    sed -i -- 's@\\newpage\n\\onecolumn@@g' $1
+}
+
 mkdir $DIFF_DIR
 rm -rf $DIFF_DIR/*
 mkdir $OLD_DIR $NEW_DIR
 git archive $OLDSHA | tar -x -C $OLD_DIR
 cp * $NEW_DIR
-sed -i -- 's@\\appendix\[A short overview of our development\]@@g' $OLD_DIR/$MAIN.tex
-sed -i -- 's@\\appendix\[A short overview of our development\]@@g' $NEW_DIR/$MAIN.tex
-sed -i -- 's@\\input{appendix}@@g' $OLD_DIR/$MAIN.tex
-sed -i -- 's@\\input{appendix}@@g' $NEW_DIR/$MAIN.tex
-sed -i -- 's@\\newpage\n\\onecolumn@@g' $OLD_DIR/$MAIN.tex
-sed -i -- 's@\\newpage\n\\onecolumn@@g' $NEW_DIR/$MAIN.tex
+clear_appendix $OLD_DIR/$MAIN.tex
+clear_appendix $NEW_DIR/$MAIN.tex
+# sed -i -- 's@\\appendix\[A short overview of our development\]@@g' $OLD_DIR/$MAIN.tex
+# sed -i -- 's@\\appendix\[A short overview of our development\]@@g' $NEW_DIR/$MAIN.tex
+# sed -i -- 's@\\input{appendix}@@g' $OLD_DIR/$MAIN.tex
+# sed -i -- 's@\\input{appendix}@@g' $NEW_DIR/$MAIN.tex
+# sed -i -- 's@\\newpage\n\\onecolumn@@g' $OLD_DIR/$MAIN.tex
+# sed -i -- 's@\\newpage\n\\onecolumn@@g' $NEW_DIR/$MAIN.tex
 cd $DIFF_DIR
 latexdiff --flatten $PREFIX"_old"/$MAIN.tex $PREFIX"_new"/$MAIN.tex > $PREFIX"_new"/diff.tex
 cd $PREFIX"_new"/
