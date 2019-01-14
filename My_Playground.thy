@@ -1,6 +1,31 @@
-theory My_Playground imports Pointed_DC begin
+theory My_Playground 
+  imports 
+    Pointed_DC 
+begin
 
 (* Clone of "forcing_posets.thy" to try understand Isabelle/ML *)
+
+(* Digits from L_axioms.thy *)
+abbreviation
+  digit3 :: i   ("3") where "3 == succ(2)"
+
+abbreviation
+  digit4 :: i   ("4") where "4 == succ(3)"
+
+abbreviation
+  digit5 :: i   ("5") where "5 == succ(4)"
+
+abbreviation
+  digit6 :: i   ("6") where "6 == succ(5)"
+
+abbreviation
+  digit7 :: i   ("7") where "7 == succ(6)"
+
+abbreviation
+  digit8 :: i   ("8") where "8 == succ(7)"
+
+abbreviation
+  digit9 :: i   ("9") where "9 == succ(8)"
   
 locale forcing_poset =
   fixes P leq uno
@@ -263,15 +288,57 @@ proof -
   then show ?thesis using 1 and 2 by auto
 qed
         
-ML_val\<open>
+ML\<open>
 val s =
 Buffer.empty
-|> Buffer.add "digits: "
-|> fold (Buffer.add o string_of_int) (0 upto 20)
+|> Buffer.add "{0"
+|> fold (Buffer.add o 
+  (fn x => "," ^ string_of_int x )) (1 upto 7)
+|> Buffer.add "}"
 |> Buffer.content;
+val lemita = "0\<in>" ^ s;
+@{lemma True by simp};    
+val enunciado_str = Thm.cterm_of @{context} (Syntax.read_prop @{context} lemita);
+val enunciado_str = 
+  lemita
+  |> Syntax.read_prop @{context}
+  |> Thm.cterm_of @{context}; (* another way to write the same thing *)
+val enunciado = (Goal.init enunciado_str);
+val paso = asm_full_simp_tac @{context} 1 enunciado;
+(* Goal.finish @{context} enunciado; *)  (* fails *)
 \<close>
 
+ML\<open>
+let
+  val x = 5;
+  val y = 2
+  val (d,z) = (3,x+y);
+in z
+end
+\<close>  
+  
+(*
+  val >> : ('a -> 'b * 'c) * ('b -> 'd) -> 'a -> 'd * 'c
+  val -- : ('a -> 'b * 'c) * ('c -> 'd * 'e) -> 'a -> ('b * 'd) * 'e
+  val |-- : ('a -> 'b * 'c) * ('c -> 'd * 'e) -> 'a -> 'd * 'e
+*)
+
+ML\<open>
+val (a,b) = (0,1);
+(fn (b, s) => fn lthy =>
+      let
+        val t = Syntax.read_term lthy s;
+        val (def, lthy') = Local_Theory.define ((b, NoSyn), ((Thm.def_binding b, []), t)) lthy;
+      in lthy' end)
+\<close>  
+
+ML\<open>
+val st = @{Isar.state};
+Toplevel.theory_of st
+\<close>
+  
 ML_val\<open>
+enunciado;
 Context.subthy (@{theory AC},@{theory Pure})
 \<close>  
   
@@ -281,7 +348,7 @@ nth (Context.parents_of @{theory}) 0;
 \<close>
 
 ML_val\<open>
-Context.ancestors_of @{theory}
+Context.ancestors_of @{theory ZF}
 \<close>
   
 ML_val\<open>
@@ -289,15 +356,22 @@ ML_val\<open>
 3 div 2;
 @14/4 / @2;
 Binding.pos_of @{binding here};
+\<close>
+
+ML_val\<open>
 Logic.mk_implies (@{term "True"},@{term "True"});
+@{lemma "True" and "0=0" by simp_all};
 Conjunction.intr 
   @{lemma "True" by standard}
-  @{lemma "0\<in>1" by (standard,simp)}
+  @{lemma "0\<in>1" by (standard,simp)};
 \<close>
 
 theorem (in countable_generic) rasiowa_sikorski:
   "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> D_generic(G)"
 proof -
+  ML_val\<open>
+    Syntax.parse_term @{context};
+  \<close>
   assume 
       Eq1:  "p\<in>P"
   let
