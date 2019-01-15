@@ -377,6 +377,7 @@ find_theorems name:"zero_in_ord"
   
 lemma
   shows "\<And>x . P \<Longrightarrow> Q \<Longrightarrow> P" 
+  apply (tactic \<open>Method.insert_tac @{context} (map zero_ord (1 upto 4)) 1\<close>)
   apply (tactic {* rotate_tac 1 1 *})  
   apply (tactic {* rename_tac ["y"] 1 *})  
   apply (tactic \<open>rename_tac ["z"] 1\<close>)  
