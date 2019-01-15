@@ -312,11 +312,43 @@ ML\<open>
 let
   val x = 5;
   val y = 2
-  val (d,z) = (3,x+y);
+  val (_,z) = (3,x+y);
 in z
 end
 \<close>  
-  
+
+ML\<open>
+val thm = 
+  let
+    val ctxt = @{context}
+    val goal = @{prop "P \<or> Q \<Longrightarrow> Q \<or> P"}
+  in
+    Goal.prove ctxt ["P", "Q"] [] goal
+      (fn _ => eresolve_tac ctxt [@{thm disjE}] 1
+        THEN resolve_tac ctxt [@{thm disjI2}] 1
+        THEN assume_tac ctxt 1
+        THEN resolve_tac ctxt [@{thm disjI1}] 1
+       THEN assume_tac ctxt 1)
+  end;
+\<close>
+
+local_setup\<open>
+let
+  fun my_note name thm = Local_Theory.note ((name, []), [thm]) #> snd
+in
+  my_note @{binding "disjComm"} thm
+end\<close>  
+ 
+lemma "P \<or> P \<Longrightarrow> P \<or> P"
+  by (erule disjComm)
+    
+lemma
+  shows "\<And>x . P \<Longrightarrow> Q \<Longrightarrow> P" 
+  apply(tactic {* rotate_tac 1 1 *})  
+  apply(tactic {* rename_tac ["y"] 1 *})  
+  apply(tactic \<open>rename_tac ["z"] 1\<close>)  
+  apply(tactic \<open>assume_tac @{context} 1\<close>)
+    
 (*
   val >> : ('a -> 'b * 'c) * ('b -> 'd) -> 'a -> 'd * 'c
   val -- : ('a -> 'b * 'c) * ('c -> 'd * 'e) -> 'a -> ('b * 'd) * 'e
