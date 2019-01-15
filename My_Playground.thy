@@ -318,7 +318,7 @@ end
 \<close>  
 
 ML\<open>
-val thm = 
+val disj_comm = 
   let
     val ctxt = @{context}
     val goal = @{prop "P \<or> Q \<Longrightarrow> Q \<or> P"}
@@ -336,18 +336,46 @@ local_setup\<open>
 let
   fun my_note name thm = Local_Theory.note ((name, []), [thm]) #> snd
 in
-  my_note @{binding "disjComm"} thm
+  my_note @{binding "disjComm"} disj_comm
 end\<close>  
  
 lemma "P \<or> P \<Longrightarrow> P \<or> P"
   by (erule disjComm)
     
+ML\<open>
+(* my_note from the Cookbook *)
+fun my_note name thm = Local_Theory.note ((name, []), [thm]) #> snd
+\<close>
+  
+ML\<open>
+val n = 6;
+val s =
+Buffer.empty
+|> Buffer.add "{0"
+|> fold (Buffer.add o 
+  (fn x => "," ^ string_of_int x )) (1 upto n)
+|> Buffer.add "}"
+|> Buffer.content;
+val zero_ord_str = "0\<in>" ^ s;
+val ctxt = @{context};
+val zero_ord_trm = 
+  zero_ord_str
+  |> Syntax.read_prop ctxt;
+val zero_ord = 
+    Goal.prove ctxt [] [] zero_ord_trm
+      (fn _ => simp_tac ctxt  1);
+\<close>
+
+local_setup\<open>
+my_note (Binding.name ("zero_in_" ^ (string_of_int n))) zero_ord
+\<close>
+  
 lemma
   shows "\<And>x . P \<Longrightarrow> Q \<Longrightarrow> P" 
-  apply(tactic {* rotate_tac 1 1 *})  
-  apply(tactic {* rename_tac ["y"] 1 *})  
-  apply(tactic \<open>rename_tac ["z"] 1\<close>)  
-  apply(tactic \<open>assume_tac @{context} 1\<close>)
+  apply (tactic {* rotate_tac 1 1 *})  
+  apply (tactic {* rename_tac ["y"] 1 *})  
+  apply (tactic \<open>rename_tac ["z"] 1\<close>)  
+  apply (tactic \<open>assume_tac @{context} 1\<close>)
     
 (*
   val >> : ('a -> 'b * 'c) * ('b -> 'd) -> 'a -> 'd * 'c
