@@ -348,27 +348,32 @@ fun my_note name thm = Local_Theory.note ((name, []), [thm]) #> snd
 \<close>
   
 ML\<open>
-val n = 6;
-val s =
-Buffer.empty
-|> Buffer.add "{0"
-|> fold (Buffer.add o 
-  (fn x => "," ^ string_of_int x )) (1 upto n)
-|> Buffer.add "}"
-|> Buffer.content;
-val zero_ord_str = "0\<in>" ^ s;
-val ctxt = @{context};
-val zero_ord_trm = 
-  zero_ord_str
-  |> Syntax.read_prop ctxt;
-val zero_ord = 
+fun zero_ord n = let
+  val s =
+    Buffer.empty
+    |> Buffer.add "{0"
+    |> fold (Buffer.add o 
+      (fn x => "," ^ string_of_int x )) (1 upto n)
+    |> Buffer.add "}"
+    |> Buffer.content;
+  val zero_ord_str = "0\<in>" ^ s;
+  val ctxt = @{context};
+  val zero_ord_trm = 
+    zero_ord_str
+     |> Syntax.read_prop ctxt
+in
     Goal.prove ctxt [] [] zero_ord_trm
-      (fn _ => simp_tac ctxt  1);
+      (fn _ => simp_tac ctxt  1)
+end;
+
+val n = 5
 \<close>
 
 local_setup\<open>
-my_note (Binding.name ("zero_in_" ^ (string_of_int n))) zero_ord
+my_note (Binding.name ("zero_in_ord" ^ (string_of_int n))) (zero_ord n)
 \<close>
+
+find_theorems name:"zero_in_ord" 
   
 lemma
   shows "\<And>x . P \<Longrightarrow> Q \<Longrightarrow> P" 
@@ -376,6 +381,7 @@ lemma
   apply (tactic {* rename_tac ["y"] 1 *})  
   apply (tactic \<open>rename_tac ["z"] 1\<close>)  
   apply (tactic \<open>assume_tac @{context} 1\<close>)
+  done
     
 (*
   val >> : ('a -> 'b * 'c) * ('b -> 'd) -> 'a -> 'd * 'c
@@ -392,11 +398,6 @@ val (a,b) = (0,1);
       in lthy' end)
 \<close>  
 
-ML\<open>
-val st = @{Isar.state};
-Toplevel.theory_of st
-\<close>
-  
 ML_val\<open>
 enunciado;
 Context.subthy (@{theory AC},@{theory Pure})
