@@ -8,10 +8,11 @@ the necessary definitions about preorders; then, we explain and prove
 the principle of dependent choice most suitable for our purpose.
 
 It is to be noted that the order of presentation of the material
-deviates a bit from the dependency of the source  files. The
-file containing the most basic results and definitions that follow
-imports that containing the results of
-Subsection~\ref{sec:sequence-version-dc}.
+deviates a bit from the dependency of the source  files. In particular,
+the contents of the Subsection~\ref{sec:sequence-version-dc} are independent
+of the following definitions; in the formalization, the file containing
+these definitions and basic results imports the file corresponding to
+the principle of dependent choice.
 
 
 \begin{definition}
@@ -155,7 +156,7 @@ from the main goal to simpler ones. The proof of this last lemma takes
 21 lines and 34 proof commands and is one of the longest procedural
 proofs in the development.  It was  at
 the moment of its implementation that we realized that a declarative
-approach was best because, apart from being more readable, the
+approach was better because, apart from being more readable, the
 reasoning flows mostly in a forward fashion.
 
 %%% Local Variables:

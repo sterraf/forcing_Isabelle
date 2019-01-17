@@ -110,7 +110,7 @@ author = "Peter Aczel"
 
 @article{paulson1995set,
   title={Set {T}heory for {V}erification. {II}: {I}nduction and {R}ecursion},
-  author={Paulson, Lawrence C},
+  author={Paulson, Lawrence C.},
   journal={Journal of Automated Reasoning},
   volume={15},
   number={2},
@@ -121,7 +121,7 @@ author = "Peter Aczel"
 
 @inproceedings{paulson2000fixedpoint,
   title={A fixedpoint approach to (co) inductive and (co) datatype definitions.},
-  author={Paulson, Lawrence C},
+  author={Paulson, Lawrence C.},
   booktitle={Proof, Language, and Interaction},
   pages={187--212},
   year={2000}
@@ -140,7 +140,7 @@ author = "Peter Aczel"
 
 @TechReport{paulson2017isabelle,
   title={Isabelle’s Logics: {FOL} and {ZF}},
-  author={Paulson, Lawrence C},
+  author={Paulson, Lawrence C.},
   year={2017},
   institution =  {Computer Laboratory, University of Cambridge},
 }
@@ -1413,7 +1413,7 @@ month = feb
 
 @book{moschovakis1994notes,
   title={Notes on Set Theory},
-  author={Moschovakis, Y.N.},
+  author={Moschovakis, Yiannis N.},
   isbn={9783540941804},
   lccn={93035825},
   series={Springer Texts in Electrical Engineering},
@@ -1434,7 +1434,7 @@ month = feb
 
 @book{kunen2011set,
   title={Set Theory},
-  author={Kunen, K.},
+  author={Kunen, Kenneth},
   edition = {Second},
   isbn=9781848900509,
   series={Studies in Logic},
@@ -1477,7 +1477,7 @@ month = feb
 
 @book{kunen2009foundations,
   title={The Foundations of Mathematics},
-  author={Kunen, K.},
+  author={Kunen, Kenneth},
   isbn={9781904987147},
   series={Mathematical logic and foundations},
   url={http://www.collegepublications.co.uk/logic/mlf/?00012},
@@ -2003,21 +2003,29 @@ MRREVIEWER = {A. Mostowski},
 MRREVIEWER = {S. C. Kleene},
 }
 		
-@incollection {Isabelle,
-    AUTHOR = {Wenzel, Makarius and Paulson, Lawrence C. and Nipkow, Tobias},
-     TITLE = {The {I}sabelle framework},
- BOOKTITLE = {Theorem proving in higher order logics},
-    SERIES = {Lecture Notes in Comput. Sci.},
-    VOLUME = {5170},
-     PAGES = {33--38},
- PUBLISHER = {Springer, Berlin},
-      YEAR = {2008},
-   MRCLASS = {Indexed},
-  MRNUMBER = {2550908},
-       DOI = {10.1007/978-3-540-71067-7\_7},
-       URL = {http://dx.doi.org/10.1007/978-3-540-71067-7\_7},
-}
 
+@inproceedings{Isabelle,
+  author    = {Makarius Wenzel and
+               Lawrence C. Paulson and
+               Tobias Nipkow},
+  editor    = {Otmane A{\"{\i}}t Mohamed and
+               C{\'{e}}sar A. Mu{\~{n}}oz and
+               Sofi{\`{e}}ne Tahar},
+  title     = {The Isabelle Framework},
+  booktitle = {Theorem Proving in Higher Order Logics, 21st International Conference,
+               TPHOLs 2008, Montreal, Canada, August 18-21, 2008. Proceedings},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {5170},
+  pages     = {33--38},
+  publisher = {Springer},
+  year      = {2008},
+  url       = {https://doi.org/10.1007/978-3-540-71067-7\_7},
+  doi       = {10.1007/978-3-540-71067-7\_7},
+  timestamp = {Tue, 13 Jun 2017 10:37:56 +0200},
+  biburl    = {https://dblp.org/rec/bib/conf/tphol/WenzelPN08},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+ 
 @Manual{Coq:manual,
   title =        {The {C}oq proof assistant reference manual},
   author =       {\mbox{The} {C}oq development team},
@@ -2067,7 +2075,7 @@ MRREVIEWER = {G. Fodor},
 
 @book{rubin1985equivalents,
   title={Equivalents of the Axiom of Choice, II},
-  author={Rubin, H. and Rubin, J.E.},
+  author={Rubin, Herman and Rubin, Jean E.},
   isbn={9780080887654},
   series={Studies in Logic and the Foundations of Mathematics},
   url={https://www.elsevier.com/books/equivalents-of-the-axiom-of-choice-ii/rubin/978-0-444-87708-6},
@@ -2075,19 +2083,26 @@ MRREVIEWER = {G. Fodor},
   publisher={Elsevier Science}
 }
 
-@InProceedings{10.1007/978-3-319-66107-0_32,
-author="Zhan, Bohua",
-editor="Ayala-Rinc{\'o}n, Mauricio
-and Mu{\~{n}}oz, C{\'e}sar A.",
-title="Formalization of the Fundamental Group in Untyped Set Theory Using Auto2",
-booktitle="Interactive Theorem Proving",
-year="2017",
-publisher="Springer International Publishing",
-address="Cham",
-pages="514--530",
-abstract="We present a new framework for formalizing mathematics in untyped set theory using auto2. Using this framework, we formalize in Isabelle/FOL the entire chain of development from the axioms of set theory to the definition of the fundamental group for an arbitrary topological space. The auto2 prover is used as the sole automation tool, and enables succinct proof scripts throughout the project.",
-isbn="978-3-319-66107-0"
+@inproceedings{10.1007/978-3-319-66107-0_32,
+  author    = {Bohua Zhan},
+  editor    = {Mauricio Ayala{-}Rinc{\'{o}}n and
+               C{\'{e}}sar A. Mu{\~{n}}oz},
+  title     = {Formalization of the Fundamental Group in Untyped Set Theory Using
+               Auto2},
+  booktitle = {Interactive Theorem Proving - 8th International Conference, {ITP}
+               2017, Bras{\'{\i}}lia, Brazil, September 26-29, 2017, Proceedings},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {10499},
+  pages     = {514--530},
+  publisher = {Springer},
+  year      = {2017},
+  url       = {https://doi.org/10.1007/978-3-319-66107-0\_32},
+  doi       = {10.1007/978-3-319-66107-0\_32},
+  timestamp = {Wed, 06 Sep 2017 15:05:23 +0200},
+  biburl    = {https://dblp.org/rec/bib/conf/itp/Zhan17},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
 }
+
 
 @mastersThesis{Quirin,
   author = "Quirin, Kevin",
@@ -2384,5 +2399,47 @@ and Type Theories with Inductive Families},
   isbn      = {3-540-43931-5},
   timestamp = {Fri, 26 May 2017 14:09:14 +0200},
   biburl    = {https://dblp.org/rec/bib/conf/cade/2002},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/ictac/Obua06,
+  author    = {Steven Obua},
+  editor    = {Kamel Barkaoui and
+               Ana Cavalcanti and
+               Antonio Cerone},
+  title     = {Partizan Games in Isabelle/HOLZF},
+  booktitle = {Theoretical Aspects of Computing - {ICTAC} 2006, Third International
+               Colloquium, Tunis, Tunisia, November 20-24, 2006, Proceedings},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {4281},
+  pages     = {272--286},
+  publisher = {Springer},
+  year      = {2006},
+  url       = {https://doi.org/10.1007/11921240\_19},
+  doi       = {10.1007/11921240\_19},
+  timestamp = {Fri, 02 Jun 2017 13:01:08 +0200},
+  biburl    = {https://dblp.org/rec/bib/conf/ictac/Obua06},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/itp/Blanchette0T14,
+  author    = {Jasmin Christian Blanchette and
+               Andrei Popescu and
+               Dmitriy Traytel},
+  editor    = {Gerwin Klein and
+               Ruben Gamboa},
+  title     = {Cardinals in Isabelle/HOL},
+  booktitle = {Interactive Theorem Proving - 5th International Conference, {ITP}
+               2014, Held as Part of the Vienna Summer of Logic, {VSL} 2014, Vienna,
+               Austria, July 14-17, 2014. Proceedings},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {8558},
+  pages     = {111--127},
+  publisher = {Springer},
+  year      = {2014},
+  url       = {https://doi.org/10.1007/978-3-319-08970-6\_8},
+  doi       = {10.1007/978-3-319-08970-6\_8},
+  timestamp = {Fri, 02 Nov 2018 09:45:32 +0100},
+  biburl    = {https://dblp.org/rec/bib/conf/itp/Blanchette0T14},
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
