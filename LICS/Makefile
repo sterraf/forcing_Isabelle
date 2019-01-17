@@ -28,3 +28,6 @@ arXiv:	clean separation_arxiv
 
 clean:
 	rm -rf $(tmp_dir) separation_arxiv.tar.gz
+
+diff:
+	bash hacer_diff.sh
