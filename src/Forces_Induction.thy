@@ -67,7 +67,7 @@ next
     2: "(\<forall>q\<in>P. (<q,p>\<in>leq \<longrightarrow> \<not> sats(M,forces(\<phi>), [P,leq,one,q] @ env)))"
   with \<open>p\<in>P\<close> have
     "\<not> sats(M,forces(\<phi>), [P,leq,one,p] @ env)"
-    using leq_preord unfolding preorder_on_def refl_def by simp
+    using refl_leq by simp
   {
     fix G
     assume
