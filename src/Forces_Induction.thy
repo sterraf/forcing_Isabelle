@@ -5,7 +5,7 @@ begin
 
 context forcing_thms begin
 
-lemma map_val_in_MG: "map(val(G),env)\<in>list(M[G])" for G 
+lemma map_val_in_MG: "env\<in>list(M) \<Longrightarrow> map(val(G),env)\<in>list(M[G])" for G 
   sorry
 
 lemma 
@@ -19,7 +19,7 @@ proof -
     "sats(M,forces(And(\<phi>,\<psi>)), [P,leq,one,p] @ env) \<longleftrightarrow> 
      (\<forall>G. (M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],And(\<phi>,\<psi>),map(val(G),env)))"
     using definition_of_forces by simp
-  also have
+  also from assms have
     "... \<longleftrightarrow> (\<forall>G. (M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],\<phi>,map(val(G),env))) \<and> 
      (\<forall>G. (M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],\<psi>,map(val(G),env)))"
     using map_val_in_MG by auto
@@ -41,7 +41,7 @@ proof (intro iffI ballI impI)
   with assms have
     "(\<forall>G. (M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],Neg(\<phi>),map(val(G),env)))"
     using definition_of_forces by simp
-  then have
+  with assms have
     1: "(\<forall>G. (M_generic(G)\<and> p\<in>G)\<longrightarrow>\<not>sats(M[G],\<phi>,map(val(G),env)))"
     using map_val_in_MG by simp
   fix q
