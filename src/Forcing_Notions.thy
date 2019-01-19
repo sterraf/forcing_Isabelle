@@ -32,6 +32,10 @@ locale forcing_notion =
       and leq_preord:       "preorder_on(P,leq)"
       and one_max:          "\<forall>p\<in>P. \<langle>p,one\<rangle>\<in>leq"
 begin
+lemma refl_leq:
+  "r\<in>P \<Longrightarrow> <r,r>\<in>leq"
+  using leq_preord unfolding preorder_on_def refl_def by simp
+
 definition 
   dense :: "i\<Rightarrow>o" where
   "dense(D) == \<forall>p\<in>P. \<exists>d\<in>D . \<langle>d,p\<rangle>\<in>leq"
