@@ -499,4 +499,31 @@ proof -
   with gen and fil show ?thesis  
     unfolding D_generic_def by auto
 qed
+  
+schematic_goal "0\<in>?I"
+proof -
+  have
+    "0\<in>Pow(0)"
+    by simp
+  then show "?thesis (Pow(0))" .
+qed
+
+schematic_goal "0\<in>?I"
+proof -
+show "?thesis (Pow(0))" by simp
+qed
+
+(* Working in Main.ZF, the proof body is necessary. In this theory,
+   it isn't *)  
+(* 
+schematic_goal "0\<in>?I"
+proof 
+show "0\<subseteq>0" by simp
+qed
+*)
+schematic_goal "0\<in>?I" ..
+
+schematic_goal "0\<in>?I"
+  by (subgoal_tac "0\<in>Pow(0)"; blast)
+  
 end
