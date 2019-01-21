@@ -1,6 +1,7 @@
 theory My_Playground 
   imports 
     Pointed_DC 
+    "~~/src/ZF/Constructible/MetaExists"
 begin
 
 (* Clone of "forcing_posets.thy" to try understand Isabelle/ML *)
@@ -525,5 +526,37 @@ schematic_goal "0\<in>?I" ..
 
 schematic_goal "0\<in>?I"
   by (subgoal_tac "0\<in>Pow(0)"; blast)
-  
+    
+schematic_goal enclosing : "x \<in> ?P(x)"
+proof -
+show "?thesis(Pow)" by simp
+qed
+
+lemma meta_ex_enclosing : "\<Or>P. \<And>x . x \<in> P(x)"  
+  by (rule meta_exI, rule enclosing)
+    
+lemma "\<Or>I. \<And>x. {x} \<in> I(x)"
+  apply (insert meta_ex_enclosing)
+  apply (erule meta_exE)
+  apply (rule meta_exI)
+  apply assumption
+done
+
+lemma "\<Or>I. \<And>x. x \<subseteq> \<Union>I(x)"
+  apply (insert meta_ex_enclosing)
+  apply (erule meta_exE)
+  apply (rule meta_exI)
+  apply (rule Union_upper)  (* B\<in>A ==> B \<subseteq> \<Union>(A) *)
+  apply assumption
+oops
+
+schematic_goal x_sub_union_some : "\<And>x. x \<subseteq> \<Union>?I(x)"
+  using [[simp_trace_new mode=full]]
+  by (rule Union_upper, simp)
+
+lemma "\<Or>I. \<And>x. x \<subseteq> \<Union>I(x)"
+  apply (rule meta_exI)
+  apply (rule x_sub_union_some)
+  done
+
 end
