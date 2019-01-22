@@ -1,6 +1,7 @@
 theory Internalize_More 
   imports 
-    Internalizations 
+    (* Internalizations *)
+    "~~/src/ZF/Constructible/Separation"
     "~~/src/ZF/Constructible/Formula"
 begin
 
@@ -22,22 +23,51 @@ definition
         Exists(Exists(And(Member(1,D#+4),And(pair_fm(1,3,0),Member(0,leq#+4)))))))))"
     
 lemma is_dense_below_fm_type [TC]:
-  "\<lbrakk> P\<in>nat ; leq\<in>nat ; leq\<in>nat ; D\<in>nat ; q\<in>nat \<rbrakk> \<Longrightarrow> is_dense_below_fm(P,leq,D,q) \<in>formula"
+  "\<lbrakk> P\<in>nat ; leq\<in>nat ; D\<in>nat ; q\<in>nat \<rbrakk> \<Longrightarrow> is_dense_below_fm(P,leq,D,q) \<in>formula"
   unfolding is_dense_below_fm_def
   by (simp)
     
 lemma sats_is_dense_below_fm :
-  "\<lbrakk> P\<in>nat ; leq\<in>nat ; leq\<in>nat ; D\<in>nat ; q\<in>nat ; env\<in>list(A) \<rbrakk> \<Longrightarrow>
+  "\<lbrakk> P\<in>nat ; leq\<in>nat ; D\<in>nat ; q\<in>nat ; env\<in>list(A) \<rbrakk> \<Longrightarrow>
      sats(A,is_dense_below_fm(P,leq,D,q),env) \<longleftrightarrow> 
      is_dense_below(##A,nth(P, env), nth(leq, env), nth(D, env),nth(q, env))"
   unfolding is_dense_below_fm_def  is_dense_below_def
   by (simp)
 
+schematic_goal sats_idbf_automatic:
+  assumes 
+    "P\<in>nat" "leq\<in>nat" "D\<in>nat" "q\<in>nat"
+  shows
+    "env\<in>list(A) \<Longrightarrow> is_dense_below(##A,nth(P, env), nth(leq, env), nth(D, env),nth(q, env))
+    \<longleftrightarrow> sats(A,?idbf(P,leq,D,q),env)"
+    and
+    "(?idbf(P,leq,D,q) \<in> formula)"
+   unfolding is_dense_below_def  
+   by (insert assms ; (rule sep_rules | simp))+
+
+(* The next line compiles, but it doesn't make sense to put it *)     
+(* declare sats_idbf_automatic(2) [TC] *)
+     
+lemmas FOL_sats_iff = sats_Nand_iff sats_Forall_iff sats_Neg_iff sats_And_iff
+  sats_Or_iff sats_Implies_iff sats_Iff_iff sats_Exists_iff arity_Neg
+  arity_And arity_Or arity_Implies arity_Iff arity_Exists 
+  
+notepad begin
+  fix P leq D q env A
+  assume
+    "P\<in>nat" "leq\<in>nat" "D\<in>nat" "q\<in>nat" "env\<in>list(A)"
+  then obtain idbf where
+    "is_dense_below(##A,nth(P, env), nth(leq, env), nth(D, env),nth(q, env))
+    \<longleftrightarrow> sats(A,idbf(P,leq,D,q),env)"
+    "idbf(P,leq,D,q) \<in> formula"
+    using sats_idbf_automatic by (simp_all del:FOL_sats_iff)
+end
+
 context M_trivial 
 begin  (************** CONTEXT: M_trivial ***************)
   
 lemma is_dense_below_abs :
-  "\<lbrakk> M(P); M(leq); M(leq); M(D); M(q) \<rbrakk> \<Longrightarrow> 
+  "\<lbrakk> M(P); M(leq); M(D); M(q) \<rbrakk> \<Longrightarrow> 
    is_dense_below(M,P,leq,D,q) \<longleftrightarrow> dense_below(P,leq,D,q)"
   unfolding is_dense_below_def dense_below_def
   by (simp)
