@@ -49,8 +49,8 @@ schematic_goal sats_idbf_automatic:
 (* declare sats_idbf_automatic(2) [TC] *)
      
 lemmas FOL_sats_iff = sats_Nand_iff sats_Forall_iff sats_Neg_iff sats_And_iff
-  sats_Or_iff sats_Implies_iff sats_Iff_iff sats_Exists_iff arity_Neg
-  arity_And arity_Or arity_Implies arity_Iff arity_Exists 
+  sats_Or_iff sats_Implies_iff sats_Iff_iff sats_Exists_iff 
+  (* arity_Neg arity_And arity_Or arity_Implies arity_Iff arity_Exists *)
   
 notepad begin
   fix P leq D q env A
