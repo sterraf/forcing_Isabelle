@@ -2,81 +2,62 @@ First and foremost, we would like to thank the referees for their
 careful reading and detailed criticism. We are indeed greatly
 benefited by their evaluation.
 
------------------------ REVIEW 1 ---------------------
+We first address some issues that appeared in more than one
+review. Our choice of Isabelle/ZF as framework was simply based on the
+need to decrease the overhead of the formalization process. Indeed,
+the main drawback of this choice is that we cannot perform inductive
+arguments on "external" formulas (i.e., Isabelle terms of type
+o). This is the reason why we are using internalized formulas.
 
-> Moreover, I would have expected at least a bit of discussion on the
-  benefits/drawbacks of choosing Isabelle/ZF over other possible
-  frameworks (Coq, Mizar, Isabelle/HOL, HOL Light, ... and the
-  corresponding underlying logics).
 
-Insistir que el overhead era tremendo si no usábamos Isabelle/ZF.
-
-> - "the fruitful use of forcing techniques to extend the Curry-Howard
->isomorphism to classical axioms" -> this claim is misleading. The two
->papers you cite show how to express forcing within Krivine
->realizability, a framework which is already classical. Therefore, in
->these papers, forcing techniques are *not* used to extend CH to
->classical logic (which has to do with control operators, not
->forcing). They rather unveil the computational content of forcing
->within Krivine realizability, just like Jaber et al. show how to
->define it within type theory [14,15].  Llamada para el Dr. Pagano...
+Questions by REVIEWER 1
+=======================
 
 > - ∈ restricted to M -> this suggests that it is defined outside of
-    M, right? Isn't this strange?
+>   M, right? Isn't this strange?
 
-Hay que decir que ∈ es el mismo para todos los modelos (el externo).
-
-> - induction on terms of type o is not available -> is this related
-    to the chosen framework (Isabelle/ZF) or is it more general?
-
-Aclarar
+Not really, since ∈ is defined in the "ambient" Isabelle type i, and
+one can restrict it to any set.
 
 > - "it is also possible", "it can be shown" -> if you did it, say it
-    as such, otherwise I am not sure that this is informative or
-    useful (but I might be missing something)
+>    as such, otherwise I am not sure that this is informative or
+>    useful (but I might be missing something)
 
-Decir que lo hicimos pero no es parte de esta submission > - Union is
-absolute for any transitive class -> is it well-known ?
+We actually did, but that wasn't part of this submission. We are sorry
+for the imprecision
 
-YES!
+> - Union is absolute for any transitive class - is it well-known ?
 
------------------------ REVIEW 2 ---------------------
+Yes, indeed.
 
-> Summary: This paper presents a formalization in Isabelle of some
-> axioms of Set theory of a generic extension of a model of Set theory
-> using forcing. The main axiom, according to the authors, that has
-> been shown to hold in a generic extension is Separation. The paper
-> starts by presenting very briefly Isabelle, axioms of Set theory,
-> mentioning the representation of first-order formulas as sets done
-> by Paulson and discuss their presentation of renaming of
-> formulas. Then the authors explain briefly the generic extension of
-> a model of Set theory using forcing, some modifications they have
-> done on the development of Paulson of “ZF-Constructible”. The
-> authors explain how to prove the “easy axioms” first. Then they
-> present the fundamental lemmas of forcing which are given as axioms
-> in the formalization. After that, they show that Separation holds in
-> the generic extension providing the fundamental lemmas
-> holds. Finally, they conclude by discussing how the main missing
-> axiom, i.e. Replacement, could be proven.
+
+Questions by REVIEWER 2
+=======================
+
 
 > Questions to the authors: “We are only able to prove that the
 > generic extension satisfies Separation for any particular number of
 > parameters, but not in general.”  This looks like a strong
 > limitation, can you comment on this.
 
-Hay que decir que no (de hecho con 2 parámetros estamos haciendo
-todo), pero tendría que sentarme un rato a confirmar de nuevo esto.
+Actually, it is well known [Schindler] that there are axiomatizations
+of ZF without any parameters. We have chosen an axiomatization using
+at most one parameter in both Separation and Replacement. In this
+sense, we can prove that M[G] satisfies the "same amount of
+Separation" that M is assumed to satisfy. 
 
------------------------ REVIEW 3 ---------------------
 
-> My biggest complaint is that this work does not seem to provide the
-  kind of fundamental contributions to logic that LICS is looking
-  for. There is no new mathematics here, and this isn't even the first
-  formalization of separation.
+Questions by REVIEWER 3
+=======================
 
-WTF!? Acá hay que preguntar cuál es la otra.
+There are no questions by the third Reviewer, but this Reviewer states
+that ours is not the first formalization of separation. We are
+extremely eager to know about this, would they provide a reference for
+such a strong claim?
 
------------------------ REVIEW 4 ---------------------
+
+Questions by REVIEWER 4
+=======================
 
 > The more important point is that the "increment" presented in this
 > paper is (IMO) too little for being published in a top conference
@@ -85,116 +66,22 @@ WTF!? Acá hay que preguntar cuál es la otra.
 > the soundness of Extensionality, Regularity, Pairing, Union and
 > Infinity has been published before,
 
-Acá la pifió bárbaro. Después repite esto que todos los axiomas
-fáciles están en otro paper. ¿Cómo llegó a tener esa impresión?
-
-> The other point deals with the formalization choices of the authors,
-> which are never really discussed. It seems to me that the authors
-> blindly followed Kunen's presentation of forcing (based on countable
-> transitive models and the Rasiowa-Sikorski lemma), without comparing
-> it with other presentations that would be (IMO) *much more suitable*
-> to a formalization of forcing in a proof-assistant, especially in
-> the perspective of deriving relative consistency proofs from this
-> work.  (Which is proof-theoretically impossible from Kunen's
-> approach, as I explain below in my detailed comments.)
-
-Raro esto. Kunen tiene una sección específica sobre cómo se puede
-hacer esto.
-
-> Moreover, the choice of the authors to follow Kunen's approach
-> induces many complications in their formalization (for instance: the
-> use of internalized formulas) that could have been avoided by taking
-> another approach (for instance, the one presented by Jech in his
-> textbook on Set theory). Perhaps these complications explain why the
-> authors had to split the presentation of their formalization in
-> several papers.
-
-
-> p. 2, second column: internalized formulas. Here you should justify
-> why you use internalized formulas, that is: formulas as sets.  IMO,
-> it would be more natural to inductively define an Isabelle type "f"
-> of first-order formulas (or codes of first-order formulas), together
-> with a decoding function that would map each code of a first-order
-> formula to a real Isabelle formula. So that the image of this map
-> would capture exactly the class you are interested in.  (At least,
-> this would be the standard way of doing in Coq or Agda.)
-
-Bueno, se ve que no le quedó claro que esto no se puede hacer. Hay que
-insistir.
-
-> Moreover, such a definition would reflect the fact that, in model
-> theory, formulas are traditionally considered as external objects:
-> they live in the ambient theory, outside all models.
-
+There is a mistake in this assertion. The only axiom that has been
+published before (at least by us) was Pairing. Is Reviewer 4 referring
+to some work not known to us?
 
 > On the other hand, I agree that "formulas as sets" are useful to
 > define the notion of constructible set, and the corresponding
 > constructible universe. But the point is that in forcing, we
 > (normally) never need such internalized formulas! The theory of
 > forcing is independent from the theory of constructible sets, and
-> this should appear in a formalization. (Although both theories can
-> be nicely combined in particular situations.)
+> this should appear in a formalization. 
 
-Acá otro pifie, pero es por algo que no aclaramos nosotros: nuestra
-presentación no depende de constructibilidad per se, sino de
-relativización y absolutez, que es de hecho un prerrequisito para
-ambas teorías.
-
-> So why did you consider internalized formulas, and not external
-> formulas, inductively defined "outside" as explained above?  I
-> understand you want to reuse parts of the (previous) formalization
-> of the constructible universe, but this is (scientifically) a very
-> weak argument. IMO, considering internalized formulas for defining
-> forcing is just introducing unnecessary complication.
-
-Bueno, hacer todo desde cero es una complicación innecesaria para
-nosotros (!).
-
-> Moreover, considering internalized formulas (that is: formulas as
-> sets) raises another problem, which is that there might be more
-> internalized formulas than first-order formulas (such as seen
-> outside). Indeed, your axiomatized type "i" of ZF sets is nothing
-> but a (hypothetical) model of ZF inside Isabelle. But such a model
-> can be non-standard, in the sense that it might contain more natural
-> numbers (and thus more formulas-as-sets) than the Isabelle type of
-> natural numbers. Note that this problem is harmless in practice, but
-> it is worth mentioning it.
-
-Todo está pasando dentro de "i", así que no es relevante esta
-observación. Hay que discutirlo un poco más.  > > p. 2, last paragraph
-of 2nd column. "Forcing is a technique to extend > very special kind
-of models...". Actually, not. There are several > ways to construct
-forcing models of ZF, and the one you consider in > your paper (taken
-from Kunen's book) is only *one* of them.  > > The method you consider
-is based on countable transitive models > (ctms) of ZF, whose main
-advantage is that they allow the use of > the Rasiowa-Sikorski lemma
-to construct the generic filter.  > Basically, a ctm of ZF captures
-three properties: > > (1) M is a set equipped with a binary relation
-(to interpret > membership) that is well-founded _from the point of
-view of the > outer set-theoretic universe_ (the type "i"). This
-property > implies that M fulfills the foundation axiom, but the
-converse > is not true. So basically, this property says that the
-notion > of well-foundedness is the same inside M and outside M (that
-is: > in the outer model "i").  > > (2) M is transitive, which means
-that the binary relation interpreting > membership is membership
-itself (in the sense of "i"). This point > is actually just a
-technical facility, to avoid distinguishing two > membership
-predicates.
-
-No sólo eso. Se está olvidando de los resultados de absolutez.  > >
-(3) M is countable (from the point of view of the universe "i").  >
-This point is crucial to prove the Rasiowa-Sikorski lemma.  > > As you
-mention it in Lemma 1, the properties (2) and (3) are >
-proof-theoretically free, since once you have (1), you can easily >
-enforce (2) and (3) by combining a Mostowski collapse with the >
-(descending) Löwenheim-Skolem theorem.  > > But the point is that (1)
-is actually very strong, and more > important: it is *not known* to be
-equivalent to the consistency > of ZF. By this, I mean that it might
-be the case that ZF has > no transitive model while being consistent.
-
-Tranquilate un poco... Esto también es irrelevante, porque sólo
-necesitamos un ctm de un fragmento suficientemente grande de ZFC (cosa
-que el Teorema de Reflexión nos da).
+We do need to ponder the suggestion by this Reviewer of defining a new
+Isabelle type "f" for formulas, and we thank this
+insight. Nevertheless, we are *not* using the theory of constructible
+sets for our formalization, only the absoluteness results (which are
+prerrequisites for both theories). 
 
 > This simple argument shows that transitive models of ZF, although
 > they are very convenient from the point of view of model theory,
@@ -203,44 +90,11 @@ que el Teorema de Reflexión nos da).
 > turn an arbitrary model of ZF (such as given by the completeness
 > theorem of 1st-order logic) into a transitive model.
 
-Ídem... Sólo necesitamos un fragmento finito de esto, como lo explica
-Kunen en el libro nuevo.  > > This is why other approaches have been
-developed in the literature.  > For instance, the construction of a
-Boolean-valued model of names > inside the ground model M, and then a
-quotient by a suitable > ultrafilter (see Jech's book for
-instance). The main advantage of > this approach is that it can be
-applied to _any model_ of ZF. (In > this case, the generic filter is
-directly constructed from the > corresponding name, without the
-Rasiowa-Sikorski lemma.)  > > However, the ground model M and the
-corresponding generic extension > M[G] are in general *not* transitive
-models. But from a proof- > theoretic point of view, this property is
-definitely useless!  > > So, since you are interested in relative
-consistency results (as > mentioned in the introduction of the paper),
-why didn't you consider > this alternative approach, that would work
-with _any_ model of ZF?  > (Moreover, it seems to me that the job of
-formalization would have > been easier.) IMO, the paper is
-dramatically missing a discussion > about this important foundational
-issue (that has also a dramatic > impact on your formalization
-choices).
-
-Me gusta más el enfoque de los ctm para trabajar en general (y
-off-the-record, es el que más entiendo de todos), y además tratamos de
-seguir lo más posible una sola referencia (i.e. Kunen) para darle
-cohesión al trabajo. La discusión sobre la conveniencia de usar el
-enfoque de los modelos a valores booleanos es más interesante, pero
-creo que otra vez nos pone en el brete de tener que reimplementar
-varias cosas.
-
-> Another advantage of constructing the generic extension as a
-> quotient of the Boolean-valued model of names (defined as a class
-> within M) would be the following. In your work, you need to
-> distinguish three models: - the Isabelle type i of sets (the ambient
-> model); - the ctm M, that is an object of type i (the ground model);
-> - the generic extension M[G].  By considering the approach I
-> suggest, you would only need two models: - the type i, which would
-> serve as a ground model M as well; - the generic extension M[G],
-> that would be defined as a quotient of the class of names (within i
-> = M).
+Though it is a fact that Con(ZF) does not imply the existence of ctms
+of ZF, finitary consistency proofs can be obtained through the ctm
+approach, since one only needs that the ctm M satisfy only a finite
+fragment of ZF at a time (and such an M can be obtained by a standard
+reflection argument). For a reference, check [Kunen, IV.5].
 
 > p. 3, second last par. of column 1. "We are only able to prove that
 > the generic extension satisfies Separation for any particular number
@@ -250,17 +104,7 @@ varias cosas.
 > a quantification over the type of natural numbers in Isabelle?
 > Please clarify this point.
 
-Aclarar esto.
-
-> p. 9, column 1, 3rd paragraph: "The Replacement Axiom [...] requires
-> more work to be done. In Kunen it requires a relativized version
-> [...] of the Reflection Principle." IMO, this requirement is another
-> drawback of following Kunen's approach. By taking the other method I
-> suggest, you would definitely not need the Reflection Principle to
-> prove the soundness of Replacement.
-
-Tendría que ver esto, no estoy seguro ya mismo. Este tipo entiende,
-sí, pero hay gente que entiende bien un enfoque y no el otro (bueno, a
-mí me pasa un poco pero al revés de este muchacho).
-
+Isabelle/ZF does not define a type of natural numbers (we just have i
+and o). "In general" would mean an universal quantification over the
+set nat::i.
 
