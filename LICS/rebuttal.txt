@@ -9,6 +9,8 @@ the main drawback of this choice is that we cannot perform inductive
 arguments on "external" formulas (i.e., Isabelle terms of type
 o). This is the reason why we are using internalized formulas.
 
+There is are some questions in common on parameters of Separation, but
+those are answered below.
 
 Questions by REVIEWER 1
 =======================
@@ -40,11 +42,11 @@ Questions by REVIEWER 2
 > parameters, but not in general.”  This looks like a strong
 > limitation, can you comment on this.
 
-Actually, it is well known [Schindler] that there are axiomatizations
-of ZF without any parameters. We have chosen an axiomatization using
-at most one parameter in both Separation and Replacement. In this
-sense, we can prove that M[G] satisfies the "same amount of
-Separation" that M is assumed to satisfy. 
+Actually, it is well known [Levy, SchiSchli] that there are
+axiomatizations of ZF without any parameters. We have chosen an
+axiomatization using at most one parameter in both Separation and
+Replacement. In this sense, we can prove that M[G] satisfies the "same
+amount of Separation" that M is assumed to satisfy.
 
 
 Questions by REVIEWER 3
@@ -108,3 +110,15 @@ Isabelle/ZF does not define a type of natural numbers (we just have i
 and o). "In general" would mean an universal quantification over the
 set nat::i.
 
+References
+==========
+
+    [Kunen] K. Kunen, Set Theory, 2nd ed., ser. Studies in Logic.
+    	    College Publications, 2011, revised edition, 2013.
+
+     [Levy] Azriel Levy, Parameters in the comprehension axiom schemas
+     	    of set theory, in Proceedings of the Tarski symposium,
+     	    Proceedings of Symposia in Pure Mathematics, vol. 25, American
+     	    Mathematical Society, Providence, RI, pp. 309–324.
+
+[SchiSchli] Ralf Schindler and Philipp Schlicht, ZFC without parameters (A note on a question of Kai Wehmeier) http://wwwmath.uni-muenster.de/logik/Personen/rds/ZFC_without_parameters.pdf
