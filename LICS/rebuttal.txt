@@ -12,6 +12,12 @@ o). This is the reason why we are using internalized formulas.
 There is are some questions in common on parameters of Separation, but
 those are answered below.
 
+Finally, we were a bit preoccupied by a comment made in one of the
+reviews. Reviewer 3 states that ours is not the first formalization of
+separation. We are extremely eager to know about this, would they
+provide a reference for such a strong claim? 
+
+
 Questions by REVIEWER 1
 =======================
 
@@ -59,14 +65,6 @@ Questions by REVIEWER 3
 > Isabelle/ZF by Paulson. 
 
 This is a mistake. Forcing was not formalized by Paulson.
-
-There are no questions by the third Reviewer, but this Reviewer states
-that ours is not the firsgt formalization of separation. This strong
-claim is quite misleading: does the Reviewer refer to some
-formalization of the Axiom of Separation of some set theory? It's hard
-to imagine how does such a formalization look like. We are extremely
-eager to know about this, would they provide a reference for such a
-strong claim?
 
 
 Questions by REVIEWER 4
