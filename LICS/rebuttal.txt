@@ -121,4 +121,6 @@ References
      	    Proceedings of Symposia in Pure Mathematics, vol. 25, American
      	    Mathematical Society, Providence, RI, pp. 309–324.
 
-[SchiSchli] Ralf Schindler and Philipp Schlicht, ZFC without parameters (A note on a question of Kai Wehmeier) http://wwwmath.uni-muenster.de/logik/Personen/rds/ZFC_without_parameters.pdf
+[SchiSchli] Ralf Schindler and Philipp Schlicht, ZFC without
+	    parameters (A note on a question of Kai Wehmeier)
+	    http://wwwmath.uni-muenster.de/logik/Personen/rds/ZFC_without_parameters.pdf 
