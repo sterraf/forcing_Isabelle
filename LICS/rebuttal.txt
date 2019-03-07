@@ -83,7 +83,7 @@ We do need to ponder the suggestion by this Reviewer of defining a new
 Isabelle type "f" for formulas, and we thank this
 insight. Nevertheless, we are *not* using the theory of constructible
 sets for our formalization, only the absoluteness results (which are
-prerrequisites for both theories). 
+prerequisites for both theories). 
 
 > This simple argument shows that transitive models of ZF, although
 > they are very convenient from the point of view of model theory,
