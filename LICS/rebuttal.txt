@@ -122,7 +122,8 @@ reflection argument). For a reference, check [Kunen, IV.5].
 
 Isabelle/ZF does not define a type of natural numbers (we just have i
 and o). "In general" would mean an universal quantification over the
-set nat::i.
+set nat::i. For our purposes, showing Separation for at most one
+paramater (that is, for at most two free variables) is enough.
 
 References
 ==========
