@@ -61,9 +61,12 @@ Questions by REVIEWER 3
 This is a mistake. Forcing was not formalized by Paulson.
 
 There are no questions by the third Reviewer, but this Reviewer states
-that ours is not the first formalization of separation. We are
-extremely eager to know about this, would they provide a reference for
-such a strong claim?
+that ours is not the firsgt formalization of separation. This strong
+claim is quite misleading: does the Reviewer refer to some
+formalization of the Axiom of Separation of some set theory? It's hard
+to imagine how does such a formalization look like. We are extremely
+eager to know about this, would they provide a reference for such a
+strong claim?
 
 
 Questions by REVIEWER 4
@@ -86,11 +89,17 @@ published before (at least by us) was Pairing.
 > forcing is independent from the theory of constructible sets, and
 > this should appear in a formalization. 
 
-We do need to ponder the suggestion by this Reviewer of defining a new
-Isabelle type "f" for formulas, and we thank this
-insight. Nevertheless, we are *not* using the theory of constructible
-sets for our formalization, only the absoluteness results (which are
-prerequisites for both theories). 
+We agree that internalized formulas are not needed per se; however in
+Isabelle/ZF internalized formulas are the only representation of
+formulas that are syntactically manipulable. We welcome the suggestion
+of extending Isabelle/ZF with a new inductive type "f" for formulas,
+this would, however, change the meta-theory (in contrast with Agda, Coq,
+or even Isabelle/HOL there is no support in Isabelle/ZF for introducing
+inductive types).
+
+Nevertheless, we are *not* using the theory of constructible sets for
+our formalization, only the absoluteness results (which are
+prerequisites for both theories).
 
 > This simple argument shows that transitive models of ZF, although
 > they are very convenient from the point of view of model theory,
