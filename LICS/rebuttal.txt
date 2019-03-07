@@ -52,6 +52,14 @@ amount of Separation" that M is assumed to satisfy.
 Questions by REVIEWER 3
 =======================
 
+> Summary:
+>
+> This paper presents a formalization of the separation axiom from set
+> theory using the forcing library that has already been built in
+> Isabelle/ZF by Paulson. 
+
+This is a mistake. Forcing was not formalized by Paulson.
+
 There are no questions by the third Reviewer, but this Reviewer states
 that ours is not the first formalization of separation. We are
 extremely eager to know about this, would they provide a reference for
@@ -69,8 +77,7 @@ Questions by REVIEWER 4
 > Infinity has been published before,
 
 There is a mistake in this assertion. The only axiom that has been
-published before (at least by us) was Pairing. Is Reviewer 4 referring
-to some work not known to us?
+published before (at least by us) was Pairing. 
 
 > On the other hand, I agree that "formulas as sets" are useful to
 > define the notion of constructible set, and the corresponding
