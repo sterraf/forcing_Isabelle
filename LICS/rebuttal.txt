@@ -9,13 +9,13 @@ the main drawback of this choice is that we cannot perform inductive
 arguments on "external" formulas (i.e., Isabelle terms of type
 o). This is the reason why we are using internalized formulas.
 
-There is are some questions in common on parameters of Separation, but
+There are some questions in common on parameters of Separation, but
 those are answered below.
 
-Finally, we were a bit preoccupied by a comment made in one of the
-reviews. Reviewer 3 states that ours is not the first formalization of
-separation. We are extremely eager to know about this, would they
-provide a reference for such a strong claim? 
+Finally, a comment in one of the reviews surprised us. Reviewer 3
+states that ours is not the first formalization of separation. We are
+extremely eager to know about this, would they provide a reference for
+such a strong claim?
 
 
 Questions by REVIEWER 1
@@ -24,7 +24,7 @@ Questions by REVIEWER 1
 > - ∈ restricted to M -> this suggests that it is defined outside of
 >   M, right? Isn't this strange?
 
-Not really, since ∈ is defined in the "ambient" Isabelle type i, and
+Not really, since ∈ is defined over the "ambient" Isabelle type i, and
 one can restrict it to any set.
 
 > - "it is also possible", "it can be shown" -> if you did it, say it
@@ -90,10 +90,11 @@ published before (at least by us) was Pairing.
 We agree that internalized formulas are not needed per se; however in
 Isabelle/ZF internalized formulas are the only representation of
 formulas that are syntactically manipulable. We welcome the suggestion
-of extending Isabelle/ZF with a new inductive type "f" for formulas,
-this would, however, change the meta-theory (in contrast with Agda, Coq,
-or even Isabelle/HOL there is no support in Isabelle/ZF for introducing
-inductive types).
+of extending Isabelle/ZF with a new inductive type "f" for formulas;
+this would, however, require a change in the metatheory. In contrast
+with Agda, Coq, or even Isabelle/HOL, there is no support in
+Isabelle/ZF for introducing inductive types, save recursively
+defined "sets" (elements of i).
 
 Nevertheless, we are *not* using the theory of constructible sets for
 our formalization, only the absoluteness results (which are
@@ -123,7 +124,7 @@ reflection argument). For a reference, check [Kunen, IV.5].
 Isabelle/ZF does not define a type of natural numbers (we just have i
 and o). "In general" would mean an universal quantification over the
 set nat::i. For our purposes, showing Separation for at most one
-paramater (that is, for at most two free variables) is enough.
+parameter (that is, for at most two free variables) is enough.
 
 References
 ==========
