@@ -94,7 +94,7 @@ of extending Isabelle/ZF with a new inductive type "f" for formulas;
 this would, however, require a change in the metatheory. In contrast
 with Agda, Coq, or even Isabelle/HOL, there is no support in
 Isabelle/ZF for introducing inductive types, save recursively
-defined "sets" (elements of i).
+defined "sets" (elements of i, like nat).
 
 Nevertheless, we are *not* using the theory of constructible sets for
 our formalization, only the absoluteness results (which are
