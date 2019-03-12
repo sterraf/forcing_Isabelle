@@ -14,7 +14,7 @@ definition
 
 definition
   f_cofinal :: "[i\<Rightarrow>i,i,i,i] \<Rightarrow> o" where
-  "f_cofinal(f,C,A,r) == \<forall>a\<in>A. \<exists>x\<in>C. <a,f(x)>\<in>r"
+  "f_cofinal(f,C,A,r) == \<forall>a\<in>A. \<exists>x\<in>C. <a,f(x)>\<in>r" (* "predic" version ? *)
   
 definition
   cofinal_fun :: "[i,i,i] \<Rightarrow> o" where
@@ -55,6 +55,7 @@ lemma "Limit(A) \<Longrightarrow> cofinal_fun(f,A,Memrel(A)) \<longleftrightarro
 locale cofinality =
   fixes cf::"i\<Rightarrow>i"
   assumes 
+    (* Better with f_cofinal(f,\<delta>,\<gamma>,Memrel(\<gamma>)) ? *)
     cota : "Ord(\<delta>) \<Longrightarrow> Limit(\<gamma>) \<Longrightarrow> function(f) \<Longrightarrow> domain(f) = \<delta> \<Longrightarrow>
             cofinal_fun(f,\<gamma>,Memrel(\<gamma>)) \<Longrightarrow> cf(\<gamma>)\<le>\<delta>"
     and idemp: "Limit(\<gamma>) \<Longrightarrow> A\<subseteq>\<gamma> \<Longrightarrow> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<Longrightarrow> 
@@ -63,7 +64,7 @@ locale cofinality =
     and idemp': "Limit(\<gamma>) \<Longrightarrow> A\<subseteq>\<gamma> \<Longrightarrow> cofinal_predic(A,\<gamma>,mem) \<Longrightarrow> 
                 cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))" *)
 begin
-
+(* probar 5.12 y 5.13(1,2) *)
 end (* cofinality *)
   
     
