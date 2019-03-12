@@ -9,8 +9,12 @@ definition
   "cofinal(X,A,r) == \<forall>a\<in>A. \<exists>x\<in>X. <a,x>\<in>r"
 
 definition
-  f_cofinal :: "[i\<Rightarrow>i,i,i] \<Rightarrow> o" where
-  "f_cofinal(f,A,r) == \<forall>a\<in>A. \<exists>x. <a,f(x)>\<in>r"
+  cofinal_predic :: "[i,i,[i,i]\<Rightarrow>o] \<Rightarrow> o" where
+  "cofinal_predic(X,A,r) == \<forall>a\<in>A. \<exists>x\<in>X. r(a,x)"
+
+definition
+  f_cofinal :: "[i\<Rightarrow>i,i,i,i] \<Rightarrow> o" where
+  "f_cofinal(f,C,A,r) == \<forall>a\<in>A. \<exists>x\<in>C. <a,f(x)>\<in>r"
   
 definition
   cofinal_fun :: "[i,i,i] \<Rightarrow> o" where
@@ -23,23 +27,27 @@ But it works for limit ordinals.
 
 definition
   cofinal_fun' :: "[i,i,i] \<Rightarrow> o" where
-  "cofinal_fun'(f,A,r) == f_cofinal(\<lambda>x. f`x, A, r)"
+  "cofinal_fun'(f,A,r) == f_cofinal(\<lambda>x. f`x,domain(f),A, r)"
 
 lemma range_is_cofinal: 
-  assumes "cofinal_fun(f,A,r)"
-  shows "cofinal(range(f),A,r)"
-proof -
-  from assms have 
-    "a\<in>A \<Longrightarrow> \<exists>x\<in>domain(f). \<langle>a, f ` x\<rangle> \<in> r" for a
-    unfolding  cofinal_fun_def by simp
-    {  
-      fix b 
-      assume  "b \<in> A"
-      have  "\<exists>y\<in>range(f). \<langle>b, y\<rangle> \<in> r" sorry
-    }
-    then show ?thesis 
-      unfolding cofinal_def by simp
-  qed
+  assumes "cofinal_fun(f,A,r)" "f:C \<rightarrow> D"
+  shows "cofinal(D,A,r)"
+  unfolding cofinal_def
+proof 
+  fix b 
+  assume "b \<in> A"
+  moreover from assms
+  have "a\<in>A \<Longrightarrow> \<exists>x\<in>domain(f). \<langle>a, f ` x\<rangle> \<in> r" for a
+    unfolding cofinal_fun_def by simp
+  ultimately
+  obtain x where "x\<in>domain(f)" "\<langle>b, f ` x\<rangle> \<in> r" 
+    by blast
+  from \<open>f:C \<rightarrow> D\<close>
+  have "domain(f) \<subseteq> C" (* is it needed? *)
+    (* using  *) sorry find_theorems "?f:Pi(?A,?B)"
+  then
+  show  "\<exists>y\<in>D. \<langle>b, y\<rangle> \<in> r" sorry
+qed
 
 lemma "Limit(A) \<Longrightarrow> cofinal_fun(f,A,Memrel(A)) \<longleftrightarrow> cofinal_fun'(f,A,Memrel(A))"
   oops
@@ -51,9 +59,12 @@ locale cofinality =
             cofinal_fun(f,\<gamma>,Memrel(\<gamma>)) \<Longrightarrow> cf(\<gamma>)\<le>\<delta>"
     and idemp: "Limit(\<gamma>) \<Longrightarrow> A\<subseteq>\<gamma> \<Longrightarrow> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<Longrightarrow> 
                 cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))"
+    (* Is it better?? 
+    and idemp': "Limit(\<gamma>) \<Longrightarrow> A\<subseteq>\<gamma> \<Longrightarrow> cofinal_predic(A,\<gamma>,mem) \<Longrightarrow> 
+                cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))" *)
 begin
 
-end
+end (* cofinality *)
   
     
 end
