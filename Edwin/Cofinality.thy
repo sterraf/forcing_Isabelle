@@ -64,10 +64,13 @@ lemma ordertype_idemp:
   assumes "Ord(\<gamma>)"
   shows "\<gamma> = ordertype(\<gamma>,Memrel(\<gamma>))" sorry
 
-lemma minimal_cofinal:
+lemma cf_is_ordertype:
   assumes "Ord(\<gamma>)"
   shows "\<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))" 
- (*using gamma_cofinal_gamma LeastI[of _ \<gamma>] ordertype_idemp  assms unfolding cf_def*)
+    (is "?P(cf(\<gamma>))")
+  using gamma_cofinal_gamma LeastI[of ?P \<gamma>] ordertype_idemp assms 
+  unfolding cf_def by blast
+(* 
 proof -
   from assms
   have "\<gamma>\<subseteq>\<gamma> \<and> cofinal(\<gamma>,\<gamma>,Memrel(\<gamma>)) \<and> \<gamma> = ordertype(\<gamma>,Memrel(\<gamma>))"  
@@ -76,18 +79,16 @@ proof -
   have "\<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> \<gamma> = ordertype(A,Memrel(\<gamma>))" ..
   then
   show ?thesis 
-    using LeastI[of _ \<gamma>] assms unfolding cf_def apply auto 
-  oops
-  
+    using LeastI[of ?P] assms unfolding cf_def by simp
+qed
+*)
     
-    
-  
 locale cofinality =
   assumes 
     (* Better with f_cofinal(f,\<delta>,\<gamma>,Memrel(\<gamma>)) ? *)
-    cota : "Ord(\<delta>) \<Longrightarrow> Limit(\<gamma>) \<Longrightarrow> function(f) \<Longrightarrow> domain(f) = \<delta> \<Longrightarrow>
+    cota : "Ord(\<delta>) \<Longrightarrow> Ord(\<gamma>) \<Longrightarrow> function(f) \<Longrightarrow> domain(f) = \<delta> \<Longrightarrow>
             cofinal_fun(f,\<gamma>,Memrel(\<gamma>)) \<Longrightarrow> cf(\<gamma>)\<le>\<delta>"
-    and idemp: "Limit(\<gamma>) \<Longrightarrow> A\<subseteq>\<gamma> \<Longrightarrow> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<Longrightarrow> 
+    and idemp: "Ord(\<gamma>) \<Longrightarrow> A\<subseteq>\<gamma> \<Longrightarrow> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<Longrightarrow> 
                 cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))"
     (* Is it better?? 
     and idemp': "Limit(\<gamma>) \<Longrightarrow> A\<subseteq>\<gamma> \<Longrightarrow> cofinal_predic(A,\<gamma>,mem) \<Longrightarrow> 
@@ -96,14 +97,13 @@ locale cofinality =
 begin
 (* probar 5.12 y 5.13(1,2) *)
   
-lemma cf_indempotent:
-  assumes "Limit(\<gamma>)"
+lemma cf_indemp:
+  assumes "Ord(\<gamma>)"
   shows "cf(\<gamma>) = cf(cf(\<gamma>))"  
 proof -
   from assms
   obtain A where "A\<subseteq>\<gamma>" "cofinal(A,\<gamma>,Memrel(\<gamma>))" "cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))"
-    using cf_def sorry
-      find_theorems "Least"
+    using cf_is_ordertype by blast
   with assms
   have "cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))" using idemp by simp
   also 
