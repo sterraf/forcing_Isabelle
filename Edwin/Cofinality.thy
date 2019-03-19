@@ -51,9 +51,38 @@ qed
 
 lemma "Limit(A) \<Longrightarrow> cofinal_fun(f,A,Memrel(A)) \<longleftrightarrow> cofinal_fun'(f,A,Memrel(A))"
   oops
+
+definition
+  cf :: "i\<Rightarrow>i" where 
+  "cf(\<gamma>) == \<mu> \<alpha>.  \<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> \<alpha> = ordertype(A,Memrel(\<gamma>))"
+  
+lemma gamma_cofinal_gamma:
+  assumes "Ord(\<gamma>)"
+  shows "cofinal(\<gamma>,\<gamma>,Memrel(\<gamma>))" sorry
     
+lemma ordertype_idemp:
+  assumes "Ord(\<gamma>)"
+  shows "\<gamma> = ordertype(\<gamma>,Memrel(\<gamma>))" sorry
+
+lemma minimal_cofinal:
+  assumes "Ord(\<gamma>)"
+  shows "\<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))" 
+ (*using gamma_cofinal_gamma LeastI[of _ \<gamma>] ordertype_idemp  assms unfolding cf_def*)
+proof -
+  from assms
+  have "\<gamma>\<subseteq>\<gamma> \<and> cofinal(\<gamma>,\<gamma>,Memrel(\<gamma>)) \<and> \<gamma> = ordertype(\<gamma>,Memrel(\<gamma>))"  
+    using gamma_cofinal_gamma ordertype_idemp assms by simp 
+  then
+  have "\<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> \<gamma> = ordertype(A,Memrel(\<gamma>))" ..
+  then
+  show ?thesis 
+    using LeastI[of _ \<gamma>] assms unfolding cf_def apply auto 
+  oops
+  
+    
+    
+  
 locale cofinality =
-  fixes cf::"i\<Rightarrow>i"
   assumes 
     (* Better with f_cofinal(f,\<delta>,\<gamma>,Memrel(\<gamma>)) ? *)
     cota : "Ord(\<delta>) \<Longrightarrow> Limit(\<gamma>) \<Longrightarrow> function(f) \<Longrightarrow> domain(f) = \<delta> \<Longrightarrow>
@@ -63,8 +92,6 @@ locale cofinality =
     (* Is it better?? 
     and idemp': "Limit(\<gamma>) \<Longrightarrow> A\<subseteq>\<gamma> \<Longrightarrow> cofinal_predic(A,\<gamma>,mem) \<Longrightarrow> 
                 cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))" *)
-    and minimal_cofinal: "Limit(\<gamma>) \<Longrightarrow> \<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> 
-                cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))"
     
 begin
 (* probar 5.12 y 5.13(1,2) *)
@@ -75,7 +102,8 @@ lemma cf_indempotent:
 proof -
   from assms
   obtain A where "A\<subseteq>\<gamma>" "cofinal(A,\<gamma>,Memrel(\<gamma>))" "cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))"
-    using minimal_cofinal by blast
+    using cf_def sorry
+      find_theorems "Least"
   with assms
   have "cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))" using idemp by simp
   also 
