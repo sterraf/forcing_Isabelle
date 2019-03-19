@@ -65,6 +65,27 @@ locale cofinality =
                 cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))" *)
 begin
 (* probar 5.12 y 5.13(1,2) *)
+  
+lemma cofinal_is_regular:
+  assumes "Limit(\<gamma>)"
+  shows "cf(\<gamma>) = cf(cf(\<gamma>))"  
+proof
+  fix A
+  assume "A\<subseteq>\<gamma>" "cofinal(A,\<gamma>,Memrel(\<gamma>))" "cf(\<gamma>) = ordertype(A,Memrel(\<gamma>)) "
+  with assms
+  have " cf(\<gamma>) =cf(ordertype(A,Memrel(\<gamma>)))" using idemp by simp
+  also have
+ "... =cf(cf(\<gamma>))" using\<open>cf(\<gamma>) =ordertype(A,Memrel(\<gamma>))\<close> by simp
+  with \<open>cf(\<gamma>) =cf(ordertype(A,Memrel(\<gamma>)))\<close>
+  have "cf(\<gamma>) = cf(cf(\<gamma>))"  by simp
+      
+      then have "cf(\<gamma>) \<subseteq> cf(cf(\<gamma>))"  using equalityD1  by auto
+  
+      
+  find_theorems "?A=?B \<Longrightarrow>?A\<subseteq>?B"
+    
+  
+end  
 end (* cofinality *)
   
     
