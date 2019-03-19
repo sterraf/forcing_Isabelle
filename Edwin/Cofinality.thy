@@ -69,10 +69,8 @@ lemma cf_is_ordertype:
 (*
 proof -
   from assms
-  have "\<gamma>\<subseteq>\<gamma> \<and> cofinal(\<gamma>,\<gamma>,Memrel(\<gamma>)) \<and> \<gamma> = ordertype(\<gamma>,Memrel(\<gamma>))"  
-    using gamma_cofinal_gamma ordertype_Memrel assms by simp 
-  then
-  have "\<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> \<gamma> = ordertype(A,Memrel(\<gamma>))" ..
+  have "\<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> \<gamma> = ordertype(A,Memrel(\<gamma>))"
+    using gamma_cofinal_gamma ordertype_Memrel[symmetric] assms by blast
   then
   show ?thesis 
     using LeastI[of ?P] assms unfolding cf_def by simp
