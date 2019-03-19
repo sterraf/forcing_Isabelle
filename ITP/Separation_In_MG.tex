@@ -1,0 +1,112 @@
+\documentclass[a4paper,UKenglish,cleveref, autoref]{lipics-v2019}
+%This is a template for producing LIPIcs articles. 
+%See lipics-manual.pdf for further information.
+%for A4 paper format use option "a4paper", for US-letter use option "letterpaper"
+%for british hyphenation rules use option "UKenglish", for american hyphenation rules use option "USenglish"
+%for section-numbered lemmas etc., use "numberwithinsect"
+%for enabling cleveref support, use "cleveref"
+%for enabling cleveref support, use "autoref"
+
+
+%\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
+
+\bibliographystyle{plainurl}% the mandatory bibstyle
+
+\title{Mechanization of Separation in Generic Extensions} %TODO Please add
+
+%\titlerunning{}%optional, please use if title is longer than one line
+
+\author{Emmanuel Gunther}{FAMAF, Universidad Nacional de Córdoba, [optional: Address], Argentina}{gunther@famaf.unc.edu.ar}{}{Partially supported by a CONICET scholarship}%TODO mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty. Please provide at least the name of the affiliation and the country. The full address is optional
+
+\author{Miguel Pagano}{FAMAF, Universidad Nacional de Córdoba, Argentina}{pagano@famaf.unc.edu.ar}{}{}%{[orcid]}{[funding]}
+\author{Pedro Sánchez Terraf}{CIEM-FAMAF, Universidad Nacional de Córdoba, Argentina}{sterraf@famaf.unc.edu.ar}{}{}%{[orcid]}{[funding]}
+
+\authorrunning{E. Gunther and M. Pagano and P. Sánchez Terraf}%TODO mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et al.'
+
+\Copyright{Emmanuel Gunther and Miguel Pagano and Pedro Sánchez Terraf}%TODO mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+
+\ccsdesc[100]{General and reference~General literature}
+\ccsdesc[100]{General and reference}%TODO mandatory: Please choose ACM 2012 classifications from https://dl.acm.org/ccs/ccs_flat.cfm 
+
+\keywords{Isabelle/ZF, forcing, names, generic extension, constructibility}%TODO mandatory; please add comma-separated list of keywords
+
+\category{}%optional, e.g. invited paper
+
+\relatedversion{A full version of the paper is available at \url{https://arxiv.org/abs/1901.03313}}%optional, e.g. full version hosted on arXiv, HAL, or other respository/website
+%\relatedversion{A full version of the paper is available at \url{...}.}
+
+\supplement{The whole Isabelle/ZF development is available at \url{https://arxiv.org/abs/1901.03313}}%optional, e.g. related research data, source code, ... hosted on a repository like zenodo, figshare, GitHub, ...
+
+%\funding{(Optional) general funding statement \dots}%optional, to capture a funding statement, which applies to all authors. Please enter author specific funding statements as fifth argument of the \author macro.
+
+\acknowledgements{We would like to thanks to anonymous referees of a
+  previous version of this paper that helped us to enhance the
+  presentation.}%optional
+
+%\nolinenumbers %uncomment to disable line numbering
+
+%\hideLIPIcs  %uncomment to remove references to LIPIcs series (logo, DOI, ...), e.g. when preparing a pre-final version to be uploaded to arXiv or another public repository
+
+%Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\EventEditors{John Q. Open and Joan R. Access}
+\EventNoEds{2}
+\EventLongTitle{42nd Conference on Very Important Topics (CVIT 2016)}
+\EventShortTitle{CVIT 2016}
+\EventAcronym{CVIT}
+\EventYear{2016}
+\EventDate{December 24--27, 2016}
+\EventLocation{Little Whinging, United Kingdom}
+\EventLogo{}
+\SeriesVolume{42}
+\ArticleNo{23}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Some very useful LaTeX packages include:
+% (uncomment the ones you want to load)
+\usepackage{isabelle,isabellesym}
+\usepackage{csquotes}
+\input{header-draft}
+
+\begin{document}
+
+\maketitle
+\input{abstract}
+
+\input{intro}
+
+\input{isabelle}
+
+\input{zfc-axioms}
+
+\input{renaming}
+
+\input{generic-extensions}
+
+\input{recursion}
+
+% \input{prior-results}
+
+\input{hacking}
+
+\input{easy-axioms}
+
+\input{forcing}
+
+\input{proof-of-separation}
+
+
+\input{conclusion}
+
+\bibliography{../LSFA/citados}
+
+\newpage
+\onecolumn
+\appendix[A short overview of our development]
+\input{appendix}
+% that's all folks
+\end{document}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% ispell-local-dictionary: "american"
+%%% End:

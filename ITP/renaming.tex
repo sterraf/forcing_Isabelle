@@ -1,0 +1,128 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
+\section{Renaming}
+\label{sec:renaming}
+\newcommand{\renaming}[2]{(#1)[#2]}
+\newcommand{\inFm}[2]{#1 \in #2}
+\newcommand{\eqFm}[2]{#1 = #2}
+\newcommand{\negFm}[1]{\neg #1}
+\newcommand{\andFm}[2]{#1 \wedge #2}
+\newcommand{\forallFm}[1]{\forall #1}
+
+\newcommand{\inIFm}[2]{\mathsf{Member}(#1,#2)}
+\newcommand{\eqIFm}[2]{\mathsf{Equal}(#1,#2)}
+\newcommand{\nandIFm}[2]{\mathsf{Nand}(#1,#2)}
+\newcommand{\forallIFm}[1]{\mathsf{Forall(#1)}}
+
+
+In the course of our work we need to reason about renaming of formulas
+and its effect on their satisfiability. Internalized formulas are
+implemented using de Bruijn indices for variables and the arity of a
+formula $\phi$ gives the least natural number containing all the free
+variables in $\phi$. Following Fiore et al. \cite{fiore-abssyn}, one can
+understand the arity of a formula as the context of the free
+variables; notice that the arity of $\forallFm{\phi}$ is the
+predecessor of the arity of $\phi$. Renamings are, consequently,
+mappings between finite sets; since we can think of $\mathsf{succ}(n)$
+as the coproduct $1+n = \{0\} \cup \{1,\dots,n\}$, then given a
+renaming $f \colon n \to m$, the 
+unique morphism $\mathsf{id}_1+f \colon 1+n \to 1+m$ is used to rename
+free variables in a quantified formula. 
+
+\begin{definition}[Renaming]
+  Let $\phi$ be a formula of arity $n$ and let $f \colon n \to m$, the
+  renaming of $\phi$ by $f$, denoted $\renaming{\phi}{f}$, is defined
+  by recursion on $\phi$:
+  \begin{gather*}
+    \renaming{\inFm{i}{j}}{f} = \inFm{f\,i}{f\,j}\\
+    \renaming{\eqFm{i}{j}}{f} = \eqFm{f\,i}{f\,j}\\
+    \renaming{\negFm{\phi}}{f} = \negFm{\renaming{\phi}{f}}\\
+    \renaming{\andFm{\phi}{\psi}}{f} = \andFm{\renaming{\phi}{f}}{\renaming{\psi}{f}}\\
+    \renaming{\forallFm{\phi}}{f} = \forallFm{\renaming{\phi}{\mathsf{id}_1+f}}
+  \end{gather*}
+\end{definition}
+
+As usual, if $M$ is a set, $a_0,\dots,a_{n-1}$ are elements of $M$, and
+$\phi$ is a formula of arity $n$, we write
+\[
+M,[a_0,\dots,a_{n-1}] \models \phi
+\]
+to denote that $\phi$ is satisfied by $M$ when $i$ is interpreted
+as $a_i$ ($i=0,\dots,n-1$). We call the list $[a_0,\dots,a_{n-1}]$ the
+\emph{environment}.
+
+The action of renaming on environments re-indexes the variables. An
+easy proof connects satisfaction with renamings.
+\begin{lemma}
+  \label{lem:renaming}
+  Let $\phi$ be a formula of arity $n$, $f \colon n \to m$ be a
+  renaming, and let $\rho=[a_1,\ldots,a_n]$ and
+  $\rho'=[b_1,\ldots,b_m]$ be environments of length $n$ and $m$,
+  respectively. If for all $i \in n$, $a_i = b_{j}$ where $j=f\,i$,
+  then $M,\rho\models \phi$ is equivalent to
+  $M,\rho' \models \renaming{\phi}{f}$.
+\end{lemma}
+
+An important resource in Isabelle/ZF is the facility for defining
+inductive sets \cite{paulson2000fixedpoint,paulson1995set} together
+with a principle for defining functions by structural recursion.
+Internalized formulas are a prime example of this, so we define
+a function \isa{ren} that associates to each formula an internalized
+function that can be later applied to suitable arguments. Notice that
+Paulson used \isa{Nand} because it is more economical.
+\begin{isabelle}
+\isamarkuptrue%
+\isacommand{consts}\isamarkupfalse%
+\ ren\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isacharequal}{\isachargreater}i{\isachardoublequoteclose}\isanewline
+\isacommand{primrec}\isamarkupfalse%
+\isanewline
+\ {\isachardoublequoteopen}ren{\isacharparenleft}Member{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
+\ \ {\isacharparenleft}{\isasymlambda}\ n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ Member\ {\isacharparenleft}f{\isacharbackquote}x{\isacharcomma}\ f{\isacharbackquote}y{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \isanewline
+\ {\isachardoublequoteopen}ren{\isacharparenleft}Equal{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
+\ \ {\isacharparenleft}{\isasymlambda}\ n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ Equal\ {\isacharparenleft}f{\isacharbackquote}x{\isacharcomma}\ f{\isacharbackquote}y{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \isanewline
+\ {\isachardoublequoteopen}ren{\isacharparenleft}Nand{\isacharparenleft}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
+\ \ {\isacharparenleft}{\isasymlambda}\ n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ \isanewline
+\ \ \ Nand\ {\isacharparenleft}ren{\isacharparenleft}p{\isacharparenright}{\isacharbackquote}n{\isacharbackquote}m{\isacharbackquote}f{\isacharcomma}\ ren{\isacharparenleft}q{\isacharparenright}{\isacharbackquote}n{\isacharbackquote}m{\isacharbackquote}f{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \isanewline
+\ {\isachardoublequoteopen}ren{\isacharparenleft}Forall{\isacharparenleft}p{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
+\ \  {\isacharparenleft}{\isasymlambda}\ n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ \isanewline
+\ \ \ Forall\ {\isacharparenleft}ren{\isacharparenleft}p{\isacharparenright}{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isacharbackquote}succ{\isacharparenleft}m{\isacharparenright}{\isacharbackquote}sum{\isacharunderscore}id{\isacharparenleft}n{\isacharcomma}f{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+In the last equation, \isa{sum{\isacharunderscore}id} corresponds to
+the coproduct morphism $\mathsf{id}_{1}+f \colon 1 + n \to 1 +
+n$. Since the schema for recursively defined functions does not allow
+parameters, we are forced to return a function of three arguments
+(\isa{n,m,f}). This also exposes some inconveniences of working in the
+untyped realm of set theory; for example to use \isa{ren} we will need
+to prove that the renaming is a function. Besides some auxiliary
+results (for example that the application of renaming to suitable
+arguments yields a formula), the main result corresponding to
+Lemma~\ref{lem:renaming} is:
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ sats{\isacharunderscore}iff{\isacharunderscore}sats{\isacharunderscore}ren\ {\isacharcolon}\ \isanewline
+\ \ \isakeyword{fixes}\ {\isasymphi}\isanewline
+\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}{\isasymphi}\ {\isasymin}\ formula{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ \ {\isachardoublequoteopen}{\isasymAnd}\ n\ m\ {\isasymrho}\ {\isasymrho}{\isacharprime}\ f\ {\isachardot}\ \isanewline
+\ \ {\isasymlbrakk}n{\isasymin}nat\ {\isacharsemicolon}\ m{\isasymin}nat\ {\isacharsemicolon}\ f\ {\isasymin}\ n{\isasymrightarrow}m\ {\isacharsemicolon}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymle}\ n\ {\isacharsemicolon}\isanewline
+\ \ \ \ \ {\isasymrho}\ {\isasymin}\ list{\isacharparenleft}M{\isacharparenright}\ {\isacharsemicolon}\ {\isasymrho}{\isacharprime}\ {\isasymin}\ list{\isacharparenleft}M{\isacharparenright}\ {\isacharsemicolon}\ \isanewline
+\ \ \ {\isasymAnd}\ i\ {\isachardot}\ i{\isacharless}n\ {\isasymLongrightarrow}\ nth{\isacharparenleft}i{\isacharcomma}{\isasymrho}{\isacharparenright}\ {\isacharequal}\ nth{\isacharparenleft}f{\isacharbackquote}i{\isacharcomma}{\isasymrho}{\isacharprime}{\isacharparenright}\ {\isasymrbrakk}\ {\isasymLongrightarrow}\isanewline
+\ \ sats{\isacharparenleft}M{\isacharcomma}{\isasymphi}{\isacharcomma}{\isasymrho}{\isacharparenright}\ {\isasymlongleftrightarrow}\ sats{\isacharparenleft}M{\isacharcomma}ren{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharbackquote}n{\isacharbackquote}m{\isacharbackquote}f{\isacharcomma}{\isasymrho}{\isacharprime}{\isacharparenright}{\isachardoublequoteclose}\end{isabelle}
+
+All our uses of this lemma involve concrete renamings on small
+numbers, but we also tested it with more abstract ones for arbitrary
+numbers. All the renamings of the first kind follow the same pattern
+and, more importantly, share equal proofs. We would like to develop
+some \texttt{ML} tools in order to automatize this.
+%% We think that it should be possible, and clearer,
+%% to express all the current renamings in the theory \isa{Formula} using
+%% our approach. 
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "Separation_In_MG"
+%%% ispell-local-dictionary: "american"
+%%% End: 
