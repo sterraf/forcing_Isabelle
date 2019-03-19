@@ -60,21 +60,17 @@ lemma gamma_cofinal_gamma:
   assumes "Ord(\<gamma>)"
   shows "cofinal(\<gamma>,\<gamma>,Memrel(\<gamma>))" sorry
     
-lemma ordertype_idemp:
-  assumes "Ord(\<gamma>)"
-  shows "\<gamma> = ordertype(\<gamma>,Memrel(\<gamma>))" sorry
-
 lemma cf_is_ordertype:
   assumes "Ord(\<gamma>)"
   shows "\<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))" 
     (is "?P(cf(\<gamma>))")
-  using gamma_cofinal_gamma LeastI[of ?P \<gamma>] ordertype_idemp assms 
+  using gamma_cofinal_gamma LeastI[of ?P \<gamma>] ordertype_Memrel[symmetric] assms 
   unfolding cf_def by blast
-(* 
+(*
 proof -
   from assms
   have "\<gamma>\<subseteq>\<gamma> \<and> cofinal(\<gamma>,\<gamma>,Memrel(\<gamma>)) \<and> \<gamma> = ordertype(\<gamma>,Memrel(\<gamma>))"  
-    using gamma_cofinal_gamma ordertype_idemp assms by simp 
+    using gamma_cofinal_gamma ordertype_Memrel assms by simp 
   then
   have "\<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> \<gamma> = ordertype(A,Memrel(\<gamma>))" ..
   then
