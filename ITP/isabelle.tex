@@ -30,7 +30,7 @@ One further example is given by induction on the natural numbers
 x.\ P(x)\ \isasymLongrightarrow\ P(\isatt{succ}(x))) \isasymrbrakk
 \ \isasymLongrightarrow\ P(n), 
 \]
-where we are omitting the ``typing'' assumtions on $n$ and $x$.
+where we are omitting the ``typing'' assumptions on $n$ and $x$.
 
 We work in the object theory \emph{Isabelle/ZF}. Two types are defined
 in this theory: \tyo, the object-Booleans, and \tyi,
@@ -53,8 +53,8 @@ model with an environment and an internalized formula (where the
 relation symbol is interpreted as membership). The set 
 \isatt{formula::"\tyi"}
  of internalized
-formulas is defined by recursion and hence it is possible to perform
-inductive arguments using them. In this sense, the object-logic level
+formulas is inductively defined and hence it is possible to perform
+inductive arguments on them, such as the definition of the renaming map. In this sense, the object-logic level
 is further divided into \emph{internal} and \emph{external}
 sublevels. 
 

@@ -18,15 +18,14 @@ In the course of our work we need to reason about renaming of formulas
 and its effect on their satisfiability. Internalized formulas are
 implemented using de Bruijn indices for variables and the arity of a
 formula $\phi$ gives the least natural number containing all the free
-variables in $\phi$. Following Fiore et al. \cite{fiore-abssyn}, one can
-understand the arity of a formula as the context of the free
+variables in $\phi$. Following Fiore et al. \cite{fiore-abssyn}, one
+can understand the arity of a formula as the context of the free
 variables; notice that the arity of $\forallFm{\phi}$ is the
-predecessor of the arity of $\phi$. Renamings are, consequently,
-mappings between finite sets; since we can think of $\mathsf{succ}(n)$
-as the coproduct $1+n = \{0\} \cup \{1,\dots,n\}$, then given a
-renaming $f \colon n \to m$, the 
-unique morphism $\mathsf{id}_1+f \colon 1+n \to 1+m$ is used to rename
-free variables in a quantified formula. 
+predecessor of the arity of $\phi$. In order to understand renamings,
+it is helpful to think of $\mathsf{succ}(n)$ as the coproduct
+$1+n = \{0\} \cup \{1,\dots,n\}$; given a renaming $f \colon n \to m$,
+the unique morphism $\mathsf{id}_1+f \colon 1+n \to 1+m$ is used to
+rename free variables in a quantified formula.
 
 \begin{definition}[Renaming]
   Let $\phi$ be a formula of arity $n$ and let $f \colon n \to m$, the
@@ -76,17 +75,17 @@ Paulson used \isa{Nand} because it is more economical.
 \isacommand{primrec}\isamarkupfalse%
 \isanewline
 \ {\isachardoublequoteopen}ren{\isacharparenleft}Member{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
-\ \ {\isacharparenleft}{\isasymlambda}\ n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ Member\ {\isacharparenleft}f{\isacharbackquote}x{\isacharcomma}\ f{\isacharbackquote}y{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ {\isacharparenleft}{\isasymlambda}n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ Member\ {\isacharparenleft}f{\isacharbackquote}x{\isacharcomma}\ f{\isacharbackquote}y{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \ \isanewline
 \ {\isachardoublequoteopen}ren{\isacharparenleft}Equal{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
-\ \ {\isacharparenleft}{\isasymlambda}\ n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ Equal\ {\isacharparenleft}f{\isacharbackquote}x{\isacharcomma}\ f{\isacharbackquote}y{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ {\isacharparenleft}{\isasymlambda}n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ Equal\ {\isacharparenleft}f{\isacharbackquote}x{\isacharcomma}\ f{\isacharbackquote}y{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \ \isanewline
 \ {\isachardoublequoteopen}ren{\isacharparenleft}Nand{\isacharparenleft}p{\isacharcomma}q{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
-\ \ {\isacharparenleft}{\isasymlambda}\ n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ \isanewline
-\ \ \ Nand\ {\isacharparenleft}ren{\isacharparenleft}p{\isacharparenright}{\isacharbackquote}n{\isacharbackquote}m{\isacharbackquote}f{\isacharcomma}\ ren{\isacharparenleft}q{\isacharparenright}{\isacharbackquote}n{\isacharbackquote}m{\isacharbackquote}f{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ {\isacharparenleft}{\isasymlambda}n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ 
+Nand\ {\isacharparenleft}ren{\isacharparenleft}p{\isacharparenright}{\isacharbackquote}n{\isacharbackquote}m{\isacharbackquote}f{\isacharcomma}\ ren{\isacharparenleft}q{\isacharparenright}{\isacharbackquote}n{\isacharbackquote}m{\isacharbackquote}f{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \ \isanewline
 \ {\isachardoublequoteopen}ren{\isacharparenleft}Forall{\isacharparenleft}p{\isacharparenright}{\isacharparenright}\ {\isacharequal}\isanewline
-\ \  {\isacharparenleft}{\isasymlambda}\ n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ \isanewline
+\ \  {\isacharparenleft}{\isasymlambda}n\ {\isasymin}\ nat\ {\isachardot}\ {\isasymlambda}\ m\ {\isasymin}\ nat{\isachardot}\ {\isasymlambda}f\ {\isasymin}\ n\ {\isasymrightarrow}\ m{\isachardot}\ \isanewline
 \ \ \ Forall\ {\isacharparenleft}ren{\isacharparenleft}p{\isacharparenright}{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isacharbackquote}succ{\isacharparenleft}m{\isacharparenright}{\isacharbackquote}sum{\isacharunderscore}id{\isacharparenleft}n{\isacharcomma}f{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 

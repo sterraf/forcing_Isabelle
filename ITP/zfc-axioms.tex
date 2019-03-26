@@ -34,7 +34,7 @@ hypotheses.
 \end{lemma}
 \begin{proof}
   (Sketch) The L\"owenheim-Skolem 
-  Theorem ensures that there is an countable elementary submodel 
+  Theorem ensures that there is a countable elementary submodel 
   $\lb N',E\restr N'\rb\preccurlyeq  \lb N,E\rb$ which must also be
   well founded; then the 
   Mostowski collapsing function \cite[Def.~I.9.31]{kunen2011set} sends $\lb
@@ -42,7 +42,7 @@ hypotheses.
   isomorphically to some $\lb M,\in\rb$ with  $M$ transitive.
 \end{proof}
 
-In this stage of our implementation, we chose a presentation of the
+At this stage of our implementation, we chose a presentation of the
 $\ZF$ axioms that would be most
 compatible with the development by Paulson. For
 instance, the predicate
@@ -87,10 +87,10 @@ extension satisfies Separation for any particular number of
 parameters, but not in general. This is a consequence that induction
 on terms of type \tyo{} is not available.
 
-It is also possible define a predicate that states that a set
+It is also possible to define a predicate that states that a set
 satisfies a (possibly infinite) set of formulas, and then to state
 that ``$M$ satisfies $\ZF$'' in a standard way. With the
-aforementioned restriction on parameters, it can be shown that this
+aforementioned restriction on parameters, we have shown that this
 statement is equivalent to the set of assumptions of the locale
 \isatt{M\_ZF}.
 %

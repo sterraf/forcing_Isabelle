@@ -1,0 +1,490 @@
+
+----------------------- REVIEW 1 ---------------------
+PAPER: 165
+TITLE: Mechanization of Separation in Generic Extensions
+AUTHORS: Emmanuel Gunther, Miguel Pagano and Pedro Sánchez Terraf
+
+Overall evaluation: -2 (reject)
+
+----------- Overall evaluation -----------
+========== Summary =============
+
+
+The paper "Mechanization of Separation in Generic Extensions" presents a
+formalization in Isabelle/ZF of Cohen's forcing. To this end, they build
+on Paulson's ZF theory in Isabelle, which they partly modify. A prequel
+of this work was already presented at LSFA'18 by the same authors. In
+this paper, they focus on the proof that the extended forcing model M[G]
+satisfies ZF axioms, and especially the Separation axiom which turns out
+to be more problematic. After a general introduction to forcing and
+existing works (almost none) on its formalization, the paper essentially
+consists in a survey of the project and of the techniques used in the
+formalization, before a particular focus on the proof of validity for
+Separation and Powerset.
+
+
+
+========== Review =============
+
+While I am convinced of the interest of formalizations and aware of
+their potential difficulty, I find myself bothered with the nature of
+this paper. Indeed, it mainly describes the work of the author in order
+to formalize the theory of Cohen's forcing, and as such consists of an
+alternation between Isabelle code and its description. Again, I am
+sincerely in favor of works like this one, but insofar as it does not
+bring any thing new from a theoretical/logical point of view, I am
+afraid that it falls out of LICS scope. Conferences on the topic (e.g.,
+ITP) would have been, I believe, much more adapted for presenting such a
+work. In particular, I cannot see how it can be of interest for people
+that are not interested in formalization: most of the paper is devoted
+to technicalities in implementing the formalization. For instance, these
+(subjectively chosen) extracts highlight the fact that, in my opinion,
+the paper is already more directed to the specific community around
+formalized mathematics and proof assistants than to the broad audience
+of LICS:
+- "Since the schema for recursively defined functions does not allow
+parameters, we are forced to return a function of three arguments (n,m,f )."
+- "Nevertheless, in order to have a neater presentation, we have
+stripped off several sections concerning L from the theories L_axioms
+and Internalize, and we merged them to form the new file Internalizations."
+- "We note in passing that it is possible to abbreviate expressions in
+Isabelle by the use of let statements or is qualifiers, and
+metavariables (whose identifiers start with a question mark)."
+
+Moreover, I would have expected at least a bit of discussion on the
+benefits/drawbacks of choosing Isabelle/ZF over other possible
+frameworks (Coq, Mizar, Isabelle/HOL, HOL Light, ... and the
+corresponding underlying logics).
+
+Last, I find the paper really hard to read without being familiar with
+Isabelle/ZF and/or the specific project. As I said, the paper including
+a lot of code lines, it requires to process a lot of
+notations/declarations (for instance f'x or sats(M,φ,[a,b,c])), and
+sometimes complicate the readings. In particular, the whole renaming
+process makes some notations more computer- than human-readable. For
+instance, in p8, the reader has to remember that x_0 ∈ x_2 is
+transformed into x_4 ∈ x_6 when it is inside the forces(_) function,
+because the latter have 4 more free variables and thus imposes a name
+translations.
+
+To wrap it up, despite my personal interest for forcing and
+formalization of mathematics (and hereby for the present work), I cannot
+recommend the acceptation of this paper at LICS. Nonetheless, I strongly
+advise the authors to improve the presentation and to consider applying
+to a conference or journal more specifically focused on formalized
+mathematics.
+
+
+========= Comments ============
+
+Here follows a list of specific comments, typos and so on.
+Globally, I would suggest to consider doing a trade-off between sticking
+to Isabelle code and making the paper more readable. In particular, I
+would take a step back from the formalization and try to avoid all the
+part describing the code without further informations (e.g., "in the
+file Bli there is 30 lines of this"). Also, make sure that no notation
+is used without having been previously introduced in the text (e.g., ed,
+edrel, etc.).
+
+*p.1*
+
+V "strategy: Since" -> since
+- "the fruitful use of forcing techniques to extend the Curry-Howard
+isomorphism to classical axioms" -> this claim is misleading. The two
+papers you cite show how to express forcing within Krivine
+realizability, a framework which is already classical. Therefore, in
+these papers, forcing techniques are *not* used to extend CH to
+classical logic (which has to do with control operators, not forcing).
+They rather unveil the computational content of forcing within Krivine
+realizability, just like Jaber et al. show how to define it within type
+theory [14,15].
+
+
+*p2*
+
+V "a version of Rasiowa-Sikorski" -> ...'s theorem?
+V "typing assumtions" -> assumptions
+- sats:: "i ⇒ i ⇒ i ⇒ o" -> without exploring the code, I find it hard
+to understand the type of sats
+
+
+*p3*
+
+- ∈ restricted to M -> this suggests that it is defined outside of M,
+right? Isn't this strange?
+V "an countable" -> a countable
+V "in this stage" -> at this stage?
+- relative quantification -> relativized? (it seems more natural to me
+and you speak of "relativization" all the time afterwards. Also, I would
+parenthesize ∀x.(C(x) → φ) to make sure it is read correctly
+- induction on terms of type o is not available -> is this related to
+the chosen framework (Isabelle/ZF) or is it more general?
+V "It is also possible define" -> to define
+V "it is also possible", "it can be shown" -> if you did it, say it as
+such, otherwise I am not sure that this is informative or useful (but I
+might be missing something)
+M en "it can be shown" lo cambié por "we have shown"
+V think of succ(n) as .. -> I have been a bit confused by your
+explanation, because I didn't understand at first the relation of succ
+with the rest of the paragraph and I was thinking that you wanted the
+reader to think to the function succ itself, not as a renaming...
+- block starting at "consts ren"  -> I am not sure of the utility of
+giving the four examples in the paper...
+
+
+
+*p4*
+
+? develop ML tools -> good idea indeed, seems boring to do manually
+otherwise
+- a preorder with top -> is top 1 in your tuple?
+V its name \dot a of M -> \dot a in M (of \dot a \in M)
+- "As is well-known ..." -> come a bit out of nowhere
+- "x ed y ⇐⇒ ..." -> what is ed? Isn't it a definition rather than an
+equivalence?
+- edrel, edclose -> we don't know what they are?
+- (r^+)-''{a} -> is the reader expected to be able to parse this?
+
+
+*p5*
+
+- 2) Originally,... 4) ... -> again, why is it informative for external
+reader? (by this, I mean not an Isabelle/ZF developer)
+- Nervetheless, in order to ... -> again, it looks more like a
+description of your technical process than like something useful for the
+reader.
+
+
+*p6*
+
+- as it is defined using Separation, so one needsx -> remove "so"
+- Union is absolute for any transitive class -> is it well-known ?
+
+
+*p7*
+
+- "We note in passing that it is possible to abbreviate expression in
+Isabelle..." -> I don't want to rude, but I really don't see how this
+could be a relevant information in a LICS paper...
+
+*p8*
+
+- as said above, the use of variable names x_0, x_1, etc that are
+automatically translated in forces makes it hard to read...
+- "two instances" -> which are?
+- using absoluteness -> the absoluteness of?
+- in the last block of code, the reader is left guessing what p,l,o,χ are
+
+*p9*
+
+- you should give a reference for Theorem 8 & 9
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 165
+TITLE: Mechanization of Separation in Generic Extensions
+AUTHORS: Emmanuel Gunther, Miguel Pagano and Pedro Sánchez Terraf
+
+Overall evaluation: -2 (reject)
+
+----------- Overall evaluation -----------
+Summary:
+
+This paper presents a formalization in Isabelle of some axioms of Set theory of a generic extension of
+a model of Set theory using forcing. The main axiom, according to the authors, that has been shown to
+hold in a generic extension is Separation. The paper starts by presenting very briefly Isabelle, axioms of
+Set theory, mentioning the representation of first-order formulas as sets done by Paulson and
+discuss their presentation of renaming of formulas.
+Then the authors explain briefly the generic extension of a model of Set theory using forcing,
+some modifications they have done on the development of Paulson of “ZF-Constructible”.
+The authors explain how to prove the “easy axioms” first. Then they present the fundamental lemmas
+of forcing which are given as axioms in the formalization. After that, they show that Separation holds in
+the generic extension providing the fundamental lemmas holds. Finally, they conclude by discussing
+how the main missing axiom, i.e. Replacement, could be proven.
+
+
+Evaluation:
+
+Overall, I can’t see more in this paper than a formalization exercise, following the library developed
+by Paulson and the textbook of Kunen. The reader does not get any insight on forcing in Set theory,
+and very few on how to formalize theorems on Set theoretic tools in Isabelle. For those reasons,
+I suggest to the authors to submit their work to a more appropriate venue such as CPP or ITP,
+and focus more on the insight of the formalization. 
+
+I think this paper is very hard to follow for a general audience that does not know about Cohen forcing
+and/or Isabelle. The paper interleaves short explanations on Set theory and forcing with technical remarks
+on the Isabelle formalization in a rather unstructured way, which makes it even harder to read.
+
+
+Some Remarks:
+
+- “We think that this project constitutes an interesting test-case for the current technology of formalization of mathematics, in particular for the need of handling several layers of reasoning. “
+Not really, it is only formalization of set theory, which is a very little part of what is usually considered when one say formalizing mathematics. For instance, the work of the Mathematical Component Library in Coq is more in this flavor of multiple layers of definitions/reasoning. 
+- “It might be a little surprising the lack of formalizations of forcing and generic extensions”
+It is indeed disappointing, it seems that the author have only partially formalize that given a good forcing translation, the induced generic model is indeed a model of Set theory. But nothing is done on concrete translations which may be the hard part in Isabelle.
+
+
+Questions to the authors:
+“We are only able to prove that the generic extension satisfies Separation for any particular number of parameters, but not in general.”
+This looks like a strong limitation, can you comment on this.
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 165
+TITLE: Mechanization of Separation in Generic Extensions
+AUTHORS: Emmanuel Gunther, Miguel Pagano and Pedro Sánchez Terraf
+
+Overall evaluation: -2 (reject)
+
+----------- Overall evaluation -----------
+Summary:
+
+This paper presents a formalization of the separation axiom from set theory using the forcing library that has already been built in Isabelle/ZF by Paulson. The main contribution of the paper is a formalization of parts of Kunen's textbook in Isabelle/ZF.
+
+Evaluation:
+
+The paper is decently written. As someone whose poison of choice is Coq, I nevertheless found the paper fairly easy to follow since it doesn't use any complicated Isabelle-specific machinery.
+
+Despite this, I regret to say that I cannot recommend acceptance at LICS.
+
+My biggest complaint is that this work does not seem to provide the kind of fundamental contributions to logic that LICS is looking for. There is no new mathematics here, and this isn't even the first formalization of separation.
+
+I think a conference like CPP or ITP is a much better fit for this kind of paper that is more of a documentation of a formalization project than a description of new results.
+
+I am not giving a more thorough review because I think the program committees of these other conferences would be better equipped to critique a formalization artifact.
+
+----------------------- REVIEW 4 ---------------------
+PAPER: 165
+TITLE: Mechanization of Separation in Generic Extensions
+AUTHORS: Emmanuel Gunther, Miguel Pagano and Pedro Sánchez Terraf
+
+Overall evaluation: -1 (weak reject)
+
+----------- Overall evaluation -----------
+This paper takes place in the long term goal of formalizing the method
+of forcing *in set theory*, such as introduced by Cohen in the sixties
+to prove the relative consistency of the negation of the continuum
+hypothesis.  (As opposed to more recent works cited by the authors, in
+which the method of forcing has been adapted to various
+type-theoretical frameworks, for instance to study its computational
+contents via the proofs-as-programs correspondence)
+
+Reusing parts of an earlier formalization (by Paulson) of Gödel's
+method of constructible sets in the proof-assistant Isabelle, the
+authors started a formalization of Cohen's method of forcing (in the
+same proof-assistant) based on Kunen's presentation of forcing in his
+famous textbook on set theory.  In this paper, the authors present the
+formalization of the soundness proof for the Separation scheme and for
+the Powerset axiom. (The treatment of the Extensionality, Regularity,
+Pairing, Union and Infinity axioms has been already published in an
+earlier paper by the same authors, whereas the Replacement scheme is
+still to be treated.)
+
+Together with the authors, I consider that the achievement of their
+long term goal (which is to formalize the *set-theoretic* method of
+forcing) would constitute a milestone in the formalization of
+mathematics. (After all, Cohen was awarded the Fields medal for this
+beautiful piece of mathematics.)  Moreover, the paper is technically
+sound and the methodology followed by the authors is clearly
+explained.
+
+Nevertheless, and despite its real interest, the paper suffers from
+important weaknesses which I will now address.
+
+The more important point is that the "increment" presented in this
+paper is (IMO) too little for being published in a top conference
+such as LICS.  Indeed, the paper only deals with the soundness of
+Separation and Powerset in generic extensions.  The formalization
+of the soundness of Extensionality, Regularity, Pairing, Union and
+Infinity has been published before, and the soundness of Replacement
+has not been formalized yet.  More important: the authors' work relies
+on some fundamental properties of forcing (relating the notion of
+satisfaction in the generic extension with the notion of satisfaction
+in the ground model) that have not been proven yet.  (In their formal
+development, these properties are only axiomatized.)
+
+The other point deals with the formalization choices of the authors,
+which are never really discussed.  It seems to me that the authors
+blindly followed Kunen's presentation of forcing (based on countable
+transitive models and the Rasiowa-Sikorski lemma), without comparing
+it with other presentations that would be (IMO) *much more suitable*
+to a formalization of forcing in a proof-assistant, especially in the
+perspective of deriving relative consistency proofs from this work.
+(Which is proof-theoretically impossible from Kunen's approach, as I
+explain below in my detailed comments.)  Moreover, the choice of the
+authors to follow Kunen's approach induces many complications in their
+formalization (for instance: the use of internalized formulas) that
+could have been avoided by taking another approach (for instance,
+the one presented by Jech in his textbook on Set theory).  Perhaps
+these complications explain why the authors had to split the
+presentation of their formalization in several papers.
+
+For all theses reasons - and despite the merits of the authors' work -
+I cannot recommend this paper for publication in the LICS conference.
+Nevertheless, I strongly encourage the authors to pursue their
+(valuable) effort, but also to consider other formalization choices
+that would be (IMO) more suited to their long-term goal, which is to
+get relative consistency proofs.
+
+
+Detailed comments and suggestions for improvement
+-------------------------------------------------
+
+p. 2, last paragraph of the 1st column. "It must be observed that
+predicates (...) do not correspond to first-order formulas".  Here,
+you should be more precise, to help the reader.  As far as I
+understand, you mean: "It must be observed that Isabelle higher-order
+predicates (...) do not correspond to ZF first-order formulas."
+
+p. 2, second column: internalized formulas.  Here you should justify
+why you use internalized formulas, that is: formulas as sets.
+
+IMO, it would be more natural to inductively define an Isabelle
+type "f" of first-order formulas (or codes of first-order formulas),
+together with a decoding function that would map each code of a
+first-order formula to a real Isabelle formula.  So that the image
+of this map would capture exactly the class you are interested in.
+(At least, this would be the standard way of doing in Coq or Agda.)
+Moreover, such a definition would reflect the fact that, in model
+theory, formulas are traditionally considered as external objects:
+they live in the ambient theory, outside all models.
+
+On the other hand, I agree that "formulas as sets" are useful to
+define the notion of constructible set, and the corresponding
+constructible universe.  But the point is that in forcing, we
+(normally) never need such internalized formulas!  The theory
+of forcing is independent from the theory of constructible sets,
+and this should appear in a formalization.  (Although both theories
+can be nicely combined in particular situations.)
+
+So why did you consider internalized formulas, and not external
+formulas, inductively defined "outside" as explained above?
+I understand you want to reuse parts of the (previous) formalization
+of the constructible universe, but this is (scientifically) a very
+weak argument.  IMO, considering internalized formulas for defining
+forcing is just introducing unnecessary complication.
+
+Moreover, considering internalized formulas (that is: formulas as
+sets) raises another problem, which is that there might be more
+internalized formulas than first-order formulas (such as seen
+outside).  Indeed, your axiomatized type "i" of ZF sets is nothing
+but a (hypothetical) model of ZF inside Isabelle.  But such a model
+can be non-standard, in the sense that it might contain more natural
+numbers (and thus more formulas-as-sets) than the Isabelle type of
+natural numbers.  Note that this problem is harmless in practice, but
+it is worth mentioning it.
+
+p. 2, last paragraph of 2nd column. "Forcing is a technique to extend
+very special kind of models...".  Actually, not.  There are several
+ways to construct forcing models of ZF, and the one you consider in
+your paper (taken from Kunen's book) is only *one* of them.
+
+The method you consider is based on countable transitive models
+(ctms) of ZF, whose main advantage is that they allow the use of
+the Rasiowa-Sikorski lemma to construct the generic filter.
+Basically, a ctm of ZF captures three properties:
+
+(1) M is a set equipped with a binary relation (to interpret
+  membership) that is well-founded _from the point of view of the
+  outer set-theoretic universe_ (the type "i").  This property
+  implies that M fulfills the foundation axiom, but the converse
+  is not true.  So basically, this property says that the notion
+  of well-foundedness is the same inside M and outside M (that is:
+  in the outer model "i").
+
+(2) M is transitive, which means that the binary relation interpreting
+  membership is membership itself (in the sense of "i").  This point
+  is actually just a technical facility, to avoid distinguishing two
+  membership predicates.
+
+(3) M is countable (from the point of view of the universe "i").
+  This point is crucial to prove the Rasiowa-Sikorski lemma.
+
+As you mention it in Lemma 1, the properties (2) and (3) are
+proof-theoretically free, since once you have (1), you can easily
+enforce (2) and (3) by combining a Mostowski collapse with the
+(descending) Löwenheim-Skolem theorem.
+
+But the point is that (1) is actually very strong, and more
+important: it is *not known* to be equivalent to the consistency
+of ZF.  By this, I mean that it might be the case that ZF has
+no transitive model while being consistent.
+
+This simple argument shows that transitive models of ZF, although
+they are very convenient from the point of view of model theory,
+*cannot* be used to prove relative consistency results about forcing
+(in the proof-theoretic sense), since there is *no known way* to
+turn an arbitrary model of ZF (such as given by the completeness
+theorem of 1st-order logic) into a transitive model.
+
+This is why other approaches have been developed in the literature.
+For instance, the construction of a Boolean-valued model of names
+inside the ground model M, and then a quotient by a suitable
+ultrafilter (see Jech's book for instance).  The main advantage of
+this approach is that it can be applied to _any model_ of ZF.  (In
+this case, the generic filter is directly constructed from the
+corresponding name, without the Rasiowa-Sikorski lemma.)
+
+However, the ground model M and the corresponding generic extension
+M[G] are in general *not* transitive models.  But from a proof-
+theoretic point of view, this property is definitely useless!
+
+So, since you are interested in relative consistency results (as
+mentioned in the introduction of the paper), why didn't you consider
+this alternative approach, that would work with _any_ model of ZF?
+(Moreover, it seems to me that the job of formalization would have
+been easier.)  IMO, the paper is dramatically missing a discussion
+about this important foundational issue (that has also a dramatic
+impact on your formalization choices).
+
+Another advantage of constructing the generic extension as a quotient
+of the Boolean-valued model of names (defined as a class within M)
+would be the following.  In your work, you need to distinguish three
+models:
+- the Isabelle type i of sets (the ambient model);
+- the ctm M, that is an object of type i (the ground model);
+- the generic extension M[G].
+By considering the approach I suggest, you would only need two models:
+- the type i, which would serve as a ground model M as well;
+- the generic extension M[G], that would be defined as a quotient of
+  the class of names (within i = M).
+
+p. 3, Proof of Lemma 1. "an countable..." -> "a countable".
+
+p. 3, second last par. of column 1.  "We are only able to prove that
+the generic extension satisfies Separation for any particular number
+of parameters, but not in general."  What do you mean precisely?
+At which level lives the quantification in "any particular number of
+parameters"?  A quantification over the set N (inside M and "i")?
+Or a quantification over the type of natural numbers in Isabelle?
+Please clarify this point.
+
+p. 3, next par. "possible define" -> "possible to define".
+
+p. 4, last remark before Sect. V.  "All our uses... (etc.)".
+What do you mean precisely?  I am completely confused.
+
+p. 4, first paragraph of Sect. V.  "be its _name_ in M".
+Here you should precise what you mean here by a name.
+Do you consider a special class of names inside M?
+Or do you consider all elements of M as names?
+(Note that both options are possible.)  From the discussion of
+Sect. V. A., it seems that you consider the second option, but
+you should clarify it.
+
+p. 5, second last par. before Sect. VI.  "Paulson proved... (etc.)"
+This discussion is really hard to follow, due to the several levels
+that are involved.
+
+p. 6, column 2: Sect. VIII.  In this section, you say that the
+fundamental properties of forcing are axiomatized (in a locale)
+rather than proved.  IMO, these properties should have been proven
+first (before proving the soundness of the axioms of ZF), since they
+are at the core of the method of forcing.
+
+p. 9, column 1, 3rd paragraph: "The Replacement Axiom [...] requires
+more work to be done.  In Kunen it requires a relativized version
+[...] of the Reflection Principle."  IMO, this requirement is another
+drawback of following Kunen's approach.  By taking the other method I
+suggest, you would definitely not need the Reflection Principle to
+prove the soundness of Replacement.
+
+------------------------------------------------------
