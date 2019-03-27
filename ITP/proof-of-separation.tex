@@ -32,9 +32,7 @@ To show that
 \[
 S\defi\{x\in c : M[G],[x,w]\models \phi(x_0,x_1)\} \in M[G],
 \]
-it is enough to provide a name $n\in M$ for this set.
- 
-The candidate name is
+it is enough to provide a name $n\in M$ for this set. The candidate name is
 \begin{equation}\label{eq:4}
 n \defi \{u \in\dom(\pi)\times\PP :M,[u,\PP,\leq,\1,\sig,\pi]\models \psi\}
 \end{equation}
@@ -139,8 +137,9 @@ Note this is the same as (\ref{eq:2}). Hence, tracing the equivalence
 up to (\ref{eq:1}), we can show that $x=\val(G,\th)\in \val(G,n)$
 (lines 319--337), finishing the main lemma.
 
-The last 20 lines of the theory show, using absoluteness, the two
-instances of Separation for $M[G]$:
+The last 20 lines of the theory show, using absoluteness of
+Separation, every instance of Separation for $M[G]$ for formulas with
+at most two parameters:
 
 \begin{isabelle}
 \isacommand{theorem}\isamarkupfalse%
@@ -149,8 +148,7 @@ instances of Separation for $M[G]$:
 \ \ \ \ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\ \isakeyword{and}\isanewline
 \ \ \ \  {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isacharequal}\ {\isadigit{1}}\ {\isasymor}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharequal}{\isadigit{2}}{\isachardoublequoteclose}\isanewline
 \ \ \isakeyword{shows}\ \ \isanewline
-\ \ \ \ {\isachardoublequoteopen}{\isasymforall}a{\isasymin}{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharparenright}{\isachardot}\isanewline 
- \ \ \ \ \  separation{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymlambda}x{\isachardot}sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymphi}{\isacharcomma}{\isacharbrackleft}x{\isacharcomma}a{\isacharbrackright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\ \ \ \ {\isachardoublequoteopen}{\isasymforall}a{\isasymin}{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharparenright}{\isachardot} \ \  separation{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymlambda}x{\isachardot}sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymphi}{\isacharcomma}{\isacharbrackleft}x{\isacharcomma}a{\isacharbrackright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
    
 We now turn to the Powerset Axiom. We followed the proof of
@@ -197,19 +195,18 @@ where we weakened the assumption ``$y\in M$'' (\isatt{M(y)}) to
 
 Of the rest of the theory file \verb|Powerset_Axiom.thy|, a
 considerable fraction is taken by the proof of a closure property of
-the ctm $M$, that involves renaming of an internalized formula; also,
-the handling of the projections \isatt{fst} and \isatt{snd} must be
-done internally. 
-\begin{isabelle}
-\isacommand{lemma}\isamarkupfalse%
-\ sats{\isacharunderscore}fst{\isacharunderscore}snd{\isacharunderscore}in{\isacharunderscore}M{\isacharcolon}\isanewline
-\ \isakeyword{assumes}\ \isanewline
-\  \ {\isachardoublequoteopen}A{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}B{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymphi}\ {\isasymin}\ formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}p{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}l{\isasymin}M{\isachardoublequoteclose}\isanewline
-\ \  {\isachardoublequoteopen}o{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymchi}{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymle}\ {\isadigit{6}}{\isachardoublequoteclose}\isanewline
-\  \isakeyword{shows}\isanewline
-\  \ {\isachardoublequoteopen}{\isacharbraceleft}sq\ {\isasymin}\ A{\isasymtimes}B\ {\isachardot}\isanewline
-\ \ \ \ \ sats{\isacharparenleft}M{\isacharcomma}{\isasymphi}{\isacharcomma}{\isacharbrackleft}p{\isacharcomma}l{\isacharcomma}o{\isacharcomma}snd{\isacharparenleft}sq{\isacharparenright}{\isacharcomma}fst{\isacharparenleft}sq{\isacharparenright}{\isacharcomma}{\isasymchi}{\isacharbrackright}{\isacharparenright}{\isacharbraceright}\ {\isasymin}\ M{\isachardoublequoteclose}
-\end{isabelle}
+the ctm $M$, that involves renaming of an internalized formula
+involving a rearrangement of the components of pairs via the
+projections \isatt{fst} and \isatt{snd}.
+% \begin{isabelle}
+% \isacommand{lemma}\isamarkupfalse%
+% \ sats{\isacharunderscore}fst{\isacharunderscore}snd{\isacharunderscore}in{\isacharunderscore}M{\isacharcolon}\isanewline
+% \ \isakeyword{assumes}\ \isanewline
+% \  \ {\isachardoublequoteopen}A{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}B{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymphi}\ {\isasymin}\ formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}p{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}l{\isasymin}M{\isachardoublequoteclose}\isanewline
+% \ \  {\isachardoublequoteopen}o{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymchi}{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymle}\ {\isadigit{6}}{\isachardoublequoteclose}\isanewline
+% \  \isakeyword{shows}\isanewline
+% \  \ {\isachardoublequoteopen}{\isacharbraceleft}sq\ {\isasymin}\ A{\isasymtimes}B\ {\isachardot}\ \ sats{\isacharparenleft}M{\isacharcomma}{\isasymphi}{\isacharcomma}{\isacharbrackleft}p{\isacharcomma}l{\isacharcomma}o{\isacharcomma}snd{\isacharparenleft}sq{\isacharparenright}{\isacharcomma}fst{\isacharparenleft}sq{\isacharparenright}{\isacharcomma}{\isasymchi}{\isacharbrackright}{\isacharparenright}{\isacharbraceright}\ {\isasymin}\ M{\isachardoublequoteclose}
+% \end{isabelle}
 
 
 %%% Local Variables: 

@@ -41,7 +41,7 @@ Kunen \cite{kunen2011set} gives $\pi_a$ in terms of $\tau$:
     p\leqslant r \wedge p \leqslant q \}
 \end{align*}
 Our formal definition is slightly different in order to ease the proof
-of $\pi_a \in M$; as it is defined using Separation, so one needs to
+of $\pi_a \in M$; as it is defined using Separation, one needs to
 define the domain of separation and also internalize the predicate as
 a formula
 \isa{union{\isacharunderscore}name{\isacharunderscore}fm}. Instead of
@@ -71,8 +71,8 @@ $G$ is a filter.
 \ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}filter{\isacharparenleft}G{\isacharparenright}{\isachardoublequoteclose}\ \isakeyword{and}\ {\isachardoublequoteopen}{\isasymtau}\ {\isasymin}\ M{\isachardoublequoteclose}\isanewline
 \ \ \isakeyword{shows}\ {\isachardoublequoteopen}{\isasymUnion}\ a\ {\isacharequal}\ val{\isacharparenleft}G{\isacharcomma}Union{\isacharunderscore}name{\isacharparenleft}{\isasymtau}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
-Since Union is absolute for any transitive class we may conclude that
-$M[G]$ is closed under Union:
+Since Union is absolute for any transitive class (an easy exercise)
+we may conclude that $M[G]$ is closed under Union:
 \begin{isabelle}
   \isacommand{lemma}\isamarkupfalse%
   \ union{\isacharunderscore}in{\isacharunderscore}MG\ {\isacharcolon}\ \isanewline

@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
-\subsection{Recursion and values of names}
+\subsection*{Recursion and values of names}
 
 The map $\val$ used in the definition of the generic extension is
 characterized by the recursive equation
@@ -9,15 +9,15 @@ characterized by the recursive equation
   \lb\sigma,p\rb \in \tau \wedge p \in G \}
 \end{equation}
 
-As is well-known, the principle of  recursion on
-well-founded relations \cite[p.~48]{kunen2011set} allows us to define
-a recursive function $F \colon A\to A$ by choosing a well-founded
-relation $R \subseteq A\times A$ and a functional
-$H\colon A\times (A \to A) \to A$ satisfying
-$F(a)=H(a,F\!\upharpoonright\!(R^{-1}(a)))$. Paulson \cite{paulson1995set}
-made this principle available in Isabelle/ZF via the the operator
-\isa{wfrec}. The formalization of the corresponding functional
-$\mathit{Hv}$ for $\val$ is straightforward:
+Recursive definitions such as this are justified by the principle of
+recursion on well-founded relations \cite[p.~48]{kunen2011set}; this
+principle allows us to define a recursive function $F \colon A\to A$
+by choosing a well-founded relation $R \subseteq A\times A$ and a
+functional $H\colon A\times (A \to A) \to A$ satisfying
+$F(a)=H(a,F\!\upharpoonright\!(R^{-1}(a)))$. Paulson
+\cite{paulson1995set} made this principle available in Isabelle/ZF via
+the the operator \isa{wfrec}. The formalization of the corresponding
+functional $\mathit{Hv}$ for $\val$ is straightforward:
 %
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
@@ -28,7 +28,8 @@ $\mathit{Hv}$ for $\val$ is straightforward:
 In the references \cite{kunen2011set,weaver2014forcing} $\val$ is
 applied only to \emph{names}, that are certain elements of $M$
 characterized by a recursively defined predicate. The well-founded
-relation used to justify Equation~\eqref{eq:val} is
+relation used to justify Equation~\eqref{eq:val} is $\mathrel{\mathit{ed}}$
+defined by
 \[ x \mathrel{\mathit{ed}} y \iff \exists p . \lb x,p\rb\in y. \] In
 order to use \isa{wfrec} the relation should be expressed as a set, so
 in \cite{2018arXiv180705174G} we originally took the restriction of
@@ -36,22 +37,30 @@ $\mathit{ed}$ to the whole universe
 $M$; i.e. $\mathit{ed}\cap M\times M$.  Although this decision was
 adequate for that work, we now required more flexibility (for
 instance, in order to apply $\val$ to arguments that we can't assume
-that are in $M$, see Eq.~(\ref{eq:val-of-m}) below).
+that are in $M$, see Eq.~(\ref{eq:val-of-m}) below); so we define
+\begin{isabelle}
+  \isacommand{definition}\isamarkupfalse%
+\isanewline
+\ edrel\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}
+\ {\isachardoublequoteopen}edrel{\isacharparenleft}A{\isacharparenright}{\isacharequal}{\isacharequal}\ \{<x,y> . <x,y> {\isasymin} A{\isasymtimes}A {\isasymand} ed(x,y) \}
+\end{isabelle}
 
 The remedy is to restrict $\mathit{ed}$ to the
-transitive closure of the actual parameter:
+transitive closure (\isatt{eclose}) of the actual parameter:
 \begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
 \isanewline
-\ val\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ val\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}
 \ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isacharequal}{\isacharequal}\ wfrec{\isacharparenleft}edrel{\isacharparenleft}eclose{\isacharparenleft}{\isacharbraceleft}{\isasymtau}{\isacharbraceright}{\isacharparenright}{\isacharparenright}{\isacharcomma}{\isasymtau}{\isacharcomma}Hv{\isacharparenleft}G{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
 In order to show that this definition satisfies~(\ref{eq:val}) we had
 to supplement the existing recursion tools with a key, albeit
-intuitive, result stating that when computing the value of a recursive 
+intuitive, result stating that when computing the value of a recursive
 function on some argument $a$, one can restrict the relation to some
-ambient set if it includes $a$ and all of its predecessors.
+ambient set if it includes $a$ and all of its predecessors (i.e. every
+element in the image of the transitive closure of the relation on $a$,
+\isatt{{\isacharparenleft}r{\isacharcircum}{\isacharplus}{\isacharparenright}{\isacharminus}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}a{\isacharbraceright}}).
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ wfrec{\isacharunderscore}restr\ {\isacharcolon}\isanewline
@@ -63,8 +72,7 @@ As a consequence, we are able to formalize Equation~(\ref{eq:val}) as follows:
 \begin{isabelle}
   \isacommand{lemma}\isamarkupfalse%
   \ def{\isacharunderscore}val{\isacharcolon}\isanewline
-  \ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}\ {\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}t{\isacharparenright}\ {\isachardot}{\isachardot}\ t{\isasymin}domain{\isacharparenleft}x{\isacharparenright}\ {\isacharcomma}\isanewline
-\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymexists}p{\isasymin}P{\isachardot}\ {\isacharless}t{\isacharcomma}p{\isachargreater}{\isasymin}x\ {\isasymand}\ p{\isasymin}G\ {\isacharbraceright}{\isachardoublequoteclose}
+  \ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}\ {\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}t{\isacharparenright}\ {\isachardot}{\isachardot}\ t{\isasymin}domain{\isacharparenleft}x{\isacharparenright}\ {\isacharcomma}\ {\isasymexists}p{\isasymin}P{\isachardot}\ {\isacharless}t{\isacharcomma}p{\isachargreater}{\isasymin}x\ {\isasymand}\ p{\isasymin}G\ {\isacharbraceright}{\isachardoublequoteclose}
 \end{isabelle}
 and the monotonicity of $\val$ follows automatically after a
 substitution.

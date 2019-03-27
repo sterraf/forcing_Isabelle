@@ -104,21 +104,29 @@ theory [14,15].
 
 V "a version of Rasiowa-Sikorski" -> ...'s theorem?
 V "typing assumtions" -> assumptions
-- sats:: "i ⇒ i ⇒ i ⇒ o" -> without exploring the code, I find it hard
-to understand the type of sats
+M sats:: "i ⇒ i ⇒ i ⇒ o" -> without exploring the code, I find it hard
+  to understand the type of sats
+M Se podría decir algo más, pero no sé si tiene sentido...
 
 
 *p3*
 
-- ∈ restricted to M -> this suggests that it is defined outside of M,
-right? Isn't this strange?
+M ∈ restricted to M -> this suggests that it is defined outside of M,
+  right? Isn't this strange?
+M No entiendo del todo; ¿se refiere a que si M es un modelo de ZFC _todo_
+M debería suceder ahí dentro incluso la definición de ∈?
+
 V "an countable" -> a countable
 V "in this stage" -> at this stage?
-- relative quantification -> relativized? (it seems more natural to me
-and you speak of "relativization" all the time afterwards. Also, I would
-parenthesize ∀x.(C(x) → φ) to make sure it is read correctly
-- induction on terms of type o is not available -> is this related to
-the chosen framework (Isabelle/ZF) or is it more general?
+M relative quantification -> relativized? (it seems more natural to me
+M and you speak of "relativization" all the time afterwards. Also, I would
+M parenthesize ∀x.(C(x) → φ) to make sure it is read correctly
+M Estoy de acuerdo con ambas sugerencias.
+
+M induction on terms of type o is not available -> is this related to
+M the chosen framework (Isabelle/ZF) or is it more general?
+M Tiene que ver con Isabelle/ZF. ¿decimos algo?
+
 V "It is also possible define" -> to define
 V "it is also possible", "it can be shown" -> if you did it, say it as
 such, otherwise I am not sure that this is informative or useful (but I
@@ -128,42 +136,42 @@ V think of succ(n) as .. -> I have been a bit confused by your
 explanation, because I didn't understand at first the relation of succ
 with the rest of the paragraph and I was thinking that you wanted the
 reader to think to the function succ itself, not as a renaming...
-- block starting at "consts ren"  -> I am not sure of the utility of
-giving the four examples in the paper...
-
+M block starting at "consts ren"  -> I am not sure of the utility of
+M giving the four examples in the paper...
+M No son ejemplos, es la definición!
 
 
 *p4*
 
 ? develop ML tools -> good idea indeed, seems boring to do manually
 otherwise
-- a preorder with top -> is top 1 in your tuple?
+V a preorder with top -> is top 1 in your tuple?
 V its name \dot a of M -> \dot a in M (of \dot a \in M)
-- "As is well-known ..." -> come a bit out of nowhere
-- "x ed y ⇐⇒ ..." -> what is ed? Isn't it a definition rather than an
+V "As is well-known ..." -> come a bit out of nowhere
+V "x ed y ⇐⇒ ..." -> what is ed? Isn't it a definition rather than an
 equivalence?
-- edrel, edclose -> we don't know what they are?
-- (r^+)-''{a} -> is the reader expected to be able to parse this?
+V edrel, edclose -> we don't know what they are?
+V (r^+)-''{a} -> is the reader expected to be able to parse this?
 
 
 *p5*
 
-- 2) Originally,... 4) ... -> again, why is it informative for external
-reader? (by this, I mean not an Isabelle/ZF developer)
-- Nervetheless, in order to ... -> again, it looks more like a
-description of your technical process than like something useful for the
-reader.
-
+V 2) Originally,... 4) ... -> again, why is it informative for external
+ reader? (by this, I mean not an Isabelle/ZF developer)
+M Nervetheless, in order to ... -> again, it looks more like a
+M description of your technical process than like something useful for the
+M reader.
+M Creo que ayuda poner ahí que discutimos un poco más sobre en la conclusión.
 
 *p6*
 
-- as it is defined using Separation, so one needsx -> remove "so"
-- Union is absolute for any transitive class -> is it well-known ?
+V as it is defined using Separation, so one needsx -> remove "so"
+M Union is absolute for any transitive class -> is it well-known ? Puse (an easy exercise)
 
 
 *p7*
 
-- "We note in passing that it is possible to abbreviate expression in
+? "We note in passing that it is possible to abbreviate expression in
 Isabelle..." -> I don't want to rude, but I really don't see how this
 could be a relevant information in a LICS paper...
 
@@ -171,13 +179,20 @@ could be a relevant information in a LICS paper...
 
 - as said above, the use of variable names x_0, x_1, etc that are
 automatically translated in forces makes it hard to read...
-- "two instances" -> which are?
-- using absoluteness -> the absoluteness of?
-- in the last block of code, the reader is left guessing what p,l,o,χ are
+V "two instances" -> which are?
+V using absoluteness -> the absoluteness of? 
+M los resultados de relativización para/de separación.
+
+M in the last block of code, the reader is left guessing what p,l,o,χ are
+M ¿agrega algo este lema? Entiendo que esos parámetros son instanciados por
+  P,leq,one en la prueba. Pero no entiendo muy bien para qué mostrarla?
+M quizás lo saco
 
 *p9*
 
 - you should give a reference for Theorem 8 & 9
+M citar II.5.3 para 9
+M I.9.23 y I.9.30 para 8
 
 ----------------------- REVIEW 2 ---------------------
 PAPER: 165

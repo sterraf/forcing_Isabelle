@@ -45,8 +45,10 @@ the following:
   Axiom of replacement.  As a consequence, the lemma
   \isatt{strong\_replacementI} is no longer valid and was commented
   out.
-\item\label{item:2}  Originally the Powerset Axiom was assumed by the
-  locale \isatt{M\_trivial},   we moved this requirement to \isatt{M\_basic}. 
+\item\label{item:2} Originally the Powerset Axiom was assumed by the
+  locale \isatt{M\_trivial} but it was not needed to prove any result
+  of that locale, so we moved this requirement to \isatt{M\_basic};
+  thus turning \isatt{M\_trivial} more usable.
 \item\label{item:3} We replaced the need that the set of natural
   numbers is in $M$ by the   milder hypothesis that $M(0)$. Actually,
   most results should follow 
@@ -58,14 +60,14 @@ the following:
   locale. 
 \end{enumerate}
 Because of these changes, some theory files from the
-\isatt{ZF-Constructible} session have been included among ours.
-
-The proof, for instance, that the constructible universe $L$ satisfies
-the modified locale \isatt{M\_trivial} holds with minor
+\isatt{ZF-Constructible} session have been included among ours. The
+proof, for instance, that the constructible universe $L$ satisfies the
+modified locale \isatt{M\_trivial} holds with minor
 modifications. Nevertheless, in order to have a neater presentation,
 we have stripped off several sections concerning $L$ from the theories
 \isatt{L\_axioms} and \isatt{Internalize}, and we merged them to form
-the new file  \isatt{Internalizations}. 
+the new file \isatt{Internalizations}. We discuss in the conclusion further
+modifications of the constructible session.
 
 %%% Local Variables: 
 %%% mode: latex

@@ -53,7 +53,7 @@ $C$ satisfies the Pairing Axiom.
 upair{\isacharunderscore}ax{\isacharparenleft}C{\isacharparenright}{\isacharequal}{\isacharequal}{\isasymforall}x{\isacharbrackleft}C{\isacharbrackright}{\isachardot}{\isasymforall}y{\isacharbrackleft}C{\isacharbrackright}{\isachardot}{\isasymexists}z{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ upair{\isacharparenleft}C{\isacharcomma}x{\isacharcomma}y{\isacharcomma}z{\isacharparenright}
 \end{isabelle}
 Here, $\forall x[C]. \phi$ stands for
-$\forall x. C(x) \longrightarrow \phi$, \emph{relative}
+$\forall x. (C(x) \longrightarrow \phi)$, \emph{relativized}
 quantification. All of the development of relativization by Paulson is
 written for a class model, so we set up a locale fixing a set $M$
 and using the class $\#\#M\defi \lambda x. \ x\in M$ as the argument. 
