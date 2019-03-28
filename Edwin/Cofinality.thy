@@ -112,6 +112,23 @@ proof -
   finally
   show "cf(\<gamma>) = cf(cf(\<gamma>))"  .
 qed
+  
+lemma cof_less_cardinal:
+  assumes "Limit(\<gamma>)"
+  shows "cf(\<gamma>) \<le> |\<gamma>|"
+proof sorry
+
+lemma reg_lim_is_cof:
+  assumes "Limit(\<gamma>)" "cf(\<gamma>) = \<gamma>"
+  shows "Card(\<gamma>)"
+
+proof -
+  from assms
+  have "cf(\<gamma>) \<le> |\<gamma>|" using cof_less_cardinal by blast
+  then
+  have "cf(\<gamma>) \<le> \<gamma>" using Ord_cardinal_le by simp
+
+qed 
     
 end (* cofinality *)
     
