@@ -1,8 +1,9 @@
-theory Delta_system   imports 
-    Cardinal_AC
-    "~~/src/ZF/Constructible/Normal"
+theory Delta_System   imports 
+  Cofinality
+  Cardinal_AC
+  "~~/src/ZF/Constructible/Normal"
 begin
-  
+
 lemma cardinal_lt_csucc_iff: "Card(K) ==> |K'| < csucc(K) \<longleftrightarrow> |K'| \<le> K"
   by (simp add: Card_lt_csucc_iff)
     
@@ -50,6 +51,14 @@ lemma le_aleph1_nat: "Card(k) \<Longrightarrow> k<\<aleph>1 \<Longrightarrow> k 
 lemma func_is_function: "f:A\<rightarrow>B \<Longrightarrow> function(f)"
   by (blast intro:fun_is_function)
   
+lemma fun_sub : "f:A\<rightarrow>B \<Longrightarrow> f \<subseteq> Sigma(A,\<lambda> _ . B)"
+  by(auto simp add: Pi_iff)
+  
+lemma range_of_function: "f:A\<rightarrow>B \<Longrightarrow> range(f) \<subseteq> B"
+  by(rule range_rel_subset,erule fun_sub[of _ "A"])
+
+context cofinality begin
+    
 lemma cof_aleph1_aux: "function(G) \<Longrightarrow> domain(G) \<lesssim> nat \<Longrightarrow> 
   \<forall>n\<in>domain(G). |G`n|<\<aleph>1 \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<le>nat"
 proof -
@@ -76,13 +85,7 @@ proof -
   with \<open>?N \<lesssim> nat\<close> show ?thesis
     using InfCard_nat leqpoll_UN_le_InfCard by simp
 qed
-    
-lemma fun_sub : "f:A\<rightarrow>B \<Longrightarrow> f \<subseteq> Sigma(A,\<lambda> _ . B)"
-  by(auto simp add: Pi_iff)
-  
-lemma range_of_function: "f:A\<rightarrow>B \<Longrightarrow> range(f) \<subseteq> B"
-  by(rule range_rel_subset,erule fun_sub[of _ "A"])
-    
+        
 lemma "f:\<aleph>1\<rightarrow>nat \<Longrightarrow> \<exists>n\<in>nat. \<aleph>1 \<le> |f-``{n}|"
 proof -
   assume 
@@ -145,4 +148,5 @@ qed
     
 lemma "|X|=\<aleph>1 \<Longrightarrow> f:X\<rightarrow>nat \<Longrightarrow> \<exists>n\<in>nat. |f-``{n}|=\<aleph>1" 
   oops
+end (* cofinality *)
 end
