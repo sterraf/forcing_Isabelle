@@ -110,9 +110,11 @@ qed
 lemma cof_less_cardinal:
   assumes "Limit(\<gamma>)"
   shows "cf(\<gamma>) \<le> |\<gamma>|"
-  sorry
+proof -
+  
+qed
 
-lemma reg_lim_is_cof:
+lemma regular_is_cardinal:
   notes le_imp_subset [dest]
   assumes "Limit(\<gamma>)" "\<gamma> = cf(\<gamma>)"
   shows "Card(\<gamma>)"
