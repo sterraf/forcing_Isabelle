@@ -1,4 +1,7 @@
-theory Delta_system imports Normal Cardinal_AC begin
+theory Delta_system   imports 
+    Cardinal_AC
+    "~~/src/ZF/Constructible/Normal"
+begin
   
 lemma cardinal_lt_csucc_iff: "Card(K) ==> |K'| < csucc(K) \<longleftrightarrow> |K'| \<le> K"
   by (simp add: Card_lt_csucc_iff)
