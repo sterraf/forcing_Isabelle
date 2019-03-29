@@ -113,16 +113,19 @@ lemma cof_less_cardinal:
   sorry
 
 lemma reg_lim_is_cof:
-  assumes "Limit(\<gamma>)" "cf(\<gamma>) = \<gamma>"
+  notes le_imp_subset [dest]
+  assumes "Limit(\<gamma>)" "\<gamma> = cf(\<gamma>)"
   shows "Card(\<gamma>)"
 proof -
   from assms
-  have "cf(\<gamma>) \<le> |\<gamma>|" 
-    using cof_less_cardinal by blast
-  also from \<open>Limit(\<gamma>)\<close> (* We can't use "..." in place of \<gamma> below: *)
-  have "|\<gamma>| \<le> \<gamma>" 
-    using Limit_is_Ord Ord_cardinal_le by simp
-      
+  have "|\<gamma>| \<subseteq> \<gamma>" 
+    using Limit_is_Ord Ord_cardinal_le by blast
+  also from \<open>\<gamma> = cf(\<gamma>)\<close>
+  have "\<gamma> \<subseteq> cf(\<gamma>)" by simp
+  finally
+  have "|\<gamma>| \<subseteq> cf(\<gamma>)" .
+  with assms
+  show ?thesis unfolding Card_def using cof_less_cardinal by force     
 qed 
     
 end (* cofinality *)
