@@ -89,15 +89,17 @@ edrel, etc.).
 *p.1*
 
 V "strategy: Since" -> since
-- "the fruitful use of forcing techniques to extend the Curry-Howard
-isomorphism to classical axioms" -> this claim is misleading. The two
-papers you cite show how to express forcing within Krivine
-realizability, a framework which is already classical. Therefore, in
-these papers, forcing techniques are *not* used to extend CH to
-classical logic (which has to do with control operators, not forcing).
-They rather unveil the computational content of forcing within Krivine
-realizability, just like Jaber et al. show how to define it within type
-theory [14,15].
+V - "the fruitful use of forcing techniques to extend the Curry-Howard
+V isomorphism to classical axioms" -> this claim is misleading. The two
+V papers you cite show how to express forcing within Krivine
+V realizability, a framework which is already classical. Therefore, in
+tV hese papers, forcing techniques are *not* used to extend CH to
+V classical logic (which has to do with control operators, not forcing).
+V They rather unveil the computational content of forcing within Krivine
+V realizability, just like Jaber et al. show how to define it within type
+V theory [14,15].
+M Me parece que estaba bien, le agregué algo para que le cierre más a
+M a este referee (que podría leer el paper de Krivine y dejarse de joder).
 
 
 *p2*
@@ -343,54 +345,61 @@ get relative consistency proofs.
 Detailed comments and suggestions for improvement
 -------------------------------------------------
 
-p. 2, last paragraph of the 1st column. "It must be observed that
-predicates (...) do not correspond to first-order formulas".  Here,
-you should be more precise, to help the reader.  As far as I
-understand, you mean: "It must be observed that Isabelle higher-order
-predicates (...) do not correspond to ZF first-order formulas."
+M p. 2, last paragraph of the 1st column. "It must be observed that
+M predicates (...) do not correspond to first-order formulas".  Here,
+M you should be more precise, to help the reader.  As far as I
+M understand, you mean: "It must be observed that Isabelle higher-order
+M predicates (...) do not correspond to ZF first-order formulas."
+M Puse que no tenemos un principio de inducción.
 
-p. 2, second column: internalized formulas.  Here you should justify
-why you use internalized formulas, that is: formulas as sets.
+M p. 2, second column: internalized formulas.  Here you should justify
+M why you use internalized formulas, that is: formulas as sets.
+M 
+M IMO, it would be more natural to inductively define an Isabelle
+M type "f" of first-order formulas (or codes of first-order formulas),
+M together with a decoding function that would map each code of a
+M first-order formula to a real Isabelle formula.  So that the image
+M of this map would capture exactly the class you are interested in.
+M (At least, this would be the standard way of doing in Coq or Agda.)
+M Moreover, such a definition would reflect the fact that, in model
+M theory, formulas are traditionally considered as external objects:
+M they live in the ambient theory, outside all models.
+M 
+M On the other hand, I agree that "formulas as sets" are useful to
+M define the notion of constructible set, and the corresponding
+M constructible universe.  But the point is that in forcing, we
+M (normally) never need such internalized formulas!  The theory
+M of forcing is independent from the theory of constructible sets,
+M and this should appear in a formalization.  (Although both theories
+M can be nicely combined in particular situations.)
+M 
+M So why did you consider internalized formulas, and not external
+M formulas, inductively defined "outside" as explained above?
+M I understand you want to reuse parts of the (previous) formalization
+M of the constructible universe, but this is (scientifically) a very
+M weak argument.  IMO, considering internalized formulas for defining
+M forcing is just introducing unnecessary complication.
+M
+M Puse que Isabelle/ZF no permite definir tipos inductivos. Notar lo
+M que pone de que es un argumento débil la reutilización...
 
-IMO, it would be more natural to inductively define an Isabelle
-type "f" of first-order formulas (or codes of first-order formulas),
-together with a decoding function that would map each code of a
-first-order formula to a real Isabelle formula.  So that the image
-of this map would capture exactly the class you are interested in.
-(At least, this would be the standard way of doing in Coq or Agda.)
-Moreover, such a definition would reflect the fact that, in model
-theory, formulas are traditionally considered as external objects:
-they live in the ambient theory, outside all models.
 
-On the other hand, I agree that "formulas as sets" are useful to
-define the notion of constructible set, and the corresponding
-constructible universe.  But the point is that in forcing, we
-(normally) never need such internalized formulas!  The theory
-of forcing is independent from the theory of constructible sets,
-and this should appear in a formalization.  (Although both theories
-can be nicely combined in particular situations.)
+? Moreover, considering internalized formulas (that is: formulas as
+? sets) raises another problem, which is that there might be more
+? internalized formulas than first-order formulas (such as seen
+? outside).  Indeed, your axiomatized type "i" of ZF sets is nothing
+? but a (hypothetical) model of ZF inside Isabelle.  But such a model
+? can be non-standard, in the sense that it might contain more natural
+? numbers (and thus more formulas-as-sets) than the Isabelle type of
+? natural numbers.  Note that this problem is harmless in practice, but
+? it is worth mentioning it.
 
-So why did you consider internalized formulas, and not external
-formulas, inductively defined "outside" as explained above?
-I understand you want to reuse parts of the (previous) formalization
-of the constructible universe, but this is (scientifically) a very
-weak argument.  IMO, considering internalized formulas for defining
-forcing is just introducing unnecessary complication.
-
-Moreover, considering internalized formulas (that is: formulas as
-sets) raises another problem, which is that there might be more
-internalized formulas than first-order formulas (such as seen
-outside).  Indeed, your axiomatized type "i" of ZF sets is nothing
-but a (hypothetical) model of ZF inside Isabelle.  But such a model
-can be non-standard, in the sense that it might contain more natural
-numbers (and thus more formulas-as-sets) than the Isabelle type of
-natural numbers.  Note that this problem is harmless in practice, but
-it is worth mentioning it.
-
-p. 2, last paragraph of 2nd column. "Forcing is a technique to extend
-very special kind of models...".  Actually, not.  There are several
-ways to construct forcing models of ZF, and the one you consider in
-your paper (taken from Kunen's book) is only *one* of them.
+M p. 2, last paragraph of 2nd column. "Forcing is a technique to extend
+M very special kind of models...".  Actually, not.  There are several
+M ways to construct forcing models of ZF, and the one you consider in
+M your paper (taken from Kunen's book) is only *one* of them.
+M
+M Puse un comentario al final de la conclusión. Quizás es demasiado tarde?
 
 The method you consider is based on countable transitive models
 (ctms) of ZF, whose main advantage is that they allow the use of
@@ -462,44 +471,50 @@ By considering the approach I suggest, you would only need two models:
 - the generic extension M[G], that would be defined as a quotient of
   the class of names (within i = M).
 
-p. 3, Proof of Lemma 1. "an countable..." -> "a countable".
+V p. 3, Proof of Lemma 1. "an countable..." -> "a countable".
 
-p. 3, second last par. of column 1.  "We are only able to prove that
-the generic extension satisfies Separation for any particular number
-of parameters, but not in general."  What do you mean precisely?
-At which level lives the quantification in "any particular number of
-parameters"?  A quantification over the set N (inside M and "i")?
-Or a quantification over the type of natural numbers in Isabelle?
-Please clarify this point.
+M p. 3, second last par. of column 1.  "We are only able to prove that
+M the generic extension satisfies Separation for any particular number
+M of parameters, but not in general."  What do you mean precisely?
+M At which level lives the quantification in "any particular number of
+M parameters"?  A quantification over the set N (inside M and "i")?
+M Or a quantification over the type of natural numbers in Isabelle?
+M Please clarify this point.
+M
+M Puse algo, no sé si aclara.
 
-p. 3, next par. "possible define" -> "possible to define".
+V p. 3, next par. "possible define" -> "possible to define".
 
-p. 4, last remark before Sect. V.  "All our uses... (etc.)".
-What do you mean precisely?  I am completely confused.
+V p. 4, last remark before Sect. V.  "All our uses... (etc.)".
+V What do you mean precisely?  I am completely confused.
+M Saqué a la mierda ese comentario. Me parece que no tenía mucho sentido.
 
-p. 4, first paragraph of Sect. V.  "be its _name_ in M".
-Here you should precise what you mean here by a name.
-Do you consider a special class of names inside M?
-Or do you consider all elements of M as names?
-(Note that both options are possible.)  From the discussion of
-Sect. V. A., it seems that you consider the second option, but
-you should clarify it.
+V p. 4, first paragraph of Sect. V.  "be its _name_ in M".
+V Here you should precise what you mean here by a name.
+V Do you consider a special class of names inside M?
+V Or do you consider all elements of M as names?
+V (Note that both options are possible.)  From the discussion of
+V Sect. V. A., it seems that you consider the second option, but
+V you should clarify it.
 
-p. 5, second last par. before Sect. VI.  "Paulson proved... (etc.)"
-This discussion is really hard to follow, due to the several levels
-that are involved.
+M p. 5, second last par. before Sect. VI.  "Paulson proved... (etc.)"
+M This discussion is really hard to follow, due to the several levels
+M that are involved.
+M
+M Si queda tiempo lo cambio mañana.
 
-p. 6, column 2: Sect. VIII.  In this section, you say that the
-fundamental properties of forcing are axiomatized (in a locale)
-rather than proved.  IMO, these properties should have been proven
-first (before proving the soundness of the axioms of ZF), since they
-are at the core of the method of forcing.
+? p. 6, column 2: Sect. VIII.  In this section, you say that the
+? fundamental properties of forcing are axiomatized (in a locale)
+? rather than proved.  IMO, these properties should have been proven
+? first (before proving the soundness of the axioms of ZF), since they
+? are at the core of the method of forcing.
 
-p. 9, column 1, 3rd paragraph: "The Replacement Axiom [...] requires
-more work to be done.  In Kunen it requires a relativized version
-[...] of the Reflection Principle."  IMO, this requirement is another
-drawback of following Kunen's approach.  By taking the other method I
-suggest, you would definitely not need the Reflection Principle to
-prove the soundness of Replacement.
-
+? p. 9, column 1, 3rd paragraph: "The Replacement Axiom [...] requires
+? more work to be done.  In Kunen it requires a relativized version
+? [...] of the Reflection Principle."  IMO, this requirement is another
+? drawback of following Kunen's approach.  By taking the other method I
+? suggest, you would definitely not need the Reflection Principle to
+? prove the soundness of Replacement.
+?
+? No puse nada.
 ------------------------------------------------------

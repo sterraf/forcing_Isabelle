@@ -40,23 +40,24 @@ sets.
 %% generate elements of both types, neither of them is 
 %% \emph{initial}, in the sense that they are not the least types
 %% obtained by combining the given constants and operations. 
-It must be observed that predicates (functions with arguments of
-type \tyi{} with values in \tyo) do not correspond to first-order formulas;
-in particular, those are not recursively constructed.
-This will
-have concrete consequences in our strategy to approach the
+It must be observed that predicates over \tyi{} do not correspond to
+first-order formulas; in particular, those are not recursively
+constructed and there is no induction principle associated with them.
+This will have concrete consequences in our strategy to approach the
 development. From the beginning, we had to resort to
-\emph{internalized} formulas \cite[Sect.~6]{paulson_2003}, i.e.\ elements of type $\tyi$ that
-encode first-order formulas with a binary relation symbol, and the
-satisfaction predicate \isatt{sats\,::\,"i\isasymRightarrow i\isasymRightarrow i\isasymRightarrow o"} between a set
-model with an environment and an internalized formula (where the
-relation symbol is interpreted as membership). The set 
-\isatt{formula::"\tyi"}
- of internalized
-formulas is inductively defined and hence it is possible to perform
-inductive arguments on them, such as the definition of the renaming map. In this sense, the object-logic level
-is further divided into \emph{internal} and \emph{external}
-sublevels. 
+\emph{internalized} formulas \cite[Sect.~6]{paulson_2003}, i.e.\
+elements of type $\tyi$ that encode first-order formulas with a binary
+relation symbol, and the satisfaction predicate
+\isatt{sats\,::\,"i\isasymRightarrow i\isasymRightarrow
+  i\isasymRightarrow o"} between a set model with an environment and
+an internalized formula (where the relation symbol is interpreted as
+membership). The set \isatt{formula::"\tyi"} of internalized formulas
+is inductively defined and hence it is possible to perform inductive
+arguments on them, such as the definition of the renaming map. In this
+sense, the object-logic level is further divided into \emph{internal}
+and \emph{external} sublevels. We remark that Isabelle/ZF lacks any
+mechanism to define inductively defined types at the same level of
+\tyi{} or \tyo.
 
 The source code is written for the 2018 version of Isabelle and can be downloaded
 from 

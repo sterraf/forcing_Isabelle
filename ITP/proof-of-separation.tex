@@ -18,8 +18,7 @@ The key technical result is the following:
   \isacommand{lemma}\isamarkupfalse%
   \ Collect{\isacharunderscore}sats{\isacharunderscore}in{\isacharunderscore}MG\ {\isacharcolon}\isanewline
   \ \ \isakeyword{assumes}\isanewline
-  \ \ \ \ {\isachardoublequoteopen}{\isasympi}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymsigma}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}\ {\isasympi}{\isacharparenright}\ {\isacharequal}\ c{\isachardoublequoteclose}\isanewline
-  \ \ \ \  {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}\ {\isasymsigma}{\isacharparenright}\ {\isacharequal}\ w{\isachardoublequoteclose}\isanewline
+  \ \ \ \ {\isachardoublequoteopen}{\isasympi}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymsigma}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}\ {\isasympi}{\isacharparenright}\ {\isacharequal}\ c{\isachardoublequoteclose} \  {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}\ {\isasymsigma}{\isacharparenright}\ {\isacharequal}\ w{\isachardoublequoteclose}\isanewline
   \ \ \ \ {\isachardoublequoteopen}{\isasymphi}\ {\isasymin}\ formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymle}\ {\isadigit{2}}{\isachardoublequoteclose}\isanewline
   \ \ \isakeyword{shows}\ \ \ \ \isanewline
   \ \ \ \ {\isachardoublequoteopen}{\isacharbraceleft}x{\isasymin}c{\isachardot}\ sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}\ {\isasymphi}{\isacharcomma}\ {\isacharbrackleft}x{\isacharcomma}\ w{\isacharbrackright}{\isacharparenright}{\isacharbraceright}{\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
@@ -145,8 +144,7 @@ at most two parameters:
 \isacommand{theorem}\isamarkupfalse%
 \ separation{\isacharunderscore}in{\isacharunderscore}MG{\isacharcolon}\isanewline
 \ \ \isakeyword{assumes}\ \isanewline
-\ \ \ \ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\ \isakeyword{and}\isanewline
-\ \ \ \  {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isacharequal}\ {\isadigit{1}}\ {\isasymor}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharequal}{\isadigit{2}}{\isachardoublequoteclose}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\ \isakeyword{and}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isacharequal}\ {\isadigit{1}}\ {\isasymor}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharequal}{\isadigit{2}}{\isachardoublequoteclose}\isanewline
 \ \ \isakeyword{shows}\ \ \isanewline
 \ \ \ \ {\isachardoublequoteopen}{\isasymforall}a{\isasymin}{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharparenright}{\isachardot} \ \  separation{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymlambda}x{\isachardot}sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymphi}{\isacharcomma}{\isacharbrackleft}x{\isacharcomma}a{\isacharbrackright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}

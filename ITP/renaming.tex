@@ -110,10 +110,8 @@ Lemma~\ref{lem:renaming} is:
 \ \ \ {\isasymAnd}\ i\ {\isachardot}\ i{\isacharless}n\ {\isasymLongrightarrow}\ nth{\isacharparenleft}i{\isacharcomma}{\isasymrho}{\isacharparenright}\ {\isacharequal}\ nth{\isacharparenleft}f{\isacharbackquote}i{\isacharcomma}{\isasymrho}{\isacharprime}{\isacharparenright}\ {\isasymrbrakk}\ {\isasymLongrightarrow}\isanewline
 \ \ sats{\isacharparenleft}M{\isacharcomma}{\isasymphi}{\isacharcomma}{\isasymrho}{\isacharparenright}\ {\isasymlongleftrightarrow}\ sats{\isacharparenleft}M{\isacharcomma}ren{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharbackquote}n{\isacharbackquote}m{\isacharbackquote}f{\isacharcomma}{\isasymrho}{\isacharprime}{\isacharparenright}{\isachardoublequoteclose}\end{isabelle}
 
-All our uses of this lemma involve concrete renamings on small
-numbers, but we also tested it with more abstract ones for arbitrary
-numbers. All the renamings of the first kind follow the same pattern
-and, more importantly, share equal proofs. We would like to develop
+The use of this lemma involves some repetitive tasks (mainly proving
+that the renaming is in fact a function). We would like to develop
 some \texttt{ML} tools in order to automatize this.
 %% We think that it should be possible, and clearer,
 %% to express all the current renamings in the theory \isa{Formula} using

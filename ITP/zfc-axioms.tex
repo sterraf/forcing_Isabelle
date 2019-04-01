@@ -80,12 +80,18 @@ and using the class $\#\#M\defi \lambda x. \ x\in M$ as the argument.
 \end{isabelle}
 The rest of the axioms are also included. We single out Separation and
 Replacement: These are written for formulas with at most one extra
-parameter (meaning $n\leq 1$ in the formula $\psi$ of the
-axiom-schemes above). Thanks to Pairing, these versions are equivalent
+parameter. Thanks to Pairing, these versions are equivalent
 to the usual formulations. We are only able to prove that the generic
 extension satisfies Separation for any particular number of
-parameters, but not in general. This is a consequence that induction
-on terms of type \tyo{} is not available.
+parameters, but, we cannot formalize in Isabelle/ZF a general lemma
+because one cannot define recursive functions over predicates
+(remember that these are terms of type \isatt{i\ \isasymRightarrow\
+  o}).
+
+% We are only able to prove that the generic
+% extension satisfies Separation for any particular number of
+% parameters, but not in general. This is a consequence that induction
+% on terms of type \tyo{} is not available.
 
 It is also possible to define a predicate that states that a set
 satisfies a (possibly infinite) set of formulas, and then to state

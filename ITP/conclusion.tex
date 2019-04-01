@@ -128,12 +128,13 @@ assess which assumptions on the ground model $M$ are needed to develop
 the forcing machinery. The obvious are transitivity and $M$ being
 countable (but keep in mind Lemma~\ref{lem:wf-model-implies-ctm}); the
 first because many absoluteness results follows from this, the latter
-for the existence of generic filters. A
-more anecdotal one is that to show that an instance of Separation
-with at most two parameters holds in $M[G]$, one needs to assume a
-particular  six-parameter
-instance in $M$ (four extra parameters can be directly blamed on
-$\forceisa$).  The purpose of identifying those assumptions is to assemble
+for the existence of generic filters. % A
+% more anecdotal one is that to show that an instance of Separation
+% with at most two parameters holds in $M[G]$, one needs to assume a
+% particular  six-parameter
+% instance in $M$ (four extra parameters can be directly blamed on
+% $\forceisa$).
+The purpose of identifying those assumptions is to assemble
 in a locale the specific (instances of) axioms that should satisfy the
 ground model in order to perform forcing constructions; this list will
 likely include all the instances of Separation and Replacement that
@@ -156,6 +157,13 @@ broader applicability, it would be convenient to have absoluteness
 results not assuming it. We plan to contribute back to the official
 distribution of Isabelle/ZF with a thorough revision of the development of
 constructibility.
+
+Recently Alexandre Miquel suggested us to look into Boolean-valued
+models as an alternative method for extending models of ZF. This is a
+very interesting option to consider, since that would work for any
+model (and not just transitivive ones); some of the others issues (the
+most salient being the use of internalized formulas) are consequences
+of working in Isabelle/ZF and would be inevitable.
 
 %% \section*{Acknowledgment}
 %% 

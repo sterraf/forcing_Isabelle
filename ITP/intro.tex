@@ -80,7 +80,8 @@ and generic extensions. As far as we know, the development of
 Quirin and Tabareau \cite{JFR6232} in homotopy type theory for constructing generic
 extensions in a sheaf-theoretic setting is the unique mechanization of
 forcing. This contrast with the fruitful use of forcing techniques to
-extend the Curry-Howard isomorphism to classical axioms
+extend the Curry-Howard isomorphism to classical axioms in order to
+get programs for proofs using those axioms
 \cite{Miquel:2011:FPT:2058525.2059614,lmcs:1070}. Moreover, the
 combination of forcing with intuitionistic type theory
 \cite{Coquand:2009:FTT:1807662.1807665,coquand2010note} gives rise
@@ -126,8 +127,9 @@ extended Paulson's library with:
   ensures the existence of generic filters for countable and transitive
   models of $\ZF$;
 \end{enumerate}
-the last item was already communicated in the
-  first report \cite{2018arXiv180705174G}.
+the last item was already communicated in the first report
+\cite{2018arXiv180705174G} of our project (where we also proved that
+$M[G]$ satisfies Pairing; now we have redone this proof in Isar).
   
 We briefly describe the contents of each
 section. Section~\ref{sec:isabelle} contains the bare minimum
