@@ -18,7 +18,7 @@ definition
   
 definition
   cofinal_fun :: "[i,i,i] \<Rightarrow> o" where
-  "cofinal_fun(f,A,r) == \<forall>a\<in>A. \<exists>x\<in>domain(f). <a,f`x>\<in>r"
+  "cofinal_fun(f,A,r) == \<forall>a\<in>A. \<exists>x\<in>domain(f). <a,f`x>\<in>r \<or> a = f`x"
 
 (*
 The next definition doesn't work if 0 is the top element of A.
@@ -107,7 +107,22 @@ proof -
   show "cf(\<gamma>) = cf(cf(\<gamma>))"  .
 qed
   
-lemma cof_less_cardinal:
+lemma surjection_is_cofinal:
+  assumes
+    "Ord(\<gamma>)" "Ord(\<delta>)" "f \<in> surj(\<delta>,\<gamma>)"
+  shows "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))"
+  unfolding cofinal_fun_def
+proof 
+  fix a
+  assume "a\<in>\<gamma>"
+  with assms
+  obtain x where "x\<in>\<delta>" "f`x = a" 
+    unfolding surj_def  by blast
+    
+  
+qed
+    
+lemma cf_le_cardinal:
   assumes "Limit(\<gamma>)"
   shows "cf(\<gamma>) \<le> |\<gamma>|"
 proof -
