@@ -6,15 +6,15 @@ begin
 
 definition
   cofinal :: "[i,i,i] \<Rightarrow> o" where
-  "cofinal(X,A,r) == \<forall>a\<in>A. \<exists>x\<in>X. <a,x>\<in>r"
+  "cofinal(X,A,r) == \<forall>a\<in>A. \<exists>x\<in>X. <a,x>\<in>r \<or> a = x"
 
 definition
   cofinal_predic :: "[i,i,[i,i]\<Rightarrow>o] \<Rightarrow> o" where
-  "cofinal_predic(X,A,r) == \<forall>a\<in>A. \<exists>x\<in>X. r(a,x)"
+  "cofinal_predic(X,A,r) == \<forall>a\<in>A. \<exists>x\<in>X. r(a,x) \<or> a = x"
 
 definition
   f_cofinal :: "[i\<Rightarrow>i,i,i,i] \<Rightarrow> o" where
-  "f_cofinal(f,C,A,r) == \<forall>a\<in>A. \<exists>x\<in>C. <a,f(x)>\<in>r" (* "predic" version ? *)
+  "f_cofinal(f,C,A,r) == \<forall>a\<in>A. \<exists>x\<in>C. <a,f(x)>\<in>r \<or> a = f(x)" (* "predic" version ? *)
   
 definition
   cofinal_fun :: "[i,i,i] \<Rightarrow> o" where
@@ -28,6 +28,13 @@ But it works for limit ordinals.
 definition
   cofinal_fun' :: "[i,i,i] \<Rightarrow> o" where
   "cofinal_fun'(f,A,r) == f_cofinal(\<lambda>x. f`x,domain(f),A, r)"
+  
+lemma cofinal_in_cofinal:
+  assumes
+    "trans(r)" "cofinal(Y,X,r)" "cofinal(X,A,r)" 
+  shows 
+    "cofinal(Y,A,r)"
+  oops
 
 lemma range_is_cofinal: 
   assumes "cofinal_fun(f,A,r)" "f:C \<rightarrow> D"
@@ -37,16 +44,16 @@ proof
   fix b 
   assume "b \<in> A"
   moreover from assms
-  have "a\<in>A \<Longrightarrow> \<exists>x\<in>domain(f). \<langle>a, f ` x\<rangle> \<in> r" for a
+  have "a\<in>A \<Longrightarrow> \<exists>x\<in>domain(f). \<langle>a, f ` x\<rangle> \<in> r \<or> a = f`x" for a
     unfolding cofinal_fun_def by simp
   ultimately
-  obtain x where "x\<in>domain(f)" "\<langle>b, f ` x\<rangle> \<in> r" 
+  obtain x where "x\<in>domain(f)" "\<langle>b, f ` x\<rangle> \<in> r \<or> b = f`x" 
     by blast
   from \<open>f:C \<rightarrow> D\<close>
   have "domain(f) \<subseteq> C" (* is it needed? *)
     (* using  *) sorry find_theorems "?f:Pi(?A,?B)"
   then
-  show  "\<exists>y\<in>D. \<langle>b, y\<rangle> \<in> r" sorry
+  show  "\<exists>y\<in>D. \<langle>b, y\<rangle> \<in> r \<or> b = y" sorry
 qed
 
 lemma "Limit(A) \<Longrightarrow> cofinal_fun(f,A,Memrel(A)) \<longleftrightarrow> cofinal_fun'(f,A,Memrel(A))"
@@ -76,6 +83,87 @@ proof -
     using LeastI[of ?P] assms unfolding cf_def by simp
 qed
 *)
+
+lemma cofinal_mono_map_cf:
+  assumes "Ord(\<gamma>)"
+  shows "\<exists>j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>)) . cofinal_fun(j,\<gamma>,Memrel(\<gamma>))"
+  sorry
+    
+lemma cf_succ:
+  "Ord(\<alpha>) \<Longrightarrow> cf(succ(\<alpha>)) = 1"
+  sorry
+    
+lemma mono_map_increasing: 
+  "j\<in>mono_map(A,r,B,s) \<Longrightarrow> a\<in>A \<Longrightarrow> c\<in>A \<Longrightarrow> <a,c>\<in>r \<Longrightarrow> <j`a,j`c>\<in>s"
+  unfolding mono_map_def by simp
+
+lemma lt_trans [trans]: 
+  "a<b \<Longrightarrow> b<c \<Longrightarrow> a<c"
+  using Ord_trans unfolding lt_def by blast
+  
+lemma 
+  notes le_imp_subset [dest]
+  assumes 
+    "Ord(\<delta>)" "Limit(\<gamma>)" "function(f)" "domain(f) = \<delta>" "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))" 
+  shows
+    "\<exists>g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<delta>,Memrel(\<delta>)). 
+      f O g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>)) \<and> 
+      cofinal_fun(f O g,\<gamma>,Memrel(\<gamma>))"
+proof -
+  from \<open>Limit(\<gamma>)\<close>
+  obtain j where "j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))" "cofinal_fun(j,\<gamma>,Memrel(\<gamma>))"
+    using cofinal_mono_map_cf Limit_is_Ord by blast
+  let ?A="\<lambda>\<alpha> g. {\<theta> \<in> \<delta>. j`\<alpha> \<le> f`\<theta> \<and> (\<forall>\<beta><\<alpha> . f`(g`\<beta>) < f`\<theta>)}"
+  let ?H="\<lambda>\<alpha> h. if ?A(\<alpha>,h) \<noteq> 0 then Least(##?A(\<alpha>,h)) else \<delta>"
+  define G where "G \<equiv> \<lambda>\<alpha>. transrec(\<alpha>,?H)"
+  have "\<alpha><cf(\<gamma>) \<Longrightarrow> \<beta>\<in>cf(\<gamma>) \<Longrightarrow> \<beta><\<alpha> \<Longrightarrow> ?A(\<alpha>,g) \<subseteq> ?A(\<beta>,g)" for \<beta> \<alpha> g
+  proof -
+    assume "\<beta><\<alpha>" "\<alpha><cf(\<gamma>)"
+    then 
+    have "\<beta>\<in>cf(\<gamma>)" "\<alpha>\<in>cf(\<gamma>)" "\<beta>\<in>\<alpha>" 
+      using ltD by (auto intro:lt_trans) 
+    with \<open>j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))\<close>
+    have "j`\<beta> \<in> j`\<alpha>" using mono_map_increasing by blast 
+    moreover
+    have "Ord(j`\<alpha>)" sorry
+    ultimately
+    have "j`\<beta> \<le> j`\<alpha>"  unfolding lt_def by blast
+    then
+    have "j`\<alpha> \<le> f`\<theta> \<Longrightarrow> j`\<beta> \<le> f`\<theta>" for \<theta> using le_trans by blast
+    moreover from \<open>\<beta><\<alpha>\<close>
+    have "\<forall>x<\<alpha>. f`(g`x) < f`z \<Longrightarrow> y<\<beta> \<Longrightarrow>  f`(g`y) < f`z" for y z sorry
+    ultimately
+    show ?thesis by blast
+  qed
+  have "f`G(\<beta>) < f`G(\<alpha>)" 
+    if "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" "f`G(\<beta>) < f`G(\<alpha>)" "G(\<beta>)<G(\<alpha>)" for \<beta> \<alpha>
+  proof -
+    show ?thesis sorry
+  qed
+  have "G(\<beta>)<G(\<alpha>)" 
+    if "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" "f`G(\<beta>) < f`G(\<alpha>)" "G(\<beta>)<G(\<alpha>)" for \<beta> \<alpha>
+  proof -
+    show ?thesis sorry
+  qed
+  have "\<alpha> < cf(\<gamma>) \<Longrightarrow> G(\<alpha>)\<noteq>\<delta>" for \<alpha>
+    sorry
+  let ?g="\<lambda>\<alpha>\<in>cf(\<gamma>) . G(\<alpha>)"
+  have "?g \<in> mono_map(cf(\<gamma>), Memrel(cf(\<gamma>)), \<delta>, Memrel(\<delta>))" sorry
+  moreover     
+  have "f O ?g \<in> mono_map(cf(\<gamma>), Memrel(cf(\<gamma>)), \<gamma>, Memrel(\<gamma>))" sorry
+  moreover
+  have "cofinal_fun(f O ?g, \<gamma>, Memrel(\<gamma>))"
+    sorry
+  ultimately show ?thesis by blast
+qed
+    
+lemma 
+  assumes 
+    "Ord(\<delta>)" "Ord(\<gamma>)" "function(f)" "domain(f) = \<delta>" "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))" 
+  shows
+    "cf(\<gamma>)\<le>\<delta>"
+  oops
+    
     
 locale cofinality =
   assumes 
@@ -118,16 +206,13 @@ proof
   with assms
   obtain x where "x\<in>\<delta>" "f`x = a" 
     unfolding surj_def  by blast
-    
-  
-qed
+  oops
+   
     
 lemma cf_le_cardinal:
   assumes "Limit(\<gamma>)"
   shows "cf(\<gamma>) \<le> |\<gamma>|"
-proof -
-  
-qed
+  sorry    
 
 lemma regular_is_cardinal:
   notes le_imp_subset [dest]
@@ -142,7 +227,7 @@ proof -
   finally
   have "|\<gamma>| \<subseteq> cf(\<gamma>)" .
   with assms
-  show ?thesis unfolding Card_def using cof_less_cardinal by force     
+  show ?thesis unfolding Card_def using cf_le_cardinal by force     
 qed 
     
 end (* cofinality *)
