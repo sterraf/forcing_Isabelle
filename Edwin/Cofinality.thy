@@ -100,6 +100,14 @@ lemma mono_map_increasing:
 lemma lt_trans [trans]: 
   "a<b \<Longrightarrow> b<c \<Longrightarrow> a<c"
   using Ord_trans unfolding lt_def by blast
+    
+lemma Least_antitone:
+  "\<lbrakk>\<And>i. P(i) \<Longrightarrow> Q(i)\<rbrakk> \<Longrightarrow> Least(Q) \<le> Least(P)"
+  sorry
+    
+lemma Least_setclass_antitone: 
+  "A \<subseteq> B \<Longrightarrow> Least(##B) \<le> Least(##A)"
+  using subset_iff  by (auto intro:Least_antitone)
   
 lemma 
   notes le_imp_subset [dest]
@@ -113,10 +121,10 @@ proof -
   from \<open>Limit(\<gamma>)\<close>
   obtain j where "j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))" "cofinal_fun(j,\<gamma>,Memrel(\<gamma>))"
     using cofinal_mono_map_cf Limit_is_Ord by blast
-  let ?A="\<lambda>\<alpha> g. {\<theta> \<in> \<delta>. j`\<alpha> \<le> f`\<theta> \<and> (\<forall>\<beta><\<alpha> . f`(g`\<beta>) < f`\<theta>)}"
-  let ?H="\<lambda>\<alpha> h. if ?A(\<alpha>,h) \<noteq> 0 then Least(##?A(\<alpha>,h)) else \<delta>"
+  let ?A="\<lambda>\<alpha> g. {\<theta> \<in> \<delta>. j`\<alpha> \<le> f`\<theta> \<and> (\<forall>\<beta><\<alpha> . f`(g`\<beta>) < f`\<theta>)} \<union> {\<delta>}"
+  let ?H="\<lambda>\<alpha> h. Least(##?A(\<alpha>,h))"
   define G where "G \<equiv> \<lambda>\<alpha>. transrec(\<alpha>,?H)"
-  have "\<alpha><cf(\<gamma>) \<Longrightarrow> \<beta>\<in>cf(\<gamma>) \<Longrightarrow> \<beta><\<alpha> \<Longrightarrow> ?A(\<alpha>,g) \<subseteq> ?A(\<beta>,g)" for \<beta> \<alpha> g
+  have "\<alpha><cf(\<gamma>) \<Longrightarrow> \<beta><\<alpha> \<Longrightarrow> ?A(\<alpha>,g) \<subseteq> ?A(\<beta>,g)" for \<beta> \<alpha> g
   proof -
     assume "\<beta><\<alpha>" "\<alpha><cf(\<gamma>)"
     then 
@@ -135,6 +143,9 @@ proof -
     ultimately
     show ?thesis by blast
   qed
+  then 
+  have "\<alpha><cf(\<gamma>) \<Longrightarrow> \<beta><\<alpha> \<Longrightarrow> Least(##?A(\<beta>,g)) \<le> Least(##?A(\<alpha>,g))" for \<beta> \<alpha> g
+    using Least_setclass_antitone by simp
   have "f`G(\<beta>) < f`G(\<alpha>)" 
     if "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" "f`G(\<beta>) < f`G(\<alpha>)" "G(\<beta>)<G(\<alpha>)" for \<beta> \<alpha>
   proof -
