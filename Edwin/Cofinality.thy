@@ -92,7 +92,12 @@ lemma cofinal_mono_map_cf:
 lemma cf_succ:
   "Ord(\<alpha>) \<Longrightarrow> cf(succ(\<alpha>)) = 1"
   sorry
-    
+
+lemma cf_zero:
+  "cf(0) = 0"
+  unfolding cf_def cofinal_def using 
+    ordertype_0 subset_empty_iff Least_le[of _ 0] by auto
+
 lemma mono_map_increasing: 
   "j\<in>mono_map(A,r,B,s) \<Longrightarrow> a\<in>A \<Longrightarrow> c\<in>A \<Longrightarrow> <a,c>\<in>r \<Longrightarrow> <j`a,j`c>\<in>s"
   unfolding mono_map_def by simp
