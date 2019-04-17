@@ -112,7 +112,7 @@ lemma Least_antitone:
     
 lemma Least_setclass_antitone: 
   "A \<subseteq> B \<Longrightarrow> Least(##B) \<le> Least(##A)"
-  using subset_iff  by (auto intro:Least_antitone)
+  using subset_iff by (auto intro:Least_antitone)
   
 lemma 
   notes le_imp_subset [dest]
@@ -127,9 +127,8 @@ proof -
   obtain j where "j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))" "cofinal_fun(j,\<gamma>,Memrel(\<gamma>))"
     using cofinal_mono_map_cf Limit_is_Ord by blast
   let ?A="\<lambda>\<alpha> g. {\<theta> \<in> \<delta>. j`\<alpha> \<le> f`\<theta> \<and> (\<forall>\<beta><\<alpha> . f`(g`\<beta>) < f`\<theta>)} \<union> {\<delta>}"
-  let ?H="\<lambda>\<alpha> h. Least(##?A(\<alpha>,h))"
-  define G where "G \<equiv> \<lambda>\<alpha>. transrec(\<alpha>,?H)"
-  have "\<alpha><cf(\<gamma>) \<Longrightarrow> \<beta><\<alpha> \<Longrightarrow> ?A(\<alpha>,g) \<subseteq> ?A(\<beta>,g)" for \<beta> \<alpha> g
+  define H where "H \<equiv> \<lambda>\<alpha> h. Least(##?A(\<alpha>,h))"
+  have "\<alpha><cf(\<gamma>) \<Longrightarrow> \<beta><\<alpha> \<Longrightarrow> ?A(\<alpha>,\<lambda>x\<in>\<alpha>. G(x)) \<subseteq> ?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))" for \<beta> \<alpha> G
   proof -
     assume "\<beta><\<alpha>" "\<alpha><cf(\<gamma>)"
     then 
@@ -144,15 +143,29 @@ proof -
     then
     have "j`\<alpha> \<le> f`\<theta> \<Longrightarrow> j`\<beta> \<le> f`\<theta>" for \<theta> using le_trans by blast
     moreover from \<open>\<beta><\<alpha>\<close>
-    have "\<forall>x<\<alpha>. f`(g`x) < f`z \<Longrightarrow> y<\<beta> \<Longrightarrow>  f`(g`y) < f`z" for y z sorry
+    have "\<forall>x<\<alpha>. f`((\<lambda>x\<in>\<alpha>. G(x))`x) < f`z \<Longrightarrow> y<\<beta> \<Longrightarrow>  f`((\<lambda>x\<in>\<beta>. G(x))`y) < f`z" for y z sorry
     ultimately
     show ?thesis by blast
   qed
   then 
-  have "\<alpha><cf(\<gamma>) \<Longrightarrow> \<beta><\<alpha> \<Longrightarrow> Least(##?A(\<beta>,g)) \<le> Least(##?A(\<alpha>,g))" for \<beta> \<alpha> g
-    using Least_setclass_antitone by simp
+  have H_mono: "\<alpha><cf(\<gamma>) \<Longrightarrow> \<beta><\<alpha> \<Longrightarrow> H(\<beta>,\<lambda>x\<in>\<beta>. G(x)) \<le> H(\<alpha>,\<lambda>x\<in>\<alpha>. G(x))" for \<beta> \<alpha> G
+    unfolding H_def using Least_setclass_antitone by simp
+  define G where "G \<equiv> \<lambda>\<alpha>. transrec(\<alpha>,H)"
+  have "G(\<beta>) \<le> G(\<alpha>)" if "\<alpha><cf(\<gamma>)" "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" for \<beta> \<alpha>
+  proof -
+    have def_G:"\<And>x. G(x) \<equiv> transrec(x,H)" using G_def by simp
+    have "G(\<beta>) = H(\<beta>, \<lambda>x\<in>\<beta>. G(x))" 
+      using def_transrec[OF def_G] .
+    also from that H_mono
+    have " ... \<le> H(\<alpha>, \<lambda>x\<in>\<alpha>. G(x))" 
+      by simp
+    also
+    have "H(\<alpha>, \<lambda>x\<in>\<alpha>. G(x)) = G(\<alpha>)" 
+      using def_transrec[OF def_G, symmetric] .
+    finally show ?thesis .
+  qed
   have "f`G(\<beta>) < f`G(\<alpha>)" 
-    if "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" "f`G(\<beta>) < f`G(\<alpha>)" "G(\<beta>)<G(\<alpha>)" for \<beta> \<alpha>
+    if "\<alpha><cf(\<gamma>)" "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>"  for \<beta> \<alpha>
   proof -
     show ?thesis sorry
   qed
@@ -161,15 +174,13 @@ proof -
   proof -
     show ?thesis sorry
   qed
-  have "\<alpha> < cf(\<gamma>) \<Longrightarrow> G(\<alpha>)\<noteq>\<delta>" for \<alpha>
-    sorry
+  have "\<alpha> < cf(\<gamma>) \<Longrightarrow> G(\<alpha>)\<noteq>\<delta>" for \<alpha>  sorry
   let ?g="\<lambda>\<alpha>\<in>cf(\<gamma>) . G(\<alpha>)"
   have "?g \<in> mono_map(cf(\<gamma>), Memrel(cf(\<gamma>)), \<delta>, Memrel(\<delta>))" sorry
   moreover     
   have "f O ?g \<in> mono_map(cf(\<gamma>), Memrel(cf(\<gamma>)), \<gamma>, Memrel(\<gamma>))" sorry
   moreover
-  have "cofinal_fun(f O ?g, \<gamma>, Memrel(\<gamma>))"
-    sorry
+  have "cofinal_fun(f O ?g, \<gamma>, Memrel(\<gamma>))"  sorry
   ultimately show ?thesis by blast
 qed
     
@@ -178,8 +189,8 @@ lemma
     "Ord(\<delta>)" "Ord(\<gamma>)" "function(f)" "domain(f) = \<delta>" "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))" 
   shows
     "cf(\<gamma>)\<le>\<delta>"
+    (* Perhaps consider three cases on \<gamma>, using cf_zero and cf_succ *)
   oops
-    
     
 locale cofinality =
   assumes 
