@@ -1,6 +1,6 @@
 theory Cofinality 
   imports 
-    Cardinal_AC
+    ZF.Cardinal_AC
     "~~/src/ZF/Constructible/Normal"
 begin
 

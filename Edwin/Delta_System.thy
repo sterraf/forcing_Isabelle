@@ -1,6 +1,6 @@
 theory Delta_System   imports 
   Cofinality
-  Cardinal_AC
+  ZF.Cardinal_AC
   "~~/src/ZF/Constructible/Normal"
 begin
 
