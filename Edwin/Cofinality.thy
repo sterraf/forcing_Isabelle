@@ -111,15 +111,7 @@ lemma Least_antitone:
     "Ord(j)" "P(j)" "\<And>i. P(i) \<Longrightarrow> Q(i)"
   shows
     "Least(Q) \<le> Least(P)"
-proof -
-  from assms
-  have "Q(Least(P))" using LeastI2[of P j Q] by simp
-  moreover 
-  have "Ord(Least(P))" by simp
-  ultimately 
-  show ?thesis
-    using Least_le by simp
-qed
+  using assms LeastI2[of P j Q] Least_le by simp
 
 lemma Least_setclass_antitone:
   "Ord(j) \<Longrightarrow> j\<in>A \<Longrightarrow> A \<subseteq> B \<Longrightarrow> Least(##B) \<le> Least(##A)"
