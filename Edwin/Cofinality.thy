@@ -105,13 +105,16 @@ lemma mono_map_increasing:
 lemma lt_trans [trans]: 
   "a<b \<Longrightarrow> b<c \<Longrightarrow> a<c"
   using Ord_trans unfolding lt_def by blast
-    
+
 lemma Least_antitone:
-  "\<lbrakk>\<And>i. P(i) \<Longrightarrow> Q(i)\<rbrakk> \<Longrightarrow> Least(Q) \<le> Least(P)"
+  assumes 
+    "Ord(j)" "P(j)" "\<And>i. P(i) \<Longrightarrow> Q(i)"
+  shows
+    "Least(Q) \<le> Least(P)"
   sorry
-    
-lemma Least_setclass_antitone: 
-  "A \<subseteq> B \<Longrightarrow> Least(##B) \<le> Least(##A)"
+
+lemma Least_setclass_antitone:
+  "Ord(j) \<Longrightarrow> j\<in>A \<Longrightarrow> A \<subseteq> B \<Longrightarrow> Least(##B) \<le> Least(##A)"
   using subset_iff by (auto intro:Least_antitone)
   
 lemma 
@@ -119,9 +122,9 @@ lemma
   assumes 
     "Ord(\<delta>)" "Limit(\<gamma>)" "function(f)" "domain(f) = \<delta>" "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))" 
   shows
-    "\<exists>g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<delta>,Memrel(\<delta>)). 
-      f O g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>)) \<and> 
-      cofinal_fun(f O g,\<gamma>,Memrel(\<gamma>))"
+    "\<exists>g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<delta>,Memrel(\<delta>)).
+     f O g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>)) \<and> 
+     cofinal_fun(f O g,\<gamma>,Memrel(\<gamma>))"
 proof -
   from \<open>Limit(\<gamma>)\<close>
   obtain j where "j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))" "cofinal_fun(j,\<gamma>,Memrel(\<gamma>))"
@@ -147,9 +150,9 @@ proof -
     ultimately
     show ?thesis by blast
   qed
-  then 
+  with \<open>Ord(\<delta>)\<close>
   have H_mono: "\<alpha><cf(\<gamma>) \<Longrightarrow> \<beta><\<alpha> \<Longrightarrow> H(\<beta>,\<lambda>x\<in>\<beta>. G(x)) \<le> H(\<alpha>,\<lambda>x\<in>\<alpha>. G(x))" for \<beta> \<alpha> G
-    unfolding H_def using Least_setclass_antitone by simp
+    unfolding H_def using Least_setclass_antitone[of \<delta>] by simp
   define G where "G \<equiv> \<lambda>\<alpha>. transrec(\<alpha>,H)"
   have "G(\<beta>) \<le> G(\<alpha>)" if "\<alpha><cf(\<gamma>)" "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" for \<beta> \<alpha>
   proof -
