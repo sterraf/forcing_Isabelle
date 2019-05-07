@@ -49,11 +49,11 @@ proof
   ultimately
   obtain x where "x\<in>domain(f)" "\<langle>b, f ` x\<rangle> \<in> r \<or> b = f`x" 
     by blast
-  from \<open>f:C \<rightarrow> D\<close>
+  moreover from \<open>f:C \<rightarrow> D\<close>  \<open>x\<in>domain(f)\<close>
   have "f`x\<in>D"
-    using domain_of_fun apply_rangeI \<open>x\<in>domain(f)\<close>  by simp
- then
-  show  "\<exists>y\<in>D. \<langle>b, y\<rangle> \<in> r \<or> b = y" using \<open>\<langle>b, f ` x\<rangle> \<in> r \<or> b = f`x\<close>  by auto
+    using domain_of_fun apply_rangeI by simp
+  ultimately
+  show  "\<exists>y\<in>D. \<langle>b, y\<rangle> \<in> r \<or> b = y" by auto
 qed
 
 lemma "Limit(A) \<Longrightarrow> cofinal_fun(f,A,Memrel(A)) \<longleftrightarrow> cofinal_fun'(f,A,Memrel(A))"
@@ -90,9 +90,13 @@ lemma cofinal_mono_map_cf:
   shows "\<exists>j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>)) . cofinal_fun(j,\<gamma>,Memrel(\<gamma>))"
   sorry
     
-lemma cf_succ:
+lemma cofinal_fun_succ:
   "Ord(\<alpha>) \<Longrightarrow> f:1\<rightarrow>succ(\<alpha>) \<Longrightarrow> f`0=\<alpha> \<Longrightarrow> cofinal_fun(f,succ(\<alpha>),Memrel(succ(\<alpha>)))"
- using domain_of_fun unfolding cofinal_fun_def by auto
+  using domain_of_fun unfolding cofinal_fun_def by auto
+
+lemma cf_succ:
+  "Ord(\<alpha>) \<Longrightarrow> cf(succ(\<alpha>)) = 1"
+  sorry
 
 lemma cf_zero:
   "cf(0) = 0"
@@ -140,14 +144,19 @@ proof -
       using ltD by (auto intro:lt_trans) 
     with \<open>j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))\<close>
     have "j`\<beta> \<in> j`\<alpha>" using mono_map_increasing by blast 
-    moreover
-    have "Ord(j`\<alpha>)" sorry
+    moreover from \<open>j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))\<close> \<open>\<alpha>\<in>cf(\<gamma>)\<close>
+    have "j`\<alpha>\<in>\<gamma>" 
+      using domain_of_fun apply_rangeI mono_map_is_fun by force
+    moreover from this and \<open>Limit(\<gamma>)\<close>
+    have "Ord(j`\<alpha>)"
+      using Ord_in_Ord Limit_is_Ord by auto
     ultimately
     have "j`\<beta> \<le> j`\<alpha>"  unfolding lt_def by blast
     then
     have "j`\<alpha> \<le> f`\<theta> \<Longrightarrow> j`\<beta> \<le> f`\<theta>" for \<theta> using le_trans by blast
     moreover from \<open>\<beta><\<alpha>\<close>
-    have "\<forall>x<\<alpha>. f`((\<lambda>x\<in>\<alpha>. G(x))`x) < f`z \<Longrightarrow> y<\<beta> \<Longrightarrow>  f`((\<lambda>x\<in>\<beta>. G(x))`y) < f`z" for y z sorry
+    have "z\<in>\<delta> \<Longrightarrow> \<forall>x<\<alpha>. f`((\<lambda>w\<in>\<alpha>. G(w))`x) < f`z \<Longrightarrow> y<\<beta> \<Longrightarrow>  f`((\<lambda>w\<in>\<beta>. G(w))`y) < f`z" for y z
+      sorry (* probably wrong *)
     ultimately
     show ?thesis by blast
   qed
@@ -243,7 +252,7 @@ proof
 lemma cf_le_cardinal:
   assumes "Limit(\<gamma>)"
   shows "cf(\<gamma>) \<le> |\<gamma>|"
-  sorry    
+  sorry
 
 lemma regular_is_cardinal:
   notes le_imp_subset [dest]
