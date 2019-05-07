@@ -50,10 +50,10 @@ proof
   obtain x where "x\<in>domain(f)" "\<langle>b, f ` x\<rangle> \<in> r \<or> b = f`x" 
     by blast
   from \<open>f:C \<rightarrow> D\<close>
-  have "domain(f) \<subseteq> C" (* is it needed? *)
-    (* using  *) sorry find_theorems "?f:Pi(?A,?B)"
-  then
-  show  "\<exists>y\<in>D. \<langle>b, y\<rangle> \<in> r \<or> b = y" sorry
+  have "f`x\<in>D"
+    using domain_of_fun apply_rangeI \<open>x\<in>domain(f)\<close>  by simp
+ then
+  show  "\<exists>y\<in>D. \<langle>b, y\<rangle> \<in> r \<or> b = y" using \<open>\<langle>b, f ` x\<rangle> \<in> r \<or> b = f`x\<close>  by auto
 qed
 
 lemma "Limit(A) \<Longrightarrow> cofinal_fun(f,A,Memrel(A)) \<longleftrightarrow> cofinal_fun'(f,A,Memrel(A))"
@@ -62,10 +62,11 @@ lemma "Limit(A) \<Longrightarrow> cofinal_fun(f,A,Memrel(A)) \<longleftrightarro
 definition
   cf :: "i\<Rightarrow>i" where 
   "cf(\<gamma>) == \<mu> \<alpha>.  \<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> \<alpha> = ordertype(A,Memrel(\<gamma>))"
-  
+    
 lemma gamma_cofinal_gamma:
   assumes "Ord(\<gamma>)"
-  shows "cofinal(\<gamma>,\<gamma>,Memrel(\<gamma>))" sorry
+  shows "cofinal(\<gamma>,\<gamma>,Memrel(\<gamma>))"
+  sorry
     
 lemma cf_is_ordertype:
   assumes "Ord(\<gamma>)"
@@ -90,8 +91,8 @@ lemma cofinal_mono_map_cf:
   sorry
     
 lemma cf_succ:
-  "Ord(\<alpha>) \<Longrightarrow> cf(succ(\<alpha>)) = 1"
-  sorry
+  "Ord(\<alpha>) \<Longrightarrow> f:1\<rightarrow>succ(\<alpha>) \<Longrightarrow> f`0=\<alpha> \<Longrightarrow> cofinal_fun(f,succ(\<alpha>),Memrel(succ(\<alpha>)))"
+ using domain_of_fun unfolding cofinal_fun_def by auto
 
 lemma cf_zero:
   "cf(0) = 0"
