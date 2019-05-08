@@ -62,6 +62,9 @@ lemma "Limit(A) \<Longrightarrow> cofinal_fun(f,A,Memrel(A)) \<longleftrightarro
 definition
   cf :: "i\<Rightarrow>i" where 
   "cf(\<gamma>) == \<mu> \<alpha>.  \<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> \<alpha> = ordertype(A,Memrel(\<gamma>))"
+
+lemma Ord_cf [TC]: "Ord(cf(\<alpha>))"
+  unfolding cf_def using Ord_Least by simp
     
 lemma gamma_cofinal_gamma:
   assumes "Ord(\<gamma>)"
@@ -154,9 +157,20 @@ proof -
     have "j`\<beta> \<le> j`\<alpha>"  unfolding lt_def by blast
     then
     have "j`\<alpha> \<le> f`\<theta> \<Longrightarrow> j`\<beta> \<le> f`\<theta>" for \<theta> using le_trans by blast
-    moreover from \<open>\<beta><\<alpha>\<close>
-    have "z\<in>\<delta> \<Longrightarrow> \<forall>x<\<alpha>. f`((\<lambda>w\<in>\<alpha>. G(w))`x) < f`z \<Longrightarrow> y<\<beta> \<Longrightarrow>  f`((\<lambda>w\<in>\<beta>. G(w))`y) < f`z" for y z
-      sorry (* probably wrong *)
+    moreover
+    have "f`((\<lambda>w\<in>\<beta>. G(w))`y) < f`z" if "z\<in>\<delta>" "\<forall>x<\<alpha>. f`((\<lambda>w\<in>\<alpha>. G(w))`x) < f`z" "y<\<beta>" for y z
+    proof -
+      note \<open>y<\<beta>\<close> 
+      moreover 
+      note \<open>\<beta><\<alpha>\<close>
+      finally
+      have "y<\<alpha>" by simp
+      with \<open>\<forall>x<\<alpha>. f`((\<lambda>w\<in>\<alpha>. G(w))`x) < f`z\<close>
+      have "f ` ((\<lambda>w\<in>\<alpha>. G(w)) ` y) < f ` z" by simp
+      moreover from \<open>y<\<beta>\<close>
+      have "(\<lambda>w\<in>\<alpha>. G(w)) ` y = (\<lambda>w\<in>\<beta>. G(w)) ` y" sorry
+      ultimately show ?thesis by simp
+    qed
     ultimately
     show ?thesis by blast
   qed
