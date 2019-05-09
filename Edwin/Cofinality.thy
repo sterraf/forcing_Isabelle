@@ -161,14 +161,15 @@ proof -
     have "f`((\<lambda>w\<in>\<beta>. G(w))`y) < f`z" if "z\<in>\<delta>" "\<forall>x<\<alpha>. f`((\<lambda>w\<in>\<alpha>. G(w))`x) < f`z" "y<\<beta>" for y z
     proof -
       note \<open>y<\<beta>\<close> 
-      moreover 
+      also
       note \<open>\<beta><\<alpha>\<close>
       finally
       have "y<\<alpha>" by simp
       with \<open>\<forall>x<\<alpha>. f`((\<lambda>w\<in>\<alpha>. G(w))`x) < f`z\<close>
       have "f ` ((\<lambda>w\<in>\<alpha>. G(w)) ` y) < f ` z" by simp
-      moreover from \<open>y<\<beta>\<close>
-      have "(\<lambda>w\<in>\<alpha>. G(w)) ` y = (\<lambda>w\<in>\<beta>. G(w)) ` y" sorry
+      moreover from \<open>y<\<beta>\<close> \<open>y<\<alpha>\<close>
+      have "(\<lambda>w\<in>\<alpha>. G(w)) ` y = (\<lambda>w\<in>\<beta>. G(w)) ` y" 
+        using beta_if  by (auto dest:ltD)
       ultimately show ?thesis by simp
     qed
     ultimately
