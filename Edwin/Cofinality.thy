@@ -118,11 +118,11 @@ lemma Least_antitone:
   assumes 
     "Ord(j)" "P(j)" "\<And>i. P(i) \<Longrightarrow> Q(i)"
   shows
-    "Least(Q) \<le> Least(P)"
+    "(\<mu> i. Q(i)) \<le> (\<mu> i. P(i))"
   using assms LeastI2[of P j Q] Least_le by simp
 
-lemma Least_setclass_antitone:
-  "Ord(j) \<Longrightarrow> j\<in>A \<Longrightarrow> A \<subseteq> B \<Longrightarrow> Least(##B) \<le> Least(##A)"
+lemma Least_set_antitone:
+  "Ord(j) \<Longrightarrow> j\<in>A \<Longrightarrow> A \<subseteq> B \<Longrightarrow> (\<mu> i. i\<in>B) \<le> (\<mu> i. i\<in>A)"
   using subset_iff by (auto intro:Least_antitone)
   
 lemma 
@@ -138,7 +138,7 @@ proof -
   obtain j where "j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))" "cofinal_fun(j,\<gamma>,Memrel(\<gamma>))"
     using cofinal_mono_map_cf Limit_is_Ord by blast
   let ?A="\<lambda>\<alpha> g. {\<theta> \<in> \<delta>. j`\<alpha> \<le> f`\<theta> \<and> (\<forall>\<beta><\<alpha> . f`(g`\<beta>) < f`\<theta>)} \<union> {\<delta>}"
-  define H where "H \<equiv> \<lambda>\<alpha> h. Least(##?A(\<alpha>,h))"
+  define H where "H \<equiv> \<lambda>\<alpha> h. \<mu> x. x\<in>?A(\<alpha>,h)"
   have "\<alpha><cf(\<gamma>) \<Longrightarrow> \<beta><\<alpha> \<Longrightarrow> ?A(\<alpha>,\<lambda>x\<in>\<alpha>. G(x)) \<subseteq> ?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))" for \<beta> \<alpha> G
   proof -
     assume "\<beta><\<alpha>" "\<alpha><cf(\<gamma>)"
@@ -177,31 +177,38 @@ proof -
   qed
   with \<open>Ord(\<delta>)\<close>
   have H_mono: "\<alpha><cf(\<gamma>) \<Longrightarrow> \<beta><\<alpha> \<Longrightarrow> H(\<beta>,\<lambda>x\<in>\<beta>. G(x)) \<le> H(\<alpha>,\<lambda>x\<in>\<alpha>. G(x))" for \<beta> \<alpha> G
-    unfolding H_def using Least_setclass_antitone[of \<delta>] by simp
+    unfolding H_def using Least_set_antitone[of \<delta> "?A(\<alpha>,\<lambda>x\<in>\<alpha>. G(x))" "?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))"] 
+    by simp
   define G where "G \<equiv> \<lambda>\<alpha>. transrec(\<alpha>,H)"
+  then 
+  have G_def':"\<And>x. G(x) \<equiv> transrec(x,H)" using G_def by simp
+  have G_rec:"G(\<beta>) = H(\<beta>, \<lambda>x\<in>\<beta>. G(x))" for \<beta>
+    using def_transrec[OF G_def'] .
   have "G(\<beta>) \<le> G(\<alpha>)" if "\<alpha><cf(\<gamma>)" "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" for \<beta> \<alpha>
   proof -
-    have def_G:"\<And>x. G(x) \<equiv> transrec(x,H)" using G_def by simp
-    have "G(\<beta>) = H(\<beta>, \<lambda>x\<in>\<beta>. G(x))" 
-      using def_transrec[OF def_G] .
-    also from that H_mono
-    have " ... \<le> H(\<alpha>, \<lambda>x\<in>\<alpha>. G(x))" 
+    note \<open>G(\<beta>) = H(\<beta>, \<lambda>x\<in>\<beta>. G(x))\<close> 
+    also from that and H_mono
+    have "H(\<beta>, \<lambda>x\<in>\<beta>. G(x)) \<le> H(\<alpha>, \<lambda>x\<in>\<alpha>. G(x))" 
       by simp
     also
     have "H(\<alpha>, \<lambda>x\<in>\<alpha>. G(x)) = G(\<alpha>)" 
-      using def_transrec[OF def_G, symmetric] .
+      using def_transrec[OF G_def', symmetric] .
     finally show ?thesis .
   qed
+  moreover 
   have "f`G(\<beta>) < f`G(\<alpha>)" 
-    if "\<alpha><cf(\<gamma>)" "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>"  for \<beta> \<alpha>
+    if "\<alpha><cf(\<gamma>)" "\<beta><\<alpha>" "G(\<alpha>)\<noteq>\<delta>"  for \<beta> \<alpha>
   proof -
-    show ?thesis sorry
+    from \<open>G(\<alpha>) = H(\<alpha>, \<lambda>x\<in>\<alpha>. G(x))\<close> \<open>Ord(\<delta>)\<close> and that 
+    have "f ` ((\<lambda>x\<in>\<alpha>. G(x)) ` \<beta>) < f ` G(\<alpha>)"
+      unfolding H_def using  LeastI[of "\<lambda>y. y\<in>?A(\<alpha>,\<lambda>x\<in>\<alpha>. G(x))"] 
+      by (auto simp del:beta_if)
+    with \<open>\<beta><\<alpha>\<close>
+    show ?thesis using ltD by auto
   qed
-  have "G(\<beta>)<G(\<alpha>)" 
-    if "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" "f`G(\<beta>) < f`G(\<alpha>)" "G(\<beta>)<G(\<alpha>)" for \<beta> \<alpha>
-  proof -
-    show ?thesis sorry
-  qed
+  ultimately
+  have "G(\<beta>)<G(\<alpha>)"  if "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" "f`G(\<beta>) < f`G(\<alpha>)" "G(\<beta>)<G(\<alpha>)" for \<beta> \<alpha> 
+    using that by simp
   have "\<alpha> < cf(\<gamma>) \<Longrightarrow> G(\<alpha>)\<noteq>\<delta>" for \<alpha>  sorry
   let ?g="\<lambda>\<alpha>\<in>cf(\<gamma>) . G(\<alpha>)"
   have "?g \<in> mono_map(cf(\<gamma>), Memrel(cf(\<gamma>)), \<delta>, Memrel(\<delta>))" sorry
