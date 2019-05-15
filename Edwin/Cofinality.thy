@@ -124,28 +124,43 @@ lemma Least_antitone:
 lemma Least_set_antitone:
   "Ord(j) \<Longrightarrow> j\<in>A \<Longrightarrow> A \<subseteq> B \<Longrightarrow> (\<mu> i. i\<in>B) \<le> (\<mu> i. i\<in>A)"
   using subset_iff by (auto intro:Least_antitone)
-  
+
+lemma le_neq_imp_lt:
+  "x\<le>y \<Longrightarrow> x\<noteq>y \<Longrightarrow> x<y"
+  using ltD ltI[of x y] le_Ord2
+  unfolding succ_def by auto
+
+lemma apply_in_range:
+  "Ord(\<gamma>) \<Longrightarrow> \<gamma>\<noteq>0 \<Longrightarrow> f: A \<rightarrow> \<gamma> \<Longrightarrow> f`x\<in>\<gamma>"
+  sorry
+
 lemma 
   notes le_imp_subset [dest]
   assumes 
-    "Ord(\<delta>)" "Limit(\<gamma>)" "function(f)" "domain(f) = \<delta>" "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))" 
+    "Ord(\<delta>)" "Limit(\<gamma>)" "f: \<delta> \<rightarrow> \<gamma>" "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))" 
   shows
     "\<exists>g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<delta>,Memrel(\<delta>)).
      f O g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>)) \<and> 
      cofinal_fun(f O g,\<gamma>,Memrel(\<gamma>))"
 proof -
   from \<open>Limit(\<gamma>)\<close>
+  have "Ord(\<gamma>)" using Limit_is_Ord by simp
+  then
   obtain j where "j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))" "cofinal_fun(j,\<gamma>,Memrel(\<gamma>))"
-    using cofinal_mono_map_cf Limit_is_Ord by blast
+    using cofinal_mono_map_cf by blast
   let ?A="\<lambda>\<alpha> g. {\<theta> \<in> \<delta>. j`\<alpha> \<le> f`\<theta> \<and> (\<forall>\<beta><\<alpha> . f`(g`\<beta>) < f`\<theta>)} \<union> {\<delta>}"
   define H where "H \<equiv> \<lambda>\<alpha> h. \<mu> x. x\<in>?A(\<alpha>,h)"
-  have "\<alpha><cf(\<gamma>) \<Longrightarrow> \<beta><\<alpha> \<Longrightarrow> ?A(\<alpha>,\<lambda>x\<in>\<alpha>. G(x)) \<subseteq> ?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))" for \<beta> \<alpha> G
+  have "\<alpha>\<in>cf(\<gamma>) \<Longrightarrow> \<beta><\<alpha> \<Longrightarrow> ?A(\<alpha>,\<lambda>x\<in>\<alpha>. G(x)) \<subseteq> ?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))" for \<beta> \<alpha> G
   proof -
-    assume "\<beta><\<alpha>" "\<alpha><cf(\<gamma>)"
+    assume "\<beta><\<alpha>"
     then 
-    have "\<beta>\<in>cf(\<gamma>)" "\<alpha>\<in>cf(\<gamma>)" "\<beta>\<in>\<alpha>" 
-      using ltD by (auto intro:lt_trans) 
-    with \<open>j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))\<close>
+    have "\<beta>\<in>\<alpha>" using ltD by simp 
+    moreover assume "\<alpha>\<in>cf(\<gamma>)" 
+    moreover from calculation
+    have "\<beta>\<in>cf(\<gamma>)" using Ord_cf Ord_trans by blast
+    moreover 
+    note \<open>j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))\<close>
+    ultimately 
     have "j`\<beta> \<in> j`\<alpha>" using mono_map_increasing by blast 
     moreover from \<open>j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))\<close> \<open>\<alpha>\<in>cf(\<gamma>)\<close>
     have "j`\<alpha>\<in>\<gamma>" 
@@ -176,7 +191,7 @@ proof -
     show ?thesis by blast
   qed
   with \<open>Ord(\<delta>)\<close>
-  have H_mono: "\<alpha><cf(\<gamma>) \<Longrightarrow> \<beta><\<alpha> \<Longrightarrow> H(\<beta>,\<lambda>x\<in>\<beta>. G(x)) \<le> H(\<alpha>,\<lambda>x\<in>\<alpha>. G(x))" for \<beta> \<alpha> G
+  have H_mono: "\<alpha>\<in>cf(\<gamma>) \<Longrightarrow> \<beta><\<alpha> \<Longrightarrow> H(\<beta>,\<lambda>x\<in>\<beta>. G(x)) \<le> H(\<alpha>,\<lambda>x\<in>\<alpha>. G(x))" for \<beta> \<alpha> G
     unfolding H_def using Least_set_antitone[of \<delta> "?A(\<alpha>,\<lambda>x\<in>\<alpha>. G(x))" "?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))"] 
     by simp
   define G where "G \<equiv> \<lambda>\<alpha>. transrec(\<alpha>,H)"
@@ -184,7 +199,19 @@ proof -
   have G_def':"\<And>x. G(x) \<equiv> transrec(x,H)" using G_def by simp
   have G_rec:"G(\<beta>) = H(\<beta>, \<lambda>x\<in>\<beta>. G(x))" for \<beta>
     using def_transrec[OF G_def'] .
-  have "G(\<beta>) \<le> G(\<alpha>)" if "\<alpha><cf(\<gamma>)" "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" for \<beta> \<alpha>
+  have "G(\<beta>) \<in> ?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))" for \<beta>
+  proof -
+    note \<open>G(\<beta>) = H(\<beta>, \<lambda>x\<in>\<beta>. G(x))\<close>
+    also from \<open>Ord(\<delta>)\<close>
+    have "H(\<beta>, \<lambda>x\<in>\<beta>. G(x)) \<in> ?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))"
+      unfolding H_def using  LeastI[of "\<lambda>y. y\<in>?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))" \<delta>] by simp
+    finally 
+    show ?thesis by simp
+  qed
+  with \<open>Ord(\<delta>)\<close>  
+  have "Ord(G(\<beta>))" for \<beta>
+    using Ord_in_Ord by auto
+  have "G(\<beta>) \<le> G(\<alpha>)" if "\<alpha>\<in>cf(\<gamma>)" "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" for \<beta> \<alpha>
   proof -
     note \<open>G(\<beta>) = H(\<beta>, \<lambda>x\<in>\<beta>. G(x))\<close> 
     also from that and H_mono
@@ -197,7 +224,7 @@ proof -
   qed
   moreover 
   have "f`G(\<beta>) < f`G(\<alpha>)" 
-    if "\<alpha><cf(\<gamma>)" "\<beta><\<alpha>" "G(\<alpha>)\<noteq>\<delta>"  for \<beta> \<alpha>
+    if "\<alpha>\<in>cf(\<gamma>)" "\<beta><\<alpha>" "G(\<alpha>)\<noteq>\<delta>"  for \<beta> \<alpha>
   proof -
     from \<open>G(\<alpha>) = H(\<alpha>, \<lambda>x\<in>\<alpha>. G(x))\<close> \<open>Ord(\<delta>)\<close> and that 
     have "f ` ((\<lambda>x\<in>\<alpha>. G(x)) ` \<beta>) < f ` G(\<alpha>)"
@@ -206,14 +233,61 @@ proof -
     with \<open>\<beta><\<alpha>\<close>
     show ?thesis using ltD by auto
   qed
-  ultimately
-  have "G(\<beta>)<G(\<alpha>)"  if "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" "f`G(\<beta>) < f`G(\<alpha>)" "G(\<beta>)<G(\<alpha>)" for \<beta> \<alpha> 
-    using that by simp
-  have "\<alpha> < cf(\<gamma>) \<Longrightarrow> G(\<alpha>)\<noteq>\<delta>" for \<alpha>  sorry
+  moreover 
+  note \<open>\<And>\<alpha>. Ord(G(\<alpha>))\<close>
+  ultimately 
+  have "G(\<beta>)<G(\<alpha>)" if "\<alpha>\<in>cf(\<gamma>)" "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" for \<beta> \<alpha> 
+    using that by (force intro:le_neq_imp_lt)
+  then
+  have monot:"G(\<beta>)\<in>G(\<alpha>)" if "\<alpha>\<in>cf(\<gamma>)" "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" for \<beta> \<alpha> 
+    using that and ltD by simp
+  have G_not_delta: "\<alpha> \<in> cf(\<gamma>) \<Longrightarrow> G(\<alpha>)\<noteq>\<delta>" for \<alpha>  sorry
+  with \<open>Ord(\<delta>)\<close> \<open>\<And>\<beta>. G(\<beta>) \<in> ?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))\<close> 
+  have in_delta:"\<alpha> \<in> cf(\<gamma>) \<Longrightarrow> G(\<alpha>)\<in>\<delta>" for \<alpha> by auto 
   let ?g="\<lambda>\<alpha>\<in>cf(\<gamma>) . G(\<alpha>)"
-  have "?g \<in> mono_map(cf(\<gamma>), Memrel(cf(\<gamma>)), \<delta>, Memrel(\<delta>))" sorry
-  moreover     
-  have "f O ?g \<in> mono_map(cf(\<gamma>), Memrel(cf(\<gamma>)), \<gamma>, Memrel(\<gamma>))" sorry
+  from \<open>Ord(\<gamma>)\<close> \<open>Ord(\<delta>)\<close> in_delta G_not_delta
+  have "?g : cf(\<gamma>) -> \<delta>"
+    using ltI lam_type by simp
+  then have "?g \<in> mono_map(cf(\<gamma>), Memrel(cf(\<gamma>)), \<delta>, Memrel(\<delta>))"
+    unfolding mono_map_def 
+  proof (intro CollectI ballI impI) 
+    (* Proof that ?g respects membership *)
+    fix \<beta> \<alpha> 
+    assume 
+      "\<beta>\<in>cf(\<gamma>)" "\<alpha>\<in>cf(\<gamma>)" 
+    with G_not_delta 
+    have "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" "Ord(\<alpha>)" 
+      using Ord_in_Ord Ord_cf by auto
+    moreover
+    assume "\<langle>\<beta>, \<alpha>\<rangle> \<in> Memrel(cf(\<gamma>))"
+    ultimately
+    show "\<langle>?g ` \<beta>, ?g ` \<alpha>\<rangle> \<in> Memrel(\<delta>)" 
+      using ltI monot in_delta by auto 
+  qed
+  moreover from \<open>?g : cf(\<gamma>) \<rightarrow> \<delta>\<close> \<open>f: \<delta> \<rightarrow> \<gamma>\<close>
+  have "f O ?g \<in> mono_map(cf(\<gamma>), Memrel(cf(\<gamma>)), \<gamma>, Memrel(\<gamma>))" 
+     unfolding mono_map_def 
+  proof (intro CollectI ballI impI comp_fun[of _ _ \<delta>]) 
+    (* Proof that f O ?g respects membership *)
+    fix \<beta> \<alpha> 
+    assume "\<langle>\<beta>, \<alpha>\<rangle> \<in> Memrel(cf(\<gamma>))"
+    then
+    have "\<beta><\<alpha>"
+      using Ord_in_Ord[of "cf(\<gamma>)"] ltI Ord_cf by blast
+    assume
+      "\<beta>\<in>cf(\<gamma>)" "\<alpha>\<in>cf(\<gamma>)"   
+    moreover from this and  G_not_delta  
+    have "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" using Ord_cf by auto
+    moreover
+    note \<open>\<alpha> \<in> cf(\<gamma>) \<Longrightarrow> \<beta> < \<alpha> \<Longrightarrow> G(\<alpha>) \<noteq> \<delta> \<Longrightarrow> f ` G(\<beta>) < f ` G(\<alpha>)\<close>
+    moreover 
+    note \<open>f: \<delta> \<rightarrow> \<gamma>\<close> \<open>\<beta><\<alpha>\<close> \<open>Limit(\<gamma>)\<close> \<open>Ord(\<gamma>)\<close>
+    ultimately
+    show "\<langle>(f O ?g) ` \<beta>, (f O ?g) ` \<alpha>\<rangle> \<in> Memrel(\<gamma>)" 
+      using ltD[of "f ` G(\<beta>)" "f ` G(\<alpha>)"] monot in_delta 
+        apply_in_range Limit_nonzero[of \<gamma>]
+      apply auto  sorry find_theorems "Limit(?a)"
+  qed
   moreover
   have "cofinal_fun(f O ?g, \<gamma>, Memrel(\<gamma>))"  sorry
   ultimately show ?thesis by blast
