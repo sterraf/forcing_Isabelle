@@ -278,7 +278,7 @@ proof -
       using ltI monot in_delta by auto 
   qed
   moreover from \<open>?g : cf(\<gamma>) \<rightarrow> \<delta>\<close> \<open>f: \<delta> \<rightarrow> \<gamma>\<close>
-  have "f O ?g \<in> mono_map(cf(\<gamma>), Memrel(cf(\<gamma>)), \<gamma>, Memrel(\<gamma>))" 
+  have fg_mono_map: "f O ?g \<in> mono_map(cf(\<gamma>), Memrel(cf(\<gamma>)), \<gamma>, Memrel(\<gamma>))" 
      unfolding mono_map_def 
   proof (intro CollectI ballI impI comp_fun[of _ _ \<delta>]) 
     (* Proof that f O ?g respects membership *)
@@ -289,20 +289,38 @@ proof -
       using Ord_in_Ord[of "cf(\<gamma>)"] ltI Ord_cf by blast
     assume
       "\<beta>\<in>cf(\<gamma>)" "\<alpha>\<in>cf(\<gamma>)"   
-    moreover from this and  G_not_delta  
+    moreover from this and G_not_delta  
     have "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" using Ord_cf by auto
     moreover
     note \<open>\<alpha> \<in> cf(\<gamma>) \<Longrightarrow> \<beta> < \<alpha> \<Longrightarrow> G(\<alpha>) \<noteq> \<delta> \<Longrightarrow> f ` G(\<beta>) < f ` G(\<alpha>)\<close>
     moreover 
-    note \<open>f: \<delta> \<rightarrow> \<gamma>\<close> \<open>\<beta><\<alpha>\<close> \<open>Limit(\<gamma>)\<close> \<open>Ord(\<gamma>)\<close>
+    note \<open>f: \<delta> \<rightarrow> \<gamma>\<close> \<open>\<beta><\<alpha>\<close> \<open>Limit(\<gamma>)\<close> \<open>Ord(\<gamma>)\<close> \<open>?g : cf(\<gamma>) \<rightarrow> \<delta>\<close>
     ultimately
-    show "\<langle>(f O ?g) ` \<beta>, (f O ?g) ` \<alpha>\<rangle> \<in> Memrel(\<gamma>)" 
-      using ltD[of "f ` G(\<beta>)" "f ` G(\<alpha>)"] monot in_delta 
-        apply_in_range Limit_nonzero[of \<gamma>]
-      apply auto  sorry find_theorems "Limit(?a)"
+    show "\<langle>(f O ?g) ` \<beta>, (f O ?g) ` \<alpha>\<rangle> \<in> Memrel(\<gamma>)"
+      using ltD[of "f ` G(\<beta>)" "f ` G(\<alpha>)"] apply_in_range by auto
   qed
   moreover
-  have "cofinal_fun(f O ?g, \<gamma>, Memrel(\<gamma>))"  sorry
+  have "cofinal_fun(f O ?g, \<gamma>, Memrel(\<gamma>))" 
+  proof -
+    {    
+      fix a
+      let ?x="2"   (* just a mock value for testing proof structure *)
+      assume "a \<in> \<gamma>"
+      then
+      have "?x \<in> domain(f O ?g)"  sorry (* mock goal *)
+      moreover
+      have "a \<in> (f O ?g) `?x" sorry
+      moreover
+      note \<open>a \<in> \<gamma>\<close>
+      moreover from calculation and fg_mono_map and \<open>Ord(\<gamma>)\<close> \<open>Limit(\<gamma>)\<close>
+      have "(f O ?g) `?x \<in> \<gamma>" 
+        using Limit_nonzero apply_in_range mono_map_is_fun[of "f O ?g" ] by blast
+      ultimately
+      have "\<langle>a, (f O ?g) ` ?x\<rangle> \<in> Memrel(\<gamma>)" "?x \<in> domain(f O ?g)"
+        by simp_all 
+    }
+    then show ?thesis unfolding cofinal_fun_def  by blast
+  qed
   ultimately show ?thesis by blast
 qed
     
