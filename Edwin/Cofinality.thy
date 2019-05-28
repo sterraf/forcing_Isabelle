@@ -131,8 +131,21 @@ lemma le_neq_imp_lt:
   unfolding succ_def by auto
 
 lemma apply_in_range:
-  "Ord(\<gamma>) \<Longrightarrow> \<gamma>\<noteq>0 \<Longrightarrow> f: A \<rightarrow> \<gamma> \<Longrightarrow> f`x\<in>\<gamma>"
-  sorry
+  assumes "Ord(\<gamma>)" " \<gamma>\<noteq>0" "f: A \<rightarrow> \<gamma>"
+shows"f`x\<in>\<gamma>"
+proof (cases "x\<in>A")
+  case True
+  from assms \<open>x\<in>A\<close>
+  show ?thesis
+    using   domain_of_fun apply_rangeI  by simp
+    next
+      case False
+      from assms \<open>x\<notin>A\<close>
+      show ?thesis
+        using apply_0  Ord_0_lt ltD domain_of_fun by auto
+    qed
+       
+  
 
 lemma 
   notes le_imp_subset [dest]
