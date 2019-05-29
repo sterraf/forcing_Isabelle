@@ -36,9 +36,9 @@ lemma sats_is_dense_below_fm :
 
 schematic_goal sats_idbf_automatic:
   assumes 
-    "P\<in>nat" "leq\<in>nat" "D\<in>nat" "q\<in>nat"
+    "P\<in>nat" "leq\<in>nat" "D\<in>nat" "q\<in>nat" "env\<in>list(A)"
   shows
-    "env\<in>list(A) \<Longrightarrow> is_dense_below(##A,nth(P, env), nth(leq, env), nth(D, env),nth(q, env))
+    "is_dense_below(##A,nth(P, env), nth(leq, env), nth(D, env),nth(q, env))
     \<longleftrightarrow> sats(A,?idbf(P,leq,D,q),env)"
     and
     "(?idbf(P,leq,D,q) \<in> formula)"
@@ -61,6 +61,24 @@ notepad begin
     \<longleftrightarrow> sats(A,idbf(P,leq,D,q),env)"
     "idbf(P,leq,D,q) \<in> formula"
     using sats_idbf_automatic by (simp_all del:FOL_sats_iff)
+end
+
+notepad begin
+  fix P leq D q A
+  define env where "env == [P,leq,D,q]"
+  assume
+    "P\<in>A" "leq\<in>A" "D\<in>A" "q\<in>A"
+  then
+  obtain idbf where
+    "is_dense_below(##A,nth(0,env),nth(1,env),nth(2,env),nth(3,env))
+    \<longleftrightarrow> sats(A,idbf(0,1,2,3),env)"
+    "idbf(0,1,2,3) \<in> formula"
+    using sats_idbf_automatic[of 0 1 2 3 "env"] unfolding env_def 
+    by (simp_all del:FOL_sats_iff)
+  then 
+  have "is_dense_below(##A,P,leq,D,q)
+        \<longleftrightarrow> sats(A,idbf(0,1,2,3),[P,leq,D,q])"
+    unfolding env_def by simp
 end
 
 context M_trivial 

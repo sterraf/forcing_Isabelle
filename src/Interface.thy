@@ -809,5 +809,93 @@ sublocale forcing_data \<subseteq> M_basic "##M"
   apply (insert M_basic_sep_instances funspace_succ_rep_intf)
   apply (simp_all)
 done
-  
+
+(* Interface with M_trancl *)
+
+(*
+locale M_trancl = M_basic +
+  assumes rtrancl_separation:
+         "[| M(r); M(A) |] ==> separation (M, rtran_closure_mem(M,A,r))"
+      and wellfounded_trancl_separation:
+         "[| M(r); M(Z) |] ==> 
+          separation (M, \<lambda>x. 
+              \<exists>w[M]. \<exists>wx[M]. \<exists>rp[M]. 
+               w \<in> Z & pair(M,w,x,wx) & tran_closure(M,r,rp) & wx \<in> rp)"
+      and M_nat [iff] : "M(nat)"
+*)
+
+(* rtran_closure_mem *)
+(*
+rtran_closure_mem :: "[i=>o,i,i,i] => o" where
+    \<comment>\<open>The property of belonging to \<open>rtran_closure(r)\<close>\<close>
+    "rtran_closure_mem(M,A,r,p) ==
+              \<exists>nnat[M]. \<exists>n[M]. \<exists>n'[M]. 
+               omega(M,nnat) & n\<in>nnat & successor(M,n,n') &
+               (\<exists>f[M]. typed_function(M,n',A,f) &
+                (\<exists>x[M]. \<exists>y[M]. \<exists>zero[M]. pair(M,x,y,p) & empty(M,zero) &
+                  fun_apply(M,f,zero,x) & fun_apply(M,f,n,y)) &
+                  (\<forall>j[M]. j\<in>n \<longrightarrow> 
+                    (\<exists>fj[M]. \<exists>sj[M]. \<exists>fsj[M]. \<exists>ffp[M]. 
+                      fun_apply(M,f,j,fj) & successor(M,j,sj) &
+                      fun_apply(M,f,sj,fsj) & pair(M,fj,fsj,ffp) & ffp \<in> r)))"
+*)
+
+lemma nth_ConsI: "[|nth(n,l) = x; n \<in> nat|] ==> nth(succ(n), Cons(a,l)) = x"
+by simp
+
+lemmas nth_rules = nth_0 nth_ConsI nat_0I nat_succI
+lemmas sep_rules = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
+                   fun_plus_iff_sats
+
+lemmas FOL_sats_iff = sats_Nand_iff sats_Forall_iff sats_Neg_iff sats_And_iff
+  sats_Or_iff sats_Implies_iff sats_Iff_iff sats_Exists_iff 
+
+
+schematic_goal rtran_closure_mem_fm_auto:
+  assumes 
+    "B\<in>nat" "r\<in>nat" "p\<in>nat"
+  shows
+    "(\<forall>env\<in>list(A). rtran_closure_mem(##A,nth(B,env),nth(r,env),nth(p,env))
+    \<longleftrightarrow> sats(A,?rcm(B,r,p),env)) \<and> ?rcm(B,r,p) \<in> formula \<and> arity(?rcm(B,r,p)) = succ(B \<union> r \<union> p)"
+  sorry 
+
+lemma (in forcing_data) rtrancl_separation_intf:
+    assumes
+      "r\<in>M"
+    and
+      "A\<in>M"
+    shows
+      "separation (##M, rtran_closure_mem(##M,A,r))"
+proof -
+   obtain rcmf where
+    rcmfsats:"\<And>env. env\<in>list(M) \<Longrightarrow> rtran_closure_mem(##M,nth(0,env),nth(1,env),nth(2,env))
+    \<longleftrightarrow> sats(M,rcmf(0,1,2),env)"
+    and 
+    "rcmf(0,1,2) \<in> formula" 
+    and
+    "arity(rcmf(0,1,2)) = 3"
+     using \<open>r\<in>M\<close> \<open>A\<in>M\<close> rtran_closure_mem_fm_auto[of 0 1 2]
+     by (simp add:Un_commute nat_union_abs1 del:FOL_sats_iff)
+   then have 
+    rcmfsats':"rtran_closure_mem(##M,a,b,c)
+    \<longleftrightarrow> sats(M,rcmf(0,1,2),[a,b,c,d])" if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" for a b c d
+     using that rcmfsats [of "[a,b,c,d]"] by simp 
+   with separation_ax arity_tup2p have
+     "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,tupling_fm_2p(rcmf(0,1,2)),[x,v])))"
+     using \<open>rcmf(0,1,2) \<in> formula\<close> \<open>arity(rcmf(0,1,2)) = 3\<close> by simp
+   then have
+     "(separation(##M, \<lambda>x. \<forall>r\<in>M. \<forall>A\<in>M. pair(##M, r, A, v) \<longrightarrow> rtran_closure_mem(##M,A,r,x)))" if "v\<in>M" for v
+     unfolding separation_def tupling_fm_2p_def using that rcmfsats' [of _ _ _ "v"] by (simp del: pair_abs)
+   then have
+     "\<forall>v\<in>M.(separation(##M, \<lambda>x. \<forall>r\<in>M. \<forall>A\<in>M. pair(##M, r, A, v) \<longrightarrow> rtran_closure_mem(##M,A,r,x)))"
+     by simp
+   with tupling_sep_2p have 
+    "(\<forall>A\<in>M. \<forall>r\<in>M. separation(##M, rtran_closure_mem(##M,A,r)))"
+   by simp
+  with \<open>A\<in>M\<close> \<open>r\<in>M\<close> show ?thesis by simp
+qed
+
+
+
+
 end
