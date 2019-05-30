@@ -161,6 +161,9 @@ proof -
   then
   obtain j where "j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))" "cofinal_fun(j,\<gamma>,Memrel(\<gamma>))"
     using cofinal_mono_map_cf by blast
+  then
+  have "domain(j) = cf(\<gamma>)" 
+    using domain_of_fun mono_map_is_fun by force
   let ?A="\<lambda>\<alpha> g. {\<theta> \<in> \<delta>. j`\<alpha> \<le> f`\<theta> \<and> (\<forall>\<beta><\<alpha> . f`(g`\<beta>) < f`\<theta>)} \<union> {\<delta>}"
   define H where "H \<equiv> \<lambda>\<alpha> h. \<mu> x. x\<in>?A(\<alpha>,h)"
   have "\<alpha>\<in>cf(\<gamma>) \<Longrightarrow> \<beta><\<alpha> \<Longrightarrow> ?A(\<alpha>,\<lambda>x\<in>\<alpha>. G(x)) \<subseteq> ?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))" for \<beta> \<alpha> G
@@ -304,22 +307,35 @@ proof -
   proof -
     {    
       fix a
-      let ?x="2"   (* just a mock value for testing proof structure *)
       assume "a \<in> \<gamma>"
-      then
-      have "?x \<in> domain(f O ?g)"  sorry (* mock goal *)
+      with \<open>cofinal_fun(j,\<gamma>,Memrel(\<gamma>))\<close> \<open>domain(j) = cf(\<gamma>)\<close>
+      obtain x where "x\<in>cf(\<gamma>)" "a \<in> j`x \<or> a = j`x"
+        unfolding cofinal_fun_def by auto
+      with fg_mono_map
+      have "x \<in> domain(f O ?g)" 
+        using mono_map_is_fun domain_of_fun by force
       moreover
-      have "a \<in> (f O ?g) `?x" sorry
+      have "a \<in> (f O ?g) `x \<or> a = (f O ?g) `x"
+      proof -
+        from \<open>x\<in>cf(\<gamma>)\<close> \<open>G(x) \<in> ?A(x,\<lambda>y\<in>x. G(y))\<close> \<open>x \<in> cf(\<gamma>) \<Longrightarrow> G(x)\<in>\<delta>\<close>
+        have "j ` x \<le> f ` G(x)" 
+          using mem_not_refl by auto
+        with \<open>a \<in> j`x \<or> a = j`x\<close>
+        have "a \<in> f ` G(x) \<or> a = f ` G(x)" 
+          using ltD by blast
+        with \<open>x\<in>cf(\<gamma>)\<close>
+        show ?thesis using lam_funtype[of "cf(\<gamma>)" G] by auto
+      qed
       moreover
       note \<open>a \<in> \<gamma>\<close>
       moreover from calculation and fg_mono_map and \<open>Ord(\<gamma>)\<close> \<open>Limit(\<gamma>)\<close>
-      have "(f O ?g) `?x \<in> \<gamma>" 
+      have "(f O ?g) `x \<in> \<gamma>"
         using Limit_nonzero apply_in_range mono_map_is_fun[of "f O ?g" ] by blast
       ultimately
-      have "\<langle>a, (f O ?g) ` ?x\<rangle> \<in> Memrel(\<gamma>)" "?x \<in> domain(f O ?g)"
-        by simp_all 
+      have "\<exists>x \<in> domain(f O ?g). \<langle>a, (f O ?g) ` x\<rangle> \<in> Memrel(\<gamma>) \<or> a = (f O ?g) `x"
+        by blast
     }
-    then show ?thesis unfolding cofinal_fun_def  by blast
+    then show ?thesis unfolding cofinal_fun_def by blast
   qed
   ultimately show ?thesis by blast
 qed
