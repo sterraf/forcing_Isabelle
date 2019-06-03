@@ -801,8 +801,8 @@ lemmas (in forcing_data) M_basic_sep_instances =
                 inter_sep_intf diff_sep_intf cartprod_sep_intf
                 image_sep_intf converse_sep_intf restrict_sep_intf
                 pred_sep_intf memrel_sep_intf comp_sep_intf is_recfun_sep_intf
-  
-sublocale forcing_data \<subseteq> M_basic "##M"
+
+lemma (in forcing_data) mbasic : "M_basic(##M)"
   apply (insert trans_M zero_in_M power_ax)
   apply (rule M_basic.intro,rule mtriv)
   apply (rule M_basic_axioms.intro)
@@ -810,35 +810,12 @@ sublocale forcing_data \<subseteq> M_basic "##M"
   apply (simp_all)
 done
 
-(* Interface with M_trancl *)
+sublocale forcing_data \<subseteq> M_basic "##M"
+  by (rule mbasic)
 
-(*
-locale M_trancl = M_basic +
-  assumes rtrancl_separation:
-         "[| M(r); M(A) |] ==> separation (M, rtran_closure_mem(M,A,r))"
-      and wellfounded_trancl_separation:
-         "[| M(r); M(Z) |] ==> 
-          separation (M, \<lambda>x. 
-              \<exists>w[M]. \<exists>wx[M]. \<exists>rp[M]. 
-               w \<in> Z & pair(M,w,x,wx) & tran_closure(M,r,rp) & wx \<in> rp)"
-      and M_nat [iff] : "M(nat)"
-*)
+(*** Interface with M_trancl ***)
 
 (* rtran_closure_mem *)
-(*
-rtran_closure_mem :: "[i=>o,i,i,i] => o" where
-    \<comment>\<open>The property of belonging to \<open>rtran_closure(r)\<close>\<close>
-    "rtran_closure_mem(M,A,r,p) ==
-              \<exists>nnat[M]. \<exists>n[M]. \<exists>n'[M]. 
-               omega(M,nnat) & n\<in>nnat & successor(M,n,n') &
-               (\<exists>f[M]. typed_function(M,n',A,f) &
-                (\<exists>x[M]. \<exists>y[M]. \<exists>zero[M]. pair(M,x,y,p) & empty(M,zero) &
-                  fun_apply(M,f,zero,x) & fun_apply(M,f,n,y)) &
-                  (\<forall>j[M]. j\<in>n \<longrightarrow> 
-                    (\<exists>fj[M]. \<exists>sj[M]. \<exists>fsj[M]. \<exists>ffp[M]. 
-                      fun_apply(M,f,j,fj) & successor(M,j,sj) &
-                      fun_apply(M,f,sj,fsj) & pair(M,fj,fsj,ffp) & ffp \<in> r)))"
-*)
 
 lemma nth_ConsI: "[|nth(n,l) = x; n \<in> nat|] ==> nth(succ(n), Cons(a,l)) = x"
 by simp
@@ -895,7 +872,126 @@ proof -
   with \<open>A\<in>M\<close> \<open>r\<in>M\<close> show ?thesis by simp
 qed
 
+(* wellfounded trancl *)
+definition
+  wellfounded_trancl :: "[i=>o,i,i,i] => o" where
+  "wellfounded_trancl(M,Z,r,p) == 
+      \<exists>w[M]. \<exists>wx[M]. \<exists>rp[M]. 
+               w \<in> Z & pair(M,w,p,wx) & tran_closure(M,r,rp) & wx \<in> rp"
+
+schematic_goal wellfounded_trancl_fm_auto:
+  assumes 
+    "B\<in>nat" "r\<in>nat" "p\<in>nat"
+  shows
+    "(\<forall>env\<in>list(A). wellfounded_trancl(##A,nth(B,env),nth(r,env),nth(p,env))
+    \<longleftrightarrow> sats(A,?wtf(B,r,p),env)) \<and> ?wtf(B,r,p) \<in> formula \<and> arity(?rcm(B,r,p)) = succ(B \<union> r \<union> p)"
+  sorry 
 
 
+lemma (in forcing_data) wftrancl_separation_intf:
+    assumes
+      "r\<in>M"
+    and
+      "Z\<in>M"
+    shows
+      "separation (##M, wellfounded_trancl(##M,Z,r))"
+proof -
+   obtain wtf where
+    wtfsats:"\<And>env. env\<in>list(M) \<Longrightarrow> wellfounded_trancl(##M,nth(0,env),nth(1,env),nth(2,env))
+    \<longleftrightarrow> sats(M,wtf(0,1,2),env)"
+    and 
+    "wtf(0,1,2) \<in> formula" 
+    and
+    "arity(wtf(0,1,2)) = 3"
+     using \<open>r\<in>M\<close> \<open>Z\<in>M\<close> wellfounded_trancl_fm_auto[of 0 1 2]
+     by (simp add:Un_commute nat_union_abs1 del:FOL_sats_iff)
+   then have 
+    wtfsats':"wellfounded_trancl(##M,a,b,c)
+    \<longleftrightarrow> sats(M,wtf(0,1,2),[a,b,c,d])" if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" for a b c d
+     using that wtfsats [of "[a,b,c,d]"] by simp 
+   with separation_ax arity_tup2p have
+     "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,tupling_fm_2p(wtf(0,1,2)),[x,v])))"
+     using \<open>wtf(0,1,2) \<in> formula\<close> \<open>arity(wtf(0,1,2)) = 3\<close> by simp
+   then have
+     "(separation(##M, \<lambda>x. \<forall>r\<in>M. \<forall>Z\<in>M. pair(##M, r, Z, v) \<longrightarrow> wellfounded_trancl(##M,Z,r,x)))" if "v\<in>M" for v
+     unfolding separation_def tupling_fm_2p_def using that wtfsats' [of _ _ _ "v"] by (simp del: pair_abs)
+   then have
+     "\<forall>v\<in>M.(separation(##M, \<lambda>x. \<forall>r\<in>M. \<forall>Z\<in>M. pair(##M, r, Z, v) \<longrightarrow> wellfounded_trancl(##M,Z,r,x)))"
+     by simp
+   with tupling_sep_2p have 
+    "(\<forall>Z\<in>M. \<forall>r\<in>M. separation(##M, wellfounded_trancl(##M,Z,r)))"
+   by simp
+  with \<open>Z\<in>M\<close> \<open>r\<in>M\<close> show ?thesis by simp
+qed
+
+(* nat \<in> M *)
+
+lemma (in forcing_data) finite_sep_intf:
+  "separation(##M, \<lambda>x. x\<in>nat)"
+proof -
+  have "arity(finite_ordinal_fm(0)) = 1 "
+    unfolding finite_ordinal_fm_def limit_ordinal_fm_def empty_fm_def succ_fm_def cons_fm_def
+              union_fm_def upair_fm_def
+    by (simp add: nat_union_abs1 Un_commute)
+  with separation_ax have
+    "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,finite_ordinal_fm(0),[x,v])))"
+  by simp
+  then have
+    "(\<forall>v\<in>M. separation(##M,finite_ordinal(##M)))"
+    unfolding separation_def by simp
+  then have 
+   "separation(##M,finite_ordinal(##M))"
+    using zero_in_M by auto
+  then show ?thesis unfolding separation_def by simp
+qed
+
+
+lemma (in forcing_data) nat_subset_I' : 
+  "\<lbrakk> I\<in>M ; 0\<in>I ; \<And>x. x\<in>I \<Longrightarrow> succ(x)\<in>I \<rbrakk> \<Longrightarrow> nat \<subseteq> I"
+  by (rule subsetI,induct_tac x,simp+)
+
+
+lemma (in forcing_data) nat_subset_I :
+  "\<exists>I\<in>M. nat \<subseteq> I" 
+proof -
+  have "\<exists>I\<in>M. 0\<in>I \<and> (\<forall>x\<in>M. x\<in>I \<longrightarrow> succ(x)\<in>I)" 
+    using infinity_ax unfolding infinity_ax_def by auto
+  then obtain I where
+  "I\<in>M" "0\<in>I" "(\<forall>x\<in>M. x\<in>I \<longrightarrow> succ(x)\<in>I)"
+    by auto
+  then have "\<And>x. x\<in>I \<Longrightarrow> succ(x)\<in>I"
+    using trans_M Transset_intf [of M _ I]  by simp
+  then have "nat\<subseteq>I"
+    using  \<open>I\<in>M\<close> \<open>0\<in>I\<close> nat_subset_I' by simp
+  then show ?thesis using \<open>I\<in>M\<close> by auto
+qed
+find_theorems "{x\<in>?B . x\<in>?A}=?A"
+
+lemma (in forcing_data) nat_in_M : 
+  "nat \<in> M"
+proof -
+  have 1:"{x\<in>B . x\<in>A}=A" if "A\<subseteq>B" for A B
+    using that by auto
+  obtain I where
+    "I\<in>M" "nat\<subseteq>I"
+    using nat_subset_I by auto
+  then have "{x\<in>I . x\<in>nat} \<in> M" 
+    using finite_sep_intf separation_closed[of "\<lambda>x . x\<in>nat"] by simp
+  then show ?thesis
+    using \<open>nat\<subseteq>I\<close> 1 by simp
+qed
+
+
+lemma (in forcing_data) mtrancl : "M_trancl(##M)" 
+  apply (rule M_trancl.intro,rule mbasic)
+  apply (rule M_trancl_axioms.intro)
+    apply (insert rtrancl_separation_intf wftrancl_separation_intf nat_in_M)
+    apply (simp_all add: wellfounded_trancl_def)
+  done
+
+sublocale forcing_data \<subseteq> M_trancl "##M"
+  by (rule mtrancl)
+
+(*** end interface with M_trancl ***)
 
 end
