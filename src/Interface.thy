@@ -1,5 +1,6 @@
 theory Interface 
   imports Forcing_Data Relative Internalizations Renaming
+          Renaming_Auto
 begin
 
 lemma Transset_intf :
@@ -657,29 +658,17 @@ proof -
   with \<open>r\<in>M\<close> \<open>f\<in>M\<close> \<open>g\<in>M\<close> \<open>a\<in>M\<close> \<open>b\<in>M\<close> show ?thesis by simp
 qed
 
-definition 
-  sixp_sep_perm :: "i" where
-  "sixp_sep_perm == {<0,8>,<1,0>,<2,1>,<3,2>,<4,3>,<5,4>}" 
 
-lemma sixp_perm_ftc : "sixp_sep_perm \<in> 6 -||> 9"
-  by(unfold sixp_sep_perm_def,(rule consI,auto)+,rule emptyI)
+local_setup\<open>
+let val rho  = @{term "[x,a1,a2,a3,a4,a5]"}
+    val rho' = @{term "[a1,a2,a3,a4,a5,b1,b2,b3,x]"}
+    val (r,t,fvs,ren) = ren_Thm rho rho'
+    val (r',t') = (fix_vars r fvs , fix_vars t fvs)
+in
+Local_Theory.note ((@{binding "my_thm"}, []), [r',t']) #> snd
+end\<close>
+thm my_thm
 
-lemma dom_sixp_perm : "domain(sixp_sep_perm) = 6"
-  by(unfold sixp_sep_perm_def,auto)
-  
-lemma sixp_perm_tc : "sixp_sep_perm \<in> 6 \<rightarrow> 9"
-  by(subst dom_sixp_perm[symmetric],rule FiniteFun_is_fun,rule sixp_perm_ftc)
-
-lemma apply_fun: "f \<in> Pi(A,B) ==> <a,b>: f \<Longrightarrow> f`a = b"
-  by(auto simp add: apply_iff)
-
-lemma sixp_perm_env : 
-  "{x,a1,a2,a3,a4,a5} \<subseteq> A \<Longrightarrow> j<6 \<Longrightarrow>
-  nth(j,[x,a1,a2,a3,a4,a5]) = nth(sixp_sep_perm`j,[a1,a2,a3,a4,a5,b1,b2,b3,x,v])"
-  apply(subgoal_tac "j\<in>nat")
-  apply(rule natE,simp,subst apply_fun,rule sixp_perm_tc,simp add:sixp_sep_perm_def,simp+)+
-  apply(subst apply_fun,rule sixp_perm_tc,simp add:sixp_sep_perm_def,simp+,drule ltD,auto)
-  done
 
 lemma (in forcing_data) sixp_sep: 
   assumes
@@ -688,12 +677,12 @@ lemma (in forcing_data) sixp_sep:
     "separation(##M,\<lambda>x. sats(M,\<phi>,[x,a1,a2,a3,a4,a5]))"
 proof -
   let 
-    ?f="sixp_sep_perm"
+    ?f="{\<langle>0, 8\<rangle>, \<langle>1, 0\<rangle>, \<langle>2, 1\<rangle>, \<langle>3, 2\<rangle>, \<langle>4, 3\<rangle>, \<langle>5, 4\<rangle>}" (*"sixp_sep_perm"*)
   let
     ?\<phi>'="ren(\<phi>)`6`9`?f"
   from assms have
     "arity(?\<phi>')\<le>9" "?\<phi>' \<in> formula"
-    using sixp_perm_tc ren_arity ren_tc by simp_all
+    using my_thm(2) ren_arity ren_tc by simp_all
   then have
     "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,tupling_fm_5p(?\<phi>'),[x,v])))"
     using separation_ax arity_tup5p_leq by simp
@@ -708,13 +697,20 @@ proof -
   {
     fix B1 B2 B3 A1 A2 A3 A4 A5 x v
     assume
-      "x\<in>M" "v\<in>M"
+      asm: "x\<in>M" "v\<in>M"
       "B3\<in>M" "B2\<in>M" "B1\<in>M" "A5\<in>M" "A4\<in>M" "A3\<in>M" "A2\<in>M" "A1\<in>M"
-    with assms have
-      "sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x,v]) \<longleftrightarrow> sats(M,\<phi>,[x,A1,A2,A3,A4,A5])" 
-      (is "sats(_,_,?env1) \<longleftrightarrow> sats(_,_,?env2)")
-      using sats_iff_sats_ren[of \<phi> 6 9 ?env2 M ?env1 ?f] sixp_perm_tc sixp_perm_env [of _ _ _ _ _ _ "M"]  
+    with asm assms have
+      A: "sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x,v]) \<longleftrightarrow> sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x])"
+      using \<open>arity(?\<phi>')\<le>9\<close> arity_sats_iff[OF \<open>?\<phi>' \<in> formula\<close>,of "[v]" M "[A1,A2,A3,A4,A5,B1,B2,B3,x]"] 
       by auto
+    from assms asm have
+      "sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x]) \<longleftrightarrow> sats(M,\<phi>,[x,A1,A2,A3,A4,A5])" 
+      (is "sats(_,_,?env1) \<longleftrightarrow> sats(_,_,?env2)")
+      using sats_iff_sats_ren[of \<phi> 6 9 ?env2 M ?env1 ?f] my_thm(1)[of x A1 A2 A3 A4 A5 "M"] my_thm(2)    
+      by auto
+    with A have 
+      "sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x,v])\<longleftrightarrow> sats(M,\<phi>,[x,A1,A2,A3,A4,A5])"
+      by simp
   }
   then have
     Eq2: "x\<in>M \<Longrightarrow> v\<in>M \<Longrightarrow> ?P(x,v) \<longleftrightarrow> (\<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.

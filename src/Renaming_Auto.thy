@@ -5,27 +5,6 @@ theory Renaming_Auto
     ZF.List
 begin
 
-abbreviation
-  digit3 :: i   ("3") where "3 == succ(2)"
-
-abbreviation
-  digit4 :: i   ("4") where "4 == succ(3)"
-
-abbreviation
-  digit5 :: i   ("5") where "5 == succ(4)"
-
-abbreviation
-  digit6 :: i   ("6") where "6 == succ(5)"
-
-abbreviation
-  digit7 :: i   ("7") where "7 == succ(6)"
-
-abbreviation
-  digit8 :: i   ("8") where "8 == succ(7)"
-
-abbreviation
-  digit9 :: i   ("9") where "9 == succ(8)"
-
 lemmas app_fun = apply_iff[THEN iffD1]
 lemma le_natI : "j \<le> n \<Longrightarrow> n \<in> nat \<Longrightarrow> j\<in>nat"
   by(drule ltD,rule in_n_in_nat,rule nat_succ_iff[THEN iffD2,of n],simp_all)
@@ -47,6 +26,12 @@ fun mk_ZFlist _ nil = Const (@{const_name "Nil"}, @{typ "i"})
 fun to_ML_list (Const (@{const_name "Nil"}, _)) = nil
   | to_ML_list (Const (@{const_name "Cons"}, _) $ t $ ts) = t :: to_ML_list ts
   | to_ML_list _ = nil
+
+fun isFree (Free (_,_)) = true
+  | isFree _ = false
+
+fun freeName (Free (n,_)) = n
+  | freeName _ = error "Not a free variable"
 
 fun index(item, xs) =
   let
@@ -90,28 +75,29 @@ fun mk_action_lemma ren rho rho'  =
   let val ctxt = @{context}
       val setV = Variable.variant_frees ctxt [] [("A",@{typ i})] |> hd |> Free
       val j = Variable.variant_frees ctxt [] [("j",@{typ i})] |> hd |> Free 
-      val vs = rho |> to_ML_list        
+      val vs = rho  |> to_ML_list
+      val ws = rho' |> to_ML_list |> filter isFree 
       val n = length vs
       val h1 = Const (@{const_name Subset},@{typ "i \<Rightarrow> i \<Rightarrow> o"}) $ (vs|> mk_FinSet) $ setV
       val h2 = Const (@{const_name lt},@{typ "i \<Rightarrow> i \<Rightarrow> o"}) $ j $ mk_ZFnat n
       val nth_ = Const (@{const_name nth},@{typ "i \<Rightarrow> i \<Rightarrow> i"})
 
+      val fvs = ([j,setV ] @ ws |> filter isFree) |> map freeName
+
       val lhs = nth_ $ j $ rho
       val rhs = nth_ $ 
                   (Const (@{const_name apply}, @{typ "i\<Rightarrow>i\<Rightarrow>i"}) $ ren $ j) $ rho'
       val concl = Const (@{const_name IFOL.eq},@{typ "i \<Rightarrow> i \<Rightarrow> o"}) $ lhs $ rhs
-   in Logic.list_implies([tp h1,tp h2],tp concl)
+   in (Logic.list_implies([tp h1,tp h2],tp concl),fvs)
   end
 
-  val my_thm = 
-   let  val e = @{term "[b,c,a]"} 
-        val e' = @{term "[c,b,a,q,z,ew,e]"}
-        val ctxt = @{context}
+  fun ren_Thm e e' = 
+   let  val ctxt = @{context}
         val r = mk_ren e e'
         val goal = mk_tc_lemma true r e e'
         val goal2 =  mk_dom_lemma r e
         val goal3 = mk_tc_lemma false r e e'
-        val goal4 = mk_action_lemma r e e'
+        val (goal4,fvs) = mk_action_lemma r e e'
         val thm = Goal.prove ctxt [] [] goal 
       (fn _ => REPEAT (
       resolve_tac ctxt [@{thm consI}] 1
@@ -146,6 +132,14 @@ fun mk_action_lemma ren rho rho'  =
                   THEN REPEAT (tact ctxt)
                   THEN (step ctxt)
                 end)
-    in thm4
+    in (thm4,thm3,fvs,r)
+  end
+
+ fun fix_vars thm vars =
+    let
+      val ctxt0 = @{context}
+      val (_, ctxt1) = Variable.add_fixes vars ctxt0
+    in singleton (Proof_Context.export ctxt1 ctxt0) thm
   end
 \<close>
+end
