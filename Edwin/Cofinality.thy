@@ -239,8 +239,7 @@ proof -
     finally show ?thesis .
   qed
   moreover 
-  have "f`G(\<beta>) < f`G(\<alpha>)" 
-    if "\<alpha>\<in>cf(\<gamma>)" "\<beta><\<alpha>" "G(\<alpha>)\<noteq>\<delta>"  for \<beta> \<alpha>
+  have fg_monot:"f`G(\<beta>) < f`G(\<alpha>)" if "\<alpha>\<in>cf(\<gamma>)" "\<beta><\<alpha>" "G(\<alpha>)\<noteq>\<delta>"  for \<beta> \<alpha>
   proof -
     from \<open>G(\<alpha>) = H(\<alpha>, \<lambda>x\<in>\<alpha>. G(x))\<close> \<open>Ord(\<delta>)\<close> and that 
     have "f ` ((\<lambda>x\<in>\<alpha>. G(x)) ` \<beta>) < f ` G(\<alpha>)"
@@ -257,9 +256,17 @@ proof -
   then
   have monot:"G(\<beta>)\<in>G(\<alpha>)" if "\<alpha>\<in>cf(\<gamma>)" "\<beta><\<alpha>" "G(\<beta>)\<noteq>\<delta>" "G(\<alpha>)\<noteq>\<delta>" for \<beta> \<alpha> 
     using that and ltD by simp
-  have G_not_delta: "\<alpha> \<in> cf(\<gamma>) \<Longrightarrow> G(\<alpha>)\<noteq>\<delta>" for \<alpha>  sorry
+  have G_not_delta: "\<alpha> \<in> cf(\<gamma>) \<Longrightarrow> Ord(cf(\<gamma>)) \<Longrightarrow> G(\<alpha>)\<noteq>\<delta>" for \<alpha> 
+  proof (induct rule:Ord_induct)
+    case (1 \<alpha>)
+    with fg_monot
+    have "Ord(\<alpha>) \<Longrightarrow> \<beta>\<in>\<alpha> \<Longrightarrow> \<beta>'\<in>\<alpha> \<Longrightarrow> \<beta> <\<beta>' \<Longrightarrow> f`G(\<beta>) < f`G(\<beta>')" for \<beta> \<beta>'
+      using ltI[of _ \<beta>'] sorry (* fake *)
+      show ?case sorry
+  qed 
   with \<open>Ord(\<delta>)\<close> \<open>\<And>\<beta>. G(\<beta>) \<in> ?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))\<close> 
-  have in_delta:"\<alpha> \<in> cf(\<gamma>) \<Longrightarrow> G(\<alpha>)\<in>\<delta>" for \<alpha> by auto 
+  have in_delta:"\<alpha> \<in> cf(\<gamma>) \<Longrightarrow> G(\<alpha>)\<in>\<delta>" for \<alpha> 
+    using Ord_cf by auto 
   let ?g="\<lambda>\<alpha>\<in>cf(\<gamma>) . G(\<alpha>)"
   from \<open>Ord(\<gamma>)\<close> \<open>Ord(\<delta>)\<close> in_delta G_not_delta
   have "?g : cf(\<gamma>) -> \<delta>"
