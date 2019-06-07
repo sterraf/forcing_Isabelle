@@ -664,11 +664,11 @@ let val rho  = @{term "[x,a1,a2,a3,a4,a5]"}
     val rho' = @{term "[a1,a2,a3,a4,a5,b1,b2,b3,x]"}
     val (r,t,fvs,ren) = ren_Thm rho rho'
     val (r',t') = (fix_vars r fvs , fix_vars t fvs)
-in
-Local_Theory.note ((@{binding "my_thm"}, []), [r',t']) #> snd
+in 
+Local_Theory.note ((@{binding "my_thm"}, []), [r',t']) #> snd #>
+Local_Theory.define ((@{binding "my_ren"}, NoSyn),
+((@{binding "my_ren_def"}, []), ren)) #> snd 
 end\<close>
-thm my_thm
-
 
 lemma (in forcing_data) sixp_sep: 
   assumes
@@ -677,12 +677,12 @@ lemma (in forcing_data) sixp_sep:
     "separation(##M,\<lambda>x. sats(M,\<phi>,[x,a1,a2,a3,a4,a5]))"
 proof -
   let 
-    ?f="{\<langle>0, 8\<rangle>, \<langle>1, 0\<rangle>, \<langle>2, 1\<rangle>, \<langle>3, 2\<rangle>, \<langle>4, 3\<rangle>, \<langle>5, 4\<rangle>}" (*"sixp_sep_perm"*)
+    ?f="my_ren"
   let
     ?\<phi>'="ren(\<phi>)`6`9`?f"
   from assms have
     "arity(?\<phi>')\<le>9" "?\<phi>' \<in> formula"
-    using my_thm(2) ren_arity ren_tc by simp_all
+    unfolding my_ren_def using my_thm(2) ren_arity ren_tc by simp_all
   then have
     "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,tupling_fm_5p(?\<phi>'),[x,v])))"
     using separation_ax arity_tup5p_leq by simp
@@ -700,16 +700,18 @@ proof -
       asm: "x\<in>M" "v\<in>M"
       "B3\<in>M" "B2\<in>M" "B1\<in>M" "A5\<in>M" "A4\<in>M" "A3\<in>M" "A2\<in>M" "A1\<in>M"
     with asm assms have
-      A: "sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x,v]) \<longleftrightarrow> sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x])"
-      using \<open>arity(?\<phi>')\<le>9\<close> arity_sats_iff[OF \<open>?\<phi>' \<in> formula\<close>,of "[v]" M "[A1,A2,A3,A4,A5,B1,B2,B3,x]"] 
+      "sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x,v]) \<longleftrightarrow> sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x])"
+      (is "sats(_,_,?env0) \<longleftrightarrow> sats(_,_,?env1)")
+      using \<open>arity(?\<phi>')\<le>9\<close> arity_sats_iff[OF \<open>?\<phi>' \<in> formula\<close>,of "[v]" M ?env1]
       by auto
-    from assms asm have
-      "sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x]) \<longleftrightarrow> sats(M,\<phi>,[x,A1,A2,A3,A4,A5])" 
+    moreover have
+      "... \<longleftrightarrow> sats(M,\<phi>,[x,A1,A2,A3,A4,A5])" 
       (is "sats(_,_,?env1) \<longleftrightarrow> sats(_,_,?env2)")
-      using sats_iff_sats_ren[of \<phi> 6 9 ?env2 M ?env1 ?f] my_thm(1)[of x A1 A2 A3 A4 A5 "M"] my_thm(2)    
+      using my_ren_def asm assms sats_iff_sats_ren[of _ 6 9 _ M ?env1] 
+            my_thm(1)[of x A1 A2 A3 A4 A5 M] my_thm(2)    
       by auto
-    with A have 
-      "sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x,v])\<longleftrightarrow> sats(M,\<phi>,[x,A1,A2,A3,A4,A5])"
+    finally have 
+      "sats(M,?\<phi>',?env0)\<longleftrightarrow> sats(M,\<phi>,?env2)"
       by simp
   }
   then have
@@ -816,21 +818,29 @@ sublocale forcing_data \<subseteq> M_basic "##M"
 lemma nth_ConsI: "[|nth(n,l) = x; n \<in> nat|] ==> nth(succ(n), Cons(a,l)) = x"
 by simp
 
-lemmas nth_rules = nth_0 nth_ConsI nat_0I nat_succI
-lemmas sep_rules = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
-                   fun_plus_iff_sats
 
 lemmas FOL_sats_iff = sats_Nand_iff sats_Forall_iff sats_Neg_iff sats_And_iff
   sats_Or_iff sats_Implies_iff sats_Iff_iff sats_Exists_iff 
 
+lemmas nth_rules = nth_0 nth_ConsI nat_0I nat_succI
+lemmas sep_rules = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
+                   fun_plus_iff_sats 
+                    omega_iff_sats FOL_sats_iff 
+
+lemmas ble_defs = omega_fm_def limit_ordinal_fm_def empty_fm_def typed_function_fm_def
+                 pair_fm_def upair_fm_def domain_fm_def function_fm_def succ_fm_def
+                 cons_fm_def fun_apply_fm_def image_fm_def big_union_fm_def union_fm_def
+                 relation_fm_def
 
 schematic_goal rtran_closure_mem_fm_auto:
-  assumes 
-    "B\<in>nat" "r\<in>nat" "p\<in>nat"
-  shows
-    "(\<forall>env\<in>list(A). rtran_closure_mem(##A,nth(B,env),nth(r,env),nth(p,env))
-    \<longleftrightarrow> sats(A,?rcm(B,r,p),env)) \<and> ?rcm(B,r,p) \<in> formula \<and> arity(?rcm(B,r,p)) = succ(B \<union> r \<union> p)"
-  sorry 
+assumes
+"B\<in>nat" "r\<in>nat" "p\<in>nat"
+shows
+"(\<forall>env\<in>list(A). rtran_closure_mem(##A,nth(B,env),nth(r,env),nth(p,env)) \<longleftrightarrow> sats(A,?rcm(B,r,p),env))"
+"?rcm(B,r,p) \<in> formula"
+  unfolding rtran_closure_mem_def
+  by (rule ballI,(insert assms ; (rule sep_rules | simp))+)
+  
 
 lemma (in forcing_data) rtrancl_separation_intf:
     assumes
@@ -848,7 +858,7 @@ proof -
     and
     "arity(rcmf(0,1,2)) = 3"
      using \<open>r\<in>M\<close> \<open>A\<in>M\<close> rtran_closure_mem_fm_auto[of 0 1 2]
-     by (simp add:Un_commute nat_union_abs1 del:FOL_sats_iff)
+     by ( simp del:FOL_sats_iff add: ble_defs nat_simp_union)
    then have 
     rcmfsats':"rtran_closure_mem(##M,a,b,c)
     \<longleftrightarrow> sats(M,rcmf(0,1,2),[a,b,c,d])" if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" for a b c d
@@ -880,9 +890,10 @@ schematic_goal wellfounded_trancl_fm_auto:
     "B\<in>nat" "r\<in>nat" "p\<in>nat"
   shows
     "(\<forall>env\<in>list(A). wellfounded_trancl(##A,nth(B,env),nth(r,env),nth(p,env))
-    \<longleftrightarrow> sats(A,?wtf(B,r,p),env)) \<and> ?wtf(B,r,p) \<in> formula \<and> arity(?rcm(B,r,p)) = succ(B \<union> r \<union> p)"
-  sorry 
-
+    \<longleftrightarrow> sats(A,?wtf(B,r,p),env)) \<and> ?wtf(B,r,p) \<in> formula"
+  unfolding  wellfounded_trancl_def tran_closure_def
+(*  apply (insert assms ; (rule sep_rules | simp))+ *)
+  sorry
 
 lemma (in forcing_data) wftrancl_separation_intf:
     assumes
@@ -900,7 +911,7 @@ proof -
     and
     "arity(wtf(0,1,2)) = 3"
      using \<open>r\<in>M\<close> \<open>Z\<in>M\<close> wellfounded_trancl_fm_auto[of 0 1 2]
-     by (simp add:Un_commute nat_union_abs1 del:FOL_sats_iff)
+     by (simp del:FOL_sats_iff nat_simp_union)
    then have 
     wtfsats':"wellfounded_trancl(##M,a,b,c)
     \<longleftrightarrow> sats(M,wtf(0,1,2),[a,b,c,d])" if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" for a b c d
