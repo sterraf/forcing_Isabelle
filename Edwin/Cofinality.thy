@@ -147,7 +147,11 @@ next
     using apply_0  Ord_0_lt ltD domain_of_fun by auto
 qed
 
-lemma inj_to_codomain: "f:A\<rightarrow>B' \<Longrightarrow> f \<in> inj(A,B) \<Longrightarrow> f \<in> inj(A,B')"
+lemma inj_to_codomain: 
+  assumes 
+    "f:A\<rightarrow>B" "f \<in> inj(A,B)"
+  shows 
+    "f \<in> inj(A,f``A)"
   sorry
 
 lemma Ord_mono_map_ord_iso_image:
@@ -155,7 +159,8 @@ lemma Ord_mono_map_ord_iso_image:
     "Ord(\<alpha>)" "Ord(\<beta>)" "f\<in>mono_map(\<alpha>,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
   shows
     "f \<in> ord_iso(\<alpha>,Memrel(\<alpha>),f``\<alpha>,Memrel(\<beta>))"
-proof -
+  unfolding ord_iso_def
+proof (intro CollectI ballI iffI)
   from assms
   have "f \<in> inj(\<alpha>,\<beta>)"
     using mono_map_is_inj wf_Memrel wf_imp_wf_on well_ord_is_linear well_ord_Memrel by blast
@@ -163,10 +168,31 @@ proof -
   have "f \<in> surj(\<alpha>,f``\<alpha>)"
     unfolding mono_map_def using surj_image by auto
   ultimately
-  have "f \<in> bij(\<alpha>,f``\<alpha>)" 
-    unfolding bij_def using surj_is_fun inj_to_codomain by simp
-  find_theorems name:"bij_def"
-  show ?thesis sorry
+  show "f \<in> bij(\<alpha>,f``\<alpha>)" 
+    unfolding bij_def using inj_is_fun inj_to_codomain by simp
+  from \<open>f\<in>mono_map(_,_,_,_)\<close>
+  show preserves:"x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>Memrel(\<alpha>) \<Longrightarrow> \<langle>f`x,f`y\<rangle>\<in>Memrel(\<beta>)" for x y    
+    unfolding mono_map_def by blast
+  show "x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>Memrel(\<alpha>)" if  "\<langle>f`x,f`y\<rangle>\<in>Memrel(\<beta>)" for x y 
+  proof 
+    {
+      assume "x\<notin>y" "x\<in>\<alpha>" "y\<in>\<alpha>"  
+      moreover 
+      note \<open>\<langle>f`x,f`y\<rangle>\<in>Memrel(\<beta>)\<close> and \<open>Ord(\<alpha>)\<close>
+      moreover from calculation 
+      have "y = x \<or> y\<in>x" 
+        using well_ord_Memrel well_ord_is_linear[of _ "Memrel(\<alpha>)"] unfolding linear_def by blast
+      moreover
+      note preserves [of y x]
+      ultimately
+      have "y = x \<or> \<langle>f`y, f`x\<rangle>\<in> Memrel(\<beta>)"  by blast
+      with \<open>\<langle>f`x,f`y\<rangle>\<in>Memrel(\<beta>)\<close> \<open>Ord(\<beta>)\<close>
+      have "False"
+        using trans_Memrel transD[of _ "f`x" "f`y" "f`x"] by (auto elim:mem_irrefl)
+    }
+    then
+    show "x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> x\<in>y" by blast
+  qed 
 qed
 
 lemma 
@@ -284,6 +310,10 @@ proof -
     with fg_monot
     have "Ord(\<beta>) \<Longrightarrow> \<alpha>\<in>\<beta> \<Longrightarrow> \<alpha>'\<in>\<beta> \<Longrightarrow> \<alpha> <\<alpha>' \<Longrightarrow> f`G(\<alpha>) < f`G(\<alpha>')" for \<alpha> \<alpha>'
       using ltI[of _ \<alpha>'] sorry (* fake *)
+        (* Teoremas útiles ordertype: *)
+        find_theorems name:ordertype_eq
+        find_theorems name:ordertype_ord_iso
+        find_theorems name:le_ordertype_Memrel
       show ?case sorry
   qed 
   with \<open>Ord(\<delta>)\<close> \<open>\<And>\<alpha>. G(\<alpha>) \<in> ?A(\<alpha>,\<lambda>x\<in>\<alpha>. G(x))\<close> 
