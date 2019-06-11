@@ -69,7 +69,7 @@ lemma Ord_cf [TC]: "Ord(cf(\<alpha>))"
 lemma gamma_cofinal_gamma:
   assumes "Ord(\<gamma>)"
   shows "cofinal(\<gamma>,\<gamma>,Memrel(\<gamma>))"
-  sorry
+  unfolding cofinal_def by auto
     
 lemma cf_is_ordertype:
   assumes "Ord(\<gamma>)"
@@ -97,10 +97,43 @@ lemma cofinal_fun_succ:
   "Ord(\<alpha>) \<Longrightarrow> f:1\<rightarrow>succ(\<alpha>) \<Longrightarrow> f`0=\<alpha> \<Longrightarrow> cofinal_fun(f,succ(\<alpha>),Memrel(succ(\<alpha>)))"
   using domain_of_fun unfolding cofinal_fun_def by auto
 
-lemma cf_succ:
-  "Ord(\<alpha>) \<Longrightarrow> cf(succ(\<alpha>)) = 1"
+    
+lemma not_0_cofinal:
+  "ordertype(A,r) = 0 \<Longrightarrow> \<not>cofinal(A,X,r)"
   sorry
-
+    
+lemma cf_succ:
+  assumes "Ord(\<alpha>)" "f:1\<rightarrow>succ(\<alpha>)" "f`0=\<alpha>"
+  shows " cf(succ(\<alpha>)) = 1"
+proof
+  from assms
+  have "cofinal_fun(f,succ(\<alpha>),Memrel(succ(\<alpha>)))" using cofinal_fun_succ unfolding cofinal_fun_def by simp
+  from \<open>f:1\<rightarrow>succ(\<alpha>)\<close>
+    have "0\<in>domain(f)" using domain_of_fun by simp
+    define A where "A={f`0}"
+    with \<open>cofinal_fun(f,succ(\<alpha>),Memrel(succ(\<alpha>)))\<close> \<open>0\<in>domain(f)\<close> \<open>f`0=\<alpha>\<close>
+    have "cofinal(A,succ(\<alpha>),Memrel(succ(\<alpha>)))"  unfolding cofinal_def cofinal_fun_def by simp
+    from  \<open>f`0=\<alpha>\<close>\<open>A={f`0}\<close>
+    have "A\<subseteq> succ(\<alpha>)" unfolding succ_def by auto
+    from \<open>Ord(\<alpha>)\<close> \<open>A\<subseteq> succ(\<alpha>)\<close>
+    have "well_ord(A,Memrel(succ(\<alpha>)))" 
+      using Ord_succ well_ord_Memrel  well_ord_subset relation_Memrel by blast
+     
+    have "\<not>(A \<subseteq> succ(\<alpha>) \<and> cofinal(A, succ(\<alpha>), Memrel(succ(\<alpha>))) \<and> ordertype(A, Memrel(succ(\<alpha>))) =0)"
+      using not_0_cofinal unfolding cf_def  by auto
+        
+    from \<open>A={f`0}\<close>
+    have "A\<approx>1" using singleton_eqpoll_1 by simp
+    with \<open>well_ord(A,Memrel(succ(\<alpha>)))\<close>
+    have "ordertype(A,Memrel(succ(\<alpha>))) = 1" using nat_1I ordertype_eq_n by simp
+    with \<open>A\<subseteq> succ(\<alpha>)\<close> \<open>cofinal(A,succ(\<alpha>),Memrel(succ(\<alpha>)))\<close> \<open>\<not>(A \<subseteq> succ(\<alpha>) \<and> cofinal(A, succ(\<alpha>), Memrel(succ(\<alpha>))) \<and> ordertype(A, Memrel(succ(\<alpha>))) =0)\<close>
+     have \<open> cf(succ(\<alpha>)) = 1\<close> using relation_Memrel Ord_0 Ord_1 Ord_0_le Ord_ordertype  Least_equality[of ?P 1]  unfolding cf_def by auto
+    find_theorems "Least"
+      find_theorems "eqpoll"
+ 
+    qed 
+      
+      
 lemma cf_zero:
   "cf(0) = 0"
   unfolding cf_def cofinal_def using 
