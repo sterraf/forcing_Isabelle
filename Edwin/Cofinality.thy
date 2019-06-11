@@ -154,13 +154,14 @@ lemma inj_to_codomain:
     "f \<in> inj(A,f``A)"
   sorry
 
-lemma Ord_mono_map_ord_iso_image:
+lemma mono_map_imp_ord_iso_image:
   assumes 
     "Ord(\<alpha>)" "Ord(\<beta>)" "f\<in>mono_map(\<alpha>,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
   shows
     "f \<in> ord_iso(\<alpha>,Memrel(\<alpha>),f``\<alpha>,Memrel(\<beta>))"
   unfolding ord_iso_def
 proof (intro CollectI ballI iffI)
+  (* Enough to show it's bijective and preserves two ways *)
   from assms
   have "f \<in> inj(\<alpha>,\<beta>)"
     using mono_map_is_inj wf_Memrel wf_imp_wf_on well_ord_is_linear well_ord_Memrel by blast
@@ -194,6 +195,18 @@ proof (intro CollectI ballI iffI)
     show "x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> x\<in>y" by blast
   qed 
 qed
+
+lemma Image_sub_codomain: "f:A\<rightarrow>B \<Longrightarrow> f``C \<subseteq> B"
+  using image_subset fun_is_rel[of _ _ "\<lambda>_ . B"] by force
+
+lemma mono_map_ordertype_image:
+  assumes 
+    "Ord(\<alpha>)" "Ord(\<beta>)" "f\<in>mono_map(\<alpha>,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
+  shows
+    "ordertype(f``\<alpha>,Memrel(\<beta>)) = \<alpha>"
+  using assms mono_map_is_fun mono_map_imp_ord_iso_image ordertype_Memrel 
+    well_ord_subset Image_sub_codomain[of _ \<alpha>]  ordertype_eq[of f \<alpha> "Memrel(\<alpha>)"] 
+    well_ord_Memrel[of \<beta>]  by auto 
 
 lemma 
   notes le_imp_subset [dest]
