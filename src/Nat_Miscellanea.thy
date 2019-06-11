@@ -34,8 +34,8 @@ lemmas succ_leD = succ_leE[OF leI]
 lemma succpred_leI : "n \<in> nat \<Longrightarrow>  n \<le> succ(pred(n))"
   by (auto elim: natE)
 
-lemma succpred_n0 : "p \<in> nat \<Longrightarrow>  succ(n) \<in> p \<Longrightarrow> p\<noteq>0"
-  by (auto elim: natE)
+lemma succpred_n0 : "succ(n) \<in> p \<Longrightarrow> p\<noteq>0"
+  by (auto)
 
 
 lemma funcI : "f \<in> A \<rightarrow> B \<Longrightarrow> a \<in> A \<Longrightarrow> b= f ` a \<Longrightarrow> \<langle>a, b\<rangle> \<in> f"
@@ -44,7 +44,7 @@ lemma funcI : "f \<in> A \<rightarrow> B \<Longrightarrow> a \<in> A \<Longright
 lemmas natEin = natE [OF lt_nat_in_nat]
 
 lemma succ_in : "succ(x) \<le> y  \<Longrightarrow> x \<in> y"
- by (auto dest:ltD) 
+ by (auto dest:ltD)
   
 lemmas Un_least_lt_iffn =  Un_least_lt_iff [OF nat_into_Ord nat_into_Ord]
 
@@ -54,10 +54,10 @@ lemma pred_le2 : "n\<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> pre
 lemma pred_le : "n\<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> n \<le> succ(m) \<Longrightarrow> pred(n) \<le> m"
   by(subgoal_tac "pred(n)\<in>nat",rule_tac n="n" in natE,auto)
     
-lemma un_leD1 : "i \<in> nat \<Longrightarrow> j\<in> nat \<Longrightarrow> k \<in> nat \<Longrightarrow>  i \<union> j \<le> k \<Longrightarrow> i \<le> k"   
+lemma Un_leD1 : "Ord(i)\<Longrightarrow> Ord(j)\<Longrightarrow> Ord(k)\<Longrightarrow>  i \<union> j \<le> k \<Longrightarrow> i \<le> k"   
   by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct1]],simp_all)
   
-lemma un_leD2 : "i \<in> nat \<Longrightarrow> j\<in> nat \<Longrightarrow> k \<in> nat \<Longrightarrow>  i \<union> j \<le>k \<Longrightarrow> j \<le> k"   
+lemma Un_leD2 : "Ord(i)\<Longrightarrow> Ord(j)\<Longrightarrow> Ord(k)\<Longrightarrow>  i \<union> j \<le>k \<Longrightarrow> j \<le> k"   
   by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct2]],simp_all)
 
 lemma gt1 : "n \<in> nat \<Longrightarrow> i \<in> n \<Longrightarrow> i \<noteq> 0 \<Longrightarrow> i \<noteq> 1 \<Longrightarrow> 1<i"
@@ -79,17 +79,20 @@ lemma nat_union_abs2 :
   "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> j \<union> i = j"
   by (rule Un_absorb2,erule le_imp_subset)
     
-lemma nat_un_max : "i \<in> nat \<Longrightarrow> j \<in> nat \<Longrightarrow> i \<union> j = max(i,j)"
+lemma nat_un_max : "Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> i \<union> j = max(i,j)"
   apply(auto simp add:max_def nat_union_abs1)
   apply(auto simp add:  not_lt_iff_le leI nat_union_abs2)
 done
 
-lemma nat_un_ty : "i\<in>nat \<Longrightarrow>j\<in>nat \<Longrightarrow> i\<union>j \<in> nat"
+lemma nat_un_ty : "Ord(i) \<Longrightarrow>Ord(j) \<Longrightarrow> Ord(i\<union>j)"
   by simp  
 
-lemma nat_max_ty : "i\<in>nat \<Longrightarrow>j\<in>nat \<Longrightarrow> max(i,j) \<in> nat"
+lemma nat_max_ty : "Ord(i) \<Longrightarrow>Ord(j) \<Longrightarrow> Ord(max(i,j))"
   unfolding max_def by simp
 
-lemmas nat_simp_union = nat_un_max nat_un_ty nat_max_ty max_def
+lemma le_not_lt_nat : "Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> \<not> p\<le> q \<Longrightarrow> q \<le> p" 
+  by (rule ltE,rule not_le_iff_lt[THEN iffD1],auto,drule ltI[of q p],auto,erule leI)
+
+lemmas nat_simp_union = nat_un_max nat_un_ty nat_max_ty max_def 
 
 end 

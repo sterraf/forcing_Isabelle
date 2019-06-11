@@ -204,5 +204,4 @@ next
   qed
   then show ?case using Forall 0 1 2 4 by simp
 qed
-  
 end 

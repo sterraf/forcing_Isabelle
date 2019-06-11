@@ -2,6 +2,9 @@ theory Separation_Axiom
   imports Forcing_Theorems Renaming 
 begin
 
+lemma apply_fun: "f \<in> Pi(A,B) ==> <a,b>: f \<Longrightarrow> f`a = b"
+  by(auto simp add: apply_iff)
+
 definition 
   perm_sep_forces :: "i" where
   "perm_sep_forces == {<0,3>,<1,4>,<2,5>,<3,1>,<4,0>,<5,6>,<6,7>,<7,2>}" 

@@ -665,7 +665,7 @@ let val rho  = @{term "[x,a1,a2,a3,a4,a5]"}
     val (r,t,fvs,ren) = ren_Thm rho rho'
     val (r',t') = (fix_vars r fvs , fix_vars t fvs)
 in 
-Local_Theory.note ((@{binding "my_thm"}, []), [r',t']) #> snd #>
+Local_Theory.note   ((@{binding "my_thm"}, []), [r',t']) #> snd #>
 Local_Theory.define ((@{binding "my_ren"}, NoSyn),
 ((@{binding "my_ren_def"}, []), ren)) #> snd 
 end\<close>
@@ -827,7 +827,7 @@ lemmas sep_rules = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
                    fun_plus_iff_sats 
                     omega_iff_sats FOL_sats_iff 
 
-lemmas ble_defs = omega_fm_def limit_ordinal_fm_def empty_fm_def typed_function_fm_def
+lemmas fm_defs = omega_fm_def limit_ordinal_fm_def empty_fm_def typed_function_fm_def
                  pair_fm_def upair_fm_def domain_fm_def function_fm_def succ_fm_def
                  cons_fm_def fun_apply_fm_def image_fm_def big_union_fm_def union_fm_def
                  relation_fm_def
@@ -858,7 +858,7 @@ proof -
     and
     "arity(rcmf(0,1,2)) = 3"
      using \<open>r\<in>M\<close> \<open>A\<in>M\<close> rtran_closure_mem_fm_auto[of 0 1 2]
-     by ( simp del:FOL_sats_iff add: ble_defs nat_simp_union)
+     by ( simp del:FOL_sats_iff add: fm_defs nat_simp_union)
    then have 
     rcmfsats':"rtran_closure_mem(##M,a,b,c)
     \<longleftrightarrow> sats(M,rcmf(0,1,2),[a,b,c,d])" if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" for a b c d
@@ -877,7 +877,7 @@ proof -
    by simp
   with \<open>A\<in>M\<close> \<open>r\<in>M\<close> show ?thesis by simp
 qed
-
+(*
 (* wellfounded trancl *)
 definition
   wellfounded_trancl :: "[i=>o,i,i,i] => o" where
@@ -890,9 +890,11 @@ schematic_goal wellfounded_trancl_fm_auto:
     "B\<in>nat" "r\<in>nat" "p\<in>nat"
   shows
     "(\<forall>env\<in>list(A). wellfounded_trancl(##A,nth(B,env),nth(r,env),nth(p,env))
-    \<longleftrightarrow> sats(A,?wtf(B,r,p),env)) \<and> ?wtf(B,r,p) \<in> formula"
+    \<longleftrightarrow> sats(A,?wtf(B,r,p),env))"
+    "?wtf(B,r,p) \<in> formula"
   unfolding  wellfounded_trancl_def tran_closure_def
-(*  apply (insert assms ; (rule sep_rules | simp))+ *)
+  apply (rule ballI)
+  apply (insert assms ; (rule sep_rules | simp))+ 
   sorry
 
 lemma (in forcing_data) wftrancl_separation_intf:
@@ -998,7 +1000,7 @@ lemma (in forcing_data) mtrancl : "M_trancl(##M)"
 
 sublocale forcing_data \<subseteq> M_trancl "##M"
   by (rule mtrancl)
-
+*)
 (*** end interface with M_trancl ***)
 
 end

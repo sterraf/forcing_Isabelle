@@ -141,5 +141,7 @@ fun mk_action_lemma ren rho rho'  =
       val (_, ctxt1) = Variable.add_fixes vars ctxt0
     in singleton (Proof_Context.export ctxt1 ctxt0) thm
   end
+
 \<close>
+
 end
