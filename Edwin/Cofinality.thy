@@ -1,5 +1,6 @@
 theory Cofinality 
   imports 
+    Nat_Miscellanea
     ZF.Cardinal_AC
     "~~/src/ZF/Constructible/Normal"
 begin
@@ -36,7 +37,13 @@ lemma cofinal_in_cofinal:
     "cofinal(Y,A,r)"
   oops
 
-lemma range_is_cofinal: 
+lemma Un_leD1 : "Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow>  i \<union> j \<le> k \<Longrightarrow> i \<le> k"   
+  by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct1]],simp_all)
+  
+lemma Un_leD2 : "Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow>  i \<union> j \<le>k \<Longrightarrow> j \<le> k"   
+  by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct2]],simp_all)
+
+lemma range_is_cofinal:
   assumes "cofinal_fun(f,A,r)" "f:C \<rightarrow> D"
   shows "cofinal(D,A,r)"
   unfolding cofinal_def
@@ -245,6 +252,29 @@ lemma mono_map_ordertype_image:
     well_ord_subset Image_sub_codomain[of _ \<alpha>]  ordertype_eq[of f \<alpha> "Memrel(\<alpha>)"] 
     well_ord_Memrel[of \<beta>]  by auto 
 
+lemma ordertype_in_cf_imp_not_cofinal:
+  assumes
+    "ordertype(A,Memrel(\<gamma>)) \<in> cf(\<gamma>)" 
+    "A \<subseteq> \<gamma>" 
+  shows
+    "\<not> cofinal(A,\<gamma>,Memrel(\<gamma>))"
+proof 
+  note \<open>A \<subseteq> \<gamma>\<close>
+  moreover
+  assume "cofinal(A,\<gamma>,Memrel(\<gamma>))"
+  ultimately
+  have "\<exists>B. B \<subseteq> \<gamma> \<and> cofinal(B, \<gamma>, Memrel(\<gamma>)) \<and>  ordertype(A,Memrel(\<gamma>)) = ordertype(B, Memrel(\<gamma>))"
+    (is "?P(ordertype(A,_))")
+    by blast
+  moreover from assms
+  have "ordertype(A,Memrel(\<gamma>)) < cf(\<gamma>)"
+    using Ord_cf ltI by blast
+  ultimately
+  show "False"
+    unfolding cf_def using less_LeastE[of ?P  "ordertype(A,Memrel(\<gamma>))"]  
+    by auto
+qed
+
 lemma 
   notes le_imp_subset [dest]
   assumes 
@@ -354,17 +384,50 @@ proof -
   then
   have monot:"G(\<alpha>)\<in>G(\<beta>)" if "\<beta>\<in>cf(\<gamma>)" "\<alpha><\<beta>" "G(\<alpha>)\<noteq>\<delta>" "G(\<beta>)\<noteq>\<delta>" for \<alpha> \<beta> 
     using that and ltD by simp
-  have G_not_delta: "\<beta> \<in> cf(\<gamma>) \<Longrightarrow> Ord(cf(\<gamma>)) \<Longrightarrow> G(\<beta>)\<noteq>\<delta>" for \<beta> 
-  proof (induct rule:Ord_induct)
-    case (1 \<beta>)
-    with fg_monot
-    have "Ord(\<beta>) \<Longrightarrow> \<alpha>\<in>\<beta> \<Longrightarrow> \<alpha>'\<in>\<beta> \<Longrightarrow> \<alpha> <\<alpha>' \<Longrightarrow> f`G(\<alpha>) < f`G(\<alpha>')" for \<alpha> \<alpha>'
-      using ltI[of _ \<alpha>'] sorry (* fake *)
-        (* Teoremas útiles ordertype: *)
-        find_theorems name:ordertype_eq
-        find_theorems name:ordertype_ord_iso
-        find_theorems name:le_ordertype_Memrel
-      show ?case sorry
+  have G_not_delta: "G(\<beta>)\<noteq>\<delta>" if "\<beta> \<in> cf(\<gamma>)" for \<beta> 
+  proof (induct \<beta> rule:Ord_induct[OF _ Ord_cf[of \<gamma>]])
+    (* Induction on cf(\<gamma>) *)
+    case 1 with that show ?case .
+  next
+    case (2 \<beta>)
+    define h where "h \<equiv> \<lambda>x\<in>\<beta>. f`G(x)"
+    then
+    have "h \<in> mono_map(\<beta>,Memrel(\<beta>),\<gamma>,Memrel(\<gamma>))" sorry
+    with \<open>\<beta>\<in>cf(\<gamma>)\<close> \<open>Ord(\<gamma>)\<close> 
+    have "ordertype(h``\<beta>,Memrel(\<gamma>)) = \<beta>"
+      using mono_map_ordertype_image[of \<beta>] Ord_cf Ord_in_Ord by blast
+    also
+    note \<open>\<beta> \<in>cf(\<gamma>)\<close>
+    finally
+    have "ordertype(h``\<beta>,Memrel(\<gamma>)) \<in> cf(\<gamma>)" by simp
+    moreover 
+    have "h``\<beta> \<subseteq> \<gamma>" sorry
+    ultimately
+    have "\<not> cofinal(h``\<beta>,\<gamma>,Memrel(\<gamma>))"
+      using ordertype_in_cf_imp_not_cofinal by simp
+    then
+    obtain \<alpha>_0 where "\<alpha>_0\<in>\<gamma>" "\<forall>x\<in>h `` \<beta>. \<not> \<langle>\<alpha>_0, x\<rangle> \<in> Memrel(\<gamma>) \<and> \<alpha>_0 \<noteq> x"
+      unfolding cofinal_def by auto
+    with \<open>Ord(\<gamma>)\<close> \<open>h``\<beta> \<subseteq> \<gamma>\<close>
+    have "\<forall>x\<in>h `` \<beta>. x \<in> \<alpha>_0"
+      using well_ord_Memrel[of \<gamma>] well_ord_is_linear[of \<gamma> "Memrel(\<gamma>)"] 
+      unfolding linear_def by blast
+    from \<open>\<alpha>_0 \<in> \<gamma>\<close> \<open>j \<in> mono_map(_,_,\<gamma>,_)\<close> \<open>Ord(\<gamma>)\<close>
+    have "j`\<beta> \<in> \<gamma>" 
+      using mono_map_is_fun apply_in_range by force 
+    with \<open>\<alpha>_0 \<in> \<gamma>\<close> \<open>Ord(\<gamma>)\<close>
+    have "\<alpha>_0 \<union> j`\<beta> \<in> \<gamma>"
+      using Un_least_mem_iff Ord_in_Ord by auto
+    with \<open>cofinal_fun(f,\<gamma>,_)\<close> 
+    obtain \<theta> where "\<theta>\<in>domain(f)" "\<langle>\<alpha>_0 \<union> j`\<beta>, f ` \<theta>\<rangle> \<in> Memrel(\<gamma>) \<or>  \<alpha>_0 \<union> j`\<beta>= f ` \<theta>"
+      unfolding cofinal_fun_def by blast
+    moreover from this and \<open>f:\<delta>\<rightarrow>\<gamma>\<close>
+    have "\<theta> \<in> \<delta>" using domain_of_fun by auto
+    moreover note \<open>Ord(\<gamma>)\<close>
+    ultimately 
+    have "\<theta> \<in> ?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))"
+      using Un_leD1 leI ltI Ord_in_Ord sorry
+    show ?case sorry
   qed 
   with \<open>Ord(\<delta>)\<close> \<open>\<And>\<alpha>. G(\<alpha>) \<in> ?A(\<alpha>,\<lambda>x\<in>\<alpha>. G(x))\<close> 
   have in_delta:"\<beta> \<in> cf(\<gamma>) \<Longrightarrow> G(\<beta>)\<in>\<delta>" for \<beta> 
@@ -448,7 +511,7 @@ proof -
   qed
   ultimately show ?thesis by blast
 qed
-    
+
 lemma 
   assumes 
     "Ord(\<delta>)" "Ord(\<gamma>)" "function(f)" "domain(f) = \<delta>" "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))" 
