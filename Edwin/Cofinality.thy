@@ -280,15 +280,18 @@ proof
     by auto
 qed
 
-lemma range_eq_image: "f:A\<rightarrow>B \<Longrightarrow> range(f) = f``A"
+lemma range_eq_image:
+  assumes "f:A\<rightarrow>B"
+  shows "range(f) = f``A"
 proof
   show "f `` A \<subseteq> range(f)"
     unfolding image_def by blast
-  assume "f:A\<rightarrow>B"
   {
     fix x
     assume "x\<in>range(f)"
-    have "x\<in>f``A" sorry
+    with assms
+    have "x\<in>f``A"
+      using domain_of_fun[of f A "\<lambda>_. B"] by auto
   }
   then 
   show "range(f) \<subseteq> f `` A" ..
