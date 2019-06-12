@@ -196,12 +196,29 @@ next
     using apply_0  Ord_0_lt ltD domain_of_fun by auto
 qed
 
+lemma range_eq_image:
+  assumes "f:A\<rightarrow>B"
+  shows "range(f) = f``A"
+proof
+  show "f `` A \<subseteq> range(f)"
+    unfolding image_def by blast
+  {
+    fix x
+    assume "x\<in>range(f)"
+    with assms
+    have "x\<in>f``A"
+      using domain_of_fun[of f A "\<lambda>_. B"] by auto
+  }
+  then 
+  show "range(f) \<subseteq> f `` A" ..
+qed
+
 lemma inj_to_codomain: 
   assumes 
     "f:A\<rightarrow>B" "f \<in> inj(A,B)"
   shows 
     "f \<in> inj(A,f``A)"
-  sorry
+  using assms inj_inj_range range_eq_image by force
 
 lemma mono_map_imp_ord_iso_image:
   assumes 
@@ -278,23 +295,6 @@ proof
   show "False"
     unfolding cf_def using less_LeastE[of ?P  "ordertype(A,Memrel(\<gamma>))"]  
     by auto
-qed
-
-lemma range_eq_image:
-  assumes "f:A\<rightarrow>B"
-  shows "range(f) = f``A"
-proof
-  show "f `` A \<subseteq> range(f)"
-    unfolding image_def by blast
-  {
-    fix x
-    assume "x\<in>range(f)"
-    with assms
-    have "x\<in>f``A"
-      using domain_of_fun[of f A "\<lambda>_. B"] by auto
-  }
-  then 
-  show "range(f) \<subseteq> f `` A" ..
 qed
 
 lemma apply_in_image: "f:A\<rightarrow>B \<Longrightarrow> a\<in>A \<Longrightarrow> f`a \<in> f``A"
