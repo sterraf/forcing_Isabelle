@@ -1,6 +1,5 @@
 theory Cofinality 
   imports 
-    Nat_Miscellanea
     ZF.Cardinal_AC
     "~~/src/ZF/Constructible/Normal"
 begin
@@ -37,11 +36,17 @@ lemma cofinal_in_cofinal:
     "cofinal(Y,A,r)"
   oops
 
-lemma Un_leD1 : "Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow>  i \<union> j \<le> k \<Longrightarrow> i \<le> k"   
+lemma Un_leD1 : "i \<union> j \<le> k \<Longrightarrow> Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow> i \<le> k"
   by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct1]],simp_all)
   
-lemma Un_leD2 : "Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow>  i \<union> j \<le>k \<Longrightarrow> j \<le> k"   
+lemma Un_leD2 : "i \<union> j \<le> k \<Longrightarrow> Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow> j \<le> k"
   by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct2]],simp_all)
+
+lemma Un_memD1: "i \<union> j \<in> k \<Longrightarrow> Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow> i \<le> k"
+  by (drule ltI, assumption, drule leI, rule Un_least_lt_iff[THEN iffD1[THEN conjunct1]],simp_all)
+
+lemma Un_memD2 : "i \<union> j \<in> k \<Longrightarrow> Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow> j \<le> k"
+  by (drule ltI, assumption, drule leI, rule Un_least_lt_iff[THEN iffD1[THEN conjunct2]],simp_all)
 
 lemma range_is_cofinal:
   assumes "cofinal_fun(f,A,r)" "f:C \<rightarrow> D"
@@ -275,7 +280,24 @@ proof
     by auto
 qed
 
-lemma 
+lemma range_eq_image: "f:A\<rightarrow>B \<Longrightarrow> range(f) = f``A"
+proof
+  show "f `` A \<subseteq> range(f)"
+    unfolding image_def by blast
+  assume "f:A\<rightarrow>B"
+  {
+    fix x
+    assume "x\<in>range(f)"
+    have "x\<in>f``A" sorry
+  }
+  then 
+  show "range(f) \<subseteq> f `` A" ..
+qed
+
+lemma apply_in_image: "f:A\<rightarrow>B \<Longrightarrow> a\<in>A \<Longrightarrow> f`a \<in> f``A"
+  using range_eq_image apply_rangeI[of f]  by simp
+
+lemma
   notes le_imp_subset [dest]
   assumes 
     "Ord(\<delta>)" "Limit(\<gamma>)" "f: \<delta> \<rightarrow> \<gamma>" "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))" 
@@ -394,7 +416,7 @@ proof -
     then
     have "h \<in> mono_map(\<beta>,Memrel(\<beta>),\<gamma>,Memrel(\<gamma>))" sorry
     with \<open>\<beta>\<in>cf(\<gamma>)\<close> \<open>Ord(\<gamma>)\<close> 
-    have "ordertype(h``\<beta>,Memrel(\<gamma>)) = \<beta>"
+    have "ordertype(h``\<beta>,Memrel(\<gamma>)) = \<beta>" (* Maybe should use range(h) *)
       using mono_map_ordertype_image[of \<beta>] Ord_cf Ord_in_Ord by blast
     also
     note \<open>\<beta> \<in>cf(\<gamma>)\<close>
@@ -413,7 +435,7 @@ proof -
       using well_ord_Memrel[of \<gamma>] well_ord_is_linear[of \<gamma> "Memrel(\<gamma>)"] 
       unfolding linear_def by blast
     from \<open>\<alpha>_0 \<in> \<gamma>\<close> \<open>j \<in> mono_map(_,_,\<gamma>,_)\<close> \<open>Ord(\<gamma>)\<close>
-    have "j`\<beta> \<in> \<gamma>" 
+    have "j`\<beta> \<in> \<gamma>"
       using mono_map_is_fun apply_in_range by force 
     with \<open>\<alpha>_0 \<in> \<gamma>\<close> \<open>Ord(\<gamma>)\<close>
     have "\<alpha>_0 \<union> j`\<beta> \<in> \<gamma>"
@@ -423,10 +445,21 @@ proof -
       unfolding cofinal_fun_def by blast
     moreover from this and \<open>f:\<delta>\<rightarrow>\<gamma>\<close>
     have "\<theta> \<in> \<delta>" using domain_of_fun by auto
-    moreover note \<open>Ord(\<gamma>)\<close>
-    ultimately 
+    moreover
+    note \<open>Ord(\<gamma>)\<close>
+    moreover from this and \<open>f:\<delta>\<rightarrow>\<gamma>\<close>  \<open>\<alpha>_0 \<in> \<gamma>\<close>
+    have "Ord(f`\<theta>)"
+      using apply_in_range Ord_in_Ord by blast
+    moreover from calculation and \<open>\<alpha>_0 \<in> \<gamma>\<close> and \<open>Ord(\<delta>)\<close> and \<open>j`\<beta> \<in> \<gamma>\<close>
+    have "Ord(\<alpha>_0)" "Ord(j`\<beta>)"
+      using Ord_in_Ord by auto
+    moreover from  \<open>\<forall>x\<in>h `` \<beta>. x \<in> \<alpha>_0\<close> \<open>Ord(\<alpha>_0)\<close> \<open>_ \<or> (\<alpha>_0 \<union> _= f`\<theta>)\<close>
+    have "x\<in>\<beta> \<Longrightarrow> h`x < f`\<theta>" for x
+      using ltI lam_funtype[of h] apply (auto dest:Un_memD2 Un_leD2[OF le_eqI])
+      sorry
+    ultimately
     have "\<theta> \<in> ?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))"
-      using Un_leD1 leI ltI Ord_in_Ord sorry
+      unfolding h_def using ltD by (auto dest:Un_memD2 Un_leD2[OF le_eqI])
     show ?case sorry
   qed 
   with \<open>Ord(\<delta>)\<close> \<open>\<And>\<alpha>. G(\<alpha>) \<in> ?A(\<alpha>,\<lambda>x\<in>\<alpha>. G(x))\<close> 
