@@ -451,7 +451,7 @@ proof -
     have "Ord(f`\<theta>)"
       using apply_in_range Ord_in_Ord by blast
     moreover from calculation and \<open>\<alpha>_0 \<in> \<gamma>\<close> and \<open>Ord(\<delta>)\<close> and \<open>j`\<beta> \<in> \<gamma>\<close>
-    have "Ord(\<alpha>_0)" "Ord(j`\<beta>)"
+    have "Ord(\<alpha>_0)" "Ord(j`\<beta>)" "Ord(\<theta>)"
       using Ord_in_Ord by auto
     moreover from  \<open>\<forall>x\<in>h `` \<beta>. x \<in> \<alpha>_0\<close> \<open>Ord(\<alpha>_0)\<close> \<open>_ \<or> (\<alpha>_0 \<union> _= f`\<theta>)\<close>
     have "x\<in>\<beta> \<Longrightarrow> h`x < f`\<theta>" for x
@@ -460,7 +460,13 @@ proof -
     ultimately
     have "\<theta> \<in> ?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))"
       unfolding h_def using ltD by (auto dest:Un_memD2 Un_leD2[OF le_eqI])
-    show ?case sorry
+    with \<open>Ord(\<theta>)\<close> \<open>G(\<beta>) = H(\<beta>, \<lambda>x\<in>\<beta>. G(x))\<close>
+    have "G(\<beta>) \<le> \<theta>"
+      unfolding H_def using Least_le by auto
+    with \<open>\<theta>\<in>\<delta>\<close> \<open>Ord(\<delta>)\<close>
+    have "G(\<beta>) \<in> \<delta>" sorry
+    then
+    show ?case by (auto elim:mem_irrefl)
   qed 
   with \<open>Ord(\<delta>)\<close> \<open>\<And>\<alpha>. G(\<alpha>) \<in> ?A(\<alpha>,\<lambda>x\<in>\<alpha>. G(x))\<close> 
   have in_delta:"\<beta> \<in> cf(\<gamma>) \<Longrightarrow> G(\<beta>)\<in>\<delta>" for \<beta> 
