@@ -464,7 +464,8 @@ proof -
     have "G(\<beta>) \<le> \<theta>"
       unfolding H_def using Least_le by auto
     with \<open>\<theta>\<in>\<delta>\<close> \<open>Ord(\<delta>)\<close>
-    have "G(\<beta>) \<in> \<delta>" sorry
+    have "G(\<beta>) \<in> \<delta>"
+      using leI[of \<theta>] ltI[of \<theta>]  by (auto dest:ltD)
     then
     show ?case by (auto elim:mem_irrefl)
   qed 
