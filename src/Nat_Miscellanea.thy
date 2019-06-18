@@ -84,15 +84,12 @@ lemma nat_un_max : "Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> i \<union>
   apply(auto simp add:  not_lt_iff_le leI nat_union_abs2)
 done
 
-lemma nat_un_ty : "Ord(i) \<Longrightarrow>Ord(j) \<Longrightarrow> Ord(i\<union>j)"
-  by simp  
-
 lemma nat_max_ty : "Ord(i) \<Longrightarrow>Ord(j) \<Longrightarrow> Ord(max(i,j))"
   unfolding max_def by simp
 
 lemma le_not_lt_nat : "Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> \<not> p\<le> q \<Longrightarrow> q \<le> p" 
   by (rule ltE,rule not_le_iff_lt[THEN iffD1],auto,drule ltI[of q p],auto,erule leI)
 
-lemmas nat_simp_union = nat_un_max nat_un_ty nat_max_ty max_def 
+lemmas nat_simp_union = nat_un_max nat_max_ty max_def 
 
 end 
