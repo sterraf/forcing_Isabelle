@@ -415,9 +415,36 @@ proof -
     case 1 with that show ?case .
   next
     case (2 \<beta>)
+    then 
+    have IH: "z\<in>\<beta> \<Longrightarrow> G(z)\<noteq>\<delta>" for z by simp
     define h where "h \<equiv> \<lambda>x\<in>\<beta>. f`G(x)"
+    have "h \<in> \<beta> \<rightarrow> \<gamma>" sorry
     then
-    have "h \<in> mono_map(\<beta>,Memrel(\<beta>),\<gamma>,Memrel(\<gamma>))" sorry
+    have "h \<in> mono_map(\<beta>,Memrel(\<beta>),\<gamma>,Memrel(\<gamma>))"
+      unfolding mono_map_def
+    proof (intro CollectI ballI impI)
+      fix x y
+      assume "x\<in>\<beta>" "y\<in>\<beta>"
+      moreover from this and IH
+      have "G(y) \<noteq> \<delta>" by simp
+      moreover from calculation and \<open>h \<in> \<beta> \<rightarrow> \<gamma>\<close>
+      have "h`x \<in> \<gamma>" "h`y \<in> \<gamma>" by simp_all
+      moreover from \<open>\<beta>\<in>cf(\<gamma>)\<close> and \<open>y\<in>\<beta>\<close>
+      have "y \<in> cf(\<gamma>)"
+        using Ord_trans Ord_cf by blast
+      moreover from this
+      have "Ord(y)"
+        using Ord_cf Ord_in_Ord by blast
+      moreover
+      assume "\<langle>x,y\<rangle> \<in> Memrel(\<beta>)"
+      moreover from calculation
+      have "x<y" by (blast intro:ltI)
+      moreover
+      note fg_monot[of y x]
+      ultimately
+      show "\<langle>h ` x, h ` y\<rangle> \<in> Memrel(\<gamma>)"
+        unfolding h_def using ltD by (auto)
+    qed
     with \<open>\<beta>\<in>cf(\<gamma>)\<close> \<open>Ord(\<gamma>)\<close> 
     have "ordertype(h``\<beta>,Memrel(\<gamma>)) = \<beta>" (* Maybe should use range(h) *)
       using mono_map_ordertype_image[of \<beta>] Ord_cf Ord_in_Ord by blast
@@ -425,8 +452,9 @@ proof -
     note \<open>\<beta> \<in>cf(\<gamma>)\<close>
     finally
     have "ordertype(h``\<beta>,Memrel(\<gamma>)) \<in> cf(\<gamma>)" by simp
-    moreover 
-    have "h``\<beta> \<subseteq> \<gamma>" sorry
+    moreover from \<open>h \<in> \<beta> \<rightarrow> \<gamma>\<close>
+    have "h``\<beta> \<subseteq> \<gamma>"
+      using mono_map_is_fun Image_sub_codomain by blast
     ultimately
     have "\<not> cofinal(h``\<beta>,\<gamma>,Memrel(\<gamma>))"
       using ordertype_in_cf_imp_not_cofinal by simp
