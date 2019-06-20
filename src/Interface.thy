@@ -56,6 +56,10 @@ abbreviation
 abbreviation
  dec13  :: i   ("13") where "13 == succ(12)"
 
+abbreviation
+ dec14  :: i   ("14") where "14 == succ(13)"
+
+
 lemma uniq_dec_2p: "<C,D> \<in> M \<Longrightarrow> 
              \<forall>A\<in>M. \<forall>B\<in>M. <C,D> = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B)
             \<longleftrightarrow>
@@ -819,6 +823,13 @@ lemma nth_ConsI: "[|nth(n,l) = x; n \<in> nat|] ==> nth(succ(n), Cons(a,l)) = x"
 by simp
 
 
+(* wellfounded trancl *)
+definition
+  wellfounded_trancl :: "[i=>o,i,i,i] => o" where
+  "wellfounded_trancl(M,Z,r,p) == 
+      \<exists>w[M]. \<exists>wx[M]. \<exists>rp[M]. 
+               w \<in> Z & pair(M,w,p,wx) & tran_closure(M,r,rp) & wx \<in> rp"
+
 lemmas FOL_sats_iff = sats_Nand_iff sats_Forall_iff sats_Neg_iff sats_And_iff
   sats_Or_iff sats_Implies_iff sats_Iff_iff sats_Exists_iff 
 
@@ -830,17 +841,18 @@ lemmas sep_rules = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
 lemmas fm_defs = omega_fm_def limit_ordinal_fm_def empty_fm_def typed_function_fm_def
                  pair_fm_def upair_fm_def domain_fm_def function_fm_def succ_fm_def
                  cons_fm_def fun_apply_fm_def image_fm_def big_union_fm_def union_fm_def
-                 relation_fm_def
-
-schematic_goal rtran_closure_mem_fm_auto:
-assumes
-"B\<in>nat" "r\<in>nat" "p\<in>nat"
+                 relation_fm_def composition_fm_def field_fm_def
+                                                            
+schematic_goal rtran_closure_mem_auto:
+assumes 
+  "nth(i,env) = B" "nth(j,env) = r"  "nth(k,env) = p"
+  "i \<in> nat" "j \<in> nat" "k \<in> nat" "env \<in> list(A)"
 shows
-"(\<forall>env\<in>list(A). rtran_closure_mem(##A,nth(B,env),nth(r,env),nth(p,env)) \<longleftrightarrow> sats(A,?rcm(B,r,p),env))"
-"?rcm(B,r,p) \<in> formula"
+"rtran_closure_mem(##A,B,r,p) \<longleftrightarrow> sats(A,?rcm(i,j,k),env)"
   unfolding rtran_closure_mem_def
-  by (rule ballI,(insert assms ; (rule sep_rules | simp))+)
-  
+  by (insert assms ; (rule sep_rules | simp)+)
+(* demora al menos 15 segundos *)
+
 
 lemma (in forcing_data) rtrancl_separation_intf:
     assumes
@@ -857,7 +869,7 @@ proof -
     "rcmf(0,1,2) \<in> formula" 
     and
     "arity(rcmf(0,1,2)) = 3"
-     using \<open>r\<in>M\<close> \<open>A\<in>M\<close> rtran_closure_mem_fm_auto[of 0 1 2]
+     using \<open>r\<in>M\<close> \<open>A\<in>M\<close> rtran_closure_mem_auto
      by ( simp del:FOL_sats_iff add: fm_defs nat_simp_union)
    then have 
     rcmfsats':"rtran_closure_mem(##M,a,b,c)
@@ -877,26 +889,38 @@ proof -
    by simp
   with \<open>A\<in>M\<close> \<open>r\<in>M\<close> show ?thesis by simp
 qed
-(*
-(* wellfounded trancl *)
-definition
-  wellfounded_trancl :: "[i=>o,i,i,i] => o" where
-  "wellfounded_trancl(M,Z,r,p) == 
-      \<exists>w[M]. \<exists>wx[M]. \<exists>rp[M]. 
-               w \<in> Z & pair(M,w,p,wx) & tran_closure(M,r,rp) & wx \<in> rp"
+
+schematic_goal rtran_closure_fm_auto:
+assumes 
+  "nth(i,env) = r" "nth(j,env) = rp"
+  "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
+shows
+  "rtran_closure(##A,r,rp) \<longleftrightarrow> sats(A,?rtc(i,j),env)"
+  unfolding rtran_closure_def
+  by (insert assms ; (rule sep_rules rtran_closure_mem_auto | simp)+)
+   
+
+schematic_goal tran_closure_fm_auto:
+assumes 
+  "nth(i,env) = r" "nth(j,env) = rp"
+  "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
+shows
+  "tran_closure(##A,r,rp) \<longleftrightarrow> sats(A,?tc(i,j),env)"
+  "?tc(i,j) \<in> formula"
+  unfolding tran_closure_def
+  by (insert assms ; (rule sep_rules rtran_closure_fm_auto | simp))+
+
+
 
 schematic_goal wellfounded_trancl_fm_auto:
-  assumes 
-    "B\<in>nat" "r\<in>nat" "p\<in>nat"
+assumes 
+  "nth(i,env) = B" "nth(j,env) = r"  "nth(k,env) = p"
+  "i \<in> nat" "j \<in> nat" "k \<in> nat" "env \<in> list(A)"
   shows
-    "(\<forall>env\<in>list(A). wellfounded_trancl(##A,nth(B,env),nth(r,env),nth(p,env))
-    \<longleftrightarrow> sats(A,?wtf(B,r,p),env))"
-    "?wtf(B,r,p) \<in> formula"
-  unfolding  wellfounded_trancl_def tran_closure_def
-  apply (rule ballI)
-  apply (insert assms ; (rule sep_rules | simp))+ 
-  sorry
-
+    "wellfounded_trancl(##A,B,r,p) \<longleftrightarrow> sats(A,?wtf(i,j,k),env)"
+  unfolding  wellfounded_trancl_def
+  by (insert assms ; (rule sep_rules tran_closure_fm_auto | simp)+)
+  
 lemma (in forcing_data) wftrancl_separation_intf:
     assumes
       "r\<in>M"
@@ -904,17 +928,19 @@ lemma (in forcing_data) wftrancl_separation_intf:
       "Z\<in>M"
     shows
       "separation (##M, wellfounded_trancl(##M,Z,r))"
-proof -
-   obtain wtf where
-    wtfsats:"\<And>env. env\<in>list(M) \<Longrightarrow> wellfounded_trancl(##M,nth(0,env),nth(1,env),nth(2,env))
+  sorry
+
+(*proof -
+   obtain wtf  x where
+     wtfsats:"\<And>env. env\<in>list(M) \<Longrightarrow> wellfounded_trancl(##M,nth(0,env),nth(1,env),nth(2,env))
     \<longleftrightarrow> sats(M,wtf(0,1,2),env)"
-    and 
-    "wtf(0,1,2) \<in> formula" 
-    and
-    "arity(wtf(0,1,2)) = 3"
-     using \<open>r\<in>M\<close> \<open>Z\<in>M\<close> wellfounded_trancl_fm_auto[of 0 1 2]
-     by (simp del:FOL_sats_iff nat_simp_union)
-   then have 
+     and 
+     "wtf(0,1,2) \<in> formula"
+     and
+     "arity(wtf(0,1,2)) = 0"
+     using \<open>r\<in>M\<close> \<open>Z\<in>M\<close> wellfounded_trancl_fm_auto
+     -pply ( simp del:FOL_sats_iff add: fm_defs nat_simp_union)
+*)(*
     wtfsats':"wellfounded_trancl(##M,a,b,c)
     \<longleftrightarrow> sats(M,wtf(0,1,2),[a,b,c,d])" if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" for a b c d
      using that wtfsats [of "[a,b,c,d]"] by simp 
@@ -931,7 +957,7 @@ proof -
     "(\<forall>Z\<in>M. \<forall>r\<in>M. separation(##M, wellfounded_trancl(##M,Z,r)))"
    by simp
   with \<open>Z\<in>M\<close> \<open>r\<in>M\<close> show ?thesis by simp
-qed
+qed*)
 
 (* nat \<in> M *)
 
@@ -942,14 +968,12 @@ proof -
     unfolding finite_ordinal_fm_def limit_ordinal_fm_def empty_fm_def succ_fm_def cons_fm_def
               union_fm_def upair_fm_def
     by (simp add: nat_union_abs1 Un_commute)
-  with separation_ax have
-    "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,finite_ordinal_fm(0),[x,v])))"
+  with separation_ax 
+  have "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,finite_ordinal_fm(0),[x,v])))"
   by simp
-  then have
-    "(\<forall>v\<in>M. separation(##M,finite_ordinal(##M)))"
+  then have "(\<forall>v\<in>M. separation(##M,finite_ordinal(##M)))"
     unfolding separation_def by simp
-  then have 
-   "separation(##M,finite_ordinal(##M))"
+  then have "separation(##M,finite_ordinal(##M))"
     using zero_in_M by auto
   then show ?thesis unfolding separation_def by simp
 qed
@@ -974,7 +998,6 @@ proof -
     using  \<open>I\<in>M\<close> \<open>0\<in>I\<close> nat_subset_I' by simp
   then show ?thesis using \<open>I\<in>M\<close> by auto
 qed
-find_theorems "{x\<in>?B . x\<in>?A}=?A"
 
 lemma (in forcing_data) nat_in_M : 
   "nat \<in> M"
@@ -1000,7 +1023,182 @@ lemma (in forcing_data) mtrancl : "M_trancl(##M)"
 
 sublocale forcing_data \<subseteq> M_trancl "##M"
   by (rule mtrancl)
-*)
+
 (*** end interface with M_trancl ***)
+
+(*
+locale M_datatypes = M_trancl +
+ assumes list_replacement1:
+   "M(A) ==> iterates_replacement(M, is_list_functor(M,A), 0)"
+  and list_replacement2:
+   "M(A) ==> strong_replacement(M,
+         \<lambda>n y. n\<in>nat & is_iterates(M, is_list_functor(M,A), 0, n, y))"
+  and formula_replacement1:
+   "iterates_replacement(M, is_formula_functor(M), 0)"
+  and formula_replacement2:
+   "strong_replacement(M,
+         \<lambda>n y. n\<in>nat & is_iterates(M, is_formula_functor(M), 0, n, y))"
+  and nth_replacement:
+   "M(l) ==> iterates_replacement(M, %l t. is_tl(M,l,t), l)"
+*)
+
+
+(*
+
+lemma sats_iterates_MH_fm:
+  assumes is_F_iff_sats:
+      "!!a b c d. [| a \<in> A; b \<in> A; c \<in> A; d \<in> A|]
+              ==> is_F(a,b) \<longleftrightarrow>
+                  sats(A, p, Cons(b, Cons(a, Cons(c, Cons(d,env)))))"
+  shows 
+      "[|v \<in> nat; x \<in> nat; y \<in> nat; z < length(env); env \<in> list(A)|]
+       ==> sats(A, iterates_MH_fm(p,v,x,y,z), env) \<longleftrightarrow>
+           iterates_MH(##A, is_F, nth(v,env), nth(x,env), nth(y,env), nth(z,env))"
+
+
+lemma sats_is_wfrec_fm:
+  assumes MH_iff_sats: 
+      "!!a0 a1 a2 a3 a4. 
+        [|a0\<in>A; a1\<in>A; a2\<in>A; a3\<in>A; a4\<in>A|] 
+        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(A, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
+  shows 
+      "[|x \<in> nat; y < length(env); z < length(env); env \<in> list(A)|]
+       ==> sats(A, is_wfrec_fm(p,x,y,z), env) \<longleftrightarrow> 
+           is_wfrec(##A, MH, nth(x,env), nth(y,env), nth(z,env))"
+
+iterates_replacement(M,isF,v) ==
+      \<forall>n[M]. n\<in>nat \<longrightarrow> 
+         wfrec_replacement(M, iterates_MH(M,isF,v), Memrel(succ(n)))
+
+wfrec_replacement(M,MH,r) ==
+        strong_replacement(M, 
+             \<lambda>x z. \<exists>y[M]. pair(M,x,y,z) & is_wfrec(M,MH,r,x,y))
+
+Quiero probar
+
+A\<in>M ; n\<in>nat \<Longrightarrow>
+strong_replacement(M, 
+             \<lambda>x z. \<exists>y[M]. pair(M,x,y,z) & is_wfrec(M,iterates_MH(##M,is_list_functor(M,A),0),Memrel(succ(n)),x,y))
+
+
+
+voy a usar
+replacement_ax:      "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=2 \<or> arity(\<phi>)=succ(2) \<rbrakk> \<Longrightarrow>
+                            (\<forall>a\<in>M. strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y,a])))"
+
+\<phi> = Exists(And(pair_fm(1,0,2),is_wfrec_fm(?H,3,1,0)))
+
+\<lambda>x z. sats( M , Exists(And(pair_fm(1,0,2),is_wfrec_fm(?H,3,1,0))) , [x,z,Memrel(succ(n))])
+
+
+?H = iterates_MH_fm(?LF,)
+
+
+is_F(a,b) \<longleftrightarrow> sats(M, p, Cons(b, Cons(a, Cons(c, Cons(d,env)))))
+is_F = is_list_functor(M,A)
+is_list_functor(M,A,a,b) \<longleftrightarrow> sats(M, ?LF, Cons(b, Cons(a, Cons(c, Cons(d,env)))))
+
+     
+is_list_functor(##M, A, a, b)  \<longleftrightarrow> sats(M, list_functor_fm(4,1,0), [b,a,c,d,A]++env)
+
+  sats(M, iterates_MH_fm(list_functor_fm(4,1,0),v,x,y,z), [A]++env) \<longleftrightarrow>
+ iterates_MH(##M, is_list_functor(M,A), nth(v,[A]++env), nth(x,[A]++env), nth(y,[A]++env), nth(z,[A]++env))"
+
+
+
+MH(a2, a1, a0) \<longleftrightarrow> sats(M, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,[y,x,z,Memrel(succ(n))]))))))
+MH = iterates_MH(##M,is_list_functor(M,A),0)
+sats(M, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,[y,x,z,Memrel(succ(n)),A]))))))
+\<longleftrightarrow> iterates_MH(##M,is_list_functor(M,A),0,a2, a1, a0)
+
+
+"!!a b c d. [| a \<in> A; b \<in> A; c \<in> A; d \<in> A|]
+              ==> is_F(a,b) \<longleftrightarrow>
+                  sats(A, p, Cons(b, Cons(a, Cons(c, Cons(d,env)))))"
+  shows 
+      "[|v \<in> nat; x \<in> nat; y \<in> nat; z < length(env); env \<in> list(A)|]
+       ==> sats(A, iterates_MH_fm(p,v,x,y,z), env) \<longleftrightarrow>
+           iterates_MH(##A, is_F, nth(v,env), nth(x,env), nth(y,env), nth(z,env))"
+
+is_list_functor(##M, A, a, b)  \<longleftrightarrow> sats(M, list_functor_fm(13,1,0), 
+  [b,a,c,d,a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),A,0])
+
+sats(M, iterates_MH_fm(list_functor_fm(13,1,0),14,2,1,0), [a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),A,0]))))))
+\<longleftrightarrow> iterates_MH(##M,is_list_functor(M,A),0,a2, a1, a0)
+
+
+           ----------------------------------------------------------------------------
+sats(M, is_wfrec_fm(iterates_MH_fm(list_functor_fm(13,1,0),14,2,1,0),3,1,0), [y,x,z,Memrel(succ(n)),A,0]) 
+\<longleftrightarrow> 
+is_wfrec(##M, iterates_MH(##M,is_list_functor(M,A),0) , Memrel(succ(n)), x, y)"
+           ----------------------------------------------------------------------------
+
+
+
+A\<in>M ; n\<in>nat \<Longrightarrow>
+strong_replacement(M, 
+             \<lambda>x z. \<exists>y[M]. pair(M,x,y,z) & is_wfrec(M,iterates_MH(##M,is_list_functor(M,A),0),Memrel(succ(n)),x,y))
+
+
+
+voy a usar
+replacement_ax:      "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=2 \<or> arity(\<phi>)=succ(2) \<rbrakk> \<Longrightarrow>
+                            (\<forall>a\<in>M. strong_replacement(##M,\<lambda>x z. sats(M,\<phi>,[x,z,a])))"
+
+\<lambda>x z. sats( M , Exists(And(pair_fm(1,0,2),
+is_wfrec_fm(iterates_MH_fm(list_functor_fm(13,1,0),14,2,1,0),3,1,0))) , [x,z,Memrel(succ(n)),A,0])
+
+
+La aridad de \<phi> debería ser 5. Luego tenemos que hacer tupling para que tenga aridad 3.
+
+
+
+
+\<lambda>x z. sats( M , Exists(And(pair_fm(1,0,2),is_wfrec_fm(?H,3,1,0))) , [x,z,Memrel(succ(n))])
+
+  
+
+
+is_wfrec(M,iterates_MH(##M,is_list_functor(M,A),0),Memrel(succ(n)),x,y)
+
+
+?LF = list_functor_fm(4,1,0)
+
+ToDos: n\<in>nat \<Longrightarrow> Memrel(succ(n)) \<in> M by Memrel_closed + trans
+*)
+
+
+lemma (in forcing_data) list_replacement1_intf:
+    assumes
+      "A\<in>M"
+    shows
+      "iterates_replacement(##M, is_list_functor(##M,A), 13)"
+proof -
+  have 1:"n\<in>M" if "n\<in>nat" for n
+    using that trans_M nat_in_M Transset_intf[of M n nat] by simp
+  then have "succ(n)\<in>M" if "n\<in>nat" for n
+    using that by simp
+  then have 2:"Memrel(succ(n))\<in>M" if "n\<in>nat" for n
+    using that Memrel_closed by simp (* por qué tengo que citar a Memrel_closed si está en el simp ? *)
+  have "0\<in>M" 
+    using  nat_0I 1 by simp
+  then have "is_list_functor(##M, A, a, b)  
+       \<longleftrightarrow> sats(M, list_functor_fm(13,1,0), [b,a,c,d,a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),A,0])"
+    if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "a0\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "y\<in>M" "x\<in>M" "z\<in>M" "n\<in>nat"
+    for a b c d a0 a1 a2 a3 a4 y x z n
+    using that 2 \<open>A\<in>M\<close> list_functor_iff_sats by simp
+  then have "sats(M, iterates_MH_fm(list_functor_fm(13,1,0),14,2,1,0), [a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),A,0])
+        \<longleftrightarrow> iterates_MH(##M,is_list_functor(##M,A),0,a2, a1, a0)"
+    if "a0\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "y\<in>M" "x\<in>M" "z\<in>M" "n\<in>nat" 
+    for a0 a1 a2 a3 a4 y x z n
+    using that sats_iterates_MH_fm[of M "is_list_functor(##M,A)" _] 2 \<open>0\<in>M\<close> \<open>A\<in>M\<close>  by simp
+  then have "sats(M, is_wfrec_fm(iterates_MH_fm(list_functor_fm(13,1,0),14,2,1,0),3,1,0), 
+                            [y,x,z,Memrel(succ(n)),A,0])
+        \<longleftrightarrow> 
+        is_wfrec(##M, iterates_MH(##M,is_list_functor(##M,A),0) , Memrel(succ(n)), x, y)"
+    if "y\<in>M" "x\<in>M" "z\<in>M" "n\<in>nat" for y x z n
+    using  that sats_is_wfrec_fm 2 \<open>0\<in>M\<close> \<open>A\<in>M\<close> by simp
+  oops
+
 
 end
