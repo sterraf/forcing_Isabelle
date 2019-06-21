@@ -136,7 +136,7 @@ proof -
   have "\<not>(\<exists>A. A \<subseteq> succ(\<alpha>) \<and> cofinal(A, succ(\<alpha>), Memrel(succ(\<alpha>))) \<and> 0 = ordertype(A, Memrel(succ(\<alpha>))))"
     (is "\<not>?P(0)")
     using not_0_cofinal unfolding cf_def  by auto
-  moreover 
+  moreover
   have "1 = ordertype(A,Memrel(succ(\<alpha>)))" 
   proof - 
     from \<open>A={f`0}\<close>
@@ -158,10 +158,6 @@ lemma cf_zero:
 lemma mono_map_increasing: 
   "j\<in>mono_map(A,r,B,s) \<Longrightarrow> a\<in>A \<Longrightarrow> c\<in>A \<Longrightarrow> <a,c>\<in>r \<Longrightarrow> <j`a,j`c>\<in>s"
   unfolding mono_map_def by simp
-
-lemma lt_trans [trans]: 
-  "a<b \<Longrightarrow> b<c \<Longrightarrow> a<c"
-  using Ord_trans unfolding lt_def by blast
 
 lemma Least_antitone:
   assumes 
@@ -244,7 +240,7 @@ proof (intro CollectI ballI iffI)
   proof 
     {
       assume "x\<notin>y" "x\<in>\<alpha>" "y\<in>\<alpha>"  
-      moreover 
+      moreover
       note \<open>\<langle>f`x,f`y\<rangle>\<in>Memrel(\<beta>)\<close> and \<open>Ord(\<alpha>)\<close>
       moreover from calculation 
       have "y = x \<or> y\<in>x" 
@@ -300,8 +296,26 @@ qed
 lemma apply_in_image: "f:A\<rightarrow>B \<Longrightarrow> a\<in>A \<Longrightarrow> f`a \<in> f``A"
   using range_eq_image apply_rangeI[of f]  by simp
 
+lemma Image_subset_Ord_imp_lt:
+  assumes
+    "Ord(\<alpha>)" "h``A \<subseteq> \<alpha>" "x\<in>domain(h)" "x\<in>A" "function(h)"
+  shows
+    "h`x < \<alpha>"
+  using assms
+  unfolding domain_def using imageI ltI function_apply_equality by auto
+(* (* Long version... *)
+proof -
+  from \<open>x\<in>domain(h)\<close> \<open>x\<in>A\<close> \<open>function(h)\<close>
+  have "h`x \<in> h``A"
+    unfolding domain_def using imageI function_apply_equality by auto
+  with \<open>h``A \<subseteq> \<alpha>\<close>
+  have "h`x \<in> \<alpha>" by auto
+  with \<open>Ord(\<alpha>)\<close>
+  show ?thesis using ltI by simp
+qed *)
+
 lemma
-  notes le_imp_subset [dest]
+  notes le_imp_subset [dest] lt_trans2 [trans]
   assumes 
     "Ord(\<delta>)" "Limit(\<gamma>)" "f: \<delta> \<rightarrow> \<gamma>" "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))" 
   shows
@@ -374,7 +388,7 @@ proof -
     also from \<open>Ord(\<delta>)\<close>
     have "H(\<alpha>, \<lambda>x\<in>\<alpha>. G(x)) \<in> ?A(\<alpha>,\<lambda>x\<in>\<alpha>. G(x))"
       unfolding H_def using  LeastI[of "\<lambda>y. y\<in>?A(\<alpha>,\<lambda>x\<in>\<alpha>. G(x))" \<delta>] by simp
-    finally 
+    finally
     show ?thesis by simp
   qed
   with \<open>Ord(\<delta>)\<close>  
@@ -418,7 +432,10 @@ proof -
     then 
     have IH: "z\<in>\<beta> \<Longrightarrow> G(z)\<noteq>\<delta>" for z by simp
     define h where "h \<equiv> \<lambda>x\<in>\<beta>. f`G(x)"
-    have "h \<in> \<beta> \<rightarrow> \<gamma>" sorry
+    from IH and \<open>\<And>\<alpha>. G(\<alpha>) \<in> {\<theta>\<in>\<delta>. _ } \<union> {\<delta>}\<close>
+    have "z\<in>\<beta> \<Longrightarrow> G(z) \<in> \<delta>" for z by blast
+    with \<open>f:\<delta>\<rightarrow>\<gamma>\<close>
+    have "h \<in> \<beta> \<rightarrow> \<gamma>" unfolding h_def using apply_funtype lam_type by auto
     then
     have "h \<in> mono_map(\<beta>,Memrel(\<beta>),\<gamma>,Memrel(\<gamma>))"
       unfolding mono_map_def
@@ -472,7 +489,7 @@ proof -
     have "\<alpha>_0 \<union> j`\<beta> \<in> \<gamma>"
       using Un_least_mem_iff Ord_in_Ord by auto
     with \<open>cofinal_fun(f,\<gamma>,_)\<close> 
-    obtain \<theta> where "\<theta>\<in>domain(f)" "\<langle>\<alpha>_0 \<union> j`\<beta>, f ` \<theta>\<rangle> \<in> Memrel(\<gamma>) \<or>  \<alpha>_0 \<union> j`\<beta>= f ` \<theta>"
+    obtain \<theta> where "\<theta>\<in>domain(f)" "\<langle>\<alpha>_0 \<union> j`\<beta>, f ` \<theta>\<rangle> \<in> Memrel(\<gamma>) \<or>  \<alpha>_0 \<union> j`\<beta> = f ` \<theta>"
       unfolding cofinal_fun_def by blast
     moreover from this and \<open>f:\<delta>\<rightarrow>\<gamma>\<close>
     have "\<theta> \<in> \<delta>" using domain_of_fun by auto
@@ -484,10 +501,25 @@ proof -
     moreover from calculation and \<open>\<alpha>_0 \<in> \<gamma>\<close> and \<open>Ord(\<delta>)\<close> and \<open>j`\<beta> \<in> \<gamma>\<close>
     have "Ord(\<alpha>_0)" "Ord(j`\<beta>)" "Ord(\<theta>)"
       using Ord_in_Ord by auto
-    moreover from  \<open>\<forall>x\<in>h `` \<beta>. x \<in> \<alpha>_0\<close> \<open>Ord(\<alpha>_0)\<close> \<open>_ \<or> (\<alpha>_0 \<union> _= f`\<theta>)\<close>
+    moreover from \<open>\<forall>x\<in>h `` \<beta>. x \<in> \<alpha>_0\<close> \<open>Ord(\<alpha>_0)\<close> \<open>h:\<beta>\<rightarrow>\<gamma>\<close>
+    have "x\<in>\<beta> \<Longrightarrow> h`x < \<alpha>_0" for x
+      using fun_is_function[of h \<beta> "\<lambda>_. \<gamma>"] Image_subset_Ord_imp_lt domain_of_fun[of h \<beta> "\<lambda>_. \<gamma>"] 
+      by blast
+    moreover 
     have "x\<in>\<beta> \<Longrightarrow> h`x < f`\<theta>" for x
-      using ltI lam_funtype[of h] apply (auto dest:Un_memD2 Un_leD2[OF le_eqI])
-      sorry
+    proof -
+      fix x
+      assume "x\<in>\<beta>"
+      with \<open>\<forall>x\<in>h `` \<beta>. x \<in> \<alpha>_0\<close> \<open>Ord(\<alpha>_0)\<close> \<open>h:\<beta>\<rightarrow>\<gamma>\<close>
+      have "h`x < \<alpha>_0" 
+        using fun_is_function[of h \<beta> "\<lambda>_. \<gamma>"] Image_subset_Ord_imp_lt domain_of_fun[of h \<beta> "\<lambda>_. \<gamma>"] 
+        by blast
+      also from \<open>\<langle>\<alpha>_0 \<union> _, f ` \<theta>\<rangle> \<in> Memrel(\<gamma>) \<or> \<alpha>_0 \<union> _= f ` \<theta>\<close> \<open>Ord(f`\<theta>)\<close> \<open>Ord(\<alpha>_0)\<close> \<open>Ord(j`\<beta>)\<close>
+      have "\<alpha>_0 \<le> f`\<theta>"
+        using Un_leD1[OF leI [OF ltI]] Un_leD1[OF le_eqI] by blast
+      finally
+      show "h`x < f`\<theta>" .
+    qed
     ultimately
     have "\<theta> \<in> ?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))"
       unfolding h_def using ltD by (auto dest:Un_memD2 Un_leD2[OF le_eqI])
@@ -539,7 +571,7 @@ proof -
     have "G(\<alpha>)\<noteq>\<delta>" "G(\<beta>)\<noteq>\<delta>" using Ord_cf by auto
     moreover
     note \<open>\<beta> \<in> cf(\<gamma>) \<Longrightarrow> \<alpha> < \<beta> \<Longrightarrow> G(\<beta>) \<noteq> \<delta> \<Longrightarrow> f ` G(\<alpha>) < f ` G(\<beta>)\<close>
-    moreover 
+    moreover
     note \<open>f: \<delta> \<rightarrow> \<gamma>\<close> \<open>\<alpha><\<beta>\<close> \<open>Limit(\<gamma>)\<close> \<open>Ord(\<gamma>)\<close> \<open>?g : cf(\<gamma>) \<rightarrow> \<delta>\<close>
     ultimately
     show "\<langle>(f O ?g) ` \<alpha>, (f O ?g) ` \<beta>\<rangle> \<in> Memrel(\<gamma>)"
