@@ -223,7 +223,7 @@ lemma mono_map_imp_ord_iso_image:
     "f \<in> ord_iso(\<alpha>,Memrel(\<alpha>),f``\<alpha>,Memrel(\<beta>))"
   unfolding ord_iso_def
 proof (intro CollectI ballI iffI)
-  (* Enough to show it's bijective and preserves two ways *)
+  (* Enough to show it's bijective and preserves both ways *)
   from assms
   have "f \<in> inj(\<alpha>,\<beta>)"
     using mono_map_is_inj wf_Memrel wf_imp_wf_on well_ord_is_linear well_ord_Memrel by blast
@@ -406,7 +406,7 @@ proof -
     finally show ?thesis .
   qed
   moreover 
-  have fg_monot:"f`G(\<alpha>) < f`G(\<beta>)" if "\<beta>\<in>cf(\<gamma>)" "\<alpha><\<beta>" "G(\<beta>)\<noteq>\<delta>"  for \<alpha> \<beta>
+  have "f`G(\<alpha>) < f`G(\<beta>)" if "\<beta>\<in>cf(\<gamma>)" "\<alpha><\<beta>" "G(\<beta>)\<noteq>\<delta>"  for \<alpha> \<beta>
   proof -
     from \<open>G(\<beta>) = H(\<beta>, \<lambda>x\<in>\<beta>. G(x))\<close> \<open>Ord(\<delta>)\<close> and that 
     have "f ` ((\<lambda>x\<in>\<beta>. G(x)) ` \<alpha>) < f ` G(\<beta>)"
@@ -457,7 +457,7 @@ proof -
       moreover from calculation
       have "x<y" by (blast intro:ltI)
       moreover
-      note fg_monot[of y x]
+      note \<open>y\<in>cf(\<gamma>) \<Longrightarrow> x<y \<Longrightarrow> G(y)\<noteq>\<delta> \<Longrightarrow> f ` G(x) < f ` G(y)\<close>
       ultimately
       show "\<langle>h ` x, h ` y\<rangle> \<in> Memrel(\<gamma>)"
         unfolding h_def using ltD by (auto)
