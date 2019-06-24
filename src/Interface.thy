@@ -738,7 +738,16 @@ proof -
     unfolding separation_def PP_def by (simp del: pair_abs)
   with assms show ?thesis unfolding QQ_def using tupling_sep_5p_rel2  by simp
 qed 
-  
+
+
+lemma (in forcing_data) threep_repl: 
+  assumes
+    "\<phi> \<in> formula" "arity(\<phi>)\<le>7" "a1\<in>M" "a2\<in>M" "a3\<in>M"
+  shows 
+    "strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y,a1,a2,a3]))"
+  sorry
+
+
 (* Instance of Replacement for M_basic *)
   
 (* funspace_succ_replacement:
@@ -1172,7 +1181,7 @@ lemma (in forcing_data) list_replacement1_intf:
     assumes
       "A\<in>M"
     shows
-      "iterates_replacement(##M, is_list_functor(##M,A), 13)"
+      "iterates_replacement(##M, is_list_functor(##M,A), 0)"
 proof -
   have 1:"n\<in>M" if "n\<in>nat" for n
     using that trans_M nat_in_M Transset_intf[of M n nat] by simp
@@ -1200,5 +1209,10 @@ proof -
     using  that sats_is_wfrec_fm 2 \<open>0\<in>M\<close> \<open>A\<in>M\<close> by simp
   oops
 
+
+(*
+strong_replacement(M, 
+             \<lambda>x z. \<exists>y[M]. pair(M,x,y,z) & is_wfrec(##M, iterates_MH(##M,is_list_functor(##M,A),0) , Memrel(succ(n)), x, y))
+*)
 
 end
