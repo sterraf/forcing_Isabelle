@@ -739,10 +739,157 @@ proof -
   with assms show ?thesis unfolding QQ_def using tupling_sep_5p_rel2  by simp
 qed 
 
+(* Tupling for the Replacement Axiom *)
+
+lemma (in forcing_data) tupling_repl_5p : 
+"(\<forall>v\<in>M. strong_replacement(##M,\<lambda>x z. (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. 
+                  v = \<langle>A1, \<langle>A2, \<langle>A3, \<langle>A4, A5\<rangle>\<rangle>\<rangle>\<rangle> \<longrightarrow> Q(x,z,A1,A2,A3,A4,A5))))
+    \<longleftrightarrow>
+ (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. strong_replacement(##M,\<lambda>x z. Q(x,z,A1,A2,A3,A4,A5)))"
+  sorry
+(* proof (simp add: strong_replacement_def, intro ballI iffI)
+  fix A B C D E w
+  assume
+        Eq1:  "\<forall>v\<in>M. \<forall>u\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> 
+               x \<in> u \<and> (\<forall>A\<in>M. \<forall>B\<in>M.  \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. v = \<langle>A, B,C,D,E\<rangle> 
+                   \<longrightarrow> Q(x, A, B, C, D, E))"
+     and
+        Eq2:  "A\<in>M" "B\<in>M" "C\<in>M" "D\<in>M" "E\<in>M" "w\<in>M"  (* no puedo poner la conjunción *)
+  then have 
+        Eq3:  "<A,B,C,D,E>\<in>M"
+    by (simp del:setclass_iff add:setclass_iff[symmetric])
+  with Eq1 have 
+              "\<forall>u\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> 
+               x \<in> u \<and> (\<forall>A'\<in>M. \<forall>B'\<in>M.  \<forall>C'\<in>M. \<forall>D'\<in>M. \<forall>E'\<in>M. <A,B,C,D,E> = \<langle>A',B',C',D',E'\<rangle> 
+                   \<longrightarrow> Q(x, A', B', C', D', E'))"
+    by (rule bspec)
+  with uniq_dec_5p and Eq3 and Eq2 show
+              "\<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> 
+               x \<in> w \<and>  Q(x,A,B,C,D,E)"
+    by simp
+next
+  fix v w
+  assume
+       asms:  "v\<in>M"   "w\<in>M"
+              "\<forall>A\<in>M. \<forall>B\<in>M. \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. \<forall>u\<in>M. \<exists>y\<in>M. 
+                  \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> u \<and> Q(x, A,B,C,D,E)"
+  consider (a) "\<exists>A\<in>M. \<exists>B\<in>M. \<exists>C\<in>M. \<exists>D\<in>M. \<exists>E\<in>M. v = \<langle>A,B,C,D,E\<rangle>" | 
+           (b) "\<forall>A\<in>M. \<forall>B\<in>M. \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. v \<noteq> \<langle>A,B,C,D,E\<rangle>" by blast
+  then show               
+              "\<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> w \<and> 
+                    (\<forall>A\<in>M. \<forall>B\<in>M. \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. v = \<langle>A,B,C,D,E\<rangle> \<longrightarrow> Q(x,A,B,C,D,E))"
+  proof cases
+    case a
+    then obtain A B C D E where 
+        Eq4:  "A\<in>M" "B\<in>M" "C\<in>M" "D\<in>M" "E\<in>M" "v = \<langle>A,B,C,D,E\<rangle>"
+      by auto
+    then have
+              "\<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> w \<and> Q(x,A,B,C,D,E)"
+      using asms by simp
+    then show ?thesis using Eq4 by simp
+  next
+    case b
+    then have
+              "\<forall>x\<in>M. x \<in> w \<longleftrightarrow> x \<in> w \<and> 
+                (\<forall>A\<in>M. \<forall>B\<in>M.  \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. v = \<langle>A,B,C,D,E\<rangle> \<longrightarrow> Q(x,A,B,C,D,E))"
+      by simp
+    then show ?thesis using b and asms by auto
+  qed
+qed *)
+
+lemma (in forcing_data) tupling_repl_5p_rel :
+"(\<forall>v\<in>M. strong_replacement(##M,\<lambda>x z. (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. 
+                    \<forall>B1\<in>M. \<forall>B2\<in>M. \<forall>B3\<in>M.   
+                    pair(##M,A4,A5,B1) & 
+                    pair(##M,A3,B1,B2) & 
+                    pair(##M,A2,B2,B3) & 
+                    pair(##M,A1,B3,v)  
+               \<longrightarrow> Q(x,z,A1,A2,A3,A4,A5))))
+    \<longleftrightarrow>
+ (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. strong_replacement(##M,\<lambda>x z. Q(x,z,A1,A2,A3,A4,A5)))"
+proof (simp)
+  have
+      "(\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+        \<langle>A4, A5\<rangle> \<in> M \<and> \<langle>A3, A4, A5\<rangle> \<in> M \<and> \<langle>A2, A3, A4, A5\<rangle> \<in> M \<and> v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+        Q(x,z, A1, A2, A3, A4, A5))
+      \<longleftrightarrow>
+      (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M.
+        v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+        Q(x,z, A1, A2, A3, A4, A5))" for x v z
+    by (rule tupling_sep_5p_aux)
+  then have
+      "(\<forall>v\<in>M. strong_replacement
+             (##M,
+              \<lambda>x z. \<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+        \<langle>A4, A5\<rangle> \<in> M \<and> \<langle>A3, A4, A5\<rangle> \<in> M \<and> \<langle>A2, A3, A4, A5\<rangle> \<in> M \<and> v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+        Q(x,z, A1, A2, A3, A4, A5)))
+      \<longleftrightarrow>
+      (\<forall>v\<in>M. strong_replacement
+             (##M,
+              \<lambda>x z. \<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M.
+        v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+        Q(x,z, A1, A2, A3, A4, A5)))"
+    by simp
+  also have
+     "...   \<longleftrightarrow>
+ (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. strong_replacement(##M,\<lambda>x z. Q(x,z,A1,A2,A3,A4,A5)))"
+    using tupling_repl_5p by simp
+  finally show
+    "(\<forall>v\<in>M. strong_replacement
+             (##M,
+              \<lambda>x z. \<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+\<langle>A4, A5\<rangle> \<in> M \<and> \<langle>A3, A4, A5\<rangle> \<in> M \<and> \<langle>A2, A3, A4, A5\<rangle> \<in> M \<and> v = \<langle>A1, A2, A3, A4, A5\<rangle> \<longrightarrow>
+Q(x,z, A1, A2, A3, A4, A5))) \<longleftrightarrow>
+    (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. strong_replacement(##M, \<lambda>x z. Q(x,z, A1, A2, A3, A4, A5)))"
+    by auto
+qed
+
+lemma (in forcing_data) tupling_repl_5p_rel2 : 
+"(\<forall>v\<in>M. strong_replacement(##M,\<lambda>x z. (\<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. 
+                    \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. \<forall>A1\<in>M.  
+                    pair(##M,A4,A5,B1) & 
+                    pair(##M,A3,B1,B2) & 
+                    pair(##M,A2,B2,B3) & 
+                    pair(##M,A1,B3,v)  
+               \<longrightarrow> Q(x,z,A1,A2,A3,A4,A5))))
+    \<longleftrightarrow>
+ (\<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. \<forall>A1\<in>M. strong_replacement(##M,\<lambda>x z. Q(x,z,A1,A2,A3,A4,A5)))"
+proof -
+  have
+        "(\<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. 
+                    \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. \<forall>A1\<in>M.  
+                    pair(##M,A4,A5,B1) & 
+                    pair(##M,A3,B1,B2) & 
+                    pair(##M,A2,B2,B3) & 
+                    pair(##M,A1,B3,v)  
+               \<longrightarrow> Q(x,z,A1,A2,A3,A4,A5))
+          \<longleftrightarrow>
+         (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. 
+                    \<forall>B1\<in>M. \<forall>B2\<in>M. \<forall>B3\<in>M.   
+                    pair(##M,A4,A5,B1) & 
+                    pair(##M,A3,B1,B2) & 
+                    pair(##M,A2,B2,B3) & 
+                    pair(##M,A1,B3,v)  
+               \<longrightarrow> Q(x,z,A1,A2,A3,A4,A5))" 
+        (is "?P(x,z,v)\<longleftrightarrow>?Q(x,z,v)") for x z v
+    by auto
+  then have
+        "strong_replacement(##M,\<lambda>x z. ?P(x,z,v)) \<longleftrightarrow> strong_replacement(##M,\<lambda>x z. ?Q(x,z,v))" for v
+    by (rule strong_replacement_cong)
+  then have
+        "(\<forall>v\<in>M. strong_replacement(##M,\<lambda>x z. ?P(x,z,v)))
+         \<longleftrightarrow> 
+         (\<forall>v\<in>M. strong_replacement(##M,\<lambda>x z. ?Q(x,z,v)))"
+    by blast
+  also have
+    " ... \<longleftrightarrow> (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. strong_replacement(##M,\<lambda>x z. Q(x,z,A1,A2,A3,A4,A5)))"
+    using tupling_repl_5p_rel by (simp del:setclass_iff add:setclass_iff[symmetric]) 
+  finally show ?thesis by (auto simp del:setclass_iff simp add:setclass_iff[symmetric]) 
+qed
 
 lemma (in forcing_data) threep_repl: 
   assumes
-    "\<phi> \<in> formula" "arity(\<phi>)\<le>7" "a1\<in>M" "a2\<in>M" "a3\<in>M"
+    "\<phi> \<in> formula" "arity(\<phi>)\<le>5" "a1\<in>M" "a2\<in>M" "a3\<in>M"
   shows 
     "strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y,a1,a2,a3]))"
   sorry
