@@ -746,56 +746,69 @@ lemma (in forcing_data) tupling_repl_5p :
                   v = \<langle>A1, \<langle>A2, \<langle>A3, \<langle>A4, A5\<rangle>\<rangle>\<rangle>\<rangle> \<longrightarrow> Q(x,z,A1,A2,A3,A4,A5))))
     \<longleftrightarrow>
  (\<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. strong_replacement(##M,\<lambda>x z. Q(x,z,A1,A2,A3,A4,A5)))"
-  sorry
-(* proof (simp add: strong_replacement_def, intro ballI iffI)
-  fix A B C D E w
+  unfolding strong_replacement_def
+proof (simp, intro ballI iffI impI, rename_tac A B C D E l, rename_tac [2] v l)
+  fix A B C D E l
+  let ?Q1="\<lambda>v x z. \<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. v = \<langle>A1,A2,A3,A4,A5\<rangle> 
+           \<longrightarrow> Q(x,z,A1,A2,A3,A4,A5)"
   assume
-        Eq1:  "\<forall>v\<in>M. \<forall>u\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> 
-               x \<in> u \<and> (\<forall>A\<in>M. \<forall>B\<in>M.  \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. v = \<langle>A, B,C,D,E\<rangle> 
-                   \<longrightarrow> Q(x, A, B, C, D, E))"
-     and
-        Eq2:  "A\<in>M" "B\<in>M" "C\<in>M" "D\<in>M" "E\<in>M" "w\<in>M"  (* no puedo poner la conjunción *)
-  then have 
-        Eq3:  "<A,B,C,D,E>\<in>M"
+    Eq1:  "\<forall>v\<in>M. \<forall>l\<in>M. univalent(##M,l,?Q1(v))
+              \<longrightarrow> (\<exists>Y\<in>M. \<forall>b\<in>M. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>M. x \<in> l \<and> ?Q1(v,x,b)))"
+          "univalent(##M, l, \<lambda>x z. Q(x, z, A, B, C, D, E))"
+    and
+    Eq2:  "A\<in>M" "B\<in>M" "C\<in>M" "D\<in>M" "E\<in>M" "l\<in>M"  (* no puedo poner la conjunción *)
+  then 
+  have Eq3:  "<A,B,C,D,E>\<in>M"
     by (simp del:setclass_iff add:setclass_iff[symmetric])
-  with Eq1 have 
-              "\<forall>u\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> 
-               x \<in> u \<and> (\<forall>A'\<in>M. \<forall>B'\<in>M.  \<forall>C'\<in>M. \<forall>D'\<in>M. \<forall>E'\<in>M. <A,B,C,D,E> = \<langle>A',B',C',D',E'\<rangle> 
-                   \<longrightarrow> Q(x, A', B', C', D', E'))"
+  with Eq1(1) 
+  have  "\<forall>l\<in>M. univalent(##M,l,?Q1(<A,B,C,D,E>)) \<longrightarrow> 
+        (\<exists>Y\<in>M. \<forall>b\<in>M. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>M. x \<in> l \<and> ?Q1(<A,B,C,D,E>,x,b)))"
     by (rule bspec)
-  with uniq_dec_5p and Eq3 and Eq2 show
-              "\<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> 
-               x \<in> w \<and>  Q(x,A,B,C,D,E)"
-    by simp
+  with uniq_dec_5p and Eq1(2) and Eq3 and Eq2 show
+    "\<exists>Y\<in>M. \<forall>b\<in>M. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>M. x \<in> l \<and> Q(x, b, A, B, C, D, E))"
+    by auto
 next
-  fix v w
+  fix v l
+  let ?Q2="\<lambda>v x z. \<forall>A1\<in>M. \<forall>A2\<in>M. \<forall>A3\<in>M. \<forall>A4\<in>M. \<forall>A5\<in>M. v = \<langle>A1,A2,A3,A4,A5\<rangle> 
+           \<longrightarrow> Q(x,z,A1,A2,A3,A4,A5)"
   assume
-       asms:  "v\<in>M"   "w\<in>M"
-              "\<forall>A\<in>M. \<forall>B\<in>M. \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. \<forall>u\<in>M. \<exists>y\<in>M. 
-                  \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> u \<and> Q(x, A,B,C,D,E)"
+    asms:  "v\<in>M" "l\<in>M"
+    "\<forall>A\<in>M. \<forall>B\<in>M. \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. \<forall>l\<in>M.
+        univalent(##M, l, \<lambda>x z. Q(x,z,A,B,C,D,E)) \<longrightarrow>
+                  (\<exists>Y\<in>M. \<forall>b\<in>M. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>M. x \<in> l \<and> Q(x,b,A,B,C,D,E)))"
+     "univalent(##M,l,?Q2(v))"
   consider (a) "\<exists>A\<in>M. \<exists>B\<in>M. \<exists>C\<in>M. \<exists>D\<in>M. \<exists>E\<in>M. v = \<langle>A,B,C,D,E\<rangle>" | 
-           (b) "\<forall>A\<in>M. \<forall>B\<in>M. \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. v \<noteq> \<langle>A,B,C,D,E\<rangle>" by blast
-  then show               
-              "\<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> w \<and> 
-                    (\<forall>A\<in>M. \<forall>B\<in>M. \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. v = \<langle>A,B,C,D,E\<rangle> \<longrightarrow> Q(x,A,B,C,D,E))"
+    (b) "\<forall>A\<in>M. \<forall>B\<in>M. \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. v \<noteq> \<langle>A,B,C,D,E\<rangle>" "l=0" |
+    (c) "\<forall>A\<in>M. \<forall>B\<in>M. \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. v \<noteq> \<langle>A,B,C,D,E\<rangle>" "l\<noteq>0" by blast
+  then 
+  show "\<exists>Y\<in>M. \<forall>b\<in>M. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>M. x \<in> l \<and> ?Q2(v,x,b))"
   proof cases
     case a
-    then obtain A B C D E where 
-        Eq4:  "A\<in>M" "B\<in>M" "C\<in>M" "D\<in>M" "E\<in>M" "v = \<langle>A,B,C,D,E\<rangle>"
-      by auto
-    then have
-              "\<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> w \<and> Q(x,A,B,C,D,E)"
-      using asms by simp
-    then show ?thesis using Eq4 by simp
+    then
+    (* obtain A B C D E where
+      Eq4:  "A\<in>M" "B\<in>M" "C\<in>M" "D\<in>M" "E\<in>M" "v = \<langle>A,B,C,D,E\<rangle>"
+      by auto 
+    then 
+    show ?thesis using asms by simp *)
+    show ?thesis using asms by force
   next
     case b
-    then have
-              "\<forall>x\<in>M. x \<in> w \<longleftrightarrow> x \<in> w \<and> 
-                (\<forall>A\<in>M. \<forall>B\<in>M.  \<forall>C\<in>M. \<forall>D\<in>M. \<forall>E\<in>M. v = \<langle>A,B,C,D,E\<rangle> \<longrightarrow> Q(x,A,B,C,D,E))"
-      by simp
-    then show ?thesis using b and asms by auto
+    then 
+    have "b \<in> 0 \<longleftrightarrow> (\<exists>x\<in>M. x \<in> l \<and> ?Q2(v,x,b))" for b by simp
+    with \<open>l\<in>M\<close>
+    show ?thesis using zero_in_M bexI[of _ 0] by simp 
+  next
+    case c
+    with \<open>l\<in>M\<close>
+    obtain u where "u\<in>l" "?Q2(v,u,0)" "?Q2(v,u,l)" "u\<in>M" 
+      using Transset_intf[OF trans_M, of _ l] by force
+    with asms
+    have "\<not> univalent(##M,l,?Q2(v))"
+      unfolding univalent_def using zero_in_M by auto
+    with \<open>univalent(##M,l,?Q2(v))\<close>
+    show ?thesis by blast
   qed
-qed *)
+qed 
 
 lemma (in forcing_data) tupling_repl_5p_rel :
 "(\<forall>v\<in>M. strong_replacement(##M,\<lambda>x z. (\<forall>A1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M. 
@@ -892,7 +905,14 @@ lemma (in forcing_data) threep_repl:
     "\<phi> \<in> formula" "arity(\<phi>)\<le>5" "a1\<in>M" "a2\<in>M" "a3\<in>M"
   shows 
     "strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y,a1,a2,a3]))"
-  sorry
+  unfolding strong_replacement_def
+proof  (intro rallI impI)
+  fix A
+  have "\<exists>Y\<in>M. \<forall>b\<in>M. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>M. x \<in> A \<and> sats(M, \<phi>, [x, b, a1, a2, a3]))"
+    sorry
+  then show "\<exists>Y[##M]. \<forall>b[##M]. b \<in> Y \<longleftrightarrow> (\<exists>x[##M]. x \<in> A \<and> sats(M, \<phi>, [x, b, a1, a2, a3]))"
+    by simp
+qed
 
 
 (* Instance of Replacement for M_basic *)
