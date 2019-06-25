@@ -742,7 +742,7 @@ qed
 
 lemma (in forcing_data) threep_repl: 
   assumes
-    "\<phi> \<in> formula" "arity(\<phi>)\<le>7" "a1\<in>M" "a2\<in>M" "a3\<in>M"
+    "\<phi> \<in> formula" "arity(\<phi>)\<le>5" "a1\<in>M" "a2\<in>M" "a3\<in>M"
   shows 
     "strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y,a1,a2,a3]))"
   sorry
@@ -1176,6 +1176,17 @@ is_wfrec(M,iterates_MH(##M,is_list_functor(M,A),0),Memrel(succ(n)),x,y)
 ToDos: n\<in>nat \<Longrightarrow> Memrel(succ(n)) \<in> M by Memrel_closed + trans
 *)
 
+lemma repl_sats:
+  assumes
+      sat:"\<And>x z. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> sats(M,\<phi>,Cons(x,Cons(z,env))) \<longleftrightarrow> P(x,z)" 
+  shows
+   "strong_replacement(##M,\<lambda>x z. sats(M,\<phi>,Cons(x,Cons(z,env)))) \<longleftrightarrow>
+   strong_replacement(##M,P)" 
+  by (rule strong_replacement_cong,simp add:sat)
+
+lemma (in forcing_data) nat_trans_M : 
+  "n\<in>M" if "n\<in>nat" for n
+  using that trans_M nat_in_M Transset_intf[of M n nat] by simp
 
 lemma (in forcing_data) list_replacement1_intf:
     assumes
@@ -1183,36 +1194,58 @@ lemma (in forcing_data) list_replacement1_intf:
     shows
       "iterates_replacement(##M, is_list_functor(##M,A), 0)"
 proof -
-  have 1:"n\<in>M" if "n\<in>nat" for n
-    using that trans_M nat_in_M Transset_intf[of M n nat] by simp
-  then have "succ(n)\<in>M" if "n\<in>nat" for n
-    using that by simp
-  then have 2:"Memrel(succ(n))\<in>M" if "n\<in>nat" for n
-    using that Memrel_closed by simp (* por qué tengo que citar a Memrel_closed si está en el simp ? *)
+  {
+  fix n
+  assume "n\<in>nat"
+  have "succ(n)\<in>M"
+    using \<open>n\<in>nat\<close> nat_trans_M by simp
+  then have 1:"Memrel(succ(n))\<in>M"
+    using \<open>n\<in>nat\<close> Memrel_closed by simp (* por qué tengo que citar a Memrel_closed si está en el simp ? *)
   have "0\<in>M" 
-    using  nat_0I 1 by simp
+    using  nat_0I nat_trans_M by simp
   then have "is_list_functor(##M, A, a, b)  
        \<longleftrightarrow> sats(M, list_functor_fm(13,1,0), [b,a,c,d,a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),A,0])"
-    if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "a0\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "y\<in>M" "x\<in>M" "z\<in>M" "n\<in>nat"
-    for a b c d a0 a1 a2 a3 a4 y x z n
-    using that 2 \<open>A\<in>M\<close> list_functor_iff_sats by simp
-  then have "sats(M, iterates_MH_fm(list_functor_fm(13,1,0),14,2,1,0), [a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),A,0])
+    if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "a0\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "y\<in>M" "x\<in>M" "z\<in>M"
+    for a b c d a0 a1 a2 a3 a4 y x z
+    using that 1 \<open>A\<in>M\<close> list_functor_iff_sats by simp
+  then have "sats(M, iterates_MH_fm(list_functor_fm(13,1,0),10,2,1,0), [a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),A,0])
         \<longleftrightarrow> iterates_MH(##M,is_list_functor(##M,A),0,a2, a1, a0)"
-    if "a0\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "y\<in>M" "x\<in>M" "z\<in>M" "n\<in>nat" 
-    for a0 a1 a2 a3 a4 y x z n
-    using that sats_iterates_MH_fm[of M "is_list_functor(##M,A)" _] 2 \<open>0\<in>M\<close> \<open>A\<in>M\<close>  by simp
-  then have "sats(M, is_wfrec_fm(iterates_MH_fm(list_functor_fm(13,1,0),14,2,1,0),3,1,0), 
+    if "a0\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "y\<in>M" "x\<in>M" "z\<in>M" 
+    for a0 a1 a2 a3 a4 y x z
+    using that sats_iterates_MH_fm[of M "is_list_functor(##M,A)" _] 1 \<open>0\<in>M\<close> \<open>A\<in>M\<close>  by simp
+  then have 2:"sats(M, is_wfrec_fm(iterates_MH_fm(list_functor_fm(13,1,0),10,2,1,0),3,1,0), 
                             [y,x,z,Memrel(succ(n)),A,0])
         \<longleftrightarrow> 
         is_wfrec(##M, iterates_MH(##M,is_list_functor(##M,A),0) , Memrel(succ(n)), x, y)"
-    if "y\<in>M" "x\<in>M" "z\<in>M" "n\<in>nat" for y x z n
-    using  that sats_is_wfrec_fm 2 \<open>0\<in>M\<close> \<open>A\<in>M\<close> by simp
-  oops
+    if "y\<in>M" "x\<in>M" "z\<in>M" for y x z
+    using  that sats_is_wfrec_fm 1 \<open>0\<in>M\<close> \<open>A\<in>M\<close> by simp  
+  let 
+    ?f="Exists(And(pair_fm(1,0,2),
+               is_wfrec_fm(iterates_MH_fm(list_functor_fm(13,1,0),10,2,1,0),3,1,0)))"
+  have satsf:"sats(M, ?f, [x,z,Memrel(succ(n)),A,0])
+        \<longleftrightarrow> 
+        (\<exists>y\<in>M. pair(##M,x,y,z) & 
+        is_wfrec(##M, iterates_MH(##M,is_list_functor(##M,A),0) , Memrel(succ(n)), x, y))"
+    if "x\<in>M" "z\<in>M" for x z
+    using that 2 1 \<open>0\<in>M\<close> \<open>A\<in>M\<close> by (simp del:pair_abs) 
+  have "arity(?f) = 5" 
+    unfolding iterates_MH_fm_def is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def 
+                    restriction_fm_def list_functor_fm_def number1_fm_def cartprod_fm_def 
+                    sum_fm_def quasinat_fm_def pre_image_fm_def fm_defs  
+    by (simp add:nat_simp_union)
+  then
+  have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),A,0]))"
+    using threep_repl 1 \<open>A\<in>M\<close> \<open>0\<in>M\<close> by simp
+  then
+  have "strong_replacement(##M,\<lambda>x z. 
+          \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, iterates_MH(##M,is_list_functor(##M,A),0) , 
+                Memrel(succ(n)), x, y))"
+    using repl_sats[of M ?f "[Memrel(succ(n)),A,0]"]  satsf 1 by (simp del:pair_abs)
+}
+  then 
+  show ?thesis unfolding iterates_replacement_def wfrec_replacement_def by simp
+qed
 
 
-(*
-strong_replacement(M, 
-             \<lambda>x z. \<exists>y[M]. pair(M,x,y,z) & is_wfrec(##M, iterates_MH(##M,is_list_functor(##M,A),0) , Memrel(succ(n)), x, y))
-*)
 
 end
