@@ -943,23 +943,27 @@ proof -
     ?f="repl_ren"
   let
     ?\<phi>'="ren(\<phi>)`7`10`?f"
-  let ?P="\<lambda>x z v. \<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+  define PP where "PP \<equiv> \<lambda>x z v. \<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
                     \<forall>A1\<in>M. pair(##M, A4, A5, B1) \<and> pair(##M, A3, B1, B2) \<and> pair(##M, A2, B2, B3) \<and>
                             pair(##M, A1, B3, v) \<longrightarrow>
                sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x,z,v])"
+  define QQ where "QQ \<equiv> \<lambda>x z v. \<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+                    \<forall>A1\<in>M. pair(##M, A4, A5, B1) \<and> pair(##M, A3, B1, B2) \<and> pair(##M, A2, B2, B3) \<and>
+                            pair(##M, A1, B3, v) \<longrightarrow>
+               sats(M,\<phi>,[x,z,A1,A2,A3,A4,A5])"
   from assms have
     "arity(?\<phi>')\<le>10" "?\<phi>' \<in> formula"
     unfolding repl_ren_def using repl_thm(2) ren_arity ren_tc by simp_all
   then have
     "(\<forall>v\<in>M. strong_replacement(##M,\<lambda>x z. sats(M,repl_tupling_fm_5p(?\<phi>'),[x,z,v])))"
-    (* why this doesn't work ?? (is "(\<forall>v\<in>M. strong_replacement(_,?R))") *)
+    (is "(\<forall>v\<in>M. strong_replacement(_,?R(v)))")
     using replacement_ax arity_repl_tup5p_leq by simp
   moreover
-  have "x\<in>M \<Longrightarrow> z \<in> M \<Longrightarrow> v \<in> M \<Longrightarrow> sats(M,repl_tupling_fm_5p(?\<phi>'),[x,z,v]) \<longleftrightarrow> ?P(x,z,v)" for x v z
-    unfolding repl_tupling_fm_5p_def by (simp del: pair_abs)
+  have "x\<in>M \<Longrightarrow> z \<in> M \<Longrightarrow> v \<in> M \<Longrightarrow> sats(M,repl_tupling_fm_5p(?\<phi>'),[x,z,v]) \<longleftrightarrow> PP(x,z,v)" for x v z
+    unfolding repl_tupling_fm_5p_def PP_def by (simp del: pair_abs)
   ultimately 
-  have Eq1: "v\<in>M \<Longrightarrow> strong_replacement(##M, \<lambda>x z. ?P(x,z,v))" for v
-    using strong_replacement_cong[of "##M" "\<lambda>x z. sats(M,repl_tupling_fm_5p(?\<phi>'),[x,z,v])" "\<lambda>x z. ?P(x,z,v)"] by auto
+  have Eq1: "v\<in>M \<Longrightarrow> strong_replacement(##M, \<lambda>x z. PP(x,z,v))" for v
+    using strong_replacement_cong[of "##M" "?R(v)" "\<lambda>x z. PP(x,z,v)"] by auto
   {
     fix B1 B2 B3 A1 A2 A3 A4 A5 x z v
     assume
@@ -980,21 +984,14 @@ proof -
       "sats(M,?\<phi>',?env0)\<longleftrightarrow> sats(M,\<phi>,?env2)"
       by simp
   }
-  then have
-    Eq2: "x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> v\<in>M \<Longrightarrow> ?P(x,z,v) \<longleftrightarrow> (\<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
-                    \<forall>A1\<in>M. pair(##M, A4, A5, B1) \<and> pair(##M, A3, B1, B2) \<and> pair(##M, A2, B2, B3) \<and>
-                            pair(##M, A1, B3, v) \<longrightarrow>
-               sats(M,\<phi>,[x,z,A1,A2,A3,A4,A5]))" (is "_ \<Longrightarrow> _ \<Longrightarrow> _\<Longrightarrow> _ \<longleftrightarrow> ?Q(x,z,v)") for x z v
-    by (simp del: pair_abs)
-  define PP where "PP \<equiv> ?P"
-  define QQ where "QQ \<equiv> ?Q"
-  from Eq1
-  have "v\<in>M \<Longrightarrow> strong_replacement(##M , \<lambda>x z. PP(x,z,v))" for v
-    unfolding PP_def by blast
-  moreover from Eq2
+  then 
+  have
+    Eq2: "x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> v\<in>M \<Longrightarrow> PP(x,z,v) \<longleftrightarrow> QQ(x,z,v)" for x z v
+    unfolding PP_def QQ_def by (simp del: pair_abs)
+  then
   have "v\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> PP(x,z,v) \<longleftrightarrow> QQ(x,z,v)" for x z v
     unfolding PP_def QQ_def .
-  ultimately
+  with Eq1
   have "v\<in>M \<Longrightarrow> strong_replacement(##M, \<lambda>x z. QQ(x,z,v))" for v
     using strong_replacement_cong[of "##M" "\<lambda>x z. PP(x,z,v)" "\<lambda>x z. QQ(x,z,v)"] by auto
   then
