@@ -327,6 +327,28 @@ lemma arity_tup5p_leq :
   by (drule leq_9, elim disjE, simp_all add:tupling_fm_5p_def arity_incr_bv_lemma pair_fm_def 
                 upair_fm_def Un_commute nat_union_abs1)
 
+definition
+  repl_tupling_fm_5p :: "i \<Rightarrow> i" where
+  "repl_tupling_fm_5p(\<phi>) =
+      Forall(Forall(Forall(Forall(Forall(Forall(Forall(Forall(
+        Implies(And(pair_fm(3,4,5),
+                And(pair_fm(2,5,6),
+                And(pair_fm(1,6,7),
+                    pair_fm(0,7,10)))),\<phi>)))))))))"
+
+
+lemma [TC] :  "\<lbrakk> \<phi> \<in> formula \<rbrakk> \<Longrightarrow> repl_tupling_fm_5p(\<phi>) \<in> formula"
+  by (simp add: repl_tupling_fm_5p_def)
+
+lemma leq_10:
+  "n\<le>10 \<Longrightarrow> n=0 | n=1 | n=2 | n=3 | n=4 | n=5 | n=6| n=7 | n=8 | n=9 | n =10"
+  by (clarsimp simp add:not_lt_iff_le, auto simp add:lt_def)
+
+lemma arity_repl_tup5p_leq :
+  "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>) \<le> 10 \<rbrakk> \<Longrightarrow> arity(repl_tupling_fm_5p(\<phi>)) = 3"
+  by (drule leq_10, elim disjE, simp_all add:repl_tupling_fm_5p_def arity_incr_bv_lemma pair_fm_def
+                upair_fm_def Un_commute nat_union_abs1)
+
 (* end tupling *)
 
 (* Instances of separation of M_basic *)
@@ -900,20 +922,106 @@ proof -
   finally show ?thesis by (auto simp del:setclass_iff simp add:setclass_iff[symmetric]) 
 qed
 
-lemma (in forcing_data) threep_repl: 
+local_setup\<open>
+let val rho  = @{term "[x,z,a1,a2,a3,a4,a5]"}
+    val rho' = @{term "[a1,a2,a3,a4,a5,b1,b2,b3,x,z]"}
+    val (r,t,fvs,ren) = ren_Thm rho rho'
+    val (r',t') = (fix_vars r fvs , fix_vars t fvs)
+in
+Local_Theory.note   ((@{binding "repl_thm"}, []), [r',t']) #> snd #>
+Local_Theory.define ((@{binding "repl_ren"}, NoSyn),
+((@{binding "repl_ren_def"}, []), ren)) #> snd
+end\<close>
+
+lemma (in forcing_data) fivep_repl:
+  assumes
+    "\<phi> \<in> formula" "arity(\<phi>)\<le>7" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "a5\<in>M"
+  shows
+    "strong_replacement(##M,\<lambda>x z. sats(M,\<phi>,[x,z,a1,a2,a3,a4,a5]))"
+proof -
+  let
+    ?f="repl_ren"
+  let
+    ?\<phi>'="ren(\<phi>)`7`10`?f"
+  let ?P="\<lambda>x z v. \<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+                    \<forall>A1\<in>M. pair(##M, A4, A5, B1) \<and> pair(##M, A3, B1, B2) \<and> pair(##M, A2, B2, B3) \<and>
+                            pair(##M, A1, B3, v) \<longrightarrow>
+               sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x,z,v])"
+  from assms have
+    "arity(?\<phi>')\<le>10" "?\<phi>' \<in> formula"
+    unfolding repl_ren_def using repl_thm(2) ren_arity ren_tc by simp_all
+  then have
+    "(\<forall>v\<in>M. strong_replacement(##M,\<lambda>x z. sats(M,repl_tupling_fm_5p(?\<phi>'),[x,z,v])))"
+    (* why this doesn't work ?? (is "(\<forall>v\<in>M. strong_replacement(_,?R))") *)
+    using replacement_ax arity_repl_tup5p_leq by simp
+  moreover
+  have "x\<in>M \<Longrightarrow> z \<in> M \<Longrightarrow> v \<in> M \<Longrightarrow> sats(M,repl_tupling_fm_5p(?\<phi>'),[x,z,v]) \<longleftrightarrow> ?P(x,z,v)" for x v z
+    unfolding repl_tupling_fm_5p_def by (simp del: pair_abs)
+  ultimately 
+  have Eq1: "v\<in>M \<Longrightarrow> strong_replacement(##M, \<lambda>x z. ?P(x,z,v))" for v
+    using strong_replacement_cong[of "##M" "\<lambda>x z. sats(M,repl_tupling_fm_5p(?\<phi>'),[x,z,v])" "\<lambda>x z. ?P(x,z,v)"] by auto
+  {
+    fix B1 B2 B3 A1 A2 A3 A4 A5 x z v
+    assume
+      asm: "x\<in>M" "z\<in>M" "v\<in>M"
+      "B3\<in>M" "B2\<in>M" "B1\<in>M" "A5\<in>M" "A4\<in>M" "A3\<in>M" "A2\<in>M" "A1\<in>M"
+    with asm assms have
+      "sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x,z,v]) \<longleftrightarrow> sats(M,?\<phi>',[A1,A2,A3,A4,A5,B1,B2,B3,x,z])"
+      (is "sats(_,_,?env0) \<longleftrightarrow> sats(_,_,?env1)")
+      using \<open>arity(?\<phi>')\<le>10\<close> arity_sats_iff[OF \<open>?\<phi>' \<in> formula\<close>,of "[v]" M ?env1]
+      by auto
+    moreover have
+      "... \<longleftrightarrow> sats(M,\<phi>,[x,z,A1,A2,A3,A4,A5])"
+      (is "sats(_,_,?env1) \<longleftrightarrow> sats(_,_,?env2)")
+      using repl_ren_def asm assms sats_iff_sats_ren[of _ 7 10 _ M ?env1]
+            repl_thm(1)[of x z A1 A2 A3 A4 A5 M] repl_thm(2)
+      by auto
+    finally have
+      "sats(M,?\<phi>',?env0)\<longleftrightarrow> sats(M,\<phi>,?env2)"
+      by simp
+  }
+  then have
+    Eq2: "x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> v\<in>M \<Longrightarrow> ?P(x,z,v) \<longleftrightarrow> (\<forall>B3\<in>M. \<forall>B2\<in>M. \<forall>B1\<in>M. \<forall>A5\<in>M. \<forall>A4\<in>M. \<forall>A3\<in>M. \<forall>A2\<in>M.
+                    \<forall>A1\<in>M. pair(##M, A4, A5, B1) \<and> pair(##M, A3, B1, B2) \<and> pair(##M, A2, B2, B3) \<and>
+                            pair(##M, A1, B3, v) \<longrightarrow>
+               sats(M,\<phi>,[x,z,A1,A2,A3,A4,A5]))" (is "_ \<Longrightarrow> _ \<Longrightarrow> _\<Longrightarrow> _ \<longleftrightarrow> ?Q(x,z,v)") for x z v
+    by (simp del: pair_abs)
+  define PP where "PP \<equiv> ?P"
+  define QQ where "QQ \<equiv> ?Q"
+  from Eq1
+  have "v\<in>M \<Longrightarrow> strong_replacement(##M , \<lambda>x z. PP(x,z,v))" for v
+    unfolding PP_def by blast
+  moreover from Eq2
+  have "v\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> PP(x,z,v) \<longleftrightarrow> QQ(x,z,v)" for x z v
+    unfolding PP_def QQ_def .
+  ultimately
+  have "v\<in>M \<Longrightarrow> strong_replacement(##M, \<lambda>x z. QQ(x,z,v))" for v
+    using strong_replacement_cong[of "##M" "\<lambda>x z. PP(x,z,v)" "\<lambda>x z. QQ(x,z,v)"] by auto
+  then
+  have "\<forall>v\<in>M. strong_replacement(##M, \<lambda>x z. QQ(x,z,v))" ..
+  with assms show ?thesis
+    unfolding QQ_def using tupling_repl_5p_rel2 by simp
+qed
+
+lemma (in forcing_data) threep_repl:
   assumes
     "\<phi> \<in> formula" "arity(\<phi>)\<le>5" "a1\<in>M" "a2\<in>M" "a3\<in>M"
   shows 
     "strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y,a1,a2,a3]))"
-  unfolding strong_replacement_def
-proof  (intro rallI impI)
-  fix A
-  have "\<exists>Y\<in>M. \<forall>b\<in>M. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>M. x \<in> A \<and> sats(M, \<phi>, [x, b, a1, a2, a3]))"
-    sorry
-  then show "\<exists>Y[##M]. \<forall>b[##M]. b \<in> Y \<longleftrightarrow> (\<exists>x[##M]. x \<in> A \<and> sats(M, \<phi>, [x, b, a1, a2, a3]))"
-    by simp
+proof -
+  from \<open>arity(\<phi>)\<le>5\<close>
+  have "arity(\<phi>)\<le>7" using le_trans by simp
+  with assms
+  have "strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y,a1,a2,a3,0,0]))"
+    using fivep_repl zero_in_M by blast
+  from \<open>arity(\<phi>)\<le>5\<close> assms
+  have "x\<in>M \<Longrightarrow> y\<in> M \<Longrightarrow> sats(M,\<phi>,[x,y,a1,a2,a3,0,0]) \<longleftrightarrow> sats(M,\<phi>,[x,y,a1,a2,a3])" 
+    (is "_ \<Longrightarrow> _ \<Longrightarrow> ?P \<longleftrightarrow> ?Q") for x y
+    using zero_in_M arity_sats_iff[of \<phi> "[0,0]" M "[x,y,a1,a2,a3]"] by simp
+  with \<open>strong_replacement(_,_)\<close>
+  show "strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y,a1,a2,a3]))"
+    using strong_replacement_cong[of "##M" "?P" "?Q"] by simp
 qed
-
 
 (* Instance of Replacement for M_basic *)
   
