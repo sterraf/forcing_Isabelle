@@ -34,7 +34,7 @@ lemma cofinal_in_cofinal:
     "trans(r)" "cofinal(Y,X,r)" "cofinal(X,A,r)" 
   shows 
     "cofinal(Y,A,r)"
-  oops
+  sorry
 
 lemma Un_leD1 : "i \<union> j \<le> k \<Longrightarrow> Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow> i \<le> k"
   by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct1]],simp_all)
@@ -48,7 +48,7 @@ lemma Un_memD1: "i \<union> j \<in> k \<Longrightarrow> Ord(i) \<Longrightarrow>
 lemma Un_memD2 : "i \<union> j \<in> k \<Longrightarrow> Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow> j \<le> k"
   by (drule ltI, assumption, drule leI, rule Un_least_lt_iff[THEN iffD1[THEN conjunct2]],simp_all)
 
-lemma range_is_cofinal:
+lemma codomain_is_cofinal:
   assumes "cofinal_fun(f,A,r)" "f:C \<rightarrow> D"
   shows "cofinal(D,A,r)"
   unfolding cofinal_def
@@ -66,6 +66,28 @@ proof
     using domain_of_fun apply_rangeI by simp
   ultimately
   show  "\<exists>y\<in>D. \<langle>b, y\<rangle> \<in> r \<or> b = y" by auto
+qed
+
+lemma cofinal_range_imp_cofinal_fun:
+  assumes "cofinal(range(f),A,r)" "function(f)"
+  shows "cofinal_fun(f,A,r)"
+  unfolding cofinal_fun_def
+proof
+  fix a
+  assume "a\<in>A"
+  with \<open>cofinal(range(f),_,_)\<close>
+  obtain y where "y\<in>range(f)" "\<langle>a,y\<rangle> \<in> r \<or> a = y"
+    unfolding cofinal_def by blast
+  moreover from this
+  obtain x where "<x,y>\<in>f"
+    unfolding range_def domain_def converse_def by blast
+  moreover
+  note \<open>function(f)\<close>
+  ultimately
+  have "\<langle>a, f ` x\<rangle> \<in> r \<or> a = f ` x"
+    using function_apply_equality by blast
+  with \<open><x,y>\<in>f\<close>
+  show "\<exists>x\<in>domain(f). \<langle>a, f ` x\<rangle> \<in> r \<or> a = f ` x"  by blast
 qed
 
 lemma "Limit(A) \<Longrightarrow> cofinal_fun(f,A,Memrel(A)) \<longleftrightarrow> cofinal_fun'(f,A,Memrel(A))"
@@ -666,6 +688,30 @@ next
   show ?case using mono_map_imp_le by simp
 qed
 
+lemma cf_ordertype_cofinal:
+  assumes
+    "Ord(\<gamma>)" "A\<subseteq>\<gamma>" "cofinal(A,\<gamma>,Memrel(\<gamma>))"
+  shows
+    "cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))"
+    (* Is it better??
+    "Limit(\<gamma>) \<Longrightarrow> A\<subseteq>\<gamma> \<Longrightarrow> cofinal_predic(A,\<gamma>,mem) \<Longrightarrow> 
+                cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))" *)
+proof
+  from assms
+  have "well_ord(A,Memrel(\<gamma>))"
+    using well_ord_Memrel well_ord_subset by blast
+  then
+  obtain f \<alpha> where "f:\<langle>\<alpha>, Memrel(\<alpha>)\<rangle> \<cong> \<langle>A,Memrel(\<gamma>)\<rangle>"
+    using ordertype_ord_iso Ord_ordertype ord_iso_sym by blast
+
+  from \<open>well_ord(A,_)\<close> assms
+  have "cf(\<gamma>) \<le> ordertype(A,Memrel(\<gamma>))"
+    using Least_le[of "\<lambda>\<beta>. \<exists>A. A \<subseteq> \<gamma> \<and> cofinal(A, \<gamma>, Memrel(\<gamma>)) \<and> \<beta> = ordertype(A, Memrel(\<gamma>))"]  
+      Ord_ordertype
+    unfolding cf_def  by blast
+  then
+  oops
+
 locale cofinality =
   assumes 
     (* Better with f_cofinal(f,\<delta>,\<gamma>,Memrel(\<gamma>)) ? *)
@@ -680,7 +726,7 @@ locale cofinality =
 begin
 (* probar 5.12 y 5.13(1,2) *)
   
-lemma cf_indemp:
+lemma cf_idemp:
   assumes "Ord(\<gamma>)"
   shows "cf(\<gamma>) = cf(cf(\<gamma>))"  
 proof -
