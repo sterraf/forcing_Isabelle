@@ -150,7 +150,7 @@ proof -
 qed 
       
       
-lemma cf_zero:
+lemma cf_zero [simp]:
   "cf(0) = 0"
   unfolding cf_def cofinal_def using 
     ordertype_0 subset_empty_iff Least_le[of _ 0] by auto
@@ -314,7 +314,7 @@ proof -
   show ?thesis using ltI by simp
 qed *)
 
-lemma
+lemma cofinal_fun_factorization:
   notes le_imp_subset [dest] lt_trans2 [trans]
   assumes 
     "Ord(\<delta>)" "Limit(\<gamma>)" "f: \<delta> \<rightarrow> \<gamma>" "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))" 
@@ -377,11 +377,9 @@ proof -
   have H_mono: "\<beta>\<in>cf(\<gamma>) \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> H(\<alpha>,\<lambda>x\<in>\<alpha>. G(x)) \<le> H(\<beta>,\<lambda>x\<in>\<beta>. G(x))" for \<alpha> \<beta> G
     unfolding H_def using Least_set_antitone[of \<delta> "?A(\<beta>,\<lambda>x\<in>\<beta>. G(x))" "?A(\<alpha>,\<lambda>x\<in>\<alpha>. G(x))"] 
     by simp
-  define G where "G \<equiv> \<lambda>\<beta>. transrec(\<beta>,H)"
-  then 
-  have G_def':"\<And>x. G(x) \<equiv> transrec(x,H)" using G_def by simp
+  define G where "G(\<beta>) \<equiv> transrec(\<beta>,H)" for \<beta>
   have G_rec:"G(\<alpha>) = H(\<alpha>, \<lambda>x\<in>\<alpha>. G(x))" for \<alpha>
-    using def_transrec[OF G_def'] .
+    using def_transrec[OF G_def] .
   have "G(\<alpha>) \<in> ?A(\<alpha>,\<lambda>x\<in>\<alpha>. G(x))" for \<alpha>
   proof -
     note \<open>G(\<alpha>) = H(\<alpha>, \<lambda>x\<in>\<alpha>. G(x))\<close>
@@ -402,7 +400,7 @@ proof -
       by simp
     also
     have "H(\<beta>, \<lambda>x\<in>\<beta>. G(x)) = G(\<beta>)" 
-      using def_transrec[OF G_def', symmetric] .
+      using def_transrec[OF G_def, symmetric] .
     finally show ?thesis .
   qed
   moreover 
@@ -615,14 +613,59 @@ proof -
   ultimately show ?thesis by blast
 qed
 
-lemma 
+lemma mono_map_imp_ordertype_le: 
   assumes 
-    "Ord(\<delta>)" "Ord(\<gamma>)" "function(f)" "domain(f) = \<delta>" "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))" 
+    "X\<subseteq>\<beta>" "Ord(\<beta>)"
+  shows
+    "ordertype(X,Memrel(\<beta>))\<le>\<beta>"
+  sorry
+
+lemma mono_map_imp_le:
+  assumes 
+    "f\<in>mono_map(\<alpha>, Memrel(\<alpha>),\<beta>, Memrel(\<beta>))" "Ord(\<alpha>)" "Ord(\<beta>)"
+  shows
+    "\<alpha>\<le>\<beta>"
+proof -
+  from assms
+  have "f \<in> \<langle>\<alpha>, Memrel(\<alpha>)\<rangle> \<cong> \<langle>f``\<alpha>, Memrel(\<beta>)\<rangle>"
+    using mono_map_imp_ord_iso_image by simp
+  then
+  have "converse(f) \<in> \<langle>f``\<alpha>, Memrel(\<beta>)\<rangle> \<cong> \<langle>\<alpha>, Memrel(\<alpha>)\<rangle>"
+    using ord_iso_sym by simp
+  with \<open>Ord(\<alpha>)\<close>
+  have "\<alpha> = ordertype(f``\<alpha>,Memrel(\<beta>))"
+    using ordertype_eq well_ord_Memrel ordertype_Memrel by auto
+  also from assms
+  have "ordertype(f``\<alpha>,Memrel(\<beta>)) \<le> \<beta>"
+    using mono_map_imp_ordertype_le mono_map_is_fun[of f] Image_sub_codomain[of f] by force
+  finally
+  show ?thesis .
+qed
+
+lemma cf_le_domain_cofinal_fun:
+  assumes 
+    "Ord(\<gamma>)" "Ord(\<delta>)" "f:\<delta> \<rightarrow> \<gamma>" "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))" 
   shows
     "cf(\<gamma>)\<le>\<delta>"
-    (* Perhaps consider three cases on \<gamma>, using cf_zero and cf_succ *)
-  oops
-    
+  using assms
+proof (induct rule:trans_induct3)
+  case 0
+  with \<open>Ord(\<delta>)\<close>
+  show ?case using Ord_0_le by simp
+next
+  case (succ \<gamma>)
+  with \<open>Ord(\<gamma>)\<close>
+  have "cf(succ(\<gamma>)) = 1" using cf_succ sorry
+  then show ?case sorry
+next
+  case (limit \<gamma>)
+  with assms 
+  obtain g where "g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<delta>,Memrel(\<delta>))"
+    using cofinal_fun_factorization by blast
+  with assms
+  show ?case using mono_map_imp_le by simp
+qed
+
 locale cofinality =
   assumes 
     (* Better with f_cofinal(f,\<delta>,\<gamma>,Memrel(\<gamma>)) ? *)
