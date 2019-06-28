@@ -696,34 +696,44 @@ lemma cf_ordertype_cofinal:
     (* Is it better??
     "Limit(\<gamma>) \<Longrightarrow> A\<subseteq>\<gamma> \<Longrightarrow> cofinal_predic(A,\<gamma>,mem) \<Longrightarrow> 
                 cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))" *)
-proof
+proof (intro le_anti_sym)
   from assms
   have "well_ord(A,Memrel(\<gamma>))"
     using well_ord_Memrel well_ord_subset by blast
   then
-  obtain f \<alpha> where "f:\<langle>\<alpha>, Memrel(\<alpha>)\<rangle> \<cong> \<langle>A,Memrel(\<gamma>)\<rangle>"
+  obtain f \<alpha> where "f:\<langle>\<alpha>, Memrel(\<alpha>)\<rangle> \<cong> \<langle>A,Memrel(\<gamma>)\<rangle>" "Ord(\<alpha>)" "\<alpha> = ordertype(A,Memrel(\<gamma>))"
     using ordertype_ord_iso Ord_ordertype ord_iso_sym by blast
-
-  from \<open>well_ord(A,_)\<close> assms
+  moreover from this
+  have "function(f)" 
+    using ord_iso_is_mono_map mono_map_is_fun[of f _ "Memrel(\<alpha>)"] fun_is_function by force
+  moreover from \<open>f:\<langle>\<alpha>, Memrel(\<alpha>)\<rangle> \<cong> \<langle>A,Memrel(\<gamma>)\<rangle>\<close>
+  have "range(f) = A"
+    using ord_iso_is_bij bij_is_surj surj_range by blast
+  moreover note  \<open>cofinal(A,\<gamma>,_)\<close>
+  ultimately
+  have "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))"
+    using cofinal_range_imp_cofinal_fun by blast
+  from \<open>Ord(\<alpha>)\<close>
+  obtain h where "h \<in> mono_map(cf(\<alpha>),Memrel(cf(\<alpha>)),\<alpha>,Memrel(\<alpha>))" "cofinal_fun(h,\<alpha>,Memrel(\<alpha>))"
+    using cofinal_mono_map_cf by blast
+  then
+  have "cofinal_fun(f O h,\<gamma>,Memrel(\<gamma>))" sorry
+  moreover
+  have "f O h : cf(\<alpha>) \<rightarrow> \<gamma>" sorry
+  moreover
+  note \<open>Ord(\<gamma>)\<close> \<open>Ord(\<alpha>)\<close> \<open>\<alpha> = ordertype(A,Memrel(\<gamma>))\<close>
+  ultimately
+  show "cf(\<gamma>) \<le> cf(ordertype(A,Memrel(\<gamma>)))"
+    using cf_le_domain_cofinal_fun[of _ _ "f O h"] by auto
+next
+  (*from \<open>well_ord(A,_)\<close> assms
   have "cf(\<gamma>) \<le> ordertype(A,Memrel(\<gamma>))"
     using Least_le[of "\<lambda>\<beta>. \<exists>A. A \<subseteq> \<gamma> \<and> cofinal(A, \<gamma>, Memrel(\<gamma>)) \<and> \<beta> = ordertype(A, Memrel(\<gamma>))"]  
       Ord_ordertype
-    unfolding cf_def  by blast
-  then
-  oops
+    unfolding cf_def  by blast *)
+  show "cf(ordertype(A,Memrel(\<gamma>))) \<le> cf(\<gamma>)" sorry
+qed
 
-locale cofinality =
-  assumes 
-    (* Better with f_cofinal(f,\<delta>,\<gamma>,Memrel(\<gamma>)) ? *)
-    cota : "Ord(\<delta>) \<Longrightarrow> Ord(\<gamma>) \<Longrightarrow> function(f) \<Longrightarrow> domain(f) = \<delta> \<Longrightarrow>
-            cofinal_fun(f,\<gamma>,Memrel(\<gamma>)) \<Longrightarrow> cf(\<gamma>)\<le>\<delta>"
-    and idemp: "Ord(\<gamma>) \<Longrightarrow> A\<subseteq>\<gamma> \<Longrightarrow> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<Longrightarrow> 
-                cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))"
-    (* Is it better?? 
-    and idemp': "Limit(\<gamma>) \<Longrightarrow> A\<subseteq>\<gamma> \<Longrightarrow> cofinal_predic(A,\<gamma>,mem) \<Longrightarrow> 
-                cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))" *)
-    
-begin
 (* probar 5.12 y 5.13(1,2) *)
   
 lemma cf_idemp:
@@ -734,7 +744,7 @@ proof -
   obtain A where "A\<subseteq>\<gamma>" "cofinal(A,\<gamma>,Memrel(\<gamma>))" "cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))"
     using cf_is_ordertype by blast
   with assms
-  have "cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))" using idemp by simp
+  have "cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))" using cf_ordertype_cofinal by simp
   also 
   have "... = cf(cf(\<gamma>))" 
     using \<open>cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))\<close> by simp
@@ -776,7 +786,5 @@ proof -
   with assms
   show ?thesis unfolding Card_def using cf_le_cardinal by force     
 qed 
-    
-end (* cofinality *)
     
 end
