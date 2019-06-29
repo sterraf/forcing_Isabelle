@@ -1460,7 +1460,7 @@ lemma (in forcing_data) nat_trans_M :
   "n\<in>M" if "n\<in>nat" for n
   using that trans_M nat_in_M Transset_intf[of M n nat] by simp
 
-lemma (in forcing_data) list_replacement1_intf:
+lemma (in forcing_data) list_repl1_intf:
     assumes
       "A\<in>M"
     shows
@@ -1512,11 +1512,284 @@ proof -
   have "strong_replacement(##M,\<lambda>x z. 
           \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, iterates_MH(##M,is_list_functor(##M,A),0) , 
                 Memrel(succ(n)), x, y))"
-    using repl_sats[of M ?f "[Memrel(succ(n)),A,0]"]  satsf 1 by (simp del:pair_abs)
+    using repl_sats[of M ?f "[Memrel(succ(n)),A,0]"]  satsf by (simp del:pair_abs)
 }
   then 
   show ?thesis unfolding iterates_replacement_def wfrec_replacement_def by simp
 qed
+
+(* Iterates_replacement para predicados sin parámetros *)
+lemma (in forcing_data) iterates_repl_intf :
+  assumes
+    "v\<in>M" and
+    isfm:"is_F_fm \<in> formula" and
+    arty:"arity(is_F_fm)=2" and
+    satsf: "\<And>a b env'. \<lbrakk> a\<in>M ; b\<in>M ; env'\<in>list(M) \<rbrakk>
+              \<Longrightarrow> is_F(a,b) \<longleftrightarrow> sats(M, is_F_fm, [b,a]@env')"
+  shows
+    "iterates_replacement(##M,is_F,v)"
+proof -
+  {
+  fix n
+  assume "n\<in>nat"
+  have "succ(n)\<in>M"
+    using \<open>n\<in>nat\<close> nat_trans_M by simp
+  then have 1:"Memrel(succ(n))\<in>M"
+    using \<open>n\<in>nat\<close> Memrel_closed by simp 
+  {
+    fix a0 a1 a2 a3 a4 y x z
+    assume as:"a0\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "y\<in>M" "x\<in>M" "z\<in>M"
+    have "sats(M, is_F_fm, Cons(b,Cons(a,Cons(c,Cons(d,[a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),v])))))
+          \<longleftrightarrow> is_F(a,b)" (* Si invierto el orden de las proposiciones en el \<longleftrightarrow>, el simp que sigue no anda *)
+      if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" for a b c d
+      using as that 1 satsf[of a b "[c,d,a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),v]"] \<open>v\<in>M\<close> by simp
+    then
+    have "sats(M, iterates_MH_fm(is_F_fm,9,2,1,0), [a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),v])
+          \<longleftrightarrow> iterates_MH(##M,is_F,v,a2, a1, a0)"
+      using as 
+        sats_iterates_MH_fm[of M "is_F" "is_F_fm"] 1 \<open>v\<in>M\<close> by simp
+  }
+  then have 2:"sats(M, is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0), 
+                            [y,x,z,Memrel(succ(n)),v])
+        \<longleftrightarrow> 
+        is_wfrec(##M, iterates_MH(##M,is_F,v),Memrel(succ(n)), x, y)"
+    if "y\<in>M" "x\<in>M" "z\<in>M" for y x z
+    using  that sats_is_wfrec_fm 1 \<open>v\<in>M\<close> by simp
+  let 
+    ?f="Exists(And(pair_fm(1,0,2),
+               is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0)))"
+  have satsf:"sats(M, ?f, [x,z,Memrel(succ(n)),v])
+        \<longleftrightarrow> 
+        (\<exists>y\<in>M. pair(##M,x,y,z) & 
+        is_wfrec(##M, iterates_MH(##M,is_F,v) , Memrel(succ(n)), x, y))"
+    if "x\<in>M" "z\<in>M" for x z
+    using that 2 1 \<open>v\<in>M\<close> by (simp del:pair_abs) 
+  have artyf:"arity(?f) = 4" 
+    unfolding iterates_MH_fm_def is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def 
+                    restriction_fm_def pre_image_fm_def quasinat_fm_def fm_defs  
+    using arty by (simp add:nat_simp_union)
+  then
+  have 3:"sats(M,?f,[x,z,Memrel(succ(n)),v,v]) \<longleftrightarrow> sats(M,?f,[x,z,Memrel(succ(n)),v])"
+    if "x\<in>M" "z\<in>M" for x z    
+    using that 1 \<open>v\<in>M\<close> arity_sats1_iff[of ?f "[z,Memrel(succ(n)),v]" x M "[v]"] 
+          \<open>is_F_fm\<in>formula\<close> by simp
+  have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),v,v]))" 
+          (* tengo que hacer esto feo de repetir el v porque en el lema "threep_repl" me obliga a poner 5 cosas
+             en el entorno, aunque la aridad sea menor a 5...*)
+    using threep_repl 1 artyf \<open>v\<in>M\<close> \<open>is_F_fm\<in>formula\<close> by simp
+  then 
+  have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),v]))"
+    using  strong_replacement_cong[of "##M" "\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),v,v])" 
+                                            "\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),v])"] 3 by simp
+  then
+  have "strong_replacement(##M,\<lambda>x z. 
+          \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, iterates_MH(##M,is_F,v) , 
+                Memrel(succ(n)), x, y))"
+    using repl_sats[of M ?f "[Memrel(succ(n)),v]"]  satsf by (simp del:pair_abs)
+}
+  then 
+  show ?thesis unfolding iterates_replacement_def wfrec_replacement_def by simp
+qed
+
+lemma (in forcing_data) formula_repl1_intf :
+   "iterates_replacement(##M, is_formula_functor(##M), 0)"
+proof -
+  have "0\<in>M" 
+    using  nat_0I nat_trans_M by simp
+  have 1:"arity(formula_functor_fm(1,0)) = 2" 
+    unfolding formula_functor_fm_def fm_defs sum_fm_def cartprod_fm_def number1_fm_def 
+    by (simp add:nat_simp_union)
+  have 2:"formula_functor_fm(1,0)\<in>formula" by simp
+  have "is_formula_functor(##M,a,b) \<longleftrightarrow>
+        sats(M, formula_functor_fm(1,0), [b,a])"
+    if "a\<in>M" "b\<in>M"  for a b
+    using that by simp
+  then show ?thesis using \<open>0\<in>M\<close> 1 2 iterates_repl_intf by simp
+qed
+
+lemma (in forcing_data) nth_repl_intf:
+  assumes
+    "l \<in> M"
+  shows
+    "iterates_replacement(##M,\<lambda>l' t. is_tl(##M,l',t),l)"
+proof -
+  have 1:"arity(tl_fm(1,0)) = 2" 
+    unfolding tl_fm_def fm_defs quasilist_fm_def Cons_fm_def Nil_fm_def Inr_fm_def number1_fm_def
+              Inl_fm_def by (simp add:nat_simp_union)
+  have 2:"tl_fm(1,0)\<in>formula" by simp
+  have "is_tl(##M,a,b) \<longleftrightarrow> sats(M, tl_fm(1,0), [b,a])"
+    if "a\<in>M" "b\<in>M" for a b
+    using that by simp
+  then show ?thesis using \<open>l\<in>M\<close> 1 2 iterates_repl_intf by simp
+qed
+
+
+lemma (in forcing_data) eclose_repl1_intf:
+  assumes
+    "A\<in>M" 
+  shows
+    "iterates_replacement(##M, big_union(##M), A)"
+proof -
+  have 1:"arity(big_union_fm(1,0)) = 2" 
+    unfolding big_union_fm_def fm_defs by (simp add:nat_simp_union)
+  have 2:"big_union_fm(1,0)\<in>formula" by simp
+  have "big_union(##M,a,b) \<longleftrightarrow> sats(M, big_union_fm(1,0), [b,a])"
+    if "a\<in>M" "b\<in>M" for a b
+    using that by simp
+  then show ?thesis using \<open>A\<in>M\<close> 1 2 iterates_repl_intf by simp
+qed
+
+(*
+    and list_replacement2:
+   "M(A) ==> strong_replacement(M,
+         \<lambda>n y. n\<in>nat & is_iterates(M, is_list_functor(M,A), 0, n, y))"
+ 
+*)
+lemma (in forcing_data) list_repl2_intf:
+  assumes
+    "A\<in>M"
+  shows
+    "strong_replacement(##M,\<lambda>n y. n\<in>nat & is_iterates(##M, is_list_functor(##M,A), 0, n, y))"
+proof -
+  have "0\<in>M" 
+    using  nat_0I nat_trans_M by simp
+  have "is_list_functor(##M,A,a,b) \<longleftrightarrow>
+        sats(M,list_functor_fm(13,1,0),[b,a,c,d,e,f,g,h,i,j,k,n,y,A,0,nat])"
+    if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "e\<in>M" "f\<in>M""g\<in>M""h\<in>M""i\<in>M""j\<in>M" "k\<in>M" "n\<in>M" "y\<in>M" 
+    for a b c d e f g h i j k n y
+    using that \<open>0\<in>M\<close> nat_in_M \<open>A\<in>M\<close> by simp
+  then 
+  have 1:"sats(M, is_iterates_fm(list_functor_fm(13,1,0),3,0,1),[n,y,A,0,nat] ) \<longleftrightarrow>
+           is_iterates(##M, is_list_functor(##M,A), 0, n , y)"
+    if "n\<in>M" "y\<in>M" for n y
+    using that \<open>0\<in>M\<close> \<open>A\<in>M\<close> nat_in_M 
+          sats_is_iterates_fm[of M "is_list_functor(##M,A)"] by simp
+  let ?f = "And(Member(0,4),is_iterates_fm(list_functor_fm(13,1,0),3,0,1))" 
+  have satsf:"sats(M, ?f,[n,y,A,0,nat] ) \<longleftrightarrow>
+        n\<in>nat & is_iterates(##M, is_list_functor(##M,A), 0, n, y)" 
+    if "n\<in>M" "y\<in>M" for n y 
+    using that \<open>0\<in>M\<close> \<open>A\<in>M\<close> nat_in_M 1 by simp
+  have "arity(?f) = 5" 
+    unfolding is_iterates_fm_def restriction_fm_def list_functor_fm_def number1_fm_def Memrel_fm_def
+              cartprod_fm_def sum_fm_def quasinat_fm_def pre_image_fm_def fm_defs is_wfrec_fm_def
+              is_recfun_fm_def iterates_MH_fm_def is_nat_case_fm_def
+    by (simp add:nat_simp_union)
+  then
+  have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,A,0,nat]))"
+    using threep_repl 1 nat_in_M \<open>A\<in>M\<close> \<open>0\<in>M\<close> by simp
+  then 
+  show ?thesis using repl_sats[of M ?f "[A,0,nat]"]  satsf  by simp
+qed
+
+lemma (in forcing_data) formula_repl2_intf:
+  "strong_replacement(##M,\<lambda>n y. n\<in>nat & is_iterates(##M, is_formula_functor(##M), 0, n, y))"
+proof -
+  have "0\<in>M" 
+    using  nat_0I nat_trans_M by simp
+  have "is_formula_functor(##M,a,b) \<longleftrightarrow>
+        sats(M,formula_functor_fm(1,0),[b,a,c,d,e,f,g,h,i,j,k,n,y,0,nat])"
+    if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "e\<in>M" "f\<in>M""g\<in>M""h\<in>M""i\<in>M""j\<in>M" "k\<in>M" "n\<in>M" "y\<in>M" 
+    for a b c d e f g h i j k n y
+    using that \<open>0\<in>M\<close> nat_in_M by simp
+  then 
+  have 1:"sats(M, is_iterates_fm(formula_functor_fm(1,0),2,0,1),[n,y,0,nat] ) \<longleftrightarrow>
+           is_iterates(##M, is_formula_functor(##M), 0, n , y)"
+    if "n\<in>M" "y\<in>M" for n y
+    using that \<open>0\<in>M\<close> nat_in_M 
+          sats_is_iterates_fm[of M "is_formula_functor(##M)"] by simp
+  let ?f = "And(Member(0,3),is_iterates_fm(formula_functor_fm(1,0),2,0,1))" 
+  have satsf:"sats(M, ?f,[n,y,0,nat] ) \<longleftrightarrow>
+        n\<in>nat & is_iterates(##M, is_formula_functor(##M), 0, n, y)" 
+    if "n\<in>M" "y\<in>M" for n y 
+    using that \<open>0\<in>M\<close> nat_in_M 1 by simp
+  have artyf:"arity(?f) = 4" 
+    unfolding is_iterates_fm_def formula_functor_fm_def fm_defs sum_fm_def quasinat_fm_def
+              cartprod_fm_def number1_fm_def Memrel_fm_def ordinal_fm_def transset_fm_def
+              is_wfrec_fm_def is_recfun_fm_def iterates_MH_fm_def is_nat_case_fm_def subset_fm_def
+              pre_image_fm_def restriction_fm_def
+    by (simp add:nat_simp_union)
+  then
+  have 2:"sats(M,?f,[n,y,0,nat,nat]) \<longleftrightarrow> sats(M,?f,[n,y,0,nat])"
+    if "n\<in>M" "y\<in>M" for n y    
+    using that 1 \<open>0\<in>M\<close> nat_in_M arity_sats1_iff[of ?f "[y,0,nat]" n M "[nat]"] by simp
+  have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,0,nat,nat]))" 
+    using threep_repl 1 artyf \<open>0\<in>M\<close> nat_in_M by simp
+  then 
+  have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,0,nat]))"
+    using  strong_replacement_cong[of "##M" "\<lambda>n y. sats(M,?f,[n,y,0,nat,nat])" 
+                                            "\<lambda>n y. sats(M,?f,[n,y,0,nat])"] 2 by simp
+  then 
+  show ?thesis using repl_sats[of M ?f "[0,nat]"]  satsf  by simp
+qed
+
+
+(*
+   "M(A) ==> strong_replacement(M,
+         \<lambda>n y. n\<in>nat & is_iterates(M, big_union(M), A, n, y))"
+*)
+
+lemma (in forcing_data) eclose_repl2_intf:
+  assumes
+    "A\<in>M"
+  shows
+    "strong_replacement(##M,\<lambda>n y. n\<in>nat & is_iterates(##M, big_union(##M), A, n, y))"
+proof -
+  have "big_union(##M,a,b) \<longleftrightarrow>
+        sats(M,big_union_fm(1,0),[b,a,c,d,e,f,g,h,i,j,k,n,y,A,nat])"
+    if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "e\<in>M" "f\<in>M""g\<in>M""h\<in>M""i\<in>M""j\<in>M" "k\<in>M" "n\<in>M" "y\<in>M" 
+    for a b c d e f g h i j k n y
+    using that \<open>A\<in>M\<close> nat_in_M by simp
+  then 
+  have 1:"sats(M, is_iterates_fm(big_union_fm(1,0),2,0,1),[n,y,A,nat] ) \<longleftrightarrow>
+           is_iterates(##M, big_union(##M), A, n , y)"
+    if "n\<in>M" "y\<in>M" for n y
+    using that \<open>A\<in>M\<close> nat_in_M 
+          sats_is_iterates_fm[of M "big_union(##M)"] by simp
+  let ?f = "And(Member(0,3),is_iterates_fm(big_union_fm(1,0),2,0,1))" 
+  have satsf:"sats(M, ?f,[n,y,A,nat] ) \<longleftrightarrow>
+        n\<in>nat & is_iterates(##M, big_union(##M), A, n, y)" 
+    if "n\<in>M" "y\<in>M" for n y 
+    using that \<open>A\<in>M\<close> nat_in_M 1 by simp
+  have artyf:"arity(?f) = 4" 
+    unfolding is_iterates_fm_def formula_functor_fm_def fm_defs sum_fm_def quasinat_fm_def
+              cartprod_fm_def number1_fm_def Memrel_fm_def ordinal_fm_def transset_fm_def
+              is_wfrec_fm_def is_recfun_fm_def iterates_MH_fm_def is_nat_case_fm_def subset_fm_def
+              pre_image_fm_def restriction_fm_def
+    by (simp add:nat_simp_union)
+  then
+  have 2:"sats(M,?f,[n,y,A,nat,nat]) \<longleftrightarrow> sats(M,?f,[n,y,A,nat])"
+    if "n\<in>M" "y\<in>M" for n y    
+    using that 1 \<open>A\<in>M\<close> nat_in_M arity_sats1_iff[of ?f "[y,A,nat]" n M "[nat]"] by simp
+  have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,A,nat,nat]))" 
+    using threep_repl 1 artyf \<open>A\<in>M\<close> nat_in_M by simp
+  then 
+  have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,A,nat]))"
+    using  strong_replacement_cong[of "##M" "\<lambda>n y. sats(M,?f,[n,y,A,nat,nat])" 
+                                            "\<lambda>n y. sats(M,?f,[n,y,A,nat])"] 2 by simp
+  then 
+  show ?thesis using repl_sats[of M ?f "[A,nat]"]  satsf  by simp
+qed
+
+lemma (in forcing_data) mdatatypes : "M_datatypes(##M)" 
+  apply (rule M_datatypes.intro,rule mtrancl)
+  apply (rule M_datatypes_axioms.intro)
+      apply (insert list_repl1_intf list_repl2_intf formula_repl1_intf 
+      formula_repl2_intf nth_repl_intf)
+    apply (simp_all)
+  done
+
+sublocale forcing_data \<subseteq> M_datatypes "##M"
+  by (rule mdatatypes)
+
+lemma (in forcing_data) meclose : "M_eclose(##M)" 
+  apply (rule M_eclose.intro,rule mdatatypes)
+  apply (rule M_eclose_axioms.intro)
+      apply (insert eclose_repl1_intf eclose_repl2_intf)
+    apply (simp_all)
+  done
+
+sublocale forcing_data \<subseteq> M_eclose "##M"
+  by (rule meclose)
 
 
 
