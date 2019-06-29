@@ -90,6 +90,79 @@ proof
   show "\<exists>x\<in>domain(f). \<langle>a, f ` x\<rangle> \<in> r \<or> a = f ` x"  by blast
 qed
 
+lemma range_fun_subset_codomain: 
+  assumes "h:B \<rightarrow> C"
+  shows "range(h) \<subseteq> C"
+  unfolding range_def domain_def converse_def using range_type[OF _ assms]  by auto 
+
+lemma cofinal_comp:
+  assumes 
+    "f\<in> mono_map(C,s,D,r)" "cofinal_fun(f,D,r)" "h:B \<rightarrow> C"  "cofinal_fun(h,C,s)"
+    "trans(r)"
+  shows "cofinal_fun(f O h,D,r)"
+  unfolding cofinal_fun_def
+proof 
+  fix a
+  from \<open>f\<in> mono_map(C,s,D,r)\<close>
+  have "f:C \<rightarrow> D"
+    using mono_map_is_fun by simp
+  with \<open>h:B \<rightarrow> C\<close>
+  have "domain(f) = C" "domain(h) = B"
+    using domain_of_fun by simp_all
+  moreover 
+  assume "a \<in> D"
+  moreover
+  note \<open>cofinal_fun(f,D,r)\<close>
+  ultimately
+  obtain c where "c\<in>C"  "\<langle>a, f ` c\<rangle> \<in> r \<or> a = f ` c"
+    unfolding cofinal_fun_def by blast
+  with \<open>cofinal_fun(h,C,s)\<close> \<open>domain(h) = B\<close>
+  obtain b where "b \<in> B"  "\<langle>c, h ` b\<rangle> \<in> s \<or> c = h ` b"
+    unfolding cofinal_fun_def by blast
+  moreover from this and \<open>h:B \<rightarrow> C\<close>
+  have "h`b \<in> C" by simp
+  moreover
+  note \<open>f \<in> mono_map(C,s,D,r)\<close>  \<open>c\<in>C\<close>
+  ultimately
+  have "\<langle>f`c, f` (h ` b)\<rangle> \<in> r \<or> f`c = f` (h ` b)"
+    unfolding mono_map_def by blast
+  with \<open>\<langle>a, f ` c\<rangle> \<in> r \<or> a = f ` c\<close> \<open>trans(r)\<close> \<open>h:B \<rightarrow> C\<close> \<open>b\<in>B\<close>
+  have "\<langle>a, (f O h) ` b\<rangle> \<in> r \<or> a = (f O h) ` b"
+    using transD by auto
+  moreover from \<open>h:B \<rightarrow> C\<close> \<open>domain(f) = C\<close> \<open>domain(h) = B\<close>
+  have "domain(f O h) = B"
+    using range_fun_subset_codomain by blast
+  moreover
+  note \<open>b\<in>B\<close>
+  ultimately
+  show "\<exists>x\<in>domain(f O h). \<langle>a, (f O h) ` x\<rangle> \<in> r \<or> a = (f O h) ` x"  by blast
+qed
+
+lemma mono_map_mono:
+  assumes 
+    "f \<in> mono_map(A,r,B,s)" "B \<subseteq> C"
+  shows
+    "f \<in> mono_map(A,r,C,s)"
+  unfolding mono_map_def
+proof (intro CollectI ballI impI)
+  from \<open>f \<in> mono_map(A,_,B,_)\<close>
+  have "f: A \<rightarrow> B"
+    using mono_map_is_fun by simp
+  with \<open>B\<subseteq>C\<close>
+  show "f: A \<rightarrow> C"
+    using fun_weaken_type by simp
+  fix x y 
+  assume "x\<in>A" "y\<in>A" "<x,y> \<in> r"
+  moreover from this and \<open>f: A \<rightarrow> B\<close>
+  have "f`x \<in> B" "f`y \<in> B"
+    using apply_type by simp_all
+  moreover
+  note \<open>f \<in> mono_map(_,r,_,s)\<close>
+  ultimately
+  show "\<langle>f ` x, f ` y\<rangle> \<in> s"
+    unfolding mono_map_def by blast
+qed
+
 lemma "Limit(A) \<Longrightarrow> cofinal_fun(f,A,Memrel(A)) \<longleftrightarrow> cofinal_fun'(f,A,Memrel(A))"
   oops
 
@@ -704,22 +777,33 @@ proof (intro le_anti_sym)
   obtain f \<alpha> where "f:\<langle>\<alpha>, Memrel(\<alpha>)\<rangle> \<cong> \<langle>A,Memrel(\<gamma>)\<rangle>" "Ord(\<alpha>)" "\<alpha> = ordertype(A,Memrel(\<gamma>))"
     using ordertype_ord_iso Ord_ordertype ord_iso_sym by blast
   moreover from this
-  have "function(f)" 
-    using ord_iso_is_mono_map mono_map_is_fun[of f _ "Memrel(\<alpha>)"] fun_is_function by force
+  have "f: \<alpha> \<rightarrow> A"
+    using ord_iso_is_mono_map mono_map_is_fun[of f _ "Memrel(\<alpha>)"] by blast
+  moreover from this
+  have "function(f)"
+    using fun_is_function by simp
   moreover from \<open>f:\<langle>\<alpha>, Memrel(\<alpha>)\<rangle> \<cong> \<langle>A,Memrel(\<gamma>)\<rangle>\<close>
   have "range(f) = A"
     using ord_iso_is_bij bij_is_surj surj_range by blast
-  moreover note  \<open>cofinal(A,\<gamma>,_)\<close>
+  moreover note \<open>cofinal(A,\<gamma>,_)\<close>
   ultimately
   have "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))"
     using cofinal_range_imp_cofinal_fun by blast
-  from \<open>Ord(\<alpha>)\<close>
+  moreover from \<open>Ord(\<alpha>)\<close>
   obtain h where "h \<in> mono_map(cf(\<alpha>),Memrel(cf(\<alpha>)),\<alpha>,Memrel(\<alpha>))" "cofinal_fun(h,\<alpha>,Memrel(\<alpha>))"
     using cofinal_mono_map_cf by blast
-  then
-  have "cofinal_fun(f O h,\<gamma>,Memrel(\<gamma>))" sorry
+  moreover from \<open>Ord(\<gamma>)\<close>
+  have "trans(Memrel(\<gamma>))"
+    using trans_Memrel by simp
   moreover
-  have "f O h : cf(\<alpha>) \<rightarrow> \<gamma>" sorry
+  note \<open>A\<subseteq>\<gamma>\<close>
+  ultimately
+  have "cofinal_fun(f O h,\<gamma>,Memrel(\<gamma>))" 
+    using cofinal_comp ord_iso_is_mono_map[OF \<open>f:\<langle>\<alpha>,_\<rangle> \<cong> \<langle>A,_\<rangle>\<close>] mono_map_is_fun
+      mono_map_mono by blast
+  moreover from \<open>f:\<alpha>\<rightarrow>A\<close> \<open>A\<subseteq>\<gamma>\<close> \<open>h\<in>mono_map(cf(\<alpha>),_,\<alpha>,_)\<close>
+  have "f O h : cf(\<alpha>) \<rightarrow> \<gamma>"
+    using Pi_mono[of A \<gamma>] comp_fun  mono_map_is_fun by blast
   moreover
   note \<open>Ord(\<gamma>)\<close> \<open>Ord(\<alpha>)\<close> \<open>\<alpha> = ordertype(A,Memrel(\<gamma>))\<close>
   ultimately
