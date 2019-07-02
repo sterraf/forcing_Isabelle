@@ -311,6 +311,47 @@ lemma inj_to_codomain:
     "f \<in> inj(A,f``A)"
   using assms inj_inj_range range_eq_image by force
 
+lemma linear_mono_map_reflects:
+  assumes
+    "linear(\<alpha>,r)" "trans[\<beta>](s)" "irrefl(\<beta>,s)" "f\<in>mono_map(\<alpha>,r,\<beta>,s)"
+    "x\<in>\<alpha>" "y\<in>\<alpha>" "\<langle>f`x,f`y\<rangle>\<in>s"
+  shows
+    "\<langle>x,y\<rangle>\<in>r"
+proof -
+  from \<open>f\<in>mono_map(_,_,_,_)\<close>
+  have preserves:"x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>r \<Longrightarrow> \<langle>f`x,f`y\<rangle>\<in>s" for x y    
+    unfolding mono_map_def by blast
+  {
+    assume "\<langle>x, y\<rangle> \<notin> r" "x\<in>\<alpha>" "y\<in>\<alpha>"
+    moreover
+    note \<open>\<langle>f`x,f`y\<rangle>\<in>s\<close> and \<open>linear(\<alpha>,r)\<close>
+    moreover from calculation
+    have "y = x \<or> \<langle>y,x\<rangle>\<in>r"
+      unfolding linear_def by blast
+    moreover
+    note preserves [of y x]
+    ultimately
+    have "y = x \<or> \<langle>f`y, f`x\<rangle>\<in> s" by blast
+    moreover from \<open>f\<in>mono_map(_,_,\<beta>,_)\<close> \<open>x\<in>\<alpha>\<close> \<open>y\<in>\<alpha>\<close>
+    have "f`x\<in>\<beta>" "f`y\<in>\<beta>"
+      using apply_type[OF mono_map_is_fun] by simp_all
+    moreover
+    note \<open>\<langle>f`x,f`y\<rangle>\<in>s\<close>  \<open>trans[\<beta>](s)\<close> \<open>irrefl(\<beta>,s)\<close>
+    ultimately
+    have "False"
+      using trans_onD[of \<beta> s "f`x" "f`y" "f`x"] irreflE by blast
+  }
+  with assms
+  show "\<langle>x,y\<rangle>\<in>r" by blast
+qed
+
+lemma irrefl_Memrel: "irrefl(x, Memrel(x))"
+    unfolding irrefl_def using mem_irrefl by auto
+
+lemmas Memrel_mono_map_reflects = linear_mono_map_reflects
+  [OF well_ord_is_linear[OF well_ord_Memrel] well_ord_is_trans_on[OF well_ord_Memrel]
+    irrefl_Memrel]
+
 lemma mono_map_imp_ord_iso_image:
   assumes 
     "Ord(\<alpha>)" "Ord(\<beta>)" "f\<in>mono_map(\<alpha>,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
@@ -329,28 +370,11 @@ proof (intro CollectI ballI iffI)
   show "f \<in> bij(\<alpha>,f``\<alpha>)" 
     unfolding bij_def using inj_is_fun inj_to_codomain by simp
   from \<open>f\<in>mono_map(_,_,_,_)\<close>
-  show preserves:"x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>Memrel(\<alpha>) \<Longrightarrow> \<langle>f`x,f`y\<rangle>\<in>Memrel(\<beta>)" for x y    
+  show "x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>Memrel(\<alpha>) \<Longrightarrow> \<langle>f`x,f`y\<rangle>\<in>Memrel(\<beta>)" for x y    
     unfolding mono_map_def by blast
-  show "x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>Memrel(\<alpha>)" if  "\<langle>f`x,f`y\<rangle>\<in>Memrel(\<beta>)" for x y 
-  proof 
-    {
-      assume "x\<notin>y" "x\<in>\<alpha>" "y\<in>\<alpha>"  
-      moreover
-      note \<open>\<langle>f`x,f`y\<rangle>\<in>Memrel(\<beta>)\<close> and \<open>Ord(\<alpha>)\<close>
-      moreover from calculation 
-      have "y = x \<or> y\<in>x" 
-        using well_ord_Memrel well_ord_is_linear[of _ "Memrel(\<alpha>)"] unfolding linear_def by blast
-      moreover
-      note preserves [of y x]
-      ultimately
-      have "y = x \<or> \<langle>f`y, f`x\<rangle>\<in> Memrel(\<beta>)"  by blast
-      with \<open>\<langle>f`x,f`y\<rangle>\<in>Memrel(\<beta>)\<close> \<open>Ord(\<beta>)\<close>
-      have "False"
-        using trans_Memrel transD[of _ "f`x" "f`y" "f`x"] by (auto elim:mem_irrefl)
-    }
-    then
-    show "x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> x\<in>y" by blast
-  qed 
+  with assms
+  show "\<langle>f`x,f`y\<rangle>\<in>Memrel(\<beta>) \<Longrightarrow> x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>Memrel(\<alpha>)" for x y
+    using Memrel_mono_map_reflects by blast
 qed
 
 lemma Image_sub_codomain: "f:A\<rightarrow>B \<Longrightarrow> f``C \<subseteq> B"
@@ -361,8 +385,8 @@ lemma mono_map_ordertype_image:
     "Ord(\<alpha>)" "Ord(\<beta>)" "f\<in>mono_map(\<alpha>,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
   shows
     "ordertype(f``\<alpha>,Memrel(\<beta>)) = \<alpha>"
-  using assms mono_map_is_fun mono_map_imp_ord_iso_image ordertype_Memrel 
-    well_ord_subset Image_sub_codomain[of _ \<alpha>]  ordertype_eq[of f \<alpha> "Memrel(\<alpha>)"] 
+  using assms mono_map_is_fun ordertype_Memrel ordertype_eq[of f \<alpha> "Memrel(\<alpha>)"]
+    mono_map_imp_ord_iso_image well_ord_subset Image_sub_codomain[of _ \<alpha>]
     well_ord_Memrel[of \<beta>]  by auto 
 
 lemma ordertype_in_cf_imp_not_cofinal:
@@ -761,16 +785,60 @@ next
   show ?case using mono_map_imp_le by simp
 qed
 
+lemma mono_map_is_inj':
+    "[| linear(A,r);  irrefl(B,s);  f \<in> mono_map(A,r,B,s) |] ==> f \<in> inj(A,B)"
+  apply (unfold mono_map_def inj_def irrefl_def, clarify, rename_tac w x)
+  apply (erule_tac x=w and y=x in linearE, assumption+)
+    apply (force intro: apply_type )+
+  done
+
+(* Ord(A) \<Longrightarrow> f \<in> mono_map(A, Memrel(A), B, Memrel(Aa)) \<Longrightarrow> f \<in> inj(A, B) *)
+lemmas Memrel_mono_map_is_inj = mono_map_is_inj
+  [OF well_ord_is_linear[OF well_ord_Memrel]
+      wf_imp_wf_on[OF wf_Memrel]]
+
+lemma factor_is_cofinal:
+  assumes
+    "Ord(\<delta>)" "Ord(\<gamma>)"
+    "f \<in> mono_map(\<delta>,Memrel(\<delta>),\<gamma>,Memrel(\<gamma>))"  "f O g \<in> mono_map(\<alpha>,r,\<gamma>,Memrel(\<gamma>))"
+    "cofinal_fun(f O g,\<gamma>,Memrel(\<gamma>))" "g: \<alpha> \<rightarrow> \<delta>"
+  shows
+    "cofinal_fun(g,\<delta>,Memrel(\<delta>))"
+  unfolding cofinal_fun_def
+proof
+  fix a
+  assume "a \<in> \<delta>"
+  with \<open>f \<in> mono_map(\<delta>,_,\<gamma>,_)\<close>
+  have "f`a \<in> \<gamma>"
+    using mono_map_is_fun by force
+  with \<open>cofinal_fun(f O g,\<gamma>,_)\<close>
+  obtain y where "y\<in>\<alpha>"  "\<langle>f`a, (f O g) ` y\<rangle> \<in> Memrel(\<gamma>) \<or> f`a = (f O g) ` y"
+    unfolding cofinal_fun_def using domain_of_fun[OF \<open>g:\<alpha> \<rightarrow> \<delta>\<close>] by blast
+  with \<open>g:\<alpha> \<rightarrow> \<delta>\<close>
+  have "\<langle>f`a, f ` (g ` y)\<rangle> \<in> Memrel(\<gamma>) \<or> f`a = f ` (g ` y)" "g`y \<in> \<delta>"
+    unfolding Pair_def using comp_fun_apply[of g \<alpha> \<delta> y f] by auto
+  with assms(1-3) and \<open>a\<in>\<delta>\<close>
+  have "\<langle>a, g ` y\<rangle> \<in> Memrel(\<delta>) \<or> a = g ` y"
+    using Memrel_mono_map_reflects Memrel_mono_map_is_inj[of \<delta> f \<gamma> \<gamma>]
+    inj_apply_equality[of f \<delta> \<gamma> ]  by blast
+  with \<open>y\<in>\<alpha>\<close>
+  show "\<exists>x\<in>domain(g). \<langle>a, g ` x\<rangle> \<in> Memrel(\<delta>) \<or> a = g ` x"
+    using domain_of_fun[OF \<open>g:\<alpha> \<rightarrow> \<delta>\<close>] by blast
+qed
+
 lemma cf_ordertype_cofinal:
   assumes
-    "Ord(\<gamma>)" "A\<subseteq>\<gamma>" "cofinal(A,\<gamma>,Memrel(\<gamma>))"
+    "Limit(\<gamma>)" "A\<subseteq>\<gamma>" "cofinal(A,\<gamma>,Memrel(\<gamma>))"
   shows
     "cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))"
     (* Is it better??
     "Limit(\<gamma>) \<Longrightarrow> A\<subseteq>\<gamma> \<Longrightarrow> cofinal_predic(A,\<gamma>,mem) \<Longrightarrow> 
                 cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))" *)
 proof (intro le_anti_sym)
-  from assms
+  from \<open>Limit(\<gamma>)\<close>
+  have \<open>Ord(\<gamma>)\<close>
+    using Limit_is_Ord by simp
+  with \<open>A \<subseteq> \<gamma>\<close>
   have "well_ord(A,Memrel(\<gamma>))"
     using well_ord_Memrel well_ord_subset by blast
   then
@@ -809,24 +877,42 @@ proof (intro le_anti_sym)
   ultimately
   show "cf(\<gamma>) \<le> cf(ordertype(A,Memrel(\<gamma>)))"
     using cf_le_domain_cofinal_fun[of _ _ "f O h"] by auto
-next
-  (*from \<open>well_ord(A,_)\<close> assms
-  have "cf(\<gamma>) \<le> ordertype(A,Memrel(\<gamma>))"
-    using Least_le[of "\<lambda>\<beta>. \<exists>A. A \<subseteq> \<gamma> \<and> cofinal(A, \<gamma>, Memrel(\<gamma>)) \<and> \<beta> = ordertype(A, Memrel(\<gamma>))"]  
-      Ord_ordertype
-    unfolding cf_def  by blast *)
-  show "cf(ordertype(A,Memrel(\<gamma>))) \<le> cf(\<gamma>)" sorry
+  (********************************************************)
+  from \<open>f:\<langle>\<alpha>, _\<rangle> \<cong> \<langle>A,_\<rangle>\<close> \<open>A\<subseteq>\<gamma>\<close>
+  have "f \<in> mono_map(\<alpha>,Memrel(\<alpha>),\<gamma>,Memrel(\<gamma>))"
+    using mono_map_mono[OF ord_iso_is_mono_map] by simp
+  then
+  have "f: \<alpha> \<rightarrow> \<gamma>"
+    using mono_map_is_fun by simp
+  with \<open>cofinal_fun(f,\<gamma>,Memrel(\<gamma>))\<close> \<open>Limit(\<gamma>)\<close> \<open>Ord(\<alpha>)\<close>
+  obtain g where "g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<alpha>,Memrel(\<alpha>))"
+     "f O g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))"
+     "cofinal_fun(f O g,\<gamma>,Memrel(\<gamma>))"
+    using cofinal_fun_factorization by blast
+  moreover from this
+  have "g:cf(\<gamma>)\<rightarrow>\<alpha>"
+    using mono_map_is_fun by simp
+  moreover from calculation and \<open>f \<in> mono_map(\<alpha>,Memrel(\<alpha>),\<gamma>,Memrel(\<gamma>))\<close> \<open>Ord(\<alpha>)\<close> \<open>Ord(\<gamma>)\<close>
+  have "cofinal_fun(g,\<alpha>,Memrel(\<alpha>))"
+    using factor_is_cofinal by blast
+  moreover
+  note \<open>Ord(\<alpha>)\<close>
+  ultimately
+  have "cf(\<alpha>) \<le> cf(\<gamma>)"
+    using cf_le_domain_cofinal_fun[OF _ Ord_cf mono_map_is_fun] by simp
+  with \<open>\<alpha> = ordertype(A,Memrel(\<gamma>))\<close>
+  show "cf(ordertype(A,Memrel(\<gamma>))) \<le> cf(\<gamma>)" by simp
 qed
 
 (* probar 5.12 y 5.13(1,2) *)
   
 lemma cf_idemp:
-  assumes "Ord(\<gamma>)"
+  assumes "Limit(\<gamma>)"
   shows "cf(\<gamma>) = cf(cf(\<gamma>))"  
 proof -
   from assms
   obtain A where "A\<subseteq>\<gamma>" "cofinal(A,\<gamma>,Memrel(\<gamma>))" "cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))"
-    using cf_is_ordertype by blast
+    using Limit_is_Ord cf_is_ordertype by blast
   with assms
   have "cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))" using cf_ordertype_cofinal by simp
   also 
@@ -838,7 +924,7 @@ qed
   
 lemma surjection_is_cofinal:
   assumes
-    "Ord(\<gamma>)" "Ord(\<delta>)" "f \<in> surj(\<delta>,\<gamma>)"
+    "Limit(\<gamma>)" "Ord(\<delta>)" "f \<in> surj(\<delta>,\<gamma>)"
   shows "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))"
   unfolding cofinal_fun_def
 proof 
