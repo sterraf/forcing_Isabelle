@@ -816,11 +816,11 @@ proof
     unfolding cofinal_fun_def using domain_of_fun[OF \<open>g:\<alpha> \<rightarrow> \<delta>\<close>] by blast
   with \<open>g:\<alpha> \<rightarrow> \<delta>\<close>
   have "\<langle>f`a, f ` (g ` y)\<rangle> \<in> Memrel(\<gamma>) \<or> f`a = f ` (g ` y)" "g`y \<in> \<delta>"
-    unfolding Pair_def using comp_fun_apply[of g \<alpha> \<delta> y f] by auto
+    using comp_fun_apply[of g \<alpha> \<delta> y f] by auto
   with assms(1-3) and \<open>a\<in>\<delta>\<close>
   have "\<langle>a, g ` y\<rangle> \<in> Memrel(\<delta>) \<or> a = g ` y"
     using Memrel_mono_map_reflects Memrel_mono_map_is_inj[of \<delta> f \<gamma> \<gamma>]
-    inj_apply_equality[of f \<delta> \<gamma> ]  by blast
+    inj_apply_equality[of f \<delta> \<gamma>]  by blast
   with \<open>y\<in>\<alpha>\<close>
   show "\<exists>x\<in>domain(g). \<langle>a, g ` x\<rangle> \<in> Memrel(\<delta>) \<or> a = g ` x"
     using domain_of_fun[OF \<open>g:\<alpha> \<rightarrow> \<delta>\<close>] by blast
