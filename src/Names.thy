@@ -206,7 +206,30 @@ definition
 lemma checkD:
   "check(x) =  wfrec(Memrel(eclose({x})), x, Hcheck)"
   unfolding check_def transrec_def ..
-  
+
+lemma Hcheck_trancl:"Hcheck(y, restrict(f,Memrel(eclose({x}))-``{y}))
+                   = Hcheck(y, restrict(f,(Memrel(eclose({x}))^+)-``{y}))"
+  unfolding Hcheck_def
+  sorry
+
+lemma check_trancl: "check(x) =  wfrec(Memrel(eclose({x}))^+, x, Hcheck)"
+proof -
+  have "check(x) =  wfrec(Memrel(eclose({x})), x, Hcheck)"
+        (is "_ = wfrec(?r,_,_)")
+    using checkD .
+  also
+  have " ... = wftrec(?r^+, x, \<lambda>y f. Hcheck(y, restrict(f,?r-``{y})))"
+    unfolding wfrec_def ..
+  also
+  have " ... = wftrec(?r^+, x, \<lambda>y f. Hcheck(y, restrict(f,(?r^+)-``{y})))"
+    using Hcheck_trancl by simp
+  also
+  have " ... =  wfrec(?r^+, x, Hcheck)"
+    unfolding wfrec_def using trancl_eq_r[OF relation_trancl trans_trancl] by simp
+  finally
+  show ?thesis .
+qed
+
 lemma  aux_def_check: "x \<in> y \<Longrightarrow>
   wfrec(Memrel(eclose({y})), x, Hcheck) = 
   wfrec(Memrel(eclose({x})), x, Hcheck)"
