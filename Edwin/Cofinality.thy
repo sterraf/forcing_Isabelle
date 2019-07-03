@@ -203,11 +203,70 @@ lemma cofinal_mono_map_cf:
 lemma cofinal_fun_succ:
   "Ord(\<beta>) \<Longrightarrow> f:1\<rightarrow>succ(\<beta>) \<Longrightarrow> f`0=\<beta> \<Longrightarrow> cofinal_fun(f,succ(\<beta>),Memrel(succ(\<beta>)))"
   using domain_of_fun unfolding cofinal_fun_def by auto
-   
-lemma not_0_cofinal:
-  "ordertype(A,r) = 0 \<Longrightarrow> \<not>cofinal(A,X,r)"
-  (* falta assumption X\<noteq>0 *)
+    
+lemma cofinal_succ:
+  assumes "Ord(x)"
+  shows "cofinal(A,succ(x),Memrel(succ(x))) \<longleftrightarrow> x\<in>A"
+unfolding cofinal_def  
+proof (intro ballI iffI)
+  fix a
+  assume "a\<in>succ(x)"
+  show "\<exists>y\<in>A. \<langle>a, y\<rangle> \<in> Memrel(succ(x)) \<or> a = y"
+    sorry
+next
+  assume " \<forall>a\<in>succ(x). \<exists>y\<in>A. \<langle>a, y\<rangle> \<in> Memrel(succ(x)) \<or> a = y"
+  show "x \<in> A"
+    sorry
+ 
+qed
+  
+lemma surj_0:
+  assumes "f\<in>surj(A,0)"
+  shows "A=0"
 sorry
+  
+lemma ordertype_0_not_cofinal_succ:
+  assumes "ordertype(A,Memrel(succ(i))) = 0" "succ(i)\<noteq>0" "A\<subseteq>succ(i)" "Ord(i)"
+shows "\<not>cofinal(A,succ(i),Memrel(succ(i)))"
+proof 
+  have 1:"ordertype(A,Memrel(succ(i))) = ordertype(0,Memrel(0))"
+    using \<open>ordertype(A,Memrel(succ(i))) = 0\<close> ordertype_0 by simp     
+  from  \<open>A\<subseteq>succ(i)\<close> \<open>Ord(i)\<close>
+  have "\<exists>f. f \<in> \<langle>A, Memrel(succ(i))\<rangle> \<cong> \<langle>0, Memrel(0)\<rangle>" 
+    using   well_ord_Memrel well_ord_subset
+      ordertype_eq_imp_ord_iso[OF 1] Ord_0  by blast
+  then
+  have "A=0"
+    using surj_0 ord_iso_is_bij bij_is_surj by blast
+  moreover
+  assume "cofinal(A, succ(i), Memrel(succ(i)))" 
+  moreover 
+    note \<open>Ord(i)\<close>
+    ultimately
+    show "False" 
+      using cofinal_succ by simp     
+qed
+  
+  
+ (* lemma ordertype_0_not_cofinal:
+  assumes "ordertype(A,Memrel(i)) = 0" "i\<noteq>0" "A\<subseteq>i" "Ord(i)"
+shows "\<not>cofinal(A,i,Memrel(i))"
+proof 
+  have 1:"ordertype(A,Memrel(i)) = ordertype(0,Memrel(0))"
+    using \<open>ordertype(A,Memrel(i)) = 0\<close> ordertype_0 by simp      
+  from  \<open>A\<subseteq>i\<close> \<open>Ord(i)\<close>
+  have "\<exists>f. f \<in> \<langle>A, Memrel(i)\<rangle> \<cong> \<langle>0, Memrel(0)\<rangle>" 
+    using   well_ord_Memrel well_ord_subset
+      ordertype_eq_imp_ord_iso[OF 1] Ord_0  by blast
+  then
+  have "A=0"
+    sorry
+  moreover
+  assume "cofinal(A, i, Memrel(i))"
+    ultimately
+  show "False" 
+    sorry
+   qed*)
   
 lemma cf_succ:
   assumes "Ord(\<alpha>)" "f:1\<rightarrow>succ(\<alpha>)" "f`0=\<alpha>"
@@ -227,10 +286,10 @@ proof -
   moreover from \<open>Ord(\<alpha>)\<close> \<open>A\<subseteq> succ(\<alpha>)\<close>
   have "well_ord(A,Memrel(succ(\<alpha>)))" 
     using Ord_succ well_ord_Memrel  well_ord_subset relation_Memrel by blast
-  moreover
+  moreover from \<open>Ord(\<alpha>)\<close>
   have "\<not>(\<exists>A. A \<subseteq> succ(\<alpha>) \<and> cofinal(A, succ(\<alpha>), Memrel(succ(\<alpha>))) \<and> 0 = ordertype(A, Memrel(succ(\<alpha>))))"
     (is "\<not>?P(0)")
-    using not_0_cofinal unfolding cf_def  by auto
+    using ordertype_0_not_cofinal_succ  unfolding cf_def  by auto
   moreover
   have "1 = ordertype(A,Memrel(succ(\<alpha>)))" 
   proof - 
