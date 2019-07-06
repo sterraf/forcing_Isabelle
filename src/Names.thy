@@ -207,10 +207,61 @@ lemma checkD:
   "check(x) =  wfrec(Memrel(eclose({x})), x, Hcheck)"
   unfolding check_def transrec_def ..
 
+
+lemma Hcheck_trancl_aux:
+  assumes "w \<in> y"
+  shows "restrict(f,Memrel(eclose({x}))-``{y})`w
+       = restrict(f,(Memrel(eclose({x}))^+)-``{y})`w"
+  unfolding Hcheck_def
+proof (cases "y\<in>eclose({x})")
+  let ?r="Memrel(eclose({x}))"
+  let ?s="Memrel(eclose({x}))^+"
+  case True
+  from \<open>w\<in>y\<close> \<open>y\<in>eclose({x})\<close>
+  have "<w,y>\<in>?r" 
+    using Memrel_iff  eclose_subset[OF \<open>y\<in>eclose({x})\<close>] by blast
+  then 
+  have "<w,y>\<in>?s" 
+    using r_subset_trancl[of ?r] relation_Memrel by blast
+  with \<open><w,y>\<in>?r\<close> 
+  have "w\<in>?r-``{y}" "w\<in>?s-``{y}"
+    using vimage_singleton_iff by simp_all
+  then 
+  have "restrict(f,?r-``{y})`w == restrict(f,?s-``{y})`w"
+    using func.restrict by simp
+  then show ?thesis by simp
+next
+  let ?r="Memrel(eclose({x}))"
+  let ?s="?r^+"
+  case False
+  then 
+  have "?r-``{y}=0" 
+    unfolding field_def
+    using Memrel_iff by blast
+  then 
+  have "w\<notin>?r-``{y}" by simp    
+  then
+  have "restrict(f,?r-``{y})`w = 0"
+    using restrict by simp
+  have "y\<in>range(?s) \<Longrightarrow> y \<in> eclose({x})"
+    by (auto,rule trancl_induct[of _ _ ?r],auto)
+  with \<open>y\<notin>eclose({x})\<close> 
+  have "y\<notin>range(?s)" 
+    by blast
+  then 
+  have "w\<notin>?s-``{y}" 
+    using vimage_singleton_iff by blast
+  with \<open>w\<notin>?r-``{y}\<close>
+  have "restrict(f,?r-``{y})`w == restrict(f,?s-``{y})`w"
+    using restrict by simp
+  then show ?thesis by simp
+qed
+
+
 lemma Hcheck_trancl:"Hcheck(y, restrict(f,Memrel(eclose({x}))-``{y}))
                    = Hcheck(y, restrict(f,(Memrel(eclose({x}))^+)-``{y}))"
   unfolding Hcheck_def
-  sorry
+  using Hcheck_trancl_aux by simp
 
 lemma check_trancl: "check(x) =  wfrec(Memrel(eclose({x}))^+, x, Hcheck)"
 proof -
