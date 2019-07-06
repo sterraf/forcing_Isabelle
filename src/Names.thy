@@ -211,11 +211,10 @@ lemma checkD:
 lemma Hcheck_trancl_aux:
   assumes "w \<in> y"
   shows "restrict(f,Memrel(eclose({x}))-``{y})`w
-       = restrict(f,(Memrel(eclose({x}))^+)-``{y})`w"
-  unfolding Hcheck_def
+       = restrict(f,(Memrel(eclose({x}))^+)-``{y})`w" 
 proof (cases "y\<in>eclose({x})")
   let ?r="Memrel(eclose({x}))"
-  let ?s="Memrel(eclose({x}))^+"
+  and ?s="Memrel(eclose({x}))^+"
   case True
   from \<open>w\<in>y\<close> \<open>y\<in>eclose({x})\<close>
   have "<w,y>\<in>?r" 
