@@ -226,16 +226,13 @@ proof (cases "y\<in>eclose({x})")
   have "w\<in>?r-``{y}" "w\<in>?s-``{y}"
     using vimage_singleton_iff by simp_all
   then 
-  have "restrict(f,?r-``{y})`w == restrict(f,?s-``{y})`w"
-    using func.restrict by simp
-  then show ?thesis by simp
+  show ?thesis by simp
 next
   let ?r="Memrel(eclose({x}))"
   let ?s="?r^+"
   case False
   then 
   have "?r-``{y}=0" 
-    unfolding field_def
     using Memrel_iff by blast
   then 
   have "w\<notin>?r-``{y}" by simp    
@@ -251,9 +248,7 @@ next
   have "w\<notin>?s-``{y}" 
     using vimage_singleton_iff by blast
   with \<open>w\<notin>?r-``{y}\<close>
-  have "restrict(f,?r-``{y})`w == restrict(f,?s-``{y})`w"
-    using restrict by simp
-  then show ?thesis by simp
+  show ?thesis by simp
 qed
 
 
