@@ -207,6 +207,11 @@ lemma checkD:
   "check(x) =  wfrec(Memrel(eclose({x})), x, Hcheck)"
   unfolding check_def transrec_def ..
 
+lemma field_trancl : "field(r^+) = field(r)"
+by (blast intro: r_into_trancl dest!: trancl_type [THEN subsetD])
+
+lemma field_Memrel : "field(Memrel(A)) \<subseteq> A"
+  unfolding field_def using Ordinal.Memrel_type by blast
 
 lemma Hcheck_trancl_aux:
   assumes "w \<in> y"
@@ -236,14 +241,9 @@ next
     using Memrel_iff by blast
   then 
   have "w\<notin>?r-``{y}" by simp    
-  then
-  have "restrict(f,?r-``{y})`w = 0"
-    using restrict by simp
-  have "y\<in>range(?s) \<Longrightarrow> y \<in> eclose({x})"
-    by (auto,rule trancl_induct[of _ _ ?r],auto)
   with \<open>y\<notin>eclose({x})\<close> 
-  have "y\<notin>range(?s)" 
-    by blast
+  have "y\<notin>field(?s)" 
+    using field_trancl subsetD[OF field_Memrel[of "eclose({x})"]] by auto
   then 
   have "w\<notin>?s-``{y}" 
     using vimage_singleton_iff by blast
@@ -370,8 +370,8 @@ proof (induct rule:eps_induct)
   then show ?case
   proof -
     from def_check have
-      Eq1: "check(y) = { \<langle>check(w), one\<rangle> . w \<in> y}"  (is "_ = ?C") .
-    from Eq1 have
+       "check(y) = { \<langle>check(w), one\<rangle> . w \<in> y}"  (is "_ = ?C") .
+    then have
       "val(G,check(y)) = val(G, {\<langle>check(w), one\<rangle> . w \<in> y})"
       by simp
     also have
@@ -483,13 +483,13 @@ lemma Transset_MG : "Transset(M[G])"
 proof -
   { fix vc y 
     assume "vc \<in> M[G]" and  "y \<in> vc" 
-  from \<open>vc\<in>M[G]\<close> and \<open>y \<in> vc\<close>   obtain c where
-    "c\<in>M" "val(G,c)\<in>M[G]" "y \<in> val(G,c)" 
-    using  GenExtD by auto
-  from \<open>y \<in> val(G,c)\<close>  obtain \<theta> where
-    "\<theta>\<in>domain(c)" "val(G,\<theta>) = y" using elem_of_val by blast
-  with trans_M \<open>c\<in>M\<close> 
-  have "y \<in> M[G]" using domain_trans GenExtI by blast
+    then  obtain c where
+      "c\<in>M" "val(G,c)\<in>M[G]" "y \<in> val(G,c)" 
+      using  GenExtD by auto
+    from \<open>y \<in> val(G,c)\<close>  obtain \<theta> where
+      "\<theta>\<in>domain(c)" "val(G,\<theta>) = y" using elem_of_val by blast
+    with trans_M \<open>c\<in>M\<close> 
+    have "y \<in> M[G]" using domain_trans GenExtI by blast
   }
   then show ?thesis using Transset_def by auto
 qed
