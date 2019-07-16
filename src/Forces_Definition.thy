@@ -710,25 +710,36 @@ lemma lambda_is_wfrec: "\<lbrakk>M(r); M(a); M(z) \<rbrakk> \<Longrightarrow> is
         is_wfrec(M,\<lambda>b c d. M(b) \<longrightarrow> M(c) \<longrightarrow> M(d) \<longrightarrow> MH(b,c,d),r,a,z)"
   unfolding is_wfrec_def M_is_recfun_def by force
 
-lemma trancl_frecrel: "is_recfun(frecrel(eclose({fnnc})), fnnc, \<lambda>x f. bool_of_o(Hfrc(P, leq, x, f)),g) 
-                \<longleftrightarrow>  is_recfun(frecrel(eclose({fnnc}))^+, fnnc, \<lambda>x f. bool_of_o(Hfrc(P, leq, x, f)),g)"
+end (* context M_basic *)
+
+
+context M_trancl 
+begin
+
+lemma wfrec_trancl_frecrel: "wfrec(frecrel(eclose({fnnc})), fnnc, \<lambda>x f. bool_of_o(Hfrc(P, leq, x, f))) 
+                 =  wfrec(frecrel(eclose({fnnc}))^+, fnnc, \<lambda>x f. bool_of_o(Hfrc(P, leq, x, f)))"
+  sorry
+
+lemma horrible_aux: "is_wfrec(M, \<lambda>b c d. M(b) \<longrightarrow> M(c) \<longrightarrow> M(d) \<longrightarrow> is_Hfrc_at(M, P, leq, b, c, d), frecrel(eclose({fnnc}))^+, fnnc, z) \<longleftrightarrow>
+    is_wfrec(M, \<lambda>b c d. M(b) \<longrightarrow> M(c) \<longrightarrow> M(d) \<longrightarrow> d = bool_of_o(Hfrc(P, leq, b, c)), frecrel(eclose({fnnc})), fnnc, z)"
   sorry
 
 lemma frc_at_abs:
-  "\<lbrakk>M(fnnc); M(P); M(leq); M(z); M(frecrel(eclose({fnnc})))\<rbrakk> \<Longrightarrow>
-   is_frc_at(M,P,leq,fnnc,z) \<longleftrightarrow> z = frc_at(P,leq,fnnc)"
+  assumes
+    "M(fnnc)" "M(P)" "M(leq)" "M(z)" "M(frecrel(eclose({fnnc}))^+)" "M(frecrel(eclose({fnnc})))"
+    "wfrec_replacement(M, is_Hfrc_at(M, P, leq), frecrel(eclose({fnnc}))^+)"
+    "wf(frecrel(eclose({fnnc}))^+)"
+  shows
+    "is_frc_at(M,P,leq,fnnc,z) \<longleftrightarrow> z = frc_at(P,leq,fnnc)"
   unfolding is_frc_at_def frc_at_def using
-  is_wfrec_abs[OF _ relation2_Hfrc_at_abs[of P leq], of "frecrel(eclose({fnnc}))" fnnc z]
-  apply simp
-  apply (subst lambda_is_wfrec, assumption+)
+  trans_wfrec_abs[OF _ trans_trancl relation_trancl _ _ _ assms(7) relation2_Hfrc_at_abs[of P leq], of fnnc z]
+  apply (simp add:wfrec_trancl_frecrel)
+  apply (insert assms; subst lambda_is_wfrec, assumption+)
   apply (subst (asm) lambda_is_wfrec, assumption+)
-  apply (subst (asm) lambda_Hfrc_at_abs, assumption+)
-  apply (simp add:trancl_frecrel)
-  apply (unfold wfrec_def)
-  apply (unfold wftrec_def)
-  oops
+  apply (simp add: horrible_aux)
+  done
 
-end (* context M_basic *)
+end (* context M_trancl *)
 
 context forcing_data
 begin
