@@ -655,6 +655,23 @@ definition
                                                                   Or(And(Or(Member(5, 1), Member(5, 0)), Or(Equal(4, 3), Equal(4, 2))),
                                                                      And(Equal(5, 3), Member(4, 0)))))))))))))))))))))))"
 
+lemma sats_is_frecrel_fm:
+  assumes
+    "a\<in>nat"  "r\<in>nat" "env\<in>list(A)"
+  shows
+    "is_frecrel(##A,nth(a, env),nth(r, env))
+    \<longleftrightarrow> sats(A,is_frecrel_fm(a,r),env)"
+  unfolding is_frecrel_fm_def using assms sats_is_frecrel_fm_auto
+  by simp
+
+lemma sats_is_Hfrc_at_fm:
+  assumes
+    "P\<in>nat" "leq\<in>nat" "fnnc\<in>nat" "f\<in>nat" "z\<in>nat" "env\<in>list(A)"
+  shows
+    "is_Hfrc_at(##A,nth(P, env), nth(leq, env), nth(fnnc, env),nth(f, env),nth(z, env))
+    \<longleftrightarrow> sats(A,is_Hfrc_at_fm(P,leq,fnnc,f,z),env)"
+  unfolding is_Hfrc_at_fm_def using assms sats_is_Hfrc_at_fm_auto by simp
+
 definition
   is_one_fm :: "i \<Rightarrow> i" where
   "is_one_fm(z) \<equiv> Forall(Iff(Member(0, succ(z)), empty_fm(0)))"
@@ -671,7 +688,7 @@ lemma frecrel_eclose_fm_type [TC]:
 definition
   forces_eq :: "[i,i] \<Rightarrow> i" where
   "forces_eq(t1,t2) \<equiv> Exists(Exists(Exists(Exists(And(And(And(And(
-               is_wfrec_fm(is_Hfrc_at_fm(4,5,6,2,1),0,1,2),is_one_fm(2)),empty_fm(3)),
+               is_wfrec_fm(is_Hfrc_at_fm(4,5,2,1,0),0,1,2),is_one_fm(2)),empty_fm(3)),
                is_tuple_fm(3, t1 #+ 8, t2 #+ 8, 7, 1)),frecrel_eclose_fm(1,0))))))"
 
 lemma forces_eq_type [TC]:
@@ -696,11 +713,6 @@ lemma arity_forces_eq:
   apply (intro conjI impI)
   sorry
 
-schematic_goal
-  "[P,leq,one,p,t1,t2] \<in> list(A) \<Longrightarrow> sats(A,forces_eq(0,1),[P,leq,one,p,t1,t2]) \<longleftrightarrow> ?P"
-  unfolding forces_eq_def is_one_fm_def is_tuple_fm_def frecrel_eclose_fm_def
-  by (simp)
-
 lemma lambda_Hfrc_at_abs:
   "\<lbrakk>M(P); M(leq)\<rbrakk> \<Longrightarrow>
    (\<lambda>b c d. M(b) \<longrightarrow> M(c) \<longrightarrow> M(d) \<longrightarrow> is_Hfrc_at(M,P,leq,b,c,d)) \<equiv> (\<lambda>b c d. M(b) \<longrightarrow> M(c) \<longrightarrow> M(d) \<longrightarrow> d = bool_of_o(Hfrc(P, leq, b, c)))"
@@ -716,12 +728,14 @@ end (* context M_basic *)
 context M_trancl 
 begin
 
-lemma wfrec_trancl_frecrel: "wfrec(frecrel(eclose({fnnc})), fnnc, \<lambda>x f. bool_of_o(Hfrc(P, leq, x, f))) 
-                 =  wfrec(frecrel(eclose({fnnc}))^+, fnnc, \<lambda>x f. bool_of_o(Hfrc(P, leq, x, f)))"
+lemma wfrec_trancl_frecrel: 
+  "wfrec(frecrel(eclose({fnnc})), fnnc, \<lambda>x f. bool_of_o(Hfrc(P, leq, x, f))) =
+   wfrec(frecrel(eclose({fnnc}))^+, fnnc, \<lambda>x f. bool_of_o(Hfrc(P, leq, x, f)))"
   sorry
 
-lemma horrible_aux: "is_wfrec(M, \<lambda>b c d. M(b) \<longrightarrow> M(c) \<longrightarrow> M(d) \<longrightarrow> is_Hfrc_at(M, P, leq, b, c, d), frecrel(eclose({fnnc}))^+, fnnc, z) \<longleftrightarrow>
-    is_wfrec(M, \<lambda>b c d. M(b) \<longrightarrow> M(c) \<longrightarrow> M(d) \<longrightarrow> d = bool_of_o(Hfrc(P, leq, b, c)), frecrel(eclose({fnnc})), fnnc, z)"
+lemma horrible_aux:
+  "is_wfrec(M, \<lambda>b c d. M(b) \<longrightarrow> M(c) \<longrightarrow> M(d) \<longrightarrow> is_Hfrc_at(M, P, leq, b, c, d), frecrel(eclose({fnnc}))^+, fnnc, z) \<longleftrightarrow>
+   is_wfrec(M, \<lambda>b c d. M(b) \<longrightarrow> M(c) \<longrightarrow> M(d) \<longrightarrow> d = bool_of_o(Hfrc(P, leq, b, c)), frecrel(eclose({fnnc})), fnnc, z)"
   sorry
 
 lemma frc_at_abs:
@@ -748,17 +762,18 @@ lemma def_one: "xa \<in>M \<Longrightarrow> (\<forall>x\<in>M. x \<in> xa \<long
   sorry
 
 lemma uno_in_M: "1\<in>M"
-  sorry
+  by (simp del:setclass_iff add:setclass_iff[symmetric])
 
-lemma "[P,leq,one,p,t1,t2] \<in> list(M) \<Longrightarrow> sats(M,forces_eq(0,1),[P,leq,one,p,t1,t2]) \<longleftrightarrow>
-        (\<exists>xc\<in>M.
-               sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 6, 2, 1), 0, 1, 2), [xc, <0,t1,t2,p>, 1, 0, P, leq, one, p, t1, t2]) \<and>
-               sats(M, Exists(And(is_eclose_fm(2, 0), is_frecrel_fm(0, 1))), [xc, <0,t1,t2,p>, 1, 0, P, leq, one, p, t1, t2]))"
+lemma "\<lbrakk> [P,leq,one,p,t1,t2] \<in> list(M); \<And>x. x\<in>M \<Longrightarrow> frecrel(x)\<in>M \<rbrakk> \<Longrightarrow>
+          sats(M,forces_eq(0,1),[P,leq,one,p,t1,t2]) \<longleftrightarrow>
+          sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 2, 1, 0), 0, 1, 2),
+                  [frecrel(eclose(<0,t1,t2,p>)), <0,t1,t2,p>, 1, 0, P, leq, one, p, t1, t2])"
 proof -
+  assume "x\<in>M \<Longrightarrow> frecrel(x)\<in>M" for x
   assume "[P,leq,one,p,t1,t2] \<in> list(M)"
   then
   have "sats(M,forces_eq(0,1),[P,leq,one,p,t1,t2]) \<longleftrightarrow> (\<exists>x\<in>M. \<exists>xa\<in>M. \<exists>xb\<in>M. \<exists>xc\<in>M.
-               sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 6, 2, 1), 0, 1, 2), [xc, xb, xa, x, P, leq, one, p, t1, t2]) \<and>
+               sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 2, 1, 0), 0, 1, 2), [xc, xb, xa, x, P, leq, one, p, t1, t2]) \<and>
                xa = 1 \<and>
                sats(M, empty_fm(3), [xc, xb, 1, x, P, leq, one, p, t1, t2]) \<and>
                sats(M, Exists(Exists(And(pair_fm(11, 9, 0), And(pair_fm(10, 0, 1), pair_fm(5, 1, 3))))),
@@ -769,7 +784,7 @@ proof -
     by simp
   moreover from \<open>[P,leq,one,p,t1,t2] \<in> list(M)\<close>
   have "... \<longleftrightarrow> (\<exists>x\<in>M. \<exists>xa\<in>M. \<exists>xb\<in>M. \<exists>xc\<in>M.
-               sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 6, 2, 1), 0, 1, 2), [xc, xb, xa, x, P, leq, one, p, t1, t2]) \<and>
+               sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 2, 1, 0), 0, 1, 2), [xc, xb, xa, x, P, leq, one, p, t1, t2]) \<and>
                xa = 1 \<and>
                x = 0 \<and>
                sats(M, Exists(Exists(And(pair_fm(11, 9, 0), And(pair_fm(10, 0, 1), pair_fm(5, 1, 3))))),
@@ -778,7 +793,7 @@ proof -
     by force
   moreover from \<open>[P,leq,one,p,t1,t2] \<in> list(M)\<close>
   have "... \<longleftrightarrow> (\<exists>xa\<in>M. \<exists>xb\<in>M. \<exists>xc\<in>M.
-               sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 6, 2, 1), 0, 1, 2), [xc, xb, xa, 0, P, leq, one, p, t1, t2]) \<and>
+               sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 2, 1, 0), 0, 1, 2), [xc, xb, xa, 0, P, leq, one, p, t1, t2]) \<and>
                xa = 1 \<and>
                sats(M, Exists(Exists(And(pair_fm(11, 9, 0), And(pair_fm(10, 0, 1), pair_fm(5, 1, 3))))),
                     [xc, xb, 1, 0, P, leq, one, p, t1, t2]) \<and>
@@ -786,30 +801,40 @@ proof -
     using M_inhabit by force
   moreover from \<open>[P,leq,one,p,t1,t2] \<in> list(M)\<close>
   have " ... \<longleftrightarrow> (\<exists>xb\<in>M. \<exists>xc\<in>M.
-               sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 6, 2, 1), 0, 1, 2), [xc, xb, 1, 0, P, leq, one, p, t1, t2]) \<and>
+               sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 2, 1, 0), 0, 1, 2), [xc, xb, 1, 0, P, leq, one, p, t1, t2]) \<and>
                sats(M, Exists(Exists(And(pair_fm(11, 9, 0), And(pair_fm(10, 0, 1), pair_fm(5, 1, 3))))),
                     [xc, xb, 1, 0, P, leq, one, p, t1, t2]) \<and>
                sats(M, Exists(And(is_eclose_fm(2, 0), is_frecrel_fm(0, 1))), [xc, xb, 1, 0, P, leq, one, p, t1, t2]))"
     using uno_in_M by auto
   moreover from \<open>[P,leq,one,p,t1,t2] \<in> list(M)\<close>
   have " ... \<longleftrightarrow> (\<exists>xb\<in>M. \<exists>xc\<in>M.
-               sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 6, 2, 1), 0, 1, 2), [xc, xb, 1, 0, P, leq, one, p, t1, t2]) \<and>
+               sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 2, 1, 0), 0, 1, 2), [xc, xb, 1, 0, P, leq, one, p, t1, t2]) \<and>
                (\<exists>c1\<in>M. \<exists>c0\<in>M. sats(M, And(pair_fm(11, 9, 0), And(pair_fm(10, 0, 1), pair_fm(5, 1, 3))),
                     [c0, c1, xc, xb, 1, 0, P, leq, one, p, t1, t2])) \<and>
                sats(M, Exists(And(is_eclose_fm(2, 0), is_frecrel_fm(0, 1))), [xc, xb, 1, 0, P, leq, one, p, t1, t2]))"
     using uno_in_M M_inhabit by simp
   moreover from \<open>[P,leq,one,p,t1,t2] \<in> list(M)\<close>
   have " ... \<longleftrightarrow> (\<exists>xb\<in>M. \<exists>xc\<in>M.
-               sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 6, 2, 1), 0, 1, 2), [xc, xb, 1, 0, P, leq, one, p, t1, t2]) \<and>
+               sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 2, 1, 0), 0, 1, 2), [xc, xb, 1, 0, P, leq, one, p, t1, t2]) \<and>
                xb = <0,t1,t2,p> \<and> sats(M,pair_fm(5, 1, 3),
                     [<t2,p>, <t1,t2,p>, xc, xb, 1, 0, P, leq, one, p, t1, t2]) \<and>
                sats(M, Exists(And(is_eclose_fm(2, 0), is_frecrel_fm(0, 1))), [xc, xb, 1, 0, P, leq, one, p, t1, t2]))"
     using uno_in_M M_inhabit tuples_in_M by simp
   moreover from \<open>[P,leq,one,p,t1,t2] \<in> list(M)\<close>
   have " ... \<longleftrightarrow> (\<exists>xc\<in>M.
-               sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 6, 2, 1), 0, 1, 2), [xc, <0,t1,t2,p>, 1, 0, P, leq, one, p, t1, t2]) \<and>
+               sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 2, 1, 0), 0, 1, 2), [xc, <0,t1,t2,p>, 1, 0, P, leq, one, p, t1, t2]) \<and>
                sats(M, Exists(And(is_eclose_fm(2, 0), is_frecrel_fm(0, 1))), [xc, <0,t1,t2,p>, 1, 0, P, leq, one, p, t1, t2]))"
     using uno_in_M M_inhabit tuples_in_M by auto
+  moreover from \<open>[P,leq,one,p,t1,t2] \<in> list(M)\<close>
+  have " ... \<longleftrightarrow> (\<exists>xc\<in>M.
+               sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 2, 1, 0), 0, 1, 2), [xc, <0,t1,t2,p>, 1, 0, P, leq, one, p, t1, t2]) \<and>
+               (\<exists>ec\<in>M. sats(M, is_eclose_fm(2, 0), [ec, xc, <0,t1,t2,p>, 1, 0, P, leq, one, p, t1, t2])
+                    \<and>  sats(M, is_frecrel_fm(0, 1), [ec, xc, <0,t1,t2,p>, 1, 0, P, leq, one, p, t1, t2])) )"
+    using uno_in_M M_inhabit tuples_in_M by simp
+  moreover from \<open>[P,leq,one,p,t1,t2] \<in> list(M)\<close> \<open>eclose(<0,t1,t2,p>)\<in>M \<Longrightarrow> frecrel(eclose(<0,t1,t2,p>))\<in>M\<close>
+  have " ... \<longleftrightarrow> sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 2, 1, 0), 0, 1, 2),
+                  [frecrel(eclose(<0,t1,t2,p>)), <0,t1,t2,p>, 1, 0, P, leq, one, p, t1, t2])"
+    using uno_in_M M_inhabit tuples_in_M sats_is_frecrel_fm[symmetric] eclose_closed by auto
   ultimately show ?thesis by simp
 qed
 
