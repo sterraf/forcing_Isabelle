@@ -1,0 +1,142 @@
+  sep_rules:
+      nth(0, Cons(a, l)) = a
+      nth(n, l) = x ⟹ n ∈ nat ⟹ nth(succ(n), Cons(a, l)) = x
+      nth(i, env) = x ⟹ nth(j, env) = y ⟹ env ∈ list(A) ⟹ x ∈ y ⟷ sats(A, Member(i, j), env)
+      nth(i, env) = x ⟹ nth(j, env) = y ⟹ env ∈ list(A) ⟹ x = y ⟷ sats(A, Equal(i, j), env)
+      P ⟷ sats(A, p, env) ⟹ env ∈ list(A) ⟹ ¬ P ⟷ sats(A, Neg(p), env)
+      P ⟷ sats(A, p, env) ⟹ Q ⟷ sats(A, q, env) ⟹ env ∈ list(A) ⟹ P ∧ Q ⟷ sats(A, And(p, q), env)
+      P ⟷ sats(A, p, env) ⟹ Q ⟷ sats(A, q, env) ⟹ env ∈ list(A) ⟹ P ∨ Q ⟷ sats(A, Or(p, q), env)
+      P ⟷ sats(A, p, env) ⟹
+      Q ⟷ sats(A, q, env) ⟹ env ∈ list(A) ⟹ (P ⟶ Q) ⟷ sats(A, Implies(p, q), env)
+      P ⟷ sats(A, p, env) ⟹ Q ⟷ sats(A, q, env) ⟹ env ∈ list(A) ⟹ (P ⟷ Q) ⟷ sats(A, Iff(p, q), env)
+      P ⟷ sats(A, p, env) ⟹
+      Q ⟷ sats(A, q, env) ⟹ env ∈ list(A) ⟹ (P ⟶ Q) ⟷ sats(A, Implies(p, q), env)
+      (⋀x. x ∈ A ⟹ P(x) ⟷ sats(A, p, Cons(x, env))) ⟹
+      env ∈ list(A) ⟹ (∀x∈A. P(x)) ⟷ sats(A, Forall(p), env)
+      (⋀x. x ∈ A ⟹ P(x) ⟷ sats(A, p, Cons(x, env))) ⟹
+      env ∈ list(A) ⟹ (∃x∈A. P(x)) ⟷ sats(A, Exists(p), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹ i ∈ nat ⟹ env ∈ list(A) ⟹ empty(##A, x) ⟷ sats(A, empty_fm(i), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹ i ∈ nat ⟹ env ∈ list(A) ⟹ number1(##A, x) ⟷ sats(A, number1_fm(i), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      nth(k, env) = z ⟹
+      i ∈ nat ⟹ j ∈ nat ⟹ k ∈ nat ⟹ env ∈ list(A) ⟹ upair(##A, x, y, z) ⟷ sats(A, upair_fm(i, j, k), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      nth(k, env) = z ⟹
+      i ∈ nat ⟹ j ∈ nat ⟹ k ∈ nat ⟹ env ∈ list(A) ⟹ pair(##A, x, y, z) ⟷ sats(A, pair_fm(i, j, k), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      nth(k, env) = z ⟹
+      i ∈ nat ⟹ j ∈ nat ⟹ k ∈ nat ⟹ env ∈ list(A) ⟹ union(##A, x, y, z) ⟷ sats(A, union_fm(i, j, k), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      i ∈ nat ⟹ j ∈ nat ⟹ env ∈ list(A) ⟹ big_union(##A, x, y) ⟷ sats(A, big_union_fm(i, j), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      nth(k, env) = z ⟹
+      i ∈ nat ⟹
+      j ∈ nat ⟹ k ∈ nat ⟹ env ∈ list(A) ⟹ is_cons(##A, x, y, z) ⟷ sats(A, cons_fm(i, j, k), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      i ∈ nat ⟹ j ∈ nat ⟹ env ∈ list(A) ⟹ successor(##A, x, y) ⟷ sats(A, succ_fm(i, j), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      nth(k, env) = z ⟹
+      i ∈ nat ⟹
+      j ∈ nat ⟹ k ∈ nat ⟹ env ∈ list(A) ⟹ fun_apply(##A, x, y, z) ⟷ sats(A, fun_apply_fm(i, j, k), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      i ∈ nat ⟹ j ∈ nat ⟹ env ∈ list(A) ⟹ membership(##A, x, y) ⟷ sats(A, Memrel_fm(i, j), env)
+      nth(i, env) = U ⟹
+      nth(j, env) = x ⟹
+      nth(k, env) = r ⟹
+      nth(l, env) = B ⟹
+      i ∈ nat ⟹
+      j ∈ nat ⟹
+      k ∈ nat ⟹
+      l ∈ nat ⟹ env ∈ list(A) ⟹ pred_set(##A, U, x, r, B) ⟷ sats(A, pred_set_fm(i, j, k, l), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      i ∈ nat ⟹ j ∈ nat ⟹ env ∈ list(A) ⟹ is_domain(##A, x, y) ⟷ sats(A, domain_fm(i, j), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      i ∈ nat ⟹ j ∈ nat ⟹ env ∈ list(A) ⟹ is_range(##A, x, y) ⟷ sats(A, range_fm(i, j), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      i ∈ nat ⟹ j ∈ nat ⟹ env ∈ list(A) ⟹ is_field(##A, x, y) ⟷ sats(A, field_fm(i, j), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      nth(k, env) = z ⟹
+      i ∈ nat ⟹ j ∈ nat ⟹ k ∈ nat ⟹ env ∈ list(A) ⟹ image(##A, x, y, z) ⟷ sats(A, image_fm(i, j, k), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      nth(k, env) = z ⟹
+      i ∈ nat ⟹
+      j ∈ nat ⟹ k ∈ nat ⟹ env ∈ list(A) ⟹ pre_image(##A, x, y, z) ⟷ sats(A, pre_image_fm(i, j, k), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹ i ∈ nat ⟹ env ∈ list(A) ⟹ is_relation(##A, x) ⟷ sats(A, relation_fm(i), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹ i ∈ nat ⟹ env ∈ list(A) ⟹ is_function(##A, x) ⟷ sats(A, function_fm(i), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      nth(k, env) = z ⟹
+      i ∈ nat ⟹
+      j ∈ nat ⟹
+      k ∈ nat ⟹ env ∈ list(A) ⟹ typed_function(##A, x, y, z) ⟷ sats(A, typed_function_fm(i, j, k), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      nth(k, env) = z ⟹
+      i ∈ nat ⟹
+      j ∈ nat ⟹ k ∈ nat ⟹ env ∈ list(A) ⟹ composition(##A, x, y, z) ⟷ sats(A, composition_fm(i, j, k), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      nth(k, env) = z ⟹
+      i ∈ nat ⟹
+      j ∈ nat ⟹ k ∈ nat ⟹ env ∈ list(A) ⟹ injection(##A, x, y, z) ⟷ sats(A, injection_fm(i, j, k), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      nth(k, env) = z ⟹
+      i ∈ nat ⟹
+      j ∈ nat ⟹ k ∈ nat ⟹ env ∈ list(A) ⟹ surjection(##A, x, y, z) ⟷ sats(A, surjection_fm(i, j, k), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      nth(k, env) = z ⟹
+      i ∈ nat ⟹
+      j ∈ nat ⟹ k ∈ nat ⟹ env ∈ list(A) ⟹ bijection(##A, x, y, z) ⟷ sats(A, bijection_fm(i, j, k), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹
+      nth(k, env) = z ⟹
+      i ∈ nat ⟹
+      j ∈ nat ⟹ k ∈ nat ⟹ env ∈ list(A) ⟹ restriction(##A, x, y, z) ⟷ sats(A, restriction_fm(i, j, k), env)
+      nth(i, env) = U ⟹
+      nth(j, env) = r ⟹
+      nth(k, env) = B ⟹
+      nth(j', env) = s ⟹
+      nth(k', env) = f ⟹
+      i ∈ nat ⟹
+      j ∈ nat ⟹
+      k ∈ nat ⟹
+      j' ∈ nat ⟹
+      k' ∈ nat ⟹
+      env ∈ list(A) ⟹
+      order_isomorphism(##A, U, r, B, s, f) ⟷ sats(A, order_isomorphism_fm(i, j, k, j', k'), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹ i ∈ nat ⟹ env ∈ list(A) ⟹ finite_ordinal(##A, x) ⟷ sats(A, finite_ordinal_fm(i), env)
+      nth(i, env) = x ⟹ i ∈ nat ⟹ env ∈ list(A) ⟹ ordinal(##A, x) ⟷ sats(A, ordinal_fm(i), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹ i ∈ nat ⟹ env ∈ list(A) ⟹ limit_ordinal(##A, x) ⟷ sats(A, limit_ordinal_fm(i), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹ i ∈ nat ⟹ env ∈ list(A) ⟹ omega(##A, x) ⟷ sats(A, omega_fm(i), env)
+      nth(i, env) = x ⟹
+      nth(j, env) = y ⟹ i ∈ nat ⟹ env ∈ list(A) ⟹ omega(##A, x) ⟷ sats(A, omega_fm(i), env)
+      env ∈ list(A) ⟹ sats(A, Nand(p, q), env) ⟷ ¬ (sats(A, p, env) ∧ sats(A, q, env))
+      env ∈ list(A) ⟹ sats(A, Forall(p), env) ⟷ (∀x∈A. sats(A, p, Cons(x, env)))
+      env ∈ list(A) ⟹ sats(A, Neg(p), env) ⟷ satisfies(A, p) ` env ≠ 1
+      env ∈ list(A) ⟹ sats(A, And(p, q), env) ⟷ sats(A, p, env) ∧ sats(A, q, env)
+      env ∈ list(A) ⟹ sats(A, Or(p, q), env) ⟷ sats(A, p, env) ∨ sats(A, q, env)
+      env ∈ list(A) ⟹ sats(A, Implies(p, q), env) ⟷ sats(A, p, env) ⟶ sats(A, q, env)
+      env ∈ list(A) ⟹ sats(A, Iff(p, q), env) ⟷ sats(A, p, env) ⟷ sats(A, q, env)
+      env ∈ list(A) ⟹ sats(A, Exists(p), env) ⟷ (∃x∈A. sats(A, p, Cons(x, env)))
