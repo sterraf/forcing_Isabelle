@@ -218,6 +218,11 @@ definition
   "is_frc_at(M,P,leq,fnnc,z) \<equiv>
   is_wfrec(M,\<lambda>x f z. z = bool_of_o(Hfrc(P,leq,x,f)),frecrel(eclose({fnnc})),fnnc,z)"
 
+definition
+  is_tuple_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
+  "is_tuple_fm(z,t1,t2,p,tup) = Exists(Exists(And(pair_fm(t2 #+ 2,p #+ 2,0),
+                      And(pair_fm(t1 #+ 2,0,1),pair_fm(z #+ 2,1,tup #+ 2)))))"
+
 context M_basic
 begin
 
@@ -479,11 +484,6 @@ schematic_goal is_Hfrc_at_iff_sats:
     \<open>nth(z,env) = zz\<close>[symmetric]  
   by (rule sats_is_Hfrc_at_fm_auto(1); simp add:assms)
 
-definition
-  is_tuple_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
-  "is_tuple_fm(z,t1,t2,p,tup) = Exists(Exists(And(pair_fm(t2 #+ 2,p #+ 2,0),
-                      And(pair_fm(t1 #+ 2,0,1),pair_fm(z #+ 2,1,tup #+ 2)))))"
-
 lemma is_tuple_fm_def_type [TC]:
   "\<lbrakk>z\<in>nat ; t1\<in>nat ; t2\<in>nat ; p\<in>nat ; tup\<in>nat\<rbrakk> \<Longrightarrow> is_tuple_fm(z,t1,t2,p,tup) \<in> formula"
   unfolding is_tuple_fm_def
@@ -494,6 +494,8 @@ lemma relation2_Hfrc_at_abs:
   relation2(M,is_Hfrc_at(M,P,leq),\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f)))"
   unfolding relation2_def
   by simp
+
+end (* context M_basic *)
 
 definition
   is_Hfrc_at_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
@@ -655,6 +657,50 @@ definition
                                                                   Or(And(Or(Member(5, 1), Member(5, 0)), Or(Equal(4, 3), Equal(4, 2))),
                                                                      And(Equal(5, 3), Member(4, 0)))))))))))))))))))))))"
 
+definition
+  is_one_fm :: "i \<Rightarrow> i" where
+  "is_one_fm(z) \<equiv> Forall(Iff(Member(0, succ(z)), empty_fm(0)))"
+
+definition
+  frecrel_eclose_fm :: "[i,i] \<Rightarrow> i" where
+  "frecrel_eclose_fm(tup,fet) \<equiv> Exists(And(is_eclose_fm(succ(tup),0),is_frecrel_fm(0,succ(fet))))"
+
+definition
+  forces_eq :: "[i,i] \<Rightarrow> i" where
+  "forces_eq(t1,t2) \<equiv> Exists(Exists(Exists(Exists(And(And(And(And(
+               is_wfrec_fm(is_Hfrc_at_fm(4,5,2,1,0),0,1,2),is_one_fm(2)),empty_fm(3)),
+               is_tuple_fm(3, t1 #+ 8, t2 #+ 8, 7, 1)),frecrel_eclose_fm(1,0))))))"
+
+definition
+  forces_mem :: "[i,i] \<Rightarrow> i" where
+  "forces_mem(t1,t2) \<equiv> Exists(Exists(Exists(Exists(And(And(And(And(
+               is_wfrec_fm(is_Hfrc_at_fm(4,5,2,1,0),0,1,2),is_one_fm(2)),is_one_fm(3)),
+               is_tuple_fm(3, t1 #+ 8, t2 #+ 8, 7, 1)),frecrel_eclose_fm(1,0))))))"
+
+
+(*
+forces (\<not>\<phi>) == (\<forall>q\<in>P. (<q,p>\<in>leq \<longrightarrow> \<not> forces(\<phi>)))
+forces(And(\<phi>,\<psi>)) == And(forces(\<phi>), forces(\<psi>))
+
+forces(Nand(\<phi>,\<psi>)) == (\<forall>q\<in>P. (<q,p>\<in>leq \<longrightarrow> \<not> And(forces(\<phi>), forces(\<psi>))))
+forces(Nand(\<phi>,\<psi>)) == (\<forall>q. \<forall>qp. q\<in>P \<longrightarrow> (<q,p> = qp \<and> qp\<in>leq \<longrightarrow> \<not> And(forces(\<phi>), forces(\<psi>))))
+                       1    0  1 (0+2)   1 (3+2) 0    0  (1+2) 
+forces(Nand(\<phi>,\<psi>)) == Forall(Forall(Implies(Member(1,2),
+              Implies(And(pair_fm(1,5,0),Member(0,3)),Neg(And(forces(\<phi>), forces(\<psi>)))))))
+*)
+consts forces :: "i\<Rightarrow>i"
+primrec
+  "forces(Member(x,y)) = forces_mem(x,y)"
+  "forces(Equal(x,y))  = forces_eq(x,y)"
+  (* Problem: This definition does not preserve the place of P,leq,one,p 
+              in the environment *)
+  "forces(Nand(p,q))   = Forall(Forall(Implies(Member(1,2),
+                  Implies(And(pair_fm(1,5,0),Member(0,3)),Neg(And(forces(p), forces(q)))))))"
+  "forces(Forall(p))   = Forall(forces(p))" (* check indexes *)
+
+context M_basic
+begin
+
 lemma sats_is_frecrel_fm:
   assumes
     "a\<in>nat"  "r\<in>nat" "env\<in>list(A)"
@@ -672,28 +718,19 @@ lemma sats_is_Hfrc_at_fm:
     \<longleftrightarrow> sats(A,is_Hfrc_at_fm(P,leq,fnnc,f,z),env)"
   unfolding is_Hfrc_at_fm_def using assms sats_is_Hfrc_at_fm_auto by simp
 
-definition
-  is_one_fm :: "i \<Rightarrow> i" where
-  "is_one_fm(z) \<equiv> Forall(Iff(Member(0, succ(z)), empty_fm(0)))"
-
-definition
-  frecrel_eclose_fm :: "[i,i] \<Rightarrow> i" where
-  "frecrel_eclose_fm(tup,fet) \<equiv> Exists(And(is_eclose_fm(succ(tup),0),is_frecrel_fm(0,succ(fet))))"
-
 lemma frecrel_eclose_fm_type [TC]:
   "tup \<in> nat \<Longrightarrow> fet \<in> nat \<Longrightarrow> frecrel_eclose_fm(tup,fet) \<in> formula"
   unfolding frecrel_eclose_fm_def is_frecrel_fm_def
   by simp
 
-definition
-  forces_eq :: "[i,i] \<Rightarrow> i" where
-  "forces_eq(t1,t2) \<equiv> Exists(Exists(Exists(Exists(And(And(And(And(
-               is_wfrec_fm(is_Hfrc_at_fm(4,5,2,1,0),0,1,2),is_one_fm(2)),empty_fm(3)),
-               is_tuple_fm(3, t1 #+ 8, t2 #+ 8, 7, 1)),frecrel_eclose_fm(1,0))))))"
-
 lemma forces_eq_type [TC]:
   "t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow> forces_eq(t1,t2) \<in> formula"
   unfolding forces_eq_def is_one_fm_def is_Hfrc_at_fm_def
+  by simp
+
+lemma forces_mem_type [TC]:
+  "t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow> forces_mem(t1,t2) \<in> formula"
+  unfolding forces_mem_def is_one_fm_def is_Hfrc_at_fm_def
   by simp
 
 lemma pred_Un:
@@ -837,6 +874,37 @@ proof -
     using uno_in_M M_inhabit tuples_in_M sats_is_frecrel_fm[symmetric] eclose_closed by auto
   ultimately show ?thesis by simp
 qed
+
+lemma forces_Nand: "\<lbrakk> [P,leq,one,p] @ env \<in> list(M); \<phi>\<in>formula; \<psi>\<in>formula\<rbrakk> \<Longrightarrow>
+          sats(M,forces(Nand  (\<phi>,\<psi>)),[P,leq,one,p] @ env) \<longleftrightarrow>
+          (\<forall>x\<in>M. x \<in> P \<longrightarrow> \<langle>x, p\<rangle> \<in> M \<and> \<langle>x, p\<rangle> \<in> leq \<longrightarrow>
+          \<not> (sats(M, forces(\<phi>),[\<langle>x, p\<rangle>,x,P,leq,one,p] @ env) \<and>
+             sats(M, forces(\<psi>),[\<langle>x, p\<rangle>,x,P,leq,one,p] @ env)))"
+  by simp
+
+lemma forces_Neg: "\<lbrakk> [P,leq,one,p] @ env \<in> list(M); \<phi>\<in>formula\<rbrakk> \<Longrightarrow>
+          sats(M,forces(Neg(\<phi>)),[P,leq,one,p] @ env) \<longleftrightarrow>
+          (\<forall>x\<in>M. x \<in> P \<longrightarrow> \<langle>x, p\<rangle> \<in> M \<and> \<langle>x, p\<rangle> \<in> leq \<longrightarrow>
+          \<not> sats(M, forces(\<phi>),[\<langle>x, p\<rangle>,x,P,leq,one,p] @ env))"
+  unfolding Neg_def 
+  by simp
+
+lemma 
+  assumes
+    "[P,leq,one,p] @ env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
+  shows
+    "sats(M,forces(And(\<phi>,\<psi>)),[P,leq,one,p] @ env) \<longleftrightarrow>
+      sats(M, forces(\<phi>),[P,leq,one,p] @ env) \<and>
+      sats(M, forces(\<psi>),[P,leq,one,p] @ env)"
+  unfolding And_def
+proof -
+  have "sats(M,forces(And(\<phi>,\<psi>)),[P,leq,one,p] @ env) \<longleftrightarrow> sats(M, forces(Neg(Nand(\<phi>, \<psi>))), [P, leq, one, p] @ env)"
+    unfolding And_def ..
+  also from assms 
+  have " ... \<longleftrightarrow>  (\<forall>x\<in>M. x \<in> P \<longrightarrow> \<langle>x, p\<rangle> \<in> M \<and> \<langle>x, p\<rangle> \<in> leq \<longrightarrow>
+          \<not> sats(M, forces(Nand(\<phi>,\<psi>)),[\<langle>x, p\<rangle>,x,P,leq,one,p] @ env))"
+    using forces_Neg by simp
+  oops
 
 end (* context forcing_data *)
 
