@@ -1,6 +1,17 @@
 theory Forcing_Experiments imports Interface Names begin
 
-consts height :: "[i\<Rightarrow>i,i] \<Rightarrow> i" 
+ML\<open>
+ fun synthetic_def ctxt thm tstr defstr = 
+  let 
+    val (((_,[(((fxs,_),_),_)]),[novar]),ctxt1) = Variable.import true [Proof_Context.get_thm ctxt thm] ctxt
+    val t = Thm.dest_equals_rhs (Thm.cterm_of ctxt1 ( Thm.concl_of(novar))) |> Thm.term_of 
+    val at = lambda (Free (fxs,@{typ "i"})) t 
+  in
+  Local_Theory.define ((Binding.name tstr, NoSyn), ((Binding.name defstr, []), at)) #> snd 
+  end
+\<close>
+
+consts height :: "[i\<Rightarrow>i,i] \<Rightarrow> i"
 primrec 
    "height(f,Member(x,y)) =
       (f(0))"
@@ -34,7 +45,13 @@ end
 
 lemma p : "my_x(2) = 3" unfolding my_x_def ..
 
-find_theorems name:my_x 
+local_setup\<open>
+  synthetic_def @{context} "ff" "another_x" "another_def"
+\<close>
+
+lemma "another_x(2) = 3" unfolding another_def ..
+
+
 end  (* context M_basic *)
 
 context M_basic
