@@ -3,12 +3,12 @@ theory Forcing_Experiments imports Interface Names begin
 ML\<open>
  fun synthetic_def ctxt thm tstr defstr = 
   let 
-    val (((_,[(((fxs,_),_),_)]),[novar]),ctxt1) = Variable.import true [Proof_Context.get_thm ctxt thm] ctxt
+    val (((_,[(_,vct)]),[novar]),ctxt1) = Variable.import true [Proof_Context.get_thm ctxt thm] ctxt
     val t = Thm.dest_equals_rhs (Thm.cterm_of ctxt1 ( Thm.concl_of(novar))) |> Thm.term_of 
-    val at = lambda (Free (fxs,@{typ "i"})) t 
+    val at = lambda (Thm.term_of vct) t 
   in
   Local_Theory.define ((Binding.name tstr, NoSyn), ((Binding.name defstr, []), at)) #> snd 
-  end
+  end 
 \<close>
 
 consts height :: "[i\<Rightarrow>i,i] \<Rightarrow> i"
@@ -50,7 +50,12 @@ local_setup\<open>
 \<close>
 
 lemma "another_x(2) = 3" unfolding another_def ..
-
+ML\<open>
+let val ctxt = @{context}
+in
+ Variable.import  true [Proof_Context.get_thm ctxt "ff"] ctxt
+end
+\<close>
 
 end  (* context M_basic *)
 
