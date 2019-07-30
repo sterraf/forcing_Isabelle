@@ -1020,6 +1020,7 @@ proof -
     using strong_replacement_cong[of "##M" "?P" "?Q"] by simp
 qed
 
+
 (* Instance of Replacement for M_basic *)
   
 (* funspace_succ_replacement:
@@ -1540,7 +1541,7 @@ proof -
     fix a0 a1 a2 a3 a4 y x z
     assume as:"a0\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "y\<in>M" "x\<in>M" "z\<in>M"
     have "sats(M, is_F_fm, Cons(b,Cons(a,Cons(c,Cons(d,[a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),v])))))
-          \<longleftrightarrow> is_F(a,b)" (* Si invierto el orden de las proposiciones en el \<longleftrightarrow>, el simp que sigue no anda *)
+          \<longleftrightarrow> is_F(a,b)" 
       if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" for a b c d
       using as that 1 satsf[of a b "[c,d,a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),v]"] \<open>v\<in>M\<close> by simp
     then
