@@ -1,4 +1,10 @@
-theory Forcing_Experiments imports Interface Names begin
+theory Forcing_Experiments 
+  imports Interface Names 
+
+keywords
+"synth_def" :: thy_decl % "ML"
+
+begin
 
 ML\<open>
  fun synthetic_def ctxt thm tstr defstr = 
@@ -8,7 +14,19 @@ ML\<open>
     val at = lambda (Thm.term_of vct) t 
   in
   Local_Theory.define ((Binding.name tstr, NoSyn), ((Binding.name defstr, []), at)) #> snd 
-  end 
+  end;
+
+local
+fun synth_def source =
+  ML_Lex.read_source false source
+  |> ML_Context.expression (Input.range_of source) "synth" "string * string"
+    "Context.map_proof (synthetic_def @{context} (fst synth)  (snd synth) (snd synth ^ \"_def\"))"
+  |> Context.proof_map;
+
+val _ =
+  Outer_Syntax.local_theory \<^command_keyword>\<open>synth_def\<close> "ML setup for synthetic definitions"
+    (Parse.ML_source >> synth_def);
+in end
 \<close>
 
 consts height :: "[i\<Rightarrow>i,i] \<Rightarrow> i"
@@ -45,17 +63,15 @@ end
 
 lemma p : "my_x(2) = 3" unfolding my_x_def ..
 
+(* 
 local_setup\<open>
-  synthetic_def @{context} "ff" "another_x" "another_def"
+  synthetic_def @{context} "ff" "another_x" "another_x_def"
 \<close>
+*)
 
-lemma "another_x(2) = 3" unfolding another_def ..
-ML\<open>
-let val ctxt = @{context}
-in
- Variable.import  true [Proof_Context.get_thm ctxt "ff"] ctxt
-end
-\<close>
+synth_def\<open>("ff",  "another_x")\<close>
+
+lemma "another_x(2) = 3" unfolding another_x_def ..
 
 end  (* context M_basic *)
 
@@ -71,7 +87,6 @@ Local_Theory.define ((@{binding "my_b"}, NoSyn), ((@{binding "my_b_def"}, []), t
 end
 \<close>
 
-find_theorems name:my_b
 end  (* context M_basic *)
 
 end
