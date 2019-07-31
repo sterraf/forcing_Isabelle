@@ -6,7 +6,7 @@
 section \<open>Binary Numerals\<close>
 
 theory Num
-  imports ZF "src/Nat_Miscellanea"
+  imports ZF "../src/Nat_Miscellanea"
 begin
 
 subsection \<open>The \<open>num\<close> type\<close>
