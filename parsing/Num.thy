@@ -9,6 +9,48 @@ theory Num
   imports ZF "../src/Nat_Miscellanea"
 begin
 
+abbreviation
+  digit3 :: i   ("3") where "3 == succ(2)"
+
+abbreviation
+  digit4 :: i   ("4") where "4 == succ(3)"
+
+abbreviation
+  digit5 :: i   ("5") where "5 == succ(4)"
+
+abbreviation
+  digit6 :: i   ("6") where "6 == succ(5)"
+
+abbreviation
+  digit7 :: i   ("7") where "7 == succ(6)"
+
+abbreviation
+  digit8 :: i   ("8") where "8 == succ(7)"
+
+abbreviation
+  digit9 :: i   ("9") where "9 == succ(8)"
+
+definition
+  decimal :: "i\<Rightarrow>i\<Rightarrow>i" where
+  "decimal(t,u) \<equiv> succ(9) #* t #+ u"
+
+definition
+  identical :: "i\<Rightarrow>i" where
+  "identical(u) \<equiv>  u"
+
+nonterminal "nats"
+syntax
+  "" :: "i \<Rightarrow> nats"  ("_")
+  "_Digits" :: "[nats,i] \<Rightarrow> nats"  ("__")
+  "_Numeral" :: "nats \<Rightarrow> i"  ("#(_)#")
+translations
+  "#xs x#" \<rightleftharpoons> "CONST decimal(#xs#,x)"
+  "#x#"  \<rightleftharpoons>  "CONST identical(x)"
+
+lemmas digit_simps [simp] = decimal_def identical_def
+
+schematic_goal "#2 1# = ?K" by simp
+
 subsection \<open>The \<open>num\<close> type\<close>
 
 consts num :: "i"
