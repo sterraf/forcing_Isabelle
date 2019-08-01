@@ -34,10 +34,6 @@ definition
   decimal :: "i\<Rightarrow>i\<Rightarrow>i" where
   "decimal(t,u) \<equiv> succ(9) #* t #+ u"
 
-definition
-  identical :: "i\<Rightarrow>i" where
-  "identical(u) \<equiv>  u"
-
 nonterminal "nats"
 syntax
   "" :: "i \<Rightarrow> nats"  ("_")
@@ -45,9 +41,9 @@ syntax
   "_Numeral" :: "nats \<Rightarrow> i"  ("#(_)#")
 translations
   "#xs x#" \<rightleftharpoons> "CONST decimal(#xs#,x)"
-  "#x#"  \<rightleftharpoons>  "CONST identical(x)"
+  "#x#"  \<rightleftharpoons>  "CONST decimal(0,x)"
 
-lemmas digit_simps [simp] = decimal_def identical_def
+lemmas digit_simps [simp] = decimal_def 
 
 schematic_goal "#2 1# = ?K" by simp
 
