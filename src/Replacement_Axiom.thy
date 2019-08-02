@@ -22,7 +22,7 @@ lemma Replace_sats_in_MG:
     "\<pi> \<in> M" "\<sigma> \<in> M" "val(G,\<pi>) = c" "val(G,\<sigma>) = w"
     "\<phi> \<in> formula" "arity(\<phi>) \<le> 3"
   shows
-    "{v. x\<in>c, sats(M[G], \<phi>, [x,v,w])} \<in> M[G]"
+    "{v. x\<in>c, v\<in>M[G] \<and> sats(M[G], \<phi>, [x,v,w])} \<in> M[G]"
   sorry
 
 theorem strong_replacement_in_MG:
@@ -38,18 +38,18 @@ proof -
     obtain \<pi> \<sigma> where "val(G, \<pi>) = c" "val(G, \<sigma>) = w" "\<pi> \<in> M" "\<sigma> \<in> M" 
       using GenExt_def by auto
     with assms 
-    have Eq1: "{v. x\<in>c, sats(M[G], \<phi>, [x,v,w])} \<in> M[G]"
+    have Eq1: "{v. x\<in>c, v\<in>M[G] \<and> sats(M[G], \<phi>, [x,v,w])} \<in> M[G]"
       using Replace_sats_in_MG by auto
   }
   then
   show ?thesis 
-    unfolding strong_replacement_def univalent_def
+     unfolding strong_replacement_def univalent_def
     apply (intro ballI rallI impI)
-    apply (rule_tac x="{v . x \<in> A, sats(M[G], \<phi>, [x, v, a])}" in rexI)
+    apply (rule_tac x="{v . x \<in> A, v\<in>M[G] \<and> sats(M[G], \<phi>, [x, v, a])}" in rexI)
      apply (auto simp add: Transset_intf Transset_MG)
-
-    oops
-    find_theorems name:ReplaceI
+    apply (drule_tac x=x in bspec; simp_all add: Transset_intf Transset_MG)
+    by blast+ (* 40secs *)
+qed
 
 end (* context G_generic *)
 
