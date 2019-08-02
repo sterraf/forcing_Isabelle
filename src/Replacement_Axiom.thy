@@ -43,12 +43,11 @@ proof -
   }
   then
   show ?thesis 
-     unfolding strong_replacement_def univalent_def
+     unfolding strong_replacement_def univalent_def using Transset_intf[OF Transset_MG]
     apply (intro ballI rallI impI)
     apply (rule_tac x="{v . x \<in> A, v\<in>M[G] \<and> sats(M[G], \<phi>, [x, v, a])}" in rexI)
-     apply (auto simp add: Transset_intf Transset_MG)
-    apply (drule_tac x=x in bspec; simp_all add: Transset_intf Transset_MG)
-    by blast+ (* 40secs *)
+     apply (auto) 
+    by (drule_tac x=x in bspec; simp) (blast) (* 28secs *)
 qed
 
 end (* context G_generic *)
