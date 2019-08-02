@@ -3,6 +3,10 @@ theory Relative_Univ
     Datatype_absolute
 
 begin
+
+lemma rank_eq_wfrank: "rank(a) = wfrank(Memrel(eclose({a})),a)"
+  unfolding rank_def transrec_def wfrank_def wfrec_def sorry
+
 lemma (in M_trivial) powerset_subset_Pow:
   assumes 
     "powerset(M,x,y)" "\<And>z. z\<in>y \<Longrightarrow> M(z)"
@@ -62,6 +66,10 @@ lemma Collect_inter_Transset:
     "{x\<in>b . P(x)} = {x\<in>b . P(x)} \<inter> M"
     using assms unfolding Transset_def
   by (auto)  
+
+lemma (in M_trivial) family_union_closed: "\<lbrakk>strong_replacement(M, \<lambda>x y. y = f(x)); M(A); \<forall>x\<in>A. M(f(x))\<rbrakk>
+      \<Longrightarrow> M(\<Union>x\<in>A. f(x))"
+  using RepFun_closed ..
 
 (* "Vfrom(A,i) == transrec(i, %x f. A \<union> (\<Union>y\<in>x. Pow(f`y)))" *)
 definition
