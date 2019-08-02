@@ -19,11 +19,16 @@ lemma Vset_abs:  "\<lbrakk> i\<in>M; V\<in>M \<rbrakk> \<Longrightarrow> is_Vfro
 
 lemma Replace_sats_in_MG:
   assumes
-    "\<pi> \<in> M" "\<sigma> \<in> M" "val(G,\<pi>) = c" "val(G,\<sigma>) = w"
+    "c\<in>M[G]" "w\<in>M[G]"
     "\<phi> \<in> formula" "arity(\<phi>) \<le> 3"
   shows
     "{v. x\<in>c, v\<in>M[G] \<and> sats(M[G], \<phi>, [x,v,w])} \<in> M[G]"
-  sorry
+proof -
+  from \<open>c\<in>M[G]\<close> \<open>w\<in>M[G]\<close>
+  obtain \<pi> \<sigma> where "val(G, \<pi>) = c" "val(G, \<sigma>) = w" "\<pi> \<in> M" "\<sigma> \<in> M" 
+    using GenExt_def by auto
+  show ?thesis sorry
+qed
 
 theorem strong_replacement_in_MG:
   assumes 
@@ -31,19 +36,12 @@ theorem strong_replacement_in_MG:
   shows  
     "(\<forall>a\<in>(M[G]). strong_replacement(##M[G],\<lambda>x v. sats(M[G],\<phi>,[x,v,a])))"
 proof -
-  { 
-    fix c v w 
-    assume "c\<in>M[G]" "w\<in>M[G]"
-    then 
-    obtain \<pi> \<sigma> where "val(G, \<pi>) = c" "val(G, \<sigma>) = w" "\<pi> \<in> M" "\<sigma> \<in> M" 
-      using GenExt_def by auto
-    with assms 
-    have Eq1: "{v. x\<in>c, v\<in>M[G] \<and> sats(M[G], \<phi>, [x,v,w])} \<in> M[G]"
-      using Replace_sats_in_MG by auto
-  }
+  from assms
+  have "c \<in> M[G] \<Longrightarrow> w \<in> M[G] \<Longrightarrow> {v . x \<in> c, v \<in> M[G] \<and> sats(M[G], \<phi>, [x, v, w])} \<in> M[G]" for c w
+    using Replace_sats_in_MG by auto
   then
   show ?thesis 
-     unfolding strong_replacement_def univalent_def using Transset_intf[OF Transset_MG]
+    unfolding strong_replacement_def univalent_def using Transset_intf[OF Transset_MG]
     apply (intro ballI rallI impI)
     apply (rule_tac x="{v . x \<in> A, v\<in>M[G] \<and> sats(M[G], \<phi>, [x, v, a])}" in rexI)
      apply (auto) 
