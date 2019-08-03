@@ -30,10 +30,8 @@ locale M_ZF =
       and extensionality:   "extensionality(##M)"
       and foundation_ax:    "foundation_ax(##M)"
       and infinity_ax:      "infinity_ax(##M)"
-      and separation_ax:       "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=1 \<or> arity(\<phi>)=2 \<rbrakk> \<Longrightarrow> 
-                              (\<forall>a\<in>M. separation(##M,\<lambda>x. sats(M,\<phi>,[x,a])))" 
-      and replacement_ax:      "\<lbrakk> \<phi> \<in> formula ; arity(\<phi>)=2 \<or> arity(\<phi>)=succ(2) \<rbrakk> \<Longrightarrow>
-                            (\<forall>a\<in>M. strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y,a])))" 
+      and separation_ax:    "\<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow> separation(##M,\<lambda>x. sats(M,\<phi>,[x] @ env))" 
+      and replacement_ax:   "\<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y] @ env))" 
       
 locale forcing_data = forcing_notion + M_ZF +
   fixes enum
