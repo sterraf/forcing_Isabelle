@@ -326,7 +326,7 @@ proof -
   with val_m first_incl 
   have "val(G,?n) = {x\<in>c. sats(M[G], \<phi>, [x, w, c] @ env)}" by auto
   also 
-  have " ... = {x\<in>c. sats(M[G], \<phi>, [x, w] @ env)}" (* this is no longer true *)
+  have " ... = {x\<in>c. sats(M[G], \<phi>, [x, w] @ env)}" 
   proof -
     {
       fix x
@@ -338,8 +338,8 @@ proof -
       have "x\<in>M[G]"
         by (simp add:Transset_MG Transset_intf)
       ultimately 
-      have "sats(M[G], \<phi>, [x,w]@[c] @ env) \<longleftrightarrow> sats(M[G], \<phi>, [x,w] @ env)" 
-        using phi by (rule_tac arity_sats_iff, simp_all)   (* Enhance this *)
+      have "sats(M[G], \<phi>, ([x,w] @ env) @[c]) \<longleftrightarrow> sats(M[G], \<phi>, [x,w] @ env)" 
+        using phi \<open>env \<in> _\<close> by (rule_tac arity_sats_iff, simp_all)   (* Enhance this *)
     }
     then show ?thesis by auto
   qed      
@@ -350,18 +350,19 @@ qed
 
 theorem separation_in_MG:
   assumes 
-    "\<phi>\<in>formula" and "arity(\<phi>) = 1 \<or> arity(\<phi>)=2"
+    "\<phi>\<in>formula" and "arity(\<phi>) \<le> 2 #+ length(env)" and "env\<in>list(M[G])"
   shows  
-    "(\<forall>a\<in>(M[G]). separation(##M[G],\<lambda>x. sats(M[G],\<phi>,[x,a])))"
+    "(\<forall>a\<in>(M[G]).  separation(##M[G],\<lambda>x. sats(M[G],\<phi>,[x,a] @ env)))"
 proof -
   { 
-    fix c w 
-    assume "c\<in>M[G]" "w\<in>M[G]"
-    then 
-    obtain \<pi> \<sigma> where "val(G, \<pi>) = c" "val(G, \<sigma>) = w" "\<pi> \<in> M" "\<sigma> \<in> M" 
-      using GenExt_def by auto
-    with assms 
-    have Eq1: "{x\<in>c. sats(M[G], \<phi>, [x,w])} \<in> M[G]"
+    fix c w
+    assume "c\<in>M[G]" "w\<in>M[G]" 
+    with \<open>env \<in> _\<close>
+    obtain \<pi> \<sigma> nenv where "\<pi> \<in> M" "\<sigma>\<in>M" "val(G, \<pi>) = c" "val(G, \<sigma>) = w" "nenv\<in>list(M)" 
+      "env = map(val(G),nenv)" "length(env) = length(nenv)"
+        using GenExt_def map_val[of env] by auto
+    with \<open>\<phi> \<in> _\<close> \<open>arity(\<phi>) \<le> _\<close> \<open>env \<in> _\<close>
+    have Eq1: "{x\<in>c. sats(M[G], \<phi>, [x,w] @ env)} \<in> M[G]"
       using Collect_sats_in_MG  by auto
   }
   then 
