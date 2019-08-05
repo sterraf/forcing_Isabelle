@@ -341,20 +341,13 @@ proof -
     " ... = {x\<in>?b . sats(M[G],subset_fm(0,1),[x,a])}"
     using Collect_inter_Transset Transset_MG 
     by simp
-  also have
+  also from \<open>?b\<in>M[G]\<close> \<open>a\<in>M[G]\<close>
+  have
     " ... \<in> M[G]"
-  proof -
-    have
-      "arity(subset_fm(0,1)) \<le> 2"
-      by (simp add:  not_lt_iff_le leI nat_union_abs1)
-    moreover note
-      \<open>?\<pi>\<in>M\<close> \<open>\<tau>\<in>M\<close> \<open>val(G,\<tau>) = a\<close>
-    ultimately show ?thesis
-      using Collect_sats_in_MG by auto
-  qed
+      using Collect_sats_in_MG GenExtI nat_simp_union by simp
   finally show ?thesis .
 qed
-end
+end (* context: sep_rename *)
   
 sublocale G_generic \<subseteq> M_trivial"##M[G]"
   using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
