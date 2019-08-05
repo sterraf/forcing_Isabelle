@@ -76,7 +76,7 @@ lemma Collect_inter_Transset:
     using assms unfolding Transset_def
   by (auto)  
 
-context G_generic begin
+context sep_rename begin
     
 lemma name_components_in_M:
   assumes "<\<sigma>,p>\<in>\<theta>" "\<theta> \<in> M"
@@ -360,7 +360,7 @@ sublocale G_generic \<subseteq> M_trivial"##M[G]"
   using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
   unfolding M_trivial_def by simp 
  
-context G_generic begin
+context sep_rename begin
 theorem power_in_MG :
   "power_ax(##(M[G]))"
   unfolding power_ax_def
