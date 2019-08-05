@@ -12,24 +12,9 @@ lemmas transitivity = Transset_intf trans_M
 lemma one_in_M: "one \<in> M"
   by (insert one_in_P P_in_M, simp add: transitivity)
 
-lemma separation_aux: 
-  assumes
-    "b \<in> M" "[\<sigma>, \<pi>] \<in> list(M)" "nenv\<in>list(M)" "\<psi>\<in>formula" "arity(\<psi>) \<le> 5 #+ length(nenv)"
-  shows
-    "{u \<in> b. sats(M,\<psi>,[u] @ [P, leq, one] @ [\<sigma>, \<pi>] @ nenv)} \<in> M" 
-proof -
-  from assms P_in_M leq_in_M one_in_M  
-  have "(\<forall>u\<in>M. separation(##M,\<lambda>x. sats(M,\<psi>,[x] @ [P, leq, one] @ [\<sigma>, \<pi>] @ nenv)))" 
-    using separation_ax by simp  
-  with \<open>b \<in> M\<close> show ?thesis
-    using separation_iff by auto
-qed
-
 end (* context G_generic *)
-(* sats(M, rensep ` PHI, [\<theta>, p, u, P, leq, one, \<sigma>, \<pi>]) \<longleftrightarrow>
-    sats(M, PHI , [P, leq, one] @ [p, \<theta>, \<sigma>, \<pi>, u]) *)
 
-locale sep_rename = G_generic + 
+locale sep_rename = G_generic +
   fixes rensep :: "i"
   assumes
   rensep_action: "arity(\<phi>) \<le> 8 #+ length(env) \<Longrightarrow> [t,p,u,P,leq,one,si,pi] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
@@ -222,7 +207,7 @@ proof -
   note  \<open>val(G,\<pi>) = c\<close> \<open>val(G,\<sigma>) = w\<close> (* from the assumptions *)
   with \<open>?\<psi>\<in>formula\<close>  \<open>arity(?\<psi>) \<le> _\<close> in_M \<open>nenv \<in> _\<close> \<open>env \<in> _\<close> \<open>length(nenv) = _\<close> 
   have "?n\<in>M" 
-    using separation_aux by simp
+    using separation_ax leI separation_iff by auto 
   from generic 
   have "filter(G)" "G\<subseteq>P" 
     unfolding M_generic_def filter_def by simp_all
@@ -383,5 +368,5 @@ proof -
   show ?thesis 
     using separation_iff rev_bexI unfolding is_Collect_def by force
 qed
-end   (* context: sep_rename *)
+end (* context: sep_rename *)
 end

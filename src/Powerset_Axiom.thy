@@ -387,5 +387,5 @@ proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
     "\<exists>x\<in>M[G] . powerset(##M[G], a, x)"
     by auto
 qed
-end
+end (* context: sep_rename *)
 end
