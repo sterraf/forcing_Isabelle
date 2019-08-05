@@ -656,7 +656,7 @@ proof -
     using that 1 \<open>X\<in>M\<close> one_in_M rcheck_in_M arity_sats1_iff[of ?f "[z,one,rcheck(X)]" x M "[one]"] 
           by simp
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,one,rcheck(X),one]))"
-    using threep_repl 1 artyf \<open>X\<in>M\<close> rcheck_in_M one_in_M by simp
+    using replacement_ax 1 artyf \<open>X\<in>M\<close> rcheck_in_M one_in_M by simp
   then 
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,one,rcheck(X)]))"
     using  strong_replacement_cong[of "##M" "\<lambda>x z. sats(M,?f,[x,z,one,rcheck(X),one])" 
