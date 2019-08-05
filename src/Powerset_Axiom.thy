@@ -162,7 +162,7 @@ proof -
     moreover note assms \<open>A\<times>B\<in>M\<close> 
     ultimately show
       "{x \<in> A\<times>B . sats(M, ?\<psi>, [x, p, l, o, \<chi>, p])} \<in> M"
-      using sixp_sep Collect_abs separation_iff
+      using separation_ax separation_iff
       by simp
   qed
   finally show ?thesis .

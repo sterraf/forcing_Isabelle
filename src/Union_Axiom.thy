@@ -63,8 +63,8 @@ proof -
   from assms P_in_M leq_in_M  Union_name_fm_arity have
     "[\<tau>,leq] \<in> list(M)" "[P,\<tau>,leq] \<in> list(M)" by auto
   with assms assms P_in_M leq_in_M  \<open>arity(Union_name_fm)\<le>6\<close> have 
-    "\<forall>u\<in>M . separation(##M,?P)" 
-    using sixp_sep[of Union_name_fm \<tau> leq P \<tau> leq] by simp
+    "separation(##M,?P)" 
+    using separation_ax by simp
   with \<open>?d \<times> P \<in> M\<close> have A:"{ u \<in> ?d \<times> P . ?P(u) } \<in> M" 
     using  separation_iff by force
   {fix x 

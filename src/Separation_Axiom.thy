@@ -1,5 +1,5 @@
 theory Separation_Axiom 
-  imports Forcing_Theorems Renaming 
+  imports Forcing_Theorems
 begin
 
 lemma apply_fun: "f \<in> Pi(A,B) ==> <a,b>: f \<Longrightarrow> f`a = b"
