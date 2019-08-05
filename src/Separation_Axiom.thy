@@ -17,7 +17,7 @@ end (* context G_generic *)
 locale sep_rename = G_generic +
   fixes rensep :: "i"
   assumes
-  rensep_action: "arity(\<phi>) \<le> 8 #+ length(env) \<Longrightarrow> [t,p,u,P,leq,one,pi] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
+  rensep_action: "arity(\<phi>) \<le> 7 #+ length(env) \<Longrightarrow> [t,p,u,P,leq,one,pi] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
       sats(M, rensep`\<phi>,[t,p,u,P,leq,one,pi] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,one,p,t] @ env @ [pi,u])"
   and
   rensep_type [TC]: "\<phi>\<in>formula \<Longrightarrow> rensep`\<phi> \<in> formula"
