@@ -1388,23 +1388,13 @@ proof -
         is_wfrec(##M, iterates_MH(##M,is_F,v) , Memrel(succ(n)), x, y))"
     if "x\<in>M" "z\<in>M" for x z
     using that 2 1 \<open>v\<in>M\<close> by (simp del:pair_abs) 
-  have artyf:"arity(?f) = 4" 
+  have "arity(?f) = 4" 
     unfolding iterates_MH_fm_def is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def 
                     restriction_fm_def pre_image_fm_def quasinat_fm_def fm_defs  
     using arty by (simp add:nat_simp_union)
   then
-  have 3:"sats(M,?f,[x,z,Memrel(succ(n)),v,v]) \<longleftrightarrow> sats(M,?f,[x,z,Memrel(succ(n)),v])"
-    if "x\<in>M" "z\<in>M" for x z    
-    using that 1 \<open>v\<in>M\<close> arity_sats1_iff[of ?f "[z,Memrel(succ(n)),v]" x M "[v]"] 
-          \<open>is_F_fm\<in>formula\<close> by simp
-  have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),v,v]))" 
-          (* tengo que hacer esto feo de repetir el v porque en el lema "threep_repl" me obliga a poner 5 cosas
-             en el entorno, aunque la aridad sea menor a 5...*)
-    using replacement_ax 1 artyf \<open>v\<in>M\<close> \<open>is_F_fm\<in>formula\<close> by simp
-  then 
-  have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),v]))"
-    using  strong_replacement_cong[of "##M" "\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),v,v])" 
-                                            "\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),v])"] 3 by simp
+  have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),v]))" 
+    using replacement_ax 1 \<open>v\<in>M\<close> \<open>is_F_fm\<in>formula\<close> by simp
   then
   have "strong_replacement(##M,\<lambda>x z. 
           \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, iterates_MH(##M,is_F,v) , 
