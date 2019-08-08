@@ -96,6 +96,10 @@ definition
   "is_Vfrom(M,A,i,V) == is_transrec(M,is_HVfrom(M,A),i,V)"
 
 definition
+  is_Vset :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_Vset(M,i,V) == \<exists>z[M]. empty(M,z) \<and> is_Vfrom(M,z,i,V)"
+
+definition
   least :: "[i\<Rightarrow>o,i\<Rightarrow>o,i] \<Rightarrow> o" where
   "least(M,Q,i) \<equiv> ordinal(M,i) \<and> (
          (empty(M,i) \<and> (\<forall>b[M]. ordinal(M,b) \<longrightarrow> \<not>Q(b)))
@@ -157,14 +161,64 @@ lemma least_iff_sats:
   using sats_least_fm [OF is_Q_iff_sats, of j , symmetric]
   by simp
 
-context forcing_data
-
-begin
 (* Better to have this in M_basic or similar *)
-lemma unique_least: "a\<in>M \<Longrightarrow> b\<in>M \<Longrightarrow> least(##M,Q,a) \<Longrightarrow> least(##M,Q,b) \<Longrightarrow> a=b"
+lemma (in forcing_data) unique_least: "a\<in>M \<Longrightarrow> b\<in>M \<Longrightarrow> least(##M,Q,a) \<Longrightarrow> least(##M,Q,b) \<Longrightarrow> a=b"
   unfolding least_def
   by (auto, erule_tac i=a and j=b in Ord_linear_lt; (drule ltD | simp); auto intro:Ord_in_Ord)
-end (* context forcing_data *)
+
+context M_trivial
+begin
+
+lemma least_abs: 
+  assumes "\<And>x. Q(x) \<Longrightarrow> M(x)" "M(a)" 
+  shows "least(M,Q,a) \<longleftrightarrow> a = (\<mu> x. Q(x))"
+  unfolding least_def
+proof (cases "\<forall>b[M]. Ord(b) \<longrightarrow> \<not> Q(b)"; intro iffI; simp add:assms)
+  case True
+  with \<open>\<And>x. Q(x) \<Longrightarrow> M(x)\<close>
+  have "\<not> (\<exists>i. Ord(i) \<and> Q(i)) " by blast
+  then
+  show "0 =(\<mu> x. Q(x))" using Least_0 by simp
+  then
+  show "ordinal(M, \<mu> x. Q(x)) \<and> (empty(M, Least(Q)) \<or> Q(Least(Q)))"
+    by simp 
+next
+  assume "\<exists>b[M]. Ord(b) \<and> Q(b)"
+  then 
+  obtain i where "M(i)" "Ord(i)" "Q(i)" by blast
+  assume "a = (\<mu> x. Q(x))"
+  moreover
+  note \<open>M(a)\<close>
+  moreover from  \<open>Q(i)\<close> \<open>Ord(i)\<close>
+  have "Q(\<mu> x. Q(x))" (is ?G)
+    by (blast intro:LeastI)
+  moreover
+  have "(\<forall>b[M]. Ord(b) \<and> b \<in> (\<mu> x. Q(x)) \<longrightarrow> \<not> Q(b))" (is "?H")
+    using less_LeastE[of Q _ False]
+    by (auto, drule_tac ltI, simp, blast)
+  ultimately
+  show "ordinal(M, \<mu> x. Q(x)) \<and> (empty(M, \<mu> x. Q(x)) \<and> (\<forall>b[M]. Ord(b) \<longrightarrow> \<not> Q(b)) \<or> ?G \<and> ?H)"
+    by simp
+next
+  assume 1:"\<exists>b[M]. Ord(b) \<and> Q(b)"
+  then 
+  obtain i where "M(i)" "Ord(i)" "Q(i)" by blast
+  assume "Ord(a) \<and> (a = 0 \<and> (\<forall>b[M]. Ord(b) \<longrightarrow> \<not> Q(b)) \<or> Q(a) \<and> (\<forall>b[M]. Ord(b) \<and> b \<in> a \<longrightarrow> \<not> Q(b)))"
+  with 1
+  have "Ord(a)" "Q(a)" "\<forall>b[M]. Ord(b) \<and> b \<in> a \<longrightarrow> \<not> Q(b)"
+    by blast+
+  moreover from this and \<open>\<And>x. Q(x) \<Longrightarrow> M(x)\<close>
+  have "Ord(b) \<Longrightarrow> b \<in> a \<Longrightarrow> \<not> Q(b)" for b
+    by blast
+  moreover from this and \<open>Ord(a)\<close>
+  have "b < a \<Longrightarrow> \<not> Q(b)" for b
+    unfolding lt_def using Ord_in_Ord by blast
+  ultimately
+  show "a = (\<mu> x. Q(x))"
+    using Least_equality by simp
+qed
+
+end (* context M_trivial *)
 
 subsection\<open>Formula synthesis\<close>
 
@@ -228,6 +282,7 @@ schematic_goal is_HVfrom_iff_sats:
     \<open>nth(f,env) = ff\<close>[symmetric] \<open>nth(h,env) = hh\<close>[symmetric]
   by (rule sats_is_HVfrom_fm_auto(1); simp add:assms)
 
+(* Next two are not needed *)
 schematic_goal sats_is_Vfrom_fm_auto:
   assumes
     "a\<in>nat" "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "A\<noteq>0"
@@ -246,10 +301,32 @@ schematic_goal is_Vfrom_iff_sats:
     "a\<in>nat" "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "A\<noteq>0"
     "i < length(env)" "v < length(env)"
   shows
-       "is_Vfrom(##A,aa,ii,vv) \<longleftrightarrow> sats(A, ?ihvf_fm(a,i,v), env)"
+    "is_Vfrom(##A,aa,ii,vv) \<longleftrightarrow> sats(A, ?ivf_fm(a,i,v), env)"
   unfolding \<open>nth(a,env) = aa\<close>[symmetric] \<open>nth(i,env) = ii\<close>[symmetric]
     \<open>nth(v,env) = vv\<close>[symmetric]
   by (rule sats_is_Vfrom_fm_auto(1); simp add:assms)
+
+schematic_goal sats_is_Vset_fm_auto:
+  assumes
+    "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "A\<noteq>0"
+    "i < length(env)" "v < length(env)"
+  shows
+    "is_Vset(##A,nth(i, env),nth(v, env))
+    \<longleftrightarrow> sats(A,?ivs_fm(i,v),env)"
+    and
+    "?ivs_fm(i,v) \<in> formula"
+  unfolding is_Vset_def is_Vfrom_def
+  by (insert assms; (rule sep_rules is_HVfrom_iff_sats is_transrec_iff_sats | simp))+
+
+schematic_goal is_Vset_iff_sats:
+  assumes
+    "nth(i,env) = ii" "nth(v,env) = vv"
+    "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "A\<noteq>0"
+    "i < length(env)" "v < length(env)"
+  shows
+    "is_Vset(##A,ii,vv) \<longleftrightarrow> sats(A, ?ivs_fm(i,v), env)"
+  unfolding \<open>nth(i,env) = ii\<close>[symmetric] \<open>nth(v,env) = vv\<close>[symmetric]
+  by (rule sats_is_Vset_fm_auto(1); simp add:assms)
 
 section\<open>Absoluteness results\<close>
 
@@ -280,6 +357,12 @@ lemma Vfrom_closed: "\<lbrakk> M(A); M(i) \<rbrakk> \<Longrightarrow> M({x\<in>V
 
 lemma rank_closed: "M(a) \<Longrightarrow> M(rank(a))"
   sorry
+
+lemma Vset_abs: "\<lbrakk> M(i); M(V) \<rbrakk> \<Longrightarrow> is_Vset(M,i,V) \<longleftrightarrow> V = {x\<in>Vset(i). M(x)}"
+  using Vfrom_abs unfolding is_Vset_def by simp
+
+lemma Vset_closed: "\<lbrakk> M(i) \<rbrakk> \<Longrightarrow> M({x\<in>Vset(i). M(x)})"
+  using Vfrom_closed unfolding is_Vset_def by simp
 
 lemma M_into_Vset:
   assumes "M(a)"
