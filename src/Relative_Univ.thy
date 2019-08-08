@@ -1,6 +1,6 @@
 theory Relative_Univ
   imports
-    Names
+    Names Rank
 
 begin
 
@@ -94,6 +94,77 @@ definition
 definition
   is_Vfrom :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
   "is_Vfrom(M,A,i,V) == is_transrec(M,is_HVfrom(M,A),i,V)"
+
+definition
+  least :: "[i\<Rightarrow>o,i\<Rightarrow>o,i] \<Rightarrow> o" where
+  "least(M,Q,i) \<equiv> ordinal(M,i) \<and> (
+         (empty(M,i) \<and> (\<forall>b[M]. ordinal(M,b) \<longrightarrow> \<not>Q(b)))
+       \<or> (Q(i) \<and> (\<forall>b[M]. ordinal(M,b) \<and> b\<in>i\<longrightarrow> \<not>Q(b))))"
+
+definition
+  least_fm :: "[i,i] \<Rightarrow> i" where
+  "least_fm(q,i) \<equiv> And(ordinal_fm(i),
+   Or(And(empty_fm(i),Forall(Implies(ordinal_fm(0),Neg(q)))), 
+      And(Exists(And(q,Equal(0,succ(i)))),
+          Forall(Implies(And(ordinal_fm(0),Member(0,succ(i))),Neg(q))))))"
+
+lemma least_fm_type[TC] :"i \<in> nat \<Longrightarrow> q\<in>formula \<Longrightarrow> least_fm(q,i) \<in> formula"
+  unfolding least_fm_def
+  by simp
+
+(* Refactorize Formula and Relative to include the following three lemmas *)
+lemma sats_subset_fm':
+   "\<lbrakk> x\<in> nat; y \<in> nat;env \<in> list(A)\<rbrakk>
+    \<Longrightarrow> sats(A, subset_fm(x,y), env) \<longleftrightarrow> subset(##A,nth(x,env),nth(y,env))"
+  unfolding subset_fm_def subset_def
+  by (simp)
+
+lemma sats_transset_fm':
+   "\<lbrakk>env \<in> list(A); x\<in>nat\<rbrakk>
+    \<Longrightarrow> sats(A, transset_fm(x), env) \<longleftrightarrow> transitive_set(##A,nth(x,env))"
+  unfolding transset_fm_def transitive_set_def 
+  by (simp add:sats_subset_fm')
+
+lemma sats_ordinal_fm':
+   "\<lbrakk>x\<in> nat; env \<in> list(A)\<rbrakk>
+    \<Longrightarrow> sats(A, ordinal_fm(x), env) \<longleftrightarrow> ordinal(##A,nth(x,env))"
+  unfolding ordinal_fm_def ordinal_def
+  by (simp add:sats_subset_fm' sats_transset_fm')
+
+(* Copied from Names! *)
+lemma nth_closed :
+  "0\<in>A \<Longrightarrow> n\<in>nat \<Longrightarrow> env\<in>list(A) \<Longrightarrow> nth(n,env)\<in>A" 
+  sorry 
+
+lemmas basic_fm_simps = sats_subset_fm' sats_transset_fm' sats_ordinal_fm'
+
+lemma sats_least_fm :
+  assumes p_iff_sats: 
+    "\<And>a. a \<in> A \<Longrightarrow> P(a) \<longleftrightarrow> sats(A, p, Cons(a, env))"
+  shows
+    "\<lbrakk>y \<in> nat; env \<in> list(A) ; 0\<in>A\<rbrakk>
+    \<Longrightarrow> sats(A, least_fm(p,y), env) \<longleftrightarrow>
+        least(##A, P, nth(y,env))"
+  using nth_closed p_iff_sats unfolding least_def least_fm_def
+  by (simp add:basic_fm_simps)
+
+lemma least_iff_sats:
+  assumes is_Q_iff_sats: 
+      "\<And>a. a \<in> A \<Longrightarrow> is_Q(a) \<longleftrightarrow> sats(A, q, Cons(a,env))"
+  shows 
+  "\<lbrakk>nth(j,env) = y; j \<in> nat; env \<in> list(A); 0\<in>A\<rbrakk>
+   \<Longrightarrow> least(##A, is_Q, y) \<longleftrightarrow> sats(A, least_fm(q,j), env)"
+  using sats_least_fm [OF is_Q_iff_sats, of j , symmetric]
+  by simp
+
+context forcing_data
+
+begin
+(* Better to have this in M_basic or similar *)
+lemma unique_least: "a\<in>M \<Longrightarrow> b\<in>M \<Longrightarrow> least(##M,Q,a) \<Longrightarrow> least(##M,Q,b) \<Longrightarrow> a=b"
+  unfolding least_def
+  by (auto, erule_tac i=a and j=b in Ord_linear_lt; (drule ltD | simp); auto intro:Ord_in_Ord)
+end (* context forcing_data *)
 
 subsection\<open>Formula synthesis\<close>
 
@@ -196,14 +267,47 @@ lemma "\<lbrakk>M(A); M(x); M(f); M(h) \<rbrakk> \<Longrightarrow>
 lemma "relation2(M,is_HVfrom(M,A),MHVfrom(M,A))"
   unfolding is_HVfrom_def MHVfrom_def relation2_def
   oops
-
 end (* context M_basic *)
 
 context M_trancl
 begin
 
-lemma Vfrom_abs: "\<lbrakk>M(A); M(i); M(V) \<rbrakk> \<Longrightarrow> is_Vfrom(M,A,i,V) \<longleftrightarrow> V = {x\<in>Vfrom(A,i). M(x)}"
+lemma Vfrom_abs: "\<lbrakk> M(A); M(i); M(V) \<rbrakk> \<Longrightarrow> is_Vfrom(M,A,i,V) \<longleftrightarrow> V = {x\<in>Vfrom(A,i). M(x)}"
   sorry
 
-end
+lemma Vfrom_closed: "\<lbrakk> M(A); M(i) \<rbrakk> \<Longrightarrow> M({x\<in>Vfrom(A,i). M(x)})"
+  sorry
+
+lemma rank_closed: "M(a) \<Longrightarrow> M(rank(a))"
+  sorry
+
+lemma M_into_Vset:
+  assumes "M(a)"
+  shows "\<exists>i[M]. \<exists>V[M]. ordinal(M,i) \<and> is_Vfrom(M,0,i,V) \<and> a\<in>V"
+proof -
+  let ?i="succ(rank(a))"
+  from assms
+  have "a\<in>{x\<in>Vfrom(0,?i). M(x)}" (is "a\<in>?V")
+    using Vset_Ord_rank_iff by simp
+  moreover from assms
+  have "M(?i)"
+    using rank_closed by simp
+  moreover 
+  note \<open>M(a)\<close>
+  moreover from calculation
+  have "M(?V)"
+    using Vfrom_closed by simp
+  moreover from calculation
+  have "ordinal(M,?i) \<and> is_Vfrom(M, 0, ?i, ?V) \<and> a \<in> ?V"
+    using Ord_rank Vfrom_abs by simp 
+  ultimately
+  show ?thesis by blast
+qed
+end (* context M_trancl *)
+
+context M_wfrank
+begin
+
+end (* M_wfrank *)
+
 end
