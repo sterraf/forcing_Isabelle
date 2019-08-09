@@ -161,6 +161,9 @@ lemma least_iff_sats:
   using sats_least_fm [OF is_Q_iff_sats, of j , symmetric]
   by simp
 
+lemma least_conj: "a\<in>M \<Longrightarrow> least(##M, \<lambda>x. x\<in>M \<and> Q(x),a) \<longleftrightarrow> least(##M,Q,a)"
+  unfolding least_def by simp
+
 (* Better to have this in M_basic or similar *)
 lemma (in forcing_data) unique_least: "a\<in>M \<Longrightarrow> b\<in>M \<Longrightarrow> least(##M,Q,a) \<Longrightarrow> least(##M,Q,b) \<Longrightarrow> a=b"
   unfolding least_def
@@ -217,6 +220,11 @@ next
   show "a = (\<mu> x. Q(x))"
     using Least_equality by simp
 qed
+
+lemma Least_closed:
+  assumes "\<And>x. Q(x) \<Longrightarrow> M(x)"
+  shows "M(\<mu> x. Q(x))"
+  using assms LeastI[of Q] Least_0 by (cases "(\<exists>i. Ord(i) \<and> Q(i))", auto)
 
 end (* context M_trivial *)
 
