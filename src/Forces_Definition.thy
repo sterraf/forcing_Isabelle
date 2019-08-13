@@ -746,7 +746,7 @@ lemma forces_mem_type [TC]:
 lemma pred_Un:
   "x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> Arith.pred(succ(x) \<union> y) = x \<union> Arith.pred(y)"
   "x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> Arith.pred(x \<union> succ(y)) = Arith.pred(x) \<union> y"
-  sorry
+  using pred_Un_distrib pred_succ_eq by simp_all
 
 lemma arity_forces_eq:
   "t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow> arity(forces_eq(t1,t2)) = (t1 \<union> t2) #+ 5"
