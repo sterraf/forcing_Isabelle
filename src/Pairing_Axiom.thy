@@ -3,9 +3,8 @@ theory Pairing_Axiom imports Names Interface begin
 context forcing_data
 begin
 
-lemma valsigma :
-  "one \<in> G \<Longrightarrow> {\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>} \<in> M \<Longrightarrow>
-   val(G,{\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>}) = {val(G,\<tau>),val(G,\<rho>)}"
+lemma val_Upair :
+  "one \<in> G \<Longrightarrow> val(G,{\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>}) = {val(G,\<tau>),val(G,\<rho>)}"
   by (insert one_in_P, rule trans, subst def_val,auto simp add: Sep_and_Replace)
       
 lemma pairing_in_MG : 
@@ -30,7 +29,7 @@ proof -
     then have "val(G,?\<sigma>) \<in> M[G]"
       using GenExtI by simp
     with 1 have "{val(G,\<tau>),val(G,\<rho>)} \<in> M[G]" 
-      using valsigma assms one_in_G by simp
+      using val_Upair assms one_in_G by simp
     with 0 have "{x,y} \<in> M[G]" by simp
     }
     then show ?thesis unfolding upair_ax_def upair_def by auto
