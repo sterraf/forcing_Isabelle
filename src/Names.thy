@@ -778,8 +778,12 @@ end
 locale M_extra_assms = forcing_data +
   assumes
     repl_check_pair : "strong_replacement(##M,\<lambda>p y. y =<check(p),p>)"
-    
 begin 
+
+lemma M_subset_MG :  "one \<in> G \<Longrightarrow> M \<subseteq> M[G]"
+  using check_in_M one_in_P GenExtI
+  by (intro subsetI, subst valcheck [of G,symmetric], auto)
+
 definition
   G_dot :: "i" where
   "G_dot == {<check(p),p> . p\<in>P}"
@@ -831,6 +835,6 @@ lemma G_in_Gen_Ext :
  using assms val_G_dot GenExtI[of _ G] G_dot_in_M 
   by force
     
-end    (*************** CONTEXT: M_extra_assms *****************)
+end (* M_extra_assms *)
   
 end
