@@ -758,7 +758,9 @@ lemma arity_forces_eq:
     is_nat_case_fm_def quasinat_fm_def Memrel_fm_def fm_defs
   apply (simp add:nat_union_abs1 nat_union_abs2 pred_Un, simp add:nat_simp_union)
   apply (intro conjI impI)
-  sorry
+   apply (rule le_anti_sym,simp_all)
+  apply (drule not_le_imp_lt,simp_all, drule leI,simp)
+done
 
 lemma lambda_Hfrc_at_abs:
   "\<lbrakk>M(P); M(leq)\<rbrakk> \<Longrightarrow>
