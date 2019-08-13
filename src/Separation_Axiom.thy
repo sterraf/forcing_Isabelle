@@ -7,11 +7,6 @@ lemma apply_fun: "f \<in> Pi(A,B) ==> <a,b>: f \<Longrightarrow> f`a = b"
 
 context G_generic begin
 
-lemmas transitivity = Transset_intf trans_M
-  
-lemma one_in_M: "one \<in> M"
-  by (insert one_in_P P_in_M, simp add: transitivity)
-
 end (* context G_generic *)
 
 locale sep_rename = G_generic +

@@ -7,6 +7,8 @@ lemma Transset_intf :
   "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
   by (simp add: Transset_def,auto)
 
+lemmas (in forcing_data) transitivity = Transset_intf trans_M
+  
 lemma TranssetI :
   "(\<And>y x. y\<in>x \<Longrightarrow> x\<in>M \<Longrightarrow> y\<in>M) \<Longrightarrow> Transset(M)"
   by (auto simp add: Transset_def)
@@ -351,13 +353,35 @@ lemma arity_repl_tup5p_leq :
 
 (* end tupling *)
 
+lemmas FOL_sats_iff = sats_Nand_iff sats_Forall_iff sats_Neg_iff sats_And_iff
+  sats_Or_iff sats_Implies_iff sats_Iff_iff sats_Exists_iff 
+
+lemma nth_ConsI: "[|nth(n,l) = x; n \<in> nat|] ==> nth(succ(n), Cons(a,l)) = x"
+by simp
+
+lemmas nth_rules = nth_0 nth_ConsI nat_0I nat_succI
+lemmas sep_rules = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
+                   fun_plus_iff_sats 
+                    omega_iff_sats FOL_sats_iff 
+
+lemmas fm_defs = omega_fm_def limit_ordinal_fm_def empty_fm_def typed_function_fm_def
+                 pair_fm_def upair_fm_def domain_fm_def function_fm_def succ_fm_def
+                 cons_fm_def fun_apply_fm_def image_fm_def big_union_fm_def union_fm_def
+                 relation_fm_def composition_fm_def field_fm_def
+
+
 (* Instances of separation of M_basic *)
 
 (* Inter_separation: "M(A) ==> separation(M, \<lambda>x. \<forall>y[M]. y\<in>A \<longrightarrow> x\<in>y)" *)
-              
-lemma arity_inter_fm :
-  "arity(Forall(Implies(Member(0,2),Member(1,0)))) = 2"
-  by (simp add: Un_commute nat_union_abs1)
+
+
+schematic_goal inter_fm_auto:
+assumes 
+  "nth(i,env) = x" "nth(j,env) = B" 
+  "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
+shows
+  "(\<forall>y\<in>A . y\<in>B \<longrightarrow> x\<in>y) \<longleftrightarrow> sats(A,?ifm(i,j),env)"
+  by (insert assms ; (rule sep_rules | simp)+)
   
 lemma (in forcing_data) inter_sep_intf :
   assumes
@@ -365,16 +389,29 @@ lemma (in forcing_data) inter_sep_intf :
   shows
       "separation(##M,\<lambda>x . \<forall>y\<in>M . y\<in>A \<longrightarrow> x\<in>y)"
 proof -
-    from separation_ax arity_inter_fm have 
-        "\<forall>a\<in>M. separation(##M, \<lambda>x. sats(M, Forall(Implies(Member(0,2),Member(1,0))), [x, a]))"
-    by simp
-  with \<open>A\<in>M\<close> have 
-        "separation(##M, \<lambda>x. sats(M, Forall(Implies(Member(0,2),Member(1,0))), [x, A]))"
-    by simp
-  with \<open>A\<in>M\<close> show ?thesis unfolding separation_def by simp
+   obtain ifm where
+    fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow> (\<forall> y\<in>M. y\<in>(nth(1,env)) \<longrightarrow> nth(0,env)\<in>y) 
+    \<longleftrightarrow> sats(M,ifm(0,1),env)"
+    and 
+    "ifm(0,1) \<in> formula" 
+    and
+    "arity(ifm(0,1)) = 2"
+   using \<open>A\<in>M\<close> inter_fm_auto
+     by ( simp del:FOL_sats_iff add: nat_simp_union)
+   then
+   have "\<forall>a\<in>M. separation(##M, \<lambda>x. sats(M,ifm(0,1) , [x, a]))"
+     using separation_ax by simp
+   moreover
+   have "(\<forall>y\<in>M . y\<in>a \<longrightarrow> x\<in>y) \<longleftrightarrow> sats(M,ifm(0,1),[x,a])" 
+     if "a\<in>M" "x\<in>M" for a x
+     using that fmsats[of "[x,a]"] by simp
+   ultimately
+   have "\<forall>a\<in>M. separation(##M, \<lambda>x . \<forall>y\<in>M . y\<in>a \<longrightarrow> x\<in>y)"
+     unfolding separation_def by simp
+   with \<open>A\<in>M\<close> show ?thesis by simp
 qed
 
-  
+
 (* Diff_separation: "M(B) ==> separation(M, \<lambda>x. x \<notin> B)" *)
 lemma arity_diff_fm: 
   "arity(Neg(Member(0,1))) = 2"
@@ -924,9 +961,6 @@ sublocale forcing_data \<subseteq> M_basic "##M"
 
 (* rtran_closure_mem *)
 
-lemma nth_ConsI: "[|nth(n,l) = x; n \<in> nat|] ==> nth(succ(n), Cons(a,l)) = x"
-by simp
-
 
 (* wellfounded trancl *)
 definition
@@ -935,18 +969,6 @@ definition
       \<exists>w[M]. \<exists>wx[M]. \<exists>rp[M]. 
                w \<in> Z & pair(M,w,p,wx) & tran_closure(M,r,rp) & wx \<in> rp"
 
-lemmas FOL_sats_iff = sats_Nand_iff sats_Forall_iff sats_Neg_iff sats_And_iff
-  sats_Or_iff sats_Implies_iff sats_Iff_iff sats_Exists_iff 
-
-lemmas nth_rules = nth_0 nth_ConsI nat_0I nat_succI
-lemmas sep_rules = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
-                   fun_plus_iff_sats 
-                    omega_iff_sats FOL_sats_iff 
-
-lemmas fm_defs = omega_fm_def limit_ordinal_fm_def empty_fm_def typed_function_fm_def
-                 pair_fm_def upair_fm_def domain_fm_def function_fm_def succ_fm_def
-                 cons_fm_def fun_apply_fm_def image_fm_def big_union_fm_def union_fm_def
-                 relation_fm_def composition_fm_def field_fm_def
                                                             
 schematic_goal rtran_closure_mem_auto:
 assumes 
@@ -956,7 +978,6 @@ shows
 "rtran_closure_mem(##A,B,r,p) \<longleftrightarrow> sats(A,?rcm(i,j,k),env)"
   unfolding rtran_closure_mem_def
   by (insert assms ; (rule sep_rules | simp)+)
-(* demora al menos 15 segundos *)
 
 
 lemma (in forcing_data) rtrancl_separation_intf:

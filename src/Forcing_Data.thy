@@ -43,6 +43,8 @@ locale forcing_data = forcing_notion + M_ZF +
       and trans_M:          "Transset(M)"
           
 begin  (*************** CONTEXT: forcing_data *****************)
+
+
 definition
   M_generic :: "i\<Rightarrow>o" where
   "M_generic(G) == filter(G) \<and> (\<forall>D\<in>M. D\<subseteq>P \<and> dense(D)\<longrightarrow>D\<inter>G\<noteq>0)"
@@ -138,7 +140,7 @@ proof -
   with Eq6 show ?thesis 
     unfolding M_generic_def by auto
 qed
-  
+
      
 end    (*************** CONTEXT: forcing_data *****************)      
   
