@@ -54,6 +54,28 @@ lemma comp_in_M: "p\<in>M \<Longrightarrow> fst(p) \<in> M \<and> snd(p)\<in> M"
     show ?thesis by simp
   qed
 
+(* Move to Names *)
+lemma val_only_names: "val(F,\<tau>) = val(F,{x\<in>\<tau>. \<exists>t\<in>domain(\<tau>). \<exists>p\<in>P. x=<t,p>})" 
+    (is "_ = val(F,?name)")
+proof -
+  have "val(F,?name) = {val(F, t).. t\<in>domain(?name), \<exists>p\<in>P. \<langle>t, p\<rangle> \<in> ?name \<and> p \<in> F}"
+    using def_val by blast
+  also
+  have " ... = {val(F, t). t\<in>{y\<in>domain(?name). \<exists>p\<in>P. \<langle>y, p\<rangle> \<in> ?name \<and> p \<in> F}}"
+    using Sep_and_Replace by simp
+  also
+  have " ... = {val(F, t). t\<in>{y\<in>domain(\<tau>). \<exists>p\<in>P. \<langle>y, p\<rangle> \<in> \<tau> \<and> p \<in> F}}"
+    by blast
+  also
+  have " ... = {val(F, t).. t\<in>domain(\<tau>), \<exists>p\<in>P. \<langle>t, p\<rangle> \<in> \<tau> \<and> p \<in> F}"
+    using Sep_and_Replace by simp
+  also
+  have " ... = val(F, \<tau>)"
+    using def_val[symmetric] by blast
+  finally
+  show ?thesis ..
+qed
+
 schematic_goal sats_prebody_fm_auto:
   assumes
     "[P,leq,one,p,\<rho>,\<pi>] @ nenv \<in>list(M)" "\<phi>\<in>formula" "\<alpha>\<in>M" "arity(\<phi>) \<le> 3 #+ length(nenv)"
