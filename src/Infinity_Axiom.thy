@@ -24,8 +24,9 @@ sublocale G_generic \<subseteq> M_trivial"##M[G]"
   using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
   unfolding M_trivial_def by simp 
     
-locale G_generic_extra = G_generic + M_extra_assms  
-  begin
+context G_generic
+begin
+
 lemma infinty_in_MG : "infinity_ax(##M[G])"
 proof -
   from infinity_ax obtain I where
@@ -46,5 +47,5 @@ proof -
     unfolding infinity_ax_def by auto
 qed
 
-end   (* context: G_generic_extra *)
+end (* G_generic *)
 end
