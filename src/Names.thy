@@ -814,8 +814,11 @@ proof -
     by (simp del:setclass_iff add:setclass_iff[symmetric] rcheck_def)
 qed
   
+lemma M_subset_MG :  "one \<in> G \<Longrightarrow> M \<subseteq> M[G]"
+  using check_in_M one_in_P GenExtI
+  by (intro subsetI, subst valcheck [of G,symmetric], auto)
 
-end
+end (* forcing_data *)
 
 (* Other assumptions over M. This will be removed
    when Interface is completed *)
@@ -823,10 +826,6 @@ locale M_extra_assms = forcing_data +
   assumes
     repl_check_pair : "strong_replacement(##M,\<lambda>p y. y =<check(p),p>)"
 begin 
-
-lemma M_subset_MG :  "one \<in> G \<Longrightarrow> M \<subseteq> M[G]"
-  using check_in_M one_in_P GenExtI
-  by (intro subsetI, subst valcheck [of G,symmetric], auto)
 
 definition
   G_dot :: "i" where

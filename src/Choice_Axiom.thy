@@ -219,7 +219,7 @@ proof
     
 end (* M_basic *)
   
-locale G_generic_extra_repl = G_generic + M_extra_assms +
+locale G_generic_extra_repl = G_generic +
   (*     ?f_dot="{\<langle>opair_name(check(\<beta>),s`\<beta>),one\<rangle>. \<beta>\<in>\<alpha>}" *)
   assumes check_repl  : "strong_replacement(##M,\<lambda>p y. y =check(p))"
 begin
