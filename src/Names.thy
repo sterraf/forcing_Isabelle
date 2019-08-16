@@ -455,7 +455,51 @@ qed
 
 lemma val_of_name_alt : 
   "val(G,{x\<in>A\<times>P. Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>P\<inter>G .  Q(<t,p>) }"
-using val_of_name by force
+  using val_of_name by force
+
+lemma val_only_names: "val(F,\<tau>) = val(F,{x\<in>\<tau>. \<exists>t\<in>domain(\<tau>). \<exists>p\<in>P. x=<t,p>})" 
+    (is "_ = val(F,?name)")
+proof -
+  have "val(F,?name) = {val(F, t).. t\<in>domain(?name), \<exists>p\<in>P. \<langle>t, p\<rangle> \<in> ?name \<and> p \<in> F}"
+    using def_val by blast
+  also
+  have " ... = {val(F, t). t\<in>{y\<in>domain(?name). \<exists>p\<in>P. \<langle>y, p\<rangle> \<in> ?name \<and> p \<in> F}}"
+    using Sep_and_Replace by simp
+  also
+  have " ... = {val(F, t). t\<in>{y\<in>domain(\<tau>). \<exists>p\<in>P. \<langle>y, p\<rangle> \<in> \<tau> \<and> p \<in> F}}"
+    by blast
+  also
+  have " ... = {val(F, t).. t\<in>domain(\<tau>), \<exists>p\<in>P. \<langle>t, p\<rangle> \<in> \<tau> \<and> p \<in> F}"
+    using Sep_and_Replace by simp
+  also
+  have " ... = val(F, \<tau>)"
+    using def_val[symmetric] by blast
+  finally
+  show ?thesis ..
+qed
+
+lemma val_only_pairs: "val(F,\<tau>) = val(F,{x\<in>\<tau>. \<exists>t p. x=<t,p>})"
+proof 
+  have "val(F,\<tau>) = val(F,{x\<in>\<tau>. \<exists>t\<in>domain(\<tau>). \<exists>p\<in>P. x=<t,p>})"
+    (is " _ = val(F,?name)")
+    using val_only_names .
+  also
+  have "... \<subseteq> val(F,{x\<in>\<tau>. \<exists>t p. x=<t,p>})"
+    using val_mono[of ?name "{x\<in>\<tau>. \<exists>t p. x=<t,p>}"] by auto
+  finally
+  show "val(F,\<tau>) \<subseteq> val(F,{x\<in>\<tau>. \<exists>t p. x=<t,p>})" by simp
+next
+  show "val(F,{x\<in>\<tau>. \<exists>t p. x=<t,p>}) \<subseteq> val(F,\<tau>)"
+    using val_mono[of "{x\<in>\<tau>. \<exists>t p. x=<t,p>}"] by auto
+qed
+
+lemma val_subset_domain_times_range: "val(F,\<tau>) \<subseteq> val(F,domain(\<tau>)\<times>range(\<tau>))"
+  using val_only_pairs[THEN equalityD1] 
+    val_mono[of "{x \<in> \<tau> . \<exists>t p. x = \<langle>t, p\<rangle>}" "domain(\<tau>)\<times>range(\<tau>)"] by blast
+
+lemma val_subset_domain_times_P: "val(F,\<tau>) \<subseteq> val(F,domain(\<tau>)\<times>P)"
+  using val_only_names[of F \<tau>] val_mono[of "{x\<in>\<tau>. \<exists>t\<in>domain(\<tau>). \<exists>p\<in>P. x=<t,p>}" "domain(\<tau>)\<times>P" F] 
+  by auto
   
 definition
   GenExt :: "i\<Rightarrow>i"     ("M[_]")
