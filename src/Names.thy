@@ -624,6 +624,11 @@ lemma sats_is_Rep_fm :
         is_Replace(##M, nth(x,env), P , nth(y,env))"
   by (simp add: is_Replace_def is_Replace_fm_def p_iff_sats)
 
+lemma nth_closed :
+  assumes "0\<in>A" "env\<in>list(A)"
+  shows "nth(n,env)\<in>A" 
+  using assms(2,1) unfolding nth_def by (induct env; simp)
+
 context forcing_data
 begin
 
@@ -638,11 +643,6 @@ definition
 lemma PHcheck_type [TC]:
      "[| x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat |] ==> PHcheck_fm(x,y,z,u) \<in> formula"
   by (simp add:PHcheck_fm_def)
-
-lemma nth_closed :
-  assumes "0\<in>A" "env\<in>list(A)"
-  shows "nth(n,env)\<in>A" 
-  using assms(2,1) unfolding nth_def by (induct env; simp)
 
 lemma sats_PHcheck_fm [simp]: 
   "[| x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat ; env \<in> list(M)|]
