@@ -203,7 +203,7 @@ definition
   body_fm :: "[i,i]\<Rightarrow>i" where
   "body_fm(\<phi>,n) \<equiv> renbody`body_fm'(\<phi>,n)"
 
-lemma body_fm_type [TC]: "\<phi>\<in>formula \<Longrightarrow>  body_fm(\<phi>)\<in>formula"
+lemma body_fm_type [TC]: "m \<in> nat \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow>  body_fm(\<phi>,m)\<in>formula"
   unfolding body_fm_def by simp
 
 lemma sats_body_fm:
@@ -314,7 +314,7 @@ proof -
   moreover from \<open>arity(_) \<le> 3 #+ length(nenv)\<close>
   have "arity(?f_fm) \<le> 6 #+ length(env)" (* or 8? *)
     unfolding body_fm_def using arity_forces arity_renrep sorry
-  moreover from \<open>\<phi>\<in>formula\<close>
+  moreover from \<open>\<phi>\<in>formula\<close> \<open>nenv\<in>list(M)\<close>
   have "?f_fm\<in>formula" by simp
   moreover
   note inM = P_in_M leq_in_M one_in_M \<open>nenv\<in>list(M)\<close> \<open>\<pi>\<in>M\<close>
