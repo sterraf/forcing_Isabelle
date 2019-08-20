@@ -648,7 +648,7 @@ lemma sats_PHcheck_fm [simp]:
   "[| x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat ; env \<in> list(M)|]
     ==> sats(M,PHcheck_fm(x,y,z,u),env) \<longleftrightarrow> 
         PHcheck(nth(x,env),nth(y,env),nth(z,env),nth(u,env))" 
-  using zero_in_M nth_closed by (simp add: PHcheck_def PHcheck_fm_def)
+  using zero_in_M Names.nth_closed by (simp add: PHcheck_def PHcheck_fm_def)
 
 (* 
   "is_Hcheck(o,z,f,hc)  == is_Replace(##M,z,PHcheck(o,f),hc)"
