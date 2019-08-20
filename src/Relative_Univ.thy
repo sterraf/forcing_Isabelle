@@ -135,11 +135,6 @@ lemma sats_ordinal_fm':
   unfolding ordinal_fm_def ordinal_def
   by (simp add:sats_subset_fm' sats_transset_fm')
 
-(* Copied from Names! *)
-lemma nth_closed :
-  "0\<in>A \<Longrightarrow> n\<in>nat \<Longrightarrow> env\<in>list(A) \<Longrightarrow> nth(n,env)\<in>A" 
-  sorry 
-
 lemmas basic_fm_simps = sats_subset_fm' sats_transset_fm' sats_ordinal_fm'
 
 lemma sats_least_fm :
