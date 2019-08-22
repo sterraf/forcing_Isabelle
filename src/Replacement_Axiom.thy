@@ -42,7 +42,6 @@ lemma arity_renrep:
  unfolding renrep_def
     using renrep_fn_type[OF assms(1)] ren_arity assms
     by simp
-  
 
 lemma renrep_sats :
   assumes
@@ -164,15 +163,23 @@ lemma prebody_fm_type [TC]:
   "\<phi>\<in>formula \<Longrightarrow> n \<in> nat \<Longrightarrow> prebody_fm(\<phi>,n)\<in>formula"
   unfolding prebody_fm_def by simp
 
+lemmas new_fm_defs = fm_defs is_transrec_fm_def  is_Replace_fm_def is_eclose_fm_def mem_eclose_fm_def 
+   finite_ordinal_fm_def is_wfrec_fm_def  Memrel_fm_def eclose_n_fm_def is_recfun_fm_def is_iterates_fm_def
+   iterates_MH_fm_def is_nat_case_fm_def quasinat_fm_def pre_image_fm_def restriction_fm_def
+
 lemma arity_prebody_fm:
   assumes
     "\<phi>\<in>formula" "\<alpha>\<in>M" "m \<in> nat" "arity(\<phi>) \<le> 3 #+ m"
   shows
-    "arity(prebody_fm(\<phi>,m))\<le> 7 #+ m"
-  unfolding prebody_fm_def using assms arity_renrep 
-  apply(simp add: fm_defs arity_forces)
-  sorry
-
+    "arity(prebody_fm(\<phi>,m))\<le>7 #+ m"
+  unfolding prebody_fm_def using assms
+  apply(simp add:  new_fm_defs )
+  apply(simp add: nat_simp_union,rule, rule, (rule pred_le,simp+)+)
+  apply(subgoal_tac "arity(forces(\<phi>)) \<le> 7 #+m ")
+  apply(subgoal_tac "forces(\<phi>)\<in> formula")
+  apply(drule arity_renrep[of _ "forces(\<phi>)",OF \<open>m\<in>nat\<close>],simp_all add:arity_forces)
+  done
+  
 
 definition
   body_fm' :: "[i,i]\<Rightarrow>i" where
