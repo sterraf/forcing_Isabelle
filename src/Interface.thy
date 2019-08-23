@@ -45,7 +45,6 @@ done
 sublocale forcing_data \<subseteq> M_trivial "##M"
   by (rule mtriv)
   
-(* tupling *)
 abbreviation
  dec10  :: i   ("10") where "10 == succ(9)"
     
@@ -61,19 +60,8 @@ abbreviation
 abbreviation
  dec14  :: i   ("14") where "14 == succ(13)"
 
-
-lemma uniq_dec_2p: "<C,D> \<in> M \<Longrightarrow> 
-             \<forall>A\<in>M. \<forall>B\<in>M. <C,D> = \<langle>A, B\<rangle> \<longrightarrow> P(x, A, B)
-            \<longleftrightarrow>
-              P(x, C, D)"
-  by simp
-    
-
 lemma (in forcing_data) tuples_in_M: "A\<in>M \<Longrightarrow> B\<in>M \<Longrightarrow> <A,B>\<in>M" 
    by (simp del:setclass_iff add:setclass_iff[symmetric])
-
-
-(* end tupling *)
 
 lemmas FOL_sats_iff = sats_Nand_iff sats_Forall_iff sats_Neg_iff sats_And_iff
   sats_Or_iff sats_Implies_iff sats_Iff_iff sats_Exists_iff 
