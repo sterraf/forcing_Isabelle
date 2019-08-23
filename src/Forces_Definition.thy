@@ -748,7 +748,7 @@ lemma pred_Un:
   "x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> Arith.pred(x \<union> succ(y)) = Arith.pred(x) \<union> y"
   using pred_Un_distrib pred_succ_eq by simp_all
 
-lemma arity_forces_eq:
+lemma arity_forces_eq [simp]:
   "t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow> arity(forces_eq(t1,t2)) = (t1 \<union> t2) #+ 5"
   unfolding forces_eq_def is_one_fm_def is_Hfrc_at_fm_def is_tuple_fm_def
     frecrel_eclose_fm_def is_frecrel_fm_def cartprod_fm_def
@@ -762,7 +762,7 @@ lemma arity_forces_eq:
   apply (drule not_le_imp_lt,simp_all, drule leI,simp)
 done
 
-lemma arity_forces_mem:
+lemma arity_forces_mem [simp]:
   "t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow> arity(forces_mem(t1,t2)) = (t1 \<union> t2) #+ 5"
   unfolding forces_mem_def is_one_fm_def is_Hfrc_at_fm_def is_tuple_fm_def
     frecrel_eclose_fm_def is_frecrel_fm_def cartprod_fm_def
@@ -923,17 +923,44 @@ locale forces_rename = forcing_data +
   fren_action: "[x,q,P,leq,one,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
       sats(M, fren`\<phi>,[x,q,P,leq,one,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,one,q] @ env)"
   and
+  arity_fren [simp]: "arity(fren`\<phi>) = arity(\<phi>) #+ 2"
+  and
   fref_action: "[x,P,leq,one,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
       sats(M, fref`\<phi>,[x,P,leq,one,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,one,p,x] @ env)"
   and
+  arity_fref [simp]: "arity(fref`\<phi>) = arity(\<phi>)"
+  and
   renaming_type [TC]: "\<phi>\<in>formula \<Longrightarrow> fren`\<phi> \<in> formula" "\<phi>\<in>formula \<Longrightarrow> fref`\<phi> \<in> formula"
   and 
-  (* The next one will follow by induction *)
-  forces_ren_type [TC]: "forces_ren(fren,fref, \<phi>) \<in> formula" 
-  and
   frecrel_closed: "x\<in>M \<Longrightarrow> frecrel(x)\<in>M"
 
 begin
+
+lemma forces_ren_type [TC]:  "\<phi>\<in>formula \<Longrightarrow> forces_ren(fren,fref, \<phi>) \<in> formula" 
+  by (induct \<phi> set:formula; simp)
+
+lemma arity_forces_ren:
+  shows "\<phi>\<in>formula \<Longrightarrow> arity(forces_ren(fren,fref, \<phi>)) =  arity(\<phi>) #+ 4"
+proof (induct set:formula)
+  case (Member x y)
+  then 
+  show ?case by (simp add:nat_simp_union)
+next
+  case (Equal x y)
+  then 
+  show ?case by (simp add:nat_simp_union)
+next
+  case (Nand \<phi> \<psi>)
+  then 
+  show ?case 
+    by (simp add:fm_defs nat_union_abs1 nat_union_abs2 pred_Un, simp add:nat_simp_union)
+next
+  case (Forall \<phi>)
+  then
+  show ?case 
+    apply (simp) (* This is false as it stands, it needs arity(\<phi>) \<noteq> 0 *)
+    sorry
+qed
 
 lemma sats_forces_ren_Nand: 
   assumes 
