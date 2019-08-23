@@ -762,6 +762,20 @@ lemma arity_forces_eq:
   apply (drule not_le_imp_lt,simp_all, drule leI,simp)
 done
 
+lemma arity_forces_mem:
+  "t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow> arity(forces_mem(t1,t2)) = (t1 \<union> t2) #+ 5"
+  unfolding forces_mem_def is_one_fm_def is_Hfrc_at_fm_def is_tuple_fm_def
+    frecrel_eclose_fm_def is_frecrel_fm_def cartprod_fm_def
+    is_eclose_fm_def mem_eclose_fm_def finite_ordinal_fm_def
+    eclose_n_fm_def is_iterates_fm_def iterates_MH_fm_def
+    is_wfrec_fm_def is_recfun_fm_def restriction_fm_def pre_image_fm_def
+    is_nat_case_fm_def quasinat_fm_def Memrel_fm_def fm_defs
+  apply (simp add:nat_union_abs1 nat_union_abs2 pred_Un, simp add:nat_simp_union)
+  apply (intro conjI impI)
+   apply (rule le_anti_sym,simp_all)
+  apply (drule not_le_imp_lt,simp_all, drule leI,simp)
+  done
+
 lemma lambda_Hfrc_at_abs:
   "\<lbrakk>M(P); M(leq)\<rbrakk> \<Longrightarrow>
    (\<lambda>b c d. M(b) \<longrightarrow> M(c) \<longrightarrow> M(d) \<longrightarrow> is_Hfrc_at(M,P,leq,b,c,d)) \<equiv> (\<lambda>b c d. M(b) \<longrightarrow> M(c) \<longrightarrow> M(d) \<longrightarrow> d = bool_of_o(Hfrc(P, leq, b, c)))"
@@ -965,31 +979,14 @@ lemma sats_forces_ren_Forall:
      (\<forall>x\<in>M. sats(M, forces_ren(fren,fref,\<phi>),[P,leq,one,p,x] @ env))"
   using assms fref_action by simp
 
-lemma 
+lemma sats_forces_ren_Equal:
   assumes
-    "p\<in>P" "[P,leq,one,p] @ env \<in> list(M)" 
+    "p\<in>P" "[P,leq,one,p,x,y] @ env \<in> list(M)" 
   shows
-    "sats(M,forces_ren(fren,fref,Forall(Forall(Equal(0,1)))),[P,leq,one,p] @ env) \<longleftrightarrow> 
-     (\<forall>x\<in>M. \<forall>y\<in>M. sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 2, 1, 0), 0, 1, 2),
-         [frecrel(eclose(<0,x,y,p>)), <0,x,y,p>, 1, 0, P, leq, one, p, x, y] @ env))"
-    (is "?Q \<longleftrightarrow> _")
-proof -
-  from assms
-  have "?Q \<longleftrightarrow> (\<forall>x\<in>M. sats(M, fref ` Forall(fref ` forces_eq(0, 1)),[x, P,leq,one,p] @ env))"
-    by simp
-  also from assms
-  have "... \<longleftrightarrow> (\<forall>x\<in>M. sats(M, Forall(fref ` forces_eq(0, 1)),[P,leq,one,p,x] @ env))"
-    using fref_action by (simp)
-  also from assms
-  have "... \<longleftrightarrow> (\<forall>x\<in>M. \<forall>y\<in>M. sats(M, forces_eq(0, 1),[P,leq,one,p,x,y] @ env))"
-    using fref_action by auto
-  also from assms
-  have "... \<longleftrightarrow> (\<forall>x\<in>M. \<forall>y\<in>M. sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 2, 1, 0), 0, 1, 2),
-         [frecrel(eclose(<0,x,y,p>)), <0,x,y,p>, 1, 0, P, leq, one, p, x, y] @ env))"
-  using sats_forces_eq frecrel_closed by simp
-  finally
-  show ?thesis .
-qed
+    "sats(M,forces_ren(fren,fref,Equal(0,1)),[P,leq,one,p,x,y] @ env) \<longleftrightarrow> 
+     sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 2, 1, 0), 0, 1, 2),
+         [frecrel(eclose(<0,x,y,p>)), <0,x,y,p>, 1, 0, P, leq, one, p, x, y] @ env)"
+  using assms sats_forces_eq frecrel_closed by simp
 
 lemma
   assumes
