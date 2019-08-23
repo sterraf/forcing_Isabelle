@@ -6,7 +6,7 @@ begin
 
 context M_basic begin
 
-lemma 
+lemma
   assumes 
     "strong_replacement(M,\<lambda>x y. y = <x,F(x)>)"
     "strong_replacement(M,\<lambda>x y. y = <x,G(x)>)"
@@ -15,8 +15,6 @@ lemma
   unfolding strong_replacement_def
 proof
   fix A
-  have "\<And>B H. univalent(M, B, \<lambda>x y. y = H(x))" 
-    by simp
   assume "M(A)"
   moreover 
   note assms
