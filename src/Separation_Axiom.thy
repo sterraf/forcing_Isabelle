@@ -21,14 +21,27 @@ locale sep_rename = G_generic +
 
 begin
 
-lemma concat_assoc :"nenv\<in>list(A) \<Longrightarrow> a\<in>list(A) \<Longrightarrow> b\<in> list(A)\<Longrightarrow> nenv @ (a @ b) = (nenv @ a) @ b"
-  sorry
-
-lemma map_val : "env\<in>list(M[G]) \<Longrightarrow> \<exists>nenv\<in>list(M). env = map(val(G),nenv)"
-  sorry
-
 lemma nth_concat : "[p,t] \<in> list(A) \<Longrightarrow> env\<in> list(A) \<Longrightarrow> nth(1 #+ length(env),[p]@ env @ [t]) = t"
-  sorry
+  by(auto simp add:nth_append)
+
+lemma map_val :
+  assumes "env\<in>list(M[G])"
+  shows "\<exists>nenv\<in>list(M). env = map(val(G),nenv)"
+  using assms
+  proof(induct env)
+    case Nil
+    have "map(val(G),Nil) = Nil" by simp
+    then show ?case by force
+  next
+    case (Cons a l)
+    then obtain a' l' where
+      "l' \<in> list(M)" "l=map(val(G),l')" "a = val(G,a')"
+      "Cons(a,l) = map(val(G),Cons(a',l'))" "Cons(a',l') \<in> list(M)"
+      using \<open>a\<in>M[G]\<close> GenExtD
+      by force
+    then show ?case by force
+qed
+
 
 lemma Collect_sats_in_MG :
   assumes
@@ -108,7 +121,7 @@ proof -
         using rensep_action[of "forces(?\<chi>)"  "nenv" \<theta> p u \<pi>] leI by (simp) 
       also from in_M'
       have "... \<longleftrightarrow> sats(M,forces(?\<chi>), ([P, leq, one,p,\<theta>]@nenv@ [\<pi>])@[u])" 
-        using concat_assoc[of nenv _ "[\<pi>]" "[u]"] by simp
+        using app_assoc by simp
       also 
       from in_M' \<open>env\<in>_\<close>  phi \<open>length(nenv) = length(env)\<close>
         \<open>arity(forces(?\<chi>)) \<le> 6 #+ length(env)\<close> \<open>forces(?\<chi>)\<in>formula\<close>
@@ -155,8 +168,9 @@ proof -
           (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>,  map(val(F), [\<theta>] @ nenv @[\<pi>]))))" 
     for u 
     by simp
-  moreover from \<open>env = _\<close>
-  have map_nenv:"map(val(G), nenv@[\<pi>]) = env @ [val(G,\<pi>)]" sorry
+  moreover from \<open>env = _\<close> \<open>\<pi>\<in>M\<close> \<open>nenv\<in>list(M)\<close>
+  have map_nenv:"map(val(G), nenv@[\<pi>]) = env @ [val(G,\<pi>)]"
+    using map_app_distrib append1_eq_iff by auto
   ultimately
   have aux:"(\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> (p\<in>G \<longrightarrow> sats(M[G],?\<chi>,[val(G,\<theta>)] @ env @ [val(G,\<pi>)])))" 
    (is "(\<exists>\<theta>\<in>M. \<exists>p\<in>P. _ ( _ \<longrightarrow> sats(_,_,?vals(\<theta>))))")
