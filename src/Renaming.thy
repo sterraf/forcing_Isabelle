@@ -12,34 +12,142 @@ lemma app_nm : "n\<in>nat \<Longrightarrow> m\<in>nat \<Longrightarrow> f\<in>n\
   done
     
 section\<open>Renaming of free variables\<close>
-  
+
+(*
+f : m \<rightarrow> n
+g : p \<rightarrow> q
+f+g : m+p \<rightarrow> n+q
+f+g (x) = {f(x)                  si x < m
+        = {g(x-m)+n              si m \<le> x < m+p
+*)
+definition 
+  sum :: "[i,i,i,i,i] \<Rightarrow> i" where
+  "sum(f,g,m,n,p) == \<lambda>j \<in> m#+p  . if j<m then f`j else (g`(j#-m))#+n"
+
+lemma sum_inl:
+  assumes "m \<in> nat" "n\<in>nat" "p\<in>nat" "q\<in>nat"
+    "f \<in> m\<rightarrow>n" "x \<in> m"
+  shows "sum(f,g,m,n,p)`x = f`x"
+proof -
+  from \<open>m\<in>nat\<close>
+  have "m\<le>m#+p" 
+    using add_le_self[of m] by simp
+  with assms
+  have "x\<in>m#+p" using ltI[of x m] lt_trans2[of x m "m#+p"] ltD by simp
+  from assms
+  have "x<m == True" 
+    using ltI by simp  
+  with \<open>x\<in>m#+p\<close>
+  show ?thesis 
+    unfolding sum_def using beta if_true
+    by simp
+qed
+
+lemma sum_inr:
+  assumes "m \<in> nat" "n\<in>nat" "p\<in>nat" "q\<in>nat"
+    "g\<in>p\<rightarrow>q" "m \<le> x" "x < m#+p"
+  shows "sum(f,g,m,n,p)`x = g`(x#-m)#+n"
+proof -
+  from assms have "x\<in>nat" using in_n_in_nat[of "m#+p"] ltD
+    by simp
+  with assms have 1 :  "x<m == False" 
+    using not_lt_iff_le[THEN iffD2] by simp 
+  from assms 
+  have "x\<in>m#+p" using ltD by simp
+  with 1 show ?thesis 
+    unfolding sum_def using beta if_false
+    by simp
+qed
+
+
+lemma sum_type  :
+  assumes "m \<in> nat" "n\<in>nat" "p\<in>nat" "q\<in>nat"
+    "f \<in> m\<rightarrow>n" "g\<in>p\<rightarrow>q"
+  shows "sum(f,g,m,n,p) \<in> (m#+p) \<rightarrow> (n#+q)"
+proof -
+  let ?h = "sum(f,g,m,n,p)"
+  from \<open>m\<in>nat\<close> \<open>n\<in>nat\<close> \<open>q\<in>nat\<close>
+  have "m\<le>m#+p" "n\<le>n#+q" "q\<le>n#+q"
+    using add_le_self[of m]  add_le_self2[of n q] by simp_all
+  from \<open>p\<in>nat\<close>
+  have "p = (m#+p)#-m" using diff_add_inverse2 by simp   
+  let ?h = "sum(f,g,m,n,p)"
+  {fix x
+    assume 1: "x\<in>m#+p" "x<m"
+    with 1 have "?h`x= f`x" "x\<in>m"
+      using assms sum_inl ltD by simp_all
+    with \<open>f\<in>m\<rightarrow>n\<close>
+    have "?h`x \<in> n" by simp
+    with \<open>n\<in>nat\<close> have "?h`x < n" using ltI by simp
+    with \<open>n\<le>n#+q\<close> 
+    have "?h`x < n#+q" using lt_trans2 by simp
+    then 
+    have "?h`x \<in> n#+q"  using ltD by simp
+  }
+  then have 1:"?h`x \<in> n#+q" if "x\<in>m#+p" "x<m" for x using that .
+  {fix x
+    assume 1: "x\<in>m#+p" "m\<le>x"
+    then have "x<m#+p" "x\<in>nat" using ltI in_n_in_nat[of "m#+p"] ltD by simp_all
+    with 1 
+    have 2 : "?h`x= g`(x#-m)#+n" 
+      using assms sum_inr ltD by simp_all
+    from assms \<open>x\<in>nat\<close> \<open>p=m#+p#-m\<close>
+    have "x#-m < p" using diff_mono[OF _ _ _ \<open>x<m#+p\<close> \<open>m\<le>x\<close>] by simp
+    then have "x#-m\<in>p" using ltD by simp
+    with \<open>g\<in>p\<rightarrow>q\<close>
+    have "g`(x#-m) \<in> q"  by simp
+    with \<open>q\<in>nat\<close> have "g`(x#-m) < q" using ltI by simp
+    with \<open>q\<in>nat\<close>
+    have "(g`(x#-m))#+n <n#+q" using add_lt_mono1[of "g`(x#-m)" _ n,OF _ \<open>q\<in>nat\<close>] by simp
+    with 2
+    have "?h`x \<in> n#+q"  using ltD by simp
+  }
+  then have 2:"?h`x \<in> n#+q" if "x\<in>m#+p" "m\<le>x" for x using that .
+  have
+    D: "?h`x \<in> n#+q" if "x\<in>m#+p" for x 
+    using that 
+  proof (cases "x<m")
+    case True
+    then show ?thesis using 1 that by simp
+  next
+    case False
+    with \<open>m\<in>nat\<close> have "m\<le>x" using not_lt_iff_le that in_n_in_nat[of "m#+p"] by simp
+    then show ?thesis using 2 that by simp
+  qed
+  have A:"function(?h)" unfolding sum_def using function_lam by simp
+  have " x\<in> (m #+ p) \<times> (n #+ q)" if "x\<in> ?h" for x
+    using that lamE[of x "m#+p" _ "x \<in> (m #+ p) \<times> (n #+ q)"] D unfolding sum_def 
+    by auto
+  then have B:"?h \<subseteq> (m #+ p) \<times> (n #+ q)" ..
+  have "m #+ p \<subseteq> domain(?h)" 
+    unfolding sum_def using domain_lam by simp
+  with A B 
+  show ?thesis using  Pi_iff [THEN iffD2] by simp
+qed
+
+definition 
+  sum_id' :: "[i,i] \<Rightarrow> i" where
+  "sum_id'(m,f) == sum(\<lambda>x\<in>1.x,f,1,1,m)"
+
 definition 
   sum_id :: "[i,i] \<Rightarrow> i" where
   "sum_id(m,f) == \<lambda>j \<in> succ(m)  . if j=0 then 0 else succ(f`pred(j))"
   
-lemma sum_id0 : "sum_id(m,f)`0 = 0"
-  by(unfold sum_id_def,simp)
-    
-lemma sum_idS : "succ(x) \<in> succ(m) \<Longrightarrow> sum_id(m,f)`succ(x) = succ(f`x)"
-  by(unfold sum_id_def,simp)
-    
-lemma sum_id_tc : 
-  "n \<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> f \<in> n \<rightarrow> m \<Longrightarrow> sum_id(n,f) \<in> succ(n) \<rightarrow> succ(m)"
-  apply (rule Pi_iff [THEN iffD2],rule conjI)
-   apply (unfold sum_id_def,rule function_lam)
-  apply (rule conjI,auto)
-  apply (erule_tac p="x" and A="succ(n)" and 
-      b="\<lambda> i. if i = 0 then 0 else succ(f`pred(i))" and 
-      P="x\<in>succ(n)\<times>succ(m)" in lamE)
-  apply(rename_tac j,case_tac "j=0",simp,simp add:zero_in)
-  apply(subgoal_tac "f`pred(j) \<in> m",simp)
-   apply(rule nat_succI,assumption+)
-  apply (erule_tac A="n" in apply_type)
-  apply (rule Ord_succ_mem_iff [THEN iffD1],simp)
-  apply (subst succ_pred_eq,rule_tac A="succ(n)" in subsetD,rule naturals_subset_nat)
-     apply (simp+)
+lemma sum_id0 : "m\<in>nat\<Longrightarrow>sum_id'(m,f)`0 = 0"
+by(unfold sum_id'_def,subst sum_inl,auto)
+
+lemma sum_idS : "p\<in>nat \<Longrightarrow> q\<in>nat \<Longrightarrow> f\<in>p\<rightarrow>q \<Longrightarrow> x \<in> p \<Longrightarrow> sum_id'(p,f)`(succ(x)) = succ(f`x)"
+  by(subgoal_tac "x\<in>nat",unfold sum_id'_def,subst sum_inr,simp_all add:ltI,simp_all add: app_nm in_n_in_nat)
+
+lemma sum_id_tc_aux :
+  "p \<in> nat \<Longrightarrow>  q \<in> nat \<Longrightarrow> f \<in> p \<rightarrow> q \<Longrightarrow> sum_id'(p,f) \<in> 1#+p \<rightarrow> 1#+q"
+  by (unfold sum_id'_def,rule sum_type,simp_all)
+
+lemma sum_id_tc :
+  "n \<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> f \<in> n \<rightarrow> m \<Longrightarrow> sum_id'(n,f) \<in> succ(n) \<rightarrow> succ(m)"
+  apply(rule ssubst[of  "succ(n) \<rightarrow> succ(m)" "1#+n \<rightarrow> 1#+m"])
+  apply(simp,rule sum_id_tc_aux,simp_all)
   done
-    
     
 section\<open>Renaming of formulas\<close>
   
@@ -55,7 +163,7 @@ primrec
       (\<lambda> n \<in> nat . \<lambda> m \<in> nat. \<lambda>f \<in> n \<rightarrow> m. Nand (ren(p)`n`m`f, ren(q)`n`m`f))"
   
   "ren(Forall(p)) =
-      (\<lambda> n \<in> nat . \<lambda> m \<in> nat. \<lambda>f \<in> n \<rightarrow> m. Forall (ren(p)`succ(n)`succ(m)`sum_id(n,f)))"
+      (\<lambda> n \<in> nat . \<lambda> m \<in> nat. \<lambda>f \<in> n \<rightarrow> m. Forall (ren(p)`succ(n)`succ(m)`sum_id'(n,f)))"
   
 lemma arity_meml : "l \<in> nat \<Longrightarrow> Member(x,y) \<in> formula \<Longrightarrow> arity(Member(x,y)) \<le> l \<Longrightarrow> x \<in> l"
   by(simp,rule subsetD,rule le_imp_subset,assumption,simp)  
@@ -79,8 +187,8 @@ lemma nand_ar2D : "p \<in> formula \<Longrightarrow> q\<in>formula \<Longrightar
 lemma ren_tc : "p \<in> formula \<Longrightarrow> 
   (\<And> n m f . n \<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> f \<in> n\<rightarrow>m \<Longrightarrow>  ren(p)`n`m`f \<in> formula)"
   by (induct set:formula,auto simp add: app_nm sum_id_tc)
-    
-    
+
+
 lemma ren_arity :
   fixes "p"
   assumes "p \<in> formula" 
@@ -110,9 +218,9 @@ next
 next
   case (Forall p)
   from Forall have "succ(n)\<in>nat"  "succ(m)\<in>nat" by auto
-  from Forall have 2: "sum_id(n,f) \<in> succ(n)\<rightarrow>succ(m)" by (simp add:sum_id_tc)
+  from Forall have 2: "sum_id'(n,f) \<in> succ(n)\<rightarrow>succ(m)" by (simp add:sum_id_tc)
   from Forall have 3:"arity(p) \<le> succ(n)" by (rule_tac n="arity(p)" in natE,simp+)
-  then have "arity(ren(p)`succ(n)`succ(m)`sum_id(n,f))\<le>succ(m)" using  
+  then have "arity(ren(p)`succ(n)`succ(m)`sum_id'(n,f))\<le>succ(m)" using  
       Forall \<open>succ(n)\<in>nat\<close> \<open>succ(m)\<in>nat\<close> 2 by force
   then show ?case using Forall 2 3 ren_tc arity_type pred_le by auto
 qed
@@ -126,9 +234,9 @@ lemma env_coincidence_sum_id :
     "f \<in> n \<rightarrow> m"
     "\<And> i . i < n \<Longrightarrow> nth(i,\<rho>) = nth(f`i,\<rho>')"
     "a \<in> A" "j \<in> succ(n)"
-  shows "nth(j,Cons(a,\<rho>)) = nth(sum_id(n,f)`j,Cons(a,\<rho>'))"
+  shows "nth(j,Cons(a,\<rho>)) = nth(sum_id'(n,f)`j,Cons(a,\<rho>'))"
 proof -
-  let ?g="sum_id(n,f)"   
+  let ?g="sum_id'(n,f)"   
   have "succ(n) \<in> nat" using \<open>n\<in>nat\<close> by simp
   then have "j \<in> nat" using \<open>j\<in>succ(n)\<close> in_n_in_nat by blast
   then have "nth(j,Cons(a,\<rho>)) = nth(?g`j,Cons(a,\<rho>'))" 
@@ -145,7 +253,7 @@ proof -
     also have "... = nth(f`i,\<rho>')" using assms \<open>i\<in>n\<close> ltI by simp
     also have "... = nth(succ(f`i),Cons(a,\<rho>'))" using \<open>f`i\<in>nat\<close> by simp
     also have "... = nth(?g`succ(i),Cons(a,\<rho>'))" 
-      using sum_idS \<open>succ(i)\<in>succ(n)\<close> cases by simp
+      using assms sum_idS[OF \<open>n\<in>nat\<close> \<open>m\<in>nat\<close>  \<open>f\<in>n\<rightarrow>m\<close> \<open>i \<in> n\<close>] cases by simp
     finally have "nth(succ(i),Cons(a,\<rho>)) = nth(?g`succ(i),Cons(a,\<rho>'))" .
     then show ?thesis using \<open>j=succ(i)\<close> by simp
   qed
@@ -186,9 +294,9 @@ next
   then show ?case using Nand 0 2 4 by simp
 next
   case (Forall p)
-  have 0:"ren(Forall(p))`n`m`f = Forall(ren(p)`succ(n)`succ(m)`sum_id(n,f))" 
+  have 0:"ren(Forall(p))`n`m`f = Forall(ren(p)`succ(n)`succ(m)`sum_id'(n,f))" 
     using Forall by simp
-  have 1:"sum_id(n,f) \<in> succ(n) \<rightarrow> succ(m)" (is "?g \<in> _") using sum_id_tc Forall by simp
+  have 1:"sum_id'(n,f) \<in> succ(n) \<rightarrow> succ(m)" (is "?g \<in> _") using sum_id_tc Forall by simp
   then have 2: "arity(p) \<le> succ(n)" 
     using Forall le_trans[of _ "succ(pred(arity(p)))"] succpred_leI by simp
   have "succ(n)\<in>nat" "succ(m)\<in>nat" using Forall by auto
