@@ -13,13 +13,6 @@ lemma app_nm : "n\<in>nat \<Longrightarrow> m\<in>nat \<Longrightarrow> f\<in>n\
     
 section\<open>Renaming of free variables\<close>
 
-(*
-f : m \<rightarrow> n
-g : p \<rightarrow> q
-f+g : m+p \<rightarrow> n+q
-f+g (x) = {f(x)                  si x < m
-        = {g(x-m)+n              si m \<le> x < m+p
-*)
 definition 
   sum :: "[i,i,i,i,i] \<Rightarrow> i" where
   "sum(f,g,m,n,p) == \<lambda>j \<in> m#+p  . if j<m then f`j else (g`(j#-m))#+n"
@@ -60,6 +53,112 @@ proof -
 qed
 
 
+lemma sum_action : 
+  assumes "m \<in> nat" "n\<in>nat" "p\<in>nat" "q\<in>nat"
+    "f \<in> m\<rightarrow>n" "g\<in>p\<rightarrow>q" 
+    "env \<in> list(M)" 
+    "env' \<in> list(M)"
+    "env1 \<in> list(M)" 
+    "env2 \<in> list(M)"
+    "length(env) = m" 
+    "length(env1) = p"
+    "length(env') = n" 
+    "\<And> i . i < m \<Longrightarrow> nth(i,env) = nth(f`i,env')"
+    "\<And> j. j < p \<Longrightarrow> nth(j,env1) = nth(g`j,env2)"
+  shows "i < m#+p \<longrightarrow> 
+          nth(i,env@env1) = nth(sum(f,g,m,n,p)`i,env'@env2)"
+proof -
+  let ?h = "sum(f,g,m,n,p)"
+  from \<open>m\<in>nat\<close> \<open>n\<in>nat\<close> \<open>q\<in>nat\<close>
+  have "m\<le>m#+p" "n\<le>n#+q" "q\<le>n#+q"
+    using add_le_self[of m]  add_le_self2[of n q] by simp_all
+  from \<open>p\<in>nat\<close>
+  have "p = (m#+p)#-m" using diff_add_inverse2 by simp
+  {fix x
+    assume 1: "x\<in>m#+p" "x<m"
+    then
+    have 2: "?h`x= f`x" "x\<in>m" "f`x \<in> n" "x\<in>nat"
+      using assms sum_inl ltD apply_type[of f m _ x] in_n_in_nat by simp_all
+    with \<open>x<m\<close> assms
+    have "f`x < n" "f`x<length(env')"  "f`x\<in>nat" 
+      using ltI in_n_in_nat by simp_all
+    with 2 \<open>x<m\<close> assms 
+    have "nth(x,env@env1) = nth(x,env)"       
+      using nth_append[OF \<open>env\<in>list(M)\<close>] \<open>x\<in>nat\<close> by simp
+    also 
+    have
+      "... = nth(f`x,env')" 
+      using 2 \<open>x<m\<close> assms by simp
+    also
+    have "... = nth(f`x,env'@env2)"
+      using nth_append[OF \<open>env'\<in>list(M)\<close>] \<open>f`x<length(env')\<close> \<open>f`x \<in>nat\<close> by simp
+    also
+    have "... = nth(?h`x,env'@env2)"
+      using 2 by simp
+    finally
+    have "nth(x, env @ env1) = nth(?h`x,env'@env2)" .
+  }
+  then
+  have A:"nth(x,env@env1) = nth(?h`x,env'@env2)" if "x\<in>m#+p" "x < m" for x 
+    using that .
+  {fix x
+    assume 1: "x\<in>m#+p" "m\<le>x" 
+    with \<open>length(env) = m\<close> have "x<m#+p" "x\<in>nat" "length(env) \<le> x" 
+      using ltI in_n_in_nat[of "m#+p"] ltD by simp_all
+    with 1 
+    have 2 : "?h`x= g`(x#-m)#+n" "\<not> (x < length(env))"
+      using assms sum_inr ltD not_lt_iff_le by simp_all
+    from assms \<open>x\<in>nat\<close> \<open>p=m#+p#-m\<close>
+    have "x#-m < p" 
+      using diff_mono[OF _ _ _ \<open>x<m#+p\<close> \<open>m\<le>x\<close>] by simp
+    then have "x#-m\<in>p" using ltD by simp
+    with \<open>g\<in>p\<rightarrow>q\<close>
+    have "g`(x#-m) \<in> q"  by simp
+    with \<open>q\<in>nat\<close> \<open>length(env') = n\<close>
+    have "g`(x#-m) < q" "g`(x#-m)\<in>nat" using ltI in_n_in_nat by simp_all
+    with \<open>q\<in>nat\<close> \<open>n\<in>nat\<close>
+    have "(g`(x#-m))#+n <n#+q" "n \<le> g`(x#-m)#+n" "\<not> g`(x#-m)#+n < length(env')"
+      using add_lt_mono1[of "g`(x#-m)" _ n,OF _ \<open>q\<in>nat\<close>] 
+            add_le_self2[of n] \<open>length(env') = n\<close> 
+      by simp_all
+    from assms \<open>\<not> x < length(env)\<close> \<open>length(env) = m\<close>
+    have "nth(x,env @ env1) = nth(x#-m,env1)"
+      using nth_append[OF \<open>env\<in>list(M)\<close> \<open>x\<in>nat\<close>] by simp
+    also
+    have "... = nth(g`(x#-m),env2)"
+      using assms \<open>x#-m < p\<close> by simp
+    also 
+    have "... = nth((g`(x#-m)#+n)#-length(env'),env2)"
+      using  \<open>length(env') = n\<close>
+          diff_add_inverse2 \<open>g`(x#-m)\<in>nat\<close>
+      by simp
+    also 
+    have "... = nth((g`(x#-m)#+n),env'@env2)"
+      using  nth_append[OF \<open>env'\<in>list(M)\<close>] \<open>n\<in>nat\<close> \<open>\<not> g`(x#-m)#+n < length(env')\<close>
+      by simp
+    also
+    have "... = nth(?h`x,env'@env2)"
+      using 2 by simp
+    finally
+    have "nth(x, env @ env1) = nth(?h`x,env'@env2)" .
+  }
+  then have B: "nth(x, env @ env1) = nth(?h`x,env'@env2)" if "x\<in>m#+p" "m\<le>x" for x 
+    using that .
+  have
+    D: "nth(x, env @ env1) = nth(?h`x,env'@env2)" if "x<m#+p" for x
+    using that 
+  proof (cases "x<m")
+    case True
+    then show ?thesis using A that ltD by simp
+  next
+    case False
+    with \<open>m\<in>nat\<close> have "m\<le>x" 
+      using not_lt_iff_le that in_n_in_nat[of "m#+p"] ltD by simp
+    then show ?thesis using B that ltD by simp
+  qed
+  then show ?thesis by simp
+qed
+
 lemma sum_type  :
   assumes "m \<in> nat" "n\<in>nat" "p\<in>nat" "q\<in>nat"
     "f \<in> m\<rightarrow>n" "g\<in>p\<rightarrow>q"
@@ -71,7 +170,6 @@ proof -
     using add_le_self[of m]  add_le_self2[of n q] by simp_all
   from \<open>p\<in>nat\<close>
   have "p = (m#+p)#-m" using diff_add_inverse2 by simp   
-  let ?h = "sum(f,g,m,n,p)"
   {fix x
     assume 1: "x\<in>m#+p" "x<m"
     with 1 have "?h`x= f`x" "x\<in>m"

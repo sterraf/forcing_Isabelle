@@ -92,4 +92,15 @@ lemma le_not_lt_nat : "Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> \<not> 
 
 lemmas nat_simp_union = nat_un_max nat_max_ty max_def 
 
+lemma diff_mono :
+  assumes "m \<in> nat" "n\<in>nat" "p \<in> nat" "m < n" "p\<le>m"
+  shows "m#-p < n#-p"
+proof -
+  from assms
+  have "m#-p \<in> nat" "m#-p #+p = m"
+    using add_diff_inverse2 by simp_all
+  with assms
+  show ?thesis
+    using less_diff_conv[of n p "m #- p",THEN iffD2] by simp
+qed
 end 
