@@ -103,4 +103,10 @@ proof -
   show ?thesis
     using less_diff_conv[of n p "m #- p",THEN iffD2] by simp
 qed
-end 
+
+lemma pred_Un:
+  "x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> Arith.pred(succ(x) \<union> y) = x \<union> Arith.pred(y)"
+  "x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> Arith.pred(x \<union> succ(y)) = Arith.pred(x) \<union> y"
+  using pred_Un_distrib pred_succ_eq by simp_all
+
+end
