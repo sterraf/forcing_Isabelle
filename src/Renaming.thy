@@ -18,7 +18,7 @@ definition
   "sum(f,g,m,n,p) == \<lambda>j \<in> m#+p  . if j<m then f`j else (g`(j#-m))#+n"
 
 lemma sum_inl:
-  assumes "m \<in> nat" "n\<in>nat" "p\<in>nat" "q\<in>nat"
+  assumes "m \<in> nat" "n\<in>nat"
     "f \<in> m\<rightarrow>n" "x \<in> m"
   shows "sum(f,g,m,n,p)`x = f`x"
 proof -
@@ -26,30 +26,32 @@ proof -
   have "m\<le>m#+p" 
     using add_le_self[of m] by simp
   with assms
-  have "x\<in>m#+p" using ltI[of x m] lt_trans2[of x m "m#+p"] ltD by simp
+  have "x\<in>m#+p" 
+    using ltI[of x m] lt_trans2[of x m "m#+p"] ltD by simp
   from assms
-  have "x<m == True" 
+  have "x<m" 
     using ltI by simp  
-  with \<open>x\<in>m#+p\<close>
-  show ?thesis 
-    unfolding sum_def using beta if_true
-    by simp
+  with \<open>x\<in>m#+p\<close> 
+  show ?thesis unfolding sum_def by simp
 qed
 
 lemma sum_inr:
-  assumes "m \<in> nat" "n\<in>nat" "p\<in>nat" "q\<in>nat"
+  assumes "m \<in> nat" "n\<in>nat" "p\<in>nat"
     "g\<in>p\<rightarrow>q" "m \<le> x" "x < m#+p"
   shows "sum(f,g,m,n,p)`x = g`(x#-m)#+n"
 proof -
-  from assms have "x\<in>nat" using in_n_in_nat[of "m#+p"] ltD
+  from assms 
+  have "x\<in>nat" 
+    using in_n_in_nat[of "m#+p"] ltD
     by simp
-  with assms have 1 :  "x<m == False" 
+  with assms 
+  have "\<not> x<m" 
     using not_lt_iff_le[THEN iffD2] by simp 
   from assms 
-  have "x\<in>m#+p" using ltD by simp
-  with 1 show ?thesis 
-    unfolding sum_def using beta if_false
-    by simp
+  have "x\<in>m#+p" 
+    using ltD by simp
+  with \<open>\<not> x<m\<close> 
+  show ?thesis unfolding sum_def by simp
 qed
 
 
@@ -224,29 +226,26 @@ proof -
 qed
 
 definition 
-  sum_id' :: "[i,i] \<Rightarrow> i" where
-  "sum_id'(m,f) == sum(\<lambda>x\<in>1.x,f,1,1,m)"
-
-definition 
   sum_id :: "[i,i] \<Rightarrow> i" where
-  "sum_id(m,f) == \<lambda>j \<in> succ(m)  . if j=0 then 0 else succ(f`pred(j))"
+  "sum_id(m,f) == sum(\<lambda>x\<in>1.x,f,1,1,m)"
   
-lemma sum_id0 : "m\<in>nat\<Longrightarrow>sum_id'(m,f)`0 = 0"
-by(unfold sum_id'_def,subst sum_inl,auto)
+lemma sum_id0 : "m\<in>nat\<Longrightarrow>sum_id(m,f)`0 = 0"
+by(unfold sum_id_def,subst sum_inl,auto)
 
-lemma sum_idS : "p\<in>nat \<Longrightarrow> q\<in>nat \<Longrightarrow> f\<in>p\<rightarrow>q \<Longrightarrow> x \<in> p \<Longrightarrow> sum_id'(p,f)`(succ(x)) = succ(f`x)"
-  by(subgoal_tac "x\<in>nat",unfold sum_id'_def,subst sum_inr,simp_all add:ltI,simp_all add: app_nm in_n_in_nat)
+lemma sum_idS : "p\<in>nat \<Longrightarrow> q\<in>nat \<Longrightarrow> f\<in>p\<rightarrow>q \<Longrightarrow> x \<in> p \<Longrightarrow> sum_id(p,f)`(succ(x)) = succ(f`x)"
+  by(subgoal_tac "x\<in>nat",unfold sum_id_def,subst sum_inr,
+      simp_all add:ltI,simp_all add: app_nm in_n_in_nat)
 
 lemma sum_id_tc_aux :
-  "p \<in> nat \<Longrightarrow>  q \<in> nat \<Longrightarrow> f \<in> p \<rightarrow> q \<Longrightarrow> sum_id'(p,f) \<in> 1#+p \<rightarrow> 1#+q"
-  by (unfold sum_id'_def,rule sum_type,simp_all)
+  "p \<in> nat \<Longrightarrow>  q \<in> nat \<Longrightarrow> f \<in> p \<rightarrow> q \<Longrightarrow> sum_id(p,f) \<in> 1#+p \<rightarrow> 1#+q"
+  by (unfold sum_id_def,rule sum_type,simp_all)
 
 lemma sum_id_tc :
-  "n \<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> f \<in> n \<rightarrow> m \<Longrightarrow> sum_id'(n,f) \<in> succ(n) \<rightarrow> succ(m)"
+  "n \<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> f \<in> n \<rightarrow> m \<Longrightarrow> sum_id(n,f) \<in> succ(n) \<rightarrow> succ(m)"
   apply(rule ssubst[of  "succ(n) \<rightarrow> succ(m)" "1#+n \<rightarrow> 1#+m"])
   apply(simp,rule sum_id_tc_aux,simp_all)
   done
-    
+
 section\<open>Renaming of formulas\<close>
   
 consts   ren :: "i=>i"
@@ -261,7 +260,7 @@ primrec
       (\<lambda> n \<in> nat . \<lambda> m \<in> nat. \<lambda>f \<in> n \<rightarrow> m. Nand (ren(p)`n`m`f, ren(q)`n`m`f))"
   
   "ren(Forall(p)) =
-      (\<lambda> n \<in> nat . \<lambda> m \<in> nat. \<lambda>f \<in> n \<rightarrow> m. Forall (ren(p)`succ(n)`succ(m)`sum_id'(n,f)))"
+      (\<lambda> n \<in> nat . \<lambda> m \<in> nat. \<lambda>f \<in> n \<rightarrow> m. Forall (ren(p)`succ(n)`succ(m)`sum_id(n,f)))"
   
 lemma arity_meml : "l \<in> nat \<Longrightarrow> Member(x,y) \<in> formula \<Longrightarrow> arity(Member(x,y)) \<le> l \<Longrightarrow> x \<in> l"
   by(simp,rule subsetD,rule le_imp_subset,assumption,simp)  
@@ -316,9 +315,9 @@ next
 next
   case (Forall p)
   from Forall have "succ(n)\<in>nat"  "succ(m)\<in>nat" by auto
-  from Forall have 2: "sum_id'(n,f) \<in> succ(n)\<rightarrow>succ(m)" by (simp add:sum_id_tc)
+  from Forall have 2: "sum_id(n,f) \<in> succ(n)\<rightarrow>succ(m)" by (simp add:sum_id_tc)
   from Forall have 3:"arity(p) \<le> succ(n)" by (rule_tac n="arity(p)" in natE,simp+)
-  then have "arity(ren(p)`succ(n)`succ(m)`sum_id'(n,f))\<le>succ(m)" using  
+  then have "arity(ren(p)`succ(n)`succ(m)`sum_id(n,f))\<le>succ(m)" using  
       Forall \<open>succ(n)\<in>nat\<close> \<open>succ(m)\<in>nat\<close> 2 by force
   then show ?case using Forall 2 3 ren_tc arity_type pred_le by auto
 qed
@@ -332,9 +331,9 @@ lemma env_coincidence_sum_id :
     "f \<in> n \<rightarrow> m"
     "\<And> i . i < n \<Longrightarrow> nth(i,\<rho>) = nth(f`i,\<rho>')"
     "a \<in> A" "j \<in> succ(n)"
-  shows "nth(j,Cons(a,\<rho>)) = nth(sum_id'(n,f)`j,Cons(a,\<rho>'))"
+  shows "nth(j,Cons(a,\<rho>)) = nth(sum_id(n,f)`j,Cons(a,\<rho>'))"
 proof -
-  let ?g="sum_id'(n,f)"   
+  let ?g="sum_id(n,f)"   
   have "succ(n) \<in> nat" using \<open>n\<in>nat\<close> by simp
   then have "j \<in> nat" using \<open>j\<in>succ(n)\<close> in_n_in_nat by blast
   then have "nth(j,Cons(a,\<rho>)) = nth(?g`j,Cons(a,\<rho>'))" 
@@ -392,9 +391,9 @@ next
   then show ?case using Nand 0 2 4 by simp
 next
   case (Forall p)
-  have 0:"ren(Forall(p))`n`m`f = Forall(ren(p)`succ(n)`succ(m)`sum_id'(n,f))" 
+  have 0:"ren(Forall(p))`n`m`f = Forall(ren(p)`succ(n)`succ(m)`sum_id(n,f))" 
     using Forall by simp
-  have 1:"sum_id'(n,f) \<in> succ(n) \<rightarrow> succ(m)" (is "?g \<in> _") using sum_id_tc Forall by simp
+  have 1:"sum_id(n,f) \<in> succ(n) \<rightarrow> succ(m)" (is "?g \<in> _") using sum_id_tc Forall by simp
   then have 2: "arity(p) \<le> succ(n)" 
     using Forall le_trans[of _ "succ(pred(arity(p)))"] succpred_leI by simp
   have "succ(n)\<in>nat" "succ(m)\<in>nat" using Forall by auto
