@@ -3,27 +3,65 @@ theory Replacement_Axiom
     Relative_Univ Separation_Axiom Renaming
 begin
 
-definition 
-  renrep_fn :: "i \<Rightarrow> i" where
-  "renrep_fn(n) = {<0,5>,<1,6>,<2,7>,<3,3>,<4,2>,<5,1>,<6,8>} \<union> {<j,succ(succ(j))> . j \<in> n}"
+local_setup\<open>
+let val rho  = @{term "[P,leq,o,p,\<rho>,\<tau>,\<pi>]"}
+    val rho' = @{term "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>]"}
+    val (r,t,fvs,ren) = ren_Thm rho rho'
+    val (r',t') = (fix_vars r fvs , fix_vars t fvs)
+in
+Local_Theory.note   ((@{binding "renrep_thm"}, []), [r',t']) #> snd #>
+Local_Theory.define ((@{binding "renrep1_fn"}, NoSyn),
+  ((@{binding "renrep1_def"}, []), ren)) #> snd
+end\<close>
+
+lemma id_fn_type : 
+  assumes "n \<in> nat"
+  shows "id(n) \<in> n \<rightarrow> n"
+  unfolding id_def using \<open>n\<in>nat\<close> by simp
+
+lemma id_fn_action:
+  assumes "n \<in> nat"
+  shows "\<And> j . j < n \<Longrightarrow> id(n)`j=j" 
+proof -
+ show "id(n)`j=j" if "j < n" for j using that \<open>n\<in>nat\<close> ltD by simp
+qed
+
+definition renrep_fn :: "i \<Rightarrow> i" where
+  "renrep_fn(n) == sum(renrep1_fn,id(n),7,9,n)"
 
 lemma renrep_fn_type :
-  assumes "n \<in> nat"
-  shows "renrep_fn(n) \<in> 7 #+ n \<rightarrow> 9 #+ n"
-using assms proof(induct n rule:nat_induct)
-case 0
-  then show ?case sorry
-next
-  case (succ x)
-  then show ?case sorry
-qed
+  assumes "n\<in>nat"
+  shows "renrep_fn(n) \<in> 7#+n \<rightarrow> 9#+n"
+  unfolding renrep_fn_def renrep1_def 
+  using \<open>n\<in>nat\<close> sum_type[OF _ _ _ _ renrep_thm(2)] id_fn_type
+  by simp
 
 lemma renrep_fn_action : 
   assumes 
-    "[P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env \<in> list(M)" 
+    "[P,leq,o,p,\<rho>,\<tau>,\<pi>] \<in> list(M)" 
+    "env \<in> list(M)"
     "V \<in> M" "\<alpha> \<in> M"
-  shows "\<And> i . i < 7 #+ length(env) \<Longrightarrow> nth(i,[P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env) = nth(renrep_fn(length(env))`i,[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env)"
-  sorry
+  shows "\<And> i . i < 7 #+ length(env) \<Longrightarrow>
+    nth(i, [P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env) = nth(renrep_fn(length(env))`i, [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env)"
+proof - 
+  from assms
+  have 2:"[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] \<in> list(M)" 
+       " {P, leq, o, p, \<rho>, \<tau>, \<pi>} \<subseteq> M " by simp_all
+  let ?env1 = "[P,leq,o,p,\<rho>,\<tau>,\<pi>]"
+  let ?env2 = "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>]" 
+  let ?n = "length(env)"
+  from \<open>env\<in>list(M)\<close> 
+  have "length(env)\<in>nat" by simp
+  then show "nth(i, [P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env) = nth(renrep_fn(length(env))`i, [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env)"
+    if "i < 7 #+ length(env)" for i
+     unfolding renrep_fn_def renrep1_def
+     using \<open>?n\<in>nat\<close> that
+       sum_action[OF _ _ \<open>?n\<in>nat\<close> \<open>?n\<in>nat\<close> renrep_thm(2)  id_fn_type
+                        \<open>?env1 \<in> list(M)\<close> \<open>?env2 \<in> list(M)\<close> \<open>env\<in>list(M)\<close> \<open>env\<in>list(M)\<close>]
+                         renrep_thm(1)[of P leq o p \<rho> \<tau> \<pi> M,OF 2(2)]
+                         id_fn_action
+     by simp
+qed
 
 definition 
   renrep :: "[i,i] \<Rightarrow> i" where
@@ -51,39 +89,41 @@ lemma renrep_sats :
     "\<phi>\<in>formula"
   shows "sats(M, \<phi>, [P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env) \<longleftrightarrow> sats(M, renrep(\<phi>,length(env)), [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env)"
 proof -
-  let ?env' = "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env" 
-  from \<open>[P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env \<in> list(M)\<close>
-  have 1:"7 #+ length(env) \<in> nat" "9 #+ length(env) \<in> nat"  "env \<in> list(M)"
+  let ?env0 = "[P,leq,o,p,\<rho>,\<tau>,\<pi>]"
+  let ?env' = "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env"
+  let ?env1 = "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>]"
+  from \<open>[P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env \<in> list(M)\<close> \<open>V \<in> M\<close> \<open>\<alpha> \<in> M\<close>
+  have 1:"7 #+ length(env) \<in> nat" "9 #+ length(env) \<in> nat"  "env \<in> list(M)" "?env0 \<in> list(M)" 
+        "?env1 \<in> list(M)"
     by simp_all
   with assms 
   have 2:"length(env) \<in> nat" "?env' \<in> list(M)" by simp_all
   from assms
   have "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env \<in> list(M)" by simp
-  with 1  
   show ?thesis
-    unfolding renrep_def
-    using renrep_fn_action[OF \<open>[P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env \<in> list(M)\<close> \<open>V\<in>M\<close> \<open>\<alpha>\<in>M\<close>]
-    sats_iff_sats_ren[OF \<open>\<phi> \<in> formula\<close> 1(1) 1(2)  \<open>[P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env \<in> list(M)\<close> 2(2) 
+    unfolding renrep_def 
+    using renrep_fn_action[OF \<open>?env0 \<in> list(M)\<close> \<open>env\<in>list(M)\<close> \<open>V\<in>M\<close> \<open>\<alpha>\<in>M\<close>]
+    sats_iff_sats_ren[OF \<open>\<phi> \<in> formula\<close> 1(1) 1(2)  \<open>[P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env \<in> list(M)\<close> 2(2)]
       renrep_fn_type[OF 2(1)] \<open>arity(\<phi>) \<le> 7#+length(env)\<close>      
-  ] by simp
+   by simp
 qed
 
 locale rep_rename = sep_rename +
-  fixes renpbdy :: "i" and renbody :: "i"
+  fixes renpbdy :: "[i,i] \<Rightarrow> i" and renbody :: "[i,i] \<Rightarrow> i"
   assumes
-  sats_renpbdy: "arity(\<phi>) \<le> 7 #+ length(env) \<Longrightarrow> [\<rho>,p,x,\<alpha>,P,leq,one,\<pi>] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
-       sats(M, \<phi>, [\<rho>,p,\<alpha>,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow> sats(M, renpbdy`\<phi>, [\<rho>,p,x,\<alpha>,P,leq,one,\<pi>] @ nenv)"
+  sats_renpbdy: "arity(\<phi>) \<le> 7 #+ m \<Longrightarrow> [\<rho>,p,x,\<alpha>,P,leq,one,\<pi>] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
+       sats(M, \<phi>, [\<rho>,p,\<alpha>,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow> sats(M, renpbdy(\<phi>,length(env)), [\<rho>,p,x,\<alpha>,P,leq,one,\<pi>] @ nenv)"
   and
-  renpbdy_type [TC]: "\<phi>\<in>formula \<Longrightarrow> renpbdy`\<phi> \<in> formula"
+  renpbdy_type [TC]: "\<phi>\<in>formula \<Longrightarrow> renpbdy(\<phi>,m) \<in> formula"
   and
-  arity_renpbdy: "\<phi>\<in>formula \<Longrightarrow> arity(renpbdy`\<phi>) \<le> 8 #+ length(env)"
+  arity_renpbdy: "\<phi>\<in>formula \<Longrightarrow> m\<in>nat \<Longrightarrow> arity(renpbdy(\<phi>,m)) \<le> 8 #+ m"
   and
   sats_renbody: "arity(\<phi>) \<le> 6 #+ length(nenv) \<Longrightarrow> [\<alpha>,x,m,P,leq,one,\<pi>] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
-       sats(M, \<phi>, [x,\<alpha>,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow> sats(M, renbody`\<phi>, [\<alpha>,x,m,P,leq,one,\<pi>] @ nenv)"
+       sats(M, \<phi>, [x,\<alpha>,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow> sats(M, renbody(\<phi>,length(env)), [\<alpha>,x,m,P,leq,one,\<pi>] @ nenv)"
   and
-  renbody_type [TC]: "\<phi>\<in>formula \<Longrightarrow> renbody`\<phi> \<in> formula"
+  renbody_type [TC]: "\<phi>\<in>formula \<Longrightarrow> m \<in> nat \<Longrightarrow> renbody(\<phi>,m) \<in> formula"
   and
-  arity_renbody: "\<phi>\<in>formula \<Longrightarrow> arity(renbody`\<phi>) = arity(\<phi>)"
+  arity_renbody: "\<phi>\<in>formula \<Longrightarrow> m \<in> nat \<Longrightarrow> arity(renbody(\<phi>,m)) = arity(\<phi>)"
 begin
 
 lemma pow_inter_M:
@@ -183,7 +223,7 @@ lemma arity_prebody_fm:
 
 definition
   body_fm' :: "[i,i]\<Rightarrow>i" where
-  "body_fm'(\<phi>,n) \<equiv> Exists(Exists(And(pair_fm(0,1,2),renpbdy`prebody_fm(\<phi>,n))))"
+  "body_fm'(\<phi>,n) \<equiv> Exists(Exists(And(pair_fm(0,1,2),renpbdy(prebody_fm(\<phi>,n),n))))"
 
 lemma body_fm'_type[TC]: "\<phi>\<in>formula \<Longrightarrow> m\<in>nat \<Longrightarrow> body_fm'(\<phi>,m)\<in>formula"
   unfolding body_fm'_def prebody_fm_def 
@@ -195,20 +235,27 @@ lemma arity_body_fm':
     "\<phi>\<in>formula" "\<alpha>\<in>M" "m\<in>nat" "arity(\<phi>) \<le> 3 #+ m"
   shows
     "arity(body_fm'(\<phi>,m))\<le> 6 #+ m"
-  sorry
+  unfolding body_fm'_def using assms
+  apply(simp add:  new_fm_defs )
+  apply(simp add: nat_simp_union)
+  apply( rule, (rule pred_le,simp+)+)
+  apply(frule arity_prebody_fm,simp_all,simp)
+  apply(subgoal_tac "prebody_fm(\<phi>,m)\<in>formula")
+  apply(frule arity_renpbdy[of "prebody_fm(\<phi>,m)"],simp_all+)
+  done
 
 lemma sats_body_fm':
   assumes
     "\<exists>t p. x=<t,p>" "x\<in>M" "[\<alpha>,P,leq,one,p,\<rho>,\<pi>] @ nenv \<in>list(M)" "\<phi>\<in>formula" "arity(\<phi>) \<le> 3 #+ length(nenv)"
   shows 
     "sats(M,body_fm'(\<phi>,length(nenv)),[x,\<alpha>,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow> 
-     sats(M,renpbdy`prebody_fm(\<phi>,length(nenv)),[fst(x),snd(x),x,\<alpha>,P,leq,one,\<pi>] @ nenv)"
+     sats(M,renpbdy(prebody_fm(\<phi>,length(nenv)),length(nenv)),[fst(x),snd(x),x,\<alpha>,P,leq,one,\<pi>] @ nenv)"
   using assms comp_in_M[OF \<open>x\<in>M\<close>] unfolding body_fm'_def
   by (auto)
 
 definition
   body_fm :: "[i,i]\<Rightarrow>i" where
-  "body_fm(\<phi>,n) \<equiv> renbody`body_fm'(\<phi>,n)"
+  "body_fm(\<phi>,n) \<equiv> renbody(body_fm'(\<phi>,n),n)"
 
 lemma body_fm_type [TC]: "m \<in> nat \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow>  body_fm(\<phi>,m)\<in>formula"
   unfolding body_fm_def by simp
@@ -219,7 +266,7 @@ lemma sats_body_fm:
     "\<phi>\<in>formula" "arity(\<phi>) \<le> 3 #+ length(nenv)"
   shows 
     "sats(M,body_fm(\<phi>,length(nenv)),[\<alpha>,x,m,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow> 
-     sats(M,renpbdy`prebody_fm(\<phi>,length(nenv)),[fst(x),snd(x),x,\<alpha>,P,leq,one,\<pi>] @ nenv)"
+     sats(M,renpbdy(prebody_fm(\<phi>,length(nenv)),length(nenv)),[fst(x),snd(x),x,\<alpha>,P,leq,one,\<pi>] @ nenv)"
   using assms sats_body_fm' sats_renbody[OF arity_body_fm' assms(2), symmetric]
   unfolding body_fm_def
   by auto
@@ -229,7 +276,7 @@ lemma sats_renpbdy_prebody_fm:
     "\<exists>t p. x=<t,p>" "x\<in>M" "[\<alpha>,m,P,leq,one,\<pi>] @ nenv \<in>list(M)"
     "\<phi>\<in>formula" "arity(\<phi>) \<le> 3 #+ length(nenv)"
   shows 
-    "sats(M,renpbdy`prebody_fm(\<phi>,length(nenv)),[fst(x),snd(x),x,\<alpha>,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow>
+    "sats(M,renpbdy(prebody_fm(\<phi>,length(nenv)),length(nenv)),[fst(x),snd(x),x,\<alpha>,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow>
      sats(M,prebody_fm(\<phi>,length(nenv)),[fst(x),snd(x),\<alpha>,P,leq,one,\<pi>] @ nenv)"
   using assms comp_in_M[OF \<open>x\<in>M\<close>] 
     sats_renpbdy[OF arity_prebody_fm _ prebody_fm_type, of concl:\<phi>, symmetric]
@@ -259,7 +306,13 @@ proof -
     using GenExt_def by auto
   define \<pi> where "\<pi> \<equiv> {x\<in>\<pi>'. \<exists>t p. x=<t,p>}"
   from \<open>\<pi>' \<in> M\<close>
-  have "\<pi> \<in> M" sorry
+  have "(##M)(\<pi>')" by simp
+  have 1:"separation(##M,\<lambda> x . \<exists> t p . x=<t,p>)"
+    unfolding separation_def 
+    sorry
+  then 
+  have "\<pi> \<in> M" 
+    sorry
   from \<open>val(G, \<pi>') = c\<close>
   have "val(G,\<pi>) = c" 
     using val_only_pairs unfolding \<pi>_def by simp
