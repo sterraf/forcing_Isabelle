@@ -752,6 +752,12 @@ lemma lambda_is_wfrec: "\<lbrakk>M(r); M(a); M(z) \<rbrakk> \<Longrightarrow> is
         is_wfrec(M,\<lambda>b c d. M(b) \<longrightarrow> M(c) \<longrightarrow> M(d) \<longrightarrow> MH(b,c,d),r,a,z)"
   unfolding is_wfrec_def M_is_recfun_def by force
 
+lemma is_wfrec_cong: 
+  assumes "M(a)" "M(b)" "M(c)"
+    "\<And>x f z. M(x) \<Longrightarrow> M(f) \<Longrightarrow> M(z) \<Longrightarrow> MH(x,f,z) \<longleftrightarrow> MH'(x,f,z)" 
+  shows "is_wfrec(M,MH,a,b,c) \<longleftrightarrow> is_wfrec(M,MH',a,b,c)"
+  unfolding is_wfrec_def using assms by simp 
+
 end (* context M_basic *)
 
 
@@ -794,7 +800,7 @@ lemma def_one: "xa \<in>M \<Longrightarrow> (\<forall>x\<in>M. x \<in> xa \<long
 lemma uno_in_M: "1\<in>M"
   by (simp del:setclass_iff add:setclass_iff[symmetric])
 
-lemma sats_forces_eq_fm: "\<lbrakk> [P,leq,one,p,t1,t2] @ env \<in> list(M); \<And>x. x\<in>M \<Longrightarrow> frecrel(x)\<in>M \<rbrakk> \<Longrightarrow>
+lemma sats_forces_eq_fm': "\<lbrakk> [P,leq,one,p,t1,t2] @ env \<in> list(M); \<And>x. x\<in>M \<Longrightarrow> frecrel(x)\<in>M \<rbrakk> \<Longrightarrow>
           sats(M,forces_eq_fm(0,1),[P,leq,one,p,t1,t2] @ env) \<longleftrightarrow>
           sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 2, 1, 0), 0, 1, 2),
                   [frecrel(eclose({<0,t1,t2,p>})), <0,t1,t2,p>, 1, 0, P, leq, one, p, t1, t2] @ env)"
@@ -878,17 +884,32 @@ qed
 
 lemma MH: "a0\<in>M \<Longrightarrow> a1\<in>M \<Longrightarrow> a2\<in>M \<Longrightarrow> a3\<in>M \<Longrightarrow> a4 \<in> M \<Longrightarrow> 
       is_Hfrc_at(##M,P,leq,a2,a1,a0) \<longleftrightarrow> sats(M,is_Hfrc_at_fm(4,5,2,1,0),Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
-  sorry
+  sorry (* A lie now *)
 
-lemma sats_forces_eq_fm': 
+lemma sats_forces_eq_fm: 
   assumes  "[P,leq,one,p,t1,t2] @ env \<in> list(M)" "\<And>x. x\<in>M \<Longrightarrow> frecrel(x)\<in>M "
-  shows "sats(M,forces_eq_fm(0,1),[P,leq,one,p,t1,t2] @ env) \<longleftrightarrow>
-          is_frc_at(##M,P,leq,<0,t1,t2,p>,1)"
-  unfolding is_frc_at_def 
-  using assms sats_is_wfrec_fm[OF MH, of 0 1 "[frecrel(eclose(<0,t1,t2,p>)), <0,t1,t2,p>, 1, 0, P, leq, one, p, t1, t2] @ env" 2]
-    sats_forces_eq_fm eclose_closed uno_in_M M_inhabit tuples_in_M Hfrc_at_abs
-  apply (simp del:Hfrc_at_abs)
-  oops
+  shows "sats(M,forces_eq_fm(0,1),[P,leq,one,p,t1,t2] @ env) \<longleftrightarrow> is_frc_at(##M,P,leq,<0,t1,t2,p>,1)"
+proof -
+  note assms
+  moreover from this
+  have "frecrel(eclose({\<langle>0, t1, t2, p\<rangle>}))\<in>M" "\<langle>0, t1, t2, p\<rangle>\<in>M"
+    using tuples_in_M cons_closed eclose_closed M_inhabit by simp_all
+  moreover from calculation
+  have "is_wfrec(##M,is_Hfrc_at(##M,P,leq),frecrel(eclose({\<langle>0,t1,t2,p\<rangle>})),\<langle>0,t1,t2,p\<rangle>,1) \<longleftrightarrow>
+   is_wfrec(##M,\<lambda>x f z. z = bool_of_o(Hfrc(P,leq,x,f)),frecrel(eclose({\<langle>0,t1,t2,p\<rangle>})),\<langle>0,t1,t2,p\<rangle>,1)"
+    using tuples_in_M uno_in_M is_wfrec_cong[OF _ _ _ Hfrc_at_abs]
+    by simp
+  moreover from assms
+  have "Ord(length(env))" using nat_into_Ord[OF length_type, of env M] by simp
+  moreover 
+  note assms
+  ultimately
+  show ?thesis
+    unfolding is_frc_at_def 
+    using assms sats_forces_eq_fm' eclose_closed uno_in_M M_inhabit tuples_in_M 
+    sats_is_wfrec_fm MH
+    by simp
+qed
 
 lemma forces_Nand: "\<lbrakk> [P,leq,one,p] @ env \<in> list(M); \<phi>\<in>formula; \<psi>\<in>formula\<rbrakk> \<Longrightarrow>
           sats(M,forces(Nand(\<phi>,\<psi>)),[P,leq,one,p] @ env) \<longleftrightarrow>
@@ -1002,7 +1023,7 @@ lemma sats_forces_ren_Equal:
     "sats(M,forces_ren(fren,fref,Equal(0,1)),[P,leq,one,p,x,y] @ env) \<longleftrightarrow> 
      sats(M, is_wfrec_fm(is_Hfrc_at_fm(4, 5, 2, 1, 0), 0, 1, 2),
          [frecrel(eclose({<0,x,y,p>})), <0,x,y,p>, 1, 0, P, leq, one, p, x, y] @ env)"
-  using assms sats_forces_eq_fm frecrel_closed by simp
+  using assms sats_forces_eq_fm' frecrel_closed by simp
 
 lemma
   assumes
