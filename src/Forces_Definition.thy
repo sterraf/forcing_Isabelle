@@ -1,5 +1,4 @@
 theory Forces_Definition imports Interface Names begin
-(* 1min 8 secs processing time *)
 
 definition
   ftype :: "i\<Rightarrow>i" where
@@ -318,21 +317,8 @@ schematic_goal sats_is_frecrel_fm_auto:
   shows
     "is_frecrel(##A,nth(a, env),nth(r, env))
     \<longleftrightarrow> sats(A,?ifrl_fm(a,r),env)"
-    and
-    "(?ifrl_fm(a,r) \<in> formula)"
-  (*  (* 28 secs *) 
     unfolding is_frecrel_def  is_Collect_def frecrelP_def is_name1_def is_name2_def
-   by (insert assms ; (rule sep_rules cartprod_iff_sats | simp del:sats_cartprod_fm))+ 
-       *)
-    (* 17 secs *)
-  unfolding is_frecrel_def  is_Collect_def frecrelP_def
-   apply (insert assms ; (rule sep_rules cartprod_iff_sats | simp del:sats_cartprod_fm))
-   apply (insert assms ; (rule sep_rules cartprod_iff_sats | simp del:sats_cartprod_fm))
-    apply (insert assms ; (rule sep_rules cartprod_iff_sats | simp del:sats_cartprod_fm))
-      apply (insert assms ; (rule sep_rules cartprod_iff_sats | simp del:sats_cartprod_fm))
-            apply (unfold  is_name1_def is_name2_def)
-            apply (insert assms ; (rule sep_rules | simp del:sats_cartprod_fm))+
-  done
+   by (insert assms ; (rule sep_rules cartprod_iff_sats | simp del:sats_cartprod_fm)+) 
 
 schematic_goal is_frecrel_iff_sats:
   assumes
@@ -367,15 +353,8 @@ schematic_goal sats_is_mem_case_fm_auto:
   shows
     "is_mem_case(##A, nth(n1, env),nth(n2, env),nth(p, env),nth(P, env), nth(leq, env),nth(f,env))
     \<longleftrightarrow> sats(A,?imc_fm(n1,n2,p,P,leq,f),env)"
-    and
-    "(?imc_fm(n1,n2,p,P,leq,f) \<in> formula)"
    unfolding is_mem_case_def
-       (* 19 secs *)
-   apply (insert assms ; (rule sep_rules  | simp))
-   apply ((rule sep_rules  | simp))+
-                    apply ((rule sep_rules is_one_iff_sats[of 0]  | simp))
-                      apply (insert assms ; (rule sep_rules  | simp))+
-  done
+   by (insert assms ; (rule sep_rules is_one_iff_sats | simp)+)
 
 schematic_goal sats_is_eq_case_fm_auto:
   assumes 
@@ -383,15 +362,8 @@ schematic_goal sats_is_eq_case_fm_auto:
   shows
     "is_eq_case(##A, nth(n1, env),nth(n2, env),nth(p, env),nth(P, env), nth(leq, env),nth(f,env))
     \<longleftrightarrow> sats(A,?iec_fm(n1,n2,p,P,leq,f),env)"
-    and
-    "(?iec_fm(n1,n2,p,P,leq,f) \<in> formula)"
   unfolding is_eq_case_def
-    (* 9 secs *)
-    apply (insert assms ; (rule sep_rules  | simp))
-   apply ((rule sep_rules  | simp))+
-                    apply ((rule sep_rules is_one_iff_sats[of 0]  | simp))
-                      apply (insert assms ; (rule sep_rules  | simp))+
-  done
+    by (insert assms ; (rule sep_rules  is_one_iff_sats[of 0] | simp)+)
              
 schematic_goal is_mem_case_iff_sats:
   assumes
@@ -444,11 +416,8 @@ schematic_goal sats_is_Hfrc_fm_auto:
   shows
     "is_Hfrc(##A,nth(P, env), nth(leq, env), nth(fnnc, env),nth(f, env))
     \<longleftrightarrow> sats(A,?hfrc_fm(P,leq,fnnc,f),env)"
-    and
-    "(?hfrc_fm(P,leq,fnnc,f) \<in> formula)"
   unfolding is_Hfrc_def 
-  (* 11 secs *)
-  by (insert assms; (rule sep_rules' is_mem_case_iff_sats[of 4 3 2 "P #+ 6" "leq #+ 6" "f #+ 6"] is_eq_case_iff_sats[of 4 3 2 "P #+ 6" "leq #+ 6" "f #+ 6"] is_one_iff_sats | simp))+
+  by (insert assms; (rule sep_rules' is_mem_case_iff_sats[of 4 3 2 "P #+ 6" "leq #+ 6" "f #+ 6"] is_eq_case_iff_sats[of 4 3 2 "P #+ 6" "leq #+ 6" "f #+ 6"] is_one_iff_sats | simp)+)
 
 schematic_goal is_Hfrc_iff_sats:
   assumes
@@ -467,10 +436,8 @@ schematic_goal sats_is_Hfrc_at_fm_auto:
   shows
     "is_Hfrc_at(##A,nth(P, env), nth(leq, env), nth(fnnc, env),nth(f, env),nth(z, env))
     \<longleftrightarrow> sats(A,?hfrc_fm(P,leq,fnnc,f,z),env)"
-    and
-    "(?hfrc_fm(P,leq,fnnc,f,z) \<in> formula)"
   unfolding is_Hfrc_at_def 
-  by (insert assms; (rule sep_rules' is_one_iff_sats is_Hfrc_iff_sats[of P leq fnnc f] | simp))+
+  by (insert assms; (rule sep_rules' is_one_iff_sats is_Hfrc_iff_sats[of P leq fnnc f] | simp)+)
 
 schematic_goal is_Hfrc_at_iff_sats:
   assumes
@@ -743,11 +710,6 @@ lemma forces_mem_type [TC]:
   unfolding forces_mem_def is_one_fm_def is_Hfrc_at_fm_def
   by simp
 
-lemma pred_Un:
-  "x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> Arith.pred(succ(x) \<union> y) = x \<union> Arith.pred(y)"
-  "x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> Arith.pred(x \<union> succ(y)) = Arith.pred(x) \<union> y"
-  using pred_Un_distrib pred_succ_eq by simp_all
-
 lemma arity_forces_eq [simp]:
   "t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow> arity(forces_eq(t1,t2)) = (t1 \<union> t2) #+ 5"
   unfolding forces_eq_def is_one_fm_def is_Hfrc_at_fm_def is_tuple_fm_def
@@ -900,6 +862,13 @@ proof -
     using uno_in_M M_inhabit tuples_in_M sats_is_frecrel_fm[symmetric] eclose_closed by auto
   ultimately show ?thesis by simp
 qed
+
+lemma sats_forces_eq': "\<lbrakk> [P,leq,one,p,t1,t2] @ env \<in> list(M); \<And>x. x\<in>M \<Longrightarrow> frecrel(x)\<in>M \<rbrakk> \<Longrightarrow>
+          sats(M,forces_eq(0,1),[P,leq,one,p,t1,t2] @ env) \<longleftrightarrow>
+          is_frc_at(##M,P,leq,<0,t1,t2,p>,1)"
+  unfolding is_frc_at_def 
+  find_theorems name:sats_is_wfrec
+  oops
 
 lemma forces_Nand: "\<lbrakk> [P,leq,one,p] @ env \<in> list(M); \<phi>\<in>formula; \<psi>\<in>formula\<rbrakk> \<Longrightarrow>
           sats(M,forces(Nand(\<phi>,\<psi>)),[P,leq,one,p] @ env) \<longleftrightarrow>
