@@ -7,8 +7,8 @@ begin
 section\<open>Auxiliary results\<close>
   
 lemma app_nm : "n\<in>nat \<Longrightarrow> m\<in>nat \<Longrightarrow> f\<in>n\<rightarrow>m \<Longrightarrow> x \<in> nat \<Longrightarrow> f`x \<in> nat"  
-  apply(case_tac "x\<in>n",rule_tac m="m" in in_n_in_nat,(simp add:apply_type)+)
-  apply(subst apply_0,subst  domain_of_fun,assumption+,auto)
+  apply(case_tac "x\<in>n",rule_tac m="m" in in_n_in_nat,simp_all add:apply_type)
+  apply(subst apply_0,subst domain_of_fun,simp_all)
   done
     
 section\<open>Renaming of free variables\<close>
@@ -55,7 +55,7 @@ proof -
 qed
 
 
-lemma sum_action : 
+lemma sum_action :
   assumes "m \<in> nat" "n\<in>nat" "p\<in>nat" "q\<in>nat"
     "f \<in> m\<rightarrow>n" "g\<in>p\<rightarrow>q" 
     "env \<in> list(M)" 
