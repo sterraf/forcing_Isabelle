@@ -83,7 +83,7 @@ definition
 (* z = Pow(f`y) *)
 definition
   is_powapply :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
-  "is_powapply(M,f,y,z) \<equiv> \<exists>fy[M]. fun_apply(M,f,y,fy) \<and> powerset(M,fy,z)"
+  "is_powapply(M,f,y,z) \<equiv> M(z) \<and> (\<exists>fy[M]. fun_apply(M,f,y,fy) \<and> powerset(M,fy,z))"
 
 (* is_Replace(M,A,P,z) == \<forall>u[M]. u \<in> z \<longleftrightarrow> (\<exists>x[M]. x\<in>A & P(x,u)) *)
 definition
@@ -242,10 +242,8 @@ schematic_goal sats_is_powapply_fm_auto:
   shows
     "is_powapply(##A,nth(f, env),nth(y, env),nth(z, env))
     \<longleftrightarrow> sats(A,?ipa_fm(f,y,z),env)"
-    and
-    "?ipa_fm(f,y,z) \<in> formula"
   unfolding is_powapply_def is_Collect_def powerset_def subset_def
-   by (insert assms ; (rule sep_rules  | simp))+
+   (* by (insert assms ; (rule sep_rules  | simp))+ *) sorry
 
 schematic_goal is_powapply_iff_sats:
   assumes
@@ -270,10 +268,8 @@ schematic_goal sats_is_HVfrom_fm_auto:
   shows
     "is_HVfrom(##A,nth(a, env),nth(x, env),nth(f, env),nth(h, env))
     \<longleftrightarrow> sats(A,?ihvf_fm(a,x,f,h),env)"
-    and
-    "?ihvf_fm(a,x,f,h) \<in> formula"
   unfolding is_HVfrom_def
-   by (insert assms; (rule sep_rules is_powapply_iff_sats Replace_iff_sats trivial_fm | simp))+
+   by (insert assms; (rule sep_rules is_powapply_iff_sats Replace_iff_sats trivial_fm | simp)+)
 
 schematic_goal is_HVfrom_iff_sats:
   assumes
@@ -293,10 +289,8 @@ schematic_goal sats_is_Vfrom_fm_auto:
   shows
     "is_Vfrom(##A,nth(a, env),nth(i, env),nth(v, env))
     \<longleftrightarrow> sats(A,?ivf_fm(a,i,v),env)"
-    and
-    "?ivf_fm(a,i,v) \<in> formula"
   unfolding is_Vfrom_def
-  by (insert assms; (rule sep_rules is_HVfrom_iff_sats is_transrec_iff_sats | simp))+
+  by (insert assms; (rule sep_rules is_HVfrom_iff_sats is_transrec_iff_sats | simp)+)
 
 schematic_goal is_Vfrom_iff_sats:
   assumes
@@ -316,10 +310,8 @@ schematic_goal sats_is_Vset_fm_auto:
   shows
     "is_Vset(##A,nth(i, env),nth(v, env))
     \<longleftrightarrow> sats(A,?ivs_fm(i,v),env)"
-    and
-    "?ivs_fm(i,v) \<in> formula"
   unfolding is_Vset_def is_Vfrom_def
-  by (insert assms; (rule sep_rules is_HVfrom_iff_sats is_transrec_iff_sats | simp))+
+  by (insert assms; (rule sep_rules is_HVfrom_iff_sats is_transrec_iff_sats | simp)+)
 
 schematic_goal is_Vset_iff_sats:
   assumes
@@ -352,19 +344,19 @@ end (* context M_basic *)
 context M_trancl
 begin
 
-lemma Vfrom_abs: "\<lbrakk> M(A); M(i); M(V) \<rbrakk> \<Longrightarrow> is_Vfrom(M,A,i,V) \<longleftrightarrow> V = {x\<in>Vfrom(A,i). M(x)}"
+lemma Vfrom_abs: "\<lbrakk> M(A); M(i); M(V); Ord(i) \<rbrakk> \<Longrightarrow> is_Vfrom(M,A,i,V) \<longleftrightarrow> V = {x\<in>Vfrom(A,i). M(x)}"
   sorry
 
-lemma Vfrom_closed: "\<lbrakk> M(A); M(i) \<rbrakk> \<Longrightarrow> M({x\<in>Vfrom(A,i). M(x)})"
+lemma Vfrom_closed: "\<lbrakk> M(A); M(i); Ord(i) \<rbrakk> \<Longrightarrow> M({x\<in>Vfrom(A,i). M(x)})"
   sorry
 
 lemma rank_closed: "M(a) \<Longrightarrow> M(rank(a))"
   sorry
 
-lemma Vset_abs: "\<lbrakk> M(i); M(V) \<rbrakk> \<Longrightarrow> is_Vset(M,i,V) \<longleftrightarrow> V = {x\<in>Vset(i). M(x)}"
+lemma Vset_abs: "\<lbrakk> M(i); M(V); Ord(i) \<rbrakk> \<Longrightarrow> is_Vset(M,i,V) \<longleftrightarrow> V = {x\<in>Vset(i). M(x)}"
   using Vfrom_abs unfolding is_Vset_def by simp
 
-lemma Vset_closed: "\<lbrakk> M(i) \<rbrakk> \<Longrightarrow> M({x\<in>Vset(i). M(x)})"
+lemma Vset_closed: "\<lbrakk> M(i); Ord(i) \<rbrakk> \<Longrightarrow> M({x\<in>Vset(i). M(x)})"
   using Vfrom_closed unfolding is_Vset_def by simp
 
 lemma M_into_Vset:
