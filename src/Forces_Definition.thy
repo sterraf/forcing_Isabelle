@@ -883,7 +883,7 @@ proof -
 qed
 
 lemma MH: "a0\<in>M \<Longrightarrow> a1\<in>M \<Longrightarrow> a2\<in>M \<Longrightarrow> a3\<in>M \<Longrightarrow> a4 \<in> M \<Longrightarrow> 
-      is_Hfrc_at(##M,P,leq,a2,a1,a0) \<longleftrightarrow> sats(M,is_Hfrc_at_fm(4,5,2,1,0),Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
+      is_Hfrc_at(##M,P,leq,a2,a1,a0) \<longleftrightarrow> sats(M,is_Hfrc_at_fm(4,5,2,1,0),[a0,a1,a2,a3,a4] @ env)"
   sorry (* A lie now *)
 
 lemma sats_forces_eq_fm: 
@@ -901,8 +901,6 @@ proof -
     by simp
   moreover from assms
   have "Ord(length(env))" using nat_into_Ord[OF length_type, of env M] by simp
-  moreover 
-  note assms
   ultimately
   show ?thesis
     unfolding is_frc_at_def 
