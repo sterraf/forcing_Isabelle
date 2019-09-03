@@ -239,7 +239,7 @@ next
   then 
   have "?r-``{y}=0" 
     using Memrel_iff by blast
-  then 
+  then
   have "w\<notin>?r-``{y}" by simp    
   with \<open>y\<notin>eclose({x})\<close> 
   have "y\<notin>field(?s)" 
@@ -843,7 +843,8 @@ proof -
     "{ y . p\<in>P , y = <check(p),p> } \<in> M" by simp
   then show ?thesis using 0 by simp
 qed
-  
+
+
 lemma val_G_dot :
   assumes "G \<subseteq> P"
     "one \<in> G" 
@@ -877,7 +878,7 @@ lemma G_in_Gen_Ext :
   shows   "G \<in> M[G]" 
  using assms val_G_dot GenExtI[of _ G] G_dot_in_M 
   by force
-    
-end (* M_extra_assms *)
-  
+
+
+end    (*************** CONTEXT: M_extra_assms *****************)
 end
