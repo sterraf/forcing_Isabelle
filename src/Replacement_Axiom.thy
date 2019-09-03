@@ -14,17 +14,6 @@ Local_Theory.define ((@{binding "renrep1_fn"}, NoSyn),
   ((@{binding "renrep1_def"}, []), ren)) #> snd
 end\<close>
 
-lemma id_fn_type : 
-  assumes "n \<in> nat"
-  shows "id(n) \<in> n \<rightarrow> n"
-  unfolding id_def using \<open>n\<in>nat\<close> by simp
-
-lemma id_fn_action:
-  assumes "n \<in> nat"
-  shows "\<And> j . j < n \<Longrightarrow> id(n)`j=j" 
-proof -
- show "id(n)`j=j" if "j < n" for j using that \<open>n\<in>nat\<close> ltD by simp
-qed
 
 definition renrep_fn :: "i \<Rightarrow> i" where
   "renrep_fn(n) == sum(renrep1_fn,id(n),7,9,n)"

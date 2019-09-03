@@ -13,6 +13,19 @@ lemma app_nm : "n\<in>nat \<Longrightarrow> m\<in>nat \<Longrightarrow> f\<in>n\
     
 section\<open>Renaming of free variables\<close>
 
+lemma id_fn_type :
+  assumes "n \<in> nat"
+  shows "id(n) \<in> n \<rightarrow> n"
+  unfolding id_def using \<open>n\<in>nat\<close> by simp
+
+lemma id_fn_action:
+  assumes "n \<in> nat"
+  shows "\<And> j . j < n \<Longrightarrow> id(n)`j=j"
+proof -
+ show "id(n)`j=j" if "j < n" for j using that \<open>n\<in>nat\<close> ltD by simp
+qed
+
+
 definition 
   sum :: "[i,i,i,i,i] \<Rightarrow> i" where
   "sum(f,g,m,n,p) == \<lambda>j \<in> m#+p  . if j<m then f`j else (g`(j#-m))#+n"
@@ -409,4 +422,5 @@ next
   qed
   then show ?case using Forall 0 1 2 4 by simp
 qed
-end 
+
+end
