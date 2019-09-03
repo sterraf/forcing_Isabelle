@@ -1,6 +1,6 @@
 theory Replacement_Axiom
   imports
-    Relative_Univ Separation_Axiom Renaming
+    Least Relative_Univ Separation_Axiom Renaming
 begin
 
 local_setup\<open>
@@ -153,11 +153,10 @@ schematic_goal sats_prebody_fm_auto:
   shows 
     "(\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> sats(M,forces(\<phi>),[P,leq,one,p,\<rho>,\<tau>,\<pi>] @ nenv))
    \<longleftrightarrow> sats(M,?prebody_fm,[\<rho>,p,\<alpha>,P,leq,one,\<pi>] @ nenv)"
-    and
-    "?prebody_fm \<in> formula"
-  apply (insert assms; (rule sep_rules is_Vset_iff_sats | simp))
-  apply (rule sep_rules is_Vset_iff_sats  | simp)+
-         apply (simp_all, blast)
+  apply (insert assms; (rule sep_rules is_Vset_iff_sats[OF _ _ _ _ _ M_inhabit[simplified]] | simp))
+   apply (rule sep_rules is_Vset_iff_sats is_Vset_iff_sats[OF _ _ _ _ _ M_inhabit[simplified]] | simp)+
+  apply (rule M_inhabit[simplified])
+       apply (simp_all)
      apply (rule length_type[THEN nat_into_Ord], blast)+
   apply ((rule sep_rules | simp))
   apply ((rule sep_rules | simp))
