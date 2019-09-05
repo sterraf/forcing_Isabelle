@@ -291,9 +291,16 @@ lemma RepFun_powapply_closed:
   assumes 
     "M(f)" "M(A)"
   shows 
-    "M({ {x \<in> Pow(f`y). M(x)} . y\<in>A })"
-  sorry
-
+    "M(Replace(A,is_powapply(M,f)))"
+proof -
+  have "univalent(M,A,is_powapply(M,f))" 
+    using \<open>M(A)\<close> \<open>M(f)\<close> unfolding univalent_def is_powapply_def by simp
+  moreover
+  have "\<lbrakk> x\<in>A ; is_powapply(M,f,x,y) \<rbrakk> \<Longrightarrow> M(y)" for x y
+    using assms unfolding is_powapply_def by simp
+  ultimately
+  show ?thesis using assms powapply_replacement by simp
+qed
 
 lemma Union_powapply_closed:
   assumes 
@@ -305,7 +312,7 @@ proof -
     using that assms transM[of _ x] powapply_closed by simp
   then
   have "M({{a\<in>Pow(f`y). M(a)}. y\<in>x})"
-    using assms transM[of _ x]  RepFun_powapply_closed by simp
+    using assms transM[of _ x]  RepFun_powapply_closed RepFun_is_powapply by simp
   then show ?thesis using assms by simp
 qed
 
@@ -314,6 +321,7 @@ lemma relation2_HVfrom: "M(A) \<Longrightarrow> relation2(M,is_HVfrom(M,A),HVfro
     unfolding is_HVfrom_def HVfrom_def relation2_def
     using Replace_is_powapply RepFun_is_powapply 
           Union_powapply_closed RepFun_powapply_closed by auto
+
 
 lemma "Ord(i) \<Longrightarrow> {x\<in>Vfrom(A,i). M(x)} = transrec(i,HVfrom(M,A))"
 proof (induct rule:trans_induct)
@@ -331,10 +339,7 @@ proof (induct rule:trans_induct)
     sorry
 qed
 
-
-end (* context M_basic *)
-
-
+end (* context M_basic_pow *)
 
 
 context M_eclose
