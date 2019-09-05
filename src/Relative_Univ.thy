@@ -93,6 +93,7 @@ definition
   "is_HVfrom(M,A,x,f,h) \<equiv> \<exists>U[M]. \<exists>R[M]. \<exists>P[M]. union(M,A,U,h) 
         \<and> big_union(M,R,U) \<and> is_Replace(M,x,is_powapply(M,f),R)" 
 
+
 definition
   is_Vfrom :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
   "is_Vfrom(M,A,i,V) == is_transrec(M,is_HVfrom(M,A),i,V)"
@@ -236,7 +237,11 @@ schematic_goal is_Vset_iff_sats:
 
 section\<open>Absoluteness results\<close>
 
-context M_basic
+locale M_basic_pow = M_basic + 
+  assumes
+    power_ax : "power_ax(M)" and
+    powapply_replacement : "M(f) \<Longrightarrow> strong_replacement(M,is_powapply(M,f))" 
+
 begin
 
 lemma is_powapply_abs: "\<lbrakk>M(f); M(y)\<rbrakk> \<Longrightarrow> is_powapply(M,f,y,z) \<longleftrightarrow> M(z) \<and> z = {x\<in>Pow(f`y). M(x)}"
@@ -262,22 +267,91 @@ proof -
   show ?thesis using \<open>M(A)\<close> \<open>M(R)\<close> Replace_abs by simp
 qed
 
-lemma 
-  assumes "M(A)"
-  shows "relation2(M,is_HVfrom(M,A),HVfrom(M,A))"
+
+lemma powapply_closed:
+  "\<lbrakk> M(y) ; M(f) \<rbrakk> \<Longrightarrow> M({x \<in> Pow(f ` y) . M(x)})"
+  using apply_closed power_ax unfolding power_ax_def by simp
+
+
+lemma RepFun_is_powapply:
+  assumes
+    "M(R)" "M(A)" "M(f)" 
+  shows
+  "Replace(A,is_powapply(M,f)) = RepFun(A,\<lambda>y.{x\<in>Pow(f`y). M(x)})"
 proof -
-  have 1:"M(f) \<Longrightarrow> M(C) \<Longrightarrow> univalent(M,C,is_powapply(M,f))"  for f C
-    unfolding univalent_def is_powapply_def by simp
-  show ?thesis
-    unfolding is_HVfrom_def HVfrom_def relation2_def
-    using assms Replace_is_powapply is_powapply_abs
-    sorry
+  have 1:"{y . x \<in> A, M(y) \<and> y = {x \<in> Pow(f ` x) . M(x)}} = {y . x \<in> A, y = {x \<in> Pow(f ` x) . M(x)}}"
+    using assms powapply_closed transM[of _ A] by blast
+  have "{y . x \<in> A, y = {x \<in> Pow(f ` x) . M(x)}} = {{x \<in> Pow(f ` y) . M(x)} . y \<in> A}"
+    by auto
+  then show ?thesis using 1 assms is_powapply_abs transM[of _ A] by simp
 qed
+
+lemma RepFun_powapply_closed:
+  assumes 
+    "M(f)" "M(A)"
+  shows 
+    "M({ {x \<in> Pow(f`y). M(x)} . y\<in>A })"
+  sorry
+
+
+lemma Union_powapply_closed:
+  assumes 
+    "M(x)" "M(f)"
+  shows 
+    "M(\<Union>y\<in>x. {a\<in>Pow(f`y). M(a)})"
+proof -
+  have "M({a\<in>Pow(f`y). M(a)})" if "y\<in>x" for y
+    using that assms transM[of _ x] powapply_closed by simp
+  then
+  have "M({{a\<in>Pow(f`y). M(a)}. y\<in>x})"
+    using assms transM[of _ x]  RepFun_powapply_closed by simp
+  then show ?thesis using assms by simp
+qed
+
+
+lemma "M(A) \<Longrightarrow> relation2(M,is_HVfrom(M,A),HVfrom(M,A))"
+    unfolding is_HVfrom_def HVfrom_def relation2_def
+    using Replace_is_powapply RepFun_is_powapply 
+          Union_powapply_closed RepFun_powapply_closed by auto
 
 end (* context M_basic *)
 
 context M_trancl
 begin
+
+
+(*
+1- relation2(M,is_HVfrom(M,A),HVfrom)                OK
+2- transrec_replacement(M,is_HVfrom,i)
+3- \<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(HVfrom(x,g))      ESTARIA (hay que usar partes)
+
+MHVfrom(M,A,x,f) \<equiv> A \<union> (\<Union>y\<in>x. {a\<in>Pow(f`y) . M(a)})
+
+
+is_Vfrom(M,A,i,V) \<longleftrightarrow> V = transrec(i,HVfrom)
+
+
+
+
+
+
+{x\<in>Vfrom(A,i). M(x)} = transrec(i,HVfrom)
+
+Vfrom(A,i) == transrec(i, %x f. A \<union> (\<Union>y\<in>x. Pow(f`y)))
+
+HVfrom(A,x,f) \<equiv> A \<union> (\<Union>y\<in>x. {a\<in>Pow(f`y). M(a)})
+
+
+
+
+
+
+theorem (in M_eclose) transrec_abs:
+  "[|transrec_replacement(M,MH,i);  relation2(M,MH,H);
+     Ord(i);  M(i);  M(z);
+     \<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(H(x,g))|]
+   ==> is_transrec(M,MH,i,z) \<longleftrightarrow> z = transrec(i,H)"
+*)
 
 lemma Vfrom_abs: "\<lbrakk> M(A); M(i); M(V); Ord(i) \<rbrakk> \<Longrightarrow> is_Vfrom(M,A,i,V) \<longleftrightarrow> V = {x\<in>Vfrom(A,i). M(x)}"
   sorry
