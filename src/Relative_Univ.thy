@@ -279,11 +279,12 @@ lemma RepFun_is_powapply:
   shows
   "Replace(A,is_powapply(M,f)) = RepFun(A,\<lambda>y.{x\<in>Pow(f`y). M(x)})"
 proof -
-  have 1:"{y . x \<in> A, M(y) \<and> y = {x \<in> Pow(f ` x) . M(x)}} = {y . x \<in> A, y = {x \<in> Pow(f ` x) . M(x)}}"
+  have "{y . x \<in> A, M(y) \<and> y = {x \<in> Pow(f ` x) . M(x)}} = {y . x \<in> A, y = {x \<in> Pow(f ` x) . M(x)}}"
     using assms powapply_closed transM[of _ A] by blast
-  have "{y . x \<in> A, y = {x \<in> Pow(f ` x) . M(x)}} = {{x \<in> Pow(f ` y) . M(x)} . y \<in> A}"
-    by auto
-  then show ?thesis using 1 assms is_powapply_abs transM[of _ A] by simp
+  also
+  have " ... = {{x \<in> Pow(f ` y) . M(x)} . y \<in> A}" by auto
+  finally 
+  show ?thesis using assms is_powapply_abs transM[of _ A] by simp
 qed
 
 lemma RepFun_powapply_closed:
@@ -309,14 +310,34 @@ proof -
 qed
 
 
-lemma "M(A) \<Longrightarrow> relation2(M,is_HVfrom(M,A),HVfrom(M,A))"
+lemma relation2_HVfrom: "M(A) \<Longrightarrow> relation2(M,is_HVfrom(M,A),HVfrom(M,A))"
     unfolding is_HVfrom_def HVfrom_def relation2_def
     using Replace_is_powapply RepFun_is_powapply 
           Union_powapply_closed RepFun_powapply_closed by auto
 
+lemma "Ord(i) \<Longrightarrow> {x\<in>Vfrom(A,i). M(x)} = transrec(i,HVfrom(M,A))"
+proof (induct rule:trans_induct)
+  case (step i)
+    (*fake test *)
+  fix X
+  { 
+    fix x
+    assume "M(x)"
+    have "x\<in>Vfrom(A,i) \<longleftrightarrow> x\<in>X" sorry
+  }
+  then
+  have "{x\<in>Vfrom(A,i). M(x)} = {x\<in>X. M(x)}" by auto
+  then show ?case
+    sorry
+qed
+
+
 end (* context M_basic *)
 
-context M_trancl
+
+
+
+context M_eclose
 begin
 
 
@@ -331,19 +352,11 @@ MHVfrom(M,A,x,f) \<equiv> A \<union> (\<Union>y\<in>x. {a\<in>Pow(f`y) . M(a)})
 is_Vfrom(M,A,i,V) \<longleftrightarrow> V = transrec(i,HVfrom)
 
 
-
-
-
-
 {x\<in>Vfrom(A,i). M(x)} = transrec(i,HVfrom)
 
 Vfrom(A,i) == transrec(i, %x f. A \<union> (\<Union>y\<in>x. Pow(f`y)))
 
 HVfrom(A,x,f) \<equiv> A \<union> (\<Union>y\<in>x. {a\<in>Pow(f`y). M(a)})
-
-
-
-
 
 
 theorem (in M_eclose) transrec_abs:
@@ -390,7 +403,7 @@ proof -
   ultimately
   show ?thesis by blast
 qed
-end (* context M_trancl *)
+end (* context M_eclose *)
 
 context M_wfrank
 begin
