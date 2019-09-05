@@ -4,9 +4,6 @@ theory Relative_Univ
 
 begin
 
-lemma rank_eq_wfrank: "rank(a) = wfrank(Memrel(eclose({a})),a)"
-  unfolding rank_def transrec_def wfrank_def wfrec_def sorry
-
 lemma (in M_trivial) powerset_subset_Pow:
   assumes 
     "powerset(M,x,y)" "\<And>z. z\<in>y \<Longrightarrow> M(z)"
@@ -116,36 +113,6 @@ lemma Replace_iff_sats:
    ==> is_Replace(##A, x, is_P, y) \<longleftrightarrow> sats(A, is_Replace_fm(i,p,j), env)"
 by (simp add: sats_is_Rep_fm [OF is_P_iff_sats])
 
-(*
-(*   "is_powapply(M,f,y,z) \<equiv> M(z) \<and> (\<exists>fy[M]. fun_apply(M,f,y,fy) \<and> powerset(M,fy,z))" *)
-
-definition
-  powerset_fm :: "[i,i] \<Rightarrow> i" where
-  "powerset_fm(y,z) \<equiv> Forall(Iff(Member(0,succ(z)),subset_fm(0,succ(y))))"
-
-lemma sats_powerset_fm [simp]:
-  assumes
-    "y\<in>nat" "z\<in>nat" "env\<in>list(A)"
-  shows
-    "powerset(##A,nth(y, env),nth(z, env))
-    \<longleftrightarrow> sats(A,powerset_fm(y,z),env)"
-  unfolding powerset_fm_def powerset_def 
-  using assms sats_subset_fm' by simp
-
-definition
-  is_powapply_fm :: "[i,i,i] \<Rightarrow> i" where
-  "is_powapply_fm(f,y,z) \<equiv> Exists(And(fun_apply_fm(1,2,0),powerset_fm(0,3)))"
-
-lemma sats_is_powapply_fm_auto:
-  assumes
-    "f\<in>nat" "y\<in>nat" "z\<in>nat" "env\<in>list(A)" "z<length(env)"
-  shows
-    "is_powapply(##A,nth(f, env),nth(y, env),nth(z, env))
-    \<longleftrightarrow> sats(A,is_powapply_fm(f,y,z),env)"
-  using assms
-  unfolding is_powapply_def is_powapply_fm_def
-  apply simp
-*)
 
 schematic_goal sats_is_powapply_fm_auto:
   assumes
@@ -237,10 +204,12 @@ schematic_goal is_Vset_iff_sats:
 
 section\<open>Absoluteness results\<close>
 
-locale M_basic_pow = M_basic + 
+locale M_eclose_pow = M_eclose + 
   assumes
     power_ax : "power_ax(M)" and
-    powapply_replacement : "M(f) \<Longrightarrow> strong_replacement(M,is_powapply(M,f))" 
+    powapply_replacement : "M(f) \<Longrightarrow> strong_replacement(M,is_powapply(M,f))" and
+    HVfrom_replacement : "\<lbrakk> M(i) ; Ord(i) ; M(A) \<rbrakk> \<Longrightarrow> 
+                          transrec_replacement(M,is_HVfrom(M,A),i)"
 
 begin
 
@@ -322,8 +291,12 @@ lemma relation2_HVfrom: "M(A) \<Longrightarrow> relation2(M,is_HVfrom(M,A),HVfro
     using Replace_is_powapply RepFun_is_powapply 
           Union_powapply_closed RepFun_powapply_closed by auto
 
+lemma HVfrom_closed : 
+  "M(A) \<Longrightarrow> \<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(HVfrom(M,A,x,g))"
+  unfolding HVfrom_def using Union_powapply_closed by simp
 
-lemma "Ord(i) \<Longrightarrow> {x\<in>Vfrom(A,i). M(x)} = transrec(i,HVfrom(M,A))"
+
+lemma HVfrom_def : "Ord(i) \<Longrightarrow> {x\<in>Vfrom(A,i). M(x)} = transrec(i,HVfrom(M,A))"
 proof (induct rule:trans_induct)
   case (step i)
     (*fake test *)
@@ -339,52 +312,29 @@ proof (induct rule:trans_induct)
     sorry
 qed
 
-end (* context M_basic_pow *)
-
-
-context M_eclose
-begin
-
-
-(*
-1- relation2(M,is_HVfrom(M,A),HVfrom)                OK
-2- transrec_replacement(M,is_HVfrom,i)
-3- \<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(HVfrom(x,g))      ESTARIA (hay que usar partes)
-
-MHVfrom(M,A,x,f) \<equiv> A \<union> (\<Union>y\<in>x. {a\<in>Pow(f`y) . M(a)})
-
-
-is_Vfrom(M,A,i,V) \<longleftrightarrow> V = transrec(i,HVfrom)
-
-
-{x\<in>Vfrom(A,i). M(x)} = transrec(i,HVfrom)
-
-Vfrom(A,i) == transrec(i, %x f. A \<union> (\<Union>y\<in>x. Pow(f`y)))
-
-HVfrom(A,x,f) \<equiv> A \<union> (\<Union>y\<in>x. {a\<in>Pow(f`y). M(a)})
-
-
-theorem (in M_eclose) transrec_abs:
-  "[|transrec_replacement(M,MH,i);  relation2(M,MH,H);
-     Ord(i);  M(i);  M(z);
-     \<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(H(x,g))|]
-   ==> is_transrec(M,MH,i,z) \<longleftrightarrow> z = transrec(i,H)"
-*)
-
 lemma Vfrom_abs: "\<lbrakk> M(A); M(i); M(V); Ord(i) \<rbrakk> \<Longrightarrow> is_Vfrom(M,A,i,V) \<longleftrightarrow> V = {x\<in>Vfrom(A,i). M(x)}"
-  sorry
+  unfolding is_Vfrom_def
+  using relation2_HVfrom HVfrom_closed HVfrom_replacement 
+    transrec_abs[of "is_HVfrom(M,A)" i "HVfrom(M,A)"] HVfrom_def by simp
+
 
 lemma Vfrom_closed: "\<lbrakk> M(A); M(i); Ord(i) \<rbrakk> \<Longrightarrow> M({x\<in>Vfrom(A,i). M(x)})"
-  sorry
-
-lemma rank_closed: "M(a) \<Longrightarrow> M(rank(a))"
-  sorry
+  unfolding is_Vfrom_def
+  using relation2_HVfrom HVfrom_closed HVfrom_replacement 
+    transrec_closed[of "is_HVfrom(M,A)" i "HVfrom(M,A)"] HVfrom_def by simp
 
 lemma Vset_abs: "\<lbrakk> M(i); M(V); Ord(i) \<rbrakk> \<Longrightarrow> is_Vset(M,i,V) \<longleftrightarrow> V = {x\<in>Vset(i). M(x)}"
   using Vfrom_abs unfolding is_Vset_def by simp
 
 lemma Vset_closed: "\<lbrakk> M(i); Ord(i) \<rbrakk> \<Longrightarrow> M({x\<in>Vset(i). M(x)})"
   using Vfrom_closed unfolding is_Vset_def by simp
+
+(*
+lemma rank_eq_wfrank: "rank(a) = wfrank(Memrel(eclose({a})),a)"
+  unfolding rank_def transrec_def wfrank_def wfrec_def oops
+
+lemma rank_closed: "M(a) \<Longrightarrow> M(rank(a))"
+  sorry
 
 lemma M_into_Vset:
   assumes "M(a)"
@@ -408,11 +358,8 @@ proof -
   ultimately
   show ?thesis by blast
 qed
-end (* context M_eclose *)
+end (* context M_eclose_pow *)
 
-context M_wfrank
-begin
-
-end (* M_wfrank *)
+*)
 
 end
