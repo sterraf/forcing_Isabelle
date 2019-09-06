@@ -3,6 +3,20 @@ theory Least
     Names
 
 begin
+lemma Least_Ord: "(\<mu> \<alpha>. R(\<alpha>)) = (\<mu> \<alpha>. Ord(\<alpha>) \<and> R(\<alpha>))"
+  unfolding Least_def by (simp add:lt_Ord)
+
+lemma Ord_Least_cong: 
+  assumes "\<And>y. Ord(y) \<Longrightarrow> R(y) \<longleftrightarrow> Q(y)"
+  shows "(\<mu> \<alpha>. R(\<alpha>)) = (\<mu> \<alpha>. Q(\<alpha>))"
+proof -
+  from assms
+  have "(\<mu> \<alpha>. Ord(\<alpha>) \<and> R(\<alpha>)) = (\<mu> \<alpha>. Ord(\<alpha>) \<and> Q(\<alpha>))"
+    by simp 
+  then
+  show ?thesis using Least_Ord by simp
+qed
+
 definition
   least :: "[i\<Rightarrow>o,i\<Rightarrow>o,i] \<Rightarrow> o" where
   "least(M,Q,i) \<equiv> ordinal(M,i) \<and> (
