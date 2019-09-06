@@ -424,8 +424,8 @@ proof -
     for v sorry
   moreover from this
   have "{v\<in>?big. \<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env)} = {v\<in>?big. sats(M[G], \<psi>, [v,c] @ env)}"
-    using Transset_intf[OF Transset_MG _ GenExtI]
-    apply (intro equality_iffI, simp, auto) sorry
+    using Transset_intf[OF Transset_MG _ GenExtI, OF _ \<open>?big_name\<in>M\<close>]
+    by (simp) 
   moreover from calculation and \<open>env\<in>_\<close> \<open>c\<in>_\<close> \<open>?big\<in>M[G]\<close>
   have "{v\<in>?big. sats(M[G], \<psi>, [v,c] @ env)} \<in> M[G]"
     using Collect_sats_in_MG by auto
