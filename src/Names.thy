@@ -251,13 +251,17 @@ next
   show ?thesis by simp
 qed
 
+definition
+  rcheck :: "i \<Rightarrow> i" where
+  "rcheck(x) == Memrel(eclose({x}))^+" 
+
 
 lemma Hcheck_trancl:"Hcheck(y, restrict(f,Memrel(eclose({x}))-``{y}))
                    = Hcheck(y, restrict(f,(Memrel(eclose({x}))^+)-``{y}))"
   unfolding Hcheck_def
   using Hcheck_trancl_aux by simp
 
-lemma check_trancl: "check(x) =  wfrec(Memrel(eclose({x}))^+, x, Hcheck)"
+lemma check_trancl: "check(x) =  wfrec(rcheck(x), x, Hcheck)"
 proof -
   have "check(x) =  wfrec(Memrel(eclose({x})), x, Hcheck)"
         (is "_ = wfrec(?r,_,_)")
@@ -272,12 +276,9 @@ proof -
   have " ... =  wfrec(?r^+, x, Hcheck)"
     unfolding wfrec_def using trancl_eq_r[OF relation_trancl trans_trancl] by simp
   finally
-  show ?thesis .
+  show ?thesis unfolding rcheck_def .
 qed
 
-definition
-  rcheck :: "i \<Rightarrow> i" where
-  "rcheck(x) == Memrel(eclose({x}))^+" 
 
 (* relation of check is in M *)
 lemma rcheck_in_M : 
@@ -735,49 +736,12 @@ proof -
   show ?thesis using one_in_M unfolding strong_replacement_def univalent_def by simp
 qed
 
+lemma univ_PHcheck : "\<lbrakk> z\<in>M ; f\<in>M \<rbrakk> \<Longrightarrow> univalent(##M,z,PHcheck(one,f))" 
+  unfolding univalent_def PHcheck_def by simp
 
 lemma relation2_Hcheck : 
   "relation2(##M,is_Hcheck(one),Hcheck)"
 proof -
-  have "y\<in>M \<Longrightarrow> x\<in>z \<Longrightarrow> z\<in>M \<Longrightarrow> f\<in>M \<Longrightarrow>
-        y = \<langle>f ` x, one\<rangle> \<longleftrightarrow> (\<exists>fy\<in>M. fun_apply(##M, f, x, fy) \<and> pair(##M, fy, one, y))"
-    for y z x f
-    using Transset_intf[OF trans_M]
-    by ( auto simp del:setclass_iff simp add:setclass_iff[symmetric])   
-  then
-  have 0:"Hcheck(z,f) = Replace(z,PHcheck(one,f))" 
-    if "z\<in>M" "f\<in>M" for z f        
-    using that Transset_intf[OF trans_M] one_in_M unfolding Hcheck_def PHcheck_def RepFun_def 
-    apply auto
-    apply (rule equality_iffI)
-    apply (simp add: Replace_iff)
-    apply auto
-    apply (rule tuples_in_M)
-    apply (simp_all del:setclass_iff add:setclass_iff[symmetric])
-    done
-  have 1:"univalent(##M,z,PHcheck(one,f))" 
-    if "z\<in>M" "f\<in>M" for z f
-    using that unfolding univalent_def PHcheck_def by simp
-  have 2:"\<lbrakk>x\<in>z; PHcheck(one,f,x,y) \<rbrakk> \<Longrightarrow> (##M)(y)"
-    if "z\<in>M" "f\<in>M" for z f x y
-    using that unfolding PHcheck_def by simp
-  have "is_Replace(##M,z,PHcheck(one,f),hc) \<longleftrightarrow> hc = Replace(z,PHcheck(one,f))" 
-    if "z\<in>M" "f\<in>M" "hc\<in>M" for z f hc
-    using that Replace_abs[OF _ _ 1 2] by simp
-  with 0
-  show ?thesis unfolding relation2_def is_Hcheck_def Hcheck_def by simp
-qed
-
-
-lemma check_in_M :
-  assumes
-    "x\<in>M"
-  shows
-    "check(x) \<in> M"
-proof -
-  have univ_PHcheck: "univalent(##M,z,PHcheck(one,f))" 
-    if "z\<in>M" "f\<in>M" for z f
-    using that unfolding univalent_def PHcheck_def by simp
   have 1:"\<lbrakk>x\<in>z; PHcheck(one,f,x,y) \<rbrakk> \<Longrightarrow> (##M)(y)"
     if "z\<in>M" "f\<in>M" for z f x y
     using that unfolding PHcheck_def by simp
@@ -785,43 +749,77 @@ proof -
     if "z\<in>M" "f\<in>M" "hc\<in>M" for z f hc
     using that Replace_abs[OF _ _ univ_PHcheck 1] by simp
   with def_PHcheck
-  have rel2h:"relation2(##M,is_Hcheck(one),Hcheck)" 
+  show ?thesis 
     unfolding relation2_def is_Hcheck_def Hcheck_def by simp
-  moreover
+qed
+
+lemma PHcheck_closed : 
+  "\<lbrakk>z\<in>M ; f\<in>M ; x\<in>z; PHcheck(one,f,x,y) \<rbrakk> \<Longrightarrow> (##M)(y)"
+  unfolding PHcheck_def by simp
+
+lemma Hcheck_closed :
+  "\<forall>y\<in>M. \<forall>g\<in>M. function(g) \<longrightarrow> Hcheck(y,g)\<in>M"
+proof -
   have "Replace(y,PHcheck(one,f))\<in>M"
     if "f\<in>M" "y\<in>M" for f y
-    using that repl_PHcheck univ_PHcheck 1[of y f] 
+    using that repl_PHcheck  PHcheck_closed[of y f] univ_PHcheck
           strong_replacement_closed
     by (simp del:setclass_iff add:setclass_iff[symmetric])
-  then have "\<forall>y\<in>M. \<forall>g\<in>M. function(g) \<longrightarrow> Hcheck(y,g)\<in>M"
-    using def_PHcheck by auto
-  moreover
-  have "wf(rcheck(x))"
-    unfolding rcheck_def using wf_trancl[OF wf_Memrel] .
-  moreover
-  have "trans(rcheck(x))" 
-    unfolding rcheck_def using trans_trancl .
-  moreover
-  have "relation(rcheck(x))" 
-    unfolding rcheck_def using relation_trancl .
-  moreover
-  have "rcheck(x) \<in> M" 
-    unfolding rcheck_def using \<open>x\<in>M\<close> by (simp del:setclass_iff add:setclass_iff[symmetric])
-  ultimately 
-  show ?thesis unfolding transrec_def 
-    using \<open>x\<in>M\<close> wfrec_Hcheck[of x] check_trancl
-          trans_wfrec_closed[of "rcheck(x)" x "is_Hcheck(one)" Hcheck]
-    by (simp del:setclass_iff add:setclass_iff[symmetric] rcheck_def)
+  then show ?thesis using def_PHcheck by auto
 qed
-  
+
+lemma wf_rcheck : "x\<in>M \<Longrightarrow> wf(rcheck(x))" 
+  unfolding rcheck_def using wf_trancl[OF wf_Memrel] .
+
+lemma trans_rcheck : "x\<in>M \<Longrightarrow> trans(rcheck(x))"
+  unfolding rcheck_def using trans_trancl .
+
+lemma relation_rcheck : "x\<in>M \<Longrightarrow> relation(rcheck(x))" 
+  unfolding rcheck_def using relation_trancl .
+
+lemma check_in_M : "x\<in>M \<Longrightarrow> check(x) \<in> M"
+  unfolding transrec_def 
+  using wfrec_Hcheck[of x] check_trancl wf_rcheck trans_rcheck relation_rcheck rcheck_in_M
+        Hcheck_closed relation2_Hcheck trans_wfrec_closed[of "rcheck(x)" x "is_Hcheck(one)" Hcheck] 
+  by (simp del:setclass_iff add:setclass_iff[symmetric])
+
+lemma check_abs :
+    "\<lbrakk> x\<in>M ; z\<in>M \<rbrakk> \<Longrightarrow> is_wfrec(##M,is_Hcheck(one),rcheck(x),x,z) \<longleftrightarrow> z = check(x)"
+  unfolding check_trancl 
+  using wfrec_Hcheck[of x] check_trancl wf_rcheck trans_rcheck relation_rcheck rcheck_in_M
+        Hcheck_closed relation2_Hcheck trans_wfrec_abs[of "rcheck(x)" x z "is_Hcheck(one)" Hcheck]
+  by (simp del:setclass_iff  add:setclass_iff[symmetric])
+
+
 lemma M_subset_MG :  "one \<in> G \<Longrightarrow> M \<subseteq> M[G]"
   using check_in_M one_in_P GenExtI
   by (intro subsetI, subst valcheck [of G,symmetric], auto)
 
+
+(* Internalization of check *)
+
 end (* forcing_data *)
 
+
 (* Other assumptions over M. This will be removed
-   when Interface is completed *)
+   when Interface is completed 
+
+
+  assumes 
+    f_abs: "\<And>x y. \<lbrakk> x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_F(##M,x,y) \<longleftrightarrow> y = f(x)"
+    and
+    f_sats: "\<And>x y. \<lbrakk>x\<in>M ; y\<in>M \<rbrakk> \<Longrightarrow> 
+             sats(M,f_fm,Cons(x,Cons(y,env))) \<longleftrightarrow> is_F(##M,x,y)"
+    and
+    f_form: "f_fm \<in> formula" 
+    and 
+    f_arty: "arity(f_fm) = 2" 
+    and
+    "env\<in>list(M)"
+  shows
+    "strong_replacement(##M, \<lambda>x y. y = f(x))"
+
+*)
 locale M_extra_assms = forcing_data +
   assumes
     repl_check_pair : "strong_replacement(##M,\<lambda>p y. y =<check(p),p>)"
