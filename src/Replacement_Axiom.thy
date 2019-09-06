@@ -281,6 +281,13 @@ lemma body_lemma:
     sats_prebody_fm[of "snd(x)" "fst(x)"] comp_in_M[OF \<open>x\<in>M\<close>]
    by (simp, simp del:setclass_iff add:setclass_iff[symmetric]) 
 
+(* Sorrying this until the interface is ready *)
+lemma (in M_eclose) Vset_abs: "\<lbrakk> M(i); M(V); Ord(i)\<rbrakk> \<Longrightarrow> is_Vset(M,i,V) \<longleftrightarrow> V = {x\<in>Vset(i). M(x)}"
+  sorry
+
+lemma (in M_eclose) Vset_closed: "\<lbrakk> M(i); Ord(i)\<rbrakk> \<Longrightarrow> M({x\<in>Vset(i). M(x)})"
+  sorry
+
 lemma Replace_sats_in_MG:
   assumes
     "c\<in>M[G]" "env \<in> list(M[G])"
@@ -313,8 +320,8 @@ proof -
         sats(M,forces(\<phi>),[P,leq,one,snd(\<rho>p),fst(\<rho>p),\<tau>,\<pi>] @ nenv))" (is "_ \<equiv> \<mu> \<alpha>. ?P(\<rho>p,\<alpha>)") for \<rho>p
   have "f(\<rho>p) = (\<mu> \<alpha>. \<alpha>\<in>M \<and> (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> 
         sats(M,forces(\<phi>),[P,leq,one,snd(\<rho>p),fst(\<rho>p),\<tau>,\<pi>] @ nenv)))" (is "_ = (\<mu> \<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>))") for \<rho>p
-    unfolding f_def using Vset_abs Vset_closed Least_cong
-    by (simp)
+    unfolding f_def using Vset_abs Vset_closed Ord_Least_cong[of "?P(\<rho>p)" "\<lambda> \<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>)"]
+    by (simp, simp del:setclass_iff)
   moreover
   have "f(\<rho>p) \<in> M" for \<rho>p
     unfolding f_def using Least_closed[of "?P(\<rho>p)"] by simp
