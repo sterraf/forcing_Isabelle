@@ -236,11 +236,9 @@ proof -
   show ?thesis using \<open>M(A)\<close> \<open>M(R)\<close> Replace_abs by simp
 qed
 
-
 lemma powapply_closed:
   "\<lbrakk> M(y) ; M(f) \<rbrakk> \<Longrightarrow> M({x \<in> Pow(f ` y) . M(x)})"
   using apply_closed power_ax unfolding power_ax_def by simp
-
 
 lemma RepFun_is_powapply:
   assumes
@@ -284,7 +282,6 @@ proof -
     using assms transM[of _ x]  RepFun_powapply_closed RepFun_is_powapply by simp
   then show ?thesis using assms by simp
 qed
-
 
 lemma relation2_HVfrom: "M(A) \<Longrightarrow> relation2(M,is_HVfrom(M,A),HVfrom(M,A))"
     unfolding is_HVfrom_def HVfrom_def relation2_def
@@ -346,6 +343,10 @@ lemma Vset_closed: "\<lbrakk> M(i); Ord(i) \<rbrakk> \<Longrightarrow> M({x\<in>
   using Vfrom_closed unfolding is_Vset_def by simp
 
 (*
+
+(* Results to be implemented later *)
+
+(* hint ? *)
 lemma rank_eq_wfrank: "rank(a) = wfrank(Memrel(eclose({a})),a)"
   unfolding rank_def transrec_def wfrank_def wfrec_def oops
 
@@ -374,8 +375,8 @@ proof -
   ultimately
   show ?thesis by blast
 qed
-end (* context M_eclose_pow *)
 
 *)
+end (* context M_eclose_pow *)
 
 end
