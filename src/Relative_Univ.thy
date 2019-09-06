@@ -295,33 +295,49 @@ lemma HVfrom_closed :
   "M(A) \<Longrightarrow> \<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(HVfrom(M,A,x,g))"
   unfolding HVfrom_def using Union_powapply_closed by simp
 
-
-lemma HVfrom_def : "Ord(i) \<Longrightarrow> {x\<in>Vfrom(A,i). M(x)} = transrec(i,HVfrom(M,A))"
+lemma transrec_HVfrom:
+  assumes "M(A)"
+  shows "Ord(i) \<Longrightarrow> {x\<in>Vfrom(A,i). M(x)} = transrec(i,HVfrom(M,A))"
 proof (induct rule:trans_induct)
   case (step i)
-    (*fake test *)
-  fix X
-  { 
-    fix x
-    assume "M(x)"
-    have "x\<in>Vfrom(A,i) \<longleftrightarrow> x\<in>X" sorry
-  }
+  have "Vfrom(A,i) = A \<union> (\<Union>y\<in>i. Pow((\<lambda>x\<in>i. Vfrom(A, x)) ` y))"
+    using def_transrec[OF Vfrom_def, of A i] by simp
+  then 
+  have "Vfrom(A,i) = A \<union> (\<Union>y\<in>i. Pow(Vfrom(A, y)))"
+    by simp
   then
-  have "{x\<in>Vfrom(A,i). M(x)} = {x\<in>X. M(x)}" by auto
-  then show ?case
-    sorry
+  have "{x\<in>Vfrom(A,i). M(x)} = {x\<in>A. M(x)} \<union> (\<Union>y\<in>i. {x\<in>Pow(Vfrom(A, y)). M(x)})"
+    by auto
+  with \<open>M(A)\<close>
+  have "{x\<in>Vfrom(A,i). M(x)} = A \<union> (\<Union>y\<in>i. {x\<in>Pow(Vfrom(A, y)). M(x)})" 
+    by (auto intro:transM)
+  also
+  have "... = A \<union> (\<Union>y\<in>i. {x\<in>Pow({z\<in>Vfrom(A,y). M(z)}). M(x)})" 
+  proof -
+    have "{x\<in>Pow(Vfrom(A, y)). M(x)} = {x\<in>Pow({z\<in>Vfrom(A,y). M(z)}). M(x)}"
+      if "y\<in>i" for y by (auto intro:transM)
+    then
+    show ?thesis by simp
+  qed
+  also from step 
+  have " ... = A \<union> (\<Union>y\<in>i. {x\<in>Pow(transrec(y, HVfrom(M, A))). M(x)})" by auto
+  also
+  have " ... = transrec(i, HVfrom(M, A))"
+    using def_transrec[of "\<lambda>y. transrec(y, HVfrom(M, A))" "HVfrom(M, A)" i,symmetric] 
+    unfolding HVfrom_def by simp
+  finally
+  show ?case .
 qed
 
 lemma Vfrom_abs: "\<lbrakk> M(A); M(i); M(V); Ord(i) \<rbrakk> \<Longrightarrow> is_Vfrom(M,A,i,V) \<longleftrightarrow> V = {x\<in>Vfrom(A,i). M(x)}"
   unfolding is_Vfrom_def
   using relation2_HVfrom HVfrom_closed HVfrom_replacement 
-    transrec_abs[of "is_HVfrom(M,A)" i "HVfrom(M,A)"] HVfrom_def by simp
-
+    transrec_abs[of "is_HVfrom(M,A)" i "HVfrom(M,A)"] transrec_HVfrom by simp
 
 lemma Vfrom_closed: "\<lbrakk> M(A); M(i); Ord(i) \<rbrakk> \<Longrightarrow> M({x\<in>Vfrom(A,i). M(x)})"
   unfolding is_Vfrom_def
   using relation2_HVfrom HVfrom_closed HVfrom_replacement 
-    transrec_closed[of "is_HVfrom(M,A)" i "HVfrom(M,A)"] HVfrom_def by simp
+    transrec_closed[of "is_HVfrom(M,A)" i "HVfrom(M,A)"] transrec_HVfrom by simp
 
 lemma Vset_abs: "\<lbrakk> M(i); M(V); Ord(i) \<rbrakk> \<Longrightarrow> is_Vset(M,i,V) \<longleftrightarrow> V = {x\<in>Vset(i). M(x)}"
   using Vfrom_abs unfolding is_Vset_def by simp
