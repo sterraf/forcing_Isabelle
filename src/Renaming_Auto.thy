@@ -11,11 +11,13 @@ lemma le_natI : "j \<le> n \<Longrightarrow> n \<in> nat \<Longrightarrow> j\<in
 lemmas nat_succI = nat_succ_iff[THEN iffD2]
 
 ML\<open>
+(* Smart constructors for ZF-terms *)
 fun mk_Pair t t' = Const (@{const_name Pair},@{typ "i \<Rightarrow> i \<Rightarrow> i"}) $ t $ t'
+
+fun lengthZF p = Const (@{const_name length},@{typ "i \<Rightarrow> i"}) $ p
 
 fun mk_FinSet nil = Const (@{const_name zero},@{typ i})
   | mk_FinSet (e :: es) = Const (@{const_name cons},@{typ "i \<Rightarrow> i \<Rightarrow> i"}) $ e $ mk_FinSet es
-
 
 fun mk_ZFnat 0 = Const (@{const_name zero},@{typ i})
   | mk_ZFnat n = Const (@{const_name succ},@{typ "i\<Rightarrow>i"}) $ mk_ZFnat (n-1)
@@ -33,27 +35,17 @@ fun isFree (Free (_,_)) = true
 fun freeName (Free (n,_)) = n
   | freeName _ = error "Not a free variable"
 
-fun index(item, xs) =
-  let
-    fun index'(_, nil) = NONE
-      | index'(m, x::xr) = if x = item then SOME m else index'(m + 1, xr)
-  in
-    index'(0, xs)
-  end
-
-fun find_f rho rho' i = index(nth rho i,rho')
 fun tp x = Const (@{const_name Trueprop},@{typ "o \<Rightarrow> prop"}) $ x
 
 fun mk_ren rho rho' =
   let val rs  = to_ML_list rho
       val rs' = to_ML_list rho'
-      val n = length rs-1
-      val ixs = 0 upto n
+      val ixs = 0 upto (length rs-1)
       fun err t = "The element " ^ Syntax.string_of_term @{context} t ^ " is missing in the target environment"
       fun mkp i =
-          case find_f rs rs' i of
-            NONE => nth rs i |> err |> error
-          | SOME j => mk_Pair (mk_ZFnat i) (mk_ZFnat j) 
+          case find_index (fn x => x = nth rs i) rs' of
+            ~1 => nth rs i |> err |> error
+          |  j => mk_Pair (mk_ZFnat i) (mk_ZFnat j) 
   in  map mkp ixs |> mk_FinSet
   end                                                         
 
@@ -91,54 +83,119 @@ fun mk_action_lemma ren rho rho'  =
    in (Logic.list_implies([tp h1,tp h2],tp concl),fvs)
   end
 
-  fun mk_sum_rename f m n p= 
+  fun mk_sum_rename f m n p = 
     let val id_fun = Const (@{const_name id},@{typ "i\<Rightarrow>i"}) $ p
-        val sum_const = Const (@{const_name sum},@{typ "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i"})
+        val sum_const = Const (@{const_name sum},@{typ "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i"})
     in sum_const $ f $ id_fun $ m $ n $ p
   end
 
-  fun ren_Thm e e' = 
-   let  val ctxt = @{context}
-        val r = mk_ren e e'
-        val goal = mk_tc_lemma true r e e'
-        val goal2 =  mk_dom_lemma r e
-        val goal3 = mk_tc_lemma false r e e'
-        val (goal4,fvs) = mk_action_lemma r e e'
-        val thm = Goal.prove ctxt [] [] goal 
-      (fn _ => REPEAT (
+  fun mk_sum_tc f m n p = 
+    let val m_length = m |> lengthZF (* to_ML_list |> length |> *)
+        val n_length = n |> lengthZF (* to_ML_list |> length |> to_ZF *)
+        val p_length = p |> lengthZF
+        val sum_fun = mk_sum_rename f m_length n_length p_length
+        val dom = Const (@{const_name "add"}, @{typ "i \<Rightarrow> i \<Rightarrow> i"}) $ m_length $ p_length
+        val codom = Const (@{const_name "add"}, @{typ "i \<Rightarrow> i \<Rightarrow> i"}) $ n_length $ p_length
+        val fun_ty = @{const_abbrev "function_space"}
+        val ty = Const (fun_ty,@{typ "i \<Rightarrow> i \<Rightarrow> i"}) $ dom $ codom
+  in  (sum_fun, Const (@{const_name "mem"},@{typ "i \<Rightarrow> i \<Rightarrow> o"}) $ sum_fun $ ty |> tp)
+  end
+
+fun mk_sum_action_lemma ren rho rho' =
+  let val ctxt = @{context}
+      val setV = Variable.variant_frees ctxt [] [("A",@{typ i})] |> hd |> Free
+      val envV = Variable.variant_frees ctxt [] [("env",@{typ i})] |> hd |> Free
+      val j = Variable.variant_frees ctxt [] [("j",@{typ i})] |> hd |> Free 
+      val vs = rho  |> to_ML_list
+      val ws = rho' |> to_ML_list |> filter isFree 
+      val envL = envV |> lengthZF
+      val rhoL = rho |> lengthZF
+      val h1 = Const (@{const_name Subset},@{typ "i \<Rightarrow> i \<Rightarrow> o"}) $ (append vs ws |> mk_FinSet) $ setV
+      val h2 = Const (@{const_name lt},@{typ "i \<Rightarrow> i \<Rightarrow> o"}) $ j $ 
+                (Const (@{const_name add},@{typ "i \<Rightarrow> i \<Rightarrow> i"}) $ rhoL $ envL)
+      val h3 = Const (@{const_name mem},@{typ "i \<Rightarrow> i \<Rightarrow> o"}) $ envV $ (Const (@{const_name list},@{typ "i\<Rightarrow>i"}) $ setV)
+      val nth_ = Const (@{const_name nth},@{typ "i \<Rightarrow> i \<Rightarrow> i"})
+      val fvs = ([j,setV,envV] @ ws |> filter isFree) |> map freeName
+      val lhs = nth_ $ j $ (Const (@{const_name app},@{typ "i \<Rightarrow> i \<Rightarrow> i"}) $ rho $ envV)
+      val rhs = nth_ $ 
+                  (Const (@{const_name apply}, @{typ "i\<Rightarrow>i\<Rightarrow>i"}) $ ren $ j) $ 
+                  (Const (@{const_name app},@{typ "i \<Rightarrow> i \<Rightarrow> i"}) $ rho' $ envV)
+      val concl = Const (@{const_name IFOL.eq},@{typ "i \<Rightarrow> i \<Rightarrow> o"}) $ lhs $ rhs
+   in (Logic.list_implies([tp h1,tp h2,tp h3],tp concl),fvs)
+  end
+
+  (* Tactics *)
+  fun fin ctx = 
+         REPEAT (resolve_tac ctx [@{thm nat_succI}] 1)
+         THEN   resolve_tac ctx [@{thm nat_0I}] 1
+
+  fun step ctx thm = 
+    asm_full_simp_tac ctx 1
+    THEN asm_full_simp_tac ctx 1
+    THEN EqSubst.eqsubst_tac ctx [1] [@{thm app_fun} OF [thm]] 1
+    THEN simp_tac ctx 1
+    THEN simp_tac ctx 1
+
+  fun fin_fun_tac ctxt = 
+  REPEAT (
       resolve_tac ctxt [@{thm consI}] 1
       THEN resolve_tac ctxt [@{thm ltD}] 1
       THEN simp_tac ctxt 1
       THEN resolve_tac ctxt [@{thm ltD}] 1
       THEN simp_tac ctxt 1)
-      THEN resolve_tac ctxt [@{thm emptyI}] 1
-      THEN REPEAT (simp_tac ctxt 1))
-       val thm2 = Goal.prove ctxt [] [] goal2
-            (fn _ => blast_tac ctxt 1) 
-    val thm3 =  Goal.prove ctxt [] [] goal3
-            (fn _ =>  EqSubst.eqsubst_tac ctxt [1] [thm2] 1
+  THEN resolve_tac ctxt [@{thm emptyI}] 1
+  THEN REPEAT (simp_tac ctxt 1)
+
+  fun ren_Thm e e' = 
+   let
+    val ctxt = @{context}
+    val r = mk_ren e e'
+    val fin_tc_goal = mk_tc_lemma true r e e'
+    val dom_goal =  mk_dom_lemma r e
+    val tc_goal = mk_tc_lemma false r e e'
+    val (action_goal,fvs) = mk_action_lemma r e e'
+    val fin_tc_lemma = Goal.prove ctxt [] [] fin_tc_goal (fn _ => fin_fun_tac ctxt)
+    val dom_lemma = Goal.prove ctxt [] [] dom_goal (fn _ => blast_tac ctxt 1) 
+    val tc_lemma =  Goal.prove ctxt [] [] tc_goal
+            (fn _ =>  EqSubst.eqsubst_tac ctxt [1] [dom_lemma] 1
               THEN resolve_tac ctxt [@{thm FiniteFun_is_fun}] 1
-              THEN resolve_tac ctxt [thm] 1)
-    val thm4 = Goal.prove ctxt [] [] goal4
+              THEN resolve_tac ctxt [fin_tc_lemma] 1)
+    val action_lemma = Goal.prove ctxt [] [] action_goal
               (fn _ => 
-                   let 
-                   fun fin ctx = 
-                          REPEAT (resolve_tac ctx [@{thm nat_succI}] 1)
-                          THEN   resolve_tac ctx [@{thm nat_0I}] 1
-                   fun step ctx = asm_full_simp_tac ctx 1
-                                  THEN asm_full_simp_tac ctx 1
-                                  THEN EqSubst.eqsubst_tac ctx [1] [@{thm app_fun} OF [thm3]] 1
-                                  THEN simp_tac ctx 1
-                                  THEN simp_tac ctx 1
-                   fun tact ctx = resolve_tac ctx [@{thm natE}] 1
-                                  THEN step ctx                                  
-                 in
                   forward_tac ctxt [@{thm le_natI}] 1
                   THEN fin ctxt
-                  THEN REPEAT (tact ctxt)
-                  THEN (step ctxt)
-                end)
-    in (thm4,thm3,fvs,r)
+                  THEN REPEAT (resolve_tac ctxt [@{thm natE}] 1
+                               THEN step ctxt tc_lemma)
+                  THEN (step ctxt tc_lemma)
+              )
+    in (action_lemma, tc_lemma, fvs, r)
+  end
+
+ fun sumRen_Thm e e' = 
+  let val ctxt = @{context}
+      val env = Variable.variant_frees ctxt [] [("env",@{typ i})] |> hd |> Free
+      val (action_lemma,tc_lemma,fvs,r) = ren_Thm e e'
+      val (sum_ren,goal_tc) = mk_sum_tc r e e' env
+      val setV = Variable.variant_frees ctxt [] [("A",@{typ i})] |> hd |> Free      
+      fun hyp en = Const (@{const_name mem},@{typ "i \<Rightarrow> i \<Rightarrow> o"}) $ en
+                $ (Const (@{const_name "list"}, @{typ "i\<Rightarrow>i"}) $ setV)
+  in (sum_ren,Logic.list_implies (map (fn e => e |> hyp |> tp) [e,e',env], goal_tc),tc_lemma,action_lemma)
+end
+
+fun mk_sum_thm_tc rho rho' =
+  let val (r,g,t1,t2) = sumRen_Thm rho rho'
+      val (goal,fvs) = mk_sum_action_lemma r rho rho'
+      val r = mk_ren rho rho'
+      val ctx = @{context}
+  in (goal,r,t1,t2,fvs,Goal.prove ctx [] [] g
+      (fn _ =>
+            resolve_tac ctx [@{thm sum_type_id}] 1
+            THEN asm_full_simp_tac ctx 3
+            THEN asm_full_simp_tac ctx 1
+            THEN asm_full_simp_tac ctx 1
+            THEN simp_tac ctx  1
+            THEN resolve_tac ctx [t1] 1
+  ))
   end
 
  fun fix_vars thm vars =
@@ -146,63 +203,29 @@ fun mk_action_lemma ren rho rho'  =
       val ctxt0 = @{context}
       val (_, ctxt1) = Variable.add_fixes vars ctxt0
     in singleton (Proof_Context.export ctxt1 ctxt0) thm
-  end
+  end 
 
+fun sum_rename rho rho' = 
+  let
+    val (goal, r, t1, t2, fvs, sum_tc_lemma) = mk_sum_thm_tc rho rho'
+    val ctx = @{context}
+    val action_lemma = fix_vars t2 fvs
+  in (fvs, r, sum_tc_lemma, Goal.prove ctx [] [] goal
+    (fn _ => resolve_tac ctx [@{thm sum_action_id}] 1
+            THEN (simp_tac ctx 4)
+            THEN (asm_full_simp_tac ctx 1) 
+            THEN (asm_full_simp_tac ctx 1)
+            THEN (asm_full_simp_tac ctx 3)
+            THEN (simp_tac ctx 1)
+            THEN (resolve_tac ctx [t1]  1)
+            THEN (resolve_tac ctx [action_lemma] 1)
+            THEN (blast_tac ctx  1)
+            THEN (full_simp_tac ctx  1)
+   ))
+end
 \<close>
 
-local_setup\<open>
-let val rho  = @{term "[P,leq,o,p,\<rho>,\<tau>,\<pi>]"}
-    val rho' = @{term "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>]"}
-    val (r,t,fvs,ren) = ren_Thm rho rho'
-    val (r',t') = (fix_vars r fvs , fix_vars t fvs)
-in
-Local_Theory.note   ((@{binding "renrep_thm"}, []), [r',t']) #> snd #>
-Local_Theory.define ((@{binding "renrep1_fn"}, NoSyn),
-  ((@{binding "renrep1_def"}, []), ren)) #> snd
-end\<close>
-
 (*
-
-mk_sum_rename f m n p: dado el renombre f : m \<rightarrow> n construye el renombre f+id(p)
-
-
-definition renrep_fn :: "i \<Rightarrow> i" where
-  "renrep_fn(n) == sum(renrep1_fn,id(n),7,9,n)"
-
-lemma renrep_fn_type :
-  assumes "n\<in>nat"
-  shows "renrep_fn(n) \<in> 7#+n \<rightarrow> 9#+n"
-  unfolding renrep_fn_def renrep1_def 
-  using \<open>n\<in>nat\<close> sum_type[OF _ _ _ _ renrep_thm(2)] id_fn_type
-  by simp
-
-lemma renrep_fn_action : 
-  assumes 
-    "[P,leq,o,p,\<rho>,\<tau>,\<pi>] \<in> list(M)" 
-    "env \<in> list(M)"
-    "V \<in> M" "\<alpha> \<in> M"
-  shows "\<And> i . i < 7 #+ length(env) \<Longrightarrow>
-    nth(i, [P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env) = nth(renrep_fn(length(env))`i, [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env)"
-proof - 
-  from assms
-  have 2:"[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] \<in> list(M)" 
-       " {P, leq, o, p, \<rho>, \<tau>, \<pi>} \<subseteq> M " by simp_all
-  let ?env1 = "[P,leq,o,p,\<rho>,\<tau>,\<pi>]"
-  let ?env2 = "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>]" 
-  let ?n = "length(env)"
-  from \<open>env\<in>list(M)\<close> 
-  have "length(env)\<in>nat" by simp
-  then show "nth(i, [P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env) = nth(renrep_fn(length(env))`i, [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env)"
-    if "i < 7 #+ length(env)" for i
-     unfolding renrep_fn_def renrep1_def
-     using \<open>?n\<in>nat\<close> that
-       sum_action[OF _ _ \<open>?n\<in>nat\<close> \<open>?n\<in>nat\<close> renrep_thm(2)  id_fn_type
-                        \<open>?env1 \<in> list(M)\<close> \<open>?env2 \<in> list(M)\<close> \<open>env\<in>list(M)\<close> \<open>env\<in>list(M)\<close>]
-                         renrep_thm(1)[of P leq o p \<rho> \<tau> \<pi> M,OF 2(2)]
-                         id_fn_action
-     by simp
-qed
-
 definition 
   renrep :: "[i,i] \<Rightarrow> i" where
   "renrep(\<phi>,n) = ren(\<phi>)`(7#+n)`(9#+n)`renrep_fn(n)" 

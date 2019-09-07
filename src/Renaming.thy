@@ -19,10 +19,10 @@ lemma id_fn_type :
   unfolding id_def using \<open>n\<in>nat\<close> by simp
 
 lemma id_fn_action:
-  assumes "n \<in> nat"
-  shows "\<And> j . j < n \<Longrightarrow> id(n)`j=j"
+  assumes "n \<in> nat" "env\<in>list(M)"
+  shows "\<And> j . j < n \<Longrightarrow> nth(j,env) = nth(id(n)`j,env)"
 proof -
- show "id(n)`j=j" if "j < n" for j using that \<open>n\<in>nat\<close> ltD by simp
+ show "nth(j,env) = nth(id(n)`j,env)" if "j < n" for j using that \<open>n\<in>nat\<close> ltD by simp
 qed
 
 
@@ -80,7 +80,7 @@ lemma sum_action :
     "length(env') = n" 
     "\<And> i . i < m \<Longrightarrow> nth(i,env) = nth(f`i,env')"
     "\<And> j. j < p \<Longrightarrow> nth(j,env1) = nth(g`j,env2)"
-  shows "i < m#+p \<longrightarrow> 
+  shows "\<forall> i . i < m#+p \<longrightarrow> 
           nth(i,env@env1) = nth(sum(f,g,m,n,p)`i,env'@env2)"
 proof -
   let ?h = "sum(f,g,m,n,p)"
@@ -236,6 +236,48 @@ proof -
     unfolding sum_def using domain_lam by simp
   with A B 
   show ?thesis using  Pi_iff [THEN iffD2] by simp
+qed
+
+lemma sum_type_id :
+  assumes
+    "env \<in> list(M)" 
+    "env' \<in> list(M)"
+    "env1 \<in> list(M)"
+    "f \<in> length(env)\<rightarrow>length(env')"  
+  shows 
+    "sum(f,id(length(env1)),length(env),length(env'),length(env1)) \<in> 
+        (length(env)#+length(env1)) \<rightarrow> (length(env')#+length(env1))"
+  using assms length_type id_fn_type sum_type
+  by simp
+
+lemma sum_action_id :
+  assumes
+    "env \<in> list(M)" 
+    "env' \<in> list(M)"
+    "f \<in> length(env)\<rightarrow>length(env')" 
+    "env1 \<in> list(M)" 
+    "\<And> i . i < length(env) \<Longrightarrow> nth(i,env) = nth(f`i,env')"
+  shows "\<And> i . i < length(env)#+length(env1) \<Longrightarrow>
+          nth(i,env@env1) = nth(sum(f,id(length(env1)),length(env),length(env'),length(env1))`i,env'@env1)"
+proof -
+  from assms 
+  have "length(env)\<in>nat" (is "?m \<in> _") by simp 
+  from assms have "length(env')\<in>nat" (is "?n \<in> _") by simp 
+  from assms have "length(env1)\<in>nat" (is "?p \<in> _") by simp 
+  note lenv = id_fn_action[OF \<open>?p\<in>nat\<close> \<open>env1\<in>list(M)\<close>]
+  note lenv_ty = id_fn_type[OF \<open>?p\<in>nat\<close>]    
+  { 
+    fix i 
+    assume "i < length(env)#+length(env1)" 
+    have "nth(i,env@env1) = nth(sum(f,id(length(env1)),?m,?n,?p)`i,env'@env1)"
+      using sum_action[OF \<open>?m\<in>nat\<close> \<open>?n\<in>nat\<close> \<open>?p\<in>nat\<close> \<open>?p\<in>nat\<close> \<open>f\<in>?m\<rightarrow>?n\<close>
+                        lenv_ty \<open>env\<in>list(M)\<close> \<open>env'\<in>list(M)\<close>
+                          \<open>env1\<in>list(M)\<close> \<open>env1\<in>list(M)\<close> _
+                          _ _  assms(5) lenv 
+    ] \<open>i<?m#+length(env1)\<close> by simp
+  }
+  then show "\<And> i . i < ?m#+length(env1) \<Longrightarrow>
+          nth(i,env@env1) = nth(sum(f,id(?p),?m,?n,?p)`i,env'@env1)" by simp
 qed
 
 definition 

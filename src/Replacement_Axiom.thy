@@ -6,63 +6,30 @@ begin
 local_setup\<open>
 let val rho  = @{term "[P,leq,o,p,\<rho>,\<tau>,\<pi>]"}
     val rho' = @{term "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>]"}
-    val (r,t,fvs,ren) = ren_Thm rho rho'
-    val (r',t') = (fix_vars r fvs , fix_vars t fvs)
+    val (fvs,r,tc_lemma,action_lemma) = sum_rename rho rho'
+    val (tc_lemma,action_lemma) = (fix_vars tc_lemma fvs , fix_vars action_lemma fvs)
 in
-Local_Theory.note   ((@{binding "renrep_thm"}, []), [r',t']) #> snd #>
+Local_Theory.note   ((@{binding "renrep_thm"}, []), [tc_lemma,action_lemma]) #> snd #>
 Local_Theory.define ((@{binding "renrep1_fn"}, NoSyn),
-  ((@{binding "renrep1_def"}, []), ren)) #> snd
+  ((@{binding "renrep1_def"}, []), r)) #> snd
 end\<close>
 
 
 definition renrep_fn :: "i \<Rightarrow> i" where
-  "renrep_fn(n) == sum(renrep1_fn,id(n),7,9,n)"
-
-lemma renrep_fn_type :
-  assumes "n\<in>nat"
-  shows "renrep_fn(n) \<in> 7#+n \<rightarrow> 9#+n"
-  unfolding renrep_fn_def renrep1_def 
-  using \<open>n\<in>nat\<close> sum_type[OF _ _ _ _ renrep_thm(2)] id_fn_type
-  by simp
-
-lemma renrep_fn_action : 
-  assumes 
-    "[P,leq,o,p,\<rho>,\<tau>,\<pi>] \<in> list(M)" 
-    "env \<in> list(M)"
-    "V \<in> M" "\<alpha> \<in> M"
-  shows "\<And> i . i < 7 #+ length(env) \<Longrightarrow>
-    nth(i, [P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env) = nth(renrep_fn(length(env))`i, [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env)"
-proof - 
-  from assms
-  have 2:"[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] \<in> list(M)" 
-       " {P, leq, o, p, \<rho>, \<tau>, \<pi>} \<subseteq> M " by simp_all
-  let ?env1 = "[P,leq,o,p,\<rho>,\<tau>,\<pi>]"
-  let ?env2 = "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>]" 
-  let ?n = "length(env)"
-  from \<open>env\<in>list(M)\<close> 
-  have "length(env)\<in>nat" by simp
-  then show "nth(i, [P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env) = nth(renrep_fn(length(env))`i, [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env)"
-    if "i < 7 #+ length(env)" for i
-     unfolding renrep_fn_def renrep1_def
-     using \<open>?n\<in>nat\<close> that
-       sum_action[OF _ _ \<open>?n\<in>nat\<close> \<open>?n\<in>nat\<close> renrep_thm(2)  id_fn_type
-                        \<open>?env1 \<in> list(M)\<close> \<open>?env2 \<in> list(M)\<close> \<open>env\<in>list(M)\<close> \<open>env\<in>list(M)\<close>]
-                         renrep_thm(1)[of P leq o p \<rho> \<tau> \<pi> M,OF 2(2)]
-                         id_fn_action
-     by simp
-qed
+  "renrep_fn(env) == sum(renrep1_fn,id(length(env)),7,9,length(env))"
 
 definition 
   renrep :: "[i,i] \<Rightarrow> i" where
-  "renrep(\<phi>,n) = ren(\<phi>)`(7#+n)`(9#+n)`renrep_fn(n)" 
+  "renrep(\<phi>,env) = ren(\<phi>)`(7#+length(env))`(9#+length(env))`renrep_fn(env)" 
 
 lemma renrep_type [TC]: 
-  assumes "\<phi>\<in>formula" "n \<in> nat"
-    shows "renrep(\<phi>,n) \<in> formula"
- unfolding renrep_def
-    using renrep_fn_type[OF assms(2)] ren_tc assms(1)
-    by simp
-
+  assumes "\<phi>\<in>formula" "env \<in> list(M)"
+    shows "renrep(\<phi>,env) \<in> formula"
+  unfolding renrep_def renrep_fn_def renrep1_def
+  using assms
+  apply(rule_tac ren_tc,simp_all)
+  apply(insert renrep_thm(1)[simplified,of P M leq o p \<rho> \<tau> \<pi> v \<alpha> env],simp)
+  
 lemma arity_renrep: 
   assumes "n\<in>nat" "\<phi>\<in>formula" "arity(\<phi>)\<le> 7#+n"
     shows "arity(renrep(\<phi>,n)) \<le> 9#+n"
