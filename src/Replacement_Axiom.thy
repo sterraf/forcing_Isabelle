@@ -100,10 +100,10 @@ qed
 locale rep_rename = sep_rename +
   fixes renpbdy :: "[i,i] \<Rightarrow> i" and renbody :: "[i,i] \<Rightarrow> i"
   assumes
-  sats_renpbdy: "arity(\<phi>) \<le> 7 #+ m \<Longrightarrow> [\<rho>,p,x,\<alpha>,P,leq,one,\<pi>] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
+  sats_renpbdy: "arity(\<phi>) \<le> 7 #+ length(nenv) \<Longrightarrow> [\<rho>,p,x,\<alpha>,P,leq,one,\<pi>] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
        sats(M, \<phi>, [\<rho>,p,\<alpha>,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow> sats(M, renpbdy(\<phi>,length(env)), [\<rho>,p,x,\<alpha>,P,leq,one,\<pi>] @ nenv)"
   and
-  renpbdy_type [TC]: "\<phi>\<in>formula \<Longrightarrow> renpbdy(\<phi>,m) \<in> formula"
+  renpbdy_type [TC]: "\<phi>\<in>formula \<Longrightarrow> m\<in>nat \<Longrightarrow> renpbdy(\<phi>,m) \<in> formula"
   and
   arity_renpbdy: "\<phi>\<in>formula \<Longrightarrow> m\<in>nat \<Longrightarrow> arity(renpbdy(\<phi>,m)) \<le> 8 #+ m"
   and
