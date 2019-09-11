@@ -4,9 +4,6 @@ theory Relative_Univ
 
 begin
 
-lemma rank_eq_wfrank: "rank(a) = wfrank(Memrel(eclose({a})),a)"
-  unfolding rank_def transrec_def wfrank_def wfrec_def sorry
-
 lemma (in M_trivial) powerset_subset_Pow:
   assumes 
     "powerset(M,x,y)" "\<And>z. z\<in>y \<Longrightarrow> M(z)"
@@ -72,24 +69,27 @@ lemma (in M_trivial) family_union_closed: "\<lbrakk>strong_replacement(M, \<lamb
   using RepFun_closed ..
 
 (* "Vfrom(A,i) == transrec(i, %x f. A \<union> (\<Union>y\<in>x. Pow(f`y)))" *)
+(* HVfrom is *not* the recursive step for Vfrom. It is the
+   relativized version *)
 definition
-  HVfrom :: "[i,i,i] \<Rightarrow> i" where
-  "HVfrom(A,x,f) \<equiv> A \<union> (\<Union>y\<in>x. Pow(f`y))"
-
-definition
-  MHVfrom :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> i" where
-  "MHVfrom(M,A,x,f) \<equiv> A \<union> (\<Union>y\<in>x. {a\<in>Pow(f`y). M(a)})"
+  HVfrom :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> i" where
+  "HVfrom(M,A,x,f) \<equiv> A \<union> (\<Union>y\<in>x. {a\<in>Pow(f`y). M(a)})"
 
 (* z = Pow(f`y) *)
 definition
   is_powapply :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
   "is_powapply(M,f,y,z) \<equiv> M(z) \<and> (\<exists>fy[M]. fun_apply(M,f,y,fy) \<and> powerset(M,fy,z))"
 
+(* Trivial lemma *)
+lemma is_powapply_closed: "is_powapply(M,f,y,z) \<Longrightarrow> M(z)"
+  unfolding is_powapply_def by simp
+
 (* is_Replace(M,A,P,z) == \<forall>u[M]. u \<in> z \<longleftrightarrow> (\<exists>x[M]. x\<in>A & P(x,u)) *)
 definition
   is_HVfrom :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
   "is_HVfrom(M,A,x,f,h) \<equiv> \<exists>U[M]. \<exists>R[M]. \<exists>P[M]. union(M,A,U,h) 
         \<and> big_union(M,R,U) \<and> is_Replace(M,x,is_powapply(M,f),R)" 
+
 
 definition
   is_Vfrom :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
@@ -99,129 +99,6 @@ definition
   is_Vset :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "is_Vset(M,i,V) == \<exists>z[M]. empty(M,z) \<and> is_Vfrom(M,z,i,V)"
 
-definition
-  least :: "[i\<Rightarrow>o,i\<Rightarrow>o,i] \<Rightarrow> o" where
-  "least(M,Q,i) \<equiv> ordinal(M,i) \<and> (
-         (empty(M,i) \<and> (\<forall>b[M]. ordinal(M,b) \<longrightarrow> \<not>Q(b)))
-       \<or> (Q(i) \<and> (\<forall>b[M]. ordinal(M,b) \<and> b\<in>i\<longrightarrow> \<not>Q(b))))"
-
-definition
-  least_fm :: "[i,i] \<Rightarrow> i" where
-  "least_fm(q,i) \<equiv> And(ordinal_fm(i),
-   Or(And(empty_fm(i),Forall(Implies(ordinal_fm(0),Neg(q)))), 
-      And(Exists(And(q,Equal(0,succ(i)))),
-          Forall(Implies(And(ordinal_fm(0),Member(0,succ(i))),Neg(q))))))"
-
-lemma least_fm_type[TC] :"i \<in> nat \<Longrightarrow> q\<in>formula \<Longrightarrow> least_fm(q,i) \<in> formula"
-  unfolding least_fm_def
-  by simp
-
-(* Refactorize Formula and Relative to include the following three lemmas *)
-lemma sats_subset_fm':
-   "\<lbrakk> x\<in> nat; y \<in> nat;env \<in> list(A)\<rbrakk>
-    \<Longrightarrow> sats(A, subset_fm(x,y), env) \<longleftrightarrow> subset(##A,nth(x,env),nth(y,env))"
-  unfolding subset_fm_def subset_def
-  by (simp)
-
-lemma sats_transset_fm':
-   "\<lbrakk>env \<in> list(A); x\<in>nat\<rbrakk>
-    \<Longrightarrow> sats(A, transset_fm(x), env) \<longleftrightarrow> transitive_set(##A,nth(x,env))"
-  unfolding transset_fm_def transitive_set_def 
-  by (simp add:sats_subset_fm')
-
-lemma sats_ordinal_fm':
-   "\<lbrakk>x\<in> nat; env \<in> list(A)\<rbrakk>
-    \<Longrightarrow> sats(A, ordinal_fm(x), env) \<longleftrightarrow> ordinal(##A,nth(x,env))"
-  unfolding ordinal_fm_def ordinal_def
-  by (simp add:sats_subset_fm' sats_transset_fm')
-
-lemmas basic_fm_simps = sats_subset_fm' sats_transset_fm' sats_ordinal_fm'
-
-lemma sats_least_fm :
-  assumes p_iff_sats: 
-    "\<And>a. a \<in> A \<Longrightarrow> P(a) \<longleftrightarrow> sats(A, p, Cons(a, env))"
-  shows
-    "\<lbrakk>y \<in> nat; env \<in> list(A) ; 0\<in>A\<rbrakk>
-    \<Longrightarrow> sats(A, least_fm(p,y), env) \<longleftrightarrow>
-        least(##A, P, nth(y,env))"
-  using nth_closed p_iff_sats unfolding least_def least_fm_def
-  by (simp add:basic_fm_simps)
-
-lemma least_iff_sats:
-  assumes is_Q_iff_sats: 
-      "\<And>a. a \<in> A \<Longrightarrow> is_Q(a) \<longleftrightarrow> sats(A, q, Cons(a,env))"
-  shows 
-  "\<lbrakk>nth(j,env) = y; j \<in> nat; env \<in> list(A); 0\<in>A\<rbrakk>
-   \<Longrightarrow> least(##A, is_Q, y) \<longleftrightarrow> sats(A, least_fm(q,j), env)"
-  using sats_least_fm [OF is_Q_iff_sats, of j , symmetric]
-  by simp
-
-lemma least_conj: "a\<in>M \<Longrightarrow> least(##M, \<lambda>x. x\<in>M \<and> Q(x),a) \<longleftrightarrow> least(##M,Q,a)"
-  unfolding least_def by simp
-
-(* Better to have this in M_basic or similar *)
-lemma (in forcing_data) unique_least: "a\<in>M \<Longrightarrow> b\<in>M \<Longrightarrow> least(##M,Q,a) \<Longrightarrow> least(##M,Q,b) \<Longrightarrow> a=b"
-  unfolding least_def
-  by (auto, erule_tac i=a and j=b in Ord_linear_lt; (drule ltD | simp); auto intro:Ord_in_Ord)
-
-context M_trivial
-begin
-
-lemma least_abs: 
-  assumes "\<And>x. Q(x) \<Longrightarrow> M(x)" "M(a)" 
-  shows "least(M,Q,a) \<longleftrightarrow> a = (\<mu> x. Q(x))"
-  unfolding least_def
-proof (cases "\<forall>b[M]. Ord(b) \<longrightarrow> \<not> Q(b)"; intro iffI; simp add:assms)
-  case True
-  with \<open>\<And>x. Q(x) \<Longrightarrow> M(x)\<close>
-  have "\<not> (\<exists>i. Ord(i) \<and> Q(i)) " by blast
-  then
-  show "0 =(\<mu> x. Q(x))" using Least_0 by simp
-  then
-  show "ordinal(M, \<mu> x. Q(x)) \<and> (empty(M, Least(Q)) \<or> Q(Least(Q)))"
-    by simp 
-next
-  assume "\<exists>b[M]. Ord(b) \<and> Q(b)"
-  then 
-  obtain i where "M(i)" "Ord(i)" "Q(i)" by blast
-  assume "a = (\<mu> x. Q(x))"
-  moreover
-  note \<open>M(a)\<close>
-  moreover from  \<open>Q(i)\<close> \<open>Ord(i)\<close>
-  have "Q(\<mu> x. Q(x))" (is ?G)
-    by (blast intro:LeastI)
-  moreover
-  have "(\<forall>b[M]. Ord(b) \<and> b \<in> (\<mu> x. Q(x)) \<longrightarrow> \<not> Q(b))" (is "?H")
-    using less_LeastE[of Q _ False]
-    by (auto, drule_tac ltI, simp, blast)
-  ultimately
-  show "ordinal(M, \<mu> x. Q(x)) \<and> (empty(M, \<mu> x. Q(x)) \<and> (\<forall>b[M]. Ord(b) \<longrightarrow> \<not> Q(b)) \<or> ?G \<and> ?H)"
-    by simp
-next
-  assume 1:"\<exists>b[M]. Ord(b) \<and> Q(b)"
-  then 
-  obtain i where "M(i)" "Ord(i)" "Q(i)" by blast
-  assume "Ord(a) \<and> (a = 0 \<and> (\<forall>b[M]. Ord(b) \<longrightarrow> \<not> Q(b)) \<or> Q(a) \<and> (\<forall>b[M]. Ord(b) \<and> b \<in> a \<longrightarrow> \<not> Q(b)))"
-  with 1
-  have "Ord(a)" "Q(a)" "\<forall>b[M]. Ord(b) \<and> b \<in> a \<longrightarrow> \<not> Q(b)"
-    by blast+
-  moreover from this and \<open>\<And>x. Q(x) \<Longrightarrow> M(x)\<close>
-  have "Ord(b) \<Longrightarrow> b \<in> a \<Longrightarrow> \<not> Q(b)" for b
-    by blast
-  moreover from this and \<open>Ord(a)\<close>
-  have "b < a \<Longrightarrow> \<not> Q(b)" for b
-    unfolding lt_def using Ord_in_Ord by blast
-  ultimately
-  show "a = (\<mu> x. Q(x))"
-    using Least_equality by simp
-qed
-
-lemma Least_closed:
-  assumes "\<And>x. Q(x) \<Longrightarrow> M(x)"
-  shows "M(\<mu> x. Q(x))"
-  using assms LeastI[of Q] Least_0 by (cases "(\<exists>i. Ord(i) \<and> Q(i))", auto)
-
-end (* context M_trivial *)
 
 subsection\<open>Formula synthesis\<close>
 
@@ -236,18 +113,20 @@ lemma Replace_iff_sats:
    ==> is_Replace(##A, x, is_P, y) \<longleftrightarrow> sats(A, is_Replace_fm(i,p,j), env)"
 by (simp add: sats_is_Rep_fm [OF is_P_iff_sats])
 
+
 schematic_goal sats_is_powapply_fm_auto:
   assumes
-    "f\<in>nat" "y\<in>nat" "z\<in>nat" "env\<in>list(A)"
+    "f\<in>nat" "y\<in>nat" "z\<in>nat" "env\<in>list(A)" "0\<in>A"
   shows
     "is_powapply(##A,nth(f, env),nth(y, env),nth(z, env))
     \<longleftrightarrow> sats(A,?ipa_fm(f,y,z),env)"
   unfolding is_powapply_def is_Collect_def powerset_def subset_def
-   (* by (insert assms ; (rule sep_rules  | simp))+ *) sorry
+  using nth_closed assms
+   by (simp) (rule sep_rules  | simp)+
 
 schematic_goal is_powapply_iff_sats:
   assumes
-    "nth(f,env) = ff" "nth(y,env) = yy" "nth(z,env) = zz"
+    "nth(f,env) = ff" "nth(y,env) = yy" "nth(z,env) = zz" "0\<in>A"
     "f \<in> nat"  "y \<in> nat" "z \<in> nat" "env \<in> list(A)"
   shows
        "is_powapply(##A,ff,yy,zz) \<longleftrightarrow> sats(A, ?is_one_fm(a,r), env)"
@@ -264,17 +143,17 @@ lemma trivial_fm:
 
 schematic_goal sats_is_HVfrom_fm_auto:
   assumes
-    "a\<in>nat" "x\<in>nat" "f\<in>nat" "h\<in>nat" "env\<in>list(A)" "A\<noteq>0"
+    "a\<in>nat" "x\<in>nat" "f\<in>nat" "h\<in>nat" "env\<in>list(A)" "0\<in>A"
   shows
     "is_HVfrom(##A,nth(a, env),nth(x, env),nth(f, env),nth(h, env))
     \<longleftrightarrow> sats(A,?ihvf_fm(a,x,f,h),env)"
-  unfolding is_HVfrom_def
-   by (insert assms; (rule sep_rules is_powapply_iff_sats Replace_iff_sats trivial_fm | simp)+)
+  unfolding is_HVfrom_def using assms
+  by (simp) (rule sep_rules is_powapply_iff_sats Replace_iff_sats trivial_fm not_emptyI | simp)+
 
 schematic_goal is_HVfrom_iff_sats:
   assumes
     "nth(a,env) = aa" "nth(x,env) = xx" "nth(f,env) = ff" "nth(h,env) = hh"
-    "a\<in>nat" "x\<in>nat" "f\<in>nat" "h\<in>nat" "env\<in>list(A)" "A\<noteq>0"
+    "a\<in>nat" "x\<in>nat" "f\<in>nat" "h\<in>nat" "env\<in>list(A)" "0\<in>A"
   shows
        "is_HVfrom(##A,aa,xx,ff,hh) \<longleftrightarrow> sats(A, ?ihvf_fm(a,x,f,h), env)"
   unfolding \<open>nth(a,env) = aa\<close>[symmetric] \<open>nth(x,env) = xx\<close>[symmetric]
@@ -284,7 +163,7 @@ schematic_goal is_HVfrom_iff_sats:
 (* Next two are not needed *)
 schematic_goal sats_is_Vfrom_fm_auto:
   assumes
-    "a\<in>nat" "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "A\<noteq>0"
+    "a\<in>nat" "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
     "i < length(env)" "v < length(env)"
   shows
     "is_Vfrom(##A,nth(a, env),nth(i, env),nth(v, env))
@@ -295,7 +174,7 @@ schematic_goal sats_is_Vfrom_fm_auto:
 schematic_goal is_Vfrom_iff_sats:
   assumes
     "nth(a,env) = aa" "nth(i,env) = ii" "nth(v,env) = vv"
-    "a\<in>nat" "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "A\<noteq>0"
+    "a\<in>nat" "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
     "i < length(env)" "v < length(env)"
   shows
     "is_Vfrom(##A,aa,ii,vv) \<longleftrightarrow> sats(A, ?ivf_fm(a,i,v), env)"
@@ -305,7 +184,7 @@ schematic_goal is_Vfrom_iff_sats:
 
 schematic_goal sats_is_Vset_fm_auto:
   assumes
-    "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "A\<noteq>0"
+    "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
     "i < length(env)" "v < length(env)"
   shows
     "is_Vset(##A,nth(i, env),nth(v, env))
@@ -316,7 +195,7 @@ schematic_goal sats_is_Vset_fm_auto:
 schematic_goal is_Vset_iff_sats:
   assumes
     "nth(i,env) = ii" "nth(v,env) = vv"
-    "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "A\<noteq>0"
+    "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
     "i < length(env)" "v < length(env)"
   shows
     "is_Vset(##A,ii,vv) \<longleftrightarrow> sats(A, ?ivs_fm(i,v), env)"
@@ -325,10 +204,16 @@ schematic_goal is_Vset_iff_sats:
 
 section\<open>Absoluteness results\<close>
 
-context M_basic
+locale M_eclose_pow = M_eclose + 
+  assumes
+    power_ax : "power_ax(M)" and
+    powapply_replacement : "M(f) \<Longrightarrow> strong_replacement(M,is_powapply(M,f))" and
+    HVfrom_replacement : "\<lbrakk> M(i) ; Ord(i) ; M(A) \<rbrakk> \<Longrightarrow> 
+                          transrec_replacement(M,is_HVfrom(M,A),i)"
+
 begin
 
-lemma is_powapply_abs: "\<lbrakk>M(f); M(y); M(z) \<rbrakk> \<Longrightarrow> is_powapply(M,f,y,z) \<longleftrightarrow> z = {x\<in>Pow(f`y). M(x)}"
+lemma is_powapply_abs: "\<lbrakk>M(f); M(y)\<rbrakk> \<Longrightarrow> is_powapply(M,f,y,z) \<longleftrightarrow> M(z) \<and> z = {x\<in>Pow(f`y). M(x)}"
   unfolding is_powapply_def by simp
 
 lemma "\<lbrakk>M(A); M(x); M(f); M(h) \<rbrakk> \<Longrightarrow> 
@@ -336,28 +221,137 @@ lemma "\<lbrakk>M(A); M(x); M(f); M(h) \<rbrakk> \<Longrightarrow>
       (\<exists>R[M]. h = A \<union> \<Union>R \<and> is_Replace(M, x,\<lambda>x y. y = {x \<in> Pow(f ` x) . M(x)}, R))"
   using is_powapply_abs unfolding is_HVfrom_def by auto
 
-lemma "relation2(M,is_HVfrom(M,A),MHVfrom(M,A))"
-  unfolding is_HVfrom_def MHVfrom_def relation2_def
-  oops
-end (* context M_basic *)
+lemma Replace_is_powapply:
+  assumes
+    "M(R)" "M(A)" "M(f)" 
+  shows
+  "is_Replace(M, A, is_powapply(M, f), R) \<longleftrightarrow> R = Replace(A,is_powapply(M,f))"
+proof -
+  have "univalent(M,A,is_powapply(M,f))" 
+    using \<open>M(A)\<close> \<open>M(f)\<close> unfolding univalent_def is_powapply_def by simp
+  moreover
+  have "\<And>x y. \<lbrakk> x\<in>A; is_powapply(M,f,x,y) \<rbrakk> \<Longrightarrow> M(y)"
+    using \<open>M(A)\<close> \<open>M(f)\<close> unfolding is_powapply_def by simp
+  ultimately
+  show ?thesis using \<open>M(A)\<close> \<open>M(R)\<close> Replace_abs by simp
+qed
 
-context M_trancl
-begin
+lemma powapply_closed:
+  "\<lbrakk> M(y) ; M(f) \<rbrakk> \<Longrightarrow> M({x \<in> Pow(f ` y) . M(x)})"
+  using apply_closed power_ax unfolding power_ax_def by simp
+
+lemma RepFun_is_powapply:
+  assumes
+    "M(R)" "M(A)" "M(f)" 
+  shows
+  "Replace(A,is_powapply(M,f)) = RepFun(A,\<lambda>y.{x\<in>Pow(f`y). M(x)})"
+proof -
+  have "{y . x \<in> A, M(y) \<and> y = {x \<in> Pow(f ` x) . M(x)}} = {y . x \<in> A, y = {x \<in> Pow(f ` x) . M(x)}}"
+    using assms powapply_closed transM[of _ A] by blast
+  also
+  have " ... = {{x \<in> Pow(f ` y) . M(x)} . y \<in> A}" by auto
+  finally 
+  show ?thesis using assms is_powapply_abs transM[of _ A] by simp
+qed
+
+lemma RepFun_powapply_closed:
+  assumes 
+    "M(f)" "M(A)"
+  shows 
+    "M(Replace(A,is_powapply(M,f)))"
+proof -
+  have "univalent(M,A,is_powapply(M,f))" 
+    using \<open>M(A)\<close> \<open>M(f)\<close> unfolding univalent_def is_powapply_def by simp
+  moreover
+  have "\<lbrakk> x\<in>A ; is_powapply(M,f,x,y) \<rbrakk> \<Longrightarrow> M(y)" for x y
+    using assms unfolding is_powapply_def by simp
+  ultimately
+  show ?thesis using assms powapply_replacement by simp
+qed
+
+lemma Union_powapply_closed:
+  assumes 
+    "M(x)" "M(f)"
+  shows 
+    "M(\<Union>y\<in>x. {a\<in>Pow(f`y). M(a)})"
+proof -
+  have "M({a\<in>Pow(f`y). M(a)})" if "y\<in>x" for y
+    using that assms transM[of _ x] powapply_closed by simp
+  then
+  have "M({{a\<in>Pow(f`y). M(a)}. y\<in>x})"
+    using assms transM[of _ x]  RepFun_powapply_closed RepFun_is_powapply by simp
+  then show ?thesis using assms by simp
+qed
+
+lemma relation2_HVfrom: "M(A) \<Longrightarrow> relation2(M,is_HVfrom(M,A),HVfrom(M,A))"
+    unfolding is_HVfrom_def HVfrom_def relation2_def
+    using Replace_is_powapply RepFun_is_powapply 
+          Union_powapply_closed RepFun_powapply_closed by auto
+
+lemma HVfrom_closed : 
+  "M(A) \<Longrightarrow> \<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(HVfrom(M,A,x,g))"
+  unfolding HVfrom_def using Union_powapply_closed by simp
+
+lemma transrec_HVfrom:
+  assumes "M(A)"
+  shows "Ord(i) \<Longrightarrow> {x\<in>Vfrom(A,i). M(x)} = transrec(i,HVfrom(M,A))"
+proof (induct rule:trans_induct)
+  case (step i)
+  have "Vfrom(A,i) = A \<union> (\<Union>y\<in>i. Pow((\<lambda>x\<in>i. Vfrom(A, x)) ` y))"
+    using def_transrec[OF Vfrom_def, of A i] by simp
+  then 
+  have "Vfrom(A,i) = A \<union> (\<Union>y\<in>i. Pow(Vfrom(A, y)))"
+    by simp
+  then
+  have "{x\<in>Vfrom(A,i). M(x)} = {x\<in>A. M(x)} \<union> (\<Union>y\<in>i. {x\<in>Pow(Vfrom(A, y)). M(x)})"
+    by auto
+  with \<open>M(A)\<close>
+  have "{x\<in>Vfrom(A,i). M(x)} = A \<union> (\<Union>y\<in>i. {x\<in>Pow(Vfrom(A, y)). M(x)})" 
+    by (auto intro:transM)
+  also
+  have "... = A \<union> (\<Union>y\<in>i. {x\<in>Pow({z\<in>Vfrom(A,y). M(z)}). M(x)})" 
+  proof -
+    have "{x\<in>Pow(Vfrom(A, y)). M(x)} = {x\<in>Pow({z\<in>Vfrom(A,y). M(z)}). M(x)}"
+      if "y\<in>i" for y by (auto intro:transM)
+    then
+    show ?thesis by simp
+  qed
+  also from step 
+  have " ... = A \<union> (\<Union>y\<in>i. {x\<in>Pow(transrec(y, HVfrom(M, A))). M(x)})" by auto
+  also
+  have " ... = transrec(i, HVfrom(M, A))"
+    using def_transrec[of "\<lambda>y. transrec(y, HVfrom(M, A))" "HVfrom(M, A)" i,symmetric] 
+    unfolding HVfrom_def by simp
+  finally
+  show ?case .
+qed
 
 lemma Vfrom_abs: "\<lbrakk> M(A); M(i); M(V); Ord(i) \<rbrakk> \<Longrightarrow> is_Vfrom(M,A,i,V) \<longleftrightarrow> V = {x\<in>Vfrom(A,i). M(x)}"
-  sorry
+  unfolding is_Vfrom_def
+  using relation2_HVfrom HVfrom_closed HVfrom_replacement 
+    transrec_abs[of "is_HVfrom(M,A)" i "HVfrom(M,A)"] transrec_HVfrom by simp
 
 lemma Vfrom_closed: "\<lbrakk> M(A); M(i); Ord(i) \<rbrakk> \<Longrightarrow> M({x\<in>Vfrom(A,i). M(x)})"
-  sorry
-
-lemma rank_closed: "M(a) \<Longrightarrow> M(rank(a))"
-  sorry
+  unfolding is_Vfrom_def
+  using relation2_HVfrom HVfrom_closed HVfrom_replacement 
+    transrec_closed[of "is_HVfrom(M,A)" i "HVfrom(M,A)"] transrec_HVfrom by simp
 
 lemma Vset_abs: "\<lbrakk> M(i); M(V); Ord(i) \<rbrakk> \<Longrightarrow> is_Vset(M,i,V) \<longleftrightarrow> V = {x\<in>Vset(i). M(x)}"
   using Vfrom_abs unfolding is_Vset_def by simp
 
 lemma Vset_closed: "\<lbrakk> M(i); Ord(i) \<rbrakk> \<Longrightarrow> M({x\<in>Vset(i). M(x)})"
   using Vfrom_closed unfolding is_Vset_def by simp
+
+(*
+
+(* Results to be implemented later *)
+
+(* hint ? *)
+lemma rank_eq_wfrank: "rank(a) = wfrank(Memrel(eclose({a})),a)"
+  unfolding rank_def transrec_def wfrank_def wfrec_def oops
+
+lemma rank_closed: "M(a) \<Longrightarrow> M(rank(a))"
+  sorry
 
 lemma M_into_Vset:
   assumes "M(a)"
@@ -381,11 +375,8 @@ proof -
   ultimately
   show ?thesis by blast
 qed
-end (* context M_trancl *)
 
-context M_wfrank
-begin
-
-end (* M_wfrank *)
+*)
+end (* context M_eclose_pow *)
 
 end

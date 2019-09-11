@@ -1,6 +1,6 @@
 theory Replacement_Axiom
   imports
-    Relative_Univ Separation_Axiom Renaming
+    Least Relative_Univ Separation_Axiom Renaming
 begin
 
 local_setup\<open>
@@ -31,51 +31,51 @@ lemma renrep_type [TC]:
   apply(insert renrep_thm(1)[simplified,of P M leq o p \<rho> \<tau> \<pi> v \<alpha> env],simp)
   
 lemma arity_renrep: 
-  assumes "n\<in>nat" "\<phi>\<in>formula" "arity(\<phi>)\<le> 7#+n"
-    shows "arity(renrep(\<phi>,n)) \<le> 9#+n"
+  assumes "n\<in>nat" "\<phi>\<in>formula" "arity(\<phi>)\<le> 6#+n"
+    shows "arity(renrep(\<phi>,n)) \<le> 8#+n"
  unfolding renrep_def
     using renrep_fn_type[OF assms(1)] ren_arity assms
     by simp
 
 lemma renrep_sats :
   assumes
-    "arity(\<phi>) \<le> 7 #+ length(env)"
-    "[P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env \<in> list(M)"
+    "arity(\<phi>) \<le> 6 #+ length(env)"
+    "[P,leq,o,p,\<rho>,\<tau>] @ env \<in> list(M)"
     "V \<in> M" "\<alpha> \<in> M"
     "\<phi>\<in>formula"
-  shows "sats(M, \<phi>, [P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env) \<longleftrightarrow> sats(M, renrep(\<phi>,length(env)), [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env)"
+  shows "sats(M, \<phi>, [P,leq,o,p,\<rho>,\<tau>] @ env) \<longleftrightarrow> sats(M, renrep(\<phi>,length(env)), [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o] @ env)"
 proof -
-  let ?env0 = "[P,leq,o,p,\<rho>,\<tau>,\<pi>]"
-  let ?env' = "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env"
-  let ?env1 = "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>]"
-  from \<open>[P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env \<in> list(M)\<close> \<open>V \<in> M\<close> \<open>\<alpha> \<in> M\<close>
-  have 1:"7 #+ length(env) \<in> nat" "9 #+ length(env) \<in> nat"  "env \<in> list(M)" "?env0 \<in> list(M)" 
+  let ?env0 = "[P,leq,o,p,\<rho>,\<tau>]"
+  let ?env' = "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o] @ env"
+  let ?env1 = "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o]"
+  from \<open>[P,leq,o,p,\<rho>,\<tau>] @ env \<in> list(M)\<close> \<open>V \<in> M\<close> \<open>\<alpha> \<in> M\<close>
+  have 1:"6 #+ length(env) \<in> nat" "8 #+ length(env) \<in> nat"  "env \<in> list(M)" "?env0 \<in> list(M)" 
         "?env1 \<in> list(M)"
     by simp_all
   with assms 
   have 2:"length(env) \<in> nat" "?env' \<in> list(M)" by simp_all
   from assms
-  have "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env \<in> list(M)" by simp
+  have "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o] @ env \<in> list(M)" by simp
   show ?thesis
     unfolding renrep_def 
     using renrep_fn_action[OF \<open>?env0 \<in> list(M)\<close> \<open>env\<in>list(M)\<close> \<open>V\<in>M\<close> \<open>\<alpha>\<in>M\<close>]
-    sats_iff_sats_ren[OF \<open>\<phi> \<in> formula\<close> 1(1) 1(2)  \<open>[P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env \<in> list(M)\<close> 2(2)]
-      renrep_fn_type[OF 2(1)] \<open>arity(\<phi>) \<le> 7#+length(env)\<close>      
-   by simp
+    sats_iff_sats_ren[OF \<open>\<phi> \<in> formula\<close> 1(1) 1(2)  \<open>[P,leq,o,p,\<rho>,\<tau>] @ env \<in> list(M)\<close> 2(2)]
+      renrep_fn_type[OF 2(1)] \<open>arity(\<phi>) \<le> 6#+length(env)\<close>      
+    by simp
 qed
 
 locale rep_rename = sep_rename +
   fixes renpbdy :: "[i,i] \<Rightarrow> i" and renbody :: "[i,i] \<Rightarrow> i"
   assumes
-  sats_renpbdy: "arity(\<phi>) \<le> 7 #+ m \<Longrightarrow> [\<rho>,p,x,\<alpha>,P,leq,one,\<pi>] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
-       sats(M, \<phi>, [\<rho>,p,\<alpha>,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow> sats(M, renpbdy(\<phi>,length(env)), [\<rho>,p,x,\<alpha>,P,leq,one,\<pi>] @ nenv)"
+  sats_renpbdy: "arity(\<phi>) \<le> 6 #+ length(nenv) \<Longrightarrow> [\<rho>,p,x,\<alpha>,P,leq,one,\<pi>] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
+       sats(M, \<phi>, [\<rho>,p,\<alpha>,P,leq,one] @ nenv) \<longleftrightarrow> sats(M, renpbdy(\<phi>,length(env)), [\<rho>,p,x,\<alpha>,P,leq,one] @ nenv)"
   and
-  renpbdy_type [TC]: "\<phi>\<in>formula \<Longrightarrow> renpbdy(\<phi>,m) \<in> formula"
+  renpbdy_type [TC]: "\<phi>\<in>formula \<Longrightarrow> m\<in>nat \<Longrightarrow> renpbdy(\<phi>,m) \<in> formula"
   and
   arity_renpbdy: "\<phi>\<in>formula \<Longrightarrow> m\<in>nat \<Longrightarrow> arity(renpbdy(\<phi>,m)) \<le> 8 #+ m"
   and
-  sats_renbody: "arity(\<phi>) \<le> 6 #+ length(nenv) \<Longrightarrow> [\<alpha>,x,m,P,leq,one,\<pi>] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
-       sats(M, \<phi>, [x,\<alpha>,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow> sats(M, renbody(\<phi>,length(env)), [\<alpha>,x,m,P,leq,one,\<pi>] @ nenv)"
+  sats_renbody: "arity(\<phi>) \<le> 6 #+ length(nenv) \<Longrightarrow> [\<alpha>,x,m,P,leq,one] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
+       sats(M, \<phi>, [x,\<alpha>,P,leq,one] @ nenv) \<longleftrightarrow> sats(M, renbody(\<phi>,length(env)), [\<alpha>,x,m,P,leq,one] @ nenv)"
   and
   renbody_type [TC]: "\<phi>\<in>formula \<Longrightarrow> m \<in> nat \<Longrightarrow> renbody(\<phi>,m) \<in> formula"
   and
@@ -116,15 +116,14 @@ lemma comp_in_M: "p\<in>M \<Longrightarrow> fst(p) \<in> M \<and> snd(p)\<in> M"
 
 schematic_goal sats_prebody_fm_auto:
   assumes
-    "[P,leq,one,p,\<rho>,\<pi>] @ nenv \<in>list(M)" "\<phi>\<in>formula" "\<alpha>\<in>M" "arity(\<phi>) \<le> 3 #+ length(nenv)"
+    "[P,leq,one,p,\<rho>,\<pi>] @ nenv \<in>list(M)" "\<phi>\<in>formula" "\<alpha>\<in>M" "arity(\<phi>) \<le> 2 #+ length(nenv)"
   shows 
-    "(\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> sats(M,forces(\<phi>),[P,leq,one,p,\<rho>,\<tau>,\<pi>] @ nenv))
-   \<longleftrightarrow> sats(M,?prebody_fm,[\<rho>,p,\<alpha>,P,leq,one,\<pi>] @ nenv)"
-    and
-    "?prebody_fm \<in> formula"
-  apply (insert assms; (rule sep_rules is_Vset_iff_sats | simp))
-  apply (rule sep_rules is_Vset_iff_sats  | simp)+
-         apply (simp_all, blast)
+    "(\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> sats(M,forces(\<phi>),[P,leq,one,p,\<rho>,\<tau>] @ nenv))
+   \<longleftrightarrow> sats(M,?prebody_fm,[\<rho>,p,\<alpha>,P,leq,one] @ nenv)"
+  apply (insert assms; (rule sep_rules is_Vset_iff_sats[OF _ _ _ _ _ M_inhabit[simplified]] | simp))
+   apply (rule sep_rules is_Vset_iff_sats is_Vset_iff_sats[OF _ _ _ _ _ M_inhabit[simplified]] | simp)+
+  apply (rule M_inhabit[simplified])
+       apply (simp_all)
      apply (rule length_type[THEN nat_into_Ord], blast)+
   apply ((rule sep_rules | simp))
   apply ((rule sep_rules | simp))
@@ -140,19 +139,30 @@ schematic_goal sats_prebody_fm_auto:
 (* The formula synthesized above *)
 definition
   prebody_fm :: "[i,i]\<Rightarrow>i" where
-  "prebody_fm(\<phi>,n) \<equiv> Exists (Exists (And(Exists (And(empty_fm(0), is_transrec_fm (
-      Exists(And(union_fm(9, 0, 1), Exists (And(big_union_fm(0, 1), 
-      And(Equal(0,0), is_Replace_fm (4, Exists (And(fun_apply_fm(6, 1, 0), Forall(
-      Iff(Member(0, 3), 
-      Forall(Implies(Member(0, 1), Member(0, 2))))))),0)))))), 5, 1))), 
-      And(Member(1, 0), renrep(forces(\<phi>),n)))))"
+  "prebody_fm(\<phi>,n) \<equiv> Exists
+          (Exists
+            (And(Exists
+                  (And(empty_fm(0),
+                       is_transrec_fm
+                        (Exists
+                          (And(union_fm(9, 0, 1),
+                               Exists
+                                (And(big_union_fm(0, 1),
+                                     And(Equal(0, 0),
+                                         is_Replace_fm
+                                          (4, Exists
+                                               (And(fun_apply_fm(6, 1, 0),
+                                                    Forall(Iff(Member(0, 3), Forall(Implies(Member(0, 1), Member(0, 2))))))),
+                                           0)))))),
+                         5, 1))),
+                 And(Member(1, 0), renrep(forces(\<phi>), n)))))"
 
 lemma sats_prebody_fm:
   assumes
-    "[P,leq,one,p,\<rho>,\<pi>] @ nenv \<in>list(M)" "\<phi>\<in>formula" "\<alpha>\<in>M" "arity(\<phi>) \<le> 3 #+ length(nenv)"
+    "[P,leq,one,p,\<rho>] @ nenv \<in>list(M)" "\<phi>\<in>formula" "\<alpha>\<in>M" "arity(\<phi>) \<le> 2 #+ length(nenv)"
   shows 
-    "sats(M,prebody_fm(\<phi>,length(nenv)),[\<rho>,p,\<alpha>,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow>
-     (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> sats(M,forces(\<phi>),[P,leq,one,p,\<rho>,\<tau>,\<pi>] @ nenv))"
+    "sats(M,prebody_fm(\<phi>,length(nenv)),[\<rho>,p,\<alpha>,P,leq,one] @ nenv) \<longleftrightarrow>
+     (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> sats(M,forces(\<phi>),[P,leq,one,p,\<rho>,\<tau>] @ nenv))"
   unfolding prebody_fm_def using assms sats_prebody_fm_auto by force
 
 lemma prebody_fm_type [TC]:
@@ -165,13 +175,13 @@ lemmas new_fm_defs = fm_defs is_transrec_fm_def  is_Replace_fm_def is_eclose_fm_
 
 lemma arity_prebody_fm:
   assumes
-    "\<phi>\<in>formula" "\<alpha>\<in>M" "m \<in> nat" "arity(\<phi>) \<le> 3 #+ m"
+    "\<phi>\<in>formula" "\<alpha>\<in>M" "m \<in> nat" "arity(\<phi>) \<le> 2 #+ m"
   shows
-    "arity(prebody_fm(\<phi>,m))\<le>7 #+ m"
+    "arity(prebody_fm(\<phi>,m))\<le>6 #+ m"
   unfolding prebody_fm_def using assms
   apply(simp add:  new_fm_defs )
   apply(simp add: nat_simp_union,rule, rule, (rule pred_le,simp+)+)
-  apply(subgoal_tac "arity(forces(\<phi>)) \<le> 7 #+m ")
+  apply(subgoal_tac "arity(forces(\<phi>)) \<le> 6 #+m ")
   apply(subgoal_tac "forces(\<phi>)\<in> formula")
   apply(drule arity_renrep[of _ "forces(\<phi>)",OF \<open>m\<in>nat\<close>],simp_all add:arity_forces)
   done
@@ -188,7 +198,7 @@ lemma body_fm'_type[TC]: "\<phi>\<in>formula \<Longrightarrow> m\<in>nat \<Longr
 (* This might be false! Might be 2 if that changes in sats_body_fm *)
 lemma arity_body_fm':
   assumes
-    "\<phi>\<in>formula" "\<alpha>\<in>M" "m\<in>nat" "arity(\<phi>) \<le> 3 #+ m"
+    "\<phi>\<in>formula" "\<alpha>\<in>M" "m\<in>nat" "arity(\<phi>) \<le> 2 #+ m"
   shows
     "arity(body_fm'(\<phi>,m))\<le> 6 #+ m"
   unfolding body_fm'_def using assms
@@ -202,10 +212,10 @@ lemma arity_body_fm':
 
 lemma sats_body_fm':
   assumes
-    "\<exists>t p. x=<t,p>" "x\<in>M" "[\<alpha>,P,leq,one,p,\<rho>,\<pi>] @ nenv \<in>list(M)" "\<phi>\<in>formula" "arity(\<phi>) \<le> 3 #+ length(nenv)"
+    "\<exists>t p. x=<t,p>" "x\<in>M" "[\<alpha>,P,leq,one,p,\<rho>] @ nenv \<in>list(M)" "\<phi>\<in>formula" "arity(\<phi>) \<le> 2 #+ length(nenv)"
   shows 
-    "sats(M,body_fm'(\<phi>,length(nenv)),[x,\<alpha>,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow> 
-     sats(M,renpbdy(prebody_fm(\<phi>,length(nenv)),length(nenv)),[fst(x),snd(x),x,\<alpha>,P,leq,one,\<pi>] @ nenv)"
+    "sats(M,body_fm'(\<phi>,length(nenv)),[x,\<alpha>,P,leq,one] @ nenv) \<longleftrightarrow> 
+     sats(M,renpbdy(prebody_fm(\<phi>,length(nenv)),length(nenv)),[fst(x),snd(x),x,\<alpha>,P,leq,one] @ nenv)"
   using assms comp_in_M[OF \<open>x\<in>M\<close>] unfolding body_fm'_def
   by (auto)
 
@@ -218,36 +228,46 @@ lemma body_fm_type [TC]: "m \<in> nat \<Longrightarrow> \<phi>\<in>formula \<Lon
 
 lemma sats_body_fm:
   assumes
-    "\<exists>t p. x=<t,p>" "[\<alpha>,x,m,P,leq,one,\<pi>] @ nenv \<in>list(M)"
-    "\<phi>\<in>formula" "arity(\<phi>) \<le> 3 #+ length(nenv)"
+    "\<exists>t p. x=<t,p>" "[\<alpha>,x,m,P,leq,one] @ nenv \<in>list(M)"
+    "\<phi>\<in>formula" "arity(\<phi>) \<le> 2 #+ length(nenv)"
   shows 
-    "sats(M,body_fm(\<phi>,length(nenv)),[\<alpha>,x,m,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow> 
-     sats(M,renpbdy(prebody_fm(\<phi>,length(nenv)),length(nenv)),[fst(x),snd(x),x,\<alpha>,P,leq,one,\<pi>] @ nenv)"
+    "sats(M,body_fm(\<phi>,length(nenv)),[\<alpha>,x,m,P,leq,one] @ nenv) \<longleftrightarrow> 
+     sats(M,renpbdy(prebody_fm(\<phi>,length(nenv)),length(nenv)),[fst(x),snd(x),x,\<alpha>,P,leq,one] @ nenv)"
   using assms sats_body_fm' sats_renbody[OF arity_body_fm' assms(2), symmetric]
   unfolding body_fm_def
   by auto
 
 lemma sats_renpbdy_prebody_fm:
   assumes
-    "\<exists>t p. x=<t,p>" "x\<in>M" "[\<alpha>,m,P,leq,one,\<pi>] @ nenv \<in>list(M)"
-    "\<phi>\<in>formula" "arity(\<phi>) \<le> 3 #+ length(nenv)"
+    "\<exists>t p. x=<t,p>" "x\<in>M" "[\<alpha>,m,P,leq,one] @ nenv \<in>list(M)"
+    "\<phi>\<in>formula" "arity(\<phi>) \<le> 2 #+ length(nenv)"
   shows 
-    "sats(M,renpbdy(prebody_fm(\<phi>,length(nenv)),length(nenv)),[fst(x),snd(x),x,\<alpha>,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow>
-     sats(M,prebody_fm(\<phi>,length(nenv)),[fst(x),snd(x),\<alpha>,P,leq,one,\<pi>] @ nenv)"
+    "sats(M,renpbdy(prebody_fm(\<phi>,length(nenv)),length(nenv)),[fst(x),snd(x),x,\<alpha>,P,leq,one] @ nenv) \<longleftrightarrow>
+     sats(M,prebody_fm(\<phi>,length(nenv)),[fst(x),snd(x),\<alpha>,P,leq,one] @ nenv)"
   using assms comp_in_M[OF \<open>x\<in>M\<close>] 
     sats_renpbdy[OF arity_prebody_fm _ prebody_fm_type, of concl:\<phi>, symmetric]
   by force
 
 lemma body_lemma:
   assumes
-    "\<exists>t p. x=<t,p>" "x\<in>M" "[x,\<alpha>,m,P,leq,one,\<pi>] @ nenv \<in>list(M)"
-    "\<phi>\<in>formula" "arity(\<phi>) \<le> 3 #+ length(nenv)"
+    "\<exists>t p. x=<t,p>" "x\<in>M" "[x,\<alpha>,m,P,leq,one] @ nenv \<in>list(M)"
+    "\<phi>\<in>formula" "arity(\<phi>) \<le> 2 #+ length(nenv)"
   shows 
-  "sats(M,body_fm(\<phi>,length(nenv)),[\<alpha>,x,m,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow> 
-  (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a),\<alpha>,V) \<and> \<tau> \<in> V \<and> sats(M,forces(\<phi>),[P,leq,one,snd(x),fst(x),\<tau>,\<pi>] @ nenv))"
-  using assms sats_body_fm sats_renpbdy_prebody_fm 
+  "sats(M,body_fm(\<phi>,length(nenv)),[\<alpha>,x,m,P,leq,one] @ nenv) \<longleftrightarrow> 
+  (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a),\<alpha>,V) \<and> \<tau> \<in> V \<and> sats(M,forces(\<phi>),[P,leq,one,snd(x),fst(x),\<tau>] @ nenv))"
+  using assms sats_body_fm[of x \<alpha> m nenv] sats_renpbdy_prebody_fm[of x \<alpha>]
     sats_prebody_fm[of "snd(x)" "fst(x)"] comp_in_M[OF \<open>x\<in>M\<close>]
-   by (simp, simp del:setclass_iff add:setclass_iff[symmetric]) 
+  by (simp, simp del:setclass_iff add:setclass_iff[symmetric],simp)
+
+(* Sorrying this until the interface is ready *)
+lemma (in M_eclose) Vset_abs: "\<lbrakk> M(i); M(V); Ord(i)\<rbrakk> \<Longrightarrow> is_Vset(M,i,V) \<longleftrightarrow> V = {x\<in>Vset(i). M(x)}"
+  sorry
+
+lemma (in M_eclose) Vset_closed: "\<lbrakk> M(i); Ord(i)\<rbrakk> \<Longrightarrow> M({x\<in>Vset(i). M(x)})"
+  sorry
+
+lemma (in M_eclose) rank_closed: "M(a) \<Longrightarrow> M(rank(a))"
+  sorry
 
 lemma Replace_sats_in_MG:
   assumes
@@ -260,29 +280,24 @@ proof -
   from \<open>c\<in>M[G]\<close>
   obtain \<pi>' where "val(G, \<pi>') = c" "\<pi>' \<in> M"
     using GenExt_def by auto
-  define \<pi> where "\<pi> \<equiv> {x\<in>\<pi>'. \<exists>t p. x=<t,p>}"
-  from \<open>\<pi>' \<in> M\<close>
-  have "(##M)(\<pi>')" by simp
-  have 1:"separation(##M,\<lambda> x . \<exists> t p . x=<t,p>)"
-    unfolding separation_def 
-    sorry
-  then 
-  have "\<pi> \<in> M" 
-    sorry
+  then
+  have "domain(\<pi>')\<times>P\<in>M" (is "?\<pi>\<in>M")
+    using cartprod_closed P_in_M domain_closed by simp
   from \<open>val(G, \<pi>') = c\<close>
-  have "val(G,\<pi>) = c" 
-    using val_only_pairs unfolding \<pi>_def by simp
+  have "c \<subseteq> val(G,?\<pi>)" 
+    using def_val[of G ?\<pi>] one_in_P one_in_G[OF generic] elem_of_val
+      domain_of_prod[OF one_in_P, of "domain(\<pi>')"] by force
   from \<open>env \<in> _\<close>
   obtain nenv where "nenv\<in>list(M)" "env = map(val(G),nenv)"
     using map_val by auto
   then
   have "length(nenv) = length(env)" by simp
   define f where "f(\<rho>p) \<equiv> \<mu> \<alpha>. \<alpha>\<in>M \<and> (\<exists>\<tau>\<in>M. \<tau> \<in> Vset(\<alpha>) \<and> 
-        sats(M,forces(\<phi>),[P,leq,one,snd(\<rho>p),fst(\<rho>p),\<tau>,\<pi>] @ nenv))" (is "_ \<equiv> \<mu> \<alpha>. ?P(\<rho>p,\<alpha>)") for \<rho>p
+        sats(M,forces(\<phi>),[P,leq,one,snd(\<rho>p),fst(\<rho>p),\<tau>] @ nenv))" (is "_ \<equiv> \<mu> \<alpha>. ?P(\<rho>p,\<alpha>)") for \<rho>p
   have "f(\<rho>p) = (\<mu> \<alpha>. \<alpha>\<in>M \<and> (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> 
-        sats(M,forces(\<phi>),[P,leq,one,snd(\<rho>p),fst(\<rho>p),\<tau>,\<pi>] @ nenv)))" (is "_ = (\<mu> \<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>))") for \<rho>p
-    unfolding f_def using Vset_abs Vset_closed Least_cong
-    by (simp)
+        sats(M,forces(\<phi>),[P,leq,one,snd(\<rho>p),fst(\<rho>p),\<tau>] @ nenv)))" (is "_ = (\<mu> \<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>))") for \<rho>p
+    unfolding f_def using Vset_abs Vset_closed Ord_Least_cong[of "?P(\<rho>p)" "\<lambda> \<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>)"]
+    by (simp, simp del:setclass_iff)
   moreover
   have "f(\<rho>p) \<in> M" for \<rho>p
     unfolding f_def using Least_closed[of "?P(\<rho>p)"] by simp
@@ -290,61 +305,69 @@ proof -
   have 1:"least(##M,\<lambda>\<alpha>. ?Q(\<rho>p,\<alpha>),f(\<rho>p))" for \<rho>p
     using least_abs[of "\<lambda>\<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>)" "f(\<rho>p)"] least_conj 
     by (simp del:setclass_iff add:setclass_iff[symmetric])
+  have "Ord(f(\<rho>p))" for \<rho>p unfolding f_def by simp
   define QQ where "QQ\<equiv>?Q"
   from 1
   have "least(##M,\<lambda>\<alpha>. QQ(\<rho>p,\<alpha>),f(\<rho>p))" for \<rho>p
     unfolding QQ_def .
   from \<open>arity(\<phi>) \<le> _\<close> \<open>length(nenv) = _\<close>
-  have "arity(\<phi>) \<le> 3 #+ length(nenv)"
-    using leI by simp
+  have "arity(\<phi>) \<le> 2 #+ length(nenv)"
+    by simp
   moreover
-  note assms \<open>nenv\<in>list(M)\<close> \<open>\<pi>\<in>M\<close>
+  note assms \<open>nenv\<in>list(M)\<close> \<open>?\<pi>\<in>M\<close>
   moreover
-  have "\<rho>p\<in>\<pi> \<Longrightarrow> \<exists>t p. \<rho>p=<t,p>" for \<rho>p
-    unfolding \<pi>_def by simp
+  have "\<rho>p\<in>?\<pi> \<Longrightarrow> \<exists>t p. \<rho>p=<t,p>" for \<rho>p
+    by auto
   ultimately
-  have body:"sats(M,body_fm(\<phi>,length(nenv)),[\<alpha>,\<rho>p,m,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow> ?Q(\<rho>p,\<alpha>)" 
-    if "\<rho>p\<in>\<pi>" "\<rho>p\<in>M" "m\<in>M" "\<alpha>\<in>M" for \<alpha> \<rho>p m
-    using that P_in_M leq_in_M one_in_M body_lemma[of \<rho>p _ _ \<pi> nenv \<phi>] by simp
+  have body:"sats(M,body_fm(\<phi>,length(nenv)),[\<alpha>,\<rho>p,m,P,leq,one] @ nenv) \<longleftrightarrow> ?Q(\<rho>p,\<alpha>)" 
+    if "\<rho>p\<in>?\<pi>" "\<rho>p\<in>M" "m\<in>M" "\<alpha>\<in>M" for \<alpha> \<rho>p m
+    using that P_in_M leq_in_M one_in_M body_lemma[of \<rho>p _ _ nenv \<phi>] by simp
   let ?f_fm="least_fm(body_fm(\<phi>,length(nenv)),1)"
   {
     fix \<rho>p m
-    assume asm: "\<rho>p\<in>M" "\<rho>p\<in>\<pi>" "m\<in>M"
-    note inM = this P_in_M leq_in_M one_in_M \<open>nenv\<in>list(M)\<close> \<open>\<pi>\<in>M\<close>
+    assume asm: "\<rho>p\<in>M" "\<rho>p\<in>?\<pi>" "m\<in>M"
+    note inM = this P_in_M leq_in_M one_in_M \<open>nenv\<in>list(M)\<close>
     with body
-    have body':"\<And>\<alpha>. \<alpha> \<in> M \<Longrightarrow> (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a), \<alpha>, V) \<and> \<tau> \<in> V \<and> sats(M, forces(\<phi>), [P,leq,one,snd(\<rho>p),fst(\<rho>p),\<tau>,\<pi>] @ nenv)) \<longleftrightarrow>
-          sats(M, body_fm(\<phi>,length(nenv)), Cons(\<alpha>, [\<rho>p, m, P, leq, one, \<pi>] @ nenv))" by simp
+    have body':"\<And>\<alpha>. \<alpha> \<in> M \<Longrightarrow> (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a), \<alpha>, V) \<and> \<tau> \<in> V \<and> sats(M, forces(\<phi>), [P,leq,one,snd(\<rho>p),fst(\<rho>p),\<tau>] @ nenv)) \<longleftrightarrow>
+          sats(M, body_fm(\<phi>,length(nenv)), Cons(\<alpha>, [\<rho>p, m, P, leq, one] @ nenv))" by simp
     from inM
-    have "sats(M, ?f_fm,[\<rho>p,m,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
+    have "sats(M, ?f_fm,[\<rho>p,m,P,leq,one] @ nenv) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
       using sats_least_fm[OF body', of 1] unfolding QQ_def 
       by (simp, simp del:setclass_iff add:setclass_iff[symmetric])
   }
   then
-  have "sats(M, ?f_fm,[\<rho>p,m,P,leq,one,\<pi>] @ nenv) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)" 
-    if "\<rho>p\<in>M" "\<rho>p\<in>\<pi>" "m\<in>M" for \<rho>p m using that by simp
+  have "sats(M, ?f_fm,[\<rho>p,m,P,leq,one] @ nenv) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)" 
+    if "\<rho>p\<in>M" "\<rho>p\<in>?\<pi>" "m\<in>M" for \<rho>p m using that by simp
   then
-  have "univalent(##M, \<pi>, \<lambda>\<rho>p m. sats(M, ?f_fm, [\<rho>p,m] @ ([P,leq,one,\<pi>] @ nenv)))"
+  have "univalent(##M, ?\<pi>, \<lambda>\<rho>p m. sats(M, ?f_fm, [\<rho>p,m] @ ([P,leq,one] @ nenv)))"
     unfolding univalent_def by (auto intro:unique_least)
   moreover from \<open>length(_) = _\<close> \<open>env \<in> _\<close>
-  have "length([P,leq,one,\<pi>] @ nenv) = 4 #+ length(env)" by simp
-  moreover from \<open>arity(_) \<le> 3 #+ length(nenv)\<close>
-  have "arity(?f_fm) \<le> 6 #+ length(env)" (* or 8? *)
+  have "length([P,leq,one] @ nenv) = 3 #+ length(env)" by simp
+  moreover from \<open>arity(_) \<le> 2 #+ length(nenv)\<close>
+  have "arity(?f_fm) \<le> 5 #+ length(env)" (* or 8? *)
     unfolding body_fm_def using arity_forces arity_renrep sorry
   moreover from \<open>\<phi>\<in>formula\<close> \<open>nenv\<in>list(M)\<close>
   have "?f_fm\<in>formula" by simp
   moreover
-  note inM = P_in_M leq_in_M one_in_M \<open>nenv\<in>list(M)\<close> \<open>\<pi>\<in>M\<close>
+  note inM = P_in_M leq_in_M one_in_M \<open>nenv\<in>list(M)\<close> \<open>?\<pi>\<in>M\<close>
   ultimately
-  obtain Y where "Y\<in>M" "\<forall>m\<in>M. m \<in> Y \<longleftrightarrow> (\<exists>\<rho>p\<in>M. \<rho>p \<in> \<pi> \<and> 
-          sats(M, ?f_fm, [\<rho>p,m] @ ([P,leq,one,\<pi>] @ nenv)))"
-    using replacement_ax[of ?f_fm "[P,leq,one,\<pi>] @ nenv"]
+  obtain Y where "Y\<in>M" "\<forall>m\<in>M. m \<in> Y \<longleftrightarrow> (\<exists>\<rho>p\<in>M. \<rho>p \<in> ?\<pi> \<and> 
+          sats(M, ?f_fm, [\<rho>p,m] @ ([P,leq,one] @ nenv)))"
+    using replacement_ax[of ?f_fm "[P,leq,one] @ nenv"]
     unfolding strong_replacement_def by auto
-  with \<open>_ \<Longrightarrow> _ \<Longrightarrow> _ \<Longrightarrow> sats(M,?f_fm,_) \<longleftrightarrow> least(_,_,_)\<close> \<open>least(_,QQ(_),f(_))\<close> \<open>f(_) \<in> M\<close> \<open>\<pi>\<in>M\<close>
-  have "\<rho>p\<in>\<pi> \<Longrightarrow> f(\<rho>p)\<in>Y" for \<rho>p
-    using Transset_intf[OF trans_M] by auto
+  with \<open>least(_,QQ(_),f(_))\<close> \<open>f(_) \<in> M\<close> \<open>?\<pi>\<in>M\<close> 
+    \<open>_ \<Longrightarrow> _ \<Longrightarrow> _ \<Longrightarrow> sats(M,?f_fm,_) \<longleftrightarrow> least(_,_,_)\<close> 
+  have "f(\<rho>p)\<in>Y" if "\<rho>p\<in>?\<pi>" for \<rho>p
+    using that Transset_intf[OF trans_M _ \<open>?\<pi>\<in>M\<close>]
+    by (clarsimp, rule_tac x="<x,y>" in bexI, auto)
   moreover
   have "{y\<in>Y. Ord(y)} \<in> M"
-    sorry
+  proof -
+    from \<open>Y\<in>M\<close>
+    have "{y\<in>Y. Ord(y)} = {y\<in>Y. y\<in>M & Ord(y)}"
+       using Transset_M[OF trans_M] by (simp)
+    show ?thesis sorry
+  qed
   then
   have "\<Union> {y\<in>Y. Ord(y)} \<in> M" (is "?sup \<in> M")
     using Union_closed by simp
@@ -362,18 +385,78 @@ proof -
     by (blast intro:GenExtI)
   {
     fix v x
-    assume "x\<in>c" "v\<in>M[G]" "sats(M[G], \<phi>, [x,v] @ env)"
-    (* We have to use univalence for the next one *)
-    have "v \<in> val(G,{x\<in>Vset(?sup). x \<in> M} \<times> {one})" sorry
+    assume "x\<in>c"
+    moreover
+    note \<open>val(G,\<pi>')=c\<close> \<open>\<pi>'\<in>M\<close>
+    moreover
+    from calculation
+    obtain \<rho> p where "<\<rho>,p>\<in>\<pi>'"  "val(G,\<rho>) = x" "p\<in>G" "\<rho>\<in>M"
+      using elem_of_val_pair'[of \<pi>' x G] by blast
+    moreover
+    assume "v\<in>M[G]"
+    then
+    obtain \<sigma> where "val(G,\<sigma>) = v" "\<sigma>\<in>M"
+      using GenExtD by blast
+    moreover
+    assume "sats(M[G], \<phi>, [x,v] @ env)"
+    moreover
+    note \<open>\<phi>\<in>_\<close> \<open>nenv\<in>_\<close> \<open>env = _\<close>
+    ultimately
+    obtain q where "q\<in>G" "sats(M, forces(\<phi>), [P,leq,one,q,\<rho>,\<sigma>] @ nenv)" 
+      using truth_lemma[OF \<open>\<phi>\<in>_\<close> _ generic, symmetric, of "[\<rho>,\<sigma>] @ nenv"] by auto
+    with \<open><\<rho>,p>\<in>\<pi>'\<close> \<open><\<rho>,q>\<in>?\<pi> \<Longrightarrow> f(<\<rho>,q>)\<in>Y\<close>
+    have "f(<\<rho>,q>)\<in>Y" 
+      using generic unfolding M_generic_def filter_def by blast
+    let ?\<alpha>="succ(rank(\<sigma>))"
+    (* Not sure if this encapsultation is really needed *)
+    define PP where "PP(x) \<equiv> ?P(<\<rho>,q>,x)" for x
+    note \<open>\<sigma>\<in>M\<close>
+    moreover from this
+    have "?\<alpha> \<in> M" 
+      using rank_closed cons_closed by (simp del:setclass_iff add:setclass_iff[symmetric])
+    moreover 
+    have "\<sigma> \<in> Vset(?\<alpha>)"
+      using Vset_Ord_rank_iff by auto
+    moreover
+    note \<open>sats(M, forces(\<phi>), [P,leq,one,q,\<rho>,\<sigma>] @ nenv)\<close>
+    ultimately
+    have "PP(?\<alpha>)" unfolding PP_def by (auto simp del: Vset_rank_iff)
+    moreover
+    have "Least(PP) = f(<\<rho>,q>)"
+      unfolding PP_def f_def by simp
+    ultimately
+    obtain \<tau> where "\<tau>\<in>M" "\<tau> \<in> Vset(f(<\<rho>,q>))" "sats(M,forces(\<phi>),[P,leq,one,q,\<rho>,\<tau>] @ nenv)" 
+      using LeastI[of PP ?\<alpha>] unfolding PP_def by auto
+    with \<open>q\<in>G\<close> \<open>\<rho>\<in>M\<close> \<open>nenv\<in>_\<close>
+    have "sats(M[G],\<phi>,map(val(G),[\<rho>,\<tau>] @ nenv))"
+      using truth_lemma[OF \<open>\<phi>\<in>_\<close> _ generic, of "[\<rho>,\<tau>] @ nenv"] by auto
+    moreover from \<open>x\<in>c\<close> \<open>c\<in>M[G]\<close>
+    have "x\<in>M[G]" using Transset_intf[OF Transset_MG] by simp
+    moreover
+    note \<open>sats(M[G],\<phi>,[x,v] @ env)\<close> \<open>env = map(val(G),nenv)\<close> \<open>\<tau>\<in>M\<close> \<open>val(G,\<rho>)=x\<close>
+      \<open>univalent(##M[G],_,_)\<close> \<open>x\<in>c\<close> \<open>v\<in>M[G]\<close>
+    ultimately
+    have "v=val(G,\<tau>)"
+      using GenExtI[of \<tau> G] unfolding univalent_def by (auto)
+    from \<open>\<tau> \<in> Vset(f(<\<rho>,q>))\<close> \<open>Ord(f(_))\<close>  \<open>f(<\<rho>,q>)\<in>Y\<close>
+    have "\<tau> \<in> Vset(?sup)"  
+      using Vset_Ord_rank_iff lt_Union_iff[of _ "rank(\<tau>)"] by auto
+    with \<open>\<tau>\<in>M\<close>
+    have "val(G,\<tau>) \<in> val(G,?big_name)"
+      using domain_of_prod[of one "{one}" "{x\<in>Vset(?sup). x \<in> M}" ] def_val[of G ?big_name] 
+        one_in_G[OF generic] one_in_P  by (auto simp del: Vset_rank_iff)
+    with \<open>v=val(G,\<tau>)\<close>
+    have "v \<in> val(G,{x\<in>Vset(?sup). x \<in> M} \<times> {one})"
+      by simp
   }
   then
-  have "{v. x\<in>c, v\<in>M[G] \<and> sats(M[G], \<phi>, [x,v] @ env)} \<subseteq> val(G,?big_name)"
-    (is "?repl \<subseteq> ?big") by blast
+  have "{v. x\<in>c, v\<in>M[G]\<and>sats(M[G],\<phi>,[x,v]@env)} \<subseteq> val(G,?big_name)" (is "?repl\<subseteq>?big") 
+    by blast
   with \<open>?big_name\<in>M\<close> 
   have "?repl = {v\<in>?big. \<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env)}"
     apply (intro equality_iffI, subst Replace_iff)
     apply (auto intro:Transset_intf[OF Transset_MG _ GenExtI, of _ G ?big_name])
-    using assms(5) unfolding univalent_def
+    using \<open>univalent(##M[G],_,_)\<close> unfolding univalent_def
     apply (rule_tac x=xa in bexI; simp)
     apply (frule Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
     apply (drule bspec, assumption, drule mp, assumption, clarify)
@@ -385,8 +468,8 @@ proof -
     for v sorry
   moreover from this
   have "{v\<in>?big. \<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env)} = {v\<in>?big. sats(M[G], \<psi>, [v,c] @ env)}"
-    using Transset_intf[OF Transset_MG _ GenExtI]
-    apply (intro equality_iffI, simp, auto) sorry
+    using Transset_intf[OF Transset_MG _ GenExtI, OF _ \<open>?big_name\<in>M\<close>]
+    by (simp) 
   moreover from calculation and \<open>env\<in>_\<close> \<open>c\<in>_\<close> \<open>?big\<in>M[G]\<close>
   have "{v\<in>?big. sats(M[G], \<psi>, [v,c] @ env)} \<in> M[G]"
     using Collect_sats_in_MG by auto
