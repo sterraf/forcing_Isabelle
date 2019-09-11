@@ -377,7 +377,7 @@ proof -
   moreover from \<open>length(_) = _\<close> \<open>env \<in> _\<close>
   have "length([P,leq,one] @ nenv) = 3 #+ length(env)" by simp
   moreover from \<open>arity(_) \<le> 2 #+ length(nenv)\<close>
-  have "arity(?f_fm) \<le> 5 #+ length(env)" (* or 8? *)
+  have "arity(?f_fm) \<le> 5 #+ length(env)"
     unfolding body_fm_def using arity_forces arity_renrep sorry
   moreover from \<open>\<phi>\<in>formula\<close> \<open>nenv\<in>list(M)\<close>
   have "?f_fm\<in>formula" by simp
@@ -398,8 +398,14 @@ proof -
   proof -
     from \<open>Y\<in>M\<close>
     have "{y\<in>Y. Ord(y)} = {y\<in>Y. y\<in>M & Ord(y)}"
-       using Transset_M[OF trans_M] by (simp)
-    show ?thesis sorry
+      using Transset_M[OF trans_M] by (simp)
+    also
+    have " ... = {y\<in>Y. y\<in>M \<and> sats(M, ordinal_fm(0), [y])}"
+      using sats_ordinal_fm trans_M by auto
+    also from \<open>env\<in>_\<close> \<open>Y\<in>M\<close>
+    have "... \<in> M" sorry
+    finally
+    show ?thesis .
   qed
   then
   have "\<Union> {y\<in>Y. Ord(y)} \<in> M" (is "?sup \<in> M")
