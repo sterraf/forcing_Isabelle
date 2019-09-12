@@ -367,11 +367,13 @@ proof -
     unfolding univalent_def by (auto intro:unique_least)
   moreover from \<open>length(_) = _\<close> \<open>env \<in> _\<close>
   have "length([P,leq,one] @ nenv) = 3 #+ length(env)" by simp
-  moreover from \<open>arity(_) \<le> 2 #+ length(nenv)\<close>
+  moreover from \<open>arity(_) \<le> 2 #+ length(nenv)\<close> 
+    \<open>length(_) = length(_)\<close>[symmetric] \<open>nenv\<in>_\<close> \<open>\<phi>\<in>_\<close>
   have "arity(?f_fm) \<le> 5 #+ length(env)"
     unfolding body_fm_def  new_fm_defs least_fm_def 
-    using arity_forces arity_renrep arity_renbody arity_body_fm'
-    sorry
+    using arity_forces arity_renrep arity_renbody arity_body_fm' M_inhabit
+    by (simp add: pred_Un Un_assoc, simp add: Un_assoc[symmetric] nat_union_abs1 pred_Un)
+      (auto simp add: nat_simp_union, rule pred_le, auto intro:leI)
   moreover from \<open>\<phi>\<in>formula\<close> \<open>nenv\<in>list(M)\<close>
   have "?f_fm\<in>formula" by simp
   moreover
