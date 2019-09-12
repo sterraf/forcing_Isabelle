@@ -240,15 +240,26 @@ qed
 
 lemma sum_type_id :
   assumes
+    "f \<in> length(env)\<rightarrow>length(env')"  
     "env \<in> list(M)" 
     "env' \<in> list(M)"
     "env1 \<in> list(M)"
-    "f \<in> length(env)\<rightarrow>length(env')"  
   shows 
     "sum(f,id(length(env1)),length(env),length(env'),length(env1)) \<in> 
         (length(env)#+length(env1)) \<rightarrow> (length(env')#+length(env1))"
   using assms length_type id_fn_type sum_type
   by simp
+
+lemma sum_type_id_aux2 :
+  assumes    
+    "f \<in> m\<rightarrow>n"
+    "m \<in> nat" "n \<in> nat"
+    "env1 \<in> list(M)"
+  shows 
+    "sum(f,id(length(env1)),m,n,length(env1)) \<in> 
+        (m#+length(env1)) \<rightarrow> (n#+length(env1))"
+  using assms id_fn_type sum_type
+  by auto
 
 lemma sum_action_id :
   assumes
@@ -279,6 +290,22 @@ proof -
   then show "\<And> i . i < ?m#+length(env1) \<Longrightarrow>
           nth(i,env@env1) = nth(sum(f,id(?p),?m,?n,?p)`i,env'@env1)" by simp
 qed
+
+lemma sum_action_id_aux :
+  assumes
+    "f \<in> m\<rightarrow>n"
+    "env \<in> list(M)" 
+    "env' \<in> list(M)" 
+    "env1 \<in> list(M)" 
+    "length(env) = m"
+    "length(env') = n"
+    "length(env1) = p"
+    "\<And> i . i < m \<Longrightarrow> nth(i,env) = nth(f`i,env')"
+  shows "\<And> i . i < m#+length(env1) \<Longrightarrow>
+          nth(i,env@env1) = nth(sum(f,id(length(env1)),m,n,length(env1))`i,env'@env1)"
+  using assms length_type id_fn_type sum_action_id
+  by auto
+
 
 definition 
   sum_id :: "[i,i] \<Rightarrow> i" where
