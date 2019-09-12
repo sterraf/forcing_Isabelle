@@ -367,11 +367,13 @@ proof -
     unfolding univalent_def by (auto intro:unique_least)
   moreover from \<open>length(_) = _\<close> \<open>env \<in> _\<close>
   have "length([P,leq,one] @ nenv) = 3 #+ length(env)" by simp
-  moreover from \<open>arity(_) \<le> 2 #+ length(nenv)\<close>
+  moreover from \<open>arity(_) \<le> 2 #+ length(nenv)\<close> 
+    \<open>length(_) = length(_)\<close>[symmetric] \<open>nenv\<in>_\<close> \<open>\<phi>\<in>_\<close>
   have "arity(?f_fm) \<le> 5 #+ length(env)"
     unfolding body_fm_def  new_fm_defs least_fm_def 
-    using arity_forces arity_renrep arity_renbody arity_body_fm'
-    sorry
+    using arity_forces arity_renrep arity_renbody arity_body_fm' M_inhabit
+    by (simp add: pred_Un Un_assoc, simp add: Un_assoc[symmetric] nat_union_abs1 pred_Un)
+      (auto simp add: nat_simp_union, rule pred_le, auto intro:leI)
   moreover from \<open>\<phi>\<in>formula\<close> \<open>nenv\<in>list(M)\<close>
   have "?f_fm\<in>formula" by simp
   moreover
@@ -440,8 +442,6 @@ proof -
     have "f(<\<rho>,q>)\<in>Y" 
       using generic unfolding M_generic_def filter_def by blast
     let ?\<alpha>="succ(rank(\<sigma>))"
-    (* Not sure if this encapsultation is really needed *)
-    define PP where "PP(x) \<equiv> ?P(<\<rho>,q>,x)" for x
     note \<open>\<sigma>\<in>M\<close>
     moreover from this
     have "?\<alpha> \<in> M" 
@@ -452,13 +452,13 @@ proof -
     moreover
     note \<open>sats(M, forces(\<phi>), [P,leq,one,q,\<rho>,\<sigma>] @ nenv)\<close>
     ultimately
-    have "PP(?\<alpha>)" unfolding PP_def by (auto simp del: Vset_rank_iff)
+    have "?P(<\<rho>,q>,?\<alpha>)" by (auto simp del: Vset_rank_iff)
     moreover
-    have "Least(PP) = f(<\<rho>,q>)"
-      unfolding PP_def f_def by simp
+    have "(\<mu> \<alpha>. ?P(<\<rho>,q>,\<alpha>)) = f(<\<rho>,q>)"
+      unfolding f_def by simp
     ultimately
     obtain \<tau> where "\<tau>\<in>M" "\<tau> \<in> Vset(f(<\<rho>,q>))" "sats(M,forces(\<phi>),[P,leq,one,q,\<rho>,\<tau>] @ nenv)" 
-      using LeastI[of PP ?\<alpha>] unfolding PP_def by auto
+      using LeastI[of "\<lambda> \<alpha>. ?P(<\<rho>,q>,\<alpha>)" ?\<alpha>] by auto
     with \<open>q\<in>G\<close> \<open>\<rho>\<in>M\<close> \<open>nenv\<in>_\<close>
     have "sats(M[G],\<phi>,map(val(G),[\<rho>,\<tau>] @ nenv))"
       using truth_lemma[OF \<open>\<phi>\<in>_\<close> _ generic, of "[\<rho>,\<tau>] @ nenv"] by auto
