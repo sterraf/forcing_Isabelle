@@ -85,15 +85,45 @@ lemma
   apply (auto simp add: renpbdy_thm(2)[simplified,of \<rho> M p  \<alpha> P leq o x  _ nenv])
   done
 
-locale rep_rename = sep_rename +
-  fixes renbody :: "[i,i] \<Rightarrow> i"
-  assumes
-  sats_renbody: "arity(\<phi>) \<le> 5 #+ length(nenv) \<Longrightarrow> [\<alpha>,x,m,P,leq,one] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
-       sats(M, \<phi>, [x,\<alpha>,P,leq,one] @ nenv) \<longleftrightarrow> sats(M, renbody(\<phi>,env), [\<alpha>,x,m,P,leq,one] @ nenv)"
-  and
+local_setup\<open>
+let val rho  = @{term "[x,\<alpha>,P,leq,o]"}
+    val rho' = @{term " [\<alpha>,x,m,P,leq,o]"}
+    val (envVar, fvs,r,tc_lemma,action_lemma) = sum_rename rho rho'
+    val (tc_lemma,action_lemma) = (fix_vars tc_lemma fvs , fix_vars action_lemma fvs)
+in
+Local_Theory.note   ((@{binding "renbody_thm"}, []), [tc_lemma,action_lemma]) #> snd #>
+Local_Theory.define ((@{binding "renbody1_fn"}, NoSyn),
+  ((@{binding "renbody1_def"}, []), r)) #> snd
+end\<close>
+
+definition renbody_fn :: "i \<Rightarrow> i" where
+  "renbody_fn(env) == sum(renbody1_fn,id(length(env)),5,6,length(env))"
+
+definition 
+  renbody :: "[i,i] \<Rightarrow> i" where
+  "renbody(\<phi>,env) = ren(\<phi>)`(5#+length(env))`(6#+length(env))`renbody_fn(env)" 
+
+
+lemma
   renbody_type [TC]: "\<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow> renbody(\<phi>,env) \<in> formula"
-  and
-  arity_renbody: "\<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow> arity(renbody(\<phi>,env)) = arity(\<phi>)"
+  unfolding renbody_def renbody_fn_def renbody1_def
+  using  renbody_thm(1) ren_tc
+  by simp
+
+lemma  arity_renbody: "\<phi>\<in>formula \<Longrightarrow> arity(\<phi>) \<le> 5 #+ length(env) \<Longrightarrow> env\<in>list(M) \<Longrightarrow> arity(renbody(\<phi>,env)) \<le> 6 #+ length(env)"
+  unfolding renbody_def renbody_fn_def renbody1_def
+  using  renbody_thm(1) ren_arity
+    by simp
+
+lemma
+  sats_renbody: "arity(\<phi>) \<le> 5 #+ length(nenv) \<Longrightarrow> [\<alpha>,x,m,P,leq,o] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
+       sats(M, \<phi>, [x,\<alpha>,P,leq,o] @ nenv) \<longleftrightarrow> sats(M, renbody(\<phi>,nenv), [\<alpha>,x,m,P,leq,o] @ nenv)"
+  unfolding renbody_def renbody_fn_def renbody1_def
+  apply (rule sats_iff_sats_ren,auto simp add:renbody_thm(1)[of _ M,simplified])
+  apply (simp add: renbody_thm(2)[of x \<alpha> P leq o m M _ nenv,simplified])
+  done
+
+locale rep_rename = sep_rename 
 begin
 
 lemma pow_inter_M:

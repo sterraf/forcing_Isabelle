@@ -36,6 +36,7 @@ fun freeName (Free (n,_)) = n
   | freeName _ = error "Not a free variable"
 
 fun tp x = Const (@{const_name Trueprop},@{typ "o \<Rightarrow> prop"}) $ x
+fun length_ env = Const (@{const_name length},@{typ "i \<Rightarrow> i"}) $ env
 fun nth_ i env = Const (@{const_name nth},@{typ "i \<Rightarrow> i \<Rightarrow> i"}) $ i $ env
 fun sum_ f g m n p = Const (@{const_name sum},@{typ "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i"}) $ f $ g $ m $ n $ p
 fun add_ m n = Const (@{const_name "add"}, @{typ "i \<Rightarrow> i \<Rightarrow> i"}) $ m $ n
@@ -190,7 +191,7 @@ fun sum_tc_lemma rho rho' =
       val (goal,fvs) = sum_action_goal sum_ren rho rho'
       val r = mk_ren rho rho'
       val ctx = @{context}
-  in (goal,envVar, r,left_tc_lemma, left_action_lemma ,fvs, Goal.prove ctx [] [] tc_goal
+  in (sum_ren, goal,envVar, r,left_tc_lemma, left_action_lemma ,fvs, Goal.prove ctx [] [] tc_goal
                (fn _ =>
             resolve_tac ctx [@{thm sum_type_id_aux2}] 1
             THEN asm_simp_tac ctx 4
@@ -210,7 +211,7 @@ fun sum_tc_lemma rho rho' =
 
 fun sum_rename rho rho' = 
   let
-    val (goal, envVar, left_rename, left_tc_lemma, left_action_lemma, fvs, sum_tc_lemma) = sum_tc_lemma rho rho'
+    val (sum_ren, goal, envVar, left_rename, left_tc_lemma, left_action_lemma, fvs, sum_tc_lemma) = sum_tc_lemma rho rho'
     val ctx = @{context}
     val action_lemma = fix_vars left_action_lemma fvs
   in (envVar, fvs, left_rename, sum_tc_lemma, Goal.prove ctx [] [] goal
@@ -232,53 +233,36 @@ fun sum_rename rho rho' =
    )
    )
 end ;
-\<close>
 
 (*
-definition 
-  renrep :: "[i,i] \<Rightarrow> i" where
-  "renrep(\<phi>,n) = ren(\<phi>)`(7#+n)`(9#+n)`renrep_fn(n)" 
+
 
 lemma renrep_type [TC]: 
-  assumes "\<phi>\<in>formula" "n \<in> nat"
-    shows "renrep(\<phi>,n) \<in> formula"
- unfolding renrep_def
-    using renrep_fn_type[OF assms(2)] ren_tc assms(1)
-    by simp
-
+  assumes "\<phi>\<in>formula" "env \<in> list(M)"
+    shows "renrep(\<phi>,env) \<in> formula"
+  unfolding renrep_def renrep_fn_def renrep1_def
+  using assms renrep_thm(1) ren_tc
+  by simp
+  
 lemma arity_renrep: 
-  assumes "n\<in>nat" "\<phi>\<in>formula" "arity(\<phi>)\<le> 7#+n"
-    shows "arity(renrep(\<phi>,n)) \<le> 9#+n"
- unfolding renrep_def
-    using renrep_fn_type[OF assms(1)] ren_arity assms
+  assumes  "\<phi>\<in>formula" "arity(\<phi>)\<le> 6#+length(env)" "env \<in> list(M)"
+    shows "arity(renrep(\<phi>,env)) \<le> 8#+length(env)"
+ unfolding  renrep_def renrep_fn_def renrep1_def
+    using assms renrep_thm(1) ren_arity
     by simp
 
 lemma renrep_sats :
-  assumes
-    "arity(\<phi>) \<le> 7 #+ length(env)"
-    "[P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env \<in> list(M)"
-    "V \<in> M" "\<alpha> \<in> M"
-    "\<phi>\<in>formula"
-  shows "sats(M, \<phi>, [P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env) \<longleftrightarrow> sats(M, renrep(\<phi>,length(env)), [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env)"
-proof -
-  let ?env0 = "[P,leq,o,p,\<rho>,\<tau>,\<pi>]"
-  let ?env' = "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env"
-  let ?env1 = "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>]"
-  from \<open>[P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env \<in> list(M)\<close> \<open>V \<in> M\<close> \<open>\<alpha> \<in> M\<close>
-  have 1:"7 #+ length(env) \<in> nat" "9 #+ length(env) \<in> nat"  "env \<in> list(M)" "?env0 \<in> list(M)" 
-        "?env1 \<in> list(M)"
-    by simp_all
-  with assms 
-  have 2:"length(env) \<in> nat" "?env' \<in> list(M)" by simp_all
-  from assms
-  have "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o,\<pi>] @ env \<in> list(M)" by simp
-  show ?thesis
-    unfolding renrep_def 
-    using renrep_fn_action[OF \<open>?env0 \<in> list(M)\<close> \<open>env\<in>list(M)\<close> \<open>V\<in>M\<close> \<open>\<alpha>\<in>M\<close>]
-    sats_iff_sats_ren[OF \<open>\<phi> \<in> formula\<close> 1(1) 1(2)  \<open>[P,leq,o,p,\<rho>,\<tau>,\<pi>] @ env \<in> list(M)\<close> 2(2)]
-      renrep_fn_type[OF 2(1)] \<open>arity(\<phi>) \<le> 7#+length(env)\<close>      
-   by simp
-qed
+    "arity(\<phi>) \<le> 6 #+ length(env) \<Longrightarrow>
+    [P,leq,o,p,\<rho>,\<tau>] @ env \<in> list(M) \<Longrightarrow>
+    V \<in> M \<Longrightarrow> \<alpha> \<in> M \<Longrightarrow> 
+    \<phi>\<in>formula \<Longrightarrow> 
+  sats(M, \<phi>, [P,leq,o,p,\<rho>,\<tau>] @ env) \<longleftrightarrow> sats(M, renrep(\<phi>,env), [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o] @ env)"
+  unfolding  renrep_def renrep_fn_def renrep1_def    
+  apply (rule sats_iff_sats_ren,auto simp add:renrep_thm(1)[of _ M,simplified])
+  apply (auto simp add: renrep_thm(2)[simplified,of P M leq o p \<rho> \<tau> V \<alpha> _ env])
+  done
 
 *)
+\<close>
+
 end
