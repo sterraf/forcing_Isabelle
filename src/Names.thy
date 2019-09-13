@@ -521,6 +521,21 @@ lemma elem_of_val: "x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>\<in>d
 lemma elem_of_val_pair: "x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>. \<exists>p\<in>G.  <\<theta>,p>\<in>\<pi> \<and> val(G,\<theta>) = x"
   by (subst (asm) def_val,auto)
   
+lemma elem_of_val_pair': 
+  assumes "\<pi>\<in>M" "x\<in>val(G,\<pi>)" 
+  shows "\<exists>\<theta>\<in>M. \<exists>p\<in>G.  <\<theta>,p>\<in>\<pi> \<and> val(G,\<theta>) = x"
+proof -
+  from assms
+  obtain \<theta> p where "p\<in>G" "<\<theta>,p>\<in>\<pi>" "val(G,\<theta>) = x"
+    using elem_of_val_pair by blast
+  moreover from this \<open>\<pi>\<in>M\<close>
+  have "\<theta>\<in>M"
+    using pair_in_M_iff[THEN iffD1, THEN conjunct1, simplified]  
+      Transset_intf[OF trans_M] by blast
+  ultimately
+  show ?thesis by blast
+qed
+
 lemma GenExtD: 
   "x \<in> M[G] \<Longrightarrow> \<exists>\<tau>\<in>M. x = val(G,\<tau>)"
   by (simp add:GenExt_def)
