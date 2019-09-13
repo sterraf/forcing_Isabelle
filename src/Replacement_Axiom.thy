@@ -420,17 +420,9 @@ proof -
     by (clarsimp, rule_tac x="<x,y>" in bexI, auto)
   moreover
   have "{y\<in>Y. Ord(y)} \<in> M"
-  proof -
-    have "separation(##M,\<lambda>y. sats(M,ordinal_fm(0),[y]))"
-      using separation_ax by simp
-    then
-    have "separation(##M,Ord)"
-      using sats_ordinal_fm trans_M 
+    using \<open>Y\<in>M\<close> separation_ax sats_ordinal_fm trans_M 
             separation_cong[of "##M" "\<lambda>y. sats(M,ordinal_fm(0),[y])" "Ord"]
-      by simp
-    with \<open>Y\<in>M\<close>
-    show ?thesis using separation_closed by simp
-  qed
+            separation_closed by simp
   then
   have "\<Union> {y\<in>Y. Ord(y)} \<in> M" (is "?sup \<in> M")
     using Union_closed by simp
