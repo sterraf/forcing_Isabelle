@@ -20,12 +20,7 @@ lemma SepReplace_subset : "A\<subseteq>A'\<Longrightarrow> {b .. x\<in>A, Q}\<su
     
 lemma SepReplace_iff [simp]: "y\<in>{b(x) .. x\<in>A, P(x)} \<longleftrightarrow> (\<exists>x\<in>A. y=b(x) & P(x))"
   by (auto simp add:SepReplace_def)
-    
-    (*
-lemma SepReplace_cong1 : "(\<And>x. b(x) = b'(x))\<Longrightarrow> {b(x) .. x\<in>A, Q(x)}={b'(x) .. x\<in>A, Q(x)}"
-  by (auto simp add:SepReplace_def)
-*)
-    
+        
 lemma SepReplace_dom_implies :
   "(\<And> x . x \<in>A \<Longrightarrow> b(x) = b'(x))\<Longrightarrow> {b(x) .. x\<in>A, Q(x)}={b'(x) .. x\<in>A, Q(x)}"
   by  (simp add:SepReplace_def)
@@ -187,8 +182,8 @@ lemma singletonM : "a \<in> M \<Longrightarrow> {a} \<in> M"
  by (simp del:setclass_iff  add:setclass_iff[symmetric]) 
 
 lemma pairM : "x \<in>  M \<Longrightarrow> y \<in> M \<Longrightarrow> <x,y> \<in> M"
- by (simp del:setclass_iff  add:setclass_iff[symmetric]) 
-    
+  by (simp del:setclass_iff  add:setclass_iff[symmetric]) 
+
 lemma P_sub_M : "P \<subseteq> M"
   by (simp add: P_in_M trans_M transD)
     
@@ -526,21 +521,6 @@ lemma elem_of_val: "x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>\<in>d
 lemma elem_of_val_pair: "x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>. \<exists>p\<in>G.  <\<theta>,p>\<in>\<pi> \<and> val(G,\<theta>) = x"
   by (subst (asm) def_val,auto)
   
-lemma elem_of_val_pair': 
-  assumes "\<pi>\<in>M" "x\<in>val(G,\<pi>)" 
-  shows "\<exists>\<theta>\<in>M. \<exists>p\<in>G.  <\<theta>,p>\<in>\<pi> \<and> val(G,\<theta>) = x"
-proof -
-  from assms
-  obtain \<theta> p where "p\<in>G" "<\<theta>,p>\<in>\<pi>" "val(G,\<theta>) = x"
-    using elem_of_val_pair by blast
-  moreover from this \<open>\<pi>\<in>M\<close>
-  have "\<theta>\<in>M"
-    using pair_in_M_iff[THEN iffD1, THEN conjunct1, simplified]  
-      Transset_intf[OF trans_M] by blast
-  ultimately
-  show ?thesis by blast
-qed
-
 lemma GenExtD: 
   "x \<in> M[G] \<Longrightarrow> \<exists>\<tau>\<in>M. x = val(G,\<tau>)"
   by (simp add:GenExt_def)
@@ -859,17 +839,20 @@ shows
 (* Internalization of check *)
 lemma sats_check_fm :
   assumes
-    "x\<in>M" "z\<in>M" 
+    "nth(i,env) = x" "nth(j,env) = z" "nth(k,env) = one" "nth(l,env) = rcheck(x)" 
+    "i\<in>nat" "j\<in>nat" "k\<in>nat" "l\<in>nat" "x\<in>M" "z\<in>M" "env\<in>list(M)" "i < length(env)"
+     "j < length(env)"
   shows
-    "sats(M, is_wfrec_fm(is_Hcheck_fm(8,2,1,0),0,1,2), [rcheck(x),x,z,one]) \<longleftrightarrow> is_check(x,z)"
+    "sats(M, is_wfrec_fm(is_Hcheck_fm(5#+k,2,1,0),l,i,j), env) \<longleftrightarrow> is_check(x,z)"
 proof -
   have sats_is_Hcheck_fm: 
         "\<And>a0 a1 a2 a3 a4. \<lbrakk> a0\<in>M; a1\<in>M; a2\<in>M; a3\<in>M; a4\<in>M \<rbrakk> \<Longrightarrow> 
          is_Hcheck(one,a2, a1, a0) \<longleftrightarrow> 
-         sats(M, is_Hcheck_fm(8,2,1,0), [a0,a1,a2,a3,a4]@[rcheck(x),x,z,one])"
-    using one_in_M \<open>x\<in>M\<close> \<open>z\<in>M\<close> rcheck_in_M by simp
+         sats(M, is_Hcheck_fm(5#+k,2,1,0), [a0,a1,a2,a3,a4]@env)"
+    using one_in_M assms rcheck_in_M by simp
   then 
-  show ?thesis unfolding is_check_def using assms rcheck_in_M one_in_M sats_is_wfrec_fm by simp
+  show ?thesis unfolding is_check_def
+    using assms rcheck_in_M one_in_M sats_is_wfrec_fm by simp
 qed
 
 
@@ -906,30 +889,64 @@ proof -
     using that rcheck_in_M one_in_M fmsats[of "[_,x,z,one]", symmetric] rcheck_abs by simp
   then 
   have "sats(M, Exists(And(ch_fm,rfm(1,0))),[x,z,one]) \<longleftrightarrow> z = check(x)" 
-    if "x\<in>M" "z\<in>M" for x z unfolding ch_fm_def using that sats_check_fm check_abs by simp
+    if "x\<in>M" "z\<in>M" for x z unfolding ch_fm_def using that rcheck_in_M one_in_M
+        sats_check_fm[of 1 "[rcheck(x),x,z,one]" x 2 z 3 0] check_abs by simp
   with fm_repl
   show ?thesis using repl_sats by (simp del:pair_abs)
 qed
 
+lemma pair_check : "\<lbrakk> p\<in>M ; y\<in>M \<rbrakk>  \<Longrightarrow> (\<exists>c\<in>M. is_check(p,c) \<and> pair(##M,c,p,y)) \<longleftrightarrow> y = <check(p),p>" 
+  using check_abs check_in_M pairM by simp
 
+lemma pair_check_replacement:
+  "strong_replacement(##M,\<lambda>p y. y = <check(p),p>)" 
+proof -
+  define ch_fm where 
+    "ch_fm \<equiv> is_wfrec_fm(is_Hcheck_fm(9,2,1,0),0,2,1)"
+  obtain rfm where
+    fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow> is_rcheck(nth(2,env),nth(0,env)) \<longleftrightarrow> sats(M,rfm(2,0),env)"
+    and 
+    fmty:"rfm(2,0) \<in> formula" 
+    and
+    fmar:"arity(rfm(2,0)) = 3"
+    using rcheck_fm_auto
+    unfolding is_eclose_fm_def mem_eclose_fm_def finite_ordinal_fm_def
+             eclose_n_fm_def is_iterates_fm_def iterates_MH_fm_def
+             is_wfrec_fm_def is_recfun_fm_def restriction_fm_def pre_image_fm_def
+             is_nat_case_fm_def quasinat_fm_def Memrel_fm_def singleton_fm_def fm_defs 
+    by ( simp del:FOL_sats_iff add: nat_simp_union)
+  define p_ch_fm where 
+    "p_ch_fm \<equiv> Exists(And(Exists(And(ch_fm,rfm(2,0))),pair_fm(0,1,2)))"
+  have "p_ch_fm \<in> formula" 
+    using fmty unfolding ch_fm_def p_ch_fm_def by simp
+  moreover
+  have "arity(p_ch_fm) = 3" 
+    unfolding p_ch_fm_def ch_fm_def is_Hcheck_fm_def is_Replace_fm_def PHcheck_fm_def 
+             is_wfrec_fm_def is_recfun_fm_def restriction_fm_def pre_image_fm_def
+             is_nat_case_fm_def quasinat_fm_def Memrel_fm_def singleton_fm_def fm_defs
+    using fmar by ( simp del:FOL_sats_iff add: nat_simp_union)
+  ultimately
+  have fm_repl:"strong_replacement(##M,\<lambda>x y. sats(M, p_ch_fm,[x,y,one]))"
+    unfolding ch_fm_def using replacement_ax one_in_M by simp
+  have "sats(M, ch_fm, [rcheck(x),z,x,y,one]) \<longleftrightarrow> sats(M, Exists(And(ch_fm,rfm(2,0))),[z,x,y,one])"
+    if "x\<in>M" "z\<in>M" "y\<in>M" for x z y
+    using that rcheck_in_M one_in_M fmsats[of "[_,z,x,y,one]", symmetric] rcheck_abs by simp
+  then 
+  have "sats(M, Exists(And(ch_fm,rfm(2,0))),[z,x,y,one]) \<longleftrightarrow> is_check(x,z)" 
+    if "x\<in>M" "z\<in>M" "y\<in>M" for x z y unfolding ch_fm_def using that rcheck_in_M one_in_M
+        sats_check_fm[of 2 "[rcheck(x),z,x,y,one]" x 1 z 4 0] by simp
+  then
+  have "sats(M, p_ch_fm,[x,y,one]) \<longleftrightarrow> y = <check(x),x>"
+    if "x\<in>M" "y\<in>M" for x y unfolding p_ch_fm_def using that one_in_M pair_check by simp
+  with fm_repl
+  show ?thesis using repl_sats by (simp del:pair_abs)
+qed
+  
 
 lemma M_subset_MG :  "one \<in> G \<Longrightarrow> M \<subseteq> M[G]"
   using check_in_M one_in_P GenExtI
   by (intro subsetI, subst valcheck [of G,symmetric], auto)
 
-
-(* Internalization of check *)
-
-end (* forcing_data *)
-
-
-(* Other assumptions over M. This will be removed
-   when Interface is completed 
-*)
-locale M_extra_assms = forcing_data +
-  assumes
-    repl_check_pair : "strong_replacement(##M,\<lambda>p y. y =<check(p),p>)"
-begin 
 
 definition
   G_dot :: "i" where
@@ -943,7 +960,7 @@ proof -
   from P_in_M check_in_M pairM P_sub_M have 
      1: "p\<in>P \<Longrightarrow> <check(p),p> \<in> M" for p
     by auto
-  with 1 repl_check_pair P_in_M strong_replacement_closed have
+  with 1 pair_check_replacement P_in_M strong_replacement_closed have
     "{ y . p\<in>P , y = <check(p),p> } \<in> M" by simp
   then show ?thesis using 0 by simp
 qed
@@ -984,5 +1001,5 @@ lemma G_in_Gen_Ext :
   by force
 
 
-end    (*************** CONTEXT: M_extra_assms *****************)
+end    (*************** CONTEXT: forcing_data *****************)
 end
