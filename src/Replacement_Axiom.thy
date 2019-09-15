@@ -420,18 +420,9 @@ proof -
     by (clarsimp, rule_tac x="<x,y>" in bexI, auto)
   moreover
   have "{y\<in>Y. Ord(y)} \<in> M"
-  proof -
-    from \<open>Y\<in>M\<close>
-    have "{y\<in>Y. Ord(y)} = {y\<in>Y. y\<in>M & Ord(y)}"
-      using Transset_M[OF trans_M] by (simp)
-    also
-    have " ... = {y\<in>Y. y\<in>M \<and> sats(M, ordinal_fm(0), [y])}"
-      using sats_ordinal_fm trans_M by auto
-    also from \<open>env\<in>_\<close> \<open>Y\<in>M\<close>
-    have "... \<in> M" sorry
-    finally
-    show ?thesis .
-  qed
+    using \<open>Y\<in>M\<close> separation_ax sats_ordinal_fm trans_M 
+            separation_cong[of "##M" "\<lambda>y. sats(M,ordinal_fm(0),[y])" "Ord"]
+            separation_closed by simp
   then
   have "\<Union> {y\<in>Y. Ord(y)} \<in> M" (is "?sup \<in> M")
     using Union_closed by simp

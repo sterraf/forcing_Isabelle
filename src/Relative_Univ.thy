@@ -202,6 +202,24 @@ schematic_goal is_Vset_iff_sats:
   unfolding \<open>nth(i,env) = ii\<close>[symmetric] \<open>nth(v,env) = vv\<close>[symmetric]
   by (rule sats_is_Vset_fm_auto(1); simp add:assms)
 
+(* rank *)
+definition
+  Hrank :: "[i,i] \<Rightarrow> i" where
+  "Hrank(x,f) = (\<Union>y\<in>x. succ(f`y))"
+
+definition
+  PHrank :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
+  "PHrank(M,f,y,z) == M(z) \<and> (\<exists>fy[M]. fun_apply(M,f,y,fy) \<and> successor(M,fy,z))"
+
+definition
+  is_Hrank :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
+  "is_Hrank(M,x,f,hc) == (\<exists>R[M]. big_union(M,R,hc) \<and>is_Replace(M,x,PHrank(M,f),R)) "
+
+definition
+  rrank :: "i \<Rightarrow> i" where
+  "rrank(a) == Memrel(eclose({a}))^+" 
+
+
 section\<open>Absoluteness results\<close>
 
 locale M_eclose_pow = M_eclose + 
@@ -209,7 +227,9 @@ locale M_eclose_pow = M_eclose +
     power_ax : "power_ax(M)" and
     powapply_replacement : "M(f) \<Longrightarrow> strong_replacement(M,is_powapply(M,f))" and
     HVfrom_replacement : "\<lbrakk> M(i) ; Ord(i) ; M(A) \<rbrakk> \<Longrightarrow> 
-                          transrec_replacement(M,is_HVfrom(M,A),i)"
+                          transrec_replacement(M,is_HVfrom(M,A),i)" and
+    PHrank_replacement : "M(f) \<Longrightarrow> strong_replacement(M,PHrank(M,f))" and
+    is_Hrank_replacement : "M(x) \<Longrightarrow> wfrec_replacement(M,is_Hrank(M),rrank(x))"
 
 begin
 
@@ -342,6 +362,169 @@ lemma Vset_abs: "\<lbrakk> M(i); M(V); Ord(i) \<rbrakk> \<Longrightarrow> is_Vse
 lemma Vset_closed: "\<lbrakk> M(i); Ord(i) \<rbrakk> \<Longrightarrow> M({x\<in>Vset(i). M(x)})"
   using Vfrom_closed unfolding is_Vset_def by simp
 
+
+(* MOVE THIS! *)
+
+lemma field_trancl : "field(r^+) = field(r)"
+by (blast intro: r_into_trancl dest!: trancl_type [THEN subsetD])
+
+lemma field_Memrel : "field(Memrel(A)) \<subseteq> A"
+  unfolding field_def using Ordinal.Memrel_type by blast
+
+lemma restrict_trans_eq:
+  assumes "w \<in> y"
+  shows "restrict(f,Memrel(eclose({x}))-``{y})`w
+       = restrict(f,(Memrel(eclose({x}))^+)-``{y})`w" 
+proof (cases "y\<in>eclose({x})")
+  let ?r="Memrel(eclose({x}))"
+  and ?s="Memrel(eclose({x}))^+"
+  case True
+  from \<open>w\<in>y\<close> \<open>y\<in>eclose({x})\<close>
+  have "<w,y>\<in>?r" 
+    using Memrel_iff  eclose_subset[OF \<open>y\<in>eclose({x})\<close>] by blast
+  then 
+  have "<w,y>\<in>?s" 
+    using r_subset_trancl[of ?r] relation_Memrel by blast
+  with \<open><w,y>\<in>?r\<close> 
+  have "w\<in>?r-``{y}" "w\<in>?s-``{y}"
+    using vimage_singleton_iff by simp_all
+  then 
+  show ?thesis by simp
+next
+  let ?r="Memrel(eclose({x}))"
+  let ?s="?r^+"
+  case False
+  then 
+  have "?r-``{y}=0" 
+    using Memrel_iff by blast
+  then
+  have "w\<notin>?r-``{y}" by simp    
+  with \<open>y\<notin>eclose({x})\<close> 
+  have "y\<notin>field(?s)" 
+    using field_trancl subsetD[OF field_Memrel[of "eclose({x})"]] by auto
+  then 
+  have "w\<notin>?s-``{y}" 
+    using vimage_singleton_iff by blast
+  with \<open>w\<notin>?r-``{y}\<close>
+  show ?thesis by simp
+qed
+
+lemma Hrank_trancl:"Hrank(y, restrict(f,Memrel(eclose({x}))-``{y}))
+                  = Hrank(y, restrict(f,(Memrel(eclose({x}))^+)-``{y}))"
+  unfolding Hrank_def
+  using restrict_trans_eq by simp
+
+lemma rank_trancl: "rank(x) = wfrec(rrank(x), x, Hrank)"
+proof -
+  have "rank(x) =  wfrec(Memrel(eclose({x})), x, Hrank)"
+    (is "_ = wfrec(?r,_,_)")
+    unfolding rank_def transrec_def Hrank_def by simp
+  also
+  have " ... = wftrec(?r^+, x, \<lambda>y f. Hrank(y, restrict(f,?r-``{y})))"
+    unfolding wfrec_def ..
+  also
+  have " ... = wftrec(?r^+, x, \<lambda>y f. Hrank(y, restrict(f,(?r^+)-``{y})))"
+    using Hrank_trancl by simp
+  also
+  have " ... =  wfrec(?r^+, x, Hrank)"
+    unfolding wfrec_def using trancl_eq_r[OF relation_trancl trans_trancl] by simp
+  finally
+  show ?thesis unfolding rrank_def .
+qed
+
+lemma univ_PHrank : "\<lbrakk> M(z) ; M(f) \<rbrakk> \<Longrightarrow> univalent(M,z,PHrank(M,f))" 
+  unfolding univalent_def PHrank_def by simp
+
+
+lemma PHrank_abs :
+    "\<lbrakk> M(f) ; M(y) \<rbrakk> \<Longrightarrow> PHrank(M,f,y,z) \<longleftrightarrow> M(z) \<and> z = succ(f`y)"
+  unfolding PHrank_def by simp
+
+lemma PHrank_closed : "PHrank(M,f,y,z) \<Longrightarrow> M(z)" 
+  unfolding PHrank_def by simp
+
+lemma Replace_PHrank_abs:
+  assumes
+    "M(z)" "M(f)" "M(hr)" 
+  shows
+    "is_Replace(M,z,PHrank(M,f),hr) \<longleftrightarrow> hr = Replace(z,PHrank(M,f))" 
+proof -
+  have "\<And>x y. \<lbrakk>x\<in>z; PHrank(M,f,x,y) \<rbrakk> \<Longrightarrow> M(y)"
+    using \<open>M(z)\<close> \<open>M(f)\<close> unfolding PHrank_def by simp
+  then
+  show ?thesis using \<open>M(z)\<close> \<open>M(hr)\<close> \<open>M(f)\<close> univ_PHrank Replace_abs by simp
+qed
+
+lemma RepFun_PHrank:
+  assumes
+    "M(R)" "M(A)" "M(f)" 
+  shows
+  "Replace(A,PHrank(M,f)) = RepFun(A,\<lambda>y. succ(f`y))"
+proof -
+  have "{z . y \<in> A, M(z) \<and> z = succ(f`y)} = {z . y \<in> A, z = succ(f`y)}" 
+    using assms PHrank_closed transM[of _ A] by blast
+  also
+  have " ... = {succ(f`y) . y \<in> A}" by auto
+  finally 
+  show ?thesis using assms PHrank_abs transM[of _ A] by simp
+qed
+
+lemma RepFun_PHrank_closed :
+  assumes
+    "M(f)" "M(A)" 
+  shows
+    "M(Replace(A,PHrank(M,f)))"
+proof -
+  have "\<lbrakk> x\<in>A ; PHrank(M,f,x,y) \<rbrakk> \<Longrightarrow> M(y)" for x y
+    using assms unfolding PHrank_def by simp
+  with univ_PHrank
+  show ?thesis using assms PHrank_replacement by simp
+qed
+
+
+lemma relation2_Hrank :
+  "relation2(M,is_Hrank(M),Hrank)"
+  unfolding is_Hrank_def Hrank_def relation2_def
+  using Replace_PHrank_abs RepFun_PHrank RepFun_PHrank_closed by auto
+
+lemma Union_PHrank_closed:
+  assumes 
+    "M(x)" "M(f)"
+  shows 
+    "M(\<Union>y\<in>x. succ(f`y))"
+proof -
+  have "M(succ(f`y))" if "y\<in>x" for y
+    using that assms transM[of _ x] by simp
+  then
+  have "M({succ(f`y). y\<in>x})"
+    using assms transM[of _ x]  RepFun_PHrank_closed RepFun_PHrank by simp
+  then show ?thesis using assms by simp
+qed
+
+
+lemma is_Hrank_closed : 
+  "M(A) \<Longrightarrow> \<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(Hrank(x,g))"
+  unfolding Hrank_def using RepFun_PHrank_closed Union_PHrank_closed by simp
+
+(*wf(r); trans(r); relation(r); M(r); M(a)*)
+lemma wf_rrank : "M(x) \<Longrightarrow> wf(rrank(x))" 
+  unfolding rrank_def using wf_trancl[OF wf_Memrel] .
+
+lemma trans_rrank : "M(x) \<Longrightarrow> trans(rrank(x))"
+  unfolding rrank_def using trans_trancl .
+
+lemma relation_rrank : "M(x) \<Longrightarrow> relation(rrank(x))" 
+  unfolding rrank_def using relation_trancl .
+
+lemma rrank_in_M : "M(x) \<Longrightarrow> M(rrank(x))" 
+  unfolding rrank_def by simp
+
+lemma rank_closed: "M(a) \<Longrightarrow> M(rank(a))"
+  unfolding rank_trancl 
+  using relation2_Hrank is_Hrank_closed is_Hrank_replacement 
+        wf_rrank relation_rrank trans_rrank rrank_in_M 
+         trans_wfrec_closed[of "rrank(a)" a "is_Hrank(M)"] by simp
+
 (*
 
 (* Results to be implemented later *)
@@ -377,6 +560,6 @@ proof -
 qed
 
 *)
-end (* context M_eclose_pow *)
 
+end
 end
