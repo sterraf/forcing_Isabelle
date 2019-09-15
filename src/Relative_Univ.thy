@@ -525,17 +525,6 @@ lemma rank_closed: "M(a) \<Longrightarrow> M(rank(a))"
         wf_rrank relation_rrank trans_rrank rrank_in_M 
          trans_wfrec_closed[of "rrank(a)" a "is_Hrank(M)"] by simp
 
-(*
-
-(* Results to be implemented later *)
-
-(* hint ? *)
-lemma rank_eq_wfrank: "rank(a) = wfrank(Memrel(eclose({a})),a)"
-  unfolding rank_def transrec_def wfrank_def wfrec_def oops
-
-lemma rank_closed: "M(a) \<Longrightarrow> M(rank(a))"
-  sorry
-
 lemma M_into_Vset:
   assumes "M(a)"
   shows "\<exists>i[M]. \<exists>V[M]. ordinal(M,i) \<and> is_Vfrom(M,0,i,V) \<and> a\<in>V"
@@ -558,8 +547,6 @@ proof -
   ultimately
   show ?thesis by blast
 qed
-
-*)
 
 end
 end
