@@ -639,9 +639,9 @@ definition
     And(upair_fm(tup#+2,tup#+2,1),And(is_eclose_fm(1,0),is_frecrel_fm(0,fet #+ 2)))))"
 
 definition
-  forces_eq_fm :: "[i,i] \<Rightarrow> i" where
-  "forces_eq_fm(t1,t2) \<equiv> Exists(Exists(Exists(Exists(And(And(And(And(
-               is_wfrec_fm(is_Hfrc_at_fm(5,6,2,1,0),2,3,4),number1_fm(2)),empty_fm(3)),
+  forces_eq_fm :: "[i\<Rightarrow>i,i,i] \<Rightarrow> i" where
+  "forces_eq_fm(r,t1,t2) \<equiv> Exists(Exists(Exists(Exists(And(And(And(And(
+               r(is_wfrec_fm(is_Hfrc_at_fm(5,6,2,1,0),2,3,4)),number1_fm(2)),empty_fm(3)),
                is_tuple_fm(3, t1 #+ 8, t2 #+ 8, 7, 1)),frecrel_eclose_fm(1,0))))))"
 
 definition
@@ -661,6 +661,8 @@ forces(Nand(\<phi>,\<psi>)) == (\<forall>q. \<forall>qp. q\<in>P \<longrightarro
 forces(Nand(\<phi>,\<psi>)) == Forall(Forall(Implies(Member(1,2),
               Implies(And(pair_fm(1,5,0),Member(0,3)),Neg(And(forces(\<phi>), forces(\<psi>)))))))
 *)
+
+(*
 consts forces :: "i\<Rightarrow>i"
 primrec
   "forces(Member(x,y)) = forces_mem_fm(x,y)"
@@ -670,15 +672,16 @@ primrec
   "forces(Nand(p,q))   = Forall(Forall(Implies(Member(1,2),
                   Implies(And(pair_fm(1,5,0),Member(0,3)),Neg(And(forces(p), forces(q)))))))"
   "forces(Forall(p))   = Forall(forces(p))" (* check indexes *)
+*)
 
-consts forces_ren :: "[i,i,i]\<Rightarrow>i"
+consts forces_ren :: "[i\<Rightarrow>i,i,i,i]\<Rightarrow>i"
 primrec
-  "forces_ren(fren,fref,Member(x,y)) = forces_mem_fm(x,y)"
-  "forces_ren(fren,fref,Equal(x,y))  = forces_eq_fm(x,y)"
-  "forces_ren(fren,fref,Nand(p,q))   = Forall(Forall(Implies(Member(1,2),
+  "forces_ren(auxren,fren,fref,Member(x,y)) = forces_mem_fm(x,y)" (* Not ready yet *)
+  "forces_ren(auxren,fren,fref,Equal(x,y))  = forces_eq_fm(auxren,x,y)"
+  "forces_ren(auxren,fren,fref,Nand(p,q))   = Forall(Forall(Implies(Member(1,2),
                   Implies(And(pair_fm(1,5,0),Member(0,3)),
-                  Neg(And(fren`forces_ren(fren,fref,p), fren`forces_ren(fren,fref,q)))))))"
-  "forces_ren(fren,fref,Forall(p))   = Forall(fref`forces_ren(fren,fref,p))" (* check indexes *)
+                  Neg(And(fren`forces_ren(auxren,fren,fref,p), fren`forces_ren(auxren,fren,fref,q)))))))"
+  "forces_ren(auxren,fren,fref,Forall(p))   = Forall(fref`forces_ren(auxren,fren,fref,p))" (* check indexes *)
 
 context M_basic
 begin
@@ -706,7 +709,8 @@ lemma frecrel_eclose_fm_type [TC]:
   by simp
 
 lemma forces_eq_fm_type [TC]:
-  "t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow> forces_eq_fm(t1,t2) \<in> formula"
+  assumes [TC]:"\<And>x. x\<in>formula \<Longrightarrow> r(x)\<in>formula" 
+  shows "t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow> forces_eq_fm(r,t1,t2) \<in> formula"
   unfolding forces_eq_fm_def is_Hfrc_at_fm_def
   by simp
 
@@ -716,7 +720,7 @@ lemma forces_mem_fm_type [TC]:
   by simp
 
 lemma arity_forces_eq_fm [simp]:
-  "t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow> arity(forces_eq_fm(t1,t2)) = (t1 \<union> t2) #+ 5"
+  "\<lbrakk>\<And>x. x\<in>formula \<Longrightarrow> arity(r(x)) = arity(x) \<rbrakk> \<Longrightarrow> t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow> arity(forces_eq_fm(r,t1,t2)) = (t1 \<union> t2) #+ 5"
   unfolding forces_eq_fm_def number1_fm_def is_Hfrc_at_fm_def is_tuple_fm_def
     frecrel_eclose_fm_def is_frecrel_fm_def cartprod_fm_def
     is_eclose_fm_def mem_eclose_fm_def finite_ordinal_fm_def
@@ -800,54 +804,97 @@ lemma def_one: "xa \<in>M \<Longrightarrow> (\<forall>x\<in>M. x \<in> xa \<long
 lemma uno_in_M: "1\<in>M"
   by (simp del:setclass_iff add:setclass_iff[symmetric])
 
-lemma sats_forces_eq_fm': "\<lbrakk> [P,leq,one,p,t1,t2] @ env \<in> list(M); \<And>x. x\<in>M \<Longrightarrow> frecrel(x)\<in>M \<rbrakk> \<Longrightarrow>
-     sats(M,forces_eq_fm(0,1),[P,leq,one,p,t1,t2] @ env) \<longleftrightarrow>
-     sats(M,is_wfrec_fm(is_Hfrc_at_fm(5,6,2,1,0),2,3,4),
+end (* context forcing_data *)
+
+locale forces_rename = forcing_data + 
+  fixes fren :: "i" and fref :: "i" and auxren :: "i\<Rightarrow>i"
+  assumes
+  sats_fren: "[x,q,P,leq,one,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
+      sats(M, fren`\<phi>,[x,q,P,leq,one,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,one,q] @ env)"
+  and
+  arity_fren [simp]: "arity(fren`\<phi>) = arity(\<phi>) #+ 2"
+  and
+  sats_fref: "[x,P,leq,one,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
+      sats(M, fref`\<phi>,[x,P,leq,one,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,one,p,x] @ env)"
+  and
+  arity_fref [simp]: "arity(fref`\<phi>) = arity(\<phi>)"
+  and (* Note: this is a function i\<Rightarrow>i *)
+  sats_auxren: "[fec,tup,o,z,pp,l] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
+      sats(M,auxren(\<phi>),[fec,tup,o,z,pp,l] @ env) \<longleftrightarrow> sats(M,\<phi>,[pp,l,fec,tup,o,z] @ env)"
+  and
+  arity_auxren [simp]: "arity(auxren(\<phi>)) = arity(\<phi>)"
+  and
+  renaming_type [TC]: "\<phi>\<in>formula \<Longrightarrow> fren`\<phi> \<in> formula" "\<phi>\<in>formula \<Longrightarrow> fref`\<phi> \<in> formula"
+         "\<phi>\<in>formula \<Longrightarrow> auxren(\<phi>) \<in> formula"
+  and 
+  frecrel_closed: "x\<in>M \<Longrightarrow> frecrel(x)\<in>M"
+
+begin
+
+definition
+  forces :: "i\<Rightarrow>i" where
+  "forces(\<phi>) \<equiv> And(Member(3,0),forces_ren(auxren,fren,fref, \<phi>))"
+
+lemma sats_forces_eq_fm': 
+  assumes " [P,leq,one,p,t1,t2] @ env \<in> list(M)"
+  shows "sats(M,forces_eq_fm(auxren,0,1),[P,leq,one,p,t1,t2] @ env) \<longleftrightarrow>
+         sats(M,is_wfrec_fm(is_Hfrc_at_fm(5,6,2,1,0),2,3,4),
        [P,leq,frecrel(eclose({<0,t1,t2,p>})),<0,t1,t2,p>,1,0, one,p,t1,t2] @ env)"
 proof -
+  from assms
+  have "<0,t1,t2,p> \<in> M" 
+    using M_inhabit tuples_in_M by simp
+  then
+  have "eclose({<0,t1,t2,p>}) \<in> M" 
+    using M_inhabit eclose_closed cons_closed by simp
+  then
+  have "frecrel(eclose({<0,t1,t2,p>})) \<in> M" 
+    using frecrel_closed by simp
+  note inM = assms uno_in_M M_inhabit \<open><0,t1,t2,p>\<in>M\<close> \<open>eclose({<0,t1,t2,p>})\<in>M\<close> \<open>frecrel(eclose({<0,t1,t2,p>}))\<in>M\<close>
   let ?\<phi>="is_wfrec_fm(is_Hfrc_at_fm(5,6,2,1,0),2,3,4)"
+  have "?\<phi>\<in>formula" unfolding is_Hfrc_at_fm_def by simp
   let ?\<psi>="And(pair_fm(11,9,0),And(pair_fm(10,0,1),pair_fm(5,1,3)))"
   let ?\<theta>="Exists(Exists(And(upair_fm(3,3,1),And(is_eclose_fm(1,0),is_frecrel_fm(0,2)))))"
-  assume frecrel_closed:"x\<in>M \<Longrightarrow> frecrel(x)\<in>M" for x
-  assume env:"[P,leq,one,p,t1,t2] @ env \<in> list(M)"
-  then
-  have "sats(M,forces_eq_fm(0,1),[P,leq,one,p,t1,t2] @ env) \<longleftrightarrow> (\<exists>x\<in>M. \<exists>xa\<in>M. \<exists>xb\<in>M. \<exists>xc\<in>M.
-          sats(M,?\<phi>,[xc,xb,xa,x,P,leq,one,p,t1,t2] @ env) \<and>
+  from assms
+  have "sats(M,forces_eq_fm(auxren,0,1),[P,leq,one,p,t1,t2] @ env) \<longleftrightarrow> (\<exists>x\<in>M. \<exists>xa\<in>M. \<exists>xb\<in>M. \<exists>xc\<in>M.
+          sats(M,auxren(?\<phi>),[xc,xb,xa,x,P,leq,one,p,t1,t2] @ env) \<and>
           xa = 1 \<and> sats(M,empty_fm(3),[xc,xb,1,x,P,leq,one,p,t1,t2] @ env) \<and>
           sats(M,is_tuple_fm(3,8,9,7,1),[xc,xb,1,x,P,leq,one,p,t1,t2] @ env) \<and>
           sats(M,?\<theta>,[xc,xb,1,x,P,leq,one,p,t1,t2] @ env))"
     unfolding forces_eq_fm_def frecrel_eclose_fm_def
     using M_inhabit def_one
     by simp
-  moreover from env
+  moreover from assms
   have "... \<longleftrightarrow> (\<exists>xa\<in>M. \<exists>xb\<in>M. \<exists>xc\<in>M.
-          sats(M,?\<phi>,[xc,xb,xa,0,P,leq,one,p,t1,t2] @ env) \<and>
+          sats(M,auxren(?\<phi>),[xc,xb,xa,0,P,leq,one,p,t1,t2] @ env) \<and>
           xa = 1 \<and>
           sats(M,is_tuple_fm(3,8,9,7,1),[xc,xb,1,0,P,leq,one,p,t1,t2] @ env) \<and>
           sats(M,?\<theta>,[xc,xb,1,0,P,leq,one,p,t1,t2] @ env))"
     using M_inhabit by force
-  moreover from env
+  moreover from assms
   have " ... \<longleftrightarrow> (\<exists>xb\<in>M. \<exists>xc\<in>M.
-          sats(M,?\<phi>,[xc,xb,1,0,P,leq,one,p,t1,t2] @ env) \<and>
+          sats(M,auxren(?\<phi>),[xc,xb,1,0,P,leq,one,p,t1,t2] @ env) \<and>
           (\<exists>c1\<in>M. \<exists>c0\<in>M. sats(M,?\<psi>,[c0,c1,xc,xb,1,0,P,leq,one,p,t1,t2] @ env)) \<and>
           sats(M,?\<theta>,[xc,xb,1,0,P,leq,one,p,t1,t2] @ env))"
     using uno_in_M M_inhabit unfolding is_tuple_fm_def by auto
-  moreover from env
+  moreover from assms
   have " ... \<longleftrightarrow> (\<exists>xc\<in>M.
-          sats(M,?\<phi>,[xc,<0,t1,t2,p>,1,0,P,leq,one,p,t1,t2] @ env) \<and>
+          sats(M,auxren(?\<phi>),[xc,<0,t1,t2,p>,1,0,P,leq,one,p,t1,t2] @ env) \<and>
           sats(M,?\<theta>,[xc,<0,t1,t2,p>,1,0,P,leq,one,p,t1,t2] @ env))"
     using uno_in_M M_inhabit tuples_in_M by auto
-  moreover from env
+  moreover from inM
   have " ... \<longleftrightarrow> (\<exists>xc\<in>M.
-          sats(M,?\<phi>,[xc,<0,t1,t2,p>,1,0,P,leq,one,p,t1,t2] @ env) \<and>
+          sats(M,auxren(?\<phi>),[xc,<0,t1,t2,p>,1,0,P,leq,one,p,t1,t2] @ env) \<and>
           (\<exists>s\<in>M. \<exists>ec\<in>M. sats(M,is_eclose_fm(1,0),[ec,s,xc,<0,t1,t2,p>,1,0,P,leq,one,p,t1,t2] @ env)
                \<and>  sats(M,upair_fm(3,3,1),[ec,s,xc,<0,t1,t2,p>,1,0,P,leq,one,p,t1,t2] @ env)
                \<and>  sats(M,is_frecrel_fm(0,2),[ec,s,xc,<0,t1,t2,p>,1,0,P,leq,one,p,t1,t2] @ env)) )"
-    using uno_in_M M_inhabit tuples_in_M by (simp)
-  moreover from env
-  have " ... \<longleftrightarrow> sats(M,?\<phi>,[frecrel(eclose({<0,t1,t2,p>})),<0,t1,t2,p>,1,0,P,leq,one,p,t1,t2] @ env)"
-    using frecrel_closed uno_in_M M_inhabit sats_is_frecrel_fm[symmetric]
-      tuples_in_M eclose_closed cons_closed by simp
+    by (simp)
+  moreover from inM
+  have " ... \<longleftrightarrow> sats(M,auxren(?\<phi>),[frecrel(eclose({<0,t1,t2,p>})),<0,t1,t2,p>,1,0,P,leq,one,p,t1,t2] @ env)"
+    using sats_is_frecrel_fm[symmetric] cons_closed by simp
+  moreover from inM
+  have " ... \<longleftrightarrow> sats(M,?\<phi>,[P,leq,frecrel(eclose({<0,t1,t2,p>})),<0,t1,t2,p>,1,0, one,p,t1,t2] @ env)"
+    using sats_auxren[OF _ \<open>?\<phi>\<in>formula\<close>, of _ _ _ _ _ _ "[one,p,t1,t2] @ env"] by (simp)
   ultimately show ?thesis by simp
 qed
 
@@ -857,13 +904,13 @@ lemma MH: "a0\<in>M \<Longrightarrow> a1\<in>M \<Longrightarrow> a2\<in>M \<Long
   by (simp del:Hfrc_at_abs)
 
 lemma sats_forces_eq_fm: 
-  assumes  "[P,leq,one,p,t1,t2] @ env \<in> list(M)" "\<And>x. x\<in>M \<Longrightarrow> frecrel(x)\<in>M "
-  shows "sats(M,forces_eq_fm(0,1),[P,leq,one,p,t1,t2] @ env) \<longleftrightarrow> is_frc_at(##M,P,leq,<0,t1,t2,p>,1)"
+  assumes  "[P,leq,one,p,t1,t2] @ env \<in> list(M)"
+  shows "sats(M,forces_eq_fm(auxren,0,1),[P,leq,one,p,t1,t2] @ env) \<longleftrightarrow> is_frc_at(##M,P,leq,<0,t1,t2,p>,1)"
 proof -
   note assms
   moreover from this
   have "frecrel(eclose({\<langle>0, t1, t2, p\<rangle>}))\<in>M" "\<langle>0, t1, t2, p\<rangle>\<in>M"
-    using tuples_in_M cons_closed eclose_closed M_inhabit by simp_all
+    using tuples_in_M cons_closed eclose_closed M_inhabit frecrel_closed by simp_all
   moreover from calculation
   have "is_wfrec(##M,is_Hfrc_at(##M,P,leq),frecrel(eclose({\<langle>0,t1,t2,p\<rangle>})),\<langle>0,t1,t2,p\<rangle>,1) \<longleftrightarrow>
    is_wfrec(##M,\<lambda>x f z. z = bool_of_o(Hfrc(P,leq,x,f)),frecrel(eclose({\<langle>0,t1,t2,p\<rangle>})),\<langle>0,t1,t2,p\<rangle>,1)"
@@ -874,51 +921,16 @@ proof -
   ultimately
   show ?thesis
   unfolding is_frc_at_def 
-  using assms sats_forces_eq_fm' eclose_closed uno_in_M M_inhabit tuples_in_M cons_closed
+  using frecrel_closed sats_forces_eq_fm' eclose_closed uno_in_M M_inhabit tuples_in_M cons_closed
     sats_is_wfrec_fm[OF MH[simplified], of "[frecrel(eclose({<0,t1,t2,p>})), <0,t1,t2,p>, 1, 0, one, p, t1, t2] @ env" 2 3 4]
      Hfrc_at_abs nat_into_Ord[OF length_type, of env M] by simp
 qed
 
-lemma forces_Nand: "\<lbrakk> [P,leq,one,p] @ env \<in> list(M); \<phi>\<in>formula; \<psi>\<in>formula\<rbrakk> \<Longrightarrow>
-          sats(M,forces(Nand(\<phi>,\<psi>)),[P,leq,one,p] @ env) \<longleftrightarrow>
-          (\<forall>x\<in>P. \<langle>x, p\<rangle> \<in> leq \<longrightarrow>
-          \<not> (sats(M, forces(\<phi>),[\<langle>x, p\<rangle>,x,P,leq,one,p] @ env) \<and>
-             sats(M, forces(\<psi>),[\<langle>x, p\<rangle>,x,P,leq,one,p] @ env)))"
-  using tuples_in_M Transset_intf[OF trans_M, of _ P] by auto
-
-lemma forces_Neg: "\<lbrakk> [P,leq,one,p] @ env \<in> list(M); \<phi>\<in>formula\<rbrakk> \<Longrightarrow>
-          sats(M,forces(Neg(\<phi>)),[P,leq,one,p] @ env) \<longleftrightarrow>
-          (\<forall>x\<in>P. \<langle>x, p\<rangle> \<in> leq \<longrightarrow>
-          \<not> sats(M, forces(\<phi>),[\<langle>x, p\<rangle>,x,P,leq,one,p] @ env))"
-  unfolding Neg_def 
-  using tuples_in_M Transset_intf[OF trans_M, of _ P] by auto
-
-end (* context forcing_data *)
-
-locale forces_rename = forcing_data + 
-  fixes fren :: "i" and fref :: "i"
-  assumes
-  fren_action: "[x,q,P,leq,one,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
-      sats(M, fren`\<phi>,[x,q,P,leq,one,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,one,q] @ env)"
-  and
-  arity_fren [simp]: "arity(fren`\<phi>) = arity(\<phi>) #+ 2"
-  and
-  fref_action: "[x,P,leq,one,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
-      sats(M, fref`\<phi>,[x,P,leq,one,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,one,p,x] @ env)"
-  and
-  arity_fref [simp]: "arity(fref`\<phi>) = arity(\<phi>)"
-  and
-  renaming_type [TC]: "\<phi>\<in>formula \<Longrightarrow> fren`\<phi> \<in> formula" "\<phi>\<in>formula \<Longrightarrow> fref`\<phi> \<in> formula"
-  and 
-  frecrel_closed: "x\<in>M \<Longrightarrow> frecrel(x)\<in>M"
-
-begin
-
-lemma forces_ren_type [TC]:  "\<phi>\<in>formula \<Longrightarrow> forces_ren(fren,fref, \<phi>) \<in> formula" 
+lemma forces_ren_type [TC]:  "\<phi>\<in>formula \<Longrightarrow> forces_ren(auxren,fren,fref, \<phi>) \<in> formula" 
   by (induct \<phi> set:formula; simp)
 
-lemma arity_forces_ren:
-  shows "\<phi>\<in>formula \<Longrightarrow> arity(forces_ren(fren,fref, \<phi>)) =  arity(\<phi>) #+ 4"
+lemma arity_forces:
+  shows "\<phi>\<in>formula \<Longrightarrow> arity(forces_ren(auxren,fren,fref, \<phi>)) =  arity(\<phi>) #+ 4"
 proof (induct set:formula)
   case (Member x y)
   then 
@@ -944,35 +956,35 @@ lemma sats_forces_ren_Nand:
   assumes 
     "[P,leq,one,p] @ env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
   shows
-    "sats(M,forces_ren(fren,fref,Nand(\<phi>,\<psi>)),[P,leq,one,p] @ env) \<longleftrightarrow>
+    "sats(M,forces_ren(auxren,fren,fref,Nand(\<phi>,\<psi>)),[P,leq,one,p] @ env) \<longleftrightarrow>
           (\<forall>x\<in>M. x\<in>P \<longrightarrow> \<langle>x, p\<rangle> \<in> leq \<longrightarrow>
-          \<not> (sats(M, forces_ren(fren,fref,\<phi>),[P,leq,one,x] @ env) \<and>
-             sats(M, forces_ren(fren,fref,\<psi>),[P,leq,one,x] @ env)))"
+          \<not> (sats(M, forces_ren(auxren,fren,fref,\<phi>),[P,leq,one,x] @ env) \<and>
+             sats(M, forces_ren(auxren,fren,fref,\<psi>),[P,leq,one,x] @ env)))"
 proof -
   from assms
-  have "sats(M,forces_ren(fren,fref,Nand(\<phi>,\<psi>)),[P,leq,one,p] @ env) \<longleftrightarrow>
+  have "sats(M,forces_ren(auxren,fren,fref,Nand(\<phi>,\<psi>)),[P,leq,one,p] @ env) \<longleftrightarrow>
           (\<forall>x\<in>M. x\<in>P \<longrightarrow> \<langle>x, p\<rangle> \<in> leq \<longrightarrow>
-          \<not> (sats(M, fren`forces_ren(fren,fref,\<phi>),[\<langle>x, p\<rangle>,x,P,leq,one,p] @ env) \<and>
-             sats(M, fren`forces_ren(fren,fref,\<psi>),[\<langle>x, p\<rangle>,x,P,leq,one,p] @ env)))"
+          \<not> (sats(M, fren`forces_ren(auxren,fren,fref,\<phi>),[\<langle>x, p\<rangle>,x,P,leq,one,p] @ env) \<and>
+             sats(M, fren`forces_ren(auxren,fren,fref,\<psi>),[\<langle>x, p\<rangle>,x,P,leq,one,p] @ env)))"
     using tuples_in_M  by simp
   also from assms
   have "... \<longleftrightarrow> (\<forall>x\<in>M. x\<in>P \<longrightarrow> \<langle>x, p\<rangle> \<in> leq \<longrightarrow>
-          \<not> (sats(M, forces_ren(fren,fref,\<phi>),[P,leq,one,x] @ env) \<and>
-             sats(M, forces_ren(fren,fref,\<psi>),[P,leq,one,x] @ env)))"
-    using tuples_in_M fren_action by simp
+          \<not> (sats(M, forces_ren(auxren,fren,fref,\<phi>),[P,leq,one,x] @ env) \<and>
+             sats(M, forces_ren(auxren,fren,fref,\<psi>),[P,leq,one,x] @ env)))"
+    using tuples_in_M sats_fren by simp
   (* also from assms
   have "... \<longleftrightarrow> (\<forall>x\<in>P. \<langle>x, p\<rangle> \<in> leq \<longrightarrow>
-          \<not> (sats(M, forces_ren(fren,fref,\<phi>),[P,leq,one,x] @ env) \<and>
-             sats(M, forces_ren(fren,fref,\<psi>),[P,leq,one,x] @ env)))"
+          \<not> (sats(M, forces_ren(auxren,fren,fref,\<phi>),[P,leq,one,x] @ env) \<and>
+             sats(M, forces_ren(auxren,fren,fref,\<psi>),[P,leq,one,x] @ env)))"
     using tuples_in_M Transset_intf[OF trans_M, of _ P]  by auto *)
   finally
   show ?thesis .
 qed
 
 lemma sats_forces_ren_Neg: "\<lbrakk> [P,leq,one,p] @ env \<in> list(M); \<phi>\<in>formula\<rbrakk> \<Longrightarrow>
-          sats(M,forces_ren(fren,fref,Neg(\<phi>)),[P,leq,one,p] @ env) \<longleftrightarrow> 
+          sats(M,forces_ren(auxren,fren,fref,Neg(\<phi>)),[P,leq,one,p] @ env) \<longleftrightarrow> 
           (\<forall>q\<in>M. q\<in>P \<longrightarrow> \<langle>q, p\<rangle> \<in> leq \<longrightarrow>
-          \<not> sats(M, forces_ren(fren,fref,\<phi>),[P,leq,one,q] @ env))" 
+          \<not> sats(M, forces_ren(auxren,fren,fref,\<phi>),[P,leq,one,q] @ env))" 
   unfolding Neg_def sats_forces_ren_Nand
   by simp
 
@@ -980,15 +992,15 @@ lemma sats_forces_ren_Forall:
   assumes
     "p\<in>P" "[P,leq,one,p] @ env \<in> list(M)" "\<phi>\<in>formula"
   shows
-    "sats(M,forces_ren(fren,fref,Forall(\<phi>)),[P,leq,one,p] @ env) \<longleftrightarrow> 
-     (\<forall>x\<in>M. sats(M, forces_ren(fren,fref,\<phi>),[P,leq,one,p,x] @ env))"
-  using assms fref_action by simp
+    "sats(M,forces_ren(auxren,fren,fref,Forall(\<phi>)),[P,leq,one,p] @ env) \<longleftrightarrow> 
+     (\<forall>x\<in>M. sats(M, forces_ren(auxren,fren,fref,\<phi>),[P,leq,one,p,x] @ env))"
+  using assms sats_fref by simp
 
 lemma sats_forces_ren_Equal:
   assumes
     "p\<in>P" "[P,leq,one,p,x,y] @ env \<in> list(M)" 
   shows
-    "sats(M,forces_ren(fren,fref,Equal(0,1)),[P,leq,one,p,x,y] @ env) \<longleftrightarrow> 
+    "sats(M,forces_ren(auxren,fren,fref,Equal(0,1)),[P,leq,one,p,x,y] @ env) \<longleftrightarrow> 
      sats(M, is_wfrec_fm(is_Hfrc_at_fm(5,6,2,1,0),2,3,4),
          [P,leq,frecrel(eclose({<0,x,y,p>})), <0,x,y,p>, 1, 0, one, p, x, y] @ env)"
   using assms sats_forces_eq_fm' frecrel_closed by simp
@@ -997,9 +1009,11 @@ lemma
   assumes
     "p\<in>P" "[P,leq,one,p] @ env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
   shows
-    "sats(M,forces_ren(fren,fref,And(\<phi>,\<psi>)),[P,leq,one,p] @ env) \<longleftrightarrow>
-      sats(M, forces_ren(fren,fref,\<phi>),[P,leq,one,p] @ env) \<and>
-      sats(M, forces_ren(fren,fref,\<psi>),[P,leq,one,p] @ env)"
+    "sats(M,forces_ren(auxren,fren,fref,And(\<phi>,\<psi>)),[P,leq,one,p] @ env) \<longleftrightarrow>
+      sats(M, forces_ren(auxren,fren,fref,\<phi>),[P,leq,one,p] @ env) \<and>
+      sats(M, forces_ren(auxren,fren,fref,\<psi>),[P,leq,one,p] @ env)"
   oops
+
+end (* forces_rename *)
 
 end
