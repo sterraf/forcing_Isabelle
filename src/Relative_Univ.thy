@@ -368,46 +368,67 @@ lemma Vset_closed: "\<lbrakk> M(i); Ord(i) \<rbrakk> \<Longrightarrow> M({x\<in>
 lemma field_trancl : "field(r^+) = field(r)"
 by (blast intro: r_into_trancl dest!: trancl_type [THEN subsetD])
 
-lemma field_Memrel : "field(Memrel(A)) \<subseteq> A"
-  unfolding field_def using Ordinal.Memrel_type by blast
+definition
+  Rrel :: "[i\<Rightarrow>i\<Rightarrow>o,i] \<Rightarrow> i" where
+  "Rrel(R,A) \<equiv> {z\<in>A\<times>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> R(x,y)}"
 
-lemma restrict_trans_eq:
-  assumes "w \<in> y"
-  shows "restrict(f,Memrel(eclose({x}))-``{y})`w
-       = restrict(f,(Memrel(eclose({x}))^+)-``{y})`w" 
-proof (cases "y\<in>eclose({x})")
-  let ?r="Memrel(eclose({x}))"
-  and ?s="Memrel(eclose({x}))^+"
+lemma Rrel_mem: "Rrel(mem,x) = Memrel(x)"
+  unfolding Rrel_def Memrel_def ..
+
+lemma relation_Rrel: "relation(Rrel(R,d))"
+  unfolding Rrel_def relation_def by simp
+
+lemma field_Rrel: "field(Rrel(R,d)) \<subseteq>  d"
+  unfolding Rrel_def by auto
+
+(* now a consequence of the previous lemmas *)
+lemma field_Memrel : "field(Memrel(A)) \<subseteq> A"
+  (* unfolding field_def using Ordinal.Memrel_type by blast *)
+  using Rrel_mem field_Rrel by blast
+
+lemma restrict_trancl_Rrel:
+  assumes "R(w,y)" and "\<And>x z. z\<in>d \<Longrightarrow> R(x,z) \<Longrightarrow> x\<in>d"
+  shows "restrict(f,Rrel(R,d)-``{y})`w
+       = restrict(f,(Rrel(R,d)^+)-``{y})`w" 
+proof (cases "y\<in>d")
+  let ?r="Rrel(R,d)"
+  and ?s="(Rrel(R,d))^+"
   case True
-  from \<open>w\<in>y\<close> \<open>y\<in>eclose({x})\<close>
+  with assms
   have "<w,y>\<in>?r" 
-    using Memrel_iff  eclose_subset[OF \<open>y\<in>eclose({x})\<close>] by blast
+    unfolding Rrel_def by blast
   then 
   have "<w,y>\<in>?s" 
-    using r_subset_trancl[of ?r] relation_Memrel by blast
+    using r_subset_trancl[of ?r] relation_Rrel[of R d] by blast
   with \<open><w,y>\<in>?r\<close> 
   have "w\<in>?r-``{y}" "w\<in>?s-``{y}"
     using vimage_singleton_iff by simp_all
   then 
   show ?thesis by simp
 next
-  let ?r="Memrel(eclose({x}))"
+  let ?r="Rrel(R,d)"
   let ?s="?r^+"
   case False
   then 
   have "?r-``{y}=0" 
-    using Memrel_iff by blast
+    unfolding Rrel_def by blast
   then
   have "w\<notin>?r-``{y}" by simp    
-  with \<open>y\<notin>eclose({x})\<close> 
+  with \<open>y\<notin>d\<close> assms
   have "y\<notin>field(?s)" 
-    using field_trancl subsetD[OF field_Memrel[of "eclose({x})"]] by auto
+    using field_trancl subsetD[OF field_Rrel[of R d]] by force
   then 
   have "w\<notin>?s-``{y}" 
     using vimage_singleton_iff by blast
   with \<open>w\<notin>?r-``{y}\<close>
   show ?thesis by simp
 qed
+
+lemma restrict_trans_eq:
+  assumes "w \<in> y"
+  shows "restrict(f,Memrel(eclose({x}))-``{y})`w
+       = restrict(f,(Memrel(eclose({x}))^+)-``{y})`w" 
+  using assms restrict_trancl_Rrel[of mem] ecloseD Rrel_mem by (simp)
 
 lemma Hrank_trancl:"Hrank(y, restrict(f,Memrel(eclose({x}))-``{y}))
                   = Hrank(y, restrict(f,(Memrel(eclose({x}))^+)-``{y}))"
@@ -481,7 +502,6 @@ proof -
   show ?thesis using assms PHrank_replacement by simp
 qed
 
-
 lemma relation2_Hrank :
   "relation2(M,is_Hrank(M),Hrank)"
   unfolding is_Hrank_def Hrank_def relation2_def
@@ -500,7 +520,6 @@ proof -
     using assms transM[of _ x]  RepFun_PHrank_closed RepFun_PHrank by simp
   then show ?thesis using assms by simp
 qed
-
 
 lemma is_Hrank_closed : 
   "M(A) \<Longrightarrow> \<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(Hrank(x,g))"
