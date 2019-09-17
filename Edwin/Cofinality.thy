@@ -34,7 +34,23 @@ lemma cofinal_in_cofinal:
     "trans(r)" "cofinal(Y,X,r)" "cofinal(X,A,r)" 
   shows 
     "cofinal(Y,A,r)"
-  sorry
+    unfolding cofinal_def
+proof
+  fix a
+  assume "a\<in>A"
+  moreover from \<open>cofinal(X,A,r)\<close>
+  have "b\<in>A\<Longrightarrow>\<exists>x\<in>X. <b,x>\<in>r \<or> b=x" for b
+    unfolding cofinal_def by simp
+  ultimately
+  obtain y where "y\<in>X" "<a,y>\<in>r \<or> a=y" by auto
+  moreover from \<open>cofinal(Y,X,r)\<close>
+  have "c\<in>X\<Longrightarrow>\<exists>y\<in>Y. <c,y>\<in>r \<or> c=y" for c
+    unfolding cofinal_def by simp
+  ultimately
+  obtain x where "x\<in>Y" "<y,x>\<in>r \<or> y=x" by auto
+  with \<open>a\<in>A\<close> \<open>y\<in>X\<close> \<open><a,y>\<in>r \<or> a=y\<close> \<open>trans(r)\<close>
+  show "\<exists>x\<in>Y. <a,x>\<in>r \<or> a=x" unfolding trans_def by auto
+qed
 
 lemma Un_leD1 : "i \<union> j \<le> k \<Longrightarrow> Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow> i \<le> k"
   by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct1]],simp_all)
