@@ -447,17 +447,23 @@ lemmas Memrel_mono_map_reflects = linear_mono_map_reflects
   [OF well_ord_is_linear[OF well_ord_Memrel] well_ord_is_trans_on[OF well_ord_Memrel]
     irrefl_Memrel]
 
+(* Same proof as Paulson's *)
+lemma mono_map_is_inj':
+    "\<lbrakk> linear(A,r);  irrefl(B,s);  f \<in> mono_map(A,r,B,s) \<rbrakk> \<Longrightarrow> f \<in> inj(A,B)"
+  unfolding irrefl_def mono_map_def inj_def using linearE
+  by (clarify) (erule_tac x=w and y=x in linearE, assumption+, (force intro: apply_type)+)
+
 lemma mono_map_imp_ord_iso_image:
   assumes 
-    "Ord(\<alpha>)" "Ord(\<beta>)" "f\<in>mono_map(\<alpha>,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
+    "linear(\<alpha>,r)" "trans[\<beta>](s)"  "irrefl(\<beta>,s)" "f\<in>mono_map(\<alpha>,r,\<beta>,s)"
   shows
-    "f \<in> ord_iso(\<alpha>,Memrel(\<alpha>),f``\<alpha>,Memrel(\<beta>))"
+    "f \<in> ord_iso(\<alpha>,r,f``\<alpha>,s)"
   unfolding ord_iso_def
 proof (intro CollectI ballI iffI)
   (* Enough to show it's bijective and preserves both ways *)
   from assms
   have "f \<in> inj(\<alpha>,\<beta>)"
-    using mono_map_is_inj wf_Memrel wf_imp_wf_on well_ord_is_linear well_ord_Memrel by blast
+    using mono_map_is_inj' by blast
   moreover from \<open>f\<in>mono_map(_,_,_,_)\<close>
   have "f \<in> surj(\<alpha>,f``\<alpha>)"
     unfolding mono_map_def using surj_image by auto
@@ -465,15 +471,37 @@ proof (intro CollectI ballI iffI)
   show "f \<in> bij(\<alpha>,f``\<alpha>)" 
     unfolding bij_def using inj_is_fun inj_to_codomain by simp
   from \<open>f\<in>mono_map(_,_,_,_)\<close>
-  show "x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>Memrel(\<alpha>) \<Longrightarrow> \<langle>f`x,f`y\<rangle>\<in>Memrel(\<beta>)" for x y    
+  show "x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>r \<Longrightarrow> \<langle>f`x,f`y\<rangle>\<in>s" for x y    
     unfolding mono_map_def by blast
   with assms
-  show "\<langle>f`x,f`y\<rangle>\<in>Memrel(\<beta>) \<Longrightarrow> x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>Memrel(\<alpha>)" for x y
-    using Memrel_mono_map_reflects by blast
+  show "\<langle>f`x,f`y\<rangle>\<in>s \<Longrightarrow> x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>r" for x y
+    using linear_mono_map_reflects
+    by blast
 qed
+
+lemma mono_map_imp_ord_iso_Memrel:
+  assumes 
+    "Ord(\<alpha>)" "Ord(\<beta>)" "f\<in>mono_map(\<alpha>,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
+  shows
+    "f \<in> ord_iso(\<alpha>,Memrel(\<alpha>),f``\<alpha>,Memrel(\<beta>))"
+  using assms mono_map_imp_ord_iso_image[OF well_ord_is_linear[OF well_ord_Memrel]
+      well_ord_is_trans_on[OF well_ord_Memrel] irrefl_Memrel] by blast
 
 lemma Image_sub_codomain: "f:A\<rightarrow>B \<Longrightarrow> f``C \<subseteq> B"
   using image_subset fun_is_rel[of _ _ "\<lambda>_ . B"] by force
+
+lemma linear_sub_linear: "linear(A,r) \<Longrightarrow> B\<subseteq>A \<Longrightarrow> linear (B,r)"
+  unfolding linear_def by blast
+
+lemma mono_map_ordertype_image':
+  assumes 
+    "X\<subseteq>\<alpha>" "Ord(\<alpha>)" "Ord(\<beta>)" "f\<in>mono_map(X,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
+  shows
+    "ordertype(f``X,Memrel(\<beta>)) = ordertype(X,Memrel(\<alpha>))"
+  using assms mono_map_is_fun[of f X _ \<beta>]  ordertype_eq
+    mono_map_imp_ord_iso_image[OF well_ord_is_linear[OF well_ord_Memrel, THEN linear_sub_linear]
+      well_ord_is_trans_on[OF well_ord_Memrel] irrefl_Memrel, of \<alpha> X \<beta> f]
+    well_ord_subset[OF well_ord_Memrel]  Image_sub_codomain[of f X \<beta> X] by auto 
 
 lemma mono_map_ordertype_image:
   assumes 
@@ -481,8 +509,8 @@ lemma mono_map_ordertype_image:
   shows
     "ordertype(f``\<alpha>,Memrel(\<beta>)) = \<alpha>"
   using assms mono_map_is_fun ordertype_Memrel ordertype_eq[of f \<alpha> "Memrel(\<alpha>)"]
-    mono_map_imp_ord_iso_image well_ord_subset Image_sub_codomain[of _ \<alpha>]
-    well_ord_Memrel[of \<beta>]  by auto 
+    mono_map_imp_ord_iso_Memrel well_ord_subset[OF well_ord_Memrel] Image_sub_codomain[of _ \<alpha>]
+      by auto 
 
 lemma ordertype_in_cf_imp_not_cofinal:
   assumes
@@ -827,7 +855,7 @@ proof -
   ultimately show ?thesis by blast
 qed
 
-lemma mono_map_imp_ordertype_le: 
+lemma subset_imp_ordertype_le: 
   assumes 
     "X\<subseteq>\<beta>" "Ord(\<beta>)"
   shows
@@ -842,7 +870,7 @@ lemma mono_map_imp_le:
 proof -
   from assms
   have "f \<in> \<langle>\<alpha>, Memrel(\<alpha>)\<rangle> \<cong> \<langle>f``\<alpha>, Memrel(\<beta>)\<rangle>"
-    using mono_map_imp_ord_iso_image by simp
+    using mono_map_imp_ord_iso_Memrel by simp
   then
   have "converse(f) \<in> \<langle>f``\<alpha>, Memrel(\<beta>)\<rangle> \<cong> \<langle>\<alpha>, Memrel(\<alpha>)\<rangle>"
     using ord_iso_sym by simp
@@ -851,7 +879,7 @@ proof -
     using ordertype_eq well_ord_Memrel ordertype_Memrel by auto
   also from assms
   have "ordertype(f``\<alpha>,Memrel(\<beta>)) \<le> \<beta>"
-    using mono_map_imp_ordertype_le mono_map_is_fun[of f] Image_sub_codomain[of f] by force
+    using subset_imp_ordertype_le mono_map_is_fun[of f] Image_sub_codomain[of f] by force
   finally
   show ?thesis .
 qed
@@ -879,13 +907,6 @@ next
   with assms
   show ?case using mono_map_imp_le by simp
 qed
-
-lemma mono_map_is_inj':
-    "[| linear(A,r);  irrefl(B,s);  f \<in> mono_map(A,r,B,s) |] ==> f \<in> inj(A,B)"
-  apply (unfold mono_map_def inj_def irrefl_def, clarify, rename_tac w x)
-  apply (erule_tac x=w and y=x in linearE, assumption+)
-    apply (force intro: apply_type )+
-  done
 
 (* Ord(A) \<Longrightarrow> f \<in> mono_map(A, Memrel(A), B, Memrel(Aa)) \<Longrightarrow> f \<in> inj(A, B) *)
 lemmas Memrel_mono_map_is_inj = mono_map_is_inj
