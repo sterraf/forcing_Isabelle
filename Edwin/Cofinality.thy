@@ -200,10 +200,30 @@ lemma cofinal_mono_map_cf:
   shows "\<exists>j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>)) . cofinal_fun(j,\<gamma>,Memrel(\<gamma>))"
   sorry
     
+lemma cofinal_fun_succ':
+  assumes "Ord(\<beta>)" "Ord(\<alpha>)" "f:\<alpha>\<rightarrow>succ(\<beta>)"
+  shows "(\<exists>x\<in>\<alpha>. f`x=\<beta>) \<longleftrightarrow> cofinal_fun(f,succ(\<beta>),Memrel(succ(\<beta>)))"
+proof (intro iffI)
+  assume "(\<exists>x\<in>\<alpha>. f`x=\<beta>)"
+  with assms
+  show "cofinal_fun(f,succ(\<beta>),Memrel(succ(\<beta>)))"
+    using domain_of_fun[OF \<open>f:\<alpha>\<rightarrow>succ(\<beta>)\<close>] unfolding cofinal_fun_def by auto
+next
+  assume "cofinal_fun(f,succ(\<beta>),Memrel(succ(\<beta>)))"
+  with assms 
+  obtain x where "x\<in>\<alpha>" "\<langle>\<beta>,f`x\<rangle> \<in> Memrel(succ(\<beta>)) \<or> \<beta> = f ` x"
+    using domain_of_fun[OF \<open>f:\<alpha>\<rightarrow>succ(\<beta>)\<close>] unfolding cofinal_fun_def by auto
+  moreover from \<open>Ord(\<beta>)\<close>
+  have "\<langle>\<beta>,y\<rangle> \<notin> Memrel(succ(\<beta>))" for y
+    using foundation unfolding Memrel_def by blast
+  ultimately
+  show "\<exists>x\<in>\<alpha>. f ` x = \<beta>" by blast
+qed
+
 lemma cofinal_fun_succ:
   "Ord(\<beta>) \<Longrightarrow> f:1\<rightarrow>succ(\<beta>) \<Longrightarrow> f`0=\<beta> \<Longrightarrow> cofinal_fun(f,succ(\<beta>),Memrel(succ(\<beta>)))"
-  using domain_of_fun unfolding cofinal_fun_def by auto
-    
+  using cofinal_fun_succ' by blast
+
 lemma cofinal_succ:
   assumes "Ord(x)"
   shows "cofinal(A,succ(x),Memrel(succ(x))) \<longleftrightarrow> x\<in>A"
