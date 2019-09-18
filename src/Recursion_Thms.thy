@@ -1,4 +1,4 @@
-theory Recursion_Thms imports ZF.WF begin
+theory Recursion_Thms imports ZF.Epsilon begin
 
 (* Restrict the relation r to the field A*A *)
     
@@ -95,5 +95,72 @@ lemmas wfrec_tr_down = wfrec_restr[OF _ _ _ subset_refl]
 lemma wfrec_trans_restr : "relation(r) \<Longrightarrow> wf(r) \<Longrightarrow> trans(r) \<Longrightarrow> r-``{a}\<subseteq>A \<Longrightarrow> a \<in> A \<Longrightarrow>
   wfrec(r, a, H) = wfrec[A](r, a, H)"
   by(subgoal_tac "tr_down(r,a) \<subseteq> A",auto simp add : wfrec_restr tr_down_def trancl_eq_r)  
+
+
+lemma field_trancl : "field(r^+) = field(r)"
+by (blast intro: r_into_trancl dest!: trancl_type [THEN subsetD])
+
+definition
+  Rrel :: "[i\<Rightarrow>i\<Rightarrow>o,i] \<Rightarrow> i" where
+  "Rrel(R,A) \<equiv> {z\<in>A\<times>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> R(x,y)}"
+
+lemma Rrel_mem: "Rrel(mem,x) = Memrel(x)"
+  unfolding Rrel_def Memrel_def ..
+
+lemma relation_Rrel: "relation(Rrel(R,d))"
+  unfolding Rrel_def relation_def by simp
+
+lemma field_Rrel: "field(Rrel(R,d)) \<subseteq>  d"
+  unfolding Rrel_def by auto
+
+(* now a consequence of the previous lemmas *)
+lemma field_Memrel : "field(Memrel(A)) \<subseteq> A"
+  (* unfolding field_def using Ordinal.Memrel_type by blast *)
+  using Rrel_mem field_Rrel by blast
+
+lemma restrict_trancl_Rrel:
+  assumes "R(w,y)" and "\<And>x z. z\<in>d \<Longrightarrow> R(x,z) \<Longrightarrow> x\<in>d"
+  shows "restrict(f,Rrel(R,d)-``{y})`w
+       = restrict(f,(Rrel(R,d)^+)-``{y})`w" 
+proof (cases "y\<in>d")
+  let ?r="Rrel(R,d)"
+  and ?s="(Rrel(R,d))^+"
+  case True
+  with assms
+  have "<w,y>\<in>?r" 
+    unfolding Rrel_def by blast
+  then 
+  have "<w,y>\<in>?s" 
+    using r_subset_trancl[of ?r] relation_Rrel[of R d] by blast
+  with \<open><w,y>\<in>?r\<close> 
+  have "w\<in>?r-``{y}" "w\<in>?s-``{y}"
+    using vimage_singleton_iff by simp_all
+  then 
+  show ?thesis by simp
+next
+  let ?r="Rrel(R,d)"
+  let ?s="?r^+"
+  case False
+  then 
+  have "?r-``{y}=0" 
+    unfolding Rrel_def by blast
+  then
+  have "w\<notin>?r-``{y}" by simp    
+  with \<open>y\<notin>d\<close> assms
+  have "y\<notin>field(?s)" 
+    using field_trancl subsetD[OF field_Rrel[of R d]] by force
+  then 
+  have "w\<notin>?s-``{y}" 
+    using vimage_singleton_iff by blast
+  with \<open>w\<notin>?r-``{y}\<close>
+  show ?thesis by simp
+qed
+
+lemma restrict_trans_eq:
+  assumes "w \<in> y"
+  shows "restrict(f,Memrel(eclose({x}))-``{y})`w
+       = restrict(f,(Memrel(eclose({x}))^+)-``{y})`w" 
+  using assms restrict_trancl_Rrel[of mem] ecloseD Rrel_mem by (simp)
+
 
 end
