@@ -256,10 +256,8 @@ next
  
 qed
   
-lemma surj_0:
-  assumes "f\<in>surj(A,0)"
-  shows "A=0"
-sorry
+lemma surj_0: "f\<in>surj(A,0) \<Longrightarrow> A=0"
+  unfolding surj_def by (auto simp add:if_def the_def)
   
 lemma ordertype_0_not_cofinal_succ:
   assumes "ordertype(A,Memrel(succ(i))) = 0" "succ(i)\<noteq>0" "A\<subseteq>succ(i)" "Ord(i)"
@@ -855,12 +853,63 @@ proof -
   ultimately show ?thesis by blast
 qed
 
+lemma subset_imp_le: assumes "Ord(x)" "Ord(y)" "x \<subseteq> y" shows "x \<le> y"
+  using assms by (cases rule:Ord_linear_lt, auto intro:leI[of x y] ltD, unfold lt_def) 
+    (blast dest:mem_irrefl[of _ "x\<in>succ(y)"])
+
+lemma ordermap_le_arg:
+  assumes 
+    "X\<subseteq>\<beta>" "x\<in>X" "Ord(\<beta>)"
+  shows
+    "x\<in>X\<Longrightarrow>ordermap(X,Memrel(\<beta>))`x\<le>x"
+proof (induct rule:Ord_induct[OF subsetD, OF assms])
+  case (1 x)
+  have "wf[X](Memrel(\<beta>))" 
+    using wf_imp_wf_on[OF wf_Memrel] .
+  with 1
+  have "ordermap(X,Memrel(\<beta>))`x = {ordermap(X,Memrel(\<beta>))`y . y\<in>{y\<in>X . y\<in>x \<and> y\<in>\<beta>}}"
+    using ordermap_unfold Ord_trans[of _ x \<beta>] by auto
+  also from assms 
+  have "... = {ordermap(X,Memrel(\<beta>))`y . y\<in>{y\<in>X . y\<in>x}}"
+    using Ord_trans[of _ x \<beta>] Ord_in_Ord by blast
+  finally
+  have ordm:"ordermap(X,Memrel(\<beta>))`x = {ordermap(X,Memrel(\<beta>))`y . y\<in>{y\<in>X . y\<in>x}}" .
+  from 1
+  have "y\<in>x \<Longrightarrow> y\<in>X \<Longrightarrow> ordermap(X,Memrel(\<beta>))`y \<le> y" for y by simp
+  with \<open>x\<in>\<beta>\<close> and \<open>Ord(\<beta>)\<close>
+  have "y\<in>x \<Longrightarrow> y\<in>X \<Longrightarrow> ordermap(X,Memrel(\<beta>))`y \<in> x" for y 
+    using ltI[OF _ Ord_in_Ord[of \<beta> x]] lt_trans1 ltD by blast
+  with ordm 
+  have "ordermap(X,Memrel(\<beta>))`x \<subseteq> x" by auto
+  with \<open>x\<in>X\<close> assms
+  show ?case 
+    using subset_imp_le Ord_in_Ord[of \<beta> x] Ord_ordermap
+      well_ord_subset[OF well_ord_Memrel, of \<beta>] by force
+qed
+
 lemma subset_imp_ordertype_le: 
   assumes 
     "X\<subseteq>\<beta>" "Ord(\<beta>)"
   shows
     "ordertype(X,Memrel(\<beta>))\<le>\<beta>"
-  sorry
+proof -
+  {
+    fix x
+    assume "x\<in>X"
+    with assms
+    have "ordermap(X,Memrel(\<beta>))`x \<le> x"
+      using ordermap_le_arg by simp
+    with \<open>x\<in>X\<close> and assms
+    have "ordermap(X,Memrel(\<beta>))`x \<in> \<beta>" (is "?y \<in> _")
+      using ltD[of ?y "succ(x)"] Ord_trans[of  ?y x \<beta>] by auto
+  }
+  then
+  have "ordertype(X, Memrel(\<beta>)) \<subseteq> \<beta>"
+    using ordertype_unfold[of X] by auto
+  with assms
+  show ?thesis
+    using subset_imp_le Ord_ordertype[OF well_ord_subset, OF well_ord_Memrel] by simp
+qed
 
 lemma mono_map_imp_le:
   assumes 
