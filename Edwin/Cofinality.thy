@@ -897,8 +897,16 @@ proof (induct rule:trans_induct3)
 next
   case (succ \<gamma>)
   with \<open>Ord(\<gamma>)\<close>
-  have "cf(succ(\<gamma>)) = 1" using cf_succ sorry
-  then show ?case sorry
+  obtain x where "x\<in>\<delta>" "f`x=\<gamma>" using cofinal_fun_succ' by blast
+  then
+  have "\<delta>\<noteq>0" by blast
+  let ?f="{<0,f`x>}"
+  from \<open>f`x=\<gamma>\<close>
+  have "?f:1\<rightarrow>succ(\<gamma>)"
+    using singleton_0 singleton_fun[of 0 \<gamma>] singleton_subsetI fun_weaken_type by simp
+  with \<open>Ord(\<gamma>)\<close>  \<open>f`x=\<gamma>\<close>
+  have "cf(succ(\<gamma>)) = 1" using cf_succ by simp 
+  then show ?case using \<open>\<delta>\<noteq>0\<close> Ord_0_lt_iff succ_leI \<open>Ord(\<delta>)\<close> by simp
 next
   case (limit \<gamma>)
   with assms 
