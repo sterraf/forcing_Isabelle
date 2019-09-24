@@ -1,6 +1,6 @@
 theory Relative_Univ
   imports
-    Names Rank
+    Rank Datatype_absolute Internalizations
 
 begin
 
@@ -102,37 +102,6 @@ definition
 
 subsection\<open>Formula synthesis\<close>
 
-(* Copied from DPow_absolute --- check Names! *)
-lemma Replace_iff_sats:
-  assumes is_P_iff_sats: 
-      "!!a b. [|a \<in> A; b \<in> A|] 
-              ==> is_P(a,b) \<longleftrightarrow> sats(A, p, Cons(a,Cons(b,env)))"
-  shows 
-  "[| nth(i,env) = x; nth(j,env) = y;
-      i \<in> nat; j \<in> nat; env \<in> list(A)|]
-   ==> is_Replace(##A, x, is_P, y) \<longleftrightarrow> sats(A, is_Replace_fm(i,p,j), env)"
-by (simp add: sats_is_Rep_fm [OF is_P_iff_sats])
-
-
-schematic_goal sats_is_powapply_fm_auto:
-  assumes
-    "f\<in>nat" "y\<in>nat" "z\<in>nat" "env\<in>list(A)" "0\<in>A"
-  shows
-    "is_powapply(##A,nth(f, env),nth(y, env),nth(z, env))
-    \<longleftrightarrow> sats(A,?ipa_fm(f,y,z),env)"
-  unfolding is_powapply_def is_Collect_def powerset_def subset_def
-  using nth_closed assms
-   by (simp) (rule sep_rules  | simp)+
-
-schematic_goal is_powapply_iff_sats:
-  assumes
-    "nth(f,env) = ff" "nth(y,env) = yy" "nth(z,env) = zz" "0\<in>A"
-    "f \<in> nat"  "y \<in> nat" "z \<in> nat" "env \<in> list(A)"
-  shows
-       "is_powapply(##A,ff,yy,zz) \<longleftrightarrow> sats(A, ?is_one_fm(a,r), env)"
-  unfolding \<open>nth(f,env) = ff\<close>[symmetric] \<open>nth(y,env) = yy\<close>[symmetric]
-    \<open>nth(z,env) = zz\<close>[symmetric]
-  by (rule sats_is_powapply_fm_auto(1); simp add:assms)
 
 lemma trivial_fm:
   assumes

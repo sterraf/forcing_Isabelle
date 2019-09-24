@@ -1,6 +1,6 @@
 theory Interface 
   imports Forcing_Data Relative Internalizations Renaming
-          Renaming_Auto
+          Renaming_Auto Relative_Univ
 begin
 
 lemma Transset_intf :
@@ -63,22 +63,6 @@ abbreviation
 lemma (in forcing_data) tuples_in_M: "A\<in>M \<Longrightarrow> B\<in>M \<Longrightarrow> <A,B>\<in>M" 
    by (simp del:setclass_iff add:setclass_iff[symmetric])
 
-lemmas FOL_sats_iff = sats_Nand_iff sats_Forall_iff sats_Neg_iff sats_And_iff
-  sats_Or_iff sats_Implies_iff sats_Iff_iff sats_Exists_iff 
-
-lemma nth_ConsI: "[|nth(n,l) = x; n \<in> nat|] ==> nth(succ(n), Cons(a,l)) = x"
-by simp
-
-lemmas nth_rules = nth_0 nth_ConsI nat_0I nat_succI
-lemmas sep_rules = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
-                   fun_plus_iff_sats 
-                    omega_iff_sats FOL_sats_iff 
-
-lemmas fm_defs = omega_fm_def limit_ordinal_fm_def empty_fm_def typed_function_fm_def
-                 pair_fm_def upair_fm_def domain_fm_def function_fm_def succ_fm_def
-                 cons_fm_def fun_apply_fm_def image_fm_def big_union_fm_def union_fm_def
-                 relation_fm_def composition_fm_def field_fm_def ordinal_fm_def range_fm_def
-                 transset_fm_def subset_fm_def
 
 
 (* Instances of separation of M_basic *)
@@ -717,6 +701,11 @@ proof -
 qed
 (* end nat \<in> M *)
 
+
+lemma (in forcing_data) n_in_M : "n\<in>nat \<Longrightarrow> n\<in>M"
+  using nat_in_M trans_M Transset_intf[of M n nat] by simp
+
+
 lemma (in forcing_data) mtrancl : "M_trancl(##M)" 
   apply (rule M_trancl.intro,rule mbasic)
   apply (rule M_trancl_axioms.intro)
@@ -1051,7 +1040,82 @@ lemma (in forcing_data) meclose : "M_eclose(##M)"
 sublocale forcing_data \<subseteq> M_eclose "##M"
   by (rule meclose)
 
+(* Interface with locale M_eclose_pow *)
 
+schematic_goal sats_is_powapply_fm_auto:
+  assumes
+    "f\<in>nat" "y\<in>nat" "z\<in>nat" "env\<in>list(A)" "0\<in>A"
+  shows
+    "is_powapply(##A,nth(f, env),nth(y, env),nth(z, env))
+    \<longleftrightarrow> sats(A,?ipa_fm(f,y,z),env)"
+  unfolding is_powapply_def is_Collect_def powerset_def subset_def
+  using nth_closed assms
+   by (simp) (rule sep_rules  | simp)+
+
+
+lemma (in forcing_data) powapply_repl :
+  assumes
+      "f\<in>M"
+  shows
+     "strong_replacement(##M,is_powapply(##M,f))"
+proof -
+  obtain ipafm where
+    fmsats:"env\<in>list(M) \<Longrightarrow> 
+      is_powapply(##M,nth(2,env),nth(0,env),nth(1,env)) \<longleftrightarrow> sats(M,ipafm(2,0,1),env)"
+    and "ipafm(2,0,1) \<in> formula" and "arity(ipafm(2,0,1)) = 3" for env
+    using zero_in_M sats_is_powapply_fm_auto[of concl:M] 
+    by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+  then
+  have "\<forall>f0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,ipafm(2,0,1) , [p,z,f0]))"
+    using replacement_ax by simp
+  moreover 
+  have "is_powapply(##M,f0,p,z) \<longleftrightarrow> sats(M,ipafm(2,0,1) , [p,z,f0])"
+    if "p\<in>M" "z\<in>M" "f0\<in>M" for p z f0
+    using that fmsats[of "[p,z,f0]"] by simp
+  ultimately
+  have "\<forall>f0\<in>M. strong_replacement(##M, is_powapply(##M,f0))"
+    unfolding strong_replacement_def univalent_def by simp
+  with \<open>f\<in>M\<close> show ?thesis by simp
+qed
+
+schematic_goal sats_phrank_fm_auto:
+  assumes
+    "f\<in>nat" "y\<in>nat" "z\<in>nat" "env\<in>list(A)" "0\<in>A"
+  shows
+    "PHrank(##A,nth(f, env),nth(y, env),nth(z, env))
+    \<longleftrightarrow> sats(A,?rfm(f,y,z),env)"
+  unfolding PHrank_def 
+  using nth_closed assms
+  by (simp) (rule sep_rules  | simp)+
+
+
+lemma (in forcing_data) phrank_repl :
+  assumes
+      "f\<in>M"
+  shows
+     "strong_replacement(##M,PHrank(##M,f))"
+proof -
+  obtain rfm where
+    fmsats:"env\<in>list(M) \<Longrightarrow> 
+      PHrank(##M,nth(2,env),nth(0,env),nth(1,env)) \<longleftrightarrow> sats(M,rfm(2,0,1),env)"
+    and "rfm(2,0,1) \<in> formula" and "arity(rfm(2,0,1)) = 3" for env
+    using zero_in_M sats_phrank_fm_auto[of concl:M] 
+    by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+  then
+  have "\<forall>f0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,rfm(2,0,1) , [p,z,f0]))"
+    using replacement_ax by simp
+  moreover 
+  have "PHrank(##M,f0,p,z) \<longleftrightarrow> sats(M,rfm(2,0,1) , [p,z,f0])"
+    if "p\<in>M" "z\<in>M" "f0\<in>M" for p z f0
+    using that fmsats[of "[p,z,f0]"] by simp
+  ultimately
+  have "\<forall>f0\<in>M. strong_replacement(##M, PHrank(##M,f0))"
+    unfolding strong_replacement_def univalent_def by simp
+  with \<open>f\<in>M\<close> show ?thesis by simp
+qed
+
+
+(* M(x) \<Longrightarrow> wfrec_replacement(M,is_Hrank(M),rrank(x)) *)
 
 lemma (in forcing_data) repl_gen : 
   assumes 
@@ -1080,6 +1144,7 @@ proof -
   with f_abs show ?thesis 
     using strong_replacement_cong[of "##M" "is_F(##M)" "\<lambda>x y. y = f(x)"] by simp
 qed
-    
+
+
 
 end

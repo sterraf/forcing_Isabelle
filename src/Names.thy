@@ -536,6 +536,7 @@ proof -
   show ?thesis by blast
 qed
 
+
 lemma GenExtD: 
   "x \<in> M[G] \<Longrightarrow> \<exists>\<tau>\<in>M. x = val(G,\<tau>)"
   by (simp add:GenExt_def)
@@ -615,31 +616,6 @@ qed
 
 end (* context forcing_data *)
 
-
-definition 
-  is_Replace_fm :: "[i,i,i] \<Rightarrow> i" where
-  "is_Replace_fm(a,p,z) == Forall(Iff(Member(0,succ(z)),
-                                  Exists(And(Member(0,succ(succ(a))),p))))"
-
-lemma is_Replace_type [TC]:
-     "[| x \<in> nat; y \<in> nat; p\<in>formula |] ==> is_Replace_fm(x,p,y) \<in> formula"
-  by (simp add:is_Replace_fm_def)
-
-lemma sats_is_Rep_fm :
-    assumes p_iff_sats: 
-      "\<And>a b . a \<in> M \<Longrightarrow> b \<in> M \<Longrightarrow> 
-          P(a,b) \<longleftrightarrow> sats(M, p, Cons(a, Cons(b, env)))"
-    shows
-   "[| x \<in> nat; y \<in> nat; env \<in> list(M)|]
-    ==> sats(M, is_Replace_fm(x,p,y), env) \<longleftrightarrow>
-        is_Replace(##M, nth(x,env), P , nth(y,env))"
-  by (simp add: is_Replace_def is_Replace_fm_def p_iff_sats)
-
-lemma nth_closed :
-  assumes "0\<in>A" "env\<in>list(A)"
-  shows "nth(n,env)\<in>A" 
-  using assms(2,1) unfolding nth_def by (induct env; simp)
-
 context forcing_data
 begin
 
@@ -659,7 +635,7 @@ lemma sats_PHcheck_fm [simp]:
   "[| x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat ; env \<in> list(M)|]
     ==> sats(M,PHcheck_fm(x,y,z,u),env) \<longleftrightarrow> 
         PHcheck(nth(x,env),nth(y,env),nth(z,env),nth(u,env))" 
-  using zero_in_M Names.nth_closed by (simp add: PHcheck_def PHcheck_fm_def)
+  using zero_in_M Internalizations.nth_closed by (simp add: PHcheck_def PHcheck_fm_def)
 
 (* 
   "is_Hcheck(o,z,f,hc)  == is_Replace(##M,z,PHcheck(o,f),hc)"
@@ -711,16 +687,8 @@ proof -
               pre_image_fm_def restriction_fm_def image_fm_def
     by (simp add:nat_simp_union)
   then
-  have 3:"sats(M,?f,[x,z,one,rcheck(X),one]) \<longleftrightarrow> sats(M,?f,[x,z,one,rcheck(X)])"
-    if "x\<in>M" "z\<in>M" for x z    
-    using that 1 \<open>X\<in>M\<close> one_in_M rcheck_in_M arity_sats1_iff[of ?f "[z,one,rcheck(X)]" x M "[one]"] 
-          by simp
-  have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,one,rcheck(X),one]))"
-    using replacement_ax 1 artyf \<open>X\<in>M\<close> rcheck_in_M one_in_M by simp
-  then 
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,one,rcheck(X)]))"
-    using  strong_replacement_cong[of "##M" "\<lambda>x z. sats(M,?f,[x,z,one,rcheck(X),one])" 
-                                            "\<lambda>x z. sats(M,?f,[x,z,one,rcheck(X)])"] 3 by simp
+    using replacement_ax 1 artyf \<open>X\<in>M\<close> rcheck_in_M one_in_M by simp
   then
   have "strong_replacement(##M,\<lambda>x z.
           \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hcheck(one),rcheck(X), x, y))"
@@ -802,7 +770,7 @@ definition
 lemma check_abs :
     "\<lbrakk> x\<in>M ; z\<in>M \<rbrakk> \<Longrightarrow> is_check(x,z) \<longleftrightarrow> z = check(x)"
   unfolding check_trancl is_check_def
-  using wfrec_Hcheck[of x] check_trancl wf_rcheck trans_rcheck relation_rcheck rcheck_in_M
+  using wfrec_Hcheck[of x] wf_rcheck trans_rcheck relation_rcheck rcheck_in_M
         Hcheck_closed relation2_Hcheck trans_wfrec_abs[of "rcheck(x)" x z "is_Hcheck(one)" Hcheck]
   by (simp del:setclass_iff  add:setclass_iff[symmetric])
 
