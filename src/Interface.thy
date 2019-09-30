@@ -1145,6 +1145,21 @@ proof -
     using strong_replacement_cong[of "##M" "is_F(##M)" "\<lambda>x y. y = f(x)"] by simp
 qed
 
-
+(* Proof Scheme for instances of separation *)
+lemma (in forcing_data) sep_in_M :
+  assumes
+    "\<phi> \<in> formula" "env\<in>list(M)" 
+    "arity(\<phi>) \<le> 1 #+ length(env)" "A\<in>M" and
+    satsQ: "\<And>x. x\<in>M \<Longrightarrow> sats(M,\<phi>,[x]@env) \<longleftrightarrow> Q(x)"     
+  shows
+    "{y\<in>A . Q(y)}\<in>M"
+proof -
+  have "separation(##M,\<lambda>x. sats(M,\<phi>,[x] @ env))"
+    using assms separation_ax by simp
+  then show ?thesis using 
+      \<open>A\<in>M\<close> satsQ trans_M 
+            separation_cong[of "##M" "\<lambda>y. sats(M,\<phi>,[y]@env)" "Q"]
+            separation_closed  by simp
+qed
 
 end

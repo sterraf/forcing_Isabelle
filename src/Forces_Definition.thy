@@ -80,7 +80,7 @@ schematic_goal is_one_iff_sats :
 (* Relation of forces *)
 definition
   frecR :: "i \<Rightarrow> i \<Rightarrow> o" where
-  "frecR(x,y) \<longleftrightarrow>  name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> 
+  "frecR(x,y) \<equiv>  name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> 
             (name2(x) = name1(y) \<or> name2(x) = name2(y)) 
           \<or> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y))"
 
@@ -122,6 +122,14 @@ definition
   forcerel :: "i \<Rightarrow> i \<Rightarrow> i" where
   "forcerel(P,x) \<equiv> frecrel(names_below(P,x))"
 
+schematic_goal sats_frecrelP_fm_auto:
+  assumes 
+    "a\<in>nat" "env\<in>list(A)"
+  shows
+    "frecrelP(##A,nth(a, env))
+    \<longleftrightarrow> sats(A,?frp_fm(a,r),env)"
+    unfolding is_frecrel_def  is_Collect_def frecrelP_def is_name1_def is_name2_def
+   by (insert assms ; (rule sep_rules cartprod_iff_sats | simp del:sats_cartprod_fm)+)
 
 schematic_goal sats_is_frecrel_fm_auto:
   assumes 
@@ -211,7 +219,8 @@ definition
 definition
   is_frc_at :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
   "is_frc_at(M,P,leq,fnnc,z) \<equiv>
-  is_wfrec(M,\<lambda>x f z. z = bool_of_o(Hfrc(P,leq,x,f)),forcerel(P,fnnc),fnnc,z)"
+  is_wfrec(M,is_Hfrc_at(M,P,leq),forcerel(P,fnnc),fnnc,z)"
+
 
 definition
   is_tuple_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
@@ -683,6 +692,12 @@ lemma frecrelP_abs [simp] :
   unfolding frecrelP_def rex_def apply simp
   sorry
 
+(* Vale esto si z no es un par? *)
+lemma frecrelP_abs' :
+  "z\<in>M \<Longrightarrow> frecrelP(##M,z) \<longleftrightarrow> (\<lambda><x,y>. frecR(x,y))(z)" 
+  sorry
+
+
 lemma frecrel_abs:
   "\<lbrakk>A\<in>M;r\<in>M\<rbrakk> \<Longrightarrow>
    is_frecrel(##M,A,r) \<longleftrightarrow>  r = frecrel(A) "
@@ -741,67 +756,6 @@ proof -
   show ?thesis unfolding forcerel_t_def .
 qed
 
-(*
-lemma univ_PHcheck : "\<lbrakk> z\<in>M ; f\<in>M \<rbrakk> \<Longrightarrow> univalent(##M,z,PHcheck(one,f))" 
-  unfolding univalent_def PHcheck_def by simp
-
-lemma relation2_Hcheck : 
-  "relation2(##M,is_Hcheck(one),Hcheck)"
-proof -
-  have 1:"\<lbrakk>x\<in>z; PHcheck(one,f,x,y) \<rbrakk> \<Longrightarrow> (##M)(y)"
-    if "z\<in>M" "f\<in>M" for z f x y
-    using that unfolding PHcheck_def by simp
-  have "is_Replace(##M,z,PHcheck(one,f),hc) \<longleftrightarrow> hc = Replace(z,PHcheck(one,f))" 
-    if "z\<in>M" "f\<in>M" "hc\<in>M" for z f hc
-    using that Replace_abs[OF _ _ univ_PHcheck 1] by simp
-  with def_PHcheck
-  show ?thesis 
-    unfolding relation2_def is_Hcheck_def Hcheck_def by simp
-qed
-
-lemma PHcheck_closed : 
-  "\<lbrakk>z\<in>M ; f\<in>M ; x\<in>z; PHcheck(one,f,x,y) \<rbrakk> \<Longrightarrow> (##M)(y)"
-  unfolding PHcheck_def by simp
-
-lemma Hcheck_closed :
-  "\<forall>y\<in>M. \<forall>g\<in>M. function(g) \<longrightarrow> Hcheck(y,g)\<in>M"
-proof -
-  have "Replace(y,PHcheck(one,f))\<in>M"
-    if "f\<in>M" "y\<in>M" for f y
-    using that repl_PHcheck  PHcheck_closed[of y f] univ_PHcheck
-          strong_replacement_closed
-    by (simp del:setclass_iff add:setclass_iff[symmetric])
-  then show ?thesis using def_PHcheck by auto
-qed
-
-lemma wf_rcheck : "x\<in>M \<Longrightarrow> wf(rcheck(x))" 
-  unfolding rcheck_def using wf_trancl[OF wf_Memrel] .
-
-lemma trans_rcheck : "x\<in>M \<Longrightarrow> trans(rcheck(x))"
-  unfolding rcheck_def using trans_trancl .
-
-lemma relation_rcheck : "x\<in>M \<Longrightarrow> relation(rcheck(x))" 
-  unfolding rcheck_def using relation_trancl .
-
-definition 
-  is_Hcheck :: "[i,i,i,i] \<Rightarrow> o" where
-  "is_Hcheck(o,z,f,hc)  == is_Replace(##M,z,PHcheck(o,f),hc)"
-
-
-definition 
-  is_check :: "[i,i] \<Rightarrow> o" where
-  "is_check(x,z) == is_wfrec(##M,is_Hcheck(one),rcheck(x),x,z)"
-
-
-
-lemma check_abs :
-    "\<lbrakk> x\<in>M ; z\<in>M \<rbrakk> \<Longrightarrow> is_check(x,z) \<longleftrightarrow> z = check(x)"
-  unfolding check_trancl is_check_def
-  using wfrec_Hcheck[of x] wf_rcheck trans_rcheck relation_rcheck rcheck_in_M
-        Hcheck_closed relation2_Hcheck trans_wfrec_abs[of "rcheck(x)" x z "is_Hcheck(one)" Hcheck]
-  by (simp del:setclass_iff  add:setclass_iff[symmetric])
-
-*)
 
 (* Pedro: por qué en la definición de is_frc_at no usás is_Hfrc_at? hacés un abuso ahí con la
 absolutez *)
@@ -820,10 +774,61 @@ lemma trans_forcerel_t : "x\<in>M \<Longrightarrow> trans(forcerel_t(x))"
 lemma relation_forcerel_t : "x\<in>M \<Longrightarrow> relation(forcerel_t(x))" 
   unfolding forcerel_t_def using relation_trancl .
 
-lemma forcerel_t_in_M :
-  "x\<in>M \<Longrightarrow> forcerel_t(x)\<in>M" 
+lemma oneN_in_M[simp]: "1\<in>M"
+  by (simp del:setclass_iff add:setclass_iff[symmetric])
+
+
+lemma twoN_in_M : "2\<in>M" 
+  by (simp del:setclass_iff add:setclass_iff[symmetric])
+
+
+lemma forcerel_in_M :
+  assumes 
+    "x\<in>M" 
+  shows 
+    "forcerel(P,x)\<in>M" 
   unfolding forcerel_t_def forcerel_def frecrel_def names_below_def
-  sorry
+proof -
+  let ?Q = "2 \<times> eclose(x) \<times> eclose(x) \<times> P"
+  have "?Q \<times> ?Q \<in> M"
+    using \<open>x\<in>M\<close> P_in_M twoN_in_M eclose_closed cartprod_closed by simp
+  moreover
+  have "separation(##M,\<lambda>\<langle>x,y\<rangle>. frecR(x,y))"
+  proof -
+    obtain fp_fm where
+    fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow> 
+    (frecrelP(##M,nth(0,env)) \<longleftrightarrow> sats(M,fp_fm(0),env))"
+    and 
+    "fp_fm(0) \<in> formula" 
+    and
+    "arity(fp_fm(0)) = 1"
+   using sats_frecrelP_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+   then
+   have "separation(##M, \<lambda>z. sats(M,fp_fm(0) , [z]))"
+     using separation_ax by simp
+   moreover
+   have "frecrelP(##M,z) \<longleftrightarrow> sats(M,fp_fm(0),[z])" 
+     if "z\<in>M" for z
+     using that fmsats[of "[z]"] by simp
+   ultimately
+   have "separation(##M,frecrelP(##M))" 
+     unfolding separation_def by simp
+   then show ?thesis using frecrelP_abs' 
+            separation_cong[of "##M" "frecrelP(##M)" "\<lambda><x,y>. frecR(x,y)"] by simp 
+ qed
+  ultimately
+  show "{\<langle>x,y\<rangle> \<in> ?Q \<times> ?Q . frecR(x, y)} \<in> M" 
+    using separation_closed by simp
+qed
+
+
+lemma forcerel_t_in_M :
+  assumes 
+    "x\<in>M" 
+  shows 
+    "forcerel_t(x)\<in>M" 
+  unfolding forcerel_t_def using assms  forcerel_in_M trancl_closed by simp
+
 
 lemma relation2_Hfrc_at_abs:
   "relation2(##M,is_Hfrc_at(##M,P,leq),\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f)))"
@@ -901,9 +906,6 @@ proof auto
               1 \<open>xa\<in>M\<close> trans_M Transset_intf[of M] by auto
 qed
   
-lemma uno_in_M: "1\<in>M"
-  by (simp del:setclass_iff add:setclass_iff[symmetric])
-
 end (* context forcing_data *)
 
 locale forces_rename = forcing_data + 
@@ -937,6 +939,7 @@ definition
   forces :: "i\<Rightarrow>i" where
   "forces(\<phi>) \<equiv> And(Member(3,0),forces_ren(auxren,fren,fref, \<phi>))"
 
+(* Para qué está el env acá? *)
 lemma sats_forces_eq_fm': 
   assumes " [P,leq,one,p,t1,t2] @ env \<in> list(M)"
   shows "sats(M,forces_eq_fm(auxren,0,1),[P,leq,one,p,t1,t2] @ env) \<longleftrightarrow>
@@ -949,7 +952,7 @@ proof -
   then
   have "forcerel(P,<0,t1,t2,p>) \<in> M" 
     using forcerel_closed by simp
-  note inM = assms uno_in_M M_inhabit \<open><0,t1,t2,p>\<in>M\<close> \<open>forcerel(P,<0,t1,t2,p>)\<in>M\<close>
+  note inM = assms oneN_in_M M_inhabit \<open><0,t1,t2,p>\<in>M\<close> \<open>forcerel(P,<0,t1,t2,p>)\<in>M\<close>
   let ?\<phi>="is_wfrec_fm(is_Hfrc_at_fm(5,6,2,1,0),2,3,4)"
   have "?\<phi>\<in>formula" unfolding is_Hfrc_at_fm_def by simp
   let ?\<psi>="And(pair_fm(11,9,0),And(pair_fm(10,0,1),pair_fm(5,1,3)))"
@@ -975,12 +978,12 @@ proof -
           sats(M,auxren(?\<phi>),[xc,xb,1,0,P,leq,one,p,t1,t2] @ env) \<and>
           (\<exists>c1\<in>M. \<exists>c0\<in>M. sats(M,?\<psi>,[c0,c1,xc,xb,1,0,P,leq,one,p,t1,t2] @ env)) \<and>
           sats(M,?\<theta>,[xc,xb,1,0,P,leq,one,p,t1,t2] @ env))"
-    using uno_in_M M_inhabit unfolding is_tuple_fm_def by auto
+    using oneN_in_M M_inhabit unfolding is_tuple_fm_def by auto
   moreover from assms
   have " ... \<longleftrightarrow> (\<exists>xc\<in>M.
           sats(M,auxren(?\<phi>),[xc,<0,t1,t2,p>,1,0,P,leq,one,p,t1,t2] @ env) \<and>
           sats(M,?\<theta>,[xc,<0,t1,t2,p>,1,0,P,leq,one,p,t1,t2] @ env))"
-    using uno_in_M M_inhabit tuples_in_M by auto
+    using oneN_in_M M_inhabit tuples_in_M by auto
   moreover from inM
   have " ... \<longleftrightarrow> (\<exists>xc\<in>M.
           sats(M,auxren(?\<phi>),[xc,<0,t1,t2,p>,1,0,P,leq,one,p,t1,t2] @ env) \<and>
@@ -990,7 +993,7 @@ proof -
     by (simp)
   moreover from inM
   have " ... \<longleftrightarrow> sats(M,auxren(?\<phi>),[forcerel(P,<0,t1,t2,p>),<0,t1,t2,p>,1,0,P,leq,one,p,t1,t2] @ env)"
-    using sats_is_frecrel_fm[symmetric] cons_closed apply simp
+    using sats_is_frecrel_fm[symmetric] cons_closed by simp
   moreover from inM
   have " ... \<longleftrightarrow> sats(M,?\<phi>,[P,leq,forcerel(P,<0,t1,t2,p>),<0,t1,t2,p>,1,0, one,p,t1,t2] @ env)"
     using sats_auxren[OF _ \<open>?\<phi>\<in>formula\<close>, of _ _ _ _ _ _ "[one,p,t1,t2] @ env"] by (simp)
@@ -1002,6 +1005,29 @@ lemma MH: "a0\<in>M \<Longrightarrow> a1\<in>M \<Longrightarrow> a2\<in>M \<Long
   using sats_is_Hfrc_at_fm[of 5 6 2 1 0 "[a0,a1,a2,a3,a4,P,leq] @ env" M] P_in_M leq_in_M
   by (simp)
 
+
+lemma sats_forces_eq_fm: 
+  assumes  "p\<in>M" "t1\<in>M" "t2\<in>M"
+  shows "sats(M,forces_eq_fm(auxren,0,1),[P,leq,one,p,t1,t2]) \<longleftrightarrow> is_frc_at(##M,P,leq,<0,t1,t2,p>,1)"
+proof -
+  have satsMH:"(is_Hfrc_at(##M, P, leq, a2, a1, a0) \<longleftrightarrow>
+        sats(M, is_Hfrc_at_fm(5, 6, 2, 1, 0),
+        [a0,a1,a2,a3,a4,P,leq,forcerel(P,<0,t1,t2,p>),<0,t1,t2,p>,1,0, one,p,t1,t2]))" 
+    if "a0\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" for a0 a1 a2 a3 a4
+    using that assms P_in_M leq_in_M one_in_M 
+        sats_is_Hfrc_at_fm[of 5 6 2 1 0 
+        "[a0,a1,a2,a3,a4,P,leq,forcerel(P,<0,t1,t2,p>),<0,t1,t2,p>,1,0, one,p,t1,t2]"]
+        tuples_in_M zero_in_M oneN_in_M forcerel_in_M by simp
+  have "sats(M,is_wfrec_fm(is_Hfrc_at_fm(5,6,2,1,0),2,3,4),
+            [P,leq,forcerel(P,<0,t1,t2,p>),<0,t1,t2,p>,1,0, one,p,t1,t2]) \<longleftrightarrow>
+        is_frc_at(##M,P,leq,<0,t1,t2,p>,1)" 
+    unfolding is_frc_at_def using assms P_in_M leq_in_M one_in_M
+      forcerel_in_M tuples_in_M oneN_in_M zero_in_M sats_is_wfrec_fm[OF satsMH]
+    by simp
+  then show ?thesis using assms P_in_M one_in_M leq_in_M sats_forces_eq_fm' by simp
+qed
+
+(* por qué tenemos el env? *)
 lemma sats_forces_eq_fm: 
   assumes  "[P,leq,one,p,t1,t2] @ env \<in> list(M)"
   shows "sats(M,forces_eq_fm(auxren,0,1),[P,leq,one,p,t1,t2] @ env) \<longleftrightarrow> is_frc_at(##M,P,leq,<0,t1,t2,p>,1)"
@@ -1013,14 +1039,14 @@ proof -
   moreover from calculation
   have "is_wfrec(##M,is_Hfrc_at(##M,P,leq),forcerel(P,\<langle>0,t1,t2,p\<rangle>),\<langle>0,t1,t2,p\<rangle>,1) \<longleftrightarrow>
    is_wfrec(##M,\<lambda>x f z. z = bool_of_o(Hfrc(P,leq,x,f)),forcerel(P,\<langle>0,t1,t2,p\<rangle>),\<langle>0,t1,t2,p\<rangle>,1)"
-    using tuples_in_M uno_in_M is_wfrec_cong[OF _ _ _ Hfrc_at_abs]
+    using tuples_in_M oneN_in_M is_wfrec_cong[OF _ _ _ Hfrc_at_abs] (* esto es horrible *)
     by simp
   moreover from assms
   have "Ord(length(env))" using nat_into_Ord[OF length_type, of env M] by simp
   ultimately
   show ?thesis
   unfolding is_frc_at_def 
-  using forcerel_closed sats_forces_eq_fm' eclose_closed uno_in_M M_inhabit tuples_in_M cons_closed
+  using forcerel_closed sats_forces_eq_fm' eclose_closed oneN_in_M M_inhabit tuples_in_M cons_closed
     sats_is_wfrec_fm[OF MH[simplified], of "[forcerel(P,<0,t1,t2,p>), <0,t1,t2,p>, 1, 0, one, p, t1, t2] @ env" 2 3 4]
      Hfrc_at_abs nat_into_Ord[OF length_type, of env M] by simp
 qed
@@ -1130,7 +1156,7 @@ lemma sats_forces_Equal:
     "sats(M,forces(Equal(0,1)),[P,leq,one,p,x,y] @ env) \<longleftrightarrow> 1 = frc_at(P,leq,<0,x,y,p>)"
   using assms sats_forces_ren_Equal forcerel_closed 
     wfrec_isHfrcat_replacement frc_at_abs  M_inhabit eclose_closed
-    tuples_in_M Transset_intf[OF trans_M _ P_in_M] uno_in_M trancl_closed cons_closed<
+    tuples_in_M Transset_intf[OF trans_M _ P_in_M] oneN_in_M trancl_closed cons_closed<
   unfolding forces_def by simp
 
 lemma
