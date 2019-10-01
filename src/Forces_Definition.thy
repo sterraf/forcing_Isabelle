@@ -712,14 +712,53 @@ lemma frecR_abs :
   unfolding frecR_def is_frecR_def using components_closed domain_closed by simp
 
 lemma frecrelP_abs :
-  "z\<in>M \<Longrightarrow> frecrelP(##M,z) \<longleftrightarrow> (\<exists>x y. z = <x,y> \<and> frecR(x,y))"
-  unfolding frecrelP_def sorry
+  assumes
+    "A1\<in>M" "A2\<in>M" "A3\<in>M" "A4\<in>M" "z\<in>(A1\<times>A2\<times>A3\<times>A4)\<times>(A1\<times>A2\<times>A3\<times>A4)"
+  shows
+    "frecrelP(##M,z) \<longleftrightarrow> (\<exists>x y. z = <x,y> \<and> frecR(x,y))"
+proof -
+  let ?Q= "A1\<times>A2\<times>A3\<times>A4"
+  have "?Q\<times>?Q\<in>M"
+    using assms cartprod_closed by simp
+  then
+  have "z\<in>M" 
+    using \<open>z\<in>?Q\<times>?Q\<close> Transset_intf[OF trans_M] by simp
+  moreover
+  have "x\<in>M \<and> y\<in>M" if "z = <x,y>" for x y
+    using pair_in_M_iff that calculation by simp
+  moreover 
+  have "x\<in>(A1\<times>A2\<times>A3\<times>A4) \<and> y\<in>(A1\<times>A2\<times>A3\<times>A4)" if "z=<x,y>" for x y
+    using that \<open>z\<in>(A1\<times>A2\<times>A3\<times>A4)\<times>(A1\<times>A2\<times>A3\<times>A4)\<close> by simp
+  ultimately
+  show ?thesis unfolding frecrelP_def using assms frecR_abs by auto
+qed
 
 lemma frecrel_abs:
-  "\<lbrakk>A1\<times>A2\<times>A3\<times>A4\<in>M;r\<in>M\<rbrakk> \<Longrightarrow>
-   is_frecrel(##M,A1\<times>A2\<times>A3\<times>A4,r) \<longleftrightarrow>  r = frecrel(A1\<times>A2\<times>A3\<times>A4) "
-  unfolding is_frecrel_def frecrel_def 
-  sorry
+  assumes 
+   "A1\<in>M" "A2\<in>M" "A3\<in>M" "A3\<in>M""A4\<in>M" "r\<in>M"
+ shows
+   "is_frecrel(##M,A1\<times>A2\<times>A3\<times>A4,r) \<longleftrightarrow>  r = frecrel(A1\<times>A2\<times>A3\<times>A4) "
+proof -
+  let ?Q= "A1\<times>A2\<times>A3\<times>A4"
+  have 0:"?Q\<in>M"
+    using assms cartprod_closed by simp
+  then
+  have 1: "?Q \<times> ?Q \<in> M" 
+    using cartprod_closed by simp
+  moreover
+  have "x\<in>M \<and> y\<in>M" if "z = <x,y>" "z\<in>M" for x y z
+    using pair_in_M_iff that by simp
+  moreover 
+  have "x\<in>(A1\<times>A2\<times>A3\<times>A4) \<and> y\<in>(A1\<times>A2\<times>A3\<times>A4)" 
+          if "z = <x,y>" "z\<in>(A1\<times>A2\<times>A3\<times>A4)\<times>(A1\<times>A2\<times>A3\<times>A4)" for x y z
+    using that by simp
+  have 
+    "Collect(?Q\<times>?Q,frecrelP(##M)) = Collect(?Q\<times>?Q,\<lambda>z. (\<exists>x y. z = <x,y> \<and> frecR(x,y)))"
+    using Collect_cong[of "?Q\<times>?Q" "?Q\<times>?Q" "frecrelP(##M)"] assms frecrelP_abs by simp
+  then
+  show ?thesis unfolding is_frecrel_def frecrel_def using assms cartprod_closed by simp
+qed
+
 
 lemma names_belowD : "y\<in>names_below(P,z) \<Longrightarrow> frecR(x,y) \<Longrightarrow>x\<in>names_below(P,z)"
   sorry
