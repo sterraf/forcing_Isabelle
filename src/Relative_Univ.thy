@@ -102,6 +102,37 @@ definition
 
 subsection\<open>Formula synthesis\<close>
 
+(* Copied from DPow_absolute --- check Names! *)
+lemma Replace_iff_sats:
+  assumes is_P_iff_sats: 
+      "!!a b. [|a \<in> A; b \<in> A|] 
+              ==> is_P(a,b) \<longleftrightarrow> sats(A, p, Cons(a,Cons(b,env)))"
+  shows 
+  "[| nth(i,env) = x; nth(j,env) = y;
+      i \<in> nat; j \<in> nat; env \<in> list(A)|]
+   ==> is_Replace(##A, x, is_P, y) \<longleftrightarrow> sats(A, is_Replace_fm(i,p,j), env)"
+by (simp add: sats_is_Rep_fm [OF is_P_iff_sats])
+
+
+schematic_goal sats_is_powapply_fm_auto:
+  assumes
+    "f\<in>nat" "y\<in>nat" "z\<in>nat" "env\<in>list(A)" "0\<in>A"
+  shows
+    "is_powapply(##A,nth(f, env),nth(y, env),nth(z, env))
+    \<longleftrightarrow> sats(A,?ipa_fm(f,y,z),env)"
+  unfolding is_powapply_def is_Collect_def powerset_def subset_def
+  using nth_closed assms
+   by (simp) (rule sep_rules  | simp)+
+
+schematic_goal is_powapply_iff_sats:
+  assumes
+    "nth(f,env) = ff" "nth(y,env) = yy" "nth(z,env) = zz" "0\<in>A"
+    "f \<in> nat"  "y \<in> nat" "z \<in> nat" "env \<in> list(A)"
+  shows
+       "is_powapply(##A,ff,yy,zz) \<longleftrightarrow> sats(A, ?is_one_fm(a,r), env)"
+  unfolding \<open>nth(f,env) = ff\<close>[symmetric] \<open>nth(y,env) = yy\<close>[symmetric]
+    \<open>nth(z,env) = zz\<close>[symmetric]
+  by (rule sats_is_powapply_fm_auto(1); simp add:assms)
 
 lemma trivial_fm:
   assumes
@@ -331,6 +362,73 @@ lemma Vset_abs: "\<lbrakk> M(i); M(V); Ord(i) \<rbrakk> \<Longrightarrow> is_Vse
 lemma Vset_closed: "\<lbrakk> M(i); Ord(i) \<rbrakk> \<Longrightarrow> M({x\<in>Vset(i). M(x)})"
   using Vfrom_closed unfolding is_Vset_def by simp
 
+
+(* MOVE THIS! *)
+
+lemma field_trancl : "field(r^+) = field(r)"
+by (blast intro: r_into_trancl dest!: trancl_type [THEN subsetD])
+
+definition
+  Rrel :: "[i\<Rightarrow>i\<Rightarrow>o,i] \<Rightarrow> i" where
+  "Rrel(R,A) \<equiv> {z\<in>A\<times>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> R(x,y)}"
+
+lemma Rrel_mem: "Rrel(mem,x) = Memrel(x)"
+  unfolding Rrel_def Memrel_def ..
+
+lemma relation_Rrel: "relation(Rrel(R,d))"
+  unfolding Rrel_def relation_def by simp
+
+lemma field_Rrel: "field(Rrel(R,d)) \<subseteq>  d"
+  unfolding Rrel_def by auto
+
+(* now a consequence of the previous lemmas *)
+lemma field_Memrel : "field(Memrel(A)) \<subseteq> A"
+  (* unfolding field_def using Ordinal.Memrel_type by blast *)
+  using Rrel_mem field_Rrel by blast
+
+lemma restrict_trancl_Rrel:
+  assumes "R(w,y)" and "\<And>x z. z\<in>d \<Longrightarrow> R(x,z) \<Longrightarrow> x\<in>d"
+  shows "restrict(f,Rrel(R,d)-``{y})`w
+       = restrict(f,(Rrel(R,d)^+)-``{y})`w" 
+proof (cases "y\<in>d")
+  let ?r="Rrel(R,d)"
+  and ?s="(Rrel(R,d))^+"
+  case True
+  with assms
+  have "<w,y>\<in>?r" 
+    unfolding Rrel_def by blast
+  then 
+  have "<w,y>\<in>?s" 
+    using r_subset_trancl[of ?r] relation_Rrel[of R d] by blast
+  with \<open><w,y>\<in>?r\<close> 
+  have "w\<in>?r-``{y}" "w\<in>?s-``{y}"
+    using vimage_singleton_iff by simp_all
+  then 
+  show ?thesis by simp
+next
+  let ?r="Rrel(R,d)"
+  let ?s="?r^+"
+  case False
+  then 
+  have "?r-``{y}=0" 
+    unfolding Rrel_def by blast
+  then
+  have "w\<notin>?r-``{y}" by simp    
+  with \<open>y\<notin>d\<close> assms
+  have "y\<notin>field(?s)" 
+    using field_trancl subsetD[OF field_Rrel[of R d]] by force
+  then 
+  have "w\<notin>?s-``{y}" 
+    using vimage_singleton_iff by blast
+  with \<open>w\<notin>?r-``{y}\<close>
+  show ?thesis by simp
+qed
+
+lemma restrict_trans_eq:
+  assumes "w \<in> y"
+  shows "restrict(f,Memrel(eclose({x}))-``{y})`w
+       = restrict(f,(Memrel(eclose({x}))^+)-``{y})`w" 
+  using assms restrict_trancl_Rrel[of mem] ecloseD Rrel_mem by (simp)
 
 lemma Hrank_trancl:"Hrank(y, restrict(f,Memrel(eclose({x}))-``{y}))
                   = Hrank(y, restrict(f,(Memrel(eclose({x}))^+)-``{y}))"

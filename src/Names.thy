@@ -984,5 +984,31 @@ lemma G_in_Gen_Ext :
   by force
 
 
+(* Move this to M_trivial *)
+lemma fst_snd_closed: "p\<in>M \<Longrightarrow> fst(p) \<in> M \<and> snd(p)\<in> M"
+  proof (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>")
+    case False
+    then 
+    show "fst(p) \<in> M \<and> snd(p) \<in> M" unfolding fst_def snd_def using zero_in_M by auto
+  next
+    case True
+    then
+    obtain a b where "p = \<langle>a, b\<rangle>" by blast
+    with True
+    have "fst(p) = a" "snd(p) = b" unfolding fst_def snd_def by simp_all
+    moreover 
+    assume "p\<in>M"
+    moreover from this
+    have "a\<in>M" 
+      unfolding \<open>p = _\<close> Pair_def by (force intro:Transset_M[OF trans_M])
+    moreover from  \<open>p\<in>M\<close>
+    have "b\<in>M" 
+      using Transset_M[OF trans_M, of "{a,b}" p] Transset_M[OF trans_M, of "b" "{a,b}"] 
+      unfolding \<open>p = _\<close> Pair_def by (simp)
+    ultimately
+    show ?thesis by simp
+  qed
+
+
 end    (*************** CONTEXT: forcing_data *****************)
 end
