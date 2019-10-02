@@ -13,6 +13,88 @@ lemma app_nm : "n\<in>nat \<Longrightarrow> m\<in>nat \<Longrightarrow> f\<in>n\
     
 section\<open>Renaming of free variables\<close>
 
+definition 
+  union_fun :: "[i,i,i,i] \<Rightarrow> i" where
+  "union_fun(f,g,m,p) == \<lambda>j \<in> m \<union> p  . if j\<in>m then f`j else g`j"
+
+lemma union_fun_type:
+  assumes "f \<in> m \<rightarrow> n"
+    "g \<in> p \<rightarrow> q"
+  shows "union_fun(f,g,m,p) \<in> m \<union> p \<rightarrow> n \<union> q"
+proof -
+  let ?h="union_fun(f,g,m,p)"
+  have
+    D: "?h`x \<in> n \<union> q" if "x \<in> m \<union> p" for x  
+  proof (cases "x \<in> m")
+    case True
+    then have 
+      "x \<in> m \<union> p" by simp
+    with \<open>x\<in>m\<close>
+    have "?h`x = f`x"
+      unfolding union_fun_def  beta by simp
+    with \<open>f \<in> m \<rightarrow> n\<close> \<open>x\<in>m\<close>
+    have "?h`x \<in> n" by simp
+    then show ?thesis ..
+  next
+    case False
+    with \<open>x \<in> m \<union> p\<close>
+    have "x \<in> p" 
+      by auto
+    with \<open>x\<notin>m\<close>
+    have "?h`x = g`x"
+      unfolding union_fun_def using beta by simp
+    with \<open>g \<in> p \<rightarrow> q\<close> \<open>x\<in>p\<close>
+    have "?h`x \<in> q" by simp
+    then show ?thesis ..
+  qed
+  have A:"function(?h)" unfolding union_fun_def using function_lam by simp
+  have " x\<in> (m \<union> p) \<times> (n \<union> q)" if "x\<in> ?h" for x
+    using that lamE[of x "m \<union> p" _ "x \<in> (m \<union> p) \<times> (n \<union> q)"] D unfolding union_fun_def 
+    by auto
+  then have B:"?h \<subseteq> (m \<union> p) \<times> (n \<union> q)" ..
+  have "m \<union> p \<subseteq> domain(?h)" 
+    unfolding union_fun_def using domain_lam by simp
+  with A B 
+  show ?thesis using  Pi_iff [THEN iffD2] by simp
+qed
+
+lemma union_fun_action :
+  assumes
+    "env \<in> list(M)" 
+    "env' \<in> list(M)"
+    "length(env) = m \<union> p" 
+    "\<forall> i . i \<in> m \<longrightarrow> nth(i,env) = nth(f`i,env')"
+    "\<forall> j . j \<in> p \<longrightarrow> nth(j,env) = nth(g`j,env')"
+  shows "\<forall> i . i \<in> m \<union> p \<longrightarrow> 
+          nth(i,env) = nth(union_fun(f,g,m,p)`i,env')"
+proof -
+  let ?h = "union_fun(f,g,m,p)"
+  have "nth(x, env) = nth(?h`x,env')" if "x \<in> m \<union> p" for x
+    using that 
+  proof (cases "x\<in>m")
+    case True
+    with \<open>x\<in>m\<close>
+    have "?h`x = f`x"
+      unfolding union_fun_def  beta by simp
+    with assms \<open>x\<in>m\<close>
+    have "nth(x,env) = nth(?h`x,env')" by simp
+    then show ?thesis .
+  next
+    case False
+    with \<open>x \<in> m \<union> p\<close>
+    have 
+      "x \<in> p" "x\<notin>m"  by auto
+    then
+    have "?h`x = g`x"
+      unfolding union_fun_def beta by simp
+    with assms \<open>x\<in>p\<close>
+    have "nth(x,env) = nth(?h`x,env')" by simp
+    then show ?thesis .
+  qed
+  then show ?thesis by simp
+qed
+
+
 lemma id_fn_type :
   assumes "n \<in> nat"
   shows "id(n) \<in> n \<rightarrow> n"
@@ -89,8 +171,9 @@ proof -
     using add_le_self[of m]  add_le_self2[of n q] by simp_all
   from \<open>p\<in>nat\<close>
   have "p = (m#+p)#-m" using diff_add_inverse2 by simp
-  {fix x
-    assume 1: "x\<in>m#+p" "x<m"
+  have "nth(x, env @ env1) = nth(?h`x,env'@env2)" if "x<m#+p" for x
+  proof (cases "x<m")
+    case True
     then
     have 2: "?h`x= f`x" "x\<in>m" "f`x \<in> n" "x\<in>nat"
       using assms sum_inl ltD apply_type[of f m _ x] in_n_in_nat by simp_all
@@ -112,17 +195,18 @@ proof -
       using 2 by simp
     finally
     have "nth(x, env @ env1) = nth(?h`x,env'@env2)" .
-  }
-  then
-  have A:"nth(x,env@env1) = nth(?h`x,env'@env2)" if "x\<in>m#+p" "x < m" for x 
-    using that .
-  {fix x
-    assume 1: "x\<in>m#+p" "m\<le>x" 
-    with \<open>length(env) = m\<close> have "x<m#+p" "x\<in>nat" "length(env) \<le> x" 
-      using ltI in_n_in_nat[of "m#+p"] ltD by simp_all
-    with 1 
-    have 2 : "?h`x= g`(x#-m)#+n" "\<not> (x < length(env))"
-      using assms sum_inr ltD not_lt_iff_le by simp_all
+    then show ?thesis .
+  next
+    case False    
+    have "x\<in>nat" 
+      using that in_n_in_nat[of "m#+p" x] ltD \<open>p\<in>nat\<close> \<open>m\<in>nat\<close> by simp
+    with \<open>length(env) = m\<close>
+    have "m\<le>x" "length(env) \<le> x"
+      using not_lt_iff_le \<open>m\<in>nat\<close> \<open>\<not>x<m\<close> by simp_all
+    with \<open>\<not>x<m\<close> \<open>length(env) = m\<close>
+    have 2 : "?h`x= g`(x#-m)#+n"  "\<not> x <length(env)"
+      unfolding sum_def
+      using  sum_inr that beta ltD by simp_all
     from assms \<open>x\<in>nat\<close> \<open>p=m#+p#-m\<close>
     have "x#-m < p" 
       using diff_mono[OF _ _ _ \<open>x<m#+p\<close> \<open>m\<le>x\<close>] by simp
@@ -156,20 +240,7 @@ proof -
       using 2 by simp
     finally
     have "nth(x, env @ env1) = nth(?h`x,env'@env2)" .
-  }
-  then have B: "nth(x, env @ env1) = nth(?h`x,env'@env2)" if "x\<in>m#+p" "m\<le>x" for x 
-    using that .
-  have
-    D: "nth(x, env @ env1) = nth(?h`x,env'@env2)" if "x<m#+p" for x
-    using that 
-  proof (cases "x<m")
-    case True
-    then show ?thesis using A that ltD by simp
-  next
-    case False
-    with \<open>m\<in>nat\<close> have "m\<le>x" 
-      using not_lt_iff_le that in_n_in_nat[of "m#+p"] ltD by simp
-    then show ?thesis using B that ltD by simp
+    then show ?thesis .
   qed
   then show ?thesis by simp
 qed
@@ -403,7 +474,7 @@ next
       Forall \<open>succ(n)\<in>nat\<close> \<open>succ(m)\<in>nat\<close> 2 by force
   then show ?case using Forall 2 3 ren_tc arity_type pred_le by auto
 qed
-  
+
 lemma forall_arityE : "p \<in> formula \<Longrightarrow> m \<in> nat \<Longrightarrow> arity(Forall(p)) \<le> m \<Longrightarrow> arity(p) \<le> succ(m)"
   by(rule_tac n="arity(p)" in natE,erule arity_type,simp+)
     
