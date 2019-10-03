@@ -86,14 +86,17 @@ definition
 
 definition
   frecrel :: "i \<Rightarrow> i" where
-  "frecrel(A) \<equiv> {z\<in>A\<times>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x,y)}"
+  "frecrel(A) \<equiv> Rrel(frecR,A)"
+
+lemma def_frecrel : "frecrel(A) = {z\<in>A\<times>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x,y)}"
+  unfolding frecrel_def Rrel_def ..
 
 lemma frecrel_fst_snd:
   "frecrel(A) = {z \<in> A\<times>A . 
             name1(fst(z)) \<in> domain(name1(snd(z))) \<union> domain(name2(snd(z))) \<and> 
             (name2(fst(z)) = name1(snd(z)) \<or> name2(fst(z)) = name2(snd(z))) 
           \<or> name1(fst(z)) = name1(snd(z)) \<and> name2(fst(z)) \<in> domain(name2(snd(z)))}"
-  unfolding frecrel_def frecR_def
+  unfolding def_frecrel frecR_def
   by (intro equalityI subsetI CollectI; elim CollectE; auto)
 
 (*
@@ -756,22 +759,19 @@ proof -
     "Collect(?Q\<times>?Q,frecrelP(##M)) = Collect(?Q\<times>?Q,\<lambda>z. (\<exists>x y. z = <x,y> \<and> frecR(x,y)))"
     using Collect_cong[of "?Q\<times>?Q" "?Q\<times>?Q" "frecrelP(##M)"] assms frecrelP_abs by simp
   then
-  show ?thesis unfolding is_frecrel_def frecrel_def using assms cartprod_closed by simp
+  show ?thesis unfolding is_frecrel_def def_frecrel using assms cartprod_closed by simp
 qed
 
 
 lemma names_belowD : "y\<in>names_below(P,z) \<Longrightarrow> frecR(x,y) \<Longrightarrow>x\<in>names_below(P,z)"
   sorry
 
-lemma Rrel_frecR: "Rrel(frecR,x) = frecrel(x)"
-  unfolding Rrel_def frecR_def frecrel_def ..
-
 lemma restrict_trancl_forcerel:
   assumes "frecR(w,y)"
   shows "restrict(f,forcerel(P,x)-``{y})`w
        = restrict(f,(forcerel(P,x)^+)-``{y})`w" 
-  unfolding forcerel_def using assms restrict_trancl_Rrel[of frecR] 
-    names_belowD Rrel_frecR by (simp)
+  unfolding forcerel_def frecrel_def using assms restrict_trancl_Rrel[of frecR] 
+    names_belowD by (simp)
 
 lemma frecRI1: "s \<in> domain(n1) \<or> s \<in> domain(n2) \<Longrightarrow> frecR(\<langle>b, s, n1, q\<rangle>, \<langle>b', n1, n2, q'\<rangle>)"
   unfolding frecR_def by simp
@@ -840,7 +840,7 @@ lemma forcerel_in_M :
     "x\<in>M" 
   shows 
     "forcerel(P,x)\<in>M" 
-  unfolding forcerel_t_def forcerel_def frecrel_def names_below_def
+  unfolding forcerel_t_def forcerel_def def_frecrel names_below_def
 proof -
   let ?Q = "2 \<times> eclose(x) \<times> eclose(x) \<times> P"
   have "?Q \<times> ?Q \<in> M"
