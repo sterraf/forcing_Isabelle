@@ -956,9 +956,6 @@ lemma cf_ordertype_cofinal:
     "Limit(\<gamma>)" "A\<subseteq>\<gamma>" "cofinal(A,\<gamma>,Memrel(\<gamma>))"
   shows
     "cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))"
-    (* Is it better??
-    "Limit(\<gamma>) \<Longrightarrow> A\<subseteq>\<gamma> \<Longrightarrow> cofinal_predic(A,\<gamma>,mem) \<Longrightarrow> 
-                cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))" *)
 proof (intro le_anti_sym)
   from \<open>Limit(\<gamma>)\<close>
   have \<open>Ord(\<gamma>)\<close>
@@ -1017,16 +1014,16 @@ proof (intro le_anti_sym)
   moreover from this
   have "g:cf(\<gamma>)\<rightarrow>\<alpha>"
     using mono_map_is_fun by simp
-  moreover from calculation and \<open>f \<in> mono_map(\<alpha>,Memrel(\<alpha>),\<gamma>,Memrel(\<gamma>))\<close> \<open>Ord(\<alpha>)\<close> \<open>Ord(\<gamma>)\<close>
+  moreover
+  note \<open>Ord(\<alpha>)\<close>
+  moreover from calculation and \<open>f \<in> mono_map(\<alpha>,Memrel(\<alpha>),\<gamma>,Memrel(\<gamma>))\<close> \<open>Ord(\<gamma>)\<close>
   have "cofinal_fun(g,\<alpha>,Memrel(\<alpha>))"
     using factor_is_cofinal by blast
   moreover
-  note \<open>Ord(\<alpha>)\<close>
+  note \<open>\<alpha> = ordertype(A,Memrel(\<gamma>))\<close>
   ultimately
-  have "cf(\<alpha>) \<le> cf(\<gamma>)"
+  show "cf(ordertype(A,Memrel(\<gamma>))) \<le> cf(\<gamma>)"
     using cf_le_domain_cofinal_fun[OF _ Ord_cf mono_map_is_fun] by simp
-  with \<open>\<alpha> = ordertype(A,Memrel(\<gamma>))\<close>
-  show "cf(ordertype(A,Memrel(\<gamma>))) \<le> cf(\<gamma>)" by simp
 qed
 
 (* probar 5.12 y 5.13(1,2) *)
