@@ -200,16 +200,6 @@ lemma cf_is_ordertype:
     (is "?P(cf(\<gamma>))")
   using gamma_cofinal_gamma LeastI[of ?P \<gamma>] ordertype_Memrel[symmetric] assms 
   unfolding cf_def by blast
-(*
-proof -
-  from assms
-  have "\<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> \<gamma> = ordertype(A,Memrel(\<gamma>))"
-    using gamma_cofinal_gamma ordertype_Memrel[symmetric] assms by blast
-  then
-  show ?thesis 
-    using LeastI[of ?P] assms unfolding cf_def by simp
-qed
-*)
 
 lemma cofinal_mono_map_cf:
   assumes "Ord(\<gamma>)"
@@ -280,9 +270,8 @@ proof
     show "False" 
       using cofinal_succ by simp     
 qed
-  
-  
- (* lemma ordertype_0_not_cofinal:
+    
+(* lemma ordertype_0_not_cofinal:
   assumes "ordertype(A,Memrel(i)) = 0" "i\<noteq>0" "A\<subseteq>i" "Ord(i)"
 shows "\<not>cofinal(A,i,Memrel(i))"
 proof 
@@ -543,16 +532,6 @@ lemma Image_subset_Ord_imp_lt:
     "h`x < \<alpha>"
   using assms
   unfolding domain_def using imageI ltI function_apply_equality by auto
-(* (* Long version... *)
-proof -
-  from \<open>x\<in>domain(h)\<close> \<open>x\<in>A\<close> \<open>function(h)\<close>
-  have "h`x \<in> h``A"
-    unfolding domain_def using imageI function_apply_equality by auto
-  with \<open>h``A \<subseteq> \<alpha>\<close>
-  have "h`x \<in> \<alpha>" by auto
-  with \<open>Ord(\<alpha>)\<close>
-  show ?thesis using ltI by simp
-qed *)
 
 lemma cofinal_fun_factorization:
   notes le_imp_subset [dest] lt_trans2 [trans]
