@@ -201,10 +201,11 @@ lemma cf_is_ordertype:
   using gamma_cofinal_gamma LeastI[of ?P \<gamma>] ordertype_Memrel[symmetric] assms 
   unfolding cf_def by blast
 
+(* Muevo este lema para más abajo
 lemma cofinal_mono_map_cf:
   assumes "Ord(\<gamma>)"
   shows "\<exists>j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>)) . cofinal_fun(j,\<gamma>,Memrel(\<gamma>))"
-  sorry
+  sorry *)
     
 lemma cofinal_fun_succ':
   assumes "Ord(\<beta>)" "Ord(\<alpha>)" "f:\<alpha>\<rightarrow>succ(\<beta>)"
@@ -230,27 +231,8 @@ lemma cofinal_fun_succ:
   "Ord(\<beta>) \<Longrightarrow> f:1\<rightarrow>succ(\<beta>) \<Longrightarrow> f`0=\<beta> \<Longrightarrow> cofinal_fun(f,succ(\<beta>),Memrel(succ(\<beta>)))"
   using cofinal_fun_succ' by blast
 
-lemma cofinal_succ:
-  assumes "Ord(x)"
-  shows "cofinal(A,succ(x),Memrel(succ(x))) \<longleftrightarrow> x\<in>A"
-unfolding cofinal_def  
-proof (intro ballI iffI)
-  fix a
-  assume "a\<in>succ(x)"
-  show "\<exists>y\<in>A. \<langle>a, y\<rangle> \<in> Memrel(succ(x)) \<or> a = y"
-    sorry
-next
-  assume " \<forall>a\<in>succ(x). \<exists>y\<in>A. \<langle>a, y\<rangle> \<in> Memrel(succ(x)) \<or> a = y"
-  show "x \<in> A"
-    sorry
- 
-qed
-  
-lemma surj_0: "f\<in>surj(A,0) \<Longrightarrow> A=0"
-  unfolding surj_def by (auto simp add:if_def the_def)
-  
 lemma ordertype_0_not_cofinal_succ:
-  assumes "ordertype(A,Memrel(succ(i))) = 0" "succ(i)\<noteq>0" "A\<subseteq>succ(i)" "Ord(i)"
+  assumes "ordertype(A,Memrel(succ(i))) = 0"  "A\<subseteq>succ(i)" "Ord(i)"
 shows "\<not>cofinal(A,succ(i),Memrel(succ(i)))"
 proof 
   have 1:"ordertype(A,Memrel(succ(i))) = ordertype(0,Memrel(0))"
@@ -261,18 +243,20 @@ proof
       ordertype_eq_imp_ord_iso[OF 1] Ord_0  by blast
   then
   have "A=0"
-    using surj_0 ord_iso_is_bij bij_is_surj by blast
+    using  ord_iso_is_bij bij_imp_eqpoll eqpoll_0_is_0 by blast
   moreover
   assume "cofinal(A, succ(i), Memrel(succ(i)))" 
   moreover 
     note \<open>Ord(i)\<close>
     ultimately
     show "False" 
-      using cofinal_succ by simp     
+      using not_mem_empty unfolding cofinal_def by auto
 qed
+
     
 (* lemma ordertype_0_not_cofinal:
-  assumes "ordertype(A,Memrel(i)) = 0" "i\<noteq>0" "A\<subseteq>i" "Ord(i)"
+
+ assumes "ordertype(A,Memrel(i)) = 0" "i\<noteq>0" "A\<subseteq>i" "Ord(i)"
 shows "\<not>cofinal(A,i,Memrel(i))"
 proof 
   have 1:"ordertype(A,Memrel(i)) = ordertype(0,Memrel(0))"
@@ -533,6 +517,24 @@ lemma Image_subset_Ord_imp_lt:
   using assms
   unfolding domain_def using imageI ltI function_apply_equality by auto
 
+lemma cofinal_mono_map_cf:
+  assumes "Ord(\<gamma>)"
+  shows "\<exists>j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>)) . cofinal_fun(j,\<gamma>,Memrel(\<gamma>))"
+  using assms
+proof (induct rule:trans_induct3)
+  case 0
+  have "cf(0) = 0" using cf_zero by simp
+  then have  "id(0) \<in> \<langle>cf(0), Memrel(cf(0))\<rangle> \<cong> \<langle>0, Memrel(0)\<rangle>" using ord_iso_refl by simp
+  then  have "id(0)\<in>mono_map(cf(0),Memrel(cf(0)),0,Memrel(0))" using ord_iso_is_mono_map by simp
+  then show ?case unfolding cofinal_fun_def by auto
+  next
+  case (succ x)
+  show ?case sorry    
+  next    
+  case (limit x)
+  show ?case sorry
+qed
+          
 lemma cofinal_fun_factorization:
   notes le_imp_subset [dest] lt_trans2 [trans]
   assumes 
