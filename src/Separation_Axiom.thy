@@ -41,17 +41,24 @@ proof -
   with \<open>env\<in>list(_)\<close>
   have "arity(forces(?\<chi>)) \<le> 6 #+ length(env)"
     using nat_simp_union arity_forces leI by simp
-  from \<open>\<phi>\<in>formula\<close> \<open>env\<in>list(M[G])\<close>
-  have "?new_form \<in> formula"
-    using definability[of "?\<chi>"] type_rensep by simp
   then
-  have "?\<psi> \<in> formula"
-    by simp
-  with \<open>arity(forces(?\<chi>)) \<le> _\<close> \<open>env \<in> _\<close> \<open>\<phi> \<in> formula\<close>
+  have "arity(forces(?\<chi>)) \<le> 7 #+ length(env)"
+    using nat_simp_union arity_forces leI by simp
+  with \<open>arity(forces(?\<chi>)) \<le>7 #+ _\<close> \<open>env \<in> _\<close> \<open>\<phi> \<in> formula\<close>
+  have "arity(?new_form) \<le> 7 #+ length(env)" "?new_form \<in> formula"
+    using arity_rensep[OF definability[of "?\<chi>"]]  definability[of "?\<chi>"] type_rensep 
+    by auto
+  then
+  have "pred(pred(arity(?new_form))) \<le> 5 #+ length(env)" "?\<psi>\<in>formula"
+    unfolding pair_fm_def upair_fm_def 
+    using nat_simp_union length_type[OF \<open>env\<in>list(M[G])\<close>] 
+        pred_mono[OF _ pred_mono[OF _ \<open>arity(?new_form) \<le> _\<close>]]
+    by auto
+  with \<open>arity(?new_form) \<le> _\<close> \<open>?new_form \<in> formula\<close>
   have "arity(?\<psi>) \<le> 5 #+ length(env)"
     unfolding pair_fm_def upair_fm_def 
-    using leI arity_rensep[OF definability[of "?\<chi>"]] arity_forces nat_simp_union
-    sorry
+    using nat_simp_union arity_forces 
+    by auto
   from \<open>\<phi>\<in>formula\<close>
   have "forces(?\<chi>) \<in> formula"
     using definability by simp
@@ -99,19 +106,19 @@ proof -
       have "sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>] @ nenv) \<longleftrightarrow> sats(M,?new_form,?new_env)"
         by simp
       from in_M' \<open>env \<in> _\<close> Eq1' \<open>length(nenv) = length(env)\<close> 
-        \<open>arity(forces(?\<chi>)) \<le> 6 #+ length(env)\<close> \<open>forces(?\<chi>)\<in> formula\<close>
+        \<open>arity(forces(?\<chi>)) \<le> 7 #+ length(env)\<close> \<open>forces(?\<chi>)\<in> formula\<close>
         \<open>[\<theta>, p, u, \<pi>, leq, one, \<pi>] \<in> list(M)\<close> 
       have "... \<longleftrightarrow> sats(M,forces(?\<chi>),?env)"
-        using sepren_action[of "forces(?\<chi>)"  "nenv" \<theta> p u \<pi>,OF _ _ \<open>nenv\<in>list(M)\<close>] leI 
-        sorry
+        using sepren_action[of "forces(?\<chi>)"  "nenv",OF _ _ \<open>nenv\<in>list(M)\<close>] 
+        by simp
       also from in_M'
       have "... \<longleftrightarrow> sats(M,forces(?\<chi>), ([P, leq, one,p,\<theta>]@nenv@ [\<pi>])@[u])" 
-        using app_assoc sorry
+        using app_assoc by simp
       also 
       from in_M' \<open>env\<in>_\<close>  phi \<open>length(nenv) = length(env)\<close>
         \<open>arity(forces(?\<chi>)) \<le> 6 #+ length(env)\<close> \<open>forces(?\<chi>)\<in>formula\<close>
       have "... \<longleftrightarrow> sats(M,forces(?\<chi>), [P, leq, one,p,\<theta>]@ nenv @ [\<pi>])"        
-        sorry (*        by (rule_tac arity_sats_iff,auto) *)
+        by (rule_tac arity_sats_iff,auto)
       also 
       from \<open>arity(forces(?\<chi>)) \<le> 6 #+ length(env)\<close> \<open>forces(?\<chi>)\<in>formula\<close> in_M' phi 
       have " ... \<longleftrightarrow> (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
