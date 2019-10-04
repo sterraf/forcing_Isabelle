@@ -109,4 +109,19 @@ lemma pred_Un:
   "x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> Arith.pred(x \<union> succ(y)) = Arith.pred(x) \<union> y"
   using pred_Un_distrib pred_succ_eq by simp_all
 
+lemma le_natI : "j \<le> n \<Longrightarrow> n \<in> nat \<Longrightarrow> j\<in>nat"
+  by(drule ltD,rule in_n_in_nat,rule nat_succ_iff[THEN iffD2,of n],simp_all)
+
+lemma le_natE : "n\<in>nat \<Longrightarrow> j < n \<Longrightarrow>  j\<in>n"
+  by(rule ltE[of j n],simp+)
+
+lemma diff_cancel :
+  assumes "m \<in> nat" "n\<in>nat" "m < n"
+  shows "m#-n = 0"
+  using assms diff_is_0_lemma leI by simp
+
+lemma leD : assumes "n\<in>nat" "j \<le> n"
+  shows "j < n | j = n"
+using leE[OF \<open>j\<le>n\<close>,of "j<n | j = n"] by auto
+
 end
