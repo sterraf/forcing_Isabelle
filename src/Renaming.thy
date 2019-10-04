@@ -63,8 +63,8 @@ lemma union_fun_action :
     "env \<in> list(M)" 
     "env' \<in> list(M)"
     "length(env) = m \<union> p" 
-    "\<forall> i . i \<in> m \<longrightarrow> nth(i,env) = nth(f`i,env')"
-    "\<forall> j . j \<in> p \<longrightarrow> nth(j,env) = nth(g`j,env')"
+    "\<forall> i . i \<in> m \<longrightarrow>  nth(f`i,env') = nth(i,env)"
+    "\<forall> j . j \<in> p \<longrightarrow> nth(g`j,env') = nth(j,env)"
   shows "\<forall> i . i \<in> m \<union> p \<longrightarrow> 
           nth(i,env) = nth(union_fun(f,g,m,p)`i,env')"
 proof -
