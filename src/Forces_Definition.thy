@@ -845,27 +845,28 @@ proof -
   have "separation(##M,\<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x, y))"
   proof -
     obtain fp_fm where
-    fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow> 
+      fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow> 
     (frecrelP(##M,nth(0,env)) \<longleftrightarrow> sats(M,fp_fm(0),env))"
-    and 
-    "fp_fm(0) \<in> formula" 
-    and
-    "arity(fp_fm(0)) = 1"
-   using sats_frecrelP_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
-   then
-   have "separation(##M, \<lambda>z. sats(M,fp_fm(0) , [z]))"
-     using separation_ax by simp
-   moreover
-   have "frecrelP(##M,z) \<longleftrightarrow> sats(M,fp_fm(0),[z])" 
-     if "z\<in>M" for z
-     using that fmsats[of "[z]"] by simp
-   ultimately
-   have "separation(##M,frecrelP(##M))" 
-     unfolding separation_def by simp
-   then 
-   show ?thesis using separation_cong[of "##M" "frecrelP(##M)" 
-         "\<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x, y)" ] frecrelP_abs by simp
- qed
+      and 
+      "fp_fm(0) \<in> formula" 
+      and
+      "arity(fp_fm(0)) = 1"
+      using sats_frecrelP_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+    then
+    have "separation(##M, \<lambda>z. sats(M,fp_fm(0) , [z]))"
+      using separation_ax by simp
+    moreover
+    have "frecrelP(##M,z) \<longleftrightarrow> sats(M,fp_fm(0),[z])" 
+      if "z\<in>M" for z
+      using that fmsats[of "[z]"] by simp
+    ultimately
+    have "separation(##M,frecrelP(##M))" 
+      unfolding separation_def by simp
+    then 
+    show ?thesis using frecrelP_abs
+        separation_cong[of "##M" "frecrelP(##M)" "\<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x, y)"]
+      by simp
+  qed
   ultimately
   show "{z \<in> ?Q \<times> ?Q . \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x, y)} \<in> M" 
     using separation_closed frecrelP_abs by simp
@@ -999,7 +1000,7 @@ proof -
     using M_inhabit tuples_in_M by simp
   then
   have "forcerel(P,<0,t1,t2,p>) \<in> M" 
-    using forcerel_closed by simp
+    using forcerel_in_M by simp
   note inM = assms oneN_in_M M_inhabit \<open><0,t1,t2,p>\<in>M\<close> \<open>forcerel(P,<0,t1,t2,p>)\<in>M\<close>
   let ?\<phi>="is_wfrec_fm(is_Hfrc_at_fm(5,6,2,1,0),2,3,4)"
   have "?\<phi>\<in>formula" unfolding is_Hfrc_at_fm_def by simp
@@ -1183,7 +1184,7 @@ lemma sats_forces_ren_Equal:
   shows
     "sats(M,forces_ren(auxren,fren,fref,Equal(0,1)),[P,leq,one,p,x,y] @ env) \<longleftrightarrow> 
      is_frc_at(##M,P,leq,<0,x,y,p>,1)"
-  using assms sats_forces_eq_fm forcerel_closed by simp
+  using assms sats_forces_eq_fm[of 0 1 p x y] forcerel_in_M by simp
 
 lemma sats_forces_Nand: 
   assumes 
