@@ -119,24 +119,41 @@ lemma field_Memrel : "field(Memrel(A)) \<subseteq> A"
   using Rrel_mem field_Rrel by blast
 
 lemma restrict_trancl_Rrel:
-  assumes "R(w,y)" and "\<And>x z. z\<in>d \<Longrightarrow> R(x,z) \<Longrightarrow> x\<in>d"
+  assumes "R(w,y)" 
   shows "restrict(f,Rrel(R,d)-``{y})`w
        = restrict(f,(Rrel(R,d)^+)-``{y})`w" 
 proof (cases "y\<in>d")
   let ?r="Rrel(R,d)"
   and ?s="(Rrel(R,d))^+"
   case True
-  with assms
-  have "<w,y>\<in>?r" 
-    unfolding Rrel_def by blast
-  then 
-  have "<w,y>\<in>?s" 
-    using r_subset_trancl[of ?r] relation_Rrel[of R d] by blast
-  with \<open><w,y>\<in>?r\<close> 
-  have "w\<in>?r-``{y}" "w\<in>?s-``{y}"
-    using vimage_singleton_iff by simp_all
-  then 
-  show ?thesis by simp
+  show ?thesis
+  proof (cases "w\<in>d")
+    case True
+    with \<open>y\<in>d\<close> assms
+    have "<w,y>\<in>?r" 
+      unfolding Rrel_def by blast
+    then 
+    have "<w,y>\<in>?s" 
+      using r_subset_trancl[of ?r] relation_Rrel[of R d] by blast
+    with \<open><w,y>\<in>?r\<close> 
+    have "w\<in>?r-``{y}" "w\<in>?s-``{y}"
+      using vimage_singleton_iff by simp_all
+    then 
+    show ?thesis by simp
+  next
+    case False
+    then
+    have "w\<notin>domain(restrict(f,?r-``{y}))"
+      using subsetD[OF field_Rrel[of R d]] by auto
+    moreover from \<open>w\<notin>d\<close>
+    have "w\<notin>domain(restrict(f,?s-``{y}))"
+      using subsetD[OF field_Rrel[of R d], of w] field_trancl[of ?r] 
+        fieldI1[of w y ?s] by auto
+    ultimately
+    have "restrict(f,?r-``{y})`w = 0" "restrict(f,?s-``{y})`w = 0" 
+      unfolding apply_def by auto
+    then show ?thesis by simp
+  qed
 next
   let ?r="Rrel(R,d)"
   let ?s="?r^+"
@@ -160,7 +177,6 @@ lemma restrict_trans_eq:
   assumes "w \<in> y"
   shows "restrict(f,Memrel(eclose({x}))-``{y})`w
        = restrict(f,(Memrel(eclose({x}))^+)-``{y})`w" 
-  using assms restrict_trancl_Rrel[of mem] ecloseD Rrel_mem by (simp)
-
+  using assms restrict_trancl_Rrel[of mem ] Rrel_mem by (simp)
 
 end
