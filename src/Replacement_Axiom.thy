@@ -133,30 +133,6 @@ lemma pow_inter_M:
     "powerset(##M,x,y) \<longleftrightarrow> y = Pow(x) \<inter> M"
   using assms by auto
 
-(* Move this to M_trivial *)
-lemma comp_in_M: "p\<in>M \<Longrightarrow> fst(p) \<in> M \<and> snd(p)\<in> M"
-  proof (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>")
-    case False
-    then 
-    show "fst(p) \<in> M \<and> snd(p) \<in> M" unfolding fst_def snd_def using zero_in_M by auto
-  next
-    case True
-    then
-    obtain a b where "p = \<langle>a, b\<rangle>" by blast
-    with True
-    have "fst(p) = a" "snd(p) = b" unfolding fst_def snd_def by simp_all
-    moreover 
-    assume "p\<in>M"
-    moreover from this
-    have "a\<in>M" 
-      unfolding \<open>p = _\<close> Pair_def by (force intro:Transset_M[OF trans_M])
-    moreover from  \<open>p\<in>M\<close>
-    have "b\<in>M" 
-      using Transset_M[OF trans_M, of "{a,b}" p] Transset_M[OF trans_M, of "b" "{a,b}"] 
-      unfolding \<open>p = _\<close> Pair_def by (simp)
-    ultimately
-    show ?thesis by simp
-  qed
 
 schematic_goal sats_prebody_fm_auto:
   assumes
@@ -270,7 +246,7 @@ lemma sats_body_fm':
   shows 
     "sats(M,body_fm'(\<phi>,nenv),[x,\<alpha>,P,leq,one] @ nenv) \<longleftrightarrow> 
      sats(M,renpbdy(prebody_fm(\<phi>,nenv),nenv),[fst(x),snd(x),x,\<alpha>,P,leq,one] @ nenv)"
-  using assms comp_in_M[OF \<open>x\<in>M\<close>] unfolding body_fm'_def
+  using assms fst_snd_closed[OF \<open>x\<in>M\<close>] unfolding body_fm'_def
   by (auto)
 
 definition
@@ -298,7 +274,7 @@ lemma sats_renpbdy_prebody_fm:
   shows 
     "sats(M,renpbdy(prebody_fm(\<phi>,nenv),nenv),[fst(x),snd(x),x,\<alpha>,P,leq,one] @ nenv) \<longleftrightarrow>
      sats(M,prebody_fm(\<phi>,nenv),[fst(x),snd(x),\<alpha>,P,leq,one] @ nenv)"
-  using assms comp_in_M[OF \<open>x\<in>M\<close>] 
+  using assms fst_snd_closed[OF \<open>x\<in>M\<close>] 
     sats_renpbdy[OF arity_prebody_fm _ prebody_fm_type, of concl:M, symmetric]
   by force
 
@@ -310,7 +286,7 @@ lemma body_lemma:
   "sats(M,body_fm(\<phi>,nenv),[\<alpha>,x,m,P,leq,one] @ nenv) \<longleftrightarrow> 
   (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a),\<alpha>,V) \<and> \<tau> \<in> V \<and> sats(M,forces(\<phi>),[P,leq,one,snd(x),fst(x),\<tau>] @ nenv))"
   using assms sats_body_fm[of x \<alpha> m nenv] sats_renpbdy_prebody_fm[of x \<alpha>]
-    sats_prebody_fm[of "snd(x)" "fst(x)"] comp_in_M[OF \<open>x\<in>M\<close>]
+    sats_prebody_fm[of "snd(x)" "fst(x)"] fst_snd_closed[OF \<open>x\<in>M\<close>]
   by (simp, simp del:setclass_iff add:setclass_iff[symmetric],simp)
 
 (* Sorrying this until the interface is ready *)

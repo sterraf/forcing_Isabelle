@@ -86,32 +86,41 @@ definition
 
 definition
   frecrel :: "i \<Rightarrow> i" where
-  "frecrel(A) \<equiv> {<x,y> \<in> A\<times>A . frecR(x,y)}"
+  "frecrel(A) \<equiv> Rrel(frecR,A)"
+
+lemma def_frecrel : "frecrel(A) = {z\<in>A\<times>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x,y)}"
+  unfolding frecrel_def Rrel_def ..
 
 lemma frecrel_fst_snd:
   "frecrel(A) = {z \<in> A\<times>A . 
             name1(fst(z)) \<in> domain(name1(snd(z))) \<union> domain(name2(snd(z))) \<and> 
             (name2(fst(z)) = name1(snd(z)) \<or> name2(fst(z)) = name2(snd(z))) 
           \<or> name1(fst(z)) = name1(snd(z)) \<and> name2(fst(z)) \<in> domain(name2(snd(z)))}"
-  unfolding frecrel_def frecR_def
+  unfolding def_frecrel frecR_def
   by (intro equalityI subsetI CollectI; elim CollectE; auto)
 
+(*
+name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> 
+            (name2(x) = name1(y) \<or> name2(x) = name2(y)) 
+          \<or> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y))*)
+definition
+  is_frecR :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_frecR(M,x,y) \<equiv> \<exists>n1x[M]. \<exists>n2x[M]. \<exists>n1y[M]. \<exists>n2y[M]. \<exists>dn1[M]. \<exists>dn2[M].
+      is_name1(M,x,n1x)\<and> is_name2(M,x,n2x) \<and> is_name1(M,y,n1y) \<and> is_name2(M,y,n2y)
+          \<and> is_domain(M,n1y,dn1) \<and> is_domain(M,n2y,dn2) \<and> 
+          ((n1x \<in> dn1 \<or> n1x \<in> dn2) \<and> (n2x = n1y \<or> n2x = n2y) \<or> n1x = n1y \<and> n2x \<in> dn2)"
+
+(*
+\<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x,y) *)
 definition
   frecrelP :: "[i\<Rightarrow>o,i] \<Rightarrow> o" where
-  "frecrelP(M,xy) \<equiv>  
-          (\<exists>x[M]. \<exists>y[M]. \<exists>n1x[M]. \<exists>n2x[M]. \<exists>n1y[M]. \<exists>n2y[M]. \<exists>dn1[M]. \<exists>dn2[M].
-           pair(M,x,y,xy) 
-          \<and> is_name1(M,x,n1x)\<and> is_name2(M,x,n2x) \<and> is_name1(M,y,n1y) \<and> is_name2(M,y,n2y)
-          \<and> is_domain(M,n1y,dn1) \<and> is_domain(M,n2y,dn2) \<and> 
-          ( 
-             (n1x \<in> dn1 \<or> n1x \<in> dn2) \<and> (n2x = n1y \<or> n2x = n2y)
-           \<or> n1x = n1y \<and> n2x \<in> dn2
-          )
-          )"
+  "frecrelP(M,xy) \<equiv> (\<exists>x[M]. \<exists>y[M]. pair(M,x,y,xy) \<and> is_frecR(M,x,y))"
 
+
+(* {z\<in>A\<times>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x,y)} *)
 definition
   is_frecrel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_frecrel(M,A,r) \<equiv> \<exists>A2[M]. cartprod(M,A,A,A2) \<and> is_Collect(M,A2,frecrelP(M),r)"
+  "is_frecrel(M,A,r) \<equiv> \<exists>A2[M]. cartprod(M,A,A,A2) \<and> is_Collect(M,A2, frecrelP(M) ,r)"
 
 definition
   names_below :: "i \<Rightarrow> i \<Rightarrow> i" where
@@ -128,7 +137,7 @@ schematic_goal sats_frecrelP_fm_auto:
   shows
     "frecrelP(##A,nth(a, env))
     \<longleftrightarrow> sats(A,?frp_fm(a,r),env)"
-    unfolding is_frecrel_def  is_Collect_def frecrelP_def is_name1_def is_name2_def
+    unfolding is_frecrel_def is_frecR_def is_Collect_def frecrelP_def is_name1_def is_name2_def
    by (insert assms ; (rule sep_rules cartprod_iff_sats | simp del:sats_cartprod_fm)+)
 
 schematic_goal sats_is_frecrel_fm_auto:
@@ -137,7 +146,7 @@ schematic_goal sats_is_frecrel_fm_auto:
   shows
     "is_frecrel(##A,nth(a, env),nth(r, env))
     \<longleftrightarrow> sats(A,?ifrl_fm(a,r),env)"
-    unfolding is_frecrel_def  is_Collect_def frecrelP_def is_name1_def is_name2_def
+    unfolding is_frecrel_def is_frecR_def is_Collect_def frecrelP_def is_name1_def is_name2_def
    by (insert assms ; (rule sep_rules cartprod_iff_sats | simp del:sats_cartprod_fm)+) 
 
 schematic_goal is_frecrel_iff_sats:
@@ -174,6 +183,14 @@ definition
 definition
   frc_at :: "[i,i,i] \<Rightarrow> i" where
   "frc_at(P,leq,fnnc) \<equiv> wfrec(forcerel(P,fnnc),fnnc,\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f)))"
+
+definition
+  forces_eq :: "[i,i,i,i,i] \<Rightarrow> o" where
+  "forces_eq(P,leq,p,t1,t2) \<equiv> frc_at(P,leq,<0,t1,t2,p>) = 1"
+
+definition
+  forces_mem :: "[i,i,i,i,i] \<Rightarrow> o" where
+  "forces_mem(P,leq,p,t1,t2) \<equiv> frc_at(P,leq,<1,t1,t2,p>) = 1"
 
 
 (* "eq_case(t1,t2,p,P,leq,f) \<equiv> \<forall>s\<in>domain(t1) \<union> domain(t2). \<forall>q. <q,p>\<in>leq \<longrightarrow>
@@ -218,8 +235,7 @@ definition
       wfrec(forcerel(P,fnnc),fnnc,\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f)))" *)
 definition
   is_frc_at :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
-  "is_frc_at(M,P,leq,fnnc,z) \<equiv>
-  is_wfrec(M,is_Hfrc_at(M,P,leq),forcerel(P,fnnc),fnnc,z)"
+  "is_frc_at(M,P,leq,fnnc,z) \<equiv> is_wfrec(M,is_Hfrc_at(M,P,leq),forcerel(P,fnnc),fnnc,z)"
 
 
 definition
@@ -299,7 +315,8 @@ schematic_goal sats_is_Hfrc_fm_auto:
     "is_Hfrc(##A,nth(P, env), nth(leq, env), nth(fnnc, env),nth(f, env))
     \<longleftrightarrow> sats(A,?hfrc_fm(P,leq,fnnc,f),env)"
   unfolding is_Hfrc_def 
-  by (insert assms; (rule sep_rules' is_mem_case_iff_sats[of 4 3 2 "P #+ 6" "leq #+ 6" "f #+ 6"] is_eq_case_iff_sats[of 4 3 2 "P #+ 6" "leq #+ 6" "f #+ 6"] is_one_iff_sats | simp)+)
+  by (insert assms; (rule sep_rules' is_mem_case_iff_sats[of 4 3 2 "P #+ 6" "leq #+ 6" "f #+ 6"] 
+        is_eq_case_iff_sats[of 4 3 2 "P #+ 6" "leq #+ 6" "f #+ 6"] is_one_iff_sats | simp)+)
 
 schematic_goal is_Hfrc_iff_sats:
   assumes
@@ -618,6 +635,7 @@ lemma comp_in_M:
   "<p,q>\<in>leq \<Longrightarrow> q\<in>M"
   using leq_in_M trans_M Transset_intf[of M _ leq] pair_in_M_iff by auto
 
+
 lemma eq_case_abs [simp]:
   assumes
     "t1\<in>M" "t2\<in>M" "p\<in>M" "f\<in>M" 
@@ -653,20 +671,20 @@ lemma mem_case_abs [simp]:
   shows
     "is_mem_case(##M,t1,t2,p,P,leq,f) \<longleftrightarrow> mem_case(t1,t2,p,P,leq,f)"
   sorry
-
-(*lemma mem_case_abs [simp]:
+(*
+lemma mem_case_abs [simp]:
   "\<lbrakk>(##M)(t1); (##M)(t2); (##M)(p); (##M)(f)\<rbrakk> \<Longrightarrow> 
       is_mem_case(##M,t1,t2,p,P,leq,f) \<longleftrightarrow> mem_case(t1,t2,p,P,leq,f)"
   unfolding mem_case_def is_mem_case_def
   using pair_in_M_iff zero_in_M n_in_M[of 1]
-  apply simp
+  apply (simp del:setclass_iff rall_setclass_is_ball)
   apply (unfold rall_def)
   apply (intro iffI allI impI)
   apply (drule_tac x=v in spec)
-  apply (subgoal_tac "M(v)")
+  apply (subgoal_tac "(##M)(v)")
     apply (drule mp, assumption)+
     apply blast
-  apply (simp add: comp_in_M(1))
+  apply (simp add: comp_in_M(1) del:setclass_iff rall_setclass_is_ball)
   apply (drule_tac x=x in spec)
   apply (blast intro:comp_in_M)
   done
@@ -684,40 +702,76 @@ lemma Hfrc_at_abs:
   unfolding is_Hfrc_at_def using Hfrc_abs
   by auto
 
-lemma frecrelP_abs [simp] :
-  "z\<in>M \<Longrightarrow>
-   frecrelP(##M,z) \<longleftrightarrow>  name1(fst(z)) \<in> domain(name1(snd(z))) \<union> domain(name2(snd(z))) \<and> 
-            (name2(fst(z)) = name1(snd(z)) \<or> name2(fst(z)) = name2(snd(z))) 
-          \<or> name1(fst(z)) = name1(snd(z)) \<and> name2(fst(z)) \<in> domain(name2(snd(z)))"
-  unfolding frecrelP_def rex_def apply simp
-  sorry
 
-(* Vale esto si z no es un par? *)
-lemma frecrelP_abs' :
-  "z\<in>M \<Longrightarrow> frecrelP(##M,z) \<longleftrightarrow> (\<lambda><x,y>. frecR(x,y))(z)" 
-  sorry
+lemma components_closed :
+  "x\<in>M \<Longrightarrow> ftype(x)\<in>M"
+  "x\<in>M \<Longrightarrow> name1(x)\<in>M"
+  "x\<in>M \<Longrightarrow> name2(x)\<in>M"
+  "x\<in>M \<Longrightarrow> cond_of(x)\<in>M"
+  unfolding ftype_def name1_def name2_def cond_of_def using fst_snd_closed by simp_all
 
+lemma frecR_abs :
+  "x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> x\<in>A1\<times>A2\<times>A3\<times>A4 \<Longrightarrow> y\<in>A1\<times>A2\<times>A3\<times>A4 \<Longrightarrow> frecR(x,y) \<longleftrightarrow> is_frecR(##M,x,y)" 
+  unfolding frecR_def is_frecR_def using components_closed domain_closed by simp
+
+lemma frecrelP_abs :
+  assumes
+    "A1\<in>M" "A2\<in>M" "A3\<in>M" "A4\<in>M" "z\<in>(A1\<times>A2\<times>A3\<times>A4)\<times>(A1\<times>A2\<times>A3\<times>A4)"
+  shows
+    "frecrelP(##M,z) \<longleftrightarrow> (\<exists>x y. z = <x,y> \<and> frecR(x,y))"
+proof -
+  let ?Q= "A1\<times>A2\<times>A3\<times>A4"
+  have "?Q\<times>?Q\<in>M"
+    using assms cartprod_closed by simp
+  then
+  have "z\<in>M" 
+    using \<open>z\<in>?Q\<times>?Q\<close> Transset_intf[OF trans_M] by simp
+  moreover
+  have "x\<in>M \<and> y\<in>M" if "z = <x,y>" for x y
+    using pair_in_M_iff that calculation by simp
+  moreover 
+  have "x\<in>(A1\<times>A2\<times>A3\<times>A4) \<and> y\<in>(A1\<times>A2\<times>A3\<times>A4)" if "z=<x,y>" for x y
+    using that \<open>z\<in>(A1\<times>A2\<times>A3\<times>A4)\<times>(A1\<times>A2\<times>A3\<times>A4)\<close> by simp
+  ultimately
+  show ?thesis unfolding frecrelP_def using assms frecR_abs by auto
+qed
 
 lemma frecrel_abs:
-  "\<lbrakk>A\<in>M;r\<in>M\<rbrakk> \<Longrightarrow>
-   is_frecrel(##M,A,r) \<longleftrightarrow>  r = frecrel(A) "
-  unfolding is_frecrel_def frecrel_fst_snd 
-  using transM[OF _ cartprod_closed[of A A]] cartprod_closed
-  by simp
+  assumes 
+   "A1\<in>M" "A2\<in>M" "A3\<in>M" "A3\<in>M""A4\<in>M" "r\<in>M"
+ shows
+   "is_frecrel(##M,A1\<times>A2\<times>A3\<times>A4,r) \<longleftrightarrow>  r = frecrel(A1\<times>A2\<times>A3\<times>A4) "
+proof -
+  let ?Q= "A1\<times>A2\<times>A3\<times>A4"
+  have 0:"?Q\<in>M"
+    using assms cartprod_closed by simp
+  then
+  have 1: "?Q \<times> ?Q \<in> M" 
+    using cartprod_closed by simp
+  moreover
+  have "x\<in>M \<and> y\<in>M" if "z = <x,y>" "z\<in>M" for x y z
+    using pair_in_M_iff that by simp
+  moreover 
+  have "x\<in>(A1\<times>A2\<times>A3\<times>A4) \<and> y\<in>(A1\<times>A2\<times>A3\<times>A4)" 
+          if "z = <x,y>" "z\<in>(A1\<times>A2\<times>A3\<times>A4)\<times>(A1\<times>A2\<times>A3\<times>A4)" for x y z
+    using that by simp
+  have 
+    "Collect(?Q\<times>?Q,frecrelP(##M)) = Collect(?Q\<times>?Q,\<lambda>z. (\<exists>x y. z = <x,y> \<and> frecR(x,y)))"
+    using Collect_cong[of "?Q\<times>?Q" "?Q\<times>?Q" "frecrelP(##M)"] assms frecrelP_abs by simp
+  then
+  show ?thesis unfolding is_frecrel_def def_frecrel using assms cartprod_closed by simp
+qed
 
 
 lemma names_belowD : "y\<in>names_below(P,z) \<Longrightarrow> frecR(x,y) \<Longrightarrow>x\<in>names_below(P,z)"
   sorry
 
-lemma Rrel_frecR: "Rrel(frecR,x) = frecrel(x)"
-  unfolding Rrel_def frecR_def frecrel_def by (rule equalityI) (auto)
-
 lemma restrict_trancl_forcerel:
   assumes "frecR(w,y)"
   shows "restrict(f,forcerel(P,x)-``{y})`w
        = restrict(f,(forcerel(P,x)^+)-``{y})`w" 
-  unfolding forcerel_def using assms restrict_trancl_Rrel[of frecR] 
-    names_belowD Rrel_frecR by (simp)
+  unfolding forcerel_def frecrel_def using assms restrict_trancl_Rrel[of frecR] 
+    names_belowD by (simp)
 
 lemma frecRI1: "s \<in> domain(n1) \<or> s \<in> domain(n2) \<Longrightarrow> frecR(\<langle>b, s, n1, q\<rangle>, \<langle>b', n1, n2, q'\<rangle>)"
   unfolding frecR_def by simp
@@ -757,8 +811,7 @@ proof -
 qed
 
 
-(* Pedro: por qué en la definición de is_frc_at no usás is_Hfrc_at? hacés un abuso ahí con la
-absolutez *)
+
 definition
   is_frc_at_t :: "[i,i] \<Rightarrow> o" where
   "is_frc_at_t(x,z) \<equiv> is_wfrec(##M,is_Hfrc_at(##M,P,leq),forcerel_t(x),x,z)"
@@ -787,13 +840,13 @@ lemma forcerel_in_M :
     "x\<in>M" 
   shows 
     "forcerel(P,x)\<in>M" 
-  unfolding forcerel_t_def forcerel_def frecrel_def names_below_def
+  unfolding forcerel_t_def forcerel_def def_frecrel names_below_def
 proof -
   let ?Q = "2 \<times> eclose(x) \<times> eclose(x) \<times> P"
   have "?Q \<times> ?Q \<in> M"
     using \<open>x\<in>M\<close> P_in_M twoN_in_M eclose_closed cartprod_closed by simp
   moreover
-  have "separation(##M,\<lambda>\<langle>x,y\<rangle>. frecR(x,y))"
+  have "separation(##M,\<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x, y))"
   proof -
     obtain fp_fm where
     fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow> 
@@ -813,12 +866,13 @@ proof -
    ultimately
    have "separation(##M,frecrelP(##M))" 
      unfolding separation_def by simp
-   then show ?thesis using frecrelP_abs' 
-            separation_cong[of "##M" "frecrelP(##M)" "\<lambda><x,y>. frecR(x,y)"] by simp 
+   then 
+   show ?thesis using separation_cong[of "##M" "frecrelP(##M)" 
+         "\<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x, y)" ] frecrelP_abs by simp
  qed
   ultimately
-  show "{\<langle>x,y\<rangle> \<in> ?Q \<times> ?Q . frecR(x, y)} \<in> M" 
-    using separation_closed by simp
+  show "{z \<in> ?Q \<times> ?Q . \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x, y)} \<in> M" 
+    using separation_closed frecrelP_abs by simp
 qed
 
 
@@ -928,8 +982,6 @@ locale forces_rename = forcing_data +
   and
   renaming_type [TC]: "\<phi>\<in>formula \<Longrightarrow> fren`\<phi> \<in> formula" "\<phi>\<in>formula \<Longrightarrow> fref`\<phi> \<in> formula"
          "\<phi>\<in>formula \<Longrightarrow> auxren(\<phi>) \<in> formula"
-  and 
-  forcerel_closed: "x\<in>M \<Longrightarrow> forcerel(P,x)\<in>M"
   and
   wfrec_isHfrcat_replacement: "wfrec_replacement(##M, is_Hfrc_at(##M, P, leq), forcerel(P,fnnc)^+)"
 
@@ -939,7 +991,7 @@ definition
   forces :: "i\<Rightarrow>i" where
   "forces(\<phi>) \<equiv> And(Member(3,0),forces_ren(auxren,fren,fref, \<phi>))"
 
-(* Para qué está el env acá? *)
+
 lemma sats_forces_eq_fm': 
   assumes " [P,leq,one,p,t1,t2] @ env \<in> list(M)"
   shows "sats(M,forces_eq_fm(auxren,0,1),[P,leq,one,p,t1,t2] @ env) \<longleftrightarrow>
@@ -1005,30 +1057,42 @@ lemma MH: "a0\<in>M \<Longrightarrow> a1\<in>M \<Longrightarrow> a2\<in>M \<Long
   using sats_is_Hfrc_at_fm[of 5 6 2 1 0 "[a0,a1,a2,a3,a4,P,leq] @ env" M] P_in_M leq_in_M
   by (simp)
 
-
 lemma sats_forces_eq_fm: 
-  assumes  "p\<in>M" "t1\<in>M" "t2\<in>M"
-  shows "sats(M,forces_eq_fm(auxren,0,1),[P,leq,one,p,t1,t2]) \<longleftrightarrow> is_frc_at(##M,P,leq,<0,t1,t2,p>,1)"
+  assumes  "n\<in>nat" "m\<in>nat" "p\<in>M" "t1\<in>M" "t2\<in>M" "env\<in>list(M)"
+           "nth(n,env)=t1"  "nth(m,env)=t2"
+  shows "sats(M,forces_eq_fm(auxren,n,m),[P,leq,one,p]@env) \<longleftrightarrow> is_frc_at(##M,P,leq,<0,t1,t2,p>,1)"
+  sorry
+
+lemma sats_forces_mem_fm: 
+  assumes  "n\<in>nat" "m\<in>nat" "p\<in>M" "t1\<in>M" "t2\<in>M" "env\<in>list(M)"
+           "nth(n,env)=t1"  "nth(m,env)=t2"
+  shows "sats(M,forces_mem_fm(n,m),[P,leq,one,p]@env) \<longleftrightarrow> is_frc_at(##M,P,leq,<1,t1,t2,p>,1)"
+  sorry
+
+lemma sats_forces_eq_fm0: 
+  assumes  "p\<in>M" "t1\<in>M" "t2\<in>M" "env\<in>list(M)"
+  shows "sats(M,forces_eq_fm(auxren,0,1),[P,leq,one,p,t1,t2]@env) \<longleftrightarrow> is_frc_at(##M,P,leq,<0,t1,t2,p>,1)"
 proof -
   have satsMH:"(is_Hfrc_at(##M, P, leq, a2, a1, a0) \<longleftrightarrow>
         sats(M, is_Hfrc_at_fm(5, 6, 2, 1, 0),
-        [a0,a1,a2,a3,a4,P,leq,forcerel(P,<0,t1,t2,p>),<0,t1,t2,p>,1,0, one,p,t1,t2]))" 
+        [a0,a1,a2,a3,a4,P,leq,forcerel(P,<0,t1,t2,p>),<0,t1,t2,p>,1,0, one,p,t1,t2]@env))" 
     if "a0\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" for a0 a1 a2 a3 a4
     using that assms P_in_M leq_in_M one_in_M 
         sats_is_Hfrc_at_fm[of 5 6 2 1 0 
-        "[a0,a1,a2,a3,a4,P,leq,forcerel(P,<0,t1,t2,p>),<0,t1,t2,p>,1,0, one,p,t1,t2]"]
+        "[a0,a1,a2,a3,a4,P,leq,forcerel(P,<0,t1,t2,p>),<0,t1,t2,p>,1,0, one,p,t1,t2]@env"]
         tuples_in_M zero_in_M oneN_in_M forcerel_in_M by simp
   have "sats(M,is_wfrec_fm(is_Hfrc_at_fm(5,6,2,1,0),2,3,4),
-            [P,leq,forcerel(P,<0,t1,t2,p>),<0,t1,t2,p>,1,0, one,p,t1,t2]) \<longleftrightarrow>
+            [P,leq,forcerel(P,<0,t1,t2,p>),<0,t1,t2,p>,1,0, one,p,t1,t2]@env) \<longleftrightarrow>
         is_frc_at(##M,P,leq,<0,t1,t2,p>,1)" 
     unfolding is_frc_at_def using assms P_in_M leq_in_M one_in_M
-      forcerel_in_M tuples_in_M oneN_in_M zero_in_M sats_is_wfrec_fm[OF satsMH]
+      forcerel_in_M tuples_in_M oneN_in_M zero_in_M sats_is_wfrec_fm[OF satsMH[simplified]]
     by simp
   then show ?thesis using assms P_in_M one_in_M leq_in_M sats_forces_eq_fm' by simp
 qed
 
 (* por qué tenemos el env? *)
-lemma sats_forces_eq_fm: 
+(*
+lemma sats_forces_eq_fm:
   assumes  "[P,leq,one,p,t1,t2] @ env \<in> list(M)"
   shows "sats(M,forces_eq_fm(auxren,0,1),[P,leq,one,p,t1,t2] @ env) \<longleftrightarrow> is_frc_at(##M,P,leq,<0,t1,t2,p>,1)"
 proof -
@@ -1050,6 +1114,7 @@ proof -
     sats_is_wfrec_fm[OF MH[simplified], of "[forcerel(P,<0,t1,t2,p>), <0,t1,t2,p>, 1, 0, one, p, t1, t2] @ env" 2 3 4]
      Hfrc_at_abs nat_into_Ord[OF length_type, of env M] by simp
 qed
+*)
 
 lemma forces_ren_type [TC]:  "\<phi>\<in>formula \<Longrightarrow> forces_ren(auxren,fren,fref, \<phi>) \<in> formula" 
   by (induct \<phi> set:formula; simp)
@@ -1151,14 +1216,16 @@ lemma sats_forces_Forall:
 
 lemma sats_forces_Equal:
   assumes
-    "p\<in>P" "[P,leq,one,p,x,y] @ env \<in> list(M)" "wf(forcerel(P,\<langle>0, x, y, p\<rangle>)^+)"
+    "p\<in>P" "x\<in>M" "y\<in>M" "env\<in>list(M)"
   shows
-    "sats(M,forces(Equal(0,1)),[P,leq,one,p,x,y] @ env) \<longleftrightarrow> 1 = frc_at(P,leq,<0,x,y,p>)"
-  using assms sats_forces_ren_Equal forcerel_closed 
-    wfrec_isHfrcat_replacement frc_at_abs  M_inhabit eclose_closed
-    tuples_in_M Transset_intf[OF trans_M _ P_in_M] oneN_in_M trancl_closed cons_closed<
-  unfolding forces_def by simp
+    "sats(M,forces(Equal(0,1)),[P,leq,one,p,x,y] @ env) \<longleftrightarrow> forces_eq(P,leq,p,t1,t2) "
+  oops
 
+(*  using assms sats_forces_ren_Equal forcerel_in_M
+    wfrec_isHfrcat_replacement frc_at_abs  M_inhabit eclose_closed
+    tuples_in_M Transset_intf[OF trans_M _ P_in_M] oneN_in_M trancl_closed cons_closed
+  unfolding forces_def by simp
+*)
 lemma
   assumes
     "p\<in>P" "[P,leq,one,p] @ env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
