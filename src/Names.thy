@@ -202,50 +202,6 @@ lemma checkD:
   "check(x) =  wfrec(Memrel(eclose({x})), x, Hcheck)"
   unfolding check_def transrec_def ..
 
-lemma field_trancl : "field(r^+) = field(r)"
-by (blast intro: r_into_trancl dest!: trancl_type [THEN subsetD])
-
-lemma field_Memrel : "field(Memrel(A)) \<subseteq> A"
-  unfolding field_def using Ordinal.Memrel_type by blast
-
-lemma Hcheck_trancl_aux:
-  assumes "w \<in> y"
-  shows "restrict(f,Memrel(eclose({x}))-``{y})`w
-       = restrict(f,(Memrel(eclose({x}))^+)-``{y})`w" 
-proof (cases "y\<in>eclose({x})")
-  let ?r="Memrel(eclose({x}))"
-  and ?s="Memrel(eclose({x}))^+"
-  case True
-  from \<open>w\<in>y\<close> \<open>y\<in>eclose({x})\<close>
-  have "<w,y>\<in>?r" 
-    using Memrel_iff  eclose_subset[OF \<open>y\<in>eclose({x})\<close>] by blast
-  then 
-  have "<w,y>\<in>?s" 
-    using r_subset_trancl[of ?r] relation_Memrel by blast
-  with \<open><w,y>\<in>?r\<close> 
-  have "w\<in>?r-``{y}" "w\<in>?s-``{y}"
-    using vimage_singleton_iff by simp_all
-  then 
-  show ?thesis by simp
-next
-  let ?r="Memrel(eclose({x}))"
-  let ?s="?r^+"
-  case False
-  then 
-  have "?r-``{y}=0" 
-    using Memrel_iff by blast
-  then
-  have "w\<notin>?r-``{y}" by simp    
-  with \<open>y\<notin>eclose({x})\<close> 
-  have "y\<notin>field(?s)" 
-    using field_trancl subsetD[OF field_Memrel[of "eclose({x})"]] by auto
-  then 
-  have "w\<notin>?s-``{y}" 
-    using vimage_singleton_iff by blast
-  with \<open>w\<notin>?r-``{y}\<close>
-  show ?thesis by simp
-qed
-
 definition
   rcheck :: "i \<Rightarrow> i" where
   "rcheck(x) == Memrel(eclose({x}))^+" 
@@ -254,7 +210,7 @@ definition
 lemma Hcheck_trancl:"Hcheck(y, restrict(f,Memrel(eclose({x}))-``{y}))
                    = Hcheck(y, restrict(f,(Memrel(eclose({x}))^+)-``{y}))"
   unfolding Hcheck_def
-  using Hcheck_trancl_aux by simp
+  using restrict_trans_eq by simp
 
 lemma check_trancl: "check(x) = wfrec(rcheck(x), x, Hcheck)"
 proof -
