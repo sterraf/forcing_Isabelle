@@ -161,11 +161,11 @@ schematic_goal is_frecrel_iff_sats:
 (* Definition of forces for equality and membership *)
 
 (* p ||- \<tau> = \<theta> \<equiv>
-  \<forall>\<sigma>. \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<longrightarrow> (\<forall>q. <q,p>\<in>leq \<longrightarrow> (q ||- \<sigma>\<in>\<tau>) = (q ||- \<sigma>\<in>\<theta>) ) *)
+  \<forall>\<sigma>. \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<longrightarrow> (\<forall>q. <q,p>\<in>leq \<longrightarrow> ((q ||- \<sigma>\<in>\<tau>) \<longleftrightarrow> (q ||- \<sigma>\<in>\<theta>)) ) *)
 definition
   eq_case :: "[i,i,i,i,i,i] \<Rightarrow> o" where
   "eq_case(t1,t2,p,P,leq,f) \<equiv> \<forall>s. s\<in>domain(t1) \<union> domain(t2) \<longrightarrow>
-      (\<forall>q. q\<in>P \<and> <q,p>\<in>leq \<longrightarrow> f`<1,s,t1,q> = f`<1,s,t2,q>)"
+      (\<forall>q. q\<in>P \<and> <q,p>\<in>leq \<longrightarrow> (f`<1,s,t1,q>=1  \<longleftrightarrow> f`<1,s,t2,q> =1))"
 
 (* p ||-
    \<pi> \<in> \<tau> \<equiv> \<forall>v. <v,p>\<in>leq \<longrightarrow> (\<exists>q. <q,v>\<in>leq \<and> (\<exists>\<sigma>. \<exists>r. <\<sigma>,r>\<in>\<tau> \<and> <q,r>\<in>leq \<and>  q ||- \<pi> = \<sigma>)) *)
@@ -192,19 +192,19 @@ definition
   forces_mem :: "[i,i,i,i,i] \<Rightarrow> o" where
   "forces_mem(P,leq,p,t1,t2) \<equiv> frc_at(P,leq,<1,t1,t2,p>) = 1"
 
-
-(* "eq_case(t1,t2,p,P,leq,f) \<equiv> \<forall>s\<in>domain(t1) \<union> domain(t2). 
+(* "eq_case(t1,t2,p,P,leq,f) \<equiv> \<forall>s\<in>domain(t1) \<union> domain(t2).
                         \<forall>q. q\<in>P \<and> <q,p>\<in>leq \<longrightarrow> f`<1,s,t1,q> = f`<1,s,t2,q>" *)
 definition
   is_eq_case :: "[i\<Rightarrow>o,i,i,i,i,i,i] \<Rightarrow> o" where
   "is_eq_case(M,t1,t2,p,P,leq,f) \<equiv>
    \<forall>s[M]. (\<exists>d[M]. is_domain(M,t1,d) \<and> s\<in>d) \<or> (\<exists>d[M]. is_domain(M,t2,d) \<and> s\<in>d)
        \<longrightarrow> (\<forall>q[M]. q\<in>P \<and> (\<exists>qp[M]. pair(M,q,p,qp) \<and> qp\<in>leq) \<longrightarrow>
-            (\<exists>t1q[M]. \<exists>st1q[M]. \<exists>ost1q[M]. \<exists>t2q[M]. \<exists>st2q[M]. \<exists>o[M]. \<exists>ost2q[M]. \<exists>vf[M].
+            (\<exists>t1q[M]. \<exists>st1q[M]. \<exists>ost1q[M]. \<exists>t2q[M]. \<exists>st2q[M]. \<exists>o[M]. \<exists>ost2q[M]. \<exists>vf1[M]. \<exists>vf2[M].
              pair(M,t1,q,t1q) \<and> pair(M,s,t1q,st1q) \<and> pair(M,o,st1q,ost1q) \<and>
              pair(M,t2,q,t2q) \<and> pair(M,s,t2q,st2q) \<and>
              is_one(M,o) \<and> pair(M,o,st2q,ost2q) \<and>
-             fun_apply(M,f,ost2q,vf) \<and> fun_apply(M,f,ost1q,vf)))"
+             fun_apply(M,f,ost2q,vf1) \<and> fun_apply(M,f,ost1q,vf2) \<and>
+             (vf2 = o \<longleftrightarrow> vf1 =o)))"
 
 (*  "mem_case(t1,t2,p,P,leq,f) \<equiv> \<forall>v. <v,p>\<in>leq \<longrightarrow>
     (\<exists>q. \<exists>s. \<exists>r. q\<in>P \<and> <q,v>\<in>leq \<and> <s,r> \<in> t2 \<and> <q,r>\<in>leq \<and>  f`<0,t1,s,q> = 1)" *)
@@ -358,7 +358,7 @@ lemma is_tuple_fm_def_type [TC]:
 
 definition
   is_Hfrc_at_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
-  "is_Hfrc_at_fm(P,leq,fnnc,f,z) \<equiv> Or(And(empty_fm(z),
+  "is_Hfrc_at_fm(P,leq,fnnc,f,z) \<equiv>  Or(And(empty_fm(z),
              Neg(Exists
                   (Exists
                     (Exists
@@ -392,7 +392,9 @@ definition
                                                                                                  (And(pair_fm(1, 2, 0),
                                                                                                       Exists
                                                                                                        (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))), 1, 0),
-                                                                                                            fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))), 5, 0)))))))))))))))))))))),
+                                                                                                            Exists
+                                                                                                             (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6))))))))))), 6, 0),
+                                                                                                                  Iff(Equal(0, 3), Equal(1, 3))))))))))))))))))))))))),
                                                 And(Forall(Iff(Member(0, 6), empty_fm(0))),
                                                     Forall
                                                      (Implies
@@ -456,7 +458,9 @@ definition
                                                                                              (And(pair_fm(1, 2, 0),
                                                                                                   Exists
                                                                                                    (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))), 1, 0),
-                                                                                                        fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))), 5, 0)))))))))))))))))))))),
+                                                                                                        Exists
+                                                                                                         (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6))))))))))), 6, 0),
+                                                                                                              Iff(Equal(0, 3), Equal(1, 3))))))))))))))))))))))))),
                                             And(Forall(Iff(Member(0, 6), empty_fm(0))),
                                                 Forall
                                                  (Implies
@@ -486,7 +490,6 @@ definition
 (Member(9, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
  And(Member(5, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
      fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))))), 1, 0))))))))))))))))))))))))))))))))))))))))"
-
 definition
   is_frecrel_fm :: "[i,i] \<Rightarrow> i" where
   "is_frecrel_fm(a,r) \<equiv> Exists
@@ -653,14 +656,14 @@ proof -
   ultimately
   have 
     "(\<forall>s\<in>M. s \<in> domain(t1) \<or> s \<in> domain(t2) \<longrightarrow> (\<forall>q\<in>M. q\<in>P \<and> \<langle>q, p\<rangle> \<in> leq \<longrightarrow> 
-                              f ` \<langle>1, s, t1, q\<rangle> = f ` \<langle>1, s, t2, q\<rangle>)) \<longleftrightarrow>
+                              (f ` \<langle>1, s, t1, q\<rangle> =1 \<longleftrightarrow> f ` \<langle>1, s, t2, q\<rangle>=1))) \<longleftrightarrow>
     (\<forall>s. s \<in> domain(t1) \<or> s \<in> domain(t2) \<longrightarrow> (\<forall>q. q\<in>P \<and> \<langle>q, p\<rangle> \<in> leq \<longrightarrow> 
-                                  f ` \<langle>1, s, t1, q\<rangle> = f ` \<langle>1, s, t2, q\<rangle>))" 
+                                  (f ` \<langle>1, s, t1, q\<rangle> =1 \<longleftrightarrow> f ` \<langle>1, s, t2, q\<rangle>=1)))" 
     using assms by auto
   then show ?thesis
     unfolding eq_case_def is_eq_case_def 
     using assms pair_in_M_iff n_in_M[of 1] domain_closed tuples_in_M 
-      apply_closed leq_in_M 
+      apply_closed leq_in_M
     by simp
 qed
 
@@ -778,6 +781,11 @@ lemma frecRI2: "s \<in> domain(n1) \<or> s \<in> domain(n2) \<Longrightarrow> fr
 lemma frecRI3: "\<langle>s, r\<rangle> \<in> n2 \<Longrightarrow> frecR(\<langle>b, n1, s, q\<rangle>, \<langle>b', n1, n2, q'\<rangle>)"
   unfolding frecR_def by auto
 
+lemma names_belowI : "frecR(<ft,n1,n2,p>,<a,b,c,d>) \<Longrightarrow> ft\<in>2 \<Longrightarrow> p\<in>P \<Longrightarrow> <ft,n1,n2,p>\<in>names_below(P,<a,b,c,d>)"
+  sorry
+
+lemmas names_belowI' = names_belowI[OF frecRI1] names_belowI[OF frecRI2] names_belowI[OF frecRI3] 
+
 lemma Hfrc_restrict_trancl: "bool_of_o(Hfrc(P, leq, y, restrict(f,forcerel(P,x)-``{y})))
          = bool_of_o(Hfrc(P, leq, y, restrict(f,(forcerel(P,x)^+)-``{y})))"
   unfolding Hfrc_def bool_of_o_def eq_case_def mem_case_def
@@ -806,21 +814,69 @@ proof -
   show ?thesis unfolding forcerel_t_def .
 qed
 
+lemma wf_forcerel :
+  "wf(forcerel(P,x))"
+  sorry
 
+(* Don't know if this is true *)
+lemma  aux_def_frc_at: "x\<in>names_below(P,y) \<Longrightarrow>
+  wfrec(forcerel(P,y), x, H) =  wfrec(forcerel(P,x), x, H)"
+  sorry
+
+(* This is NOT true (though it might be with \<subseteq>) *)
+lemma vimage_forcerel: "forcerel(P,\<langle>ft,n1,n2,p\<rangle>) -`` {\<langle>ft,n1,n2,p\<rangle>} = names_below(P,\<langle>ft,n1,n2,p\<rangle>)"
+  sorry
+
+lemma def_frc_at : "frc_at(P,leq,<ft,n1,n2,p>) = 
+   bool_of_o( p \<in>P \<and> 
+  (  ft = 0 \<and>  (\<forall>s. s\<in>domain(n1) \<union> domain(n2) \<longrightarrow>
+        (\<forall>q. q\<in>P \<and> <q,p>\<in>leq \<longrightarrow> (frc_at(P,leq,<1,s,n1,q>) =1 \<longleftrightarrow> frc_at(P,leq,<1,s,n2,q>) =1)))
+   \<or> ft = 1 \<and> ( \<forall>v. <v,p>\<in>leq \<longrightarrow>
+    (\<exists>q. \<exists>s. \<exists>r. q\<in>P \<and> <q,v>\<in>leq \<and> <s,r> \<in> n2 \<and> <q,r>\<in>leq \<and>  frc_at(P,leq,<0,n1,s,q>) = 1))))"
+proof -
+  let ?r="\<lambda>y. forcerel(P,y)" and ?Hf="\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f))"
+  let ?arg="<ft,n1,n2,p>"
+  from wf_forcerel 
+  have wfr: "\<forall>w . wf(?r(w))" ..
+  with wfrec [of "?r(?arg)" ?arg ?Hf] 
+  have "frc_at(P,leq,?arg) = ?Hf( ?arg, \<lambda>x\<in>?r(?arg) -`` {?arg}. wfrec(?r(?arg), x, ?Hf))"
+    unfolding frc_at_def by simp 
+  also
+  have " ... = ?Hf( ?arg, \<lambda>x\<in>names_below(P,?arg). wfrec(?r(?arg), x, ?Hf))"
+    using vimage_forcerel by simp
+  also
+  have " ... = ?Hf( ?arg, \<lambda>x\<in>names_below(P,?arg). frc_at(P,leq,x))"
+    using aux_def_frc_at unfolding frc_at_def by simp
+  finally 
+  show ?thesis using names_belowI' unfolding Hfrc_def eq_case_def mem_case_def 
+    apply auto sorry
+qed
+
+lemma def_forces_eq: "p\<in>P \<Longrightarrow> forces_eq(P,leq,p,t1,t2) \<longleftrightarrow> 
+      (\<forall>s\<in>domain(t1) \<union> domain(t2). \<forall>q. q\<in>P \<and> <q,p>\<in>leq \<longrightarrow> 
+      (forces_mem(P,leq,q,s,t1) \<longleftrightarrow> forces_mem(P,leq,q,s,t2)))" 
+  unfolding forces_eq_def forces_mem_def using def_frc_at[of 0 t1 t2 p]  unfolding bool_of_o_def 
+  by auto
+
+lemma def_forces_mem: "p\<in>P \<Longrightarrow> forces_mem(P,leq,p,t1,t2) \<longleftrightarrow> 
+     (\<forall>v. <v,p>\<in>leq \<longrightarrow>
+      (\<exists>q. \<exists>s. \<exists>r. q\<in>P \<and> <q,v>\<in>leq \<and> <s,r> \<in> t2 \<and> <q,r>\<in>leq \<and> forces_eq(P,leq,q,t1,s)))"
+  unfolding forces_eq_def forces_mem_def using def_frc_at[of 1 t1 t2 p]  unfolding bool_of_o_def 
+  by auto
 
 definition
   is_frc_at_t :: "[i,i] \<Rightarrow> o" where
   "is_frc_at_t(x,z) \<equiv> is_wfrec(##M,is_Hfrc_at(##M,P,leq),forcerel_t(x),x,z)"
 
 
-lemma wf_forcerel :
+lemma wf_forcerel_t :
   "x\<in>M \<Longrightarrow> wf(forcerel_t(x))"
   sorry
 
-lemma trans_forcerel_t : "x\<in>M \<Longrightarrow> trans(forcerel_t(x))"
+lemma trans_forcerel_t : "trans(forcerel_t(x))"
   unfolding forcerel_t_def using trans_trancl .
 
-lemma relation_forcerel_t : "x\<in>M \<Longrightarrow> relation(forcerel_t(x))" 
+lemma relation_forcerel_t : "relation(forcerel_t(x))" 
   unfolding forcerel_t_def using relation_trancl .
 
 lemma oneN_in_M[simp]: "1\<in>M"
@@ -937,7 +993,7 @@ qed
 lemma frc_at_abs:
   "\<lbrakk>fnnc\<in>M ; z\<in>M\<rbrakk> \<Longrightarrow> is_frc_at_t(fnnc,z) \<longleftrightarrow> z = frc_at(P,leq,fnnc)"
   unfolding frc_at_trancl is_frc_at_t_def
-  using wfrec_Hfrc_at[of fnnc] wf_forcerel trans_forcerel_t relation_forcerel_t forcerel_t_in_M
+  using wfrec_Hfrc_at[of fnnc] wf_forcerel_t trans_forcerel_t relation_forcerel_t forcerel_t_in_M
         Hfrc_at_closed relation2_Hfrc_at_abs 
         trans_wfrec_abs[of "forcerel_t(fnnc)" fnnc z "is_Hfrc_at(##M,P,leq)" "\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f))"]
   by (simp del:setclass_iff  add:setclass_iff[symmetric])
