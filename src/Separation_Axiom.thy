@@ -1,28 +1,9 @@
 theory Separation_Axiom 
-  imports Forcing_Theorems
+  imports Forcing_Theorems Separation_Rename
 begin
 
-lemma apply_fun: "f \<in> Pi(A,B) ==> <a,b>: f \<Longrightarrow> f`a = b"
-  by(auto simp add: apply_iff)
-
-context G_generic begin
-
-end (* context G_generic *)
-
-locale sep_rename = G_generic +
-  fixes rensep :: "i"
-  assumes
-  rensep_action: "arity(\<phi>) \<le> 7 #+ length(env) \<Longrightarrow> [t,p,u,P,leq,one,pi] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
-      sats(M, rensep`\<phi>,[t,p,u,P,leq,one,pi] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,one,p,t] @ env @ [pi,u])"
-  and
-  rensep_type [TC]: "\<phi>\<in>formula \<Longrightarrow> rensep`\<phi> \<in> formula"
-  and
-  arity_rensep: "\<phi>\<in>formula \<Longrightarrow> arity(rensep`\<phi>) = arity(\<phi>)"
-
+context G_generic
 begin
-
-lemma nth_concat : "[p,t] \<in> list(A) \<Longrightarrow> env\<in> list(A) \<Longrightarrow> nth(1 #+ length(env),[p]@ env @ [t]) = t"
-  by(auto simp add:nth_append)
 
 lemma map_val :
   assumes "env\<in>list(M[G])"
@@ -54,15 +35,15 @@ proof -
   obtain \<pi> where "\<pi> \<in> M" "val(G, \<pi>) = c"
     using GenExt_def by auto
   let ?\<chi>="And(Member(0,1 #+ length(env)),\<phi>)" and ?Pl1="[P,leq,one]"
-  let ?new_form="rensep`(forces(?\<chi>))"
+  let ?new_form="sep_ren(length(env),forces(?\<chi>))"
   let ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
   note phi = \<open>\<phi>\<in>formula\<close> \<open>arity(\<phi>) \<le> 1 #+ length(env)\<close>
   with \<open>env\<in>list(_)\<close>
   have "arity(forces(?\<chi>)) \<le> 6 #+ length(env)"
     using nat_simp_union arity_forces leI by simp
-  from \<open>\<phi>\<in>formula\<close>
+  from \<open>\<phi>\<in>formula\<close> \<open>env\<in>list(M[G])\<close>
   have "?new_form \<in> formula"
-    using definability[of "?\<chi>"] rensep_type by simp
+    using definability[of "?\<chi>"] type_rensep by simp
   then
   have "?\<psi> \<in> formula"
     by simp
@@ -70,7 +51,7 @@ proof -
   have "arity(?\<psi>) \<le> 5 #+ length(env)"
     unfolding pair_fm_def upair_fm_def 
     using leI arity_rensep[OF definability[of "?\<chi>"]] arity_forces nat_simp_union
-    by simp
+    sorry
   from \<open>\<phi>\<in>formula\<close>
   have "forces(?\<chi>) \<in> formula"
     using definability by simp
@@ -106,6 +87,8 @@ proof -
       let ?env="?Pl1@[p,\<theta>] @ nenv @ [\<pi>,u]"
       let ?new_env=" [\<theta>,p,u,P,leq,one,\<pi>] @ nenv"
       let ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
+      have "[\<theta>, p, u, \<pi>, leq, one, \<pi>] \<in> list(M)" 
+        using in_M' by simp
       have "?\<chi> \<in> formula" "forces(?\<chi>)\<in> formula"  
         using phi by simp_all
       from in_M' 
@@ -117,16 +100,18 @@ proof -
         by simp
       from in_M' \<open>env \<in> _\<close> Eq1' \<open>length(nenv) = length(env)\<close> 
         \<open>arity(forces(?\<chi>)) \<le> 6 #+ length(env)\<close> \<open>forces(?\<chi>)\<in> formula\<close>
+        \<open>[\<theta>, p, u, \<pi>, leq, one, \<pi>] \<in> list(M)\<close> 
       have "... \<longleftrightarrow> sats(M,forces(?\<chi>),?env)"
-        using rensep_action[of "forces(?\<chi>)"  "nenv" \<theta> p u \<pi>] leI by (simp) 
+        using sepren_action[of "forces(?\<chi>)"  "nenv" \<theta> p u \<pi>,OF _ _ \<open>nenv\<in>list(M)\<close>] leI 
+        sorry
       also from in_M'
       have "... \<longleftrightarrow> sats(M,forces(?\<chi>), ([P, leq, one,p,\<theta>]@nenv@ [\<pi>])@[u])" 
-        using app_assoc by simp
+        using app_assoc sorry
       also 
       from in_M' \<open>env\<in>_\<close>  phi \<open>length(nenv) = length(env)\<close>
         \<open>arity(forces(?\<chi>)) \<le> 6 #+ length(env)\<close> \<open>forces(?\<chi>)\<in>formula\<close>
       have "... \<longleftrightarrow> sats(M,forces(?\<chi>), [P, leq, one,p,\<theta>]@ nenv @ [\<pi>])"        
-        by (rule_tac arity_sats_iff,auto)
+        sorry (*        by (rule_tac arity_sats_iff,auto) *)
       also 
       from \<open>arity(forces(?\<chi>)) \<le> 6 #+ length(env)\<close> \<open>forces(?\<chi>)\<in>formula\<close> in_M' phi 
       have " ... \<longleftrightarrow> (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
@@ -383,5 +368,7 @@ proof -
   show ?thesis 
     using separation_iff rev_bexI unfolding is_Collect_def by force
 qed
+
 end (* context: sep_rename *)
+
 end
