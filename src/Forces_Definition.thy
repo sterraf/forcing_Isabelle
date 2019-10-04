@@ -363,7 +363,72 @@ definition
                   (Exists
                     (Exists
                       (Exists
-                        (Exists
+                        (And(Member(0, succ(succ(succ(succ(P))))),
+                             Exists
+                              (And(pair_fm(2, 1, 0),
+                                   Exists
+                                    (And(pair_fm(4, 1, 0),
+                                         And(pair_fm(5, 0, succ(succ(succ(succ(succ(succ(fnnc))))))),
+                                             Or(And(empty_fm(5),
+                                                    Forall
+                                                     (Implies
+                                                       (Or(Exists(And(domain_fm(6, 0), Member(1, 0))), Exists(And(domain_fm(5, 0), Member(1, 0)))),
+                                                        Forall
+                                                         (Implies
+                                                           (And(Member(0, succ(succ(P #+ 6))), Exists(And(pair_fm(1, 5, 0), Member(0, succ(succ(succ(leq #+ 6))))))),
+                                                            Exists
+                                                             (And(pair_fm(7, 1, 0),
+                                                                  Exists
+                                                                   (And(pair_fm(3, 1, 0),
+                                                                        Exists
+                                                                         (Exists
+                                                                           (Exists
+                                                                             (Exists
+                                                                               (And(pair_fm(0, 4, 3),
+                                                                                    And(pair_fm(11, 6, 2),
+                                                                                        And(pair_fm(7, 2, 1),
+                                                                                            And(Forall(Iff(Member(0, 1), empty_fm(0))),
+                                                                                                Exists
+                                                                                                 (And(pair_fm(1, 2, 0),
+                                                                                                      Exists
+                                                                                                       (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))), 1, 0),
+                                                                                                            fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))), 5, 0)))))))))))))))))))))),
+                                                And(Forall(Iff(Member(0, 6), empty_fm(0))),
+                                                    Forall
+                                                     (Implies
+                                                       (Exists(And(pair_fm(1, 4, 0), Member(0, succ(succ(leq #+ 6))))),
+                                                        Exists
+                                                         (And(Member(0, succ(succ(P #+ 6))),
+                                                              Exists
+                                                               (And(pair_fm(1, 2, 0),
+                                                                    Exists
+                                                                     (Exists
+                                                                       (Exists
+                                                                         (And(pair_fm(2, 1, 0),
+                                                                              Exists
+                                                                               (And(pair_fm(5, 2, 0),
+                                                                                    Exists
+                                                                                     (And(pair_fm(4, 6, 0),
+                                                                                          Exists
+                                                                                           (Exists
+                                                                                             (And(empty_fm(0),
+                                                                                                  And(pair_fm(14, 2, 1),
+                                                                                                      Exists
+                                                                                                       (And(pair_fm(1, 2, 0),
+                                                                                                            Exists
+                                                                                                             (And(Forall(Iff(Member(0, 1), empty_fm(0))),
+                                                                                                                  And
+(Member(6, succ(14)),
+ And(Member(9, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
+     And(Member(5, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
+         fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))))), 1, 0)))))))))))))))))))))))))))))))))))))))),
+         And(Forall(Iff(Member(0, succ(z)), empty_fm(0))),
+             Exists
+              (Exists
+                (Exists
+                  (Exists
+                    (And(Member(0, succ(succ(succ(succ(P))))),
+                         Exists
                           (And(pair_fm(2, 1, 0),
                                Exists
                                 (And(pair_fm(4, 1, 0),
@@ -374,7 +439,7 @@ definition
                                                    (Or(Exists(And(domain_fm(6, 0), Member(1, 0))), Exists(And(domain_fm(5, 0), Member(1, 0)))),
                                                     Forall
                                                      (Implies
-                                                       (Exists(And(pair_fm(1, 5, 0), Member(0, succ(succ(succ(leq #+ 6)))))),
+                                                       (And(Member(0, succ(succ(P #+ 6))), Exists(And(pair_fm(1, 5, 0), Member(0, succ(succ(succ(leq #+ 6))))))),
                                                         Exists
                                                          (And(pair_fm(7, 1, 0),
                                                               Exists
@@ -382,110 +447,45 @@ definition
                                                                     Exists
                                                                      (Exists
                                                                        (Exists
- (Exists
-   (And(pair_fm(0, 4, 3),
-        And(pair_fm(11, 6, 2),
-            And(pair_fm(7, 2, 1),
-                And(Forall(Iff(Member(0, 1), empty_fm(0))),
-                    Exists
-                     (And(pair_fm(1, 2, 0),
-                          Exists
-                           (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))), 1, 0),
-                                fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))), 5, 0)))))))))))))))))))))),
+                                                                         (Exists
+                                                                           (And(pair_fm(0, 4, 3),
+                                                                                And(pair_fm(11, 6, 2),
+                                                                                    And(pair_fm(7, 2, 1),
+                                                                                        And(Forall(Iff(Member(0, 1), empty_fm(0))),
+                                                                                            Exists
+                                                                                             (And(pair_fm(1, 2, 0),
+                                                                                                  Exists
+                                                                                                   (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))), 1, 0),
+                                                                                                        fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))), 5, 0)))))))))))))))))))))),
                                             And(Forall(Iff(Member(0, 6), empty_fm(0))),
                                                 Forall
                                                  (Implies
                                                    (Exists(And(pair_fm(1, 4, 0), Member(0, succ(succ(leq #+ 6))))),
                                                     Exists
-                                                     (Exists
-                                                       (And(pair_fm(1, 2, 0),
-                                                            Exists
-                                                             (Exists
-                                                               (Exists
-                                                                 (And(pair_fm(2, 1, 0),
-                                                                      Exists
-                                                                       (And
- (pair_fm(5, 2, 0),
-  Exists
-   (And(pair_fm(4, 6, 0),
-        Exists
-         (Exists
-           (And(empty_fm(0),
-                And(pair_fm(14, 2, 1),
-                    Exists
-                     (And(pair_fm(1, 2, 0),
-                          Exists
-                           (And(Forall(Iff(Member(0, 1), empty_fm(0))),
-                                And(Member(6, succ(14)),
-                                    And(Member(9, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
-                                        And(Member(5, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
-                                            fun_apply_fm
-                                             (succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))))), 1,
-                                              0)))))))))))))))))))))))))))))))))))))),
-         And(Forall(Iff(Member(0, succ(z)), empty_fm(0))),
-             Exists
-              (Exists
-                (Exists
-                  (Exists
-                    (Exists
-                      (And(pair_fm(2, 1, 0),
-                           Exists
-                            (And(pair_fm(4, 1, 0),
-                                 And(pair_fm(5, 0, succ(succ(succ(succ(succ(succ(fnnc))))))),
-                                     Or(And(empty_fm(5),
-                                            Forall
-                                             (Implies
-                                               (Or(Exists(And(domain_fm(6, 0), Member(1, 0))), Exists(And(domain_fm(5, 0), Member(1, 0)))),
-                                                Forall
-                                                 (Implies
-                                                   (Exists(And(pair_fm(1, 5, 0), Member(0, succ(succ(succ(leq #+ 6)))))),
-                                                    Exists
-                                                     (And(pair_fm(7, 1, 0),
+                                                     (And(Member(0, succ(succ(P #+ 6))),
                                                           Exists
-                                                           (And(pair_fm(3, 1, 0),
+                                                           (And(pair_fm(1, 2, 0),
                                                                 Exists
                                                                  (Exists
                                                                    (Exists
-                                                                     (Exists
-                                                                       (And
- (pair_fm(0, 4, 3),
-  And(pair_fm(11, 6, 2),
-      And(pair_fm(7, 2, 1),
-          And(Forall(Iff(Member(0, 1), empty_fm(0))),
-              Exists
-               (And(pair_fm(1, 2, 0),
-                    Exists
-                     (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))), 1, 0),
-                          fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))), 5, 0)))))))))))))))))))))),
-                                        And(Forall(Iff(Member(0, 6), empty_fm(0))),
-                                            Forall
-                                             (Implies
-                                               (Exists(And(pair_fm(1, 4, 0), Member(0, succ(succ(leq #+ 6))))),
-                                                Exists
-                                                 (Exists
-                                                   (And(pair_fm(1, 2, 0),
-                                                        Exists
-                                                         (Exists
-                                                           (Exists
-                                                             (And(pair_fm(2, 1, 0),
-                                                                  Exists
-                                                                   (And(pair_fm(5, 2, 0),
-Exists
- (And(pair_fm(4, 6, 0),
-      Exists
-       (Exists
-         (And(empty_fm(0),
-              And(pair_fm(14, 2, 1),
-                  Exists
-                   (And(pair_fm(1, 2, 0),
-                        Exists
-                         (And(Forall(Iff(Member(0, 1), empty_fm(0))),
-                              And(Member(6, succ(14)),
-                                  And(Member(9, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
-                                      And(Member(5, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
-                                          fun_apply_fm
-                                           (succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))))), 1,
-                                            0))))))))))))))))))))))))))))))))))))))"
+                                                                     (And(pair_fm(2, 1, 0),
+                                                                          Exists
+                                                                           (And(pair_fm(5, 2, 0),
+                                                                                Exists
+                                                                                 (And(pair_fm(4, 6, 0),
+                                                                                      Exists
+                                                                                       (Exists
+                                                                                         (And(empty_fm(0),
+                                                                                              And(pair_fm(14, 2, 1),
+                                                                                                  Exists
+                                                                                                   (And(pair_fm(1, 2, 0),
+                                                                                                        Exists
+                                                                                                         (And(Forall(Iff(Member(0, 1), empty_fm(0))),
+                                                                                                              And(Member(6, succ(14)),
+                                                                                                                  And
+(Member(9, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
+ And(Member(5, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
+     fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))))), 1, 0))))))))))))))))))))))))))))))))))))))))"
 
 definition
   is_frecrel_fm :: "[i,i] \<Rightarrow> i" where
@@ -652,9 +652,9 @@ proof -
     using that unfolding domain_def by auto
   ultimately
   have 
-    "(\<forall>s\<in>M. s \<in> domain(t1) \<or> s \<in> domain(t2) \<longrightarrow> (\<forall>q\<in>M. \<langle>q, p\<rangle> \<in> leq \<longrightarrow> 
+    "(\<forall>s\<in>M. s \<in> domain(t1) \<or> s \<in> domain(t2) \<longrightarrow> (\<forall>q\<in>M. q\<in>P \<and> \<langle>q, p\<rangle> \<in> leq \<longrightarrow> 
                               f ` \<langle>1, s, t1, q\<rangle> = f ` \<langle>1, s, t2, q\<rangle>)) \<longleftrightarrow>
-    (\<forall>s. s \<in> domain(t1) \<or> s \<in> domain(t2) \<longrightarrow> (\<forall>q. \<langle>q, p\<rangle> \<in> leq \<longrightarrow> 
+    (\<forall>s. s \<in> domain(t1) \<or> s \<in> domain(t2) \<longrightarrow> (\<forall>q. q\<in>P \<and> \<langle>q, p\<rangle> \<in> leq \<longrightarrow> 
                                   f ` \<langle>1, s, t1, q\<rangle> = f ` \<langle>1, s, t2, q\<rangle>))" 
     using assms by auto
   then show ?thesis
