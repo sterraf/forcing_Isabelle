@@ -161,18 +161,18 @@ schematic_goal is_frecrel_iff_sats:
 (* Definition of forces for equality and membership *)
 
 (* p ||- \<tau> = \<theta> \<equiv>
-  \<forall>\<sigma>. \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<longrightarrow> (\<forall>q. <q,p>\<in>leq \<longrightarrow> ((q ||- \<sigma>\<in>\<tau>) \<longleftrightarrow> (q ||- \<sigma>\<in>\<theta>)) ) *)
+  \<forall>\<sigma>. \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<longrightarrow> (\<forall>q\<in>P. <q,p>\<in>leq \<longrightarrow> ((q ||- \<sigma>\<in>\<tau>) \<longleftrightarrow> (q ||- \<sigma>\<in>\<theta>)) ) *)
 definition
   eq_case :: "[i,i,i,i,i,i] \<Rightarrow> o" where
   "eq_case(t1,t2,p,P,leq,f) \<equiv> \<forall>s. s\<in>domain(t1) \<union> domain(t2) \<longrightarrow>
       (\<forall>q. q\<in>P \<and> <q,p>\<in>leq \<longrightarrow> (f`<1,s,t1,q>=1  \<longleftrightarrow> f`<1,s,t2,q> =1))"
 
 (* p ||-
-   \<pi> \<in> \<tau> \<equiv> \<forall>v. <v,p>\<in>leq \<longrightarrow> (\<exists>q. <q,v>\<in>leq \<and> (\<exists>\<sigma>. \<exists>r. <\<sigma>,r>\<in>\<tau> \<and> <q,r>\<in>leq \<and>  q ||- \<pi> = \<sigma>)) *)
+   \<pi> \<in> \<tau> \<equiv> \<forall>v\<in>P. <v,p>\<in>leq \<longrightarrow> (\<exists>q\<in>P. <q,v>\<in>leq \<and> (\<exists>\<sigma>. \<exists>r\<in>P. <\<sigma>,r>\<in>\<tau> \<and> <q,r>\<in>leq \<and>  q ||- \<pi> = \<sigma>)) *)
 definition
   mem_case :: "[i,i,i,i,i,i] \<Rightarrow> o" where
-  "mem_case(t1,t2,p,P,leq,f) \<equiv> \<forall>v. <v,p>\<in>leq \<longrightarrow>
-    (\<exists>q. \<exists>s. \<exists>r. q\<in>P \<and> <q,v>\<in>leq \<and> <s,r> \<in> t2 \<and> <q,r>\<in>leq \<and>  f`<0,t1,s,q> = 1)"
+  "mem_case(t1,t2,p,P,leq,f) \<equiv> \<forall>v\<in>P. <v,p>\<in>leq \<longrightarrow>
+    (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> <q,v>\<in>leq \<and> <s,r> \<in> t2 \<and> <q,r>\<in>leq \<and>  f`<0,t1,s,q> = 1)"
 
 definition
   Hfrc :: "[i,i,i,i] \<Rightarrow> o" where
@@ -206,13 +206,13 @@ definition
              fun_apply(M,f,ost2q,vf1) \<and> fun_apply(M,f,ost1q,vf2) \<and>
              (vf2 = o \<longleftrightarrow> vf1 =o)))"
 
-(*  "mem_case(t1,t2,p,P,leq,f) \<equiv> \<forall>v. <v,p>\<in>leq \<longrightarrow>
-    (\<exists>q. \<exists>s. \<exists>r. q\<in>P \<and> <q,v>\<in>leq \<and> <s,r> \<in> t2 \<and> <q,r>\<in>leq \<and>  f`<0,t1,s,q> = 1)" *)
+(*  "mem_case(t1,t2,p,P,leq,f) \<equiv> \<forall>v\<in>P. <v,p>\<in>leq \<longrightarrow>
+    (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> <q,v>\<in>leq \<and> <s,r> \<in> t2 \<and> <q,r>\<in>leq \<and>  f`<0,t1,s,q> = 1)" *)
 definition
   is_mem_case :: "[i\<Rightarrow>o,i,i,i,i,i,i] \<Rightarrow> o" where
-  "is_mem_case(M,t1,t2,p,P,leq,f) \<equiv> \<forall>v[M]. \<forall>vp[M]. pair(M,v,p,vp) \<and> vp\<in>leq \<longrightarrow>
+  "is_mem_case(M,t1,t2,p,P,leq,f) \<equiv> \<forall>v[M]. \<forall>vp[M]. v\<in>P \<and> pair(M,v,p,vp) \<and> vp\<in>leq \<longrightarrow>
     (\<exists>q[M]. \<exists>qv[M]. \<exists>s[M]. \<exists>r[M]. \<exists>sr[M]. \<exists>qr[M]. \<exists>sq[M]. \<exists>t1sq[M]. \<exists>z[M]. \<exists>zt1sq[M]. \<exists>o[M].
-     q\<in>P \<and> pair(M,q,v,qv) \<and> pair(M,s,r,sr) \<and> pair(M,q,r,qr) \<and> pair(M,s,q,sq) \<and>
+     r\<in> P \<and> q\<in>P \<and> pair(M,q,v,qv) \<and> pair(M,s,r,sr) \<and> pair(M,q,r,qr) \<and> pair(M,s,q,sq) \<and>
      empty(M,z) \<and> pair(M,t1,sq,t1sq) \<and> pair(M,z,t1sq,zt1sq) \<and>
      is_one(M,o) \<and> sr\<in>t2 \<and> qv\<in>leq \<and> qr\<in>leq \<and> fun_apply(M,f,zt1sq,o))"
 
@@ -358,7 +358,7 @@ lemma is_tuple_fm_def_type [TC]:
 
 definition
   is_Hfrc_at_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
-  "is_Hfrc_at_fm(P,leq,fnnc,f,z) \<equiv>  Or(And(empty_fm(z),
+  "is_Hfrc_at_fm(P,leq,fnnc,f,z) \<equiv> Or(And(empty_fm(z),
              Neg(Exists
                   (Exists
                     (Exists
@@ -398,32 +398,33 @@ definition
                                                 And(Forall(Iff(Member(0, 6), empty_fm(0))),
                                                     Forall
                                                      (Implies
-                                                       (Exists(And(pair_fm(1, 4, 0), Member(0, succ(succ(leq #+ 6))))),
+                                                       (And(Member(0, succ(P #+ 6)), Exists(And(pair_fm(1, 4, 0), Member(0, succ(succ(leq #+ 6)))))),
                                                         Exists
-                                                         (And(Member(0, succ(succ(P #+ 6))),
-                                                              Exists
-                                                               (And(pair_fm(1, 2, 0),
-                                                                    Exists
-                                                                     (Exists
-                                                                       (Exists
-                                                                         (And(pair_fm(2, 1, 0),
-                                                                              Exists
-                                                                               (And(pair_fm(5, 2, 0),
-                                                                                    Exists
-                                                                                     (And(pair_fm(4, 6, 0),
-                                                                                          Exists
-                                                                                           (Exists
-                                                                                             (And(empty_fm(0),
-                                                                                                  And(pair_fm(14, 2, 1),
-                                                                                                      Exists
-                                                                                                       (And(pair_fm(1, 2, 0),
-                                                                                                            Exists
-                                                                                                             (And(Forall(Iff(Member(0, 1), empty_fm(0))),
-                                                                                                                  And
-(Member(6, succ(14)),
- And(Member(9, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
-     And(Member(5, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
-         fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))))), 1, 0)))))))))))))))))))))))))))))))))))))))),
+                                                         (Exists
+                                                           (Exists
+                                                             (Exists
+                                                               (And(Member(0, succ(succ(succ(succ(succ(P #+ 6)))))),
+                                                                    And(Member(3, succ(succ(succ(succ(succ(P #+ 6)))))),
+                                                                        And(pair_fm(3, 4, 2),
+                                                                            Exists
+                                                                             (And(pair_fm(2, 1, 0),
+                                                                                  Exists
+                                                                                   (And(pair_fm(5, 2, 0),
+                                                                                        Exists
+                                                                                         (And(pair_fm(4, 6, 0),
+                                                                                              Exists
+                                                                                               (Exists
+                                                                                                 (And(empty_fm(0),
+                                                                                                      And(pair_fm(14, 2, 1),
+                                                                                                          Exists
+                                                                                                           (And(pair_fm(1, 2, 0),
+                                                                                                                Exists
+                                                                                                                 (And
+(Forall(Iff(Member(0, 1), empty_fm(0))),
+ And(Member(6, succ(14)),
+     And(Member(9, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
+         And(Member(5, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
+             fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))))), 1, 0))))))))))))))))))))))))))))))))))))))))),
          And(Forall(Iff(Member(0, succ(z)), empty_fm(0))),
              Exists
               (Exists
@@ -464,32 +465,34 @@ definition
                                             And(Forall(Iff(Member(0, 6), empty_fm(0))),
                                                 Forall
                                                  (Implies
-                                                   (Exists(And(pair_fm(1, 4, 0), Member(0, succ(succ(leq #+ 6))))),
+                                                   (And(Member(0, succ(P #+ 6)), Exists(And(pair_fm(1, 4, 0), Member(0, succ(succ(leq #+ 6)))))),
                                                     Exists
-                                                     (And(Member(0, succ(succ(P #+ 6))),
-                                                          Exists
-                                                           (And(pair_fm(1, 2, 0),
-                                                                Exists
-                                                                 (Exists
-                                                                   (Exists
-                                                                     (And(pair_fm(2, 1, 0),
-                                                                          Exists
-                                                                           (And(pair_fm(5, 2, 0),
-                                                                                Exists
-                                                                                 (And(pair_fm(4, 6, 0),
-                                                                                      Exists
-                                                                                       (Exists
-                                                                                         (And(empty_fm(0),
-                                                                                              And(pair_fm(14, 2, 1),
-                                                                                                  Exists
-                                                                                                   (And(pair_fm(1, 2, 0),
-                                                                                                        Exists
-                                                                                                         (And(Forall(Iff(Member(0, 1), empty_fm(0))),
-                                                                                                              And(Member(6, succ(14)),
+                                                     (Exists
+                                                       (Exists
+                                                         (Exists
+                                                           (And(Member(0, succ(succ(succ(succ(succ(P #+ 6)))))),
+                                                                And(Member(3, succ(succ(succ(succ(succ(P #+ 6)))))),
+                                                                    And(pair_fm(3, 4, 2),
+                                                                        Exists
+                                                                         (And(pair_fm(2, 1, 0),
+                                                                              Exists
+                                                                               (And(pair_fm(5, 2, 0),
+                                                                                    Exists
+                                                                                     (And(pair_fm(4, 6, 0),
+                                                                                          Exists
+                                                                                           (Exists
+                                                                                             (And(empty_fm(0),
+                                                                                                  And(pair_fm(14, 2, 1),
+                                                                                                      Exists
+                                                                                                       (And(pair_fm(1, 2, 0),
+                                                                                                            Exists
+                                                                                                             (And(Forall(Iff(Member(0, 1), empty_fm(0))),
                                                                                                                   And
-(Member(9, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
- And(Member(5, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
-     fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))))), 1, 0))))))))))))))))))))))))))))))))))))))))"
+(Member(6, succ(14)),
+ And(Member(9, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
+     And(Member(5, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
+         fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))))), 1, 0)))))))))))))))))))))))))))))))))))))))))"
+
 definition
   is_frecrel_fm :: "[i,i] \<Rightarrow> i" where
   "is_frecrel_fm(a,r) \<equiv> Exists
@@ -831,8 +834,8 @@ lemma def_frc_at : "frc_at(P,leq,<ft,n1,n2,p>) =
    bool_of_o( p \<in>P \<and> 
   (  ft = 0 \<and>  (\<forall>s. s\<in>domain(n1) \<union> domain(n2) \<longrightarrow>
         (\<forall>q. q\<in>P \<and> <q,p>\<in>leq \<longrightarrow> (frc_at(P,leq,<1,s,n1,q>) =1 \<longleftrightarrow> frc_at(P,leq,<1,s,n2,q>) =1)))
-   \<or> ft = 1 \<and> ( \<forall>v. <v,p>\<in>leq \<longrightarrow>
-    (\<exists>q. \<exists>s. \<exists>r. q\<in>P \<and> <q,v>\<in>leq \<and> <s,r> \<in> n2 \<and> <q,r>\<in>leq \<and>  frc_at(P,leq,<0,n1,s,q>) = 1))))"
+   \<or> ft = 1 \<and> ( \<forall>v\<in>P. <v,p>\<in>leq \<longrightarrow>
+    (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> <q,v>\<in>leq \<and> <s,r> \<in> n2 \<and> <q,r>\<in>leq \<and>  frc_at(P,leq,<0,n1,s,q>) = 1))))"
 proof -
   let ?r="\<lambda>y. forcerel(P,y)" and ?Hf="\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f))"
   let ?arg="<ft,n1,n2,p>"
@@ -859,8 +862,8 @@ lemma def_forces_eq: "p\<in>P \<Longrightarrow> forces_eq(P,leq,p,t1,t2) \<longl
   by auto
 
 lemma def_forces_mem: "p\<in>P \<Longrightarrow> forces_mem(P,leq,p,t1,t2) \<longleftrightarrow> 
-     (\<forall>v. <v,p>\<in>leq \<longrightarrow>
-      (\<exists>q. \<exists>s. \<exists>r. q\<in>P \<and> <q,v>\<in>leq \<and> <s,r> \<in> t2 \<and> <q,r>\<in>leq \<and> forces_eq(P,leq,q,t1,s)))"
+     (\<forall>v\<in>P. <v,p>\<in>leq \<longrightarrow>
+      (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> <q,v>\<in>leq \<and> <s,r> \<in> t2 \<and> <q,r>\<in>leq \<and> forces_eq(P,leq,q,t1,s)))"
   unfolding forces_eq_def forces_mem_def using def_frc_at[of 1 t1 t2 p]  unfolding bool_of_o_def 
   by auto
 

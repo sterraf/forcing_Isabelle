@@ -42,7 +42,7 @@ definition
 
 definition 
   dense_below :: "i\<Rightarrow>i\<Rightarrow>o" where
-  "dense_below(D,q) == \<forall>p\<in>P. \<langle>p,q\<rangle>\<in>leq \<longrightarrow> (\<exists>d\<in>D . \<langle>d,p\<rangle>\<in>leq)"
+  "dense_below(D,q) == \<forall>p\<in>P. \<langle>p,q\<rangle>\<in>leq \<longrightarrow> (\<exists>d\<in>D. d\<in>P \<and> \<langle>d,p\<rangle>\<in>leq)"
 
 lemma P_dense: "dense(P)"
   by (insert leq_preord, auto simp add: preorder_on_def refl_def dense_def)
