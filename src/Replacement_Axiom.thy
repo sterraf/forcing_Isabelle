@@ -123,7 +123,7 @@ lemma
   apply (simp add: renbody_thm(2)[of x \<alpha> P leq o m M _ nenv,simplified])
   done
 
-locale rep_rename = sep_rename 
+context G_generic
 begin
 
 lemma pow_inter_M:
