@@ -72,6 +72,7 @@ lemma forces_mem_iff_dense_below:  "p\<in>P \<Longrightarrow> forces_mem(P,leq,p
     ,p)"
   using def_forces_mem[of p t1 t2] by blast
 
+(* Kunen 2013, Lemma IV.2.37(a) *)
 lemma strengthening_eq: 
   assumes "p\<in>P" "r\<in>P" "<r,p>\<in>leq" "forces_eq(P,leq,p,t1,t2)"
   shows "forces_eq(P,leq,r,t1,t2)"
@@ -98,11 +99,13 @@ proof -
 qed
 *)
 
+(* Kunen 2013, Lemma IV.2.37(a) *)
 lemma strengthening_mem: 
   assumes "p\<in>P" "r\<in>P" "<r,p>\<in>leq" "forces_mem(P,leq,p,t1,t2)"
   shows "forces_mem(P,leq,r,t1,t2)"
   using assms forces_mem_iff_dense_below dense_below_under by auto
 
+(* Kunen 2013, Lemma IV.2.37(b) *)
 lemma density_mem: 
   assumes "p\<in>P"
   shows "forces_mem(P,leq,p,t1,t2)  \<longleftrightarrow> dense_below({q\<in>P. forces_mem(P,leq,q,t1,t2)},p)"
@@ -131,7 +134,7 @@ lemma aux_density_eq:
     "forces_mem(P,leq,q,s,t1)" "q\<in>P" "p\<in>P" "<q,p>\<in>leq"
   shows
     "dense_below({r\<in>P. forces_mem(P,leq,r,s,t2)},q)"
-proof (standard, rename_tac r)
+proof
   fix r
   assume "r\<in>P" "\<langle>r,q\<rangle> \<in> leq"
   moreover from this and \<open>p\<in>P\<close> \<open><q,p>\<in>leq\<close> \<open>q\<in>P\<close>
@@ -147,6 +150,7 @@ proof (standard, rename_tac r)
     by blast
 qed
 
+(* Kunen 2013, Lemma IV.2.37(b) *)
 lemma density_eq:
   assumes "p\<in>P"
   shows "forces_eq(P,leq,p,t1,t2)  \<longleftrightarrow> dense_below({q\<in>P. forces_eq(P,leq,q,t1,t2)},p)"
@@ -193,6 +197,27 @@ next
   with \<open>p\<in>P\<close>
   show "forces_eq(P,leq,p,t1,t2)" using def_forces_eq by blast
 qed
+
+definition
+  forces_neq :: "[i,i,i] \<Rightarrow> o" where
+  "forces_neq(p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_eq(P,leq,q,t1,t2))"
+
+definition
+  forces_nmem :: "[i,i,i] \<Rightarrow> o" where
+  "forces_nmem(p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_mem(P,leq,q,t1,t2))"
+
+(* Kunen 2013, Lemma IV.2.38 *)
+lemma not_forces_neq:
+  assumes "p\<in>P"
+  shows "forces_eq(P,leq,p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_neq(q,t1,t2))"
+  sorry
+
+(* Kunen 2013, Lemma IV.2.38 *)
+lemma not_forces_nmem:
+  assumes "p\<in>P"
+  shows "forces_mem(P,leq,p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_nmem(q,t1,t2))"
+  sorry
+
 
 end
 
