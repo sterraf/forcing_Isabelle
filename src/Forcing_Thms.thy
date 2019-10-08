@@ -123,6 +123,30 @@ next
     using dense_below_dense_below forces_mem_iff_dense_below[of p t1 t2] by blast
 qed
 
+lemma aux_density_eq:
+  assumes 
+    "dense_below(
+    {q'\<in>P. \<forall>q. q\<in>P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow> forces_mem(P,leq,q,s,t1) \<longleftrightarrow> forces_mem(P,leq,q,s,t2)}
+    ,p)"
+    "forces_mem(P,leq,q,s,t1)" "q\<in>P" "p\<in>P" "<q,p>\<in>leq"
+  shows
+    "dense_below({r\<in>P. forces_mem(P,leq,r,s,t2)},q)"
+proof (standard, rename_tac r)
+  fix r
+  assume "r\<in>P" "\<langle>r,q\<rangle> \<in> leq"
+  moreover from this and \<open>p\<in>P\<close> \<open><q,p>\<in>leq\<close> \<open>q\<in>P\<close>
+  have "<r,p>\<in>leq"
+    using leq_transD by simp
+  moreover
+  note \<open>forces_mem(_,_,q,s,t1)\<close> \<open>dense_below(_,p)\<close> \<open>q\<in>P\<close>
+  ultimately
+  obtain q1 where "<q1,r>\<in>leq" "q1\<in>P" "forces_mem(P,leq,q1,s,t2)"
+    using strengthening_mem[of q _ s t1] leq_reflI leq_transD[of _ r q] by blast
+  then
+  show "\<exists>d\<in>{r \<in> P . forces_mem(P, leq, r, s, t2)}. d \<in> P \<and> \<langle>d, r\<rangle> \<in> leq"
+    by blast
+qed
+
 lemma density_eq:
   assumes "p\<in>P"
   shows "forces_eq(P,leq,p,t1,t2)  \<longleftrightarrow> dense_below({q\<in>P. forces_eq(P,leq,q,t1,t2)},p)"
@@ -138,7 +162,7 @@ next
     let ?D1="{q'\<in>P. \<forall>s\<in>domain(t1) \<union> domain(t2). \<forall>q. q \<in> P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow>
            forces_mem(P,leq,q,s,t1)\<longleftrightarrow>forces_mem(P,leq,q,s,t2)}"
     let ?D2="{q'\<in>P. \<forall>q. q\<in>P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow> forces_mem(P,leq,q,s,t1) \<longleftrightarrow> forces_mem(P,leq,q,s,t2)}"
-    assume "s\<in>domain(t1) \<union> domain(t2)" "q \<in> P" "<q,p>\<in>leq"
+    assume "s\<in>domain(t1) \<union> domain(t2)" 
     then
     have "?D1\<subseteq>?D2" by blast
     with \<open>dense_below(_,p)\<close>
@@ -146,47 +170,23 @@ next
            forces_mem(P,leq,q,s,t1)\<longleftrightarrow>forces_mem(P,leq,q,s,t2)},p)"
       using dense_below_cong'[OF \<open>p\<in>P\<close> def_forces_eq[of _ t1 t2]] by simp
     with \<open>p\<in>P\<close> \<open>?D1\<subseteq>?D2\<close>
-    have dbp:"dense_below({q'\<in>P. \<forall>q. q\<in>P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow> 
+    have "dense_below({q'\<in>P. \<forall>q. q\<in>P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow> 
             forces_mem(P,leq,q,s,t1) \<longleftrightarrow> forces_mem(P,leq,q,s,t2)},p)"
       using dense_below_mono by simp
-    have "forces_mem(P,leq,q,s,t1) \<Longrightarrow> dense_below({r\<in>P. forces_mem(P,leq,r,s,t2)},q)"
-    proof
-      fix r
-      assume "r\<in>P" "\<langle>r,q\<rangle> \<in> leq"
-      moreover from this and \<open>p\<in>P\<close> \<open><q,p>\<in>leq\<close> \<open>q\<in>P\<close>
-      have "<r,p>\<in>leq"
-        using leq_transD by simp
-      moreover
-      assume "forces_mem(P,leq,q,s,t1)" 
-      moreover 
-      note dbp \<open>q\<in>P\<close>
-      ultimately
-      obtain q1 where "<q1,r>\<in>leq" "q1\<in>P" "forces_mem(P,leq,q1,s,t2)"
-        using strengthening_mem[of q _ s t1] leq_reflI leq_transD[of _ r q] by blast
-      then
-      show "\<exists>d\<in>{r \<in> P . forces_mem(P, leq, r, s, t2)}. d \<in> P \<and> \<langle>d, r\<rangle> \<in> leq"
-        by blast
-    qed
+    moreover from this (* Automatic tools can't handle this symmetry 
+                          in order to apply aux_density_eq below *)
+    have  "dense_below({q'\<in>P. \<forall>q. q\<in>P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow> 
+            forces_mem(P,leq,q,s,t2) \<longleftrightarrow> forces_mem(P,leq,q,s,t1)},p)"
+      by blast
     moreover
-    have "forces_mem(P,leq,q,s,t2) \<Longrightarrow> dense_below({r\<in>P. forces_mem(P,leq,r,s,t1)},q)"
-    proof (* Copy-paste of previous proof. FIX THIS*)
-      fix r
-      assume "r\<in>P" "\<langle>r,q\<rangle> \<in> leq"
-      moreover from this and \<open>p\<in>P\<close> \<open><q,p>\<in>leq\<close> \<open>q\<in>P\<close>
-      have "<r,p>\<in>leq"
-        using leq_transD by simp
-      moreover
-      assume "forces_mem(P,leq,q,s,t2)" 
-      moreover 
-      note dbp \<open>q\<in>P\<close>
-      ultimately
-      obtain q1 where "<q1,r>\<in>leq" "q1\<in>P" "forces_mem(P,leq,q1,s,t1)"
-        using strengthening_mem[of q _ s t2] leq_reflI leq_transD[of _ r q] by blast
-      then
-      show "\<exists>d\<in>{r \<in> P . forces_mem(P, leq, r, s, t1)}. d \<in> P \<and> \<langle>d, r\<rangle> \<in> leq"
-        by blast
-    qed
-    ultimately
+    assume "q \<in> P" "<q,p>\<in>leq"
+    moreover
+    note \<open>p\<in>P\<close>
+    ultimately (*We can omit the next step but it is slower *)
+    have "forces_mem(P,leq,q,s,t1) \<Longrightarrow> dense_below({r\<in>P. forces_mem(P,leq,r,s,t2)},q)"
+         "forces_mem(P,leq,q,s,t2) \<Longrightarrow> dense_below({r\<in>P. forces_mem(P,leq,r,s,t1)},q)" 
+      using aux_density_eq by simp_all
+    then
     have "forces_mem(P, leq, q, s, t1) \<longleftrightarrow> forces_mem(P, leq, q, s, t2)"
       using density_mem[OF \<open>q\<in>P\<close>] by blast
   }
