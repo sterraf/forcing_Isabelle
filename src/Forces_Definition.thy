@@ -99,6 +99,11 @@ definition
             (name2(x) = name1(y) \<or> name2(x) = name2(y)) 
           \<or> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y))"
 
+lemma frecR_core_frecR :
+  assumes  "frecR_core(x,y)"
+  shows "frecR(x,y)"
+  using assms unfolding frecR_core_def frecR_def by auto
+
 lemma max_cong :
   assumes "x \<le> y" "Ord(y)" "Ord(z)" shows "max(x,y) \<le> max(y,z)"
   using assms 
@@ -243,6 +248,8 @@ lemma type_form_tc [TC]:
 definition 
   \<Gamma> :: "i \<Rightarrow> i" where
   "\<Gamma>(x) = 3 * rank_names(x) + type_form(x)"
+
+
 
 lemma \<Gamma>_type : 
   assumes "fst(x) \<in> 2" 
