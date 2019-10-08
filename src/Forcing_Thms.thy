@@ -213,7 +213,7 @@ lemma not_forces_neq:
 proof -
   have "forces_eq(P,leq,p,t1,t2) \<longleftrightarrow> dense_below({q\<in>P. forces_eq(P,leq,q,t1,t2)},p)"
     using \<open>p\<in>P\<close> density_eq by simp
-  then show ?thesis using dense_below_def forces_neq_def by auto
+  then show ?thesis unfolding forces_neq_def by auto
 qed
   
 (* Kunen 2013, Lemma IV.2.38 *)
@@ -223,7 +223,7 @@ lemma not_forces_nmem:
 proof -
   have "forces_mem(P,leq,p,t1,t2)  \<longleftrightarrow> dense_below({q\<in>P. forces_mem(P,leq,q,t1,t2)},p)" 
     using \<open>p\<in>P\<close> density_mem by simp
-  then show ?thesis using dense_below_def forces_nmem_def by auto
+  then show ?thesis unfolding forces_nmem_def by auto
 qed
 
 
