@@ -75,7 +75,24 @@ schematic_goal is_one_iff_sats :
   by (rule sats_is_one_fm_auto(1); simp add:assms)
 
 (* Relation of forces *)
-(* Esta definición está incompleta. *)
+definition
+  frecR_core :: "i \<Rightarrow> i \<Rightarrow> o" where
+  "frecR_core(x,y) \<equiv>
+    (ftype(x) = 0 \<and> ftype(y) = 1 
+      \<and> (name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> (name2(x) = name1(y) \<or> name2(x) = name2(y))))
+   \<or> (ftype(x) = 1 \<and> ftype(y) =  0 \<and> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y)))"
+
+lemma frecR_ftypeD :
+  assumes "frecR_core(x,y)"
+  shows "(ftype(x) = 0 \<and> ftype(y) = 1) \<or> (ftype(x) = 1 \<and> ftype(y) = 0)"
+  using assms unfolding frecR_core_def by auto
+
+(* Punto 3 de p. 257 de Kunen *)
+lemma eq_ftypep_not_frecrR:
+  assumes "ftype(x) = ftype(y)"
+  shows "\<not> frecR_core(x,y)"
+  using assms frecR_ftypeD by force
+
 definition
   frecR :: "i \<Rightarrow> i \<Rightarrow> o" where
   "frecR(x,y) \<equiv>  name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> 
@@ -134,14 +151,14 @@ definition
   "rank_names(x) == max(rank(name1(x)),rank(name2(x)))"
 
 lemma frecR_le_rnk_names :
-  assumes  "frecR(x,y)"
+  assumes  "frecR_core(x,y)"
   shows "rank_names(x)\<le>rank_names(y)"
 proof -
   obtain a b c d  where
     H: "a = name1(x)" "b = name2(x)"
     "c = name1(y)" "d = name2(y)"
     "(a \<in> domain(c)\<union>domain(d) \<and> (b=c \<or> b = d)) \<or> (a = c \<and> b \<in> domain(d))"
-    using assms unfolding frecR_def by force
+    using assms unfolding frecR_core_def by force
   then 
   consider (m) "a \<in> domain(c)  \<and> (b=c \<or> b = d) " 
     | (n) "a\<in>domain(d)  \<and> (b=c \<or> b = d)" 
