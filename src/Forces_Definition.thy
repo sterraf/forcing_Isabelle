@@ -74,19 +74,179 @@ schematic_goal is_one_iff_sats :
   unfolding \<open>nth(i,env) = x\<close>[symmetric] 
   by (rule sats_is_one_fm_auto(1); simp add:assms)
 
-
-
-
 (* Relation of forces *)
+(* Esta definición está incompleta. *)
 definition
   frecR :: "i \<Rightarrow> i \<Rightarrow> o" where
   "frecR(x,y) \<equiv>  name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> 
             (name2(x) = name1(y) \<or> name2(x) = name2(y)) 
           \<or> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y))"
 
+lemma max_cong :
+  assumes "x \<le> y" "Ord(y)" "Ord(z)" shows "max(x,y) \<le> max(y,z)"
+  using assms 
+proof (cases "y \<le> z")
+  case True
+  then show ?thesis 
+    unfolding max_def using assms by simp
+next
+  case False
+  then have "z \<le> y"  using assms not_le_iff_lt leI by simp
+  then show ?thesis 
+    unfolding max_def using assms by simp 
+qed
+
+lemma max_commutes : 
+  assumes "Ord(x)" "Ord(y)"
+  shows "max(x,y) = max(y,x)"
+proof -
+  have "max(x,y) = x \<union> y"
+    using assms nat_simp_union(1) by simp
+  also
+  have "... = y \<union> x"
+    using Un_commute ..
+  finally show ?thesis 
+    using assms nat_simp_union(1) by simp
+qed
+
+lemma max_cong2 :
+  assumes "x \<le> y" "Ord(y)" "Ord(z)" 
+  shows "max(x,z) \<le> max(y,z)"
+proof -
+  from assms 
+  have "Ord(x)" "x \<subseteq> y" 
+    using lt_Ord le_imp_subset by simp_all
+  then
+  have 1: "Ord(x \<union> z)"  "Ord(y \<union> z)" 
+    using Ord_Un assms by simp_all
+  from \<open>Ord(x)\<close>
+  have "max(x,z) = x \<union> z"
+    using nat_simp_union \<open>Ord(z)\<close> by simp
+  also
+  have "... \<le> y \<union> z"
+    using Un_mono[OF \<open>x\<subseteq>y\<close>] subset_imp_le 1 by simp
+  finally show ?thesis 
+    using nat_simp_union \<open>Ord(z)\<close> \<open>Ord(y)\<close> by simp
+qed
+
+definition 
+  rank_names :: "i \<Rightarrow> i" where
+  "rank_names(x) == max(rank(name1(x)),rank(name2(x)))"
+
+lemma frecR_le_rnk_names :
+  assumes  "frecR(x,y)"
+  shows "rank_names(x)\<le>rank_names(y)"
+proof -
+  obtain a b c d  where
+    H: "a = name1(x)" "b = name2(x)"
+    "c = name1(y)" "d = name2(y)"
+    "(a \<in> domain(c)\<union>domain(d) \<and> (b=c \<or> b = d)) \<or> (a = c \<and> b \<in> domain(d))"
+    using assms unfolding frecR_def by force
+  then 
+  consider (m) "a \<in> domain(c)  \<and> (b=c \<or> b = d) " 
+    | (n) "a\<in>domain(d)  \<and> (b=c \<or> b = d)" 
+    | (o) "b\<in>domain(d) \<and> a = c"
+    by auto
+  then show ?thesis proof(cases)
+    case m
+    then 
+    have "rank(a) < rank(c)" 
+      using eclose_rank_lt  in_dom_in_eclose  by simp
+    from m
+    consider (1) "b = c" | (2) "b = d" by auto    
+    then show ?thesis proof (cases)
+      case 1
+      then 
+      have "rank(b) = rank(c)" by simp
+      with \<open>rank(a) < rank(c)\<close> H(1) H(2) H(3) H(4)
+      show ?thesis unfolding rank_names_def 
+        using Ord_rank max_cong leI by simp
+    next
+      case 2
+      then
+      have "rank(b) = rank(d)" by simp
+      with \<open>rank(a) < rank(c)\<close> H(1) H(2) H(3) H(4)
+      show ?thesis unfolding rank_names_def 
+        using Ord_rank max_cong2 leI by simp
+    qed
+  next
+    case n
+    then
+    have "rank(a) < rank(d)"
+      using eclose_rank_lt in_dom_in_eclose  by simp
+    from n
+    consider (1) "b = c" | (2) "b = d" by auto    
+    then show ?thesis proof (cases)
+      case 1
+      then 
+      have "rank(b) = rank(c)" by simp
+      with \<open>rank(a) < rank(d)\<close> H(1) H(2) H(3) H(4)
+      show ?thesis unfolding rank_names_def 
+        using Ord_rank max_cong2
+          max_commutes[of "rank(c)" "rank(d)"] leI by auto
+    next
+      case 2
+      then
+      have "rank(b) = rank(d)" by simp
+      with \<open>rank(a) < rank(d)\<close> H(1) H(2) H(3) H(4)
+      show ?thesis unfolding rank_names_def 
+        using Ord_rank max_cong
+          max_commutes[of "rank(c)" "rank(d)"] leI by auto
+    qed
+  next
+    case o
+    then
+    have "rank(b) < rank(d)" (is "?b < ?d") "rank(a) = rank(c)" (is "?a = _")
+      using eclose_rank_lt in_dom_in_eclose  by simp_all
+    with  H(1) H(2) H(3) H(4)
+    show ?thesis unfolding rank_names_def
+      using Ord_rank max_commutes  max_cong2[OF leI[OF \<open>?b < ?d\<close>], of ?a]
+      by simp
+  qed
+qed
+
+lemma rank_names_types [TC]: 
+  shows "Ord(rank_names(x))"
+  unfolding rank_names_def max_def 
+  using Ord_rank Ord_Un by auto
+
+definition
+  mtype_form :: "i \<Rightarrow> i" where
+  "mtype_form(x) == if rank(name1(x)) < rank(name2(x)) then 0 else 2"
+
+definition
+  type_form :: "i \<Rightarrow> i" where
+  "type_form(x) == if ftype(x) = 0 then 0 else mtype_form(x)"
+
+lemma type_form_tc [TC]: 
+  shows "Ord(type_form(x))"
+  unfolding type_form_def mtype_form_def by auto
+
+(* \<questiondown>Qué operaciones van acá? *)
+definition 
+  \<Gamma> :: "i \<Rightarrow> i" where
+  "\<Gamma>(x) = 3 * rank_names(x) + type_form(x)"
+
+lemma \<Gamma>_type : 
+  assumes "fst(x) \<in> 2" 
+  shows "Ord(\<Gamma>(x))"
+  unfolding \<Gamma>_def sorry
+
+
+lemma frecR_implies_\<Gamma>_le : 
+  assumes "frecR(x,y)"
+  shows "\<Gamma>(x) < \<Gamma>(y)"
+  sorry
+
 definition
   frecrel :: "i \<Rightarrow> i" where
   "frecrel(A) \<equiv> Rrel(frecR,A)"
+
+lemma wf_frecrel : 
+  shows "wf(frecrel(A))"
+  unfolding frecrel_def
+  using relation_Rrel 
+  sorry
 
 lemma def_frecrel : "frecrel(A) = {z\<in>A\<times>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x,y)}"
   unfolding frecrel_def Rrel_def ..
