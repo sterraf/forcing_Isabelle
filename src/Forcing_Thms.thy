@@ -210,21 +210,14 @@ definition
 lemma not_forces_neq:
   assumes "p\<in>P"
   shows "forces_eq(P,leq,p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_neq(q,t1,t2))"
-proof -
-  have "forces_eq(P,leq,p,t1,t2) \<longleftrightarrow> dense_below({q\<in>P. forces_eq(P,leq,q,t1,t2)},p)"
-    using \<open>p\<in>P\<close> density_eq by simp
-  then show ?thesis unfolding forces_neq_def by auto
-qed
-  
+  using assms density_eq unfolding forces_neq_def by blast
+
 (* Kunen 2013, Lemma IV.2.38 *)
 lemma not_forces_nmem:
   assumes "p\<in>P"
   shows "forces_mem(P,leq,p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_nmem(q,t1,t2))"
-proof -
-  have "forces_mem(P,leq,p,t1,t2)  \<longleftrightarrow> dense_below({q\<in>P. forces_mem(P,leq,q,t1,t2)},p)" 
-    using \<open>p\<in>P\<close> density_mem by simp
-  then show ?thesis unfolding forces_nmem_def by auto
-qed
+  using assms density_mem unfolding forces_nmem_def by blast
+
 
 
 end
