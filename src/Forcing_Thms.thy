@@ -218,7 +218,72 @@ lemma not_forces_nmem:
   shows "forces_mem(P,leq,p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_nmem(q,t1,t2))"
   using assms density_mem unfolding forces_nmem_def by blast
 
+lemma sats_forces_Equal:
+  assumes
+    "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2"
+  shows
+    "sats(M,forces(Equal(n,m)),[P,leq,one,p] @ env) \<longleftrightarrow> forces_eq(P,leq,p,t1,t2)"
+  sorry
 
+lemma sats_forces_Member:
+  assumes
+    "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2"
+  shows
+    "sats(M,forces(Member(n,m)),[P,leq,one,p] @ env) \<longleftrightarrow> forces_mem(P,leq,p,t1,t2)"
+  sorry
+
+(* Move the next three *)
+(* "x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>. \<exists>p\<in>G.  <\<theta>,p>\<in>\<pi> \<and> val(G,\<theta>) = x" *)
+declare elem_of_val_pair [dest] SepReplace_iff [simp del] SepReplace_iff[iff]
+
+lemma elem_of_valI [intro!]: "\<exists>\<theta>. \<exists>p\<in>P. p\<in>G \<and> <\<theta>,p>\<in>\<pi> \<and> val(G,\<theta>) = x \<Longrightarrow> x\<in>val(G,\<pi>)"
+  by (subst def_val, auto)
+
+lemma M_genericD [dest]: "M_generic(G) \<Longrightarrow> x\<in>G \<Longrightarrow> x\<in>P"
+  unfolding M_generic_def by (blast dest:filterD)
+
+lemma M_generic_leqD [dest]: "M_generic(G) \<Longrightarrow> p\<in>G \<Longrightarrow> q\<in>P \<Longrightarrow> <p,q>\<in>leq \<Longrightarrow> q\<in>G"
+  unfolding M_generic_def by (blast dest:filter_leqD)
+
+lemma left_in_M : "tau\<in>M \<Longrightarrow> <a,b>\<in>tau \<Longrightarrow> a\<in>M"
+  using fst_snd_closed[of "<a,b>"] Transset_intf[OF trans_M] by auto
+
+(* Kunen 2013, Lemma IV.2.29 *)
+lemma generic_inter_dense_below: "D:M ==> M_generic(G) ==> dense_below(D,p) ==> p\<in>G ==> D \<inter> G \<noteq> 0"
+  sorry
+
+(* Lemma IV.2.40(a), membership *)
+lemma
+  assumes
+    "M_generic(G)" "p\<in>G" "p\<in>P" "forces_mem(P,leq,p,pi,tau)" "pi\<in>M" "tau\<in>M"
+    "\<And>q sig. q\<in>P \<Longrightarrow> sig\<in>domain(tau) \<Longrightarrow> forces_eq(P,leq,q,pi,sig) \<Longrightarrow> 
+      val(G,pi) = val(G,sig)" 
+  shows
+    "val(G,pi)\<in>val(G,tau)"
+proof
+  let ?D="{q\<in>P. \<exists>s. \<exists>r. r\<in>P \<and> <s,r> \<in> tau \<and> <q,r>\<in>leq \<and> forces_eq(P,leq,q,pi,s)}"
+  from assms
+  have "?D = {q\<in>P. \<exists>s. \<exists>r. r\<in>P \<and> <s,r> \<in> tau \<and> <q,r>\<in>leq \<and> sats(M,forces(Equal(0,1)),[P,leq,one,q,pi,s])}"
+    using sats_forces_Equal[of _ pi _ "[pi, _]" 0 1]  left_in_M  by simp
+  with \<open>p\<in>P\<close> \<open>pi\<in>M\<close> \<open>tau\<in>M\<close>
+  have "?D \<in> M" 
+    using leq_in_M one_in_M P_in_M Transset_intf[OF trans_M _ P_in_M] (* or else P_sub_M *) sorry
+  moreover from assms
+  have "dense_below(?D,p)"
+    using forces_mem_iff_dense_below by simp
+  moreover
+  note \<open>M_generic(G)\<close> \<open>p\<in>G\<close>
+  ultimately
+  obtain q where "q\<in>G" "q\<in>?D" using generic_inter_dense_below by blast
+  then
+  obtain s r where "r\<in>P" "<s,r> \<in> tau" "<q,r>\<in>leq" "forces_eq(P,leq,q,pi,s)" by blast
+  moreover from this and \<open>q\<in>G\<close> assms
+  have "r \<in> G" "val(G,pi) = val(G,s)" by blast+
+  ultimately
+  show "\<exists> s. \<exists>p\<in>P. p \<in> G \<and> \<langle>s, p\<rangle> \<in> tau \<and> val(G, s) = val(G, pi)" by auto
+qed
+
+(* Lemma IV.2.40(a), equality *)
 
 end
 
