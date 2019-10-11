@@ -315,7 +315,7 @@ lemma
   assumes
     "M_generic(G)" "p\<in>G" "forces_eq(P,leq,p,\<tau>,\<theta>)" "\<pi>\<in>M" "\<tau>\<in>M"
     and
-    IH:"\<And>q \<sigma> \<theta>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_mem(P,leq,q,\<sigma>,\<theta>) \<Longrightarrow> 
+    IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_mem(P,leq,q,\<sigma>,\<theta>) \<Longrightarrow> 
       val(G,\<sigma>) \<in> val(G,\<theta>)"
   shows
     "val(G,\<tau>) \<subseteq> val(G,\<theta>)"
@@ -336,7 +336,7 @@ proof
   ultimately
   have "forces_mem(P,leq,q,\<sigma>,\<theta>)"
     using def_forces_eq by blast
-  with \<open>q\<in>P\<close> IH[of q \<sigma> \<theta>] \<open><\<sigma>,r>\<in>\<tau>\<close> \<open>val(G,\<sigma>) = x\<close>
+  with \<open>q\<in>P\<close> IH[of q \<sigma>] \<open><\<sigma>,r>\<in>\<tau>\<close> \<open>val(G,\<sigma>) = x\<close>
   show "x\<in>val(G,\<theta>)" by (blast del:elem_of_valI)
 qed
 
