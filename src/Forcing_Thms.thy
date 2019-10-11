@@ -340,6 +340,47 @@ proof
   show "x\<in>val(G,\<theta>)" by (blast del:elem_of_valI)
 qed
 
+(* Lemma IV.2.40(b), membership *)
+lemma
+  assumes
+    "M_generic(G)" "val(G,\<pi>)\<in>val(G,\<tau>)" "\<pi>\<in>M" "\<tau>\<in>M"
+    and
+    IH:"\<And>\<sigma>. \<sigma>\<in>domain(\<tau>) \<Longrightarrow> val(G,\<pi>) = val(G,\<sigma>) \<Longrightarrow> 
+      \<exists>p\<in>G. forces_eq(P,leq,p,\<pi>,\<sigma>)" (* inductive hypothesis *)
+  shows
+    "\<exists>p\<in>G. forces_mem(P,leq,p,\<pi>,\<tau>)"
+proof -
+  from \<open>val(G,\<pi>)\<in>val(G,\<tau>)\<close>
+  obtain \<sigma> r where "r\<in>G" "<\<sigma>,r>\<in>\<tau>" "val(G,\<pi>) = val(G,\<sigma>)" by auto
+  moreover from this and IH
+  obtain p' where "p'\<in>G" "forces_eq(P,leq,p',\<pi>,\<sigma>)" by blast
+  moreover
+  note \<open>M_generic(G)\<close>
+  ultimately
+  obtain p where "<p,r>\<in>leq" "p\<in>G" "forces_eq(P,leq,p,\<pi>,\<sigma>)" 
+    using M_generic_compatD strengthening_eq[of p'] by blast
+  moreover 
+  note \<open>M_generic(G)\<close>
+  moreover from calculation
+  have "forces_eq(P,leq,q,\<pi>,\<sigma>)" if "q\<in>P" "<q,p>\<in>leq" for q
+    using that strengthening_eq by blast
+  moreover 
+  note \<open><\<sigma>,r>\<in>\<tau>\<close> \<open>r\<in>G\<close>
+  ultimately
+  have "r\<in>P \<and> \<langle>\<sigma>,r\<rangle> \<in> \<tau> \<and> \<langle>q,r\<rangle> \<in> leq \<and> forces_eq(P,leq,q,\<pi>,\<sigma>)" if "q\<in>P" "<q,p>\<in>leq" for q
+    using that leq_transD[of _ p r] by blast
+  then
+  have "dense_below({q\<in>P. \<exists>s r. r\<in>P \<and> \<langle>s,r\<rangle> \<in> \<tau> \<and> \<langle>q,r\<rangle>\<in>leq \<and> forces_eq(P,leq,q,\<pi>,s)},p)"
+    using leq_reflI by blast
+  moreover
+  note \<open>M_generic(G)\<close> \<open>p\<in>G\<close>
+  moreover from calculation
+  have "forces_mem(P,leq,p,\<pi>,\<tau>)" 
+    using forces_mem_iff_dense_below by blast
+  ultimately
+  show ?thesis by blast
+qed
+
 end
 
 end
