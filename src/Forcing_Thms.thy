@@ -232,7 +232,7 @@ lemma sats_forces_Member:
     "sats(M,forces(Member(n,m)),[P,leq,one,p] @ env) \<longleftrightarrow> forces_mem(P,leq,p,t1,t2)"
   sorry
 
-(* Move the next three *)
+(* Move the following to an appropriate place *)
 (* "x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>. \<exists>p\<in>G.  <\<theta>,p>\<in>\<pi> \<and> val(G,\<theta>) = x" *)
 declare elem_of_val_pair [dest] SepReplace_iff [simp del] SepReplace_iff[iff]
 
@@ -245,6 +245,9 @@ lemma M_genericD [dest]: "M_generic(G) \<Longrightarrow> x\<in>G \<Longrightarro
 lemma M_generic_leqD [dest]: "M_generic(G) \<Longrightarrow> p\<in>G \<Longrightarrow> q\<in>P \<Longrightarrow> <p,q>\<in>leq \<Longrightarrow> q\<in>G"
   unfolding M_generic_def by (blast dest:filter_leqD)
 
+lemma M_generic_compatD [dest]: "M_generic(G) \<Longrightarrow> p\<in>G \<Longrightarrow> r\<in>G \<Longrightarrow> \<exists>q\<in>G. <q,p>\<in>leq \<and> <q,r>\<in>leq"
+  unfolding M_generic_def by (blast dest:low_bound_filter)
+
 lemma left_in_M : "tau\<in>M \<Longrightarrow> <a,b>\<in>tau \<Longrightarrow> a\<in>M"
   using fst_snd_closed[of "<a,b>"] Transset_intf[OF trans_M] by auto
 
@@ -255,17 +258,21 @@ lemma generic_inter_dense_below: "D:M ==> M_generic(G) ==> dense_below(D,p) ==> 
 (* Lemma IV.2.40(a), membership *)
 lemma
   assumes
-    "M_generic(G)" "p\<in>G" "p\<in>P" "forces_mem(P,leq,p,pi,tau)" "pi\<in>M" "tau\<in>M"
-    "\<And>q sig. q\<in>P \<Longrightarrow> sig\<in>domain(tau) \<Longrightarrow> forces_eq(P,leq,q,pi,sig) \<Longrightarrow> 
-      val(G,pi) = val(G,sig)" 
+    "M_generic(G)" "p\<in>G" "p\<in>P" "forces_mem(P,leq,p,\<pi>,\<tau>)" "\<pi>\<in>M" "\<tau>\<in>M"
+    "\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_eq(P,leq,q,\<pi>,\<sigma>) \<Longrightarrow> 
+      val(G,\<pi>) = val(G,\<sigma>)" (* inductive hypothesis *)
   shows
-    "val(G,pi)\<in>val(G,tau)"
+    "val(G,\<pi>)\<in>val(G,\<tau>)"
 proof
-  let ?D="{q\<in>P. \<exists>s. \<exists>r. r\<in>P \<and> <s,r> \<in> tau \<and> <q,r>\<in>leq \<and> forces_eq(P,leq,q,pi,s)}"
+  let ?D="{q\<in>P. \<exists>\<sigma>. \<exists>r. r\<in>P \<and> <\<sigma>,r> \<in> \<tau> \<and> <q,r>\<in>leq \<and> forces_eq(P,leq,q,\<pi>,\<sigma>)}"
   from assms
-  have "?D = {q\<in>P. \<exists>s. \<exists>r. r\<in>P \<and> <s,r> \<in> tau \<and> <q,r>\<in>leq \<and> sats(M,forces(Equal(0,1)),[P,leq,one,q,pi,s])}"
-    using sats_forces_Equal[of _ pi _ "[pi, _]" 0 1]  left_in_M  by simp
-  with \<open>p\<in>P\<close> \<open>pi\<in>M\<close> \<open>tau\<in>M\<close>
+  have "?D = {q\<in>P. \<exists>\<sigma>. \<exists>r. r\<in>P \<and> <\<sigma>,r> \<in> \<tau> \<and> <q,r>\<in>leq \<and> sats(M,forces(Equal(0,1)),[P,leq,one,q,\<pi>,\<sigma>])}"
+    using sats_forces_Equal[of _ \<pi> _ "[\<pi>, _]" 0 1]  left_in_M  by simp
+  moreover from \<open>M_generic(G)\<close> \<open>p\<in>P\<close>
+  have "p\<in>P" by blast
+  moreover
+  note \<open>\<pi>\<in>M\<close> \<open>\<tau>\<in>M\<close>
+  ultimately
   have "?D \<in> M" 
     using leq_in_M one_in_M P_in_M Transset_intf[OF trans_M _ P_in_M] (* or else P_sub_M *) sorry
   moreover from assms
@@ -276,14 +283,62 @@ proof
   ultimately
   obtain q where "q\<in>G" "q\<in>?D" using generic_inter_dense_below by blast
   then
-  obtain s r where "r\<in>P" "<s,r> \<in> tau" "<q,r>\<in>leq" "forces_eq(P,leq,q,pi,s)" by blast
+  obtain \<sigma> r where "r\<in>P" "<\<sigma>,r> \<in> \<tau>" "<q,r>\<in>leq" "forces_eq(P,leq,q,\<pi>,\<sigma>)" by blast
   moreover from this and \<open>q\<in>G\<close> assms
-  have "r \<in> G" "val(G,pi) = val(G,s)" by blast+
+  have "r \<in> G" "val(G,\<pi>) = val(G,\<sigma>)" by blast+
   ultimately
-  show "\<exists> s. \<exists>p\<in>P. p \<in> G \<and> \<langle>s, p\<rangle> \<in> tau \<and> val(G, s) = val(G, pi)" by auto
+  show "\<exists> \<sigma>. \<exists>p\<in>P. p \<in> G \<and> \<langle>\<sigma>, p\<rangle> \<in> \<tau> \<and> val(G, \<sigma>) = val(G, \<pi>)" by auto
 qed
 
+(* Example IV.2.36 (next two lemmas) *)
+lemma refl_forces_eq:"p\<in>P \<Longrightarrow> forces_eq(P,leq,p,x,x)"
+  using def_forces_eq by simp
+
+lemma forces_memI: "<\<sigma>,r>\<in>\<tau> \<Longrightarrow> p\<in>P \<Longrightarrow> r\<in>P \<Longrightarrow> <p,r>\<in>leq \<Longrightarrow> forces_mem(P,leq,p,\<sigma>,\<tau>)"
+  using refl_forces_eq[of _ \<sigma>] leq_transD leq_reflI 
+  by (blast intro:forces_mem_iff_dense_below[THEN iffD2])
+
+(* 
+lemma symmetry_argument: 
+  assumes 
+    "\<And>x y. R(x,y) \<Longrightarrow> R(y,x)"
+    "\<And>x y. R(x,y) \<Longrightarrow> Q(x,y) \<longleftrightarrow> Q(y,x)"
+    "\<And>x y. R(x,y) \<Longrightarrow> Q(x,y) \<Longrightarrow> S(x,y)"
+    "R(x,y)" "Q(x,y)"
+  shows 
+    "S(x,y) \<and> S(y,x)"
+  using assms by simp
+*)
+
 (* Lemma IV.2.40(a), equality *)
+lemma
+  assumes
+    "M_generic(G)" "p\<in>G" "forces_eq(P,leq,p,\<tau>,\<theta>)" "\<pi>\<in>M" "\<tau>\<in>M"
+    and
+    IH:"\<And>q \<sigma> \<theta>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_mem(P,leq,q,\<sigma>,\<theta>) \<Longrightarrow> 
+      val(G,\<sigma>) \<in> val(G,\<theta>)"
+  shows
+    "val(G,\<tau>) \<subseteq> val(G,\<theta>)"
+proof
+  fix x
+  assume "x\<in>val(G,\<tau>)"
+  then
+  obtain \<sigma> r where "<\<sigma>,r>\<in>\<tau>" "r\<in>G" "val(G,\<sigma>)=x" by blast
+  moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
+  obtain q where "q\<in>G" "<q,p>\<in>leq" "<q,r>\<in>leq" by force
+  moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
+  have "q\<in>P" "p\<in>P" by blast+
+  moreover from calculation
+  have "forces_mem(P,leq,q,\<sigma>,\<tau>)"
+    using forces_memI M_genericD[OF \<open>M_generic(G)\<close>] by blast
+  moreover
+  note \<open>forces_eq(P,leq,p,\<tau>,\<theta>)\<close>
+  ultimately
+  have "forces_mem(P,leq,q,\<sigma>,\<theta>)"
+    using def_forces_eq by blast
+  with \<open>q\<in>P\<close> IH[of q \<sigma> \<theta>] \<open><\<sigma>,r>\<in>\<tau>\<close> \<open>val(G,\<sigma>) = x\<close>
+  show "x\<in>val(G,\<theta>)" by (blast del:elem_of_valI)
+qed
 
 end
 
