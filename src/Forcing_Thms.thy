@@ -343,6 +343,15 @@ proof
   show "x\<in>val(G,\<theta>)" by (blast del:elem_of_valI)
 qed
 
+(* Lemma IV.2.40(a), full *)
+lemma IV240a:
+  assumes
+    "M_generic(G)" "p\<in>G" "\<tau>\<in>M" "\<theta>\<in>M"
+  shows 
+    "(forces_eq(P,leq,p,\<tau>,\<theta>) \<longrightarrow> val(G,\<tau>) = val(G,\<theta>)) \<and>
+     (forces_mem(P,leq,p,\<tau>,\<theta>) \<longrightarrow> val(G,\<tau>) \<in> val(G,\<theta>)) "
+  sorry
+
 (* Lemma IV.2.40(b), membership *)
 lemma
   assumes
@@ -390,6 +399,7 @@ lemma
     "M_generic(G)" "p\<in>G" "val(G,\<tau>) = val(G,\<theta>)" "\<tau>\<in>M" "\<theta>\<in>M" 
     and
     IH:"\<And>\<sigma> \<tau> \<theta>. \<sigma>\<in>domain(\<tau>)\<union>domain(\<theta>) \<Longrightarrow> val(G,\<sigma>)\<in>val(G,\<theta>) \<Longrightarrow> \<exists>q\<in>G. forces_mem(P,leq,q,\<sigma>,\<theta>)"
+    (* inductive hypothesis *)
   shows
     "\<exists>p\<in>G. forces_eq(P,leq,p,\<tau>,\<theta>)"
 proof -
@@ -458,7 +468,8 @@ proof -
     obtain \<sigma> where "\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)" "forces_mem(P,leq,p,\<sigma>,\<tau>)" "forces_nmem(p,\<sigma>,\<theta>)" 
       by blast
     moreover from this and \<open>p\<in>G\<close> and assms
-    have "val(G,\<sigma>)\<in>val(G,\<tau>)" sorry
+    have "val(G,\<sigma>)\<in>val(G,\<tau>)"
+      using IV240a[of G p \<sigma> \<tau>] Transset_intf[OF trans_M _ domain_closed[simplified]] by blast
     moreover note IH[of _ \<tau> \<theta>] \<open>val(G,\<tau>) = _\<close>
     ultimately
     obtain q where "q\<in>G" "forces_mem(P, leq, q, \<sigma>, \<theta>)" by auto
@@ -481,7 +492,8 @@ proof -
     obtain \<sigma> where "\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)" "forces_mem(P,leq,p,\<sigma>,\<theta>)" "forces_nmem(p,\<sigma>,\<tau>)" 
       by blast
     moreover from this and \<open>p\<in>G\<close> and assms
-    have "val(G,\<sigma>)\<in>val(G,\<theta>)" sorry
+    have "val(G,\<sigma>)\<in>val(G,\<theta>)"
+      using IV240a[of G p \<sigma> \<theta>] Transset_intf[OF trans_M _ domain_closed[simplified]] by blast
     moreover note IH[of _ \<theta> \<tau>] \<open>val(G,\<tau>) = _\<close>
     ultimately
     obtain q where "q\<in>G" "forces_mem(P, leq, q, \<sigma>, \<tau>)" by auto
