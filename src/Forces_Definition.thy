@@ -118,6 +118,11 @@ next
     unfolding max_def using assms by simp 
 qed
 
+lemma le_imp_max : 
+  assumes "x \<le> y" "Ord(x)" "Ord(y)"
+  shows "max(x,y) = y"
+  unfolding max_def using assms by simp
+
 lemma max_commutes : 
   assumes "Ord(x)" "Ord(y)"
   shows "max(x,y) = max(y,x)"
@@ -130,9 +135,10 @@ proof -
   finally show ?thesis 
     using assms nat_simp_union(1) by simp
 qed
+find_theorems name:total
 
 lemma max_cong2 :
-  assumes "x \<le> y" "Ord(y)" "Ord(z)" 
+  assumes "x \<le> y" "Ord(y)" "Ord(z)"
   shows "max(x,z) \<le> max(y,z)"
 proof -
   from assms 
@@ -151,9 +157,89 @@ proof -
     using nat_simp_union \<open>Ord(z)\<close> \<open>Ord(y)\<close> by simp
 qed
 
-definition 
+lemma max_D1 :
+  assumes "x = y" "w < z"  "Ord(x)"  "Ord(w)" "Ord(z)" "max(x,w) = max(y,z)"
+  shows "z\<le>y"
+proof -
+  from assms
+  have "w < y \<union> z" using Un_upper2_lt[OF \<open>w<z\<close>] by simp
+  also
+  have "... = max(y,z)" using assms nat_simp_union by simp
+  also
+  have "... = max(x,w)" using assms by simp
+  also
+  have "... = x \<union> w" using assms nat_simp_union by simp
+  finally
+  have "w < x" using assms lt_Un_iff[of x w w] lt_not_refl by auto
+  then 
+  have "x = max(x,w) " using max_commutes nat_simp_union assms leI by simp
+  then 
+  have "y = y \<union> z" using assms max_commutes nat_simp_union assms leI by simp 
+  then 
+  show ?thesis using Un_leD2 assms by simp
+qed
+
+lemma max_D2 :
+  assumes "w = y \<or> w = z" "x < y"  "Ord(x)"  "Ord(w)" "Ord(y)" "Ord(z)" "max(x,w) = max(y,z)"
+  shows "x<w"
+proof -
+  from assms
+  have "x < z \<union> y" using Un_upper2_lt[OF \<open>x<y\<close>] by simp
+  then
+  consider (a) "x < y" | (b) "x < w"
+    using assms nat_simp_union by simp
+  then show ?thesis proof (cases)
+    case a
+    consider (c) "w = y" | (d) "w = z" 
+      using assms by auto
+    then show ?thesis proof (cases)
+      case c
+      with a show ?thesis by simp
+    next
+      case d
+      with a
+      show ?thesis 
+      proof (cases "y <w")
+        case True       
+        then show ?thesis using lt_trans[OF \<open>x<y\<close>] by simp
+      next
+        case False
+        then
+        have "w \<le> y" 
+          using not_lt_iff_le[OF assms(5) assms(4)] by simp
+        with \<open>w=z\<close>
+        have "max(z,y) = y"  unfolding max_def using assms by simp
+        with assms
+        have "... = x \<union> w" using nat_simp_union max_commutes  by simp
+        then show ?thesis using le_Un_iff assms by blast
+      qed
+    qed
+  next
+    case b
+    then show ?thesis .
+  qed
+qed
+
+
+definition
   rank_names :: "i \<Rightarrow> i" where
   "rank_names(x) == max(rank(name1(x)),rank(name2(x)))"
+
+lemma rank_names_types [TC]: 
+  shows "Ord(rank_names(x))"
+  unfolding rank_names_def max_def using Ord_rank Ord_Un by auto
+
+definition
+  mtype_form :: "i \<Rightarrow> i" where
+  "mtype_form(x) == if rank(name1(x)) < rank(name2(x)) then 0 else 2"
+
+definition
+  type_form :: "i \<Rightarrow> i" where
+  "type_form(x) == if ftype(x) = 1 then 1 else mtype_form(x)"
+
+lemma type_form_tc [TC]: 
+  shows "type_form(x) \<in> 3"
+  unfolding type_form_def mtype_form_def by auto
 
 lemma frecR_le_rnk_names :
   assumes  "frecR_core(x,y)"
@@ -161,13 +247,14 @@ lemma frecR_le_rnk_names :
 proof -
   obtain a b c d  where
     H: "a = name1(x)" "b = name2(x)"
-    "c = name1(y)" "d = name2(y)"
+     "c = name1(y)" "d = name2(y)"
     "(a \<in> domain(c)\<union>domain(d) \<and> (b=c \<or> b = d)) \<or> (a = c \<and> b \<in> domain(d))"
     using assms unfolding frecR_core_def by force
   then 
-  consider (m) "a \<in> domain(c)  \<and> (b=c \<or> b = d) " 
-    | (n) "a\<in>domain(d)  \<and> (b=c \<or> b = d)" 
-    | (o) "b\<in>domain(d) \<and> a = c"
+  consider
+      (m) "a \<in> domain(c) \<and> (b = c \<or> b = d) "
+    | (n) "a \<in> domain(d) \<and> (b = c \<or> b = d)" 
+    | (o) "b \<in> domain(d) \<and> a = c"
     by auto
   then show ?thesis proof(cases)
     case m
@@ -222,55 +309,145 @@ proof -
       using eclose_rank_lt in_dom_in_eclose  by simp_all
     with  H(1) H(2) H(3) H(4)
     show ?thesis unfolding rank_names_def
-      using Ord_rank max_commutes  max_cong2[OF leI[OF \<open>?b < ?d\<close>], of ?a]
+      using Ord_rank max_commutes max_cong2[OF leI[OF \<open>?b < ?d\<close>], of ?a]
       by simp
   qed
 qed
 
-lemma rank_names_types [TC]: 
-  shows "Ord(rank_names(x))"
-  unfolding rank_names_def max_def 
-  using Ord_rank Ord_Un by auto
 
-definition
-  mtype_form :: "i \<Rightarrow> i" where
-  "mtype_form(x) == if rank(name1(x)) < rank(name2(x)) then 0 else 2"
-
-definition
-  type_form :: "i \<Rightarrow> i" where
-  "type_form(x) == if ftype(x) = 0 then 0 else mtype_form(x)"
-
-lemma type_form_tc [TC]: 
-  shows "Ord(type_form(x))"
-  unfolding type_form_def mtype_form_def by auto
-
-(* \<questiondown>Qué operaciones van acá? *)
 definition 
   \<Gamma> :: "i \<Rightarrow> i" where
-  "\<Gamma>(x) = 3 * rank_names(x) + type_form(x)"
+  "\<Gamma>(x) = 3 ** rank_names(x) ++ type_form(x)"
 
-
-
-lemma \<Gamma>_type : 
-  assumes "fst(x) \<in> 2" 
+lemma \<Gamma>_type [TC]: 
   shows "Ord(\<Gamma>(x))"
-  unfolding \<Gamma>_def sorry
+  unfolding \<Gamma>_def by simp
+
+lemma ord_leD : 
+  assumes "Ord(y)" "x \<le> y"
+  shows "x < y | x = y"
+proof -
+  note leE[OF \<open>x\<le>y\<close>] 
+  then show ?thesis
+  proof(cases)
+    case 1 then show ?thesis ..
+  next
+    case 2 then show ?thesis by simp
+  qed
+qed
+
+lemma obvio : "0 < 3" by simp
 
 
-lemma frecR_implies_\<Gamma>_le : 
-  assumes "frecR(x,y)"
+lemma oadd_lt_mono2 :
+  assumes  "Ord(\<alpha>)" "Ord(\<beta>)" "\<alpha> < \<beta>" "x < 3" "y < 3"
+  shows "3 ** \<alpha> ++ x < 3 **\<beta> ++ y"
+proof(cases "x\<le>y")
+case True
+then show ?thesis using assms Ord_induct ltD[OF  \<open>x<3\<close>] ltD[OF  \<open>y<3\<close>] omult_lt_mono2[OF \<open>\<alpha><\<beta>\<close> obvio] 
+    le_refl_iff leI by auto
+next
+  case False
+  have "0<1" by simp
+  with False show ?thesis using assms Ord_cases[OF \<open>Ord(\<beta>)\<close>]
+    sorry
+qed  
+
+lemma \<Gamma>_mono : 
+  assumes "frecR_core(x,y)"
   shows "\<Gamma>(x) < \<Gamma>(y)"
-  sorry
+proof -
+  have F: "type_form(x) < 3" "type_form(y) < 3"
+    using ltI by simp_all
+  from assms 
+  have A: "rank_names(x) \<le> rank_names(y)" (is "?x \<le> ?y")
+    using frecR_le_rnk_names by simp
+  then
+  have "Ord(?y)" unfolding rank_names_def using Ord_rank max_def by simp
+  note leE[OF \<open>?x\<le>?y\<close>] 
+  then
+  show ?thesis
+  proof(cases)
+    case 1
+    then 
+    show ?thesis unfolding \<Gamma>_def using oadd_lt_mono2[OF _ _ \<open>?x < ?y\<close>] F by auto
+  next
+    case 2
+    consider (a) "ftype(x) = 0 \<and> ftype(y) = 1" | (b) "ftype(x) = 1 \<and> ftype(y) = 0"
+      using  frecR_ftypeD[OF \<open>frecR_core(x,y)\<close>] by auto
+    then show ?thesis proof(cases)
+      case a
+      then 
+      have "type_form(y) = 1" 
+        using type_form_def by simp
+      from a
+      have H: "name2(x) = name1(y) \<or> name2(x) = name2(y) " (is "?\<tau> = ?\<sigma>' \<or> ?\<tau> = ?\<tau>'")
+           "name1(x) \<in> domain(name1(y)) \<union> domain(name2(y))" 
+              (is "?\<sigma> \<in> domain(?\<sigma>') \<union> domain(?\<tau>')")
+        using assms unfolding type_form_def frecR_core_def by auto
+      then 
+      have E: "rank(?\<tau>) = rank(?\<sigma>') \<or> rank(?\<tau>) = rank(?\<tau>')" by auto
+      from H
+      consider (a) "rank(?\<sigma>) < rank(?\<sigma>')" |  (b) "rank(?\<sigma>) < rank(?\<tau>')"
+          using eclose_rank_lt in_dom_in_eclose by force
+        then
+        have "rank(?\<sigma>) < rank(?\<tau>)" proof (cases)
+          case a
+          with \<open>rank_names(x) = rank_names(y) \<close>
+          show ?thesis unfolding rank_names_def mtype_form_def type_form_def using max_D2[OF E a]
+                E assms Ord_rank by simp
+        next
+          case b
+          with \<open>rank_names(x) = rank_names(y) \<close>
+          show ?thesis unfolding rank_names_def mtype_form_def type_form_def 
+            using max_D2[OF _ b] max_commutes E assms Ord_rank disj_commute by auto
+        qed
+        with a
+        have "type_form(x) = 0" unfolding type_form_def mtype_form_def by simp
+      with \<open>rank_names(x) = rank_names(y) \<close> \<open>type_form(y) = 1\<close> \<open>type_form(x) = 0\<close>
+       show ?thesis 
+         unfolding \<Gamma>_def by auto
+    next
+      case b
+      then 
+      have "name1(x) = name1(y)" (is "?\<sigma> = ?\<sigma>'") 
+           "name2(x) \<in> domain(name2(y))" (is "?\<tau> \<in> domain(?\<tau>')")
+           "type_form(x) = 1"
+        using assms unfolding type_form_def frecR_core_def by auto
+      then
+      have "rank(?\<sigma>) = rank(?\<sigma>')" "rank(?\<tau>) < rank(?\<tau>')" 
+        using  eclose_rank_lt in_dom_in_eclose by simp_all
+       with \<open>rank_names(x) = rank_names(y) \<close> 
+       have "rank(?\<tau>') \<le> rank(?\<sigma>')" 
+         unfolding rank_names_def using Ord_rank max_D1 by simp
+      with b
+      have "type_form(y) = 2"
+        unfolding type_form_def mtype_form_def using not_lt_iff_le assms by simp
+      with \<open>rank_names(x) = rank_names(y) \<close> \<open>type_form(y) = 2\<close> \<open>type_form(x) = 1\<close>
+       show ?thesis 
+         unfolding \<Gamma>_def by auto
+    qed
+  qed
+qed
+
+
+definition
+  frecrel_core :: "i \<Rightarrow> i" where
+  "frecrel_core(A) \<equiv> Rrel(frecR_core,A)"
+
 
 definition
   frecrel :: "i \<Rightarrow> i" where
   "frecrel(A) \<equiv> Rrel(frecR,A)"
 
 lemma wf_frecrel : 
-  shows "wf(frecrel(A))"
-  unfolding frecrel_def
-  using relation_Rrel 
-  sorry
+  shows "wf(frecrel_core(A))"
+proof -
+  have "frecrel_core(A) \<subseteq> measure(A,\<Gamma>)"
+    unfolding frecrel_core_def Rrel_def measure_def
+    using \<Gamma>_mono by auto
+  then show ?thesis using wf_subset wf_measure by auto
+qed
 
 lemma def_frecrel : "frecrel(A) = {z\<in>A\<times>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x,y)}"
   unfolding frecrel_def Rrel_def ..
