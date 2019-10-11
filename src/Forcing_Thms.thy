@@ -13,7 +13,10 @@ lemma leq_transD:  "\<langle>a,b\<rangle> \<in> leq \<Longrightarrow> \<langle>b
 lemma leq_reflI: "p\<in>P \<Longrightarrow> <p,p>\<in>leq"
  using leq_preord unfolding preorder_on_def refl_def by blast
 
-lemma dense_belowD [dest]: 
+lemma dense_iff [iff] : "dense(D) \<longleftrightarrow> (\<forall>p\<in>P. \<exists>d\<in>D. \<langle>d, p\<rangle> \<in> leq)"
+  unfolding dense_def ..
+
+lemma dense_belowD [dest]:
   assumes "dense_below(D,p)" "q\<in>P" "<q,p>\<in>leq"
   shows "\<exists>d\<in>D. d\<in>P \<and> <d,q>\<in>leq"
   using assms unfolding dense_below_def by simp
@@ -256,7 +259,7 @@ lemma generic_inter_dense_below: "D:M ==> M_generic(G) ==> dense_below(D,p) ==> 
   sorry
 
 (* Lemma IV.2.40(a), membership *)
-lemma
+lemma IV240a_mem:
   assumes
     "M_generic(G)" "p\<in>G" "p\<in>P" "forces_mem(P,leq,p,\<pi>,\<tau>)" "\<pi>\<in>M" "\<tau>\<in>M"
     "\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_eq(P,leq,q,\<pi>,\<sigma>) \<Longrightarrow> 
@@ -379,6 +382,123 @@ proof -
     using forces_mem_iff_dense_below by blast
   ultimately
   show ?thesis by blast
+qed
+
+(* Lemma IV.2.40(b), equality *)
+lemma
+  assumes
+    "M_generic(G)" "p\<in>G" "val(G,\<tau>) = val(G,\<theta>)" "\<tau>\<in>M" "\<theta>\<in>M" 
+    and
+    IH:"\<And>\<sigma> \<tau> \<theta>. \<sigma>\<in>domain(\<tau>)\<union>domain(\<theta>) \<Longrightarrow> val(G,\<sigma>)\<in>val(G,\<theta>) \<Longrightarrow> \<exists>q\<in>G. forces_mem(P,leq,q,\<sigma>,\<theta>)"
+  shows
+    "\<exists>p\<in>G. forces_eq(P,leq,p,\<tau>,\<theta>)"
+proof -
+  let ?D="{p\<in>P. forces_eq(P,leq,p,\<tau>,\<theta>) 
+     \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(P,leq,p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>))
+     \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p,\<sigma>,\<tau>) \<and> forces_mem(P,leq,p,\<sigma>,\<theta>))}"
+  have "?D = {p\<in>P. sats(M,forces(Equal(0,1)),[P,leq,one,p,\<tau>,\<theta>]) 
+    \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<tau>]) \<and> 
+            \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<theta>])))
+    \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<tau>]))
+              \<and> sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<theta>]))}"
+    (* horrible proof ahead *)
+  proof -
+    from assms
+    have "\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> \<sigma>\<in>M" for \<sigma>
+      using Transset_intf[OF trans_M _ domain_closed[simplified]] by blast
+    moreover from \<open>\<tau>\<in>M\<close> \<open>\<theta>\<in>M\<close>
+    have "forces_mem(P,leq,p,\<sigma>,\<tau>)\<longleftrightarrow>sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<tau>])"
+      "forces_mem(P,leq,p,\<sigma>,\<theta>)\<longleftrightarrow>sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<theta>])"
+      if "p\<in>P" and "\<sigma>\<in>M" for p \<sigma> 
+      using that sats_forces_Member[OF \<open>p\<in>P\<close> \<open>\<sigma>\<in>M\<close>, of _ "[\<sigma>,_]" 0 1] by simp_all
+    moreover
+    note assms
+    ultimately
+    have "(\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(P,leq,p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>))
+      \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p,\<sigma>,\<tau>) \<and> forces_mem(P,leq,p,\<sigma>,\<theta>))
+   \<longleftrightarrow>
+        (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<tau>]) 
+             \<and> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<theta>])))
+      \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). 
+              \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and>  sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<tau>])) 
+             \<and> sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<theta>])) " if "p\<in>P" for p
+      unfolding forces_nmem_def using that sorry
+    with assms
+    show ?thesis
+      using sats_forces_Equal[of _ \<tau> \<theta> "[\<tau>,\<theta>]" 0 1] by auto
+  qed
+  with assms
+  have "?D\<in>M" sorry
+  moreover
+  have "dense(?D)" 
+    using def_forces_eq not_forces_nmem sorry
+  moreover
+  have "?D \<subseteq> P"
+    by auto
+  moreover
+  note \<open>M_generic(G)\<close>
+  ultimately
+  obtain p where "p\<in>G" "p\<in>?D"
+    unfolding M_generic_def by blast
+  then 
+  consider 
+    (1) "forces_eq(P,leq,p,\<tau>,\<theta>)" | 
+    (2) "\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(P,leq,p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>)" | 
+    (3) "\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p,\<sigma>,\<tau>) \<and> forces_mem(P,leq,p,\<sigma>,\<theta>)"
+    by blast
+  then
+  show ?thesis
+  proof (cases)
+    case 1
+    with \<open>p\<in>G\<close> 
+    show ?thesis by blast
+  next
+    case 2
+    then 
+    obtain \<sigma> where "\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)" "forces_mem(P,leq,p,\<sigma>,\<tau>)" "forces_nmem(p,\<sigma>,\<theta>)" 
+      by blast
+    moreover from this and \<open>p\<in>G\<close> and assms
+    have "val(G,\<sigma>)\<in>val(G,\<tau>)" sorry
+    moreover note IH[of _ \<tau> \<theta>] \<open>val(G,\<tau>) = _\<close>
+    ultimately
+    obtain q where "q\<in>G" "forces_mem(P, leq, q, \<sigma>, \<theta>)" by auto
+    moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
+    obtain r where "r\<in>P" "<r,p>\<in>leq" "<r,q>\<in>leq"
+      by blast
+    moreover
+    note \<open>M_generic(G)\<close>
+    ultimately
+    have "forces_mem(P, leq, r, \<sigma>, \<theta>)"
+      using strengthening_mem by blast
+    with \<open><r,p>\<in>leq\<close> \<open>forces_nmem(p,\<sigma>,\<theta>)\<close> \<open>r\<in>P\<close>
+    have "False"
+      unfolding forces_nmem_def by blast
+    then
+    show ?thesis by simp
+  next (* copy-paste from case 2 mutatis mutandis*)
+    case 3
+    then
+    obtain \<sigma> where "\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)" "forces_mem(P,leq,p,\<sigma>,\<theta>)" "forces_nmem(p,\<sigma>,\<tau>)" 
+      by blast
+    moreover from this and \<open>p\<in>G\<close> and assms
+    have "val(G,\<sigma>)\<in>val(G,\<theta>)" sorry
+    moreover note IH[of _ \<theta> \<tau>] \<open>val(G,\<tau>) = _\<close>
+    ultimately
+    obtain q where "q\<in>G" "forces_mem(P, leq, q, \<sigma>, \<tau>)" by auto
+    moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
+    obtain r where "r\<in>P" "<r,p>\<in>leq" "<r,q>\<in>leq"
+      by blast
+    moreover
+    note \<open>M_generic(G)\<close>
+    ultimately
+    have "forces_mem(P, leq, r, \<sigma>, \<tau>)"
+      using strengthening_mem by blast
+    with \<open><r,p>\<in>leq\<close> \<open>forces_nmem(p,\<sigma>,\<tau>)\<close> \<open>r\<in>P\<close>
+    have "False"
+      unfolding forces_nmem_def by blast
+    then
+    show ?thesis by simp
+  qed
 qed
 
 end
