@@ -1,5 +1,42 @@
 theory Nat_Miscellanea imports ZF begin
 
+abbreviation
+  digit3 :: i   ("3") where "3 == succ(2)"
+
+abbreviation
+  digit4 :: i   ("4") where "4 == succ(3)"
+
+abbreviation
+  digit5 :: i   ("5") where "5 == succ(4)"
+
+abbreviation
+  digit6 :: i   ("6") where "6 == succ(5)"
+
+abbreviation
+  digit7 :: i   ("7") where "7 == succ(6)"
+
+abbreviation
+  digit8 :: i   ("8") where "8 == succ(7)"
+
+abbreviation
+  digit9 :: i   ("9") where "9 == succ(8)"
+
+abbreviation
+ dec10  :: i   ("10") where "10 == succ(9)"
+    
+abbreviation
+ dec11  :: i   ("11") where "11 == succ(10)"
+
+abbreviation
+ dec12  :: i   ("12") where "12 == succ(11)"
+
+abbreviation
+ dec13  :: i   ("13") where "13 == succ(12)"
+
+abbreviation
+ dec14  :: i   ("14") where "14 == succ(13)"
+
+
 section\<open>Auxiliary results\<close>
 
 lemmas nat_succI =  Ord_succ_mem_iff [THEN iffD2,OF nat_into_Ord]
@@ -123,5 +160,108 @@ lemma diff_cancel :
 lemma leD : assumes "n\<in>nat" "j \<le> n"
   shows "j < n | j = n"
 using leE[OF \<open>j\<le>n\<close>,of "j<n | j = n"] by auto
+
+
+lemma max_cong :
+  assumes "x \<le> y" "Ord(y)" "Ord(z)" shows "max(x,y) \<le> max(y,z)"
+  using assms 
+proof (cases "y \<le> z")
+  case True
+  then show ?thesis 
+    unfolding max_def using assms by simp
+next
+  case False
+  then have "z \<le> y"  using assms not_le_iff_lt leI by simp
+  then show ?thesis 
+    unfolding max_def using assms by simp 
+qed
+
+lemma max_commutes : 
+  assumes "Ord(x)" "Ord(y)"
+  shows "max(x,y) = max(y,x)"
+    using assms Un_commute nat_simp_union(1) nat_simp_union(1)[symmetric] by auto
+
+lemma max_cong2 :
+  assumes "x \<le> y" "Ord(y)" "Ord(z)" "Ord(x)" 
+  shows "max(x,z) \<le> max(y,z)"
+proof -
+  from assms 
+  have " x \<union> z \<le> y \<union> z"
+    using lt_Ord Ord_Un Un_mono[OF  le_imp_subset[OF \<open>x\<le>y\<close>]]  subset_imp_le by auto
+  then show ?thesis 
+    using  nat_simp_union \<open>Ord(x)\<close> \<open>Ord(z)\<close> \<open>Ord(y)\<close> by simp
+qed
+
+lemma max_D1 :
+  assumes "x = y" "w < z"  "Ord(x)"  "Ord(w)" "Ord(z)" "max(x,w) = max(y,z)"
+  shows "z\<le>y"
+proof -
+  from assms
+  have "w <  x \<union> w" using Un_upper2_lt[OF \<open>w<z\<close>] assms nat_simp_union by simp
+  then
+  have "w < x" using assms lt_Un_iff[of x w w] lt_not_refl by auto
+  then 
+  have "y = y \<union> z" using assms max_commutes nat_simp_union assms leI by simp 
+  then 
+  show ?thesis using Un_leD2 assms by simp
+qed
+
+lemma max_D2 :
+  assumes "w = y \<or> w = z" "x < y"  "Ord(x)"  "Ord(w)" "Ord(y)" "Ord(z)" "max(x,w) = max(y,z)"
+  shows "x<w"
+proof -
+  from assms
+  have "x < z \<union> y" using Un_upper2_lt[OF \<open>x<y\<close>] by simp
+  then
+  consider (a) "x < y" | (b) "x < w"
+    using assms nat_simp_union by simp
+  then show ?thesis proof (cases)
+    case a
+    consider (c) "w = y" | (d) "w = z" 
+      using assms by auto
+    then show ?thesis proof (cases)
+      case c
+      with a show ?thesis by simp
+    next
+      case d
+      with a
+      show ?thesis 
+      proof (cases "y <w")
+        case True       
+        then show ?thesis using lt_trans[OF \<open>x<y\<close>] by simp
+      next
+        case False
+        then
+        have "w \<le> y" 
+          using not_lt_iff_le[OF assms(5) assms(4)] by simp
+        with \<open>w=z\<close>
+        have "max(z,y) = y"  unfolding max_def using assms by simp
+        with assms
+        have "... = x \<union> w" using nat_simp_union max_commutes  by simp
+        then show ?thesis using le_Un_iff assms by blast
+      qed
+    qed
+  next
+    case b
+    then show ?thesis .
+  qed
+qed
+
+lemma obvio : "0 < 3" by simp
+
+lemma oadd_lt_mono2 :
+  assumes  "Ord(\<alpha>)" "Ord(\<beta>)" "\<alpha> < \<beta>" "x < 3" "y < 3"
+  shows "3 ** \<alpha> ++ x < 3 **\<beta> ++ y"
+proof(cases "x\<le>y")
+case True
+then show ?thesis using assms Ord_induct ltD[OF  \<open>x<3\<close>] ltD[OF  \<open>y<3\<close>] omult_lt_mono2[OF \<open>\<alpha><\<beta>\<close> obvio] 
+    le_refl_iff leI by auto
+next
+  case False
+  have "0<1" by simp
+  with False show ?thesis using assms Ord_cases[OF \<open>Ord(\<beta>)\<close>]
+    sorry
+qed  
+
 
 end

@@ -7,32 +7,12 @@ theory Internalizations
   imports 
     "~~/src/ZF/Constructible/Formula"
     Relative  Datatype_absolute 
+    Nat_Miscellanea
 begin
 
 subsection\<open>Internalized Formulas for some Set-Theoretic Concepts\<close>
 
 subsubsection\<open>Some numbers to help write de Bruijn indices\<close>
-
-abbreviation
-  digit3 :: i   ("3") where "3 == succ(2)"
-
-abbreviation
-  digit4 :: i   ("4") where "4 == succ(3)"
-
-abbreviation
-  digit5 :: i   ("5") where "5 == succ(4)"
-
-abbreviation
-  digit6 :: i   ("6") where "6 == succ(5)"
-
-abbreviation
-  digit7 :: i   ("7") where "7 == succ(6)"
-
-abbreviation
-  digit8 :: i   ("8") where "8 == succ(7)"
-
-abbreviation
-  digit9 :: i   ("9") where "9 == succ(8)"
 
 
 subsubsection\<open>The Empty Set, Internalized\<close>

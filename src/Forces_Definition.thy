@@ -76,149 +76,22 @@ schematic_goal is_one_iff_sats :
 
 (* Relation of forces *)
 definition
-  frecR_core :: "i \<Rightarrow> i \<Rightarrow> o" where
-  "frecR_core(x,y) \<equiv>
+  frecR :: "i \<Rightarrow> i \<Rightarrow> o" where
+  "frecR(x,y) \<equiv>
     (ftype(x) = 0 \<and> ftype(y) = 1 
       \<and> (name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> (name2(x) = name1(y) \<or> name2(x) = name2(y))))
    \<or> (ftype(x) = 1 \<and> ftype(y) =  0 \<and> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y)))"
 
 lemma frecR_ftypeD :
-  assumes "frecR_core(x,y)"
+  assumes "frecR(x,y)"
   shows "(ftype(x) = 0 \<and> ftype(y) = 1) \<or> (ftype(x) = 1 \<and> ftype(y) = 0)"
-  using assms unfolding frecR_core_def by auto
+  using assms unfolding frecR_def by auto
 
 (* Punto 3 de p. 257 de Kunen *)
 lemma eq_ftypep_not_frecrR:
   assumes "ftype(x) = ftype(y)"
-  shows "\<not> frecR_core(x,y)"
+  shows "\<not> frecR(x,y)"
   using assms frecR_ftypeD by force
-
-definition
-  frecR :: "i \<Rightarrow> i \<Rightarrow> o" where
-  "frecR(x,y) \<equiv>  name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> 
-            (name2(x) = name1(y) \<or> name2(x) = name2(y)) 
-          \<or> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y))"
-
-lemma frecR_core_frecR :
-  assumes  "frecR_core(x,y)"
-  shows "frecR(x,y)"
-  using assms unfolding frecR_core_def frecR_def by auto
-
-lemma max_cong :
-  assumes "x \<le> y" "Ord(y)" "Ord(z)" shows "max(x,y) \<le> max(y,z)"
-  using assms 
-proof (cases "y \<le> z")
-  case True
-  then show ?thesis 
-    unfolding max_def using assms by simp
-next
-  case False
-  then have "z \<le> y"  using assms not_le_iff_lt leI by simp
-  then show ?thesis 
-    unfolding max_def using assms by simp 
-qed
-
-lemma le_imp_max : 
-  assumes "x \<le> y" "Ord(x)" "Ord(y)"
-  shows "max(x,y) = y"
-  unfolding max_def using assms by simp
-
-lemma max_commutes : 
-  assumes "Ord(x)" "Ord(y)"
-  shows "max(x,y) = max(y,x)"
-proof -
-  have "max(x,y) = x \<union> y"
-    using assms nat_simp_union(1) by simp
-  also
-  have "... = y \<union> x"
-    using Un_commute ..
-  finally show ?thesis 
-    using assms nat_simp_union(1) by simp
-qed
-find_theorems name:total
-
-lemma max_cong2 :
-  assumes "x \<le> y" "Ord(y)" "Ord(z)"
-  shows "max(x,z) \<le> max(y,z)"
-proof -
-  from assms 
-  have "Ord(x)" "x \<subseteq> y" 
-    using lt_Ord le_imp_subset by simp_all
-  then
-  have 1: "Ord(x \<union> z)"  "Ord(y \<union> z)" 
-    using Ord_Un assms by simp_all
-  from \<open>Ord(x)\<close>
-  have "max(x,z) = x \<union> z"
-    using nat_simp_union \<open>Ord(z)\<close> by simp
-  also
-  have "... \<le> y \<union> z"
-    using Un_mono[OF \<open>x\<subseteq>y\<close>] subset_imp_le 1 by simp
-  finally show ?thesis 
-    using nat_simp_union \<open>Ord(z)\<close> \<open>Ord(y)\<close> by simp
-qed
-
-lemma max_D1 :
-  assumes "x = y" "w < z"  "Ord(x)"  "Ord(w)" "Ord(z)" "max(x,w) = max(y,z)"
-  shows "z\<le>y"
-proof -
-  from assms
-  have "w < y \<union> z" using Un_upper2_lt[OF \<open>w<z\<close>] by simp
-  also
-  have "... = max(y,z)" using assms nat_simp_union by simp
-  also
-  have "... = max(x,w)" using assms by simp
-  also
-  have "... = x \<union> w" using assms nat_simp_union by simp
-  finally
-  have "w < x" using assms lt_Un_iff[of x w w] lt_not_refl by auto
-  then 
-  have "x = max(x,w) " using max_commutes nat_simp_union assms leI by simp
-  then 
-  have "y = y \<union> z" using assms max_commutes nat_simp_union assms leI by simp 
-  then 
-  show ?thesis using Un_leD2 assms by simp
-qed
-
-lemma max_D2 :
-  assumes "w = y \<or> w = z" "x < y"  "Ord(x)"  "Ord(w)" "Ord(y)" "Ord(z)" "max(x,w) = max(y,z)"
-  shows "x<w"
-proof -
-  from assms
-  have "x < z \<union> y" using Un_upper2_lt[OF \<open>x<y\<close>] by simp
-  then
-  consider (a) "x < y" | (b) "x < w"
-    using assms nat_simp_union by simp
-  then show ?thesis proof (cases)
-    case a
-    consider (c) "w = y" | (d) "w = z" 
-      using assms by auto
-    then show ?thesis proof (cases)
-      case c
-      with a show ?thesis by simp
-    next
-      case d
-      with a
-      show ?thesis 
-      proof (cases "y <w")
-        case True       
-        then show ?thesis using lt_trans[OF \<open>x<y\<close>] by simp
-      next
-        case False
-        then
-        have "w \<le> y" 
-          using not_lt_iff_le[OF assms(5) assms(4)] by simp
-        with \<open>w=z\<close>
-        have "max(z,y) = y"  unfolding max_def using assms by simp
-        with assms
-        have "... = x \<union> w" using nat_simp_union max_commutes  by simp
-        then show ?thesis using le_Un_iff assms by blast
-      qed
-    qed
-  next
-    case b
-    then show ?thesis .
-  qed
-qed
 
 
 definition
@@ -242,17 +115,17 @@ lemma type_form_tc [TC]:
   unfolding type_form_def mtype_form_def by auto
 
 lemma frecR_le_rnk_names :
-  assumes  "frecR_core(x,y)"
+  assumes  "frecR(x,y)"
   shows "rank_names(x)\<le>rank_names(y)"
 proof -
   obtain a b c d  where
     H: "a = name1(x)" "b = name2(x)"
-     "c = name1(y)" "d = name2(y)"
+    "c = name1(y)" "d = name2(y)"
     "(a \<in> domain(c)\<union>domain(d) \<and> (b=c \<or> b = d)) \<or> (a = c \<and> b \<in> domain(d))"
-    using assms unfolding frecR_core_def by force
+    using assms unfolding frecR_def by force
   then 
   consider
-      (m) "a \<in> domain(c) \<and> (b = c \<or> b = d) "
+    (m) "a \<in> domain(c) \<and> (b = c \<or> b = d) "
     | (n) "a \<in> domain(d) \<and> (b = c \<or> b = d)" 
     | (o) "b \<in> domain(d) \<and> a = c"
     by auto
@@ -261,56 +134,24 @@ proof -
     then 
     have "rank(a) < rank(c)" 
       using eclose_rank_lt  in_dom_in_eclose  by simp
-    from m
-    consider (1) "b = c" | (2) "b = d" by auto    
-    then show ?thesis proof (cases)
-      case 1
-      then 
-      have "rank(b) = rank(c)" by simp
-      with \<open>rank(a) < rank(c)\<close> H(1) H(2) H(3) H(4)
-      show ?thesis unfolding rank_names_def 
-        using Ord_rank max_cong leI by simp
-    next
-      case 2
-      then
-      have "rank(b) = rank(d)" by simp
-      with \<open>rank(a) < rank(c)\<close> H(1) H(2) H(3) H(4)
-      show ?thesis unfolding rank_names_def 
-        using Ord_rank max_cong2 leI by simp
-    qed
+    with \<open>rank(a) < rank(c)\<close> H m
+    show ?thesis unfolding rank_names_def using Ord_rank max_cong max_cong2 leI by auto
   next
     case n
     then
     have "rank(a) < rank(d)"
       using eclose_rank_lt in_dom_in_eclose  by simp
-    from n
-    consider (1) "b = c" | (2) "b = d" by auto    
-    then show ?thesis proof (cases)
-      case 1
-      then 
-      have "rank(b) = rank(c)" by simp
-      with \<open>rank(a) < rank(d)\<close> H(1) H(2) H(3) H(4)
-      show ?thesis unfolding rank_names_def 
-        using Ord_rank max_cong2
-          max_commutes[of "rank(c)" "rank(d)"] leI by auto
-    next
-      case 2
-      then
-      have "rank(b) = rank(d)" by simp
-      with \<open>rank(a) < rank(d)\<close> H(1) H(2) H(3) H(4)
-      show ?thesis unfolding rank_names_def 
-        using Ord_rank max_cong
-          max_commutes[of "rank(c)" "rank(d)"] leI by auto
-    qed
+    with \<open>rank(a) < rank(d)\<close> H n
+    show ?thesis unfolding rank_names_def 
+      using Ord_rank max_cong2 max_cong max_commutes[of "rank(c)" "rank(d)"] leI by auto
   next
     case o
     then
     have "rank(b) < rank(d)" (is "?b < ?d") "rank(a) = rank(c)" (is "?a = _")
       using eclose_rank_lt in_dom_in_eclose  by simp_all
-    with  H(1) H(2) H(3) H(4)
+    with H
     show ?thesis unfolding rank_names_def
-      using Ord_rank max_commutes max_cong2[OF leI[OF \<open>?b < ?d\<close>], of ?a]
-      by simp
+      using Ord_rank max_commutes max_cong2[OF leI[OF \<open>?b < ?d\<close>], of ?a] by simp
   qed
 qed
 
@@ -323,38 +164,9 @@ lemma \<Gamma>_type [TC]:
   shows "Ord(\<Gamma>(x))"
   unfolding \<Gamma>_def by simp
 
-lemma ord_leD : 
-  assumes "Ord(y)" "x \<le> y"
-  shows "x < y | x = y"
-proof -
-  note leE[OF \<open>x\<le>y\<close>] 
-  then show ?thesis
-  proof(cases)
-    case 1 then show ?thesis ..
-  next
-    case 2 then show ?thesis by simp
-  qed
-qed
-
-lemma obvio : "0 < 3" by simp
-
-
-lemma oadd_lt_mono2 :
-  assumes  "Ord(\<alpha>)" "Ord(\<beta>)" "\<alpha> < \<beta>" "x < 3" "y < 3"
-  shows "3 ** \<alpha> ++ x < 3 **\<beta> ++ y"
-proof(cases "x\<le>y")
-case True
-then show ?thesis using assms Ord_induct ltD[OF  \<open>x<3\<close>] ltD[OF  \<open>y<3\<close>] omult_lt_mono2[OF \<open>\<alpha><\<beta>\<close> obvio] 
-    le_refl_iff leI by auto
-next
-  case False
-  have "0<1" by simp
-  with False show ?thesis using assms Ord_cases[OF \<open>Ord(\<beta>)\<close>]
-    sorry
-qed  
 
 lemma \<Gamma>_mono : 
-  assumes "frecR_core(x,y)"
+  assumes "frecR(x,y)"
   shows "\<Gamma>(x) < \<Gamma>(y)"
 proof -
   have F: "type_form(x) < 3" "type_form(y) < 3"
@@ -374,7 +186,7 @@ proof -
   next
     case 2
     consider (a) "ftype(x) = 0 \<and> ftype(y) = 1" | (b) "ftype(x) = 1 \<and> ftype(y) = 0"
-      using  frecR_ftypeD[OF \<open>frecR_core(x,y)\<close>] by auto
+      using  frecR_ftypeD[OF \<open>frecR(x,y)\<close>] by auto
     then show ?thesis proof(cases)
       case a
       then 
@@ -384,7 +196,7 @@ proof -
       have H: "name2(x) = name1(y) \<or> name2(x) = name2(y) " (is "?\<tau> = ?\<sigma>' \<or> ?\<tau> = ?\<tau>'")
            "name1(x) \<in> domain(name1(y)) \<union> domain(name2(y))" 
               (is "?\<sigma> \<in> domain(?\<sigma>') \<union> domain(?\<tau>')")
-        using assms unfolding type_form_def frecR_core_def by auto
+        using assms unfolding type_form_def frecR_def by auto
       then 
       have E: "rank(?\<tau>) = rank(?\<sigma>') \<or> rank(?\<tau>) = rank(?\<tau>')" by auto
       from H
@@ -413,7 +225,7 @@ proof -
       have "name1(x) = name1(y)" (is "?\<sigma> = ?\<sigma>'") 
            "name2(x) \<in> domain(name2(y))" (is "?\<tau> \<in> domain(?\<tau>')")
            "type_form(x) = 1"
-        using assms unfolding type_form_def frecR_core_def by auto
+        using assms unfolding type_form_def frecR_def by auto
       then
       have "rank(?\<sigma>) = rank(?\<sigma>')" "rank(?\<tau>) < rank(?\<tau>')" 
         using  eclose_rank_lt in_dom_in_eclose by simp_all
@@ -432,19 +244,20 @@ qed
 
 
 definition
-  frecrel_core :: "i \<Rightarrow> i" where
-  "frecrel_core(A) \<equiv> Rrel(frecR_core,A)"
-
-
-definition
   frecrel :: "i \<Rightarrow> i" where
   "frecrel(A) \<equiv> Rrel(frecR,A)"
 
+(*
+definition
+  frecrel :: "i \<Rightarrow> i" where
+  "frecrel(A) \<equiv> Rrel(frecR,A)"
+*)
+
 lemma wf_frecrel : 
-  shows "wf(frecrel_core(A))"
+  shows "wf(frecrel(A))"
 proof -
-  have "frecrel_core(A) \<subseteq> measure(A,\<Gamma>)"
-    unfolding frecrel_core_def Rrel_def measure_def
+  have "frecrel(A) \<subseteq> measure(A,\<Gamma>)"
+    unfolding frecrel_def Rrel_def measure_def
     using \<Gamma>_mono by auto
   then show ?thesis using wf_subset wf_measure by auto
 qed
@@ -454,9 +267,11 @@ lemma def_frecrel : "frecrel(A) = {z\<in>A\<times>A. \<exists>x y. z = \<langle>
 
 lemma frecrel_fst_snd:
   "frecrel(A) = {z \<in> A\<times>A . 
-            name1(fst(z)) \<in> domain(name1(snd(z))) \<union> domain(name2(snd(z))) \<and> 
+            ftype(fst(z)) = 0 \<and> 
+        ftype(snd(z)) = 1 \<and> name1(fst(z)) \<in> domain(name1(snd(z))) \<union> domain(name2(snd(z))) \<and> 
             (name2(fst(z)) = name1(snd(z)) \<or> name2(fst(z)) = name2(snd(z))) 
-          \<or> name1(fst(z)) = name1(snd(z)) \<and> name2(fst(z)) \<in> domain(name2(snd(z)))}"
+          \<or> (ftype(fst(z)) = 1 \<and> 
+        ftype(snd(z)) = 0 \<and>  name1(fst(z)) = name1(snd(z)) \<and> name2(fst(z)) \<in> domain(name2(snd(z))))}"
   unfolding def_frecrel frecR_def
   by (intro equalityI subsetI CollectI; elim CollectE; auto)
 
@@ -466,10 +281,12 @@ name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and>
           \<or> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y))*)
 definition
   is_frecR :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_frecR(M,x,y) \<equiv> \<exists>n1x[M]. \<exists>n2x[M]. \<exists>n1y[M]. \<exists>n2y[M]. \<exists>dn1[M]. \<exists>dn2[M].
-      is_name1(M,x,n1x)\<and> is_name2(M,x,n2x) \<and> is_name1(M,y,n1y) \<and> is_name2(M,y,n2y)
+  "is_frecR(M,x,y) \<equiv> \<exists> ftx[M]. \<exists> n1x[M]. \<exists>n2x[M]. \<exists>fty[M]. \<exists>n1y[M]. \<exists>n2y[M]. \<exists>dn1[M]. \<exists>dn2[M].
+  is_ftype(M,x,ftx) \<and> is_name1(M,x,n1x)\<and> is_name2(M,x,n2x) \<and>
+  is_ftype(M,y,fty) \<and> is_name1(M,y,n1y) \<and> is_name2(M,y,n2y)
           \<and> is_domain(M,n1y,dn1) \<and> is_domain(M,n2y,dn2) \<and> 
-          ((n1x \<in> dn1 \<or> n1x \<in> dn2) \<and> (n2x = n1y \<or> n2x = n2y) \<or> n1x = n1y \<and> n2x \<in> dn2)"
+          (  (empty(M,ftx) \<and> number1(M,fty) \<and> (n1x \<in> dn1 \<or> n1x \<in> dn2) \<and> (n2x = n1y \<or> n2x = n2y))
+           \<or> (number1(M,ftx) \<and> empty(M,fty) \<and> n1x = n1y \<and> n2x \<in> dn2))"
 
 (*
 \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x,y) *)
@@ -498,8 +315,8 @@ schematic_goal sats_frecrelP_fm_auto:
   shows
     "frecrelP(##A,nth(a, env))
     \<longleftrightarrow> sats(A,?frp_fm(a,r),env)"
-    unfolding is_frecrel_def is_frecR_def is_Collect_def frecrelP_def is_name1_def is_name2_def
-   by (insert assms ; (rule sep_rules cartprod_iff_sats | simp del:sats_cartprod_fm)+)
+    unfolding is_frecrel_def is_frecR_def is_Collect_def frecrelP_def is_ftype_def is_name1_def is_name2_def 
+   by (insert assms ; (rule sep_rules empty_iff_sats cartprod_iff_sats is_one_iff_sats  | simp del:sats_cartprod_fm)+)
 
 schematic_goal sats_is_frecrel_fm_auto:
   assumes 
@@ -507,7 +324,7 @@ schematic_goal sats_is_frecrel_fm_auto:
   shows
     "is_frecrel(##A,nth(a, env),nth(r, env))
     \<longleftrightarrow> sats(A,?ifrl_fm(a,r),env)"
-    unfolding is_frecrel_def is_frecR_def is_Collect_def frecrelP_def is_name1_def is_name2_def
+    unfolding is_frecrel_def is_frecR_def is_Collect_def frecrelP_def is_name1_def is_name2_def is_ftype_def
    by (insert assms ; (rule sep_rules cartprod_iff_sats | simp del:sats_cartprod_fm)+) 
 
 schematic_goal is_frecrel_iff_sats:
@@ -719,7 +536,8 @@ lemma is_tuple_fm_def_type [TC]:
 
 definition
   is_Hfrc_at_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
-  "is_Hfrc_at_fm(P,leq,fnnc,f,z) \<equiv> Or(And(empty_fm(z),
+  "is_Hfrc_at_fm(P,leq,fnnc,f,z) \<equiv> 
+Or(And(empty_fm(z),
              Neg(Exists
                   (Exists
                     (Exists
@@ -733,59 +551,67 @@ definition
                                              Or(And(empty_fm(5),
                                                     Forall
                                                      (Implies
-                                                       (Or(Exists(And(domain_fm(6, 0), Member(1, 0))), Exists(And(domain_fm(5, 0), Member(1, 0)))),
+                                                       (Or(Exists(And(domain_fm(6, 0), Member(1, 0))),
+                                                           Exists(And(domain_fm(5, 0), Member(1, 0)))),
                                                         Forall
                                                          (Implies
-                                                           (And(Member(0, succ(succ(P #+ 6))), Exists(And(pair_fm(1, 5, 0), Member(0, succ(succ(succ(leq #+ 6))))))),
+                                                           (And(Member(0, succ(succ(P #+ 6))),
+                                                                Exists(And(pair_fm(1, 5, 0), Member(0, succ(succ(succ(leq #+ 6))))))),
                                                             Exists
                                                              (And(pair_fm(7, 1, 0),
                                                                   Exists
                                                                    (And(pair_fm(3, 1, 0),
-                                                                        Exists
-                                                                         (Exists
-                                                                           (Exists
-                                                                             (Exists
-                                                                               (And(pair_fm(0, 4, 3),
-                                                                                    And(pair_fm(11, 6, 2),
-                                                                                        And(pair_fm(7, 2, 1),
-                                                                                            And(Forall(Iff(Member(0, 1), empty_fm(0))),
-                                                                                                Exists
-                                                                                                 (And(pair_fm(1, 2, 0),
-                                                                                                      Exists
-                                                                                                       (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))), 1, 0),
-                                                                                                            Exists
-                                                                                                             (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6))))))))))), 6, 0),
-                                                                                                                  Iff(Equal(0, 3), Equal(1, 3))))))))))))))))))))))))),
+ Exists
+  (Exists
+    (Exists
+      (Exists
+        (And(pair_fm(0, 4, 3),
+             And(pair_fm(11, 6, 2),
+                 And(pair_fm(7, 2, 1),
+                     And(Forall(Iff(Member(0, 1), empty_fm(0))),
+                         Exists
+                          (And(pair_fm(1, 2, 0),
+                               Exists
+                                (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))), 1, 0),
+                                     Exists
+                                      (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6))))))))))), 6, 0),
+                                           Iff(Equal(0, 3), Equal(1, 3))))))))))))))))))))))))),
                                                 And(Forall(Iff(Member(0, 6), empty_fm(0))),
                                                     Forall
                                                      (Implies
-                                                       (And(Member(0, succ(P #+ 6)), Exists(And(pair_fm(1, 4, 0), Member(0, succ(succ(leq #+ 6)))))),
+                                                       (And(Member(0, succ(P #+ 6)),
+                                                            Exists(And(pair_fm(1, 4, 0), Member(0, succ(succ(leq #+ 6)))))),
                                                         Exists
                                                          (Exists
                                                            (Exists
                                                              (Exists
                                                                (And(Member(0, succ(succ(succ(succ(succ(P #+ 6)))))),
                                                                     And(Member(3, succ(succ(succ(succ(succ(P #+ 6)))))),
-                                                                        And(pair_fm(3, 4, 2),
-                                                                            Exists
-                                                                             (And(pair_fm(2, 1, 0),
-                                                                                  Exists
-                                                                                   (And(pair_fm(5, 2, 0),
-                                                                                        Exists
-                                                                                         (And(pair_fm(4, 6, 0),
-                                                                                              Exists
-                                                                                               (Exists
-                                                                                                 (And(empty_fm(0),
-                                                                                                      And(pair_fm(14, 2, 1),
-                                                                                                          Exists
-                                                                                                           (And(pair_fm(1, 2, 0),
-                                                                                                                Exists
-                                                                                                                 (And
-(Forall(Iff(Member(0, 1), empty_fm(0))),
- And(Member(6, succ(14)),
-     And(Member(9, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
-         And(Member(5, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
-             fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))))), 1, 0))))))))))))))))))))))))))))))))))))))))),
+ And(pair_fm(3, 4, 2),
+     Exists
+      (And(pair_fm(2, 1, 0),
+           Exists
+            (And(pair_fm(5, 2, 0),
+                 Exists
+                  (And(pair_fm(4, 6, 0),
+                       Exists
+                        (Exists
+                          (And(empty_fm(0),
+                               And(pair_fm(14, 2, 1),
+                                   Exists
+                                    (And(pair_fm(1, 2, 0),
+                                         Exists
+                                          (And(Forall(Iff(Member(0, 1), empty_fm(0))),
+                                               And(Member(6, succ(14)),
+                                                   And(Member
+                                                        (9, succ(succ(succ
+(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
+                                                       And(Member
+                                                            (5, succ(succ(succ
+    (succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
+                                                           fun_apply_fm
+                                                            (succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))))),
+                                                             1, 0))))))))))))))))))))))))))))))))))))))))),
          And(Forall(Iff(Member(0, succ(z)), empty_fm(0))),
              Exists
               (Exists
@@ -800,33 +626,36 @@ definition
                                          Or(And(empty_fm(5),
                                                 Forall
                                                  (Implies
-                                                   (Or(Exists(And(domain_fm(6, 0), Member(1, 0))), Exists(And(domain_fm(5, 0), Member(1, 0)))),
+                                                   (Or(Exists(And(domain_fm(6, 0), Member(1, 0))),
+                                                       Exists(And(domain_fm(5, 0), Member(1, 0)))),
                                                     Forall
                                                      (Implies
-                                                       (And(Member(0, succ(succ(P #+ 6))), Exists(And(pair_fm(1, 5, 0), Member(0, succ(succ(succ(leq #+ 6))))))),
+                                                       (And(Member(0, succ(succ(P #+ 6))),
+                                                            Exists(And(pair_fm(1, 5, 0), Member(0, succ(succ(succ(leq #+ 6))))))),
                                                         Exists
                                                          (And(pair_fm(7, 1, 0),
                                                               Exists
                                                                (And(pair_fm(3, 1, 0),
                                                                     Exists
                                                                      (Exists
-                                                                       (Exists
-                                                                         (Exists
-                                                                           (And(pair_fm(0, 4, 3),
-                                                                                And(pair_fm(11, 6, 2),
-                                                                                    And(pair_fm(7, 2, 1),
-                                                                                        And(Forall(Iff(Member(0, 1), empty_fm(0))),
-                                                                                            Exists
-                                                                                             (And(pair_fm(1, 2, 0),
-                                                                                                  Exists
-                                                                                                   (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))), 1, 0),
-                                                                                                        Exists
-                                                                                                         (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6))))))))))), 6, 0),
-                                                                                                              Iff(Equal(0, 3), Equal(1, 3))))))))))))))))))))))))),
+(Exists
+  (Exists
+    (And(pair_fm(0, 4, 3),
+         And(pair_fm(11, 6, 2),
+             And(pair_fm(7, 2, 1),
+                 And(Forall(Iff(Member(0, 1), empty_fm(0))),
+                     Exists
+                      (And(pair_fm(1, 2, 0),
+                           Exists
+                            (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))), 1, 0),
+                                 Exists
+                                  (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6))))))))))), 6, 0),
+                                       Iff(Equal(0, 3), Equal(1, 3))))))))))))))))))))))))),
                                             And(Forall(Iff(Member(0, 6), empty_fm(0))),
                                                 Forall
                                                  (Implies
-                                                   (And(Member(0, succ(P #+ 6)), Exists(And(pair_fm(1, 4, 0), Member(0, succ(succ(leq #+ 6)))))),
+                                                   (And(Member(0, succ(P #+ 6)),
+                                                        Exists(And(pair_fm(1, 4, 0), Member(0, succ(succ(leq #+ 6)))))),
                                                     Exists
                                                      (Exists
                                                        (Exists
@@ -834,26 +663,29 @@ definition
                                                            (And(Member(0, succ(succ(succ(succ(succ(P #+ 6)))))),
                                                                 And(Member(3, succ(succ(succ(succ(succ(P #+ 6)))))),
                                                                     And(pair_fm(3, 4, 2),
-                                                                        Exists
-                                                                         (And(pair_fm(2, 1, 0),
-                                                                              Exists
-                                                                               (And(pair_fm(5, 2, 0),
-                                                                                    Exists
-                                                                                     (And(pair_fm(4, 6, 0),
-                                                                                          Exists
-                                                                                           (Exists
-                                                                                             (And(empty_fm(0),
-                                                                                                  And(pair_fm(14, 2, 1),
-                                                                                                      Exists
-                                                                                                       (And(pair_fm(1, 2, 0),
-                                                                                                            Exists
-                                                                                                             (And(Forall(Iff(Member(0, 1), empty_fm(0))),
-                                                                                                                  And
-(Member(6, succ(14)),
- And(Member(9, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
-     And(Member(5, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
-         fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))))), 1, 0)))))))))))))))))))))))))))))))))))))))))"
-
+ Exists
+  (And(pair_fm(2, 1, 0),
+       Exists
+        (And(pair_fm(5, 2, 0),
+             Exists
+              (And(pair_fm(4, 6, 0),
+                   Exists
+                    (Exists
+                      (And(empty_fm(0),
+                           And(pair_fm(14, 2, 1),
+                               Exists
+                                (And(pair_fm(1, 2, 0),
+                                     Exists
+                                      (And(Forall(Iff(Member(0, 1), empty_fm(0))),
+                                           And(Member(6, succ(14)),
+                                               And(Member
+                                                    (9, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
+                                                   And(Member
+                                                        (5, succ(succ(succ
+(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq #+ 6))))))))))))),
+                                                       fun_apply_fm
+                                                        (succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f #+ 6)))))))))))), 1,
+                                                         0)))))))))))))))))))))))))))))))))))))))))"
 definition
   is_frecrel_fm :: "[i,i] \<Rightarrow> i" where
   "is_frecrel_fm(a,r) \<equiv> Exists
@@ -865,23 +697,28 @@ definition
                        (Exists
                          (And(pair_fm(1, 0, 2),
                               Exists
-                               (And(Exists(Exists(And(pair_fm(1, 0, 4), Exists(pair_fm(3, 0, 1))))),
+                               (And(Exists(pair_fm(1, 0, 3)),
                                     Exists
-                                     (And(Exists
-                                           (Exists(And(pair_fm(1, 0, 5), Exists(Exists(And(pair_fm(1, 0, 2), Exists(pair_fm(5, 0, 1)))))))),
+                                     (And(Exists(Exists(And(pair_fm(1, 0, 5), Exists(pair_fm(3, 0, 1))))),
                                           Exists
-                                           (And(Exists(Exists(And(pair_fm(1, 0, 5), Exists(pair_fm(3, 0, 1))))),
+                                           (And(Exists
+                                                 (Exists
+                                                   (And(pair_fm(1, 0, 6), Exists(Exists(And(pair_fm(1, 0, 2), Exists(pair_fm(5, 0, 1)))))))),
                                                 Exists
-                                                 (And(Exists
-                                                       (Exists
-                                                         (And(pair_fm(1, 0, 6),
-                                                              Exists(Exists(And(pair_fm(1, 0, 2), Exists(pair_fm(5, 0, 1)))))))),
+                                                 (And(Exists(pair_fm(1, 0, 5)),
                                                       Exists
-                                                       (And(domain_fm(2, 0),
+                                                       (And(Exists(Exists(And(pair_fm(1, 0, 7), Exists(pair_fm(3, 0, 1))))),
                                                             Exists
-                                                             (And(domain_fm(2, 0),
-                                                                  Or(And(Or(Member(5, 1), Member(5, 0)), Or(Equal(4, 3), Equal(4, 2))),
-                                                                     And(Equal(5, 3), Member(4, 0)))))))))))))))))))))))"
+                                                             (And(Exists
+                                                                   (Exists
+                                                                     (And
+(pair_fm(1, 0, 8), Exists(Exists(And(pair_fm(1, 0, 2), Exists(pair_fm(5, 0, 1)))))))),
+                                                                  Exists
+                                                                   (And(domain_fm(2, 0),
+ Exists
+  (And(domain_fm(2, 0),
+       Or(And(empty_fm(7), And(number1_fm(4), And(Or(Member(6, 1), Member(6, 0)), Or(Equal(5, 3), Equal(5, 2))))),
+          And(number1_fm(7), And(empty_fm(4), And(Equal(6, 3), Member(5, 0)))))))))))))))))))))))))))))"
 
 definition
   frecrel_eclose_fm :: "[i,i] \<Rightarrow> i" where
@@ -1136,13 +973,13 @@ lemma restrict_trancl_forcerel:
   unfolding forcerel_def frecrel_def using assms restrict_trancl_Rrel[of frecR] 
      by (simp)
 
-lemma frecRI1: "s \<in> domain(n1) \<or> s \<in> domain(n2) \<Longrightarrow> frecR(\<langle>b, s, n1, q\<rangle>, \<langle>b', n1, n2, q'\<rangle>)"
+lemma frecRI1: "s \<in> domain(n1) \<or> s \<in> domain(n2) \<Longrightarrow> frecR(\<langle>0, s, n1, q\<rangle>, \<langle>1, n1, n2, q'\<rangle>)"
   unfolding frecR_def by simp
 
-lemma frecRI2: "s \<in> domain(n1) \<or> s \<in> domain(n2) \<Longrightarrow> frecR(\<langle>b, s, n2, q\<rangle>, \<langle>b', n1, n2, q'\<rangle>)"
+lemma frecRI2: "s \<in> domain(n1) \<or> s \<in> domain(n2) \<Longrightarrow> frecR(\<langle>0, s, n2, q\<rangle>, \<langle>1, n1, n2, q'\<rangle>)"
   unfolding frecR_def by simp
 
-lemma frecRI3: "\<langle>s, r\<rangle> \<in> n2 \<Longrightarrow> frecR(\<langle>b, n1, s, q\<rangle>, \<langle>b', n1, n2, q'\<rangle>)"
+lemma frecRI3: "\<langle>s, r\<rangle> \<in> n2 \<Longrightarrow> frecR(\<langle>1, n1, s, q\<rangle>, \<langle>0, n1, n2, q'\<rangle>)"
   unfolding frecR_def by auto
 
 lemma names_belowI : "frecR(<ft,n1,n2,p>,<a,b,c,d>) \<Longrightarrow> ft\<in>2 \<Longrightarrow> p\<in>P \<Longrightarrow> <ft,n1,n2,p>\<in>names_below(P,<a,b,c,d>)"
@@ -1153,7 +990,8 @@ lemmas names_belowI' = names_belowI[OF frecRI1] names_belowI[OF frecRI2] names_b
 lemma Hfrc_restrict_trancl: "bool_of_o(Hfrc(P, leq, y, restrict(f,forcerel(P,x)-``{y})))
          = bool_of_o(Hfrc(P, leq, y, restrict(f,(forcerel(P,x)^+)-``{y})))"
   unfolding Hfrc_def bool_of_o_def eq_case_def mem_case_def
-  using  restrict_trancl_forcerel frecRI1 frecRI2 frecRI3 by (simp) 
+  using  restrict_trancl_forcerel frecRI1 frecRI2 frecRI3 
+  sorry 
 
 (* transitive force relation *)
 definition
@@ -1271,7 +1109,8 @@ proof -
       "fp_fm(0) \<in> formula" 
       and
       "arity(fp_fm(0)) = 1"
-      using sats_frecrelP_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+      using sats_frecrelP_fm_auto 
+        sorry (* by (simp del:FOL_sats_iff pair_abs empty_abs add: fm_defs nat_simp_union) *)
     then
     have "separation(##M, \<lambda>z. sats(M,fp_fm(0) , [z]))"
       using separation_ax by simp
@@ -1285,7 +1124,7 @@ proof -
     then 
     show ?thesis using frecrelP_abs
         separation_cong[of "##M" "frecrelP(##M)" "\<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x, y)"]
-      by simp
+      sorry
   qed
   ultimately
   show "{z \<in> ?Q \<times> ?Q . \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x, y)} \<in> M" 
