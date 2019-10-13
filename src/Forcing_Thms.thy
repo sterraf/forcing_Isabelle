@@ -474,7 +474,7 @@ lemma IV240a:
   shows 
     "forces_eq(P,leq,p,\<tau>,\<theta>) \<Longrightarrow> val(G,\<tau>) = val(G,\<theta>)" 
     "forces_mem(P,leq,p,\<tau>,\<theta>) \<Longrightarrow> val(G,\<tau>) \<in> val(G,\<theta>)"
-  using IV240a_aux[OF assms(1), of _ p \<tau> \<theta>] assms unfolding forces_eq_def forces_mem_def 
+  using IV240a_aux[OF assms(1-2), of _  \<tau> \<theta>] assms unfolding forces_eq_def forces_mem_def 
   by (auto del:elem_of_valI)
 
 (* Lemma IV.2.40(b), membership *)
