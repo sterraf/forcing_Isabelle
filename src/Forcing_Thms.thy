@@ -478,7 +478,7 @@ lemma IV240a:
   by (auto del:elem_of_valI)
 
 (* Lemma IV.2.40(b), membership *)
-lemma
+lemma IV240b_mem:
   assumes
     "M_generic(G)" "val(G,\<pi>)\<in>val(G,\<tau>)" "\<pi>\<in>M" "\<tau>\<in>M"
     and
@@ -519,11 +519,13 @@ proof -
 qed
 
 (* Lemma IV.2.40(b), equality *)
-lemma
+lemma IV240b_eq:
   assumes
     "M_generic(G)" "p\<in>G" "val(G,\<tau>) = val(G,\<theta>)" "\<tau>\<in>M" "\<theta>\<in>M" 
     and
-    IH:"\<And>\<sigma> \<tau> \<theta>. \<sigma>\<in>domain(\<tau>)\<union>domain(\<theta>) \<Longrightarrow> val(G,\<sigma>)\<in>val(G,\<theta>) \<Longrightarrow> \<exists>q\<in>G. forces_mem(P,leq,q,\<sigma>,\<theta>)"
+    IH:"\<And>\<sigma>. \<sigma>\<in>domain(\<tau>)\<union>domain(\<theta>) \<Longrightarrow> 
+      (val(G,\<sigma>)\<in>val(G,\<tau>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(P,leq,q,\<sigma>,\<tau>))) \<and> 
+      (val(G,\<sigma>)\<in>val(G,\<theta>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(P,leq,q,\<sigma>,\<theta>)))"
     (* inductive hypothesis *)
   shows
     "\<exists>p\<in>G. forces_eq(P,leq,p,\<tau>,\<theta>)"
@@ -595,7 +597,7 @@ proof -
     moreover from this and \<open>p\<in>G\<close> and assms
     have "val(G,\<sigma>)\<in>val(G,\<tau>)"
       using IV240a[of G p \<sigma> \<tau>] Transset_intf[OF trans_M _ domain_closed[simplified]] by blast
-    moreover note IH[of _ \<tau> \<theta>] \<open>val(G,\<tau>) = _\<close>
+    moreover note IH \<open>val(G,\<tau>) = _\<close>
     ultimately
     obtain q where "q\<in>G" "forces_mem(P, leq, q, \<sigma>, \<theta>)" by auto
     moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
@@ -619,7 +621,7 @@ proof -
     moreover from this and \<open>p\<in>G\<close> and assms
     have "val(G,\<sigma>)\<in>val(G,\<theta>)"
       using IV240a[of G p \<sigma> \<theta>] Transset_intf[OF trans_M _ domain_closed[simplified]] by blast
-    moreover note IH[of _ \<theta> \<tau>] \<open>val(G,\<tau>) = _\<close>
+    moreover note IH \<open>val(G,\<tau>) = _\<close>
     ultimately
     obtain q where "q\<in>G" "forces_mem(P, leq, q, \<sigma>, \<tau>)" by auto
     moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
@@ -637,6 +639,32 @@ proof -
     show ?thesis by simp
   qed
 qed
+
+lemma IV240b_aux:
+  assumes
+    "M_generic(G)" "ft\<in>2"
+  shows 
+    "\<tau>\<in>M \<longrightarrow> \<theta>\<in>M \<longrightarrow> 
+     (ft = 0 \<longrightarrow> val(G,\<tau>) = val(G,\<theta>) \<longrightarrow> (\<exists>p\<in>G. frc_at(P,leq,<ft,\<tau>,\<theta>,p>) = 1)) \<and>
+     (ft = 1 \<longrightarrow> val(G,\<tau>) \<in> val(G,\<theta>) \<longrightarrow> (\<exists>p\<in>G. frc_at(P,leq,<ft,\<tau>,\<theta>,p>) = 1))" (is "?Q(ft,\<tau>,\<theta>,p)")
+  apply (rule_tac core_induction[OF _ _ \<open>ft\<in>2\<close>, of ?Q _ \<tau> \<theta>])
+   apply (simp_all add:forces_eq_def[symmetric] forces_mem_def[symmetric])
+   apply (insert one_in_P)
+   apply (intro impI)
+   apply (rule IV240b_mem[OF assms(1)] ; simp add: assms Transset_intf[OF trans_M _ P_in_M] Transset_intf[OF trans_M _ domain_closed[simplified]])
+  apply (intro impI)
+  apply (rule IV240b_eq[OF assms(1)]; auto simp add:assms intro: one_in_G[OF \<open>M_generic(G)\<close>] Transset_intf[OF trans_M _ domain_closed[simplified]] del: domainE elem_of_valI)
+  done
+
+(* Lemma IV.2.40(b), full *)
+lemma IV240b:
+  assumes
+    "M_generic(G)" "\<tau>\<in>M" "\<theta>\<in>M"
+  shows 
+    "val(G,\<tau>) = val(G,\<theta>) \<Longrightarrow> (\<exists>p\<in>G. forces_eq(P,leq,p,\<tau>,\<theta>))" 
+    "val(G,\<tau>) \<in> val(G,\<theta>) \<Longrightarrow> (\<exists>p\<in>G. forces_mem(P,leq,p,\<tau>,\<theta>))" 
+  using IV240b_aux[OF assms(1), of _  \<tau> \<theta>] assms unfolding forces_eq_def forces_mem_def 
+  by (auto del:elem_of_valI)
 
 end
 
