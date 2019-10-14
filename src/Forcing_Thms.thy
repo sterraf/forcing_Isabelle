@@ -666,6 +666,46 @@ lemma IV240b:
   using IV240b_aux[OF assms(1), of _  \<tau> \<theta>] assms unfolding forces_eq_def forces_mem_def 
   by (auto del:elem_of_valI)
 
+lemma map_val_in_MG:
+  assumes 
+    "env\<in>list(M)"
+  shows 
+    "map(val(G),env)\<in>list(M[G])"
+  unfolding GenExt_def using assms map_type2 by simp
+
+lemma truth_lemma_mem:
+  assumes 
+    "env\<in>list(M)" "M_generic(G)"
+    "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" 
+    "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)"
+  shows 
+    "(\<exists>p\<in>G.(sats(M,forces(Member(n,m)),[P,leq,one,p] @ env))) \<longleftrightarrow> sats(M[G],Member(n,m),map(val(G),env))"
+  using assms IV240a(2)[OF assms(2) _ assms(3-4)] IV240b(2)[OF assms(2-4)] 
+    P_in_M leq_in_M one_in_M sats_forces_Member[OF _ assms(3-7)] map_val_in_MG 
+  by (auto del:elem_of_valI)
+
+lemma truth_lemma_eq:
+  assumes 
+    "env\<in>list(M)" "M_generic(G)"
+    "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" 
+    "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)"
+  shows 
+    "(\<exists>p\<in>G.(sats(M,forces(Equal(n,m)),[P,leq,one,p] @ env))) \<longleftrightarrow> sats(M[G],Equal(n,m),map(val(G),env))"
+  using assms IV240a(1)[OF assms(2) _ assms(3-4)] IV240b(1)[OF assms(2-4)] 
+    P_in_M leq_in_M one_in_M sats_forces_Equal[OF _ assms(3-7)] map_val_in_MG
+  by (auto)
+
+lemma definition_of_forces_mem:
+  assumes 
+    "env\<in>list(M)"
+    "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" 
+    "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)"
+  shows 
+    "sats(M,forces(Member(n,m)), [P,leq,one,p] @ env) \<longleftrightarrow> (\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],\<phi>,map(val(G),env)))"
+  using assms IV240a(1)[OF _ _ assms(2-3)] IV240b(1)[OF _ assms(2-3)] 
+    P_in_M leq_in_M one_in_M sats_forces_Equal[OF _ assms(2-6)] map_val_in_MG
+  oops
+
 end
 
 end
