@@ -251,11 +251,14 @@ lemma M_generic_leqD [dest]: "M_generic(G) \<Longrightarrow> p\<in>G \<Longright
 lemma M_generic_compatD [dest]: "M_generic(G) \<Longrightarrow> p\<in>G \<Longrightarrow> r\<in>G \<Longrightarrow> \<exists>q\<in>G. <q,p>\<in>leq \<and> <q,r>\<in>leq"
   unfolding M_generic_def by (blast dest:low_bound_filter)
 
+lemma GenExtD [iff]: "x\<in>M[G] \<longleftrightarrow> (\<exists>\<tau>\<in>M. x = val(G,\<tau>))"
+  unfolding GenExt_def by simp
+
 lemma left_in_M : "tau\<in>M \<Longrightarrow> <a,b>\<in>tau \<Longrightarrow> a\<in>M"
   using fst_snd_closed[of "<a,b>"] Transset_intf[OF trans_M] by auto
 
 (* Kunen 2013, Lemma IV.2.29 *)
-lemma generic_inter_dense_below: "D:M ==> M_generic(G) ==> dense_below(D,p) ==> p\<in>G ==> D \<inter> G \<noteq> 0"
+lemma generic_inter_dense_below: "D\<in>M \<Longrightarrow> M_generic(G) \<Longrightarrow> dense_below(D,p) \<Longrightarrow> p\<in>G \<Longrightarrow> D \<inter> G \<noteq> 0"
   sorry
 
 (* Lemma IV.2.40(a), membership *)
@@ -454,7 +457,7 @@ lemma core_induction:
 
 lemma IV240a_aux:
   assumes
-    "M_generic(G)" "p\<in>G" (* "\<tau>\<in>M" "\<theta>\<in>M" *) "ft\<in>2"
+    "M_generic(G)" "p\<in>G" "ft\<in>2"
   shows 
     "\<tau>\<in>M \<longrightarrow> \<theta>\<in>M \<longrightarrow> frc_at(P,leq,<ft,\<tau>,\<theta>,p>) = 1 \<longrightarrow> 
      (ft = 0 \<longrightarrow> val(G,\<tau>) = val(G,\<theta>)) \<and>
@@ -676,25 +679,28 @@ lemma map_val_in_MG:
 lemma truth_lemma_mem:
   assumes 
     "env\<in>list(M)" "M_generic(G)"
-    "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" 
     "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)"
   shows 
     "(\<exists>p\<in>G.(sats(M,forces(Member(n,m)),[P,leq,one,p] @ env))) \<longleftrightarrow> sats(M[G],Member(n,m),map(val(G),env))"
-  using assms IV240a(2)[OF assms(2) _ assms(3-4)] IV240b(2)[OF assms(2-4)] 
-    P_in_M leq_in_M one_in_M sats_forces_Member[OF _ assms(3-7)] map_val_in_MG 
+  using assms IV240a(2)[OF assms(2), of _ "nth(n,env)" "nth(m,env)"] 
+    IV240b(2)[OF assms(2), of "nth(n,env)" "nth(m,env)"] 
+    P_in_M leq_in_M one_in_M 
+    sats_forces_Member[OF _ _ _ assms(1), of _  "nth(n,env)" "nth(m,env)" n m] map_val_in_MG
   by (auto del:elem_of_valI)
 
 lemma truth_lemma_eq:
   assumes 
     "env\<in>list(M)" "M_generic(G)"
-    "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" 
     "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)"
   shows 
     "(\<exists>p\<in>G.(sats(M,forces(Equal(n,m)),[P,leq,one,p] @ env))) \<longleftrightarrow> sats(M[G],Equal(n,m),map(val(G),env))"
-  using assms IV240a(1)[OF assms(2) _ assms(3-4)] IV240b(1)[OF assms(2-4)] 
-    P_in_M leq_in_M one_in_M sats_forces_Equal[OF _ assms(3-7)] map_val_in_MG
+  using assms IV240a(1)[OF assms(2), of _ "nth(n,env)" "nth(m,env)"] 
+    IV240b(1)[OF assms(2), of "nth(n,env)" "nth(m,env)"] 
+    P_in_M leq_in_M one_in_M 
+    sats_forces_Equal[OF _ _ _ assms(1), of _  "nth(n,env)" "nth(m,env)" n m] map_val_in_MG
   by (auto)
 
+(*
 lemma definition_of_forces_mem:
   assumes 
     "env\<in>list(M)"
@@ -708,6 +714,99 @@ lemma definition_of_forces_mem:
   apply (auto del:elem_of_valI) apply (elim allE impE) apply simp 
   (* need to use that G is a filter, see Forcing_Corollaries.thy *)
   oops
+*)
+
+lemma density_lemma:
+  assumes 
+    "p\<in>P" "\<phi>\<in>formula" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"
+  shows
+    "sats(M,forces(\<phi>), [P,leq,one,p] @ env) \<longleftrightarrow> dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,one,q] @ env)},p)"
+  using assms(2)
+proof (induct)
+  case (Member x y)
+  then show ?case sorry
+next
+  case (Equal x y)
+  then show ?case sorry
+next
+  case (Nand p q)
+  then show ?case sorry
+next
+  case (Forall p)
+  then show ?case sorry
+qed
+
+lemma truth_lemma:
+  assumes 
+    "\<phi>\<in>formula" "M_generic(G)"
+  shows 
+     "\<And>env. env\<in>list(M) \<Longrightarrow> arity(\<phi>)\<le>length(env) \<Longrightarrow> 
+      (\<exists>p\<in>G.(sats(M,forces(\<phi>), [P,leq,one,p] @ env))) \<longleftrightarrow> sats(M[G],\<phi>,map(val(G),env))"
+  using assms(1)
+proof (induct)
+  case (Member x y)
+  then
+  show ?case
+    using assms truth_lemma_mem[OF \<open>env\<in>list(M)\<close> assms(2) \<open>x\<in>nat\<close> \<open>y\<in>nat\<close> 
+        succ_leE[OF Un_leD1] succ_leE[OF Un_leD2], of "succ(y)" "succ(x)"]
+    by simp
+next
+  case (Equal x y)
+  then
+  show ?case
+    using assms truth_lemma_eq[OF \<open>env\<in>list(M)\<close> assms(2) \<open>x\<in>nat\<close> \<open>y\<in>nat\<close> 
+        succ_leE[OF Un_leD1] succ_leE[OF Un_leD2], of "succ(y)" "succ(x)"]
+    by simp
+next (* This case will probably need a density argument *)
+  case (Nand p q)
+  then 
+  show ?case
+    unfolding forces_def 
+    sorry
+next
+  case (Forall \<phi>)
+  with \<open>M_generic(G)\<close>
+  show ?case
+  proof (intro iffI)
+    assume "\<exists>p\<in>G. sats(M,forces(Forall(\<phi>)),[P,leq,one,p] @ env)"
+    with \<open>M_generic(G)\<close>
+    obtain p where "p\<in>G" "p\<in>M" "p\<in>P" "sats(M,forces(Forall(\<phi>)),[P,leq,one,p] @ env)"
+      using Transset_intf[OF trans_M _ P_in_M] by auto
+    with \<open>env\<in>list(M)\<close> \<open>\<phi>\<in>formula\<close>
+    have "sats(M,forces(\<phi>),[P,leq,one,p,x] @ env)" if "x\<in>M" for x
+      unfolding forces_def using that P_in_M leq_in_M one_in_M 
+        sats_fref[of x p env "forces_ren(auxren,fren,fref,\<phi>)"] by simp
+    with \<open>p\<in>G\<close> \<open>\<phi>\<in>formula\<close> \<open>env\<in>_\<close> \<open>arity(Forall(\<phi>)) \<le> length(env)\<close>
+      Forall(2)[of "Cons(_,env)"] 
+    show "sats(M[G], Forall(\<phi>), map(val(G),env))"
+      using pred_le2 map_val_in_MG
+      by (auto)
+  next (* This implication will probably need a density argument *)
+    assume 1:"sats(M[G], Forall(\<phi>), map(val(G),env))"
+    {
+      fix v
+      assume "v\<in>M[G]"
+      moreover from this and  1 \<open>env\<in>_\<close>
+      have "sats(M[G], \<phi>, [v] @ map(val(G),env))"
+        using P_in_M leq_in_M one_in_M map_val_in_MG by simp
+      ultimately
+      obtain x where "x\<in>M" "sats(M[G], \<phi>, map(val(G),[x] @ env))" 
+        by auto
+      with \<open>\<phi>\<in>formula\<close> \<open>env\<in>_\<close> \<open>arity(Forall(\<phi>)) \<le> length(env)\<close>
+        Forall(2)[of "Cons(x,env)"] 
+      obtain p where "p\<in>G" "sats(M,forces(\<phi>),[P,leq,one,p,x] @ env)" 
+        unfolding forces_def using  \<open>x\<in>M\<close> pred_le2
+          sats_fref[of _ _ env "forces_ren(auxren,fren,fref,\<phi>)"] 
+        by auto
+      then
+      have "\<exists>p\<in>G. sats(M, forces(Forall(\<phi>)), [P, leq, one, p] @ env)"
+        unfolding forces_def sorry (* a lie *)
+    }
+    show "\<exists>p\<in>G. sats(M, forces(Forall(\<phi>)), [P, leq, one, p] @ env)"
+      unfolding forces_def using map_val_in_MG P_in_M leq_in_M one_in_M Transset_intf[OF trans_M _ P_in_M]
+      sorry
+  qed
+qed
 
 end
 
