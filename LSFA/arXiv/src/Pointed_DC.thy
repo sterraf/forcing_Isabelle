@@ -100,22 +100,13 @@ corollary DC_on_A_x_nat :
   apply (subst snd_conv, simp)
   done
 
-lemma aux_sequence_DC : "\<And>R. \<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. \<langle>x,y\<rangle> \<in> S`n \<Longrightarrow>
-                        R={\<langle>\<langle>x,n\<rangle>,\<langle>y,m\<rangle>\<rangle>\<in>(A\<times>nat)\<times>(A\<times>nat). \<langle>x,y\<rangle>\<in>S`m } \<Longrightarrow>
-                        \<forall>x\<in>A\<times>nat. \<exists>y\<in>A. \<langle>x,\<langle>y,succ(snd(x))\<rangle>\<rangle> \<in> R"
-  apply (rule ballI, rename_tac v)
-  apply (frule Pair_fst_snd_eq)  
-  apply (erule_tac x="fst(v)" in ballE)
-   apply (drule_tac x="succ(snd(v))" in bspec, auto)
-  done
-
-lemma aux_sequence_DC2 : "\<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. \<langle>x,y\<rangle> \<in> S`n \<Longrightarrow>
+lemma aux_sequence_DC : "\<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. \<langle>x,y\<rangle> \<in> S`n \<Longrightarrow>
         \<forall>x\<in>A\<times>nat. \<exists>y\<in>A. \<langle>x,\<langle>y,succ(snd(x))\<rangle>\<rangle> \<in> {\<langle>\<langle>x,n\<rangle>,\<langle>y,m\<rangle>\<rangle>\<in>(A\<times>nat)\<times>(A\<times>nat). \<langle>x,y\<rangle>\<in>S`m }"
   by auto
     
 lemma sequence_DC: "\<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. \<langle>x,y\<rangle> \<in> S`n \<Longrightarrow>
     \<forall>a\<in>A. (\<exists>f \<in> nat\<rightarrow>A. f`0 = a \<and> (\<forall>n \<in> nat. \<langle>f`n,f`succ(n)\<rangle>\<in>S`succ(n)))"
-  apply (drule aux_sequence_DC2)
+  apply (drule aux_sequence_DC)
   apply (drule DC_on_A_x_nat, auto)
   done
 

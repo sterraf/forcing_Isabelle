@@ -1,6 +1,15 @@
 \section{The generic extension}
-In the following subsections we show that every preorder in a ctm
-admits a generic filter, and develop the machinery of names.
+
+Cohen's technique of forcing consists of constructing new models of
+$\ZFC$ by adding a \emph{generic} subset $G$ of the forcing notion $P$
+(a preorder with top). Given a model $M$ of $\ZFC$, the extension with
+the generic subset $G$ is called \emph{the generic extension} of $M$,
+denoted $M[G]$.  In this section we introduce all the necessary
+concepts and results for defining $M[G]$; namely, we show, using
+Rasiowa-Sikorski, that every preorder in a ctm admits a generic filter
+and also develop the machinery of names. As an application of the
+latter, we prove some basic
+results about the generic extension.
 
 \subsection{The generic filter}
 \label{sec:generic-filter}
@@ -59,11 +68,11 @@ existence of an $M$-generic filter for a poset \isa{P}.
 \ \ \isacommand{from}\isamarkupfalse%
 \ Eq{\isadigit{3}}\ \isakeyword{and}\ Eq{\isadigit{4}}\ \isacommand{interpret}\isamarkupfalse%
 \ \isanewline
-  \ \ cg{\isacharcolon}\ countable{\isacharunderscore}generic\ P\ leq\ uno\ {\isacharquery}D\ \isanewline
+  \ \ cg{\isacharcolon}\ countable{\isacharunderscore}generic\ P\ leq\ one\ {\isacharquery}D\ \isanewline
  \isacommand{by}\isamarkupfalse%
 \ {\isacharparenleft}unfold{\isacharunderscore}locales{\isacharcomma}\ auto{\isacharparenright}
 \end{isabelle}
-\noindent
+%
 and then a  $\calD$-generic filter given by Rasiowa-Sikorski will be $M$-generic by construction. 
 
 \begin{isabelle}

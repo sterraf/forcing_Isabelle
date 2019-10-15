@@ -1,0 +1,136 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
+\subsection*{Recursion and values of names}
+
+The map $\val$ used in the definition of the generic extension is
+characterized by the recursive equation
+\begin{equation}
+  \label{eq:val}
+  \val(G,\tau) = \{val(G,\sigma) :\exists p \in\PP .%
+  \lb\sigma,p\rb \in \tau \wedge p \in G \}
+\end{equation}
+
+Recursive definitions such as this are justified by the principle of
+recursion on well-founded relations \cite[p.~48]{kunen2011set}; this
+principle allows us to define a recursive function $F \colon A\to A$
+by choosing a well-founded relation $R \subseteq A\times A$ and a
+functional $H\colon A\times (A \to A) \to A$ satisfying
+$F(a)=H(a,F\!\upharpoonright\!(R^{-1}(a)))$. Paulson
+\cite{paulson1995set} made this principle available in Isabelle/ZF via
+the the operator \isa{wfrec}. The formalization of the corresponding
+functional $\mathit{Hv}$ for $\val$ is straightforward:
+%
+\begin{isabelle}
+\isacommand{definition}\isamarkupfalse%
+\isanewline
+\ \ Hv\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}Hv{\isacharparenleft}G{\isacharcomma}y{\isacharcomma}f{\isacharparenright}\ {\isacharequal}{\isacharequal}\ {\isacharbraceleft}f{\isacharbackquote}x\ {\isachardot}{\isachardot}\ x{\isasymin}domain{\isacharparenleft}y{\isacharparenright}{\isacharcomma}\ {\isasymexists}p{\isasymin}P{\isachardot}\ {\isacharless}x{\isacharcomma}p{\isachargreater}\ {\isasymin}\ y\ {\isasymand}\ p\ {\isasymin}\ G\ {\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+In the references \cite{kunen2011set,weaver2014forcing} $\val$ is
+applied only to \emph{names}, that are certain elements of $M$
+characterized by a recursively defined predicate. The well-founded
+relation used to justify Equation~\eqref{eq:val} is $\mathrel{\mathit{ed}}$
+defined by
+\[ x \mathrel{\mathit{ed}} y \iff \exists p . \lb x,p\rb\in y. \] In
+order to use \isa{wfrec} the relation should be expressed as a set, so
+in \cite{2018arXiv180705174G} we originally took the restriction of
+$\mathit{ed}$ to the whole universe 
+$M$; i.e. $\mathit{ed}\cap M\times M$.  Although this decision was
+adequate for that work, we now required more flexibility (for
+instance, in order to apply $\val$ to arguments that we can't assume
+that are in $M$, see Eq.~(\ref{eq:val-of-m}) below); so we define
+\begin{isabelle}
+  \isacommand{definition}\isamarkupfalse%
+\isanewline
+\ edrel\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}
+\ {\isachardoublequoteopen}edrel{\isacharparenleft}A{\isacharparenright}{\isacharequal}{\isacharequal}\ \{<x,y> . <x,y> {\isasymin} A{\isasymtimes}A {\isasymand} ed(x,y) \}
+\end{isabelle}
+
+The remedy is to restrict $\mathit{ed}$ to the
+transitive closure (\isatt{eclose}) of the actual parameter:
+\begin{isabelle}
+\isacommand{definition}\isamarkupfalse%
+\isanewline
+\ val\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}
+\ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isacharequal}{\isacharequal}\ wfrec{\isacharparenleft}edrel{\isacharparenleft}eclose{\isacharparenleft}{\isacharbraceleft}{\isasymtau}{\isacharbraceright}{\isacharparenright}{\isacharparenright}{\isacharcomma}{\isasymtau}{\isacharcomma}Hv{\isacharparenleft}G{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+In order to show that this definition satisfies~(\ref{eq:val}) we had
+to supplement the existing recursion tools with a key, albeit
+intuitive, result stating that when computing the value of a recursive
+function on some argument $a$, one can restrict the relation to some
+ambient set if it includes $a$ and all of its predecessors (i.e. every
+element in the image of the transitive closure of the relation on $a$,
+\isatt{{\isacharparenleft}r{\isacharcircum}{\isacharplus}{\isacharparenright}{\isacharminus}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}a{\isacharbraceright}}).
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ wfrec{\isacharunderscore}restr\ {\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}relation{\isacharparenleft}r{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}wf{\isacharparenleft}r{\isacharparenright}{\isachardoublequoteclose}\ \isanewline
+\ \ \isakeyword{shows}\ \ {\isachardoublequoteopen}a{\isasymin}A\ {\isasymLongrightarrow}\ {\isacharparenleft}r{\isacharcircum}{\isacharplus}{\isacharparenright}{\isacharminus}{\isacharbackquote}{\isacharbackquote}{\isacharbraceleft}a{\isacharbraceright}\ {\isasymsubseteq}\ A\ {\isasymLongrightarrow}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ wfrec{\isacharparenleft}r{\isacharcomma}a{\isacharcomma}H{\isacharparenright}\ {\isacharequal}\ wfrec{\isacharparenleft}r{\isasyminter}A{\isasymtimes}A{\isacharcomma}a{\isacharcomma}H{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+As a consequence, we are able to formalize Equation~(\ref{eq:val}) as follows:
+\begin{isabelle}
+  \isacommand{lemma}\isamarkupfalse%
+  \ def{\isacharunderscore}val{\isacharcolon}\isanewline
+  \ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}\ {\isacharequal}\ {\isacharbraceleft}val{\isacharparenleft}G{\isacharcomma}t{\isacharparenright}\ {\isachardot}{\isachardot}\ t{\isasymin}domain{\isacharparenleft}x{\isacharparenright}\ {\isacharcomma}\ {\isasymexists}p{\isasymin}P{\isachardot}\ {\isacharless}t{\isacharcomma}p{\isachargreater}{\isasymin}x\ {\isasymand}\ p{\isasymin}G\ {\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+and the monotonicity of $\val$ follows automatically after a
+substitution.
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ val{\isacharunderscore}mono{\isacharcolon}\ {\isachardoublequoteopen}x{\isasymsubseteq}y\ {\isasymLongrightarrow}\ val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}\ {\isasymsubseteq}\ val{\isacharparenleft}G{\isacharcomma}y{\isacharparenright}{\isachardoublequoteclose}\isanewline
+%
+\ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}subst\ {\isacharparenleft}{\isadigit{1}}\ {\isadigit{2}}{\isacharparenright}\ def{\isacharunderscore}val{\isacharcomma}\ force{\isacharparenright}%
+\end{isabelle}
+More interestingly we can give a neat equation for values of
+names defined by Separation, say $B = \{x\in A\times \PP.\ Q(x)\}$,
+then
+\begin{equation}
+\val(G,B) = \{\val(G,t) : t\in A , \exists p\in \PP \cap G.\ Q(\lb t,p\rb) \} \label{eq:val-name-sep}
+\end{equation}
+
+We close our discussion of names and their values by making explicit
+the names for elements in $M$; once more, we refer to
+\cite{2018arXiv180705174G} for our formalization. The definition of
+$\chk(x)$ is a straightforward $\in$-recursion:
+\begin{equation*}
+  \label{eq:def-check}
+  \chk(x)\defi\{\lb\chk(y),\1\rb : y\in x\}
+\end{equation*}
+An easy $\in$-induction shows $\val(G,\chk(x))=x$.
+But to conclude $M\subseteq M[G]$ one also needs to have
+$\chk(x) \in M$; this result requires the internalization of
+recursively defined functions. This is also needed to prove
+$G \in M[G]$; let us define
+$\dot G= \{\lb \chk(p),p\rb : p \in \PP \}$, it is easy to prove
+$\val(G,\dot G) = G$. Proving $\dot G\in M$ involves knowing
+$\chk(x) \in M$ and using one instance of Replacement.
+
+Paulson proved absoluteness results for definitions by recursion and
+one of our next goals is to instantiate at $\#\#M$ the appropriate
+locale 
+\isa{M{\isacharunderscore}eclose} which is the last layer of a pile of
+locales. It will take us some time to prove that any ctm of $\ZF$ 
+satisfies the
+assumptions involved in those locales; as we mentioned, Paulson's work
+is mostly done \emph{externally}, i.e. the assumptions are instances
+of Separation and Replacement where the predicates and functions are
+Isabelle functions of type \isa{i{\isasymRightarrow}i} and
+\isa{i{\isasymRightarrow}o}, respectively. In contrast, we assume that
+$M$ is a model of $\ZF$, therefore to deduce that $M$ satisfies a
+Separation instance, we have to define an internalized formula whose
+satisfaction is equivalent to the external predicate (cf. the
+interface described in Section~\ref{sec:axioms-models-set-theory} and
+also the concrete example given in the proof of Union below).
+
+In the meantime, we declare a locale
+\isa{M{\isacharunderscore}extra{\isacharunderscore}assms} assembling
+both assumptions ($M$ being closed under $\chk$ and the instance of
+Replacement); in this paper we explicitly mention where we use them.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "Separation_In_MG"
+%%% ispell-local-dictionary: "american"
+%%% End: 

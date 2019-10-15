@@ -1,0 +1,142 @@
+First and foremost, we would like to thank the referees for their
+careful reading and detailed criticism. We are indeed greatly
+benefited by their evaluation.
+
+We first address some issues that appeared in more than one
+review. Our choice of Isabelle/ZF as framework was simply based on the
+need to decrease the overhead of the formalization process. Indeed,
+the main drawback of this choice is that we cannot perform inductive
+arguments on "external" formulas (i.e., Isabelle terms of type
+o). This is the reason why we are using internalized formulas.
+
+There are some questions in common on parameters of Separation, but
+those are answered below.
+
+Finally, a comment in one of the reviews surprised us. Reviewer 3
+states that ours is not the first formalization of separation. We are
+extremely eager to know about this, would they provide a reference for
+such a strong claim?
+
+
+Questions by REVIEWER 1
+=======================
+
+> - ∈ restricted to M -> this suggests that it is defined outside of
+>   M, right? Isn't this strange?
+
+Not really, since ∈ is defined over the "ambient" Isabelle type i, and
+one can restrict it to any set.
+
+> - "it is also possible", "it can be shown" -> if you did it, say it
+>    as such, otherwise I am not sure that this is informative or
+>    useful (but I might be missing something)
+
+We actually did, but that wasn't part of this submission. We are sorry
+for the imprecision
+
+> - Union is absolute for any transitive class - is it well-known ?
+
+Yes, indeed.
+
+
+Questions by REVIEWER 2
+=======================
+
+
+> Questions to the authors: “We are only able to prove that the
+> generic extension satisfies Separation for any particular number of
+> parameters, but not in general.”  This looks like a strong
+> limitation, can you comment on this.
+
+Actually, it is well known [Levy, SchiSchli] that there are
+axiomatizations of ZF without any parameters. We have chosen an
+axiomatization using at most one parameter in both Separation and
+Replacement. In this sense, we can prove that M[G] satisfies the "same
+amount of Separation" that M is assumed to satisfy.
+
+
+Questions by REVIEWER 3
+=======================
+
+> Summary:
+>
+> This paper presents a formalization of the separation axiom from set
+> theory using the forcing library that has already been built in
+> Isabelle/ZF by Paulson. 
+
+This is a mistake. Forcing was not formalized by Paulson.
+
+
+Questions by REVIEWER 4
+=======================
+
+> The more important point is that the "increment" presented in this
+> paper is (IMO) too little for being published in a top conference
+> such as LICS. Indeed, the paper only deals with the soundness of
+> Separation and Powerset in generic extensions. The formalization of
+> the soundness of Extensionality, Regularity, Pairing, Union and
+> Infinity has been published before,
+
+There is a mistake in this assertion. The only axiom that has been
+published before (at least by us) was Pairing. 
+
+> On the other hand, I agree that "formulas as sets" are useful to
+> define the notion of constructible set, and the corresponding
+> constructible universe. But the point is that in forcing, we
+> (normally) never need such internalized formulas! The theory of
+> forcing is independent from the theory of constructible sets, and
+> this should appear in a formalization. 
+
+We agree that internalized formulas are not needed per se; however in
+Isabelle/ZF internalized formulas are the only representation of
+formulas that are syntactically manipulable. We welcome the suggestion
+of extending Isabelle/ZF with a new inductive type "f" for formulas;
+this would, however, require a change in the metatheory. In contrast
+with Agda, Coq, or even Isabelle/HOL, there is no support in
+Isabelle/ZF for introducing inductive types, save recursively
+defined "sets" (elements of i, like nat).
+
+Nevertheless, we are *not* using the theory of constructible sets for
+our formalization, only the absoluteness results (which are
+prerequisites for both theories).
+
+> This simple argument shows that transitive models of ZF, although
+> they are very convenient from the point of view of model theory,
+> *cannot* be used to prove relative consistency results about forcing
+> (in the proof-theoretic sense), since there is *no known way* to
+> turn an arbitrary model of ZF (such as given by the completeness
+> theorem of 1st-order logic) into a transitive model.
+
+Though it is a fact that Con(ZF) does not imply the existence of ctms
+of ZF, finitary consistency proofs can be obtained through the ctm
+approach, since one only needs that the ctm M satisfy only a finite
+fragment of ZF at a time (and such an M can be obtained by a standard
+reflection argument). For a reference, check [Kunen, IV.5].
+
+> p. 3, second last par. of column 1. "We are only able to prove that
+> the generic extension satisfies Separation for any particular number
+> of parameters, but not in general." What do you mean precisely?  At
+> which level lives the quantification in "any particular number of
+> parameters"? A quantification over the set N (inside M and "i")?  Or
+> a quantification over the type of natural numbers in Isabelle?
+> Please clarify this point.
+
+Isabelle/ZF does not define a type of natural numbers (we just have i
+and o). "In general" would mean an universal quantification over the
+set nat::i. For our purposes, showing Separation for at most one
+parameter (that is, for at most two free variables) is enough.
+
+References
+==========
+
+    [Kunen] K. Kunen, Set Theory, 2nd ed., ser. Studies in Logic.
+    	    College Publications, 2011, revised edition, 2013.
+
+     [Levy] Azriel Levy, Parameters in the comprehension axiom schemas
+     	    of set theory, in Proceedings of the Tarski symposium,
+     	    Proceedings of Symposia in Pure Mathematics, vol. 25, American
+     	    Mathematical Society, Providence, RI, pp. 309–324.
+
+[SchiSchli] Ralf Schindler and Philipp Schlicht, ZFC without
+	    parameters (A note on a question of Kai Wehmeier)
+	    http://wwwmath.uni-muenster.de/logik/Personen/rds/ZFC_without_parameters.pdf 

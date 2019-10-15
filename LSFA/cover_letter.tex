@@ -1,0 +1,74 @@
+\documentclass[11pt,english]{article}
+\usepackage{babel}
+\usepackage[numbers]{natbib}
+%
+\input{header-draft}
+%
+%
+\begin{document}
+\title{First steps towards a formalization of Forcing
+  \\ Revisions made to the paper}
+\author{E.~Gunther \and  M.~Pagano \and P.~S\'anchez~Terraf
+  %% fourth author was partially
+  %% supported by CONICET, ANPCyT project PICT 2012-1823, and by
+  %% SeCyT-UNC project 05/B284.}
+}
+\date{}
+\maketitle
+
+In first place we want to thank the referees for reading the paper very
+carefully and for their detailed and constructive criticism. Below we
+detail the main changes that have been made; also, a diff-PDF is
+provided that shows all the changes in color.
+
+We have spelled-check the manuscript, corrected punctuation, and took
+notice of all the typos indicated in the report. 
+
+The Introduction has many changes. A whole new section (``Related
+work'') has been added, where the formalization of mathematics in
+general and of forcing and set theory in particular are discussed.
+Also, at the end of the subsection on Isabelle we describe the tools
+available for implementation, and a comparison
+between the two dialects available, the basic procedural style and the
+declarative \emph{Isar}. At some point of the Introduction, we also
+remark that our 
+development follows the presentation by Kunen \cite{kunen2011set}. 
+
+We added several comments on the implementation details, especially in
+the section on forcing notions; this includes a description of the
+complexity in number of lines and proof commands, and some hints on
+the mechanics of the use Isabelle.
+
+A thorough comparison between the available results on $\AC$ and
+$\DC$, and the need for reimplementing some of those was included in
+the subsection on Dependent Choices.
+
+The section on ``Names'' includes a thorough discussion on recursive
+definitions in Isabelle/ZF and two new applications. The first is the proof
+that the generic extension $M[G]$ is a transitive set; and the second
+is that the generic filter $G$ belongs to $M[G]$, a fundamental result
+that was missing from the previous two versions.
+
+We take this opportunity to answer a question by Reviewer 3 from the
+first round of corrections. Obtaining the results of this paper per se
+was not very difficult. But as this Reviewer points out, the setting
+up for the project, planning a strategy, and even studying Paulson's
+libraries%
+%%%%%%%%%%%%%%%%%%%%
+\footnote{Even today we find ourselves inadvertently reproving some
+  variant of a lemma in Paulson's development on set theory.}
+%%%%%%%%%%%%%%%%%%%%
+took almost an year of work. With the hindsight of this planning
+period, we would like to point out that most of the results stated in
+the conclusion section involve some serious development; and it might
+even result in a publication for each item. It is therefore not
+feasible to include any of them in this revision.
+%
+%
+\bibliographystyle{arXiv/mi-estilo-else}
+\bibliography{citados}
+\end{document}
+%%% Local Variables: 
+%%% mode: latex
+%%% ispell-local-dictionary: "american"
+%%% End: 

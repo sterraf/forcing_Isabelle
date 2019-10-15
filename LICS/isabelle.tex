@@ -1,0 +1,114 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
+\section{Isabelle}
+\label{sec:isabelle}
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-
+\subsection{Logics}
+\label{sec:logics}
+Isabelle \cite{Isabelle,DBLP:books/sp/Paulson94} provides a
+meta-language called \emph{Pure} that consists of a fragment of higher
+order logic, where \isatt{\isasymRightarrow} is the function-space
+arrow. The meta-Boolean type is called \isatt{prop}. Meta-connectives
+\isatt{\isasymLongrightarrow} and \isatt{\&\&\&} fulfill the role of
+implication and conjunction, and the meta-binder \isatt{\isasymAnd}
+corresponds to universal quantification.
+
+On top of \emph{Pure}, theories/object logics can be defined, with
+their own types, connectives and rules. Rules can be written  using
+meta-implication: ``$P$, $Q$, and $R$ yield $S$'' can be written
+\[
+P \ \isatt{\isasymLongrightarrow}\ Q\ \isatt{\isasymLongrightarrow}\ R\ \isatt{\isasymLongrightarrow}\ S
+\]
+(as usual,  \isatt{\isasymLongrightarrow} associates to the right), and
+syntactic sugar is provided to curry the previous rule as follows:
+\[
+\isasymlbrakk P; Q; R \isasymrbrakk \ \isatt{\isasymLongrightarrow}\ S.
+\]
+One further example is given by induction on the natural numbers
+\isatt{nat},
+\[
+\isasymlbrakk P(0);\ (\textstyle\isasymAnd
+x.\ P(x)\ \isasymLongrightarrow\ P(\isatt{succ}(x))) \isasymrbrakk
+\ \isasymLongrightarrow\ P(n), 
+\]
+where we are omitting the ``typing'' assumtions on $n$ and $x$.
+
+We work in the object theory \emph{Isabelle/ZF}. Two types are defined
+in this theory: \tyo, the object-Booleans, and \tyi,
+sets. 
+%% It must be insisted that the types are defined axiomatically, not
+%% recursively. That is, although there are constants and functions that
+%% generate elements of both types, neither of them is 
+%% \emph{initial}, in the sense that they are not the least types
+%% obtained by combining the given constants and operations. 
+It must be observed that predicates (functions with arguments of
+type \tyi{} with values in \tyo) do not correspond to first-order formulas;
+in particular, those are not recursively constructed.
+This will
+have concrete consequences in our strategy to approach the
+development. From the beginning, we had to resort to
+\emph{internalized} formulas \cite[Sect.~6]{paulson_2003}, i.e.\ elements of type $\tyi$ that
+encode first-order formulas with a binary relation symbol, and the
+satisfaction predicate \isatt{sats\,::\,"i\isasymRightarrow i\isasymRightarrow i\isasymRightarrow o"}  between a set
+model with an environment and an internalized formula (where the
+relation symbol is interpreted as membership). The set 
+\isatt{formula::"\tyi"}
+ of internalized
+formulas is defined by recursion and hence it is possible to perform
+inductive arguments using them. In this sense, the object-logic level
+is further divided into \emph{internal} and \emph{external}
+sublevels. 
+
+The source code is written for the 2018 version of Isabelle and can be downloaded
+from 
+\ifIEEE
+\begin{center}
+\texttt{https://cs.famaf.unc.edu.ar/\~{}mpagano/forcing/}
+\end{center}
+\fi
+\ifarXiv
+\url{https://cs.famaf.unc.edu.ar/~mpagano/forcing/}
+\fi
+(with
+minor modifications, it can be run in Isabelle2016-1). Most of it is
+presented in the (nowadays standard) declarative flavour called
+\emph{Isar} \cite{DBLP:conf/tphol/Wenzel99}, where intermediate
+statements in the course of a proof are explicitly stated,
+interspersed with automatic tactics handling more trivial steps. The
+goal is that the resulting text, a \emph{proof document}, can be
+understood without the need of replaying it and viewing the proof state
+at each point.
+
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-
+\subsection{Locales}
+\label{sec:locales}
+Locales \cite{ballarin2010tutorial} provide a neat facility to
+encapsulate a context (fixed objects and assumptions on them) that is
+to be used in proving several theorems, as in usual mathematical
+practice. Furthermore, locales can be organized in hierarchies. 
+
+In this paper, locales have a further use. The \emph{Fundamental
+  Theorems of Forcing} we use talk about a specific map $\forceisa$
+from formulas to formulas. The definition of $\forceisa$ is involved
+and we will not dwell on this now; but applications of those theorems
+do not require to know how it is defined. Therefore, we black-box it
+and pack everything in a locale called \texttt{forcing\_thms} that
+assumes that there is such a 
+map that satisfies the Fundamental Theorems.
+
+%% \begin{description}
+%% \item[\texttt{forcing\_notion}] preorden con top
+%% \item[\texttt{countable\_generic}] lo anterior con una familia contable de densos.
+%% \item[\texttt{M\_ZF}] axiomas.
+%% \item[\texttt{forcing\_data}]: lo anterior contable transitivo y una notion.
+%% \item[\texttt{forcing\_thms}]: eso.
+%% \item[\texttt{G\_generic}]: lo anterior y G es genérico.
+%% \item[\texttt{M\_extra\_assms}]: check in M e instancia de reemplazo para G.
+%% \item[\texttt{G\_generic\_extra}]: los dos anteriores (no sé si sigue estando)
+%% \end{description}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "Separation_In_MG"
+%%% ispell-local-dictionary: "american"
+%%% End: 

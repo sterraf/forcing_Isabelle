@@ -36,7 +36,9 @@ The formalization is modularized in these files:
 	Proof of the existence of a generic filter.
 - Names.thy
 	Definition of Generic extension of a model M of ZFC: M[G].
-	Definition of function val and check, and properties about them.
+	Definition of function val and check, and properties about 
+	them. Proof that G belongs to M[G] and that the latter is
+	a transitive set.
 - Gen_ext_pair.thy
-	Proof of preservation of the axiom of Pairing in the generic
+	Proof of the axiom of Pairing in the generic
 	extension M[G].

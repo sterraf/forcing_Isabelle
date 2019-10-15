@@ -1,0 +1,176 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
+\section{Conclusions and future work}
+\label{sec:conclusions-future-work}
+
+The ultimate goal of our project is a complete mechanization of
+forcing allowing for further developments (formalization of the
+relative consistency of $\CH$), with the long-term hope that 
+working set-theorists will adopt these formal tools as an aid to their
+research. In the current paper we reported a first major
+milestone towards that goal; viz. a formal proof in Isabelle/ZF of the
+satisfaction by generic extensions of most of the $\ZF$ axioms.%% , except
+%% for the axiom-scheme of Replacement.
+
+We cannot overstate the importance of following the sharp and detailed 
+presentation of forcing given by
+Kunen \cite{kunen2011set}. In fact, it helped us to delineate the
+\emph{thematic} aspects of our formalization; i.e.~the handling of all
+the theoretical concepts and results in the subject and it informed
+the structure of locales organizing our development. This had an
+impact, in particular, in the formal statement of the Fundamental
+Theorems. We consider that the writing of the \isatt{forcing\_thms}
+locale, though only taking a few lines of code, is the second most
+important achievement of this work, since there is no obvious
+reference from which to translate this directly. The accomplishment
+of the formalizations of Separation and Powerset are, in a sense,
+certificates that the locale of the Fundamental Theorems was set
+correctly.
+
+% In a gross simplification, there are two aspects to a formalization
+% project like this one: thematic and programmatic. The first concerns
+% the handling of all the theoretical concepts and results in the
+% subject, while the second involves the practical issues of the
+% implementation and design. In the case of forcing, the main intricacy
+% lies in the first aspect. In this sense, following a sensible
+% presentation of the material is key.  The authoritative reference 
+% on the subject during the last 30 years has been Kunen's classical
+% \cite{kunen1980}, and  we have followed a recent rewrite
+% \cite{kunen2011set} 
+% of that  textbook, which presents the material in the same sharp 
+% style but offering a lot of details. In some sense this project
+% wouldn't exist without this book.
+
+
+% Repite intro el p\'arrafo  que sigue
+%% The proof of Separation depends on the Fundamental Theorems of
+%% Forcing; in the spirit of the Formal Abstracts project we have only
+%% stated those theorems in our current development, because from a
+%% engineering point of view this can be done independently. The task of
+%% proving the Fundamental Theorems is another landmark of our project,
+%% after completing the formalization that generic extensions satisfy
+%% the axiom scheme of Replacement.
+
+% Next, various forcing notions must be developed in order to
+% obtain extensions satisfying diverse properties (v.g., the Continuum
+% Hypothesis). This yields relative consistency results.
+
+
+Replacement is the only one axiom that we have not yet addressed (see
+below) and Infinity was proved under two extra assumptions on the
+ground model; when we develop a full-fledged interface between ctms of
+$\ZF$ and the locales providing recursive constructions from Paulson's
+\isatt{ZF-Constructible} session, the same current proof will hold
+with no extra assumptions. The same goes for the results $M\sbq M[G]$
+and $G\in M[G]$.
+
+The Replacement Axiom, however, requires some more work to be
+done. In Kunen it
+requires a relativized version (i.e., showing that it holds for $M$)
+of the \emph{Reflection Principle}. In order to state this
+meta-theoretic result by Montague, recall that an equivalent
+formulation of the Foundation Axiom states that the universe of sets
+can be decomposed in a transfinite, cumulative hierarchy of sets:
+\begin{theorem}[{\cite[Thms.~I.9.23 and I.9.30]{kunen2011set}}]
+  Let $V_{\al}\defi\union\{\P(V_\be) : \be<\al\}$ for each ordinal
+  $\al$. Then each $V_\al$ is a set and 
+  $\forall x. \exists\al .\ \Ord(\al) \y x\in V_\al$.  
+\end{theorem}
+\begin{theorem}[Reflection Principle, {\cite[Thm.~II.5.3]{kunen2011set}}]\label{th:reflection-principle}
+  For every finite $\Phi\sbq\ZF$, $\ZF$ proves: ``There exist
+  unboundedly many $\al$ such that $V_\al\models \Phi$.''
+\end{theorem}
+%% This result has also other applications; in particular, it dispenses
+%% the need of ctms of the whole of $\ZF$ for consistency proofs (by
+%% repeating  the proof of Lemma~\ref{lem:wf-model-implies-ctm}, now
+%% starting with a  $V_\al$ satisfying $\Phi$). 
+
+% This statement is straightforwardly equivalent to that with $\Phi$
+% consisting of a single formula. 
+It is obvious that we can take the conjunction of $\Phi$ and state
+Theorem~\ref{th:reflection-principle} for a single formula, say
+$\phi$.  The schematic nature of this result hints at a proof by
+induction on formulas, and hence it must be shown internally. It is to
+be noted that Paulson \cite{DBLP:conf/cade/Paulson02} also formalized
+the Reflection principle in Isabelle/ZF, but it is not clear if the
+relativized version follows directly from it. Neeman
+\cite{neeman-course} has an alternative proof for Replacement that
+might avoid Reflection, for only the relativization of the
+cumulative hierarchy is needed; it is, nevertheless, a non-trivial
+task.
+
+This is an appropriate point to insist that the internal/external
+dichotomy has been a powerful agent in the shaping of our project.
+This tension was also pondered by Paulson in his formalization of
+G\"odel's constructible universe \cite{paulson_2003}; after choosing a
+shallow embedding of $\ZF$, every argument proved by induction on
+formulas (or functions defined by recursion) should be done using
+internalized formulas. Working on top of Paulson's library, we
+prototyped the formula-transformer $\forceisa$, which is defined for
+internalized formulas, and this affects indirectly the proof of the
+Separation Axiom (despite the latter is not by induction). The proof
+of Replacement also calls for internalized formulas, because one needs
+a general version of the Reflection Principle (since the formula
+$\phi$ involved depends on the specific instance of Replacement being
+proved). 
+%% Other formalizations, v.g.\ that of Barras
+%% \cite{barras-habilit} and Kaiser \cite{kaiser-set-theory-coq}, take
+%% advantage of a better articulation between the metatheory (Coq in both
+%% cases) and the set theory. 
+
+An alternative road to internalization would be to redevelop
+absoluteness results in a more structured metatheory that already
+includes a recursively defined type of first order formulas. Needless
+to say, this change to a deeper-embedding comprises an extensive
+re-engineering.
+
+A secondary, more prosaic, outcome of this project is to precisely
+assess which assumptions on the ground model $M$ are needed to develop
+the forcing machinery. The obvious are transitivity and $M$ being
+countable (but keep in mind Lemma~\ref{lem:wf-model-implies-ctm}); the
+first because many absoluteness results follows from this, the latter
+for the existence of generic filters. % A
+% more anecdotal one is that to show that an instance of Separation
+% with at most two parameters holds in $M[G]$, one needs to assume a
+% particular  six-parameter
+% instance in $M$ (four extra parameters can be directly blamed on
+% $\forceisa$).
+The purpose of identifying those assumptions is to assemble
+in a locale the specific (instances of) axioms that should satisfy the
+ground model in order to perform forcing constructions; this list will
+likely include all the instances of Separation and Replacement that
+are needed to satisfy the requirements of the locales in the
+\isatt{ZF-Constructible} session.
+
+We have already commented on our hacking of \isatt{ZF-Constructible}
+to maximize its modularity and thus the re-usability in other
+formalizations. We think it would be desirable to organize it
+somewhat differently: a trivial change is to catalog in one file all
+the internalized formulas. A more
+conceptual modification would be to start out with an even more basic
+locale that only assumes $M$ to be a non-empty transitive class, as
+many absoluteness results follow from this hypothesis. Furthermore, as
+Paulson comments in the 
+sources, it would have been better to minimize the use of the Powerset
+Axiom in locales and proofs. There are useful natural models that
+satisfy a sub-theory of $\ZF$ not including Powerset, and to ensure a
+broader applicability, it would be convenient to have absoluteness
+results not assuming it. We plan to contribute back to the official
+distribution of Isabelle/ZF with a thorough revision of the development of
+constructibility.
+
+Recently Alexandre Miquel suggested us to look into Boolean-valued
+models as an alternative method for extending models of ZF. This is a
+very interesting option to consider, since that would work for any
+model (and not just transitivive ones); some of the others issues (the
+most salient being the use of internalized formulas) are consequences
+of working in Isabelle/ZF and would be inevitable.
+
+%% \section*{Acknowledgment}
+%% 
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "Separation_In_MG"
+%%% ispell-local-dictionary: "american"
+%%% End: 

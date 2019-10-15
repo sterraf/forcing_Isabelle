@@ -41,7 +41,7 @@ Ordering Theorem and  $\DC(\omega)$), compared to the mere 11 commands from $\AC
 one is the
 choice principle that we use in our formalization of Pointed $\DC$, and states 
 the existence of
-choice functions on $\P(A)\sm \{\mty\}$):
+choice functions (``selectors'') on $\P(A)\sm \{\mty\}$):
 \[
 \exists (s: \P(A)\sm \{\mty\}\to A). \, \forall X\sbq A.\ X\neq \mty \limp
 s(X) \in X.
@@ -49,7 +49,7 @@ s(X) \in X.
 Another advantage of taking
 \isatt{AC{\isacharunderscore}func{\isacharunderscore}Pow} as a
 starting point is that it does not involve proper classes: The version
-of  $\AC$ in Isabelle/ZF corresponds to an axiom scheme of first order
+of  $\AC$ in Isabelle/ZF corresponds to an axiom scheme of first-order
 logic and as such is not a standard formulation. 
 %% 26 commands to get Pointed $\DC$.
 
@@ -97,12 +97,12 @@ following theorem:
 \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymforall}a{\isasymin}A{\isachardot}\ {\isacharparenleft}{\isasymexists}f\ {\isasymin}\ nat{\isasymrightarrow}A{\isachardot}\ f{\isacharbackquote}{\isadigit{0}}\ {\isacharequal}\ a\ {\isasymand}\ {\isacharparenleft}{\isasymforall}n\ {\isasymin}\ nat{\isachardot}\ {\isasymlangle}f{\isacharbackquote}n{\isacharcomma}f{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isasymrangle}{\isasymin}R{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-We need a further, ``diagonal'' version of $\DC$  to prove
+We need a further ``diagonal'' version of $\DC$  to prove
 Rasiowa-Sikorski. That is, if the assumption holds for a sequence of
-relations $S_n$,  then $f(n) \mathrel{S_{n+1}} f(n+1)$.
+relations $S_n$,  then $f(n) \mathrel{S_{n+1}} f(n+1)$ for all $n$.
 
 We first obtain a corollary of $\DC$ changing $A$ for
-$A\times\mathtt{nat}$:
+$A\times\mathtt{nat}$, whose procedural proof takes 16 lines:
 
 \begin{isabelle}
 \isacommand{corollary}\isamarkupfalse%
@@ -123,12 +123,24 @@ The following lemma is then proved automatically:
 \ auto%
 \end{isabelle}
 %
-And finally, we arrive to $\DC$ for a sequence of relations.
+And after a short proof we arrive to $\DC$ for a sequence of relations:
 
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ sequence{\isacharunderscore}DC{\isacharcolon}\ {\isachardoublequoteopen}{\isasymforall}x{\isasymin}A{\isachardot}\ {\isasymforall}n{\isasymin}nat{\isachardot}\ {\isasymexists}y{\isasymin}A{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ S{\isacharbackquote}n\ {\isasymLongrightarrow}\isanewline
-\ \ \ \ {\isasymforall}a{\isasymin}A{\isachardot}\ {\isacharparenleft}{\isasymexists}f\ {\isasymin}\ nat{\isasymrightarrow}A{\isachardot}\ f{\isacharbackquote}{\isadigit{0}}\ {\isacharequal}\ a\ {\isasymand}\ {\isacharparenleft}{\isasymforall}n\ {\isasymin}\ nat{\isachardot}\ {\isasymlangle}f{\isacharbackquote}n{\isacharcomma}f{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isasymrangle}{\isasymin}S{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\ \ \ \ {\isasymforall}a{\isasymin}A{\isachardot}\ {\isacharparenleft}{\isasymexists}f\ {\isasymin}\ nat{\isasymrightarrow}A{\isachardot}\ f{\isacharbackquote}{\isadigit{0}}\ {\isacharequal}\ a\ {\isasymand}\ {\isacharparenleft}{\isasymforall}n\ {\isasymin}\ nat{\isachardot}\ {\isasymlangle}f{\isacharbackquote}n{\isacharcomma}f{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isasymrangle}{\isasymin}S{\isacharbackquote}succ{\isacharparenleft}n{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+%
+%\isadelimproof
+\ \ %
+%\endisadelimproof
+%
+%\isatagproof
+\isacommand{apply}\isamarkupfalse%
+\ {\isacharparenleft}drule\ aux{\isacharunderscore}sequence{\isacharunderscore}DC{\isacharparenright}\isanewline
+\ \ \isacommand{apply}\isamarkupfalse%
+\ {\isacharparenleft}drule\ DC{\isacharunderscore}on{\isacharunderscore}A{\isacharunderscore}x{\isacharunderscore}nat{\isacharcomma}\ auto{\isacharparenright}\isanewline
+\ \ \isacommand{done}\isamarkupfalse%
+%
 \end{isabelle}
 
 \subsection{The Rasiowa-Sikorski lemma}\label{sec:rasiowa-sikorski-lemma}
@@ -178,8 +190,8 @@ satisfies its hypothesis:
 \ \ \ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}{\isasymexists}y{\isasymin}P{\isachardot}\ {\isasymlangle}x{\isacharcomma}y{\isasymrangle}\ {\isasymin}\ {\isacharparenleft}{\isasymlambda}m{\isasymin}nat{\isachardot}\ {\isacharbraceleft}{\isasymlangle}x{\isacharcomma}y{\isasymrangle}{\isasymin}P{\isacharasterisk}P{\isachardot}\ {\isasymlangle}y{\isacharcomma}x{\isasymrangle}{\isasymin}leq\ {\isasymand}\ y{\isasymin}{\isasymD}{\isacharbackquote}{\isacharparenleft}pred{\isacharparenleft}m{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isacharbackquote}n{\isachardoublequoteclose}
 \end{isabelle}
 %
-As these two proofs are interesting, we have proved them using the
-Isar proof language~\cite{DBLP:conf/tphol/Wenzel99}.
+These two proofs have been implemented  using the
+Isar proof language.
 
 
 %%% Local Variables:

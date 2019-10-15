@@ -7,34 +7,21 @@ Proof of preservation of the axiom of Pairing in the generic
 extension M[G].
 
 *)
-theory Gen_ext_pair imports Names Forcing_data Relative begin
 
-context forcing_data
+theory Gen_ext_pair imports Names Forcing_data begin
+
+context M_extra_assms
 begin
   
-lemma upair_abs [simp]:
-     "z \<in> M \<Longrightarrow> upair(##M,a,b,z)  \<longleftrightarrow> z={a,b}"
-  apply (simp add: upair_def)
-  apply (insert trans_M)
-  apply (blast intro: Transset_M)
-done
-
-lemma upairs_in_M :
-  "upair_ax(##M) \<Longrightarrow> a \<in> M \<Longrightarrow> b \<in> M \<Longrightarrow> {a,b} \<in> M"
-  apply (simp add: upair_ax_def)
-done
-
 lemma one_in_M : "one \<in> M"
-  by (insert trans_M,insert one_in_P,insert P_in_M,rule Transset_M)
+  by (insert trans_M,insert one_in_P,insert P_in_M,rule Transset_intf)
  
 lemma pairs_in_M : 
-  " \<lbrakk> upair_ax(##M) ; a \<in> M ; b \<in> M ; c \<in> M ; d \<in> M \<rbrakk> \<Longrightarrow> {\<langle>a,c\<rangle>,\<langle>b,d\<rangle>} \<in> M"
-  apply (unfold Pair_def)
-  apply ((rule upairs_in_M)+,assumption+)+
-done
+  " \<lbrakk> a \<in> M ; b \<in> M ; c \<in> M ; d \<in> M \<rbrakk> \<Longrightarrow> {\<langle>a,c\<rangle>,\<langle>b,d\<rangle>} \<in> M"
+  by (unfold Pair_def, ((rule upairM)+,assumption+)+)
 
 lemma sigma_in_M :
-  "upair_ax(##M) \<Longrightarrow> one \<in> G \<Longrightarrow> \<tau> \<in> M \<Longrightarrow> \<rho> \<in> M \<Longrightarrow> {\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>} \<in> M"
+  "one \<in> G \<Longrightarrow> \<tau> \<in> M \<Longrightarrow> \<rho> \<in> M \<Longrightarrow> {\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>} \<in> M"
   by (rule pairs_in_M,simp_all add: upair_ax_def one_in_M)
   
 lemma valsigma :
@@ -46,18 +33,18 @@ lemma valsigma :
   apply (auto simp add: Sep_and_Replace)
 done
       
-lemma pair_preserv : 
-  "one \<in> G \<Longrightarrow> upair_ax(##M) \<Longrightarrow> upair_ax(##M[G])"
+lemma pairing_axiom : 
+  "one \<in> G \<Longrightarrow> upair_ax(##M[G])"
   apply (simp add: upair_ax_def)
   apply (rule ballI)+
-  apply (drule def_GenExt1)+
+  apply (drule GenExtD)+
   apply (rule bexE,assumption)
   apply (rule_tac A="M" and P="\<lambda>w. y=val(G,w)" in bexE,assumption)
   apply (rename_tac x y \<tau> \<rho>)
   apply (rule_tac x="val(G,{\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>})" in bexI)
    apply (subst valsigma,assumption+)
    defer 1 apply (simp add: upair_def)
-   apply (rule def_GenExt2)
+   apply (rule GenExtI)
    apply (insert sigma_in_M,simp_all add: upair_ax_def)
 done
 

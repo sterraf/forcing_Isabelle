@@ -1,0 +1,90 @@
+\documentclass[9pt]{article} %\usepackage{entcsmacro}
+%DIF LATEXDIFF DIFFERENCE FILE
+%DIF DEL LSFA_old/first_steps_into_forcing.tex   Sun Nov 18 09:09:10 2018
+%DIF ADD LSFA_new/first_steps_into_forcing.tex   Sun Nov 18 09:07:02 2018
+\usepackage{graphicx}
+\usepackage{isabelle,isabellesym}
+\sloppy
+
+\input{header-draft}
+\usepackage{amsthm}
+\usepackage[bottom=10mm,top=10mm, left=24mm, right=24mm]{geometry}
+\usepackage[numbers]{natbib}
+\newcommand{\url}[1]{\texttt{\mbox{#1}}}
+\newcommand{\ack}[1]{\noindent\emph{Acknowlegdment}: #1}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% Theorem Environments
+%%
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{prop}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{claim}{Claim}
+\newtheorem*{claim*}{Claim}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem*{remark*}{Remark}
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\lastname{Gunther, Pagano, S\'anchez Terraf}
+%DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF UNDERLINE PREAMBLE %DIF PREAMBLE
+\RequirePackage[normalem]{ulem} %DIF PREAMBLE
+\RequirePackage{color}\definecolor{RED}{rgb}{1,0,0}\definecolor{BLUE}{rgb}{0,0,1} %DIF PREAMBLE
+\providecommand{\DIFadd}[1]{{\protect\color{blue}\uwave{#1}}} %DIF PREAMBLE
+\providecommand{\DIFdel}[1]{{\protect\color{red}\sout{#1}}}                      %DIF PREAMBLE
+%DIF SAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddbegin}{} %DIF PREAMBLE
+\providecommand{\DIFaddend}{} %DIF PREAMBLE
+\providecommand{\DIFdelbegin}{} %DIF PREAMBLE
+\providecommand{\DIFdelend}{} %DIF PREAMBLE
+%DIF FLOATSAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddFL}[1]{\DIFadd{#1}} %DIF PREAMBLE
+\providecommand{\DIFdelFL}[1]{\DIFdel{#1}} %DIF PREAMBLE
+\providecommand{\DIFaddbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFaddendFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelendFL}{} %DIF PREAMBLE
+%DIF END PREAMBLE EXTENSION ADDED BY LATEXDIFF
+
+\begin{document}
+%\begin{frontmatter}
+  \title{First steps towards a formalization of Forcing}
+  \maketitle
+ %%  \author{Emmanuel Gunther%\thanksref{ALL}
+ %%    \thanksref{myemail}}
+ %%  \address{FaMAF\\ Universidad Nacional de C\'ordoba\\
+ %%    C\'ordoba, Argentina} \author{Miguel Pagano\thanksref{coemail}}
+ %%  \address{FaMAF\\Universidad Nacional de C\'ordoba\\
+ %%    C\'ordoba, Argentina}
+ %%  \author{Pedro S\'anchez Terraf\thanksref{co2email}}
+ %%  \address{CIEM-FaMAF\\Universidad Nacional de C\'ordoba\\
+ %%    C\'ordoba, Argentina}
+ %% \thanks[myemail]{Email:
+ %%    \href{mailto:gunther@famaf.unc.edu.ar} {\texttt{\normalshape
+ %%        gunther@famaf.unc.edu.ar}}} \thanks[coemail]{Email:
+ %%    \href{mailto:pagano@famaf.unc.edu.ar} {\texttt{\normalshape
+ %%        pagano@famaf.unc.edu.ar}}}  \thanks[co2email]{Email:
+ %%    \href{mailto:sterraf@famaf.unc.edu.ar} {\texttt{\normalshape
+ %%        sterraf@famaf.unc.edu.ar}}} 
+ %% \thanks[ALL]{Supported by Secyt-UNC project 33620180100465CB.} 
+\begin{abstract} 
+  We lay the ground for an Isabelle/ZF formalization of Cohen's technique of
+  \emph{forcing}. We formalize the definition of forcing notions as
+  preorders with top, dense subsets, and generic filters. We formalize
+  a version of the principle of Dependent Choices and using it
+  we prove the Rasiowa-Sikorski lemma on the existence of generic filters.
+
+  Given a transitive set $M$, we define its generic extension $M[G]$,
+  the canonical names for elements of $M$, and finally show that if $M$
+  \DIFdelbegin \DIFdel{satisfy }\DIFdelend \DIFaddbegin \DIFadd{satisfies }\DIFaddend the axiom of pairing, then $M[G]$ also does.
+\end{abstract}
+%% \begin{keyword}
+%% Isabelle/ZF, forcing, preorder, Rasiowa-Sikorski lemma, names, generic extension.
+%% \end{keyword}
+%% \end{frontmatter}
+

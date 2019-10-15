@@ -1,0 +1,161 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
+\section{Introduction}
+% no \IEEEPARstart
+Zermelo-Fraenkel Set Theory ($\ZF$) has a prominent place among formal
+theories. The reason for this is that it formalizes many intuitive
+properties of the notion of set. As such, it can be used as a
+foundation for mathematics and thus it has been
+thoroughly studied. 
+Considering the current trend 
+of mechanization of mathematics~\cite{avigad2018mechanization}, it
+seems natural to ask for a mechanization of the most salient results
+of Set Theory.
+
+The results we are interested in originally arose in connection to
+\emph{relative consistency} proofs in set theory; that is, showing
+that if $\ZF$ is 
+consistent, the addition of a new axiom $A$ won't make the system
+inconsistent; this is as much as we can expect to obtain, since
+G\"odel's Incompleteness Theorems precludes a  
+formal proof of the consistency of set theory in $\ZF$, unless the
+latter is indeed inconsistent. There are statements $A$ which are
+\emph{undecided} by $\ZF$, in the sense that both $A$ and $\neg A$ are
+consistent relative to $\ZF$; perhaps the most prominent  is the
+\emph{Continuum Hypothesis}, which led to the development of powerful
+techniques for independence proofs. First, G\"odel inaugurated the
+theory of \emph{inner models} by introducing his model $L$ of
+the \emph{Axiom of Constructibility} \cite{godel-L} and proved the
+relative consistency of the Axiom of Choice and the Generalized
+Continuum Hypothesis with $\ZF$. More than twenty years later, Paul
+J.~Cohen~\cite{Cohen-CH-PNAS} devised the technique of \emph{forcing},
+which is the only known way of \emph{extending} models of $\ZF$; this
+was used to prove the relative consistency of the 
+negation of the Continuum Hypothesis. 
+
+In this work we address a substantial part of formalizing the proof
+that given a model $M$ of $\ZF$, any \emph{generic extension} $M[G]$
+obtained by forcing also satisfies $\ZF$. As remarked by
+\citet[][p.250]{kunen2011set} \enquote{[...] in verifying that $M[G]$
+  is a model for set theory, the hardest axiom to verify is
+  [Separation].}  
+The most important achievement of this paper is the
+mechanization in the proof assistant \emph{Isabelle} of a proof of the
+Axiom of Separation in 
+generic extensions by using the ``fundamental'' theorems of forcing.
+En route
+to this, we also formalized the satisfaction by $M[G]$ of
+Extensionality, Foundation, and Union. As a consequence of Separation
+we were able to formalize the proof of the Powerset Axiom; finally,
+the Axiom of Infinity was proved under extra assumptions. % We have already
+% proved Pairing in the first report of our project
+% \cite{2018arXiv180705174G}.
+The theoretical support for this work has been 
+the fine textbook by Kunen \cite{kunen2011set} and our development
+benefited from the remarkable work done by Lawrence 
+Paulson \cite{paulson_2003} on the formalization of G\"odel's
+constructible universe in Isabelle. 
+
+The
+ultimate goal of our project is the formalization of the forcing
+techniques needed to show the independence of the Continuum
+Hypothesis. 
+We think that this project constitutes an interesting test-case
+for the current technology of formalization of mathematics, in
+particular for the need of handling several layers of reasoning. 
+
+The \emph{Formal Abstracts} project~\cite{hales-fabstracts} proposes
+the formalization of complex pieces of mathematics by writing the
+statements of 
+results and the material upon which they are based (definitions,
+propositions, lemmas), but omitting the proofs. In this work we
+partially adhere to this vision to delineate our formalization
+strategy:
+Since the proofs that the  axioms hold in generic extensions
+are independent of the \emph{proofs} of the fundamental theorems of
+forcing, we assumed the latter for the time being. Let us remark
+that those theorems depend on the definition of a function $\forceisa$
+from formulas to formulas which is, by itself, quite demanding; the
+formalization of it and of the fundamental theorems of forcing % roughly
+comprises barely less than a half of our full project.
+
+It might be a little surprising the lack of formalizations of forcing
+and generic extensions. As far as we know, the development of
+\citet{JFR6232} in homotopy type theory for constructing generic
+extensions in a sheaf-theoretic setting is the unique mechanization of
+forcing. This contrast with the fruitful use of forcing techniques to
+extend the Curry-Howard isomorphism to classical axioms
+\cite{Miquel:2011:FPT:2058525.2059614,lmcs:1070}. Moreover, the
+combination of forcing with intuitionistic type theory
+\cite{Coquand:2009:FTT:1807662.1807665,coquand2010note} gives rise
+both to positive results (an algorithm to obtain witnesses of the
+continuity of definable functionals \cite{coquand2012computational})
+and also negative (the independence of Markov's principle
+\cite{lmcs:3859}). In the same strand of forcing from the point of
+view of proof theory \cite{avigad_2004} are the conservative
+extensions of CoC with forcing conditions
+\cite{jaber:hal-01319066,Jaber:2012:ETT:2358958.2359524}.
+
+% \fbox{Parece mucho comienzo sólo para introducir a Kunen}
+% \fbox{¿lo puedo achurar un poco?}
+
+% In a gross simplification, there are two aspects to a formalization
+% project like this one: thematic and programmatic. The first concerns
+% the handling of all the theoretical concepts and results in the
+% subject, while the second involves the practical issues of the
+% implementation and design. In the case of forcing, the main intricacy
+% lies in the first aspect. In this sense, following a sensible
+% presentation of the material is key.  The authoritative reference 
+% on the subject during the last 30 years has been Kunen's classical
+% \cite{kunen1980}. In our
+% formalizaton we have followed a recent rewrite \cite{kunen2011set}
+% of that  textbook, which presents the material in the same sharp 
+% style but offering a lot of details. In some sense this project
+% wouldn't exist without this book. As alternative, introductory
+% resources, the  interested reader can check
+% \cite{chow-beginner-forcing}; also, the book \cite{weaver2014forcing}
+% contains a thorough treament minimizing the technicalities.
+
+In pursuing the proof of Separation on generic extensions we
+extended Paulson's library with:
+\begin{inlinelist}
+\item renaming of variables for \emph{internalized} formulas, which
+  with little effort can be extended 
+  to substitutions;
+\item an improvement on definitions by recursion on well-founded
+  relations; 
+\item enhancements in the hierarchy of locales; and
+\item a variant of the  principle of dependent choices and a version
+  of Rasiowa-Sikorski, which 
+  ensures the existence of generic filters for countable and transitive
+  models of $\ZF$;
+\end{inlinelist} 
+the last item was already communicated in the
+  first report \cite{2018arXiv180705174G}.
+  
+We briefly describe the contents of each
+section. Section~\ref{sec:isabelle} contains the bare minimum
+requirements to understand the (meta)logics used in Isabelle. Next, an
+overview of the model theory of set theory is presented in
+Section~\ref{sec:axioms-models-set-theory}. There is an ``internal''
+representation of first-order formulas as sets, implemented by
+Paulson; Section~\ref{sec:renaming} discusses syntactical
+transformations of the former, mainly permutation of variables. 
+In Section~\ref{sec:generic-extensions} the generic extensions are
+succinctly reviewed and how the treatment of well founded recursion in
+Isabelle was enhanced. We take care of the ``easy axioms'' in
+Section~\ref{sec:easy-axioms}; these are the ones that
+do not depend on the forcing theorems. We describe the latter in
+Section~\ref{sec:forcing}. We adapted the  work by Paulson to our
+needs, and this is described in
+Section~\ref{sec:hack-constructible}. We present the proof
+of the Separation Axiom Scheme in Section~\ref{sec:proof-separation},
+which follows closely its implementation, and some comments on the
+proof of the Powerset Axiom. A plan for future work and
+some immediate conclusions are offered in
+Section~\ref{sec:conclusions-future-work}.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "Separation_In_MG"
+%%% ispell-local-dictionary: "american"
+%%% End: 

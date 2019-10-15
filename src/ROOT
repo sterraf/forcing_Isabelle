@@ -1,0 +1,10 @@
+session "Separation" = "ZF" +
+  options [document = pdf, document_output = "output"]
+  theories [document = true]
+    "Extensionality_Axiom"
+    "Foundation_Axiom"
+    "Separation_Axiom"
+    "Powerset_Axiom"
+    "Infinity_Axiom"
+  document_files
+    "root.tex"
