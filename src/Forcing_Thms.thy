@@ -448,8 +448,8 @@ Putting altogether,
 
 lemma core_induction:
   assumes
-    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P; \<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
-    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P; \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<theta>,p)"
+    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>\<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
+    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<theta>,p)"
     "ft \<in> 2" (* "p \<in> P" *)
   shows
     "Q(ft,\<tau>,\<theta>,p)"
@@ -718,15 +718,22 @@ lemma definition_of_forces_mem:
 
 lemma density_lemma:
   assumes 
-    "p\<in>P" "\<phi>\<in>formula" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"
+    "p\<in>P" "\<phi>\<in>formula" "env\<in>list(M)" 
   shows
-    "sats(M,forces(\<phi>), [P,leq,one,p] @ env) \<longleftrightarrow> dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,one,q] @ env)},p)"
+    "arity(\<phi>)\<le>length(env) \<Longrightarrow> sats(M,forces(\<phi>), [P,leq,one,p] @ env) \<longleftrightarrow> dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,one,q] @ env)},p)"
   using assms(2)
 proof (induct)
-  case (Member x y)
-  then show ?case sorry
+  case (Member n m)
+  with \<open>env\<in>_\<close>
+  have "n<length(env)" "m<length(env)" 
+    using succ_leE[OF Un_leD1, of n "succ(m)" "length(env)"] 
+      succ_leE[OF Un_leD2, of "succ(n)" m "length(env)"] by auto
+  with assms Member
+  show ?case 
+    using sats_forces_Member[OF _ _ _ assms(3), of _ "nth(n,env)" "nth(m,env)" n m] 
+      density_mem[of p "nth(n,env)" "nth(m,env)"] by simp
 next
-  case (Equal x y)
+  case (Equal n m)
   then show ?case sorry
 next
   case (Nand p q)
