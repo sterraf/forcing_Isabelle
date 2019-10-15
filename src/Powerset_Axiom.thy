@@ -76,7 +76,7 @@ lemma Collect_inter_Transset:
     using assms unfolding Transset_def
   by (auto)  
 
-context sep_rename begin
+context G_generic  begin
     
 lemma name_components_in_M:
   assumes "<\<sigma>,p>\<in>\<theta>" "\<theta> \<in> M"
@@ -347,13 +347,13 @@ proof -
       using Collect_sats_in_MG GenExtI nat_simp_union by simp
   finally show ?thesis .
 qed
-end (* context: sep_rename *)
+end (* context: G_generic *)
   
 sublocale G_generic \<subseteq> M_trivial"##M[G]"
   using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
   unfolding M_trivial_def by simp 
  
-context sep_rename begin
+context G_generic begin
 theorem power_in_MG :
   "power_ax(##(M[G]))"
   unfolding power_ax_def
@@ -380,5 +380,5 @@ proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
     "\<exists>x\<in>M[G] . powerset(##M[G], a, x)"
     by auto
 qed
-end (* context: sep_rename *)
+end (* context: G_generic *)
 end
