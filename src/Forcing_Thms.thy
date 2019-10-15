@@ -261,7 +261,7 @@ lemma generic_inter_dense_below: "D:M ==> M_generic(G) ==> dense_below(D,p) ==> 
 (* Lemma IV.2.40(a), membership *)
 lemma IV240a_mem:
   assumes
-    "M_generic(G)" "p\<in>G" "p\<in>P" "forces_mem(P,leq,p,\<pi>,\<tau>)" "\<pi>\<in>M" "\<tau>\<in>M"
+    "M_generic(G)" "p\<in>G" "\<pi>\<in>M" "\<tau>\<in>M" "forces_mem(P,leq,p,\<pi>,\<tau>)"
     "\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_eq(P,leq,q,\<pi>,\<sigma>) \<Longrightarrow> 
       val(G,\<pi>) = val(G,\<sigma>)" (* inductive hypothesis *)
   shows
@@ -271,14 +271,14 @@ proof
   from assms
   have "?D = {q\<in>P. \<exists>\<sigma>. \<exists>r. r\<in>P \<and> <\<sigma>,r> \<in> \<tau> \<and> <q,r>\<in>leq \<and> sats(M,forces(Equal(0,1)),[P,leq,one,q,\<pi>,\<sigma>])}"
     using sats_forces_Equal[of _ \<pi> _ "[\<pi>, _]" 0 1]  left_in_M  by simp
-  moreover from \<open>M_generic(G)\<close> \<open>p\<in>P\<close>
+  moreover from \<open>M_generic(G)\<close> \<open>p\<in>G\<close>
   have "p\<in>P" by blast
   moreover
   note \<open>\<pi>\<in>M\<close> \<open>\<tau>\<in>M\<close>
   ultimately
   have "?D \<in> M" 
     using leq_in_M one_in_M P_in_M Transset_intf[OF trans_M _ P_in_M] (* or else P_sub_M *) sorry
-  moreover from assms
+  moreover from assms \<open>p\<in>P\<close>
   have "dense_below(?D,p)"
     using forces_mem_iff_dense_below by simp
   moreover
@@ -313,13 +313,17 @@ lemma symmetry_argument:
   using assms by simp
 *)
 
-(* Lemma IV.2.40(a), equality *)
-lemma
+(* Lemma IV.2.40(a), equality, first inclusion *)
+lemma IV240a_eq_1st_incl:
   assumes
     "M_generic(G)" "p\<in>G" "forces_eq(P,leq,p,\<tau>,\<theta>)" "\<pi>\<in>M" "\<tau>\<in>M"
     and
-    IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_mem(P,leq,q,\<sigma>,\<theta>) \<Longrightarrow> 
-      val(G,\<sigma>) \<in> val(G,\<theta>)"
+    IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
+        (forces_mem(P,leq,q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
+        (forces_mem(P,leq,q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
+(* Strong enough for this case: *)
+(*  IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_mem(P,leq,q,\<sigma>,\<theta>) \<Longrightarrow> 
+      val(G,\<sigma>) \<in> val(G,\<theta>)" *)
   shows
     "val(G,\<tau>) \<subseteq> val(G,\<theta>)"
 proof
@@ -343,17 +347,138 @@ proof
   show "x\<in>val(G,\<theta>)" by (blast del:elem_of_valI)
 qed
 
+(* Lemma IV.2.40(a), equality, second inclusion--- COPY-PASTE *)
+lemma IV240a_eq_2nd_incl:
+  assumes
+    "M_generic(G)" "p\<in>G" "forces_eq(P,leq,p,\<tau>,\<theta>)" "\<pi>\<in>M" "\<tau>\<in>M"
+    and
+    IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
+        (forces_mem(P,leq,q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
+        (forces_mem(P,leq,q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
+  shows
+    "val(G,\<theta>) \<subseteq> val(G,\<tau>)"
+proof
+  fix x
+  assume "x\<in>val(G,\<theta>)"
+  then
+  obtain \<sigma> r where "<\<sigma>,r>\<in>\<theta>" "r\<in>G" "val(G,\<sigma>)=x" by blast
+  moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
+  obtain q where "q\<in>G" "<q,p>\<in>leq" "<q,r>\<in>leq" by force
+  moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
+  have "q\<in>P" "p\<in>P" by blast+
+  moreover from calculation
+  have "forces_mem(P,leq,q,\<sigma>,\<theta>)"
+    using forces_memI M_genericD[OF \<open>M_generic(G)\<close>] by blast
+  moreover
+  note \<open>forces_eq(P,leq,p,\<tau>,\<theta>)\<close>
+  ultimately
+  have "forces_mem(P,leq,q,\<sigma>,\<tau>)"
+    using def_forces_eq by blast
+  with \<open>q\<in>P\<close> IH[of q \<sigma>] \<open><\<sigma>,r>\<in>\<theta>\<close> \<open>val(G,\<sigma>) = x\<close>
+  show "x\<in>val(G,\<tau>)" by (blast del:elem_of_valI)
+qed
+
+(* Lemma IV.2.40(a), equality, second inclusion--- COPY-PASTE *)
+lemma IV240a_eq:
+  assumes
+    "M_generic(G)" "p\<in>G" "forces_eq(P,leq,p,\<tau>,\<theta>)" "\<pi>\<in>M" "\<tau>\<in>M"
+    and
+    IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
+        (forces_mem(P,leq,q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
+        (forces_mem(P,leq,q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
+  shows
+    "val(G,\<tau>) = val(G,\<theta>)"
+  using IV240a_eq_1st_incl[OF assms] IV240a_eq_2nd_incl[OF assms] IH by blast 
+
+(*
+    "forces_mem(P,leq,p,\<pi>,\<tau>)"
+    "\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_eq(P,leq,q,\<pi>,\<sigma>) \<Longrightarrow> val(G,\<pi>) = val(G,\<sigma>)" 
+    -------------------------------
+    "val(G,\<pi>) \<in> val(G,\<tau>)"
+
+    "forces_eq(P,leq,p,\<tau>,\<theta>)"
+ IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
+        (forces_mem(P,leq,q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
+        (forces_mem(P,leq,q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
+    -------------------------------
+    "val(G,\<tau>) = val(G,\<theta>)"
+
+Unfolding forces_eq and forces_mem defs,
+
+    "frc_at(P,leq,<1,\<tau>,\<theta>,p>) = 1"
+    "\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<theta>) \<Longrightarrow> frc_at(P,leq,<0,\<tau>,\<sigma>,q>) = 1 \<Longrightarrow> val(G,\<tau>) = val(G,\<sigma>)"
+    -------------------------------
+    "val(G,\<tau>) \<in> val(G,\<theta>)"
+    
+    "frc_at(P,leq,<0,\<tau>,\<theta>,p>) = 1"
+ IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
+        (frc_at(P,leq,<1,\<sigma>,\<tau>,q>) = 1 \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
+        (frc_at(P,leq,<1,\<sigma>,\<theta>,q>) = 1 \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
+    -------------------------------
+    "val(G,\<tau>) = val(G,\<theta>)"
+
+
+Discharging the main assumption,
+
+    "\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<theta>) \<Longrightarrow> frc_at(P,leq,<0,\<tau>,\<sigma>,q>) = 1 \<longrightarrow> val(G,\<tau>) = val(G,\<sigma>)"
+    -------------------------------
+    "frc_at(P,leq,<1,\<tau>,\<theta>,p>) = 1 \<longrightarrow>  val(G,\<tau>) \<in> val(G,\<theta>)"
+    
+ IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
+        (frc_at(P,leq,<1,\<sigma>,\<tau>,q>) = 1 \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
+        (frc_at(P,leq,<1,\<sigma>,\<theta>,q>) = 1 \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
+    -------------------------------
+    "frc_at(P,leq,<0,\<tau>,\<theta>,p>) = 1 \<longrightarrow> val(G,\<tau>) = val(G,\<theta>)"
+
+And abstacting,
+
+    "\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<theta>) \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)"
+    -------------------------------
+    "Q(1,\<tau>,\<theta>,p)"
+    
+ IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)"
+    -------------------------------
+    "Q(0,\<tau>,\<theta>,p)"
+
+Putting altogether,
+*)
+
+lemma core_induction:
+  assumes
+    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P; \<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
+    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P; \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<theta>,p)"
+    "ft \<in> 2" (* "p \<in> P" *)
+  shows
+    "Q(ft,\<tau>,\<theta>,p)"
+  sorry
+
+lemma IV240a_aux:
+  assumes
+    "M_generic(G)" "p\<in>G" (* "\<tau>\<in>M" "\<theta>\<in>M" *) "ft\<in>2"
+  shows 
+    "\<tau>\<in>M \<longrightarrow> \<theta>\<in>M \<longrightarrow> frc_at(P,leq,<ft,\<tau>,\<theta>,p>) = 1 \<longrightarrow> 
+     (ft = 0 \<longrightarrow> val(G,\<tau>) = val(G,\<theta>)) \<and>
+     (ft = 1 \<longrightarrow> val(G,\<tau>) \<in> val(G,\<theta>))"
+  apply (rule_tac core_induction[OF _ _ \<open>ft\<in>2\<close>, of _ p \<tau> \<theta>])
+   apply (simp_all add:forces_eq_def[symmetric] forces_mem_def[symmetric])
+   apply (intro impI)
+   apply (rule IV240a_mem[OF assms(1)]; simp add: assms Transset_intf[OF trans_M _ P_in_M] Transset_intf[OF trans_M _ domain_closed[simplified]])
+  apply (intro impI)
+  apply (rule IV240a_eq[OF assms(1)]; auto simp add:assms intro:Transset_intf[OF trans_M _ domain_closed[simplified]] del:elem_of_valI)
+  done
+
 (* Lemma IV.2.40(a), full *)
 lemma IV240a:
   assumes
     "M_generic(G)" "p\<in>G" "\<tau>\<in>M" "\<theta>\<in>M"
   shows 
-    "(forces_eq(P,leq,p,\<tau>,\<theta>) \<longrightarrow> val(G,\<tau>) = val(G,\<theta>)) \<and>
-     (forces_mem(P,leq,p,\<tau>,\<theta>) \<longrightarrow> val(G,\<tau>) \<in> val(G,\<theta>)) "
-  sorry
+    "forces_eq(P,leq,p,\<tau>,\<theta>) \<Longrightarrow> val(G,\<tau>) = val(G,\<theta>)" 
+    "forces_mem(P,leq,p,\<tau>,\<theta>) \<Longrightarrow> val(G,\<tau>) \<in> val(G,\<theta>)"
+  using IV240a_aux[OF assms(1-2), of _  \<tau> \<theta>] assms unfolding forces_eq_def forces_mem_def 
+  by (auto del:elem_of_valI)
 
 (* Lemma IV.2.40(b), membership *)
-lemma
+lemma IV240b_mem:
   assumes
     "M_generic(G)" "val(G,\<pi>)\<in>val(G,\<tau>)" "\<pi>\<in>M" "\<tau>\<in>M"
     and
@@ -394,11 +519,13 @@ proof -
 qed
 
 (* Lemma IV.2.40(b), equality *)
-lemma
+lemma IV240b_eq:
   assumes
     "M_generic(G)" "p\<in>G" "val(G,\<tau>) = val(G,\<theta>)" "\<tau>\<in>M" "\<theta>\<in>M" 
     and
-    IH:"\<And>\<sigma> \<tau> \<theta>. \<sigma>\<in>domain(\<tau>)\<union>domain(\<theta>) \<Longrightarrow> val(G,\<sigma>)\<in>val(G,\<theta>) \<Longrightarrow> \<exists>q\<in>G. forces_mem(P,leq,q,\<sigma>,\<theta>)"
+    IH:"\<And>\<sigma>. \<sigma>\<in>domain(\<tau>)\<union>domain(\<theta>) \<Longrightarrow> 
+      (val(G,\<sigma>)\<in>val(G,\<tau>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(P,leq,q,\<sigma>,\<tau>))) \<and> 
+      (val(G,\<sigma>)\<in>val(G,\<theta>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(P,leq,q,\<sigma>,\<theta>)))"
     (* inductive hypothesis *)
   shows
     "\<exists>p\<in>G. forces_eq(P,leq,p,\<tau>,\<theta>)"
@@ -470,7 +597,7 @@ proof -
     moreover from this and \<open>p\<in>G\<close> and assms
     have "val(G,\<sigma>)\<in>val(G,\<tau>)"
       using IV240a[of G p \<sigma> \<tau>] Transset_intf[OF trans_M _ domain_closed[simplified]] by blast
-    moreover note IH[of _ \<tau> \<theta>] \<open>val(G,\<tau>) = _\<close>
+    moreover note IH \<open>val(G,\<tau>) = _\<close>
     ultimately
     obtain q where "q\<in>G" "forces_mem(P, leq, q, \<sigma>, \<theta>)" by auto
     moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
@@ -494,7 +621,7 @@ proof -
     moreover from this and \<open>p\<in>G\<close> and assms
     have "val(G,\<sigma>)\<in>val(G,\<theta>)"
       using IV240a[of G p \<sigma> \<theta>] Transset_intf[OF trans_M _ domain_closed[simplified]] by blast
-    moreover note IH[of _ \<theta> \<tau>] \<open>val(G,\<tau>) = _\<close>
+    moreover note IH \<open>val(G,\<tau>) = _\<close>
     ultimately
     obtain q where "q\<in>G" "forces_mem(P, leq, q, \<sigma>, \<tau>)" by auto
     moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
@@ -512,6 +639,75 @@ proof -
     show ?thesis by simp
   qed
 qed
+
+lemma IV240b_aux:
+  assumes
+    "M_generic(G)" "ft\<in>2"
+  shows 
+    "\<tau>\<in>M \<longrightarrow> \<theta>\<in>M \<longrightarrow> 
+     (ft = 0 \<longrightarrow> val(G,\<tau>) = val(G,\<theta>) \<longrightarrow> (\<exists>p\<in>G. frc_at(P,leq,<ft,\<tau>,\<theta>,p>) = 1)) \<and>
+     (ft = 1 \<longrightarrow> val(G,\<tau>) \<in> val(G,\<theta>) \<longrightarrow> (\<exists>p\<in>G. frc_at(P,leq,<ft,\<tau>,\<theta>,p>) = 1))" (is "?Q(ft,\<tau>,\<theta>,p)")
+  apply (rule_tac core_induction[OF _ _ \<open>ft\<in>2\<close>, of ?Q _ \<tau> \<theta>])
+   apply (simp_all add:forces_eq_def[symmetric] forces_mem_def[symmetric])
+   apply (insert one_in_P)
+   apply (intro impI)
+   apply (rule IV240b_mem[OF assms(1)] ; simp add: assms Transset_intf[OF trans_M _ P_in_M] Transset_intf[OF trans_M _ domain_closed[simplified]])
+  apply (intro impI)
+  apply (rule IV240b_eq[OF assms(1)]; auto simp add:assms intro: one_in_G[OF \<open>M_generic(G)\<close>] Transset_intf[OF trans_M _ domain_closed[simplified]] del: domainE elem_of_valI)
+  done
+
+(* Lemma IV.2.40(b), full *)
+lemma IV240b:
+  assumes
+    "M_generic(G)" "\<tau>\<in>M" "\<theta>\<in>M"
+  shows 
+    "val(G,\<tau>) = val(G,\<theta>) \<Longrightarrow> (\<exists>p\<in>G. forces_eq(P,leq,p,\<tau>,\<theta>))" 
+    "val(G,\<tau>) \<in> val(G,\<theta>) \<Longrightarrow> (\<exists>p\<in>G. forces_mem(P,leq,p,\<tau>,\<theta>))" 
+  using IV240b_aux[OF assms(1), of _  \<tau> \<theta>] assms unfolding forces_eq_def forces_mem_def 
+  by (auto del:elem_of_valI)
+
+lemma map_val_in_MG:
+  assumes 
+    "env\<in>list(M)"
+  shows 
+    "map(val(G),env)\<in>list(M[G])"
+  unfolding GenExt_def using assms map_type2 by simp
+
+lemma truth_lemma_mem:
+  assumes 
+    "env\<in>list(M)" "M_generic(G)"
+    "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" 
+    "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)"
+  shows 
+    "(\<exists>p\<in>G.(sats(M,forces(Member(n,m)),[P,leq,one,p] @ env))) \<longleftrightarrow> sats(M[G],Member(n,m),map(val(G),env))"
+  using assms IV240a(2)[OF assms(2) _ assms(3-4)] IV240b(2)[OF assms(2-4)] 
+    P_in_M leq_in_M one_in_M sats_forces_Member[OF _ assms(3-7)] map_val_in_MG 
+  by (auto del:elem_of_valI)
+
+lemma truth_lemma_eq:
+  assumes 
+    "env\<in>list(M)" "M_generic(G)"
+    "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" 
+    "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)"
+  shows 
+    "(\<exists>p\<in>G.(sats(M,forces(Equal(n,m)),[P,leq,one,p] @ env))) \<longleftrightarrow> sats(M[G],Equal(n,m),map(val(G),env))"
+  using assms IV240a(1)[OF assms(2) _ assms(3-4)] IV240b(1)[OF assms(2-4)] 
+    P_in_M leq_in_M one_in_M sats_forces_Equal[OF _ assms(3-7)] map_val_in_MG
+  by (auto)
+
+lemma definition_of_forces_mem:
+  assumes 
+    "env\<in>list(M)"
+    "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" 
+    "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)" "p\<in>P"
+  shows 
+    "sats(M,forces(Member(n,m)), [P,leq,one,p] @ env) \<longleftrightarrow> (\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],Member(n,m),map(val(G),env)))"
+  using assms IV240a(2)[OF _ _ assms(2-3)] IV240b(2)[OF _ assms(2-3)] 
+    P_in_M leq_in_M one_in_M sats_forces_Member[OF _ assms(2-6)] map_val_in_MG
+    Transset_intf[OF trans_M \<open>p\<in>P\<close>] generic_filter_existence[OF \<open>p\<in>P\<close>] 
+  apply (auto del:elem_of_valI) apply (elim allE impE) apply simp 
+  (* need to use that G is a filter, see Forcing_Corollaries.thy *)
+  oops
 
 end
 
