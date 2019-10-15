@@ -83,6 +83,13 @@ been proved using the Isar language:
 The formalization of the functional $\mathit{Hv}$ is straightforward and $\val$ is defined using \isa{wfrec}:
 %
 \begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ edrel{\isacharunderscore}sub{\isacharunderscore}memrel{\isacharcolon}\ {\isachardoublequoteopen}edrel{\isacharparenleft}A{\isacharparenright}\ {\isasymsubseteq}\ trancl{\isacharparenleft}Memrel{\isacharparenleft}eclose{\isacharparenleft}A{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+\noindent The formalizaton of the functional $H$ is straightforward and $\val$ is defined using \isa{wfrec}:
+%
+\begin{isabelle}
 \isacommand{definition}\isamarkupfalse%
 \isanewline
 \ \ Hv\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}i{\isachardoublequoteclose}\ \isakeyword{where}\isanewline
