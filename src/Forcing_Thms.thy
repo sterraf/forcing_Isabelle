@@ -716,30 +716,85 @@ lemma definition_of_forces_mem:
   oops
 *)
 
-lemma density_lemma:
-  assumes 
-    "p\<in>P" "\<phi>\<in>formula" "env\<in>list(M)" 
+lemma arities_at_aux:
+  assumes
+    "n \<in> nat" "m \<in> nat" "env \<in> list(M)" "succ(n) \<union>  succ(m) \<le> length(env)"
   shows
-    "arity(\<phi>)\<le>length(env) \<Longrightarrow> sats(M,forces(\<phi>), [P,leq,one,p] @ env) \<longleftrightarrow> dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,one,q] @ env)},p)"
+    "n < length(env)" "m < length(env)"
+  using assms succ_leE[OF Un_leD1, of n "succ(m)" "length(env)"] 
+   succ_leE[OF Un_leD2, of "succ(n)" m "length(env)"] by auto
+
+lemma strengthening_lemma:
+  assumes 
+    "p\<in>P" "\<phi>\<in>formula" "r\<in>P" "<r,p>\<in>leq"
+  shows
+    "\<And>env. env\<in>list(M) \<Longrightarrow> arity(\<phi>)\<le>length(env) \<Longrightarrow>
+    sats(M,forces(\<phi>), [P,leq,one,p] @ env) \<Longrightarrow> sats(M,forces(\<phi>), [P,leq,one,r] @ env)"
   using assms(2)
 proof (induct)
   case (Member n m)
-  with \<open>env\<in>_\<close>
-  have "n<length(env)" "m<length(env)" 
-    using succ_leE[OF Un_leD1, of n "succ(m)" "length(env)"] 
-      succ_leE[OF Un_leD2, of "succ(n)" m "length(env)"] by auto
-  with assms Member
+  then
+  have "n<length(env)" "m<length(env)"
+    using arities_at_aux by simp_all
+  moreover
+  assume "env\<in>list(M)"
+  moreover
+  note assms Member
+  ultimately
   show ?case 
-    using sats_forces_Member[OF _ _ _ assms(3), of _ "nth(n,env)" "nth(m,env)" n m] 
+    using sats_forces_Member[OF _ _ _ \<open>env\<in>_\<close>, of _ "nth(n,env)" "nth(m,env)" n m]
+      strengthening_mem[of p r "nth(n,env)" "nth(m,env)"] by simp
+next
+  case (Equal n m)
+  then
+  have "n<length(env)" "m<length(env)"
+    using arities_at_aux by simp_all
+  moreover
+  assume "env\<in>list(M)"
+  moreover
+  note assms Equal
+  ultimately
+  show ?case 
+    using sats_forces_Equal[OF _ _ _ \<open>env\<in>_\<close>, of _ "nth(n,env)" "nth(m,env)" n m]
+      strengthening_eq[of p r "nth(n,env)" "nth(m,env)"] by simp
+next
+  case (Nand \<phi> \<psi>)
+  then 
+  show ?case sorry
+next
+  case (Forall \<phi>)
+  then
+  show ?case sorry
+qed
+
+lemma density_lemma:
+  assumes 
+    "p\<in>P" "\<phi>\<in>formula"
+  shows
+    "\<And>env. env\<in>list(M) \<Longrightarrow> arity(\<phi>)\<le>length(env) \<Longrightarrow>
+    sats(M,forces(\<phi>), [P,leq,one,p] @ env) \<longleftrightarrow> dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,one,q] @ env)},p)"
+  using assms(2)
+proof (induct)
+  case (Member n m)
+  then
+  have "n<length(env)" "m<length(env)"
+    using arities_at_aux by simp_all
+  moreover
+  assume "env\<in>list(M)"
+  moreover
+  note assms Member
+  ultimately
+  show ?case 
+    using sats_forces_Member[OF _ _ _ \<open>env\<in>_\<close>, of _ "nth(n,env)" "nth(m,env)" n m]
       density_mem[of p "nth(n,env)" "nth(m,env)"] by simp
 next
   case (Equal n m)
   then show ?case sorry
 next
-  case (Nand p q)
+  case (Nand \<phi> \<psi>)
   then show ?case sorry
 next
-  case (Forall p)
+  case (Forall \<phi>)
   then show ?case sorry
 qed
 
@@ -754,16 +809,14 @@ proof (induct)
   case (Member x y)
   then
   show ?case
-    using assms truth_lemma_mem[OF \<open>env\<in>list(M)\<close> assms(2) \<open>x\<in>nat\<close> \<open>y\<in>nat\<close> 
-        succ_leE[OF Un_leD1] succ_leE[OF Un_leD2], of "succ(y)" "succ(x)"]
-    by simp
+    using assms truth_lemma_mem[OF \<open>env\<in>list(M)\<close> assms(2) \<open>x\<in>nat\<close> \<open>y\<in>nat\<close>] 
+      arities_at_aux by simp
 next
   case (Equal x y)
   then
   show ?case
-    using assms truth_lemma_eq[OF \<open>env\<in>list(M)\<close> assms(2) \<open>x\<in>nat\<close> \<open>y\<in>nat\<close> 
-        succ_leE[OF Un_leD1] succ_leE[OF Un_leD2], of "succ(y)" "succ(x)"]
-    by simp
+    using assms truth_lemma_eq[OF \<open>env\<in>list(M)\<close> assms(2) \<open>x\<in>nat\<close> \<open>y\<in>nat\<close>] 
+      arities_at_aux by simp
 next (* This case will probably need a density argument *)
   case (Nand p q)
   then 
