@@ -107,6 +107,10 @@ lemma frecRI2': "s \<in> domain(n1) \<union> domain(n2) \<Longrightarrow> frecR(
 lemma frecRI3: "\<langle>s, r\<rangle> \<in> n2 \<Longrightarrow> frecR(\<langle>0, n1, s, q\<rangle>, \<langle>1, n1, n2, q'\<rangle>)"
   unfolding frecR_def by auto
 
+lemma frecRI3': "s \<in> domain(n2) \<Longrightarrow> frecR(\<langle>0, n1, s, q\<rangle>, \<langle>1, n1, n2, q'\<rangle>)"
+  unfolding frecR_def by auto
+
+
 lemma frecR_iff [iff] :
   "frecR(x,y) \<longleftrightarrow>
     (ftype(x) = 1 \<and> ftype(y) = 0 
@@ -335,10 +339,16 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
      have "Q(1, \<sigma>, ?\<tau>, q) \<and> Q(1, \<sigma>, ?\<theta>, q)" if "\<sigma> \<in> domain(?\<tau>) \<union> domain(?\<theta>)" and "q\<in>A2" for q \<sigma>
      proof -
        from 1
-       have "domain(?\<tau>) \<union> domain(?\<theta>) \<subseteq> A1" "?\<tau>\<in>A1" "?\<theta>\<in>A1" "cond_of(x)\<in>A2"
-         sorry (* lo primero sale gracias a pedir Transset(A1) *)
-       with \<open>Transset(A1)\<close> that(1)
-       have "\<sigma>\<in>A1" using subsetI by auto
+       have A: "?\<tau>\<in>A1" "?\<theta>\<in>A1" "cond_of(x)\<in>A2" "?\<tau>\<in>eclose(A1)" "?\<theta>\<in>eclose(A1)"
+         using  arg_into_eclose by auto
+       with  \<open>Transset(A1)\<close> that(1)
+       have "\<sigma>\<in>eclose(?\<tau>) \<union> eclose(?\<theta>)" 
+         using in_dom_in_eclose  by auto
+       then
+       have "\<sigma>\<in>A1"
+         using mem_eclose_subset[OF \<open>?\<tau>\<in>A1\<close>] mem_eclose_subset[OF \<open>?\<theta>\<in>A1\<close>] 
+           Transset_eclose_eq_arg[OF \<open>Transset(A1)\<close>] 
+         by auto         
        with \<open>q\<in>A2\<close> \<open>?\<theta> \<in> A1\<close> \<open>cond_of(x)\<in>A2\<close> \<open>?\<tau>\<in>A1\<close>
        have "frecR(<1, \<sigma>, ?\<tau>, q>, x)" (is "frecR(?T,_)")
             "frecR(<1, \<sigma>, ?\<theta>, q>, x)" (is "frecR(?U,_)")
@@ -358,7 +368,29 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
      then show ?thesis using assms(3) \<open>ftype(x) = 0\<close> by auto
    next
      case mem
-     then show ?thesis sorry
+     have "Q(0, ?\<tau>,  \<sigma>, q)" if "\<sigma> \<in> domain(?\<theta>)" and "q\<in>A2" for q \<sigma>
+     proof -
+       from 1 assms
+       have A: "?\<tau>\<in>A1" "?\<theta>\<in>A1" "cond_of(x)\<in>A2" "?\<tau>\<in>eclose(A1)" "?\<theta>\<in>eclose(A1)"
+         using  arg_into_eclose by auto
+       with  \<open>Transset(A1)\<close> that(1)
+       have "\<sigma>\<in> eclose(?\<theta>)" 
+         using in_dom_in_eclose  by auto
+       then
+       have "\<sigma>\<in>A1"
+         using mem_eclose_subset[OF \<open>?\<theta>\<in>A1\<close>] Transset_eclose_eq_arg[OF \<open>Transset(A1)\<close>] 
+         by auto         
+       with \<open>q\<in>A2\<close> \<open>?\<theta> \<in> A1\<close> \<open>cond_of(x)\<in>A2\<close> \<open>?\<tau>\<in>A1\<close>
+       have "frecR(<0, ?\<tau>, \<sigma>, q>, x)" (is "frecR(?T,_)")
+        using  frecRI3'[OF that(1)] frecR_DI  \<open>ftype(x) = 1\<close>                 
+         by auto
+       with \<open>x\<in>?D\<close> \<open>\<sigma>\<in>A1\<close> \<open>q\<in>A2\<close> \<open>?\<tau>\<in>A1\<close>
+       have "<?T,x>\<in> frecrel(?D)" "?T\<in>?D"
+         using frecrelI[of ?T ?D x] by auto
+       with \<open>q\<in>A2\<close> \<open>\<sigma>\<in>A1\<close> \<open>?\<tau>\<in>A1\<close> \<open>?\<theta>\<in>A1\<close>
+       show ?thesis using 1 by force
+     qed
+     then show ?thesis using assms(2) \<open>ftype(x) = 1\<close> by auto
    qed
  qed
 
