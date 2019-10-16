@@ -763,8 +763,19 @@ next
   show ?case sorry
 next
   case (Forall \<phi>)
-  then
-  show ?case sorry
+  with assms
+  have "sats(M,forces(\<phi>),[P,leq,one,p,x] @ env)" if "x\<in>M" for x
+    unfolding forces_def using that P_in_M leq_in_M one_in_M 
+      Transset_intf[OF trans_M _ P_in_M]
+      sats_fref[of x p env "forces_ren(auxren,fren,fref,\<phi>)"] by simp
+  with Forall 
+  have "sats(M,forces(\<phi>),[P,leq,one,r,x] @ env)" if "x\<in>M" for x
+    using that pred_le2 by (simp)
+  with assms Forall
+  show ?case 
+    unfolding forces_def using P_in_M leq_in_M one_in_M 
+      Transset_intf[OF trans_M _ P_in_M]
+      sats_fref[of _ _ env "forces_ren(auxren,fren,fref,\<phi>)"] by simp
 qed
 
 lemma density_lemma:
