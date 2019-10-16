@@ -26,6 +26,10 @@ lemma components_simp [simp]:
   unfolding ftype_def name1_def name2_def cond_of_def
   by simp_all
 
+lemma components_in_eclose : 
+  "n1 \<in> eclose(<f,n1,n2,c>)"
+  "n2 \<in> eclose(<f,n1,n2,c>)"
+  sorry
 
 definition
   is_ftype :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
@@ -78,14 +82,52 @@ schematic_goal is_one_iff_sats :
 definition
   frecR :: "i \<Rightarrow> i \<Rightarrow> o" where
   "frecR(x,y) \<equiv>
-    (ftype(x) = 0 \<and> ftype(y) = 1 
+    (ftype(x) = 1 \<and> ftype(y) = 0 
       \<and> (name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> (name2(x) = name1(y) \<or> name2(x) = name2(y))))
-   \<or> (ftype(x) = 1 \<and> ftype(y) =  0 \<and> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y)))"
+   \<or> (ftype(x) = 0 \<and> ftype(y) =  1 \<and> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y)))"
 
 lemma frecR_ftypeD :
   assumes "frecR(x,y)"
   shows "(ftype(x) = 0 \<and> ftype(y) = 1) \<or> (ftype(x) = 1 \<and> ftype(y) = 0)"
   using assms unfolding frecR_def by auto
+
+lemma frecRI1: "s \<in> domain(n1) \<or> s \<in> domain(n2) \<Longrightarrow> frecR(\<langle>1, s, n1, q\<rangle>, \<langle>0, n1, n2, q'\<rangle>)"
+  unfolding frecR_def by simp
+
+lemma frecRI1': "s \<in> domain(n1) \<union> domain(n2) \<Longrightarrow> frecR(\<langle>1, s, n1, q\<rangle>, \<langle>0, n1, n2, q'\<rangle>)"
+  unfolding frecR_def by simp
+
+lemma frecRI2: "s \<in> domain(n1) \<or> s \<in> domain(n2) \<Longrightarrow> frecR(\<langle>1, s, n2, q\<rangle>, \<langle>0, n1, n2, q'\<rangle>)"
+  unfolding frecR_def by simp
+
+lemma frecRI2': "s \<in> domain(n1) \<union> domain(n2) \<Longrightarrow> frecR(\<langle>1, s, n2, q\<rangle>, \<langle>0, n1, n2, q'\<rangle>)"
+  unfolding frecR_def by simp
+
+
+lemma frecRI3: "\<langle>s, r\<rangle> \<in> n2 \<Longrightarrow> frecR(\<langle>0, n1, s, q\<rangle>, \<langle>1, n1, n2, q'\<rangle>)"
+  unfolding frecR_def by auto
+
+lemma frecR_iff [iff] :
+  "frecR(x,y) \<longleftrightarrow>
+    (ftype(x) = 1 \<and> ftype(y) = 0 
+      \<and> (name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> (name2(x) = name1(y) \<or> name2(x) = name2(y))))
+   \<or> (ftype(x) = 0 \<and> ftype(y) =  1 \<and> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y)))"
+  unfolding frecR_def ..
+
+lemma frecR_D1 :
+  "frecR(x,y) \<Longrightarrow> ftype(y) = 0 \<Longrightarrow> ftype(x) = 1 \<and> 
+      (name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> (name2(x) = name1(y) \<or> name2(x) = name2(y)))"
+  by auto
+
+lemma frecR_D2 :
+  "frecR(x,y) \<Longrightarrow> ftype(y) = 1 \<Longrightarrow> ftype(x) = 0 \<and> 
+      ftype(x) = 0 \<and> ftype(y) =  1 \<and> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y))"
+  by auto
+
+lemma frecR_DI : 
+  assumes "frecR(<a,b,c,d>,<ftype(y),name1(y),name2(y),cond_of(y)>)"
+  shows "frecR(<a,b,c,d>,y)"
+  using assms unfolding frecR_def by force
 
 (* Punto 3 de p. 257 de Kunen *)
 lemma eq_ftypep_not_frecrR:
@@ -108,7 +150,7 @@ definition
 
 definition
   type_form :: "i \<Rightarrow> i" where
-  "type_form(x) == if ftype(x) = 1 then 1 else mtype_form(x)"
+  "type_form(x) == if ftype(x) = 0 then 1 else mtype_form(x)"
 
 lemma type_form_tc [TC]: 
   shows "type_form(x) \<in> 3"
@@ -188,11 +230,11 @@ proof -
     consider (a) "ftype(x) = 0 \<and> ftype(y) = 1" | (b) "ftype(x) = 1 \<and> ftype(y) = 0"
       using  frecR_ftypeD[OF \<open>frecR(x,y)\<close>] by auto
     then show ?thesis proof(cases)
-      case a
+      case b
       then 
       have "type_form(y) = 1" 
         using type_form_def by simp
-      from a
+      from b
       have H: "name2(x) = name1(y) \<or> name2(x) = name2(y) " (is "?\<tau> = ?\<sigma>' \<or> ?\<tau> = ?\<tau>'")
            "name1(x) \<in> domain(name1(y)) \<union> domain(name2(y))" 
               (is "?\<sigma> \<in> domain(?\<sigma>') \<union> domain(?\<tau>')")
@@ -214,13 +256,13 @@ proof -
           show ?thesis unfolding rank_names_def mtype_form_def type_form_def 
             using max_D2[OF _ b] max_commutes E assms Ord_rank disj_commute by auto
         qed
-        with a
+        with b
         have "type_form(x) = 0" unfolding type_form_def mtype_form_def by simp
       with \<open>rank_names(x) = rank_names(y) \<close> \<open>type_form(y) = 1\<close> \<open>type_form(x) = 0\<close>
        show ?thesis 
          unfolding \<Gamma>_def by auto
     next
-      case b
+      case a
       then 
       have "name1(x) = name1(y)" (is "?\<sigma> = ?\<sigma>'") 
            "name2(x) \<in> domain(name2(y))" (is "?\<tau> \<in> domain(?\<tau>')")
@@ -232,7 +274,7 @@ proof -
        with \<open>rank_names(x) = rank_names(y) \<close> 
        have "rank(?\<tau>') \<le> rank(?\<sigma>')" 
          unfolding rank_names_def using Ord_rank max_D1 by simp
-      with b
+      with a
       have "type_form(y) = 2"
         unfolding type_form_def mtype_form_def using not_lt_iff_le assms by simp
       with \<open>rank_names(x) = rank_names(y) \<close> \<open>type_form(y) = 2\<close> \<open>type_form(x) = 1\<close>
@@ -247,31 +289,90 @@ definition
   frecrel :: "i \<Rightarrow> i" where
   "frecrel(A) \<equiv> Rrel(frecR,A)"
 
-(*
-definition
-  frecrel :: "i \<Rightarrow> i" where
-  "frecrel(A) \<equiv> Rrel(frecR,A)"
-*)
+lemma frecrelI : 
+  assumes "x \<in> A" "y\<in>A" "frecR(x,y)"
+  shows "<x,y>\<in>frecrel(A)"
+  using assms unfolding frecrel_def Rrel_def by auto
+
+lemma frecrelD :
+  assumes "<x,y> \<in> frecrel(A1\<times>A2\<times>A3\<times>A4)"
+  shows "ftype(x) \<in> A1" "ftype(x) \<in> A1"
+    "name1(x) \<in> A2" "name1(y) \<in> A2" "name2(x) \<in> A3" "name2(x) \<in> A3" 
+    "cond_of(x) \<in> A4" "cond_of(y) \<in> A4" 
+    "frecR(x,y)"
+  using assms unfolding frecrel_def Rrel_def ftype_def by auto
 
 lemma wf_frecrel : 
   shows "wf(frecrel(A))"
 proof -
   have "frecrel(A) \<subseteq> measure(A,\<Gamma>)"
     unfolding frecrel_def Rrel_def measure_def
-    using \<Gamma>_mono by auto
+    using \<Gamma>_mono by force
   then show ?thesis using wf_subset wf_measure by auto
 qed
+
+lemma core_induction_aux:
+  fixes A1 A2 :: "i"
+  assumes
+    "Transset(A1)"
+    "\<And>\<tau> \<theta> p. \<lbrakk>\<And>q \<sigma>. \<lbrakk> q\<in>A2 ; \<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
+    "\<And>\<tau> \<theta> p. \<lbrakk>\<And>q \<sigma>. \<lbrakk> q\<in>A2 ; \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<theta>,p)"
+  shows "ftype(a)\<in>2 \<Longrightarrow> name1(a)\<in>A1 \<Longrightarrow> name2(a)\<in>A1 \<Longrightarrow>
+            cond_of(a)\<in>A2 \<Longrightarrow> Q(ftype(a),name1(a),name2(a),cond_of(a))"
+proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2"]])
+   case (1 x)
+   let ?\<tau> = "name1(x)" 
+   let ?\<theta> = "name2(x)"
+   let ?D = "2\<times>A1\<times>A1\<times>A2"
+   assume "ftype(x) \<in> 2"
+   then
+   consider (eq) "ftype(x)=0" | (mem) "ftype(x)=1"
+     by auto
+   then 
+   show ?case 
+   proof cases
+     case eq
+     then 
+     have "Q(1, \<sigma>, ?\<tau>, q) \<and> Q(1, \<sigma>, ?\<theta>, q)" if "\<sigma> \<in> domain(?\<tau>) \<union> domain(?\<theta>)" and "q\<in>A2" for q \<sigma>
+     proof -
+       from 1
+       have "domain(?\<tau>) \<union> domain(?\<theta>) \<subseteq> A1" 
+         sorry (* esto sale gracias a pedir Transset(A1) *)
+       with \<open>Transset(A1)\<close> that(1)
+       have "\<sigma>\<in>A1" using subsetI by auto
+       with \<open>q\<in>A2\<close> \<open>?\<theta> \<in> A1\<close> \<open>cond_of(x)\<in>A2\<close> \<open>?\<tau>\<in>A1\<close>
+       have "frecR(<1, \<sigma>, ?\<tau>, q>, x)" (is "frecR(?T,_)")
+            "frecR(<1, \<sigma>, ?\<theta>, q>, x)" (is "frecR(?U,_)")
+         using  frecRI1'[OF that(1)] frecR_DI  \<open>ftype(x) = 0\<close> 
+                frecRI2'[OF that(1)] 
+         by auto
+       then
+       have "<?T,x>\<in> frecrel(?D)" "<?U,x>\<in> frecrel(?D)"
+         using frecrelI[of ?T ?D x] sorry (* esto no es cierto *)
+       with \<open>q\<in>A2\<close> \<open>\<sigma>\<in>A1\<close> \<open>?\<tau>\<in>A1\<close> \<open>?\<theta>\<in>A1\<close>
+       have A:"Q(1, \<sigma>, ?\<tau>, q)" using 1 by force
+       from \<open>q\<in>A2\<close> \<open>\<sigma>\<in>A1\<close> \<open>?\<tau>\<in>A1\<close> \<open>?\<theta>\<in>A1\<close> \<open><?U,x>\<in> frecrel(?D)\<close>
+       have "Q(1, \<sigma>, ?\<theta>, q)" using 1 by force
+       then
+       show ?thesis using A by simp
+     qed
+     then show ?thesis using assms(3) \<open>ftype(x) = 0\<close> by auto
+   next
+     case mem
+     then show ?thesis sorry
+   qed
+ qed
 
 lemma def_frecrel : "frecrel(A) = {z\<in>A\<times>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x,y)}"
   unfolding frecrel_def Rrel_def ..
 
 lemma frecrel_fst_snd:
   "frecrel(A) = {z \<in> A\<times>A . 
-            ftype(fst(z)) = 0 \<and> 
-        ftype(snd(z)) = 1 \<and> name1(fst(z)) \<in> domain(name1(snd(z))) \<union> domain(name2(snd(z))) \<and> 
+            ftype(fst(z)) = 1 \<and> 
+        ftype(snd(z)) = 0 \<and> name1(fst(z)) \<in> domain(name1(snd(z))) \<union> domain(name2(snd(z))) \<and> 
             (name2(fst(z)) = name1(snd(z)) \<or> name2(fst(z)) = name2(snd(z))) 
-          \<or> (ftype(fst(z)) = 1 \<and> 
-        ftype(snd(z)) = 0 \<and>  name1(fst(z)) = name1(snd(z)) \<and> name2(fst(z)) \<in> domain(name2(snd(z))))}"
+          \<or> (ftype(fst(z)) = 0 \<and> 
+        ftype(snd(z)) = 1 \<and>  name1(fst(z)) = name1(snd(z)) \<and> name2(fst(z)) \<in> domain(name2(snd(z))))}"
   unfolding def_frecrel frecR_def
   by (intro equalityI subsetI CollectI; elim CollectE; auto)
 
@@ -285,8 +386,8 @@ definition
   is_ftype(M,x,ftx) \<and> is_name1(M,x,n1x)\<and> is_name2(M,x,n2x) \<and>
   is_ftype(M,y,fty) \<and> is_name1(M,y,n1y) \<and> is_name2(M,y,n2y)
           \<and> is_domain(M,n1y,dn1) \<and> is_domain(M,n2y,dn2) \<and> 
-          (  (empty(M,ftx) \<and> number1(M,fty) \<and> (n1x \<in> dn1 \<or> n1x \<in> dn2) \<and> (n2x = n1y \<or> n2x = n2y))
-           \<or> (number1(M,ftx) \<and> empty(M,fty) \<and> n1x = n1y \<and> n2x \<in> dn2))"
+          (  (number1(M,ftx) \<and> empty(M,fty) \<and> (n1x \<in> dn1 \<or> n1x \<in> dn2) \<and> (n2x = n1y \<or> n2x = n2y))
+           \<or> (empty(M,ftx) \<and> number1(M,fty) \<and> n1x = n1y \<and> n2x \<in> dn2))"
 
 (*
 \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x,y) *)
@@ -303,7 +404,6 @@ definition
 definition
   names_below :: "i \<Rightarrow> i \<Rightarrow> i" where
   "names_below(P,x) \<equiv> 2\<times>eclose(x)\<times>eclose(x)\<times>P"
-
 
 definition
   forcerel :: "i \<Rightarrow> i \<Rightarrow> i" where
@@ -973,25 +1073,48 @@ lemma restrict_trancl_forcerel:
   unfolding forcerel_def frecrel_def using assms restrict_trancl_Rrel[of frecR] 
      by (simp)
 
-lemma frecRI1: "s \<in> domain(n1) \<or> s \<in> domain(n2) \<Longrightarrow> frecR(\<langle>0, s, n1, q\<rangle>, \<langle>1, n1, n2, q'\<rangle>)"
-  unfolding frecR_def by simp
 
-lemma frecRI2: "s \<in> domain(n1) \<or> s \<in> domain(n2) \<Longrightarrow> frecR(\<langle>0, s, n2, q\<rangle>, \<langle>1, n1, n2, q'\<rangle>)"
-  unfolding frecR_def by simp
-
-lemma frecRI3: "\<langle>s, r\<rangle> \<in> n2 \<Longrightarrow> frecR(\<langle>1, n1, s, q\<rangle>, \<langle>0, n1, n2, q'\<rangle>)"
-  unfolding frecR_def by auto
-
-lemma names_belowI : "frecR(<ft,n1,n2,p>,<a,b,c,d>) \<Longrightarrow> ft\<in>2 \<Longrightarrow> p\<in>P \<Longrightarrow> <ft,n1,n2,p>\<in>names_below(P,<a,b,c,d>)"
-  sorry
+lemma names_belowI : 
+  assumes "frecR(<ft,n1,n2,p>,<a,b,c,d>)" "p\<in>P"
+  shows "<ft,n1,n2,p> \<in> names_below(P,<a,b,c,d>)" (is "?x \<in> names_below(_,?y)")
+proof -
+  from assms
+  have "ft \<in> 2" "a \<in> 2" 
+    unfolding frecR_def by auto
+  have A: "b \<in> eclose(?y) " "c \<in> eclose(?y)" 
+    using components_in_eclose by simp_all
+  from assms
+  consider (e) "n1 \<in> domain(b) \<union> domain(c) \<and> (n2 = b \<or> n2 =c)" 
+    | (m) "n1 = b \<and> n2 \<in> domain(c)"
+    unfolding frecR_def by auto
+  then show ?thesis 
+  proof cases
+    case e
+    then 
+    have "n1 \<in> eclose(b) \<or> n1 \<in> eclose(c)"  
+      using Un_iff in_dom_in_eclose by auto
+    with e
+    have "n1 \<in> eclose(?y)" "n2 \<in> eclose(?y)"
+      using mem_eclose_trans components_in_eclose by auto
+    with A \<open>ft\<in>2\<close> \<open>p\<in>P\<close> 
+    show ?thesis unfolding names_below_def by  auto
+  next
+    case m
+    then
+    have "n1 \<in> eclose(?y)" "n2 \<in> eclose(c)"
+      using mem_eclose_trans in_dom_in_eclose components_in_eclose by auto
+    with A \<open>ft\<in>2\<close> \<open>p\<in>P\<close> 
+    show ?thesis unfolding names_below_def using mem_eclose_trans by auto    
+  qed
+qed
 
 lemmas names_belowI' = names_belowI[OF frecRI1] names_belowI[OF frecRI2] names_belowI[OF frecRI3] 
 
+
 lemma Hfrc_restrict_trancl: "bool_of_o(Hfrc(P, leq, y, restrict(f,forcerel(P,x)-``{y})))
          = bool_of_o(Hfrc(P, leq, y, restrict(f,(forcerel(P,x)^+)-``{y})))"
-  unfolding Hfrc_def bool_of_o_def eq_case_def mem_case_def
-  using  restrict_trancl_forcerel frecRI1 frecRI2 frecRI3 
-  sorry 
+  unfolding Hfrc_def bool_of_o_def eq_case_def mem_case_def 
+  using  restrict_trancl_forcerel frecRI1 frecRI2 frecRI3 by simp
 
 (* transitive force relation *)
 definition
@@ -1018,7 +1141,7 @@ qed
 
 lemma wf_forcerel :
   "wf(forcerel(P,x))"
-  sorry
+  unfolding forcerel_def using wf_frecrel .
 
 (* Don't know if this is true *)
 lemma  aux_def_frc_at: "x\<in>names_below(P,y) \<Longrightarrow>
