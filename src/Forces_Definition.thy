@@ -317,14 +317,13 @@ lemma core_induction_aux:
     "Transset(A1)"
     "\<And>\<tau> \<theta> p. \<lbrakk>\<And>q \<sigma>. \<lbrakk> q\<in>A2 ; \<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
     "\<And>\<tau> \<theta> p. \<lbrakk>\<And>q \<sigma>. \<lbrakk> q\<in>A2 ; \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<theta>,p)"
-  shows "ftype(a)\<in>2 \<Longrightarrow> name1(a)\<in>A1 \<Longrightarrow> name2(a)\<in>A1 \<Longrightarrow>
-            cond_of(a)\<in>A2 \<Longrightarrow> Q(ftype(a),name1(a),name2(a),cond_of(a))"
+  shows "a\<in>2\<times>A1\<times>A1\<times>A2 \<Longrightarrow> Q(ftype(a),name1(a),name2(a),cond_of(a))"
 proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2"]])
    case (1 x)
    let ?\<tau> = "name1(x)" 
    let ?\<theta> = "name2(x)"
    let ?D = "2\<times>A1\<times>A1\<times>A2"
-   assume "ftype(x) \<in> 2"
+   assume "x \<in> ?D"
    then
    consider (eq) "ftype(x)=0" | (mem) "ftype(x)=1"
      by auto
@@ -336,19 +335,19 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
      have "Q(1, \<sigma>, ?\<tau>, q) \<and> Q(1, \<sigma>, ?\<theta>, q)" if "\<sigma> \<in> domain(?\<tau>) \<union> domain(?\<theta>)" and "q\<in>A2" for q \<sigma>
      proof -
        from 1
-       have "domain(?\<tau>) \<union> domain(?\<theta>) \<subseteq> A1" 
-         sorry (* esto sale gracias a pedir Transset(A1) *)
+       have "domain(?\<tau>) \<union> domain(?\<theta>) \<subseteq> A1" "?\<tau>\<in>A1" "?\<theta>\<in>A1" "cond_of(x)\<in>A2"
+         sorry (* lo primero sale gracias a pedir Transset(A1) *)
        with \<open>Transset(A1)\<close> that(1)
        have "\<sigma>\<in>A1" using subsetI by auto
        with \<open>q\<in>A2\<close> \<open>?\<theta> \<in> A1\<close> \<open>cond_of(x)\<in>A2\<close> \<open>?\<tau>\<in>A1\<close>
        have "frecR(<1, \<sigma>, ?\<tau>, q>, x)" (is "frecR(?T,_)")
             "frecR(<1, \<sigma>, ?\<theta>, q>, x)" (is "frecR(?U,_)")
-         using  frecRI1'[OF that(1)] frecR_DI  \<open>ftype(x) = 0\<close> 
+        using  frecRI1'[OF that(1)] frecR_DI  \<open>ftype(x) = 0\<close> 
                 frecRI2'[OF that(1)] 
          by auto
-       then
-       have "<?T,x>\<in> frecrel(?D)" "<?U,x>\<in> frecrel(?D)"
-         using frecrelI[of ?T ?D x] sorry (* esto no es cierto *)
+       with \<open>x\<in>?D\<close> \<open>\<sigma>\<in>A1\<close> \<open>q\<in>A2\<close>
+       have "<?T,x>\<in> frecrel(?D)" "<?U,x>\<in> frecrel(?D)" 
+         using frecrelI[of ?T ?D x]  frecrelI[of ?U ?D x] by auto
        with \<open>q\<in>A2\<close> \<open>\<sigma>\<in>A1\<close> \<open>?\<tau>\<in>A1\<close> \<open>?\<theta>\<in>A1\<close>
        have A:"Q(1, \<sigma>, ?\<tau>, q)" using 1 by force
        from \<open>q\<in>A2\<close> \<open>\<sigma>\<in>A1\<close> \<open>?\<tau>\<in>A1\<close> \<open>?\<theta>\<in>A1\<close> \<open><?U,x>\<in> frecrel(?D)\<close>
