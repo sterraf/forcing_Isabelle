@@ -1625,11 +1625,12 @@ lemma sats_forces_Neg: "\<lbrakk> [P,leq,one,p] @ env \<in> list(M); \<phi>\<in>
 
 lemma sats_forces_Forall:
   assumes
-    "p\<in>P" "[P,leq,one,p] @ env \<in> list(M)" "\<phi>\<in>formula"
+    "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula"
   shows
     "sats(M,forces(Forall(\<phi>)),[P,leq,one,p] @ env) \<longleftrightarrow> 
      (\<forall>x\<in>M. sats(M, forces(\<phi>),[P,leq,one,p,x] @ env))"
-  using assms sats_forces_ren_Forall unfolding forces_def by simp
+  using assms sats_forces_ren_Forall P_in_M leq_in_M one_in_M
+    Transset_intf[OF trans_M _ P_in_M] unfolding forces_def by simp
 
 lemma sats_forces_Equal:
   assumes
