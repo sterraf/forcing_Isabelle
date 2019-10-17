@@ -971,6 +971,55 @@ next
   qed
 qed
 
+lemma definition_of_forces:
+  assumes
+    "p\<in>P" "\<phi>\<in>formula" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"
+  shows
+    "sats(M,forces(\<phi>), [P,leq,one,p] @ env) \<longleftrightarrow>
+     (\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],\<phi>,map(val(G),env)))"
+proof (intro iffI allI impI, elim conjE)
+  fix G
+  assume "sats(M, forces(\<phi>), [P,leq,one,p] @ env)" "M_generic(G)" "p \<in> G"
+  with assms 
+  show "sats(M[G],\<phi>,map(val(G),env))"
+    using truth_lemma by blast
+next
+  assume 1: "\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],\<phi>,map(val(G),env))"
+  {
+    fix r 
+    assume 2: "r\<in>P" "<r,p>\<in>leq"
+    then 
+    obtain G where "r\<in>G" "M_generic(G)"
+      using generic_filter_existence by auto
+    moreover from calculation 2 \<open>p\<in>P\<close> 
+    have "p\<in>G" 
+      unfolding M_generic_def using filter_leqD by simp
+    moreover note 1
+    ultimately
+    have "sats(M[G],\<phi>,map(val(G),env))"
+      by simp
+    with assms \<open>M_generic(G)\<close> 
+    obtain s where "s\<in>G" "sats(M,forces(\<phi>), [P,leq,one,s] @ env)"
+      using truth_lemma by blast
+    moreover from this and  \<open>M_generic(G)\<close> \<open>r\<in>G\<close> 
+    obtain q where "q\<in>G" "<q,s>\<in>leq" "<q,r>\<in>leq"
+      by blast
+    moreover from calculation \<open>s\<in>G\<close> \<open>M_generic(G)\<close> 
+    have "s\<in>P" "q\<in>P" 
+      unfolding M_generic_def filter_def by auto
+    moreover 
+    note assms
+    ultimately 
+    have "\<exists>q\<in>P. <q,r>\<in>leq \<and> sats(M,forces(\<phi>), [P,leq,one,q] @ env)"
+      using strengthening_lemma by blast
+  }
+  then
+  have "dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,one,q] @ env)},p)"
+    unfolding dense_below_def by blast
+  with assms
+  show "sats(M,forces(\<phi>), [P,leq,one,p] @ env)"
+    using density_lemma by blast
+qed
 end
 
 end
