@@ -703,22 +703,6 @@ lemma truth_lemma_eq:
     sats_forces_Equal[OF _ _ _ assms(1), of _  "nth(n,env)" "nth(m,env)" n m] map_val_in_MG
   by (auto)
 
-(*
-lemma definition_of_forces_mem:
-  assumes 
-    "env\<in>list(M)"
-    "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" 
-    "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)" "p\<in>P"
-  shows 
-    "sats(M,forces(Member(n,m)), [P,leq,one,p] @ env) \<longleftrightarrow> (\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],Member(n,m),map(val(G),env)))"
-  using assms IV240a(2)[OF _ _ assms(2-3)] IV240b(2)[OF _ assms(2-3)] 
-    P_in_M leq_in_M one_in_M sats_forces_Member[OF _ assms(2-6)] map_val_in_MG
-    Transset_intf[OF trans_M \<open>p\<in>P\<close>] generic_filter_existence[OF \<open>p\<in>P\<close>] 
-  apply (auto del:elem_of_valI) apply (elim allE impE) apply simp 
-  (* need to use that G is a filter, see Forcing_Corollaries.thy *)
-  oops
-*)
-
 lemma arities_at_aux:
   assumes
     "n \<in> nat" "m \<in> nat" "env \<in> list(M)" "succ(n) \<union>  succ(m) \<le> length(env)"
@@ -1020,6 +1004,9 @@ next
   show "sats(M,forces(\<phi>), [P,leq,one,p] @ env)"
     using density_lemma by blast
 qed
-end
+
+lemma definability[TC]:"\<phi>\<in>formula \<Longrightarrow> forces(\<phi>) \<in> formula"
+  unfolding forces_def by simp
+end (* forces_rename *)
 
 end
