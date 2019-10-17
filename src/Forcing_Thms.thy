@@ -448,8 +448,8 @@ Putting altogether,
 
 lemma core_induction:
   assumes
-    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P; \<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
-    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P; \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<theta>,p)"
+    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>\<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
+    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<theta>,p)"
     "ft \<in> 2" (* "p \<in> P" *)
   shows
     "Q(ft,\<tau>,\<theta>,p)"
@@ -716,24 +716,144 @@ lemma definition_of_forces_mem:
   oops
 *)
 
-lemma density_lemma:
+lemma arities_at_aux:
+  assumes
+    "n \<in> nat" "m \<in> nat" "env \<in> list(M)" "succ(n) \<union>  succ(m) \<le> length(env)"
+  shows
+    "n < length(env)" "m < length(env)"
+  using assms succ_leE[OF Un_leD1, of n "succ(m)" "length(env)"] 
+   succ_leE[OF Un_leD2, of "succ(n)" m "length(env)"] by auto
+
+lemma strengthening_lemma:
   assumes 
+    "p\<in>P" "\<phi>\<in>formula" "r\<in>P" "<r,p>\<in>leq"
+  shows
+    "\<And>env. env\<in>list(M) \<Longrightarrow> arity(\<phi>)\<le>length(env) \<Longrightarrow>
+    sats(M,forces(\<phi>), [P,leq,one,p] @ env) \<Longrightarrow> sats(M,forces(\<phi>), [P,leq,one,r] @ env)"
+  using assms(2)
+proof (induct)
+  case (Member n m)
+  then
+  have "n<length(env)" "m<length(env)"
+    using arities_at_aux by simp_all
+  moreover
+  assume "env\<in>list(M)"
+  moreover
+  note assms Member
+  ultimately
+  show ?case 
+    using sats_forces_Member[OF _ _ _ \<open>env\<in>_\<close>, of _ "nth(n,env)" "nth(m,env)" n m]
+      strengthening_mem[of p r "nth(n,env)" "nth(m,env)"] by simp
+next
+  case (Equal n m)
+  then
+  have "n<length(env)" "m<length(env)"
+    using arities_at_aux by simp_all
+  moreover
+  assume "env\<in>list(M)"
+  moreover
+  note assms Equal
+  ultimately
+  show ?case 
+    using sats_forces_Equal[OF _ _ _ \<open>env\<in>_\<close>, of _ "nth(n,env)" "nth(m,env)" n m]
+      strengthening_eq[of p r "nth(n,env)" "nth(m,env)"] by simp
+next
+  case (Nand \<phi> \<psi>)
+  then 
+  show ?case sorry
+next
+  case (Forall \<phi>)
+  with assms
+  have "sats(M,forces(\<phi>),[P,leq,one,p,x] @ env)" if "x\<in>M" for x
+    using that sats_forces_Forall by simp
+  with Forall 
+  have "sats(M,forces(\<phi>),[P,leq,one,r,x] @ env)" if "x\<in>M" for x
+    using that pred_le2 by (simp)
+  with assms Forall
+  show ?case 
+    using sats_forces_Forall by simp
+qed
+
+lemma dense_below_imp_forces:
+  assumes 
+    "p\<in>P" "\<phi>\<in>formula"
+  shows
+    "\<And>env. env\<in>list(M) \<Longrightarrow> arity(\<phi>)\<le>length(env) \<Longrightarrow>
+     dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,one,q] @ env)},p) \<Longrightarrow> 
+     sats(M,forces(\<phi>), [P,leq,one,p] @ env)"
+  using assms(2)
+proof (induct)
+  case (Member n m)
+  then
+  have "n<length(env)" "m<length(env)"
+    using arities_at_aux by simp_all
+  moreover
+  assume "env\<in>list(M)"
+  moreover
+  note assms Member
+  ultimately
+  show ?case 
+    using sats_forces_Member[OF _ _ _ \<open>env\<in>_\<close>, of _ "nth(n,env)" "nth(m,env)" n m]
+      density_mem[of p "nth(n,env)" "nth(m,env)"] by simp
+next
+  case (Equal n m)
+  then
+  have "n<length(env)" "m<length(env)"
+    using arities_at_aux by simp_all
+  moreover
+  assume "env\<in>list(M)"
+  moreover
+  note assms Equal
+  ultimately
+  show ?case 
+    using sats_forces_Equal[OF _ _ _ \<open>env\<in>_\<close>, of _ "nth(n,env)" "nth(m,env)" n m]
+      density_eq[of p "nth(n,env)" "nth(m,env)"] by simp
+next
+  case (Nand \<phi> \<psi>)
+  then 
+  show ?case sorry
+next
+  case (Forall \<phi>)
+  have "dense_below({q\<in>P. sats(M,forces(\<phi>),[P,leq,one,q,a] @ env)},p)" if "a\<in>M" for a
+  proof (standard, rename_tac r)
+    fix r
+    assume "r\<in>P" "<r,p>\<in>leq"
+    with \<open>dense_below(_,p)\<close>
+    obtain q where "q\<in>P" "<q,r>\<in>leq" "sats(M,forces(Forall(\<phi>)),[P,leq,one,q] @ env)"
+      by blast
+    moreover
+    note Forall \<open>a\<in>M\<close>
+    moreover from calculation
+    have "sats(M,forces(\<phi>),[P,leq,one,q,a] @ env)"
+      using sats_forces_Forall by simp
+    ultimately
+    show "\<exists>d \<in> {q\<in>P. sats(M,forces(\<phi>),[P,leq,one,q,a] @ env)}. d \<in> P \<and> \<langle>d,r\<rangle> \<in> leq"
+      by auto
+  qed
+  moreover 
+  note Forall(2)[of "Cons(_,env)"] Forall(1,3-5)
+  ultimately
+  have "sats(M,forces(\<phi>),[P,leq,one,p,a] @ env)" if "a\<in>M" for a
+    using that pred_le2 by simp
+  with assms Forall
+  show ?case using sats_forces_Forall by simp
+qed
+
+lemma density_lemma:
+  assumes
     "p\<in>P" "\<phi>\<in>formula" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"
   shows
     "sats(M,forces(\<phi>), [P,leq,one,p] @ env) \<longleftrightarrow> dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,one,q] @ env)},p)"
-  using assms(2)
-proof (induct)
-  case (Member x y)
-  then show ?case sorry
+proof
+  assume "dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,one,q] @ env)},p)"
+  with assms
+  show  "sats(M, forces(\<phi>), [P, leq, one, p] @ env)"
+    using dense_below_imp_forces by simp
 next
-  case (Equal x y)
-  then show ?case sorry
-next
-  case (Nand p q)
-  then show ?case sorry
-next
-  case (Forall p)
-  then show ?case sorry
+  assume "sats(M, forces(\<phi>), [P, leq, one, p] @ env)"
+  with assms
+  show "dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,one,q] @ env)},p)"
+    using strengthening_lemma leq_reflI by auto
 qed
 
 lemma truth_lemma:
@@ -747,16 +867,14 @@ proof (induct)
   case (Member x y)
   then
   show ?case
-    using assms truth_lemma_mem[OF \<open>env\<in>list(M)\<close> assms(2) \<open>x\<in>nat\<close> \<open>y\<in>nat\<close> 
-        succ_leE[OF Un_leD1] succ_leE[OF Un_leD2], of "succ(y)" "succ(x)"]
-    by simp
+    using assms truth_lemma_mem[OF \<open>env\<in>list(M)\<close> assms(2) \<open>x\<in>nat\<close> \<open>y\<in>nat\<close>] 
+      arities_at_aux by simp
 next
   case (Equal x y)
   then
   show ?case
-    using assms truth_lemma_eq[OF \<open>env\<in>list(M)\<close> assms(2) \<open>x\<in>nat\<close> \<open>y\<in>nat\<close> 
-        succ_leE[OF Un_leD1] succ_leE[OF Un_leD2], of "succ(y)" "succ(x)"]
-    by simp
+    using assms truth_lemma_eq[OF \<open>env\<in>list(M)\<close> assms(2) \<open>x\<in>nat\<close> \<open>y\<in>nat\<close>] 
+      arities_at_aux by simp
 next (* This case will probably need a density argument *)
   case (Nand p q)
   then 
@@ -774,8 +892,7 @@ next
       using Transset_intf[OF trans_M _ P_in_M] by auto
     with \<open>env\<in>list(M)\<close> \<open>\<phi>\<in>formula\<close>
     have "sats(M,forces(\<phi>),[P,leq,one,p,x] @ env)" if "x\<in>M" for x
-      unfolding forces_def using that P_in_M leq_in_M one_in_M 
-        sats_fref[of x p env "forces_ren(auxren,fren,fref,\<phi>)"] by simp
+      using that sats_forces_Forall by simp
     with \<open>p\<in>G\<close> \<open>\<phi>\<in>formula\<close> \<open>env\<in>_\<close> \<open>arity(Forall(\<phi>)) \<le> length(env)\<close>
       Forall(2)[of "Cons(_,env)"] 
     show "sats(M[G], Forall(\<phi>), map(val(G),env))"
@@ -795,8 +912,7 @@ next
       with \<open>\<phi>\<in>formula\<close> \<open>env\<in>_\<close> \<open>arity(Forall(\<phi>)) \<le> length(env)\<close>
         Forall(2)[of "Cons(x,env)"] 
       obtain p where "p\<in>G" "sats(M,forces(\<phi>),[P,leq,one,p,x] @ env)" 
-        unfolding forces_def using  \<open>x\<in>M\<close> pred_le2
-          sats_fref[of _ _ env "forces_ren(auxren,fren,fref,\<phi>)"] 
+         using  \<open>x\<in>M\<close> pred_le2
         by auto
       then
       have "\<exists>p\<in>G. sats(M, forces(Forall(\<phi>)), [P, leq, one, p] @ env)"
