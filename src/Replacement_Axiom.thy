@@ -427,14 +427,15 @@ proof -
     assume "v\<in>M[G]"
     then
     obtain \<sigma> where "val(G,\<sigma>) = v" "\<sigma>\<in>M"
-      using GenExtD by blast
+      using GenExtD by auto
     moreover
     assume "sats(M[G], \<phi>, [x,v] @ env)"
     moreover
-    note \<open>\<phi>\<in>_\<close> \<open>nenv\<in>_\<close> \<open>env = _\<close>
+    note \<open>\<phi>\<in>_\<close> \<open>nenv\<in>_\<close> \<open>env = _\<close> \<open>arity(\<phi>)\<le> 2 #+ length(env)\<close>
     ultimately
     obtain q where "q\<in>G" "sats(M, forces(\<phi>), [P,leq,one,q,\<rho>,\<sigma>] @ nenv)" 
-      using truth_lemma[OF \<open>\<phi>\<in>_\<close> _ generic, symmetric, of "[\<rho>,\<sigma>] @ nenv"] by auto
+      using truth_lemma[OF \<open>\<phi>\<in>_\<close> generic, symmetric, of "[\<rho>,\<sigma>] @ nenv"] 
+       by auto
     with \<open><\<rho>,p>\<in>\<pi>'\<close> \<open><\<rho>,q>\<in>?\<pi> \<Longrightarrow> f(<\<rho>,q>)\<in>Y\<close>
     have "f(<\<rho>,q>)\<in>Y" 
       using generic unfolding M_generic_def filter_def by blast
@@ -456,9 +457,9 @@ proof -
     ultimately
     obtain \<tau> where "\<tau>\<in>M" "\<tau> \<in> Vset(f(<\<rho>,q>))" "sats(M,forces(\<phi>),[P,leq,one,q,\<rho>,\<tau>] @ nenv)" 
       using LeastI[of "\<lambda> \<alpha>. ?P(<\<rho>,q>,\<alpha>)" ?\<alpha>] by auto
-    with \<open>q\<in>G\<close> \<open>\<rho>\<in>M\<close> \<open>nenv\<in>_\<close>
+    with \<open>q\<in>G\<close> \<open>\<rho>\<in>M\<close> \<open>nenv\<in>_\<close> \<open>arity(\<phi>)\<le> 2 #+ length(nenv)\<close>
     have "sats(M[G],\<phi>,map(val(G),[\<rho>,\<tau>] @ nenv))"
-      using truth_lemma[OF \<open>\<phi>\<in>_\<close> _ generic, of "[\<rho>,\<tau>] @ nenv"] by auto
+      using truth_lemma[OF \<open>\<phi>\<in>_\<close> generic, of "[\<rho>,\<tau>] @ nenv"] by auto
     moreover from \<open>x\<in>c\<close> \<open>c\<in>M[G]\<close>
     have "x\<in>M[G]" using Transset_intf[OF Transset_MG] by simp
     moreover
@@ -524,7 +525,7 @@ proof -
      apply (auto)
      apply (drule_tac x=x in bspec; simp_all)
      by (blast)
-    (* 34secs *)
+    (* 44secs *)
 qed
 
 end (* context sep_rename *)
