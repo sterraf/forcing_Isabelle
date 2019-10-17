@@ -252,16 +252,39 @@ lemma obvio : "0 < 3" by simp
 lemma oadd_lt_mono2 :
   assumes  "Ord(\<alpha>)" "Ord(\<beta>)" "\<alpha> < \<beta>" "x < 3" "y < 3"
   shows "3 ** \<alpha> ++ x < 3 **\<beta> ++ y"
-proof(cases "x\<le>y")
-case True
-then show ?thesis using assms Ord_induct ltD[OF  \<open>x<3\<close>] ltD[OF  \<open>y<3\<close>] omult_lt_mono2[OF \<open>\<alpha><\<beta>\<close> obvio] 
-    le_refl_iff leI by auto
-next
-  case False
-  have "0<1" by simp
-  with False show ?thesis using assms Ord_cases[OF \<open>Ord(\<beta>)\<close>]
-    sorry
-qed  
-
-
+proof -
+  consider (0) "\<beta>=0" | (s) \<gamma> where  "Ord(\<gamma>)" "\<beta> = succ(\<gamma>)" | (l) "Limit(\<beta>)"
+    using Ord_cases[OF \<open>Ord(\<beta>)\<close>,of ?thesis] by force
+  then show ?thesis 
+  proof cases
+    case 0
+    then show ?thesis using \<open>\<alpha><\<beta>\<close> by auto
+  next
+    case s
+    then
+    have "\<alpha>\<le>\<gamma>" using \<open>\<alpha><\<beta>\<close> using leI by auto
+    then
+    have "3 ** \<alpha> \<le> 3 ** \<gamma>" using omult_le_mono[OF _ \<open>\<alpha>\<le>\<gamma>\<close>] by simp
+    then
+    have "3 ** \<alpha> ++ x < 3 ** \<gamma> ++ 3" using oadd_lt_mono[OF _ \<open>x<3\<close>] by simp
+    also
+    have "... = 3 ** \<beta>" using \<open>\<beta>=succ(_)\<close> omult_succ \<open>Ord(\<beta>)\<close> by simp
+    finally
+    have "3 ** \<alpha> ++ x < 3 ** \<beta>" by auto
+    then
+    show ?thesis using oadd_le_self \<open>Ord(\<beta>)\<close> lt_trans2 by auto
+  next
+    case l 
+    hence "succ(\<alpha>) < \<beta>" using Limit_has_succ \<open>\<alpha><\<beta>\<close> by simp
+    have "3 ** \<alpha> ++ x < 3 ** \<alpha> ++ 3" 
+      using oadd_lt_mono[OF le_refl[OF Ord_omult[OF _ \<open>Ord(\<alpha>)\<close>]] \<open>x<3\<close>] by simp
+    also
+    have "... = 3 ** succ(\<alpha>)" using omult_succ \<open>Ord(\<alpha>)\<close> by simp
+    finally
+    have "3 ** \<alpha> ++ x < 3 ** succ(\<alpha>)" by simp 
+    with \<open>succ(\<alpha>) < \<beta>\<close>
+    have "3 ** \<alpha> ++ x < 3 ** \<beta>" using lt_trans omult_lt_mono by auto
+    then show ?thesis using oadd_le_self \<open>Ord(\<beta>)\<close> lt_trans2 by auto
+  qed
+qed
 end
