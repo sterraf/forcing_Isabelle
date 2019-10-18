@@ -1,0 +1,1521 @@
+simplification rules:
+    cond_of(⟨?f1, ?n1.1, ?n2.1, ?y⟩) ≡ ?y
+    name2(⟨?f1, ?n1.1, ?y, ?c1⟩) ≡ ?y
+    name1(⟨?f1, ?y, ?n2.1, ?c1⟩) ≡ ?y
+    ftype(⟨?y, ?n1.1, ?n2.1, ?c1⟩) ≡ ?y
+    depth(Forall(?p1)) ≡ succ(depth(?p1))
+    depth(Member(?x1, ?y1)) ≡ 0
+    depth(Equal(?x1, ?y1)) ≡ 0
+    depth(Nand(?p1, ?q1)) ≡ succ(depth(?p1) ∪ depth(?q1))
+    quasilist([]) ≡ True
+    quasilist(Cons(?x1, ?l1)) ≡ True
+    |0| ≡ 0
+    |1| ≡ 1
+    Finite(?A1) ⟹ ?a1 ∉ ?A1 ⟹ |cons(?a1, ?A1)| ≡ succ(|?A1|)
+    relation(restrict(?r1, ?A1)) ≡ True
+    converse(0) ≡ 0
+    relation(?y) ⟹ converse(converse(?y)) ≡ ?y
+    converse(⋃x∈?A1. ?B1(x)) ≡ ⋃x∈?A1. converse(?B1(x))
+    converse(⋂x∈?A1. ?B1(x)) ≡ ⋂x∈?A1. converse(?B1(x))
+    converse(?A1 × ?B1) ≡ ?B1 × ?A1
+    converse(?A1 - ?B1) ≡ converse(?A1) - converse(?B1)
+    converse(?A1 ∩ ?B1) ≡ converse(?A1) ∩ converse(?B1)
+    converse(?A1 ∪ ?B1) ≡ converse(?A1) ∪ converse(?B1)
+    ordify(ordify(?x1)) ≡ ordify(?x1)
+    set_of_list([]) ≡ 0
+    set_of_list(Cons(?a1, ?l1)) ≡ cons(?a1, set_of_list(?l1))
+    posDivAlg(⟨#0, ?b1⟩) ≡ ⟨#0, #0⟩
+    #0 $< integ_of(?w1) ⟹
+    integ_of(?v1) ∈ int ⟹
+    integ_of(?w1) ∈ int ⟹
+    posDivAlg(⟨integ_of(?v1), integ_of(?w1)⟩) ≡ if integ_of(?v1) $< integ_of(?w1) then ⟨#0, integ_of(?v1)⟩ else adjust(integ_of(?w1), posDivAlg(⟨integ_of(?v1), #2 $* integ_of(?w1)⟩))
+    negateSnd(⟨?q1, ?r1⟩) ≡ ⟨?q1, $- ?r1⟩
+    negDivAlg(⟨#-1, ?b1⟩) ≡ ⟨#-1, ?b1 $- #1⟩
+    #0 $< integ_of(?w1) ⟹
+    integ_of(?v1) ∈ int ⟹
+    integ_of(?w1) ∈ int ⟹
+    negDivAlg(⟨integ_of(?v1), integ_of(?w1)⟩) ≡
+    if #0 $≤ integ_of(?v1) $+ integ_of(?w1) then ⟨#-1, integ_of(?v1) $+ integ_of(?w1)⟩ else adjust(integ_of(?w1), negDivAlg(⟨integ_of(?v1), #2 $* integ_of(?w1)⟩))
+    incr_bv(Forall(?p1)) ≡ λnq∈nat. Forall(incr_bv(?p1) ` succ(nq))
+    incr_bv(Member(?x1, ?y1)) ≡ λnq∈nat. Member(incr_var(?x1, nq), incr_var(?y1, nq))
+    incr_bv(Equal(?x1, ?y1)) ≡ λnq∈nat. Equal(incr_var(?x1, nq), incr_var(?y1, nq))
+    incr_bv(Nand(?p1, ?q1)) ≡ λnq∈nat. Nand(incr_bv(?p1) ` nq, incr_bv(?q1) ` nq)
+    contents({?y}) ≡ ?y
+    Finite(0) ≡ True
+    Finite(succ(?x1)) ≡ Finite(?x1)
+    Finite(Pow(?A1)) ≡ Finite(?A1)
+    Finite(cons(?y1, ?x1)) ≡ Finite(?x1)
+    Finite(?A1 ∪ ?B1) ≡ Finite(?A1) ∧ Finite(?B1)
+    domain(0) ≡ 0
+    domain(converse(?r1)) ≡ range(?r1)
+    domain(restrict(?f1, ?C1)) ≡ domain(?f1) ∩ ?C1
+    domain(restrict(Lambda(?A1, ?f1), ?C1)) ≡ ?A1 ∩ ?C1
+    domain(Lambda(?y, ?b1)) ≡ ?y
+    domain(cons(⟨?a1, ?b1⟩, ?r1)) ≡ cons(?a1, domain(?r1))
+    domain(?A1 ∪ ?B1) ≡ domain(?A1) ∪ domain(?B1)
+    domain(?f1(?x1 := ?y1)) ≡ cons(?x1, domain(?f1))
+    ?r1^*^* ≡ ?r1^*
+    Memrel(0) ≡ 0
+    Memrel(1) ≡ 0
+    zmagnitude($- $# ?n1) ≡ natify(?n1)
+    zmagnitude($# ?n1) ≡ natify(?n1)
+    bool_of_o(False) ≡ 0
+    bool_of_o(True) ≡ 1
+    range(0) ≡ 0
+    range(converse(?r1)) ≡ domain(?r1)
+    range(cons(⟨?a1, ?b1⟩, ?r1)) ≡ cons(?b1, range(?r1))
+    range(?A1 ∪ ?B1) ≡ range(?A1) ∪ range(?B1)
+    field(0) ≡ 0
+    field(converse(?r1)) ≡ field(?r1)
+    field(cons(⟨?a1, ?b1⟩, ?r1)) ≡ cons(?a1, cons(?b1, field(?r1)))
+    field(?A1 ∪ ?B1) ≡ field(?A1) ∪ field(?B1)
+    ⋃0 ≡ 0
+    ⋃Pow(?y) ≡ ?y
+    ⋃i∈0. ?A1(i) ≡ 0
+    ⋃y∈?A1. ?c1 ≡ if ?A1 = 0 then 0 else ?c1
+    ⋃x∈?C1. ?A'1 - ?B1(x) ≡ if ?C1 = 0 then 0 else ?A'1 - (⋂x∈?C1. ?B1(x))
+    ⋃x∈?C1. ?A1(x) - ?B'1 ≡ (⋃x∈?C1. ?A1(x)) - ?B'1
+    ⋃x∈?C1. ?A'1 ∩ ?B1(x) ≡ ?A'1 ∩ (⋃x∈?C1. ?B1(x))
+    ⋃x∈?C1. ?A1(x) ∩ ?B'1 ≡ (⋃x∈?C1. ?A1(x)) ∩ ?B'1
+    ⋃x∈?C1. ?A'1 ∪ ?B1(x) ≡ if ?C1 = 0 then 0 else ?A'1 ∪ (⋃x∈?C1. ?B1(x))
+    ⋃x∈?C1. ?A1(x) ∪ ?B'1 ≡ if ?C1 = 0 then 0 else (⋃x∈?C1. ?A1(x)) ∪ ?B'1
+    ⋃x∈?C1. cons(?a1, ?B1(x)) ≡ if ?C1 = 0 then 0 else cons(?a1, ⋃x∈?C1. ?B1(x))
+    ⋃x∈⋃?A1. ?B1(x) ≡ ⋃y∈?A1. ⋃x∈y. ?B1(x)
+    ⋃z∈⋃x∈?A1. ?B1(x). ?C1(z) ≡ ⋃x∈?A1. ⋃z∈?B1(x). ?C1(z)
+    ⋃x∈RepFun(?A1, ?f1). ?B1(x) ≡ ⋃a∈?A1. ?B1(?f1(a))
+    ⋃cons(?a1, ?B1) ≡ ?a1 ∪ ⋃?B1
+    ⋃cons(?b1, ?A1) ≡ ?b1 ∪ ⋃?A1
+    ⋂0 ≡ 0
+    ⋂y∈?A1. ?c1 ≡ if ?A1 = 0 then 0 else ?c1
+    ⋂x∈?C1. ?A1 ∪ ?B1(x) ≡ if ?C1 = 0 then 0 else ?A1 ∪ (⋂x∈?C1. ?B1(x))
+    ⋂x∈?C1. cons(?a1, ?B1(x)) ≡ if ?C1 = 0 then 0 else cons(?a1, ⋂x∈?C1. ?B1(x))
+    ⋂x∈?C1. ?A1 - ?B1(x) ≡ if ?C1 = 0 then 0 else ?A1 - (⋃x∈?C1. ?B1(x))
+    ⋂x∈?C1. ?A1 ∩ ?B1(x) ≡ ?A1 ∩ (⋂x∈?C1. ?B1(x))
+    ⋂x∈?C1. ?A1(x) ∪ ?B1 ≡ if ?C1 = 0 then 0 else (⋂x∈?C1. ?A1(x)) ∪ ?B1
+    ⋂x∈?C1. ?A1(x) - ?B1 ≡ (⋂x∈?C1. ?A1(x)) - ?B1
+    ⋂x∈?C1. ?A1(x) ∩ ?B1 ≡ (⋂x∈?C1. ?A1(x)) ∩ ?B1
+    ⋂x∈RepFun(?A1, ?f1). ?B1(x) ≡ ⋂a∈?A1. ?B1(?f1(a))
+    ⋂{?y} ≡ ?y
+    ⋂cons(?a1, ?B1) ≡ if ?B1 = 0 then ?a1 else ?a1 ∩ ⋂?B1
+    Limit(0) ≡ False
+    Limit(nat) ≡ True
+    Limit(succ(?i1)) ≡ False
+    list_add([]) ≡ 0
+    list_add(Cons(?a1, ?l1)) ≡ ?a1 #+ list_add(?l1)
+    znegative(#0) ≡ False
+    znegative(#-1) ≡ True
+    ?w1 ∈ bin ⟹ ?x1 ∈ bool ⟹ znegative(integ_of(?w1 BIT ?x1)) ≡ znegative(integ_of(?w1))
+    znegative($- $# succ(?n1)) ≡ True
+    znegative($# ?n1) ≡ False
+    lrank(lrank(?a1)) ≡ lrank(?a1)
+    arity(Forall(?p1)) ≡ Arith.pred(arity(?p1))
+    ?x1 ∈ nat ⟹ arity(transset_fm(?x1)) ≡ succ(?x1)
+    ?x1 ∈ nat ⟹ arity(ordinal_fm(?x1)) ≡ succ(?x1)
+    arity(Exists(?p1)) ≡ Arith.pred(arity(?p1))
+    arity(Neg(?p1)) ≡ arity(?p1)
+    arity(auxren(?φ1)) ≡ arity(?φ1)
+    ?t1.1 ∈ nat ⟹ ?t2.1 ∈ nat ⟹ arity(forces_mem_fm(?t1.1, ?t2.1)) ≡ ?t1.1 ∪ ?t2.1 #+ 5
+    arity(Member(?x1, ?y1)) ≡ succ(?x1) ∪ succ(?y1)
+    arity(Equal(?x1, ?y1)) ≡ succ(?x1) ∪ succ(?y1)
+    arity(Nand(?p1, ?q1)) ≡ arity(?p1) ∪ arity(?q1)
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ arity(subset_fm(?x1, ?y1)) ≡ succ(?x1) ∪ succ(?y1)
+    arity(Implies(?p1, ?q1)) ≡ arity(?p1) ∪ arity(?q1)
+    arity(fren ` ?φ1) ≡ arity(?φ1) #+ 2
+    arity(fref ` ?φ1) ≡ arity(?φ1)
+    arity(Iff(?p1, ?q1)) ≡ arity(?p1) ∪ arity(?q1)
+    arity(And(?p1, ?q1)) ≡ arity(?p1) ∪ arity(?q1)
+    arity(Or(?p1, ?q1)) ≡ arity(?p1) ∪ arity(?q1)
+    (⋀x. x ∈ formula ⟹ arity(?r1(x)) = arity(x)) ⟹ ?t1.1 ∈ nat ⟹ ?t2.1 ∈ nat ⟹ arity(forces_eq_fm(?r1, ?t1.1, ?t2.1)) ≡ ?t1.1 ∪ ?t2.1 #+ 5
+    Card(|?A1|) ≡ True
+    (⋀x. x ∈ ?A1 ⟹ Card(x)) ⟹ Card(⋃?A1) ≡ True
+    (⋀x. x ∈ ?A1 ⟹ Card(?K1(x))) ⟹ Card(⋃x<?A1. ?K1(x)) ≡ True
+    bin_minus(Pls) ≡ Pls
+    bin_minus(Min) ≡ Pls BIT 1
+    bin_minus(?w1 BIT 0) ≡ bin_minus(?w1) BIT 0
+    bin_minus(?w1 BIT 1) ≡ bin_pred(NCons(bin_minus(?w1), 0))
+    bin_adder(Pls) ≡ λw∈bin. w
+    bin_adder(Min) ≡ λw∈bin. bin_pred(w)
+    ren(Forall(?p1)) ≡ λn∈nat. λm∈nat. λf∈n -> m. Forall(ren(?p1) ` succ(n) ` succ(m) ` sum_id(n, f))
+    ren(Member(?x1, ?y1)) ≡ λn∈nat. λm∈nat. λf∈n -> m. Member(f ` ?x1, f ` ?y1)
+    ren(Equal(?x1, ?y1)) ≡ λn∈nat. λm∈nat. λf∈n -> m. Equal(f ` ?x1, f ` ?y1)
+    ren(Nand(?p1, ?q1)) ≡ λn∈nat. λm∈nat. λf∈n -> m. Nand(ren(?p1) ` n ` m ` f, ren(?q1) ` n ` m ` f)
+    quasinat(0) ≡ True
+    quasinat(succ(?x1)) ≡ True
+    Lset(0) ≡ 0
+    Lset(⋃?X1) ≡ ⋃y∈?X1. Lset(y)
+    rank(0) ≡ 0
+    rank(succ(?x1)) ≡ succ(rank(?x1))
+    rank(rank(?a1)) ≡ rank(?a1)
+    ?w1 ∈ bin ⟹ integ_of(bin_succ(?w1)) ≡ $# 1 $+ integ_of(?w1)
+    ?w1 ∈ bin ⟹ integ_of(bin_pred(?w1)) ≡ $- $# 1 $+ integ_of(?w1)
+    ?w1 ∈ bin ⟹ ?b1 ∈ bool ⟹ integ_of(NCons(?w1, ?b1)) ≡ integ_of(?w1 BIT ?b1)
+    bin_succ(Pls) ≡ Pls BIT 1
+    bin_succ(Min) ≡ Pls
+    bin_succ(?w1 BIT 0) ≡ NCons(?w1, 1)
+    bin_succ(?w1 BIT 1) ≡ bin_succ(?w1) BIT 0
+    bin_pred(Pls) ≡ Min
+    bin_pred(Min) ≡ Min BIT 0
+    bin_pred(?w1 BIT 0) ≡ bin_pred(?w1) BIT 1
+    bin_pred(?w1 BIT 1) ≡ NCons(?w1, 0)
+    natify(0) ≡ 0
+    ?y ∈ nat ⟹ natify(?y) ≡ ?y
+    natify(natify(?x1)) ≡ natify(?x1)
+    snd(⟨?a1, ?y⟩) ≡ ?y
+    fst(⟨?y, ?b1⟩) ≡ ?y
+    THE x. False ≡ 0
+    THE x. x = ?y ≡ ?y
+    THE x. ?y = x ≡ ?y
+    Pow(0) ≡ {0}
+    Pow(?A1 ∩ ?B1) ≡ Pow(?A1) ∩ Pow(?B1)
+    Ord(0) ≡ True
+    Ord(nat) ≡ True
+    ?n1 ∈ nat ⟹ Ord(?n1) ≡ True
+    Ord(|?A1|) ≡ True
+    Ord(ordify(?x1)) ≡ True
+    Ord(μ x. ?P1(x)) ≡ True
+    (⋀i. i ∈ ?A1 ⟹ Ord(i)) ⟹ Ord(⋃?A1) ≡ True
+    (⋀x. x ∈ ?A1 ⟹ Ord(?B1(x))) ⟹ Ord(⋃x∈?A1. ?B1(x)) ≡ True
+    (⋀i. i ∈ ?A1 ⟹ Ord(i)) ⟹ Ord(⋂?A1) ≡ True
+    (⋀x. x ∈ ?A1 ⟹ Ord(?B1(x))) ⟹ Ord(⋂x∈?A1. ?B1(x)) ≡ True
+    Ord(lrank(?a1)) ≡ True
+    Ord(succ(?i1)) ≡ Ord(?i1)
+    Ord(rank(?a1)) ≡ True
+    Ord(?i1) ⟹ Ord(?j1) ⟹ Ord(?i1 ** ?j1) ≡ True
+    Ord(?i1) ⟹ Ord(?j1) ⟹ Ord(?i1 -- ?j1) ≡ True
+    (⋀x. x < ?A1 ⟹ Ord(?B1(x))) ⟹ Ord(⋃x<?A1. ?B1(x)) ≡ True
+    Ord(?i1 ++ ?j1) ≡ True
+    Ord(?i1) ⟹ Ord(?j1) ⟹ Ord(?i1 ∪ ?j1) ≡ True
+    ?n1 ∈ nat ⟹ (⋀i. Ord(i) ⟹ Ord(?F1(i))) ⟹ Ord(?x1) ⟹ Ord(?F1^?n1 (?x1)) ≡ True
+    length([]) ≡ 0
+    ?xs1 ∈ list(?A1) ⟹ length(rev(?xs1)) ≡ length(?xs1)
+    ?xs1 ∈ list(?A1) ⟹ length(tl(?xs1)) ≡ length(?xs1) #- 1
+    length(Cons(?a1, ?l1)) ≡ succ(length(?l1))
+    ?n1 ∈ nat ⟹ ?xs1 ∈ list(?A1) ⟹ length(drop(?n1, ?xs1)) ≡ length(?xs1) #- ?n1
+    ?xs1 ∈ list(?A1) ⟹ ?ys1 ∈ list(?B1) ⟹ length(zip(?xs1, ?ys1)) ≡ min(length(?xs1), length(?ys1))
+    ?i1 ∈ nat ⟹ ?j1 ∈ nat ⟹ length(upt(?i1, ?j1)) ≡ ?j1 #- ?i1
+    ?xs1 ∈ list(?A1) ⟹ length(map(?h1, ?xs1)) ≡ length(?xs1)
+    ?xs1 ∈ list(?A1) ⟹ ?ys1 ∈ list(?A1) ⟹ length(?xs1 @ ?ys1) ≡ length(?xs1) #+ length(?ys1)
+    ?xs1 ∈ list(?A1) ⟹ ?i1 ∈ nat ⟹ length(list_update(?xs1, ?i1, ?v1)) ≡ length(?xs1)
+    qsnd(<?a1; ?y>) ≡ ?y
+    qfst(<?y; ?b1>) ≡ ?y
+    $- #0 ≡ #0
+    ?w1 ∈ bin ⟹ $- integ_of(?w1) ≡ integ_of(bin_minus(?w1))
+    $- $- ?z1 ≡ intify(?z1)
+    $- intify(?m1) ≡ $- ?m1
+    $- $# 0 ≡ $# 0
+    $- (?z1 $- ?y1) ≡ ?y1 $- ?z1
+    $- (?z1 $+ ?w1) ≡ $- ?z1 $+ $- ?w1
+    znegative(intify(?z1)) ⟹ nat_of(?z1) ≡ 0
+    nat_of(#0) ≡ 0
+    nat_of($- $# ?n1) ≡ 0
+    nat_of(intify(?z1)) ≡ nat_of(?z1)
+    nat_of($# ?n1) ≡ natify(?n1)
+    iszero(#0) ≡ True
+    iszero(#-1) ≡ False
+    ?w1 ∈ bin ⟹ iszero(integ_of(?w1 BIT 0)) ≡ iszero(integ_of(?w1))
+    ?w1 ∈ bin ⟹ iszero(integ_of(?w1 BIT 1)) ≡ False
+    ?y ∈ int ⟹ intify(?y) ≡ ?y
+    intify(intify(?x1)) ≡ intify(?x1)
+    $# 0 ≡ #0
+    ?y ∈ int ⟹ ¬ znegative(?y) ⟹ $# zmagnitude(?y) ≡ ?y
+    znegative(?z1) ⟹ ?z1 ∈ int ⟹ $# zmagnitude(?z1) ≡ $- ?z1
+    $# succ(?n1) ≡ #1 $+ $# ?n1
+    $# natify(?m1) ≡ $# ?m1
+    #0 $≤ ?z1 ⟹ $# nat_of(?z1) ≡ intify(?z1)
+    Arith.pred(0) ≡ 0
+    Arith.pred(succ(?y)) ≡ ?y
+    flat([]) ≡ []
+    flat(Cons(?l1, ?ls1)) ≡ ?l1 @ flat(?ls1)
+    (⋀x. PROP ?V) ≡ PROP ?V
+    rev([]) ≡ []
+    ?y ∈ list(?A1) ⟹ rev(rev(?y)) ≡ ?y
+    rev(Cons(?a1, ?l1)) ≡ rev(?l1) @ [?a1]
+    ¬ False ≡ True
+    ¬ True ≡ False
+    ¬ ¬ ?Q ≡ ?Q
+    ¬ (∀x. ?P1(x)) ≡ ∃x. ¬ ?P1(x)
+    ¬ (∃x. ?P1(x)) ≡ ∀x. ¬ ?P1(x)
+    ¬ (∀x[?M1]. ?P1(x)) ≡ ∃x[?M1]. ¬ ?P1(x)
+    ¬ (∀x∈?A1. ?P1(x)) ≡ ∃x∈?A1. ¬ ?P1(x)
+    ¬ (∃x[?M1]. ?P1(x)) ≡ ∀x[?M1]. ¬ ?P1(x)
+    ¬ (∃x∈?A1. ?P1(x)) ≡ ∀x∈?A1. ¬ ?P1(x)
+    ¬ (?P1 ∨ ?Q1) ≡ ¬ ?P1 ∧ ¬ ?Q1
+    ¬ (?P1 ∧ ?Q1) ≡ ¬ ?P1 ∨ ¬ ?Q1
+    ¬ (?P1 ⟶ ?Q1) ≡ ?P1 ∧ ¬ ?Q1
+    ∀x. ?P1 ∨ ?Q1(x) ≡ ?P1 ∨ (∀x. ?Q1(x))
+    ∀x. ?P1(x) ∨ ?Q1 ≡ (∀x. ?P1(x)) ∨ ?Q1
+    ∀x. ?P1 ⟶ ?Q1(x) ≡ ?P1 ⟶ (∀x. ?Q1(x))
+    ∀x. ?P1(x) ⟶ ?Q1 ≡ (∃x. ?P1(x)) ⟶ ?Q1
+    ∀x. ?P1 ∧ ?Q1(x) ≡ ?P1 ∧ (∀x. ?Q1(x))
+    ∀x. ?P1(x) ∧ ?Q1 ≡ (∀x. ?P1(x)) ∧ ?Q1
+    ∀x. ?t1 = x ⟶ ?P1(x) ≡ ?P1(?t1)
+    ∀x. x = ?t1 ⟶ ?P1(x) ≡ ?P1(?t1)
+    ∀x. ?Q ≡ ?Q
+    not(0) ≡ 1
+    not(1) ≡ 0
+    ?y ∈ bool ⟹ not(not(?y)) ≡ ?y
+    ?a1 ∈ bool ⟹ not(?a1 and ?b1) ≡ not(?a1) or not(?b1)
+    ?a1 ∈ bool ⟹ not(?a1 or ?b1) ≡ not(?a1) and not(?b1)
+    tl([]) ≡ []
+    tl(Cons(?a1, ?y)) ≡ ?y
+    ?xs1 ∈ list(?A1) ⟹ ?xs1 ≠ [] ⟹ tl(?xs1 @ ?ys1) ≡ tl(?xs1) @ ?ys1
+    hd([]) ≡ 0
+    hd(Cons(?y, ?l1)) ≡ ?y
+    ?xs1 ∈ list(?A1) ⟹ ?xs1 ≠ [] ⟹ hd(?xs1 @ ?ys1) ≡ hd(?xs1)
+    ∃x. ?P1 ⟶ ?Q1(x) ≡ ?P1 ⟶ (∃x. ?Q1(x))
+    ∃x. ?P1(x) ⟶ ?Q1 ≡ (∀x. ?P1(x)) ⟶ ?Q1
+    ∃x. ?P1 ∨ ?Q1(x) ≡ ?P1 ∨ (∃x. ?Q1(x))
+    ∃x. ?P1(x) ∨ ?Q1 ≡ (∃x. ?P1(x)) ∨ ?Q1
+    ∃x. ?P1 ∧ ?Q1(x) ≡ ?P1 ∧ (∃x. ?Q1(x))
+    ∃x. ?P1(x) ∧ ?Q1 ≡ (∃x. ?P1(x)) ∧ ?Q1
+    ∃x. ?t1 = x ∧ ?P1(x) ≡ ?P1(?t1)
+    ∃x. x = ?t1 ∧ ?P1(x) ≡ ?P1(?t1)
+    ∃x. x = ?t1 ≡ True
+    ∃x. ?Q ≡ ?Q
+    ∃x. ?t1 = x ≡ True
+    wf(measure(?A1, ?f1)) ≡ True
+    mem_formula(##M, ?l1) ≡ ?l1 ∈ formula
+    (##M)(?Z1) ⟹ is_formula(##M, ?Z1) ≡ ?Z1 = formula
+    (##M)(?a1) ⟹ successor_ordinal(##M, ?a1) ≡ Ord(?a1) ∧ (∃b[##M]. ?a1 = succ(b))
+    (##M)(?o1) ⟹ is_one(##M, ?o1) ≡ ?o1 = 1
+    (##M)(?a1) ⟹ transitive_set(##M, ?a1) ≡ Transset(?a1)
+    (##M)(?a1) ⟹ finite_ordinal(##M, ?a1) ≡ ?a1 ∈ nat
+    (##M)(?a1) ⟹ limit_ordinal(##M, ?a1) ≡ Limit(?a1)
+    (##M)(?z1) ⟹ is_quasilist(##M, ?z1) ≡ quasilist(?z1)
+    (##M)(?r1) ⟹ is_relation(##M, ?r1) ≡ relation(?r1)
+    (##M)(?z1) ⟹ is_quasinat(##M, ?z1) ≡ quasinat(?z1)
+    (##M)(?r1) ⟹ is_function(##M, ?r1) ≡ function(?r1)
+    ordertype(0, ?r1) ≡ 0
+    0 ⊗ ?i1 ≡ 0
+    Card(?y) ⟹ 1 ⊗ ?y ≡ ?y
+    Card(?y) ⟹ 0 ⊕ ?y ≡ ?y
+    (##M)(formula) ≡ True
+    (##M)([]) ≡ True
+    (##M)(0) ≡ True
+    (##M)(nat) ≡ True
+    ?n1 ∈ nat ⟹ (##M)(formula_N(?n1)) ≡ True
+    ?p1 ∈ formula ⟹ (##M)(depth(?p1)) ≡ True
+    (##M)(Forall(?x1)) ≡ (##M)(?x1)
+    (##M)(?r1) ⟹ (##M)(converse(?r1)) ≡ True
+    (##M)(?r1) ⟹ (##M)(domain(?r1)) ≡ True
+    (##M)(?r1) ⟹ (##M)(?r1^*) ≡ True
+    (##M)(?A1) ⟹ (##M)(Memrel(?A1)) ≡ True
+    (##M)(?A1) ⟹ (##M)(eclose(?A1)) ≡ True
+    (##M)(bool_of_o(?P1)) ≡ True
+    (##M)(?r1) ⟹ (##M)(range(?r1)) ≡ True
+    (##M)(?r1) ⟹ (##M)(field(?r1)) ≡ True
+    (##M)(?A1) ⟹ (##M)(⋃?A1) ≡ True
+    (##M)(?A1) ⟹ (##M)(⋂?A1) ≡ True
+    (##M)(?r1) ⟹ (##M)(?r1^+) ≡ True
+    (##M)(succ(?a1)) ≡ (##M)(?a1)
+    ?l1 ∈ list(?A1) ⟹ (##M)(length(?l1)) ≡ True
+    (##M)(?A1) ⟹ (##M)(list(?A1)) ≡ True
+    (##M)(?p1) ⟹ (##M)(not(?p1)) ≡ True
+    (##M)(Inr(?a1)) ≡ (##M)(?a1)
+    (##M)(Inl(?a1)) ≡ (##M)(?a1)
+    (##M)(?A1) ⟹ ?n1 ∈ nat ⟹ (##M)(list_N(?A1, ?n1)) ≡ True
+    (##M)(Member(?x1, ?y1)) ≡ (##M)(?x1) ∧ (##M)(?y1)
+    (##M)(Equal(?x1, ?y1)) ≡ (##M)(?x1) ∧ (##M)(?y1)
+    (##M)(Nand(?x1, ?y1)) ≡ (##M)(?x1) ∧ (##M)(?y1)
+    (##M)(?A1) ⟹ (##M)(?r1) ⟹ (##M)(restrict(?r1, ?A1)) ≡ True
+    strong_replacement(##M, ?P1) ⟹ (##M)(?A1) ⟹ univalent(##M, ?A1, ?P1) ⟹ (⋀x y. x ∈ ?A1 ⟹ ?P1(x, y) ⟹ (##M)(y)) ⟹ (##M)(Replace(?A1, ?P1)) ≡ True
+    separation(##M, ?P1) ⟹ (##M)(?A1) ⟹ (##M)(Collect(?A1, ?P1)) ≡ True
+    (##M)(?A1) ⟹ (##M)(?r1) ⟹ (##M)(?r1 -`` ?A1) ≡ True
+    (##M)(Cons(?a1, ?l1)) ≡ (##M)(?a1) ∧ (##M)(?l1)
+    (##M)(?f1) ⟹ (##M)(?a1) ⟹ (##M)(?f1 ` ?a1) ≡ True
+    (##M)(?A1) ⟹ (##M)(?B1) ⟹ (##M)(?A1 × ?B1) ≡ True
+    (##M)(?A1) ⟹ (##M)(?r1) ⟹ (##M)(?r1 `` ?A1) ≡ True
+    (##M)({?a1}) ≡ (##M)(?a1)
+    (##M)(?a1) ⟹ (##M)(?A1) ⟹ (##M)(cons(?a1, ?A1)) ≡ True
+    (##M)({?a1, ?b1}) ≡ (##M)(?a1) ∧ (##M)(?b1)
+    (##M)(⟨?a1, ?b1⟩) ≡ (##M)(?a1) ∧ (##M)(?b1)
+    (##M)(?A1) ⟹ (##M)(?B1) ⟹ (##M)(?A1 - ?B1) ≡ True
+    (##M)(?A1) ⟹ (##M)(?B1) ⟹ (##M)(?A1 ∩ ?B1) ≡ True
+    (##M)(?A1) ⟹ (##M)(?B1) ⟹ (##M)(?A1 ∪ ?B1) ≡ True
+    ?n1 ∈ nat ⟹ (##M)(?B1) ⟹ (##M)(?n1 -> ?B1) ≡ True
+    (##M)(?r1) ⟹ (##M)(?s1) ⟹ (##M)(?r1 O ?s1) ≡ True
+    ?xs1 ∈ list(?A1) ⟹ ?n1 ∈ nat ⟹ (##M)(?A1) ⟹ (##M)(nth(?n1, ?xs1)) ≡ True
+    (##M)(?p1) ⟹ (##M)(?q1) ⟹ (##M)(?p1 and ?q1) ≡ True
+    (##M)(?A1) ⟹ (##M)(?B1) ⟹ (##M)(?A1 + ?B1) ≡ True
+    (##M)(?p1) ⟹ (##M)(?q1) ⟹ (##M)(?p1 or ?q1) ≡ True
+    (##M)(?k1) ⟹ (##M)(?a1) ⟹ ∀x[##M]. ∀y[##M]. (##M)(?b1(x, y)) ⟹ (##M)(list_case'(?a1, ?b1, ?k1)) ≡ True
+    (##M)(?k1) ⟹ (##M)(?a1) ⟹ ∀m[##M]. (##M)(?b1(m)) ⟹ (##M)(nat_case(?a1, ?b1, ?k1)) ≡ True
+    iterates_replacement(##M, ?isF1, ?v1) ⟹ relation1(##M, ?isF1, ?F1) ⟹ ?n1 ∈ nat ⟹ (##M)(?v1) ⟹ ∀x[##M]. (##M)(?F1(x)) ⟹ (##M)(?F1^?n1 (?v1)) ≡ True
+    (##M)(?A1) ⟹ (##M)(?r1) ⟹ (##M)(?x1) ⟹ (##M)(Order.pred(?A1, ?x1, ?r1)) ≡ True
+    ?p1 ∈ formula ⟹
+    ∀x[##M]. ∀y[##M]. x ∈ nat ⟶ y ∈ nat ⟶ (##M)(?a1(x, y)) ⟹
+    ∀x[##M]. ∀y[##M]. x ∈ nat ⟶ y ∈ nat ⟶ (##M)(?b1(x, y)) ⟹
+    ∀x[##M]. ∀y[##M]. x ∈ formula ⟶ y ∈ formula ⟶ (##M)(?c1(x, y)) ⟹ ∀x[##M]. x ∈ formula ⟶ (##M)(?d1(x)) ⟹ (##M)(formula_case(?a1, ?b1, ?c1, ?d1, ?p1)) ≡ True
+    (##?A1)(?x1) ≡ ?x1 ∈ ?A1
+    restrict(?f1, 0) ≡ 0
+    restrict(restrict(?r1, ?A1), ?B1) ≡ restrict(?r1, ?A1 ∩ ?B1)
+    (##M)(?a1) ⟹ ordinal(##M, ?a1) ≡ Ord(?a1)
+    (##M)(?a1) ⟹ number3(##M, ?a1) ≡ ?a1 = 3
+    (##M)(?a1) ⟹ number2(##M, ?a1) ≡ ?a1 = 2
+    (##M)(?a1) ⟹ number1(##M, ?a1) ≡ ?a1 = 1
+    {x . y ∈ 0, ?R1(x, y)} ≡ 0
+    {x ∈ 0 . ?P1(x)} ≡ 0
+    {x ∈ ?A1 . ?Q1} ≡ if ?Q1 then ?A1 else 0
+    Collect(⋃x∈?A1. ?B1(x), ?P1) ≡ ⋃x∈?A1. Collect(?B1(x), ?P1)
+    Collect(Collect(?A1, ?P1), ?Q1) ≡ {x ∈ ?A1 . ?P1(x) ∧ ?Q1(x)}
+    (##M)(?Z1) ⟹ is_Nil(##M, ?Z1) ≡ ?Z1 = []
+    0 ** ?i1 ≡ 0
+    ?i1 ** 0 ≡ 0
+    Ord(?y) ⟹ ?y ** 1 ≡ ?y
+    Ord(?y) ⟹ 1 ** ?y ≡ ?y
+    ?X1 ≲ ?X1 ≡ True
+    ?A1 ≈ ?A1 ≡ True
+    0 -`` ?A1 ≡ 0
+    ?r1 -`` 0 ≡ 0
+    ?r1 -`` (?A1 ∪ ?B1) ≡ ?r1 -`` ?A1 ∪ ?r1 -`` ?B1
+    0 ⊆ ?A1 ≡ True
+    ?A1 ⊆ ?A1 ≡ True
+    cons(?a1, ?B1) ⊆ ?C1 ≡ ?a1 ∈ ?C1 ∧ ?B1 ⊆ ?C1
+    RepFun(0, ?f1) ≡ 0
+    {?c1 . x ∈ ?A1} ≡ if ?A1 = 0 then 0 else {?c1}
+    {x . x ∈ ?y} ≡ ?y
+    RepFun(succ(?i1), ?f1) ≡ cons(?f1(?i1), RepFun(?i1, ?f1))
+    RepFun(cons(?a1, ?B1), ?f1) ≡ cons(?f1(?a1), RepFun(?B1, ?f1))
+    λx∈0. ?b1(x) ≡ 0
+    ?y ∈ Pi(?A1, ?B1) ⟹ λx∈?A1. ?y ` x ≡ ?y
+    (##M)(?a1) ⟹ omega(##M, ?a1) ≡ ?a1 = nat
+    (##M)(?z1) ⟹ empty(##M, ?z1) ≡ ?z1 = 0
+    Ord(?y) ⟹ 0 ++ ?y ≡ ?y
+    Ord(?y) ⟹ ?y ++ 0 ≡ ?y
+    Ord(?j1) ⟹ ?i1 ++ succ(?j1) ≡ succ(?i1 ++ ?j1)
+    raw_mult(0, ?n1) ≡ 0
+    raw_mult(succ(?m1), ?n1) ≡ raw_add(?n1, raw_mult(?m1, ?n1))
+    raw_diff(?y, 0) ≡ ?y
+    (λ⟨x,y⟩. ?c(x, y))(⟨?a, ?b⟩) ≡ ?c(?a, ?b)
+    ?f1 ∈ inj(?A1, ?B1) ⟹ ?y ∈ range(?f1) ⟹ ?f1 ` (converse(?f1) ` ?y) ≡ ?y
+    ?f1 ∈ inj(?A1, ?B1) ⟹ ?y ∈ ?A1 ⟹ converse(?f1) ` (?f1 ` ?y) ≡ ?y
+    ?y ∈ ?A1 ⟹ id(?A1) ` ?y ≡ ?y
+    restrict(?f1, ?A1) ` ?a1 ≡ if ?a1 ∈ ?A1 then ?f1 ` ?a1 else 0
+    (λx∈?A1. ?b1(x)) ` ?a1 ≡ if ?a1 ∈ ?A1 then ?b1(?a1) else 0
+    {⟨?a1, ?y⟩} ` ?a1 ≡ ?y
+    ?f1 ∈ ?A1 -> ?B1 ⟹ ?c1 ∉ ?A1 ⟹ cons(⟨?c1, ?b1⟩, ?f1) ` ?a1 ≡ if ?a1 = ?c1 then ?b1 else ?f1 ` ?a1
+    ?g1 ∈ ?A1 -> ?B1 ⟹ ?a1 ∈ ?A1 ⟹ (?f1 O ?g1) ` ?a1 ≡ ?f1 ` (?g1 ` ?a1)
+    ?f1(?x1 := ?y1) ` ?z1 ≡ if ?z1 = ?x1 then ?y1 else ?f1 ` ?z1
+    Sigma(0, ?B1) ≡ 0
+    ?A1 × 0 ≡ 0
+    0 `` ?A1 ≡ 0
+    ?r1 `` 0 ≡ 0
+    ?r1 `` (?A1 ∪ ?B1) ≡ ?r1 `` ?A1 ∪ ?r1 `` ?B1
+    restrict(?f1, ?A1) `` ?B1 ≡ ?f1 `` (?A1 ∩ ?B1)
+    ∀x[?M1]. ?P1 ≡ (∃x. ?M1(x)) ⟶ ?P1
+    ∀x[λz. z ∈ ?A1]. ?P1(x) ≡ ∀x∈?A1. ?P1(x)
+    ∀x[?M1]. ?P1(x) ∧ ?Q1 ≡ (∀x[?M1]. ?P1(x)) ∧ ((∀x[?M1]. False) ∨ ?Q1)
+    ∀x[?M1]. ?P1(x) ∨ ?Q1 ≡ (∀x[?M1]. ?P1(x)) ∨ ?Q1
+    ∀x[?M1]. ?P1(x) ⟶ ?Q1 ≡ (∃x[?M1]. ?P1(x)) ⟶ ?Q1
+    ∀x[?M1]. ?P1 ∧ ?Q1(x) ≡ ((∀x[?M1]. False) ∨ ?P1) ∧ (∀x[?M1]. ?Q1(x))
+    ∀x[?M1]. ?P1 ∨ ?Q1(x) ≡ ?P1 ∨ (∀x[?M1]. ?Q1(x))
+    ∀x[?M1]. ?P1 ⟶ ?Q1(x) ≡ ?P1 ⟶ (∀x[?M1]. ?Q1(x))
+    ∀x[?M1]. x = ?a1 ⟶ ?P1(x) ≡ ?M1(?a1) ⟶ ?P1(?a1)
+    ∀x[?M1]. ?a1 = x ⟶ ?P1(x) ≡ ?M1(?a1) ⟶ ?P1(?a1)
+    (##M)(?A1) ⟹ ∀x[##M]. x ∈ ?A1 ⟶ ?P1(x) ≡ ∀x∈?A1. ?P1(x)
+    ∀x[##?A1]. ?P1(x) ≡ ∀x∈?A1. ?P1(x)
+    ∀x<0. ?P1(x) ≡ True
+    ∀x<?a1. True ≡ True
+    ∀x<succ(?i1). ?P1(x) ≡ Ord(?i1) ⟶ ?P1(?i1) ∧ (∀x<?i1. ?P1(x))
+    adjust(?b1, ⟨?q1, ?r1⟩) ≡ let diff = ?r1 $- ?b1 in if #0 $≤ diff then ⟨#2 $* ?q1 $+ #1, diff⟩ else ⟨#2 $* ?q1, ?r1⟩
+    raw_add(0, ?y) ≡ ?y
+    raw_add(succ(?m1), ?n1) ≡ succ(raw_add(?m1, ?n1))
+    cons(?a1, cons(?a1, ?B1)) ≡ cons(?a1, ?B1)
+    0 - ?A1 ≡ 0
+    ?y - 0 ≡ ?y
+    ∀x∈0. ?P1(x) ≡ True
+    ?A1 ∈ univ(0) ⟹ ∀x∈?A1. x ∈ univ(0) ⟶ ?P1(x) ≡ ∀x∈?A1. ?P1(x)
+    ∀x∈?A1. ?a1 = x ⟶ ?P1(x) ≡ ?a1 ∈ ?A1 ⟶ ?P1(?a1)
+    ∀x∈?A1. x = ?a1 ⟶ ?P1(x) ≡ ?a1 ∈ ?A1 ⟶ ?P1(?a1)
+    ∀x∈?A1. ?P1 ⟶ ?Q1(x) ≡ ?P1 ⟶ (∀x∈?A1. ?Q1(x))
+    ∀x∈?A1. ?P1 ∨ ?Q1(x) ≡ ?P1 ∨ (∀x∈?A1. ?Q1(x))
+    ∀x∈?A1. ?P1 ∧ ?Q1(x) ≡ (?A1 = 0 ∨ ?P1) ∧ (∀x∈?A1. ?Q1(x))
+    ∀x∈?A1. ?P1(x) ⟶ ?Q1 ≡ (∃x∈?A1. ?P1(x)) ⟶ ?Q1
+    ∀x∈?A1. ?P1(x) ∨ ?Q1 ≡ (∀x∈?A1. ?P1(x)) ∨ ?Q1
+    ∀x∈?A1. ?P1(x) ∧ ?Q1 ≡ (∀x∈?A1. ?P1(x)) ∧ (?A1 = 0 ∨ ?Q1)
+    ∀x∈?A1. ?P1 ≡ (∃x. x ∈ ?A1) ⟶ ?P1
+    ∀x∈⋃?A1. ?P1(x) ≡ ∀y∈?A1. ∀x∈y. ?P1(x)
+    ∀x∈succ(?i1). ?P1(x) ≡ ?P1(?i1) ∧ (∀x∈?i1. ?P1(x))
+    ∀x∈Collect(?A1, ?Q1). ?P1(x) ≡ ∀x∈?A1. ?Q1(x) ⟶ ?P1(x)
+    ∀x∈RepFun(?A1, ?f1). ?P1(x) ≡ ∀y∈?A1. ?P1(?f1(y))
+    ∀z∈Sigma(?A1, ?B1). ?P1(z) ≡ ∀x∈?A1. ∀y∈?B1(x). ?P1(⟨x, y⟩)
+    ∀x∈cons(?a1, ?B1). ?P1(x) ≡ ?P1(?a1) ∧ (∀x∈?B1. ?P1(x))
+    qsplit(λx y. ?c(x, y), <?a; ?b>) ≡ ?c(?a, ?b)
+    QSigma(0, ?B1) ≡ 0
+    ?A1 <*> 0 ≡ 0
+    ∃x[?M1]. ?P1 ≡ (∃x. ?M1(x)) ∧ ?P1
+    ∃x[λz. z ∈ ?A1]. ?P1(x) ≡ ∃x∈?A1. ?P1(x)
+    ∃x[?M1]. ?P1(x) ∧ ?Q1 ≡ (∃x[?M1]. ?P1(x)) ∧ ?Q1
+    ∃x[?M1]. ?P1(x) ∨ ?Q1 ≡ (∃x[?M1]. ?P1(x)) ∨ (∃x[?M1]. True) ∧ ?Q1
+    ∃x[?M1]. ?P1(x) ⟶ ?Q1 ≡ (∀x[?M1]. ?P1(x)) ⟶ (∃x[?M1]. True) ∧ ?Q1
+    ∃x[?M1]. ?P1 ∧ ?Q1(x) ≡ ?P1 ∧ (∃x[?M1]. ?Q1(x))
+    ∃x[?M1]. ?P1 ∨ ?Q1(x) ≡ (∃x[?M1]. True) ∧ ?P1 ∨ (∃x[?M1]. ?Q1(x))
+    ∃x[?M1]. ?P1 ⟶ ?Q1(x) ≡ (∀x[?M1]. False) ∨ ?P1 ⟶ (∃x[?M1]. ?Q1(x))
+    ∃x[?M1]. x = ?a1 ≡ ?M1(?a1)
+    ∃x[?M1]. x = ?a1 ∧ ?P1(x) ≡ ?M1(?a1) ∧ ?P1(?a1)
+    ∃x[?M1]. ?a1 = x ∧ ?P1(x) ≡ ?M1(?a1) ∧ ?P1(?a1)
+    ∃x[?M1]. ?a1 = x ≡ ?M1(?a1)
+    (##M)(?A1) ⟹ ∃x[##M]. x ∈ ?A1 ∧ ?P1(x) ≡ ∃x∈?A1. ?P1(x)
+    ∃x[##?A1]. ?P1(x) ≡ ∃x∈?A1. ?P1(x)
+    ∃x<0. ?P1(x) ≡ False
+    ∃x<succ(?i1). ?P1(x) ≡ Ord(?i1) ∧ (?P1(?i1) ∨ (∃x<?i1. ?P1(x)))
+    zip_aux(?B1, []) ≡ λys∈list(?B1). list_case([], λy l. [], ys)
+    zip_aux(?B1, Cons(?x1, ?l1)) ≡ λys∈list(?B1). list_case([], λy zs. Cons(⟨?x1, y⟩, zip_aux(?B1, ?l1) ` zs), ys)
+    sublist([], ?A1) ≡ []
+    ?xs1 ∈ list(?A1) ⟹ sublist(?xs1, 0) ≡ []
+    ?xs1 ∈ list(?A1) ⟹ ?n1 ∈ nat ⟹ sublist(?xs1, ?n1) ≡ take(?n1, ?xs1)
+    sublist([?x1], ?A1) ≡ if 0 ∈ ?A1 then [?x1] else []
+    bin_mult(Pls, ?w1) ≡ Pls
+    bin_mult(Min, ?w1) ≡ bin_minus(?w1)
+    bin_mult(?v1 BIT 0, ?w1) ≡ NCons(bin_mult(?v1, ?w1), 0)
+    bin_mult(?v1 BIT 1, ?w1) ≡ bin_add(NCons(bin_mult(?v1, ?w1), 0), ?w1)
+    [] ∈ list(?A1) ≡ True
+    [] ∈ list_N(?A1, succ(?n1)) ≡ True
+    0 ∈ bool ≡ True
+    0 ∈ nat ≡ True
+    0 ∈ Fin(?A1) ≡ True
+    Pls ∈ bin ≡ True
+    Min ∈ bin ≡ True
+    ?a1 ∈ 0 ≡ False
+    ?A1 ∈ ⋃?C1 ≡ ∃B∈?C1. ?A1 ∈ B
+    ?b1 ∈ (⋃x∈?A1. ?B1(x)) ≡ ∃x∈?A1. ?b1 ∈ ?B1(x)
+    ?i1 ∈ succ(?i1) ≡ True
+    ?x1 ∈ Lset(succ(lrank(?x1))) ≡ L(?x1)
+    ?A1 ∈ Pow(?B1) ≡ ?A1 ⊆ ?B1
+    ?a1 ∈ {x ∈ ?A1 . ?P1(x)} ≡ ?a1 ∈ ?A1 ∧ ?P1(?a1)
+    ?b1 ∈ {?f1(x) . x ∈ ?A1} ≡ ∃x∈?A1. ?b1 = ?f1(x)
+    ?c1 ∈ Upair(?a1, ?b1) ≡ ?c1 = ?a1 ∨ ?c1 = ?b1
+    ?a1 ∈ cons(?a1, ?B1) ≡ True
+    ?a1 ∈ cons(?b1, ?A1) ≡ ?a1 = ?b1 ∨ ?a1 ∈ ?A1
+    ?c1 ∈ ?A1 - ?B1 ≡ ?c1 ∈ ?A1 ∧ ?c1 ∉ ?B1
+    ?c1 ∈ ?A1 ∩ ?B1 ≡ ?c1 ∈ ?A1 ∧ ?c1 ∈ ?B1
+    ?c1 ∈ ?A1 ∪ ?B1 ≡ ?c1 ∈ ?A1 ∨ ?c1 ∈ ?B1
+    ?b1 ∈ Vset(?a1) ≡ rank(?b1) < rank(?a1)
+    ?y1 ∈ SepReplace(?A1, λx. ?b1(x), λx. ?P1(x)) ≡ ∃x∈?A1. ?y1 = ?b1(x) ∧ ?P1(x)
+    Forall(?x1) ∈ formula_N(succ(?n1)) ≡ ?x1 ∈ formula_N(?n1)
+    Finite(?A1) ⟹ |?A1| ∈ nat ≡ True
+    zmagnitude(?z1) ∈ nat ≡ True
+    bool_of_o(?P1) ∈ bool ≡ True
+    1 ∈ bool ≡ True
+    1 ∈ nat ≡ True
+    1 ∈ M ≡ True
+    succ(?n1) ∈ nat ≡ ?n1 ∈ nat
+    2 ∈ nat ≡ True
+    natify(?x1) ∈ nat ≡ True
+    $- ?z1 ∈ int ≡ True
+    nat_of(?z1) ∈ nat ≡ True
+    intify(?x1) ∈ int ≡ True
+    $# ?m1 ∈ int ≡ True
+    ?i1 ∈ nat ⟹ Arith.pred(?i1) ∈ nat ≡ True
+    ?b1 ∈ ?B1 ⟹ Inr(?b1) ∈ ?A1 + ?B1 ≡ True
+    Inr(?y1) ∈ ?A1 + ?B1 ≡ ?y1 ∈ ?B1
+    ?a1 ∈ ?A1 ⟹ Inl(?a1) ∈ ?A1 + ?B1 ≡ True
+    Inl(?x1) ∈ ?A1 + ?B1 ≡ ?x1 ∈ ?A1
+    Member(?x1, ?y1) ∈ formula_N(succ(?n1)) ≡ ?x1 ∈ nat ∧ ?y1 ∈ nat
+    Equal(?x1, ?y1) ∈ formula_N(succ(?n1)) ≡ ?x1 ∈ nat ∧ ?y1 ∈ nat
+    Nand(?x1, ?y1) ∈ formula_N(succ(?n1)) ≡ ?x1 ∈ formula_N(?n1) ∧ ?y1 ∈ formula_N(?n1)
+    Cons(?a1, ?l1) ∈ list(?A1) ≡ ?a1 ∈ ?A1 ∧ ?l1 ∈ list(?A1)
+    ?a1 ∈ ?A1 ⟹ ?l1 ∈ list(?A1) ⟹ Cons(?a1, ?l1) ∈ list(?A1) ≡ True
+    Cons(?a1, ?l1) ∈ list_N(?A1, succ(?n1)) ≡ ?a1 ∈ ?A1 ∧ ?l1 ∈ list_N(?A1, ?n1)
+    ?a1 ∈ ?A1 ⟹ ?b1 ∈ Fin(?A1) ⟹ cons(?a1, ?b1) ∈ Fin(?A1) ≡ True
+    {⟨?a1, ?b1⟩} ∈ {?a1} -> {?b1} ≡ True
+    ⟨?x1, ?y1⟩ ∈ Le ≡ ?x1 ≤ ?y1 ∧ ?x1 ∈ nat ∧ ?y1 ∈ nat
+    ⟨?a1, ?b1⟩ ∈ converse(?r1) ≡ ⟨?b1, ?a1⟩ ∈ ?r1
+    ⟨?a1, ?b1⟩ ∈ Memrel(?A1) ≡ ?a1 ∈ ?b1 ∧ ?a1 ∈ ?A1 ∧ ?b1 ∈ ?A1
+    ⟨?x1, ?y1⟩ ∈ id(?A1) ≡ ?x1 = ?y1 ∧ ?y1 ∈ ?A1
+    ⟨?x1, ?y1⟩ ∈ measure(?A1, ?f1) ≡ ?x1 ∈ ?A1 ∧ ?y1 ∈ ?A1 ∧ ?f1(?x1) < ?f1(?y1)
+    ⟨?a1, ?b1⟩ ∈ Sigma(?A1, ?B1) ≡ ?a1 ∈ ?A1 ∧ ?b1 ∈ ?B1(?a1)
+    ⟨Inr(?b'1), Inr(?b1)⟩ ∈ radd(?A1, ?r1, ?B1, ?s1) ≡ ?b'1 ∈ ?B1 ∧ ?b1 ∈ ?B1 ∧ ⟨?b'1, ?b1⟩ ∈ ?s1
+    ⟨Inr(?b1), Inl(?a1)⟩ ∈ radd(?A1, ?r1, ?B1, ?s1) ≡ False
+    ⟨Inl(?a1), Inr(?b1)⟩ ∈ radd(?A1, ?r1, ?B1, ?s1) ≡ ?a1 ∈ ?A1 ∧ ?b1 ∈ ?B1
+    ⟨Inl(?a'1), Inl(?a1)⟩ ∈ radd(?A1, ?r1, ?B1, ?s1) ≡ ?a'1 ∈ ?A1 ∧ ?a1 ∈ ?A1 ∧ ⟨?a'1, ?a1⟩ ∈ ?r1
+    ⟨⟨?x1.1, ?y1.1⟩, ?x2.1, ?y2.1⟩ ∈ intrel ≡ ?x1.1 ∈ nat ∧ ?y1.1 ∈ nat ∧ ?x2.1 ∈ nat ∧ ?y2.1 ∈ nat ∧ ?x1.1 #+ ?y2.1 = ?x2.1 #+ ?y1.1
+    ⟨⟨?a'1, ?b'1⟩, ?a1, ?b1⟩ ∈ rmult(?A1, ?r1, ?B1, ?s1) ≡ ⟨?a'1, ?a1⟩ ∈ ?r1 ∧ ?a'1 ∈ ?A1 ∧ ?a1 ∈ ?A1 ∧ ?b'1 ∈ ?B1 ∧ ?b1 ∈ ?B1 ∨ ⟨?b'1, ?b1⟩ ∈ ?s1 ∧ ?a'1 = ?a1 ∧ ?a1 ∈ ?A1 ∧ ?b'1 ∈ ?B1 ∧ ?b1 ∈ ?B1
+    ?xs1 ∈ list(?B1) ⟹ sublist(?xs1, ?A1) ∈ list(?B1) ≡ True
+    ?b1 ∈ Fin(?A1) ⟹ ?b1 ∩ ?c1 ∈ Fin(?A1) ≡ True
+    ?c1 ∈ Fin(?A1) ⟹ ?b1 ∩ ?c1 ∈ Fin(?A1) ≡ True
+    ?xs1 ∈ list(?A1) ⟹ List.filter(?P1, ?xs1) ∈ list(?A1) ≡ True
+    ?z1 zmod ?w1 ∈ int ≡ True
+    ?z1 zdiv ?w1 ∈ int ≡ True
+    ?w1 ∈ bin ⟹ ?b1 ∈ bool ⟹ ?w1 BIT ?b1 ∈ bin ≡ True
+    ?b1 ∈ Fin(?A1) ⟹ ?c1 ∈ Fin(?A1) ⟹ ?b1 ∪ ?c1 ∈ Fin(?A1) ≡ True
+    ?m1 #* ?n1 ∈ nat ≡ True
+    ?m1 #- ?n1 ∈ nat ≡ True
+    ?xs1 ∈ list(?A1) ⟹ ?n1 ∈ nat ⟹ take(?n1, ?xs1) ∈ list(?A1) ≡ True
+    ?i1 ∈ nat ⟹ ?l1 ∈ list(?A1) ⟹ drop(?i1, ?l1) ∈ list(?A1) ≡ True
+    ?z1 $* ?w1 ∈ int ≡ True
+    ?z1 $- ?w1 ∈ int ≡ True
+    ?m1 mod ?n1 ∈ nat ≡ True
+    ?m1 div ?n1 ∈ nat ≡ True
+    ?m1 #+ ?n1 ∈ nat ≡ True
+    ?xs1 ∈ list(?A1) ⟹ ?ys1 ∈ list(?B1) ⟹ zip(?xs1, ?ys1) ∈ list(?A1 × ?B1) ≡ True
+    ?j1 ∈ nat ⟹ upt(?i1, ?j1) ∈ list(nat) ≡ True
+    ?xs1 ∈ list(?A1) ⟹ ?n1 < length(?xs1) ⟹ nth(?n1, ?xs1) ∈ ?A1 ≡ True
+    ?i1 ∈ nat ⟹ ?j1 ∈ nat ⟹ min(?i1, ?j1) ∈ nat ≡ True
+    ?z1 $+ ?w1 ∈ int ≡ True
+    ?xs1 ∈ list(?A1) ⟹ ?v1 ∈ ?A1 ⟹ ?n1 ∈ nat ⟹ list_update(?xs1, ?n1, ?v1) ∈ list(?A1) ≡ True
+    ?n1 ∈ nat ⟹ ?a1 ∈ ?C1(0) ⟹ (⋀m z. m ∈ nat ⟹ z ∈ ?C1(m) ⟹ ?b1(m, z) ∈ ?C1(succ(m))) ⟹ rec(?n1, ?a1, ?b1) ∈ ?C1(?n1) ≡ True
+    0 ∩ ?A1 ≡ 0
+    ?A1 ∩ 0 ≡ 0
+    ?y ∩ ?y ≡ ?y
+    ∃x∈0. ?P1(x) ≡ False
+    ?A1 ∈ univ(0) ⟹ ∃x∈?A1. x ∈ univ(0) ∧ ?P1(x) ≡ ∃x∈?A1. ?P1(x)
+    ∃x∈?A1. ?a1 = x ∧ ?P1(x) ≡ ?a1 ∈ ?A1 ∧ ?P1(?a1)
+    ∃x∈?A1. x = ?a1 ∧ ?P1(x) ≡ ?a1 ∈ ?A1 ∧ ?P1(?a1)
+    ∃x∈?A1. x = ?a1 ≡ ?a1 ∈ ?A1
+    ∃x∈?A1. ?P1 ⟶ ?Q1(x) ≡ ?A1 = 0 ∨ ?P1 ⟶ (∃x∈?A1. ?Q1(x))
+    ∃x∈?A1. ?P1 ∨ ?Q1(x) ≡ ?A1 ≠ 0 ∧ ?P1 ∨ (∃x∈?A1. ?Q1(x))
+    ∃x∈?A1. ?P1 ∧ ?Q1(x) ≡ ?P1 ∧ (∃x∈?A1. ?Q1(x))
+    ∃x∈?A1. ?P1(x) ⟶ ?Q1 ≡ (∀x∈?A1. ?P1(x)) ⟶ ?A1 ≠ 0 ∧ ?Q1
+    ∃x∈?A1. ?P1(x) ∨ ?Q1 ≡ (∃x∈?A1. ?P1(x)) ∨ ?A1 ≠ 0 ∧ ?Q1
+    ∃x∈?A1. ?P1(x) ∧ ?Q1 ≡ (∃x∈?A1. ?P1(x)) ∧ ?Q1
+    ∃x∈?A1. ?P1 ≡ (∃x. x ∈ ?A1) ∧ ?P1
+    ∃x∈?A1. ?a1 = x ≡ ?a1 ∈ ?A1
+    ∃x∈⋃?A1. ?P1(x) ≡ ∃y∈?A1. ∃x∈y. ?P1(x)
+    ∃x∈succ(?i1). ?P1(x) ≡ ?P1(?i1) ∨ (∃x∈?i1. ?P1(x))
+    ∃x∈Collect(?A1, ?Q1). ?P1(x) ≡ ∃x∈?A1. ?Q1(x) ∧ ?P1(x)
+    ∃x∈RepFun(?A1, ?f1). ?P1(x) ≡ ∃y∈?A1. ?P1(?f1(y))
+    ∃z∈Sigma(?A1, ?B1). ?P1(z) ≡ ∃x∈?A1. ∃y∈?B1(x). ?P1(⟨x, y⟩)
+    ∃x∈cons(?a1, ?B1). ?P1(x) ≡ ?P1(?a1) ∨ (∃x∈?B1. ?P1(x))
+    <0; 0> ≡ 0
+    repeat(?a1, 0) ≡ []
+    repeat(?a1, succ(?n1)) ≡ Cons(?a1, repeat(?a1, ?n1))
+    List.filter(?P1, []) ≡ []
+    ?y ∈ list(?A1) ⟹ List.filter(λp. True, ?y) ≡ ?y
+    ?xs1 ∈ list(?A1) ⟹ List.filter(λp. False, ?xs1) ≡ []
+    List.filter(?P1, Cons(?x1, ?xs1)) ≡ if ?P1(?x1) then Cons(?x1, List.filter(?P1, ?xs1)) else List.filter(?P1, ?xs1)
+    ?xs1 ∈ list(?A1) ⟹ List.filter(?P1, ?xs1 @ ?ys1) ≡ List.filter(?P1, ?xs1) @ List.filter(?P1, ?ys1)
+    ?a1 zmod ?a1 ≡ #0
+    ?a1 zmod #-1 ≡ #0
+    ?a1 zmod #1 ≡ #0
+    ?x1 zmod intify(?y1) ≡ ?x1 zmod ?y1
+    #0 zmod ?b1 ≡ #0
+    #0 $< integ_of(?v1) ⟹ #0 $≤ integ_of(?w1) ⟹ integ_of(?v1) zmod integ_of(?w1) ≡ snd(posDivAlg(⟨intify(integ_of(?v1)), intify(integ_of(?w1))⟩))
+    integ_of(?v1) $< #0 ⟹ #0 $< integ_of(?w1) ⟹ integ_of(?v1) zmod integ_of(?w1) ≡ snd(negDivAlg(⟨intify(integ_of(?v1)), intify(integ_of(?w1))⟩))
+    #0 $< integ_of(?v1) ⟹ integ_of(?w1) $< #0 ⟹ integ_of(?v1) zmod integ_of(?w1) ≡ snd(negateSnd(negDivAlg(⟨$- integ_of(?v1), $- integ_of(?w1)⟩)))
+    integ_of(?v1) $< #0 ⟹ integ_of(?w1) $≤ #0 ⟹ integ_of(?v1) zmod integ_of(?w1) ≡ snd(negateSnd(posDivAlg(⟨$- integ_of(?v1), $- integ_of(?w1)⟩)))
+    $- ?a1 zmod $- ?b1 ≡ $- (?a1 zmod ?b1)
+    intify(?x1) zmod ?y1 ≡ ?x1 zmod ?y1
+    ?a1 zmod ?b1 zmod ?b1 ≡ ?a1 zmod ?b1
+    ?a1 $* ?b1 zmod ?b1 ≡ #0
+    ?b1 $* ?a1 zmod ?b1 ≡ #0
+    (?a1 $+ ?b1) zmod ?a1 ≡ ?b1 zmod ?a1
+    (?b1 $+ ?a1) zmod ?a1 ≡ ?b1 zmod ?a1
+    intify(?a1) ≠ #0 ⟹ ?a1 zdiv ?a1 ≡ #1
+    ?a1 zdiv #-1 ≡ $- ?a1
+    ?a1 zdiv #1 ≡ intify(?a1)
+    ?x1 zdiv intify(?y1) ≡ ?x1 zdiv ?y1
+    #0 zdiv ?b1 ≡ #0
+    #0 $< integ_of(?v1) ⟹ #0 $≤ integ_of(?w1) ⟹ integ_of(?v1) zdiv integ_of(?w1) ≡ fst(posDivAlg(⟨intify(integ_of(?v1)), intify(integ_of(?w1))⟩))
+    integ_of(?v1) $< #0 ⟹ #0 $< integ_of(?w1) ⟹ integ_of(?v1) zdiv integ_of(?w1) ≡ fst(negDivAlg(⟨intify(integ_of(?v1)), intify(integ_of(?w1))⟩))
+    #0 $< integ_of(?v1) ⟹ integ_of(?w1) $< #0 ⟹ integ_of(?v1) zdiv integ_of(?w1) ≡ fst(negateSnd(negDivAlg(⟨$- integ_of(?v1), $- integ_of(?w1)⟩)))
+    integ_of(?v1) $< #0 ⟹ integ_of(?w1) $≤ #0 ⟹ integ_of(?v1) zdiv integ_of(?w1) ≡ fst(negateSnd(posDivAlg(⟨$- integ_of(?v1), $- integ_of(?w1)⟩)))
+    $- ?a1 zdiv $- ?b1 ≡ ?a1 zdiv ?b1
+    intify(?x1) zdiv ?y1 ≡ ?x1 zdiv ?y1
+    ?a1 zmod ?b1 zdiv ?b1 ≡ #0
+    intify(?b1) ≠ #0 ⟹ ?a1 $* ?b1 zdiv ?b1 ≡ intify(?a1)
+    intify(?b1) ≠ #0 ⟹ ?b1 $* ?a1 zdiv ?b1 ≡ intify(?a1)
+    intify(?a1) ≠ #0 ⟹ (?a1 $+ ?b1) zdiv ?a1 ≡ ?b1 zdiv ?a1 $+ #1
+    intify(?a1) ≠ #0 ⟹ (?b1 $+ ?a1) zdiv ?a1 ≡ ?b1 zdiv ?a1 $+ #1
+    ?y ∈ bin ⟹ bin_add(Pls, ?y) ≡ ?y
+    ?w1 ∈ bin ⟹ bin_add(Min, ?w1) ≡ bin_pred(?w1)
+    ?y ∈ bin ⟹ bin_add(?y, Pls) ≡ ?y
+    ?w1 ∈ bin ⟹ bin_add(?w1, Min) ≡ bin_pred(?w1)
+    ?w1 ∈ bin ⟹ ?y1 ∈ bool ⟹ bin_add(?v1 BIT 0, ?w1 BIT ?y1) ≡ NCons(bin_add(?v1, ?w1), ?y1)
+    bin_add(?v1 BIT ?x1, Pls) ≡ ?v1 BIT ?x1
+    bin_add(?v1 BIT ?x1, Min) ≡ bin_pred(?v1 BIT ?x1)
+    ?w1 ∈ bin ⟹ ?y1 ∈ bool ⟹ bin_add(?v1 BIT ?x1, ?w1 BIT ?y1) ≡ NCons(bin_add(?v1, cond(?x1 and ?y1, bin_succ(?w1), ?w1)), ?x1 xor ?y1)
+    ?w1 ∈ bin ⟹ bin_add(?v1 BIT 1, ?w1 BIT 0) ≡ NCons(bin_add(?v1, ?w1), 1)
+    ?w1 ∈ bin ⟹ bin_add(?v1 BIT 1, ?w1 BIT 1) ≡ NCons(bin_add(?v1, bin_succ(?w1)), 0)
+    0 ∪ ?y ≡ ?y
+    ?y ∪ 0 ≡ ?y
+    ?y ∪ ?y ≡ ?y
+    Pi(0, ?A1) ≡ {0}
+    ?A1 -> 0 ≡ if ?A1 = 0 then {0} else 0
+    0 <+> 0 ≡ 0
+    ?i1 ∈ nat ⟹ 0 ≤ ?i1 ≡ True
+    0 ≤ succ(?x1) ≡ Ord(?x1)
+    0 < ?m1 #* ?n1 ≡ 0 < natify(?m1) ∧ 0 < natify(?n1)
+    ?m1 ∈ nat ⟹ ?n1 ∈ nat ⟹ 0 < ?n1 #- ?m1 ≡ ?m1 < ?n1
+    ?i1 < 0 ≡ False
+    ?i1 ≤ 0 ≡ ?i1 = 0
+    ?i1 ≤ ?i1 ≡ Ord(?i1)
+    Limit(?i1) ⟹ succ(?j1) < ?i1 ≡ ?j1 < ?i1
+    succ(?i1) ≤ ?j1 ≡ ?i1 < ?j1
+    ?m1 #* ?k1 ≤ ?n1 #* ?k1 ≡ 0 < natify(?k1) ⟶ natify(?m1) ≤ natify(?n1)
+    ?k1 #* ?m1 ≤ ?k1 #* ?n1 ≡ 0 < natify(?k1) ⟶ natify(?m1) ≤ natify(?n1)
+    ?m1 #* ?k1 < ?n1 #* ?k1 ≡ 0 < natify(?k1) ∧ natify(?m1) < natify(?n1)
+    ?k1 #* ?m1 < ?k1 #* ?n1 ≡ 0 < natify(?k1) ∧ natify(?m1) < natify(?n1)
+    0 #* ?m1 ≡ 0
+    ?m1 #* 0 ≡ 0
+    ?n1 #* 1 ≡ natify(?n1)
+    ?m1 #* succ(?n1) ≡ ?m1 #+ ?m1 #* ?n1
+    ?m1 #* natify(?n1) ≡ ?m1 #* ?n1
+    1 #* ?n1 ≡ natify(?n1)
+    succ(?m1) #* ?n1 ≡ ?n1 #+ ?m1 #* ?n1
+    natify(?m1) #* ?n1 ≡ ?m1 #* ?n1
+    0 #- ?n1 ≡ 0
+    ?m1 #- 0 ≡ natify(?m1)
+    ?m1 #- ?m1 ≡ 0
+    ?m1 #- natify(?n1) ≡ ?m1 #- ?n1
+    succ(?m1) #- succ(?n1) ≡ ?m1 #- ?n1
+    natify(?m1) #- ?n1 ≡ ?m1 #- ?n1
+    ?xs1 ∈ list(?A1) ⟹ take(0, ?xs1) ≡ []
+    ?n1 ∈ nat ⟹ take(?n1, []) ≡ []
+    ?n1 ∈ nat ⟹ ?y ∈ list(?A1) ⟹ length(?y) ≤ ?n1 ⟹ take(?n1, ?y) ≡ ?y
+    ?m1 ∈ nat ⟹ ?n1 ∈ nat ⟹ ?i1 ∈ nat ⟹ ?i1 #+ ?m1 ≤ ?n1 ⟹ take(?m1, upt(?i1, ?n1)) ≡ upt(?i1, ?i1 #+ ?m1)
+    ?xs1 ∈ list(?A1) ⟹ ?ys1 ∈ list(?A1) ⟹ ?n1 ∈ nat ⟹ take(?n1, ?xs1 @ ?ys1) ≡ take(?n1, ?xs1) @ take(?n1 #- length(?xs1), ?ys1)
+    ?n1 ∈ nat ⟹ take(succ(?n1), Cons(?a1, ?xs1)) ≡ Cons(?a1, take(?n1, ?xs1))
+    drop(0, ?y) ≡ ?y
+    ?i1 ∈ nat ⟹ drop(?i1, []) ≡ []
+    ?n1 ∈ nat ⟹ ?xs1 ∈ list(?A1) ⟹ length(?xs1) ≤ ?n1 ⟹ drop(?n1, ?xs1) ≡ []
+    ?i1 ∈ nat ⟹ drop(succ(?i1), Cons(?a1, ?l1)) ≡ drop(?i1, ?l1)
+    ?z1 $* #0 ≡ #0
+    ?z1 $* #-1 ≡ $- ?z1
+    ?z1 $* #1 ≡ intify(?z1)
+    ?w1 $* $- ?z1 ≡ $- (?w1 $* ?z1)
+    ?x1 $* intify(?y1) ≡ ?x1 $* ?y1
+    #0 $* ?z1 ≡ #0
+    #-1 $* ?z1 ≡ $- ?z1
+    ?v1 ∈ bin ⟹ ?w1 ∈ bin ⟹ integ_of(?v1) $* integ_of(?w1) ≡ integ_of(bin_mult(?v1, ?w1))
+    ?v1 ∈ bin ⟹ ?w1 ∈ bin ⟹ integ_of(?v1) $* (integ_of(?w1) $* ?z1) ≡ integ_of(bin_mult(?v1, ?w1)) $* ?z1
+    #1 $* ?z1 ≡ intify(?z1)
+    $- ?z1 $* ?w1 ≡ $- (?z1 $* ?w1)
+    intify(?x1) $* ?y1 ≡ ?x1 $* ?y1
+    $# 0 $* ?z1 ≡ $# 0
+    $# 1 $* ?z1 ≡ intify(?z1)
+    ?z1 $< ?z1 ≡ False
+    ?x1 $< intify(?y1) ≡ ?x1 $< ?y1
+    ?v1 ∈ bin ⟹ ?w1 ∈ bin ⟹ integ_of(?v1) $< integ_of(?w1) ≡ znegative(integ_of(bin_add(?v1, bin_minus(?w1))))
+    integ_of(?w1) $< $- ?y1 ≡ ?y1 $< $- integ_of(?w1)
+    $- ?x1 $< integ_of(?w1) ≡ $- integ_of(?w1) $< ?x1
+    $- ?x1 $< $- ?y1 ≡ ?y1 $< ?x1
+    intify(?x1) $< ?y1 ≡ ?x1 $< ?y1
+    ?m1 ∈ nat ⟹ ?n1 ∈ nat ⟹ $# ?m1 $< $# ?n1 ≡ ?m1 < ?n1
+    ?w'1 $+ ?z1 $< ?w1 $+ ?z1 ≡ ?w'1 $< ?w1
+    ?z1 $+ ?w'1 $< ?z1 $+ ?w1 ≡ ?w'1 $< ?w1
+    ?x1 $- ?x1 ≡ #0
+    ?x1 $- #0 ≡ intify(?x1)
+    ?x1 $- intify(?y1) ≡ ?x1 $- ?y1
+    #0 $- ?x1 ≡ $- ?x1
+    ?v1 ∈ bin ⟹ ?w1 ∈ bin ⟹ integ_of(?v1) $- integ_of(?w1) ≡ integ_of(bin_add(?v1, bin_minus(?w1)))
+    intify(?x1) $- ?y1 ≡ ?x1 $- ?y1
+    False ∨ ?Q ≡ ?Q
+    True ∨ ?P1 ≡ True
+    ?Q ∨ False ≡ ?Q
+    ?P1 ∨ True ≡ True
+    ?Q ∨ ?Q ≡ ?Q
+    ?P1 ∨ ¬ ?P1 ≡ True
+    ?P1 ∨ ?P1 ∨ ?Q1 ≡ ?P1 ∨ ?Q1
+    ?Q1 ∨ (?P1 ⟶ ?R1) ≡ ?P1 ⟶ ?Q1 ∨ ?R1
+    ¬ ?P1 ∨ ?P1 ≡ True
+    (?P1 ∨ ?Q1) ∨ ?R1 ≡ ?P1 ∨ ?Q1 ∨ ?R1
+    (?P1 ⟶ ?Q1) ∨ ?R1 ≡ ?P1 ⟶ ?Q1 ∨ ?R1
+    False ∧ ?P1 ≡ False
+    True ∧ ?Q ≡ ?Q
+    ?P1 ∧ False ≡ False
+    ?Q ∧ True ≡ ?Q
+    ?Q ∧ ?Q ≡ ?Q
+    ?P1 ∧ ¬ ?P1 ≡ False
+    ?P1 ∧ ?P1 ∧ ?Q1 ≡ ?P1 ∧ ?Q1
+    ¬ ?P1 ∧ ?P1 ≡ False
+    (?P1 ∧ ?Q1) ∧ ?R1 ≡ ?P1 ∧ ?Q1 ∧ ?R1
+    (?P1 ⟶ ?Q) ∧ (¬ ?P1 ⟶ ?Q) ≡ ?Q
+    NCons(Pls, 0) ≡ Pls
+    NCons(Pls, 1) ≡ Pls BIT 1
+    NCons(Min, 0) ≡ Min BIT 0
+    NCons(Min, 1) ≡ Min
+    NCons(?w1 BIT ?c1, ?b1) ≡ ?w1 BIT ?c1 BIT ?b1
+    NCons(?w1 BIT ?x1, ?b1) ≡ ?w1 BIT ?x1 BIT ?b1
+    ?y < ?n1 ⟹ ?n1 ∈ nat ⟹ ?y mod ?n1 ≡ ?y
+    ?m1 mod 1 ≡ 0
+    ?m1 mod natify(?n1) ≡ ?m1 mod ?n1
+    succ(succ(?m1)) mod 2 ≡ ?m1 mod 2
+    natify(?m1) mod ?n1 ≡ ?m1 mod ?n1
+    (?m1 #+ ?n1) mod ?n1 ≡ ?m1 mod ?n1
+    (?n1 #+ ?m1) mod ?n1 ≡ ?m1 mod ?n1
+    (?m1 #+ ?m1) mod 2 ≡ 0
+    (?m1 #+ ?k1 #* ?n1) mod ?n1 ≡ ?m1 mod ?n1
+    (?m1 #+ ?n1 #* ?k1) mod ?n1 ≡ ?m1 mod ?n1
+    (?m1 #+ ?m1 #+ ?n1) mod 2 ≡ ?n1 mod 2
+    ?m1 < ?n1 ⟹ ?n1 ∈ nat ⟹ ?m1 div ?n1 ≡ 0
+    0 < ?n1 ⟹ ?n1 ≤ ?m1 ⟹ ?m1 ∈ nat ⟹ ?m1 div ?n1 ≡ succ((?m1 #- ?n1) div ?n1)
+    ?m1 div natify(?n1) ≡ ?m1 div ?n1
+    natify(?m1) div ?n1 ≡ ?m1 div ?n1
+    0 #+ ?m1 ≡ natify(?m1)
+    ?m1 #+ 0 ≡ natify(?m1)
+    ?m1 #+ succ(?n1) ≡ succ(?m1 #+ ?n1)
+    ?m1 #+ natify(?n1) ≡ ?m1 #+ ?n1
+    succ(?m1) #+ ?n1 ≡ succ(?m1 #+ ?n1)
+    natify(?m1) #+ ?n1 ≡ ?m1 #+ ?n1
+    (True ⟹ PROP ?P) ≡ PROP ?P
+    ?ys1 ∈ list(?A1) ⟹ zip([], ?ys1) ≡ []
+    ?xs1 ∈ list(?A1) ⟹ zip(?xs1, []) ≡ []
+    ?ys1 ∈ list(?B1) ⟹ ?xs1 ∈ list(?A1) ⟹ length(?xs1) = length(?ys1) ⟹ zip(rev(?xs1), rev(?ys1)) ≡ rev(zip(?xs1, ?ys1))
+    ?xs1 ∈ list(?A1) ⟹ ?ys1 ∈ list(?B1) ⟹ ?x1 ∈ ?A1 ⟹ ?y1 ∈ ?B1 ⟹ zip(Cons(?x1, ?xs1), Cons(?y1, ?ys1)) ≡ Cons(⟨?x1, ?y1⟩, zip(?xs1, ?ys1))
+    length(?xs1) = length(?us1) ⟹
+    length(?ys1) = length(?vs1) ⟹ ?xs1 ∈ list(?A1) ⟹ ?us1 ∈ list(?B1) ⟹ ?ys1 ∈ list(?A1) ⟹ ?vs1 ∈ list(?B1) ⟹ zip(?xs1 @ ?ys1, ?us1 @ ?vs1) ≡ zip(?xs1, ?us1) @ zip(?ys1, ?vs1)
+    upt(?i1, 0) ≡ []
+    ?j1 ≤ ?i1 ⟹ ?j1 ∈ nat ⟹ upt(?i1, ?j1) ≡ []
+    upt(?i1, succ(?j1)) ≡ if ?i1 ≤ ?j1 then upt(?i1, ?j1) @ [?j1] else []
+    nth(0, Cons(?y, ?l1)) ≡ ?y
+    nth(?n1, []) ≡ 0
+    ?ys1 ∈ list(?B1) ⟹ ?i1 ∈ nat ⟹ ?xs1 ∈ list(?A1) ⟹ ?i1 < length(?xs1) ⟹ ?i1 < length(?ys1) ⟹ nth(?i1, zip(?xs1, ?ys1)) ≡ ⟨nth(?i1, ?xs1), nth(?i1, ?ys1)⟩
+    ?i1 ∈ nat ⟹ ?j1 ∈ nat ⟹ ?k1 ∈ nat ⟹ ?i1 #+ ?k1 < ?j1 ⟹ nth(?k1, upt(?i1, ?j1)) ≡ ?i1 #+ ?k1
+    ?xs1 ∈ list(?A1) ⟹ ?n1 ∈ nat ⟹ ?n1 < length(?xs1) ⟹ nth(?n1, map(?f1, ?xs1)) ≡ ?f1(nth(?n1, ?xs1))
+    ?xs1 ∈ list(?A1) ⟹ ?i1 ∈ nat ⟹ ?j1 ∈ nat ⟹ ?i1 ≠ ?j1 ⟹ nth(?j1, list_update(?xs1, ?i1, ?x1)) ≡ nth(?j1, ?xs1)
+    ?i1 < length(?xs1) ⟹ ?xs1 ∈ list(?A1) ⟹ nth(?i1, list_update(?xs1, ?i1, ?y)) ≡ ?y
+    ?n1 ∈ nat ⟹ nth(succ(?n1), Cons(?a1, ?l1)) ≡ nth(?n1, ?l1)
+    ?i1 ∈ nat ⟹ min(0, ?i1) ≡ 0
+    ?i1 ∈ nat ⟹ min(?i1, 0) ≡ 0
+    ?i1 ∈ nat ⟹ ?j1 ∈ nat ⟹ min(succ(?i1), succ(?j1)) ≡ succ(min(?i1, ?j1))
+    map(?f1, []) ≡ []
+    ?y ∈ list(?A1) ⟹ map(λu. u, ?y) ≡ ?y
+    map(?f1, Cons(?a1, ?l1)) ≡ Cons(?f1(?a1), map(?f1, ?l1))
+    [] @ ?y ≡ ?y
+    ?y ∈ list(?A1) ⟹ ?y @ [] ≡ ?y
+    Cons(?a1, ?l1) @ ?ys1 ≡ Cons(?a1, ?l1 @ ?ys1)
+    ?z1 $+ #0 ≡ intify(?z1)
+    ?z1 $+ $- ?z1 ≡ $# 0
+    ?x1 $+ intify(?y1) ≡ ?x1 $+ ?y1
+    ?z1 $+ $# 0 ≡ intify(?z1)
+    #0 $+ ?z1 ≡ intify(?z1)
+    ?v1 ∈ bin ⟹ ?w1 ∈ bin ⟹ integ_of(?v1) $+ integ_of(?w1) ≡ integ_of(bin_add(?v1, ?w1))
+    ?v1 ∈ bin ⟹ ?w1 ∈ bin ⟹ integ_of(?v1) $+ (?c1 $- integ_of(?w1)) ≡ integ_of(bin_add(?v1, bin_minus(?w1))) $+ ?c1
+    ?v1 ∈ bin ⟹ ?w1 ∈ bin ⟹ integ_of(?v1) $+ (integ_of(?w1) $- ?c1) ≡ integ_of(bin_add(?v1, ?w1)) $- ?c1
+    ?v1 ∈ bin ⟹ ?w1 ∈ bin ⟹ integ_of(?v1) $+ (integ_of(?w1) $+ ?z1) ≡ integ_of(bin_add(?v1, ?w1)) $+ ?z1
+    $- ?z1 $+ ?z1 ≡ $# 0
+    intify(?x1) $+ ?y1 ≡ ?x1 $+ ?y1
+    $# 0 $+ ?z1 ≡ intify(?z1)
+    False ⟶ ?P1 ≡ True
+    True ⟶ ?Q ≡ ?Q
+    ?P1 ⟶ False ≡ ¬ ?P1
+    ?P1 ⟶ True ≡ True
+    ?P1 ⟶ ?P1 ≡ True
+    ?P1 ⟶ ¬ ?P1 ≡ ¬ ?P1
+    ¬ ?Q ⟶ ?Q ≡ ?Q
+    False ⟷ ?P1 ≡ ¬ ?P1
+    True ⟷ ?Q ≡ ?Q
+    ?P1 ⟷ False ≡ ¬ ?P1
+    ?Q ⟷ True ≡ ?Q
+    ?P1 ⟷ ?P1 ≡ True
+    ¬ ?P1 ⟷ ¬ ?Q1 ≡ ?P1 ⟷ ?Q1
+    (?P1 ⟶ ?Q1) ⟷ ?P1 ⟶ ?R1 ≡ ?P1 ⟶ ?Q1 ⟷ ?R1
+    (?P1 ⟶ ?R1) ⟷ ?Q1 ⟶ ?R1 ≡ (?P1 ⟷ ?Q1) ∨ ?R1
+    Let(integ_of(?w), ?f) ≡ ?f(integ_of(?w))
+    0 xor ?y ≡ ?y
+    1 xor ?d1 ≡ not(?d1)
+    0 and ?c1 ≡ 0
+    ?y ∈ bool ⟹ ?y and ?y ≡ ?y
+    1 and ?y ≡ ?y
+    0 + 0 ≡ 0
+    ?x1 $≤ intify(?y1) ≡ ?x1 $≤ ?y1
+    #0 $≤ $# ?n1 ≡ True
+    integ_of(?x1) $≤ integ_of(?w1) ≡ ¬ integ_of(?w1) $< integ_of(?x1)
+    integ_of(?w1) $≤ $- ?y1 ≡ ?y1 $≤ $- integ_of(?w1)
+    $- ?x1 $≤ integ_of(?w1) ≡ $- integ_of(?w1) $≤ ?x1
+    $- ?x1 $≤ $- ?y1 ≡ ?y1 $≤ ?x1
+    intify(?x1) $≤ ?y1 ≡ ?x1 $≤ ?y1
+    ?w'1 $+ ?z1 $≤ ?w1 $+ ?z1 ≡ ?w'1 $≤ ?w1
+    ?z1 $+ ?w'1 $≤ ?z1 $+ ?w1 ≡ ?w'1 $≤ ?w1
+    ?xs1 ∈ list(?A1) ⟹ [] = rev(?xs1) ≡ ?xs1 = []
+    ?xs1 ∈ list(?A1) ⟹ [] = ?xs1 @ ?ys1 ≡ ?xs1 = [] ∧ ?ys1 = []
+    0 = succ(?n1) ≡ False
+    ?xs1 ∈ list(?A1) ⟹ 0 = length(?xs1) ≡ ?xs1 = []
+    0 = cons(?a1, ?B1) ≡ False
+    nat = 0 ≡ False
+    ?a1 = ?a1 ≡ True
+    ?xs1 ∈ list(?A1) ⟹ ?ys1 ∈ list(?A1) ⟹ ?ys1 = ?xs1 @ ?ys1 ≡ ?xs1 = []
+    ?xs1 ∈ list(?A1) ⟹ ?xs1 = ?xs1 @ ?ys1 ≡ ?ys1 = []
+    bool_of_o(?P1) = 0 ≡ ¬ ?P1
+    bool_of_o(?Q) = 1 ≡ ?Q
+    succ(?n1) = 0 ≡ False
+    succ(?m1) = succ(?n1) ≡ ?m1 = ?n1
+    ?v1 ∈ bin ⟹ ?w1 ∈ bin ⟹ integ_of(?v1) = integ_of(?w1) ≡ iszero(integ_of(bin_add(?v1, bin_minus(?w1))))
+    integ_of(?w1) = $- ?x1 ≡ $- ?x1 = integ_of(?w1)
+    integ_of(?w1) ∈ int ⟹ ?y1 ∈ int ⟹ integ_of(?w1) = $- ?y1 ≡ ?y1 = $- integ_of(?w1)
+    integ_of(?w1) = ?x1 $* ?y1 ≡ ?x1 $* ?y1 = integ_of(?w1)
+    integ_of(?w1) = ?x1 $- ?y1 ≡ ?x1 $- ?y1 = integ_of(?w1)
+    integ_of(?w1) = ?x1 $+ ?y1 ≡ ?x1 $+ ?y1 = integ_of(?w1)
+    ?xs1 ∈ list(?A1) ⟹ length(?xs1) = 0 ≡ ?xs1 = []
+    QInr(?a1) = QInr(?b1) ≡ ?a1 = ?b1
+    QInr(?b1) = QInl(?a1) ≡ False
+    QInl(?a1) = QInr(?b1) ≡ False
+    QInl(?a1) = QInl(?b1) ≡ ?a1 = ?b1
+    ?x1 ∈ int ⟹ integ_of(?w1) ∈ int ⟹ $- ?x1 = integ_of(?w1) ≡ $- integ_of(?w1) = ?x1
+    $# ?m1 = $# ?n1 ≡ natify(?m1) = natify(?n1)
+    ?xs1 ∈ list(?A1) ⟹ rev(?xs1) = [] ≡ ?xs1 = []
+    ?xs1 ∈ list(?A1) ⟹ ?ys1 ∈ list(?A1) ⟹ rev(?xs1) = rev(?ys1) ≡ ?xs1 = ?ys1
+    Inr(?a1) = Inr(?b1) ≡ ?a1 = ?b1
+    Inr(?b1) = Inl(?a1) ≡ False
+    Inl(?a1) = Inr(?b1) ≡ False
+    Inl(?a1) = Inl(?b1) ≡ ?a1 = ?b1
+    {?f1(x) . x ∈ ?A1} = 0 ≡ ?A1 = 0
+    ?x1 ∈ nat ⟹
+    ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?u1 ∈ nat ⟹ ?env1 ∈ list(M) ⟹ sats(M, is_Hcheck_fm(?x1, ?y1, ?z1, ?u1), ?env1) ≡ is_Hcheck(nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1), nth(?u1, ?env1))
+    ?x1 ∈ nat ⟹
+    ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?u1 ∈ nat ⟹ ?env1 ∈ list(M) ⟹ sats(M, PHcheck_fm(?x1, ?y1, ?z1, ?u1), ?env1) ≡ PHcheck(nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1), nth(?u1, ?env1))
+    ?x1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, finite_ordinal_fm(?x1), ?env1) ≡ finite_ordinal(##?A1, nth(?x1, ?env1))
+    ?x1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, limit_ordinal_fm(?x1), ?env1) ≡ limit_ordinal(##?A1, nth(?x1, ?env1))
+    ?x1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, mem_formula_fm(?x1), ?env1) ≡ mem_formula(##?A1, nth(?x1, ?env1))
+    ?x1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, is_formula_fm(?x1), ?env1) ≡ is_formula(##?A1, nth(?x1, ?env1))
+    ?x1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, quasilist_fm(?x1), ?env1) ≡ is_quasilist(##?A1, nth(?x1, ?env1))
+    ?x1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, relation_fm(?x1), ?env1) ≡ is_relation(##?A1, nth(?x1, ?env1))
+    ?x1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, quasinat_fm(?x1), ?env1) ≡ is_quasinat(##?A1, nth(?x1, ?env1))
+    ?x1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, function_fm(?x1), ?env1) ≡ is_function(##?A1, nth(?x1, ?env1))
+    ?x1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, number1_fm(?x1), ?env1) ≡ number1(##?A1, nth(?x1, ?env1))
+    ?x1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, omega_fm(?x1), ?env1) ≡ omega(##?A1, nth(?x1, ?env1))
+    ?x1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, empty_fm(?x1), ?env1) ≡ empty(##?A1, nth(?x1, ?env1))
+    ?x1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, Nil_fm(?x1), ?env1) ≡ is_Nil(##?A1, nth(?x1, ?env1))
+    ?env1 ∈ list(?A1) ⟹ sats(?A1, Forall(?p1), ?env1) ≡ ∀x∈?A1. sats(?A1, ?p1, Cons(x, ?env1))
+    ?x1 < length(?env1) ⟹ ?env1 ∈ list(?A1) ⟹ Transset(?A1) ⟹ sats(?A1, transset_fm(?x1), ?env1) ≡ Transset(nth(?x1, ?env1))
+    ?env1 ∈ list(?A1) ⟹ sats(?A1, Exists(?p1), ?env1) ≡ ∃x∈?A1. sats(?A1, ?p1, Cons(x, ?env1))
+    ?env1 ∈ list(?A1) ⟹ sats(?A1, Neg(?p1), ?env1) ≡ satisfies(?A1, ?p1) ` ?env1 ≠ 1
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, formula_functor_fm(?x1, ?y1), ?env1) ≡ is_formula_functor(##?A1, nth(?x1, ?env1), nth(?y1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, mem_eclose_fm(?x1, ?y1), ?env1) ≡ mem_eclose(##?A1, nth(?x1, ?env1), nth(?y1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, is_eclose_fm(?x1, ?y1), ?env1) ≡ is_eclose(##?A1, nth(?x1, ?env1), nth(?y1, ?env1))
+    ?x1 < length(?env1) ⟹ ?y1 < length(?env1) ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, formula_N_fm(?x1, ?y1), ?env1) ≡ is_formula_N(##?A1, nth(?x1, ?env1), nth(?y1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, big_union_fm(?x1, ?y1), ?env1) ≡ big_union(##?A1, nth(?x1, ?env1), nth(?y1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, mem_list_fm(?x1, ?y1), ?env1) ≡ mem_list(##?A1, nth(?x1, ?env1), nth(?y1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, is_list_fm(?x1, ?y1), ?env1) ≡ is_list(##?A1, nth(?x1, ?env1), nth(?y1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, domain_fm(?x1, ?y1), ?env1) ≡ is_domain(##?A1, nth(?x1, ?env1), nth(?y1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, Memrel_fm(?x1, ?y1), ?env1) ≡ membership(##?A1, nth(?x1, ?env1), nth(?y1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, Forall_fm(?x1, ?y1), ?env1) ≡ is_Forall(##?A1, nth(?x1, ?env1), nth(?y1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, range_fm(?x1, ?y1), ?env1) ≡ is_range(##?A1, nth(?x1, ?env1), nth(?y1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, field_fm(?x1, ?y1), ?env1) ≡ is_field(##?A1, nth(?x1, ?env1), nth(?y1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, succ_fm(?x1, ?y1), ?env1) ≡ successor(##?A1, nth(?x1, ?env1), nth(?y1, ?env1))
+    ?x1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, not_fm(?x1, ?z1), ?env1) ≡ is_not(##?A1, nth(?x1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, Inr_fm(?x1, ?z1), ?env1) ≡ is_Inr(##?A1, nth(?x1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, Inl_fm(?x1, ?z1), ?env1) ≡ is_Inl(##?A1, nth(?x1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, tl_fm(?x1, ?y1), ?env1) ≡ is_tl(##?A1, nth(?x1, ?env1), nth(?y1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, hd_fm(?x1, ?y1), ?env1) ≡ is_hd(##?A1, nth(?x1, ?env1), nth(?y1, ?env1))
+    ?env1 ∈ list(?A1) ⟹ sats(?A1, Member(?x1, ?y1), ?env1) ≡ nth(?x1, ?env1) ∈ nth(?y1, ?env1)
+    ?env1 ∈ list(?A1) ⟹ sats(?A1, Equal(?x1, ?y1), ?env1) ≡ nth(?x1, ?env1) = nth(?y1, ?env1)
+    ?env1 ∈ list(?A1) ⟹ sats(?A1, Nand(?p1, ?q1), ?env1) ≡ ¬ (sats(?A1, ?p1, ?env1) ∧ sats(?A1, ?q1, ?env1))
+    ?x1 < length(?env1) ⟹ ?y1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ Transset(?A1) ⟹ sats(?A1, subset_fm(?x1, ?y1), ?env1) ≡ nth(?x1, ?env1) ⊆ nth(?y1, ?env1)
+    ?env1 ∈ list(?A1) ⟹ sats(?A1, Implies(?p1, ?q1), ?env1) ≡ sats(?A1, ?p1, ?env1) ⟶ sats(?A1, ?q1, ?env1)
+    ?env1 ∈ list(?A1) ⟹ sats(?A1, Iff(?p1, ?q1), ?env1) ≡ sats(?A1, ?p1, ?env1) ⟷ sats(?A1, ?q1, ?env1)
+    ?env1 ∈ list(?A1) ⟹ sats(?A1, And(?p1, ?q1), ?env1) ≡ sats(?A1, ?p1, ?env1) ∧ sats(?A1, ?q1, ?env1)
+    ?env1 ∈ list(?A1) ⟹ sats(?A1, Or(?p1, ?q1), ?env1) ≡ sats(?A1, ?p1, ?env1) ∨ sats(?A1, ?q1, ?env1)
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, typed_function_fm(?x1, ?y1, ?z1), ?env1) ≡ typed_function(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, list_functor_fm(?x1, ?y1, ?z1), ?env1) ≡ is_list_functor(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, restriction_fm(?x1, ?y1, ?z1), ?env1) ≡ restriction(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, composition_fm(?x1, ?y1, ?z1), ?env1) ≡ composition(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, surjection_fm(?x1, ?y1, ?z1), ?env1) ≡ surjection(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, pre_image_fm(?x1, ?y1, ?z1), ?env1) ≡ pre_image(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, injection_fm(?x1, ?y1, ?z1), ?env1) ≡ injection(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, fun_apply_fm(?x1, ?y1, ?z1), ?env1) ≡ fun_apply(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, bijection_fm(?x1, ?y1, ?z1), ?env1) ≡ bijection(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹
+    ?y1 < length(?env1) ⟹ ?z1 < length(?env1) ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, eclose_n_fm(?x1, ?y1, ?z1), ?env1) ≡ is_eclose_n(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, cartprod_fm(?x1, ?y1, ?z1), ?env1) ≡ cartprod(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹
+    ?y1 < length(?env1) ⟹ ?z1 < length(?env1) ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, list_N_fm(?x1, ?y1, ?z1), ?env1) ≡ is_list_N(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, Member_fm(?x1, ?y1, ?z1), ?env1) ≡ is_Member(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 < length(?env1) ⟹ ?env1 ∈ list(?A1) ⟹ Transset(?A1) ⟹ sats(?A1, upair_fm(?x1, ?y1, ?z1), ?env1) ≡ nth(?z1, ?env1) = {nth(?x1, ?env1), nth(?y1, ?env1)}
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, upair_fm(?x1, ?y1, ?z1), ?env1) ≡ upair(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, union_fm(?x1, ?y1, ?z1), ?env1) ≡ union(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, image_fm(?x1, ?y1, ?z1), ?env1) ≡ image(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, Equal_fm(?x1, ?y1, ?z1), ?env1) ≡ is_Equal(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, pair_fm(?x1, ?y1, ?z1), ?env1) ≡ pair(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, cons_fm(?x1, ?y1, ?z1), ?env1) ≡ is_cons(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, Nand_fm(?x1, ?y1, ?z1), ?env1) ≡ is_Nand(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, Cons_fm(?x1, ?y1, ?z1), ?env1) ≡ is_Cons(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, sum_fm(?x1, ?y1, ?z1), ?env1) ≡ is_sum(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, and_fm(?x1, ?y1, ?z1), ?env1) ≡ is_and(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?x1 ∈ nat ⟹ ?y1 ∈ nat ⟹ ?z1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, or_fm(?x1, ?y1, ?z1), ?env1) ≡ is_or(##?A1, nth(?x1, ?env1), nth(?y1, ?env1), nth(?z1, ?env1))
+    ?U1 ∈ nat ⟹
+    ?x1 ∈ nat ⟹
+    ?r1 ∈ nat ⟹ ?B1 ∈ nat ⟹ ?env1 ∈ list(?A1) ⟹ sats(?A1, pred_set_fm(?U1, ?x1, ?r1, ?B1), ?env1) ≡ pred_set(##?A1, nth(?U1, ?env1), nth(?x1, ?env1), nth(?r1, ?env1), nth(?B1, ?env1))
+    ?U1 ∈ nat ⟹
+    ?r1 ∈ nat ⟹
+    ?B1 ∈ nat ⟹
+    ?s1 ∈ nat ⟹
+    ?f1 ∈ nat ⟹
+    ?env1 ∈ list(?A1) ⟹
+    sats(?A1, order_isomorphism_fm(?U1, ?r1, ?B1, ?s1, ?f1), ?env1) ≡ order_isomorphism(##?A1, nth(?U1, ?env1), nth(?r1, ?env1), nth(?B1, ?env1), nth(?s1, ?env1), nth(?f1, ?env1))
+    ?x1 ∈ nat × nat ⟹ ?y1 ∈ nat × nat ⟹ intrel `` {?x1} = intrel `` {?y1} ≡ ⟨?x1, ?y1⟩ ∈ intrel
+    {?a1} = {?b1} ≡ ?a1 = ?b1
+    cons(?a1, ?B1) = 0 ≡ False
+    ⟨?a1, ?b1⟩ = ⟨?c1, ?d1⟩ ≡ ?a1 = ?c1 ∧ ?b1 = ?d1
+    <?a1; ?b1> = <?c1; ?d1> ≡ ?a1 = ?c1 ∧ ?b1 = ?d1
+    ?A1 ∪ ?B1 = 0 ≡ ?A1 = 0 ∧ ?B1 = 0
+    ?A1 -> ?X1 = 0 ≡ ?X1 = 0 ∧ ?A1 ≠ 0
+    ?m1 #* ?n1 = 0 ≡ natify(?m1) = 0 ∨ natify(?n1) = 0
+    ?m1 #* ?n1 = 1 ≡ natify(?m1) = 1 ∧ natify(?n1) = 1
+    ?m1 #* ?k1 = ?n1 #* ?k1 ≡ natify(?m1) = natify(?n1) ∨ natify(?k1) = 0
+    ?k1 #* ?m1 = ?k1 #* ?n1 ≡ natify(?m1) = natify(?n1) ∨ natify(?k1) = 0
+    ?m1 $* ?n1 = #0 ≡ intify(?m1) = #0 ∨ intify(?n1) = #0
+    ?m1 $* ?k1 = ?n1 $* ?k1 ≡ intify(?k1) = #0 ∨ intify(?m1) = intify(?n1)
+    ?k1 $* ?m1 = ?k1 $* ?n1 ≡ intify(?k1) = #0 ∨ intify(?m1) = intify(?n1)
+    ?m1 #+ ?n1 = 0 ≡ natify(?m1) = 0 ∧ natify(?n1) = 0
+    ?xs1 ∈ list(?A1) ⟹ ?xs1 @ ?ys1 = [] ≡ ?xs1 = [] ∧ ?ys1 = []
+    ?xs1 ∈ list(?A1) ⟹ ?ys1 ∈ list(?A1) ⟹ ?xs1 @ ?ys1 = ?ys1 ≡ ?xs1 = []
+    ?xs1 ∈ list(?A1) ⟹ ?xs1 @ ?ys1 = ?xs1 ≡ ?ys1 = []
+    ?xs1 ∈ list(?A1) ⟹ ?ys1 ∈ list(?A1) ⟹ ?zs1 ∈ list(?A1) ⟹ ?ys1 @ ?xs1 = ?zs1 @ ?xs1 ≡ ?ys1 = ?zs1
+    ?xs1 ∈ list(?A1) ⟹ ?ys1 ∈ list(?A1) ⟹ ?zs1 ∈ list(?A1) ⟹ ?xs1 @ ?ys1 = ?xs1 @ ?zs1 ≡ ?ys1 = ?zs1
+    ?xs1 ∈ list(?A1) ⟹ ?ys1 ∈ list(?A1) ⟹ ?us1 ∈ list(?A1) ⟹ ?vs1 ∈ list(?A1) ⟹ length(?us1) = length(?vs1) ⟹ ?xs1 @ ?us1 = ?ys1 @ ?vs1 ≡ ?xs1 = ?ys1 ∧ ?us1 = ?vs1
+    ?xs1 ∈ list(?A1) ⟹ ?ys1 ∈ list(?A1) ⟹ length(?xs1) = length(?ys1) ⟹ ?xs1 @ ?us1 = ?ys1 @ ?vs1 ≡ ?xs1 = ?ys1 ∧ ?us1 = ?vs1
+    ?xs1 ∈ list(?A1) ⟹ ?ys1 ∈ list(?A1) ⟹ ?xs1 @ [?x1] = ?ys1 @ [?y1] ≡ ?xs1 = ?ys1 ∧ ?x1 = ?y1
+    ?z1 $+ ?w'1 = ?z1 $+ ?w1 ≡ intify(?w'1) = intify(?w1)
+    ?w'1 $+ ?z1 = ?w1 $+ ?z1 ≡ intify(?w'1) = intify(?w1)
+    0 or ?y ≡ ?y
+    ?y ∈ bool ⟹ ?y or ?y ≡ ?y
+    1 or ?d1 ≡ 1
+    dense(?D1) ≡ ∀p∈P. ∃d∈?D1. ⟨d, p⟩ ∈ leq
+    (##M)(?X1) ⟹ (##M)(?Z1) ⟹ is_formula_functor(##M, ?X1, ?Z1) ≡ ?Z1 = (nat × nat + nat × nat) + ?X1 × ?X1 + ?X1
+    ?n1 ∈ nat ⟹ (##M)(?Z1) ⟹ is_formula_N(##M, ?n1, ?Z1) ≡ ?Z1 = formula_N(?n1)
+    (##M)(?A1) ⟹ transitive_rel(##M, ?A1, ?r1) ≡ trans[?A1](?r1)
+    ?x1 ∈ M ⟹ ?y1 ∈ M ⟹ ?x1 ∈ ?A1.1 × ?A2.1 × ?A3.1 × ?A4.1 ⟹ is_cond_of(##M, ?x1, ?y1) ≡ cond_of(?x1) = ?y1
+    ?f1 ∈ M ⟹ ?n1.1 ∈ M ⟹ ?n2.1 ∈ M ⟹ ?c1 ∈ M ⟹ ?y1 ∈ M ⟹ is_cond_of(##M, ⟨?f1, ?n1.1, ?n2.1, ?c1⟩, ?y1) ≡ cond_of(⟨?f1, ?n1.1, ?n2.1, ?c1⟩) = ?y1
+    (##M)(?A1) ⟹ mem_eclose(##M, ?A1, ?l1) ≡ ?l1 ∈ eclose(?A1)
+    (##M)(?A1) ⟹ (##M)(?Z1) ⟹ is_eclose(##M, ?A1, ?Z1) ≡ ?Z1 = eclose(?A1)
+    (##M)(?x1) ⟹ (##M)(?Z1) ⟹ is_Forall(##M, ?x1, ?Z1) ≡ ?Z1 = Forall(?x1)
+    ?x1 ∈ M ⟹ ?y1 ∈ M ⟹ ?x1 ∈ ?A1.1 × ?A2.1 × ?A3.1 × ?A4.1 ⟹ is_name2(##M, ?x1, ?y1) ≡ name2(?x1) = ?y1
+    ?f1 ∈ M ⟹ ?n1.1 ∈ M ⟹ ?n2.1 ∈ M ⟹ ?c1 ∈ M ⟹ ?y1 ∈ M ⟹ is_name2(##M, ⟨?f1, ?n1.1, ?n2.1, ?c1⟩, ?y1) ≡ name2(⟨?f1, ?n1.1, ?n2.1, ?c1⟩) = ?y1
+    ?x1 ∈ M ⟹ ?y1 ∈ M ⟹ ?x1 ∈ ?A1.1 × ?A2.1 × ?A3.1 ⟹ is_name1(##M, ?x1, ?y1) ≡ name1(?x1) = ?y1
+    ?f1 ∈ M ⟹ ?n1.1 ∈ M ⟹ ?n2.1 ∈ M ⟹ ?c1 ∈ M ⟹ ?y1 ∈ M ⟹ is_name1(##M, ⟨?f1, ?n1.1, ?n2.1, ?c1⟩, ?y1) ≡ name1(⟨?f1, ?n1.1, ?n2.1, ?c1⟩) = ?y1
+    ?x1 ∈ M ⟹ ?y1 ∈ M ⟹ ?x1 ∈ ?A1.1 × ?A2.1 ⟹ is_ftype(##M, ?x1, ?y1) ≡ ftype(?x1) = ?y1
+    ?f1 ∈ M ⟹ ?n1.1 ∈ M ⟹ ?n2.1 ∈ M ⟹ ?c1 ∈ M ⟹ ?y1 ∈ M ⟹ is_ftype(##M, ⟨?f1, ?n1.1, ?n2.1, ?c1⟩, ?y1) ≡ ftype(⟨?f1, ?n1.1, ?n2.1, ?c1⟩) = ?y1
+    (##M)(?A1) ⟹ mem_list(##M, ?A1, ?l1) ≡ ?l1 ∈ list(?A1)
+    ?p1 ∈ formula ⟹ ?n1 ∈ nat ⟹ is_depth(##M, ?p1, ?n1) ≡ ?n1 = depth(?p1)
+    (##M)(?A1) ⟹ irreflexive(##M, ?A1, ?r1) ≡ irrefl(?A1, ?r1)
+    (##M)(?r1) ⟹ (##M)(?z1) ⟹ rtran_closure(##M, ?r1, ?z1) ≡ ?z1 = ?r1^*
+    (##M)(?A1) ⟹ (##M)(?Z1) ⟹ is_list(##M, ?A1, ?Z1) ≡ ?Z1 = list(?A1)
+    (##M)(?A1) ⟹ linear_rel(##M, ?A1, ?r1) ≡ linear(?A1, ?r1)
+    (##M)(?r1) ⟹ (##M)(?z1) ⟹ tran_closure(##M, ?r1, ?z1) ≡ ?z1 = ?r1^+
+    (##M)(?z1) ⟹ is_bool_of_o(##M, ?P1, ?z1) ≡ ?z1 = bool_of_o(?P1)
+    (##M)(?r1) ⟹ (##M)(?z1) ⟹ is_converse(##M, ?r1, ?z1) ≡ ?z1 = converse(?r1)
+    (##M)(?r1) ⟹ (##M)(?A1) ⟹ membership(##M, ?A1, ?r1) ≡ ?r1 = Memrel(?A1)
+    list_case'(?y, ?b1, []) ≡ ?y
+    ?xs1 ∈ list(?A1) ⟹ list_case'(?a1, ?b1, ?xs1) ≡ list_case(?a1, ?b1, ?xs1)
+    list_case'(?a1, ?b1, Cons(?x1, ?l1)) ≡ ?b1(?x1, ?l1)
+    list_case(?y, ?f_Cons1, []) ≡ ?y
+    list_case(?f_Nil1, ?f_Cons1, Cons(?a1, ?l1)) ≡ ?f_Cons1(?a1, ?l1)
+    univalent(?M1, ?A1, λx y. y = ?f1(x)) ≡ True
+    univalent(?M1, ?A1, ?Q1) ⟹ univalent(?M1, ?A1, λx y. ?P1(x, y) ∧ ?Q1(x, y)) ≡ True
+    (##M)(?a1) ⟹ (##M)(?z1) ⟹ successor(##M, ?a1, ?z1) ≡ ?z1 = succ(?a1)
+    (##M)(?r1) ⟹ (##M)(?z1) ⟹ is_domain(##M, ?r1, ?z1) ≡ ?z1 = domain(?r1)
+    (##M)(?A1) ⟹ (##M)(?z1) ⟹ big_union(##M, ?A1, ?z1) ≡ ?z1 = ⋃?A1
+    (##M)(?A1) ⟹ (##M)(?z1) ⟹ big_inter(##M, ?A1, ?z1) ≡ ?z1 = ⋂?A1
+    (##M)(?x1) ⟹ (##M)(?s1) ⟹ is_singleton(##M, ?x1, ?s1) ≡ ?s1 = {?x1}
+    list_rec(?y, ?f_Cons1, []) ≡ ?y
+    list_rec(?f_Nil1, ?f_Cons1, Cons(?a1, ?l1)) ≡ ?f_Cons1(?a1, ?l1, list_rec(?f_Nil1, ?f_Cons1, ?l1))
+    (##M)(?x1) ⟹ (##M)(?y1) ⟹ powerset(##M, ?x1, ?y1) ≡ ?y1 = {a ∈ Pow(?x1) . (##M)(a)}
+    (##M)(?r1) ⟹ (##M)(?z1) ⟹ is_range(##M, ?r1, ?z1) ≡ ?z1 = range(?r1)
+    (##M)(?r1) ⟹ (##M)(?z1) ⟹ is_field(##M, ?r1, ?z1) ≡ ?z1 = field(?r1)
+    transrec2(0, ?y, ?b1) ≡ ?y
+    transrec2(succ(?i1), ?a1, ?b1) ≡ ?b1(?i1, transrec2(?i1, ?a1, ?b1))
+    ?i1 ∈ nat ⟹ list_update([], ?i1, ?v1) ≡ []
+    list_update(Cons(?x1, ?xs1), 0, ?v1) ≡ Cons(?v1, ?xs1)
+    ?n1 ∈ nat ⟹ list_update(Cons(?x1, ?xs1), succ(?n1), ?v1) ≡ Cons(?x1, list_update(?xs1, ?n1, ?v1))
+    ?xs1 ∈ list(?A1) ⟹ ?i1 ∈ nat ⟹ ?i1 < length(?xs1) ⟹ list_update(list_update(?xs1, ?i1, ?x1), ?i1, ?y1) ≡ list_update(?xs1, ?i1, ?y1)
+    recursor(?y, ?b1, 0) ≡ ?y
+    recursor(?a1, ?b1, succ(?m1)) ≡ ?b1(?m1, recursor(?a1, ?b1, ?m1))
+    (##M)(?A1) ⟹ subset(##M, ?A1, ?B1) ≡ ?A1 ⊆ ?B1
+    (##M)(?a1) ⟹ (##M)(?z1) ⟹ is_not(##M, ?a1, ?z1) ≡ ?z1 = not(?a1)
+    (##M)(?Z1) ⟹ is_Inr(##M, ?a1, ?Z1) ≡ ?Z1 = Inr(?a1)
+    (##M)(?Z1) ⟹ is_Inl(##M, ?a1, ?Z1) ≡ ?Z1 = Inl(?a1)
+    (##M)(?x1) ⟹ (##M)(?y1) ⟹ is_tl(##M, ?x1, ?y1) ≡ ?y1 = tl'(?x1)
+    (##M)(?x1) ⟹ (##M)(?y1) ⟹ is_hd(##M, ?x1, ?y1) ≡ ?y1 = hd'(?x1)
+    nat_case(?y, ?b1, 0) ≡ ?y
+    nat_case(?a1, ?b1, succ(?n1)) ≡ ?b1(?n1)
+    ?y ∈ Pi(?A1, ?B1) ⟹ ?x1 ∈ ?A1 ⟹ ?y(?x1 := ?y ` ?x1) ≡ ?y
+    ?F1^0 (?y) ≡ ?y
+    ?F1^succ(?n1) (?x1) ≡ ?F1(?F1^?n1 (?x1))
+    qcase(?c1, ?d1, QInr(?b1)) ≡ ?d1(?b1)
+    qcase(?c1, ?d1, QInl(?a1)) ≡ ?c1(?a1)
+    rec(0, ?y, ?b1) ≡ ?y
+    rec(succ(?m1), ?a1, ?b1) ≡ ?b1(?m1, rec(?m1, ?a1, ?b1))
+    if False then ?a1 else ?y ≡ ?y
+    if True then ?y else ?b1 ≡ ?y
+    cond(0, ?c1, ?y) ≡ ?y
+    cond(1, ?y, ?d1) ≡ ?y
+    case(?c1, ?d1, Inr(?b1)) ≡ ?d1(?b1)
+    case(?c1, ?d1, Inl(?a1)) ≡ ?c1(?a1)
+    (##M)(?A1) ⟹ (##M)(?X1) ⟹ (##M)(?Z1) ⟹ is_list_functor(##M, ?A1, ?X1, ?Z1) ≡ ?Z1 = {0} + ?A1 × ?X1
+    (##M)(?A1) ⟹ ?n1 ∈ nat ⟹ (##M)(?Z1) ⟹ is_eclose_n(##M, ?A1, ?n1, ?Z1) ≡ ?Z1 = Union^?n1 (?A1)
+    forces_ren(?auxren1, ?fren1, ?fref1, Forall(?p1)) ≡ Forall(?fref1 ` forces_ren(?auxren1, ?fren1, ?fref1, ?p1))
+    forces_ren(?auxren1, ?fren1, ?fref1, Member(?x1, ?y1)) ≡ forces_mem_fm(?x1, ?y1)
+    forces_ren(?auxren1, ?fren1, ?fref1, Equal(?x1, ?y1)) ≡ forces_eq_fm(?auxren1, ?x1, ?y1)
+    forces_ren(?auxren1, ?fren1, ?fref1, Nand(?p1, ?q1)) ≡
+    Forall
+     (Forall(Implies(Member(1, 2), Implies(And(pair_fm(1, 5, 0), Member(0, 3)), Neg(And(?fren1 ` forces_ren(?auxren1, ?fren1, ?fref1, ?p1), ?fren1 ` forces_ren(?auxren1, ?fren1, ?fref1, ?q1)))))))
+    (##M)(?A1) ⟹ ?n1 ∈ nat ⟹ (##M)(?Z1) ⟹ is_list_N(##M, ?A1, ?n1, ?Z1) ≡ ?Z1 = list_N(?A1, ?n1)
+    (##M)(?A1) ⟹ ?l1 ∈ list(?A1) ⟹ ?n1 ∈ nat ⟹ is_length(##M, ?A1, ?l1, ?n1) ≡ ?n1 = length(?l1)
+    (##M)(?x1) ⟹ (##M)(?y1) ⟹ (##M)(?Z1) ⟹ is_Member(##M, ?x1, ?y1, ?Z1) ≡ ?Z1 = Member(?x1, ?y1)
+    (##M)(?x1) ⟹ (##M)(?y1) ⟹ (##M)(?Z1) ⟹ is_Equal(##M, ?x1, ?y1, ?Z1) ≡ ?Z1 = Equal(?x1, ?y1)
+    (##M)(?x1) ⟹ (##M)(?y1) ⟹ (##M)(?Z1) ⟹ is_Nand(##M, ?x1, ?y1, ?Z1) ≡ ?Z1 = Nand(?x1, ?y1)
+    (##M)(?A1) ⟹ ?n1 ∈ nat ⟹ ?l1 ∈ list(?A1) ⟹ (##M)(?Z1) ⟹ is_nth(##M, ?n1, ?l1, ?Z1) ≡ ?Z1 = nth(?n1, ?l1)
+    (##M)(?A1) ⟹ (##M)(?f1) ⟹ typed_function(##M, ?A1, ?B1, ?f1) ≡ ?f1 ∈ ?A1 -> ?B1
+    (##M)(?f1) ⟹ (##M)(?A1) ⟹ (##M)(?z1) ⟹ restriction(##M, ?f1, ?A1, ?z1) ≡ ?z1 = restrict(?f1, ?A1)
+    (##M)(?A1) ⟹ (##M)(?B1) ⟹ (##M)(?F1) ⟹ (##M)(?A1 -> ?B1) ⟹ is_funspace(##M, ?A1, ?B1, ?F1) ≡ ?F1 = ?A1 -> ?B1
+    (##M)(?r1) ⟹ (##M)(?s1) ⟹ (##M)(?t1) ⟹ composition(##M, ?r1, ?s1, ?t1) ≡ ?t1 = ?r1 O ?s1
+    (##M)(?A1) ⟹ (##M)(?B1) ⟹ (##M)(?f1) ⟹ surjection(##M, ?A1, ?B1, ?f1) ≡ ?f1 ∈ surj(?A1, ?B1)
+    (##M)(?A1) ⟹ (##M)(?z1) ⟹ is_Collect(##M, ?A1, ?P1, ?z1) ≡ ?z1 = Collect(?A1, ?P1)
+    (##M)(?r1) ⟹ (##M)(?A1) ⟹ (##M)(?z1) ⟹ pre_image(##M, ?r1, ?A1, ?z1) ≡ ?z1 = ?r1 -`` ?A1
+    (##M)(?A1) ⟹ (##M)(?f1) ⟹ injection(##M, ?A1, ?B1, ?f1) ≡ ?f1 ∈ inj(?A1, ?B1)
+    (##M)(?f1) ⟹ (##M)(?x1) ⟹ (##M)(?y1) ⟹ fun_apply(##M, ?f1, ?x1, ?y1) ≡ ?f1 ` ?x1 = ?y1
+    (##M)(?A1) ⟹ (##M)(?B1) ⟹ (##M)(?f1) ⟹ bijection(##M, ?A1, ?B1, ?f1) ≡ ?f1 ∈ bij(?A1, ?B1)
+    (##M)(?A1) ⟹ (##M)(?B1) ⟹ (##M)(?z1) ⟹ cartprod(##M, ?A1, ?B1, ?z1) ≡ ?z1 = ?A1 × ?B1
+    (##M)(?a1) ⟹ (##M)(?b1) ⟹ (##M)(?z1) ⟹ setdiff(##M, ?a1, ?b1, ?z1) ≡ ?z1 = ?a1 - ?b1
+    (##M)(?b1) ⟹ (##M)(?z1) ⟹ is_cons(##M, ?a1, ?b1, ?z1) ≡ ?z1 = cons(?a1, ?b1)
+    (##M)(?a1) ⟹ (##M)(?l1) ⟹ (##M)(?Z1) ⟹ is_Cons(##M, ?a1, ?l1, ?Z1) ≡ ?Z1 = Cons(?a1, ?l1)
+    bin_case(?y, ?f_Min1, ?f_Bit1, Pls) ≡ ?y
+    bin_case(?f_Pls1, ?y, ?f_Bit1, Min) ≡ ?y
+    bin_case(?f_Pls1, ?f_Min1, ?f_Bit1, ?w1 BIT ?b1) ≡ ?f_Bit1(?w1, ?b1)
+    (##M)(?A1) ⟹ (##M)(?B1) ⟹ (##M)(?Z1) ⟹ is_sum(##M, ?A1, ?B1, ?Z1) ≡ ?Z1 = ?A1 + ?B1
+    (##M)(?a1) ⟹ (##M)(?b1) ⟹ (##M)(?z1) ⟹ is_and(##M, ?a1, ?b1, ?z1) ≡ ?z1 = ?a1 and ?b1
+    bin_rec(?y, ?f_Min1, ?f_Bit1, Pls) ≡ ?y
+    bin_rec(?f_Pls1, ?y, ?f_Bit1, Min) ≡ ?y
+    bin_rec(?f_Pls1, ?f_Min1, ?f_Bit1, ?w1 BIT ?b1) ≡ ?f_Bit1(?w1, ?b1, bin_rec(?f_Pls1, ?f_Min1, ?f_Bit1, ?w1))
+    (##M)(?z1) ⟹ upair(##M, ?a1, ?b1, ?z1) ≡ ?z1 = {?a1, ?b1}
+    (##M)(?a1) ⟹ (##M)(?b1) ⟹ (##M)(?z1) ⟹ union(##M, ?a1, ?b1, ?z1) ≡ ?z1 = ?a1 ∪ ?b1
+    (##M)(?a1) ⟹ (##M)(?b1) ⟹ (##M)(?z1) ⟹ is_or(##M, ?a1, ?b1, ?z1) ≡ ?z1 = ?a1 or ?b1
+    (##M)(?a1) ⟹ (##M)(?b1) ⟹ (##M)(?z1) ⟹ inter(##M, ?a1, ?b1, ?z1) ≡ ?z1 = ?a1 ∩ ?b1
+    (##M)(?r1) ⟹ (##M)(?A1) ⟹ (##M)(?z1) ⟹ image(##M, ?r1, ?A1, ?z1) ≡ ?z1 = ?r1 `` ?A1
+    (##M)(?z1) ⟹ pair(##M, ?a1, ?b1, ?z1) ≡ ?z1 = ⟨?a1, ?b1⟩
+    transrec3(0, ?y, ?b1, ?c1) ≡ ?y
+    transrec3(succ(?i1), ?a1, ?b1, ?c1) ≡ ?b1(?i1, transrec3(?i1, ?a1, ?b1, ?c1))
+    formula_case(?f_Member1, ?f_Equal1, ?f_Nand1, ?f_Forall1, Forall(?p1)) ≡ ?f_Forall1(?p1)
+    formula_case(?f_Member1, ?f_Equal1, ?f_Nand1, ?f_Forall1, Member(?x1, ?y1)) ≡ ?f_Member1(?x1, ?y1)
+    formula_case(?f_Member1, ?f_Equal1, ?f_Nand1, ?f_Forall1, Equal(?x1, ?y1)) ≡ ?f_Equal1(?x1, ?y1)
+    formula_case(?f_Member1, ?f_Equal1, ?f_Nand1, ?f_Forall1, Nand(?p1, ?q1)) ≡ ?f_Nand1(?p1, ?q1)
+    formula_rec(?f_Member1, ?f_Equal1, ?f_Nand1, ?f_Forall1, Forall(?p1)) ≡ ?f_Forall1(?p1, formula_rec(?f_Member1, ?f_Equal1, ?f_Nand1, ?f_Forall1, ?p1))
+    formula_rec(?f_Member1, ?f_Equal1, ?f_Nand1, ?f_Forall1, Member(?x1, ?y1)) ≡ ?f_Member1(?x1, ?y1)
+    formula_rec(?f_Member1, ?f_Equal1, ?f_Nand1, ?f_Forall1, Equal(?x1, ?y1)) ≡ ?f_Equal1(?x1, ?y1)
+    formula_rec(?f_Member1, ?f_Equal1, ?f_Nand1, ?f_Forall1, Nand(?p1, ?q1)) ≡
+    ?f_Nand1(?p1, ?q1, formula_rec(?f_Member1, ?f_Equal1, ?f_Nand1, ?f_Forall1, ?p1), formula_rec(?f_Member1, ?f_Equal1, ?f_Nand1, ?f_Forall1, ?q1))
+    relation2(##M, ?is_b1, ?b1) ⟹ (##M)(?k1) ⟹ (##M)(?z1) ⟹ is_list_case(##M, ?a1, ?is_b1, ?k1, ?z1) ≡ ?z1 = list_case'(?a1, ?b1, ?k1)
+    dc_witness(0, ?A1, ?y, ?s1, ?R1) ≡ ?y
+    dc_witness(succ(?n1), ?A1, ?a1, ?s1, ?R1) ≡ ?s1 ` {x ∈ ?A1 . ⟨dc_witness(?n1, ?A1, ?a1, ?s1, ?R1), x⟩ ∈ ?R1}
+    relation1(##M, ?is_b1, ?b1) ⟹ (##M)(?k1) ⟹ (##M)(?z1) ⟹ is_nat_case(##M, ?a1, ?is_b1, ?k1, ?z1) ≡ ?z1 = nat_case(?a1, ?b1, ?k1)
+    (##M)(?r1) ⟹ (##M)(?B1) ⟹ pred_set(##M, ?A1, ?x1, ?r1, ?B1) ≡ ?B1 = Order.pred(?A1, ?x1, ?r1)
+    (##M)(?A1) ⟹ (##M)(?B1) ⟹ (##M)(?f1) ⟹ order_isomorphism(##M, ?A1, ?r1, ?B1, ?s1, ?f1) ≡ ?f1 ∈ ⟨?A1, ?r1⟩ ≅ ⟨?B1, ?s1⟩
+    Relation2(##M, nat, nat, ?is_a1, ?a1) ⟹
+    Relation2(##M, nat, nat, ?is_b1, ?b1) ⟹
+    Relation2(##M, formula, formula, ?is_c1, ?c1) ⟹
+    Relation1(##M, formula, ?is_d1, ?d1) ⟹ ?p1 ∈ formula ⟹ (##M)(?z1) ⟹ is_formula_case(##M, ?is_a1, ?is_b1, ?is_c1, ?is_d1, ?p1, ?z1) ≡ ?z1 = formula_case(?a1, ?b1, ?c1, ?d1, ?p1)
+    ?t1.1 ∈ M ⟹ ?t2.1 ∈ M ⟹ ?p1 ∈ M ⟹ ?f1 ∈ M ⟹ is_mem_case(##M, ?t1.1, ?t2.1, ?p1, P, leq, ?f1) ≡ mem_case(?t1.1, ?t2.1, ?p1, P, leq, ?f1)
+    ?t1.1 ∈ M ⟹ ?t2.1 ∈ M ⟹ ?p1 ∈ M ⟹ ?f1 ∈ M ⟹ is_eq_case(##M, ?t1.1, ?t2.1, ?p1, P, leq, ?f1) ≡ eq_case(?t1.1, ?t2.1, ?p1, P, leq, ?f1)
+simplification procedures:
+  ??.data_free:
+      ?x = ?y
+  ??.int_combine_numerals:
+      ?i $- ?j
+      ?i $+ ?j
+  ??.int_combine_numerals_prod:
+      ?i $* ?j
+  ??.inteq_cancel_numerals:
+      ?l = ?m $* ?n
+      ?l = ?m $- ?n
+      ?l = ?m $+ ?n
+      ?l $* ?m = ?n
+      ?l $- ?m = ?n
+      ?l $+ ?m = ?n
+  ??.intle_cancel_numerals:
+      ?l $≤ ?m $* ?n
+      ?l $≤ ?m $- ?n
+      ?l $≤ ?m $+ ?n
+      ?l $* ?m $≤ ?n
+      ?l $- ?m $≤ ?n
+      ?l $+ ?m $≤ ?n
+  ??.intless_cancel_numerals:
+      ?l $< ?m $* ?n
+      ?l $< ?m $- ?n
+      ?l $< ?m $+ ?n
+      ?l $* ?m $< ?n
+      ?l $- ?m $< ?n
+      ?l $+ ?m $< ?n
+  ??.natdiff_cancel_numerals:
+      ?m #- succ(?n)
+      ?l #- ?m #* ?n
+      ?l #- (?m #+ ?n)
+      succ(?m) #- ?n
+      ?l #* ?m #- ?n
+      ?l #+ ?m #- ?n
+  ??.nateq_cancel_numerals:
+      ?m = succ(?n)
+      ?l = ?m #* ?n
+      ?l = ?m #+ ?n
+      succ(?m) = ?n
+      ?l #* ?m = ?n
+      ?l #+ ?m = ?n
+  ??.natless_cancel_numerals:
+      ?m ≤ ?n
+      ?l < ?m #* ?n
+      ?l < ?m #+ ?n
+      succ(?m) < ?n
+      ?l #* ?m < ?n
+      ?l #+ ?m < ?n
+  defined_All:
+      ∀x. ?P(x)
+  defined_Ball:
+      ∀x∈?A. ?P(x) ⟶ ?Q(x)
+  defined_Bex:
+      ∃x∈?A. ?P(x) ∧ ?Q(x)
+  defined_Ex:
+      ∃x. ?P(x)
+  defined_rall:
+      ∀x[?M]. ?P(x) ⟶ ?Q(x)
+  defined_rex:
+      ∃x[?M]. ?P(x) ∧ ?Q(x)
+congruences:
+  wfrec_replacement: (⋀x y z. ?M(x) ⟹ ?M(y) ⟹ ?M(z) ⟹ ?MH(x, y, z) ≡ ?MH'(x, y, z)) ⟹ ?r ≡ ?r' ⟹ wfrec_replacement(?M, λx y. ?MH(x, y), ?r) ≡ wfrec_replacement(?M, λx y. ?MH'(x, y), ?r')
+  M_is_recfun:
+    ?r ≡ ?r' ⟹ ?a ≡ ?a' ⟹ ?f ≡ ?f' ⟹ (⋀x g y. ?M(x) ⟹ ?M(g) ⟹ ?M(y) ⟹ ?MH(x, g, y) ≡ ?MH'(x, g, y)) ⟹ M_is_recfun(?M, ?MH, ?r, ?a, ?f) ≡ M_is_recfun(?M, ?MH', ?r', ?a', ?f')
+  is_lambda: ?A ≡ ?A' ⟹ ?z ≡ ?z' ⟹ (⋀x y. x ∈ ?A ⟹ ?M(x) ⟹ ?M(y) ⟹ ?is_b(x, y) ≡ ?is_b'(x, y)) ⟹ is_lambda(?M, ?A, λx y. ?is_b(x, y), ?z) ≡ is_lambda(?M, ?A', λx y. ?is_b'(x, y), ?z')
+  is_Replace: ?A ≡ ?A' ⟹ (⋀x y. ?M(x) ⟹ ?M(y) ⟹ ?P(x, y) ≡ ?P'(x, y)) ⟹ ?z ≡ ?z' ⟹ is_Replace(?M, ?A, λx y. ?P(x, y), ?z) ≡ is_Replace(?M, ?A', λx y. ?P'(x, y), ?z')
+  strong_replacement: (⋀x y. ?M(x) ⟹ ?M(y) ⟹ ?P(x, y) ≡ ?P'(x, y)) ⟹ strong_replacement(?M, λx y. ?P(x, y)) ≡ strong_replacement(?M, λx y. ?P'(x, y))
+  univalent: ?A ≡ ?A' ⟹ (⋀x y. x ∈ ?A ⟹ ?M(x) ⟹ ?M(y) ⟹ ?P(x, y) ≡ ?P'(x, y)) ⟹ univalent(?M, ?A, λx y. ?P(x, y)) ≡ univalent(?M, ?A', λx y. ?P'(x, y))
+  separation: (⋀x. ?M(x) ⟹ ?P(x) ≡ ?P'(x)) ⟹ separation(?M, λx. ?P(x)) ≡ separation(?M, λx. ?P'(x))
+  (∧): ?P ≡ ?P' ⟹ (?P' ⟹ ?Q ≡ ?Q') ⟹ ?P ∧ ?Q ≡ ?P' ∧ ?Q'
+  rex: (⋀x. ?M(x) ⟹ ?P(x) ≡ ?P'(x)) ⟹ ∃x[?M]. ?P(x) ≡ ∃x[?M]. ?P'(x)
+  rall: (⋀x. ?M(x) ⟹ ?P(x) ≡ ?P'(x)) ⟹ ∀x[?M]. ?P(x) ≡ ∀x[?M]. ?P'(x)
+  OUnion: ?i ≡ ?j ⟹ (⋀x. x < ?j ⟹ ?C(x) ≡ ?D(x)) ⟹ ⋃x<?i. ?C(x) ≡ ⋃x<?j. ?D(x)
+  oex: ?a ≡ ?a' ⟹ (⋀x. x < ?a' ⟹ ?P(x) ≡ ?P'(x)) ⟹ ∃x<?a. ?P(x) ≡ ∃x<?a'. ?P'(x)
+  oall: ?a ≡ ?a' ⟹ (⋀x. x < ?a' ⟹ ?P(x) ≡ ?P'(x)) ⟹ ∀x<?a. ?P(x) ≡ ∀x<?a'. ?P'(x)
+  Lambda: ?A ≡ ?A' ⟹ (⋀x. x ∈ ?A' ⟹ ?b(x) ≡ ?b'(x)) ⟹ Lambda(?A, ?b) ≡ Lambda(?A', ?b')
+  If: ?P ≡ ?Q ⟹ if ?P then ?x else ?y ≡ if ?Q then ?x else ?y
+  Collect: ?A ≡ ?B ⟹ (⋀x. x ∈ ?B ⟹ ?P(x) ≡ ?Q(x)) ⟹ {x ∈ ?A . ?P(x)} ≡ {x ∈ ?B . ?Q(x)}
+  RepFun: ?A ≡ ?B ⟹ (⋀x. x ∈ ?B ⟹ ?f(x) ≡ ?g(x)) ⟹ RepFun(?A, ?f) ≡ RepFun(?B, ?g)
+  Replace: ?A ≡ ?B ⟹ (⋀x y. x ∈ ?B ⟹ ?P(x, y) ≡ ?Q(x, y)) ⟹ Replace(?A, ?P) ≡ Replace(?B, ?Q)
+  Bex: ?A ≡ ?A' ⟹ (⋀x. x ∈ ?A' ⟹ ?P(x) ≡ ?P'(x)) ⟹ ∃x∈?A. ?P(x) ≡ ∃x∈?A'. ?P'(x)
+  Ball: ?A ≡ ?A' ⟹ (⋀x. x ∈ ?A' ⟹ ?P(x) ≡ ?P'(x)) ⟹ ∀x∈?A. ?P(x) ≡ ∀x∈?A'. ?P'(x)
+  (⟶): ?P ≡ ?P' ⟹ (?P' ⟹ ?Q ≡ ?Q') ⟹ ?P ⟶ ?Q ≡ ?P' ⟶ ?Q'
+loopers: "split ZF_Base.If :: (IFOL.o, (ZF_Base.i, (ZF_Base.i, ZF_Base.i)fun)fun)fun"
+unsafe solvers: "ZF typecheck"
+safe solvers: "FOL safe"
+safe introduction rules (intro!):
+    (⋀q. q ∈ P ⟹ ⟨q, ?p⟩ ∈ leq ⟹ ∃d∈?D. d ∈ P ∧ ⟨d, q⟩ ∈ leq) ⟹ dense_below(?D, ?p)
+    ∀p∈P. ∃d∈?D. ⟨d, p⟩ ∈ leq ⟹ dense(?D)
+    (##M)(nat)
+    (##M)(?x) ⟹ (##M)(Forall(?x))
+    (##M)(?x) ∧ (##M)(?y) ⟹ (##M)(Nand(?x, ?y))
+    (##M)(?x) ∧ (##M)(?y) ⟹ (##M)(Equal(?x, ?y))
+    (##M)(?x) ∧ (##M)(?y) ⟹ (##M)(Member(?x, ?y))
+    (##M)(?a) ∧ (##M)(?l) ⟹ (##M)(Cons(?a, ?l))
+    (##M)(?a) ⟹ (##M)(Inr(?a))
+    (##M)(?a) ⟹ (##M)(Inl(?a))
+    (##M)(?a) ⟹ (##M)(succ(?a))
+    (##M)(?a) ∧ (##M)(?b) ⟹ (##M)(⟨?a, ?b⟩)
+    (##M)(?a) ⟹ (##M)({?a})
+    (##M)(?a) ∧ (##M)(?b) ⟹ (##M)({?a, ?b})
+    (##M)(0)
+    ?x ∈ ?A ⟹ ?y ∈ ?A ⟹ ?x ∈ domain(?y) ⟹ ⟨?x, ?y⟩ ∈ edrel(?A)
+    ?p ∈ formula ⟹ Forall(?p) ∈ formula
+    ?p ∈ formula ⟹ ?q ∈ formula ⟹ Nand(?p, ?q) ∈ formula
+    ?x ∈ nat ⟹ ?y ∈ nat ⟹ Equal(?x, ?y) ∈ formula
+    ?x ∈ nat ⟹ ?y ∈ nat ⟹ Member(?x, ?y) ∈ formula
+    quasilist(Cons(?x, ?l))
+    quasilist([])
+    ?z zmod ?w ∈ int
+    ?z zdiv ?w ∈ int
+    intify(?m) = #0 ∨ intify(?n) = #0 ⟹ ?m $* ?n = #0
+    ?y $≤ $- integ_of(?w) ⟹ integ_of(?w) $≤ $- ?y
+    $- integ_of(?w) $≤ ?x ⟹ $- ?x $≤ integ_of(?w)
+    ?y $< $- integ_of(?w) ⟹ integ_of(?w) $< $- ?y
+    $- integ_of(?w) $< ?x ⟹ $- ?x $< integ_of(?w)
+    ?w ∈ bin ⟹ ?b ∈ bool ⟹ ?w BIT ?b ∈ bin
+    Min ∈ bin
+    Pls ∈ bin
+    ?z $- ?w ∈ int
+    ?z $* ?w ∈ int
+    ?z $+ ?w ∈ int
+    zmagnitude(?z) ∈ nat
+    nat_of(?z) ∈ nat
+    $- ?z ∈ int
+    intify(?x) ∈ int
+    natify(?m) = natify(?n) ⟹ $# ?m = $# ?n
+    ?x1.0 #+ ?y2.0 = ?x2.0 #+ ?y1.0 ⟹ ?x1.0 ∈ nat ⟹ ?y1.0 ∈ nat ⟹ ?x2.0 ∈ nat ⟹ ?y2.0 ∈ nat ⟹ ⟨⟨?x1.0, ?y1.0⟩, ?x2.0, ?y2.0⟩ ∈ intrel
+    ?a ∈ ?A ⟹ ?l ∈ list(?A) ⟹ Cons(?a, ?l) ∈ list(?A)
+    [] ∈ list(?A)
+    natify(?m) = 0 ∨ natify(?n) = 0 ⟹ ?m #* ?n = 0
+    natify(?m) = 1 ∧ natify(?n) = 1 ⟹ ?m #* ?n = 1
+    0 < natify(?m) ∧ 0 < natify(?n) ⟹ 0 < ?m #* ?n
+    natify(?m) = 0 ∧ natify(?n) = 0 ⟹ ?m #+ ?n = 0
+    ?m div ?n ∈ nat
+    ?m mod ?n ∈ nat
+    ?m #- ?n ∈ nat
+    ?m #* ?n ∈ nat
+    ?m #+ ?n ∈ nat
+    natify(?x) ∈ nat
+    Finite(?A) ⟹ Finite(Pow(?A))
+    Finite(?x) ⟹ Finite(succ(?x))
+    Finite(?x) ⟹ Finite(cons(?y, ?x))
+    |1| = 1
+    |0| = 0
+    Card(|?A|)
+    Ord(|?A|)
+    ?a = ?b ⟹ QInr(?a) = QInr(?b)
+    ?a = ?b ⟹ QInl(?a) = QInl(?b)
+    ?b ∈ ?B ⟹ QInr(?b) ∈ ?A <+> ?B
+    ?a ∈ ?A ⟹ QInl(?a) ∈ ?A <+> ?B
+    <?a; ?b> ∈ ?r ⟹ <?b; ?a> ∈ qconverse(?r)
+    ?a ∈ ?A ⟹ ?b ∈ ?B(?a) ⟹ <?a; ?b> ∈ QSigma(?A, ?B)
+    Ord(?i ++ ?j)
+    Ord(ordify(?x))
+    ?x ≤ ?y ∧ ?x ∈ nat ∧ ?y ∈ nat ⟹ ⟨?x, ?y⟩ ∈ Le
+    quasinat(succ(?x))
+    quasinat(0)
+    Limit(nat)
+    Ord(nat)
+    2 ∈ nat
+    1 ∈ nat
+    ?n ∈ nat ⟹ succ(?n) ∈ nat
+    0 ∈ nat
+    (⋀x. ?M(x) ⟹ ?P(x)) ⟹ ∀x[?M]. ?P(x)
+    (⋀x. x < ?A ⟹ ?P(x)) ⟹ ∀x<?A. ?P(x)
+    ?x ∈ ?A ∧ ?y ∈ ?A ∧ ?f(?x) < ?f(?y) ⟹ ⟨?x, ?y⟩ ∈ measure(?A, ?f)
+    wf(measure(?A, ?f))
+    wf(?r) ⟹ wf(rvimage(?A, ?f, ?r))
+    ⟨?a', ?a⟩ ∈ ?r ∧ ?a' ∈ ?A ∧ ?a ∈ ?A ∧ ?b' ∈ ?B ∧ ?b ∈ ?B ∨ ⟨?b', ?b⟩ ∈ ?s ∧ ?a' = ?a ∧ ?a ∈ ?A ∧ ?b' ∈ ?B ∧ ?b ∈ ?B ⟹ ⟨⟨?a', ?b'⟩, ?a, ?b⟩ ∈ rmult(?A, ?r, ?B, ?s)
+    ?b' ∈ ?B ∧ ?b ∈ ?B ∧ ⟨?b', ?b⟩ ∈ ?s ⟹ ⟨Inr(?b'), Inr(?b)⟩ ∈ radd(?A, ?r, ?B, ?s)
+    ?a' ∈ ?A ∧ ?a ∈ ?A ∧ ⟨?a', ?a⟩ ∈ ?r ⟹ ⟨Inl(?a'), Inl(?a)⟩ ∈ radd(?A, ?r, ?B, ?s)
+    ?a ∈ ?A ∧ ?b ∈ ?B ⟹ ⟨Inl(?a), Inr(?b)⟩ ∈ radd(?A, ?r, ?B, ?s)
+    ?i < ?j ⟹ succ(?i) ≤ ?j
+    Ord(?x) ⟹ 0 ≤ succ(?x)
+    ?a ∈ ?b ⟹ ?a ∈ ?A ⟹ ?b ∈ ?A ⟹ ⟨?a, ?b⟩ ∈ Memrel(?A)
+    Ord(?i) ⟹ ?i ≤ ?i
+    Ord(?i) ⟹ Ord(succ(?i))
+    Ord(0)
+    ?a ∈ ?A ⟹ ⟨?a, ?a⟩ ∈ id(?A)
+    ?X = 0 ∧ ?A ≠ 0 ⟹ ?A -> ?X = 0
+    ?a = ?b ⟹ Inr(?a) = Inr(?b)
+    ?a = ?b ⟹ Inl(?a) = Inl(?b)
+    ?b ∈ ?B ⟹ Inr(?b) ∈ ?A + ?B
+    ?a ∈ ?A ⟹ Inl(?a) ∈ ?A + ?B
+    ?A = 0 ∧ ?B = 0 ⟹ ?A ∪ ?B = 0
+    ?a ∈ ?C ∧ ?B ⊆ ?C ⟹ cons(?a, ?B) ⊆ ?C
+    ⟨?a, ?b⟩ ∈ ?r ⟹ ⟨?b, ?a⟩ ∈ converse(?r)
+    ?a ∈ ?A ⟹ ?b ∈ ?B(?a) ⟹ ⟨?a, ?b⟩ ∈ Sigma(?A, ?B)
+    ?a = ?b ⟹ {?a} = {?b}
+    (?i ∉ ?j ⟹ ?i = ?j) ⟹ ?i ∈ succ(?j)
+    ?a ∈ {?a}
+    (?a ∉ ?B ⟹ ?a = ?b) ⟹ ?a ∈ cons(?b, ?B)
+    ?c ∈ ?A ⟹ ?c ∉ ?B ⟹ ?c ∈ ?A - ?B
+    ?c ∈ ?A ⟹ ?c ∈ ?B ⟹ ?c ∈ ?A ∩ ?B
+    (?c ∉ ?B ⟹ ?c ∈ ?A) ⟹ ?c ∈ ?A ∪ ?B
+    ?A ⊆ ?B ⟹ ?A ∈ Pow(?B)
+    (⋀x. x ∈ ?C ⟹ ?A ∈ x) ⟹ ?C ≠ 0 ⟹ ?A ∈ ⋂?C
+    ?a ∈ ?A ⟹ ?P(?a) ⟹ ?a ∈ {x ∈ ?A . ?P(x)}
+    (⋀x. x ∈ ?A ⟹ x ∈ ?B) ⟹ ?A ⊆ ?B
+    (⋀x. x ∈ ?A ⟹ ?P(x)) ⟹ ∀x∈?A. ?P(x)
+    ∃x. ?P(x) ⟹ (⋀x y. ?P(x) ⟹ ?P(y) ⟹ x = y) ⟹ ∃!x. ?P(x)
+    (⋀x. ?P(x)) ⟹ ∀x. ?P(x)
+    (?P ⟹ ?Q) ⟹ (?Q ⟹ ?P) ⟹ ?P ⟷ ?Q
+    (?P ⟹ False) ⟹ ¬ ?P
+    (?P ⟹ ?Q) ⟹ ?P ⟶ ?Q
+    (¬ ?Q ⟹ ?P) ⟹ ?P ∨ ?Q
+    ?P ⟹ ?Q ⟹ ?P ∧ ?Q
+    True
+    ?a = ?a
+introduction rules (intro):
+    (##M)(?A) ⟹ (##M)(eclose(?A))
+    ?p ∈ formula ⟹
+    ∀x[##M]. ∀y[##M]. x ∈ nat ⟶ y ∈ nat ⟶ (##M)(?a(x, y)) ⟹
+    ∀x[##M]. ∀y[##M]. x ∈ nat ⟶ y ∈ nat ⟶ (##M)(?b(x, y)) ⟹
+    ∀x[##M]. ∀y[##M]. x ∈ formula ⟶ y ∈ formula ⟶ (##M)(?c(x, y)) ⟹ ∀x[##M]. x ∈ formula ⟶ (##M)(?d(x)) ⟹ (##M)(formula_case(?a, ?b, ?c, ?d, ?p))
+    ?xs ∈ list(?A) ⟹ ?n ∈ nat ⟹ (##M)(?A) ⟹ (##M)(nth(?n, ?xs))
+    ?n ∈ nat ⟹ (##M)(formula_N(?n))
+    (##M)(formula)
+    (##M)(?A) ⟹ ?n ∈ nat ⟹ (##M)(list_N(?A, ?n))
+    (##M)(?A) ⟹ (##M)(list(?A))
+    iterates_replacement(##M, ?isF, ?v) ⟹ relation1(##M, ?isF, ?F) ⟹ ?n ∈ nat ⟹ (##M)(?v) ⟹ ∀x[##M]. (##M)(?F(x)) ⟹ (##M)(?F^?n (?v))
+    (##M)(?r) ⟹ (##M)(?r^+)
+    (##M)(?r) ⟹ (##M)(?r^*)
+    (##M)(?A) ⟹ (##M)(Memrel(?A))
+    (##M)(?A) ⟹ (##M)(?r) ⟹ (##M)(?x) ⟹ (##M)(Order.pred(?A, ?x, ?r))
+    (##M)(?k) ⟹ (##M)(?a) ⟹ ∀x[##M]. ∀y[##M]. (##M)(?b(x, y)) ⟹ (##M)(list_case'(?a, ?b, ?k))
+    ?n ∈ nat ⟹ (##M)(?B) ⟹ (##M)(?n -> ?B)
+    (##M)(?A) ⟹ (##M)(?B) ⟹ (##M)(?A - ?B)
+    (##M)(?A) ⟹ (##M)(?B) ⟹ (##M)(?A ∩ ?B)
+    (##M)(?A) ⟹ (##M)(⋂?A)
+    (##M)(?A) ⟹ (##M)(?r) ⟹ (##M)(restrict(?r, ?A))
+    (##M)(?r) ⟹ (##M)(?s) ⟹ (##M)(?r O ?s)
+    (##M)(?f) ⟹ (##M)(?a) ⟹ (##M)(?f ` ?a)
+    (##M)(?r) ⟹ (##M)(field(?r))
+    (##M)(?r) ⟹ (##M)(range(?r))
+    (##M)(?r) ⟹ (##M)(domain(?r))
+    (##M)(?A) ⟹ (##M)(?r) ⟹ (##M)(?r -`` ?A)
+    (##M)(?A) ⟹ (##M)(?r) ⟹ (##M)(?r `` ?A)
+    (##M)(?r) ⟹ (##M)(converse(?r))
+    (##M)(?A) ⟹ (##M)(?B) ⟹ (##M)(?A + ?B)
+    (##M)(?A) ⟹ (##M)(?B) ⟹ (##M)(?A × ?B)
+    ?p ∈ formula ⟹ (##M)(depth(?p))
+    ?l ∈ list(?A) ⟹ (##M)(length(?l))
+    (##M)([])
+    (##M)(?p) ⟹ (##M)(not(?p))
+    (##M)(?p) ⟹ (##M)(?q) ⟹ (##M)(?p or ?q)
+    (##M)(?p) ⟹ (##M)(?q) ⟹ (##M)(?p and ?q)
+    (##M)(bool_of_o(?P))
+    (##M)(?k) ⟹ (##M)(?a) ⟹ ∀m[##M]. (##M)(?b(m)) ⟹ (##M)(nat_case(?a, ?b, ?k))
+    ?n ∈ nat ⟹ (##M)(?n)
+    strong_replacement(##M, ?P) ⟹ (##M)(?A) ⟹ univalent(##M, ?A, ?P) ⟹ (⋀x y. x ∈ ?A ⟹ ?P(x, y) ⟹ (##M)(y)) ⟹ (##M)(Replace(?A, ?P))
+    separation(##M, ?P) ⟹ (##M)(?A) ⟹ (##M)(Collect(?A, ?P))
+    (##M)(?a) ⟹ (##M)(?A) ⟹ (##M)(cons(?a, ?A))
+    (##M)(?A) ⟹ (##M)(?B) ⟹ (##M)(?A ∪ ?B)
+    (##M)(?A) ⟹ (##M)(⋃?A)
+    ?p ∈ P ⟹ ?a ∈ ?A ⟹ ⟨?a, ?p⟩ ∈ leq ⟹ ?p ∈ upclosure(?A)
+    univalent(?M, ?A, ?Q) ⟹ univalent(?M, ?A, λx y. ?P(x, y) ∧ ?Q(x, y))
+    univalent(?M, ?A, λx y. y = ?f(x))
+    (⋀x. x ∈ ?A ⟹ Card(?K(x))) ⟹ Card(⋃x<?A. ?K(x))
+    (⋀x. x ∈ ?A ⟹ Card(x)) ⟹ Card(⋃?A)
+    Ord(μ x. ?P(x))
+    ?c ∈ Fin(?A) ⟹ ?b ∩ ?c ∈ Fin(?A)
+    ?b ∈ Fin(?A) ⟹ ?b ∩ ?c ∈ Fin(?A)
+    ?P(?x) ⟹ ?M(?x) ⟹ ∃x[?M]. ?P(x)
+    ?a < ?i ⟹ ?b ∈ ?B(?a) ⟹ ?b ∈ (⋃z<?i. ?B(z))
+    ?P(?x) ⟹ ?x < ?A ⟹ ∃x<?A. ?P(x)
+    (⋀x. x < ?A ⟹ Ord(?B(x))) ⟹ Ord(⋃x<?A. ?B(x))
+    (⋀x. x ∈ ?A ⟹ Ord(?B(x))) ⟹ Ord(⋂x∈?A. ?B(x))
+    (⋀i. i ∈ ?A ⟹ Ord(i)) ⟹ Ord(⋂?A)
+    (⋀x. x ∈ ?A ⟹ Ord(?B(x))) ⟹ Ord(⋃x∈?A. ?B(x))
+    (⋀i. i ∈ ?A ⟹ Ord(i)) ⟹ Ord(⋃?A)
+    Ord(?i) ⟹ Ord(?j) ⟹ Ord(?i ∪ ?j)
+    ⟨?a, ?b⟩ ∈ ?s ⟹ ⟨?b, ?c⟩ ∈ ?r ⟹ ⟨?a, ?c⟩ ∈ ?r O ?s
+    ?a ∈ ?A ⟹ ?a = ?h(?b) ⟹ ?a ∈ Part(?A, ?h)
+    ⟨?a, ?b⟩ ∈ ?r ⟹ ?b ∈ ?B ⟹ ?a ∈ ?r -`` ?B
+    ⟨?a, ?b⟩ ∈ ?r ⟹ ?a ∈ ?A ⟹ ?b ∈ ?r `` ?A
+    (⟨?c, ?a⟩ ∉ ?r ⟹ ⟨?a, ?b⟩ ∈ ?r) ⟹ ?a ∈ field(?r)
+    ⟨?a, ?b⟩ ∈ ?r ⟹ ?b ∈ range(?r)
+    ⟨?a, ?b⟩ ∈ ?r ⟹ ?a ∈ domain(?r)
+    ?P(?a) ⟹ (⋀x. ?P(x) ⟹ x = ?a) ⟹ (THE x. ?P(x)) = ?a
+    ?B ∈ ?C ⟹ ?A ∈ ?B ⟹ ?A ∈ ⋃?C
+    ?b = ?f(?a) ⟹ ?a ∈ ?A ⟹ ?b ∈ {?f(x) . x ∈ ?A}
+    ?P(?x, ?b) ⟹ ?x ∈ ?A ⟹ (⋀y. ?P(?x, y) ⟹ y = ?b) ⟹ ?b ∈ {y . x ∈ ?A, ?P(x, y)}
+    ?A ⊆ ?B ⟹ ?B ⊆ ?A ⟹ ?A = ?B
+    ?P(?x) ⟹ ?x ∈ ?A ⟹ ∃x∈?A. ?P(x)
+    ?P(?x) ⟹ ∃x. ?P(x)
+safe elimination rules (elim!):
+    dense(?D) ⟹ (∀p∈P. ∃d∈?D. ⟨d, p⟩ ∈ leq ⟹ PROP ?W) ⟹ PROP ?W
+    (##M)(Forall(?x)) ⟹ ((##M)(?x) ⟹ PROP ?W) ⟹ PROP ?W
+    (##M)(Nand(?x, ?y)) ⟹ ((##M)(?x) ∧ (##M)(?y) ⟹ PROP ?W) ⟹ PROP ?W
+    (##M)(Equal(?x, ?y)) ⟹ ((##M)(?x) ∧ (##M)(?y) ⟹ PROP ?W) ⟹ PROP ?W
+    (##M)(Member(?x, ?y)) ⟹ ((##M)(?x) ∧ (##M)(?y) ⟹ PROP ?W) ⟹ PROP ?W
+    (##M)(Cons(?a, ?l)) ⟹ ((##M)(?a) ∧ (##M)(?l) ⟹ PROP ?W) ⟹ PROP ?W
+    (##M)(Inr(?a)) ⟹ ((##M)(?a) ⟹ PROP ?W) ⟹ PROP ?W
+    (##M)(Inl(?a)) ⟹ ((##M)(?a) ⟹ PROP ?W) ⟹ PROP ?W
+    (##M)(succ(?a)) ⟹ ((##M)(?a) ⟹ PROP ?W) ⟹ PROP ?W
+    (##M)(⟨?a, ?b⟩) ⟹ ((##M)(?a) ∧ (##M)(?b) ⟹ PROP ?W) ⟹ PROP ?W
+    (##M)({?a}) ⟹ ((##M)(?a) ⟹ PROP ?W) ⟹ PROP ?W
+    (##M)({?a, ?b}) ⟹ ((##M)(?a) ∧ (##M)(?b) ⟹ PROP ?W) ⟹ PROP ?W
+    ?m $* ?n = #0 ⟹ (intify(?m) = #0 ∨ intify(?n) = #0 ⟹ PROP ?W) ⟹ PROP ?W
+    integ_of(?w) $≤ $- ?y ⟹ (?y $≤ $- integ_of(?w) ⟹ PROP ?W) ⟹ PROP ?W
+    $- ?x $≤ integ_of(?w) ⟹ ($- integ_of(?w) $≤ ?x ⟹ PROP ?W) ⟹ PROP ?W
+    integ_of(?w) $< $- ?y ⟹ (?y $< $- integ_of(?w) ⟹ PROP ?W) ⟹ PROP ?W
+    $- ?x $< integ_of(?w) ⟹ ($- integ_of(?w) $< ?x ⟹ PROP ?W) ⟹ PROP ?W
+    ?z $< ?z ⟹ ?R
+    znegative($# ?n) ⟹ ?R
+    $- ?z = $- ?w ⟹ (intify(?z) = intify(?w) ⟹ PROP ?W) ⟹ PROP ?W
+    $# ?m = $# ?n ⟹ (natify(?m) = natify(?n) ⟹ PROP ?W) ⟹ PROP ?W
+    ?p ∈ intrel ⟹ (⋀x1 y1 x2 y2. ?p = ⟨⟨x1, y1⟩, x2, y2⟩ ⟹ x1 #+ y2 = x2 #+ y1 ⟹ x1 ∈ nat ⟹ y1 ∈ nat ⟹ x2 ∈ nat ⟹ y2 ∈ nat ⟹ ?Q) ⟹ ?Q
+    ?X ∈ ?A // ?r ⟹ (⋀x. ?X = ?r `` {x} ⟹ x ∈ ?A ⟹ ?P) ⟹ ?P
+    ?m #* ?n = 0 ⟹ (natify(?m) = 0 ∨ natify(?n) = 0 ⟹ PROP ?W) ⟹ PROP ?W
+    ?m #* ?n = 1 ⟹ (natify(?m) = 1 ∧ natify(?n) = 1 ⟹ PROP ?W) ⟹ PROP ?W
+    0 < ?m #* ?n ⟹ (0 < natify(?m) ∧ 0 < natify(?n) ⟹ PROP ?W) ⟹ PROP ?W
+    ?m #+ ?n = 0 ⟹ (natify(?m) = 0 ∧ natify(?n) = 0 ⟹ PROP ?W) ⟹ PROP ?W
+    Finite(Pow(?A)) ⟹ (Finite(?A) ⟹ PROP ?W) ⟹ PROP ?W
+    Finite(succ(?x)) ⟹ (Finite(?x) ⟹ PROP ?W) ⟹ PROP ?W
+    Finite(cons(?y, ?x)) ⟹ (Finite(?x) ⟹ PROP ?W) ⟹ PROP ?W
+    ?i ≺ ?i ⟹ ?P
+    QInr(?b) = QInl(?a) ⟹ ?P
+    QInl(?a) = QInr(?b) ⟹ ?P
+    QInr(?a) = QInr(?b) ⟹ (?a = ?b ⟹ PROP ?W) ⟹ PROP ?W
+    QInl(?a) = QInl(?b) ⟹ (?a = ?b ⟹ PROP ?W) ⟹ PROP ?W
+    ?u ∈ ?A <+> ?B ⟹ (⋀x. x ∈ ?A ⟹ ?u = QInl(x) ⟹ ?P) ⟹ (⋀y. y ∈ ?B ⟹ ?u = QInr(y) ⟹ ?P) ⟹ ?P
+    ?yx ∈ qconverse(?r) ⟹ (⋀x y. ?yx = <y; x> ⟹ <x; y> ∈ ?r ⟹ ?P) ⟹ ?P
+    <?a; ?b> ∈ qconverse(?r) ⟹ <?b; ?a> ∈ ?r
+    ?p ∈ QSigma(?A, ?B) ⟹ (⋀x y. x ∈ ?A ⟹ y ∈ ?B(x) ⟹ ?c(x, y) ∈ ?C(<x; y>)) ⟹ qsplit(λx y. ?c(x, y), ?p) ∈ ?C(?p)
+    <?a; ?b> ∈ QSigma(?A, ?B) ⟹ (?a ∈ ?A ⟹ ?b ∈ ?B(?a) ⟹ ?P) ⟹ ?P
+    ?c ∈ QSigma(?A, ?B) ⟹ (⋀x y. x ∈ ?A ⟹ y ∈ ?B(x) ⟹ ?c = <x; y> ⟹ ?P) ⟹ ?P
+    <?a; ?b> = <?c; ?d> ⟹ (?a = ?c ⟹ ?b = ?d ⟹ ?R) ⟹ ?R
+    ⟨?x, ?y⟩ ∈ Le ⟹ (?x ≤ ?y ∧ ?x ∈ nat ∧ ?y ∈ nat ⟹ PROP ?W) ⟹ PROP ?W
+    succ(?n) ∈ nat ⟹ (?n ∈ nat ⟹ PROP ?W) ⟹ PROP ?W
+    ∃x[?M]. ?P(x) ⟹ (⋀x. ?M(x) ⟹ ?P(x) ⟹ ?Q) ⟹ ?Q
+    ?b ∈ (⋃z<?i. ?B(z)) ⟹ (⋀a. ?b ∈ ?B(a) ⟹ a < ?i ⟹ ?R) ⟹ ?R
+    ∃x<?A. ?P(x) ⟹ (⋀x. x < ?A ⟹ ?P(x) ⟹ ?Q) ⟹ ?Q
+    ⟨?x, ?y⟩ ∈ measure(?A, ?f) ⟹ (?x ∈ ?A ∧ ?y ∈ ?A ∧ ?f(?x) < ?f(?y) ⟹ PROP ?W) ⟹ PROP ?W
+    ⟨⟨?a', ?b'⟩, ?a, ?b⟩ ∈ rmult(?A, ?r, ?B, ?s) ⟹ (⟨?a', ?a⟩ ∈ ?r ∧ ?a' ∈ ?A ∧ ?a ∈ ?A ∧ ?b' ∈ ?B ∧ ?b ∈ ?B ∨ ⟨?b', ?b⟩ ∈ ?s ∧ ?a' = ?a ∧ ?a ∈ ?A ∧ ?b' ∈ ?B ∧ ?b ∈ ?B ⟹ PROP ?W) ⟹ PROP ?W
+    ⟨Inr(?b), Inl(?a)⟩ ∈ radd(?A, ?r, ?B, ?s) ⟹ (False ⟹ PROP ?W) ⟹ PROP ?W
+    ⟨Inr(?b'), Inr(?b)⟩ ∈ radd(?A, ?r, ?B, ?s) ⟹ (?b' ∈ ?B ∧ ?b ∈ ?B ∧ ⟨?b', ?b⟩ ∈ ?s ⟹ PROP ?W) ⟹ PROP ?W
+    ⟨Inl(?a'), Inl(?a)⟩ ∈ radd(?A, ?r, ?B, ?s) ⟹ (?a' ∈ ?A ∧ ?a ∈ ?A ∧ ⟨?a', ?a⟩ ∈ ?r ⟹ PROP ?W) ⟹ PROP ?W
+    ⟨Inl(?a), Inr(?b)⟩ ∈ radd(?A, ?r, ?B, ?s) ⟹ (?a ∈ ?A ∧ ?b ∈ ?B ⟹ PROP ?W) ⟹ PROP ?W
+    Limit(succ(?i)) ⟹ ?P
+    Limit(0) ⟹ ?R
+    succ(?i) ≤ ?j ⟹ (?i < ?j ⟹ PROP ?W) ⟹ PROP ?W
+    0 ≤ succ(?x) ⟹ (Ord(?x) ⟹ PROP ?W) ⟹ PROP ?W
+    ⟨?a, ?b⟩ ∈ Memrel(?A) ⟹ (?a ∈ ?A ⟹ ?b ∈ ?A ⟹ ?a ∈ ?b ⟹ ?P) ⟹ ?P
+    ?i ≤ 0 ⟹ (?i = 0 ⟹ PROP ?W) ⟹ PROP ?W
+    ?i ≤ ?i ⟹ (Ord(?i) ⟹ PROP ?W) ⟹ PROP ?W
+    ?i < ?i ⟹ ?P
+    ?i < 0 ⟹ ?R
+    Ord(succ(?i)) ⟹ (Ord(?i) ⟹ PROP ?W) ⟹ PROP ?W
+    ?xz ∈ ?r O ?s ⟹ (⋀x y z. ?xz = ⟨x, z⟩ ⟹ ⟨x, y⟩ ∈ ?s ⟹ ⟨y, z⟩ ∈ ?r ⟹ ?P) ⟹ ?P
+    ?p ∈ id(?A) ⟹ (⋀x. x ∈ ?A ⟹ ?p = ⟨x, x⟩ ⟹ ?P) ⟹ ?P
+    ?A -> ?X = 0 ⟹ (?X = 0 ∧ ?A ≠ 0 ⟹ PROP ?W) ⟹ PROP ?W
+    Inr(?b) = Inl(?a) ⟹ ?P
+    Inl(?a) = Inr(?b) ⟹ ?P
+    Inr(?a) = Inr(?b) ⟹ (?a = ?b ⟹ PROP ?W) ⟹ PROP ?W
+    Inl(?a) = Inl(?b) ⟹ (?a = ?b ⟹ PROP ?W) ⟹ PROP ?W
+    ?u ∈ ?A + ?B ⟹ (⋀x. x ∈ ?A ⟹ ?u = Inl(x) ⟹ ?P) ⟹ (⋀y. y ∈ ?B ⟹ ?u = Inr(y) ⟹ ?P) ⟹ ?P
+    ?a ∈ Part(?A, ?h) ⟹ (⋀z. ?a ∈ ?A ⟹ ?a = ?h(z) ⟹ ?P) ⟹ ?P
+    ?a ∈ ?r -`` ?B ⟹ (⋀x. ⟨?a, x⟩ ∈ ?r ⟹ x ∈ ?B ⟹ ?P) ⟹ ?P
+    ?b ∈ ?r `` ?A ⟹ (⋀x. ⟨x, ?b⟩ ∈ ?r ⟹ x ∈ ?A ⟹ ?P) ⟹ ?P
+    ?a ∈ field(?r) ⟹ (⋀x. ⟨?a, x⟩ ∈ ?r ⟹ ?P) ⟹ (⋀x. ⟨x, ?a⟩ ∈ ?r ⟹ ?P) ⟹ ?P
+    ?b ∈ range(?r) ⟹ (⋀x. ⟨x, ?b⟩ ∈ ?r ⟹ ?P) ⟹ ?P
+    ?a ∈ domain(?r) ⟹ (⋀y. ⟨?a, y⟩ ∈ ?r ⟹ ?P) ⟹ ?P
+    ?A ∪ ?B = 0 ⟹ (?A = 0 ∧ ?B = 0 ⟹ PROP ?W) ⟹ PROP ?W
+    cons(?a, ?B) ⊆ ?C ⟹ (?a ∈ ?C ∧ ?B ⊆ ?C ⟹ PROP ?W) ⟹ PROP ?W
+    ?yx ∈ converse(?r) ⟹ (⋀x y. ?yx = ⟨y, x⟩ ⟹ ⟨x, y⟩ ∈ ?r ⟹ ?P) ⟹ ?P
+    ⟨?a, ?b⟩ ∈ Sigma(?A, ?B) ⟹ (?a ∈ ?A ⟹ ?b ∈ ?B(?a) ⟹ ?P) ⟹ ?P
+    ?c ∈ Sigma(?A, ?B) ⟹ (⋀x y. x ∈ ?A ⟹ y ∈ ?B(x) ⟹ ?c = ⟨x, y⟩ ⟹ ?P) ⟹ ?P
+    0 = ⟨?a, ?b⟩ ⟹ ?R
+    ⟨?a, ?b⟩ = 0 ⟹ ?R
+    ⟨?a, ?b⟩ = ⟨?c, ?d⟩ ⟹ (?a = ?c ⟹ ?b = ?d ⟹ ?R) ⟹ ?R
+    {?a} = {?b} ⟹ (?a = ?b ⟹ PROP ?W) ⟹ PROP ?W
+    succ(?m) = succ(?n) ⟹ (?m = ?n ⟹ PROP ?W) ⟹ PROP ?W
+    0 = succ(?n) ⟹ ?R
+    succ(?n) = 0 ⟹ ?R
+    ?i ∈ succ(?j) ⟹ (?i = ?j ⟹ ?P) ⟹ (?i ∈ ?j ⟹ ?P) ⟹ ?P
+    ?a ∈ {?b} ⟹ (?a = ?b ⟹ PROP ?W) ⟹ PROP ?W
+    ?a ∈ cons(?b, ?A) ⟹ (?a = ?b ⟹ ?P) ⟹ (?a ∈ ?A ⟹ ?P) ⟹ ?P
+    ?c ∈ ?A - ?B ⟹ (?c ∈ ?A ⟹ ?c ∉ ?B ⟹ ?P) ⟹ ?P
+    ?c ∈ ?A ∩ ?B ⟹ (?c ∈ ?A ⟹ ?c ∈ ?B ⟹ ?P) ⟹ ?P
+    ?c ∈ ?A ∪ ?B ⟹ (?c ∈ ?A ⟹ ?P) ⟹ (?c ∈ ?B ⟹ ?P) ⟹ ?P
+    ?A ∈ Pow(?B) ⟹ (?A ⊆ ?B ⟹ PROP ?W) ⟹ PROP ?W
+    ?a ∈ 0 ⟹ ?R
+    ?b ∈ (⋃x∈?A. ?B(x)) ⟹ (⋀x. x ∈ ?A ⟹ ?b ∈ ?B(x) ⟹ ?R) ⟹ ?R
+    ?A ∈ ⋃?C ⟹ (⋀B. ?A ∈ B ⟹ B ∈ ?C ⟹ ?R) ⟹ ?R
+    ?a ∈ {x ∈ ?A . ?P(x)} ⟹ (?a ∈ ?A ⟹ ?P(?a) ⟹ ?R) ⟹ ?R
+    ?b ∈ {?f(x) . x ∈ ?A} ⟹ (⋀x. x ∈ ?A ⟹ ?b = ?f(x) ⟹ ?P) ⟹ ?P
+    ?b ∈ {y . x ∈ ?A, ?P(x, y)} ⟹ (⋀x. x ∈ ?A ⟹ ?P(x, ?b) ⟹ ?R) ⟹ ?R
+    ∃x∈?A. ?P(x) ⟹ (⋀x. x ∈ ?A ⟹ ?P(x) ⟹ ?Q) ⟹ ?Q
+    ∃!x. ?P(x) ⟹ (⋀x. ?P(x) ⟹ ∀y y'. ?P(y) ∧ ?P(y') ⟶ y = y' ⟹ ?R) ⟹ ?R
+    ∃x. ?P(x) ⟹ (⋀x. ?P(x) ⟹ ?R) ⟹ ?R
+    ?P ⟷ ?Q ⟹ (?P ⟹ ?Q ⟹ ?R) ⟹ (¬ ?P ⟹ ¬ ?Q ⟹ ?R) ⟹ ?R
+    False ⟹ ?P
+    ?P ⟶ ?Q ⟹ (¬ ?P ⟹ ?R) ⟹ (?Q ⟹ ?R) ⟹ ?R
+    ?P ∨ ?Q ⟹ (?P ⟹ ?R) ⟹ (?Q ⟹ ?R) ⟹ ?R
+    ?P ∧ ?Q ⟹ (?P ⟹ ?Q ⟹ ?R) ⟹ ?R
+elimination rules (elim):
+    M_generic(?G) ⟹ dense(?D) ⟹ ?D ⊆ P ⟹ ?D ∈ M ⟹ (∃q∈?G. q ∈ ?D ⟹ PROP ?W) ⟹ PROP ?W
+    M_generic(?G) ⟹ ?p ∈ ?G ⟹ ?r ∈ ?G ⟹ (∃q∈?G. ⟨q, ?p⟩ ∈ leq ∧ ⟨q, ?r⟩ ∈ leq ⟹ PROP ?W) ⟹ PROP ?W
+    M_generic(?G) ⟹ ?p ∈ ?G ⟹ ?q ∈ P ⟹ ⟨?p, ?q⟩ ∈ leq ⟹ (?q ∈ ?G ⟹ PROP ?W) ⟹ PROP ?W
+    M_generic(?G) ⟹ ?x ∈ ?G ⟹ (?x ∈ P ⟹ PROP ?W) ⟹ PROP ?W
+    dense_below(?D, ?p) ⟹ ?q ∈ P ⟹ ⟨?q, ?p⟩ ∈ leq ⟹ (∃d∈?D. d ∈ P ∧ ⟨d, ?q⟩ ∈ leq ⟹ PROP ?W) ⟹ PROP ?W
+    ?p ∈ upclosure(?A) ⟹ (∃a∈?A. ⟨a, ?p⟩ ∈ leq ∧ ?p ∈ P ⟹ PROP ?W) ⟹ PROP ?W
+    ?p ∈ upclosure(?A) ⟹ (⋀x a. x ∈ P ⟹ a ∈ ?A ⟹ ⟨a, x⟩ ∈ leq ⟹ ?R) ⟹ ?R
+    ?x ∈ edrel(?A) ⟹ (∃a∈?A. ∃b∈?A. ?x = ⟨a, b⟩ ⟹ PROP ?W) ⟹ PROP ?W
+    ∀x[?M]. ?P(x) ⟹ (¬ ?M(?x) ⟹ ?Q) ⟹ (?P(?x) ⟹ ?Q) ⟹ ?Q
+    ∀x<?A. ?P(x) ⟹ (¬ ?x < ?A ⟹ ?Q) ⟹ (?P(?x) ⟹ ?Q) ⟹ ?Q
+    ?A ∈ ⋂?C ⟹ (?B ∉ ?C ⟹ ?R) ⟹ (?A ∈ ?B ⟹ ?R) ⟹ ?R
+    ?A ∈ ⋂?C ⟹ ?B ∈ ?C ⟹ ?A ∈ ?B
+    0 = ?A ⟹ (?a ∉ ?A ⟹ PROP ?W) ⟹ PROP ?W
+    ?A = 0 ⟹ (?a ∉ ?A ⟹ PROP ?W) ⟹ PROP ?W
+    ?A ⊆ ?B ⟹ (?c ∉ ?A ⟹ ?P) ⟹ (?c ∈ ?B ⟹ ?P) ⟹ ?P
+    ?A ⊆ ?B ⟹ ?c ∈ ?A ⟹ ?c ∈ ?B
+    ∀x∈?A. ?P(x) ⟹ (?x ∉ ?A ⟹ ?Q) ⟹ (?P(?x) ⟹ ?Q) ⟹ ?Q
+    ∀x. ?P(x) ⟹ (?P(?x) ⟹ ?R) ⟹ ?R
+safe wrappers:
+unsafe wrappers:
