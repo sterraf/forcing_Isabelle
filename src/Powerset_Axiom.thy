@@ -176,7 +176,7 @@ lemma Pow_inter_MG:
 proof -
   from assms obtain \<tau> where
     "\<tau> \<in> M" "val(G, \<tau>) = a"
-    using GenExtD by blast
+    using GenExtD by auto
   let
     ?Q="Pow(domain(\<tau>)\<times>P) \<inter> M"
   from \<open>\<tau>\<in>M\<close> have
@@ -222,7 +222,7 @@ proof -
       "c \<in> Pow(a) \<inter> M[G]"
     then obtain \<chi> where
       "c\<in>M[G]" "\<chi> \<in> M" "val(G,\<chi>) = c"
-      using GenExtD by blast
+      using GenExtD by auto
     let
       ?\<theta>="{sp \<in>domain(\<tau>)\<times>P . sats(M,forces(Member(0,1)),[P,leq,one,snd(sp),fst(sp),\<chi>])}"
     have
@@ -261,7 +261,7 @@ proof -
           \<open>val(G,\<chi>) = c\<close>       
         ultimately have
           "sats(M[G],Member(0,1),[x,c])"
-          using \<open>\<chi> \<in> M\<close> generic definition_of_forces
+          using \<open>\<chi> \<in> M\<close> generic definition_of_forces nat_simp_union
           by auto
         moreover have
           "x\<in>M[G]" 
@@ -308,7 +308,7 @@ proof -
         moreover note \<open>\<chi> \<in> M\<close>
         ultimately obtain p where
           "p\<in>G" "sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<chi>])"
-          using generic truth_lemma[of "Member(0,1)" "[\<sigma>,\<chi>]" "G"] 
+          using generic truth_lemma[of "Member(0,1)" "G" "[\<sigma>,\<chi>]" ] nat_simp_union
           by auto
         moreover from \<open>p\<in>G\<close> have 
           "p\<in>P" 

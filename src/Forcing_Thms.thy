@@ -251,6 +251,9 @@ lemma M_generic_leqD [dest]: "M_generic(G) \<Longrightarrow> p\<in>G \<Longright
 lemma M_generic_compatD [dest]: "M_generic(G) \<Longrightarrow> p\<in>G \<Longrightarrow> r\<in>G \<Longrightarrow> \<exists>q\<in>G. <q,p>\<in>leq \<and> <q,r>\<in>leq"
   unfolding M_generic_def by (blast dest:low_bound_filter)
 
+lemma M_generic_denseD [dest]: "M_generic(G) \<Longrightarrow> dense(D) \<Longrightarrow> D\<subseteq>P \<Longrightarrow> D\<in>M \<Longrightarrow> \<exists>q\<in>G. q\<in>D"
+  unfolding M_generic_def by blast
+
 lemma GenExtD [iff]: "x\<in>M[G] \<longleftrightarrow> (\<exists>\<tau>\<in>M. x = val(G,\<tau>))"
   unfolding GenExt_def by simp
 
@@ -712,22 +715,6 @@ lemma truth_lemma_eq:
     sats_forces_Equal[OF _ _ _ assms(1), of _  "nth(n,env)" "nth(m,env)" n m] map_val_in_MG
   by (auto)
 
-(*
-lemma definition_of_forces_mem:
-  assumes 
-    "env\<in>list(M)"
-    "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" 
-    "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)" "p\<in>P"
-  shows 
-    "sats(M,forces(Member(n,m)), [P,leq,one,p] @ env) \<longleftrightarrow> (\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],Member(n,m),map(val(G),env)))"
-  using assms IV240a(2)[OF _ _ assms(2-3)] IV240b(2)[OF _ assms(2-3)] 
-    P_in_M leq_in_M one_in_M sats_forces_Member[OF _ assms(2-6)] map_val_in_MG
-    Transset_intf[OF trans_M \<open>p\<in>P\<close>] generic_filter_existence[OF \<open>p\<in>P\<close>] 
-  apply (auto del:elem_of_valI) apply (elim allE impE) apply simp 
-  (* need to use that G is a filter, see Forcing_Corollaries.thy *)
-  oops
-*)
-
 lemma arities_at_aux:
   assumes
     "n \<in> nat" "m \<in> nat" "env \<in> list(M)" "succ(n) \<union>  succ(m) \<le> length(env)"
@@ -827,7 +814,7 @@ next
 next
   case (Forall \<phi>)
   have "dense_below({q\<in>P. sats(M,forces(\<phi>),[P,leq,one,q,a] @ env)},p)" if "a\<in>M" for a
-  proof (standard, rename_tac r)
+  proof
     fix r
     assume "r\<in>P" "<r,p>\<in>leq"
     with \<open>dense_below(_,p)\<close>
@@ -910,32 +897,128 @@ next
     show "sats(M[G], Forall(\<phi>), map(val(G),env))"
       using pred_le2 map_val_in_MG
       by (auto)
-  next (* This implication will probably need a density argument *)
-    assume 1:"sats(M[G], Forall(\<phi>), map(val(G),env))"
-    {
-      fix v
-      assume "v\<in>M[G]"
-      moreover from this and  1 \<open>env\<in>_\<close>
-      have "sats(M[G], \<phi>, [v] @ map(val(G),env))"
-        using P_in_M leq_in_M one_in_M map_val_in_MG by simp
-      ultimately
-      obtain x where "x\<in>M" "sats(M[G], \<phi>, map(val(G),[x] @ env))" 
-        by auto
-      with \<open>\<phi>\<in>formula\<close> \<open>env\<in>_\<close> \<open>arity(Forall(\<phi>)) \<le> length(env)\<close>
-        Forall(2)[of "Cons(x,env)"] 
-      obtain p where "p\<in>G" "sats(M,forces(\<phi>),[P,leq,one,p,x] @ env)" 
-         using  \<open>x\<in>M\<close> pred_le2
-        by auto
-      then
-      have "\<exists>p\<in>G. sats(M, forces(Forall(\<phi>)), [P, leq, one, p] @ env)"
-        unfolding forces_def sorry (* a lie *)
-    }
+  next
+    assume "sats(M[G], Forall(\<phi>), map(val(G),env))"
+    let ?D1="{d\<in>P. sats(M,forces(Forall(\<phi>)),[P,leq,one,d] @ env)}"
+    let ?D2="{d\<in>P. \<exists>b\<in>M. \<forall>q\<in>P. <q,d>\<in>leq \<longrightarrow> \<not>sats(M,forces(\<phi>),[P,leq,one,q,b] @ env)}"
+    define D where "D \<equiv> ?D1 \<union> ?D2"
+    have "D \<subseteq> P" unfolding D_def by auto
+    moreover
+    have "D\<in>M" sorry
+    moreover
+    have "dense(D)" 
+    proof (standard, intro ballI)
+      fix p
+      assume "p\<in>P"
+      show "\<exists>d\<in>D. \<langle>d, p\<rangle> \<in> leq"
+      proof (cases "sats(M,forces(Forall(\<phi>)),[P,leq,one,p] @ env)")
+        case True
+        with \<open>p\<in>P\<close> 
+        show ?thesis unfolding D_def using leq_reflI by blast
+      next
+        case False
+        with Forall \<open>p\<in>P\<close>
+        obtain b where "b\<in>M" "\<not>sats(M,forces(\<phi>),[P,leq,one,p,b] @ env)"
+          using sats_forces_Forall by blast
+        moreover from this \<open>p\<in>P\<close> Forall
+        have "\<not>dense_below({q\<in>P. sats(M,forces(\<phi>),[P,leq,one,q,b] @ env)},p)"
+          using density_lemma pred_le2  by auto
+        moreover from this
+        obtain d where "<d,p>\<in>leq" "\<forall>q\<in>P. <q,d>\<in>leq \<longrightarrow> \<not>sats(M,forces(\<phi>),[P,leq,one,q,b] @ env)"
+          "d\<in>P" by blast
+        ultimately
+        show ?thesis unfolding D_def by auto
+      qed
+    qed
+    moreover
+    note \<open>M_generic(G)\<close>
+    ultimately
+    obtain d where "d \<in> D"  "d \<in> G" by blast
+    then
+    consider (1) "d\<in>?D1" | (2) "d\<in>?D2" unfolding D_def by blast
+    then
     show "\<exists>p\<in>G. sats(M, forces(Forall(\<phi>)), [P, leq, one, p] @ env)"
-      unfolding forces_def using map_val_in_MG P_in_M leq_in_M one_in_M Transset_intf[OF trans_M _ P_in_M]
-      sorry
+    proof (cases)
+      case 1
+      with \<open>d\<in>G\<close>
+      show ?thesis by blast
+    next
+      case 2
+      then
+      obtain b where "b\<in>M" "\<forall>q\<in>P. <q,d>\<in>leq \<longrightarrow>\<not>sats(M,forces(\<phi>),[P,leq,one,q,b] @ env)"
+        by blast
+      moreover from this(1) and  \<open>sats(M[G], Forall(\<phi>),_)\<close> and 
+        Forall(2)[of "Cons(b,env)"] Forall(1,3-4) \<open>M_generic(G)\<close>
+      obtain p where "p\<in>G" "p\<in>P" "sats(M,forces(\<phi>),[P,leq,one,p,b] @ env)" 
+        using pred_le2 using map_val_in_MG by auto
+      moreover
+      note \<open>d\<in>G\<close> \<open>M_generic(G)\<close>
+      ultimately
+      obtain q where "q\<in>G" "q\<in>P" "<q,d>\<in>leq" "<q,p>\<in>leq" by blast
+      moreover from this and  \<open>sats(M,forces(\<phi>),[P,leq,one,p,b] @ env)\<close> 
+        Forall  \<open>b\<in>M\<close> \<open>p\<in>P\<close>
+      have "sats(M,forces(\<phi>),[P,leq,one,q,b] @ env)"
+        using pred_le2 strengthening_lemma by simp
+      moreover 
+      note \<open>\<forall>q\<in>P. <q,d>\<in>leq \<longrightarrow>\<not>sats(M,forces(\<phi>),[P,leq,one,q,b] @ env)\<close>
+      ultimately
+      show ?thesis by simp
+    qed
   qed
 qed
 
-end
+lemma definition_of_forces:
+  assumes
+    "p\<in>P" "\<phi>\<in>formula" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"
+  shows
+    "sats(M,forces(\<phi>), [P,leq,one,p] @ env) \<longleftrightarrow>
+     (\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],\<phi>,map(val(G),env)))"
+proof (intro iffI allI impI, elim conjE)
+  fix G
+  assume "sats(M, forces(\<phi>), [P,leq,one,p] @ env)" "M_generic(G)" "p \<in> G"
+  with assms 
+  show "sats(M[G],\<phi>,map(val(G),env))"
+    using truth_lemma by blast
+next
+  assume 1: "\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],\<phi>,map(val(G),env))"
+  {
+    fix r 
+    assume 2: "r\<in>P" "<r,p>\<in>leq"
+    then 
+    obtain G where "r\<in>G" "M_generic(G)"
+      using generic_filter_existence by auto
+    moreover from calculation 2 \<open>p\<in>P\<close> 
+    have "p\<in>G" 
+      unfolding M_generic_def using filter_leqD by simp
+    moreover note 1
+    ultimately
+    have "sats(M[G],\<phi>,map(val(G),env))"
+      by simp
+    with assms \<open>M_generic(G)\<close> 
+    obtain s where "s\<in>G" "sats(M,forces(\<phi>), [P,leq,one,s] @ env)"
+      using truth_lemma by blast
+    moreover from this and  \<open>M_generic(G)\<close> \<open>r\<in>G\<close> 
+    obtain q where "q\<in>G" "<q,s>\<in>leq" "<q,r>\<in>leq"
+      by blast
+    moreover from calculation \<open>s\<in>G\<close> \<open>M_generic(G)\<close> 
+    have "s\<in>P" "q\<in>P" 
+      unfolding M_generic_def filter_def by auto
+    moreover 
+    note assms
+    ultimately 
+    have "\<exists>q\<in>P. <q,r>\<in>leq \<and> sats(M,forces(\<phi>), [P,leq,one,q] @ env)"
+      using strengthening_lemma by blast
+  }
+  then
+  have "dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,one,q] @ env)},p)"
+    unfolding dense_below_def by blast
+  with assms
+  show "sats(M,forces(\<phi>), [P,leq,one,p] @ env)"
+    using density_lemma by blast
+qed
+
+lemma definability[TC]:"\<phi>\<in>formula \<Longrightarrow> forces(\<phi>) \<in> formula"
+  unfolding forces_def by simp
+end (* forces_rename *)
 
 end

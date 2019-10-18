@@ -70,6 +70,8 @@ proof -
     using map_val by auto
   then
   have "length(nenv) = length(env)" by simp
+  with \<open>arity(\<phi>) \<le> _\<close> \<open>nenv\<in>_\<close> \<open>env\<in>_\<close>
+  have "arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])" for \<theta>  sorry
   note in_M = \<open>\<pi>\<in>M\<close> \<open>domain(\<pi>) \<times> P \<in> M\<close>  P_in_M one_in_M leq_in_M
   {
     fix u
@@ -126,8 +128,8 @@ proof -
         using  definition_of_forces 
       proof (intro iffI)
         assume a1: "sats(M, forces(?\<chi>), [P, leq, one,p,\<theta>] @ nenv @ [\<pi>])"
-        note definition_of_forces
-        with \<open>nenv\<in>_\<close>
+        note definition_of_forces \<open>arity(\<phi>)\<le>_\<close>
+        with \<open>nenv\<in>_\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
         have "p \<in> P \<Longrightarrow> ?\<chi>\<in>formula \<Longrightarrow> [\<theta>,\<pi>] \<in> list(M) \<Longrightarrow>
                   sats(M, forces(?\<chi>), [P, leq, one, p] @ [\<theta>]@ nenv@[\<pi>]) \<Longrightarrow> 
               \<forall>G. M_generic(G) \<and> p \<in> G \<longrightarrow> sats(M[G], ?\<chi>, map(val(G), [\<theta>] @ nenv @[\<pi>]))" by auto
@@ -138,7 +140,7 @@ proof -
       next
         assume "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
                    sats(M[F], ?\<chi>, map(val(F), [\<theta>] @ nenv @[\<pi>]))"
-        with definition_of_forces [THEN iffD2] 
+        with definition_of_forces [THEN iffD2] \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
         show "sats(M, forces(?\<chi>), [P, leq, one,p,\<theta>] @ nenv @ [\<pi>])"
           using  \<open>?\<chi>\<in>formula\<close> \<open>p\<in>P\<close> in_M' by auto
       qed
@@ -290,7 +292,8 @@ proof -
     have Eq5: "sats(M[G], And(Member(0,1 #+ length(env)),\<phi>), [val(G,\<theta>)] @ env @[val(G,\<pi>)] )" 
       by auto
         (* Recall ?\<chi> = And(Member(0,1 #+ length(env)),\<phi>) *)
-    with \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close>  Eq5 \<open>M_generic(G)\<close> \<open>\<phi>\<in>formula\<close> \<open>nenv \<in> _ \<close> \<open>env = _ \<close> map_nenv
+    with \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close>  Eq5 \<open>M_generic(G)\<close> \<open>\<phi>\<in>formula\<close> \<open>nenv \<in> _ \<close> \<open>env = _ \<close> map_nenv 
+      \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
     have "(\<exists>r\<in>G. sats(M,forces(?\<chi>), [P,leq,one,r,\<theta>] @ nenv @[\<pi>]))"
       using truth_lemma  by auto
     then obtain r where      (* I can't "obtain" this directly *)
@@ -301,11 +304,11 @@ proof -
     with \<open>r\<in>G\<close>  \<open>q\<in>G\<close> \<open>G\<subseteq>P\<close> 
     have "p\<in>P" "r\<in>P" "q\<in>P" "p\<in>M"
       using  P_in_M  by (auto simp add:transitivity)
-    with \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close>  \<open><p,r>\<in>leq\<close> \<open>nenv \<in> _\<close>
-      \<open>sats(M,forces(?\<chi>), [P,leq,one,r,\<theta>] @ nenv @ [\<pi>])\<close>
+    with \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close>  \<open><p,r>\<in>leq\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
+      \<open>sats(M,forces(?\<chi>), [P,leq,one,r,\<theta>] @ nenv @ [\<pi>])\<close> \<open>env\<in>_\<close>
     have "sats(M,forces(?\<chi>), [P,leq,one,p,\<theta>] @ nenv @ [\<pi>])"
-      using strengthening by simp
-    with \<open>p\<in>P\<close> \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>nenv \<in> _\<close>
+      using strengthening_lemma by simp
+    with \<open>p\<in>P\<close> \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
     have "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
                  sats(M[F], ?\<chi>,  map(val(F), [\<theta>] @ nenv @[\<pi>]))"
       using definition_of_forces by simp

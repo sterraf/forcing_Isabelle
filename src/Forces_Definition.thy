@@ -1529,7 +1529,7 @@ qed
 lemma forces_ren_type [TC]:  "\<phi>\<in>formula \<Longrightarrow> forces_ren(auxren,fren,fref, \<phi>) \<in> formula" 
   by (induct \<phi> set:formula; simp)
 
-lemma arity_forces:
+lemma arity_forces_ren:
   shows "\<phi>\<in>formula \<Longrightarrow> arity(forces_ren(auxren,fren,fref, \<phi>)) =  arity(\<phi>) #+ 4"
 proof (induct set:formula)
   case (Member x y)
