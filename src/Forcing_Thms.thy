@@ -446,14 +446,26 @@ And abstacting,
 Putting altogether,
 *)
 
+
 lemma core_induction:
   assumes
-    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>\<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
-    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<theta>,p)"
-    "ft \<in> 2" (* "p \<in> P" *)
+    "\<And>a b c . \<lbrakk>\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(b) \<Longrightarrow> Q(0,a,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,a,b,c)"
+    "\<And>\<tau> \<theta> p . \<lbrakk>\<And>q \<sigma>. q\<in>P \<Longrightarrow>  \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<theta>,p)"
+   "ft \<in> 2" "p \<in> P" "\<tau>\<in>M" "\<theta>\<in>M" 
   shows
     "Q(ft,\<tau>,\<theta>,p)"
-  sorry
+proof -
+  {fix ft p \<tau> \<theta> 
+    assume     "ft \<in> 2" "p \<in> P" "\<tau>\<in>M" "\<theta>\<in>M"
+    then 
+    have "<ft,\<tau>,\<theta>,p>\<in> 2\<times>M\<times>M\<times>P" (is "?a\<in>2\<times>M\<times>M\<times>P") by simp
+    then
+    have "Q(ftype(?a), name1(?a), name2(?a), cond_of(?a))"
+      using core_induction_aux[ of _ P Q "?a",OF trans_M assms(1) assms(2)] by simp 
+    then have "Q(ft,\<tau>,\<theta>,p)" by simp
+  }
+  then show ?thesis using assms by simp
+qed
 
 lemma IV240a_aux:
   assumes
