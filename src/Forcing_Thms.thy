@@ -268,7 +268,7 @@ lemma generic_inter_dense_below: "D\<in>M \<Longrightarrow> M_generic(G) \<Longr
 lemma IV240a_mem:
   assumes
     "M_generic(G)" "p\<in>G" "\<pi>\<in>M" "\<tau>\<in>M" "forces_mem(P,leq,p,\<pi>,\<tau>)"
-    "\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_eq(P,leq,q,\<pi>,\<sigma>) \<Longrightarrow> 
+    "\<And>q \<sigma>. q\<in>P \<Longrightarrow> q\<in>G \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_eq(P,leq,q,\<pi>,\<sigma>) \<Longrightarrow> 
       val(G,\<pi>) = val(G,\<sigma>)" (* inductive hypothesis *)
   shows
     "val(G,\<pi>)\<in>val(G,\<tau>)"
@@ -324,7 +324,7 @@ lemma IV240a_eq_1st_incl:
   assumes
     "M_generic(G)" "p\<in>G" "forces_eq(P,leq,p,\<tau>,\<theta>)" "\<pi>\<in>M" "\<tau>\<in>M"
     and
-    IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
+    IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> q\<in>G \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
         (forces_mem(P,leq,q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
         (forces_mem(P,leq,q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
 (* Strong enough for this case: *)
@@ -349,7 +349,7 @@ proof
   ultimately
   have "forces_mem(P,leq,q,\<sigma>,\<theta>)"
     using def_forces_eq by blast
-  with \<open>q\<in>P\<close> IH[of q \<sigma>] \<open><\<sigma>,r>\<in>\<tau>\<close> \<open>val(G,\<sigma>) = x\<close>
+  with \<open>q\<in>P\<close> \<open>q\<in>G\<close> IH[of q \<sigma>] \<open><\<sigma>,r>\<in>\<tau>\<close> \<open>val(G,\<sigma>) = x\<close>
   show "x\<in>val(G,\<theta>)" by (blast del:elem_of_valI)
 qed
 
@@ -358,7 +358,7 @@ lemma IV240a_eq_2nd_incl:
   assumes
     "M_generic(G)" "p\<in>G" "forces_eq(P,leq,p,\<tau>,\<theta>)" "\<pi>\<in>M" "\<tau>\<in>M"
     and
-    IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
+    IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> q\<in>G \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
         (forces_mem(P,leq,q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
         (forces_mem(P,leq,q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
   shows
@@ -380,7 +380,7 @@ proof
   ultimately
   have "forces_mem(P,leq,q,\<sigma>,\<tau>)"
     using def_forces_eq by blast
-  with \<open>q\<in>P\<close> IH[of q \<sigma>] \<open><\<sigma>,r>\<in>\<theta>\<close> \<open>val(G,\<sigma>) = x\<close>
+  with \<open>q\<in>P\<close> \<open>q\<in>G\<close> IH[of q \<sigma>] \<open><\<sigma>,r>\<in>\<theta>\<close> \<open>val(G,\<sigma>) = x\<close>
   show "x\<in>val(G,\<tau>)" by (blast del:elem_of_valI)
 qed
 
@@ -389,7 +389,7 @@ lemma IV240a_eq:
   assumes
     "M_generic(G)" "p\<in>G" "forces_eq(P,leq,p,\<tau>,\<theta>)" "\<pi>\<in>M" "\<tau>\<in>M"
     and
-    IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
+    IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> q\<in>G \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
         (forces_mem(P,leq,q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
         (forces_mem(P,leq,q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
   shows
@@ -451,8 +451,8 @@ Putting altogether,
 
 lemma core_induction:
   assumes
-    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
-    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<theta>,p)"
+    "\<And>\<tau> \<theta> p. p \<in> P \<Longrightarrow> \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
+    "\<And>\<tau> \<theta> p. p \<in> P \<Longrightarrow> \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<theta>,p)"
     "ft \<in> 2" "p \<in> P" "\<tau>\<in>M" "\<theta>\<in>M"
   shows
     "Q(ft,\<tau>,\<theta>,p)"
@@ -462,10 +462,10 @@ lemma IV240a_aux:
   assumes
     "M_generic(G)" "p\<in>G" "ft\<in>2" "\<tau>\<in>M" "\<theta>\<in>M" 
   shows 
-    "\<tau>\<in>M \<longrightarrow> \<theta>\<in>M \<longrightarrow> frc_at(P,leq,<ft,\<tau>,\<theta>,p>) = 1 \<longrightarrow> 
+    "p\<in>G \<longrightarrow> \<tau>\<in>M \<longrightarrow> \<theta>\<in>M \<longrightarrow> frc_at(P,leq,<ft,\<tau>,\<theta>,p>) = 1 \<longrightarrow> 
      (ft = 0 \<longrightarrow> val(G,\<tau>) = val(G,\<theta>)) \<and>
-     (ft = 1 \<longrightarrow> val(G,\<tau>) \<in> val(G,\<theta>))"
-  apply (rule_tac core_induction[OF _ _ \<open>ft\<in>2\<close>, of _ p \<tau> \<theta>])
+     (ft = 1 \<longrightarrow> val(G,\<tau>) \<in> val(G,\<theta>))" (is "?Q(ft,\<tau>,\<theta>,p)")
+  apply (rule_tac core_induction[OF _ _ \<open>ft\<in>2\<close> M_genericD[OF assms(1), OF \<open>p\<in>G\<close>], of ?Q  \<tau> \<theta>])
    apply (simp_all add:forces_eq_def[symmetric] forces_mem_def[symmetric])
    apply (intro impI)
    apply (rule IV240a_mem[OF assms(1)]; simp add: assms Transset_intf[OF trans_M _ P_in_M] Transset_intf[OF trans_M _ domain_closed[simplified]])
