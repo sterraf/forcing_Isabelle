@@ -210,12 +210,9 @@ proof -
   qed
 qed
 
-abbreviation
-  digit_three :: i   ("3") where "3 == succ(2)"
-
 lemma oadd_lt_mono2 :
-  assumes  "Ord(\<alpha>)" "Ord(\<beta>)" "\<alpha> < \<beta>" "x < 3" "y < 3"
-  shows "3 ** \<alpha> ++ x < 3 **\<beta> ++ y"
+  assumes  "Ord(n)" "Ord(\<alpha>)" "Ord(\<beta>)" "\<alpha> < \<beta>" "x < n" "y < n" "0 <n"
+  shows "n ** \<alpha> ++ x < n **\<beta> ++ y"
 proof -
   consider (0) "\<beta>=0" | (s) \<gamma> where  "Ord(\<gamma>)" "\<beta> = succ(\<gamma>)" | (l) "Limit(\<beta>)"
     using Ord_cases[OF \<open>Ord(\<beta>)\<close>,of ?thesis] by force
@@ -228,27 +225,29 @@ proof -
     then
     have "\<alpha>\<le>\<gamma>" using \<open>\<alpha><\<beta>\<close> using leI by auto
     then
-    have "3 ** \<alpha> \<le> 3 ** \<gamma>" using omult_le_mono[OF _ \<open>\<alpha>\<le>\<gamma>\<close>] by simp
+    have "n ** \<alpha> \<le> n ** \<gamma>" using omult_le_mono[OF _ \<open>\<alpha>\<le>\<gamma>\<close>] \<open>Ord(n)\<close> by simp
     then
-    have "3 ** \<alpha> ++ x < 3 ** \<gamma> ++ 3" using oadd_lt_mono[OF _ \<open>x<3\<close>] by simp
+    have "n ** \<alpha> ++ x < n ** \<gamma> ++ n" using oadd_lt_mono[OF _ \<open>x<n\<close>] by simp
     also
-    have "... = 3 ** \<beta>" using \<open>\<beta>=succ(_)\<close> omult_succ \<open>Ord(\<beta>)\<close> by simp
+    have "... = n ** \<beta>" using \<open>\<beta>=succ(_)\<close> omult_succ \<open>Ord(\<beta>)\<close> \<open>Ord(n)\<close> by simp
     finally
-    have "3 ** \<alpha> ++ x < 3 ** \<beta>" by auto
+    have "n ** \<alpha> ++ x < n ** \<beta>" by auto
     then
-    show ?thesis using oadd_le_self \<open>Ord(\<beta>)\<close> lt_trans2 by auto
+    show ?thesis using oadd_le_self \<open>Ord(\<beta>)\<close> lt_trans2 \<open>Ord(n)\<close> by auto
   next
-    case l 
-    hence "succ(\<alpha>) < \<beta>" using Limit_has_succ \<open>\<alpha><\<beta>\<close> by simp
-    have "3 ** \<alpha> ++ x < 3 ** \<alpha> ++ 3" 
-      using oadd_lt_mono[OF le_refl[OF Ord_omult[OF _ \<open>Ord(\<alpha>)\<close>]] \<open>x<3\<close>] by simp
+    case l
+    have "Ord(x)" using \<open>x<n\<close> lt_Ord by simp
+    with l
+    have "succ(\<alpha>) < \<beta>" using Limit_has_succ \<open>\<alpha><\<beta>\<close> by simp
+    have "n ** \<alpha> ++ x < n ** \<alpha> ++ n" 
+      using oadd_lt_mono[OF le_refl[OF Ord_omult[OF _ \<open>Ord(\<alpha>)\<close>]] \<open>x<n\<close>] \<open>Ord(n)\<close> by simp
     also
-    have "... = 3 ** succ(\<alpha>)" using omult_succ \<open>Ord(\<alpha>)\<close> by simp
+    have "... = n ** succ(\<alpha>)" using omult_succ \<open>Ord(\<alpha>)\<close> \<open>Ord(n)\<close> by simp
     finally
-    have "3 ** \<alpha> ++ x < 3 ** succ(\<alpha>)" by simp 
+    have "n ** \<alpha> ++ x < n ** succ(\<alpha>)" by simp 
     with \<open>succ(\<alpha>) < \<beta>\<close>
-    have "3 ** \<alpha> ++ x < 3 ** \<beta>" using lt_trans omult_lt_mono by auto
-    then show ?thesis using oadd_le_self \<open>Ord(\<beta>)\<close> lt_trans2 by auto
+    have "n ** \<alpha> ++ x < n ** \<beta>" using lt_trans omult_lt_mono \<open>Ord(n)\<close> \<open>0<n\<close>  by auto      
+    then show ?thesis using oadd_le_self \<open>Ord(\<beta>)\<close> lt_trans2 \<open>Ord(n)\<close> by auto
   qed
 qed
 end

@@ -26,11 +26,6 @@ lemma components_simp [simp]:
   unfolding ftype_def name1_def name2_def cond_of_def
   by simp_all
 
-lemma components_in_eclose : 
-  "n1 \<in> eclose(<f,n1,n2,c>)"
-  "n2 \<in> eclose(<f,n1,n2,c>)"
-  sorry
-
 definition
   is_ftype :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
   "is_ftype(M,x,t1) == \<exists>z[M]. pair(M,t1,z,x)"
@@ -319,8 +314,8 @@ lemma core_induction_aux:
   fixes A1 A2 :: "i"
   assumes
     "Transset(A1)"
-    "\<And>\<tau> \<theta> p. \<lbrakk>\<And>q \<sigma>. \<lbrakk> q\<in>A2 ; \<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
-    "\<And>\<tau> \<theta> p. \<lbrakk>\<And>q \<sigma>. \<lbrakk> q\<in>A2 ; \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<theta>,p)"
+    "\<And>\<tau> \<theta> p.  p \<in> A2 \<Longrightarrow> \<lbrakk>\<And>q \<sigma>. \<lbrakk> q\<in>A2 ; \<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
+    "\<And>\<tau> \<theta> p.  p \<in> A2 \<Longrightarrow> \<lbrakk>\<And>q \<sigma>. \<lbrakk> q\<in>A2 ; \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<theta>,p)"
   shows "a\<in>2\<times>A1\<times>A1\<times>A2 \<Longrightarrow> Q(ftype(a),name1(a),name2(a),cond_of(a))"
 proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2"]])
    case (1 x)
@@ -329,6 +324,9 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
    let ?D = "2\<times>A1\<times>A1\<times>A2"
    assume "x \<in> ?D"
    then
+   have "cond_of(x)\<in>A2" 
+     sorry
+   from \<open>x\<in>?D\<close>
    consider (eq) "ftype(x)=0" | (mem) "ftype(x)=1"
      by auto
    then 
@@ -339,7 +337,7 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
      have "Q(1, \<sigma>, ?\<tau>, q) \<and> Q(1, \<sigma>, ?\<theta>, q)" if "\<sigma> \<in> domain(?\<tau>) \<union> domain(?\<theta>)" and "q\<in>A2" for q \<sigma>
      proof -
        from 1
-       have A: "?\<tau>\<in>A1" "?\<theta>\<in>A1" "cond_of(x)\<in>A2" "?\<tau>\<in>eclose(A1)" "?\<theta>\<in>eclose(A1)"
+       have A: "?\<tau>\<in>A1" "?\<theta>\<in>A1" "?\<tau>\<in>eclose(A1)" "?\<theta>\<in>eclose(A1)"
          using  arg_into_eclose by auto
        with  \<open>Transset(A1)\<close> that(1)
        have "\<sigma>\<in>eclose(?\<tau>) \<union> eclose(?\<theta>)" 
@@ -365,7 +363,7 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
        then
        show ?thesis using A by simp
      qed
-     then show ?thesis using assms(3) \<open>ftype(x) = 0\<close> by auto
+     then show ?thesis using assms(3) \<open>ftype(x) = 0\<close> \<open>cond_of(x)\<in>A2\<close> by auto
    next
      case mem
      have "Q(0, ?\<tau>,  \<sigma>, q)" if "\<sigma> \<in> domain(?\<theta>)" and "q\<in>A2" for q \<sigma>
@@ -390,7 +388,7 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
        with \<open>q\<in>A2\<close> \<open>\<sigma>\<in>A1\<close> \<open>?\<tau>\<in>A1\<close> \<open>?\<theta>\<in>A1\<close>
        show ?thesis using 1 by force
      qed
-     then show ?thesis using assms(2) \<open>ftype(x) = 1\<close> by auto
+     then show ?thesis using assms(2) \<open>ftype(x) = 1\<close> \<open>cond_of(x)\<in>A2\<close>  by auto
    qed
  qed
 
