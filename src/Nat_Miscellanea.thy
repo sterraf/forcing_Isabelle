@@ -1,42 +1,5 @@
 theory Nat_Miscellanea imports ZF begin
 
-abbreviation
-  digit3 :: i   ("3") where "3 == succ(2)"
-
-abbreviation
-  digit4 :: i   ("4") where "4 == succ(3)"
-
-abbreviation
-  digit5 :: i   ("5") where "5 == succ(4)"
-
-abbreviation
-  digit6 :: i   ("6") where "6 == succ(5)"
-
-abbreviation
-  digit7 :: i   ("7") where "7 == succ(6)"
-
-abbreviation
-  digit8 :: i   ("8") where "8 == succ(7)"
-
-abbreviation
-  digit9 :: i   ("9") where "9 == succ(8)"
-
-abbreviation
- dec10  :: i   ("10") where "10 == succ(9)"
-    
-abbreviation
- dec11  :: i   ("11") where "11 == succ(10)"
-
-abbreviation
- dec12  :: i   ("12") where "12 == succ(11)"
-
-abbreviation
- dec13  :: i   ("13") where "13 == succ(12)"
-
-abbreviation
- dec14  :: i   ("14") where "14 == succ(13)"
-
-
 section\<open>Auxiliary results\<close>
 
 lemmas nat_succI =  Ord_succ_mem_iff [THEN iffD2,OF nat_into_Ord]
@@ -247,7 +210,8 @@ proof -
   qed
 qed
 
-lemma obvio : "0 < 3" by simp
+abbreviation
+  digit_three :: i   ("3") where "3 == succ(2)"
 
 lemma oadd_lt_mono2 :
   assumes  "Ord(\<alpha>)" "Ord(\<beta>)" "\<alpha> < \<beta>" "x < 3" "y < 3"
