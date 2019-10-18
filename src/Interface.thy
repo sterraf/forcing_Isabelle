@@ -44,6 +44,21 @@ done
 
 sublocale forcing_data \<subseteq> M_trivial "##M"
   by (rule mtriv)
+  
+abbreviation
+ dec10  :: i   ("10") where "10 == succ(9)"
+    
+abbreviation
+ dec11  :: i   ("11") where "11 == succ(10)"
+
+abbreviation
+ dec12  :: i   ("12") where "12 == succ(11)"
+
+abbreviation
+ dec13  :: i   ("13") where "13 == succ(12)"
+
+abbreviation
+ dec14  :: i   ("14") where "14 == succ(13)"
 
 lemma (in forcing_data) tuples_in_M: "A\<in>M \<Longrightarrow> B\<in>M \<Longrightarrow> <A,B>\<in>M" 
    by (simp del:setclass_iff add:setclass_iff[symmetric])
