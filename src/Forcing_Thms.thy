@@ -458,18 +458,18 @@ lemma core_induction:
   shows
     "Q(ft,\<tau>,\<theta>,p)"
 proof -
-   have A:"(\<And>\<tau> \<theta> p. p \<in> P \<Longrightarrow> (\<And>q \<sigma>. q \<in> P \<Longrightarrow> \<sigma> \<in> domain(\<theta>) \<Longrightarrow> Q(0, \<tau>, \<sigma>, q)) \<Longrightarrow> p \<in> P)"
-      by blast
-  {fix ft p \<tau> \<theta>
+  {
+    fix ft p \<tau> \<theta>
     assume     "ft \<in> 2" "p \<in> P" "\<tau>\<in>M" "\<theta>\<in>M"
     then 
     have "<ft,\<tau>,\<theta>,p>\<in> 2\<times>M\<times>M\<times>P" (is "?a\<in>2\<times>M\<times>M\<times>P") by simp
     then 
     have "Q(ftype(?a), name1(?a), name2(?a), cond_of(?a))"
-      using core_induction_aux[ of M P Q "?a",OF trans_M assms(1) assms(2) \<open>?a\<in>_\<close>, OF A ]
-      then have "Q(ft,\<tau>,\<theta>,p)" by 
+      using core_induction_aux[of M P Q "?a",OF trans_M assms(1) assms(2) \<open>?a\<in>_\<close>] 
+      by (clarify) (blast)
+    then have "Q(ft,\<tau>,\<theta>,p)" by simp
   }
-  then show ?thesis using assms by 
+  then show ?thesis using assms by simp
 qed
 
 lemma IV240a_aux:
