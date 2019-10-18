@@ -451,16 +451,16 @@ Putting altogether,
 
 lemma core_induction:
   assumes
-    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>\<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
-    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<theta>,p)"
-    "ft \<in> 2" (* "p \<in> P" *)
+    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
+    "\<And>\<tau> \<theta>. \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<theta>,p)"
+    "ft \<in> 2" "p \<in> P" "\<tau>\<in>M" "\<theta>\<in>M"
   shows
     "Q(ft,\<tau>,\<theta>,p)"
   sorry
 
 lemma IV240a_aux:
   assumes
-    "M_generic(G)" "p\<in>G" "ft\<in>2"
+    "M_generic(G)" "p\<in>G" "ft\<in>2" "\<tau>\<in>M" "\<theta>\<in>M" 
   shows 
     "\<tau>\<in>M \<longrightarrow> \<theta>\<in>M \<longrightarrow> frc_at(P,leq,<ft,\<tau>,\<theta>,p>) = 1 \<longrightarrow> 
      (ft = 0 \<longrightarrow> val(G,\<tau>) = val(G,\<theta>)) \<and>
@@ -470,7 +470,9 @@ lemma IV240a_aux:
    apply (intro impI)
    apply (rule IV240a_mem[OF assms(1)]; simp add: assms Transset_intf[OF trans_M _ P_in_M] Transset_intf[OF trans_M _ domain_closed[simplified]])
   apply (intro impI)
-  apply (rule IV240a_eq[OF assms(1)]; auto simp add:assms intro:Transset_intf[OF trans_M _ domain_closed[simplified]] del:elem_of_valI)
+  apply (rule IV240a_eq[OF assms(1)]; auto simp add:assms intro: Transset_intf[OF trans_M _ P_in_M] Transset_intf[OF trans_M _ domain_closed[simplified]] del:elem_of_valI)
+  using  \<open>M_generic(G)\<close>  Transset_intf[OF trans_M _ P_in_M] assms
+  apply auto
   done
 
 (* Lemma IV.2.40(a), full *)
@@ -648,7 +650,7 @@ qed
 
 lemma IV240b_aux:
   assumes
-    "M_generic(G)" "ft\<in>2"
+    "M_generic(G)" "ft\<in>2" "\<tau>\<in>M" "\<theta>\<in>M"
   shows 
     "\<tau>\<in>M \<longrightarrow> \<theta>\<in>M \<longrightarrow> 
      (ft = 0 \<longrightarrow> val(G,\<tau>) = val(G,\<theta>) \<longrightarrow> (\<exists>p\<in>G. frc_at(P,leq,<ft,\<tau>,\<theta>,p>) = 1)) \<and>
@@ -660,6 +662,8 @@ lemma IV240b_aux:
    apply (rule IV240b_mem[OF assms(1)] ; simp add: assms Transset_intf[OF trans_M _ P_in_M] Transset_intf[OF trans_M _ domain_closed[simplified]])
   apply (intro impI)
   apply (rule IV240b_eq[OF assms(1)]; auto simp add:assms intro: one_in_G[OF \<open>M_generic(G)\<close>] Transset_intf[OF trans_M _ domain_closed[simplified]] del: domainE elem_of_valI)
+  using one_in_M assms (* an arbitrary element of M! *)
+  apply auto
   done
 
 (* Lemma IV.2.40(b), full *)
