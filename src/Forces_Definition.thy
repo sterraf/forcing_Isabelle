@@ -223,7 +223,7 @@ proof -
   proof(cases)
     case 1
     then 
-    show ?thesis unfolding \<Gamma>_def using oadd_lt_mono2[OF _ _ \<open>?x < ?y\<close>] F by auto
+    show ?thesis unfolding \<Gamma>_def using oadd_lt_mono2 \<open>?x < ?y\<close> F by auto
   next
     case 2
     consider (a) "ftype(x) = 0 \<and> ftype(y) = 1" | (b) "ftype(x) = 1 \<and> ftype(y) = 0"
@@ -325,7 +325,7 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
    assume "x \<in> ?D"
    then
    have "cond_of(x)\<in>A2" 
-     sorry
+     by auto
    from \<open>x\<in>?D\<close>
    consider (eq) "ftype(x)=0" | (mem) "ftype(x)=1"
      by auto
