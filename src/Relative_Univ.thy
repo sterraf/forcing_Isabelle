@@ -219,6 +219,18 @@ definition
   rrank :: "i \<Rightarrow> i" where
   "rrank(a) == Memrel(eclose({a}))^+" 
 
+lemma (in M_eclose) wf_rrank : "M(x) \<Longrightarrow> wf(rrank(x))" 
+  unfolding rrank_def using wf_trancl[OF wf_Memrel] .
+
+lemma (in M_eclose) trans_rrank : "M(x) \<Longrightarrow> trans(rrank(x))"
+  unfolding rrank_def using trans_trancl .
+
+lemma (in M_eclose) relation_rrank : "M(x) \<Longrightarrow> relation(rrank(x))" 
+  unfolding rrank_def using relation_trancl .
+
+lemma (in M_eclose) rrank_in_M : "M(x) \<Longrightarrow> M(rrank(x))" 
+  unfolding rrank_def by simp
+
 
 section\<open>Absoluteness results\<close>
 
@@ -439,6 +451,7 @@ lemma relation2_Hrank :
   unfolding is_Hrank_def Hrank_def relation2_def
   using Replace_PHrank_abs RepFun_PHrank RepFun_PHrank_closed by auto
 
+
 lemma Union_PHrank_closed:
   assumes 
     "M(x)" "M(f)"
@@ -457,24 +470,12 @@ lemma is_Hrank_closed :
   "M(A) \<Longrightarrow> \<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(Hrank(x,g))"
   unfolding Hrank_def using RepFun_PHrank_closed Union_PHrank_closed by simp
 
-(*wf(r); trans(r); relation(r); M(r); M(a)*)
-lemma wf_rrank : "M(x) \<Longrightarrow> wf(rrank(x))" 
-  unfolding rrank_def using wf_trancl[OF wf_Memrel] .
-
-lemma trans_rrank : "M(x) \<Longrightarrow> trans(rrank(x))"
-  unfolding rrank_def using trans_trancl .
-
-lemma relation_rrank : "M(x) \<Longrightarrow> relation(rrank(x))" 
-  unfolding rrank_def using relation_trancl .
-
-lemma rrank_in_M : "M(x) \<Longrightarrow> M(rrank(x))" 
-  unfolding rrank_def by simp
-
 lemma rank_closed: "M(a) \<Longrightarrow> M(rank(a))"
   unfolding rank_trancl 
   using relation2_Hrank is_Hrank_closed is_Hrank_replacement 
         wf_rrank relation_rrank trans_rrank rrank_in_M 
          trans_wfrec_closed[of "rrank(a)" a "is_Hrank(M)"] by simp
+
 
 lemma M_into_Vset:
   assumes "M(a)"
