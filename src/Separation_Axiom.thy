@@ -69,9 +69,19 @@ proof -
   obtain nenv where "nenv\<in>list(M)" "env = map(val(G),nenv)"
     using map_val by auto
   then
-  have "length(nenv) = length(env)" by simp
-  with \<open>arity(\<phi>) \<le> _\<close> \<open>nenv\<in>_\<close> \<open>env\<in>_\<close>
-  have "arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])" for \<theta>  sorry
+  have "length(nenv) = length(env)" "1\<le>2" by simp_all
+  from \<open>arity(\<phi>) \<le> _\<close> 
+  have "arity(\<phi>) \<le> 2#+ length(env)" 
+    using length_type[OF \<open>env\<in>_\<close>] le_trans[OF \<open>arity(\<phi>)\<le>_\<close>]
+      add_le_mono[OF \<open>1\<le>2\<close> le_refl[of "length(env)"]] by auto
+  with \<open>nenv\<in>_\<close> \<open>env\<in>_\<close> \<open>\<pi>\<in>M\<close>
+  have "arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])" for \<theta> 
+    using  
+   nat_union_abs2[OF nat_into_Ord[OF arity_type[OF \<open>\<phi>\<in>_\<close>]] add_type[THEN nat_into_Ord] \<open>arity(\<phi>) \<le> 2#+ _\<close>]
+   \<open>length(nenv) = length(env)\<close> arity_type length_type 
+      nat_simp_union 
+      length_app
+    by simp    
   note in_M = \<open>\<pi>\<in>M\<close> \<open>domain(\<pi>) \<times> P \<in> M\<close>  P_in_M one_in_M leq_in_M
   {
     fix u
@@ -128,7 +138,7 @@ proof -
         using  definition_of_forces 
       proof (intro iffI)
         assume a1: "sats(M, forces(?\<chi>), [P, leq, one,p,\<theta>] @ nenv @ [\<pi>])"
-        note definition_of_forces \<open>arity(\<phi>)\<le>_\<close>
+        note definition_of_forces \<open>arity(\<phi>)\<le> 1#+_\<close>
         with \<open>nenv\<in>_\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
         have "p \<in> P \<Longrightarrow> ?\<chi>\<in>formula \<Longrightarrow> [\<theta>,\<pi>] \<in> list(M) \<Longrightarrow>
                   sats(M, forces(?\<chi>), [P, leq, one, p] @ [\<theta>]@ nenv@[\<pi>]) \<Longrightarrow> 
