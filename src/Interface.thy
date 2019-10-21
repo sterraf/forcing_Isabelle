@@ -1078,15 +1078,23 @@ proof -
   with \<open>f\<in>M\<close> show ?thesis by simp
 qed
 
-schematic_goal sats_phrank_fm_auto:
-  assumes
-    "f\<in>nat" "y\<in>nat" "z\<in>nat" "env\<in>list(A)" "0\<in>A"
-  shows
-    "PHrank(##A,nth(f, env),nth(y, env),nth(z, env))
-    \<longleftrightarrow> sats(A,?rfm(f,y,z),env)"
-  unfolding PHrank_def 
-  using nth_closed assms
-  by (simp) (rule sep_rules  | simp)+
+
+(*"PHrank(M,f,y,z) == M(z) \<and> (\<exists>fy[M]. fun_apply(M,f,y,fy) \<and> successor(M,fy,z))"*)
+definition 
+  PHrank_fm :: "[i,i,i] \<Rightarrow> i" where
+  "PHrank_fm(f,y,z) == Exists(And(fun_apply_fm(succ(f),succ(y),0)
+                                 ,succ_fm(0,succ(z))))"
+
+lemma PHrank_type [TC]:
+     "[| x \<in> nat; y \<in> nat; z \<in> nat |] ==> PHrank_fm(x,y,z) \<in> formula"
+  by (simp add:PHrank_fm_def)
+
+
+lemma (in forcing_data) sats_PHrank_fm [simp]: 
+  "[| x \<in> nat; y \<in> nat; z \<in> nat;  env \<in> list(M)|]
+    ==> sats(M,PHrank_fm(x,y,z),env) \<longleftrightarrow> 
+        PHrank(##M,nth(x,env),nth(y,env),nth(z,env))" 
+  using zero_in_M Internalizations.nth_closed by (simp add: PHrank_def PHrank_fm_def)
 
 
 lemma (in forcing_data) phrank_repl :
@@ -1095,27 +1103,78 @@ lemma (in forcing_data) phrank_repl :
   shows
      "strong_replacement(##M,PHrank(##M,f))"
 proof -
-  obtain rfm where
-    fmsats:"env\<in>list(M) \<Longrightarrow> 
-      PHrank(##M,nth(2,env),nth(0,env),nth(1,env)) \<longleftrightarrow> sats(M,rfm(2,0,1),env)"
-    and "rfm(2,0,1) \<in> formula" and "arity(rfm(2,0,1)) = 3" for env
-    using zero_in_M sats_phrank_fm_auto[of concl:M] 
-    by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+  have "arity(PHrank_fm(2,0,1)) = 3" 
+    unfolding PHrank_fm_def
+    by (simp add: fm_defs nat_simp_union)
   then
-  have "\<forall>f0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,rfm(2,0,1) , [p,z,f0]))"
+  have "\<forall>f0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,PHrank_fm(2,0,1) , [p,z,f0]))"
     using replacement_ax by simp
-  moreover 
-  have "PHrank(##M,f0,p,z) \<longleftrightarrow> sats(M,rfm(2,0,1) , [p,z,f0])"
-    if "p\<in>M" "z\<in>M" "f0\<in>M" for p z f0
-    using that fmsats[of "[p,z,f0]"] by simp
-  ultimately
+  then
   have "\<forall>f0\<in>M. strong_replacement(##M, PHrank(##M,f0))"
     unfolding strong_replacement_def univalent_def by simp
   with \<open>f\<in>M\<close> show ?thesis by simp
 qed
 
 
+(*"is_Hrank(M,x,f,hc) == (\<exists>R[M]. big_union(M,R,hc) \<and>is_Replace(M,x,PHrank(M,f),R)) "*)
+definition
+  is_Hrank_fm :: "[i,i,i] \<Rightarrow> i" where
+  "is_Hrank_fm(x,f,hc) == Exists(And(big_union_fm(0,succ(hc)),
+                                is_Replace_fm(succ(x),PHrank_fm(succ(succ(succ(f))),0,1),0)))" 
+
+lemma is_Hrank_type [TC]:
+     "[| x \<in> nat; y \<in> nat; z \<in> nat |] ==> is_Hrank_fm(x,y,z) \<in> formula"
+  by (simp add:is_Hrank_fm_def)
+
+lemma (in forcing_data) sats_is_Hrank_fm [simp]: 
+  "[| x \<in> nat; y \<in> nat; z \<in> nat; env \<in> list(M)|]
+    ==> sats(M,is_Hrank_fm(x,y,z),env) \<longleftrightarrow> 
+        is_Hrank(##M,nth(x,env),nth(y,env),nth(z,env))" 
+  using zero_in_M
+  apply (simp add: is_Hrank_def is_Hrank_fm_def)
+  apply (simp add: sats_is_Rep_fm)
+  done
+
 (* M(x) \<Longrightarrow> wfrec_replacement(M,is_Hrank(M),rrank(x)) *)
+lemma (in forcing_data) wfrec_rank :
+  assumes
+    "X\<in>M"
+  shows
+    "wfrec_replacement(##M,is_Hrank(##M),rrank(X))"
+proof -
+  have
+    "is_Hrank(##M,a2, a1, a0) \<longleftrightarrow> 
+             sats(M, is_Hrank_fm(2,1,0), [a0,a1,a2,a3,a4,y,x,z,rrank(X)])"
+    if "a4\<in>M" "a3\<in>M" "a2\<in>M" "a1\<in>M" "a0\<in>M" "y\<in>M" "x\<in>M" "z\<in>M" for a4 a3 a2 a1 a0 y x z
+    using that rrank_in_M \<open>X\<in>M\<close> by simp
+  then
+  have
+  1:"sats(M, is_wfrec_fm(is_Hrank_fm(2,1,0),3,1,0),[y,x,z,rrank(X)])
+  \<longleftrightarrow> is_wfrec(##M, is_Hrank(##M) ,rrank(X), x, y)"
+  if "y\<in>M" "x\<in>M" "z\<in>M" for y x z
+    using that \<open>X\<in>M\<close> rrank_in_M sats_is_wfrec_fm by simp
+  let 
+    ?f="Exists(And(pair_fm(1,0,2),is_wfrec_fm(is_Hrank_fm(2,1,0),3,1,0)))"
+  have satsf:"sats(M, ?f, [x,z,rrank(X)])
+              \<longleftrightarrow> (\<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hrank(##M) , rrank(X), x, y))"
+    if "x\<in>M" "z\<in>M" for x z
+    using that 1 \<open>X\<in>M\<close> rrank_in_M by (simp del:pair_abs) 
+  have "arity(?f) = 3" 
+    unfolding is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def is_Hrank_fm_def PHrank_fm_def
+              restriction_fm_def list_functor_fm_def number1_fm_def cartprod_fm_def 
+                    sum_fm_def quasinat_fm_def pre_image_fm_def fm_defs
+    by (simp add:nat_simp_union)
+  then
+  have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,rrank(X)]))"
+    using replacement_ax 1 \<open>X\<in>M\<close> rrank_in_M by simp
+  then
+  have "strong_replacement(##M,\<lambda>x z. 
+          \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hrank(##M) , rrank(X), x, y))"
+    using repl_sats[of M ?f "[rrank(X)]"]  satsf by (simp del:pair_abs)
+  then
+  show ?thesis unfolding wfrec_replacement_def  by simp
+qed
+  
 
 lemma (in forcing_data) repl_gen : 
   assumes 

@@ -2130,13 +2130,13 @@ by simp
 lemmas nth_rules = nth_0 nth_ConsI nat_0I nat_succI
 lemmas sep_rules = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
                    fun_plus_iff_sats successor_iff_sats
-                    omega_iff_sats FOL_sats_iff 
+                    omega_iff_sats FOL_sats_iff Replace_iff_sats
 
 lemmas fm_defs = omega_fm_def limit_ordinal_fm_def empty_fm_def typed_function_fm_def
                  pair_fm_def upair_fm_def domain_fm_def function_fm_def succ_fm_def
                  cons_fm_def fun_apply_fm_def image_fm_def big_union_fm_def union_fm_def
                  relation_fm_def composition_fm_def field_fm_def ordinal_fm_def range_fm_def
-                 transset_fm_def subset_fm_def
+                 transset_fm_def subset_fm_def is_Replace_fm_def
 
 
 end
