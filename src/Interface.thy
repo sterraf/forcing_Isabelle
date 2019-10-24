@@ -791,6 +791,8 @@ proof -
   show ?thesis unfolding iterates_replacement_def wfrec_replacement_def by simp
 qed
 
+
+
 (* Iterates_replacement para predicados sin parámetros *)
 lemma (in forcing_data) iterates_repl_intf :
   assumes
@@ -1042,6 +1044,30 @@ sublocale forcing_data \<subseteq> M_eclose "##M"
 
 (* Interface with locale M_eclose_pow *)
 
+(* "powerset(M,A,z) == \<forall>x[M]. x \<in> z \<longleftrightarrow> subset(M,x,A)" *)
+definition
+  powerset_fm :: "[i,i] \<Rightarrow> i" where
+  "powerset_fm(A,z) == Forall(Iff(Member(0,succ(z)),subset_fm(0,succ(A))))" 
+
+lemma powerset_type [TC]:
+     "[| x \<in> nat; y \<in> nat |] ==> powerset_fm(x,y) \<in> formula"
+  by (simp add:powerset_fm_def)
+
+(*
+lemma (in forcing_data) sats_powerset_fm [simp]: 
+  "[| x \<in> nat; y \<in> nat ; env \<in> list(M)|]
+    ==> sats(M,powerset_fm(x,y),env) \<longleftrightarrow> 
+        powerset(##M,nth(x,env),nth(y,env))" 
+  using Internalizations.nth_closed by (simp add: powerset_def powerset_fm_def)
+
+
+
+(* "is_powapply(M,f,y,z) \<equiv> M(z) \<and> (\<exists>fy[M]. fun_apply(M,f,y,fy) \<and> powerset(M,fy,z))" *)
+definition 
+  is_powapply_fm :: "[i,i,i] \<Rightarrow> i" where
+  "is_powapply_fm(f,y,z) == Exists(And(fun_apply_fm(succ(f),succ(y),0),))" 
+*)
+
 schematic_goal sats_is_powapply_fm_auto:
   assumes
     "f\<in>nat" "y\<in>nat" "z\<in>nat" "env\<in>list(A)" "0\<in>A"
@@ -1174,7 +1200,22 @@ proof -
   then
   show ?thesis unfolding wfrec_replacement_def  by simp
 qed
-  
+
+(*
+(*
+\<exists>sa[M]. \<exists>esa[M]. \<exists>mesa[M].
+       upair(M,a,a,sa) & is_eclose(M,sa,esa) & membership(M,esa,mesa) &
+       wfrec_replacement(M,MH,mesa) *)
+lemma (in forcing_data) trans_repl_HVFrom :
+  assumes
+    "A\<in>M" "i\<in>M" "Ord(i)" 
+  shows
+    "transrec_replacement(##M,is_HVfrom(##M,A),i)"
+proof -
+  { fix mesa 
+    assume "mesa\<in>M" 
+    have 
+*)
 
 lemma (in forcing_data) repl_gen : 
   assumes 

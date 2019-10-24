@@ -221,6 +221,7 @@ lemma not_forces_nmem:
   shows "forces_mem(P,leq,p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_nmem(q,t1,t2))"
   using assms density_mem unfolding forces_nmem_def by blast
 
+
 lemma sats_forces_Equal:
   assumes
     "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2"
