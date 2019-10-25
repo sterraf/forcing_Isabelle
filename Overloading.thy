@@ -5,6 +5,8 @@ section \<open>Relativization and Absoluteness\<close>
 
 subsection\<open>Relativized versions of standard set-theoretic concepts\<close>
 
+declare [[syntax_ambiguity_warning = false]]
+
 definition
   memclass :: "[i,i\<Rightarrow>o] \<Rightarrow> o" (infixl "\<in>" 50) where
   "memclass(x,A) \<equiv> A(x)" 
