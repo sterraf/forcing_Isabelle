@@ -461,7 +461,7 @@ lemma core_induction:
 proof -
   {
     fix ft p \<tau> \<theta>
-    assume     "ft \<in> 2" "p \<in> P" "\<tau>\<in>M" "\<theta>\<in>M"
+    assume "ft \<in> 2" "p \<in> P" "\<tau>\<in>M" "\<theta>\<in>M"
     then 
     have "<ft,\<tau>,\<theta>,p>\<in> 2\<times>M\<times>M\<times>P" (is "?a\<in>2\<times>M\<times>M\<times>P") by simp
     then 
@@ -471,6 +471,30 @@ proof -
     then have "Q(ft,\<tau>,\<theta>,p)" by simp
   }
   then show ?thesis using assms by simp
+qed
+
+lemma forces_induction:
+  assumes
+    "\<And>\<tau> \<theta> p. p \<in> P \<Longrightarrow> \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> R(\<tau>,\<theta>,p)"
+    "\<And>\<tau> \<theta> p. p \<in> P \<Longrightarrow> \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> R(\<sigma>,\<tau>,q) \<and> R(\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(\<tau>,\<theta>,p)"
+    "p \<in> P" "\<tau>\<in>M" "\<theta>\<in>M"
+  shows
+    "Q(\<tau>,\<theta>,p)" "R(\<tau>,\<theta>,p)"
+proof -
+  let ?Q="\<lambda>ft \<tau> \<theta> p. (ft = 0 \<longrightarrow> Q(\<tau>,\<theta>,p)) \<and> (ft = 1 \<longrightarrow> R(\<tau>,\<theta>,p))"
+  from assms(1)
+  have "\<And>\<tau> \<theta> p. p \<in> P \<Longrightarrow> \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> ?Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> ?Q(1,\<tau>,\<theta>,p)"
+    by simp
+  moreover from assms(2)
+  have "\<And>\<tau> \<theta> p. p \<in> P \<Longrightarrow> \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> ?Q(1,\<sigma>,\<tau>,q) \<and> ?Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> ?Q(0,\<tau>,\<theta>,p)"
+    by simp
+  moreover
+  note assms(3-5)
+  ultimately
+  have "?Q(ft,\<tau>,\<theta>,p)" if "ft\<in>2" for ft
+    by (rule core_induction[OF _ _ that, of ?Q])
+  then
+  show "Q(\<tau>,\<theta>,p)" "R(\<tau>,\<theta>,p)" by auto
 qed
 
 lemma IV240a_aux:
