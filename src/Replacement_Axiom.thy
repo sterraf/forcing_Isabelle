@@ -482,8 +482,8 @@ proof -
   then
   have "{v. x\<in>c, v\<in>M[G]\<and>sats(M[G],\<phi>,[x,v]@env)} \<subseteq> val(G,?big_name)" (is "?repl\<subseteq>?big") 
     by blast
-  with \<open>?big_name\<in>M\<close> 
-  have "?repl = {v\<in>?big. \<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env)}"
+  with \<open>?big_name\<in>M\<close>
+  have "?repl = {v\<in>?big. \<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env )}"
     apply (intro equality_iffI, subst Replace_iff)
     apply (auto intro:Transset_intf[OF Transset_MG _ GenExtI, of _ G ?big_name])
     using \<open>univalent(##M[G],_,_)\<close> unfolding univalent_def
@@ -493,15 +493,57 @@ proof -
     apply (drule_tac x=y in bspec, assumption)
     by (drule_tac y=x in Transset_intf[OF Transset_MG _ GenExtI], auto)
   moreover
-  obtain \<psi> where "v\<in>M[G] \<Longrightarrow> (\<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env)) \<longleftrightarrow> sats(M[G], \<psi>, [v,c] @ env)"
-    "arity(\<psi>) \<le> 2 #+ length(env)" "\<psi>\<in>formula"
-    for v sorry
+  let ?\<psi> = "Exists(And(Member(0,2#+length(env)),\<phi>))"
+  have "v\<in>M[G] \<Longrightarrow> (\<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env)) \<longleftrightarrow> sats(M[G], ?\<psi>, [v] @ env @ [c])"
+    "arity(?\<psi>) \<le> 2 #+ length(env)" "?\<psi>\<in>formula"
+    for v 
+  proof - 
+    fix v
+    assume "v\<in>M[G]"
+    with \<open>c\<in>M[G]\<close> 
+    have A:"[v,c] \<in> list(M[G])" "[c]\<in>list(M[G])" 
+      "\<And>x . x\<in> M[G] \<Longrightarrow>  Cons(x, Cons(v, env @ [c])) = ([x,v]@env)@[c]" 
+      "\<And>x . x\<in> M[G] \<Longrightarrow>  Cons(x, Cons(v, env)) = ([x,v]@env)" 
+      by auto
+    from A(1) A(2)
+    have "nth(succ(length(env)),[v]@env@[c]) = c"
+      using  \<open>env\<in>_\<close>nth_concat[of v c "M[G]" env]
+      by auto 
+    with \<open>c\<in>M[G]\<close> \<open>v\<in>M[G]\<close> 
+    show "(\<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env)) \<longleftrightarrow> sats(M[G], ?\<psi>, [v] @ env @ [c])"
+      using length_type[OF \<open>env\<in>_\<close>] \<open>\<phi>\<in>_\<close> \<open>arity(\<phi>)\<le>2#+length(env)\<close> 
+         \<open>env\<in>list(_)\<close> \<open>[c]\<in>list(M[G])\<close> A(3)
+      apply (auto)
+       apply(rule_tac x=x in rev_bexI, auto simp add: transitivity(1)[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
+      prefer 2
+       apply(rule_tac x=x in rev_bexI,simp,subst (asm) A(3))
+      apply(simp add: transitivity(1)[OF Transset_MG _ \<open>c\<in>M[G]\<close>],subst A(4))
+        apply(simp add: transitivity(1)[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
+       apply(rule arity_sats_iff[of \<phi> "[c]",THEN iffD1],auto simp add: transitivity(1)[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
+      apply(subst (asm) A(4),simp add:transitivity(1)[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
+      apply(subst A(3),simp add: transitivity(1)[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
+       apply(rule arity_sats_iff[of \<phi> "[c]",THEN iffD2],auto simp add: transitivity(1)[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
+      done
+  next
+    from  \<open>arity(\<phi>)\<le>2#+length(env)\<close> \<open>env\<in>_\<close>
+    show "arity(?\<psi>)\<le>2#+length(env)" 
+      apply(auto simp add:length_type[OF \<open>env\<in>_\<close>] nat_simp_union )
+      apply(subst pred_Un(1),auto simp add: length_type[OF \<open>env\<in>_\<close>] arity_type[OF \<open>\<phi>\<in>_\<close>] )
+      apply(subgoal_tac "pred(arity(\<phi>)) \<le> 2#+length(env)")
+      apply(auto simp add:length_type[OF \<open>env\<in>_\<close>], subst nat_simp_union )
+         apply(auto simp add:arity_type[OF \<open>\<phi>\<in>_\<close>] nat_simp_union)
+      apply(rule le_trans, rule pred_mono[OF _  \<open>arity(\<phi>)\<le>2#+length(env)\<close>],auto)
+      done
+    next
+    from \<open>\<phi>\<in>_\<close>
+    show "?\<psi>\<in>formula" by simp
+  qed
   moreover from this
-  have "{v\<in>?big. \<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env)} = {v\<in>?big. sats(M[G], \<psi>, [v,c] @ env)}"
+  have "{v\<in>?big. \<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env)} = {v\<in>?big. sats(M[G], ?\<psi>, [v] @ env @ [c])}"
     using Transset_intf[OF Transset_MG _ GenExtI, OF _ \<open>?big_name\<in>M\<close>]
     by (simp) 
   moreover from calculation and \<open>env\<in>_\<close> \<open>c\<in>_\<close> \<open>?big\<in>M[G]\<close>
-  have "{v\<in>?big. sats(M[G], \<psi>, [v,c] @ env)} \<in> M[G]"
+  have "{v\<in>?big. sats(M[G], ?\<psi>, [v] @ env @ [c])} \<in> M[G]"
     using Collect_sats_in_MG by auto
   ultimately
   show ?thesis by simp 
