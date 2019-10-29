@@ -94,7 +94,7 @@ proof -
     moreover
     assume "s\<in>domain(t1) \<union> domain(t2)" 
     ultimately
-    have "forces_mem(P, leq, q, s, t1) \<longleftrightarrow> forces_mem(P, leq, q, s, t2)"
+    have "forces_mem(q, s, t1) \<longleftrightarrow> forces_mem(q, s, t2)"
       using def_forces_eq[of p t1 t2] by simp
   }
   with \<open>r\<in>P\<close>
@@ -118,7 +118,7 @@ proof
   show "dense_below({q\<in>P. forces_mem(q,t1,t2)},p)"
     using forces_mem_iff_dense_below strengthening_mem[of p] ideal_dense_below by auto
 next
-  assume "dense_below({q \<in> P . forces_mem(P, leq, q, t1, t2)}, p)"
+  assume "dense_below({q \<in> P . forces_mem(q, t1, t2)}, p)"
   with assms
   have "dense_below({q\<in>P. 
     dense_below({q'\<in>P. \<exists>s r. r \<in> P \<and> \<langle>s,r\<rangle>\<in>t2 \<and> \<langle>q',r\<rangle>\<in>leq \<and> forces_eq(q',t1,s)},q)
@@ -144,12 +144,12 @@ proof
   have "<r,p>\<in>leq"
     using leq_transD by simp
   moreover
-  note \<open>forces_mem(_,_,q,s,t1)\<close> \<open>dense_below(_,p)\<close> \<open>q\<in>P\<close>
+  note \<open>forces_mem(q,s,t1)\<close> \<open>dense_below(_,p)\<close> \<open>q\<in>P\<close>
   ultimately
   obtain q1 where "<q1,r>\<in>leq" "q1\<in>P" "forces_mem(q1,s,t2)"
     using strengthening_mem[of q _ s t1] leq_reflI leq_transD[of _ r q] by blast
   then
-  show "\<exists>d\<in>{r \<in> P . forces_mem(P, leq, r, s, t2)}. d \<in> P \<and> \<langle>d, r\<rangle> \<in> leq"
+  show "\<exists>d\<in>{r \<in> P . forces_mem(r, s, t2)}. d \<in> P \<and> \<langle>d, r\<rangle> \<in> leq"
     by blast
 qed
 
@@ -194,7 +194,7 @@ next
          "forces_mem(q,s,t2) \<Longrightarrow> dense_below({r\<in>P. forces_mem(r,s,t1)},q)" 
       using aux_density_eq by simp_all
     then
-    have "forces_mem(P, leq, q, s, t1) \<longleftrightarrow> forces_mem(P, leq, q, s, t2)"
+    have "forces_mem(q, s, t1) \<longleftrightarrow> forces_mem(q, s, t2)"
       using density_mem[OF \<open>q\<in>P\<close>] by blast
   }
   with \<open>p\<in>P\<close>
@@ -646,14 +646,14 @@ proof -
       using IV240a[of G p \<sigma> \<tau>] Transset_intf[OF trans_M _ domain_closed[simplified]] by blast
     moreover note IH \<open>val(G,\<tau>) = _\<close>
     ultimately
-    obtain q where "q\<in>G" "forces_mem(P, leq, q, \<sigma>, \<theta>)" by auto
+    obtain q where "q\<in>G" "forces_mem(q, \<sigma>, \<theta>)" by auto
     moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
     obtain r where "r\<in>P" "<r,p>\<in>leq" "<r,q>\<in>leq"
       by blast
     moreover
     note \<open>M_generic(G)\<close>
     ultimately
-    have "forces_mem(P, leq, r, \<sigma>, \<theta>)"
+    have "forces_mem(r, \<sigma>, \<theta>)"
       using strengthening_mem by blast
     with \<open><r,p>\<in>leq\<close> \<open>forces_nmem(p,\<sigma>,\<theta>)\<close> \<open>r\<in>P\<close>
     have "False"
@@ -670,14 +670,14 @@ proof -
       using IV240a[of G p \<sigma> \<theta>] Transset_intf[OF trans_M _ domain_closed[simplified]] by blast
     moreover note IH \<open>val(G,\<tau>) = _\<close>
     ultimately
-    obtain q where "q\<in>G" "forces_mem(P, leq, q, \<sigma>, \<tau>)" by auto
+    obtain q where "q\<in>G" "forces_mem(q, \<sigma>, \<tau>)" by auto
     moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
     obtain r where "r\<in>P" "<r,p>\<in>leq" "<r,q>\<in>leq"
       by blast
     moreover
     note \<open>M_generic(G)\<close>
     ultimately
-    have "forces_mem(P, leq, r, \<sigma>, \<tau>)"
+    have "forces_mem(r, \<sigma>, \<tau>)"
       using strengthening_mem by blast
     with \<open><r,p>\<in>leq\<close> \<open>forces_nmem(p,\<sigma>,\<tau>)\<close> \<open>r\<in>P\<close>
     have "False"
