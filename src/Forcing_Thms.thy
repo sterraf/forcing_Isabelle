@@ -70,15 +70,15 @@ proof (intro ballI impI)
     using leq_preord trans_onD unfolding preorder_on_def by blast
 qed *)
 
-lemma forces_mem_iff_dense_below:  "p\<in>P \<Longrightarrow> forces_mem(P,leq,p,t1,t2) \<longleftrightarrow> dense_below(
-    {q\<in>P. \<exists>s. \<exists>r. r\<in>P \<and> <s,r> \<in> t2 \<and> <q,r>\<in>leq \<and> forces_eq(P,leq,q,t1,s)}
+lemma forces_mem_iff_dense_below:  "p\<in>P \<Longrightarrow> forces_mem(p,t1,t2) \<longleftrightarrow> dense_below(
+    {q\<in>P. \<exists>s. \<exists>r. r\<in>P \<and> <s,r> \<in> t2 \<and> <q,r>\<in>leq \<and> forces_eq(q,t1,s)}
     ,p)"
   using def_forces_mem[of p t1 t2] by blast
 
 (* Kunen 2013, Lemma IV.2.37(a) *)
 lemma strengthening_eq: 
-  assumes "p\<in>P" "r\<in>P" "<r,p>\<in>leq" "forces_eq(P,leq,p,t1,t2)"
-  shows "forces_eq(P,leq,r,t1,t2)"
+  assumes "p\<in>P" "r\<in>P" "<r,p>\<in>leq" "forces_eq(p,t1,t2)"
+  shows "forces_eq(r,t1,t2)"
   using assms def_forces_eq[of _ t1 t2] leq_transD by blast
 (* Long proof *)
 (*
@@ -104,39 +104,39 @@ qed
 
 (* Kunen 2013, Lemma IV.2.37(a) *)
 lemma strengthening_mem: 
-  assumes "p\<in>P" "r\<in>P" "<r,p>\<in>leq" "forces_mem(P,leq,p,t1,t2)"
-  shows "forces_mem(P,leq,r,t1,t2)"
+  assumes "p\<in>P" "r\<in>P" "<r,p>\<in>leq" "forces_mem(p,t1,t2)"
+  shows "forces_mem(r,t1,t2)"
   using assms forces_mem_iff_dense_below dense_below_under by auto
 
 (* Kunen 2013, Lemma IV.2.37(b) *)
 lemma density_mem: 
   assumes "p\<in>P"
-  shows "forces_mem(P,leq,p,t1,t2)  \<longleftrightarrow> dense_below({q\<in>P. forces_mem(P,leq,q,t1,t2)},p)"
+  shows "forces_mem(p,t1,t2)  \<longleftrightarrow> dense_below({q\<in>P. forces_mem(q,t1,t2)},p)"
 proof
-  assume "forces_mem(P,leq,p,t1,t2)"
+  assume "forces_mem(p,t1,t2)"
   with assms
-  show "dense_below({q\<in>P. forces_mem(P,leq,q,t1,t2)},p)"
+  show "dense_below({q\<in>P. forces_mem(q,t1,t2)},p)"
     using forces_mem_iff_dense_below strengthening_mem[of p] ideal_dense_below by auto
 next
   assume "dense_below({q \<in> P . forces_mem(P, leq, q, t1, t2)}, p)"
   with assms
   have "dense_below({q\<in>P. 
-    dense_below({q'\<in>P. \<exists>s r. r \<in> P \<and> \<langle>s,r\<rangle>\<in>t2 \<and> \<langle>q',r\<rangle>\<in>leq \<and> forces_eq(P,leq,q',t1,s)},q)
+    dense_below({q'\<in>P. \<exists>s r. r \<in> P \<and> \<langle>s,r\<rangle>\<in>t2 \<and> \<langle>q',r\<rangle>\<in>leq \<and> forces_eq(q',t1,s)},q)
     },p)"
     using forces_mem_iff_dense_below by simp
   with assms
-  show "forces_mem(P,leq,p,t1,t2)"
+  show "forces_mem(p,t1,t2)"
     using dense_below_dense_below forces_mem_iff_dense_below[of p t1 t2] by blast
 qed
 
 lemma aux_density_eq:
   assumes 
     "dense_below(
-    {q'\<in>P. \<forall>q. q\<in>P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow> forces_mem(P,leq,q,s,t1) \<longleftrightarrow> forces_mem(P,leq,q,s,t2)}
+    {q'\<in>P. \<forall>q. q\<in>P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow> forces_mem(q,s,t1) \<longleftrightarrow> forces_mem(q,s,t2)}
     ,p)"
-    "forces_mem(P,leq,q,s,t1)" "q\<in>P" "p\<in>P" "<q,p>\<in>leq"
+    "forces_mem(q,s,t1)" "q\<in>P" "p\<in>P" "<q,p>\<in>leq"
   shows
-    "dense_below({r\<in>P. forces_mem(P,leq,r,s,t2)},q)"
+    "dense_below({r\<in>P. forces_mem(r,s,t2)},q)"
 proof
   fix r
   assume "r\<in>P" "\<langle>r,q\<rangle> \<in> leq"
@@ -146,7 +146,7 @@ proof
   moreover
   note \<open>forces_mem(_,_,q,s,t1)\<close> \<open>dense_below(_,p)\<close> \<open>q\<in>P\<close>
   ultimately
-  obtain q1 where "<q1,r>\<in>leq" "q1\<in>P" "forces_mem(P,leq,q1,s,t2)"
+  obtain q1 where "<q1,r>\<in>leq" "q1\<in>P" "forces_mem(q1,s,t2)"
     using strengthening_mem[of q _ s t1] leq_reflI leq_transD[of _ r q] by blast
   then
   show "\<exists>d\<in>{r \<in> P . forces_mem(P, leq, r, s, t2)}. d \<in> P \<and> \<langle>d, r\<rangle> \<in> leq"
@@ -156,69 +156,69 @@ qed
 (* Kunen 2013, Lemma IV.2.37(b) *)
 lemma density_eq:
   assumes "p\<in>P"
-  shows "forces_eq(P,leq,p,t1,t2)  \<longleftrightarrow> dense_below({q\<in>P. forces_eq(P,leq,q,t1,t2)},p)"
+  shows "forces_eq(p,t1,t2)  \<longleftrightarrow> dense_below({q\<in>P. forces_eq(q,t1,t2)},p)"
 proof
-  assume "forces_eq(P,leq,p,t1,t2)"
+  assume "forces_eq(p,t1,t2)"
   with \<open>p\<in>P\<close>
-  show "dense_below({q\<in>P. forces_eq(P,leq,q,t1,t2)},p)"
+  show "dense_below({q\<in>P. forces_eq(q,t1,t2)},p)"
     using strengthening_eq ideal_dense_below by auto
 next
-  assume "dense_below({q\<in>P. forces_eq(P,leq,q,t1,t2)},p)"
+  assume "dense_below({q\<in>P. forces_eq(q,t1,t2)},p)"
   {
     fix s q 
     let ?D1="{q'\<in>P. \<forall>s\<in>domain(t1) \<union> domain(t2). \<forall>q. q \<in> P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow>
-           forces_mem(P,leq,q,s,t1)\<longleftrightarrow>forces_mem(P,leq,q,s,t2)}"
-    let ?D2="{q'\<in>P. \<forall>q. q\<in>P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow> forces_mem(P,leq,q,s,t1) \<longleftrightarrow> forces_mem(P,leq,q,s,t2)}"
+           forces_mem(q,s,t1)\<longleftrightarrow>forces_mem(q,s,t2)}"
+    let ?D2="{q'\<in>P. \<forall>q. q\<in>P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow> forces_mem(q,s,t1) \<longleftrightarrow> forces_mem(q,s,t2)}"
     assume "s\<in>domain(t1) \<union> domain(t2)" 
     then
     have "?D1\<subseteq>?D2" by blast
     with \<open>dense_below(_,p)\<close>
     have "dense_below({q'\<in>P. \<forall>s\<in>domain(t1) \<union> domain(t2). \<forall>q. q \<in> P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow>
-           forces_mem(P,leq,q,s,t1)\<longleftrightarrow>forces_mem(P,leq,q,s,t2)},p)"
+           forces_mem(q,s,t1)\<longleftrightarrow>forces_mem(q,s,t2)},p)"
       using dense_below_cong'[OF \<open>p\<in>P\<close> def_forces_eq[of _ t1 t2]] by simp
     with \<open>p\<in>P\<close> \<open>?D1\<subseteq>?D2\<close>
     have "dense_below({q'\<in>P. \<forall>q. q\<in>P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow> 
-            forces_mem(P,leq,q,s,t1) \<longleftrightarrow> forces_mem(P,leq,q,s,t2)},p)"
+            forces_mem(q,s,t1) \<longleftrightarrow> forces_mem(q,s,t2)},p)"
       using dense_below_mono by simp
     moreover from this (* Automatic tools can't handle this symmetry 
                           in order to apply aux_density_eq below *)
     have  "dense_below({q'\<in>P. \<forall>q. q\<in>P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow> 
-            forces_mem(P,leq,q,s,t2) \<longleftrightarrow> forces_mem(P,leq,q,s,t1)},p)"
+            forces_mem(q,s,t2) \<longleftrightarrow> forces_mem(q,s,t1)},p)"
       by blast
     moreover
     assume "q \<in> P" "<q,p>\<in>leq"
     moreover
     note \<open>p\<in>P\<close>
     ultimately (*We can omit the next step but it is slower *)
-    have "forces_mem(P,leq,q,s,t1) \<Longrightarrow> dense_below({r\<in>P. forces_mem(P,leq,r,s,t2)},q)"
-         "forces_mem(P,leq,q,s,t2) \<Longrightarrow> dense_below({r\<in>P. forces_mem(P,leq,r,s,t1)},q)" 
+    have "forces_mem(q,s,t1) \<Longrightarrow> dense_below({r\<in>P. forces_mem(r,s,t2)},q)"
+         "forces_mem(q,s,t2) \<Longrightarrow> dense_below({r\<in>P. forces_mem(r,s,t1)},q)" 
       using aux_density_eq by simp_all
     then
     have "forces_mem(P, leq, q, s, t1) \<longleftrightarrow> forces_mem(P, leq, q, s, t2)"
       using density_mem[OF \<open>q\<in>P\<close>] by blast
   }
   with \<open>p\<in>P\<close>
-  show "forces_eq(P,leq,p,t1,t2)" using def_forces_eq by blast
+  show "forces_eq(p,t1,t2)" using def_forces_eq by blast
 qed
 
 definition
   forces_neq :: "[i,i,i] \<Rightarrow> o" where
-  "forces_neq(p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_eq(P,leq,q,t1,t2))"
+  "forces_neq(p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_eq(q,t1,t2))"
 
 definition
   forces_nmem :: "[i,i,i] \<Rightarrow> o" where
-  "forces_nmem(p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_mem(P,leq,q,t1,t2))"
+  "forces_nmem(p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_mem(q,t1,t2))"
 
 (* Kunen 2013, Lemma IV.2.38 *)
 lemma not_forces_neq:
   assumes "p\<in>P"
-  shows "forces_eq(P,leq,p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_neq(q,t1,t2))"
+  shows "forces_eq(p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_neq(q,t1,t2))"
   using assms density_eq unfolding forces_neq_def by blast
 
 (* Kunen 2013, Lemma IV.2.38 *)
 lemma not_forces_nmem:
   assumes "p\<in>P"
-  shows "forces_mem(P,leq,p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_nmem(q,t1,t2))"
+  shows "forces_mem(p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_nmem(q,t1,t2))"
   using assms density_mem unfolding forces_nmem_def by blast
 
 
@@ -226,14 +226,14 @@ lemma sats_forces_Equal:
   assumes
     "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2"
   shows
-    "sats(M,forces(Equal(n,m)),[P,leq,one,p] @ env) \<longleftrightarrow> forces_eq(P,leq,p,t1,t2)"
+    "sats(M,forces(Equal(n,m)),[P,leq,one,p] @ env) \<longleftrightarrow> forces_eq(p,t1,t2)"
   sorry
 
 lemma sats_forces_Member:
   assumes
     "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2"
   shows
-    "sats(M,forces(Member(n,m)),[P,leq,one,p] @ env) \<longleftrightarrow> forces_mem(P,leq,p,t1,t2)"
+    "sats(M,forces(Member(n,m)),[P,leq,one,p] @ env) \<longleftrightarrow> forces_mem(p,t1,t2)"
   sorry
 
 (* Move the following to an appropriate place *)
@@ -268,13 +268,13 @@ lemma generic_inter_dense_below: "D\<in>M \<Longrightarrow> M_generic(G) \<Longr
 (* Lemma IV.2.40(a), membership *)
 lemma IV240a_mem:
   assumes
-    "M_generic(G)" "p\<in>G" "\<pi>\<in>M" "\<tau>\<in>M" "forces_mem(P,leq,p,\<pi>,\<tau>)"
-    "\<And>q \<sigma>. q\<in>P \<Longrightarrow> q\<in>G \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_eq(P,leq,q,\<pi>,\<sigma>) \<Longrightarrow> 
+    "M_generic(G)" "p\<in>G" "\<pi>\<in>M" "\<tau>\<in>M" "forces_mem(p,\<pi>,\<tau>)"
+    "\<And>q \<sigma>. q\<in>P \<Longrightarrow> q\<in>G \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_eq(q,\<pi>,\<sigma>) \<Longrightarrow> 
       val(G,\<pi>) = val(G,\<sigma>)" (* inductive hypothesis *)
   shows
     "val(G,\<pi>)\<in>val(G,\<tau>)"
 proof
-  let ?D="{q\<in>P. \<exists>\<sigma>. \<exists>r. r\<in>P \<and> <\<sigma>,r> \<in> \<tau> \<and> <q,r>\<in>leq \<and> forces_eq(P,leq,q,\<pi>,\<sigma>)}"
+  let ?D="{q\<in>P. \<exists>\<sigma>. \<exists>r. r\<in>P \<and> <\<sigma>,r> \<in> \<tau> \<and> <q,r>\<in>leq \<and> forces_eq(q,\<pi>,\<sigma>)}"
   from assms
   have "?D = {q\<in>P. \<exists>\<sigma>. \<exists>r. r\<in>P \<and> <\<sigma>,r> \<in> \<tau> \<and> <q,r>\<in>leq \<and> sats(M,forces(Equal(0,1)),[P,leq,one,q,\<pi>,\<sigma>])}"
     using sats_forces_Equal[of _ \<pi> _ "[\<pi>, _]" 0 1]  left_in_M  by simp
@@ -293,7 +293,7 @@ proof
   ultimately
   obtain q where "q\<in>G" "q\<in>?D" using generic_inter_dense_below by blast
   then
-  obtain \<sigma> r where "r\<in>P" "<\<sigma>,r> \<in> \<tau>" "<q,r>\<in>leq" "forces_eq(P,leq,q,\<pi>,\<sigma>)" by blast
+  obtain \<sigma> r where "r\<in>P" "<\<sigma>,r> \<in> \<tau>" "<q,r>\<in>leq" "forces_eq(q,\<pi>,\<sigma>)" by blast
   moreover from this and \<open>q\<in>G\<close> assms
   have "r \<in> G" "val(G,\<pi>) = val(G,\<sigma>)" by blast+
   ultimately
@@ -301,10 +301,10 @@ proof
 qed
 
 (* Example IV.2.36 (next two lemmas) *)
-lemma refl_forces_eq:"p\<in>P \<Longrightarrow> forces_eq(P,leq,p,x,x)"
+lemma refl_forces_eq:"p\<in>P \<Longrightarrow> forces_eq(p,x,x)"
   using def_forces_eq by simp
 
-lemma forces_memI: "<\<sigma>,r>\<in>\<tau> \<Longrightarrow> p\<in>P \<Longrightarrow> r\<in>P \<Longrightarrow> <p,r>\<in>leq \<Longrightarrow> forces_mem(P,leq,p,\<sigma>,\<tau>)"
+lemma forces_memI: "<\<sigma>,r>\<in>\<tau> \<Longrightarrow> p\<in>P \<Longrightarrow> r\<in>P \<Longrightarrow> <p,r>\<in>leq \<Longrightarrow> forces_mem(p,\<sigma>,\<tau>)"
   using refl_forces_eq[of _ \<sigma>] leq_transD leq_reflI 
   by (blast intro:forces_mem_iff_dense_below[THEN iffD2])
 
@@ -323,13 +323,13 @@ lemma symmetry_argument:
 (* Lemma IV.2.40(a), equality, first inclusion *)
 lemma IV240a_eq_1st_incl:
   assumes
-    "M_generic(G)" "p\<in>G" "forces_eq(P,leq,p,\<tau>,\<theta>)" "\<pi>\<in>M" "\<tau>\<in>M"
+    "M_generic(G)" "p\<in>G" "forces_eq(p,\<tau>,\<theta>)" "\<pi>\<in>M" "\<tau>\<in>M"
     and
     IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> q\<in>G \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
-        (forces_mem(P,leq,q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
-        (forces_mem(P,leq,q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
+        (forces_mem(q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
+        (forces_mem(q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
 (* Strong enough for this case: *)
-(*  IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_mem(P,leq,q,\<sigma>,\<theta>) \<Longrightarrow> 
+(*  IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_mem(q,\<sigma>,\<theta>) \<Longrightarrow> 
       val(G,\<sigma>) \<in> val(G,\<theta>)" *)
   shows
     "val(G,\<tau>) \<subseteq> val(G,\<theta>)"
@@ -343,12 +343,12 @@ proof
   moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
   have "q\<in>P" "p\<in>P" by blast+
   moreover from calculation
-  have "forces_mem(P,leq,q,\<sigma>,\<tau>)"
+  have "forces_mem(q,\<sigma>,\<tau>)"
     using forces_memI M_genericD[OF \<open>M_generic(G)\<close>] by blast
   moreover
-  note \<open>forces_eq(P,leq,p,\<tau>,\<theta>)\<close>
+  note \<open>forces_eq(p,\<tau>,\<theta>)\<close>
   ultimately
-  have "forces_mem(P,leq,q,\<sigma>,\<theta>)"
+  have "forces_mem(q,\<sigma>,\<theta>)"
     using def_forces_eq by blast
   with \<open>q\<in>P\<close> \<open>q\<in>G\<close> IH[of q \<sigma>] \<open><\<sigma>,r>\<in>\<tau>\<close> \<open>val(G,\<sigma>) = x\<close>
   show "x\<in>val(G,\<theta>)" by (blast del:elem_of_valI)
@@ -357,11 +357,11 @@ qed
 (* Lemma IV.2.40(a), equality, second inclusion--- COPY-PASTE *)
 lemma IV240a_eq_2nd_incl:
   assumes
-    "M_generic(G)" "p\<in>G" "forces_eq(P,leq,p,\<tau>,\<theta>)" "\<pi>\<in>M" "\<tau>\<in>M"
+    "M_generic(G)" "p\<in>G" "forces_eq(p,\<tau>,\<theta>)" "\<pi>\<in>M" "\<tau>\<in>M"
     and
     IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> q\<in>G \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
-        (forces_mem(P,leq,q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
-        (forces_mem(P,leq,q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
+        (forces_mem(q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
+        (forces_mem(q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
   shows
     "val(G,\<theta>) \<subseteq> val(G,\<tau>)"
 proof
@@ -374,12 +374,12 @@ proof
   moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
   have "q\<in>P" "p\<in>P" by blast+
   moreover from calculation
-  have "forces_mem(P,leq,q,\<sigma>,\<theta>)"
+  have "forces_mem(q,\<sigma>,\<theta>)"
     using forces_memI M_genericD[OF \<open>M_generic(G)\<close>] by blast
   moreover
-  note \<open>forces_eq(P,leq,p,\<tau>,\<theta>)\<close>
+  note \<open>forces_eq(p,\<tau>,\<theta>)\<close>
   ultimately
-  have "forces_mem(P,leq,q,\<sigma>,\<tau>)"
+  have "forces_mem(q,\<sigma>,\<tau>)"
     using def_forces_eq by blast
   with \<open>q\<in>P\<close> \<open>q\<in>G\<close> IH[of q \<sigma>] \<open><\<sigma>,r>\<in>\<theta>\<close> \<open>val(G,\<sigma>) = x\<close>
   show "x\<in>val(G,\<tau>)" by (blast del:elem_of_valI)
@@ -388,25 +388,25 @@ qed
 (* Lemma IV.2.40(a), equality, second inclusion--- COPY-PASTE *)
 lemma IV240a_eq:
   assumes
-    "M_generic(G)" "p\<in>G" "forces_eq(P,leq,p,\<tau>,\<theta>)" "\<pi>\<in>M" "\<tau>\<in>M"
+    "M_generic(G)" "p\<in>G" "forces_eq(p,\<tau>,\<theta>)" "\<pi>\<in>M" "\<tau>\<in>M"
     and
     IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> q\<in>G \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
-        (forces_mem(P,leq,q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
-        (forces_mem(P,leq,q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
+        (forces_mem(q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
+        (forces_mem(q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
   shows
     "val(G,\<tau>) = val(G,\<theta>)"
   using IV240a_eq_1st_incl[OF assms] IV240a_eq_2nd_incl[OF assms] IH by blast 
 
 (*
-    "forces_mem(P,leq,p,\<pi>,\<tau>)"
-    "\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_eq(P,leq,q,\<pi>,\<sigma>) \<Longrightarrow> val(G,\<pi>) = val(G,\<sigma>)" 
+    "forces_mem(p,\<pi>,\<tau>)"
+    "\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_eq(q,\<pi>,\<sigma>) \<Longrightarrow> val(G,\<pi>) = val(G,\<sigma>)" 
     -------------------------------
     "val(G,\<pi>) \<in> val(G,\<tau>)"
 
-    "forces_eq(P,leq,p,\<tau>,\<theta>)"
+    "forces_eq(p,\<tau>,\<theta>)"
  IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
-        (forces_mem(P,leq,q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
-        (forces_mem(P,leq,q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
+        (forces_mem(q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
+        (forces_mem(q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
     -------------------------------
     "val(G,\<tau>) = val(G,\<theta>)"
 
@@ -519,8 +519,8 @@ lemma IV240a:
   assumes
     "M_generic(G)" "p\<in>G" "\<tau>\<in>M" "\<theta>\<in>M"
   shows 
-    "forces_eq(P,leq,p,\<tau>,\<theta>) \<Longrightarrow> val(G,\<tau>) = val(G,\<theta>)" 
-    "forces_mem(P,leq,p,\<tau>,\<theta>) \<Longrightarrow> val(G,\<tau>) \<in> val(G,\<theta>)"
+    "forces_eq(p,\<tau>,\<theta>) \<Longrightarrow> val(G,\<tau>) = val(G,\<theta>)" 
+    "forces_mem(p,\<tau>,\<theta>) \<Longrightarrow> val(G,\<tau>) \<in> val(G,\<theta>)"
   using IV240a_aux[OF assms(1) _ assms(3-4) assms(2)] assms unfolding forces_eq_def forces_mem_def 
 by (auto del:elem_of_valI)
 
@@ -530,36 +530,36 @@ lemma IV240b_mem:
     "M_generic(G)" "val(G,\<pi>)\<in>val(G,\<tau>)" "\<pi>\<in>M" "\<tau>\<in>M"
     and
     IH:"\<And>\<sigma>. \<sigma>\<in>domain(\<tau>) \<Longrightarrow> val(G,\<pi>) = val(G,\<sigma>) \<Longrightarrow> 
-      \<exists>p\<in>G. forces_eq(P,leq,p,\<pi>,\<sigma>)" (* inductive hypothesis *)
+      \<exists>p\<in>G. forces_eq(p,\<pi>,\<sigma>)" (* inductive hypothesis *)
   shows
-    "\<exists>p\<in>G. forces_mem(P,leq,p,\<pi>,\<tau>)"
+    "\<exists>p\<in>G. forces_mem(p,\<pi>,\<tau>)"
 proof -
   from \<open>val(G,\<pi>)\<in>val(G,\<tau>)\<close>
   obtain \<sigma> r where "r\<in>G" "<\<sigma>,r>\<in>\<tau>" "val(G,\<pi>) = val(G,\<sigma>)" by auto
   moreover from this and IH
-  obtain p' where "p'\<in>G" "forces_eq(P,leq,p',\<pi>,\<sigma>)" by blast
+  obtain p' where "p'\<in>G" "forces_eq(p',\<pi>,\<sigma>)" by blast
   moreover
   note \<open>M_generic(G)\<close>
   ultimately
-  obtain p where "<p,r>\<in>leq" "p\<in>G" "forces_eq(P,leq,p,\<pi>,\<sigma>)" 
+  obtain p where "<p,r>\<in>leq" "p\<in>G" "forces_eq(p,\<pi>,\<sigma>)" 
     using M_generic_compatD strengthening_eq[of p'] by blast
   moreover 
   note \<open>M_generic(G)\<close>
   moreover from calculation
-  have "forces_eq(P,leq,q,\<pi>,\<sigma>)" if "q\<in>P" "<q,p>\<in>leq" for q
+  have "forces_eq(q,\<pi>,\<sigma>)" if "q\<in>P" "<q,p>\<in>leq" for q
     using that strengthening_eq by blast
   moreover 
   note \<open><\<sigma>,r>\<in>\<tau>\<close> \<open>r\<in>G\<close>
   ultimately
-  have "r\<in>P \<and> \<langle>\<sigma>,r\<rangle> \<in> \<tau> \<and> \<langle>q,r\<rangle> \<in> leq \<and> forces_eq(P,leq,q,\<pi>,\<sigma>)" if "q\<in>P" "<q,p>\<in>leq" for q
+  have "r\<in>P \<and> \<langle>\<sigma>,r\<rangle> \<in> \<tau> \<and> \<langle>q,r\<rangle> \<in> leq \<and> forces_eq(q,\<pi>,\<sigma>)" if "q\<in>P" "<q,p>\<in>leq" for q
     using that leq_transD[of _ p r] by blast
   then
-  have "dense_below({q\<in>P. \<exists>s r. r\<in>P \<and> \<langle>s,r\<rangle> \<in> \<tau> \<and> \<langle>q,r\<rangle>\<in>leq \<and> forces_eq(P,leq,q,\<pi>,s)},p)"
+  have "dense_below({q\<in>P. \<exists>s r. r\<in>P \<and> \<langle>s,r\<rangle> \<in> \<tau> \<and> \<langle>q,r\<rangle>\<in>leq \<and> forces_eq(q,\<pi>,s)},p)"
     using leq_reflI by blast
   moreover
   note \<open>M_generic(G)\<close> \<open>p\<in>G\<close>
   moreover from calculation
-  have "forces_mem(P,leq,p,\<pi>,\<tau>)" 
+  have "forces_mem(p,\<pi>,\<tau>)" 
     using forces_mem_iff_dense_below by blast
   ultimately
   show ?thesis by blast
@@ -571,15 +571,15 @@ lemma IV240b_eq:
     "M_generic(G)" "p\<in>G" "val(G,\<tau>) = val(G,\<theta>)" "\<tau>\<in>M" "\<theta>\<in>M" 
     and
     IH:"\<And>\<sigma>. \<sigma>\<in>domain(\<tau>)\<union>domain(\<theta>) \<Longrightarrow> 
-      (val(G,\<sigma>)\<in>val(G,\<tau>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(P,leq,q,\<sigma>,\<tau>))) \<and> 
-      (val(G,\<sigma>)\<in>val(G,\<theta>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(P,leq,q,\<sigma>,\<theta>)))"
+      (val(G,\<sigma>)\<in>val(G,\<tau>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(q,\<sigma>,\<tau>))) \<and> 
+      (val(G,\<sigma>)\<in>val(G,\<theta>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(q,\<sigma>,\<theta>)))"
     (* inductive hypothesis *)
   shows
-    "\<exists>p\<in>G. forces_eq(P,leq,p,\<tau>,\<theta>)"
+    "\<exists>p\<in>G. forces_eq(p,\<tau>,\<theta>)"
 proof -
-  let ?D="{p\<in>P. forces_eq(P,leq,p,\<tau>,\<theta>) 
-     \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(P,leq,p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>))
-     \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p,\<sigma>,\<tau>) \<and> forces_mem(P,leq,p,\<sigma>,\<theta>))}"
+  let ?D="{p\<in>P. forces_eq(p,\<tau>,\<theta>) 
+     \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>))
+     \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p,\<sigma>,\<tau>) \<and> forces_mem(p,\<sigma>,\<theta>))}"
   have "?D = {p\<in>P. sats(M,forces(Equal(0,1)),[P,leq,one,p,\<tau>,\<theta>]) 
     \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<tau>]) \<and> 
             \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<theta>])))
@@ -591,15 +591,15 @@ proof -
     have "\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> \<sigma>\<in>M" for \<sigma>
       using Transset_intf[OF trans_M _ domain_closed[simplified]] by blast
     moreover from \<open>\<tau>\<in>M\<close> \<open>\<theta>\<in>M\<close>
-    have "forces_mem(P,leq,p,\<sigma>,\<tau>)\<longleftrightarrow>sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<tau>])"
-      "forces_mem(P,leq,p,\<sigma>,\<theta>)\<longleftrightarrow>sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<theta>])"
+    have "forces_mem(p,\<sigma>,\<tau>)\<longleftrightarrow>sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<tau>])"
+      "forces_mem(p,\<sigma>,\<theta>)\<longleftrightarrow>sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<theta>])"
       if "p\<in>P" and "\<sigma>\<in>M" for p \<sigma> 
       using that sats_forces_Member[OF \<open>p\<in>P\<close> \<open>\<sigma>\<in>M\<close>, of _ "[\<sigma>,_]" 0 1] by simp_all
     moreover
     note assms
     ultimately
-    have "(\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(P,leq,p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>))
-      \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p,\<sigma>,\<tau>) \<and> forces_mem(P,leq,p,\<sigma>,\<theta>))
+    have "(\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>))
+      \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p,\<sigma>,\<tau>) \<and> forces_mem(p,\<sigma>,\<theta>))
    \<longleftrightarrow>
         (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<tau>]) 
              \<and> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<theta>])))
@@ -626,9 +626,9 @@ proof -
     unfolding M_generic_def by blast
   then 
   consider 
-    (1) "forces_eq(P,leq,p,\<tau>,\<theta>)" | 
-    (2) "\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(P,leq,p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>)" | 
-    (3) "\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p,\<sigma>,\<tau>) \<and> forces_mem(P,leq,p,\<sigma>,\<theta>)"
+    (1) "forces_eq(p,\<tau>,\<theta>)" | 
+    (2) "\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>)" | 
+    (3) "\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p,\<sigma>,\<tau>) \<and> forces_mem(p,\<sigma>,\<theta>)"
     by blast
   then
   show ?thesis
@@ -639,7 +639,7 @@ proof -
   next
     case 2
     then 
-    obtain \<sigma> where "\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)" "forces_mem(P,leq,p,\<sigma>,\<tau>)" "forces_nmem(p,\<sigma>,\<theta>)" 
+    obtain \<sigma> where "\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)" "forces_mem(p,\<sigma>,\<tau>)" "forces_nmem(p,\<sigma>,\<theta>)" 
       by blast
     moreover from this and \<open>p\<in>G\<close> and assms
     have "val(G,\<sigma>)\<in>val(G,\<tau>)"
@@ -663,7 +663,7 @@ proof -
   next (* copy-paste from case 2 mutatis mutandis*)
     case 3
     then
-    obtain \<sigma> where "\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)" "forces_mem(P,leq,p,\<sigma>,\<theta>)" "forces_nmem(p,\<sigma>,\<tau>)" 
+    obtain \<sigma> where "\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)" "forces_mem(p,\<sigma>,\<theta>)" "forces_nmem(p,\<sigma>,\<tau>)" 
       by blast
     moreover from this and \<open>p\<in>G\<close> and assms
     have "val(G,\<sigma>)\<in>val(G,\<theta>)"
@@ -710,8 +710,8 @@ lemma IV240b:
   assumes
     "M_generic(G)" "\<tau>\<in>M" "\<theta>\<in>M"
   shows 
-    "val(G,\<tau>) = val(G,\<theta>) \<Longrightarrow> (\<exists>p\<in>G. forces_eq(P,leq,p,\<tau>,\<theta>))" 
-    "val(G,\<tau>) \<in> val(G,\<theta>) \<Longrightarrow> (\<exists>p\<in>G. forces_mem(P,leq,p,\<tau>,\<theta>))" 
+    "val(G,\<tau>) = val(G,\<theta>) \<Longrightarrow> (\<exists>p\<in>G. forces_eq(p,\<tau>,\<theta>))" 
+    "val(G,\<tau>) \<in> val(G,\<theta>) \<Longrightarrow> (\<exists>p\<in>G. forces_mem(p,\<tau>,\<theta>))" 
   using IV240b_aux[OF assms(1), of _  \<tau> \<theta>] assms unfolding forces_eq_def forces_mem_def 
   by (auto del:elem_of_valI)
 
