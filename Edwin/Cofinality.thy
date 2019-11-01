@@ -179,8 +179,7 @@ proof (intro CollectI ballI impI)
     unfolding mono_map_def by blast
 qed
 
-lemma "Limit(A) \<Longrightarrow> cofinal_fun(f,A,Memrel(A)) \<longleftrightarrow> cofinal_fun'(f,A,Memrel(A))"
-  oops
+(* lemma "Limit(A) \<Longrightarrow> cofinal_fun(f,A,Memrel(A)) \<longleftrightarrow> cofinal_fun'(f,A,Memrel(A))" *)
 
 definition
   cf :: "i\<Rightarrow>i" where 
@@ -201,12 +200,6 @@ lemma cf_is_ordertype:
   using gamma_cofinal_gamma LeastI[of ?P \<gamma>] ordertype_Memrel[symmetric] assms 
   unfolding cf_def by blast
 
-(* Muevo este lema para más abajo
-lemma cofinal_mono_map_cf:
-  assumes "Ord(\<gamma>)"
-  shows "\<exists>j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>)) . cofinal_fun(j,\<gamma>,Memrel(\<gamma>))"
-  sorry *)
-    
 lemma cofinal_fun_succ':
   assumes "Ord(\<beta>)" "Ord(\<alpha>)" "f:\<alpha>\<rightarrow>succ(\<beta>)"
   shows "(\<exists>x\<in>\<alpha>. f`x=\<beta>) \<longleftrightarrow> cofinal_fun(f,succ(\<beta>),Memrel(succ(\<beta>)))"
@@ -253,28 +246,6 @@ proof
       using not_mem_empty unfolding cofinal_def by auto
 qed
 
-    
-(* lemma ordertype_0_not_cofinal:
-
- assumes "ordertype(A,Memrel(i)) = 0" "i\<noteq>0" "A\<subseteq>i" "Ord(i)"
-shows "\<not>cofinal(A,i,Memrel(i))"
-proof 
-  have 1:"ordertype(A,Memrel(i)) = ordertype(0,Memrel(0))"
-    using \<open>ordertype(A,Memrel(i)) = 0\<close> ordertype_0 by simp      
-  from  \<open>A\<subseteq>i\<close> \<open>Ord(i)\<close>
-  have "\<exists>f. f \<in> \<langle>A, Memrel(i)\<rangle> \<cong> \<langle>0, Memrel(0)\<rangle>" 
-    using   well_ord_Memrel well_ord_subset
-      ordertype_eq_imp_ord_iso[OF 1] Ord_0  by blast
-  then
-  have "A=0"
-    sorry
-  moreover
-  assume "cofinal(A, i, Memrel(i))"
-    ultimately
-  show "False" 
-    sorry
-   qed*)
-  
 lemma cf_succ:
   assumes "Ord(\<alpha>)" "f:1\<rightarrow>succ(\<alpha>)" "f`0=\<alpha>"
   shows " cf(succ(\<alpha>)) = 1"
@@ -997,9 +968,6 @@ lemma cf_ordertype_cofinal:
     "Limit(\<gamma>)" "A\<subseteq>\<gamma>" "cofinal(A,\<gamma>,Memrel(\<gamma>))"
   shows
     "cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))"
-    (* Is it better??
-    "Limit(\<gamma>) \<Longrightarrow> A\<subseteq>\<gamma> \<Longrightarrow> cofinal_predic(A,\<gamma>,mem) \<Longrightarrow> 
-                cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))" *)
 proof (intro le_anti_sym)
   from \<open>Limit(\<gamma>)\<close>
   have \<open>Ord(\<gamma>)\<close>
@@ -1058,16 +1026,16 @@ proof (intro le_anti_sym)
   moreover from this
   have "g:cf(\<gamma>)\<rightarrow>\<alpha>"
     using mono_map_is_fun by simp
-  moreover from calculation and \<open>f \<in> mono_map(\<alpha>,Memrel(\<alpha>),\<gamma>,Memrel(\<gamma>))\<close> \<open>Ord(\<alpha>)\<close> \<open>Ord(\<gamma>)\<close>
+  moreover
+  note \<open>Ord(\<alpha>)\<close>
+  moreover from calculation and \<open>f \<in> mono_map(\<alpha>,Memrel(\<alpha>),\<gamma>,Memrel(\<gamma>))\<close> \<open>Ord(\<gamma>)\<close>
   have "cofinal_fun(g,\<alpha>,Memrel(\<alpha>))"
     using factor_is_cofinal by blast
   moreover
-  note \<open>Ord(\<alpha>)\<close>
+  note \<open>\<alpha> = ordertype(A,Memrel(\<gamma>))\<close>
   ultimately
-  have "cf(\<alpha>) \<le> cf(\<gamma>)"
+  show "cf(ordertype(A,Memrel(\<gamma>))) \<le> cf(\<gamma>)"
     using cf_le_domain_cofinal_fun[OF _ Ord_cf mono_map_is_fun] by simp
-  with \<open>\<alpha> = ordertype(A,Memrel(\<gamma>))\<close>
-  show "cf(ordertype(A,Memrel(\<gamma>))) \<le> cf(\<gamma>)" by simp
 qed
 
 (* probar 5.12 y 5.13(1,2) *)
@@ -1088,24 +1056,23 @@ proof -
   show "cf(\<gamma>) = cf(cf(\<gamma>))"  .
 qed
   
-lemma surjection_is_cofinal:
-  assumes
-    "Limit(\<gamma>)" "Ord(\<delta>)" "f \<in> surj(\<delta>,\<gamma>)"
-  shows "cofinal_fun(f,\<gamma>,Memrel(\<gamma>))"
-  unfolding cofinal_fun_def
-proof 
-  fix a
-  assume "a\<in>\<gamma>"
-  with assms
-  obtain x where "x\<in>\<delta>" "f`x = a" 
-    unfolding surj_def  by blast
-  oops
-   
-    
+lemma surjection_is_cofinal: "f \<in> surj(\<delta>,\<gamma>) \<Longrightarrow> cofinal_fun(f,\<gamma>,Memrel(\<gamma>))"
+  unfolding surj_def cofinal_fun_def using domain_of_fun by force
+
 lemma cf_le_cardinal:
   assumes "Limit(\<gamma>)"
   shows "cf(\<gamma>) \<le> |\<gamma>|"
-  sorry
+proof -
+  from assms
+  have \<open>Ord(\<gamma>)\<close> using Limit_is_Ord by simp
+  then
+  obtain f where "f \<in> surj(|\<gamma>|,\<gamma>)" 
+    using Ord_cardinal_eqpoll unfolding eqpoll_def bij_def by blast
+  with \<open>Ord(\<gamma>)\<close>
+  show ?thesis 
+    using Card_is_Ord[OF Card_cardinal] surjection_is_cofinal 
+      cf_le_domain_cofinal_fun[of \<gamma>] surj_is_fun by blast
+qed
 
 lemma regular_is_cardinal:
   notes le_imp_subset [dest]

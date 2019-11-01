@@ -229,15 +229,15 @@
 \newcommand{\Null}{\calN\!\mathit{ull}}
 \DeclareMathOperator{\club}{Club}
 \DeclareMathOperator{\otp}{otp}
-\DeclareMathOperator{\val}{val}
-\DeclareMathOperator{\chk}{check}
-\DeclareMathOperator{\edrel}{edrel}
-\DeclareMathOperator{\eclose}{eclose}
-\DeclareMathOperator{\Memrel}{Memrel}
+\DeclareMathOperator{\val}{\mathit{val}}
+\DeclareMathOperator{\chk}{\mathit{check}}
+\DeclareMathOperator{\edrel}{\mathit{edrel}}
+\DeclareMathOperator{\eclose}{\mathit{eclose}}
+\DeclareMathOperator{\Memrel}{\mathit{Memrel}}
 
-%
-%
-%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Variant aleph, beth, etc
+% From http://tex.stackexchange.com/q/170476/69595
 \makeatletter
 \@ifpackageloaded{txfonts}\@tempswafalse\@tempswatrue
 \if@tempswa
@@ -283,7 +283,7 @@
 \def\foottext{\gdef\@thefnmark{}\@footnotetext}
 \makeatother
 \newcommand{\keywords}[1]{\foottext{\emph{Keywords:} #1}}
-
+\newcommand{\ack}[1]{\par\bigskip \noindent \emph{Acknowledgment:} #1}
 %
 %
 %

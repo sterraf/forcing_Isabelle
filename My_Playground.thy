@@ -559,4 +559,32 @@ lemma "\<Or>I. \<And>x. x \<subseteq> \<Union>I(x)"
   apply (rule x_sub_union_some)
   done
 
+context forcing_poset
+begin
+lemma denseD : "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow> \<exists>d\<in>D . <d,p>\<in>leq"
+  unfolding dense_def by simp
+
+bundle b = denseD[dest] 
+context 
+  includes b
+begin
+
+lemma hola: "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow> \<exists>d\<in>D . <d,p>\<in>leq"
+  apply blast
+  done
+
+end
+
+(* declare left_in_M[rule del] *)
+
+lemma "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow> \<exists>d\<in>D . <d,p>\<in>leq"
+   apply blast
+  oops
+
+lemma "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow> \<exists>d\<in>D . <d,p>\<in>leq"
+  using hola by blast
+
+end
+
+
 end

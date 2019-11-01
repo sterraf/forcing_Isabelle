@@ -1,0 +1,219 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
+\section{Separation and Powerset}
+\label{sec:proof-separation}
+We proceed to describe in detail the main goal of this paper, the formalization
+of the proof of the Separation Axiom. Afterwards, we sketch  the
+implementation of the Powerset Axiom.
+
+This proof of Separation can be found in the file
+\verb|Separation_Axiom.thy|. The order chosen to
+implement
+the proof sought to minimize the cross-reference of facts;  it is
+not entirely appropriate for a text version, so we depart from it in
+this presentation. Nevertheless, we will refer to each specific block
+of code by line number for ease of reference.
+
+The key technical result is the following:
+\begin{isabelle}
+  \isacommand{lemma}\isamarkupfalse%
+  \ Collect{\isacharunderscore}sats{\isacharunderscore}in{\isacharunderscore}MG\ {\isacharcolon}\isanewline
+  \ \ \isakeyword{assumes}\isanewline
+  \ \ \ \ {\isachardoublequoteopen}{\isasympi}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymsigma}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}\ {\isasympi}{\isacharparenright}\ {\isacharequal}\ c{\isachardoublequoteclose}\isanewline
+  \ \ \ \  {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}\ {\isasymsigma}{\isacharparenright}\ {\isacharequal}\ w{\isachardoublequoteclose}\isanewline
+  \ \ \ \ {\isachardoublequoteopen}{\isasymphi}\ {\isasymin}\ formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymle}\ {\isadigit{2}}{\isachardoublequoteclose}\isanewline
+  \ \ \isakeyword{shows}\ \ \ \ \isanewline
+  \ \ \ \ {\isachardoublequoteopen}{\isacharbraceleft}x{\isasymin}c{\isachardot}\ sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}\ {\isasymphi}{\isacharcomma}\ {\isacharbrackleft}x{\isacharcomma}\ w{\isacharbrackright}{\isacharparenright}{\isacharbraceright}{\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
+\end{isabelle}
+%
+From this, using absoluteness, we will be able to derive the
+$\phi$-instance of Separation. 
+
+To show that   
+\[
+S\defi\{x\in c : M[G],[x,w]\models \phi(x_0,x_1)\} \in M[G],
+\]
+it is enough to provide a name $n\in M$ for this set.
+ 
+The candidate name is
+\begin{equation}\label{eq:4}
+n \defi \{u \in\dom(\pi)\times\PP :M,[u,\PP,\leq,\1,\sig,\pi]\models \psi\}
+\end{equation}
+where
+\[
+\psi \defi \exists \th\, p.\ x_0=\lb\th,p\rb \y 
+   \forceisa(\th\in x_5\y\phi(\th,x_4)).
+\]
+The fact that $n\in M$ follows (lines 216--220 of the source file) by
+an application of a six-variable instance of Separation in $M$ (lemma
+\isatt{six{\isacharunderscore}sep{\isacharunderscore}aux}). We note in
+passing that it is possible to  abbreviate expressions in Isabelle by
+the use of \textbf{let} statements or  \textbf{is} qualifiers,
+and metavariables (whose
+identifiers start with a question mark). In this way, the definition in
+(\ref{eq:4}) appears in the sources as letting \isatt{?n} to be that
+set (lines 208--211).
+
+Almost a third part of the proof involves the syntactic handling of
+internalized formulas and permutation of variables. The more
+substantive portion concerns proving that actually $\val(G,n)=S$.
+
+Let's first focus into the predicate 
+\begin{equation}\label{eq:1}
+M,[u,\PP,\leq,\1,\sig,\pi]\models \psi
+\end{equation}
+defining $n$ by separation. By definition of the satisfaction
+relation and %% permuting variables
+absoluteness, we have (lines 92--98) that it is equivalent to the fact
+that there exist $\th,p\in M$ with   $u=\lb\th,p\rb$  and 
+\[
+M,[\PP,\leq,\1,p,\th,\sig,\pi]\models \forceisa(x_4\in
+x_6\y\phi(x_4,x_5)). 
+\]
+% (Note that the variable $x_7$ is not used.)
+This, in turn, is equivalent by the Definition of Forcing to: \emph{For all $M$-generic
+filters $F$ such that $p\in F$,} 
+\begin{equation}\label{eq:2}
+M[F],[\val(F,\th),\val(F,\sig),\val(F,\pi)]\models x_0\in
+x_2\y\phi(x_0,x_1). 
+\end{equation}
+(lines 99--185). We can instantiate this statement with $G$ and obtain
+(lines 186--206)
+\[
+p\in G \impl M[G],[\val(G,\th),w,c]\models x_0\in
+x_2\y\phi(x_0,x_1). 
+\] 
+Let $Q(\th,p)$ be the last displayed statement. We have just seen that
+(\ref{eq:1}) implies 
+\[
+\exists \th,p\in M.\ u=\lb\th,p\rb \y Q(\th,p).
+\]
+Hence (lines 207-212) $n$ is included in 
+\[
+m\defi \{u \in\dom(\pi)\times\PP : \exists \th,p\in M.\ u=\lb\th,p\rb
+\y Q(\th,p)\}. 
+\]
+
+Since $m$ is a name defined using Separation, we may use
+(\ref{eq:val-name-sep}) to show (lines 221--274 of
+\isatt{Separation\_Axiom})
+\begin{equation}
+  \label{eq:val-of-m}
+  \val(G,m) = \{x\in c : M[G],[x,w,c]\models \phi(x_0,x_1)\}.
+\end{equation}
+The right-hand side is trivially equal to $S$, but as a consequence of
+the definition of 
+\isatt{separation\_ax}, the result contains an extra $c$ in the
+environment.
+
+Also, by monotonicity of $\val$ we obtain 
+  $\val(G,n)\sbq \val(G,m)$ (lines 213--215).
+To complete the proof, it is therefore enough to show the other
+inclusion (starting at line 275).
+%$\val(G,m)\sbq \val(G,n)$ 
+For this, let $x\in \val(G,m) = S$ and then $x\in c$. Hence there exists
+$\lb\th,q\rb\in\pi$ such that $q\in G$ and $x=\val(G,\th)$. 
+
+On the other hand, since (line 297)
+\[
+M[G],[\val(G,\th),\val(G,\sig),\val(G,\pi)]\models
+ x_0\in x_2\y\phi( x_0, x_1),
+\]
+by the  Truth Lemma there must exist $r\in G$ such that
+\[
+M,[\PP,\leq,\1,r,\th,\sig,\pi]\models
+\forceisa(x_4\in x_6\y\phi( x_4, x_5)).
+\]
+Since $G$ is a filter, there is $p\in G$ such that $p\leq q, r$.
+By Strengthening, we have
+\[
+M,[\PP,\leq,\1,p,\th,\sig,\pi]\models
+\forceisa(x_4\in x_6\y \phi( x_4, x_5)),
+\]
+which by the Definition of Forcing gives us (lines 315--318): \emph{for all $M$-generic $F$,
+  $p\in F$ implies} 
+\[
+M[F],[\val(F,\th),\val(F,\sig),\val(F,\pi)]\models
+ x_0\in  x_2 \y\phi( x_0, x_1).
+\]
+Note this is the same as (\ref{eq:2}). Hence, tracing the equivalence
+up to (\ref{eq:1}), we can show that $x=\val(G,\th)\in \val(G,n)$
+(lines 319--337), finishing the main lemma.
+
+The last 20 lines of the theory show, using absoluteness, the two
+instances of Separation for $M[G]$:
+
+\begin{isabelle}
+\isacommand{theorem}\isamarkupfalse%
+\ separation{\isacharunderscore}in{\isacharunderscore}MG{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ \isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\ \isakeyword{and}\isanewline
+\ \ \ \  {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isacharequal}\ {\isadigit{1}}\ {\isasymor}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharequal}{\isadigit{2}}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ \ \isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymforall}a{\isasymin}{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharparenright}{\isachardot}\isanewline 
+ \ \ \ \ \  separation{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymlambda}x{\isachardot}sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymphi}{\isacharcomma}{\isacharbrackleft}x{\isacharcomma}a{\isacharbrackright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+   
+We now turn to the Powerset Axiom. We followed the proof of
+\cite[IV.2.27]{kunen2011set}, to which we refer the reader for further
+details. Actually, the main technical result,
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ Pow{\isacharunderscore}inter{\isacharunderscore}MG{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isachardoublequoteopen}a{\isasymin}M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ \ \ {\isachardoublequoteopen}Pow{\isacharparenleft}a{\isacharparenright}\ {\isasyminter}\ M{\isacharbrackleft}G{\isacharbrackright}\ {\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
+\end{isabelle}
+keeps most of the structure of the printed proof; this ``skeleton'' of the
+argument takes around 120 (short) lines, where we tried to  preserve the
+names of variables used in the textbook (with the occasional question
+mark that distinguishes meta-variables). There are approximately 30
+more lines of bureaucracy in the proof of the last lemma. 
+
+Two more
+absoluteness lemmas concerning powersets were needed: These are
+refinements of results (\isatt{powerset\_Pow} and
+\isatt{powerset\_imp\_subset\_Pow}) located in the theory
+\isatt{Relative} 
+% which assumed that $y$ below is in the class $M$.
+where we weakened the assumption ``$y\in M$'' (\isatt{M(y)}) to 
+``$y\sbq  M$'' (second assumption below).  
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ {\isacharparenleft}\isakeyword{in}\ M{\isacharunderscore}trivial{\isacharparenright}\ powerset{\isacharunderscore}subset{\isacharunderscore}Pow{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ \isanewline
+\ \ \ \ {\isachardoublequoteopen}powerset{\isacharparenleft}M{\isacharcomma}x{\isacharcomma}y{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymAnd}z{\isachardot}\ z{\isasymin}y\ {\isasymLongrightarrow}\ M{\isacharparenleft}z{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ \isanewline
+\ \ \ \ {\isachardoublequoteopen}y\ {\isasymsubseteq}\ Pow{\isacharparenleft}x{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ {\isacharparenleft}\isakeyword{in}\ M{\isacharunderscore}trivial{\isacharparenright}\ powerset{\isacharunderscore}abs{\isacharcolon}\ \isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isachardoublequoteopen}M{\isacharparenleft}x{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymAnd}z{\isachardot}\ z{\isasymin}y\ {\isasymLongrightarrow}\ M{\isacharparenleft}z{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ {\isachardoublequoteopen}powerset{\isacharparenleft}M{\isacharcomma}x{\isacharcomma}y{\isacharparenright}\ {\isasymlongleftrightarrow}\ y\ {\isacharequal}\ {\isacharbraceleft}a{\isasymin}Pow{\isacharparenleft}x{\isacharparenright}\ {\isachardot}\ M{\isacharparenleft}a{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+
+Of the rest of the theory file \verb|Powerset_Axiom.thy|, a
+considerable fraction is taken by the proof of a closure property of
+the ctm $M$, that involves renaming of an internalized formula; also,
+the handling of the projections \isatt{fst} and \isatt{snd} must be
+done internally. 
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ sats{\isacharunderscore}fst{\isacharunderscore}snd{\isacharunderscore}in{\isacharunderscore}M{\isacharcolon}\isanewline
+\ \isakeyword{assumes}\ \isanewline
+\  \ {\isachardoublequoteopen}A{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}B{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymphi}\ {\isasymin}\ formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}p{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}l{\isasymin}M{\isachardoublequoteclose}\isanewline
+\ \  {\isachardoublequoteopen}o{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymchi}{\isasymin}M{\isachardoublequoteclose}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymle}\ {\isadigit{6}}{\isachardoublequoteclose}\isanewline
+\  \isakeyword{shows}\isanewline
+\  \ {\isachardoublequoteopen}{\isacharbraceleft}sq\ {\isasymin}\ A{\isasymtimes}B\ {\isachardot}\isanewline
+\ \ \ \ \ sats{\isacharparenleft}M{\isacharcomma}{\isasymphi}{\isacharcomma}{\isacharbrackleft}p{\isacharcomma}l{\isacharcomma}o{\isacharcomma}snd{\isacharparenleft}sq{\isacharparenright}{\isacharcomma}fst{\isacharparenleft}sq{\isacharparenright}{\isacharcomma}{\isasymchi}{\isacharbrackright}{\isacharparenright}{\isacharbraceright}\ {\isasymin}\ M{\isachardoublequoteclose}
+\end{isabelle}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "Separation_In_MG"
+%%% ispell-local-dictionary: "american"
+%%% End: 

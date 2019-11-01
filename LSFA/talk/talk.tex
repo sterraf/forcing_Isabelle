@@ -1,0 +1,200 @@
+\documentclass{beamer}
+\usetheme{metropolis}           % Use metropolis theme
+\usepackage[spanish]{babel}
+\usepackage{amsmath,mathtools,array}
+\usepackage{amssymb} 
+\usepackage{amsthm} 
+\usepackage{tikz}
+\usepackage{microtype}
+% \usepackage{../paper/paper}
+
+\title{First steps towards a formalization of Forcing}
+\author{Emmanuel Gunther\and \emph{Miguel Pagano}\and Pedro Sánchez Terraf}
+\date{LSFA - Fortaleza, 26 September 2018}
+\input{../header-draft}
+\usepackage{../isabelle}
+\usepackage{../isabellesym}
+\begin{document}
+
+\maketitle
+%% Outline
+% 
+
+\begin{frame}{Zermelo-Fraenkel Set Theory}
+  \begin{block}{}
+    Set theory arose at the early twentieth century as one
+    possible foundation for mathematics.
+  \end{block}
+  \begin{block}{}
+    More formally, set theory is a first order theory ($ZFC$) with no
+    constants and one relational symbol $\in$. % It has some axioms
+    % (extensionality, pairing, foundation, union, powerset, infinity)
+    % and two axiom schemes (separation and replacement). This theory
+    % is known by $ZF$; while $ZFC$ is $ZF$ plus the axiom of Choice.
+  \end{block}
+  \begin{block}{}
+    To say that $ZFC$ is a possible foundation for mathematics means
+    that any mathematical theorem, say $T$, can be deduced from $ZFC$:
+    \[ ZFC \vdash T \]
+  \end{block}
+\end{frame}
+\begin{frame}{Cantor's Question and Gödel's and Cohen's answers}
+  \begin{block}{}
+    Cantor posed the \emph{Continuum Hypothesis} ($\CH$):
+    \begin{quote}
+      Every uncountable subset of $\R$ is equipotent with $\R$.
+    \end{quote}
+  \end{block}
+  \begin{block}{}
+    Gödel showed that $\CH$ is \emph{relatively consistent} with $ZFC$.
+  \end{block}
+  \begin{block}{}
+    Later, Cohen showed that also the negation of $\CH$ is relatively
+    consistent with $ZFC$. For this he invented the technique of
+    \emph{forcing}.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Some preliminaries}
+  \begin{block}{}
+    To say that $T$ is \emph{relatively consistent} with $ZFC$ can be
+    understood in two ways:
+    \begin{enumerate}
+    \item Construct a model $M'$ of $ZFC+T$ from a model $M$ for
+      $ZFC$.
+    \item Alternatively, deduce a contradiction in $ZFC$ from a
+      contradiction in $ZFC+T$.% (Interestingly both proofs give
+      % rise to algorithms for this)
+    \end{enumerate}
+  \end{block}
+
+  \begin{block}{}
+    Cohen's proofs construct a model $ZFC+\neg\CH$ assuming a
+    countable and transitive model (ctm).
+  \end{block}
+  \begin{itemize}
+  \item  $M$ is a \emph{transitive} model of $ZFC$ if $x \in M$ implies
+    $x\subset M$.
+  \item $M$ is \emph{countable} if it is equipotent with $\N$.
+  \end{itemize}
+
+  % \begin{block}{}
+  %   Notice that it is fine to ask for a ctm because at the end we
+  %   want to transforms contradictions 
+  % \end{block}
+\end{frame}
+
+\begin{frame}{Forcing}
+  \begin{block}{}
+    \begin{itemize}
+    \item Given a ctm $M$ and a \emph{generic} set $G$ \emph{for} $M$,
+      one constructs a new ctm $M[G]$.
+    \item One defines a poset $(P,\leq)$, where $P \in M$. The
+      existence of a generic filter $G$ follows from Rasiowa-Sikorski.
+    \item $M[G] = \{\val(G,x)\, |\, x \in M \}$ 
+    \item Depending on the definition of $P$, $M[G]$ will satisfy
+      $\CH$ or $\neg\CH$.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Our goal: formalize forcing}
+  \begin{block}{Questions?}
+    \begin{itemize}
+    \item Why forcing? Has not been formalized yet. % (Paulson formalized Gödel's result)
+    \item Related work. Paulson formalized Gödel's proof. %is the largest development and
+%      we can build on top of his work.
+    \item Which proof assistant? Because of the previous answer:
+      Isabelle/ZF.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Isabelle/ZF}
+  \begin{block}{Axiomatization of ZF in Isabelle/FOL}
+    \begin{itemize}
+    \item Sets are terms of type \isatt{i} and formulas have type
+      \isatt{o}. % None of them are recursive data-types.
+    \item Axioms of $ZFC$ are postulated as axioms of Isabelle:
+      \isa{extension: A\ =\ B\ \isasymlongleftrightarrow\ A\ \isasymsubseteq\ B\ \isasymand\ B \isasymsubseteq\ A}
+    \item A theorem of $ZFC$ is a \emph{lemma} of Isabelle/ZF:
+           \includegraphics[scale=1.3]{eqI.png}
+     \item In order to speak of formulas and satisfaction
+           (models), Paulson coded formulas (and much more) as sets.
+         \item He also defined relativized (to a class) versions of the axioms\\
+\hspace{-0.5cm}   \isa{upair\_ax(M) == \isasymforall x[M]. \isasymforall  y[M].\isasymexists z[M]. upair(M,x,y,z)}
+     \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{First steps towards Forcings}
+  \begin{block}{Our strategy}
+    \begin{enumerate}
+    \item Be as modular as possible, using \emph{locales}.
+    \item Define interfaces to deal with models of $ZFC$.
+    \item Exploit the modularity of forcing to divide the work.
+    \end{enumerate}
+  \end{block}
+\end{frame}
+
+\begin{frame}{What have we done?}
+  \begin{block}{Existence of a generic filter}
+  \begin{itemize}
+  \item Proved a principle of dependent choice.
+  \item Using that principle, proved Rasiowa-Sikorski.
+  \item If $M$ is a ctm and $P\in M$ is a poset, then
+    there exists a generic filter for $M$.
+  \end{itemize}
+\end{block}
+\begin{block}{Definition of $M[G]$}
+  \begin{itemize}
+  \item Defined \emph{names} for $x \in M$ and \emph{$\val$}.
+  \item Defined $M[G]$, assuming $M$ ctm and $G$ generic for $M$.
+  \item Proved $M \subseteq M[G]$.% (using $\check{x}$).
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{$M[G] \models ZFC$}
+  \begin{block}{Axiom by axiom}
+    \begin{itemize}
+    \item One of the hardest part is transfering truth on $M$ to
+      truth on $M[G]$.
+    % \item The most obvious, say for pairing, would be
+    %   \isa{sats(M,upair\_fm,[])} implies \isa{sats(M[G],upair\_fm,[])}.
+    \item We proved \isa{upair\_ax(\#\#M)} implies \isa{upair\_ax(\#\#M[G])}
+    \item $M[G]\models \mathit{separation}$ (almost).
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Future work: The next steps}
+  \begin{block}{Soon}
+    \begin{itemize}
+    \item $x \in M$ implies $\check{x}\in M$.
+    \item Define the poset we are interested in ($Add(\omega,\kappa)$).
+    \item Prove that $M[G]$ satisfies union, foundation, infinity.
+    \end{itemize}
+  \end{block}
+  \begin{block}{Not so soon}
+    \begin{itemize}
+    \item Define the forcing relation ($\forces$).
+    \item Prove the fundamental theorem of forcing.
+    \item $M[G]\models ZFC$.
+    \item If $P$ is ccc, then cardinals are preserved in $M[G]$.
+    \item Prove that for any generic $G$ for $Add(\omega,\aleph_2)$,
+      then $M[G]\models ZFC+\neg\CH$.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{Questions?}
+  \begin{center}
+    \begin{block}{}
+      \large{Thank you!}
+    \end{block}
+  \end{center}
+\end{frame}
+
+\end{document}

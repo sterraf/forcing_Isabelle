@@ -1,420 +1,420 @@
-theory Renaming imports Formula begin
+theory Renaming 
+  imports 
+    Nat_Miscellanea 
+    "~~/src/ZF/Constructible/Formula"
+begin
 
 section\<open>Auxiliary results\<close>
-
-lemmas nat_succI =  Ord_succ_mem_iff [THEN iffD2,OF nat_into_Ord]
-
-lemma nat_succD : "m \<in> nat \<Longrightarrow>  succ(n) \<in> succ(m) \<Longrightarrow> n \<in> m"
-  by (drule_tac j="succ(m)" in ltI,auto,erule ltD)
-    
-lemmas zero_in =  ltD [OF nat_0_le]
-
-lemma in_n_in_nat :  "m \<in> nat \<Longrightarrow> n \<in> m \<Longrightarrow> n \<in> nat"
- by(rule_tac A="m" in subsetD,erule naturals_subset_nat,assumption)
-
-    
-lemma in_succ_in_nat : "m \<in> nat \<Longrightarrow> n \<in> succ(m) \<Longrightarrow> n \<in> nat"
-  by(rule le_in_nat[OF leI],erule ltI,simp+)
   
-lemma ltI_neg : "x \<in> nat \<Longrightarrow> j \<le> x \<Longrightarrow> j \<noteq> x \<Longrightarrow> j < x"
-  by (simp add: le_iff)
-
-lemma leD_cases : "x \<in> nat \<Longrightarrow> j \<le> x \<Longrightarrow> j = x \<or> j < x"
-  by(auto simp add: le_iff)
-
-lemma leI_nat : "x \<in> nat \<Longrightarrow> j \<le> x \<Longrightarrow> j \<in> nat"
-  by(erule leE,erule in_n_in_nat,erule ltD,simp)
+lemma app_nm : "n\<in>nat \<Longrightarrow> m\<in>nat \<Longrightarrow> f\<in>n\<rightarrow>m \<Longrightarrow> x \<in> nat \<Longrightarrow> f`x \<in> nat"  
+  apply(case_tac "x\<in>n",rule_tac m="m" in in_n_in_nat,simp_all add:apply_type)
+  apply(subst apply_0,subst domain_of_fun,simp_all)
+  done
     
-lemma succ_pred_eq  :  "m \<in> nat \<Longrightarrow> m \<noteq> 0  \<Longrightarrow> succ(pred(m)) = m"
- by (erule_tac n="m" in natE,auto)
-
-lemma succ_mono : "j \<le> n \<Longrightarrow> succ(j) \<le> succ(n)"
-  by (auto)
-    
-lemma succ_ltI : "n \<in> nat \<Longrightarrow> succ(j) < n \<Longrightarrow> j < n"
-  apply (rule_tac j="succ(j)" in lt_trans,rule le_refl,rule Ord_succD)
-  apply (rule nat_into_Ord,erule in_n_in_nat,erule ltD,simp)
-done
-      
-lemma succ_In : "n \<in> nat \<Longrightarrow> succ(j) \<in> n \<Longrightarrow> j \<in> n"
- by (rule ltD,rule succ_ltI,simp,rule ltI,auto)
-    
-lemmas succ_leD = succ_leE[OF leI]
-    
-lemma succpred_leI : "n \<in> nat \<Longrightarrow>  n \<le> succ(pred(n))"
-  by (erule natE,simp+)
-
-lemma succpred_n0 : "p \<in> nat \<Longrightarrow>  succ(n) \<in> p \<Longrightarrow> p\<noteq>0"
-  by (erule natE,simp+)
-
-
-lemma funcI : "f \<in> A \<rightarrow> B \<Longrightarrow> a \<in> A \<Longrightarrow> b= f ` a \<Longrightarrow> \<langle>a, b\<rangle> \<in> f"
-  by(simp,rule apply_Pair,simp+)
-
-lemma bij_is_function  : "f\<in>bij(A,B) \<Longrightarrow> function(f)"
-  by(drule bij_is_fun,simp add: Pi_iff)
-
-lemmas natEin = natE [OF lt_nat_in_nat]  
-
-lemma trich_nat : "\<lbrakk> m \<in> nat ; n \<le> m ; n \<noteq> m ; \<not> n < m \<rbrakk> \<Longrightarrow> P"
-  apply(subgoal_tac "Ord(n)" "Ord(m)" "\<not> m < n")
-  apply(rule_tac i="n" and j="m" in Ord_linear_lt,blast+)
-  apply(erule le_imp_not_lt,erule nat_into_Ord)
-  apply(rule nat_into_Ord[OF le_in_nat],assumption+)
-done
-
-lemma pred0E : "i \<in> nat \<Longrightarrow> pred(i) = 0 \<Longrightarrow> i = 1 | i = 0"
-  by(rule natE,simp+)
-
-lemma succ_in : "succ(x) \<le> y  \<Longrightarrow> x \<in> y"
- by (auto,rule ltD) 
-  
-lemmas Un_least_lt_iffn =  Un_least_lt_iff [OF nat_into_Ord nat_into_Ord]
-
-lemma pred_le2 : "n\<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> pred(n) \<le> m \<Longrightarrow> n \<le> succ(m)"
-  by(subgoal_tac "n\<in>nat",rule_tac n="n" in natE,auto)
-
-    
-lemma pred_le : "n\<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> n \<le> succ(m) \<Longrightarrow> pred(n) \<le> m"
-  by(subgoal_tac "pred(n)\<in>nat",rule_tac n="n" in natE,auto)
-    
-lemma un_leD1 : "i \<in> nat \<Longrightarrow> j\<in> nat \<Longrightarrow> k \<in> nat \<Longrightarrow>  i \<union> j \<le> k \<Longrightarrow> i \<le> k"   
-  by (rule conjunct1,rule  iffD1, rule_tac j="j" in Un_least_lt_iffn,assumption+)
-
-    
-lemma un_leD2 : "i \<in> nat \<Longrightarrow> j\<in> nat \<Longrightarrow> k \<in> nat \<Longrightarrow>  i \<union> j \<le>k \<Longrightarrow> j \<le> k"   
-  by (rule conjunct2,rule  iffD1, rule_tac j="j" in Un_least_lt_iffn,assumption+)
-
-lemma un_leI : "i \<in> nat \<Longrightarrow> j\<in> nat \<Longrightarrow> k \<in> nat \<Longrightarrow> i \<le> k \<Longrightarrow> j \<le> k \<Longrightarrow> i \<union> j \<le> k"   
-  by(subst Un_def, rule Union_le,auto) 
-lemma un_leI' : "k \<in> nat \<Longrightarrow> i \<le> k \<Longrightarrow> j \<le> k \<Longrightarrow> i \<union> j \<le> k"   
-  by(subst Un_def, rule Union_le,auto) 
-
-lemma gt1 : "n \<in> nat \<Longrightarrow> i \<in> n \<Longrightarrow> i \<noteq> 0 \<Longrightarrow> i \<noteq> 1 \<Longrightarrow> 1<i"
-  by(rule_tac n="i" in natE,erule in_n_in_nat,simp,auto,rule Ord_0_lt,simp+)
-
-lemma app_bij : "f \<in> bij(A,B) \<Longrightarrow> a \<in> A \<Longrightarrow> f`a \<in> B"
-  by (frule  bij_is_fun,auto)
-
-lemma bij_app_n : "n\<in>nat \<Longrightarrow> f\<in>bij(n,n) \<Longrightarrow> x \<in> nat \<Longrightarrow> f`x \<in> nat"  
-  apply(case_tac "x\<in>n",rule_tac m="n" in in_n_in_nat,(simp add:app_bij)+)
-  apply(subst apply_0,drule bij_is_fun,subst  domain_of_fun,assumption+,auto)
-done
-    
-section\<open>Involutions\<close>
-
-definition invol :: "[i,i] \<Rightarrow> o" where
-  "invol(A,f) == f\<in>bij(A,A) \<and> f = converse(f)"
-  
-lemma invol_bij : "invol(A,f) \<Longrightarrow> f\<in>bij(A,A)" by (simp add: invol_def)
-lemma invol_conv : "invol(A,f) \<Longrightarrow> f=converse(f)" by (simp add: invol_def)
-lemmas invol_conv_bij =  bij_converse_bij[OF invol_bij]
-lemmas invol_fun = bij_is_fun[OF invol_bij]
-lemmas invol_conv_fun = bij_is_fun[OF invol_conv_bij]
-  
-lemma invol_inverse : "invol(A,f) \<Longrightarrow> a \<in> A \<Longrightarrow> f`(f`a) = a"
-  by(simp add: invol_def,clarsimp,subst sym[of "converse(f)"],
-      simp,rule right_inverse_bij,simp+)
-  
 section\<open>Renaming of free variables\<close>
 
 definition 
-  sum_id :: "[i,i] \<Rightarrow> i" where
-  "sum_id(m,f) == \<lambda>n \<in> succ(m)  . if n=0 then 0 else succ(f`pred(n))"
-    
-lemma sum_id0 : "sum_id(m,f)`0 = 0"
-  by(unfold sum_id_def,simp)
+  union_fun :: "[i,i,i,i] \<Rightarrow> i" where
+  "union_fun(f,g,m,p) == \<lambda>j \<in> m \<union> p  . if j\<in>m then f`j else g`j"
 
-lemma sum_idS : "succ(x) \<in> succ(m) \<Longrightarrow> sum_id(m,f)`succ(x) = succ(f`x)"
-  by(unfold sum_id_def,simp)
-    
-lemma sum_id_bd  : "m \<in> nat \<Longrightarrow> n\<in> nat \<Longrightarrow> 
-      f \<in> m \<rightarrow> m \<Longrightarrow> n \<in> succ(m) \<Longrightarrow> (if n = 0 then 0 else succ(f`pred(n))) \<in> succ(m)"
-  apply (simp,rule conjI,simp add: zero_in)
-  apply (rule impI, rule nat_succI,assumption) 
-  apply (rule_tac A="m" in subsetD,simp)
-  apply (erule_tac A="m" in apply_type)
-  apply (rule Ord_succ_mem_iff [THEN iffD1],simp,subst succ_pred_eq,assumption+)
-done
+lemma union_fun_type:
+  assumes "f \<in> m \<rightarrow> n"
+    "g \<in> p \<rightarrow> q"
+  shows "union_fun(f,g,m,p) \<in> m \<union> p \<rightarrow> n \<union> q"
+proof -
+  let ?h="union_fun(f,g,m,p)"
+  have
+    D: "?h`x \<in> n \<union> q" if "x \<in> m \<union> p" for x  
+  proof (cases "x \<in> m")
+    case True
+    then have 
+      "x \<in> m \<union> p" by simp
+    with \<open>x\<in>m\<close>
+    have "?h`x = f`x"
+      unfolding union_fun_def  beta by simp
+    with \<open>f \<in> m \<rightarrow> n\<close> \<open>x\<in>m\<close>
+    have "?h`x \<in> n" by simp
+    then show ?thesis ..
+  next
+    case False
+    with \<open>x \<in> m \<union> p\<close>
+    have "x \<in> p" 
+      by auto
+    with \<open>x\<notin>m\<close>
+    have "?h`x = g`x"
+      unfolding union_fun_def using beta by simp
+    with \<open>g \<in> p \<rightarrow> q\<close> \<open>x\<in>p\<close>
+    have "?h`x \<in> q" by simp
+    then show ?thesis ..
+  qed
+  have A:"function(?h)" unfolding union_fun_def using function_lam by simp
+  have " x\<in> (m \<union> p) \<times> (n \<union> q)" if "x\<in> ?h" for x
+    using that lamE[of x "m \<union> p" _ "x \<in> (m \<union> p) \<times> (n \<union> q)"] D unfolding union_fun_def 
+    by auto
+  then have B:"?h \<subseteq> (m \<union> p) \<times> (n \<union> q)" ..
+  have "m \<union> p \<subseteq> domain(?h)" 
+    unfolding union_fun_def using domain_lam by simp
+  with A B 
+  show ?thesis using  Pi_iff [THEN iffD2] by simp
+qed
 
-lemma sum_id_ap : "m \<in> nat \<Longrightarrow> f \<in> m \<rightarrow> m \<Longrightarrow> 
-    n \<in> succ(m) \<Longrightarrow> sum_id(m,f)`n \<in> succ(m)"
-  by (unfold sum_id_def, subst beta,assumption,rule sum_id_bd,simp add: in_succ_in_nat,
-   erule in_succ_in_nat,simp+)
-    
-lemma sum_id_tc : 
-  "m \<in> nat \<Longrightarrow> f \<in> m \<rightarrow> m \<Longrightarrow> sum_id(m,f) \<in> succ(m) \<rightarrow> succ(m)"
-  apply (rule Pi_iff [THEN iffD2],rule conjI)
-  apply (unfold sum_id_def,rule function_lam)
-  apply (rule conjI,auto)
-  apply (erule_tac p="x" and A="succ(m)" and 
-        b="\<lambda> i. if i = 0 then 0 else succ(f`pred(i))" and 
-        P="x\<in>succ(m)\<times>succ(m)" in lamE)
-  apply(rename_tac n,case_tac "n=0",simp,simp)
-  apply(subgoal_tac "f`pred(n) \<in> m")
-   apply(rule nat_succI,assumption+)
-  apply (erule_tac A="m" in apply_type)
-  apply (rule Ord_succ_mem_iff [THEN iffD1],simp)
-  apply (subst succ_pred_eq,rule_tac A="succ(m)" in subsetD,rule naturals_subset_nat)
-  apply (simp+)
-done
-
-lemma sum_id_bij  : "m \<in> nat \<Longrightarrow> f \<in> bij(m,m) \<Longrightarrow> sum_id(m,f)\<in>bij(succ(m),succ(m))"  
-  apply (unfold sum_id_def)
-  apply (rule_tac  d="\<lambda> n. if n =0 then 0 else succ(converse(f)`(pred(n)))" in lam_bijective)
-  apply (rule sum_id_bd,assumption+)
-  apply(rule_tac A="succ(m)" in subsetD)
-  apply(rule naturals_subset_nat, rule nat_succ_iff [THEN iffD2],assumption+)
-  apply(rule_tac n="x" in natE,erule_tac m="m" in in_succ_in_nat,assumption)
-  apply(erule bij_is_fun)+
-  apply(simp,rule_tac f="converse(f)" in sum_id_bd,assumption)
-  apply(erule_tac m="m" in in_succ_in_nat,assumption)
-  apply(rule bij_is_fun [OF bij_converse_bij],assumption+)    
-  apply(rule_tac n="x" in natE, erule_tac m="m" in in_succ_in_nat,assumption)
-  apply(simp+,erule left_inverse_bij)
-  apply(rule Ord_succ_mem_iff [THEN iffD1],simp+)
-  apply(rule_tac n="y" in natE, erule_tac m="m" in in_succ_in_nat,assumption)
-  apply(simp+,erule right_inverse_bij)
-  apply(rule Ord_succ_mem_iff [THEN iffD1],simp+)
-done
-
-lemma conv_sum_id : "m \<in> nat \<Longrightarrow> f \<in> bij(m,m) \<Longrightarrow> converse(sum_id(m,f))`0 = 0"
-  by(subst (1) sum_id0[symmetric],subst left_inverse_bij,erule sum_id_bij,auto simp add: zero_in)
-    
-lemma sum_idRel : "m \<in> nat \<Longrightarrow> f\<in>bij(m,m) \<Longrightarrow> x \<in> m \<Longrightarrow>
-  <succ(x),y> \<in> sum_id(m,f) \<Longrightarrow> y=succ(f`x)" 
-  apply(subgoal_tac "sum_id(m,f)`(succ(x)) = succ(f`x)")
-  apply(drule function_apply_equality)
-  apply(rule fun_is_function,rule bij_is_fun,rule sum_id_bij,simp+)
-  apply(rule sum_idS,rule nat_succI,simp+)
-done
+lemma union_fun_action :
+  assumes
+    "env \<in> list(M)" 
+    "env' \<in> list(M)"
+    "length(env) = m \<union> p" 
+    "\<forall> i . i \<in> m \<longrightarrow>  nth(f`i,env') = nth(i,env)"
+    "\<forall> j . j \<in> p \<longrightarrow> nth(g`j,env') = nth(j,env)"
+  shows "\<forall> i . i \<in> m \<union> p \<longrightarrow> 
+          nth(i,env) = nth(union_fun(f,g,m,p)`i,env')"
+proof -
+  let ?h = "union_fun(f,g,m,p)"
+  have "nth(x, env) = nth(?h`x,env')" if "x \<in> m \<union> p" for x
+    using that 
+  proof (cases "x\<in>m")
+    case True
+    with \<open>x\<in>m\<close>
+    have "?h`x = f`x"
+      unfolding union_fun_def  beta by simp
+    with assms \<open>x\<in>m\<close>
+    have "nth(x,env) = nth(?h`x,env')" by simp
+    then show ?thesis .
+  next
+    case False
+    with \<open>x \<in> m \<union> p\<close>
+    have 
+      "x \<in> p" "x\<notin>m"  by auto
+    then
+    have "?h`x = g`x"
+      unfolding union_fun_def beta by simp
+    with assms \<open>x\<in>p\<close>
+    have "nth(x,env) = nth(?h`x,env')" by simp
+    then show ?thesis .
+  qed
+  then show ?thesis by simp
+qed
 
 
-lemma conv_perm_s : "m \<in> nat \<Longrightarrow> f \<in> bij(m,m) \<Longrightarrow> succ(n) \<in> succ(m) \<Longrightarrow>
-    (converse(sum_id(m, f))`succ(n) = sum_id(m, converse(f))`succ(n))"  
-  apply(rule function_apply_equality,rule converseI)
-  apply(subst sum_idS,simp)
-  apply(rule funcI,rule sum_id_tc,simp,erule bij_is_fun)
-    prefer 2 apply(subst sum_idS)
-    prefer 2 apply(subst right_inverse_bij,simp+)
-    apply(rule nat_succD,simp+,rule nat_succI,simp)
-  apply(rule apply_type,rule bij_is_fun,erule bij_converse_bij,rule nat_succD,simp+)
-  apply(rule bij_is_function,rule  bij_converse_bij, rule sum_id_bij,simp+)
-done
+lemma id_fn_type :
+  assumes "n \<in> nat"
+  shows "id(n) \<in> n \<rightarrow> n"
+  unfolding id_def using \<open>n\<in>nat\<close> by simp
 
-lemma conv_perm_ap : "m \<in> nat \<Longrightarrow> f \<in> bij(m,m) \<Longrightarrow> n \<in> succ(m) \<Longrightarrow>
-    (converse(sum_id(m, f))`n) = sum_id(m, converse(f))`n"  
-  apply(rule_tac n="n" in natE,rule_tac m="succ(m)" in in_n_in_nat,(simp add:sum_id0 conv_sum_id)+)
-  apply(subst conv_perm_s,simp+)
-done
-    
-lemma conv_perm : "m \<in> nat \<Longrightarrow> f \<in> bij(m,m) \<Longrightarrow> 
-    converse(sum_id(m, f)) = sum_id(m, converse(f))"
-  apply(rule fun_extension,rule bij_is_fun,rule bij_converse_bij,rule sum_id_bij,simp+)
-  apply(rule bij_is_fun,rule sum_id_bij,simp,erule bij_converse_bij,simp add:conv_perm_ap)
-done
+lemma id_fn_action:
+  assumes "n \<in> nat" "env\<in>list(M)"
+  shows "\<And> j . j < n \<Longrightarrow> nth(j,env) = nth(id(n)`j,env)"
+proof -
+ show "nth(j,env) = nth(id(n)`j,env)" if "j < n" for j using that \<open>n\<in>nat\<close> ltD by simp
+qed
 
-lemma sum_id_invol : "m \<in> nat \<Longrightarrow> invol(m,f) \<Longrightarrow> 
-  invol(succ(m),sum_id(m,f))"  
-  apply(unfold invol_def,rule conjI)
-   apply(fold invol_def,rule sum_id_bij,auto,erule invol_bij)
-  apply(subst conv_perm,simp+,erule invol_bij)
-  apply(subst invol_conv,simp+)
-done
-  
-text\<open>This function is a more general version of @{term upt}, which
-can be recovered as @{term "tabulate(id)"}.\<close>
+
 definition 
-  tabulate :: "[i,i] \<Rightarrow> i" where 
-  "tabulate(f,i) = nat_rec(i,Nil, \<lambda> j l . l@[f`j])" 
- 
-lemma tab_succ : "\<lbrakk> j \<in> nat ; f \<in> n \<rightarrow> A \<rbrakk> \<Longrightarrow> 
-                       tabulate(f,succ(j)) = tabulate(f,j)@[f`j]"
-   by(unfold tabulate_def,subst nat_rec_succ,assumption+,simp)
+  sum :: "[i,i,i,i,i] \<Rightarrow> i" where
+  "sum(f,g,m,n,p) == \<lambda>j \<in> m#+p  . if j<m then f`j else (g`(j#-m))#+n"
+
+lemma sum_inl:
+  assumes "m \<in> nat" "n\<in>nat"
+    "f \<in> m\<rightarrow>n" "x \<in> m"
+  shows "sum(f,g,m,n,p)`x = f`x"
+proof -
+  from \<open>m\<in>nat\<close>
+  have "m\<le>m#+p" 
+    using add_le_self[of m] by simp
+  with assms
+  have "x\<in>m#+p" 
+    using ltI[of x m] lt_trans2[of x m "m#+p"] ltD by simp
+  from assms
+  have "x<m" 
+    using ltI by simp  
+  with \<open>x\<in>m#+p\<close> 
+  show ?thesis unfolding sum_def by simp
+qed
+
+lemma sum_inr:
+  assumes "m \<in> nat" "n\<in>nat" "p\<in>nat"
+    "g\<in>p\<rightarrow>q" "m \<le> x" "x < m#+p"
+  shows "sum(f,g,m,n,p)`x = g`(x#-m)#+n"
+proof -
+  from assms 
+  have "x\<in>nat" 
+    using in_n_in_nat[of "m#+p"] ltD
+    by simp
+  with assms 
+  have "\<not> x<m" 
+    using not_lt_iff_le[THEN iffD2] by simp 
+  from assms 
+  have "x\<in>m#+p" 
+    using ltD by simp
+  with \<open>\<not> x<m\<close> 
+  show ?thesis unfolding sum_def by simp
+qed
+
+
+lemma sum_action :
+  assumes "m \<in> nat" "n\<in>nat" "p\<in>nat" "q\<in>nat"
+    "f \<in> m\<rightarrow>n" "g\<in>p\<rightarrow>q" 
+    "env \<in> list(M)" 
+    "env' \<in> list(M)"
+    "env1 \<in> list(M)" 
+    "env2 \<in> list(M)"
+    "length(env) = m" 
+    "length(env1) = p"
+    "length(env') = n" 
+    "\<And> i . i < m \<Longrightarrow> nth(i,env) = nth(f`i,env')"
+    "\<And> j. j < p \<Longrightarrow> nth(j,env1) = nth(g`j,env2)"
+  shows "\<forall> i . i < m#+p \<longrightarrow> 
+          nth(i,env@env1) = nth(sum(f,g,m,n,p)`i,env'@env2)"
+proof -
+  let ?h = "sum(f,g,m,n,p)"
+  from \<open>m\<in>nat\<close> \<open>n\<in>nat\<close> \<open>q\<in>nat\<close>
+  have "m\<le>m#+p" "n\<le>n#+q" "q\<le>n#+q"
+    using add_le_self[of m]  add_le_self2[of n q] by simp_all
+  from \<open>p\<in>nat\<close>
+  have "p = (m#+p)#-m" using diff_add_inverse2 by simp
+  have "nth(x, env @ env1) = nth(?h`x,env'@env2)" if "x<m#+p" for x
+  proof (cases "x<m")
+    case True
+    then
+    have 2: "?h`x= f`x" "x\<in>m" "f`x \<in> n" "x\<in>nat"
+      using assms sum_inl ltD apply_type[of f m _ x] in_n_in_nat by simp_all
+    with \<open>x<m\<close> assms
+    have "f`x < n" "f`x<length(env')"  "f`x\<in>nat" 
+      using ltI in_n_in_nat by simp_all
+    with 2 \<open>x<m\<close> assms 
+    have "nth(x,env@env1) = nth(x,env)"       
+      using nth_append[OF \<open>env\<in>list(M)\<close>] \<open>x\<in>nat\<close> by simp
+    also 
+    have
+      "... = nth(f`x,env')" 
+      using 2 \<open>x<m\<close> assms by simp
+    also
+    have "... = nth(f`x,env'@env2)"
+      using nth_append[OF \<open>env'\<in>list(M)\<close>] \<open>f`x<length(env')\<close> \<open>f`x \<in>nat\<close> by simp
+    also
+    have "... = nth(?h`x,env'@env2)"
+      using 2 by simp
+    finally
+    have "nth(x, env @ env1) = nth(?h`x,env'@env2)" .
+    then show ?thesis .
+  next
+    case False    
+    have "x\<in>nat" 
+      using that in_n_in_nat[of "m#+p" x] ltD \<open>p\<in>nat\<close> \<open>m\<in>nat\<close> by simp
+    with \<open>length(env) = m\<close>
+    have "m\<le>x" "length(env) \<le> x"
+      using not_lt_iff_le \<open>m\<in>nat\<close> \<open>\<not>x<m\<close> by simp_all
+    with \<open>\<not>x<m\<close> \<open>length(env) = m\<close>
+    have 2 : "?h`x= g`(x#-m)#+n"  "\<not> x <length(env)"
+      unfolding sum_def
+      using  sum_inr that beta ltD by simp_all
+    from assms \<open>x\<in>nat\<close> \<open>p=m#+p#-m\<close>
+    have "x#-m < p" 
+      using diff_mono[OF _ _ _ \<open>x<m#+p\<close> \<open>m\<le>x\<close>] by simp
+    then have "x#-m\<in>p" using ltD by simp
+    with \<open>g\<in>p\<rightarrow>q\<close>
+    have "g`(x#-m) \<in> q"  by simp
+    with \<open>q\<in>nat\<close> \<open>length(env') = n\<close>
+    have "g`(x#-m) < q" "g`(x#-m)\<in>nat" using ltI in_n_in_nat by simp_all
+    with \<open>q\<in>nat\<close> \<open>n\<in>nat\<close>
+    have "(g`(x#-m))#+n <n#+q" "n \<le> g`(x#-m)#+n" "\<not> g`(x#-m)#+n < length(env')"
+      using add_lt_mono1[of "g`(x#-m)" _ n,OF _ \<open>q\<in>nat\<close>] 
+            add_le_self2[of n] \<open>length(env') = n\<close> 
+      by simp_all
+    from assms \<open>\<not> x < length(env)\<close> \<open>length(env) = m\<close>
+    have "nth(x,env @ env1) = nth(x#-m,env1)"
+      using nth_append[OF \<open>env\<in>list(M)\<close> \<open>x\<in>nat\<close>] by simp
+    also
+    have "... = nth(g`(x#-m),env2)"
+      using assms \<open>x#-m < p\<close> by simp
+    also 
+    have "... = nth((g`(x#-m)#+n)#-length(env'),env2)"
+      using  \<open>length(env') = n\<close>
+          diff_add_inverse2 \<open>g`(x#-m)\<in>nat\<close>
+      by simp
+    also 
+    have "... = nth((g`(x#-m)#+n),env'@env2)"
+      using  nth_append[OF \<open>env'\<in>list(M)\<close>] \<open>n\<in>nat\<close> \<open>\<not> g`(x#-m)#+n < length(env')\<close>
+      by simp
+    also
+    have "... = nth(?h`x,env'@env2)"
+      using 2 by simp
+    finally
+    have "nth(x, env @ env1) = nth(?h`x,env'@env2)" .
+    then show ?thesis .
+  qed
+  then show ?thesis by simp
+qed
+
+lemma sum_type  :
+  assumes "m \<in> nat" "n\<in>nat" "p\<in>nat" "q\<in>nat"
+    "f \<in> m\<rightarrow>n" "g\<in>p\<rightarrow>q"
+  shows "sum(f,g,m,n,p) \<in> (m#+p) \<rightarrow> (n#+q)"
+proof -
+  let ?h = "sum(f,g,m,n,p)"
+  from \<open>m\<in>nat\<close> \<open>n\<in>nat\<close> \<open>q\<in>nat\<close>
+  have "m\<le>m#+p" "n\<le>n#+q" "q\<le>n#+q"
+    using add_le_self[of m]  add_le_self2[of n q] by simp_all
+  from \<open>p\<in>nat\<close>
+  have "p = (m#+p)#-m" using diff_add_inverse2 by simp   
+  {fix x
+    assume 1: "x\<in>m#+p" "x<m"
+    with 1 have "?h`x= f`x" "x\<in>m"
+      using assms sum_inl ltD by simp_all
+    with \<open>f\<in>m\<rightarrow>n\<close>
+    have "?h`x \<in> n" by simp
+    with \<open>n\<in>nat\<close> have "?h`x < n" using ltI by simp
+    with \<open>n\<le>n#+q\<close> 
+    have "?h`x < n#+q" using lt_trans2 by simp
+    then 
+    have "?h`x \<in> n#+q"  using ltD by simp
+  }
+  then have 1:"?h`x \<in> n#+q" if "x\<in>m#+p" "x<m" for x using that .
+  {fix x
+    assume 1: "x\<in>m#+p" "m\<le>x"
+    then have "x<m#+p" "x\<in>nat" using ltI in_n_in_nat[of "m#+p"] ltD by simp_all
+    with 1 
+    have 2 : "?h`x= g`(x#-m)#+n" 
+      using assms sum_inr ltD by simp_all
+    from assms \<open>x\<in>nat\<close> \<open>p=m#+p#-m\<close>
+    have "x#-m < p" using diff_mono[OF _ _ _ \<open>x<m#+p\<close> \<open>m\<le>x\<close>] by simp
+    then have "x#-m\<in>p" using ltD by simp
+    with \<open>g\<in>p\<rightarrow>q\<close>
+    have "g`(x#-m) \<in> q"  by simp
+    with \<open>q\<in>nat\<close> have "g`(x#-m) < q" using ltI by simp
+    with \<open>q\<in>nat\<close>
+    have "(g`(x#-m))#+n <n#+q" using add_lt_mono1[of "g`(x#-m)" _ n,OF _ \<open>q\<in>nat\<close>] by simp
+    with 2
+    have "?h`x \<in> n#+q"  using ltD by simp
+  }
+  then have 2:"?h`x \<in> n#+q" if "x\<in>m#+p" "m\<le>x" for x using that .
+  have
+    D: "?h`x \<in> n#+q" if "x\<in>m#+p" for x 
+    using that 
+  proof (cases "x<m")
+    case True
+    then show ?thesis using 1 that by simp
+  next
+    case False
+    with \<open>m\<in>nat\<close> have "m\<le>x" using not_lt_iff_le that in_n_in_nat[of "m#+p"] by simp
+    then show ?thesis using 2 that by simp
+  qed
+  have A:"function(?h)" unfolding sum_def using function_lam by simp
+  have " x\<in> (m #+ p) \<times> (n #+ q)" if "x\<in> ?h" for x
+    using that lamE[of x "m#+p" _ "x \<in> (m #+ p) \<times> (n #+ q)"] D unfolding sum_def 
+    by auto
+  then have B:"?h \<subseteq> (m #+ p) \<times> (n #+ q)" ..
+  have "m #+ p \<subseteq> domain(?h)" 
+    unfolding sum_def using domain_lam by simp
+  with A B 
+  show ?thesis using  Pi_iff [THEN iffD2] by simp
+qed
+
+lemma sum_type_id :
+  assumes
+    "f \<in> length(env)\<rightarrow>length(env')"  
+    "env \<in> list(M)" 
+    "env' \<in> list(M)"
+    "env1 \<in> list(M)"
+  shows 
+    "sum(f,id(length(env1)),length(env),length(env'),length(env1)) \<in> 
+        (length(env)#+length(env1)) \<rightarrow> (length(env')#+length(env1))"
+  using assms length_type id_fn_type sum_type
+  by simp
+
+lemma sum_type_id_aux2 :
+  assumes    
+    "f \<in> m\<rightarrow>n"
+    "m \<in> nat" "n \<in> nat"
+    "env1 \<in> list(M)"
+  shows 
+    "sum(f,id(length(env1)),m,n,length(env1)) \<in> 
+        (m#+length(env1)) \<rightarrow> (n#+length(env1))"
+  using assms id_fn_type sum_type
+  by auto
+
+lemma sum_action_id :
+  assumes
+    "env \<in> list(M)" 
+    "env' \<in> list(M)"
+    "f \<in> length(env)\<rightarrow>length(env')" 
+    "env1 \<in> list(M)" 
+    "\<And> i . i < length(env) \<Longrightarrow> nth(i,env) = nth(f`i,env')"
+  shows "\<And> i . i < length(env)#+length(env1) \<Longrightarrow>
+          nth(i,env@env1) = nth(sum(f,id(length(env1)),length(env),length(env'),length(env1))`i,env'@env1)"
+proof -
+  from assms 
+  have "length(env)\<in>nat" (is "?m \<in> _") by simp 
+  from assms have "length(env')\<in>nat" (is "?n \<in> _") by simp 
+  from assms have "length(env1)\<in>nat" (is "?p \<in> _") by simp 
+  note lenv = id_fn_action[OF \<open>?p\<in>nat\<close> \<open>env1\<in>list(M)\<close>]
+  note lenv_ty = id_fn_type[OF \<open>?p\<in>nat\<close>]    
+  { 
+    fix i 
+    assume "i < length(env)#+length(env1)" 
+    have "nth(i,env@env1) = nth(sum(f,id(length(env1)),?m,?n,?p)`i,env'@env1)"
+      using sum_action[OF \<open>?m\<in>nat\<close> \<open>?n\<in>nat\<close> \<open>?p\<in>nat\<close> \<open>?p\<in>nat\<close> \<open>f\<in>?m\<rightarrow>?n\<close>
+                        lenv_ty \<open>env\<in>list(M)\<close> \<open>env'\<in>list(M)\<close>
+                          \<open>env1\<in>list(M)\<close> \<open>env1\<in>list(M)\<close> _
+                          _ _  assms(5) lenv 
+    ] \<open>i<?m#+length(env1)\<close> by simp
+  }
+  then show "\<And> i . i < ?m#+length(env1) \<Longrightarrow>
+          nth(i,env@env1) = nth(sum(f,id(?p),?m,?n,?p)`i,env'@env1)" by simp
+qed
+
+lemma sum_action_id_aux :
+  assumes
+    "f \<in> m\<rightarrow>n"
+    "env \<in> list(M)" 
+    "env' \<in> list(M)" 
+    "env1 \<in> list(M)" 
+    "length(env) = m"
+    "length(env') = n"
+    "length(env1) = p"
+    "\<And> i . i < m \<Longrightarrow> nth(i,env) = nth(f`i,env')"
+  shows "\<And> i . i < m#+length(env1) \<Longrightarrow>
+          nth(i,env@env1) = nth(sum(f,id(length(env1)),m,n,length(env1))`i,env'@env1)"
+  using assms length_type id_fn_type sum_action_id
+  by auto
+
+
+definition 
+  sum_id :: "[i,i] \<Rightarrow> i" where
+  "sum_id(m,f) == sum(\<lambda>x\<in>1.x,f,1,1,m)"
   
-  
-lemma tab_tc_aux [rule_format] : "i \<in> nat \<Longrightarrow> 
-  \<forall> m f . i\<le> m \<longrightarrow> f \<in> m \<rightarrow> A \<longrightarrow> tabulate(f,i) \<in> list(A)"
-  apply(erule_tac n="i" in nat_induct)
-  apply(clarsimp,unfold tabulate_def,subst nat_rec_0,simp)
-  apply(rename_tac i)
-  apply(clarsimp,subst nat_rec_succ,simp,rule app_type)
-  prefer 2 apply(simp,erule apply_type,erule ltD)
-  apply(rename_tac n g)
-  apply(subgoal_tac "i\<le>n")
-  apply(auto,erule leI)
-done
+lemma sum_id0 : "m\<in>nat\<Longrightarrow>sum_id(m,f)`0 = 0"
+by(unfold sum_id_def,subst sum_inl,auto)
 
-lemma tab_tc  : "\<lbrakk> j \<in> nat ;  f \<in> j \<rightarrow> A \<rbrakk> \<Longrightarrow> 
-                       tabulate(f,j) \<in> list(A)"
- by (rule tab_tc_aux,assumption,auto)
+lemma sum_idS : "p\<in>nat \<Longrightarrow> q\<in>nat \<Longrightarrow> f\<in>p\<rightarrow>q \<Longrightarrow> x \<in> p \<Longrightarrow> sum_id(p,f)`(succ(x)) = succ(f`x)"
+  by(subgoal_tac "x\<in>nat",unfold sum_id_def,subst sum_inr,
+      simp_all add:ltI,simp_all add: app_nm in_n_in_nat)
 
+lemma sum_id_tc_aux :
+  "p \<in> nat \<Longrightarrow>  q \<in> nat \<Longrightarrow> f \<in> p \<rightarrow> q \<Longrightarrow> sum_id(p,f) \<in> 1#+p \<rightarrow> 1#+q"
+  by (unfold sum_id_def,rule sum_type,simp_all)
 
-lemma tab_length  : "\<lbrakk> j \<in> nat \<rbrakk> \<Longrightarrow> \<forall> n . n \<in> nat \<longrightarrow> j \<le> n \<longrightarrow> (\<forall> f . (f \<in> n \<rightarrow> A) \<longrightarrow> 
-                       length(tabulate(f,j)) = j)"
-  apply(erule nat_induct)
-  apply(unfold tabulate_def,subst nat_rec_0,(rule allI,rule impI)+,simp)
-  apply((rule allI,rule impI)+,subst nat_rec_succ,assumption)
-  apply(rule impI,rule allI,rule impI)
-  apply(subst length_app,fold tabulate_def,rule tab_tc_aux,simp)
-  apply(rule_tac j="succ(x)" in le_trans,simp,assumption+,simp)
-  apply(rule apply_type,assumption,erule ltD,simp)
-  apply(subst natify_ident,rule length_type,rule tab_tc_aux,assumption)
-  apply(erule leI,assumption)
-  apply(subgoal_tac "x\<le>n",simp,erule leI)
-done
-
-lemma tab_length2 : "\<lbrakk> n \<in> nat ; f \<in> n \<rightarrow> A ; j < n \<rbrakk> \<Longrightarrow> 
-                       length(tabulate(f,j)) = j"
-  by(subgoal_tac "j\<le>n",subgoal_tac "j \<in> nat",insert tab_length,simp,erule in_n_in_nat,erule ltD,erule leI)
-
-
-definition nth_i :: "i \<Rightarrow> i" where
-  "nth_i(l) == \<lambda> n\<in>length(l).nth(n,l)"
-
-lemma nth_eq  : "l \<in> list(A) \<Longrightarrow> n \<in> length(l) \<Longrightarrow> nth_i(l)`n=nth(n,l)"
-  by(unfold nth_i_def,simp)
-    
-lemma nth_i_type : "l \<in> list(A) \<Longrightarrow> nth_i(l) \<in> length(l) \<rightarrow> A"
-  by (unfold nth_i_def,rule lam_type,rule nth_type,auto,rule ltI,simp,rule nat_into_Ord,auto)
-
-text\<open>The action of a permutation over a list.\<close>
-definition perm_list :: "[i,i] \<Rightarrow> i" where
- "perm_list(f,l) ==tabulate(nth_i(l) O f,length(l))"
-
-
-lemma nth_tab_gen: 
-  "m \<in>nat \<Longrightarrow> \<forall> n . n \<in> nat \<longrightarrow> m \<le> n \<longrightarrow> (\<forall> f . (f \<in> n \<rightarrow> A \<longrightarrow>(
-   \<forall> j . j < m \<longrightarrow> nth(j,tabulate(f,m)) = f`j)))" 
-  apply(erule nat_induct,simp)
-  apply(rule allI,(rule impI)+)+
-  apply(case_tac "j=x")
-  apply(simp,unfold tabulate_def,subst nat_rec_succ,assumption)
-   apply(fold tabulate_def,subst nth_append)
-  apply(rule_tac i="x" and m="n" and A="A" in tab_tc_aux,assumption,erule leI,assumption+)
-  apply(simp add:tab_length2,blast)
-  apply(subst tab_succ,assumption+,simp,subst nth_append) 
-  apply(rule_tac i="x" and m="n" and A="A" in tab_tc_aux,assumption,erule leI,assumption+)
-  apply(erule le_in_nat,simp add:tab_length2)
-  apply(simp add:tab_length2,rule conjI)
-  prefer 2 apply(rule impI,erule_tac m="x" and n="j" in trich_nat,assumption+)
-  apply(subgoal_tac "x\<le>n",blast,erule leI)
+lemma sum_id_tc :
+  "n \<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> f \<in> n \<rightarrow> m \<Longrightarrow> sum_id(n,f) \<in> succ(n) \<rightarrow> succ(m)"
+  apply(rule ssubst[of  "succ(n) \<rightarrow> succ(m)" "1#+n \<rightarrow> 1#+m"])
+  apply(simp,rule sum_id_tc_aux,simp_all)
   done
 
-lemma nth_tab: 
-  "m \<in> nat \<Longrightarrow> f \<in> m \<rightarrow> A \<Longrightarrow> j \<in> m \<Longrightarrow> nth(j,tabulate(f,m)) = f`j" 
- by(subgoal_tac "j<m",insert nth_tab_gen,auto simp add:tab_length2,erule ltI,erule nat_into_Ord)
- 
-lemma nth_after_type : 
-  "l\<in>list(A) \<Longrightarrow> f \<in> length(l) \<rightarrow> length(l) \<Longrightarrow>
-   j < length(l) \<Longrightarrow> nth(f`j,l) \<in> A" 
-  apply(subgoal_tac "f`j < length(l)")
-  apply(erule nth_type,assumption)
-  apply(rule ltI,erule apply_type,erule ltE,simp+)
-done
-
-
-lemma perm_list_tc  : " l \<in> list(A) \<Longrightarrow> 
-    f\<in> bij(length(l),length(l)) \<Longrightarrow> 
-    perm_list(f,l) \<in> list(A)"
-  apply(unfold perm_list_def,rule tab_tc,rule length_type,simp add:nth_i_type)
-  apply(rule comp_fun,erule bij_is_fun,simp add:nth_i_type)
-done
-
-lemma perm_list_length : " l \<in> list(A) \<Longrightarrow> 
-    f\<in> bij(length(l),length(l)) \<Longrightarrow> 
-    length(perm_list(f,l)) = length(l)"
-  apply(unfold perm_list_def,subst tab_length,simp add:nth_i_type,rule length_type,simp+)
-  apply(rule comp_fun,erule bij_is_fun,rule nth_i_type,simp+)
-done
-    
-lemma nth_tab_perm : "\<lbrakk> m \<in> nat ; h \<in> m \<rightarrow> A ; f \<in> bij(m,m) ; n \<in> m \<rbrakk> \<Longrightarrow>
-  nth(converse(f)`n,tabulate(h O f,m)) = h`n"
-  apply(subst nth_tab,simp,rule comp_fun,erule bij_is_fun,simp)
- apply(rule apply_type,rule bij_is_fun[OF bij_converse_bij],assumption+)
- apply(subst comp_fun_apply,erule bij_is_fun)
- apply(rule apply_type,rule bij_is_fun[OF bij_converse_bij],assumption+)
- apply(subst right_inverse_bij,simp+)
-done
-
-lemma perm_list_eq  : "\<lbrakk> l \<in> list(A) ; a \<in> A ; f \<in> bij(length(l),length(l)) \<rbrakk> \<Longrightarrow> 
-  perm_list(sum_id(length(l),f), Cons(a, l)) = Cons(a,perm_list(f,l))"  
-  apply(rule nth_equalityI)
-  apply((rule perm_list_tc,(simp add:sum_id_bij)+)+,simp add: sum_id_bij perm_list_length)
-  apply(erule natE)
-  apply(unfold  perm_list_def)
-   apply(subst nth_tab,simp)
-   apply(fold perm_list_def,simp+)
-  apply(rule comp_fun,rule sum_id_tc,simp,erule bij_is_fun)
-  apply(subst length.simps(2)[symmetric],rule nth_i_type,simp+,rule zero_in,simp+)
-  apply(subst comp_fun_apply,rule sum_id_tc,simp+,erule bij_is_fun,rule zero_in,simp) 
-  apply(subst sum_id0,subst nth_eq,simp+,rule zero_in,simp+)
-  apply(unfold  perm_list_def)
-   apply(subst nth_tab,simp)
-   apply(fold perm_list_def,simp)
-  apply(rule comp_fun,rule sum_id_tc,simp,erule bij_is_fun)
-    apply(subst length.simps(2)[symmetric],rule nth_i_type,simp+)
-   apply(drule ltD,subst (asm) perm_list_length[of "Cons(a,l)"],(simp add:sum_id_bij)+)
-   apply(subst comp_fun_apply,rule sum_id_tc,simp,rule bij_is_fun,simp)
-   apply(drule ltD,subst (asm) perm_list_length[of "Cons(a,l)"],(simp add:sum_id_bij)+)
-  apply(subst nth_eq,simp+,rule app_bij,rule sum_id_bij,simp+)
-   apply(drule ltD,subst (asm) perm_list_length[of "Cons(a,l)"],(simp add:sum_id_bij)+)
-   apply(subst sum_idS)
-   apply(drule ltD,subst (asm) perm_list_length[of "Cons(a,l)"],(simp add:sum_id_bij)+)
-  apply(subst nth_Cons)
-   apply(rule_tac m="length(l)" in in_n_in_nat,simp,rule app_bij,simp)
-   apply(subst (asm) perm_list_length[of "Cons(a,l)"],(simp add:sum_id_bij)+,rule ltD,simp)
-  apply(unfold perm_list_def,subst nth_tab,simp+)
-  apply(fold perm_list_def)
-  apply(rule comp_fun,erule bij_is_fun,rule nth_i_type,simp)
-   apply(subst (asm) perm_list_length[of "Cons(a,l)"],(simp add:sum_id_bij)+,rule ltD,simp)  
-   apply(subst comp_fun_apply,erule bij_is_fun)
-   apply(subst (asm) perm_list_length[of "Cons(a,l)"],(simp add:sum_id_bij)+,rule ltD,simp)  
-  apply(subst nth_eq,simp,frule app_bij)
-   apply(subst (asm) perm_list_length[of "Cons(a,l)"],(simp add:sum_id_bij)+,rule ltD,simp+)  
-done
-    
-lemma nth_perm_conv : "\<lbrakk> l \<in> list(A) ; f \<in> bij(length(l),length(l)) ; n \<in> length(l) \<rbrakk> \<Longrightarrow>
-  nth(converse(f)`n,perm_list(f,l)) = nth(n,l)"
-  by (unfold perm_list_def,subst nth_tab_perm,simp,erule nth_i_type,(simp add:nth_eq)+)
-
-lemma nth_perm : "\<lbrakk> l \<in> list(A) ; f \<in> bij(length(l),length(l)) ; n \<in> length(l) \<rbrakk> \<Longrightarrow>
-  nth(n,perm_list(f,l)) = nth(f`n,l)"
-  apply (unfold perm_list_def,subst nth_tab,simp,rule comp_fun,erule bij_is_fun)
-  apply(erule nth_i_type,simp)
-  apply(subst comp_fun_apply,erule bij_is_fun,simp,erule nth_eq,rule apply_type,erule bij_is_fun,simp)
-done
-
 section\<open>Renaming of formulas\<close>
- consts   rename :: "i=>i"
- primrec
-   "rename(Member(x,y)) =
-      (\<lambda> n \<in> nat . \<lambda>f \<in> bij(n,n). Member (f`x, f`y))"
- 
-   "rename(Equal(x,y)) =
-      (\<lambda> n \<in> nat . \<lambda>f \<in> bij(n,n). Equal (f`x, f`y))"
- 
-   "rename(Nand(p,q)) =
-      (\<lambda> n \<in> nat . \<lambda>f \<in> bij(n,n). Nand (rename(p)`n`f, rename(q)`n`f))"
- 
-   "rename(Forall(p)) =
-      (\<lambda> n \<in> nat . \<lambda>f \<in> bij(n,n). Forall (rename(p) `succ(n)` sum_id(n,f)))"
-
-lemma ren_mem  : "\<lbrakk> i \<in> nat ; j\<in>nat ; n \<in> nat ; f \<in> bij(n,n)\<rbrakk> \<Longrightarrow> 
-  rename(Member(i,j))`n`f = Member(f`i,f`j)"
-  by (auto)
-
-lemma ren_eq  : "\<lbrakk> i \<in> nat ; j\<in>nat ; n \<in> nat ; f \<in> bij(n,n)\<rbrakk> \<Longrightarrow> 
-  rename(Equal(i,j))`n`f = Equal(f`i,f`j)"
-  by (auto)
-
-lemma ren_nand  : "\<lbrakk> p \<in> formula ; q\<in>formula ; n \<in> nat ; f \<in> bij(n,n)\<rbrakk> \<Longrightarrow> 
-  rename(Nand(p,q))`n`f = Nand(rename(p)`n`f,rename(q)`n`f)"
-  by (auto)
-
-lemma ren_forall  : "\<lbrakk> p \<in> formula ; n \<in> nat ; f \<in> bij(n,n)\<rbrakk> \<Longrightarrow> 
-  rename(Forall(p))`n`f = Forall(rename(p)`succ(n)`sum_id(n,f))"
-  by (auto)
+  
+consts   ren :: "i=>i"
+primrec
+  "ren(Member(x,y)) =
+      (\<lambda> n \<in> nat . \<lambda> m \<in> nat. \<lambda>f \<in> n \<rightarrow> m. Member (f`x, f`y))"
+  
+  "ren(Equal(x,y)) =
+      (\<lambda> n \<in> nat . \<lambda> m \<in> nat. \<lambda>f \<in> n \<rightarrow> m. Equal (f`x, f`y))"
+  
+  "ren(Nand(p,q)) =
+      (\<lambda> n \<in> nat . \<lambda> m \<in> nat. \<lambda>f \<in> n \<rightarrow> m. Nand (ren(p)`n`m`f, ren(q)`n`m`f))"
+  
+  "ren(Forall(p)) =
+      (\<lambda> n \<in> nat . \<lambda> m \<in> nat. \<lambda>f \<in> n \<rightarrow> m. Forall (ren(p)`succ(n)`succ(m)`sum_id(n,f)))"
+  
 lemma arity_meml : "l \<in> nat \<Longrightarrow> Member(x,y) \<in> formula \<Longrightarrow> arity(Member(x,y)) \<le> l \<Longrightarrow> x \<in> l"
   by(simp,rule subsetD,rule le_imp_subset,assumption,simp)  
 lemma arity_memr : "l \<in> nat \<Longrightarrow> Member(x,y) \<in> formula \<Longrightarrow> arity(Member(x,y)) \<le> l \<Longrightarrow> y \<in> l"
@@ -427,536 +427,140 @@ lemma  nand_ar1 : "p \<in> formula \<Longrightarrow> q\<in>formula \<Longrightar
   by (simp,rule Un_upper1_le,simp+)  
 lemma nand_ar2 : "p \<in> formula \<Longrightarrow> q\<in>formula \<Longrightarrow>arity(q) \<le> arity(Nand(p,q))"
   by (simp,rule Un_upper2_le,simp+)  
- 
-(* Do we need this? *)   
-lemma ren_tc :    
-  fixes "p"
-  assumes "p \<in> formula" 
-  shows "(\<And> n f . n \<in> nat \<Longrightarrow> f \<in> bij(n,n) \<Longrightarrow> arity(p) \<le> n \<Longrightarrow> rename(p)`n`f \<in> formula)"
- using assms proof (induct set:formula)
-  case (Member x y) 
-  then have 1: "f`x \<in> n"  "f`y \<in> n" 
-    by (simp add:  arity_meml  app_bij,simp add: arity_memr app_bij) 
-  then have 2:"f`x \<in> nat" "f`y \<in> nat" using Member and 1
-    by(rule_tac m="n" in in_n_in_nat,simp,simp,rule_tac m="n" in in_n_in_nat,simp,simp)
-  then show ?case using Member and 2 by simp
- next
-   case (Equal x y)
-  then have  "f`x \<in> n"  "f`y \<in> n" 
-    by (simp add:  arity_meml  app_bij,simp add: arity_memr app_bij) 
-  then have "f`x \<in> nat" "f`y \<in> nat" using Equal 
-    by(rule_tac m="n" in in_n_in_nat,simp,simp,rule_tac m="n" in in_n_in_nat,simp,simp)
-   then show ?case using Equal by simp
- next
-   case (Nand p q)
-  then have "arity(p)\<le>arity(Nand(p,q))" "arity(q)\<le>arity(Nand(p,q))"
-    by (subst  nand_ar1,simp,simp,simp,subst nand_ar2,simp+)
-  then have "arity(p)\<le>n" "arity(q)\<le>n" using Nand
-    by (rule_tac j="arity(Nand(p,q))" in le_trans,simp,simp)+
-   then show ?case using Nand by (auto)
- next
-   case (Forall p)
-     then have "arity(p) \<in> nat" "pred(arity(p)) \<le> n" by (simp+)
-     then have 2: "arity(p) \<le> succ(n)" using Forall 
-       by (rule_tac n="arity(p)" in pred_le2,simp+)
-     then have "rename(p)`succ(n)`sum_id(n,f) \<in> formula" using Forall
-       by(simp add:sum_id_bij)
-     then show ?case using 2 and Forall by(simp)
- qed
-
-lemma ren_lib_tc : "p \<in> formula \<Longrightarrow> 
-  (\<And> n f . n \<in> nat \<Longrightarrow>  f \<in> bij(n,n) \<Longrightarrow>  rename(p)`n`f \<in> formula)"
-  by (induct set:formula,auto simp add: bij_app_n sum_id_bij)
+    
+lemma nand_ar1D : "p \<in> formula \<Longrightarrow> q\<in>formula \<Longrightarrow> arity(Nand(p,q)) \<le> n \<Longrightarrow> arity(p) \<le> n"
+  by(auto simp add:  le_trans[OF Un_upper1_le[of "arity(p)" "arity(q)"]])  
+lemma nand_ar2D : "p \<in> formula \<Longrightarrow> q\<in>formula \<Longrightarrow> arity(Nand(p,q)) \<le> n \<Longrightarrow> arity(q) \<le> n"
+  by(auto simp add:  le_trans[OF Un_upper2_le[of "arity(p)" "arity(q)"]])  
+    
+    
+lemma ren_tc : "p \<in> formula \<Longrightarrow> 
+  (\<And> n m f . n \<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> f \<in> n\<rightarrow>m \<Longrightarrow>  ren(p)`n`m`f \<in> formula)"
+  by (induct set:formula,auto simp add: app_nm sum_id_tc)
 
 
 lemma ren_arity :
   fixes "p"
   assumes "p \<in> formula" 
-  shows "\<And> n f . n \<in> nat \<Longrightarrow> f \<in> bij(n,n) \<Longrightarrow> arity(p) \<le> n \<Longrightarrow> arity(rename(p)`n`f)\<le>n"  
-using assms 
-  proof (induct set:formula)
+  shows "\<And> n m f . n \<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> f \<in> n\<rightarrow>m \<Longrightarrow> arity(p) \<le> n \<Longrightarrow> arity(ren(p)`n`m`f)\<le>m"  
+  using assms 
+proof (induct set:formula)
   case (Member x y) 
-  then have"f`x \<in> n"  "f`y \<in> n" 
-    by (simp add:  arity_meml  app_bij,simp add: arity_memr app_bij) 
-  then show ?case using Member by (simp add: un_leI' ltI)  
+  then have "f`x \<in> m" "f`y \<in> m"
+    using Member assms by (simp add: arity_meml apply_funtype,simp add:arity_memr apply_funtype) 
+  then show ?case using Member by (simp add: Un_least_lt ltI)  
 next
   case (Equal x y)
-  then have "f`x \<in> n" "f`y \<in> n" 
-    by (simp add: arity_eql app_bij,simp add: arity_eqr app_bij) 
-  then show ?case using Equal by (simp add: un_leI' ltI)
+  then have "f`x \<in> m" "f`y \<in> m" 
+    using Equal assms by (simp add: arity_eql apply_funtype,simp add:arity_eqr apply_funtype)     
+  then show ?case using Equal by (simp add: Un_least_lt ltI)
 next
   case (Nand p q) 
   then have "arity(p)\<le>arity(Nand(p,q))" 
-            "arity(q)\<le>arity(Nand(p,q))"
+    "arity(q)\<le>arity(Nand(p,q))"
     by (subst  nand_ar1,simp,simp,simp,subst nand_ar2,simp+)
   then have "arity(p)\<le>n" 
-        and "arity(q)\<le>n" using Nand
+    and "arity(q)\<le>n" using Nand
     by (rule_tac j="arity(Nand(p,q))" in le_trans,simp,simp)+
-  then have "arity(rename(p)`n`f) \<le> n" 
-        and "arity(rename(q)`n`f) \<le> n" using Nand by (simp+)
-  then show ?case using Nand by (simp add:un_leI')
+  then have "arity(ren(p)`n`m`f) \<le> m" and  "arity(ren(q)`n`m`f) \<le> m" 
+    using Nand by auto
+  then show ?case using Nand by (simp add:Un_least_lt)
 next
   case (Forall p)
-    from Forall have 2: "sum_id(n,f) \<in> bij(succ(n),succ(n))" by (simp add:sum_id_bij)
-    from Forall have 3:"arity(p) \<le> succ(n)" by (rule_tac n="arity(p)" in natE,simp+)
-    then have "arity(rename(p)`succ(n)`sum_id(n,f))\<le>succ(n)" using 2 and Forall 
-        by (simp)
-    then show ?case using Forall and 2 and 3 by(simp add: pred_le arity_type ren_tc)
+  from Forall have "succ(n)\<in>nat"  "succ(m)\<in>nat" by auto
+  from Forall have 2: "sum_id(n,f) \<in> succ(n)\<rightarrow>succ(m)" by (simp add:sum_id_tc)
+  from Forall have 3:"arity(p) \<le> succ(n)" by (rule_tac n="arity(p)" in natE,simp+)
+  then have "arity(ren(p)`succ(n)`succ(m)`sum_id(n,f))\<le>succ(m)" using  
+      Forall \<open>succ(n)\<in>nat\<close> \<open>succ(m)\<in>nat\<close> 2 by force
+  then show ?case using Forall 2 3 ren_tc arity_type pred_le by auto
 qed
-  
-lemma ren_tc0 : "p \<in> formula \<Longrightarrow> n \<in> nat \<Longrightarrow> f \<in> bij(n,n) \<Longrightarrow> 
-          arity(p) = 0 \<Longrightarrow> rename(p)`n`f \<in> formula"
-  by (insert ren_tc,auto)
-
-
-lemma nand_eq : "p = q \<Longrightarrow> r = s \<Longrightarrow> Nand(p,r) = Nand(q,s)"    
-  by simp
 
 lemma forall_arityE : "p \<in> formula \<Longrightarrow> m \<in> nat \<Longrightarrow> arity(Forall(p)) \<le> m \<Longrightarrow> arity(p) \<le> succ(m)"
   by(rule_tac n="arity(p)" in natE,erule arity_type,simp+)
-
-lemma forall_ar : "arity(Forall(p)) = pred(arity(p))"
-  by simp
     
-lemma coincidence :
-  fixes "p"
-  assumes pf : "p \<in> formula"
-  shows  gf :"(\<And> m n f g . m \<in> nat \<Longrightarrow> n \<in> nat \<Longrightarrow> f \<in> bij(m,m) \<Longrightarrow> g \<in> bij(n,n) \<Longrightarrow>
-    arity(p) \<le> m \<Longrightarrow> m \<le> n \<Longrightarrow> (\<And> x . x \<in> arity(p) \<Longrightarrow> f`x=g`x) \<Longrightarrow>
-    rename(p)`m`f = rename(p)`n`g)" 
-  using pf 
-  proof(induct p)
+lemma env_coincidence_sum_id : 
+  assumes "m \<in> nat" "n \<in> nat"  
+    "\<rho> \<in> list(A)" "\<rho>' \<in> list(A)"
+    "f \<in> n \<rightarrow> m"
+    "\<And> i . i < n \<Longrightarrow> nth(i,\<rho>) = nth(f`i,\<rho>')"
+    "a \<in> A" "j \<in> succ(n)"
+  shows "nth(j,Cons(a,\<rho>)) = nth(sum_id(n,f)`j,Cons(a,\<rho>'))"
+proof -
+  let ?g="sum_id(n,f)"   
+  have "succ(n) \<in> nat" using \<open>n\<in>nat\<close> by simp
+  then have "j \<in> nat" using \<open>j\<in>succ(n)\<close> in_n_in_nat by blast
+  then have "nth(j,Cons(a,\<rho>)) = nth(?g`j,Cons(a,\<rho>'))" 
+  proof (cases rule:natE[OF \<open>j\<in>nat\<close>])
+    case 1
+    then show ?thesis using assms sum_id0 by simp
+  next
+    case (2 i)
+    with \<open>j\<in>succ(n)\<close> have "succ(i)\<in>succ(n)" by simp
+    with \<open>n\<in>nat\<close> have "i \<in> n" using nat_succD assms by simp
+    have "f`i\<in>m" using \<open>f\<in>n\<rightarrow>m\<close> apply_type \<open>i\<in>n\<close> by simp
+    then have "f`i \<in> nat" using in_n_in_nat \<open>m\<in>nat\<close> by simp
+    have "nth(succ(i),Cons(a,\<rho>)) = nth(i,\<rho>)" using \<open>i\<in>nat\<close> by simp
+    also have "... = nth(f`i,\<rho>')" using assms \<open>i\<in>n\<close> ltI by simp
+    also have "... = nth(succ(f`i),Cons(a,\<rho>'))" using \<open>f`i\<in>nat\<close> by simp
+    also have "... = nth(?g`succ(i),Cons(a,\<rho>'))" 
+      using assms sum_idS[OF \<open>n\<in>nat\<close> \<open>m\<in>nat\<close>  \<open>f\<in>n\<rightarrow>m\<close> \<open>i \<in> n\<close>] cases by simp
+    finally have "nth(succ(i),Cons(a,\<rho>)) = nth(?g`succ(i),Cons(a,\<rho>'))" .
+    then show ?thesis using \<open>j=succ(i)\<close> by simp
+  qed
+  then show ?thesis .
+qed
+  
+lemma sats_iff_sats_ren : 
+  fixes "\<phi>"
+  assumes "\<phi> \<in> formula"
+  shows  "\<lbrakk>  n \<in> nat ; m \<in> nat ; \<rho> \<in> list(M) ; \<rho>' \<in> list(M) ; f \<in> n \<rightarrow> m ;
+            arity(\<phi>) \<le> n ;
+            \<And> i . i < n \<Longrightarrow> nth(i,\<rho>) = nth(f`i,\<rho>') \<rbrakk> \<Longrightarrow>
+         sats(M,\<phi>,\<rho>) \<longleftrightarrow> sats(M,ren(\<phi>)`n`m`f,\<rho>')"
+  using \<open>\<phi> \<in> formula\<close> 
+proof(induct \<phi> arbitrary:n m \<rho> \<rho>' f)
   case (Member x y)
-  then show ?case by simp
+  have 0: "ren(Member(x,y))`n`m`f = Member(f`x,f`y)" using Member assms arity_type by force
+  have 1: "x \<in> n" using Member arity_meml by simp
+  have "y \<in> n" using Member arity_memr by simp
+  then show ?case using Member 1 0 ltI by simp      
 next
   case (Equal x y)
-  then show ?case by simp
+  have 0: "ren(Equal(x,y))`n`m`f = Equal(f`x,f`y)" using Equal assms arity_type by force
+  have 1: "x \<in> n" using Equal arity_eql by simp
+  have "y \<in> n" using Equal arity_eqr by simp
+  then show ?case using Equal 1 0 ltI by simp      
 next
   case (Nand p q)
-  then have 1: "arity(p)\<le>m" "arity(q)\<le>m" 
-    by(rule_tac j="arity(Nand(p,q))" in le_trans,erule_tac q="q" in nand_ar1,blast,blast,
-          rule_tac j="arity(Nand(p,q))" in le_trans,erule_tac p="p" in nand_ar2,blast+)       
-  then have "\<And> x .  x \<in> arity(p) \<Longrightarrow> f`x=g`x"  "\<And> x .  x \<in> arity(q) \<Longrightarrow> f`x=g`x" 
-    using Nand by (simp+)      
-  then have "rename(p)`m`f = rename(p)`n`g" "rename(q)`m`f = rename(q)`n`g" using 1 and Nand
-    by (blast+)
-  then show ?case using Nand by (simp)      
-next  
-  case (Forall q)
-  have Pq : "(\<And> i j h k . i \<in> nat \<Longrightarrow> j \<in> nat \<Longrightarrow> h \<in> bij(i,i) \<Longrightarrow> k \<in> bij(j,j) \<Longrightarrow>
-    arity(q) \<le> i \<Longrightarrow> i \<le> j \<Longrightarrow> (\<And> x . x \<in> arity(q) \<Longrightarrow> h`x=k`x) \<Longrightarrow>
-    rename(q)`i`h = rename(q)`j`k)" using Forall
-    by (blast)
-  have 1:"succ(m)\<in> nat" "succ(n)\<in> nat" "arity(q) \<le> succ(m)" "succ(m) \<le> succ(n)" 
-    using Forall
-    by (simp,simp,erule_tac p="q" and m="m" in forall_arityE,blast+)
-  have 2:"\<And> x . x \<in> arity(q) \<Longrightarrow> sum_id(m,f)`x = sum_id(n,g)`x" using 1 and Forall 
-      and sum_id0 
-    apply(rule_tac n="x" in natE,rule_tac m="arity(q)" in in_n_in_nat)
-    apply(rule arity_type,blast,blast)
-    apply(fastforce)
-    apply(simp,subst (1 2) sum_idS)
-    apply(rule_tac A="succ(m)" in subsetD,rule le_imp_subset,erule succ_mono)
-    apply(rule_tac A="arity(q)" in subsetD,rule le_imp_subset,rule pred_le2)
-    apply(simp,simp,simp,simp)
-    apply(rule_tac A="arity(q)" in subsetD,rule le_imp_subset,rule pred_le2)
-    apply(simp,simp,simp,simp)
-    apply(simp+,subgoal_tac "xa \<in> pred(arity(q))",simp)
-    apply(rule nat_succD,simp,subst succ_pred_eq,simp+,rule succpred_n0,simp+)
-  done
-  then have              
-            "sum_id(m,f)\<in>bij(succ(m),succ(m))"
-            "sum_id(n,g)\<in>bij(succ(n),succ(n))"      
-    using 1 and Forall 
-    by(simp add:sum_id_bij,simp add:sum_id_bij)
-  then have "rename(q)`succ(m)`sum_id(m,f) = rename(q)`succ(n)`sum_id(n,g)"
-    using 1 and 2 
-      by(simp add:Pq[of "succ(m)" "succ(n)" "sum_id(m,f)"])
-    then show ?case using  1 and 2 and Pq and Forall
-      by(subst (1 2) ren_forall,fastforce+)
-qed
-    
-lemma Nand_equiv : "\<lbrakk> env \<in> list(M) ; env' \<in> list(M) ; 
-  p \<in> formula;q \<in> formula ; p' \<in> formula ; q' \<in> formula ;
-  sats(M,p,env) \<longleftrightarrow> sats(M,p',env') ;
-sats(M,q,env) \<longleftrightarrow> sats(M,q',env') \<rbrakk> \<Longrightarrow>
-sats(M,Nand(p,q),env) \<longleftrightarrow> sats(M,Nand(p',q'),env')" 
-  by(auto)
-
-lemma Forall_equiv : "\<lbrakk> env \<in> list(M) ; env' \<in> list(M) ; 
-  p \<in> formula; p' \<in> formula ; \<And> a . a  \<in> M  \<longrightarrow>
-  (sats(M,p,Cons(a,env)) \<longleftrightarrow> sats(M,p',Cons(a,env')))  \<rbrakk> \<Longrightarrow>
-sats(M,Forall(p),env) \<longleftrightarrow> sats(M,Forall(p'),env')" 
-  by(simp)
-
-lemmas mem_sat_ch = mem_iff_sats [THEN iffD2]   
-lemmas mem_sat_chr = mem_iff_sats [THEN iffD1]        
-
-lemma mem_iff_sats2:
-  "env\<in>list(A) \<Longrightarrow> sats(A, Member(i,j), env) \<Longrightarrow> nth(i,env) \<in> nth(j,env)"
-by (insert satisfies.simps(1),simp)
-
-lemma renSat : 
-  fixes "p"
-  assumes pf : "p \<in> formula"
-  shows  " (\<And> env . env \<in> list(M) \<Longrightarrow>
-         (\<And> f . f \<in> bij(length(env),length(env)) \<Longrightarrow>
-        arity(p) \<le> length(env) \<Longrightarrow>
-         sats(M,p,env) \<longleftrightarrow> 
-         sats(M,rename(p)`length(env)`converse(f),perm_list(f,env))))"
-  using pf 
-  proof(induct p)
-    case (Member x y)
-    then have "x \<in> length(env)" "y \<in> length(env)" 
-      by(simp add : arity_meml,simp add:arity_memr)
-    then have "nth(x,env) \<in> nth(y,env) \<longleftrightarrow> nth(converse(f)`x,perm_list(f,env)) \<in> nth(converse(f)`y,perm_list(f,env))"
-      using Member
-      by((subst nth_perm_conv,simp,simp,simp)+,simp)
-    then show ?case using Member 
-      apply(subst ren_mem,simp,simp,simp)
-      apply(erule bij_converse_bij)
-      apply(simp,rule mem_iff_sats,(simp add:nth_perm perm_list_tc)+)
-    done
-    next
-    case (Equal x y)
-    then have "x \<in> length(env)" "y \<in> length(env)" 
-      by(simp add : arity_meml,simp add:arity_memr)
-    then have "nth(x,env) = nth(y,env) \<longleftrightarrow> nth(converse(f)`x,perm_list(f,env)) = nth(converse(f)`y,perm_list(f,env))"
-      using Equal
-      by((subst nth_perm_conv,simp,simp,simp)+,simp)
-    then show ?case using Equal 
-      apply(subst ren_eq,simp,simp,simp)
-      apply(erule bij_converse_bij)
-      apply(simp,rule equal_iff_sats,(simp add:nth_perm perm_list_tc)+)
-    done
-  next
-    case (Nand p q)
-    then have 1: "arity(p) \<le> length(env)" "arity(q)\<le>length(env)" using nand_ar1 nand_ar2
-      by(rule_tac j="arity(Nand(p,q))" in le_trans,simp,simp)+
-    then have "sats(M,p,env) \<longleftrightarrow> sats(M,rename(p)`length(env)`converse(f),perm_list(f,env))" 
-              "sats(M,q,env) \<longleftrightarrow> sats(M,rename(q)`length(env)`converse(f),perm_list(f,env))"
-      using Nand
-      by (simp+)
-    then show ?case using Nand and 1
-       apply(subst ren_nand,simp,simp,simp)
-       apply(erule bij_converse_bij)
-      apply(rule Nand_equiv,(simp add:perm_list_tc ren_tc)+)
-    done
-    next
-      case (Forall p)
-      then have 1: "sum_id(length(env),f) \<in> bij(succ(length(env)),succ(length(env)))"
-        by(simp add:sum_id_bij)
-      then have 2: "arity(p) \<le> succ(length(env))" using Forall
-        apply(rule_tac j="succ(pred(arity(p)))" in le_trans)
-         apply(rule succpred_leI,simp+)
-       done
-      then have 3:"\<And> a . a\<in> M \<Longrightarrow>
-         sats(M, p, Cons(a, env)) \<longleftrightarrow>
-         sats(M, rename(p) ` succ(length(env)) ` converse(sum_id(length(env), f)), perm_list(sum_id(length(env),f), Cons(a,env)))"
-        using Forall and 1 
-          by(simp)
-      then show ?case using Forall
-        apply(subst ren_forall,simp,simp)
-        apply(erule bij_converse_bij)
-        apply(rule Forall_equiv,(simp add:perm_list_tc)+,rule ren_lib_tc,(simp add:sum_id_bij)+)
-        apply(simp add: perm_list_eq conv_perm) 
-      done
+  have 0:"ren(Nand(p,q))`n`m`f = Nand(ren(p)`n`m`f,ren(q)`n`m`f)" using Nand by simp
+  have "arity(p) \<le> n" using Nand nand_ar1D by simp 
+  then have 1:"i \<in> arity(p) \<Longrightarrow> i \<in> n" for i using subsetD[OF le_imp_subset[OF \<open>arity(p) \<le> n\<close>]] by simp
+  then have "i \<in> arity(p) \<Longrightarrow> nth(i,\<rho>) = nth(f`i,\<rho>')" for i using Nand ltI by simp
+  then have 2:"sats(M,p,\<rho>) \<longleftrightarrow> sats(M,ren(p)`n`m`f,\<rho>')" using \<open>arity(p)\<le>n\<close> 1 Nand by simp
+  have "arity(q) \<le> n" using Nand nand_ar2D by simp 
+  then have 3:"i \<in> arity(q) \<Longrightarrow> i \<in> n" for i using subsetD[OF le_imp_subset[OF \<open>arity(q) \<le> n\<close>]] by simp
+  then have "i \<in> arity(q) \<Longrightarrow> nth(i,\<rho>) = nth(f`i,\<rho>')" for i using Nand ltI by simp
+  then have 4:"sats(M,q,\<rho>) \<longleftrightarrow> sats(M,ren(q)`n`m`f,\<rho>')" using assms \<open>arity(q)\<le>n\<close> 3 Nand by simp  
+  then show ?case using Nand 0 2 4 by simp
+next
+  case (Forall p)
+  have 0:"ren(Forall(p))`n`m`f = Forall(ren(p)`succ(n)`succ(m)`sum_id(n,f))" 
+    using Forall by simp
+  have 1:"sum_id(n,f) \<in> succ(n) \<rightarrow> succ(m)" (is "?g \<in> _") using sum_id_tc Forall by simp
+  then have 2: "arity(p) \<le> succ(n)" 
+    using Forall le_trans[of _ "succ(pred(arity(p)))"] succpred_leI by simp
+  have "succ(n)\<in>nat" "succ(m)\<in>nat" using Forall by auto
+  then have A:"\<And> j .j < succ(n) \<Longrightarrow> nth(j, Cons(a, \<rho>)) = nth(?g`j, Cons(a, \<rho>'))" if "a\<in>M" for a
+    using that env_coincidence_sum_id Forall ltD by force
+  have 4:
+    "sats(M,p,Cons(a,\<rho>)) \<longleftrightarrow> sats(M,ren(p)`succ(n)`succ(m)`?g,Cons(a,\<rho>'))" if "a\<in>M" for a
+  proof - 
+    have C:"Cons(a,\<rho>) \<in> list(M)" "Cons(a,\<rho>')\<in>list(M)" using Forall that by auto   
+    have "sats(M,p,Cons(a,\<rho>)) \<longleftrightarrow> sats(M,ren(p)`succ(n)`succ(m)`?g,Cons(a,\<rho>'))" 
+      using Forall(2)[OF \<open>succ(n)\<in>nat\<close> \<open>succ(m)\<in>nat\<close> C(1) C(2) 1 2 A[OF \<open>a\<in>M\<close>]] by simp
+    then show ?thesis .
   qed
-    
-lemma ren_Sat_eq : "p \<in> formula \<Longrightarrow>  env \<in> list(M) \<Longrightarrow>
-         f \<in> bij(arity(p),arity(p)) \<Longrightarrow>
-        arity(p) = length(env) \<Longrightarrow>
-         sats(M,p,env) \<longleftrightarrow> 
-         sats(M,rename(p)`arity(p)`converse(f),perm_list(f,env))"
- by(insert renSat,auto)
+  then show ?case using Forall 0 1 2 4 by simp
+qed
 
-lemma ren_Sat_leq : "p \<in> formula \<Longrightarrow>  env \<in> list(M) \<Longrightarrow>
-         f \<in> bij(length(env),length(env)) \<Longrightarrow>
-         arity(p) \<le> length(env) \<Longrightarrow>
-         sats(M,p,env) \<longleftrightarrow> 
-         sats(M,rename(p)`length(env)`converse(f),perm_list(f,env))"
- by(insert renSat,auto)
-   
-   
-lemma sat_env_eq : "p \<in> formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow> env'\<in> list(M) \<Longrightarrow>
-   env=env' \<Longrightarrow>         sats(M,p,env) \<longleftrightarrow> sats(M,p,env')"
-  by(auto)
-    
-
-    
-definition ext_fun :: "[i,i,i] \<Rightarrow> i" where
-    "ext_fun(f,k,m) == \<lambda> n \<in> m . if m = 1 then 0 else if n <k then f`n else n"
-
-lemma ext_fun_bij1 : "ext_fun(f,k,1) \<in> bij(1,1)"
-  by(unfold ext_fun_def,rule_tac  d="\<lambda> n. 0" in lam_bijective,simp+,auto)
-
-lemma ext_fun1 : "ext_fun(f,k,1)`n = 0"
-   by(simp add:ext_fun_def)
-      
-lemma ext_fun_bij : "k \<in> nat \<Longrightarrow> f\<in>bij(k,k) \<Longrightarrow> m \<in> nat \<Longrightarrow> k<m \<Longrightarrow> 
-  ext_fun(f,k,m) \<in> bij(m,m)"
-  apply(unfold ext_fun_def)
-  apply(rule_tac  d="\<lambda> n. if m = 1 then 0 else if n < k then converse(f)`n else n" in lam_bijective,simp)
-    apply(clarsimp)
-   apply(rule ltD,rule_tac j="k" in lt_trans,rule ltI)
-   apply(rule apply_type,rule bij_is_fun,simp+,erule ltD,simp+)
-   apply(clarsimp,rule ltD,rule_tac j="k" in lt_trans,rule ltI)
-   apply(rule apply_type,rule bij_is_fun,simp+,erule ltD,simp+,auto)
-   apply(erule left_inverse_bij,erule ltD)
-   apply(subgoal_tac "f`x < k",simp,rule ltI,rule apply_type)
-   apply(erule bij_is_fun,erule ltD,simp)
-   apply(erule right_inverse_bij,erule ltD)
-  apply(subgoal_tac "converse(f)`y < k",simp,rule ltI,rule app_bij)
-  apply(erule bij_converse_bij,erule ltD,simp)
-done
-
-lemma ext_fun_bije : "k\<in>nat \<Longrightarrow> f\<in>bij(k,k) \<Longrightarrow> m \<in> nat \<Longrightarrow> k\<le>m \<Longrightarrow> ext_fun(f,k,m) \<in> bij(m,m)"
-  apply(erule leE,rule ext_fun_bij,simp+)
-  apply(unfold ext_fun_def)
-  apply(rule_tac d="\<lambda> n . if m = 1 then 0 else converse(f)`n" in lam_bijective,clarsimp,rule app_bij,simp+)
-  apply(clarsimp,rule app_bij,erule bij_converse_bij,auto)
-  apply(erule left_inverse_bij,erule ltD)
-  apply(drule_tac i="x" in ltI,simp+)
-  apply(erule right_inverse_bij,simp)
-  apply(subgoal_tac "converse(f)`y < m",rule notE,assumption+)
-  apply(rule ltI,rule app_bij,simp+)
-done  
-
-lemma ext_fun_bij0 : "ext_fun(f,k,0) \<in> bij(0,0)"
-  apply(unfold ext_fun_def)
-  apply(rule_tac  d="\<lambda> n. if n < k then converse(f)`n else n" in lam_bijective)
-  apply(auto)
-done
-    
-lemma ext_fun_lek: "m \<in> nat \<Longrightarrow> f \<in> k \<rightarrow> k \<Longrightarrow> n \<in> k \<Longrightarrow> m\<noteq>1 \<Longrightarrow> k\<le>m \<Longrightarrow> ext_fun(f,k,m)`n=f`n"
-  apply(unfold ext_fun_def,subst beta,rule ltD,drule ltI[of "n" "k"],rule nat_into_Ord)
-  apply(erule_tac i="k" and j="m" in leE,erule in_n_in_nat,erule ltD,simp,rule lt_trans2,simp+)
-  apply(auto,drule ltI[of "n" "k"],rule nat_into_Ord)
-  apply(erule_tac i="k" and j="m" in leE,erule in_n_in_nat,erule ltD,simp,auto)
-  done    
- 
-lemma ext_fun_gek: "m \<in> nat \<Longrightarrow> f \<in> k \<rightarrow> k \<Longrightarrow>  k \<le>n \<Longrightarrow> n\<in>m \<Longrightarrow> ext_fun(f,k,m)`n=n"
-  by(unfold ext_fun_def,subst beta,simp,auto,drule le_imp_not_lt,auto)
-
-lemma conv_ext_1 : "n \<in> 1 \<Longrightarrow>
-    (converse(ext_fun(f,k,1))`n = ext_fun(f,k,1)`n)"  
-  apply(rule function_apply_equality,rule converseI,simp add:ext_fun_def)
-  apply(rule_tac A="1" and B="1" in funcI,auto,rule Pi_type,auto)
-  apply(rule fun_is_function,rule bij_is_fun,rule bij_converse_bij,rule ext_fun_bij1)
-  done
-    
-lemma conv_ext_ltk : "m \<in> nat \<Longrightarrow> invol(k,f) \<Longrightarrow> n \<in> k \<Longrightarrow> m\<noteq>1 \<Longrightarrow> k \<le> m \<Longrightarrow>
-    (converse(ext_fun(f,k,m))`n = ext_fun(f,k,m)`n)"  
-  apply(rule function_apply_equality,rule converseI)
-  apply(subst ext_fun_lek,simp)
-  apply(erule invol_fun,simp+)
-  apply(rule funcI,rule bij_is_fun[OF ext_fun_bije],simp add: leI_nat,erule invol_bij,simp+) 
-  apply(rule ltD,rule lt_trans2,rule ltI,rule apply_type)
-  apply(erule invol_fun,simp,rule nat_into_Ord,erule leI_nat,simp+,subst ext_fun_lek,simp) 
-  apply(rule invol_fun,simp+,rule apply_type,erule invol_fun,simp+,simp add: invol_inverse)
-  apply(rule bij_is_function,rule bij_converse_bij,rule ext_fun_bije,auto)
-  apply(simp add:leI_nat,erule invol_bij)
-  done
-    
-lemma conv_ext_gek : "m \<in> nat \<Longrightarrow> invol(k,f) \<Longrightarrow> k \<le> n \<Longrightarrow> n \<in> m \<Longrightarrow>
-    (converse(ext_fun(f,k,m))`n = ext_fun(f,k,m)`n)"  
-  apply(rule function_apply_equality,rule converseI)
-   apply(rule funcI,rule bij_is_fun[OF ext_fun_bije],rule in_n_in_nat,assumption)
-   apply(rule ltD,erule lt_trans1,rule ltI,simp+)
-  apply(erule invol_bij,simp) 
-   apply(rule lt_trans1,simp,drule ltI[of "n"],simp,erule leI) 
-    apply(rule apply_type,rule bij_is_fun,rule ext_fun_bije)
-    apply(rule in_n_in_nat,assumption)
-   apply(rule ltD,erule lt_trans1,rule ltI,simp+)
-  apply(erule invol_bij,simp) 
-   apply(rule lt_trans1,simp,drule ltI[of "n"],simp,erule leI,simp) 
-  apply(subst ext_fun_gek,auto)
-  apply(erule invol_fun)
-  apply(subst ext_fun_gek,auto,erule invol_fun)
-  apply(subst ext_fun_gek,auto,erule invol_fun)
-  apply(subst ext_fun_gek,auto,erule invol_fun)
-    apply(rule bij_is_function,rule bij_converse_bij,rule ext_fun_bije,auto)
-  apply(rule in_n_in_nat,assumption)
-   apply(rule ltD,erule lt_trans1,rule ltI,simp+,erule invol_bij)
- apply(rule lt_trans1,simp,drule ltI[of "n"],simp,erule leI)
-done
-    
-    
-lemma conv_ext_ap : "m\<in>nat \<Longrightarrow> invol(k,f) \<Longrightarrow> k\<le> m \<Longrightarrow> n \<in> m \<Longrightarrow>
-  converse(ext_fun(f,k,m))`n = ext_fun(f,k,m)`n"
-  apply(case_tac "m=1",simp,rule conv_ext_1,simp)
-  apply(case_tac "n<k")
-  apply(subst conv_ext_ltk,auto,erule ltD)
-  apply(subgoal_tac "k\<le>n")
-  apply(rule conv_ext_gek,auto)  
-  apply(rule_tac not_le_iff_lt[THEN iffD1],auto,(rule nat_into_Ord,rule in_n_in_nat,rule leI_nat,auto+))
-  apply(rule nat_into_Ord,erule leI_nat,simp)
-done
-
-lemma conv_ext : "m\<in>nat \<Longrightarrow> invol(k,f) \<Longrightarrow> k\<le> m \<Longrightarrow> 
-  converse(ext_fun(f,k,m)) = ext_fun(f,k,m)"
-  apply(rule fun_extension,rule bij_is_fun)
-    apply(rule bij_converse_bij,rule ext_fun_bije,auto simp add:leI_nat)
-    apply(erule invol_bij,rule bij_is_fun,rule ext_fun_bije,auto simp add:leI_nat invol_bij)
-   apply(simp add: conv_ext_ap)
-done
-
-lemma inv_ext : "m\<in>nat \<Longrightarrow> invol(k,f) \<Longrightarrow> k\<le> m \<Longrightarrow>
-                   invol(m,ext_fun(f,k,m))"
-  apply(unfold invol_def,rule conjI)
-   apply(fold invol_def,rule ext_fun_bije,simp add:leI_nat,erule invol_bij,simp+) 
-  apply(rule sym,rule conv_ext,auto)
-done
-    
-definition 
-  swap01 :: "i" where
-  "swap01 == \<lambda> n \<in> 2 . if n=0 then 1 else 0"
-    
-lemma swap_0 : "swap01`0 = 1"
-    by(unfold swap01_def,simp,auto)
-lemma swap_1 : "swap01`1 = 0"
-  by(unfold swap01_def,simp)
-
-lemma swap01_bij : "swap01 \<in> bij(2,2)"
-  by(unfold swap01_def,rule_tac  d="\<lambda> n. if n =0 then 1 else 0" in lam_bijective,auto)
-    
-    
-lemma swap_auto  : "x < 2 \<Longrightarrow> converse(swap01)`x = (swap01`x)" 
-  apply(rule function_apply_equality,rule converseI,insert swap01_bij)    
-   apply(case_tac "x\<le>0",rule funcI,rule bij_is_fun,simp,rule app_bij,simp+,auto)
-    apply(simp add:swap_0 swap_1)
-  apply(rule leE[of "x" "1"],simp,auto)
-  apply(rule funcI,rule bij_is_fun,(simp add:swap_1)+,auto,(simp add:swap_0 swap_1))
-  apply(insert swap01_bij,simp add: bij_is_function bij_converse_bij)+
-done
-   
-lemma swap_conv : "converse(swap01) = swap01"
-  apply(rule fun_extension,rule bij_is_fun,insert swap01_bij)
-  apply(rule bij_converse_bij,simp,rule bij_is_fun,simp,drule ltI,auto simp add:pred0E swap_auto)
- done
-
-lemma swap_invol : "invol(2,swap01)" 
- by (unfold invol_def,rule conjI,rule swap01_bij,rule sym, rule swap_conv)
-
-lemma conv_swap_ext : "m\<in>nat \<Longrightarrow> 2\<le> m \<Longrightarrow> 
- converse(ext_fun(swap01,2,m)) = ext_fun(swap01,2,m)"  
-  by(rule conv_ext,simp,rule swap_invol,simp)
-    
-lemma eswap0 : "m \<in> nat \<Longrightarrow> 2 \<le> m \<Longrightarrow> ext_fun(swap01,2,m)`0 = 1"
-  by(insert swap01_bij,subst ext_fun_lek,(simp add:bij_is_fun)+,auto simp add:swap_0)
-
-lemma eswap1  : "m \<in> nat \<Longrightarrow> 2 \<le> m \<Longrightarrow> ext_fun(swap01,2,m)`1 = 0"
-  by(insert swap01_bij,subst ext_fun_lek,(simp add:bij_is_fun)+,auto simp add:swap_1)
-
-lemma eswapn  : "m \<in> nat \<Longrightarrow> 2 \<le> n \<Longrightarrow> n \<in> m \<Longrightarrow> ext_fun(swap01,2,m)`n = n"
-  by(insert swap01_bij,subst ext_fun_gek,auto,rule bij_is_fun,simp)
-
-    
-lemma swap_env : "l \<in> list(M) \<Longrightarrow> a \<in> M \<Longrightarrow> b \<in> M \<Longrightarrow> 
-  perm_list(ext_fun(swap01,2,succ(succ(length(l)))),Cons(a,(Cons(b,l)))) =
-  Cons(b,Cons(a,l))"
-  apply(insert swap01_bij)
-  apply(subgoal_tac 
-  "ext_fun(swap01,2, succ(succ(length(l)))) \<in> bij(length(Cons(a, Cons(b, l))), length(Cons(a, Cons(b, l))))")
-prefer 2 apply(simp,rule_tac m="succ(succ(length(l)))" in ext_fun_bije,simp+)
-  apply(rule nth_equalityI,rule perm_list_tc,(simp add:perm_list_length)+)
-  apply(case_tac "i=0",simp add: eswap0,subst nth_perm,simp+,rule zero_in,simp,simp add:eswap0)
-  apply(case_tac "i=1",(simp add: eswap1) +) 
-  apply(subst nth_perm,(simp add:eswap1)+,rule ltD,(simp add:eswap1)+)
-  apply(subgoal_tac "\<exists> j . i = succ(succ(j))")
-  apply(erule exE)
-  apply(subst nth_perm,simp+,rule ltD,simp+)
-  apply(subst eswapn,simp+,(rule nat_succI,simp)+,erule ltD,simp)
-  apply(rule_tac x="pred(pred(i))" in exI)
-  apply(subst succ_pred_eq,erule pred_type)
-  prefer 2 apply(subst succ_pred_eq,simp+,auto)
-  apply(drule pred0E,simp,auto)
-done
-
-lemma ren_sat : "p \<in> formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow> f \<in> bij(length(env),length(env)) \<Longrightarrow>
-        arity(p) \<le> length(env) \<Longrightarrow>
-        sats(M,p,env) \<longleftrightarrow> 
-        sats(M,rename(p)`length(env)`converse(f),perm_list(f,env))"
- by(insert renSat,simp)
-
-definition swap_0_1 :: "i \<Rightarrow> i" where
-  "swap_0_1(p) = rename(p)`arity(p)`ext_fun(swap01,2,arity(p))"   
-
-lemma arity_swap_0_1 :
-  "p\<in>formula \<Longrightarrow> arity(swap_0_1(p)) \<le> arity(p)"
-  apply (simp add: swap_0_1_def) 
-  apply(rule ren_arity,simp+)
-  apply(rule_tac n="arity(p)" in natE,simp+,rule ext_fun_bij0)
-   apply(case_tac "x=0",simp,rule ext_fun_bij1)
-  apply(insert swap01_bij)
-  apply(subgoal_tac "1<arity(p)",rule ext_fun_bije,simp+,rule ltI_neg,simp+,erule not_sym,simp)
-done
-
-lemma arity_2 :
-  "p\<in>formula \<Longrightarrow>arity(p) = 2 \<Longrightarrow> 
-    arity(swap_0_1(p)) = 0 \<or> arity(swap_0_1(p)) = 1 \<or> arity(swap_0_1(p)) = 2"
-  by (rule leE,rule arity_swap_0_1,simp+,erule leE,simp+) 
-
-lemma arity_3 :
-  "p\<in>formula \<Longrightarrow>arity(p) = succ(2) \<Longrightarrow> 
-    arity(swap_0_1(p)) = 0 \<or> arity(swap_0_1(p)) = 1 \<or> 
-  arity(swap_0_1(p)) = 2 \<or> arity(swap_0_1(p)) = succ(2)"
-  by (rule leE,rule arity_swap_0_1,simp+,erule leE,erule leE,simp+) 
-
-
-  
-lemma swap_0_1_tc[TC] :
-  "p\<in>formula \<Longrightarrow> swap_0_1(p) \<in> formula"
-  apply (simp add: swap_0_1_def) 
-  apply(rule ren_lib_tc,simp+)
-  apply(rule_tac n="arity(p)" in natE,simp+,rule ext_fun_bij0)
-  apply(case_tac "x=0",simp,rule ext_fun_bij1)
-  apply(insert swap01_bij)
-  apply(subgoal_tac "1<arity(p)",rule ext_fun_bije,simp+,rule ltI_neg,simp+,erule not_sym)
-done
-        
-lemma sats_swap_0_1 :
-  "\<lbrakk> \<phi> \<in> formula ; env \<in> list(M) ; a \<in> M ; b \<in> M ; 1 < arity(\<phi>) 
-    ; arity(\<phi>) \<le> succ(succ(length(env))) \<rbrakk> \<Longrightarrow>  
-  sats(M,\<phi>,Cons(b,Cons(a,env))) \<longleftrightarrow>
-  sats(M,swap_0_1(\<phi>),Cons(a,Cons(b,env)))"
-  apply(subst swap_env[symmetric,of "env" "M" "b" "a"],simp+)
-  apply(unfold swap_0_1_def)
-  apply(rule iff_trans)
-  apply(rule_tac f="ext_fun(swap01,2,succ(succ(length(env))))" in ren_Sat_leq,simp+)
-    apply(insert swap01_bij)
-    apply(rule ext_fun_bije,simp+)
-  apply(subst conv_swap_ext,simp+)
-  apply(subst coincidence[of _  "arity(\<phi>)" "succ(succ(length(env)))"  "ext_fun(swap01,2,arity(\<phi>))"],simp+)
-  apply(auto,rule ext_fun_bije,simp+)    
-  apply(rule ext_fun_bije,simp+)
-  apply(case_tac "x=0",simp add:eswap0)
-  apply(case_tac "x=1",simp add:eswap1)
-  apply(subgoal_tac "2\<le>x")
-  apply(subst eswapn,simp+,rule_tac A="arity(\<phi>)" in subsetD,erule le_imp_subset,simp)
-  apply(subst eswapn,simp+,subgoal_tac "arity(\<phi>) \<in> nat")   
-  apply(rule gt1,simp+)
-done
-
-lemma sats_swap_0_12 :
-  "\<lbrakk> \<phi> \<in> formula ; env \<in> list(M) ; a \<in> M ; b \<in> M  ; arity(\<phi>) = 2  \<rbrakk> \<Longrightarrow>
-  sats(M,swap_0_1(\<phi>),Cons(b,Cons(a,env))) \<longleftrightarrow>
-  sats(M,\<phi>,[a,b]@env)"
-  apply(subgoal_tac "arity(\<phi>) \<le> succ(succ(length(env)))")
-  apply(subgoal_tac "2 \<le> arity(\<phi>)")
-  apply(insert sats_swap_0_1,simp)
-  apply(simp+) 
-done
-
-lemma sats_swap_0_13 :
-  "\<lbrakk> \<phi> \<in> formula ; env \<in> list(M) ; a \<in> M ; b \<in> M ; c \<in> M ; arity(\<phi>) = succ(2)  \<rbrakk> \<Longrightarrow>
-  sats(M,\<phi>,Cons(b,Cons(a,Cons(c,env)))) \<longleftrightarrow>
-  sats(M,swap_0_1(\<phi>),Cons(a,Cons(b,Cons(c,env))))"
-  apply(subgoal_tac "arity(\<phi>) \<le> succ(succ(length(Cons(c,env))))")
-  apply(subgoal_tac "2 \<le> arity(\<phi>)")
-  apply(insert sats_swap_0_1,simp)
-  apply(simp+) 
-done
-
-
-end 
+end

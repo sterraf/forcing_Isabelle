@@ -1,0 +1,112 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
+\section{Conclusions and future work}
+\label{sec:conclusions-future-work}
+
+In a gross simplification, there are two aspects to a formalization
+project like this one: thematic and programmatic. The first concerns
+the handling of all the theoretical concepts and results in the
+subject, while the second involves the practical issues of the
+implementation and design. In the case of forcing, the main intricacy
+lies in the first aspect. In this sense, following a sensible
+presentation of the material is key.  The authoritative reference 
+on the subject during the last 30 years has been Kunen's classical
+\cite{kunen1980}, and  we have followed a recent rewrite
+\cite{kunen2011set} 
+of that  textbook, which presents the material in the same sharp 
+style but offering a lot of details. In some sense this project
+wouldn't exist without this book.
+
+The proof that the axioms of $\ZF$ hold in generic extensions is 
+the first important landmark in the path of formalization of the
+theory of forcing. The task of proving the Fundamental Theorems can be
+considered a part of that landmark, but from a workflow point of view
+this can be done independently, and one of our design decisions was to
+postpone that task.  Next, various forcing notions must be developed
+in order to obtain extensions satisfying diverse properties (v.g., the
+Continuum Hypothesis). This yields relative consistency results.
+
+We first discuss the axioms we are now missing. The proof of the
+Powerset Axiom does not present new difficulties but one  has to
+take care of absoluteness issues; it is one of the
+first goals in the immediate future. This is also the case with the
+Axiom of Infinity; it can be proved in a direct but cumbersome way. We
+preferred to wait to have a full-fledged interface between ctms and the
+locales providing recursive constructions from Paulson's
+\isatt{Constructibility} session. Then the current proof will hold
+with no extra assumptions. The same goes for the results $M\sbq M[G]$
+and $G\in M[G]$.
+
+The Replacement Axiom, however, requires some more work to be
+done. Both in Kunen and in other presentations \cite{neeman-course}
+it requires a relativized version (i.e., showing that it holds for $M$) of
+the \emph{Reflection Principle}. In order to state this meta-theoretic
+result by Montague, recall that
+an equivalent formulation of the Foundation Axiom states that the 
+universe of sets can be decomposed in a transfinite hierarchy of
+sets: 
+\begin{theorem}
+  Let $V_{\al}\defi\union\{\P(V_\be) : \be<\al\}$ for each ordinal
+  $\al$. Then each $V_\al$ is a set and 
+  $\forall x. \exists\al .\ \Ord(\al) \y x\in V_\al$.  
+\end{theorem}
+\begin{theorem}[Reflection Principle]\label{th:reflection-principle}
+  For every finite $\Phi\sbq\ZF$, $\ZF$ proves: ``There exists
+  unboundedly many $\al$ such that $V_\al\models \Phi$.''
+\end{theorem}
+%% This result has also other applications; in particular, it dispenses
+%% the need of ctms of the whole of $\ZF$ for consistency proofs (by
+%% repeating  the proof of Lemma~\ref{lem:wf-model-implies-ctm}, now
+%% starting with a  $V_\al$ satisfying $\Phi$). 
+
+This statement is straightforwardly equivalent to that with $\Phi$
+consisting of a single formula. The schematic nature of this result
+hints at a proof by induction on formulas, and hence it must be shown
+internally. 
+
+This  is an appropriate spot to insist that the internal/external
+dichotomy has been a powerful agent in the shaping of our
+project. It traces back to the definition of the formula-transformer
+$\forceisa$, which must be done by recursion, and this requirement
+spills indirectly to the proof of the Separation Axiom (despite the
+latter
+is not by induction). Now the need of using internalized formulas
+reappears with the need of having a general version of the Reflection
+Principle (because the $\Phi$ there depends on the instance of Replacement
+being proved).
+
+A secondary goal of this project is to assess which assumptions on the
+original ctm $M$ are needed to develop the forcing machinery. Up to this
+point we have some anecdotal data; for example, to show that a
+2-variable instance of Separation holds in $M[G]$, one needs to use a
+6-variable instance in $M$. In the future, we expect to condense in a
+new locale a finite list of (instances of) axioms on $M$ enough to
+perform forcing constructions; this list will likely include all the
+instances of Separation and Replacement in $M$ that are needed to
+satisfy the requirements of the locales in the
+\isatt{ZF-Constructible} session.  
+
+A few words are in order in relation to \isatt{ZF-Constructible}.
+We believe that this  session  would benefit from some changes in
+the way some results are organized accross theory files; for
+intance, by cataloging all or most of the internalized formulas in one
+file. Another, most basic example would be to start out with an even
+more locale that only assumes $M$ to be a nonempty transitive class,
+as many absoluteness results follow from these hypotheses.
+As Paulson comments in the sources, it would have been better to
+minimize the use of the Powerset Axiom in locales and proofs. There
+are  useful natural models that satisfy a fraction of $\ZF$ not including
+this particular axiom, and to ensure a broader applicability, it would
+be convenient to have  absoluteness results not assuming it.
+It is our desire to advocate a future work to a thorough
+revision of the development of constructibility to address these needs
+and to maximize modularity.
+
+
+\section*{Acknowledgment}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "Separation_In_MG"
+%%% ispell-local-dictionary: "american"
+%%% End: 

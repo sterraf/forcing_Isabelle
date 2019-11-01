@@ -1,0 +1,21 @@
+Para perm_pow
+                 0        1        2   3        4        5  6
+    sats(M, φ', [fst(sp), snd(sp), sp, p,       l,       o, χ]) ⟷ 
+    sats(M, φ , [p,       l ,      o,  snd(sp), fst(sp), χ   ])
+
+  "perm_pow == {<0,3>,<1,4>,<2,5>,<3,1>,<4,0>,<5,6>}"  
+
+  "sixp_sep_perm == {<0,8>,<1,0>,<2,1>,<3,2>,<4,3>,<5,4>}" 
+
+Para sixp_sep:
+
+                0  1  2  3  4  5  6  7  8 9
+    sats(M,?φ',[A1,A2,A3,A4,A5,B1,B2,B3,x,v]) <-->
+    sats(M, φ, [x, A1,A2,A3,A4,A5])
+                0  1  2  3  4  5 
+lemma sixp_perm_env : 
+  "{x,a1,a2,a3,a4,a5} ⊆ A ⟹ j<6 ⟹
+  nth(j,[x,a1,a2,a3,a4,a5]) = nth(sixp_sep_perm`j,[a1,a2,a3,a4,a5,b1,b2,b3,x,v])"
+
+  "{p,l,o,ss,fs,χ} ⊆ A ⟹ j<6 ⟹
+  nth(j,[p,l,o,ss,fs,χ]) = nth(perm_pow`j,[fs,ss,sp,p,l,o,χ])"

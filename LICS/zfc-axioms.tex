@@ -1,0 +1,104 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
+\section{Axioms and models of set theory}
+\label{sec:axioms-models-set-theory}
+
+The axioms of Zermelo and Fraenkel ($\ZF$) form a
+countably infinite list of first-order sentences in a language
+consisting of an only binary relation symbol $\in$. These include the
+axioms of Extensionality, Pairing, Union, Powerset, Foundation, Infinity, and two
+axiom-schemes collectively referred as
+\begin{inlinelist}[label=(\emph{\alph*})]
+\item Axiom of Separation:
+\emph{For every $A$, $a_1,\dots,a_n$,  and  a formula
+  $\psi(x_0,x_1,\dots,x_n)$, there exists $\{a\in  A:
+  \psi(a,a_1,\dots,a_n)\}$}, 
+and \item Axiom of Replacement: \emph{For every $A$, $a_1,\dots,a_n$,  and
+  a formula   $\psi(x,z,x_1\dots,x_n)$, if 
+  $\forall x.\exists!z.\psi(x,z,x_1,\dots,x_n)$,  there exists 
+  $\{b : \exists a\in A. \psi(a,b,a_1,\dots,a_n)\}$}.
+\end{inlinelist}
+An excellent introduction to the axioms and the motivation behind them
+can be found in Shoenfield \cite{MR3727410}. 
+
+A model of the theory $\ZF$ consists of a pair $\lb M,E\rb$ where $M$
+is a set and $E$ is a binary relation on $M$ satisfying the
+axioms. Forcing is a technique 
+to extend very special kind of models, where $M$ is a countable
+transitive set (i.e., every element of $M$ is a subset of $M$) and
+$E$ is the membership relation $\in$ restricted to $M$. In this case
+we simply refer to $M$ as a \emph{countable transitive model} or
+\emph{ctm}. The following result shows how to obtain ctms from weaker
+hypotheses. 
+%
+\begin{lemma}\label{lem:wf-model-implies-ctm}
+  If there exists  a
+  model  $\lb N,E\rb$  of $\ZF$ such that the relation $E$ is well
+  founded, then there exists a countable transitive one.
+\end{lemma}
+\begin{proof}
+  (Sketch) The L\"owenheim-Skolem 
+  Theorem ensures that there is an countable elementary submodel 
+  $\lb N',E\restr N'\rb\preccurlyeq  \lb N,E\rb$ which must also be
+  well founded; then the 
+  Mostowski collapsing function \cite[Def.~I.9.31]{kunen2011set} sends $\lb
+  N',E\restr N'\rb$ 
+  isomorphically to some $\lb M,\in\rb$ with  $M$ transitive.
+\end{proof}
+
+In this stage of our implementation, we chose a presentation of the
+$\ZF$ axioms that would be most
+compatible with the development by Paulson. For
+instance, the predicate
+\isatt{upair{\isacharunderscore}ax{\isacharcolon}{\isacharcolon}{\isachardoublequoteopen}{\isacharparenleft}i{\isacharequal}{\isachargreater}o{\isacharparenright}{\isacharequal}{\isachargreater}o{\isachardoublequoteclose}}
+takes a ``class'' (unary predicate) $C$ as an argument and states that
+$C$ satisfies the Pairing Axiom.
+\begin{isabelle}
+upair{\isacharunderscore}ax{\isacharparenleft}C{\isacharparenright}{\isacharequal}{\isacharequal}{\isasymforall}x{\isacharbrackleft}C{\isacharbrackright}{\isachardot}{\isasymforall}y{\isacharbrackleft}C{\isacharbrackright}{\isachardot}{\isasymexists}z{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ upair{\isacharparenleft}C{\isacharcomma}x{\isacharcomma}y{\isacharcomma}z{\isacharparenright}
+\end{isabelle}
+Here, $\forall x[C]. \phi$ stands for
+$\forall x. C(x) \longrightarrow \phi$, \emph{relative}
+quantification. All of the development of relativization by Paulson is
+written for a class model, so we set up a locale fixing a set $M$
+and using the class $\#\#M\defi \lambda x. \ x\in M$ as the argument. 
+\begin{isabelle}
+\isacommand{locale}\isamarkupfalse%
+\ M{\isacharunderscore}ZF\ {\isacharequal}\ \isanewline
+\ \isakeyword{fixes}\ M\ \isanewline
+\ \isakeyword{assumes}\ \isanewline
+\ \ \ \ \ \ upair{\isacharunderscore}ax{\isacharcolon}\ \ \ \ {\isachardoublequoteopen}upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}{\isachardoublequoteclose}\isanewline
+%% \ \ \isakeyword{and}\ Union{\isacharunderscore}ax{\isacharcolon}\ \ \ \ {\isachardoublequoteopen}Union{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}{\isachardoublequoteclose}\isanewline
+%% \ \ \isakeyword{and}\ power{\isacharunderscore}ax{\isacharcolon}\ \ \ \ {\isachardoublequoteopen}power{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}{\isachardoublequoteclose}\isanewline
+%% \ \ \isakeyword{and}\ extensionality{\isacharcolon}\ \ \ {\isachardoublequoteopen}extensionality{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}{\isachardoublequoteclose}\isanewline
+%% \ \ \isakeyword{and}\ foundation{\isacharunderscore}ax{\isacharcolon}\ \ \ \ {\isachardoublequoteopen}foundation{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}{\isachardoublequoteclose}\isanewline
+%% \ \ \isakeyword{and}\ infinity{\isacharunderscore}ax{\isacharcolon}\ {\isachardoublequoteopen}infinity{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{and}\ \dots \isanewline
+\ \ \isakeyword{and}\ separation{\isacharunderscore}ax{\isacharcolon}\isanewline
+\ \ {\isachardoublequoteopen}{\isasymlbrakk}\ {\isasymphi}\ {\isasymin}\ formula\ {\isacharsemicolon}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharequal}{\isadigit{1}}\ {\isasymor}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharequal}{\isadigit{2}}\ {\isasymrbrakk}\isanewline\ \ \ \ {\isasymLongrightarrow}\isanewline
+\ \ {\isacharparenleft}{\isasymforall}a{\isasymin}M{\isachardot}\ separation{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharcomma}{\isasymlambda}x{\isachardot}\ sats{\isacharparenleft}M{\isacharcomma}{\isasymphi}{\isacharcomma}{\isacharbrackleft}x{\isacharcomma}a{\isacharbrackright}{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{and}\ replacement{\isacharunderscore}ax{\isacharcolon}\isanewline 
+\ \ {\isachardoublequoteopen}{\isasymlbrakk}\ {\isasymphi}\ {\isasymin}\ formula{\isacharsemicolon}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharequal}{\isadigit{2}}\ {\isasymor}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharequal}{\isadigit{3}}\ {\isasymrbrakk}\isanewline
+\ \ \ \ {\isasymLongrightarrow}\isanewline
+\ \ {\isacharparenleft}{\isasymforall}a{\isasymin}M{\isachardot}\ strong{\isacharunderscore}replacement{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharcomma}\isanewline
+\ \ \ \ {\isasymlambda}x\ y{\isachardot}\ sats{\isacharparenleft}M{\isacharcomma}{\isasymphi}{\isacharcomma}{\isacharbrackleft}x{\isacharcomma}y{\isacharcomma}a{\isacharbrackright}{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+The rest of the axioms are also included. We single out Separation and
+Replacement: These are written for formulas with at most one extra
+parameter (meaning $n\leq 1$ in the formula $\psi$ of the
+axiom-schemes above). Thanks to Pairing, these versions are equivalent
+to the usual formulations. We are only able to prove that the generic
+extension satisfies Separation for any particular number of
+parameters, but not in general. This is a consequence that induction
+on terms of type \tyo{} is not available.
+
+It is also possible define a predicate that states that a set
+satisfies a (possibly infinite) set of formulas, and then to state
+that ``$M$ satisfies $\ZF$'' in a standard way. With the
+aforementioned restriction on parameters, it can be shown that this
+statement is equivalent to the set of assumptions of the locale
+\isatt{M\_ZF}.
+%
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "Separation_In_MG"
+%%% ispell-local-dictionary: "american"
+%%% End: 

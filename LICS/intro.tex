@@ -1,0 +1,105 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
+\section{Introduction}
+% no \IEEEPARstart
+Zermelo-Fraenkel Set Theory ($\ZF$) has a prominent place among formal
+theories. The reason for this is that it formalizes many intuitive
+properties of the notion of set. As such, it can be used as a
+foundation for mathematics and thus it has been
+thoroughly studied. 
+
+One of the main initial concerns was to decide if this foundation
+completely axiomatized all of mathematics. As it was shown by G\"odel
+in 1931, no  such axiomatization (therefore, including artihmetic) can
+be complete. A refinement of this result, G\"odel's Second
+Incompleteness Theorem, says that no consistent formal system that
+includes arithmetic can prove its own consistency. As a matter of
+fact, many problems within the area of Set Theory, not directly related
+to consistency or logic, have been proved to be undecided by the
+theory. Two techniques have been developed to do this. One is Kurt G\"odel's
+theory of \emph{inner models}, which started with his model $L$ of
+\emph{Axiom of Constructibility} \cite{godel-L} and was used to proved the relative
+consistency of the Axiom of Choice and the Generalized Continuum
+Hypothesis with $\ZF$. The second one is the technique of
+\emph{forcing}, which was developed 30 years later by Paul
+J. Cohen~\cite{Cohen-CH-PNAS}. In essence, forcing is the only known
+way of \emph{extending} models of $\ZF$. 
+
+The constructible universe  has been formalized by Lawrence
+Paulson \cite{paulson_2003} in the proof assistant \emph{Isabelle}, and
+the present paper is part of a project of formalizing the whole of the
+forcing machinery, continuing the work by Paulson. The starting point
+of this project is our previous paper 
+\cite{2018arXiv180705174G}, to which we 
+refer the reader for further details on basic matters. 
+
+
+In a gross simplification, there are two aspects to a formalization
+project like this one: thematic and programmatic. The first concerns
+the handling of all the theoretical concepts and results in the
+subject, while the second involves the practical issues of the
+implementation and design. In the case of forcing, the main intricacy
+lies in the first aspect. In this sense, following a sensible
+presentation of the material is key.  The authoritative reference 
+on the subject during the last 30 years has been Kunen's classical
+\cite{kunen1980}. In our
+formalizaton we have followed a recent rewrite \cite{kunen2011set}
+of that  textbook, which presents the material in the same sharp 
+style but offering a lot of details. In some sense this project
+wouldn't exist without this book. As alternative, introductory
+resources, the  interested reader can check
+\cite{chow-beginner-forcing}; also, the book \cite{weaver2014forcing}
+contains a thorough treament minimizing the technicalities.
+
+In this work we address a substantial part the problem of formalizing
+the proof that given a model of $\ZF$, its extensions by forcing, 
+\emph{generic extensions},
+satisfy the same axioms. In particular, the first axiom that
+genuinely calls for a use of the forcing machinery is that of
+\emph{Separation} (\emph{Aussonderungsaxiom}), otherwise known as
+``Axiom of (Restricted) Comprehension''  or ``Specification.'' In
+\cite{2018arXiv180705174G} it was shown that  generic extensions of
+models of $\ZF$ 
+satisfy the Axiom of Pairing, and in this work we show that also
+Extensionality, Foundation, Union, Infinity (under extra assumptions),
+and Separation go through. The
+Axiom of Powerset is not treated in the present paper but it poses no
+extra difficulties; we discuss the Axiom of Replacement in the
+conclusions. 
+
+The proof that these axioms hold in generic extension is independent
+of the \emph{proofs} of the ``fundamental'' theorems of forcing. In
+particular, one of the most complex parts of those proofs is the
+definition of the \emph{forcing relation}. It turns out that the
+particular (``implementation'') details of this  definition  does not
+appear in the statement of the fundamental theorems, and our
+formalization works inside a \emph{locale} (set of assumptions) that
+includes the statement of these theorems. The formalization of the
+fundamental theorems of forcing roughly comprises little less than a
+half of our full project. 
+
+We briefly describe the contents of each
+section. Section~\ref{sec:isabelle} contains the bare minimun
+requirements to understand the (meta)logics used in Isabelle. Next, an
+overview of the model theory of set theory is presented in
+Section~\ref{sec:axioms-models-set-theory}. There is an ``internal''
+representation of first-order formulas as sets, implemented by
+Paulson; Section~\ref{sec:renaming} discusses syntactical
+transformations of the former, mainly permutation of variables. 
+In Section~\ref{sec:generic-extensions} the generic extensions are
+succintly reviewed and how the treatment of well founded recursion in
+Isabelle was enhanced. We take care of the ``easy axioms'' in
+Section~\ref{sec:easy-axioms}; these are the ones that
+do not depend on the forcing theorems. We describe the latter in
+Section~\ref{sec:forcing}. We adapted the  work by Paulson to our
+needs, and this is described in
+Section~\ref{sec:hack-constructible}. We present the proof
+of the Separation Axiom Scheme in Section~\ref{sec:proof-separation},
+which follows closely its implementation. A plan for future work and
+some immediate conclusions are offered in
+Section~\ref{sec:conclusions-future-work}.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "Separation_In_MG"
+%%% ispell-local-dictionary: "american"
+%%% End: 

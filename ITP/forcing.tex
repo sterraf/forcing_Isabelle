@@ -1,0 +1,183 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
+\section{Forcing}
+\label{sec:forcing}
+
+For the most part, we follow Kunen \cite{kunen2011set}. As
+an alternative, introductory 
+resource, the  interested reader can check
+\cite{chow-beginner-forcing}; the book \cite{weaver2014forcing}
+contains a thorough treatment minimizing the technicalities.
+
+Given a ctm $M$, and an $M$-generic filter $G\sbq\PP$, the Forcing
+Theorems relate satisfaction of a formula 
+$\phi$ in the generic extension $M[G]$ to the satisfaction of another
+formula $\forceisa(\phi)$ in $M$. The map $\forceisa$ is defined by
+recursion on 
+the structure of $\phi$. It is to be noted that the base case (viz.,
+for atomic $\phi$) contains all the complexity; the case for
+connectives and quantifiers is then straightforward.
+%% and indeed it can be
+%% said that writing down this definition is half
+%% a way the path to set up the forcing machinery.
+In order to state the properties of this map
+in sufficient generality to prove that  $M[G]$ satisfies $\ZF$, we work with
+internalized formulas, because it is not possible to carry inductive
+arguments over \tyo.
+
+We will now make more precise the properties of the map
+$\forceisa$ and how it relates satisfaction in $M$ to that in
+$M[G]$. Actually, if the formula $\phi$ has $n$ free variables,
+$\forceisa(\phi)$ will have $n+4$ free variables, where the first four account
+for the forcing notion and a particular element of it. 
+
+We write $\phi(x_0,\dots,x_n)$ to indicate that the free variables of
+$\phi$ are among $\{x_0,\dots,x_n\}$. In the case of a formula of the
+form $\forceisa(\phi)$, we will make an abuse of notation and indicate
+the variables inside the argument of $\forceisa$. As an example, take
+the formula $\phi\defi x_1\in x_0$. Then
+\[
+M,[a,b] \models x_1\in x_0
+\]
+will hold whenever $b\in a$; and instead of writing $\forceisa(\phi)$
+we will write $\forceisa(x_5\in x_4)$, as in
+\[
+M,[\PP,\leq,\1,p,\tau,\rho] \models \forceisa(x_5\in x_4).
+\]
+
+If
+$\phi=\phi(x_0,\dots,x_n)$, the notation used by Kunen
+\cite{kunen2011set,kunen1980} for $\forceisa(\phi)$ is 
+\[
+p\forces_{\PP,\leq,\1}^* \phi(x_0,\dots,x_n).
+\]
+Here, the extra parameters are $\PP,\leq,\1,$ and $p\in\PP$, and the
+first three are usually omitted. %(since the forcing notion is fixed
+% throughout the discussion).  
+Afterwards, the \emph{forcing relation}
+$\forces$ can be obtained by 
+interpreting $\forces^*$ in a ctm $M$, for fixed
+$\lb\PP,\leq,\1\rb\in M$: $p\forces \phi(\tau_0,\dots,\tau_n)$ holds
+if and only if
+\begin{equation}\label{eq:3}
+M,[\PP,\leq,\1,p,\tau_0,\dots,\tau_n]\models \forceisa(x_4,\dots,x_{n+4}).
+\end{equation}
+
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-
+\subsection{The fundamental theorems}
+\label{sec:fundamental-theorems}
+Modern treatments of the theory of forcing start
+by defining the 
+forcing relation semantically and later it is proved  that the
+characterization given by (\ref{eq:3}) indeed holds, and hence the
+forcing relation is \emph{definable}.
+
+Then the definition of the forcing relation is stated as a
+\begin{lemma}[Definition of Forcing]\label{lem:definition-of-forcing}
+  Let $M$ be a ctm of $\ZF$, $\lb\PP,\leq,\1\rb$ a forcing notion
+  in $M$, $p\in\PP$, and $\phi(x_0,\dots,x_n)$ a formula in the
+  language of set 
+  theory with all free variables displayed. Then the
+  following are equivalent, for all $\tau_0,\dots,\tau_n\in M$:
+  \begin{enumerate}
+  \item $M,[\PP,\leq,\1,p,\tau_0,\dots,\tau_n] 
+  \models\forceisa(\phi(x_4,\dots,x_{n+4}))$.
+  \item For all $M$-generic filters $G$ such that $p\in G$,
+    \ifIEEE
+    $M[G],[\val(G,\tau_0),\dots,\val(G,\tau_n)]
+    \models\phi(x_0,\dots,x_n)$.
+    \fi
+    \ifarXiv
+    \[
+    M[G],[\val(G,\tau_0),\dots,\val(G,\tau_n)]
+    \models\phi(x_0,\dots,x_n).
+    \]
+    \fi
+  \end{enumerate}
+\end{lemma}
+
+The \emph{Truth Lemma} states that the forcing
+relation indeed relates 
+satisfaction in $M[G]$ to that in $M$. 
+\begin{lemma}[Truth Lemma]\label{lem:truth-lemma}
+  Assume the same hypothesis of
+  Lemma~\ref{lem:definition-of-forcing}. Then the
+  following are equivalent, for all $\tau_0,\dots,\tau_n\in M$, and
+  $M$-generic $G$: 
+  \begin{enumerate}
+  \item $M[G],[\val(G,\tau_0),\dots,\val(G,\tau_n)]
+  \models\phi(x_0,\dots,x_n)$.
+  \item  There exists $p\in G$ such that 
+    \ifIEEE 
+    $M,[\PP,\leq,\1,p,\tau_0,\dots,\tau_n] 
+    \models\forceisa(\phi(x_4,\dots,x_{n+4}))$.
+    \fi
+    \ifarXiv 
+    \[ 
+    M,[\PP,\leq,\1,p,\tau_0,\dots,\tau_n] 
+    \models\forceisa(\phi(x_4,\dots,x_{n+4})).
+    \]
+    \fi
+  \end{enumerate}
+\end{lemma}
+\noindent The previous two results combined are the ones usually called the
+\emph{fundamental theorems}. 
+
+The following auxiliary results (adapted from
+\cite[IV.2.43]{kunen2011set}) are also handy in forcing arguments.
+\begin{lemma}[Strengthening]\label{lem:strengthen} 
+  Assume the same hypothesis of Lemma~\ref{lem:definition-of-forcing}.
+  $M, [\PP,\leq,\1,p,\dots]\models\forceisa(\phi)$ and $p_1\leq p$
+  implies $M, [\PP,\leq,\1,p_1,\dots]\models\forceisa(\phi)$.
+\end{lemma}
+\begin{lemma}[Density]\label{lem:density}
+  Assume the same hypothesis of
+  Lemma~\ref{lem:definition-of-forcing}. $M,[\PP,\leq,\1,p,\dots]\models\forceisa(\phi)$   
+  if and only if 
+  \[
+  \{p_1\in \PP : M,[\PP,\leq,\1,p_1,\dots]\models
+  \forceisa(\phi)\}
+  \]
+  is dense below $p$.
+\end{lemma}
+%
+All these results are proved by recursion in
+$\formula$.
+
+The locale \isatt{forcing\_thms} includes all these results as assumptions on the
+mapping $\forceisa$, plus a typing condition  and its
+effect on arities:
+\begin{isabelle}
+\isacommand{locale}\isamarkupfalse%
+\ forcing{\isacharunderscore}thms\ {\isacharequal}\ forcing{\isacharunderscore}data\ {\isacharplus}\isanewline
+\ \isakeyword{fixes}\ forces\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequoteopen}i\ {\isasymRightarrow}\ i{\isachardoublequoteclose}\isanewline
+\ \isakeyword{assumes}\
+definition{\isacharunderscore}of{\isacharunderscore}forces{\isacharcolon}\isanewline 
+\ \ {\isachardoublequoteopen}p{\isasymin}P\ {\isasymLongrightarrow}\ {\isasymphi}{\isasymin}formula\ {\isasymLongrightarrow}\ env{\isasymin}list{\isacharparenleft}M{\isacharparenright}\ {\isasymLongrightarrow}\isanewline
+\ \ \ \  sats{\isacharparenleft}M{\isacharcomma}forces{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharcomma}\ {\isacharbrackleft}P{\isacharcomma}leq{\isacharcomma}one{\isacharcomma}p{\isacharbrackright}\ {\isacharat}\ env{\isacharparenright}\ {\isasymlongleftrightarrow}\isanewline
+\ \ \ \ \ \
+{\isacharparenleft}{\isasymforall}G{\isachardot}{\isacharparenleft}M{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}{\isasymand}\
+p{\isasymin}G{\isacharparenright}\ {\isasymlongrightarrow}%\isanewline 
+ \ sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymphi}{\isacharcomma}map{\isacharparenleft}val{\isacharparenleft}G{\isacharparenright}{\isacharcomma}env{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{and}\ \ definability{\isacharbrackleft}TC{\isacharbrackright}{\isacharcolon}\ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \  forces{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymin}\ formula{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{and}\ \ \ arity{\isacharunderscore}forces{\isacharcolon}\ \ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \
+arity{\isacharparenleft}forces{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharparenright}\
+{\isacharequal}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isacharhash}{\isacharplus}\ {\isadigit{4}}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{and}\ \dots
+\end{isabelle}
+
+The presentation of the Fundamental Theorems of Forcing in a locale
+can be regarded as a \emph{formal abstract} as in the project
+envisioned by Hales \cite{hales-fabstracts}, where  statements of
+mathematical theorems proven in the literature are posed in a language
+that is both human- and computer-readable. The point is to take
+particular care so that, v.g., there are no missing hypotheses, so it
+is possible to take this statement as firm ground on which to start a
+formalization of a proof. 
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "Separation_In_MG"
+%%% ispell-local-dictionary: "american"
+%%% End: 
