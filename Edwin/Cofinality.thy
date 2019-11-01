@@ -521,18 +521,30 @@ lemma cofinal_mono_map_cf:
   assumes "Ord(\<gamma>)"
   shows "\<exists>j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>)) . cofinal_fun(j,\<gamma>,Memrel(\<gamma>))"
   using assms
-proof (induct rule:trans_induct3)
-  case 0
+proof - 
+  from assms
+  consider (zero) "\<gamma>=0" | (succ) "\<exists>b. \<gamma> =succ(b)" | (lim) "Limit(\<gamma>)" using Ord_cases_disj by auto
+  then
+  show ?thesis
+  proof(cases)
+  case zero
   have "cf(0) = 0" using cf_zero by simp
-  then have  "id(0) \<in> \<langle>cf(0), Memrel(cf(0))\<rangle> \<cong> \<langle>0, Memrel(0)\<rangle>" using ord_iso_refl by simp
-  then  have "id(0)\<in>mono_map(cf(0),Memrel(cf(0)),0,Memrel(0))" using ord_iso_is_mono_map by simp
-  then show ?case unfolding cofinal_fun_def by auto
-  next
-  case (succ x)
-  show ?case sorry    
-  next    
-  case (limit x)
-  show ?case sorry
+  then 
+  have  "id(0) \<in> \<langle>cf(0), Memrel(cf(0))\<rangle> \<cong> \<langle>0, Memrel(0)\<rangle>" using ord_iso_refl by simp
+  then 
+  have "id(0)\<in>mono_map(cf(0),Memrel(cf(0)),0,Memrel(0))" using ord_iso_is_mono_map by simp
+  with zero
+  show ?thesis unfolding cofinal_fun_def by auto
+      
+next
+  case succ
+  then
+  show ?thesis sorry    
+next    
+  case lim
+  then
+  show ?thesis sorry
+qed
 qed
           
 lemma cofinal_fun_factorization:
