@@ -817,10 +817,6 @@ proof -
   ultimately show ?thesis by blast
 qed
 
-lemma subset_imp_le: assumes "Ord(x)" "Ord(y)" "x \<subseteq> y" shows "x \<le> y"
-  using assms by (cases rule:Ord_linear_lt, auto intro:leI[of x y] ltD, unfold lt_def) 
-    (blast dest:mem_irrefl[of _ "x\<in>succ(y)"])
-
 lemma ordermap_le_arg:
   assumes 
     "X\<subseteq>\<beta>" "x\<in>X" "Ord(\<beta>)"
