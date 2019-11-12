@@ -29,6 +29,32 @@ val _ =
 in end
 \<close>
 
+(*
+Version for two parameters 
+ML\<open>
+ fun synthetic_def ctxt thm tstr defstr = 
+  let 
+    val (((_,[(_,vct),(_,vct')]),[novar]),ctxt1) = Variable.import true [Proof_Context.get_thm ctxt thm] ctxt
+    val t = Thm.dest_equals_rhs (Thm.cterm_of ctxt1 ( Thm.concl_of(novar))) |> Thm.term_of 
+    val at = lambda (Thm.term_of vct) (lambda (Thm.term_of vct') t)
+  in
+  Local_Theory.define ((Binding.name tstr, NoSyn), ((Binding.name defstr, []), at)) #> snd 
+  end;
+
+local
+fun synth_def source =
+  ML_Lex.read_source false source
+  |> ML_Context.expression (Input.range_of source) "synth" "string * string"
+    "Context.map_proof (synthetic_def @{context} (fst synth)  (snd synth) (snd synth ^ \"_def\"))"
+  |> Context.proof_map;
+
+val _ =
+  Outer_Syntax.local_theory \<^command_keyword>\<open>synth_def\<close> "ML setup for synthetic definitions"
+    (Parse.ML_source >> synth_def);
+in end
+\<close>
+*)
+
 consts height :: "[i\<Rightarrow>i,i] \<Rightarrow> i"
 primrec 
    "height(f,Member(x,y)) =
@@ -43,6 +69,9 @@ primrec
 context M_basic
 begin
 schematic_goal ff : "n:nat ==> height(\<lambda> x. x#+n, Nand(Member(0,3),Equal(3,0))) == ?x"
+  by (simp add: max_def)
+
+schematic_goal fff : "n:nat \<Longrightarrow> m:nat \<Longrightarrow>  n #+ m == ?x"
   by (simp add: max_def)
 
 (*ML\<open>
@@ -67,6 +96,13 @@ lemma p : "my_x(2) = 3" unfolding my_x_def ..
 local_setup\<open>
   synthetic_def @{context} "ff" "another_x" "another_x_def"
 \<close>
+*)
+
+(* 
+Two variables 
+synth_def\<open>("fff",  "suma")\<close>
+
+lemma "suma(3,5) = 8" unfolding suma_def apply simp
 *)
 
 synth_def\<open>("ff",  "another_x")\<close>
