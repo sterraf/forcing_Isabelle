@@ -87,7 +87,7 @@ lemma is_powapply_closed: "is_powapply(M,f,y,z) \<Longrightarrow> M(z)"
 (* is_Replace(M,A,P,z) == \<forall>u[M]. u \<in> z \<longleftrightarrow> (\<exists>x[M]. x\<in>A & P(x,u)) *)
 definition
   is_HVfrom :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
-  "is_HVfrom(M,A,x,f,h) \<equiv> \<exists>U[M]. \<exists>R[M]. \<exists>P[M]. union(M,A,U,h) 
+  "is_HVfrom(M,A,x,f,h) \<equiv> \<exists>U[M]. \<exists>R[M].  union(M,A,U,h) 
         \<and> big_union(M,R,U) \<and> is_Replace(M,x,is_powapply(M,f),R)" 
 
 
@@ -141,66 +141,6 @@ lemma trivial_fm:
     "(\<exists>P. P \<in> A) \<longleftrightarrow> sats(A, Equal(0,0), env)"
   using assms by auto
 
-schematic_goal sats_is_HVfrom_fm_auto:
-  assumes
-    "a\<in>nat" "x\<in>nat" "f\<in>nat" "h\<in>nat" "env\<in>list(A)" "0\<in>A"
-  shows
-    "is_HVfrom(##A,nth(a, env),nth(x, env),nth(f, env),nth(h, env))
-    \<longleftrightarrow> sats(A,?ihvf_fm(a,x,f,h),env)"
-  unfolding is_HVfrom_def using assms
-  by (simp) (rule sep_rules is_powapply_iff_sats Replace_iff_sats trivial_fm not_emptyI | simp)+
-
-schematic_goal is_HVfrom_iff_sats:
-  assumes
-    "nth(a,env) = aa" "nth(x,env) = xx" "nth(f,env) = ff" "nth(h,env) = hh"
-    "a\<in>nat" "x\<in>nat" "f\<in>nat" "h\<in>nat" "env\<in>list(A)" "0\<in>A"
-  shows
-       "is_HVfrom(##A,aa,xx,ff,hh) \<longleftrightarrow> sats(A, ?ihvf_fm(a,x,f,h), env)"
-  unfolding \<open>nth(a,env) = aa\<close>[symmetric] \<open>nth(x,env) = xx\<close>[symmetric]
-    \<open>nth(f,env) = ff\<close>[symmetric] \<open>nth(h,env) = hh\<close>[symmetric]
-  by (rule sats_is_HVfrom_fm_auto(1); simp add:assms)
-
-(* Next two are not needed *)
-schematic_goal sats_is_Vfrom_fm_auto:
-  assumes
-    "a\<in>nat" "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
-    "i < length(env)" "v < length(env)"
-  shows
-    "is_Vfrom(##A,nth(a, env),nth(i, env),nth(v, env))
-    \<longleftrightarrow> sats(A,?ivf_fm(a,i,v),env)"
-  unfolding is_Vfrom_def
-  by (insert assms; (rule sep_rules is_HVfrom_iff_sats is_transrec_iff_sats | simp)+)
-
-schematic_goal is_Vfrom_iff_sats:
-  assumes
-    "nth(a,env) = aa" "nth(i,env) = ii" "nth(v,env) = vv"
-    "a\<in>nat" "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
-    "i < length(env)" "v < length(env)"
-  shows
-    "is_Vfrom(##A,aa,ii,vv) \<longleftrightarrow> sats(A, ?ivf_fm(a,i,v), env)"
-  unfolding \<open>nth(a,env) = aa\<close>[symmetric] \<open>nth(i,env) = ii\<close>[symmetric]
-    \<open>nth(v,env) = vv\<close>[symmetric]
-  by (rule sats_is_Vfrom_fm_auto(1); simp add:assms)
-
-schematic_goal sats_is_Vset_fm_auto:
-  assumes
-    "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
-    "i < length(env)" "v < length(env)"
-  shows
-    "is_Vset(##A,nth(i, env),nth(v, env))
-    \<longleftrightarrow> sats(A,?ivs_fm(i,v),env)"
-  unfolding is_Vset_def is_Vfrom_def
-  by (insert assms; (rule sep_rules is_HVfrom_iff_sats is_transrec_iff_sats | simp)+)
-
-schematic_goal is_Vset_iff_sats:
-  assumes
-    "nth(i,env) = ii" "nth(v,env) = vv"
-    "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
-    "i < length(env)" "v < length(env)"
-  shows
-    "is_Vset(##A,ii,vv) \<longleftrightarrow> sats(A, ?ivs_fm(i,v), env)"
-  unfolding \<open>nth(i,env) = ii\<close>[symmetric] \<open>nth(v,env) = vv\<close>[symmetric]
-  by (rule sats_is_Vset_fm_auto(1); simp add:assms)
 
 (* rank *)
 definition

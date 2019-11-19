@@ -2115,6 +2115,34 @@ lemma Replace_iff_sats:
    ==> is_Replace(##A, x, is_P, y) \<longleftrightarrow> sats(A, is_Replace_fm(i,p,j), env)"
 by (simp add: sats_is_Rep_fm [OF is_P_iff_sats])
 
+(* "is_Collect(M,A,P,z) == \<forall>x[M]. x \<in> z \<longleftrightarrow> x \<in> A & P(x)" *)
+definition 
+  is_Collect_fm :: "[i,i,i] \<Rightarrow> i" where
+  "is_Collect_fm(a,p,z) == Forall(Iff(Member(0,succ(z)),And(Member(0,succ(a)),p)))"
+
+lemma is_Collect_type [TC]:
+     "[| x \<in> nat; y \<in> nat; p\<in>formula |] ==> is_Collect_fm(x,p,y) \<in> formula"
+  by (simp add:is_Collect_fm_def)
+
+lemma sats_is_Collect_fm :
+    assumes p_iff_sats: 
+      "\<And>a. a \<in> M \<Longrightarrow>  
+          P(a) \<longleftrightarrow> sats(M, p, Cons(a, env))"
+    shows
+   "[| x \<in> nat; y \<in> nat; env \<in> list(M)|]
+    ==> sats(M, is_Collect_fm(x,p,y), env) \<longleftrightarrow>
+        is_Collect(##M, nth(x,env), P , nth(y,env))"
+  by (simp add: is_Collect_def is_Collect_fm_def p_iff_sats)
+
+lemma Collect_iff_sats:
+  assumes is_P_iff_sats: 
+      "\<And>a b. a \<in> A 
+              \<Longrightarrow> is_P(a) \<longleftrightarrow> sats(A, p, Cons(a,env))"
+  shows 
+  "[| nth(i,env) = x; nth(j,env) = y;
+      i \<in> nat; j \<in> nat; env \<in> list(A)|]
+   ==> is_Collect(##A, x, is_P, y) \<longleftrightarrow> sats(A, is_Collect_fm(i,p,j), env)"
+by (simp add: sats_is_Collect_fm [OF is_P_iff_sats])
 
 lemma nth_closed :
   assumes "0\<in>A" "env\<in>list(A)"

@@ -1068,15 +1068,25 @@ definition
   "is_powapply_fm(f,y,z) == Exists(And(fun_apply_fm(succ(f),succ(y),0),))" 
 *)
 
-schematic_goal sats_is_powapply_fm_auto:
+definition
+  is_powapply_fm :: "[i,i,i] \<Rightarrow> i" where
+  "is_powapply_fm(f,y,z) == 
+      Exists(And(fun_apply_fm(succ(f), succ(y), 0),
+            Forall(Iff(Member(0, succ(succ(z))), 
+            Forall(Implies(Member(0, 1), Member(0, 2)))))))"
+
+lemma is_powapply_type [TC] : 
+  "\<lbrakk>f\<in>nat ; y\<in>nat; z\<in>nat\<rbrakk> \<Longrightarrow> is_powapply_fm(f,y,z)\<in>formula" 
+  unfolding is_powapply_fm_def by simp
+
+lemma sats_is_powapply_fm :
   assumes
     "f\<in>nat" "y\<in>nat" "z\<in>nat" "env\<in>list(A)" "0\<in>A"
   shows
     "is_powapply(##A,nth(f, env),nth(y, env),nth(z, env))
-    \<longleftrightarrow> sats(A,?ipa_fm(f,y,z),env)"
-  unfolding is_powapply_def is_Collect_def powerset_def subset_def
-  using nth_closed assms
-   by (simp) (rule sep_rules  | simp)+
+    \<longleftrightarrow> sats(A,is_powapply_fm(f,y,z),env)"
+  unfolding is_powapply_def is_powapply_fm_def is_Collect_def powerset_def subset_def
+  using nth_closed assms by simp
 
 
 lemma (in forcing_data) powapply_repl :
@@ -1085,19 +1095,16 @@ lemma (in forcing_data) powapply_repl :
   shows
      "strong_replacement(##M,is_powapply(##M,f))"
 proof -
-  obtain ipafm where
-    fmsats:"env\<in>list(M) \<Longrightarrow> 
-      is_powapply(##M,nth(2,env),nth(0,env),nth(1,env)) \<longleftrightarrow> sats(M,ipafm(2,0,1),env)"
-    and "ipafm(2,0,1) \<in> formula" and "arity(ipafm(2,0,1)) = 3" for env
-    using zero_in_M sats_is_powapply_fm_auto[of concl:M] 
-    by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+  have "arity(is_powapply_fm(2,0,1)) = 3" 
+    unfolding is_powapply_fm_def
+    by (simp add: fm_defs nat_simp_union)
   then
-  have "\<forall>f0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,ipafm(2,0,1) , [p,z,f0]))"
+  have "\<forall>f0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,is_powapply_fm(2,0,1) , [p,z,f0]))"
     using replacement_ax by simp
-  moreover 
-  have "is_powapply(##M,f0,p,z) \<longleftrightarrow> sats(M,ipafm(2,0,1) , [p,z,f0])"
+  moreover
+  have "is_powapply(##M,f0,p,z) \<longleftrightarrow> sats(M,is_powapply_fm(2,0,1) , [p,z,f0])"
     if "p\<in>M" "z\<in>M" "f0\<in>M" for p z f0
-    using that fmsats[of "[p,z,f0]"] by simp
+    using that zero_in_M sats_is_powapply_fm[of 2 0 1 "[p,z,f0]" M] by simp
   ultimately
   have "\<forall>f0\<in>M. strong_replacement(##M, is_powapply(##M,f0))"
     unfolding strong_replacement_def univalent_def by simp
@@ -1147,7 +1154,7 @@ definition
   is_Hrank_fm :: "[i,i,i] \<Rightarrow> i" where
   "is_Hrank_fm(x,f,hc) == Exists(And(big_union_fm(0,succ(hc)),
                                 is_Replace_fm(succ(x),PHrank_fm(succ(succ(succ(f))),0,1),0)))" 
-
+                                                           
 lemma is_Hrank_type [TC]:
      "[| x \<in> nat; y \<in> nat; z \<in> nat |] ==> is_Hrank_fm(x,y,z) \<in> formula"
   by (simp add:is_Hrank_fm_def)
@@ -1201,6 +1208,32 @@ proof -
   show ?thesis unfolding wfrec_replacement_def  by simp
 qed
 
+(*"is_HVfrom(M,A,x,f,h) \<equiv> \<exists>U[M]. \<exists>R[M].  union(M,A,U,h) 
+        \<and> big_union(M,R,U) \<and> is_Replace(M,x,is_powapply(M,f),R)"*)
+definition
+  is_HVfrom_fm :: "[i,i,i,i] \<Rightarrow> i" where
+  "is_HVfrom_fm(A,x,f,h) == Exists(Exists(And(union_fm(A #+ 2,1,h #+ 2),
+                            And(big_union_fm(0,1),
+                            is_Replace_fm(x #+ 2,is_powapply_fm(f #+ 4,0,1),0)))))"
+
+lemma is_HVfrom_type [TC]:
+     "[| A\<in>nat; x \<in> nat; f \<in> nat; h \<in> nat |] ==> is_HVfrom_fm(A,x,f,h) \<in> formula"
+  by (simp add:is_HVfrom_fm_def)
+
+lemma sats_is_HVfrom_fm : 
+  "[| a\<in>nat; x \<in> nat; f \<in> nat; h \<in> nat; env \<in> list(A); 0\<in>A|]
+    ==> sats(A,is_HVfrom_fm(a,x,f,h),env) \<longleftrightarrow> 
+        is_HVfrom(##A,nth(a,env),nth(x,env),nth(f,env),nth(h,env))" 
+  apply (simp add: is_HVfrom_def is_HVfrom_fm_def)
+  apply (simp add: sats_is_Rep_fm[OF sats_is_powapply_fm])
+  done
+
+(*
+definition
+  rec_mem : "i \<Rightarrow> o" where
+  "
+*)
+
 (*
 (*
 \<exists>sa[M]. \<exists>esa[M]. \<exists>mesa[M].
@@ -1211,11 +1244,42 @@ lemma (in forcing_data) trans_repl_HVFrom :
     "A\<in>M" "i\<in>M" "Ord(i)" 
   shows
     "transrec_replacement(##M,is_HVfrom(##M,A),i)"
-proof -
+proof -           
   { fix mesa 
     assume "mesa\<in>M" 
     have 
-*)
+    0:"is_HVfrom(##M,A,a2, a1, a0) \<longleftrightarrow> 
+      sats(M, is_HVfrom_fm(8,2,1,0), [a0,a1,a2,a3,a4,y,x,z,A,mesa])"
+    if "a4\<in>M" "a3\<in>M" "a2\<in>M" "a1\<in>M" "a0\<in>M" "y\<in>M" "x\<in>M" "z\<in>M" for a4 a3 a2 a1 a0 y x z
+    using that zero_in_M sats_is_HVfrom_fm \<open>mesa\<in>M\<close> \<open>A\<in>M\<close> by simp
+    have
+      1:"sats(M, is_wfrec_fm(is_HVfrom_fm(8,2,1,0),4,1,0),[y,x,z,A,mesa])
+        \<longleftrightarrow> is_wfrec(##M, is_HVfrom(##M,A),mesa, x, y)"
+      if "y\<in>M" "x\<in>M" "z\<in>M" for y x z
+      using that \<open>A\<in>M\<close> \<open>mesa\<in>M\<close> sats_is_wfrec_fm[OF 0] by simp
+    let 
+    ?f="Exists(And(pair_fm(1,0,2),is_wfrec_fm(is_HVfrom_fm(8,2,1,0),4,1,0)))"
+    have satsf:"sats(M, ?f, [x,z,A,mesa])
+              \<longleftrightarrow> (\<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_HVfrom(##M,A) , mesa, x, y))"
+    if "x\<in>M" "z\<in>M" for x z
+    using that 1 \<open>A\<in>M\<close> \<open>mesa\<in>M\<close> by (simp del:pair_abs) 
+  have "arity(?f) = 4" 
+    unfolding is_HVfrom_fm_def is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def
+              restriction_fm_def list_functor_fm_def number1_fm_def cartprod_fm_def 
+               is_powapply_fm_def sum_fm_def quasinat_fm_def pre_image_fm_def fm_defs
+    by (simp add:nat_simp_union)
+  then
+  have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,A,mesa]))"
+    using replacement_ax 1 \<open>A\<in>M\<close> \<open>mesa\<in>M\<close> by simp
+  then
+  have "strong_replacement(##M,\<lambda>x z. 
+          \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_HVfrom(##M,A) , mesa, x, y))"
+    using repl_sats[of M ?f "[A,mesa]"]  satsf by (simp del:pair_abs)
+  then
+  have "wfrec_replacement(##M,is_HVfrom(##M,A),mesa)" 
+    unfolding wfrec_replacement_def  by simp
+  }
+  *)
 
 lemma (in forcing_data) repl_gen : 
   assumes 

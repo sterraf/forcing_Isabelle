@@ -1,5 +1,72 @@
 theory FrecR imports Interface Names begin
 
+lemma empty_iff_sats':
+      "[| nth(i,env) = x; i \<in> nat; env \<in> list(A)|]
+       ==> empty(##A, x) \<longleftrightarrow> sats(A, empty_fm(i), env)"
+  by simp
+
+(* Already in Constructible, under "number1_fm" but with 
+  an unnecessary, harmful assumption *)
+lemma number1_iff_sats':
+      "[| nth(i,env) = x; 
+          i \<in> nat; env \<in> list(A)|]
+       ==> number1(##A, x) \<longleftrightarrow> sats(A, number1_fm(i), env)"
+by simp
+
+lemmas function_iff_sats' =
+        empty_iff_sats' number1_iff_sats'
+        upair_iff_sats pair_iff_sats union_iff_sats
+        big_union_iff_sats cons_iff_sats successor_iff_sats
+        fun_apply_iff_sats  Memrel_iff_sats
+        pred_set_iff_sats domain_iff_sats range_iff_sats field_iff_sats
+        image_iff_sats pre_image_iff_sats
+        relation_iff_sats is_function_iff_sats
+
+lemmas sep_rules' = nth_0 nth_ConsI FOL_iff_sats function_iff_sats'
+                   fun_plus_iff_sats 
+                    omega_iff_sats FOL_sats_iff 
+
+
+(* MOVE THIS. absoluteness of higher-order composition *)
+definition
+  is_hcomp :: "[i\<Rightarrow>o,i\<Rightarrow>i\<Rightarrow>o,i\<Rightarrow>i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_hcomp(M,is_f,is_g,a,w) == \<exists>z[M]. is_g(a,z) \<and> is_f(z,w)" 
+
+lemma (in M_trivial) hcomp_abs: 
+  assumes
+    is_f_abs:"\<And>a z. M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_f(a,z) \<longleftrightarrow> z = f(a)" and
+    is_g_abs:"\<And>a z. M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_g(a,z) \<longleftrightarrow> z = g(a)" and
+    g_closed:"\<And>a. M(a) \<Longrightarrow> M(g(a))" 
+    "M(a)" "M(w)" 
+  shows
+    "is_hcomp(M,is_f,is_g,a,w) \<longleftrightarrow> w = f(g(a))" 
+  unfolding is_hcomp_def using assms by simp
+
+definition
+  hcomp_fm :: "[i\<Rightarrow>i\<Rightarrow>i,i\<Rightarrow>i\<Rightarrow>i,i,i] \<Rightarrow> i" where
+  "hcomp_fm(pf,pg,a,w) \<equiv> Exists(And(pg(succ(a),0),pf(0,succ(w))))"
+
+lemma sats_hcomp_fm:
+  assumes 
+    f_iff_sats:"\<And>a b z. a\<in>nat \<Longrightarrow> b\<in>nat \<Longrightarrow> z\<in>M \<Longrightarrow> 
+                 is_f(nth(a,Cons(z,env)),nth(b,Cons(z,env))) \<longleftrightarrow> sats(M,pf(a,b),Cons(z,env))"
+    and
+    g_iff_sats:"\<And>a b z. a\<in>nat \<Longrightarrow> b\<in>nat \<Longrightarrow> z\<in>M \<Longrightarrow> 
+                is_g(nth(a,Cons(z,env)),nth(b,Cons(z,env))) \<longleftrightarrow> sats(M,pg(a,b),Cons(z,env))"
+    and
+    "a\<in>nat" "w\<in>nat" "env\<in>list(M)" 
+  shows
+     "sats(M,hcomp_fm(pf,pg,a,w),env) \<longleftrightarrow> is_hcomp(##M,is_f,is_g,nth(a,env),nth(w,env))" 
+proof -
+  have "sats(M, pf(0, succ(w)), Cons(x, env)) \<longleftrightarrow> is_f(x,nth(w,env))" if "x\<in>M" "w\<in>nat" for x w
+    using f_iff_sats[of 0 "succ(w)" x] that by simp
+  moreover
+  have "sats(M, pg(succ(a), 0), Cons(x, env)) \<longleftrightarrow> is_g(nth(a,env),x)" if "x\<in>M" "a\<in>nat" for x a
+    using g_iff_sats[of "succ(a)" 0 x] that by simp
+  ultimately
+  show ?thesis unfolding hcomp_fm_def is_hcomp_def using assms by simp
+qed
+ 
 
 (* Preliminary *)
 definition
@@ -18,7 +85,7 @@ definition
    cond_of :: "i\<Rightarrow>i" where
   "cond_of(x) == snd(snd(snd((x))))"
 
-lemma components_simp [simp]:
+lemma components_simp:
   "ftype(<f,n1,n2,c>) = f"
   "name1(<f,n1,n2,c>) = n1"
   "name2(<f,n1,n2,c>) = n2"
@@ -46,52 +113,168 @@ lemma components_in_eclose :
   unfolding Pair_def 
   by (rule arg_into_eclose2 ; auto)+
 
+(* ftype(p) == THE a. \<exists>b. p = <a, b> *)
+
 definition
+  is_fst :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
+  "is_fst(M,x,t) == (\<exists>z[M]. pair(M,t,z,x)) \<or> 
+                       (\<not>(\<exists>z[M]. \<exists>w[M]. pair(M,w,z,x)) \<and> empty(M,t))"
+
+definition
+  fst_fm :: "[i,i] \<Rightarrow> i" where
+  "fst_fm(x,t) \<equiv> Or(Exists(pair_fm(succ(t),0,succ(x))),
+                   And(Neg(Exists(Exists(pair_fm(0,1,2 #+ x)))),empty_fm(t)))"
+
+lemma sats_fst_fm :
+   "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk> 
+    \<Longrightarrow> sats(A, fst_fm(x,y), env) \<longleftrightarrow>
+        is_fst(##A, nth(x,env), nth(y,env))"
+by (simp add: fst_fm_def is_fst_def)
+
+definition 
   is_ftype :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "is_ftype(M,x,t1) == \<exists>z[M]. pair(M,t1,z,x)"
+  "is_ftype \<equiv> is_fst" 
+
+definition
+  ftype_fm :: "[i,i] \<Rightarrow> i" where
+  "ftype_fm \<equiv> fst_fm" 
+
+lemma sats_ftype_fm :
+   "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk> 
+    \<Longrightarrow> sats(A, ftype_fm(x,y), env) \<longleftrightarrow>
+        is_ftype(##A, nth(x,env), nth(y,env))"
+  unfolding ftype_fm_def is_ftype_def
+  by (simp add:sats_fst_fm)
+
+lemma is_ftype_iff_sats:
+  assumes
+    "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
+  shows
+       "is_ftype(##A,aa,bb)  \<longleftrightarrow> sats(A,ftype_fm(a,b), env)"
+  using assms
+  by (simp add:sats_ftype_fm)
+
+definition
+  is_snd :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
+  "is_snd(M,x,t) == (\<exists>z[M]. pair(M,z,t,x)) \<or> 
+                       (\<not>(\<exists>z[M]. \<exists>w[M]. pair(M,z,w,x)) \<and> empty(M,t))"
+
+definition
+  snd_fm :: "[i,i] \<Rightarrow> i" where
+  "snd_fm(x,t) \<equiv> Or(Exists(pair_fm(0,succ(t),succ(x))),
+                   And(Neg(Exists(Exists(pair_fm(1,0,2 #+ x)))),empty_fm(t)))"
+
+lemma sats_snd_fm :
+   "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk> 
+    \<Longrightarrow> sats(A, snd_fm(x,y), env) \<longleftrightarrow>
+        is_snd(##A, nth(x,env), nth(y,env))"
+by (simp add: snd_fm_def is_snd_def)
 
 definition
   is_name1 :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "is_name1(M,x,t2) == \<exists>t1[M]. \<exists>z[M]. \<exists>w[M]. pair(M,t1,z,x) \<and> pair(M,t2,w,z)"
+  "is_name1(M,x,t2) == is_hcomp(M,is_fst(M),is_snd(M),x,t2)"
 
 definition
+  name1_fm :: "[i,i] \<Rightarrow> i" where
+  "name1_fm(x,t) \<equiv> hcomp_fm(fst_fm,snd_fm,x,t)" 
+
+lemma sats_name1_fm :
+   "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk> 
+    \<Longrightarrow> sats(A, name1_fm(x,y), env) \<longleftrightarrow>
+        is_name1(##A, nth(x,env), nth(y,env))"
+  unfolding name1_fm_def is_name1_def using sats_fst_fm sats_snd_fm 
+            sats_hcomp_fm[of A "is_fst(##A)" _ fst_fm "is_snd(##A)"] by simp
+
+lemma is_name1_iff_sats:
+  assumes
+    "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
+  shows
+       "is_name1(##A,aa,bb)  \<longleftrightarrow> sats(A,name1_fm(a,b), env)"
+  using assms
+  by (simp add:sats_name1_fm)
+
+definition
+  is_snd_snd :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
+  "is_snd_snd(M,x,t) == is_hcomp(M,is_snd(M),is_snd(M),x,t)"
+
+definition
+  snd_snd_fm :: "[i,i]\<Rightarrow>i" where
+  "snd_snd_fm(x,t) == hcomp_fm(snd_fm,snd_fm,x,t)"
+
+lemma sats_snd2_fm :
+   "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk> 
+    \<Longrightarrow> sats(A,snd_snd_fm(x,y), env) \<longleftrightarrow>
+        is_snd_snd(##A, nth(x,env), nth(y,env))"
+  unfolding snd_snd_fm_def is_snd_snd_def using sats_snd_fm 
+            sats_hcomp_fm[of A "is_snd(##A)" _ snd_fm "is_snd(##A)"] by simp
+    
+definition
   is_name2 :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "is_name2(M,x,t3) == \<exists>t1[M]. \<exists>z[M]. \<exists>t2[M]. \<exists>w[M]. \<exists>t4[M].
-                           pair(M,t1,z,x) \<and> pair(M,t2,w,z) \<and> pair(M,t3,t4,w)"
+  "is_name2(M,x,t3) == is_hcomp(M,is_fst(M),is_snd_snd(M),x,t3)"
+
+definition
+  name2_fm :: "[i,i] \<Rightarrow> i" where
+  "name2_fm(x,t3) \<equiv> hcomp_fm(fst_fm,snd_snd_fm,x,t3)"
+
+lemma sats_name2_fm :
+   "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk> 
+    \<Longrightarrow> sats(A,name2_fm(x,y), env) \<longleftrightarrow>
+        is_name2(##A, nth(x,env), nth(y,env))"
+  unfolding name2_fm_def is_name2_def using sats_fst_fm sats_snd2_fm
+            sats_hcomp_fm[of A "is_fst(##A)" _ fst_fm "is_snd_snd(##A)"] by simp
+
+lemma is_name2_iff_sats:
+  assumes
+    "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
+  shows
+       "is_name2(##A,aa,bb)  \<longleftrightarrow> sats(A,name2_fm(a,b), env)"
+  using assms
+  by (simp add:sats_name2_fm)
 
 definition
   is_cond_of :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "is_cond_of(M,x,t4) == \<exists>t1[M]. \<exists>z[M]. \<exists>t2[M]. \<exists>w[M]. \<exists>t3[M].
-                           pair(M,t1,z,x) \<and> pair(M,t2,w,z) \<and> pair(M,t3,t4,w)"
+  "is_cond_of(M,x,t4) == is_hcomp(M,is_snd(M),is_snd_snd(M),x,t4)"
 
 definition
-  is_one :: "[i\<Rightarrow>o,i] \<Rightarrow> o" where
-  "is_one(M,o) == \<forall>z[M]. z\<in>o \<longleftrightarrow> empty(M,z)"
+  cond_of_fm :: "[i,i] \<Rightarrow> i" where
+  "cond_of_fm(x,t4) \<equiv> hcomp_fm(snd_fm,snd_snd_fm,x,t4)"
 
-lemma (in M_trivial) is_one_abs [simp]:
-     "M(o) ==> is_one(M,o) \<longleftrightarrow> o=1"
-  by (simp add: is_one_def,blast intro: transM)
+lemma sats_cond_of_fm :
+   "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk> 
+    \<Longrightarrow> sats(A,cond_of_fm(x,y), env) \<longleftrightarrow>
+        is_cond_of(##A, nth(x,env), nth(y,env))"
+  unfolding cond_of_fm_def is_cond_of_def using sats_snd_fm sats_snd2_fm
+            sats_hcomp_fm[of A "is_snd(##A)" _ snd_fm "is_snd_snd(##A)"] by simp
 
-(* Already in Constructible, under "number1_fm" but with 
-  an unnecessary, harmful assumption *)
-schematic_goal sats_is_one_fm_auto:
-  assumes 
-    "z\<in>nat" "env\<in>list(A)"
-  shows
-    "is_one(##A,nth(z, env))
-    \<longleftrightarrow> sats(A,?io_fm(z),env)"
-    and
-    "(?io_fm(z) \<in> formula)"
-   unfolding is_one_def  
-   by (insert assms ; (rule sep_rules | simp))+
-
-schematic_goal is_one_iff_sats :
+lemma is_cond_of_iff_sats:
   assumes
-    "nth(i,env) = x" "i \<in> nat"  "env \<in> list(A)"
+    "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
   shows
-       "is_one(##A, x) \<longleftrightarrow> sats(A, ?is_one_fm(i), env)"
-  unfolding \<open>nth(i,env) = x\<close>[symmetric] 
-  by (rule sats_is_one_fm_auto(1); simp add:assms)
+       "is_cond_of(##A,aa,bb)  \<longleftrightarrow> sats(A,cond_of_fm(a,b), env)"
+  using assms
+  by (simp add:sats_cond_of_fm)
+
+lemma components_type[TC] :
+  assumes "a\<in>nat" "b\<in>nat"
+  shows 
+    "ftype_fm(a,b)\<in>formula" 
+    "name1_fm(a,b)\<in>formula"
+    "name2_fm(a,b)\<in>formula"
+    "cond_of_fm(a,b)\<in>formula"
+  using assms
+  unfolding ftype_fm_def fst_fm_def snd_fm_def snd_snd_fm_def name1_fm_def name2_fm_def 
+    cond_of_fm_def hcomp_fm_def
+  by simp_all
+
+lemmas sats_components_fm = sats_ftype_fm sats_name1_fm sats_name2_fm sats_cond_of_fm
+
+lemmas components_iff_sats = is_ftype_iff_sats is_name1_iff_sats is_name2_iff_sats
+                            is_cond_of_iff_sats
+
+lemmas components_defs = fst_fm_def ftype_fm_def snd_fm_def snd_snd_fm_def hcomp_fm_def
+                        name1_fm_def name2_fm_def cond_of_fm_def
+
+
 
 (* Relation of forces *)
 definition
@@ -107,26 +290,25 @@ lemma frecR_ftypeD :
   using assms unfolding frecR_def by auto
 
 lemma frecRI1: "s \<in> domain(n1) \<or> s \<in> domain(n2) \<Longrightarrow> frecR(\<langle>1, s, n1, q\<rangle>, \<langle>0, n1, n2, q'\<rangle>)"
-  unfolding frecR_def by simp
+  unfolding frecR_def by (simp add:components_simp)
 
 lemma frecRI1': "s \<in> domain(n1) \<union> domain(n2) \<Longrightarrow> frecR(\<langle>1, s, n1, q\<rangle>, \<langle>0, n1, n2, q'\<rangle>)"
-  unfolding frecR_def by simp
+  unfolding frecR_def by (simp add:components_simp)
 
 lemma frecRI2: "s \<in> domain(n1) \<or> s \<in> domain(n2) \<Longrightarrow> frecR(\<langle>1, s, n2, q\<rangle>, \<langle>0, n1, n2, q'\<rangle>)"
-  unfolding frecR_def by simp
+  unfolding frecR_def by (simp add:components_simp)
 
 lemma frecRI2': "s \<in> domain(n1) \<union> domain(n2) \<Longrightarrow> frecR(\<langle>1, s, n2, q\<rangle>, \<langle>0, n1, n2, q'\<rangle>)"
-  unfolding frecR_def by simp
+  unfolding frecR_def by (simp add:components_simp)
 
 
 lemma frecRI3: "\<langle>s, r\<rangle> \<in> n2 \<Longrightarrow> frecR(\<langle>0, n1, s, q\<rangle>, \<langle>1, n1, n2, q'\<rangle>)"
-  unfolding frecR_def by auto
+  unfolding frecR_def by (auto simp add:components_simp)
 
 lemma frecRI3': "s \<in> domain(n2) \<Longrightarrow> frecR(\<langle>0, n1, s, q\<rangle>, \<langle>1, n1, n2, q'\<rangle>)"
-  unfolding frecR_def by auto
+  unfolding frecR_def by (auto simp add:components_simp)
 
-
-lemma frecR_iff [iff] :
+lemma frecR_iff :
   "frecR(x,y) \<longleftrightarrow>
     (ftype(x) = 1 \<and> ftype(y) = 0 
       \<and> (name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> (name2(x) = name1(y) \<or> name2(x) = name2(y))))
@@ -136,17 +318,84 @@ lemma frecR_iff [iff] :
 lemma frecR_D1 :
   "frecR(x,y) \<Longrightarrow> ftype(y) = 0 \<Longrightarrow> ftype(x) = 1 \<and> 
       (name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> (name2(x) = name1(y) \<or> name2(x) = name2(y)))"
+  using frecR_iff
   by auto
 
 lemma frecR_D2 :
   "frecR(x,y) \<Longrightarrow> ftype(y) = 1 \<Longrightarrow> ftype(x) = 0 \<and> 
       ftype(x) = 0 \<and> ftype(y) =  1 \<and> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y))"
+  using frecR_iff
   by auto
 
 lemma frecR_DI : 
   assumes "frecR(<a,b,c,d>,<ftype(y),name1(y),name2(y),cond_of(y)>)"
   shows "frecR(<a,b,c,d>,y)"
-  using assms unfolding frecR_def by force
+  using assms unfolding frecR_def by (force simp add:components_simp)
+
+(*
+name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> 
+            (name2(x) = name1(y) \<or> name2(x) = name2(y)) 
+          \<or> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y))*)
+definition
+  is_frecR :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_frecR(M,x,y) \<equiv> \<exists> ftx[M]. \<exists> n1x[M]. \<exists>n2x[M]. \<exists>fty[M]. \<exists>n1y[M]. \<exists>n2y[M]. \<exists>dn1[M]. \<exists>dn2[M].
+  is_ftype(M,x,ftx) \<and> is_name1(M,x,n1x)\<and> is_name2(M,x,n2x) \<and>
+  is_ftype(M,y,fty) \<and> is_name1(M,y,n1y) \<and> is_name2(M,y,n2y)
+          \<and> is_domain(M,n1y,dn1) \<and> is_domain(M,n2y,dn2) \<and> 
+          (  (number1(M,ftx) \<and> empty(M,fty) \<and> (n1x \<in> dn1 \<or> n1x \<in> dn2) \<and> (n2x = n1y \<or> n2x = n2y))
+           \<or> (empty(M,ftx) \<and> number1(M,fty) \<and> n1x = n1y \<and> n2x \<in> dn2))"
+
+schematic_goal sats_frecR_fm_auto:
+  assumes 
+    "a\<in>nat" "b\<in>nat" "env\<in>list(A)"
+  shows
+    "is_frecR(##A,nth(a,env),nth(b,env)) \<longleftrightarrow> sats(A,?fr_fm(a),env)"
+  unfolding  is_frecR_def is_Collect_def  
+    by (insert assms ; (rule sep_rules' cartprod_iff_sats  components_iff_sats
+        | simp del:sats_cartprod_fm)+)
+
+definition
+  frecR_fm :: "[i,i] \<Rightarrow> i" where
+  "frecR_fm(a,b) \<equiv> 
+  Exists
+       (And(ftype_fm(succ(a), 0),
+            Exists
+             (And(name1_fm(succ(succ(a)), 0),
+                  Exists
+                   (And(name2_fm(succ(succ(succ(a))), 0),
+                        Exists
+                         (And(ftype_fm(succ(succ(succ(succ(b)))), 0),
+                              Exists
+                               (And(name1_fm(succ(succ(succ(succ(succ(b))))), 0),
+                                    Exists
+                                     (And(name2_fm(succ(succ(succ(succ(succ(succ(b)))))), 0),
+                                          Exists
+                                           (And(domain_fm(2, 0),
+                                                Exists
+                                                 (And(domain_fm(2, 0),
+                                                      Or(And(number1_fm(7),
+And(empty_fm(4), And(Or(Member(6, 1), Member(6, 0)), Or(Equal(5, 3), Equal(5, 2))))),
+                                                         And(empty_fm(7),
+And(number1_fm(4), And(Equal(6, 3), Member(5, 0)))))))))))))))))))))"
+
+lemma frecR_fm_type[TC] :
+  "\<lbrakk>a\<in>nat;b\<in>nat\<rbrakk> \<Longrightarrow> frecR_fm(a,b)\<in>formula"
+  unfolding frecR_fm_def by simp
+
+lemma sats_frecR_fm :
+  assumes "a\<in>nat" "b\<in>nat" "env\<in>list(A)"
+  shows "sats(A,frecR_fm(a,b),env) \<longleftrightarrow> is_frecR(##A,nth(a,env),nth(b,env))"
+  unfolding is_frecR_def frecR_fm_def
+  using assms by (simp add: sats_components_fm)
+
+lemma is_frecR_iff_sats:
+  assumes
+    "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
+  shows
+       "is_frecR(##A,aa,bb)  \<longleftrightarrow> sats(A, frecR_fm(a,b), env)"
+  using assms
+  by (simp add:sats_frecR_fm)
+
 
 (* Punto 3 de p. 257 de Kunen *)
 lemma eq_ftypep_not_frecrR:
@@ -303,7 +552,6 @@ proof -
   qed
 qed
 
-
 definition
   frecrel :: "i \<Rightarrow> i" where
   "frecrel(A) \<equiv> Rrel(frecR,A)"
@@ -319,7 +567,7 @@ lemma frecrelD :
     "name1(x) \<in> A2" "name1(y) \<in> A2" "name2(x) \<in> A3" "name2(x) \<in> A3" 
     "cond_of(x) \<in> A4" "cond_of(y) \<in> A4" 
     "frecR(x,y)"
-  using assms unfolding frecrel_def Rrel_def ftype_def by auto
+  using assms unfolding frecrel_def Rrel_def ftype_def by (auto simp add:components_simp)
 
 lemma wf_frecrel : 
   shows "wf(frecrel(A))"
@@ -345,10 +593,10 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
    assume "x \<in> ?D"
    then
    have "cond_of(x)\<in>A2" 
-     by auto
+     by (auto simp add:components_simp)
    from \<open>x\<in>?D\<close>
    consider (eq) "ftype(x)=0" | (mem) "ftype(x)=1"
-     by auto
+     by (auto simp add:components_simp)
    then 
    show ?case 
    proof cases
@@ -358,7 +606,7 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
      proof -
        from 1
        have A: "?\<tau>\<in>A1" "?\<theta>\<in>A1" "?\<tau>\<in>eclose(A1)" "?\<theta>\<in>eclose(A1)"
-         using  arg_into_eclose by auto
+         using  arg_into_eclose by (auto simp add:components_simp)
        with  \<open>Transset(A1)\<close> that(1)
        have "\<sigma>\<in>eclose(?\<tau>) \<union> eclose(?\<theta>)" 
          using in_dom_in_eclose  by auto
@@ -372,14 +620,14 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
             "frecR(<1, \<sigma>, ?\<theta>, q>, x)" (is "frecR(?U,_)")
         using  frecRI1'[OF that(1)] frecR_DI  \<open>ftype(x) = 0\<close> 
                 frecRI2'[OF that(1)] 
-         by auto
+         by (auto simp add:components_simp)
        with \<open>x\<in>?D\<close> \<open>\<sigma>\<in>A1\<close> \<open>q\<in>A2\<close>
        have "<?T,x>\<in> frecrel(?D)" "<?U,x>\<in> frecrel(?D)" 
-         using frecrelI[of ?T ?D x]  frecrelI[of ?U ?D x] by auto
+         using frecrelI[of ?T ?D x]  frecrelI[of ?U ?D x] by (auto simp add:components_simp)
        with \<open>q\<in>A2\<close> \<open>\<sigma>\<in>A1\<close> \<open>?\<tau>\<in>A1\<close> \<open>?\<theta>\<in>A1\<close>
-       have A:"Q(1, \<sigma>, ?\<tau>, q)" using 1 by force
+       have A:"Q(1, \<sigma>, ?\<tau>, q)" using 1 by (force simp add:components_simp)
        from \<open>q\<in>A2\<close> \<open>\<sigma>\<in>A1\<close> \<open>?\<tau>\<in>A1\<close> \<open>?\<theta>\<in>A1\<close> \<open><?U,x>\<in> frecrel(?D)\<close>
-       have "Q(1, \<sigma>, ?\<theta>, q)" using 1 by force
+       have "Q(1, \<sigma>, ?\<theta>, q)" using 1 by (force simp add:components_simp)
        then
        show ?thesis using A by simp
      qed
@@ -390,7 +638,7 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
      proof -
        from 1 assms
        have A: "?\<tau>\<in>A1" "?\<theta>\<in>A1" "cond_of(x)\<in>A2" "?\<tau>\<in>eclose(A1)" "?\<theta>\<in>eclose(A1)"
-         using  arg_into_eclose by auto
+         using  arg_into_eclose by (auto simp add:components_simp)
        with  \<open>Transset(A1)\<close> that(1)
        have "\<sigma>\<in> eclose(?\<theta>)" 
          using in_dom_in_eclose  by auto
@@ -401,12 +649,12 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
        with \<open>q\<in>A2\<close> \<open>?\<theta> \<in> A1\<close> \<open>cond_of(x)\<in>A2\<close> \<open>?\<tau>\<in>A1\<close>
        have "frecR(<0, ?\<tau>, \<sigma>, q>, x)" (is "frecR(?T,_)")
         using  frecRI3'[OF that(1)] frecR_DI  \<open>ftype(x) = 1\<close>                 
-         by auto
+          by (auto simp add:components_simp)
        with \<open>x\<in>?D\<close> \<open>\<sigma>\<in>A1\<close> \<open>q\<in>A2\<close> \<open>?\<tau>\<in>A1\<close>
        have "<?T,x>\<in> frecrel(?D)" "?T\<in>?D"
-         using frecrelI[of ?T ?D x] by auto
+         using frecrelI[of ?T ?D x] by (auto simp add:components_simp)
        with \<open>q\<in>A2\<close> \<open>\<sigma>\<in>A1\<close> \<open>?\<tau>\<in>A1\<close> \<open>?\<theta>\<in>A1\<close>
-       show ?thesis using 1 by force
+       show ?thesis using 1 by (force simp add:components_simp)
      qed
      then show ?thesis using assms(2) \<open>ftype(x) = 1\<close> \<open>cond_of(x)\<in>A2\<close>  by auto
    qed
