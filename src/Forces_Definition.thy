@@ -1,4 +1,4 @@
-theory Forces_Definition imports FrecR begin
+theory Forces_Definition imports FrecR Synthetic_Definition begin
 
 (* \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x,y) *)
 definition
@@ -167,7 +167,6 @@ definition
      number1(M,o) \<and> sr\<in>t2 \<and> qv\<in>leq \<and> qr\<in>leq \<and> fun_apply(M,f,zt1sq,o))"
 
 
-(*
 schematic_goal sats_is_mem_case_fm_auto:
   assumes 
     "n1\<in>nat" "n2\<in>nat" "p\<in>nat" "P\<in>nat" "leq\<in>nat" "f\<in>nat" "env\<in>list(A)"
@@ -176,40 +175,11 @@ schematic_goal sats_is_mem_case_fm_auto:
     \<longleftrightarrow> sats(A,?imc_fm(n1,n2,p,P,leq,f),env)"
    unfolding is_mem_case_def 
    by (insert assms ; (rule sep_rules'  is_tuple_iff_sats | simp)+)
-*)
 
-definition 
-  mem_case_fm :: "[i,i,i,i,i,i] \<Rightarrow> i" where
-  "mem_case_fm(n1,n2,p,P,leq,f) \<equiv>
-Forall
-       (Implies
-         (And(Member(0, succ(P)), Exists(And(pair_fm(1, succ(succ(p)), 0), Member(0, succ(succ(leq)))))),
-          Exists
-           (Exists
-             (Exists
-               (Exists
-                 (And(Member(0, succ(succ(succ(succ(succ(P)))))),
-                      And(Member(3, succ(succ(succ(succ(succ(P)))))),
-                          And(pair_fm(3, 4, 2),
-                              Exists
-                               (And(pair_fm(2, 1, 0),
-                                    Exists
-                                     (And(pair_fm(5, 2, 0),
-                                          Exists
-                                           (And(empty_fm(0),
-                                                Exists
-                                                 (And(is_tuple_fm
-                                                       (1, succ(succ(succ(succ(succ(succ(succ(succ(succ(n1))))))))), 5, 7, 0),
-                                                      Exists
-                                                       (And(number1_fm(0),
-                                                            And(Member
-                                                                 (4, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(n2))))))))))),
-                                                                And(Member
- (7, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq))))))))))),
-And(Member(3, succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(leq))))))))))),
-    fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(f)))))))))), 1, 0)))))))))))))))))))))))"
 
-(*
+synthesize "mem_case_fm" from_schematic "sats_is_mem_case_fm_auto"
+
+
 schematic_goal sats_is_eq_case_fm_auto:
   assumes 
     "n1\<in>nat" "n2\<in>nat" "p\<in>nat" "P\<in>nat" "leq\<in>nat" "f\<in>nat" "env\<in>list(A)"
@@ -218,30 +188,9 @@ schematic_goal sats_is_eq_case_fm_auto:
     \<longleftrightarrow> sats(A,?iec_fm(n1,n2,p,P,leq,f),env)"
   unfolding is_eq_case_def
     by (insert assms ; (rule sep_rules'  is_tuple_iff_sats | simp)+)
-*)
 
-definition 
-  eq_case_fm :: "[i,i,i,i,i,i] \<Rightarrow> i" where
-  "eq_case_fm(n1,n2,p,P,leq,f) \<equiv>
-Forall
-       (Implies
-         (Or(Exists(And(domain_fm(succ(succ(n1)), 0), Member(1, 0))),
-             Exists(And(domain_fm(succ(succ(n2)), 0), Member(1, 0)))),
-          Forall
-           (Implies
-             (And(Member(0, succ(succ(P))),
-                  Exists(And(pair_fm(1, succ(succ(succ(p))), 0), Member(0, succ(succ(succ(leq))))))),
-              Exists
-               (Exists
-                 (Exists
-                   (And(is_tuple_fm(0, 4, succ(succ(succ(succ(succ(n1))))), 3, 2),
-                        And(is_tuple_fm(0, 4, succ(succ(succ(succ(succ(n2))))), 3, 1),
-                            And(number1_fm(0),
-                                Exists
-                                 (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(f)))))), 3, 0),
-                                      Exists
-                                       (And(fun_apply_fm(succ(succ(succ(succ(succ(succ(succ(f))))))), 3, 0),
-                                            Iff(Equal(1, 2), Equal(0, 2))))))))))))))))"
+synthesize "eq_case_fm" from_schematic "sats_is_eq_case_fm_auto"
+
 
 lemma mem_case_fm_type[TC] :
   "\<lbrakk>n1\<in>nat;n2\<in>nat;p\<in>nat;P\<in>nat;leq\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> mem_case_fm(n1,n2,p,P,leq,f)\<in>formula"
