@@ -4,7 +4,7 @@ theory Forcing_Thms
 
 begin
 
-context forces_rename
+context forcing_data
 begin
 
 lemma leq_transD:  "\<langle>a,b\<rangle> \<in> leq \<Longrightarrow> \<langle>b,c\<rangle> \<in> leq \<Longrightarrow> a \<in> P\<Longrightarrow> b \<in> P\<Longrightarrow> c \<in> P\<Longrightarrow> \<langle>a,c\<rangle> \<in> leq"
@@ -468,7 +468,7 @@ proof -
     have "Q(ftype(?a), name1(?a), name2(?a), cond_of(?a))"
       using core_induction_aux[of M P Q "?a",OF trans_M assms(1) assms(2) \<open>?a\<in>_\<close>] 
       by (clarify) (blast)
-    then have "Q(ft,\<tau>,\<theta>,p)" by simp
+    then have "Q(ft,\<tau>,\<theta>,p)" by (simp add:components_simp)
   }
   then show ?thesis using assms by simp
 qed
