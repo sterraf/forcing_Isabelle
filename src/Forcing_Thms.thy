@@ -221,7 +221,8 @@ lemma not_forces_nmem:
   shows "forces_mem(p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_nmem(q,t1,t2))"
   using assms density_mem unfolding forces_nmem_def by blast
 
-
+(* Use the newer versions in Forces_Definition! *)
+(* (and adequate the rest of the code to them)  *)
 lemma sats_forces_Equal:
   assumes
     "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2"
@@ -234,6 +235,14 @@ lemma sats_forces_Member:
     "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2"
   shows
     "sats(M,forces(Member(n,m)),[P,leq,one,p] @ env) \<longleftrightarrow> forces_mem(p,t1,t2)"
+  sorry
+
+lemma sats_forces_Forall:
+  assumes
+    "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula"
+  shows
+    "sats(M,forces(Forall(\<phi>)),[P,leq,one,p] @ env) \<longleftrightarrow> 
+     (\<forall>x\<in>M. sats(M, forces(\<phi>),[P,leq,one,p,x] @ env))"
   sorry
 
 (* Move the following to an appropriate place *)
@@ -1048,8 +1057,7 @@ next
     using density_lemma by blast
 qed
 
-lemma definability[TC]:"\<phi>\<in>formula \<Longrightarrow> forces(\<phi>) \<in> formula"
-  unfolding forces_def by simp
-end (* forces_rename *)
+lemmas definability = forces_type 
+end (* forcing_data *)
 
 end
