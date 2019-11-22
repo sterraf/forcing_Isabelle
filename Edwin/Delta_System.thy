@@ -25,13 +25,11 @@ bundle mono_map_rules =  mono_mapI[intro!] mono_mapD[dest]
 lemma Aleph_zero_eq_nat: "\<aleph>0 = nat"
   unfolding Aleph_def by simp
 
-lemma Limit_Aleph: 
+lemma InfCard_Aleph: 
   includes Aleph_dests
   notes Aleph_zero_eq_nat[simp]
   assumes "Ord(\<alpha>)" 
-  shows "Limit(\<aleph>\<alpha>)"
-(*  using Card_cardinal_eq Inf_Card_is_InfCard assms 
-  apply (intro InfCard_is_Limit) *)
+  shows "InfCard(\<aleph>\<alpha>)"
 proof -
   have "\<not> (\<aleph>\<alpha> \<in> nat)" 
   proof (cases "\<alpha>=0")
@@ -50,8 +48,10 @@ proof -
   have "\<not> Finite(\<aleph>\<alpha>)" by auto
   with \<open>Ord(\<alpha>)\<close>
   show ?thesis
-    using InfCard_is_Limit Inf_Card_is_InfCard by simp
+    using Inf_Card_is_InfCard by simp
 qed 
+
+lemmas Limit_Aleph = InfCard_Aleph[THEN InfCard_is_Limit] 
 
 context
   includes Ord_dests Aleph_dests Aleph_mem_dests mono_map_rules
