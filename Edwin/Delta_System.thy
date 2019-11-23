@@ -84,8 +84,30 @@ proof -
     using ordertype_eq[OF _ well_ord_Memrel]
     ordertype_Memrel by auto
   moreover from \<open>Limit(\<gamma>)\<close>
-  have "cofinal(?f``\<gamma>, \<aleph>\<gamma>, Memrel(\<aleph>\<gamma>))"
-    sorry
+  have "cofinal(?f``\<gamma>, \<aleph>\<gamma>, Memrel(\<aleph>\<gamma>))" 
+    unfolding cofinal_def 
+  proof (standard, intro ballI)
+    fix a
+    assume "a\<in>\<aleph>\<gamma>" "\<aleph>\<gamma> = (\<Union>i<\<gamma>. \<aleph>i)"
+    moreover from this
+    obtain i where "i<\<gamma>" "a\<in>\<aleph>i"
+      by auto
+    moreover from this and \<open>Limit(\<gamma>)\<close>
+    have "Ord(i)" using ltD Ord_in_Ord by blast
+    moreover
+    have "succ(i) \<in> \<gamma>" sorry
+    moreover from this and \<open>Ord(i)\<close>
+    have "\<aleph>i < \<aleph>(succ(i))" 
+      by (intro Normal_imp_mono[OF _ Normal_Aleph], simp) 
+    ultimately
+    have "<a,\<aleph>i> \<in> Memrel(\<aleph>\<gamma>)"
+      using ltD by auto
+    moreover from \<open>i<\<gamma>\<close>
+    have "\<aleph>i \<in> ?f``\<gamma>" 
+      using ltD apply_in_image[OF \<open>?f : _ \<rightarrow> _\<close>] by auto
+    ultimately
+    show "\<exists>x\<in>?f `` \<gamma>. \<langle>a, x\<rangle> \<in> Memrel(\<aleph>\<gamma>) \<or> a = x" by blast
+  qed
   moreover
   note \<open>?f: \<gamma> \<rightarrow> \<aleph>\<gamma>\<close> \<open>Limit(\<gamma>)\<close>
   ultimately
