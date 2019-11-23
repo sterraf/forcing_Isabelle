@@ -94,8 +94,8 @@ proof -
       by auto
     moreover from this and \<open>Limit(\<gamma>)\<close>
     have "Ord(i)" using ltD Ord_in_Ord by blast
-    moreover
-    have "succ(i) \<in> \<gamma>" sorry
+    moreover from \<open>Limit(\<gamma>)\<close> and calculation
+    have "succ(i) \<in> \<gamma>" using ltD by auto
     moreover from this and \<open>Ord(i)\<close>
     have "\<aleph>i < \<aleph>(succ(i))" 
       by (intro Normal_imp_mono[OF _ Normal_Aleph], simp) 
