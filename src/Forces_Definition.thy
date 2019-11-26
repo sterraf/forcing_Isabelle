@@ -1029,8 +1029,8 @@ primrec
   "forces'(Member(x,y)) = forces_mem_fm(0,1,3,x#+4,y#+4)"
   "forces'(Equal(x,y))  = forces_eq_fm(0,1,3,x#+4,y#+4)"
   "forces'(Nand(p,q))   = 
-        Neg(Exists(And(leq_fm(2,0,4),And(ren_forces_nand(forces'(p)),
-                                         ren_forces_nand(forces'(q))))))"
+        Neg(Exists(And(Member(0,1),And(leq_fm(2,0,4),And(ren_forces_nand(forces'(p)),
+                                         ren_forces_nand(forces'(q)))))))"
   "forces'(Forall(p))   = Forall(ren_forces_forall(forces'(p)))" 
 
 definition 
@@ -1062,7 +1062,7 @@ lemma (in forcing_data) sats_forces_Equal :
 lemma (in forcing_data) sats_forces_Nand :
   assumes  "\<phi>\<in>formula" "\<psi>\<in>formula" "env\<in>list(M)" "p\<in>M" 
   shows "sats(M,forces(Nand(\<phi>,\<psi>)),[P,leq,one,p]@env) \<longleftrightarrow> 
-         (p\<in>P \<and> \<not>(\<exists>q\<in>M. (\<exists>qp\<in>M. pair(##M,q,p,qp) \<and> qp\<in>leq) \<and> 
+         (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> (\<exists>qp\<in>M. pair(##M,q,p,qp) \<and> qp\<in>leq) \<and> 
                (sats(M,forces'(\<phi>),[P,leq,one,q]@env) \<and> sats(M,forces'(\<psi>),[P,leq,one,q]@env))))"
   unfolding forces_def using sats_leq_fm assms sats_ren_forces_nand P_in_M leq_in_M one_in_M  
   by simp
@@ -1070,7 +1070,7 @@ lemma (in forcing_data) sats_forces_Nand :
 lemma (in forcing_data) sats_forces_Neg :
   assumes  "\<phi>\<in>formula" "\<psi>\<in>formula" "env\<in>list(M)" "p\<in>M" 
   shows "sats(M,forces(Neg(\<phi>)),[P,leq,one,p]@env) \<longleftrightarrow> 
-         (p\<in>P \<and> \<not>(\<exists>q\<in>M. (\<exists>qp\<in>M. pair(##M,q,p,qp) \<and> qp\<in>leq) \<and> 
+         (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> (\<exists>qp\<in>M. pair(##M,q,p,qp) \<and> qp\<in>leq) \<and> 
                (sats(M,forces'(\<phi>),[P,leq,one,q]@env))))"
   unfolding Neg_def using assms sats_forces_Nand 
   by simp
