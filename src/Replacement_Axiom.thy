@@ -161,20 +161,7 @@ definition
   prebody_fm :: "[i,i]\<Rightarrow>i" where
   "prebody_fm(\<phi>,env) \<equiv> Exists
           (Exists
-            (And(Exists
-                  (And(empty_fm(0),
-                       is_transrec_fm
-                        (Exists
-                          (And(union_fm(9, 0, 1),
-                               Exists
-                                (And(big_union_fm(0, 1),
-                                     And(Equal(0, 0),
-                                         is_Replace_fm
-                                          (4, Exists
-                                               (And(fun_apply_fm(6, 1, 0),
-                                                    Forall(Iff(Member(0, 3), Forall(Implies(Member(0, 1), Member(0, 2))))))),
-                                           0)))))),
-                         5, 1))),
+            (And(Exists(And(empty_fm(0), is_transrec_fm(is_HVfrom_fm(8, 2, 1, 0), 5, 1))),
                  And(Member(1, 0), renrep(forces(\<phi>), env)))))"
 
 
@@ -209,7 +196,7 @@ lemma arity_prebody_fm:
     "\<phi>\<in>formula" "\<alpha>\<in>M" "env \<in> list(M)" "arity(\<phi>) \<le> 2 #+ length(env)"
   shows
     "arity(prebody_fm(\<phi>,env))\<le>6 #+  length(env)"
-  unfolding prebody_fm_def using assms
+  unfolding prebody_fm_def is_HVfrom_fm_def is_powapply_fm_def using assms
   apply(simp add:  new_fm_defs )
   apply(simp add: nat_simp_union,rule, rule, (rule pred_le,simp+)+)
   apply(subgoal_tac "arity(forces(\<phi>)) \<le> 6 #+length(env)")
