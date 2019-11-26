@@ -1228,6 +1228,36 @@ lemma sats_is_HVfrom_fm :
   apply (simp add: sats_is_Rep_fm[OF sats_is_powapply_fm])
   done
 
+lemma is_HVfrom_iff_sats:
+  assumes
+    "nth(a,env) = aa" "nth(x,env) = xx" "nth(f,env) = ff" "nth(h,env) = hh"
+    "a\<in>nat" "x\<in>nat" "f\<in>nat" "h\<in>nat" "env\<in>list(A)" "0\<in>A"
+  shows
+       "is_HVfrom(##A,aa,xx,ff,hh) \<longleftrightarrow> sats(A, is_HVfrom_fm(a,x,f,h), env)"
+  using assms sats_is_HVfrom_fm by simp
+
+(* FIX US *)
+schematic_goal sats_is_Vset_fm_auto:
+  assumes
+    "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
+    "i < length(env)" "v < length(env)"
+  shows
+    "is_Vset(##A,nth(i, env),nth(v, env))
+    \<longleftrightarrow> sats(A,?ivs_fm(i,v),env)"
+  unfolding is_Vset_def is_Vfrom_def
+  by (insert assms; (rule sep_rules is_HVfrom_iff_sats is_transrec_iff_sats | simp)+)
+
+schematic_goal is_Vset_iff_sats:
+  assumes
+    "nth(i,env) = ii" "nth(v,env) = vv"
+    "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
+    "i < length(env)" "v < length(env)"
+  shows
+    "is_Vset(##A,ii,vv) \<longleftrightarrow> sats(A, ?ivs_fm(i,v), env)"
+  unfolding \<open>nth(i,env) = ii\<close>[symmetric] \<open>nth(v,env) = vv\<close>[symmetric]
+  by (rule sats_is_Vset_fm_auto(1); simp add:assms)
+
+
 (*
 definition
   rec_mem : "i \<Rightarrow> o" where
