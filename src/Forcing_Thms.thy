@@ -7,6 +7,10 @@ begin
 context forcing_data
 begin
 
+definition
+  Forces :: "i \<Rightarrow> i \<Rightarrow> i\<Rightarrow> o" ("_ \<tturnstile> _ _" 60) where
+  "Forces(p,\<phi>,env) \<equiv> sats(M,forces(\<phi>), [P,leq,one,p] @ env)"
+
 lemma leq_transD:  "\<langle>a,b\<rangle> \<in> leq \<Longrightarrow> \<langle>b,c\<rangle> \<in> leq \<Longrightarrow> a \<in> P\<Longrightarrow> b \<in> P\<Longrightarrow> c \<in> P\<Longrightarrow> \<langle>a,c\<rangle> \<in> leq"
   using leq_preord trans_onD unfolding preorder_on_def by blast
 
@@ -225,17 +229,19 @@ lemma not_forces_nmem:
 (* (and adequate the rest of the code to them)  *)
 lemma sats_forces_Equal:
   assumes
-    "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2"
+    "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" "n\<in>nat" "m\<in>nat"
   shows
     "sats(M,forces(Equal(n,m)),[P,leq,one,p] @ env) \<longleftrightarrow> forces_eq(p,t1,t2)"
-  sorry
+  using assms sats_forces_Equal forces_eq_abs Transset_intf[OF trans_M] P_in_M 
+  by simp
 
 lemma sats_forces_Member:
   assumes
-    "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2"
+    "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" "n\<in>nat" "m\<in>nat"
   shows
     "sats(M,forces(Member(n,m)),[P,leq,one,p] @ env) \<longleftrightarrow> forces_mem(p,t1,t2)"
-  sorry
+  using assms sats_forces_Member forces_mem_abs Transset_intf[OF trans_M] P_in_M 
+  by simp
 
 lemma sats_forces_Forall:
   assumes
@@ -243,7 +249,16 @@ lemma sats_forces_Forall:
   shows
     "sats(M,forces(Forall(\<phi>)),[P,leq,one,p] @ env) \<longleftrightarrow> 
      (\<forall>x\<in>M. sats(M, forces(\<phi>),[P,leq,one,p,x] @ env))"
-  sorry
+  using assms sats_forces_Forall Transset_intf[OF trans_M] P_in_M 
+  P_in_M leq_in_M one_in_M sats_ren_forces_forall unfolding forces_def
+  by simp
+
+lemma Forces_Equal:
+  assumes
+    "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" "n\<in>nat" "m\<in>nat" 
+  shows
+    "p \<tturnstile> Equal(n,m) env \<longleftrightarrow> forces_eq(p,t1,t2)"
+  unfolding Forces_def using sats_forces_Equal assms .
 
 (* Move the following to an appropriate place *)
 (* "x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>. \<exists>p\<in>G.  <\<theta>,p>\<in>\<pi> \<and> val(G,\<theta>) = x" *)
