@@ -1,19 +1,9 @@
 theory Replacement_Axiom
   imports
-    Least Relative_Univ Separation_Axiom Renaming
+    Least Relative_Univ Separation_Axiom  Renaming_Auto
 begin
 
-local_setup\<open>
-let val rho  = @{term "[P,leq,o,p,\<rho>,\<tau>]"}
-    val rho' = @{term "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o]"}
-    val (envVar, fvs,r,tc_lemma,action_lemma) = sum_rename rho rho'
-    val (tc_lemma,action_lemma) = (fix_vars tc_lemma fvs , fix_vars action_lemma fvs)
-in
-Local_Theory.note   ((@{binding "renrep_thm"}, []), [tc_lemma,action_lemma]) #> snd #>
-Local_Theory.define ((@{binding "renrep1_fn"}, NoSyn),
-  ((@{binding "renrep1_def"}, []), r)) #> snd
-end\<close>
-
+rename "renrep1" src "[P,leq,o,p,\<rho>,\<tau>]" tgt "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o]"
 
 definition renrep_fn :: "i \<Rightarrow> i" where
   "renrep_fn(env) == sum(renrep1_fn,id(length(env)),6,8,length(env))"
@@ -25,15 +15,15 @@ definition
 lemma renrep_type [TC]: 
   assumes "\<phi>\<in>formula" "env \<in> list(M)"
     shows "renrep(\<phi>,env) \<in> formula"
-  unfolding renrep_def renrep_fn_def renrep1_def
-  using assms renrep_thm(1) ren_tc
+  unfolding renrep_def renrep_fn_def renrep1_fn_def
+  using assms renrep1_thm(1) ren_tc
   by simp
   
 lemma arity_renrep: 
   assumes  "\<phi>\<in>formula" "arity(\<phi>)\<le> 6#+length(env)" "env \<in> list(M)"
     shows "arity(renrep(\<phi>,env)) \<le> 8#+length(env)"
- unfolding  renrep_def renrep_fn_def renrep1_def
-    using assms renrep_thm(1) ren_arity
+ unfolding  renrep_def renrep_fn_def renrep1_fn_def
+    using assms renrep1_thm(1) ren_arity
     by simp
 
 lemma renrep_sats :
@@ -42,21 +32,13 @@ lemma renrep_sats :
     V \<in> M \<Longrightarrow> \<alpha> \<in> M \<Longrightarrow> 
     \<phi>\<in>formula \<Longrightarrow> 
   sats(M, \<phi>, [P,leq,o,p,\<rho>,\<tau>] @ env) \<longleftrightarrow> sats(M, renrep(\<phi>,env), [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o] @ env)"
-  unfolding  renrep_def renrep_fn_def renrep1_def    
-  apply (rule sats_iff_sats_ren,auto simp add:renrep_thm(1)[of _ M,simplified])
-  apply (auto simp add: renrep_thm(2)[simplified,of P M leq o p \<rho> \<tau> V \<alpha> _ env])
+  unfolding  renrep_def renrep_fn_def renrep1_fn_def    
+  apply (rule sats_iff_sats_ren,auto simp add:renrep1_thm(1)[of _ M,simplified])
+  apply (auto simp add: renrep1_thm(2)[simplified,of P M leq o p \<rho> \<tau> V \<alpha> _ env])
   done
 
-local_setup\<open>
-let val rho  = @{term "[\<rho>,p,\<alpha>,P,leq,o]"}
-    val rho' = @{term "[\<rho>,p,x,\<alpha>,P,leq,o]"}
-    val (envVar, fvs,r,tc_lemma,action_lemma) = sum_rename rho rho'
-    val (tc_lemma,action_lemma) = (fix_vars tc_lemma fvs , fix_vars action_lemma fvs)
-in
-Local_Theory.note   ((@{binding "renpbdy_thm"}, []), [tc_lemma,action_lemma]) #> snd #>
-Local_Theory.define ((@{binding "renpbdy1_fn"}, NoSyn),
-  ((@{binding "renpbdy1_def"}, []), r)) #> snd
-end\<close>
+rename "renpbdy1" src "[\<rho>,p,\<alpha>,P,leq,o]" tgt "[\<rho>,p,x,\<alpha>,P,leq,o]"
+
 
 definition renpbdy_fn :: "i \<Rightarrow> i" where
   "renpbdy_fn(env) == sum(renpbdy1_fn,id(length(env)),6,7,length(env))"
@@ -68,33 +50,24 @@ definition
 
 lemma
   renpbdy_type [TC]: "\<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow> renpbdy(\<phi>,env) \<in> formula"
-  unfolding renpbdy_def renpbdy_fn_def renpbdy1_def
-  using  renpbdy_thm(1) ren_tc
+  unfolding renpbdy_def renpbdy_fn_def renpbdy1_fn_def
+  using  renpbdy1_thm(1) ren_tc
   by simp
 
 lemma  arity_renpbdy: "\<phi>\<in>formula \<Longrightarrow> arity(\<phi>) \<le> 6 #+ length(env) \<Longrightarrow> env\<in>list(M) \<Longrightarrow> arity(renpbdy(\<phi>,env)) \<le> 7 #+ length(env)"
-  unfolding renpbdy_def renpbdy_fn_def renpbdy1_def
-  using  renpbdy_thm(1) ren_arity
+  unfolding renpbdy_def renpbdy_fn_def renpbdy1_fn_def
+  using  renpbdy1_thm(1) ren_arity
     by simp
 
 lemma
   sats_renpbdy: "arity(\<phi>) \<le> 6 #+ length(nenv) \<Longrightarrow> [\<rho>,p,x,\<alpha>,P,leq,o,\<pi>] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
        sats(M, \<phi>, [\<rho>,p,\<alpha>,P,leq,o] @ nenv) \<longleftrightarrow> sats(M, renpbdy(\<phi>,nenv), [\<rho>,p,x,\<alpha>,P,leq,o] @ nenv)"
-  unfolding renpbdy_def renpbdy_fn_def renpbdy1_def
-  apply (rule sats_iff_sats_ren,auto simp add:renpbdy_thm(1)[of _ M,simplified])
-  apply (auto simp add: renpbdy_thm(2)[simplified,of \<rho> M p  \<alpha> P leq o x  _ nenv])
+  unfolding renpbdy_def renpbdy_fn_def renpbdy1_fn_def
+  apply (rule sats_iff_sats_ren,auto simp add:renpbdy1_thm(1)[of _ M,simplified])
+  apply (auto simp add: renpbdy1_thm(2)[simplified,of \<rho> M p  \<alpha> P leq o x  _ nenv])
   done
 
-local_setup\<open>
-let val rho  = @{term "[x,\<alpha>,P,leq,o]"}
-    val rho' = @{term " [\<alpha>,x,m,P,leq,o]"}
-    val (envVar, fvs,r,tc_lemma,action_lemma) = sum_rename rho rho'
-    val (tc_lemma,action_lemma) = (fix_vars tc_lemma fvs , fix_vars action_lemma fvs)
-in
-Local_Theory.note   ((@{binding "renbody_thm"}, []), [tc_lemma,action_lemma]) #> snd #>
-Local_Theory.define ((@{binding "renbody1_fn"}, NoSyn),
-  ((@{binding "renbody1_def"}, []), r)) #> snd
-end\<close>
+rename "renbody1" src "[x,\<alpha>,P,leq,o]" tgt "[\<alpha>,x,m,P,leq,o]"
 
 definition renbody_fn :: "i \<Rightarrow> i" where
   "renbody_fn(env) == sum(renbody1_fn,id(length(env)),5,6,length(env))"
@@ -103,24 +76,23 @@ definition
   renbody :: "[i,i] \<Rightarrow> i" where
   "renbody(\<phi>,env) = ren(\<phi>)`(5#+length(env))`(6#+length(env))`renbody_fn(env)" 
 
-
 lemma
   renbody_type [TC]: "\<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow> renbody(\<phi>,env) \<in> formula"
-  unfolding renbody_def renbody_fn_def renbody1_def
-  using  renbody_thm(1) ren_tc
+  unfolding renbody_def renbody_fn_def renbody1_fn_def
+  using  renbody1_thm(1) ren_tc
   by simp
 
 lemma  arity_renbody: "\<phi>\<in>formula \<Longrightarrow> arity(\<phi>) \<le> 5 #+ length(env) \<Longrightarrow> env\<in>list(M) \<Longrightarrow> arity(renbody(\<phi>,env)) \<le> 6 #+ length(env)"
-  unfolding renbody_def renbody_fn_def renbody1_def
-  using  renbody_thm(1) ren_arity
+  unfolding renbody_def renbody_fn_def renbody1_fn_def
+  using  renbody1_thm(1) ren_arity
     by simp
 
 lemma
   sats_renbody: "arity(\<phi>) \<le> 5 #+ length(nenv) \<Longrightarrow> [\<alpha>,x,m,P,leq,o] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
        sats(M, \<phi>, [x,\<alpha>,P,leq,o] @ nenv) \<longleftrightarrow> sats(M, renbody(\<phi>,nenv), [\<alpha>,x,m,P,leq,o] @ nenv)"
-  unfolding renbody_def renbody_fn_def renbody1_def
-  apply (rule sats_iff_sats_ren,auto simp add:renbody_thm(1)[of _ M,simplified])
-  apply (simp add: renbody_thm(2)[of x \<alpha> P leq o m M _ nenv,simplified])
+  unfolding renbody_def renbody_fn_def renbody1_fn_def
+  apply (rule sats_iff_sats_ren,auto simp add:renbody1_thm(1)[of _ M,simplified])
+  apply (simp add: renbody1_thm(2)[of x \<alpha> P leq o m M _ nenv,simplified])
   done
 
 context G_generic
