@@ -1067,14 +1067,20 @@ lemma (in forcing_data) sats_forces_Nand :
   unfolding forces_def using sats_leq_fm assms sats_ren_forces_nand P_in_M leq_in_M one_in_M  
   by simp
   
+lemma (in forcing_data) sats_forces_Neg :
+  assumes  "\<phi>\<in>formula" "\<psi>\<in>formula" "env\<in>list(M)" "p\<in>M" 
+  shows "sats(M,forces(Neg(\<phi>)),[P,leq,one,p]@env) \<longleftrightarrow> 
+         (p\<in>P \<and> \<not>(\<exists>q\<in>M. (\<exists>qp\<in>M. pair(##M,q,p,qp) \<and> qp\<in>leq) \<and> 
+               (sats(M,forces'(\<phi>),[P,leq,one,q]@env))))"
+  unfolding Neg_def using assms sats_forces_Nand 
+  by simp
+
 lemma (in forcing_data) sats_forces_Forall :
   assumes  "\<phi>\<in>formula" "env\<in>list(M)" "p\<in>M" 
   shows "sats(M,forces(Forall(\<phi>)),[P,leq,one,p]@env) \<longleftrightarrow> 
          p\<in>P \<and> (\<forall>x\<in>M. sats(M,forces'(\<phi>),[P,leq,one,p,x]@env))"
   unfolding forces_def using assms sats_ren_forces_forall P_in_M leq_in_M one_in_M  
   by simp
-
-
 
 (*
 lemma arity_forces_ren:
