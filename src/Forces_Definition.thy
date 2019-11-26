@@ -984,18 +984,36 @@ end (* context forcing_data *)
 
 
 (* DEFINE THIS *)
+rename "forces_nand" src "[P,leq,o,q]" tgt "[q,P,leq,o,p]"
+
+definition forces_nand_ren :: "i \<Rightarrow> i" where
+  "forces_nand_ren(env) == sum(forces_nand_fn,id(length(env)),4,5,length(env))"
+
 definition 
-  ren_forces_nand :: "i\<Rightarrow>i" where
-  "ren_forces_nand(f) \<equiv> f" 
+  ren_forces_nand :: "[i,i] \<Rightarrow> i" where
+  "ren_forces_nand(\<phi>,env) = ren(\<phi>)`(4#+length(env))`(5#+length(env))`forces_nand_ren(env)" 
+
 
 lemma ren_forces_nand_type[TC] :
-  "\<phi>\<in>formula \<Longrightarrow> ren_forces_nand(\<phi>) \<in>formula" 
-  unfolding ren_forces_nand_def by simp
+  "\<phi>\<in>formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow> ren_forces_nand(\<phi>,env) \<in>formula" 
+  unfolding ren_forces_nand_def forces_nand_fn_def forces_nand_ren_def
+  using  forces_nand_thm(1) ren_tc
+  by simp
+
+lemma ren_forces_nand_arity: 
+  assumes  "\<phi>\<in>formula" "arity(\<phi>)\<le> 4#+length(env)" "env \<in> list(M)"
+    shows "arity(ren_forces_nand(\<phi>,env)) \<le> 5#+length(env)"
+  unfolding ren_forces_nand_def forces_nand_fn_def forces_nand_ren_def
+    using assms forces_nand_thm(1) ren_arity
+    by simp
 
 lemma sats_ren_forces_nand: 
-  "[q,P,leq,o,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
-   sats(M, ren_forces_nand(\<phi>),[q,P,leq,o,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,o,q] @ env)"
-  sorry
+  "[q,P,leq,o,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> arity(\<phi>) \<le> 4 #+ length(env) \<Longrightarrow>
+   sats(M, ren_forces_nand(\<phi>,env),[q,P,leq,o,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,o,q] @ env)"
+  unfolding ren_forces_nand_def forces_nand_fn_def forces_nand_ren_def
+  apply (rule sats_iff_sats_ren[symmetric],auto simp add:forces_nand_thm(1)[of _ M,simplified])
+  apply (auto simp add: forces_nand_thm(2)[simplified,symmetric])
+  done
 
 definition
   ren_forces_forall :: "i\<Rightarrow>i" where
