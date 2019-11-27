@@ -1034,33 +1034,45 @@ lemma sats_forces_mem_fm:
 end (* context forcing_data *)
 
 
-(* DEFINE THIS *)
 definition 
   ren_forces_nand :: "i\<Rightarrow>i" where
-  "ren_forces_nand(f) \<equiv> f" 
+  "ren_forces_nand(\<phi>) \<equiv> Exists(Exists(Exists(Exists(
+          And(Equal(3,4),And(Equal(0,5),And(Equal(1,6),
+          And(Equal(2,7),iterates(\<lambda>p. incr_bv(p)`4 , 5, \<phi>)))))))))" 
 
 lemma ren_forces_nand_type[TC] :
   "\<phi>\<in>formula \<Longrightarrow> ren_forces_nand(\<phi>) \<in>formula" 
   unfolding ren_forces_nand_def by simp
 
+  
 lemma sats_ren_forces_nand: 
   "[q,P,leq,o,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
    sats(M, ren_forces_nand(\<phi>),[q,P,leq,o,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,o,q] @ env)"
-  sorry
+  unfolding ren_forces_nand_def
+  apply (insert sats_incr_bv_iff [of _ _ M _ "Cons(P, Cons(leq, Cons(o, Cons(q,Nil))))"])
+  apply simp
+  done
+
 
 definition
   ren_forces_forall :: "i\<Rightarrow>i" where
-  "ren_forces_forall(f) \<equiv> f" 
+  "ren_forces_forall(\<phi>) \<equiv> 
+      Exists(Exists(Exists(Exists(Exists(
+        And(Equal(0,6),And(Equal(1,7),And(Equal(2,8),And(Equal(3,9),
+        And(Equal(4,5),iterates(\<lambda>p. incr_bv(p)`5 , 5, \<phi>)))))))))))" 
 
 lemma ren_forces_forall_type[TC] :
   "\<phi>\<in>formula \<Longrightarrow> ren_forces_forall(\<phi>) \<in>formula" 
   unfolding ren_forces_forall_def by simp
 
 lemma sats_ren_forces_forall :
-  "[x,P,leq,one,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
+  "[x,P,leq,o,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
     sats(M, ren_forces_forall(\<phi>),[x,P,leq,o,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,o,p,x] @ env)"
-  sorry
-
+  unfolding ren_forces_forall_def
+  apply (insert sats_incr_bv_iff [of _ _ M _ "Cons(P, Cons(leq, Cons(o, Cons(p,Cons(x,Nil)))))"])
+  apply simp
+  done
+  
 definition 
   leq_fm :: "[i,i,i] \<Rightarrow> i" where
   "leq_fm(leq,q,p) \<equiv> Exists(And(pair_fm(q#+1,p#+1,0),Member(0,leq#+1)))" 
