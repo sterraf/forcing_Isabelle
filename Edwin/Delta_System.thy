@@ -6,6 +6,121 @@ theory Delta_System
 
 begin
 
+lemma mono_mapI: 
+  assumes "f: A\<rightarrow>B" "\<And>x y. x\<in>A \<Longrightarrow> y\<in>A \<Longrightarrow> <x,y>\<in>r \<Longrightarrow> <f`x,f`y>\<in>s"
+  shows   "f \<in> mono_map(A,r,B,s)"
+  unfolding mono_map_def using assms by simp
+
+lemma mono_mapD: 
+  assumes "f \<in> mono_map(A,r,B,s)"
+  shows   "f: A\<rightarrow>B" "\<And>x y. x\<in>A \<Longrightarrow> y\<in>A \<Longrightarrow> <x,y>\<in>r \<Longrightarrow> <f`x,f`y>\<in>s"
+  using assms unfolding mono_map_def by simp_all
+
+lemmas Aleph_mono = Normal_imp_mono[OF _ Normal_Aleph]
+lemmas Aleph_cont = Normal_imp_cont[OF Normal_Aleph]
+lemmas Aleph_sup = Normal_Union[OF _ _ Normal_Aleph]
+
+bundle Ord_dests = Limit_is_Ord[dest] Card_is_Ord[dest]
+bundle Aleph_dests = Aleph_cont[dest] Aleph_sup[dest]
+bundle Aleph_intros = Aleph_mono[intro!]
+bundle Aleph_mem_dests = Aleph_mono[OF ltI, THEN ltD, dest]
+bundle mono_map_rules =  mono_mapI[intro!] mono_mapD[dest]
+
+lemma Aleph_zero_eq_nat: "\<aleph>0 = nat"
+  unfolding Aleph_def by simp
+
+lemma InfCard_Aleph: 
+  notes Aleph_zero_eq_nat[simp]
+  assumes "Ord(\<alpha>)" 
+  shows "InfCard(\<aleph>\<alpha>)"
+proof -
+  have "\<not> (\<aleph>\<alpha> \<in> nat)" 
+  proof (cases "\<alpha>=0")
+    case True
+    then show ?thesis using mem_irrefl by auto
+  next
+    case False
+    with \<open>Ord(\<alpha>)\<close>
+    have "nat \<in> \<aleph>\<alpha>" using Ord_0_lt[of \<alpha>] ltD  by (auto dest:Aleph_mono)
+    then show ?thesis using foundation by blast 
+  qed
+  with \<open>Ord(\<alpha>)\<close>
+  have "\<not> (|\<aleph>\<alpha>| \<in> nat)" 
+    using Card_cardinal_eq by auto
+  then
+  have "\<not> Finite(\<aleph>\<alpha>)" by auto
+  with \<open>Ord(\<alpha>)\<close>
+  show ?thesis
+    using Inf_Card_is_InfCard by simp
+qed 
+
+lemmas Limit_Aleph = InfCard_Aleph[THEN InfCard_is_Limit] 
+
+context
+  includes Ord_dests Aleph_dests Aleph_intros Aleph_mem_dests mono_map_rules
+begin
+
+lemma cf_Aleph_Limit:
+  assumes "Limit(\<gamma>)"
+  shows "cf(\<aleph>\<gamma>) = cf(\<gamma>)" 
+proof -
+  note \<open>Limit(\<gamma>)\<close>
+  moreover from this
+  have "(\<lambda>x\<in>\<gamma>. \<aleph>x) : \<gamma> \<rightarrow> \<aleph>\<gamma>" (is "?f : _ \<rightarrow> _")
+    using lam_funtype[of _ Aleph] fun_weaken_type[of _ _ _ "\<aleph>\<gamma>"] by blast
+  moreover from \<open>Limit(\<gamma>)\<close>
+  have "x \<in> y \<Longrightarrow> \<aleph>x \<in> \<aleph>y" if "x \<in> \<gamma>" "y \<in> \<gamma>" for x y
+    using that Ord_in_Ord[of \<gamma>] Ord_trans[of _ _ \<gamma>] by blast
+  ultimately
+  have "?f \<in> mono_map(\<gamma>,Memrel(\<gamma>),\<aleph>\<gamma>, Memrel(\<aleph>\<gamma>))"
+    by auto
+  with  \<open>Limit(\<gamma>)\<close> 
+  have "?f \<in> \<langle>\<gamma>, Memrel(\<gamma>)\<rangle> \<cong> \<langle>?f``\<gamma>, Memrel(\<aleph>\<gamma>)\<rangle>"
+    using mono_map_imp_ord_iso_Memrel[of \<gamma> "\<aleph>\<gamma>" ?f] 
+      Card_Aleph (* Already an intro rule, but need it explicitly *)
+    by blast
+  then
+  have "converse(?f) \<in> \<langle>?f``\<gamma>, Memrel(\<aleph>\<gamma>)\<rangle> \<cong> \<langle>\<gamma>, Memrel(\<gamma>)\<rangle>"
+    using ord_iso_sym by simp
+  with \<open>Limit(\<gamma>)\<close>
+  have "ordertype(?f``\<gamma>, Memrel(\<aleph>\<gamma>)) = \<gamma>"
+    using ordertype_eq[OF _ well_ord_Memrel]
+    ordertype_Memrel by auto
+  moreover from \<open>Limit(\<gamma>)\<close>
+  have "cofinal(?f``\<gamma>, \<aleph>\<gamma>, Memrel(\<aleph>\<gamma>))" 
+    unfolding cofinal_def 
+  proof (standard, intro ballI)
+    fix a
+    assume "a\<in>\<aleph>\<gamma>" "\<aleph>\<gamma> = (\<Union>i<\<gamma>. \<aleph>i)"
+    moreover from this
+    obtain i where "i<\<gamma>" "a\<in>\<aleph>i"
+      by auto
+    moreover from this and \<open>Limit(\<gamma>)\<close>
+    have "Ord(i)" using ltD Ord_in_Ord by blast
+    moreover from \<open>Limit(\<gamma>)\<close> and calculation
+    have "succ(i) \<in> \<gamma>" using ltD by auto
+    moreover from this and \<open>Ord(i)\<close>
+    have "\<aleph>i < \<aleph>(succ(i))" 
+      by (auto) 
+    ultimately
+    have "<a,\<aleph>i> \<in> Memrel(\<aleph>\<gamma>)"
+      using ltD by (auto dest:Aleph_mono)
+    moreover from \<open>i<\<gamma>\<close>
+    have "\<aleph>i \<in> ?f``\<gamma>" 
+      using ltD apply_in_image[OF \<open>?f : _ \<rightarrow> _\<close>] by auto
+    ultimately
+    show "\<exists>x\<in>?f `` \<gamma>. \<langle>a, x\<rangle> \<in> Memrel(\<aleph>\<gamma>) \<or> a = x" by blast
+  qed
+  moreover
+  note \<open>?f: \<gamma> \<rightarrow> \<aleph>\<gamma>\<close> \<open>Limit(\<gamma>)\<close>
+  ultimately
+  show "cf(\<aleph>\<gamma>) =  cf(\<gamma>)"
+    using cf_ordertype_cofinal[OF Limit_Aleph Image_sub_codomain, of \<gamma> ?f \<gamma> \<gamma> ] 
+      Limit_is_Ord by simp 
+qed
+
+end (* includes *)
+
 lemma cardinal_lt_csucc_iff: "Card(K) \<Longrightarrow> |K'| < csucc(K) \<longleftrightarrow> |K'| \<le> K"
   by (simp add: Card_lt_csucc_iff)
 

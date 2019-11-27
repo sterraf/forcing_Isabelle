@@ -1,7 +1,7 @@
 theory Forcing_Theorems imports Interface Names Forcing_Thms begin
    
 (* Prototyping Forcing relation and theorems as a locale*)
-locale forcing_thms = forcing_data + forces_rename +
+locale forcing_thms = forcing_data + 
   assumes  arity_forces:     "\<phi>\<in>formula \<Longrightarrow> arity(forces(\<phi>)) = arity(\<phi>) #+ 4"
 
 begin
