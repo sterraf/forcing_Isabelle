@@ -4,12 +4,6 @@ theory Forcing_Theorems imports Interface Names Forcing_Thms begin
 locale forcing_thms = forcing_data + 
   assumes  arity_forces:     "\<phi>\<in>formula \<Longrightarrow> arity(forces(\<phi>)) = arity(\<phi>) #+ 4"
 
-begin
-declare elem_of_valI[rule del] elem_of_val_pair [rule del] SepReplace_iff[iff del] 
-  SepReplace_iff [simp add] GenExtD [iff del]
-
-end (* forcing_thms *)
-  
 locale G_generic = forcing_thms + 
   fixes G :: "i"
   assumes generic : "M_generic(G)" 
