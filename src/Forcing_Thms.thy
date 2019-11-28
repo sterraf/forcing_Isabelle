@@ -551,25 +551,30 @@ lemma core_induction:
   assumes
     "\<And>\<tau> \<theta> p. p \<in> P \<Longrightarrow> \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
     "\<And>\<tau> \<theta> p. p \<in> P \<Longrightarrow> \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<theta>,p)"
-    "ft \<in> 2" "p \<in> P" "\<tau>\<in>M" "\<theta>\<in>M"
+    "ft \<in> 2" "p \<in> P"
   shows
     "Q(ft,\<tau>,\<theta>,p)"
 proof -
   {
     fix ft p \<tau> \<theta>
-    assume "ft \<in> 2" "p \<in> P" "\<tau>\<in>M" "\<theta>\<in>M"
-    then 
-    have "<ft,\<tau>,\<theta>,p>\<in> 2\<times>M\<times>M\<times>P" (is "?a\<in>2\<times>M\<times>M\<times>P") by simp
+    have "Transset(eclose({\<tau>,\<theta>}))" (is "Transset(?e)") 
+      using Transset_eclose by simp
+    have "\<tau> \<in> ?e" "\<theta> \<in> ?e" 
+      using arg_into_eclose by simp_all
+    moreover
+    assume "ft \<in> 2" "p \<in> P"
+    ultimately
+    have "<ft,\<tau>,\<theta>,p>\<in> 2\<times>?e\<times>?e\<times>P" (is "?a\<in>2\<times>?e\<times>?e\<times>P") by simp
     then 
     have "Q(ftype(?a), name1(?a), name2(?a), cond_of(?a))"
-      using core_induction_aux[of M P Q "?a",OF trans_M assms(1) assms(2) \<open>?a\<in>_\<close>] 
+      using core_induction_aux[of ?e P Q ?a,OF \<open>Transset(?e)\<close> assms(1,2) \<open>?a\<in>_\<close>] 
       by (clarify) (blast)
     then have "Q(ft,\<tau>,\<theta>,p)" by (simp add:components_simp)
   }
   then show ?thesis using assms by simp
 qed
 
-lemma forces_induction:
+lemma forces_induction_with_conds:
   assumes
     "\<And>\<tau> \<theta> p. p \<in> P \<Longrightarrow> \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(q,\<tau>,\<sigma>)\<rbrakk> \<Longrightarrow> R(p,\<tau>,\<theta>)"
     "\<And>\<tau> \<theta> p. p \<in> P \<Longrightarrow> \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> R(q,\<sigma>,\<tau>) \<and> R(q,\<sigma>,\<theta>)\<rbrakk> \<Longrightarrow> Q(p,\<tau>,\<theta>)"
@@ -585,12 +590,33 @@ proof -
   have "\<And>\<tau> \<theta> p. p \<in> P \<Longrightarrow> \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)\<rbrakk> \<Longrightarrow> ?Q(1,\<sigma>,\<tau>,q) \<and> ?Q(1,\<sigma>,\<theta>,q)\<rbrakk> \<Longrightarrow> ?Q(0,\<tau>,\<theta>,p)"
     by simp
   moreover
-  note assms(3-5)
+  note \<open>p\<in>P\<close>
   ultimately
   have "?Q(ft,\<tau>,\<theta>,p)" if "ft\<in>2" for ft
     by (rule core_induction[OF _ _ that, of ?Q])
   then
   show ?thesis by auto
+qed
+
+lemma forces_induction:
+  assumes
+    "\<And>\<tau> \<theta>. \<lbrakk>\<And>\<sigma>. \<sigma>\<in>domain(\<theta>) \<Longrightarrow> Q(\<tau>,\<sigma>)\<rbrakk> \<Longrightarrow> R(\<tau>,\<theta>)"
+    "\<And>\<tau> \<theta>. \<lbrakk>\<And>\<sigma>. \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> R(\<sigma>,\<tau>) \<and> R(\<sigma>,\<theta>)\<rbrakk> \<Longrightarrow> Q(\<tau>,\<theta>)"
+    "\<tau>\<in>M" "\<theta>\<in>M"
+  shows
+    "Q(\<tau>,\<theta>) \<and> R(\<tau>,\<theta>)" (is "?Q(p,\<tau>,\<theta>) \<and> ?R(p,\<tau>,\<theta>)")
+proof (intro forces_induction_with_conds[OF _ _ one_in_P \<open>\<tau>\<in>M\<close> \<open>\<theta>\<in>M\<close>])
+  fix \<tau> \<theta> p 
+  assume "q \<in> P \<Longrightarrow> \<sigma> \<in> domain(\<theta>) \<Longrightarrow> Q(\<tau>, \<sigma>)" for q \<sigma>
+  with assms(1)
+  show "R(\<tau>,\<theta>)"
+    using one_in_P by simp
+next
+  fix \<tau> \<theta> p 
+    assume "q \<in> P \<Longrightarrow> \<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> R(\<sigma>,\<tau>) \<and> R(\<sigma>,\<theta>)" for q \<sigma>
+    with assms(2)
+    show "Q(\<tau>,\<theta>)"
+      using one_in_P by simp
 qed
 
 (* Lemma IV.2.40(a), full *)
@@ -601,7 +627,7 @@ lemma IV240a:
     "(p\<in>G\<longrightarrow>\<tau>\<in>M \<longrightarrow> \<theta>\<in>M \<longrightarrow> forces_eq(p,\<tau>,\<theta>) \<longrightarrow> val(G,\<tau>) = val(G,\<theta>)) \<and> 
      (p\<in>G\<longrightarrow>\<tau>\<in>M \<longrightarrow> \<theta>\<in>M \<longrightarrow> forces_mem(p,\<tau>,\<theta>) \<longrightarrow> val(G,\<tau>) \<in> val(G,\<theta>))"
     (is "?Q(p,\<tau>,\<theta>) \<and> ?R(p,\<tau>,\<theta>)")
-proof (intro forces_induction[OF _ _ M_genericD[OF assms(1) \<open>p\<in>G\<close>] \<open>\<tau>\<in>M\<close> \<open>\<theta>\<in>M\<close>])
+proof (intro forces_induction_with_conds[OF _ _ M_genericD[OF assms(1) \<open>p\<in>G\<close>] \<open>\<tau>\<in>M\<close> \<open>\<theta>\<in>M\<close>])
   fix \<tau> \<theta> p
   assume "p \<in> P" and
     "q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<theta>) \<Longrightarrow> ?Q(q, \<tau>, \<sigma>)" for q \<sigma>
@@ -663,12 +689,12 @@ proof -
   show ?thesis by blast
 qed
 
-end
+end (* includes *)
 
 (* Lemma IV.2.40(b), equality *)
 lemma IV240b_eq:
   assumes
-    "M_generic(G)" "p\<in>G" "val(G,\<tau>) = val(G,\<theta>)" "\<tau>\<in>M" "\<theta>\<in>M" 
+    "M_generic(G)" "val(G,\<tau>) = val(G,\<theta>)" "\<tau>\<in>M" "\<theta>\<in>M" 
     and
     IH:"\<And>\<sigma>. \<sigma>\<in>domain(\<tau>)\<union>domain(\<theta>) \<Longrightarrow> 
       (val(G,\<sigma>)\<in>val(G,\<tau>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(q,\<sigma>,\<tau>))) \<and> 
@@ -794,26 +820,24 @@ lemma IV240b:
   shows 
     "(\<tau>\<in>M\<longrightarrow>\<theta>\<in>M\<longrightarrow>val(G,\<tau>) = val(G,\<theta>) \<longrightarrow> (\<exists>p\<in>G. forces_eq(p,\<tau>,\<theta>))) \<and>
      (\<tau>\<in>M\<longrightarrow>\<theta>\<in>M\<longrightarrow>val(G,\<tau>) \<in> val(G,\<theta>) \<longrightarrow> (\<exists>p\<in>G. forces_mem(p,\<tau>,\<theta>)))" 
-    (is "?Q(p,\<tau>,\<theta>) \<and> ?R(p,\<tau>,\<theta>)")
-proof (intro forces_induction[OF _ _ M_genericD[OF assms(1) one_in_G] \<open>\<tau>\<in>M\<close> \<open>\<theta>\<in>M\<close>, OF _ _ assms(1)])
+    (is "?Q(\<tau>,\<theta>) \<and> ?R(\<tau>,\<theta>)")
+proof (intro forces_induction[OF _ _ \<open>\<tau>\<in>M\<close> \<open>\<theta>\<in>M\<close>])
   fix \<tau> \<theta> p
-  assume "p \<in> P" and
-    "q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<theta>) \<Longrightarrow> ?Q(q, \<tau>, \<sigma>)" for q \<sigma>
+  assume "\<sigma>\<in>domain(\<theta>) \<Longrightarrow> ?Q(\<tau>, \<sigma>)" for \<sigma>
   with assms
-  show "?R(p, \<tau>, \<theta>)"
+  show "?R(\<tau>, \<theta>)"
     using IV240b_mem domain_closed Transset_intf[OF trans_M] by (simp)
 next
   fix \<tau> \<theta> p
-  assume "p \<in> P" and
-    "q \<in> P \<Longrightarrow> \<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> ?R(q,\<sigma>,\<tau>) \<and> ?R(q,\<sigma>,\<theta>)" for q \<sigma>
+  assume "\<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> ?R(\<sigma>,\<tau>) \<and> ?R(\<sigma>,\<theta>)" for \<sigma>
   moreover from this
   have IH':"\<tau>\<in>M \<Longrightarrow> \<theta>\<in>M \<Longrightarrow> \<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow>
           (val(G, \<sigma>) \<in> val(G, \<tau>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(q, \<sigma>, \<tau>))) \<and>
           (val(G, \<sigma>) \<in> val(G, \<theta>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(q, \<sigma>, \<theta>)))" for \<sigma> 
     by (blast intro:left_in_M) 
   ultimately
-  show "?Q(p,\<tau>,\<theta>)"
-    using  one_in_G[OF assms(1)] IV240b_eq[OF assms(1)] by (auto)
+  show "?Q(\<tau>,\<theta>)"
+    using IV240b_eq[OF assms(1)] by (auto)
 qed
 
 lemma map_val_in_MG:
@@ -849,7 +873,7 @@ lemma truth_lemma_eq:
 
 lemma arities_at_aux:
   assumes
-    "n \<in> nat" "m \<in> nat" "env \<in> list(M)" "succ(n) \<union>  succ(m) \<le> length(env)"
+    "n \<in> nat" "m \<in> nat" "env \<in> list(M)" "succ(n) \<union> succ(m) \<le> length(env)"
   shows
     "n < length(env)" "m < length(env)"
   using assms succ_leE[OF Un_leD1, of n "succ(m)" "length(env)"] 
@@ -890,8 +914,10 @@ next
       strengthening_eq[of p r "nth(n,env)" "nth(m,env)"] by simp
 next
   case (Nand \<phi> \<psi>)
-  then 
-  show ?case sorry
+  with assms
+  show ?case 
+    using sats_forces_Nand' Transset_intf[OF trans_M _ P_in_M] pair_in_M_iff 
+      Transset_intf[OF trans_M _ leq_in_M] leq_transD by auto
 next
   case (Forall \<phi>)
   with assms
@@ -942,7 +968,8 @@ next
 next
   case (Nand \<phi> \<psi>)
   then 
-  show ?case sorry
+  show ?case
+    using sats_forces_Nand' sorry
 next
   case (Forall \<phi>)
   have "dense_below({q\<in>P. sats(M,forces(\<phi>),[P,leq,one,q,a] @ env)},p)" if "a\<in>M" for a
