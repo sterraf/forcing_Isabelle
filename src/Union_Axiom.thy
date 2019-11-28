@@ -12,15 +12,15 @@ definition Union_name_body :: "[i,i,i,i] \<Rightarrow> o" where
 
 definition Union_name_fm :: "i" where
   "Union_name_fm == 
-    Exists(* \<theta> *)(
-    Exists(* p *)(And(pair_fm(1,0,2),
-    Exists (* \<sigma>*)(
-    Exists (* q*)(And(Member(0,7),
-      Exists (* \<sigma>,q *)(And(And(pair_fm(2,1,0),Member(0,6)),
-        Exists (* r *)(And(Member(0,9),
-         Exists (* \<theta>,r *)(And(And(pair_fm(6,1,0),Member(0,4)),
-          Exists (* p,r *)(And(And(pair_fm(6,2,0),Member(0,10)),
-          Exists (* p,q *)(And(pair_fm(7,5,0),Member(0,11)))))))))))))))))"
+    Exists(
+    Exists(And(pair_fm(1,0,2),
+    Exists (
+    Exists (And(Member(0,7),
+      Exists (And(And(pair_fm(2,1,0),Member(0,6)),
+        Exists (And(Member(0,9),
+         Exists (And(And(pair_fm(6,1,0),Member(0,4)),
+          Exists (And(And(pair_fm(6,2,0),Member(0,10)),
+          Exists (And(pair_fm(7,5,0),Member(0,11)))))))))))))))))"
   
 lemma Union_name_fm_type [TC]:
   "Union_name_fm \<in>formula"
