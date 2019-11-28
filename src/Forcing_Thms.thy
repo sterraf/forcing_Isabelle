@@ -852,23 +852,23 @@ lemma truth_lemma_mem:
     "env\<in>list(M)" "M_generic(G)"
     "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)"
   shows 
-    "(\<exists>p\<in>G.(sats(M,forces(Member(n,m)),[P,leq,one,p] @ env))) \<longleftrightarrow> sats(M[G],Member(n,m),map(val(G),env))"
+    "(\<exists>p\<in>G.(p \<tturnstile> Member(n,m) env)) \<longleftrightarrow> sats(M[G],Member(n,m),map(val(G),env))"
   using assms IV240a[OF assms(2), of _ "nth(n,env)" "nth(m,env)"] 
     IV240b[OF assms(2), of "nth(n,env)" "nth(m,env)"] 
     P_in_M leq_in_M one_in_M 
-    sats_forces_Member'[OF _ _ _ assms(1), of _  "nth(n,env)" "nth(m,env)" n m] map_val_in_MG
+    Forces_Member[of _  "nth(n,env)" "nth(m,env)" env n m] map_val_in_MG
   by (auto)
 
 lemma truth_lemma_eq:
   assumes 
-    "env\<in>list(M)" "M_generic(G)"
+    "env\<in>list(M)" "M_generic(G)" 
     "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)"
   shows 
-    "(\<exists>p\<in>G.(sats(M,forces(Equal(n,m)),[P,leq,one,p] @ env))) \<longleftrightarrow> sats(M[G],Equal(n,m),map(val(G),env))"
+    "(\<exists>p\<in>G. (p \<tturnstile> Equal(n,m) env)) \<longleftrightarrow> sats(M[G],Equal(n,m),map(val(G),env))"
   using assms IV240a(1)[OF assms(2), of _ "nth(n,env)" "nth(m,env)"] 
     IV240b(1)[OF assms(2), of "nth(n,env)" "nth(m,env)"] 
     P_in_M leq_in_M one_in_M 
-    sats_forces_Equal'[OF _ _ _ assms(1), of _  "nth(n,env)" "nth(m,env)" n m] map_val_in_MG
+    Forces_Equal[of _  "nth(n,env)" "nth(m,env)" env n m] map_val_in_MG
   by (auto)
 
 lemma arities_at_aux:
@@ -883,8 +883,7 @@ lemma strengthening_lemma:
   assumes 
     "p\<in>P" "\<phi>\<in>formula" "r\<in>P" "<r,p>\<in>leq"
   shows
-    "\<And>env. env\<in>list(M) \<Longrightarrow> arity(\<phi>)\<le>length(env) \<Longrightarrow>
-    sats(M,forces(\<phi>), [P,leq,one,p] @ env) \<Longrightarrow> sats(M,forces(\<phi>), [P,leq,one,r] @ env)"
+    "\<And>env. env\<in>list(M) \<Longrightarrow> arity(\<phi>)\<le>length(env) \<Longrightarrow> p \<tturnstile> \<phi> env \<Longrightarrow> r \<tturnstile> \<phi> env"
   using assms(2)
 proof (induct)
   case (Member n m)
@@ -897,7 +896,7 @@ proof (induct)
   note assms Member
   ultimately
   show ?case 
-    using sats_forces_Member'[OF _ _ _ \<open>env\<in>_\<close>, of _ "nth(n,env)" "nth(m,env)" n m]
+    using Forces_Member[of _ "nth(n,env)" "nth(m,env)" env n m]
       strengthening_mem[of p r "nth(n,env)" "nth(m,env)"] by simp
 next
   case (Equal n m)
@@ -910,25 +909,25 @@ next
   note assms Equal
   ultimately
   show ?case 
-    using sats_forces_Equal'[OF _ _ _ \<open>env\<in>_\<close>, of _ "nth(n,env)" "nth(m,env)" n m]
+    using Forces_Equal[of _ "nth(n,env)" "nth(m,env)" env n m]
       strengthening_eq[of p r "nth(n,env)" "nth(m,env)"] by simp
 next
   case (Nand \<phi> \<psi>)
   with assms
   show ?case 
-    using sats_forces_Nand' Transset_intf[OF trans_M _ P_in_M] pair_in_M_iff 
+    using Forces_Nand Transset_intf[OF trans_M _ P_in_M] pair_in_M_iff 
       Transset_intf[OF trans_M _ leq_in_M] leq_transD by auto
 next
   case (Forall \<phi>)
   with assms
-  have "sats(M,forces(\<phi>),[P,leq,one,p,x] @ env)" if "x\<in>M" for x
-    using that sats_forces_Forall' by simp
+  have "p \<tturnstile> \<phi> ([x] @ env)" if "x\<in>M" for x
+    using that Forces_Forall by simp
   with Forall 
-  have "sats(M,forces(\<phi>),[P,leq,one,r,x] @ env)" if "x\<in>M" for x
+  have "r \<tturnstile> \<phi> ([x] @ env)" if "x\<in>M" for x
     using that pred_le2 by (simp)
   with assms Forall
   show ?case 
-    using sats_forces_Forall' by simp
+    using Forces_Forall by simp
 qed
 
 lemma dense_below_imp_forces:
@@ -936,8 +935,7 @@ lemma dense_below_imp_forces:
     "p\<in>P" "\<phi>\<in>formula"
   shows
     "\<And>env. env\<in>list(M) \<Longrightarrow> arity(\<phi>)\<le>length(env) \<Longrightarrow>
-     dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,one,q] @ env)},p) \<Longrightarrow> 
-     sats(M,forces(\<phi>), [P,leq,one,p] @ env)"
+     dense_below({q\<in>P. (q \<tturnstile> \<phi> env)},p) \<Longrightarrow> (p \<tturnstile> \<phi> env)"
   using assms(2)
 proof (induct)
   case (Member n m)
@@ -950,7 +948,7 @@ proof (induct)
   note assms Member
   ultimately
   show ?case 
-    using sats_forces_Member'[OF _ _ _ \<open>env\<in>_\<close>, of _ "nth(n,env)" "nth(m,env)" n m]
+    using Forces_Member[of _ "nth(n,env)" "nth(m,env)" env n m]
       density_mem[of p "nth(n,env)" "nth(m,env)"] by simp
 next
   case (Equal n m)
@@ -963,7 +961,7 @@ next
   note assms Equal
   ultimately
   show ?case 
-    using sats_forces_Equal'[OF _ _ _ \<open>env\<in>_\<close>, of _ "nth(n,env)" "nth(m,env)" n m]
+    using Forces_Equal[of _ "nth(n,env)" "nth(m,env)" env n m]
       density_eq[of p "nth(n,env)" "nth(m,env)"] by simp
 next
   case (Nand \<phi> \<psi>)
@@ -972,45 +970,45 @@ next
     using sats_forces_Nand' sorry
 next
   case (Forall \<phi>)
-  have "dense_below({q\<in>P. sats(M,forces(\<phi>),[P,leq,one,q,a] @ env)},p)" if "a\<in>M" for a
+  have "dense_below({q\<in>P. q \<tturnstile> \<phi> ([a]@env)},p)" if "a\<in>M" for a
   proof
     fix r
     assume "r\<in>P" "<r,p>\<in>leq"
     with \<open>dense_below(_,p)\<close>
-    obtain q where "q\<in>P" "<q,r>\<in>leq" "sats(M,forces(Forall(\<phi>)),[P,leq,one,q] @ env)"
+    obtain q where "q\<in>P" "<q,r>\<in>leq" "q \<tturnstile> Forall(\<phi>) env"
       by blast
     moreover
     note Forall \<open>a\<in>M\<close>
     moreover from calculation
-    have "sats(M,forces(\<phi>),[P,leq,one,q,a] @ env)"
-      using sats_forces_Forall' by simp
+    have "q \<tturnstile> \<phi> ([a]@env)"
+      using Forces_Forall by simp
     ultimately
-    show "\<exists>d \<in> {q\<in>P. sats(M,forces(\<phi>),[P,leq,one,q,a] @ env)}. d \<in> P \<and> \<langle>d,r\<rangle> \<in> leq"
+    show "\<exists>d \<in> {q\<in>P. q \<tturnstile> \<phi> ([a]@env)}. d \<in> P \<and> \<langle>d,r\<rangle> \<in> leq"
       by auto
   qed
   moreover 
   note Forall(2)[of "Cons(_,env)"] Forall(1,3-5)
   ultimately
-  have "sats(M,forces(\<phi>),[P,leq,one,p,a] @ env)" if "a\<in>M" for a
+  have "p \<tturnstile> \<phi> ([a]@env)" if "a\<in>M" for a
     using that pred_le2 by simp
   with assms Forall
-  show ?case using sats_forces_Forall' by simp
+  show ?case using Forces_Forall by simp
 qed
 
 lemma density_lemma:
   assumes
     "p\<in>P" "\<phi>\<in>formula" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"
   shows
-    "sats(M,forces(\<phi>), [P,leq,one,p] @ env) \<longleftrightarrow> dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,one,q] @ env)},p)"
+    "(p \<tturnstile> \<phi> env) \<longleftrightarrow> dense_below({q\<in>P. (q \<tturnstile> \<phi> env)},p)"
 proof
-  assume "dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,one,q] @ env)},p)"
+  assume "dense_below({q\<in>P. (q \<tturnstile> \<phi> env)},p)"
   with assms
-  show  "sats(M, forces(\<phi>), [P, leq, one, p] @ env)"
+  show  "(p \<tturnstile> \<phi> env)"
     using dense_below_imp_forces by simp
 next
-  assume "sats(M, forces(\<phi>), [P, leq, one, p] @ env)"
+  assume "p \<tturnstile> \<phi> env"
   with assms
-  show "dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,one,q] @ env)},p)"
+  show "dense_below({q\<in>P. q \<tturnstile> \<phi> env},p)"
     using strengthening_lemma leq_reflI by auto
 qed
 
@@ -1019,7 +1017,7 @@ lemma truth_lemma:
     "\<phi>\<in>formula" "M_generic(G)"
   shows 
      "\<And>env. env\<in>list(M) \<Longrightarrow> arity(\<phi>)\<le>length(env) \<Longrightarrow> 
-      (\<exists>p\<in>G.(sats(M,forces(\<phi>), [P,leq,one,p] @ env))) \<longleftrightarrow> sats(M[G],\<phi>,map(val(G),env))"
+      (\<exists>p\<in>G. (p \<tturnstile> \<phi> env)) \<longleftrightarrow> sats(M[G],\<phi>,map(val(G),env))"
   using assms(1)
 proof (induct)
   case (Member x y)
@@ -1044,13 +1042,13 @@ next
   with \<open>M_generic(G)\<close>
   show ?case
   proof (intro iffI)
-    assume "\<exists>p\<in>G. sats(M,forces(Forall(\<phi>)),[P,leq,one,p] @ env)"
+    assume "\<exists>p\<in>G. (p \<tturnstile> Forall(\<phi>) env)"
     with \<open>M_generic(G)\<close>
-    obtain p where "p\<in>G" "p\<in>M" "p\<in>P" "sats(M,forces(Forall(\<phi>)),[P,leq,one,p] @ env)"
+    obtain p where "p\<in>G" "p\<in>M" "p\<in>P" "p \<tturnstile> Forall(\<phi>) env"
       using Transset_intf[OF trans_M _ P_in_M] by auto
     with \<open>env\<in>list(M)\<close> \<open>\<phi>\<in>formula\<close>
-    have "sats(M,forces(\<phi>),[P,leq,one,p,x] @ env)" if "x\<in>M" for x
-      using that sats_forces_Forall' by simp
+    have "p \<tturnstile> \<phi> ([x]@env)" if "x\<in>M" for x
+      using that Forces_Forall by simp
     with \<open>p\<in>G\<close> \<open>\<phi>\<in>formula\<close> \<open>env\<in>_\<close> \<open>arity(Forall(\<phi>)) \<le> length(env)\<close>
       Forall(2)[of "Cons(_,env)"] 
     show "sats(M[G], Forall(\<phi>), map(val(G),env))"
@@ -1058,8 +1056,8 @@ next
       by (auto iff:GenExtD)
   next
     assume "sats(M[G], Forall(\<phi>), map(val(G),env))"
-    let ?D1="{d\<in>P. sats(M,forces(Forall(\<phi>)),[P,leq,one,d] @ env)}"
-    let ?D2="{d\<in>P. \<exists>b\<in>M. \<forall>q\<in>P. <q,d>\<in>leq \<longrightarrow> \<not>sats(M,forces(\<phi>),[P,leq,one,q,b] @ env)}"
+    let ?D1="{d\<in>P. (d \<tturnstile> Forall(\<phi>) env)}"
+    let ?D2="{d\<in>P. \<exists>b\<in>M. \<forall>q\<in>P. <q,d>\<in>leq \<longrightarrow> \<not>(q \<tturnstile> \<phi> ([b]@env))}"
     define D where "D \<equiv> ?D1 \<union> ?D2"
     have "D \<subseteq> P" unfolding D_def by auto
     moreover
@@ -1070,20 +1068,20 @@ next
       fix p
       assume "p\<in>P"
       show "\<exists>d\<in>D. \<langle>d, p\<rangle> \<in> leq"
-      proof (cases "sats(M,forces(Forall(\<phi>)),[P,leq,one,p] @ env)")
+      proof (cases "p \<tturnstile> Forall(\<phi>) env")
         case True
         with \<open>p\<in>P\<close> 
         show ?thesis unfolding D_def using leq_reflI by blast
       next
         case False
         with Forall \<open>p\<in>P\<close>
-        obtain b where "b\<in>M" "\<not>sats(M,forces(\<phi>),[P,leq,one,p,b] @ env)"
-          using sats_forces_Forall' by blast
+        obtain b where "b\<in>M" "\<not>(p \<tturnstile> \<phi> ([b]@env))"
+          using Forces_Forall by blast
         moreover from this \<open>p\<in>P\<close> Forall
-        have "\<not>dense_below({q\<in>P. sats(M,forces(\<phi>),[P,leq,one,q,b] @ env)},p)"
+        have "\<not>dense_below({q\<in>P. q \<tturnstile> \<phi> ([b]@env)},p)"
           using density_lemma pred_le2  by auto
         moreover from this
-        obtain d where "<d,p>\<in>leq" "\<forall>q\<in>P. <q,d>\<in>leq \<longrightarrow> \<not>sats(M,forces(\<phi>),[P,leq,one,q,b] @ env)"
+        obtain d where "<d,p>\<in>leq" "\<forall>q\<in>P. <q,d>\<in>leq \<longrightarrow> \<not>(q \<tturnstile> \<phi> ([b] @ env))"
           "d\<in>P" by blast
         ultimately
         show ?thesis unfolding D_def by auto
@@ -1096,7 +1094,7 @@ next
     then
     consider (1) "d\<in>?D1" | (2) "d\<in>?D2" unfolding D_def by blast
     then
-    show "\<exists>p\<in>G. sats(M, forces(Forall(\<phi>)), [P, leq, one, p] @ env)"
+    show "\<exists>p\<in>G. (p \<tturnstile> Forall(\<phi>) env)"
     proof (cases)
       case 1
       with \<open>d\<in>G\<close>
@@ -1104,22 +1102,22 @@ next
     next
       case 2
       then
-      obtain b where "b\<in>M" "\<forall>q\<in>P. <q,d>\<in>leq \<longrightarrow>\<not>sats(M,forces(\<phi>),[P,leq,one,q,b] @ env)"
+      obtain b where "b\<in>M" "\<forall>q\<in>P. <q,d>\<in>leq \<longrightarrow>\<not>(q \<tturnstile> \<phi> ([b] @ env))"
         by blast
       moreover from this(1) and  \<open>sats(M[G], Forall(\<phi>),_)\<close> and 
         Forall(2)[of "Cons(b,env)"] Forall(1,3-4) \<open>M_generic(G)\<close>
-      obtain p where "p\<in>G" "p\<in>P" "sats(M,forces(\<phi>),[P,leq,one,p,b] @ env)" 
+      obtain p where "p\<in>G" "p\<in>P" "p \<tturnstile> \<phi> ([b] @ env)" 
         using pred_le2 using map_val_in_MG by (auto iff:GenExtD)
       moreover
       note \<open>d\<in>G\<close> \<open>M_generic(G)\<close>
       ultimately
       obtain q where "q\<in>G" "q\<in>P" "<q,d>\<in>leq" "<q,p>\<in>leq" by blast
-      moreover from this and  \<open>sats(M,forces(\<phi>),[P,leq,one,p,b] @ env)\<close> 
+      moreover from this and  \<open>p \<tturnstile> \<phi> ([b] @ env)\<close> 
         Forall  \<open>b\<in>M\<close> \<open>p\<in>P\<close>
-      have "sats(M,forces(\<phi>),[P,leq,one,q,b] @ env)"
+      have "q \<tturnstile> \<phi> ([b] @ env)"
         using pred_le2 strengthening_lemma by simp
       moreover 
-      note \<open>\<forall>q\<in>P. <q,d>\<in>leq \<longrightarrow>\<not>sats(M,forces(\<phi>),[P,leq,one,q,b] @ env)\<close>
+      note \<open>\<forall>q\<in>P. <q,d>\<in>leq \<longrightarrow>\<not>(q \<tturnstile> \<phi> ([b] @ env))\<close>
       ultimately
       show ?thesis by simp
     qed
@@ -1130,11 +1128,11 @@ lemma definition_of_forces:
   assumes
     "p\<in>P" "\<phi>\<in>formula" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"
   shows
-    "sats(M,forces(\<phi>), [P,leq,one,p] @ env) \<longleftrightarrow>
+    "(p \<tturnstile> \<phi> env) \<longleftrightarrow>
      (\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],\<phi>,map(val(G),env)))"
 proof (intro iffI allI impI, elim conjE)
   fix G
-  assume "sats(M, forces(\<phi>), [P,leq,one,p] @ env)" "M_generic(G)" "p \<in> G"
+  assume "(p \<tturnstile> \<phi> env)" "M_generic(G)" "p \<in> G"
   with assms 
   show "sats(M[G],\<phi>,map(val(G),env))"
     using truth_lemma by blast
@@ -1154,7 +1152,7 @@ next
     have "sats(M[G],\<phi>,map(val(G),env))"
       by simp
     with assms \<open>M_generic(G)\<close> 
-    obtain s where "s\<in>G" "sats(M,forces(\<phi>), [P,leq,one,s] @ env)"
+    obtain s where "s\<in>G" "(s \<tturnstile> \<phi> env)"
       using truth_lemma by blast
     moreover from this and  \<open>M_generic(G)\<close> \<open>r\<in>G\<close> 
     obtain q where "q\<in>G" "<q,s>\<in>leq" "<q,r>\<in>leq"
@@ -1165,14 +1163,14 @@ next
     moreover 
     note assms
     ultimately 
-    have "\<exists>q\<in>P. <q,r>\<in>leq \<and> sats(M,forces(\<phi>), [P,leq,one,q] @ env)"
+    have "\<exists>q\<in>P. <q,r>\<in>leq \<and> (q \<tturnstile> \<phi> env)"
       using strengthening_lemma by blast
   }
   then
-  have "dense_below({q\<in>P. sats(M,forces(\<phi>), [P,leq,one,q] @ env)},p)"
+  have "dense_below({q\<in>P. (q \<tturnstile> \<phi> env)},p)"
     unfolding dense_below_def by blast
   with assms
-  show "sats(M,forces(\<phi>), [P,leq,one,p] @ env)"
+  show "(p \<tturnstile> \<phi> env)"
     using density_lemma by blast
 qed
 
