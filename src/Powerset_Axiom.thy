@@ -224,12 +224,13 @@ proof -
       "c\<in>M[G]" "\<chi> \<in> M" "val(G,\<chi>) = c"
       using GenExtD by auto
     let
-      ?\<theta>="{sp \<in>domain(\<tau>)\<times>P . sats(M,forces(Member(0,1)),[P,leq,one,snd(sp),fst(sp),\<chi>])}"
+      ?\<theta>="{sp \<in>domain(\<tau>)\<times>P . snd(sp) \<tturnstile> (Member(0,1)) [fst(sp),\<chi>] }"
     have
       "arity(forces(Member(0,1))) = 6"
       using arity_forces by auto
     with \<open>domain(\<tau>) \<in> M\<close> \<open>\<chi> \<in> M\<close> have
       "?\<theta> \<in> M"
+      unfolding Forces_def
       using P_in_M one_in_M leq_in_M sats_fst_snd_in_M 
       by simp
     then have 
@@ -255,7 +256,7 @@ proof -
           "\<sigma>\<in>M"
           using name_components_in_M[of _ _ ?\<theta>]  by auto
         moreover from 1 have
-          "sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<chi>])" "p\<in>P" 
+          "(p \<tturnstile> (Member(0,1)) [\<sigma>,\<chi>])" "p\<in>P" 
           by simp_all
         moreover note
           \<open>val(G,\<chi>) = c\<close>       
@@ -307,7 +308,7 @@ proof -
         qed
         moreover note \<open>\<chi> \<in> M\<close>
         ultimately obtain p where
-          "p\<in>G" "sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<chi>])"
+          "p\<in>G" "(p \<tturnstile> Member(0,1) [\<sigma>,\<chi>])"
           using generic truth_lemma[of "Member(0,1)" "G" "[\<sigma>,\<chi>]" ] nat_simp_union
           by auto
         moreover from \<open>p\<in>G\<close> have 
