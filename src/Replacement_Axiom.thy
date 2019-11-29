@@ -243,7 +243,8 @@ lemma body_lemma:
     "\<phi>\<in>formula" "arity(\<phi>) \<le> 2 #+ length(nenv)"
   shows 
   "sats(M,body_fm(\<phi>,nenv),[\<alpha>,x,m,P,leq,one] @ nenv) \<longleftrightarrow> 
-  (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a),\<alpha>,V) \<and> \<tau> \<in> V \<and> sats(M,forces(\<phi>),[P,leq,one,snd(x),fst(x),\<tau>] @ nenv))"
+  (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a),\<alpha>,V) \<and> \<tau> \<in> V \<and> (snd(x) \<tturnstile> \<phi> ([fst(x),\<tau>]@nenv)))"
+  unfolding Forces_def
   using assms sats_body_fm[of x \<alpha> m nenv] sats_renpbdy_prebody_fm[of x \<alpha>]
     sats_prebody_fm[of "snd(x)" "fst(x)"] fst_snd_closed[OF \<open>x\<in>M\<close>]
   by (simp, simp del:setclass_iff add:setclass_iff[symmetric],simp)
@@ -282,9 +283,9 @@ proof -
   then
   have "length(nenv) = length(env)" by simp
   define f where "f(\<rho>p) \<equiv> \<mu> \<alpha>. \<alpha>\<in>M \<and> (\<exists>\<tau>\<in>M. \<tau> \<in> Vset(\<alpha>) \<and> 
-        sats(M,forces(\<phi>),[P,leq,one,snd(\<rho>p),fst(\<rho>p),\<tau>] @ nenv))" (is "_ \<equiv> \<mu> \<alpha>. ?P(\<rho>p,\<alpha>)") for \<rho>p
+        (snd(\<rho>p) \<tturnstile> \<phi> ([fst(\<rho>p),\<tau>] @ nenv)))" (is "_ \<equiv> \<mu> \<alpha>. ?P(\<rho>p,\<alpha>)") for \<rho>p
   have "f(\<rho>p) = (\<mu> \<alpha>. \<alpha>\<in>M \<and> (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> 
-        sats(M,forces(\<phi>),[P,leq,one,snd(\<rho>p),fst(\<rho>p),\<tau>] @ nenv)))" (is "_ = (\<mu> \<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>))") for \<rho>p
+        snd(\<rho>p) \<tturnstile> \<phi> ([fst(\<rho>p),\<tau>] @ nenv)))" (is "_ = (\<mu> \<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>))") for \<rho>p
     unfolding f_def using Vset_abs Vset_closed Ord_Least_cong[of "?P(\<rho>p)" "\<lambda> \<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>)"]
     by (simp, simp del:setclass_iff)
   moreover
@@ -310,14 +311,15 @@ proof -
   ultimately
   have body:"sats(M,body_fm(\<phi>,nenv),[\<alpha>,\<rho>p,m,P,leq,one] @ nenv) \<longleftrightarrow> ?Q(\<rho>p,\<alpha>)" 
     if "\<rho>p\<in>?\<pi>" "\<rho>p\<in>M" "m\<in>M" "\<alpha>\<in>M" for \<alpha> \<rho>p m
-    using that P_in_M leq_in_M one_in_M body_lemma[of \<rho>p _ _ nenv \<phi>] by simp
+    using that P_in_M leq_in_M one_in_M body_lemma[of \<rho>p \<alpha> m nenv \<phi>] by simp
   let ?f_fm="least_fm(body_fm(\<phi>,nenv),1)"
   {
     fix \<rho>p m
     assume asm: "\<rho>p\<in>M" "\<rho>p\<in>?\<pi>" "m\<in>M"
     note inM = this P_in_M leq_in_M one_in_M \<open>nenv\<in>list(M)\<close>
     with body
-    have body':"\<And>\<alpha>. \<alpha> \<in> M \<Longrightarrow> (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a), \<alpha>, V) \<and> \<tau> \<in> V \<and> sats(M, forces(\<phi>), [P,leq,one,snd(\<rho>p),fst(\<rho>p),\<tau>] @ nenv)) \<longleftrightarrow>
+    have body':"\<And>\<alpha>. \<alpha> \<in> M \<Longrightarrow> (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a), \<alpha>, V) \<and> \<tau> \<in> V \<and> 
+          snd(\<rho>p) \<tturnstile> \<phi> ([fst(\<rho>p),\<tau>] @ nenv)) \<longleftrightarrow>
           sats(M, body_fm(\<phi>,nenv), Cons(\<alpha>, [\<rho>p, m, P, leq, one] @ nenv))" by simp
     from inM
     have "sats(M, ?f_fm,[\<rho>p,m,P,leq,one] @ nenv) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
@@ -392,7 +394,7 @@ proof -
     moreover
     note \<open>\<phi>\<in>_\<close> \<open>nenv\<in>_\<close> \<open>env = _\<close> \<open>arity(\<phi>)\<le> 2 #+ length(env)\<close>
     ultimately
-    obtain q where "q\<in>G" "sats(M, forces(\<phi>), [P,leq,one,q,\<rho>,\<sigma>] @ nenv)" 
+    obtain q where "q\<in>G" "q \<tturnstile> \<phi> ([\<rho>,\<sigma>]@nenv)" 
       using truth_lemma[OF \<open>\<phi>\<in>_\<close> generic, symmetric, of "[\<rho>,\<sigma>] @ nenv"] 
        by auto
     with \<open><\<rho>,p>\<in>\<pi>'\<close> \<open><\<rho>,q>\<in>?\<pi> \<Longrightarrow> f(<\<rho>,q>)\<in>Y\<close>
@@ -407,14 +409,14 @@ proof -
     have "\<sigma> \<in> Vset(?\<alpha>)"
       using Vset_Ord_rank_iff by auto
     moreover
-    note \<open>sats(M, forces(\<phi>), [P,leq,one,q,\<rho>,\<sigma>] @ nenv)\<close>
+    note \<open>q \<tturnstile> \<phi> ([\<rho>,\<sigma>] @ nenv)\<close>
     ultimately
     have "?P(<\<rho>,q>,?\<alpha>)" by (auto simp del: Vset_rank_iff)
     moreover
     have "(\<mu> \<alpha>. ?P(<\<rho>,q>,\<alpha>)) = f(<\<rho>,q>)"
       unfolding f_def by simp
     ultimately
-    obtain \<tau> where "\<tau>\<in>M" "\<tau> \<in> Vset(f(<\<rho>,q>))" "sats(M,forces(\<phi>),[P,leq,one,q,\<rho>,\<tau>] @ nenv)" 
+    obtain \<tau> where "\<tau>\<in>M" "\<tau> \<in> Vset(f(<\<rho>,q>))" "q \<tturnstile> \<phi> ([\<rho>,\<tau>] @ nenv)" 
       using LeastI[of "\<lambda> \<alpha>. ?P(<\<rho>,q>,\<alpha>)" ?\<alpha>] by auto
     with \<open>q\<in>G\<close> \<open>\<rho>\<in>M\<close> \<open>nenv\<in>_\<close> \<open>arity(\<phi>)\<le> 2 #+ length(nenv)\<close>
     have "sats(M[G],\<phi>,map(val(G),[\<rho>,\<tau>] @ nenv))"

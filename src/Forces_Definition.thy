@@ -993,7 +993,7 @@ lemma sats_ren_forces_nand:
   "[q,P,leq,o,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
    sats(M, ren_forces_nand(\<phi>),[q,P,leq,o,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,o,q] @ env)"
   unfolding ren_forces_nand_def
-  apply (insert sats_incr_bv_iff [of _ _ M _ "Cons(P, Cons(leq, Cons(o, Cons(q,Nil))))"])
+  apply (insert sats_incr_bv_iff [of _ _ M _ "[P,leq,o,q]"])
   apply simp
   done
 
@@ -1012,7 +1012,7 @@ lemma sats_ren_forces_forall :
   "[x,P,leq,o,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
     sats(M, ren_forces_forall(\<phi>),[x,P,leq,o,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,o,p,x] @ env)"
   unfolding ren_forces_forall_def
-  apply (insert sats_incr_bv_iff [of _ _ M _ "Cons(P, Cons(leq, Cons(o, Cons(p,Cons(x,Nil)))))"])
+  apply (insert sats_incr_bv_iff [of _ _ M _ "[P,leq,o,p,x]"])
   apply simp
   done
   
