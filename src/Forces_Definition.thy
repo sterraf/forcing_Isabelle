@@ -982,52 +982,40 @@ lemma sats_forces_mem_fm:
 
 end (* context forcing_data *)
 
-
-(* DEFINE THIS *)
-rename "forces_nand" src "[P,leq,o,q]" tgt "[q,P,leq,o,p]"
-
-definition forces_nand_ren :: "i \<Rightarrow> i" where
-  "forces_nand_ren(env) == sum(forces_nand_fn,id(length(env)),4,5,length(env))"
-
 definition 
-  ren_forces_nand :: "[i,i] \<Rightarrow> i" where
-  "ren_forces_nand(\<phi>,env) = ren(\<phi>)`(4#+length(env))`(5#+length(env))`forces_nand_ren(env)" 
+  ren_forces_nand :: "i\<Rightarrow>i" where
+  "ren_forces_nand(\<phi>) \<equiv> Exists(Exists(Exists(Exists(
+          And(Equal(3,4),And(Equal(0,5),And(Equal(1,6),
+          And(Equal(2,7),iterates(\<lambda>p. incr_bv(p)`4 , 5, \<phi>)))))))))" 
 
-
-lemma ren_forces_nand_type[TC] :
-  "\<phi>\<in>formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow> ren_forces_nand(\<phi>,env) \<in>formula" 
-  unfolding ren_forces_nand_def forces_nand_fn_def forces_nand_ren_def
-  using  forces_nand_thm(1) ren_tc
-  by simp
-
-lemma ren_forces_nand_arity: 
-  assumes  "\<phi>\<in>formula" "arity(\<phi>)\<le> 4#+length(env)" "env \<in> list(M)"
-    shows "arity(ren_forces_nand(\<phi>,env)) \<le> 5#+length(env)"
-  unfolding ren_forces_nand_def forces_nand_fn_def forces_nand_ren_def
-    using assms forces_nand_thm(1) ren_arity
-    by simp
-
+  
 lemma sats_ren_forces_nand: 
-  "[q,P,leq,o,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> arity(\<phi>) \<le> 4 #+ length(env) \<Longrightarrow>
-   sats(M, ren_forces_nand(\<phi>,env),[q,P,leq,o,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,o,q] @ env)"
-  unfolding ren_forces_nand_def forces_nand_fn_def forces_nand_ren_def
-  apply (rule sats_iff_sats_ren[symmetric],auto simp add:forces_nand_thm(1)[of _ M,simplified])
-  apply (auto simp add: forces_nand_thm(2)[simplified,symmetric])
+  "[q,P,leq,o,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
+   sats(M, ren_forces_nand(\<phi>),[q,P,leq,o,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,o,q] @ env)"
+  unfolding ren_forces_nand_def
+  apply (insert sats_incr_bv_iff [of _ _ M _ "Cons(P, Cons(leq, Cons(o, Cons(q,Nil))))"])
+  apply simp
   done
 
 definition
   ren_forces_forall :: "i\<Rightarrow>i" where
-  "ren_forces_forall(f) \<equiv> f" 
+  "ren_forces_forall(\<phi>) \<equiv> 
+      Exists(Exists(Exists(Exists(Exists(
+        And(Equal(0,6),And(Equal(1,7),And(Equal(2,8),And(Equal(3,9),
+        And(Equal(4,5),iterates(\<lambda>p. incr_bv(p)`5 , 5, \<phi>)))))))))))" 
 
 lemma ren_forces_forall_type[TC] :
   "\<phi>\<in>formula \<Longrightarrow> ren_forces_forall(\<phi>) \<in>formula" 
   unfolding ren_forces_forall_def by simp
 
 lemma sats_ren_forces_forall :
-  "[x,P,leq,one,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
+  "[x,P,leq,o,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
     sats(M, ren_forces_forall(\<phi>),[x,P,leq,o,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,o,p,x] @ env)"
-  sorry
-
+  unfolding ren_forces_forall_def
+  apply (insert sats_incr_bv_iff [of _ _ M _ "Cons(P, Cons(leq, Cons(o, Cons(p,Cons(x,Nil)))))"])
+  apply simp
+  done
+  
 definition 
   leq_fm :: "[i,i,i] \<Rightarrow> i" where
   "leq_fm(leq,q,p) \<equiv> Exists(And(pair_fm(q#+1,p#+1,0),Member(0,leq#+1)))" 
@@ -1086,7 +1074,7 @@ lemma (in forcing_data) sats_forces_Nand :
   by simp
   
 lemma (in forcing_data) sats_forces_Neg :
-  assumes  "\<phi>\<in>formula" "\<psi>\<in>formula" "env\<in>list(M)" "p\<in>M" 
+  assumes  "\<phi>\<in>formula" "env\<in>list(M)" "p\<in>M" 
   shows "sats(M,forces(Neg(\<phi>)),[P,leq,one,p]@env) \<longleftrightarrow> 
          (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> (\<exists>qp\<in>M. pair(##M,q,p,qp) \<and> qp\<in>leq) \<and> 
                (sats(M,forces'(\<phi>),[P,leq,one,q]@env))))"
