@@ -281,21 +281,21 @@ lemma Forces_Equal:
   assumes
     "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" "n\<in>nat" "m\<in>nat" 
   shows
-    "p \<tturnstile> Equal(n,m) env \<longleftrightarrow> forces_eq(p,t1,t2)"
+    "(p \<tturnstile> Equal(n,m) env) \<longleftrightarrow> forces_eq(p,t1,t2)"
   unfolding Forces_def using sats_forces_Equal' assms .
 
 lemma Forces_Member:
   assumes
     "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" "n\<in>nat" "m\<in>nat" 
   shows
-    "p \<tturnstile> Member(n,m) env \<longleftrightarrow> forces_mem(p,t1,t2)"
+    "(p \<tturnstile> Member(n,m) env) \<longleftrightarrow> forces_mem(p,t1,t2)"
   unfolding Forces_def using sats_forces_Member' assms .
 
 lemma Forces_Neg:
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" 
   shows
-    "p \<tturnstile> Neg(\<phi>) env \<longleftrightarrow> \<not>(\<exists>q\<in>M. q\<in>P \<and> <q,p>\<in>leq \<and> q \<tturnstile> \<phi> env)"
+    "(p \<tturnstile> Neg(\<phi>) env) \<longleftrightarrow> \<not>(\<exists>q\<in>M. q\<in>P \<and> <q,p>\<in>leq \<and> (q \<tturnstile> \<phi> env))"
   unfolding Forces_def using assms sats_forces_Neg' Transset_intf[OF trans_M] 
   P_in_M pair_in_M_iff by simp
 
@@ -303,7 +303,7 @@ lemma Forces_Nand:
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
   shows
-    "p \<tturnstile> Nand(\<phi>,\<psi>) env \<longleftrightarrow> \<not>(\<exists>q\<in>M. q\<in>P \<and> <q,p>\<in>leq \<and> (q \<tturnstile> \<phi> env) \<and> (q \<tturnstile> \<psi> env))"
+    "(p \<tturnstile> Nand(\<phi>,\<psi>) env) \<longleftrightarrow> \<not>(\<exists>q\<in>M. q\<in>P \<and> <q,p>\<in>leq \<and> (q \<tturnstile> \<phi> env) \<and> (q \<tturnstile> \<psi> env))"
   unfolding Forces_def using assms sats_forces_Nand' Transset_intf[OF trans_M] 
   P_in_M pair_in_M_iff by simp
 
@@ -311,7 +311,7 @@ lemma Forces_And_aux:
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
   shows
-    "p \<tturnstile> And(\<phi>,\<psi>) env \<longleftrightarrow> 
+    "(p \<tturnstile> And(\<phi>,\<psi>) env) \<longleftrightarrow> 
     (\<forall>q\<in>M. q\<in>P \<and> <q,p>\<in>leq \<longrightarrow> (\<exists>r\<in>M. r\<in>P \<and> <r,q>\<in>leq \<and> (r \<tturnstile> \<phi> env) \<and> (r \<tturnstile> \<psi> env)))"
   unfolding And_def using assms Forces_Neg Forces_Nand by (auto simp only:)
 
@@ -319,7 +319,7 @@ lemma Forces_And_iff_dense_below:
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
   shows
-    "p \<tturnstile> And(\<phi>,\<psi>) env \<longleftrightarrow> dense_below({r\<in>P. (r \<tturnstile> \<phi> env) \<and> (r \<tturnstile> \<psi> env) },p)"
+    "(p \<tturnstile> And(\<phi>,\<psi>) env) \<longleftrightarrow> dense_below({r\<in>P. (r \<tturnstile> \<phi> env) \<and> (r \<tturnstile> \<psi> env) },p)"
   unfolding dense_below_def using Forces_And_aux assms
     by (auto dest:Transset_intf[OF trans_M _ P_in_M]; rename_tac q; drule_tac x=q in bspec)+
 
@@ -327,7 +327,7 @@ lemma Forces_Forall:
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula"
   shows
-    "p \<tturnstile> Forall(\<phi>) env \<longleftrightarrow> (\<forall>x\<in>M. p \<tturnstile> \<phi> ([x] @ env))"
+    "(p \<tturnstile> Forall(\<phi>) env) \<longleftrightarrow> (\<forall>x\<in>M. (p \<tturnstile> \<phi> ([x] @ env)))"
   unfolding Forces_def using sats_forces_Forall' assms by simp
 
 (* Move the following to an appropriate place *)
@@ -969,10 +969,31 @@ next
     using Forces_Equal[of _ "nth(n,env)" "nth(m,env)" env n m]
       density_eq[of p "nth(n,env)" "nth(m,env)"] by simp
 next
-  case (Nand \<phi> \<psi>)
-  then 
+case (Nand \<phi> \<psi>)
+  {  
+    fix q
+    assume "q\<in>M" "q\<in>P" "\<langle>q, p\<rangle> \<in> leq" "q \<tturnstile> \<phi> env"
+    moreover 
+    note Nand
+    moreover from calculation
+    obtain d where "d\<in>P" "d \<tturnstile> Nand(\<phi>, \<psi>) env" "\<langle>d, q\<rangle> \<in> leq"
+      using dense_belowI by auto
+    moreover from calculation
+    have "\<not>(d\<tturnstile> \<psi> env)" if "d \<tturnstile> \<phi> env"
+      using that Forces_Nand leq_reflI Transset_intf[OF trans_M _ P_in_M, of d] by auto
+    moreover from calculation
+    have "arity(\<phi>) \<le> length(env)"  "arity(\<psi>) \<le> length(env)"
+      by (rule_tac Un_leD1, rule_tac [5] Un_leD2, auto)
+    moreover from calculation
+    have "d \<tturnstile> \<phi> env" 
+       using strengthening_lemma[of q \<phi> d env] Un_leD1 by auto
+    ultimately
+    have "\<not> (q \<tturnstile> \<psi> env)"
+      using strengthening_lemma[of q \<psi> d env] by auto
+  }
+  with \<open>p\<in>P\<close>
   show ?case
-    using sats_forces_Nand' sorry
+    using Forces_Nand[symmetric, OF _ Nand(5,1,3)] by blast
 next
   case (Forall \<phi>)
   have "dense_below({q\<in>P. q \<tturnstile> \<phi> ([a]@env)},p)" if "a\<in>M" for a
@@ -1080,7 +1101,7 @@ next (* This case will probably need a density argument *)
   case (Nand p q)
   then 
   show ?case
-    unfolding forces_def 
+    using Forces_Nand  
     sorry
 next
   case (Forall \<phi>)
