@@ -20,6 +20,8 @@ lemma leq_reflI: "p\<in>P \<Longrightarrow> <p,p>\<in>leq"
 lemma dense_iff [iff] : "dense(D) \<longleftrightarrow> (\<forall>p\<in>P. \<exists>d\<in>D. \<langle>d, p\<rangle> \<in> leq)"
   unfolding dense_def ..
 
+declare dense_iff[simp del]
+
 lemma dense_belowD [dest]:
   assumes "dense_below(D,p)" "q\<in>P" "<q,p>\<in>leq"
   shows "\<exists>d\<in>D. d\<in>P \<and> <d,q>\<in>leq"
@@ -1013,6 +1015,38 @@ next
   with assms
   show "dense_below({q\<in>P. q \<tturnstile> \<phi> env},p)"
     using strengthening_lemma leq_reflI by auto
+qed
+
+lemma Forces_And:
+  assumes
+    "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula" 
+    "arity(\<phi>) \<le> length(env)" "arity(\<psi>) \<le> length(env)"
+  shows
+    "(p \<tturnstile> And(\<phi>,\<psi>) env) \<longleftrightarrow> (p \<tturnstile> \<phi> env) \<and> (p \<tturnstile> \<psi> env)"
+proof
+  assume "p \<tturnstile> And(\<phi>, \<psi>) env"
+  with assms
+  have "dense_below({r \<in> P . (r \<tturnstile> \<phi> env) \<and> (r \<tturnstile> \<psi> env)}, p)"
+    using Forces_And_iff_dense_below by simp
+  then
+  have "dense_below({r \<in> P . (r \<tturnstile> \<phi> env)}, p)" "dense_below({r \<in> P . (r \<tturnstile> \<psi> env)}, p)"
+    by blast+
+  with assms
+  show "(p \<tturnstile> \<phi> env) \<and> (p \<tturnstile> \<psi> env)"
+    using density_lemma[symmetric] by simp
+next
+  assume "(p \<tturnstile> \<phi> env) \<and> (p \<tturnstile> \<psi> env)"
+  have "dense_below({r \<in> P . (r \<tturnstile> \<phi> env) \<and> (r \<tturnstile> \<psi> env)}, p)"
+  proof (intro dense_belowI bexI conjI, assumption)
+    fix q
+    assume "q\<in>P" "\<langle>q, p\<rangle> \<in> leq"
+    with assms \<open>(p \<tturnstile> \<phi> env) \<and> (p \<tturnstile> \<psi> env)\<close>
+    show "q\<in>{r \<in> P . (r \<tturnstile> \<phi> env) \<and> (r \<tturnstile> \<psi> env)}" "\<langle>q, q\<rangle> \<in> leq"
+      using strengthening_lemma leq_reflI by auto
+  qed
+  with assms
+  show "p \<tturnstile> And(\<phi>,\<psi>) env"
+    using Forces_And_iff_dense_below by simp
 qed
 
 lemma truth_lemma:
