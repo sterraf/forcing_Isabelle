@@ -1049,6 +1049,14 @@ next
     using Forces_And_iff_dense_below by simp
 qed
 
+lemma Forces_Nand_alt:
+  assumes
+    "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula" 
+    "arity(\<phi>) \<le> length(env)" "arity(\<psi>) \<le> length(env)"
+  shows
+    "(p \<tturnstile> Nand(\<phi>,\<psi>) env) \<longleftrightarrow> \<not>(\<exists>q\<in>M. q\<in>P \<and> <q,p>\<in>leq \<and> (q \<tturnstile> And(\<phi>,\<psi>) env))"
+  using assms Forces_Nand Forces_And by simp
+
 lemma truth_lemma:
   assumes 
     "\<phi>\<in>formula" "M_generic(G)"
