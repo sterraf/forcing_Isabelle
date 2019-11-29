@@ -1075,8 +1075,27 @@ lemma Forces_Nand_alt:
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula" 
     "arity(\<phi>) \<le> length(env)" "arity(\<psi>) \<le> length(env)"
   shows
-    "(p \<tturnstile> Nand(\<phi>,\<psi>) env) \<longleftrightarrow> \<not>(\<exists>q\<in>M. q\<in>P \<and> <q,p>\<in>leq \<and> (q \<tturnstile> And(\<phi>,\<psi>) env))"
-  using assms Forces_Nand Forces_And by simp
+    "(p \<tturnstile> Nand(\<phi>,\<psi>) env) \<longleftrightarrow> (p \<tturnstile> Neg(And(\<phi>,\<psi>)) env)"
+  using assms Forces_Nand Forces_And Forces_Neg by auto
+
+lemma truth_lemma_Neg:
+  assumes 
+    "\<phi>\<in>formula" "M_generic(G)" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)" and
+    IH: "(\<exists>p\<in>G. (p \<tturnstile> \<phi> env)) \<longleftrightarrow> sats(M[G],\<phi>,map(val(G),env))"
+  shows
+      "(\<exists>p\<in>G. (p \<tturnstile> Neg(\<phi>) env)) \<longleftrightarrow> sats(M[G],Neg(\<phi>),map(val(G),env))"
+  sorry
+
+lemma truth_lemma_And:
+  assumes 
+    "\<phi>\<in>formula" "M_generic(G)" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)" 
+    "arity(\<psi>) \<le> length(env)"
+    and
+    IH: "(\<exists>p\<in>G. (p \<tturnstile> \<phi> env)) \<longleftrightarrow> sats(M[G],\<phi>,map(val(G),env))"
+    "(\<exists>p\<in>G. (p \<tturnstile> \<psi> env)) \<longleftrightarrow> sats(M[G],\<psi>,map(val(G),env))"
+  shows
+      "(\<exists>p\<in>G. (p \<tturnstile> And(\<phi>,\<psi>) env)) \<longleftrightarrow> sats(M[G],And(\<phi>,\<psi>),map(val(G),env))"
+  sorry
 
 lemma truth_lemma:
   assumes 
@@ -1097,12 +1116,17 @@ next
   show ?case
     using assms truth_lemma_eq[OF \<open>env\<in>list(M)\<close> assms(2) \<open>x\<in>nat\<close> \<open>y\<in>nat\<close>] 
       arities_at_aux by simp
-next (* This case will probably need a density argument *)
-  case (Nand p q)
-  then 
-  show ?case
-    using Forces_Nand  
-    sorry
+next
+  case (Nand \<phi> \<psi>)
+  moreover from this
+  have arities: "arity(\<phi>) \<le> length(env)"  "arity(\<psi>) \<le> length(env)"
+    by (rule_tac Un_leD1, rule_tac [5] Un_leD2, auto)
+  moreover 
+  note \<open>M_generic(G)\<close>
+  ultimately
+  show ?case 
+    using truth_lemma_And truth_lemma_Neg Forces_Nand_alt 
+      M_genericD map_val_in_MG by auto
 next
   case (Forall \<phi>)
   with \<open>M_generic(G)\<close>
