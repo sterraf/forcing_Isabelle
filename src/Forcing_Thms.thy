@@ -17,10 +17,11 @@ lemma leq_transD:  "\<langle>a,b\<rangle> \<in> leq \<Longrightarrow> \<langle>b
 lemma leq_reflI: "p\<in>P \<Longrightarrow> <p,p>\<in>leq"
  using leq_preord unfolding preorder_on_def refl_def by blast
 
-lemma dense_iff [iff] : "dense(D) \<longleftrightarrow> (\<forall>p\<in>P. \<exists>d\<in>D. \<langle>d, p\<rangle> \<in> leq)"
-  unfolding dense_def ..
+lemma denseD [dest]: "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow>  \<exists>d\<in>D. \<langle>d, p\<rangle> \<in> leq"
+  unfolding dense_def by blast
 
-declare dense_iff[simp del]
+lemma denseI [intro!]: "\<lbrakk> \<And>p. p\<in>P \<Longrightarrow> \<exists>d\<in>D. \<langle>d, p\<rangle> \<in> leq \<rbrakk> \<Longrightarrow> dense(D)"
+  unfolding dense_def by blast
 
 lemma dense_belowD [dest]:
   assumes "dense_below(D,p)" "q\<in>P" "<q,p>\<in>leq"
@@ -440,9 +441,9 @@ proof
   obtain q where "q\<in>G" "<q,p>\<in>leq" "<q,r>\<in>leq" by force
   moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
   have "q\<in>P" "p\<in>P" by blast+
-  moreover from calculation
+  moreover from calculation and \<open>M_generic(G)\<close>
   have "forces_mem(q,\<sigma>,\<tau>)"
-    using forces_memI M_genericD[OF \<open>M_generic(G)\<close>] by blast
+    using forces_memI by blast
   moreover
   note \<open>forces_eq(p,\<tau>,\<theta>)\<close>
   ultimately
@@ -471,9 +472,9 @@ proof
   obtain q where "q\<in>G" "<q,p>\<in>leq" "<q,r>\<in>leq" by force
   moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
   have "q\<in>P" "p\<in>P" by blast+
-  moreover from calculation
+  moreover from calculation and \<open>M_generic(G)\<close>
   have "forces_mem(q,\<sigma>,\<theta>)"
-    using forces_memI M_genericD[OF \<open>M_generic(G)\<close>] by blast
+    using forces_memI by blast
   moreover
   note \<open>forces_eq(p,\<tau>,\<theta>)\<close>
   ultimately
@@ -935,6 +936,12 @@ next
     using Forces_Forall by simp
 qed
 
+lemma arity_Nand_le: 
+  assumes "\<phi> \<in> formula" "\<psi> \<in> formula" "arity(Nand(\<phi>, \<psi>)) \<le> length(env)" "env\<in>list(A)"
+  shows "arity(\<phi>) \<le> length(env)" "arity(\<psi>) \<le> length(env)"
+  using assms 
+  by (rule_tac Un_leD1, rule_tac [5] Un_leD2, auto)
+
 lemma dense_below_imp_forces:
   assumes 
     "p\<in>P" "\<phi>\<in>formula"
@@ -981,9 +988,8 @@ case (Nand \<phi> \<psi>)
     moreover from calculation
     have "\<not>(d\<tturnstile> \<psi> env)" if "d \<tturnstile> \<phi> env"
       using that Forces_Nand leq_reflI Transset_intf[OF trans_M _ P_in_M, of d] by auto
-    moreover from calculation
-    have "arity(\<phi>) \<le> length(env)"  "arity(\<psi>) \<le> length(env)"
-      by (rule_tac Un_leD1, rule_tac [5] Un_leD2, auto)
+    moreover 
+    note arity_Nand_le[of \<phi> \<psi>]
     moreover from calculation
     have "d \<tturnstile> \<phi> env" 
        using strengthening_lemma[of q \<phi> d env] Un_leD1 by auto
@@ -1083,19 +1089,106 @@ lemma truth_lemma_Neg:
     "\<phi>\<in>formula" "M_generic(G)" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)" and
     IH: "(\<exists>p\<in>G. (p \<tturnstile> \<phi> env)) \<longleftrightarrow> sats(M[G],\<phi>,map(val(G),env))"
   shows
-      "(\<exists>p\<in>G. (p \<tturnstile> Neg(\<phi>) env)) \<longleftrightarrow> sats(M[G],Neg(\<phi>),map(val(G),env))"
-  sorry
+    "(\<exists>p\<in>G. (p \<tturnstile> Neg(\<phi>) env)) \<longleftrightarrow> sats(M[G],Neg(\<phi>),map(val(G),env))"
+proof (intro iffI, elim bexE, rule ccontr) 
+  (* Direct implication by contradiction *)
+  fix p 
+  assume "p\<in>G" "p \<tturnstile> Neg(\<phi>) env" "\<not>sats(M[G],Neg(\<phi>),map(val(G),env))"
+  moreover 
+  note assms
+  moreover from calculation
+  have "sats(M[G],\<phi>,map(val(G),env))"
+    using map_val_in_MG by simp
+  with IH
+  obtain r where "r \<tturnstile> \<phi> env" "r\<in>G" by blast
+  moreover from this and \<open>M_generic(G)\<close> \<open>p\<in>G\<close>
+  obtain q where "\<langle>q,p\<rangle> \<in> leq" "\<langle>q,r\<rangle> \<in> leq" "q\<in>G"
+    by blast
+  moreover from calculation 
+  have "q \<tturnstile> \<phi> env"
+    using strengthening_lemma[where \<phi>=\<phi>] by blast
+  ultimately
+  show "False"
+    using Forces_Neg[where \<phi>=\<phi>] Transset_intf[OF trans_M _ P_in_M] by blast
+next
+  assume "sats(M[G],Neg(\<phi>),map(val(G),env))"
+  with assms 
+  have "\<not> sats(M[G],\<phi>,map(val(G),env))"
+    using map_val_in_MG by simp
+  let ?D="{p\<in>P. (p \<tturnstile> \<phi> env) \<or> (p \<tturnstile> Neg(\<phi>) env)}"
+  have "?D \<subseteq> P" by auto
+  moreover 
+  have "?D \<in> M" sorry
+  moreover
+  have "dense(?D)"
+  proof
+    fix q
+    assume "q\<in>P"
+    show "\<exists>d\<in>{p \<in> P . (p \<tturnstile> \<phi> env) \<or> (p \<tturnstile> Neg(\<phi>) env)}. \<langle>d, q\<rangle> \<in> leq"
+    proof (cases "q \<tturnstile> Neg(\<phi>) env")
+      case True
+      with \<open>q\<in>P\<close>
+      show ?thesis using leq_reflI by blast
+    next
+      case False
+      with \<open>q\<in>P\<close> and assms
+      show ?thesis using Forces_Neg by auto
+    qed
+  qed
+  moreover
+  note \<open>M_generic(G)\<close>
+  ultimately
+  obtain p where "p\<in>G" "(p \<tturnstile> \<phi> env) \<or> (p \<tturnstile> Neg(\<phi>) env)"
+    by blast
+  then
+  consider (1) "p \<tturnstile> \<phi> env" | (2) "p \<tturnstile> Neg(\<phi>) env" by blast
+  then
+  show "\<exists>p\<in>G. (p \<tturnstile> Neg(\<phi>) env)"
+  proof (cases)
+    case 1
+    with \<open>\<not> sats(M[G],\<phi>,map(val(G),env))\<close> \<open>p\<in>G\<close> IH
+    show ?thesis
+      by blast
+  next
+    case 2
+    with \<open>p\<in>G\<close> 
+    show ?thesis by blast
+  qed
+qed 
 
 lemma truth_lemma_And:
   assumes 
-    "\<phi>\<in>formula" "M_generic(G)" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)" 
-    "arity(\<psi>) \<le> length(env)"
+    "env\<in>list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
+    "arity(\<phi>)\<le>length(env)" "arity(\<psi>) \<le> length(env)" "M_generic(G)"
     and
     IH: "(\<exists>p\<in>G. (p \<tturnstile> \<phi> env)) \<longleftrightarrow> sats(M[G],\<phi>,map(val(G),env))"
     "(\<exists>p\<in>G. (p \<tturnstile> \<psi> env)) \<longleftrightarrow> sats(M[G],\<psi>,map(val(G),env))"
   shows
-      "(\<exists>p\<in>G. (p \<tturnstile> And(\<phi>,\<psi>) env)) \<longleftrightarrow> sats(M[G],And(\<phi>,\<psi>),map(val(G),env))"
-  sorry
+    "(\<exists>p\<in>G. (p \<tturnstile> And(\<phi>,\<psi>) env)) \<longleftrightarrow> sats(M[G],And(\<phi>,\<psi>),map(val(G),env))"
+  using assms map_val_in_MG Forces_And[OF M_genericD assms(1-5)]
+proof (intro iffI, elim bexE)
+  fix p
+  assume "p\<in>G" "p \<tturnstile> And(\<phi>,\<psi>) env"
+  with assms
+  show "sats(M[G],And(\<phi>,\<psi>),map(val(G),env))" 
+    using Forces_And[OF M_genericD, of _ _ _ \<phi> \<psi>] map_val_in_MG by auto
+next 
+  assume "sats(M[G],And(\<phi>,\<psi>),map(val(G),env))"
+  moreover
+  note assms
+  moreover from calculation
+  obtain q r where "q \<tturnstile> \<phi> env" "r \<tturnstile> \<psi> env" "q\<in>G" "r\<in>G"
+    using map_val_in_MG Forces_And[OF M_genericD assms(1-5)] by auto
+  moreover from calculation
+  obtain p where "\<langle>p,q\<rangle> \<in> leq" "\<langle>p,r\<rangle> \<in> leq" "p\<in>G"
+    by blast
+  moreover from calculation
+  have "(p \<tturnstile> \<phi> env) \<and> (p \<tturnstile> \<psi> env)" (* can't solve as separate goals *)
+    using strengthening_lemma by (blast)
+  ultimately
+  show "\<exists>p\<in>G. (p \<tturnstile> And(\<phi>,\<psi>) env)"
+    using Forces_And[OF M_genericD assms(1-5)] by auto
+qed 
 
 lemma truth_lemma:
   assumes 
@@ -1118,15 +1211,12 @@ next
       arities_at_aux by simp
 next
   case (Nand \<phi> \<psi>)
-  moreover from this
-  have arities: "arity(\<phi>) \<le> length(env)"  "arity(\<psi>) \<le> length(env)"
-    by (rule_tac Un_leD1, rule_tac [5] Un_leD2, auto)
   moreover 
   note \<open>M_generic(G)\<close>
   ultimately
   show ?case 
     using truth_lemma_And truth_lemma_Neg Forces_Nand_alt 
-      M_genericD map_val_in_MG by auto
+      M_genericD map_val_in_MG arity_Nand_le[of \<phi> \<psi>] by auto
 next
   case (Forall \<phi>)
   with \<open>M_generic(G)\<close>
@@ -1154,7 +1244,7 @@ next
     have "D\<in>M" sorry
     moreover
     have "dense(D)" 
-    proof (standard, intro ballI)
+    proof
       fix p
       assume "p\<in>P"
       show "\<exists>d\<in>D. \<langle>d, p\<rangle> \<in> leq"
