@@ -1,4 +1,4 @@
-theory Forcing_Notions imports Pointed_DC  begin
+theory Forcing_Notions imports ZF begin
 
 definition compat_in :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
   "compat_in(A,r,p,q) == \<exists>d\<in>A . \<langle>d,p\<rangle>\<in>r \<and> \<langle>d,q\<rangle>\<in>r"
@@ -191,8 +191,7 @@ lemma decr_seq_linear: "refl(P,leq) \<Longrightarrow> f \<in> nat \<rightarrow> 
        apply (simp add:preorder_on_def)
     (* listo esa prueba *)
      apply (simp+)
-    done
-
+  done
   
 locale countable_generic = forcing_notion +
   fixes \<D>
@@ -205,95 +204,140 @@ definition
   D_generic :: "i\<Rightarrow>o" where
   "D_generic(G) == filter(G) \<and> (\<forall>n\<in>nat.(\<D>`n)\<inter>G\<noteq>0)"
 
-
-
-lemma RS_relation:
-  assumes
-        1:  "x\<in>P"
-            and
-        2:  "n\<in>nat"
+lemma RS_sequence_imp_rasiowa_sikorski:
+  assumes 
+    "p\<in>P" "f : nat\<rightarrow>P" "f ` 0 = p"
+    "\<And>n. n\<in>nat \<Longrightarrow> \<langle>f ` succ(n), f ` n\<rangle> \<in> leq \<and> f ` succ(n) \<in> \<D> ` n" 
   shows
-            "\<exists>y\<in>P. \<langle>x,y\<rangle> \<in> (\<lambda>m\<in>nat. {\<langle>x,y\<rangle>\<in>P*P. \<langle>y,x\<rangle>\<in>leq \<and> y\<in>\<D>`(pred(m))})`n"
+    "\<exists>G. p\<in>G \<and> D_generic(G)"
 proof -
-  from seq_of_denses and 2 have "dense(\<D> ` pred(n))" by (simp)
-  with 1 have
-            "\<exists>d\<in>\<D> ` Arith.pred(n). \<langle>d, x\<rangle> \<in> leq"
-    unfolding dense_def by (simp)
-  then obtain d where
-        3:  "d \<in> \<D> ` Arith.pred(n) \<and> \<langle>d, x\<rangle> \<in> leq"
-    by (rule bexE, simp)
-  from countable_subs_of_P have
-            "\<D> ` Arith.pred(n) \<in> Pow(P)"
-    using 2 by (blast dest:apply_funtype intro:pred_type) (* (rule apply_funtype [OF _ pred_type]) *)
-  then have
-            "\<D> ` Arith.pred(n) \<subseteq> P" 
-    by (rule PowD)
-  then have
-            "d \<in> P \<and> \<langle>d, x\<rangle> \<in> leq \<and> d \<in> \<D> ` Arith.pred(n)"
-    using 3 by auto
-  then show ?thesis using 1 and 2 by auto
-qed
-        
-theorem rasiowa_sikorski:
-  "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> D_generic(G)"
-proof -
-  assume 
-      Eq1:  "p\<in>P"
-  let
-            ?S="(\<lambda>m\<in>nat. {\<langle>x,y\<rangle>\<in>P*P. \<langle>y,x\<rangle>\<in>leq \<and> y\<in>\<D>`(pred(m))})"
-  from RS_relation have
-            "\<forall>x\<in>P. \<forall>n\<in>nat. \<exists>y\<in>P. \<langle>x,y\<rangle> \<in> ?S`n"
-    by (auto)
-  with sequence_DC have
-            "\<forall>a\<in>P. (\<exists>f \<in> nat\<rightarrow>P. f`0 = a \<and> (\<forall>n \<in> nat. \<langle>f`n,f`succ(n)\<rangle>\<in>?S`succ(n)))"
-    by (blast)
-  then obtain f where
-      Eq2:  "f : nat\<rightarrow>P"
-    and
-      Eq3:  "f ` 0 = p \<and>
-             (\<forall>n\<in>nat.
-              f ` n \<in> P \<and> f ` succ(n) \<in> P \<and> \<langle>f ` succ(n), f ` n\<rangle> \<in> leq \<and> 
-              f ` succ(n) \<in> \<D> ` n)"
-    using Eq1 by (auto)
-  then have   
-      Eq4:  "f``nat  \<subseteq> P"
+  note assms
+  moreover from this 
+  have "f``nat  \<subseteq> P"
     by (simp add:subset_fun_image)
-  with leq_preord have 
-      Eq5:  "refl(f``nat, leq) \<and> trans[P](leq)"
-    unfolding preorder_on_def  by (blast intro:refl_monot_domain)
-  from Eq3 have
-            "\<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq"
-    by (simp)
-  with Eq2 and Eq5 and leq_preord and decr_seq_linear have
-      Eq6:  "linear(f``nat, leq)"
-    unfolding preorder_on_def by (blast)
-  with Eq5 and chain_compat have 
-            "(\<forall>p\<in>f``nat.\<forall>q\<in>f``nat. compat_in(f``nat,leq,p,q))"             
-    by (auto)
-  then have
-      fil:  "filter(upclosure(f``nat))"
-   (is "filter(?G)")
-    using closure_compat_filter and Eq4 by simp
-  have
-      gen:  "\<forall>n\<in>nat. \<D> ` n \<inter> ?G \<noteq> 0"
+  moreover from calculation
+  have "refl(f``nat, leq) \<and> trans[P](leq)"
+    using leq_preord unfolding preorder_on_def by (blast intro:refl_monot_domain)
+  moreover from calculation 
+  have "\<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq" by (simp)
+  moreover from calculation
+  have "linear(f``nat, leq)"
+    using leq_preord and decr_seq_linear unfolding preorder_on_def by (blast)
+  moreover from calculation
+  have "(\<forall>p\<in>f``nat.\<forall>q\<in>f``nat. compat_in(f``nat,leq,p,q))"             
+    using chain_compat by (auto)
+  ultimately  
+  have "filter(upclosure(f``nat))" (is "filter(?G)")
+    using closure_compat_filter by simp
+  moreover
+  have "\<forall>n\<in>nat. \<D> ` n \<inter> ?G \<noteq> 0"
   proof
     fix n
-    assume  
-            "n\<in>nat"
-    with Eq2 and Eq3 have
-            "f`succ(n) \<in> ?G \<and> f`succ(n) \<in> \<D> ` n"
+    assume "n\<in>nat"
+    with assms 
+    have "f`succ(n) \<in> ?G \<and> f`succ(n) \<in> \<D> ` n"
       using aux_RS1 by simp
-    then show 
-            "\<D> ` n \<inter> ?G \<noteq> 0"
-      by blast
+    then 
+    show "\<D> ` n \<inter> ?G \<noteq> 0"  by blast
   qed
-  from Eq3 and Eq2 have 
-            "p \<in> ?G"
+  moreover from assms 
+  have "p \<in> ?G"
     using aux_RS1 by auto
-  with gen and fil show ?thesis  
-    unfolding D_generic_def by auto
+  ultimately 
+  show ?thesis unfolding D_generic_def by auto
 qed
   
-end
-  
+end (* countable_generic *)
+
+consts RS_seq :: "[i,i,i,i,i,i] \<Rightarrow> i"
+primrec
+  "RS_seq(0,P,leq,p,enum,\<D>) = p"
+  "RS_seq(succ(n),P,leq,p,enum,\<D>) = 
+    enum`(\<mu> m. \<langle>enum`m, RS_seq(n,P,leq,p,enum,\<D>)\<rangle> \<in> leq \<and> enum`m \<in> \<D> ` n)"
+
+context countable_generic
+begin
+
+lemma preimage_rangeD:
+  assumes "f\<in>Pi(A,B)" "b \<in> range(f)" 
+  shows "\<exists>a\<in>A. f`a = b"
+  using assms apply_equality[OF _ assms(1), of _ b] domain_type[OF _ assms(1)] by auto
+
+lemma countable_RS_sequence_aux:
+  fixes p enum
+  defines "f(n) \<equiv> RS_seq(n,P,leq,p,enum,\<D>)"
+    and   "Q(q,k,m) \<equiv> \<langle>enum`m, q\<rangle> \<in> leq \<and> enum`m \<in> \<D> ` k"
+  assumes "n\<in>nat" "p\<in>P" "P \<subseteq> range(enum)" "enum:nat\<rightarrow>M"
+    "\<And>x k. x\<in>P \<Longrightarrow> k\<in>nat \<Longrightarrow>  \<exists>q\<in>P. \<langle>q, x\<rangle> \<in> leq \<and> q \<in> \<D> ` k" 
+  shows 
+    "f(succ(n)) \<in> P \<and> \<langle>f(succ(n)), f(n)\<rangle> \<in> leq \<and> f(succ(n)) \<in> \<D> ` n"
+  using \<open>n\<in>nat\<close>
+proof (induct)
+  case 0
+  from assms 
+  obtain q where "q\<in>P" "\<langle>q, p\<rangle> \<in> leq" "q \<in> \<D> ` 0" by blast
+  moreover from this and \<open>P \<subseteq> range(enum)\<close>
+  obtain m where "m\<in>nat" "enum`m = q" 
+    using preimage_rangeD[OF \<open>enum:nat\<rightarrow>M\<close>] by blast
+  moreover 
+  have "\<D>`0 \<subseteq> P"
+    using apply_funtype[OF countable_subs_of_P] by simp
+  moreover note \<open>p\<in>P\<close>
+  ultimately
+  show ?case 
+    using LeastI[of "Q(p,0)" m] unfolding Q_def f_def by auto
+next
+  case (succ n)
+  with assms 
+  obtain q where "q\<in>P" "\<langle>q, f(succ(n))\<rangle> \<in> leq" "q \<in> \<D> ` succ(n)" by blast
+  moreover from this and \<open>P \<subseteq> range(enum)\<close>
+  obtain m where "m\<in>nat" "\<langle>enum`m, f(succ(n))\<rangle> \<in> leq" "enum`m \<in> \<D> ` succ(n)"
+    using preimage_rangeD[OF \<open>enum:nat\<rightarrow>M\<close>] by blast
+  moreover note succ
+  moreover from calculation
+  have "\<D>`succ(n) \<subseteq> P" 
+    using apply_funtype[OF countable_subs_of_P] by auto
+  ultimately
+  show ?case
+    using LeastI[of "Q(f(succ(n)),succ(n))" m] unfolding Q_def f_def by auto
+qed
+
+lemma countable_RS_sequence:
+  fixes p enum
+  defines "f \<equiv> \<lambda>n\<in>nat. RS_seq(n,P,leq,p,enum,\<D>)"
+    and   "Q(q,k,m) \<equiv> \<langle>enum`m, q\<rangle> \<in> leq \<and> enum`m \<in> \<D> ` k"
+  assumes "n\<in>nat" "p\<in>P" "P \<subseteq> range(enum)" "enum:nat\<rightarrow>M"
+  shows 
+    "f`0 = p" "\<langle>f`succ(n), f`n\<rangle> \<in> leq \<and> f`succ(n) \<in> \<D> ` n" "f`succ(n) \<in> P"
+proof -
+  from assms
+  show "f`0 = p" by simp
+  {
+    fix x k
+    assume "x\<in>P" "k\<in>nat"
+    then
+    have "\<exists>q\<in>P. \<langle>q, x\<rangle> \<in> leq \<and> q \<in> \<D> ` k"
+      using seq_of_denses apply_funtype[OF countable_subs_of_P] 
+      unfolding dense_def by blast
+  }
+  with assms
+  show "\<langle>f`succ(n), f`n\<rangle> \<in> leq \<and> f`succ(n) \<in> \<D> ` n" "f`succ(n)\<in>P"
+    unfolding f_def using countable_RS_sequence_aux by simp_all
+qed
+
+lemma RS_seq_type: 
+  assumes "n \<in> nat" "p\<in>P" "P \<subseteq> range(enum)" "enum:nat\<rightarrow>M"
+  shows "RS_seq(n,P,leq,p,enum,\<D>) \<in> P"
+  using assms countable_RS_sequence(1,3)  
+  by (induct;simp) 
+
+lemma RS_seq_funtype:
+  assumes "p\<in>P" "P \<subseteq> range(enum)" "enum:nat\<rightarrow>M"
+  shows "(\<lambda>n\<in>nat. RS_seq(n,P,leq,p,enum,\<D>)): nat \<rightarrow> P"
+  using assms lam_type RS_seq_type by auto
+
+lemmas countable_rasiowa_sikorski = 
+  RS_sequence_imp_rasiowa_sikorski[OF _ RS_seq_funtype countable_RS_sequence(1,2)]
+end (* countable_generic *)
+
 end

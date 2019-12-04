@@ -1,8 +1,5 @@
 theory Names imports Forcing_Data Interface Recursion_Thms begin
   
-lemma transD : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> y \<subseteq> M" 
-  by (unfold Transset_def, blast) 
-    
 definition
   SepReplace :: "[i, i\<Rightarrow>i, i\<Rightarrow> o] \<Rightarrow>i" where
   "SepReplace(A,b,Q) == {y . x\<in>A, y=b(x) \<and> Q(x)}"
@@ -184,9 +181,6 @@ lemma singletonM : "a \<in> M \<Longrightarrow> {a} \<in> M"
 lemma pairM : "x \<in>  M \<Longrightarrow> y \<in> M \<Longrightarrow> <x,y> \<in> M"
   by (simp del:setclass_iff  add:setclass_iff[symmetric]) 
 
-lemma P_sub_M : "P \<subseteq> M"
-  by (simp add: P_in_M trans_M transD)
-    
 lemma Rep_simp : "Replace(u,\<lambda> y z . z = f(y)) = { f(y) . y \<in> u}"
   by(auto)
 
