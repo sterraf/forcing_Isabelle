@@ -315,12 +315,12 @@ proof -
     then obtain r where      (* I can't "obtain" this directly *)
       "r\<in>G" "sats(M,forces(?\<chi>), [P,leq,one,r,\<theta>] @ nenv @ [\<pi>])" by auto
     with \<open>filter(G)\<close> and \<open>q\<in>G\<close> obtain p where
-      "p\<in>G" "<p,q>\<in>leq" "<p,r>\<in>leq" 
+      "p\<in>G" "p\<preceq>q" "p\<preceq>r" 
       unfolding filter_def compat_in_def by force
     with \<open>r\<in>G\<close>  \<open>q\<in>G\<close> \<open>G\<subseteq>P\<close> 
     have "p\<in>P" "r\<in>P" "q\<in>P" "p\<in>M"
       using  P_in_M  by (auto simp add:transitivity)
-    with \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close>  \<open><p,r>\<in>leq\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
+    with \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close>  \<open>p\<preceq>r\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
       \<open>sats(M,forces(?\<chi>), [P,leq,one,r,\<theta>] @ nenv @ [\<pi>])\<close> \<open>env\<in>_\<close>
     have "sats(M,forces(?\<chi>), [P,leq,one,p,\<theta>] @ nenv @ [\<pi>])"
       using strengthening_lemma 

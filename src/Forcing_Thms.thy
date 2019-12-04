@@ -11,27 +11,27 @@ definition
   Forces :: "i \<Rightarrow> i \<Rightarrow> i\<Rightarrow> o" ("_ \<tturnstile> _ _" 60) where
   "Forces(p,\<phi>,env) \<equiv> sats(M,forces(\<phi>), [P,leq,one,p] @ env)"
 
-lemma leq_transD:  "\<langle>a,b\<rangle> \<in> leq \<Longrightarrow> \<langle>b,c\<rangle> \<in> leq \<Longrightarrow> a \<in> P\<Longrightarrow> b \<in> P\<Longrightarrow> c \<in> P\<Longrightarrow> \<langle>a,c\<rangle> \<in> leq"
+lemma leq_transD:  "a\<preceq>b \<Longrightarrow> b\<preceq>c \<Longrightarrow> a \<in> P\<Longrightarrow> b \<in> P\<Longrightarrow> c \<in> P\<Longrightarrow> a\<preceq>c"
   using leq_preord trans_onD unfolding preorder_on_def by blast
 
-lemma leq_reflI: "p\<in>P \<Longrightarrow> <p,p>\<in>leq"
+lemma leq_reflI: "p\<in>P \<Longrightarrow> p\<preceq>p"
  using leq_preord unfolding preorder_on_def refl_def by blast
 
-lemma denseD [dest]: "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow>  \<exists>d\<in>D. \<langle>d, p\<rangle> \<in> leq"
+lemma denseD [dest]: "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow>  \<exists>d\<in>D. d\<preceq> p"
   unfolding dense_def by blast
 
-lemma denseI [intro!]: "\<lbrakk> \<And>p. p\<in>P \<Longrightarrow> \<exists>d\<in>D. \<langle>d, p\<rangle> \<in> leq \<rbrakk> \<Longrightarrow> dense(D)"
+lemma denseI [intro!]: "\<lbrakk> \<And>p. p\<in>P \<Longrightarrow> \<exists>d\<in>D. d\<preceq> p \<rbrakk> \<Longrightarrow> dense(D)"
   unfolding dense_def by blast
 
 lemma dense_belowD [dest]:
-  assumes "dense_below(D,p)" "q\<in>P" "<q,p>\<in>leq"
-  shows "\<exists>d\<in>D. d\<in>P \<and> <d,q>\<in>leq"
+  assumes "dense_below(D,p)" "q\<in>P" "q\<preceq>p"
+  shows "\<exists>d\<in>D. d\<in>P \<and> d\<preceq>q"
   using assms unfolding dense_below_def by simp
-(*obtains d where "d\<in>D" "d\<in>P" "<d,q>\<in>leq"
+(*obtains d where "d\<in>D" "d\<in>P" "d\<preceq>q"
   using assms unfolding dense_below_def by blast *)
 
 lemma dense_belowI [intro!]: 
-  assumes "\<And>q. q\<in>P \<Longrightarrow> <q,p>\<in>leq \<Longrightarrow> \<exists>d\<in>D. d\<in>P \<and> <d,q>\<in>leq" 
+  assumes "\<And>q. q\<in>P \<Longrightarrow> q\<preceq>p \<Longrightarrow> \<exists>d\<in>D. d\<in>P \<and> d\<preceq>q" 
   shows "dense_below(D,p)"
   using assms unfolding dense_below_def by simp
 
@@ -46,12 +46,12 @@ lemma dense_below_mono: "p\<in>P \<Longrightarrow> D \<subseteq> D' \<Longrighta
   by blast
 
 lemma dense_below_under:
-  assumes "dense_below(D,p)" "p\<in>P" "q\<in>P" "<q,p>\<in>leq"
+  assumes "dense_below(D,p)" "p\<in>P" "q\<in>P" "q\<preceq>p"
   shows "dense_below(D,q)"
   using assms leq_transD by blast
 
 lemma ideal_dense_below:
-  assumes "\<And>q. q\<in>P \<Longrightarrow> <q,p>\<in>leq \<Longrightarrow> q\<in>D"
+  assumes "\<And>q. q\<in>P \<Longrightarrow> q\<preceq>p \<Longrightarrow> q\<in>D"
   shows "dense_below(D,p)"
   using assms leq_reflI by blast
 
@@ -63,28 +63,28 @@ lemma dense_below_dense_below:
 (*  unfolding dense_below_def
 proof (intro ballI impI)
   fix r
-  assume "r\<in>P" \<open><r,p>\<in>leq\<close>
+  assume "r\<in>P" \<open>r\<preceq>p\<close>
   with assms
-  obtain q where "q\<in>P" "<q,r>\<in>leq" "dense_below(D,q)"
+  obtain q where "q\<in>P" "q\<preceq>r" "dense_below(D,q)"
     using assms by auto
   moreover from this
-  obtain d where "d\<in>P" "<d,q>\<in>leq" "d\<in>D"
+  obtain d where "d\<in>P" "d\<preceq>q" "d\<in>D"
     using assms leq_preord unfolding preorder_on_def refl_def by blast
   moreover
   note \<open>r\<in>P\<close>
   ultimately
-  show "\<exists>d\<in>D. d \<in> P \<and> \<langle>d, r\<rangle> \<in> leq"
+  show "\<exists>d\<in>D. d \<in> P \<and> d\<preceq> r"
     using leq_preord trans_onD unfolding preorder_on_def by blast
 qed *)
 
 lemma forces_mem_iff_dense_below:  "p\<in>P \<Longrightarrow> forces_mem(p,t1,t2) \<longleftrightarrow> dense_below(
-    {q\<in>P. \<exists>s. \<exists>r. r\<in>P \<and> <s,r> \<in> t2 \<and> <q,r>\<in>leq \<and> forces_eq(q,t1,s)}
+    {q\<in>P. \<exists>s. \<exists>r. r\<in>P \<and> <s,r> \<in> t2 \<and> q\<preceq>r \<and> forces_eq(q,t1,s)}
     ,p)"
   using def_forces_mem[of p t1 t2] by blast
 
 (* Kunen 2013, Lemma IV.2.37(a) *)
 lemma strengthening_eq: 
-  assumes "p\<in>P" "r\<in>P" "<r,p>\<in>leq" "forces_eq(p,t1,t2)"
+  assumes "p\<in>P" "r\<in>P" "r\<preceq>p" "forces_eq(p,t1,t2)"
   shows "forces_eq(r,t1,t2)"
   using assms def_forces_eq[of _ t1 t2] leq_transD by blast
 (* Long proof *)
@@ -92,9 +92,9 @@ lemma strengthening_eq:
 proof -
   {
     fix s q
-    assume "\<langle>q, r\<rangle> \<in> leq" "q\<in>P"
+    assume "q\<preceq> r" "q\<in>P"
     with assms
-    have "<q,p>\<in>leq"
+    have "q\<preceq>p"
       using leq_preord unfolding preorder_on_def trans_on_def by blast
     moreover 
     note \<open>q\<in>P\<close> assms
@@ -111,7 +111,7 @@ qed
 
 (* Kunen 2013, Lemma IV.2.37(a) *)
 lemma strengthening_mem: 
-  assumes "p\<in>P" "r\<in>P" "<r,p>\<in>leq" "forces_mem(p,t1,t2)"
+  assumes "p\<in>P" "r\<in>P" "r\<preceq>p" "forces_mem(p,t1,t2)"
   shows "forces_mem(r,t1,t2)"
   using assms forces_mem_iff_dense_below dense_below_under by auto
 
@@ -128,7 +128,7 @@ next
   assume "dense_below({q \<in> P . forces_mem(q, t1, t2)}, p)"
   with assms
   have "dense_below({q\<in>P. 
-    dense_below({q'\<in>P. \<exists>s r. r \<in> P \<and> \<langle>s,r\<rangle>\<in>t2 \<and> \<langle>q',r\<rangle>\<in>leq \<and> forces_eq(q',t1,s)},q)
+    dense_below({q'\<in>P. \<exists>s r. r \<in> P \<and> \<langle>s,r\<rangle>\<in>t2 \<and> q'\<preceq>r \<and> forces_eq(q',t1,s)},q)
     },p)"
     using forces_mem_iff_dense_below by simp
   with assms
@@ -139,24 +139,24 @@ qed
 lemma aux_density_eq:
   assumes 
     "dense_below(
-    {q'\<in>P. \<forall>q. q\<in>P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow> forces_mem(q,s,t1) \<longleftrightarrow> forces_mem(q,s,t2)}
+    {q'\<in>P. \<forall>q. q\<in>P \<and> q\<preceq>q' \<longrightarrow> forces_mem(q,s,t1) \<longleftrightarrow> forces_mem(q,s,t2)}
     ,p)"
-    "forces_mem(q,s,t1)" "q\<in>P" "p\<in>P" "<q,p>\<in>leq"
+    "forces_mem(q,s,t1)" "q\<in>P" "p\<in>P" "q\<preceq>p"
   shows
     "dense_below({r\<in>P. forces_mem(r,s,t2)},q)"
 proof
   fix r
-  assume "r\<in>P" "\<langle>r,q\<rangle> \<in> leq"
-  moreover from this and \<open>p\<in>P\<close> \<open><q,p>\<in>leq\<close> \<open>q\<in>P\<close>
-  have "<r,p>\<in>leq"
+  assume "r\<in>P" "r\<preceq>q"
+  moreover from this and \<open>p\<in>P\<close> \<open>q\<preceq>p\<close> \<open>q\<in>P\<close>
+  have "r\<preceq>p"
     using leq_transD by simp
   moreover
   note \<open>forces_mem(q,s,t1)\<close> \<open>dense_below(_,p)\<close> \<open>q\<in>P\<close>
   ultimately
-  obtain q1 where "<q1,r>\<in>leq" "q1\<in>P" "forces_mem(q1,s,t2)"
+  obtain q1 where "q1\<preceq>r" "q1\<in>P" "forces_mem(q1,s,t2)"
     using strengthening_mem[of q _ s t1] leq_reflI leq_transD[of _ r q] by blast
   then
-  show "\<exists>d\<in>{r \<in> P . forces_mem(r, s, t2)}. d \<in> P \<and> \<langle>d, r\<rangle> \<in> leq"
+  show "\<exists>d\<in>{r \<in> P . forces_mem(r, s, t2)}. d \<in> P \<and> d\<preceq> r"
     by blast
 qed
 
@@ -173,27 +173,27 @@ next
   assume "dense_below({q\<in>P. forces_eq(q,t1,t2)},p)"
   {
     fix s q 
-    let ?D1="{q'\<in>P. \<forall>s\<in>domain(t1) \<union> domain(t2). \<forall>q. q \<in> P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow>
+    let ?D1="{q'\<in>P. \<forall>s\<in>domain(t1) \<union> domain(t2). \<forall>q. q \<in> P \<and> q\<preceq>q' \<longrightarrow>
            forces_mem(q,s,t1)\<longleftrightarrow>forces_mem(q,s,t2)}"
-    let ?D2="{q'\<in>P. \<forall>q. q\<in>P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow> forces_mem(q,s,t1) \<longleftrightarrow> forces_mem(q,s,t2)}"
+    let ?D2="{q'\<in>P. \<forall>q. q\<in>P \<and> q\<preceq>q' \<longrightarrow> forces_mem(q,s,t1) \<longleftrightarrow> forces_mem(q,s,t2)}"
     assume "s\<in>domain(t1) \<union> domain(t2)" 
     then
     have "?D1\<subseteq>?D2" by blast
     with \<open>dense_below(_,p)\<close>
-    have "dense_below({q'\<in>P. \<forall>s\<in>domain(t1) \<union> domain(t2). \<forall>q. q \<in> P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow>
+    have "dense_below({q'\<in>P. \<forall>s\<in>domain(t1) \<union> domain(t2). \<forall>q. q \<in> P \<and> q\<preceq>q' \<longrightarrow>
            forces_mem(q,s,t1)\<longleftrightarrow>forces_mem(q,s,t2)},p)"
       using dense_below_cong'[OF \<open>p\<in>P\<close> def_forces_eq[of _ t1 t2]] by simp
     with \<open>p\<in>P\<close> \<open>?D1\<subseteq>?D2\<close>
-    have "dense_below({q'\<in>P. \<forall>q. q\<in>P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow> 
+    have "dense_below({q'\<in>P. \<forall>q. q\<in>P \<and> q\<preceq>q' \<longrightarrow> 
             forces_mem(q,s,t1) \<longleftrightarrow> forces_mem(q,s,t2)},p)"
       using dense_below_mono by simp
     moreover from this (* Automatic tools can't handle this symmetry 
                           in order to apply aux_density_eq below *)
-    have  "dense_below({q'\<in>P. \<forall>q. q\<in>P \<and> \<langle>q,q'\<rangle>\<in>leq \<longrightarrow> 
+    have  "dense_below({q'\<in>P. \<forall>q. q\<in>P \<and> q\<preceq>q' \<longrightarrow> 
             forces_mem(q,s,t2) \<longleftrightarrow> forces_mem(q,s,t1)},p)"
       by blast
     moreover
-    assume "q \<in> P" "<q,p>\<in>leq"
+    assume "q \<in> P" "q\<preceq>p"
     moreover
     note \<open>p\<in>P\<close>
     ultimately (*We can omit the next step but it is slower *)
@@ -210,22 +210,22 @@ qed
 
 definition
   forces_neq :: "[i,i,i] \<Rightarrow> o" where
-  "forces_neq(p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_eq(q,t1,t2))"
+  "forces_neq(p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> forces_eq(q,t1,t2))"
 
 definition
   forces_nmem :: "[i,i,i] \<Rightarrow> o" where
-  "forces_nmem(p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_mem(q,t1,t2))"
+  "forces_nmem(p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> forces_mem(q,t1,t2))"
 
 (* Kunen 2013, Lemma IV.2.38 *)
 lemma not_forces_neq:
   assumes "p\<in>P"
-  shows "forces_eq(p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_neq(q,t1,t2))"
+  shows "forces_eq(p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> forces_neq(q,t1,t2))"
   using assms density_eq unfolding forces_neq_def by blast
 
 (* Kunen 2013, Lemma IV.2.38 *)
 lemma not_forces_nmem:
   assumes "p\<in>P"
-  shows "forces_mem(p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> forces_nmem(q,t1,t2))"
+  shows "forces_mem(p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> forces_nmem(q,t1,t2))"
   using assms density_mem unfolding forces_nmem_def by blast
 
 (* Use the newer versions in Forces_Definition! *)
@@ -296,7 +296,7 @@ lemma Forces_Neg:
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" 
   shows
-    "(p \<tturnstile> Neg(\<phi>) env) \<longleftrightarrow> \<not>(\<exists>q\<in>M. q\<in>P \<and> <q,p>\<in>leq \<and> (q \<tturnstile> \<phi> env))"
+    "(p \<tturnstile> Neg(\<phi>) env) \<longleftrightarrow> \<not>(\<exists>q\<in>M. q\<in>P \<and> q\<preceq>p \<and> (q \<tturnstile> \<phi> env))"
   unfolding Forces_def using assms sats_forces_Neg' Transset_intf[OF trans_M] 
   P_in_M pair_in_M_iff by simp
 
@@ -304,7 +304,7 @@ lemma Forces_Nand:
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
   shows
-    "(p \<tturnstile> Nand(\<phi>,\<psi>) env) \<longleftrightarrow> \<not>(\<exists>q\<in>M. q\<in>P \<and> <q,p>\<in>leq \<and> (q \<tturnstile> \<phi> env) \<and> (q \<tturnstile> \<psi> env))"
+    "(p \<tturnstile> Nand(\<phi>,\<psi>) env) \<longleftrightarrow> \<not>(\<exists>q\<in>M. q\<in>P \<and> q\<preceq>p \<and> (q \<tturnstile> \<phi> env) \<and> (q \<tturnstile> \<psi> env))"
   unfolding Forces_def using assms sats_forces_Nand' Transset_intf[OF trans_M] 
   P_in_M pair_in_M_iff by simp
 
@@ -313,7 +313,7 @@ lemma Forces_And_aux:
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
   shows
     "(p \<tturnstile> And(\<phi>,\<psi>) env) \<longleftrightarrow> 
-    (\<forall>q\<in>M. q\<in>P \<and> <q,p>\<in>leq \<longrightarrow> (\<exists>r\<in>M. r\<in>P \<and> <r,q>\<in>leq \<and> (r \<tturnstile> \<phi> env) \<and> (r \<tturnstile> \<psi> env)))"
+    (\<forall>q\<in>M. q\<in>P \<and> q\<preceq>p \<longrightarrow> (\<exists>r\<in>M. r\<in>P \<and> r\<preceq>q \<and> (r \<tturnstile> \<phi> env) \<and> (r \<tturnstile> \<psi> env)))"
   unfolding And_def using assms Forces_Neg Forces_Nand by (auto simp only:)
 
 lemma Forces_And_iff_dense_below:
@@ -345,10 +345,10 @@ lemma elem_of_valI: "\<exists>\<theta>. \<exists>p\<in>P. p\<in>G \<and> <\<thet
 lemma M_genericD [dest]: "M_generic(G) \<Longrightarrow> x\<in>G \<Longrightarrow> x\<in>P"
   unfolding M_generic_def by (blast dest:filterD)
 
-lemma M_generic_leqD [dest]: "M_generic(G) \<Longrightarrow> p\<in>G \<Longrightarrow> q\<in>P \<Longrightarrow> <p,q>\<in>leq \<Longrightarrow> q\<in>G"
+lemma M_generic_leqD [dest]: "M_generic(G) \<Longrightarrow> p\<in>G \<Longrightarrow> q\<in>P \<Longrightarrow> p\<preceq>q \<Longrightarrow> q\<in>G"
   unfolding M_generic_def by (blast dest:filter_leqD)
 
-lemma M_generic_compatD [dest]: "M_generic(G) \<Longrightarrow> p\<in>G \<Longrightarrow> r\<in>G \<Longrightarrow> \<exists>q\<in>G. <q,p>\<in>leq \<and> <q,r>\<in>leq"
+lemma M_generic_compatD [dest]: "M_generic(G) \<Longrightarrow> p\<in>G \<Longrightarrow> r\<in>G \<Longrightarrow> \<exists>q\<in>G. q\<preceq>p \<and> q\<preceq>r"
   unfolding M_generic_def by (blast dest:low_bound_filter)
 
 lemma M_generic_denseD [dest]: "M_generic(G) \<Longrightarrow> dense(D) \<Longrightarrow> D\<subseteq>P \<Longrightarrow> D\<in>M \<Longrightarrow> \<exists>q\<in>G. q\<in>D"
@@ -373,9 +373,9 @@ lemma IV240a_mem:
   shows
     "val(G,\<pi>)\<in>val(G,\<tau>)"
 proof (intro elem_of_valI)
-  let ?D="{q\<in>P. \<exists>\<sigma>. \<exists>r. r\<in>P \<and> <\<sigma>,r> \<in> \<tau> \<and> <q,r>\<in>leq \<and> forces_eq(q,\<pi>,\<sigma>)}"
+  let ?D="{q\<in>P. \<exists>\<sigma>. \<exists>r. r\<in>P \<and> <\<sigma>,r> \<in> \<tau> \<and> q\<preceq>r \<and> forces_eq(q,\<pi>,\<sigma>)}"
   from assms
-  have "?D = {q\<in>P. \<exists>\<sigma>. \<exists>r. r\<in>P \<and> <\<sigma>,r> \<in> \<tau> \<and> <q,r>\<in>leq \<and> sats(M,forces(Equal(0,1)),[P,leq,one,q,\<pi>,\<sigma>])}"
+  have "?D = {q\<in>P. \<exists>\<sigma>. \<exists>r. r\<in>P \<and> <\<sigma>,r> \<in> \<tau> \<and> q\<preceq>r \<and> sats(M,forces(Equal(0,1)),[P,leq,one,q,\<pi>,\<sigma>])}"
     using sats_forces_Equal'[of _ \<pi> _ "[\<pi>, _]" 0 1]  left_in_M  by simp
   moreover from \<open>M_generic(G)\<close> \<open>p\<in>G\<close>
   have "p\<in>P" by blast
@@ -392,7 +392,7 @@ proof (intro elem_of_valI)
   ultimately
   obtain q where "q\<in>G" "q\<in>?D" using generic_inter_dense_below by blast
   then
-  obtain \<sigma> r where "r\<in>P" "<\<sigma>,r> \<in> \<tau>" "<q,r>\<in>leq" "forces_eq(q,\<pi>,\<sigma>)" by blast
+  obtain \<sigma> r where "r\<in>P" "<\<sigma>,r> \<in> \<tau>" "q\<preceq>r" "forces_eq(q,\<pi>,\<sigma>)" by blast
   moreover from this and \<open>q\<in>G\<close> assms
   have "r \<in> G" "val(G,\<pi>) = val(G,\<sigma>)" by blast+
   ultimately
@@ -403,7 +403,7 @@ qed
 lemma refl_forces_eq:"p\<in>P \<Longrightarrow> forces_eq(p,x,x)"
   using def_forces_eq by simp
 
-lemma forces_memI: "<\<sigma>,r>\<in>\<tau> \<Longrightarrow> p\<in>P \<Longrightarrow> r\<in>P \<Longrightarrow> <p,r>\<in>leq \<Longrightarrow> forces_mem(p,\<sigma>,\<tau>)"
+lemma forces_memI: "<\<sigma>,r>\<in>\<tau> \<Longrightarrow> p\<in>P \<Longrightarrow> r\<in>P \<Longrightarrow> p\<preceq>r \<Longrightarrow> forces_mem(p,\<sigma>,\<tau>)"
   using refl_forces_eq[of _ \<sigma>] leq_transD leq_reflI 
   by (blast intro:forces_mem_iff_dense_below[THEN iffD2])
 
@@ -438,7 +438,7 @@ proof
   then
   obtain \<sigma> r where "<\<sigma>,r>\<in>\<tau>" "r\<in>G" "val(G,\<sigma>)=x" by blast
   moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
-  obtain q where "q\<in>G" "<q,p>\<in>leq" "<q,r>\<in>leq" by force
+  obtain q where "q\<in>G" "q\<preceq>p" "q\<preceq>r" by force
   moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
   have "q\<in>P" "p\<in>P" by blast+
   moreover from calculation and \<open>M_generic(G)\<close>
@@ -469,7 +469,7 @@ proof
   then
   obtain \<sigma> r where "<\<sigma>,r>\<in>\<theta>" "r\<in>G" "val(G,\<sigma>)=x" by blast
   moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
-  obtain q where "q\<in>G" "<q,p>\<in>leq" "<q,r>\<in>leq" by force
+  obtain q where "q\<in>G" "q\<preceq>p" "q\<preceq>r" by force
   moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
   have "q\<in>P" "p\<in>P" by blast+
   moreover from calculation and \<open>M_generic(G)\<close>
@@ -671,20 +671,20 @@ proof -
   moreover
   note \<open>M_generic(G)\<close>
   ultimately
-  obtain p where "<p,r>\<in>leq" "p\<in>G" "forces_eq(p,\<pi>,\<sigma>)" 
+  obtain p where "p\<preceq>r" "p\<in>G" "forces_eq(p,\<pi>,\<sigma>)" 
     using M_generic_compatD strengthening_eq[of p'] by blast
   moreover 
   note \<open>M_generic(G)\<close>
   moreover from calculation
-  have "forces_eq(q,\<pi>,\<sigma>)" if "q\<in>P" "<q,p>\<in>leq" for q
+  have "forces_eq(q,\<pi>,\<sigma>)" if "q\<in>P" "q\<preceq>p" for q
     using that strengthening_eq by blast
   moreover 
   note \<open><\<sigma>,r>\<in>\<tau>\<close> \<open>r\<in>G\<close>
   ultimately
-  have "r\<in>P \<and> \<langle>\<sigma>,r\<rangle> \<in> \<tau> \<and> \<langle>q,r\<rangle> \<in> leq \<and> forces_eq(q,\<pi>,\<sigma>)" if "q\<in>P" "<q,p>\<in>leq" for q
+  have "r\<in>P \<and> \<langle>\<sigma>,r\<rangle> \<in> \<tau> \<and> q\<preceq>r \<and> forces_eq(q,\<pi>,\<sigma>)" if "q\<in>P" "q\<preceq>p" for q
     using that leq_transD[of _ p r] by blast
   then
-  have "dense_below({q\<in>P. \<exists>s r. r\<in>P \<and> \<langle>s,r\<rangle> \<in> \<tau> \<and> \<langle>q,r\<rangle>\<in>leq \<and> forces_eq(q,\<pi>,s)},p)"
+  have "dense_below({q\<in>P. \<exists>s r. r\<in>P \<and> \<langle>s,r\<rangle> \<in> \<tau> \<and> q\<preceq>r \<and> forces_eq(q,\<pi>,s)},p)"
     using leq_reflI by blast
   moreover
   note \<open>M_generic(G)\<close> \<open>p\<in>G\<close>
@@ -714,8 +714,8 @@ proof -
      \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p,\<sigma>,\<tau>) \<and> forces_mem(p,\<sigma>,\<theta>))}"
   have "?D = {p\<in>P. sats(M,forces(Equal(0,1)),[P,leq,one,p,\<tau>,\<theta>]) 
     \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<tau>]) \<and> 
-            \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<theta>])))
-    \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<tau>]))
+            \<not> (\<exists>q\<in>P. q\<preceq>p \<and> sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<theta>])))
+    \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). \<not> (\<exists>q\<in>P. q\<preceq>p \<and> sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<tau>]))
               \<and> sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<theta>]))}"
     (* horrible proof ahead *)
   proof -
@@ -734,9 +734,9 @@ proof -
       \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p,\<sigma>,\<tau>) \<and> forces_mem(p,\<sigma>,\<theta>))
    \<longleftrightarrow>
         (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<tau>]) 
-             \<and> \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and> sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<theta>])))
+             \<and> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<theta>])))
       \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). 
-              \<not> (\<exists>q\<in>P. <q,p>\<in>leq \<and>  sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<tau>])) 
+              \<not> (\<exists>q\<in>P. q\<preceq>p \<and>  sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<tau>])) 
              \<and> sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<theta>])) " if "p\<in>P" for p
       unfolding forces_nmem_def using that sorry
     with assms
@@ -780,14 +780,14 @@ proof -
     ultimately
     obtain q where "q\<in>G" "forces_mem(q, \<sigma>, \<theta>)" by auto
     moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
-    obtain r where "r\<in>P" "<r,p>\<in>leq" "<r,q>\<in>leq"
+    obtain r where "r\<in>P" "r\<preceq>p" "r\<preceq>q"
       by blast
     moreover
     note \<open>M_generic(G)\<close>
     ultimately
     have "forces_mem(r, \<sigma>, \<theta>)"
       using strengthening_mem by blast
-    with \<open><r,p>\<in>leq\<close> \<open>forces_nmem(p,\<sigma>,\<theta>)\<close> \<open>r\<in>P\<close>
+    with \<open>r\<preceq>p\<close> \<open>forces_nmem(p,\<sigma>,\<theta>)\<close> \<open>r\<in>P\<close>
     have "False"
       unfolding forces_nmem_def by blast
     then
@@ -804,14 +804,14 @@ proof -
     ultimately
     obtain q where "q\<in>G" "forces_mem(q, \<sigma>, \<tau>)" by auto
     moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
-    obtain r where "r\<in>P" "<r,p>\<in>leq" "<r,q>\<in>leq"
+    obtain r where "r\<in>P" "r\<preceq>p" "r\<preceq>q"
       by blast
     moreover
     note \<open>M_generic(G)\<close>
     ultimately
     have "forces_mem(r, \<sigma>, \<tau>)"
       using strengthening_mem by blast
-    with \<open><r,p>\<in>leq\<close> \<open>forces_nmem(p,\<sigma>,\<tau>)\<close> \<open>r\<in>P\<close>
+    with \<open>r\<preceq>p\<close> \<open>forces_nmem(p,\<sigma>,\<tau>)\<close> \<open>r\<in>P\<close>
     have "False"
       unfolding forces_nmem_def by blast
     then
@@ -887,7 +887,7 @@ lemma arities_at_aux:
 
 lemma strengthening_lemma:
   assumes 
-    "p\<in>P" "\<phi>\<in>formula" "r\<in>P" "<r,p>\<in>leq"
+    "p\<in>P" "\<phi>\<in>formula" "r\<in>P" "r\<preceq>p"
   shows
     "\<And>env. env\<in>list(M) \<Longrightarrow> arity(\<phi>)\<le>length(env) \<Longrightarrow> p \<tturnstile> \<phi> env \<Longrightarrow> r \<tturnstile> \<phi> env"
   using assms(2)
@@ -979,11 +979,11 @@ next
 case (Nand \<phi> \<psi>)
   {  
     fix q
-    assume "q\<in>M" "q\<in>P" "\<langle>q, p\<rangle> \<in> leq" "q \<tturnstile> \<phi> env"
+    assume "q\<in>M" "q\<in>P" "q\<preceq> p" "q \<tturnstile> \<phi> env"
     moreover 
     note Nand
     moreover from calculation
-    obtain d where "d\<in>P" "d \<tturnstile> Nand(\<phi>, \<psi>) env" "\<langle>d, q\<rangle> \<in> leq"
+    obtain d where "d\<in>P" "d \<tturnstile> Nand(\<phi>, \<psi>) env" "d\<preceq> q"
       using dense_belowI by auto
     moreover from calculation
     have "\<not>(d\<tturnstile> \<psi> env)" if "d \<tturnstile> \<phi> env"
@@ -1005,9 +1005,9 @@ next
   have "dense_below({q\<in>P. q \<tturnstile> \<phi> ([a]@env)},p)" if "a\<in>M" for a
   proof
     fix r
-    assume "r\<in>P" "<r,p>\<in>leq"
+    assume "r\<in>P" "r\<preceq>p"
     with \<open>dense_below(_,p)\<close>
-    obtain q where "q\<in>P" "<q,r>\<in>leq" "q \<tturnstile> Forall(\<phi>) env"
+    obtain q where "q\<in>P" "q\<preceq>r" "q \<tturnstile> Forall(\<phi>) env"
       by blast
     moreover
     note Forall \<open>a\<in>M\<close>
@@ -1015,7 +1015,7 @@ next
     have "q \<tturnstile> \<phi> ([a]@env)"
       using Forces_Forall by simp
     ultimately
-    show "\<exists>d \<in> {q\<in>P. q \<tturnstile> \<phi> ([a]@env)}. d \<in> P \<and> \<langle>d,r\<rangle> \<in> leq"
+    show "\<exists>d \<in> {q\<in>P. q \<tturnstile> \<phi> ([a]@env)}. d \<in> P \<and> d\<preceq>r"
       by auto
   qed
   moreover 
@@ -1066,9 +1066,9 @@ next
   have "dense_below({r \<in> P . (r \<tturnstile> \<phi> env) \<and> (r \<tturnstile> \<psi> env)}, p)"
   proof (intro dense_belowI bexI conjI, assumption)
     fix q
-    assume "q\<in>P" "\<langle>q, p\<rangle> \<in> leq"
+    assume "q\<in>P" "q\<preceq> p"
     with assms \<open>(p \<tturnstile> \<phi> env) \<and> (p \<tturnstile> \<psi> env)\<close>
-    show "q\<in>{r \<in> P . (r \<tturnstile> \<phi> env) \<and> (r \<tturnstile> \<psi> env)}" "\<langle>q, q\<rangle> \<in> leq"
+    show "q\<in>{r \<in> P . (r \<tturnstile> \<phi> env) \<and> (r \<tturnstile> \<psi> env)}" "q\<preceq> q"
       using strengthening_lemma leq_reflI by auto
   qed
   with assms
@@ -1102,7 +1102,7 @@ proof (intro iffI, elim bexE, rule ccontr)
   with IH
   obtain r where "r \<tturnstile> \<phi> env" "r\<in>G" by blast
   moreover from this and \<open>M_generic(G)\<close> \<open>p\<in>G\<close>
-  obtain q where "\<langle>q,p\<rangle> \<in> leq" "\<langle>q,r\<rangle> \<in> leq" "q\<in>G"
+  obtain q where "q\<preceq>p" "q\<preceq>r" "q\<in>G"
     by blast
   moreover from calculation 
   have "q \<tturnstile> \<phi> env"
@@ -1124,7 +1124,7 @@ next
   proof
     fix q
     assume "q\<in>P"
-    show "\<exists>d\<in>{p \<in> P . (p \<tturnstile> \<phi> env) \<or> (p \<tturnstile> Neg(\<phi>) env)}. \<langle>d, q\<rangle> \<in> leq"
+    show "\<exists>d\<in>{p \<in> P . (p \<tturnstile> \<phi> env) \<or> (p \<tturnstile> Neg(\<phi>) env)}. d\<preceq> q"
     proof (cases "q \<tturnstile> Neg(\<phi>) env")
       case True
       with \<open>q\<in>P\<close>
@@ -1180,7 +1180,7 @@ next
   obtain q r where "q \<tturnstile> \<phi> env" "r \<tturnstile> \<psi> env" "q\<in>G" "r\<in>G"
     using map_val_in_MG Forces_And[OF M_genericD assms(1-5)] by auto
   moreover from calculation
-  obtain p where "\<langle>p,q\<rangle> \<in> leq" "\<langle>p,r\<rangle> \<in> leq" "p\<in>G"
+  obtain p where "p\<preceq>q" "p\<preceq>r" "p\<in>G"
     by blast
   moreover from calculation
   have "(p \<tturnstile> \<phi> env) \<and> (p \<tturnstile> \<psi> env)" (* can't solve as separate goals *)
@@ -1237,7 +1237,7 @@ next
   next
     assume "sats(M[G], Forall(\<phi>), map(val(G),env))"
     let ?D1="{d\<in>P. (d \<tturnstile> Forall(\<phi>) env)}"
-    let ?D2="{d\<in>P. \<exists>b\<in>M. \<forall>q\<in>P. <q,d>\<in>leq \<longrightarrow> \<not>(q \<tturnstile> \<phi> ([b]@env))}"
+    let ?D2="{d\<in>P. \<exists>b\<in>M. \<forall>q\<in>P. q\<preceq>d \<longrightarrow> \<not>(q \<tturnstile> \<phi> ([b]@env))}"
     define D where "D \<equiv> ?D1 \<union> ?D2"
     have "D \<subseteq> P" unfolding D_def by auto
     moreover
@@ -1247,7 +1247,7 @@ next
     proof
       fix p
       assume "p\<in>P"
-      show "\<exists>d\<in>D. \<langle>d, p\<rangle> \<in> leq"
+      show "\<exists>d\<in>D. d\<preceq> p"
       proof (cases "p \<tturnstile> Forall(\<phi>) env")
         case True
         with \<open>p\<in>P\<close> 
@@ -1261,7 +1261,7 @@ next
         have "\<not>dense_below({q\<in>P. q \<tturnstile> \<phi> ([b]@env)},p)"
           using density_lemma pred_le2  by auto
         moreover from this
-        obtain d where "<d,p>\<in>leq" "\<forall>q\<in>P. <q,d>\<in>leq \<longrightarrow> \<not>(q \<tturnstile> \<phi> ([b] @ env))"
+        obtain d where "d\<preceq>p" "\<forall>q\<in>P. q\<preceq>d \<longrightarrow> \<not>(q \<tturnstile> \<phi> ([b] @ env))"
           "d\<in>P" by blast
         ultimately
         show ?thesis unfolding D_def by auto
@@ -1282,7 +1282,7 @@ next
     next
       case 2
       then
-      obtain b where "b\<in>M" "\<forall>q\<in>P. <q,d>\<in>leq \<longrightarrow>\<not>(q \<tturnstile> \<phi> ([b] @ env))"
+      obtain b where "b\<in>M" "\<forall>q\<in>P. q\<preceq>d \<longrightarrow>\<not>(q \<tturnstile> \<phi> ([b] @ env))"
         by blast
       moreover from this(1) and  \<open>sats(M[G], Forall(\<phi>),_)\<close> and 
         Forall(2)[of "Cons(b,env)"] Forall(1,3-4) \<open>M_generic(G)\<close>
@@ -1291,13 +1291,13 @@ next
       moreover
       note \<open>d\<in>G\<close> \<open>M_generic(G)\<close>
       ultimately
-      obtain q where "q\<in>G" "q\<in>P" "<q,d>\<in>leq" "<q,p>\<in>leq" by blast
+      obtain q where "q\<in>G" "q\<in>P" "q\<preceq>d" "q\<preceq>p" by blast
       moreover from this and  \<open>p \<tturnstile> \<phi> ([b] @ env)\<close> 
         Forall  \<open>b\<in>M\<close> \<open>p\<in>P\<close>
       have "q \<tturnstile> \<phi> ([b] @ env)"
         using pred_le2 strengthening_lemma by simp
       moreover 
-      note \<open>\<forall>q\<in>P. <q,d>\<in>leq \<longrightarrow>\<not>(q \<tturnstile> \<phi> ([b] @ env))\<close>
+      note \<open>\<forall>q\<in>P. q\<preceq>d \<longrightarrow>\<not>(q \<tturnstile> \<phi> ([b] @ env))\<close>
       ultimately
       show ?thesis by simp
     qed
@@ -1320,7 +1320,7 @@ next
   assume 1: "\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],\<phi>,map(val(G),env))"
   {
     fix r 
-    assume 2: "r\<in>P" "<r,p>\<in>leq"
+    assume 2: "r\<in>P" "r\<preceq>p"
     then 
     obtain G where "r\<in>G" "M_generic(G)"
       using generic_filter_existence by auto
@@ -1335,7 +1335,7 @@ next
     obtain s where "s\<in>G" "(s \<tturnstile> \<phi> env)"
       using truth_lemma by blast
     moreover from this and  \<open>M_generic(G)\<close> \<open>r\<in>G\<close> 
-    obtain q where "q\<in>G" "<q,s>\<in>leq" "<q,r>\<in>leq"
+    obtain q where "q\<in>G" "q\<preceq>s" "q\<preceq>r"
       by blast
     moreover from calculation \<open>s\<in>G\<close> \<open>M_generic(G)\<close> 
     have "s\<in>P" "q\<in>P" 
@@ -1343,7 +1343,7 @@ next
     moreover 
     note assms
     ultimately 
-    have "\<exists>q\<in>P. <q,r>\<in>leq \<and> (q \<tturnstile> \<phi> env)"
+    have "\<exists>q\<in>P. q\<preceq>r \<and> (q \<tturnstile> \<phi> env)"
       using strengthening_lemma by blast
   }
   then
