@@ -17,6 +17,15 @@ lemma leq_transD:  "a\<preceq>b \<Longrightarrow> b\<preceq>c \<Longrightarrow> 
 lemma leq_reflI: "p\<in>P \<Longrightarrow> p\<preceq>p"
  using leq_preord unfolding preorder_on_def refl_def by blast
 
+lemma compatD[dest!]: "compat(p,q) \<Longrightarrow> \<exists>d\<in>P. d\<preceq>p \<and> d\<preceq>q"
+  unfolding compat_def compat_in_def .
+
+abbreviation Incompatible :: "[i, i] \<Rightarrow> o"  (infixl "\<bottom>" 50)
+  where "p \<bottom> q \<equiv> \<not> compat(p,q)"
+
+lemma compatI[intro!]: "d\<in>P \<Longrightarrow> d\<preceq>p \<Longrightarrow> d\<preceq>q \<Longrightarrow> compat(p,q)"
+  unfolding compat_def compat_in_def by blast
+
 lemma denseD [dest]: "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow>  \<exists>d\<in>D. d\<preceq> p"
   unfolding dense_def by blast
 
@@ -361,8 +370,43 @@ lemma left_in_M : "tau\<in>M \<Longrightarrow> <a,b>\<in>tau \<Longrightarrow> a
   using fst_snd_closed[of "<a,b>"] Transset_intf[OF trans_M] by auto
 
 (* Kunen 2013, Lemma IV.2.29 *)
-lemma generic_inter_dense_below: "D\<in>M \<Longrightarrow> M_generic(G) \<Longrightarrow> dense_below(D,p) \<Longrightarrow> p\<in>G \<Longrightarrow> D \<inter> G \<noteq> 0"
-  sorry
+lemma generic_inter_dense_below: 
+  assumes "D\<in>M" "M_generic(G)" "dense_below(D,p)" "p\<in>G"
+  shows "D \<inter> G \<noteq> 0"
+proof -
+  let ?D="{q\<in>P. p\<bottom>q \<or> q\<in>D}"
+  have "dense(?D)"
+  proof
+    fix r
+    assume "r\<in>P"
+    show "\<exists>d\<in>{q \<in> P . p \<bottom> q \<or> q \<in> D}. d \<preceq> r"
+    proof (cases "p \<bottom> r")
+      case True
+      with \<open>r\<in>P\<close>
+        (* Automatic tools can't handle this case for some reason... *)
+      show ?thesis using leq_reflI[of r] by (intro bexI) (blast+)
+    next
+      case False
+      then
+      obtain s where "s\<in>P" "s\<preceq>p" "s\<preceq>r" by blast
+      with assms \<open>r\<in>P\<close>
+      show ?thesis
+        using dense_belowD[OF assms(3), of s] leq_transD[of _ s r]
+        by blast
+    qed
+  qed
+  have "?D\<subseteq>P" by auto
+  have "?D\<in>M" sorry
+  note asm = \<open>M_generic(G)\<close> \<open>dense(?D)\<close> \<open>?D\<subseteq>P\<close> \<open>?D\<in>M\<close>
+  obtain x where "x\<in>G" "x\<in>?D" using M_generic_denseD[OF asm]
+    by force (* by (erule bexE) does it, but the other automatic tools don't *)
+  moreover from this and \<open>M_generic(G)\<close>
+  have "x\<in>D"
+    using M_generic_compatD[OF _ \<open>p\<in>G\<close>, of x]
+      leq_reflI compatI[of _ p x] by force
+  ultimately
+  show ?thesis by auto
+qed
 
 (* Lemma IV.2.40(a), membership *)
 lemma IV240a_mem:
