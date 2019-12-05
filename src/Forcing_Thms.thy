@@ -746,8 +746,41 @@ proof -
   with assms
   have "?D\<in>M" sorry
   moreover
-  have "dense(?D)" 
-    using def_forces_eq not_forces_nmem sorry
+  have "dense(?D)"
+  proof
+    fix p
+    assume "p\<in>P"
+    have "\<exists>d\<in>P. (forces_eq(d, \<tau>, \<theta>) \<or>
+            (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(d, \<sigma>, \<tau>) \<and> forces_nmem(d, \<sigma>, \<theta>)) \<or>
+            (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(d, \<sigma>, \<tau>) \<and> forces_mem(d, \<sigma>, \<theta>))) \<and>
+           d \<preceq> p" 
+    proof (cases "forces_eq(p, \<tau>, \<theta>)")
+      case True
+      with \<open>p\<in>P\<close> 
+      show ?thesis using leq_reflI by blast
+    next
+      case False
+      moreover note \<open>p\<in>P\<close>
+      moreover from calculation
+      obtain \<sigma> q where "\<sigma>\<in>domain(\<tau>)\<union>domain(\<theta>)" "q\<in>P" "q\<preceq>p"
+        "(forces_mem(q, \<sigma>, \<tau>) \<and> \<not> forces_mem(q, \<sigma>, \<theta>)) \<or>
+         (\<not> forces_mem(q, \<sigma>, \<tau>) \<and> forces_mem(q, \<sigma>, \<theta>))"
+        using def_forces_eq by blast
+      moreover from this
+      obtain r where "r\<preceq>q" "r\<in>P"
+        "(forces_mem(r, \<sigma>, \<tau>) \<and> forces_nmem(r, \<sigma>, \<theta>)) \<or>
+         (forces_nmem(r, \<sigma>, \<tau>) \<and> forces_mem(r, \<sigma>, \<theta>))"
+        using not_forces_nmem strengthening_mem by blast
+      ultimately
+      show ?thesis using leq_transD by blast
+    qed
+    then
+    show "\<exists>d\<in>{p \<in> P .
+              forces_eq(p, \<tau>, \<theta>) \<or>
+              (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(p, \<sigma>, \<tau>) \<and> forces_nmem(p, \<sigma>, \<theta>)) \<or>
+              (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p, \<sigma>, \<tau>) \<and> forces_mem(p, \<sigma>, \<theta>))}.
+            d \<preceq> p" by simp
+  qed
   moreover
   have "?D \<subseteq> P"
     by auto
