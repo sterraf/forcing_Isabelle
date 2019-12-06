@@ -540,60 +540,6 @@ lemma IV240a_eq:
     "val(G,\<tau>) = val(G,\<theta>)"
   using IV240a_eq_1st_incl[OF assms] IV240a_eq_2nd_incl[OF assms] IH by blast 
 
-(*
-    "forces_mem(p,\<pi>,\<tau>)"
-    "\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_eq(q,\<pi>,\<sigma>) \<Longrightarrow> val(G,\<pi>) = val(G,\<sigma>)" 
-    -------------------------------
-    "val(G,\<pi>) \<in> val(G,\<tau>)"
-
-    "forces_eq(p,\<tau>,\<theta>)"
- IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
-        (forces_mem(q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
-        (forces_mem(q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
-    -------------------------------
-    "val(G,\<tau>) = val(G,\<theta>)"
-
-Unfolding forces_eq and forces_mem defs,
-
-    "frc_at(P,leq,<1,\<tau>,\<theta>,p>) = 1"
-    "\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<theta>) \<Longrightarrow> frc_at(P,leq,<0,\<tau>,\<sigma>,q>) = 1 \<Longrightarrow> val(G,\<tau>) = val(G,\<sigma>)"
-    -------------------------------
-    "val(G,\<tau>) \<in> val(G,\<theta>)"
-    
-    "frc_at(P,leq,<0,\<tau>,\<theta>,p>) = 1"
- IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
-        (frc_at(P,leq,<1,\<sigma>,\<tau>,q>) = 1 \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
-        (frc_at(P,leq,<1,\<sigma>,\<theta>,q>) = 1 \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
-    -------------------------------
-    "val(G,\<tau>) = val(G,\<theta>)"
-
-
-Discharging the main assumption,
-
-    "\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<theta>) \<Longrightarrow> frc_at(P,leq,<0,\<tau>,\<sigma>,q>) = 1 \<longrightarrow> val(G,\<tau>) = val(G,\<sigma>)"
-    -------------------------------
-    "frc_at(P,leq,<1,\<tau>,\<theta>,p>) = 1 \<longrightarrow>  val(G,\<tau>) \<in> val(G,\<theta>)"
-    
- IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
-        (frc_at(P,leq,<1,\<sigma>,\<tau>,q>) = 1 \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
-        (frc_at(P,leq,<1,\<sigma>,\<theta>,q>) = 1 \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
-    -------------------------------
-    "frc_at(P,leq,<0,\<tau>,\<theta>,p>) = 1 \<longrightarrow> val(G,\<tau>) = val(G,\<theta>)"
-
-And abstacting,
-
-    "\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<theta>) \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)"
-    -------------------------------
-    "Q(1,\<tau>,\<theta>,p)"
-    
- IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> Q(1,\<sigma>,\<tau>,q) \<and> Q(1,\<sigma>,\<theta>,q)"
-    -------------------------------
-    "Q(0,\<tau>,\<theta>,p)"
-
-Putting altogether,
-*)
-
-
 lemma core_induction:
   assumes
     "\<And>\<tau> \<theta> p. p \<in> P \<Longrightarrow> \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
@@ -741,6 +687,32 @@ qed
 
 end (* includes *)
 
+lemma Collect_forces_eq_in_M:
+  assumes "\<tau> \<in> M" "\<theta> \<in> M" "\<sigma> \<in> M"
+  shows "{p\<in>P. forces_eq(p,\<tau>,\<theta>)} \<in> M"
+  sorry
+
+lemma Collect_forces_mem_in_M:
+  assumes "\<tau> \<in> M" "\<theta> \<in> M" "\<sigma> \<in> M"
+  shows "{p\<in>P. forces_mem(p,\<tau>,\<theta>)} \<in> M"
+  sorry
+
+lemma Collect_forces_nmem_in_M:
+  assumes "\<tau> \<in> M" "\<theta> \<in> M" "\<sigma> \<in> M"
+  shows "{p\<in>P. forces_nmem(p,\<tau>,\<theta>)} \<in> M"
+  sorry
+
+(* One possible general lemma*)
+lemma Collect_bex_in_M:
+  assumes "\<And>x y. x \<in> M \<Longrightarrow> A \<in> M \<Longrightarrow> {a\<in>A. Q(x,a)} \<in> M" "B \<in> M"
+  shows "{a\<in>A. \<exists>x\<in>B. Q(x,a)} \<in> M"
+  sorry
+
+(* lemma IV240b_eq_Collects:
+  assumes "\<tau> \<in> M" "\<theta> \<in> M"
+  shows "{p\<in>P. \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>)}\<in>M"
+*)
+
 (* Lemma IV.2.40(b), equality *)
 lemma IV240b_eq:
   assumes
@@ -753,42 +725,23 @@ lemma IV240b_eq:
   shows
     "\<exists>p\<in>G. forces_eq(p,\<tau>,\<theta>)"
 proof -
-  let ?D="{p\<in>P. forces_eq(p,\<tau>,\<theta>) 
-     \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>))
-     \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p,\<sigma>,\<tau>) \<and> forces_mem(p,\<sigma>,\<theta>))}"
-  have "?D = {p\<in>P. sats(M,forces(Equal(0,1)),[P,leq,one,p,\<tau>,\<theta>]) 
-    \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<tau>]) \<and> 
-            \<not> (\<exists>q\<in>P. q\<preceq>p \<and> sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<theta>])))
-    \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). \<not> (\<exists>q\<in>P. q\<preceq>p \<and> sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<tau>]))
-              \<and> sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<theta>]))}"
-    (* horrible proof ahead *)
-  proof -
-    from assms
-    have "\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> \<sigma>\<in>M" for \<sigma>
-      using Transset_intf[OF trans_M _ domain_closed[simplified]] by blast
-    moreover from \<open>\<tau>\<in>M\<close> \<open>\<theta>\<in>M\<close>
-    have "forces_mem(p,\<sigma>,\<tau>)\<longleftrightarrow>sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<tau>])"
-      "forces_mem(p,\<sigma>,\<theta>)\<longleftrightarrow>sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<theta>])"
-      if "p\<in>P" and "\<sigma>\<in>M" for p \<sigma> 
-      using that sats_forces_Member'[OF \<open>p\<in>P\<close> \<open>\<sigma>\<in>M\<close>, of _ "[\<sigma>,_]" 0 1] by simp_all
-    moreover
-    note assms
-    ultimately
-    have "(\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>))
-      \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p,\<sigma>,\<tau>) \<and> forces_mem(p,\<sigma>,\<theta>))
-   \<longleftrightarrow>
-        (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<tau>]) 
-             \<and> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<theta>])))
-      \<or> (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). 
-              \<not> (\<exists>q\<in>P. q\<preceq>p \<and>  sats(M,forces(Member(0,1)),[P,leq,one,q,\<sigma>,\<tau>])) 
-             \<and> sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<theta>])) " if "p\<in>P" for p
-      unfolding forces_nmem_def using that sorry
-    with assms
-    show ?thesis
-      using sats_forces_Equal'[of _ \<tau> \<theta> "[\<tau>,\<theta>]" 0 1] by auto
-  qed
-  with assms
-  have "?D\<in>M" sorry
+  let ?D1="{p\<in>P. forces_eq(p,\<tau>,\<theta>)}"
+  let ?D2="{p\<in>P. \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>)}"
+  let ?D3="{p\<in>P. \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p,\<sigma>,\<tau>) \<and> forces_mem(p,\<sigma>,\<theta>)}"
+  let ?D="?D1 \<union> ?D2 \<union> ?D3"
+  note assms
+  moreover from this
+  have "domain(\<tau>) \<union> domain(\<theta>)\<in>M" (is "?B\<in>M") using domain_closed Un_closed by auto
+  moreover from calculation
+  have "\<sigma>\<in>M \<Longrightarrow> {p\<in>P. forces_mem(p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>)} \<in> M" 
+       "\<sigma>\<in>M \<Longrightarrow> {p\<in>P. forces_nmem(p,\<sigma>,\<tau>) \<and> forces_mem(p,\<sigma>,\<theta>)} \<in> M" for \<sigma>
+    using Collect_forces_mem_in_M Collect_forces_nmem_in_M Int_closed Collect_conj_eq by auto 
+  moreover from calculation
+  have "?D2\<in>M" (is "{p\<in>P. \<exists>\<sigma>\<in>_ . ?Q(\<sigma>,p)}\<in>M") and "?D3\<in>M" (is "{p\<in>P. \<exists>\<sigma>\<in>_ . ?R(\<sigma>,p)}\<in>M")
+    using P_in_M Collect_bex_in_M[OF _ _ , of  P ?Q ?B] Collect_bex_in_M[OF _ _ , of  P ?R ?B] 
+    by auto
+  ultimately
+  have "?D\<in>M" using Collect_forces_eq_in_M Un_closed by auto
   moreover
   have "dense(?D)"
   proof
@@ -819,11 +772,7 @@ proof -
       show ?thesis using leq_transD by blast
     qed
     then
-    show "\<exists>d\<in>{p \<in> P .
-              forces_eq(p, \<tau>, \<theta>) \<or>
-              (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(p, \<sigma>, \<tau>) \<and> forces_nmem(p, \<sigma>, \<theta>)) \<or>
-              (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p, \<sigma>, \<tau>) \<and> forces_mem(p, \<sigma>, \<theta>))}.
-            d \<preceq> p" by simp
+    show "\<exists>d\<in>?D1 \<union> ?D2 \<union> ?D3. d \<preceq> p" by blast
   qed
   moreover
   have "?D \<subseteq> P"
