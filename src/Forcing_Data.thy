@@ -6,12 +6,6 @@ theory Forcing_Data
 
 begin
 
-lemma lam_codomain: "\<forall>n\<in>N. (\<lambda>x\<in>N. b(x))`n \<in> B \<Longrightarrow>  (\<lambda>x\<in>N. b(x)) : N\<rightarrow>B"
-  apply (rule fun_weaken_type)
-   apply (subgoal_tac " (\<lambda>x\<in>N. b(x)) : N \<rightarrow> {b(x).x\<in>N}", assumption)
-   apply (auto simp add:lam_funtype)
-  done
-
 lemma Transset_M :
   "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
   by (simp add: Transset_def,auto)  
@@ -42,8 +36,13 @@ locale forcing_data = forcing_notion + M_ZF +
       and leq_in_M:         "leq \<in> M"
       and trans_M:          "Transset(M)"
           
-begin  (*************** CONTEXT: forcing_data *****************)
+begin
 
+lemma transD : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> y \<subseteq> M" 
+  by (unfold Transset_def, blast) 
+    
+(* P \<subseteq> M *)
+lemmas P_sub_M = transD[OF trans_M P_in_M]
 
 definition
   M_generic :: "i\<Rightarrow>o" where
@@ -87,7 +86,7 @@ proof -
     by auto
   then have
          Eq3: "?D:nat\<rightarrow>Pow(P)"
-    by (rule lam_codomain)
+    using lam_type by auto
   have
          Eq4: "\<forall>n\<in>nat. dense(?D`n)"
   proof
@@ -109,8 +108,10 @@ proof -
   from Eq3 and Eq4 interpret 
           cg: countable_generic P leq one ?D 
     by (unfold_locales, auto)
-  from cg.rasiowa_sikorski and Eq1 obtain G where 
-         Eq6: "p\<in>G \<and> filter(G) \<and> (\<forall>n\<in>nat.(?D`n)\<inter>G\<noteq>0)"
+  from Eq1 
+  obtain G where Eq6: "p\<in>G \<and> filter(G) \<and> (\<forall>n\<in>nat.(?D`n)\<inter>G\<noteq>0)"
+    using cg.countable_rasiowa_sikorski[where M="\<lambda>_. M"]  P_sub_M
+      M_countable[THEN bij_is_fun] M_countable[THEN bij_is_surj, THEN surj_range] 
     unfolding cg.D_generic_def by blast
   then have
          Eq7: "(\<forall>D\<in>M. D\<subseteq>P \<and> dense(D)\<longrightarrow>D\<inter>G\<noteq>0)"
@@ -142,6 +143,6 @@ proof -
 qed
 
      
-end    (*************** CONTEXT: forcing_data *****************)      
+end (* forcing_data *)      
   
 end
