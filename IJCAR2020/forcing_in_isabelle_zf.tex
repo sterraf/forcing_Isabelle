@@ -5,13 +5,20 @@
 \documentclass[runningheads]{llncs}
 %
 \usepackage[utf8]{inputenc}
+\usepackage{isabelle,isabellesym}
+\input{header-draft}
 \usepackage{graphicx}
 % Used for displaying a sample figure. If possible, figure files should
 % be included in EPS format.
 %
+\hypersetup{
+  colorlinks,
+  linkcolor={blue!50!black},
+  citecolor={blue!50!black},
+}
 % If you use the hyperref package, please uncomment the following line
 % to display URLs in blue roman font according to Springer's eBook style:
-% \renewcommand\UrlFont{\color{blue}\rmfamily}
+\renewcommand\UrlFont{\color{blue}\rmfamily}
 
 \begin{document}
 %
@@ -27,7 +34,8 @@
 Miguel Pagano\inst{1} \and \\
 Pedro Sánchez Terraf\inst{1,2}\orcidID{0000-0003-3928-6942}}
 %
-\authorrunning{E. Gunther et al.}
+\authorrunning{Gunther, Pagano, Sánchez Terraf}
+%\authorrunning{E. Gunther et al.}
 % First names are abbreviated in the running head.
 % If there are more than two authors, 'et al.' is used.
 %
@@ -49,7 +57,6 @@ A better paper than that of Han \& van Doorn \cite{han_et_al:LIPIcs:2019:11074}
 %
 %
 %
-
 \input{intro}
 
 %
