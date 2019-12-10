@@ -982,16 +982,11 @@ lemma sats_forces_mem_fm:
 
 end (* context forcing_data *)
 
-
 definition 
   ren_forces_nand :: "i\<Rightarrow>i" where
   "ren_forces_nand(\<phi>) \<equiv> Exists(Exists(Exists(Exists(
           And(Equal(3,4),And(Equal(0,5),And(Equal(1,6),
           And(Equal(2,7),iterates(\<lambda>p. incr_bv(p)`4 , 5, \<phi>)))))))))" 
-
-lemma ren_forces_nand_type[TC] :
-  "\<phi>\<in>formula \<Longrightarrow> ren_forces_nand(\<phi>) \<in>formula" 
-  unfolding ren_forces_nand_def by simp
 
   
 lemma sats_ren_forces_nand: 
@@ -1001,7 +996,6 @@ lemma sats_ren_forces_nand:
   apply (insert sats_incr_bv_iff [of _ _ M _ "[P,leq,o,q]"])
   apply simp
   done
-
 
 definition
   ren_forces_forall :: "i\<Rightarrow>i" where
