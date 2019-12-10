@@ -62,7 +62,82 @@ definition
   compat :: "i\<Rightarrow>i\<Rightarrow>o" where
   "compat(p,q) == compat_in(P,leq,p,q)"
 
-definition 
+lemma leq_transD:  "a\<preceq>b \<Longrightarrow> b\<preceq>c \<Longrightarrow> a \<in> P\<Longrightarrow> b \<in> P\<Longrightarrow> c \<in> P\<Longrightarrow> a\<preceq>c"
+  using leq_preord trans_onD unfolding preorder_on_def by blast
+
+lemma leq_reflI: "p\<in>P \<Longrightarrow> p\<preceq>p"
+ using leq_preord unfolding preorder_on_def refl_def by blast
+
+lemma compatD[dest!]: "compat(p,q) \<Longrightarrow> \<exists>d\<in>P. d\<preceq>p \<and> d\<preceq>q"
+  unfolding compat_def compat_in_def .
+
+abbreviation Incompatible :: "[i, i] \<Rightarrow> o"  (infixl "\<bottom>" 50)
+  where "p \<bottom> q \<equiv> \<not> compat(p,q)"
+
+lemma compatI[intro!]: "d\<in>P \<Longrightarrow> d\<preceq>p \<Longrightarrow> d\<preceq>q \<Longrightarrow> compat(p,q)"
+  unfolding compat_def compat_in_def by blast
+
+lemma denseD [dest]: "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow>  \<exists>d\<in>D. d\<preceq> p"
+  unfolding dense_def by blast
+
+lemma denseI [intro!]: "\<lbrakk> \<And>p. p\<in>P \<Longrightarrow> \<exists>d\<in>D. d\<preceq> p \<rbrakk> \<Longrightarrow> dense(D)"
+  unfolding dense_def by blast
+
+lemma dense_belowD [dest]:
+  assumes "dense_below(D,p)" "q\<in>P" "q\<preceq>p"
+  shows "\<exists>d\<in>D. d\<in>P \<and> d\<preceq>q"
+  using assms unfolding dense_below_def by simp
+(*obtains d where "d\<in>D" "d\<in>P" "d\<preceq>q"
+  using assms unfolding dense_below_def by blast *)
+
+lemma dense_belowI [intro!]: 
+  assumes "\<And>q. q\<in>P \<Longrightarrow> q\<preceq>p \<Longrightarrow> \<exists>d\<in>D. d\<in>P \<and> d\<preceq>q" 
+  shows "dense_below(D,p)"
+  using assms unfolding dense_below_def by simp
+
+lemma dense_below_cong: "p\<in>P \<Longrightarrow> D = D' \<Longrightarrow> dense_below(D,p) \<longleftrightarrow> dense_below(D',p)"
+  by blast
+
+lemma dense_below_cong': "p\<in>P \<Longrightarrow> \<lbrakk>\<And>x. x\<in>P \<Longrightarrow> Q(x) \<longleftrightarrow> Q'(x)\<rbrakk> \<Longrightarrow> 
+           dense_below({q\<in>P. Q(q)},p) \<longleftrightarrow> dense_below({q\<in>P. Q'(q)},p)"
+  by blast
+
+lemma dense_below_mono: "p\<in>P \<Longrightarrow> D \<subseteq> D' \<Longrightarrow> dense_below(D,p) \<Longrightarrow> dense_below(D',p)"
+  by blast
+
+lemma dense_below_under:
+  assumes "dense_below(D,p)" "p\<in>P" "q\<in>P" "q\<preceq>p"
+  shows "dense_below(D,q)"
+  using assms leq_transD by blast
+
+lemma ideal_dense_below:
+  assumes "\<And>q. q\<in>P \<Longrightarrow> q\<preceq>p \<Longrightarrow> q\<in>D"
+  shows "dense_below(D,p)"
+  using assms leq_reflI by blast
+
+lemma dense_below_dense_below: 
+  assumes "dense_below({q\<in>P. dense_below(D,q)},p)" "p\<in>P" 
+  shows "dense_below(D,p)"  
+  using assms leq_transD leq_reflI  by blast
+(* Long proof *)
+(*  unfolding dense_below_def
+proof (intro ballI impI)
+  fix r
+  assume "r\<in>P" \<open>r\<preceq>p\<close>
+  with assms
+  obtain q where "q\<in>P" "q\<preceq>r" "dense_below(D,q)"
+    using assms by auto
+  moreover from this
+  obtain d where "d\<in>P" "d\<preceq>q" "d\<in>D"
+    using assms leq_preord unfolding preorder_on_def refl_def by blast
+  moreover
+  note \<open>r\<in>P\<close>
+  ultimately
+  show "\<exists>d\<in>D. d \<in> P \<and> d\<preceq> r"
+    using leq_preord trans_onD unfolding preorder_on_def by blast
+qed *)
+
+definition
   antichain :: "i\<Rightarrow>o" where
   "antichain(A) == A\<subseteq>P \<and> (\<forall>p\<in>A.\<forall>q\<in>A.(\<not>compat(p,q)))"
 
