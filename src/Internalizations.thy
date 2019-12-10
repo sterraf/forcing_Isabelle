@@ -2144,6 +2144,14 @@ lemma Collect_iff_sats:
    ==> is_Collect(##A, x, is_P, y) \<longleftrightarrow> sats(A, is_Collect_fm(i,p,j), env)"
 by (simp add: sats_is_Collect_fm [OF is_P_iff_sats])
 
+(* 
+  This final segment must be preserved, perhaps in a file named like 
+  this one.
+
+  Note: sep_rules already appears in Constructible/Separation.thy, and
+  this new  version is needed in Interface and Relative_Univ 
+*)
+
 lemma nth_closed :
   assumes "0\<in>A" "env\<in>list(A)"
   shows "nth(n,env)\<in>A" 
