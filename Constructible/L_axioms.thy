@@ -102,10 +102,12 @@ lemmas L_nat = Ord_in_L [OF Ord_nat]
 
 theorem M_trivial_L: "M_trivial(L)"
   apply (rule M_trivial.intro)
-       apply (erule (1) transL)
+  apply (rule M_trans.intro)
+    apply (erule (1) transL)
+   apply(rule nonempty)
+  apply (rule M_trivial_axioms.intro)
       apply (rule upair_ax)
    apply (rule Union_ax)
-  apply(rule nonempty)
   done
 
 interpretation L?: M_trivial L by (rule M_trivial_L)
