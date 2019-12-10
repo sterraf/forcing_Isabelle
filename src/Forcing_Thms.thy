@@ -11,81 +11,6 @@ definition
   Forces :: "i \<Rightarrow> i \<Rightarrow> i\<Rightarrow> o" ("_ \<tturnstile> _ _" 60) where
   "Forces(p,\<phi>,env) \<equiv> sats(M,forces(\<phi>), [P,leq,one,p] @ env)"
 
-lemma leq_transD:  "a\<preceq>b \<Longrightarrow> b\<preceq>c \<Longrightarrow> a \<in> P\<Longrightarrow> b \<in> P\<Longrightarrow> c \<in> P\<Longrightarrow> a\<preceq>c"
-  using leq_preord trans_onD unfolding preorder_on_def by blast
-
-lemma leq_reflI: "p\<in>P \<Longrightarrow> p\<preceq>p"
- using leq_preord unfolding preorder_on_def refl_def by blast
-
-lemma compatD[dest!]: "compat(p,q) \<Longrightarrow> \<exists>d\<in>P. d\<preceq>p \<and> d\<preceq>q"
-  unfolding compat_def compat_in_def .
-
-abbreviation Incompatible :: "[i, i] \<Rightarrow> o"  (infixl "\<bottom>" 50)
-  where "p \<bottom> q \<equiv> \<not> compat(p,q)"
-
-lemma compatI[intro!]: "d\<in>P \<Longrightarrow> d\<preceq>p \<Longrightarrow> d\<preceq>q \<Longrightarrow> compat(p,q)"
-  unfolding compat_def compat_in_def by blast
-
-lemma denseD [dest]: "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow>  \<exists>d\<in>D. d\<preceq> p"
-  unfolding dense_def by blast
-
-lemma denseI [intro!]: "\<lbrakk> \<And>p. p\<in>P \<Longrightarrow> \<exists>d\<in>D. d\<preceq> p \<rbrakk> \<Longrightarrow> dense(D)"
-  unfolding dense_def by blast
-
-lemma dense_belowD [dest]:
-  assumes "dense_below(D,p)" "q\<in>P" "q\<preceq>p"
-  shows "\<exists>d\<in>D. d\<in>P \<and> d\<preceq>q"
-  using assms unfolding dense_below_def by simp
-(*obtains d where "d\<in>D" "d\<in>P" "d\<preceq>q"
-  using assms unfolding dense_below_def by blast *)
-
-lemma dense_belowI [intro!]: 
-  assumes "\<And>q. q\<in>P \<Longrightarrow> q\<preceq>p \<Longrightarrow> \<exists>d\<in>D. d\<in>P \<and> d\<preceq>q" 
-  shows "dense_below(D,p)"
-  using assms unfolding dense_below_def by simp
-
-lemma dense_below_cong: "p\<in>P \<Longrightarrow> D = D' \<Longrightarrow> dense_below(D,p) \<longleftrightarrow> dense_below(D',p)"
-  by blast
-
-lemma dense_below_cong': "p\<in>P \<Longrightarrow> \<lbrakk>\<And>x. x\<in>P \<Longrightarrow> Q(x) \<longleftrightarrow> Q'(x)\<rbrakk> \<Longrightarrow> 
-           dense_below({q\<in>P. Q(q)},p) \<longleftrightarrow> dense_below({q\<in>P. Q'(q)},p)"
-  by blast
-
-lemma dense_below_mono: "p\<in>P \<Longrightarrow> D \<subseteq> D' \<Longrightarrow> dense_below(D,p) \<Longrightarrow> dense_below(D',p)"
-  by blast
-
-lemma dense_below_under:
-  assumes "dense_below(D,p)" "p\<in>P" "q\<in>P" "q\<preceq>p"
-  shows "dense_below(D,q)"
-  using assms leq_transD by blast
-
-lemma ideal_dense_below:
-  assumes "\<And>q. q\<in>P \<Longrightarrow> q\<preceq>p \<Longrightarrow> q\<in>D"
-  shows "dense_below(D,p)"
-  using assms leq_reflI by blast
-
-lemma dense_below_dense_below: 
-  assumes "dense_below({q\<in>P. dense_below(D,q)},p)" "p\<in>P" 
-  shows "dense_below(D,p)"  
-  using assms leq_transD leq_reflI  by blast
-(* Long proof *)
-(*  unfolding dense_below_def
-proof (intro ballI impI)
-  fix r
-  assume "r\<in>P" \<open>r\<preceq>p\<close>
-  with assms
-  obtain q where "q\<in>P" "q\<preceq>r" "dense_below(D,q)"
-    using assms by auto
-  moreover from this
-  obtain d where "d\<in>P" "d\<preceq>q" "d\<in>D"
-    using assms leq_preord unfolding preorder_on_def refl_def by blast
-  moreover
-  note \<open>r\<in>P\<close>
-  ultimately
-  show "\<exists>d\<in>D. d \<in> P \<and> d\<preceq> r"
-    using leq_preord trans_onD unfolding preorder_on_def by blast
-qed *)
-
 lemma forces_mem_iff_dense_below:  "p\<in>P \<Longrightarrow> forces_mem(p,t1,t2) \<longleftrightarrow> dense_below(
     {q\<in>P. \<exists>s. \<exists>r. r\<in>P \<and> <s,r> \<in> t2 \<and> q\<preceq>r \<and> forces_eq(q,t1,s)}
     ,p)"
@@ -692,22 +617,6 @@ lemma Collect_forces_eq_in_M:
   shows "{p\<in>P. forces_eq(p,\<tau>,\<theta>)} \<in> M"
   sorry
 
-lemma Collect_forces_mem_in_M:
-  assumes "\<tau> \<in> M" "\<theta> \<in> M" "\<sigma> \<in> M"
-  shows "{p\<in>P. forces_mem(p,\<tau>,\<theta>)} \<in> M"
-  sorry
-
-lemma Collect_forces_nmem_in_M:
-  assumes "\<tau> \<in> M" "\<theta> \<in> M" "\<sigma> \<in> M"
-  shows "{p\<in>P. forces_nmem(p,\<tau>,\<theta>)} \<in> M"
-  sorry
-
-(* One possible general lemma*)
-lemma Collect_bex_in_M:
-  assumes "\<And>x y. x \<in> M \<Longrightarrow> A \<in> M \<Longrightarrow> {a\<in>A. Q(x,a)} \<in> M" "B \<in> M"
-  shows "{a\<in>A. \<exists>x\<in>B. Q(x,a)} \<in> M"
-  sorry
-
 (* lemma IV240b_eq_Collects:
   assumes "\<tau> \<in> M" "\<theta> \<in> M"
   shows "{p\<in>P. \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>)}\<in>M"
@@ -733,13 +642,7 @@ proof -
   moreover from this
   have "domain(\<tau>) \<union> domain(\<theta>)\<in>M" (is "?B\<in>M") using domain_closed Un_closed by auto
   moreover from calculation
-  have "\<sigma>\<in>M \<Longrightarrow> {p\<in>P. forces_mem(p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>)} \<in> M" 
-       "\<sigma>\<in>M \<Longrightarrow> {p\<in>P. forces_nmem(p,\<sigma>,\<tau>) \<and> forces_mem(p,\<sigma>,\<theta>)} \<in> M" for \<sigma>
-    using Collect_forces_mem_in_M Collect_forces_nmem_in_M Int_closed Collect_conj_eq by auto 
-  moreover from calculation
-  have "?D2\<in>M" (is "{p\<in>P. \<exists>\<sigma>\<in>_ . ?Q(\<sigma>,p)}\<in>M") and "?D3\<in>M" (is "{p\<in>P. \<exists>\<sigma>\<in>_ . ?R(\<sigma>,p)}\<in>M")
-    using P_in_M Collect_bex_in_M[OF _ _ , of  P ?Q ?B] Collect_bex_in_M[OF _ _ , of  P ?R ?B] 
-    by auto
+  have "?D2\<in>M" and "?D3\<in>M" sorry
   ultimately
   have "?D\<in>M" using Collect_forces_eq_in_M Un_closed by auto
   moreover
