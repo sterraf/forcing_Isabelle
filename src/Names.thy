@@ -481,7 +481,7 @@ proof -
   moreover from this \<open>\<pi>\<in>M\<close>
   have "\<theta>\<in>M"
     using pair_in_M_iff[THEN iffD1, THEN conjunct1, simplified]  
-      Transset_intf[OF trans_M] by blast
+      transitivity by blast
   ultimately
   show ?thesis by blast
 qed
@@ -535,9 +535,7 @@ definition
   is_Hcheck :: "[i,i,i,i] \<Rightarrow> o" where
   "is_Hcheck(o,z,f,hc)  == is_Replace(##M,z,PHcheck(o,f),hc)"
 
-(* esto está también en Separation_axiom. Remodularizar! *)
-lemmas transitivity = Transset_intf trans_M
-  
+
 lemma one_in_M: "one \<in> M"
   by (insert one_in_P P_in_M, simp add: transitivity)
 
@@ -551,10 +549,10 @@ proof -
   have "y\<in>M \<Longrightarrow> x\<in>z \<Longrightarrow> z\<in>M \<Longrightarrow> f\<in>M \<Longrightarrow>
         y = \<langle>f ` x, one\<rangle> \<longleftrightarrow> (\<exists>fy\<in>M. fun_apply(##M, f, x, fy) \<and> pair(##M, fy, one, y))"
     for y z x f
-    using Transset_intf[OF trans_M]
+    using transitivity
     by ( auto simp del:setclass_iff simp add:setclass_iff[symmetric])   
   then show ?thesis
-    using \<open>z\<in>M\<close> \<open>f\<in>M\<close> Transset_intf[OF trans_M] one_in_M unfolding Hcheck_def PHcheck_def RepFun_def 
+    using \<open>z\<in>M\<close> \<open>f\<in>M\<close> transitivity one_in_M unfolding Hcheck_def PHcheck_def RepFun_def 
     apply auto
     apply (rule equality_iffI)
     apply (simp add: Replace_iff)

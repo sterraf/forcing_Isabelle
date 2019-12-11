@@ -7,7 +7,7 @@ lemma Transset_intf :
   "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
   by (simp add: Transset_def,auto)
 
-lemmas (in forcing_data) transitivity = Transset_intf trans_M
+lemmas (in forcing_data) transitivity = Transset_intf[OF trans_M]
   
 lemma TranssetI :
   "(\<And>y x. y\<in>x \<Longrightarrow> x\<in>M \<Longrightarrow> y\<in>M) \<Longrightarrow> Transset(M)"

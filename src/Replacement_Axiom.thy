@@ -468,15 +468,15 @@ proof -
       using length_type[OF \<open>env\<in>_\<close>] \<open>\<phi>\<in>_\<close> \<open>arity(\<phi>)\<le>2#+length(env)\<close> 
          \<open>env\<in>list(_)\<close> \<open>[c]\<in>list(M[G])\<close> A(3)
       apply (auto)
-       apply(rule_tac x=x in rev_bexI, auto simp add: transitivity(1)[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
+       apply(rule_tac x=x in rev_bexI, auto simp add: Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
       prefer 2
        apply(rule_tac x=x in rev_bexI,simp,subst (asm) A(3))
-      apply(simp add: transitivity(1)[OF Transset_MG _ \<open>c\<in>M[G]\<close>],subst A(4))
-        apply(simp add: transitivity(1)[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
-       apply(rule arity_sats_iff[of \<phi> "[c]",THEN iffD1],auto simp add: transitivity(1)[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
-      apply(subst (asm) A(4),simp add:transitivity(1)[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
-      apply(subst A(3),simp add: transitivity(1)[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
-       apply(rule arity_sats_iff[of \<phi> "[c]",THEN iffD2],auto simp add: transitivity(1)[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
+      apply(simp add: Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>],subst A(4))
+        apply(simp add: Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
+       apply(rule arity_sats_iff[of \<phi> "[c]",THEN iffD1],auto simp add: Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
+      apply(subst (asm) A(4),simp add:Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
+      apply(subst A(3),simp add: Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
+       apply(rule arity_sats_iff[of \<phi> "[c]",THEN iffD2],auto simp add: Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
       done
   next
     from \<open>env\<in>_\<close> \<open>\<phi>\<in>_\<close>

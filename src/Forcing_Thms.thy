@@ -169,7 +169,7 @@ lemma sats_forces_Equal':
     "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" "n\<in>nat" "m\<in>nat"
   shows
     "sats(M,forces(Equal(n,m)),[P,leq,one,p] @ env) \<longleftrightarrow> forces_eq(p,t1,t2)"
-  using assms sats_forces_Equal forces_eq_abs Transset_intf[OF trans_M] P_in_M 
+  using assms sats_forces_Equal forces_eq_abs transitivity P_in_M 
   by simp
 
 lemma sats_forces_Member':
@@ -177,7 +177,7 @@ lemma sats_forces_Member':
     "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" "n\<in>nat" "m\<in>nat"
   shows
     "sats(M,forces(Member(n,m)),[P,leq,one,p] @ env) \<longleftrightarrow> forces_mem(p,t1,t2)"
-  using assms sats_forces_Member forces_mem_abs Transset_intf[OF trans_M] P_in_M 
+  using assms sats_forces_Member forces_mem_abs transitivity P_in_M 
   by simp
 
 lemma sats_forces_Nand':
@@ -198,7 +198,7 @@ lemma sats_forces_Neg':
     "sats(M,forces(Neg(\<phi>)),[P,leq,one,p] @ env) \<longleftrightarrow> 
      \<not>(\<exists>q\<in>M. q\<in>P \<and> (\<exists>qp\<in>M. pair(##M,q,p,qp) \<and> qp\<in>leq) \<and> 
                (sats(M,forces(\<phi>),[P,leq,one,q]@env)))"
-  using assms sats_forces_Neg Transset_intf[OF trans_M] 
+  using assms sats_forces_Neg transitivity 
   P_in_M leq_in_M one_in_M  unfolding forces_def
   by (simp, blast)
 
@@ -208,7 +208,7 @@ lemma sats_forces_Forall':
   shows
     "sats(M,forces(Forall(\<phi>)),[P,leq,one,p] @ env) \<longleftrightarrow> 
      (\<forall>x\<in>M. sats(M, forces(\<phi>),[P,leq,one,p,x] @ env))"
-  using assms sats_forces_Forall Transset_intf[OF trans_M] 
+  using assms sats_forces_Forall transitivity 
   P_in_M leq_in_M one_in_M sats_ren_forces_forall unfolding forces_def
   by simp
 
@@ -231,7 +231,7 @@ lemma Forces_Neg:
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" 
   shows
     "(p \<tturnstile> Neg(\<phi>) env) \<longleftrightarrow> \<not>(\<exists>q\<in>M. q\<in>P \<and> q\<preceq>p \<and> (q \<tturnstile> \<phi> env))"
-  unfolding Forces_def using assms sats_forces_Neg' Transset_intf[OF trans_M] 
+  unfolding Forces_def using assms sats_forces_Neg' transitivity 
   P_in_M pair_in_M_iff by simp
 
 lemma Forces_Nand:
@@ -239,7 +239,7 @@ lemma Forces_Nand:
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
   shows
     "(p \<tturnstile> Nand(\<phi>,\<psi>) env) \<longleftrightarrow> \<not>(\<exists>q\<in>M. q\<in>P \<and> q\<preceq>p \<and> (q \<tturnstile> \<phi> env) \<and> (q \<tturnstile> \<psi> env))"
-  unfolding Forces_def using assms sats_forces_Nand' Transset_intf[OF trans_M] 
+  unfolding Forces_def using assms sats_forces_Nand' transitivity 
   P_in_M pair_in_M_iff by simp
 
 lemma Forces_And_aux:
@@ -292,7 +292,7 @@ lemma GenExtD: "x\<in>M[G] \<longleftrightarrow> (\<exists>\<tau>\<in>M. x = val
   unfolding GenExt_def by simp
 
 lemma left_in_M : "tau\<in>M \<Longrightarrow> <a,b>\<in>tau \<Longrightarrow> a\<in>M"
-  using fst_snd_closed[of "<a,b>"] Transset_intf[OF trans_M] by auto
+  using fst_snd_closed[of "<a,b>"] transitivity by auto
 
 (* Kunen 2013, Lemma IV.2.29 *)
 lemma generic_inter_dense_below: 
@@ -550,12 +550,12 @@ proof (intro forces_induction[of ?Q ?R] impI)
   moreover from this
   have "\<sigma>\<in>domain(\<theta>) \<Longrightarrow> forces_eq(q, \<tau>, \<sigma>) \<Longrightarrow> val(G, \<tau>) = val(G, \<sigma>)" 
     if "q\<in>P" "q\<in>G" for q \<sigma>
-    using that domain_closed[of \<theta>] Transset_intf[OF trans_M] by auto
+    using that domain_closed[of \<theta>] transitivity by auto
   moreover 
   note assms
   ultimately
   show "\<forall>p\<in>G. forces_mem(p,\<tau>,\<theta>) \<longrightarrow> val(G,\<tau>) \<in> val(G,\<theta>)"
-    using IV240a_mem domain_closed Transset_intf[OF trans_M] by (simp)
+    using IV240a_mem domain_closed transitivity by (simp)
 next
   fix \<tau> \<theta> 
   assume "\<tau>\<in>M" "\<theta>\<in>M" "\<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> ?R(\<sigma>,\<tau>) \<and> ?R(\<sigma>,\<theta>)" for \<sigma>
@@ -761,7 +761,7 @@ proof (intro forces_induction)
   assume "\<sigma>\<in>domain(\<theta>) \<Longrightarrow> ?Q(\<tau>, \<sigma>)" for \<sigma>
   with assms
   show "?R(\<tau>, \<theta>)"
-    using IV240b_mem domain_closed Transset_intf[OF trans_M] by (simp)
+    using IV240b_mem domain_closed transitivity by (simp)
 next
   fix \<tau> \<theta> p
   assume "\<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> ?R(\<sigma>,\<tau>) \<and> ?R(\<sigma>,\<theta>)" for \<sigma>
