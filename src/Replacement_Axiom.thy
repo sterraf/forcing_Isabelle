@@ -108,7 +108,7 @@ lemma pow_inter_M:
 
 schematic_goal sats_prebody_fm_auto:
   assumes
-    "[P,leq,one,p,\<rho>,\<pi>] @ nenv \<in>list(M)" "\<phi>\<in>formula" "\<alpha>\<in>M" "arity(\<phi>) \<le> 2 #+ length(nenv)"
+    "\<phi>\<in>formula" "[P,leq,one,p,\<rho>,\<pi>] @ nenv \<in>list(M)"  "\<alpha>\<in>M" "arity(\<phi>) \<le> 2 #+ length(nenv)"
   shows 
     "(\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> sats(M,forces(\<phi>),[P,leq,one,p,\<rho>,\<tau>] @ nenv))
    \<longleftrightarrow> sats(M,?prebody_fm,[\<rho>,p,\<alpha>,P,leq,one] @ nenv)"
@@ -129,13 +129,7 @@ schematic_goal sats_prebody_fm_auto:
   done (* 10 secs *)
 
 (* The formula synthesized above *)
-definition
-  prebody_fm :: "[i,i]\<Rightarrow>i" where
-  "prebody_fm(\<phi>,env) \<equiv> Exists
-          (Exists
-            (And(Exists(And(empty_fm(0), is_transrec_fm(is_HVfrom_fm(8, 2, 1, 0), 5, 1))),
-                 And(Member(1, 0), renrep(forces(\<phi>), env)))))"
-
+synthesize "prebody_fm" from_schematic "sats_prebody_fm_auto"
 
 lemmas new_fm_defs = fm_defs is_transrec_fm_def is_eclose_fm_def mem_eclose_fm_def 
    finite_ordinal_fm_def is_wfrec_fm_def  Memrel_fm_def eclose_n_fm_def is_recfun_fm_def is_iterates_fm_def
@@ -184,7 +178,6 @@ lemma body_fm'_type[TC]: "\<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \
   unfolding body_fm'_def using prebody_fm_type 
   by simp
 
-(* This might be false! Might be 2 if that changes in sats_body_fm *)
 lemma arity_body_fm':
   assumes
     "\<phi>\<in>formula" "\<alpha>\<in>M" "env\<in>list(M)" "arity(\<phi>) \<le> 2 #+ length(env)"
@@ -285,7 +278,7 @@ proof -
   define f where "f(\<rho>p) \<equiv> \<mu> \<alpha>. \<alpha>\<in>M \<and> (\<exists>\<tau>\<in>M. \<tau> \<in> Vset(\<alpha>) \<and> 
         (snd(\<rho>p) \<tturnstile> \<phi> ([fst(\<rho>p),\<tau>] @ nenv)))" (is "_ \<equiv> \<mu> \<alpha>. ?P(\<rho>p,\<alpha>)") for \<rho>p
   have "f(\<rho>p) = (\<mu> \<alpha>. \<alpha>\<in>M \<and> (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> 
-        snd(\<rho>p) \<tturnstile> \<phi> ([fst(\<rho>p),\<tau>] @ nenv)))" (is "_ = (\<mu> \<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>))") for \<rho>p
+        (snd(\<rho>p) \<tturnstile> \<phi> ([fst(\<rho>p),\<tau>] @ nenv))))" (is "_ = (\<mu> \<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>))") for \<rho>p
     unfolding f_def using Vset_abs Vset_closed Ord_Least_cong[of "?P(\<rho>p)" "\<lambda> \<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>)"]
     by (simp, simp del:setclass_iff)
   moreover
@@ -319,7 +312,7 @@ proof -
     note inM = this P_in_M leq_in_M one_in_M \<open>nenv\<in>list(M)\<close>
     with body
     have body':"\<And>\<alpha>. \<alpha> \<in> M \<Longrightarrow> (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a), \<alpha>, V) \<and> \<tau> \<in> V \<and> 
-          snd(\<rho>p) \<tturnstile> \<phi> ([fst(\<rho>p),\<tau>] @ nenv)) \<longleftrightarrow>
+          (snd(\<rho>p) \<tturnstile> \<phi> ([fst(\<rho>p),\<tau>] @ nenv))) \<longleftrightarrow>
           sats(M, body_fm(\<phi>,nenv), Cons(\<alpha>, [\<rho>p, m, P, leq, one] @ nenv))" by simp
     from inM
     have "sats(M, ?f_fm,[\<rho>p,m,P,leq,one] @ nenv) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
@@ -531,6 +524,6 @@ proof -
     (* 44secs *)
 qed
 
-end (* context sep_rename *)
+end (* context G_generic *)
 
 end
