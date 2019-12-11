@@ -988,6 +988,10 @@ definition
           And(Equal(3,4),And(Equal(0,5),And(Equal(1,6),
           And(Equal(2,7),iterates(\<lambda>p. incr_bv(p)`4 , 5, \<phi>)))))))))" 
 
+lemma ren_forces_nand_type[TC] :
+  "\<phi>\<in>formula \<Longrightarrow> ren_forces_nand(\<phi>) \<in>formula" 
+  unfolding ren_forces_nand_def by simp
+
   
 lemma sats_ren_forces_nand: 
   "[q,P,leq,o,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
