@@ -479,15 +479,10 @@ proof -
        apply(rule arity_sats_iff[of \<phi> "[c]",THEN iffD2],auto simp add: transitivity(1)[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
       done
   next
-    from  \<open>arity(\<phi>)\<le>2#+length(env)\<close> \<open>env\<in>_\<close>
-    show "arity(?\<psi>)\<le>2#+length(env)" 
-      apply(auto simp add:length_type[OF \<open>env\<in>_\<close>] nat_simp_union )
-      apply(subst pred_Un(1),auto simp add: length_type[OF \<open>env\<in>_\<close>] arity_type[OF \<open>\<phi>\<in>_\<close>] )
-      apply(subgoal_tac "pred(arity(\<phi>)) \<le> 2#+length(env)")
-      apply(auto simp add:length_type[OF \<open>env\<in>_\<close>], subst nat_simp_union )
-         apply(auto simp add:arity_type[OF \<open>\<phi>\<in>_\<close>] nat_simp_union)
-      apply(rule le_trans, rule pred_mono[OF _  \<open>arity(\<phi>)\<le>2#+length(env)\<close>],auto)
-      done
+    from \<open>env\<in>_\<close> \<open>\<phi>\<in>_\<close>
+    show "arity(?\<psi>)\<le>2#+length(env)"
+      using pred_mono[OF _ \<open>arity(\<phi>)\<le>2#+length(env)\<close>] lt_trans[OF _ le_refl] 
+      by (auto simp add:nat_simp_union) 
     next
     from \<open>\<phi>\<in>_\<close>
     show "?\<psi>\<in>formula" by simp
