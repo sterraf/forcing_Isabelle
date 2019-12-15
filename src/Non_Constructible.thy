@@ -1,7 +1,7 @@
 theory Non_Constructible
   imports
     Forcing_Thms 
-    (* it actually depends on more basic stuff, plus a misplaced lemma in the former *)
+    (* it actually depends more basic stuff, plus a misplaced lemma in the former *)
 
 begin
 
