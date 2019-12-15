@@ -169,8 +169,8 @@ proof -
 qed
   
   
-context forcing_data
-begin  (*************** CONTEXT: forcing_data *****************)
+context M_ctm
+begin
   
 lemma upairM : "x \<in> M \<Longrightarrow> y \<in> M \<Longrightarrow> {x,y} \<in> M"
  by (simp del:setclass_iff  add:setclass_iff[symmetric]) 
@@ -183,6 +183,11 @@ lemma pairM : "x \<in>  M \<Longrightarrow> y \<in> M \<Longrightarrow> <x,y> \<
 
 lemma Rep_simp : "Replace(u,\<lambda> y z . z = f(y)) = { f(y) . y \<in> u}"
   by(auto)
+
+end (* M_ctm *)
+
+context forcing_data
+begin
 
 definition 
   Hcheck :: "[i,i] \<Rightarrow> i" where
@@ -273,7 +278,7 @@ lemma field_Memrel2 : "x \<in> M \<Longrightarrow> field(Memrel(eclose({x}))) \<
   apply(rule subset_trans,rule field_rel_subset,rule Ordinal.Memrel_type)
   apply(rule eclose_least,rule trans_M,auto)
   done
-    
+
 definition
   Hv :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i" where
   "Hv(G,x,f) == { f`y .. y\<in> domain(x), \<exists>p\<in>P. <y,p> \<in> x \<and> p \<in> G }"
@@ -561,11 +566,6 @@ proof -
     apply (simp_all del:setclass_iff add:setclass_iff[symmetric])
     done
 qed
-
-end (* context forcing_data *)
-
-context forcing_data
-begin
 
 (*
   "PHcheck(o,f,y,p) == \<exists>fy[##M]. fun_apply(##M,f,y,fy) \<and> pair(##M,fy,o,p)"
@@ -958,5 +958,5 @@ lemma fst_snd_closed: "p\<in>M \<Longrightarrow> fst(p) \<in> M \<and> snd(p)\<i
   qed
 
 
-end    (*************** CONTEXT: forcing_data *****************)
+end (* forcing_data *)
 end
