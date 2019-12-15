@@ -7,7 +7,7 @@ lemma Transset_intf :
   "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
   by (simp add: Transset_def,auto)
 
-lemmas (in forcing_data) transitivity = Transset_intf[OF trans_M]
+lemmas (in M_ctm) transitivity = Transset_intf[OF trans_M]
   
 lemma TranssetI :
   "(\<And>y x. y\<in>x \<Longrightarrow> x\<in>M \<Longrightarrow> y\<in>M) \<Longrightarrow> Transset(M)"
@@ -18,7 +18,7 @@ lemma empty_intf :
   (\<exists>z[M]. empty(M,z))"
   by (auto simp add: empty_def infinity_ax_def)
 
-lemma (in forcing_data) zero_in_M:  "0 \<in> M"
+lemma (in M_ctm) zero_in_M:  "0 \<in> M"
 proof -
   from infinity_ax have
         "(\<exists>z[##M]. empty(##M,z))"
@@ -34,7 +34,7 @@ qed
     
 (* Interface with M_trivial *)
     
-lemma (in forcing_data) mtriv :  
+lemma (in M_ctm) mtriv :  
   "M_trivial(##M)"
   apply (insert trans_M upair_ax Union_ax)
   apply (rule M_trivial.intro)
@@ -42,7 +42,7 @@ lemma (in forcing_data) mtriv :
   apply (rule Transset_intf,simp+)
 done
 
-sublocale forcing_data \<subseteq> M_trivial "##M"
+sublocale M_ctm \<subseteq> M_trivial "##M"
   by (rule mtriv)
   
 abbreviation
@@ -60,7 +60,7 @@ abbreviation
 abbreviation
  dec14  :: i   ("14") where "14 == succ(13)"
 
-lemma (in forcing_data) tuples_in_M: "A\<in>M \<Longrightarrow> B\<in>M \<Longrightarrow> <A,B>\<in>M" 
+lemma (in M_ctm) tuples_in_M: "A\<in>M \<Longrightarrow> B\<in>M \<Longrightarrow> <A,B>\<in>M" 
    by (simp del:setclass_iff add:setclass_iff[symmetric])
 
 
@@ -78,7 +78,7 @@ shows
   "(\<forall>y\<in>A . y\<in>B \<longrightarrow> x\<in>y) \<longleftrightarrow> sats(A,?ifm(i,j),env)"
   by (insert assms ; (rule sep_rules | simp)+)
   
-lemma (in forcing_data) inter_sep_intf :
+lemma (in M_ctm) inter_sep_intf :
   assumes
       "A\<in>M"
   shows
@@ -116,7 +116,7 @@ shows
   "x\<notin>B \<longleftrightarrow> sats(A,?dfm(i,j),env)"
   by (insert assms ; (rule sep_rules | simp)+)
 
-lemma (in forcing_data) diff_sep_intf :
+lemma (in M_ctm) diff_sep_intf :
   assumes
       "B\<in>M"
   shows
@@ -153,7 +153,7 @@ shows
   by (insert assms ; (rule sep_rules | simp)+)
   
 
-lemma (in forcing_data) cartprod_sep_intf :
+lemma (in M_ctm) cartprod_sep_intf :
   assumes
             "A\<in>M"
             and
@@ -191,7 +191,7 @@ shows
   "(\<exists>p\<in>A. p\<in>r & (\<exists>x\<in>A. x\<in>B & pair(##A,x,y,p))) \<longleftrightarrow> sats(A,?imfm(i,j,h),env)"
   by (insert assms ; (rule sep_rules | simp)+)
   
-lemma (in forcing_data) image_sep_intf :
+lemma (in M_ctm) image_sep_intf :
   assumes
             "A\<in>M"
             and
@@ -231,7 +231,7 @@ shows
   by (insert assms ; (rule sep_rules | simp)+)
 
        
-lemma (in forcing_data) converse_sep_intf :
+lemma (in M_ctm) converse_sep_intf :
   assumes
          "R\<in>M"
   shows
@@ -271,7 +271,7 @@ shows
   by (insert assms ; (rule sep_rules | simp)+)
 
 
-lemma (in forcing_data) restrict_sep_intf :
+lemma (in M_ctm) restrict_sep_intf :
   assumes
          "A\<in>M"
   shows
@@ -311,7 +311,7 @@ shows
   by (insert assms ; (rule sep_rules | simp)+)
 
 
-lemma (in forcing_data) comp_sep_intf :
+lemma (in M_ctm) comp_sep_intf :
   assumes
     "R\<in>M"
     and
@@ -356,7 +356,7 @@ shows
   by (insert assms ; (rule sep_rules | simp)+)
 
 
-lemma (in forcing_data) pred_sep_intf:
+lemma (in M_ctm) pred_sep_intf:
     assumes
       "R\<in>M"
     and
@@ -396,7 +396,7 @@ shows
   "(\<exists>x\<in>A. \<exists>y\<in>A. pair(##A,x,y,z) & x \<in> y) \<longleftrightarrow> sats(A,?mfm(i),env)"
   by (insert assms ; (rule sep_rules | simp)+)
 
-lemma (in forcing_data) memrel_sep_intf:
+lemma (in M_ctm) memrel_sep_intf:
   "separation(##M, \<lambda>z. \<exists>x\<in>M. \<exists>y\<in>M. pair(##M,x,y,z) & x \<in> y)"
 proof -
    obtain mfm where
@@ -431,7 +431,7 @@ shows
   by (insert assms ; (rule sep_rules | simp)+)
   
 
-lemma (in forcing_data) is_recfun_sep_intf :
+lemma (in M_ctm) is_recfun_sep_intf :
   assumes
         "r\<in>M" "f\<in>M" "g\<in>M" "a\<in>M" "b\<in>M"
    shows
@@ -482,7 +482,7 @@ shows
   by (insert assms ; (rule sep_rules | simp)+)
 
 
-lemma (in forcing_data) funspace_succ_rep_intf :
+lemma (in M_ctm) funspace_succ_rep_intf :
   assumes
       "n\<in>M"
   shows
@@ -518,12 +518,12 @@ qed
 
 (* Interface with M_basic *)
   
-lemmas (in forcing_data) M_basic_sep_instances = 
+lemmas (in M_ctm) M_basic_sep_instances = 
                 inter_sep_intf diff_sep_intf cartprod_sep_intf
                 image_sep_intf converse_sep_intf restrict_sep_intf
                 pred_sep_intf memrel_sep_intf comp_sep_intf is_recfun_sep_intf
 
-lemma (in forcing_data) mbasic : "M_basic(##M)"
+lemma (in M_ctm) mbasic : "M_basic(##M)"
   apply (insert trans_M zero_in_M power_ax)
   apply (rule M_basic.intro,rule mtriv)
   apply (rule M_basic_axioms.intro)
@@ -531,7 +531,7 @@ lemma (in forcing_data) mbasic : "M_basic(##M)"
   apply (simp_all)
 done
 
-sublocale forcing_data \<subseteq> M_basic "##M"
+sublocale M_ctm \<subseteq> M_basic "##M"
   by (rule mbasic)
 
 (*** Interface with M_trancl ***)
@@ -556,7 +556,7 @@ shows
   by (insert assms ; (rule sep_rules | simp)+)
 
 
-lemma (in forcing_data) rtrancl_separation_intf:
+lemma (in M_ctm) rtrancl_separation_intf:
     assumes
       "r\<in>M"
     and
@@ -615,7 +615,7 @@ assumes
   unfolding  wellfounded_trancl_def
   by (insert assms ; (rule sep_rules tran_closure_fm_auto | simp)+)
   
-lemma (in forcing_data) wftrancl_separation_intf:
+lemma (in M_ctm) wftrancl_separation_intf:
     assumes
       "r\<in>M"
     and
@@ -648,7 +648,7 @@ qed
 
 (* nat \<in> M *)
 
-lemma (in forcing_data) finite_sep_intf:
+lemma (in M_ctm) finite_sep_intf:
   "separation(##M, \<lambda>x. x\<in>nat)"
 proof -
   have "arity(finite_ordinal_fm(0)) = 1 "
@@ -666,12 +666,12 @@ proof -
 qed
 
 
-lemma (in forcing_data) nat_subset_I' : 
+lemma (in M_ctm) nat_subset_I' : 
   "\<lbrakk> I\<in>M ; 0\<in>I ; \<And>x. x\<in>I \<Longrightarrow> succ(x)\<in>I \<rbrakk> \<Longrightarrow> nat \<subseteq> I"
   by (rule subsetI,induct_tac x,simp+)
 
 
-lemma (in forcing_data) nat_subset_I :
+lemma (in M_ctm) nat_subset_I :
   "\<exists>I\<in>M. nat \<subseteq> I" 
 proof -
   have "\<exists>I\<in>M. 0\<in>I \<and> (\<forall>x\<in>M. x\<in>I \<longrightarrow> succ(x)\<in>I)" 
@@ -686,7 +686,7 @@ proof -
   then show ?thesis using \<open>I\<in>M\<close> by auto
 qed
 
-lemma (in forcing_data) nat_in_M : 
+lemma (in M_ctm) nat_in_M : 
   "nat \<in> M"
 proof -
   have 1:"{x\<in>B . x\<in>A}=A" if "A\<subseteq>B" for A B
@@ -702,18 +702,18 @@ qed
 (* end nat \<in> M *)
 
 
-lemma (in forcing_data) n_in_M : "n\<in>nat \<Longrightarrow> n\<in>M"
+lemma (in M_ctm) n_in_M : "n\<in>nat \<Longrightarrow> n\<in>M"
   using nat_in_M trans_M Transset_intf[of M n nat] by simp
 
 
-lemma (in forcing_data) mtrancl : "M_trancl(##M)" 
+lemma (in M_ctm) mtrancl : "M_trancl(##M)" 
   apply (rule M_trancl.intro,rule mbasic)
   apply (rule M_trancl_axioms.intro)
     apply (insert rtrancl_separation_intf wftrancl_separation_intf nat_in_M)
     apply (simp_all add: wellfounded_trancl_def)
   done
 
-sublocale forcing_data \<subseteq> M_trancl "##M"
+sublocale M_ctm \<subseteq> M_trancl "##M"
   by (rule mtrancl)
 
 (*** end interface with M_trancl ***)
@@ -729,11 +729,11 @@ lemma repl_sats:
    strong_replacement(##M,P)" 
   by (rule strong_replacement_cong,simp add:sat)
 
-lemma (in forcing_data) nat_trans_M : 
+lemma (in M_ctm) nat_trans_M : 
   "n\<in>M" if "n\<in>nat" for n
   using that trans_M nat_in_M Transset_intf[of M n nat] by simp
 
-lemma (in forcing_data) list_repl1_intf:
+lemma (in M_ctm) list_repl1_intf:
     assumes
       "A\<in>M"
     shows
@@ -794,7 +794,7 @@ qed
 
 
 (* Iterates_replacement para predicados sin parámetros *)
-lemma (in forcing_data) iterates_repl_intf :
+lemma (in M_ctm) iterates_repl_intf :
   assumes
     "v\<in>M" and
     isfm:"is_F_fm \<in> formula" and
@@ -856,7 +856,7 @@ proof -
   show ?thesis unfolding iterates_replacement_def wfrec_replacement_def by simp
 qed
 
-lemma (in forcing_data) formula_repl1_intf :
+lemma (in M_ctm) formula_repl1_intf :
    "iterates_replacement(##M, is_formula_functor(##M), 0)"
 proof -
   have "0\<in>M" 
@@ -872,7 +872,7 @@ proof -
   then show ?thesis using \<open>0\<in>M\<close> 1 2 iterates_repl_intf by simp
 qed
 
-lemma (in forcing_data) nth_repl_intf:
+lemma (in M_ctm) nth_repl_intf:
   assumes
     "l \<in> M"
   shows
@@ -889,7 +889,7 @@ proof -
 qed
 
 
-lemma (in forcing_data) eclose_repl1_intf:
+lemma (in M_ctm) eclose_repl1_intf:
   assumes
     "A\<in>M" 
   shows
@@ -910,7 +910,7 @@ qed
          \<lambda>n y. n\<in>nat & is_iterates(M, is_list_functor(M,A), 0, n, y))"
  
 *)
-lemma (in forcing_data) list_repl2_intf:
+lemma (in M_ctm) list_repl2_intf:
   assumes
     "A\<in>M"
   shows
@@ -946,7 +946,7 @@ proof -
   show ?thesis using repl_sats[of M ?f "[A,0,nat]"]  satsf  by simp
 qed
 
-lemma (in forcing_data) formula_repl2_intf:
+lemma (in M_ctm) formula_repl2_intf:
   "strong_replacement(##M,\<lambda>n y. n\<in>nat & is_iterates(##M, is_formula_functor(##M), 0, n, y))"
 proof -
   have "0\<in>M" 
@@ -986,7 +986,7 @@ qed
          \<lambda>n y. n\<in>nat & is_iterates(M, big_union(M), A, n, y))"
 *)
 
-lemma (in forcing_data) eclose_repl2_intf:
+lemma (in M_ctm) eclose_repl2_intf:
   assumes
     "A\<in>M"
   shows
@@ -1021,7 +1021,7 @@ proof -
   show ?thesis using repl_sats[of M ?f "[A,nat]"]  satsf  by simp
 qed
 
-lemma (in forcing_data) mdatatypes : "M_datatypes(##M)" 
+lemma (in M_ctm) mdatatypes : "M_datatypes(##M)" 
   apply (rule M_datatypes.intro,rule mtrancl)
   apply (rule M_datatypes_axioms.intro)
       apply (insert list_repl1_intf list_repl2_intf formula_repl1_intf 
@@ -1029,17 +1029,17 @@ lemma (in forcing_data) mdatatypes : "M_datatypes(##M)"
     apply (simp_all)
   done
 
-sublocale forcing_data \<subseteq> M_datatypes "##M"
+sublocale M_ctm \<subseteq> M_datatypes "##M"
   by (rule mdatatypes)
 
-lemma (in forcing_data) meclose : "M_eclose(##M)" 
+lemma (in M_ctm) meclose : "M_eclose(##M)" 
   apply (rule M_eclose.intro,rule mdatatypes)
   apply (rule M_eclose_axioms.intro)
       apply (insert eclose_repl1_intf eclose_repl2_intf)
     apply (simp_all)
   done
 
-sublocale forcing_data \<subseteq> M_eclose "##M"
+sublocale M_ctm \<subseteq> M_eclose "##M"
   by (rule meclose)
 
 (* Interface with locale M_eclose_pow *)
@@ -1054,7 +1054,7 @@ lemma powerset_type [TC]:
   by (simp add:powerset_fm_def)
 
 (*
-lemma (in forcing_data) sats_powerset_fm [simp]: 
+lemma (in M_ctm) sats_powerset_fm [simp]: 
   "[| x \<in> nat; y \<in> nat ; env \<in> list(M)|]
     ==> sats(M,powerset_fm(x,y),env) \<longleftrightarrow> 
         powerset(##M,nth(x,env),nth(y,env))" 
@@ -1089,7 +1089,7 @@ lemma sats_is_powapply_fm :
   using nth_closed assms by simp
 
 
-lemma (in forcing_data) powapply_repl :
+lemma (in M_ctm) powapply_repl :
   assumes
       "f\<in>M"
   shows
@@ -1123,14 +1123,14 @@ lemma PHrank_type [TC]:
   by (simp add:PHrank_fm_def)
 
 
-lemma (in forcing_data) sats_PHrank_fm [simp]: 
+lemma (in M_ctm) sats_PHrank_fm [simp]: 
   "[| x \<in> nat; y \<in> nat; z \<in> nat;  env \<in> list(M)|]
     ==> sats(M,PHrank_fm(x,y,z),env) \<longleftrightarrow> 
         PHrank(##M,nth(x,env),nth(y,env),nth(z,env))" 
   using zero_in_M Internalizations.nth_closed by (simp add: PHrank_def PHrank_fm_def)
 
 
-lemma (in forcing_data) phrank_repl :
+lemma (in M_ctm) phrank_repl :
   assumes
       "f\<in>M"
   shows
@@ -1159,7 +1159,7 @@ lemma is_Hrank_type [TC]:
      "[| x \<in> nat; y \<in> nat; z \<in> nat |] ==> is_Hrank_fm(x,y,z) \<in> formula"
   by (simp add:is_Hrank_fm_def)
 
-lemma (in forcing_data) sats_is_Hrank_fm [simp]: 
+lemma (in M_ctm) sats_is_Hrank_fm [simp]: 
   "[| x \<in> nat; y \<in> nat; z \<in> nat; env \<in> list(M)|]
     ==> sats(M,is_Hrank_fm(x,y,z),env) \<longleftrightarrow> 
         is_Hrank(##M,nth(x,env),nth(y,env),nth(z,env))" 
@@ -1169,7 +1169,7 @@ lemma (in forcing_data) sats_is_Hrank_fm [simp]:
   done
 
 (* M(x) \<Longrightarrow> wfrec_replacement(M,is_Hrank(M),rrank(x)) *)
-lemma (in forcing_data) wfrec_rank :
+lemma (in M_ctm) wfrec_rank :
   assumes
     "X\<in>M"
   shows
@@ -1269,7 +1269,7 @@ definition
 \<exists>sa[M]. \<exists>esa[M]. \<exists>mesa[M].
        upair(M,a,a,sa) & is_eclose(M,sa,esa) & membership(M,esa,mesa) &
        wfrec_replacement(M,MH,mesa) *)
-lemma (in forcing_data) trans_repl_HVFrom :
+lemma (in M_ctm) trans_repl_HVFrom :
   assumes
     "A\<in>M" "i\<in>M" "Ord(i)" 
   shows
@@ -1311,7 +1311,7 @@ proof -
   }
   *)
 
-lemma (in forcing_data) repl_gen : 
+lemma (in M_ctm) repl_gen : 
   assumes 
     f_abs: "\<And>x y. \<lbrakk> x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_F(##M,x,y) \<longleftrightarrow> y = f(x)"
     and
@@ -1340,7 +1340,7 @@ proof -
 qed
 
 (* Proof Scheme for instances of separation *)
-lemma (in forcing_data) sep_in_M :
+lemma (in M_ctm) sep_in_M :
   assumes
     "\<phi> \<in> formula" "env\<in>list(M)" 
     "arity(\<phi>) \<le> 1 #+ length(env)" "A\<in>M" and

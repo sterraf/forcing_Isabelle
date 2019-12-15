@@ -28,13 +28,15 @@ locale M_ZF =
                     separation(##M,\<lambda>x. sats(M,\<phi>,[x] @ env))" 
       and replacement_ax:   "\<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow> arity(\<phi>) \<le> 2 #+ length(env) \<Longrightarrow> 
                     strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y] @ env))" 
-      
-locale forcing_data = forcing_notion + M_ZF +
+
+locale M_ctm = M_ZF +
   fixes enum
   assumes M_countable:      "enum\<in>bij(nat,M)"
-      and P_in_M:           "P \<in> M"
-      and leq_in_M:         "leq \<in> M"
       and trans_M:          "Transset(M)"
+
+locale forcing_data = forcing_notion + M_ctm +
+  assumes P_in_M:           "P \<in> M"
+      and leq_in_M:         "leq \<in> M"
           
 begin
 
