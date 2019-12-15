@@ -36,15 +36,7 @@ proof -
 qed
     
 (* Interface with M_trivial *)
-lemma (in M_ctm) mtrans :  
-  "M_trans(##M)"
-  apply (rule M_trans.intro)
-  apply (simp_all)
-   apply (rule Transset_intf,simp add: trans_M,simp+)
-  apply (rule exI, rule zero_in_M)
-done
-
-
+    
 lemma (in M_ctm) mtriv :  
   "M_trivial(##M)"
   apply (insert trans_M)
