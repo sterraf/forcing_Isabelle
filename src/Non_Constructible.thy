@@ -1,7 +1,7 @@
 theory Non_Constructible
   imports
     Forcing_Thms 
-    (* it actually depends more basic stuff, plus a misplaced lemma in the former *)
+    (* it actually depends on more basic stuff, plus a misplaced lemma in the former *)
 
 begin
 
@@ -51,7 +51,17 @@ abbreviation Incompatible :: "[i, i] \<Rightarrow> o"  (infixl "\<bottom>" 50)
 lemma incompatible_extensions:
   assumes "p\<in>list(2)"
   shows "(p @ [0]) \<bottom> (p @ [1])"
-  sorry
+proof
+  assume "ch.compat(p @ [0], p @ [1])"
+  then
+  obtain q where "q\<in>list(2)" "q \<preceq> p@[0]" "q \<preceq> p@[1]" 
+    by blast
+  with assms
+  obtain xs ys where "q = (p @ [0]) @ xs" "q = (p @ [1]) @ ys"  
+    by blast
+  with assms
+  show "False" using app_assoc by simp
+qed
 
 lemma filter_complement_dense:
   assumes "ch.filter(G)" shows "ch.dense(list(2) - G)"
