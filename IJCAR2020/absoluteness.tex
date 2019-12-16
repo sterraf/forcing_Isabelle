@@ -11,7 +11,10 @@ as ``$x$ is a subset of $y$'' or of a function like $y=\P(x)$) to
 a class $C$ is obtained by taking its (first-order) definition and
 restricting all of its quantifiers to $C$.
 
-\centerline{[example: $\sbq$]}
+\[
+x \sbq^C y \equiv \forall z.\ C(z) \longrightarrow (z\in x
+\longrightarrow z\in y)
+\]
 
 The new formula $\phi^C(\bx)$ corresponds to what is obtained by defining
 the concept ``inside'' $C$. It turns out that many concepts mean the
@@ -25,7 +28,8 @@ When this is the case, we say that the relation defined by $\phi$ is
 moreover requires that
 the relativized definition also behaves functionally over $C$.) As
 examples, the relation of inclusion $\subseteq$ ---and actually, any
-relation defined by a formula using only bounded quantifiers 
+relation defined by a formula (equivalent to one) using only bounded
+quantifiers 
 $(\forall x\in y)$ and $(\exists x\in y)$--- is absolute for
 transitive models. On the contrary, this is not the case with the powerset
 operation.
@@ -41,6 +45,10 @@ architecture had only in mind the consistency of $\ZFC$, but, for
 instance, in order to apply it in the development of forcing, too much
 is assumed at the beginning; more seriously, some assumptions can't be
 regarded as ``first-order'' (v.g. the Replacement Scheme).
+
+The version of \isatt{ZF-Constructible} we present weakens the
+assumptions of [many / a dozen / several] absoluteness theorems to that
+of a nonempty transitive class.
 
 %%% Local Variables: 
 %%% mode: latex
