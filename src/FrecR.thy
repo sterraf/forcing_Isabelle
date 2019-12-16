@@ -93,25 +93,73 @@ lemma components_simp:
   unfolding ftype_def name1_def name2_def cond_of_def
   by simp_all
 
+definition eclose_n :: "[i\<Rightarrow>i,i] \<Rightarrow> i" where
+  "eclose_n(name,x) = eclose({name(x)})"
 
-lemma trans_eclose :
-  " x \<in> eclose(A) \<Longrightarrow> y \<in> x \<Longrightarrow> y \<in> eclose(A)"
-  using Transset_intf[OF Transset_eclose]
+definition
+  ecloseN :: "i \<Rightarrow> i" where
+  "ecloseN(x) = eclose_n(name1,x) \<union> eclose_n(name2,x)"
+
+lemma components_in_eclose :
+  "n1 \<in> ecloseN(<f,n1,n2,c>)"
+  "n2 \<in> ecloseN(<f,n1,n2,c>)"
+  unfolding ecloseN_def eclose_n_def
+  using components_simp arg_into_eclose by auto
+
+lemmas names_simp = components_simp(2) components_simp(3)
+
+lemma ecloseNI1 : 
+  assumes "x \<in> eclose(n1)" 
+  shows "x \<in> ecloseN(<f,n1,n2,c>)" 
+proof -
+  from assms
+  have "x\<in>eclose({n1})"  
+    using eclose_sing by simp
+  then show "x \<in> ecloseN(<f,n1,n2,c>)"
+  unfolding ecloseN_def eclose_n_def
+  using names_simp
   by simp
+qed
 
+lemma ecloseNI2 : 
+  assumes "y \<in> eclose(n2)" 
+  shows "y \<in> ecloseN(<f,n1,n2,c>)" 
+proof -
+  from assms
+  have "y\<in>eclose({n2})" 
+    using eclose_sing by simp_all
+  then show "y \<in> ecloseN(<f,n1,n2,c>)"
+  unfolding ecloseN_def eclose_n_def
+  using names_simp
+  by simp
+qed
 
-lemma arg_into_eclose2 :
-  assumes
-    "n\<notin>A \<Longrightarrow> B\<in>eclose(A)" "n\<notin>A \<Longrightarrow> n\<in>B" 
-  shows
-    "n\<in>eclose(A)" 
-  using assms trans_eclose arg_into_eclose by blast
+lemmas ecloseNI = ecloseNI1 ecloseNI2
 
-lemma components_in_eclose : 
-  "n1 \<in> eclose(<f,n1,n2,c>)"
-  "n2 \<in> eclose(<f,n1,n2,c>)"
-  unfolding Pair_def 
-  by (rule arg_into_eclose2 ; auto)+
+lemma ecloseN_mono :
+  assumes "u \<in> ecloseN(x)" "name1(x) \<in> ecloseN(y)" "name2(x) \<in> ecloseN(y)"
+  shows "u \<in> ecloseN(y)"
+proof -
+  from \<open>u\<in>_\<close>
+  consider (a) "u\<in>eclose({name1(x)})" | (b) "u \<in> eclose({name2(x)})"
+    unfolding ecloseN_def  eclose_n_def by auto
+  then 
+  show ?thesis
+  proof cases
+    case a
+    with \<open>name1(x) \<in> _\<close>
+    show ?thesis 
+      unfolding ecloseN_def  eclose_n_def
+      using eclose_singE[OF a] mem_eclose_trans[of u "name1(x)" ] by auto 
+  next
+    case b
+    with \<open>name2(x) \<in> _\<close>
+    show ?thesis 
+      unfolding ecloseN_def eclose_n_def
+      using eclose_singE[OF b] mem_eclose_trans[of u "name2(x)"] by auto
+  qed
+qed
+
 
 (* ftype(p) == THE a. \<exists>b. p = <a, b> *)
 
@@ -275,6 +323,38 @@ lemmas components_defs = fst_fm_def ftype_fm_def snd_fm_def snd_snd_fm_def hcomp
                         name1_fm_def name2_fm_def cond_of_fm_def
 
 
+definition
+  is_eclose_n :: "[i=>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i,i] => o" where
+    "is_eclose_n(N,is_name,en,t) == 
+        \<exists>n1[N].\<exists>s1[N]. is_name(N,t,n1) \<and> is_singleton(N,n1,s1) \<and> is_eclose(N,s1,en)"
+
+definition 
+  eclose_n1_fm :: "[i,i] \<Rightarrow> i" where
+  "eclose_n1_fm(m,t) == Exists(Exists(And(And(name1_fm(t#+2,0),singleton_fm(0,1)),
+                                       is_eclose_fm(1,m#+2))))"
+
+definition 
+  eclose_n2_fm :: "[i,i] \<Rightarrow> i" where
+  "eclose_n2_fm(m,t) == Exists(Exists(And(And(name2_fm(t#+2,0),singleton_fm(0,1)),
+                                       is_eclose_fm(1,m#+2))))"
+
+definition
+  is_ecloseN :: "[i=>o,i,i] => o" where
+    "is_ecloseN(N,en,t) == \<exists>en1[N].\<exists>en2[N].
+                is_eclose_n(N,is_name1,en1,t) \<and> is_eclose_n(N,is_name2,en2,t)\<and>
+                union(N,en1,en2,en)"
+
+definition 
+  ecloseN_fm :: "[i,i] \<Rightarrow> i" where
+  "ecloseN_fm(en,t) == Exists(Exists(And(eclose_n1_fm(1,t#+2),
+                            And(eclose_n2_fm(0,t#+2),union_fm(1,0,en#+2)))))"
+                                                         
+lemma sats_ecloseN_fm [simp]:
+   "[| en \<in> nat; t \<in> nat ; env \<in> list(A)|]
+    ==> sats(A, ecloseN_fm(en,t), env) \<longleftrightarrow> is_ecloseN(##A,nth(en,env),nth(t,env))"
+  unfolding ecloseN_fm_def is_ecloseN_def eclose_n1_fm_def eclose_n2_fm_def is_eclose_n_def
+  using  nth_0 nth_ConsI  sats_singleton_fm[symmetric] sats_name1_fm sats_name2_fm
+  by auto
 
 (* Relation of forces *)
 definition
