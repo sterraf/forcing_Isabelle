@@ -63,9 +63,26 @@ definition
   "names_below(P,x) \<equiv> 2\<times>eclose(x)\<times>eclose(x)\<times>P"
 
 definition
+  names_below_s :: "i \<Rightarrow> i \<Rightarrow> i" where
+  "names_below_s(P,x) \<equiv> 2\<times>ecloseN(x)\<times>ecloseN(x)\<times>P"
+
+lemma names_belowD:
+  assumes "x \<in> names_below(P,z)"
+  obtains f n1 n2 p where
+    "x = <f,n1,n2,p>" "f\<in>2" "n1\<in>eclose(z)" "n2\<in>eclose(z)" "p\<in>P"
+  using assms unfolding names_below_def by auto
+
+lemma names_belowsD:
+  assumes "x \<in> names_below_s(P,z)"
+  obtains f n1 n2 p where
+    "x = <f,n1,n2,p>" "f\<in>2" "n1\<in>ecloseN(z)" "n2\<in>ecloseN(z)" "p\<in>P"
+  using assms unfolding names_below_s_def by auto
+
+
+definition
   is_names_below :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
   "is_names_below(M,P,x,nb) == \<exists>p1[M]. \<exists>p0[M]. \<exists>t[M]. \<exists>ec[M]. 
-              is_eclose(M,x,ec) \<and> number2(M,t) \<and> cartprod(M,ec,P,p0) \<and> cartprod(M,ec,p0,p1)
+              is_ecloseN(M,ec,x) \<and> number2(M,t) \<and> cartprod(M,ec,P,p0) \<and> cartprod(M,ec,p0,p1)
               \<and> cartprod(M,t,p1,nb)"
 
 definition
@@ -97,7 +114,7 @@ lemma sats_is_names_below_fm :
   shows
     "sats(A,is_names_below_fm(P,x,nb),env)
     \<longleftrightarrow> is_names_below(##A,nth(P, env),nth(x, env),nth(nb, env))" 
-   unfolding is_names_below_fm_def is_names_below_def using assms by simp
+   unfolding is_names_below_fm_def is_names_below_def using assms sorry
 
 definition
   is_tuple :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
@@ -320,7 +337,7 @@ lemma is_Hfrc_at_iff_sats:
 
 definition
   frc_at :: "[i,i,i] \<Rightarrow> i" where
-  "frc_at(P,leq,fnnc) \<equiv> wfrec(frecrel(names_below(P,fnnc)),fnnc,\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f)))"
+  "frc_at(P,leq,fnnc) \<equiv> wfrec(frecrel(names_below_s(P,fnnc)),fnnc,\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f)))"
 
 definition
   tran_closure_fm :: "i\<Rightarrow>i\<Rightarrow>i" where
@@ -491,6 +508,7 @@ lemma tuple_abs[simp]:
 lemma in_domain: "y\<in>M \<Longrightarrow> x\<in>domain(y) \<Longrightarrow> x\<in>M"
   using domainE[of x y] trans_M Transset_intf[of M _ y] pair_in_M_iff by auto
 
+
 lemma comp_in_M:
   "<p,q>\<in>leq \<Longrightarrow> p\<in>M"
   "<p,q>\<in>leq \<Longrightarrow> q\<in>M"
@@ -570,6 +588,28 @@ lemma components_closed :
   "x\<in>M \<Longrightarrow> cond_of(x)\<in>M"
   unfolding ftype_def name1_def name2_def cond_of_def using fst_snd_closed by simp_all
 
+lemma ecloseN_closed:
+  "(##M)(A) \<Longrightarrow> (##M)(ecloseN(A))"
+  "(##M)(A) \<Longrightarrow> (##M)(eclose_n(name1,A))"
+  "(##M)(A) \<Longrightarrow> (##M)(eclose_n(name2,A))"
+  unfolding ecloseN_def eclose_n_def
+  using components_closed eclose_closed singletonM Un_closed by auto
+
+lemma is_eclose_n_abs :
+  assumes "x\<in>M" "ec\<in>M"
+  shows "is_eclose_n(##M,is_name1,ec,x) \<longleftrightarrow> ec = eclose_n(name1,x)"
+        "is_eclose_n(##M,is_name2,ec,x) \<longleftrightarrow> ec = eclose_n(name2,x)"
+  unfolding is_eclose_n_def eclose_n_def
+  using assms name1_abs name2_abs singleton_abs eclose_abs eclose_closed singletonM components_closed
+  by auto
+
+
+lemma is_ecloseN_abs :
+  "\<lbrakk>x\<in>M;ec\<in>M\<rbrakk> \<Longrightarrow> is_ecloseN(##M,ec,x) \<longleftrightarrow> ec = ecloseN(x)" 
+  unfolding is_ecloseN_def ecloseN_def 
+  using is_eclose_n_abs  Un_closed eclose_abs union_abs ecloseN_closed
+  by auto 
+
 lemma frecR_abs :
   "x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> frecR(x,y) \<longleftrightarrow> is_frecR(##M,x,y)" 
   unfolding frecR_def is_frecR_def using components_closed domain_closed by simp
@@ -586,7 +626,7 @@ lemma frecrel_abs:
 proof -
   from \<open>A\<in>M\<close>
   have "z\<in>M" if "z\<in>A\<times>A" for z
-    using cartprod_closed transitivity that by simp
+    using cartprod_closed Transset_intf[OF trans_M] that by simp
   then
   have "Collect(A\<times>A,frecrelP(##M)) = Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = <x,y> \<and> frecR(x,y)))"
     using Collect_cong[of "A\<times>A" "A\<times>A" "frecrelP(##M)"] assms frecrelP_abs by simp
@@ -606,7 +646,15 @@ lemma frecrel_closed:
 (* transitive relation of forces for atomic formulas *)
 definition
   forcerel :: "i \<Rightarrow> i" where
-  "forcerel(x) \<equiv> frecrel(names_below(P,x))^+"
+  "forcerel(x) \<equiv> frecrel(names_below_s(P,x))^+"
+
+lemma field_frecrel : "field(frecrel(names_below_s(P,x))) \<subseteq> names_below_s(P,x)"
+  unfolding frecrel_def
+  using field_Rrel by simp
+
+lemma forcerelD : "uv \<in> forcerel(x) \<Longrightarrow> uv\<in> names_below_s(P,x) \<times> names_below_s(P,x)"
+  unfolding forcerel_def
+  using trancl_type field_frecrel by blast
 
 lemma wf_forcerel :
   "wf(forcerel(x))"
@@ -614,20 +662,18 @@ lemma wf_forcerel :
 
 lemma restrict_trancl_forcerel:
   assumes "frecR(w,y)"
-  shows "restrict(f,frecrel(names_below(P,x))-``{y})`w
-       = restrict(f,(frecrel(names_below(P,x))^+)-``{y})`w" 
+  shows "restrict(f,frecrel(names_below_s(P,x))-``{y})`w
+       = restrict(f,forcerel(x)-``{y})`w" 
   unfolding forcerel_def frecrel_def using assms restrict_trancl_Rrel[of frecR] 
      by (simp)
 
 lemma names_belowI : 
   assumes "frecR(<ft,n1,n2,p>,<a,b,c,d>)" "p\<in>P"
-  shows "<ft,n1,n2,p> \<in> names_below(P,<a,b,c,d>)" (is "?x \<in> names_below(_,?y)")
+  shows "<ft,n1,n2,p> \<in> names_below_s(P,<a,b,c,d>)" (is "?x \<in> names_below_s(_,?y)")
 proof -
   from assms
   have "ft \<in> 2" "a \<in> 2" 
     unfolding frecR_def by (auto simp add:components_simp)
-  have A: "b \<in> eclose(?y) " "c \<in> eclose(?y)" 
-    using components_in_eclose by simp_all
   from assms
   consider (e) "n1 \<in> domain(b) \<union> domain(c) \<and> (n2 = b \<or> n2 =c)" 
     | (m) "n1 = b \<and> n2 \<in> domain(c)"
@@ -639,32 +685,219 @@ proof -
     have "n1 \<in> eclose(b) \<or> n1 \<in> eclose(c)"  
       using Un_iff in_dom_in_eclose by auto
     with e
-    have "n1 \<in> eclose(?y)" "n2 \<in> eclose(?y)"
-      using mem_eclose_trans components_in_eclose by auto
-    with A \<open>ft\<in>2\<close> \<open>p\<in>P\<close> 
-    show ?thesis unfolding names_below_def by  auto
+    have "n1 \<in> ecloseN(?y)" "n2 \<in> ecloseN(?y)"
+      using ecloseNI components_in_eclose by auto
+    with \<open>ft\<in>2\<close> \<open>p\<in>P\<close> 
+    show ?thesis unfolding names_below_s_def by  auto
   next
     case m
     then
-    have "n1 \<in> eclose(?y)" "n2 \<in> eclose(c)"
-      using mem_eclose_trans in_dom_in_eclose components_in_eclose by auto
-    with A \<open>ft\<in>2\<close> \<open>p\<in>P\<close> 
-    show ?thesis unfolding names_below_def using mem_eclose_trans by auto    
+    have "n1 \<in> ecloseN(?y)" "n2 \<in> ecloseN(?y)"
+      using mem_eclose_trans  ecloseNI
+            in_dom_in_eclose components_in_eclose by auto
+    with \<open>ft\<in>2\<close> \<open>p\<in>P\<close> 
+    show ?thesis unfolding names_below_s_def
+      by auto    
   qed
 qed
 
 lemmas names_belowI' = names_belowI[OF frecRI1] names_belowI[OF frecRI2] names_belowI[OF frecRI3] 
 
-lemma Hfrc_restrict_trancl: "bool_of_o(Hfrc(P, leq, y, restrict(f,frecrel(names_below(P,x))-``{y})))
-         = bool_of_o(Hfrc(P, leq, y, restrict(f,(frecrel(names_below(P,x))^+)-``{y})))"
-  unfolding Hfrc_def bool_of_o_def eq_case_def mem_case_def 
-  using  restrict_trancl_forcerel frecRI1 frecRI2 frecRI3 by simp
+lemma names_below_tr : 
+  assumes "x\<in> names_below_s(P,y)" 
+    "y\<in> names_below_s(P,z)"
+  shows "x\<in> names_below_s(P,z)"
+proof -
+  let ?A="\<lambda>y . names_below_s(P,y)"
+  from assms
+  obtain fx x1 x2 px where
+    "x = <fx,x1,x2,px>" "fx\<in>2" "x1\<in>ecloseN(y)" "x2\<in>ecloseN(y)" "px\<in>P"
+    unfolding names_below_s_def by auto
+  from assms
+  obtain fy y1 y2 py where
+    "y = <fy,y1,y2,py>" "fy\<in>2" "y1\<in>ecloseN(z)" "y2\<in>ecloseN(z)" "py\<in>P"
+    unfolding names_below_s_def by auto
+    from \<open>x1\<in>_\<close> \<open>x2\<in>_\<close> \<open>y1\<in>_\<close> \<open>y2\<in>_\<close> \<open>x=_\<close> \<open>y=_\<close>
+    have "x1\<in>ecloseN(z)" "x2\<in>ecloseN(z)"
+      using ecloseN_mono names_simp by auto
+    with \<open>fx\<in>2\<close> \<open>px\<in>P\<close> \<open>x=_\<close>
+    have "x\<in>?A(z)" 
+      unfolding names_below_s_def by simp
+    then show ?thesis using subsetI by simp
+qed
 
+lemma arg_into_names_below2 :
+  assumes "<x,y> \<in> frecrel(names_below_s(P,z))"
+  shows  "x \<in> names_below_s(P,y)"
+proof -
+  {
+  from assms
+  have "x\<in>names_below_s(P,z)" "y\<in>names_below_s(P,z)" "frecR(x,y)"
+    unfolding frecrel_def Rrel_def
+    by auto
+  obtain f n1 n2 p where
+    A: "x = <f,n1,n2,p>" "f\<in>2" "n1\<in>ecloseN(z)" "n2\<in>ecloseN(z)" "p\<in>P" 
+    using \<open>x\<in>names_below_s(P,z)\<close>
+    unfolding names_below_s_def by auto
+  obtain fy m1 m2 q where
+      B: "q\<in>P" "y = <fy,m1,m2,q>"
+    using \<open>y\<in>names_below_s(P,z)\<close>
+    unfolding names_below_s_def by auto
+  from A B \<open>frecR(x,y)\<close>
+  have "x\<in>names_below_s(P,y)" using names_belowI by simp
+  }
+  then show ?thesis .
+qed
+
+lemma arg_into_names_below :
+  assumes "<x,y> \<in> frecrel(names_below_s(P,z))"
+  shows  "x \<in> names_below_s(P,x)"
+proof -
+  {
+  from assms
+  have "x\<in>names_below_s(P,z)"
+    unfolding frecrel_def Rrel_def
+    by auto
+  obtain f n1 n2 p where
+    "x = <f,n1,n2,p>" "f\<in>2" "n1\<in>ecloseN(z)" "n2\<in>ecloseN(z)" "p\<in>P"
+    using \<open>x\<in>names_below_s(P,z)\<close> unfolding names_below_s_def by auto
+  then
+  have "n1\<in>ecloseN(x)" "n2\<in>ecloseN(x)" 
+    using components_in_eclose by simp_all
+  with \<open>f\<in>2\<close> \<open>p\<in>P\<close> \<open>x = <f,n1,n2,p>\<close>
+  have "x\<in>names_below_s(P,x)" unfolding names_below_s_def by simp
+  }
+  then show ?thesis .
+qed
+
+lemma forcerel_arg_into_names_below :
+  assumes "<x,y> \<in> forcerel(z)"
+  shows  "x \<in> names_below_s(P,x)"
+  using assms
+  unfolding forcerel_def
+  by(rule trancl_induct;auto simp add: arg_into_names_below)
+
+lemma names_below_mono : 
+  assumes "\<langle>x,y\<rangle> \<in> frecrel(names_below_s(P,z))"
+  shows "names_below_s(P,x) \<subseteq> names_below_s(P,y)"
+proof -
+  from assms
+  have "x\<in>names_below_s(P,y)"
+    using arg_into_names_below2 by simp
+  then 
+  show ?thesis 
+    using names_below_tr subsetI by simp
+qed
+
+lemma frecrel_mono : 
+  assumes "\<langle>x,y\<rangle> \<in> frecrel(names_below_s(P,z))"
+  shows "frecrel(names_below_s(P,x)) \<subseteq> frecrel(names_below_s(P,y))"
+  unfolding frecrel_def
+  using Rrel_mono names_below_mono assms by simp
+
+lemma forcerel_mono2 : 
+  assumes "\<langle>x,y\<rangle> \<in> frecrel(names_below_s(P,z))"
+  shows "forcerel(x) \<subseteq> forcerel(y)"
+  unfolding forcerel_def
+  using trancl_mono frecrel_mono assms by simp
+
+lemma forcerel_mono_aux : 
+  assumes "\<langle>x,y\<rangle> \<in> frecrel(names_below_s(P, w))^+"
+  shows "forcerel(x) \<subseteq> forcerel(y)"
+  using assms 
+  by (rule trancl_induct,simp_all add: subset_trans forcerel_mono2)
+
+lemma forcerel_mono : 
+  assumes "\<langle>x,y\<rangle> \<in> forcerel(z)"
+  shows "forcerel(x) \<subseteq> forcerel(y)"
+  using forcerel_mono_aux assms unfolding forcerel_def by simp
+
+lemma aux: "x \<in> names_below_s(P, w) \<Longrightarrow> <x,y> \<in> forcerel(z) \<Longrightarrow> (y \<in> names_below_s(P, w) \<longrightarrow> <x,y> \<in> forcerel(w))"
+  unfolding forcerel_def
+proof(rule_tac a=x and b=y and P="\<lambda> y . y \<in> names_below_s(P, w) \<longrightarrow> <x,y> \<in> frecrel(names_below_s(P,w))^+" in trancl_induct,simp)
+  let ?A="\<lambda> a . names_below_s(P, a)"
+  let ?R="\<lambda> a . frecrel(?A(a))"
+  let ?fR="\<lambda> a .forcerel(a)"  
+  show "u\<in>?A(w) \<longrightarrow> <x,u>\<in>?R(w)^+" if "x\<in>?A(w)" "<x,y>\<in>?R(z)^+" "<x,u>\<in>?R(z)"  for  u 
+    using that frecrelD frecrelI r_into_trancl unfolding names_below_s_def by simp  
+  {
+    fix u v
+    assume "x \<in> ?A(w)"
+       "\<langle>x, y\<rangle> \<in> ?R(z)^+"
+       "\<langle>x, u\<rangle> \<in> ?R(z)^+"
+       "\<langle>u, v\<rangle> \<in> ?R(z)"
+       "u \<in> ?A(w) \<Longrightarrow> \<langle>x, u\<rangle> \<in> ?R(w)^+"
+    then 
+    have "v \<in> ?A(w) \<Longrightarrow> \<langle>x, v\<rangle> \<in> ?R(w)^+"
+    proof -
+      assume "v \<in>?A(w)"
+      from \<open>\<langle>u,v\<rangle>\<in>_\<close>
+      have "u\<in>?A(v)"
+        using arg_into_names_below2 by simp
+      with \<open>v \<in>?A(w)\<close>
+      have "u\<in>?A(w)"
+        using names_below_tr by simp
+      with \<open>v\<in>_\<close> \<open>\<langle>u,v\<rangle>\<in>_\<close>
+      have "\<langle>u,v\<rangle>\<in> ?R(w)" 
+        using frecrelD frecrelI r_into_trancl unfolding names_below_s_def by simp
+      with \<open>u \<in> ?A(w) \<Longrightarrow> \<langle>x, u\<rangle> \<in> ?R(w)^+\<close> \<open>u\<in>?A(w)\<close>
+      have "\<langle>x, u\<rangle> \<in> ?R(w)^+" by simp
+      with \<open>\<langle>u,v\<rangle>\<in> ?R(w)\<close>
+      show "\<langle>x,v\<rangle>\<in> ?R(w)^+" using trancl_trans r_into_trancl
+        by simp
+    qed
+  }
+  then show "v \<in> ?A(w) \<longrightarrow> \<langle>x, v\<rangle> \<in> ?R(w)^+" 
+    if "x \<in> ?A(w)"
+       "\<langle>x, y\<rangle> \<in> ?R(z)^+"
+       "\<langle>x, u\<rangle> \<in> ?R(z)^+"
+       "\<langle>u, v\<rangle> \<in> ?R(z)"
+       "u \<in> ?A(w) \<longrightarrow> \<langle>x, u\<rangle> \<in> ?R(w)^+" for u v
+    using that by simp
+qed
+
+lemma forcerel_eq : 
+  assumes "\<langle>z,x\<rangle> \<in> forcerel(x)"
+  shows "forcerel(z) = forcerel(x) \<inter> names_below_s(P,z)\<times>names_below_s(P,z)"
+  using assms aux forcerelD forcerel_mono[of z x x] subsetI 
+  by auto
+
+lemma forcerel_below_aux :
+  assumes "<z,x> \<in> forcerel(x)" "<u,z> \<in> forcerel(x)"
+  shows "u \<in> names_below_s(P,z)" 
+  using assms(2)
+  unfolding forcerel_def
+proof(rule trancl_induct)
+  show  "u \<in> names_below_s(P,y)" if " \<langle>u, y\<rangle> \<in> frecrel(names_below_s(P, x))" for y
+    using that vimage_singleton_iff  arg_into_names_below2 by simp
+  show "u \<in> names_below_s(P,z)" 
+    if "\<langle>u, y\<rangle> \<in> frecrel(names_below_s(P, x))^+"
+      "\<langle>y, z\<rangle> \<in> frecrel(names_below_s(P, x))"
+      "u \<in> names_below_s(P, y)"
+    for y z
+    using that arg_into_names_below2[of y z x] names_below_tr by simp
+qed
+
+lemma forcerel_below :
+  assumes "<z,x> \<in> forcerel(x)" 
+  shows "forcerel(x) -`` {z} \<subseteq> names_below_s(P,z)" 
+  using vimage_singleton_iff assms forcerel_below_aux by auto
+
+lemma relation_forcerel : 
+  shows "relation(forcerel(z))" "trans(forcerel(z))"
+  unfolding forcerel_def using relation_trancl trans_trancl by simp_all
+
+lemma Hfrc_restrict_trancl: "bool_of_o(Hfrc(P, leq, y, restrict(f,frecrel(names_below_s(P,x))-``{y})))
+         = bool_of_o(Hfrc(P, leq, y, restrict(f,(frecrel(names_below_s(P,x))^+)-``{y})))"
+  unfolding Hfrc_def bool_of_o_def eq_case_def mem_case_def 
+  using  restrict_trancl_forcerel frecRI1 frecRI2 frecRI3 
+  unfolding forcerel_def
+  by simp
 
 (* Recursive definition of forces for atomic formulas using a transitive relation *)
 lemma frc_at_trancl: "frc_at(P,leq,z) = wfrec(forcerel(z),z,\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f)))"
 proof -
-  have "frc_at(P,leq,z) = wfrec(frecrel(names_below(P,z)),z,\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f)))"
+  have "frc_at(P,leq,z) = wfrec(frecrel(names_below_s(P,z)),z,\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f)))"
     (is "_ = wfrec(?r,_,?H)")
     unfolding frc_at_def ..
   also
@@ -710,16 +943,98 @@ proof -
   show ?thesis using assms  unfolding is_forcerel_def forcerel_fm_def by simp
 qed
 
-(* Don't know if this is true *)
-lemma  aux_def_frc_at: "x\<in>names_below(P,y) \<Longrightarrow>
-  wfrec(forcerel(y), x, H) =  wfrec(forcerel(x), x, H)"
-  sorry
+lemma forcerelI1 : 
+  assumes "n1 \<in> domain(b) \<or> n1 \<in> domain(c)" "p\<in>P" "d\<in>P"
+  shows "\<langle>\<langle>1, n1, b, p\<rangle>, \<langle>0,b,c,d\<rangle>\<rangle>\<in> forcerel(\<langle>0,b,c,d\<rangle>)"
+proof -
+  let ?x="\<langle>1, n1, b, p\<rangle>"
+  let ?y="\<langle>0,b,c,d\<rangle>"
+  from assms
+  have "frecR(?x,?y)"
+    using frecRI1 by simp
+  then
+  have "?x\<in>names_below_s(P,?y)"  "?y \<in> names_below_s(P,?y)"
+    using names_belowI  assms components_in_eclose 
+    unfolding names_below_s_def by auto
+  with \<open>frecR(?x,?y)\<close>
+  show ?thesis
+    unfolding forcerel_def frecrel_def
+    using subsetD[OF r_subset_trancl[OF relation_Rrel]] RrelI
+    by auto
+qed
 
-(* This is NOT true (though it might be with \<subseteq>) *)
-lemma vimage_forcerel: "forcerel(\<langle>ft,n1,n2,p\<rangle>) -`` {\<langle>ft,n1,n2,p\<rangle>} = names_below(P,\<langle>ft,n1,n2,p\<rangle>)"
-  sorry
+lemma forcerelI2 : 
+  assumes "n1 \<in> domain(b) \<or> n1 \<in> domain(c)" "p\<in>P" "d\<in>P"
+  shows "\<langle>\<langle>1, n1, c, p\<rangle>, \<langle>0,b,c,d\<rangle>\<rangle>\<in> forcerel(\<langle>0,b,c,d\<rangle>)"
+proof -
+  let ?x="\<langle>1, n1, c, p\<rangle>"
+  let ?y="\<langle>0,b,c,d\<rangle>"
+  from assms
+  have "frecR(?x,?y)"
+    using frecRI2 by simp
+  then
+  have "?x\<in>names_below_s(P,?y)"  "?y \<in> names_below_s(P,?y)"
+    using names_belowI  assms components_in_eclose 
+    unfolding names_below_s_def by auto
+  with \<open>frecR(?x,?y)\<close>
+  show ?thesis
+    unfolding forcerel_def frecrel_def 
+      using subsetD[OF r_subset_trancl[OF relation_Rrel]] RrelI
+    by auto
+qed
 
-lemma def_frc_at : "frc_at(P,leq,<ft,n1,n2,p>) = 
+lemma forcerelI3 : 
+  assumes "\<langle>n2, r\<rangle> \<in> c" "p\<in>P" "d\<in>P" "r \<in> P"
+  shows "\<langle>\<langle>0, b, n2, p\<rangle>,\<langle>1, b, c, d\<rangle>\<rangle> \<in> forcerel(<1,b,c,d>)"
+proof -
+  let ?x="\<langle>0, b, n2, p\<rangle>"
+  let ?y="\<langle>1, b, c, d\<rangle>"
+  from assms
+  have "frecR(?x,?y)"
+    using assms frecRI3 by simp
+  then
+  have "?x\<in>names_below_s(P,?y)"  "?y \<in> names_below_s(P,?y)"
+    using names_belowI  assms components_in_eclose 
+    unfolding names_below_s_def by auto
+  with \<open>frecR(?x,?y)\<close>
+  show ?thesis
+    unfolding forcerel_def frecrel_def 
+      using subsetD[OF r_subset_trancl[OF relation_Rrel]] RrelI
+    by auto
+qed
+
+lemmas forcerelI = forcerelI1[THEN vimage_singleton_iff[THEN iffD2]] 
+  forcerelI2[THEN vimage_singleton_iff[THEN iffD2]]
+  forcerelI3[THEN vimage_singleton_iff[THEN iffD2]]
+
+lemma  aux_def_frc_at:
+  assumes "z \<in> forcerel(x) -`` {x}"
+  shows "wfrec(forcerel(x), z, H) =  wfrec(forcerel(z), z, H)"
+proof -
+  let ?A="names_below_s(P,z)"
+  from assms
+  have "<z,x> \<in> forcerel(x)" 
+    using vimage_singleton_iff by simp
+  then 
+  have "z \<in> ?A" 
+    using forcerel_arg_into_names_below by simp
+  from \<open><z,x> \<in> forcerel(x)\<close>
+  have E:"forcerel(z) = forcerel(x) \<inter> (?A\<times>?A)"
+      "forcerel(x) -`` {z} \<subseteq> ?A" 
+    using forcerel_eq forcerel_below
+    by auto
+  with \<open>z\<in>?A\<close>
+  have "wfrec(forcerel(x), z, H) = wfrec[?A](forcerel(x), z, H)"
+    using wfrec_trans_restr[OF relation_forcerel(1) wf_forcerel relation_forcerel(2), of x z ?A]
+    by simp
+  then show ?thesis 
+    using E wfrec_restr_eq by simp
+qed
+
+lemma def_frc_at : 
+  assumes "p\<in>P"
+  shows
+  "frc_at(P,leq,<ft,n1,n2,p>) =
    bool_of_o( p \<in>P \<and> 
   (  ft = 0 \<and>  (\<forall>s. s\<in>domain(n1) \<union> domain(n2) \<longrightarrow>
         (\<forall>q. q\<in>P \<and> <q,p>\<in>leq \<longrightarrow> (frc_at(P,leq,<1,s,n1,q>) =1 \<longleftrightarrow> frc_at(P,leq,<1,s,n2,q>) =1)))
@@ -727,21 +1042,21 @@ lemma def_frc_at : "frc_at(P,leq,<ft,n1,n2,p>) =
     (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> <q,v>\<in>leq \<and> <s,r> \<in> n2 \<and> <q,r>\<in>leq \<and>  frc_at(P,leq,<0,n1,s,q>) = 1))))"
 proof -
   let ?r="\<lambda>y. forcerel(y)" and ?Hf="\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f))"
+  let ?t="\<lambda>y. ?r(y) -`` {y}" 
   let ?arg="<ft,n1,n2,p>"
   from wf_forcerel 
   have wfr: "\<forall>w . wf(?r(w))" ..
   with wfrec [of "?r(?arg)" ?arg ?Hf] 
   have "frc_at(P,leq,?arg) = ?Hf( ?arg, \<lambda>x\<in>?r(?arg) -`` {?arg}. wfrec(?r(?arg), x, ?Hf))"
-    unfolding frc_at_trancl by simp 
+    using frc_at_trancl by simp 
   also
-  have " ... = ?Hf( ?arg, \<lambda>x\<in>names_below(P,?arg). wfrec(?r(?arg), x, ?Hf))"
-    using vimage_forcerel by simp
-  also
-  have " ... = ?Hf( ?arg, \<lambda>x\<in>names_below(P,?arg). frc_at(P,leq,x))"
-    using aux_def_frc_at unfolding frc_at_trancl by simp
+  have " ... = ?Hf( ?arg, \<lambda>x\<in>?r(?arg) -`` {?arg}. frc_at(P,leq,x))"
+    using aux_def_frc_at frc_at_trancl by simp
   finally 
-  show ?thesis using names_belowI' unfolding Hfrc_def eq_case_def mem_case_def 
-    apply auto sorry
+  show ?thesis  
+    unfolding Hfrc_def mem_case_def eq_case_def
+    using forcerelI  assms
+    by auto
 qed
 
 
@@ -757,13 +1072,13 @@ definition
 lemma def_forces_eq: "p\<in>P \<Longrightarrow> forces_eq(p,t1,t2) \<longleftrightarrow> 
       (\<forall>s\<in>domain(t1) \<union> domain(t2). \<forall>q. q\<in>P \<and> <q,p>\<in>leq \<longrightarrow> 
       (forces_mem(q,s,t1) \<longleftrightarrow> forces_mem(q,s,t2)))" 
-  unfolding forces_eq_def forces_mem_def using def_frc_at[of 0 t1 t2 p]  unfolding bool_of_o_def 
+  unfolding forces_eq_def forces_mem_def using def_frc_at[of p 0 t1 t2 ]  unfolding bool_of_o_def 
   by auto
 
 lemma def_forces_mem: "p\<in>P \<Longrightarrow> forces_mem(p,t1,t2) \<longleftrightarrow> 
      (\<forall>v\<in>P. <v,p>\<in>leq \<longrightarrow>
       (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> <q,v>\<in>leq \<and> <s,r> \<in> t2 \<and> <q,r>\<in>leq \<and> forces_eq(q,t1,s)))"
-  unfolding forces_eq_def forces_mem_def using def_frc_at[of 1 t1 t2 p]  unfolding bool_of_o_def 
+  unfolding forces_eq_def forces_mem_def using def_frc_at[of p 1 t1 t2]  unfolding bool_of_o_def 
   by auto
 
 definition
@@ -788,11 +1103,11 @@ lemma forcerel_in_M :
     "x\<in>M" 
   shows 
     "forcerel(x)\<in>M" 
-  unfolding forcerel_def def_frecrel names_below_def
+  unfolding forcerel_def def_frecrel names_below_s_def
 proof -
-  let ?Q = "2 \<times> eclose(x) \<times> eclose(x) \<times> P"
+  let ?Q = "2 \<times> ecloseN(x) \<times> ecloseN(x) \<times> P"
   have "?Q \<times> ?Q \<in> M"
-    using \<open>x\<in>M\<close> P_in_M twoN_in_M eclose_closed cartprod_closed by simp
+    using \<open>x\<in>M\<close> P_in_M twoN_in_M ecloseN_closed cartprod_closed by simp
   moreover
   have "separation(##M,\<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x, y))"
   proof -
@@ -875,26 +1190,29 @@ proof -
 qed
 
 lemma names_below_abs :
-  "\<lbrakk>Q\<in>M;x\<in>M;nb\<in>M\<rbrakk> \<Longrightarrow> is_names_below(##M,Q,x,nb) \<longleftrightarrow> nb = names_below(Q,x)" 
-  unfolding is_names_below_def names_below_def 
-  using succ_in_M_iff zero_in_M cartprod_closed eclose_closed by simp
+  "\<lbrakk>Q\<in>M;x\<in>M;nb\<in>M\<rbrakk> \<Longrightarrow> is_names_below(##M,Q,x,nb) \<longleftrightarrow> nb = names_below_s(Q,x)" 
+  unfolding is_names_below_def names_below_s_def 
+  using succ_in_M_iff zero_in_M cartprod_closed is_ecloseN_abs ecloseN_closed 
+  by auto
 
 lemma names_below_closed:
-  "\<lbrakk>Q\<in>M;x\<in>M\<rbrakk> \<Longrightarrow> names_below(Q,x) \<in> M"
-  unfolding names_below_def using zero_in_M cartprod_closed eclose_closed succ_in_M_iff by simp
+  "\<lbrakk>Q\<in>M;x\<in>M\<rbrakk> \<Longrightarrow> names_below_s(Q,x) \<in> M"
+  unfolding names_below_s_def 
+  using zero_in_M cartprod_closed ecloseN_closed succ_in_M_iff 
+  by simp
 
 lemma "names_below_productE" :
   " Q \<in> M \<Longrightarrow>
  x \<in> M \<Longrightarrow> (\<And>A1 A2 A3 A4. A1 \<in> M \<Longrightarrow> A2 \<in> M \<Longrightarrow> A3 \<in> M \<Longrightarrow> A4 \<in> M \<Longrightarrow> R(A1 \<times> A2 \<times> A3 \<times> A4)) 
-       \<Longrightarrow> R(names_below(Q,x))" 
-  unfolding names_below_def using zero_in_M eclose_closed[of x]  twoN_in_M by auto
+       \<Longrightarrow> R(names_below_s(Q,x))" 
+  unfolding names_below_s_def using zero_in_M ecloseN_closed[of x] twoN_in_M by auto
 
 lemma forcerel_abs :
   "\<lbrakk>x\<in>M;z\<in>M\<rbrakk> \<Longrightarrow> is_forcerel(x,z) \<longleftrightarrow> z = forcerel(x)" 
   unfolding is_forcerel_def forcerel_def 
-  using frecrel_abs names_below_abs trancl_abs P_in_M twoN_in_M eclose_closed names_below_closed
+  using frecrel_abs names_below_abs trancl_abs P_in_M twoN_in_M ecloseN_closed names_below_closed
          names_below_productE[of concl:"\<lambda>p. is_frecrel(##M,p,_) \<longleftrightarrow>  _ = frecrel(p)"] frecrel_closed
-  by simp
+  sorry
 
 lemma frc_at_abs:
   assumes "fnnc\<in>M" "z\<in>M" 
@@ -941,6 +1259,8 @@ lemma sats_frc_at_fm :
     "p\<in>nat" "l\<in>nat" "i\<in>nat" "j\<in>nat" "x\<in>M" "z\<in>M" "env\<in>list(M)" "i < length(env)" "j < length(env)"
   shows
     "sats(M,frc_at_fm(p,l,i,j),env) \<longleftrightarrow> is_frc_at(x,z)" 
+  sorry
+(*
 proof -
   {
     fix r
@@ -964,6 +1284,7 @@ proof -
   show ?thesis unfolding is_frc_at_def frc_at_fm_def
     using assms by simp
 qed
+*)
 
 lemma sats_forces_eq_fm: 
   assumes  "p\<in>nat" "l\<in>nat" "r\<in>nat" "q\<in>nat" "t1\<in>nat" "t2\<in>nat"  "env\<in>list(M)"
@@ -981,6 +1302,7 @@ lemma sats_forces_mem_fm:
   by simp
 
 end (* context forcing_data *)
+
 
 definition 
   ren_forces_nand :: "i\<Rightarrow>i" where
@@ -1000,6 +1322,7 @@ lemma sats_ren_forces_nand:
   apply (insert sats_incr_bv_iff [of _ _ M _ "[P,leq,o,q]"])
   apply simp
   done
+
 
 definition
   ren_forces_forall :: "i\<Rightarrow>i" where
