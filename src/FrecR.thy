@@ -348,7 +348,10 @@ definition
   ecloseN_fm :: "[i,i] \<Rightarrow> i" where
   "ecloseN_fm(en,t) == Exists(Exists(And(eclose_n1_fm(1,t#+2),
                             And(eclose_n2_fm(0,t#+2),union_fm(1,0,en#+2)))))"
-                                                         
+lemma ecloseN_fm_type [TC] :
+  "\<lbrakk> en \<in> nat ; t \<in> nat \<rbrakk> \<Longrightarrow> ecloseN_fm(en,t) \<in> formula"
+  unfolding ecloseN_fm_def eclose_n1_fm_def eclose_n2_fm_def by simp
+
 lemma sats_ecloseN_fm [simp]:
    "[| en \<in> nat; t \<in> nat ; env \<in> list(A)|]
     ==> sats(A, ecloseN_fm(en,t), env) \<longleftrightarrow> is_ecloseN(##A,nth(en,env),nth(t,env))"

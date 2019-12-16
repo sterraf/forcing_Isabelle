@@ -91,7 +91,7 @@ by (simp add: number2_fm_def number2_def)
 definition 
   is_names_below_fm :: "[i,i,i] \<Rightarrow> i" where
   "is_names_below_fm(P,x,nb) == Exists(Exists(Exists(Exists(
-                    And(is_eclose_fm(x #+ 4,0),And(number2_fm(1),
+                    And(ecloseN_fm(0,x #+ 4),And(number2_fm(1),
                     And(cartprod_fm(0,P #+ 4,2),And(cartprod_fm(0,2,3),cartprod_fm(1,3,nb#+4)))))))))"
 
 lemma is_names_below_fm_type[TC]:
@@ -104,7 +104,7 @@ lemma sats_is_names_below_fm :
   shows
     "sats(A,is_names_below_fm(P,x,nb),env)
     \<longleftrightarrow> is_names_below(##A,nth(P, env),nth(x, env),nth(nb, env))" 
-   unfolding is_names_below_fm_def is_names_below_def using assms sorry
+   unfolding is_names_below_fm_def is_names_below_def using assms by simp
 
 definition
   is_tuple :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
@@ -1202,7 +1202,7 @@ lemma forcerel_abs :
   unfolding is_forcerel_def forcerel_def 
   using frecrel_abs names_below_abs trancl_abs P_in_M twoN_in_M ecloseN_closed names_below_closed
          names_below_productE[of concl:"\<lambda>p. is_frecrel(##M,p,_) \<longleftrightarrow>  _ = frecrel(p)"] frecrel_closed
-  sorry
+  by simp
 
 lemma frc_at_abs:
   assumes "fnnc\<in>M" "z\<in>M" 
@@ -1249,8 +1249,6 @@ lemma sats_frc_at_fm :
     "p\<in>nat" "l\<in>nat" "i\<in>nat" "j\<in>nat" "x\<in>M" "z\<in>M" "env\<in>list(M)" "i < length(env)" "j < length(env)"
   shows
     "sats(M,frc_at_fm(p,l,i,j),env) \<longleftrightarrow> is_frc_at(x,z)" 
-  sorry
-(*
 proof -
   {
     fix r
@@ -1274,7 +1272,6 @@ proof -
   show ?thesis unfolding is_frc_at_def frc_at_fm_def
     using assms by simp
 qed
-*)
 
 lemma sats_forces_eq_fm: 
   assumes  "p\<in>nat" "l\<in>nat" "r\<in>nat" "q\<in>nat" "t1\<in>nat" "t2\<in>nat"  "env\<in>list(M)"
