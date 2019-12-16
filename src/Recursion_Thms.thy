@@ -104,6 +104,9 @@ definition
   Rrel :: "[i\<Rightarrow>i\<Rightarrow>o,i] \<Rightarrow> i" where
   "Rrel(R,A) \<equiv> {z\<in>A\<times>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> R(x,y)}"
 
+lemma RrelI : "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> R(x,y) \<Longrightarrow> \<langle>x,y\<rangle> \<in> Rrel(R,A)"
+  unfolding Rrel_def by simp
+
 lemma Rrel_mem: "Rrel(mem,x) = Memrel(x)"
   unfolding Rrel_def Memrel_def ..
 
@@ -113,10 +116,17 @@ lemma relation_Rrel: "relation(Rrel(R,d))"
 lemma field_Rrel: "field(Rrel(R,d)) \<subseteq>  d"
   unfolding Rrel_def by auto
 
+lemma Rrel_mono : "A \<subseteq> B \<Longrightarrow> Rrel(R,A) \<subseteq> Rrel(R,B)"
+  unfolding Rrel_def by blast
+
+lemma Rrel_restr_eq : "Rrel(R,A) \<inter> B\<times>B = Rrel(R,A\<inter>B)"
+  unfolding Rrel_def by blast
+
 (* now a consequence of the previous lemmas *)
 lemma field_Memrel : "field(Memrel(A)) \<subseteq> A"
   (* unfolding field_def using Ordinal.Memrel_type by blast *)
   using Rrel_mem field_Rrel by blast
+
 
 lemma restrict_trancl_Rrel:
   assumes "R(w,y)" 
