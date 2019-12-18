@@ -59,26 +59,28 @@ definition
   
 definition
   edrel :: "i \<Rightarrow> i" where
-  "edrel(A) == {<x,y> \<in> A*A . x \<in> domain(y)}"
+  "edrel(A) == Rrel(ed,A)"
   
 lemma edrel_dest [dest]: "x \<in> edrel(A) \<Longrightarrow> \<exists> a\<in> A. \<exists> b \<in> A. x =<a,b>"
-  by(auto simp add:edrel_def)
+  by(auto simp add:ed_def edrel_def Rrel_def)
     
 lemma edrelD : "x \<in> edrel(A) \<Longrightarrow> \<exists> a\<in> A. \<exists> b \<in> A. x =<a,b> \<and> a \<in> domain(b)"
-  by(auto simp add:edrel_def)
+  by(auto simp add:ed_def edrel_def Rrel_def)
     
 lemma edrelI [intro!]: "x\<in>A \<Longrightarrow> y\<in>A \<Longrightarrow> x \<in> domain(y) \<Longrightarrow> <x,y>\<in>edrel(A)"
-  by (simp add:edrel_def)
+  by (simp add:ed_def edrel_def Rrel_def)
     
 lemma edrel_trans: "Transset(A) \<Longrightarrow> y\<in>A \<Longrightarrow> x \<in> domain(y) \<Longrightarrow> <x,y>\<in>edrel(A)"
   by (rule edrelI, auto simp add:Transset_def domain_def Pair_def)
 
 lemma domain_trans: "Transset(A) \<Longrightarrow> y\<in>A \<Longrightarrow> x \<in> domain(y) \<Longrightarrow> x\<in>A"
   by (auto simp add: Transset_def domain_def Pair_def)
-       
+
 lemma relation_edrel : "relation(edrel(A))"
   by(auto simp add: relation_def)
     
+lemma field_edrel : "field(edrel(A))\<subseteq>A"
+  by blast
     
 lemma edrel_sub_memrel: "edrel(A) \<subseteq> trancl(Memrel(eclose(A)))" 
 proof
@@ -87,7 +89,8 @@ proof
     "z\<in>edrel(A)"
   then obtain x y where
     Eq1:   "x\<in>A" "y\<in>A" "z=<x,y>" "x\<in>domain(y)"
-    by (auto simp add: edrel_def)
+    using edrelD
+    by blast
   then obtain u v where
     Eq2:   "x\<in>u" "u\<in>v" "v\<in>y"
     unfolding domain_def Pair_def by auto
@@ -113,7 +116,7 @@ lemma wf_edrel : "wf(edrel(A))"
   done
     
 lemma dom_under_edrel_eclose: "edrel(eclose({x})) -`` {x}= domain(x)" 
-  apply(simp add:edrel_def,rule,rule,drule underD,simp,rule,rule underI)
+  apply(simp add:edrel_def Rrel_def ed_def,rule,rule,drule underD,simp,rule,rule underI)
   apply(auto simp add:in_dom_in_eclose eclose_sing arg_into_eclose)
   done
     
