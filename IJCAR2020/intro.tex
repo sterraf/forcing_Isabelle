@@ -1,7 +1,34 @@
 \section{Introduction}
 
+\subsection{Related work}
 
+Han \& van Doorn \cite{han_et_al:LIPIcs:2019:11074}.
 
+Updates over the (unpublished) technical report \cite{2019arXiv190103313G}.
+
+\begin{enumerate}
+\item The development is now independent of $\AC$: We modularized the
+  Rasiowa-Sikorski lemma in such a way that a version for countable
+  posets does not require choice, while we have the full result in an
+  independent file.
+  %
+\item We lifted the restriction on arities on the axiom schemes of
+  Separation and Replacement, streamlining various proofs as an
+  immediate benefit and avoiding the need for tupling. 
+  %
+\item We fulfilled the promised formal abstract for the Forcing
+  Theorems almost to the letter, with some slight modification
+  regarding arities of formulas.
+  %
+\item We implemented an automatic ML machinery of (bounded) renaming
+  of formulas.
+\item We finished the inteface between our development and
+  \isatt{ZF-Constructible} which enables us to do well-founded
+  recursion inside transitive models of an appropriate finite fragment
+  of $\ZF$. As a consequence, we have an unconditional proof of
+  the Axiom of Infinity and a long debt: the fact that the generic
+  filter $G$ belongs to the extension $M[G]$ and $M\sbq M[G]$.
+\end{enumerate}
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "forcing_in_isabelle_zf"
