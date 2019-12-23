@@ -455,29 +455,32 @@ proof -
     fix v
     assume "v\<in>M[G]"
     with \<open>c\<in>M[G]\<close> 
-    have A:"[v,c] \<in> list(M[G])" "[c]\<in>list(M[G])" 
-      "\<And>x . x\<in> M[G] \<Longrightarrow>  Cons(x, Cons(v, env @ [c])) = ([x,v]@env)@[c]" 
-      "\<And>x . x\<in> M[G] \<Longrightarrow>  Cons(x, Cons(v, env)) = ([x,v]@env)" 
-      by auto
-    from A(1) A(2)
-    have "nth(succ(length(env)),[v]@env@[c]) = c"
+    have "nth(length(env)#+1,[v]@env@[c]) = c"
       using  \<open>env\<in>_\<close>nth_concat[of v c "M[G]" env]
-      by auto 
-    with \<open>c\<in>M[G]\<close> \<open>v\<in>M[G]\<close> 
+      by auto     
+    note inMG= \<open>nth(length(env)#+1,[v]@env@[c]) = c\<close> \<open>c\<in>M[G]\<close> \<open>v\<in>M[G]\<close> \<open>env\<in>_\<close>
     show "(\<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env)) \<longleftrightarrow> sats(M[G], ?\<psi>, [v] @ env @ [c])"
-      using length_type[OF \<open>env\<in>_\<close>] \<open>\<phi>\<in>_\<close> \<open>arity(\<phi>)\<le>2#+length(env)\<close> 
-         \<open>env\<in>list(_)\<close> \<open>[c]\<in>list(M[G])\<close> A(3)
-      apply (auto)
-       apply(rule_tac x=x in rev_bexI, auto simp add: Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
-      prefer 2
-       apply(rule_tac x=x in rev_bexI,simp,subst (asm) A(3))
-      apply(simp add: Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>],subst A(4))
-        apply(simp add: Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
-       apply(rule arity_sats_iff[of \<phi> "[c]",THEN iffD1],auto simp add: Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
-      apply(subst (asm) A(4),simp add:Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
-      apply(subst A(3),simp add: Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
-       apply(rule arity_sats_iff[of \<phi> "[c]",THEN iffD2],auto simp add: Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
-      done
+    proof 
+      assume "\<exists>x\<in>c. sats(M[G], \<phi>, [x, v] @ env)"
+      with \<open>c\<in>M[G]\<close> obtain x where
+        "x\<in>c" "sats(M[G], \<phi>, [x, v] @ env)" "x\<in>M[G]"
+        using Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>]
+        by auto
+      with \<open>\<phi>\<in>_\<close> \<open>arity(\<phi>)\<le>2#+length(env)\<close> inMG
+      show "sats(M[G], Exists(And(Member(0, 2 #+ length(env)), \<phi>)), [v] @ env @ [c])"
+        using arity_sats_iff[of \<phi> "[c]" _ "[x,v]@env"]
+        by auto
+    next
+      assume "sats(M[G], Exists(And(Member(0, 2 #+ length(env)), \<phi>)), [v] @ env @ [c])"
+      with inMG
+      obtain x where
+        "x\<in>M[G]" "x\<in>c" "sats(M[G],\<phi>,[x,v]@env@[c])" 
+        by auto
+      with \<open>\<phi>\<in>_\<close> \<open>arity(\<phi>)\<le>2#+length(env)\<close> inMG
+      show "\<exists>x\<in>c. sats(M[G], \<phi>, [x, v] @ env)"
+        using arity_sats_iff[of \<phi> "[c]" _ "[x,v]@env"]
+        by auto
+    qed
   next
     from \<open>env\<in>_\<close> \<open>\<phi>\<in>_\<close>
     show "arity(?\<psi>)\<le>2#+length(env)"

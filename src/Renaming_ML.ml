@@ -220,36 +220,3 @@ fun sum_rename rho rho' =
    )
    )
 end ;
-
-(*
-
-definition renrep_fn :: "i \<Rightarrow> i" where
-  "renrep_fn(env) == sum(renrep1_fn,id(length(env)),6,8,length(env))"
-
-
-lemma renrep_type [TC]: 
-  assumes "\<phi>\<in>formula" "env \<in> list(M)"
-    shows "renrep(\<phi>,env) \<in> formula"
-  unfolding renrep_def renrep_fn_def renrep1_def
-  using assms renrep_thm(1) ren_tc
-  by simp
-  
-lemma arity_renrep: 
-  assumes  "\<phi>\<in>formula" "arity(\<phi>)\<le> 6#+length(env)" "env \<in> list(M)"
-    shows "arity(renrep(\<phi>,env)) \<le> 8#+length(env)"
- unfolding  renrep_def renrep_fn_def renrep1_def
-    using assms renrep_thm(1) ren_arity
-    by simp
-
-lemma renrep_sats :
-    "arity(\<phi>) \<le> 6 #+ length(env) \<Longrightarrow>
-    [P,leq,o,p,\<rho>,\<tau>] @ env \<in> list(M) \<Longrightarrow>
-    V \<in> M \<Longrightarrow> \<alpha> \<in> M \<Longrightarrow> 
-    \<phi>\<in>formula \<Longrightarrow> 
-  sats(M, \<phi>, [P,leq,o,p,\<rho>,\<tau>] @ env) \<longleftrightarrow> sats(M, renrep(\<phi>,env), [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o] @ env)"
-  unfolding  renrep_def renrep_fn_def renrep1_def    
-  apply (rule sats_iff_sats_ren,auto simp add:renrep_thm(1)[of _ M,simplified])
-  apply (auto simp add: renrep_thm(2)[simplified,of P M leq o p \<rho> \<tau> V \<alpha> _ env])
-  done
-
-*)

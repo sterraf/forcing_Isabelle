@@ -2,26 +2,7 @@ theory Powerset_Axiom
   imports Separation_Axiom Pairing_Axiom Union_Axiom 
 begin
 
-definition 
-  perm_pow :: "i" where
-  "perm_pow == {<0,3>,<1,4>,<2,5>,<3,1>,<4,0>,<5,6>}"  
-
-lemma perm_pow_ftc : "perm_pow \<in> 6 -||> 7" "domain(perm_pow) = 6"
-  unfolding perm_pow_def
-  by (blast intro: consI emptyI,auto)
-  
-lemma perm_pow_tc : "perm_pow \<in> 6 \<rightarrow> 7"
-  using  FiniteFun_is_fun perm_pow_ftc
-  by force
-
-lemma perm_pow_env : 
-   "{p,l,o,ss,fs,\<chi>} \<subseteq> A \<Longrightarrow> j<6 \<Longrightarrow>
-  nth(j,[p,l,o,ss,fs,\<chi>]) = nth(perm_pow`j,[fs,ss,sp,p,l,o,\<chi>])" 
-  apply(subgoal_tac "j\<in>nat")
-  apply(rule natE,simp,subst apply_fun,rule perm_pow_tc,simp add:perm_pow_def,simp_all)+
-   apply(subst apply_fun,rule perm_pow_tc,simp add:perm_pow_def,simp_all,drule ltD,auto)
-  done
-
+simple_rename "perm_pow" src "[p,l,o,ss,fs,\<chi>]" tgt "[fs,ss,sp,p,l,o,\<chi>]"
   
 lemma (in M_trivial) powerset_subset_Pow:
   assumes 
@@ -105,13 +86,15 @@ lemma sats_fst_snd_in_M:
     (is "?\<theta> \<in> M")
 proof -
   have "6\<in>nat" "7\<in>nat" by simp_all
-  let ?\<phi>' = "ren(\<phi>)`6`7`perm_pow"
+  let ?\<phi>' = "ren(\<phi>)`6`7`perm_pow_fn"
   from \<open>A\<in>M\<close> \<open>B\<in>M\<close> have
     "A\<times>B \<in> M" 
     using cartprod_closed by simp
-  from  \<open>arity(\<phi>) \<le> 6\<close> \<open>\<phi>\<in> formula\<close> have
+  from  \<open>arity(\<phi>) \<le> 6\<close> \<open>\<phi>\<in> formula\<close> \<open>6\<in>_\<close> \<open>7\<in>_\<close> have
     "?\<phi>' \<in> formula" "arity(?\<phi>')\<le>7" 
-    using perm_pow_tc ren_arity ren_tc by simp_all
+    unfolding perm_pow_fn_def
+    using  perm_pow_thm  ren_arity ren_tc Nil_type
+    by auto
   with \<open>?\<phi>' \<in> formula\<close> have
     1: "arity(Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))))\<le>5"     (is "arity(?\<psi>)\<le>5")
     unfolding pair_fm_def upair_fm_def 
@@ -140,8 +123,8 @@ proof -
     also from inM \<open>\<phi> \<in> formula\<close> \<open>arity(\<phi>) \<le> 6\<close> have
       " ... \<longleftrightarrow> sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
       (is "sats(_,_,?env1) \<longleftrightarrow> sats(_,_,?env2)")
-      using sats_iff_sats_ren[of \<phi> 6 7 ?env2 M ?env1 perm_pow] perm_pow_tc perm_pow_env [of _ _ _ _ _ _ "M"]
-      by simp
+      using sats_iff_sats_ren[of \<phi> 6 7 ?env2 M ?env1 perm_pow_fn] perm_pow_thm
+      unfolding perm_pow_fn_def by simp
     finally have
       "sats(M,?\<psi>,[sp,p,l,o,\<chi>,p]) \<longleftrightarrow> 
        sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
