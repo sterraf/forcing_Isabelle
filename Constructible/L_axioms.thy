@@ -104,7 +104,7 @@ theorem M_trivial_L: "M_trivial(L)"
   apply (rule M_trivial.intro)
   apply (rule M_trans.intro)
     apply (erule (1) transL)
-   apply(rule nonempty)
+   apply(rule exI,rule  nonempty)
   apply (rule M_trivial_axioms.intro)
       apply (rule upair_ax)
    apply (rule Union_ax)
