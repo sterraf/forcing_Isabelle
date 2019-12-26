@@ -550,6 +550,7 @@ proof -
   show "M(0)" using M_nonempty by blast
 qed
 
+    
 text\<open>The class M is assumed to be transitive and to satisfy some
       relativized ZF axioms\<close>
 locale M_trivial = M_trans +
