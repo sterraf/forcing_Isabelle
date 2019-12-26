@@ -519,13 +519,38 @@ definition
   
 subsection\<open>Introducing a Transitive Class Model\<close>
 
-text\<open>The class N is assumed to be transitive and inhabited\<close>
+text\<open>The class M is assumed to be transitive and inhabited\<close>
 locale M_trans =
   fixes M
-  assumes transM:           "[| y\<in>x; M(x) |] ==> M(y)"
-      and M_inhabit [iff]:  "M(0)"          
+  assumes transM:   "[| y\<in>x; M(x) |] ==> M(y)"
+    and M_nonempty: "\<exists>x . M(x)"
 
-  
+lemma (in M_trans) M_inhabit [iff]:  "M(0)"
+proof -
+  have "M(x) \<longrightarrow> M(0)" for x
+  proof (rule_tac P="\<lambda>w. M(w) \<longrightarrow> M(0)" in eps_induct)
+    {
+    fix x
+    assume "\<forall>y\<in>x. M(y) \<longrightarrow> M(0)" "M(x)"
+    consider (a) "\<exists>y. y\<in>x" | (b) "x=0" by auto
+    then 
+    have "M(x) \<longrightarrow> M(0)" 
+    proof cases
+      case a
+      then show ?thesis using \<open>\<forall>y\<in>x._\<close> \<open>M(x)\<close> transM by auto
+    next
+      case b
+      then show ?thesis by simp
+    qed
+  }
+  then show "M(x) \<longrightarrow> M(0)" if "\<forall>y\<in>x. M(y) \<longrightarrow> M(0)" for x
+    using that by auto
+  qed
+  with M_nonempty
+  show "M(0)" using M_nonempty by blast
+qed
+
+    
 text\<open>The class M is assumed to be transitive and to satisfy some
       relativized ZF axioms\<close>
 locale M_trivial = M_trans +
