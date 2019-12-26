@@ -550,7 +550,96 @@ proof -
   show "M(0)" using M_nonempty by blast
 qed
 
-    
+lemma (in M_trans) Union_abs_trans :
+  assumes "M(a)" "\<Union> a = z"
+  shows "big_union(M,a,z)"
+proof -
+  {
+    fix x
+    assume "x \<in> z"
+    with \<open>\<Union> a=z\<close> \<open>M(a)\<close>
+    have "\<exists> y[M].x\<in>y \<and> y \<in>a"
+      using transM by auto
+  }
+  then
+  have 1: "x \<in> z \<Longrightarrow> \<exists> y[M].x\<in>y \<and> y \<in>a" for x .
+  with \<open>\<Union> a=z\<close>
+  have "\<exists>y[M]. y \<in> a \<and> x \<in> y \<Longrightarrow> x\<in>z" for x
+    by blast
+  with 1 show ?thesis
+    unfolding big_union_def by blast
+qed
+
+lemma (in M_trans) Union_abs_trans2:
+  assumes "M(a)" "M(z)" "big_union(M,a,z)"
+  shows "\<Union> a = z"
+proof
+  from \<open>M(a)\<close>
+  have "\<exists> y[M]. y\<in>a \<and> x\<in>y" "M(x)" if "x \<in> \<Union> a" for x
+    using that transM by auto
+  with \<open>big_union(_,_,_)\<close>
+  show "\<Union> a \<subseteq> z"
+      unfolding big_union_def by blast
+next
+  from \<open>big_union(_,_,_)\<close> \<open>M(z)\<close>
+  show "z \<subseteq> \<Union>a"
+    unfolding big_union_def using transM by blast
+qed
+
+lemma (in M_trans) powerset_subset_Pow:
+  assumes
+    "powerset(M,x,y)" "M(y)"
+  shows
+    "y \<subseteq> Pow(x)"
+proof
+  fix w
+  assume "w\<in>y"
+  with \<open>M(y)\<close>
+  have "M(w)"
+    using transM by simp
+  with \<open>powerset(M,x,y)\<close> \<open>w\<in>_\<close>
+  show "w\<in>Pow(x)"
+    using transM unfolding powerset_def subset_def
+    by auto
+qed
+
+lemma (in M_trans) powerset_abs:
+  assumes
+    "M(x)" "M(y)"
+  shows
+    "powerset(M,x,y) \<longleftrightarrow> y = {a\<in>Pow(x) . M(a)}"
+proof (intro iffI equalityI)
+  (* First show the converse implication by double inclusion *)
+  assume
+    "powerset(M,x,y)"
+  with assms
+  have "y \<subseteq> Pow(x)"
+    using powerset_subset_Pow by simp
+  with assms
+  show "y \<subseteq> {a\<in>Pow(x) . M(a)}"
+    using transM by blast
+  {
+    fix a
+    assume
+      "a \<subseteq> x" "M(a)"
+    then
+    have "subset(M,a,x)"
+      using transM unfolding subset_def by blast
+    with \<open>M(a)\<close> \<open>powerset(M,x,y)\<close>
+    have "a \<in> y"
+      unfolding powerset_def by simp
+  }
+  then
+  show "{a\<in>Pow(x) . M(a)} \<subseteq> y"
+    by auto
+next (* we show the direct implication *)
+  assume
+    "y = {a \<in> Pow(x) . M(a)}"
+  then
+  show "powerset(M, x, y)"
+    unfolding powerset_def subset_def using transM by blast
+qed
+
 text\<open>The class M is assumed to be transitive and to satisfy some
       relativized ZF axioms\<close>
 locale M_trivial = M_trans +
@@ -560,10 +649,9 @@ locale M_trivial = M_trans +
 
 text\<open>Automatically discovers the proof using \<open>transM\<close>, \<open>nat_0I\<close>
 and \<open>M_inhabit\<close>.\<close>
-(*
-lemma (in M_trivial) nonempty [simp]: "M(0)"
-by (blast intro: transM)
-*)
+
+lemmas (in M_trivial) nonempty = M_nonempty
+
 lemma (in M_trans) rall_abs [simp]:
      "M(A) ==> (\<forall>x[M]. x\<in>A \<longrightarrow> P(x)) \<longleftrightarrow> (\<forall>x\<in>A. P(x))"
 by (blast intro: transM)
