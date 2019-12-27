@@ -560,7 +560,7 @@ locale M_trivial = M_trans +
 text\<open>Automatically discovers the proof using \<open>transM\<close>, \<open>nat_0I\<close>
 and \<open>M_inhabit\<close>.\<close>
 
-lemmas (in M_trivial) nonempty = M_nonempty
+lemmas (in M_trivial) nonempty = M_inhabit
 
 lemma (in M_trans) rall_abs [simp]:
      "M(A) ==> (\<forall>x[M]. x\<in>A \<longrightarrow> P(x)) \<longleftrightarrow> (\<forall>x\<in>A. P(x))"
