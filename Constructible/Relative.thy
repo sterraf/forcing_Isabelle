@@ -626,7 +626,7 @@ lemma (in M_trans) singleton_in_MD [dest!]:
 
 lemma (in M_trivial) singleton_in_M_iff [simp]:
      "M({a}) \<longleftrightarrow> M(a)"
-  by (insert upair_in_M_iff [of a a], simp)
+  by blast
 
 lemma (in M_trans) pair_abs [simp]:
      "M(z) ==> pair(M,a,b,z) \<longleftrightarrow> z=<a,b>"
@@ -634,49 +634,51 @@ apply (simp add: pair_def Pair_def)
 apply (blast intro: transM)
 done
 
-lemma (in M_trivial) pair_in_M_iff [iff]:
-     "M(<a,b>) \<longleftrightarrow> M(a) & M(b)"
-by (simp add: Pair_def)
+lemma (in M_trans) pair_in_MD [dest!]:
+     "M(<a,b>) \<Longrightarrow> M(a) & M(b)"
+  by (simp add: Pair_def, blast intro: transM)
 
-lemma (in M_trivial) pair_components_in_M:
+lemma (in M_trivial) pair_in_MI [intro!]:
+     "M(a) & M(b) \<Longrightarrow> M(<a,b>)"
+  by (simp add: Pair_def)
+
+lemma (in M_trivial) pair_in_M_iff [simp]:
+     "M(<a,b>) \<longleftrightarrow> M(a) & M(b)"
+  by blast
+
+lemma (in M_trans) pair_components_in_M:
      "[| <x,y> \<in> A; M(A) |] ==> M(x) & M(y)"
-apply (simp add: Pair_def)
-apply (blast dest: transM)
-done
+  by (blast dest: transM)
 
 lemma (in M_trivial) cartprod_abs [simp]:
-     "[| M(A); M(B); M(z) |] ==> cartprod(M,A,B,z) \<longleftrightarrow> z = A*B"
-apply (simp add: cartprod_def)
-apply (rule iffI)
- apply (blast intro!: equalityI intro: transM dest!: rspec)
-apply (blast dest: transM)
-done
+  "[| M(A); M(B); M(z) |] ==> cartprod(M,A,B,z) \<longleftrightarrow> z = A*B"
+  apply (simp add: cartprod_def)
+  apply (rule iffI)
+   apply (blast intro!: equalityI intro: transM dest!: rspec)
+  apply (blast dest: transM)
+  done
 
 subsubsection\<open>Absoluteness for Unions and Intersections\<close>
 
 lemma (in M_trans) union_abs [simp]:
      "[| M(a); M(b); M(z) |] ==> union(M,a,b,z) \<longleftrightarrow> z = a \<union> b"
-apply (simp add: union_def)
-apply (blast intro: transM)
-done
+  unfolding union_def
+  by (blast intro: transM )
 
 lemma (in M_trans) inter_abs [simp]:
      "[| M(a); M(b); M(z) |] ==> inter(M,a,b,z) \<longleftrightarrow> z = a \<inter> b"
-apply (simp add: inter_def)
-apply (blast intro: transM)
-done
+  unfolding inter_def
+  by (blast intro: transM)
 
 lemma (in M_trans) setdiff_abs [simp]:
      "[| M(a); M(b); M(z) |] ==> setdiff(M,a,b,z) \<longleftrightarrow> z = a-b"
-apply (simp add: setdiff_def)
-apply (blast intro: transM)
-done
+  unfolding setdiff_def
+  by (blast intro: transM)
 
 lemma (in M_trans) Union_abs [simp]:
      "[| M(A); M(z) |] ==> big_union(M,A,z) \<longleftrightarrow> z = \<Union>(A)"
-apply (simp add: big_union_def)
-apply (blast  dest: transM)
-done
+  unfolding big_union_def
+  by (blast  dest: transM)
 
 lemma (in M_trivial) Union_closed [intro,simp]:
      "M(A) ==> M(\<Union>(A))"
@@ -698,21 +700,31 @@ lemma (in M_trivial) successor_abs [simp]:
      "[| M(a); M(z) |] ==> successor(M,a,z) \<longleftrightarrow> z = succ(a)"
 by (simp add: successor_def, blast)
 
-lemma (in M_trivial) succ_in_M_iff [iff]:
+lemma (in M_trans) succ_in_MD [dest!]:
+     "M(succ(a)) \<Longrightarrow> M(a)"
+  unfolding succ_def
+  by (blast intro: transM)
+
+lemma (in M_trivial) succ_in_MI [intro!]:
+     "M(a) \<Longrightarrow> M(succ(a))"
+  unfolding succ_def
+  by (blast intro: transM)
+
+lemma (in M_trivial) succ_in_M_iff [simp]:
      "M(succ(a)) \<longleftrightarrow> M(a)"
-apply (simp add: succ_def)
-apply (blast intro: transM)
-done
+  by blast
 
 subsubsection\<open>Absoluteness for Powerset\<close>
 
-lemma (in M_trans) powerset_subset_Pow:
-  assumes
-    "powerset(M,x,y)" "M(y)"
-  shows
-    "y \<subseteq> Pow(x)"
-  using transM \<open>M(y)\<close> \<open>powerset(M,x,y)\<close> unfolding powerset_def 
-  by auto
+lemma (in M_trans) powerset_Pow:
+     "powerset(M, x, Pow(x))"
+by (simp add: powerset_def)
+
+lemma (in M_trans) powerset_imp_subset_Pow:
+     "[| powerset(M,x,y); M(y) |] ==> y \<subseteq> Pow(x)"
+apply (simp add: powerset_def)
+apply (blast dest: transM)
+done
 
 lemma (in M_trans) powerset_abs:
   assumes
@@ -724,7 +736,7 @@ proof (intro iffI equalityI)
   assume "powerset(M,x,y)"
   with \<open>M(y)\<close>  
   show "y \<subseteq> {a\<in>Pow(x) . M(a)}"
-    using powerset_subset_Pow transM by blast
+    using powerset_imp_subset_Pow transM by blast
   from \<open>powerset(M,x,y)\<close>
   show "{a\<in>Pow(x) . M(a)} \<subseteq> y"
     using transM unfolding powerset_def by auto
@@ -739,7 +751,7 @@ qed
 
 subsubsection\<open>Absoluteness for Separation and Replacement\<close>
 
-lemma (in M_trivial) separation_closed [intro,simp]:
+lemma (in M_trans) separation_closed [intro,simp]:
      "[| separation(M,P); M(A) |] ==> M(Collect(A,P))"
 apply (insert separation, simp add: separation_def)
 apply (drule rspec, assumption, clarify)
@@ -751,11 +763,11 @@ lemma separation_iff:
      "separation(M,P) \<longleftrightarrow> (\<forall>z[M]. \<exists>y[M]. is_Collect(M,z,P,y))"
 by (simp add: separation_def is_Collect_def)
 
-lemma (in M_trivial) Collect_abs [simp]:
+lemma (in M_trans) Collect_abs [simp]:
      "[| M(A); M(z) |] ==> is_Collect(M,A,P,z) \<longleftrightarrow> z = Collect(A,P)"
-apply (simp add: is_Collect_def)
-apply (blast dest: transM)
-done
+  unfolding is_Collect_def
+  by (blast dest: transM)
+
 
 text\<open>Probably the premise and conclusion are equivalent\<close>
 
@@ -774,9 +786,8 @@ lemma (in M_trans) univalent_Replace_iff:
      "[| M(A); univalent(M,A,P);
          !!x y. [| x\<in>A; P(x,y) |] ==> M(y) |]
       ==> u \<in> Replace(A,P) \<longleftrightarrow> (\<exists>x. x\<in>A & P(x,u))"
-apply (simp add: Replace_iff univalent_def)
-apply (blast dest: transM)
-done
+  unfolding Replace_iff univalent_def
+  by (blast dest: transM)
 
 (*The last premise expresses that P takes M to M*)
 lemma (in M_trans) strong_replacement_closed [intro,simp]:
@@ -870,26 +881,11 @@ lemma is_lambda_cong [cong]:
           is_lambda(M, A', %x y. is_b'(x,y), z')"
 by (simp add: is_lambda_def)
 
-lemma (in M_trivial) image_abs [simp]:
+lemma (in M_trans) image_abs [simp]:
      "[| M(r); M(A); M(z) |] ==> image(M,r,A,z) \<longleftrightarrow> z = r``A"
 apply (simp add: image_def)
 apply (rule iffI)
  apply (blast intro!: equalityI dest: transM, blast)
-done
-
-text\<open>What about \<open>Pow_abs\<close>?  Powerset is NOT absolute!
-      This result is one direction of absoluteness.\<close>
-
-lemma (in M_trivial) powerset_Pow:
-     "powerset(M, x, Pow(x))"
-by (simp add: powerset_def)
-
-text\<open>But we can't prove that the powerset in \<open>M\<close> includes the
-      real powerset.\<close>
-lemma (in M_trivial) powerset_imp_subset_Pow:
-     "[| powerset(M,x,y); M(y) |] ==> y \<subseteq> Pow(x)"
-apply (simp add: powerset_def)
-apply (blast dest: transM)
 done
 
 subsubsection\<open>Absoluteness for the Natural Numbers\<close>
@@ -898,7 +894,7 @@ lemma (in M_trivial) nat_into_M [intro]:
      "n \<in> nat ==> M(n)"
 by (induct n rule: nat_induct, simp_all)
 
-lemma (in M_trivial) nat_case_closed [intro,simp]:
+lemma (in M_trans) nat_case_closed [intro,simp]:
   "[|M(k); M(a); \<forall>m[M]. M(b(m))|] ==> M(nat_case(a,b,k))"
 apply (case_tac "k=0", simp)
 apply (case_tac "\<exists>m. k = succ(m)", force)
@@ -1062,7 +1058,7 @@ assumes Inter_separation:
                                    fx \<noteq> gx))"
      and power_ax:         "power_ax(M)"
 
-lemma (in M_basic) cartprod_iff_lemma:
+lemma (in M_trivial) cartprod_iff_lemma:
      "[| M(C);  \<forall>u[M]. u \<in> C \<longleftrightarrow> (\<exists>x\<in>A. \<exists>y\<in>B. u = {{x}, {x,y}});
          powerset(M, A \<union> B, p1); powerset(M, p1, p2);  M(p2) |]
        ==> C = {u \<in> p2 . \<exists>x\<in>A. \<exists>y\<in>B. u = {{x}, {x,y}}}"
@@ -1104,6 +1100,7 @@ apply (intro rexI conjI, simp+)
 apply (insert cartprod_separation [of A B], simp)
 done
 
+(* TODO: esto que Powerset no es absoluto parece no ser cierto, entonces? *)
 text\<open>All the lemmas above are necessary because Powerset is not absolute.
       I should have used Replacement instead!\<close>
 lemma (in M_basic) cartprod_closed [intro,simp]:
@@ -1120,7 +1117,7 @@ by (simp add: is_sum_def sum_def singleton_0 nat_into_M)
 
 lemma (in M_trivial) Inl_in_M_iff [iff]:
      "M(Inl(a)) \<longleftrightarrow> M(a)"
-by (simp add: Inl_def)
+  by (simp add: Inl_def)
 
 lemma (in M_trivial) Inl_abs [simp]:
      "M(Z) ==> is_Inl(M,a,Z) \<longleftrightarrow> (Z = Inl(a))"
@@ -1187,7 +1184,7 @@ by (simp add: vimage_def)
 
 subsubsection\<open>Domain, range and field\<close>
 
-lemma (in M_basic) domain_abs [simp]:
+lemma (in M_trans) domain_abs [simp]:
      "[| M(r); M(z) |] ==> is_domain(M,r,z) \<longleftrightarrow> z = domain(r)"
 apply (simp add: is_domain_def)
 apply (blast intro!: equalityI dest: transM)
@@ -1198,7 +1195,7 @@ lemma (in M_basic) domain_closed [intro,simp]:
 apply (simp add: domain_eq_vimage)
 done
 
-lemma (in M_basic) range_abs [simp]:
+lemma (in M_trans) range_abs [simp]:
      "[| M(r); M(z) |] ==> is_range(M,r,z) \<longleftrightarrow> z = range(r)"
 apply (simp add: is_range_def)
 apply (blast intro!: equalityI dest: transM)
@@ -1220,13 +1217,13 @@ by (simp add: field_def)
 
 subsubsection\<open>Relations, functions and application\<close>
 
-lemma (in M_basic) relation_abs [simp]:
+lemma (in M_trans) relation_abs [simp]:
      "M(r) ==> is_relation(M,r) \<longleftrightarrow> relation(r)"
 apply (simp add: is_relation_def relation_def)
 apply (blast dest!: bspec dest: pair_components_in_M)+
 done
 
-lemma (in M_basic) function_abs [simp]:
+lemma (in M_trivial) function_abs [simp]:
      "M(r) ==> is_function(M,r) \<longleftrightarrow> function(r)"
 apply (simp add: is_function_def function_def, safe)
    apply (frule transM, assumption)
@@ -1242,7 +1239,7 @@ lemma (in M_basic) apply_abs [simp]:
 apply (simp add: fun_apply_def apply_def, blast)
 done
 
-lemma (in M_basic) typed_function_abs [simp]:
+lemma (in M_trivial) typed_function_abs [simp]:
      "[| M(A); M(f) |] ==> typed_function(M,A,B,f) \<longleftrightarrow> f \<in> A -> B"
 apply (auto simp add: typed_function_def relation_def Pi_iff)
 apply (blast dest: pair_components_in_M)+
@@ -1304,7 +1301,7 @@ apply (simp add: restriction_def ball_iff_equiv)
 apply (unfold function_def, blast)
 done
 
-lemma (in M_basic) restriction_abs [simp]:
+lemma (in M_trans) restriction_abs [simp]:
      "[| M(f); M(A); M(z) |]
       ==> restriction(M,f,A,z) \<longleftrightarrow> z = restrict(f,A)"
 apply (simp add: ball_iff_equiv restriction_def restrict_def)
@@ -1312,7 +1309,7 @@ apply (blast intro!: equalityI dest: transM)
 done
 
 
-lemma (in M_basic) M_restrict_iff:
+lemma (in M_trans) M_restrict_iff:
      "M(r) ==> restrict(r,A) = {z \<in> r . \<exists>x\<in>A. \<exists>y[M]. z = \<langle>x, y\<rangle>}"
 by (simp add: restrict_def, blast dest: transM)
 
@@ -1322,7 +1319,7 @@ apply (simp add: M_restrict_iff)
 apply (insert restrict_separation [of A], simp)
 done
 
-lemma (in M_basic) Inter_abs [simp]:
+lemma (in M_trans) Inter_abs [simp]:
      "[| M(A); M(z) |] ==> big_inter(M,A,z) \<longleftrightarrow> z = \<Inter>(A)"
 apply (simp add: big_inter_def Inter_def)
 apply (blast intro!: equalityI dest: transM)
@@ -1358,12 +1355,11 @@ lemma Diff_Collect_eq:
      "A - Collect(A,P) = Collect(A, %x. ~ P(x))"
 by blast
 
-lemma (in M_trivial) Collect_rall_eq:
+lemma (in M_trans) Collect_rall_eq:
      "M(Y) ==> Collect(A, %x. \<forall>y[M]. y\<in>Y \<longrightarrow> P(x,y)) =
                (if Y=0 then A else (\<Inter>y \<in> Y. {x \<in> A. P(x,y)}))"
-apply simp
-apply (blast dest: transM)
-done
+  by (simp,blast dest: transM)
+
 
 lemma (in M_basic) separation_disj:
      "[|separation(M,P); separation(M,Q)|] ==> separation(M, \<lambda>z. P(z) | Q(z))"
@@ -1397,7 +1393,7 @@ subsubsection\<open>Functions and function space\<close>
 
 text\<open>The assumption @{term "M(A->B)"} is unusual, but essential: in
 all but trivial cases, A->B cannot be expected to belong to @{term M}.\<close>
-lemma (in M_basic) is_funspace_abs [simp]:
+lemma (in M_trivial) is_funspace_abs [simp]:
      "[|M(A); M(B); M(F); M(A->B)|] ==> is_funspace(M,A,B,F) \<longleftrightarrow> F = A->B"
 apply (simp add: is_funspace_def)
 apply (rule iffI)
