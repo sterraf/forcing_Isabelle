@@ -1,7 +1,7 @@
 theory Renaming 
   imports 
     Nat_Miscellanea 
-    "~~/src/ZF/Constructible/Formula"
+    "../Constructible/Formula"
 begin
 
 section\<open>Auxiliary results\<close>

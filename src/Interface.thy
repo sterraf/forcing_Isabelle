@@ -1,6 +1,9 @@
 theory Interface 
-  imports Forcing_Data Relative Internalizations Renaming
-          Renaming_Auto Relative_Univ
+  imports Forcing_Data 
+          "../Constructible/Relative"
+          Renaming
+          Renaming_Auto 
+          Relative_Univ
 begin
 
 lemma Transset_intf :
@@ -33,13 +36,22 @@ proof -
 qed
     
 (* Interface with M_trivial *)
-    
+lemma (in M_ctm) mtrans :  
+  "M_trans(##M)"
+  apply (rule M_trans.intro)
+  apply (simp_all)
+   apply (rule Transset_intf,simp add: trans_M,simp+)
+  apply (rule exI, rule zero_in_M)
+done
+
+
 lemma (in M_ctm) mtriv :  
   "M_trivial(##M)"
-  apply (insert trans_M upair_ax Union_ax)
+  apply (insert trans_M)
   apply (rule M_trivial.intro)
-  apply (simp_all add: zero_in_M)
-  apply (rule Transset_intf,simp+)
+  apply (simp_all add: mtrans )
+  apply (rule M_trivial_axioms.intro)
+   apply(simp_all add: upair_ax Union_ax)
 done
 
 sublocale M_ctm \<subseteq> M_trivial "##M"

@@ -3,52 +3,7 @@ theory Powerset_Axiom
 begin
 
 simple_rename "perm_pow" src "[p,l,o,ss,fs,\<chi>]" tgt "[fs,ss,sp,p,l,o,\<chi>]"
-  
-lemma (in M_trivial) powerset_subset_Pow:
-  assumes 
-    "powerset(M,x,y)" "\<And>z. z\<in>y \<Longrightarrow> M(z)"
-  shows 
-    "y \<subseteq> Pow(x)"
-  using assms unfolding powerset_def
-  by (auto)
-    
-lemma (in M_trivial) powerset_abs: 
-  assumes
-    "M(x)" "\<And>z. z\<in>y \<Longrightarrow> M(z)"
-  shows
-    "powerset(M,x,y) \<longleftrightarrow> y = {a\<in>Pow(x) . M(a)}"
-proof (intro iffI equalityI)
-  (* First show the converse implication by double inclusion *)
-  assume 
-    "powerset(M,x,y)"
-  with assms have
-    "y \<subseteq> Pow(x)" 
-    using powerset_subset_Pow by simp
-  with assms show
-    "y \<subseteq> {a\<in>Pow(x) . M(a)}"
-    by blast
-  {
-    fix a
-    assume 
-      "a \<subseteq> x" "M(a)"
-    then have 
-      "subset(M,a,x)" by simp
-    with \<open>M(a)\<close> \<open>powerset(M,x,y)\<close> have
-      "a \<in> y"
-      unfolding powerset_def by simp
-  }
-  then show 
-    "{a\<in>Pow(x) . M(a)} \<subseteq> y"
-    by auto
-next (* we show the direct implication *)
-  assume 
-    "y = {a \<in> Pow(x) . M(a)}"
-  then show
-    "powerset(M, x, y)"
-    unfolding powerset_def
-    by simp
-qed
-  
+
 lemma Collect_inter_Transset:
   assumes 
     "Transset(M)" "b \<in> M"
@@ -335,7 +290,7 @@ end (* context: G_generic *)
   
 sublocale G_generic \<subseteq> M_trivial"##M[G]"
   using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
-  unfolding M_trivial_def by simp 
+  unfolding M_trivial_def M_trans_def M_trivial_axioms_def by (simp; blast)
  
 context G_generic begin
 theorem power_in_MG :
@@ -348,6 +303,8 @@ proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
   fix a
   assume 
     "a \<in> M[G]"
+  then
+  have "(##M[G])(a)" by simp
   have
     "{x\<in>Pow(a) . x \<in> M[G]} = Pow(a) \<inter> M[G]"
     by auto
@@ -356,9 +313,9 @@ proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
     using Pow_inter_MG by simp
   finally have
     "{x\<in>Pow(a) . x \<in> M[G]} \<in> M[G]" .
-  moreover from \<open>a\<in>M[G]\<close> have
+  moreover from \<open>a\<in>M[G]\<close> \<open>{x\<in>Pow(a) . x \<in> M[G]} \<in> _\<close> have
     "powerset(##M[G], a, {x\<in>Pow(a) . x \<in> M[G]})"
-    using powerset_abs[of a "{x\<in>Pow(a) . x \<in> M[G]}"]
+    using powerset_abs[OF \<open>(##M[G])(a)\<close>] 
     by simp
   ultimately show 
     "\<exists>x\<in>M[G] . powerset(##M[G], a, x)"

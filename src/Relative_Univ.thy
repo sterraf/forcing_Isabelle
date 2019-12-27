@@ -1,60 +1,19 @@
 theory Relative_Univ
   imports
-    Rank Datatype_absolute Internalizations Recursion_Thms
+    "../Constructible/Rank"
+    "../Constructible/Datatype_absolute"
+    "../Constructible/Internalizations"
+    Recursion_Thms
 
 begin
 
-lemma (in M_trivial) powerset_subset_Pow:
-  assumes 
-    "powerset(M,x,y)" "\<And>z. z\<in>y \<Longrightarrow> M(z)"
-  shows 
-    "y \<subseteq> Pow(x)"
-  using assms unfolding powerset_def
-  by (auto)
-    
-lemma (in M_trivial) powerset_abs: 
-  assumes
-    "M(x)" "\<And>z. z\<in>y \<Longrightarrow> M(z)"
-  shows
-    "powerset(M,x,y) \<longleftrightarrow> y = {a\<in>Pow(x) . M(a)}"
-proof (intro iffI equalityI)
-  (* First show the converse implication by double inclusion *)
-  assume 
-    "powerset(M,x,y)"
-  with assms have
-    "y \<subseteq> Pow(x)" 
-    using powerset_subset_Pow by simp
-  with assms show
-    "y \<subseteq> {a\<in>Pow(x) . M(a)}"
-    by blast
-  {
-    fix a
-    assume 
-      "a \<subseteq> x" "M(a)"
-    then have 
-      "subset(M,a,x)" by simp
-    with \<open>M(a)\<close> \<open>powerset(M,x,y)\<close> have
-      "a \<in> y"
-      unfolding powerset_def by simp
-  }
-  then show 
-    "{a\<in>Pow(x) . M(a)} \<subseteq> y"
-    by auto
-next (* we show the direct implication *)
-  assume 
-    "y = {a \<in> Pow(x) . M(a)}"
-  then show
-    "powerset(M, x, y)"
-    unfolding powerset_def
-    by simp
-qed
 
 lemma (in M_trivial) powerset_abs' [simp]: 
   assumes
     "M(x)" "M(y)"
   shows
     "powerset(M,x,y) \<longleftrightarrow> y = {a\<in>Pow(x) . M(a)}"
-  using powerset_abs[OF _ transM] assms by simp
+  using powerset_abs assms by simp
 
 lemma Collect_inter_Transset:
   assumes 
