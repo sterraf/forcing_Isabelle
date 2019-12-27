@@ -1,8 +1,8 @@
 theory Forcing_Data 
   imports  
     Forcing_Notions 
-    Relative 
-    "~~/src/ZF/Constructible/Formula"
+    "../Constructible/Relative"
+    "../Constructible/Formula"
 
 begin
 
@@ -143,8 +143,7 @@ proof -
   with Eq6 show ?thesis 
     unfolding M_generic_def by auto
 qed
-
-     
+  
 end (* forcing_data *)      
   
 end

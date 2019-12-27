@@ -19,10 +19,16 @@ proof -
   finally show ?thesis .
 qed 
 end
-  
+
+sublocale  G_generic \<subseteq> M_trans"##M[G]"
+  using generic zero_in_MG Transset_intf Transset_MG
+  unfolding M_trans_def 
+  by (simp;blast)
+
 sublocale G_generic \<subseteq> M_trivial"##M[G]"
-  using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
-  unfolding M_trivial_def by simp 
+  using generic Union_MG pairing_in_MG  zero_in_MG Transset_intf Transset_MG
+  unfolding M_trivial_def M_trivial_axioms_def M_trans_def 
+  by (simp;blast)
     
 context G_generic
 begin
