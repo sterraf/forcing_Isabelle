@@ -728,7 +728,7 @@ done
 
 lemma (in M_trans) powerset_abs:
   assumes
-    "M(x)" "M(y)"
+     "M(y)"
   shows
     "powerset(M,x,y) \<longleftrightarrow> y = {a\<in>Pow(x) . M(a)}"
 proof (intro iffI equalityI)
