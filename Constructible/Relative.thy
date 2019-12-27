@@ -726,16 +726,6 @@ apply (simp add: powerset_def)
 apply (blast dest: transM)
 done
 
-subsubsection\<open>Absoluteness for Powerset\<close>
-
-lemma (in M_trans) powerset_subset_Pow:
-  assumes
-    "powerset(M,x,y)" "M(y)"
-  shows
-    "y \<subseteq> Pow(x)"
-  using transM \<open>M(y)\<close> \<open>powerset(M,x,y)\<close> unfolding powerset_def 
-  by auto
-
 lemma (in M_trans) powerset_abs:
   assumes
     "M(x)" "M(y)"
@@ -746,7 +736,7 @@ proof (intro iffI equalityI)
   assume "powerset(M,x,y)"
   with \<open>M(y)\<close>  
   show "y \<subseteq> {a\<in>Pow(x) . M(a)}"
-    using powerset_subset_Pow transM by blast
+    using powerset_imp_subset_Pow transM by blast
   from \<open>powerset(M,x,y)\<close>
   show "{a\<in>Pow(x) . M(a)} \<subseteq> y"
     using transM unfolding powerset_def by auto
