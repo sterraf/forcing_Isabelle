@@ -30,5 +30,4 @@ proof -
 qed
 
 end    (* context: G_generic *)
-
 end
