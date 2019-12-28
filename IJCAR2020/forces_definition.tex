@@ -1,4 +1,70 @@
-\section{The definition of \isatt{forces}}
+\section{The definition of $\forceisa$}
+
+The core of the development is showing the definability of the
+relation of forcing. As explained in
+\cite[Sect.~8]{2019arXiv190103313G}, this comprises the 
+definition of a function $\forceisa$ that maps the set of internal
+formulas into itself. 
+
+The definition of $\forceisa$ proceeds by recursion
+over the set $\formula$ and its base case, that is, for
+atomic formulas, is (in)famously the most complicated one. Actually,
+newcomers can be puzzled by the fact that forcing for atomic
+formulas is also defined by (mutual) recursion: to know if $\tau_1\in\tau_2$ is
+forced, one must check if $\tau_1=\sigma$ is forced for $\sigma$
+moving in the transitive closure of $\tau_2$. To disentangle this, one
+must realize that this last recursion must be described sintactically:
+the definition of $\forceisa(\phi)$ for atomic $\phi$ is then an
+internal definition of the alleged recursion on names. 
+
+Our definition, in the lines of Kunen~\cite[p.~257]{kunen2011set}, is the
+following, with two mutually recursive clauses:
+\begin{multline}\label{eq:def-forcing-equality}
+  \forceseq (p,t_1,t_2) \defi 
+  \forall s\in\dom(t_1)\cup\dom(t_2)\;\forall q\pleq p :\\
+  \forcesmem(q,s,t_1)\lsii 
+  \forcesmem(q,s,t_2),
+\end{multline}
+\begin{multline}\label{eq:def-forcing-membership}
+  \forcesmem(p,t_1,t_2) \defi  \forall v\pleq p \limp\\
+      \exists q\pleq v. \ \exists s.\ \exists r\in P .\ \lb s,r\rb \in
+      t_2 \land q \pleq r \land \forceseq(q,t_1,s)
+\end{multline}
+Note that the definition of $\forcesmem$ states that the set 
+\[
+\{q\pleq p : \exists \lb s,r\rb\in t_2 . \ q\pleq r \land \forceseq(q,t_1,s)\}
+\]
+is dense below $p$.
+
+It was not straightforward to use the recursion machinery of
+Isabelle/ZF to define $\forceseq$ and $\forcesmem$. For this, we
+defined a relation $\frecR$ on 4-tuples of elements of $M$, proved an
+induction principle for this relation,
+
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ forces{\isacharunderscore}induction{\isacharunderscore}with{\isacharunderscore}conds{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymAnd}{\isasymtau}\ {\isasymtheta}\ p{\isachardot}\ p\ {\isasymin}\ P\ {\isasymLongrightarrow}\ {\isasymlbrakk}{\isasymAnd}q\ {\isasymsigma}{\isachardot}\ {\isasymlbrakk}q{\isasymin}P\ {\isacharsemicolon}\ {\isasymsigma}{\isasymin}domain{\isacharparenleft}{\isasymtheta}{\isacharparenright}{\isasymrbrakk}\ {\isasymLongrightarrow}\ Q{\isacharparenleft}q{\isacharcomma}{\isasymtau}{\isacharcomma}{\isasymsigma}{\isacharparenright}{\isasymrbrakk}\ {\isasymLongrightarrow}\ R{\isacharparenleft}p{\isacharcomma}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymAnd}{\isasymtau}\ {\isasymtheta}\ p{\isachardot}\ p\ {\isasymin}\ P\ {\isasymLongrightarrow}\ {\isasymlbrakk}{\isasymAnd}q\ {\isasymsigma}{\isachardot}\ {\isasymlbrakk}q{\isasymin}P\ {\isacharsemicolon}\ {\isasymsigma}{\isasymin}domain{\isacharparenleft}{\isasymtau}{\isacharparenright}\ {\isasymunion}\ domain{\isacharparenleft}{\isasymtheta}{\isacharparenright}{\isasymrbrakk}\ {\isasymLongrightarrow}\ R{\isacharparenleft}q{\isacharcomma}{\isasymsigma}{\isacharcomma}{\isasymtau}{\isacharparenright}\ {\isasymand}\ R{\isacharparenleft}q{\isacharcomma}{\isasymsigma}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isasymrbrakk}\ {\isasymLongrightarrow}\ Q{\isacharparenleft}p{\isacharcomma}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ {\isachardoublequoteopen}p\ {\isasymin}\ P{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ \ \ {\isachardoublequoteopen}Q{\isacharparenleft}p{\isacharcomma}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}\ {\isasymand}\ R{\isacharparenleft}p{\isacharcomma}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+%
+and 
+obtained both functions as cases of a another one, 
+$\forcesat$, using a single recursion on $\frecR$. Then we obtained 
+(\ref{eq:def-forcing-equality}) and (\ref{eq:def-forcing-membership})
+as our corollaries \isatt{def\_forces\_eq} and
+\isatt{def\_forces\_mem}.
+
+Other approaches, like the one in Neeman~\cite{neeman-course}, prefer
+to have a single, more complicated, clause for $t_1=t_2$ using
+well-founded recursion on $t_1$
+and $t_2$ and then define the case $t_1\in t_2$ explicitly. 
+
+
 
 
 %%% Local Variables: 
