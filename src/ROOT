@@ -1,10 +1,13 @@
-session "Separation" = "ZF" +
-  options [document = pdf, document_output = "output"]
+session "Forcing" = "ZF" +
+  options [document = pdf, document_output = "output", quick_and_dirty (* sorry *)]
   theories [document = true]
     "Extensionality_Axiom"
     "Foundation_Axiom"
-    "Separation_Axiom"
-    "Powerset_Axiom"
+    "Choice_Axiom"
     "Infinity_Axiom"
+    "Replacement_Axiom"
+    "Non_Constructible"
+    "Ordinals_In_MG"
+    "Rasiowa_Sikorski"
   document_files
     "root.tex"
