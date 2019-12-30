@@ -1,4 +1,4 @@
-theory Forcing_Theorems imports Interface Names Forcing_Thms begin
+theory Forcing_Theorems imports Forcing_Thms begin
    
 (* Prototyping Forcing relation and theorems as a locale*)
 locale forcing_thms = forcing_data + 

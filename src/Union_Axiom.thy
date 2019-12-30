@@ -1,5 +1,5 @@
 theory Union_Axiom
-  imports Names Nat_Miscellanea
+  imports Names
 begin
 
 context forcing_data

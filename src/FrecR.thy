@@ -1,4 +1,4 @@
-theory FrecR imports Interface Names begin
+theory FrecR imports Names begin
 
 lemma empty_iff_sats':
       "[| nth(i,env) = x; i \<in> nat; env \<in> list(A)|]
