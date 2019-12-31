@@ -1,0 +1,38 @@
+\section{Example of proper extension}
+
+Even when the axioms of $\ZFC$ are proved in the generic extension,
+one can't claim that the magic of forcing has taken place unless one
+is able to provide some \emph{proper} extension with the \emph{same
+ordinals}. After all, one is assuming from starters a model $M$ of $\ZFC$,
+and in some trivial cases $M[G]$ might end up to be exactly $M$; this
+is where \emph{proper} enters the stage. But, for instance, in the
+presence of large cardinals, a model $M'\supsetneq M$ might be an
+end-extension of $M$ ---this is were we ask the two models to have the
+same ordinals, the same \emph{height}. 
+
+Two short theory files contains the relevant
+results. \texttt{Ordinals\_In\_MG.thy} shows, using the closure of $M$
+under ranks, that $M$ and $M[G]$ share the same ordinals (actually,
+ranks of elements of $M[G]$ are bounded by the ranks of their names in
+$M$):
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ rank{\isacharunderscore}val{\isacharcolon}\ {\isachardoublequoteopen}rank{\isacharparenleft}val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}{\isacharparenright}\ {\isasymle}\ rank{\isacharparenleft}x{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ Ord{\isacharunderscore}MG{\isacharunderscore}iff{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}Ord{\isacharparenleft}{\isasymalpha}{\isacharparenright}{\isachardoublequoteclose}\ \isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}{\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
+\end{isabelle}
+
+\texttt{Non\_Constructible.thy} contains the first example of a poset
+that interprets the locale
+\isatt{forcing{\isacharunderscore}notion}. It is the set of all binary
+lists with the partial order given by  ``\isatt{xs} is an extension of
+\isatt{ys}.''
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "forcing_in_isabelle_zf"
+%%% ispell-local-dictionary: "american"
+%%% End: 

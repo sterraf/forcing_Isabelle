@@ -1,5 +1,83 @@
 \section{The axiom of replacement}
 
+The proof of the Replacement Axiom scheme in $M[G]$ in Kunen uses the
+Reflection Principle relativized to $M$. We took an alternative
+pathway, following Neeman \cite{neeman-course}. In his course notes,
+he uses the relativization of the cumulative hierarchy of sets. 
+
+The
+family of all sets of rank less than $\alpha$ is called
+\isatt{Vset}$(\alpha)$ in Isabelle/ZF. We showed, in the theory file
+\texttt{Relative\_Univ.thy}
+ the following
+relativization and closure results concerning this function, for a
+class $M$ satisfying the locale \isatt{M{\isacharunderscore}eclose}
+plus the Powerset Axiom and four instances of replacement.
+%
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ Vset{\isacharunderscore}abs{\isacharcolon}\ {\isachardoublequoteopen}{\isasymlbrakk}\ M{\isacharparenleft}i{\isacharparenright}{\isacharsemicolon}\ M{\isacharparenleft}V{\isacharparenright}{\isacharsemicolon}\ Ord{\isacharparenleft}i{\isacharparenright}\ {\isasymrbrakk}\ {\isasymLongrightarrow}\ is{\isacharunderscore}Vset{\isacharparenleft}M{\isacharcomma}i{\isacharcomma}V{\isacharparenright}\ {\isasymlongleftrightarrow}\ V\ {\isacharequal}\ {\isacharbraceleft}x{\isasymin}Vset{\isacharparenleft}i{\isacharparenright}{\isachardot}\ M{\isacharparenleft}x{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ Vset{\isacharunderscore}closed{\isacharcolon}\ {\isachardoublequoteopen}{\isasymlbrakk}\ M{\isacharparenleft}i{\isacharparenright}{\isacharsemicolon}\ Ord{\isacharparenleft}i{\isacharparenright}\ {\isasymrbrakk}\ {\isasymLongrightarrow}\ M{\isacharparenleft}{\isacharbraceleft}x{\isasymin}Vset{\isacharparenleft}i{\isacharparenright}{\isachardot}\ M{\isacharparenleft}x{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+We also have the basic result
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ M{\isacharunderscore}into{\isacharunderscore}Vset{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}M{\isacharparenleft}a{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}{\isasymexists}i{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isasymexists}V{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ ordinal{\isacharparenleft}M{\isacharcomma}i{\isacharparenright}\ {\isasymand}\ is{\isacharunderscore}Vfrom{\isacharparenleft}M{\isacharcomma}{\isadigit{0}}{\isacharcomma}i{\isacharcomma}V{\isacharparenright}\ {\isasymand}\ a{\isasymin}V{\isachardoublequoteclose}
+\end{isabelle}
+stating that $M$ is included in 
+$\union\{\isatt{Vset}(\alpha) : \alpha\in M\}$ (it's actually equal).
+
+For the proof of the Replacement Axiom, we assume that $\phi$ is
+functional in its first two variables when interpreted in $M[G]$ and
+the first ranges over the domain \isatt{c}. Then we show that the collection of
+all values of the second variable when the first ranges over
+\isatt{c} belongs to $M[G]$:
+%
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ Replace{\isacharunderscore}sats{\isacharunderscore}in{\isacharunderscore}MG{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isachardoublequoteopen}c{\isasymin}M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}env\ {\isasymin}\ list{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymphi}\ {\isasymin}\ formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymle}\ {\isadigit{2}}\ {\isacharhash}{\isacharplus}\ length{\isacharparenleft}env{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ {\isachardoublequoteopen}univalent{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}\ c{\isacharcomma}\ {\isasymlambda}x\ v{\isachardot}\ sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}\ {\isasymphi}{\isacharcomma}\ {\isacharbrackleft}x{\isacharcomma}\ v{\isacharbrackright}\ {\isacharat}\ env{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isacharbraceleft}v{\isachardot}\ x{\isasymin}c{\isacharcomma}\ v{\isasymin}M{\isacharbrackleft}G{\isacharbrackright}\ {\isasymand}\ sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}\ {\isasymphi}{\isacharcomma}\ {\isacharbrackleft}x{\isacharcomma}v{\isacharbrackright}\ {\isacharat}\ env{\isacharparenright}{\isacharbraceright}\ {\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
+\end{isabelle}
+%
+From this, the satisfaction of the Replacement Axiom in $M[G]$ follows
+very easily.
+
+The proof of the previous lemma, following Neeman, proceeds as usual
+by turning an argument concerning elements of $M[G]$ to one involving
+names lying in $M$, and connecting both worlds by using the forcing
+theorems. In the case at hand, by functionality of $\phi$ we know that
+for every $x\in c\cap M[G]$ there exists exactly one $v\in M[G]$ such
+that
+\isatt{sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymphi}{\isacharcomma}{\isacharbrackleft}x{\isacharcomma}v{\isacharbrackright}{\isacharat}env{\isacharparenright}}. Now,
+given a name $\pi'\in M$ for $c$, every name of an element of $c$
+belongs to $\pi\defi \dom(\pi')\times \PP$, which is easily seen to be
+in $M$. We'll use $\pi$ to be the domain in an application of the
+Replacement Axiom in $M$. But now, obviously, we have lost
+functionality since there are many names $\dot v\in M$ for a fixed $v$
+in $M[G]$. To solve this issue, for each $\rho p \defi\lb\rho,p\rb\in \pi$ calculate the
+minimum rank of some $\tau\in M$ such that 
+$p\forces \phi(\rho,\tau,\dots)$ if there is one, or $0$ otherwise. By
+Replacement in $M$, we can show that the supremum \isatt{?sup} of these ordinals
+belongs to $M$ and we can construct a \isatt{bigname} $\defi$ 
+\isatt{{\isacharbraceleft}x{\isasymin}Vset{\isacharparenleft}{\isacharquery}sup{\isacharparenright}{\isachardot}\ x\ {\isasymin}\ M{\isacharbraceright}\ {\isasymtimes}\ {\isacharbraceleft}one{\isacharbraceright}}
+whose interpretation by (any generic) $G$ will include all possible elements
+as $v$ above.
+
+The previous calculation required some absoluteness and closure
+results regarding the minimum ordinal binder, \isatt{Least}$(Q)$, also
+denoted $\mu x. Q(x)$, that can be found in the theory file
+\texttt{Least.thy}.
+
 
 %%% Local Variables: 
 %%% mode: latex

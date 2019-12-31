@@ -1,16 +1,31 @@
 \section{The forcing theorems}
 
 After the definition of $\forceisa$ is complete, the proof of the
-Fundamental Theorems of forcing is comparatively straightforward, and
+Fundamental Theorems of Forcing is comparatively straightforward, and
 we were able to follow Kunen very closely. The more involved points of
 this part of the development were those where we needed to proved that
 various (dense) subsets of $\PP$ were in $M$; for this, we had to
 recourse to several absoluteness ad-hoc lemmas.
 
-As with the previous section, the proofs here have two different
+The first results concern characterizations of the forcing
+relation. Two of them are \isatt{Forces{\isacharunderscore}Member}:
+\begin{center}
+  \isatt{{\isacharparenleft}p\ {\isasymtturnstile}\ Member{\isacharparenleft}n{\isacharcomma}m{\isacharparenright}\ env{\isacharparenright}\ {\isasymlongleftrightarrow}\ forces{\isacharunderscore}mem{\isacharparenleft}p{\isacharcomma}t{\isadigit{1}}{\isacharcomma}t{\isadigit{2}}{\isacharparenright}},
+\end{center}
+where \isatt{t{\isadigit{1}}} and \isatt{t{\isadigit{1}}} are the
+\isatt{n}th resp.\ \isatt{m}th elements of \isatt{env}, and  \isatt{Forces{\isacharunderscore}Forall}:
+\begin{center}
+  \isatt{{\isacharparenleft}p\ {\isasymtturnstile}\ Forall{\isacharparenleft}{\isasymphi}{\isacharparenright}\ env{\isacharparenright}\ {\isasymlongleftrightarrow}\ {\isacharparenleft}{\isasymforall}x{\isasymin}M{\isachardot}\ {\isacharparenleft}p\ {\isasymtturnstile}\ {\isasymphi}\ {\isacharparenleft}{\isacharbrackleft}x{\isacharbrackright}\ {\isacharat}\ env{\isacharparenright}{\isacharparenright}{\isacharparenright}}.
+\end{center}
+These two, along with  \isatt{Forces{\isacharunderscore}Equal} and
+\isatt{Forces{\isacharunderscore}Nand}, appear in Kunen as the
+inductive definition of the forcing relation \cite[Def.~IV.2.42]{kunen2011set}.
+
+As with the previous section, the proofs of the forcing theorems have two different
 flavours: The ones for the atomic formulas proceed by using the
-\isatt{forces\_induction} principle, and then an induction on
-$\formula$ wraps the former with the remaining (inductive) cases. 
+principle of 
+\isatt{forces\_induction}, and then an induction on
+$\formula$ wraps the former with the remaining cases (\isatt{Nand} and \isatt{Forall}). 
 
 As an example of the first class, we can take a look at our
 formalization of \cite[Lem.~IV.2.40(a)]{kunen2011set}:
@@ -25,8 +40,8 @@ formalization of \cite[Lem.~IV.2.40(a)]{kunen2011set}:
   \ \ \ \ \ {\isacharparenleft}{\isasymtau}{\isasymin}M{\isasymlongrightarrow}{\isasymtheta}{\isasymin}M{\isasymlongrightarrow}{\isacharparenleft}{\isasymforall}p{\isasymin}G{\isachardot}forces{\isacharunderscore}mem{\isacharparenleft}p{\isacharcomma}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isasymlongrightarrow}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isasymin}val{\isacharparenleft}G{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 %
-Its proof starts by an introduction of \isatt{forces\_induction}, and
-the two inductive cases for each atomic type were handled before as
+Its proof starts by an introduction of \isatt{forces\_induction};
+the  inductive cases for each atomic type were handled before as
 separate lemmas (\isatt{IV240a\_mem} and \isatt{IV240a\_eq}). We
 illustrate with the statement of the latter.
 %
@@ -81,10 +96,8 @@ The proof is divided in the 4 cases of definition of an element of $\formula$,
 %
 where the final step depends on previously proved
 \isatt{strengthening{\isacharunderscore}mem} and the characterization of
-$\forceisa$ for membership (\isatt{Forces{\isacharunderscore}Member}):
-\isatt{{\isacharparenleft}p\ {\isasymtturnstile}\ Member{\isacharparenleft}n{\isacharcomma}m{\isacharparenright}\ env{\isacharparenright}\ {\isasymlongleftrightarrow}\ forces{\isacharunderscore}mem{\isacharparenleft}p{\isacharcomma}t{\isadigit{1}}{\isacharcomma}t{\isadigit{2}}{\isacharparenright}},
-where \isatt{t{\isadigit{1}}} and \isatt{t{\isadigit{1}}} are the
-\isatt{n}th resp.\ \isatt{m}th elements of \isatt{env}.
+$\forceisa$ for membership 
+
 
 The case of equality is entirely analogous, and the \isatt{Nand} and
 \isatt{Forall} cases are handled very simply.
@@ -135,11 +148,11 @@ The case of equality is entirely analogous, and the \isatt{Nand} and
 \isacommand{qed}\isamarkupfalse
 \end{isabelle}
 %
-In these two proofs, analogous results to
-\isatt{Forces{\isacharunderscore}Member} for \isatt{Nand} and
-\isatt{Forall} are used. It can be noted that the inductive hypothesis
+It can be noted that the inductive hypothesis
 gets used in the last case (underlined here as
 \isatt{\underline{Forall}}), but not in the case for \isatt{Nand}.
+
+
 
 %%% Local Variables: 
 %%% mode: latex
