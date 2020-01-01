@@ -153,8 +153,39 @@ It can be noted that the inductive hypothesis
 gets used in the last case (underlined here as
 \isatt{\underline{Forall}}), but not in the case for \isatt{Nand}.
 
-
-
+The main results in this section are the Density and Truth Lemmas,
+which we reproduce next.
+%
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ density{\isacharunderscore}lemma{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isachardoublequoteopen}p{\isasymin}P{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}env{\isasymin}list{\isacharparenleft}M{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isasymle}length{\isacharparenleft}env{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isacharparenleft}p\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}\ {\isasymlongleftrightarrow}\ dense{\isacharunderscore}below{\isacharparenleft}{\isacharbraceleft}q{\isasymin}P{\isachardot}\ {\isacharparenleft}q\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}{\isacharbraceright}{\isacharcomma}p{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ truth{\isacharunderscore}lemma{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ \isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}M{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ \isanewline
+\ \ \ \ \ {\isachardoublequoteopen}{\isasymAnd}env{\isachardot}\ env{\isasymin}list{\isacharparenleft}M{\isacharparenright}\ {\isasymLongrightarrow}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isasymle}length{\isacharparenleft}env{\isacharparenright}\ {\isasymLongrightarrow}\ \isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\isasymexists}p{\isasymin}G{\isachardot}\ {\isacharparenleft}p\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}{\isacharparenright}\ {\isasymlongleftrightarrow}\ sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymphi}{\isacharcomma}map{\isacharparenleft}val{\isacharparenleft}G{\isacharparenright}{\isacharcomma}env{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+%
+From these results, the semantical characterization of the forcing
+relation (the ``definition of $\forces$''
+\cite[IV.2.22]{kunen2011set}) follows easily (49 lines):
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ definition{\isacharunderscore}of{\isacharunderscore}forces{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isachardoublequoteopen}p{\isasymin}P{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}env{\isasymin}list{\isacharparenleft}M{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isasymle}length{\isacharparenleft}env{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isacharparenleft}p\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}\ {\isasymlongleftrightarrow}\isanewline
+\ \ \ \ \ {\isacharparenleft}{\isasymforall}G{\isachardot}{\isacharparenleft}M{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}{\isasymand}\ p{\isasymin}G{\isacharparenright}{\isasymlongrightarrow}sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymphi}{\isacharcomma}map{\isacharparenleft}val{\isacharparenleft}G{\isacharparenright}{\isacharcomma}env{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "forcing_in_isabelle_zf"
