@@ -1,4 +1,5 @@
 \section{The forcing theorems}
+\label{sec:forcing-theorems}
 
 After the definition of $\forceisa$ is complete, the proof of the
 Fundamental Theorems of Forcing is comparatively straightforward, and
@@ -24,7 +25,7 @@ inductive definition of the forcing relation \cite[Def.~IV.2.42]{kunen2011set}.
 As with the previous section, the proofs of the forcing theorems have two different
 flavours: The ones for the atomic formulas proceed by using the
 principle of 
-\isatt{forces\_induction}, and then an induction on
+\isatt{forces{\isacharunderscore}induction}, and then an induction on
 $\formula$ wraps the former with the remaining cases (\isatt{Nand} and \isatt{Forall}). 
 
 As an example of the first class, we can take a look at our
@@ -40,9 +41,9 @@ formalization of \cite[Lem.~IV.2.40(a)]{kunen2011set}:
   \ \ \ \ \ {\isacharparenleft}{\isasymtau}{\isasymin}M{\isasymlongrightarrow}{\isasymtheta}{\isasymin}M{\isasymlongrightarrow}{\isacharparenleft}{\isasymforall}p{\isasymin}G{\isachardot}forces{\isacharunderscore}mem{\isacharparenleft}p{\isacharcomma}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isasymlongrightarrow}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isasymin}val{\isacharparenleft}G{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 %
-Its proof starts by an introduction of \isatt{forces\_induction};
+Its proof starts by an introduction of \isatt{forces{\isacharunderscore}induction};
 the  inductive cases for each atomic type were handled before as
-separate lemmas (\isatt{IV240a\_mem} and \isatt{IV240a\_eq}). We
+separate lemmas (\isatt{IV240a{\isacharunderscore}mem} and \isatt{IV240a{\isacharunderscore}eq}). We
 illustrate with the statement of the latter.
 %
 \begin{isabelle}
