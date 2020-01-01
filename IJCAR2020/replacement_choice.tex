@@ -1,4 +1,11 @@
-\section{The axiom of replacement}
+\section{The axioms of replacement and choice}
+
+Apart from the obvious modifications arising from the change in the
+statement of the axiom schemes, the proofs that all axioms apart from
+those in the title hold in $M[G]$ are obtained exactly as in
+\cite{2019arXiv190103313G}. 
+
+\subsection{Replacement}
 
 The proof of the Replacement Axiom scheme in $M[G]$ in Kunen uses the
 Reflection Principle relativized to $M$. We took an alternative
@@ -78,6 +85,53 @@ results regarding the minimum ordinal binder, \isatt{Least}$(Q)$, also
 denoted $\mu x. Q(x)$, that can be found in the theory file
 \texttt{Least.thy}.
 
+\subsection{Choice}
+A first important observation is that the proof of $\AC$ in $M[G]$
+only requires the assumption that $M$ satisfies (a finite fragment of)
+$\ZFC$. There is no need to invoke Choice in the metatheory.
+
+Although our previous version of the developement used $\AC$, that was
+only needed to show the Rasiowa-Sikorski Lemma (RSL) for
+arbitrary posets. We have modularized the proof of the latter
+and now the version for countable posets that we use to show the
+existence of generic filters
+does not require Choice (as it is well known). We also bundled the
+full RSL along with our implementation of the principle of dependent
+choices in an independent branch of the dependency graph, which is the
+only place where the theory \texttt{ZF.AC} is invoked.
+
+Our statement of the axiom of choice is the one preferred for
+arguments involving transitive classes satisfying $\ZF$:
+%
+\begin{center}
+\isatt{{\isasymforall}x{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isasymexists}a{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isasymexists}f{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ ordinal{\isacharparenleft}M{\isacharcomma}a{\isacharparenright}\ {\isasymand}\ surjection{\isacharparenleft}M{\isacharcomma}a{\isacharcomma}x{\isacharcomma}f{\isacharparenright}}
+\end{center}
+%
+The Isabelle simplifier is able to show automatically that this
+statement is equivalent to the next one, in which the real notions of
+ordinal and surjection appear:
+%
+\begin{center}
+\isatt{{\isasymforall}x{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isasymexists}a{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isasymexists}f{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ Ord{\isacharparenleft}a{\isacharparenright}\ {\isasymand}\ f\ {\isasymin}\ surj{\isacharparenleft}a{\isacharcomma}x{\isacharparenright}}
+\end{center}
+
+As with the forcing axioms, the proof of $\AC$ in $M[G]$ follows the pattern of Kunen
+\cite[IV.2.27]{kunen2011set} and is rather
+straightforward; the only complicated technical point being to show
+that the relevant name belongs to $M$. We assume that \isatt{a}${}\neq\emptyset$
+belongs to $M[G]$ and has a name $\tau\in M$. By $\AC$ in $M$, there
+is a surjection \isatt{s} from an ordinal $\alpha\in M$ ($\subseteq M[G]$) onto
+$\dom(\tau)$. Now
+%
+\begin{center}
+\isatt{{\isacharbraceleft}opair{\isacharunderscore}name{\isacharparenleft}check{\isacharparenleft}{\isasymbeta}{\isacharparenright}{\isacharcomma}s{\isacharbackquote}{\isasymbeta}{\isacharparenright}{\isachardot}\ {\isasymbeta}{\isasymin}{\isasymalpha}{\isacharbraceright}\ {\isasymtimes}\ {\isacharbraceleft}one{\isacharbraceright}}
+\end{center}
+%
+is a name for a function \isatt{f} with domain $\alpha$ such that \isatt{a}
+is included in its range, and where
+\isatt{opair{\isacharunderscore}name}$(\sig,\rho)$ is a name for the
+ordered pair $\lb\val(G,\sig),\val(G,\rho)\rb$. From this, $\AC$ in
+$M[G]$ follows easily.
 
 %%% Local Variables: 
 %%% mode: latex
