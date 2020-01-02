@@ -2,7 +2,7 @@ theory Relative_Univ
   imports
     "../Constructible/Rank"
     "../Constructible/Datatype_absolute"
-    "../Constructible/Internalizations"
+    Internalizations
     Recursion_Thms
 
 begin
