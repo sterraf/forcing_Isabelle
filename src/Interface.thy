@@ -1270,21 +1270,17 @@ schematic_goal is_Vset_iff_sats:
   by (rule sats_is_Vset_fm_auto(1); simp add:assms)
 
 
-(*
-definition
-  rec_mem : "i \<Rightarrow> o" where
-  "
-*)
+lemma (in M_ctm) memrel_eclose_sing :
+  "a\<in>M \<Longrightarrow> \<exists>sa\<in>M. \<exists>esa\<in>M. \<exists>mesa\<in>M.
+       upair(##M,a,a,sa) & is_eclose(##M,sa,esa) & membership(##M,esa,mesa)" 
+  using upair_ax eclose_closed Memrel_closed unfolding upair_ax_def 
+      by (simp del:upair_abs)
 
-(*
-(*
-\<exists>sa[M]. \<exists>esa[M]. \<exists>mesa[M].
-       upair(M,a,a,sa) & is_eclose(M,sa,esa) & membership(M,esa,mesa) &
-       wfrec_replacement(M,MH,mesa) *)
+
 lemma (in M_ctm) trans_repl_HVFrom :
   assumes
-    "A\<in>M" "i\<in>M" "Ord(i)" 
-  shows
+    "A\<in>M" "i\<in>M"  
+  shows             
     "transrec_replacement(##M,is_HVfrom(##M,A),i)"
 proof -           
   { fix mesa 
@@ -1320,8 +1316,21 @@ proof -
   then
   have "wfrec_replacement(##M,is_HVfrom(##M,A),mesa)" 
     unfolding wfrec_replacement_def  by simp
-  }
-  *)
+}
+  then show ?thesis unfolding transrec_replacement_def
+    using \<open>i\<in>M\<close> memrel_eclose_sing by simp
+qed
+
+
+lemma (in M_ctm) meclose_pow : "M_eclose_pow(##M)" 
+  apply (rule M_eclose_pow.intro,rule meclose)
+  apply (rule M_eclose_pow_axioms.intro)
+      apply (insert power_ax powapply_repl phrank_repl trans_repl_HVFrom wfrec_rank)
+    apply (simp_all)
+  done
+
+sublocale M_ctm \<subseteq> M_eclose_pow "##M"
+  by (rule meclose_pow)
 
 lemma (in M_ctm) repl_gen : 
   assumes 

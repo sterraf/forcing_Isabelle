@@ -45,9 +45,6 @@ next
     using assms[of x] edrelI domain_trans[OF Transset_eclose 3(1)] by blast 
 qed
 
-(* until the interface is ready *)
-lemma (in M_eclose) rank_closed: "M(a) \<Longrightarrow> M(rank(a))"
-  sorry
 
 context G_generic
 begin

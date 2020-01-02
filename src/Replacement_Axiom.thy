@@ -242,15 +242,7 @@ lemma body_lemma:
     sats_prebody_fm[of "snd(x)" "fst(x)"] fst_snd_closed[OF \<open>x\<in>M\<close>]
   by (simp, simp del:setclass_iff add:setclass_iff[symmetric],simp)
 
-(* Sorrying this until the interface is ready *)
-lemma (in M_eclose) Vset_abs: "\<lbrakk> M(i); M(V); Ord(i)\<rbrakk> \<Longrightarrow> is_Vset(M,i,V) \<longleftrightarrow> V = {x\<in>Vset(i). M(x)}"
-  sorry
 
-lemma (in M_eclose) Vset_closed: "\<lbrakk> M(i); Ord(i)\<rbrakk> \<Longrightarrow> M({x\<in>Vset(i). M(x)})"
-  sorry
-
-lemma (in M_eclose) rank_closed: "M(a) \<Longrightarrow> M(rank(a))"
-  sorry
 
 lemma Replace_sats_in_MG:
   assumes
