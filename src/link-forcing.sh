@@ -9,10 +9,10 @@ function link_item {
     #   link_item HTML ITEMLIST SUFFIX
     for z in `cat $2`
     do 
-	l=`echo $z | cut -d"." -f2`$3
+	l=`echo $z | cut -d"." -f2`
 	lprime=`echo $l | sed -e "s/&/\\\\\\&/g"`
 	t=`echo $z | cut -d"." -f1`
-	sed -i -e "s/>$l</><a class=\"pst-lnk\" href=\"$t.html#$t.$lprime\">$lprime<\/a></g" $1
+	sed -i -e "s/>$l$3</><a class=\"pst-lnk\" href=\"$t.html#$t.$lprime\">$lprime$3<\/a></g" $1
     done
 }
 
