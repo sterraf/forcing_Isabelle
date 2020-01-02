@@ -137,7 +137,7 @@ locale M_eclose_pow = M_eclose +
   assumes
     power_ax : "power_ax(M)" and
     powapply_replacement : "M(f) \<Longrightarrow> strong_replacement(M,is_powapply(M,f))" and
-    HVfrom_replacement : "\<lbrakk> M(i) ; Ord(i) ; M(A) \<rbrakk> \<Longrightarrow> 
+    HVfrom_replacement : "\<lbrakk> M(i) ; M(A) \<rbrakk> \<Longrightarrow> 
                           transrec_replacement(M,is_HVfrom(M,A),i)" and
     PHrank_replacement : "M(f) \<Longrightarrow> strong_replacement(M,PHrank(M,f))" and
     is_Hrank_replacement : "M(x) \<Longrightarrow> wfrec_replacement(M,is_Hrank(M),rrank(x))"
