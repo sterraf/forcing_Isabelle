@@ -17,7 +17,7 @@ proof -
     from assms have "G\<subseteq>P" 
       unfolding M_generic_def and filter_def by simp
     with \<open>one\<in>G\<close>have "one\<in>P" using subsetD by simp
-    then have "one\<in>M" using Transset_intf[OF trans_M _ P_in_M] by simp
+    then have "one\<in>M" using transitivity[OF _ P_in_M] by simp
     assume "x \<in> M[G]" "y \<in> M[G]"
     then obtain \<tau> \<rho> where
       0 : "val(G,\<tau>) = x" "val(G,\<rho>) = y" "\<rho> \<in> M"  "\<tau> \<in> M"

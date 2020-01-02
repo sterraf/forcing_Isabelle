@@ -187,7 +187,7 @@ lemma sats_forces_Nand':
     "sats(M,forces(Nand(\<phi>,\<psi>)),[P,leq,one,p] @ env) \<longleftrightarrow> 
      \<not>(\<exists>q\<in>M. q\<in>P \<and> (\<exists>qp\<in>M. pair(##M,q,p,qp) \<and> qp\<in>leq) \<and> 
           (sats(M,forces(\<phi>),[P,leq,one,q]@env)\<and> sats(M,forces(\<psi>),[P,leq,one,q]@env)))"
-  using assms sats_forces_Nand[OF assms(2-4) Transset_intf[OF trans_M \<open>p\<in>P\<close>]]
+  using assms sats_forces_Nand[OF assms(2-4) transitivity[OF \<open>p\<in>P\<close>]]
   P_in_M leq_in_M one_in_M unfolding forces_def
   by simp
 
@@ -256,7 +256,7 @@ lemma Forces_And_iff_dense_below:
   shows
     "(p \<tturnstile> And(\<phi>,\<psi>) env) \<longleftrightarrow> dense_below({r\<in>P. (r \<tturnstile> \<phi> env) \<and> (r \<tturnstile> \<psi> env) },p)"
   unfolding dense_below_def using Forces_And_aux assms
-    by (auto dest:Transset_intf[OF trans_M _ P_in_M]; rename_tac q; drule_tac x=q in bspec)+
+    by (auto dest:transitivity[OF _ P_in_M]; rename_tac q; drule_tac x=q in bspec)+
 
 lemma Forces_Forall:
   assumes
@@ -352,7 +352,7 @@ proof (intro elem_of_valI)
   note \<open>\<pi>\<in>M\<close> \<open>\<tau>\<in>M\<close>
   ultimately
   have "?D \<in> M" 
-    using leq_in_M one_in_M P_in_M Transset_intf[OF trans_M _ P_in_M] (* or else P_sub_M *) sorry
+    using leq_in_M one_in_M P_in_M transitivity[OF _ P_in_M] (* or else P_sub_M *) sorry
   moreover from assms \<open>p\<in>P\<close>
   have "dense_below(?D,p)"
     using forces_mem_iff_dense_below by simp
@@ -563,7 +563,7 @@ next
   have IH':"\<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> q\<in>G \<Longrightarrow>
             (forces_mem(q, \<sigma>, \<tau>) \<longrightarrow> val(G, \<sigma>) \<in> val(G, \<tau>)) \<and> 
             (forces_mem(q, \<sigma>, \<theta>) \<longrightarrow> val(G, \<sigma>) \<in> val(G, \<theta>))" for q \<sigma> 
-    by (auto intro:  Transset_intf[OF trans_M _ domain_closed[simplified]])
+    by (auto intro:  transitivity[OF _ domain_closed[simplified]])
   ultimately
   show "\<forall>p\<in>G. forces_eq(p,\<tau>,\<theta>) \<longrightarrow> val(G,\<tau>) = val(G,\<theta>)"
     using IV240a_eq[OF assms(1) _ _ IH'] by (simp)
@@ -704,7 +704,7 @@ proof -
       by blast
     moreover from this and \<open>p\<in>G\<close> and assms
     have "val(G,\<sigma>)\<in>val(G,\<tau>)"
-      using IV240a[of G \<sigma> \<tau>] Transset_intf[OF trans_M _ domain_closed[simplified]] by blast
+      using IV240a[of G \<sigma> \<tau>] transitivity[OF _ domain_closed[simplified]] by blast
     moreover note IH \<open>val(G,\<tau>) = _\<close>
     ultimately
     obtain q where "q\<in>G" "forces_mem(q, \<sigma>, \<theta>)" by auto
@@ -728,7 +728,7 @@ proof -
       by blast
     moreover from this and \<open>p\<in>G\<close> and assms
     have "val(G,\<sigma>)\<in>val(G,\<theta>)"
-      using IV240a[of G \<sigma> \<theta>] Transset_intf[OF trans_M _ domain_closed[simplified]] by blast
+      using IV240a[of G \<sigma> \<theta>] transitivity[OF _ domain_closed[simplified]] by blast
     moreover note IH \<open>val(G,\<tau>) = _\<close>
     ultimately
     obtain q where "q\<in>G" "forces_mem(q, \<sigma>, \<tau>)" by auto
@@ -850,8 +850,8 @@ next
   case (Nand \<phi> \<psi>)
   with assms
   show ?case 
-    using Forces_Nand Transset_intf[OF trans_M _ P_in_M] pair_in_M_iff 
-      Transset_intf[OF trans_M _ leq_in_M] leq_transD by auto
+    using Forces_Nand transitivity[OF _ P_in_M] pair_in_M_iff 
+      transitivity[OF _ leq_in_M] leq_transD by auto
 next
   case (Forall \<phi>)
   with assms
@@ -916,7 +916,7 @@ case (Nand \<phi> \<psi>)
       using dense_belowI by auto
     moreover from calculation
     have "\<not>(d\<tturnstile> \<psi> env)" if "d \<tturnstile> \<phi> env"
-      using that Forces_Nand leq_reflI Transset_intf[OF trans_M _ P_in_M, of d] by auto
+      using that Forces_Nand leq_reflI transitivity[OF _ P_in_M, of d] by auto
     moreover 
     note arity_Nand_le[of \<phi> \<psi>]
     moreover from calculation
@@ -1038,7 +1038,7 @@ proof (intro iffI, elim bexE, rule ccontr)
     using strengthening_lemma[where \<phi>=\<phi>] by blast
   ultimately
   show "False"
-    using Forces_Neg[where \<phi>=\<phi>] Transset_intf[OF trans_M _ P_in_M] by blast
+    using Forces_Neg[where \<phi>=\<phi>] transitivity[OF _ P_in_M] by blast
 next
   assume "sats(M[G],Neg(\<phi>),map(val(G),env))"
   with assms 
@@ -1154,7 +1154,7 @@ next
     assume "\<exists>p\<in>G. (p \<tturnstile> Forall(\<phi>) env)"
     with \<open>M_generic(G)\<close>
     obtain p where "p\<in>G" "p\<in>M" "p\<in>P" "p \<tturnstile> Forall(\<phi>) env"
-      using Transset_intf[OF trans_M _ P_in_M] by auto
+      using transitivity[OF _ P_in_M] by auto
     with \<open>env\<in>list(M)\<close> \<open>\<phi>\<in>formula\<close>
     have "p \<tturnstile> \<phi> ([x]@env)" if "x\<in>M" for x
       using that Forces_Forall by simp

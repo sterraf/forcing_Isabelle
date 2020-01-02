@@ -46,7 +46,7 @@ proof -
     using valcheck generic one_in_G one_in_P GenExtI[of "check(I)" G] by simp
   with \<open>0\<in>I\<close> have "0\<in>M[G]" using Transset_MG Transset_intf by simp
   with \<open>I\<in>M\<close> have "y \<in> M" if "y \<in> I" for y
-    using  Transset_intf[OF trans_M _ \<open>I\<in>M\<close>] that by simp
+    using  transitivity[OF _ \<open>I\<in>M\<close>] that by simp
   with \<open>I\<in>M[G]\<close> have "succ(y) \<in> I \<inter> M[G]" if  "y \<in> I" for y
     using that Eq1 Transset_MG Transset_intf by blast
   with Eq1 \<open>I\<in>M[G]\<close> \<open>0\<in>M[G]\<close> show ?thesis 
