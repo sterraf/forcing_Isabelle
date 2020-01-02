@@ -2,7 +2,7 @@ THY_FILES = Choice_Axiom.thy \
  Extensionality_Axiom.thy Forces_Definition.thy Forcing_Data.thy\
  Forcing_Notions.thy Forcing_Theorems.thy Forcing_Thms.thy\
  Foundation_Axiom.thy FrecR.thy Infinity_Axiom.thy\
- Interface.thy Least.thy Names.thy\
+ Interface.thy Internalizations.thy Least.thy Names.thy\
  Nat_Miscellanea.thy Non_Constructible.thy Ordinals_In_MG.thy\
  Pairing_Axiom.thy Pointed_DC.thy Powerset_Axiom.thy \
  Rasiowa_Sikorski.thy Recursion_Thms.thy Relative_Univ.thy\
