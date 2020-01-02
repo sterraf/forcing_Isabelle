@@ -500,8 +500,8 @@ lemma in_domain: "y\<in>M \<Longrightarrow> x\<in>domain(y) \<Longrightarrow> x\
 
 
 lemma comp_in_M:
-  "<p,q>\<in>leq \<Longrightarrow> p\<in>M"
-  "<p,q>\<in>leq \<Longrightarrow> q\<in>M"
+  "p \<preceq> q \<Longrightarrow> p\<in>M"
+  "p \<preceq> q \<Longrightarrow> q\<in>M"
   using leq_in_M trans_M Transset_intf[of M _ leq] pair_in_M_iff by auto
 
 (* Absoluteness of Hfrc *)
@@ -512,7 +512,7 @@ lemma eq_case_abs [simp]:
   shows
     "is_eq_case(##M,t1,t2,p,P,leq,f) \<longleftrightarrow> eq_case(t1,t2,p,P,leq,f)"
 proof -
-  have "\<langle>q,p\<rangle>\<in>leq \<Longrightarrow> q\<in>M" for q
+  have "q \<preceq> p \<Longrightarrow> q\<in>M" for q
     using comp_in_M by simp
   moreover
   have "\<langle>s,y\<rangle>\<in>t \<Longrightarrow> s\<in>M" if "t\<in>M" for s y t
@@ -522,9 +522,9 @@ proof -
     using that unfolding domain_def by auto
   ultimately
   have 
-    "(\<forall>s\<in>M. s \<in> domain(t1) \<or> s \<in> domain(t2) \<longrightarrow> (\<forall>q\<in>M. q\<in>P \<and> \<langle>q, p\<rangle> \<in> leq \<longrightarrow> 
+    "(\<forall>s\<in>M. s \<in> domain(t1) \<or> s \<in> domain(t2) \<longrightarrow> (\<forall>q\<in>M. q\<in>P \<and> q \<preceq> p \<longrightarrow> 
                               (f ` \<langle>1, s, t1, q\<rangle> =1 \<longleftrightarrow> f ` \<langle>1, s, t2, q\<rangle>=1))) \<longleftrightarrow>
-    (\<forall>s. s \<in> domain(t1) \<or> s \<in> domain(t2) \<longrightarrow> (\<forall>q. q\<in>P \<and> \<langle>q, p\<rangle> \<in> leq \<longrightarrow> 
+    (\<forall>s. s \<in> domain(t1) \<or> s \<in> domain(t2) \<longrightarrow> (\<forall>q. q\<in>P \<and> q \<preceq> p \<longrightarrow> 
                                   (f ` \<langle>1, s, t1, q\<rangle> =1 \<longleftrightarrow> f ` \<langle>1, s, t2, q\<rangle>=1)))" 
     using assms by auto
   then show ?thesis
@@ -1027,9 +1027,9 @@ lemma def_frc_at :
   "frc_at(P,leq,<ft,n1,n2,p>) =
    bool_of_o( p \<in>P \<and> 
   (  ft = 0 \<and>  (\<forall>s. s\<in>domain(n1) \<union> domain(n2) \<longrightarrow>
-        (\<forall>q. q\<in>P \<and> <q,p>\<in>leq \<longrightarrow> (frc_at(P,leq,<1,s,n1,q>) =1 \<longleftrightarrow> frc_at(P,leq,<1,s,n2,q>) =1)))
-   \<or> ft = 1 \<and> ( \<forall>v\<in>P. <v,p>\<in>leq \<longrightarrow>
-    (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> <q,v>\<in>leq \<and> <s,r> \<in> n2 \<and> <q,r>\<in>leq \<and>  frc_at(P,leq,<0,n1,s,q>) = 1))))"
+        (\<forall>q. q\<in>P \<and> q \<preceq> p \<longrightarrow> (frc_at(P,leq,<1,s,n1,q>) =1 \<longleftrightarrow> frc_at(P,leq,<1,s,n2,q>) =1)))
+   \<or> ft = 1 \<and> ( \<forall>v\<in>P. v \<preceq> p \<longrightarrow>
+    (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> q \<preceq> v \<and> <s,r> \<in> n2 \<and> q \<preceq> r \<and>  frc_at(P,leq,<0,n1,s,q>) = 1))))"
 proof -
   let ?r="\<lambda>y. forcerel(y)" and ?Hf="\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f))"
   let ?t="\<lambda>y. ?r(y) -`` {y}" 
@@ -1060,14 +1060,14 @@ definition
 
 
 lemma def_forces_eq: "p\<in>P \<Longrightarrow> forces_eq(p,t1,t2) \<longleftrightarrow> 
-      (\<forall>s\<in>domain(t1) \<union> domain(t2). \<forall>q. q\<in>P \<and> <q,p>\<in>leq \<longrightarrow> 
+      (\<forall>s\<in>domain(t1) \<union> domain(t2). \<forall>q. q\<in>P \<and> q \<preceq> p \<longrightarrow> 
       (forces_mem(q,s,t1) \<longleftrightarrow> forces_mem(q,s,t2)))" 
   unfolding forces_eq_def forces_mem_def using def_frc_at[of p 0 t1 t2 ]  unfolding bool_of_o_def 
   by auto
 
 lemma def_forces_mem: "p\<in>P \<Longrightarrow> forces_mem(p,t1,t2) \<longleftrightarrow> 
-     (\<forall>v\<in>P. <v,p>\<in>leq \<longrightarrow>
-      (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> <q,v>\<in>leq \<and> <s,r> \<in> t2 \<and> <q,r>\<in>leq \<and> forces_eq(q,t1,s)))"
+     (\<forall>v\<in>P. v \<preceq> p \<longrightarrow>
+      (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> q \<preceq> v \<and> <s,r> \<in> t2 \<and> q \<preceq> r \<and> forces_eq(q,t1,s)))"
   unfolding forces_eq_def forces_mem_def using def_frc_at[of p 1 t1 t2]  unfolding bool_of_o_def 
   by auto
 
@@ -1288,7 +1288,7 @@ lemma sats_forces_mem_fm:
             oneN_in_M zero_in_M sats_frc_at_fm
   by simp
 
-end (* context forcing_data *)
+end (* forcing_data *)
 
 
 definition 
@@ -1363,7 +1363,10 @@ lemma forces'_type [TC]:  "\<phi>\<in>formula \<Longrightarrow> forces'(\<phi>) 
 lemma forces_type[TC] : "\<phi>\<in>formula \<Longrightarrow> forces(\<phi>) \<in> formula"
   unfolding forces_def by simp
 
-lemma (in forcing_data) sats_forces_Member :
+context forcing_data
+begin
+
+lemma sats_forces_Member :
   assumes  "x\<in>nat" "y\<in>nat" "env\<in>list(M)"
            "nth(x,env)=xx" "nth(y,env)=yy" "q\<in>M" 
          shows "sats(M,forces(Member(x,y)),[P,leq,one,q]@env) \<longleftrightarrow> 
@@ -1371,7 +1374,7 @@ lemma (in forcing_data) sats_forces_Member :
   unfolding forces_def using assms sats_forces_mem_fm P_in_M leq_in_M one_in_M 
   by simp
 
-lemma (in forcing_data) sats_forces_Equal :
+lemma sats_forces_Equal :
   assumes  "x\<in>nat" "y\<in>nat" "env\<in>list(M)"
            "nth(x,env)=xx" "nth(y,env)=yy" "q\<in>M" 
          shows "sats(M,forces(Equal(x,y)),[P,leq,one,q]@env) \<longleftrightarrow> 
@@ -1379,7 +1382,7 @@ lemma (in forcing_data) sats_forces_Equal :
   unfolding forces_def using assms sats_forces_eq_fm P_in_M leq_in_M one_in_M 
   by simp
 
-lemma (in forcing_data) sats_forces_Nand :
+lemma sats_forces_Nand :
   assumes  "\<phi>\<in>formula" "\<psi>\<in>formula" "env\<in>list(M)" "p\<in>M" 
   shows "sats(M,forces(Nand(\<phi>,\<psi>)),[P,leq,one,p]@env) \<longleftrightarrow> 
          (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> (\<exists>qp\<in>M. pair(##M,q,p,qp) \<and> qp\<in>leq) \<and> 
@@ -1387,7 +1390,7 @@ lemma (in forcing_data) sats_forces_Nand :
   unfolding forces_def using sats_leq_fm assms sats_ren_forces_nand P_in_M leq_in_M one_in_M  
   by simp
   
-lemma (in forcing_data) sats_forces_Neg :
+lemma sats_forces_Neg :
   assumes  "\<phi>\<in>formula" "env\<in>list(M)" "p\<in>M" 
   shows "sats(M,forces(Neg(\<phi>)),[P,leq,one,p]@env) \<longleftrightarrow> 
          (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> (\<exists>qp\<in>M. pair(##M,q,p,qp) \<and> qp\<in>leq) \<and> 
@@ -1395,12 +1398,14 @@ lemma (in forcing_data) sats_forces_Neg :
   unfolding Neg_def using assms sats_forces_Nand 
   by simp
 
-lemma (in forcing_data) sats_forces_Forall :
+lemma sats_forces_Forall :
   assumes  "\<phi>\<in>formula" "env\<in>list(M)" "p\<in>M" 
   shows "sats(M,forces(Forall(\<phi>)),[P,leq,one,p]@env) \<longleftrightarrow> 
          p\<in>P \<and> (\<forall>x\<in>M. sats(M,forces'(\<phi>),[P,leq,one,p,x]@env))"
   unfolding forces_def using assms sats_ren_forces_forall P_in_M leq_in_M one_in_M  
   by simp
+
+end (* forcing_data *)
 
 (*
 lemma arity_forces_ren:
