@@ -1,24 +1,38 @@
-THY_FILES = Choice_Axiom.thy Datatype_absolute.thy\
+THY_FILES = Choice_Axiom.thy \
  Extensionality_Axiom.thy Forces_Definition.thy Forcing_Data.thy\
  Forcing_Notions.thy Forcing_Theorems.thy Forcing_Thms.thy\
  Foundation_Axiom.thy FrecR.thy Infinity_Axiom.thy\
- Interface.thy Internalizations.thy Least.thy Names.thy\
+ Interface.thy Least.thy Names.thy\
  Nat_Miscellanea.thy Non_Constructible.thy Ordinals_In_MG.thy\
- Pairing_Axiom.thy Pointed_DC.thy Powerset_Axiom.thy Rank.thy\
- Rasiowa_Sikorski.thy Recursion_Thms.thy Relative.thy\
- Relative_Univ.thy Renaming.thy Renaming_Auto.thy Replacement_Axiom.thy\
+ Pairing_Axiom.thy Pointed_DC.thy Powerset_Axiom.thy \
+ Rasiowa_Sikorski.thy Recursion_Thms.thy Relative_Univ.thy\
+ Renaming.thy Renaming_Auto.thy Replacement_Axiom.thy\
  Separation_Axiom.thy Separation_Rename.thy Synthetic_Definition.thy\
- Union_Axiom.thy WF_absolute.thy WFrec.thy Wellorderings.thy 
+ Union_Axiom.thy 
+
+ML_FILES = Renaming_ML.ml
+
+LINKING_FILES = fix_links.sh links.css
 
 build: 
 	isabelle build -c -D .
 
 html: 
 	isabelle env ISABELLE_BROWSER_INFO=./output/html  isabelle build -c -d . -o browser_info -v Forcing
+	sh fix_links.sh
+	cat links.css >> output/html/Unsorted/Forcing/isabelle.css
 
 tar:    clean html
-	sh fix_links.sh
-	tar --show-transformed-names -cvzf forcing.tar.gz $(THY_FILES) ROOT Makefile document/ output/html/Unsorted/Forcing/ --transform s,output/html/Unsorted/Forcing,html,
+	bash link-forcing.sh
+	mkdir tmptar
+	mkdir tmptar/Forcing
+	cp -r ../Constructible tmptar
+	cp -r $(THY_FILES) $(ML_FILES) $(LINKING_FILES) ROOT document/ tmptar/Forcing
+	cp Makefile_distro tmptar/Forcing/Makefile
+	cp -r output/html/Unsorted/Forcing/ tmptar/html
+	cd tmptar; tar --show-transformed-names -cvzf forcing.tar.gz Constructible Forcing html
+	mv tmptar/forcing.tar.gz .
+	rm -rf tmptar
 
 clean:
 	rm -rf output/
