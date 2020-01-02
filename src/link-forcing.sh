@@ -42,13 +42,13 @@ function full_job {
 cd $html_dir
 
 ## Script de indizado y linkeo de definiciones completo
-for x in *.html; do y=`basename -s".html" $x`; sed -i -e "h;s/.*definition<\/span><\/span><span> <\/span><span>\([^<>\/]*\)<\/span>.*/$y.\1/w definiciones_$y.sn.txt" -e "g;s/<span \(class=\"command\">definition<\/span><\/span><span> <\/span><span>\)\([^<>\/]*\)<\/span><span>/<span id=\"$y.\2\"\1\2<\/span><span>/" $x; sed -i -e "N;h;s/.*<span class=\"command\">definition<\/span><\/span><span>\n<\/span><span>[ ]\+<\/span><span>\([^<>\/]*\)<\/span><span>.*/$y.\1/w definiciones_$y.cn.txt" -e "g;s/<span \(class=\"command\">definition<\/span><\/span><span>\n<\/span><span>[ ]\+<\/span><span>\)\([^<>\/]*\)<\/span><span>/<span id=\"$y.\2\"\1\2<\/span><span>/;P;D" $x ; done; cat definiciones_*txt > definiciones.txt ; rm -f definiciones_*txt
+for x in *.html; do y=`basename -s".html" $x`; sed -i -e "h;s/.*definition<\/span><\/span><span>[ ]\+<\/span><span>\([^<>\/]*\)<\/span>.*/$y.\1/w definiciones_$y.sn.txt" -e "g;s/<span \(class=\"command\">definition<\/span><\/span><span> <\/span><span>\)\([^<>\/]*\)<\/span><span>/<span id=\"$y.\2\"\1\2<\/span><span>/" $x; sed -i -e "N;h;s/.*<span class=\"command\">definition<\/span><\/span><span>\n<\/span><span>[ ]\+<\/span><span>\([^<>\/]*\)<\/span><span>.*/$y.\1/w definiciones_$y.cn.txt" -e "g;s/<span \(class=\"command\">definition<\/span><\/span><span>\n<\/span><span>[ ]\+<\/span><span>\)\([^<>\/]*\)<\/span><span>/<span id=\"$y.\2\"\1\2<\/span><span>/;P;D" $x ; done; cat definiciones_*txt > definiciones.txt ; rm -f definiciones_*txt
 
 ## Script de indizado y linkeo de lemas
-for x in *.html; do y=`basename -s".html" $x`; sed -i -e "h;s/.*lemma<\/span><\/span><span> <\/span><span>\([^<>\/]*\)<\/span>.*/$y.\1/w lemas_$y.sn.txt" -e "g;s/<span \(class=\"command\">lemma<\/span><\/span><span> <\/span><span>\)\([^<>\/]*\)<\/span>/<span id=\"$y.\2\" \1\2<\/span>/" $x; done; cat lemas_*txt > lemas.txt ; rm -f lemas_*txt
+for x in *.html; do y=`basename -s".html" $x`; sed -i -e "h;s/.*lemma<\/span><\/span><span>[ ]\+<\/span><span>\([^<>\/]*\)<\/span>.*/$y.\1/w lemas_$y.sn.txt" -e "g;s/<span \(class=\"command\">lemma<\/span><\/span><span> <\/span><span>\)\([^<>\/]*\)<\/span>/<span id=\"$y.\2\" \1\2<\/span>/" $x; done; cat lemas_*txt > lemas.txt ; rm -f lemas_*txt
  
 ## Script de indizado y linkeo de "lemmas" (sic)
-for x in *.html; do y=`basename -s".html" $x`; sed -i -e "h;s/.*lemmas<\/span><\/span><span> <\/span><span>\([^<>\/]*\)<\/span>.*/$y.\1/w lemas_$y.sn.txt" -e "g;s/<span \(class=\"command\">lemmas<\/span><\/span><span> <\/span><span>\)\([^<>\/]*\)<\/span>/<span id=\"$y.\2\" \1\2<\/span>/" $x; done; cat lemas_*txt > lemaslemmas.txt ; rm -f lemas_*txt
+for x in *.html; do y=`basename -s".html" $x`; sed -i -e "h;s/.*lemmas<\/span><\/span><span>[ ]\+<\/span><span>\([^<>\/]*\)<\/span>.*/$y.\1/w lemas_$y.sn.txt" -e "g;s/<span \(class=\"command\">lemmas<\/span><\/span><span> <\/span><span>\)\([^<>\/]*\)<\/span>/<span id=\"$y.\2\" \1\2<\/span>/" $x; done; cat lemas_*txt > lemaslemmas.txt ; rm -f lemas_*txt
 
 full_job lemas.txt
 full_job lemaslemmas.txt
