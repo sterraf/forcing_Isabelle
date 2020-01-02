@@ -1,28 +1,6 @@
-theory FrecR imports Names begin
+theory FrecR imports Names Synthetic_Definition begin
 
-lemma empty_iff_sats':
-      "[| nth(i,env) = x; i \<in> nat; env \<in> list(A)|]
-       ==> empty(##A, x) \<longleftrightarrow> sats(A, empty_fm(i), env)"
-  by simp
-
-(* Already in Constructible, under "number1_fm" but with 
-  an unnecessary, harmful assumption *)
-lemma number1_iff_sats':
-      "[| nth(i,env) = x; 
-          i \<in> nat; env \<in> list(A)|]
-       ==> number1(##A, x) \<longleftrightarrow> sats(A, number1_fm(i), env)"
-by simp
-
-lemmas function_iff_sats' =
-        empty_iff_sats' number1_iff_sats'
-        upair_iff_sats pair_iff_sats union_iff_sats
-        big_union_iff_sats cons_iff_sats successor_iff_sats
-        fun_apply_iff_sats  Memrel_iff_sats
-        pred_set_iff_sats domain_iff_sats range_iff_sats field_iff_sats
-        image_iff_sats pre_image_iff_sats
-        relation_iff_sats is_function_iff_sats
-
-lemmas sep_rules' = nth_0 nth_ConsI FOL_iff_sats function_iff_sats'
+lemmas sep_rules' = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
                    fun_plus_iff_sats 
                     omega_iff_sats FOL_sats_iff 
 
@@ -437,29 +415,7 @@ schematic_goal sats_frecR_fm_auto:
     by (insert assms ; (rule sep_rules' cartprod_iff_sats  components_iff_sats
         | simp del:sats_cartprod_fm)+)
 
-definition
-  frecR_fm :: "[i,i] \<Rightarrow> i" where
-  "frecR_fm(a,b) \<equiv> 
-  Exists
-       (And(ftype_fm(succ(a), 0),
-            Exists
-             (And(name1_fm(succ(succ(a)), 0),
-                  Exists
-                   (And(name2_fm(succ(succ(succ(a))), 0),
-                        Exists
-                         (And(ftype_fm(succ(succ(succ(succ(b)))), 0),
-                              Exists
-                               (And(name1_fm(succ(succ(succ(succ(succ(b))))), 0),
-                                    Exists
-                                     (And(name2_fm(succ(succ(succ(succ(succ(succ(b)))))), 0),
-                                          Exists
-                                           (And(domain_fm(2, 0),
-                                                Exists
-                                                 (And(domain_fm(2, 0),
-                                                      Or(And(number1_fm(7),
-And(empty_fm(4), And(Or(Member(6, 1), Member(6, 0)), Or(Equal(5, 3), Equal(5, 2))))),
-                                                         And(empty_fm(7),
-And(number1_fm(4), And(Equal(6, 3), Member(5, 0)))))))))))))))))))))"
+synthesize "frecR_fm" from_schematic "sats_frecR_fm_auto"
 
 lemma frecR_fm_type[TC] :
   "\<lbrakk>a\<in>nat;b\<in>nat\<rbrakk> \<Longrightarrow> frecR_fm(a,b)\<in>formula"
