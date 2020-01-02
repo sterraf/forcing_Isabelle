@@ -616,7 +616,7 @@ lemma frecrel_abs:
 proof -
   from \<open>A\<in>M\<close>
   have "z\<in>M" if "z\<in>A\<times>A" for z
-    using cartprod_closed Transset_intf[OF trans_M] that by simp
+    using cartprod_closed transitivity that by simp
   then
   have "Collect(A\<times>A,frecrelP(##M)) = Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = <x,y> \<and> frecR(x,y)))"
     using Collect_cong[of "A\<times>A" "A\<times>A" "frecrelP(##M)"] assms frecrelP_abs by simp
