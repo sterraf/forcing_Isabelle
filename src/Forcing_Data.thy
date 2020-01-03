@@ -80,6 +80,9 @@ end
 sublocale M_ctm \<subseteq> M_trivial "##M"
   by  (rule mtriv)
 
+sublocale M_ctm \<subseteq> M_trans "##M"
+  by  (rule mtrans)
+
 sublocale M_ctm \<subseteq> M_basic "##M"
   by  (rule mbasic)
 

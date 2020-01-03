@@ -5,8 +5,6 @@ begin
 context forcing_data
 begin
 
-interpretation mtrans : M_trans " ##M :: i \<Rightarrow> o" 
-  by unfold_locales
 
 definition Union_name_body :: "[i,i,i,i] \<Rightarrow> o" where
   "Union_name_body(P',leq',\<tau>,\<theta>p) == (\<exists> \<sigma>[##M].
