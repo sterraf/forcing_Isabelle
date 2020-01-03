@@ -293,6 +293,7 @@ sublocale G_generic \<subseteq> M_trivial"##M[G]"
   unfolding M_trivial_def M_trans_def M_trivial_axioms_def by (simp; blast)
  
 context G_generic begin
+
 theorem power_in_MG :
   "power_ax(##(M[G]))"
   unfolding power_ax_def

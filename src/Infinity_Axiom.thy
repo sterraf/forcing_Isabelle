@@ -1,38 +1,17 @@
 theory Infinity_Axiom 
-  imports Pairing_Axiom Union_Axiom
+  imports Pairing_Axiom Union_Axiom Separation_Axiom
 begin  
+
+context G_generic begin
+
+interpretation mg_triv: M_trivial"##M[G]" 
+  apply (rule M_trivial.intro,rule M_trans.intro)
+    apply (simp add: Transset_MG Transset_intf)
+  apply (insert zero_in_MG,auto)
+  apply (rule M_trivial_axioms.intro)
+   apply (simp_all add: generic Union_MG pairing_in_MG)
+  done
   
-locale G_generic = forcing_data +
-    fixes G :: "i"
-    assumes generic : "M_generic(G)" 
-begin
-  
-lemma zero_in_MG : 
-  "0 \<in> M[G]" 
-proof -
-  from zero_in_M and elem_of_val have 
-    "0 = val(G,0)" 
-    by auto
-  also from GenExtI and zero_in_M have 
-    "... \<in> M[G]" 
-  by simp
-  finally show ?thesis .
-qed 
-end
-
-sublocale  G_generic \<subseteq> M_trans"##M[G]"
-  using generic zero_in_MG Transset_intf Transset_MG
-  unfolding M_trans_def 
-  by (simp;blast)
-
-sublocale G_generic \<subseteq> M_trivial"##M[G]"
-  using generic Union_MG pairing_in_MG  zero_in_MG Transset_intf Transset_MG
-  unfolding M_trivial_def M_trivial_axioms_def M_trans_def 
-  by (simp;blast)
-    
-context G_generic
-begin
-
 lemma infinty_in_MG : "infinity_ax(##M[G])"
 proof -
   from infinity_ax obtain I where
@@ -53,5 +32,5 @@ proof -
     unfolding infinity_ax_def by auto
 qed
 
-end (* G_generic *)
+end (* G_generic' *)
 end

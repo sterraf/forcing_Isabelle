@@ -3,6 +3,7 @@ theory Forcing_Data
     Forcing_Notions 
     "../Constructible/Relative"
     "../Constructible/Formula"
+    Interface
 
 begin
 
@@ -10,10 +11,6 @@ lemma Transset_M :
   "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
   by (simp add: Transset_def,auto)  
 
-definition 
-  infinity_ax :: "(i \<Rightarrow> o) \<Rightarrow> o" where
-  "infinity_ax(M) ==  
-      (\<exists>I[M]. (\<exists>z[M]. empty(M,z) \<and> z\<in>I) \<and>  (\<forall>y[M]. y\<in>I \<longrightarrow> (\<exists>sy[M]. successor(M,y,sy) \<and> sy\<in>I)))"
 
 locale M_ZF = 
   fixes M 
@@ -33,6 +30,73 @@ locale M_ctm = M_ZF +
   fixes enum
   assumes M_countable:      "enum\<in>bij(nat,M)"
       and trans_M:          "Transset(M)"
+
+begin
+interpretation intf: M_ZF_trans "M"
+  apply (rule M_ZF_trans.intro)
+          apply (simp_all add: trans_M upair_ax Union_ax power_ax extensionality
+      foundation_ax infinity_ax separation_ax[simplified] 
+      replacement_ax[simplified])
+  done
+
+lemmas transitivity = Transset_intf[OF trans_M]
+
+lemma zero_in_M:  "0 \<in> M" 
+  by (rule intf.zero_in_M)
+
+lemma tuples_in_M: "A\<in>M \<Longrightarrow> B\<in>M \<Longrightarrow> <A,B>\<in>M" 
+   by (simp del:setclass_iff add:setclass_iff[symmetric])
+
+lemma nat_in_M : "nat \<in> M"
+  by (rule intf.nat_in_M)
+
+lemma n_in_M : "n\<in>nat \<Longrightarrow> n\<in>M"
+  using nat_in_M trans_M Transset_intf[of M n nat] by simp
+
+lemma mtriv: "M_trivial(##M)" 
+  by (rule intf.mtriv)
+
+lemma mtrans: "M_trans(##M)"
+  by (rule intf.mtrans)
+
+lemma mbasic: "M_basic(##M)"
+  by (rule intf.mbasic)
+
+lemma mtrancl: "M_trancl(##M)"
+  by (rule intf.mtrancl)
+
+lemma mdatatypes: "M_datatypes(##M)"
+  by (rule intf.mdatatypes)
+
+lemma meclose: "M_eclose(##M)"
+  by (rule intf.meclose)
+
+lemma meclose_pow: "M_eclose_pow(##M)"
+  by (rule intf.meclose_pow)
+
+end
+
+(* M_ctm interface *)
+sublocale M_ctm \<subseteq> M_trivial "##M"
+  by  (rule mtriv)
+
+sublocale M_ctm \<subseteq> M_basic "##M"
+  by  (rule mbasic)
+
+sublocale M_ctm \<subseteq> M_trancl "##M"
+  by  (rule mtrancl)
+
+sublocale M_ctm \<subseteq> M_datatypes "##M"
+  by  (rule mdatatypes)
+
+sublocale M_ctm \<subseteq> M_eclose "##M"
+  by  (rule meclose)
+
+sublocale M_ctm \<subseteq> M_eclose_pow "##M"
+  by  (rule meclose_pow)
+
+(* end interface *)
+
 
 locale forcing_data = forcing_notion + M_ctm +
   assumes P_in_M:           "P \<in> M"
@@ -143,7 +207,9 @@ proof -
   with Eq6 show ?thesis 
     unfolding M_generic_def by auto
 qed
-  
+
+
+
 end (* forcing_data *)      
   
 end

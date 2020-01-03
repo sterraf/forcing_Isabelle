@@ -1,7 +1,9 @@
 theory Choice_Axiom 
-  imports Powerset_Axiom Pairing_Axiom Union_Axiom 
+  imports Powerset_Axiom Pairing_Axiom Union_Axiom Extensionality_Axiom 
+          Foundation_Axiom Powerset_Axiom Separation_Axiom 
+          Replacement_Axiom Interface Infinity_Axiom
 begin
-  
+
 definition 
   induced_surj :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i" where
   "induced_surj(f,a,e) == f-``(range(f)-a)\<times>{e} \<union> restrict(f,f-``a)"
@@ -132,7 +134,8 @@ lemma choice_ax_abs :
 end    (* M_basic *)
   
 context G_generic begin
-  
+
+
 definition
   upair_name :: "i \<Rightarrow> i \<Rightarrow> i" where
   "upair_name(\<tau>,\<rho>) == {\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>}"
@@ -168,19 +171,21 @@ proof -
     by auto
   finally show ?thesis by simp
 qed
-  
-end (* G_generic *)
 
-locale G_generic_extra_repl = G_generic +
-  (*     ?f_dot="{\<langle>opair_name(check(\<beta>),s`\<beta>),one\<rangle>. \<beta>\<in>\<alpha>}" *)
-  assumes check_repl  : "strong_replacement(##M,\<lambda>p y. y =check(p))"
-begin
-  
+(* M[G] is a transitive model of ZF *)
+interpretation mgzf: M_ZF_trans "M[G]"
+  apply (rule M_ZF_trans.intro)
+          apply (simp_all add: Transset_MG generic pairing_in_MG 
+      Union_MG  extensionality_in_MG power_in_MG
+      foundation_in_MG  strong_replacement_in_MG[simplified]
+      separation_in_MG[simplified] infinty_in_MG)
+  done
+
+
 theorem choice_in_MG: 
   assumes "choice_ax(##M)"
   shows "choice_ax(##M[G])"
 proof -
-  interpret mgb: M_basic"##M[G]" sorry
   {
     fix a
     assume "a\<in>M[G]"
@@ -271,7 +276,7 @@ proof -
     qed
   }
   then
-  show ?thesis using mgb.choice_ax_abs by simp
+  show ?thesis using mgzf.choice_ax_abs by simp
 qed
   
 end (* G_generic_extra_repl *)

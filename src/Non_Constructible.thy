@@ -101,8 +101,10 @@ lemma chle_in_M: "chle \<in> M"
 
 end (* M_ctm *)
 
+
 sublocale M_ctm \<subseteq> forcing_data "list(2)" "chle" "[]"
   using poset_in_M chle_in_M by (unfold_locales)
+
 
 context M_ctm
 begin
