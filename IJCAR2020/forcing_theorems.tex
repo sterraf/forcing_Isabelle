@@ -18,7 +18,7 @@ where \isatt{t{\isadigit{1}}} and \isatt{t{\isadigit{1}}} are the
 \begin{center}
   \isatt{{\isacharparenleft}p\ {\isasymtturnstile}\ Forall{\isacharparenleft}{\isasymphi}{\isacharparenright}\ env{\isacharparenright}\ {\isasymlongleftrightarrow}\ {\isacharparenleft}{\isasymforall}x{\isasymin}M{\isachardot}\ {\isacharparenleft}p\ {\isasymtturnstile}\ {\isasymphi}\ {\isacharparenleft}{\isacharbrackleft}x{\isacharbrackright}\ {\isacharat}\ env{\isacharparenright}{\isacharparenright}{\isacharparenright}}.
 \end{center}
-These two, along with  \isatt{Forces{\isacharunderscore}Equal} and
+Equivalent statements, along with the ones corresponding to \isatt{Forces{\isacharunderscore}Equal} and
 \isatt{Forces{\isacharunderscore}Nand}, appear in Kunen as the
 inductive definition of the forcing relation \cite[Def.~IV.2.42]{kunen2011set}.
 
@@ -95,9 +95,10 @@ The proof is divided in the 4 cases of definition of an element of $\formula$,
 \ simp
 \end{isabelle}
 %
-where the final step depends on previously proved
+(7 lines omitted) where the final step depends on the previously
+proved lemma
 \isatt{strengthening{\isacharunderscore}mem} and the characterization of
-$\forceisa$ for membership 
+$\forceisa$ for membership.
 
 
 The case of equality is entirely analogous, and the \isatt{Nand} and
