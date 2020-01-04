@@ -158,6 +158,12 @@ lemma omega_fm_arity :
   using limit_ordinal_fm_arity nat_union_abs2 pred_Un_distrib
   by auto
 
+lemma cartprod_fm_arity : 
+  "\<lbrakk> A\<in>nat ; B\<in>nat ; z\<in>nat \<rbrakk> \<Longrightarrow> arity(cartprod_fm(A,B,z)) = succ(A) \<union> succ(B) \<union> succ(z)"
+  unfolding cartprod_fm_def
+  using pair_fm_arity nat_union_abs2 pred_Un_distrib
+  by auto
+
 lemma fst_fm_arity :
   "\<lbrakk>x\<in>nat ; t\<in>nat\<rbrakk> \<Longrightarrow> arity(fst_fm(x,t)) = succ(x) \<union> succ(t)"
   unfolding fst_fm_def
@@ -347,6 +353,13 @@ lemma frecR_fm_arity :
   unfolding frecR_fm_def
   using ftype_fm_arity name1_fm_arity name2_fm_arity domain_fm_arity 
       number1_fm_arity empty_fm_arity nat_union_abs2 pred_Un_distrib
+  by auto
+
+lemma is_Collect_fm_arity :
+  assumes "x \<in> nat" "y \<in> nat" "p\<in>formula" 
+  shows "arity(is_Collect_fm(x,p,y)) = succ(x) \<union> succ(y) \<union> pred(arity(p))"
+  unfolding is_Collect_fm_def
+  using assms pred_Un_distrib
   by auto
 
 end

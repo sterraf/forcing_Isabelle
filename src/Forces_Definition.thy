@@ -1,4 +1,4 @@
-theory Forces_Definition imports FrecR Synthetic_Definition begin
+theory Forces_Definition imports Arities FrecR Synthetic_Definition begin
 
 (* \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x,y) *)
 definition
@@ -8,6 +8,12 @@ definition
 definition
   frecrelP_fm :: "i \<Rightarrow> i" where
   "frecrelP_fm(a) == Exists(Exists(And(pair_fm(1,0,a#+2),frecR_fm(1,0))))"
+
+lemma frecrelP_fm_arity :
+  "a\<in>nat \<Longrightarrow> arity(frecrelP_fm(a)) =succ(a)" 
+  unfolding frecrelP_fm_def
+  using frecR_fm_arity pair_fm_arity pred_Un_distrib
+  by simp
 
 lemma frecrelP_fm_type[TC] :
   "a\<in>nat \<Longrightarrow> frecrelP_fm(a)\<in>formula" 
@@ -39,6 +45,13 @@ definition
 lemma frecrel_fm_type[TC] :
   "\<lbrakk>a\<in>nat;b\<in>nat\<rbrakk> \<Longrightarrow> frecrel_fm(a,b)\<in>formula"
   unfolding frecrel_fm_def by simp
+
+lemma frecrel_fm_arity :
+  assumes "a\<in>nat"  "b\<in>nat" 
+  shows "arity(frecrel_fm(a,b)) = succ(a) \<union> succ(b)"
+  unfolding frecrel_fm_def
+  using assms is_Collect_fm_arity cartprod_fm_arity frecrelP_fm_arity pred_Un_distrib 
+  by auto
 
 lemma sats_frecrel_fm :
   assumes 
@@ -83,6 +96,12 @@ lemma number2_fm_type[TC] :
   "a\<in>nat \<Longrightarrow> number2_fm(a) \<in> formula"
   unfolding number2_fm_def by simp
 
+lemma number2_fm_arity : 
+  "a\<in>nat \<Longrightarrow> arity(number2_fm(a)) = succ(a)"
+  unfolding number2_fm_def
+  using number1_fm_arity succ_fm_arity nat_union_abs2 pred_Un_distrib
+  by simp
+
 lemma sats_number2_fm [simp]:
    "[| x \<in> nat; env \<in> list(A)|]
     ==> sats(A, number2_fm(x), env) \<longleftrightarrow> number2(##A, nth(x,env))"
@@ -93,6 +112,13 @@ definition
   "is_names_below_fm(P,x,nb) == Exists(Exists(Exists(Exists(
                     And(ecloseN_fm(0,x #+ 4),And(number2_fm(1),
                     And(cartprod_fm(0,P #+ 4,2),And(cartprod_fm(0,2,3),cartprod_fm(1,3,nb#+4)))))))))"
+
+lemma is_names_below_fm_arity : 
+  "\<lbrakk>P\<in>nat;x\<in>nat;nb\<in>nat\<rbrakk> \<Longrightarrow> arity(is_names_below_fm(P,x,nb)) = succ(P) \<union> succ(x) \<union> succ(nb)"
+  unfolding is_names_below_fm_def 
+  using cartprod_fm_arity number2_fm_arity ecloseN_fm_arity nat_union_abs2 pred_Un_distrib
+  by auto
+
 
 lemma is_names_below_fm_type[TC]:
   "\<lbrakk>P\<in>nat;x\<in>nat;nb\<in>nat\<rbrakk> \<Longrightarrow> is_names_below_fm(P,x,nb)\<in>formula" 
@@ -116,6 +142,13 @@ definition
   is_tuple_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
   "is_tuple_fm(z,t1,t2,p,tup) = Exists(Exists(And(pair_fm(t2 #+ 2,p #+ 2,0),
                       And(pair_fm(t1 #+ 2,0,1),pair_fm(z #+ 2,1,tup #+ 2)))))"
+
+
+lemma is_tuple_fm_arity : "\<lbrakk> z\<in>nat ; t1\<in>nat ; t2\<in>nat ; p\<in>nat ; tup\<in>nat \<rbrakk> \<Longrightarrow> 
+  arity(is_tuple_fm(z,t1,t2,p,tup)) = \<Union> {succ(z),succ(t1),succ(t2),succ(p),succ(tup)}"
+  unfolding is_tuple_fm_def
+  using pair_fm_arity nat_union_abs1 nat_union_abs2 pred_Un_distrib
+  by auto
 
 lemma is_tuple_fm_type[TC] : 
   "z\<in>nat \<Longrightarrow> t1\<in>nat \<Longrightarrow> t2\<in>nat \<Longrightarrow> p\<in>nat \<Longrightarrow> tup\<in>nat \<Longrightarrow> is_tuple_fm(z,t1,t2,p,tup)\<in>formula" 
@@ -186,6 +219,16 @@ schematic_goal sats_is_mem_case_fm_auto:
 
 synthesize "mem_case_fm" from_schematic "sats_is_mem_case_fm_auto"
 
+lemma mem_case_fm_arity : 
+  assumes 
+    "n1\<in>nat" "n2\<in>nat" "p\<in>nat" "P\<in>nat" "leq\<in>nat" "f\<in>nat"
+  shows
+    "arity(mem_case_fm(n1,n2,p,P,leq,f)) = 
+    succ(n1) \<union> succ(n2) \<union> succ(p) \<union> succ(P) \<union> succ(leq) \<union> succ(f)"
+  unfolding mem_case_fm_def
+  using assms pair_fm_arity is_tuple_fm_arity number1_fm_arity fun_apply_fm_arity empty_fm_arity
+    pred_Un_distrib
+  by auto
 
 schematic_goal sats_is_eq_case_fm_auto:
   assumes 
@@ -198,6 +241,16 @@ schematic_goal sats_is_eq_case_fm_auto:
 
 synthesize "eq_case_fm" from_schematic "sats_is_eq_case_fm_auto"
 
+lemma eq_case_fm_arity : 
+  assumes 
+    "n1\<in>nat" "n2\<in>nat" "p\<in>nat" "P\<in>nat" "leq\<in>nat" "f\<in>nat"
+  shows
+    "arity(eq_case_fm(n1,n2,p,P,leq,f)) = 
+    succ(n1) \<union> succ(n2) \<union> succ(p) \<union> succ(P) \<union> succ(leq) \<union> succ(f)"
+  unfolding eq_case_fm_def
+  using assms pair_fm_arity is_tuple_fm_arity number1_fm_arity fun_apply_fm_arity empty_fm_arity
+    domain_fm_arity pred_Un_distrib
+  by auto
 
 lemma mem_case_fm_type[TC] :
   "\<lbrakk>n1\<in>nat;n2\<in>nat;p\<in>nat;P\<in>nat;leq\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> mem_case_fm(n1,n2,p,P,leq,f)\<in>formula"
@@ -271,6 +324,16 @@ lemma Hfrc_fm_type[TC] :
   "\<lbrakk>P\<in>nat;leq\<in>nat;fnnc\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> Hfrc_fm(P,leq,fnnc,f)\<in>formula"
   unfolding Hfrc_fm_def by simp
 
+lemma Hfrc_fm_arity : 
+  assumes 
+    "P\<in>nat" "leq\<in>nat" "fnnc\<in>nat" "f\<in>nat"
+  shows
+    "arity(Hfrc_fm(P,leq,fnnc,f)) = succ(P) \<union> succ(leq) \<union> succ(fnnc) \<union> succ(f)"
+  unfolding Hfrc_fm_def
+  using assms is_tuple_fm_arity mem_case_fm_arity eq_case_fm_arity
+    empty_fm_arity number1_fm_arity pred_Un_distrib
+  by auto
+
 lemma sats_Hfrc_fm:
   assumes 
     "P\<in>nat" "leq\<in>nat" "fnnc\<in>nat" "f\<in>nat" "env\<in>list(A)"
@@ -301,6 +364,16 @@ definition
   Hfrc_at_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
   "Hfrc_at_fm(P,leq,fnnc,f,z) \<equiv> Or(And(empty_fm(z),Neg(Hfrc_fm(P,leq,fnnc,f))),
                                       And(number1_fm(z),Hfrc_fm(P,leq,fnnc,f)))" 
+
+lemma Hfrc_at_fm_arity :
+  assumes 
+    "P\<in>nat" "leq\<in>nat" "fnnc\<in>nat" "f\<in>nat" "z\<in>nat"
+  shows
+    "arity(Hfrc_at_fm(P,leq,fnnc,f,z)) = succ(P) \<union> succ(leq) \<union> succ(fnnc) \<union> succ(f) \<union> succ(z)"
+  unfolding Hfrc_at_fm_def
+  using assms Hfrc_fm_arity empty_fm_arity number1_fm_arity pred_Un_distrib
+  by auto
+
 
 lemma Hfrc_at_fm_type[TC] :
   "\<lbrakk>P\<in>nat;leq\<in>nat;fnnc\<in>nat;f\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> Hfrc_at_fm(P,leq,fnnc,f,z)\<in>formula"
@@ -365,6 +438,14 @@ Exists
    (succ(succ(succ(succ(succ(succ(i)))))))))))))))))))))))))))))))))))),
               composition_fm(succ(i), 0, succ(j))))"
 
+
+lemma tran_closure_fm_arity :
+  "\<lbrakk>x\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> arity(tran_closure_fm(x,f)) = succ(x) \<union> succ(f)"
+  unfolding tran_closure_fm_def 
+  using omega_fm_arity field_fm_arity typed_function_fm_arity pair_fm_arity empty_fm_arity fun_apply_fm_arity
+    composition_fm_arity succ_fm_arity nat_union_abs2 pred_Un_distrib
+  by auto
+
 lemma tran_closure_fm_type[TC] :
   "\<lbrakk>x\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> tran_closure_fm(x,f)\<in>formula"
   unfolding tran_closure_fm_def by simp
@@ -383,6 +464,12 @@ definition
   "forcerel_fm(p,x,z) == Exists(Exists(And(tran_closure_fm(1, z#+2),
                                         And(is_names_below_fm(p#+2,x#+2,0),frecrel_fm(0,1)))))"
 
+lemma forcerel_fm_arity: 
+  "\<lbrakk>p\<in>nat;x\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> arity(forcerel_fm(p,x,z)) = succ(p) \<union> succ(x) \<union> succ(z)" 
+  unfolding forcerel_fm_def 
+  using frecrel_fm_arity tran_closure_fm_arity is_names_below_fm_arity pred_Un_distrib
+  by auto
+
 lemma forcerel_fm_type[TC]: 
   "\<lbrakk>p\<in>nat;x\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> forcerel_fm(p,x,z)\<in>formula" 
   unfolding forcerel_fm_def by simp
@@ -397,7 +484,31 @@ lemma frc_at_fm_type [TC] :
   "\<lbrakk>p\<in>nat;l\<in>nat;x\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> frc_at_fm(p,l,x,z)\<in>formula"
   unfolding frc_at_fm_def by simp
 
-(* \<exists>o\<in>M. \<exists>z\<in>M. \<exists>t\<in>M. number1(##M,o) \<and> empty(##M,z) \<and> 
+lemma frc_at_fm_arity :
+  assumes "p\<in>nat" "l\<in>nat" "x\<in>nat" "z\<in>nat"
+  shows "arity(frc_at_fm(p,l,x,z)) = succ(p) \<union> succ(l) \<union> succ(x) \<union> succ(z)" 
+proof -
+  let ?\<phi> = "Hfrc_at_fm(6 #+ p, 6 #+ l, 2, 1, 0)"
+  from assms
+  have  "arity(?\<phi>) = (7#+p) \<union> (7#+l)" "?\<phi> \<in> formula"
+    using Hfrc_at_fm_arity nat_simp_union
+    by auto
+  with assms 
+  have W: "arity(is_wfrec_fm(?\<phi>, 0, succ(x), succ(z))) = 2#+p \<union> (2#+l) \<union> (2#+x) \<union> (2#+z)"
+    using is_wfrec_fm_arity[OF \<open>?\<phi>\<in>_\<close> _ _ _ _ \<open>arity(?\<phi>) = _\<close>] pred_Un_distrib pred_succ_eq
+      nat_union_abs1
+    by auto
+  from assms
+  have "arity(forcerel_fm(succ(p),succ(x),0)) = succ(succ(p)) \<union> succ(succ(x))"
+    using forcerel_fm_arity nat_simp_union
+    by auto
+  with W assms
+  show ?thesis 
+    unfolding frc_at_fm_def 
+    using forcerel_fm_arity pred_Un_distrib
+    by auto
+qed
+(* \<exists>o\<in>M. \<exists>z\<in>M. \<exists>t\<in>M. number1(##M,o) \<and> empty(##M,z) \<and>
                                 is_tuple(##M,z,t1,t2,p,t) \<and> is_frc_at(t,o) *)
 definition
   forces_eq_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
@@ -422,36 +533,21 @@ lemma forces_mem_fm_type [TC]:
   unfolding forces_mem_fm_def
   by simp
 
+lemma forces_eq_fm_arity :
+  "p\<in>nat \<Longrightarrow> l\<in>nat \<Longrightarrow> q\<in>nat \<Longrightarrow> t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow> 
+   arity(forces_eq_fm(p,l,q,t1,t2)) = succ(t1) \<union> succ(t2) \<union> succ(q) \<union> succ(p) \<union> succ(l)"
+  unfolding forces_eq_fm_def 
+  using number1_fm_arity empty_fm_arity is_tuple_fm_arity frc_at_fm_arity
+    pred_Un_distrib
+  by auto
 
-(*
-lemma arity_forces_eq_fm [simp]:
-  "\<lbrakk>\<And>x. x\<in>formula \<Longrightarrow> arity(r(x)) = arity(x) \<rbrakk> \<Longrightarrow> t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow> arity(forces_eq_fm(r,t1,t2)) = (t1 \<union> t2) #+ 5"
-  unfolding forces_eq_fm_def number1_fm_def is_Hfrc_at_fm_def is_tuple_fm_def
-    frecrel_eclose_fm_def is_frecrel_fm_def cartprod_fm_def
-    is_eclose_fm_def mem_eclose_fm_def finite_ordinal_fm_def
-    eclose_n_fm_def is_iterates_fm_def iterates_MH_fm_def
-    is_wfrec_fm_def is_recfun_fm_def restriction_fm_def pre_image_fm_def
-    is_nat_case_fm_def quasinat_fm_def Memrel_fm_def fm_defs
-  apply (simp add:nat_union_abs1 nat_union_abs2 pred_Un, simp add:nat_simp_union)
-  apply (intro conjI impI)
-   apply (rule le_anti_sym,simp_all)
-  apply (drule not_le_imp_lt,simp_all, drule leI,simp)
-done
-
-lemma arity_forces_mem_fm [simp]:
-  "t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow> arity(forces_mem_fm(t1,t2)) = (t1 \<union> t2) #+ 5"
-  unfolding forces_mem_fm_def number1_fm_def is_Hfrc_at_fm_def is_tuple_fm_def
-    frecrel_eclose_fm_def is_frecrel_fm_def cartprod_fm_def
-    is_eclose_fm_def mem_eclose_fm_def finite_ordinal_fm_def
-    eclose_n_fm_def is_iterates_fm_def iterates_MH_fm_def
-    is_wfrec_fm_def is_recfun_fm_def restriction_fm_def pre_image_fm_def
-    is_nat_case_fm_def quasinat_fm_def Memrel_fm_def fm_defs
-  apply (simp add:nat_union_abs1 nat_union_abs2 pred_Un, simp add:nat_simp_union)
-  apply (intro conjI impI)
-   apply (rule le_anti_sym,simp_all)
-  apply (drule not_le_imp_lt,simp_all, drule leI,simp)
-  done
-*)
+lemma forces_mem_fm_arity :
+  "p\<in>nat \<Longrightarrow> l\<in>nat \<Longrightarrow> q\<in>nat \<Longrightarrow> t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow> 
+   arity(forces_mem_fm(p,l,q,t1,t2)) = succ(t1) \<union> succ(t2) \<union> succ(q) \<union> succ(p) \<union> succ(l)"
+  unfolding forces_mem_fm_def 
+  using number1_fm_arity empty_fm_arity is_tuple_fm_arity frc_at_fm_arity
+    pred_Un_distrib
+  by auto
 
 context forcing_data
 begin
@@ -1407,13 +1503,14 @@ lemma sats_forces_Forall :
 
 end (* forcing_data *)
 
-(*
+
 lemma arity_forces_ren:
-  shows "\<phi>\<in>formula \<Longrightarrow> arity(forces_ren(auxren,fren,fref, \<phi>)) =  arity(\<phi>) #+ 4"
+  shows "\<phi>\<in>formula \<Longrightarrow> arity(forces( \<phi>)) =  arity(\<phi>) #+ 4"
+  unfolding forces_def
 proof (induct set:formula)
   case (Member x y)
   then 
-  show ?case by (simp add:nat_simp_union)
+  show ?case apply (simp add:nat_simp_union)
 next
   case (Equal x y)
   then 
@@ -1430,6 +1527,5 @@ next
     apply (simp) (* This is false as it stands, it needs arity(\<phi>) \<noteq> 0 *)
     sorry
 qed
-*)
 
 end 
