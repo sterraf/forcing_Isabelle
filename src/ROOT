@@ -9,5 +9,7 @@ session "Forcing" = "ZF" +
     "Non_Constructible"
     "Ordinals_In_MG"
     "Rasiowa_Sikorski"
+    "../Constructible/Rank_Separation"
+    "../Constructible/DPow_absolute"
   document_files
     "root.tex"
