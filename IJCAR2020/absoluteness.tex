@@ -1,11 +1,13 @@
-\section{Relativization and absoluteness}
+\section{Relativization,  absoluteness, and the axioms}
 \label{sec:relat-absol}
 
 The concepts of relativization and absoluteness (due to Gödel, in his
 proof of the relative consistency of $\AC$ \cite{godel-L}) 
 are both
 prerrequisites and powerful tools in working with transitive
-models. The \emph{relativization} $\phi^C(\bx)$ of a set-theoretic
+models. A \emph{class} is simply a predicate $C(x)$ with at least one
+free variable $x$.
+The \emph{relativization} $\phi^C(\bx)$ of a set-theoretic
 definition
 $\phi$ (of a relation such
 as ``$x$ is a subset of $y$'' or of a function like $y=\P(x)$) to
@@ -18,7 +20,12 @@ x \sbq^C y \equiv \forall z.\ C(z) \longrightarrow (z\in x
 \]
 
 The new formula $\phi^C(\bx)$ corresponds to what is obtained by defining
-the concept ``inside'' $C$. It turns out that many concepts mean the
+the concept ``inside'' $C$. In fact, for a class corresponding to a
+set $c$ (i.e.\ $C(x) \defi x \in c$), the relativization $\phi^C$ of a 
+sentence $\phi$ is equivalent to the satisfaction of $\phi$ in the
+first-order model $\lb c, \in\rb$.
+
+It turns out that many concepts mean the
 same after relativization to a nonempty transitive class $C$; formally
 \[
 \forall\bx.\ C(\bx) \longrightarrow (\phi^C(\bx) \longleftrightarrow
@@ -50,9 +57,35 @@ regarded as ``first-order'' (v.g. the Replacement Scheme).
 The version of \isatt{ZF-Constructible} we present weakens the
 assumptions of [many / a dozen / several] absoluteness theorems to that
 of a nonempty transitive class.
+%
+\begin{framed}
+  New absoluteness results on powersets --- for \isatt{Least} and
+  \isatt{Vset} see Section~\ref{sec:axioms-replacement-choice}
+\end{framed}
 
-[New absoluteness results on powersets --- for \isatt{Least} and
-  \isatt{Vset} see Section~\ref{sec:axioms-replacement-choice}]
+Apart from the axiom schemes, the rest of the $\ZFC$ 
+axioms are stated as predicates on classes (that is,
+of type \isatt{(i{\isasymRightarrow}o){\isasymRightarrow}o}); some
+of them were already defined by Paulson, and this formulation allows a
+better interaction with \isatt{ZF-Constructible}. 
+The axioms of Pairing, Union, Foundation,
+Extensionality, and Infinity are relativizations of the respective
+traditional 
+first-order sentences to the class argument. For the Axiom of Choice
+we selected a version best suited for the work with transitive
+models: the relativization of a sentence stating that for every $x$
+there is surjection from an ordinal onto $x$. Finally, Separation and
+Replacement were treated separately to effectively obtain first-order
+versions. It is to be noted that predicates in Isabelle/ZF are akin to
+second order variables and thus do not correspond to first-order
+formulas; in particular, there is no induction principle for functions
+of type \isatt{i{\isasymRightarrow}o}. For that reason, Separation and
+Replacement predicate \emph{on the satisfaction} of a formula $\phi$.
+With respect to our previous \cite{2019arXiv190103313G}, we lifted the
+arity restriction for the parameter $\phi$ on these schemes,
+streamlining various proofs as an immediate benefit and avoiding the
+need for tupling.
+
 
 %%% Local Variables: 
 %%% mode: latex
