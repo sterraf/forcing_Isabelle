@@ -42,9 +42,10 @@ $\union\{\isatt{Vset}(\alpha) : \alpha\in M\}$ (it's actually equal).
 
 For the proof of the Replacement Axiom, we assume that $\phi$ is
 functional in its first two variables when interpreted in $M[G]$ and
-the first ranges over the domain \isatt{c}. Then we show that the collection of
-all values of the second variable when the first ranges over
-\isatt{c} belongs to $M[G]$:
+the first ranges over the domain \isatt{c}${}\in M[G]$. Then we show
+that the collection of
+all values of the second variable, when the first ranges over
+\isatt{c}, belongs to $M[G]$:
 %
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
@@ -72,7 +73,8 @@ belongs to $\pi\defi \dom(\pi')\times \PP$, which is easily seen to be
 in $M$. We'll use $\pi$ to be the domain in an application of the
 Replacement Axiom in $M$. But now, obviously, we have lost
 functionality since there are many names $\dot v\in M$ for a fixed $v$
-in $M[G]$. To solve this issue, for each $\rho p \defi\lb\rho,p\rb\in \pi$ calculate the
+in $M[G]$. To solve this issue, for each $\rho p \defi\lb\rho,p\rb\in
+\pi$ we calculate the
 minimum rank of some $\tau\in M$ such that 
 $p\forces \phi(\rho,\tau,\dots)$ if there is one, or $0$ otherwise. By
 Replacement in $M$, we can show that the supremum \isatt{?sup} of these ordinals
@@ -101,7 +103,7 @@ full RSL along with our implementation of the principle of dependent
 choices in an independent branch of the dependency graph, which is the
 only place where the theory \texttt{ZF.AC} is invoked.
 
-Our statement of the axiom of choice is the one preferred for
+Our statement of the Axiom of Choice is the one preferred for
 arguments involving transitive classes satisfying $\ZF$:
 %
 \begin{center}
