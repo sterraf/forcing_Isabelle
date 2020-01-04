@@ -80,6 +80,20 @@ lemma empty_fm_arity :
   using nat_union_abs1 nat_union_abs2 pred_Un_distrib
   by simp
 
+lemma succ_fm_arity :
+  "\<lbrakk>x\<in>nat;y\<in>nat\<rbrakk> \<Longrightarrow> arity(succ_fm(x,y)) = succ(x) \<union> succ(y)"
+  unfolding succ_fm_def cons_fm_def 
+  using upair_fm_arity union_fm_arity nat_union_abs2 pred_Un_distrib
+  by auto
+
+
+lemma number1_fm_arity : 
+    "\<lbrakk> r\<in>nat \<rbrakk> \<Longrightarrow> arity(number1_fm(r)) = succ(r)"
+  unfolding number1_fm_def 
+  using empty_fm_arity succ_fm_arity nat_union_abs1 nat_union_abs2 pred_Un_distrib
+  by simp
+
+
 lemma function_fm_arity : 
     "\<lbrakk> r\<in>nat \<rbrakk> \<Longrightarrow> arity(function_fm(r)) = succ(r)"
   unfolding function_fm_def 
@@ -106,12 +120,6 @@ lemma typed_function_fm_arity :
     nat_union_abs2 pred_Un_distrib
   by auto
 
-lemma succ_fm_arity :
-  "\<lbrakk>x\<in>nat;y\<in>nat\<rbrakk> \<Longrightarrow> arity(succ_fm(x,y)) = succ(x) \<union> succ(y)"
-  unfolding succ_fm_def cons_fm_def 
-  using upair_fm_arity union_fm_arity
-    nat_union_abs2 pred_Un_distrib
-  by auto
 
 lemma subset_fm_arity : 
   "\<lbrakk>x\<in>nat ; y\<in>nat\<rbrakk> \<Longrightarrow> arity(subset_fm(x,y)) = succ(x) \<union> succ(y)"
@@ -314,6 +322,31 @@ lemma is_eclose_fm_arity :
   "\<lbrakk>x\<in>nat ; t\<in>nat\<rbrakk> \<Longrightarrow> arity(is_eclose_fm(x,t)) = succ(x) \<union> succ(t)"
   unfolding is_eclose_fm_def 
   using mem_eclose_fm_arity nat_union_abs2 pred_Un_distrib
+  by auto
+
+lemma eclose_n1_fm_arity :
+  "\<lbrakk>x\<in>nat ; t\<in>nat\<rbrakk> \<Longrightarrow> arity(eclose_n1_fm(x,t)) = succ(x) \<union> succ(t)"
+  unfolding eclose_n1_fm_def 
+  using is_eclose_fm_arity singleton_fm_arity name1_fm_arity nat_union_abs2 pred_Un_distrib
+  by auto
+
+lemma eclose_n2_fm_arity :
+  "\<lbrakk>x\<in>nat ; t\<in>nat\<rbrakk> \<Longrightarrow> arity(eclose_n2_fm(x,t)) = succ(x) \<union> succ(t)"
+  unfolding eclose_n2_fm_def 
+  using is_eclose_fm_arity singleton_fm_arity name2_fm_arity nat_union_abs2 pred_Un_distrib
+  by auto
+
+lemma ecloseN_fm_arity :
+  "\<lbrakk>x\<in>nat ; t\<in>nat\<rbrakk> \<Longrightarrow> arity(ecloseN_fm(x,t)) = succ(x) \<union> succ(t)"
+  unfolding ecloseN_fm_def 
+  using eclose_n1_fm_arity eclose_n2_fm_arity union_fm_arity nat_union_abs2 pred_Un_distrib
+  by auto
+
+lemma frecR_fm_arity :
+  "\<lbrakk>a\<in>nat;b\<in>nat\<rbrakk> \<Longrightarrow> arity(frecR_fm(a,b)) = succ(a) \<union> succ(b)"
+  unfolding frecR_fm_def
+  using ftype_fm_arity name1_fm_arity name2_fm_arity domain_fm_arity 
+      number1_fm_arity empty_fm_arity nat_union_abs2 pred_Un_distrib
   by auto
 
 end
