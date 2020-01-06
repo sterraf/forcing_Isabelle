@@ -1386,7 +1386,6 @@ lemma sats_forces_mem_fm:
 
 end (* forcing_data *)
 
-
 definition 
   ren_forces_nand :: "i\<Rightarrow>i" where
   "ren_forces_nand(\<phi>) \<equiv> Exists(Exists(Exists(Exists(
@@ -1395,9 +1394,14 @@ definition
 
 lemma ren_forces_nand_type[TC] :
   "\<phi>\<in>formula \<Longrightarrow> ren_forces_nand(\<phi>) \<in>formula" 
-  unfolding ren_forces_nand_def by simp
+  unfolding ren_forces_nand_def
+  by simp
 
-  
+lemma ren_forces_nand_arity : 
+  assumes "\<phi>\<in>formula" 
+  shows "arity(ren_forces_nand(\<phi>)) = succ(arity(\<phi>))"
+  sorry
+
 lemma sats_ren_forces_nand: 
   "[q,P,leq,o,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
    sats(M, ren_forces_nand(\<phi>),[q,P,leq,o,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,o,q] @ env)"
@@ -1414,6 +1418,11 @@ definition
         And(Equal(0,6),And(Equal(1,7),And(Equal(2,8),And(Equal(3,9),
         And(Equal(4,5),iterates(\<lambda>p. incr_bv(p)`5 , 5, \<phi>)))))))))))" 
 
+lemma ren_forces_all_arity : 
+  assumes "\<phi>\<in>formula" 
+  shows "arity(ren_forces_forall(\<phi>)) = arity(\<phi>)"
+  sorry
+
 lemma ren_forces_forall_type[TC] :
   "\<phi>\<in>formula \<Longrightarrow> ren_forces_forall(\<phi>) \<in>formula" 
   unfolding ren_forces_forall_def by simp
@@ -1429,6 +1438,12 @@ lemma sats_ren_forces_forall :
 definition 
   leq_fm :: "[i,i,i] \<Rightarrow> i" where
   "leq_fm(leq,q,p) \<equiv> Exists(And(pair_fm(q#+1,p#+1,0),Member(0,leq#+1)))" 
+
+lemma leq_fm_arity :
+  "\<lbrakk>leq\<in>nat;q\<in>nat;p\<in>nat\<rbrakk> \<Longrightarrow> arity(leq_fm(leq,q,p)) = succ(q) \<union> succ(p) \<union> succ(leq)"
+  unfolding leq_fm_def
+  using pair_fm_arity pred_Un_distrib nat_simp_union
+  by auto
 
 lemma leq_fm_type[TC] :
   "\<lbrakk>leq\<in>nat;q\<in>nat;p\<in>nat\<rbrakk> \<Longrightarrow> leq_fm(leq,q,p)\<in>formula" 
@@ -1491,7 +1506,7 @@ lemma sats_forces_Neg :
   shows "sats(M,forces(Neg(\<phi>)),[P,leq,one,p]@env) \<longleftrightarrow> 
          (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> (\<exists>qp\<in>M. pair(##M,q,p,qp) \<and> qp\<in>leq) \<and> 
                (sats(M,forces'(\<phi>),[P,leq,one,q]@env))))"
-  unfolding Neg_def using assms sats_forces_Nand 
+  unfolding Neg_def using assms sats_forces_Nand
   by simp
 
 lemma sats_forces_Forall :
@@ -1503,29 +1518,62 @@ lemma sats_forces_Forall :
 
 end (* forcing_data *)
 
-
-lemma arity_forces_ren:
-  shows "\<phi>\<in>formula \<Longrightarrow> arity(forces( \<phi>)) =  arity(\<phi>) #+ 4"
+lemma arity_forces':
+  shows "\<phi>\<in>formula \<Longrightarrow> arity(forces'(\<phi>)) \<le> arity(\<phi>) #+ 4"
   unfolding forces_def
 proof (induct set:formula)
   case (Member x y)
   then 
-  show ?case apply (simp add:nat_simp_union)
+  show ?case 
+    using forces_mem_fm_arity succ_Un_distrib nat_simp_union 
+    by simp
 next
   case (Equal x y)
   then 
-  show ?case by (simp add:nat_simp_union)
+  show ?case 
+    using forces_eq_fm_arity succ_Un_distrib nat_simp_union
+    by simp
 next
   case (Nand \<phi> \<psi>)
-  then 
+  have "arity(leq_fm(2, 0, 4)) = 5" 
+    using leq_fm_arity succ_Un_distrib nat_simp_union
+    by simp
+  have "4 \<le> (4#+arity(\<phi>)) \<union> (4#+arity(\<psi>))" (is "_ \<le> ?rhs")
+    using nat_simp_union by simp
+  from Nand
+  have "arity(forces'(\<phi>)) \<le> ?rhs"
+    "arity(forces'(\<psi>)) \<le> ?rhs"
+    using le_trans[OF Nand(2) Un_upper1_le] le_trans[OF Nand(4) Un_upper2_le]
+    by auto
+  with Nand \<open>_=5\<close>
   show ?case 
-    by (simp add:fm_defs nat_union_abs1 nat_union_abs2 pred_Un, simp add:nat_simp_union)
+    using ren_forces_nand_arity  pred_Un_distrib Un_assoc[symmetric] 
+      nat_union_abs1 Un_leI[OF _ _ _ _ \<open>4 \<le> ?rhs\<close> ]
+      succ_Un_distrib
+    by auto
 next
   case (Forall \<phi>)
   then
-  show ?case 
-    apply (simp) (* This is false as it stands, it needs arity(\<phi>) \<noteq> 0 *)
-    sorry
+  show ?case
+  proof (cases "arity(\<phi>) = 0")
+    case True
+    with Forall
+    show ?thesis
+      using ren_forces_all_arity succ_Un_distrib pred_Un_distrib Un_assoc[symmetric]
+        le_trans[OF le_pred[of "arity(forces'(\<phi>))"]]
+      by auto
+  next
+    case False
+    with Forall
+    show ?thesis 
+      using ren_forces_all_arity succ_Un_distrib pred_Un_distrib Un_assoc[symmetric]
+        succ_pred_eq[OF _ \<open>arity(\<phi>)\<noteq>0\<close>] pred_mono[OF _ Forall(2)]
+      by auto
+  qed
 qed
+
+lemma forces_arity : "\<phi>\<in>formula \<Longrightarrow> arity(forces(\<phi>)) \<le> 4#+arity(\<phi>)" 
+  unfolding forces_def
+  using arity_forces' le_trans nat_simp_union by auto
 
 end 

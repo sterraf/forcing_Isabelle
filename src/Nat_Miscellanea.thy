@@ -65,7 +65,10 @@ lemma gt1 : "n \<in> nat \<Longrightarrow> i \<in> n \<Longrightarrow> i \<noteq
 
 lemma pred_mono : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> pred(n) \<le> pred(m)"
   by(rule_tac n="n" in natE,auto simp add:le_in_nat,erule_tac n="m" in natE,auto)
-    
+
+lemma succ_mono : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> succ(n) \<le> succ(m)"
+  by auto
+
 lemma pred2_Un: 
   assumes "j \<in> nat" "m \<le> j" "n \<le> j" 
   shows "pred(pred(m \<union> n)) \<le> pred(pred(j))" 
@@ -91,6 +94,16 @@ lemma le_not_lt_nat : "Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> \<not> 
   by (rule ltE,rule not_le_iff_lt[THEN iffD1],auto,drule ltI[of q p],auto,erule leI)
 
 lemmas nat_simp_union = nat_un_max nat_max_ty max_def 
+
+lemma le_succ : "x\<in>nat \<Longrightarrow> x\<le>succ(x)" by simp
+lemma le_pred : "x\<in>nat \<Longrightarrow> pred(x)\<le>x" 
+  using pred_le[OF _ _ le_succ] pred_succ_eq 
+  by simp
+
+
+lemma Un_leI : "Ord(o) \<Longrightarrow> Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> 
+    o \<le> r \<Longrightarrow> p \<le> r \<Longrightarrow> q \<le> r \<Longrightarrow> o \<union> p \<union> q \<le> r"
+  using nat_simp_union by auto
 
 lemma diff_mono :
   assumes "m \<in> nat" "n\<in>nat" "p \<in> nat" "m < n" "p\<le>m"
