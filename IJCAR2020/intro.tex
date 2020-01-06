@@ -11,7 +11,8 @@ We
 work using the  implementation of Zermelo-Fraenkel ($\ZF$)
 set theory \emph{Isabelle/ZF} by Paulson and Grabczewski \cite{DBLP:journals/jar/PaulsonG96}. In
 an early paper \cite{2018arXiv180705174G}, we set up the first
-elements, defining forcing notions, names, generic extensions, and
+elements of the countable transitive model (ctm) approach, defining
+forcing notions, names, generic extensions, and
 showing the existence of generic filters via the Rasiowa-Sikorski
 lemma (RSL). Our second (unpublished) technical report
 \cite{2019arXiv190103313G} advanced by presenting the first accurate
@@ -45,9 +46,10 @@ posets does not require choice.
 \subsection{Related work}
 To the best of our knowledge, all of the previous works in
 formalization of the method 
-of forcing has been done in different variants of type theory. The
+of forcing have been done in different variants of type theory, and
+none of them uses the ctm approach. The
 most important is the recent one by 
-Han \& van Doorn
+Han and van Doorn
 \cite{han_et_al:LIPIcs:2019:11074,DBLP:conf/cpp/HanD20}, which includes
 a formalization of the independence of $\CH$ by means
 the Boolean-valued approach to forcing, using the Lean
