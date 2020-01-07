@@ -1,10 +1,6 @@
 theory Forcing_Theorems imports Forcing_Thms begin
    
-(* Prototyping Forcing relation and theorems as a locale*)
-locale forcing_thms = forcing_data + 
-  assumes  arity_forces:     "\<phi>\<in>formula \<Longrightarrow> arity(forces(\<phi>)) = arity(\<phi>) #+ 4"
-
-locale G_generic = forcing_thms + 
+locale G_generic = forcing_data + 
   fixes G :: "i"
   assumes generic : "M_generic(G)" 
 begin

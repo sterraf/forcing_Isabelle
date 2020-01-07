@@ -37,13 +37,18 @@ proof -
   let ?\<chi>="And(Member(0,1 #+ length(env)),\<phi>)" and ?Pl1="[P,leq,one]"
   let ?new_form="sep_ren(length(env),forces(?\<chi>))"
   let ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
-  note phi = \<open>\<phi>\<in>formula\<close> \<open>arity(\<phi>) \<le> 1 #+ length(env)\<close>
-  with \<open>env\<in>list(_)\<close>
+  note phi = \<open>\<phi>\<in>formula\<close> \<open>arity(\<phi>) \<le> 1 #+ length(env)\<close> 
+  then
+  have "?\<chi>\<in>formula" by simp
+  with \<open>env\<in>_\<close> phi
+  have "arity(?\<chi>) \<le> 2#+length(env) " 
+    using nat_simp_union leI by simp
+  with \<open>env\<in>list(_)\<close> phi
   have "arity(forces(?\<chi>)) \<le> 6 #+ length(env)"
-    using nat_simp_union arity_forces leI by simp
+    using  forces_arity_le by simp
   then
   have "arity(forces(?\<chi>)) \<le> 7 #+ length(env)"
-    using nat_simp_union arity_forces leI by simp
+    using nat_simp_union forces_arity leI by simp
   with \<open>arity(forces(?\<chi>)) \<le>7 #+ _\<close> \<open>env \<in> _\<close> \<open>\<phi> \<in> formula\<close>
   have "arity(?new_form) \<le> 7 #+ length(env)" "?new_form \<in> formula"
     using arity_rensep[OF definability[of "?\<chi>"]]  definability[of "?\<chi>"] type_rensep 
@@ -57,7 +62,7 @@ proof -
   with \<open>arity(?new_form) \<le> _\<close> \<open>?new_form \<in> formula\<close>
   have "arity(?\<psi>) \<le> 5 #+ length(env)"
     unfolding pair_fm_def upair_fm_def 
-    using nat_simp_union arity_forces 
+    using nat_simp_union forces_arity
     by auto
   from \<open>\<phi>\<in>formula\<close>
   have "forces(?\<chi>) \<in> formula"

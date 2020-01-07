@@ -165,7 +165,7 @@ proof -
       ?\<theta>="{sp \<in>domain(\<tau>)\<times>P . snd(sp) \<tturnstile> (Member(0,1)) [fst(sp),\<chi>] }"
     have
       "arity(forces(Member(0,1))) = 6"
-      using arity_forces by auto
+      using arity_forces_at by auto
     with \<open>domain(\<tau>) \<in> M\<close> \<open>\<chi> \<in> M\<close> have
       "?\<theta> \<in> M"
       unfolding Forces_def

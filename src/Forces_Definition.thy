@@ -1516,6 +1516,14 @@ lemma sats_forces_Forall :
 
 end (* forcing_data *)
 
+lemma arity_forces_at:
+  assumes  "x \<in> nat" "y \<in> nat"
+  shows "arity(forces(Member(x, y))) = (succ(x) \<union> succ(y)) #+ 4"
+        "arity(forces(Equal(x, y))) = (succ(x) \<union> succ(y)) #+ 4"
+  unfolding forces_def
+    using assms forces_mem_fm_arity forces_eq_fm_arity succ_Un_distrib nat_simp_union 
+    by auto
+
 lemma arity_forces':
   shows "\<phi>\<in>formula \<Longrightarrow> arity(forces'(\<phi>)) \<le> arity(\<phi>) #+ 4"
   unfolding forces_def
@@ -1573,5 +1581,10 @@ qed
 lemma forces_arity : "\<phi>\<in>formula \<Longrightarrow> arity(forces(\<phi>)) \<le> 4#+arity(\<phi>)" 
   unfolding forces_def
   using arity_forces' le_trans nat_simp_union by auto
+
+lemma forces_arity_le :
+  assumes "\<phi>\<in>formula" "n\<in>nat" "arity(\<phi>) \<le> n"
+  shows "arity(forces(\<phi>)) \<le> 4#+n" 
+  using assms le_trans[OF _ add_le_mono[OF le_refl[of 4] \<open>arity(\<phi>)\<le>_\<close>]] forces_arity by auto
 
 end 

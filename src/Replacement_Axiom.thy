@@ -108,7 +108,7 @@ lemma pow_inter_M:
 
 schematic_goal sats_prebody_fm_auto:
   assumes
-    "\<phi>\<in>formula" "[P,leq,one,p,\<rho>,\<pi>] @ nenv \<in>list(M)"  "\<alpha>\<in>M" "arity(\<phi>) \<le> 2 #+ length(nenv)"
+    "\<phi>\<in>formula" "[P,leq,one,p,\<rho>,\<pi>] @ nenv \<in>list(M)"  "\<alpha>\<in>M" "arity(\<phi>) \<le> 2 #+ length(nenv)"  
   shows 
     "(\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> sats(M,forces(\<phi>),[P,leq,one,p,\<rho>,\<tau>] @ nenv))
    \<longleftrightarrow> sats(M,?prebody_fm,[\<rho>,p,\<alpha>,P,leq,one] @ nenv)"
@@ -125,8 +125,15 @@ schematic_goal sats_prebody_fm_auto:
   apply ((rule sep_rules | simp))
      apply ((rule sep_rules | simp))
     apply (rule renrep_sats[simplified])
-      apply (insert assms; force simp add:  arity_forces renrep_type definability)+
-  done (* 10 secs *)
+  apply (insert assms)        
+       apply(auto simp add: renrep_type definability)
+proof -
+  from assms
+  have "nenv\<in>list(M)" by simp
+  with \<open>arity(\<phi>)\<le>_\<close> \<open>\<phi>\<in>_\<close>
+  show "arity(forces(\<phi>)) \<le> succ(succ(succ(succ(succ(succ(length(nenv)))))))"
+    using forces_arity_le by simp
+qed
 
 (* The formula synthesized above *)
 synthesize "prebody_fm" from_schematic "sats_prebody_fm_auto"
@@ -162,12 +169,13 @@ lemma arity_prebody_fm:
     "\<phi>\<in>formula" "\<alpha>\<in>M" "env \<in> list(M)" "arity(\<phi>) \<le> 2 #+ length(env)"
   shows
     "arity(prebody_fm(\<phi>,env))\<le>6 #+  length(env)"
-  unfolding prebody_fm_def is_HVfrom_fm_def is_powapply_fm_def using assms
+  unfolding prebody_fm_def is_HVfrom_fm_def is_powapply_fm_def 
+  using assms forces_arity_le[OF _ _ \<open>arity(\<phi>) \<le> _\<close>,simplified]
   apply(simp add:  new_fm_defs )
   apply(simp add: nat_simp_union,rule, rule, (rule pred_le,simp+)+)
   apply(subgoal_tac "arity(forces(\<phi>)) \<le> 6 #+length(env)")
   apply(subgoal_tac "forces(\<phi>)\<in> formula")
-  apply(drule arity_renrep[of "forces(\<phi>)"], auto simp add:arity_forces length_type)
+    apply(drule arity_renrep[of "forces(\<phi>)"], auto)
   done
 
 definition
@@ -323,7 +331,7 @@ proof -
     \<open>length(_) = length(_)\<close>[symmetric] \<open>nenv\<in>_\<close> \<open>\<phi>\<in>_\<close>
   have "arity(?f_fm) \<le> 5 #+ length(env)"
     unfolding body_fm_def  new_fm_defs least_fm_def 
-    using arity_forces arity_renrep arity_renbody arity_body_fm' M_inhabit
+    using forces_arity arity_renrep arity_renbody arity_body_fm' M_inhabit
     by (simp add: pred_Un Un_assoc, simp add: Un_assoc[symmetric] nat_union_abs1 pred_Un)
       (auto simp add: nat_simp_union, rule pred_le, auto intro:leI)
   moreover from \<open>\<phi>\<in>formula\<close> \<open>nenv\<in>list(M)\<close>
