@@ -62,7 +62,7 @@ lemma sats_frecrel_fm :
   unfolding is_frecrel_def frecrel_fm_def
   using assms
   by (simp add:sats_is_Collect_fm sats_frecrelP_fm)
-
+                                              
 lemma is_frecrel_iff_sats:
   assumes
     "nth(a,env) = aa" "nth(r,env) = rr" "a\<in> nat"  "r\<in> nat"  "env \<in> list(A)"
@@ -201,10 +201,10 @@ definition
 definition
   is_mem_case :: "[i\<Rightarrow>o,i,i,i,i,i,i] \<Rightarrow> o" where
   "is_mem_case(M,t1,t2,p,P,leq,f) \<equiv> \<forall>v[M]. \<forall>vp[M]. v\<in>P \<and> pair(M,v,p,vp) \<and> vp\<in>leq \<longrightarrow>
-    (\<exists>q[M]. \<exists>qv[M]. \<exists>s[M]. \<exists>r[M]. \<exists>sr[M]. \<exists>qr[M]. \<exists>z[M]. \<exists>zt1sq[M]. \<exists>o[M].
+    (\<exists>q[M]. \<exists>s[M]. \<exists>r[M]. \<exists>qv[M]. \<exists>sr[M]. \<exists>qr[M]. \<exists>z[M]. \<exists>zt1sq[M]. \<exists>o[M].
      r\<in> P \<and> q\<in>P \<and> pair(M,q,v,qv) \<and> pair(M,s,r,sr) \<and> pair(M,q,r,qr) \<and> 
      empty(M,z) \<and> is_tuple(M,z,t1,s,q,zt1sq) \<and>
-     number1(M,o) \<and> sr\<in>t2 \<and> qv\<in>leq \<and> qr\<in>leq \<and> fun_apply(M,f,zt1sq,o))"
+     number1(M,o) \<and> qv\<in>leq \<and> sr\<in>t2 \<and> qr\<in>leq \<and> fun_apply(M,f,zt1sq,o))"
 
 
 schematic_goal sats_is_mem_case_fm_auto:
@@ -594,13 +594,25 @@ lemma tuple_abs[simp]:
 lemma in_domain: "y\<in>M \<Longrightarrow> x\<in>domain(y) \<Longrightarrow> x\<in>M"
   using domainE[of x y] trans_M Transset_intf[of M _ y] pair_in_M_iff by auto
 
+lemma oneN_in_M[simp]: "1\<in>M"
+  by (simp del:setclass_iff add:setclass_iff[symmetric])
+
+
+lemma twoN_in_M : "2\<in>M" 
+  by (simp del:setclass_iff add:setclass_iff[symmetric])
 
 lemma comp_in_M:
   "p \<preceq> q \<Longrightarrow> p\<in>M"
   "p \<preceq> q \<Longrightarrow> q\<in>M"
   using leq_in_M trans_M Transset_intf[of M _ leq] pair_in_M_iff by auto
 
+
 (* Absoluteness of Hfrc *)
+
+
+lemma pair_trans_M : 
+  "\<lbrakk> t\<in>M ; \<langle>s,y\<rangle>\<in>t \<rbrakk> \<Longrightarrow> s\<in>M"
+  using trans_M Transset_intf[of M _ t] pair_in_M_iff by auto
 
 lemma eq_case_abs [simp]:
   assumes
@@ -611,9 +623,6 @@ proof -
   have "q \<preceq> p \<Longrightarrow> q\<in>M" for q
     using comp_in_M by simp
   moreover
-  have "\<langle>s,y\<rangle>\<in>t \<Longrightarrow> s\<in>M" if "t\<in>M" for s y t
-    using that trans_M Transset_intf[of M _ t] pair_in_M_iff by auto
-  moreover
   have "\<langle>s,y\<rangle>\<in>t \<Longrightarrow> s\<in>domain(t)" if "t\<in>M" for s y t
     using that unfolding domain_def by auto
   ultimately
@@ -622,7 +631,7 @@ proof -
                               (f ` \<langle>1, s, t1, q\<rangle> =1 \<longleftrightarrow> f ` \<langle>1, s, t2, q\<rangle>=1))) \<longleftrightarrow>
     (\<forall>s. s \<in> domain(t1) \<or> s \<in> domain(t2) \<longrightarrow> (\<forall>q. q\<in>P \<and> q \<preceq> p \<longrightarrow> 
                                   (f ` \<langle>1, s, t1, q\<rangle> =1 \<longleftrightarrow> f ` \<langle>1, s, t2, q\<rangle>=1)))" 
-    using assms by auto
+    using assms pair_trans_M by auto
   then show ?thesis
     unfolding eq_case_def is_eq_case_def 
     using assms pair_in_M_iff n_in_M[of 1] domain_closed tuples_in_M 
@@ -635,25 +644,15 @@ lemma mem_case_abs [simp]:
     "t1\<in>M" "t2\<in>M" "p\<in>M" "f\<in>M" 
   shows
     "is_mem_case(##M,t1,t2,p,P,leq,f) \<longleftrightarrow> mem_case(t1,t2,p,P,leq,f)"
-  sorry
-(*
-lemma mem_case_abs [simp]:
-  "\<lbrakk>(##M)(t1); (##M)(t2); (##M)(p); (##M)(f)\<rbrakk> \<Longrightarrow> 
-      is_mem_case(##M,t1,t2,p,P,leq,f) \<longleftrightarrow> mem_case(t1,t2,p,P,leq,f)"
-  unfolding mem_case_def is_mem_case_def
-  using pair_in_M_iff zero_in_M n_in_M[of 1]
-  apply (simp del:setclass_iff rall_setclass_is_ball)
-  apply (unfold rall_def)
-  apply (intro iffI allI impI)
-  apply (drule_tac x=v in spec)
-  apply (subgoal_tac "(##M)(v)")
-    apply (drule mp, assumption)+
-    apply blast
-  apply (simp add: comp_in_M(1) del:setclass_iff rall_setclass_is_ball)
-  apply (drule_tac x=x in spec)
-  apply (blast intro:comp_in_M)
-  done
-*)
+  unfolding is_mem_case_def mem_case_def using assms zero_in_M pair_in_M_iff
+    comp_in_M 
+  apply auto 
+   apply blast
+  apply (drule bspec,auto)
+  apply (rule bexI)+
+     defer 1 prefer 2
+  apply (rule pair_trans_M[of t2],auto)
+  done   
 
 lemma Hfrc_abs:
   "\<lbrakk>fnnc\<in>M; f\<in>M\<rbrakk> \<Longrightarrow>
@@ -726,8 +725,13 @@ lemma frecrel_closed:
    "x\<in>M" 
  shows
    "frecrel(x)\<in>M" 
-  unfolding frecrel_def frecR_def Rrel_def
-  sorry
+proof -
+  have "Collect(x\<times>x,\<lambda>z. (\<exists>x y. z = <x,y> \<and> frecR(x,y)))\<in>M"
+    using Collect_in_M[of "frecrelP_fm(0)"] frecrelP_fm_arity sats_frecrelP_fm
+          frecrelP_abs \<open>x\<in>M\<close> cartprod_closed by simp 
+  then show ?thesis
+  unfolding frecrel_def Rrel_def frecrelP_def by simp
+qed
 
 (* transitive relation of forces for atomic formulas *)
 definition
@@ -1177,12 +1181,6 @@ lemma trans_forcerel_t : "trans(forcerel(x))"
 lemma relation_forcerel_t : "relation(forcerel(x))" 
   unfolding forcerel_def using relation_trancl .
 
-lemma oneN_in_M[simp]: "1\<in>M"
-  by (simp del:setclass_iff add:setclass_iff[symmetric])
-
-
-lemma twoN_in_M : "2\<in>M" 
-  by (simp del:setclass_iff add:setclass_iff[symmetric])
 
 lemma forcerel_in_M :
   assumes 

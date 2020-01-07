@@ -211,7 +211,32 @@ proof -
     unfolding M_generic_def by auto
 qed
 
-
+(* Collects in M *)
+lemma Collect_in_M :
+  assumes
+    Qfm : "Q_fm \<in> formula" and
+    Qarty : "arity(Q_fm) = 1" and
+    Qsats : "\<And>x. x\<in>M \<Longrightarrow> sats(M,Q_fm,[x]) \<longleftrightarrow> is_Q(##M,x)" and
+    Qabs  : "\<And>x. x\<in>M \<Longrightarrow> is_Q(##M,x) \<longleftrightarrow> Q(x)" and
+    "A\<in>M"
+  shows
+  "Collect(A,Q)\<in>M" 
+proof -
+  have "z\<in>A \<Longrightarrow> z\<in>M" for z
+    using \<open>A\<in>M\<close> trans_M Transset_intf[of M z A] by simp
+  then
+  have 1:"Collect(A,is_Q(##M)) = Collect(A,Q)" 
+    using Qabs Collect_cong[of "A" "A" "is_Q(##M)" "Q"] by simp
+  have "separation(##M,is_Q(##M))"
+    using separation_ax Qsats Qarty Qfm
+          separation_cong[of "##M" "\<lambda>y. sats(M,Q_fm,[y])" "is_Q(##M)"]
+    by simp
+  then 
+  have "Collect(A,is_Q(##M))\<in>M"
+    using separation_closed \<open>A\<in>M\<close> by simp 
+  then
+  show ?thesis using 1 by simp
+qed
 
 end (* forcing_data *)      
   
