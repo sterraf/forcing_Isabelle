@@ -1,5 +1,5 @@
 theory Synthetic_Definition 
-  imports Interface
+  imports "../Constructible/Formula"
 keywords
   "synthesize" :: thy_decl % "ML"
 and
