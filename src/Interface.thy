@@ -5,6 +5,11 @@ theory Interface
           Relative_Univ
 begin
 
+syntax
+  "_sats"  :: "[i, i, i] \<Rightarrow> o"  ("(_, _ \<Turnstile> _)")
+translations
+  "(M,env \<Turnstile> \<phi>)" \<rightleftharpoons> "CONST sats(M,\<phi>,env)"
+
 abbreviation
  dec10  :: i   ("10") where "10 == succ(9)"
     
