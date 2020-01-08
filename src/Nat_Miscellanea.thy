@@ -100,9 +100,19 @@ lemma le_pred : "x\<in>nat \<Longrightarrow> pred(x)\<le>x"
   using pred_le[OF _ _ le_succ] pred_succ_eq 
   by simp
 
+lemma Un_le_compat : "o \<le> p \<Longrightarrow> q \<le> r \<Longrightarrow> Ord(o) \<Longrightarrow> Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> o \<union> q \<le> p \<union> r"
+  using  le_trans[of q r "p\<union>r",OF _ Un_upper2_le] le_trans[of o p "p\<union>r",OF _ Un_upper1_le]
+        nat_simp_union 
+  by auto
 
-lemma Un_leI : "Ord(o) \<Longrightarrow> Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> 
-    o \<le> r \<Longrightarrow> p \<le> r \<Longrightarrow> q \<le> r \<Longrightarrow> o \<union> p \<union> q \<le> r"
+lemma Un_le : "p \<le> r \<Longrightarrow> q \<le> r \<Longrightarrow> 
+                 Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> 
+                p \<union> q \<le> r"
+  using nat_simp_union by auto
+
+lemma Un_leI3 : "o \<le> r \<Longrightarrow> p \<le> r \<Longrightarrow> q \<le> r \<Longrightarrow> 
+                Ord(o) \<Longrightarrow> Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> 
+                o \<union> p \<union> q \<le> r"
   using nat_simp_union by auto
 
 lemma diff_mono :
