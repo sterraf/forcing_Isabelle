@@ -1399,17 +1399,17 @@ lemma ren_forces_nand_arity :
   assumes "\<phi>\<in>formula" 
   shows "arity(ren_forces_nand(\<phi>)) \<le> 4 \<union> succ(arity(\<phi>))"
 proof -
-  consider (lt) "4<arity(\<phi>)" | (ge) "\<not> 4 < arity(\<phi>) "
+  consider (lt) "4<arity(\<phi>)" | (ge) "\<not> 4 < arity(\<phi>)"
     by auto
-  then 
-  show ?thesis 
+  then
+  show ?thesis
   proof cases
     case lt
     with \<open>\<phi>\<in>_\<close>
     have "4 < succ(arity(\<phi>))" "4<arity(\<phi>)#+2"  "4<arity(\<phi>)#+3"  "4<arity(\<phi>)#+4"
       using succ_ltI by auto
     with \<open>\<phi>\<in>_\<close>
-    have "arity(iterates(\<lambda>p. incr_bv(p)`4,5,\<phi>)) = 5#+arity(\<phi>)" 
+    have "arity(iterates(\<lambda>p. incr_bv(p)`4,5,\<phi>)) = 5#+arity(\<phi>)"
       using arity_incr_bv_lemma lt
       by auto
     with \<open>\<phi>\<in>_\<close>
@@ -1420,23 +1420,22 @@ proof -
   next
     case ge
     with \<open>\<phi>\<in>_\<close>
-    have "arity(\<phi>) \<le> 4" "pred(pred(pred(pred(arity(\<phi>))))) \<le> 4"
+    have "arity(\<phi>) \<le> 4" "pred^4(arity(\<phi>)) \<le> 4"
       using not_lt_iff_le le_trans[OF le_pred]
       by simp_all
     with \<open>\<phi>\<in>_\<close>
-    have A: "arity(iterates(\<lambda>p. incr_bv(p)`4,5,\<phi>)) = arity(\<phi>)" 
-      using arity_incr_bv_lemma ge 
+    have "arity(iterates(\<lambda>p. incr_bv(p)`4,5,\<phi>)) = arity(\<phi>)"
+      using arity_incr_bv_lemma ge
       by simp
-      with A \<open>arity(\<phi>) \<le> 4\<close> \<open>\<phi>\<in>_\<close> \<open>pred(_) \<le> 4\<close>
-    show ?thesis 
+    with \<open>arity(\<phi>) \<le> 4\<close> \<open>\<phi>\<in>_\<close> \<open>pred^4(_) \<le> 4\<close>
+    show ?thesis
       unfolding ren_forces_nand_def
-      using  pred_Un_distrib nat_union_abs1 Un_assoc[symmetric] nat_union_abs2  
+      using  pred_Un_distrib nat_union_abs1 Un_assoc[symmetric] nat_union_abs2
       by (simp,simp add:nat_simp_union)
   qed
 qed
 
-
-lemma sats_ren_forces_nand: 
+lemma sats_ren_forces_nand:
   "[q,P,leq,o,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
    sats(M, ren_forces_nand(\<phi>),[q,P,leq,o,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,o,q] @ env)"
   unfolding ren_forces_nand_def
@@ -1453,55 +1452,43 @@ definition
         And(Equal(4,5),iterates(\<lambda>p. incr_bv(p)`5 , 5, \<phi>)))))))))))" 
 
 lemma ren_forces_all_arity : 
-  assumes "\<phi>\<in>formula" 
+  assumes "\<phi>\<in>formula"
   shows "arity(ren_forces_forall(\<phi>)) = 5 \<union> arity(\<phi>)"
 proof -
-  consider (lt) "5<arity(\<phi>)" | (ge) "\<not> 5 < arity(\<phi>) "
+  consider (lt) "5<arity(\<phi>)" | (ge) "\<not> 5 < arity(\<phi>)"
     by auto
-  then 
-  show ?thesis 
+  then
+  show ?thesis
   proof cases
     case lt
     with \<open>\<phi>\<in>_\<close>
-    have "5 < succ(arity(\<phi>))" "5<arity(\<phi>)#+2"  "5<arity(\<phi>)#+3"  "5<arity(\<phi>)#+4" 
+    have "5 < succ(arity(\<phi>))" "5<arity(\<phi>)#+2"  "5<arity(\<phi>)#+3"  "5<arity(\<phi>)#+4"
       using succ_ltI by auto
     with \<open>\<phi>\<in>_\<close>
-    have "arity(iterates(\<lambda>p. incr_bv(p)`5,5,\<phi>)) = 5#+arity(\<phi>)" 
+    have "arity(iterates(\<lambda>p. incr_bv(p)`5,5,\<phi>)) = 5#+arity(\<phi>)"
       using arity_incr_bv_lemma lt
       by simp
-    then show ?thesis
-      using assms 
+    with \<open>\<phi>\<in>_\<close>
+    show ?thesis
       unfolding ren_forces_forall_def
-      using arity_incr_bv_lemma pred_Un_distrib nat_union_abs1 Un_assoc[symmetric] nat_union_abs2
+      using pred_Un_distrib nat_union_abs1 Un_assoc[symmetric] nat_union_abs2
       by simp
   next
     case ge
     with \<open>\<phi>\<in>_\<close>
-    have "arity(\<phi>) \<le> 5" "pred(pred(pred(pred(pred(arity(\<phi>)))))) \<le> 5"
+    have "arity(\<phi>) \<le> 5" "pred^5(arity(\<phi>)) \<le> 5"
       using not_lt_iff_le le_trans[OF le_pred]
       by simp_all
     with \<open>\<phi>\<in>_\<close>
-    have A: "arity(iterates(\<lambda>p. incr_bv(p)`5,5,\<phi>)) = arity(\<phi>)" 
-      using arity_incr_bv_lemma ge 
+    have "arity(iterates(\<lambda>p. incr_bv(p)`5,5,\<phi>)) = arity(\<phi>)"
+      using arity_incr_bv_lemma ge
       by simp
-      with A \<open>arity(\<phi>) \<le> 5\<close> \<open>\<phi>\<in>_\<close> \<open>pred(_) \<le> 5\<close>
-    show ?thesis 
+    with \<open>arity(\<phi>) \<le> 5\<close> \<open>\<phi>\<in>_\<close> \<open>pred^5(_) \<le> 5\<close>
+    show ?thesis
       unfolding ren_forces_forall_def
-      using  pred_Un_distrib nat_union_abs1 Un_assoc[symmetric] nat_union_abs2  
+      using  pred_Un_distrib nat_union_abs1 Un_assoc[symmetric] nat_union_abs2
       by simp
   qed
-qed
-
-lemma ren_forces_all_arity' : 
-  assumes "\<phi>\<in>formula" 
-  shows "arity(ren_forces_forall(\<phi>)) \<le> 5 \<union> succ(arity(\<phi>))"
-proof -
-  from assms 
-  have "5 \<union> arity(\<phi>) \<le> 5 \<union> succ(arity(\<phi>))"
-    using Un_le_compat le_succ by auto
-  with assms
-  show ?thesis
-    using le_trans ren_forces_all_arity by auto
 qed
 
 lemma ren_forces_forall_type[TC] :
@@ -1612,21 +1599,21 @@ lemma arity_forces':
   unfolding forces_def
 proof (induct set:formula)
   case (Member x y)
-  then 
-  show ?case 
+  then
+  show ?case
     using forces_mem_fm_arity succ_Un_distrib nat_simp_union
     by simp
 next
   case (Equal x y)
-  then 
-  show ?case 
+  then
+  show ?case
     using forces_eq_fm_arity succ_Un_distrib nat_simp_union
     by simp
 next
   case (Nand \<phi> \<psi>)
   let ?\<phi>' = "ren_forces_nand(forces'(\<phi>))"
   let ?\<psi>' = "ren_forces_nand(forces'(\<psi>))"
-  have "arity(leq_fm(2, 0, 4)) = 5" 
+  have "arity(leq_fm(2, 0, 4)) = 5"
     using leq_fm_arity succ_Un_distrib nat_simp_union
     by simp
   have "4 \<le> (4#+arity(\<phi>)) \<union> (4#+arity(\<psi>))" (is "_ \<le> ?rhs")
@@ -1634,40 +1621,30 @@ next
   from \<open>\<phi>\<in>_\<close> Nand
   have "pred(arity(?\<phi>')) \<le> ?rhs"  "pred(arity(?\<psi>')) \<le> ?rhs"
   proof -
-    from Nand
-    have A:"pred(4 \<union> succ(arity(forces'(\<phi>)))) = 3 \<union> arity(forces'(\<phi>))"
-           "pred(4 \<union> succ(arity(forces'(\<psi>)))) = 3 \<union> arity(forces'(\<psi>))"
-      using pred_Un_distrib pred_succ_eq 
-      by auto
+    have p: "pred(succ(n) \<union> succ(m)) = n \<union> m" if "n\<in>nat" "m\<in>nat" for n m
+      using that pred_Un_distrib pred_succ_eq by simp
     from \<open>\<phi>\<in>_\<close> \<open>\<psi>\<in>_\<close>
     have "pred(arity(?\<phi>')) \<le> pred(4 \<union> succ(arity(forces'(\<phi>))))"
          "pred(arity(?\<psi>')) \<le> pred(4 \<union> succ(arity(forces'(\<psi>))))"
-      using ren_forces_nand_arity[OF forces'_type[OF \<open>\<phi>\<in>_\<close>]]
-            ren_forces_nand_arity[OF forces'_type[OF \<open>\<psi>\<in>_\<close>]] 
-            pred_mono by auto
-    then
-    have B:"pred(arity(?\<phi>')) \<le> 3 \<union> arity(forces'(\<phi>))"
+      using ren_forces_nand_arity pred_mono by auto
+    with \<open>\<phi>\<in>_\<close> \<open>\<psi>\<in>_\<close>
+    have A:"pred(arity(?\<phi>')) \<le> 3 \<union> arity(forces'(\<phi>))"
            "pred(arity(?\<psi>')) \<le> 3 \<union> arity(forces'(\<psi>))"
-      using A by simp_all
+      using p[of 3] by simp_all
     from Nand
-    have "arity(forces'(\<phi>)) \<le> arity(\<phi>) #+ 4"
-         "arity(forces'(\<psi>)) \<le> arity(\<psi>) #+ 4"
-      by simp_all
-    with Nand
-    have C: "3 \<union> arity(forces'(\<phi>)) \<le> arity(\<phi>) #+ 4"
-            "3 \<union> arity(forces'(\<psi>)) \<le> arity(\<psi>) #+ 4"
+    have "3 \<union> arity(forces'(\<phi>)) \<le> arity(\<phi>) #+ 4"
+         "3 \<union> arity(forces'(\<psi>)) \<le> arity(\<psi>) #+ 4"
       using Un_le by simp_all
     with Nand
     show "pred(arity(?\<phi>')) \<le> ?rhs"
          "pred(arity(?\<psi>')) \<le> ?rhs"
-      using le_trans[OF B(1) C(1)]  le_trans[OF B(2) C(2)] le_Un_iff 
+      using le_trans[OF A(1)] le_trans[OF A(2)] le_Un_iff
       by simp_all
   qed
   with Nand \<open>_=5\<close>
   show ?case 
-    using pred_Un_distrib Un_assoc[symmetric] succ_Un_distrib nat_union_abs1 
-       Un_leI3[OF \<open>4 \<le> ?rhs\<close> ]
-   by simp
+    using pred_Un_distrib Un_assoc[symmetric] succ_Un_distrib nat_union_abs1 Un_leI3[OF \<open>4 \<le> ?rhs\<close>]
+    by simp
 next
   case (Forall \<phi>)
   let ?\<phi>' = "ren_forces_forall(forces'(\<phi>))"
@@ -1677,46 +1654,37 @@ next
     with Forall
     show ?thesis
     proof -
-      from Forall True \<open>\<phi>\<in>_\<close>
-      have "arity(forces'(\<phi>)) \<le> 5" 
-          "arity(?\<phi>') \<le> 5 \<union> arity(forces'(\<phi>))"
-        using ren_forces_all_arity[OF forces'_type[OF \<open>\<phi>\<in>_\<close>]] 
-          le_trans[of _ 4 5] by auto
+      from Forall True
+      have "arity(forces'(\<phi>)) \<le> 5"
+        using le_trans[of _ 4 5] by auto
       with \<open>\<phi>\<in>_\<close>
-      have 1:"arity(?\<phi>') \<le> 5" 
-        using nat_union_abs2 by auto
+      have "arity(?\<phi>') \<le> 5"
+        using ren_forces_all_arity[OF forces'_type[OF \<open>\<phi>\<in>_\<close>]] nat_union_abs2
+        by auto
       with Forall True
       show ?thesis
-        using succ_Un_distrib pred_Un_distrib Un_assoc[symmetric] 
-          pred_mono[OF _ 1]
+        using pred_mono[OF _ \<open>arity(?\<phi>') \<le> 5\<close>]
         by simp
     qed
   next
     case False
     with Forall
-    show ?thesis 
+    show ?thesis
     proof -
-      from Forall False \<open>\<phi>\<in>_\<close>
+      from Forall False
       have "arity(?\<phi>') = 5 \<union> arity(forces'(\<phi>))"
            "arity(forces'(\<phi>)) \<le> 5 #+ arity(\<phi>)"
-        using ren_forces_all_arity[OF forces'_type[OF \<open>\<phi>\<in>_\<close>]] 
-          le_trans[OF _ add_le_mono[of 4 5, OF _ le_refl] ]
+           "4 \<le> succ(succ(succ(arity(\<phi>))))"
+        using Ord_0_lt ren_forces_all_arity
+          le_trans[OF _ add_le_mono[of 4 5, OF _ le_refl]]
         by auto
       with \<open>\<phi>\<in>_\<close>
-      have "5 \<union> arity(forces'(\<phi>)) \<le> 5#+arity(\<phi>)" 
+      have "5 \<union> arity(forces'(\<phi>)) \<le> 5#+arity(\<phi>)"
         using nat_simp_union by auto
-      with \<open>\<phi>\<in>_\<close>
-      have A: "pred(arity(?\<phi>')) = 4 \<union> pred(arity(forces'(\<phi>)))" 
-        using \<open>arity(?\<phi>') = 5 \<union> _\<close> pred_Un_distrib
-        by simp
-      with \<open>\<phi>\<in>_\<close> False 
-      have "4 \<le> succ(succ(succ(arity(\<phi>))))" 
-        using Ord_0_lt by auto
-      with \<open>\<phi>\<in>_\<close>
+      with \<open>\<phi>\<in>_\<close> \<open>arity(?\<phi>') = 5 \<union> _\<close>
       show ?thesis
-        using A succ_Un_distrib pred_Un_distrib Un_assoc[symmetric]
-          succ_pred_eq[OF _ \<open>arity(\<phi>)\<noteq>0\<close>] pred_mono[OF _ Forall(2)]
-          Un_le[OF \<open>4\<le>succ(_)\<close>]
+        using pred_Un_distrib succ_pred_eq[OF _ \<open>arity(\<phi>)\<noteq>0\<close>]
+          pred_mono[OF _ Forall(2)] Un_le[OF \<open>4\<le>succ(_)\<close>]
       by simp
   qed
 qed
@@ -1728,7 +1696,8 @@ lemma forces_arity : "\<phi>\<in>formula \<Longrightarrow> arity(forces(\<phi>))
 
 lemma forces_arity_le :
   assumes "\<phi>\<in>formula" "n\<in>nat" "arity(\<phi>) \<le> n"
-  shows "arity(forces(\<phi>)) \<le> 4#+n" 
-  using assms le_trans[OF _ add_le_mono[OF le_refl[of 5] \<open>arity(\<phi>)\<le>_\<close>]] forces_arity by auto
+  shows "arity(forces(\<phi>)) \<le> 4#+n"
+  using assms le_trans[OF _ add_le_mono[OF le_refl[of 5] \<open>arity(\<phi>)\<le>_\<close>]] forces_arity
+  by auto
 
 end 
