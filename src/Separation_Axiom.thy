@@ -71,21 +71,15 @@ proof -
   have "domain(\<pi>)\<in>M" "domain(\<pi>) \<times> P \<in> M"
     by (simp_all del:setclass_iff add:setclass_iff[symmetric])
   from \<open>env \<in> _\<close>
-  obtain nenv where "nenv\<in>list(M)" "env = map(val(G),nenv)"
+  obtain nenv where "nenv\<in>list(M)" "env = map(val(G),nenv)" "length(nenv) = length(env)"
     using map_val by auto
-  then
-  have "length(nenv) = length(env)" "1\<le>2" by simp_all
-  from \<open>arity(\<phi>) \<le> _\<close> 
+  from \<open>arity(\<phi>) \<le> _\<close> \<open>env\<in>_\<close> \<open>\<phi>\<in>_\<close>
   have "arity(\<phi>) \<le> 2#+ length(env)" 
-    using length_type[OF \<open>env\<in>_\<close>] le_trans[OF \<open>arity(\<phi>)\<le>_\<close>]
-      add_le_mono[OF \<open>1\<le>2\<close> le_refl[of "length(env)"]] by auto
-  with \<open>nenv\<in>_\<close> \<open>env\<in>_\<close> \<open>\<pi>\<in>M\<close>
+    using le_trans[OF \<open>arity(\<phi>)\<le>_\<close>] add_le_mono[of 1 2,OF _ le_refl] 
+    by auto
+  with \<open>nenv\<in>_\<close> \<open>env\<in>_\<close> \<open>\<pi>\<in>M\<close> \<open>\<phi>\<in>_\<close> \<open>length(nenv) = length(env)\<close>
   have "arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])" for \<theta> 
-    using  
-   nat_union_abs2[OF nat_into_Ord[OF arity_type[OF \<open>\<phi>\<in>_\<close>]] add_type[THEN nat_into_Ord] \<open>arity(\<phi>) \<le> 2#+ _\<close>]
-   \<open>length(nenv) = length(env)\<close> arity_type length_type 
-      nat_simp_union 
-      length_app
+    using nat_union_abs2[OF _ _ \<open>arity(\<phi>) \<le> 2#+ _\<close>] nat_simp_union 
     by simp    
   note in_M = \<open>\<pi>\<in>M\<close> \<open>domain(\<pi>) \<times> P \<in> M\<close>  P_in_M one_in_M leq_in_M
   {
@@ -132,7 +126,7 @@ proof -
       have "... \<longleftrightarrow> sats(M,forces(?\<chi>), ([P, leq, one,p,\<theta>]@nenv@ [\<pi>])@[u])" 
         using app_assoc by simp
       also 
-      from in_M' \<open>env\<in>_\<close>  phi \<open>length(nenv) = length(env)\<close>
+      from in_M' \<open>env\<in>_\<close> phi \<open>length(nenv) = length(env)\<close>
         \<open>arity(forces(?\<chi>)) \<le> 6 #+ length(env)\<close> \<open>forces(?\<chi>)\<in>formula\<close>
       have "... \<longleftrightarrow> sats(M,forces(?\<chi>), [P, leq, one,p,\<theta>]@ nenv @ [\<pi>])"        
         by (rule_tac arity_sats_iff,auto)

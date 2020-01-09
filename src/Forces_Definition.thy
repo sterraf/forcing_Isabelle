@@ -344,7 +344,7 @@ lemma sats_Hfrc_fm:
   using assms
   by (simp add:sats_eq_case_fm sats_is_tuple_fm sats_mem_case_fm)
 
-schematic_goal Hfrc_iff_sats:
+lemma Hfrc_iff_sats:
   assumes
     "P\<in>nat" "leq\<in>nat" "fnnc\<in>nat" "f\<in>nat" "env\<in>list(A)"    
     "nth(P,env) = PP"  "nth(leq,env) = lleq" "nth(fnnc,env) = ffnnc" "nth(f,env) = ff" 
@@ -591,12 +591,8 @@ lemma tuple_abs[simp]:
    is_tuple(##M,z,t1,t2,p,t) \<longleftrightarrow> t = <z,t1,t2,p>" 
   unfolding is_tuple_def using tuples_in_M by simp
 
-lemma in_domain: "y\<in>M \<Longrightarrow> x\<in>domain(y) \<Longrightarrow> x\<in>M"
-  using domainE[of x y] trans_M Transset_intf[of M _ y] pair_in_M_iff by auto
-
 lemma oneN_in_M[simp]: "1\<in>M"
   by (simp del:setclass_iff add:setclass_iff[symmetric])
-
 
 lemma twoN_in_M : "2\<in>M" 
   by (simp del:setclass_iff add:setclass_iff[symmetric])
@@ -606,13 +602,7 @@ lemma comp_in_M:
   "p \<preceq> q \<Longrightarrow> q\<in>M"
   using leq_in_M trans_M Transset_intf[of M _ leq] pair_in_M_iff by auto
 
-
 (* Absoluteness of Hfrc *)
-
-
-lemma pair_trans_M : 
-  "\<lbrakk> t\<in>M ; \<langle>s,y\<rangle>\<in>t \<rbrakk> \<Longrightarrow> s\<in>M"
-  using trans_M Transset_intf[of M _ t] pair_in_M_iff by auto
 
 lemma eq_case_abs [simp]:
   assumes
@@ -631,7 +621,8 @@ proof -
                               (f ` \<langle>1, s, t1, q\<rangle> =1 \<longleftrightarrow> f ` \<langle>1, s, t2, q\<rangle>=1))) \<longleftrightarrow>
     (\<forall>s. s \<in> domain(t1) \<or> s \<in> domain(t2) \<longrightarrow> (\<forall>q. q\<in>P \<and> q \<preceq> p \<longrightarrow> 
                                   (f ` \<langle>1, s, t1, q\<rangle> =1 \<longleftrightarrow> f ` \<langle>1, s, t2, q\<rangle>=1)))" 
-    using assms pair_trans_M by auto
+    using assms domain_trans[OF trans_M,of t1] 
+                domain_trans[OF trans_M,of t2] by auto
   then show ?thesis
     unfolding eq_case_def is_eq_case_def 
     using assms pair_in_M_iff n_in_M[of 1] domain_closed tuples_in_M 
@@ -651,8 +642,8 @@ lemma mem_case_abs [simp]:
   apply (drule bspec,auto)
   apply (rule bexI)+
      defer 1 prefer 2
-  apply (rule pair_trans_M[of t2],auto)
-  done   
+  apply (rule domain_trans[OF trans_M,of t2],auto)
+  done
 
 lemma Hfrc_abs:
   "\<lbrakk>fnnc\<in>M; f\<in>M\<rbrakk> \<Longrightarrow>
@@ -791,8 +782,6 @@ proof -
   qed
 qed
 
-lemmas names_belowI' = names_belowI[OF frecRI1] names_belowI[OF frecRI2] names_belowI[OF frecRI3] 
-
 lemma names_below_tr : 
   assumes "x\<in> names_below(P,y)" 
     "y\<in> names_below(P,z)"
@@ -848,14 +837,16 @@ proof -
   have "x\<in>names_below(P,z)"
     unfolding frecrel_def Rrel_def
     by auto
+  from \<open>x\<in>names_below(P,z)\<close> 
   obtain f n1 n2 p where
     "x = <f,n1,n2,p>" "f\<in>2" "n1\<in>ecloseN(z)" "n2\<in>ecloseN(z)" "p\<in>P"
-    using \<open>x\<in>names_below(P,z)\<close> unfolding names_below_def by auto
+    unfolding names_below_def by auto
   then
   have "n1\<in>ecloseN(x)" "n2\<in>ecloseN(x)" 
     using components_in_eclose by simp_all
   with \<open>f\<in>2\<close> \<open>p\<in>P\<close> \<open>x = <f,n1,n2,p>\<close>
-  have "x\<in>names_below(P,x)" unfolding names_below_def by simp
+  have "x\<in>names_below(P,x)" 
+    unfolding names_below_def by simp
   }
   then show ?thesis .
 qed
@@ -902,7 +893,8 @@ lemma forcerel_mono :
   shows "forcerel(x) \<subseteq> forcerel(y)"
   using forcerel_mono_aux assms unfolding forcerel_def by simp
 
-lemma aux: "x \<in> names_below(P, w) \<Longrightarrow> <x,y> \<in> forcerel(z) \<Longrightarrow> (y \<in> names_below(P, w) \<longrightarrow> <x,y> \<in> forcerel(w))"
+lemma aux: "x \<in> names_below(P, w) \<Longrightarrow> <x,y> \<in> forcerel(z) \<Longrightarrow> 
+  (y \<in> names_below(P, w) \<longrightarrow> <x,y> \<in> forcerel(w))"
   unfolding forcerel_def
 proof(rule_tac a=x and b=y and P="\<lambda> y . y \<in> names_below(P, w) \<longrightarrow> <x,y> \<in> frecrel(names_below(P,w))^+" in trancl_induct,simp)
   let ?A="\<lambda> a . names_below(P, a)"
@@ -959,7 +951,8 @@ lemma forcerel_below_aux :
   unfolding forcerel_def
 proof(rule trancl_induct)
   show  "u \<in> names_below(P,y)" if " \<langle>u, y\<rangle> \<in> frecrel(names_below(P, x))" for y
-    using that vimage_singleton_iff  arg_into_names_below2 by simp
+    using that vimage_singleton_iff arg_into_names_below2 by simp
+next
   show "u \<in> names_below(P,z)" 
     if "\<langle>u, y\<rangle> \<in> frecrel(names_below(P, x))^+"
       "\<langle>y, z\<rangle> \<in> frecrel(names_below(P, x))"
@@ -1595,8 +1588,9 @@ lemma arity_forces_at:
     by auto
 
 lemma arity_forces':
-  shows "\<phi>\<in>formula \<Longrightarrow> arity(forces'(\<phi>)) \<le> arity(\<phi>) #+ 4"
-  unfolding forces_def
+  assumes "\<phi>\<in>formula"
+  shows "arity(forces'(\<phi>)) \<le> arity(\<phi>) #+ 4"
+  using assms
 proof (induct set:formula)
   case (Member x y)
   then
@@ -1626,7 +1620,7 @@ next
     from \<open>\<phi>\<in>_\<close> \<open>\<psi>\<in>_\<close>
     have "pred(arity(?\<phi>')) \<le> pred(4 \<union> succ(arity(forces'(\<phi>))))"
          "pred(arity(?\<psi>')) \<le> pred(4 \<union> succ(arity(forces'(\<psi>))))"
-      using ren_forces_nand_arity pred_mono by auto
+      using ren_forces_nand_arity pred_mono by simp_all
     with \<open>\<phi>\<in>_\<close> \<open>\<psi>\<in>_\<close>
     have A:"pred(arity(?\<phi>')) \<le> 3 \<union> arity(forces'(\<phi>))"
            "pred(arity(?\<psi>')) \<le> 3 \<union> arity(forces'(\<psi>))"
@@ -1690,9 +1684,11 @@ next
 qed
 qed
 
-lemma forces_arity : "\<phi>\<in>formula \<Longrightarrow> arity(forces(\<phi>)) \<le> 4#+arity(\<phi>)" 
+lemma forces_arity : 
+  assumes "\<phi>\<in>formula"
+  shows "arity(forces(\<phi>)) \<le> 4#+arity(\<phi>)" 
   unfolding forces_def
-  using arity_forces' le_trans nat_simp_union by auto
+  using assms arity_forces' le_trans nat_simp_union by auto
 
 lemma forces_arity_le :
   assumes "\<phi>\<in>formula" "n\<in>nat" "arity(\<phi>) \<le> n"
@@ -1700,4 +1696,4 @@ lemma forces_arity_le :
   using assms le_trans[OF _ add_le_mono[OF le_refl[of 5] \<open>arity(\<phi>)\<le>_\<close>]] forces_arity
   by auto
 
-end 
+end
