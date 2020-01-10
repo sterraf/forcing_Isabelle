@@ -212,7 +212,7 @@ proof -
 qed
 
 (* Collects in M *)
-lemma Collect_in_M :
+lemma Collect_in_M_0p :
   assumes
     Qfm : "Q_fm \<in> formula" and
     Qarty : "arity(Q_fm) = 1" and
@@ -237,6 +237,63 @@ proof -
   then
   show ?thesis using 1 by simp
 qed
+
+lemma Collect_in_M_2p :
+  assumes
+    Qfm : "Q_fm \<in> formula" and
+    Qarty : "arity(Q_fm) = 3" and
+    params_M : "y\<in>M" "z\<in>M" and
+    Qsats : "\<And>x. x\<in>M \<Longrightarrow> sats(M,Q_fm,[x,y,z]) \<longleftrightarrow> is_Q(##M,x,y,z)" and
+    Qabs  : "\<And>x. x\<in>M \<Longrightarrow> is_Q(##M,x,y,z) \<longleftrightarrow> Q(x,y,z)" and
+    "A\<in>M"
+  shows
+  "Collect(A,\<lambda>x. Q(x,y,z))\<in>M" 
+proof -
+  have "z\<in>A \<Longrightarrow> z\<in>M" for z
+    using \<open>A\<in>M\<close> trans_M Transset_intf[of M z A] by simp
+  then
+  have 1:"Collect(A,\<lambda>x. is_Q(##M,x,y,z)) = Collect(A,\<lambda>x. Q(x,y,z))" 
+    using Qabs Collect_cong[of "A" "A" "\<lambda>x. is_Q(##M,x,y,z)" "\<lambda>x. Q(x,y,z)"] by simp
+  have "separation(##M,\<lambda>x. is_Q(##M,x,y,z))"
+    using separation_ax Qsats Qarty Qfm params_M
+          separation_cong[of "##M" "\<lambda>x. sats(M,Q_fm,[x,y,z])" "\<lambda>x. is_Q(##M,x,y,z)"]
+    by simp
+  then 
+  have "Collect(A,\<lambda>x. is_Q(##M,x,y,z))\<in>M"
+    using separation_closed \<open>A\<in>M\<close> by simp 
+  then
+  show ?thesis using 1 by simp
+qed
+
+lemma Collect_in_M_4p :
+  assumes
+    Qfm : "Q_fm \<in> formula" and
+    Qarty : "arity(Q_fm) = 5" and
+    params_M : "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" and
+    Qsats : "\<And>x. x\<in>M \<Longrightarrow> sats(M,Q_fm,[x,a1,a2,a3,a4]) \<longleftrightarrow> is_Q(##M,x,a1,a2,a3,a4)" and
+    Qabs  : "\<And>x. x\<in>M \<Longrightarrow> is_Q(##M,x,a1,a2,a3,a4) \<longleftrightarrow> Q(x,a1,a2,a3,a4)" and
+    "A\<in>M"
+  shows
+  "Collect(A,\<lambda>x. Q(x,a1,a2,a3,a4))\<in>M" 
+proof -
+  have "z\<in>A \<Longrightarrow> z\<in>M" for z
+    using \<open>A\<in>M\<close> trans_M Transset_intf[of M z A] by simp
+  then
+  have 1:"Collect(A,\<lambda>x. is_Q(##M,x,a1,a2,a3,a4)) = Collect(A,\<lambda>x. Q(x,a1,a2,a3,a4))" 
+    using Qabs Collect_cong[of "A" "A" "\<lambda>x. is_Q(##M,x,a1,a2,a3,a4)" "\<lambda>x. Q(x,a1,a2,a3,a4)"] 
+    by simp
+  have "separation(##M,\<lambda>x. is_Q(##M,x,a1,a2,a3,a4))"
+    using separation_ax Qsats Qarty Qfm params_M
+          separation_cong[of "##M" "\<lambda>x. sats(M,Q_fm,[x,a1,a2,a3,a4])" 
+                                   "\<lambda>x. is_Q(##M,x,a1,a2,a3,a4)"]
+    by simp
+  then 
+  have "Collect(A,\<lambda>x. is_Q(##M,x,a1,a2,a3,a4))\<in>M"
+    using separation_closed \<open>A\<in>M\<close> by simp 
+  then
+  show ?thesis using 1 by simp
+qed
+
 
 end (* forcing_data *)      
   

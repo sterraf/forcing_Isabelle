@@ -718,7 +718,7 @@ lemma frecrel_closed:
    "frecrel(x)\<in>M" 
 proof -
   have "Collect(x\<times>x,\<lambda>z. (\<exists>x y. z = <x,y> \<and> frecR(x,y)))\<in>M"
-    using Collect_in_M[of "frecrelP_fm(0)"] frecrelP_fm_arity sats_frecrelP_fm
+    using Collect_in_M_0p[of "frecrelP_fm(0)"] frecrelP_fm_arity sats_frecrelP_fm
           frecrelP_abs \<open>x\<in>M\<close> cartprod_closed by simp 
   then show ?thesis
   unfolding frecrel_def Rrel_def frecrelP_def by simp
@@ -1361,7 +1361,7 @@ proof -
 qed
 
 lemma sats_forces_eq_fm: 
-  assumes  "p\<in>nat" "l\<in>nat" "r\<in>nat" "q\<in>nat" "t1\<in>nat" "t2\<in>nat"  "env\<in>list(M)"
+  assumes  "p\<in>nat" "l\<in>nat" "q\<in>nat" "t1\<in>nat" "t2\<in>nat"  "env\<in>list(M)"
            "nth(t1,env)=tt1" "nth(t2,env)=tt2" "nth(q,env)=qq" "nth(p,env)=P" "nth(l,env)=leq" 
          shows "sats(M,forces_eq_fm(p,l,q,t1,t2),env) \<longleftrightarrow> is_forces_eq(qq,tt1,tt2)"
 unfolding forces_eq_fm_def is_forces_eq_def using assms sats_is_tuple_fm oneN_in_M zero_in_M sats_frc_at_fm
@@ -1379,9 +1379,18 @@ end (* forcing_data *)
 
 definition 
   ren_forces_nand :: "i\<Rightarrow>i" where
-  "ren_forces_nand(\<phi>) \<equiv> Exists(Exists(Exists(Exists(
+  "ren_forces_nand(\<phi>) \<equiv> Exists(And(Equal(0,1),iterates(\<lambda>p. incr_bv(p)`1 , 2, \<phi>)))"
+
+(*
+sats(M, ren_forces_nand(\<phi>),[q,p,P,leq,o] @ env) \<longleftrightarrow> sats(M, \<phi>,[q,P,leq,o] @ env)"
+
+Exists(Exists(Exists(Exists(
           And(Equal(3,4),And(Equal(0,5),And(Equal(1,6),
           And(Equal(2,7),iterates(\<lambda>p. incr_bv(p)`4 , 5, \<phi>)))))))))" 
+
+sats(M, ren_forces_nand(\<phi>),[q,P,leq,o,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,o,q] @ env)"
+
+  *) 
 
 lemma ren_forces_nand_type[TC] :
   "\<phi>\<in>formula \<Longrightarrow> ren_forces_nand(\<phi>) \<in>formula" 
@@ -1430,9 +1439,9 @@ qed
 
 lemma sats_ren_forces_nand:
   "[q,P,leq,o,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
-   sats(M, ren_forces_nand(\<phi>),[q,P,leq,o,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,o,q] @ env)"
+   sats(M, ren_forces_nand(\<phi>),[q,p,P,leq,o] @ env) \<longleftrightarrow> sats(M, \<phi>,[q,P,leq,o] @ env)"
   unfolding ren_forces_nand_def
-  apply (insert sats_incr_bv_iff [of _ _ M _ "[P,leq,o,q]"])
+  apply (insert sats_incr_bv_iff [of _ _ M _ "[q]"])
   apply simp
   done
 
@@ -1490,9 +1499,9 @@ lemma ren_forces_forall_type[TC] :
 
 lemma sats_ren_forces_forall :
   "[x,P,leq,o,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
-    sats(M, ren_forces_forall(\<phi>),[x,P,leq,o,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,o,p,x] @ env)"
+    sats(M, ren_forces_forall(\<phi>),[x,p,P,leq,o] @ env) \<longleftrightarrow> sats(M, \<phi>,[p,P,leq,o,x] @ env)"
   unfolding ren_forces_forall_def
-  apply (insert sats_incr_bv_iff [of _ _ M _ "[P,leq,o,p,x]"])
+  apply (insert sats_incr_bv_iff [of _ _ M _ "[p,P,leq,o,x]"])
   apply simp
   done
   
@@ -1518,16 +1527,17 @@ lemma sats_leq_fm :
 
 consts forces' :: "i\<Rightarrow>i"
 primrec
-  "forces'(Member(x,y)) = forces_mem_fm(0,1,3,x#+4,y#+4)"
-  "forces'(Equal(x,y))  = forces_eq_fm(0,1,3,x#+4,y#+4)"
+  "forces'(Member(x,y)) = forces_mem_fm(1,2,0,x#+4,y#+4)"
+  "forces'(Equal(x,y))  = forces_eq_fm(1,2,0,x#+4,y#+4)"
   "forces'(Nand(p,q))   = 
-        Neg(Exists(And(Member(0,1),And(leq_fm(2,0,4),And(ren_forces_nand(forces'(p)),
+        Neg(Exists(And(Member(0,2),And(leq_fm(3,0,1),And(ren_forces_nand(forces'(p)),
                                          ren_forces_nand(forces'(q)))))))"
   "forces'(Forall(p))   = Forall(ren_forces_forall(forces'(p)))" 
 
+
 definition 
   forces :: "i\<Rightarrow>i" where
-  "forces(\<phi>) \<equiv> And(Member(3,0),forces'(\<phi>))"
+  "forces(\<phi>) \<equiv> And(Member(0,1),forces'(\<phi>))"
 
 lemma forces'_type [TC]:  "\<phi>\<in>formula \<Longrightarrow> forces'(\<phi>) \<in> formula" 
   by (induct \<phi> set:formula; simp)
@@ -1541,7 +1551,7 @@ begin
 lemma sats_forces_Member :
   assumes  "x\<in>nat" "y\<in>nat" "env\<in>list(M)"
            "nth(x,env)=xx" "nth(y,env)=yy" "q\<in>M" 
-         shows "sats(M,forces(Member(x,y)),[P,leq,one,q]@env) \<longleftrightarrow> 
+         shows "sats(M,forces(Member(x,y)),[q,P,leq,one]@env) \<longleftrightarrow> 
                 (q\<in>P \<and> is_forces_mem(q,xx,yy))"
   unfolding forces_def using assms sats_forces_mem_fm P_in_M leq_in_M one_in_M 
   by simp
@@ -1549,31 +1559,31 @@ lemma sats_forces_Member :
 lemma sats_forces_Equal :
   assumes  "x\<in>nat" "y\<in>nat" "env\<in>list(M)"
            "nth(x,env)=xx" "nth(y,env)=yy" "q\<in>M" 
-         shows "sats(M,forces(Equal(x,y)),[P,leq,one,q]@env) \<longleftrightarrow> 
+         shows "sats(M,forces(Equal(x,y)),[q,P,leq,one]@env) \<longleftrightarrow> 
                 (q\<in>P \<and> is_forces_eq(q,xx,yy))"
   unfolding forces_def using assms sats_forces_eq_fm P_in_M leq_in_M one_in_M 
   by simp
 
 lemma sats_forces_Nand :
   assumes  "\<phi>\<in>formula" "\<psi>\<in>formula" "env\<in>list(M)" "p\<in>M" 
-  shows "sats(M,forces(Nand(\<phi>,\<psi>)),[P,leq,one,p]@env) \<longleftrightarrow> 
+  shows "sats(M,forces(Nand(\<phi>,\<psi>)),[p,P,leq,one]@env) \<longleftrightarrow> 
          (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> (\<exists>qp\<in>M. pair(##M,q,p,qp) \<and> qp\<in>leq) \<and> 
-               (sats(M,forces'(\<phi>),[P,leq,one,q]@env) \<and> sats(M,forces'(\<psi>),[P,leq,one,q]@env))))"
+               (sats(M,forces'(\<phi>),[q,P,leq,one]@env) \<and> sats(M,forces'(\<psi>),[q,P,leq,one]@env))))"
   unfolding forces_def using sats_leq_fm assms sats_ren_forces_nand P_in_M leq_in_M one_in_M  
   by simp
   
 lemma sats_forces_Neg :
   assumes  "\<phi>\<in>formula" "env\<in>list(M)" "p\<in>M" 
-  shows "sats(M,forces(Neg(\<phi>)),[P,leq,one,p]@env) \<longleftrightarrow> 
+  shows "sats(M,forces(Neg(\<phi>)),[p,P,leq,one]@env) \<longleftrightarrow> 
          (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> (\<exists>qp\<in>M. pair(##M,q,p,qp) \<and> qp\<in>leq) \<and> 
-               (sats(M,forces'(\<phi>),[P,leq,one,q]@env))))"
+               (sats(M,forces'(\<phi>),[q,P,leq,one]@env))))"
   unfolding Neg_def using assms sats_forces_Nand
   by simp
 
 lemma sats_forces_Forall :
   assumes  "\<phi>\<in>formula" "env\<in>list(M)" "p\<in>M" 
-  shows "sats(M,forces(Forall(\<phi>)),[P,leq,one,p]@env) \<longleftrightarrow> 
-         p\<in>P \<and> (\<forall>x\<in>M. sats(M,forces'(\<phi>),[P,leq,one,p,x]@env))"
+  shows "sats(M,forces(Forall(\<phi>)),[p,P,leq,one]@env) \<longleftrightarrow> 
+         p\<in>P \<and> (\<forall>x\<in>M. sats(M,forces'(\<phi>),[p,P,leq,one,x]@env))"
   unfolding forces_def using assms sats_ren_forces_forall P_in_M leq_in_M one_in_M  
   by simp
 
