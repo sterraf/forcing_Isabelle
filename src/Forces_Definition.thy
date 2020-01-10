@@ -1399,19 +1399,19 @@ lemma ren_forces_nand_type[TC] :
 
 lemma ren_forces_nand_arity : 
   assumes "\<phi>\<in>formula" 
-  shows "arity(ren_forces_nand(\<phi>)) \<le> 4 \<union> succ(arity(\<phi>))"
+  shows "arity(ren_forces_nand(\<phi>)) \<le> succ(arity(\<phi>))"
 proof -
-  consider (lt) "4<arity(\<phi>)" | (ge) "\<not> 4 < arity(\<phi>)"
+  consider (lt) "1<arity(\<phi>)" | (ge) "\<not> 1 < arity(\<phi>)"
     by auto
   then
   show ?thesis
   proof cases
     case lt
     with \<open>\<phi>\<in>_\<close>
-    have "4 < succ(arity(\<phi>))" "4<arity(\<phi>)#+2"  "4<arity(\<phi>)#+3"  "4<arity(\<phi>)#+4"
+    have "2 < succ(arity(\<phi>))" "2<arity(\<phi>)#+2"
       using succ_ltI by auto
     with \<open>\<phi>\<in>_\<close>
-    have "arity(iterates(\<lambda>p. incr_bv(p)`4,5,\<phi>)) = 5#+arity(\<phi>)"
+    have "arity(iterates(\<lambda>p. incr_bv(p)`1,2,\<phi>)) = 2#+arity(\<phi>)"
       using arity_incr_bv_lemma lt
       by auto
     with \<open>\<phi>\<in>_\<close>
@@ -1422,18 +1422,18 @@ proof -
   next
     case ge
     with \<open>\<phi>\<in>_\<close>
-    have "arity(\<phi>) \<le> 4" "pred^4(arity(\<phi>)) \<le> 4"
+    have "arity(\<phi>) \<le> 1" "pred(arity(\<phi>)) \<le> 1"
       using not_lt_iff_le le_trans[OF le_pred]
       by simp_all
     with \<open>\<phi>\<in>_\<close>
-    have "arity(iterates(\<lambda>p. incr_bv(p)`4,5,\<phi>)) = arity(\<phi>)"
+    have "arity(iterates(\<lambda>p. incr_bv(p)`1,2,\<phi>)) = (arity(\<phi>))"
       using arity_incr_bv_lemma ge
       by simp
-    with \<open>arity(\<phi>) \<le> 4\<close> \<open>\<phi>\<in>_\<close> \<open>pred^4(_) \<le> 4\<close>
+    with \<open>arity(\<phi>) \<le> 1\<close> \<open>\<phi>\<in>_\<close> \<open>pred(_) \<le> 1\<close>
     show ?thesis
       unfolding ren_forces_nand_def
       using  pred_Un_distrib nat_union_abs1 Un_assoc[symmetric] nat_union_abs2
-      by (simp,simp add:nat_simp_union)
+      by simp
   qed
 qed
 
@@ -1617,24 +1617,19 @@ next
   case (Nand \<phi> \<psi>)
   let ?\<phi>' = "ren_forces_nand(forces'(\<phi>))"
   let ?\<psi>' = "ren_forces_nand(forces'(\<psi>))"
-  have "arity(leq_fm(2, 0, 4)) = 5"
+  have "arity(leq_fm(3, 0, 1)) = 4"
     using leq_fm_arity succ_Un_distrib nat_simp_union
     by simp
-  have "4 \<le> (4#+arity(\<phi>)) \<union> (4#+arity(\<psi>))" (is "_ \<le> ?rhs")
+  have "3 \<le> (4#+arity(\<phi>)) \<union> (4#+arity(\<psi>))" (is "_ \<le> ?rhs")
     using nat_simp_union by simp
   from \<open>\<phi>\<in>_\<close> Nand
   have "pred(arity(?\<phi>')) \<le> ?rhs"  "pred(arity(?\<psi>')) \<le> ?rhs"
   proof -
-    have p: "pred(succ(n) \<union> succ(m)) = n \<union> m" if "n\<in>nat" "m\<in>nat" for n m
-      using that pred_Un_distrib pred_succ_eq by simp
     from \<open>\<phi>\<in>_\<close> \<open>\<psi>\<in>_\<close>
-    have "pred(arity(?\<phi>')) \<le> pred(4 \<union> succ(arity(forces'(\<phi>))))"
-         "pred(arity(?\<psi>')) \<le> pred(4 \<union> succ(arity(forces'(\<psi>))))"
-      using ren_forces_nand_arity pred_mono by simp_all
-    with \<open>\<phi>\<in>_\<close> \<open>\<psi>\<in>_\<close>
-    have A:"pred(arity(?\<phi>')) \<le> 3 \<union> arity(forces'(\<phi>))"
-           "pred(arity(?\<psi>')) \<le> 3 \<union> arity(forces'(\<psi>))"
-      using p[of 3] by simp_all
+    have A:"pred(arity(?\<phi>')) \<le> arity(forces'(\<phi>))"
+           "pred(arity(?\<psi>')) \<le> arity(forces'(\<psi>))"
+      using pred_mono[OF _  ren_forces_nand_arity] pred_succ_eq 
+      by simp_all
     from Nand
     have "3 \<union> arity(forces'(\<phi>)) \<le> arity(\<phi>) #+ 4"
          "3 \<union> arity(forces'(\<psi>)) \<le> arity(\<psi>) #+ 4"
@@ -1645,9 +1640,9 @@ next
       using le_trans[OF A(1)] le_trans[OF A(2)] le_Un_iff
       by simp_all
   qed
-  with Nand \<open>_=5\<close>
+  with Nand \<open>_=4\<close>
   show ?case 
-    using pred_Un_distrib Un_assoc[symmetric] succ_Un_distrib nat_union_abs1 Un_leI3[OF \<open>4 \<le> ?rhs\<close>]
+    using pred_Un_distrib Un_assoc[symmetric] succ_Un_distrib nat_union_abs1 Un_leI3[OF \<open>3 \<le> ?rhs\<close>]
     by simp
 next
   case (Forall \<phi>)
