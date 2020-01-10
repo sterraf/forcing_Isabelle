@@ -136,4 +136,70 @@ theorem proper_extension: assumes "M_generic(G)" shows "M \<noteq> GenExt(G)"
 
 end (* M_ctm *)
 
+(* Version with FiniteFun *)
+
+abbreviation
+  Fn_nat :: "i" where
+  "Fn_nat \<equiv> FiniteFun(nat,nat)"
+
+definition
+  fleR :: "i \<Rightarrow> i \<Rightarrow> o" where
+  "fleR(xs,ys) \<equiv> ys \<subseteq> xs"
+
+definition
+  flerel :: "i \<Rightarrow> i" where
+  "flerel(A) \<equiv> Rrel(fleR,A)"
+
+definition
+  fle :: "i" where
+  "fle \<equiv> flerel(Fn_nat)"
+
+lemma fleI[intro!]: 
+  "\<langle>x,y\<rangle> \<in> Fn_nat\<times>Fn_nat \<Longrightarrow> y \<subseteq> x  \<Longrightarrow> \<langle>x,y\<rangle> \<in> fle"
+  unfolding preorder_on_def refl_def trans_on_def 
+  fle_def flerel_def Rrel_def fleR_def 
+  by blast
+
+lemma fleD[dest!]: 
+  "z \<in> fle \<Longrightarrow> \<exists>x y. \<langle>x,y\<rangle> \<in> Fn_nat\<times>Fn_nat \<and> y\<subseteq>x \<and> z = \<langle>x,y\<rangle>"
+  unfolding preorder_on_def refl_def trans_on_def 
+  fle_def flerel_def Rrel_def fleR_def 
+  by blast
+
+lemma preorder_on_fle: "preorder_on(Fn_nat,fle)"
+  unfolding preorder_on_def refl_def trans_on_def 
+  using app_assoc by auto
+
+lemma zero_fle_max: "x\<in>Fn_nat \<Longrightarrow> \<langle>x,0\<rangle> \<in> fle"
+  using FiniteFun.emptyI 
+  by (auto)
+
+interpretation f: forcing_notion "Fn_nat" "fle" "0"
+  unfolding forcing_notion_def 
+  using preorder_on_fle zero_fle_max FiniteFun.emptyI by simp
+
+(* abbreviation fle :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>" 50)
+  where "x \<preceq> y \<equiv> f.Leq(x,y)" 
+
+abbreviation Incompatible :: "[i, i] \<Rightarrow> o"  (infixl "\<bottom>" 50)
+  where "p \<bottom> q \<equiv> f.Incompatible(p,q)"*)
+
+lemma incompatible_extensions:
+  assumes "p\<in>Fn_nat"
+  shows "\<exists>q\<in>Fn_nat. \<exists>r\<in>Fn_nat. q \<preceq> p \<and> r \<preceq> p \<and> q \<bottom> r"
+  oops
+
+context M_ctm
+begin
+
+lemma Fn_nat_in_M: "Fn_nat\<in>M" 
+  sorry
+
+lemma fle_in_M: "fle \<in> M"
+  unfolding fle_def flerel_def Rrel_def fleR_def
+  sorry
+
+end (* M_ctm *)
+
+
 end
