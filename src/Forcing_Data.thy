@@ -117,6 +117,18 @@ definition
   M_generic :: "i\<Rightarrow>o" where
   "M_generic(G) == filter(G) \<and> (\<forall>D\<in>M. D\<subseteq>P \<and> dense(D)\<longrightarrow>D\<inter>G\<noteq>0)"
 
+lemma M_genericD [dest]: "M_generic(G) \<Longrightarrow> x\<in>G \<Longrightarrow> x\<in>P"
+  unfolding M_generic_def by (blast dest:filterD)
+
+lemma M_generic_leqD [dest]: "M_generic(G) \<Longrightarrow> p\<in>G \<Longrightarrow> q\<in>P \<Longrightarrow> p\<preceq>q \<Longrightarrow> q\<in>G"
+  unfolding M_generic_def by (blast dest:filter_leqD)
+
+lemma M_generic_compatD [dest]: "M_generic(G) \<Longrightarrow> p\<in>G \<Longrightarrow> r\<in>G \<Longrightarrow> \<exists>q\<in>G. q\<preceq>p \<and> q\<preceq>r"
+  unfolding M_generic_def by (blast dest:low_bound_filter)
+
+lemma M_generic_denseD [dest]: "M_generic(G) \<Longrightarrow> dense(D) \<Longrightarrow> D\<subseteq>P \<Longrightarrow> D\<in>M \<Longrightarrow> \<exists>q\<in>G. q\<in>D"
+  unfolding M_generic_def by blast
+
 lemma G_nonempty: "M_generic(G) \<Longrightarrow> G\<noteq>0"
 proof -
   have "P\<subseteq>P" ..
@@ -140,6 +152,9 @@ proof -
     using G_nonempty and one_in_P and one_max 
     unfolding increasing_def by blast
 qed
+
+lemma G_subset_M: "M_generic(G) \<Longrightarrow> G \<subseteq> M" \<comment> \<open>put somewhere else\<close>
+  using transitivity[OF _ P_in_M] by auto
   
 declare iff_trans [trans]
   

@@ -1,7 +1,6 @@
 theory Proper_Extension
   imports
-    Forcing_Thms 
-    (* it actually depends on more basic stuff, plus a misplaced lemma in the former *)
+    Names
 
 begin
 
@@ -60,11 +59,8 @@ proof
       M_generic_def by simp \<comment> \<open>need to put generic ==> filter in claset\<close>
 qed
 
-lemma G_subset_M: "M_generic(G) \<Longrightarrow> G \<subseteq> M" \<comment> \<open>put somewhere else\<close>
-  using transitivity[OF _ P_in_M] by auto
-
 theorem proper_extension: assumes "M_generic(G)" shows "M \<noteq> M[G]"
-  using assms G_in_Gen_Ext[of G] one_in_G[of G] generic_not_in_M G_subset_M
+  using assms G_in_Gen_Ext[of G] one_in_G[of G] generic_not_in_M
   by force
 
 end (* ctm_separative *)
