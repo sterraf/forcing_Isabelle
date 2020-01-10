@@ -72,6 +72,15 @@ definition
   "is_blc(M,A,aa,is_g,h,xs,z) \<equiv> is_list_case(M,aa,change_args(M,A,is_g,h),xs,z)"
 
 definition
+  Lam_list_case :: "[i, i,[i,i,i]\<Rightarrow>i,i,i] \<Rightarrow> i" where
+  "Lam_list_case(A,aa,g,x,h) \<equiv>
+          Lambda(list(A), 
+                 list_case'(aa,
+                           \<lambda>a l. g(a, l, h ` succ(length(l)) ` l)
+                           )
+                 )"
+
+definition
   (* x is dumb           M   A aa       is_g   x *)
   is_Lam_list_case :: "[i\<Rightarrow>o,i, i,[i,i,i,i]\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
   "is_Lam_list_case(M,A,aa,is_g,x,h,z) \<equiv> \<exists>lA[M].
@@ -80,9 +89,14 @@ definition
 definition
   is_list_rec :: "[i\<Rightarrow>o,i,i,[i,i,i,i]\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "is_list_rec(M,A,aa,is_g,ll,z)\<equiv> \<exists>ln[M]. \<exists>sl[M]. \<exists>tr[M].
-     is_length(M,A,ll,ln) \<and> successor(M,ln,sl) \<and> 
-     is_transrec(M,is_Lam_list_case(M,A,aa,is_g),sl,tr) \<and>
-     fun_apply(M,tr,ll,z)"
+    is_length(M,A,ll,ln) \<and> successor(M,ln,sl) \<and> 
+    is_transrec(M,is_Lam_list_case(M,A,aa,is_g),sl,tr) \<and>
+    fun_apply(M,tr,ll,z)"
+(*  "is_list_rec(M,A,aa,is_g,ll,z)\<equiv> \<exists>om[M]. \<exists>ln[M]. \<exists>sl[M]. \<exists>tr[M]. \<exists>lA[M].
+    is_list(M,A,lA) \<and> ll \<in> lA \<and> is_length(M,A,ll,ln) \<and> omega(M,om) \<and>
+    ln \<in> om \<and> successor(M,ln,sl) \<and> 
+    is_transrec(M,is_Lam_list_case(M,A,aa,is_g),sl,tr) \<and>
+    fun_apply(M,tr,ll,z)"*)
 
 context M_datatypes
 begin
@@ -93,7 +107,7 @@ lemma relation2_change_args:
   sorry
 
 txt\<open>Si tuviera relation2 (sorriado arriba), podría probar que is_blc
-(abreviatura de "is_b con list_case') se corresponde al
+(abreviatura de "is_b con list_case'") se corresponde al
 "is_b" que va a consumir is_lambda más abajo.\<close>
 
 lemma Relation1_is_blc:
@@ -106,22 +120,55 @@ lemma Relation1_is_blc:
 
 lemma relation2_is_Lam_list_case:
   assumes 
-    "relation3(M,is_g,g)" "M(A)"  "M(h)" "M(aa)"
+    "relation3(M,is_g,g)" "M(A)" "M(aa)"
+    "\<And>h a l. M(h) \<Longrightarrow> M(a) \<Longrightarrow> M(l) \<Longrightarrow>
+        M(g(a, l, h ` succ(length(l)) ` l))"
+    (* (* These two would suffice, but the second might not be true *)
+    "\<And>h a l. M(h) \<Longrightarrow> M(a) \<Longrightarrow> M(l) \<Longrightarrow> M(g(a, l, h))"
+    "\<And>l. M(l) \<Longrightarrow> M(length(l))"
+    *)  
   shows
-    "relation2(M,is_Lam_list_case(M,A,aa,is_g),
-          \<lambda>x h. Lambda(list(A), list_case'(aa,
-                               \<lambda>a l. g(a, l, h ` succ(length(l)) ` l)
-                              )
-                       )
-              )"
-  using assms Relation1_is_blc[OF assms(1-4)] 
-    lambda_abs2[OF Relation1_is_blc[OF assms(1-4)] 
-      list_closed[OF \<open>M(A)\<close>]] M_nonempty
-  unfolding relation3_def relation2_def is_Lam_list_case_def
-  apply (simp del:list_case'_eq_list_case)
+    "relation2(M,is_Lam_list_case(M,A,aa,is_g),Lam_list_case(A,aa,g))"
+  using assms lambda_abs2[OF Relation1_is_blc[OF assms(1,2) _ assms(3)] list_closed[OF \<open>M(A)\<close>]]
+  unfolding relation3_def relation2_def is_Lam_list_case_def Lam_list_case_def
+  by (simp del:list_case'_eq_list_case)
+
+end (* M_datatypes *)
+
+context M_eclose
+begin
+
+lemma transrec_Lam_list_case_abs:
+  assumes   
+    "relation3(M,is_g,g)" "M(A)" "M(aa)" 
+    "\<And>h a l. M(h) \<Longrightarrow> M(a) \<Longrightarrow> M(l) \<Longrightarrow> M(g(a,l,h`succ(length(l))`l))"
+    "transrec_replacement(M,is_Lam_list_case(M,A,aa,is_g),i)"
+    "Ord(i)" "M(i)" "M(z)"
+    "\<forall>x[M]. \<forall>gg[M]. function(gg) \<longrightarrow> M(Lam_list_case(A,aa,g,x,gg))"
+  shows 
+    "is_transrec(M,is_Lam_list_case(M,A,aa,is_g),i,z) \<longleftrightarrow> z = transrec(i,Lam_list_case(A,aa,g))"
+    using transrec_abs[OF assms(5) relation2_is_Lam_list_case[OF assms(1-4)] assms(6-9)]
+    by simp
+
+lemma list_rec_abs:
+  assumes   
+    "relation3(M,is_g,g)" "M(A)" "M(aa)" 
+    "\<And>h a l. M(h) \<Longrightarrow> M(a) \<Longrightarrow> M(l) \<Longrightarrow> M(g(a,l,h`succ(length(l))`l))"
+    "\<And>i. M(i) \<Longrightarrow> transrec_replacement(M,is_Lam_list_case(M,A,aa,is_g),i)"
+    "M(z)"
+    "\<forall>x[M]. \<forall>gg[M]. function(gg) \<longrightarrow> M(Lam_list_case(A,aa,g,x,gg))"
+    "ll\<in>list(A)"
+  shows 
+    "is_list_rec(M,A,aa,is_g,ll,z) \<longleftrightarrow> z = list_rec(aa,g,ll)"
+proof -
+  from assms
+  have "M(ll)" using transM[of _ "list(A)"] by simp
+  with assms
+  show ?thesis
+    using transrec_Lam_list_case_abs[OF assms(1-5) _ _ assms(6,7)] 
+    unfolding is_list_rec_def
+    apply (simp add:list_rec_eq)
   oops
 
-
-end
-
+end (* M_eclose *)
 end
