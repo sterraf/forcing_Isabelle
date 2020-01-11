@@ -16,7 +16,7 @@ lemma nth_concat3 : "env\<in> list(A) \<Longrightarrow>  u = nth(succ(length(env
 
 definition 
   sep_var :: "i \<Rightarrow> i" where
-  "sep_var(n) == {<0,3>,<1,4>,<2,5>,<3,1>,<4,0>,<5#+n,6>,<6#+n,2>}"
+  "sep_var(n) == {<0,1>,<1,3>,<2,4>,<3,5>,<4,0>,<5#+n,6>,<6#+n,2>}"
 
 definition
   sep_env :: "i \<Rightarrow> i" where
@@ -182,17 +182,18 @@ lemma sep_env_action:
   assumes
     "[t,p,u,P,leq,o,pi] \<in> list(M)"
     "env \<in> list(M)"
-  shows "\<forall> i . i \<in> weak(length(env),5) \<longrightarrow> nth(sep_env(length(env))`i,[t,p,u,P,leq,o,pi]@env) = nth(i,[P,leq,o,p,t] @ env @ [pi,u])"
+  shows "\<forall> i . i \<in> weak(length(env),5) \<longrightarrow> 
+      nth(sep_env(length(env))`i,[t,p,u,P,leq,o,pi]@env) = nth(i,[p,P,leq,o,t] @ env @ [pi,u])"
 proof -
   from assms
-  have A: "5#+length(env)\<in>nat" "[P, leq, o, p, t] \<in>list(M)"
+  have A: "5#+length(env)\<in>nat" "[p, P, leq, o, t] \<in>list(M)"
     by simp_all
   let ?f="sep_env(length(env))"
   have EQ: "weak(length(env),5) = 5#+length(env) - 5"
     using weak_equal length_type[OF \<open>env\<in>list(M)\<close>] by simp
   let ?tgt="[t,p,u,P,leq,o,pi]@env"
-  let ?src="[P,leq,o,p,t] @ env @ [pi,u]"
-  have "nth(?f`i,[t,p,u,P,leq,o,pi]@env) = nth(i,[P,leq,o,p,t] @ env @ [pi,u])" 
+  let ?src="[p,P,leq,o,t] @ env @ [pi,u]"
+  have "nth(?f`i,[t,p,u,P,leq,o,pi]@env) = nth(i,[p,P,leq,o,t] @ env @ [pi,u])" 
     if "i \<in> (5#+length(env)-5)" for i 
   proof -
     from that 
@@ -380,7 +381,7 @@ lemma sep_var_action :
     "[t,p,u,P,leq,o,pi] \<in> list(M)"
     "env \<in> list(M)"
   shows "\<forall> i . i \<in> (7#+length(env)) - weak(length(env),5) \<longrightarrow> 
-    nth(sep_var(length(env))`i,[t,p,u,P,leq,o,pi]@env) = nth(i,[P,leq,o,p,t] @ env @ [pi,u])"
+    nth(sep_var(length(env))`i,[t,p,u,P,leq,o,pi]@env) = nth(i,[p,P,leq,o,t] @ env @ [pi,u])"
   using assms
   apply (subst sep_var_domain[OF length_type[OF \<open>env\<in>list(M)\<close>],symmetric],subst (1) sep_var_def,auto)
   apply (subst apply_fun[OF sep_var_type],simp add: length_type[OF \<open>env\<in>list(M)\<close>],simp add: sep_var_def,simp)+
@@ -420,10 +421,10 @@ qed
 
 lemma rensep_action :
   assumes "[t,p,u,P,leq,o,pi] @ env \<in> list(M)"
-  shows "\<forall> i . i < 7#+length(env) \<longrightarrow> nth(rensep(length(env))`i,[t,p,u,P,leq,o,pi]@env) = nth(i,[P,leq,o,p,t] @ env @ [pi,u])"
+  shows "\<forall> i . i < 7#+length(env) \<longrightarrow> nth(rensep(length(env))`i,[t,p,u,P,leq,o,pi]@env) = nth(i,[p,P,leq,o,t] @ env @ [pi,u])"
 proof - 
   let ?tgt="[t,p,u,P,leq,o,pi]@env"
-  let ?src="[P,leq,o,p,t] @ env @ [pi,u]"
+  let ?src="[p,P,leq,o,t] @ env @ [pi,u]"
   let ?m="7 #+ length(env) - weak(length(env),5)"
   let ?p="weak(length(env),5)"
   let ?f="sep_var(length(env))"
@@ -474,7 +475,7 @@ lemma sepren_action:
     "[t,p,u,P,leq,o,pi] \<in> list(M)"
     "env\<in>list(M)"
     "\<phi>\<in>formula"
-  shows "sats(M, sep_ren(length(env),\<phi>),[t,p,u,P,leq,o,pi] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,o,p,t] @ env @ [pi,u])"
+  shows "sats(M, sep_ren(length(env),\<phi>),[t,p,u,P,leq,o,pi] @ env) \<longleftrightarrow> sats(M, \<phi>,[p,P,leq,o,t] @ env @ [pi,u])"
 proof -
   from assms
   have 1: " [t, p, u, P, leq, o, pi] @ env \<in> list(M)" 
@@ -482,7 +483,7 @@ proof -
     "[pi,u] \<in> list(M)"    
     by simp_all
   then 
-  have 2: "[P,leq,o,p,t] @ env @ [pi,u] \<in> list(M)" using app_type by simp
+  have 2: "[p,P,leq,o,t] @ env @ [pi,u] \<in> list(M)" using app_type by simp
   show ?thesis 
     unfolding sep_ren_def
     using  sats_iff_sats_ren[OF \<open>\<phi>\<in>formula\<close>       
