@@ -2,7 +2,7 @@ theory Powerset_Axiom
   imports Separation_Axiom Pairing_Axiom Union_Axiom 
 begin
 
-simple_rename "perm_pow" src "[p,l,o,ss,fs,\<chi>]" tgt "[fs,ss,sp,p,l,o,\<chi>]"
+simple_rename "perm_pow" src "[ss,p,l,o,fs,\<chi>]" tgt "[fs,ss,sp,p,l,o,\<chi>]"
 
 lemma Collect_inter_Transset:
   assumes 
@@ -37,7 +37,7 @@ lemma sats_fst_snd_in_M:
     "A\<in>M" "B\<in>M" "\<phi> \<in> formula" "p\<in>M" "l\<in>M" "o\<in>M" "\<chi>\<in>M"
     "arity(\<phi>) \<le> 6"
   shows
-    "{sq \<in>A\<times>B . sats(M,\<phi>,[p,l,o,snd(sq),fst(sq),\<chi>])} \<in> M" 
+    "{sq \<in>A\<times>B . sats(M,\<phi>,[snd(sq),p,l,o,fst(sq),\<chi>])} \<in> M" 
     (is "?\<theta> \<in> M")
 proof -
   have "6\<in>nat" "7\<in>nat" by simp_all
@@ -76,13 +76,13 @@ proof -
       "... \<longleftrightarrow> sats(M,?\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>])"
        by auto
     also from inM \<open>\<phi> \<in> formula\<close> \<open>arity(\<phi>) \<le> 6\<close> have
-      " ... \<longleftrightarrow> sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
+      " ... \<longleftrightarrow> sats(M,\<phi>,[snd(sp),p,l,o,fst(sp),\<chi>])" 
       (is "sats(_,_,?env1) \<longleftrightarrow> sats(_,_,?env2)")
       using sats_iff_sats_ren[of \<phi> 6 7 ?env2 M ?env1 perm_pow_fn] perm_pow_thm
       unfolding perm_pow_fn_def by simp
     finally have
       "sats(M,?\<psi>,[sp,p,l,o,\<chi>,p]) \<longleftrightarrow> 
-       sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
+       sats(M,\<phi>,[snd(sp),p,l,o,fst(sp),\<chi>])" 
       by simp
   }
   then have
@@ -195,6 +195,7 @@ proof -
           using name_components_in_M[of _ _ ?\<theta>]  by auto
         moreover from 1 have
           "(p \<tturnstile> (Member(0,1)) [\<sigma>,\<chi>])" "p\<in>P" 
+          unfolding Forces_def
           by simp_all
         moreover note
           \<open>val(G,\<chi>) = c\<close>       
@@ -204,7 +205,7 @@ proof -
           by auto
         moreover have
           "x\<in>M[G]" 
-          using \<open>val(G,\<sigma>) =  x\<close> \<open>\<sigma>\<in>M\<close> GenExtI by blast
+          using \<open>val(G,\<sigma>) =  x\<close> \<open>\<sigma>\<in>M\<close>  \<open>\<chi>\<in>M\<close> GenExtI by blast
         ultimately have
           "x\<in>c"
           using \<open>c\<in>M[G]\<close> by simp
