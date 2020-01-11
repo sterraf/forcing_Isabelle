@@ -3,7 +3,7 @@ theory Replacement_Axiom
     Least Relative_Univ Separation_Axiom  Renaming_Auto
 begin
 
-rename "renrep1" src "[P,leq,o,p,\<rho>,\<tau>]" tgt "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o]"
+rename "renrep1" src "[p,P,leq,o,\<rho>,\<tau>]" tgt "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o]"
 
 definition renrep_fn :: "i \<Rightarrow> i" where
   "renrep_fn(env) == sum(renrep1_fn,id(length(env)),6,8,length(env))"
@@ -31,14 +31,13 @@ lemma renrep_sats :
     [P,leq,o,p,\<rho>,\<tau>] @ env \<in> list(M) \<Longrightarrow>
     V \<in> M \<Longrightarrow> \<alpha> \<in> M \<Longrightarrow> 
     \<phi>\<in>formula \<Longrightarrow> 
-  sats(M, \<phi>, [P,leq,o,p,\<rho>,\<tau>] @ env) \<longleftrightarrow> sats(M, renrep(\<phi>,env), [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o] @ env)"
+  sats(M, \<phi>, [p,P,leq,o,\<rho>,\<tau>] @ env) \<longleftrightarrow> sats(M, renrep(\<phi>,env), [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o] @ env)"
   unfolding  renrep_def renrep_fn_def renrep1_fn_def    
   apply (rule sats_iff_sats_ren,auto simp add:renrep1_thm(1)[of _ M,simplified])
-  apply (auto simp add: renrep1_thm(2)[simplified,of P M leq o p \<rho> \<tau> V \<alpha> _ env])
+  apply (auto simp add: renrep1_thm(2)[simplified,of p M P leq  o  \<rho> \<tau> V \<alpha> _ env])
   done
 
 rename "renpbdy1" src "[\<rho>,p,\<alpha>,P,leq,o]" tgt "[\<rho>,p,x,\<alpha>,P,leq,o]"
-
 
 definition renpbdy_fn :: "i \<Rightarrow> i" where
   "renpbdy_fn(env) == sum(renpbdy1_fn,id(length(env)),6,7,length(env))"
@@ -82,7 +81,8 @@ lemma
   using  renbody1_thm(1) ren_tc
   by simp
 
-lemma  arity_renbody: "\<phi>\<in>formula \<Longrightarrow> arity(\<phi>) \<le> 5 #+ length(env) \<Longrightarrow> env\<in>list(M) \<Longrightarrow> arity(renbody(\<phi>,env)) \<le> 6 #+ length(env)"
+lemma  arity_renbody: "\<phi>\<in>formula \<Longrightarrow> arity(\<phi>) \<le> 5 #+ length(env) \<Longrightarrow> env\<in>list(M) \<Longrightarrow> 
+  arity(renbody(\<phi>,env)) \<le> 6 #+ length(env)"
   unfolding renbody_def renbody_fn_def renbody1_fn_def
   using  renbody1_thm(1) ren_arity
     by simp
@@ -110,7 +110,7 @@ schematic_goal sats_prebody_fm_auto:
   assumes
     "\<phi>\<in>formula" "[P,leq,one,p,\<rho>,\<pi>] @ nenv \<in>list(M)"  "\<alpha>\<in>M" "arity(\<phi>) \<le> 2 #+ length(nenv)"  
   shows 
-    "(\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> sats(M,forces(\<phi>),[P,leq,one,p,\<rho>,\<tau>] @ nenv))
+    "(\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> sats(M,forces(\<phi>),[p,P,leq,one,\<rho>,\<tau>] @ nenv))
    \<longleftrightarrow> sats(M,?prebody_fm,[\<rho>,p,\<alpha>,P,leq,one] @ nenv)"
   apply (insert assms; (rule sep_rules is_Vset_iff_sats[OF _ _ _ _ _ M_inhabit[simplified]] | simp))
    apply (rule sep_rules is_Vset_iff_sats is_Vset_iff_sats[OF _ _ _ _ _ M_inhabit[simplified]] | simp)+
@@ -160,7 +160,7 @@ lemma sats_prebody_fm:
     "[P,leq,one,p,\<rho>] @ nenv \<in>list(M)" "\<phi>\<in>formula" "\<alpha>\<in>M" "arity(\<phi>) \<le> 2 #+ length(nenv)"
   shows 
     "sats(M,prebody_fm(\<phi>,nenv),[\<rho>,p,\<alpha>,P,leq,one] @ nenv) \<longleftrightarrow>
-     (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> sats(M,forces(\<phi>),[P,leq,one,p,\<rho>,\<tau>] @ nenv))"
+     (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> sats(M,forces(\<phi>),[p,P,leq,one,\<rho>,\<tau>] @ nenv))"
   unfolding prebody_fm_def using assms sats_prebody_fm_auto by force
 
 
