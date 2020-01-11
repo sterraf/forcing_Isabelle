@@ -1,7 +1,12 @@
-theory Forcing_Notions imports ZF begin
+theory Forcing_Notions imports ZF "../Constructible/Relative" begin
 
 definition compat_in :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
   "compat_in(A,r,p,q) == \<exists>d\<in>A . \<langle>d,p\<rangle>\<in>r \<and> \<langle>d,q\<rangle>\<in>r"
+
+definition
+  is_compat_in :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
+  "is_compat_in(M,A,r,p,q) \<equiv> \<exists>d[M]. d\<in>A \<and> (\<exists>dp[M]. pair(M,d,p,dp) \<and> dp\<in>r \<and> 
+                                   (\<exists>dq[M]. pair(M,d,q,dq) \<and> dq\<in>r))"
 
 lemma compat_inI : 
   "\<lbrakk> d\<in>A ; \<langle>d,p\<rangle>\<in>r ; \<langle>d,g\<rangle>\<in>r \<rbrakk> \<Longrightarrow> compat_in(A,r,p,g)"

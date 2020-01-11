@@ -226,6 +226,51 @@ proof -
     unfolding M_generic_def by auto
 qed
 
+(* Compatible lemmas *)
+lemma compat_in_abs :
+  assumes
+    "A\<in>M" "r\<in>M" "p\<in>M" "q\<in>M" 
+  shows
+  "is_compat_in(##M,A,r,p,q) \<longleftrightarrow> compat_in(A,r,p,q)" 
+proof -
+  have 1:"d\<in>A \<Longrightarrow> d\<in>M" for d
+    using Transset_intf[of M _ A] trans_M \<open>A\<in>M\<close> by simp
+  moreover
+  have "d\<in>A \<Longrightarrow> \<langle>d, t\<rangle> \<in> M" if "t\<in>M" for t d
+    using that 1 pair_in_M_iff by simp
+  ultimately show ?thesis
+    unfolding is_compat_in_def compat_in_def pair_in_M_iff Transset_intf[of M _ A] 
+    using assms  by auto
+qed
+
+(*
+definition
+  is_compat_in :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
+  "is_compat_in(M,A,r,p,q) \<equiv> \<exists>d[M]. d\<in>A \<and> (\<exists>dp[M]. pair(M,d,p,dp) \<and> dp\<in>r \<and> 
+                                   (\<exists>dq[M]. pair(M,d,q,dq) \<and> dq\<in>r))"
+*)
+
+definition
+  compat_in_fm :: "[i,i,i,i] \<Rightarrow> i" where
+  "compat_in_fm(A,r,p,q) \<equiv> 
+    Exists(And(Member(0,succ(A)),Exists(And(pair_fm(1,p#+2,0),
+                                        And(Member(0,r#+2),
+                                 Exists(And(pair_fm(2,q#+3,0),Member(0,r#+3))))))))" 
+
+lemma compat_in_fm_type[TC] : 
+  "\<lbrakk> A\<in>nat;r\<in>nat;p\<in>nat;q\<in>nat\<rbrakk> \<Longrightarrow> compat_in_fm(A,r,p,q)\<in>formula" 
+  unfolding compat_in_fm_def by simp
+
+lemma sats_compat_in_fm:
+  assumes
+    "A\<in>nat" "r\<in>nat"  "p\<in>nat" "q\<in>nat" "env\<in>list(M)"  
+  shows
+    "sats(M,compat_in_fm(A,r,p,q),env) \<longleftrightarrow> 
+            is_compat_in(##M,nth(A, env),nth(r, env),nth(p, env),nth(q, env))"
+  unfolding compat_in_fm_def is_compat_in_def using assms by simp
+
+
+
 (* Collects in M *)
 lemma Collect_in_M_0p :
   assumes

@@ -295,6 +295,10 @@ lemma GenExtD: "x\<in>M[G] \<longleftrightarrow> (\<exists>\<tau>\<in>M. x = val
 lemma left_in_M : "tau\<in>M \<Longrightarrow> <a,b>\<in>tau \<Longrightarrow> a\<in>M"
   using fst_snd_closed[of "<a,b>"] transitivity by auto
 
+
+
+  
+
 (* Kunen 2013, Lemma IV.2.29 *)
 lemma generic_inter_dense_below: 
   assumes "D\<in>M" "M_generic(G)" "dense_below(D,p)" "p\<in>G"
@@ -322,7 +326,26 @@ proof -
     qed
   qed
   have "?D\<subseteq>P" by auto
-  have "?D\<in>M" sorry
+  (* D\<in>M *)
+  let ?d_fm="Or(Neg(compat_in_fm(1,2,3,0)),Member(0,4))"
+  have 1:"p\<in>M" 
+    using \<open>M_generic(G)\<close> M_genericD Transset_intf[of M _ P] trans_M P_in_M 
+          \<open>p\<in>G\<close> by simp
+  moreover
+  have "?d_fm\<in>formula" by simp
+  moreover
+  have "arity(?d_fm) = 5" unfolding compat_in_fm_def pair_fm_def upair_fm_def
+    by (simp add: nat_union_abs1 Un_commute)
+  moreover
+  have "sats(M,?d_fm,[q,P,leq,p,D]) \<longleftrightarrow> (\<not> is_compat_in(##M,P,leq,p,q) \<or> q\<in>D)"
+    if "q\<in>M" for q
+    using that sats_compat_in_fm P_in_M leq_in_M 1 \<open>D\<in>M\<close> by simp
+  moreover
+  have "(\<not> is_compat_in(##M,P,leq,p,q) \<or> q\<in>D) \<longleftrightarrow> p\<bottom>q \<or> q\<in>D" if "q\<in>M" for q
+    unfolding compat_def using that compat_in_abs P_in_M leq_in_M 1 by simp
+  ultimately
+  have "?D\<in>M" using Collect_in_M_4p[of ?d_fm _ _ _ _ _"\<lambda>x y z w h. w\<bottom>x \<or> x\<in>h"] 
+                    P_in_M leq_in_M \<open>D\<in>M\<close> by simp
   note asm = \<open>M_generic(G)\<close> \<open>dense(?D)\<close> \<open>?D\<subseteq>P\<close> \<open>?D\<in>M\<close>
   obtain x where "x\<in>G" "x\<in>?D" using M_generic_denseD[OF asm]
     by force (* by (erule bexE) does it, but the other automatic tools don't *)
@@ -1135,6 +1158,27 @@ next
     using Forces_And[OF M_genericD assms(1-5)] by auto
 qed 
 
+
+lemma truth_lemma' :
+  assumes
+    "\<phi>\<in>formula" "env\<in>list(M)" "arity(\<phi>) \<le> succ(length(env))" 
+  shows
+    "separation(##M,\<lambda>d. \<exists>b\<in>M. \<forall>q\<in>P. q\<preceq>d \<longrightarrow> \<not>(q \<tturnstile> \<phi> ([b]@env)))" 
+  sorry
+(*
+proof -
+  let ?f1="Exists(Forall(And(Member(0,3),Implies(leq_fm(4,0,2),
+                         Neg(iterates(\<lambda>p. incr_bv(p)`0 , 2, forces(\<phi>)))))))"
+  have "?f1\<in>formula" using \<open>\<phi>\<in>formula\<close> by simp
+  moreover
+  have "arity(?f1) \<le> 4#+succ(length(env))"
+    sorry
+  moreover
+  have "sats(M,?f1,[d,P,leq,one]@env) \<longleftrightarrow> (\<exists>b\<in>M. \<forall>q\<in>P. q\<preceq>d \<longrightarrow> \<not>(q \<tturnstile> \<phi> ([b]@env)))" if "d\<in>M" for d
+    unfolding Forces_def using assms 
+*)
+
+
 lemma truth_lemma:
   assumes 
     "\<phi>\<in>formula" "M_generic(G)"
@@ -1184,9 +1228,22 @@ next
     let ?D1="{d\<in>P. (d \<tturnstile> Forall(\<phi>) env)}"
     let ?D2="{d\<in>P. \<exists>b\<in>M. \<forall>q\<in>P. q\<preceq>d \<longrightarrow> \<not>(q \<tturnstile> \<phi> ([b]@env))}"
     define D where "D \<equiv> ?D1 \<union> ?D2"
-    have "D \<subseteq> P" unfolding D_def by auto
+    have ar\<phi>:"arity(\<phi>)\<le>succ(length(env))" 
+      using assms \<open>arity(Forall(\<phi>)) \<le> length(env)\<close> \<open>\<phi>\<in>formula\<close> \<open>env\<in>list(M)\<close> pred_le2 
+      by simp
+    then
+    have "arity(Forall(\<phi>)) \<le> length(env)" 
+      using pred_le \<open>\<phi>\<in>formula\<close> \<open>env\<in>list(M)\<close> by simp
+    then
+    have "?D1\<in>M" using Collect_forces ar\<phi> \<open>\<phi>\<in>formula\<close> \<open>env\<in>list(M)\<close> by simp
     moreover
-    have "D\<in>M" sorry
+    have "?D2\<in>M" using \<open>env\<in>list(M)\<close> \<open>\<phi>\<in>formula\<close>  truth_lemma' separation_closed ar\<phi>
+                        P_in_M
+      by simp
+    ultimately
+    have "D\<in>M" unfolding D_def using Un_closed by simp
+    moreover
+    have "D \<subseteq> P" unfolding D_def by auto
     moreover
     have "dense(D)" 
     proof

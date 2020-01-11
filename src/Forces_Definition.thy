@@ -1504,7 +1504,16 @@ lemma sats_ren_forces_forall :
   apply (insert sats_incr_bv_iff [of _ _ M _ "[p,P,leq,o,x]"])
   apply simp
   done
-  
+
+definition
+  is_leq :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
+  "is_leq(A,l,q,p) \<equiv> \<exists>qp[A]. (pair(A,q,p,qp) \<and> qp\<in>l)" 
+
+lemma (in forcing_data) leq_abs[simp]:
+  "\<lbrakk> l\<in>M ; q\<in>M ; p\<in>M \<rbrakk> \<Longrightarrow> is_leq(##M,l,q,p) \<longleftrightarrow> <q,p>\<in>l" 
+  unfolding is_leq_def using pair_in_M_iff by simp
+
+
 definition 
   leq_fm :: "[i,i,i] \<Rightarrow> i" where
   "leq_fm(leq,q,p) \<equiv> Exists(And(pair_fm(q#+1,p#+1,0),Member(0,leq#+1)))" 
