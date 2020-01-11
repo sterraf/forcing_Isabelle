@@ -20,7 +20,7 @@ lemma Collect_forces :
     "{p\<in>P . p \<tturnstile> \<phi> env} \<in> M"
 proof -
   have "z\<in>P \<Longrightarrow> z\<in>M" for z
-    using P_in_M trans_M Transset_intf[of M z P] by simp
+    using P_in_M transitivity[of z P] by simp
   moreover
   have "separation(##M,\<lambda>p. (p \<tturnstile> \<phi> env))"
     unfolding Forces_def

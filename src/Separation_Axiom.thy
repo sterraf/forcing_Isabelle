@@ -362,7 +362,8 @@ proof -
         unfolding GenExt_def by auto
       moreover from this and \<open>x\<in>c\<close> 
       have "x\<in>M[G]"
-        by (simp add:Transset_MG Transset_intf)
+        using Transset_MG Transset_intf
+        by simp
       ultimately 
       have "sats(M[G], \<phi>, ([x] @ env) @[c]) \<longleftrightarrow> sats(M[G], \<phi>, [x] @ env)" 
         using phi \<open>env \<in> _\<close> by (rule_tac arity_sats_iff, simp_all)   (* Enhance this *)

@@ -64,8 +64,8 @@ proof -
       using fst_type snd_type by simp_all
     ultimately have 
       "sp \<in> M" "fst(sp) \<in> M" "snd(sp) \<in> M" 
-      using  \<open>A\<in>M\<close> \<open>B\<in>M\<close> 
-      by (simp_all add: trans_M Transset_intf)    
+      using  \<open>A\<in>M\<close> \<open>B\<in>M\<close> transitivity 
+      by simp_all
     note
       inM =  \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>p\<in>M\<close> \<open>l\<in>M\<close> \<open>o\<in>M\<close> \<open>\<chi>\<in>M\<close>
              \<open>sp\<in>M\<close> \<open>fst(sp)\<in>M\<close> \<open>snd(sp)\<in>M\<close> 
@@ -129,7 +129,7 @@ proof -
       unfolding power_ax_def by auto
     moreover from calculation have
       "z\<in>Q  \<Longrightarrow> z\<in>M" for z
-      using Transset_intf trans_M by blast
+      using transitivity by blast
     ultimately have
       "Q = {a\<in>Pow(domain(\<tau>)\<times>P) . a\<in>M}"
       using \<open>domain(\<tau>)\<times>P \<in> M\<close> powerset_abs[of "domain(\<tau>)\<times>P" Q]     
@@ -147,7 +147,7 @@ proof -
     ?b="val(G,?\<pi>)"
   from \<open>?Q\<in>M\<close> have
     "?\<pi>\<in>M"
-    using one_in_P P_in_M Transset_intf transM  
+    using one_in_P P_in_M transitivity  
     by (simp del:setclass_iff add:setclass_iff[symmetric])
   from \<open>?\<pi>\<in>M\<close> have
     "?b \<in> M[G]" 
@@ -221,7 +221,8 @@ proof -
           "x \<in> c"
         with \<open>c \<in> Pow(a) \<inter> M[G]\<close> have
           "x \<in> a" "c\<in>M[G]" "x\<in>M[G]"
-          by (auto simp add:Transset_intf Transset_MG)
+          using Transset_intf Transset_MG
+          by auto
         with \<open>val(G, \<tau>) = a\<close> obtain \<sigma> where
           "\<sigma>\<in>domain(\<tau>)" "val(G,\<sigma>) =  x"
           using elem_of_val

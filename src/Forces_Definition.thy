@@ -600,7 +600,7 @@ lemma twoN_in_M : "2\<in>M"
 lemma comp_in_M:
   "p \<preceq> q \<Longrightarrow> p\<in>M"
   "p \<preceq> q \<Longrightarrow> q\<in>M"
-  using leq_in_M trans_M Transset_intf[of M _ leq] pair_in_M_iff by auto
+  using leq_in_M transitivity[of _ leq] pair_in_M_iff by auto
 
 (* Absoluteness of Hfrc *)
 

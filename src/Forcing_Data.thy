@@ -51,7 +51,7 @@ lemma nat_in_M : "nat \<in> M"
   by (rule intf.nat_in_M)
 
 lemma n_in_M : "n\<in>nat \<Longrightarrow> n\<in>M"
-  using nat_in_M trans_M Transset_intf[of M n nat] by simp
+  using nat_in_M transitivity by simp
 
 lemma mtriv: "M_trivial(##M)" 
   by (rule intf.mtriv)
@@ -238,7 +238,7 @@ lemma Collect_in_M_0p :
   "Collect(A,Q)\<in>M" 
 proof -
   have "z\<in>A \<Longrightarrow> z\<in>M" for z
-    using \<open>A\<in>M\<close> trans_M Transset_intf[of M z A] by simp
+    using \<open>A\<in>M\<close> transitivity[of z A] by simp
   then
   have 1:"Collect(A,is_Q(##M)) = Collect(A,Q)" 
     using Qabs Collect_cong[of "A" "A" "is_Q(##M)" "Q"] by simp
@@ -265,7 +265,7 @@ lemma Collect_in_M_2p :
   "Collect(A,\<lambda>x. Q(x,y,z))\<in>M" 
 proof -
   have "z\<in>A \<Longrightarrow> z\<in>M" for z
-    using \<open>A\<in>M\<close> trans_M Transset_intf[of M z A] by simp
+    using \<open>A\<in>M\<close> transitivity[of z A] by simp
   then
   have 1:"Collect(A,\<lambda>x. is_Q(##M,x,y,z)) = Collect(A,\<lambda>x. Q(x,y,z))" 
     using Qabs Collect_cong[of "A" "A" "\<lambda>x. is_Q(##M,x,y,z)" "\<lambda>x. Q(x,y,z)"] by simp
@@ -292,7 +292,7 @@ lemma Collect_in_M_4p :
   "Collect(A,\<lambda>x. Q(x,a1,a2,a3,a4))\<in>M" 
 proof -
   have "z\<in>A \<Longrightarrow> z\<in>M" for z
-    using \<open>A\<in>M\<close> trans_M Transset_intf[of M z A] by simp
+    using \<open>A\<in>M\<close> transitivity[of z A] by simp
   then
   have 1:"Collect(A,\<lambda>x. is_Q(##M,x,a1,a2,a3,a4)) = Collect(A,\<lambda>x. Q(x,a1,a2,a3,a4))" 
     using Qabs Collect_cong[of "A" "A" "\<lambda>x. is_Q(##M,x,a1,a2,a3,a4)" "\<lambda>x. Q(x,a1,a2,a3,a4)"] 
