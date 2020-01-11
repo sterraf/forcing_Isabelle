@@ -14,10 +14,10 @@ proof -
       asms: "x\<in>M[G]" "y\<in>M[G]" "(\<forall>w\<in>M[G] . w \<in> x \<longleftrightarrow> w \<in> y)"
     from \<open>x\<in>M[G]\<close> have
       "z\<in>x \<longleftrightarrow> z\<in>M[G] \<and> z\<in>x"
-      using Transset_MG Transset_intf by auto
+      using transitivity_MG by auto
     also have
       "... \<longleftrightarrow> z\<in>y"
-      using asms Transset_MG Transset_intf by auto
+      using asms transitivity_MG by auto
     finally have
       "z\<in>x \<longleftrightarrow> z\<in>y" .
   }

@@ -262,7 +262,7 @@ proof -
       case False
       with \<open>a\<in>M[G]\<close> 
       obtain e where "e\<in>a" "e\<in>M[G]" 
-        using Transset_MG Transset_intf by blast
+        using transitivity_MG by blast
       with 1 and 2
       have "induced_surj(f,a,e) \<in> surj(\<alpha>,a)"
         using induced_surj_is_surj by simp

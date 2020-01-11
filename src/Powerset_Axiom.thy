@@ -221,7 +221,7 @@ proof -
           "x \<in> c"
         with \<open>c \<in> Pow(a) \<inter> M[G]\<close> have
           "x \<in> a" "c\<in>M[G]" "x\<in>M[G]"
-          using Transset_intf Transset_MG
+          using transitivity_MG
           by auto
         with \<open>val(G, \<tau>) = a\<close> obtain \<sigma> where
           "\<sigma>\<in>domain(\<tau>)" "val(G,\<sigma>) =  x"
@@ -291,7 +291,7 @@ qed
 end (* context: G_generic *)
   
 sublocale G_generic \<subseteq> M_trivial"##M[G]"
-  using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
+  using generic Union_MG pairing_in_MG zero_in_MG transitivity_MG
   unfolding M_trivial_def M_trans_def M_trivial_axioms_def by (simp; blast)
  
 context G_generic begin

@@ -141,7 +141,7 @@ lemma union_in_MG : assumes "filter(G)"
     { fix a
       assume "a \<in> M[G]"
       then interpret mgtrans : M_trans "##M[G]" 
-        using Transset_MG unfolding Transset_def by (unfold_locales; auto)
+        using transitivity_MG by (unfold_locales; auto)
       from \<open>a\<in>_\<close> obtain \<tau> where "\<tau> \<in> M" "a=val(G,\<tau>)"    using GenExtD by blast
       then have "Union_name(\<tau>) \<in> M" (is "?\<pi> \<in> _") using Union_name_M unfolding Union_name_def by simp 
       then have "val(G,?\<pi>) \<in> M[G]" (is "?U \<in> _") using GenExtI by simp

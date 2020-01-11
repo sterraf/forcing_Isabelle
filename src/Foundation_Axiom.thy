@@ -9,7 +9,7 @@ begin
 (* Slick proof essentially by Paulson (adapted from L) *)  
 lemma foundation_in_MG : "foundation_ax(##(M[G]))"
   unfolding foundation_ax_def
-  by (rule rallI, cut_tac A=x in foundation, auto intro: Transset_M [OF Transset_MG])
+  by (rule rallI, cut_tac A=x in foundation, auto intro: transitivity_MG)
 
 (* Same theorem as above, declarative proof, 
    without using transitivity *)

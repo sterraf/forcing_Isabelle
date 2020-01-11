@@ -415,7 +415,7 @@ proof -
     have "sats(M[G],\<phi>,map(val(G),[\<rho>,\<tau>] @ nenv))"
       using truth_lemma[OF \<open>\<phi>\<in>_\<close> generic, of "[\<rho>,\<tau>] @ nenv"] by auto
     moreover from \<open>x\<in>c\<close> \<open>c\<in>M[G]\<close>
-    have "x\<in>M[G]" using Transset_intf[OF Transset_MG] by simp
+    have "x\<in>M[G]" using transitivity_MG by simp
     moreover
     note \<open>sats(M[G],\<phi>,[x,v] @ env)\<close> \<open>env = map(val(G),nenv)\<close> \<open>\<tau>\<in>M\<close> \<open>val(G,\<rho>)=x\<close>
       \<open>univalent(##M[G],_,_)\<close> \<open>x\<in>c\<close> \<open>v\<in>M[G]\<close>
@@ -439,13 +439,13 @@ proof -
   with \<open>?big_name\<in>M\<close>
   have "?repl = {v\<in>?big. \<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env )}"
     apply (intro equality_iffI, subst Replace_iff)
-    apply (auto intro:Transset_intf[OF Transset_MG _ GenExtI, of _ G ?big_name])
+    apply (auto intro:transitivity_MG[OF _ GenExtI])
     using \<open>univalent(##M[G],_,_)\<close> unfolding univalent_def
     apply (rule_tac x=xa in bexI; simp)
-    apply (frule Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>])
+    apply (frule transitivity_MG[OF _ \<open>c\<in>M[G]\<close>])
     apply (drule bspec, assumption, drule mp, assumption, clarify)
     apply (drule_tac x=y in bspec, assumption)
-    by (drule_tac y=x in Transset_intf[OF Transset_MG _ GenExtI], auto)
+    by (drule_tac y=x in transitivity_MG[OF _ GenExtI], auto)
   moreover
   let ?\<psi> = "Exists(And(Member(0,2#+length(env)),\<phi>))"
   have "v\<in>M[G] \<Longrightarrow> (\<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env)) \<longleftrightarrow> sats(M[G], ?\<psi>, [v] @ env @ [c])"
@@ -464,7 +464,7 @@ proof -
       assume "\<exists>x\<in>c. sats(M[G], \<phi>, [x, v] @ env)"
       with \<open>c\<in>M[G]\<close> obtain x where
         "x\<in>c" "sats(M[G], \<phi>, [x, v] @ env)" "x\<in>M[G]"
-        using Transset_intf[OF Transset_MG _ \<open>c\<in>M[G]\<close>]
+        using transitivity_MG[OF _ \<open>c\<in>M[G]\<close>]
         by auto
       with \<open>\<phi>\<in>_\<close> \<open>arity(\<phi>)\<le>2#+length(env)\<close> inMG
       show "sats(M[G], Exists(And(Member(0, 2 #+ length(env)), \<phi>)), [v] @ env @ [c])"
@@ -492,8 +492,8 @@ proof -
   qed
   moreover from this
   have "{v\<in>?big. \<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env)} = {v\<in>?big. sats(M[G], ?\<psi>, [v] @ env @ [c])}"
-    using Transset_intf[OF Transset_MG _ GenExtI, OF _ \<open>?big_name\<in>M\<close>]
-    by (simp) 
+    using transitivity_MG[OF _ GenExtI, OF _ \<open>?big_name\<in>M\<close>]
+    by simp
   moreover from calculation and \<open>env\<in>_\<close> \<open>c\<in>_\<close> \<open>?big\<in>M[G]\<close>
   have "{v\<in>?big. sats(M[G], ?\<psi>, [v] @ env @ [c])} \<in> M[G]"
     using Collect_sats_in_MG by auto
@@ -513,7 +513,7 @@ proof -
     using that Replace_sats_in_MG by auto
   then
   show ?thesis
-    unfolding strong_replacement_def univalent_def using Transset_intf[OF Transset_MG]
+    unfolding strong_replacement_def univalent_def using transitivity_MG
     apply (intro ballI rallI impI)
     apply (rule_tac x="{v . x \<in> A, v\<in>M[G] \<and> sats(M[G], \<phi>, [x, v] @ env)}" in rexI)
      apply (auto)

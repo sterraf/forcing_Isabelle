@@ -288,16 +288,16 @@ proof -
     assume "x \<in> val(G,?m)"
     with val_m 
     have Eq4: "x \<in> {x\<in>c. sats(M[G], \<phi>, [x] @ env @ [c] )}" by simp
-    with \<open>val(G,\<pi>) = c\<close> 
+    with \<open>val(G,\<pi>) = c\<close>
     have "x \<in> val(G,\<pi>)" by simp
     then 
     have "\<exists>\<theta>. \<exists>q\<in>G. \<langle>\<theta>,q\<rangle>\<in>\<pi> \<and> val(G,\<theta>) =x" 
       using elem_of_val_pair by auto
     then obtain \<theta> q where
       "\<langle>\<theta>,q\<rangle>\<in>\<pi>" "q\<in>G" "val(G,\<theta>)=x" by auto
-    from \<open>\<langle>\<theta>,q\<rangle>\<in>\<pi>\<close> \<open>\<pi>\<in>M\<close> trans_M 
+    from \<open>\<langle>\<theta>,q\<rangle>\<in>\<pi>\<close>
     have "\<theta>\<in>M"
-      unfolding Pair_def Transset_def by auto 
+      using domain_trans[OF trans_M \<open>\<pi>\<in>_\<close>] by auto
     with \<open>\<pi>\<in>M\<close> \<open>nenv \<in> _\<close> \<open>env = _\<close>
     have "[val(G,\<theta>), val(G,\<pi>)] @ env \<in>list(M[G])" 
       using GenExt_def by auto
@@ -362,7 +362,7 @@ proof -
         unfolding GenExt_def by auto
       moreover from this and \<open>x\<in>c\<close> 
       have "x\<in>M[G]"
-        using Transset_MG Transset_intf
+        using transitivity_MG
         by simp
       ultimately 
       have "sats(M[G], \<phi>, ([x] @ env) @[c]) \<longleftrightarrow> sats(M[G], \<phi>, [x] @ env)" 

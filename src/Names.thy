@@ -518,6 +518,8 @@ proof -
   then show ?thesis using Transset_def by auto
 qed
 
+lemmas transitivity_MG = Transset_intf[OF Transset_MG]
+
 lemma check_n_M :
   fixes n
   assumes "n \<in> nat"
