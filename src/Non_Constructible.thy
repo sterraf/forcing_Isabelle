@@ -209,47 +209,76 @@ definition
   funle :: "i" where
   "funle \<equiv> funlerel(2)"
 
-lemma funleI[intro!]: 
-  "\<langle>f,g\<rangle> \<in> 2^<\<omega>\<times>2^<\<omega> \<Longrightarrow> domain(g) \<subseteq> domain(f) \<and> (\<forall>i\<in>domain(g). g`i = f`i)  \<Longrightarrow> \<langle>f,g\<rangle> \<in> funle"
+lemma funlerelI[intro!]: 
+  "\<langle>f,g\<rangle> \<in> A^<\<omega>\<times>A^<\<omega> \<Longrightarrow> domain(g) \<subseteq> domain(f) \<and> (\<forall>i\<in>domain(g). g`i = f`i)  \<Longrightarrow> \<langle>f,g\<rangle> \<in> funlerel(A)"
   unfolding preorder_on_def refl_def trans_on_def 
   seqspace_def funleR_def funle_def funlerel_def Rrel_def 
   by auto
 
-lemma funleD[dest!]: 
-  "z \<in> funle \<Longrightarrow> \<exists>x y. \<langle>x,y\<rangle> \<in> 2^<\<omega>\<times>2^<\<omega> \<and> funleR(x,y) \<and> z = \<langle>x,y\<rangle>"
+lemma funlerelD[dest!]: 
+  "z \<in> funlerel(A) \<Longrightarrow> \<exists>x y. \<langle>x,y\<rangle> \<in> A^<\<omega>\<times>A^<\<omega> \<and> funleR(x,y) \<and> z = \<langle>x,y\<rangle>"
   unfolding funle_def funlerel_def Rrel_def 
   by blast
 
 lemma dom_funleD : 
-  assumes "<f,g> \<in> funle"
+  assumes "<f,g> \<in> funlerel(2)"
   shows "domain(g)\<subseteq>domain(f)" 
   using assms unfolding funle_def funlerel_def Rrel_def  funleR_def
   by simp
 
 lemma app_funleD : 
-  assumes "<f,g> \<in> funle" "i\<in>domain(g)"
+  assumes "<f,g> \<in> funlerel(2)" "i\<in>domain(g)"
   shows "g`i=f`i" 
-  using assms unfolding funle_def funlerel_def Rrel_def funleR_def
+  using assms unfolding funlerel_def Rrel_def funleR_def
   by simp
 
 lemma upd_leI : 
-  assumes "f\<in>2^<\<omega>" "a\<in>2"
-  shows "<fun_upd(f,a),f>\<in>funle" 
-  sorry
+  assumes "f\<in>A^<\<omega>" "a\<in>A"
+  shows "<fun_upd(f,a),f>\<in>funlerel(A)" (is "<?f,_>\<in>_")
+proof
+  show " \<langle>?f, f\<rangle> \<in> A^<\<omega> \<times> A^<\<omega>" 
+    using assms fun_upd_type by auto
+next
+  show  "domain(f) \<subseteq> domain(?f) \<and> (\<forall>i\<in>domain(f). f ` i = ?f ` i)"
+  proof -
+    from assms 
+    obtain y where "y\<in>nat" "f\<in>y\<rightarrow>A" 
+      unfolding seqspace_def  by blast 
+    then
+    have "domain(f) = y" "domain(?f) = succ(y)"
+      using domain_of_fun fun_upd_succ_type [OF _ \<open>f\<in>y\<rightarrow>A\<close> \<open>a\<in>A\<close>] by auto
+    with \<open>y\<in>_\<close>
+    have "domain(f) \<subseteq> domain(?f)"
+      using le_imp_subset[of y "succ(y)"] by simp  
+    have "\<forall>i\<in>domain(f). f ` i = fun_upd(f, a) ` i"
+    proof
+      fix i 
+      assume "i\<in>domain(f)"
+      with \<open>domain(f) = y\<close> \<open>y\<in>nat\<close>
+      have "i<domain(f)" "i\<in>succ(domain(f))"
+        using ltI succI2 by simp_all
+      then 
+      show "f`i = ?f`i" 
+        unfolding fun_upd_def by auto
+    qed
+    with \<open>domain(f) \<subseteq> domain(?f)\<close>
+    show ?thesis ..
+  qed
+qed
 
-lemma preorder_on_funle: "preorder_on(2^<\<omega>,funle)"
+lemma preorder_on_funle: "preorder_on(2^<\<omega>,funlerel(2))"
   unfolding preorder_on_def  
 proof auto
-  show "refl(2^<\<omega>, funle)"
+  show "refl(2^<\<omega>, funlerel(2))"
     unfolding refl_def by blast
 next
-  show "trans[2^<\<omega>](funle)"
+  show "trans[2^<\<omega>](funlerel(2))"
     unfolding trans_on_def 
   proof (rule ballI,rule ballI,rule ballI,rule,rule)
     {
     fix f g h 
     assume 1:"f\<in>2^<\<omega>" "g\<in>2^<\<omega>" "h\<in>2^<\<omega>"
-          "<f,g> \<in> funle" "<g,h> \<in> funle"
+          "<f,g> \<in> funlerel(2)" "<g,h> \<in> funlerel(2)"
     then
     have 2:"domain(h) \<subseteq> domain(f)" "domain(h) \<subseteq> domain(g)" 
       using subset_trans[OF _ dom_funleD[OF \<open><f,g>\<in>_\<close>]] dom_funleD by auto
@@ -266,16 +295,16 @@ next
     have "h`i = f`i" if "i\<in>domain(h)" for i
       using that by auto
     with 2 1
-    show "\<langle>f, h\<rangle> \<in> funle" by blast
+    show "\<langle>f, h\<rangle> \<in> funlerel(2)" by blast
   }
 qed
 qed
 
-lemma zero_funle_max: "x\<in>2^<\<omega> \<Longrightarrow> \<langle>x,0\<rangle> \<in> funle"
-  using zero_in_seqspace 
+lemma zero_funle_max: "x\<in>2^<\<omega> \<Longrightarrow> \<langle>x,0\<rangle> \<in> funlerel(2)"
+  using zero_in_seqspace
   by auto
 
-interpretation fun: forcing_notion "2^<\<omega>" "funle" "0"
+interpretation fun: forcing_notion "2^<\<omega>" "funlerel(2)" "0"
   unfolding forcing_notion_def 
   using preorder_on_funle zero_funle_max zero_in_seqspace by simp
 
@@ -288,34 +317,34 @@ abbreviation FUNIncompatible :: "[i, i] \<Rightarrow> o"  (infixl "\<bottom>f" 5
 lemma FUNincompatible_extensions:
   assumes "f\<in>2^<\<omega>"
   shows "(fun_upd(f,0)) \<bottom>f (fun_upd(f,1))" (is "?f \<bottom>f ?g")
-proof 
-  {
-  assume "fun.compat(?f, ?g)"
-  then
-  have 1:"\<exists>h\<in>2^<\<omega> . h \<preceq>f ?f \<and> h \<preceq>f ?g" 
-    unfolding fun.compat_def compat_in_def by simp
-  {fix h
-    assume "h\<in>2^<\<omega>" "h \<preceq>f ?f \<and> h \<preceq>f ?g"
-    then have "h \<preceq>f ?f" "h \<preceq>f ?g" by simp_all
-  from \<open>f\<in>_\<close>
-  obtain y where "y\<in>nat" "f\<in>y\<rightarrow>2" 
-    unfolding seqspace_def by blast
-  then
-  have "y\<in>succ(y)" "y=domain(f)" 
-    using domain_of_fun by simp_all
-  then
-  have equ: "?f`y = 0" "?g`y = 1" "y\<in>domain(?f)" "y\<in>domain(?g)"
-    unfolding fun_upd_def by auto
-  then 
-  have "0 = 1"
-    using app_funleD[OF \<open>h \<preceq>f ?f\<close>]app_funleD[OF \<open>h \<preceq>f ?g\<close>]
-    by auto
-  with equ
-  have False by blast
-} then
-  show "fun.compat(fun_upd(f, 0), fun_upd(f, 1)) \<Longrightarrow> False"
-    using bexE[OF 1,of False] by auto
-}
+proof   
+    assume "fun.compat(?f, ?g)"
+    then
+    have 1:"\<exists>h\<in>2^<\<omega> . h \<preceq>f ?f \<and> h \<preceq>f ?g" 
+      unfolding fun.compat_def compat_in_def by simp
+    {
+      fix h
+      assume "h\<in>2^<\<omega>" "h \<preceq>f ?f \<and> h \<preceq>f ?g"
+      then have "h \<preceq>f ?f" "h \<preceq>f ?g" by simp_all
+      from \<open>f\<in>_\<close>
+      obtain y where "y\<in>nat" "f\<in>y\<rightarrow>2" 
+        unfolding seqspace_def by blast
+      then
+      have "y\<in>succ(y)" "y=domain(f)" 
+        using domain_of_fun by simp_all
+      then
+      have equ: "?f`y = 0" "?g`y = 1" "y\<in>domain(?f)" "y\<in>domain(?g)"
+        unfolding fun_upd_def by auto
+      then 
+      have "0 = 1"
+        using app_funleD[OF \<open>h \<preceq>f ?f\<close>]app_funleD[OF \<open>h \<preceq>f ?g\<close>]
+        by auto
+      with equ
+      have False by blast
+    } 
+    then
+    show "fun.compat(fun_upd(f, 0), fun_upd(f, 1)) \<Longrightarrow> False"
+      using bexE[OF 1,of False] by auto
 qed
 
 lemma FUNfilter_complement_dense:
