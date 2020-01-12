@@ -136,72 +136,6 @@ theorem proper_extension: assumes "M_generic(G)" shows "M \<noteq> GenExt(G)"
 
 end (* M_ctm *)
 
-(* Version with FiniteFun *)
-
-
-abbreviation
-  Fn_nat :: "i" where
-  "Fn_nat \<equiv> FiniteFun(nat,nat)"
-
-definition
-  fleR :: "i \<Rightarrow> i \<Rightarrow> o" where
-  "fleR(xs,ys) \<equiv> ys \<subseteq> xs"
-
-definition
-  flerel :: "i \<Rightarrow> i" where
-  "flerel(A) \<equiv> Rrel(fleR,A)"
-
-definition
-  fle :: "i" where
-  "fle \<equiv> flerel(Fn_nat)"
-
-lemma fleI[intro!]: 
-  "\<langle>x,y\<rangle> \<in> Fn_nat\<times>Fn_nat \<Longrightarrow> y \<subseteq> x  \<Longrightarrow> \<langle>x,y\<rangle> \<in> fle"
-  unfolding preorder_on_def refl_def trans_on_def 
-  fle_def flerel_def Rrel_def fleR_def 
-  by blast
-
-lemma fleD[dest!]: 
-  "z \<in> fle \<Longrightarrow> \<exists>x y. \<langle>x,y\<rangle> \<in> Fn_nat\<times>Fn_nat \<and> y\<subseteq>x \<and> z = \<langle>x,y\<rangle>"
-  unfolding preorder_on_def refl_def trans_on_def 
-  fle_def flerel_def Rrel_def fleR_def 
-  by blast
-
-lemma preorder_on_fle: "preorder_on(Fn_nat,fle)"
-  unfolding preorder_on_def refl_def trans_on_def 
-  using app_assoc by auto
-
-lemma zero_fle_max: "x\<in>Fn_nat \<Longrightarrow> \<langle>x,0\<rangle> \<in> fle"
-  using FiniteFun.emptyI 
-  by (auto)
-
-interpretation f: forcing_notion "Fn_nat" "fle" "0"
-  unfolding forcing_notion_def 
-  using preorder_on_fle zero_fle_max FiniteFun.emptyI by simp
-
-(* abbreviation fle :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>" 50)
-  where "x \<preceq> y \<equiv> f.Leq(x,y)" 
-
-abbreviation Incompatible :: "[i, i] \<Rightarrow> o"  (infixl "\<bottom>" 50)
-  where "p \<bottom> q \<equiv> f.Incompatible(p,q)"*)
-
-lemma incompatible_extensions:
-  assumes "p\<in>Fn_nat"
-  shows "\<exists>q\<in>Fn_nat. \<exists>r\<in>Fn_nat. q \<preceq> p \<and> r \<preceq> p \<and> q \<bottom> r"
-  oops
-
-context M_ctm
-begin
-
-lemma Fn_nat_in_M: "Fn_nat\<in>M" 
-  sorry
-
-lemma fle_in_M: "fle \<in> M"
-  unfolding fle_def flerel_def Rrel_def fleR_def
-  sorry
-
-end (* M_ctm *)
-
 (* Versión con n \<rightarrow> 2 *)
 (* f \<le> n g sii \<forall>j\<in>n. g`j=f`j *)
 definition FunSp :: "i \<Rightarrow> i" where
@@ -298,7 +232,10 @@ lemma app_funleD :
   using assms unfolding funle_def funlerel_def Rrel_def funleR_def
   by simp
 
-
+lemma upd_leI : 
+  assumes "f\<in>FunSp(2)" "a\<in>2"
+  shows "<fun_upd(f,a),f>\<in>funle" 
+  sorry
 
 lemma preorder_on_funle: "preorder_on(FunSp(2),funle)"
   unfolding preorder_on_def  
@@ -382,28 +319,28 @@ proof
 qed
 
 lemma FUNfilter_complement_dense:
-  assumes "ch.filter(G)" shows "ch.dense(list(2) - G)"
+  assumes "fun.filter(G)" shows "fun.dense(FunSp(2) - G)"
 proof
   fix p
-  assume "p\<in>list(2)"
-  show "\<exists>d\<in>list(2) - G. ch.Leq(d, p)"
+  assume "p\<in>FunSp(2)"
+  show "\<exists>d\<in>FunSp(2) - G. fun.Leq(d, p)"
   proof (cases "p\<in>G")
     case True
-    note assms \<open>p\<in>list(2)\<close>
+    note assms \<open>p\<in>FunSp(2)\<close>
     moreover from this
-    obtain j where "j\<in>2" "p @ [j] \<notin> G"
-      using incompatible_extensions[of p] ch.filter_imp_compat[of G "p @ [0]" "p @ [1]"] 
+    obtain j where "j\<in>2" "fun_upd(p,j) \<notin> G"
+      using FUNincompatible_extensions[of p] fun.filter_imp_compat[of G "fun_upd(p,0)" "fun_upd(p, 1)"] 
       by auto
-    moreover from calculation
-    have "p @ [k] \<in> list(2)" if "k\<in>2" for k using that by simp
-    moreover from calculation
-    have "p @ [j] \<preceq> p" by auto
+    moreover from calculation 
+    have "fun_upd(p,j) \<in> FunSp(2) - G" using upd_FunSp by simp
+    moreover from calculation 
+    have "fun_upd(p,j) \<preceq>f p" using upd_leI[OF \<open>p\<in>FunSp(2)\<close> \<open>j\<in>2\<close>] by simp
     ultimately 
-    show ?thesis by auto
+    show ?thesis using rev_bexI[OF \<open>fun_upd(p,j) \<in> FunSp(2) - G\<close>] by auto
   next
     case False
-    with \<open>p\<in>list(2)\<close> 
-    show ?thesis using ch.leq_reflI unfolding Diff_def by auto
+    with \<open>p\<in>FunSp(2)\<close> 
+    show ?thesis using fun.leq_reflI unfolding Diff_def by auto
   qed
 qed
 
