@@ -398,6 +398,24 @@ lemma (in M_basic) funleR_abs:
   using assms domain_abs domain_closed[OF \<open>M(f)\<close>]  domain_closed[OF \<open>M(g)\<close>]
   by auto
 
+definition
+  is_related :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i] \<Rightarrow> o" where
+  "is_related(M,is_r,xy) \<equiv> (\<exists>x[M]. \<exists>y[M]. pair(M,x,y,xy) \<and> is_r(M,x,y))"
+
+definition
+  is_RRel :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_RRel(M,is_r,A,r) \<equiv> \<exists>A2[M]. cartprod(M,A,A,A2) \<and> is_Collect(M,A2, is_related(M,is_r),r)"
+
+lemma (in M_basic) is_related_abs : 
+  assumes "M(A)" "M(f)" "M(g)"
+    "\<And> f g . M(f) \<Longrightarrow> M(g) \<Longrightarrow> rel(f,g) \<longleftrightarrow> is_rel(M,f,g)"
+  shows "<f,g> \<in> Rrel(R,A) \<longleftrightarrow> is_RRel(M,is_rel,A,<f,g>)"
+  sorry
+
+definition
+  is_funlerel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_funlerel(M,A,r) \<equiv> is_RRel(M,is_funleR,A,r)"
+
 
 context M_ctm
 begin
