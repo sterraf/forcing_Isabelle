@@ -1,7 +1,6 @@
 theory Non_Constructible
   imports
-    Forcing_Thms 
-    (* it actually depends on more basic stuff, plus a misplaced lemma in the former *)
+    Names
 
 begin
 
@@ -138,13 +137,14 @@ end (* M_ctm *)
 
 (* Versión con n \<rightarrow> 2 *)
 (* f \<le> n g sii \<forall>j\<in>n. g`j=f`j *)
-definition FunSp :: "i \<Rightarrow> i" where
-  "FunSp(A) \<equiv> \<Union> {n \<rightarrow> A . n\<in>nat}"
+definition 
+  seqspace :: "i \<Rightarrow> i" ("_^<\<omega>" [100]100) where
+  "B^<\<omega> \<equiv> \<Union>n\<in>nat. (n\<rightarrow>B)"
 
 definition fun_upd :: "i \<Rightarrow> i \<Rightarrow> i" where
   "fun_upd(f,a) \<equiv> \<lambda> j \<in> succ(domain(f)) . if j < domain(f) then f`j else a"
 
-lemma fun_upd_type : 
+lemma fun_upd_succ_type : 
   assumes "n\<in>nat" "f\<in>n\<rightarrow>A" "a\<in>A"
   shows "fun_upd(f,a)\<in> succ(n) \<rightarrow> A"
 proof -
@@ -176,24 +176,24 @@ proof -
     by auto
 qed
 
-lemma upd_FunSp : 
-  assumes "f\<in>FunSp(A)" "a\<in>A"
-  shows "fun_upd(f,a) \<in> FunSp(A)"
+lemma fun_upd_type : 
+  assumes "f\<in>A^<\<omega>" "a\<in>A"
+  shows "fun_upd(f,a) \<in> A^<\<omega>"
 proof -
   from \<open>f\<in>_\<close>
   obtain y where "y\<in>nat" "f\<in>y\<rightarrow>A"
-    unfolding FunSp_def by blast
+    unfolding seqspace_def by blast
   with \<open>a\<in>A\<close>
   have "fun_upd(f,a)\<in>succ(y)\<rightarrow>A" 
-    using fun_upd_type by simp
+    using fun_upd_succ_type by simp
   with \<open>y\<in>_\<close>
   show ?thesis
-    unfolding FunSp_def by auto
+    unfolding seqspace_def by auto
 qed
 
-lemma zero_FunSp : 
-  shows "0 \<in> FunSp(A)"
-  unfolding FunSp_def
+lemma zero_in_seqspace : 
+  shows "0 \<in> A^<\<omega>"
+  unfolding seqspace_def
  by force
 
 
@@ -203,20 +203,20 @@ definition
 
 definition
   funlerel :: "i \<Rightarrow> i" where
-  "funlerel(A) \<equiv> Rrel(funleR,FunSp(A))"
+  "funlerel(A) \<equiv> Rrel(funleR,A^<\<omega>)"
 
 definition
   funle :: "i" where
   "funle \<equiv> funlerel(2)"
 
 lemma funleI[intro!]: 
-  "\<langle>f,g\<rangle> \<in> FunSp(2)\<times>FunSp(2) \<Longrightarrow> domain(g) \<subseteq> domain(f) \<and> (\<forall>i\<in>domain(g). g`i = f`i)  \<Longrightarrow> \<langle>f,g\<rangle> \<in> funle"
+  "\<langle>f,g\<rangle> \<in> 2^<\<omega>\<times>2^<\<omega> \<Longrightarrow> domain(g) \<subseteq> domain(f) \<and> (\<forall>i\<in>domain(g). g`i = f`i)  \<Longrightarrow> \<langle>f,g\<rangle> \<in> funle"
   unfolding preorder_on_def refl_def trans_on_def 
-  FunSp_def funleR_def funle_def funlerel_def Rrel_def 
+  seqspace_def funleR_def funle_def funlerel_def Rrel_def 
   by auto
 
 lemma funleD[dest!]: 
-  "z \<in> funle \<Longrightarrow> \<exists>x y. \<langle>x,y\<rangle> \<in> FunSp(2)\<times>FunSp(2) \<and> funleR(x,y) \<and> z = \<langle>x,y\<rangle>"
+  "z \<in> funle \<Longrightarrow> \<exists>x y. \<langle>x,y\<rangle> \<in> 2^<\<omega>\<times>2^<\<omega> \<and> funleR(x,y) \<and> z = \<langle>x,y\<rangle>"
   unfolding funle_def funlerel_def Rrel_def 
   by blast
 
@@ -233,22 +233,22 @@ lemma app_funleD :
   by simp
 
 lemma upd_leI : 
-  assumes "f\<in>FunSp(2)" "a\<in>2"
+  assumes "f\<in>2^<\<omega>" "a\<in>2"
   shows "<fun_upd(f,a),f>\<in>funle" 
   sorry
 
-lemma preorder_on_funle: "preorder_on(FunSp(2),funle)"
+lemma preorder_on_funle: "preorder_on(2^<\<omega>,funle)"
   unfolding preorder_on_def  
 proof auto
-  show "refl(FunSp(2), funle)"
+  show "refl(2^<\<omega>, funle)"
     unfolding refl_def by blast
 next
-  show "trans[FunSp(2)](funle)"
+  show "trans[2^<\<omega>](funle)"
     unfolding trans_on_def 
   proof (rule ballI,rule ballI,rule ballI,rule,rule)
     {
     fix f g h 
-    assume 1:"f\<in>FunSp(2)" "g\<in>FunSp(2)" "h\<in>FunSp(2)"
+    assume 1:"f\<in>2^<\<omega>" "g\<in>2^<\<omega>" "h\<in>2^<\<omega>"
           "<f,g> \<in> funle" "<g,h> \<in> funle"
     then
     have 2:"domain(h) \<subseteq> domain(f)" "domain(h) \<subseteq> domain(g)" 
@@ -271,13 +271,13 @@ next
 qed
 qed
 
-lemma zero_funle_max: "x\<in>FunSp(2) \<Longrightarrow> \<langle>x,0\<rangle> \<in> funle"
-  using zero_FunSp 
+lemma zero_funle_max: "x\<in>2^<\<omega> \<Longrightarrow> \<langle>x,0\<rangle> \<in> funle"
+  using zero_in_seqspace 
   by auto
 
-interpretation fun: forcing_notion "FunSp(2)" "funle" "0"
+interpretation fun: forcing_notion "2^<\<omega>" "funle" "0"
   unfolding forcing_notion_def 
-  using preorder_on_funle zero_funle_max zero_FunSp by simp
+  using preorder_on_funle zero_funle_max zero_in_seqspace by simp
 
 abbreviation FUNle :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>f" 50)
   where "x \<preceq>f y \<equiv> fun.Leq(x,y)"
@@ -286,20 +286,20 @@ abbreviation FUNIncompatible :: "[i, i] \<Rightarrow> o"  (infixl "\<bottom>f" 5
   where "p \<bottom>f q \<equiv> fun.Incompatible(p,q)"
 
 lemma FUNincompatible_extensions:
-  assumes "f\<in>FunSp(2)"
+  assumes "f\<in>2^<\<omega>"
   shows "(fun_upd(f,0)) \<bottom>f (fun_upd(f,1))" (is "?f \<bottom>f ?g")
 proof 
   {
   assume "fun.compat(?f, ?g)"
   then
-  have 1:"\<exists>h\<in>FunSp(2) . h \<preceq>f ?f \<and> h \<preceq>f ?g" 
+  have 1:"\<exists>h\<in>2^<\<omega> . h \<preceq>f ?f \<and> h \<preceq>f ?g" 
     unfolding fun.compat_def compat_in_def by simp
   {fix h
-    assume "h\<in>FunSp(2)" "h \<preceq>f ?f \<and> h \<preceq>f ?g"
+    assume "h\<in>2^<\<omega>" "h \<preceq>f ?f \<and> h \<preceq>f ?g"
     then have "h \<preceq>f ?f" "h \<preceq>f ?g" by simp_all
   from \<open>f\<in>_\<close>
   obtain y where "y\<in>nat" "f\<in>y\<rightarrow>2" 
-    unfolding FunSp_def by blast
+    unfolding seqspace_def by blast
   then
   have "y\<in>succ(y)" "y=domain(f)" 
     using domain_of_fun by simp_all
@@ -319,32 +319,32 @@ proof
 qed
 
 lemma FUNfilter_complement_dense:
-  assumes "fun.filter(G)" shows "fun.dense(FunSp(2) - G)"
+  assumes "fun.filter(G)" shows "fun.dense(2^<\<omega> - G)"
 proof
   fix p
-  assume "p\<in>FunSp(2)"
-  show "\<exists>d\<in>FunSp(2) - G. fun.Leq(d, p)"
+  assume "p\<in>2^<\<omega>"
+  show "\<exists>d\<in>2^<\<omega> - G. fun.Leq(d, p)"
   proof (cases "p\<in>G")
     case True
-    note assms \<open>p\<in>FunSp(2)\<close>
+    note assms \<open>p\<in>2^<\<omega>\<close>
     moreover from this
     obtain j where "j\<in>2" "fun_upd(p,j) \<notin> G"
       using FUNincompatible_extensions[of p] fun.filter_imp_compat[of G "fun_upd(p,0)" "fun_upd(p, 1)"] 
       by auto
     moreover from calculation 
-    have "fun_upd(p,j) \<in> FunSp(2) - G" using upd_FunSp by simp
+    have "fun_upd(p,j) \<in> 2^<\<omega> - G" using fun_upd_type by simp
     moreover from calculation 
-    have "fun_upd(p,j) \<preceq>f p" using upd_leI[OF \<open>p\<in>FunSp(2)\<close> \<open>j\<in>2\<close>] by simp
+    have "fun_upd(p,j) \<preceq>f p" using upd_leI[OF \<open>p\<in>2^<\<omega>\<close> \<open>j\<in>2\<close>] by simp
     ultimately 
-    show ?thesis using rev_bexI[OF \<open>fun_upd(p,j) \<in> FunSp(2) - G\<close>] by auto
+    show ?thesis using rev_bexI[OF \<open>fun_upd(p,j) \<in> 2^<\<omega> - G\<close>] by auto
   next
     case False
-    with \<open>p\<in>FunSp(2)\<close> 
+    with \<open>p\<in>2^<\<omega>\<close> 
     show ?thesis using fun.leq_reflI unfolding Diff_def by auto
   qed
 qed
 
-lemma (in M_datatypes) poset_in_M: "M(FunSp(2))" 
+lemma (in M_datatypes) poset_in_M: "M(2^<\<omega>)" 
 proof - 
   have "M(2)" "M(nat)" by auto
   then
@@ -354,7 +354,7 @@ proof -
   have "M({ n\<rightarrow>2 . n\<in>nat})" sorry
   then 
   show ?thesis
-    unfolding FunSp_def using Union_closed by simp
+    unfolding seqspace_def using Union_closed by simp
 qed
 
 
