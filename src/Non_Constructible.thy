@@ -373,6 +373,7 @@ proof
   qed
 qed
 
+
 lemma (in M_datatypes) poset_in_M: "M(2^<\<omega>)" 
 proof - 
   have "M(2)" "M(nat)" by auto
@@ -385,6 +386,30 @@ proof -
   show ?thesis
     unfolding seqspace_def using Union_closed by simp
 qed
+
+definition is_funleR :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_funleR(Q,f,g) \<equiv> \<exists>df[Q]. \<exists>dg[Q]. is_domain(Q,f,df) \<and> is_domain(Q,g,dg) \<and> dg \<subseteq> df \<and>
+                        (\<forall>j[Q]. j\<in>dg \<longrightarrow> f`j = g`j)"
+
+lemma (in M_basic) funleR_abs: 
+  assumes "M(f)" "M(g)"
+  shows "funleR(f,g) \<longleftrightarrow> is_funleR(M,f,g)"
+  unfolding funleR_def is_funleR_def 
+  using assms domain_abs domain_closed[OF \<open>M(f)\<close>]  domain_closed[OF \<open>M(g)\<close>]
+  by auto
+
+
+context M_ctm
+begin
+
+(* domain(g) \<subseteq> domain(f) \<and> (\<forall> j\<in>domain(g). g`j = f`j) *)
+lemma funlerel_in_M: 
+  assumes "A\<in>M" 
+  shows "funlerel(A) \<in> M"
+  unfolding  funlerel_def Rrel_def chleR_def
+  sorry
+
+end 
 
 
 end
