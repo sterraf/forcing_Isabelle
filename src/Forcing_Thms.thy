@@ -163,14 +163,6 @@ next
   show "forces_eq(p,t1,t2)" using def_forces_eq by blast
 qed
 
-definition
-  forces_neq :: "[i,i,i] \<Rightarrow> o" where
-  "forces_neq(p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> forces_eq(q,t1,t2))"
-
-definition
-  forces_nmem :: "[i,i,i] \<Rightarrow> o" where
-  "forces_nmem(p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> forces_mem(q,t1,t2))"
-
 (* Kunen 2013, Lemma IV.2.38 *)
 lemma not_forces_neq:
   assumes "p\<in>P"
@@ -183,8 +175,6 @@ lemma not_forces_nmem:
   shows "forces_mem(p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> forces_nmem(q,t1,t2))"
   using assms density_mem unfolding forces_nmem_def by blast
 
-
-(* HAY QUE VOLAR AL CARAJO ESTO QUE SIGUE *)
 
 (* Use the newer versions in Forces_Definition! *)
 (* (and adequate the rest of the code to them)  *)
@@ -642,10 +632,20 @@ lemma Collect_forces_eq_in_M:
         forces_eq_fm_arity P_in_M leq_in_M sats_forces_eq_fm forces_eq_abs forces_eq_fm_type 
   by (simp add: nat_union_abs1 Un_commute)
 
-(* lemma IV240b_eq_Collects:
+lemma IV240b_eq_Collects:
   assumes "\<tau> \<in> M" "\<theta> \<in> M"
   shows "{p\<in>P. \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(p,\<sigma>,\<tau>) \<and> forces_nmem(p,\<sigma>,\<theta>)}\<in>M"
+  sorry
+(*
+proof -
+  let ?rel_pred="\<lambda>M x a1 a2 a3 a4. 
+        \<exists>\<sigma>[M]. \<exists>u[M]. \<exists>da3[M]. \<exists>da4[M]. is_domain(M,a3,da3) \<and> is_domain(M,a4,da4) \<and> 
+          union(M,da3,da4,u) \<and> \<sigma>\<in>u \<and> is_forces_mem'(M,a1,a2,x,\<sigma>,a3) \<and> 
+          is_forces_nmem'(M,a1,a2,x,\<sigma>,a4)"
+  let ?\<phi>=  
 *)
+
+
 
 (* Lemma IV.2.40(b), equality *)
 lemma IV240b_eq:
