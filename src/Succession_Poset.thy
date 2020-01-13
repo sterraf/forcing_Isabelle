@@ -111,6 +111,11 @@ proof -
     unfolding seqspace_def by auto
 qed
 
+lemma fun_upd_apply_domain [simp]: 
+  assumes "f:n\<rightarrow>A" "n\<in>nat"
+  shows "fun_upd(f,a)`n = a"
+  unfolding fun_upd_def using assms domain_of_fun by auto
+
 lemma zero_in_seqspace : 
   shows "0 \<in> A^<\<omega>"
   unfolding seqspace_def
@@ -167,12 +172,6 @@ lemma zero_funle_max: "x\<in>2^<\<omega> \<Longrightarrow> \<langle>x,0\<rangle>
   using zero_in_seqspace 
   by auto
 
-lemma app_funleD : 
-  assumes "<f,g> \<in> funle" "i\<in>domain(g)"
-  shows "g`i=f`i" 
-  using assms seqspace_type
-  sorry
-
 interpretation fun: forcing_notion "2^<\<omega>" "funle" "0"
   unfolding forcing_notion_def 
   using preorder_on_funle zero_funle_max zero_in_seqspace by simp
@@ -184,35 +183,25 @@ lemma seqspace_separative:
   assumes "f\<in>2^<\<omega>"
   shows "fun.Incompatible(fun_upd(f,0),fun_upd(f,1))" (is "fun.Incompatible(?f,?g)")
 proof 
-  {
-    assume "fun.compat(?f, ?g)"
-    then
-    have 1:"\<exists>h\<in>2^<\<omega> . h \<preceq>f ?f \<and> h \<preceq>f ?g" 
-      unfolding fun.compat_def compat_in_def by simp
-    {
-      fix h
-      assume "h\<in>2^<\<omega>" "h \<preceq>f ?f \<and> h \<preceq>f ?g"
-      then have "h \<preceq>f ?f" "h \<preceq>f ?g" by simp_all
-      from \<open>f\<in>_\<close>
-      obtain y where "y\<in>nat" "f\<in>y\<rightarrow>2" 
-        unfolding seqspace_def by blast
-      then
-      have "y\<in>succ(y)" "y=domain(f)" 
-        using domain_of_fun by simp_all
-      then
-      have equ: "?f`y = 0" "?g`y = 1" "y\<in>domain(?f)" "y\<in>domain(?g)"
-        unfolding fun_upd_def by auto
-      then 
-      have "0 = 1"
-        using app_funleD[OF \<open>h \<preceq>f ?f\<close>]app_funleD[OF \<open>h \<preceq>f ?g\<close>]
-        by auto
-      with equ
-      have False by blast
-    } 
-    then
-    show "fun.compat(fun_upd(f, 0), fun_upd(f, 1)) \<Longrightarrow> False"
-      using bexE[OF 1,of False] by auto
-  }
+  assume "fun.compat(?f, ?g)"
+  then 
+  obtain h where "h \<in> 2^<\<omega>" "?f \<subseteq> h" "?g \<subseteq> h"
+    by blast
+  moreover from \<open>f\<in>_\<close>
+  obtain y where "y\<in>nat" "f:y\<rightarrow>2" by blast
+  moreover from this
+  have "?f: succ(y) \<rightarrow> 2" "?g: succ(y) \<rightarrow> 2" 
+    using fun_upd_succ_type by blast+
+  moreover from this
+  have "<y,?f`y> \<in> ?f" "<y,?g`y> \<in> ?g" using apply_Pair by auto
+  ultimately
+  have "<y,0> \<in> h" "<y,1> \<in> h" by auto
+  moreover from \<open>h \<in> 2^<\<omega>\<close>
+  obtain n where "n\<in>nat" "h:n\<rightarrow>2" by blast
+  ultimately
+  show "False"
+    using fun_is_function[of h n "\<lambda>_. 2"] 
+    unfolding seqspace_def function_def by auto
 qed
 
 interpretation separative_notion "2^<\<omega>" funle 0
