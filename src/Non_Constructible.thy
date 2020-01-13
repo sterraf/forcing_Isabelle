@@ -5,7 +5,7 @@ theory Non_Constructible
 begin
 
 lemmas sep_rules' = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
-                   fun_plus_iff_sats 
+                   fun_plus_iff_sats fun_apply_iff_sats
                     omega_iff_sats FOL_sats_iff 
 
 lemma (in forcing_notion) filter_imp_compat: "filter(G) \<Longrightarrow> p\<in>G \<Longrightarrow> q\<in>G \<Longrightarrow> compat(p,q)"  \<comment> \<open>put somewhere else\<close>
@@ -393,13 +393,27 @@ qed
 
 definition is_funleR :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "is_funleR(Q,f,g) \<equiv> \<exists>df[Q]. \<exists>dg[Q]. is_domain(Q,f,df) \<and> is_domain(Q,g,dg) \<and> dg \<subseteq> df \<and>
-                        (\<forall>j[Q]. j\<in>dg \<longrightarrow> f`j = g`j)"
+                        (\<forall>j[Q]. j\<in>dg \<longrightarrow> (\<forall>z[Q]. fun_apply(Q,g,j,z) \<longrightarrow> fun_apply(Q,f,j,z)))"
+
+definition funleR_fm :: "i \<Rightarrow> i \<Rightarrow> i" where
+  "funleR_fm(f,g) \<equiv> Exists(Exists(And(domain_fm(f#+2,1), And(domain_fm(g#+2,0), And(
+                subset_fm(1,0),
+          Forall(Implies(Member(0,1),
+            Forall(Implies(fun_apply_fm(g#+4,1,0),fun_apply_fm(f#+4,1,0)))))
+          )))))"
+
+lemma (in M_ctm) funleR_fm_sats : 
+  assumes "f\<in>nat" "g\<in>nat" "env\<in>list(A)"
+  shows "sats(A,funleR_fm(f,g),env) \<longleftrightarrow> is_funleR(##A,nth(f, env),nth(g,env))"
+  unfolding funleR_fm_def is_funleR_def
+  using assms domain_iff_sats fun_apply_iff_sats 
+  sorry
 
 lemma (in M_basic) funleR_abs: 
   assumes "M(f)" "M(g)"
   shows "funleR(f,g) \<longleftrightarrow> is_funleR(M,f,g)"
   unfolding funleR_def is_funleR_def 
-  using assms domain_abs domain_closed[OF \<open>M(f)\<close>]  domain_closed[OF \<open>M(g)\<close>]
+  using assms apply_abs domain_abs domain_closed[OF \<open>M(f)\<close>]  domain_closed[OF \<open>M(g)\<close>]
   by auto
 
 definition
