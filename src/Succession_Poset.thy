@@ -308,16 +308,11 @@ proof -
   unfolding Rrel_def by simp
 qed
 
-lemma(in M_ctm) two_M : "(2^<\<omega>) \<in>M" using seqspace_closed transitivity[of _ nat] nat_in_M by auto
-
-lemma (in forcing_data)  funlerel_in_M: 
-  shows "funlerel(2) \<in> M"
-  unfolding  funlerel_def
-  using Rrel_closed[OF two_M] type_funleR_fm[of 0] 
-        arity_funleR_fm[of 0]
-        funleR_fm_sats[of 0]
-      funleR_abs funlerel_abs 
-  unfolding funleR_def
+lemma (in forcing_data) funle_in_M: "funle \<in> M"
+  using Rrel_closed seqspace_closed 
+    transitivity[OF _ nat_in_M] type_funleR_fm[of 0] arity_funleR_fm[of 0]
+    funleR_fm_sats[of 0] funleR_abs funlerel_abs 
+  unfolding funle_def funlerel_def funleR_def
   by auto
 
 sublocale M_ctm \<subseteq> ctm_separative "2^<\<omega>" funle 0
@@ -337,7 +332,7 @@ proof (unfold_locales)
 next
   show "2^<\<omega> \<in> M" using nat_into_M seqspace_closed by simp
 next
-  show "funle \<in> M"  sorry
+  show "funle \<in> M" using funle_in_M sorry
 qed
 
 lemma (in M_ctm) cohen_extension_is_proper: "\<exists>G. M_generic(G) \<and> M \<noteq> GenExt(G)"
