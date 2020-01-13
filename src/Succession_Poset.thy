@@ -20,9 +20,9 @@ lemma seqspace_type:
 
 schematic_goal seqspace_fm_auto:
   assumes 
-    "nth(i,env) = n" "nth(j,env) = B" "nth(h,env) = z"
-    "i \<in> nat" "j \<in> nat" "h \<in> nat" "env \<in> list(A)"
-  shows
+    "nth(i,env) = n" "nth(j,env) = z"  "nth(h,env) = B" 
+    "i \<in> nat" "j \<in> nat" "h\<in>nat" "env \<in> list(A)"
+  shows 
     "(\<exists>om\<in>A. omega(##A,om) \<and> n \<in> om \<and> is_funspace(##A, n, B, z)) \<longleftrightarrow> (A, env \<Turnstile> (?sqsprp(i,j,h)))"
   unfolding is_funspace_def 
   by (insert assms ; (rule sep_rules | simp)+)
@@ -47,14 +47,27 @@ end (* M_seqspace *)
 sublocale M_ctm \<subseteq> M_seqspace "##M"
 proof (unfold_locales, simp)
   fix B
-  have "arity(seqspace_rep_fm(0,1,2)) = 3" "seqspace_rep_fm(0,1,2)\<in>formula" sorry
+  have "arity(seqspace_rep_fm(0,1,2)) \<le> 3" "seqspace_rep_fm(0,1,2)\<in>formula" 
+    unfolding seqspace_rep_fm_def 
+    using pair_fm_arity omega_fm_arity typed_function_fm_arity nat_simp_union 
+    by auto
   moreover
   assume "B\<in>M"
   ultimately
+  have "strong_replacement(##M, \<lambda>x y. M, [x, y, B] \<Turnstile> seqspace_rep_fm(0, 1, 2))"
+    using replacement_ax[of "seqspace_rep_fm(0,1,2)"]
+    by simp
+  moreover 
+  note \<open>B\<in>M\<close>
+  moreover from this
+  have "univalent(##M, A, \<lambda>x y. M, [x, y, B] \<Turnstile> seqspace_rep_fm(0, 1, 2))" 
+    if "A\<in>M" for A 
+    using that unfolding univalent_def seqspace_rep_fm_def  
+    by (auto, blast dest:transitivity)
+  ultimately
   have "strong_replacement(##M, \<lambda>n z. \<exists>om[##M]. omega(##M,om) \<and> n \<in> om \<and> is_funspace(##M, n, B, z))"
-    using replacement_ax[of "seqspace_rep_fm(0,1,2)"] unfolding seqspace_rep_fm_def
-    apply simp
-    sorry
+    using seqspace_fm_auto[of 0 "[_,_,B]" _ 1 _ 2 B M] unfolding seqspace_rep_fm_def strong_replacement_def
+    by simp
   with \<open>B\<in>M\<close> 
   show "strong_replacement(##M, \<lambda>n z. n \<in> nat \<and> is_funspace(##M, n, B, z))"
     using M_nat by simp
