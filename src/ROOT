@@ -6,7 +6,7 @@ session "Forcing" = "ZF" +
     "Choice_Axiom"
     "Infinity_Axiom"
     "Replacement_Axiom"
-    "Proper_Extension"
+    "Succession_Poset"
     "Ordinals_In_MG"
     "Rasiowa_Sikorski"
     "../Constructible/Rank_Separation"
