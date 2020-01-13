@@ -591,6 +591,13 @@ definition
   forces_mem' :: "[i,i,i,i,i] \<Rightarrow> o" where
   "forces_mem'(P,l,p,t1,t2) \<equiv> frc_at(P,l,<1,t1,t2,p>) = 1"
 
+definition
+  forces_neq' :: "[i,i,i,i,i] \<Rightarrow> o" where
+  "forces_neq'(P,l,p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. <q,p>\<in>l \<and> forces_eq'(P,l,q,t1,t2))"
+
+definition
+  forces_nmem' :: "[i,i,i,i,i] \<Rightarrow> o" where
+  "forces_nmem'(P,l,p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. <q,p>\<in>l \<and> forces_mem'(P,l,q,t1,t2))"
 
 (* frc_at(P,leq,<0,t1,t2,p>) = 1*) 
 definition
@@ -603,6 +610,19 @@ definition
   is_forces_mem' :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
   "is_forces_mem'(M,P,l,p,t1,t2) == \<exists>o[M]. \<exists>t[M]. number1(M,o) \<and>  
                                 is_tuple(M,o,t1,t2,p,t) \<and> is_frc_at(M,P,l,t,o)"
+
+
+definition
+  is_forces_neq' :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
+  "is_forces_neq'(M,P,l,p,t1,t2) \<equiv>
+      \<not> (\<exists>q[M]. \<exists>qp[M]. q\<in>P \<and> pair(M,q,p,qp) \<and> qp\<in>l \<and> is_forces_eq'(M,P,l,q,t1,t2))"
+
+
+(*\<not> (\<exists>q\<in>P. <q,p>\<in>l \<and> forces_eq'(P,l,q,t1,t2))*)
+definition
+  is_forces_nmem' :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
+  "is_forces_nmem'(M,P,l,p,t1,t2) \<equiv>
+      \<not> (\<exists>q[M]. \<exists>qp[M]. q\<in>P \<and> pair(M,q,p,qp) \<and> qp\<in>l \<and> is_forces_mem'(M,P,l,q,t1,t2))"
 
 
 (* \<exists>o\<in>M. \<exists>z\<in>M. \<exists>t\<in>M. number1(##M,o) \<and> empty(##M,z) \<and>
@@ -1614,12 +1634,29 @@ lemma sats_forces_mem_fm:
   by simp
 
 
+definition
+  forces_neq :: "[i,i,i] \<Rightarrow> o" where
+  "forces_neq(p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> forces_eq(q,t1,t2))"
+
+definition
+  forces_nmem :: "[i,i,i] \<Rightarrow> o" where
+  "forces_nmem(p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> forces_mem(q,t1,t2))"
+
+
+lemma forces_neq :
+  "forces_neq(p,t1,t2) \<longleftrightarrow> forces_neq'(P,leq,p,t1,t2)" 
+  unfolding forces_neq_def forces_neq'_def forces_eq_def by simp
+
+lemma forces_nmem :
+  "forces_nmem(p,t1,t2) \<longleftrightarrow> forces_nmem'(P,leq,p,t1,t2)" 
+  unfolding forces_nmem_def forces_nmem'_def forces_mem_def by simp
+
 lemma sats_forces_Member :
   assumes  "x\<in>nat" "y\<in>nat" "env\<in>list(M)"
            "nth(x,env)=xx" "nth(y,env)=yy" "q\<in>M" 
          shows "sats(M,forces(Member(x,y)),[q,P,leq,one]@env) \<longleftrightarrow> 
                 (q\<in>P \<and> is_forces_mem(q,xx,yy))"
-  unfolding forces_def forces_mem_def is_forces_mem_def 
+  unfolding forces_def 
   using assms sats_forces_mem_fm P_in_M leq_in_M one_in_M 
   by simp
 
@@ -1628,7 +1665,7 @@ lemma sats_forces_Equal :
            "nth(x,env)=xx" "nth(y,env)=yy" "q\<in>M" 
          shows "sats(M,forces(Equal(x,y)),[q,P,leq,one]@env) \<longleftrightarrow> 
                 (q\<in>P \<and> is_forces_eq(q,xx,yy))"
-  unfolding forces_def forces_eq_def is_forces_eq_def 
+  unfolding forces_def  
   using assms sats_forces_eq_fm P_in_M leq_in_M one_in_M 
   by simp
 
