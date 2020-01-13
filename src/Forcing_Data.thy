@@ -74,7 +74,9 @@ lemma meclose: "M_eclose(##M)"
 lemma meclose_pow: "M_eclose_pow(##M)"
   by (rule intf.meclose_pow)
 
-end
+
+
+end (* M_ctm *)
 
 (* M_ctm interface *)
 sublocale M_ctm \<subseteq> M_trivial "##M"
@@ -100,6 +102,93 @@ sublocale M_ctm \<subseteq> M_eclose_pow "##M"
 
 (* end interface *)
 
+context M_ctm
+begin
+
+(* Collects in M *)
+lemma Collect_in_M_0p :
+  assumes
+    Qfm : "Q_fm \<in> formula" and
+    Qarty : "arity(Q_fm) = 1" and
+    Qsats : "\<And>x. x\<in>M \<Longrightarrow> sats(M,Q_fm,[x]) \<longleftrightarrow> is_Q(##M,x)" and
+    Qabs  : "\<And>x. x\<in>M \<Longrightarrow> is_Q(##M,x) \<longleftrightarrow> Q(x)" and
+    "A\<in>M"
+  shows
+  "Collect(A,Q)\<in>M" 
+proof -
+  have "z\<in>A \<Longrightarrow> z\<in>M" for z
+    using \<open>A\<in>M\<close> transitivity[of z A] by simp
+  then
+  have 1:"Collect(A,is_Q(##M)) = Collect(A,Q)" 
+    using Qabs Collect_cong[of "A" "A" "is_Q(##M)" "Q"] by simp
+  have "separation(##M,is_Q(##M))"
+    using separation_ax Qsats Qarty Qfm
+          separation_cong[of "##M" "\<lambda>y. sats(M,Q_fm,[y])" "is_Q(##M)"]
+    by simp
+  then 
+  have "Collect(A,is_Q(##M))\<in>M"
+    using separation_closed \<open>A\<in>M\<close> by simp 
+  then
+  show ?thesis using 1 by simp
+qed
+
+lemma Collect_in_M_2p :
+  assumes
+    Qfm : "Q_fm \<in> formula" and
+    Qarty : "arity(Q_fm) = 3" and
+    params_M : "y\<in>M" "z\<in>M" and
+    Qsats : "\<And>x. x\<in>M \<Longrightarrow> sats(M,Q_fm,[x,y,z]) \<longleftrightarrow> is_Q(##M,x,y,z)" and
+    Qabs  : "\<And>x. x\<in>M \<Longrightarrow> is_Q(##M,x,y,z) \<longleftrightarrow> Q(x,y,z)" and
+    "A\<in>M"
+  shows
+  "Collect(A,\<lambda>x. Q(x,y,z))\<in>M" 
+proof -
+  have "z\<in>A \<Longrightarrow> z\<in>M" for z
+    using \<open>A\<in>M\<close> transitivity[of z A] by simp
+  then
+  have 1:"Collect(A,\<lambda>x. is_Q(##M,x,y,z)) = Collect(A,\<lambda>x. Q(x,y,z))" 
+    using Qabs Collect_cong[of "A" "A" "\<lambda>x. is_Q(##M,x,y,z)" "\<lambda>x. Q(x,y,z)"] by simp
+  have "separation(##M,\<lambda>x. is_Q(##M,x,y,z))"
+    using separation_ax Qsats Qarty Qfm params_M
+          separation_cong[of "##M" "\<lambda>x. sats(M,Q_fm,[x,y,z])" "\<lambda>x. is_Q(##M,x,y,z)"]
+    by simp
+  then 
+  have "Collect(A,\<lambda>x. is_Q(##M,x,y,z))\<in>M"
+    using separation_closed \<open>A\<in>M\<close> by simp 
+  then
+  show ?thesis using 1 by simp
+qed
+
+lemma Collect_in_M_4p :
+  assumes
+    Qfm : "Q_fm \<in> formula" and
+    Qarty : "arity(Q_fm) = 5" and
+    params_M : "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" and
+    Qsats : "\<And>x. x\<in>M \<Longrightarrow> sats(M,Q_fm,[x,a1,a2,a3,a4]) \<longleftrightarrow> is_Q(##M,x,a1,a2,a3,a4)" and
+    Qabs  : "\<And>x. x\<in>M \<Longrightarrow> is_Q(##M,x,a1,a2,a3,a4) \<longleftrightarrow> Q(x,a1,a2,a3,a4)" and
+    "A\<in>M"
+  shows
+  "Collect(A,\<lambda>x. Q(x,a1,a2,a3,a4))\<in>M" 
+proof -
+  have "z\<in>A \<Longrightarrow> z\<in>M" for z
+    using \<open>A\<in>M\<close> transitivity[of z A] by simp
+  then
+  have 1:"Collect(A,\<lambda>x. is_Q(##M,x,a1,a2,a3,a4)) = Collect(A,\<lambda>x. Q(x,a1,a2,a3,a4))" 
+    using Qabs Collect_cong[of "A" "A" "\<lambda>x. is_Q(##M,x,a1,a2,a3,a4)" "\<lambda>x. Q(x,a1,a2,a3,a4)"] 
+    by simp
+  have "separation(##M,\<lambda>x. is_Q(##M,x,a1,a2,a3,a4))"
+    using separation_ax Qsats Qarty Qfm params_M
+          separation_cong[of "##M" "\<lambda>x. sats(M,Q_fm,[x,a1,a2,a3,a4])" 
+                                   "\<lambda>x. is_Q(##M,x,a1,a2,a3,a4)"]
+    by simp
+  then 
+  have "Collect(A,\<lambda>x. is_Q(##M,x,a1,a2,a3,a4))\<in>M"
+    using separation_closed \<open>A\<in>M\<close> by simp 
+  then
+  show ?thesis using 1 by simp
+qed
+
+end (* M_ctm *)      
 
 locale forcing_data = forcing_notion + M_ctm +
   assumes P_in_M:           "P \<in> M"
@@ -226,7 +315,7 @@ proof -
     unfolding M_generic_def by auto
 qed
 
-(* Compatible lemmas *)
+(* Compatibility lemmas *)
 lemma compat_in_abs :
   assumes
     "A\<in>M" "r\<in>M" "p\<in>M" "q\<in>M" 
@@ -269,92 +358,6 @@ lemma sats_compat_in_fm:
             is_compat_in(##M,nth(A, env),nth(r, env),nth(p, env),nth(q, env))"
   unfolding compat_in_fm_def is_compat_in_def using assms by simp
 
-
-
-(* Collects in M *)
-lemma Collect_in_M_0p :
-  assumes
-    Qfm : "Q_fm \<in> formula" and
-    Qarty : "arity(Q_fm) = 1" and
-    Qsats : "\<And>x. x\<in>M \<Longrightarrow> sats(M,Q_fm,[x]) \<longleftrightarrow> is_Q(##M,x)" and
-    Qabs  : "\<And>x. x\<in>M \<Longrightarrow> is_Q(##M,x) \<longleftrightarrow> Q(x)" and
-    "A\<in>M"
-  shows
-  "Collect(A,Q)\<in>M" 
-proof -
-  have "z\<in>A \<Longrightarrow> z\<in>M" for z
-    using \<open>A\<in>M\<close> transitivity[of z A] by simp
-  then
-  have 1:"Collect(A,is_Q(##M)) = Collect(A,Q)" 
-    using Qabs Collect_cong[of "A" "A" "is_Q(##M)" "Q"] by simp
-  have "separation(##M,is_Q(##M))"
-    using separation_ax Qsats Qarty Qfm
-          separation_cong[of "##M" "\<lambda>y. sats(M,Q_fm,[y])" "is_Q(##M)"]
-    by simp
-  then 
-  have "Collect(A,is_Q(##M))\<in>M"
-    using separation_closed \<open>A\<in>M\<close> by simp 
-  then
-  show ?thesis using 1 by simp
-qed
-
-lemma Collect_in_M_2p :
-  assumes
-    Qfm : "Q_fm \<in> formula" and
-    Qarty : "arity(Q_fm) = 3" and
-    params_M : "y\<in>M" "z\<in>M" and
-    Qsats : "\<And>x. x\<in>M \<Longrightarrow> sats(M,Q_fm,[x,y,z]) \<longleftrightarrow> is_Q(##M,x,y,z)" and
-    Qabs  : "\<And>x. x\<in>M \<Longrightarrow> is_Q(##M,x,y,z) \<longleftrightarrow> Q(x,y,z)" and
-    "A\<in>M"
-  shows
-  "Collect(A,\<lambda>x. Q(x,y,z))\<in>M" 
-proof -
-  have "z\<in>A \<Longrightarrow> z\<in>M" for z
-    using \<open>A\<in>M\<close> transitivity[of z A] by simp
-  then
-  have 1:"Collect(A,\<lambda>x. is_Q(##M,x,y,z)) = Collect(A,\<lambda>x. Q(x,y,z))" 
-    using Qabs Collect_cong[of "A" "A" "\<lambda>x. is_Q(##M,x,y,z)" "\<lambda>x. Q(x,y,z)"] by simp
-  have "separation(##M,\<lambda>x. is_Q(##M,x,y,z))"
-    using separation_ax Qsats Qarty Qfm params_M
-          separation_cong[of "##M" "\<lambda>x. sats(M,Q_fm,[x,y,z])" "\<lambda>x. is_Q(##M,x,y,z)"]
-    by simp
-  then 
-  have "Collect(A,\<lambda>x. is_Q(##M,x,y,z))\<in>M"
-    using separation_closed \<open>A\<in>M\<close> by simp 
-  then
-  show ?thesis using 1 by simp
-qed
-
-lemma Collect_in_M_4p :
-  assumes
-    Qfm : "Q_fm \<in> formula" and
-    Qarty : "arity(Q_fm) = 5" and
-    params_M : "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" and
-    Qsats : "\<And>x. x\<in>M \<Longrightarrow> sats(M,Q_fm,[x,a1,a2,a3,a4]) \<longleftrightarrow> is_Q(##M,x,a1,a2,a3,a4)" and
-    Qabs  : "\<And>x. x\<in>M \<Longrightarrow> is_Q(##M,x,a1,a2,a3,a4) \<longleftrightarrow> Q(x,a1,a2,a3,a4)" and
-    "A\<in>M"
-  shows
-  "Collect(A,\<lambda>x. Q(x,a1,a2,a3,a4))\<in>M" 
-proof -
-  have "z\<in>A \<Longrightarrow> z\<in>M" for z
-    using \<open>A\<in>M\<close> transitivity[of z A] by simp
-  then
-  have 1:"Collect(A,\<lambda>x. is_Q(##M,x,a1,a2,a3,a4)) = Collect(A,\<lambda>x. Q(x,a1,a2,a3,a4))" 
-    using Qabs Collect_cong[of "A" "A" "\<lambda>x. is_Q(##M,x,a1,a2,a3,a4)" "\<lambda>x. Q(x,a1,a2,a3,a4)"] 
-    by simp
-  have "separation(##M,\<lambda>x. is_Q(##M,x,a1,a2,a3,a4))"
-    using separation_ax Qsats Qarty Qfm params_M
-          separation_cong[of "##M" "\<lambda>x. sats(M,Q_fm,[x,a1,a2,a3,a4])" 
-                                   "\<lambda>x. is_Q(##M,x,a1,a2,a3,a4)"]
-    by simp
-  then 
-  have "Collect(A,\<lambda>x. is_Q(##M,x,a1,a2,a3,a4))\<in>M"
-    using separation_closed \<open>A\<in>M\<close> by simp 
-  then
-  show ?thesis using 1 by simp
-qed
-
-
-end (* forcing_data *)      
+end (* forcing_data *)
   
 end

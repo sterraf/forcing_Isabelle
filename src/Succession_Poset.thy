@@ -288,7 +288,7 @@ definition RrelP :: "[i\<Rightarrow>i\<Rightarrow>o,i] \<Rightarrow> i" where
 lemma Rrel_eq : "RrelP(R,A) = Rrel(R,A)"
   unfolding Rrel_def RrelP_def by auto
 
-lemma (in forcing_data) Rrel_closed:
+lemma (in M_ctm) Rrel_closed:
   assumes "A\<in>M" 
     "\<And> a. a \<in> nat \<Longrightarrow> rel_fm(a)\<in>formula"
     "\<And> f g . (##M)(f) \<Longrightarrow> (##M)(g) \<Longrightarrow> rel(f,g) \<longleftrightarrow> is_rel(##M,f,g)"
@@ -308,7 +308,7 @@ proof -
   unfolding Rrel_def by simp
 qed
 
-lemma (in forcing_data) funle_in_M: "funle \<in> M"
+lemma (in M_ctm) funle_in_M: "funle \<in> M"
   using Rrel_closed seqspace_closed 
     transitivity[OF _ nat_in_M] type_funleR_fm[of 0] arity_funleR_fm[of 0]
     funleR_fm_sats[of 0] funleR_abs funlerel_abs 
@@ -332,7 +332,7 @@ proof (unfold_locales)
 next
   show "2^<\<omega> \<in> M" using nat_into_M seqspace_closed by simp
 next
-  show "funle \<in> M" using funle_in_M sorry
+  show "funle \<in> M" using funle_in_M .
 qed
 
 lemma (in M_ctm) cohen_extension_is_proper: "\<exists>G. M_generic(G) \<and> M \<noteq> GenExt(G)"
