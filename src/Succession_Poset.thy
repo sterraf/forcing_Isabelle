@@ -60,7 +60,6 @@ proof (unfold_locales, simp)
     using M_nat by simp
 qed
 
-
 definition fun_upd :: "i \<Rightarrow> i \<Rightarrow> i" where
   "fun_upd(f,a) \<equiv> \<lambda> j \<in> succ(domain(f)) . if j < domain(f) then f`j else a"
 
@@ -204,7 +203,7 @@ proof
     unfolding seqspace_def function_def by auto
 qed
 
-interpretation separative_notion "2^<\<omega>" funle 0
+sublocale M_ctm \<subseteq> ctm_separative "2^<\<omega>" funle 0
 proof (unfold_locales)
   fix f
   let ?q="fun_upd(f,0)" and ?r="fun_upd(f,1)"
@@ -218,7 +217,12 @@ proof (unfold_locales)
   ultimately
   show "\<exists>q\<in>2^<\<omega>. \<exists>r\<in>2^<\<omega>. q \<preceq>f f \<and> r \<preceq>f f \<and> fun.Incompatible(q, r)"
     by (rule_tac bexI)+ \<comment> \<open>why the heck auto-tools don't solve this?\<close>
+next
+  show "2^<\<omega> \<in> M" using nat_into_M seqspace_closed by simp
+next
+  show "funle \<in> M"  sorry
 qed
 
+lemmas (in M_ctm) cohen_extension_is_proper = proper_extension
 
 end
