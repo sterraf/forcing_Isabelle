@@ -4,6 +4,10 @@ theory Non_Constructible
 
 begin
 
+lemmas sep_rules' = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
+                   fun_plus_iff_sats 
+                    omega_iff_sats FOL_sats_iff 
+
 lemma (in forcing_notion) filter_imp_compat: "filter(G) \<Longrightarrow> p\<in>G \<Longrightarrow> q\<in>G \<Longrightarrow> compat(p,q)"  \<comment> \<open>put somewhere else\<close>
   unfolding filter_def compat_in_def compat_def by blast
 
@@ -435,11 +439,39 @@ definition
   is_funlerel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "is_funlerel(M,A,r) \<equiv> is_RRel(M,is_funleR,A,r)"
 
-lemma (in M_basic) funlerel_abs : 
+lemma (in M_basic) funlerel_abs :
   assumes "M(A)"  "M(r)"
-  shows "is_RRel(M,is_funleR,A,r) \<longleftrightarrow>  r = Rrel(funleR,A)"
-  using  is_Rrel_abs[OF \<open>M(A)\<close> \<open>M(r)\<close>,of funleR is_funleR] funleR_abs
+  shows "is_funlerel(M,A,r) \<longleftrightarrow> r = Rrel(funleR,A)"
+  unfolding is_funlerel_def
+  using is_Rrel_abs[OF \<open>M(A)\<close> \<open>M(r)\<close>,of funleR is_funleR] funleR_abs
   by auto
+
+definition RrelP :: "[i\<Rightarrow>i\<Rightarrow>o,i] \<Rightarrow> i" where
+  "RrelP(R,A) \<equiv> {z\<in>A\<times>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> R(x,y)}"
+  
+lemma Rrel_eq : "RrelP(R,A) = Rrel(R,A)"
+  unfolding Rrel_def RrelP_def by auto
+
+lemma (in M_ctm) Rrel_closed:
+  assumes "A\<in>M" 
+    "\<And> a. a \<in> nat \<Longrightarrow> rel_fm(a)\<in>formula"
+    "\<And> f g . (##M)(f) \<Longrightarrow> (##M)(g) \<Longrightarrow> rel(f,g) \<longleftrightarrow> is_rel(##M,f,g)"
+    "\<And> a . a \<in> nat \<Longrightarrow> arity(rel_fm(a)) =succ(a)" 
+    "\<And> a . a \<in> M \<Longrightarrow> sats(M,rel_fm(0),[a]) \<longleftrightarrow> relP(##M,is_rel,a)"
+  shows "(##M)(Rrel(rel,A))" 
+proof -
+  have "z\<in> M \<Longrightarrow> relP(##M, is_rel, z) \<longleftrightarrow> (\<exists>x y. z = \<langle>x, y\<rangle> \<and> rel(x, y))" for z
+    using assms(3) is_related_abs[of rel is_rel]
+    by auto
+  with assms
+  have "Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = <x,y> \<and> rel(x,y))) \<in> M"
+    using Collect_in_M_0p[of "rel_fm(0)" "\<lambda> A z . relP(A,is_rel,z)" "\<lambda> z.\<exists>x y. z = \<langle>x, y\<rangle> \<and> rel(x, y)" ]
+        cartprod_closed
+    by simp
+  then show ?thesis
+  unfolding Rrel_def by simp
+qed
+
 
 context M_ctm
 begin
