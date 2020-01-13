@@ -1,7 +1,7 @@
 theory Succession_Poset
   imports
-    Proper_Extension Synthetic_Definition
-
+    Arities Proper_Extension Synthetic_Definition
+    Names
 begin
 
 definition 
@@ -121,6 +121,10 @@ lemma zero_in_seqspace :
   by force
 
 definition
+  funleR :: "i \<Rightarrow> i \<Rightarrow> o" where
+  "funleR(f,g) \<equiv> g \<subseteq> f"
+
+definition
   funlerel :: "i \<Rightarrow> i" where
   "funlerel(A) \<equiv> Rrel(\<lambda>x y. y \<subseteq> x,A^<\<omega>)"
 
@@ -202,6 +206,119 @@ proof
     using fun_is_function[of h n "\<lambda>_. 2"] 
     unfolding seqspace_def function_def by auto
 qed
+
+definition is_funleR :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_funleR(Q,f,g) \<equiv> g \<subseteq> f"
+
+definition funleR_fm :: "i \<Rightarrow> i" where
+  "funleR_fm(fg) \<equiv> Exists(Exists(And(pair_fm(0,1,fg#+2),subset_fm(1,0))))"
+
+lemma type_funleR_fm :
+  "fg \<in> nat \<Longrightarrow> funleR_fm(fg) \<in> formula"
+  unfolding funleR_fm_def 
+  by simp
+
+lemma arity_funleR_fm :
+  "fg \<in> nat \<Longrightarrow> arity(funleR_fm(fg)) = succ(fg)"
+  unfolding funleR_fm_def 
+  using pair_fm_arity subset_fm_arity nat_simp_union by simp
+
+lemma (in M_basic) funleR_abs: 
+  assumes "M(f)" "M(g)"
+  shows "funleR(f,g) \<longleftrightarrow> is_funleR(M,f,g)"
+  unfolding funleR_def is_funleR_def 
+  using assms apply_abs domain_abs domain_closed[OF \<open>M(f)\<close>]  domain_closed[OF \<open>M(g)\<close>]
+  by auto
+
+definition
+  relP :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i] \<Rightarrow> o" where
+  "relP(M,r,xy) \<equiv> (\<exists>x[M]. \<exists>y[M]. pair(M,x,y,xy) \<and> r(M,x,y))"
+
+lemma (in M_ctm) funleR_fm_sats : 
+  assumes "fg\<in>nat" "env\<in>list(M)" 
+  shows "sats(M,funleR_fm(fg),env) \<longleftrightarrow> relP(##M,is_funleR,nth(fg, env))"
+  unfolding funleR_fm_def is_funleR_def relP_def
+  using assms trans_M sats_subset_fm pair_iff_sats
+  by auto
+
+
+lemma (in M_basic) is_related_abs :
+  assumes "\<And> f g . M(f) \<Longrightarrow> M(g) \<Longrightarrow> rel(f,g) \<longleftrightarrow> is_rel(M,f,g)"
+  shows "\<And>z . M(z) \<Longrightarrow> relP(M,is_rel,z) \<longleftrightarrow> (\<exists>x y. z = <x,y> \<and> rel(x,y))"
+  unfolding relP_def using pair_in_M_iff assms by auto
+
+definition
+  is_RRel :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_RRel(M,is_r,A,r) \<equiv> \<exists>A2[M]. cartprod(M,A,A,A2) \<and> is_Collect(M,A2, relP(M,is_r),r)"
+
+lemma (in M_basic) is_Rrel_abs :
+  assumes "M(A)"  "M(r)"
+    "\<And> f g . M(f) \<Longrightarrow> M(g) \<Longrightarrow> rel(f,g) \<longleftrightarrow> is_rel(M,f,g)"
+  shows "is_RRel(M,is_rel,A,r) \<longleftrightarrow>  r = Rrel(rel,A)"
+proof -
+  from \<open>M(A)\<close> 
+  have "M(z)" if "z\<in>A\<times>A" for z
+    using cartprod_closed transM[of z "A\<times>A"] that by simp
+  then
+  have A:"relP(M, is_rel, z) \<longleftrightarrow> (\<exists>x y. z = \<langle>x, y\<rangle> \<and> rel(x, y))" "M(z)" if "z\<in>A\<times>A" for z
+    using that is_related_abs[of rel is_rel,OF assms(3)] by auto
+  then
+  have "Collect(A\<times>A,relP(M,is_rel)) = Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = <x,y> \<and> rel(x,y)))"
+    using Collect_cong[of "A\<times>A" "A\<times>A" "relP(M,is_rel)",OF _ A(1)] assms(1) assms(2)
+    by auto
+  with assms
+  show ?thesis unfolding is_RRel_def Rrel_def using cartprod_closed
+    by auto
+qed
+
+definition
+  is_funlerel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_funlerel(M,A,r) \<equiv> is_RRel(M,is_funleR,A,r)"
+
+lemma (in M_basic) funlerel_abs :
+  assumes "M(A)"  "M(r)"
+  shows "is_funlerel(M,A,r) \<longleftrightarrow> r = Rrel(funleR,A)"
+  unfolding is_funlerel_def
+  using is_Rrel_abs[OF \<open>M(A)\<close> \<open>M(r)\<close>,of funleR is_funleR] funleR_abs
+  by auto
+
+definition RrelP :: "[i\<Rightarrow>i\<Rightarrow>o,i] \<Rightarrow> i" where
+  "RrelP(R,A) \<equiv> {z\<in>A\<times>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> R(x,y)}"
+  
+lemma Rrel_eq : "RrelP(R,A) = Rrel(R,A)"
+  unfolding Rrel_def RrelP_def by auto
+
+lemma (in forcing_data) Rrel_closed:
+  assumes "A\<in>M" 
+    "\<And> a. a \<in> nat \<Longrightarrow> rel_fm(a)\<in>formula"
+    "\<And> f g . (##M)(f) \<Longrightarrow> (##M)(g) \<Longrightarrow> rel(f,g) \<longleftrightarrow> is_rel(##M,f,g)"
+    "arity(rel_fm(0)) = 1" 
+    "\<And> a . a \<in> M \<Longrightarrow> sats(M,rel_fm(0),[a]) \<longleftrightarrow> relP(##M,is_rel,a)"
+  shows "(##M)(Rrel(rel,A))" 
+proof -
+  have "z\<in> M \<Longrightarrow> relP(##M, is_rel, z) \<longleftrightarrow> (\<exists>x y. z = \<langle>x, y\<rangle> \<and> rel(x, y))" for z
+    using assms(3) is_related_abs[of rel is_rel]
+    by auto
+  with assms
+  have "Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = <x,y> \<and> rel(x,y))) \<in> M"
+    using Collect_in_M_0p[of "rel_fm(0)" "\<lambda> A z . relP(A,is_rel,z)" "\<lambda> z.\<exists>x y. z = \<langle>x, y\<rangle> \<and> rel(x, y)" ]
+        cartprod_closed
+    by simp
+  then show ?thesis
+  unfolding Rrel_def by simp
+qed
+
+lemma(in M_ctm) two_M : "(2^<\<omega>) \<in>M" using seqspace_closed transitivity[of _ nat] nat_in_M by auto
+
+lemma (in forcing_data)  funlerel_in_M: 
+  shows "funlerel(2) \<in> M"
+  unfolding  funlerel_def
+  using Rrel_closed[OF two_M] type_funleR_fm[of 0] 
+        arity_funleR_fm[of 0]
+        funleR_fm_sats[of 0]
+      funleR_abs funlerel_abs 
+  unfolding funleR_def
+  by auto
 
 sublocale M_ctm \<subseteq> ctm_separative "2^<\<omega>" funle 0
 proof (unfold_locales)
