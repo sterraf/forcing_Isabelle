@@ -399,23 +399,47 @@ lemma (in M_basic) funleR_abs:
   by auto
 
 definition
-  is_related :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i] \<Rightarrow> o" where
-  "is_related(M,is_r,xy) \<equiv> (\<exists>x[M]. \<exists>y[M]. pair(M,x,y,xy) \<and> is_r(M,x,y))"
+  relP :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i] \<Rightarrow> o" where
+  "relP(M,r,xy) \<equiv> (\<exists>x[M]. \<exists>y[M]. pair(M,x,y,xy) \<and> r(M,x,y))"
+
+lemma (in M_basic) is_related_abs :
+  assumes "\<And> f g . M(f) \<Longrightarrow> M(g) \<Longrightarrow> rel(f,g) \<longleftrightarrow> is_rel(M,f,g)"
+  shows "\<And>z . M(z) \<Longrightarrow> relP(M,is_rel,z) \<longleftrightarrow> (\<exists>x y. z = <x,y> \<and> rel(x,y))"
+  unfolding relP_def using pair_in_M_iff assms by auto
 
 definition
   is_RRel :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_RRel(M,is_r,A,r) \<equiv> \<exists>A2[M]. cartprod(M,A,A,A2) \<and> is_Collect(M,A2, is_related(M,is_r),r)"
+  "is_RRel(M,is_r,A,r) \<equiv> \<exists>A2[M]. cartprod(M,A,A,A2) \<and> is_Collect(M,A2, relP(M,is_r),r)"
 
-lemma (in M_basic) is_related_abs : 
-  assumes "M(A)" "M(f)" "M(g)"
+lemma (in M_basic) is_Rrel_abs :
+  assumes "M(A)"  "M(r)"
     "\<And> f g . M(f) \<Longrightarrow> M(g) \<Longrightarrow> rel(f,g) \<longleftrightarrow> is_rel(M,f,g)"
-  shows "<f,g> \<in> Rrel(R,A) \<longleftrightarrow> is_RRel(M,is_rel,A,<f,g>)"
-  sorry
+  shows "is_RRel(M,is_rel,A,r) \<longleftrightarrow>  r = Rrel(rel,A)"
+proof -
+  from \<open>M(A)\<close> 
+  have "M(z)" if "z\<in>A\<times>A" for z
+    using cartprod_closed transM[of z "A\<times>A"] that by simp
+  then
+  have A:"relP(M, is_rel, z) \<longleftrightarrow> (\<exists>x y. z = \<langle>x, y\<rangle> \<and> rel(x, y))" "M(z)" if "z\<in>A\<times>A" for z
+    using that is_related_abs[of rel is_rel,OF assms(3)] by auto
+  then
+  have "Collect(A\<times>A,relP(M,is_rel)) = Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = <x,y> \<and> rel(x,y)))"
+    using Collect_cong[of "A\<times>A" "A\<times>A" "relP(M,is_rel)",OF _ A(1)] assms(1) assms(2)
+    by auto
+  with assms
+  show ?thesis unfolding is_RRel_def Rrel_def using cartprod_closed
+    by auto
+qed
 
 definition
   is_funlerel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "is_funlerel(M,A,r) \<equiv> is_RRel(M,is_funleR,A,r)"
 
+lemma (in M_basic) funlerel_abs : 
+  assumes "M(A)"  "M(r)"
+  shows "is_RRel(M,is_funleR,A,r) \<longleftrightarrow>  r = Rrel(funleR,A)"
+  using  is_Rrel_abs[OF \<open>M(A)\<close> \<open>M(r)\<close>,of funleR is_funleR] funleR_abs
+  by auto
 
 context M_ctm
 begin
