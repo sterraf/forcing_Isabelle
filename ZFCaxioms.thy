@@ -1,35 +1,47 @@
 (* internalización de los axiomas de ZFC dentro de la teoría ZF *)
 
-theory ZFCaxioms imports Formula L_axioms begin
+theory ZFCaxioms 
+  imports 
+  "Constructible/Formula" 
+  "Constructible/L_axioms" 
+  "src/Forcing_Data"
+
+begin
 
 (* 
    Extensionalidad 
    \<forall>x\<forall>y. \<forall>z(z\<in>x \<leftrightarrow> z\<in>y) \<rightarrow> x=y 
 *)
 definition
-  ZFextension :: "i" where
-  "ZFextension == 
+  ZF_extension_fm :: "i" where
+  "ZF_extension_fm == 
       Forall(Forall(
              Implies(Forall(Iff(Member(0,2),Member(0,1))),
              Equal(0,1))))"
 
-lemma ZFext_type [TC]: "ZFextension \<in> formula"
-  by (simp add: ZFextension_def)
+lemma ZF_extension_fm_type [TC]: "ZF_extension_fm \<in> formula"
+  by (simp add: ZF_extension_fm_def)
+
+lemma sats_ZF_extension_fm: "(A, [] \<Turnstile> ZF_extension_fm) \<longleftrightarrow> extensionality(##A)"
+  unfolding extensionality_def ZF_extension_fm_def by auto
 
 (*
   Fundación 
   \<forall>x. \<exists>y(y\<in>x) \<rightarrow> \<exists>y(y\<in>x \<and> \<not>\<exists>z(z\<in>x \<and> z\<in>y))
 *)
 definition 
-  ZFfoundation :: "i" where
-  "ZFfoundation == 
+  ZF_foundation_fm :: "i" where
+  "ZF_foundation_fm == 
         Forall(Implies(
               Exists(Member(0,1)),
               Exists(And(Member(0,1),
                      Neg(Exists(And(Member(0,2),Member(0,1))))))))"
 
-lemma ZFfound_type [TC]: "ZFfoundation \<in> formula"
-  by (simp add: ZFfoundation_def)
+lemma ZF_foundation_fm_type [TC]: "ZF_foundation_fm \<in> formula"
+  by (simp add: ZF_foundation_fm_def)
+
+lemma sats_ZF_foundation_fm: "(A, [] \<Turnstile> ZF_foundation_fm) \<longleftrightarrow> foundation_ax(##A)"
+  unfolding foundation_ax_def ZF_foundation_fm_def by auto
 
 (* fórmula compuesta por n veces Forall *)
 consts 
@@ -52,38 +64,38 @@ lemma nForall_type [TC]:
               p debe ser 0=2 \<or> 0=3
 *)
 definition
-  ZFseparation :: "i \<Rightarrow> i" where
-  "ZFseparation(p) == nForall(pred(arity(p)), 
+  ZF_separation_fm :: "i \<Rightarrow> i" where
+  "ZF_separation_fm(p) == nForall(pred(arity(p)), 
                               Forall(Exists(Forall(
                               Iff(Member(0,1),And(Member(0,2),
                                               incr_bv(p)`1))))))"
                                                 
-lemma ZFsep_type [TC]: "p \<in> formula \<Longrightarrow> ZFseparation(p) \<in> formula"
-  by (simp add: ZFseparation_def)
+lemma ZF_separation_fm_type [TC]: "p \<in> formula \<Longrightarrow> ZF_separation_fm(p) \<in> formula"
+  by (simp add: ZF_separation_fm_def)
 
 (*
   Pares
   \<forall>x\<forall>y\<exists>z. x\<in>z \<and> y\<in>z
 *)
 definition
-  ZFpairing :: "i" where
-  "ZFpairing == Forall(Forall(Exists(
+  ZF_pairing_fm :: "i" where
+  "ZF_pairing_fm == Forall(Forall(Exists(
                 And(Member(2,0),Member(1,0)))))"
 
-lemma ZFpair_type [TC]: "ZFpairing \<in> formula"
-  by (simp add: ZFpairing_def)
+lemma ZF_pair_fm_type [TC]: "ZF_pairing_fm \<in> formula"
+  by (simp add: ZF_pairing_fm_def)
 
 (*
   Union
   \<forall>F\<exists>A\<forall>Y\<forall>x. (x\<in>Y \<and> Y\<in>F) \<rightarrow> x\<in>A
 *)
 definition
-  ZFunion :: "i" where
-  "ZFunion == Forall(Exists(Forall(Forall(
+  ZF_union_fm :: "i" where
+  "ZF_union_fm == Forall(Exists(Forall(Forall(
               Implies(And(Member(0,1),Member(1,3)),Member(0,2))))))"
 
-lemma ZFunion_type [TC]: "ZFunion \<in> formula"
-  by (simp add: ZFunion_def)
+lemma ZF_union_fm_type [TC]: "ZF_union_fm \<in> formula"
+  by (simp add: ZF_union_fm_def)
 
 
 (* Existe único *)
@@ -99,40 +111,40 @@ lemma ZFExistsU_type [TC]: "p \<in> formula \<Longrightarrow> ExistsU(p) \<in> f
    \<forall>A. \<forall>x(x\<in>A \<longrightarrow> \<exists>!y \<Phi>) \<longrightarrow> \<exists>B \<forall>x(x\<in>A \<longrightarrow> \<exists>y(y\<in>B \<and> \<Phi>))
 *)
 definition
-  ZFreplacement :: "i \<Rightarrow> i" where
-  "ZFreplacement(p) == 
+  ZF_replacement_fm :: "i \<Rightarrow> i" where
+  "ZF_replacement_fm(p) == 
       nForall(pred(pred(pred(arity(p)))),
       Forall(Implies(
         Forall(Implies(Member(0,1),ExistsU(incr_bv(p)`2))),
         Exists(Forall(Implies(Member(0,2),
                       Exists(And(Member(0,2),incr_bv(p)`2))))))))"
 
-lemma ZFrep_type [TC]: "p \<in> formula \<Longrightarrow> ZFreplacement(p) \<in> formula"
-  by (simp add: ZFreplacement_def)
+lemma ZF_replacement_fm_type [TC]: "p \<in> formula \<Longrightarrow> ZF_replacement_fm(p) \<in> formula"
+  by (simp add: ZF_replacement_fm_def)
 
 (* Infinito
    \<exists>x. \<emptyset>\<in>x \<and> \<forall>y(y\<in>x \<rightarrow> y U {y} \<in> x)
 *)
 definition
-  ZFinfinity :: "i" where
-  "ZFinfinity == 
+  ZF_infinity_fm :: "i" where
+  "ZF_infinity_fm == 
       Exists(And(Exists(And(empty_fm(0),Member(0,1))),
              Forall(Implies(Member(0,1),
                     Exists(And(succ_fm(1,0),Member(0,2)))))))"
 
-lemma ZFinf_type [TC]: "ZFinfinity \<in> formula"
-  by (simp add: ZFinfinity_def)
+lemma ZF_infinity_fm_type [TC]: "ZF_infinity_fm \<in> formula"
+  by (simp add: ZF_infinity_fm_def)
 
 (* Powerset 
   \<forall>x\<exists>y\<forall>z. z\<subseteq>x \<rightarrow> z\<in>y 
 *)
 definition 
-  ZFpowerset :: "i" where
-  "ZFpowerset == Forall(Exists(Forall(
+  ZF_powerset_fm :: "i" where
+  "ZF_powerset_fm == Forall(Exists(Forall(
                  Implies(subset_fm(0,2),Member(0,1)))))"
 
-lemma ZFpower_type [TC]: "ZFpowerset \<in> formula"
-  by (simp add: ZFpowerset_def)
+lemma ZF_powerset_fm_type [TC]: "ZF_powerset_fm \<in> formula"
+  by (simp add: ZF_powerset_fm_def)
 
 (* Intersección internalizada *)
 definition
@@ -156,97 +168,64 @@ lemma ForallIn_type [TC]:
   \<forall>F. \<emptyset>\<notin>F \<and> \<forall>x\<in>F\<forall>y\<in>F (x\<noteq>y \<rightarrow> x\<inter>y=\<emptyset>))) \<rightarrow> \<exists>C\<forall>x\<in>F (\<exists>!y (y\<in>x \<and> y\<in>C))
 *)
 definition
-  ZFchoice :: "i" where
-  "ZFchoice == 
+  ZF_choice_fm :: "i" where
+  "ZF_choice_fm == 
       Forall(Implies(
          Exists(And(empty_fm(0),And(Neg(Member(0,1)), 
                     ForallIn(1,ForallIn(2,Implies(Neg(Equal(1,0)),inter_fm(1,0,2))))))),
          Exists(ForallIn(1,ExistsU(And(Member(0,1),Member(0,2)))))))
             "
-lemma ZFchoice_type [TC]: "ZFchoice \<in> formula"
-  by (simp add: ZFchoice_def)
+lemma ZF_choice_fm_type [TC]: "ZF_choice_fm \<in> formula"
+  by (simp add: ZF_choice_fm_def)
 
 definition
   ZF_fin :: "i" where
-  "ZF_fin == {ZFextension,ZFfoundation,ZFpairing,
-              ZFunion,ZFinfinity,ZFpowerset}"
-
-
+  "ZF_fin == {ZF_extension_fm,ZF_foundation_fm,ZF_pairing_fm,
+              ZF_union_fm,ZF_infinity_fm,ZF_powerset_fm}"
 
 definition
   ZFC_fin :: "i" where
-  "ZFC_fin == {ZFextension,ZFfoundation,ZFpairing,
-              ZFunion,ZFinfinity,ZFpowerset,ZFchoice}"
+  "ZFC_fin == {ZF_extension_fm,ZF_foundation_fm,ZF_pairing_fm,
+              ZF_union_fm,ZF_infinity_fm,ZF_powerset_fm,ZF_choice_fm}"
 
 lemma ZFC_fin_type : "ZFC_fin \<subseteq> formula"
   by (simp add:ZFC_fin_def)
   
 definition
   ZFC_inf :: "i" where
-  "ZFC_inf == {ZFseparation(p) . p \<in> formula } \<union> {ZFreplacement(p) . p \<in> formula }"
+  "ZFC_inf == {ZF_separation_fm(p) . p \<in> formula } \<union> {ZF_replacement_fm(p) . p \<in> formula }"
               
 lemma unions : "A\<subseteq>formula \<and> B\<subseteq>formula \<Longrightarrow> A\<union>B \<subseteq> formula"
   by auto
   
-lemma ZFC_inf_type : "ZFC_inf \<subseteq> formula"
-  apply(unfold ZFC_inf_def)
-  apply(auto)
-  done
+lemma ZFC_inf_subset_formula : "ZFC_inf \<subseteq> formula"
+  unfolding ZFC_inf_def by auto
     
-(* Teoría ZFC internalizada *)
 definition
-  ZFCTh :: "i" where
-  "ZFCTh == ZFC_inf \<union> ZFC_fin"
+  ZFC :: "i" where
+  "ZFC == ZFC_inf \<union> ZFC_fin"
 
-(* Teoría ZF *)
 definition
-  ZFTh :: "i" where
-  "ZFTh == ZFC_inf \<union> ZF_fin"
+  ZF :: "i" where
+  "ZF == ZFC_inf \<union> ZF_fin"
 
-(* Teoría ZF - partes *)
 definition 
-  ZFlessPower :: "i" where
-  "ZFlessPower == {ZFextension,ZFfoundation,ZFpairing,
-              ZFunion,ZFinfinity,ZFpowerset} \<union> ZFC_inf"
+  ZF_minus_P :: "i" where
+  "ZF_minus_P == {ZF_extension_fm,ZF_foundation_fm,ZF_pairing_fm,
+              ZF_union_fm,ZF_infinity_fm,ZF_powerset_fm} \<union> ZFC_inf"
 
-
-
-lemma "ZFCTh \<subseteq> formula"
-  by (simp add:ZFCTh_def add:unions add:ZFC_inf_type add:ZFC_fin_type)
+lemma ZFC_subset_formula: "ZFC \<subseteq> formula"
+  by (simp add:ZFC_def unions ZFC_inf_subset_formula ZFC_fin_type)
   
-(* satisfacción de un conjunto de fórmulas *)
+txt\<open>Satisfaction of a set of sentences\<close>
 definition
-  satT :: "[i,i,i] => o" where
-  "satT(A,\<Phi>,env) == \<forall> p \<in> \<Phi>. sats(A,p,env)"
+  satT :: "[i,i] => o"  ("_ \<Turnstile> _" 60) where
+  "satT(A,\<Phi>) == \<forall> p \<in> \<Phi>. sats(A,p,[])"
 
-lemma ACyZFimpZFC:
-  assumes "sats(A,ZFchoice,env)"
-  and     "satT(A,ZFTh,env)"
-  shows  "satT(A,ZFCTh,env)"
-  apply (insert assms)
-  apply (unfold satT_def)
-  apply (unfold ZFCTh_def)
-  apply (unfold ZFTh_def)
-  apply (unfold ZF_fin_def)
-  apply (unfold ZFC_fin_def)
-  apply auto
-  done
-
-  
-  
-
-definition
-  rel :: "[i,i] \<Rightarrow> o" where
-  "rel(x,y) == \<exists>z . z \<in> y \<longrightarrow> (\<exists>w . w \<in> z \<longrightarrow> x \<in> w)"
-
-definition
-  relSet :: "i \<Rightarrow> i" where
-  "relSet(M) == {z\<in>M. \<exists>x. \<exists>y. z=\<langle>x,y\<rangle> \<and> rel(x,y)}"
-
-lemma WFrel : "wf(relSet(M))"
-  apply(unfold relSet_def)
-  apply(unfold wf_def)
-  apply(rule allI)
-  oops
+lemma ACyZF_impZFC:
+  assumes "sats(A,ZF_choice_fm,[])" "satT(A,ZF)"
+  shows  "satT(A,ZFC)"
+  using assms unfolding satT_def ZFC_def
+    ZF_def ZF_fin_def ZFC_fin_def by blast
 
 end
