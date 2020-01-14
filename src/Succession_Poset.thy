@@ -188,18 +188,21 @@ lemma zero_funle_max: "x\<in>2^<\<omega> \<Longrightarrow> \<langle>x,0\<rangle>
   using zero_in_seqspace 
   by auto
 
-interpretation fun: forcing_notion "2^<\<omega>" "funle" "0"
-  unfolding forcing_notion_def 
-  using preorder_on_funle zero_funle_max zero_in_seqspace by simp
+interpretation forcing_notion "2^<\<omega>" "funle" "0"
+  using preorder_on_funle zero_funle_max zero_in_seqspace 
+  by unfold_locales simp_all
 
 abbreviation FUNle :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>f" 50)
-  where "x \<preceq>f y \<equiv> fun.Leq(x,y)"
+  where "x \<preceq>f y \<equiv> Leq(x,y)"
+
+abbreviation FUNIncompatible :: "[i, i] \<Rightarrow> o"  (infixl "\<bottom>f" 50)
+  where "x \<bottom>f y \<equiv> Incompatible(x,y)"
 
 lemma seqspace_separative:
   assumes "f\<in>2^<\<omega>"
-  shows "fun.Incompatible(fun_upd(f,0),fun_upd(f,1))" (is "fun.Incompatible(?f,?g)")
+  shows "fun_upd(f,0) \<bottom>f fun_upd(f,1)" (is "?f \<bottom>f ?g")
 proof 
-  assume "fun.compat(?f, ?g)"
+  assume "compat(?f, ?g)"
   then 
   obtain h where "h \<in> 2^<\<omega>" "?f \<subseteq> h" "?g \<subseteq> h"
     by blast
@@ -301,7 +304,10 @@ definition RrelP :: "[i\<Rightarrow>i\<Rightarrow>o,i] \<Rightarrow> i" where
 lemma Rrel_eq : "RrelP(R,A) = Rrel(R,A)"
   unfolding Rrel_def RrelP_def by auto
 
-lemma (in M_ctm) Rrel_closed:
+context M_ctm
+begin
+
+lemma Rrel_closed:
   assumes "A\<in>M" 
     "\<And> a. a \<in> nat \<Longrightarrow> rel_fm(a)\<in>formula"
     "\<And> f g . (##M)(f) \<Longrightarrow> (##M)(g) \<Longrightarrow> rel(f,g) \<longleftrightarrow> is_rel(##M,f,g)"
@@ -321,26 +327,26 @@ proof -
   unfolding Rrel_def by simp
 qed
 
-lemma (in M_ctm) funle_in_M: "funle \<in> M"
+lemma funle_in_M: "funle \<in> M"
   using Rrel_closed seqspace_closed 
     transitivity[OF _ nat_in_M] type_funleR_fm[of 0] arity_funleR_fm[of 0]
     funleR_fm_sats[of 0] funleR_abs funlerel_abs 
   unfolding funle_def funlerel_def funleR_def
   by auto
 
-sublocale M_ctm \<subseteq> ctm_separative "2^<\<omega>" funle 0
+interpretation ctm_separative "2^<\<omega>" funle 0
 proof (unfold_locales)
   fix f
   let ?q="fun_upd(f,0)" and ?r="fun_upd(f,1)"
   assume "f \<in> 2^<\<omega>"
   then
-  have "?q \<preceq>f f \<and> ?r \<preceq>f f \<and> fun.Incompatible(?q, ?r)" 
+  have "?q \<preceq>f f \<and> ?r \<preceq>f f \<and> ?q \<bottom>f ?r" 
     using upd_leI seqspace_separative by auto
   moreover from calculation
   have "?q \<in> 2^<\<omega>"  "?r \<in> 2^<\<omega>"
     using fun_upd_type[of f 2] by auto
   ultimately
-  show "\<exists>q\<in>2^<\<omega>. \<exists>r\<in>2^<\<omega>. q \<preceq>f f \<and> r \<preceq>f f \<and> fun.Incompatible(q, r)"
+  show "\<exists>q\<in>2^<\<omega>. \<exists>r\<in>2^<\<omega>. q \<preceq>f f \<and> r \<preceq>f f \<and> q \<bottom>f r"
     by (rule_tac bexI)+ \<comment> \<open>why the heck auto-tools don't solve this?\<close>
 next
   show "2^<\<omega> \<in> M" using nat_into_M seqspace_closed by simp
@@ -348,8 +354,10 @@ next
   show "funle \<in> M" using funle_in_M .
 qed
 
-lemma (in M_ctm) cohen_extension_is_proper: "\<exists>G. M_generic(G) \<and> M \<noteq> GenExt(G)"
+lemma cohen_extension_is_proper: "\<exists>G. M_generic(G) \<and> M \<noteq> GenExt(G)"
   using proper_extension generic_filter_existence zero_in_seqspace
   by force
+
+end (* M_ctm *)
 
 end
