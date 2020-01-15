@@ -100,42 +100,7 @@ lemma poset_in_M: "list(2)\<in>M"
 
 lemma chle_in_M: "chle \<in> M"
   unfolding chle_def chlerel_def Rrel_def chleR_def
-  sorry
-
-end (* M_ctm *)
-
-
-sublocale M_ctm \<subseteq> forcing_data "list(2)" "chle" "[]"
-  using poset_in_M chle_in_M by (unfold_locales)
-
-
-context M_ctm
-begin
-
-lemma generic_not_in_M: assumes "M_generic(G)"  shows "G \<notin> M"
-proof
-  assume "G\<in>M"
-  then
-  have "list(2) - G \<in> M" 
-    using P_in_M Diff_closed by simp
-  moreover
-  have "\<not>(\<exists>q\<in>G. q \<in> list(2) - G)" "(list(2) - G) \<subseteq> list(2)"
-    unfolding Diff_def by auto
-  moreover
-  note assms
-  ultimately
-  show "False"
-    using filter_complement_dense[of G] M_generic_denseD[of G "list(2)-G"] 
-      M_generic_def by simp \<comment> \<open>need to put generic ==> filter in claset\<close>
-qed
-
-lemma G_subset_M: "M_generic(G) \<Longrightarrow> G \<subseteq> M" \<comment> \<open>put somewhere else\<close>
-  using transitivity[OF _ P_in_M] by auto
-
-(* For some reason, "M[G]" doesn't work here *)
-theorem proper_extension: assumes "M_generic(G)" shows "M \<noteq> GenExt(G)"
-  using assms G_in_Gen_Ext[of G] one_in_G[of G] generic_not_in_M G_subset_M
-  by force
+  oops
 
 end (* M_ctm *)
 
@@ -377,20 +342,6 @@ proof
   qed
 qed
 
-
-lemma (in M_datatypes) poset_in_M: "M(2^<\<omega>)" 
-proof - 
-  have "M(2)" "M(nat)" by auto
-  then
-  have "M(n \<rightarrow> 2)" if "n\<in>nat" for n
-    using that finite_funspace_closed by simp
-  with \<open>M(nat)\<close>
-  have "M({ n\<rightarrow>2 . n\<in>nat})" sorry
-  then 
-  show ?thesis
-    unfolding seqspace_def using Union_closed by simp
-qed
-
 definition is_funleR :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "is_funleR(Q,f,g) \<equiv> \<exists>df[Q]. \<exists>dg[Q]. is_domain(Q,f,df) \<and> is_domain(Q,g,dg) \<and> dg \<subseteq> df \<and>
                         (\<forall>j[Q]. j\<in>dg \<longrightarrow> (\<forall>z[Q]. fun_apply(Q,g,j,z) \<longrightarrow> fun_apply(Q,f,j,z)))"
@@ -407,97 +358,6 @@ lemma (in M_ctm) funleR_fm_sats :
   shows "sats(A,funleR_fm(f,g),env) \<longleftrightarrow> is_funleR(##A,nth(f, env),nth(g,env))"
   unfolding funleR_fm_def is_funleR_def
   using assms domain_iff_sats fun_apply_iff_sats 
-  sorry
-
-lemma (in M_basic) funleR_abs: 
-  assumes "M(f)" "M(g)"
-  shows "funleR(f,g) \<longleftrightarrow> is_funleR(M,f,g)"
-  unfolding funleR_def is_funleR_def 
-  using assms apply_abs domain_abs domain_closed[OF \<open>M(f)\<close>]  domain_closed[OF \<open>M(g)\<close>]
-  by auto
-
-definition
-  relP :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i] \<Rightarrow> o" where
-  "relP(M,r,xy) \<equiv> (\<exists>x[M]. \<exists>y[M]. pair(M,x,y,xy) \<and> r(M,x,y))"
-
-lemma (in M_basic) is_related_abs :
-  assumes "\<And> f g . M(f) \<Longrightarrow> M(g) \<Longrightarrow> rel(f,g) \<longleftrightarrow> is_rel(M,f,g)"
-  shows "\<And>z . M(z) \<Longrightarrow> relP(M,is_rel,z) \<longleftrightarrow> (\<exists>x y. z = <x,y> \<and> rel(x,y))"
-  unfolding relP_def using pair_in_M_iff assms by auto
-
-definition
-  is_RRel :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_RRel(M,is_r,A,r) \<equiv> \<exists>A2[M]. cartprod(M,A,A,A2) \<and> is_Collect(M,A2, relP(M,is_r),r)"
-
-lemma (in M_basic) is_Rrel_abs :
-  assumes "M(A)"  "M(r)"
-    "\<And> f g . M(f) \<Longrightarrow> M(g) \<Longrightarrow> rel(f,g) \<longleftrightarrow> is_rel(M,f,g)"
-  shows "is_RRel(M,is_rel,A,r) \<longleftrightarrow>  r = Rrel(rel,A)"
-proof -
-  from \<open>M(A)\<close> 
-  have "M(z)" if "z\<in>A\<times>A" for z
-    using cartprod_closed transM[of z "A\<times>A"] that by simp
-  then
-  have A:"relP(M, is_rel, z) \<longleftrightarrow> (\<exists>x y. z = \<langle>x, y\<rangle> \<and> rel(x, y))" "M(z)" if "z\<in>A\<times>A" for z
-    using that is_related_abs[of rel is_rel,OF assms(3)] by auto
-  then
-  have "Collect(A\<times>A,relP(M,is_rel)) = Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = <x,y> \<and> rel(x,y)))"
-    using Collect_cong[of "A\<times>A" "A\<times>A" "relP(M,is_rel)",OF _ A(1)] assms(1) assms(2)
-    by auto
-  with assms
-  show ?thesis unfolding is_RRel_def Rrel_def using cartprod_closed
-    by auto
-qed
-
-definition
-  is_funlerel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_funlerel(M,A,r) \<equiv> is_RRel(M,is_funleR,A,r)"
-
-lemma (in M_basic) funlerel_abs :
-  assumes "M(A)"  "M(r)"
-  shows "is_funlerel(M,A,r) \<longleftrightarrow> r = Rrel(funleR,A)"
-  unfolding is_funlerel_def
-  using is_Rrel_abs[OF \<open>M(A)\<close> \<open>M(r)\<close>,of funleR is_funleR] funleR_abs
-  by auto
-
-definition RrelP :: "[i\<Rightarrow>i\<Rightarrow>o,i] \<Rightarrow> i" where
-  "RrelP(R,A) \<equiv> {z\<in>A\<times>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> R(x,y)}"
-  
-lemma Rrel_eq : "RrelP(R,A) = Rrel(R,A)"
-  unfolding Rrel_def RrelP_def by auto
-
-lemma (in M_ctm) Rrel_closed:
-  assumes "A\<in>M" 
-    "\<And> a. a \<in> nat \<Longrightarrow> rel_fm(a)\<in>formula"
-    "\<And> f g . (##M)(f) \<Longrightarrow> (##M)(g) \<Longrightarrow> rel(f,g) \<longleftrightarrow> is_rel(##M,f,g)"
-    "\<And> a . a \<in> nat \<Longrightarrow> arity(rel_fm(a)) =succ(a)" 
-    "\<And> a . a \<in> M \<Longrightarrow> sats(M,rel_fm(0),[a]) \<longleftrightarrow> relP(##M,is_rel,a)"
-  shows "(##M)(Rrel(rel,A))" 
-proof -
-  have "z\<in> M \<Longrightarrow> relP(##M, is_rel, z) \<longleftrightarrow> (\<exists>x y. z = \<langle>x, y\<rangle> \<and> rel(x, y))" for z
-    using assms(3) is_related_abs[of rel is_rel]
-    by auto
-  with assms
-  have "Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = <x,y> \<and> rel(x,y))) \<in> M"
-    using Collect_in_M_0p[of "rel_fm(0)" "\<lambda> A z . relP(A,is_rel,z)" "\<lambda> z.\<exists>x y. z = \<langle>x, y\<rangle> \<and> rel(x, y)" ]
-        cartprod_closed
-    by simp
-  then show ?thesis
-  unfolding Rrel_def by simp
-qed
-
-
-context M_ctm
-begin
-
-(* domain(g) \<subseteq> domain(f) \<and> (\<forall> j\<in>domain(g). g`j = f`j) *)
-lemma funlerel_in_M: 
-  assumes "A\<in>M" 
-  shows "funlerel(A) \<in> M"
-  unfolding  funlerel_def Rrel_def chleR_def
-  sorry
-
-end 
-
+  oops
 
 end

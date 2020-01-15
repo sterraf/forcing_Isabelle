@@ -141,12 +141,6 @@ begin
       with assms[of \<phi>] and Cons
       show ?case 
       (*
-      lemma sats_incr_bv_iff [rule_format]:
-        "[| p \<in> formula; env \<in> list(A); x \<in> A |]
-         ==> \<forall>bvs \<in> list(A).
-                 sats(A, incr_bv(p) ` length(bvs), bvs @ Cons(x,env)) \<longleftrightarrow>
-                 sats(A, p, bvs@env)"
-      
       lemma formula_add_params1 [rule_format]:
         "[| p \<in> formula; n \<in> nat; x \<in> A |]
          ==> \<forall>bvs \<in> list(A). \<forall>env \<in> list(A).

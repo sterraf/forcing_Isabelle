@@ -104,9 +104,9 @@ begin
 lemma relation2_change_args:
   assumes "relation3(M,is_g,g)" "M(A)" "M(h)"
   shows "relation2(M,change_args(M,A,is_g,h),\<lambda>a l. g(a,l, h ` succ(length(l)) ` l))"
-  sorry
+  oops
 
-txt\<open>Si tuviera relation2 (sorriado arriba), podría probar que is_blc
+txt\<open>Si tuviera relation2 (oops arriba), podría probar que is_blc
 (abreviatura de "is_b con list_case'") se corresponde al
 "is_b" que va a consumir is_lambda más abajo.\<close>
 
