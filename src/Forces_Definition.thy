@@ -615,7 +615,7 @@ definition
 definition
   is_forces_neq' :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
   "is_forces_neq'(M,P,l,p,t1,t2) \<equiv>
-      \<not> (\<exists>q[M]. \<exists>qp[M]. q\<in>P \<and> pair(M,q,p,qp) \<and> qp\<in>l \<and> is_forces_eq'(M,P,l,q,t1,t2))"
+      \<not> (\<exists>q[M]. q\<in>P \<and> (\<exists>qp[M]. pair(M,q,p,qp) \<and> qp\<in>l \<and> is_forces_eq'(M,P,l,q,t1,t2)))"
 
 
 (*\<not> (\<exists>q\<in>P. <q,p>\<in>l \<and> forces_eq'(P,l,q,t1,t2))*)
@@ -640,6 +640,17 @@ definition
   "forces_mem_fm(p,l,q,t1,t2) \<equiv> Exists(Exists(And(number1_fm(1),
                           And(is_tuple_fm(1,t1#+2,t2#+2,q#+2,0),frc_at_fm(p#+2,l#+2,0,1)))))"
 
+definition
+  forces_neq_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
+  "forces_neq_fm(p,l,q,t1,t2) \<equiv> Neg(Exists(Exists(And(Member(1,p#+2),
+     And(pair_fm(1,q#+2,0),And(Member(0,l#+2),forces_eq_fm(p#+2,l#+2,1,t1#+2,t2#+2)))))))"
+
+definition
+  forces_nmem_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
+  "forces_nmem_fm(p,l,q,t1,t2) \<equiv> Neg(Exists(Exists(And(Member(1,p#+2),
+     And(pair_fm(1,q#+2,0),And(Member(0,l#+2),forces_mem_fm(p#+2,l#+2,1,t1#+2,t2#+2)))))))"
+
+
 lemma forces_eq_fm_type [TC]:
   "\<lbrakk> p\<in>nat;l\<in>nat;q\<in>nat;t1\<in>nat;t2\<in>nat\<rbrakk> \<Longrightarrow> forces_eq_fm(p,l,q,t1,t2) \<in> formula"
   unfolding forces_eq_fm_def 
@@ -648,6 +659,16 @@ lemma forces_eq_fm_type [TC]:
 lemma forces_mem_fm_type [TC]:
   "\<lbrakk> p\<in>nat;l\<in>nat;q\<in>nat;t1\<in>nat;t2\<in>nat\<rbrakk> \<Longrightarrow> forces_mem_fm(p,l,q,t1,t2) \<in> formula"
   unfolding forces_mem_fm_def
+  by simp
+
+lemma forces_neq_fm_type [TC]:
+  "\<lbrakk> p\<in>nat;l\<in>nat;q\<in>nat;t1\<in>nat;t2\<in>nat\<rbrakk> \<Longrightarrow> forces_neq_fm(p,l,q,t1,t2) \<in> formula"
+  unfolding forces_neq_fm_def 
+  by simp
+
+lemma forces_nmem_fm_type [TC]:
+  "\<lbrakk> p\<in>nat;l\<in>nat;q\<in>nat;t1\<in>nat;t2\<in>nat\<rbrakk> \<Longrightarrow> forces_nmem_fm(p,l,q,t1,t2) \<in> formula"
+  unfolding forces_nmem_fm_def 
   by simp
 
 lemma forces_eq_fm_arity :
@@ -678,6 +699,22 @@ lemma sats_forces_mem'_fm:
   shows "sats(M,forces_mem_fm(p,l,q,t1,t2),env) \<longleftrightarrow> 
              is_forces_mem'(##M,nth(p,env),nth(l,env),nth(q,env),nth(t1,env),nth(t2,env))"
   unfolding forces_mem_fm_def is_forces_mem'_def using assms sats_is_tuple_fm sats_frc_at_fm
+  by simp
+
+lemma sats_forces_neq'_fm: 
+  assumes  "p\<in>nat" "l\<in>nat" "q\<in>nat" "t1\<in>nat" "t2\<in>nat"  "env\<in>list(M)"
+  shows "sats(M,forces_neq_fm(p,l,q,t1,t2),env) \<longleftrightarrow> 
+             is_forces_neq'(##M,nth(p,env),nth(l,env),nth(q,env),nth(t1,env),nth(t2,env))"
+  unfolding forces_neq_fm_def is_forces_neq'_def 
+  using assms sats_forces_eq'_fm sats_is_tuple_fm sats_frc_at_fm
+  by simp
+
+lemma sats_forces_nmem'_fm: 
+  assumes  "p\<in>nat" "l\<in>nat" "q\<in>nat" "t1\<in>nat" "t2\<in>nat"  "env\<in>list(M)"
+  shows "sats(M,forces_nmem_fm(p,l,q,t1,t2),env) \<longleftrightarrow> 
+             is_forces_nmem'(##M,nth(p,env),nth(l,env),nth(q,env),nth(t1,env),nth(t2,env))"
+  unfolding forces_nmem_fm_def is_forces_nmem'_def 
+  using assms sats_forces_mem'_fm sats_is_tuple_fm sats_frc_at_fm
   by simp
 
 context forcing_data
@@ -1390,6 +1427,35 @@ lemma forces_mem'_abs :
   unfolding is_forces_mem'_def forces_mem'_def
   using frc_at_abs zero_in_M tuples_in_M by auto
 
+lemma forces_neq'_abs :
+  assumes
+    "p\<in>M" "t1\<in>M" "t2\<in>M"
+  shows 
+    "is_forces_neq'(##M,P,leq,p,t1,t2) \<longleftrightarrow> forces_neq'(P,leq,p,t1,t2)"
+proof -
+  have "q\<in>M" if "q\<in>P" for q
+    using that Transset_intf[of M _ P] trans_M P_in_M by simp
+  then show ?thesis
+  unfolding is_forces_neq'_def forces_neq'_def
+  using assms forces_eq'_abs pair_in_M_iff 
+  by (auto,blast)
+qed
+
+
+lemma forces_nmem'_abs :
+  assumes
+    "p\<in>M" "t1\<in>M" "t2\<in>M"
+  shows 
+    "is_forces_nmem'(##M,P,leq,p,t1,t2) \<longleftrightarrow> forces_nmem'(P,leq,p,t1,t2)"
+proof -
+  have "q\<in>M" if "q\<in>P" for q
+    using that Transset_intf[of M _ P] trans_M P_in_M by simp
+  then show ?thesis
+  unfolding is_forces_nmem'_def forces_nmem'_def
+  using assms forces_mem'_abs pair_in_M_iff 
+  by (auto,blast)
+qed
+
 end (* forcing_data *)
 
 definition 
@@ -1545,9 +1611,8 @@ lemma leq_fm_type[TC] :
 
 lemma sats_leq_fm :
   "\<lbrakk> leq\<in>nat;q\<in>nat;p\<in>nat;env\<in>list(A) \<rbrakk> \<Longrightarrow> 
-     sats(A,leq_fm(leq,q,p),env) \<longleftrightarrow> 
-    (\<exists>qp\<in>A. (pair(##A,nth(q,env),nth(p,env),qp) \<and>qp\<in>nth(leq,env)))" 
-  unfolding leq_fm_def by simp
+     sats(A,leq_fm(leq,q,p),env) \<longleftrightarrow> is_leq(##A,nth(leq,env),nth(q,env),nth(p,env))" 
+  unfolding leq_fm_def is_leq_def by simp
 
 consts forces' :: "i\<Rightarrow>i"
 primrec
@@ -1651,6 +1716,7 @@ lemma forces_nmem :
   "forces_nmem(p,t1,t2) \<longleftrightarrow> forces_nmem'(P,leq,p,t1,t2)" 
   unfolding forces_nmem_def forces_nmem'_def forces_mem_def by simp
 
+
 lemma sats_forces_Member :
   assumes  "x\<in>nat" "y\<in>nat" "env\<in>list(M)"
            "nth(x,env)=xx" "nth(y,env)=yy" "q\<in>M" 
@@ -1672,7 +1738,7 @@ lemma sats_forces_Equal :
 lemma sats_forces_Nand :
   assumes  "\<phi>\<in>formula" "\<psi>\<in>formula" "env\<in>list(M)" "p\<in>M" 
   shows "sats(M,forces(Nand(\<phi>,\<psi>)),[p,P,leq,one]@env) \<longleftrightarrow> 
-         (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> (\<exists>qp\<in>M. pair(##M,q,p,qp) \<and> qp\<in>leq) \<and> 
+         (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and> 
                (sats(M,forces'(\<phi>),[q,P,leq,one]@env) \<and> sats(M,forces'(\<psi>),[q,P,leq,one]@env))))"
   unfolding forces_def using sats_leq_fm assms sats_ren_forces_nand P_in_M leq_in_M one_in_M  
   by simp
@@ -1680,7 +1746,7 @@ lemma sats_forces_Nand :
 lemma sats_forces_Neg :
   assumes  "\<phi>\<in>formula" "env\<in>list(M)" "p\<in>M" 
   shows "sats(M,forces(Neg(\<phi>)),[p,P,leq,one]@env) \<longleftrightarrow> 
-         (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> (\<exists>qp\<in>M. pair(##M,q,p,qp) \<and> qp\<in>leq) \<and> 
+         (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and> 
                (sats(M,forces'(\<phi>),[q,P,leq,one]@env))))"
   unfolding Neg_def using assms sats_forces_Nand
   by simp
