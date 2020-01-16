@@ -315,7 +315,7 @@ proof -
   (* D\<in>M *)
   let ?d_fm="Or(Neg(compat_in_fm(1,2,3,0)),Member(0,4))"
   have 1:"p\<in>M" 
-    using \<open>M_generic(G)\<close> M_genericD Transset_intf[of M _ P] trans_M P_in_M 
+    using \<open>M_generic(G)\<close> M_genericD transitivity[OF _ P_in_M]
           \<open>p\<in>G\<close> by simp
   moreover
   have "?d_fm\<in>formula" by simp
@@ -355,7 +355,7 @@ proof -
   let ?\<phi>="Exists(Exists(Exists(And(Member(1,4),And(pair_fm(2,1,0),
           And(Member(0,7),And(leq_fm(5,3,1),forces_eq_fm(4,5,3,6,2))))))))" 
   have "\<sigma>\<in>M \<and> r\<in>M" if "\<langle>\<sigma>, r\<rangle> \<in> \<tau>"  for \<sigma> r
-    using that \<open>\<tau>\<in>M\<close> pair_in_M_iff Transset_intf[of M "<\<sigma>,r>" \<tau>] trans_M by simp
+    using that \<open>\<tau>\<in>M\<close> pair_in_M_iff transitivity[of "<\<sigma>,r>" \<tau>] by simp
   then
   have "?rel_pred(##M,q,P,leq,\<pi>,\<tau>) \<longleftrightarrow> (\<exists>\<sigma>. \<exists>r. r\<in>P \<and> <\<sigma>,r> \<in> \<tau> \<and> q\<preceq>r \<and> forces_eq(q,\<pi>,\<sigma>))"
     if "q\<in>M" for q
@@ -674,7 +674,7 @@ proof -
           And(union_fm(1,0,2),And(Member(3,2),And(forces_mem_fm(5,6,4,3,7),
                               forces_nmem_fm(5,6,4,3,8))))))))))" 
   have 1:"\<sigma>\<in>M" if "<\<sigma>,y>\<in>\<delta>" "\<delta>\<in>M" for \<sigma> \<delta> y
-    using that pair_in_M_iff Transset_intf[of M "<\<sigma>,y>" \<delta>] trans_M by simp
+    using that pair_in_M_iff transitivity[of "<\<sigma>,y>" \<delta>] by simp
   have abs1:"?rel_pred(##M,p,P,leq,\<tau>,\<theta>) \<longleftrightarrow> 
         (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem'(P,leq,p,\<sigma>,\<tau>) \<and> forces_nmem'(P,leq,p,\<sigma>,\<theta>))" 
         if "p\<in>M" for p
@@ -1237,15 +1237,76 @@ lemma ren_truth_lemma_type[TC] :
   unfolding ren_truth_lemma_def
   by simp
 
+lemma ren_truth_arity : 
+  assumes "\<phi>\<in>formula"
+  shows "arity(ren_truth_lemma(\<phi>)) \<le> 6 \<union> succ(arity(\<phi>))"
+proof -
+  consider (lt) "5 <arity(\<phi>)" | (ge) "\<not> 5 < arity(\<phi>)"
+    by auto
+  then
+  show ?thesis
+  proof cases
+    case lt
+    consider (a) "5<arity(\<phi>)#+5"  | (b) "arity(\<phi>)#+5 \<le> 5"
+      using not_lt_iff_le \<open>\<phi>\<in>_\<close> by force
+    then 
+    show ?thesis
+    proof cases
+      case a
+      with \<open>\<phi>\<in>_\<close> lt
+      have "5 < succ(arity(\<phi>))" "5<arity(\<phi>)#+2"  "5<arity(\<phi>)#+3"  "5<arity(\<phi>)#+4"
+        using succ_ltI by auto
+       with \<open>\<phi>\<in>_\<close> 
+      have c:"arity(iterates(\<lambda>p. incr_bv(p)`5,5,\<phi>)) = 5#+arity(\<phi>)" (is "arity(?\<phi>') = _") 
+        using arity_incr_bv_lemma lt a
+        by simp
+      with \<open>\<phi>\<in>_\<close>
+      have "arity(incr_bv(?\<phi>')`5) = 6#+arity(\<phi>)"
+        using arity_incr_bv_lemma[of ?\<phi>' 5] a by auto
+      with \<open>\<phi>\<in>_\<close>
+      show ?thesis
+        unfolding ren_truth_lemma_def
+        using pred_Un_distrib nat_union_abs1 Un_assoc[symmetric] a c nat_union_abs2
+        by simp
+    next
+      case b
+      with \<open>\<phi>\<in>_\<close> lt
+      have "5 < succ(arity(\<phi>))" "5<arity(\<phi>)#+2"  "5<arity(\<phi>)#+3"  "5<arity(\<phi>)#+4" "5<arity(\<phi>)#+5"
+        using succ_ltI by auto
+      with \<open>\<phi>\<in>_\<close> 
+      have "arity(iterates(\<lambda>p. incr_bv(p)`5,6,\<phi>)) = 6#+arity(\<phi>)" (is "arity(?\<phi>') = _") 
+        using arity_incr_bv_lemma lt 
+        by simp
+      with \<open>\<phi>\<in>_\<close>
+      show ?thesis
+        unfolding ren_truth_lemma_def
+        using pred_Un_distrib nat_union_abs1 Un_assoc[symmetric]  nat_union_abs2
+        by simp
+    qed
+  next
+    case ge
+    with \<open>\<phi>\<in>_\<close>
+    have "arity(\<phi>) \<le> 5" "pred^5(arity(\<phi>)) \<le> 5"
+      using not_lt_iff_le le_trans[OF le_pred]
+      by auto
+    with \<open>\<phi>\<in>_\<close>
+    have "arity(iterates(\<lambda>p. incr_bv(p)`5,6,\<phi>)) = arity(\<phi>)" "arity(\<phi>)\<le>6" "pred^5(arity(\<phi>)) \<le> 6"
+      using arity_incr_bv_lemma ge le_trans[OF \<open>arity(\<phi>)\<le>5\<close>] le_trans[OF \<open>pred^5(arity(\<phi>))\<le>5\<close>]
+      by auto
+    with \<open>arity(\<phi>) \<le> 5\<close> \<open>\<phi>\<in>_\<close> \<open>pred^5(_) \<le> 5\<close>
+    show ?thesis
+      unfolding ren_truth_lemma_def
+      using  pred_Un_distrib nat_union_abs1 Un_assoc[symmetric] nat_union_abs2 
+      by simp
+  qed
+qed
+
 lemma sats_ren_truth_lemma:
   "[q,b,d,a1,a2,a3] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
    sats(M, ren_truth_lemma(\<phi>),[q,b,d,a1,a2,a3] @ env ) \<longleftrightarrow> 
    sats(M, \<phi>,[q,a1,a2,a3,b] @ env)"
   unfolding ren_truth_lemma_def
-  apply (insert sats_incr_bv_iff [of _ _ M _ "[q,a1,a2,a3,b]"])
-  apply simp
-  done
-
+  by (insert sats_incr_bv_iff [of _ _ M _ "[q,a1,a2,a3,b]"], simp)
 
 lemma truth_lemma' :
   assumes
@@ -1257,7 +1318,7 @@ proof -
                   \<not>(sats(M,forces(\<phi>), [q,a1,a2,a3,b] @ env))" 
   let ?\<psi>="Exists(Forall(Implies(And(Member(0,3),leq_fm(4,0,2)),
           Neg(ren_truth_lemma(forces(\<phi>))))))"
-  have "q\<in>M" if "q\<in>P" for q using that Transset_intf[of M _ P] trans_M P_in_M by simp
+  have "q\<in>M" if "q\<in>P" for q using that transitivity[OF _ P_in_M] by simp
   then
   have 1:"\<forall>q\<in>M. q\<in>P \<and> R(q) \<longrightarrow> Q(q) \<Longrightarrow> (\<forall>q\<in>P. R(q) \<longrightarrow> Q(q))" for R Q 
     by auto
@@ -1278,7 +1339,31 @@ proof -
     by simp
   moreover
   have "arity(?\<psi>) \<le> 4#+length(env)" 
-    sorry
+  proof -
+    have eq:"arity(leq_fm(4, 0, 2)) = 5"
+      using leq_fm_arity succ_Un_distrib nat_simp_union
+      by simp
+    with \<open>\<phi>\<in>_\<close>
+    have "arity(?\<psi>) = 3 \<union> (pred^2(arity(ren_truth_lemma(forces(\<phi>)))))"
+      using nat_union_abs1 pred_Un_distrib by simp
+    moreover
+    have "... \<le> 3 \<union> (pred(pred(6 \<union> succ(arity(forces(\<phi>))))))" (is "_ \<le> ?r")
+      using  \<open>\<phi>\<in>_\<close> Un_le_compat[OF le_refl[of 3]] 
+                  le_imp_subset ren_truth_arity[of "forces(\<phi>)"]
+                  pred_mono
+      by auto
+    finally
+    have "arity(?\<psi>) \<le> ?r" by simp
+    have i:"?r \<le> 4 \<union> pred(arity(forces(\<phi>)))" 
+      using pred_Un_distrib pred_succ_eq \<open>\<phi>\<in>_\<close> Un_assoc[symmetric] nat_union_abs1 by simp
+    have h:"4 \<union> pred(arity(forces(\<phi>))) \<le> 4\<union> (4#+length(env))"
+      using  \<open>env\<in>_\<close> add_commute \<open>\<phi>\<in>_\<close>
+            Un_le_compat[of 4 4,OF _ pred_mono[OF _ forces_arity_le[OF _ _ \<open>arity(\<phi>)\<le>_\<close>]] ]
+            \<open>env\<in>_\<close> by auto
+    with \<open>\<phi>\<in>_\<close> \<open>env\<in>_\<close>
+    show ?thesis
+      using le_trans[OF  \<open>arity(?\<psi>) \<le> ?r\<close>  le_trans[OF i h]] nat_simp_union by simp
+  qed
   ultimately
   show ?thesis using assms P_in_M leq_in_M one_in_M 
        separation_ax[of "?\<psi>" "[P,leq,one]@env"] 
