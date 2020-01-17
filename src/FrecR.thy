@@ -334,7 +334,8 @@ lemma sats_ecloseN_fm [simp]:
    "[| en \<in> nat; t \<in> nat ; env \<in> list(A)|]
     ==> sats(A, ecloseN_fm(en,t), env) \<longleftrightarrow> is_ecloseN(##A,nth(en,env),nth(t,env))"
   unfolding ecloseN_fm_def is_ecloseN_def eclose_n1_fm_def eclose_n2_fm_def is_eclose_n_def
-  using  nth_0 nth_ConsI  sats_singleton_fm[symmetric] sats_name1_fm sats_name2_fm
+  using  nth_0 nth_ConsI sats_name1_fm sats_name2_fm 
+      is_singleton_iff_sats[symmetric]
   by auto
 
 (* Relation of forces *)
