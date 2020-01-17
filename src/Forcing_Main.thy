@@ -305,10 +305,10 @@ theorem extensions_of_ctms:
   assumes 
     "enum\<in>bij(nat,M)" "Transset(M)" "M \<Turnstile> ZF"
   shows 
-    "\<exists>N. N\<noteq>M \<and> (N \<Turnstile> ZF) \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
-    and
-    "M, []\<Turnstile> AC \<Longrightarrow>
-      \<exists>N. N\<noteq>M \<and> (N \<Turnstile> ZFC) \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))" 
+    "\<exists>N. 
+      M \<subseteq> N \<and> Transset(N) \<and> (N \<Turnstile> ZF) \<and>  M\<noteq>N \<and>  
+      (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)) \<and>
+      ((M, []\<Turnstile> AC) \<longrightarrow> (N \<Turnstile> ZFC))" 
 proof -
   from assms
   interpret M_ctm
@@ -340,31 +340,37 @@ proof -
   then 
   interpret G_generic "2^<\<omega>" funle 0 _ _  G by unfold_locales
   interpret MG: M_ZF "?N"
-    using Transset_MG generic pairing_in_MG 
+    using generic pairing_in_MG 
       Union_MG  extensionality_in_MG power_in_MG
       foundation_in_MG  strong_replacement_in_MG[simplified]
       separation_in_MG[simplified] infinty_in_MG
     by unfold_locales simp_all
   have "?N \<Turnstile> ZF" 
     using M_ZF_iff_M_satT[of ?N] MG.M_ZF_axioms by simp
-  with \<open>M \<noteq> ?N\<close>
-  show "\<exists>N. N\<noteq>M \<and> (N \<Turnstile> ZF) \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
-    using Ord_MG_iff by (intro exI,auto)
-  assume "M, [] \<Turnstile> AC"
-  then
-  have "choice_ax(##M)"
-    unfolding ZF_choice_fm_def using ZF_choice_auto by simp
-  then
-  have "choice_ax(##?N)" using choice_in_MG by simp
-  with \<open>?N \<Turnstile> ZF\<close>
-  have "?N \<Turnstile> ZFC"
-    using ZF_choice_auto sats_ZFC_iff_sats_ZF_AC 
-    unfolding ZF_choice_fm_def by simp
+  moreover 
+  have "M, []\<Turnstile> AC \<Longrightarrow> ?N \<Turnstile> ZFC"
+  proof -
+    assume "M, [] \<Turnstile> AC"
+    then
+    have "choice_ax(##M)"
+      unfolding ZF_choice_fm_def using ZF_choice_auto by simp
+    then
+    have "choice_ax(##?N)" using choice_in_MG by simp
+    with \<open>?N \<Turnstile> ZF\<close>
+    show "?N \<Turnstile> ZFC"
+      using ZF_choice_auto sats_ZFC_iff_sats_ZF_AC 
+      unfolding ZF_choice_fm_def by simp
+  qed
   moreover
   note \<open>M \<noteq> ?N\<close>
+  moreover
+  have "Transset(?N)" using Transset_MG .
+  moreover
+  have "M \<subseteq> ?N" using M_subset_MG[OF one_in_G] generic by simp
   ultimately
-  show "\<exists>N. N\<noteq>M \<and> (N \<Turnstile> ZFC) \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
-    using Ord_MG_iff by (intro exI,auto)
+  show ?thesis
+    using Ord_MG_iff 
+    by (rule_tac x="?N" in exI, simp)
 qed
 
 notepad
