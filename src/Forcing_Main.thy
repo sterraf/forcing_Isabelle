@@ -59,10 +59,20 @@ schematic_goal ZF_choice_auto:
 
 synthesize "ZF_choice_fm" from_schematic "ZF_choice_auto"
 
+lemmas ZFC_fm_defs = ZF_extensionality_fm_def ZF_foundation_fm_def ZF_pairing_fm_def
+              ZF_union_fm_def ZF_infinity_fm_def ZF_power_fm_def ZF_choice_fm_def
+
 definition
   ZF_fin :: "i" where
-  "ZF_fin \<equiv> {ZF_extensionality_fm,ZF_foundation_fm,ZF_pairing_fm,
-              ZF_union_fm,ZF_infinity_fm,ZF_power_fm}"
+  "ZF_fin \<equiv> { ZF_extensionality_fm, ZF_foundation_fm, ZF_pairing_fm,
+              ZF_union_fm, ZF_infinity_fm, ZF_power_fm }"
+
+definition
+  ZFC_fin :: "i" where
+  "ZFC_fin \<equiv> ZF_fin \<union> {ZF_choice_fm}"
+
+lemma ZFC_fin_type : "ZFC_fin \<subseteq> formula"
+  unfolding ZFC_fin_def ZF_fin_def ZFC_fm_defs by (auto)
 
 consts 
   nForall :: "[i,i] \<Rightarrow> i"
@@ -186,6 +196,36 @@ lemma \<comment> \<open>test for replacement formula\<close>
      univalent_Q1_def univalent_Q2_def
     apply simp \<comment> \<open>check first 3rd assumption!\<close>
     oops
+
+definition
+  ZFC_inf :: "i" where
+  "ZFC_inf == {ZF_separation_fm(p) . p \<in> formula } \<union> {ZF_replacement_fm(p) . p \<in> formula }"
+              
+lemma unions : "A\<subseteq>formula \<and> B\<subseteq>formula \<Longrightarrow> A\<union>B \<subseteq> formula"
+  by auto
+  
+lemma ZFC_inf_subset_formula : "ZFC_inf \<subseteq> formula"
+  unfolding ZFC_inf_def by auto
+    
+definition
+  ZFC :: "i" where
+  "ZFC == ZFC_inf \<union> ZFC_fin"
+
+definition
+  ZF :: "i" where
+  "ZF == ZFC_inf \<union> ZF_fin"
+
+definition 
+  ZF_minus_P :: "i" where
+  "ZF_minus_P == ZF - { ZF_power_fm }"
+
+lemma ZFC_subset_formula: "ZFC \<subseteq> formula"
+  by (simp add:ZFC_def unions ZFC_inf_subset_formula ZFC_fin_type)
+  
+txt\<open>Satisfaction of a set of sentences\<close>
+definition
+  satT :: "[i,i] => o"  ("_ \<Turnstile> _" 60) where
+  "A \<Turnstile> \<Phi>  \<equiv>  \<forall>\<phi>\<in>\<Phi>. (A,[] \<Turnstile> \<phi>)"
 
 notepad
 begin
