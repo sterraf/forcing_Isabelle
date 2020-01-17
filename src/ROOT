@@ -1,5 +1,5 @@
 session "Forcing" = "ZF" +
-  options [document = pdf, document_output = "output", quick_and_dirty = true (* sorry *)]
+  options [document = pdf, document_output = "output"]
   theories [document = true]
     "Extensionality_Axiom"
     "Foundation_Axiom"
