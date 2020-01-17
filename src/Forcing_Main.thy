@@ -286,8 +286,19 @@ proof
   show "M_ZF(M)"
     unfolding M_ZF_def by simp
 next
-  show "M \<Turnstile> ZF" 
-    sorry
+  assume \<open>M_ZF(M)\<close>
+  then
+  have "M \<Turnstile> ZF_fin" 
+    unfolding M_ZF_def ZF_fin_def ZFC_fm_defs satT_def
+    using ZFC_fm_sats[of M] by blast
+  moreover from \<open>M_ZF(M)\<close>
+  have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))" 
+       "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
+    unfolding M_ZF_def using sats_ZF_separation_fm_iff 
+      sats_ZF_replacement_fm_iff by simp_all
+  ultimately
+  show "M \<Turnstile> ZF"
+    unfolding ZF_def ZF_inf_def by blast
 qed
 
 theorem extensions_of_ctms:
