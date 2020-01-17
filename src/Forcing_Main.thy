@@ -85,6 +85,18 @@ definition
 lemma ZF_separation_fm_type [TC]: "p \<in> formula \<Longrightarrow> ZF_separation_fm(p) \<in> formula"
   by (simp add: ZF_separation_fm_def)
 
+lemmas ZF_separation_simps = formula_add_params1[of _ 2 _ _ "[_,_]" ] 
+
+lemma \<comment> \<open>test for separation formula\<close>
+  fixes \<phi> M
+  assumes 
+    "\<phi> \<in> formula" "arity(\<phi>) = 3" "M, [] \<Turnstile> (ZF_separation_fm(\<phi>))" 
+  shows "Q" 
+    using assms ZF_separation_simps
+    unfolding ZF_separation_fm_def 
+    apply simp \<comment> \<open>check first 3rd assumption!\<close>
+    oops
+
 schematic_goal sats_univalent_fm_auto:
   assumes 
 (*    Q_iff_sats:"\<And>a b z env aa bb. nth(a,Cons(z,env)) = aa \<Longrightarrow> nth(b,Cons(z,env)) = bb \<Longrightarrow> z\<in>A 
@@ -122,12 +134,26 @@ lemma sats_swap_vars :
   unfolding swap_vars_def
   using sats_incr_bv_iff [of _ _ M _ "[y,x]"] by simp
 
-lemma sats_iff_sats:
+definition
+  univalent_Q1 :: "i \<Rightarrow> i" where
+  "univalent_Q1(\<phi>) \<equiv> incr_bv1(swap_vars(\<phi>))"
+
+definition
+  univalent_Q2 :: "i \<Rightarrow> i" where
+  "univalent_Q2(\<phi>) \<equiv> incr_bv(swap_vars(\<phi>))`0"
+
+lemma univalent_Qs_type [TC]: 
+  assumes "\<phi>\<in>formula"
+  shows "univalent_Q1(\<phi>) \<in> formula" "univalent_Q2(\<phi>) \<in> formula"
+  unfolding univalent_Q1_def univalent_Q2_def using assms by simp_all
+
+lemma sats_univalent_fm_assm:
   assumes 
     "x \<in> A" "y \<in> A" "z\<in>A" "env\<in> list(A)" "\<phi> \<in> formula"
   shows 
-    "(A, ([x,z] @ env) \<Turnstile> \<phi>) \<longleftrightarrow> (A, Cons(z,Cons(y,Cons(x,env))) \<Turnstile> (incr_bv1(swap_vars(\<phi>))))"
-    "(A, ([x,y] @ env) \<Turnstile> \<phi>) \<longleftrightarrow> (A, Cons(z,Cons(y,Cons(x,env))) \<Turnstile> (incr_bv(swap_vars(\<phi>))`0))"
+    "(A, ([x,z] @ env) \<Turnstile> \<phi>) \<longleftrightarrow> (A, Cons(z,Cons(y,Cons(x,env))) \<Turnstile> (univalent_Q1(\<phi>)))"
+    "(A, ([x,y] @ env) \<Turnstile> \<phi>) \<longleftrightarrow> (A, Cons(z,Cons(y,Cons(x,env))) \<Turnstile> (univalent_Q2(\<phi>)))"
+  unfolding univalent_Q1_def univalent_Q2_def
   using 
     sats_incr_bv_iff[of _ _ A _ "[]"] \<comment> \<open>simplifies iterates of incr_bv(_)`0\<close>
     sats_incr_bv1_iff[of _ "Cons(x,env)" A z y] 
@@ -136,27 +162,28 @@ lemma sats_iff_sats:
 
 definition
   ZF_replacement_fm :: "i \<Rightarrow> i" where
-  "ZF_replacement_fm(p) \<equiv> nForall(pred(pred(arity(p))),
-      Forall(Implies(univalent_fm(incr_bv(swap_vars(incr_bv(p)`2))`0,incr_bv1(swap_vars(incr_bv(p)`2)),0),
-        Exists(Forall(Iff(Member(0,1),
-                      Exists(And(Member(0,3),incr_bv(incr_bv(p)`2)`2))))))))"
+  "ZF_replacement_fm(p) \<equiv> 
+    nForall(pred(pred(arity(p))),Forall(Implies(
+        univalent_fm(univalent_Q2(incr_bv(p)`2),univalent_Q1(incr_bv(p)`2),0),
+        Exists(Forall(
+          Iff(Member(0,1),Exists(And(Member(0,3),incr_bv(incr_bv(p)`2)`2))))))))"
 
 lemma ZF_replacement_fm_type [TC]: "p \<in> formula \<Longrightarrow> ZF_replacement_fm(p) \<in> formula"
   by (simp add: ZF_replacement_fm_def)
 
 lemmas ZF_replacement_simps = formula_add_params1[of \<phi> 2 _ M "[_,_]" ]
-      sats_incr_bv_iff[of _ _ M _ "[]"] \<comment> \<open>simplifies iterates of incr_bv(_)`0\<close>
-      sats_incr_bv_iff[of _ _ M _ "[_,_]"]\<comment> \<open>simplifies incr_bv(_)`2\<close>
-      sats_incr_bv1_iff[of _ _ M] 
-      sats_swap_vars for \<phi> M
+  sats_incr_bv_iff[of _ _ M _ "[]"] \<comment> \<open>simplifies iterates of incr_bv(_)`0\<close>
+  sats_incr_bv_iff[of _ _ M _ "[_,_]"]\<comment> \<open>simplifies incr_bv(_)`2\<close>
+  sats_incr_bv1_iff[of _ _ M] sats_swap_vars for \<phi> M
 
 lemma \<comment> \<open>test for replacement formula\<close>
   fixes \<phi> M
-  assumes "\<phi> \<in> formula" "arity(\<phi>) = 4"
-    "M, [] \<Turnstile> (ZF_replacement_fm(\<phi>))" 
+  assumes 
+    "\<phi> \<in> formula" "arity(\<phi>) = 4" "M, [] \<Turnstile> (ZF_replacement_fm(\<phi>))" 
   shows "Q" 
     using assms ZF_replacement_simps
     unfolding ZF_replacement_fm_def univalent_fm_def
+     univalent_Q1_def univalent_Q2_def
     apply simp \<comment> \<open>check first 3rd assumption!\<close>
     oops
 
@@ -208,7 +235,7 @@ begin
                 sats(A, p, Cons(x,env))"
       *)
         using formula_add_params1[of \<phi> 2 _ M "Cons(a,l)"  "[]"]
-          sats_univalent_fm_auto[OF sats_iff_sats]
+          sats_univalent_fm_auto[OF sats_univalent_fm_assm]
         unfolding separation_def ZF_separation_fm_def univalent_fm_def
         apply simp
         sorry
