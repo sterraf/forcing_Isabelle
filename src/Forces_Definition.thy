@@ -399,64 +399,12 @@ lemma is_Hfrc_at_iff_sats:
   using assms by (simp add:sats_Hfrc_at_fm)
 
 
-definition
-  tran_closure_fm :: "i\<Rightarrow>i\<Rightarrow>i" where
-  "tran_closure_fm(i,j) ==
-Exists
-         (And(Forall
-               (Implies
-                 (field_fm(succ(succ(i)), 0),
-                  Forall
-                   (Iff(Member(0, 2),
-                        Exists
-                         (And(omega_fm(0),
-                              Exists
-                               (And(Member(0, 1),
-                                    Exists
-                                     (And(succ_fm(1, 0),
-                                          Exists
-                                           (And(typed_function_fm(1, 5, 0),
-                                                And(Exists
-                                                     (Exists
- (And(pair_fm(1, 0, 6), Exists(And(empty_fm(0), And(fun_apply_fm(3, 0, 2), fun_apply_fm(3, 5, 1))))))),
-                                                    Forall
-                                                     (Implies
- (Member(0, 3),
-  Exists
-   (And(fun_apply_fm(2, 1, 0),
-        Exists
-         (And(succ_fm(2, 0),
-              Exists
-               (And(fun_apply_fm(4, 1, 0),
-                    Exists
-                     (And(pair_fm(3, 1, 0),
-                          Member
-                           (0, succ(succ(succ(succ(succ(succ
-   (succ(succ(succ(succ(succ(succ(i)))))))))))))))))))))))))))))))))))),
-              composition_fm(succ(i), 0, succ(j))))"
-
-
 lemma tran_closure_fm_arity :
   "\<lbrakk>x\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> arity(tran_closure_fm(x,f)) = succ(x) \<union> succ(f)"
   unfolding tran_closure_fm_def 
   using omega_fm_arity field_fm_arity typed_function_fm_arity pair_fm_arity empty_fm_arity fun_apply_fm_arity
     composition_fm_arity succ_fm_arity nat_union_abs2 pred_Un_distrib
   by auto
-
-lemma tran_closure_fm_type[TC] :
-  "\<lbrakk>x\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> tran_closure_fm(x,f)\<in>formula"
-  unfolding tran_closure_fm_def by simp
-
-lemma sats_tran_closure_fm :
-  assumes
-    "i\<in>nat"  "j\<in>nat" "env\<in>list(A)"
-  shows
-    "tran_closure(##A,nth(i, env),nth(j, env))
-    \<longleftrightarrow> sats(A,tran_closure_fm(i,j),env)"
-  unfolding tran_closure_fm_def tran_closure_def rtran_closure_def rtran_closure_mem_def using assms 
-  by simp
-
-
 
 (* transitive relation of forces for atomic formulas *)
 definition

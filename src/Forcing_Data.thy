@@ -188,6 +188,32 @@ proof -
   show ?thesis using 1 by simp
 qed
 
+lemma Repl_in_M :
+  assumes
+    f_fm:  "f_fm \<in> formula" and
+    f_ar:  "arity(f_fm)\<le> 2 #+ length(env)" and
+    fsats: "\<And>x y. x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> sats(M,f_fm,[x,y]@env) \<longleftrightarrow> is_f(x,y)" and
+    fabs:  "\<And>x y. x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> is_f(x,y) \<longleftrightarrow> y = f(x)" and
+    fclosed: "\<And>x. x\<in>A \<Longrightarrow> f(x) \<in> M"  and
+    "A\<in>M" "env\<in>list(M)" 
+  shows "{f(x). x\<in>A}\<in>M"
+proof -
+  have "strong_replacement(##M, \<lambda>x y. sats(M,f_fm,[x,y]@env))"
+    using replacement_ax f_fm f_ar \<open>env\<in>list(M)\<close> by simp
+  then
+  have "strong_replacement(##M, \<lambda>x y. y = f(x))"
+    using fsats fabs 
+          strong_replacement_cong[of "##M" "\<lambda>x y. sats(M,f_fm,[x,y]@env)" "\<lambda>x y. y = f(x)"]
+    by simp
+  then
+  have "{ y . x\<in>A , y = f(x) } \<in> M" 
+    using \<open>A\<in>M\<close> fclosed strong_replacement_closed by simp
+  moreover
+  have "{f(x). x\<in>A} = { y . x\<in>A , y = f(x) }"
+    by auto
+  ultimately show ?thesis by simp
+qed
+
 end (* M_ctm *)      
 
 locale forcing_data = forcing_notion + M_ctm +

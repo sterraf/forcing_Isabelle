@@ -289,12 +289,14 @@ proof -
   finally show ?thesis .
 qed
 end (* context: G_generic *)
-  
-sublocale G_generic \<subseteq> M_trivial"##M[G]"
+
+
+context G_generic begin
+
+interpretation mgtriv: M_trivial "##M[G]"
   using generic Union_MG pairing_in_MG zero_in_MG transitivity_MG
   unfolding M_trivial_def M_trans_def M_trivial_axioms_def by (simp; blast)
- 
-context G_generic begin
+
 
 theorem power_in_MG :
   "power_ax(##(M[G]))"
@@ -318,7 +320,7 @@ proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
     "{x\<in>Pow(a) . x \<in> M[G]} \<in> M[G]" .
   moreover from \<open>a\<in>M[G]\<close> \<open>{x\<in>Pow(a) . x \<in> M[G]} \<in> _\<close> have
     "powerset(##M[G], a, {x\<in>Pow(a) . x \<in> M[G]})"
-    using powerset_abs[OF \<open>(##M[G])(a)\<close>] 
+    using mgtriv.powerset_abs[OF \<open>(##M[G])(a)\<close>] 
     by simp
   ultimately show 
     "\<exists>x\<in>M[G] . powerset(##M[G], a, x)"

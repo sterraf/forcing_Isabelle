@@ -3,6 +3,7 @@ theory Interface
           Renaming
           Renaming_Auto 
           Relative_Univ
+          Synthetic_Definition
 begin
 
 syntax
@@ -643,10 +644,30 @@ assumes
   "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
 shows
   "tran_closure(##A,r,rp) \<longleftrightarrow> sats(A,?tc(i,j),env)"
-  "?tc(i,j) \<in> formula"
   unfolding tran_closure_def
   by (insert assms ; (rule sep_rules rtran_closure_fm_auto | simp))+
 
+synthesize "tran_closure_fm" from_schematic "tran_closure_fm_auto"
+
+lemma tran_closure_fm_type[TC] :
+   "\<lbrakk> x\<in>nat ; y\<in>nat \<rbrakk> \<Longrightarrow> tran_closure_fm(x,y) \<in> formula" 
+  unfolding tran_closure_fm_def by simp
+
+
+lemma tran_closure_iff_sats:
+assumes 
+  "nth(i,env) = r" "nth(j,env) = rp"
+  "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
+shows
+  "tran_closure(##A,r,rp) \<longleftrightarrow> sats(A,tran_closure_fm(i,j),env)"
+  unfolding tran_closure_fm_def using assms tran_closure_fm_auto by simp
+
+lemma sats_tran_closure_fm :
+assumes 
+  "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
+shows
+  "sats(A,tran_closure_fm(i,j),env) \<longleftrightarrow> tran_closure(##A,nth(i,env),nth(j,env))"
+  unfolding tran_closure_fm_def using assms tran_closure_fm_auto by simp
 
 schematic_goal wellfounded_trancl_fm_auto:
 assumes 

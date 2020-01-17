@@ -139,11 +139,72 @@ context G_generic begin
 definition
   upair_name :: "i \<Rightarrow> i \<Rightarrow> i" where
   "upair_name(\<tau>,\<rho>) == {\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>}"
-  
+
+definition
+  is_upair_name :: "[i,i,i] \<Rightarrow> o" where
+  "is_upair_name(x,y,z) \<equiv> \<exists>xo\<in>M. \<exists>yo\<in>M. pair(##M,x,one,xo) \<and> pair(##M,y,one,yo) \<and> 
+                                       upair(##M,xo,yo,z)"
+
+lemma upair_name_abs : 
+  assumes "x\<in>M" "y\<in>M" "z\<in>M" 
+  shows "is_upair_name(x,y,z) \<longleftrightarrow> z = upair_name(x,y)" 
+  unfolding is_upair_name_def upair_name_def using assms one_in_M pair_in_M_iff by simp
+
+lemma upair_name_closed :
+  "\<lbrakk> x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> upair_name(x,y)\<in>M" 
+  unfolding upair_name_def using upair_in_M_iff pair_in_M_iff one_in_M by simp
+
+definition
+  upair_name_fm :: "[i,i,i,i] \<Rightarrow> i" where
+  "upair_name_fm(x,y,o,z) \<equiv> Exists(Exists(And(pair_fm(x#+2,o#+2,1),
+                                          And(pair_fm(y#+2,o#+2,0),upair_fm(1,0,z#+2)))))" 
+
+lemma upair_name_fm_type[TC] :
+    "\<lbrakk> s\<in>nat;x\<in>nat;y\<in>nat;o\<in>nat\<rbrakk> \<Longrightarrow> upair_name_fm(s,x,y,o)\<in>formula"
+  unfolding upair_name_fm_def by simp
+
+lemma sats_upair_name_fm :
+  assumes "x\<in>nat" "y\<in>nat" "z\<in>nat" "o\<in>nat" "env\<in>list(M)""nth(o,env)=one" 
+  shows 
+    "sats(M,upair_name_fm(x,y,o,z),env) \<longleftrightarrow> is_upair_name(nth(x,env),nth(y,env),nth(z,env))"
+  unfolding upair_name_fm_def is_upair_name_def using assms by simp
+
 definition
   opair_name :: "i \<Rightarrow> i \<Rightarrow> i" where
   "opair_name(\<tau>,\<rho>) == upair_name(upair_name(\<tau>,\<tau>),upair_name(\<tau>,\<rho>))"
-  
+
+definition
+  is_opair_name :: "[i,i,i] \<Rightarrow> o" where
+  "is_opair_name(x,y,z) \<equiv> \<exists>upxx\<in>M. \<exists>upxy\<in>M. is_upair_name(x,x,upxx) \<and> is_upair_name(x,y,upxy)
+                                          \<and> is_upair_name(upxx,upxy,z)" 
+
+lemma opair_name_abs : 
+  assumes "x\<in>M" "y\<in>M" "z\<in>M" 
+  shows "is_opair_name(x,y,z) \<longleftrightarrow> z = opair_name(x,y)" 
+  unfolding is_opair_name_def opair_name_def using assms upair_name_abs upair_name_closed by simp
+
+lemma opair_name_closed :
+  "\<lbrakk> x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> opair_name(x,y)\<in>M" 
+  unfolding opair_name_def using upair_name_closed by simp
+
+
+(*\<exists>upxx\<in>M. \<exists>upxy\<in>M. is_upair_name(x,x,upxx) \<and> is_upair_name(x,y,upxy)
+                                          \<and> is_upair_name(upxx,upxy,z)*)
+definition
+  opair_name_fm :: "[i,i,i,i] \<Rightarrow> i" where
+  "opair_name_fm(x,y,o,z) \<equiv> Exists(Exists(And(upair_name_fm(x#+2,x#+2,o#+2,1),
+                    And(upair_name_fm(x#+2,y#+2,o#+2,0),upair_name_fm(1,0,o#+2,z#+2)))))" 
+
+lemma opair_name_fm_type[TC] :
+    "\<lbrakk> s\<in>nat;x\<in>nat;y\<in>nat;o\<in>nat\<rbrakk> \<Longrightarrow> opair_name_fm(s,x,y,o)\<in>formula"
+  unfolding opair_name_fm_def by simp
+
+lemma sats_opair_name_fm :
+  assumes "x\<in>nat" "y\<in>nat" "z\<in>nat" "o\<in>nat" "env\<in>list(M)""nth(o,env)=one" 
+  shows 
+    "sats(M,opair_name_fm(x,y,o,z),env) \<longleftrightarrow> is_opair_name(nth(x,env),nth(y,env),nth(z,env))"
+  unfolding opair_name_fm_def is_opair_name_def using assms sats_upair_name_fm by simp
+
 lemma val_upair_name : "val(G,upair_name(\<tau>,\<rho>)) = {val(G,\<tau>),val(G,\<rho>)}"
   unfolding upair_name_def using val_Upair  generic one_in_G one_in_P by simp
     
@@ -181,6 +242,64 @@ interpretation mgzf: M_ZF_trans "M[G]"
       separation_in_MG[simplified] infinty_in_MG)
   done
 
+(* y = opair_name(check(\<beta>),s`\<beta>) *)
+
+
+definition
+  is_opname_check :: "[i,i,i] \<Rightarrow> o" where
+  "is_opname_check(s,x,y) \<equiv> \<exists>chx\<in>M. \<exists>sx\<in>M. is_check(x,chx) \<and> fun_apply(##M,s,x,sx) \<and> 
+                             is_opair_name(chx,sx,y)" 
+
+definition
+  opname_check_fm :: "[i,i,i,i] \<Rightarrow> i" where
+  "opname_check_fm(s,x,y,o) \<equiv> Exists(Exists(And(check_fm(2#+x,2#+o,1),
+                              And(fun_apply_fm(2#+s,2#+x,0),opair_name_fm(1,0,2#+o,2#+y)))))"
+
+lemma opname_check_fm_type[TC] :
+  "\<lbrakk> s\<in>nat;x\<in>nat;y\<in>nat;o\<in>nat\<rbrakk> \<Longrightarrow> opname_check_fm(s,x,y,o)\<in>formula"
+  unfolding opname_check_fm_def by simp
+
+lemma sats_opname_check_fm:
+  assumes "x\<in>nat" "y\<in>nat" "z\<in>nat" "o\<in>nat" "env\<in>list(M)" "nth(o,env)=one" 
+          "y<length(env)"
+  shows 
+    "sats(M,opname_check_fm(x,y,z,o),env) \<longleftrightarrow> is_opname_check(nth(x,env),nth(y,env),nth(z,env))"
+  unfolding opname_check_fm_def is_opname_check_def 
+  using assms sats_check_fm sats_opair_name_fm one_in_M by simp
+
+
+lemma opname_check_abs :
+  assumes "s\<in>M" "x\<in>M" "y\<in>M" 
+  shows "is_opname_check(s,x,y) \<longleftrightarrow> y = opair_name(check(x),s`x)" 
+  unfolding is_opname_check_def  
+  using assms check_abs check_in_M opair_name_abs apply_abs apply_closed by simp
+
+lemma repl_opname_check :
+  assumes
+    "A\<in>M" "f\<in>M" 
+  shows
+   "{opair_name(check(x),f`x). x\<in>A}\<in>M"
+proof -
+  have "arity(opname_check_fm(3,0,1,2))= 4" 
+    unfolding opname_check_fm_def opair_name_fm_def upair_name_fm_def
+          check_fm_def rcheck_fm_def tran_closure_fm_def is_eclose_fm_def mem_eclose_fm_def
+         is_Hcheck_fm_def is_Replace_fm_def PHcheck_fm_def finite_ordinal_fm_def is_iterates_fm_def
+             is_wfrec_fm_def is_recfun_fm_def restriction_fm_def pre_image_fm_def eclose_n_fm_def
+        is_nat_case_fm_def quasinat_fm_def Memrel_fm_def singleton_fm_def fm_defs iterates_MH_fm_def
+    by (simp add:nat_simp_union)
+  moreover
+  have "x\<in>A \<Longrightarrow> opair_name(check(x), f ` x)\<in>M" for x
+    using assms opair_name_closed apply_closed Transset_intf[of M _ A] trans_M check_in_M
+    by simp
+  ultimately
+  show ?thesis using assms opname_check_abs[of f] sats_opname_check_fm
+        one_in_M
+        Repl_in_M[of "opname_check_fm(3,0,1,2)" "[one,f]" "is_opname_check(f)" 
+                    "\<lambda>x. opair_name(check(x),f`x)"] 
+    by simp
+qed
+
+
 
 theorem choice_in_MG: 
   assumes "choice_ax(##M)"
@@ -203,7 +322,7 @@ proof -
       using M_subset_MG generic one_in_G subsetD by blast
     let ?A="domain(\<tau>)\<times>P"
     let ?g = "{opair_name(check(\<beta>),s`\<beta>). \<beta>\<in>\<alpha>}"
-    have "?g \<in> M" sorry
+    have "?g \<in> M" using \<open>s\<in>M\<close> \<open>\<alpha>\<in>M\<close> repl_opname_check by simp
     let ?f_dot="{\<langle>opair_name(check(\<beta>),s`\<beta>),one\<rangle>. \<beta>\<in>\<alpha>}"
     have "?f_dot = ?g \<times> {one}" by blast
     from one_in_M have "{one} \<in> M" using singletonM by simp
