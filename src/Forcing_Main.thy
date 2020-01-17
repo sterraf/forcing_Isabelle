@@ -301,12 +301,34 @@ next
     unfolding ZF_def ZF_inf_def by blast
 qed
 
+lemma (in G_generic) MG_eqpoll_nat: "M[G] \<approx> nat"
+proof -
+  interpret MG: M_ZF_trans "M[G]"
+    using Transset_MG generic pairing_in_MG 
+      Union_MG  extensionality_in_MG power_in_MG
+      foundation_in_MG  strong_replacement_in_MG[simplified]
+      separation_in_MG[simplified] infinty_in_MG
+    by unfold_locales simp_all
+  define f where "f \<equiv> \<lambda>n\<in>nat. val(G,enum`n)"
+  have "f \<in> surj(nat,M[G])"
+    (* using M_countable lam_type[of nat "\<lambda>x. val(G,enum`x)" "\<lambda>_.M[G]"]
+    unfolding surj_def GenExt_def f_def apply auto *) sorry
+  then
+  have "M[G] \<lesssim> nat" sorry
+  moreover
+  have "nat \<lesssim> M[G]"
+    using MG.nat_into_M subset_imp_lepoll by auto
+  ultimately
+  show ?thesis using eqpollI 
+    by simp
+qed
+
 theorem extensions_of_ctms:
   assumes 
     "enum\<in>bij(nat,M)" "Transset(M)" "M \<Turnstile> ZF"
   shows 
     "\<exists>N. 
-      M \<subseteq> N \<and> Transset(N) \<and> (N \<Turnstile> ZF) \<and>  M\<noteq>N \<and>  
+      M \<subseteq> N \<and> Transset(N) \<and> N \<approx> nat \<and> (N \<Turnstile> ZF) \<and>  M\<noteq>N \<and>  
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)) \<and>
       ((M, []\<Turnstile> AC) \<longrightarrow> (N \<Turnstile> ZFC))" 
 proof -
@@ -369,7 +391,7 @@ proof -
   have "M \<subseteq> ?N" using M_subset_MG[OF one_in_G] generic by simp
   ultimately
   show ?thesis
-    using Ord_MG_iff 
+    using Ord_MG_iff MG_eqpoll_nat
     by (rule_tac x="?N" in exI, simp)
 qed
 
