@@ -35,21 +35,28 @@ to arguments involving names.
 \ \ \isakeyword{shows}\ {\isachardoublequoteopen}Q{\isacharparenleft}a{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-\verb|Non_Constructible.thy| contains our first example of a poset
+\verb|Succession_Poset.thy| contains our first example of a poset
 that interprets the locale
-\isatt{forcing{\isacharunderscore}notion}. It is the set of all binary
-lists with the partial order given by  ``\isatt{xs} is an extension of
-\isatt{ys}.'' The sufficient condition for a proper extension is that
+\isatt{forcing{\isacharunderscore}notion}, essentially the notion for
+adding one Cohen real. It is the set $2^{<\om}$ of all finite binary
+sequences partially  ordered by reverse inclusion.
+The sufficient condition for a proper extension is that
 the forcing poset is \emph{separative}: every element has two
-incompatible extensions.
+incompatible (\isatt{{\isasymbottom}f}) extensions. Here,
+\isatt{fun{\isacharunderscore}upd{\isacharparenleft}f{\isacharcomma}x{\isacharparenright}}
+adds \isatt{x} to the end of the sequence.
 
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
-\ incompatible{\isacharunderscore}extensions{\isacharcolon}\isanewline
-\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}p{\isasymin}list{\isacharparenleft}{\isadigit{2}}{\isacharparenright}{\isachardoublequoteclose}\isanewline
-\ \ \isakeyword{shows}\ {\isachardoublequoteopen}{\isacharparenleft}p\ {\isacharat}\ {\isacharbrackleft}{\isadigit{0}}{\isacharbrackright}{\isacharparenright}\ {\isasymbottom}\ {\isacharparenleft}p\ {\isacharat}\ {\isacharbrackleft}{\isadigit{1}}{\isacharbrackright}{\isacharparenright}{\isachardoublequoteclose}
+\ seqspace{\isacharunderscore}separative{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}f{\isasymin}{\isadigit{2}}{\isacharcircum}{\isacharless}{\isasymomega}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}fun{\isacharunderscore}upd{\isacharparenleft}f{\isacharcomma}{\isadigit{0}}{\isacharparenright}\ {\isasymbottom}f\ fun{\isacharunderscore}upd{\isacharparenleft}f{\isacharcomma}{\isadigit{1}}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
  
+We prove in the theory file \verb|Proper_Extension.thy| that, in
+general, every separative forcing notion gives rise to a proper
+extension.
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "forcing_in_isabelle_zf"
