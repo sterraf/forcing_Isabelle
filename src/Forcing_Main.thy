@@ -59,8 +59,17 @@ schematic_goal ZF_choice_auto:
 
 synthesize "ZF_choice_fm" from_schematic "ZF_choice_auto"
 
+syntax
+  "_choice"  :: "i"  ("AC")
+translations
+  "AC" \<rightharpoonup> "CONST ZF_choice_fm"
+
+
 lemmas ZFC_fm_defs = ZF_extensionality_fm_def ZF_foundation_fm_def ZF_pairing_fm_def
               ZF_union_fm_def ZF_infinity_fm_def ZF_power_fm_def ZF_choice_fm_def
+
+lemmas ZFC_fm_sats = ZF_extensionality_auto ZF_foundation_auto ZF_pairing_auto
+              ZF_union_auto ZF_infinity_auto ZF_power_auto ZF_choice_auto
 
 definition
   ZF_fin :: "i" where
@@ -198,34 +207,154 @@ lemma \<comment> \<open>test for replacement formula\<close>
     oops
 
 definition
-  ZFC_inf :: "i" where
-  "ZFC_inf == {ZF_separation_fm(p) . p \<in> formula } \<union> {ZF_replacement_fm(p) . p \<in> formula }"
+  ZF_inf :: "i" where
+  "ZF_inf == {ZF_separation_fm(p) . p \<in> formula } \<union> {ZF_replacement_fm(p) . p \<in> formula }"
               
 lemma unions : "A\<subseteq>formula \<and> B\<subseteq>formula \<Longrightarrow> A\<union>B \<subseteq> formula"
   by auto
   
-lemma ZFC_inf_subset_formula : "ZFC_inf \<subseteq> formula"
-  unfolding ZFC_inf_def by auto
+lemma ZF_inf_subset_formula : "ZF_inf \<subseteq> formula"
+  unfolding ZF_inf_def by auto
     
 definition
   ZFC :: "i" where
-  "ZFC == ZFC_inf \<union> ZFC_fin"
+  "ZFC == ZF_inf \<union> ZFC_fin"
 
 definition
   ZF :: "i" where
-  "ZF == ZFC_inf \<union> ZF_fin"
+  "ZF == ZF_inf \<union> ZF_fin"
 
 definition 
   ZF_minus_P :: "i" where
   "ZF_minus_P == ZF - { ZF_power_fm }"
 
 lemma ZFC_subset_formula: "ZFC \<subseteq> formula"
-  by (simp add:ZFC_def unions ZFC_inf_subset_formula ZFC_fin_type)
+  by (simp add:ZFC_def unions ZF_inf_subset_formula ZFC_fin_type)
   
 txt\<open>Satisfaction of a set of sentences\<close>
 definition
-  satT :: "[i,i] => o"  ("_ \<Turnstile> _" 60) where
+  satT :: "[i,i] \<Rightarrow> o"  ("_ \<Turnstile> _" 60) where
   "A \<Turnstile> \<Phi>  \<equiv>  \<forall>\<phi>\<in>\<Phi>. (A,[] \<Turnstile> \<phi>)"
+
+lemma satTI [intro!]: 
+  assumes "\<And>\<phi>. \<phi>\<in>\<Phi> \<Longrightarrow> A,[] \<Turnstile> \<phi>"
+  shows "A \<Turnstile> \<Phi>"
+  using assms unfolding satT_def by simp
+
+lemma satTD [dest] :"A \<Turnstile> \<Phi> \<Longrightarrow>  \<phi>\<in>\<Phi> \<Longrightarrow> A,[] \<Turnstile> \<phi>"
+  unfolding satT_def by simp
+
+lemma sats_ZFC_iff_sats_ZF_AC: 
+  "(N \<Turnstile> ZFC) \<longleftrightarrow> (N \<Turnstile> ZF) \<and> (N, [] \<Turnstile> AC)"
+    unfolding ZFC_def ZFC_fin_def ZF_def by auto
+
+lemma sats_ZF_separation_fm_iff:
+  "(\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p))))
+   \<longleftrightarrow>
+   (\<forall>\<phi>\<in>formula. \<forall>env\<in>list(M). arity(\<phi>) \<le> 1 #+ length(env) \<longrightarrow>
+                    separation(##M,\<lambda>x. sats(M,\<phi>,[x] @ env)))"
+  sorry
+
+lemma sats_ZF_replacement_fm_iff:
+  "(\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p))))
+   \<longleftrightarrow>
+   (\<forall>\<phi>\<in>formula. \<forall>env\<in>list(M). arity(\<phi>) \<le> 2 #+ length(env) \<longrightarrow> 
+                    strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y] @ env)))"
+  sorry
+
+lemma M_ZF_iff_M_satT: "M_ZF(M) \<longleftrightarrow> (M \<Turnstile> ZF)"
+proof
+  assume "M \<Turnstile> ZF"
+  then
+  have fin: "upair_ax(##M)" "Union_ax(##M)" "power_ax(##M)"
+    "extensionality(##M)" "foundation_ax(##M)" "infinity_ax(##M)"
+    unfolding ZF_def ZF_fin_def ZFC_fm_defs satT_def
+    using ZFC_fm_sats[of M] by simp_all
+  {
+    fix \<phi> env
+    assume "\<phi> \<in> formula" "env\<in>list(M)" 
+    moreover from \<open>M \<Turnstile> ZF\<close>
+    have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))" 
+         "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
+      unfolding ZF_def ZF_inf_def by auto
+    moreover from calculation
+    have "arity(\<phi>) \<le> succ(length(env)) \<Longrightarrow> separation(##M, \<lambda>x. (M, Cons(x, env) \<Turnstile> \<phi>))"
+      "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
+      using sats_ZF_separation_fm_iff sats_ZF_replacement_fm_iff by simp_all  
+  }
+  with fin
+  show "M_ZF(M)"
+    unfolding M_ZF_def by simp
+next
+  show "M \<Turnstile> ZF" 
+    sorry
+qed
+
+theorem extensions_of_ctms:
+  assumes 
+    "enum\<in>bij(nat,M)" "Transset(M)" "M \<Turnstile> ZF"
+  shows 
+    "\<exists>N. N\<noteq>M \<and> (N \<Turnstile> ZF) \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
+    and
+    "M, []\<Turnstile> AC \<Longrightarrow>
+      \<exists>N. N\<noteq>M \<and> (N \<Turnstile> ZFC) \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))" 
+proof -
+  from assms
+  interpret M_ctm
+    using M_ZF_iff_M_satT
+    by intro_locales (simp_all add:M_ctm_axioms_def)
+  interpret ctm_separative "2^<\<omega>" funle 0
+  proof (unfold_locales)
+    fix f
+    let ?q="fun_upd(f,0)" and ?r="fun_upd(f,1)"
+    assume "f \<in> 2^<\<omega>"
+    then
+    have "?q \<preceq>f f \<and> ?r \<preceq>f f \<and> ?q \<bottom>f ?r" 
+      using upd_leI seqspace_separative by auto
+    moreover from calculation
+    have "?q \<in> 2^<\<omega>"  "?r \<in> 2^<\<omega>"
+      using fun_upd_type[of f 2] by auto
+    ultimately
+    show "\<exists>q\<in>2^<\<omega>.  \<exists>r\<in>2^<\<omega>. q \<preceq>f f \<and> r \<preceq>f f \<and> q \<bottom>f r"
+      by (rule_tac bexI)+ \<comment> \<open>why the heck auto-tools don't solve this?\<close>
+  next
+    show "2^<\<omega> \<in> M" using nat_into_M seqspace_closed by simp
+  next
+    show "funle \<in> M" using funle_in_M .
+  qed
+  from cohen_extension_is_proper
+  obtain G where "M_generic(G)" 
+    "M \<noteq> GenExt(G)" (is "M\<noteq>?N") 
+    by blast
+  then 
+  interpret G_generic "2^<\<omega>" funle 0 _ _  G by unfold_locales
+  interpret MG: M_ZF "?N"
+    using Transset_MG generic pairing_in_MG 
+      Union_MG  extensionality_in_MG power_in_MG
+      foundation_in_MG  strong_replacement_in_MG[simplified]
+      separation_in_MG[simplified] infinty_in_MG
+    by unfold_locales simp_all
+  have "?N \<Turnstile> ZF" 
+    using M_ZF_iff_M_satT[of ?N] MG.M_ZF_axioms by simp
+  with \<open>M \<noteq> ?N\<close>
+  show "\<exists>N. N\<noteq>M \<and> (N \<Turnstile> ZF) \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
+    using Ord_MG_iff by (intro exI,auto)
+  assume "M, [] \<Turnstile> AC"
+  then
+  have "choice_ax(##M)"
+    unfolding ZF_choice_fm_def using ZF_choice_auto by simp
+  then
+  have "choice_ax(##?N)" using choice_in_MG by simp
+  with \<open>?N \<Turnstile> ZF\<close>
+  have "?N \<Turnstile> ZFC"
+    using ZF_choice_auto sats_ZFC_iff_sats_ZF_AC 
+    unfolding ZF_choice_fm_def by simp
+  moreover
+  note \<open>M \<noteq> ?N\<close>
+  ultimately
+  show "\<exists>N. N\<noteq>M \<and> (N \<Turnstile> ZFC) \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
+    using Ord_MG_iff by (intro exI,auto)
+qed
 
 notepad
 begin
