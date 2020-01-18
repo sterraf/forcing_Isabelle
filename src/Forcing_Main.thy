@@ -313,11 +313,48 @@ definition
 
 lemma well_ord_imp_min:
   assumes 
-    "well_ord(A,r)" "B \<subseteq> A" "B \<noteq> 0" 
+    "well_ord(A,r)" "B \<subseteq> A" "B \<noteq> 0"
   shows 
     "minimum(r,B) \<in> B" 
-    (* "y\<in>B \<Longrightarrow> y\<noteq>minimum(r,B) \<Longrightarrow> <b, y> \<in> r" *)
-  sorry
+proof -
+  from \<open>well_ord(A,r)\<close>
+  have "wf[A](r)"
+    using well_ord_is_wf[OF \<open>well_ord(A,r)\<close>] by simp
+  with \<open>B\<subseteq>A\<close>
+  have "wf[B](r)"
+    using Sigma_mono Int_mono wf_subset unfolding wf_on_def by simp
+  then
+  have "\<forall> x. x \<in> B \<longrightarrow> (\<exists>z\<in>B. \<forall>y. \<langle>y, z\<rangle> \<in> r\<inter>B\<times>B \<longrightarrow> y \<notin> B)"
+    unfolding wf_on_def using wf_eq_minimal
+    by blast
+  with \<open>B\<noteq>0\<close>
+  obtain z where
+    B: "z\<in>B \<and> (\<forall>y. <y,z>\<in>r\<inter>B\<times>B \<longrightarrow> y\<notin>B)"
+    by blast
+  then
+  have "z\<in>B \<and> (\<forall>y\<in>B. y \<noteq> z \<longrightarrow> \<langle>z, y\<rangle> \<in> r)"
+  proof -
+    {
+      fix y
+      assume "y\<in>B" "y\<noteq>z"
+      with \<open>well_ord(A,r)\<close> B \<open>B\<subseteq>A\<close>
+      have "<z,y>\<in>r|<y,z>\<in>r|y=z"
+        unfolding well_ord_def tot_ord_def linear_def by auto
+      with B \<open>y\<in>B\<close> \<open>y\<noteq>z\<close>
+      have "<z,y>\<in>r"
+        by (cases;auto)
+    }
+    with B
+    show ?thesis by blast
+  qed
+  have "v = z" if "v\<in>B \<and> (\<forall>y\<in>B. y \<noteq> v \<longrightarrow> \<langle>v, y\<rangle> \<in> r)" for v
+    using that B by auto
+  with \<open>z\<in>B \<and> (\<forall>y\<in>B. y \<noteq> z \<longrightarrow> \<langle>z, y\<rangle> \<in> r)\<close>
+  show ?thesis
+    unfolding minimum_def 
+    using the_equality2[OF ex1I[of "\<lambda>x .x\<in>B \<and> (\<forall>y\<in>B. y \<noteq> x \<longrightarrow> \<langle>x, y\<rangle> \<in> r)" z]]
+    by auto
+qed
 
 lemma well_ord_surj_imp_lepoll:
   assumes "well_ord(A,r)" "h \<in> surj(A,B)"
