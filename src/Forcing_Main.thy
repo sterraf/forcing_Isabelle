@@ -403,18 +403,21 @@ qed
 
 theorem extensions_of_ctms:
   assumes 
-    "enum \<in> bij(nat,M)" "Transset(M)" "M \<Turnstile> ZF"
+    "M \<approx> nat" "Transset(M)" "M \<Turnstile> ZF"
   shows 
     "\<exists>N. 
-      M \<subseteq> N \<and> Transset(N) \<and> N \<approx> nat \<and> (N \<Turnstile> ZF) \<and>  M\<noteq>N \<and>  
+      M \<subseteq> N \<and> N \<approx> nat \<and> Transset(N) \<and> (N \<Turnstile> ZF) \<and>  M\<noteq>N \<and>  
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)) \<and>
       ((M, []\<Turnstile> AC) \<longrightarrow> (N \<Turnstile> ZFC))" 
 proof -
-  from assms
-  interpret M_ctm
+  from \<open>M \<approx> nat\<close>
+  obtain enum where "enum \<in> bij(nat,M)"
+    using eqpoll_sym unfolding eqpoll_def by blast
+  with assms
+  interpret M_ctm M enum
     using M_ZF_iff_M_satT
     by intro_locales (simp_all add:M_ctm_axioms_def)
-  interpret ctm_separative "2^<\<omega>" funle 0
+  interpret ctm_separative "2^<\<omega>" funle 0 M enum
   proof (unfold_locales)
     fix f
     let ?q="fun_upd(f,0)" and ?r="fun_upd(f,1)"
@@ -438,7 +441,7 @@ proof -
     "M \<noteq> GenExt(G)" (is "M\<noteq>?N") 
     by blast
   then 
-  interpret G_generic "2^<\<omega>" funle 0 _ _  G by unfold_locales
+  interpret G_generic "2^<\<omega>" funle 0 _ enum  G by unfold_locales
   interpret MG: M_ZF "?N"
     using generic pairing_in_MG 
       Union_MG  extensionality_in_MG power_in_MG
