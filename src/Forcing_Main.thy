@@ -301,6 +301,84 @@ next
     unfolding ZF_def ZF_inf_def by blast
 qed
 
+(* 
+lemma surj_imp_well_ord:
+  assumes "well_ord(A,r)" "h \<in> surj(A,B)"
+  shows "\<exists>s. well_ord(B,r)" 
+*)
+
+definition
+  minimum :: "i \<Rightarrow> i \<Rightarrow> i" where
+  "minimum(r,B) \<equiv> THE b. b\<in>B \<and> (\<forall>y\<in>B. y \<noteq> b \<longrightarrow> <b, y> \<in> r)"
+
+lemma well_ord_imp_min:
+  assumes 
+    "well_ord(A,r)" "B \<subseteq> A" "B \<noteq> 0" 
+  shows 
+    "minimum(r,B) \<in> B" 
+    (* "y\<in>B \<Longrightarrow> y\<noteq>minimum(r,B) \<Longrightarrow> <b, y> \<in> r" *)
+  sorry
+
+lemma well_ord_surj_imp_lepoll:
+  assumes "well_ord(A,r)" "h \<in> surj(A,B)"
+  shows "B \<lesssim> A"
+proof -
+  let ?f="\<lambda>b\<in>B. minimum(r, {a\<in>A. h`a=b})"
+  have "b \<in> B \<Longrightarrow> minimum(r, {a \<in> A . h ` a = b}) \<in> {a\<in>A. h`a=b}" for b
+  proof -
+    fix b
+    assume "b\<in>B"
+    with \<open>h \<in> surj(A,B)\<close>
+    have "\<exists>a\<in>A. h`a=b" 
+      unfolding surj_def by blast
+    then
+    have "{a\<in>A. h`a=b} \<noteq> 0"
+      by auto
+    with assms
+    show "minimum(r,{a\<in>A. h`a=b}) \<in> {a\<in>A. h`a=b}"
+      using well_ord_imp_min by blast
+  qed
+  moreover from this
+  have "?f : B \<rightarrow> A"
+      using lam_type[of B _ "\<lambda>_.A"] by simp
+  moreover 
+  have "?f ` w = ?f ` x \<Longrightarrow> w = x" if "w\<in>B" "x\<in>B" for w x
+  proof -
+    from calculation(1)[OF that(1)] calculation(1)[OF that(2)]
+    have "w = h ` minimum(r, {a \<in> A . h ` a = w})"
+         "x = h ` minimum(r, {a \<in> A . h ` a = x})"
+      by simp_all  
+    moreover
+    assume "?f ` w = ?f ` x"
+    moreover from this and that
+    have "minimum(r, {a \<in> A . h ` a = w}) = minimum(r, {a \<in> A . h ` a = x})"
+      by simp_all
+    moreover from calculation(1,2,4)
+    show "w=x" by simp
+    qed
+  ultimately
+  show ?thesis
+  unfolding lepoll_def inj_def by blast
+qed
+
+lemma (in forcing_data) surj_nat_MG :
+  "\<exists>f. f \<in> surj(nat,M[G])"
+proof -
+  let ?f="\<lambda>n\<in>nat. val(G,enum`n)"
+  have "x \<in> nat \<Longrightarrow> val(G, enum ` x)\<in> M[G]" for x
+    using GenExtD[THEN iffD2, of _ G] bij_is_fun[OF M_countable] by force
+  then
+  have "?f: nat \<rightarrow> M[G]"
+    using lam_type[of nat "\<lambda>n. val(G,enum`n)" "\<lambda>_.M[G]"] by simp
+  moreover
+  have "\<exists>n\<in>nat. ?f`n = x" if "x\<in>M[G]" for x
+    using that GenExtD[of _ G] bij_is_surj[OF M_countable] 
+    unfolding surj_def by auto
+  ultimately
+  show ?thesis
+    unfolding surj_def by blast
+qed
+
 lemma (in G_generic) MG_eqpoll_nat: "M[G] \<approx> nat"
 proof -
   interpret MG: M_ZF_trans "M[G]"
@@ -309,12 +387,12 @@ proof -
       foundation_in_MG  strong_replacement_in_MG[simplified]
       separation_in_MG[simplified] infinty_in_MG
     by unfold_locales simp_all
-  define f where "f \<equiv> \<lambda>n\<in>nat. val(G,enum`n)"
-  have "f \<in> surj(nat,M[G])"
-    (* using M_countable lam_type[of nat "\<lambda>x. val(G,enum`x)" "\<lambda>_.M[G]"]
-    unfolding surj_def GenExt_def f_def apply auto *) sorry
+  obtain f where "f \<in> surj(nat,M[G])"
+    using surj_nat_MG by blast
   then
-  have "M[G] \<lesssim> nat" sorry
+  have "M[G] \<lesssim> nat" 
+    using well_ord_surj_imp_lepoll well_ord_Memrel[of nat]
+    by simp
   moreover
   have "nat \<lesssim> M[G]"
     using MG.nat_into_M subset_imp_lepoll by auto
@@ -325,7 +403,7 @@ qed
 
 theorem extensions_of_ctms:
   assumes 
-    "enum\<in>bij(nat,M)" "Transset(M)" "M \<Turnstile> ZF"
+    "enum \<in> bij(nat,M)" "Transset(M)" "M \<Turnstile> ZF"
   shows 
     "\<exists>N. 
       M \<subseteq> N \<and> Transset(N) \<and> N \<approx> nat \<and> (N \<Turnstile> ZF) \<and>  M\<noteq>N \<and>  
