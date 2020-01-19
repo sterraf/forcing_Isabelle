@@ -60,7 +60,7 @@ schematic_goal ZF_choice_auto:
 synthesize "ZF_choice_fm" from_schematic "ZF_choice_auto"
 
 syntax
-  "_choice"  :: "i"  ("AC")
+  "_choice" :: "i"  ("AC")
 translations
   "AC" \<rightharpoonup> "CONST ZF_choice_fm"
 
@@ -89,10 +89,14 @@ primrec
   "nForall(0,p) = p"
   "nForall(succ(n),p) = Forall(nForall(n,p))" 
 
-
 lemma nForall_type [TC]: 
-      "[| n \<in> nat; p \<in> formula |] ==> nForall(n,p) \<in> formula"
-  by (induct_tac "n",auto)
+      "\<lbrakk> n \<in> nat; p \<in> formula \<rbrakk> \<Longrightarrow> nForall(n,p) \<in> formula"
+  by (induct set:nat, auto)
+
+lemma nForall_assoc: "n\<in>nat \<Longrightarrow> nForall(succ(n),p) = nForall(n,Forall(p))"
+  by (induct set:nat; simp)
+
+(* declare nForall.simps(2)[simp del] nForall_assoc[simp] *)
 
 definition
   ZF_separation_fm :: "i \<Rightarrow> i" where
@@ -109,12 +113,88 @@ lemmas ZF_separation_simps = formula_add_params1[of _ 2 _ _ "[_,_]" ]
 lemma \<comment> \<open>test for separation formula\<close>
   fixes \<phi> M
   assumes 
-    "\<phi> \<in> formula" "arity(\<phi>) = 3" "M, [] \<Turnstile> (ZF_separation_fm(\<phi>))" 
+    "\<phi> \<in> formula" "arity(\<phi>) = 2" "M, [] \<Turnstile> (ZF_separation_fm(\<phi>))" 
   shows "Q" 
     using assms ZF_separation_simps
     unfolding ZF_separation_fm_def 
     apply simp \<comment> \<open>check first 3rd assumption!\<close>
     oops
+
+lemma aux:
+  assumes
+    "arity(\<phi>) = length(env) #+ 1" "M, [] \<Turnstile> (ZF_separation_fm(\<phi>))"
+    "env \<in> list(M)" 
+  shows
+    "\<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> (M, [x] @ env \<Turnstile> \<phi>)"
+  sorry  
+
+lemma sats_ZF_separation_fm_iff:
+  "(\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p))))
+   \<longleftrightarrow>
+   (\<forall>\<phi>\<in>formula. \<forall>env\<in>list(M). arity(\<phi>) \<le> 1 #+ length(env) \<longrightarrow>
+                    separation(##M,\<lambda>x. sats(M,\<phi>,[x] @ env)))"
+proof (intro iffI ballI impI)
+  assume "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
+  show "separation(##M, \<lambda>x. M, [x] @ env \<Turnstile> \<phi>)" 
+    if "env \<in> list(M)" "\<phi> \<in> formula" "arity(\<phi>) \<le> 1 #+ length(env)" for \<phi> env
+    using that
+  proof (induct)
+    case Nil
+    moreover from this
+    have "Arith.pred(arity(\<phi>)) = 0" 
+      using pred_le[of _ 0] by (simp)
+    moreover from \<open>\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))\<close> and Nil
+    have "M, [] \<Turnstile> (ZF_separation_fm(\<phi>))" by simp
+    ultimately
+    show ?case 
+      using ZF_separation_simps
+      unfolding separation_def ZF_separation_fm_def
+      by simp
+  next
+    case (Cons a l)
+    then 
+    have "arity(\<phi>)\<in>nat" by simp
+    then
+    show ?case
+    proof (induct "arity(\<phi>)" (* arbitrary:\<phi> *))
+      case 0
+      moreover from this
+      have "l\<in>list(M) \<Longrightarrow> a\<in>M \<Longrightarrow> arity(\<phi>) \<le> length(Cons(a,l))" 
+           "n\<in>nat \<Longrightarrow> arity(\<phi>) \<le> n" for n a l by simp_all
+      note Cons
+      moreover from \<open>\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))\<close> and this
+      have "M, [] \<Turnstile> (ZF_separation_fm(\<phi>))" by simp
+      moreover from calculation
+      have "\<forall>x\<in>M. \<exists>xa\<in>M. \<forall>xb\<in>M. xb \<in> xa \<longleftrightarrow> xb \<in> x \<and> M, [xb] \<Turnstile> \<phi>"
+        using ZF_separation_simps 
+        unfolding ZF_separation_fm_def by simp
+      with Cons \<open>\<And>n. n\<in>nat \<Longrightarrow> arity(\<phi>) \<le> n\<close>
+      show ?case
+        using arity_sats_iff[of _ "Cons(a,l)" M, OF _ _ _ \<open>_ \<Longrightarrow> arity(\<phi>) \<le> length([_])\<close>]
+        unfolding separation_def
+        by simp
+    next
+      case (succ n)
+      then
+      have "n \<in> nat"
+        "n \<equiv> arity(\<phi>) \<Longrightarrow> separation(\<lambda>a. (##M)(a), \<lambda>x. M, [x] @ Cons(a, l) \<Turnstile> \<phi>)" by simp_all
+      moreover 
+      note Cons
+      moreover from \<open>\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))\<close> and this
+      have "M, [] \<Turnstile> (ZF_separation_fm(\<phi>))" by simp
+      ultimately
+      show ?case
+      using (* sats_incr_bv1_iff[of \<phi> "[_]" M _ _] *) ZF_separation_simps[of \<phi>] 
+      unfolding separation_def ZF_separation_fm_def
+      apply (simp del:)
+        sorry
+    qed
+  qed
+next
+  assume "\<forall>\<phi>\<in>formula. \<forall>env\<in>list(M). arity(\<phi>) \<le> 1 #+ length(env)
+           \<longrightarrow> separation(##M, \<lambda>x. M, [x] @ env \<Turnstile> \<phi>)"
+  show "M, [] \<Turnstile> (ZF_separation_fm(p))" for p  sorry
+qed
 
 schematic_goal sats_univalent_fm_auto:
   assumes 
@@ -206,6 +286,13 @@ lemma \<comment> \<open>test for replacement formula\<close>
     apply simp \<comment> \<open>check first 3rd assumption!\<close>
     oops
 
+lemma sats_ZF_replacement_fm_iff:
+  "(\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p))))
+   \<longleftrightarrow>
+   (\<forall>\<phi>\<in>formula. \<forall>env\<in>list(M). arity(\<phi>) \<le> 2 #+ length(env) \<longrightarrow> 
+                    strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y] @ env)))"
+  sorry
+
 definition
   ZF_inf :: "i" where
   "ZF_inf == {ZF_separation_fm(p) . p \<in> formula } \<union> {ZF_replacement_fm(p) . p \<in> formula }"
@@ -247,20 +334,6 @@ lemma satTD [dest] :"A \<Turnstile> \<Phi> \<Longrightarrow>  \<phi>\<in>\<Phi> 
 lemma sats_ZFC_iff_sats_ZF_AC: 
   "(N \<Turnstile> ZFC) \<longleftrightarrow> (N \<Turnstile> ZF) \<and> (N, [] \<Turnstile> AC)"
     unfolding ZFC_def ZFC_fin_def ZF_def by auto
-
-lemma sats_ZF_separation_fm_iff:
-  "(\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p))))
-   \<longleftrightarrow>
-   (\<forall>\<phi>\<in>formula. \<forall>env\<in>list(M). arity(\<phi>) \<le> 1 #+ length(env) \<longrightarrow>
-                    separation(##M,\<lambda>x. sats(M,\<phi>,[x] @ env)))"
-  sorry
-
-lemma sats_ZF_replacement_fm_iff:
-  "(\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p))))
-   \<longleftrightarrow>
-   (\<forall>\<phi>\<in>formula. \<forall>env\<in>list(M). arity(\<phi>) \<le> 2 #+ length(env) \<longrightarrow> 
-                    strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y] @ env)))"
-  sorry
 
 lemma M_ZF_iff_M_satT: "M_ZF(M) \<longleftrightarrow> (M \<Turnstile> ZF)"
 proof
@@ -512,68 +585,5 @@ proof -
     using Ord_MG_iff MG_eqpoll_nat
     by (rule_tac x="?N" in exI, simp)
 qed
-
-notepad
-begin
-  fix M
-  assume assms:"p \<in> formula \<Longrightarrow> M, [] \<Turnstile> (ZF_separation_fm(p))" for p
-  have "\<phi>\<in>formula \<Longrightarrow> arity(\<phi>) \<le> 1 #+ length(env) \<Longrightarrow>
-        separation(##M,\<lambda>x. sats(M,\<phi>,[x] @ env))" if "env\<in>list(M)" for \<phi> env
-    using that
-  proof (induct)
-    case Nil
-    moreover from this
-    have "Arith.pred(arity(\<phi>)) = 0" 
-      using pred_le[of _ 0] by (simp)
-    moreover
-    note assms[of \<phi>]
-    ultimately
-    show ?case 
-      using formula_add_params1[of \<phi> 2 _ M "[_,_]" ]
-      unfolding separation_def ZF_separation_fm_def
-      by simp
-  next
-    case (Cons a l)
-    then
-    have "Arith.pred(arity(\<phi>)) \<le> 1 #+ length(l)" 
-      using pred_le[of _ "succ(length(l))"] by (simp)
-    have "Arith.pred(arity(\<phi>)) = n \<Longrightarrow> 
-          separation(\<lambda>a. (##M)(a), \<lambda>x. (M, ([x] @ Cons(a, l)) \<Turnstile> \<phi>))"
-      if "n \<in> nat" for n  using that
-    proof (induct)
-      case 0
-      with assms[of \<phi>] and Cons
-      show ?case 
-        using formula_add_params1[of \<phi> 2 _ M "Cons(a,l)"  "[]"]
-        unfolding separation_def ZF_separation_fm_def
-        apply simp
-        sorry
-    next
-      case (succ n)
-      with assms[of \<phi>] and Cons
-      show ?case 
-      (*
-      lemma formula_add_params1 [rule_format]:
-        "[| p \<in> formula; n \<in> nat; x \<in> A |]
-         ==> \<forall>bvs \<in> list(A). \<forall>env \<in> list(A).
-                length(bvs) = n \<longrightarrow>
-                sats(A, iterates(incr_bv1, n, p), Cons(x, bvs@env)) \<longleftrightarrow>
-                sats(A, p, Cons(x,env))"
-      *)
-        using formula_add_params1[of \<phi> 2 _ M "Cons(a,l)"  "[]"]
-          sats_univalent_fm_auto[OF sats_univalent_fm_assm]
-        unfolding separation_def ZF_separation_fm_def univalent_fm_def
-        apply simp
-        sorry
-    qed
-    moreover from \<open>\<phi>\<in>_\<close>
-    have "Arith.pred(arity(\<phi>)) \<in> nat" by simp
-    ultimately
-    show ?case by simp
-  qed
-end (* notepad *)
-
-
-
 
 end
