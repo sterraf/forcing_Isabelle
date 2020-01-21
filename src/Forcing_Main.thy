@@ -371,14 +371,46 @@ proof (intro iffI ballI impI)
     qed
   qed
 next
-  assume "\<forall>\<phi>\<in>formula. \<forall>env\<in>list(M). arity(\<phi>) \<le> 1 #+ length(env)
+  assume asm:"\<forall>\<phi>\<in>formula. \<forall>env\<in>list(M). arity(\<phi>) \<le> 1 #+ length(env)
            \<longrightarrow> separation(##M, \<lambda>x. M, [x] @ env \<Turnstile> \<phi>)"
-  show "M, [] \<Turnstile> (ZF_separation_fm(p))" for p  sorry
+  show "\<phi>\<in>formula \<Longrightarrow> M, [] \<Turnstile> (ZF_separation_fm(\<phi>))" for \<phi>
+  proof -
+    assume "\<phi>\<in>formula"
+    with asm
+    have "separation(##M, \<lambda>x. M, [x] @ env \<Turnstile> \<phi>)" 
+      if "arity(\<phi>) \<le> 1 #+ length(env)" "env\<in>list(M)" for env
+      using that by simp
+    then
+    have "\<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> M, Cons(x,env) \<Turnstile> \<phi>"
+      if "arity(\<phi>) \<le> 1 #+ length(env)" "env\<in>list(M)" for env
+      using that unfolding separation_def by simp
+    moreover
+    have "\<forall>rest\<in>list(M). length(rest) = Arith.pred(arity(\<phi>)) \<longrightarrow> 
+        (\<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> M, Cons(x, rest) \<Turnstile> \<phi>)"
+    proof (intro ballI, intro impI)
+      fix rest
+      assume "rest \<in> list(M)" "length(rest) = Arith.pred(arity(\<phi>))"
+      moreover from this and \<open>\<phi>\<in>_\<close>
+      have "arity(\<phi>) \<le> 1 #+ length(rest)"
+        using succpred_leI by simp
+      moreover
+      note \<open>\<lbrakk>_;_\<rbrakk>\<Longrightarrow> \<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> M, Cons(x,rest) \<Turnstile> \<phi>\<close>
+      ultimately
+      show "\<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> M, Cons(x, rest) \<Turnstile> \<phi>" by simp
+    qed
+    moreover
+    note \<open>\<phi>\<in>_\<close>
+    ultimately
+    show "M, [] \<Turnstile> ZF_separation_fm(\<phi>)"
+      using sats_G_separation_fm_iff
+      unfolding ZF_separation_fm_def
+      by simp
+  qed
 qed
 
 schematic_goal sats_univalent_fm_auto:
   assumes 
-(*    Q_iff_sats:"\<And>a b z env aa bb. nth(a,Cons(z,env)) = aa \<Longrightarrow> nth(b,Cons(z,env)) = bb \<Longrightarrow> z\<in>A 
+    (*    Q_iff_sats:"\<And>a b z env aa bb. nth(a,Cons(z,env)) = aa \<Longrightarrow> nth(b,Cons(z,env)) = bb \<Longrightarrow> z\<in>A 
           \<Longrightarrow> aa \<in> A \<Longrightarrow> bb \<in> A \<Longrightarrow> env\<in> list(A) \<Longrightarrow> 
                  Q(aa,bb) \<longleftrightarrow> (A, Cons(z,env) \<Turnstile> (Q_fm(a,b)))" \<comment> \<open>using only one formula\<close> *)
     Q_iff_sats:"\<And>x y z. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> z\<in>A \<Longrightarrow> 
