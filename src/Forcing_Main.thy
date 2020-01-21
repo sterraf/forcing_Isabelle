@@ -142,6 +142,28 @@ lemma \<comment> \<open>test for separation formula\<close>
     apply simp \<comment> \<open>check first 3rd assumption!\<close>
     oops
 
+lemma list_length_succ_D' :
+  assumes "l \<in> list(A)" "length(l) = succ(n)"
+  shows "\<exists> a\<in>A. \<exists>l'\<in>list(A). l = Cons(a,l')"
+  using assms by (cases;simp)
+
+lemma list_length_succ_D :
+  assumes "l \<in> list(A)" "length(l) = succ(n)"
+  shows "\<exists> a\<in>A. \<exists>l'\<in>list(A). l = l'@[a]"
+proof-
+  from \<open>l\<in>_\<close> \<open>length(_) = _\<close>
+  have "rev(l) \<in> list(A)" "length(rev(l)) = succ(n)"
+    using length_rev by simp_all
+  then
+  obtain a l' where "a\<in>A" "l'\<in>list(A)" "rev(l) = Cons(a,l')"
+    using list_length_succ_D'[OF \<open>rev(l)\<in>_\<close> \<open> length(rev(l)) = _\<close>] by auto
+  then
+  have "l = rev(l') @ [a]" "rev(l') \<in> list(A)"
+    using rev_rev_ident[OF \<open>l\<in>_\<close>] by auto
+  with \<open>a\<in>_\<close>
+  show ?thesis by blast
+qed
+
 lemma sats_g_separation_fm_imp:
   assumes     
     "\<phi> \<in> formula" 
@@ -160,7 +182,7 @@ next
   case (succ n)
   from \<open>rest \<in> list(M)\<close> \<open>length(rest) = succ(n)\<close>
   obtain res t where "t\<in>M" "res\<in>list(M)" "rest=res @ [t]"
-    sorry
+    using list_length_succ_D[OF \<open>rest\<in>_\<close> \<open>length(_) = _\<close>] by auto
   with assms succ(1,3-7) succ(2)[of "Cons(t,ms)" res]
   show ?case 
     using ZF_separation_simps
