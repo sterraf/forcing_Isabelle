@@ -99,34 +99,99 @@ lemma nForall_assoc: "n\<in>nat \<Longrightarrow> nForall(succ(n),p) = nForall(n
 (* declare nForall.simps(2)[simp del] nForall_assoc[simp] *)
 
 definition
-  ZF_separation_fm :: "i \<Rightarrow> i" where
-  "ZF_separation_fm(p) == nForall(pred(arity(p)), 
+  g_separation_fm :: "i \<Rightarrow> i \<Rightarrow> i" where
+  "g_separation_fm(n,p) == nForall(n, 
                               Forall(Exists(Forall(
                               Iff(Member(0,1),And(Member(0,2),
                                               incr_bv1^2(p)))))))"
+
+lemma g_separation_fm_type [TC]: "n \<in> nat \<Longrightarrow> p \<in> formula \<Longrightarrow> g_separation_fm(n,p) \<in> formula"
+  by (simp add: g_separation_fm_def)
+
+lemma g_separation_fm_zero [simp]: 
+  assumes"p \<in> formula" 
+  shows "g_separation_fm(0,p) = Forall(Exists(Forall(
+                              Iff(Member(0,1),And(Member(0,2),
+                                              incr_bv1^2(p))))))"
+  using assms
+  by (simp add: g_separation_fm_def)
+
+lemma g_separation_fm_succ [simp]:
+  assumes "n \<in> nat" "p \<in> formula" 
+  shows "g_separation_fm(succ(n),p) = Forall(g_separation_fm(n,p))"
+  using assms
+  by (simp add: g_separation_fm_def)
+
+definition
+  ZF_separation_fm :: "i \<Rightarrow> i" where
+  "ZF_separation_fm(p) == g_separation_fm(pred(arity(p)),p)"
                                                 
 lemma ZF_separation_fm_type [TC]: "p \<in> formula \<Longrightarrow> ZF_separation_fm(p) \<in> formula"
   by (simp add: ZF_separation_fm_def)
 
-lemmas ZF_separation_simps = formula_add_params1[of _ 2 _ _ "[_,_]" ] 
+lemmas ZF_separation_simps = formula_add_params1[of _ 2 _ _ "[_,_]" ]
 
 lemma \<comment> \<open>test for separation formula\<close>
   fixes \<phi> M
   assumes 
-    "\<phi> \<in> formula" "arity(\<phi>) = 2" "M, [] \<Turnstile> (ZF_separation_fm(\<phi>))" 
+    "\<phi> \<in> formula" "arity(\<phi>) = 3" "n=2" "M, ms \<Turnstile> (g_separation_fm(n,\<phi>))" 
+    "ms\<in>list(M)"
   shows "Q" 
     using assms ZF_separation_simps
-    unfolding ZF_separation_fm_def 
+    unfolding g_separation_fm_def 
     apply simp \<comment> \<open>check first 3rd assumption!\<close>
     oops
 
-lemma aux:
-  assumes
-    "arity(\<phi>) = length(env) #+ 1" "M, [] \<Turnstile> (ZF_separation_fm(\<phi>))"
-    "env \<in> list(M)" 
+lemma sats_g_separation_fm_imp:
+  assumes     
+    "\<phi> \<in> formula" 
   shows
-    "\<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> (M, [x] @ env \<Turnstile> \<phi>)"
-  sorry  
+    "n\<in>nat \<Longrightarrow> ms \<in> list(M) \<Longrightarrow> rest \<in> list(M) \<Longrightarrow> length(rest) = n \<Longrightarrow>
+     arity(\<phi>) \<le> length(ms) #+ n #+ 1 \<Longrightarrow> M, ms \<Turnstile> (g_separation_fm(n,\<phi>)) \<Longrightarrow>
+    \<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> (M, [x] @ rest @ ms \<Turnstile> \<phi>)"
+proof (induct n arbitrary:ms rest set:nat)
+  case 0
+  with assms
+  show ?case
+    using ZF_separation_simps        
+    using arity_sats_iff[of \<phi> rest M "Cons(_,ms)"]
+    by simp
+next
+  case (succ n)
+  from \<open>rest \<in> list(M)\<close> \<open>length(rest) = succ(n)\<close>
+  obtain res t where "t\<in>M" "res\<in>list(M)" "rest=res @ [t]"
+    sorry
+  with assms succ(1,3-7) succ(2)[of "Cons(t,ms)" res]
+  show ?case 
+    using ZF_separation_simps
+      arity_sats_iff[of \<phi> "[t]" M "Cons(_, ms @ res)"] app_assoc
+    by (simp)
+qed
+
+lemma sats_ZF_separation_imp:
+  assumes     
+    "\<phi> \<in> formula" "rest \<in> list(M)" "M, [] \<Turnstile> (ZF_separation_fm(\<phi>))"
+    "arity(\<phi>) \<le> succ(length(rest))"   
+  shows
+    "\<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> (M, [x] @ rest \<Turnstile> \<phi>)"
+proof -
+  from \<open>arity(\<phi>) \<le> succ(length(rest))\<close> \<open>rest \<in> list(M)\<close>
+  obtain re st where "re\<in>list(M)" "st\<in>list(M)" 
+    "rest = re @ st" "length(re) = Arith.pred(arity(\<phi>))"
+    sorry
+  moreover from \<open>\<phi>\<in>_\<close>
+  have "arity(\<phi>) \<le> succ(Arith.pred(arity(\<phi>)))"
+   using succpred_leI by simp
+  moreover
+  note assms
+  ultimately
+  show ?thesis
+    using
+      sats_g_separation_fm_imp[of \<phi> "Arith.pred(arity(\<phi>))" "[]" M re]
+      arity_sats_iff[of \<phi> st M "Cons(_,re)"]
+    unfolding ZF_separation_fm_def
+    by simp
+qed
 
 lemma sats_ZF_separation_fm_iff:
   "(\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p))))
@@ -184,10 +249,9 @@ proof (intro iffI ballI impI)
       have "M, [] \<Turnstile> (ZF_separation_fm(\<phi>))" by simp
       ultimately
       show ?case
-      using (* sats_incr_bv1_iff[of \<phi> "[_]" M _ _] *) ZF_separation_simps[of \<phi>] 
-      unfolding separation_def ZF_separation_fm_def
-      apply (simp del:)
-        sorry
+      using sats_ZF_separation_imp
+      unfolding separation_def
+      by (simp)
     qed
   qed
 next
