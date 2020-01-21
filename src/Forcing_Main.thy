@@ -10,6 +10,15 @@ theory Forcing_Main
 
 begin
 
+(* syntax
+  "_sats"  :: "[i, i, i] \<Rightarrow> o"  ("(_, _ \<Turnstile> _)" 60)
+translations
+  "(M,env \<Turnstile> \<phi>)" \<rightleftharpoons> "CONST sats(M,\<phi>,env)" 
+
+notation sats ("(_, _ \<Turnstile> _)" 60)
+
+*)
+
 schematic_goal ZF_union_auto:
     "Union_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> (?zfunion(i,j,h)))"
   unfolding Union_ax_def 
@@ -92,11 +101,6 @@ primrec
 lemma nForall_type [TC]: 
       "\<lbrakk> n \<in> nat; p \<in> formula \<rbrakk> \<Longrightarrow> nForall(n,p) \<in> formula"
   by (induct set:nat, auto)
-
-lemma nForall_assoc: "n\<in>nat \<Longrightarrow> nForall(succ(n),p) = nForall(n,Forall(p))"
-  by (induct set:nat; simp)
-
-(* declare nForall.simps(2)[simp del] nForall_assoc[simp] *)
 
 definition
   g_separation_fm :: "i \<Rightarrow> i \<Rightarrow> i" where
@@ -473,44 +477,104 @@ lemma sats_univalent_fm_assm:
    by simp_all
 
 definition
-  ZF_replacement_fm :: "i \<Rightarrow> i" where
-  "ZF_replacement_fm(p) \<equiv> 
-    nForall(pred(pred(arity(p))),Forall(Implies(
-        univalent_fm(univalent_Q2(incr_bv(p)`2),univalent_Q1(incr_bv(p)`2),0),
+  rep_body_fm :: "i \<Rightarrow> i" where
+  "rep_body_fm(p) == Forall(Implies(
+        univalent_fm(univalent_Q1(incr_bv(p)`2),univalent_Q2(incr_bv(p)`2),0),
         Exists(Forall(
-          Iff(Member(0,1),Exists(And(Member(0,3),incr_bv(incr_bv(p)`2)`2))))))))"
+          Iff(Member(0,1),Exists(And(Member(0,3),incr_bv(incr_bv(p)`2)`2)))))))"
 
-lemma ZF_replacement_fm_type [TC]: "p \<in> formula \<Longrightarrow> ZF_replacement_fm(p) \<in> formula"
-  by (simp add: ZF_replacement_fm_def)
+lemma rep_body_fm_type [TC]: "p \<in> formula \<Longrightarrow> rep_body_fm(p) \<in> formula"
+  by (simp add: rep_body_fm_def)
 
 lemmas ZF_replacement_simps = formula_add_params1[of \<phi> 2 _ M "[_,_]" ]
   sats_incr_bv_iff[of _ _ M _ "[]"] \<comment> \<open>simplifies iterates of incr_bv(_)`0\<close>
   sats_incr_bv_iff[of _ _ M _ "[_,_]"]\<comment> \<open>simplifies incr_bv(_)`2\<close>
   sats_incr_bv1_iff[of _ _ M] sats_swap_vars for \<phi> M
 
-lemma \<comment> \<open>test for replacement formula\<close>
-  fixes \<phi> M
-  assumes 
-    "\<phi> \<in> formula" "arity(\<phi>) = 4" "M, [] \<Turnstile> (ZF_replacement_fm(\<phi>))" 
-  shows "Q" 
-    using assms ZF_replacement_simps
-    unfolding ZF_replacement_fm_def univalent_fm_def
-     univalent_Q1_def univalent_Q2_def
-    apply simp \<comment> \<open>check first 3rd assumption!\<close>
-    oops
+lemma sats_rep_body_fm:
+  assumes
+    "\<phi> \<in> formula" "ms\<in>list(M)" "rest\<in>list(M)"
+  shows
+    "M, rest @ ms \<Turnstile> rep_body_fm(\<phi>) \<longleftrightarrow> 
+     strong_replacement(##M,\<lambda>x y. M, [x,y] @ rest @ ms \<Turnstile> \<phi>)"
+  using assms ZF_replacement_simps 
+  unfolding rep_body_fm_def strong_replacement_def univalent_def
+  unfolding univalent_fm_def univalent_Q1_def univalent_Q2_def
+  by simp
+
+definition
+  ZF_replacement_fm :: "i \<Rightarrow> i" where
+  "ZF_replacement_fm(p) \<equiv> nForall(pred(pred(arity(p))),rep_body_fm(p))"
+
+lemma ZF_replacement_fm_type [TC]: "p \<in> formula \<Longrightarrow> ZF_replacement_fm(p) \<in> formula"
+  by (simp add: ZF_replacement_fm_def)
 
 lemma sats_ZF_replacement_fm_iff:
-  "(\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p))))
+  assumes
+    "\<phi>\<in>formula"
+  shows
+  "(M, [] \<Turnstile> (ZF_replacement_fm(\<phi>)))
    \<longleftrightarrow>
-   (\<forall>\<phi>\<in>formula. \<forall>env\<in>list(M). arity(\<phi>) \<le> 2 #+ length(env) \<longrightarrow> 
-                    strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y] @ env)))"
-  sorry
+   (\<forall>env\<in>list(M). arity(\<phi>) \<le> 2 #+ length(env) \<longrightarrow> 
+      strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y] @ env)))"
+proof (intro iffI ballI impI)
+  let ?n="Arith.pred(Arith.pred(arity(\<phi>)))"
+  fix env
+  assume "M, [] \<Turnstile> ZF_replacement_fm(\<phi>)" "arity(\<phi>) \<le> 2 #+ length(env)" "env\<in>list(M)"
+  moreover from this
+  have "arity(\<phi>) \<le> succ(succ(length(env)))" by (simp)
+  moreover from calculation
+  obtain some rest where "some\<in>list(M)" "rest\<in>list(M)" 
+    "env = some @ rest" "length(some) = Arith.pred(Arith.pred(arity(\<phi>)))" sorry
+  moreover
+  note \<open>\<phi>\<in>_\<close>
+  moreover from this
+  have "arity(\<phi>) \<le> succ(succ(Arith.pred(Arith.pred(arity(\<phi>)))))"
+    using le_trans[OF succpred_leI] succpred_leI by simp
+  moreover from calculation
+  have "M, some \<Turnstile> rep_body_fm(\<phi>)"
+    using sats_nForall[of "rep_body_fm(\<phi>)" ?n] (* that *)
+    unfolding ZF_replacement_fm_def
+    by simp
+  ultimately
+  show "strong_replacement(##M, \<lambda>x y. M, [x, y] @ env \<Turnstile> \<phi>)"
+    using sats_rep_body_fm[of \<phi> "[]" M some]
+      arity_sats_iff[of \<phi> rest M "[_,_] @ some"]
+      strong_replacement_cong[of "##M" "\<lambda>x y. M, Cons(x, Cons(y, some @ rest)) \<Turnstile> \<phi>" _ ]
+    by simp
+next \<comment> \<open>copy-paste from previous implication. FIX ME\<close>
+  let ?n="Arith.pred(Arith.pred(arity(\<phi>)))"
+  assume asm:"\<forall>env\<in>list(M). arity(\<phi>) \<le> 2 #+ length(env) \<longrightarrow> 
+    strong_replacement(##M, \<lambda>x y. M, [x, y] @ env \<Turnstile> \<phi>)"
+  {
+    fix some
+    assume "some\<in>list(M)" "length(some) = Arith.pred(Arith.pred(arity(\<phi>)))"
+    moreover
+    note \<open>\<phi>\<in>_\<close>
+    moreover from calculation
+    have "arity(\<phi>) \<le> 2 #+ length(some)" 
+      using le_trans[OF succpred_leI] succpred_leI by simp
+    moreover from calculation and asm
+    have "strong_replacement(##M, \<lambda>x y. M, [x, y] @ some \<Turnstile> \<phi>)" by blast
+    ultimately
+    have "M, some \<Turnstile> rep_body_fm(\<phi>)" 
+    using sats_rep_body_fm[of \<phi> "[]" M some]
+      arity_sats_iff[of \<phi> _ M "[_,_] @ some"]
+      strong_replacement_cong[of "##M" "\<lambda>x y. M, Cons(x, Cons(y, some @ _)) \<Turnstile> \<phi>" _ ]
+    by simp
+  }
+  with \<open>\<phi>\<in>_\<close>
+  show "M, [] \<Turnstile> ZF_replacement_fm(\<phi>)"
+    using sats_nForall[of "rep_body_fm(\<phi>)" ?n] (* that *)
+    unfolding ZF_replacement_fm_def
+    by simp
+qed
 
 definition
   ZF_inf :: "i" where
   "ZF_inf == {ZF_separation_fm(p) . p \<in> formula } \<union> {ZF_replacement_fm(p) . p \<in> formula }"
               
-lemma unions : "A\<subseteq>formula \<and> B\<subseteq>formula \<Longrightarrow> A\<union>B \<subseteq> formula"
+lemma Un_subset_formula : "A\<subseteq>formula \<and> B\<subseteq>formula \<Longrightarrow> A\<union>B \<subseteq> formula"
   by auto
   
 lemma ZF_inf_subset_formula : "ZF_inf \<subseteq> formula"
@@ -529,7 +593,7 @@ definition
   "ZF_minus_P == ZF - { ZF_power_fm }"
 
 lemma ZFC_subset_formula: "ZFC \<subseteq> formula"
-  by (simp add:ZFC_def unions ZF_inf_subset_formula ZFC_fin_type)
+  by (simp add:ZFC_def Un_subset_formula ZF_inf_subset_formula ZFC_fin_type)
   
 txt\<open>Satisfaction of a set of sentences\<close>
 definition
@@ -588,6 +652,7 @@ next
 qed
 
 (* 
+\<comment> \<open>Useful missing lemma\<close>
 lemma surj_imp_well_ord:
   assumes "well_ord(A,r)" "h \<in> surj(A,B)"
   shows "\<exists>s. well_ord(B,r)" 
