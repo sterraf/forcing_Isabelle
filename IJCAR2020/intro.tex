@@ -38,9 +38,24 @@ Finally, our development is now independent of $\AC$: We modularized
 RSL in such a way that a version for countable 
 posets does not require choice.
 
+In the course of our work we find it useful to develop Isar methods to
+automate repetitive tasks. Part of the interface with Paulson's
+library consisted in constructing formulas for each relativized
+concept; Isar already has a method (\texttt{schematic\_goal}) which can
+synthesize terms for unbound schematic variables in theorems. The
+synthesized term, however, is not available outside the theorem; we
+introduced a method that creates a definition from a schematic
+goal. The second method is concerned with renaming of formulas: we
+improved our small library of bounded renamings with a method that
+given the source and target environments figures out the renaming
+function and produces the relevant lemmas about it.
+
 \begin{framed}
-  We implemented an automatic ML machinery of (bounded) renaming
-  of formulas.
+  TODO: Comentar en algún lado las limitaciones del método de
+  definiciones sintetizadas.
+
+  TODO: Explicar mejor que las fórmulas que necesitamos definir son un
+  ejemplo exacto de lo que se puede hacer con schematic\_goal.
 \end{framed}
 
 \subsection{Related work}
