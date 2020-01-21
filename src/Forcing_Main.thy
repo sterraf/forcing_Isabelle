@@ -10,59 +10,50 @@ theory Forcing_Main
 
 begin
 
-(* syntax
-  "_sats"  :: "[i, i, i] \<Rightarrow> o"  ("(_, _ \<Turnstile> _)" 60)
-translations
-  "(M,env \<Turnstile> \<phi>)" \<rightleftharpoons> "CONST sats(M,\<phi>,env)" 
-
-notation sats ("(_, _ \<Turnstile> _)" 60)
-
-*)
-
 schematic_goal ZF_union_auto:
-    "Union_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> (?zfunion(i,j,h)))"
+    "Union_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> ?zfunion(i,j,h)"
   unfolding Union_ax_def 
   by ((rule sep_rules | simp)+)
 
 synthesize "ZF_union_fm" from_schematic "ZF_union_auto"
 
 schematic_goal ZF_power_auto:
-    "power_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> (?zfpow(i,j,h)))"
+    "power_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> ?zfpow(i,j,h)"
   unfolding power_ax_def powerset_def subset_def
   by ((rule sep_rules | simp)+)
 
 synthesize "ZF_power_fm" from_schematic "ZF_power_auto"
 
 schematic_goal ZF_pairing_auto:
-    "upair_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> (?zfpair(i,j,h)))"
+    "upair_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> ?zfpair(i,j,h)"
   unfolding upair_ax_def 
   by ((rule sep_rules | simp)+)
 
 synthesize "ZF_pairing_fm" from_schematic "ZF_pairing_auto"
 
 schematic_goal ZF_foundation_auto:
-    "foundation_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> (?zfpow(i,j,h)))"
+    "foundation_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> ?zfpow(i,j,h)"
   unfolding foundation_ax_def 
   by ((rule sep_rules | simp)+)
 
 synthesize "ZF_foundation_fm" from_schematic "ZF_foundation_auto"
 
 schematic_goal ZF_extensionality_auto:
-    "extensionality(##A) \<longleftrightarrow> (A, [] \<Turnstile> (?zfpow(i,j,h)))"
+    "extensionality(##A) \<longleftrightarrow> A, [] \<Turnstile> ?zfpow(i,j,h)"
   unfolding extensionality_def 
   by ((rule sep_rules | simp)+)
 
 synthesize "ZF_extensionality_fm" from_schematic "ZF_extensionality_auto"
 
 schematic_goal ZF_infinity_auto:
-    "infinity_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> (?\<phi>(i,j,h)))"
+    "infinity_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> ?\<phi>(i,j,h)"
   unfolding infinity_ax_def 
   by ((rule sep_rules | simp)+)
 
 synthesize "ZF_infinity_fm" from_schematic "ZF_infinity_auto"
 
 schematic_goal ZF_choice_auto:
-    "choice_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> (?\<phi>(i,j,h)))"
+    "choice_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> ?\<phi>(i,j,h)"
   unfolding choice_ax_def 
   by ((rule sep_rules | simp)+)
 
@@ -199,8 +190,8 @@ lemma sats_nForall:
     "\<phi> \<in> formula"
   shows
     "n\<in>nat \<Longrightarrow> ms \<in> list(M) \<Longrightarrow>
-       (M, ms \<Turnstile> (nForall(n,\<phi>)) \<longleftrightarrow>
-       (\<forall>rest \<in> list(M). length(rest) = n \<longrightarrow> (M, rest @ ms \<Turnstile> \<phi>)))"
+       M, ms \<Turnstile> nForall(n,\<phi>) \<longleftrightarrow>
+       (\<forall>rest \<in> list(M). length(rest) = n \<longrightarrow> M, rest @ ms \<Turnstile> \<phi>)"
 proof (induct n arbitrary:ms set:nat)
   case 0
   with assms
@@ -235,7 +226,7 @@ lemma sats_sep_body_fm:
     "\<phi> \<in> formula" "ms\<in>list(M)" "rest\<in>list(M)"
   shows
     "M, rest @ ms \<Turnstile> sep_body_fm(\<phi>) \<longleftrightarrow> 
-     (\<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> M, Cons(x, rest @ ms) \<Turnstile> \<phi>)"
+     (\<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and>  M, Cons(x,rest @ ms) \<Turnstile> \<phi>)"
   using assms ZF_separation_simps unfolding sep_body_fm_def by simp
 
 definition
@@ -597,7 +588,7 @@ lemma ZFC_subset_formula: "ZFC \<subseteq> formula"
   
 txt\<open>Satisfaction of a set of sentences\<close>
 definition
-  satT :: "[i,i] \<Rightarrow> o"  ("_ \<Turnstile> _" 60) where
+  satT :: "[i,i] \<Rightarrow> o"  ("_ \<Turnstile> _" [36,36] 60) where
   "A \<Turnstile> \<Phi>  \<equiv>  \<forall>\<phi>\<in>\<Phi>. (A,[] \<Turnstile> \<phi>)"
 
 lemma satTI [intro!]: 
@@ -794,9 +785,9 @@ theorem extensions_of_ctms:
     "M \<approx> nat" "Transset(M)" "M \<Turnstile> ZF"
   shows 
     "\<exists>N. 
-      M \<subseteq> N \<and> N \<approx> nat \<and> Transset(N) \<and> (N \<Turnstile> ZF) \<and>  M\<noteq>N \<and>  
+      M \<subseteq> N \<and> N \<approx> nat \<and> Transset(N) \<and> N \<Turnstile> ZF \<and>  M\<noteq>N \<and>  
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)) \<and>
-      ((M, []\<Turnstile> AC) \<longrightarrow> (N \<Turnstile> ZFC))" 
+      (M, []\<Turnstile> AC \<longrightarrow> N \<Turnstile> ZFC)" 
 proof -
   from \<open>M \<approx> nat\<close>
   obtain enum where "enum \<in> bij(nat,M)"
