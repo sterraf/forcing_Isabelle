@@ -122,25 +122,7 @@ lemma g_separation_fm_succ [simp]:
   using assms
   by (simp add: g_separation_fm_def)
 
-definition
-  ZF_separation_fm :: "i \<Rightarrow> i" where
-  "ZF_separation_fm(p) == g_separation_fm(pred(arity(p)),p)"
-                                                
-lemma ZF_separation_fm_type [TC]: "p \<in> formula \<Longrightarrow> ZF_separation_fm(p) \<in> formula"
-  by (simp add: ZF_separation_fm_def)
-
 lemmas ZF_separation_simps = formula_add_params1[of _ 2 _ _ "[_,_]" ]
-
-lemma \<comment> \<open>test for separation formula\<close>
-  fixes \<phi> M
-  assumes 
-    "\<phi> \<in> formula" "arity(\<phi>) = 3" "n=2" "M, ms \<Turnstile> (g_separation_fm(n,\<phi>))" 
-    "ms\<in>list(M)"
-  shows "Q" 
-    using assms ZF_separation_simps
-    unfolding g_separation_fm_def 
-    apply simp \<comment> \<open>check first 3rd assumption!\<close>
-    oops
 
 lemma last_init_eq :
   assumes "l \<in> list(A)" "length(l) = succ(n)"
@@ -234,6 +216,41 @@ next
     by (simp)
 qed
 
+definition
+  sep_body_fm :: "i \<Rightarrow> i" where
+  "sep_body_fm(p) == Forall(Exists(Forall(
+                           Iff(Member(0,1),And(Member(0,2),
+                                    incr_bv1^2(p))))))"
+
+lemma sep_body_fm_type [TC]: "p \<in> formula \<Longrightarrow> sep_body_fm(p) \<in> formula"
+  by (simp add: sep_body_fm_def)
+
+lemma sats_sep_body_fm: 
+  assumes
+    "\<phi> \<in> formula" "ms\<in>list(M)" "rest\<in>list(M)"
+  shows
+    "M, rest @ ms \<Turnstile> sep_body_fm(\<phi>) \<longleftrightarrow> 
+     (\<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> M, Cons(x, rest @ ms) \<Turnstile> \<phi>)"
+  using assms ZF_separation_simps unfolding sep_body_fm_def by simp
+
+definition
+  G_separation_fm :: "i \<Rightarrow> i \<Rightarrow> i" where
+  "G_separation_fm(n,p) == nForall(n,sep_body_fm(p))"
+
+lemma G_separation_fm_type [TC]: "n \<in> nat \<Longrightarrow> p \<in> formula \<Longrightarrow> G_separation_fm(n,p) \<in> formula"
+  by (simp add: G_separation_fm_def)
+
+lemma sats_G_separation_fm_iff:
+  assumes   
+    "\<phi> \<in> formula" "n\<in>nat" "ms \<in> list(M)"
+  shows
+    "M, ms \<Turnstile> (G_separation_fm(n,\<phi>)) \<longleftrightarrow>
+      (\<forall>rest\<in>list(M). length(rest) = n \<longrightarrow>
+         (\<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> (M, [x] @ rest @ ms \<Turnstile> \<phi>)))"
+  using sats_nForall[OF _ assms(2,3), of "sep_body_fm(\<phi>)"] assms 
+    sats_sep_body_fm
+  unfolding G_separation_fm_def by simp 
+
 lemma sats_g_separation_fm_imp:
   assumes   
     "\<phi> \<in> formula" 
@@ -260,6 +277,13 @@ next
     by (simp)
 qed
 
+definition
+  ZF_separation_fm :: "i \<Rightarrow> i" where
+  "ZF_separation_fm(p) == G_separation_fm(pred(arity(p)),p)"
+
+lemma ZF_separation_fm_type [TC]: "p \<in> formula \<Longrightarrow> ZF_separation_fm(p) \<in> formula"
+  by (simp add: ZF_separation_fm_def)
+
 lemma sats_ZF_separation_imp:
   assumes     
     "\<phi> \<in> formula" "rest \<in> list(M)" "M, [] \<Turnstile> (ZF_separation_fm(\<phi>))"
@@ -280,7 +304,7 @@ proof -
     using
       sats_g_separation_fm_imp[of \<phi> "Arith.pred(arity(\<phi>))" "[]" M re]
       arity_sats_iff[of \<phi> st M "Cons(_,re)"]
-    unfolding ZF_separation_fm_def
+    unfolding ZF_separation_fm_def G_separation_fm_def sep_body_fm_def g_separation_fm_def
     by simp
 qed
 
@@ -304,7 +328,7 @@ proof (intro iffI ballI impI)
     ultimately
     show ?case 
       using ZF_separation_simps
-      unfolding separation_def ZF_separation_fm_def
+      unfolding separation_def ZF_separation_fm_def G_separation_fm_def sep_body_fm_def
       by simp
   next
     case (Cons a l)
@@ -312,7 +336,7 @@ proof (intro iffI ballI impI)
     have "arity(\<phi>)\<in>nat" by simp
     then
     show ?case
-    proof (induct "arity(\<phi>)" (* arbitrary:\<phi> *))
+    proof (induct "arity(\<phi>)")
       case 0
       moreover from this
       have "l\<in>list(M) \<Longrightarrow> a\<in>M \<Longrightarrow> arity(\<phi>) \<le> length(Cons(a,l))" 
@@ -323,7 +347,8 @@ proof (intro iffI ballI impI)
       moreover from calculation
       have "\<forall>x\<in>M. \<exists>xa\<in>M. \<forall>xb\<in>M. xb \<in> xa \<longleftrightarrow> xb \<in> x \<and> M, [xb] \<Turnstile> \<phi>"
         using ZF_separation_simps 
-        unfolding ZF_separation_fm_def by simp
+        unfolding ZF_separation_fm_def G_separation_fm_def sep_body_fm_def
+        by simp
       with Cons \<open>\<And>n. n\<in>nat \<Longrightarrow> arity(\<phi>) \<le> n\<close>
       show ?case
         using arity_sats_iff[of _ "Cons(a,l)" M, OF _ _ _ \<open>_ \<Longrightarrow> arity(\<phi>) \<le> length([_])\<close>]
