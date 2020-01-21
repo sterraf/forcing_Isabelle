@@ -142,21 +142,16 @@ lemma \<comment> \<open>test for separation formula\<close>
     apply simp \<comment> \<open>check first 3rd assumption!\<close>
     oops
 
-lemma list_length_succ_D' :
-  assumes "l \<in> list(A)" "length(l) = succ(n)"
-  shows "\<exists> a\<in>A. \<exists>l'\<in>list(A). l = Cons(a,l')"
-  using assms by (cases;simp)
-
-lemma list_length_succ_D :
+lemma last_init_eq :
   assumes "l \<in> list(A)" "length(l) = succ(n)"
   shows "\<exists> a\<in>A. \<exists>l'\<in>list(A). l = l'@[a]"
 proof-
   from \<open>l\<in>_\<close> \<open>length(_) = _\<close>
   have "rev(l) \<in> list(A)" "length(rev(l)) = succ(n)"
-    using length_rev by simp_all
+    by simp_all
   then
   obtain a l' where "a\<in>A" "l'\<in>list(A)" "rev(l) = Cons(a,l')"
-    using list_length_succ_D'[OF \<open>rev(l)\<in>_\<close> \<open> length(rev(l)) = _\<close>] by auto
+    by (cases;simp)
   then
   have "l = rev(l') @ [a]" "rev(l') \<in> list(A)"
     using rev_rev_ident[OF \<open>l\<in>_\<close>] by auto
@@ -164,7 +159,7 @@ proof-
   show ?thesis by blast
 qed
 
-lemma split_list :
+lemma take_drop_eq :
   assumes "l\<in>list(M)"
   shows "\<And> n . n < succ(length(l)) \<Longrightarrow> l = take(n,l) @ drop(n,l)"
   using \<open>l\<in>list(M)\<close>
@@ -179,7 +174,7 @@ next
       fix i
       assume "i<succ(succ(length(l)))"
       with \<open>l\<in>list(M)\<close>
-      consider (lt) "i = 0" | (eq) "(\<exists>k\<in>nat. i = succ(k) \<and> k < succ(length(l)))"
+      consider (lt) "i = 0" | (eq) "\<exists>k\<in>nat. i = succ(k) \<and> k < succ(length(l))"
         using \<open>l\<in>list(M)\<close>  le_natI nat_imp_quasinat
         by (cases rule:nat_cases[of i];auto)
       then
@@ -200,22 +195,21 @@ proof -
     using pred_mono[OF _ \<open>n\<le>_\<close>] pred_succ_eq by auto
   with \<open>rest\<in>_\<close>
   have "pred(n)\<in>nat" "rest = take(pred(n),rest) @ drop(pred(n),rest)" (is "_ = ?re @ ?st")
-    using split_list[OF \<open>rest\<in>_\<close>] le_natI by auto
+    using take_drop_eq[OF \<open>rest\<in>_\<close>] le_natI by auto
   then
   have "length(?re) = pred(n)" "?re\<in>list(M)" "?st\<in>list(M)"
-    using length_take[rule_format,OF _ \<open>pred(n)\<in>_\<close>]
-      \<open>pred(n) \<le> _\<close> take_type \<open>rest\<in>_\<close>
+    using length_take[rule_format,OF _ \<open>pred(n)\<in>_\<close>] \<open>pred(n) \<le> _\<close> \<open>rest\<in>_\<close>
     unfolding min_def
     by auto
   then
   show ?thesis
-    using rev_bexI[of "?re" "list(M)" "\<lambda> re. \<exists>st\<in>list(M). rest = re @ st \<and> length(re) = pred(n)"]
-      rev_bexI[of "?st" "list(M)"] conjI[OF A(2) \<open>length(?re) = _\<close>]
+    using rev_bexI[of _ _ "\<lambda> re. \<exists>st\<in>list(M). rest = re @ st \<and> length(re) = pred(n)"]
+      \<open>length(?re) = _\<close> \<open>rest = _\<close>
     by auto
 qed
 
 lemma sats_g_separation_fm_imp:
-  assumes     
+  assumes   
     "\<phi> \<in> formula" 
   shows
     "n\<in>nat \<Longrightarrow> ms \<in> list(M) \<Longrightarrow> rest \<in> list(M) \<Longrightarrow> length(rest) = n \<Longrightarrow>
@@ -232,9 +226,9 @@ next
   case (succ n)
   from \<open>rest \<in> list(M)\<close> \<open>length(rest) = succ(n)\<close>
   obtain res t where "t\<in>M" "res\<in>list(M)" "rest=res @ [t]"
-    using list_length_succ_D[OF \<open>rest\<in>_\<close> \<open>length(_) = _\<close>] by auto
+    using last_init_eq[OF \<open>rest\<in>_\<close> \<open>length(_) = _\<close>] by auto
   with assms succ(1,3-7) succ(2)[of "Cons(t,ms)" res]
-  show ?case 
+  show ?case
     using ZF_separation_simps
       arity_sats_iff[of \<phi> "[t]" M "Cons(_, ms @ res)"] app_assoc
     by (simp)
