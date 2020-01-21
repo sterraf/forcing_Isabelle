@@ -208,6 +208,32 @@ proof -
     by auto
 qed
 
+lemma sats_nForall:
+  assumes
+    "\<phi> \<in> formula"
+  shows
+    "n\<in>nat \<Longrightarrow> ms \<in> list(M) \<Longrightarrow>
+       (M, ms \<Turnstile> (nForall(n,\<phi>)) \<longleftrightarrow>
+       (\<forall>rest \<in> list(M). length(rest) = n \<longrightarrow> (M, rest @ ms \<Turnstile> \<phi>)))"
+proof (induct n arbitrary:ms set:nat)
+  case 0
+  with assms
+  show ?case by simp
+next
+  case (succ n)
+  have "(\<forall>rest\<in>list(M). length(rest) = succ(n) \<longrightarrow> P(rest,n)) \<longleftrightarrow>
+        (\<forall>t\<in>M. \<forall>res\<in>list(M). length(res) = n \<longrightarrow> P(res @ [t],n))"
+    if "n\<in>nat" for n P sorry
+  from this[of _ "\<lambda>rest _. (M, rest @ ms \<Turnstile> \<phi>)"] \<open>n\<in>nat\<close>
+  have "(\<forall>rest\<in>list(M). length(rest) = succ(n) \<longrightarrow> M, rest @ ms \<Turnstile> \<phi>) \<longleftrightarrow>
+        (\<forall>t\<in>M. \<forall>res\<in>list(M). length(res) = n \<longrightarrow>  M, (res @ [t]) @ ms \<Turnstile> \<phi>)"
+    by simp
+    with assms succ(1,3) succ(2)[of "Cons(_,ms)"]
+  show ?case
+    using arity_sats_iff[of \<phi> _ M "Cons(_, ms @ _)"] app_assoc
+    by (simp)
+qed
+
 lemma sats_g_separation_fm_imp:
   assumes   
     "\<phi> \<in> formula" 
