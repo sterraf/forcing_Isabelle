@@ -205,7 +205,8 @@ next
   case (succ n)
   have "(\<forall>rest\<in>list(M). length(rest) = succ(n) \<longrightarrow> P(rest,n)) \<longleftrightarrow>
         (\<forall>t\<in>M. \<forall>res\<in>list(M). length(res) = n \<longrightarrow> P(res @ [t],n))"
-    if "n\<in>nat" for n P sorry
+    if "n\<in>nat" for n P
+    using that last_init_eq by force
   from this[of _ "\<lambda>rest _. (M, rest @ ms \<Turnstile> \<phi>)"] \<open>n\<in>nat\<close>
   have "(\<forall>rest\<in>list(M). length(rest) = succ(n) \<longrightarrow> M, rest @ ms \<Turnstile> \<phi>) \<longleftrightarrow>
         (\<forall>t\<in>M. \<forall>res\<in>list(M). length(res) = n \<longrightarrow>  M, (res @ [t]) @ ms \<Turnstile> \<phi>)"
