@@ -74,11 +74,19 @@ definitions for the recursion on names using results in
 \isatt{ZF-Constructible}. This finished the atomic case of the
 formula-transformer $\forceisa$. 
 
+\paragraph*{Technical details}
+Paulson proved absoluteness of functions defined by wellfounded
+recursion over a transitive relation. Some of our definitions by
+recursion (\emph{check} and \emph{forces}) do not fit in that scheme.
+One can replace the relation $R$ for its transitive closure $R^+$ in the
+recursive definition because one can prove, in general, that
+$F\!\upharpoonright\!(R^{-1}(x))(y) =
+F\!\upharpoonright\!({R^+}^{-1}(x))(y)$ whenever $(x,y) \in R$.
+
 \begin{framed}
-  In order to prove absoluteness of functions defined by wellfounded
-  recursion, we need to show that we can replace the relevant
-  wellfounded relations by their transitive closures. (EXPAND HERE OR
-  SOMEWHERE ELSE).
+  TODO: ¿Qué más decimos?
+
+  TODO: por qué no tenemos ese resultado general que mencionamos?
 \end{framed}
 
 
