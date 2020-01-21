@@ -164,6 +164,56 @@ proof-
   show ?thesis by blast
 qed
 
+lemma split_list :
+  assumes "l\<in>list(M)"
+  shows "\<And> n . n < succ(length(l)) \<Longrightarrow> l = take(n,l) @ drop(n,l)"
+  using \<open>l\<in>list(M)\<close>
+proof induct
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a l)
+  then show ?case
+  proof -
+    {
+      fix i
+      assume "i<succ(succ(length(l)))"
+      with \<open>l\<in>list(M)\<close>
+      consider (lt) "i = 0" | (eq) "(\<exists>k\<in>nat. i = succ(k) \<and> k < succ(length(l)))"
+        using \<open>l\<in>list(M)\<close>  le_natI nat_imp_quasinat
+        by (cases rule:nat_cases[of i];auto)
+      then
+      have "take(i,Cons(a,l)) @ drop(i,Cons(a,l)) = Cons(a,l)"
+        using Cons
+        by (cases;auto)
+    }
+    then show ?thesis using Cons by auto
+  qed
+qed
+
+lemma list_split :
+assumes "n \<le> succ(length(rest))" "rest \<in> list(M)"
+shows  "\<exists>re\<in>list(M). \<exists>st\<in>list(M). rest = re @ st \<and> length(re) = pred(n)"
+proof -
+  from assms
+  have "pred(n) \<le> length(rest)"
+    using pred_mono[OF _ \<open>n\<le>_\<close>] pred_succ_eq by auto
+  with \<open>rest\<in>_\<close>
+  have "pred(n)\<in>nat" "rest = take(pred(n),rest) @ drop(pred(n),rest)" (is "_ = ?re @ ?st")
+    using split_list[OF \<open>rest\<in>_\<close>] le_natI by auto
+  then
+  have "length(?re) = pred(n)" "?re\<in>list(M)" "?st\<in>list(M)"
+    using length_take[rule_format,OF _ \<open>pred(n)\<in>_\<close>]
+      \<open>pred(n) \<le> _\<close> take_type \<open>rest\<in>_\<close>
+    unfolding min_def
+    by auto
+  then
+  show ?thesis
+    using rev_bexI[of "?re" "list(M)" "\<lambda> re. \<exists>st\<in>list(M). rest = re @ st \<and> length(re) = pred(n)"]
+      rev_bexI[of "?st" "list(M)"] conjI[OF A(2) \<open>length(?re) = _\<close>]
+    by auto
+qed
+
 lemma sats_g_separation_fm_imp:
   assumes     
     "\<phi> \<in> formula" 
@@ -197,10 +247,9 @@ lemma sats_ZF_separation_imp:
   shows
     "\<forall>z\<in>M. \<exists>y\<in>M. \<forall>x\<in>M. x \<in> y \<longleftrightarrow> x \<in> z \<and> (M, [x] @ rest \<Turnstile> \<phi>)"
 proof -
-  from \<open>arity(\<phi>) \<le> succ(length(rest))\<close> \<open>rest \<in> list(M)\<close>
   obtain re st where "re\<in>list(M)" "st\<in>list(M)" 
     "rest = re @ st" "length(re) = Arith.pred(arity(\<phi>))"
-    sorry
+    using list_split[OF \<open>arity(\<phi>) \<le> _\<close> \<open>rest\<in>_\<close>] by force
   moreover from \<open>\<phi>\<in>_\<close>
   have "arity(\<phi>) \<le> succ(Arith.pred(arity(\<phi>)))"
    using succpred_leI by simp
