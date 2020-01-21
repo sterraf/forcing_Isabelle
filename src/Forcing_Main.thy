@@ -556,7 +556,7 @@ next \<comment> \<open>copy-paste from previous implication. FIX ME\<close>
   }
   with \<open>\<phi>\<in>_\<close>
   show "M, [] \<Turnstile> ZF_replacement_fm(\<phi>)"
-    using sats_nForall[of "rep_body_fm(\<phi>)" ?n] (* that *)
+    using sats_nForall[of "rep_body_fm(\<phi>)" ?n]
     unfolding ZF_replacement_fm_def
     by simp
 qed
@@ -565,7 +565,7 @@ definition
   ZF_inf :: "i" where
   "ZF_inf == {ZF_separation_fm(p) . p \<in> formula } \<union> {ZF_replacement_fm(p) . p \<in> formula }"
               
-lemma Un_subset_formula : "A\<subseteq>formula \<and> B\<subseteq>formula \<Longrightarrow> A\<union>B \<subseteq> formula"
+lemma Un_subset_formula: "A\<subseteq>formula \<and> B\<subseteq>formula \<Longrightarrow> A\<union>B \<subseteq> formula"
   by auto
   
 lemma ZF_inf_subset_formula : "ZF_inf \<subseteq> formula"
@@ -799,16 +799,16 @@ proof -
   interpret ctm_separative "2^<\<omega>" funle 0 M enum
   proof (unfold_locales)
     fix f
-    let ?q="fun_upd(f,0)" and ?r="fun_upd(f,1)"
+    let ?q="seq_upd(f,0)" and ?r="seq_upd(f,1)"
     assume "f \<in> 2^<\<omega>"
     then
-    have "?q \<preceq>f f \<and> ?r \<preceq>f f \<and> ?q \<bottom>f ?r" 
+    have "?q \<preceq>s f \<and> ?r \<preceq>s f \<and> ?q \<bottom>s ?r" 
       using upd_leI seqspace_separative by auto
     moreover from calculation
     have "?q \<in> 2^<\<omega>"  "?r \<in> 2^<\<omega>"
-      using fun_upd_type[of f 2] by auto
+      using seq_upd_type[of f 2] by auto
     ultimately
-    show "\<exists>q\<in>2^<\<omega>.  \<exists>r\<in>2^<\<omega>. q \<preceq>f f \<and> r \<preceq>f f \<and> q \<bottom>f r"
+    show "\<exists>q\<in>2^<\<omega>.  \<exists>r\<in>2^<\<omega>. q \<preceq>s f \<and> r \<preceq>s f \<and> q \<bottom>s r"
       by (rule_tac bexI)+ \<comment> \<open>why the heck auto-tools don't solve this?\<close>
   next
     show "2^<\<omega> \<in> M" using nat_into_M seqspace_closed by simp

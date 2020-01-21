@@ -42,15 +42,15 @@ adding one Cohen real. It is the set $2^{<\om}$ of all finite binary
 sequences partially  ordered by reverse inclusion.
 The sufficient condition for a proper extension is that
 the forcing poset is \emph{separative}: every element has two
-incompatible (\isatt{{\isasymbottom}f}) extensions. Here,
-\isatt{fun{\isacharunderscore}upd{\isacharparenleft}f{\isacharcomma}x{\isacharparenright}}
-adds \isatt{x} to the end of the sequence.
+incompatible (\isatt{{\isasymbottom}s}) extensions. Here,
+\isatt{seq{\isacharunderscore}upd{\isacharparenleft}f{\isacharcomma}x{\isacharparenright}}
+adds \isatt{x} to the end of the sequence \isatt{f}.
 
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ seqspace{\isacharunderscore}separative{\isacharcolon}\isanewline
 \ \ \isakeyword{assumes}\ {\isachardoublequoteopen}f{\isasymin}{\isadigit{2}}{\isacharcircum}{\isacharless}{\isasymomega}{\isachardoublequoteclose}\isanewline
-\ \ \isakeyword{shows}\ {\isachardoublequoteopen}fun{\isacharunderscore}upd{\isacharparenleft}f{\isacharcomma}{\isadigit{0}}{\isacharparenright}\ {\isasymbottom}f\ fun{\isacharunderscore}upd{\isacharparenleft}f{\isacharcomma}{\isadigit{1}}{\isacharparenright}{\isachardoublequoteclose}
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}seq{\isacharunderscore}upd{\isacharparenleft}f{\isacharcomma}{\isadigit{0}}{\isacharparenright}\ {\isasymbottom}s\ seq{\isacharunderscore}upd{\isacharparenleft}f{\isacharcomma}{\isadigit{1}}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
  
 We prove in the theory file \verb|Proper_Extension.thy| that, in

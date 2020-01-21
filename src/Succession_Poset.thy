@@ -73,12 +73,12 @@ proof (unfold_locales, simp)
     using M_nat by simp
 qed
 
-definition fun_upd :: "i \<Rightarrow> i \<Rightarrow> i" where
-  "fun_upd(f,a) \<equiv> \<lambda> j \<in> succ(domain(f)) . if j < domain(f) then f`j else a"
+definition seq_upd :: "i \<Rightarrow> i \<Rightarrow> i" where
+  "seq_upd(f,a) \<equiv> \<lambda> j \<in> succ(domain(f)) . if j < domain(f) then f`j else a"
 
-lemma fun_upd_succ_type : 
+lemma seq_upd_succ_type : 
   assumes "n\<in>nat" "f\<in>n\<rightarrow>A" "a\<in>A"
-  shows "fun_upd(f,a)\<in> succ(n) \<rightarrow> A"
+  shows "seq_upd(f,a)\<in> succ(n) \<rightarrow> A"
 proof -
   from assms
   have equ: "domain(f) = n" using domain_of_fun by simp
@@ -103,30 +103,30 @@ proof -
   }
   with equ
   show ?thesis
-    unfolding fun_upd_def
+    unfolding seq_upd_def
     using lam_type[of "succ(domain(f))"]
     by auto
 qed
 
-lemma fun_upd_type : 
+lemma seq_upd_type : 
   assumes "f\<in>A^<\<omega>" "a\<in>A"
-  shows "fun_upd(f,a) \<in> A^<\<omega>"
+  shows "seq_upd(f,a) \<in> A^<\<omega>"
 proof -
   from \<open>f\<in>_\<close>
   obtain y where "y\<in>nat" "f\<in>y\<rightarrow>A"
     unfolding seqspace_def by blast
   with \<open>a\<in>A\<close>
-  have "fun_upd(f,a)\<in>succ(y)\<rightarrow>A" 
-    using fun_upd_succ_type by simp
+  have "seq_upd(f,a)\<in>succ(y)\<rightarrow>A" 
+    using seq_upd_succ_type by simp
   with \<open>y\<in>_\<close>
   show ?thesis
     unfolding seqspace_def by auto
 qed
 
-lemma fun_upd_apply_domain [simp]: 
+lemma seq_upd_apply_domain [simp]: 
   assumes "f:n\<rightarrow>A" "n\<in>nat"
-  shows "fun_upd(f,a)`n = a"
-  unfolding fun_upd_def using assms domain_of_fun by auto
+  shows "seq_upd(f,a)`n = a"
+  unfolding seq_upd_def using assms domain_of_fun by auto
 
 lemma zero_in_seqspace : 
   shows "0 \<in> A^<\<omega>"
@@ -157,12 +157,12 @@ lemma funleD[dest!]:
 
 lemma upd_leI : 
   assumes "f\<in>2^<\<omega>" "a\<in>2"
-  shows "<fun_upd(f,a),f>\<in>funle"  (is "<?f,_>\<in>_")
+  shows "<seq_upd(f,a),f>\<in>funle"  (is "<?f,_>\<in>_")
 proof
   show " \<langle>?f, f\<rangle> \<in> 2^<\<omega> \<times> 2^<\<omega>" 
-    using assms fun_upd_type by auto
+    using assms seq_upd_type by auto
 next
-  show  "f \<subseteq> fun_upd(f,a)" 
+  show  "f \<subseteq> seq_upd(f,a)" 
   proof 
     fix x
     assume "x \<in> f"
@@ -175,8 +175,8 @@ next
     moreover from \<open>f:n\<rightarrow>2\<close>
     have "domain(f) = n" using domain_of_fun by simp
     ultimately
-    show "x \<in> fun_upd(f,a)"
-      unfolding fun_upd_def lam_def  
+    show "x \<in> seq_upd(f,a)"
+      unfolding seq_upd_def lam_def  
       by (auto intro:ltI)
   qed
 qed
@@ -192,15 +192,15 @@ interpretation forcing_notion "2^<\<omega>" "funle" "0"
   using preorder_on_funle zero_funle_max zero_in_seqspace 
   by unfold_locales simp_all
 
-abbreviation FUNle :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>f" 50)
-  where "x \<preceq>f y \<equiv> Leq(x,y)"
+abbreviation SEQle :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>s" 50)
+  where "x \<preceq>s y \<equiv> Leq(x,y)"
 
-abbreviation FUNIncompatible :: "[i, i] \<Rightarrow> o"  (infixl "\<bottom>f" 50)
-  where "x \<bottom>f y \<equiv> Incompatible(x,y)"
+abbreviation SEQIncompatible :: "[i, i] \<Rightarrow> o"  (infixl "\<bottom>s" 50)
+  where "x \<bottom>s y \<equiv> Incompatible(x,y)"
 
 lemma seqspace_separative:
   assumes "f\<in>2^<\<omega>"
-  shows "fun_upd(f,0) \<bottom>f fun_upd(f,1)" (is "?f \<bottom>f ?g")
+  shows "seq_upd(f,0) \<bottom>s seq_upd(f,1)" (is "?f \<bottom>s ?g")
 proof 
   assume "compat(?f, ?g)"
   then 
@@ -210,7 +210,7 @@ proof
   obtain y where "y\<in>nat" "f:y\<rightarrow>2" by blast
   moreover from this
   have "?f: succ(y) \<rightarrow> 2" "?g: succ(y) \<rightarrow> 2" 
-    using fun_upd_succ_type by blast+
+    using seq_upd_succ_type by blast+
   moreover from this
   have "<y,?f`y> \<in> ?f" "<y,?g`y> \<in> ?g" using apply_Pair by auto
   ultimately
@@ -337,16 +337,16 @@ lemma funle_in_M: "funle \<in> M"
 interpretation ctm_separative "2^<\<omega>" funle 0
 proof (unfold_locales)
   fix f
-  let ?q="fun_upd(f,0)" and ?r="fun_upd(f,1)"
+  let ?q="seq_upd(f,0)" and ?r="seq_upd(f,1)"
   assume "f \<in> 2^<\<omega>"
   then
-  have "?q \<preceq>f f \<and> ?r \<preceq>f f \<and> ?q \<bottom>f ?r" 
+  have "?q \<preceq>s f \<and> ?r \<preceq>s f \<and> ?q \<bottom>s ?r" 
     using upd_leI seqspace_separative by auto
   moreover from calculation
   have "?q \<in> 2^<\<omega>"  "?r \<in> 2^<\<omega>"
-    using fun_upd_type[of f 2] by auto
+    using seq_upd_type[of f 2] by auto
   ultimately
-  show "\<exists>q\<in>2^<\<omega>. \<exists>r\<in>2^<\<omega>. q \<preceq>f f \<and> r \<preceq>f f \<and> q \<bottom>f r"
+  show "\<exists>q\<in>2^<\<omega>. \<exists>r\<in>2^<\<omega>. q \<preceq>s f \<and> r \<preceq>s f \<and> q \<bottom>s r"
     by (rule_tac bexI)+ \<comment> \<open>why the heck auto-tools don't solve this?\<close>
 next
   show "2^<\<omega> \<in> M" using nat_into_M seqspace_closed by simp
