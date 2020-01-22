@@ -462,7 +462,7 @@ lemma sats_univalent_fm_assm:
     "(A, ([x,y] @ env) \<Turnstile> \<phi>) \<longleftrightarrow> (A, Cons(z,Cons(y,Cons(x,env))) \<Turnstile> (univalent_Q2(\<phi>)))"
   unfolding univalent_Q1_def univalent_Q2_def
   using 
-    sats_incr_bv_iff[of _ _ A _ "[]"] \<comment> \<open>simplifies iterates of incr_bv(_)`0\<close>
+    sats_incr_bv_iff[of _ _ A _ "[]"] \<comment> \<open>simplifies iterates of \<^term>\<open>\<lambda>x. incr_bv(x)`0\<close>\<close>
     sats_incr_bv1_iff[of _ "Cons(x,env)" A z y] 
     sats_swap_vars  assms 
    by simp_all
@@ -478,8 +478,8 @@ lemma rep_body_fm_type [TC]: "p \<in> formula \<Longrightarrow> rep_body_fm(p) \
   by (simp add: rep_body_fm_def)
 
 lemmas ZF_replacement_simps = formula_add_params1[of \<phi> 2 _ M "[_,_]" ]
-  sats_incr_bv_iff[of _ _ M _ "[]"] \<comment> \<open>simplifies iterates of incr_bv(_)`0\<close>
-  sats_incr_bv_iff[of _ _ M _ "[_,_]"]\<comment> \<open>simplifies incr_bv(_)`2\<close>
+  sats_incr_bv_iff[of _ _ M _ "[]"] \<comment> \<open>simplifies iterates of \<^term>\<open>\<lambda>x. incr_bv(x)`0\<close>\<close>
+  sats_incr_bv_iff[of _ _ M _ "[_,_]"]\<comment> \<open>simplifies \<^term>\<open>\<lambda>x. incr_bv(x)`2\<close>\<close>
   sats_incr_bv1_iff[of _ _ M] sats_swap_vars for \<phi> M
 
 lemma sats_rep_body_fm:
@@ -528,7 +528,7 @@ proof (intro iffI ballI impI)
     using le_trans[OF succpred_leI] succpred_leI by simp
   moreover from calculation
   have "M, some \<Turnstile> rep_body_fm(\<phi>)"
-    using sats_nForall[of "rep_body_fm(\<phi>)" ?n] (* that *)
+    using sats_nForall[of "rep_body_fm(\<phi>)" ?n]
     unfolding ZF_replacement_fm_def
     by simp
   ultimately
@@ -789,9 +789,9 @@ theorem extensions_of_ctms:
     "M \<approx> nat" "Transset(M)" "M \<Turnstile> ZF"
   shows 
     "\<exists>N. 
-      M \<subseteq> N \<and> N \<approx> nat \<and> Transset(N) \<and> N \<Turnstile> ZF \<and>  M\<noteq>N \<and>  
+      M \<subseteq> N \<and> N \<approx> nat \<and> Transset(N) \<and> N \<Turnstile> ZF \<and> M\<noteq>N \<and>
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)) \<and>
-      (M, []\<Turnstile> AC \<longrightarrow> N \<Turnstile> ZFC)" 
+      (M, []\<Turnstile> AC \<longrightarrow> N \<Turnstile> ZFC)"
 proof -
   from \<open>M \<approx> nat\<close>
   obtain enum where "enum \<in> bij(nat,M)"
@@ -824,7 +824,7 @@ proof -
     "M \<noteq> GenExt(G)" (is "M\<noteq>?N") 
     by blast
   then 
-  interpret G_generic "2^<\<omega>" funle 0 _ enum  G by unfold_locales
+  interpret G_generic "2^<\<omega>" funle 0 _ enum G by unfold_locales
   interpret MG: M_ZF "?N"
     using generic pairing_in_MG 
       Union_MG  extensionality_in_MG power_in_MG
