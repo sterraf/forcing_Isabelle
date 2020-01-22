@@ -3,11 +3,12 @@
 
 Isabelle \cite{Isabelle,DBLP:books/sp/Paulson94} is a general proof
 assistant based on fragment of higher-order logic called
-\emph{Pure}. The logical primitives of this meta-level are
-\isatt{\isasymLongrightarrow}, \isatt{\&\&\&}, and \isatt{\isasymAnd}
-(implication, conjunction, and universal
-quantification, resp.), which operate on the meta-booleans
-\isatt{prop}. The results presented in this work are theorems of a
+\emph{Pure}. %% The logical primitives of this meta-level are
+%% \isatt{\isasymLongrightarrow}, \isatt{\&\&\&}, and \isatt{\isasymAnd}
+%% (implication, conjunction, and universal
+%% quantification, resp.), which operate on the meta-booleans
+%% \isatt{prop}. 
+The results presented in this work are theorems of a
 version of $\ZF$ set theory (without the Axiom of Choice, $\AC$) 
 called \emph{Isabelle/ZF}, which is one of the
 ``object logics'' that can be defined on top of Pure (which is then
@@ -26,7 +27,7 @@ This hypothesis follows, for instance, from the existence of an
 inaccessible cardinal. As such, our framework is weaker than those
 found usually in type theories with universes, but allows us to work
 ``platonistically''--- assuming we are in a universe of sets (namely,
-\isatt{i}) an performing constructions there. We may state the main
+\isatt{i}) and performing constructions there. We may state the main
 theorem of our formalization:
 \begin{isabelle}
 \isacommand{theorem}\isamarkupfalse%

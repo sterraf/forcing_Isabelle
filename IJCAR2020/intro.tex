@@ -38,10 +38,10 @@ Finally, our development is now independent of $\AC$: We modularized
 RSL in such a way that a version for countable 
 posets does not require choice.
 
-In the course of our work we find it useful to develop Isar methods to
+In the course of our work we found it useful to develop Isar methods to
 automate repetitive tasks. Part of the interface with Paulson's
 library consisted in constructing formulas for each relativized
-concept; Isar already has a method (\texttt{schematic\_goal}) which can
+concept; and actually Isabelle's Simplifier can
 synthesize terms for unbound schematic variables in theorems. The
 synthesized term, however, is not available outside the theorem; we
 introduced a method that creates a definition from a schematic
