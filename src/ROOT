@@ -1,15 +1,9 @@
 session "Forcing" = "ZF" +
-  options [document = pdf, document_output = "output"]
+  options [document = pdf, document_output = "output", quick_and_dirty]
   theories [document = true]
-    "Extensionality_Axiom"
-    "Foundation_Axiom"
-    "Choice_Axiom"
-    "Infinity_Axiom"
-    "Replacement_Axiom"
-    "Succession_Poset"
-    "Ordinals_In_MG"
+    "Forcing_Main"
     "Rasiowa_Sikorski"
-    "../Constructible/Rank_Separation"
-    "../Constructible/DPow_absolute"
+(*  "../Constructible/Rank_Separation" *)
+(*  "../Constructible/DPow_absolute" *)
   document_files
     "root.tex"
