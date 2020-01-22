@@ -1,14 +1,14 @@
-THY_FILES = Choice_Axiom.thy \
+THY_FILES = Arities.thy Choice_Axiom.thy \
  Extensionality_Axiom.thy Forces_Definition.thy Forcing_Data.thy\
- Forcing_Notions.thy Forcing_Theorems.thy Forcing_Thms.thy\
+ Forcing_Main.thy Forcing_Notions.thy Forcing_Theorems.thy Forcing_Thms.thy\
  Foundation_Axiom.thy FrecR.thy Infinity_Axiom.thy\
  Interface.thy Internalizations.thy Least.thy Names.thy\
  Nat_Miscellanea.thy Non_Constructible.thy Ordinals_In_MG.thy\
- Pairing_Axiom.thy Pointed_DC.thy Powerset_Axiom.thy \
+ Pairing_Axiom.thy Pointed_DC.thy Powerset_Axiom.thy Proper_Extension.thy\
  Rasiowa_Sikorski.thy Recursion_Thms.thy Relative_Univ.thy\
  Renaming.thy Renaming_Auto.thy Replacement_Axiom.thy\
- Separation_Axiom.thy Separation_Rename.thy Synthetic_Definition.thy\
- Union_Axiom.thy 
+ Separation_Axiom.thy Separation_Rename.thy Succession_Poset.thy\
+ Synthetic_Definition.thy Union_Axiom.thy 
 
 ML_FILES = Renaming_ML.ml
 
