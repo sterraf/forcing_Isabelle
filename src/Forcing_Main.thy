@@ -462,7 +462,7 @@ lemma sats_univalent_fm_assm:
     "(A, ([x,y] @ env) \<Turnstile> \<phi>) \<longleftrightarrow> (A, Cons(z,Cons(y,Cons(x,env))) \<Turnstile> (univalent_Q2(\<phi>)))"
   unfolding univalent_Q1_def univalent_Q2_def
   using 
-    sats_incr_bv_iff[of _ _ A _ "[]"] \<comment> \<open>simplifies iterates of @{term "\<lambda>x. incr_bv(x)`0"}\<close>
+    sats_incr_bv_iff[of _ _ A _ "[]"] \<comment> \<open>simplifies iterates of incr_bv(_)`0\<close>
     sats_incr_bv1_iff[of _ "Cons(x,env)" A z y] 
     sats_swap_vars  assms 
    by simp_all
@@ -478,8 +478,8 @@ lemma rep_body_fm_type [TC]: "p \<in> formula \<Longrightarrow> rep_body_fm(p) \
   by (simp add: rep_body_fm_def)
 
 lemmas ZF_replacement_simps = formula_add_params1[of \<phi> 2 _ M "[_,_]" ]
-  sats_incr_bv_iff[of _ _ M _ "[]"] \<comment> \<open>simplifies iterates of @{term "\<lambda>x. incr_bv(x)`0"}\<close>
-  sats_incr_bv_iff[of _ _ M _ "[_,_]"]\<comment> \<open>simplifies @{term "\<lambda>x. incr_bv(x)`2"}\<close>
+  sats_incr_bv_iff[of _ _ M _ "[]"] \<comment> \<open>simplifies iterates of incr_bv(_)`0\<close>
+  sats_incr_bv_iff[of _ _ M _ "[_,_]"]\<comment> \<open>simplifies incr_bv(_)`2\<close>
   sats_incr_bv1_iff[of _ _ M] sats_swap_vars for \<phi> M
 
 lemma sats_rep_body_fm:
@@ -519,8 +519,8 @@ proof (intro iffI ballI impI)
     using pred_mono[OF _ \<open>arity(\<phi>)\<le>succ(_)\<close>] pred_succ_eq by simp
   moreover from calculation
   obtain some rest where "some\<in>list(M)" "rest\<in>list(M)" 
-    "env = some @ rest" "Arith.pred(Arith.pred(arity(\<phi>))) = length(some)" 
-    using list_split[OF \<open>pred(_) \<le> _\<close>] by auto
+    "env = some @ rest" "length(some) = Arith.pred(Arith.pred(arity(\<phi>)))" 
+    using list_split[OF \<open>pred(_) \<le> _\<close> \<open>env\<in>_\<close>] by auto
   moreover
   note \<open>\<phi>\<in>_\<close>
   moreover from this
@@ -789,9 +789,9 @@ theorem extensions_of_ctms:
     "M \<approx> nat" "Transset(M)" "M \<Turnstile> ZF"
   shows 
     "\<exists>N. 
-      M \<subseteq> N \<and> N \<approx> nat \<and> Transset(N) \<and> N \<Turnstile> ZF \<and> M\<noteq>N \<and>
+      M \<subseteq> N \<and> N \<approx> nat \<and> Transset(N) \<and> N \<Turnstile> ZF \<and>  M\<noteq>N \<and>  
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)) \<and>
-      (M, []\<Turnstile> AC \<longrightarrow> N \<Turnstile> ZFC)"
+      (M, []\<Turnstile> AC \<longrightarrow> N \<Turnstile> ZFC)" 
 proof -
   from \<open>M \<approx> nat\<close>
   obtain enum where "enum \<in> bij(nat,M)"
