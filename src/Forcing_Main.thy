@@ -514,9 +514,13 @@ proof (intro iffI ballI impI)
   assume "M, [] \<Turnstile> ZF_replacement_fm(\<phi>)" "arity(\<phi>) \<le> 2 #+ length(env)" "env\<in>list(M)"
   moreover from this
   have "arity(\<phi>) \<le> succ(succ(length(env)))" by (simp)
+  moreover from calculation 
+  have "pred(arity(\<phi>)) \<le> succ(length(env))"
+    using pred_mono[OF _ \<open>arity(\<phi>)\<le>succ(_)\<close>] pred_succ_eq by simp
   moreover from calculation
   obtain some rest where "some\<in>list(M)" "rest\<in>list(M)" 
-    "env = some @ rest" "length(some) = Arith.pred(Arith.pred(arity(\<phi>)))" sorry
+    "env = some @ rest" "Arith.pred(Arith.pred(arity(\<phi>))) = length(some)" 
+    using list_split[OF \<open>pred(_) \<le> _\<close>] by auto
   moreover
   note \<open>\<phi>\<in>_\<close>
   moreover from this
