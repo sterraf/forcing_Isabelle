@@ -155,13 +155,16 @@ lemma filterD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> x \<in>
 
 lemma filter_leqD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> y \<in> P \<Longrightarrow> x\<preceq>y \<Longrightarrow> y \<in> G"
   by (simp add: filter_def increasing_def)
-    
-lemma low_bound_filter : 
+      
+lemma filter_imp_compat: "filter(G) \<Longrightarrow> p\<in>G \<Longrightarrow> q\<in>G \<Longrightarrow> compat(p,q)"
+  unfolding filter_def compat_in_def compat_def by blast
+
+lemma low_bound_filter: \<comment> \<open>says the compatibility is attained inside G\<close>
   assumes "filter(G)" and "p\<in>G" and "q\<in>G"
   shows "\<exists>r\<in>G. r\<preceq>p \<and> r\<preceq>q" 
   using assms 
   unfolding compat_in_def filter_def by blast
-  
+
 definition  
   upclosure :: "i\<Rightarrow>i" where
   "upclosure(A) == {p\<in>P.\<exists>a\<in>A. a\<preceq>p}"

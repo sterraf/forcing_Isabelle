@@ -4,9 +4,6 @@ theory Proper_Extension
 
 begin
 
-lemma (in forcing_notion) filter_imp_compat: "filter(G) \<Longrightarrow> p\<in>G \<Longrightarrow> q\<in>G \<Longrightarrow> compat(p,q)"  \<comment> \<open>put somewhere else\<close>
-  unfolding filter_def compat_in_def compat_def by blast
-
 locale separative_notion = forcing_notion +
   assumes separative: "p\<in>P \<Longrightarrow> \<exists>q\<in>P. \<exists>r\<in>P. q \<preceq> p \<and> r \<preceq> p \<and> q \<bottom> r"
 begin

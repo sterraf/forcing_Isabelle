@@ -8,7 +8,7 @@ context forcing_data
 begin
 
 definition
-  Forces :: "i \<Rightarrow> i \<Rightarrow> i\<Rightarrow> o" ("_ \<tturnstile> _ _" 60) where
+  Forces :: "i \<Rightarrow> i \<Rightarrow> i\<Rightarrow> o" ("_ \<tturnstile> _ _" [36,36,36] 60) where
   "Forces(p,\<phi>,env) \<equiv> sats(M,forces(\<phi>), [p,P,leq,one] @ env)"
 
 lemma Collect_forces :
@@ -248,7 +248,7 @@ lemma Forces_And_aux:
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
   shows
-    "(p \<tturnstile> And(\<phi>,\<psi>) env) \<longleftrightarrow> 
+    "p \<tturnstile> And(\<phi>,\<psi>) env   \<longleftrightarrow> 
     (\<forall>q\<in>M. q\<in>P \<and> q\<preceq>p \<longrightarrow> (\<exists>r\<in>M. r\<in>P \<and> r\<preceq>q \<and> (r \<tturnstile> \<phi> env) \<and> (r \<tturnstile> \<psi> env)))"
   unfolding And_def using assms Forces_Neg Forces_Nand by (auto simp only:)
 
@@ -267,7 +267,6 @@ lemma Forces_Forall:
     "(p \<tturnstile> Forall(\<phi>) env) \<longleftrightarrow> (\<forall>x\<in>M. (p \<tturnstile> \<phi> ([x] @ env)))"
   unfolding Forces_def using sats_forces_Forall' assms by simp
 
-(* Move the following to an appropriate place *)
 (* "x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>. \<exists>p\<in>G.  <\<theta>,p>\<in>\<pi> \<and> val(G,\<theta>) = x" *)
 bundle some_rules =  elem_of_val_pair [dest] SepReplace_iff [simp del] SepReplace_iff[iff]
 
@@ -879,7 +878,7 @@ lemma truth_lemma_mem:
     "env\<in>list(M)" "M_generic(G)"
     "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)"
   shows 
-    "(\<exists>p\<in>G.(p \<tturnstile> Member(n,m) env)) \<longleftrightarrow>  M[G] , map(val(G),env) \<Turnstile> Member(n,m)"
+    "(\<exists>p\<in>G. p \<tturnstile> Member(n,m) env)  \<longleftrightarrow>  M[G], map(val(G),env) \<Turnstile> Member(n,m)"
   using assms IV240a[OF assms(2), of "nth(n,env)" "nth(m,env)"] 
     IV240b[OF assms(2), of "nth(n,env)" "nth(m,env)"] 
     P_in_M leq_in_M one_in_M 
@@ -891,7 +890,7 @@ lemma truth_lemma_eq:
     "env\<in>list(M)" "M_generic(G)" 
     "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)"
   shows 
-    "(\<exists>p\<in>G. (p \<tturnstile> Equal(n,m) env)) \<longleftrightarrow> M[G] , map(val(G),env) \<Turnstile> Equal(n,m)"
+    "(\<exists>p\<in>G. p \<tturnstile> Equal(n,m) env)  \<longleftrightarrow>  M[G], map(val(G),env) \<Turnstile> Equal(n,m)"
   using assms IV240a(1)[OF assms(2), of "nth(n,env)" "nth(m,env)"] 
     IV240b(1)[OF assms(2), of "nth(n,env)" "nth(m,env)"] 
     P_in_M leq_in_M one_in_M 
@@ -1052,7 +1051,7 @@ lemma density_lemma:
   assumes
     "p\<in>P" "\<phi>\<in>formula" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"
   shows
-    "(p \<tturnstile> \<phi> env) \<longleftrightarrow> dense_below({q\<in>P. (q \<tturnstile> \<phi> env)},p)"
+    "p \<tturnstile> \<phi> env   \<longleftrightarrow>   dense_below({q\<in>P. (q \<tturnstile> \<phi> env)},p)"
 proof
   assume "dense_below({q\<in>P. (q \<tturnstile> \<phi> env)},p)"
   with assms
@@ -1070,7 +1069,7 @@ lemma Forces_And:
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula" 
     "arity(\<phi>) \<le> length(env)" "arity(\<psi>) \<le> length(env)"
   shows
-    "(p \<tturnstile> And(\<phi>,\<psi>) env) \<longleftrightarrow> (p \<tturnstile> \<phi> env) \<and> (p \<tturnstile> \<psi> env)"
+    "p \<tturnstile> And(\<phi>,\<psi>) env   \<longleftrightarrow>  (p \<tturnstile> \<phi> env) \<and> (p \<tturnstile> \<psi> env)"
 proof
   assume "p \<tturnstile> And(\<phi>, \<psi>) env"
   with assms
@@ -1108,9 +1107,9 @@ lemma Forces_Nand_alt:
 lemma truth_lemma_Neg:
   assumes 
     "\<phi>\<in>formula" "M_generic(G)" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)" and
-    IH: "(\<exists>p\<in>G. (p \<tturnstile> \<phi> env)) \<longleftrightarrow> M[G] , map(val(G),env) \<Turnstile> \<phi>"
+    IH: "(\<exists>p\<in>G. p \<tturnstile> \<phi> env) \<longleftrightarrow> M[G], map(val(G),env) \<Turnstile> \<phi>"
   shows
-    "(\<exists>p\<in>G. (p \<tturnstile> Neg(\<phi>) env)) \<longleftrightarrow> M[G] , map(val(G),env) \<Turnstile> Neg(\<phi>)"
+    "(\<exists>p\<in>G. p \<tturnstile> Neg(\<phi>) env)  \<longleftrightarrow>  M[G], map(val(G),env) \<Turnstile> Neg(\<phi>)"
 proof (intro iffI, elim bexE, rule ccontr) 
   (* Direct implication by contradiction *)
   fix p 
@@ -1196,8 +1195,8 @@ lemma truth_lemma_And:
     "env\<in>list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
     "arity(\<phi>)\<le>length(env)" "arity(\<psi>) \<le> length(env)" "M_generic(G)"
     and
-    IH: "(\<exists>p\<in>G. (p \<tturnstile> \<phi> env)) \<longleftrightarrow> M[G] , map(val(G),env) \<Turnstile> \<phi>"
-    "(\<exists>p\<in>G. (p \<tturnstile> \<psi> env)) \<longleftrightarrow> M[G] , map(val(G),env) \<Turnstile> \<psi>"
+    IH: "(\<exists>p\<in>G. p \<tturnstile> \<phi> env)  \<longleftrightarrow>   M[G], map(val(G),env) \<Turnstile> \<phi>"
+        "(\<exists>p\<in>G. p \<tturnstile> \<psi> env)  \<longleftrightarrow>   M[G], map(val(G),env) \<Turnstile> \<psi>"
   shows
     "(\<exists>p\<in>G. (p \<tturnstile> And(\<phi>,\<psi>) env)) \<longleftrightarrow> M[G] , map(val(G),env) \<Turnstile> And(\<phi>,\<psi>)"
   using assms map_val_in_MG Forces_And[OF M_genericD assms(1-5)]
@@ -1377,7 +1376,7 @@ lemma truth_lemma:
     "\<phi>\<in>formula" "M_generic(G)"
   shows 
      "\<And>env. env\<in>list(M) \<Longrightarrow> arity(\<phi>)\<le>length(env) \<Longrightarrow> 
-      (\<exists>p\<in>G. (p \<tturnstile> \<phi> env))  \<longleftrightarrow>  M[G] , map(val(G),env) \<Turnstile> \<phi>"
+      (\<exists>p\<in>G. p \<tturnstile> \<phi> env)   \<longleftrightarrow>   M[G], map(val(G),env) \<Turnstile> \<phi>"
   using assms(1)
 proof (induct)
   case (Member x y)
@@ -1504,7 +1503,7 @@ lemma definition_of_forces:
     "p\<in>P" "\<phi>\<in>formula" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"
   shows
     "(p \<tturnstile> \<phi> env) \<longleftrightarrow>
-     (\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow> M[G] , map(val(G),env) \<Turnstile> \<phi>)"
+     (\<forall>G. M_generic(G) \<and> p\<in>G  \<longrightarrow>  M[G], map(val(G),env) \<Turnstile> \<phi>)"
 proof (intro iffI allI impI, elim conjE)
   fix G
   assume "(p \<tturnstile> \<phi> env)" "M_generic(G)" "p \<in> G"

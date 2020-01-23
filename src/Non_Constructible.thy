@@ -8,9 +8,6 @@ lemmas sep_rules' = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
                    fun_plus_iff_sats fun_apply_iff_sats
                     omega_iff_sats FOL_sats_iff 
 
-lemma (in forcing_notion) filter_imp_compat: "filter(G) \<Longrightarrow> p\<in>G \<Longrightarrow> q\<in>G \<Longrightarrow> compat(p,q)"  \<comment> \<open>put somewhere else\<close>
-  unfolding filter_def compat_in_def compat_def by blast
-
 definition
   chleR :: "i \<Rightarrow> i \<Rightarrow> o" where
   "chleR(xs,ys) \<equiv> \<exists>zs. xs = ys @ zs"

@@ -268,7 +268,7 @@ proof -
     unfolding increasing_def by blast
 qed
 
-lemma G_subset_M: "M_generic(G) \<Longrightarrow> G \<subseteq> M" \<comment> \<open>put somewhere else\<close>
+lemma G_subset_M: "M_generic(G) \<Longrightarrow> G \<subseteq> M"
   using transitivity[OF _ P_in_M] by auto
   
 declare iff_trans [trans]
