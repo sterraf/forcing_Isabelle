@@ -256,9 +256,9 @@ lemma Replace_sats_in_MG:
   assumes
     "c\<in>M[G]" "env \<in> list(M[G])"
     "\<phi> \<in> formula" "arity(\<phi>) \<le> 2 #+ length(env)"
-    "univalent(##M[G], c, \<lambda>x v. sats(M[G], \<phi>, [x, v] @ env))"
+    "univalent(##M[G], c, \<lambda>x v. (M[G] , [x,v]@env \<Turnstile> \<phi>) )"
   shows
-    "{v. x\<in>c, v\<in>M[G] \<and> sats(M[G], \<phi>, [x,v] @ env)} \<in> M[G]"
+    "{v. x\<in>c, v\<in>M[G] \<and> (M[G] , [x,v]@env \<Turnstile> \<phi>)} \<in> M[G]"
 proof -
   from \<open>c\<in>M[G]\<close>
   obtain \<pi>' where "val(G, \<pi>') = c" "\<pi>' \<in> M"

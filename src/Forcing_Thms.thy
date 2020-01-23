@@ -879,7 +879,7 @@ lemma truth_lemma_mem:
     "env\<in>list(M)" "M_generic(G)"
     "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)"
   shows 
-    "(\<exists>p\<in>G.(p \<tturnstile> Member(n,m) env)) \<longleftrightarrow> sats(M[G],Member(n,m),map(val(G),env))"
+    "(\<exists>p\<in>G.(p \<tturnstile> Member(n,m) env)) \<longleftrightarrow>  M[G] , map(val(G),env) \<Turnstile> Member(n,m)"
   using assms IV240a[OF assms(2), of "nth(n,env)" "nth(m,env)"] 
     IV240b[OF assms(2), of "nth(n,env)" "nth(m,env)"] 
     P_in_M leq_in_M one_in_M 
@@ -891,7 +891,7 @@ lemma truth_lemma_eq:
     "env\<in>list(M)" "M_generic(G)" 
     "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)"
   shows 
-    "(\<exists>p\<in>G. (p \<tturnstile> Equal(n,m) env)) \<longleftrightarrow> sats(M[G],Equal(n,m),map(val(G),env))"
+    "(\<exists>p\<in>G. (p \<tturnstile> Equal(n,m) env)) \<longleftrightarrow> M[G] , map(val(G),env) \<Turnstile> Equal(n,m)"
   using assms IV240a(1)[OF assms(2), of "nth(n,env)" "nth(m,env)"] 
     IV240b(1)[OF assms(2), of "nth(n,env)" "nth(m,env)"] 
     P_in_M leq_in_M one_in_M 
@@ -1108,9 +1108,9 @@ lemma Forces_Nand_alt:
 lemma truth_lemma_Neg:
   assumes 
     "\<phi>\<in>formula" "M_generic(G)" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)" and
-    IH: "(\<exists>p\<in>G. (p \<tturnstile> \<phi> env)) \<longleftrightarrow> sats(M[G],\<phi>,map(val(G),env))"
+    IH: "(\<exists>p\<in>G. (p \<tturnstile> \<phi> env)) \<longleftrightarrow> M[G] , map(val(G),env) \<Turnstile> \<phi>"
   shows
-    "(\<exists>p\<in>G. (p \<tturnstile> Neg(\<phi>) env)) \<longleftrightarrow> sats(M[G],Neg(\<phi>),map(val(G),env))"
+    "(\<exists>p\<in>G. (p \<tturnstile> Neg(\<phi>) env)) \<longleftrightarrow> M[G] , map(val(G),env) \<Turnstile> Neg(\<phi>)"
 proof (intro iffI, elim bexE, rule ccontr) 
   (* Direct implication by contradiction *)
   fix p 
@@ -1196,10 +1196,10 @@ lemma truth_lemma_And:
     "env\<in>list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
     "arity(\<phi>)\<le>length(env)" "arity(\<psi>) \<le> length(env)" "M_generic(G)"
     and
-    IH: "(\<exists>p\<in>G. (p \<tturnstile> \<phi> env)) \<longleftrightarrow> sats(M[G],\<phi>,map(val(G),env))"
-    "(\<exists>p\<in>G. (p \<tturnstile> \<psi> env)) \<longleftrightarrow> sats(M[G],\<psi>,map(val(G),env))"
+    IH: "(\<exists>p\<in>G. (p \<tturnstile> \<phi> env)) \<longleftrightarrow> M[G] , map(val(G),env) \<Turnstile> \<phi>"
+    "(\<exists>p\<in>G. (p \<tturnstile> \<psi> env)) \<longleftrightarrow> M[G] , map(val(G),env) \<Turnstile> \<psi>"
   shows
-    "(\<exists>p\<in>G. (p \<tturnstile> And(\<phi>,\<psi>) env)) \<longleftrightarrow> sats(M[G],And(\<phi>,\<psi>),map(val(G),env))"
+    "(\<exists>p\<in>G. (p \<tturnstile> And(\<phi>,\<psi>) env)) \<longleftrightarrow> M[G] , map(val(G),env) \<Turnstile> And(\<phi>,\<psi>)"
   using assms map_val_in_MG Forces_And[OF M_genericD assms(1-5)]
 proof (intro iffI, elim bexE)
   fix p
@@ -1377,7 +1377,7 @@ lemma truth_lemma:
     "\<phi>\<in>formula" "M_generic(G)"
   shows 
      "\<And>env. env\<in>list(M) \<Longrightarrow> arity(\<phi>)\<le>length(env) \<Longrightarrow> 
-      (\<exists>p\<in>G. (p \<tturnstile> \<phi> env)) \<longleftrightarrow> sats(M[G],\<phi>,map(val(G),env))"
+      (\<exists>p\<in>G. (p \<tturnstile> \<phi> env))  \<longleftrightarrow>  M[G] , map(val(G),env) \<Turnstile> \<phi>"
   using assms(1)
 proof (induct)
   case (Member x y)
@@ -1504,7 +1504,7 @@ lemma definition_of_forces:
     "p\<in>P" "\<phi>\<in>formula" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"
   shows
     "(p \<tturnstile> \<phi> env) \<longleftrightarrow>
-     (\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],\<phi>,map(val(G),env)))"
+     (\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow> M[G] , map(val(G),env) \<Turnstile> \<phi>)"
 proof (intro iffI allI impI, elim conjE)
   fix G
   assume "(p \<tturnstile> \<phi> env)" "M_generic(G)" "p \<in> G"
@@ -1512,7 +1512,7 @@ proof (intro iffI allI impI, elim conjE)
   show "sats(M[G],\<phi>,map(val(G),env))"
     using truth_lemma by blast
 next
-  assume 1: "\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow>sats(M[G],\<phi>,map(val(G),env))"
+  assume 1: "\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow> M[G] , map(val(G),env) \<Turnstile> \<phi>"
   {
     fix r 
     assume 2: "r\<in>P" "r\<preceq>p"
