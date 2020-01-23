@@ -167,41 +167,9 @@ definition
 lemma ZFC_fin_type : "ZFC_fin \<subseteq> formula"
   unfolding ZFC_fin_def ZF_fin_def ZFC_fm_defs by (auto)
 
-consts 
-  nForall :: "[i,i] \<Rightarrow> i"
-primrec
-  "nForall(0,p) = p"
-  "nForall(succ(n),p) = Forall(nForall(n,p))" 
-
-lemma nForall_type [TC]: 
-      "\<lbrakk> n \<in> nat; p \<in> formula \<rbrakk> \<Longrightarrow> nForall(n,p) \<in> formula"
+lemma iterates_Forall_type [TC]: 
+      "\<lbrakk> n \<in> nat; p \<in> formula \<rbrakk> \<Longrightarrow> Forall^n(p) \<in> formula"
   by (induct set:nat, auto)
-
-definition
-  g_separation_fm :: "i \<Rightarrow> i \<Rightarrow> i" where
-  "g_separation_fm(n,p) == nForall(n, 
-                              Forall(Exists(Forall(
-                              Iff(Member(0,1),And(Member(0,2),
-                                              incr_bv1^2(p)))))))"
-
-lemma g_separation_fm_type [TC]: "n \<in> nat \<Longrightarrow> p \<in> formula \<Longrightarrow> g_separation_fm(n,p) \<in> formula"
-  by (simp add: g_separation_fm_def)
-
-lemma g_separation_fm_zero [simp]: 
-  assumes"p \<in> formula" 
-  shows "g_separation_fm(0,p) = Forall(Exists(Forall(
-                              Iff(Member(0,1),And(Member(0,2),
-                                              incr_bv1^2(p))))))"
-  using assms
-  by (simp add: g_separation_fm_def)
-
-lemma g_separation_fm_succ [simp]:
-  assumes "n \<in> nat" "p \<in> formula" 
-  shows "g_separation_fm(succ(n),p) = Forall(g_separation_fm(n,p))"
-  using assms
-  by (simp add: g_separation_fm_def)
-
-lemmas ZF_separation_simps = formula_add_params1[of _ 2 _ _ "[_,_]" ]
 
 lemma last_init_eq :
   assumes "l \<in> list(A)" "length(l) = succ(n)"
@@ -274,7 +242,7 @@ lemma sats_nForall:
     "\<phi> \<in> formula"
   shows
     "n\<in>nat \<Longrightarrow> ms \<in> list(M) \<Longrightarrow>
-       M, ms \<Turnstile> nForall(n,\<phi>) \<longleftrightarrow>
+       M, ms \<Turnstile> (Forall^n(\<phi>)) \<longleftrightarrow>
        (\<forall>rest \<in> list(M). length(rest) = n \<longrightarrow> M, rest @ ms \<Turnstile> \<phi>)"
 proof (induct n arbitrary:ms set:nat)
   case 0
@@ -311,11 +279,12 @@ lemma sats_sep_body_fm:
   shows
     "M, rest @ ms \<Turnstile> sep_body_fm(\<phi>) \<longleftrightarrow> 
      separation(##M,\<lambda>x. M, [x] @ rest @ ms \<Turnstile> \<phi>)"
-  using assms ZF_separation_simps unfolding sep_body_fm_def separation_def by simp
+  using assms formula_add_params1[of _ 2 _ _ "[_,_]" ]
+  unfolding sep_body_fm_def separation_def by simp
 
 definition
   ZF_separation_fm :: "i \<Rightarrow> i" where
-  "ZF_separation_fm(p) == nForall(pred(arity(p)),sep_body_fm(p))"
+  "ZF_separation_fm(p) == Forall^(pred(arity(p)))(sep_body_fm(p))"
 
 lemma ZF_separation_fm_type [TC]: "p \<in> formula \<Longrightarrow> ZF_separation_fm(p) \<in> formula"
   by (simp add: ZF_separation_fm_def)
@@ -488,7 +457,7 @@ lemma sats_rep_body_fm:
 
 definition
   ZF_replacement_fm :: "i \<Rightarrow> i" where
-  "ZF_replacement_fm(p) \<equiv> nForall(pred(pred(arity(p))),rep_body_fm(p))"
+  "ZF_replacement_fm(p) \<equiv> Forall^(pred(pred(arity(p))))(rep_body_fm(p))"
 
 lemma ZF_replacement_fm_type [TC]: "p \<in> formula \<Longrightarrow> ZF_replacement_fm(p) \<in> formula"
   by (simp add: ZF_replacement_fm_def)
