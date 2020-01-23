@@ -29,7 +29,10 @@ principle of
 $\formula$ wraps the former with the remaining cases (\isatt{Nand} and \isatt{Forall}). 
 
 As an example of the first class, we can take a look at our
-formalization of \cite[Lem.~IV.2.40(a)]{kunen2011set}:
+formalization of \cite[Lem.~IV.2.40(a)]{kunen2011set}. Note that the
+\emph{context} of the lemma includes the assumption of \isatt{P} being
+a forcing notion, and the predicate of being $M$-generic is relative
+to \isatt{P}:
 
 \begin{isabelle}
   \isacommand{lemma}\isamarkupfalse%
@@ -82,7 +85,7 @@ which we reproduce next.
 \ \ \ \ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}M{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \ \ \isakeyword{shows}\ \isanewline
 \ \ \ \ \ {\isachardoublequoteopen}{\isasymAnd}env{\isachardot}\ env{\isasymin}list{\isacharparenleft}M{\isacharparenright}\ {\isasymLongrightarrow}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isasymle}length{\isacharparenleft}env{\isacharparenright}\ {\isasymLongrightarrow}\ \isanewline
-\ \ \ \ \ \ {\isacharparenleft}{\isasymexists}p{\isasymin}G{\isachardot}\ {\isacharparenleft}p\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}{\isacharparenright}\ \ {\isasymlongleftrightarrow}\ \ M{\isacharbrackleft}G{\isacharbrackright}\ {\isacharcomma}\ map{\isacharparenleft}val{\isacharparenleft}G{\isacharparenright}{\isacharcomma}env{\isacharparenright}\ {\isasymTurnstile}\ {\isasymphi}{\isachardoublequoteclose}
+\ \ \ \ \ \ {\isacharparenleft}{\isasymexists}p{\isasymin}G{\isachardot}\ {\isacharparenleft}p\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}{\isacharparenright}\ \ {\isasymlongleftrightarrow}\ \ M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}\ map{\isacharparenleft}val{\isacharparenleft}G{\isacharparenright}{\isacharcomma}env{\isacharparenright}\ {\isasymTurnstile}\ {\isasymphi}{\isachardoublequoteclose}
 \end{isabelle}
 %
 From these results, the semantical characterization of the forcing
@@ -95,7 +98,7 @@ relation (the ``definition of $\forces$''
 \ \ \ \ {\isachardoublequoteopen}p{\isasymin}P{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}env{\isasymin}list{\isacharparenleft}M{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isasymle}length{\isacharparenleft}env{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \ \ \isakeyword{shows}\isanewline
 \ \ \ \ {\isachardoublequoteopen}{\isacharparenleft}p\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}\ {\isasymlongleftrightarrow}\isanewline
-\ \ \ \ \ {\isacharparenleft}{\isasymforall}G{\isachardot}{\isacharparenleft}M{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}{\isasymand}\ p{\isasymin}G{\isacharparenright}{\isasymlongrightarrow}\ M{\isacharbrackleft}G{\isacharbrackright}\ {\isacharcomma}\ map{\isacharparenleft}val{\isacharparenleft}G{\isacharparenright}{\isacharcomma}env{\isacharparenright}\ {\isasymTurnstile}\ {\isasymphi}{\isacharparenright}{\isachardoublequoteclose}
+\ \ \ \ \ {\isacharparenleft}{\isasymforall}G{\isachardot}\ M{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}{\isasymand}\ p{\isasymin}G\ {\isasymlongrightarrow}\ M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}\ map{\isacharparenleft}val{\isacharparenleft}G{\isacharparenright}{\isacharcomma}env{\isacharparenright}\ {\isasymTurnstile}\ {\isasymphi}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
 The present statement of the Fundamental Theorems is almost exactly
