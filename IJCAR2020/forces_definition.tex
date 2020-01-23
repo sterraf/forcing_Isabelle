@@ -47,12 +47,17 @@ induction principle for this relation:
 \isacommand{lemma}\isamarkupfalse%
 \ forces{\isacharunderscore}induction{\isacharcolon}\isanewline
 \ \ \isakeyword{assumes}\isanewline
-\ \ \ \ {\isachardoublequoteopen}{\isasymAnd}{\isasymtau}\ {\isasymtheta}{\isachardot}\ {\isasymlbrakk}{\isasymAnd}{\isasymsigma}{\isachardot}\ {\isasymsigma}{\isasymin}domain{\isacharparenleft}{\isasymtheta}{\isacharparenright}\ {\isasymLongrightarrow}\ Q{\isacharparenleft}{\isasymtau}{\isacharcomma}{\isasymsigma}{\isacharparenright}{\isasymrbrakk}\ {\isasymLongrightarrow}\ R{\isacharparenleft}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymAnd}{\isasymtau}\ {\isasymtheta}{\isachardot}\ {\isasymlbrakk}{\isasymAnd}{\isasymsigma}{\isachardot}\ {\isasymsigma}{\isasymin}domain{\isacharparenleft}{\isasymtheta}{\isacharparenright}\ {\isasymLongrightarrow}\ Q{\isacharparenleft}{\isasymtau}{\isacharcomma}{\isasymsigma}{\isacharparenright}{\isasymrbrakk}\ {\isasymLongrightarrow}\ R{\isacharparenleft}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isachardoublequoteclose}\footnotemark\isanewline
 \ \ \ \ {\isachardoublequoteopen}{\isasymAnd}{\isasymtau}\ {\isasymtheta}{\isachardot}\ {\isasymlbrakk}{\isasymAnd}{\isasymsigma}{\isachardot}\ {\isasymsigma}{\isasymin}domain{\isacharparenleft}{\isasymtau}{\isacharparenright}\ {\isasymunion}\ domain{\isacharparenleft}{\isasymtheta}{\isacharparenright}\ {\isasymLongrightarrow}\ R{\isacharparenleft}{\isasymsigma}{\isacharcomma}{\isasymtau}{\isacharparenright}\ {\isasymand}\ R{\isacharparenleft}{\isasymsigma}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isasymrbrakk}\isanewline
 \ \ \ \ \ \  {\isasymLongrightarrow}\ Q{\isacharparenleft}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \ \ \isakeyword{shows}\isanewline
 \ \ \ \ {\isachardoublequoteopen}Q{\isacharparenleft}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}\ {\isasymand}\ R{\isacharparenleft}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
+\footnotetext{The logical primitives of \emph{Pure} are
+\isatt{\isasymLongrightarrow}, \isatt{\&\&\&}, and \isatt{\isasymAnd}
+(implication, conjunction, and universal
+quantification, resp.), which operate on the meta-booleans
+\isatt{prop}.}
 %
 and 
 obtained both functions as cases of a another one, 
