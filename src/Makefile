@@ -1,6 +1,6 @@
 THY_FILES = Arities.thy Choice_Axiom.thy \
  Extensionality_Axiom.thy Forces_Definition.thy Forcing_Data.thy\
- Forcing_Main.thy Forcing_Notions.thy Forcing_Theorems.thy Forcing_Thms.thy\
+ Forcing_Main.thy Forcing_Notions.thy Forcing_Theorems.thy\
  Foundation_Axiom.thy FrecR.thy Infinity_Axiom.thy\
  Interface.thy Internalizations.thy Least.thy Names.thy\
  Nat_Miscellanea.thy Non_Constructible.thy Ordinals_In_MG.thy\
