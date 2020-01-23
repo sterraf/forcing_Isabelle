@@ -19,7 +19,9 @@ axioms are written down as terms of type \isatt{o}.
 More specifically, our results work under the hypothesis of
 the existence of a ctm of $\ZFC$.% 
 %%
-\footnote{The countability is only used to prove the existence of
+\footnote{By Gödel's Second incompleteness theorem, one must assume at
+  least the existence of some model of $\ZF$. 
+  The countability is only used to prove the existence of
   generic filters and can be thus replaced in favor of this
   hypothesis.} 
 %%
@@ -27,22 +29,7 @@ This hypothesis follows, for instance, from the existence of an
 inaccessible cardinal. As such, our framework is weaker than those
 found usually in type theories with universes, but allows us to work
 ``platonistically''--- assuming we are in a universe of sets (namely,
-\isatt{i}) and performing constructions there. We may state the main
-theorem of our formalization:
-\begin{isabelle}
-\isacommand{theorem}\isamarkupfalse%
-\ extensions{\isacharunderscore}of{\isacharunderscore}ctms{\isacharcolon}\isanewline
-\ \ \isakeyword{assumes}\ \isanewline
-\ \ \ \ {\isachardoublequoteopen}M\ {\isasymapprox}\ nat{\isachardoublequoteclose}\ {\isachardoublequoteopen}Transset{\isacharparenleft}M{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}M\ {\isasymTurnstile}\ ZF{\isachardoublequoteclose}\isanewline
-\ \ \isakeyword{shows}\ \isanewline
-\ \ \ \ {\isachardoublequoteopen}{\isasymexists}N{\isachardot}\ \isanewline
-\ \ \ \ \ \ M\ {\isasymsubseteq}\ N\ {\isasymand}\ N\ {\isasymapprox}\ nat\ {\isasymand}\ Transset{\isacharparenleft}N{\isacharparenright}\ {\isasymand}\ N\ {\isasymTurnstile}\ ZF\ {\isasymand}\ M{\isasymnoteq}N\ {\isasymand}\isanewline
-\ \ \ \ \ \ {\isacharparenleft}{\isasymforall}{\isasymalpha}{\isachardot}\ Ord{\isacharparenleft}{\isasymalpha}{\isacharparenright}\ {\isasymlongrightarrow}\ {\isacharparenleft}{\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ N{\isacharparenright}{\isacharparenright}\ {\isasymand}\isanewline
-\ \ \ \ \ \ {\isacharparenleft}M{\isacharcomma}\ {\isacharbrackleft}{\isacharbrackright}{\isasymTurnstile}\ AC\ {\isasymlongrightarrow}\ N\ {\isasymTurnstile}\ ZFC{\isacharparenright}{\isachardoublequoteclose}
-\end{isabelle}
-Here, \isatt{\isasymapprox} stands for equipotence, \isatt{nat} is the
-set of natural numbers, and the predicate 
-\isatt{Transset} indicates transitivity.
+\isatt{i}) and performing constructions there.
 
 On the downside, our approach is not able to provide us with finitary
 consistency proofs. It is well known that, for example, the
@@ -52,9 +39,21 @@ it would have implied to work focusing on the proof mechanisms
 and distracting us from our main goal, that is, formalize the ctm
 approach currently used by many mathematicians.
 
-\begin{framed}
-  Internalized formulas, MIGHT BE HERE OR IN THE NEXT SECTION.
-\end{framed}
+It should be noted that Pure is a very weak framework and has no
+induction/recursion capabilities. So the only way to define functions
+by recursion is inside the object logic. (This works the same for
+Isabelle/HOL.) For this reason, to define the relation of forcing, we
+needed to resort to \emph{internalized} first-order formulas: they
+form a recursively defined set \isatt{formula}. For example, the
+predicate of safisfaction
+\isatt{sats::i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}o}
+(noted $M,\mathit{ms}\models\phi$ for a set $M$, for a set $M$,
+$\mathit{ms}\in\isatt{list}(M)$ and $\phi\in\formula$
+%% (noted \isatt{M, ms \isasymTurnstile{ }\isasymphi} for a set \isatt{M},
+%% \isatt{ms {\isasymin} list(M)} and \isatt{{\isasymphi} {\isasymin} formula})
+had already been defined by recursion in \cite{paulson_2003}. We added
+the corresponding notion $M\models \Phi$ for satisfaction of a set of
+sentences.
 
 %%% Local Variables: 
 %%% mode: latex

@@ -41,8 +41,10 @@ $(\forall x\in y)$ and $(\exists x\in y)$--- is absolute for
 transitive models. On the contrary, this is not the case with the powerset
 operation.
 
-A benefit of the work with transitive models is that [one concept of
-  ordinal accross the universe / $M$ / $M[G]$]
+A benefit of the work with transitive models is that many 
+concepts concepts (pairs, unions, and fundamentally ordinals) are
+uniform across the universe \isatt{i}, a ctm (of an adequate fragment of
+$\ZF$) $M$ and any of its extensions $M[G]$
 
 A part of this project is to refactorize Paulson's formalization
 \cite{paulson_2003} of Gödel's \cite{godel-L}. The main objective is
@@ -81,6 +83,12 @@ arity restriction for the parameter $\phi$ on these schemes,
 streamlining various proofs as an immediate benefit and avoiding the
 need for tupling.
 
+Once this class versions of the axioms are set up, it is not hard to
+apply our synthesis method to obtain their internal, first-order
+counterparts.
+\begin{framed}
+  Some code for axiom synthesis.
+\end{framed}
 
 %%% Local Variables: 
 %%% mode: latex
