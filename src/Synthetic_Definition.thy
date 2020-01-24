@@ -93,7 +93,7 @@ schematic_goal mem_formula_ex :
 
 synthesize "\<phi>" from_schematic "mem_formula_ex" 
 
-lemma funca : "m \<in> nat \<Longrightarrow> n\<in>nat \<Longrightarrow> \<phi>(n,m) \<in> formula"
+lemma synth_mem_type : "m \<in> nat \<Longrightarrow> n\<in>nat \<Longrightarrow> \<phi>(n,m) \<in> formula"
   unfolding \<phi>_def by simp
 
 *)
