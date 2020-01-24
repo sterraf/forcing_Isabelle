@@ -225,23 +225,7 @@ lemma Hcheck_trancl:"Hcheck(y, restrict(f,Memrel(eclose({x}))-``{y}))
   using restrict_trans_eq by simp
 
 lemma check_trancl: "check(x) = wfrec(rcheck(x), x, Hcheck)"
-proof -
-  have "check(x) =  wfrec(Memrel(eclose({x})), x, Hcheck)"
-        (is "_ = wfrec(?r,_,_)")
-    using checkD .
-  also
-  have " ... = wftrec(?r^+, x, \<lambda>y f. Hcheck(y, restrict(f,?r-``{y})))"
-    unfolding wfrec_def ..
-  also
-  have " ... = wftrec(?r^+, x, \<lambda>y f. Hcheck(y, restrict(f,(?r^+)-``{y})))"
-    using Hcheck_trancl by simp
-  also
-  have " ... =  wfrec(?r^+, x, Hcheck)"
-    unfolding wfrec_def using trancl_eq_r[OF relation_trancl trans_trancl] by simp
-  finally
-  show ?thesis unfolding rcheck_def .
-qed
-
+  using checkD wf_trancl Hcheck_trancl unfolding rcheck_def by simp
 
 (* relation of check is in M *)
 lemma rcheck_in_M : 

@@ -1089,29 +1089,14 @@ lemma relation_forcerel :
 
 lemma Hfrc_restrict_trancl: "bool_of_o(Hfrc(P, leq, y, restrict(f,frecrel(names_below(P,x))-``{y})))
          = bool_of_o(Hfrc(P, leq, y, restrict(f,(frecrel(names_below(P,x))^+)-``{y})))"
-  unfolding Hfrc_def bool_of_o_def eq_case_def mem_case_def 
-  using  restrict_trancl_forcerel frecRI1 frecRI2 frecRI3 
+  unfolding Hfrc_def bool_of_o_def eq_case_def mem_case_def
+  using restrict_trancl_forcerel frecRI1 frecRI2 frecRI3
   unfolding forcerel_def
   by simp
 
 (* Recursive definition of forces for atomic formulas using a transitive relation *)
 lemma frc_at_trancl: "frc_at(P,leq,z) = wfrec(forcerel(P,z),z,\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f)))"
-proof -
-  have "frc_at(P,leq,z) = wfrec(frecrel(names_below(P,z)),z,\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f)))"
-    (is "_ = wfrec(?r,_,?H)")
-    unfolding frc_at_def ..
-  also
-  have " ... = wftrec(?r^+, z, \<lambda>y f. ?H(y, restrict(f,?r-``{y})))"
-    unfolding wfrec_def ..
-  also
-  have " ... = wftrec(?r^+, z, \<lambda>y f. ?H(y, restrict(f,(?r^+)-``{y})))"
-    using Hfrc_restrict_trancl by simp
-  also
-  have " ... =  wfrec(?r^+, z, ?H)"
-    unfolding wfrec_def using trancl_eq_r[OF relation_trancl trans_trancl] by simp
-  finally
-  show ?thesis unfolding forcerel_def .
-qed
+  unfolding frc_at_def forcerel_def using wf_trancl Hfrc_restrict_trancl by simp
 
 
 lemma forcerelI1 : 
