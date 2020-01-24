@@ -37,6 +37,9 @@ make tar
 System requirements
 ====== ============
 
+The session requires Isabelle2019 to be installed, and the
+tool wrapper 'isabelle' should be on the PATH env var.
+
 At least 8G of RAM would be desirable. The ML process is ran 
 with a minimum heap size of 5.5G. If memory requirements are 
 not met, there is a chance that the building process stalls 
