@@ -15,7 +15,7 @@ ML_FILES = Renaming_ML.ml
 LINKING_FILES = fix_links.sh links.css
 
 build: 
-	isabelle build -c -D .
+	isabelle env ML_OPTIONS="--minheap 5500" isabelle build -v -c -D .
 
 html: 
 	isabelle env ISABELLE_BROWSER_INFO=./output/html  isabelle build -c -d . -o browser_info -v Forcing
