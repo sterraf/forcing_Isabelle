@@ -1096,7 +1096,7 @@ lemma Hfrc_restrict_trancl: "bool_of_o(Hfrc(P, leq, y, restrict(f,frecrel(names_
 
 (* Recursive definition of forces for atomic formulas using a transitive relation *)
 lemma frc_at_trancl: "frc_at(P,leq,z) = wfrec(forcerel(P,z),z,\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f)))"
-  unfolding frc_at_def forcerel_def using wf_trancl Hfrc_restrict_trancl by simp
+  unfolding frc_at_def forcerel_def using wf_eq_trancl Hfrc_restrict_trancl by simp
 
 
 lemma forcerelI1 : 

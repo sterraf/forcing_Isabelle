@@ -194,7 +194,7 @@ lemma restrict_trans_eq:
        = restrict(f,(Memrel(eclose({x}))^+)-``{y})`w" 
   using assms restrict_trancl_Rrel[of mem ] Rrel_mem by (simp)
 
-lemma wf_trancl:
+lemma wf_eq_trancl:
   assumes "\<And> f y . H(y,restrict(f,R-``{y})) = H(y,restrict(f,R^+-``{y}))"
   shows  "wfrec(R, x, H) = wfrec(R^+, x, H)" (is "wfrec(?r,_,_) = wfrec(?r',_,_)")
 proof -
