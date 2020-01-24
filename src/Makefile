@@ -14,25 +14,29 @@ ML_FILES = Renaming_ML.ml
 
 LINKING_FILES = fix_links.sh links.css
 
+CHAPTER =ZF
+
 build: 
 	isabelle env ML_OPTIONS="--minheap 5500" isabelle build -v -c -D .
 
 html: 
-	isabelle env ISABELLE_BROWSER_INFO=./output/html  isabelle build -c -d . -o browser_info -v Forcing
+	isabelle env ML_OPTIONS="--minheap 5500"\
+	  ISABELLE_BROWSER_INFO=./output/html\
+	  isabelle build -c -d . -o browser_info -v Forcing
 	sh fix_links.sh
-	cat links.css >> output/html/Unsorted/Forcing/isabelle.css
+	cat links.css >> output/html/$(CHAPTER)/Forcing/isabelle.css
 
 tar:    clean html
-	bash link-forcing.sh
+	time bash link-forcing.sh
 	mkdir tmptar
 	mkdir tmptar/Forcing
 	cp -r ../Constructible tmptar
 	cp -r $(THY_FILES) $(ML_FILES) $(LINKING_FILES) ROOT document/ tmptar/Forcing
 	cp Makefile_distro tmptar/Forcing/Makefile
-	cp -r output/html/Unsorted/Forcing/ tmptar/html
-	cd tmptar; tar --show-transformed-names -cvzf forcing.tar.gz Constructible Forcing html
+	cp -r output/html/$(CHAPTER)/Forcing/ tmptar/html
+	cd tmptar; tar --show-transformed-names -czf forcing.tar.gz Constructible Forcing html
 	mv tmptar/forcing.tar.gz .
 	rm -rf tmptar
 
 clean:
-	rm -rf output/
+	rm -rf output/ tmptar
