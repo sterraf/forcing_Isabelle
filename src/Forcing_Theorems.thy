@@ -24,7 +24,7 @@ proof -
   moreover
   have "separation(##M,\<lambda>p. (p \<tturnstile> \<phi> env))"
     unfolding Forces_def
-    using separation_ax forces_arity far fty P_in_M leq_in_M one_in_M envty forces_arity_le
+    using separation_ax arity_forces far fty P_in_M leq_in_M one_in_M envty arity_forces_le
     by simp
   then 
   have "Collect(P,\<lambda>p. (p \<tturnstile> \<phi> env))\<in>M"
@@ -368,7 +368,7 @@ proof -
   moreover
   have "arity(?\<phi>)=5" 
     unfolding leq_fm_def pair_fm_def upair_fm_def
-    using forces_eq_fm_arity by (simp add:nat_simp_union Un_commute)
+    using arity_forces_eq_fm by (simp add:nat_simp_union Un_commute)
   ultimately
   show ?thesis 
     unfolding forces_eq_def using P_in_M leq_in_M assms 
@@ -657,7 +657,7 @@ lemma Collect_forces_eq_in_M:
   using assms Collect_in_M_4p[of "forces_eq_fm(1,2,0,3,4)" P leq \<tau> \<theta> 
                                   "\<lambda>A x p l t1 t2. is_forces_eq(x,t1,t2)"
                                   "\<lambda> x p l t1 t2. forces_eq(x,t1,t2)" P] 
-        forces_eq_fm_arity P_in_M leq_in_M sats_forces_eq_fm forces_eq_abs forces_eq_fm_type 
+        arity_forces_eq_fm P_in_M leq_in_M sats_forces_eq_fm forces_eq_abs forces_eq_fm_type 
   by (simp add: nat_union_abs1 Un_commute)
 
 lemma IV240b_eq_Collects:
@@ -696,7 +696,7 @@ proof -
   have fty:"?\<phi>\<in>formula" by simp
   have fart:"arity(?\<phi>)=5"
     unfolding forces_nmem_fm_def domain_fm_def pair_fm_def upair_fm_def union_fm_def
-    using forces_mem_fm_arity by (simp add:nat_simp_union Un_commute)
+    using arity_forces_mem_fm by (simp add:nat_simp_union Un_commute)
     show 
     "{p \<in> P . \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(p, \<sigma>, \<tau>) \<and> forces_nmem(p, \<sigma>, \<theta>)} \<in> M"
     and "{p \<in> P . \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p, \<sigma>, \<tau>) \<and> forces_mem(p, \<sigma>, \<theta>)} \<in> M"
@@ -1138,12 +1138,12 @@ next
   let ?D="{p\<in>P. (p \<tturnstile> \<phi> env) \<or> (p \<tturnstile> Neg(\<phi>) env)}"
   have "separation(##M,\<lambda>p. (p \<tturnstile> \<phi> env))" 
   unfolding Forces_def
-    using separation_ax forces_arity assms P_in_M leq_in_M one_in_M forces_arity_le
+    using separation_ax arity_forces assms P_in_M leq_in_M one_in_M arity_forces_le
     by simp
   moreover
   have "separation(##M,\<lambda>p. (p \<tturnstile> Neg(\<phi>) env))"
   unfolding Forces_def
-    using separation_ax forces_arity assms P_in_M leq_in_M one_in_M forces_arity_le
+    using separation_ax arity_forces assms P_in_M leq_in_M one_in_M arity_forces_le
     by simp
   ultimately
   have "separation(##M,\<lambda>p. (p \<tturnstile> \<phi> env) \<or> (p \<tturnstile> Neg(\<phi>) env))" 
@@ -1236,7 +1236,7 @@ lemma ren_truth_lemma_type[TC] :
   unfolding ren_truth_lemma_def
   by simp
 
-lemma ren_truth_arity : 
+lemma arity_ren_truth : 
   assumes "\<phi>\<in>formula"
   shows "arity(ren_truth_lemma(\<phi>)) \<le> 6 \<union> succ(arity(\<phi>))"
 proof -
@@ -1340,7 +1340,7 @@ proof -
   have "arity(?\<psi>) \<le> 4#+length(env)" 
   proof -
     have eq:"arity(leq_fm(4, 0, 2)) = 5"
-      using leq_fm_arity succ_Un_distrib nat_simp_union
+      using arity_leq_fm succ_Un_distrib nat_simp_union
       by simp
     with \<open>\<phi>\<in>_\<close>
     have "arity(?\<psi>) = 3 \<union> (pred^2(arity(ren_truth_lemma(forces(\<phi>)))))"
@@ -1348,7 +1348,7 @@ proof -
     moreover
     have "... \<le> 3 \<union> (pred(pred(6 \<union> succ(arity(forces(\<phi>))))))" (is "_ \<le> ?r")
       using  \<open>\<phi>\<in>_\<close> Un_le_compat[OF le_refl[of 3]] 
-                  le_imp_subset ren_truth_arity[of "forces(\<phi>)"]
+                  le_imp_subset arity_ren_truth[of "forces(\<phi>)"]
                   pred_mono
       by auto
     finally
@@ -1357,7 +1357,7 @@ proof -
       using pred_Un_distrib pred_succ_eq \<open>\<phi>\<in>_\<close> Un_assoc[symmetric] nat_union_abs1 by simp
     have h:"4 \<union> pred(arity(forces(\<phi>))) \<le> 4\<union> (4#+length(env))"
       using  \<open>env\<in>_\<close> add_commute \<open>\<phi>\<in>_\<close>
-            Un_le_compat[of 4 4,OF _ pred_mono[OF _ forces_arity_le[OF _ _ \<open>arity(\<phi>)\<le>_\<close>]] ]
+            Un_le_compat[of 4 4,OF _ pred_mono[OF _ arity_forces_le[OF _ _ \<open>arity(\<phi>)\<le>_\<close>]] ]
             \<open>env\<in>_\<close> by auto
     with \<open>\<phi>\<in>_\<close> \<open>env\<in>_\<close>
     show ?thesis

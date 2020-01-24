@@ -49,7 +49,7 @@ proof (unfold_locales, simp)
   fix B
   have "arity(seqspace_rep_fm(0,1,2)) \<le> 3" "seqspace_rep_fm(0,1,2)\<in>formula" 
     unfolding seqspace_rep_fm_def 
-    using pair_fm_arity omega_fm_arity typed_function_fm_arity nat_simp_union 
+    using arity_pair_fm arity_omega_fm arity_typed_function_fm nat_simp_union 
     by auto
   moreover
   assume "B\<in>M"
@@ -237,7 +237,7 @@ lemma type_funleR_fm :
 lemma arity_funleR_fm :
   "fg \<in> nat \<Longrightarrow> arity(funleR_fm(fg)) = succ(fg)"
   unfolding funleR_fm_def 
-  using pair_fm_arity subset_fm_arity nat_simp_union by simp
+  using arity_pair_fm arity_subset_fm nat_simp_union by simp
 
 lemma (in M_basic) funleR_abs: 
   assumes "M(f)" "M(g)"

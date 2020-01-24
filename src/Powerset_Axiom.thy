@@ -48,7 +48,7 @@ proof -
   from  \<open>arity(\<phi>) \<le> 6\<close> \<open>\<phi>\<in> formula\<close> \<open>6\<in>_\<close> \<open>7\<in>_\<close> have
     "?\<phi>' \<in> formula" "arity(?\<phi>')\<le>7" 
     unfolding perm_pow_fn_def
-    using  perm_pow_thm  ren_arity ren_tc Nil_type
+    using  perm_pow_thm  arity_ren ren_tc Nil_type
     by auto
   with \<open>?\<phi>' \<in> formula\<close> have
     1: "arity(Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))))\<le>5"     (is "arity(?\<psi>)\<le>5")

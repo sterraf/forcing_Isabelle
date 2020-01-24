@@ -28,7 +28,7 @@ lemma Union_name_fm_type [TC]:
   unfolding Union_name_fm_def by simp
 
   
-lemma Union_name_fm_arity :
+lemma arity_Union_name_fm :
   "arity(Union_name_fm) = 4"
   unfolding Union_name_fm_def upair_fm_def pair_fm_def 
   by(auto simp add: nat_simp_union)
@@ -60,8 +60,8 @@ proof -
   let ?Q="\<lambda> x . Union_name_body(P,leq,\<tau>,x)"
   from \<open>\<tau>\<in>M\<close> have "domain(\<Union>(domain(\<tau>)))\<in>M" (is "?d \<in> _") using domain_closed Union_closed by simp
   then have "?d \<times> P \<in> M" using cartprod_closed P_in_M by simp 
-  have "arity(Union_name_fm)\<le>6" using Union_name_fm_arity by simp
-  from assms P_in_M leq_in_M  Union_name_fm_arity have
+  have "arity(Union_name_fm)\<le>6" using arity_Union_name_fm by simp
+  from assms P_in_M leq_in_M  arity_Union_name_fm have
     "[\<tau>,leq] \<in> list(M)" "[P,\<tau>,leq] \<in> list(M)" by auto
   with assms assms P_in_M leq_in_M  \<open>arity(Union_name_fm)\<le>6\<close> have 
     "separation(##M,?P)" 

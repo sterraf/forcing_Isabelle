@@ -460,7 +460,7 @@ lemma arity_rensep: assumes "\<phi>\<in>formula" "env \<in> list(M)"
   "arity(\<phi>) \<le> 7#+length(env)"
 shows "arity(sep_ren(length(env),\<phi>)) \<le> 7#+length(env)"
   unfolding sep_ren_def
-  using ren_arity rensep_type assms
+  using arity_ren rensep_type assms
   by simp
 
 lemma type_rensep [TC]: 

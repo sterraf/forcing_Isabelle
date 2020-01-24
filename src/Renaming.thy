@@ -439,7 +439,7 @@ lemma ren_tc : "p \<in> formula \<Longrightarrow>
   by (induct set:formula,auto simp add: app_nm sum_id_tc)
 
 
-lemma ren_arity :
+lemma arity_ren :
   fixes "p"
   assumes "p \<in> formula" 
   shows "\<And> n m f . n \<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> f \<in> n\<rightarrow>m \<Longrightarrow> arity(p) \<le> n \<Longrightarrow> arity(ren(p)`n`m`f)\<le>m"  
@@ -475,7 +475,7 @@ next
   then show ?case using Forall 2 3 ren_tc arity_type pred_le by auto
 qed
 
-lemma forall_arityE : "p \<in> formula \<Longrightarrow> m \<in> nat \<Longrightarrow> arity(Forall(p)) \<le> m \<Longrightarrow> arity(p) \<le> succ(m)"
+lemma arity_forallE : "p \<in> formula \<Longrightarrow> m \<in> nat \<Longrightarrow> arity(Forall(p)) \<le> m \<Longrightarrow> arity(p) \<le> succ(m)"
   by(rule_tac n="arity(p)" in natE,erule arity_type,simp+)
     
 lemma env_coincidence_sum_id : 
