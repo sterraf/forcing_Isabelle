@@ -1,3 +1,4 @@
+section\<open>The Axiom of Unions in $M[G]$\<close>
 theory Union_Axiom
   imports Names
 begin
@@ -158,5 +159,5 @@ lemma union_in_MG : assumes "filter(G)"
 theorem Union_MG : "M_generic(G) \<Longrightarrow> Union_ax(##M[G])"
   by (simp add:M_generic_def union_in_MG)
 
-end (* context: forcing_data *)
+end (* forcing_data *)
 end

@@ -1,5 +1,10 @@
+section\<open>Some enhanced theorems on recursion\<close>
+
 theory Recursion_Thms imports ZF.Epsilon begin
 
+text\<open>We prove results concerning definitions by well-founded
+recursion on some relation \<^term>\<open>R\<close> and its transitive closure
+\<^term>\<open>R^*\<close>\<close>
 (* Restrict the relation r to the field A*A *)
     
 lemma fld_restrict_eq : "a \<in> A \<Longrightarrow> (r\<inter>A*A)-``{a} = (r-``{a} \<inter> A)"

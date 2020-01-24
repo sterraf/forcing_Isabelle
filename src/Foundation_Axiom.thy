@@ -1,3 +1,4 @@
+section\<open>The Axiom of Foundation in $M[G]$\<close>
 theory Foundation_Axiom
 imports
   Names

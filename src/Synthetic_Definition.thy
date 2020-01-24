@@ -1,4 +1,5 @@
-theory Synthetic_Definition 
+section\<open>Automatic synthesis of formulas\<close>
+theory Synthetic_Definition
   imports "../Constructible/Formula"
 keywords
   "synthesize" :: thy_decl % "ML"
@@ -81,6 +82,8 @@ val _ =
 in
 end
 \<close>
+text\<open>The \<^ML>\<open>synthetic_def\<close> function extracts definitions from 
+schematic goals. A new definition is added to the context. \<close>
 
 (* example of use
 schematic_goal mem_formula_ex :

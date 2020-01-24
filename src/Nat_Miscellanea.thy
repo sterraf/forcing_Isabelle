@@ -1,7 +1,9 @@
 theory Nat_Miscellanea imports ZF begin
 
-section\<open>Auxiliary results\<close>
+section\<open>Auxiliary results on arithmetic\<close>
 
+text\<open>Most of these results will get used at some point for the
+calculation of arities.\<close>
 lemmas nat_succI =  Ord_succ_mem_iff [THEN iffD2,OF nat_into_Ord]
 
 lemma nat_succD : "m \<in> nat \<Longrightarrow>  succ(n) \<in> succ(m) \<Longrightarrow> n \<in> m"
@@ -147,6 +149,9 @@ lemma leD : assumes "n\<in>nat" "j \<le> n"
   shows "j < n | j = n"
 using leE[OF \<open>j\<le>n\<close>,of "j<n | j = n"] by auto
 
+subsection\<open>Some results in ordinal arithmetic\<close>
+text\<open>The following results are auxiliary to the proof of 
+wellfoundedness of the relation \<^term>\<open>frecR\<close>\<close>
 
 lemma max_cong :
   assumes "x \<le> y" "Ord(y)" "Ord(z)" shows "max(x,y) \<le> max(y,z)"

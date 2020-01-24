@@ -1,12 +1,19 @@
+section\<open>Proper Extensions of ctms\<close>
 theory Proper_Extension
   imports
     Names
 
 begin
 
+text\<open>The key ingredient to obtain a proper extension is to have
+a \<^emph>\<open>separative preorder\<close>:\<close>
+
 locale separative_notion = forcing_notion +
   assumes separative: "p\<in>P \<Longrightarrow> \<exists>q\<in>P. \<exists>r\<in>P. q \<preceq> p \<and> r \<preceq> p \<and> q \<bottom> r"
 begin
+
+text\<open>For separative preorders, the complement of every filter is
+dense. Hence an $M$-generic filter can't belong to the ground model.\<close>
 
 lemma filter_complement_dense:
   assumes "filter(G)" shows "dense(P - G)"

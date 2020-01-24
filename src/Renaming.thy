@@ -1,17 +1,17 @@
-theory Renaming 
+section\<open>Renaming of variables in internalized formulas\<close>
+
+theory Renaming
   imports 
     Nat_Miscellanea 
     "../Constructible/Formula"
 begin
-
-section\<open>Auxiliary results\<close>
   
 lemma app_nm : "n\<in>nat \<Longrightarrow> m\<in>nat \<Longrightarrow> f\<in>n\<rightarrow>m \<Longrightarrow> x \<in> nat \<Longrightarrow> f`x \<in> nat"  
   apply(case_tac "x\<in>n",rule_tac m="m" in in_n_in_nat,simp_all add:apply_type)
   apply(subst apply_0,subst domain_of_fun,simp_all)
   done
     
-section\<open>Renaming of free variables\<close>
+subsection\<open>Renaming of free variables\<close>
 
 definition 
   union_fun :: "[i,i,i,i] \<Rightarrow> i" where

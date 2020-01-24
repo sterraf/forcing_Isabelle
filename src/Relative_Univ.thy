@@ -1,3 +1,4 @@
+section\<open>Relativization of the cumulative hierarchy\<close>
 theory Relative_Univ
   imports
     "../Constructible/Rank"
@@ -6,7 +7,6 @@ theory Relative_Univ
     Recursion_Thms
 
 begin
-
 
 lemma (in M_trivial) powerset_abs' [simp]: 
   assumes

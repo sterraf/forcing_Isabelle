@@ -1,15 +1,13 @@
-(*  
-    This file is completely based on L_axioms.thy and Internalize.thy 
-    by Lawrence C Paulson.
-*)
-
-theory Internalizations 
+section\<open>Aids to internalize formulas\<close>
+theory Internalizations
   imports 
     "../Constructible/Formula"
     "../Constructible/L_axioms"
     "../Constructible/Internalize" 
 begin
 
+text\<open>We found it useful to have slightly different versions of some 
+results in ZF-Constructible:\<close>
 lemma nth_closed :
   assumes "0\<in>A" "env\<in>list(A)"
   shows "nth(n,env)\<in>A" 
@@ -26,6 +24,8 @@ lemmas sep_rules = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
                    fun_plus_iff_sats successor_iff_sats
                     omega_iff_sats FOL_sats_iff Replace_iff_sats
 
+text\<open>Also a different compilation of lemmas (term\<open>sep_rules\<close>) used in formula
+ synthesis\<close>
 lemmas fm_defs = omega_fm_def limit_ordinal_fm_def empty_fm_def typed_function_fm_def
                  pair_fm_def upair_fm_def domain_fm_def function_fm_def succ_fm_def
                  cons_fm_def fun_apply_fm_def image_fm_def big_union_fm_def union_fm_def

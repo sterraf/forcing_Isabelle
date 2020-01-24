@@ -1,9 +1,12 @@
+section\<open>A poset of successions\<close>
 theory Succession_Poset
   imports
     Arities Proper_Extension Synthetic_Definition
     Names
 begin
 
+text\<open>We implement the poset for adding one Cohen real, the set 
+$2^{<\omega}$ of of finite binary sequences.\<close>
 definition 
   seqspace :: "i \<Rightarrow> i" ("_^<\<omega>" [100]100) where
   "seqspace(B) \<equiv> \<Union>n\<in>nat. (n\<rightarrow>B)"
@@ -134,30 +137,30 @@ lemma zero_in_seqspace :
   by force
 
 definition
-  funleR :: "i \<Rightarrow> i \<Rightarrow> o" where
-  "funleR(f,g) \<equiv> g \<subseteq> f"
+  seqleR :: "i \<Rightarrow> i \<Rightarrow> o" where
+  "seqleR(f,g) \<equiv> g \<subseteq> f"
 
 definition
-  funlerel :: "i \<Rightarrow> i" where
-  "funlerel(A) \<equiv> Rrel(\<lambda>x y. y \<subseteq> x,A^<\<omega>)"
+  seqlerel :: "i \<Rightarrow> i" where
+  "seqlerel(A) \<equiv> Rrel(\<lambda>x y. y \<subseteq> x,A^<\<omega>)"
 
 definition
-  funle :: "i" where
-  "funle \<equiv> funlerel(2)"
+  seqle :: "i" where
+  "seqle \<equiv> seqlerel(2)"
 
-lemma funleI[intro!]: 
-  "\<langle>f,g\<rangle> \<in> 2^<\<omega>\<times>2^<\<omega> \<Longrightarrow> g \<subseteq> f  \<Longrightarrow> \<langle>f,g\<rangle> \<in> funle"
-  unfolding  seqspace_def funle_def funlerel_def Rrel_def 
+lemma seqleI[intro!]: 
+  "\<langle>f,g\<rangle> \<in> 2^<\<omega>\<times>2^<\<omega> \<Longrightarrow> g \<subseteq> f  \<Longrightarrow> \<langle>f,g\<rangle> \<in> seqle"
+  unfolding  seqspace_def seqle_def seqlerel_def Rrel_def 
   by blast
 
-lemma funleD[dest!]: 
-  "z \<in> funle \<Longrightarrow> \<exists>x y. \<langle>x,y\<rangle> \<in> 2^<\<omega>\<times>2^<\<omega> \<and> y \<subseteq> x \<and> z = \<langle>x,y\<rangle>"
-  unfolding funle_def funlerel_def Rrel_def 
+lemma seqleD[dest!]: 
+  "z \<in> seqle \<Longrightarrow> \<exists>x y. \<langle>x,y\<rangle> \<in> 2^<\<omega>\<times>2^<\<omega> \<and> y \<subseteq> x \<and> z = \<langle>x,y\<rangle>"
+  unfolding seqle_def seqlerel_def Rrel_def 
   by blast
 
 lemma upd_leI : 
   assumes "f\<in>2^<\<omega>" "a\<in>2"
-  shows "<seq_upd(f,a),f>\<in>funle"  (is "<?f,_>\<in>_")
+  shows "<seq_upd(f,a),f>\<in>seqle"  (is "<?f,_>\<in>_")
 proof
   show " \<langle>?f, f\<rangle> \<in> 2^<\<omega> \<times> 2^<\<omega>" 
     using assms seq_upd_type by auto
@@ -181,15 +184,15 @@ next
   qed
 qed
 
-lemma preorder_on_funle: "preorder_on(2^<\<omega>,funle)"
+lemma preorder_on_seqle: "preorder_on(2^<\<omega>,seqle)"
   unfolding preorder_on_def refl_def trans_on_def by blast
 
-lemma zero_funle_max: "x\<in>2^<\<omega> \<Longrightarrow> \<langle>x,0\<rangle> \<in> funle"
+lemma zero_seqle_max: "x\<in>2^<\<omega> \<Longrightarrow> \<langle>x,0\<rangle> \<in> seqle"
   using zero_in_seqspace 
   by auto
 
-interpretation forcing_notion "2^<\<omega>" "funle" "0"
-  using preorder_on_funle zero_funle_max zero_in_seqspace 
+interpretation forcing_notion "2^<\<omega>" "seqle" "0"
+  using preorder_on_seqle zero_seqle_max zero_in_seqspace 
   by unfold_locales simp_all
 
 abbreviation SEQle :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>s" 50)
@@ -223,26 +226,26 @@ proof
     unfolding seqspace_def function_def by auto
 qed
 
-definition is_funleR :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_funleR(Q,f,g) \<equiv> g \<subseteq> f"
+definition is_seqleR :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_seqleR(Q,f,g) \<equiv> g \<subseteq> f"
 
-definition funleR_fm :: "i \<Rightarrow> i" where
-  "funleR_fm(fg) \<equiv> Exists(Exists(And(pair_fm(0,1,fg#+2),subset_fm(1,0))))"
+definition seqleR_fm :: "i \<Rightarrow> i" where
+  "seqleR_fm(fg) \<equiv> Exists(Exists(And(pair_fm(0,1,fg#+2),subset_fm(1,0))))"
 
-lemma type_funleR_fm :
-  "fg \<in> nat \<Longrightarrow> funleR_fm(fg) \<in> formula"
-  unfolding funleR_fm_def 
+lemma type_seqleR_fm :
+  "fg \<in> nat \<Longrightarrow> seqleR_fm(fg) \<in> formula"
+  unfolding seqleR_fm_def 
   by simp
 
-lemma arity_funleR_fm :
-  "fg \<in> nat \<Longrightarrow> arity(funleR_fm(fg)) = succ(fg)"
-  unfolding funleR_fm_def 
+lemma arity_seqleR_fm :
+  "fg \<in> nat \<Longrightarrow> arity(seqleR_fm(fg)) = succ(fg)"
+  unfolding seqleR_fm_def 
   using arity_pair_fm arity_subset_fm nat_simp_union by simp
 
-lemma (in M_basic) funleR_abs: 
+lemma (in M_basic) seqleR_abs: 
   assumes "M(f)" "M(g)"
-  shows "funleR(f,g) \<longleftrightarrow> is_funleR(M,f,g)"
-  unfolding funleR_def is_funleR_def 
+  shows "seqleR(f,g) \<longleftrightarrow> is_seqleR(M,f,g)"
+  unfolding seqleR_def is_seqleR_def 
   using assms apply_abs domain_abs domain_closed[OF \<open>M(f)\<close>]  domain_closed[OF \<open>M(g)\<close>]
   by auto
 
@@ -250,10 +253,10 @@ definition
   relP :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i] \<Rightarrow> o" where
   "relP(M,r,xy) \<equiv> (\<exists>x[M]. \<exists>y[M]. pair(M,x,y,xy) \<and> r(M,x,y))"
 
-lemma (in M_ctm) funleR_fm_sats : 
+lemma (in M_ctm) seqleR_fm_sats : 
   assumes "fg\<in>nat" "env\<in>list(M)" 
-  shows "sats(M,funleR_fm(fg),env) \<longleftrightarrow> relP(##M,is_funleR,nth(fg, env))"
-  unfolding funleR_fm_def is_funleR_def relP_def
+  shows "sats(M,seqleR_fm(fg),env) \<longleftrightarrow> relP(##M,is_seqleR,nth(fg, env))"
+  unfolding seqleR_fm_def is_seqleR_def relP_def
   using assms trans_M sats_subset_fm pair_iff_sats
   by auto
 
@@ -288,14 +291,14 @@ proof -
 qed
 
 definition
-  is_funlerel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_funlerel(M,A,r) \<equiv> is_RRel(M,is_funleR,A,r)"
+  is_seqlerel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_seqlerel(M,A,r) \<equiv> is_RRel(M,is_seqleR,A,r)"
 
-lemma (in M_basic) funlerel_abs :
+lemma (in M_basic) seqlerel_abs :
   assumes "M(A)"  "M(r)"
-  shows "is_funlerel(M,A,r) \<longleftrightarrow> r = Rrel(funleR,A)"
-  unfolding is_funlerel_def
-  using is_Rrel_abs[OF \<open>M(A)\<close> \<open>M(r)\<close>,of funleR is_funleR] funleR_abs
+  shows "is_seqlerel(M,A,r) \<longleftrightarrow> r = Rrel(seqleR,A)"
+  unfolding is_seqlerel_def
+  using is_Rrel_abs[OF \<open>M(A)\<close> \<open>M(r)\<close>,of seqleR is_seqleR] seqleR_abs
   by auto
 
 definition RrelP :: "[i\<Rightarrow>i\<Rightarrow>o,i] \<Rightarrow> i" where
@@ -327,14 +330,14 @@ proof -
   unfolding Rrel_def by simp
 qed
 
-lemma funle_in_M: "funle \<in> M"
+lemma seqle_in_M: "seqle \<in> M"
   using Rrel_closed seqspace_closed 
-    transitivity[OF _ nat_in_M] type_funleR_fm[of 0] arity_funleR_fm[of 0]
-    funleR_fm_sats[of 0] funleR_abs funlerel_abs 
-  unfolding funle_def funlerel_def funleR_def
+    transitivity[OF _ nat_in_M] type_seqleR_fm[of 0] arity_seqleR_fm[of 0]
+    seqleR_fm_sats[of 0] seqleR_abs seqlerel_abs 
+  unfolding seqle_def seqlerel_def seqleR_def
   by auto
 
-interpretation ctm_separative "2^<\<omega>" funle 0
+interpretation ctm_separative "2^<\<omega>" seqle 0
 proof (unfold_locales)
   fix f
   let ?q="seq_upd(f,0)" and ?r="seq_upd(f,1)"
@@ -351,7 +354,7 @@ proof (unfold_locales)
 next
   show "2^<\<omega> \<in> M" using nat_into_M seqspace_closed by simp
 next
-  show "funle \<in> M" using funle_in_M .
+  show "seqle \<in> M" using seqle_in_M .
 qed
 
 lemma cohen_extension_is_proper: "\<exists>G. M_generic(G) \<and> M \<noteq> GenExt(G)"

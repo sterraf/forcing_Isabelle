@@ -1,4 +1,11 @@
-theory Interface 
+section\<open>Interface between set models and Constructibility\<close>
+text\<open>This theory provides an interface between Paulson's 
+relativization results and set models of ZFC. In particular,
+it is used to prove that the locale \<^term>\<open>forcing_data\<close> is 
+a sublocale of all relevant locales in ZF-Constructibility
+(\<^term>\<open>M_trivial\<close>, \<^term>\<open>M_basic\<close>, \<^term>\<open>M_eclose\<close>, etc).\<close>
+
+theory Interface
   imports "../Constructible/Relative"
           Renaming
           Renaming_Auto 
@@ -83,7 +90,7 @@ proof -
       by simp
 qed
     
-(* Interface with M_trivial *)
+subsection\<open>Interface with \<^term>\<open>M_trivial\<close>\<close>
 lemma mtrans :  
   "M_trans(##M)"
   apply (rule M_trans.intro)
@@ -110,7 +117,7 @@ sublocale M_ZF_trans \<subseteq> M_trivial "##M"
 context M_ZF_trans 
 begin
 
-(* Instances of separation of M_basic *)
+subsection\<open>Interface with \<^term>\<open>M_basic\<close>\<close>
 
 (* Inter_separation: "M(A) ==> separation(M, \<lambda>x. \<forall>y[M]. y\<in>A \<longrightarrow> x\<in>y)" *)
 
@@ -578,15 +585,10 @@ done
 
 end
 
-
 sublocale M_ZF_trans \<subseteq> M_basic "##M"
   by (rule mbasic)
 
-
-
-
-(*** Interface with M_trancl ***)
-
+subsection\<open>Interface with \<^term>\<open>M_trancl\<close>\<close>
 
 (* rtran_closure_mem *)                                                            
 schematic_goal rtran_closure_mem_auto:
@@ -775,10 +777,7 @@ lemma (in M_ZF_trans) mtrancl : "M_trancl(##M)"
 sublocale M_ZF_trans \<subseteq> M_trancl "##M"
   by (rule mtrancl)
 
-(*** end interface with M_trancl ***)
-
-
-(* Interface with M_eclose *)
+subsection\<open>Interface with \<^term>\<open>M_eclose\<close>\<close>
 
 lemma repl_sats:
   assumes

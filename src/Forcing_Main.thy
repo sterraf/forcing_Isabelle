@@ -762,7 +762,7 @@ proof -
   interpret M_ctm M enum
     using M_ZF_iff_M_satT
     by intro_locales (simp_all add:M_ctm_axioms_def)
-  interpret ctm_separative "2^<\<omega>" funle 0 M enum
+  interpret ctm_separative "2^<\<omega>" seqle 0 M enum
   proof (unfold_locales)
     fix f
     let ?q="seq_upd(f,0)" and ?r="seq_upd(f,1)"
@@ -779,14 +779,14 @@ proof -
   next
     show "2^<\<omega> \<in> M" using nat_into_M seqspace_closed by simp
   next
-    show "funle \<in> M" using funle_in_M .
+    show "seqle \<in> M" using seqle_in_M .
   qed
   from cohen_extension_is_proper
   obtain G where "M_generic(G)" 
     "M \<noteq> GenExt(G)" (is "M\<noteq>?N") 
     by blast
   then 
-  interpret G_generic "2^<\<omega>" funle 0 _ enum G by unfold_locales
+  interpret G_generic "2^<\<omega>" seqle 0 _ enum G by unfold_locales
   interpret MG: M_ZF "?N"
     using generic pairing_in_MG 
       Union_MG  extensionality_in_MG power_in_MG

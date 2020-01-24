@@ -1,3 +1,4 @@
+section\<open>The Axiom of Extensionality in $M[G]$\<close>
 theory Extensionality_Axiom
 imports
   Names

@@ -1,9 +1,12 @@
+section\<open>Well-founded relation on names\<close>
 theory FrecR imports Names Synthetic_Definition begin
 
 lemmas sep_rules' = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
                    fun_plus_iff_sats 
                     omega_iff_sats FOL_sats_iff 
 
+text\<open>\<^term>\<open>frecR\<close> is the well-founded relation on names that allows
+us to define forcing for atomic formulas.\<close>
 
 (* MOVE THIS. absoluteness of higher-order composition *)
 definition

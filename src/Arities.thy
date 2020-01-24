@@ -1,4 +1,5 @@
-theory Arities 
+section\<open>Arities of internalized formulas\<close>
+theory Arities
   imports FrecR
     "../Constructible/Formula"
     "../Constructible/L_axioms"

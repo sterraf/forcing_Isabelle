@@ -1,5 +1,14 @@
-theory Forcing_Notions imports ZF "../Constructible/Relative" begin
+section\<open>Forcing notions\<close>
+text\<open>This theory defines a locale for forcing notions, that is,
+ preorders with a distinguished maximum element.\<close>
 
+theory Forcing_Notions
+  imports ZF "../Constructible/Relative" 
+begin
+
+subsection\<open>Basic concepts\<close>
+text\<open>We say that two elements $p,q$ are
+  \<^emph>\<open>compatible\<close> if they have a lower bound in $P$\<close>
 definition compat_in :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
   "compat_in(A,r,p,q) == \<exists>d\<in>A . \<langle>d,p\<rangle>\<in>r \<and> \<langle>d,q\<rangle>\<in>r"
 
@@ -48,10 +57,15 @@ lemma refl_leq:
   "r\<in>P \<Longrightarrow> r\<preceq>r"
   using leq_preord unfolding preorder_on_def refl_def by simp
 
+text\<open>A set $D$ is \<^emph>\<open>dense\<close> if every element $p\in P$ has a lower 
+bound in $D$.\<close>
 definition 
   dense :: "i\<Rightarrow>o" where
   "dense(D) == \<forall>p\<in>P. \<exists>d\<in>D . d\<preceq>p"
 
+text\<open>There is also a weaker definition which asks for 
+a lower bound in $D$ only for the elements below some fixed 
+element $q$.\<close>
 definition 
   dense_below :: "i\<Rightarrow>i\<Rightarrow>o" where
   "dense_below(D,q) == \<forall>p\<in>P. p\<preceq>q \<longrightarrow> (\<exists>d\<in>D. d\<in>P \<and> d\<preceq>p)"
@@ -146,6 +160,8 @@ definition
   antichain :: "i\<Rightarrow>o" where
   "antichain(A) == A\<subseteq>P \<and> (\<forall>p\<in>A.\<forall>q\<in>A.(\<not>compat(p,q)))"
 
+text\<open>A filter is an increasing set $G$ with all its elements 
+being compatible in $G$.\<close>
 definition 
   filter :: "i\<Rightarrow>o" where
   "filter(G) == G\<subseteq>P \<and> increasing(G) \<and> (\<forall>p\<in>G. \<forall>q\<in>G. compat_in(G,leq,p,q))"
@@ -165,6 +181,9 @@ lemma low_bound_filter: \<comment> \<open>says the compatibility is attained ins
   using assms 
   unfolding compat_in_def filter_def by blast
 
+text\<open>We finally introduce the upward closure of a set
+and prove that the closure of $A$ is a filter if its elements are
+compatible in $A$.\<close>
 definition  
   upclosure :: "i\<Rightarrow>i" where
   "upclosure(A) == {p\<in>P.\<exists>a\<in>A. a\<preceq>p}"
@@ -276,6 +295,7 @@ lemma decr_seq_linear: "refl(P,leq) \<Longrightarrow> f \<in> nat \<rightarrow> 
 
 end (* forcing_notion *)
 
+subsection\<open>Towards Rasiowa-Sikorski Lemma (RSL)\<close>
 locale countable_generic = forcing_notion +
   fixes \<D>
   assumes countable_subs_of_P:  "\<D> \<in> nat\<rightarrow>Pow(P)"
@@ -287,6 +307,8 @@ definition
   D_generic :: "i\<Rightarrow>o" where
   "D_generic(G) == filter(G) \<and> (\<forall>n\<in>nat.(\<D>`n)\<inter>G\<noteq>0)"
 
+text\<open>The next lemma identifies a sufficient condition for obtaining
+RSL.\<close>
 lemma RS_sequence_imp_rasiowa_sikorski:
   assumes 
     "p\<in>P" "f : nat\<rightarrow>P" "f ` 0 = p"
@@ -331,6 +353,9 @@ proof -
 qed
   
 end (* countable_generic *)
+
+text\<open>Now, the following recursive definition will fulfill the 
+requirements of lemma \<^term>\<open>RS_sequence_imp_rasiowa_sikorski\<close> \<close>
 
 consts RS_seq :: "[i,i,i,i,i,i] \<Rightarrow> i"
 primrec

@@ -1,4 +1,12 @@
-theory Names imports Forcing_Data Interface Recursion_Thms Synthetic_Definition begin
+section\<open>Names and generic extensions\<close>
+
+theory Names
+  imports 
+    Forcing_Data 
+    Interface 
+    Recursion_Thms 
+    Synthetic_Definition
+begin
   
 definition
   SepReplace :: "[i, i\<Rightarrow>i, i\<Rightarrow> o] \<Rightarrow>i" where
@@ -26,7 +34,7 @@ lemma SepReplace_pred_implies :
   "\<forall>x. Q(x)\<longrightarrow> b(x) = b'(x)\<Longrightarrow> {b(x) .. x\<in>A, Q(x)}={b'(x) .. x\<in>A, Q(x)}"
   by  (force simp add:SepReplace_def)
     
-section\<open>eclose properties\<close>
+subsubsection\<open>eclose properties\<close>
   
 lemma eclose_sing : "x \<in> eclose(a) \<Longrightarrow> x \<in> eclose({a})"
   by(rule subsetD[OF mem_eclose_subset],simp+)  
@@ -51,8 +59,9 @@ lemma in_dom_in_eclose : "x \<in> domain(z) \<Longrightarrow> x \<in> eclose(z)"
    apply(subst (asm) Pair_def)
    apply(rule_tac A="{{x,x},{x,y}}" in ecloseD,auto simp add:arg_into_eclose)  
   done
-    
-text\<open>The well founded relation on which @{term val} is defined\<close>
+
+text\<open>\<^term>\<open>ed\<close> is the well-founded relation on which 
+\<^term>\<open>val\<close> is defined\<close>
 definition
   ed :: "[i,i] \<Rightarrow> o" where
   "ed(x,y) == x \<in> domain(y)"
@@ -189,6 +198,7 @@ lemma Rep_simp : "Replace(u,\<lambda> y z . z = f(y)) = { f(y) . y \<in> u}"
 
 end (* M_ctm *)
 
+subsection\<open>Values and check-names\<close>
 context forcing_data
 begin
 
@@ -286,6 +296,10 @@ definition
   Hv :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i" where
   "Hv(G,x,f) == { f`y .. y\<in> domain(x), \<exists>p\<in>P. <y,p> \<in> x \<and> p \<in> G }"
 
+text\<open>The funcion \<^term>\<open>val\<close> interprets a name in \<^term>\<open>M\<close> 
+according to a (generic) filter \<^term>\<open>G\<close>. Note the definition
+in terms of the well-founded recursor.\<close>
+
 definition
   val :: "i\<Rightarrow>i\<Rightarrow>i" where
   "val(G,\<tau>) == wfrec(edrel(eclose({\<tau>})), \<tau> ,Hv(G))"
@@ -307,6 +321,9 @@ proof -
   finally show ?thesis .
 qed
 
+text\<open>The next lemma provides the usual recursive expresion for 
+the definition of \<^term>\<open>val\<close>\<close>
+
 lemma def_val:  "val(G,x) = {val(G,t) .. t\<in>domain(x) , \<exists>p\<in>P .  <t,p>\<in>x \<and> p \<in> G }"
 proof -
   let
@@ -327,6 +344,9 @@ qed
   
 lemma val_mono : "x\<subseteq>y \<Longrightarrow> val(G,x) \<subseteq> val(G,y)"
   by (subst (1 2) def_val, force)
+
+text\<open>Check-names are the canonical names for elements of the
+ground model. Here we show that this is the case.\<close>
     
 lemma valcheck : "one \<in> G \<Longrightarrow>  one \<in> P \<Longrightarrow> val(G,check(y))  = y"
 proof (induct rule:eps_induct)
@@ -714,9 +734,9 @@ lemma check_in_M : "x\<in>M \<Longrightarrow> check(x) \<in> M"
         Hcheck_closed relation2_Hcheck trans_wfrec_closed[of "rcheck(x)" x "is_Hcheck(one)" Hcheck] 
   by (simp del:setclass_iff add:setclass_iff[symmetric])
 
-end (* context forcing_data *)
+end (* forcing_data *)
 
-(* check if this go to Relative! *)
+(* check if this should go to Relative! *)
 definition
   is_singleton :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "is_singleton(A,x,z) == \<exists>c[A]. empty(A,c) \<and> is_cons(A,x,c,z)"
@@ -858,7 +878,7 @@ lemma M_subset_MG :  "one \<in> G \<Longrightarrow> M \<subseteq> M[G]"
   using check_in_M one_in_P GenExtI
   by (intro subsetI, subst valcheck [of G,symmetric], auto)
 
-
+text\<open>The name for the generic filter\<close>
 definition
   G_dot :: "i" where
   "G_dot == {<check(p),p> . p\<in>P}"
@@ -927,7 +947,6 @@ lemma G_in_Gen_Ext :
  using assms val_G_dot GenExtI[of _ G] G_dot_in_M 
   by force
 
-
 (* Move this to M_trivial *)
 lemma fst_snd_closed: "p\<in>M \<Longrightarrow> fst(p) \<in> M \<and> snd(p)\<in> M"
   proof (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>")
@@ -980,5 +999,5 @@ proof -
     using generic unfolding M_generic_def by auto
 qed
 
-end    (* context: G_generic *)
+end (* G_generic *)
 end

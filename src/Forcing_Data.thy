@@ -1,4 +1,8 @@
-theory Forcing_Data 
+section\<open>Transitive set models of ZF\<close>
+text\<open>This theory defines the locale \<^term>\<open>M_ZF_trans\<close> for
+transitive models of ZF, and the associated \<^term>\<open>forcing_data\<close>
+ that adds a forcing notion\<close>
+theory Forcing_Data
   imports  
     Forcing_Notions 
     "../Constructible/Relative"
@@ -105,7 +109,7 @@ sublocale M_ctm \<subseteq> M_eclose_pow "##M"
 context M_ctm
 begin
 
-(* Collects in M *)
+subsection\<open>\<^term>\<open>Collects\<close> in $M$\<close>
 lemma Collect_in_M_0p :
   assumes
     Qfm : "Q_fm \<in> formula" and
@@ -216,6 +220,7 @@ qed
 
 end (* M_ctm *)      
 
+subsection\<open>A forcing locale and generic filters\<close>
 locale forcing_data = forcing_notion + M_ctm +
   assumes P_in_M:           "P \<in> M"
       and leq_in_M:         "leq \<in> M"
