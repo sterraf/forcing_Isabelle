@@ -4,7 +4,8 @@ html_dir="output/html/ZF/Forcing/"
 list1=Forces_Definition.html
 list2="Forcing_Theorems.html Arities.html"
 list3="Names.html Interface.html"
-list4="Forcing_Main.html FrecR.html Nat_Miscellanea.html"
+list4="Forcing_Main.html FrecR.html Nat_Miscellanea.html\
+ Internal_ZFC_Axioms.html"
 list5="Forcing_Notions.html Relative_Univ.html Forcing_Data.html\
  Renaming.html Internalizations.html"
 list6="Replacement_Axiom.html Succession_Poset.html Recursion_Thms.html\

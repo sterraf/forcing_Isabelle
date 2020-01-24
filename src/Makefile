@@ -29,13 +29,13 @@ html:
 tar:    clean html
 	time bash link-forcing.sh
 	mkdir tmptar
-	mkdir tmptar/Forcing
+	mkdir tmptar/src
 	cp -r ../Constructible tmptar
-	cp -r $(THY_FILES) $(ML_FILES) $(LINKING_FILES) ROOT document/ tmptar/Forcing
-	cp Makefile_distro tmptar/Forcing/Makefile
+	cp README tmptar
+	cp -r $(THY_FILES) $(ML_FILES) $(LINKING_FILES) ROOT document/ tmptar/src
+	cp Makefile_distro tmptar/src/Makefile
 	cp -r output/html/$(CHAPTER)/Forcing/ tmptar/html
-	cd tmptar; tar --show-transformed-names -czf forcing.tar.gz Constructible Forcing html
-	mv tmptar/forcing.tar.gz .
+	tar --transform "s/tmptar/Forcing/g" --show-transformed-names -cvzf forcing.tar.gz tmptar
 	rm -rf tmptar
 
 clean:
