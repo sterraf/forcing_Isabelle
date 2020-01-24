@@ -1,3 +1,4 @@
+section\<open>The general Rasiowa-Sikorski lemma\<close>
 theory Rasiowa_Sikorski imports Forcing_Notions Pointed_DC begin
 
 context countable_generic

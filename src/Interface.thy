@@ -39,6 +39,19 @@ definition
   "infinity_ax(M) ==  
       (\<exists>I[M]. (\<exists>z[M]. empty(M,z) \<and> z\<in>I) \<and>  (\<forall>y[M]. y\<in>I \<longrightarrow> (\<exists>sy[M]. successor(M,y,sy) \<and> sy\<in>I)))"
 
+definition
+  choice_ax :: "(i\<Rightarrow>o) \<Rightarrow> o" where
+  "choice_ax(M) == \<forall>x[M]. \<exists>a[M]. \<exists>f[M]. ordinal(M,a) \<and> surjection(M,a,x,f)"
+  
+context M_basic begin 
+  
+lemma choice_ax_abs :
+  "choice_ax(M) \<longleftrightarrow> (\<forall>x[M]. \<exists>a[M]. \<exists>f[M]. Ord(a) \<and> f \<in> surj(a,x))"
+  unfolding choice_ax_def
+  by (simp)
+    
+end (* M_basic *)
+
 (* wellfounded trancl *)
 definition
   wellfounded_trancl :: "[i=>o,i,i,i] => o" where

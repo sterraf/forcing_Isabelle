@@ -2,9 +2,9 @@ chapter "ZF"
 session "Forcing" = "ZF" +
   options [document = pdf, document_output = "output"]
   theories [document = true]
-    "Forcing_Main"
-    "Rasiowa_Sikorski"
     "../Constructible/Rank_Separation"
     "../Constructible/DPow_absolute"
+    "Rasiowa_Sikorski"
+    "Forcing_Main"
   document_files
     "root.tex"

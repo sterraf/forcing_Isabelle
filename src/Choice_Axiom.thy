@@ -121,21 +121,8 @@ proof (intro CollectI ballI)
     "\<exists>x\<in>\<alpha>. induced_surj(f, a, e) ` x = y" by auto
 qed
   
-definition
-  choice_ax :: "(i\<Rightarrow>o) \<Rightarrow> o" where
-  "choice_ax(M) == \<forall>x[M]. \<exists>a[M]. \<exists>f[M]. ordinal(M,a) \<and> surjection(M,a,x,f)"
-  
-context M_basic begin 
-  
-lemma choice_ax_abs :
-  "choice_ax(M) \<longleftrightarrow> (\<forall>x[M]. \<exists>a[M]. \<exists>f[M]. Ord(a) \<and> f \<in> surj(a,x))"
-  unfolding choice_ax_def
-  by (simp)
-    
-end    (* M_basic *)
-  
-context G_generic begin
-
+context G_generic 
+begin
 
 definition
   upair_name :: "i \<Rightarrow> i \<Rightarrow> i" where

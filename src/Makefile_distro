@@ -8,7 +8,7 @@ THY_FILES = Arities.thy Choice_Axiom.thy \
  Rasiowa_Sikorski.thy Recursion_Thms.thy Relative_Univ.thy\
  Renaming.thy Renaming_Auto.thy Replacement_Axiom.thy\
  Separation_Axiom.thy Separation_Rename.thy Succession_Poset.thy\
- Synthetic_Definition.thy Union_Axiom.thy 
+ Synthetic_Definition.thy Union_Axiom.thy Internal_ZFC_Axioms.thy
 
 ML_FILES = Renaming_ML.ml
 

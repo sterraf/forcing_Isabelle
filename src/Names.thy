@@ -34,7 +34,7 @@ lemma SepReplace_pred_implies :
   "\<forall>x. Q(x)\<longrightarrow> b(x) = b'(x)\<Longrightarrow> {b(x) .. x\<in>A, Q(x)}={b'(x) .. x\<in>A, Q(x)}"
   by  (force simp add:SepReplace_def)
     
-subsubsection\<open>eclose properties\<close>
+subsection\<open>The well-founded relation \<^term>\<open>ed\<close>\<close>
   
 lemma eclose_sing : "x \<in> eclose(a) \<Longrightarrow> x \<in> eclose({a})"
   by(rule subsetD[OF mem_eclose_subset],simp+)  
