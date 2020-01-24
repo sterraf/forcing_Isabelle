@@ -1,4 +1,5 @@
-theory Choice_Axiom 
+section\<open>The Axiom of Choice in $M[G]$\<close>
+theory Choice_Axiom
   imports Powerset_Axiom Pairing_Axiom Union_Axiom Extensionality_Axiom 
           Foundation_Axiom Powerset_Axiom Separation_Axiom 
           Replacement_Axiom Interface Infinity_Axiom
@@ -233,18 +234,15 @@ proof -
   finally show ?thesis by simp
 qed
 
-(* M[G] is a transitive model of ZF *)
+subsection\<open>$M[G]$ is a transitive model of ZF\<close>
+
 interpretation mgzf: M_ZF_trans "M[G]"
-  apply (rule M_ZF_trans.intro)
-          apply (simp_all add: Transset_MG generic pairing_in_MG 
-      Union_MG  extensionality_in_MG power_in_MG
-      foundation_in_MG  strong_replacement_in_MG[simplified]
-      separation_in_MG[simplified] infinty_in_MG)
-  done
+  using Transset_MG generic pairing_in_MG Union_MG 
+    extensionality_in_MG power_in_MG foundation_in_MG  
+    strong_replacement_in_MG separation_in_MG infinty_in_MG
+  by unfold_locales simp_all
 
 (* y = opair_name(check(\<beta>),s`\<beta>) *)
-
-
 definition
   is_opname_check :: "[i,i,i] \<Rightarrow> o" where
   "is_opname_check(s,x,y) \<equiv> \<exists>chx\<in>M. \<exists>sx\<in>M. is_check(x,chx) \<and> fun_apply(##M,s,x,sx) \<and> 

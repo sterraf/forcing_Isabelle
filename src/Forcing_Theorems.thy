@@ -1,3 +1,5 @@
+section\<open>The Forcing Theorems\<close>
+
 theory Forcing_Theorems
   imports
     Forces_Definition
@@ -6,6 +8,8 @@ begin
 
 context forcing_data
 begin
+
+subsection\<open>The forcing relation in context\<close>
 
 definition
   Forces :: "i \<Rightarrow> i \<Rightarrow> i\<Rightarrow> o" ("_ \<tturnstile> _ _" [36,36,36] 60) where
@@ -37,8 +41,9 @@ lemma forces_mem_iff_dense_below:  "p\<in>P \<Longrightarrow> forces_mem(p,t1,t2
     ,p)"
   using def_forces_mem[of p t1 t2] by blast
 
-(* Kunen 2013, Lemma IV.2.37(a) *)
-lemma strengthening_eq: 
+subsection\<open>Kunen 2013, Lemma IV.2.37(a)\<close>
+
+lemma strengthening_eq:
   assumes "p\<in>P" "r\<in>P" "r\<preceq>p" "forces_eq(p,t1,t2)"
   shows "forces_eq(r,t1,t2)"
   using assms def_forces_eq[of _ t1 t2] leq_transD by blast
@@ -64,13 +69,13 @@ proof -
 qed
 *)
 
-(* Kunen 2013, Lemma IV.2.37(a) *)
+subsection\<open>Kunen 2013, Lemma IV.2.37(a)\<close>
 lemma strengthening_mem: 
   assumes "p\<in>P" "r\<in>P" "r\<preceq>p" "forces_mem(p,t1,t2)"
   shows "forces_mem(r,t1,t2)"
   using assms forces_mem_iff_dense_below dense_below_under by auto
 
-(* Kunen 2013, Lemma IV.2.37(b) *)
+subsection\<open>Kunen 2013, Lemma IV.2.37(b)\<close>
 lemma density_mem: 
   assumes "p\<in>P"
   shows "forces_mem(p,t1,t2)  \<longleftrightarrow> dense_below({q\<in>P. forces_mem(q,t1,t2)},p)"
@@ -163,13 +168,13 @@ next
   show "forces_eq(p,t1,t2)" using def_forces_eq by blast
 qed
 
-(* Kunen 2013, Lemma IV.2.38 *)
+subsection\<open>Kunen 2013, Lemma IV.2.38\<close>
 lemma not_forces_neq:
   assumes "p\<in>P"
   shows "forces_eq(p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> forces_neq(q,t1,t2))"
   using assms density_eq unfolding forces_neq_def by blast
 
-(* Kunen 2013, Lemma IV.2.38 *)
+
 lemma not_forces_nmem:
   assumes "p\<in>P"
   shows "forces_mem(p,t1,t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> forces_nmem(q,t1,t2))"
@@ -179,14 +184,14 @@ lemma not_forces_nmem:
 (* Use the newer versions in Forces_Definition! *)
 (* (and adequate the rest of the code to them)  *)
 
-
 lemma sats_forces_Nand':
   assumes
     "p\<in>P" "\<phi>\<in>formula" "\<psi>\<in>formula" "env \<in> list(M)" 
   shows
-    "sats(M,forces(Nand(\<phi>,\<psi>)),[p,P,leq,one] @ env) \<longleftrightarrow> 
+    "M, [p,P,leq,one] @ env \<Turnstile> forces(Nand(\<phi>,\<psi>)) \<longleftrightarrow> 
      \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and> 
-          (sats(M,forces(\<phi>),[q,P,leq,one]@env)\<and> sats(M,forces(\<psi>),[q,P,leq,one]@env)))"
+           M, [q,P,leq,one] @ env \<Turnstile> forces(\<phi>) \<and> 
+           M, [q,P,leq,one] @ env \<Turnstile> forces(\<psi>))"
   using assms sats_forces_Nand[OF assms(2-4) transitivity[OF \<open>p\<in>P\<close>]]
   P_in_M leq_in_M one_in_M unfolding forces_def
   by simp
@@ -195,8 +200,9 @@ lemma sats_forces_Neg':
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula"
   shows
-    "sats(M,forces(Neg(\<phi>)),[p,P,leq,one] @ env) \<longleftrightarrow> 
-     \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and> (sats(M,forces(\<phi>),[q,P,leq,one]@env)))"
+    "M, [p,P,leq,one] @ env \<Turnstile> forces(Neg(\<phi>))   \<longleftrightarrow> 
+     \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and> 
+          M, [q,P,leq,one]@env \<Turnstile> forces(\<phi>))"
   using assms sats_forces_Neg transitivity 
   P_in_M leq_in_M one_in_M  unfolding forces_def
   by (simp, blast)
@@ -205,12 +211,13 @@ lemma sats_forces_Forall':
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula"
   shows
-    "sats(M,forces(Forall(\<phi>)),[p,P,leq,one] @ env) \<longleftrightarrow> 
-     (\<forall>x\<in>M. sats(M, forces(\<phi>),[p,P,leq,one,x] @ env))"
+    "M,[p,P,leq,one] @ env \<Turnstile> forces(Forall(\<phi>)) \<longleftrightarrow> 
+     (\<forall>x\<in>M.   M, [p,P,leq,one,x] @ env \<Turnstile> forces(\<phi>))"
   using assms sats_forces_Forall transitivity 
   P_in_M leq_in_M one_in_M sats_ren_forces_forall unfolding forces_def
   by simp
 
+subsection\<open>The relation of forcing and atomic formulas\<close>
 lemma Forces_Equal:
   assumes
     "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" "n\<in>nat" "m\<in>nat" 
@@ -235,6 +242,7 @@ lemma Forces_Neg:
   unfolding Forces_def  using assms sats_forces_Neg' transitivity 
   P_in_M pair_in_M_iff leq_in_M leq_abs by simp
  
+subsection\<open>The relation of forcing and connectives\<close>
 
 lemma Forces_Nand:
   assumes
@@ -284,7 +292,7 @@ lemma left_in_M : "tau\<in>M \<Longrightarrow> <a,b>\<in>tau \<Longrightarrow> a
   using fst_snd_closed[of "<a,b>"] transitivity by auto
 
 
-(* Kunen 2013, Lemma IV.2.29 *)
+subsection\<open>Kunen 2013, Lemma IV.2.29\<close>
 lemma generic_inter_dense_below: 
   assumes "D\<in>M" "M_generic(G)" "dense_below(D,p)" "p\<in>G"
   shows "D \<inter> G \<noteq> 0"
@@ -342,7 +350,7 @@ proof -
   show ?thesis by auto
 qed
 
-
+subsection\<open>Auxiliary results for Lemma IV.2.40(a)\<close>
 lemma IV240a_mem_Collect:
   assumes
     "\<pi>\<in>M" "\<tau>\<in>M"
@@ -414,18 +422,6 @@ lemma refl_forces_eq:"p\<in>P \<Longrightarrow> forces_eq(p,x,x)"
 lemma forces_memI: "<\<sigma>,r>\<in>\<tau> \<Longrightarrow> p\<in>P \<Longrightarrow> r\<in>P \<Longrightarrow> p\<preceq>r \<Longrightarrow> forces_mem(p,\<sigma>,\<tau>)"
   using refl_forces_eq[of _ \<sigma>] leq_transD leq_reflI 
   by (blast intro:forces_mem_iff_dense_below[THEN iffD2])
-
-(* 
-lemma symmetry_argument: 
-  assumes 
-    "\<And>x y. R(x,y) \<Longrightarrow> R(y,x)"
-    "\<And>x y. R(x,y) \<Longrightarrow> Q(x,y) \<longleftrightarrow> Q(y,x)"
-    "\<And>x y. R(x,y) \<Longrightarrow> Q(x,y) \<Longrightarrow> S(x,y)"
-    "R(x,y)" "Q(x,y)"
-  shows 
-    "S(x,y) \<and> S(y,x)"
-  using assms by simp
-*)
 
 (* Lemma IV.2.40(a), equality, first inclusion *)
 lemma IV240a_eq_1st_incl:
@@ -504,6 +500,8 @@ lemma IV240a_eq:
     "val(G,\<tau>) = val(G,\<theta>)"
   using IV240a_eq_1st_incl[OF assms] IV240a_eq_2nd_incl[OF assms] IH by blast 
 
+subsection\<open>Induction on names\<close>
+
 lemma core_induction:
   assumes
     "\<And>\<tau> \<theta> p. p \<in> P \<Longrightarrow> \<lbrakk>\<And>q \<sigma>. \<lbrakk>q\<in>P ; \<sigma>\<in>domain(\<theta>)\<rbrakk> \<Longrightarrow> Q(0,\<tau>,\<sigma>,q)\<rbrakk> \<Longrightarrow> Q(1,\<tau>,\<theta>,p)"
@@ -575,7 +573,7 @@ next
       using one_in_P by simp
 qed
 
-(* Lemma IV.2.40(a), full *)
+subsection\<open>Lemma IV.2.40(a), in full\<close>
 lemma IV240a:
   assumes
     "M_generic(G)"
@@ -608,6 +606,7 @@ next
     using IV240a_eq[OF assms(1) _ _ IH'] by (simp)
 qed
 
+subsection\<open>Lemma IV.2.40(b)\<close>
 (* Lemma IV.2.40(b), membership *)
 lemma IV240b_mem:
   assumes
@@ -905,6 +904,8 @@ lemma arities_at_aux:
   using assms succ_leE[OF Un_leD1, of n "succ(m)" "length(env)"] 
    succ_leE[OF Un_leD2, of "succ(n)" m "length(env)"] by auto
 
+subsection\<open>The Strenghtening Lemma\<close>
+
 lemma strengthening_lemma:
   assumes 
     "p\<in>P" "\<phi>\<in>formula" "r\<in>P" "r\<preceq>p"
@@ -956,6 +957,7 @@ next
     using Forces_Forall by simp
 qed
 
+subsection\<open>The Density Lemma\<close>
 lemma arity_Nand_le: 
   assumes "\<phi> \<in> formula" "\<psi> \<in> formula" "arity(Nand(\<phi>, \<psi>)) \<le> length(env)" "env\<in>list(A)"
   shows "arity(\<phi>) \<le> length(env)" "arity(\<psi>) \<le> length(env)"
@@ -1064,6 +1066,7 @@ next
     using strengthening_lemma leq_reflI by auto
 qed
 
+subsection\<open>The Truth Lemma\<close>
 lemma Forces_And:
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula" 
@@ -1497,7 +1500,7 @@ next
     qed
   qed
 qed
-
+subsection\<open>The ``Definition of forcing''\<close>
 lemma definition_of_forces:
   assumes
     "p\<in>P" "\<phi>\<in>formula" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"

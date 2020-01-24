@@ -5,9 +5,12 @@ theory Succession_Poset
     Names
 begin
 
+subsection\<open>The set of finite binary sequences\<close>
+
 text\<open>We implement the poset for adding one Cohen real, the set 
 $2^{<\omega}$ of of finite binary sequences.\<close>
-definition 
+
+definition
   seqspace :: "i \<Rightarrow> i" ("_^<\<omega>" [100]100) where
   "seqspace(B) \<equiv> \<Union>n\<in>nat. (n\<rightarrow>B)"
 
@@ -35,9 +38,7 @@ synthesize "seqspace_rep_fm" from_schematic "seqspace_fm_auto"
 locale M_seqspace =  M_trancl +
   assumes 
     seqspace_replacement: "M(B) \<Longrightarrow> strong_replacement(M,\<lambda>n z. n\<in>nat \<and> is_funspace(M,n,B,z))"
-
 begin
-
 
 lemma seqspace_closed:
   "M(B) \<Longrightarrow> M(B^<\<omega>)"
@@ -336,6 +337,8 @@ lemma seqle_in_M: "seqle \<in> M"
     seqleR_fm_sats[of 0] seqleR_abs seqlerel_abs 
   unfolding seqle_def seqlerel_def seqleR_def
   by auto
+
+subsection\<open>Cohen extension is proper\<close>
 
 interpretation ctm_separative "2^<\<omega>" seqle 0
 proof (unfold_locales)

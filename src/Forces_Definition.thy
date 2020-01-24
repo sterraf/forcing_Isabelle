@@ -1,4 +1,9 @@
+section\<open>The definition of \<^term>\<open>forces\<close>\<close>
 theory Forces_Definition imports Arities FrecR Synthetic_Definition begin
+
+text\<open>This is the core of our development.\<close>
+
+subsection\<open>The relation \<^term>\<open>frecrel\<close>\<close>
 
 (* \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x,y) *)
 definition
@@ -170,7 +175,7 @@ lemma is_tuple_iff_sats:
        "is_tuple(##A,aa,bb,cc,dd,ee)  \<longleftrightarrow> sats(A, is_tuple_fm(a,b,c,d,e), env)"
   using assms by (simp add: sats_is_tuple_fm)
 
-(* Definition of forces for equality and membership *)
+subsection\<open>Definition of \<^term>\<open>forces\<close> for equality and membership\<close>
 
 (* p ||- \<tau> = \<theta> \<equiv>
   \<forall>\<sigma>. \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<longrightarrow> (\<forall>q\<in>P. <q,p>\<in>leq \<longrightarrow> ((q ||- \<sigma>\<in>\<tau>) \<longleftrightarrow> (q ||- \<sigma>\<in>\<theta>)) ) *)
@@ -406,7 +411,7 @@ lemma arity_tran_closure_fm :
     arity_composition_fm arity_succ_fm nat_union_abs2 pred_Un_distrib
   by auto
 
-(* transitive relation of forces for atomic formulas *)
+subsection\<open>The well-founded relation \<^term>\<open>forcerel\<close>\<close>
 definition
   forcerel :: "i \<Rightarrow> i \<Rightarrow> i" where
   "forcerel(P,x) \<equiv> frecrel(names_below(P,x))^+"
@@ -455,6 +460,7 @@ proof -
   show ?thesis using assms  unfolding is_forcerel_def forcerel_fm_def by simp
 qed
 
+subsection\<open>\<^term>\<open>frc_at\<close>, forcing for atomic formulas\<close>
 definition
   frc_at :: "[i,i,i] \<Rightarrow> i" where
   "frc_at(P,leq,fnnc) \<equiv> wfrec(frecrel(names_below(P,fnnc)),fnnc,
@@ -1196,6 +1202,8 @@ proof -
     using E wfrec_restr_eq by simp
 qed
 
+subsection\<open>Recursive expression of \<^term>\<open>frc_at\<close>\<close>
+
 lemma def_frc_at : 
   assumes "p\<in>P"
   shows
@@ -1224,6 +1232,8 @@ proof -
     by auto
 qed
 
+
+subsection\<open>Absoluteness of \<^term>\<open>frc_at\<close>\<close>
 
 lemma trans_forcerel_t : "trans(forcerel(P,x))"
   unfolding forcerel_def using trans_trancl .
@@ -1406,6 +1416,8 @@ qed
 
 end (* forcing_data *)
 
+subsection\<open>Forcing for general formulas\<close>
+
 definition 
   ren_forces_nand :: "i\<Rightarrow>i" where
   "ren_forces_nand(\<phi>) \<equiv> Exists(And(Equal(0,1),iterates(\<lambda>p. incr_bv(p)`1 , 2, \<phi>)))"
@@ -1562,6 +1574,8 @@ lemma sats_leq_fm :
      sats(A,leq_fm(leq,q,p),env) \<longleftrightarrow> is_leq(##A,nth(leq,env),nth(q,env),nth(p,env))" 
   unfolding leq_fm_def is_leq_def by simp
 
+subsubsection\<open>The primitive recursion\<close>
+
 consts forces' :: "i\<Rightarrow>i"
 primrec
   "forces'(Member(x,y)) = forces_mem_fm(1,2,0,x#+4,y#+4)"
@@ -1584,6 +1598,8 @@ lemma forces_type[TC] : "\<phi>\<in>formula \<Longrightarrow> forces(\<phi>) \<i
 
 context forcing_data
 begin
+
+subsection\<open>Forcing for atomic formulas in context\<close>
 
 definition
   forces_eq :: "[i,i,i] \<Rightarrow> o" where
@@ -1707,6 +1723,8 @@ lemma sats_forces_Forall :
   by simp
 
 end (* forcing_data *)
+
+subsection\<open>The arity of \<^term>\<open>forces\<close>\<close>
 
 lemma arity_forces_at:
   assumes  "x \<in> nat" "y \<in> nat"

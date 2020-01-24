@@ -1,8 +1,13 @@
+section\<open>The binder \<^term>\<open>Least\<close>\<close>
 theory Least
   imports
     Names
 
 begin
+
+text\<open>We have some basic results on the least ordinal satisfying
+a predicate.\<close>
+
 lemma Least_Ord: "(\<mu> \<alpha>. R(\<alpha>)) = (\<mu> \<alpha>. Ord(\<alpha>) \<and> R(\<alpha>))"
   unfolding Least_def by (simp add:lt_Ord)
 
@@ -67,7 +72,9 @@ lemma (in M_ctm) unique_least: "a\<in>M \<Longrightarrow> b\<in>M \<Longrightarr
 context M_trivial
 begin
 
-lemma least_abs: 
+subsection\<open>Absoluteness and closure under \<^term>\<open>Least\<close>\<close>
+
+lemma least_abs:
   assumes "\<And>x. Q(x) \<Longrightarrow> M(x)" "M(a)" 
   shows "least(M,Q,a) \<longleftrightarrow> a = (\<mu> x. Q(x))"
   unfolding least_def
@@ -121,6 +128,6 @@ lemma Least_closed:
   shows "M(\<mu> x. Q(x))"
   using assms LeastI[of Q] Least_0 by (cases "(\<exists>i. Ord(i) \<and> Q(i))", auto)
 
-end (* context M_trivial *)
+end (* M_trivial *)
 
 end

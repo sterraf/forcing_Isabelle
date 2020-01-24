@@ -1,4 +1,5 @@
-theory Separation_Axiom 
+section\<open>The Axiom of Separation in $M[G]$\<close>
+theory Separation_Axiom
   imports Forcing_Theorems Separation_Rename
 begin
 

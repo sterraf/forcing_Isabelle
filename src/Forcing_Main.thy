@@ -1,3 +1,4 @@
+section\<open>The main theorem\<close>
 theory Forcing_Main
   imports 
   (* minimum infrastructure to define the formulas *)
@@ -9,6 +10,8 @@ theory Forcing_Main
   Succession_Poset
 
 begin
+
+subsection\<open>The ZFC axioms, internalized\<close>
 
 schematic_goal ZF_union_auto:
     "Union_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ?zfunion)"
@@ -167,7 +170,8 @@ definition
 lemma ZFC_fin_type : "ZFC_fin \<subseteq> formula"
   unfolding ZFC_fin_def ZF_fin_def ZFC_fm_defs by (auto)
 
-lemma iterates_Forall_type [TC]: 
+subsubsection\<open>The Axiom of Separation, internalized\<close>
+lemma iterates_Forall_type [TC]:
       "\<lbrakk> n \<in> nat; p \<in> formula \<rbrakk> \<Longrightarrow> Forall^n(p) \<in> formula"
   by (induct set:nat, auto)
 
@@ -354,6 +358,7 @@ next \<comment> \<open>almost equal to the previous implication\<close>
     by simp
 qed
 
+subsubsection\<open>The Axiom of Separation, internalized\<close>
 schematic_goal sats_univalent_fm_auto:
   assumes 
     (*    Q_iff_sats:"\<And>a b z env aa bb. nth(a,Cons(z,env)) = aa \<Longrightarrow> nth(b,Cons(z,env)) = bb \<Longrightarrow> z\<in>A 
@@ -608,7 +613,8 @@ next
     unfolding ZF_def ZF_inf_def by blast
 qed
 
-(* 
+subsection\<open>The generic extension is countable\<close>
+(*
 \<comment> \<open>Useful missing lemma\<close>
 lemma surj_imp_well_ord:
   assumes "well_ord(A,r)" "h \<in> surj(A,B)"
@@ -745,6 +751,8 @@ proof -
   show ?thesis using eqpollI 
     by simp
 qed
+
+subsection\<open>The main result: proper extensions of ctms\<close>
 
 theorem extensions_of_ctms:
   assumes 

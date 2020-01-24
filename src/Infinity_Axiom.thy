@@ -1,16 +1,13 @@
+section\<open>The Axiom of Infinity in $M[G]$\<close>
 theory Infinity_Axiom 
   imports Pairing_Axiom Union_Axiom Separation_Axiom
 begin  
 
 context G_generic begin
 
-interpretation mg_triv: M_trivial"##M[G]" 
-  apply (rule M_trivial.intro,rule M_trans.intro)
-    apply (simp add: transitivity_MG)
-  apply (insert zero_in_MG,auto)
-  apply (rule M_trivial_axioms.intro)
-   apply (simp_all add: generic Union_MG pairing_in_MG)
-  done
+interpretation mg_triv: M_trivial"##M[G]"
+  using transitivity_MG zero_in_MG generic Union_MG pairing_in_MG
+  by unfold_locales auto
   
 lemma infinty_in_MG : "infinity_ax(##M[G])"
 proof -

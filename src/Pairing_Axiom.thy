@@ -1,3 +1,4 @@
+section\<open>The Axiom of Pairing in $M[G]$\<close>
 theory Pairing_Axiom imports Names begin
 
 context forcing_data

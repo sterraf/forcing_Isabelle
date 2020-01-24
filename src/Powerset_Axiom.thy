@@ -1,3 +1,4 @@
+section\<open>The Powerset Axiom in $M[G]$\<close>
 theory Powerset_Axiom 
   imports Separation_Axiom Pairing_Axiom Union_Axiom 
 begin

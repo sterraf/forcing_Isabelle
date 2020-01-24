@@ -1,3 +1,4 @@
+section\<open>The Axiom of Replacement in $M[G]$\<close>
 theory Replacement_Axiom
   imports
     Least Relative_Univ Separation_Axiom  Renaming_Auto
@@ -249,8 +250,6 @@ lemma body_lemma:
   using assms sats_body_fm[of x \<alpha> m nenv] sats_renpbdy_prebody_fm[of x \<alpha>]
     sats_prebody_fm[of "snd(x)" "fst(x)"] fst_snd_closed[OF \<open>x\<in>M\<close>]
   by (simp, simp del:setclass_iff add:setclass_iff[symmetric],simp)
-
-
 
 lemma Replace_sats_in_MG:
   assumes
