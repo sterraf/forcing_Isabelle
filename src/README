@@ -1,0 +1,47 @@
+------------------------------------------------------------
+
+Forcing in Isabelle/ZF
+======= == ===========
+
+The source theory files are located in two directories:
+
+    * 'Constructible' contains our version of 
+    Paulson's constructibility library;
+
+    * 'src' contains the material directly concerning 
+    forcing.
+
+The directory 'html' contains a browseable and cross-linked
+version of the sources.
+
+------------------------------------------------------------
+
+Building the session
+======== === =======
+
+To build the session, change to 'src'
+and run
+
+make build
+
+To obtain also an HTML version of the sources, do
+
+make html
+
+To make a tar, run
+
+make tar
+
+------------------------------------------------------------
+
+System requirements
+====== ============
+
+At least 8G of RAM would be desirable. The ML process is ran 
+with a minimum heap size of 5.5G. If memory requirements are 
+not met, there is a chance that the building process stalls 
+indefinitely at some point, without failing.
+
+------------------------------------------------------------
+
+E. Gunther, M. Pagano, P. Sánchez Terraf (2020)
