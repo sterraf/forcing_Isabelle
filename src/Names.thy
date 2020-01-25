@@ -69,7 +69,31 @@ definition
 definition
   edrel :: "i \<Rightarrow> i" where
   "edrel(A) == Rrel(ed,A)"
-  
+
+
+lemma edI[intro!]: "t\<in>domain(x) \<Longrightarrow> ed(t,x)"
+  unfolding ed_def .
+
+lemma edD[dest!]: "ed(t,x) \<Longrightarrow> t\<in>domain(x)"
+  unfolding ed_def .
+
+
+lemma rank_ed:
+  assumes "ed(y,x)"
+  shows "succ(rank(y)) \<le> rank(x)" 
+proof
+  from assms
+  obtain p where "<y,p>\<in>x" by auto
+  moreover 
+  obtain s where "y\<in>s" "s\<in><y,p>" unfolding Pair_def by auto
+  ultimately
+  have "rank(y) < rank(s)" "rank(s) < rank(\<langle>y,p\<rangle>)" "rank(\<langle>y,p\<rangle>) < rank(x)"
+    using rank_lt by blast+
+  then
+  show "rank(y) < rank(x)"
+    using lt_trans by blast
+qed
+
 lemma edrel_dest [dest]: "x \<in> edrel(A) \<Longrightarrow> \<exists> a\<in> A. \<exists> b \<in> A. x =<a,b>"
   by(auto simp add:ed_def edrel_def Rrel_def)
     
@@ -116,14 +140,29 @@ proof
     by (rule_tac trancl_trans, rule_tac [2] trancl_trans, simp)
   with Eq1 show "z\<in>?r" by simp
 qed
-  
-  
-  
+
 lemma wf_edrel : "wf(edrel(A))"
-  apply (rule_tac wf_subset [of "trancl(Memrel(eclose(A)))"])
-   apply (auto simp add:edrel_sub_memrel wf_trancl wf_Memrel)
-  done
-    
+  using wf_subset [of "trancl(Memrel(eclose(A)))"] edrel_sub_memrel
+    wf_trancl wf_Memrel
+  by auto
+
+lemma ed_induction:
+  assumes "\<And>x. \<lbrakk>\<And>y.  ed(y,x) \<Longrightarrow> Q(y) \<rbrakk> \<Longrightarrow> Q(x)"
+  shows "Q(a)"
+proof(induct rule: wf_induct2[OF wf_edrel[of "eclose({a})"] ,of a "eclose({a})"])
+  case 1
+  then show ?case using arg_into_eclose by simp
+next
+  case 2
+  then show ?case using field_edrel .
+next
+  case (3 x)
+  then 
+  show ?case 
+    using assms[of x] edrelI domain_trans[OF Transset_eclose 3(1)] by blast 
+qed
+
+
 lemma dom_under_edrel_eclose: "edrel(eclose({x})) -`` {x}= domain(x)" 
   apply(simp add:edrel_def Rrel_def ed_def,rule,rule,drule underD,simp,rule,rule underI)
   apply(auto simp add:in_dom_in_eclose eclose_sing arg_into_eclose)
