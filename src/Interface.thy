@@ -105,22 +105,15 @@ qed
     
 subsection\<open>Interface with \<^term>\<open>M_trivial\<close>\<close>
 lemma mtrans :  
-  "M_trans(##M)"
-  apply (rule M_trans.intro)
-  apply (simp_all)
-   apply (simp add: Transset_intf[OF trans_M])
-  apply (rule exI, rule zero_in_M)
-done
+  "M_trans(##M)"  
+  using Transset_intf[OF trans_M] zero_in_M exI[of "\<lambda>x. x\<in>M"]
+  by unfold_locales auto
 
 
 lemma mtriv :  
   "M_trivial(##M)"
-  apply (insert trans_M)
-  apply (rule M_trivial.intro)
-  apply (simp_all add: mtrans )
-  apply (rule M_trivial_axioms.intro)
-   apply(simp_all add: upair_ax Union_ax)
-done
+  using trans_M M_trivial.intro mtrans M_trivial_axioms.intro upair_ax Union_ax
+  by simp
 
 end
 
@@ -589,12 +582,8 @@ lemmas M_basic_sep_instances =
                 pred_sep_intf memrel_sep_intf comp_sep_intf is_recfun_sep_intf
 
 lemma mbasic : "M_basic(##M)"
-  apply (insert trans_M zero_in_M power_ax)
-  apply (rule M_basic.intro,rule mtriv)
-  apply (rule M_basic_axioms.intro)
-  apply (insert M_basic_sep_instances funspace_succ_rep_intf)
-  apply (simp_all)
-done
+  using trans_M zero_in_M power_ax M_basic_sep_instances funspace_succ_rep_intf mtriv
+  by unfold_locales auto
 
 end
 
@@ -781,11 +770,9 @@ qed
 
 
 lemma (in M_ZF_trans) mtrancl : "M_trancl(##M)" 
-  apply (rule M_trancl.intro,rule mbasic)
-  apply (rule M_trancl_axioms.intro)
-    apply (insert rtrancl_separation_intf wftrancl_separation_intf nat_in_M)
-    apply (simp_all add: wellfounded_trancl_def)
-  done
+  using  mbasic rtrancl_separation_intf wftrancl_separation_intf nat_in_M
+    wellfounded_trancl_def
+  by unfold_locales auto
 
 sublocale M_ZF_trans \<subseteq> M_trancl "##M"
   by (rule mtrancl)
@@ -1093,22 +1080,16 @@ proof -
 qed
 
 lemma (in M_ZF_trans) mdatatypes : "M_datatypes(##M)" 
-  apply (rule M_datatypes.intro,rule mtrancl)
-  apply (rule M_datatypes_axioms.intro)
-      apply (insert list_repl1_intf list_repl2_intf formula_repl1_intf 
-      formula_repl2_intf nth_repl_intf)
-    apply (simp_all)
-  done
+  using  mtrancl list_repl1_intf list_repl2_intf formula_repl1_intf 
+      formula_repl2_intf nth_repl_intf
+  by unfold_locales auto
 
 sublocale M_ZF_trans \<subseteq> M_datatypes "##M"
   by (rule mdatatypes)
 
 lemma (in M_ZF_trans) meclose : "M_eclose(##M)" 
-  apply (rule M_eclose.intro,rule mdatatypes)
-  apply (rule M_eclose_axioms.intro)
-      apply (insert eclose_repl1_intf eclose_repl2_intf)
-    apply (simp_all)
-  done
+  using mdatatypes eclose_repl1_intf eclose_repl2_intf
+  by unfold_locales auto
 
 sublocale M_ZF_trans \<subseteq> M_eclose "##M"
   by (rule meclose)
@@ -1382,11 +1363,8 @@ qed
 
 
 lemma (in M_ZF_trans) meclose_pow : "M_eclose_pow(##M)" 
-  apply (rule M_eclose_pow.intro,rule meclose)
-  apply (rule M_eclose_pow_axioms.intro)
-      apply (insert power_ax powapply_repl phrank_repl trans_repl_HVFrom wfrec_rank)
-    apply (simp_all)
-  done
+  using meclose power_ax powapply_repl phrank_repl trans_repl_HVFrom wfrec_rank
+  by unfold_locales auto
 
 sublocale M_ZF_trans \<subseteq> M_eclose_pow "##M"
   by (rule meclose_pow)
