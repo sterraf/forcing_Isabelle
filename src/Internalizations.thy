@@ -1,9 +1,9 @@
 section\<open>Aids to internalize formulas\<close>
 theory Internalizations
   imports 
-    "../Constructible/Formula"
-    "../Constructible/L_axioms"
-    "../Constructible/Internalize" 
+    "ZF-Constructible-Trans.Formula"
+    "ZF-Constructible-Trans.L_axioms"
+    "ZF-Constructible-Trans.Internalize" 
 begin
 
 text\<open>We found it useful to have slightly different versions of some 

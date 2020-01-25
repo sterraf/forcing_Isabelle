@@ -1,8 +1,8 @@
 section\<open>Relativization of the cumulative hierarchy\<close>
 theory Relative_Univ
   imports
-    "../Constructible/Rank"
-    "../Constructible/Datatype_absolute"
+    "ZF-Constructible-Trans.Rank"
+    "ZF-Constructible-Trans.Datatype_absolute"
     Internalizations
     Recursion_Thms
 

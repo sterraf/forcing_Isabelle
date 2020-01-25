@@ -3,7 +3,7 @@ section\<open>Renaming of variables in internalized formulas\<close>
 theory Renaming
   imports 
     Nat_Miscellanea 
-    "../Constructible/Formula"
+    "ZF-Constructible-Trans.Formula"
 begin
   
 lemma app_nm : "n\<in>nat \<Longrightarrow> m\<in>nat \<Longrightarrow> f\<in>n\<rightarrow>m \<Longrightarrow> x \<in> nat \<Longrightarrow> f`x \<in> nat"  

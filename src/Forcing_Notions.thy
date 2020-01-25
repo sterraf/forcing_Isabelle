@@ -3,7 +3,7 @@ text\<open>This theory defines a locale for forcing notions, that is,
  preorders with a distinguished maximum element.\<close>
 
 theory Forcing_Notions
-  imports ZF "../Constructible/Relative" 
+  imports ZF "ZF-Constructible-Trans.Relative"
 begin
 
 subsection\<open>Basic concepts\<close>

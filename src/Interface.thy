@@ -6,7 +6,7 @@ a sublocale of all relevant locales in ZF-Constructibility
 (\<^term>\<open>M_trivial\<close>, \<^term>\<open>M_basic\<close>, \<^term>\<open>M_eclose\<close>, etc).\<close>
 
 theory Interface
-  imports "../Constructible/Relative"
+  imports "ZF-Constructible-Trans.Relative"
           Renaming
           Renaming_Auto 
           Relative_Univ
