@@ -31,34 +31,37 @@ same after relativization to a nonempty transitive class $C$; formally
 \phi(\bx))
 \]
 When this is the case, we say that the relation defined by $\phi$ is
-\emph{absolute for transitive models}. (The absoluteness of functions
-moreover requires that
-the relativized definition also behaves functionally over $C$.) As
-examples, the relation of inclusion $\subseteq$ ---and actually, any
-relation defined by a formula (equivalent to one) using only bounded
-quantifiers 
-$(\forall x\in y)$ and $(\exists x\in y)$--- is absolute for
-transitive models. On the contrary, this is not the case with the powerset
-operation.
+\emph{absolute for transitive models}.\footnote{Absoluteness of
+  functions also requires the relativized definition to behave
+  functionally over $C$.} As examples, the relation of inclusion
+$\subseteq$ ---and actually, any relation defined by a formula
+(equivalent to one) using only bounded quantifiers $(\forall x\in y)$
+and $(\exists x\in y)$--- is absolute for transitive models. On the
+contrary, this is not the case with the powerset operation.
 
-A benefit of the work with transitive models is that many 
-concepts concepts (pairs, unions, and fundamentally ordinals) are
-uniform across the universe \isatt{i}, a ctm (of an adequate fragment of
-$\ZF$) $M$ and any of its extensions $M[G]$
+% If a concept is absolute, then one can reason ``externally'' instead
+% of ``inside'' the model; thus, one has at hand any lemma about ``the''
+% concept and not what the model believes of the concept.
+A benefit of working with transitive models
+is that many concepts (pairs, unions, and fundamentally ordinals) are
+uniform across the universe \isatt{i}, a ctm (of an adequate fragment
+of $\ZF$) $M$ and any of its extensions $M[G]$.
 
-A part of this project is to refactorize Paulson's formalization
-\cite{paulson_2003} of Gödel's \cite{godel-L}. The main objective is
-to maximize applicability of the relativization machinery by adjusting
-the hypothesis of a greater part of it early development. Paulson's
-architecture had only in mind the consistency of $\ZFC$, but, for
-instance, in order to apply it in the development of forcing, too much
-is assumed at the beginning; more seriously, some assumptions can't be
-regarded as ``first-order'' (v.g. the Replacement Scheme).
+Paulson's formalization \cite{paulson_2003} of Gödel's \cite{godel-L}
+already contains absoluteness results which were crucial to our
+project; we realized however that they could be refactorized to be
+more useful. The main objective is to maximize applicability of
+the relativization machinery by adjusting the hypothesis of a greater
+part of it early development. Paulson's architecture had only in mind
+the consistency of $\ZFC$, but, for instance, in order to apply it in
+the development of forcing, too much is assumed at the beginning; more
+seriously, some assumptions cannot be regarded as ``first-order''
+(v.g. the Replacement Scheme).
 
-The version we present of constructibility library,
+In our version of the constructibility library,
 \isatt{ZF-Constructible-Trans}, weakens the
 assumptions of many absoluteness theorems to that
-of a nonempty transitive class; also there are some stronger results
+of a nonempty transitive class; we also include some stronger results
 such as the relativization of powersets.
 
 Apart from the axiom schemes, the $\ZFC$ 
@@ -79,21 +82,20 @@ are akin to second order variables and thus do not correspond to first-order
 formulas.
 %% in particular, there is no induction principle for functions
 %% of type \isatt{i{\isasymRightarrow}o}. 
-For that reason, Separation and
-Replacement predicate \emph{on the satisfaction} of a formula $\phi$.
-With respect to our previous \cite{2019arXiv190103313G}, we lifted the
-arity restriction for the parameter $\phi$ on these schemes,
-streamlining various proofs as an immediate benefit and avoiding the
-need for tupling.
+For that reason, Separation and Replacement predicate \emph{on the
+  satisfaction} of a formula $\phi$.  We improved their specification,
+with respect to our previous \cite{2019arXiv190103313G}, by lifting
+the arity restriction for the parameter $\phi$; consequently we
+get rid of tupling and thus various proofs are slicker.
 
-Once this class versions of the axioms are set up, it is not hard to
+A benefit of having class versions of the axioms is that we can
 apply our synthesis method to obtain their internal, first-order
 counterparts.\footnote{It should be noted that our method for
   synthetic definition requires that the schematic goal had a
   particular format where the only unbound schematic variable occurs
   as an (open) formula whose satisfaction is equivalent to some
   relativized predicate.}
-For the case of the Union Axiom, the statement for classes is the
+For the case of the Unordered Pair Axiom, the statement for classes is the
 following
 \begin{isabelle}
 upair{\isacharunderscore}ax{\isacharparenleft}C{\isacharparenright}{\isacharequal}{\isacharequal}{\isasymforall}x{\isacharbrackleft}C{\isacharbrackright}{\isachardot}{\isasymforall}y{\isacharbrackleft}C{\isacharbrackright}{\isachardot}{\isasymexists}z{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ upair{\isacharparenleft}C{\isacharcomma}x{\isacharcomma}y{\isacharcomma}z{\isacharparenright}
