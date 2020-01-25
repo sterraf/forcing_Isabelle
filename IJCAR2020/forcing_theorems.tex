@@ -30,9 +30,10 @@ $\formula$ wraps the former with the remaining cases (\isatt{Nand} and \isatt{Fo
 
 As an example of the first class, we can take a look at our
 formalization of \cite[Lem.~IV.2.40(a)]{kunen2011set}. Note that the
-\emph{context} of the lemma includes the assumption of \isatt{P} being
-a forcing notion, and the predicate of being $M$-generic is relative
-to \isatt{P}:
+context (a ``locale'' in Isabelle terminology, namely \isatt{forcing{\isacharunderscore}data}) of the lemma 
+includes the assumption of \isatt{P} being
+a forcing notion, and the predicate of being $M$-generic is defined in
+terms of \isatt{P}:
 
 \begin{isabelle}
   \isacommand{lemma}\isamarkupfalse%
