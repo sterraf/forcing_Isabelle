@@ -714,10 +714,10 @@ lemma tuple_abs[simp]:
   unfolding is_tuple_def using tuples_in_M by simp
 
 lemma oneN_in_M[simp]: "1\<in>M"
-  by (simp del:setclass_iff add:setclass_iff[symmetric])
+  by (simp flip: setclass_iff)
 
 lemma twoN_in_M : "2\<in>M" 
-  by (simp del:setclass_iff add:setclass_iff[symmetric])
+  by (simp flip: setclass_iff)
 
 lemma comp_in_M:
   "p \<preceq> q \<Longrightarrow> p\<in>M"
@@ -1357,7 +1357,7 @@ proof -
   using assms wfrec_Hfrc_at[of fnnc] wf_forcerel trans_forcerel_t relation_forcerel_t forcerel_in_M
         Hfrc_at_closed relation2_Hfrc_at_abs
         trans_wfrec_abs[of "forcerel(P,fnnc)" fnnc z "is_Hfrc_at(##M,P,leq)" "\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f))"]
-  by (simp del:setclass_iff  add:setclass_iff[symmetric])
+  by (simp flip:setclass_iff)
 qed
 
 lemma forces_eq'_abs :

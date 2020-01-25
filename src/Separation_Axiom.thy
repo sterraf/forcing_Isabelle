@@ -70,7 +70,7 @@ proof -
     using definability by simp
   from \<open>\<pi>\<in>M\<close> P_in_M 
   have "domain(\<pi>)\<in>M" "domain(\<pi>) \<times> P \<in> M"
-    by (simp_all del:setclass_iff add:setclass_iff[symmetric])
+    by (simp_all flip:setclass_iff)
   from \<open>env \<in> _\<close>
   obtain nenv where "nenv\<in>list(M)" "env = map(val(G),nenv)" "length(nenv) = length(env)"
     using map_val by auto

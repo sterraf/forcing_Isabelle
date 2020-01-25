@@ -249,7 +249,7 @@ lemma body_lemma:
   unfolding Forces_def
   using assms sats_body_fm[of x \<alpha> m nenv] sats_renpbdy_prebody_fm[of x \<alpha>]
     sats_prebody_fm[of "snd(x)" "fst(x)"] fst_snd_closed[OF \<open>x\<in>M\<close>]
-  by (simp, simp del:setclass_iff add:setclass_iff[symmetric],simp)
+  by (simp, simp flip: setclass_iff,simp)
 
 lemma Replace_sats_in_MG:
   assumes
@@ -286,7 +286,7 @@ proof -
   ultimately
   have 1:"least(##M,\<lambda>\<alpha>. ?Q(\<rho>p,\<alpha>),f(\<rho>p))" for \<rho>p
     using least_abs[of "\<lambda>\<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>)" "f(\<rho>p)"] least_conj 
-    by (simp del:setclass_iff add:setclass_iff[symmetric])
+    by (simp flip: setclass_iff)
   have "Ord(f(\<rho>p))" for \<rho>p unfolding f_def by simp
   define QQ where "QQ\<equiv>?Q"
   from 1
@@ -316,7 +316,7 @@ proof -
     from inM
     have "sats(M, ?f_fm,[\<rho>p,m,P,leq,one] @ nenv) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
       using sats_least_fm[OF body', of 1] unfolding QQ_def 
-      by (simp, simp del:setclass_iff add:setclass_iff[symmetric])
+      by (simp, simp flip: setclass_iff)
   }
   then
   have "sats(M, ?f_fm,[\<rho>p,m,P,leq,one] @ nenv) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)" 
@@ -396,7 +396,7 @@ proof -
     note \<open>\<sigma>\<in>M\<close>
     moreover from this
     have "?\<alpha> \<in> M" 
-      using rank_closed cons_closed by (simp del:setclass_iff add:setclass_iff[symmetric])
+      using rank_closed cons_closed by (simp flip: setclass_iff)
     moreover 
     have "\<sigma> \<in> Vset(?\<alpha>)"
       using Vset_Ord_rank_iff by auto

@@ -49,7 +49,7 @@ lemma zero_in_M:  "0 \<in> M"
   by (rule intf.zero_in_M)
 
 lemma tuples_in_M: "A\<in>M \<Longrightarrow> B\<in>M \<Longrightarrow> <A,B>\<in>M" 
-   by (simp del:setclass_iff add:setclass_iff[symmetric])
+   by (simp flip:setclass_iff)
 
 lemma nat_in_M : "nat \<in> M"
   by (rule intf.nat_in_M)

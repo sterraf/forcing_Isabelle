@@ -185,13 +185,13 @@ context M_ctm
 begin
   
 lemma upairM : "x \<in> M \<Longrightarrow> y \<in> M \<Longrightarrow> {x,y} \<in> M"
- by (simp del:setclass_iff  add:setclass_iff[symmetric]) 
+ by (simp flip: setclass_iff) 
     
 lemma singletonM : "a \<in> M \<Longrightarrow> {a} \<in> M"
- by (simp del:setclass_iff  add:setclass_iff[symmetric]) 
+ by (simp flip: setclass_iff) 
 
 lemma pairM : "x \<in>  M \<Longrightarrow> y \<in> M \<Longrightarrow> <x,y> \<in> M"
-  by (simp del:setclass_iff  add:setclass_iff[symmetric]) 
+  by (simp flip: setclass_iff) 
 
 lemma Rep_simp : "Replace(u,\<lambda> y z . z = f(y)) = { f(y) . y \<in> u}"
   by(auto)
@@ -230,7 +230,7 @@ lemma check_trancl: "check(x) = wfrec(rcheck(x), x, Hcheck)"
 (* relation of check is in M *)
 lemma rcheck_in_M : 
   "x \<in> M \<Longrightarrow> rcheck(x) \<in> M" 
-  unfolding rcheck_def by (simp del:setclass_iff add:setclass_iff[symmetric])
+  unfolding rcheck_def by (simp flip: setclass_iff)
 
 
 lemma  aux_def_check: "x \<in> y \<Longrightarrow>
@@ -564,7 +564,7 @@ proof -
         y = \<langle>f ` x, one\<rangle> \<longleftrightarrow> (\<exists>fy\<in>M. fun_apply(##M, f, x, fy) \<and> pair(##M, fy, one, y))"
     for y z x f
     using transitivity
-    by ( auto simp del:setclass_iff simp add:setclass_iff[symmetric])   
+    by ( auto simp flip:setclass_iff)
   then show ?thesis
     using \<open>z\<in>M\<close> \<open>f\<in>M\<close> transitivity one_in_M unfolding Hcheck_def PHcheck_def RepFun_def 
     apply auto
@@ -572,7 +572,7 @@ proof -
     apply (simp add: Replace_iff)
     apply auto
     apply (rule tuples_in_M)
-    apply (simp_all del:setclass_iff add:setclass_iff[symmetric])
+    apply (simp_all flip:setclass_iff)
     done
 qed
 
@@ -699,7 +699,7 @@ proof -
     if "f\<in>M" "y\<in>M" for f y
     using that repl_PHcheck  PHcheck_closed[of y f] univ_PHcheck
           strong_replacement_closed
-    by (simp del:setclass_iff add:setclass_iff[symmetric])
+    by (simp flip: setclass_iff)
   then show ?thesis using def_PHcheck by auto
 qed
 
@@ -716,7 +716,7 @@ lemma check_in_M : "x\<in>M \<Longrightarrow> check(x) \<in> M"
   unfolding transrec_def 
   using wfrec_Hcheck[of x] check_trancl wf_rcheck trans_rcheck relation_rcheck rcheck_in_M
         Hcheck_closed relation2_Hcheck trans_wfrec_closed[of "rcheck(x)" x "is_Hcheck(one)" Hcheck] 
-  by (simp del:setclass_iff add:setclass_iff[symmetric])
+  by (simp flip: setclass_iff)
 
 end (* forcing_data *)
 
@@ -803,7 +803,7 @@ proof -
     unfolding check_trancl
   using assms wfrec_Hcheck[of x] wf_rcheck trans_rcheck relation_rcheck rcheck_in_M
         Hcheck_closed relation2_Hcheck trans_wfrec_abs[of "rcheck(x)" x z "is_Hcheck(one)" Hcheck]
-  by (simp del:setclass_iff  add:setclass_iff[symmetric])
+  by (simp flip: setclass_iff)
 qed
 
 (* \<exists>rch\<in>M. is_rcheck(x,rch) \<and> is_wfrec(##M,is_Hcheck(one),rch,x,z) *)

@@ -46,7 +46,7 @@ lemma domD :
   assumes "\<tau> \<in> M" "\<sigma> \<in> domain(\<tau>)"
   shows "\<sigma> \<in> M" 
   using assms Transset_M trans_M
-  by (simp del:setclass_iff  add:setclass_iff[symmetric]) 
+  by (simp flip: setclass_iff) 
 
     
 definition Union_name :: "i \<Rightarrow> i" where

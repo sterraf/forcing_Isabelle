@@ -134,7 +134,7 @@ proof -
     ultimately have
       "Q = {a\<in>Pow(domain(\<tau>)\<times>P) . a\<in>M}"
       using \<open>domain(\<tau>)\<times>P \<in> M\<close> powerset_abs[of "domain(\<tau>)\<times>P" Q]     
-      by (simp del:setclass_iff add:setclass_iff[symmetric])
+      by (simp flip: setclass_iff)
     also have
       " ... = ?Q"
       by auto
@@ -149,7 +149,7 @@ proof -
   from \<open>?Q\<in>M\<close> have
     "?\<pi>\<in>M"
     using one_in_P P_in_M transitivity  
-    by (simp del:setclass_iff add:setclass_iff[symmetric])
+    by (simp flip: setclass_iff)
   from \<open>?\<pi>\<in>M\<close> have
     "?b \<in> M[G]" 
     using GenExtI by simp

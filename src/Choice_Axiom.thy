@@ -373,7 +373,7 @@ proof -
       moreover from \<open>f\<in>M[G]\<close> \<open>a\<in>M[G]\<close> \<open>e\<in>M[G]\<close>
       have "induced_surj(f,a,e) \<in> M[G]"
         unfolding induced_surj_def 
-        by (simp del:setclass_iff add:setclass_iff[symmetric])
+        by (simp flip: setclass_iff)
       moreover note
         \<open>\<alpha>\<in>M[G]\<close> \<open>Ord(\<alpha>)\<close>
       ultimately show ?thesis by auto
