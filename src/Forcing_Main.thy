@@ -147,7 +147,7 @@ proof -
     by simp
 qed
 
-subsection\<open>The main result: proper extensions of ctms\<close>
+subsection\<open>The main result\<close>
 
 theorem extensions_of_ctms:
   assumes 

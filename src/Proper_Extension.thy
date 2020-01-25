@@ -1,4 +1,4 @@
-section\<open>Proper Extensions of ctms\<close>
+section\<open>Separative notions and proper extensions\<close>
 theory Proper_Extension
   imports
     Names

@@ -131,7 +131,7 @@ lemma (in M_eclose) rrank_in_M : "M(x) \<Longrightarrow> M(rrank(x))"
   unfolding rrank_def by simp
 
 
-section\<open>Absoluteness results\<close>
+subsection\<open>Absoluteness results\<close>
 
 locale M_eclose_pow = M_eclose + 
   assumes

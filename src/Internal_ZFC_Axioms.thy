@@ -1,11 +1,9 @@
-section\<open>The main theorem\<close>
+section\<open>The ZFC axioms, internalized\<close>
 theory Internal_ZFC_Axioms
   imports 
   Forcing_Data
 
 begin
-
-section\<open>The ZFC axioms, internalized\<close>
 
 schematic_goal ZF_union_auto:
     "Union_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ?zfunion)"
@@ -164,7 +162,7 @@ definition
 lemma ZFC_fin_type : "ZFC_fin \<subseteq> formula"
   unfolding ZFC_fin_def ZF_fin_def ZFC_fm_defs by (auto)
 
-subsubsection\<open>The Axiom of Separation, internalized\<close>
+subsection\<open>The Axiom of Separation, internalized\<close>
 lemma iterates_Forall_type [TC]:
       "\<lbrakk> n \<in> nat; p \<in> formula \<rbrakk> \<Longrightarrow> Forall^n(p) \<in> formula"
   by (induct set:nat, auto)
@@ -352,7 +350,7 @@ next \<comment> \<open>almost equal to the previous implication\<close>
     by simp
 qed
 
-subsubsection\<open>The Axiom of Separation, internalized\<close>
+subsection\<open>The Axiom of Separation, internalized\<close>
 schematic_goal sats_univalent_fm_auto:
   assumes 
     (*    Q_iff_sats:"\<And>a b z env aa bb. nth(a,Cons(z,env)) = aa \<Longrightarrow> nth(b,Cons(z,env)) = bb \<Longrightarrow> z\<in>A 
