@@ -55,13 +55,14 @@ instance, in order to apply it in the development of forcing, too much
 is assumed at the beginning; more seriously, some assumptions can't be
 regarded as ``first-order'' (v.g. the Replacement Scheme).
 
-The version of \isatt{ZF-Constructible} we present weakens the
+The version we present of constructibility library,
+\isatt{ZF-Constructible-Trans}, weakens the
 assumptions of many absoluteness theorems to that
 of a nonempty transitive class; also there are some stronger results
 such as the relativization of powersets.
 
 Apart from the axiom schemes, the $\ZFC$ 
-axioms are stated as predicates on classes (that is,
+axioms are initially stated as predicates on classes (that is,
 of type \isatt{(i{\isasymRightarrow}o){\isasymRightarrow}o}); some
 of them were already defined by Paulson, and this formulation allows a
 better interaction with \isatt{ZF-Constructible}. 
@@ -73,10 +74,12 @@ we selected a version best suited for the work with transitive
 models: the relativization of a sentence stating that for every $x$
 there is surjection from an ordinal onto $x$. Finally, Separation and
 Replacement were treated separately to effectively obtain first-order
-versions. It is to be noted that predicates in Isabelle/ZF are akin to
-second order variables and thus do not correspond to first-order
-formulas; in particular, there is no induction principle for functions
-of type \isatt{i{\isasymRightarrow}o}. For that reason, Separation and
+versions afterwards. It is to be noted that predicates in Isabelle/ZF
+are akin to second order variables and thus do not correspond to first-order
+formulas.
+%% in particular, there is no induction principle for functions
+%% of type \isatt{i{\isasymRightarrow}o}. 
+For that reason, Separation and
 Replacement predicate \emph{on the satisfaction} of a formula $\phi$.
 With respect to our previous \cite{2019arXiv190103313G}, we lifted the
 arity restriction for the parameter $\phi$ on these schemes,
@@ -98,7 +101,9 @@ upair{\isacharunderscore}ax{\isacharparenleft}C{\isacharparenright}{\isacharequa
 where \isatt{upair} says that \isatt{z} is the unordered pair of
 \isatt{x} and \isatt{y}, relative to \isatt{C}.
 
-The following schematic lemma synthesizes its internal version,
+The following schematic lemma synthesizes its internal version,%
+\footnote{The use of such schematic goals and the orginal definition
+  of the collection of lemmas \isatt{sep{\isacharunderscore}rules} are due to Paulson.}
 \begin{isabelle}
 \isacommand{schematic{\isacharunderscore}goal}\isamarkupfalse%
 \ ZF{\isacharunderscore}pairing{\isacharunderscore}auto{\isacharcolon}\isanewline
