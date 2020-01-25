@@ -24,13 +24,13 @@ proof -
     unfolding Pair_def by auto
   moreover from assms have
     "<\<sigma>,p>\<in>M"
-    using trans_M  Transset_intf[of _ "<\<sigma>,p>"] by simp
+    using transitivity by simp
   moreover from calculation have
     "a\<in>M" 
-    using trans_M  Transset_intf[of _ _ "<\<sigma>,p>"] by simp
+    using transitivity by simp
   ultimately show
     "\<sigma>\<in>M" "p\<in>M" 
-    using trans_M  Transset_intf[of _ _ "a"] by simp_all
+    using transitivity by simp_all
 qed
 
 lemma sats_fst_snd_in_M:

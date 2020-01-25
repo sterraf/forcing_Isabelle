@@ -108,7 +108,7 @@ lemma mtrans :
   "M_trans(##M)"
   apply (rule M_trans.intro)
   apply (simp_all)
-   apply (rule Transset_intf,simp add: trans_M,simp+)
+   apply (simp add: Transset_intf[OF trans_M])
   apply (rule exI, rule zero_in_M)
 done
 
@@ -758,7 +758,7 @@ proof -
   "I\<in>M" "0\<in>I" "(\<forall>x\<in>M. x\<in>I \<longrightarrow> succ(x)\<in>I)"
     by auto
   then have "\<And>x. x\<in>I \<Longrightarrow> succ(x)\<in>I"
-    using trans_M Transset_intf [of M _ I]  by simp
+    using Transset_intf[OF trans_M]  by simp
   then have "nat\<subseteq>I"
     using  \<open>I\<in>M\<close> \<open>0\<in>I\<close> nat_subset_I' by simp
   then show ?thesis using \<open>I\<in>M\<close> by auto
@@ -802,7 +802,7 @@ lemma repl_sats:
 
 lemma (in M_ZF_trans) nat_trans_M : 
   "n\<in>M" if "n\<in>nat" for n
-  using that trans_M nat_in_M Transset_intf[of M n nat] by simp
+  using that nat_in_M Transset_intf[OF trans_M] by simp
 
 lemma (in M_ZF_trans) list_repl1_intf:
     assumes

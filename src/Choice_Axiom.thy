@@ -274,7 +274,7 @@ proof -
     by (simp add:nat_simp_union)
   moreover
   have "x\<in>A \<Longrightarrow> opair_name(check(x), f ` x)\<in>M" for x
-    using assms opair_name_closed apply_closed Transset_intf[of M _ A] trans_M check_in_M
+    using assms opair_name_closed apply_closed transitivity check_in_M
     by simp
   ultimately
   show ?thesis using assms opname_check_abs[of f] sats_opname_check_fm

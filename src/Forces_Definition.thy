@@ -1377,7 +1377,7 @@ lemma forces_neq'_abs :
     "is_forces_neq'(##M,P,leq,p,t1,t2) \<longleftrightarrow> forces_neq'(P,leq,p,t1,t2)"
 proof -
   have "q\<in>M" if "q\<in>P" for q
-    using that Transset_intf[of M _ P] trans_M P_in_M by simp
+    using that transitivity P_in_M by simp
   then show ?thesis
   unfolding is_forces_neq'_def forces_neq'_def
   using assms forces_eq'_abs pair_in_M_iff 
@@ -1392,7 +1392,7 @@ lemma forces_nmem'_abs :
     "is_forces_nmem'(##M,P,leq,p,t1,t2) \<longleftrightarrow> forces_nmem'(P,leq,p,t1,t2)"
 proof -
   have "q\<in>M" if "q\<in>P" for q
-    using that Transset_intf[of M _ P] trans_M P_in_M by simp
+    using that transitivity P_in_M by simp
   then show ?thesis
   unfolding is_forces_nmem'_def forces_nmem'_def
   using assms forces_mem'_abs pair_in_M_iff 

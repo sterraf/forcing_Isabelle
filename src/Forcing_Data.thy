@@ -354,13 +354,13 @@ lemma compat_in_abs :
   "is_compat_in(##M,A,r,p,q) \<longleftrightarrow> compat_in(A,r,p,q)" 
 proof -
   have 1:"d\<in>A \<Longrightarrow> d\<in>M" for d
-    using Transset_intf[of M _ A] trans_M \<open>A\<in>M\<close> by simp
+    using transitivity \<open>A\<in>M\<close> by simp
   moreover
   have "d\<in>A \<Longrightarrow> \<langle>d, t\<rangle> \<in> M" if "t\<in>M" for t d
     using that 1 pair_in_M_iff by simp
   ultimately show ?thesis
-    unfolding is_compat_in_def compat_in_def pair_in_M_iff Transset_intf[of M _ A] 
-    using assms  by auto
+    unfolding is_compat_in_def compat_in_def 
+    using assms pair_in_M_iff transitivity by auto
 qed
 
 (*
