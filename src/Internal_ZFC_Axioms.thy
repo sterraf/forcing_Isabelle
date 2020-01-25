@@ -350,7 +350,7 @@ next \<comment> \<open>almost equal to the previous implication\<close>
     by simp
 qed
 
-subsection\<open>The Axiom of Separation, internalized\<close>
+subsection\<open>The Axiom of Replacement, internalized\<close>
 schematic_goal sats_univalent_fm_auto:
   assumes 
     (*    Q_iff_sats:"\<And>a b z env aa bb. nth(a,Cons(z,env)) = aa \<Longrightarrow> nth(b,Cons(z,env)) = bb \<Longrightarrow> z\<in>A 
