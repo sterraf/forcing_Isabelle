@@ -90,9 +90,33 @@ counterparts.\footnote{It should be noted that our method for
   particular format where the only unbound schematic variable occurs
   as an (open) formula whose satisfaction is equivalent to some
   relativized predicate.}
-\begin{framed}
-  Some code for axiom synthesis.
-\end{framed}
+For the case of the Union Axiom, the statement for classes is the
+following
+\begin{isabelle}
+upair{\isacharunderscore}ax{\isacharparenleft}C{\isacharparenright}{\isacharequal}{\isacharequal}{\isasymforall}x{\isacharbrackleft}C{\isacharbrackright}{\isachardot}{\isasymforall}y{\isacharbrackleft}C{\isacharbrackright}{\isachardot}{\isasymexists}z{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ upair{\isacharparenleft}C{\isacharcomma}x{\isacharcomma}y{\isacharcomma}z{\isacharparenright}
+\end{isabelle}
+where \isatt{upair} says that \isatt{z} is the unordered pair of
+\isatt{x} and \isatt{y}, relative to \isatt{C}.
+
+The following schematic lemma synthesizes its internal version,
+\begin{isabelle}
+\isacommand{schematic{\isacharunderscore}goal}\isamarkupfalse%
+\ ZF{\isacharunderscore}pairing{\isacharunderscore}auto{\isacharcolon}\isanewline
+\ \ \ \ {\isachardoublequoteopen}upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}A{\isacharparenright}\ {\isasymlongleftrightarrow}\ {\isacharparenleft}A{\isacharcomma}\ {\isacharbrackleft}{\isacharbrackright}\ {\isasymTurnstile}\ {\isacharquery}zfpair{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\isacommand{unfolding}\isamarkupfalse%
+\ upair{\isacharunderscore}ax{\isacharunderscore}def\ \isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\isacharparenleft}rule\ sep{\isacharunderscore}rules\ {\isacharbar}\ simp{\isacharparenright}{\isacharplus}{\isacharparenright}
+\end{isabelle}
+(the actual formula obtained is
+\isatt{Forall(Forall(Exists(upair{\isacharunderscore}fm(2,1,0))))}) and
+our \isatt{synthesize} method introduces a new term
+\isatt{ZF{\isacharunderscore}pairing{\isacharunderscore}fm} for it.
+\begin{isabelle}
+\isacommand{synthesize}\isamarkupfalse%
+\ {\isachardoublequoteopen}ZF{\isacharunderscore}pairing{\isacharunderscore}fm{\isachardoublequoteclose}\ \isakeyword{from{\isacharunderscore}schematic}\ {\isachardoublequoteopen}ZF{\isacharunderscore}pairing{\isacharunderscore}auto{\isachardoublequoteclose}%
+\end{isabelle}
+
 
 %%% Local Variables: 
 %%% mode: latex
