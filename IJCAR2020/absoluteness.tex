@@ -39,13 +39,14 @@ $\subseteq$ ---and actually, any relation defined by a formula
 and $(\exists x\in y)$--- is absolute for transitive models. On the
 contrary, this is not the case with the powerset operation.
 
-% If a concept is absolute, then one can reason ``externally'' instead
-% of ``inside'' the model; thus, one has at hand any lemma about ``the''
-% concept and not what the model believes of the concept.
 A benefit of working with transitive models
 is that many concepts (pairs, unions, and fundamentally ordinals) are
 uniform across the universe \isatt{i}, a ctm (of an adequate fragment
 of $\ZF$) $M$ and any of its extensions $M[G]$.
+For that reason, then one can reason
+``externally'' about absolute concepts, instead
+of ``inside'' the model; thus, one has at hand any already proved
+lemma about the real concept.
 
 Paulson's formalization \cite{paulson_2003} of Gödel's \cite{godel-L}
 already contains absoluteness results which were crucial to our
@@ -56,9 +57,9 @@ part of it early development. Paulson's architecture had only in mind
 the consistency of $\ZFC$, but, for instance, in order to apply it in
 the development of forcing, too much is assumed at the beginning; more
 seriously, some assumptions cannot be regarded as ``first-order''
-(v.g. the Replacement Scheme).
-
-In our version of the constructibility library,
+(v.g. the Replacement Scheme) because of the occurrence of predicate
+variables.
+The version we present of the constructibility library,
 \isatt{ZF-Constructible-Trans}, weakens the
 assumptions of many absoluteness theorems to that
 of a nonempty transitive class; we also include some stronger results
@@ -86,7 +87,7 @@ For that reason, Separation and Replacement predicate \emph{on the
   satisfaction} of a formula $\phi$.  We improved their specification,
 with respect to our previous \cite{2019arXiv190103313G}, by lifting
 the arity restriction for the parameter $\phi$; consequently we
-get rid of tupling and thus various proofs are slicker.
+get rid of tupling and thus various proofs are now slicker.
 
 A benefit of having class versions of the axioms is that we can
 apply our synthesis method to obtain their internal, first-order
@@ -95,7 +96,7 @@ counterparts.\footnote{It should be noted that our method for
   particular format where the only unbound schematic variable occurs
   as an (open) formula whose satisfaction is equivalent to some
   relativized predicate.}
-For the case of the Unordered Pair Axiom, the statement for classes is the
+For the case of the Pairing Axiom, the statement for classes is the
 following
 \begin{isabelle}
 upair{\isacharunderscore}ax{\isacharparenleft}C{\isacharparenright}{\isacharequal}{\isacharequal}{\isasymforall}x{\isacharbrackleft}C{\isacharbrackright}{\isachardot}{\isasymforall}y{\isacharbrackleft}C{\isacharbrackright}{\isachardot}{\isasymexists}z{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ upair{\isacharparenleft}C{\isacharcomma}x{\isacharcomma}y{\isacharcomma}z{\isacharparenright}

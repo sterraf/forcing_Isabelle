@@ -34,11 +34,12 @@ following mutual recursion is given:
   \exists s.\ \exists r\in \PP .\ \lb s,r\rb \in
       t_2 \land q \pleq r \land \forceseq(q,t_1,s)
 \end{multline}
-Note that the definition of $\forcesmem$ states that the set 
+Note that the definition of $\forcesmem$ is equivalent to require 
+ the set 
 \[
 \{q\pleq p : \exists \lb s,r\rb\in t_2 . \ q\pleq r \land \forceseq(q,t_1,s)\}
 \]
-is dense below $p$.
+to be dense below $p$.
 
 It was not straightforward to use the recursion machinery of
 Isabelle/ZF to define $\forceseq$ and $\forcesmem$. For this, we

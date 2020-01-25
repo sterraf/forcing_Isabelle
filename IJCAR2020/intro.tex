@@ -32,11 +32,10 @@ us to do well-founded
 recursion inside transitive models of an appropriate finite fragment
 of $\ZF$. As a by-product, we honored a long debt: the fact that the
 generic filter $G$ belongs to the extension $M[G]$ and 
-$M\sbq M[G]$. In order to take full advantage of the constructibility library
+$M\sbq M[G]$. 
+In order to take full advantage of the constructibility library
 we enhanced it by weakening the assumption of many results and also
 extended it with stronger results. % 
-We also include an example of forcing notion for which
-the last inclusion is proper. 
 Finally, our development is now independent of $\AC$: We modularized
 RSL in such a way that a version for countable 
 posets does not require choice.
@@ -70,7 +69,7 @@ a formalization of the independence of $\CH$ by means
 the Boolean-valued approach to forcing, using the Lean
 proof assistant \cite{DBLP:conf/cade/MouraKADR15}.
 
-\subsection*{Outline}
+\subsection{Outline}
 \label{sec:outline}
 
 %% Esto está como subsection para que no parezca como parte de Related
@@ -78,10 +77,10 @@ proof assistant \cite{DBLP:conf/cade/MouraKADR15}.
 We assume some familiarity with Isabelle and some terminology of set
 theory. The current paper is organized as follows. In
 Sect.~\ref{sec:isabelle-metatheories} we comment briefly on the
-metha-theoretical implications of using Isabelle/ZF. In
+meta-theoretical implications of using Isabelle/ZF. In
 Sect.~\ref{sec:relat-absol} we explain the use of relativized concepts
 and its importance for the ctm approach. The next sections cover the
-core of this report: in Sect.~\ref{sec:definition-forces} we introduce
+core of this report: In Sect.~\ref{sec:definition-forces} we introduce
 the definition of the formula transformer $\forceisa$ and reasoning
 principles about it; in Sect.~\ref{sec:forcing-theorems} we present
 the proofs of the fundamental theorems of forcing. We show in

@@ -24,16 +24,9 @@ $M$):
 \ \ \isakeyword{assumes}\ {\isachardoublequoteopen}Ord{\isacharparenleft}{\isasymalpha}{\isacharparenright}{\isachardoublequoteclose}\ \isanewline
 \ \ \isakeyword{shows}\ {\isachardoublequoteopen}{\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
 \end{isabelle}
-
 To prove these results, we found it useful to formalize induction over
 the relation \isatt{ed}$(x,y) \defi x\in\dom(y)$, which is key
 to arguments involving names.
-\begin{isabelle}
-\isacommand{lemma}\isamarkupfalse%
-\ ed{\isacharunderscore}induction{\isacharcolon}\isanewline
-\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}{\isasymAnd}x{\isachardot}\ {\isasymlbrakk}{\isasymAnd}y{\isachardot}\ \ ed{\isacharparenleft}y{\isacharcomma}x{\isacharparenright}\ {\isasymLongrightarrow}\ Q{\isacharparenleft}y{\isacharparenright}\ {\isasymrbrakk}\ {\isasymLongrightarrow}\ Q{\isacharparenleft}x{\isacharparenright}{\isachardoublequoteclose}\isanewline
-\ \ \isakeyword{shows}\ {\isachardoublequoteopen}Q{\isacharparenleft}a{\isacharparenright}{\isachardoublequoteclose}
-\end{isabelle}
 
 \verb|Succession_Poset.thy| contains our first example of a poset
 that interprets the locale
