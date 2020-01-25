@@ -39,26 +39,65 @@ subsection\<open>The well-founded relation \<^term>\<open>ed\<close>\<close>
 lemma eclose_sing : "x \<in> eclose(a) \<Longrightarrow> x \<in> eclose({a})"
   by(rule subsetD[OF mem_eclose_subset],simp+)  
      
-lemma ecloseE : "x \<in> eclose(A) \<Longrightarrow> x \<in> A \<or> (\<exists> B \<in> A . x \<in> eclose(B))"
-  apply(erule eclose_induct_down,simp,erule disjE,rule disjI2,simp add:arg_into_eclose)
-   apply(subgoal_tac "z \<in> eclose(y)",blast,simp add: arg_into_eclose)
-  apply(rule disjI2,erule bexE,subgoal_tac "z \<in> eclose(B)",blast,simp add:ecloseD) 
-  done
-    
+lemma ecloseE :
+  assumes  "x \<in> eclose(A)"
+  shows  "x \<in> A \<or> (\<exists> B \<in> A . x \<in> eclose(B))"
+  using assms 
+proof (induct rule:eclose_induct_down)
+  case (1 y)
+  then 
+  show ?case 
+    using arg_into_eclose by auto
+next
+  case (2 y z)
+  then 
+  have "z \<in> eclose(y)"
+    using arg_into_eclose by simp
+  from \<open>y \<in> A \<or> (\<exists>B\<in>A. y \<in> eclose(B))\<close>
+  consider (inA) "y \<in> A" | (exB) "(\<exists>B\<in>A. y \<in> eclose(B))" 
+    by auto
+  then show ?case
+  proof (cases)
+    case inA
+    then 
+    show ?thesis using 2 arg_into_eclose by auto
+  next
+    case exB
+    then obtain B where "y \<in> eclose(B)" "B\<in>A"
+      by auto
+    then 
+    show ?thesis using 2 ecloseD[of y B z] by auto 
+  qed
+qed
+
 lemma eclose_singE : "x \<in> eclose({a}) \<Longrightarrow> x = a \<or> x \<in> eclose(a)"
   by(blast dest: ecloseE)
     
-lemma in_eclose_sing : "x \<in> eclose({a}) \<Longrightarrow> a \<in> eclose(z) \<Longrightarrow> x \<in> eclose({z})"
-  apply(drule eclose_singE,erule disjE,simp add: eclose_sing)
-  apply(rule eclose_sing,erule mem_eclose_trans,assumption)
-  done
-    
-lemma in_dom_in_eclose : "x \<in> domain(z) \<Longrightarrow> x \<in> eclose(z)"
-  apply(auto simp add:domain_def)
-  apply(rule_tac A="{x}" in ecloseD)
-   apply(subst (asm) Pair_def)
-   apply(rule_tac A="{{x,x},{x,y}}" in ecloseD,auto simp add:arg_into_eclose)  
-  done
+lemma in_eclose_sing : 
+  assumes "x \<in> eclose({a})" "a \<in> eclose(z)"
+  shows "x \<in> eclose({z})"
+proof -
+  from \<open>x\<in>eclose({a})\<close>
+  consider (eq) "x=a" | (lt) "x\<in>eclose(a)"
+    using eclose_singE by auto
+  then 
+  show ?thesis 
+    using eclose_sing mem_eclose_trans assms 
+    by (cases, auto)
+qed
+
+lemma in_dom_in_eclose : 
+  assumes "x \<in> domain(z)"
+  shows " x \<in> eclose(z)"
+proof - 
+  from assms 
+  obtain y where "{{x,x},{x,y}} \<in> z" 
+    unfolding domain_def Pair_def by auto
+  then
+  show ?thesis
+    using ecloseD[of "{x,x}"] ecloseD[of "{{x,x},{x,y}}"] arg_into_eclose
+    by auto
+qed
 
 text\<open>\<^term>\<open>ed\<close> is the well-founded relation on which 
 \<^term>\<open>val\<close> is defined\<close>
