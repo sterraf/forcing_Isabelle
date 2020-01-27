@@ -10,17 +10,24 @@ forcing that the satisfaction of a first-order formula  $\phi$ in all of the gen
 extensions of a ctm $M$ can be ``controlled'' in a definable way from
 $M$ (viz., by  satisfaction of the formula $\forceisa(\phi)$). 
 
-In fact, given a forcing notion (ie. a poset with a top element) Kunen
-defines meta-theoretically the forcing relation $p \Vdash \phi$ as the
-satisfaction by $M$ of $\forceisa(\phi)$ in an environment containing
-the forcing notion and $p$; next he shows that this relation is
-definable. To make sense of this in our formalization, we started with
-an internalized relation and then proved the equivalence of that
-relation with the semantic version of the forcing relation.  The
-latter relation is captured by the following abbreviation, after
-defining $\forceisa$:
+In fact, given a forcing notion $\PP$ (i.e. a preorder with a top element)
+in a ctm $M$,
+Kunen defines the \emph{forcing relation} model-theoretically 
+by considering all extensions $M[G]$ with $G$ generic for $\PP$.
+Then two fundamental results are proved, the Truth Lemma and the
+Definability Lemma; but the proof of the first one is based on the
+formula that witnesses Definability. To make sense of this in our 
+formalization, we started with the internalized relation and then
+proved that it is equivalent to the semantic version 
+(``\isatt{definition{\isacharunderscore}of{\isacharunderscore}forces},'' in
+the next section).
+For that reason, the usual notation of the forcing relation 
+$p \Vdash \phi\ \mathit{env}$ (for $\mathit{env}$ a list of
+``names''), abbreviates in our code the
+satisfaction by $M$ of $\forceisa(\phi)$:
 \begin{isabelle}
-\ \ {\isachardoublequoteopen}p\ {\isasymtturnstile}\ {\isasymphi}\ env\ {\isasymequiv}\ sats{\isacharparenleft}M{\isacharcomma}forces{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharcomma}\ {\isacharbrackleft}p{\isacharcomma}P{\isacharcomma}leq{\isacharcomma}one{\isacharbrackright}\ {\isacharat}\ env{\isacharparenright}{\isachardoublequoteclose}
+\ \ {\isachardoublequoteopen}p\ {\isasymtturnstile}\ {\isasymphi}\ env\ \ \ {\isasymequiv}\ \ \ M{\isacharcomma}\ {\isacharparenleft}{\isacharbrackleft}p{\isacharcomma}P{\isacharcomma}leq{\isacharcomma}one{\isacharbrackright}\ {\isacharat}\ env{\isacharparenright}
+    {\isasymTurnstile}\ forces{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
 The definition of $\forceisa$ proceeds by recursion
