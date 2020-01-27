@@ -65,22 +65,19 @@ assumptions of many absoluteness theorems to that
 of a nonempty transitive class; we also include some stronger results
 such as the relativization of powersets.
 
-Apart from the axiom schemes, the $\ZFC$ 
-axioms are initially stated as predicates on classes (that is,
-of type \isatt{(i{\isasymRightarrow}o){\isasymRightarrow}o}); some
-of them were already defined by Paulson, and this formulation allows a
-better interaction with \isatt{ZF-Constructible}. 
-The axioms of Pairing, Union, Foundation,
-Extensionality, and Infinity are relativizations of the respective
-traditional 
-first-order sentences to the class argument. For the Axiom of Choice
-we selected a version best suited for the work with transitive
-models: the relativization of a sentence stating that for every $x$
-there is surjection from an ordinal onto $x$. Finally, Separation and
-Replacement were treated separately to effectively obtain first-order
-versions afterwards. It is to be noted that predicates in Isabelle/ZF
-are akin to second order variables and thus do not correspond to first-order
-formulas.
+Apart from the axiom schemes, the $\ZFC$ axioms are initially stated
+as predicates on classes (that is, of type
+\isatt{(i{\isasymRightarrow}o){\isasymRightarrow}o}); this formulation
+allows a better interaction with \isatt{ZF-Constructible}.  The axioms
+of Pairing, Union, Foundation, Extensionality, and Infinity are
+relativizations of the respective traditional first-order sentences to
+the class argument. For the Axiom of Choice we selected a version best
+suited for the work with transitive models: the relativization of a
+sentence stating that for every $x$ there is surjection from an
+ordinal onto $x$. Finally, Separation and Replacement were treated
+separately to effectively obtain first-order versions afterwards. It
+is to be noted that predicates in Isabelle/ZF are akin to second order
+variables and thus do not correspond to first-order formulas.
 %% in particular, there is no induction principle for functions
 %% of type \isatt{i{\isasymRightarrow}o}. 
 For that reason, Separation and Replacement predicate \emph{on the
