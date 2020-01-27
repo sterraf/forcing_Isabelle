@@ -8,7 +8,20 @@ definition of a function $\forceisa$ that maps the set of internal
 formulas into itself. It is the very reason of applicability of
 forcing that the satisfaction of a first-order formula  $\phi$ in all of the generic
 extensions of a ctm $M$ can be ``controlled'' in a definable way from
-$M$ (viz., by  satisfaction the of the formula $\forceisa(\phi)$).
+$M$ (viz., by  satisfaction of the formula $\forceisa(\phi)$). 
+
+In fact, given a forcing notion (ie. a poset with a top element) Kunen
+defines meta-theoretically the forcing relation $p \Vdash \phi$ as the
+satisfaction by $M$ of $\forceisa(\phi)$ in an environment containing
+the forcing notion and $p$; next he shows that this relation is
+definable. To make sense of this in our formalization, we started with
+an internalized relation and then proved the equivalence of that
+relation with the semantic version of the forcing relation.  The
+latter relation is captured by the following abbreviation, after
+defining $\forceisa$:
+\begin{isabelle}
+\ \ {\isachardoublequoteopen}p\ {\isasymtturnstile}\ {\isasymphi}\ env\ {\isasymequiv}\ sats{\isacharparenleft}M{\isacharcomma}forces{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharcomma}\ {\isacharbrackleft}p{\isacharcomma}P{\isacharcomma}leq{\isacharcomma}one{\isacharbrackright}\ {\isacharat}\ env{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
 
 The definition of $\forceisa$ proceeds by recursion
 over the set $\formula$ and its base case, that is, for
@@ -104,18 +117,15 @@ following lemmas, respectively:
 \ \ \ \ {\isachardoublequoteopen}M{\isacharcomma}{\isacharbrackleft}p{\isacharcomma}P{\isacharcomma}leq{\isacharcomma}one{\isacharbrackright}\ {\isacharat}\ env\ {\isasymTurnstile}\ forces{\isacharparenleft}Forall{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharparenright}\ {\isasymlongleftrightarrow}\ \isanewline
 \ \ \ \ \ {\isacharparenleft}{\isasymforall}x{\isasymin}M{\isachardot}\ \ \ M{\isacharcomma}\ {\isacharbrackleft}p{\isacharcomma}P{\isacharcomma}leq{\isacharcomma}one{\isacharcomma}x{\isacharbrackright}\ {\isacharat}\ env\ {\isasymTurnstile}\ forces{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
-%
-In these lemmas we identify the notion of forcing (denoted by
-\isatt{p\ {\isasymtturnstile}\ {\isasymphi}\ env}) which is defined as
-\isatt{p\ {\isasymtturnstile}\ {\isasymphi}\ env\ {\isasymlongleftrightarrow}\ M{\isacharcomma}\ {\isacharbrackleft}p{\isacharcomma}P{\isacharcomma}leq{\isacharcomma}one{\isacharcomma}x{\isacharbrackright}\ {\isacharat}\ env {\isasymTurnstile}\ forces{\isacharparenleft}{\isasymphi}{\isacharparenright}}
 
-Another improvement over our previous report are a couple of new
-technical results concerning recursive definitions: Paulson proved
-absoluteness of functions defined by well-founded recursion over a
-transitive relation. Some of our definitions by recursion
-(\emph{check} and \emph{forces}) do not fit in that scheme.  One can
-replace the relation $R$ for its transitive closure $R^+$ in the
-recursive definition because one can prove, in general, that
+Let us note in passing another improvement over our previous report:
+we made a couple of new technical results concerning recursive
+definitions. Paulson proved absoluteness of functions defined by
+well-founded recursion over a transitive relation. Some of our
+definitions by recursion (\emph{check} and \emph{forces}) do not fit
+in that scheme.  One can replace the relation $R$ for its transitive
+closure $R^+$ in the recursive definition because one can prove, in
+general, that
 $F\!\upharpoonright\!(R^{-1}(x))(y) =
 F\!\upharpoonright\!({R^+}^{-1}(x))(y)$ whenever $(x,y) \in R$.
 
