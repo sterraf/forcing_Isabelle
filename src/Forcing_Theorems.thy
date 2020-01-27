@@ -11,9 +11,8 @@ begin
 
 subsection\<open>The forcing relation in context\<close>
 
-definition
-  Forces :: "i \<Rightarrow> i \<Rightarrow> i\<Rightarrow> o" ("_ \<tturnstile> _ _" [36,36,36] 60) where
-  "Forces(p,\<phi>,env) \<equiv> sats(M,forces(\<phi>), [p,P,leq,one] @ env)"
+abbreviation Forces :: "[i, i, i] \<Rightarrow> o"  ("_ \<tturnstile> _ _" [36,36,36] 60) where
+  "p \<tturnstile> \<phi> env \<equiv> sats(M,forces(\<phi>), [p,P,leq,one] @ env)"
 
 lemma Collect_forces :
   assumes 
@@ -27,8 +26,7 @@ proof -
     using P_in_M transitivity[of z P] by simp
   moreover
   have "separation(##M,\<lambda>p. (p \<tturnstile> \<phi> env))"
-    unfolding Forces_def
-    using separation_ax arity_forces far fty P_in_M leq_in_M one_in_M envty arity_forces_le
+        using separation_ax arity_forces far fty P_in_M leq_in_M one_in_M envty arity_forces_le
     by simp
   then 
   have "Collect(P,\<lambda>p. (p \<tturnstile> \<phi> env))\<in>M"
@@ -223,7 +221,7 @@ lemma Forces_Equal:
     "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" "n\<in>nat" "m\<in>nat" 
   shows
     "(p \<tturnstile> Equal(n,m) env) \<longleftrightarrow> forces_eq(p,t1,t2)"
-  unfolding Forces_def using assms sats_forces_Equal forces_eq_abs transitivity P_in_M 
+   using assms sats_forces_Equal forces_eq_abs transitivity P_in_M 
   by simp
 
 lemma Forces_Member:
@@ -231,7 +229,7 @@ lemma Forces_Member:
     "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" "n\<in>nat" "m\<in>nat" 
   shows
     "(p \<tturnstile> Member(n,m) env) \<longleftrightarrow> forces_mem(p,t1,t2)"
-  unfolding Forces_def using assms sats_forces_Member forces_mem_abs transitivity P_in_M
+   using assms sats_forces_Member forces_mem_abs transitivity P_in_M
   by simp
 
 lemma Forces_Neg:
@@ -239,7 +237,7 @@ lemma Forces_Neg:
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" 
   shows
     "(p \<tturnstile> Neg(\<phi>) env) \<longleftrightarrow> \<not>(\<exists>q\<in>M. q\<in>P \<and> q\<preceq>p \<and> (q \<tturnstile> \<phi> env))"
-  unfolding Forces_def  using assms sats_forces_Neg' transitivity 
+    using assms sats_forces_Neg' transitivity 
   P_in_M pair_in_M_iff leq_in_M leq_abs by simp
  
 subsection\<open>The relation of forcing and connectives\<close>
@@ -249,7 +247,7 @@ lemma Forces_Nand:
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
   shows
     "(p \<tturnstile> Nand(\<phi>,\<psi>) env) \<longleftrightarrow> \<not>(\<exists>q\<in>M. q\<in>P \<and> q\<preceq>p \<and> (q \<tturnstile> \<phi> env) \<and> (q \<tturnstile> \<psi> env))"
-  unfolding Forces_def using assms sats_forces_Nand' transitivity 
+   using assms sats_forces_Nand' transitivity 
   P_in_M pair_in_M_iff leq_in_M leq_abs by simp
 
 lemma Forces_And_aux:
@@ -273,7 +271,7 @@ lemma Forces_Forall:
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula"
   shows
     "(p \<tturnstile> Forall(\<phi>) env) \<longleftrightarrow> (\<forall>x\<in>M. (p \<tturnstile> \<phi> ([x] @ env)))"
-  unfolding Forces_def using sats_forces_Forall' assms by simp
+   using sats_forces_Forall' assms by simp
 
 (* "x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>. \<exists>p\<in>G.  <\<theta>,p>\<in>\<pi> \<and> val(G,\<theta>) = x" *)
 bundle some_rules =  elem_of_val_pair [dest] SepReplace_iff [simp del] SepReplace_iff[iff]
@@ -1140,13 +1138,11 @@ next
     using map_val_in_MG by simp
   let ?D="{p\<in>P. (p \<tturnstile> \<phi> env) \<or> (p \<tturnstile> Neg(\<phi>) env)}"
   have "separation(##M,\<lambda>p. (p \<tturnstile> \<phi> env))" 
-  unfolding Forces_def
-    using separation_ax arity_forces assms P_in_M leq_in_M one_in_M arity_forces_le
+      using separation_ax arity_forces assms P_in_M leq_in_M one_in_M arity_forces_le
     by simp
   moreover
   have "separation(##M,\<lambda>p. (p \<tturnstile> Neg(\<phi>) env))"
-  unfolding Forces_def
-    using separation_ax arity_forces assms P_in_M leq_in_M one_in_M arity_forces_le
+      using separation_ax arity_forces assms P_in_M leq_in_M one_in_M arity_forces_le
     by simp
   ultimately
   have "separation(##M,\<lambda>p. (p \<tturnstile> \<phi> env) \<or> (p \<tturnstile> Neg(\<phi>) env))" 
@@ -1330,7 +1326,6 @@ proof -
     by (rule bexI,simp_all)
   then
   have "?rel_pred(M,d,P,leq,one) \<longleftrightarrow> (\<exists>b\<in>M. \<forall>q\<in>P. q\<preceq>d \<longrightarrow> \<not>(q \<tturnstile> \<phi> ([b]@env)))" if "d\<in>M" for d
-    unfolding Forces_def 
     using that leq_abs leq_in_M P_in_M one_in_M assms
     by auto
   moreover

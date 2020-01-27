@@ -246,7 +246,6 @@ lemma body_lemma:
   shows 
   "sats(M,body_fm(\<phi>,nenv),[\<alpha>,x,m,P,leq,one] @ nenv) \<longleftrightarrow> 
   (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a),\<alpha>,V) \<and> \<tau> \<in> V \<and> (snd(x) \<tturnstile> \<phi> ([fst(x),\<tau>]@nenv)))"
-  unfolding Forces_def
   using assms sats_body_fm[of x \<alpha> m nenv] sats_renpbdy_prebody_fm[of x \<alpha>]
     sats_prebody_fm[of "snd(x)" "fst(x)"] fst_snd_closed[OF \<open>x\<in>M\<close>]
   by (simp, simp flip: setclass_iff,simp)
