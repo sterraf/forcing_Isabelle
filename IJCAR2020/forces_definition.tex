@@ -77,11 +77,33 @@ $\forceseq$ and then define $\forcesmem$ explicitly. On hindsight,
 this might have been a little simpler to do, but we preferred to be as
 faithful to the text as possible concerning this point.
 
-Once $\forcesat$ and its relativized version $\isatt{is{\isacharunderscore}forces{\isacharunderscore}at}$
-were defined, we proceeded to show absoluteness and provided internal
+Once $\forcesat$ and its relativized version
+$\isatt{is{\isacharunderscore}forces{\isacharunderscore}at}$ were
+defined, we proceeded to show absoluteness and provided internal
 definitions for the recursion on names using results in
 \isatt{ZF-Constructible}. This finished the atomic case of the
-formula-transformer $\forceisa$. 
+formula-transformer $\forceisa$. The characterization of $\forceisa$
+for negated and universal quantified formulas is given by the
+following lemmas, respectively:
+%
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ sats{\isacharunderscore}forces{\isacharunderscore}Neg{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isachardoublequoteopen}p{\isasymin}P{\isachardoublequoteclose}\ {\isachardoublequoteopen}env\ {\isasymin}\ list{\isacharparenleft}M{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ \ \ {\isachardoublequoteopen}M{\isacharcomma}\ {\isacharbrackleft}p{\isacharcomma}P{\isacharcomma}leq{\isacharcomma}one{\isacharbrackright}\ {\isacharat}\ env\ {\isasymTurnstile}\ forces{\isacharparenleft}Neg{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharparenright}\ \ \ {\isasymlongleftrightarrow}\ \isanewline
+\ \ \ \ \ {\isasymnot}{\isacharparenleft}{\isasymexists}q{\isasymin}M{\isachardot}\ q{\isasymin}P\ {\isasymand}\ is{\isacharunderscore}leq{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharcomma}leq{\isacharcomma}q{\isacharcomma}p{\isacharparenright}\ {\isasymand}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ M{\isacharcomma}\ {\isacharbrackleft}q{\isacharcomma}P{\isacharcomma}leq{\isacharcomma}one{\isacharbrackright}{\isacharat}env\ {\isasymTurnstile}\ forces{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+
+\isacommand{lemma}\isamarkupfalse%
+\ sats{\isacharunderscore}forces{\isacharunderscore}Forall{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isachardoublequoteopen}p{\isasymin}P{\isachardoublequoteclose}\ {\isachardoublequoteopen}env\ {\isasymin}\ list{\isacharparenleft}M{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ \ \ {\isachardoublequoteopen}M{\isacharcomma}{\isacharbrackleft}p{\isacharcomma}P{\isacharcomma}leq{\isacharcomma}one{\isacharbrackright}\ {\isacharat}\ env\ {\isasymTurnstile}\ forces{\isacharparenleft}Forall{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharparenright}\ {\isasymlongleftrightarrow}\ \isanewline
+\ \ \ \ \ {\isacharparenleft}{\isasymforall}x{\isasymin}M{\isachardot}\ \ \ M{\isacharcomma}\ {\isacharbrackleft}p{\isacharcomma}P{\isacharcomma}leq{\isacharcomma}one{\isacharcomma}x{\isacharbrackright}\ {\isacharat}\ env\ {\isasymTurnstile}\ forces{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
 
 Another improvement over our previous report are a couple of new
 technical results concerning recursive definitions: Paulson proved
