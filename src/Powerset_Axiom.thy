@@ -169,7 +169,6 @@ proof -
       using arity_forces_at by auto
     with \<open>domain(\<tau>) \<in> M\<close> \<open>\<chi> \<in> M\<close> have
       "?\<theta> \<in> M"
-      unfolding Forces_def
       using P_in_M one_in_M leq_in_M sats_fst_snd_in_M 
       by simp
     then have 
@@ -196,7 +195,6 @@ proof -
           using name_components_in_M[of _ _ ?\<theta>]  by auto
         moreover from 1 have
           "(p \<tturnstile> (Member(0,1)) [\<sigma>,\<chi>])" "p\<in>P" 
-          unfolding Forces_def
           by simp_all
         moreover note
           \<open>val(G,\<chi>) = c\<close>       
