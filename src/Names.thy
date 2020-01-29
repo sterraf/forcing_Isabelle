@@ -50,9 +50,6 @@ proof (induct rule:eclose_induct_down)
     using arg_into_eclose by auto
 next
   case (2 y z)
-  then 
-  have "z \<in> eclose(y)"
-    using arg_into_eclose by simp
   from \<open>y \<in> A \<or> (\<exists>B\<in>A. y \<in> eclose(B))\<close>
   consider (inA) "y \<in> A" | (exB) "(\<exists>B\<in>A. y \<in> eclose(B))" 
     by auto
@@ -91,10 +88,11 @@ lemma in_dom_in_eclose :
   shows " x \<in> eclose(z)"
 proof - 
   from assms 
-  obtain y where "{{x,x},{x,y}} \<in> z" 
-    unfolding domain_def Pair_def by auto
+  obtain y where "<x,y> \<in> z" 
+    unfolding domain_def by auto
   then
   show ?thesis
+    unfolding Pair_def
     using ecloseD[of "{x,x}"] ecloseD[of "{{x,x},{x,y}}"] arg_into_eclose
     by auto
 qed
@@ -201,11 +199,17 @@ next
     using assms[of x] edrelI domain_trans[OF Transset_eclose 3(1)] by blast 
 qed
 
-
-lemma dom_under_edrel_eclose: "edrel(eclose({x})) -`` {x}= domain(x)" 
-  apply(simp add:edrel_def Rrel_def ed_def,rule,rule,drule underD,simp,rule,rule underI)
-  apply(auto simp add:in_dom_in_eclose eclose_sing arg_into_eclose)
-  done
+lemma dom_under_edrel_eclose: "edrel(eclose({x})) -`` {x} = domain(x)"
+proof
+  show "edrel(eclose({x})) -`` {x} \<subseteq> domain(x)"
+    unfolding edrel_def Rrel_def ed_def
+    by auto
+next
+  show " domain(x) \<subseteq> edrel(eclose({x})) -`` {x}"
+    unfolding edrel_def Rrel_def 
+    using in_dom_in_eclose eclose_sing arg_into_eclose
+    by blast
+qed
     
 lemma ed_eclose : "<y,z> \<in> edrel(A) \<Longrightarrow> y \<in> eclose(z)"
   by(drule edrelD,auto simp add:domain_def in_dom_in_eclose)
