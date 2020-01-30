@@ -1,5 +1,33 @@
-theory forces_locale imports Formula val_check ZFCaxioms Pointed_DC begin
+theory My_Playground 
+  imports 
+    "../src/Pointed_DC"
+    "ZF-Constructible.MetaExists"
+begin
 
+(* Clone of "forcing_posets.thy" to try understand Isabelle/ML *)
+
+(* Digits from L_axioms.thy *)
+abbreviation
+  digit3 :: i   ("3") where "3 == succ(2)"
+
+abbreviation
+  digit4 :: i   ("4") where "4 == succ(3)"
+
+abbreviation
+  digit5 :: i   ("5") where "5 == succ(4)"
+
+abbreviation
+  digit6 :: i   ("6") where "6 == succ(5)"
+
+abbreviation
+  digit7 :: i   ("7") where "7 == succ(6)"
+
+abbreviation
+  digit8 :: i   ("8") where "8 == succ(7)"
+
+abbreviation
+  digit9 :: i   ("9") where "9 == succ(8)"
+  
 locale forcing_poset =
   fixes P leq uno
   assumes uno_in_P:         "uno \<in> P"
@@ -128,21 +156,6 @@ lemma (in forcing_poset) closure_compat_filter:
   apply (drule_tac x="x" in bspec, assumption, auto)
 done
 
-(*****************************************
- *  No use for these for a while         *
- *                                       *
-theorem Ord_dependent_choice:
-    "Ord(A) \<Longrightarrow> \<forall>a\<in>A.\<exists>b\<in>A. <a,b> \<in> s  \<Longrightarrow>
-     \<forall>x\<in>A.\<exists>f\<in>(nat\<rightarrow>A).f`0=x \<and> (\<forall>n\<in>nat.(<f`n,f`(n+1)>\<in> s))"
-  oops
-    
-theorem wo_dependent_choice:
-    "well_ord(A,r) \<Longrightarrow> \<forall>a\<in>A.\<exists>b\<in>A. <a,b> \<in> s  \<Longrightarrow>
-     \<forall>x\<in>A.\<exists>f\<in>(nat\<rightarrow>A).f`0=x \<and> (\<forall>n\<in>nat.(<f`n,f`(n+1)>\<in> s))"
-  oops
- *                                       *
- *****************************************)
-
 locale countable_generic = forcing_poset +
   fixes \<D>
   assumes countable_subs_of_P:  "\<D> \<in> nat\<rightarrow>Pow(P)"
@@ -195,10 +208,6 @@ lemma decr_seq_linear: "refl(P,leq) \<Longrightarrow> f \<in> nat -> P \<Longrig
      apply (simp+)
     done
 
-   
-lemma ball_distr_conj_iff: "(\<forall>x\<in>A. P(x) \<and> Q(x)) \<longleftrightarrow> (\<forall>x\<in>A. P(x)) \<and> (\<forall>x\<in>A. Q(x))"
- by blast
-    
 lemma subset_fun_image: "f:N\<rightarrow>P \<Longrightarrow> f``N\<subseteq>P"
   apply (simp add: image_fun)
   apply (rule subsetI, simp, erule bexE)
@@ -210,8 +219,8 @@ lemma (in forcing_poset) aux_RS1:  "f \<in> N \<rightarrow> P \<Longrightarrow> 
    apply (rule subset_fun_image, assumption)
   apply (simp add: image_fun, blast)
   done
-    
-theorem (in countable_generic) rasiowa_sikorski: 
+(*    
+theorem (in countable_generic) (* Old proof of Rasiowa-Sikorski *)
   "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> D_generic(G)"
   apply (subgoal_tac 
         "\<forall>x\<in>P. \<forall>n\<in>nat. 
@@ -250,36 +259,332 @@ theorem (in countable_generic) rasiowa_sikorski:
    apply (rule_tac A="{f ` x . x \<in> nat}" 
                and B="P" in refl_monot_domain, auto)
   apply (rule_tac P="P" in decr_seq_linear, assumption)
-   apply (drule ball_distr_conj_iff [THEN iffD1], (erule conjE) | assumption)+
+   apply (drule ball_conj_distrib [THEN iffD1], (erule conjE) | assumption)+
+  done
+*)
+lemma (in countable_generic) RS_relation:
+  assumes
+        1:  "x\<in>P"
+            and
+        2:  "n\<in>nat"
+  shows
+            "\<exists>y\<in>P. <x,y> \<in> (\<lambda>m\<in>nat. {<x,y>\<in>P*P. <y,x>\<in>leq \<and> y\<in>\<D>`(pred(m))})`n"
+proof -
+  from seq_of_denses and 2 have "dense(\<D> ` pred(n))" by (simp)
+  with 1 have
+            "\<exists>d\<in>\<D> ` Arith.pred(n). \<langle>d, x\<rangle> \<in> leq"
+    unfolding dense_def by (simp)
+  then obtain d where
+        3:  "d \<in> \<D> ` Arith.pred(n) \<and> \<langle>d, x\<rangle> \<in> leq"
+    by (rule bexE, simp)
+  from countable_subs_of_P have
+            "\<D> ` Arith.pred(n) \<in> Pow(P)"
+    using 2 by (blast dest:apply_funtype intro:pred_type) (* (rule apply_funtype [OF _ pred_type]) *)
+  then have
+            "\<D> ` Arith.pred(n) \<subseteq> P" 
+    by (rule PowD)
+  then have
+            "d \<in> P \<and> \<langle>d, x\<rangle> \<in> leq \<and> d \<in> \<D> ` Arith.pred(n)"
+    using 3 by auto
+  then show ?thesis using 1 and 2 by auto
+qed
+        
+ML\<open>
+val s =
+Buffer.empty
+|> Buffer.add "{0"
+|> fold (Buffer.add o 
+  (fn x => "," ^ string_of_int x )) (1 upto 7)
+|> Buffer.add "}"
+|> Buffer.content;
+val lemita = "0\<in>" ^ s;
+@{lemma True by simp};    
+val enunciado_str = Thm.cterm_of @{context} (Syntax.read_prop @{context} lemita);
+val enunciado_str = 
+  lemita
+  |> Syntax.read_prop @{context}
+  |> Thm.cterm_of @{context}; (* another way to write the same thing *)
+val enunciado = (Goal.init enunciado_str);
+val paso = asm_full_simp_tac @{context} 1 enunciado;
+(* Goal.finish @{context} enunciado; *)  (* fails *)
+\<close>
+
+ML\<open>
+let
+  val x = 5;
+  val y = 2
+  val (_,z) = (3,x+y);
+in z
+end
+\<close>  
+
+ML\<open>
+val disj_comm = 
+  let
+    val ctxt = @{context}
+    val goal = @{prop "P \<or> Q \<Longrightarrow> Q \<or> P"}
+  in
+    Goal.prove ctxt ["P", "Q"] [] goal
+      (fn _ => eresolve_tac ctxt [@{thm disjE}] 1
+        THEN resolve_tac ctxt [@{thm disjI2}] 1
+        THEN assume_tac ctxt 1
+        THEN resolve_tac ctxt [@{thm disjI1}] 1
+       THEN assume_tac ctxt 1)
+  end;
+\<close>
+
+local_setup\<open>
+let
+  fun my_note name thm = Local_Theory.note ((name, []), [thm]) #> snd
+in
+  my_note @{binding "disjComm"} disj_comm
+end\<close>  
+ 
+lemma "P \<or> P \<Longrightarrow> P \<or> P"
+  by (erule disjComm)
+    
+ML\<open>
+(* my_note from the Cookbook *)
+fun my_note name thm = Local_Theory.note ((name, []), [thm]) #> snd
+\<close>
+  
+ML\<open>
+fun zero_ord n = let
+  val s =
+    Buffer.empty
+    |> Buffer.add "{0"
+    |> fold (Buffer.add o 
+      (fn x => "," ^ string_of_int x )) (1 upto n)
+    |> Buffer.add "}"
+    |> Buffer.content;
+  val zero_ord_str = "0\<in>" ^ s;
+  val ctxt = @{context};
+  val zero_ord_trm = 
+    zero_ord_str
+     |> Syntax.read_prop ctxt
+in
+    Goal.prove ctxt [] [] zero_ord_trm
+      (fn _ => simp_tac ctxt  1)
+end;
+
+val n = 5
+\<close>
+
+local_setup\<open>
+my_note (Binding.name ("zero_in_ord" ^ (string_of_int n))) (zero_ord n)
+\<close>
+
+find_theorems name:"zero_in_ord" 
+  
+lemma
+  shows "\<And>x . P \<Longrightarrow> Q \<Longrightarrow> P" 
+  apply (tactic \<open>Method.insert_tac @{context} (map zero_ord (1 upto 4)) 1\<close>)
+  apply (tactic {* rotate_tac 1 1 *})  
+  apply (tactic {* rename_tac ["y"] 1 *})  
+  apply (tactic \<open>rename_tac ["z"] 1\<close>)  
+  apply (tactic \<open>assume_tac @{context} 1\<close>)
   done
     
-locale forcing_data = forcing_poset +
-  fixes M enum
-  assumes trans_M:          "Transset(M)"
-      and M_model_ZF:       "satT(M,ZFTh,[])"
-      and M_countable:      "enum\<in>bij(nat,M)"
-      and P_in_M:           "P \<in> M"
+(*
+  val >> : ('a -> 'b * 'c) * ('b -> 'd) -> 'a -> 'd * 'c
+  val -- : ('a -> 'b * 'c) * ('c -> 'd * 'e) -> 'a -> ('b * 'd) * 'e
+  val |-- : ('a -> 'b * 'c) * ('c -> 'd * 'e) -> 'a -> 'd * 'e
+*)
 
-definition (in forcing_data)
-  generic :: "i\<Rightarrow>o" where
-  "generic(G) == filter(G) \<and> (\<forall>D\<in>M. D\<subseteq>P \<and> dense(D)\<longrightarrow>D\<inter>G\<noteq>0)"
-      
-(* Prototyping Forcing relation and theorems as a locale*)
-locale forcing_thms = forcing_poset + forcing_data +
-  fixes forces :: "i \<Rightarrow> i"
-  assumes definition_of_forces: "\<forall>env\<in>list(M).
-                  sats(M,forces(\<phi>), [P,leq,uno,p] @ env) \<longleftrightarrow>
-                  (\<forall>G.(generic(G)\<and> p\<in>G)\<longrightarrow>sats(gen_ext(M,P,G),\<phi>,map(valR(M,P,G),env)))"
-      and definability:      "forces(\<phi>) \<in> formula"
-      and truth_lemma:      "\<forall>env\<in>list(M).\<forall>G.(generic(G) \<and> p\<in>G)\<longrightarrow>
-                  ((\<exists>p\<in>P.(sats(M,forces(\<phi>), [P,leq,uno,p] @ env))) \<longleftrightarrow>
-                  (sats(gen_ext(M,P,G),\<phi>,map(valR(M,P,G),env))))"
+ML\<open>
+val (a,b) = (0,1);
+(fn (b, s) => fn lthy =>
+      let
+        val t = Syntax.read_term lthy s;
+        val (def, lthy') = Local_Theory.define ((b, NoSyn), ((Thm.def_binding b, []), t)) lthy;
+      in lthy' end)
+\<close>  
 
-lemma (in forcing_thms) bounded_separation_in_genext:
-    "\<forall>p\<in>formula. arity(p)<5 \<longrightarrow> sats(gen_ext(M,P,G),ZFSeparation(p),[])"
+ML_val\<open>
+enunciado;
+Context.subthy (@{theory AC},@{theory Pure})
+\<close>  
+  
+ML_val\<open>
+nth (Context.parents_of @{theory}) 0;
+@{theory}
+\<close>
+
+ML_val\<open>
+Context.ancestors_of @{theory ZF}
+\<close>
+  
+ML_val\<open>
+"hola, " ^ "como estas?";
+3 div 2;
+@14/4 / @2;
+Binding.pos_of @{binding here};
+\<close>
+
+ML_val\<open>
+Logic.mk_implies (@{term "True"},@{term "True"});
+@{lemma "True" and "0=0" by simp_all};
+Conjunction.intr 
+  @{lemma "True" by standard}
+  @{lemma "0\<in>1" by (standard,simp)};
+\<close>
+
+theorem (in countable_generic) rasiowa_sikorski:
+  "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> D_generic(G)"
+proof -
+  ML_val\<open>
+    Syntax.parse_term @{context};
+  \<close>
+  assume 
+      Eq1:  "p\<in>P"
+  let
+            ?S="(\<lambda>m\<in>nat. {<x,y>\<in>P*P. <y,x>\<in>leq \<and> y\<in>\<D>`(pred(m))})"
+  from RS_relation have
+            "\<forall>x\<in>P. \<forall>n\<in>nat. \<exists>y\<in>P. <x,y> \<in> ?S`n"
+    by (auto)
+  with sequence_DC have
+            "\<forall>a\<in>P. (\<exists>f \<in> nat->P. f`0 = a \<and> (\<forall>n \<in> nat. <f`n,f`succ(n)>\<in>?S`succ(n)))"
+    by (blast)
+  then obtain f where
+      Eq2:  "f : nat\<rightarrow>P"
+    and
+      Eq3:  "f ` 0 = p \<and>
+             (\<forall>n\<in>nat.
+              f ` n \<in> P \<and> f ` succ(n) \<in> P \<and> \<langle>f ` succ(n), f ` n\<rangle> \<in> leq \<and> 
+              f ` succ(n) \<in> \<D> ` n)"
+    using Eq1 by (auto)
+  then have   
+      Eq4:  "f``nat  \<subseteq> P"
+    by (simp add:subset_fun_image)
+  with leq_preord have 
+      Eq5:  "refl(f``nat, leq) \<and> trans[P](leq)"
+    unfolding preorder_on_def  by (blast intro:refl_monot_domain)
+  from Eq3 have
+            "\<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq"
+    by (simp)
+  with Eq2 and Eq5 and leq_preord and decr_seq_linear have
+      Eq6:  "linear(f``nat, leq)"
+    unfolding preorder_on_def by (blast)
+  with Eq5 and chain_compat have 
+            "(\<forall>p\<in>f``nat.\<forall>q\<in>f``nat. compat_in(f``nat,leq,p,q))"             
+    by (auto)
+  then have
+      fil:  "filter(upclosure(f``nat))"
+   (is "filter(?G)")
+    ML_val\<open>
+      @{Isar.goal}
+    \<close>
+    using closure_compat_filter and Eq4 by simp
+  ML_val\<open>
+    val gol = @{Isar.goal};
+    Thm.nprems_of (#goal gol);
+    #context gol;
+    @{assert} (null (#facts gol));
+  \<close>
+  have
+      gen:  "\<forall>n\<in>nat. \<D> ` n \<inter> ?G \<noteq> 0"
+  proof
+    fix n
+    assume  
+            "n\<in>nat"
+    with Eq2 and Eq3 have
+            "f`succ(n) \<in> ?G \<and> f`succ(n) \<in> \<D> ` n"
+      using aux_RS1 by simp
+    then show 
+            "\<D> ` n \<inter> ?G \<noteq> 0"
+      by blast
+  qed
+  from Eq3 and Eq2 have 
+            "p \<in> ?G"
+    using aux_RS1 by auto
+  with gen and fil show ?thesis  
+    unfolding D_generic_def by auto
+qed
+  
+schematic_goal "0\<in>?I"
+proof -
+  have
+    "0\<in>Pow(0)"
+    by simp
+  then show "?thesis (Pow(0))" .
+qed
+
+schematic_goal "0\<in>?I"
+proof -
+show "?thesis (Pow(0))" by simp
+qed
+
+(* Working in Main.ZF, the proof body is necessary. In this theory,
+   it isn't *)  
+(* 
+schematic_goal "0\<in>?I"
+proof 
+show "0\<subseteq>0" by simp
+qed
+*)
+schematic_goal "0\<in>?I" ..
+
+schematic_goal "0\<in>?I"
+  by (subgoal_tac "0\<in>Pow(0)"; blast)
+    
+schematic_goal enclosing : "x \<in> ?P(x)"
+proof -
+show "?thesis(Pow)" by simp
+qed
+
+lemma meta_ex_enclosing : "\<Or>P. \<And>x . x \<in> P(x)"  
+  by (rule meta_exI, rule enclosing)
+    
+lemma "\<Or>I. \<And>x. {x} \<in> I(x)"
+  apply (insert meta_ex_enclosing)
+  apply (erule meta_exE)
+  apply (rule meta_exI)
+  apply assumption
+done
+
+lemma "\<Or>I. \<And>x. x \<subseteq> \<Union>I(x)"
+  apply (insert meta_ex_enclosing)
+  apply (erule meta_exE)
+  apply (rule meta_exI)
+  apply (rule Union_upper)  (* B\<in>A ==> B \<subseteq> \<Union>(A) *)
+  apply assumption
 oops
 
-theorem (in forcing_thms) separation_in_genext:
-    "\<forall>p\<in>formula. sats(gen_ext(M,P,G),ZFSeparation(p),[])"
-oops
+schematic_goal x_sub_union_some : "\<And>x. x \<subseteq> \<Union>?I(x)"
+  using [[simp_trace_new mode=full]]
+  by (rule Union_upper, simp)
+
+lemma "\<Or>I. \<And>x. x \<subseteq> \<Union>I(x)"
+  apply (rule meta_exI)
+  apply (rule x_sub_union_some)
+  done
+
+context forcing_poset
+begin
+lemma denseD : "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow> \<exists>d\<in>D . <d,p>\<in>leq"
+  unfolding dense_def by simp
+
+bundle b = denseD[dest] 
+context 
+  includes b
+begin
+
+lemma hola: "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow> \<exists>d\<in>D . <d,p>\<in>leq"
+  apply blast
+  done
+
+end
+
+(* declare left_in_M[rule del] *)
+
+lemma "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow> \<exists>d\<in>D . <d,p>\<in>leq"
+   apply blast
+  oops
+
+lemma "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow> \<exists>d\<in>D . <d,p>\<in>leq"
+  using hola by blast
+
+end
+
+
 end
