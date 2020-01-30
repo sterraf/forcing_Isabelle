@@ -1,6 +1,5 @@
-theory Nat_Miscellanea imports ZF begin
-
 section\<open>Auxiliary results on arithmetic\<close>
+theory Nat_Miscellanea imports ZF begin
 
 text\<open>Most of these results will get used at some point for the
 calculation of arities.\<close>

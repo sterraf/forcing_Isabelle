@@ -7,7 +7,7 @@ theory Renaming
 begin
   
 lemma app_nm : "n\<in>nat \<Longrightarrow> m\<in>nat \<Longrightarrow> f\<in>n\<rightarrow>m \<Longrightarrow> x \<in> nat \<Longrightarrow> f`x \<in> nat"  
-  apply(case_tac "x\<in>n",rule_tac m="m" in in_n_in_nat,simp_all add:apply_type)
+  apply(cases "x\<in>n",rule_tac m="m" in in_n_in_nat,simp_all add:apply_type)
   apply(subst apply_0,subst domain_of_fun,simp_all)
   done
     
@@ -383,7 +383,7 @@ definition
   "sum_id(m,f) == sum(\<lambda>x\<in>1.x,f,1,1,m)"
   
 lemma sum_id0 : "m\<in>nat\<Longrightarrow>sum_id(m,f)`0 = 0"
-by(unfold sum_id_def,subst sum_inl,auto)
+  by(unfold sum_id_def,subst sum_inl,auto)
 
 lemma sum_idS : "p\<in>nat \<Longrightarrow> q\<in>nat \<Longrightarrow> f\<in>p\<rightarrow>q \<Longrightarrow> x \<in> p \<Longrightarrow> sum_id(p,f)`(succ(x)) = succ(f`x)"
   by(subgoal_tac "x\<in>nat",unfold sum_id_def,subst sum_inr,
@@ -395,11 +395,10 @@ lemma sum_id_tc_aux :
 
 lemma sum_id_tc :
   "n \<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> f \<in> n \<rightarrow> m \<Longrightarrow> sum_id(n,f) \<in> succ(n) \<rightarrow> succ(m)"
-  apply(rule ssubst[of  "succ(n) \<rightarrow> succ(m)" "1#+n \<rightarrow> 1#+m"])
-  apply(simp,rule sum_id_tc_aux,simp_all)
-  done
+  by(rule ssubst[of  "succ(n) \<rightarrow> succ(m)" "1#+n \<rightarrow> 1#+m"],
+      simp,rule sum_id_tc_aux,simp_all)
 
-section\<open>Renaming of formulas\<close>
+subsection\<open>Renaming of formulas\<close>
   
 consts   ren :: "i=>i"
 primrec
