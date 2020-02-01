@@ -6,7 +6,7 @@ section \<open>Relativized Wellorderings\<close>
 
 theory Wellorderings imports Relative begin
 
-text\<open>We define functions analogous to @{term ordermap} @{term ordertype} 
+text\<open>We define functions analogous to \<^term>\<open>ordermap\<close> \<^term>\<open>ordertype\<close> 
       but without using recursion.  Instead, there is a direct appeal
       to Replacement.  This will be the basis for a version relativized
       to some class \<open>M\<close>.  The main result is Theorem I 7.6 in Kunen,
@@ -32,18 +32,18 @@ definition
 
 definition
   wellfounded :: "[i=>o,i]=>o" where
-    \<comment>\<open>EVERY non-empty set has an \<open>r\<close>-minimal element\<close>
+    \<comment> \<open>EVERY non-empty set has an \<open>r\<close>-minimal element\<close>
     "wellfounded(M,r) == 
         \<forall>x[M]. x\<noteq>0 \<longrightarrow> (\<exists>y[M]. y\<in>x & ~(\<exists>z[M]. z\<in>x & <z,y> \<in> r))"
 definition
   wellfounded_on :: "[i=>o,i,i]=>o" where
-    \<comment>\<open>every non-empty SUBSET OF \<open>A\<close> has an \<open>r\<close>-minimal element\<close>
+    \<comment> \<open>every non-empty SUBSET OF \<open>A\<close> has an \<open>r\<close>-minimal element\<close>
     "wellfounded_on(M,A,r) == 
         \<forall>x[M]. x\<noteq>0 \<longrightarrow> x\<subseteq>A \<longrightarrow> (\<exists>y[M]. y\<in>x & ~(\<exists>z[M]. z\<in>x & <z,y> \<in> r))"
 
 definition
   wellordered :: "[i=>o,i,i]=>o" where
-    \<comment>\<open>linear and wellfounded on \<open>A\<close>\<close>
+    \<comment> \<open>linear and wellfounded on \<open>A\<close>\<close>
     "wellordered(M,A,r) == 
         transitive_rel(M,A,r) & linear_rel(M,A,r) & wellfounded_on(M,A,r)"
 
@@ -162,7 +162,7 @@ subsection\<open>Relativized versions of order-isomorphisms and order types\<clo
 lemma (in M_basic) order_isomorphism_abs [simp]: 
      "[| M(A); M(B); M(f) |] 
       ==> order_isomorphism(M,A,r,B,s,f) \<longleftrightarrow> f \<in> ord_iso(A,r,B,s)"
-by (simp add: order_isomorphism_def ord_iso_def)
+by (simp add: apply_closed order_isomorphism_def ord_iso_def)
 
 lemma (in M_basic) pred_set_abs [simp]: 
      "[| M(r); M(B) |] ==> pred_set(M,A,x,r,B) \<longleftrightarrow> B = Order.pred(A,x,r)"

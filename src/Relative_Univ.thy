@@ -61,18 +61,6 @@ definition
 
 subsection\<open>Formula synthesis\<close>
 
-(* Copied from DPow_absolute --- check Names! *)
-lemma Replace_iff_sats:
-  assumes is_P_iff_sats: 
-      "!!a b. [|a \<in> A; b \<in> A|] 
-              ==> is_P(a,b) \<longleftrightarrow> sats(A, p, Cons(a,Cons(b,env)))"
-  shows 
-  "[| nth(i,env) = x; nth(j,env) = y;
-      i \<in> nat; j \<in> nat; env \<in> list(A)|]
-   ==> is_Replace(##A, x, is_P, y) \<longleftrightarrow> sats(A, is_Replace_fm(i,p,j), env)"
-by (simp add: sats_is_Rep_fm [OF is_P_iff_sats])
-
-
 schematic_goal sats_is_powapply_fm_auto:
   assumes
     "f\<in>nat" "y\<in>nat" "z\<in>nat" "env\<in>list(A)" "0\<in>A"

@@ -45,7 +45,7 @@ definition
 
 definition
   frecrel_fm :: "[i,i] \<Rightarrow> i" where
-  "frecrel_fm(a,r) \<equiv> Exists(And(cartprod_fm(a#+1,a#+1,0),is_Collect_fm(0,frecrelP_fm(0),r#+1)))" 
+  "frecrel_fm(a,r) \<equiv> Exists(And(cartprod_fm(a#+1,a#+1,0),Collect_fm(0,frecrelP_fm(0),r#+1)))" 
 
 lemma frecrel_fm_type[TC] :
   "\<lbrakk>a\<in>nat;b\<in>nat\<rbrakk> \<Longrightarrow> frecrel_fm(a,b)\<in>formula"
@@ -55,7 +55,7 @@ lemma arity_frecrel_fm :
   assumes "a\<in>nat"  "b\<in>nat" 
   shows "arity(frecrel_fm(a,b)) = succ(a) \<union> succ(b)"
   unfolding frecrel_fm_def
-  using assms arity_is_Collect_fm arity_cartprod_fm arity_frecrelP_fm pred_Un_distrib 
+  using assms arity_Collect_fm arity_cartprod_fm arity_frecrelP_fm pred_Un_distrib 
   by auto
 
 lemma sats_frecrel_fm :
@@ -66,7 +66,7 @@ lemma sats_frecrel_fm :
     \<longleftrightarrow> is_frecrel(##A,nth(a, env),nth(r, env))"
   unfolding is_frecrel_def frecrel_fm_def
   using assms
-  by (simp add:sats_is_Collect_fm sats_frecrelP_fm)
+  by (simp add:sats_Collect_fm sats_frecrelP_fm)
                                               
 lemma is_frecrel_iff_sats:
   assumes
@@ -1299,7 +1299,7 @@ proof -
     if "x\<in>M" "z\<in>M" for x z
     using that 1 \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M by (simp del:pair_abs)
   have artyf:"arity(?f) = 5" 
-    unfolding is_wfrec_fm_def Hfrc_at_fm_def Hfrc_fm_def  is_Replace_fm_def PHcheck_fm_def
+    unfolding is_wfrec_fm_def Hfrc_at_fm_def Hfrc_fm_def Replace_fm_def PHcheck_fm_def
               pair_fm_def upair_fm_def is_recfun_fm_def fun_apply_fm_def big_union_fm_def
               pre_image_fm_def restriction_fm_def image_fm_def fm_defs number1_fm_def
               eq_case_fm_def mem_case_fm_def is_tuple_fm_def

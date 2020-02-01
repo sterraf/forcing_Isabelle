@@ -3,7 +3,7 @@ theory Internalizations
   imports 
     "ZF-Constructible-Trans.Formula"
     "ZF-Constructible-Trans.L_axioms"
-    "ZF-Constructible-Trans.Internalize" 
+    "ZF-Constructible-Trans.DPow_absolute" 
 begin
 
 text\<open>We found it useful to have slightly different versions of some 
@@ -30,7 +30,7 @@ lemmas fm_defs = omega_fm_def limit_ordinal_fm_def empty_fm_def typed_function_f
                  pair_fm_def upair_fm_def domain_fm_def function_fm_def succ_fm_def
                  cons_fm_def fun_apply_fm_def image_fm_def big_union_fm_def union_fm_def
                  relation_fm_def composition_fm_def field_fm_def ordinal_fm_def range_fm_def
-                 transset_fm_def subset_fm_def is_Replace_fm_def
+                 transset_fm_def subset_fm_def Replace_fm_def
 
 
 end

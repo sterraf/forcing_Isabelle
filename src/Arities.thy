@@ -356,10 +356,10 @@ lemma arity_frecR_fm :
       number1arity__fm arity_empty_fm nat_union_abs2 pred_Un_distrib
   by auto
 
-lemma arity_is_Collect_fm :
+lemma arity_Collect_fm :
   assumes "x \<in> nat" "y \<in> nat" "p\<in>formula" 
-  shows "arity(is_Collect_fm(x,p,y)) = succ(x) \<union> succ(y) \<union> pred(arity(p))"
-  unfolding is_Collect_fm_def
+  shows "arity(Collect_fm(x,p,y)) = succ(x) \<union> succ(y) \<union> pred(arity(p))"
+  unfolding Collect_fm_def
   using assms pred_Un_distrib
   by auto
 

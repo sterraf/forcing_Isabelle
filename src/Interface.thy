@@ -1205,7 +1205,7 @@ qed
 definition
   is_Hrank_fm :: "[i,i,i] \<Rightarrow> i" where
   "is_Hrank_fm(x,f,hc) == Exists(And(big_union_fm(0,succ(hc)),
-                                is_Replace_fm(succ(x),PHrank_fm(succ(succ(succ(f))),0,1),0)))" 
+                                Replace_fm(succ(x),PHrank_fm(succ(succ(succ(f))),0,1),0)))" 
                                                            
 lemma is_Hrank_type [TC]:
      "[| x \<in> nat; y \<in> nat; z \<in> nat |] ==> is_Hrank_fm(x,y,z) \<in> formula"
@@ -1217,7 +1217,7 @@ lemma (in M_ZF_trans) sats_is_Hrank_fm [simp]:
         is_Hrank(##M,nth(x,env),nth(y,env),nth(z,env))" 
   using zero_in_M
   apply (simp add: is_Hrank_def is_Hrank_fm_def)
-  apply (simp add: sats_is_Rep_fm)
+  apply (simp add: sats_Replace_fm)
   done
 
 (* M(x) \<Longrightarrow> wfrec_replacement(M,is_Hrank(M),rrank(x)) *)
@@ -1266,7 +1266,7 @@ definition
   is_HVfrom_fm :: "[i,i,i,i] \<Rightarrow> i" where
   "is_HVfrom_fm(A,x,f,h) == Exists(Exists(And(union_fm(A #+ 2,1,h #+ 2),
                             And(big_union_fm(0,1),
-                            is_Replace_fm(x #+ 2,is_powapply_fm(f #+ 4,0,1),0)))))"
+                            Replace_fm(x #+ 2,is_powapply_fm(f #+ 4,0,1),0)))))"
 
 lemma is_HVfrom_type [TC]:
      "[| A\<in>nat; x \<in> nat; f \<in> nat; h \<in> nat |] ==> is_HVfrom_fm(A,x,f,h) \<in> formula"
@@ -1277,7 +1277,7 @@ lemma sats_is_HVfrom_fm :
     ==> sats(A,is_HVfrom_fm(a,x,f,h),env) \<longleftrightarrow> 
         is_HVfrom(##A,nth(a,env),nth(x,env),nth(f,env),nth(h,env))" 
   apply (simp add: is_HVfrom_def is_HVfrom_fm_def)
-  apply (simp add: sats_is_Rep_fm[OF sats_is_powapply_fm])
+  apply (simp add: sats_Replace_fm[OF sats_is_powapply_fm])
   done
 
 lemma is_HVfrom_iff_sats:

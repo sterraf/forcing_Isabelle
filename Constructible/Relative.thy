@@ -560,9 +560,6 @@ locale M_trivial = M_trans +
       and Union_ax:         "Union_ax(M)"
 
 
-text\<open>Automatically discovers the proof using \<open>transM\<close>, \<open>nat_0I\<close>
-and \<open>M_inhabit\<close>.\<close>
-
 lemmas (in M_trivial) nonempty = M_inhabit
 
 lemma (in M_trans) rall_abs [simp]:
@@ -654,12 +651,12 @@ lemma (in M_trans) pair_components_in_M:
   by (blast dest: transM)
 
 lemma (in M_trivial) cartprod_abs [simp]:
-  "[| M(A); M(B); M(z) |] ==> cartprod(M,A,B,z) \<longleftrightarrow> z = A*B"
-  apply (simp add: cartprod_def)
-  apply (rule iffI)
-   apply (blast intro!: equalityI intro: transM dest!: rspec)
-  apply (blast dest: transM)
-  done
+     "[| M(A); M(B); M(z) |] ==> cartprod(M,A,B,z) \<longleftrightarrow> z = A*B"
+apply (simp add: cartprod_def)
+apply (rule iffI)
+ apply (blast intro!: equalityI intro: transM dest!: rspec)
+apply (blast dest: transM)
+done
 
 subsubsection\<open>Absoluteness for Unions and Intersections\<close>
 
@@ -717,41 +714,6 @@ lemma (in M_trivial) succ_in_M_iff [simp]:
      "M(succ(a)) \<longleftrightarrow> M(a)"
   by blast
 
-subsubsection\<open>Absoluteness for Powerset\<close>
-
-lemma (in M_trans) powerset_Pow:
-     "powerset(M, x, Pow(x))"
-by (simp add: powerset_def)
-
-lemma (in M_trans) powerset_imp_subset_Pow:
-     "[| powerset(M,x,y); M(y) |] ==> y \<subseteq> Pow(x)"
-apply (simp add: powerset_def)
-apply (blast dest: transM)
-done
-
-lemma (in M_trans) powerset_abs:
-  assumes
-     "M(y)"
-  shows
-    "powerset(M,x,y) \<longleftrightarrow> y = {a\<in>Pow(x) . M(a)}"
-proof (intro iffI equalityI)
-  (* First show the converse implication by double inclusion *)
-  assume "powerset(M,x,y)"
-  with \<open>M(y)\<close>  
-  show "y \<subseteq> {a\<in>Pow(x) . M(a)}"
-    using powerset_imp_subset_Pow transM by blast
-  from \<open>powerset(M,x,y)\<close>
-  show "{a\<in>Pow(x) . M(a)} \<subseteq> y"
-    using transM unfolding powerset_def by auto
-next (* we show the direct implication *)
-  assume
-    "y = {a \<in> Pow(x) . M(a)}"
-  then
-  show "powerset(M, x, y)"
-    unfolding powerset_def subset_def using transM by blast
-qed
-
-
 subsubsection\<open>Absoluteness for Separation and Replacement\<close>
 
 lemma (in M_trans) separation_closed [intro,simp]:
@@ -770,9 +732,6 @@ lemma (in M_trans) Collect_abs [simp]:
      "[| M(A); M(z) |] ==> is_Collect(M,A,P,z) \<longleftrightarrow> z = Collect(A,P)"
   unfolding is_Collect_def
   by (blast dest: transM)
-
-
-text\<open>Probably the premise and conclusion are equivalent\<close>
 
 subsubsection\<open>The Operator \<^term>\<open>is_Replace\<close>\<close>
 
@@ -890,6 +849,46 @@ apply (simp add: image_def)
 apply (rule iffI)
  apply (blast intro!: equalityI dest: transM, blast)
 done
+
+subsubsection\<open>Absoluteness for Powerset\<close>
+
+text\<open>What about \<open>Pow_abs\<close>?  Powerset is NOT absolute!
+      This result is one direction of absoluteness.\<close>
+
+lemma (in M_trans) powerset_Pow:
+     "powerset(M, x, Pow(x))"
+by (simp add: powerset_def)
+
+text\<open>But we can't prove that the powerset in \<open>M\<close> includes the
+      real powerset.\<close>
+
+lemma (in M_trans) powerset_imp_subset_Pow:
+     "[| powerset(M,x,y); M(y) |] ==> y \<subseteq> Pow(x)"
+apply (simp add: powerset_def)
+apply (blast dest: transM)
+done
+
+lemma (in M_trans) powerset_abs:
+  assumes
+     "M(y)"
+  shows
+    "powerset(M,x,y) \<longleftrightarrow> y = {a\<in>Pow(x) . M(a)}"
+proof (intro iffI equalityI)
+  (* First show the converse implication by double inclusion *)
+  assume "powerset(M,x,y)"
+  with \<open>M(y)\<close>  
+  show "y \<subseteq> {a\<in>Pow(x) . M(a)}"
+    using powerset_imp_subset_Pow transM by blast
+  from \<open>powerset(M,x,y)\<close>
+  show "{a\<in>Pow(x) . M(a)} \<subseteq> y"
+    using transM unfolding powerset_def by auto
+next (* we show the direct implication *)
+  assume
+    "y = {a \<in> Pow(x) . M(a)}"
+  then
+  show "powerset(M, x, y)"
+    unfolding powerset_def subset_def using transM by blast
+qed
 
 subsubsection\<open>Absoluteness for the Natural Numbers\<close>
 
@@ -1050,7 +1049,7 @@ assumes Inter_separation:
      "M(n) ==>
       strong_replacement(M, \<lambda>p z. \<exists>f[M]. \<exists>b[M]. \<exists>nb[M]. \<exists>cnbf[M].
                 pair(M,f,b,p) & pair(M,n,b,nb) & is_cons(M,nb,f,cnbf) &
-                upair(M,cnbf,cnbf,z))" 
+                upair(M,cnbf,cnbf,z))"
   and is_recfun_separation:
      \<comment> \<open>for well-founded recursion: used to prove \<open>is_recfun_equal\<close>\<close>
      "[| M(r); M(f); M(g); M(a); M(b) |]
@@ -1103,7 +1102,6 @@ apply (intro rexI conjI, simp+)
 apply (insert cartprod_separation [of A B], simp)
 done
 
-(* TODO: esto que Powerset no es absoluto parece no ser cierto, entonces? *)
 text\<open>All the lemmas above are necessary because Powerset is not absolute.
       I should have used Replacement instead!\<close>
 lemma (in M_basic) cartprod_closed [intro,simp]:
@@ -1120,7 +1118,7 @@ by (simp add: is_sum_def sum_def singleton_0 nat_into_M)
 
 lemma (in M_trivial) Inl_in_M_iff [iff]:
      "M(Inl(a)) \<longleftrightarrow> M(a)"
-  by (simp add: Inl_def)
+by (simp add: Inl_def)
 
 lemma (in M_trivial) Inl_abs [simp]:
      "M(Z) ==> is_Inl(M,a,Z) \<longleftrightarrow> (Z = Inl(a))"

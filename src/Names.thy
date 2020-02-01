@@ -681,7 +681,7 @@ lemma sats_PHcheck_fm [simp]:
 *)
 definition
   is_Hcheck_fm :: "[i,i,i,i] \<Rightarrow> i" where
-  "is_Hcheck_fm(o,z,f,hc) == is_Replace_fm(z,PHcheck_fm(succ(succ(o)),succ(succ(f)),0,1),hc)" 
+  "is_Hcheck_fm(o,z,f,hc) == Replace_fm(z,PHcheck_fm(succ(succ(o)),succ(succ(f)),0,1),hc)" 
 
 lemma is_Hcheck_type [TC]:
      "[| x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat |] ==> is_Hcheck_fm(x,y,z,u) \<in> formula"
@@ -692,7 +692,7 @@ lemma sats_is_Hcheck_fm [simp]:
     ==> sats(M,is_Hcheck_fm(x,y,z,u),env) \<longleftrightarrow> 
         is_Hcheck(nth(x,env),nth(y,env),nth(z,env),nth(u,env))" 
   apply (simp add: is_Hcheck_def is_Hcheck_fm_def)
-  apply (rule sats_is_Rep_fm,simp+)
+  apply (rule sats_Replace_fm,simp+)
   done
 
 
@@ -721,7 +721,7 @@ proof -
     if "x\<in>M" "z\<in>M" for x z
     using that 1 \<open>X\<in>M\<close> rcheck_in_M one_in_M by (simp del:pair_abs)
   have artyf:"arity(?f) = 4" 
-    unfolding is_wfrec_fm_def is_Hcheck_fm_def is_Replace_fm_def PHcheck_fm_def
+    unfolding is_wfrec_fm_def is_Hcheck_fm_def Replace_fm_def PHcheck_fm_def
               pair_fm_def upair_fm_def is_recfun_fm_def fun_apply_fm_def big_union_fm_def
               pre_image_fm_def restriction_fm_def image_fm_def
     by (simp add:nat_simp_union)
@@ -924,7 +924,7 @@ lemma check_replacement:
 proof -
   have "arity(check_fm(0,2,1)) = 3" 
     unfolding check_fm_def rcheck_fm_def tran_closure_fm_def is_eclose_fm_def mem_eclose_fm_def
-         is_Hcheck_fm_def is_Replace_fm_def PHcheck_fm_def finite_ordinal_fm_def is_iterates_fm_def
+         is_Hcheck_fm_def Replace_fm_def PHcheck_fm_def finite_ordinal_fm_def is_iterates_fm_def
              is_wfrec_fm_def is_recfun_fm_def restriction_fm_def pre_image_fm_def eclose_n_fm_def
         is_nat_case_fm_def quasinat_fm_def Memrel_fm_def singleton_fm_def fm_defs iterates_MH_fm_def
     by (simp add:nat_simp_union)
@@ -964,7 +964,7 @@ proof -
   moreover
   have "arity(?pcheck_fm)=3"  
     unfolding check_fm_def rcheck_fm_def tran_closure_fm_def is_eclose_fm_def mem_eclose_fm_def
-         is_Hcheck_fm_def is_Replace_fm_def PHcheck_fm_def finite_ordinal_fm_def is_iterates_fm_def
+         is_Hcheck_fm_def Replace_fm_def PHcheck_fm_def finite_ordinal_fm_def is_iterates_fm_def
              is_wfrec_fm_def is_recfun_fm_def restriction_fm_def pre_image_fm_def eclose_n_fm_def
         is_nat_case_fm_def quasinat_fm_def Memrel_fm_def singleton_fm_def fm_defs iterates_MH_fm_def
     by (simp add:nat_simp_union)
