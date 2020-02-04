@@ -100,7 +100,7 @@ lemma (in M_trancl) rtran_closure_mem_iff:
            (\<exists>f[M]. f \<in> succ(n) -> A &
             (\<exists>x[M]. \<exists>y[M]. p = <x,y> & f`0 = x & f`n = y) &
                            (\<forall>i\<in>n. <f`i, f`succ(i)> \<in> r)))"
-  apply (simp add: rtran_closure_mem_def Ord_succ_mem_iff nat_0_le [THEN ltD] M_nat) 
+  apply (simp add: rtran_closure_mem_def Ord_succ_mem_iff nat_0_le [THEN ltD]) 
 done
 
 lemma (in M_trancl) rtran_closure_rtrancl:
@@ -114,7 +114,7 @@ lemma (in M_trancl) rtrancl_closed [intro,simp]:
      "M(r) ==> M(rtrancl(r))"
 apply (insert rtrancl_separation [of r "field(r)"])
 apply (simp add: rtrancl_alt_eq_rtrancl [symmetric]
-                 rtrancl_alt_def rtran_closure_mem_iff M_nat)
+                 rtrancl_alt_def rtran_closure_mem_iff)
 done
 
 lemma (in M_trancl) rtrancl_abs [simp]:
