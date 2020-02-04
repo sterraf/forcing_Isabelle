@@ -1,5 +1,7 @@
 (*  Title:      ZF/Constructible/Relative.thy
     Author:     Lawrence C Paulson, Cambridge University Computer Laboratory
+                With modifications by E. Gunther, M. Pagano, 
+                and P. Sánchez Terraf
 *)
 
 section \<open>Relativization and Absoluteness\<close>
@@ -518,17 +520,17 @@ definition
   membership :: "[i=>o,i,i] => o" where \<comment> \<open>membership relation\<close>
     "membership(M,A,r) ==
         \<forall>p[M]. p \<in> r \<longleftrightarrow> (\<exists>x[M]. x\<in>A & (\<exists>y[M]. y\<in>A & x\<in>y & pair(M,x,y,p)))"
-  
-  
+
+
 subsection\<open>Introducing a Transitive Class Model\<close>
 
 text\<open>The class M is assumed to be transitive and inhabited\<close>
 locale M_trans =
   fixes M
   assumes transM:   "[| y\<in>x; M(x) |] ==> M(y)"
-    and M_nonempty: "\<exists>x . M(x)"
+    and M_inhabited: "\<exists>x . M(x)"
 
-lemma (in M_trans) M_inhabit [iff]:  "M(0)"
+lemma (in M_trans) nonempty [simp]:  "M(0)"
 proof -
   have "M(x) \<longrightarrow> M(0)" for x
   proof (rule_tac P="\<lambda>w. M(w) \<longrightarrow> M(0)" in eps_induct)
@@ -549,8 +551,8 @@ proof -
   then show "M(x) \<longrightarrow> M(0)" if "\<forall>y\<in>x. M(y) \<longrightarrow> M(0)" for x
     using that by auto
   qed
-  with M_nonempty
-  show "M(0)" using M_nonempty by blast
+  with M_inhabited
+  show "M(0)" using M_inhabited by blast
 qed
 
 text\<open>The class M is assumed to be transitive and to satisfy some
@@ -558,9 +560,6 @@ text\<open>The class M is assumed to be transitive and to satisfy some
 locale M_trivial = M_trans +
   assumes upair_ax:         "upair_ax(M)"
       and Union_ax:         "Union_ax(M)"
-
-
-lemmas (in M_trivial) nonempty = M_inhabit
 
 lemma (in M_trans) rall_abs [simp]:
      "M(A) ==> (\<forall>x[M]. x\<in>A \<longrightarrow> P(x)) \<longleftrightarrow> (\<forall>x\<in>A. P(x))"
@@ -850,7 +849,7 @@ apply (rule iffI)
  apply (blast intro!: equalityI dest: transM, blast)
 done
 
-subsubsection\<open>Absoluteness for Powerset\<close>
+subsubsection\<open>Relativization of Powerset\<close>
 
 text\<open>What about \<open>Pow_abs\<close>?  Powerset is NOT absolute!
       This result is one direction of absoluteness.\<close>

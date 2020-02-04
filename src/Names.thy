@@ -808,7 +808,7 @@ definition
   "is_singleton(A,x,z) == \<exists>c[A]. empty(A,c) \<and> is_cons(A,x,c,z)"
 
 lemma (in M_trivial) singleton_abs[simp] : "\<lbrakk> M(x) ; M(s) \<rbrakk> \<Longrightarrow> is_singleton(M,x,s) \<longleftrightarrow> s = {x}" 
-  unfolding is_singleton_def using M_inhabit by simp
+  unfolding is_singleton_def using nonempty by simp
 
 definition
   singleton_fm :: "[i,i] \<Rightarrow> i" where

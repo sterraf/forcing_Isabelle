@@ -113,9 +113,9 @@ schematic_goal sats_prebody_fm_auto:
   shows 
     "(\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> sats(M,forces(\<phi>),[p,P,leq,one,\<rho>,\<tau>] @ nenv))
    \<longleftrightarrow> sats(M,?prebody_fm,[\<rho>,p,\<alpha>,P,leq,one] @ nenv)"
-  apply (insert assms; (rule sep_rules is_Vset_iff_sats[OF _ _ _ _ _ M_inhabit[simplified]] | simp))
-   apply (rule sep_rules is_Vset_iff_sats is_Vset_iff_sats[OF _ _ _ _ _ M_inhabit[simplified]] | simp)+
-  apply (rule M_inhabit[simplified])
+  apply (insert assms; (rule sep_rules is_Vset_iff_sats[OF _ _ _ _ _ nonempty[simplified]] | simp))
+   apply (rule sep_rules is_Vset_iff_sats is_Vset_iff_sats[OF _ _ _ _ _ nonempty[simplified]] | simp)+
+  apply (rule nonempty[simplified])
        apply (simp_all)
      apply (rule length_type[THEN nat_into_Ord], blast)+
   apply ((rule sep_rules | simp))
@@ -329,7 +329,7 @@ proof -
     \<open>length(_) = length(_)\<close>[symmetric] \<open>nenv\<in>_\<close> \<open>\<phi>\<in>_\<close>
   have "arity(?f_fm) \<le> 5 #+ length(env)"
     unfolding body_fm_def  new_fm_defs least_fm_def 
-    using arity_forces arity_renrep arity_renbody arity_body_fm' M_inhabit
+    using arity_forces arity_renrep arity_renbody arity_body_fm' nonempty
     by (simp add: pred_Un Un_assoc, simp add: Un_assoc[symmetric] nat_union_abs1 pred_Un)
       (auto simp add: nat_simp_union, rule pred_le, auto intro:leI)
   moreover from \<open>\<phi>\<in>formula\<close> \<open>nenv\<in>list(M)\<close>
