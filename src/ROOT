@@ -28,8 +28,17 @@ session "ZF-Constructible-Trans" in "../Constructible" = ZF +
     Rank_Separation
 
 session "Forcing" in "." =  "ZF-Constructible-Trans" +
-  options [document = pdf, document_output = "output"]
-  theories [document = true]
+  description "
+    Formalization of Forcing in Isabelle/ZF
+
+    We formalize the theory of forcing in the set theory framework of 
+    Isabelle/ZF. Under the assumption of the existence of a countable 
+    transitive model of ZFC, we construct a proper generic extension 
+    and show that the latter also satisfies ZFC.    
+  "  
+  options [document = pdf, document_output = "output", 
+  	   document_variants = "document:outline=/proof,/ML"]
+  theories
     "Rasiowa_Sikorski"
     "Forcing_Main"
   document_files
