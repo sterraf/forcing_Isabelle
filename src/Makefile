@@ -3,7 +3,7 @@ THY_FILES = Arities.thy Choice_Axiom.thy \
  Forcing_Main.thy Forcing_Notions.thy Forcing_Theorems.thy\
  Foundation_Axiom.thy FrecR.thy Infinity_Axiom.thy\
  Interface.thy Internalizations.thy Least.thy Names.thy\
- Nat_Miscellanea.thy Non_Constructible.thy Ordinals_In_MG.thy\
+ Nat_Miscellanea.thy Ordinals_In_MG.thy\
  Pairing_Axiom.thy Pointed_DC.thy Powerset_Axiom.thy Proper_Extension.thy\
  Rasiowa_Sikorski.thy Recursion_Thms.thy Relative_Univ.thy\
  Renaming.thy Renaming_Auto.thy Replacement_Axiom.thy\
