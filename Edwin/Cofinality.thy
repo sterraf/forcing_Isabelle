@@ -20,6 +20,16 @@ definition
   cofinal_fun :: "[i,i,i] \<Rightarrow> o" where
   "cofinal_fun(f,A,r) == \<forall>a\<in>A. \<exists>x\<in>domain(f). <a,f`x>\<in>r \<or> a = f`x"
 
+lemma cofinal_funI: 
+  assumes "\<And>a. a\<in>A \<Longrightarrow> \<exists>x\<in>domain(f). <a,f`x>\<in>r \<or> a = f`x"
+  shows "cofinal_fun(f,A,r)"
+  using assms unfolding cofinal_fun_def by simp
+
+lemma cofinal_funD:
+  assumes "cofinal_fun(f,A,r)" "a\<in>A"
+  shows "\<exists>x\<in>domain(f). <a,f`x>\<in>r \<or> a = f`x"
+  using assms unfolding cofinal_fun_def by simp
+
 (*
 The next definition doesn't work if 0 is the top element of A.
 But it works for limit ordinals.
@@ -498,24 +508,23 @@ proof -
   then
   show ?thesis
   proof(cases)
-  case zero
-  have "cf(0) = 0" using cf_zero by simp
-  then 
-  have  "id(0) \<in> \<langle>cf(0), Memrel(cf(0))\<rangle> \<cong> \<langle>0, Memrel(0)\<rangle>" using ord_iso_refl by simp
-  then 
-  have "id(0)\<in>mono_map(cf(0),Memrel(cf(0)),0,Memrel(0))" using ord_iso_is_mono_map by simp
-  with zero
-  show ?thesis unfolding cofinal_fun_def by auto
-      
-next
-  case succ
-  then
-  show ?thesis sorry    
-next    
-  case lim
-  then
-  show ?thesis sorry
-qed
+    case zero
+    have "cf(0) = 0" using cf_zero by simp
+    then 
+    have  "id(0) \<in> \<langle>cf(0), Memrel(cf(0))\<rangle> \<cong> \<langle>0, Memrel(0)\<rangle>" using ord_iso_refl by simp
+    then 
+    have "id(0)\<in>mono_map(cf(0),Memrel(cf(0)),0,Memrel(0))" using ord_iso_is_mono_map by simp
+    with zero
+    show ?thesis unfolding cofinal_fun_def by auto      
+  next
+    case succ
+    then
+    show ?thesis sorry    
+  next    
+    case lim
+    then
+    show ?thesis sorry
+  qed
 qed
           
 lemma cofinal_fun_factorization:
@@ -739,9 +748,10 @@ proof -
     using Ord_cf by auto 
   let ?g="\<lambda>\<beta>\<in>cf(\<gamma>) . G(\<beta>)"
   from \<open>Ord(\<gamma>)\<close> \<open>Ord(\<delta>)\<close> in_delta G_not_delta
-  have "?g : cf(\<gamma>) -> \<delta>"
+  have "?g : cf(\<gamma>) \<rightarrow> \<delta>"
     using ltI lam_type by simp
-  then have "?g \<in> mono_map(cf(\<gamma>), Memrel(cf(\<gamma>)), \<delta>, Memrel(\<delta>))"
+  then 
+  have "?g \<in> mono_map(cf(\<gamma>), Memrel(cf(\<gamma>)), \<delta>, Memrel(\<delta>))"
     unfolding mono_map_def 
   proof (intro CollectI ballI impI) 
     (* Proof that ?g respects membership *)
@@ -767,8 +777,7 @@ proof -
     then
     have "\<alpha><\<beta>"
       using Ord_in_Ord[of "cf(\<gamma>)"] ltI Ord_cf by blast
-    assume
-      "\<alpha>\<in>cf(\<gamma>)" "\<beta>\<in>cf(\<gamma>)"   
+    assume "\<alpha>\<in>cf(\<gamma>)" "\<beta>\<in>cf(\<gamma>)"   
     moreover from this and G_not_delta  
     have "G(\<alpha>)\<noteq>\<delta>" "G(\<beta>)\<noteq>\<delta>" using Ord_cf by auto
     moreover
@@ -781,38 +790,35 @@ proof -
   qed
   moreover
   have "cofinal_fun(f O ?g, \<gamma>, Memrel(\<gamma>))" 
-  proof -
-    {    
-      fix a
-      assume "a \<in> \<gamma>"
-      with \<open>cofinal_fun(j,\<gamma>,Memrel(\<gamma>))\<close> \<open>domain(j) = cf(\<gamma>)\<close>
-      obtain x where "x\<in>cf(\<gamma>)" "a \<in> j`x \<or> a = j`x"
-        unfolding cofinal_fun_def by auto
-      with fg_mono_map
-      have "x \<in> domain(f O ?g)" 
-        using mono_map_is_fun domain_of_fun by force
-      moreover
-      have "a \<in> (f O ?g) `x \<or> a = (f O ?g) `x"
-      proof -
-        from \<open>x\<in>cf(\<gamma>)\<close> \<open>G(x) \<in> ?A(x,\<lambda>y\<in>x. G(y))\<close> \<open>x \<in> cf(\<gamma>) \<Longrightarrow> G(x)\<in>\<delta>\<close>
-        have "j ` x \<le> f ` G(x)" 
-          using mem_not_refl by auto
-        with \<open>a \<in> j`x \<or> a = j`x\<close>
-        have "a \<in> f ` G(x) \<or> a = f ` G(x)" 
-          using ltD by blast
-        with \<open>x\<in>cf(\<gamma>)\<close>
-        show ?thesis using lam_funtype[of "cf(\<gamma>)" G] by auto
-      qed
-      moreover
-      note \<open>a \<in> \<gamma>\<close>
-      moreover from calculation and fg_mono_map and \<open>Ord(\<gamma>)\<close> \<open>Limit(\<gamma>)\<close>
-      have "(f O ?g) `x \<in> \<gamma>"
-        using Limit_nonzero apply_in_range mono_map_is_fun[of "f O ?g" ] by blast
-      ultimately
-      have "\<exists>x \<in> domain(f O ?g). \<langle>a, (f O ?g) ` x\<rangle> \<in> Memrel(\<gamma>) \<or> a = (f O ?g) `x"
-        by blast
-    }
-    then show ?thesis unfolding cofinal_fun_def by blast
+  proof (intro cofinal_funI)
+    fix a
+    assume "a \<in> \<gamma>"
+    with \<open>cofinal_fun(j,\<gamma>,Memrel(\<gamma>))\<close> \<open>domain(j) = cf(\<gamma>)\<close>
+    obtain x where "x\<in>cf(\<gamma>)" "a \<in> j`x \<or> a = j`x"
+      unfolding cofinal_fun_def by auto
+    with fg_mono_map
+    have "x \<in> domain(f O ?g)" 
+      using mono_map_is_fun domain_of_fun by force
+    moreover
+    have "a \<in> (f O ?g) `x \<or> a = (f O ?g) `x"
+    proof -
+      from \<open>x\<in>cf(\<gamma>)\<close> \<open>G(x) \<in> ?A(x,\<lambda>y\<in>x. G(y))\<close> \<open>x \<in> cf(\<gamma>) \<Longrightarrow> G(x)\<in>\<delta>\<close>
+      have "j ` x \<le> f ` G(x)" 
+        using mem_not_refl by auto
+      with \<open>a \<in> j`x \<or> a = j`x\<close>
+      have "a \<in> f ` G(x) \<or> a = f ` G(x)" 
+        using ltD by blast
+      with \<open>x\<in>cf(\<gamma>)\<close>
+      show ?thesis using lam_funtype[of "cf(\<gamma>)" G] by auto
+    qed
+    moreover
+    note \<open>a \<in> \<gamma>\<close>
+    moreover from calculation and fg_mono_map and \<open>Ord(\<gamma>)\<close> \<open>Limit(\<gamma>)\<close>
+    have "(f O ?g) `x \<in> \<gamma>"
+      using Limit_nonzero apply_in_range mono_map_is_fun[of "f O ?g" ] by blast
+    ultimately
+    show "\<exists>x \<in> domain(f O ?g). \<langle>a, (f O ?g) ` x\<rangle> \<in> Memrel(\<gamma>) \<or> a = (f O ?g) `x"
+      by blast
   qed
   ultimately show ?thesis by blast
 qed
@@ -966,7 +972,7 @@ lemma cf_ordertype_cofinal:
     "cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))"
 proof (intro le_anti_sym)
   from \<open>Limit(\<gamma>)\<close>
-  have \<open>Ord(\<gamma>)\<close>
+  have "Ord(\<gamma>)"
     using Limit_is_Ord by simp
   with \<open>A \<subseteq> \<gamma>\<close>
   have "well_ord(A,Memrel(\<gamma>))"
