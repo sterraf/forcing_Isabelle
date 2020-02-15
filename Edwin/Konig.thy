@@ -160,7 +160,27 @@ lemma cardinal_Pow: "|Pow(X)| = 2 \<up> X" \<comment> \<open>Perhaps it's better
 lemma cantor_cexp:
   assumes "Card(\<nu>)"
   shows "\<nu> < 2 \<up> \<nu>"
-  sorry
+proof (rule le_neq_imp_lt)
+  show "\<nu> \<le> 2 \<up> \<nu>"
+    sorry
+  show "\<nu> \<noteq> 2 \<up> \<nu>"
+  proof
+    assume "\<nu> = 2 \<up> \<nu>"
+    then
+    have "\<nu> = |Pow(\<nu>)|"
+      using cardinal_Pow by simp
+    with assms
+    have "\<nu> \<approx> Pow(\<nu>)"
+      using cardinal_eqpoll_iff Card_cardinal_eq
+      by force
+    then
+    obtain g where "g \<in> surj(\<nu>, Pow(\<nu>))"
+      unfolding eqpoll_def using bij_is_surj by blast
+    then
+    show "False"
+      using cantor_surj by simp
+  qed
+qed
 
 lemma cexp_left_mono:
   assumes "\<kappa>1 \<le> \<kappa>2" 
