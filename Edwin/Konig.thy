@@ -1,6 +1,7 @@
 theory Konig
   imports
-    ZF.Cardinal_AC Delta_System \<comment> \<open>The last one only for @{thm InfCard_Aleph}\<close>
+    ZF.Cardinal_AC 
+    Delta_System \<comment> \<open>only for @{thm InfCard_Aleph}\<close>
 begin
 
 definition
@@ -157,30 +158,53 @@ lemma cardinal_Pow: "|Pow(X)| = 2 \<up> X" \<comment> \<open>Perhaps it's better
   using cardinal_eqpoll_iff[THEN iffD2, OF Pow_eqpoll_function_space]
   unfolding cexp_def by simp
 
+lemma inj_imp_surj : 
+  fixes f b
+  notes inj_is_fun[dest] 
+  defines [simp]: "ifx(x) \<equiv> if x\<in>range(f) then converse(f)`x else b"
+  assumes "f \<in> inj(B,A)" "b\<in>B"
+  shows "(\<lambda>x\<in>A. ifx(x)) \<in> surj(A,B)"
+proof -
+  from assms
+  have "converse(f) \<in> surj(range(f),B)" "range(f) \<subseteq> A"
+       "converse(f) : range(f) \<rightarrow> B"
+    using inj_converse_surj range_of_function surj_is_fun by blast+
+  with \<open>b\<in>B\<close>
+  show "(\<lambda>x\<in>A. ifx(x)) \<in> surj(A,B)"
+    unfolding surj_def 
+  proof (intro CollectI lam_type ballI; elim CollectE) 
+    fix y
+    assume "y \<in> B" "\<forall>y\<in>B. \<exists>x\<in>range(f). converse(f) ` x = y"
+    with \<open>range(f) \<subseteq> A\<close>
+    show "\<exists>x\<in>A. (\<lambda>x\<in>A. ifx(x)) ` x = y" 
+      by (drule_tac bspec, auto)
+  qed simp
+qed
+
+lemma cantor_inj : "f \<notin> inj(Pow(A),A)"
+  using inj_imp_surj[OF _ Pow_bottom] cantor_surj by blast
+
 lemma cantor_cexp:
   assumes "Card(\<nu>)"
   shows "\<nu> < 2 \<up> \<nu>"
-proof (rule le_neq_imp_lt)
-  show "\<nu> \<le> 2 \<up> \<nu>"
-    sorry
-  show "\<nu> \<noteq> 2 \<up> \<nu>"
-  proof
-    assume "\<nu> = 2 \<up> \<nu>"
-    then
-    have "\<nu> = |Pow(\<nu>)|"
-      using cardinal_Pow by simp
-    with assms
-    have "\<nu> \<approx> Pow(\<nu>)"
-      using cardinal_eqpoll_iff Card_cardinal_eq
-      by force
-    then
-    obtain g where "g \<in> surj(\<nu>, Pow(\<nu>))"
-      unfolding eqpoll_def using bij_is_surj by blast
-    then
-    show "False"
-      using cantor_surj by simp
-  qed
-qed
+  using assms Card_is_Ord Card_cexp
+proof (intro not_le_iff_lt[THEN iffD1] notI)
+  assume "2 \<up> \<nu> \<le> \<nu>"
+  then
+  have "|Pow(\<nu>)| \<le> \<nu>"
+    using cardinal_Pow by simp
+  with assms
+  have "Pow(\<nu>) \<lesssim> \<nu>"
+    using cardinal_eqpoll_iff Card_le_imp_lepoll Card_cardinal_eq
+    by auto
+  then
+  obtain g where "g \<in> inj(Pow(\<nu>), \<nu>)"
+    unfolding lepoll_def by blast
+  then
+  show "False"
+    using cantor_inj by simp
+qed simp
+
 
 lemma cexp_left_mono:
   assumes "\<kappa>1 \<le> \<kappa>2" 
