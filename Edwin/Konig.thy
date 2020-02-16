@@ -59,7 +59,6 @@ proof -
       apply (rule_tac A="A'\<rightarrow>B'" and B="\<lambda>_.A'\<rightarrow>B'" in fun_extension)
       using comp_fun_apply[OF lam_funtype]
         apply (simp_all)
-      find_theorems "( _ O _)`_"
       sorry
   next
     show "(\<lambda>x\<in>A' \<rightarrow> B'. converse(g) O x O converse(f)) O (\<lambda>x\<in>A -> B. g O x O f) = id(A -> B)"
@@ -184,6 +183,9 @@ qed
 lemma cantor_inj : "f \<notin> inj(Pow(A),A)"
   using inj_imp_surj[OF _ Pow_bottom] cantor_surj by blast
 
+lemma lepollD[dest!]: "A \<lesssim> B \<Longrightarrow> \<exists>f. f \<in> inj(A, B)"
+  unfolding lepoll_def .
+
 lemma cantor_cexp:
   assumes "Card(\<nu>)"
   shows "\<nu> < 2 \<up> \<nu>"
@@ -199,12 +201,11 @@ proof (intro not_le_iff_lt[THEN iffD1] notI)
     by auto
   then
   obtain g where "g \<in> inj(Pow(\<nu>), \<nu>)"
-    unfolding lepoll_def by blast
+    by blast
   then
   show "False"
     using cantor_inj by simp
 qed simp
-
 
 lemma cexp_left_mono:
   assumes "\<kappa>1 \<le> \<kappa>2" 
@@ -231,20 +232,161 @@ lemma cantor_cexp':
   shows "\<nu> < \<kappa> \<up> \<nu>"
  using cexp_left_mono assms cantor_cexp lt_trans2 by blast
 
-lemma InfCard_cexp: 
+lemma InfCard_cexp:
   assumes "2 \<le> \<kappa>" "InfCard(\<nu>)"
   shows "InfCard(\<kappa> \<up> \<nu>)"
   using assms cantor_cexp'[THEN leI] le_trans Card_cexp
   unfolding InfCard_def by auto
 
+lemma nats_le_InfCard:
+  assumes "n\<in>nat" "InfCard(\<kappa>)"
+  shows "n \<le> \<kappa>"
+  using assms Ord_is_Transset
+    le_trans[of n nat \<kappa>, OF le_subset_iff[THEN iffD2]]
+  unfolding InfCard_def Transset_def by simp
+
+lemmas InfCard_cexp' = InfCard_cexp[OF nats_le_InfCard, simplified]
+  \<comment> \<open>InfCard(\<kappa>) \<Longrightarrow> InfCard(\<nu>) \<Longrightarrow> InfCard(\<kappa> \<up> \<nu>)\<close>
+
+lemma nat_into_InfCard:
+  assumes "n\<in>nat" "InfCard(\<kappa>)"
+  shows "n \<in> \<kappa>"
+  using assms  le_imp_subset[of nat \<kappa>]
+  unfolding InfCard_def by auto
+
 subsection\<open>König's Lemma\<close>
 
+lemma cf_le_cofinal_fun:
+  notes [dest] = InfCard_is_Card[THEN Card_is_Ord] InfCard_is_Limit
+  assumes "cf(\<kappa>) \<le> \<nu>" "InfCard(\<kappa>)" "InfCard(\<nu>)"
+  shows "\<exists>f.  f:\<nu> \<rightarrow> \<kappa>  \<and>  cofinal_fun(f, \<kappa>, Memrel(\<kappa>))"
+proof -
+  from \<open>InfCard(\<kappa>)\<close>
+  obtain h where h_cofinal_mono: "cofinal_fun(h,\<kappa>,Memrel(\<kappa>))"
+    "h \<in> mono_map(cf(\<kappa>),Memrel(cf(\<kappa>)),\<kappa>,Memrel(\<kappa>))"
+    "h : cf(\<kappa>) \<rightarrow> \<kappa>"
+    using cofinal_mono_map_cf mono_map_is_fun by force
+  moreover from \<open>cf(\<kappa>) \<le> \<nu>\<close>
+  obtain g where "g \<in> inj(cf(\<kappa>), \<nu>)"
+    using le_imp_lepoll by blast
+  moreover from \<open>InfCard(\<kappa>)\<close>
+  have "0 \<in> cf(\<kappa>)"
+    using InfCard_cf nat_into_InfCard by auto
+  ultimately
+  obtain f where "f \<in> surj(\<nu>, cf(\<kappa>))" "f: \<nu> \<rightarrow> cf(\<kappa>)"
+    using inj_imp_surj surj_is_fun by blast
+  moreover from this
+  have "cofinal_fun(f,cf(\<kappa>),Memrel(cf(\<kappa>)))"
+    using surj_is_cofinal by simp
+  moreover
+  note h_cofinal_mono \<open>InfCard(\<kappa>)\<close>
+  moreover from calculation
+  have "cofinal_fun(h O f,\<kappa>,Memrel(\<kappa>))"
+    using Ord_cofinal_comp by blast
+  moreover from calculation
+  have "h O f \<in> \<nu> -> \<kappa>"
+    using comp_fun by simp
+  ultimately
+  show ?thesis by blast
+qed
+
+lemma function_space_nonempty:
+  assumes "b\<in>B"
+  shows "(\<lambda>x\<in>A. b) : A \<rightarrow> B"
+  using assms lam_type by force
+
 lemma konigs_lemma:
+  notes [dest] = InfCard_is_Card Card_is_Ord
   assumes
-    "InfCard(\<kappa>)" "Card(\<nu>)" "cf(\<kappa>) \<le> \<nu>"
+    "InfCard(\<kappa>)" "InfCard(\<nu>)" "cf(\<kappa>) \<le> \<nu>"
   shows
     "\<kappa> < \<kappa> \<up> \<nu>"
-  sorry
+  using assms(1,2) Card_cexp
+proof (intro not_le_iff_lt[THEN iffD1] notI)
+  assume "\<kappa> \<up> \<nu> \<le> \<kappa>"
+  moreover
+  note \<open>InfCard(\<kappa>)\<close>
+  moreover from calculation
+  have "\<nu> \<rightarrow> \<kappa> \<lesssim> \<kappa>"
+    using Card_cardinal_eq[OF InfCard_is_Card, symmetric]
+      Card_le_imp_lepoll
+    unfolding cexp_def by simp
+  ultimately
+  obtain G where "G \<in> surj(\<kappa>, \<nu> \<rightarrow> \<kappa>)"
+    using inj_imp_surj[OF _ function_space_nonempty,
+        OF _ nat_into_InfCard] by blast
+  from assms
+  obtain f where "f:\<nu> \<rightarrow> \<kappa>" "cofinal_fun(f,\<kappa>,Memrel(\<kappa>))"
+    using cf_le_cofinal_fun InfCard_is_Card by blast
+  define H where "H(\<alpha>) \<equiv> \<mu> x. x\<in>\<kappa> \<and> (\<forall>m<f`\<alpha>. G`m`\<alpha> \<noteq> x)"
+    (is "_ \<equiv> \<mu> x. ?P(\<alpha>,x)") for \<alpha>
+  have H_satisfies: "?P(\<alpha>,H(\<alpha>))" if "\<alpha> \<in> \<nu>" for \<alpha>
+  proof -
+    from that
+    obtain h where "?P(\<alpha>,h)"
+      sorry
+    with assms
+    show "?P(\<alpha>,H(\<alpha>))"
+      using LeastI[of "?P(\<alpha>)" h] lt_Ord Ord_in_Ord
+      unfolding H_def by fastforce
+  qed
+  then
+  have "(\<lambda>\<alpha>\<in>\<nu>. H(\<alpha>)): \<nu> \<rightarrow> \<kappa>"
+    using lam_type by auto
+  with \<open>G \<in> surj(\<kappa>, \<nu> \<rightarrow> \<kappa>)\<close>
+  obtain n where "n\<in>\<kappa>" "G`n = (\<lambda>\<alpha>\<in>\<nu>. H(\<alpha>))"
+    unfolding surj_def by blast
+  moreover
+  note \<open>InfCard(\<kappa>)\<close>
+  moreover from calculation
+  have "succ(n) \<in> \<kappa>"
+    using ltI InfCard_is_Limit
+    Limit_succ_lt_iff[THEN iffD2, OF _ ltI, THEN ltD, of \<kappa> n]
+    by auto
+  moreover
+  note \<open>f: \<nu> \<rightarrow> _\<close>
+  moreover from this
+  have "domain(f) = \<nu>"
+    using domain_of_fun by simp
+  ultimately
+  obtain \<alpha> where "\<alpha> \<in> \<nu>" "succ(n) \<in> f`\<alpha> \<or> succ(n) = f `\<alpha>"
+    using cofinal_funD[OF \<open>cofinal_fun(f,_,_)\<close>, of "succ(n)"]
+    by blast
+  moreover from this
+  consider (1) "succ(n) \<in> f`\<alpha>" | (2) "succ(n) = f `\<alpha>"
+    by blast
+  then
+  have "n < f`\<alpha>"
+  proof (cases)
+    case 1 
+    moreover
+    have "n \<in> succ(n)" by simp
+    moreover
+    note \<open>InfCard(\<kappa>)\<close> \<open>f: \<nu> \<rightarrow> _\<close> \<open>\<alpha> \<in> \<nu>\<close>
+    moreover from this
+    have "Ord(f ` \<alpha>)"
+      using apply_type[of f \<nu> "\<lambda>_. \<kappa>", THEN [2] Ord_in_Ord]
+      by blast
+    ultimately
+    show ?thesis
+      using Ord_trans[of n "succ(n)" "f ` \<alpha>"] ltI  by blast
+  next
+    case 2
+    have "n \<in> f ` \<alpha>" by (simp add:2[symmetric])
+    with \<open>InfCard(\<kappa>)\<close> \<open>f: \<nu> \<rightarrow> _\<close> \<open>\<alpha> \<in> \<nu>\<close>
+    show ?thesis
+      using ltI
+        apply_type[of f \<nu> "\<lambda>_. \<kappa>", THEN [2] Ord_in_Ord]
+      by blast
+  qed
+  moreover from calculation and \<open>G`n = (\<lambda>\<alpha>\<in>\<nu>. H(\<alpha>))\<close>
+  have "G`n`\<alpha> = H(\<alpha>)"
+    using ltD by simp
+  moreover
+  note H_satisfies
+  ultimately
+  show "False" by blast
+qed blast+
 
 lemma cf_cexp:
   assumes
@@ -262,7 +404,7 @@ proof (rule ccontr)
   have "InfCard(\<kappa> \<up> \<nu>)" using InfCard_cexp by simp
   moreover from calculation
   have "\<kappa> \<up> \<nu> < (\<kappa> \<up> \<nu>) \<up> \<nu>" 
-    using konigs_lemma InfCard_is_Card Card_is_Ord by simp
+    using konigs_lemma by simp
   ultimately
   show "False" using cexp_cexp_cmult InfCard_csquare_eq by auto
 qed

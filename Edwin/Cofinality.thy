@@ -164,6 +164,13 @@ proof
   show "\<exists>x\<in>domain(f O h). \<langle>a, (f O h) ` x\<rangle> \<in> r \<or> a = (f O h) ` x"  by blast
 qed
 
+lemma Ord_cofinal_comp:
+  assumes 
+    "Ord(\<alpha>)" "f\<in> mono_map(C,s,\<alpha>,Memrel(\<alpha>))" "cofinal_fun(f,\<alpha>,Memrel(\<alpha>))" 
+    "h:B \<rightarrow> C" "cofinal_fun(h,C,s)"
+  shows "cofinal_fun(f O h,\<alpha>,Memrel(\<alpha>))"
+  using assms cofinal_comp[OF _ _ _ _ trans_Memrel] by simp
+
 lemma mono_map_mono:
   assumes 
     "f \<in> mono_map(A,r,B,s)" "B \<subseteq> C"
@@ -1131,7 +1138,7 @@ proof -
   show "cf(\<gamma>) = cf(cf(\<gamma>))"  .
 qed
   
-lemma surjection_is_cofinal: "f \<in> surj(\<delta>,\<gamma>) \<Longrightarrow> cofinal_fun(f,\<gamma>,Memrel(\<gamma>))"
+lemma surj_is_cofinal: "f \<in> surj(\<delta>,\<gamma>) \<Longrightarrow> cofinal_fun(f,\<gamma>,Memrel(\<gamma>))"
   unfolding surj_def cofinal_fun_def using domain_of_fun by force
 
 lemma cf_le_cardinal:
@@ -1145,11 +1152,11 @@ proof -
     using Ord_cardinal_eqpoll unfolding eqpoll_def bij_def by blast
   with \<open>Ord(\<gamma>)\<close>
   show ?thesis 
-    using Card_is_Ord[OF Card_cardinal] surjection_is_cofinal 
+    using Card_is_Ord[OF Card_cardinal] surj_is_cofinal
       cf_le_domain_cofinal_fun[of \<gamma>] surj_is_fun by blast
 qed
 
-lemma regular_is_cardinal:
+lemma regular_is_Card:
   notes le_imp_subset [dest]
   assumes "Limit(\<gamma>)" "\<gamma> = cf(\<gamma>)"
   shows "Card(\<gamma>)"
@@ -1164,5 +1171,18 @@ proof -
   with assms
   show ?thesis unfolding Card_def using cf_le_cardinal by force     
 qed 
-    
+
+lemma InfCard_cf: assumes "Limit(\<kappa>)" shows "InfCard(cf(\<kappa>))"
+proof -
+  from assms
+  have "Limit(cf(\<kappa>))" sorry
+  moreover from this and assms
+  have "Card(cf(\<kappa>))"
+    using regular_is_Card cf_idemp by simp
+  ultimately
+  show ?thesis
+    unfolding InfCard_def
+    using nat_le_Limit by simp
+qed
+
 end
