@@ -1,7 +1,8 @@
 theory Konig
   imports
-    ZF.Cardinal_AC 
-    Delta_System \<comment> \<open>only for @{thm InfCard_Aleph}\<close>
+    ZF.Cardinal_AC
+    Cofinality
+
 begin
 
 definition
@@ -157,34 +158,8 @@ lemma cardinal_Pow: "|Pow(X)| = 2 \<up> X" \<comment> \<open>Perhaps it's better
   using cardinal_eqpoll_iff[THEN iffD2, OF Pow_eqpoll_function_space]
   unfolding cexp_def by simp
 
-lemma inj_imp_surj : 
-  fixes f b
-  notes inj_is_fun[dest] 
-  defines [simp]: "ifx(x) \<equiv> if x\<in>range(f) then converse(f)`x else b"
-  assumes "f \<in> inj(B,A)" "b\<in>B"
-  shows "(\<lambda>x\<in>A. ifx(x)) \<in> surj(A,B)"
-proof -
-  from assms
-  have "converse(f) \<in> surj(range(f),B)" "range(f) \<subseteq> A"
-       "converse(f) : range(f) \<rightarrow> B"
-    using inj_converse_surj range_of_function surj_is_fun by blast+
-  with \<open>b\<in>B\<close>
-  show "(\<lambda>x\<in>A. ifx(x)) \<in> surj(A,B)"
-    unfolding surj_def 
-  proof (intro CollectI lam_type ballI; elim CollectE) 
-    fix y
-    assume "y \<in> B" "\<forall>y\<in>B. \<exists>x\<in>range(f). converse(f) ` x = y"
-    with \<open>range(f) \<subseteq> A\<close>
-    show "\<exists>x\<in>A. (\<lambda>x\<in>A. ifx(x)) ` x = y" 
-      by (drule_tac bspec, auto)
-  qed simp
-qed
-
 lemma cantor_inj : "f \<notin> inj(Pow(A),A)"
   using inj_imp_surj[OF _ Pow_bottom] cantor_surj by blast
-
-lemma lepollD[dest!]: "A \<lesssim> B \<Longrightarrow> \<exists>f. f \<in> inj(A, B)"
-  unfolding lepoll_def .
 
 lemma cantor_cexp:
   assumes "Card(\<nu>)"
@@ -254,96 +229,46 @@ lemma nat_into_InfCard:
   using assms  le_imp_subset[of nat \<kappa>]
   unfolding InfCard_def by auto
 
-subsection\<open>König's Lemma\<close>
+subsection\<open>Alephs are infinite cardinals\<close>
 
-lemma cf_le_cofinal_fun:
-  notes [dest] = InfCard_is_Card[THEN Card_is_Ord] InfCard_is_Limit
-  assumes "cf(\<kappa>) \<le> \<nu>" "InfCard(\<kappa>)" "InfCard(\<nu>)"
-  shows "\<exists>f.  f:\<nu> \<rightarrow> \<kappa>  \<and>  cofinal_fun(f, \<kappa>, Memrel(\<kappa>))"
+lemmas Aleph_mono = Normal_imp_mono[OF _ Normal_Aleph]
+
+lemma Aleph_zero_eq_nat: "\<aleph>0 = nat"
+  unfolding Aleph_def by simp
+
+lemma InfCard_Aleph: 
+  notes Aleph_zero_eq_nat[simp]
+  assumes "Ord(\<alpha>)" 
+  shows "InfCard(\<aleph>\<alpha>)"
 proof -
-  from \<open>InfCard(\<kappa>)\<close>
-  obtain h where h_cofinal_mono: "cofinal_fun(h,\<kappa>,Memrel(\<kappa>))"
-    "h \<in> mono_map(cf(\<kappa>),Memrel(cf(\<kappa>)),\<kappa>,Memrel(\<kappa>))"
-    "h : cf(\<kappa>) \<rightarrow> \<kappa>"
-    using cofinal_mono_map_cf mono_map_is_fun by force
-  moreover from \<open>cf(\<kappa>) \<le> \<nu>\<close>
-  obtain g where "g \<in> inj(cf(\<kappa>), \<nu>)"
-    using le_imp_lepoll by blast
-  moreover from \<open>InfCard(\<kappa>)\<close>
-  have "0 \<in> cf(\<kappa>)"
-    using InfCard_cf nat_into_InfCard by auto
-  ultimately
-  obtain f where "f \<in> surj(\<nu>, cf(\<kappa>))" "f: \<nu> \<rightarrow> cf(\<kappa>)"
-    using inj_imp_surj surj_is_fun by blast
-  moreover from this
-  have "cofinal_fun(f,cf(\<kappa>),Memrel(cf(\<kappa>)))"
-    using surj_is_cofinal by simp
-  moreover
-  note h_cofinal_mono \<open>InfCard(\<kappa>)\<close>
-  moreover from calculation
-  have "cofinal_fun(h O f,\<kappa>,Memrel(\<kappa>))"
-    using Ord_cofinal_comp by blast
-  moreover from calculation
-  have "h O f \<in> \<nu> -> \<kappa>"
-    using comp_fun by simp
-  ultimately
-  show ?thesis by blast
-qed
+  have "\<not> (\<aleph>\<alpha> \<in> nat)" 
+  proof (cases "\<alpha>=0")
+    case True
+    then show ?thesis using mem_irrefl by auto
+  next
+    case False
+    with \<open>Ord(\<alpha>)\<close>
+    have "nat \<in> \<aleph>\<alpha>" using Ord_0_lt[of \<alpha>] ltD  by (auto dest:Aleph_mono)
+    then show ?thesis using foundation by blast 
+  qed
+  with \<open>Ord(\<alpha>)\<close>
+  have "\<not> (|\<aleph>\<alpha>| \<in> nat)" 
+    using Card_cardinal_eq by auto
+  then
+  have "\<not> Finite(\<aleph>\<alpha>)" by auto
+  with \<open>Ord(\<alpha>)\<close>
+  show ?thesis
+    using Inf_Card_is_InfCard by simp
+qed 
+
+lemmas Limit_Aleph = InfCard_Aleph[THEN InfCard_is_Limit] 
+
+subsection\<open>König's Lemma\<close>
 
 lemma function_space_nonempty:
   assumes "b\<in>B"
   shows "(\<lambda>x\<in>A. b) : A \<rightarrow> B"
   using assms lam_type by force
-
-lemma Limit_cofinal_fun_lt:
-  notes [dest] = Limit_is_Ord
-  assumes "Limit(\<kappa>)" "f: \<nu> \<rightarrow> \<kappa>" "cofinal_fun(f,\<kappa>,Memrel(\<kappa>))"
-    "n\<in>\<kappa>"
-  shows "\<exists>\<alpha>\<in>\<nu>. n < f`\<alpha>"
-proof -
-  from \<open>Limit(\<kappa>)\<close> \<open>n\<in>\<kappa>\<close>
-  have "succ(n) \<in> \<kappa>"
-    using Limit_succ_lt_iff[THEN iffD2, OF _ ltI, THEN ltD, of \<kappa> n]
-    by auto
-  moreover
-  note \<open>f: \<nu> \<rightarrow> _\<close>
-  moreover from this
-  have "domain(f) = \<nu>"
-    using domain_of_fun by simp
-  ultimately
-  obtain \<alpha> where "\<alpha> \<in> \<nu>" "succ(n) \<in> f`\<alpha> \<or> succ(n) = f `\<alpha>"
-    using cofinal_funD[OF \<open>cofinal_fun(f,_,_)\<close>, of "succ(n)"]
-    by blast
-  moreover from this
-  consider (1) "succ(n) \<in> f`\<alpha>" | (2) "succ(n) = f `\<alpha>"
-    by blast
-  then
-  have "n < f`\<alpha>"
-  proof (cases)
-    case 1 
-    moreover
-    have "n \<in> succ(n)" by simp
-    moreover
-    note \<open>Limit(\<kappa>)\<close> \<open>f: \<nu> \<rightarrow> _\<close> \<open>\<alpha> \<in> \<nu>\<close>
-    moreover from this
-    have "Ord(f ` \<alpha>)"
-      using apply_type[of f \<nu> "\<lambda>_. \<kappa>", THEN [2] Ord_in_Ord]
-      by blast
-    ultimately
-    show ?thesis
-      using Ord_trans[of n "succ(n)" "f ` \<alpha>"] ltI  by blast
-  next
-    case 2
-    have "n \<in> f ` \<alpha>" by (simp add:2[symmetric])
-    with \<open>Limit(\<kappa>)\<close> \<open>f: \<nu> \<rightarrow> _\<close> \<open>\<alpha> \<in> \<nu>\<close>
-    show ?thesis
-      using ltI
-        apply_type[of f \<nu> "\<lambda>_. \<kappa>", THEN [2] Ord_in_Ord]
-      by blast
-  qed
-  ultimately
-  show ?thesis by blast
-qed
 
 lemma konigs_lemma:
   notes [dest] = InfCard_is_Card Card_is_Ord
@@ -366,8 +291,8 @@ proof (intro not_le_iff_lt[THEN iffD1] notI)
     using inj_imp_surj[OF _ function_space_nonempty,
         OF _ nat_into_InfCard] by blast
   from assms
-  obtain f where "f:\<nu> \<rightarrow> \<kappa>" "cofinal_fun(f,\<kappa>,Memrel(\<kappa>))"
-    using cf_le_cofinal_fun InfCard_is_Card by blast
+  obtain f where "f:\<nu> \<rightarrow> \<kappa>" "cf_fun(f,\<kappa>)"
+    using cf_le_cf_fun[OF _ InfCard_is_Limit] by blast
   define H where "H(\<alpha>) \<equiv> \<mu> x. x\<in>\<kappa> \<and> (\<forall>m<f`\<alpha>. G`m`\<alpha> \<noteq> x)"
     (is "_ \<equiv> \<mu> x. ?P(\<alpha>,x)") for \<alpha>
   have H_satisfies: "?P(\<alpha>,H(\<alpha>))" if "\<alpha> \<in> \<nu>" for \<alpha>
@@ -387,7 +312,7 @@ proof (intro not_le_iff_lt[THEN iffD1] notI)
   obtain n where "n\<in>\<kappa>" "G`n = (\<lambda>\<alpha>\<in>\<nu>. H(\<alpha>))"
     unfolding surj_def by blast
   moreover
-  note \<open>InfCard(\<kappa>)\<close> \<open>f: \<nu> \<rightarrow> \<kappa>\<close> \<open>cofinal_fun(f,_,_)\<close>
+  note \<open>InfCard(\<kappa>)\<close> \<open>f: \<nu> \<rightarrow> \<kappa>\<close> \<open>cf_fun(f,_)\<close>
   ultimately
   obtain \<alpha> where "n < f`\<alpha>" "\<alpha>\<in>\<nu>"
     using Limit_cofinal_fun_lt[OF InfCard_is_Limit] by blast

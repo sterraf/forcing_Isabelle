@@ -1,8 +1,6 @@
 theory Delta_System
   imports 
-    Cofinality
-    ZF.Cardinal_AC
-    "~~/src/ZF/Constructible/Normal"
+    Konig
 
 begin
 
@@ -16,7 +14,6 @@ lemma mono_mapD:
   shows   "f: A\<rightarrow>B" "\<And>x y. x\<in>A \<Longrightarrow> y\<in>A \<Longrightarrow> <x,y>\<in>r \<Longrightarrow> <f`x,f`y>\<in>s"
   using assms unfolding mono_map_def by simp_all
 
-lemmas Aleph_mono = Normal_imp_mono[OF _ Normal_Aleph]
 lemmas Aleph_cont = Normal_imp_cont[OF Normal_Aleph]
 lemmas Aleph_sup = Normal_Union[OF _ _ Normal_Aleph]
 
@@ -25,36 +22,6 @@ bundle Aleph_dests = Aleph_cont[dest] Aleph_sup[dest]
 bundle Aleph_intros = Aleph_mono[intro!]
 bundle Aleph_mem_dests = Aleph_mono[OF ltI, THEN ltD, dest]
 bundle mono_map_rules =  mono_mapI[intro!] mono_mapD[dest]
-
-lemma Aleph_zero_eq_nat: "\<aleph>0 = nat"
-  unfolding Aleph_def by simp
-
-lemma InfCard_Aleph: 
-  notes Aleph_zero_eq_nat[simp]
-  assumes "Ord(\<alpha>)" 
-  shows "InfCard(\<aleph>\<alpha>)"
-proof -
-  have "\<not> (\<aleph>\<alpha> \<in> nat)" 
-  proof (cases "\<alpha>=0")
-    case True
-    then show ?thesis using mem_irrefl by auto
-  next
-    case False
-    with \<open>Ord(\<alpha>)\<close>
-    have "nat \<in> \<aleph>\<alpha>" using Ord_0_lt[of \<alpha>] ltD  by (auto dest:Aleph_mono)
-    then show ?thesis using foundation by blast 
-  qed
-  with \<open>Ord(\<alpha>)\<close>
-  have "\<not> (|\<aleph>\<alpha>| \<in> nat)" 
-    using Card_cardinal_eq by auto
-  then
-  have "\<not> Finite(\<aleph>\<alpha>)" by auto
-  with \<open>Ord(\<alpha>)\<close>
-  show ?thesis
-    using Inf_Card_is_InfCard by simp
-qed 
-
-lemmas Limit_Aleph = InfCard_Aleph[THEN InfCard_is_Limit] 
 
 context
   includes Ord_dests Aleph_dests Aleph_intros Aleph_mem_dests mono_map_rules
@@ -161,12 +128,6 @@ lemma zero_le_aleph1: "0<\<aleph>1"
 lemma le_aleph1_nat: "Card(k) \<Longrightarrow> k<\<aleph>1 \<Longrightarrow> k \<le> nat"    
   by (simp add: Aleph_def  Card_lt_csucc_iff Card_nat)
 
-lemma fun_sub: "f:A\<rightarrow>B \<Longrightarrow> f \<subseteq> Sigma(A,\<lambda> _ . B)"
-  by(auto simp add: Pi_iff)
-
-lemma range_of_function: "f:A\<rightarrow>B \<Longrightarrow> range(f) \<subseteq> B"
-  by(rule range_rel_subset,erule fun_sub[of _ "A"])
-
 lemma cof_aleph1_aux: "function(G) \<Longrightarrow> domain(G) \<lesssim> nat \<Longrightarrow> 
    \<forall>n\<in>domain(G). |G`n|<\<aleph>1 \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<le>nat"
 proof -
@@ -223,7 +184,7 @@ proof -
       using zero_le_aleph1 by (auto)
     with \<open>function(?G)\<close> \<open>domain(?G) \<lesssim> nat\<close> 
     have "|\<Union>n\<in>domain(?G). ?G`n|\<le>nat"
-      using cof_aleph1_aux by blast (* force/auto won't do it here *)
+      using cof_aleph1_aux by (blast del:lepollD)  (* force/auto won't do it here *)
     then 
     have "|\<Union>n\<in>range(f). f-``{n}|\<le>nat" by simp
     with \<open>|\<aleph>1| \<le> _\<close> 
