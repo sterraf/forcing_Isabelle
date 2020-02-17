@@ -1263,8 +1263,7 @@ lemma Limit_cofinal_fun_lt:
 proof -
   from \<open>Limit(\<kappa>)\<close> \<open>n\<in>\<kappa>\<close>
   have "succ(n) \<in> \<kappa>"
-    using Limit_succ_lt_iff[THEN iffD2, OF _ ltI, THEN ltD, of \<kappa> n]
-    by auto
+    using Limit_has_succ[OF _ ltI, THEN ltD] by auto
   moreover
   note \<open>f: \<nu> \<rightarrow> _\<close>
   moreover from this

@@ -270,8 +270,43 @@ lemma function_space_nonempty:
   shows "(\<lambda>x\<in>A. b) : A \<rightarrow> B"
   using assms lam_type by force
 
+definition
+  str_bound :: "i\<Rightarrow>i" where
+  "str_bound(A) \<equiv> \<Union>a\<in>A. succ(a)"
+
+lemma str_bound_type [TC]: "\<forall>a\<in>A. Ord(a) \<Longrightarrow> Ord(str_bound(A))"
+  unfolding str_bound_def by auto
+
+lemma str_bound_lt: "\<forall>a\<in>A. Ord(a) \<Longrightarrow> \<forall>a\<in>A. a < str_bound(A)"
+  unfolding str_bound_def using str_bound_type  
+  by (blast intro:ltI)
+
+lemma cardinal_RepFun_le: "|{f(a) . a\<in>A}| \<le> |A|"
+proof -
+  have "(\<lambda>x\<in>A. f(x)) \<in> surj(A, {f(a) . a\<in>A})"
+    unfolding surj_def using lam_funtype by auto
+  then
+  show ?thesis
+    using  surj_implies_cardinal_le by blast
+qed
+
+lemma subset_imp_le_cardinal: "A \<subseteq> B \<Longrightarrow> |A| \<le> |B|"
+  using subset_imp_lepoll[THEN lepoll_imp_Card_le] .
+
+lemma lt_cardinal_imp_not_subset: "|A| < |B| \<Longrightarrow> \<not> B \<subseteq> A"
+  using subset_imp_le_cardinal le_imp_not_lt by blast
+
+lemma Ord_eq_Collect_lt: "i<\<alpha> \<Longrightarrow> {j\<in>\<alpha>. j<i} = i"
+  \<comment> \<open>almost the same proof as @{thm nat_eq_Collect_lt}\<close>
+  apply (rule equalityI)
+   apply (blast dest: ltD)
+  apply (auto simp add: Ord_mem_iff_lt)
+   apply (rule Ord_trans ltI[OF _ lt_Ord]; auto simp add:lt_def dest:ltD)+
+  done
+
 lemma konigs_lemma:
   notes [dest] = InfCard_is_Card Card_is_Ord
+    and [trans] = lt_trans1 lt_trans2
   assumes
     "InfCard(\<kappa>)" "InfCard(\<nu>)" "cf(\<kappa>) \<le> \<nu>"
   shows
@@ -297,9 +332,30 @@ proof (intro not_le_iff_lt[THEN iffD1] notI)
     (is "_ \<equiv> \<mu> x. ?P(\<alpha>,x)") for \<alpha>
   have H_satisfies: "?P(\<alpha>,H(\<alpha>))" if "\<alpha> \<in> \<nu>" for \<alpha>
   proof -
-    from that
     obtain h where "?P(\<alpha>,h)"
-      sorry
+    proof -
+      from \<open>\<alpha>\<in>\<nu>\<close> \<open>f:\<nu> \<rightarrow> \<kappa>\<close> \<open>InfCard(\<kappa>)\<close>
+      have "f`\<alpha> < \<kappa>"
+        using apply_type[of _ _ "\<lambda>_ . \<kappa>"] by (auto intro:ltI)
+      have "|{G`m`\<alpha> . m \<in> {x\<in>\<kappa> . x < f`\<alpha>}}| \<le> |{x\<in>\<kappa> . x < f`\<alpha>}|"
+        using cardinal_RepFun_le by simp
+      also from \<open>f`\<alpha> < \<kappa>\<close> \<open>InfCard(\<kappa>)\<close>
+      have "|{x\<in>\<kappa> . x < f`\<alpha>}| < |\<kappa>|"
+        using Card_lt_iff[OF lt_Ord, THEN iffD2, of "f`\<alpha>" \<kappa> \<kappa>]
+          Ord_eq_Collect_lt[of "f`\<alpha>" \<kappa>] Card_cardinal_eq
+        by force
+      finally
+      have "|{G`m`\<alpha> . m \<in> {x\<in>\<kappa> . x < f`\<alpha>}}| < |\<kappa>|" .
+      moreover from \<open>f`\<alpha> < \<kappa>\<close> \<open>InfCard(\<kappa>)\<close>
+      have "m<f`\<alpha> \<Longrightarrow> m\<in>\<kappa>" for m
+        using Ord_trans[of m "f`\<alpha>" \<kappa>]
+        by (auto dest:ltD)
+      ultimately
+      have "\<exists>h. ?P(\<alpha>,h)"
+        using lt_cardinal_imp_not_subset by blast
+      with that
+      show ?thesis by blast
+    qed
     with assms
     show "?P(\<alpha>,H(\<alpha>))"
       using LeastI[of "?P(\<alpha>)" h] lt_Ord Ord_in_Ord
