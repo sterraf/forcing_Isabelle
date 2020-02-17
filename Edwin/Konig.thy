@@ -295,6 +295,56 @@ lemma function_space_nonempty:
   shows "(\<lambda>x\<in>A. b) : A \<rightarrow> B"
   using assms lam_type by force
 
+lemma Limit_cofinal_fun_lt:
+  notes [dest] = Limit_is_Ord
+  assumes "Limit(\<kappa>)" "f: \<nu> \<rightarrow> \<kappa>" "cofinal_fun(f,\<kappa>,Memrel(\<kappa>))"
+    "n\<in>\<kappa>"
+  shows "\<exists>\<alpha>\<in>\<nu>. n < f`\<alpha>"
+proof -
+  from \<open>Limit(\<kappa>)\<close> \<open>n\<in>\<kappa>\<close>
+  have "succ(n) \<in> \<kappa>"
+    using Limit_succ_lt_iff[THEN iffD2, OF _ ltI, THEN ltD, of \<kappa> n]
+    by auto
+  moreover
+  note \<open>f: \<nu> \<rightarrow> _\<close>
+  moreover from this
+  have "domain(f) = \<nu>"
+    using domain_of_fun by simp
+  ultimately
+  obtain \<alpha> where "\<alpha> \<in> \<nu>" "succ(n) \<in> f`\<alpha> \<or> succ(n) = f `\<alpha>"
+    using cofinal_funD[OF \<open>cofinal_fun(f,_,_)\<close>, of "succ(n)"]
+    by blast
+  moreover from this
+  consider (1) "succ(n) \<in> f`\<alpha>" | (2) "succ(n) = f `\<alpha>"
+    by blast
+  then
+  have "n < f`\<alpha>"
+  proof (cases)
+    case 1 
+    moreover
+    have "n \<in> succ(n)" by simp
+    moreover
+    note \<open>Limit(\<kappa>)\<close> \<open>f: \<nu> \<rightarrow> _\<close> \<open>\<alpha> \<in> \<nu>\<close>
+    moreover from this
+    have "Ord(f ` \<alpha>)"
+      using apply_type[of f \<nu> "\<lambda>_. \<kappa>", THEN [2] Ord_in_Ord]
+      by blast
+    ultimately
+    show ?thesis
+      using Ord_trans[of n "succ(n)" "f ` \<alpha>"] ltI  by blast
+  next
+    case 2
+    have "n \<in> f ` \<alpha>" by (simp add:2[symmetric])
+    with \<open>Limit(\<kappa>)\<close> \<open>f: \<nu> \<rightarrow> _\<close> \<open>\<alpha> \<in> \<nu>\<close>
+    show ?thesis
+      using ltI
+        apply_type[of f \<nu> "\<lambda>_. \<kappa>", THEN [2] Ord_in_Ord]
+      by blast
+  qed
+  ultimately
+  show ?thesis by blast
+qed
+
 lemma konigs_lemma:
   notes [dest] = InfCard_is_Card Card_is_Ord
   assumes
@@ -337,53 +387,15 @@ proof (intro not_le_iff_lt[THEN iffD1] notI)
   obtain n where "n\<in>\<kappa>" "G`n = (\<lambda>\<alpha>\<in>\<nu>. H(\<alpha>))"
     unfolding surj_def by blast
   moreover
-  note \<open>InfCard(\<kappa>)\<close>
-  moreover from calculation
-  have "succ(n) \<in> \<kappa>"
-    using ltI InfCard_is_Limit
-    Limit_succ_lt_iff[THEN iffD2, OF _ ltI, THEN ltD, of \<kappa> n]
-    by auto
-  moreover
-  note \<open>f: \<nu> \<rightarrow> _\<close>
-  moreover from this
-  have "domain(f) = \<nu>"
-    using domain_of_fun by simp
+  note \<open>InfCard(\<kappa>)\<close> \<open>f: \<nu> \<rightarrow> \<kappa>\<close> \<open>cofinal_fun(f,_,_)\<close>
   ultimately
-  obtain \<alpha> where "\<alpha> \<in> \<nu>" "succ(n) \<in> f`\<alpha> \<or> succ(n) = f `\<alpha>"
-    using cofinal_funD[OF \<open>cofinal_fun(f,_,_)\<close>, of "succ(n)"]
-    by blast
-  moreover from this
-  consider (1) "succ(n) \<in> f`\<alpha>" | (2) "succ(n) = f `\<alpha>"
-    by blast
-  then
-  have "n < f`\<alpha>"
-  proof (cases)
-    case 1 
-    moreover
-    have "n \<in> succ(n)" by simp
-    moreover
-    note \<open>InfCard(\<kappa>)\<close> \<open>f: \<nu> \<rightarrow> _\<close> \<open>\<alpha> \<in> \<nu>\<close>
-    moreover from this
-    have "Ord(f ` \<alpha>)"
-      using apply_type[of f \<nu> "\<lambda>_. \<kappa>", THEN [2] Ord_in_Ord]
-      by blast
-    ultimately
-    show ?thesis
-      using Ord_trans[of n "succ(n)" "f ` \<alpha>"] ltI  by blast
-  next
-    case 2
-    have "n \<in> f ` \<alpha>" by (simp add:2[symmetric])
-    with \<open>InfCard(\<kappa>)\<close> \<open>f: \<nu> \<rightarrow> _\<close> \<open>\<alpha> \<in> \<nu>\<close>
-    show ?thesis
-      using ltI
-        apply_type[of f \<nu> "\<lambda>_. \<kappa>", THEN [2] Ord_in_Ord]
-      by blast
-  qed
+  obtain \<alpha> where "n < f`\<alpha>" "\<alpha>\<in>\<nu>"
+    using Limit_cofinal_fun_lt[OF InfCard_is_Limit] by blast
   moreover from calculation and \<open>G`n = (\<lambda>\<alpha>\<in>\<nu>. H(\<alpha>))\<close>
   have "G`n`\<alpha> = H(\<alpha>)"
     using ltD by simp
-  moreover
-  note H_satisfies
+  moreover from calculation and H_satisfies
+  have "\<forall>m<f`\<alpha>. G`m`\<alpha> \<noteq> H(\<alpha>)" by simp
   ultimately
   show "False" by blast
 qed blast+
