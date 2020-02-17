@@ -103,7 +103,7 @@ next
   assume "f : \<nu>1 \<times> \<nu>2 \<rightarrow> \<kappa>" "x\<in>\<nu>1" "y\<in>\<nu>2"
   then
   show "f`\<langle>x,y\<rangle> \<in> \<kappa>" by simp
-next \<comment> \<open>one composition is the identity\<dots>\<close>
+next \<comment> \<open>one composition is the identity:\<close>
   fix f
   assume "f : \<nu>1 \<times> \<nu>2 \<rightarrow> \<kappa>"
   then
@@ -221,7 +221,7 @@ lemma nats_le_InfCard:
   unfolding InfCard_def Transset_def by simp
 
 lemmas InfCard_cexp' = InfCard_cexp[OF nats_le_InfCard, simplified]
-  \<comment> \<open>InfCard(\<kappa>) \<Longrightarrow> InfCard(\<nu>) \<Longrightarrow> InfCard(\<kappa> \<up> \<nu>)\<close>
+  \<comment> \<open>\<^term>\<open>InfCard(\<kappa>) \<Longrightarrow> InfCard(\<nu>) \<Longrightarrow> InfCard(\<kappa> \<up> \<nu>)\<close>\<close>
 
 lemma nat_into_InfCard:
   assumes "n\<in>nat" "InfCard(\<kappa>)"
