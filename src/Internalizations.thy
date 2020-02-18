@@ -1,9 +1,7 @@
 section\<open>Aids to internalize formulas\<close>
 theory Internalizations
   imports 
-    "ZF-Constructible-Trans.Formula"
-    "ZF-Constructible-Trans.L_axioms"
-    "ZF-Constructible-Trans.DPow_absolute" 
+    "ZF-Constructible.DPow_absolute" 
 begin
 
 text\<open>We found it useful to have slightly different versions of some 
