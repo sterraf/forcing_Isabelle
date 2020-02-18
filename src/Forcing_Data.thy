@@ -5,8 +5,6 @@ transitive models of ZF, and the associated \<^term>\<open>forcing_data\<close>
 theory Forcing_Data
   imports  
     Forcing_Notions 
-    "ZF-Constructible-Trans.Relative"
-    "ZF-Constructible-Trans.Formula"
     Interface
 
 begin
