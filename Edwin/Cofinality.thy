@@ -226,19 +226,21 @@ lemma cf_is_ordertype:
   using gamma_cofinal_gamma LeastI[of ?P \<gamma>] ordertype_Memrel[symmetric] assms 
   unfolding cf_def by blast
 
-lemma cofinal_fun_succ':
+lemma cf_fun_succ':
   assumes "Ord(\<beta>)" "Ord(\<alpha>)" "f:\<alpha>\<rightarrow>succ(\<beta>)"
-  shows "(\<exists>x\<in>\<alpha>. f`x=\<beta>) \<longleftrightarrow> cofinal_fun(f,succ(\<beta>),Memrel(succ(\<beta>)))"
+  shows "(\<exists>x\<in>\<alpha>. f`x=\<beta>) \<longleftrightarrow> cf_fun(f,succ(\<beta>))"
 proof (intro iffI)
   assume "(\<exists>x\<in>\<alpha>. f`x=\<beta>)"
   with assms
-  show "cofinal_fun(f,succ(\<beta>),Memrel(succ(\<beta>)))"
-    using domain_of_fun[OF \<open>f:\<alpha>\<rightarrow>succ(\<beta>)\<close>] unfolding cofinal_fun_def by auto
+  show "cf_fun(f,succ(\<beta>))"
+    using domain_of_fun[OF \<open>f:\<alpha>\<rightarrow>succ(\<beta>)\<close>] 
+    unfolding cf_fun_def cofinal_fun_def by auto
 next
-  assume "cofinal_fun(f,succ(\<beta>),Memrel(succ(\<beta>)))"
+  assume "cf_fun(f,succ(\<beta>))"
   with assms 
   obtain x where "x\<in>\<alpha>" "\<langle>\<beta>,f`x\<rangle> \<in> Memrel(succ(\<beta>)) \<or> \<beta> = f ` x"
-    using domain_of_fun[OF \<open>f:\<alpha>\<rightarrow>succ(\<beta>)\<close>] unfolding cofinal_fun_def by auto
+    using domain_of_fun[OF \<open>f:\<alpha>\<rightarrow>succ(\<beta>)\<close>] 
+    unfolding cf_fun_def cofinal_fun_def by auto
   moreover from \<open>Ord(\<beta>)\<close>
   have "\<langle>\<beta>,y\<rangle> \<notin> Memrel(succ(\<beta>))" for y
     using foundation unfolding Memrel_def by blast
@@ -246,9 +248,9 @@ next
   show "\<exists>x\<in>\<alpha>. f ` x = \<beta>" by blast
 qed
 
-lemma cofinal_fun_succ:
-  "Ord(\<beta>) \<Longrightarrow> f:1\<rightarrow>succ(\<beta>) \<Longrightarrow> f`0=\<beta> \<Longrightarrow> cofinal_fun(f,succ(\<beta>),Memrel(succ(\<beta>)))"
-  using cofinal_fun_succ' by blast
+lemma cf_fun_succ:
+  "Ord(\<beta>) \<Longrightarrow> f:1\<rightarrow>succ(\<beta>) \<Longrightarrow> f`0=\<beta> \<Longrightarrow> cf_fun(f,succ(\<beta>))"
+  using cf_fun_succ' by blast
 
 lemma ordertype_0_not_cofinal_succ:
   assumes "ordertype(A,Memrel(succ(i))) = 0"  "A\<subseteq>succ(i)" "Ord(i)"
@@ -277,12 +279,12 @@ lemma cf_succ:
   shows " cf(succ(\<alpha>)) = 1"
 proof -
   from assms
-  have "cofinal_fun(f,succ(\<alpha>),Memrel(succ(\<alpha>)))" 
-    using cofinal_fun_succ unfolding cofinal_fun_def by simp
+  have "cf_fun(f,succ(\<alpha>))" 
+    using cf_fun_succ unfolding cofinal_fun_def by simp
   from \<open>f:1\<rightarrow>succ(\<alpha>)\<close>
   have "0\<in>domain(f)" using domain_of_fun by simp
   define A where "A={f`0}"
-  with \<open>cofinal_fun(f,succ(\<alpha>),Memrel(succ(\<alpha>)))\<close> \<open>0\<in>domain(f)\<close> \<open>f`0=\<alpha>\<close>
+  with \<open>cf_fun(f,succ(\<alpha>))\<close> \<open>0\<in>domain(f)\<close> \<open>f`0=\<alpha>\<close>
   have "cofinal(A,succ(\<alpha>),Memrel(succ(\<alpha>)))" 
     unfolding cofinal_def cofinal_fun_def by simp
   moreover from  \<open>f`0=\<alpha>\<close> \<open>A={f`0}\<close>
@@ -843,7 +845,8 @@ proof -
       using Ord_in_Ord by auto
     moreover from \<open>\<forall>x\<in>h `` \<beta>. x \<in> \<alpha>_0\<close> \<open>Ord(\<alpha>_0)\<close> \<open>h:\<beta>\<rightarrow>\<gamma>\<close>
     have "x\<in>\<beta> \<Longrightarrow> h`x < \<alpha>_0" for x
-      using fun_is_function[of h \<beta> "\<lambda>_. \<gamma>"] Image_subset_Ord_imp_lt domain_of_fun[of h \<beta> "\<lambda>_. \<gamma>"] 
+      using fun_is_function[of h \<beta> "\<lambda>_. \<gamma>"]
+        Image_subset_Ord_imp_lt domain_of_fun[of h \<beta> "\<lambda>_. \<gamma>"]
       by blast
     moreover 
     have "x\<in>\<beta> \<Longrightarrow> h`x < f`\<theta>" for x
@@ -852,9 +855,11 @@ proof -
       assume "x\<in>\<beta>"
       with \<open>\<forall>x\<in>h `` \<beta>. x \<in> \<alpha>_0\<close> \<open>Ord(\<alpha>_0)\<close> \<open>h:\<beta>\<rightarrow>\<gamma>\<close>
       have "h`x < \<alpha>_0" 
-        using fun_is_function[of h \<beta> "\<lambda>_. \<gamma>"] Image_subset_Ord_imp_lt domain_of_fun[of h \<beta> "\<lambda>_. \<gamma>"] 
+        using fun_is_function[of h \<beta> "\<lambda>_. \<gamma>"] 
+          Image_subset_Ord_imp_lt domain_of_fun[of h \<beta> "\<lambda>_. \<gamma>"]
         by blast
-      also from \<open>\<langle>\<alpha>_0 \<union> _, f ` \<theta>\<rangle> \<in> Memrel(\<gamma>) \<or> \<alpha>_0 \<union> _= f ` \<theta>\<close> \<open>Ord(f`\<theta>)\<close> \<open>Ord(\<alpha>_0)\<close> \<open>Ord(j`\<beta>)\<close>
+      also from \<open>\<langle>\<alpha>_0 \<union> _, f ` \<theta>\<rangle> \<in> Memrel(\<gamma>) \<or> \<alpha>_0 \<union> _= f ` \<theta>\<close> 
+        \<open>Ord(f`\<theta>)\<close> \<open>Ord(\<alpha>_0)\<close> \<open>Ord(j`\<beta>)\<close>
       have "\<alpha>_0 \<le> f`\<theta>"
         using Un_leD1[OF leI [OF ltI]] Un_leD1[OF le_eqI] by blast
       finally
@@ -862,7 +867,8 @@ proof -
     qed
     ultimately
     have "factor_body(\<beta>,\<lambda>x\<in>\<beta>. factor(x),\<theta>)"
-      unfolding h_def factor_body_def using ltD by (auto dest:Un_memD2 Un_leD2[OF le_eqI])
+      unfolding h_def factor_body_def using ltD 
+      by (auto dest:Un_memD2 Un_leD2[OF le_eqI])
     with \<open>Ord(\<theta>)\<close>
     have "factor(\<beta>) \<le> \<theta>"
       using def_factor[of \<beta>] Least_le unfolding factor_rec_def by auto
@@ -904,7 +910,8 @@ proof -
       using Limit_nonzero apply_in_range mono_map_is_fun[of "f O fun_factor"]
       f_fun_factor_is_mono_map by blast
     ultimately
-    show "\<exists>x \<in> domain(f O fun_factor). \<langle>a, (f O fun_factor) ` x\<rangle> \<in> Memrel(\<gamma>) \<or> a = (f O fun_factor) `x"
+    show "\<exists>x \<in> domain(f O fun_factor). \<langle>a, (f O fun_factor) ` x\<rangle> \<in> Memrel(\<gamma>)
+                                       \<or> a = (f O fun_factor) `x"
       by blast
   qed
   ultimately
@@ -1001,7 +1008,7 @@ proof (induct rule:trans_induct3)
 next
   case (succ \<gamma>)
   with \<open>Ord(\<gamma>)\<close>
-  obtain x where "x\<in>\<delta>" "f`x=\<gamma>" using cofinal_fun_succ' by blast
+  obtain x where "x\<in>\<delta>" "f`x=\<gamma>" using cf_fun_succ' by blast
   then
   have "\<delta>\<noteq>0" by blast
   let ?f="{<0,f`x>}"
