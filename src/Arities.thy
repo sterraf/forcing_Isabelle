@@ -1,8 +1,6 @@
 section\<open>Arities of internalized formulas\<close>
 theory Arities
   imports FrecR
-    "ZF-Constructible-Trans.Formula"
-    "ZF-Constructible-Trans.L_axioms"
 begin
 
 lemma arity_upair_fm : "\<lbrakk>  t1\<in>nat ; t2\<in>nat ; up\<in>nat  \<rbrakk> \<Longrightarrow> 

@@ -1,6 +1,6 @@
 section\<open>Automatic synthesis of formulas\<close>
 theory Synthetic_Definition
-  imports "ZF-Constructible-Trans.Formula"
+  imports "ZF-Constructible.Formula"
 keywords
   "synthesize" :: thy_decl % "ML"
 and
