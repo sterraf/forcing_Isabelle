@@ -26,47 +26,90 @@ lemma cardinal_eqpollI:
   by simp_all 
 *)
 
+lemma comp_cong_left :
+  assumes "f = g"
+  shows "f O a = g O a"
+  using assms by auto
+
+lemma comp_cong_right :
+  assumes "f = g"
+  shows "a O f = a O g"
+  using assms by auto
+
 lemma function_space_eqpoll_cong:
   assumes 
     "A \<approx> A'" "B \<approx> B'"
   shows
     "A \<rightarrow> B \<approx> A' \<rightarrow> B'"
-  sorry
-(*
 proof -
   from assms(1)[THEN eqpoll_sym] assms(2)
   obtain f g where "f \<in> bij(A',A)" "g \<in> bij(B,B')"
     unfolding eqpoll_def by blast
   then
   have "converse(g) : B' \<rightarrow> B" "converse(f): A \<rightarrow> A'"
-    sorry
+    using bij_converse_bij bij_is_fun by auto
   show ?thesis
     unfolding eqpoll_def
   proof (intro exI fg_imp_bijective, rule_tac [1-2] lam_type)
     fix F
     assume "F: A \<rightarrow> B"
     with \<open>f \<in> bij(A',A)\<close> \<open>g \<in> bij(B,B')\<close>
-    show "g O F O f : A' \<rightarrow> B'" 
+    show "g O F O f : A' \<rightarrow> B'"
       using bij_is_fun comp_fun by blast
   next
     fix F
     assume "F: A' \<rightarrow> B'"
     with \<open>converse(g) : B' \<rightarrow> B\<close> \<open>converse(f): A \<rightarrow> A'\<close>
-    show "converse(g) O F O converse(f) : A \<rightarrow> B" 
+    show "converse(g) O F O converse(f) : A \<rightarrow> B"
       using comp_fun by blast
   next
-    show "(\<lambda>x\<in>A \<rightarrow> B. g O x O f) O (\<lambda>x\<in>A' \<rightarrow> B'. converse(g) O x O converse(f)) = id(A' -> B')"
-      unfolding id_def 
-      apply (rule_tac A="A'\<rightarrow>B'" and B="\<lambda>_.A'\<rightarrow>B'" in fun_extension)
-      using comp_fun_apply[OF lam_funtype]
-        apply (simp_all)
-      sorry
-  next
-    show "(\<lambda>x\<in>A' \<rightarrow> B'. converse(g) O x O converse(f)) O (\<lambda>x\<in>A -> B. g O x O f) = id(A -> B)"
-      sorry
+    from \<open>f\<in>_\<close> \<open>g\<in>_\<close> \<open>converse(f)\<in>_\<close> \<open>converse(g)\<in>_\<close>
+    have "(\<And>x. x \<in> A' \<rightarrow> B' \<Longrightarrow> converse(g) O x O converse(f) \<in> A \<rightarrow> B)"
+      using bij_is_fun comp_fun by blast
+    then
+    have "(\<lambda>x\<in>A \<rightarrow> B. g O x O f) O (\<lambda>x\<in>A' \<rightarrow> B'. converse(g) O x O converse(f))
+          = (\<lambda>x\<in>A' \<rightarrow> B' . g O (converse(g) O x O converse(f)) O f)"
+      using comp_lam[of "A' \<rightarrow> B'" ] by auto
+    also
+    have "... =  (\<lambda>x\<in>A' \<rightarrow> B' . (g O converse(g)) O x O (converse(f) O f))"
+      using lam_cong comp_assoc by auto
+    also
+    have "... = (\<lambda>x\<in>A' \<rightarrow> B' . id(B') O x O (id(A')))"
+      using
+      comp_cong_right[OF left_comp_inverse[OF bij_is_inj[OF \<open>f\<in>_\<close>]]]
+      comp_cong_left[OF right_comp_inverse[OF bij_is_surj[OF \<open>g\<in>_\<close>]]]
+      by auto
+    also
+    have "... = (\<lambda>x\<in>A' \<rightarrow> B' . x)"
+      using left_comp_id[OF fun_sub] right_comp_id[OF fun_sub]  lam_cong by auto
+    also
+    have "... = id(A'\<rightarrow>B')" unfolding id_def by simp
+    finally
+    show "(\<lambda>x\<in>A -> B. g O x O f) O (\<lambda>x\<in>A' -> B'. converse(g) O x O converse(f)) = id(A' -> B')" .
+    next
+    from \<open>f\<in>_\<close> \<open>g\<in>_\<close>
+    have "(\<And>x. x \<in> A \<rightarrow> B \<Longrightarrow> g O x O f \<in> A' \<rightarrow> B')"
+      using bij_is_fun comp_fun by blast
+    then
+    have "(\<lambda>x\<in>A' -> B'. converse(g) O x O converse(f)) O (\<lambda>x\<in>A -> B. g O x O f)
+          = (\<lambda>x\<in>A \<rightarrow> B . (converse(g) O g) O x O (f O converse(f)))"
+      using comp_lam comp_assoc by auto
+    also
+    have "... = (\<lambda>x\<in>A \<rightarrow> B . id(B) O x O (id(A)))"
+      using
+      comp_cong_right right_comp_inverse[OF bij_is_surj[OF \<open>f\<in>_\<close>]]
+      comp_cong_left[OF  left_comp_inverse[OF bij_is_inj[OF \<open>g\<in>_\<close>]]] lam_cong
+      by auto
+    also
+    have "... = (\<lambda>x\<in>A \<rightarrow> B . x)"
+      using left_comp_id[OF fun_sub] right_comp_id[OF fun_sub]  lam_cong by auto
+    also
+    have "... = id(A\<rightarrow>B)" unfolding id_def by simp
+    finally
+    show "(\<lambda>x\<in>A' \<rightarrow> B'. converse(g) O x O converse(f)) O (\<lambda>x\<in>A -> B. g O x O f) = id(A -> B)" .
   qed
 qed
-*)
+
 
 lemma cexp_eqpoll_cong:
   assumes 
