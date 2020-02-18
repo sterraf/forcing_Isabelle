@@ -1,8 +1,8 @@
-ML_FILES =
-
 OPTION = -o parallel_proofs=1
 
-# LINKING_FILES = fix_links.sh links.css
+ML_FILES = 
+
+PARALLELIZATION = parallel.txt
 
 CHAPTER = ZF
 
@@ -10,6 +10,8 @@ SESSION = Delta_System_Lemma
 
 OUT_DIR = output/html
 
+LINKING_DIR = ../scripts
+PARALLEL = $(shell cat $(PARALLELIZATION))
 THY_FILES  = $(shell cat thy_files)
 USR_HEAPS  = $(shell isabelle getenv ISABELLE_HEAPS | cut -f2 -d"=")
 ML_ID      = $(shell isabelle getenv ML_IDENTIFIER | cut -f2 -d"=")
@@ -24,29 +26,32 @@ $(DB):	$(THY_FILES) $(ML_FILES)
 
 build: 	$(DB)
 
-$(HTML_DIR):	$(THY_FILES) $(ML_FILES) $(LINKING_FILES)
+$(HTML_DIR):	$(THY_FILES) $(ML_FILES) $(LINKING_DIR)
 	isabelle env \
 	  ISABELLE_BROWSER_INFO=$(OUT_DIR)\
 	  isabelle build $(OPTION) -d . -c -o browser_info -v $(SESSION)
-	# sh fix_links.sh
-	# cat links.css >> $(HTML_DIR)/isabelle.css
+	sh $(LINKING_DIR)/fix_links.sh  $(SESSION)
+	cat $(LINKING_DIR)/links.css >> $(HTML_DIR)/isabelle.css
 
 html:	$(HTML_DIR)
 
-forcing.tar.gz:	$(HTML_DIR) link-forcing.sh Makefile_distro
-	time bash link-forcing.sh
+$(SESSION).tar.gz:	$(HTML_DIR) ../scripts/link-html.sh Makefile
+	time bash $(LINKING_DIR)/link-html.sh $(SESSION) $(PARALLEL)
 	rm -rf tmptar
 	mkdir tmptar
 	mkdir tmptar/src
-	cp -r ../Constructible tmptar
 	cp README tmptar
-	cp -r $(THY_FILES) $(ML_FILES) $(LINKING_FILES) ROOT document/ tmptar/src
-	cp Makefile_distro tmptar/src/Makefile
-	cp -r $(HTML_DIR) tmptar/html
-	tar --transform "s/tmptar/$(SESSION)/g" --show-transformed-names -cvzf forcing.tar.gz tmptar
+	cp -r $(LINKING_DIR) tmptar/
+	cp -r README $(PARALLELIZATION) thy_files $(THY_FILES) $(ML_FILES)\
+	 ROOT document/ tmptar/src
+	cp Makefile tmptar/src/
+	 ## Avoid temporary sed files from linking:
+	rsync -ah --exclude 'sed*' $(HTML_DIR)/ tmptar/html
+	tar --transform "s/tmptar/$(SESSION)/g" --show-transformed-names\
+	 -cvzf $(SESSION).tar.gz tmptar
 	rm -rf tmptar
 
-# tar:    forcing.tar.gz
+tar:    $(SESSION).tar.gz
 
 clean:
 	rm -rf output/ tmptar

@@ -1,0 +1,9 @@
+
+a.pst-lnk {
+    color: inherit;
+}
+
+a.pst-lnk:hover {
+    color: blue;
+    text-decoration: underline;
+}
