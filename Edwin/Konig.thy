@@ -58,15 +58,11 @@ proof -
       using bij_is_fun comp_fun by blast
     then
     have "(\<lambda>x\<in>A \<rightarrow> B. g O x O f) O (\<lambda>x\<in>A' \<rightarrow> B'. converse(g) O x O converse(f))
-          = (\<lambda>x\<in>A' \<rightarrow> B' . g O (converse(g) O x O converse(f)) O f)"
-      using comp_lam[of "A' \<rightarrow> B'" ] by auto
-    also
-    have "... =  (\<lambda>x\<in>A' \<rightarrow> B' . (g O converse(g)) O x O (converse(f) O f))"
-      using lam_cong comp_assoc by auto
+          =  (\<lambda>x\<in>A' \<rightarrow> B' . (g O converse(g)) O x O (converse(f) O f))"
+      using lam_cong comp_assoc comp_lam[of "A' \<rightarrow> B'" ] by auto
     also
     have "... = (\<lambda>x\<in>A' \<rightarrow> B' . id(B') O x O (id(A')))"
-      using
-        left_comp_inverse[OF bij_is_inj[OF \<open>f\<in>_\<close>]]
+      using left_comp_inverse[OF bij_is_inj[OF \<open>f\<in>_\<close>]]
         right_comp_inverse[OF bij_is_surj[OF \<open>g\<in>_\<close>]]
       by auto
     also
@@ -76,7 +72,7 @@ proof -
     have "... = id(A'\<rightarrow>B')" unfolding id_def by simp
     finally
     show "(\<lambda>x\<in>A -> B. g O x O f) O (\<lambda>x\<in>A' -> B'. converse(g) O x O converse(f)) = id(A' -> B')" .
-    next
+  next
     from \<open>f\<in>_\<close> \<open>g\<in>_\<close>
     have "(\<And>x. x \<in> A \<rightarrow> B \<Longrightarrow> g O x O f \<in> A' \<rightarrow> B')"
       using bij_is_fun comp_fun by blast
@@ -87,8 +83,8 @@ proof -
     also
     have "... = (\<lambda>x\<in>A \<rightarrow> B . id(B) O x O (id(A)))"
       using
-      right_comp_inverse[OF bij_is_surj[OF \<open>f\<in>_\<close>]]
-      left_comp_inverse[OF bij_is_inj[OF \<open>g\<in>_\<close>]] lam_cong
+        right_comp_inverse[OF bij_is_surj[OF \<open>f\<in>_\<close>]]
+        left_comp_inverse[OF bij_is_inj[OF \<open>g\<in>_\<close>]] lam_cong
       by auto
     also
     have "... = (\<lambda>x\<in>A \<rightarrow> B . x)"
