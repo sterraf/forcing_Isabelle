@@ -26,16 +26,6 @@ lemma cardinal_eqpollI:
   by simp_all 
 *)
 
-lemma comp_cong_left :
-  assumes "f = g"
-  shows "f O a = g O a"
-  using assms by auto
-
-lemma comp_cong_right :
-  assumes "f = g"
-  shows "a O f = a O g"
-  using assms by auto
-
 lemma function_space_eqpoll_cong:
   assumes 
     "A \<approx> A'" "B \<approx> B'"
@@ -76,8 +66,8 @@ proof -
     also
     have "... = (\<lambda>x\<in>A' \<rightarrow> B' . id(B') O x O (id(A')))"
       using
-      comp_cong_right[OF left_comp_inverse[OF bij_is_inj[OF \<open>f\<in>_\<close>]]]
-      comp_cong_left[OF right_comp_inverse[OF bij_is_surj[OF \<open>g\<in>_\<close>]]]
+        left_comp_inverse[OF bij_is_inj[OF \<open>f\<in>_\<close>]]
+        right_comp_inverse[OF bij_is_surj[OF \<open>g\<in>_\<close>]]
       by auto
     also
     have "... = (\<lambda>x\<in>A' \<rightarrow> B' . x)"
@@ -97,8 +87,8 @@ proof -
     also
     have "... = (\<lambda>x\<in>A \<rightarrow> B . id(B) O x O (id(A)))"
       using
-      comp_cong_right right_comp_inverse[OF bij_is_surj[OF \<open>f\<in>_\<close>]]
-      comp_cong_left[OF  left_comp_inverse[OF bij_is_inj[OF \<open>g\<in>_\<close>]]] lam_cong
+      right_comp_inverse[OF bij_is_surj[OF \<open>f\<in>_\<close>]]
+      left_comp_inverse[OF bij_is_inj[OF \<open>g\<in>_\<close>]] lam_cong
       by auto
     also
     have "... = (\<lambda>x\<in>A \<rightarrow> B . x)"
