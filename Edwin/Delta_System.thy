@@ -91,33 +91,41 @@ end (* includes *)
 lemma cardinal_lt_csucc_iff: "Card(K) \<Longrightarrow> |K'| < csucc(K) \<longleftrightarrow> |K'| \<le> K"
   by (simp add: Card_lt_csucc_iff)
 
-lemma cardinal_UN_le_InfCard:
-  assumes "InfCard(K)" "\<And>i. i\<in>K \<Longrightarrow> |X(i)| \<le> K"
-  shows "|\<Union>i\<in>K. X(i)| \<le> K"
-proof -
-  {
-    fix i
-    assume "i\<in>K"
-    with assms
-    have "|X(i)| \<le> K" by simp
-    with \<open>InfCard(K)\<close>
-    have "|X(i)| < csucc(K)"
-      using cardinal_lt_csucc_iff InfCard_is_Card by auto
-  }
-  with \<open>InfCard(K)\<close> 
-  show "|\<Union>i\<in>K. X(i)| \<le> K"
-    using cardinal_UN_lt_csucc  InfCard_is_Card cardinal_lt_csucc_iff 
-    by (auto)
-qed
-
 lemma cardinal_UN_le_nat:
   "(\<And>i. i\<in>nat \<Longrightarrow> |X(i)| \<le> nat) \<Longrightarrow> |\<Union>i\<in>nat. X(i)| \<le> nat"
-  by (simp add: cardinal_UN_le_InfCard InfCard_nat) 
+  by (simp add: cardinal_UN_le InfCard_nat) 
 
-lemma leqpoll_UN_le_InfCard:
-  "InfCard(K) \<Longrightarrow> J \<lesssim> K \<Longrightarrow>  (\<And>i. i\<in>J \<Longrightarrow> |X(i)| \<le> K) 
-  \<Longrightarrow> |\<Union>i\<in>J. X(i)| \<le> K"
-  sorry
+lemma leqpoll_imp_cardinal_UN_le:
+  notes [dest] = InfCard_is_Card Card_is_Ord
+  assumes "InfCard(K)" "J \<lesssim> K" "\<And>i. i\<in>J \<Longrightarrow> |X(i)| \<le> K"
+  shows "|\<Union>i\<in>J. X(i)| \<le> K"
+proof -
+  from \<open>J \<lesssim> K\<close>
+  obtain f where "f \<in> inj(J,K)" by blast
+  find_theorems converse inj
+  define Y where "Y(k) \<equiv> if k\<in>range(f) then X(converse(f)`k) else 0" for k
+  have "i\<in>J \<Longrightarrow> f`i \<in> K" for i
+    using inj_is_fun[OF \<open>f \<in> inj(J,K)\<close>] by auto
+  have "(\<Union>i\<in>J. X(i)) \<subseteq> (\<Union>i\<in>K. Y(i))"
+  proof (standard, elim UN_E)
+    fix x i
+    assume "i\<in>J" "x\<in>X(i)"
+    with \<open>f \<in> inj(J,K)\<close> \<open>i\<in>J \<Longrightarrow> f`i \<in> K\<close>
+    have "x \<in> Y(f`i)" "f`i \<in> K"
+      unfolding Y_def 
+      using inj_is_fun[OF \<open>f \<in> inj(J,K)\<close>] 
+        right_inverse apply_rangeI by auto
+    then
+    show "x \<in> (\<Union>i\<in>K. Y(i))" by auto
+  qed
+  then
+  have "|\<Union>i\<in>J. X(i)| \<le> |\<Union>i\<in>K. Y(i)|"
+    unfolding Y_def using subset_imp_le_cardinal by simp
+  with assms \<open>\<And>i. i\<in>J \<Longrightarrow> f`i \<in> K\<close>
+  show "|\<Union>i\<in>J. X(i)| \<le> K" 
+    using inj_converse_fun[OF \<open>f \<in> inj(J,K)\<close>] unfolding Y_def
+    by (rule_tac le_trans[OF _ cardinal_UN_le]) (auto intro:Ord_0_le)+
+qed
 
 lemma nat_le_aleph1: "nat<\<aleph>1"
   by (simp add: Aleph_def lt_csucc)
@@ -145,7 +153,7 @@ proof -
   have "n\<in>?N \<Longrightarrow> |G`n| \<le> nat" for n .
   with \<open>?N \<lesssim> nat\<close> 
   show ?thesis
-    using InfCard_nat leqpoll_UN_le_InfCard by simp
+    using InfCard_nat leqpoll_imp_cardinal_UN_le by simp
 qed
 
 lemma "f:\<aleph>1\<rightarrow>nat \<Longrightarrow> \<exists>n\<in>nat. \<aleph>1 \<le> |f-``{n}|"
