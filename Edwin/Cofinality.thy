@@ -1,6 +1,6 @@
 theory Cofinality 
   imports 
-    "~~/src/ZF/Constructible/Normal"
+    ZF
 begin
 
 definition
