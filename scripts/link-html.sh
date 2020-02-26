@@ -1,6 +1,6 @@
 #!/bin/bash
 old_dir=$PWD
-html_dir="output/html/ZF/$1/"
+html_dir="$3/$2/$1/"
 
 function link_item {
     #
@@ -42,7 +42,7 @@ function full_job {
 # echo Back-up of html directory
 # cp -R $html_dir ~/tmp/
 
-echo Changing to html directory
+echo Changing to $html_dir
 cd $html_dir
 
 ## Script de indizado y linkeo de definiciones completo
@@ -61,13 +61,13 @@ for x in *.html; do y=`basename -s".html" $x`; sed -i -e "h;s/.*lemmas<\/span><\
 echo  Done
 
 echo -n Crosslinking "lemma" items...
-full_job lemas.txt "" ${@:2}
+full_job lemas.txt "" ${@:4}
 echo  Done
 echo -n Crosslinking "lemmas" items...
-full_job lemaslemmas.txt "" ${@:2}
+full_job lemaslemmas.txt "" ${@:4}
 echo  Done
 echo -n Crosslinking "definition" items...
-full_job definiciones.txt _def ${@:2}
+full_job definiciones.txt _def ${@:4}
 echo  Done
 echo Changing to old directory
 # echo -n Waiting for 'sed' to clean temp files...

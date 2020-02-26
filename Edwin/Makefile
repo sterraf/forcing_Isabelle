@@ -24,17 +24,17 @@ $(DB):	$(THY_FILES) $(ML_FILES)
 
 build: 	$(DB)
 
-$(HTML_DIR):	$(THY_FILES) $(ML_FILES) $(LINKING_DIR)
+$(HTML_DIR):	$(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT
 	isabelle env \
 	  ISABELLE_BROWSER_INFO=$(OUT_DIR)\
 	  isabelle build $(OPTION) -d . -c -o browser_info -v $(SESSION)
-	sh $(LINKING_DIR)/fix_links.sh  $(SESSION)
+	sh $(LINKING_DIR)/fix_links.sh  $(SESSION) $(CHAPTER) $(OUT_DIR)
 	cat $(LINKING_DIR)/links.css >> $(HTML_DIR)/isabelle.css
 
 html:	$(HTML_DIR)
 
-$(SESSION).tar.gz:	$(HTML_DIR) ../scripts/link-html.sh Makefile
-	time bash $(LINKING_DIR)/link-html.sh $(SESSION) $(PARALLEL)
+$(SESSION).tar.gz:	$(HTML_DIR) ../scripts/link-html.sh Makefile ROOT
+	time bash $(LINKING_DIR)/link-html.sh $(SESSION) $(CHAPTER) $(OUT_DIR) $(PARALLEL)
 	rm -rf tmptar
 	mkdir tmptar
 	mkdir tmptar/src
