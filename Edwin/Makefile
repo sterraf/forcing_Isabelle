@@ -1,23 +1,21 @@
 OPTION = -o parallel_proofs=1
 
-ML_FILES = 
-
-PARALLELIZATION = parallel.txt
-
 CHAPTER = ZF
 
 SESSION = Delta_System_Lemma
 
 OUT_DIR = output/html
 
-LINKING_DIR = ../scripts
-PARALLEL = $(shell cat $(PARALLELIZATION))
-THY_FILES  = $(shell cat thy_files)
-USR_HEAPS  = $(shell isabelle getenv ISABELLE_HEAPS | cut -f2 -d"=")
-ML_ID      = $(shell isabelle getenv ML_IDENTIFIER | cut -f2 -d"=")
+ML_FILES = 
+
+LINKING_DIR  = ../scripts
+PARALLEL     = $(shell cat thy_files | sed s/\.thy/\.html/g )
+THY_FILES    = $(shell cat thy_files | tr \" " ")
+USR_HEAPS    = $(shell isabelle getenv ISABELLE_HEAPS | cut -f2 -d"=")
+ML_ID        = $(shell isabelle getenv ML_IDENTIFIER | cut -f2 -d"=")
 HEAP_LOG_DIR = $(USR_HEAPS)/$(ML_ID)/log
-HTML_DIR   = $(OUT_DIR)/$(CHAPTER)/$(SESSION)
-DB         = $(HEAP_LOG_DIR)/$(SESSION).db 
+HTML_DIR     = $(OUT_DIR)/$(CHAPTER)/$(SESSION)
+DB           = $(HEAP_LOG_DIR)/$(SESSION).db 
 
 .PHONY: build html tar clean
 
