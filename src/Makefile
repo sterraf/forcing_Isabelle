@@ -19,12 +19,12 @@ DB           = $(HEAP_LOG_DIR)/$(SESSION).db
 
 .PHONY: build html tar clean
 
-$(DB):	$(THY_FILES) $(ML_FILES)
+$(DB):	thy_files $(THY_FILES) $(ML_FILES)
 	isabelle build $(OPTION) -v -c -d . $(SESSION)
 
 build: 	$(DB)
 
-$(HTML_DIR):	$(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT
+$(HTML_DIR):	thy_files $(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT
 	isabelle env \
 	  ISABELLE_BROWSER_INFO=$(OUT_DIR)\
 	  isabelle build $(OPTION) -d . -c -o browser_info -v $(SESSION)
