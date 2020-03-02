@@ -2,7 +2,7 @@
 \label{sec:example-proper-extension}
 
 Even when the axioms of $\ZFC$ are proved in the generic extension,
-one can't claim that the magic of forcing has taken place unless one
+one cannot claim that the magic of forcing has taken place unless one
 is able to provide some \emph{proper} extension with the \emph{same
 ordinals}. After all, one is assuming from starters a model $M$ of $\ZFC$,
 and in some trivial cases $M[G]$ might end up to be exactly $M$; this
@@ -11,8 +11,8 @@ presence of large cardinals, a model $M'\supsetneq M$ might be an
 end-extension of $M$ ---this is were we ask the two models to have the
 same ordinals, the same \emph{height}. 
 
-Two short theory files contain the relevant
-results. \texttt{Ordinals\_In\_MG.thy} shows, using the closure of $M$
+Three theory files contain the relevant
+results. \verb|Ordinals_In_MG.thy| shows, using the closure of $M$
 under ranks, that $M$ and $M[G]$ share the same ordinals (actually,
 ranks of elements of $M[G]$ are bounded by the ranks of their names in
 $M$):
@@ -24,35 +24,32 @@ $M$):
 \ \ \isakeyword{assumes}\ {\isachardoublequoteopen}Ord{\isacharparenleft}{\isasymalpha}{\isacharparenright}{\isachardoublequoteclose}\ \isanewline
 \ \ \isakeyword{shows}\ {\isachardoublequoteopen}{\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
 \end{isabelle}
-
-To prove this results, we found it useful to formalize induction over
+To prove these results, we found it useful to formalize induction over
 the relation \isatt{ed}$(x,y) \defi x\in\dom(y)$, which is key
 to arguments involving names.
-\begin{isabelle}
-\isacommand{lemma}\isamarkupfalse%
-\ ed{\isacharunderscore}induction{\isacharcolon}\isanewline
-\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}{\isasymAnd}x{\isachardot}\ {\isasymlbrakk}{\isasymAnd}y{\isachardot}\ \ ed{\isacharparenleft}y{\isacharcomma}x{\isacharparenright}\ {\isasymLongrightarrow}\ Q{\isacharparenleft}y{\isacharparenright}\ {\isasymrbrakk}\ {\isasymLongrightarrow}\ Q{\isacharparenleft}x{\isacharparenright}{\isachardoublequoteclose}\isanewline
-\ \ \isakeyword{shows}\ {\isachardoublequoteopen}Q{\isacharparenleft}a{\isacharparenright}{\isachardoublequoteclose}
-\end{isabelle}
 
-\texttt{Non\_Constructible.thy} contains the first example of a poset
+\verb|Succession_Poset.thy| contains our first example of a poset
 that interprets the locale
-\isatt{forcing{\isacharunderscore}notion}. It is the set of all binary
-lists with the partial order given by  ``\isatt{xs} is an extension of
-\isatt{ys}.'' The sufficient condition for a proper extension is that
+\isatt{forcing{\isacharunderscore}notion}, essentially the notion for
+adding one Cohen real. It is the set $2^{<\om}$ of all finite binary
+sequences partially  ordered by reverse inclusion.
+The sufficient condition for a proper extension is that
 the forcing poset is \emph{separative}: every element has two
-incompatible extensions.
+incompatible (\isatt{{\isasymbottom}s}) extensions. Here,
+\isatt{seq{\isacharunderscore}upd{\isacharparenleft}f{\isacharcomma}x{\isacharparenright}}
+adds \isatt{x} to the end of the sequence \isatt{f}.
 
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
-\ incompatible{\isacharunderscore}extensions{\isacharcolon}\isanewline
-\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}p{\isasymin}list{\isacharparenleft}{\isadigit{2}}{\isacharparenright}{\isachardoublequoteclose}\isanewline
-\ \ \isakeyword{shows}\ {\isachardoublequoteopen}{\isacharparenleft}p\ {\isacharat}\ {\isacharbrackleft}{\isadigit{0}}{\isacharbrackright}{\isacharparenright}\ {\isasymbottom}\ {\isacharparenleft}p\ {\isacharat}\ {\isacharbrackleft}{\isadigit{1}}{\isacharbrackright}{\isacharparenright}{\isachardoublequoteclose}
+\ seqspace{\isacharunderscore}separative{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}f{\isasymin}{\isadigit{2}}{\isacharcircum}{\isacharless}{\isasymomega}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}seq{\isacharunderscore}upd{\isacharparenleft}f{\isacharcomma}{\isadigit{0}}{\isacharparenright}\ {\isasymbottom}s\ seq{\isacharunderscore}upd{\isacharparenleft}f{\isacharcomma}{\isadigit{1}}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
-
-It is to be noted that both proof-documents comprise mere 99 and 79
-(resp.) lines.
  
+We prove in the theory file \verb|Proper_Extension.thy| that, in
+general, every separative forcing notion gives rise to a proper
+extension.
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "forcing_in_isabelle_zf"

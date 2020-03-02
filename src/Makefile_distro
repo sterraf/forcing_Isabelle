@@ -27,13 +27,11 @@ html:
 	cat links.css >> output/html/$(CHAPTER)/Forcing/isabelle.css
 
 tar:    clean html
-	time bash link-forcing.sh
 	mkdir tmptar
 	mkdir tmptar/src
 	cp -r ../Constructible tmptar
-	cp README tmptar
-	cp -r $(THY_FILES) $(ML_FILES) $(LINKING_FILES) ROOT document/ tmptar/src
-	cp Makefile_distro tmptar/src/Makefile
+	cp -r $(THY_FILES) $(ML_FILES) $(LINKING_FILES) ROOT Makefile document/ tmptar/src
+	cp ../README tmptar
 	cp -r output/html/$(CHAPTER)/Forcing/ tmptar/html
 	tar --transform "s/tmptar/Forcing/g" --show-transformed-names -cvzf forcing.tar.gz tmptar
 	rm -rf tmptar

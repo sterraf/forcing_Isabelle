@@ -6,7 +6,7 @@ Fundamental Theorems of Forcing is comparatively straightforward, and
 we were able to follow Kunen very closely. The more involved points of
 this part of the development were those where we needed to proved that
 various (dense) subsets of $\PP$ were in $M$; for this, we had to
-recourse to several absoluteness ad-hoc lemmas.
+recourse to several ad-hoc absoluteness lemmas.
 
 The first results concern characterizations of the forcing
 relation. Two of them are \isatt{Forces{\isacharunderscore}Member}:
@@ -18,18 +18,22 @@ where \isatt{t{\isadigit{1}}} and \isatt{t{\isadigit{1}}} are the
 \begin{center}
   \isatt{{\isacharparenleft}p\ {\isasymtturnstile}\ Forall{\isacharparenleft}{\isasymphi}{\isacharparenright}\ env{\isacharparenright}\ {\isasymlongleftrightarrow}\ {\isacharparenleft}{\isasymforall}x{\isasymin}M{\isachardot}\ {\isacharparenleft}p\ {\isasymtturnstile}\ {\isasymphi}\ {\isacharparenleft}{\isacharbrackleft}x{\isacharbrackright}\ {\isacharat}\ env{\isacharparenright}{\isacharparenright}{\isacharparenright}}.
 \end{center}
-These two, along with  \isatt{Forces{\isacharunderscore}Equal} and
+Equivalent statements, along with the ones corresponding to \isatt{Forces{\isacharunderscore}Equal} and
 \isatt{Forces{\isacharunderscore}Nand}, appear in Kunen as the
 inductive definition of the forcing relation \cite[Def.~IV.2.42]{kunen2011set}.
 
 As with the previous section, the proofs of the forcing theorems have two different
-flavours: The ones for the atomic formulas proceed by using the
+flavors: The ones for the atomic formulas proceed by using the
 principle of 
 \isatt{forces{\isacharunderscore}induction}, and then an induction on
 $\formula$ wraps the former with the remaining cases (\isatt{Nand} and \isatt{Forall}). 
 
 As an example of the first class, we can take a look at our
-formalization of \cite[Lem.~IV.2.40(a)]{kunen2011set}:
+formalization of \cite[Lem.~IV.2.40(a)]{kunen2011set}. Note that the
+context (a ``locale,'' in Isabelle terminology, namely \isatt{forcing{\isacharunderscore}data}) of the lemma 
+includes the assumption of \isatt{P} being
+a forcing notion, and the predicate of being $M$-generic is defined in
+terms of \isatt{P}:
 
 \begin{isabelle}
   \isacommand{lemma}\isamarkupfalse%
@@ -37,8 +41,9 @@ formalization of \cite[Lem.~IV.2.40(a)]{kunen2011set}:
   \ \ \isakeyword{assumes}\isanewline
   \ \ \ \ {\isachardoublequoteopen}M{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}{\isachardoublequoteclose}\isanewline
   \ \ \isakeyword{shows}\ \isanewline
-  \ \ \ \ {\isachardoublequoteopen}{\isacharparenleft}{\isasymtau}{\isasymin}M{\isasymlongrightarrow}{\isasymtheta}{\isasymin}M{\isasymlongrightarrow}{\isacharparenleft}{\isasymforall}p{\isasymin}G{\isachardot}forces{\isacharunderscore}eq{\isacharparenleft}p{\isacharcomma}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isasymlongrightarrow}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isacharequal}val{\isacharparenleft}G{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isasymand}\isanewline
-  \ \ \ \ \ {\isacharparenleft}{\isasymtau}{\isasymin}M{\isasymlongrightarrow}{\isasymtheta}{\isasymin}M{\isasymlongrightarrow}{\isacharparenleft}{\isasymforall}p{\isasymin}G{\isachardot}forces{\isacharunderscore}mem{\isacharparenleft}p{\isacharcomma}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isasymlongrightarrow}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isasymin}val{\isacharparenleft}G{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+  \ \ {\isachardoublequoteopen}{\isacharparenleft}{\isasymtau}{\isasymin}M{\isasymlongrightarrow}{\isasymtheta}{\isasymin}M{\isasymlongrightarrow}{\isacharparenleft}{\isasymforall}p{\isasymin}G{\isachardot}forces{\isacharunderscore}eq{\isacharparenleft}p{\isacharcomma}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isasymlongrightarrow}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isacharequal}val{\isacharparenleft}G{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isacharparenright}{\isacharparenright}\isanewline
+  \ \  {\isasymand}\isanewline
+  \ \ {\isacharparenleft}{\isasymtau}{\isasymin}M{\isasymlongrightarrow}{\isasymtheta}{\isasymin}M{\isasymlongrightarrow}{\isacharparenleft}{\isasymforall}p{\isasymin}G{\isachardot}forces{\isacharunderscore}mem{\isacharparenleft}p{\isacharcomma}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isasymlongrightarrow}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}{\isasymin}val{\isacharparenleft}G{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 %
 Its proof starts by an introduction of \isatt{forces{\isacharunderscore}induction};
@@ -59,102 +64,13 @@ illustrate with the statement of the latter.
 \ \ \ \ {\isachardoublequoteopen}val{\isacharparenleft}G{\isacharcomma}{\isasymtau}{\isacharparenright}\ {\isacharequal}\ val{\isacharparenleft}G{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
 
-As an example of the second kind of induction (on formulas), we choose the
-following relatively simple result:
-
-\begin{isabelle}
-\isacommand{lemma}\isamarkupfalse%
-\ strengthening{\isacharunderscore}lemma{\isacharcolon}\isanewline
-\ \ \isakeyword{assumes}\ \isanewline
-\ \ \ \ {\isachardoublequoteopen}p{\isasymin}P{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}r{\isasymin}P{\isachardoublequoteclose}\ {\isachardoublequoteopen}r{\isasympreceq}p{\isachardoublequoteclose}\isanewline
-\ \ \isakeyword{shows}\isanewline
-\ \ \ \ {\isachardoublequoteopen}{\isasymAnd}env{\isachardot}\ env{\isasymin}list{\isacharparenleft}M{\isacharparenright}\ {\isasymLongrightarrow}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isasymle}length{\isacharparenleft}env{\isacharparenright}\ {\isasymLongrightarrow}\ p\ {\isasymtturnstile}\ {\isasymphi}\ env\isanewline 
-\ \ \ \ \ {\isasymLongrightarrow}\ r\ {\isasymtturnstile}\ {\isasymphi}\ env{\isachardoublequoteclose}\isanewline
-%
-%
-\isacommand{using}\isamarkupfalse%
-\ assms{\isacharparenleft}{\isadigit{2}}{\isacharparenright}
-\end{isabelle}
-%
-The proof is divided in the 4 cases of definition of an element of $\formula$,
-%
-\begin{isabelle}
-\isacommand{proof}\isamarkupfalse%
-\ {\isacharparenleft}induct{\isacharparenright}\isanewline
-\ \ \isacommand{case}\isamarkupfalse%
-\ {\isacharparenleft}Member\ n\ m{\isacharparenright}\isanewline
-\ \ \isacommand{then}\isamarkupfalse%
-\isanewline
-\ \ \dots
-\isanewline
-\ \ \isacommand{show}\isamarkupfalse%
-\ {\isacharquery}case\ \isanewline
-\ \ \ \ \isacommand{using}\isamarkupfalse%
-\ Forces{\isacharunderscore}Member{\isacharbrackleft}of\ {\isacharunderscore}\ {\isachardoublequoteopen}nth{\isacharparenleft}n{\isacharcomma}env{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}nth{\isacharparenleft}m{\isacharcomma}env{\isacharparenright}{\isachardoublequoteclose}\ env\ n\ m{\isacharbrackright}\isanewline
-\ \ \ \ \ \ strengthening{\isacharunderscore}mem{\isacharbrackleft}of\ p\ r\ {\isachardoublequoteopen}nth{\isacharparenleft}n{\isacharcomma}env{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}nth{\isacharparenleft}m{\isacharcomma}env{\isacharparenright}{\isachardoublequoteclose}{\isacharbrackright}\ \isacommand{by}\isamarkupfalse%
-\ simp
-\end{isabelle}
-%
-where the final step depends on previously proved
-\isatt{strengthening{\isacharunderscore}mem} and the characterization of
-$\forceisa$ for membership 
-
-
-The case of equality is entirely analogous, and the \isatt{Nand} and
-\isatt{Forall} cases are handled very simply.
-%
-\begin{isabelle}
-\isacommand{next}\isamarkupfalse%
-\isanewline
-\ \ \isacommand{case}\isamarkupfalse%
-\ {\isacharparenleft}Equal\ n\ m{\isacharparenright}\isanewline
-\ \ \dots\isanewline
-\isacommand{next}\isamarkupfalse%
-\isanewline
-\ \ \isacommand{case}\isamarkupfalse%
-\ {\isacharparenleft}Nand\ {\isasymphi}\ {\isasympsi}{\isacharparenright}\isanewline
-\ \ \isacommand{with}\isamarkupfalse%
-\ assms\isanewline
-\ \ \isacommand{show}\isamarkupfalse%
-\ {\isacharquery}case\ \isanewline
-\ \ \ \ \isacommand{using}\isamarkupfalse%
-\ Forces{\isacharunderscore}Nand\ Transset{\isacharunderscore}intf{\isacharbrackleft}OF\ trans{\isacharunderscore}M\ {\isacharunderscore}\ P{\isacharunderscore}in{\isacharunderscore}M{\isacharbrackright}\ pair{\isacharunderscore}in{\isacharunderscore}M{\isacharunderscore}iff\isanewline
-\ \ \ \ \ \ Transset{\isacharunderscore}intf{\isacharbrackleft}OF\ trans{\isacharunderscore}M\ {\isacharunderscore}\ leq{\isacharunderscore}in{\isacharunderscore}M{\isacharbrackright}\ leq{\isacharunderscore}transD\ \isacommand{by}\isamarkupfalse%
-\ auto\isanewline
-\isacommand{next}\isamarkupfalse%
-\isanewline
-\ \ \isacommand{case}\isamarkupfalse%
-\ {\isacharparenleft}Forall\ {\isasymphi}{\isacharparenright}\isanewline
-\ \ \isacommand{with}\isamarkupfalse%
-\ assms\isanewline
-\ \ \isacommand{have}\isamarkupfalse%
-\ {\isachardoublequoteopen}p\ {\isasymtturnstile}\ {\isasymphi}\ {\isacharparenleft}{\isacharbrackleft}x{\isacharbrackright}\ {\isacharat}\ env{\isacharparenright}{\isachardoublequoteclose}\ \isakeyword{if}\ {\isachardoublequoteopen}x{\isasymin}M{\isachardoublequoteclose}\ \isakeyword{for}\ x\isanewline
-\ \ \ \ \isacommand{using}\isamarkupfalse%
-\ that\ Forces{\isacharunderscore}Forall\ \isacommand{by}\isamarkupfalse%
-\ simp\isanewline
-\ \ \isacommand{with}\isamarkupfalse%
-\ \underline{Forall}\ \isanewline
-\ \ \isacommand{have}\isamarkupfalse%
-\ {\isachardoublequoteopen}r\ {\isasymtturnstile}\ {\isasymphi}\ {\isacharparenleft}{\isacharbrackleft}x{\isacharbrackright}\ {\isacharat}\ env{\isacharparenright}{\isachardoublequoteclose}\ \isakeyword{if}\ {\isachardoublequoteopen}x{\isasymin}M{\isachardoublequoteclose}\ \isakeyword{for}\ x\isanewline
-\ \ \ \ \isacommand{using}\isamarkupfalse%
-\ that\ pred{\isacharunderscore}le{\isadigit{2}}\ \isacommand{by}\isamarkupfalse%
-\ {\isacharparenleft}simp{\isacharparenright}\isanewline
-\ \ \isacommand{with}\isamarkupfalse%
-\ assms\ \underline{Forall}\isanewline
-\ \ \isacommand{show}\isamarkupfalse%
-\ {\isacharquery}case\ \isanewline
-\ \ \ \ \isacommand{using}\isamarkupfalse%
-\ Forces{\isacharunderscore}Forall\ \isacommand{by}\isamarkupfalse%
-\ simp\isanewline
-\isacommand{qed}\isamarkupfalse
-\end{isabelle}
-%
-It can be noted that the inductive hypothesis
-gets used in the last case (underlined here as
-\isatt{\underline{Forall}}), but not in the case for \isatt{Nand}.
-
-The main results in this section are the Density and Truth Lemmas,
-which we reproduce next.
+Examples of proofs  using the second kind of induction include
+the basic \isatt{strengthening{\isacharunderscore}lemma} and the main
+results in this section, the lemmas of  Density  (actually, its nontrivial
+direction
+\isatt{dense{\isacharunderscore}below{\isacharunderscore}imp{\isacharunderscore}forces})
+and Truth, 
+which we state next.
 %
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
@@ -171,12 +87,12 @@ which we reproduce next.
 \ \ \ \ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}M{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \ \ \isakeyword{shows}\ \isanewline
 \ \ \ \ \ {\isachardoublequoteopen}{\isasymAnd}env{\isachardot}\ env{\isasymin}list{\isacharparenleft}M{\isacharparenright}\ {\isasymLongrightarrow}\ arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isasymle}length{\isacharparenleft}env{\isacharparenright}\ {\isasymLongrightarrow}\ \isanewline
-\ \ \ \ \ \ {\isacharparenleft}{\isasymexists}p{\isasymin}G{\isachardot}\ {\isacharparenleft}p\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}{\isacharparenright}\ {\isasymlongleftrightarrow}\ sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymphi}{\isacharcomma}map{\isacharparenleft}val{\isacharparenleft}G{\isacharparenright}{\isacharcomma}env{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\ \ \ \ \ \ {\isacharparenleft}{\isasymexists}p{\isasymin}G{\isachardot}\ {\isacharparenleft}p\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}{\isacharparenright}\ \ {\isasymlongleftrightarrow}\ \ M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}\ map{\isacharparenleft}val{\isacharparenleft}G{\isacharparenright}{\isacharcomma}env{\isacharparenright}\ {\isasymTurnstile}\ {\isasymphi}{\isachardoublequoteclose}
 \end{isabelle}
 %
 From these results, the semantical characterization of the forcing
 relation (the ``definition of $\forces$''
-\cite[IV.2.22]{kunen2011set}) follows easily (49 lines):
+\cite[IV.2.22]{kunen2011set}) follows easily:
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ definition{\isacharunderscore}of{\isacharunderscore}forces{\isacharcolon}\isanewline
@@ -184,8 +100,15 @@ relation (the ``definition of $\forces$''
 \ \ \ \ {\isachardoublequoteopen}p{\isasymin}P{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}env{\isasymin}list{\isacharparenleft}M{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isasymle}length{\isacharparenleft}env{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \ \ \isakeyword{shows}\isanewline
 \ \ \ \ {\isachardoublequoteopen}{\isacharparenleft}p\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}\ {\isasymlongleftrightarrow}\isanewline
-\ \ \ \ \ {\isacharparenleft}{\isasymforall}G{\isachardot}{\isacharparenleft}M{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}{\isasymand}\ p{\isasymin}G{\isacharparenright}{\isasymlongrightarrow}sats{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}{\isasymphi}{\isacharcomma}map{\isacharparenleft}val{\isacharparenleft}G{\isacharparenright}{\isacharcomma}env{\isacharparenright}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\ \ \ \ \ {\isacharparenleft}{\isasymforall}G{\isachardot}\ M{\isacharunderscore}generic{\isacharparenleft}G{\isacharparenright}{\isasymand}\ p{\isasymin}G\ {\isasymlongrightarrow}\ M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}\ map{\isacharparenleft}val{\isacharparenleft}G{\isacharparenright}{\isacharcomma}env{\isacharparenright}\ {\isasymTurnstile}\ {\isasymphi}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
+
+The present statement of the Fundamental Theorems is almost exactly
+the same of those of \cite{2019arXiv190103313G}, with the only
+modification being the bound on arities and a missing typing
+constraint. This implied only minor adjustments in the proofs of the
+satisfaction of axioms.
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "forcing_in_isabelle_zf"

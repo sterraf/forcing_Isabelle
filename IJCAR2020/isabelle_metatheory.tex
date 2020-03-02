@@ -1,27 +1,53 @@
 \section{Isabelle and (meta)theories}
 \label{sec:isabelle-metatheories}
 
-\begin{enumerate}
-\item \emph{Pure} (meta-theory).
-\item Isabelle/ZF + $\exists M$ ctm of $\ZF(C)$ (theory). 
-\item $\formula$ (inner theory).
-\item \textbf{Theorem}: $\exists N$ ctm of $\ZF(C)+\neg\CH$.
-\end{enumerate}
+Isabelle \cite{Isabelle,DBLP:books/sp/Paulson94} is a general proof
+assistant based on fragment of higher-order logic called
+\emph{Pure}. 
+The results presented in this work are theorems of a
+version of $\ZF$ set theory (without the Axiom of Choice, $\AC$) 
+called \emph{Isabelle/ZF}, which is one of the
+``object logics'' that can be defined on top of Pure (which is then
+used as a language to define rules). Isabelle/ZF defines types
+\isatt{i} and \isatt{o} for sets and booleans, resp., and the $\ZF$
+axioms are written down as terms of type \isatt{o}.
 
-in comparison to the ``proof theory approach'':
+More specifically, our results work under the hypothesis of
+the existence of a ctm of $\ZFC$.% 
+%%
+\footnote{By Gödel's Second incompleteness theorem, one must assume at
+  least the existence of some model of $\ZF$. 
+  The countability is only used to prove the existence of
+  generic filters and can be thus replaced in favor of this
+  hypothesis.} 
+%%
+This hypothesis follows, for instance, from the existence of an
+inaccessible cardinal. As such, our framework is weaker than those
+found usually in type theories with universes, but allows us to work
+``platonistically''--- assuming we are in a universe of sets (namely,
+\isatt{i}) and performing constructions there.
 
-\begin{enumerate}
-\item Primitive recursive arithmetic (meta-theory).
-\item \textbf{Theorem}: Con($\ZF(C)$) $\implies$ Con($\ZF(C)+\neg\CH$).
-\end{enumerate}
+On the downside, our approach is not able to provide us with finitary
+consistency proofs. It is well known that, for example, the
+implication $\Con(\ZF) \implies \Con(\ZFC+\neg\CH)$ can be proved in
+\emph{primitive recursive arithmetic (PRA)}. To achieve this, however,
+it would have implied to work focusing on the proof mechanisms
+and distracting us from our main goal, that is, formalize the ctm
+approach currently used by many mathematicians.
 
-and then to the ``type-theoretic approach'':
-
-\begin{enumerate}
-\item CiC (meta-theory).
-\item CiC (theory, $\geq \ZFC + \exists \kappa$ inaccessible).
-\item \textbf{Theorem}: Con($\ZF(C)+\neg\CH$).
-\end{enumerate}
+It should be noted that Pure is a very weak framework and has no
+induction/recursion capabilities. So the only way to define functions
+by recursion is inside the object logic. (This works the same for
+Isabelle/HOL.) For this reason, to define the relation of forcing, we
+needed to resort to \emph{internalized} first-order formulas: they
+form a recursively defined set \isatt{formula}. For example, the
+predicate of satisfaction
+\isatt{sats::i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}o}
+(written $M,\mathit{ms}\models\phi$ for a set $M$,
+$\mathit{ms}\in\isatt{list}(M)$ and $\phi\in\formula$)
+%% (noted \isatt{M, ms \isasymTurnstile{ }\isasymphi} for a set \isatt{M},
+%% \isatt{ms {\isasymin} list(M)} and \isatt{{\isasymphi} {\isasymin} formula})
+had already been defined by recursion in \cite{paulson_2003}.
 
 %%% Local Variables: 
 %%% mode: latex

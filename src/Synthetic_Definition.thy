@@ -1,5 +1,6 @@
-theory Synthetic_Definition 
-  imports Interface
+section\<open>Automatic synthesis of formulas\<close>
+theory Synthetic_Definition
+  imports "ZF-Constructible-Trans.Formula"
 keywords
   "synthesize" :: thy_decl % "ML"
 and
@@ -81,6 +82,8 @@ val _ =
 in
 end
 \<close>
+text\<open>The \<^ML>\<open>synthetic_def\<close> function extracts definitions from 
+schematic goals. A new definition is added to the context. \<close>
 
 (* example of use
 schematic_goal mem_formula_ex :
@@ -90,7 +93,7 @@ schematic_goal mem_formula_ex :
 
 synthesize "\<phi>" from_schematic "mem_formula_ex" 
 
-lemma funca : "m \<in> nat \<Longrightarrow> n\<in>nat \<Longrightarrow> \<phi>(n,m) \<in> formula"
+lemma synth_mem_type : "m \<in> nat \<Longrightarrow> n\<in>nat \<Longrightarrow> \<phi>(n,m) \<in> formula"
   unfolding \<phi>_def by simp
 
 *)

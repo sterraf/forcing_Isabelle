@@ -33,7 +33,8 @@
 %
 \author{Emmanuel Gunther\inst{1} \and
 Miguel Pagano\inst{1} \and \\
-Pedro Sánchez Terraf\inst{1,2}\orcidID{0000-0003-3928-6942}}
+Pedro Sánchez Terraf\inst{1,2}%\orcidID{0000-0003-3928-6942}
+}
 %
 \authorrunning{E.~Gunther, M.~Pagano, P.~Sánchez Terraf}
 %\authorrunning{E. Gunther et al.}
@@ -52,11 +53,13 @@ Pedro Sánchez Terraf\inst{1,2}\orcidID{0000-0003-3928-6942}}
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-We formalize the development of forcing in the set theory framework of
-Isabelle/ZF. Under the assumption of the existence of countable
-transitive model of $\ZF$, we construct a generic extension and show
-that the latter also satisfies $\ZF$.
-\keywords{Isabelle/ZF \and forcing \and names \and generic extension \and constructibility.}
+We formalize the theory of forcing in the set theory framework of
+Isabelle/ZF. Under the assumption of the existence of a countable
+transitive model of $\ZFC$, we construct a proper generic extension and show
+that the latter also satisfies $\ZFC$. In doing so, we remodularized
+Paulson's \verb|ZF-Constructibility| library.
+\keywords{forcing \and Isabelle/ZF \and countable transitive models
+  \and absoluteness \and generic extension \and constructibility.}
 \end{abstract}
 %
 %
@@ -84,4 +87,9 @@ that the latter also satisfies $\ZF$.
 %
 \bibliographystyle{splncs04}
 \bibliography{forcing_in_isabelle_zf}
+
+% \appendix
+
+% \input{sample_proof}
+
 \end{document}

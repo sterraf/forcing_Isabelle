@@ -1,27 +1,58 @@
-\section{Conclusion}
+\section{Conclusion and future work}
 \label{sec:conclusion}
 
-COMMENTS:
-\begin{enumerate}
-\item No merit in ``not formalizing'' the Reflection Principle.
-\end{enumerate}
+We consider that the formalization of the definition of $\forceisa$
+and its recursive characterization of forcing for atomic formulas is
+a turning point
+in our project; the reason for this is that all further
+developments will not involve such a daunting metamathematical
+component. Even the proofs of the Fundamental Theorems of Forcing
+turned out to follow rather smoothly after this initial setup was
+ready, the only complicated affair being to show that various dense sets belong
+to $M$. 
+%
+Actually, this is a point to be taken care of: For every new
+concept that is introduced, some lemmas concerning 
+relativization and closure must be proved to be able to synthesize its
+internal definition. Further automation must be developed for this
+purpose.
 
-\noindent TODO:
-\begin{enumerate}
-\item Implement \emph{Basic Set Theory (BST)} by Kunen in
-  Constructible: the use of alternatively Replacement or Powerset to
-  prove basic absoluteness and closure resuls.
-\item Enhance the automatization of formulas
-\item Develop the forcing notions to obtain the independence of $\CH$,
-  along with the prerrequisite combinatorial results (v.g.\ the
-  $\Delta$-system lemma).
-\end{enumerate}
+In the course of obtaining internal formulas for the atomic case of
+forcing, a fruitful discussion
+concerning complementary perspectives on the role of proof assistants
+took place. An earlier approach relied more heavily in formula
+synthesis, thus making the Simplifier an indispensable main
+character. Following this line was quickier from the coding point of
+view since few new primitives were introduced and thus fewer lemmas
+concerning absoluteness and arities. On the downside, processing was a
+bit slower, the formulas synthesized were gigantic and the process on
+a whole as more error-prone. In fact, this approach was unsuccessful
+and we opted for a more detailed engineering, defining all
+intermediate steps. So the load on the assistant, in this part of the
+development, balanced from code-production to code-verification. 
 
-\noindent WE'RE SORRY FOR:
-\begin{enumerate}
-\item Still some older or less significant proofs are in procedural
-  format.
-\end{enumerate}
+The next task in our path is pretty clear: To develop the forcing
+notions to obtain the independence of $\CH$ 
+along with the prerequisite combinatorial results, v.g.\ the
+$\Delta$-system lemma. A development of cofinality is under way in a
+joint work with E.~Pacheco Rodríguez, which is needed for a general
+statement of the latter. 
+
+In a second release of \isatt{ZF-Constructible-Trans}, we intend to conform
+it to the lines of \emph{Basic Set Theory (BST)}
+\cite[I.3.1]{kunen2011set} in which elementary results have proofs
+using alternatively Powerset or Replacement. The interest in this
+arises because many natural set models (rank-initial segments of the
+universe or the family $H(\kappa)$ of sets  of cardinality
+less than $\kappa$ hereditarily) satisfy one of those axioms and not the
+other. There are also still some older or less significant proofs
+written in tactical (\textbf{apply}) format; we hope we will find the
+time to translate them to Isar. Finally, the automation of formula
+synthesis is on an early stage of development; finishing that module
+will make writing our proofs of closure under various operations
+faster, and also turn the set theory libraries  more
+usable to other researchers.
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "forcing_in_isabelle_zf"

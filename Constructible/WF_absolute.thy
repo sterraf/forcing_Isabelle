@@ -60,7 +60,7 @@ by (blast del: subsetI
 
 definition
   rtran_closure_mem :: "[i=>o,i,i,i] => o" where
-    \<comment>\<open>The property of belonging to \<open>rtran_closure(r)\<close>\<close>
+    \<comment> \<open>The property of belonging to \<open>rtran_closure(r)\<close>\<close>
     "rtran_closure_mem(M,A,r,p) ==
               \<exists>nnat[M]. \<exists>n[M]. \<exists>n'[M]. 
                omega(M,nnat) & n\<in>nnat & successor(M,n,n') &
@@ -100,7 +100,7 @@ lemma (in M_trancl) rtran_closure_mem_iff:
            (\<exists>f[M]. f \<in> succ(n) -> A &
             (\<exists>x[M]. \<exists>y[M]. p = <x,y> & f`0 = x & f`n = y) &
                            (\<forall>i\<in>n. <f`i, f`succ(i)> \<in> r)))"
-  apply (simp add: rtran_closure_mem_def Ord_succ_mem_iff nat_0_le [THEN ltD] M_nat) 
+  apply (simp add: rtran_closure_mem_def Ord_succ_mem_iff nat_0_le [THEN ltD]) 
 done
 
 lemma (in M_trancl) rtran_closure_rtrancl:
@@ -114,7 +114,7 @@ lemma (in M_trancl) rtrancl_closed [intro,simp]:
      "M(r) ==> M(rtrancl(r))"
 apply (insert rtrancl_separation [of r "field(r)"])
 apply (simp add: rtrancl_alt_eq_rtrancl [symmetric]
-                 rtrancl_alt_def rtran_closure_mem_iff M_nat)
+                 rtrancl_alt_def rtran_closure_mem_iff)
 done
 
 lemma (in M_trancl) rtrancl_abs [simp]:
@@ -200,9 +200,9 @@ apply (simp add: wftrec_def wfrec_def, safe)
 done
 
 
-text\<open>Assuming @{term r} is transitive simplifies the occurrences of \<open>H\<close>.
-      The premise @{term "relation(r)"} is necessary 
-      before we can replace @{term "r^+"} by @{term r}.\<close>
+text\<open>Assuming \<^term>\<open>r\<close> is transitive simplifies the occurrences of \<open>H\<close>.
+      The premise \<^term>\<open>relation(r)\<close> is necessary 
+      before we can replace \<^term>\<open>r^+\<close> by \<^term>\<open>r\<close>.\<close>
 theorem (in M_trancl) trans_wfrec_relativize:
   "[|wf(r);  trans(r);  relation(r);  M(r);  M(a);
      wfrec_replacement(M,MH,r);  relation2(M,MH,H);

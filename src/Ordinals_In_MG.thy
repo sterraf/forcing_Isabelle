@@ -1,53 +1,10 @@
+section\<open>Ordinals in generic extensions\<close>
 theory Ordinals_In_MG
   imports
     Forcing_Theorems Relative_Univ
 
 begin
 
-lemma edI[intro!]: "t\<in>domain(x) \<Longrightarrow> ed(t,x)"
-  unfolding ed_def .
-
-lemma edD[dest!]: "ed(t,x) \<Longrightarrow> t\<in>domain(x)"
-  unfolding ed_def .
-
-
-lemma rank_ed:
-  assumes "ed(y,x)"
-  shows "succ(rank(y)) \<le> rank(x)" 
-proof
-  from assms
-  obtain p where "<y,p>\<in>x" by auto
-  moreover 
-  obtain s where "y\<in>s" "s\<in><y,p>" unfolding Pair_def by auto
-  ultimately
-  have "rank(y) < rank(s)" "rank(s) < rank(\<langle>y,p\<rangle>)" "rank(\<langle>y,p\<rangle>) < rank(x)"
-    using rank_lt by blast+
-  then
-  show "rank(y) < rank(x)"
-    using lt_trans by blast
-qed
-
-
-lemma ed_induction:
-  assumes "\<And>x. \<lbrakk>\<And>y.  ed(y,x) \<Longrightarrow> Q(y) \<rbrakk> \<Longrightarrow> Q(x)"
-  shows "Q(a)"
-
-proof(induct rule: wf_induct2[OF wf_edrel[of "eclose({a})"] ,of a "eclose({a})"])
-  case 1
-  then show ?case using arg_into_eclose by simp
-next
-  case 2
-  then show ?case using field_edrel .
-next
-  case (3 x)
-  then 
-  show ?case 
-    using assms[of x] edrelI domain_trans[OF Transset_eclose 3(1)] by blast 
-qed
-
-(* until the interface is ready *)
-lemma (in M_eclose) rank_closed: "M(a) \<Longrightarrow> M(rank(a))"
-  sorry
 
 context G_generic
 begin

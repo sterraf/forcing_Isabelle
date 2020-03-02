@@ -1,10 +1,12 @@
+section\<open>The Axiom of Unions in $M[G]$\<close>
 theory Union_Axiom
   imports Names
 begin
 
 context forcing_data
 begin
-    
+
+
 definition Union_name_body :: "[i,i,i,i] \<Rightarrow> o" where
   "Union_name_body(P',leq',\<tau>,\<theta>p) == (\<exists> \<sigma>[##M].
            \<exists> q[##M]. (q\<in> P' \<and> (<\<sigma>,q> \<in> \<tau> \<and> 
@@ -27,7 +29,7 @@ lemma Union_name_fm_type [TC]:
   unfolding Union_name_fm_def by simp
 
   
-lemma Union_name_fm_arity :
+lemma arity_Union_name_fm :
   "arity(Union_name_fm) = 4"
   unfolding Union_name_fm_def upair_fm_def pair_fm_def 
   by(auto simp add: nat_simp_union)
@@ -44,7 +46,7 @@ lemma domD :
   assumes "\<tau> \<in> M" "\<sigma> \<in> domain(\<tau>)"
   shows "\<sigma> \<in> M" 
   using assms Transset_M trans_M
-  by (simp del:setclass_iff  add:setclass_iff[symmetric]) 
+  by (simp flip: setclass_iff) 
 
     
 definition Union_name :: "i \<Rightarrow> i" where
@@ -59,8 +61,8 @@ proof -
   let ?Q="\<lambda> x . Union_name_body(P,leq,\<tau>,x)"
   from \<open>\<tau>\<in>M\<close> have "domain(\<Union>(domain(\<tau>)))\<in>M" (is "?d \<in> _") using domain_closed Union_closed by simp
   then have "?d \<times> P \<in> M" using cartprod_closed P_in_M by simp 
-  have "arity(Union_name_fm)\<le>6" using Union_name_fm_arity by simp
-  from assms P_in_M leq_in_M  Union_name_fm_arity have
+  have "arity(Union_name_fm)\<le>6" using arity_Union_name_fm by simp
+  from assms P_in_M leq_in_M  arity_Union_name_fm have
     "[\<tau>,leq] \<in> list(M)" "[P,\<tau>,leq] \<in> list(M)" by auto
   with assms assms P_in_M leq_in_M  \<open>arity(Union_name_fm)\<le>6\<close> have 
     "separation(##M,?P)" 
@@ -71,7 +73,8 @@ proof -
     assume "x \<in> ?d\<times>P"
     then have "x = <fst(x),snd(x)>" using Pair_fst_snd_eq by simp
     with \<open>x\<in>?d\<times>P\<close> \<open>?d\<in>M\<close>  have 
-      "fst(x) \<in> M" "snd(x) \<in> M" using transM fst_type snd_type P_in_M by auto
+      "fst(x) \<in> M" "snd(x) \<in> M" 
+      using mtrans fst_type snd_type P_in_M unfolding M_trans_def by auto
     then have "?P(<fst(x),snd(x)>) \<longleftrightarrow>  ?Q(<fst(x),snd(x)>)"
       using P_in_M sats_Union_name_fm P_in_M \<open>\<tau>\<in>M\<close> leq_in_M by simp  
     with \<open>x = <fst(x),snd(x)>\<close> have "?P(x) \<longleftrightarrow> ?Q(x)" by simp
@@ -80,24 +83,8 @@ proof -
   then show ?thesis using Collect_cong A by simp
 qed
     
-(* We prefer to avoid the dependency on M_trivial yet. *)  
-lemma Union_abs_trans : 
-  assumes "Transset(Q)" "a \<in> Q" "z \<in> Q" "\<Union> a = z"
-  shows "big_union(##Q,a,z)"
-proof -
-  {
-    fix x
-    assume "x \<in> z"
-    with \<open>\<Union> a=z\<close> \<open>Transset(Q)\<close> \<open>a\<in>Q\<close> obtain y where
-      "y \<in> a" "x \<in> y" "y \<in> Q"
-      unfolding Transset_def using subsetD by blast
-    then have "\<exists> y[##Q].x\<in>y \<and> y \<in>a" by auto
-  }
-  then have 1: "x \<in> z \<Longrightarrow> \<exists> y[##Q].x\<in>y \<and> y \<in>a" for x .
-  with \<open>\<Union> a=z\<close> have "\<exists>y[##Q]. y \<in> a \<and> x \<in> y \<Longrightarrow> x\<in>z" for x by blast
-  then show ?thesis using 1 unfolding big_union_def by blast
-qed
-  
+
+
 lemma Union_MG_Eq : 
   assumes "a \<in> M[G]" and "a = val(G,\<tau>)" and "filter(G)" and "\<tau> \<in> M"
   shows "\<Union> a = val(G,Union_name(\<tau>))"
@@ -116,7 +103,8 @@ proof -
     with \<open>filter(G)\<close> \<open>q\<in>G\<close> \<open>r\<in>G\<close> obtain p where
       A: "p \<in> G" "<p,r> \<in> leq" "<p,q> \<in> leq" "p \<in> P" "r \<in> P" "q \<in> P"
       using low_bound_filter filterD  by blast 
-    then have "p \<in> M" "q\<in>M" "r\<in>M" using transM P_in_M by auto
+    then have "p \<in> M" "q\<in>M" "r\<in>M" 
+      using mtrans P_in_M unfolding M_trans_def by auto
     with A \<open><\<theta>,r> \<in> \<sigma>\<close> \<open><\<sigma>,q> \<in> \<tau>\<close> \<open>\<theta> \<in> M\<close> \<open>\<theta> \<in> domain(\<Union>(domain(\<tau>)))\<close>  \<open>\<sigma>\<in>M\<close> have 
       "<\<theta>,p> \<in> Union_name(\<tau>)" unfolding Union_name_def Union_name_body_def
         by auto
@@ -153,12 +141,15 @@ lemma union_in_MG : assumes "filter(G)"
   proof -
     { fix a
       assume "a \<in> M[G]"
-      then obtain \<tau> where "\<tau> \<in> M" "a=val(G,\<tau>)"    using GenExtD by blast
+      then interpret mgtrans : M_trans "##M[G]" 
+        using transitivity_MG by (unfold_locales; auto)
+      from \<open>a\<in>_\<close> obtain \<tau> where "\<tau> \<in> M" "a=val(G,\<tau>)"    using GenExtD by blast
       then have "Union_name(\<tau>) \<in> M" (is "?\<pi> \<in> _") using Union_name_M unfolding Union_name_def by simp 
       then have "val(G,?\<pi>) \<in> M[G]" (is "?U \<in> _") using GenExtI by simp
-      with \<open>a\<in>M[G]\<close> \<open>\<tau> \<in> M\<close> \<open>filter(G)\<close> \<open>?U \<in> M[G]\<close> \<open>a=val(G,\<tau>)\<close>
+      with \<open>a\<in>_\<close> have "(##M[G])(a)" "(##M[G])(?U)" by auto
+      with \<open>\<tau> \<in> M\<close> \<open>filter(G)\<close> \<open>?U \<in> M[G]\<close> \<open>a=val(G,\<tau>)\<close>
       have "big_union(##M[G],a,?U)" 
-        using Union_MG_Eq Union_abs_trans Transset_MG by blast
+        using Union_MG_Eq Union_abs  by simp
       with \<open>?U \<in> M[G]\<close> have "\<exists>z[##M[G]]. big_union(##M[G],a,z)" by force
     }
     then have "Union_ax(##M[G])" unfolding Union_ax_def by force
@@ -168,5 +159,5 @@ lemma union_in_MG : assumes "filter(G)"
 theorem Union_MG : "M_generic(G) \<Longrightarrow> Union_ax(##M[G])"
   by (simp add:M_generic_def union_in_MG)
 
-end
+end (* forcing_data *)
 end

@@ -1,3 +1,4 @@
+section\<open>A pointed version of DC\<close>
 theory Pointed_DC imports ZF.AC
 
 begin

@@ -1,7 +1,21 @@
-theory Forcing_Notions imports ZF begin
+section\<open>Forcing notions\<close>
+text\<open>This theory defines a locale for forcing notions, that is,
+ preorders with a distinguished maximum element.\<close>
 
+theory Forcing_Notions
+  imports ZF "ZF-Constructible-Trans.Relative"
+begin
+
+subsection\<open>Basic concepts\<close>
+text\<open>We say that two elements $p,q$ are
+  \<^emph>\<open>compatible\<close> if they have a lower bound in $P$\<close>
 definition compat_in :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
   "compat_in(A,r,p,q) == \<exists>d\<in>A . \<langle>d,p\<rangle>\<in>r \<and> \<langle>d,q\<rangle>\<in>r"
+
+definition
+  is_compat_in :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
+  "is_compat_in(M,A,r,p,q) \<equiv> \<exists>d[M]. d\<in>A \<and> (\<exists>dp[M]. pair(M,d,p,dp) \<and> dp\<in>r \<and> 
+                                   (\<exists>dq[M]. pair(M,d,q,dq) \<and> dq\<in>r))"
 
 lemma compat_inI : 
   "\<lbrakk> d\<in>A ; \<langle>d,p\<rangle>\<in>r ; \<langle>d,g\<rangle>\<in>r \<rbrakk> \<Longrightarrow> compat_in(A,r,p,g)"
@@ -43,10 +57,15 @@ lemma refl_leq:
   "r\<in>P \<Longrightarrow> r\<preceq>r"
   using leq_preord unfolding preorder_on_def refl_def by simp
 
+text\<open>A set $D$ is \<^emph>\<open>dense\<close> if every element $p\in P$ has a lower 
+bound in $D$.\<close>
 definition 
   dense :: "i\<Rightarrow>o" where
   "dense(D) == \<forall>p\<in>P. \<exists>d\<in>D . d\<preceq>p"
 
+text\<open>There is also a weaker definition which asks for 
+a lower bound in $D$ only for the elements below some fixed 
+element $q$.\<close>
 definition 
   dense_below :: "i\<Rightarrow>i\<Rightarrow>o" where
   "dense_below(D,q) == \<forall>p\<in>P. p\<preceq>q \<longrightarrow> (\<exists>d\<in>D. d\<in>P \<and> d\<preceq>p)"
@@ -141,6 +160,8 @@ definition
   antichain :: "i\<Rightarrow>o" where
   "antichain(A) == A\<subseteq>P \<and> (\<forall>p\<in>A.\<forall>q\<in>A.(\<not>compat(p,q)))"
 
+text\<open>A filter is an increasing set $G$ with all its elements 
+being compatible in $G$.\<close>
 definition 
   filter :: "i\<Rightarrow>o" where
   "filter(G) == G\<subseteq>P \<and> increasing(G) \<and> (\<forall>p\<in>G. \<forall>q\<in>G. compat_in(G,leq,p,q))"
@@ -150,13 +171,19 @@ lemma filterD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> x \<in>
 
 lemma filter_leqD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> y \<in> P \<Longrightarrow> x\<preceq>y \<Longrightarrow> y \<in> G"
   by (simp add: filter_def increasing_def)
-    
-lemma low_bound_filter : 
+      
+lemma filter_imp_compat: "filter(G) \<Longrightarrow> p\<in>G \<Longrightarrow> q\<in>G \<Longrightarrow> compat(p,q)"
+  unfolding filter_def compat_in_def compat_def by blast
+
+lemma low_bound_filter: \<comment> \<open>says the compatibility is attained inside G\<close>
   assumes "filter(G)" and "p\<in>G" and "q\<in>G"
   shows "\<exists>r\<in>G. r\<preceq>p \<and> r\<preceq>q" 
   using assms 
   unfolding compat_in_def filter_def by blast
-  
+
+text\<open>We finally introduce the upward closure of a set
+and prove that the closure of $A$ is a filter if its elements are
+compatible in $A$.\<close>
 definition  
   upclosure :: "i\<Rightarrow>i" where
   "upclosure(A) == {p\<in>P.\<exists>a\<in>A. a\<preceq>p}"
@@ -268,6 +295,7 @@ lemma decr_seq_linear: "refl(P,leq) \<Longrightarrow> f \<in> nat \<rightarrow> 
 
 end (* forcing_notion *)
 
+subsection\<open>Towards Rasiowa-Sikorski Lemma (RSL)\<close>
 locale countable_generic = forcing_notion +
   fixes \<D>
   assumes countable_subs_of_P:  "\<D> \<in> nat\<rightarrow>Pow(P)"
@@ -279,6 +307,8 @@ definition
   D_generic :: "i\<Rightarrow>o" where
   "D_generic(G) == filter(G) \<and> (\<forall>n\<in>nat.(\<D>`n)\<inter>G\<noteq>0)"
 
+text\<open>The next lemma identifies a sufficient condition for obtaining
+RSL.\<close>
 lemma RS_sequence_imp_rasiowa_sikorski:
   assumes 
     "p\<in>P" "f : nat\<rightarrow>P" "f ` 0 = p"
@@ -323,6 +353,9 @@ proof -
 qed
   
 end (* countable_generic *)
+
+text\<open>Now, the following recursive definition will fulfill the 
+requirements of lemma \<^term>\<open>RS_sequence_imp_rasiowa_sikorski\<close> \<close>
 
 consts RS_seq :: "[i,i,i,i,i,i] \<Rightarrow> i"
 primrec

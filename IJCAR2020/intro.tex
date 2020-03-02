@@ -1,35 +1,96 @@
 \section{Introduction}
 \label{sec:introduction}
 
-\subsection{Related work}
+The present work reports on the third stage of our project of
+formalizing the theory of forcing and its applications as presented in
+one of the more
+important references on the subject, Kunen's Set Theory
+\cite{kunen2011set} (a rewrite of the classical \cite{kunen1980}). 
 
-Han \& van Doorn \cite{han_et_al:LIPIcs:2019:11074}.
+We
+work using the  implementation of Zermelo-Fraenkel ($\ZF$)
+set theory \emph{Isabelle/ZF} by Paulson and Grabczewski \cite{DBLP:journals/jar/PaulsonG96}. In
+an early paper \cite{2018arXiv180705174G}, we set up the first
+elements of the countable transitive model (ctm) approach, defining
+forcing notions, names, generic extensions, and
+showing the existence of generic filters via the Rasiowa-Sikorski
+lemma (RSL). Our second (unpublished) technical report
+\cite{2019arXiv190103313G} advanced by presenting the first accurate
+\emph{formal abstract} of the Fundamental Theorems of Forcing, and
+using them to show that that the $\ZF$ axioms apart from Replacement
+and Infinity hold in all generic extensions.
 
-Updates over the (unpublished) technical report \cite{2019arXiv190103313G}.
+This paper contains the proof of Fundamental Theorems and complete
+proofs of the Axioms of Infinity, Replacement, and Choice in all
+generic extensions. In particular, we were able to fulfill the
+promised formal abstract for the Forcing 
+Theorems almost to the letter. A requirement for Infinity and the
+absoluteness of forcing for atomic formulas, we finished the interface
+between our development and
+Paulson's constructibility library \cite{paulson_2003} which enables
+us to do well-founded
+recursion inside transitive models of an appropriate finite fragment
+of $\ZF$. As a by-product, we honored a long debt: the fact that the
+generic filter $G$ belongs to the extension $M[G]$ and 
+$M\sbq M[G]$. 
+In order to take full advantage of the constructibility library
+we enhanced it by weakening the assumption of many results and also
+extended it with stronger results. % 
+Finally, our development is now independent of $\AC$: We modularized
+RSL in such a way that a version for countable 
+posets does not require choice.
 
-\begin{enumerate}
-\item The development is now independent of $\AC$: We modularized the
-  Rasiowa-Sikorski lemma in such a way that a version for countable
-  posets does not require choice, while we have the full result in an
-  independent file.
-  %
-\item We lifted the restriction on arities on the axiom schemes of
-  Separation and Replacement, streamlining various proofs as an
-  immediate benefit and avoiding the need for tupling. 
-  %
-\item We fulfilled the promised formal abstract for the Forcing
-  Theorems almost to the letter, with some slight modification
-  regarding arities of formulas.
-  %
-\item We implemented an automatic ML machinery of (bounded) renaming
-  of formulas.
-\item We finished the inteface between our development and
-  \isatt{ZF-Constructible} which enables us to do well-founded
-  recursion inside transitive models of an appropriate finite fragment
-  of $\ZF$. As a consequence, we have an unconditional proof of
-  the Axiom of Infinity and a long debt: the fact that the generic
-  filter $G$ belongs to the extension $M[G]$ and $M\sbq M[G]$.
-\end{enumerate}
+In the course of our work we found it useful to develop Isar methods to
+automate repetitive tasks. Part of the interface with Paulson's
+library consisted in constructing formulas for each relativized
+concept; and actually Isabelle's Simplifier can
+synthesize terms for unbound schematic variables in theorems. The
+synthesized term, however, is not available outside the theorem; we
+introduced a method that creates a definition from a schematic
+goal. The second method is concerned with renaming of formulas: we
+improved our small library of bounded renamings with a method that
+given the source and target environments figures out the renaming
+function and produces the relevant lemmas about it.
+
+The source code of our formalization, written for the 2019 version of
+Isabelle, can be browsed and downloaded at
+\url{https://cs.famaf.unc.edu.ar/~pedro/forcing/}
+
+
+\paragraph{Related work}
+To the best of our knowledge, all of the previous works in
+formalization of the method 
+of forcing have been done in different variants of type theory, and
+none of them uses the ctm approach. The
+most important is the recent one by 
+Han and van Doorn
+\cite{han_et_al:LIPIcs:2019:11074,DBLP:conf/cpp/HanD20}, which includes
+a formalization of the independence of $\CH$ by means
+the Boolean-valued approach to forcing, using the Lean
+proof assistant \cite{DBLP:conf/cade/MouraKADR15}.
+
+\paragraph{Outline}
+\label{sec:outline}
+
+%% Esto está como subsection para que no parezca como parte de Related
+%% Work (que tranquilamente podría ir a las conclusiones).
+We assume some familiarity with Isabelle and some terminology of set
+theory. The current paper is organized as follows. In
+Sect.~\ref{sec:isabelle-metatheories} we comment briefly on the
+meta-theoretical implications of using Isabelle/ZF. In
+Sect.~\ref{sec:relat-absol} we explain the use of relativized concepts
+and its importance for the ctm approach. The next sections cover the
+core of this report: In Sect.~\ref{sec:definition-forces} we introduce
+the definition of the formula transformer $\forceisa$ and reasoning
+principles about it; in Sect.~\ref{sec:forcing-theorems} we present
+the proofs of the fundamental theorems of forcing. We show in
+Sect.~\ref{sec:example-proper-extension} a concrete poset that leads
+to a proper extension of the ground model. In
+Sect.~\ref{sec:axioms-replacement-choice} we complete the proof that
+every axiom and axiom scheme of ZFC is valid in any generic extension.
+We close the paper by noting the next steps in our project and drawing
+conclusions from this formalization.
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "forcing_in_isabelle_zf"

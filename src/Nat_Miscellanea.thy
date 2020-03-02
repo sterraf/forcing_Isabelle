@@ -1,7 +1,8 @@
+section\<open>Auxiliary results on arithmetic\<close>
 theory Nat_Miscellanea imports ZF begin
 
-section\<open>Auxiliary results\<close>
-
+text\<open>Most of these results will get used at some point for the
+calculation of arities.\<close>
 lemmas nat_succI =  Ord_succ_mem_iff [THEN iffD2,OF nat_into_Ord]
 
 lemma nat_succD : "m \<in> nat \<Longrightarrow>  succ(n) \<in> succ(m) \<Longrightarrow> n \<in> m"
@@ -65,7 +66,10 @@ lemma gt1 : "n \<in> nat \<Longrightarrow> i \<in> n \<Longrightarrow> i \<noteq
 
 lemma pred_mono : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> pred(n) \<le> pred(m)"
   by(rule_tac n="n" in natE,auto simp add:le_in_nat,erule_tac n="m" in natE,auto)
-    
+
+lemma succ_mono : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> succ(n) \<le> succ(m)"
+  by auto
+
 lemma pred2_Un: 
   assumes "j \<in> nat" "m \<le> j" "n \<le> j" 
   shows "pred(pred(m \<union> n)) \<le> pred(pred(j))" 
@@ -91,6 +95,26 @@ lemma le_not_lt_nat : "Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> \<not> 
   by (rule ltE,rule not_le_iff_lt[THEN iffD1],auto,drule ltI[of q p],auto,erule leI)
 
 lemmas nat_simp_union = nat_un_max nat_max_ty max_def 
+
+lemma le_succ : "x\<in>nat \<Longrightarrow> x\<le>succ(x)" by simp
+lemma le_pred : "x\<in>nat \<Longrightarrow> pred(x)\<le>x" 
+  using pred_le[OF _ _ le_succ] pred_succ_eq 
+  by simp
+
+lemma Un_le_compat : "o \<le> p \<Longrightarrow> q \<le> r \<Longrightarrow> Ord(o) \<Longrightarrow> Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> o \<union> q \<le> p \<union> r"
+  using  le_trans[of q r "p\<union>r",OF _ Un_upper2_le] le_trans[of o p "p\<union>r",OF _ Un_upper1_le]
+        nat_simp_union 
+  by auto
+
+lemma Un_le : "p \<le> r \<Longrightarrow> q \<le> r \<Longrightarrow> 
+                 Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> 
+                p \<union> q \<le> r"
+  using nat_simp_union by auto
+
+lemma Un_leI3 : "o \<le> r \<Longrightarrow> p \<le> r \<Longrightarrow> q \<le> r \<Longrightarrow> 
+                Ord(o) \<Longrightarrow> Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> 
+                o \<union> p \<union> q \<le> r"
+  using nat_simp_union by auto
 
 lemma diff_mono :
   assumes "m \<in> nat" "n\<in>nat" "p \<in> nat" "m < n" "p\<le>m"
@@ -124,6 +148,9 @@ lemma leD : assumes "n\<in>nat" "j \<le> n"
   shows "j < n | j = n"
 using leE[OF \<open>j\<le>n\<close>,of "j<n | j = n"] by auto
 
+subsection\<open>Some results in ordinal arithmetic\<close>
+text\<open>The following results are auxiliary to the proof of 
+wellfoundedness of the relation \<^term>\<open>frecR\<close>\<close>
 
 lemma max_cong :
   assumes "x \<le> y" "Ord(y)" "Ord(z)" shows "max(x,y) \<le> max(y,z)"

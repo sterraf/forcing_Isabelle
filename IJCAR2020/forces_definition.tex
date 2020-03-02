@@ -5,16 +5,39 @@ The core of the development is showing the definability of the
 relation of forcing. As explained in
 \cite[Sect.~8]{2019arXiv190103313G}, this comprises the 
 definition of a function $\forceisa$ that maps the set of internal
-formulas into itself. 
+formulas into itself. It is the very reason of applicability of
+forcing that the satisfaction of a first-order formula  $\phi$ in all of the generic
+extensions of a ctm $M$ can be ``controlled'' in a definable way from
+$M$ (viz., by  satisfaction of the formula $\forceisa(\phi)$). 
+
+In fact, given a forcing notion $\PP$ (i.e. a preorder with a top element)
+in a ctm $M$,
+Kunen defines the \emph{forcing relation} model-theoretically 
+by considering all extensions $M[G]$ with $G$ generic for $\PP$.
+Then two fundamental results are proved, the Truth Lemma and the
+Definability Lemma; but the proof of the first one is based on the
+formula that witnesses Definability. To make sense of this in our 
+formalization, we started with the internalized relation and then
+proved that it is equivalent to the semantic version 
+(``\isatt{definition{\isacharunderscore}of{\isacharunderscore}forces},'' in
+the next section).
+For that reason, the usual notation of the forcing relation 
+$p \Vdash \phi\ \mathit{env}$ (for $\mathit{env}$ a list of
+``names''), abbreviates in our code the
+satisfaction by $M$ of $\forceisa(\phi)$:
+\begin{isabelle}
+\ \ {\isachardoublequoteopen}p\ {\isasymtturnstile}\ {\isasymphi}\ env\ \ \ {\isasymequiv}\ \ \ M{\isacharcomma}\ {\isacharparenleft}{\isacharbrackleft}p{\isacharcomma}P{\isacharcomma}leq{\isacharcomma}one{\isacharbrackright}\ {\isacharat}\ env{\isacharparenright}
+    {\isasymTurnstile}\ forces{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
 
 The definition of $\forceisa$ proceeds by recursion
 over the set $\formula$ and its base case, that is, for
 atomic formulas, is (in)famously the most complicated one. Actually,
 newcomers can be puzzled by the fact that forcing for atomic
 formulas is also defined by (mutual) recursion: to know if $\tau_1\in\tau_2$ is
-forced, one must check if $\tau_1=\sigma$ is forced for $\sigma$
+forced by $p$ (notation: $\forcesmem(p,\tau_1,\tau_2)$), one must check if $\tau_1=\sigma$ is forced for $\sigma$
 moving in the transitive closure of $\tau_2$. To disentangle this, one
-must realize that this last recursion must be described sintactically:
+must realize that this last recursion must be described syntactically:
 the definition of $\forceisa(\phi)$ for atomic $\phi$ is then an
 internal definition of the alleged recursion on names. 
 
@@ -31,28 +54,34 @@ following mutual recursion is given:
   \exists s.\ \exists r\in \PP .\ \lb s,r\rb \in
       t_2 \land q \pleq r \land \forceseq(q,t_1,s)
 \end{multline}
-Note that the definition of $\forcesmem$ states that the set 
+Note that the definition of $\forcesmem$ is equivalent to require 
+ the set 
 \[
 \{q\pleq p : \exists \lb s,r\rb\in t_2 . \ q\pleq r \land \forceseq(q,t_1,s)\}
 \]
-is dense below $p$.
+to be dense below $p$.
 
 It was not straightforward to use the recursion machinery of
 Isabelle/ZF to define $\forceseq$ and $\forcesmem$. For this, we
 defined a relation $\frecR$ on 4-tuples of elements of $M$, proved
-that it is wellfounded ---indeed, we also proved an
+that it is well-founded and, more important, we also proved an
 induction principle for this relation:
 %
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
 \ forces{\isacharunderscore}induction{\isacharcolon}\isanewline
 \ \ \isakeyword{assumes}\isanewline
-\ \ \ \ {\isachardoublequoteopen}{\isasymAnd}{\isasymtau}\ {\isasymtheta}{\isachardot}\ {\isasymlbrakk}{\isasymAnd}{\isasymsigma}{\isachardot}\ {\isasymsigma}{\isasymin}domain{\isacharparenleft}{\isasymtheta}{\isacharparenright}\ {\isasymLongrightarrow}\ Q{\isacharparenleft}{\isasymtau}{\isacharcomma}{\isasymsigma}{\isacharparenright}{\isasymrbrakk}\ {\isasymLongrightarrow}\ R{\isacharparenleft}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymAnd}{\isasymtau}\ {\isasymtheta}{\isachardot}\ {\isasymlbrakk}{\isasymAnd}{\isasymsigma}{\isachardot}\ {\isasymsigma}{\isasymin}domain{\isacharparenleft}{\isasymtheta}{\isacharparenright}\ {\isasymLongrightarrow}\ Q{\isacharparenleft}{\isasymtau}{\isacharcomma}{\isasymsigma}{\isacharparenright}{\isasymrbrakk}\ {\isasymLongrightarrow}\ R{\isacharparenleft}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isachardoublequoteclose}\footnotemark\isanewline
 \ \ \ \ {\isachardoublequoteopen}{\isasymAnd}{\isasymtau}\ {\isasymtheta}{\isachardot}\ {\isasymlbrakk}{\isasymAnd}{\isasymsigma}{\isachardot}\ {\isasymsigma}{\isasymin}domain{\isacharparenleft}{\isasymtau}{\isacharparenright}\ {\isasymunion}\ domain{\isacharparenleft}{\isasymtheta}{\isacharparenright}\ {\isasymLongrightarrow}\ R{\isacharparenleft}{\isasymsigma}{\isacharcomma}{\isasymtau}{\isacharparenright}\ {\isasymand}\ R{\isacharparenleft}{\isasymsigma}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isasymrbrakk}\isanewline
 \ \ \ \ \ \  {\isasymLongrightarrow}\ Q{\isacharparenleft}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isachardoublequoteclose}\isanewline
 \ \ \isakeyword{shows}\isanewline
 \ \ \ \ {\isachardoublequoteopen}Q{\isacharparenleft}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}\ {\isasymand}\ R{\isacharparenleft}{\isasymtau}{\isacharcomma}{\isasymtheta}{\isacharparenright}{\isachardoublequoteclose}
 \end{isabelle}
+\footnotetext{The logical primitives of \emph{Pure} are
+\isatt{\isasymLongrightarrow}, \isatt{\&\&\&}, and \isatt{\isasymAnd}
+(implication, conjunction, and universal
+quantification, resp.), which operate on the meta-booleans
+\isatt{prop}.}
 %
 and 
 obtained both functions as cases of a another one, 
@@ -68,18 +97,44 @@ $\forceseq$ and then define $\forcesmem$ explicitly. On hindsight,
 this might have been a little simpler to do, but we preferred to be as
 faithful to the text as possible concerning this point.
 
-Once $\forcesat$ and its relativized version $\isatt{is{\isacharunderscore}forces{\isacharunderscore}at}$
-were defined, we proceeded to show absoluteness and provided internal
+Once $\forcesat$ and its relativized version
+$\isatt{is{\isacharunderscore}forces{\isacharunderscore}at}$ were
+defined, we proceeded to show absoluteness and provided internal
 definitions for the recursion on names using results in
 \isatt{ZF-Constructible}. This finished the atomic case of the
-formula-transformer $\forceisa$. 
+formula-transformer $\forceisa$. The characterization of $\forceisa$
+for negated and universal quantified formulas is given by the
+following lemmas, respectively:
+%
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ sats{\isacharunderscore}forces{\isacharunderscore}Neg{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isachardoublequoteopen}p{\isasymin}P{\isachardoublequoteclose}\ {\isachardoublequoteopen}env\ {\isasymin}\ list{\isacharparenleft}M{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ \ \ {\isachardoublequoteopen}M{\isacharcomma}\ {\isacharbrackleft}p{\isacharcomma}P{\isacharcomma}leq{\isacharcomma}one{\isacharbrackright}\ {\isacharat}\ env\ {\isasymTurnstile}\ forces{\isacharparenleft}Neg{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharparenright}\ \ \ {\isasymlongleftrightarrow}\ \isanewline
+\ \ \ \ \ {\isasymnot}{\isacharparenleft}{\isasymexists}q{\isasymin}M{\isachardot}\ q{\isasymin}P\ {\isasymand}\ is{\isacharunderscore}leq{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharcomma}leq{\isacharcomma}q{\isacharcomma}p{\isacharparenright}\ {\isasymand}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ M{\isacharcomma}\ {\isacharbrackleft}q{\isacharcomma}P{\isacharcomma}leq{\isacharcomma}one{\isacharbrackright}{\isacharat}env\ {\isasymTurnstile}\ forces{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
 
-\begin{framed}
-  In order to prove absoluteness of functions defined by wellfounded
-  recursion, we need to show that we can replace the relevant
-  wellfounded relations by their transitive closures. (EXPAND HERE OR
-  SOMEWHERE ELSE).
-\end{framed}
+\isacommand{lemma}\isamarkupfalse%
+\ sats{\isacharunderscore}forces{\isacharunderscore}Forall{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isachardoublequoteopen}p{\isasymin}P{\isachardoublequoteclose}\ {\isachardoublequoteopen}env\ {\isasymin}\ list{\isacharparenleft}M{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ \ \ {\isachardoublequoteopen}M{\isacharcomma}{\isacharbrackleft}p{\isacharcomma}P{\isacharcomma}leq{\isacharcomma}one{\isacharbrackright}\ {\isacharat}\ env\ {\isasymTurnstile}\ forces{\isacharparenleft}Forall{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharparenright}\ {\isasymlongleftrightarrow}\ \isanewline
+\ \ \ \ \ {\isacharparenleft}{\isasymforall}x{\isasymin}M{\isachardot}\ \ \ M{\isacharcomma}\ {\isacharbrackleft}p{\isacharcomma}P{\isacharcomma}leq{\isacharcomma}one{\isacharcomma}x{\isacharbrackright}\ {\isacharat}\ env\ {\isasymTurnstile}\ forces{\isacharparenleft}{\isasymphi}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+
+Let us note in passing another improvement over our previous report:
+we made a couple of new technical results concerning recursive
+definitions. Paulson proved absoluteness of functions defined by
+well-founded recursion over a transitive relation. Some of our
+definitions by recursion (\emph{check} and \emph{forces}) do not fit
+in that scheme.  One can replace the relation $R$ for its transitive
+closure $R^+$ in the recursive definition because one can prove, in
+general, that
+$F\!\upharpoonright\!(R^{-1}(x))(y) =
+F\!\upharpoonright\!({R^+}^{-1}(x))(y)$ whenever $(x,y) \in R$.
 
 
 %%% Local Variables: 

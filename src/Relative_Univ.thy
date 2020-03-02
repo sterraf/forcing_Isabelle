@@ -1,60 +1,19 @@
+section\<open>Relativization of the cumulative hierarchy\<close>
 theory Relative_Univ
   imports
-    Rank Datatype_absolute Internalizations Recursion_Thms
+    "ZF-Constructible-Trans.Rank"
+    "ZF-Constructible-Trans.Datatype_absolute"
+    Internalizations
+    Recursion_Thms
 
 begin
-
-lemma (in M_trivial) powerset_subset_Pow:
-  assumes 
-    "powerset(M,x,y)" "\<And>z. z\<in>y \<Longrightarrow> M(z)"
-  shows 
-    "y \<subseteq> Pow(x)"
-  using assms unfolding powerset_def
-  by (auto)
-    
-lemma (in M_trivial) powerset_abs: 
-  assumes
-    "M(x)" "\<And>z. z\<in>y \<Longrightarrow> M(z)"
-  shows
-    "powerset(M,x,y) \<longleftrightarrow> y = {a\<in>Pow(x) . M(a)}"
-proof (intro iffI equalityI)
-  (* First show the converse implication by double inclusion *)
-  assume 
-    "powerset(M,x,y)"
-  with assms have
-    "y \<subseteq> Pow(x)" 
-    using powerset_subset_Pow by simp
-  with assms show
-    "y \<subseteq> {a\<in>Pow(x) . M(a)}"
-    by blast
-  {
-    fix a
-    assume 
-      "a \<subseteq> x" "M(a)"
-    then have 
-      "subset(M,a,x)" by simp
-    with \<open>M(a)\<close> \<open>powerset(M,x,y)\<close> have
-      "a \<in> y"
-      unfolding powerset_def by simp
-  }
-  then show 
-    "{a\<in>Pow(x) . M(a)} \<subseteq> y"
-    by auto
-next (* we show the direct implication *)
-  assume 
-    "y = {a \<in> Pow(x) . M(a)}"
-  then show
-    "powerset(M, x, y)"
-    unfolding powerset_def
-    by simp
-qed
 
 lemma (in M_trivial) powerset_abs' [simp]: 
   assumes
     "M(x)" "M(y)"
   shows
     "powerset(M,x,y) \<longleftrightarrow> y = {a\<in>Pow(x) . M(a)}"
-  using powerset_abs[OF _ transM] assms by simp
+  using powerset_abs assms by simp
 
 lemma Collect_inter_Transset:
   assumes 
@@ -101,18 +60,6 @@ definition
 
 
 subsection\<open>Formula synthesis\<close>
-
-(* Copied from DPow_absolute --- check Names! *)
-lemma Replace_iff_sats:
-  assumes is_P_iff_sats: 
-      "!!a b. [|a \<in> A; b \<in> A|] 
-              ==> is_P(a,b) \<longleftrightarrow> sats(A, p, Cons(a,Cons(b,env)))"
-  shows 
-  "[| nth(i,env) = x; nth(j,env) = y;
-      i \<in> nat; j \<in> nat; env \<in> list(A)|]
-   ==> is_Replace(##A, x, is_P, y) \<longleftrightarrow> sats(A, is_Replace_fm(i,p,j), env)"
-by (simp add: sats_is_Rep_fm [OF is_P_iff_sats])
-
 
 schematic_goal sats_is_powapply_fm_auto:
   assumes
@@ -172,13 +119,13 @@ lemma (in M_eclose) rrank_in_M : "M(x) \<Longrightarrow> M(rrank(x))"
   unfolding rrank_def by simp
 
 
-section\<open>Absoluteness results\<close>
+subsection\<open>Absoluteness results\<close>
 
 locale M_eclose_pow = M_eclose + 
   assumes
     power_ax : "power_ax(M)" and
     powapply_replacement : "M(f) \<Longrightarrow> strong_replacement(M,is_powapply(M,f))" and
-    HVfrom_replacement : "\<lbrakk> M(i) ; Ord(i) ; M(A) \<rbrakk> \<Longrightarrow> 
+    HVfrom_replacement : "\<lbrakk> M(i) ; M(A) \<rbrakk> \<Longrightarrow> 
                           transrec_replacement(M,is_HVfrom(M,A),i)" and
     PHrank_replacement : "M(f) \<Longrightarrow> strong_replacement(M,PHrank(M,f))" and
     is_Hrank_replacement : "M(x) \<Longrightarrow> wfrec_replacement(M,is_Hrank(M),rrank(x))"

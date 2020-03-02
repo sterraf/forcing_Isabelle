@@ -16,7 +16,6 @@ lemmas nth_rules = nth_0 nth_ConsI nat_0I nat_succI
 lemmas sep_rules = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
                    fun_plus_iff_sats
 
-
 lemma Collect_conj_in_DPow:
      "[| {x\<in>A. P(x)} \<in> DPow(A);  {x\<in>A. Q(x)} \<in> DPow(A) |]
       ==> {x\<in>A. P(x) & Q(x)} \<in> DPow(A)"
@@ -253,12 +252,13 @@ lemma funspace_succ_replacement:
       strong_replacement(L, \<lambda>p z. \<exists>f[L]. \<exists>b[L]. \<exists>nb[L]. \<exists>cnbf[L].
                 pair(L,f,b,p) & pair(L,n,b,nb) & is_cons(L,nb,f,cnbf) &
                 upair(L,cnbf,cnbf,z))"
-  apply (rule strong_replacementI)
-  apply (rule_tac u="{n,B}" in gen_separation_multi [OF funspace_succ_Reflects], 
-      auto)
-  apply (rule_tac env="[n,B]" in DPow_LsetI)
-    apply (rule sep_rules | simp)+
-  done
+apply (rule strong_replacementI)
+apply (rule_tac u="{n,B}" in gen_separation_multi [OF funspace_succ_Reflects], 
+       auto)
+apply (rule_tac env="[n,B]" in DPow_LsetI)
+apply (rule sep_rules | simp)+
+done
+
 
 subsection\<open>Separation for a Theorem about \<^term>\<open>is_recfun\<close>\<close>
 
