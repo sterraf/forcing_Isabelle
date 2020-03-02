@@ -1,42 +1,55 @@
-THY_FILES = Arities.thy Choice_Axiom.thy \
- Extensionality_Axiom.thy Forces_Definition.thy Forcing_Data.thy\
- Forcing_Main.thy Forcing_Notions.thy Forcing_Theorems.thy\
- Foundation_Axiom.thy FrecR.thy Infinity_Axiom.thy\
- Interface.thy Internalizations.thy Least.thy Names.thy\
- Nat_Miscellanea.thy Ordinals_In_MG.thy\
- Pairing_Axiom.thy Pointed_DC.thy Powerset_Axiom.thy Proper_Extension.thy\
- Rasiowa_Sikorski.thy Recursion_Thms.thy Relative_Univ.thy\
- Renaming.thy Renaming_Auto.thy Replacement_Axiom.thy\
- Separation_Axiom.thy Separation_Rename.thy Succession_Poset.thy\
- Synthetic_Definition.thy Union_Axiom.thy Internal_ZFC_Axioms.thy
+OPTION = 
+
+CHAPTER = ZF
+
+SESSION = Forcing
+
+OUT_DIR = output/html
 
 ML_FILES = Renaming_ML.ml
 
-LINKING_FILES = fix_links.sh links.css
+LINKING_DIR  = ../scripts
+PARALLEL     = $(shell cat thy_files | sed s/\.thy/\.html/g )
+THY_FILES    = $(shell cat thy_files | tr \" " ")
+USR_HEAPS    = $(shell isabelle getenv ISABELLE_HEAPS | cut -f2 -d"=")
+ML_ID        = $(shell isabelle getenv ML_IDENTIFIER | cut -f2 -d"=")
+HEAP_LOG_DIR = $(USR_HEAPS)/$(ML_ID)/log
+HTML_DIR     = $(OUT_DIR)/$(CHAPTER)/$(SESSION)
+DB           = $(HEAP_LOG_DIR)/$(SESSION).db 
 
-CHAPTER =ZF
+.PHONY: build html tar clean
 
-build: 
-	isabelle env ML_OPTIONS="--minheap 5500" isabelle build -v -c -D .
+$(DB):	$(THY_FILES) $(ML_FILES)
+	isabelle build $(OPTION) -v -c -d . $(SESSION)
 
-html: 
-	isabelle env ML_OPTIONS="--minheap 5500"\
-	  ISABELLE_BROWSER_INFO=./output/html\
-	  isabelle build -c -d . -o browser_info -v Forcing
-	sh fix_links.sh
-	cat links.css >> output/html/$(CHAPTER)/Forcing/isabelle.css
+build: 	$(DB)
 
-tar:    clean html
-	time bash link-forcing.sh
+$(HTML_DIR):	$(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT
+	isabelle env \
+	  ISABELLE_BROWSER_INFO=$(OUT_DIR)\
+	  isabelle build $(OPTION) -d . -c -o browser_info -v $(SESSION)
+	sh $(LINKING_DIR)/fix_links.sh  $(SESSION) $(CHAPTER) $(OUT_DIR)
+	cat $(LINKING_DIR)/links.css >> $(HTML_DIR)/isabelle.css
+
+html:	$(HTML_DIR)
+
+$(SESSION).tar.gz:	$(HTML_DIR) ../scripts/link-html.sh Makefile Makefile_distro ROOT
+	time bash $(LINKING_DIR)/link-html.sh $(SESSION) $(CHAPTER) $(OUT_DIR) $(PARALLEL)
+	rm -rf tmptar
 	mkdir tmptar
 	mkdir tmptar/src
-	cp -r ../Constructible tmptar
 	cp README tmptar
-	cp -r $(THY_FILES) $(ML_FILES) $(LINKING_FILES) ROOT document/ tmptar/src
+	cp -r $(LINKING_DIR) ../Constructible tmptar/
+	cp -r README $(PARALLELIZATION) thy_files $(THY_FILES) $(ML_FILES)\
+	 ROOT document/ tmptar/src
 	cp Makefile_distro tmptar/src/Makefile
-	cp -r output/html/$(CHAPTER)/Forcing/ tmptar/html
-	tar --transform "s/tmptar/Forcing/g" --show-transformed-names -cvzf forcing.tar.gz tmptar
+	 ## Avoid temporary sed files from linking:
+	rsync -ah --exclude 'sed*' $(HTML_DIR)/ tmptar/html
+	tar --transform "s/tmptar/$(SESSION)/g" --show-transformed-names\
+	 -cvzf $(SESSION).tar.gz tmptar
 	rm -rf tmptar
+
+tar:    $(SESSION).tar.gz
 
 clean:
 	rm -rf output/ tmptar
