@@ -8,7 +8,7 @@ OUT_DIR = output/html
 
 ML_FILES = Renaming_ML.ml
 
-LINKING_DIR  = ../scripts
+LINKING_DIR  = $(PWD)/../scripts
 PARALLEL     = $(shell cat thy_files | sed s/\.thy/\.html/g )
 THY_FILES    = $(shell cat thy_files | tr \" " ")
 USR_HEAPS    = $(shell isabelle getenv ISABELLE_HEAPS | cut -f2 -d"=")
@@ -30,11 +30,13 @@ $(HTML_DIR):	thy_files $(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT
 	  isabelle build $(OPTION) -d . -c -o browser_info -v $(SESSION)
 	sh $(LINKING_DIR)/fix_links.sh  $(SESSION) $(CHAPTER) $(OUT_DIR)
 	cat $(LINKING_DIR)/links.css >> $(HTML_DIR)/isabelle.css
+	cd $(HTML_DIR); \
+		bash $(LINKING_DIR)/parsing.sh $(SESSION); \
+		bash $(LINKING_DIR)/linking.sh $(SESSION) . . $(PARALLEL)
 
 html:	$(HTML_DIR)
 
 $(SESSION).tar.gz:	$(HTML_DIR) ../scripts/link-html.sh Makefile Makefile_distro ROOT
-	time bash $(LINKING_DIR)/link-html.sh $(SESSION) $(CHAPTER) $(OUT_DIR) $(PARALLEL)
 	rm -rf tmptar
 	mkdir tmptar
 	mkdir tmptar/src
