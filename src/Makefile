@@ -53,5 +53,25 @@ $(SESSION).tar.gz:	$(HTML_DIR) ../scripts/link-html.sh Makefile Makefile_distro 
 
 tar:    $(SESSION).tar.gz
 
+linked:	$(HTML_DIR) ../scripts/link-html.sh Makefile Makefile_distro ROOT
+	rm -rf tmptar
+	mkdir tmptar
+	mkdir tmptar/src
+	cd $(HTML_DIR); \
+		bash $(LINKING_DIR)/linking.sh ZF ~/git/forcing/zf_item_lists/ \
+		 https://cs.famaf.unc.edu.ar/~pedro/forcing/ZF $(PARALLEL); \
+		bash $(LINKING_DIR)/linking.sh ZF-Constructible-Trans ~/git/forcing/zf_item_lists/ \
+		 https://cs.famaf.unc.edu.ar/~pedro/forcing/ZF-Constructible-Trans $(PARALLEL)
+	cp README tmptar
+	cp -r $(LINKING_DIR) ../Constructible tmptar/
+	cp -r README $(PARALLELIZATION) thy_files $(THY_FILES) $(ML_FILES)\
+	 ROOT document/ tmptar/src
+	cp Makefile_distro tmptar/src/Makefile
+	 ## Avoid temporary sed files from linking:
+	rsync -ah --exclude 'sed*' $(HTML_DIR)/ tmptar/html
+	tar --transform "s/tmptar/$(SESSION)/g" --show-transformed-names\
+	 -cvzf $(SESSION).tar.gz tmptar
+	rm -rf tmptar
+
 clean:
 	rm -rf output/ tmptar
