@@ -11,6 +11,9 @@ and
   "src" 
 and 
   "tgt"
+abbrevs
+  "simple_rename" = ""
+
 begin
 
 lemmas app_fun = apply_iff[THEN iffD1]
