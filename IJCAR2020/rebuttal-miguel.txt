@@ -25,8 +25,8 @@ We knew of Han and van Doorn when we were somewhat advanced in our
 project and decided to continue because of the differences: a
 different meta-theory and a different approach to forcing. We think
 that this paper is interesting per se (we can agree that the arXiv
-paper is a bit premature) as it establish a ground on which do forcing
-arguments.
+paper is a bit premature) as it establish a ground on which to do
+forcing arguments.
 
 > The main result in this paper is simply that forcing extensions
 > satisfy replacement and choice, which seem to be fairly
