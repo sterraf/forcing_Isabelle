@@ -36,7 +36,7 @@ forcing arguments.
 > proof of a first lemma about the forcing relation.
 
 We would like to point that the main result may seem straightforward
-thanks to the more substantial contributin of the paper: the
+thanks to the more substantial contribution of the paper: the
 definition of the forces function and the proof of the forcing
 theorems. Han & van Doorn [CPP 2020] hint that the formalization of
 forcing using the ctm and in a set theoretical foundations is more
