@@ -36,7 +36,7 @@ $(HTML_DIR):	thy_files $(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT
 
 html:	$(HTML_DIR)
 
-$(SESSION).tar.gz:	$(HTML_DIR) ../scripts/link-html.sh Makefile ROOT
+$(SESSION).tar.gz:	$(HTML_DIR) Makefile ROOT
 	rm -rf tmptar
 	mkdir tmptar
 	mkdir tmptar/src
@@ -53,14 +53,14 @@ $(SESSION).tar.gz:	$(HTML_DIR) ../scripts/link-html.sh Makefile ROOT
 
 tar:    $(SESSION).tar.gz
 
-linked:	$(HTML_DIR) ../scripts/link-html.sh Makefile ROOT
+linked:	$(HTML_DIR) $(LINKING_DIR)/linking.sh Makefile ROOT
 	rm -rf tmptar
 	mkdir tmptar
 	mkdir tmptar/src
 	cd $(HTML_DIR); \
-		bash $(LINKING_DIR)/linking.sh ZF ~/git/forcing/zf_item_lists/ \
+		bash $(LINKING_DIR)/linking.sh ZF $(PWD)/../zf_item_lists/ \
 		 https://cs.famaf.unc.edu.ar/~pedro/forcing/ZF $(PARALLEL); \
-		bash $(LINKING_DIR)/linking.sh ZF-Constructible-Trans ~/git/forcing/zf_item_lists/ \
+		bash $(LINKING_DIR)/linking.sh ZF-Constructible-Trans $(PWD)/../zf_item_lists/ \
 		 https://cs.famaf.unc.edu.ar/~pedro/forcing/ZF-Constructible-Trans $(PARALLEL)
 	cp README tmptar
 	cp -r $(LINKING_DIR) tmptar/

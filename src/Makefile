@@ -58,9 +58,9 @@ linked:	$(HTML_DIR) ../scripts/link-html.sh Makefile Makefile_distro ROOT
 	mkdir tmptar
 	mkdir tmptar/src
 	cd $(HTML_DIR); \
-		bash $(LINKING_DIR)/linking.sh ZF ~/git/forcing/zf_item_lists/ \
+		bash $(LINKING_DIR)/linking.sh ZF $(PWD)/../zf_item_lists/ \
 		 https://cs.famaf.unc.edu.ar/~pedro/forcing/ZF $(PARALLEL); \
-		bash $(LINKING_DIR)/linking.sh ZF-Constructible-Trans ~/git/forcing/zf_item_lists/ \
+		bash $(LINKING_DIR)/linking.sh ZF-Constructible-Trans $(PWD)/../zf_item_lists/ \
 		 https://cs.famaf.unc.edu.ar/~pedro/forcing/ZF-Constructible-Trans $(PARALLEL)
 	cp README tmptar
 	cp -r $(LINKING_DIR) ../Constructible tmptar/
