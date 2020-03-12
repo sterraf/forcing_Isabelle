@@ -11,36 +11,45 @@ careful reading and detailed criticism.
 > forcing. More to the point, the recent work by Han and van Doorn on
 > forcing in Lean deserves more discussion. 
 
-We will gladly incorporate this changes into a revised version.
+We will gladly incorporate these changes and discussion on the
+questions posed into a revised version.
 
- 
 > ----------------------- REVIEW 2 ---------------------
 > 
 > In a single
 > publication, Han and van Doorn using forcing to show the independence
 > of the continuum hypothesis, whereas the authors of this paper are on
 > their third publication, and still seem to be at least one paper away
-> from showing any independence result.
+> from showing any independence result. In particular, CH will require
+> some careful cardinal combinatorics. 
 
-We believe that the previous assertions are not entirely accurate. As
-it is clear from our introduction, our second manuscript on the
-subject is not published (and it won't be) in any venue other than the
-arXiv. (As a side note, Han & van Doorn have two papers detailing
-the full account of their formalization.)
+We knew of Han and van Doorn when we were somewhat advanced in our
+project and decided to continue because of the differences: 
+
+ 1) a weaker meta-theory (Han & van Doorn [CPP 2020] hint that the
+ formalization of forcing in set theoretical foundations is practically
+ impossible); and
+
+ 2) an approach to forcing (ctm) used in a important fraction of the
+ literature.
+
+We agree that the remaining work towards the independence of CH will
+require one more paper. Notice that, in fact, Han & van Doorn have two
+papers (ITP2019, CPP2020) detailing the full account of their
+formalization. (As a side note, our second manuscript on the subject
+is not published.)
 
 > The main result in this paper is
 > simply that forcing extensions satisfy replacement and choice, which
 > seem to be fairly straightforward. 
 
-In some sense, this is a misstatement of our achievements. The "Main
-theorem" of our paper is just the icing on the cake, since there is no
-other way to prove this result other than formalizing the machinery of
-forcing, which is the real achievement of this paper. Han & van Doorn
-[CPP 2020] hint that the formalization of forcing in set theoretical
-foundations is practically impossible.
+This is a misstatement of our achievements. Our "Main Theorem" may
+seem straightforward thanks to the more substantial contribution of
+the paper: the definition of the forcing relation and the proof of the
+forcing theorems. The Main Theorem is a succinct way to demonstrate
+the forcing machinery, since there is no other way to produce
+extensions of ctms.
 
-> 
-> 
 > ----------------------- REVIEW 3 ---------------------
 > This work presents a formalization of forcing in Isabelle/ZF and the 
 > proof of a first lemma about the forcing relation.
