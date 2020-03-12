@@ -498,24 +498,29 @@ proof -
   then
   show ?thesis
   proof(cases)
-  case zero
-  have "cf(0) = 0" using cf_zero by simp
-  then 
-  have  "id(0) \<in> \<langle>cf(0), Memrel(cf(0))\<rangle> \<cong> \<langle>0, Memrel(0)\<rangle>" using ord_iso_refl by simp
-  then 
-  have "id(0)\<in>mono_map(cf(0),Memrel(cf(0)),0,Memrel(0))" using ord_iso_is_mono_map by simp
-  with zero
-  show ?thesis unfolding cofinal_fun_def by auto
-      
-next
-  case succ
-  then
-  show ?thesis sorry    
-next    
-  case lim
-  then
-  show ?thesis sorry
-qed
+    case zero
+    have "cf(0) = 0" using cf_zero by simp
+    then 
+    have  "id(0) \<in> \<langle>cf(0), Memrel(cf(0))\<rangle> \<cong> \<langle>0, Memrel(0)\<rangle>" using ord_iso_refl by simp
+    then 
+    have "id(0)\<in>mono_map(cf(0),Memrel(cf(0)),0,Memrel(0))" using ord_iso_is_mono_map by simp
+    with zero
+    show ?thesis unfolding cofinal_fun_def by auto
+        
+  next
+    case succ find_theorems "function"
+    define f where "f={<0,b>}"
+    then 
+    have "function(f)" unfolding function_def by simp
+    then
+      have "f`0=b" using \<open>f={<0,b>}\<close>  function_apply_equality  by simp
+    then
+    show ?thesis sorry    
+  next    
+    case lim
+    then
+    show ?thesis sorry
+  qed
 qed
           
 lemma cofinal_fun_factorization:
