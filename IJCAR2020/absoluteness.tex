@@ -1,0 +1,130 @@
+\section{Relativization,  absoluteness, and the axioms}
+\label{sec:relat-absol}
+
+The concepts of relativization and absoluteness (due to Gödel, in his
+proof of the relative consistency of $\AC$ \cite{godel-L}) 
+are both
+prerequisites and powerful tools in working with transitive
+models. A \emph{class} is simply a predicate $C(x)$ with at least one
+free variable $x$.
+The \emph{relativization} $\phi^C(\bx)$ of a set-theoretic
+definition
+$\phi$ (of a relation such
+as ``$x$ is a subset of $y$'' or of a function like $y=\P(x)$) to
+a class $C$ is obtained by restricting all of its quantifiers to $C$.
+
+\[
+x \sbq^C y \equiv \forall z.\ C(z) \longrightarrow (z\in x
+\longrightarrow z\in y)
+\]
+
+The new formula $\phi^C(\bx)$ corresponds to what is obtained by defining
+the concept ``inside'' $C$. In fact, for a class corresponding to a
+set $c$ (i.e.\ $C(x) \defi x \in c$), the relativization $\phi^C$ of a 
+sentence $\phi$ is equivalent to the satisfaction of $\phi$ in the
+first-order model $\lb c, \in\rb$.
+
+It turns out that many concepts mean the
+same after relativization to a nonempty transitive class $C$; formally
+\[
+\forall\bx.\ C(\bx) \longrightarrow (\phi^C(\bx) \longleftrightarrow
+\phi(\bx))
+\]
+When this is the case, we say that the relation defined by $\phi$ is
+\emph{absolute for transitive models}.\footnote{Absoluteness of
+  functions also requires the relativized definition to behave
+  functionally over $C$.} As examples, the relation of inclusion
+$\subseteq$ ---and actually, any relation defined by a formula
+(equivalent to one) using only bounded quantifiers $(\forall x\in y)$
+and $(\exists x\in y)$--- is absolute for transitive models. On the
+contrary, this is not the case with the powerset operation.
+
+A benefit of working with transitive models
+is that many concepts (pairs, unions, and fundamentally ordinals) are
+uniform across the universe \isatt{i}, a ctm (of an adequate fragment
+of $\ZF$) $M$ and any of its extensions $M[G]$.
+For that reason, then one can reason
+``externally'' about absolute concepts, instead
+of ``inside'' the model; thus, one has at hand any already proved
+lemma about the real concept.
+
+Paulson's formalization \cite{paulson_2003} of Gödel's \cite{godel-L}
+already contains absoluteness results which were crucial to our
+project; we realized however that they could be refactorized to be
+more useful. The main objective is to maximize applicability of
+the relativization machinery by adjusting the hypothesis of a greater
+part of it early development. Paulson's architecture had only in mind
+the consistency of $\ZFC$, but, for instance, in order to apply it in
+the development of forcing, too much is assumed at the beginning; more
+seriously, some assumptions cannot be regarded as ``first-order''
+(v.g. the Replacement Scheme) because of the occurrence of predicate
+variables.
+The version we present of the constructibility library,
+\isatt{ZF-Constructible-Trans}, weakens the
+assumptions of many absoluteness theorems to that
+of a nonempty transitive class; we also include some stronger results
+such as the relativization of powersets.
+
+Apart from the axiom schemes, the $\ZFC$ axioms are initially stated
+as predicates on classes (that is, of type
+\isatt{(i{\isasymRightarrow}o){\isasymRightarrow}o}); this formulation
+allows a better interaction with \isatt{ZF-Constructible}.  The axioms
+of Pairing, Union, Foundation, Extensionality, and Infinity are
+relativizations of the respective traditional first-order sentences to
+the class argument. For the Axiom of Choice we selected a version best
+suited for the work with transitive models: the relativization of a
+sentence stating that for every $x$ there is surjection from an
+ordinal onto $x$. Finally, Separation and Replacement were treated
+separately to effectively obtain first-order versions afterwards. It
+is to be noted that predicates in Isabelle/ZF are akin to second order
+variables and thus do not correspond to first-order formulas.
+%% in particular, there is no induction principle for functions
+%% of type \isatt{i{\isasymRightarrow}o}. 
+For that reason, Separation and Replacement predicate \emph{on the
+  satisfaction} of a formula $\phi$.  We improved their specification,
+with respect to our previous \cite{2019arXiv190103313G}, by lifting
+the arity restriction for the parameter $\phi$; consequently we
+get rid of tupling and thus various proofs are now slicker.
+
+A benefit of having class versions of the axioms is that we can
+apply our synthesis method to obtain their internal, first-order
+counterparts.% \footnote{It should be noted that our method for
+  % synthetic definition requires that the schematic goal had a
+  % particular format where the only unbound schematic variable occurs
+  % as an (open) formula whose satisfaction is equivalent to some
+  % relativized predicate.}
+For the case of the Pairing Axiom, the statement for classes is the
+following
+\begin{isabelle}
+upair{\isacharunderscore}ax{\isacharparenleft}C{\isacharparenright}{\isacharequal}{\isacharequal}{\isasymforall}x{\isacharbrackleft}C{\isacharbrackright}{\isachardot}{\isasymforall}y{\isacharbrackleft}C{\isacharbrackright}{\isachardot}{\isasymexists}z{\isacharbrackleft}C{\isacharbrackright}{\isachardot}\ upair{\isacharparenleft}C{\isacharcomma}x{\isacharcomma}y{\isacharcomma}z{\isacharparenright}
+\end{isabelle}
+where \isatt{upair} says that \isatt{z} is the unordered pair of
+\isatt{x} and \isatt{y}, relative to \isatt{C}.
+
+The following schematic lemma synthesizes its internal version,%
+\footnote{The use of such schematic goals and the original definition
+  of the collection of lemmas \isatt{sep{\isacharunderscore}rules} are due to Paulson.}
+\begin{isabelle}
+\isacommand{schematic{\isacharunderscore}goal}\isamarkupfalse%
+\ ZF{\isacharunderscore}pairing{\isacharunderscore}auto{\isacharcolon}\isanewline
+\ \ \ \ {\isachardoublequoteopen}upair{\isacharunderscore}ax{\isacharparenleft}{\isacharhash}{\isacharhash}A{\isacharparenright}\ {\isasymlongleftrightarrow}\ {\isacharparenleft}A{\isacharcomma}\ {\isacharbrackleft}{\isacharbrackright}\ {\isasymTurnstile}\ {\isacharquery}zfpair{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\isacommand{unfolding}\isamarkupfalse%
+\ upair{\isacharunderscore}ax{\isacharunderscore}def\ \isanewline
+\ \ \isacommand{by}\isamarkupfalse%
+\ {\isacharparenleft}{\isacharparenleft}rule\ sep{\isacharunderscore}rules\ {\isacharbar}\ simp{\isacharparenright}{\isacharplus}{\isacharparenright}
+\end{isabelle}
+(the actual formula obtained is
+\isatt{Forall(Forall(Exists(upair{\isacharunderscore}fm(2,1,0))))}) and
+our \isatt{synthesize} method introduces a new term
+\isatt{ZF{\isacharunderscore}pairing{\isacharunderscore}fm} for it.
+\begin{isabelle}
+\isacommand{synthesize}\isamarkupfalse%
+\ {\isachardoublequoteopen}ZF{\isacharunderscore}pairing{\isacharunderscore}fm{\isachardoublequoteclose}\ \isakeyword{from{\isacharunderscore}schematic}\ {\isachardoublequoteopen}ZF{\isacharunderscore}pairing{\isacharunderscore}auto{\isachardoublequoteclose}%
+\end{isabelle}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "forcing_in_isabelle_zf"
+%%% ispell-local-dictionary: "american"
+%%% End: 

@@ -1,73 +1,10 @@
+section\<open>The Powerset Axiom in $M[G]$\<close>
 theory Powerset_Axiom 
   imports Separation_Axiom Pairing_Axiom Union_Axiom 
 begin
 
-definition 
-  perm_pow :: "i" where
-  "perm_pow == {<0,3>,<1,4>,<2,5>,<3,1>,<4,0>,<5,6>}"  
+simple_rename "perm_pow" src "[ss,p,l,o,fs,\<chi>]" tgt "[fs,ss,sp,p,l,o,\<chi>]"
 
-lemma perm_pow_ftc : "perm_pow \<in> 6 -||> 7" "domain(perm_pow) = 6"
-  unfolding perm_pow_def
-  by (blast intro: consI emptyI,auto)
-  
-lemma perm_pow_tc : "perm_pow \<in> 6 \<rightarrow> 7"
-  using  FiniteFun_is_fun perm_pow_ftc
-  by force
-
-lemma perm_pow_env : 
-   "{p,l,o,ss,fs,\<chi>} \<subseteq> A \<Longrightarrow> j<6 \<Longrightarrow>
-  nth(j,[p,l,o,ss,fs,\<chi>]) = nth(perm_pow`j,[fs,ss,sp,p,l,o,\<chi>])" 
-  apply(subgoal_tac "j\<in>nat")
-  apply(rule natE,simp,subst apply_fun,rule perm_pow_tc,simp add:perm_pow_def,simp_all)+
-   apply(subst apply_fun,rule perm_pow_tc,simp add:perm_pow_def,simp_all,drule ltD,auto)
-  done
-
-  
-lemma (in M_trivial) powerset_subset_Pow:
-  assumes 
-    "powerset(M,x,y)" "\<And>z. z\<in>y \<Longrightarrow> M(z)"
-  shows 
-    "y \<subseteq> Pow(x)"
-  using assms unfolding powerset_def
-  by (auto)
-    
-lemma (in M_trivial) powerset_abs: 
-  assumes
-    "M(x)" "\<And>z. z\<in>y \<Longrightarrow> M(z)"
-  shows
-    "powerset(M,x,y) \<longleftrightarrow> y = {a\<in>Pow(x) . M(a)}"
-proof (intro iffI equalityI)
-  (* First show the converse implication by double inclusion *)
-  assume 
-    "powerset(M,x,y)"
-  with assms have
-    "y \<subseteq> Pow(x)" 
-    using powerset_subset_Pow by simp
-  with assms show
-    "y \<subseteq> {a\<in>Pow(x) . M(a)}"
-    by blast
-  {
-    fix a
-    assume 
-      "a \<subseteq> x" "M(a)"
-    then have 
-      "subset(M,a,x)" by simp
-    with \<open>M(a)\<close> \<open>powerset(M,x,y)\<close> have
-      "a \<in> y"
-      unfolding powerset_def by simp
-  }
-  then show 
-    "{a\<in>Pow(x) . M(a)} \<subseteq> y"
-    by auto
-next (* we show the direct implication *)
-  assume 
-    "y = {a \<in> Pow(x) . M(a)}"
-  then show
-    "powerset(M, x, y)"
-    unfolding powerset_def
-    by simp
-qed
-  
 lemma Collect_inter_Transset:
   assumes 
     "Transset(M)" "b \<in> M"
@@ -87,13 +24,13 @@ proof -
     unfolding Pair_def by auto
   moreover from assms have
     "<\<sigma>,p>\<in>M"
-    using trans_M  Transset_intf[of _ "<\<sigma>,p>"] by simp
+    using transitivity by simp
   moreover from calculation have
     "a\<in>M" 
-    using trans_M  Transset_intf[of _ _ "<\<sigma>,p>"] by simp
+    using transitivity by simp
   ultimately show
     "\<sigma>\<in>M" "p\<in>M" 
-    using trans_M  Transset_intf[of _ _ "a"] by simp_all
+    using transitivity by simp_all
 qed
 
 lemma sats_fst_snd_in_M:
@@ -101,17 +38,19 @@ lemma sats_fst_snd_in_M:
     "A\<in>M" "B\<in>M" "\<phi> \<in> formula" "p\<in>M" "l\<in>M" "o\<in>M" "\<chi>\<in>M"
     "arity(\<phi>) \<le> 6"
   shows
-    "{sq \<in>A\<times>B . sats(M,\<phi>,[p,l,o,snd(sq),fst(sq),\<chi>])} \<in> M" 
+    "{sq \<in>A\<times>B . sats(M,\<phi>,[snd(sq),p,l,o,fst(sq),\<chi>])} \<in> M" 
     (is "?\<theta> \<in> M")
 proof -
   have "6\<in>nat" "7\<in>nat" by simp_all
-  let ?\<phi>' = "ren(\<phi>)`6`7`perm_pow"
+  let ?\<phi>' = "ren(\<phi>)`6`7`perm_pow_fn"
   from \<open>A\<in>M\<close> \<open>B\<in>M\<close> have
     "A\<times>B \<in> M" 
     using cartprod_closed by simp
-  from  \<open>arity(\<phi>) \<le> 6\<close> \<open>\<phi>\<in> formula\<close> have
+  from  \<open>arity(\<phi>) \<le> 6\<close> \<open>\<phi>\<in> formula\<close> \<open>6\<in>_\<close> \<open>7\<in>_\<close> have
     "?\<phi>' \<in> formula" "arity(?\<phi>')\<le>7" 
-    using perm_pow_tc ren_arity ren_tc by simp_all
+    unfolding perm_pow_fn_def
+    using  perm_pow_thm  arity_ren ren_tc Nil_type
+    by auto
   with \<open>?\<phi>' \<in> formula\<close> have
     1: "arity(Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))))\<le>5"     (is "arity(?\<psi>)\<le>5")
     unfolding pair_fm_def upair_fm_def 
@@ -126,8 +65,8 @@ proof -
       using fst_type snd_type by simp_all
     ultimately have 
       "sp \<in> M" "fst(sp) \<in> M" "snd(sp) \<in> M" 
-      using  \<open>A\<in>M\<close> \<open>B\<in>M\<close> 
-      by (simp_all add: trans_M Transset_intf)    
+      using  \<open>A\<in>M\<close> \<open>B\<in>M\<close> transitivity 
+      by simp_all
     note
       inM =  \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>p\<in>M\<close> \<open>l\<in>M\<close> \<open>o\<in>M\<close> \<open>\<chi>\<in>M\<close>
              \<open>sp\<in>M\<close> \<open>fst(sp)\<in>M\<close> \<open>snd(sp)\<in>M\<close> 
@@ -138,13 +77,13 @@ proof -
       "... \<longleftrightarrow> sats(M,?\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>])"
        by auto
     also from inM \<open>\<phi> \<in> formula\<close> \<open>arity(\<phi>) \<le> 6\<close> have
-      " ... \<longleftrightarrow> sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
+      " ... \<longleftrightarrow> sats(M,\<phi>,[snd(sp),p,l,o,fst(sp),\<chi>])" 
       (is "sats(_,_,?env1) \<longleftrightarrow> sats(_,_,?env2)")
-      using sats_iff_sats_ren[of \<phi> 6 7 ?env2 M ?env1 perm_pow] perm_pow_tc perm_pow_env [of _ _ _ _ _ _ "M"]
-      by simp
+      using sats_iff_sats_ren[of \<phi> 6 7 ?env2 M ?env1 perm_pow_fn] perm_pow_thm
+      unfolding perm_pow_fn_def by simp
     finally have
       "sats(M,?\<psi>,[sp,p,l,o,\<chi>,p]) \<longleftrightarrow> 
-       sats(M,\<phi>,[p,l,o,snd(sp),fst(sp),\<chi>])" 
+       sats(M,\<phi>,[snd(sp),p,l,o,fst(sp),\<chi>])" 
       by simp
   }
   then have
@@ -191,11 +130,11 @@ proof -
       unfolding power_ax_def by auto
     moreover from calculation have
       "z\<in>Q  \<Longrightarrow> z\<in>M" for z
-      using Transset_intf trans_M by blast
+      using transitivity by blast
     ultimately have
       "Q = {a\<in>Pow(domain(\<tau>)\<times>P) . a\<in>M}"
       using \<open>domain(\<tau>)\<times>P \<in> M\<close> powerset_abs[of "domain(\<tau>)\<times>P" Q]     
-      by (simp del:setclass_iff add:setclass_iff[symmetric])
+      by (simp flip: setclass_iff)
     also have
       " ... = ?Q"
       by auto
@@ -209,8 +148,8 @@ proof -
     ?b="val(G,?\<pi>)"
   from \<open>?Q\<in>M\<close> have
     "?\<pi>\<in>M"
-    using one_in_P P_in_M Transset_intf transM  
-    by (simp del:setclass_iff add:setclass_iff[symmetric])
+    using one_in_P P_in_M transitivity  
+    by (simp flip: setclass_iff)
   from \<open>?\<pi>\<in>M\<close> have
     "?b \<in> M[G]" 
     using GenExtI by simp
@@ -224,10 +163,10 @@ proof -
       "c\<in>M[G]" "\<chi> \<in> M" "val(G,\<chi>) = c"
       using GenExtD by auto
     let
-      ?\<theta>="{sp \<in>domain(\<tau>)\<times>P . sats(M,forces(Member(0,1)),[P,leq,one,snd(sp),fst(sp),\<chi>])}"
+      ?\<theta>="{sp \<in>domain(\<tau>)\<times>P . snd(sp) \<tturnstile> (Member(0,1)) [fst(sp),\<chi>] }"
     have
       "arity(forces(Member(0,1))) = 6"
-      using arity_forces by auto
+      using arity_forces_at by auto
     with \<open>domain(\<tau>) \<in> M\<close> \<open>\<chi> \<in> M\<close> have
       "?\<theta> \<in> M"
       using P_in_M one_in_M leq_in_M sats_fst_snd_in_M 
@@ -255,7 +194,7 @@ proof -
           "\<sigma>\<in>M"
           using name_components_in_M[of _ _ ?\<theta>]  by auto
         moreover from 1 have
-          "sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<chi>])" "p\<in>P" 
+          "(p \<tturnstile> (Member(0,1)) [\<sigma>,\<chi>])" "p\<in>P" 
           by simp_all
         moreover note
           \<open>val(G,\<chi>) = c\<close>       
@@ -265,7 +204,7 @@ proof -
           by auto
         moreover have
           "x\<in>M[G]" 
-          using \<open>val(G,\<sigma>) =  x\<close> \<open>\<sigma>\<in>M\<close> GenExtI by blast
+          using \<open>val(G,\<sigma>) =  x\<close> \<open>\<sigma>\<in>M\<close>  \<open>\<chi>\<in>M\<close> GenExtI by blast
         ultimately have
           "x\<in>c"
           using \<open>c\<in>M[G]\<close> by simp
@@ -281,7 +220,8 @@ proof -
           "x \<in> c"
         with \<open>c \<in> Pow(a) \<inter> M[G]\<close> have
           "x \<in> a" "c\<in>M[G]" "x\<in>M[G]"
-          by (auto simp add:Transset_intf Transset_MG)
+          using transitivity_MG
+          by auto
         with \<open>val(G, \<tau>) = a\<close> obtain \<sigma> where
           "\<sigma>\<in>domain(\<tau>)" "val(G,\<sigma>) =  x"
           using elem_of_val
@@ -307,7 +247,7 @@ proof -
         qed
         moreover note \<open>\<chi> \<in> M\<close>
         ultimately obtain p where
-          "p\<in>G" "sats(M,forces(Member(0,1)),[P,leq,one,p,\<sigma>,\<chi>])"
+          "p\<in>G" "(p \<tturnstile> Member(0,1) [\<sigma>,\<chi>])"
           using generic truth_lemma[of "Member(0,1)" "G" "[\<sigma>,\<chi>]" ] nat_simp_union
           by auto
         moreover from \<open>p\<in>G\<close> have 
@@ -348,12 +288,15 @@ proof -
   finally show ?thesis .
 qed
 end (* context: G_generic *)
-  
-sublocale G_generic \<subseteq> M_trivial"##M[G]"
-  using generic Union_MG pairing_in_MG zero_in_MG Transset_intf Transset_MG
-  unfolding M_trivial_def by simp 
- 
+
+
 context G_generic begin
+
+interpretation mgtriv: M_trivial "##M[G]"
+  using generic Union_MG pairing_in_MG zero_in_MG transitivity_MG
+  unfolding M_trivial_def M_trans_def M_trivial_axioms_def by (simp; blast)
+
+
 theorem power_in_MG :
   "power_ax(##(M[G]))"
   unfolding power_ax_def
@@ -364,6 +307,8 @@ proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
   fix a
   assume 
     "a \<in> M[G]"
+  then
+  have "(##M[G])(a)" by simp
   have
     "{x\<in>Pow(a) . x \<in> M[G]} = Pow(a) \<inter> M[G]"
     by auto
@@ -372,9 +317,9 @@ proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
     using Pow_inter_MG by simp
   finally have
     "{x\<in>Pow(a) . x \<in> M[G]} \<in> M[G]" .
-  moreover from \<open>a\<in>M[G]\<close> have
+  moreover from \<open>a\<in>M[G]\<close> \<open>{x\<in>Pow(a) . x \<in> M[G]} \<in> _\<close> have
     "powerset(##M[G], a, {x\<in>Pow(a) . x \<in> M[G]})"
-    using powerset_abs[of a "{x\<in>Pow(a) . x \<in> M[G]}"]
+    using mgtriv.powerset_abs[OF \<open>(##M[G])(a)\<close>] 
     by simp
   ultimately show 
     "\<exists>x\<in>M[G] . powerset(##M[G], a, x)"

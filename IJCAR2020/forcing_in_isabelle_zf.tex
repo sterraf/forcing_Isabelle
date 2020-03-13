@@ -1,0 +1,95 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage[utf8]{inputenc}
+\usepackage{isabelle,isabellesym}
+\input{header-draft}
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+\hypersetup{
+  colorlinks,
+  urlcolor={blue},
+  linkcolor={blue!50!black},
+  citecolor={blue!50!black},
+}
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+\renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\begin{document}
+%
+\title{Formalization of Forcing in Isabelle/ZF%
+  \thanks{Supported by Secyt-UNC project 33620180100465CB and Conicet.}%
+}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Emmanuel Gunther\inst{1} \and
+Miguel Pagano\inst{1} \and \\
+Pedro Sánchez Terraf\inst{1,2}%\orcidID{0000-0003-3928-6942}
+}
+%
+\authorrunning{E.~Gunther, M.~Pagano, P.~Sánchez Terraf}
+%\authorrunning{E. Gunther et al.}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Universidad Nacional de C\'ordoba. 
+  \\  Facultad de Matem\'atica, Astronom\'{\i}a,  F\'{\i}sica y
+    Computaci\'on. \\
+\email{\{gunther,pagano,sterraf\}@famaf.unc.edu.ar}
+\and
+    Centro de Investigaci\'on y Estudios de Matem\'atica (CIEM-FaMAF),
+    Conicet. C\'ordoba. Argentina.
+}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+We formalize the theory of forcing in the set theory framework of
+Isabelle/ZF. Under the assumption of the existence of a countable
+transitive model of $\ZFC$, we construct a proper generic extension and show
+that the latter also satisfies $\ZFC$. In doing so, we remodularized
+Paulson's \verb|ZF-Constructibility| library.
+\keywords{forcing \and Isabelle/ZF \and countable transitive models
+  \and absoluteness \and generic extension \and constructibility.}
+\end{abstract}
+%
+%
+%
+\input{intro}
+
+\input{isabelle_metatheory}
+
+\input{absoluteness}
+
+\input{forces_definition}
+
+\input{forcing_theorems}
+
+\input{proper_extension}
+
+\input{replacement_choice}
+
+\input{conclusion}
+%
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+\bibliographystyle{splncs04}
+\bibliography{forcing_in_isabelle_zf}
+
+% \appendix
+
+% \input{sample_proof}
+
+\end{document}

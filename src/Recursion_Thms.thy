@@ -1,5 +1,10 @@
+section\<open>Some enhanced theorems on recursion\<close>
+
 theory Recursion_Thms imports ZF.Epsilon begin
 
+text\<open>We prove results concerning definitions by well-founded
+recursion on some relation \<^term>\<open>R\<close> and its transitive closure
+\<^term>\<open>R^*\<close>\<close>
 (* Restrict the relation r to the field A*A *)
     
 lemma fld_restrict_eq : "a \<in> A \<Longrightarrow> (r\<inter>A*A)-``{a} = (r-``{a} \<inter> A)"
@@ -104,6 +109,9 @@ definition
   Rrel :: "[i\<Rightarrow>i\<Rightarrow>o,i] \<Rightarrow> i" where
   "Rrel(R,A) \<equiv> {z\<in>A\<times>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> R(x,y)}"
 
+lemma RrelI : "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> R(x,y) \<Longrightarrow> \<langle>x,y\<rangle> \<in> Rrel(R,A)"
+  unfolding Rrel_def by simp
+
 lemma Rrel_mem: "Rrel(mem,x) = Memrel(x)"
   unfolding Rrel_def Memrel_def ..
 
@@ -113,10 +121,17 @@ lemma relation_Rrel: "relation(Rrel(R,d))"
 lemma field_Rrel: "field(Rrel(R,d)) \<subseteq>  d"
   unfolding Rrel_def by auto
 
+lemma Rrel_mono : "A \<subseteq> B \<Longrightarrow> Rrel(R,A) \<subseteq> Rrel(R,B)"
+  unfolding Rrel_def by blast
+
+lemma Rrel_restr_eq : "Rrel(R,A) \<inter> B\<times>B = Rrel(R,A\<inter>B)"
+  unfolding Rrel_def by blast
+
 (* now a consequence of the previous lemmas *)
 lemma field_Memrel : "field(Memrel(A)) \<subseteq> A"
   (* unfolding field_def using Ordinal.Memrel_type by blast *)
   using Rrel_mem field_Rrel by blast
+
 
 lemma restrict_trancl_Rrel:
   assumes "R(w,y)" 
@@ -178,5 +193,22 @@ lemma restrict_trans_eq:
   shows "restrict(f,Memrel(eclose({x}))-``{y})`w
        = restrict(f,(Memrel(eclose({x}))^+)-``{y})`w" 
   using assms restrict_trancl_Rrel[of mem ] Rrel_mem by (simp)
+
+lemma wf_eq_trancl:
+  assumes "\<And> f y . H(y,restrict(f,R-``{y})) = H(y,restrict(f,R^+-``{y}))"
+  shows  "wfrec(R, x, H) = wfrec(R^+, x, H)" (is "wfrec(?r,_,_) = wfrec(?r',_,_)")
+proof -
+  have "wfrec(R, x, H) = wftrec(?r^+, x, \<lambda>y f. H(y, restrict(f,?r-``{y})))"
+    unfolding wfrec_def ..
+  also
+  have " ... = wftrec(?r^+, x, \<lambda>y f. H(y, restrict(f,(?r^+)-``{y})))"
+    using assms by simp
+  also
+  have " ... =  wfrec(?r^+, x, H)"
+    unfolding wfrec_def using trancl_eq_r[OF relation_trancl trans_trancl] by simp
+  finally
+  show ?thesis .
+qed
+
 
 end

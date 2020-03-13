@@ -1,0 +1,43 @@
+We would like to thank the referees for their
+careful reading and detailed criticism.
+
+> ----------------------- REVIEW 1 ---------------------
+>
+> The paper's main limitation is its treatment of related work. On
+> general principles, the main discussion of related work should be near
+> the end of the paper, where it could be compared with the work just
+> presented. There, it would be appropriate to contrast what was done in
+> Paulson's work on constructibility with the current work on
+> forcing. More to the point, the recent work by Han and van Doorn on
+> forcing in Lean deserves more discussion.
+
+We will gladly incorporate this changes into a revised version.
+
+
+> ----------------------- REVIEW 2 ---------------------
+>
+> In a single publication, Han and van Doorn using forcing to show the
+> independence of the continuum hypothesis, whereas the authors of
+> this paper are on their third publication, and still seem to be at
+> least one paper away from showing any independence result.
+
+We knew of Han and van Doorn when we were somewhat advanced in our
+project and decided to continue because of the differences: a
+different meta-theory and a different approach to forcing. We think
+that this paper is interesting per se (we can agree that the arXiv
+paper is a bit premature) as it establish a ground on which to do
+forcing arguments.
+
+> The main result in this paper is simply that forcing extensions
+> satisfy replacement and choice, which seem to be fairly
+> straightforward.
+> ----------------------- REVIEW 3 ---------------------
+> This work presents a formalization of forcing in Isabelle/ZF and the
+> proof of a first lemma about the forcing relation.
+
+We would like to point that the main result may seem straightforward
+thanks to the more substantial contribution of the paper: the
+definition of the forces function and the proof of the forcing
+theorems. Han & van Doorn [CPP 2020] hint that the formalization of
+forcing using the ctm and in a set theoretical foundations is more
+intricate than via the Boolean-valued models on type-theory.

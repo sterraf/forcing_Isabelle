@@ -1,60 +1,19 @@
+section\<open>Relativization of the cumulative hierarchy\<close>
 theory Relative_Univ
   imports
-    Rank Datatype_absolute Internalizations Recursion_Thms
+    "ZF-Constructible-Trans.Rank"
+    "ZF-Constructible-Trans.Datatype_absolute"
+    Internalizations
+    Recursion_Thms
 
 begin
-
-lemma (in M_trivial) powerset_subset_Pow:
-  assumes 
-    "powerset(M,x,y)" "\<And>z. z\<in>y \<Longrightarrow> M(z)"
-  shows 
-    "y \<subseteq> Pow(x)"
-  using assms unfolding powerset_def
-  by (auto)
-    
-lemma (in M_trivial) powerset_abs: 
-  assumes
-    "M(x)" "\<And>z. z\<in>y \<Longrightarrow> M(z)"
-  shows
-    "powerset(M,x,y) \<longleftrightarrow> y = {a\<in>Pow(x) . M(a)}"
-proof (intro iffI equalityI)
-  (* First show the converse implication by double inclusion *)
-  assume 
-    "powerset(M,x,y)"
-  with assms have
-    "y \<subseteq> Pow(x)" 
-    using powerset_subset_Pow by simp
-  with assms show
-    "y \<subseteq> {a\<in>Pow(x) . M(a)}"
-    by blast
-  {
-    fix a
-    assume 
-      "a \<subseteq> x" "M(a)"
-    then have 
-      "subset(M,a,x)" by simp
-    with \<open>M(a)\<close> \<open>powerset(M,x,y)\<close> have
-      "a \<in> y"
-      unfolding powerset_def by simp
-  }
-  then show 
-    "{a\<in>Pow(x) . M(a)} \<subseteq> y"
-    by auto
-next (* we show the direct implication *)
-  assume 
-    "y = {a \<in> Pow(x) . M(a)}"
-  then show
-    "powerset(M, x, y)"
-    unfolding powerset_def
-    by simp
-qed
 
 lemma (in M_trivial) powerset_abs' [simp]: 
   assumes
     "M(x)" "M(y)"
   shows
     "powerset(M,x,y) \<longleftrightarrow> y = {a\<in>Pow(x) . M(a)}"
-  using powerset_abs[OF _ transM] assms by simp
+  using powerset_abs assms by simp
 
 lemma Collect_inter_Transset:
   assumes 
@@ -87,7 +46,7 @@ lemma is_powapply_closed: "is_powapply(M,f,y,z) \<Longrightarrow> M(z)"
 (* is_Replace(M,A,P,z) == \<forall>u[M]. u \<in> z \<longleftrightarrow> (\<exists>x[M]. x\<in>A & P(x,u)) *)
 definition
   is_HVfrom :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
-  "is_HVfrom(M,A,x,f,h) \<equiv> \<exists>U[M]. \<exists>R[M]. \<exists>P[M]. union(M,A,U,h) 
+  "is_HVfrom(M,A,x,f,h) \<equiv> \<exists>U[M]. \<exists>R[M].  union(M,A,U,h) 
         \<and> big_union(M,R,U) \<and> is_Replace(M,x,is_powapply(M,f),R)" 
 
 
@@ -101,18 +60,6 @@ definition
 
 
 subsection\<open>Formula synthesis\<close>
-
-(* Copied from DPow_absolute --- check Names! *)
-lemma Replace_iff_sats:
-  assumes is_P_iff_sats: 
-      "!!a b. [|a \<in> A; b \<in> A|] 
-              ==> is_P(a,b) \<longleftrightarrow> sats(A, p, Cons(a,Cons(b,env)))"
-  shows 
-  "[| nth(i,env) = x; nth(j,env) = y;
-      i \<in> nat; j \<in> nat; env \<in> list(A)|]
-   ==> is_Replace(##A, x, is_P, y) \<longleftrightarrow> sats(A, is_Replace_fm(i,p,j), env)"
-by (simp add: sats_is_Rep_fm [OF is_P_iff_sats])
-
 
 schematic_goal sats_is_powapply_fm_auto:
   assumes
@@ -141,66 +88,6 @@ lemma trivial_fm:
     "(\<exists>P. P \<in> A) \<longleftrightarrow> sats(A, Equal(0,0), env)"
   using assms by auto
 
-schematic_goal sats_is_HVfrom_fm_auto:
-  assumes
-    "a\<in>nat" "x\<in>nat" "f\<in>nat" "h\<in>nat" "env\<in>list(A)" "0\<in>A"
-  shows
-    "is_HVfrom(##A,nth(a, env),nth(x, env),nth(f, env),nth(h, env))
-    \<longleftrightarrow> sats(A,?ihvf_fm(a,x,f,h),env)"
-  unfolding is_HVfrom_def using assms
-  by (simp) (rule sep_rules is_powapply_iff_sats Replace_iff_sats trivial_fm not_emptyI | simp)+
-
-schematic_goal is_HVfrom_iff_sats:
-  assumes
-    "nth(a,env) = aa" "nth(x,env) = xx" "nth(f,env) = ff" "nth(h,env) = hh"
-    "a\<in>nat" "x\<in>nat" "f\<in>nat" "h\<in>nat" "env\<in>list(A)" "0\<in>A"
-  shows
-       "is_HVfrom(##A,aa,xx,ff,hh) \<longleftrightarrow> sats(A, ?ihvf_fm(a,x,f,h), env)"
-  unfolding \<open>nth(a,env) = aa\<close>[symmetric] \<open>nth(x,env) = xx\<close>[symmetric]
-    \<open>nth(f,env) = ff\<close>[symmetric] \<open>nth(h,env) = hh\<close>[symmetric]
-  by (rule sats_is_HVfrom_fm_auto(1); simp add:assms)
-
-(* Next two are not needed *)
-schematic_goal sats_is_Vfrom_fm_auto:
-  assumes
-    "a\<in>nat" "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
-    "i < length(env)" "v < length(env)"
-  shows
-    "is_Vfrom(##A,nth(a, env),nth(i, env),nth(v, env))
-    \<longleftrightarrow> sats(A,?ivf_fm(a,i,v),env)"
-  unfolding is_Vfrom_def
-  by (insert assms; (rule sep_rules is_HVfrom_iff_sats is_transrec_iff_sats | simp)+)
-
-schematic_goal is_Vfrom_iff_sats:
-  assumes
-    "nth(a,env) = aa" "nth(i,env) = ii" "nth(v,env) = vv"
-    "a\<in>nat" "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
-    "i < length(env)" "v < length(env)"
-  shows
-    "is_Vfrom(##A,aa,ii,vv) \<longleftrightarrow> sats(A, ?ivf_fm(a,i,v), env)"
-  unfolding \<open>nth(a,env) = aa\<close>[symmetric] \<open>nth(i,env) = ii\<close>[symmetric]
-    \<open>nth(v,env) = vv\<close>[symmetric]
-  by (rule sats_is_Vfrom_fm_auto(1); simp add:assms)
-
-schematic_goal sats_is_Vset_fm_auto:
-  assumes
-    "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
-    "i < length(env)" "v < length(env)"
-  shows
-    "is_Vset(##A,nth(i, env),nth(v, env))
-    \<longleftrightarrow> sats(A,?ivs_fm(i,v),env)"
-  unfolding is_Vset_def is_Vfrom_def
-  by (insert assms; (rule sep_rules is_HVfrom_iff_sats is_transrec_iff_sats | simp)+)
-
-schematic_goal is_Vset_iff_sats:
-  assumes
-    "nth(i,env) = ii" "nth(v,env) = vv"
-    "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
-    "i < length(env)" "v < length(env)"
-  shows
-    "is_Vset(##A,ii,vv) \<longleftrightarrow> sats(A, ?ivs_fm(i,v), env)"
-  unfolding \<open>nth(i,env) = ii\<close>[symmetric] \<open>nth(v,env) = vv\<close>[symmetric]
-  by (rule sats_is_Vset_fm_auto(1); simp add:assms)
 
 (* rank *)
 definition
@@ -232,13 +119,13 @@ lemma (in M_eclose) rrank_in_M : "M(x) \<Longrightarrow> M(rrank(x))"
   unfolding rrank_def by simp
 
 
-section\<open>Absoluteness results\<close>
+subsection\<open>Absoluteness results\<close>
 
 locale M_eclose_pow = M_eclose + 
   assumes
     power_ax : "power_ax(M)" and
     powapply_replacement : "M(f) \<Longrightarrow> strong_replacement(M,is_powapply(M,f))" and
-    HVfrom_replacement : "\<lbrakk> M(i) ; Ord(i) ; M(A) \<rbrakk> \<Longrightarrow> 
+    HVfrom_replacement : "\<lbrakk> M(i) ; M(A) \<rbrakk> \<Longrightarrow> 
                           transrec_replacement(M,is_HVfrom(M,A),i)" and
     PHrank_replacement : "M(f) \<Longrightarrow> strong_replacement(M,PHrank(M,f))" and
     is_Hrank_replacement : "M(x) \<Longrightarrow> wfrec_replacement(M,is_Hrank(M),rrank(x))"

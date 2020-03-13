@@ -1,0 +1,57 @@
+\section{Example of proper extension}
+\label{sec:example-proper-extension}
+
+Even when the axioms of $\ZFC$ are proved in the generic extension,
+one cannot claim that the magic of forcing has taken place unless one
+is able to provide some \emph{proper} extension with the \emph{same
+ordinals}. After all, one is assuming from starters a model $M$ of $\ZFC$,
+and in some trivial cases $M[G]$ might end up to be exactly $M$; this
+is where \emph{proper} enters the stage. But, for instance, in the
+presence of large cardinals, a model $M'\supsetneq M$ might be an
+end-extension of $M$ ---this is were we ask the two models to have the
+same ordinals, the same \emph{height}. 
+
+Three theory files contain the relevant
+results. \verb|Ordinals_In_MG.thy| shows, using the closure of $M$
+under ranks, that $M$ and $M[G]$ share the same ordinals (actually,
+ranks of elements of $M[G]$ are bounded by the ranks of their names in
+$M$):
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ rank{\isacharunderscore}val{\isacharcolon}\ {\isachardoublequoteopen}rank{\isacharparenleft}val{\isacharparenleft}G{\isacharcomma}x{\isacharparenright}{\isacharparenright}\ {\isasymle}\ rank{\isacharparenleft}x{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\isacommand{lemma}\isamarkupfalse%
+\ Ord{\isacharunderscore}MG{\isacharunderscore}iff{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}Ord{\isacharparenleft}{\isasymalpha}{\isacharparenright}{\isachardoublequoteclose}\ \isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}{\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
+\end{isabelle}
+To prove these results, we found it useful to formalize induction over
+the relation \isatt{ed}$(x,y) \defi x\in\dom(y)$, which is key
+to arguments involving names.
+
+\verb|Succession_Poset.thy| contains our first example of a poset
+that interprets the locale
+\isatt{forcing{\isacharunderscore}notion}, essentially the notion for
+adding one Cohen real. It is the set $2^{<\om}$ of all finite binary
+sequences partially  ordered by reverse inclusion.
+The sufficient condition for a proper extension is that
+the forcing poset is \emph{separative}: every element has two
+incompatible (\isatt{{\isasymbottom}s}) extensions. Here,
+\isatt{seq{\isacharunderscore}upd{\isacharparenleft}f{\isacharcomma}x{\isacharparenright}}
+adds \isatt{x} to the end of the sequence \isatt{f}.
+
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ seqspace{\isacharunderscore}separative{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}f{\isasymin}{\isadigit{2}}{\isacharcircum}{\isacharless}{\isasymomega}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}seq{\isacharunderscore}upd{\isacharparenleft}f{\isacharcomma}{\isadigit{0}}{\isacharparenright}\ {\isasymbottom}s\ seq{\isacharunderscore}upd{\isacharparenleft}f{\isacharcomma}{\isadigit{1}}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+ 
+We prove in the theory file \verb|Proper_Extension.thy| that, in
+general, every separative forcing notion gives rise to a proper
+extension.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "forcing_in_isabelle_zf"
+%%% ispell-local-dictionary: "american"
+%%% End: 

@@ -4,7 +4,7 @@
 % further packages required for unusual symbols (see also
 % isabellesym.sty), use only when needed
 
-%\usepackage{amssymb}
+\usepackage{amssymb}
   %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
   %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
   %\<triangleq>, \<yen>, \<lozenge>
@@ -32,10 +32,15 @@
 % for uniform font size
 %\renewcommand{\isastyle}{\isastyleminor}
 
+\renewcommand{\isacharunderscorekeyword}{\mbox{\_}}
+\renewcommand{\isacharunderscore}{\mbox{\_}}
+\renewcommand{\isasymtturnstile}{\isamath{\Vdash}}
+\renewcommand{\isacharminus}{-}
+
 
 \begin{document}
 
-\title{Separation in Generic Extensions}
+\title{Formalization of Forcing in Isabelle/ZF}
 \author{Emmanuel Gunther
   \and 
   Miguel Pagano

@@ -1,4 +1,5 @@
-theory Separation_Axiom 
+section\<open>The Axiom of Separation in $M[G]$\<close>
+theory Separation_Axiom
   imports Forcing_Theorems Separation_Rename
 begin
 
@@ -37,10 +38,15 @@ proof -
   let ?\<chi>="And(Member(0,1 #+ length(env)),\<phi>)" and ?Pl1="[P,leq,one]"
   let ?new_form="sep_ren(length(env),forces(?\<chi>))"
   let ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
-  note phi = \<open>\<phi>\<in>formula\<close> \<open>arity(\<phi>) \<le> 1 #+ length(env)\<close>
-  with \<open>env\<in>list(_)\<close>
+  note phi = \<open>\<phi>\<in>formula\<close> \<open>arity(\<phi>) \<le> 1 #+ length(env)\<close> 
+  then
+  have "?\<chi>\<in>formula" by simp
+  with \<open>env\<in>_\<close> phi
+  have "arity(?\<chi>) \<le> 2#+length(env) " 
+    using nat_simp_union leI by simp
+  with \<open>env\<in>list(_)\<close> phi
   have "arity(forces(?\<chi>)) \<le> 6 #+ length(env)"
-    using nat_simp_union arity_forces leI by simp
+    using  arity_forces_le by simp
   then
   have "arity(forces(?\<chi>)) \<le> 7 #+ length(env)"
     using nat_simp_union arity_forces leI by simp
@@ -57,30 +63,24 @@ proof -
   with \<open>arity(?new_form) \<le> _\<close> \<open>?new_form \<in> formula\<close>
   have "arity(?\<psi>) \<le> 5 #+ length(env)"
     unfolding pair_fm_def upair_fm_def 
-    using nat_simp_union arity_forces 
+    using nat_simp_union arity_forces
     by auto
   from \<open>\<phi>\<in>formula\<close>
   have "forces(?\<chi>) \<in> formula"
     using definability by simp
   from \<open>\<pi>\<in>M\<close> P_in_M 
   have "domain(\<pi>)\<in>M" "domain(\<pi>) \<times> P \<in> M"
-    by (simp_all del:setclass_iff add:setclass_iff[symmetric])
+    by (simp_all flip:setclass_iff)
   from \<open>env \<in> _\<close>
-  obtain nenv where "nenv\<in>list(M)" "env = map(val(G),nenv)"
+  obtain nenv where "nenv\<in>list(M)" "env = map(val(G),nenv)" "length(nenv) = length(env)"
     using map_val by auto
-  then
-  have "length(nenv) = length(env)" "1\<le>2" by simp_all
-  from \<open>arity(\<phi>) \<le> _\<close> 
+  from \<open>arity(\<phi>) \<le> _\<close> \<open>env\<in>_\<close> \<open>\<phi>\<in>_\<close>
   have "arity(\<phi>) \<le> 2#+ length(env)" 
-    using length_type[OF \<open>env\<in>_\<close>] le_trans[OF \<open>arity(\<phi>)\<le>_\<close>]
-      add_le_mono[OF \<open>1\<le>2\<close> le_refl[of "length(env)"]] by auto
-  with \<open>nenv\<in>_\<close> \<open>env\<in>_\<close> \<open>\<pi>\<in>M\<close>
+    using le_trans[OF \<open>arity(\<phi>)\<le>_\<close>] add_le_mono[of 1 2,OF _ le_refl] 
+    by auto
+  with \<open>nenv\<in>_\<close> \<open>env\<in>_\<close> \<open>\<pi>\<in>M\<close> \<open>\<phi>\<in>_\<close> \<open>length(nenv) = length(env)\<close>
   have "arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])" for \<theta> 
-    using  
-   nat_union_abs2[OF nat_into_Ord[OF arity_type[OF \<open>\<phi>\<in>_\<close>]] add_type[THEN nat_into_Ord] \<open>arity(\<phi>) \<le> 2#+ _\<close>]
-   \<open>length(nenv) = length(env)\<close> arity_type length_type 
-      nat_simp_union 
-      length_app
+    using nat_union_abs2[OF _ _ \<open>arity(\<phi>) \<le> 2#+ _\<close>] nat_simp_union 
     by simp    
   note in_M = \<open>\<pi>\<in>M\<close> \<open>domain(\<pi>) \<times> P \<in> M\<close>  P_in_M one_in_M leq_in_M
   {
@@ -103,7 +103,7 @@ proof -
       note in_M' = in_M \<open>\<theta> \<in> M\<close> \<open>p\<in>M\<close> \<open>u \<in> domain(\<pi>) \<times> P\<close> \<open>u \<in> M\<close> \<open>nenv\<in>_\<close>
       then 
       have "[\<theta>,u] \<in> list(M)" by simp
-      let ?env="?Pl1@[p,\<theta>] @ nenv @ [\<pi>,u]"
+      let ?env="[p]@?Pl1@[\<theta>] @ nenv @ [\<pi>,u]"
       let ?new_env=" [\<theta>,p,u,P,leq,one,\<pi>] @ nenv"
       let ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
       have "[\<theta>, p, u, \<pi>, leq, one, \<pi>] \<in> list(M)" 
@@ -124,12 +124,12 @@ proof -
         using sepren_action[of "forces(?\<chi>)"  "nenv",OF _ _ \<open>nenv\<in>list(M)\<close>] 
         by simp
       also from in_M'
-      have "... \<longleftrightarrow> sats(M,forces(?\<chi>), ([P, leq, one,p,\<theta>]@nenv@ [\<pi>])@[u])" 
+      have "... \<longleftrightarrow> sats(M,forces(?\<chi>), ([p,P, leq, one,\<theta>]@nenv@ [\<pi>])@[u])" 
         using app_assoc by simp
       also 
-      from in_M' \<open>env\<in>_\<close>  phi \<open>length(nenv) = length(env)\<close>
+      from in_M' \<open>env\<in>_\<close> phi \<open>length(nenv) = length(env)\<close>
         \<open>arity(forces(?\<chi>)) \<le> 6 #+ length(env)\<close> \<open>forces(?\<chi>)\<in>formula\<close>
-      have "... \<longleftrightarrow> sats(M,forces(?\<chi>), [P, leq, one,p,\<theta>]@ nenv @ [\<pi>])"        
+      have "... \<longleftrightarrow> sats(M,forces(?\<chi>), [p,P, leq, one,\<theta>]@ nenv @ [\<pi>])"        
         by (rule_tac arity_sats_iff,auto)
       also 
       from \<open>arity(forces(?\<chi>)) \<le> 6 #+ length(env)\<close> \<open>forces(?\<chi>)\<in>formula\<close> in_M' phi 
@@ -137,12 +137,13 @@ proof -
                            sats(M[F], ?\<chi>, map(val(F), [\<theta>] @ nenv @ [\<pi>])))"
         using  definition_of_forces 
       proof (intro iffI)
-        assume a1: "sats(M, forces(?\<chi>), [P, leq, one,p,\<theta>] @ nenv @ [\<pi>])"
+        assume a1: "sats(M, forces(?\<chi>), [p,P, leq, one,\<theta>] @ nenv @ [\<pi>])"
         note definition_of_forces \<open>arity(\<phi>)\<le> 1#+_\<close>
-        with \<open>nenv\<in>_\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
+        with \<open>nenv\<in>_\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close> \<open>env\<in>_\<close>
         have "p \<in> P \<Longrightarrow> ?\<chi>\<in>formula \<Longrightarrow> [\<theta>,\<pi>] \<in> list(M) \<Longrightarrow>
-                  sats(M, forces(?\<chi>), [P, leq, one, p] @ [\<theta>]@ nenv@[\<pi>]) \<Longrightarrow> 
-              \<forall>G. M_generic(G) \<and> p \<in> G \<longrightarrow> sats(M[G], ?\<chi>, map(val(G), [\<theta>] @ nenv @[\<pi>]))" by auto
+                  sats(M, forces(?\<chi>), [p,P, leq, one] @ [\<theta>]@ nenv@[\<pi>]) \<Longrightarrow> 
+              \<forall>G. M_generic(G) \<and> p \<in> G \<longrightarrow> sats(M[G], ?\<chi>, map(val(G), [\<theta>] @ nenv @[\<pi>]))"
+          by auto
         then
         show "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
                   sats(M[F], ?\<chi>, map(val(F), [\<theta>] @ nenv @ [\<pi>]))"
@@ -151,8 +152,9 @@ proof -
         assume "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
                    sats(M[F], ?\<chi>, map(val(F), [\<theta>] @ nenv @[\<pi>]))"
         with definition_of_forces [THEN iffD2] \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
-        show "sats(M, forces(?\<chi>), [P, leq, one,p,\<theta>] @ nenv @ [\<pi>])"
-          using  \<open>?\<chi>\<in>formula\<close> \<open>p\<in>P\<close> in_M' by auto
+        show "sats(M, forces(?\<chi>), [p, P, leq, one,\<theta>] @ nenv @ [\<pi>])"
+          using  \<open>?\<chi>\<in>formula\<close> \<open>p\<in>P\<close> in_M' 
+          by auto
       qed
       finally 
       show "sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>]@nenv) \<longleftrightarrow> (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
@@ -285,16 +287,16 @@ proof -
     assume "x \<in> val(G,?m)"
     with val_m 
     have Eq4: "x \<in> {x\<in>c. sats(M[G], \<phi>, [x] @ env @ [c] )}" by simp
-    with \<open>val(G,\<pi>) = c\<close> 
+    with \<open>val(G,\<pi>) = c\<close>
     have "x \<in> val(G,\<pi>)" by simp
     then 
     have "\<exists>\<theta>. \<exists>q\<in>G. \<langle>\<theta>,q\<rangle>\<in>\<pi> \<and> val(G,\<theta>) =x" 
       using elem_of_val_pair by auto
     then obtain \<theta> q where
       "\<langle>\<theta>,q\<rangle>\<in>\<pi>" "q\<in>G" "val(G,\<theta>)=x" by auto
-    from \<open>\<langle>\<theta>,q\<rangle>\<in>\<pi>\<close> \<open>\<pi>\<in>M\<close> trans_M 
+    from \<open>\<langle>\<theta>,q\<rangle>\<in>\<pi>\<close>
     have "\<theta>\<in>M"
-      unfolding Pair_def Transset_def by auto 
+      using domain_trans[OF trans_M \<open>\<pi>\<in>_\<close>] by auto
     with \<open>\<pi>\<in>M\<close> \<open>nenv \<in> _\<close> \<open>env = _\<close>
     have "[val(G,\<theta>), val(G,\<pi>)] @ env \<in>list(M[G])" 
       using GenExt_def by auto
@@ -304,24 +306,27 @@ proof -
         (* Recall ?\<chi> = And(Member(0,1 #+ length(env)),\<phi>) *)
     with \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close>  Eq5 \<open>M_generic(G)\<close> \<open>\<phi>\<in>formula\<close> \<open>nenv \<in> _ \<close> \<open>env = _ \<close> map_nenv 
       \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
-    have "(\<exists>r\<in>G. sats(M,forces(?\<chi>), [P,leq,one,r,\<theta>] @ nenv @[\<pi>]))"
-      using truth_lemma  by auto
+    have "(\<exists>r\<in>G. sats(M,forces(?\<chi>), [r,P,leq,one,\<theta>] @ nenv @[\<pi>]))"
+      using truth_lemma  
+      by auto
     then obtain r where      (* I can't "obtain" this directly *)
-      "r\<in>G" "sats(M,forces(?\<chi>), [P,leq,one,r,\<theta>] @ nenv @ [\<pi>])" by auto
+      "r\<in>G" "sats(M,forces(?\<chi>), [r,P,leq,one,\<theta>] @ nenv @ [\<pi>])" by auto
     with \<open>filter(G)\<close> and \<open>q\<in>G\<close> obtain p where
-      "p\<in>G" "<p,q>\<in>leq" "<p,r>\<in>leq" 
+      "p\<in>G" "p\<preceq>q" "p\<preceq>r" 
       unfolding filter_def compat_in_def by force
     with \<open>r\<in>G\<close>  \<open>q\<in>G\<close> \<open>G\<subseteq>P\<close> 
     have "p\<in>P" "r\<in>P" "q\<in>P" "p\<in>M"
       using  P_in_M  by (auto simp add:transitivity)
-    with \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close>  \<open><p,r>\<in>leq\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
-      \<open>sats(M,forces(?\<chi>), [P,leq,one,r,\<theta>] @ nenv @ [\<pi>])\<close> \<open>env\<in>_\<close>
-    have "sats(M,forces(?\<chi>), [P,leq,one,p,\<theta>] @ nenv @ [\<pi>])"
-      using strengthening_lemma by simp
+    with \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close>  \<open>p\<preceq>r\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
+      \<open>sats(M,forces(?\<chi>), [r,P,leq,one,\<theta>] @ nenv @ [\<pi>])\<close> \<open>env\<in>_\<close>
+    have "sats(M,forces(?\<chi>), [p,P,leq,one,\<theta>] @ nenv @ [\<pi>])"
+      using strengthening_lemma 
+      by simp
     with \<open>p\<in>P\<close> \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
     have "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
                  sats(M[F], ?\<chi>,  map(val(F), [\<theta>] @ nenv @[\<pi>]))"
-      using definition_of_forces by simp
+      using definition_of_forces
+      by simp
     with \<open>p\<in>P\<close> \<open>\<theta>\<in>M\<close>  
     have Eq6: "\<exists>\<theta>'\<in>M. \<exists>p'\<in>P.  \<langle>\<theta>,p\<rangle> = <\<theta>',p'> \<and> (\<forall>F. M_generic(F) \<and> p' \<in> F \<longrightarrow> 
                  sats(M[F], ?\<chi>,  map(val(F), [\<theta>'] @ nenv @ [\<pi>])))" by auto
@@ -354,7 +359,8 @@ proof -
         unfolding GenExt_def by auto
       moreover from this and \<open>x\<in>c\<close> 
       have "x\<in>M[G]"
-        by (simp add:Transset_MG Transset_intf)
+        using transitivity_MG
+        by simp
       ultimately 
       have "sats(M[G], \<phi>, ([x] @ env) @[c]) \<longleftrightarrow> sats(M[G], \<phi>, [x] @ env)" 
         using phi \<open>env \<in> _\<close> by (rule_tac arity_sats_iff, simp_all)   (* Enhance this *)
@@ -389,6 +395,6 @@ proof -
     using separation_iff rev_bexI unfolding is_Collect_def by force
 qed
 
-end (* context: sep_rename *)
+end (* context: G_generic *)
 
 end

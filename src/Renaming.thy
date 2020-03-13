@@ -1,17 +1,17 @@
-theory Renaming 
+section\<open>Renaming of variables in internalized formulas\<close>
+
+theory Renaming
   imports 
     Nat_Miscellanea 
-    "~~/src/ZF/Constructible/Formula"
+    "ZF-Constructible-Trans.Formula"
 begin
-
-section\<open>Auxiliary results\<close>
   
 lemma app_nm : "n\<in>nat \<Longrightarrow> m\<in>nat \<Longrightarrow> f\<in>n\<rightarrow>m \<Longrightarrow> x \<in> nat \<Longrightarrow> f`x \<in> nat"  
-  apply(case_tac "x\<in>n",rule_tac m="m" in in_n_in_nat,simp_all add:apply_type)
+  apply(cases "x\<in>n",rule_tac m="m" in in_n_in_nat,simp_all add:apply_type)
   apply(subst apply_0,subst domain_of_fun,simp_all)
   done
     
-section\<open>Renaming of free variables\<close>
+subsection\<open>Renaming of free variables\<close>
 
 definition 
   union_fun :: "[i,i,i,i] \<Rightarrow> i" where
@@ -383,7 +383,7 @@ definition
   "sum_id(m,f) == sum(\<lambda>x\<in>1.x,f,1,1,m)"
   
 lemma sum_id0 : "m\<in>nat\<Longrightarrow>sum_id(m,f)`0 = 0"
-by(unfold sum_id_def,subst sum_inl,auto)
+  by(unfold sum_id_def,subst sum_inl,auto)
 
 lemma sum_idS : "p\<in>nat \<Longrightarrow> q\<in>nat \<Longrightarrow> f\<in>p\<rightarrow>q \<Longrightarrow> x \<in> p \<Longrightarrow> sum_id(p,f)`(succ(x)) = succ(f`x)"
   by(subgoal_tac "x\<in>nat",unfold sum_id_def,subst sum_inr,
@@ -395,11 +395,10 @@ lemma sum_id_tc_aux :
 
 lemma sum_id_tc :
   "n \<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> f \<in> n \<rightarrow> m \<Longrightarrow> sum_id(n,f) \<in> succ(n) \<rightarrow> succ(m)"
-  apply(rule ssubst[of  "succ(n) \<rightarrow> succ(m)" "1#+n \<rightarrow> 1#+m"])
-  apply(simp,rule sum_id_tc_aux,simp_all)
-  done
+  by(rule ssubst[of  "succ(n) \<rightarrow> succ(m)" "1#+n \<rightarrow> 1#+m"],
+      simp,rule sum_id_tc_aux,simp_all)
 
-section\<open>Renaming of formulas\<close>
+subsection\<open>Renaming of formulas\<close>
   
 consts   ren :: "i=>i"
 primrec
@@ -439,7 +438,7 @@ lemma ren_tc : "p \<in> formula \<Longrightarrow>
   by (induct set:formula,auto simp add: app_nm sum_id_tc)
 
 
-lemma ren_arity :
+lemma arity_ren :
   fixes "p"
   assumes "p \<in> formula" 
   shows "\<And> n m f . n \<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> f \<in> n\<rightarrow>m \<Longrightarrow> arity(p) \<le> n \<Longrightarrow> arity(ren(p)`n`m`f)\<le>m"  
@@ -475,7 +474,7 @@ next
   then show ?case using Forall 2 3 ren_tc arity_type pred_le by auto
 qed
 
-lemma forall_arityE : "p \<in> formula \<Longrightarrow> m \<in> nat \<Longrightarrow> arity(Forall(p)) \<le> m \<Longrightarrow> arity(p) \<le> succ(m)"
+lemma arity_forallE : "p \<in> formula \<Longrightarrow> m \<in> nat \<Longrightarrow> arity(Forall(p)) \<le> m \<Longrightarrow> arity(p) \<le> succ(m)"
   by(rule_tac n="arity(p)" in natE,erule arity_type,simp+)
     
 lemma env_coincidence_sum_id : 

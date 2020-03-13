@@ -1,0 +1,166 @@
+\section{The axioms of replacement and choice}
+\label{sec:axioms-replacement-choice}
+
+In \cite{2019arXiv190103313G} we proved that any generic extension
+preserves the satisfaction of almost all the axioms, including the separation scheme
+(we adapted those proofs to the current statement of the axiom
+schemes). Our proofs that Replacement and choice hold in every generic
+extension depend on further relativized concepts and closure properties.
+
+\subsection{Replacement}
+
+The proof of the Replacement Axiom scheme in $M[G]$ in Kunen uses the
+Reflection Principle relativized to $M$. We took an alternative
+pathway, following Neeman \cite{neeman-course}. In his course notes,
+he uses the relativization of the cumulative hierarchy of sets. 
+
+The
+family of all sets of rank less than $\alpha$ is called
+\isatt{Vset}$(\alpha)$ in Isabelle/ZF. We showed, in the theory file
+\verb|Relative_Univ.thy|
+ the following
+relativization and closure results concerning this function, for a
+class $M$ satisfying the locale \isatt{M{\isacharunderscore}eclose}
+plus the Powerset Axiom and four instances of replacement.
+%
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ Vset{\isacharunderscore}abs{\isacharcolon}\ {\isachardoublequoteopen}{\isasymlbrakk}\ M{\isacharparenleft}i{\isacharparenright}{\isacharsemicolon}\ M{\isacharparenleft}V{\isacharparenright}{\isacharsemicolon}\ Ord{\isacharparenleft}i{\isacharparenright}\ {\isasymrbrakk}\ {\isasymLongrightarrow}\ \isanewline
+\ \ \ \ \ \ \ \  \ \  \ \ \ \ \ \ \ \ \ \ is{\isacharunderscore}Vset{\isacharparenleft}M{\isacharcomma}i{\isacharcomma}V{\isacharparenright}\ {\isasymlongleftrightarrow}\ V\ {\isacharequal}\ {\isacharbraceleft}x{\isasymin}Vset{\isacharparenleft}i{\isacharparenright}{\isachardot}\ M{\isacharparenleft}x{\isacharparenright}{\isacharbraceright}{\isachardoublequoteclose}
+\end{isabelle}
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ Vset{\isacharunderscore}closed{\isacharcolon}\ {\isachardoublequoteopen}{\isasymlbrakk}\ M{\isacharparenleft}i{\isacharparenright}{\isacharsemicolon}\ Ord{\isacharparenleft}i{\isacharparenright}\ {\isasymrbrakk}\ {\isasymLongrightarrow}\ M{\isacharparenleft}{\isacharbraceleft}x{\isasymin}Vset{\isacharparenleft}i{\isacharparenright}{\isachardot}\ M{\isacharparenleft}x{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+We also have the basic result
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ M{\isacharunderscore}into{\isacharunderscore}Vset{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}M{\isacharparenleft}a{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}{\isasymexists}i{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isasymexists}V{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ ordinal{\isacharparenleft}M{\isacharcomma}i{\isacharparenright}\ {\isasymand}\ is{\isacharunderscore}Vfrom{\isacharparenleft}M{\isacharcomma}{\isadigit{0}}{\isacharcomma}i{\isacharcomma}V{\isacharparenright}\ {\isasymand}\ a{\isasymin}V{\isachardoublequoteclose}
+\end{isabelle}
+stating that $M$ is included in 
+$\union\{\isatt{Vset}(\alpha) : \alpha\in M\}$ (it's actually equal).
+
+For the proof of the Replacement Axiom, we assume that $\phi$ is
+functional in its first two variables when interpreted in $M[G]$ and
+the first ranges over the domain \isatt{c}${}\in M[G]$. Then we show
+that the collection of
+all values of the second variable, when the first ranges over
+\isatt{c}, belongs to $M[G]$:
+%
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ Replace{\isacharunderscore}sats{\isacharunderscore}in{\isacharunderscore}MG{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isachardoublequoteopen}c{\isasymin}M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}env\ {\isasymin}\ list{\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymphi}\ {\isasymin}\ formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\isasymphi}{\isacharparenright}\ {\isasymle}\ {\isadigit{2}}\ {\isacharhash}{\isacharplus}\ length{\isacharparenleft}env{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \ \ {\isachardoublequoteopen}univalent{\isacharparenleft}{\isacharhash}{\isacharhash}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}\ c{\isacharcomma}\ {\isasymlambda}x\ v{\isachardot}\ {\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}\ {\isacharbrackleft}x{\isacharcomma}v{\isacharbrackright}{\isacharat}env\ {\isasymTurnstile}\ {\isasymphi}{\isacharparenright}{\isacharparenright}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isacharbraceleft}v{\isachardot}\ x{\isasymin}c{\isacharcomma}\ v{\isasymin}M{\isacharbrackleft}G{\isacharbrackright}\ {\isasymand}\ {\isacharparenleft}M{\isacharbrackleft}G{\isacharbrackright}{\isacharcomma}\ {\isacharbrackleft}x{\isacharcomma}v{\isacharbrackright}{\isacharat}env\ {\isasymTurnstile}\ {\isasymphi}{\isacharparenright}{\isacharbraceright}\ {\isasymin}\ M{\isacharbrackleft}G{\isacharbrackright}{\isachardoublequoteclose}
+\end{isabelle}
+%
+From this, the satisfaction of the Replacement Axiom in $M[G]$ follows
+very easily.
+
+The proof of the previous lemma, following Neeman, proceeds as usual
+by turning an argument concerning elements of $M[G]$ to one involving
+names lying in $M$, and connecting both worlds by using the forcing
+theorems. In the case at hand, by functionality of $\phi$ we know that
+for every $x\in c\cap M[G]$ there exists exactly one $v\in M[G]$ such
+that
+$M[G], [x,v]\mathbin{@} \mathit{env} \models \phi$. Now,
+given a name $\pi'\in M$ for $c$, every name of an element of $c$
+belongs to $\pi\defi \dom(\pi')\times \PP$, which is easily seen to be
+in $M$. We will use $\pi$ to be the domain in an application of the
+Replacement Axiom in $M$. But now, obviously, we have lost
+functionality since there are many names $\dot v\in M$ for a fixed $v$
+in $M[G]$. To solve this issue, for each $\rho p \defi\lb\rho,p\rb\in
+\pi$ we calculate the
+minimum rank of some $\tau\in M$ such that 
+$p\forces \phi(\rho,\tau,\dots)$ if there is one, or $0$ otherwise. By
+Replacement in $M$, we can show that the supremum \isatt{?sup} of these ordinals
+belongs to $M$ and we can construct a \isatt{?bigname} $\defi$ 
+\isatt{{\isacharbraceleft}x{\isasymin}Vset{\isacharparenleft}{\isacharquery}sup{\isacharparenright}{\isachardot}\ x\ {\isasymin}\
+}$M$\isatt{{\isacharbraceright}\ {\isasymtimes}\ {\isacharbraceleft}one{\isacharbraceright}}
+whose interpretation by (any generic) $G$ will include all possible elements
+as $v$ above.
+
+The previous calculation required some absoluteness and closure
+results regarding the minimum ordinal binder, \isatt{Least}$(Q)$, also
+denoted $\mu x. Q(x)$, that can be found in the theory file
+\verb|Least.thy|.
+
+\subsection{Choice}
+A first important observation is that the proof of $\AC$ in $M[G]$
+only requires the assumption that $M$ satisfies (a finite fragment of)
+$\ZFC$. There is no need to invoke Choice in the metatheory.
+
+Although our previous version of the development used $\AC$, that was
+only needed to show the Rasiowa-Sikorski Lemma (RSL) for
+arbitrary posets. We have modularized the proof of the latter
+and now the version for countable posets that we use to show the
+existence of generic filters
+does not require Choice (as it is well known). We also bundled the
+full RSL along with our implementation of the principle of dependent
+choices in an independent branch of the dependency graph, which is the
+only place where the theory \texttt{ZF.AC} is invoked.
+
+Our statement of the Axiom of Choice is the one preferred for
+arguments involving transitive classes satisfying $\ZF$:
+%
+\begin{center}
+\isatt{{\isasymforall}x{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isasymexists}a{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isasymexists}f{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ ordinal{\isacharparenleft}M{\isacharcomma}a{\isacharparenright}\ {\isasymand}\ surjection{\isacharparenleft}M{\isacharcomma}a{\isacharcomma}x{\isacharcomma}f{\isacharparenright}}
+\end{center}
+%
+The Simplifier is able to show automatically that this
+statement is equivalent to the next one, in which the real notions of
+ordinal and surjection appear:
+%
+\begin{center}
+\isatt{{\isasymforall}x{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isasymexists}a{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ {\isasymexists}f{\isacharbrackleft}M{\isacharbrackright}{\isachardot}\ Ord{\isacharparenleft}a{\isacharparenright}\ {\isasymand}\ f\ {\isasymin}\ surj{\isacharparenleft}a{\isacharcomma}x{\isacharparenright}}
+\end{center}
+
+As with the forcing axioms, the proof of $\AC$ in $M[G]$ follows the pattern of Kunen
+\cite[IV.2.27]{kunen2011set} and is rather
+straightforward; the only complicated technical point being to show
+that the relevant name belongs to $M$. We assume that \isatt{a}${}\neq\emptyset$
+belongs to $M[G]$ and has a name $\tau\in M$. By $\AC$ in $M$, there
+is a surjection \isatt{s} from an ordinal $\alpha\in M$ ($\subseteq M[G]$) onto
+$\dom(\tau)$. Now
+%
+\begin{center}
+\isatt{{\isacharbraceleft}opair{\isacharunderscore}name{\isacharparenleft}check{\isacharparenleft}{\isasymbeta}{\isacharparenright}{\isacharcomma}s{\isacharbackquote}{\isasymbeta}{\isacharparenright}{\isachardot}\ {\isasymbeta}{\isasymin}{\isasymalpha}{\isacharbraceright}\ {\isasymtimes}\ {\isacharbraceleft}one{\isacharbraceright}}
+\end{center}
+%
+is a name for a function \isatt{f} with domain $\alpha$ such that \isatt{a}
+is included in its range, and where
+\isatt{opair{\isacharunderscore}name}$(\sig,\rho)$ is a name for the
+ordered pair $\lb\val(G,\sig),\val(G,\rho)\rb$. From this, $\AC$ in
+$M[G]$ follows easily.
+
+\subsection{The main theorem}
+With all these elements in place, we are able to transcript the main
+theorem of our formalization:
+\begin{isabelle}
+\isacommand{theorem}\isamarkupfalse%
+\ extensions{\isacharunderscore}of{\isacharunderscore}ctms{\isacharcolon}\isanewline
+\ \ \isakeyword{assumes}\ \isanewline
+\ \ \ \ {\isachardoublequoteopen}M\ {\isasymapprox}\ nat{\isachardoublequoteclose}\ {\isachardoublequoteopen}Transset{\isacharparenleft}M{\isacharparenright}{\isachardoublequoteclose}\ {\isachardoublequoteopen}M\ {\isasymTurnstile}\ ZF{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ \isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymexists}N{\isachardot}\ \isanewline
+\ \ \ \ \ \ M\ {\isasymsubseteq}\ N\ {\isasymand}\ N\ {\isasymapprox}\ nat\ {\isasymand}\ Transset{\isacharparenleft}N{\isacharparenright}\ {\isasymand}\ N\ {\isasymTurnstile}\ ZF\ {\isasymand}\ M{\isasymnoteq}N\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\isasymforall}{\isasymalpha}{\isachardot}\ Ord{\isacharparenleft}{\isasymalpha}{\isacharparenright}\ {\isasymlongrightarrow}\ {\isacharparenleft}{\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ N{\isacharparenright}{\isacharparenright}\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}M{\isacharcomma}\ {\isacharbrackleft}{\isacharbrackright}{\isasymTurnstile}\ AC\ {\isasymlongrightarrow}\ N\ {\isasymTurnstile}\ ZFC{\isacharparenright}{\isachardoublequoteclose}
+\end{isabelle}
+Here, \isatt{\isasymapprox} stands for equipotency, \isatt{nat} is the
+set of natural numbers, and the predicate 
+\isatt{Transset} indicates transitivity; and as usual, \isatt{AC}
+denotes the Axiom of Choice, and \isatt{ZF} and \isatt{ZFC} the
+corresponding subsets of \isatt{formula}.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "forcing_in_isabelle_zf"
+%%% ispell-local-dictionary: "american"
+%%% End: 
