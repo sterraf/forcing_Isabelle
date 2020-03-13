@@ -529,26 +529,33 @@ proof -
     case zero
     have "cf(0) = 0" using cf_zero by simp
     then 
-    have  "id(0) \<in> \<langle>cf(0), Memrel(cf(0))\<rangle> \<cong> \<langle>0, Memrel(0)\<rangle>" using ord_iso_refl by simp
+    have  "id(0) \<in> \<langle>cf(0), Memrel(cf(0))\<rangle> \<cong> \<langle>0, Memrel(0)\<rangle>" 
+      using ord_iso_refl by simp
     then 
-    have "id(0)\<in>mono_map(cf(0),Memrel(cf(0)),0,Memrel(0))" using ord_iso_is_mono_map by simp
+    have "id(0)\<in>mono_map(cf(0),Memrel(cf(0)),0,Memrel(0))" 
+      using ord_iso_is_mono_map by simp
     with zero
-    show ?thesis unfolding cofinal_fun_def cf_fun_def by auto
+    show ?thesis unfolding cofinal_fun_def cf_fun_def by fast
   next
-    case succ
-    then
-    obtain b where "\<gamma> = succ(b)"
-      by auto
-    then
+    case succ  
+    moreover from this
+    obtain b where "\<gamma> = succ(b)" by auto
+    moreover from this
     have "Ord(b)"  using Ord_succ_iff \<open>Ord(\<gamma>)\<close> by simp
-    define f where "f={<0,b>}"
-    then 
-    have "function(f)" unfolding function_def by simp
+    moreover
+    define f where "f\<equiv>{<0,b>}"
+    moreover from calculation
+    have "f:1\<rightarrow>\<gamma>" 
+      using fun_extend3[of 0 0 \<gamma> 0 b] singleton_0 by simp
+    moreover
+    have "f`0=b" 
+      unfolding f_def using function_apply_equality  by simp
+    ultimately
+    have "cf_fun(f,\<gamma>)" using cf_fun_succ by simp
+    have "f\<in>mono_map(1,Memrel(1),\<gamma>,Memrel(\<gamma>))"
+      unfolding mono_map_def using \<open>f:1\<rightarrow>\<gamma>\<close> by simp
     then
-    have "f`0=b" using \<open>f={<0,b>}\<close>  function_apply_equality  by simp
-    with succ
-    have "cf_fun(f,\<gamma>)"  using cf_fun_succ Ord_succ_iff \<open>Ord(\<gamma>)\<close>  sorry
-    show ?thesis sorry
+    show ?thesis using \<open>cf_fun(f,\<gamma>)\<close> cf_succ by auto
   next    
     case lim
     then
