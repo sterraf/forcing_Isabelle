@@ -534,20 +534,21 @@ proof -
     have "id(0)\<in>mono_map(cf(0),Memrel(cf(0)),0,Memrel(0))" using ord_iso_is_mono_map by simp
     with zero
     show ?thesis unfolding cofinal_fun_def cf_fun_def by auto
-        
   next
-    case succ find_theorems "succ(_)"
+    case succ
     then
-    have "Ord(b)"  using Ord_succ_iff \<open>Ord(\<gamma>)\<close>  
+    obtain b where "\<gamma> = succ(b)"
+      by auto
+    then
+    have "Ord(b)"  using Ord_succ_iff \<open>Ord(\<gamma>)\<close> by simp
     define f where "f={<0,b>}"
     then 
     have "function(f)" unfolding function_def by simp
     then
-      have "f`0=b" using \<open>f={<0,b>}\<close>  function_apply_equality  by simp
-      with succ
-      have "cf_fun(f,\<gamma>)"  using cf_fun_succ Ord_succ_iff \<open>Ord(\<gamma>)\<close> 
-      show ?thesis sorry
-    
+    have "f`0=b" using \<open>f={<0,b>}\<close>  function_apply_equality  by simp
+    with succ
+    have "cf_fun(f,\<gamma>)"  using cf_fun_succ Ord_succ_iff \<open>Ord(\<gamma>)\<close>  sorry
+    show ?thesis sorry
   next    
     case lim
     then
