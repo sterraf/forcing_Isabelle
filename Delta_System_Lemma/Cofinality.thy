@@ -5,19 +5,19 @@ begin
 
 definition
   cofinal :: "[i,i,i] \<Rightarrow> o" where
-  "cofinal(X,A,r) == \<forall>a\<in>A. \<exists>x\<in>X. <a,x>\<in>r \<or> a = x"
+  "cofinal(X,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>X. <a,x>\<in>r \<or> a = x"
 
 definition
   cofinal_predic :: "[i,i,[i,i]\<Rightarrow>o] \<Rightarrow> o" where
-  "cofinal_predic(X,A,r) == \<forall>a\<in>A. \<exists>x\<in>X. r(a,x) \<or> a = x"
+  "cofinal_predic(X,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>X. r(a,x) \<or> a = x"
 
 definition
   f_cofinal :: "[i\<Rightarrow>i,i,i,i] \<Rightarrow> o" where
-  "f_cofinal(f,C,A,r) == \<forall>a\<in>A. \<exists>x\<in>C. <a,f(x)>\<in>r \<or> a = f(x)" (* "predic" version ? *)
+  "f_cofinal(f,C,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>C. <a,f(x)>\<in>r \<or> a = f(x)" (* "predic" version ? *)
   
 definition
   cofinal_fun :: "[i,i,i] \<Rightarrow> o" where
-  "cofinal_fun(f,A,r) == \<forall>a\<in>A. \<exists>x\<in>domain(f). <a,f`x>\<in>r \<or> a = f`x"
+  "cofinal_fun(f,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>domain(f). <a,f`x>\<in>r \<or> a = f`x"
 
 lemma cofinal_funI: 
   assumes "\<And>a. a\<in>A \<Longrightarrow> \<exists>x\<in>domain(f). <a,f`x>\<in>r \<or> a = f`x"
@@ -248,6 +248,11 @@ next
   show "\<exists>x\<in>\<alpha>. f ` x = \<beta>" by blast
 qed
 
+lemma cf_is_one_iff:
+  assumes "Ord(\<gamma>)"
+  shows "cf(\<gamma>) = 1 \<longleftrightarrow> (\<exists>\<alpha>. Ord(\<alpha>) \<and> \<gamma>  = succ(\<alpha>))"
+    sorry
+
 lemma cf_fun_succ:
   "Ord(\<beta>) \<Longrightarrow> f:1\<rightarrow>succ(\<beta>) \<Longrightarrow> f`0=\<beta> \<Longrightarrow> cf_fun(f,succ(\<beta>))"
   using cf_fun_succ' by blast
@@ -274,11 +279,22 @@ proof
       using not_mem_empty unfolding cofinal_def by auto
 qed
 
-lemma cf_succ:
-  assumes "Ord(\<alpha>)" "f:1\<rightarrow>succ(\<alpha>)" "f`0=\<alpha>"
-  shows " cf(succ(\<alpha>)) = 1"
+lemma singleton_fun_succ:
+  fixes \<alpha> 
+  defines "f \<equiv> {<0,\<alpha>>}"
+  shows "f : 1\<rightarrow>succ(\<alpha>)" "f`0 = \<alpha>"
 proof -
-  from assms
+  show "f  : 1\<rightarrow>succ(\<alpha>)" unfolding f_def sorry
+  show "f`0 = \<alpha>" sorry
+qed
+
+lemma cf_succ:
+  assumes "Ord(\<alpha>)"
+  shows "cf(succ(\<alpha>)) = 1"
+proof -
+  obtain f where "f : 1\<rightarrow>succ(\<alpha>)" "f`0 = \<alpha>" 
+    using singleton_fun_succ by blast
+  with assms
   have "cf_fun(f,succ(\<alpha>))" 
     using cf_fun_succ unfolding cofinal_fun_def by simp
   from \<open>f:1\<rightarrow>succ(\<alpha>)\<close>
@@ -307,13 +323,23 @@ proof -
   ultimately
   show "cf(succ(\<alpha>)) = 1" using Ord_1  Least_equality[of ?P 1]  
     unfolding cf_def by blast
-qed 
-      
-      
+qed
+       
 lemma cf_zero [simp]:
   "cf(0) = 0"
   unfolding cf_def cofinal_def using 
     ordertype_0 subset_empty_iff Least_le[of _ 0] by auto
+
+lemma surj_is_cofinal: "f \<in> surj(\<delta>,\<gamma>) \<Longrightarrow> cf_fun(f,\<gamma>)"
+  unfolding surj_def cofinal_fun_def cf_fun_def 
+  using domain_of_fun by force
+
+lemma cf_zero_iff: "Ord(\<alpha>) \<Longrightarrow> cf(\<alpha>) = 0 \<longleftrightarrow> \<alpha> = 0"
+proof (intro iffI)
+  assume "cf(\<alpha>) = 0" "Ord(\<alpha>)"
+  then
+  show "\<alpha> = 0" sorry
+qed simp
 
 lemma mono_map_increasing: 
   "j\<in>mono_map(A,r,B,s) \<Longrightarrow> a\<in>A \<Longrightarrow> c\<in>A \<Longrightarrow> <a,c>\<in>r \<Longrightarrow> <j`a,j`c>\<in>s"
@@ -1173,10 +1199,6 @@ proof -
   show "cf(\<gamma>) = cf(cf(\<gamma>))"  .
 qed
   
-lemma surj_is_cofinal: "f \<in> surj(\<delta>,\<gamma>) \<Longrightarrow> cf_fun(f,\<gamma>)"
-  unfolding surj_def cofinal_fun_def cf_fun_def 
-  using domain_of_fun by force
-
 lemma cf_le_cardinal:
   assumes "Limit(\<gamma>)"
   shows "cf(\<gamma>) \<le> |\<gamma>|"
@@ -1238,7 +1260,24 @@ proof -
 qed
 
 lemma Limit_cf: assumes "Limit(\<kappa>)" shows "Limit(cf(\<kappa>))"
-  sorry
+  using Ord_cf[of \<kappa>, THEN Ord_cases]
+    \<comment> \<open>\<^term>\<open>cf(\<kappa>)\<close> being 0 or successor leads to contradiction\<close>
+proof (cases)
+  case 1
+  with \<open>Limit(\<kappa>)\<close>
+  show ?thesis using cf_zero_iff Limit_is_Ord by simp
+next
+  case (2 \<alpha>)
+  moreover
+  note \<open>Limit(\<kappa>)\<close>
+  moreover from calculation
+  have "cf(\<kappa>) = 1"
+    using cf_idemp cf_succ by fastforce
+  ultimately
+  show ?thesis 
+    using succ_LimitE cf_is_one_iff Limit_is_Ord
+    by auto
+qed
 
 lemma InfCard_cf: "Limit(\<kappa>) \<Longrightarrow> InfCard(cf(\<kappa>))"
   using regular_is_Card cf_idemp Limit_cf nat_le_Limit Limit_cf
