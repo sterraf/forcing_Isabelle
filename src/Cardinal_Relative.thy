@@ -63,7 +63,7 @@ definition
   banach_functor :: "[i,i,i,i,i] \<Rightarrow> i" where
   "banach_functor(X,Y,f,g,W) \<equiv> X - g``(Y - f``W)"
 
-lemma bnd_mono_banach_functor: "bnd_mono(X \<union> Y, banach_functor(X,Y,f,g))"
+lemma bnd_mono_banach_functor: "bnd_mono(X, banach_functor(X,Y,f,g))"
   unfolding bnd_mono_def banach_functor_def
   by blast
 
@@ -143,22 +143,31 @@ qed
 
 lemma lfp_banach_functor: 
   assumes "g\<in>inj(Y,X)"
-  shows "lfp(X \<union> Y, banach_functor(X,Y,f,g)) = 
+  shows "lfp(X, banach_functor(X,Y,f,g)) = 
        (\<Union>n\<in>nat. banach_functor(X,Y,f,g)^n (0))"
   using assms lfp_eq_Union bnd_mono_banach_functor contin_banach_functor
   by simp
 
+(* This is the biggest hole today *)
+lemma lfp_banach_functor_closed: 
+  assumes "M(g)" "M(X)" "M(Y)" "M(f)" "g\<in>inj(Y,X)"
+  shows "M(lfp(X, banach_functor(X,Y,f,g)))" 
+  sorry
+
 lemma banach_decomposition_rel:
   "[| M(f); M(g); M(X); M(Y); f \<in> X->Y;  g \<in> inj(Y,X) |] ==>
-      \<exists>XA[M]. \<exists>XB[M]. \<exists>YA[M]. \<exists>YB[M]. (XA \<inter> XB = 0) & (XA \<union> XB = X) &
-                      (YA \<inter> YB = 0) & (YA \<union> YB = Y) &
-                      f``XA=YA & g``YB=XB"
+      \<exists>XA[M]. \<exists>XB[M]. \<exists>YA[M]. \<exists>YB[M]. 
+         (XA \<inter> XB = 0) & (XA \<union> XB = X) &
+         (YA \<inter> YB = 0) & (YA \<union> YB = Y) &
+         f``XA=YA & g``YB=XB"
   apply (intro rexI conjI)
-       apply (rule_tac [6] Banach_last_equation)
+           apply (rule_tac [6] Banach_last_equation)
            apply (rule_tac [5] refl)
-      apply (assumption |
-      rule inj_is_fun Diff_disjoint Diff_partition fun_is_rel image_subset lfp_subset)+ 
-  sorry
+          apply (assumption |
+      rule inj_is_fun Diff_disjoint Diff_partition fun_is_rel 
+      image_subset lfp_subset)+
+  using lfp_banach_functor_closed[of g X Y f] 
+  unfolding banach_functor_def by simp_all
 
 lemma schroeder_bernstein_closed:
   "[| M(f); M(g); M(X); M(Y); f \<in> inj(X,Y);  g \<in> inj(Y,X) |] ==> \<exists>h[M]. h \<in> bij(X,Y)"
