@@ -37,7 +37,7 @@ definition
 
 definition
   is_Card     :: "i=>o"  where
-  "is_Card(i) \<equiv> is_cardinal(i,i)"
+  "is_Card(i) \<equiv> |i|r= i"
 
 lemma is_cardinal_imp_Least:
   assumes "M(A)" "M(\<kappa>)" "|A|r= \<kappa>"
@@ -46,7 +46,7 @@ lemma is_cardinal_imp_Least:
   by (drule_tac least_abs[THEN iffD1, rule_format, rotated 2, of "\<lambda>x. M(x) \<and> x \<approx>r A"])
     simp_all
 
-(* Write a more general version, "least_Least" in Least.thy *)
+(* TO DO: Write a more general version, "least_Least" in Least.thy *)
 lemma is_cardinal_iff_Least:
   assumes "M(A)" "M(\<kappa>)" 
   shows "|A|r= \<kappa> \<longleftrightarrow> \<kappa> = (\<mu> i. M(i) \<and> i \<approx>r A)"
@@ -63,10 +63,9 @@ definition
   banach_functor :: "[i,i,i,i,i] \<Rightarrow> i" where
   "banach_functor(X,Y,f,g,W) \<equiv> X - g``(Y - f``W)"
 
-(* \<open>bnd_mono(X, banach_functor(X,Y,f,g)\<close> *)
 lemma bnd_mono_banach_functor: "bnd_mono(X \<union> Y, banach_functor(X,Y,f,g))"
-  unfolding bnd_mono_def
-  sorry
+  unfolding bnd_mono_def banach_functor_def
+  by blast
 
 lemma inj_Inter: 
   assumes "g \<in> inj(Y,X)" "A\<noteq>0"
