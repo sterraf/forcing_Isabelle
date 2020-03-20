@@ -208,7 +208,7 @@ lemma is_eqpoll_sym: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<approx>r
   by (auto intro: bij_converse_bij)
 
 lemma is_eqpoll_trans [trans]:
-  "[| M(X); M(Y) ; M(Z); X \<approx>r Y;  Y \<approx>r Z |] ==> X \<approx>r Z"
+  "[|X \<approx>r Y;  Y \<approx>r Z;  M(X); M(Y) ; M(Z) |] ==> X \<approx>r Z"
   unfolding is_eqpoll_def by (auto intro: comp_bij)
 
 (** Le-pollence is a partial ordering **)
@@ -227,7 +227,7 @@ lemma is_eqpoll_imp_is_lepoll: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X 
 
 lemma is_lepoll_trans [trans]: 
   assumes 
-    "M(X)" "M(Y)" "M(Z)" "X \<lesssim>r Y" "Y \<lesssim>r Z"
+    "X \<lesssim>r Y" "Y \<lesssim>r Z" "M(X)" "M(Y)" "M(Z)"
   shows
     "X \<lesssim>r Z"
   using assms unfolding is_lepoll_def
@@ -235,14 +235,14 @@ lemma is_lepoll_trans [trans]:
 
 lemma eq_is_lepoll_trans [trans]: 
   assumes 
-    "M(X)" "M(Y)" "M(Z)" "X \<approx>r Y"  "Y \<lesssim>r Z" 
+    "X \<approx>r Y"  "Y \<lesssim>r Z" "M(X)" "M(Y)" "M(Z)" 
   shows
     "X \<lesssim>r Z"
   using assms
   by (blast intro: is_eqpoll_imp_is_lepoll is_lepoll_trans)
 
 lemma is_lepoll_eq_trans [trans]: 
-  assumes "M(X)" "M(Y)" "M(Z)" "X \<lesssim>r Y"  "Y \<approx>r Z"
+  assumes "X \<lesssim>r Y"  "Y \<approx>r Z" "M(X)" "M(Y)" "M(Z)" 
   shows "X \<lesssim>r Z"
   using assms 
   is_eqpoll_imp_is_lepoll[of Y Z] is_lepoll_trans[of X Y Z]
@@ -314,29 +314,29 @@ lemma is_lepoll_iff_lis_eqpoll: "\<lbrakk>M(A); M(B)\<rbrakk> \<Longrightarrow> 
 (** Variations on transitivity **)
 
 lemma is_lesspoll_trans [trans]:
-  "[| M(X); M(Y) ; M(Z); X \<prec>r Y; Y \<prec>r Z |] ==> X \<prec>r Z"
+  "[| X \<prec>r Y; Y \<prec>r Z; M(X); M(Y) ; M(Z) |] ==> X \<prec>r Z"
   apply (unfold is_lesspoll_def)
   apply (blast elim: is_eqpollE intro: is_eqpollI is_lepoll_trans)
   done
 
 lemma is_lesspoll_trans1 [trans]:
-  "[| M(X); M(Y) ; M(Z); X \<lesssim>r Y; Y \<prec>r Z |] ==> X \<prec>r Z"
+  "[| X \<lesssim>r Y; Y \<prec>r Z; M(X); M(Y) ; M(Z) |] ==> X \<prec>r Z"
   apply (unfold is_lesspoll_def)
   apply (blast elim: is_eqpollE intro: is_eqpollI is_lepoll_trans)
   done
 
 lemma is_lesspoll_trans2 [trans]:
-  "[|  M(X); M(Y) ; M(Z);X \<prec>r Y; Y \<lesssim>r Z |] ==> X \<prec>r Z"
+  "[|  X \<prec>r Y; Y \<lesssim>r Z; M(X); M(Y) ; M(Z)|] ==> X \<prec>r Z"
   apply (unfold is_lesspoll_def)
   apply (blast elim: is_eqpollE intro: is_eqpollI is_lepoll_trans)
   done
 
 lemma eq_is_lesspoll_trans [trans]:
-  "[|  M(X); M(Y) ; M(Z);X \<approx>r Y; Y \<prec>r Z |] ==> X \<prec>r Z"
+  "[| X \<approx>r Y; Y \<prec>r Z; M(X); M(Y) ; M(Z) |] ==> X \<prec>r Z"
   by (blast intro: is_eqpoll_imp_is_lepoll is_lesspoll_trans1)
 
 lemma is_lesspoll_eq_trans [trans]:
-  "[|  M(X); M(Y) ; M(Z);X \<prec>r Y; Y \<approx>r Z |] ==> X \<prec>r Z"
+  "[| X \<prec>r Y; Y \<approx>r Z; M(X); M(Y) ; M(Z) |] ==> X \<prec>r Z"
   by (blast intro: is_eqpoll_imp_is_lepoll is_lesspoll_trans2)
 
 lemma is_cardinal_cong: 
@@ -398,14 +398,12 @@ lemma well_ord_is_cardinal_eqE:
     eq: "|X|r=\<kappa> \<and> |Y|r=\<kappa>"
   shows "X \<approx>r Y"
 proof -
-  note assms
-  moreover from this
+  from assms
   have "X \<approx>r \<kappa>" by (blast intro: well_ord_cardinal_is_eqpoll [OF woX] is_eqpoll_sym)
-  moreover from assms
+  also from assms
   have "... \<approx>r Y" by (blast intro: well_ord_cardinal_is_eqpoll [OF woY])
-  ultimately 
-  show ?thesis
-    using is_eqpoll_trans by blast
+  finally
+  show ?thesis by (simp add:assms)
 qed
 
 lemma well_ord_is_cardinal_is_eqpoll_iff:
@@ -432,7 +430,6 @@ lemma Ord_is_cardinal_le: "M(i) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> 
 lemma is_Card_is_cardinal_eq: "is_Card(K) \<Longrightarrow> |K|r= K"
   unfolding is_Card_def .
 
-(* Could replace the  @{term"~(j \<approx>r i)"}  by  @{term"~(i \<preceq> j)"}. *)
 lemma is_CardI: "\<lbrakk> M(i); Ord(i);  \<And>j. j<i \<Longrightarrow> ~(j \<approx>r i) \<rbrakk> \<Longrightarrow> is_Card(i)"
   unfolding is_Card_def
   apply (rule is_cardinal_iff_Least[THEN iffD2, rule_format], simp_all)
@@ -455,17 +452,24 @@ lemma Ord_is_cardinal [simp,intro!]: "M(A) \<Longrightarrow> M(\<kappa>) \<Longr
 text\<open>The cardinals are the initial ordinals.\<close>
 lemma is_Card_iff_initial: "M(K) \<Longrightarrow> is_Card(K) \<longleftrightarrow> Ord(K) & (\<forall>j. j<K \<longrightarrow> ~ j \<approx>r K)"
 proof -
-  { fix j
-    assume K: "is_Card(K)" "j \<approx>r K"
+  { 
+    fix j
+    assume K: "M(K)" "is_Card(K)" "j \<approx>r K"
     assume "j < K"
-    also have "... = (\<mu> i. i \<approx>r K)" using K
-      by (simp add: is_Card_def cardinal_def)
-    finally have "j < (\<mu> i. i \<approx>r K)" .
-    hence "False" using K
-      by (best dest: less_LeastE) 
+    also have "... = (\<mu> i. M(i) \<and> i \<approx>r K)" (is "_ = Least(?P)")
+      using K is_cardinal_imp_Least by (simp add: is_Card_def)
+    finally have "j < (\<mu> i. M(i) \<and> i \<approx>r K)" (is "_ < ?x") .
+    then
+    have "False" 
+      using K less_LeastE[of "?P" j] transM[of j ?x, OF ltD] 
+        Least_closed[of ?P] by simp
   }
-  then show ?thesis
-    sorry (* by (blast intro: is_CardI is_Card_is_Ord) *)
+  moreover
+  assume "M(K)"
+  ultimately
+  show ?thesis
+    using is_CardI[of K] is_Card_is_Ord[of K]
+    by (intro iffI) auto
 qed
 
 lemma lt_is_Card_imp_is_lesspoll: "\<lbrakk> M(a); is_Card(a); i<a \<rbrakk> \<Longrightarrow> i \<prec>r a"
