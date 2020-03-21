@@ -492,7 +492,7 @@ lemma is_Card_Un: "[| M(K); M(L); is_Card(K);  is_Card(L) |] ==> is_Card(K \<uni
 
 (*Infinite unions of cardinals?  See Devlin, Lemma 6.7, page 98*)
 
-lemma is_cardinal_imp_is_Card [iff]: 
+lemma is_cardinal_imp_is_Card [simp,intro]: 
   assumes "M(A)" "M(\<kappa>)" "|A|r=\<kappa>"
   shows "is_Card(\<kappa>)"
   using assms
@@ -563,23 +563,37 @@ proof -
   show ?thesis by simp
 qed
 
-lemma cardinal_mono:
-  assumes ij: "i \<le> j" shows "|i| \<le> |j|"
-  using Ord_is_cardinal [of i] Ord_is_cardinal [of j]
-proof (cases rule: Ord_linear_le)
-  case le thus ?thesis .
+lemma is_cardinal_mono:
+  assumes 
+    "M(i)" "M(j)" "M(\<kappa>)" "M(\<kappa>')"
+    and
+    "|i|r= \<kappa>" "|j|r= \<kappa>'"
+    and
+    ij: "i \<le> j" 
+  shows "\<kappa> \<le> \<kappa>'"
+  using Ord_is_cardinal[OF \<open>M(i)\<close> \<open>M(\<kappa>)\<close> \<open>|i|r= \<kappa>\<close>]
+    Ord_is_cardinal[OF \<open>M(j)\<close> \<open>M(\<kappa>')\<close> \<open>|j|r= \<kappa>'\<close>]
+proof (cases rule: Ord_linear_le[of \<kappa> \<kappa>'])
+  case le 
+  then
+  show ?thesis by simp
 next
   case ge
   have i: "Ord(i)" using ij
     by (simp add: lt_Ord)
-  have ci: "|i| \<le> j"
-    by (blast intro: Ord_cardinal_le ij le_trans i)
-  have "|i| = ||i||"
-    by (auto simp add: Ord_cardinal_idem i)
-  also have "... = |j|"
-    by (rule is_cardinal_eq_lemma [OF ge ci])
-  finally have "|i| = |j|" .
-  thus ?thesis by simp
+  with assms
+  have ci: "\<kappa> \<le> j"
+    using Ord_is_cardinal_le[of i] ij le_trans[of \<kappa> i j] 
+    by simp
+  from \<open>M(i)\<close> \<open>M(\<kappa>)\<close> \<open>|i|r= \<kappa>\<close> 
+  have "|\<kappa>|r= \<kappa>"
+    using is_cardinal_imp_is_Card is_Card_is_cardinal_eq by simp 
+  with assms
+  have "... = \<kappa>'"
+    by (rule_tac is_cardinal_eq_lemma [OF _ _ _ _ _ _ ge ci])
+  then 
+  show ?thesis 
+    using Ord_is_cardinal[OF \<open>M(j)\<close> \<open>M(\<kappa>')\<close> \<open>|j|r= \<kappa>'\<close>] by simp
 qed
 
 text\<open>Since we have \<^term>\<open>|succ(nat)| \<le> |nat|\<close>, the converse of \<open>cardinal_mono\<close> fails!\<close>
