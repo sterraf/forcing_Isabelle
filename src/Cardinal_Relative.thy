@@ -492,25 +492,38 @@ lemma is_Card_Un: "[| M(K); M(L); is_Card(K);  is_Card(L) |] ==> is_Card(K \<uni
 
 (*Infinite unions of cardinals?  See Devlin, Lemma 6.7, page 98*)
 
-lemma is_Card_cardinal [iff]: "is_Card(|A|)"
-proof (unfold cardinal_def)
-  show "is_Card(\<mu> i. i \<approx>r A)"
-  proof (cases "\<exists>i. Ord (i) & i \<approx>r A")
-    case False thus ?thesis           \<comment> \<open>degenerate case\<close>
-      by (simp add: Least_0 is_Card_0)
+lemma is_cardinal_imp_is_Card [iff]: 
+  assumes "M(A)" "M(\<kappa>)" "|A|r=\<kappa>"
+  shows "is_Card(\<kappa>)"
+  using assms
+proof (frule_tac is_cardinal_imp_Least, simp_all, simp)
+   show "is_Card(\<mu> i. M(i) \<and> i \<approx>r A)" (is "is_Card(Least(?P))")
+  proof (cases "\<exists>i. Ord (i) \<and> M(i) \<and> i \<approx>r A")
+    case False 
+    with assms
+    show ?thesis           \<comment> \<open>degenerate case\<close>
+      using Least_0[of ?P] is_Card_0 by simp
   next
     case True                         \<comment> \<open>real case: \<^term>\<open>A\<close> is isomorphic to some ordinal\<close>
-    then obtain i where i: "Ord(i)" "i \<approx>r A" by blas
+    then obtain i where i: "M(i)" "Ord(i)" "i \<approx>r A" by blast
     show ?thesis
-    proof (rule is_CardI [OF Ord_Least], rule notI)
+    proof (rule is_CardI[OF _ Ord_Least], rule_tac [2] notI)
+      show "M(\<mu> i. M(i) \<and> i \<approx>r A)" 
+        using \<open>M(A)\<close> Least_closed[of ?P] by simp
       fix j
-      assume j: "j < (\<mu> i. i \<approx>r A)"
-      assume "j \<approx>r (\<mu> i. i \<approx>r A)"
-      also have "... \<approx>r A" using i by (auto intro: LeastI)
-      finally have "j \<approx>r A" .
-      thus False
-        by (rule less_LeastE [OF _ j])
-    qed
+      assume j: "j < (\<mu> i. M(i) \<and> i \<approx>r A)"
+      then
+      have "M(j)" using j[THEN ltD, THEN transM] Least_closed
+        by fastforce
+      assume "j \<approx>r (\<mu> i. M(i) \<and> i \<approx>r A)"
+      also
+      have "... \<approx>r A" using i using LeastI[of ?P] by simp
+      finally 
+      have "j \<approx>r A" using \<open>M(j)\<close> \<open>M(A)\<close> \<open>M(\<mu> i. M(i) \<and> i \<approx>r A)\<close>
+        by simp
+      with \<open>M(j)\<close>
+      show "False" using less_LeastE [OF _ j] by simp
+    qed 
   qed
 qed
 
