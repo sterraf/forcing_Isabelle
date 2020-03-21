@@ -528,17 +528,39 @@ proof (frule_tac is_cardinal_imp_Least, simp_all, simp)
 qed
 
 (*Kunen's Lemma 10.5*)
-lemma cardinal_eq_lemma:
-  assumes i:"|i| \<le> j" and j: "j \<le> i" shows "|j| = |i|"
-proof (rule is_eqpollI [THEN cardinal_cong])
-  show "j \<lesssim>r i" by (rule le_imp_is_lepoll [OF j])
-next
-  have Oi: "Ord(i)" using j by (rule le_Ord2)
-  hence "i \<approx>r |i|"
-    by (blast intro: Ord_cardinal_is_eqpoll is_eqpoll_sym)
-  also have "... \<lesssim>r j"
-    by (blast intro: le_imp_is_lepoll i)
-  finally show "i \<lesssim>r j" .
+lemma is_cardinal_eq_lemma:
+  assumes 
+    "M(i)" "M(j)" "M(\<kappa>)" "M(\<kappa>')"
+    and
+    "|i|r=\<kappa>" "|j|r=\<kappa>'"
+    and
+    i:"\<kappa> \<le> j" and j: "j \<le> i" shows "\<kappa>' = \<kappa>"
+proof -
+  from assms
+  have "j \<lesssim>r i" by (rule_tac le_imp_is_lepoll [OF _ _ j])
+  moreover
+  have "i \<lesssim>r j"
+  proof -
+    have Oi: "Ord(i)" using j by (rule le_Ord2)
+    with assms
+    have "i \<approx>r \<kappa>"
+      using Ord_cardinal_is_eqpoll[THEN [3] is_eqpoll_sym]
+      by simp
+    also from assms
+    have "... \<lesssim>r j"
+      by (blast intro: le_imp_is_lepoll i)
+    finally show "i \<lesssim>r j" using assms by simp
+  qed
+  moreover
+  note assms(1-6)
+  moreover from calculation
+  obtain \<delta> where "M(\<delta>)" "|i|r= \<delta>" "|j|r= \<delta>"
+    using is_eqpollI[THEN [3] is_cardinal_cong] by auto
+  ultimately
+  have "\<kappa> = \<delta>" "\<kappa>'=\<delta>"
+    using is_cardinal_univalent by blast+
+  then
+  show ?thesis by simp
 qed
 
 lemma cardinal_mono:
@@ -555,7 +577,7 @@ next
   have "|i| = ||i||"
     by (auto simp add: Ord_cardinal_idem i)
   also have "... = |j|"
-    by (rule cardinal_eq_lemma [OF ge ci])
+    by (rule is_cardinal_eq_lemma [OF ge ci])
   finally have "|i| = |j|" .
   thus ?thesis by simp
 qed
