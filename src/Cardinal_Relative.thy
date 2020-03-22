@@ -39,14 +39,6 @@ definition
   is_Card     :: "i=>o"  where
   "is_Card(i) \<equiv> |i|r= i"
 
-\<comment> \<open>This might be true; requires modification of @{thm least_abs}\<close>
-lemma is_cardinal_closed[intro,simp]:
-  assumes "M(A)" "|A|r= \<kappa>"
-  shows "M(\<kappa>)"
-  using assms Least_closed[of "\<lambda> i. M(i) \<and> i \<approx>r A"]
-  unfolding is_cardinal_def
-  oops
-
 lemma is_cardinal_imp_Least:
   assumes "M(A)" "M(\<kappa>)" "|A|r= \<kappa>"
   shows "\<kappa> = (\<mu> i. M(i) \<and> i \<approx>r A)"
@@ -667,7 +659,10 @@ next
     using Ord_is_cardinal[OF \<open>M(A)\<close> \<open>M(\<kappa>)\<close> \<open>|A|r= \<kappa>\<close>] by simp
 qed 
 
-(* Two many assumptions in next result *)
+(* Two many assumptions in next result 
+This is because of the relational form of \<open>is_cardinal\<close>,
+in arguments that involve iterated cardinals (i.e. \<open>||A||\<close>).
+*)
 lemma is_lepoll_is_cardinal_le: "[| M(A); M(i); M(\<kappa>); M(\<kappa>'); A \<lesssim>r i; Ord(i) ; |A|r=\<kappa>; |i|r= \<kappa>' |] ==> \<kappa> \<le> i"
   apply (rule le_trans)
    apply (erule well_ord_Memrel[THEN [8] well_ord_is_lepoll_imp_is_Card_le, of A i _ \<kappa>'], assumption+)
@@ -676,18 +671,18 @@ lemma is_lepoll_is_cardinal_le: "[| M(A); M(i); M(\<kappa>); M(\<kappa>'); A \<l
   done
 
 lemma is_lepoll_Ord_imp_is_eqpoll: "[| M(A); M(i); M(\<kappa>); M(\<kappa>'); A \<lesssim>r i; Ord(i) ; |A|r=\<kappa>; |i|r= \<kappa>' |] ==> \<kappa> \<approx>r A"
-  by (blast intro: is_lepoll_is_cardinal_le well_ord_Memrel well_ord_cardinal_is_eqpoll dest!: is_lepoll_well_ord
-  sorry
+  using well_ord_Memrel is_lepoll_well_ord[of A i "Memrel(i)"]
+  by (auto intro: well_ord_cardinal_is_eqpoll is_lepoll_well_ord)
 
 lemma is_lesspoll_imp_is_eqpoll: "[| M(A); M(i); M(\<kappa>); M(\<kappa>'); |A|r=\<kappa>; |i|r= \<kappa>'; A \<prec>r i; Ord(i) |] ==> \<kappa> \<approx>r A"
   apply (unfold is_lesspoll_def)
   apply (blast intro: is_lepoll_Ord_imp_is_eqpoll)
   done
 
-lemma cardinal_subset_Ord: "[|M(A); M(i); M(\<kappa>); |A|r=\<kappa>; A \<subseteq> i; Ord(i)|] ==> \<kappa> \<subseteq> i"
+lemma is_cardinal_subset_Ord: "[|M(A); M(i); M(\<kappa>); M(\<kappa>'); |A|r=\<kappa>; |i|r= \<kappa>'; A \<subseteq> i; Ord(i)|] ==> \<kappa> \<subseteq> i"
   apply (frule subset_imp_is_lepoll [THEN [5] is_lepoll_is_cardinal_le])
-  apply (auto simp add: lt_def)
-  apply (blast intro: Ord_trans
+  prefer 8 prefer 9 prefer 9 apply assumption+
+  apply (auto intro: Ord_trans dest:ltD)
   done
 
 end (* M_cardinals *)
