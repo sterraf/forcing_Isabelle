@@ -301,10 +301,8 @@ lemma is_lesspoll_irrefl: "M(i) \<Longrightarrow> i \<prec>r i ==> P"
 lemma is_lesspoll_imp_is_lepoll: "A \<prec>r B ==> A \<lesssim>r B"
   by (unfold is_lesspoll_def, blast)
 
-lemma is_lepoll_well_ord: "[| M(A); M(B); M(r); A \<lesssim>r B; well_ord(B,r) |] ==> \<exists>s. well_ord(A,s)"
-  apply (unfold is_lepoll_def)
-  apply (auto intro: well_ord_rvimage)
-  done
+lemma is_lepoll_well_ord: "[| M(A); M(B); M(r); A \<lesssim>r B; well_ord(B,r) |] ==> \<exists>s[M]. well_ord(A,s)"
+  sorry
 
 lemma is_lepoll_iff_lis_eqpoll: "\<lbrakk>M(A); M(B)\<rbrakk> \<Longrightarrow> A \<lesssim>r B \<longleftrightarrow> A \<prec>r B | A \<approx>r B"
   apply (unfold is_lesspoll_def)
@@ -359,20 +357,20 @@ proof -
 qed 
 
 lemma well_ord_cardinal_is_eqpoll:
-  assumes "well_ord(A,r)" shows "M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> |A|r= \<kappa> \<Longrightarrow> \<kappa> \<approx>r A"  
+  assumes "well_ord(A,r)" shows "M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> M(r) \<Longrightarrow> |A|r= \<kappa> \<Longrightarrow> \<kappa> \<approx>r A"  
 proof (subst is_cardinal_imp_Least[of A \<kappa>])
-  assume "M(A)" "M(\<kappa>)" "|A|r= \<kappa>"
-  moreover \<comment> \<open>not sure if this is the way\<close>
-  have "M(ordertype(A, r))" "M(ordermap(A, r))" sorry
+  assume "M(A)" "M(\<kappa>)" "M(r)" "|A|r= \<kappa>"
+  moreover from assms and calculation
+  obtain f i where "M(f)" "Ord(i)" "M(i)" "f \<in> bij(A,i)"
+    using ordertype_exists[of A r] ord_iso_is_bij by auto
   moreover
   have "M(\<mu> i. M(i) \<and> i \<approx>r A)"
     using Least_closed by fastforce
   ultimately
   show "(\<mu> i. M(i) \<and> i \<approx>r A) \<approx>r A"
   using assms[THEN well_ord_imp_relativized]
-    LeastI[of "\<lambda>i. M(i) \<and> i \<approx>r A" "ordertype(A, r)"] Ord_ordertype[OF assms] 
-    ordermap_bij[OF assms, THEN bij_converse_bij, THEN [4] bij_imp_is_eqpoll]
-  by simp
+    LeastI[of "\<lambda>i. M(i) \<and> i \<approx>r A" i] Ord_ordertype[OF assms]
+    bij_converse_bij[THEN [4] bij_imp_is_eqpoll, of f] by simp
 qed
 
 (* @{term"Ord(A) \<Longrightarrow> M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> |A|r= \<kappa> \<Longrightarrow> \<kappa> \<approx>r A *)
@@ -392,7 +390,7 @@ lemma Ord_is_cardinal_idem:
  
 lemma well_ord_is_cardinal_eqE:
   assumes 
-    "M(X)" "M(Y)" "M(\<kappa>)"
+    "M(X)" "M(Y)" "M(\<kappa>)" "M(r)" "M(s)"
     and
     woX: "well_ord(X,r)" and woY: "well_ord(Y,s)" and 
     eq: "|X|r=\<kappa> \<and> |Y|r=\<kappa>"
@@ -408,7 +406,7 @@ qed
 
 lemma well_ord_is_cardinal_is_eqpoll_iff:
   assumes 
-    "M(X)" "M(Y)" "M(\<kappa>)"
+    "M(X)" "M(Y)" "M(\<kappa>)" "M(r)" "M(s)"
     and
     woX: "well_ord(X,r)" and woY: "well_ord(Y,s)" 
   shows "(\<exists>\<kappa>[M]. |X|r=\<kappa> \<and> |Y|r=\<kappa>) \<longleftrightarrow> X \<approx>r Y"
@@ -418,8 +416,7 @@ proof (intro iffI)
   with assms
   show "\<exists>\<kappa>[M]. |X|r= \<kappa> \<and> |Y|r= \<kappa>"
     using is_cardinal_cong by simp
-qed (auto intro: well_ord_is_cardinal_eqE)
-
+qed (auto intro: well_ord_is_cardinal_eqE[of _ _ _ r s])
 
 (** Observations from Kunen, page 28 **)
 
@@ -637,13 +634,13 @@ proof (cases rule: Ord_linear_le[of \<kappa> \<kappa>'])
 next
   case ge
   from is_lepoll_well_ord [OF assms(1,2,5) AB wB]
-  obtain s where s: "well_ord(A, s)" by blast
+  obtain s where s: "well_ord(A, s)" "M(s)" by auto
   from assms
   have "B  \<approx>r \<kappa>'" by (blast intro: wB is_eqpoll_sym well_ord_cardinal_is_eqpoll)
   also from assms 
   have "... \<lesssim>r \<kappa>" by (rule_tac le_imp_is_lepoll [OF _ _ ge])
   also from assms
-  have "... \<approx>r A" by (rule_tac well_ord_cardinal_is_eqpoll [OF s])
+  have "... \<approx>r A" by (rule_tac well_ord_cardinal_is_eqpoll [OF s(1) _ _ s(2)])
   finally 
   have "B \<lesssim>r A" using assms by simp
   with assms
@@ -671,8 +668,9 @@ lemma is_lepoll_is_cardinal_le: "[| M(A); M(i); M(\<kappa>); M(\<kappa>'); A \<l
   done
 
 lemma is_lepoll_Ord_imp_is_eqpoll: "[| M(A); M(i); M(\<kappa>); M(\<kappa>'); A \<lesssim>r i; Ord(i) ; |A|r=\<kappa>; |i|r= \<kappa>' |] ==> \<kappa> \<approx>r A"
-  using well_ord_Memrel is_lepoll_well_ord[of A i "Memrel(i)"]
-  by (auto intro: well_ord_cardinal_is_eqpoll is_lepoll_well_ord)
+  using well_ord_Memrel[of i] is_lepoll_well_ord[of A i "Memrel(i)"]
+     well_ord_cardinal_is_eqpoll[of A] 
+  by auto
 
 lemma is_lesspoll_imp_is_eqpoll: "[| M(A); M(i); M(\<kappa>); M(\<kappa>'); |A|r=\<kappa>; |i|r= \<kappa>'; A \<prec>r i; Ord(i) |] ==> \<kappa> \<approx>r A"
   apply (unfold is_lesspoll_def)
