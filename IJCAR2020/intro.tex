@@ -56,24 +56,10 @@ The source code of our formalization, written for the 2019 version of
 Isabelle, can be browsed and downloaded at
 \url{https://cs.famaf.unc.edu.ar/~pedro/forcing/}
 
-
-\paragraph{Related work}
-To the best of our knowledge, all of the previous works in
-formalization of the method 
-of forcing have been done in different variants of type theory, and
-none of them uses the ctm approach. The
-most important is the recent one by 
-Han and van Doorn
-\cite{han_et_al:LIPIcs:2019:11074,DBLP:conf/cpp/HanD20}, which includes
-a formalization of the independence of $\CH$ by means
-the Boolean-valued approach to forcing, using the Lean
-proof assistant \cite{DBLP:conf/cade/MouraKADR15}.
-
-\paragraph{Outline}
-\label{sec:outline}
-
-%% Esto está como subsection para que no parezca como parte de Related
-%% Work (que tranquilamente podría ir a las conclusiones).
+%% \paragraph{Outline}
+%% \label{sec:outline}
+%% %% Esto está como subsection para que no parezca como parte de Related
+%% %% Work (que tranquilamente podría ir a las conclusiones).
 We assume some familiarity with Isabelle and some terminology of set
 theory. The current paper is organized as follows. In
 Sect.~\ref{sec:isabelle-metatheories} we comment briefly on the
@@ -87,9 +73,10 @@ the proofs of the fundamental theorems of forcing. We show in
 Sect.~\ref{sec:example-proper-extension} a concrete poset that leads
 to a proper extension of the ground model. In
 Sect.~\ref{sec:axioms-replacement-choice} we complete the proof that
-every axiom and axiom scheme of ZFC is valid in any generic extension.
-We close the paper by noting the next steps in our project and drawing
-conclusions from this formalization.
+every axiom and axiom scheme of ZFC is valid in any generic
+extension. Sect.~\ref{sec:related-work} briefly discusses related
+works and we close the paper by noting the next steps in our project
+and drawing conclusions from this formalization.
 
 %%% Local Variables: 
 %%% mode: latex
