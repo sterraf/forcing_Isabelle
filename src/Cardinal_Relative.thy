@@ -68,47 +68,51 @@ lemma bnd_mono_banach_functor: "bnd_mono(X, banach_functor(X,Y,f,g))"
   by blast
 
 lemma inj_Inter: 
-  assumes "g \<in> inj(Y,X)" "A\<noteq>0"
+  assumes "g \<in> inj(Y,X)" "A\<noteq>0" "\<forall>a\<in>A. a \<subseteq> Y"
   shows "g``(\<Inter>A) = (\<Inter>a\<in>A. g``a)"
 proof (intro equalityI subsetI)
   fix x
   from assms
-  obtain a where "a\<in>A" by auto
+  obtain a where "a\<in>A" by blast
   moreover
   assume "x \<in> (\<Inter>a\<in>A. g `` a)"
   ultimately
-  have "x \<in> g``a" (* if "a\<in>A" for a *)
-    (* using that *) by auto
-  obtain y where "a\<in>A \<Longrightarrow> y\<in>a" "x=g`y" for a
+  have x_in_im: "x \<in> g``y" if "y\<in>A" for y
+    using that by auto
+  have exists: "\<exists>z \<in> y. x = g`z" if "y\<in>A" for y
   proof -
-    {
-      fix y
-      have "a \<in> A \<Longrightarrow> y \<in> a" for a
-        sorry
-      moreover
-      have "x = g ` y"
-        sorry
-      moreover
-      note calculation
-    }
-    with that
+    note that
+    moreover from this and x_in_im
+    have "x \<in> g``y" by simp
+    moreover from calculation
+    have "x \<in> g``y" by simp
+    moreover
+    note assms
+    ultimately
     show ?thesis
-      by simp
+      using image_fun[OF inj_is_fun] by auto
   qed
-  with assms
-  have "y\<in>\<Inter>A" by auto 
-  with assms
+  with \<open>a\<in>A\<close> 
+  obtain z where "z \<in> a" "x = g`z" by auto
+  moreover
+  have "z \<in> y" if "y\<in>A" for y
+  proof -
+    from that and exists
+    obtain w where "w \<in> y" "x = g`w" by auto
+    moreover from this \<open>x = g`z\<close> assms that \<open>a\<in>A\<close> \<open>z\<in>a\<close>
+    have "z = w" unfolding inj_def by blast
+    ultimately
+    show ?thesis by simp
+  qed
+  moreover
+  note assms
+  moreover from calculation
+  have "z \<in> \<Inter>A" by auto 
+  moreover from calculation
+  have "z \<in> Y" by blast
+  ultimately
   show "x \<in> g `` (\<Inter>A)"
-  proof (cases "y\<in>Y", intro imageI[of y])
-    case True
-    with assms \<open>x = g`y\<close>
-    show "\<langle>y, x\<rangle> \<in> g"
-      using inj_is_fun[THEN funcI, of g] by simp 
-  next
-    case False
-    with assms \<open>x = g`y\<close> 
-    show "x \<in> g `` (\<Inter>A)" sorry
-  qed
+    using inj_is_fun[THEN funcI, of g] by fast
 qed auto
 
 lemma contin_banach_functor: 
@@ -131,7 +135,7 @@ proof (intro allI impI)
     by auto
   also from \<open>A\<noteq>0\<close> and assms
   have " \<dots> = X - (\<Inter>a\<in>A. g``(Y-f``a))"
-    using inj_Inter[of g Y X "{Y-f``a. a\<in>A}" ] by simp
+    using inj_Inter[of g Y X "{Y-f``a. a\<in>A}" ] by fastforce
   also from \<open>A\<noteq>0\<close>
   have " \<dots> = (\<Union>a\<in>A. X - g``(Y-f``a))" by simp
   also
@@ -301,8 +305,15 @@ lemma is_lesspoll_irrefl: "M(i) \<Longrightarrow> i \<prec>r i ==> P"
 lemma is_lesspoll_imp_is_lepoll: "A \<prec>r B ==> A \<lesssim>r B"
   by (unfold is_lesspoll_def, blast)
 
-lemma is_lepoll_well_ord: "[| M(A); M(B); M(r); A \<lesssim>r B; well_ord(B,r) |] ==> \<exists>s[M]. well_ord(A,s)"
+lemma rvimage_closed [intro,simp]: 
+  assumes 
+    "M(A)" "M(f)" "M(r)"
+  shows
+    "M(rvimage(A,f,r))"
   sorry
+
+lemma is_lepoll_well_ord: "[| M(A); M(B); M(r); A \<lesssim>r B; well_ord(B,r) |] ==> \<exists>s[M]. well_ord(A,s)"
+  unfolding is_lepoll_def by (auto intro:well_ord_rvimage)
 
 lemma is_lepoll_iff_lis_eqpoll: "\<lbrakk>M(A); M(B)\<rbrakk> \<Longrightarrow> A \<lesssim>r B \<longleftrightarrow> A \<prec>r B | A \<approx>r B"
   apply (unfold is_lesspoll_def)
