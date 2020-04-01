@@ -5,9 +5,9 @@ theory Cardinal_Relative
     Least "../Tools/Try0"
 begin
 
-hide_const (open) L
+hide_const L
 
-locale M_cardinals = M_ordertype +
+locale M_cardinals = M_ordertype + M_trancl +
   assumes
   id_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>z. \<exists>x\<in>A. z = \<langle>x, x\<rangle>)"
   and
@@ -693,6 +693,37 @@ lemma is_cardinal_subset_Ord: "[|M(A); M(i); M(\<kappa>); M(\<kappa>'); |A|r=\<k
   prefer 8 prefer 9 prefer 9 apply assumption+
   apply (auto intro: Ord_trans dest:ltD)
   done
+
+lemma Finite_abs: assumes "M(A)" shows "is_Finite(A) \<longleftrightarrow> Finite(A)"
+  unfolding is_Finite_def Finite_def
+proof (simp, intro iffI)
+  assume "\<exists>n\<in>nat. A \<approx>r n"
+  then
+  obtain n where "A \<approx>r n" "n\<in>nat" by blast
+  with assms
+  show "\<exists>n\<in>nat. A \<approx> n"
+    unfolding eqpoll_def is_eqpoll_def using nat_into_M by auto
+next
+  fix n
+  assume "\<exists>n\<in>nat. A \<approx> n"
+  then
+  obtain n where "A \<approx> n" "n\<in>nat" by blast
+  moreover from this
+  obtain f where "f \<in> bij(A,n)" unfolding eqpoll_def by auto
+  moreover
+  note assms
+  moreover from calculation
+  have "converse(f) \<in> n\<rightarrow>A"  using bij_is_fun by simp
+  moreover from calculation 
+  have "M(converse(f))" using transM[of _ "n\<rightarrow>A"] by simp
+  moreover from calculation
+  have "M(f)" using bij_is_fun 
+      fun_is_rel[of "f" A "\<lambda>_. n", THEN converse_converse] 
+      converse_closed[of "converse(f)"] by simp
+  ultimately
+  show "\<exists>n\<in>nat. A \<approx>r n"
+    unfolding is_eqpoll_def by (force dest:nat_into_M)
+qed
 
 end (* M_cardinals *)
 end
