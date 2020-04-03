@@ -95,12 +95,9 @@ definition
   FnleR :: "i \<Rightarrow> i \<Rightarrow> o" (infixl \<open>\<supseteq>\<close> 50) where
   "f \<supseteq> g \<equiv> g \<subseteq> f"
 
-lemma FnleR_iff_subset [simp]: "f \<supseteq> g \<longleftrightarrow> g \<subseteq> f"
-  unfolding FnleR_def ..
-
 definition
   Fnlerel :: "i \<Rightarrow> i" where
-  "Fnlerel(A) \<equiv> Rrel(\<lambda>x y. x \<supseteq> y,A)"
+  "Fnlerel(A) \<equiv> Rrel(\<lambda>x y. y \<supseteq> x,A)"
 
 definition
   Fnle :: "[i,i,i] \<Rightarrow> i" where
