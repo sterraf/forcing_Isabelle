@@ -469,7 +469,7 @@ proof
   then obtain r where "well_ord(x,r)" 
     by (blast dest: L_implies_AC) 
   thus "\<exists>r. wellordered(L,x,r)" 
-    by (blast intro: well_ord_imp_relativized)
+    by (blast intro: L.well_ord_imp_relativized)
 qed
 
 text\<open>In order to prove \<^term>\<open> \<exists>r[L]. wellordered(L,x,r)\<close>, it's necessary to know 

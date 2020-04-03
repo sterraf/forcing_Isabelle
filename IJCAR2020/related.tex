@@ -1,0 +1,84 @@
+\section{Related work}
+\label{sec:related-work}
+
+\textbf{Reviewer's comments}
+{\it
+  \begin{itemize}
+  \item There, it would be appropriate to contrast what was done in
+    Paulson's work on constructibility with the current work on forcing.
+  \item More to the point, the recent work by Han and van Doorn on
+    forcing in Lean deserves more discussion.  They have gone further
+    than the current authors, having proved the independence of the
+    continuum hypothesis.  They prefer Boolean-valued models as being
+    more direct in use than the authors' countable transitive models.
+    \begin{itemize}
+    \item Readers will want to know whether the type-theoretic approach
+      is better/worse/just different than using Isabelle/ZF, and
+    \item are there any benefits to the ctm approach?
+    \item Is the type-theory encoding of ZF really accurate?
+    \item How about comparing proofs of equivalent statements in the two
+      approaches for length and readability?
+    \end{itemize}
+  \end{itemize}
+}
+
+To the best of our knowledge, all of the previous works in
+formalization of the method 
+of forcing have been done in different variants of type theory, and
+none of them uses the ctm approach. The
+most important is the recent one by 
+Han and van Doorn
+\cite{han_et_al:LIPIcs:2019:11074,DBLP:conf/cpp/HanD20}, which includes
+a formalization of the independence of $\CH$ by means
+the Boolean-valued approach to forcing, using the Lean
+proof assistant \cite{DBLP:conf/cade/MouraKADR15}.
+
+
+\begin{itemize}
+\item The consistency strength of Lean seems to require infinitely
+  many inaccessibles. More precisely, Carneiro proved the  consistency
+  of the CiC foundations used by Lean from $\ZFC$ plus the assumption
+  of the existence of countably infinitely many inaccessible cardinals
+  (as claimed by Hales \cite{hales-math-defs-formally} at the Big
+  Proof 2019 workshop).%
+  \footnote{We do not have a direct reference to Carneiro's proof.}
+
+  On the other hand, Isabelle's \emph{Pure} is based on
+  ``intuitionistic higher order logic.'' In Paulson
+  \cite{Paulson1989} it is proved that \emph{Pure} is sound for
+  intuitionistic first order logic, thus it does not add any strength
+  to it. On top of this, the axiomatization of Isabelle/ZF results in
+  a system equiconsistent with $\ZFC$. Our running assumption, that of
+  the existence of a countable transitive model, is considerably
+  weaker (directly and consistency-wise) than the existence of a
+  single inaccesible cardinal. In that sense, directly obtain
+  unprovability results in first order logic, the meta theoretic
+  machinery used to obtain them is far heavier than the one we use to
+  operate model-theoretically.
+  %
+\item We may discuss in finer detail the shape of the axioms of
+  Isabelle/ZF. It is perhaps more correct to say it is an
+  notational variant of NBG set theory, because the schemes of
+  Replacement and Separation feature higher order (free) variables
+  playing the role of formula variables. It can't be proved that the
+  axioms thus written correspond to first order sentences. This is the
+  reason that our relativized versions only apply to set models, where
+  we can restrict the formula variables to predicates that actually
+  come from first order variables. In that sense, the axioms of the
+  locale \isatt{M{\isacharunderscore}ZF} correspond faithfully to the
+  $ZF$ axioms.
+\item \fbox{\bf take care of repetitions} In our opinion, one of the
+  main benefits of using transitive models is that many fundamental
+  notions are absolute and thus the many statements can be interpreted
+  transparently. It also provides a very concrete way to understand
+  generic objects: as sets that (in the non trivial case) are provably
+  not in the original model; this dispells any mystical feel around
+  this concept (contrary to the case when the ground model is the
+  universe of all sets). In addition, two-valued semantics is
+  closer to our intuition ($\leftarrow$ revise).
+\end{itemize}
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "forcing_in_isabelle_zf"
+%%% ispell-local-dictionary: "american"
+%%% End: 
