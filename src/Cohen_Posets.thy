@@ -91,4 +91,19 @@ next
   show "x \<in> I -||> J" using fun_FiniteFunI FiniteFun_mono by blast
 qed
 
+definition
+  FnleR :: "i \<Rightarrow> i \<Rightarrow> o" (infixl \<open>\<supseteq>\<close> 50) where
+  "f \<supseteq> g \<equiv> g \<subseteq> f"
+
+definition
+  Fnlerel :: "i \<Rightarrow> i" where
+  "Fnlerel(A) \<equiv> Rrel(\<lambda>x y. y \<supseteq> x,A)"
+
+definition
+  Fnle :: "[i,i,i] \<Rightarrow> i" where
+  "Fnle(\<kappa>,I,J) \<equiv> Fnlerel(Fn(\<kappa>,I,J))"
+
+interpretation cohen: forcing_notion "Fn(\<kappa>,I,J)" "Fnle(\<kappa>,I,J)" 0
+proof 
+
 end
