@@ -248,11 +248,6 @@ next
   show "\<exists>x\<in>\<alpha>. f ` x = \<beta>" by blast
 qed
 
-lemma cf_is_one_iff:
-  assumes "Ord(\<gamma>)"
-  shows "cf(\<gamma>) = 1 \<longleftrightarrow> (\<exists>\<alpha>. Ord(\<alpha>) \<and> \<gamma>  = succ(\<alpha>))"
-    sorry
-
 lemma cf_fun_succ:
   "Ord(\<beta>) \<Longrightarrow> f:1\<rightarrow>succ(\<beta>) \<Longrightarrow> f`0=\<beta> \<Longrightarrow> cf_fun(f,succ(\<beta>))"
   using cf_fun_succ' by blast
@@ -280,12 +275,20 @@ proof
 qed
 
 lemma singleton_fun_succ:
-  fixes \<alpha> 
+  assumes "Ord(\<alpha>)" 
   defines "f \<equiv> {<0,\<alpha>>}"
   shows "f : 1\<rightarrow>succ(\<alpha>)" "f`0 = \<alpha>"
 proof -
-  show "f  : 1\<rightarrow>succ(\<alpha>)" unfolding f_def sorry
-  show "f`0 = \<alpha>" sorry
+  define b where "b = succ(\<alpha>)"
+  then 
+  have "Ord(b)"  using Ord_succ_iff \<open>Ord(\<alpha>)\<close> by simp
+  then
+  show "f  : 1\<rightarrow>succ(\<alpha>)" 
+    using fun_extend3[of 0 0 b 0 \<alpha>] singleton_0 succI1
+    unfolding f_def b_def by simp 
+  moreover
+  show "f`0=\<alpha>" 
+    unfolding f_def using function_apply_equality  by simp
 qed
 
 lemma cf_succ:
@@ -293,7 +296,7 @@ lemma cf_succ:
   shows "cf(succ(\<alpha>)) = 1"
 proof -
   obtain f where "f : 1\<rightarrow>succ(\<alpha>)" "f`0 = \<alpha>" 
-    using singleton_fun_succ by blast
+    using singleton_fun_succ \<open>Ord(\<alpha>)\<close> by blast
   with assms
   have "cf_fun(f,succ(\<alpha>))" 
     using cf_fun_succ unfolding cofinal_fun_def by simp
@@ -336,10 +339,27 @@ lemma surj_is_cofinal: "f \<in> surj(\<delta>,\<gamma>) \<Longrightarrow> cf_fun
 
 lemma cf_zero_iff: "Ord(\<alpha>) \<Longrightarrow> cf(\<alpha>) = 0 \<longleftrightarrow> \<alpha> = 0"
 proof (intro iffI)
-  assume "cf(\<alpha>) = 0" "Ord(\<alpha>)"
+  assume "\<alpha> = 0" "Ord(\<alpha>)"
   then
-  show "\<alpha> = 0" sorry
-qed simp
+  show "cf(\<alpha>) = 0" using cf_zero by simp
+next
+  assume "cf(\<alpha>) =0" "Ord(\<alpha>)"
+  then
+  show "\<alpha>=0" sorry
+qed
+
+lemma cf_is_one_iff:
+  assumes "Ord(\<gamma>)"
+  shows "cf(\<gamma>) = 1 \<longleftrightarrow> (\<exists>\<alpha>. Ord(\<alpha>) \<and> \<gamma>  = succ(\<alpha>))"
+proof (intro iffI)
+  assume "\<exists>\<alpha>. Ord(\<alpha>) \<and> \<gamma>  = succ(\<alpha>)"
+  then 
+  show "cf(\<gamma>) = 1" using cf_succ by auto
+next
+  assume "cf(\<gamma>) = 1"
+  then
+  show "\<exists>\<alpha>. Ord(\<alpha>) \<and> \<gamma>  = succ(\<alpha>)" sorry
+qed 
 
 lemma mono_map_increasing: 
   "j\<in>mono_map(A,r,B,s) \<Longrightarrow> a\<in>A \<Longrightarrow> c\<in>A \<Longrightarrow> <a,c>\<in>r \<Longrightarrow> <j`a,j`c>\<in>s"
@@ -568,20 +588,14 @@ proof -
     obtain b where "\<gamma> = succ(b)" by auto
     moreover from this
     have "Ord(b)"  using Ord_succ_iff \<open>Ord(\<gamma>)\<close> by simp
-    moreover
-    define f where "f\<equiv>{<0,b>}"
-    moreover from calculation
-    have "f:1\<rightarrow>\<gamma>" 
-      using fun_extend3[of 0 0 \<gamma> 0 b] singleton_0 by simp
-    moreover
-    have "f`0=b" 
-      unfolding f_def using function_apply_equality  by simp
+    obtain f where "f : 1\<rightarrow>succ(b)" "f`0 = b" 
+      using singleton_fun_succ \<open>Ord(b)\<close> by blast
     ultimately
-    have "cf_fun(f,\<gamma>)" using cf_fun_succ by simp
+    have "cf_fun(f,\<gamma>)" using cf_fun_succ \<open>Ord(b)\<close>  by simp
     have "f\<in>mono_map(1,Memrel(1),\<gamma>,Memrel(\<gamma>))"
-      unfolding mono_map_def using \<open>f:1\<rightarrow>\<gamma>\<close> by simp
+      unfolding mono_map_def  using \<open>f:1\<rightarrow>succ(b)\<close> \<open>\<gamma>=succ(b)\<close>  by simp
     then
-    show ?thesis using \<open>cf_fun(f,\<gamma>)\<close> cf_succ by auto
+    show ?thesis using \<open>cf_fun(f,\<gamma>)\<close> cf_succ \<open>\<gamma>=succ(b)\<close> \<open>Ord(\<gamma>)\<close> by auto
   next    
     case lim
     then
