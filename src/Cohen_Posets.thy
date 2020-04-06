@@ -95,15 +95,51 @@ definition
   FnleR :: "i \<Rightarrow> i \<Rightarrow> o" (infixl \<open>\<supseteq>\<close> 50) where
   "f \<supseteq> g \<equiv> g \<subseteq> f"
 
+lemma FnleR_iff_subset [simp]: "f \<supseteq> g \<longleftrightarrow> g \<subseteq> f"
+  unfolding FnleR_def ..
+
 definition
   Fnlerel :: "i \<Rightarrow> i" where
-  "Fnlerel(A) \<equiv> Rrel(\<lambda>x y. y \<supseteq> x,A)"
+  "Fnlerel(A) \<equiv> Rrel(\<lambda>x y. x \<supseteq> y,A)"
 
 definition
   Fnle :: "[i,i,i] \<Rightarrow> i" where
   "Fnle(\<kappa>,I,J) \<equiv> Fnlerel(Fn(\<kappa>,I,J))"
 
-interpretation cohen: forcing_notion "Fn(\<kappa>,I,J)" "Fnle(\<kappa>,I,J)" 0
-proof 
+lemma zero_lesspoll: assumes "0<\<kappa>" shows "0 \<prec> \<kappa>"
+  using assms eqpoll_0_iff[THEN iffD1, of \<kappa>] eqpoll_sym
+  unfolding lesspoll_def lepoll_def
+  by (auto simp add:inj_def)
+
+locale cohen_data = 
+  fixes \<kappa> I J::i
+  assumes zero_lt_kappa: "0<\<kappa>"
+begin
+
+lemmas zero_lesspoll_kappa = zero_lesspoll[OF zero_lt_kappa]
+
+end (* cohen_data *)
+
+sublocale cohen_data \<subseteq> forcing_notion "Fn(\<kappa>,I,J)" "Fnle(\<kappa>,I,J)" 0
+proof
+  show "0 \<in> Fn(\<kappa>, I, J)"
+    unfolding Fn_def
+    by (simp,rule_tac x="0 \<rightarrow> J" in bexI, auto) 
+      (rule_tac x=0 in bexI, auto intro:zero_lesspoll_kappa)
+  then
+  show "\<forall>p\<in>Fn(\<kappa>, I, J). \<langle>p, 0\<rangle> \<in> Fnle(\<kappa>, I, J)"
+    unfolding preorder_on_def refl_def trans_on_def 
+      Fnle_def Fnlerel_def Rrel_def by simp
+next
+  show "preorder_on(Fn(\<kappa>, I, J), Fnle(\<kappa>, I, J))"
+    unfolding preorder_on_def refl_def trans_on_def 
+      Fnle_def Fnlerel_def Rrel_def by auto
+qed
+
+context cohen_data
+begin
+notation Leq (infixl "\<preceq>" 50)
+
+end (* cohen_data *)
 
 end
