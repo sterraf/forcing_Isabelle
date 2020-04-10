@@ -1496,7 +1496,7 @@ next
   qed
 qed
 subsection\<open>The ``Definition of forcing''\<close>
-lemma definition_of_forces:
+lemma definition_of_forcing:
   assumes
     "p\<in>P" "\<phi>\<in>formula" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"
   shows

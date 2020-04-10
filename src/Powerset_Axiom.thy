@@ -200,7 +200,7 @@ proof -
           \<open>val(G,\<chi>) = c\<close>       
         ultimately have
           "sats(M[G],Member(0,1),[x,c])"
-          using \<open>\<chi> \<in> M\<close> generic definition_of_forces nat_simp_union
+          using \<open>\<chi> \<in> M\<close> generic definition_of_forcing nat_simp_union
           by auto
         moreover have
           "x\<in>M[G]" 

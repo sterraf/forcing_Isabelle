@@ -135,10 +135,10 @@ proof -
       from \<open>arity(forces(?\<chi>)) \<le> 6 #+ length(env)\<close> \<open>forces(?\<chi>)\<in>formula\<close> in_M' phi 
       have " ... \<longleftrightarrow> (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
                            sats(M[F], ?\<chi>, map(val(F), [\<theta>] @ nenv @ [\<pi>])))"
-        using  definition_of_forces 
+        using  definition_of_forcing 
       proof (intro iffI)
         assume a1: "sats(M, forces(?\<chi>), [p,P, leq, one,\<theta>] @ nenv @ [\<pi>])"
-        note definition_of_forces \<open>arity(\<phi>)\<le> 1#+_\<close>
+        note definition_of_forcing \<open>arity(\<phi>)\<le> 1#+_\<close>
         with \<open>nenv\<in>_\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close> \<open>env\<in>_\<close>
         have "p \<in> P \<Longrightarrow> ?\<chi>\<in>formula \<Longrightarrow> [\<theta>,\<pi>] \<in> list(M) \<Longrightarrow>
                   sats(M, forces(?\<chi>), [p,P, leq, one] @ [\<theta>]@ nenv@[\<pi>]) \<Longrightarrow> 
@@ -151,7 +151,7 @@ proof -
       next
         assume "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
                    sats(M[F], ?\<chi>, map(val(F), [\<theta>] @ nenv @[\<pi>]))"
-        with definition_of_forces [THEN iffD2] \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
+        with definition_of_forcing [THEN iffD2] \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
         show "sats(M, forces(?\<chi>), [p, P, leq, one,\<theta>] @ nenv @ [\<pi>])"
           using  \<open>?\<chi>\<in>formula\<close> \<open>p\<in>P\<close> in_M' 
           by auto
@@ -325,7 +325,7 @@ proof -
     with \<open>p\<in>P\<close> \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
     have "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
                  sats(M[F], ?\<chi>,  map(val(F), [\<theta>] @ nenv @[\<pi>]))"
-      using definition_of_forces
+      using definition_of_forcing
       by simp
     with \<open>p\<in>P\<close> \<open>\<theta>\<in>M\<close>  
     have Eq6: "\<exists>\<theta>'\<in>M. \<exists>p'\<in>P.  \<langle>\<theta>,p\<rangle> = <\<theta>',p'> \<and> (\<forall>F. M_generic(F) \<and> p' \<in> F \<longrightarrow> 
