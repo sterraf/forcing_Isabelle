@@ -328,7 +328,7 @@ proof -
   have "arity(?d_fm) = 5" unfolding compat_in_fm_def pair_fm_def upair_fm_def
     by (simp add: nat_union_abs1 Un_commute)
   moreover
-  have "sats(M,?d_fm,[q,P,leq,p,D]) \<longleftrightarrow> (\<not> is_compat_in(##M,P,leq,p,q) \<or> q\<in>D)"
+  have "(M, [q,P,leq,p,D] \<Turnstile> ?d_fm) \<longleftrightarrow> (\<not> is_compat_in(##M,P,leq,p,q) \<or> q\<in>D)"
     if "q\<in>M" for q
     using that sats_compat_in_fm P_in_M leq_in_M 1 \<open>D\<in>M\<close> by simp
   moreover
@@ -367,7 +367,7 @@ proof -
     unfolding forces_eq_def using assms that P_in_M leq_in_M leq_abs forces_eq'_abs pair_in_M_iff 
     by auto
   moreover
-  have "sats(M,?\<phi>,[q,P,leq,\<pi>,\<tau>]) \<longleftrightarrow> ?rel_pred(##M,q,P,leq,\<pi>,\<tau>)" if "q\<in>M" for q
+  have "(M, [q,P,leq,\<pi>,\<tau>] \<Turnstile> ?\<phi>) \<longleftrightarrow> ?rel_pred(##M,q,P,leq,\<pi>,\<tau>)" if "q\<in>M" for q
     using assms that sats_forces_eq'_fm sats_leq_fm P_in_M leq_in_M by simp
   moreover
   have "?\<phi>\<in>formula" by simp
@@ -684,26 +684,26 @@ proof -
     using assms that forces_mem'_abs forces_nmem'_abs P_in_M leq_in_M 
       domain_closed Un_closed 
     by (auto simp add:1[of _ _ \<tau>] 1[of _ _ \<theta>])
-  have fsats1:"sats(M,?\<phi>,[p,P,leq,\<tau>,\<theta>]) \<longleftrightarrow> ?rel_pred(##M,p,P,leq,\<tau>,\<theta>)" if "p\<in>M" for p
+  have fsats1:"(M,[p,P,leq,\<tau>,\<theta>] \<Turnstile> ?\<phi>) \<longleftrightarrow> ?rel_pred(##M,p,P,leq,\<tau>,\<theta>)" if "p\<in>M" for p
     using that assms sats_forces_mem'_fm sats_forces_nmem'_fm P_in_M leq_in_M
       domain_closed Un_closed by simp
-  have fsats2:"sats(M,?\<phi>,[p,P,leq,\<theta>,\<tau>]) \<longleftrightarrow> ?rel_pred(##M,p,P,leq,\<theta>,\<tau>)" if "p\<in>M" for p
+  have fsats2:"(M,[p,P,leq,\<theta>,\<tau>] \<Turnstile> ?\<phi>) \<longleftrightarrow> ?rel_pred(##M,p,P,leq,\<theta>,\<tau>)" if "p\<in>M" for p
     using that assms sats_forces_mem'_fm sats_forces_nmem'_fm P_in_M leq_in_M
       domain_closed Un_closed by simp
   have fty:"?\<phi>\<in>formula" by simp
-  have fart:"arity(?\<phi>)=5"
+  have farit:"arity(?\<phi>)=5"
     unfolding forces_nmem_fm_def domain_fm_def pair_fm_def upair_fm_def union_fm_def
     using arity_forces_mem_fm by (simp add:nat_simp_union Un_commute)
     show 
     "{p \<in> P . \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(p, \<sigma>, \<tau>) \<and> forces_nmem(p, \<sigma>, \<theta>)} \<in> M"
     and "{p \<in> P . \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p, \<sigma>, \<tau>) \<and> forces_mem(p, \<sigma>, \<theta>)} \<in> M"
     unfolding forces_mem_def
-    using abs1 fty fsats1 fart P_in_M leq_in_M assms forces_nmem
+    using abs1 fty fsats1 farit P_in_M leq_in_M assms forces_nmem
           Collect_in_M_4p[of ?\<phi> _ _ _ _ _ 
           "\<lambda>x p l a1 a2. (\<exists>\<sigma>\<in>domain(a1) \<union> domain(a2). forces_mem'(p,l,x,\<sigma>,a1) \<and> 
                                                      forces_nmem'(p,l,x,\<sigma>,a2))"] 
      apply simp
-    using abs2 fty fsats2 fart P_in_M leq_in_M assms forces_nmem domain_closed Un_closed
+    using abs2 fty fsats2 farit P_in_M leq_in_M assms forces_nmem domain_closed Un_closed
           Collect_in_M_4p[of ?\<phi> P leq \<theta> \<tau> ?rel_pred 
           "\<lambda>x p l a2 a1. (\<exists>\<sigma>\<in>domain(a1) \<union> domain(a2). forces_nmem'(p,l,x,\<sigma>,a1) \<and> 
                                                      forces_mem'(p,l,x,\<sigma>,a2))" P]  
@@ -1114,11 +1114,11 @@ lemma truth_lemma_Neg:
 proof (intro iffI, elim bexE, rule ccontr) 
   (* Direct implication by contradiction *)
   fix p 
-  assume "p\<in>G" "p \<tturnstile> Neg(\<phi>) env" "\<not>sats(M[G],Neg(\<phi>),map(val(G),env))"
+  assume "p\<in>G" "p \<tturnstile> Neg(\<phi>) env" "\<not>(M[G],map(val(G),env) \<Turnstile> Neg(\<phi>))"
   moreover 
   note assms
   moreover from calculation
-  have "sats(M[G],\<phi>,map(val(G),env))"
+  have "M[G], map(val(G),env) \<Turnstile> \<phi>"
     using map_val_in_MG by simp
   with IH
   obtain r where "r \<tturnstile> \<phi> env" "r\<in>G" by blast
@@ -1132,9 +1132,9 @@ proof (intro iffI, elim bexE, rule ccontr)
   show "False"
     using Forces_Neg[where \<phi>=\<phi>] transitivity[OF _ P_in_M] by blast
 next
-  assume "sats(M[G],Neg(\<phi>),map(val(G),env))"
+  assume "M[G], map(val(G),env) \<Turnstile> Neg(\<phi>)"
   with assms 
-  have "\<not> sats(M[G],\<phi>,map(val(G),env))"
+  have "\<not> (M[G], map(val(G),env) \<Turnstile> \<phi>)"
     using map_val_in_MG by simp
   let ?D="{p\<in>P. (p \<tturnstile> \<phi> env) \<or> (p \<tturnstile> Neg(\<phi>) env)}"
   have "separation(##M,\<lambda>p. (p \<tturnstile> \<phi> env))" 
@@ -1179,7 +1179,7 @@ next
   show "\<exists>p\<in>G. (p \<tturnstile> Neg(\<phi>) env)"
   proof (cases)
     case 1
-    with \<open>\<not> sats(M[G],\<phi>,map(val(G),env))\<close> \<open>p\<in>G\<close> IH
+    with \<open>\<not> (M[G],map(val(G),env) \<Turnstile> \<phi>)\<close> \<open>p\<in>G\<close> IH
     show ?thesis
       by blast
   next
@@ -1203,10 +1203,10 @@ proof (intro iffI, elim bexE)
   fix p
   assume "p\<in>G" "p \<tturnstile> And(\<phi>,\<psi>) env"
   with assms
-  show "sats(M[G],And(\<phi>,\<psi>),map(val(G),env))" 
+  show "M[G], map(val(G),env) \<Turnstile> And(\<phi>,\<psi>)" 
     using Forces_And[OF M_genericD, of _ _ _ \<phi> \<psi>] map_val_in_MG by auto
 next 
-  assume "sats(M[G],And(\<phi>,\<psi>),map(val(G),env))"
+  assume "M[G], map(val(G),env) \<Turnstile> And(\<phi>,\<psi>)"
   moreover
   note assms
   moreover from calculation
@@ -1300,9 +1300,9 @@ proof -
 qed
 
 lemma sats_ren_truth_lemma:
-  "[q,b,d,a1,a2,a3] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
-   sats(M, ren_truth_lemma(\<phi>),[q,b,d,a1,a2,a3] @ env ) \<longleftrightarrow> 
-   sats(M, \<phi>,[q,a1,a2,a3,b] @ env)"
+  "[q,b,d,a1,a2,a3] @ env \<in> list(M) \<Longrightarrow> \<phi> \<in> formula \<Longrightarrow>
+   (M, [q,b,d,a1,a2,a3] @ env \<Turnstile> ren_truth_lemma(\<phi>) ) \<longleftrightarrow>
+   (M, [q,a1,a2,a3,b] @ env \<Turnstile> \<phi>)"
   unfolding ren_truth_lemma_def
   by (insert sats_incr_bv_iff [of _ _ M _ "[q,a1,a2,a3,b]"], simp)
 
@@ -1313,7 +1313,7 @@ lemma truth_lemma' :
     "separation(##M,\<lambda>d. \<exists>b\<in>M. \<forall>q\<in>P. q\<preceq>d \<longrightarrow> \<not>(q \<tturnstile> \<phi> ([b]@env)))"
 proof -
   let ?rel_pred="\<lambda>M x a1 a2 a3. \<exists>b\<in>M. \<forall>q\<in>M. q\<in>a1 \<and> is_leq(##M,a2,q,x) \<longrightarrow> 
-                  \<not>(sats(M,forces(\<phi>), [q,a1,a2,a3,b] @ env))" 
+                  \<not>(M, [q,a1,a2,a3,b] @ env \<Turnstile> forces(\<phi>))" 
   let ?\<psi>="Exists(Forall(Implies(And(Member(0,3),leq_fm(4,0,2)),
           Neg(ren_truth_lemma(forces(\<phi>))))))"
   have "q\<in>M" if "q\<in>P" for q using that transitivity[OF _ P_in_M] by simp
@@ -1331,7 +1331,7 @@ proof -
   moreover
   have "?\<psi>\<in>formula" using assms by simp
   moreover
-  have "sats(M,?\<psi>,[d,P,leq,one]@env) \<longleftrightarrow> ?rel_pred(M,d,P,leq,one)" if "d\<in>M" for d
+  have "(M, [d,P,leq,one]@env \<Turnstile> ?\<psi>) \<longleftrightarrow> ?rel_pred(M,d,P,leq,one)" if "d\<in>M" for d
     using assms that P_in_M leq_in_M one_in_M sats_leq_fm sats_ren_truth_lemma
     by simp
   moreover
@@ -1353,7 +1353,7 @@ proof -
     have "arity(?\<psi>) \<le> ?r" by simp
     have i:"?r \<le> 4 \<union> pred(arity(forces(\<phi>)))" 
       using pred_Un_distrib pred_succ_eq \<open>\<phi>\<in>_\<close> Un_assoc[symmetric] nat_union_abs1 by simp
-    have h:"4 \<union> pred(arity(forces(\<phi>))) \<le> 4\<union> (4#+length(env))"
+    have h:"4 \<union> pred(arity(forces(\<phi>))) \<le> 4 \<union> (4#+length(env))"
       using  \<open>env\<in>_\<close> add_commute \<open>\<phi>\<in>_\<close>
             Un_le_compat[of 4 4,OF _ pred_mono[OF _ arity_forces_le[OF _ _ \<open>arity(\<phi>)\<le>_\<close>]] ]
             \<open>env\<in>_\<close> by auto
@@ -1364,7 +1364,7 @@ proof -
   ultimately
   show ?thesis using assms P_in_M leq_in_M one_in_M 
        separation_ax[of "?\<psi>" "[P,leq,one]@env"] 
-       separation_cong[of "##M" "\<lambda>y. sats(M,?\<psi>,[y,P,leq,one]@env)"]
+       separation_cong[of "##M" "\<lambda>y. (M, [y,P,leq,one]@env \<Turnstile>?\<psi>)"]
     by simp
 qed
 
@@ -1410,11 +1410,11 @@ next
       using that Forces_Forall by simp
     with \<open>p\<in>G\<close> \<open>\<phi>\<in>formula\<close> \<open>env\<in>_\<close> \<open>arity(Forall(\<phi>)) \<le> length(env)\<close>
       Forall(2)[of "Cons(_,env)"] 
-    show "sats(M[G], Forall(\<phi>), map(val(G),env))"
+    show "M[G], map(val(G),env) \<Turnstile>  Forall(\<phi>)"
       using pred_le2 map_val_in_MG
       by (auto iff:GenExtD)
   next
-    assume "sats(M[G], Forall(\<phi>), map(val(G),env))"
+    assume "M[G], map(val(G),env) \<Turnstile> Forall(\<phi>)"
     let ?D1="{d\<in>P. (d \<tturnstile> Forall(\<phi>) env)}"
     let ?D2="{d\<in>P. \<exists>b\<in>M. \<forall>q\<in>P. q\<preceq>d \<longrightarrow> \<not>(q \<tturnstile> \<phi> ([b]@env))}"
     define D where "D \<equiv> ?D1 \<union> ?D2"
@@ -1476,7 +1476,7 @@ next
       then
       obtain b where "b\<in>M" "\<forall>q\<in>P. q\<preceq>d \<longrightarrow>\<not>(q \<tturnstile> \<phi> ([b] @ env))"
         by blast
-      moreover from this(1) and  \<open>sats(M[G], Forall(\<phi>),_)\<close> and 
+      moreover from this(1) and  \<open>M[G], _ \<Turnstile>  Forall(\<phi>)\<close> and 
         Forall(2)[of "Cons(b,env)"] Forall(1,3-4) \<open>M_generic(G)\<close>
       obtain p where "p\<in>G" "p\<in>P" "p \<tturnstile> \<phi> ([b] @ env)" 
         using pred_le2 using map_val_in_MG by (auto iff:GenExtD)
@@ -1506,7 +1506,7 @@ proof (intro iffI allI impI, elim conjE)
   fix G
   assume "(p \<tturnstile> \<phi> env)" "M_generic(G)" "p \<in> G"
   with assms 
-  show "sats(M[G],\<phi>,map(val(G),env))"
+  show "M[G], map(val(G),env) \<Turnstile> \<phi>"
     using truth_lemma by blast
 next
   assume 1: "\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow> M[G] , map(val(G),env) \<Turnstile> \<phi>"
@@ -1521,7 +1521,7 @@ next
       unfolding M_generic_def using filter_leqD by simp
     moreover note 1
     ultimately
-    have "sats(M[G],\<phi>,map(val(G),env))"
+    have "M[G], map(val(G),env) \<Turnstile> \<phi>"
       by simp
     with assms \<open>M_generic(G)\<close> 
     obtain s where "s\<in>G" "(s \<tturnstile> \<phi> env)"
