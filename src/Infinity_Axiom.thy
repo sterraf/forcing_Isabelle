@@ -9,7 +9,7 @@ interpretation mg_triv: M_trivial"##M[G]"
   using transitivity_MG zero_in_MG generic Union_MG pairing_in_MG
   by unfold_locales auto
   
-lemma infinty_in_MG : "infinity_ax(##M[G])"
+lemma infinity_in_MG : "infinity_ax(##M[G])"
 proof -
   from infinity_ax obtain I where
    Eq1: "I\<in>M" "0 \<in> I" "\<forall>y\<in>M. y \<in> I \<longrightarrow> succ(y) \<in> I"

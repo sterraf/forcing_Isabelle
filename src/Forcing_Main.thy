@@ -131,7 +131,7 @@ proof -
     using Transset_MG generic pairing_in_MG 
       Union_MG  extensionality_in_MG power_in_MG
       foundation_in_MG  strong_replacement_in_MG[simplified]
-      separation_in_MG[simplified] infinty_in_MG
+      separation_in_MG[simplified] infinity_in_MG
     by unfold_locales simp_all
   obtain f where "f \<in> surj(nat,M[G])"
     using surj_nat_MG by blast
@@ -194,7 +194,7 @@ proof -
     using generic pairing_in_MG 
       Union_MG  extensionality_in_MG power_in_MG
       foundation_in_MG  strong_replacement_in_MG[simplified]
-      separation_in_MG[simplified] infinty_in_MG
+      separation_in_MG[simplified] infinity_in_MG
     by unfold_locales simp_all
   have "?N \<Turnstile> ZF" 
     using M_ZF_iff_M_satT[of ?N] MG.M_ZF_axioms by simp

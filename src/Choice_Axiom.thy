@@ -226,7 +226,7 @@ subsection\<open>$M[G]$ is a transitive model of ZF\<close>
 interpretation mgzf: M_ZF_trans "M[G]"
   using Transset_MG generic pairing_in_MG Union_MG 
     extensionality_in_MG power_in_MG foundation_in_MG  
-    strong_replacement_in_MG separation_in_MG infinty_in_MG
+    strong_replacement_in_MG separation_in_MG infinity_in_MG
   by unfold_locales simp_all
 
 (* y = opair_name(check(\<beta>),s`\<beta>) *)
