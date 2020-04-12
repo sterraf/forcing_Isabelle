@@ -35,13 +35,14 @@ proof assistant \cite{DBLP:conf/cade/MouraKADR15}.
 
 
 \begin{itemize}
-\item The consistency strength of Lean seems to require infinitely
-  many inaccessibles. More precisely, Carneiro proved the  consistency
-  of the CiC foundations used by Lean from $\ZFC$ plus the assumption
-  of the existence of countably infinitely many inaccessible cardinals
-  (as claimed by Hales \cite{hales-math-defs-formally} at the Big
-  Proof 2019 workshop).%
-  \footnote{We do not have a direct reference to Carneiro's proof.}
+\item The consistency strength of Lean requires infinitely
+  many inaccessibles. More precisely, let Lean$_n$ be the theory of
+  CiC foundations of Lean restricted to $n$ type universes.  Carneiro
+  \cite{carneiro-ms-thesis}, proved the consistency of Lean$_n$ from
+  $\ZFC$ plus the existence of $n$ inaccessible
+  cardinals. It is also reported in \cite{carneiro-ms-thesis} that
+  Werner's results in \cite{10.5555/645869.668660} can be adapted to
+  show that Lean$_{n+2}$ proves the consistency of the latter theory. 
 
   On the other hand, Isabelle's \emph{Pure} is based on
   ``intuitionistic higher order logic.'' In Paulson
