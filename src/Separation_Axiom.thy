@@ -30,7 +30,7 @@ lemma Collect_sats_in_MG :
     "c\<in>M[G]"
     "\<phi> \<in> formula" "env\<in>list(M[G])" "arity(\<phi>) \<le> 1 #+ length(env)"
   shows    
-    "{x\<in>c. sats(M[G], \<phi>, [x] @ env)}\<in> M[G]"
+    "{x\<in>c. (M[G], [x] @ env \<Turnstile> \<phi>)}\<in> M[G]"
 proof -  
   from \<open>c\<in>M[G]\<close>
   obtain \<pi> where "\<pi> \<in> M" "val(G, \<pi>) = c"
@@ -87,13 +87,13 @@ proof -
     fix u
     assume "u \<in> domain(\<pi>) \<times> P" "u \<in> M"
     with in_M \<open>?new_form \<in> formula\<close> \<open>?\<psi>\<in>formula\<close> \<open>nenv \<in> _\<close>
-    have Eq1: "sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>] @ nenv) \<longleftrightarrow> 
+    have Eq1: "(M, [u] @ ?Pl1 @ [\<pi>] @ nenv \<Turnstile> ?\<psi>) \<longleftrightarrow> 
                         (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> 
-                          sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>] @ nenv))"
+                          M, [\<theta>,p,u]@?Pl1@[\<pi>] @ nenv \<Turnstile> ?new_form)"
       by (auto simp add: transitivity)
     have Eq3: "\<theta>\<in>M \<Longrightarrow> p\<in>P \<Longrightarrow>
-       sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>]@nenv) \<longleftrightarrow>
-          (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, map(val(F), [\<theta>] @ nenv@[\<pi>])))" 
+       (M, [\<theta>,p,u]@?Pl1@[\<pi>]@nenv \<Turnstile> ?new_form) \<longleftrightarrow>
+          (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> (M[F],  map(val(F), [\<theta>] @ nenv@[\<pi>]) \<Turnstile>  ?\<chi>))" 
       for \<theta> p 
     proof -
       fix p \<theta> 
@@ -115,72 +115,72 @@ proof -
       from in_M' have "?env \<in> list(M)" by simp
       have Eq1': "?new_env \<in> list(M)" using in_M'  by simp 
       then 
-      have "sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>] @ nenv) \<longleftrightarrow> sats(M,?new_form,?new_env)"
+      have "(M, [\<theta>,p,u]@?Pl1@[\<pi>] @ nenv \<Turnstile> ?new_form) \<longleftrightarrow> (M, ?new_env \<Turnstile> ?new_form)"
         by simp
       from in_M' \<open>env \<in> _\<close> Eq1' \<open>length(nenv) = length(env)\<close> 
         \<open>arity(forces(?\<chi>)) \<le> 7 #+ length(env)\<close> \<open>forces(?\<chi>)\<in> formula\<close>
         \<open>[\<theta>, p, u, \<pi>, leq, one, \<pi>] \<in> list(M)\<close> 
-      have "... \<longleftrightarrow> sats(M,forces(?\<chi>),?env)"
+      have "... \<longleftrightarrow> M, ?env \<Turnstile> forces(?\<chi>)"
         using sepren_action[of "forces(?\<chi>)"  "nenv",OF _ _ \<open>nenv\<in>list(M)\<close>] 
         by simp
       also from in_M'
-      have "... \<longleftrightarrow> sats(M,forces(?\<chi>), ([p,P, leq, one,\<theta>]@nenv@ [\<pi>])@[u])" 
+      have "... \<longleftrightarrow> M,  ([p,P, leq, one,\<theta>]@nenv@ [\<pi>])@[u] \<Turnstile> forces(?\<chi>)" 
         using app_assoc by simp
       also 
       from in_M' \<open>env\<in>_\<close> phi \<open>length(nenv) = length(env)\<close>
         \<open>arity(forces(?\<chi>)) \<le> 6 #+ length(env)\<close> \<open>forces(?\<chi>)\<in>formula\<close>
-      have "... \<longleftrightarrow> sats(M,forces(?\<chi>), [p,P, leq, one,\<theta>]@ nenv @ [\<pi>])"        
+      have "... \<longleftrightarrow> M,  [p,P, leq, one,\<theta>]@ nenv @ [\<pi>] \<Turnstile> forces(?\<chi>)"        
         by (rule_tac arity_sats_iff,auto)
       also 
       from \<open>arity(forces(?\<chi>)) \<le> 6 #+ length(env)\<close> \<open>forces(?\<chi>)\<in>formula\<close> in_M' phi 
       have " ... \<longleftrightarrow> (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
-                           sats(M[F], ?\<chi>, map(val(F), [\<theta>] @ nenv @ [\<pi>])))"
+                           M[F],  map(val(F), [\<theta>] @ nenv @ [\<pi>]) \<Turnstile>  ?\<chi>)"
         using  definition_of_forcing 
       proof (intro iffI)
-        assume a1: "sats(M, forces(?\<chi>), [p,P, leq, one,\<theta>] @ nenv @ [\<pi>])"
+        assume a1: "M,  [p,P, leq, one,\<theta>] @ nenv @ [\<pi>] \<Turnstile>  forces(?\<chi>)"
         note definition_of_forcing \<open>arity(\<phi>)\<le> 1#+_\<close>
         with \<open>nenv\<in>_\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close> \<open>env\<in>_\<close>
         have "p \<in> P \<Longrightarrow> ?\<chi>\<in>formula \<Longrightarrow> [\<theta>,\<pi>] \<in> list(M) \<Longrightarrow>
-                  sats(M, forces(?\<chi>), [p,P, leq, one] @ [\<theta>]@ nenv@[\<pi>]) \<Longrightarrow> 
-              \<forall>G. M_generic(G) \<and> p \<in> G \<longrightarrow> sats(M[G], ?\<chi>, map(val(G), [\<theta>] @ nenv @[\<pi>]))"
+                  M, [p,P, leq, one] @ [\<theta>]@ nenv@[\<pi>] \<Turnstile> forces(?\<chi>) \<Longrightarrow> 
+              \<forall>G. M_generic(G) \<and> p \<in> G \<longrightarrow> M[G],  map(val(G), [\<theta>] @ nenv @[\<pi>]) \<Turnstile>  ?\<chi>"
           by auto
         then
         show "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
-                  sats(M[F], ?\<chi>, map(val(F), [\<theta>] @ nenv @ [\<pi>]))"
+                  M[F],  map(val(F), [\<theta>] @ nenv @ [\<pi>]) \<Turnstile>  ?\<chi>"
           using  \<open>?\<chi>\<in>formula\<close> \<open>p\<in>P\<close> a1 \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> by simp
       next
         assume "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
-                   sats(M[F], ?\<chi>, map(val(F), [\<theta>] @ nenv @[\<pi>]))"
+                   M[F],  map(val(F), [\<theta>] @ nenv @[\<pi>]) \<Turnstile>  ?\<chi>"
         with definition_of_forcing [THEN iffD2] \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
-        show "sats(M, forces(?\<chi>), [p, P, leq, one,\<theta>] @ nenv @ [\<pi>])"
+        show "M,  [p, P, leq, one,\<theta>] @ nenv @ [\<pi>] \<Turnstile>  forces(?\<chi>)"
           using  \<open>?\<chi>\<in>formula\<close> \<open>p\<in>P\<close> in_M' 
           by auto
       qed
       finally 
-      show "sats(M,?new_form,[\<theta>,p,u]@?Pl1@[\<pi>]@nenv) \<longleftrightarrow> (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
-                           sats(M[F], ?\<chi>, map(val(F), [\<theta>] @ nenv @ [\<pi>])))" 
+      show "(M, [\<theta>,p,u]@?Pl1@[\<pi>]@nenv \<Turnstile> ?new_form) \<longleftrightarrow> (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
+                           M[F],  map(val(F), [\<theta>] @ nenv @ [\<pi>]) \<Turnstile>  ?\<chi>)" 
         by simp
     qed
     with Eq1 
-    have "sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>] @ nenv) \<longleftrightarrow> 
+    have "(M, [u] @ ?Pl1 @ [\<pi>] @ nenv \<Turnstile> ?\<psi>) \<longleftrightarrow> 
          (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> 
-          (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>, map(val(F), [\<theta>] @ nenv @ [\<pi>]))))"
+          (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> M[F],  map(val(F), [\<theta>] @ nenv @ [\<pi>]) \<Turnstile>  ?\<chi>))"
       by auto 
   }
   then 
   have Equivalence: "u\<in> domain(\<pi>) \<times> P \<Longrightarrow> u \<in> M \<Longrightarrow> 
-       sats(M,?\<psi>,[u] @ ?Pl1 @ [\<pi>] @ nenv) \<longleftrightarrow> 
+       (M, [u] @ ?Pl1 @ [\<pi>] @ nenv \<Turnstile> ?\<psi>) \<longleftrightarrow> 
          (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> 
-          (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> sats(M[F], ?\<chi>,  map(val(F), [\<theta>] @ nenv @[\<pi>]))))" 
+          (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> M[F],   map(val(F), [\<theta>] @ nenv @[\<pi>]) \<Turnstile>  ?\<chi>))" 
     for u 
     by simp
   moreover from \<open>env = _\<close> \<open>\<pi>\<in>M\<close> \<open>nenv\<in>list(M)\<close>
   have map_nenv:"map(val(G), nenv@[\<pi>]) = env @ [val(G,\<pi>)]"
     using map_app_distrib append1_eq_iff by auto
   ultimately
-  have aux:"(\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> (p\<in>G \<longrightarrow> sats(M[G],?\<chi>,[val(G,\<theta>)] @ env @ [val(G,\<pi>)])))" 
-   (is "(\<exists>\<theta>\<in>M. \<exists>p\<in>P. _ ( _ \<longrightarrow> sats(_,_,?vals(\<theta>))))")
-   if "u \<in> domain(\<pi>) \<times> P" "u \<in> M"  "sats(M,?\<psi>,[u]@ ?Pl1 @[\<pi>] @ nenv)" for u
+  have aux:"(\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> (p\<in>G \<longrightarrow> M[G], [val(G,\<theta>)] @ env @ [val(G,\<pi>)] \<Turnstile> ?\<chi>))" 
+   (is "(\<exists>\<theta>\<in>M. \<exists>p\<in>P. _ ( _ \<longrightarrow> _, ?vals(\<theta>) \<Turnstile> _))")
+   if "u \<in> domain(\<pi>) \<times> P" "u \<in> M"  "M, [u]@ ?Pl1 @[\<pi>] @ nenv \<Turnstile> ?\<psi>" for u
     using Equivalence[THEN iffD1, OF that] generic by force
   moreover 
   have "\<theta>\<in>M \<Longrightarrow> val(G,\<theta>)\<in>M[G]" for \<theta>
@@ -200,25 +200,25 @@ proof -
   qed
   ultimately 
   have "(\<exists>\<theta>\<in>M. \<exists>p\<in>P. u=\<langle>\<theta>,p\<rangle> \<and> (p\<in>G \<longrightarrow> val(G,\<theta>)\<in>nth(1 #+ length(env),[val(G, \<theta>)] @ env @ [val(G, \<pi>)]) 
-        \<and> sats(M[G], \<phi>, ?vals(\<theta>))))"
-    if "u \<in> domain(\<pi>) \<times> P" "u \<in> M"  "sats(M,?\<psi>,[u] @ ?Pl1 @[\<pi>] @ nenv)" for u
+        \<and> M[G],  ?vals(\<theta>) \<Turnstile>  \<phi>))"
+    if "u \<in> domain(\<pi>) \<times> P" "u \<in> M"  "M, [u] @ ?Pl1 @[\<pi>] @ nenv \<Turnstile> ?\<psi>" for u
     using aux[OF that] by simp
   moreover from \<open>env \<in> _\<close> \<open>\<pi>\<in>M\<close>
   have nth:"nth(1 #+ length(env),[val(G, \<theta>)] @ env @ [val(G, \<pi>)]) = val(G,\<pi>)" 
     if "\<theta>\<in>M" for \<theta>
     using nth_concat[of "val(G,\<theta>)" "val(G,\<pi>)" "M[G]"] using that GenExtI by simp
   ultimately
-  have "(\<exists>\<theta>\<in>M. \<exists>p\<in>P. u=\<langle>\<theta>,p\<rangle> \<and> (p\<in>G \<longrightarrow> val(G,\<theta>)\<in>val(G,\<pi>) \<and> sats(M[G], \<phi>, ?vals(\<theta>))))"
-    if "u \<in> domain(\<pi>) \<times> P" "u \<in> M"  "sats(M,?\<psi>,[u] @ ?Pl1 @[\<pi>] @ nenv)" for u
+  have "(\<exists>\<theta>\<in>M. \<exists>p\<in>P. u=\<langle>\<theta>,p\<rangle> \<and> (p\<in>G \<longrightarrow> val(G,\<theta>)\<in>val(G,\<pi>) \<and> M[G],  ?vals(\<theta>) \<Turnstile>  \<phi>))"
+    if "u \<in> domain(\<pi>) \<times> P" "u \<in> M"  "M, [u] @ ?Pl1 @[\<pi>] @ nenv \<Turnstile> ?\<psi>" for u
     using that \<open>\<pi>\<in>M\<close> \<open>env \<in> _\<close> by simp
   with \<open>domain(\<pi>)\<times>P\<in>M\<close>
-  have "\<forall>u\<in>domain(\<pi>)\<times>P . sats(M,?\<psi>,[u] @ ?Pl1 @[\<pi>] @ nenv) \<longrightarrow> (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and>
-        (p \<in> G \<longrightarrow> val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, ?vals(\<theta>))))"
+  have "\<forall>u\<in>domain(\<pi>)\<times>P . (M, [u] @ ?Pl1 @[\<pi>] @ nenv \<Turnstile> ?\<psi>) \<longrightarrow> (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and>
+        (p \<in> G \<longrightarrow> val(G, \<theta>)\<in>val(G, \<pi>) \<and> M[G],  ?vals(\<theta>) \<Turnstile>  \<phi>))"
     by (simp add:transitivity)
   then 
-  have "{u\<in>domain(\<pi>)\<times>P . sats(M,?\<psi>,[u] @ ?Pl1 @[\<pi>] @ nenv) } \<subseteq>
+  have "{u\<in>domain(\<pi>)\<times>P . (M,[u] @ ?Pl1 @[\<pi>] @ nenv \<Turnstile> ?\<psi>) } \<subseteq>
      {u\<in>domain(\<pi>)\<times>P . \<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> 
-       (p \<in> G \<longrightarrow> val(G, \<theta>)\<in>val(G, \<pi>) \<and> sats(M[G], \<phi>, ?vals(\<theta>)))}"
+       (p \<in> G \<longrightarrow> val(G, \<theta>)\<in>val(G, \<pi>) \<and> (M[G], ?vals(\<theta>) \<Turnstile> \<phi>))}"
     (is "?n\<subseteq>?m") 
     by auto
   with val_mono 
@@ -235,58 +235,58 @@ proof -
   have "val(G,?m) =
                {val(G,t) .. t\<in>domain(\<pi>) , \<exists>q\<in>P .  
                     (\<exists>\<theta>\<in>M. \<exists>p\<in>P. <t,q> = \<langle>\<theta>, p\<rangle> \<and> 
-            (p \<in> G \<longrightarrow> val(G, \<theta>) \<in> c \<and> sats(M[G], \<phi>, [val(G, \<theta>)] @ env @ [c])) \<and> q \<in> G)}"
+            (p \<in> G \<longrightarrow> val(G, \<theta>) \<in> c \<and> (M[G],  [val(G, \<theta>)] @ env @ [c] \<Turnstile>  \<phi>)) \<and> q \<in> G)}"
     using val_of_name by auto
   also 
   have "... =  {val(G,t) .. t\<in>domain(\<pi>) , \<exists>q\<in>P. 
-                   val(G, t) \<in> c \<and> sats(M[G], \<phi>, [val(G, t)] @ env @ [c]) \<and> q \<in> G}" 
+                   val(G, t) \<in> c \<and> (M[G],  [val(G, t)] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G}" 
   proof -
 
     have "t\<in>M \<Longrightarrow>
       (\<exists>q\<in>P. (\<exists>\<theta>\<in>M. \<exists>p\<in>P. <t,q> = \<langle>\<theta>, p\<rangle> \<and> 
-              (p \<in> G \<longrightarrow> val(G, \<theta>) \<in> c \<and> sats(M[G], \<phi>, [val(G, \<theta>)] @ env @ [c])) \<and> q \<in> G)) 
+              (p \<in> G \<longrightarrow> val(G, \<theta>) \<in> c \<and> (M[G],  [val(G, \<theta>)] @ env @ [c] \<Turnstile>  \<phi>)) \<and> q \<in> G)) 
       \<longleftrightarrow> 
-      (\<exists>q\<in>P. val(G, t) \<in> c \<and> sats(M[G], \<phi>, [val(G, t)] @ env @ [c]) \<and> q \<in> G)" for t
+      (\<exists>q\<in>P. val(G, t) \<in> c \<and> ( M[G], [val(G, t)]@env@[c]\<Turnstile> \<phi> ) \<and> q \<in> G)" for t
       by auto
     then show ?thesis using \<open>domain(\<pi>)\<in>M\<close> by (auto simp add:transitivity)
   qed
   also 
-  have "... =  {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x] @ env @ [c]) \<and> q \<in> G}"
+  have "... =  {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> (M[G],  [x] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G}"
   proof
 
-    show "... \<subseteq> {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x] @ env @ [c]) \<and> q \<in> G}"
+    show "... \<subseteq> {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> (M[G],  [x] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G}"
       by auto
   next 
     (* Now we show the other inclusion:
-      {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x, w, c]) \<and> q \<in> G}
+      {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> (M[G],  [x, w, c] \<Turnstile>  \<phi>) \<and> q \<in> G}
       \<subseteq>
-      {val(G,t)..t\<in>domain(\<pi>),\<exists>q\<in>P.val(G,t)\<in>c\<and>sats(M[G],\<phi>,[val(G,t),w])\<and>q\<in>G}
+      {val(G,t)..t\<in>domain(\<pi>),\<exists>q\<in>P.val(G,t)\<in>c\<and>(M[G], [val(G,t),w] \<Turnstile> \<phi>)\<and>q\<in>G}
     *)
     {
       fix x
-      assume "x\<in>{x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x] @ env @ [c]) \<and> q \<in> G}"
+      assume "x\<in>{x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> (M[G],  [x] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G}"
       then 
-      have "\<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x] @ env @ [c]) \<and> q \<in> G"
+      have "\<exists>q\<in>P. x \<in> c \<and> (M[G],  [x] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G"
         by simp
       with \<open>val(G,\<pi>) = c\<close>  
-      have "\<exists>q\<in>P. \<exists>t\<in>domain(\<pi>). val(G,t) =x \<and> sats(M[G], \<phi>, [val(G,t)] @ env @ [c]) \<and> q \<in> G" 
+      have "\<exists>q\<in>P. \<exists>t\<in>domain(\<pi>). val(G,t) =x \<and> (M[G],  [val(G,t)] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G" 
         using Sep_and_Replace elem_of_val by auto
     }
     then 
-    show " {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> sats(M[G], \<phi>, [x] @ env @ [c]) \<and> q \<in> G} \<subseteq> ..."
+    show " {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> (M[G],  [x] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G} \<subseteq> ..."
       using SepReplace_iff by force
   qed
   also 
-  have " ... = {x\<in>c. sats(M[G], \<phi>, [x] @ env @ [c])}"
+  have " ... = {x\<in>c. (M[G], [x] @ env @ [c] \<Turnstile> \<phi>)}"
     using \<open>G\<subseteq>P\<close> G_nonempty by force
   finally 
-  have val_m: "val(G,?m) = {x\<in>c. sats(M[G], \<phi>, [x] @ env @ [c])}" by simp
+  have val_m: "val(G,?m) = {x\<in>c. (M[G], [x] @ env @ [c] \<Turnstile> \<phi>)}" by simp
   have "val(G,?m) \<subseteq> val(G,?n)" 
   proof
     fix x
     assume "x \<in> val(G,?m)"
     with val_m 
-    have Eq4: "x \<in> {x\<in>c. sats(M[G], \<phi>, [x] @ env @ [c] )}" by simp
+    have Eq4: "x \<in> {x\<in>c. (M[G], [x] @ env @ [c] \<Turnstile> \<phi>)}" by simp
     with \<open>val(G,\<pi>) = c\<close>
     have "x \<in> val(G,\<pi>)" by simp
     then 
@@ -301,16 +301,16 @@ proof -
     have "[val(G,\<theta>), val(G,\<pi>)] @ env \<in>list(M[G])" 
       using GenExt_def by auto
     with  Eq4 \<open>val(G,\<theta>)=x\<close> \<open>val(G,\<pi>) = c\<close> \<open>x \<in> val(G,\<pi>)\<close> nth \<open>\<theta>\<in>M\<close>
-    have Eq5: "sats(M[G], And(Member(0,1 #+ length(env)),\<phi>), [val(G,\<theta>)] @ env @[val(G,\<pi>)] )" 
+    have Eq5: "M[G],  [val(G,\<theta>)] @ env @[val(G,\<pi>)] \<Turnstile> And(Member(0,1 #+ length(env)),\<phi>)" 
       by auto
         (* Recall ?\<chi> = And(Member(0,1 #+ length(env)),\<phi>) *)
     with \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close>  Eq5 \<open>M_generic(G)\<close> \<open>\<phi>\<in>formula\<close> \<open>nenv \<in> _ \<close> \<open>env = _ \<close> map_nenv 
       \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
-    have "(\<exists>r\<in>G. sats(M,forces(?\<chi>), [r,P,leq,one,\<theta>] @ nenv @[\<pi>]))"
+    have "(\<exists>r\<in>G. M,  [r,P,leq,one,\<theta>] @ nenv @[\<pi>] \<Turnstile> forces(?\<chi>))"
       using truth_lemma  
       by auto
     then obtain r where      (* I can't "obtain" this directly *)
-      "r\<in>G" "sats(M,forces(?\<chi>), [r,P,leq,one,\<theta>] @ nenv @ [\<pi>])" by auto
+      "r\<in>G" "M,  [r,P,leq,one,\<theta>] @ nenv @ [\<pi>] \<Turnstile> forces(?\<chi>)" by auto
     with \<open>filter(G)\<close> and \<open>q\<in>G\<close> obtain p where
       "p\<in>G" "p\<preceq>q" "p\<preceq>r" 
       unfolding filter_def compat_in_def by force
@@ -318,25 +318,25 @@ proof -
     have "p\<in>P" "r\<in>P" "q\<in>P" "p\<in>M"
       using  P_in_M  by (auto simp add:transitivity)
     with \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close>  \<open>p\<preceq>r\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
-      \<open>sats(M,forces(?\<chi>), [r,P,leq,one,\<theta>] @ nenv @ [\<pi>])\<close> \<open>env\<in>_\<close>
-    have "sats(M,forces(?\<chi>), [p,P,leq,one,\<theta>] @ nenv @ [\<pi>])"
+      \<open>M, [r,P,leq,one,\<theta>] @ nenv @ [\<pi>] \<Turnstile> forces(?\<chi>)\<close> \<open>env\<in>_\<close>
+    have "M,  [p,P,leq,one,\<theta>] @ nenv @ [\<pi>] \<Turnstile> forces(?\<chi>)"
       using strengthening_lemma 
       by simp
     with \<open>p\<in>P\<close> \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
     have "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
-                 sats(M[F], ?\<chi>,  map(val(F), [\<theta>] @ nenv @[\<pi>]))"
+                 M[F],   map(val(F), [\<theta>] @ nenv @[\<pi>]) \<Turnstile>  ?\<chi>"
       using definition_of_forcing
       by simp
     with \<open>p\<in>P\<close> \<open>\<theta>\<in>M\<close>  
     have Eq6: "\<exists>\<theta>'\<in>M. \<exists>p'\<in>P.  \<langle>\<theta>,p\<rangle> = <\<theta>',p'> \<and> (\<forall>F. M_generic(F) \<and> p' \<in> F \<longrightarrow> 
-                 sats(M[F], ?\<chi>,  map(val(F), [\<theta>'] @ nenv @ [\<pi>])))" by auto
+                 M[F],   map(val(F), [\<theta>'] @ nenv @ [\<pi>]) \<Turnstile>  ?\<chi>)" by auto
     from \<open>\<pi>\<in>M\<close> \<open>\<langle>\<theta>,q\<rangle>\<in>\<pi>\<close> 
     have "\<langle>\<theta>,q\<rangle> \<in> M" by (simp add:transitivity)
     from \<open>\<langle>\<theta>,q\<rangle>\<in>\<pi>\<close> \<open>\<theta>\<in>M\<close> \<open>p\<in>P\<close>  \<open>p\<in>M\<close> 
     have "\<langle>\<theta>,p\<rangle>\<in>M" "\<langle>\<theta>,p\<rangle>\<in>domain(\<pi>)\<times>P" 
       using pairM by auto
     with \<open>\<theta>\<in>M\<close> Eq6 \<open>p\<in>P\<close>
-    have "sats(M,?\<psi>,[\<langle>\<theta>,p\<rangle>] @ ?Pl1 @ [\<pi>] @ nenv)"
+    have "M, [\<langle>\<theta>,p\<rangle>] @ ?Pl1 @ [\<pi>] @ nenv \<Turnstile> ?\<psi>"
       using Equivalence  by auto
     with \<open>\<langle>\<theta>,p\<rangle>\<in>domain(\<pi>)\<times>P\<close> 
     have "\<langle>\<theta>,p\<rangle>\<in>?n" by simp
@@ -347,9 +347,9 @@ proof -
     show "x\<in>val(G,?n)" by simp
   qed (* proof of "val(G,?m) \<subseteq> val(G,?n)" *)
   with val_m first_incl 
-  have "val(G,?n) = {x\<in>c. sats(M[G], \<phi>, [x] @ env @ [c])}" by auto
+  have "val(G,?n) = {x\<in>c. (M[G], [x] @ env @ [c] \<Turnstile> \<phi>)}" by auto
   also 
-  have " ... = {x\<in>c. sats(M[G], \<phi>, [x] @ env)}" 
+  have " ... = {x\<in>c. (M[G], [x] @ env \<Turnstile> \<phi>)}" 
   proof -
     {
       fix x
@@ -362,13 +362,13 @@ proof -
         using transitivity_MG
         by simp
       ultimately 
-      have "sats(M[G], \<phi>, ([x] @ env) @[c]) \<longleftrightarrow> sats(M[G], \<phi>, [x] @ env)" 
+      have "(M[G],  ([x] @ env) @[c] \<Turnstile>  \<phi>) \<longleftrightarrow> (M[G],  [x] @ env \<Turnstile>  \<phi>)" 
         using phi \<open>env \<in> _\<close> by (rule_tac arity_sats_iff, simp_all)   (* Enhance this *)
     }
     then show ?thesis by auto
   qed      
   finally 
-  show "{x\<in>c. sats(M[G], \<phi>, [x] @ env)}\<in> M[G]" 
+  show "{x\<in>c. (M[G], [x] @ env \<Turnstile> \<phi>)}\<in> M[G]" 
     using \<open>?n\<in>M\<close> GenExt_def by force
 qed
 
@@ -376,7 +376,7 @@ theorem separation_in_MG:
   assumes 
     "\<phi>\<in>formula" and "arity(\<phi>) \<le> 1 #+ length(env)" and "env\<in>list(M[G])"
   shows  
-    "separation(##M[G],\<lambda>x. sats(M[G],\<phi>,[x] @ env))"
+    "separation(##M[G],\<lambda>x. (M[G], [x] @ env \<Turnstile> \<phi>))"
 proof -
   { 
     fix c
@@ -387,7 +387,7 @@ proof -
       using GenExt_def map_val[of env] by auto
     moreover note \<open>\<phi> \<in> _\<close> \<open>arity(\<phi>) \<le> _\<close> \<open>env \<in> _\<close>
     ultimately
-    have Eq1: "{x\<in>c. sats(M[G], \<phi>, [x] @ env)} \<in> M[G]"
+    have Eq1: "{x\<in>c. (M[G], [x] @ env \<Turnstile> \<phi>)} \<in> M[G]"
       using Collect_sats_in_MG  by auto
   }
   then 
