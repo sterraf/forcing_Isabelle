@@ -1,83 +1,112 @@
 \section{Related work}
 \label{sec:related-work}
 
-\textbf{Reviewer's comments}
-{\it
-  \begin{itemize}
-  \item There, it would be appropriate to contrast what was done in
-    Paulson's work on constructibility with the current work on forcing.
-  \item More to the point, the recent work by Han and van Doorn on
-    forcing in Lean deserves more discussion.  They have gone further
-    than the current authors, having proved the independence of the
-    continuum hypothesis.  They prefer Boolean-valued models as being
-    more direct in use than the authors' countable transitive models.
-    \begin{itemize}
-    \item Readers will want to know whether the type-theoretic approach
-      is better/worse/just different than using Isabelle/ZF, and
-    \item are there any benefits to the ctm approach?
-    \item Is the type-theory encoding of ZF really accurate?
-    \item How about comparing proofs of equivalent statements in the two
-      approaches for length and readability?
-    \end{itemize}
-  \end{itemize}
-}
+%% \textbf{Reviewer's comments}
+%% {\it
+%%   \begin{itemize}
+%%   \item There, it would be appropriate to contrast what was done in
+%%     Paulson's work on constructibility with the current work on forcing.
+%%   \item More to the point, the recent work by Han and van Doorn on
+%%     forcing in Lean deserves more discussion.  They have gone further
+%%     than the current authors, having proved the independence of the
+%%     continuum hypothesis.  They prefer Boolean-valued models as being
+%%     more direct in use than the authors' countable transitive models.
+%%     \begin{itemize}
+%%     \item Readers will want to know whether the type-theoretic approach
+%%       is better/worse/just different than using Isabelle/ZF, and
+%%     \item are there any benefits to the ctm approach?
+%%     \item Is the type-theory encoding of ZF really accurate?
+%%     \item How about comparing proofs of equivalent statements in the two
+%%       approaches for length and readability?
+%%     \end{itemize}
+%%   \end{itemize}
+%% }
 
-To the best of our knowledge, all of the previous works in
-formalization of the method 
-of forcing have been done in different variants of type theory, and
+There are various formalizations of Zermelo-Fraenkel set theory in
+proof assistants (v.g.\ Mizar, Metamath, and recently Lean
+\cite{DBLP:conf/cade/MouraKADR15}) that proceed to different levels of
+sophistication. Isabelle/ZF can be regarded as a notational variant of
+NGB set theory \cite[Sect.~II.10]{kunen2011set}, because the schemes
+of Replacement and Separation feature higher order (free) variables
+playing the role of formula variables. It can't be proved that the
+axioms thus written correspond to first order sentences. This is the
+reason that our relativized versions only apply to set models, where
+we can restrict those variables to predicates that actually come
+from first order formulas. In that sense, the axioms of the locale
+\isatt{M{\isacharunderscore}ZF} correspond more faithfully to the
+$\ZF$ axioms.
+
+Traditional expositions of the method of forcing
+\cite{kunen2011set,Jech_Millennium} are preceded by a study of
+relativization and absoluteness. For this reason, it was a natural
+choice at the beginning of this project to build on top of Paulson's
+formalization of constructibility on Isabelle/ZF, and that was a one
+of the main early reasons to work on that logic instead of, e.g., HOL
+---there are other reasons, that are discussed below. In any case, our
+development of forcing does not depend on constructibility
+itself (in contrast to Cohen's
+original presentation, in which ground models are initial segments of the
+constructible hierarchy).
+
+A natural question is whether Isabelle/HOL (with a far more solid
+framework to work with given its infrastructure and automation) would
+have been a better choice than Isabelle/ZF. In fact,
+there are two developments of Zermelo-Fraenkel set theory available on
+it: \isatt{HOLZF} by Obua \cite{DBLP:conf/ictac/Obua06} and
+\isatt{ZFC{\isacharunderscore}in{\isacharunderscore}HOL} by Paulson
+\cite{ZFC_in_HOL-AFP}. But these (logically equivalent) frameworks are
+higher in consistency strength than Isabelle/ZF. To elaborate on this,
+both ZF and HOL are axiomatized on top of Isabelle's metalogic
+\emph{Pure}, which is a version of ``intuitionistic higher order
+logic.'' In  \cite{Paulson1989} Paulson proves that \emph{Pure}
+is sound for intuitionistic first order logic, thus it does not add
+any strength to it. On top of this, the axiomatization of Isabelle/ZF
+results in a system equiconsistent with $\ZFC$. On the other hand,
+showing the consistency of \isatt{HOLZF} (and thus
+\isatt{ZFC{\isacharunderscore}in{\isacharunderscore}HOL}) requires
+assuming the consistency of $\ZFC$ plus the existence of an
+inaccesible cardinal \cite[Sect.~3]{DBLP:conf/ictac/Obua06}. We note,
+in contrast, that our extra running assumption of the existence of a
+countable transitive model is considerably weaker (directly and
+consistency-wise) than the existence of an inaccessible cardinal.
+
+Concerning the formalization of the method 
+of forcing, all of the previous works (to the best of our knowledge)
+have been done interpreting set theory into type theory, and
 none of them uses the ctm approach. The
-most important is the recent one by 
+most important is the recent \emph{Flypitch} project  by 
 Han and van Doorn
 \cite{han_et_al:LIPIcs:2019:11074,DBLP:conf/cpp/HanD20}, which includes
 a formalization of the independence of $\CH$ by means
 the Boolean-valued approach to forcing, using the Lean
-proof assistant \cite{DBLP:conf/cade/MouraKADR15}.
+proof assistant. The Flypitch
+formalization is largely orthogonal to ours, and this
+precludes a direct comparison of code. But we can
+highlight some conceptual differences.
 
+A first observation concerns consistency strength. The consistency of Lean requires infinitely many
+inaccessibles. More precisely, let Lean$_n$ be the theory of CiC
+foundations of Lean restricted to $n$ type universes.  Carneiro
+\cite{carneiro-ms-thesis}, proved the consistency of Lean$_n$ from
+$\ZFC$ plus the existence of $n$ inaccessible cardinals. It is also
+reported in \cite{carneiro-ms-thesis} that Werner's results in
+\cite{10.5555/645869.668660} can be adapted to show that Lean$_{n+2}$
+proves the consistency of the latter theory.
+In that sense, although Flypitch includes proofs of
+unprovability results in first order logic, the meta-theoretic
+machinery used to obtain them is far heavier than the one we use to
+operate model-theoretically.
+ 
+As a matter of taste, one of the main benefits of using transitive
+models is that many fundamental notions are absolute and thus most of
+the concepts and statements can be interpreted transparently, as we
+have noted before. It
+also provides a very concrete way to understand generic objects: as
+sets that (in the non trivial case) are provably not in the original
+model; this dispells any mystical feel around this concept (contrary
+to the case when the ground model is the universe of all sets). In
+addition, two-valued semantics is closer to our intuition.
 
-\begin{itemize}
-\item The consistency strength of Lean requires infinitely
-  many inaccessibles. More precisely, let Lean$_n$ be the theory of
-  CiC foundations of Lean restricted to $n$ type universes.  Carneiro
-  \cite{carneiro-ms-thesis}, proved the consistency of Lean$_n$ from
-  $\ZFC$ plus the existence of $n$ inaccessible
-  cardinals. It is also reported in \cite{carneiro-ms-thesis} that
-  Werner's results in \cite{10.5555/645869.668660} can be adapted to
-  show that Lean$_{n+2}$ proves the consistency of the latter theory. 
-
-  On the other hand, Isabelle's \emph{Pure} is based on
-  ``intuitionistic higher order logic.'' In Paulson
-  \cite{Paulson1989} it is proved that \emph{Pure} is sound for
-  intuitionistic first order logic, thus it does not add any strength
-  to it. On top of this, the axiomatization of Isabelle/ZF results in
-  a system equiconsistent with $\ZFC$. Our running assumption, that of
-  the existence of a countable transitive model, is considerably
-  weaker (directly and consistency-wise) than the existence of a
-  single inaccesible cardinal. In that sense, directly obtain
-  unprovability results in first order logic, the meta theoretic
-  machinery used to obtain them is far heavier than the one we use to
-  operate model-theoretically.
-  %
-\item We may discuss in finer detail the shape of the axioms of
-  Isabelle/ZF. It is perhaps more correct to say it is an
-  notational variant of NBG set theory, because the schemes of
-  Replacement and Separation feature higher order (free) variables
-  playing the role of formula variables. It can't be proved that the
-  axioms thus written correspond to first order sentences. This is the
-  reason that our relativized versions only apply to set models, where
-  we can restrict the formula variables to predicates that actually
-  come from first order variables. In that sense, the axioms of the
-  locale \isatt{M{\isacharunderscore}ZF} correspond faithfully to the
-  $ZF$ axioms.
-\item \fbox{\bf take care of repetitions} In our opinion, one of the
-  main benefits of using transitive models is that many fundamental
-  notions are absolute and thus the many statements can be interpreted
-  transparently. It also provides a very concrete way to understand
-  generic objects: as sets that (in the non trivial case) are provably
-  not in the original model; this dispells any mystical feel around
-  this concept (contrary to the case when the ground model is the
-  universe of all sets). In addition, two-valued semantics is
-  closer to our intuition ($\leftarrow$ revise).
-\end{itemize}
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "forcing_in_isabelle_zf"
