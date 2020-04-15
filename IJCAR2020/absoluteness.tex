@@ -48,22 +48,21 @@ For that reason, then one can reason
 of ``inside'' the model; thus, one has at hand any already proved
 lemma about the real concept.
 
-Paulson's formalization \cite{paulson_2003} of Gödel's \cite{godel-L}
-already contains absoluteness results which were crucial to our
-project; we realized however that they could be refactorized to be
-more useful. The main objective is to maximize applicability of
-the relativization machinery by adjusting the hypothesis of a greater
-part of its earlier development. Paulson's architecture had only in mind
-the consistency of $\ZFC$, but, for instance, in order to apply it in
-the development of forcing, too much is assumed at the beginning; more
-seriously, some assumptions cannot be regarded as ``first-order''
-(v.g. the Replacement Scheme) because of the occurrence of predicate
-variables.
+Paulson's formalization \cite{paulson_2003} of the relative
+consistency of AC by Gödel \cite{godel-L} already contains
+absoluteness results which were crucial to our project; we realized
+however that they could be refactored to be more useful. The main
+objective is to maximize applicability of the relativization machinery
+by adjusting the hypothesis of a greater part of its earlier
+development. Paulson's architecture had only in mind the consistency
+of $\ZFC$, but, for instance, in order to apply it in the development
+of forcing, too much is assumed at the beginning; more seriously, some
+assumptions cannot be regarded as ``first-order'' (v.g. the
+Replacement Scheme) because of the occurrence of predicate variables.
 The version we present of the constructibility library,
-\isatt{ZF-Constructible-Trans}, weakens the
-assumptions of many absoluteness theorems to that
-of a nonempty transitive class; we also include some stronger results
-such as the relativization of powersets.
+\isatt{ZF-Constructible-Trans}, weakens the assumptions of many
+absoluteness theorems to that of a nonempty transitive class; we also
+include some stronger results such as the relativization of powersets.
 
 Apart from the axiom schemes, the $\ZFC$ axioms are initially stated
 as predicates on classes (that is, of type
@@ -82,13 +81,13 @@ variables and thus do not correspond to first-order formulas.
 %% of type \isatt{i{\isasymRightarrow}o}. 
 For that reason, Separation and Replacement predicate \emph{on the
   satisfaction} of a formula $\phi$.  We improved their specification,
-with respect to our previous \cite{2019arXiv190103313G}, by lifting
+with respect to our previous report~\cite{2019arXiv190103313G}, by lifting
 the arity restriction for the parameter $\phi$; consequently we
 get rid of tupling and thus various proofs are now slicker.
 
 A benefit of having class versions of the axioms is that we can
 apply our synthesis method to obtain their internal, first-order
-counterparts.% \footnote{It should be noted that our method for
+counterparts. % \footnote{It should be noted that our method for
   % synthetic definition requires that the schematic goal had a
   % particular format where the only unbound schematic variable occurs
   % as an (open) formula whose satisfaction is equivalent to some

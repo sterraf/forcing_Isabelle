@@ -2,13 +2,14 @@
 \label{sec:definition-forces}
 
 The core of the development is showing the definability of the
-relation of forcing. As explained in
-\cite[Sect.~8]{2019arXiv190103313G}, this comprises the 
+relation of forcing. As we explained in our previous
+report~\cite[Sect.~8]{2019arXiv190103313G}, this comprises the
 definition of a function $\forceisa$ that maps the set of internal
 formulas into itself. It is the very reason of applicability of
-forcing that the satisfaction of a first-order formula  $\phi$ in all of the generic
-extensions of a ctm $M$ can be ``controlled'' in a definable way from
-$M$ (viz., by  satisfaction of the formula $\forceisa(\phi)$). 
+forcing that the satisfaction of a first-order formula $\phi$ in all
+of the generic extensions of a ctm $M$ can be ``controlled'' in a
+definable way from $M$ (viz., by satisfaction of the formula
+$\forceisa(\phi)$).
 
 In fact, given a forcing notion $\PP$ (i.e. a preorder with a top element)
 in a ctm $M$,
@@ -41,8 +42,9 @@ must realize that this last recursion must be described syntactically:
 the definition of $\forceisa(\phi)$ for atomic $\phi$ is then an
 internal definition of the alleged recursion on names. 
 
-Our aim was to follow Kunen~\cite[p.~257]{kunen2011set}, where the
-following mutual recursion is given:
+Our aim was to follow the definition proposed by Kunen
+in~\cite[p.~257]{kunen2011set}, where the following mutual recursion
+is given:
 \begin{multline}\label{eq:def-forcing-equality}
   \forceseq (p,t_1,t_2) \defi 
   \forall s\in\dom(t_1)\cup\dom(t_2).\ \forall q\pleq p .\\
@@ -91,7 +93,7 @@ as our corollaries \isatt{def{\isacharunderscore}forces{\isacharunderscore}eq} a
 \isatt{def{\isacharunderscore}forces{\isacharunderscore}mem}.
 
 Other approaches, like the one in Neeman~\cite{neeman-course} (and
-Kunen's older \cite{kunen1980}), prefer
+Kunen's older book \cite{kunen1980}), prefer
 to have a single, more complicated, definition by simple recursion for
 $\forceseq$ and then define $\forcesmem$ explicitly. On hindsight,
 this might have been a little simpler to do, but we preferred to be as
