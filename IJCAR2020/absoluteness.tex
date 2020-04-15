@@ -79,11 +79,12 @@ is to be noted that predicates in Isabelle/ZF are akin to second order
 variables and thus do not correspond to first-order formulas.
 %% in particular, there is no induction principle for functions
 %% of type \isatt{i{\isasymRightarrow}o}. 
-For that reason, Separation and Replacement predicate \emph{on the
-  satisfaction} of a formula $\phi$.  We improved their specification,
-with respect to our previous report~\cite{2019arXiv190103313G}, by lifting
-the arity restriction for the parameter $\phi$; consequently we
-get rid of tupling and thus various proofs are now slicker.
+For that reason, Separation and Replacement are defined in terms of
+\emph{the satisfaction} of an internalized formula $\phi$.  We improved their
+specification, with respect to our previous
+report~\cite{2019arXiv190103313G}, by lifting the arity restriction
+for the parameter $\phi$; consequently we get rid of tupling and thus
+various proofs are now slicker.
 
 A benefit of having class versions of the axioms is that we can
 apply our synthesis method to obtain their internal, first-order
@@ -112,15 +113,15 @@ The following schematic lemma synthesizes its internal version,%
 \ \ \isacommand{by}\isamarkupfalse%
 \ {\isacharparenleft}{\isacharparenleft}rule\ sep{\isacharunderscore}rules\ {\isacharbar}\ simp{\isacharparenright}{\isacharplus}{\isacharparenright}
 \end{isabelle}
-(the actual formula obtained is
-\isatt{Forall(Forall(Exists(upair{\isacharunderscore}fm(2,1,0))))}) and
+and
 our \isatt{synthesize} method introduces a new term
-\isatt{ZF{\isacharunderscore}pairing{\isacharunderscore}fm} for it.
+\isatt{ZF{\isacharunderscore}pairing{\isacharunderscore}fm} for it:
 \begin{isabelle}
 \isacommand{synthesize}\isamarkupfalse%
 \ {\isachardoublequoteopen}ZF{\isacharunderscore}pairing{\isacharunderscore}fm{\isachardoublequoteclose}\ \isakeyword{from{\isacharunderscore}schematic}\ {\isachardoublequoteopen}ZF{\isacharunderscore}pairing{\isacharunderscore}auto{\isachardoublequoteclose}%
 \end{isabelle}
-
+the actual formula obtained is
+\isatt{Forall(Forall(Exists(upair{\isacharunderscore}fm(2,1,0))))}.
 
 %%% Local Variables: 
 %%% mode: latex
