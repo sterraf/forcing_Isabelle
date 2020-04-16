@@ -31,7 +31,7 @@ of Replacement and Separation feature higher order (free) variables
 playing the role of formula variables. It can't be proved that the
 axioms thus written correspond to first order sentences. This is the
 reason that our relativized versions only apply to set models, where
-we can restrict those variables to predicates that actually come
+we restrict those variables to predicates that actually come
 from first order formulas. In that sense, the axioms of the locale
 \isatt{M{\isacharunderscore}ZF} correspond more faithfully to the
 $\ZF$ axioms.
@@ -82,22 +82,30 @@ the Boolean-valued approach to forcing, using the Lean
 proof assistant. The Flypitch
 formalization is largely orthogonal to ours, and this
 precludes a direct comparison of code. But we can
-highlight some conceptual differences.
+highlight some conceptual differences between our development and the
+corresponding fraction of Flypitch.
 
-A first observation concerns consistency strength. The consistency of Lean requires infinitely many
-inaccessibles. More precisely, let Lean$_n$ be the theory of CiC
-foundations of Lean restricted to $n$ type universes.  Carneiro
-\cite{carneiro-ms-thesis}, proved the consistency of Lean$_n$ from
-$\ZFC$ plus the existence of $n$ inaccessible cardinals. It is also
-reported in \cite{carneiro-ms-thesis} that Werner's results in
+A first observation concerns consistency strength. The consistency of
+Lean requires infinitely many inaccessibles. More precisely, let
+Lean$_n$ be the theory of CiC foundations of Lean restricted to $n$
+type universes.  Carneiro \cite{carneiro-ms-thesis}, proved the
+consistency of Lean$_n$ from $\ZFC$ plus the existence of $n$
+inaccessible cardinals. It is also reported in
+\cite{carneiro-ms-thesis} that Werner's results in
 \cite{10.5555/645869.668660} can be adapted to show that Lean$_{n+2}$
-proves the consistency of the latter theory.
-In that sense, although Flypitch includes proofs of
-unprovability results in first order logic, the meta-theoretic
-machinery used to obtain them is far heavier than the one we use to
-operate model-theoretically.
+proves the consistency of the latter theory.  In that sense, although
+Flypitch includes proofs of unprovability results in first order
+logic, the meta-theoretic machinery used to obtain them is far heavier
+than the one we use to operate model-theoretically.
+
+In second place, a formalization of forcing with general partial
+orders, generic filters and  ctms has ---in our opinion--- the added value
+that this approach is used in an important (perhaps the greatest)
+fraction of the literature, both in exposition and in research
+articles and monographs. In verifying a piece of mature mathematics as the
+present one, representing the actual practice seems paramount to us.
  
-As a matter of taste, one of the main benefits of using transitive
+Finally, as a matter of taste, one of the main benefits of using transitive
 models is that many fundamental notions are absolute and thus most of
 the concepts and statements can be interpreted transparently, as we
 have noted before. It
