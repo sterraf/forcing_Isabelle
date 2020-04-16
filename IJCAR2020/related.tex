@@ -28,9 +28,9 @@ proof assistants (v.g.\ Mizar, Metamath, and recently Lean
 sophistication. Isabelle/ZF can be regarded as a notational variant of
 NGB set theory \cite[Sect.~II.10]{kunen2011set}, because the schemes
 of Replacement and Separation feature higher order (free) variables
-playing the role of formula variables. It can't be proved that the
-axioms thus written correspond to first order sentences. This is the
-reason that our relativized versions only apply to set models, where
+playing the role of formula variables. It cannot be proved that the
+axioms thus written correspond to first order sentences. For this
+reason, our relativized versions only apply to set models, where
 we restrict those variables to predicates that actually come
 from first order formulas. In that sense, the axioms of the locale
 \isatt{M{\isacharunderscore}ZF} correspond more faithfully to the
@@ -40,9 +40,9 @@ Traditional expositions of the method of forcing
 \cite{kunen2011set,Jech_Millennium} are preceded by a study of
 relativization and absoluteness. For this reason, it was a natural
 choice at the beginning of this project to build on top of Paulson's
-formalization of constructibility on Isabelle/ZF, and that was a one
+formalization of constructibility on Isabelle/ZF, and that was one
 of the main early reasons to work on that logic instead of, e.g., HOL
----there are other reasons, that are discussed below. In any case, our
+---below we discuss other reasons. In any case, our
 development of forcing does not depend on constructibility
 itself (in contrast to Cohen's
 original presentation, in which ground models are initial segments of the
@@ -77,7 +77,7 @@ none of them uses the ctm approach. The
 most important is the recent \emph{Flypitch} project  by 
 Han and van Doorn
 \cite{han_et_al:LIPIcs:2019:11074,DBLP:conf/cpp/HanD20}, which includes
-a formalization of the independence of $\CH$ by means
+a formalization of the independence of $\CH$ by means of
 the Boolean-valued approach to forcing, using the Lean
 proof assistant. The Flypitch
 formalization is largely orthogonal to ours, and this
@@ -88,10 +88,9 @@ corresponding fraction of Flypitch.
 A first observation concerns consistency strength. The consistency of
 Lean requires infinitely many inaccessibles. More precisely, let
 Lean$_n$ be the theory of CiC foundations of Lean restricted to $n$
-type universes.  Carneiro \cite{carneiro-ms-thesis}, proved the
-consistency of Lean$_n$ from $\ZFC$ plus the existence of $n$
-inaccessible cardinals. It is also reported in
-\cite{carneiro-ms-thesis} that Werner's results in
+type universes.  Carneiro proved in his MSc thesis~\cite{carneiro-ms-thesis} the consistency of Lean$_n$ from $\ZFC$ plus
+the existence of $n$ inaccessible cardinals. It is also reported in
+Carneiro's thesis that Werner's results in
 \cite{10.5555/645869.668660} can be adapted to show that Lean$_{n+2}$
 proves the consistency of the latter theory.  In that sense, although
 Flypitch includes proofs of unprovability results in first order
