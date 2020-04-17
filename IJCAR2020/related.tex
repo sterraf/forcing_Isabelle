@@ -70,20 +70,19 @@ in contrast, that our extra running assumption of the existence of a
 countable transitive model is considerably weaker (directly and
 consistency-wise) than the existence of an inaccessible cardinal.
 
-Concerning the formalization of the method 
-of forcing, all of the previous works (to the best of our knowledge)
-have been done interpreting set theory into type theory, and
-none of them uses the ctm approach. The
-most important is the recent \emph{Flypitch} project  by 
-Han and van Doorn
-\cite{han_et_al:LIPIcs:2019:11074,DBLP:conf/cpp/HanD20}, which includes
-a formalization of the independence of $\CH$ by means of
-the Boolean-valued approach to forcing, using the Lean
-proof assistant. The Flypitch
-formalization is largely orthogonal to ours, and this
-precludes a direct comparison of code. But we can
-highlight some conceptual differences between our development and the
+Concerning the formalization of the method of forcing, to the best of
+our knowledge there is only another one that deals with forcing for
+set theory: the recent \emph{Flypitch} project by Han and van Doorn
+\cite{han_et_al:LIPIcs:2019:11074,DBLP:conf/cpp/HanD20}, which
+includes a formalization of the independence of CH by means of the
+Boolean-valued approach to forcing, using the Lean proof
+assistant. The Flypitch formalization is largely orthogonal to ours
+(it is based on Boolean-valued models, which are interpreted into
+type theory through a variant of the Aczel encoding of set theory),
+and this precludes a direct comparison of code. But we can highlight
+some conceptual differences between our development and the
 corresponding fraction of Flypitch.
+
 
 A first observation concerns consistency strength. The consistency of
 Lean requires infinitely many inaccessibles. More precisely, let
