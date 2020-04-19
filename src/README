@@ -3,14 +3,7 @@
 Forcing in Isabelle/ZF
 ======= == ===========
 
-The source theory files are located in two directories:
-
-    * 'Constructible' contains our version of 
-    Paulson's constructibility library;
-
-    * 'src' contains the material directly concerning 
-    forcing.
-
+The source theory files are located in the 'src' directory.
 The directory 'html' contains a browseable and cross-linked
 version of the sources.
 
@@ -24,17 +17,7 @@ executing
 
     isabelle jedit -d . Forcing_Main.thy
 
-in the 'src' directory. After doing this, the setting
-
-    jedit_logic = "ZF-Constructible-Trans"
-
-will be added to your local 
-
-    ~/.isabelle/Isabelle2019/etc/preferences
-
-file; so you should adjust this variable to your logic of
-preference afterwards.
-
+in the 'src' directory. 
 
 ------------------------------------------------------------
 
@@ -59,13 +42,10 @@ To make a tar, run
 System requirements
 ====== ============
 
-The session requires Isabelle2019 to be installed, and the
+The session requires Isabelle2020 to be installed, and the
 tool wrapper 'isabelle' should be on the PATH env var.
 
-At least 8G of RAM would be desirable. To run the session
-using the IDE this seems to be enough, but for builds have 
-only been successfully tested with 16G RAM. The ML process 
-is ran with a minimum heap size of 5.5G. If memory 
+At least 8G of RAM would be desirable. If memory 
 requirements are not met, there is a chance that the 
 building process stalls indefinitely at some point, without
 failing.

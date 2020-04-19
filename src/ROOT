@@ -1,33 +1,6 @@
 chapter "ZF"
 
-session "ZF-Constructible-Trans" in "../Constructible" = ZF +
-  description "
-    Relative Consistency of the Axiom of Choice:
-    Inner Models, Absoluteness and Consistency Proofs.
-
-    Gödel's proof of the relative consistency of the axiom of choice is
-    mechanized using Isabelle/ZF. The proof builds upon a previous
-    mechanization of the reflection theorem (see
-    http://www.cl.cam.ac.uk/users/lcp/papers/Sets/reflection.pdf). The heavy
-    reliance on metatheory in the original proof makes the formalization
-    unusually long, and not entirely satisfactory: two parts of the proof do
-    not fit together. It seems impossible to solve these problems without
-    formalizing the metatheory. However, the present development follows a
-    standard textbook, Kunen's Set Theory, and could support the formalization
-    of further material from that book. It also serves as an example of what to
-    expect when deep mathematics is formalized.
-
-    A paper describing this development is
-    http://www.cl.cam.ac.uk/TechReports/UCAM-CL-TR-551.pdf
-
-    Modifications by Gunther, Pagano & Sánchez Terraf.
-  "
-  theories
-    DPow_absolute
-    AC_in_L
-    Rank_Separation
-
-session "Forcing" in "." =  "ZF-Constructible-Trans" +
+session "Forcing" in "." =  "ZF-Constructible" +
   description "
     Formalization of Forcing in Isabelle/ZF
 
