@@ -36,12 +36,12 @@ $(HTML_DIR):	thy_files $(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT
 
 html:	$(HTML_DIR)
 
-$(SESSION).tar.gz:	$(HTML_DIR) ../scripts/link-html.sh Makefile Makefile_distro ROOT
+$(SESSION).tar.gz:	$(HTML_DIR) Makefile Makefile_distro ROOT
 	rm -rf tmptar
 	mkdir tmptar
 	mkdir tmptar/src
 	cp README tmptar
-	cp -r $(LINKING_DIR) ../Constructible tmptar/
+	cp -r $(LINKING_DIR) tmptar/
 	cp -r README $(PARALLELIZATION) thy_files $(THY_FILES) $(ML_FILES)\
 	 ROOT document/ tmptar/src
 	cp Makefile_distro tmptar/src/Makefile
@@ -53,7 +53,7 @@ $(SESSION).tar.gz:	$(HTML_DIR) ../scripts/link-html.sh Makefile Makefile_distro 
 
 tar:    $(SESSION).tar.gz
 
-linked:	$(HTML_DIR) ../scripts/link-html.sh Makefile Makefile_distro ROOT
+linked:	$(HTML_DIR) $(LINKING_DIR)/linking.sh Makefile Makefile_distro ROOT
 	rm -rf tmptar
 	mkdir tmptar
 	mkdir tmptar/src
@@ -63,7 +63,7 @@ linked:	$(HTML_DIR) ../scripts/link-html.sh Makefile Makefile_distro ROOT
 		bash $(LINKING_DIR)/linking.sh ZF-Constructible-Trans $(PWD)/../zf_item_lists/ \
 		 https://cs.famaf.unc.edu.ar/~pedro/forcing/ZF-Constructible-Trans $(PARALLEL)
 	cp README tmptar
-	cp -r $(LINKING_DIR) ../Constructible tmptar/
+	cp -r $(LINKING_DIR) tmptar/
 	cp -r README $(PARALLELIZATION) thy_files $(THY_FILES) $(ML_FILES)\
 	 ROOT document/ tmptar/src
 	cp Makefile_distro tmptar/src/Makefile
