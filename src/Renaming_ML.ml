@@ -1,41 +1,6 @@
-(* Smart constructors for ZF-terms *)
-fun mk_Pair t t' = Const (@{const_name Pair},@{typ "i \<Rightarrow> i \<Rightarrow> i"}) $ t $ t'
-
-fun lengthZF p = Const (@{const_name length},@{typ "i \<Rightarrow> i"}) $ p
-
-fun mk_FinSet nil = Const (@{const_name zero},@{typ i})
-  | mk_FinSet (e :: es) = Const (@{const_name cons},@{typ "i \<Rightarrow> i \<Rightarrow> i"}) $ e $ mk_FinSet es
-
-fun mk_ZFnat 0 = Const (@{const_name zero},@{typ i})
-  | mk_ZFnat n = Const (@{const_name succ},@{typ "i\<Rightarrow>i"}) $ mk_ZFnat (n-1)
-
-fun mk_ZFlist _ nil = Const (@{const_name "Nil"}, @{typ "i"})
-  | mk_ZFlist f (t :: ts) = Const (@{const_name "Cons"}, @{typ "i \<Rightarrow> i \<Rightarrow>i"}) $ f t $ mk_ZFlist f ts
-
-fun to_ML_list (Const (@{const_name "Nil"}, _)) = nil
-  | to_ML_list (Const (@{const_name "Cons"}, _) $ t $ ts) = t :: to_ML_list ts
-  | to_ML_list _ = nil
-
-fun isFree (Free (_,_)) = true
-  | isFree _ = false
-
-fun freeName (Free (n,_)) = n
-  | freeName _ = error "Not a free variable"
-
-fun tp x = Const (@{const_name Trueprop},@{typ "o \<Rightarrow> prop"}) $ x
-fun length_ env = Const (@{const_name length},@{typ "i \<Rightarrow> i"}) $ env
-fun nth_ i env = Const (@{const_name nth},@{typ "i \<Rightarrow> i \<Rightarrow> i"}) $ i $ env
-fun sum_ f g m n p = Const (@{const_name sum},@{typ "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i"}) $ f $ g $ m $ n $ p
-fun add_ m n = Const (@{const_name "add"}, @{typ "i \<Rightarrow> i \<Rightarrow> i"}) $ m $ n
-fun mem_ el set = Const (@{const_name "mem"},@{typ "i \<Rightarrow> i \<Rightarrow> o"}) $ el $ set
-fun eq_ a b = Const (@{const_name IFOL.eq},@{typ "i \<Rightarrow> i \<Rightarrow> o"}) $ a $ b
-fun subset_ a b = Const (@{const_name Subset},@{typ "i \<Rightarrow> i \<Rightarrow> o"}) $ a $ b
-fun lt_ a b = Const (@{const_name lt},@{typ "i \<Rightarrow> i \<Rightarrow> o"}) $ a $ b
-fun app_ f x = Const (@{const_name apply}, @{typ "i\<Rightarrow>i\<Rightarrow>i"}) $ f $ x
-fun concat_ xs ys = Const (@{const_name app}, @{typ "i\<Rightarrow>i\<Rightarrow>i"}) $ xs $ ys
-fun list_ set = Const (@{const_name list}, @{typ "i\<Rightarrow>i"}) $ set
-
 (* Builds the finite mapping. *)
+structure Renaming_ML = struct
+open ZF_terms
 fun mk_ren rho rho' =
   let val rs  = to_ML_list rho
       val rs' = to_ML_list rho'
@@ -44,13 +9,13 @@ fun mk_ren rho rho' =
       fun mkp i =
           case find_index (fn x => x = nth rs i) rs' of
             ~1 => nth rs i |> err |> error
-          |  j => mk_Pair (mk_ZFnat i) (mk_ZFnat j) 
+          |  j => mk_Pair (ZF_terms.mk_ZFnat i) (mk_ZFnat j) 
   in  map mkp ixs |> mk_FinSet
-  end                                                         
+  end                           
 
 fun mk_dom_lemma ren rho =
   let val n = rho |> to_ML_list |> length |> mk_ZFnat
-  in eq_ n (Const (@{const_name "domain"},@{typ "i \<Rightarrow> i"}) $ ren) |> tp
+  in eq_ n (@{const domain} $ ren) |> tp
 end
 
 fun ren_tc_goal fin ren rho rho' =
@@ -79,8 +44,8 @@ fun ren_action_goal ren rho rho'  =
   fun sum_tc_goal f m n p = 
     let val m_length = m |> to_ML_list |> length |> mk_ZFnat
         val n_length = n |> to_ML_list |> length |> mk_ZFnat
-        val p_length = p |> lengthZF
-        val id_fun = Const (@{const_name id},@{typ "i\<Rightarrow>i"}) $ p_length
+        val p_length = p |> length_
+        val id_fun = @{const id} $ p_length
         val sum_fun = sum_ f id_fun m_length n_length p_length
         val dom = add_ m_length p_length
         val codom = add_ n_length p_length
@@ -96,7 +61,7 @@ fun sum_action_goal ren rho rho' =
       val j = Variable.variant_frees ctxt [] [("j",@{typ i})] |> hd |> Free 
       val vs = rho  |> to_ML_list
       val ws = rho' |> to_ML_list |> filter isFree 
-      val envL =  envV |> lengthZF
+      val envL =  envV |> length_
       val rhoL = vs |> length |> mk_ZFnat
       val h1 = subset_ (append vs ws |> mk_FinSet) setV
       val h2 = lt_ j (add_ rhoL envL)
@@ -220,3 +185,4 @@ fun sum_rename rho rho' =
    )
    )
 end ;
+end

@@ -7,21 +7,22 @@ and
   "from_schematic"
 
 begin
+ML_file\<open>ZF_terms.ml\<close>
 ML\<open>
 
-fun dest_sats ctx ct = 
- case Thm.term_of ct of
+fun dest_sats ctx ct =
+ case Thm.term_of ct of 
    Const ("IFOL.eq",_) $ x $ y => (Thm.cterm_of ctx x,Thm.cterm_of ctx y)
   | _ => raise TERM ("dest_sats_lhs", [Thm.term_of ct]);
 
 fun dest_applies_op ctx ct = 
  case Thm.term_of ct of
-  Const ("ZF_Base.apply",_) $ x $ _  => Thm.cterm_of ctx x
+  @{const apply} $ x $ _  => Thm.cterm_of ctx x
   | _ => raise TERM ("dest_applies_op", [Thm.term_of ct]);
 
 fun dest_satisfies_frm ctx ct = 
  case Thm.term_of ct of
-  Const ("Formula.satisfies",_) $ _ $ frm  => Thm.cterm_of ctx frm
+  @{const Formula.satisfies} $ _ $ frm  => Thm.cterm_of ctx frm
   | _ => raise TERM ("dest_satisfies_frm", [Thm.term_of ct]);
 
 
@@ -29,17 +30,17 @@ fun dest_sats_frm ctx = dest_satisfies_frm ctx o dest_applies_op ctx o #1 o dest
 
 fun dest_trueprop ctx ct = 
  case Thm.term_of ct of
-   Const ("IFOL.Trueprop",_) $ x  => Thm.cterm_of ctx x
+   @{const IFOL.Trueprop} $ x  => Thm.cterm_of ctx x
   | _ => raise TERM ("dest_iff_rhs", [Thm.term_of ct]);
 
 fun dest_iff_lhs ctx ct =
   (case Thm.term_of ct of
-    Const ("IFOL.iff", _) $ x $ _ =>  Thm.cterm_of ctx x 
+    @{const IFOL.iff} $ x $ _ =>  Thm.cterm_of ctx x 
   | _ => raise TERM ("dest_iff_rhs", [Thm.term_of ct]));
 
 fun dest_iff_rhs ctx ct =
   (case Thm.term_of ct of
-    Const ("IFOL.iff", _) $ _ $ y =>  Thm.cterm_of ctx y
+    @{const IFOL.iff} $ _ $ y =>  Thm.cterm_of ctx y
   | _ => raise TERM ("dest_iff_rhs", [Thm.term_of ct]));
 
 

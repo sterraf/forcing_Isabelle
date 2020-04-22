@@ -18,10 +18,10 @@ begin
 
 lemmas app_fun = apply_iff[THEN iffD1]
 lemmas nat_succI = nat_succ_iff[THEN iffD2]
-
+ML_file\<open>ZF_terms.ml\<close>
 ML_file\<open>Renaming_ML.ml\<close>
-
 ML\<open>
+  open Renaming_ML
   fun renaming_def ctxt (name, from, to) =
     let val to = to |> Syntax.read_term ctxt 
         val from = from |> Syntax.read_term ctxt 
