@@ -28,7 +28,7 @@ fun relativ_tms _ _ [] _ ctxt' = ([], [], ctxt')
  |  relativ_tms pred ls (u :: us) rs' ctxt' = 
            let val (w_u, rs_u, ctxt_u) = relativ_tm u pred ls (rs', ctxt')
                val (w_us, rs_us, ctxt_us) = relativ_tms pred ls us rs_u ctxt_u
-          in (w_u :: w_us, rs_u @ rs_us, ctxt_us)
+          in (w_u :: w_us, AList.join (op aconv) (fn _ => #1) (rs_u , rs_us), ctxt_us)
           end
 and 
 relativ_tm tm pred ls (rs,ctxt) = 
@@ -103,7 +103,7 @@ let
 (*  val f =  @{term "relation({<x,y> . x\<in>A})"}
     val f1 =  @{term "relation({<x,y> \<in> A . True})"}
 *)
-  val f =  @{term "relation({<x,y>})"}
+  val f =  @{term "relation({<x,{y}>})"}
   val c = @{term "##M"}
   val ls = [ (@{const Pair}, @{const Relative.pair})
            , (@{const zero}, @{const Relative.empty})
