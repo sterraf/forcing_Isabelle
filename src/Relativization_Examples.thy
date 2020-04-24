@@ -17,7 +17,7 @@ ML\<open>
 let 
   open Relativization
 
-  fun lhs_def ctxt t =
+  fun lhs_def _ t =
    case t of 
       Const ("Pure.eq",_) $ _ $ y => y
     | _ => raise TERM ("dest_sats_lhs", [t]);
@@ -34,7 +34,7 @@ let
   let 
     val tstr = def_bndg
     val defstr = tstr ^ "_def" 
-    val (((_,vars),[novar]),ctxt1) = Variable.import true [Proof_Context.get_thm ctxt defstr] ctxt
+    val (((_,_),[novar]),ctxt1) = Variable.import true [Proof_Context.get_thm ctxt defstr] ctxt
     val t = (lhs_def ctxt o Thm.term_of o Thm.cterm_of ctxt o Thm.concl_of) novar
   in writeln def_bndg  ; test_relativ t ctxt1 cls_pred db
   end
