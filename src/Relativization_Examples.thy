@@ -23,7 +23,7 @@ let
     | _ => raise TERM ("dest_sats_lhs", [t]);
 
   fun test_relativ tm ctxt cls_pred db = 
-  let val pp = Pretty.writeln o Syntax.pretty_term ctxt
+  let val pp = Pretty.writeln o Syntax.pretty_term ctxt o Thm.term_of o Thm.cterm_of ctxt
   in 
    case fastype_of tm of
       @{typ i} => (pp tm, relativ_tm_frm tm cls_pred db ctxt |> pp)
@@ -58,7 +58,7 @@ let
   val db = ls @ rs
 
   (* the class predicate*)
-  val cls_pred = @{term "M"}
+  val cls_pred = @{term "M:: i \<Rightarrow> o"}
 in
   relativiz_defs @{context} cls_pred db ["test1","test2","test3"]
 end
