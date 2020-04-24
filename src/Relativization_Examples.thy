@@ -3,8 +3,8 @@ theory Relativization_Examples
   imports "ZF-Constructible.Formula"  "ZF-Constructible.Relative" Relativization
 begin
 
-definition test1 :: "i" where
-  "test1 == <0,1>"
+definition test1 :: "i \<Rightarrow> i" where
+  "test1(a) == <0,a>"
 
 definition test2 :: "o" where
   "test2 == <{0},{0,1}> \<in> 1"
@@ -28,14 +28,16 @@ let
    case fastype_of tm of
       @{typ i} => (pp tm, relativ_tm_frm tm cls_pred db ctxt |> pp)
     | @{typ o} => (pp tm, relativ_fm tm cls_pred db ([],ctxt) |> pp)
+    | ty => raise TYPE ("We can relativize only terms of types i and o",[ty],[tm])
   end 
 
   fun relativiz_def ctxt def_bndg cls_pred db =
   let 
     val tstr = def_bndg
     val defstr = tstr ^ "_def" 
-    val (((_,_),[novar]),ctxt1) = Variable.import true [Proof_Context.get_thm ctxt defstr] ctxt
-    val t = (lhs_def ctxt o Thm.term_of o Thm.cterm_of ctxt o Thm.concl_of) novar
+    val (((_,_),novars),ctxt1) = Variable.import true [Proof_Context.get_thm ctxt defstr] ctxt
+    val thm = hd novars
+    val t = (lhs_def ctxt o Thm.term_of o Thm.cterm_of ctxt o Thm.concl_of) thm
   in writeln def_bndg  ; test_relativ t ctxt1 cls_pred db
   end
 
