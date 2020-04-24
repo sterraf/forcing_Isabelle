@@ -1,7 +1,7 @@
 section\<open>Automatic relativization of terms.\<close>
 theory Relativization
   imports "ZF-Constructible.Formula"  "ZF-Constructible.Relative"
-  Forcing_Notions
+  FrecR
 begin
 
 ML_file\<open>ZF_terms.ml\<close>
@@ -21,6 +21,10 @@ val update_tm  =  AList.update (op aconv)
 val join_tm = AList.join (op aconv) (fn _ => #1)
 fun lookup_rel c ls =  AList.lookup (op aconv) ls c
 
+fun fold1 _ [] = @{term IFOL.True}
+  | fold1 _ (x :: []) = x
+  | fold1 f (x :: xs) = f x (fold1 f xs)
+
 fun conj_ t u = @{const IFOL.conj} $ t $ u
 fun exB p t (Free v) = @{const rex} $ p $ lambda (Free v) t
   | exB _ t (Bound _) = t
@@ -31,6 +35,7 @@ val absolute_rels = [ @{const mem}
                     , @{const IFOL.eq(i)}
                     ]
 fun need_cls_pred c = not (exists (fn t => c aconv t) absolute_rels)
+
 
 fun relativ_tms _ _ [] _ ctxt' = ([], [], ctxt') 
   | relativ_tms pred ls (u :: us) rs' ctxt' = 
@@ -50,33 +55,31 @@ and
     relativ_tm tm pred ls (rs,ctxt) = 
       let 
       (* relativization of a fully applied constant *)
-      fun relativ_fapp c args ctxt = case lookup_rel c ls of
+      fun relativ_fapp c args abs_args ctxt = case lookup_rel c ls of
                  SOME p => let 
                     val (vs, ctxt1) = Variable.variant_fixes [""] ctxt
                     val v = var_i (hd vs)
-                    val r_tm = fold (op $`) (pred :: args @ [v]) p
+                    val r_tm = fold (op $`) (pred :: args @ abs_args @ [v]) p
                     in (v, r_tm, ctxt1)
                     end
                | NONE   => 
                   raise TERM ("Constant " ^ const_name c ^ " is not present in the db." , nil)
 
       (* relativization of a partially applied constant *)
-      fun relativ_papp tm (t $ u) args rs' ctxt' = relativ_papp tm t (u :: args) rs' ctxt'
-        | relativ_papp tm (Const c) args rs' ctxt' =
+      fun relativ_papp tm (t $ u) args abs_args rs' ctxt' = relativ_papp tm t (u :: args) abs_args rs' ctxt'
+        | relativ_papp tm (Const c) args abs_args rs' ctxt' =
             let val (w_ts, rs_ts, ctxt_ts) = relativ_tms pred ls args rs' ctxt'
-                val (w_tm, r_tm, ctxt_tm) = relativ_fapp (Const c) w_ts ctxt_ts
+                val (w_tm, r_tm, ctxt_tm) = relativ_fapp (Const c) w_ts abs_args ctxt_ts
             in  (w_tm, update_tm (tm, (w_tm, r_tm)) rs_ts, ctxt_tm)
             end
-        | relativ_papp _ t _ _ _ = 
+        | relativ_papp _ t _ _ _ _ = 
             raise TERM ("Tried to relativize an application with a no-constant in head position",[t])
 
       fun go (Var _) _ _ = raise TERM ("Var: Is this possible?",[])
-        | go (@{const Collect} $ tm $ pc) rs ctxt = 
-            let val (r_tm, rs', ctxt') = go tm rs ctxt
-            in (@{const is_Collect} $ pred $ r_tm $ pc,rs', ctxt')
-            end
-        | go (tm as Const _) rs ctxt = relativ_papp tm tm [] rs ctxt
-        | go (tm as t $ u) rs ctxt = relativ_papp tm t [u] rs ctxt
+        | go (@{const Collect} $ t $ pc) rs ctxt = 
+            relativ_papp tm @{const Collect} [t] [pc] rs ctxt
+        | go (tm as Const _) rs ctxt = relativ_papp tm tm [] [] rs ctxt
+        | go (tm as t $ u) rs ctxt = relativ_papp tm t [u] [] rs ctxt
         | go tm rs ctxt = (tm, update_tm (tm,(tm,tm)) rs, ctxt)
 
       (* we first check if the term has been already relativized as a variable *)
@@ -124,29 +127,18 @@ fun relativ_fm fm pred rel_db (rs,ctxt) =
   in  go fm
   end
 
+  (* *)
+  fun close_rel_tm pred (_, rs, _) = 
+      let
+          val news = filter (not o (fn x => is_Free x orelse is_Bound x) o #1) rs
+          val (vars, tms) = split_list (map (op #2) news)
+          val cnjs = fold1 conj_ tms
+      in fold (fn v => fn t => exB pred (incr_boundvars 1 t) v) vars cnjs
+      end
+
+  fun relativ_tm_frm tm cls_pred db ctxt = 
+    close_rel_tm cls_pred (relativ_tm tm cls_pred db ([],ctxt)) 
+
 end;
-
-let 
-  open Relativization
-  val ls = [ (@{const Pair}, @{const Relative.pair})
-           , (@{const zero}, @{const Relative.empty})
-           , (@{const succ}, @{const Relative.successor})
-           , (@{const cons}, @{const Relative.is_cons})
-           ]
-  val rs = [ (@{const relation}, @{const Relative.is_relation})
-           , (@{const mem}, @{const mem})
-           , (@{const IFOL.eq(i)}, @{const IFOL.eq(i)})
-           , (@{const Subset}, @{const Relative.subset})
-           ]
-  val db = ls @ rs
-
-  val test_fm = @{term "{<u,z> \<in> {<x,y>} . u = z} = A"}
-  val cls_pred = @{term "##M"}
-  val test = relativ_fm test_fm cls_pred db ([], @{context})
-  fun debug t = writeln (Pretty.string_of (Syntax.pretty_term @{context} t))
-in
-debug test_fm ;
-debug test
-end
 \<close>
 end
