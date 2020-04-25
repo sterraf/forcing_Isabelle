@@ -6,7 +6,7 @@ SESSION = Forcing
 
 OUT_DIR = output/html
 
-ML_FILES = Renaming_ML.ml
+ML_FILES = Renaming_ML.ml Utils.ml 
 
 LINKING_DIR  = $(PWD)/../scripts
 PARALLEL     = $(shell cat thy_files | sed s/\.thy/\.html/g )
@@ -19,14 +19,14 @@ DB           = $(HEAP_LOG_DIR)/$(SESSION).db
 
 .PHONY: build html tar clean afp
 
-$(DB):	thy_files $(THY_FILES) $(ML_FILES) document/root.tex \
+$(DB):	thy_files $(THY_FILES) $(ML_FILES) Makefile document/root.tex \
 		document/root.bib
 	isabelle build $(OPTION) -v -c -d . $(SESSION)
 
 build: 	$(DB)
 
 $(HTML_DIR):	thy_files $(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT \
-			document/root.tex document/root.bib
+			document/root.tex document/root.bib Makefile
 	isabelle env \
 	  ISABELLE_BROWSER_INFO=$(OUT_DIR)\
 	  isabelle build $(OPTION) -d . -c -o browser_info -v $(SESSION)
@@ -38,7 +38,7 @@ $(HTML_DIR):	thy_files $(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT \
 
 html:	$(HTML_DIR)
 
-$(SESSION).tar.gz:	$(HTML_DIR) Makefile Makefile_distro ROOT
+$(SESSION).tar.gz:	$(HTML_DIR) Makefile_distro ROOT
 	rm -rf tmptar
 	mkdir tmptar
 	mkdir tmptar/src
@@ -55,7 +55,7 @@ $(SESSION).tar.gz:	$(HTML_DIR) Makefile Makefile_distro ROOT
 
 tar:    $(SESSION).tar.gz
 
-linked:	$(HTML_DIR) $(LINKING_DIR)/linking.sh Makefile Makefile_distro ROOT
+linked:	$(HTML_DIR) $(LINKING_DIR)/linking.sh Makefile_distro ROOT
 	rm -rf tmptar
 	mkdir tmptar
 	mkdir tmptar/src
