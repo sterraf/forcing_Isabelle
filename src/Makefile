@@ -17,14 +17,16 @@ HEAP_LOG_DIR = $(USR_HEAPS)/$(ML_ID)/log
 HTML_DIR     = $(OUT_DIR)/$(CHAPTER)/$(SESSION)
 DB           = $(HEAP_LOG_DIR)/$(SESSION).db 
 
-.PHONY: build html tar clean
+.PHONY: build html tar clean afp
 
-$(DB):	thy_files $(THY_FILES) $(ML_FILES)
+$(DB):	thy_files $(THY_FILES) $(ML_FILES) document/root.tex \
+		document/root.bib
 	isabelle build $(OPTION) -v -c -d . $(SESSION)
 
 build: 	$(DB)
 
-$(HTML_DIR):	thy_files $(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT
+$(HTML_DIR):	thy_files $(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT \
+			document/root.tex document/root.bib
 	isabelle env \
 	  ISABELLE_BROWSER_INFO=$(OUT_DIR)\
 	  isabelle build $(OPTION) -d . -c -o browser_info -v $(SESSION)
@@ -73,5 +75,17 @@ linked:	$(HTML_DIR) $(LINKING_DIR)/linking.sh Makefile Makefile_distro ROOT
 	 -cvzf $(SESSION).tar.gz tmptar
 	rm -rf tmptar
 
+$(SESSION)-AFP.tar.gz:    thy_files $(THY_FILES) $(ML_FILES) ROOT_AFP document/root.tex \
+			  document/root.bib
+	rm -rf tmpafp
+	mkdir tmpafp
+	cp $(THY_FILES) $(ML_FILES) tmpafp
+	cp ROOT_AFP tmpafp/ROOT
+	cp -r document/ tmpafp
+	tar --transform "s/tmpafp/$(SESSION)/g" --show-transformed-names\
+	 -cvzf $(SESSION)-AFP.tar.gz tmpafp
+
+afp:	$(SESSION)-AFP.tar.gz
+
 clean:
-	rm -rf output/ tmptar
+	rm -rf output/ tmptar tmpafp
