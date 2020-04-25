@@ -1,5 +1,6 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage{isabelle,isabellesym}
+\usepackage[numbers]{natbib}
 
 % further packages required for unusual symbols (see also
 % isabellesym.sty), use only when needed
@@ -36,6 +37,8 @@
 \renewcommand{\isacharunderscore}{\mbox{\_}}
 \renewcommand{\isasymtturnstile}{\isamath{\Vdash}}
 \renewcommand{\isacharminus}{-}
+\newcommand{\axiomas}[1]{\mathit{#1}}
+\newcommand{\ZFC}{\axiomas{ZFC}}
 
 
 \begin{document}
@@ -49,17 +52,31 @@
 }
 \maketitle
 
+\begin{abstract}
+We formalize the theory of forcing in the set theory framework of
+Isabelle/ZF. Under the assumption of the existence of a countable
+transitive model of $\ZFC$, we construct a proper generic extension and show
+that the latter also satisfies $\ZFC$. In doing so, we remodularized
+Paulson's \verb|ZF-Constructibility| library.
+\end{abstract}
+
+
 \tableofcontents
 
 % sane default for proof documents
 \parindent 0pt\parskip 0.5ex
 
+\section{Introduction}
+This development is described in more detail in our papers
+\cite{2018arXiv180705174G} (LSFA 2018), \cite{2019arXiv190103313G},
+and \cite{2020arXiv200109715G} (IJCAR 2020).
+
 % generated text of all theories
 \input{session}
 
 % optional bibliography
-%\bibliographystyle{abbrv}
-%\bibliography{root}
+\bibliographystyle{root}
+\bibliography{root}
 
 \end{document}
 
