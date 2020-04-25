@@ -21,11 +21,14 @@ val update_tm  =  AList.update (op aconv)
 val join_tm = AList.join (op aconv) (fn _ => #1)
 fun lookup_rel c ls =  AList.lookup (op aconv) ls c
 
-fun fold1 _ [] = @{term IFOL.True}
-  | fold1 _ (x :: []) = x
-  | fold1 f (x :: xs) = f x (fold1 f xs)
+val conj_ = $$ @{const IFOL.conj}
 
-fun conj_ t u = @{const IFOL.conj} $ t $ u
+(* We avoid to add a superflous conjunction with True. *)
+fun conjs [] _ = @{term IFOL.True}
+  | conjs (f :: []) (SOME f') = conj_ f f'
+  | conjs (f :: fs) f' = conj_ f (conjs fs f')
+
+
 fun exB p t (Free v) = @{const rex} $ p $ lambda (Free v) t
   | exB _ t (Bound _) = t
   | exB _ t tm = raise TERM ("exB shouldn't handle this.",[tm,t])
@@ -35,6 +38,13 @@ val absolute_rels = [ @{const mem}
                     , @{const IFOL.eq(i)}
                     ]
 fun need_cls_pred c = not (exists (fn t => c aconv t) absolute_rels)
+
+  (* Creates the relational term corresponding to a term of type i *)
+  fun close_rel_tm pred tm rs =
+      let val news = filter (not o (fn x => is_Free x orelse is_Bound x) o #1) rs
+          val (vars, tms) = split_list (map (op #2) news)
+      in fold (fn v => fn t => exB pred (incr_boundvars 1 t) v) vars (conjs tms tm)
+      end
 
 
 fun relativ_tms _ _ [] _ ctxt' = ([], [], ctxt') 
@@ -105,10 +115,8 @@ fun relativ_fm fm pred rel_db (rs,ctxt) =
   fun relativ_papp (p $ t) args = relativ_papp p (t :: args)
     | relativ_papp (Const c) args = 
         let val (w_ts, rs_ts, _) = relativ_tms pred rel_db args rs ctxt
-            val news = filter (not o (fn x => is_Free x orelse is_Bound x) o #1) rs_ts
-            val (vars, tms) = split_list (map (op #2) news)
-            val cnjs = fold conj_ tms (relativ_fapp (Const c) w_ts)
-        in fold (fn v => fn t => exB pred (incr_boundvars 1 t) v) vars cnjs
+            val tm = relativ_fapp (Const c) w_ts
+        in close_rel_tm pred (SOME tm) rs_ts
         end
     | relativ_papp tm _ =
         raise TERM ("Tried to relativize an application with a no-constant in head position",[tm])
@@ -127,17 +135,9 @@ fun relativ_fm fm pred rel_db (rs,ctxt) =
   in  go fm
   end
 
-  (* *)
-  fun close_rel_tm pred (_, rs, _) = 
-      let
-          val news = filter (not o (fn x => is_Free x orelse is_Bound x) o #1) rs
-          val (vars, tms) = split_list (map (op #2) news)
-          val cnjs = fold1 conj_ tms
-      in fold (fn v => fn t => exB pred (incr_boundvars 1 t) v) vars cnjs
-      end
 
   fun relativ_tm_frm tm cls_pred db ctxt = 
-    close_rel_tm cls_pred (relativ_tm tm cls_pred db ([],ctxt)) 
+    (close_rel_tm cls_pred NONE o #2) (relativ_tm tm cls_pred db ([],ctxt)) 
 
 end;
 \<close>
