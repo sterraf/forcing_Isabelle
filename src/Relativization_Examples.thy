@@ -2,12 +2,14 @@ section\<open>Examples and testing of automatic relativization of terms and form
 theory Relativization_Examples
   imports "ZF-Constructible.Formula"  "ZF-Constructible.Relative" Relativization
 begin
-
 definition test1 :: "i \<Rightarrow> i" where
   "test1(a) == <0,a>"
 
-definition test2 :: "o" where
-  "test2 == <{0},{0,1}> \<in> 1"
+definition test2 :: "i \<Rightarrow> o" where
+  "test2(a) == <{0},{1,0}> \<in> a"
+
+definition test2' :: "i \<Rightarrow> o" where
+  "test2'(a) == <{0},{0,1}> \<in> a"
 
 definition test3 :: "i" where
   "test3 == {x \<in> 0 . x = x}"
@@ -60,9 +62,10 @@ let
   val db = ls @ rs
 
   (* the class predicate*)
-  val cls_pred = @{term "M:: i \<Rightarrow> o"}
+
 in
-  relativiz_defs @{context} cls_pred db ["test1","test2","test3"]
+  relativiz_defs @{context} @{term "M :: i \<Rightarrow> o"} db ["test1","test2","test2'","test3"]
 end
 \<close>
+
 end
