@@ -1,12 +1,13 @@
 signature Utils =
  sig
-    val $$ : term -> term -> term -> term
+    val binop : term -> term -> term -> term
     val add_: term -> term -> term
     val app_: term -> term -> term
     val concat_: term -> term -> term
     val dest_apply_op: term -> term
     val dest_iff_lhs: term -> term
     val dest_iff_rhs: term -> term
+    val dest_lhs_def: term -> term
     val dest_satisfies_frm: term -> term
     val dest_eq_tms: term -> term * term
     val dest_sats_frm: term -> term
@@ -30,6 +31,8 @@ signature Utils =
     val nat_: term
     val nth_: term -> term -> term
     val subset_: term -> term -> term
+    val thm_concl_tm :  Proof.context -> xstring -> 
+        ((indexname * typ) * cterm) list * term * Proof.context
     val to_ML_list: term -> term list
     val tp: term -> term
   end
@@ -40,8 +43,8 @@ struct
 
 fun inList a = exists (fn b => a = b)
 
-fun $$ h t u = h $ t $ u
-val mk_Pair  = $$ @{const Pair}
+fun binop h t u = h $ t $ u
+val mk_Pair  = binop @{const Pair}
 
 fun mk_FinSet nil = @{const zero}
   | mk_FinSet (e :: es) = @{const cons} $ e $ mk_FinSet es
@@ -62,17 +65,17 @@ fun isFree (Free (_,_)) = true
 fun freeName (Free (n,_)) = n
   | freeName _ = error "Not a free variable"
 
-val app_ = $$ @{const apply}
+val app_ = binop @{const apply}
 
 fun tp x = @{const Trueprop} $ x
 fun length_ env = @{const length} $ env
-val nth_ = $$ @{const nth}
-val add_ = $$ @{const add}
-val mem_ = $$ @{const mem}
-val subset_ = $$ @{const Subset}
-val lt_ = $$ @{const lt}
-val concat_ = $$ @{const app}
-val eq_ = $$ @{const IFOL.eq(i)}
+val nth_ = binop @{const nth}
+val add_ = binop @{const add}
+val mem_ = binop @{const mem}
+val subset_ = binop @{const Subset}
+val lt_ = binop @{const lt}
+val concat_ = binop @{const app}
+val eq_ = binop @{const IFOL.eq(i)}
 
 (* Abbreviation for sets *)
 fun list_ set = @{const list} $ set 
@@ -82,6 +85,9 @@ val formula_ = @{const formula}
 (** Destructors of terms **)
 fun dest_eq_tms (Const (@{const_name IFOL.eq},_) $ t $ u) = (t, u)
   | dest_eq_tms t = raise TERM ("dest_eq_tms", [t])
+
+fun dest_lhs_def (Const (@{const_name Pure.eq},_) $ _ $ y) = y
+  | dest_lhs_def t = raise TERM ("dest_sats_lhs", [t])
 
 fun dest_apply_op (@{const apply} $ t $ _) = t
   | dest_apply_op t = raise TERM ("dest_applies_op", [t])
@@ -101,7 +107,12 @@ val dest_iff_lhs = #1 o dest_iff_tms
 val dest_iff_rhs = #2 o dest_iff_tms
 
 (* Given a term of the form "P \<longleftrightarrow> sats(M,env,f)" returns f *)
-val dest_tp_iff_rhs = dest_sats_frm o dest_iff_rhs o dest_trueprop
+val dest_tp_iff_rhs = dest_sats_frm o dest_iff_rhs
+
+fun thm_concl_tm ctxt thm_ref = 
+  let val (((_,vars),thm_tms),ctxt1) = Variable.import true [Proof_Context.get_thm ctxt thm_ref] ctxt
+  in (vars, thm_tms |> hd |> Thm.concl_of, ctxt1)
+end
 
 fun fix_vars thm vars ctx = let
   val (_, ctxt1) = Variable.add_fixes vars ctx
