@@ -1,11 +1,8 @@
 section\<open>Automatic relativization of terms.\<close>
 theory Relativization
   imports "ZF-Constructible.Formula"  "ZF-Constructible.Relative"
-  FrecR
 begin
-
-ML_file\<open>ZF_terms.ml\<close>
-
+ML_file\<open>Utils.ml\<close>
 ML\<open>
 structure Relativization  = struct
 
@@ -16,15 +13,17 @@ fun var_i v = Free (v, @{typ i})
 val const_name = #1 o dest_Const
 
 fun lookup f = AList.lookup (fn (x, y) => x = f y)
+fun delete_var v = filter (fn (_,w,_) => w = v)
 val lookup_tm  = AList.lookup (op aconv)
 val update_tm  =  AList.update (op aconv)
 val join_tm = AList.join (op aconv) (fn _ => #1)
 fun lookup_rel c ls =  AList.lookup (op aconv) ls c
 
-val conj_ = $$ @{const IFOL.conj}
+val conj_ = Utils.binop @{const "IFOL.conj"}
 
 (* We avoid to add a superflous conjunction with True. *)
 fun conjs [] _ = @{term IFOL.True}
+  | conjs (f :: []) NONE = f
   | conjs (f :: []) (SOME f') = conj_ f f'
   | conjs (f :: fs) f' = conj_ f (conjs fs f')
 
@@ -34,23 +33,28 @@ fun exB p t (Free v) = @{const rex} $ p $ lambda (Free v) t
   | exB _ t tm = raise TERM ("exB shouldn't handle this.",[tm,t])
 
 (* constants that do not take the class predicate *)
-val absolute_rels = [ @{const mem}
+val absolute_rels = [ @{const ZF_Base.mem}
                     , @{const IFOL.eq(i)}
                     ]
 fun need_cls_pred c = not (exists (fn t => c aconv t) absolute_rels)
 
-  (* Creates the relational term corresponding to a term of type i *)
-  fun close_rel_tm pred tm rs =
+(* Creates the relational term corresponding to a term of type i. If the last 
+  argument is (SOME v) then that variable is not bound by an existential 
+  quantifier.
+*)
+fun close_rel_tm pred tm rs tm_var =
       let val news = filter (not o (fn x => is_Free x orelse is_Bound x) o #1) rs
           val (vars, tms) = split_list (map (op #2) news)
+          val vars = case tm_var of
+              SOME w => filter (fn v => not (v = w)) vars
+            | NONE => vars
       in fold (fn v => fn t => exB pred (incr_boundvars 1 t) v) vars (conjs tms tm)
       end
 
-
-fun relativ_tms _ _ [] _ ctxt' = ([], [], ctxt') 
-  | relativ_tms pred ls (u :: us) rs' ctxt' = 
-      let val (w_u, rs_u, ctxt_u) = relativ_tm u pred ls (rs', ctxt')
-          val (w_us, rs_us, ctxt_us) = relativ_tms pred ls us rs_u ctxt_u
+fun relativ_tms _ _ _ ctxt' [] = ([], [], ctxt') 
+  | relativ_tms pred ls rs' ctxt' (u :: us) = 
+      let val (w_u, rs_u, ctxt_u) = relativ_tm pred ls (rs', ctxt') u
+          val (w_us, rs_us, ctxt_us) = relativ_tms pred ls rs_u ctxt_u us
       in (w_u :: w_us, join_tm (rs_u , rs_us), ctxt_us)
       end
 and 
@@ -62,7 +66,7 @@ and
          and the last one is the predicate corresponding to it.
       c. the resulting context of creating variables.
     *)
-    relativ_tm tm pred ls (rs,ctxt) = 
+    relativ_tm pred ls (rs,ctxt) tm = 
       let 
       (* relativization of a fully applied constant *)
       fun relativ_fapp c args abs_args ctxt = case lookup_rel c ls of
@@ -78,9 +82,10 @@ and
       (* relativization of a partially applied constant *)
       fun relativ_papp tm (t $ u) args abs_args rs' ctxt' = relativ_papp tm t (u :: args) abs_args rs' ctxt'
         | relativ_papp tm (Const c) args abs_args rs' ctxt' =
-            let val (w_ts, rs_ts, ctxt_ts) = relativ_tms pred ls args rs' ctxt'
+            let val (w_ts, rs_ts, ctxt_ts) = relativ_tms pred ls rs' ctxt' args
                 val (w_tm, r_tm, ctxt_tm) = relativ_fapp (Const c) w_ts abs_args ctxt_ts
-            in  (w_tm, update_tm (tm, (w_tm, r_tm)) rs_ts, ctxt_tm)
+                val rs_ts' = update_tm (tm, (w_tm, r_tm)) rs_ts
+            in  (w_tm, rs_ts', ctxt_tm)
             end
         | relativ_papp _ t _ _ _ _ = 
             raise TERM ("Tried to relativize an application with a no-constant in head position",[t])
@@ -98,7 +103,7 @@ and
          | SOME (w, _) => (w, rs, ctxt)
       end
 
-fun relativ_fm fm pred rel_db (rs,ctxt) = 
+fun relativ_fm pred rel_db (rs,ctxt) fm = 
   let 
 
   (* relativization of a fully applied constant *)
@@ -114,20 +119,21 @@ fun relativ_fm fm pred rel_db (rs,ctxt) =
    *)
   fun relativ_papp (p $ t) args = relativ_papp p (t :: args)
     | relativ_papp (Const c) args = 
-        let val (w_ts, rs_ts, _) = relativ_tms pred rel_db args rs ctxt
+        let val (w_ts, rs_ts, _) = relativ_tms pred rel_db rs ctxt args
             val tm = relativ_fapp (Const c) w_ts
-        in close_rel_tm pred (SOME tm) rs_ts
+        in close_rel_tm pred (SOME tm) rs_ts NONE
         end
     | relativ_papp tm _ =
         raise TERM ("Tried to relativize an application with a no-constant in head position",[tm])
 
+  (* We could share relativizations of terms occuring inside propositional connectives. *)
    fun go (@{const IFOL.conj} $ f $ f') = @{const IFOL.conj} $ go f $ go f'
         | go (@{const IFOL.disj} $ f $ f') = @{const IFOL.disj} $ go f $ go f'
         | go (@{const IFOL.Not} $ f) = @{const IFOL.Not} $ go f
         | go (@{const IFOL.iff} $ f $ f') = @{const IFOL.iff} $ go f $ go f'
         | go (@{const IFOL.imp} $ f $ f') = @{const IFOL.imp} $ go f $ go f'
-        | go (@{const IFOL.All(i)} $ f) = @{const rall} $ pred $ go f
-        | go (@{const IFOL.Ex(i)} $ f) = @{const rex} $ pred $ go f
+        | go (@{const IFOL.All(i)} $ f) = @{const OrdQuant.rall} $ pred $ go f
+        | go (@{const IFOL.Ex(i)} $ f) = @{const OrdQuant.rex} $ pred $ go f
         | go (Const c) = relativ_fapp (Const c) []
         | go (p $ t) = relativ_papp p [t]
         | go (Abs (v,ty,t)) = lambda (Free (v,ty)) (go t)
@@ -135,10 +141,12 @@ fun relativ_fm fm pred rel_db (rs,ctxt) =
   in  go fm
   end
 
+  fun relativ_tm_frm' cls_pred db ctxt tm = 
+      let val (w, rs, _) = relativ_tm cls_pred db ([],ctxt) tm
+      in (w, close_rel_tm cls_pred NONE rs (SOME w))
+      end
 
-  fun relativ_tm_frm tm cls_pred db ctxt = 
-    (close_rel_tm cls_pred NONE o #2) (relativ_tm tm cls_pred db ([],ctxt)) 
-
+  fun relativ_tm_frm cls_pred db ctxt = #2 o relativ_tm_frm' cls_pred db ctxt
 end;
 \<close>
 end

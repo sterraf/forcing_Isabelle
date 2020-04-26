@@ -1,6 +1,6 @@
 section\<open>Automatic synthesis of formulas\<close>
 theory Synthetic_Definition
-  imports "ZF-Constructible.Formula"
+  imports "ZF-Constructible.Formula" Relativization_Examples
 keywords
   "synthesize" :: thy_decl % "ML"
 and
@@ -8,20 +8,20 @@ and
 
 begin
 ML_file\<open>Utils.ml\<close>
+
 ML\<open>
 open Utils
 
-fun synthetic_def ctxt (def_bndg, thm_ref) =
-  let 
-    val tstr = def_bndg
-    val defstr = tstr ^ "_def" 
-    val (((_,vars),thm_tms),_) = Variable.import true [Proof_Context.get_thm ctxt thm_ref] ctxt
-    val t = thm_tms |> hd |> dest_tp_iff_rhs o Thm.concl_of
+fun synthetic_def ctxt (def_name, thm_ref) =
+  let                                                    
+    val (vars,tm,_) = thm_concl_tm ctxt thm_ref 
+    val t = tm |> dest_tp_iff_rhs o dest_trueprop
     val t_vars = Term.add_free_names t []
     val vs = List.filter (fn (((v,_),_),_)  => inList v t_vars) vars
     val at = List.foldr (fn ((_,var),t') => lambda (Thm.term_of var) t') t vs
-  in 
-    Local_Theory.define ((Binding.name tstr, NoSyn), ((Binding.name defstr, []), at)) #> snd
+  in
+    Local_Theory.define ((Binding.name def_name, NoSyn), 
+                        ((Binding.name (def_name ^ "_def"), []), at)) #> snd
   end;
 \<close>
 ML\<open>
