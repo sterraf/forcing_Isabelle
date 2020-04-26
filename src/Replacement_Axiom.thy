@@ -15,20 +15,20 @@ definition
 
 lemma renrep_type [TC]: 
   assumes "\<phi>\<in>formula" "env \<in> list(M)"
-    shows "renrep(\<phi>,env) \<in> formula"
+  shows "renrep(\<phi>,env) \<in> formula"
   unfolding renrep_def renrep_fn_def renrep1_fn_def
   using assms renrep1_thm(1) ren_tc
   by simp
-  
+
 lemma arity_renrep: 
   assumes  "\<phi>\<in>formula" "arity(\<phi>)\<le> 6#+length(env)" "env \<in> list(M)"
-    shows "arity(renrep(\<phi>,env)) \<le> 8#+length(env)"
- unfolding  renrep_def renrep_fn_def renrep1_fn_def
-    using assms renrep1_thm(1) arity_ren
-    by simp
+  shows "arity(renrep(\<phi>,env)) \<le> 8#+length(env)"
+  unfolding  renrep_def renrep_fn_def renrep1_fn_def
+  using assms renrep1_thm(1) arity_ren
+  by simp
 
 lemma renrep_sats :
-    "arity(\<phi>) \<le> 6 #+ length(env) \<Longrightarrow>
+  "arity(\<phi>) \<le> 6 #+ length(env) \<Longrightarrow>
     [P,leq,o,p,\<rho>,\<tau>] @ env \<in> list(M) \<Longrightarrow>
     V \<in> M \<Longrightarrow> \<alpha> \<in> M \<Longrightarrow> 
     \<phi>\<in>formula \<Longrightarrow> 
@@ -57,7 +57,7 @@ lemma
 lemma  arity_renpbdy: "\<phi>\<in>formula \<Longrightarrow> arity(\<phi>) \<le> 6 #+ length(env) \<Longrightarrow> env\<in>list(M) \<Longrightarrow> arity(renpbdy(\<phi>,env)) \<le> 7 #+ length(env)"
   unfolding renpbdy_def renpbdy_fn_def renpbdy1_fn_def
   using  renpbdy1_thm(1) arity_ren
-    by simp
+  by simp
 
 lemma
   sats_renpbdy: "arity(\<phi>) \<le> 6 #+ length(nenv) \<Longrightarrow> [\<rho>,p,x,\<alpha>,P,leq,o,\<pi>] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
@@ -86,7 +86,7 @@ lemma  arity_renbody: "\<phi>\<in>formula \<Longrightarrow> arity(\<phi>) \<le> 
   arity(renbody(\<phi>,env)) \<le> 6 #+ length(env)"
   unfolding renbody_def renbody_fn_def renbody1_fn_def
   using  renbody1_thm(1) arity_ren
-    by simp
+  by simp
 
 lemma
   sats_renbody: "arity(\<phi>) \<le> 5 #+ length(nenv) \<Longrightarrow> [\<alpha>,x,m,P,leq,o] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
@@ -115,18 +115,18 @@ schematic_goal sats_prebody_fm_auto:
    \<longleftrightarrow> sats(M,?prebody_fm,[\<rho>,p,\<alpha>,P,leq,one] @ nenv)"
   apply (insert assms; (rule sep_rules is_Vset_iff_sats[OF _ _ _ _ _ nonempty[simplified]] | simp))
    apply (rule sep_rules is_Vset_iff_sats is_Vset_iff_sats[OF _ _ _ _ _ nonempty[simplified]] | simp)+
-  apply (rule nonempty[simplified])
+        apply (rule nonempty[simplified])
        apply (simp_all)
-     apply (rule length_type[THEN nat_into_Ord], blast)+
+    apply (rule length_type[THEN nat_into_Ord], blast)+
   apply ((rule sep_rules | simp))
-  apply ((rule sep_rules | simp))
-  apply ((rule sep_rules | simp))
-  apply ((rule sep_rules | simp))
-  apply ((rule sep_rules | simp))
-  apply ((rule sep_rules | simp))
+    apply ((rule sep_rules | simp))
+      apply ((rule sep_rules | simp))
+       apply ((rule sep_rules | simp))
+      apply ((rule sep_rules | simp))
      apply ((rule sep_rules | simp))
-    apply (rule renrep_sats[simplified])
-  apply (insert assms)        
+    apply ((rule sep_rules | simp))
+   apply (rule renrep_sats[simplified])
+       apply (insert assms)
        apply(auto simp add: renrep_type definability)
 proof -
   from assms
@@ -140,8 +140,8 @@ qed
 synthesize "prebody_fm" from_schematic "sats_prebody_fm_auto"
 
 lemmas new_fm_defs = fm_defs is_transrec_fm_def is_eclose_fm_def mem_eclose_fm_def 
-   finite_ordinal_fm_def is_wfrec_fm_def  Memrel_fm_def eclose_n_fm_def is_recfun_fm_def is_iterates_fm_def
-   iterates_MH_fm_def is_nat_case_fm_def quasinat_fm_def pre_image_fm_def restriction_fm_def
+  finite_ordinal_fm_def is_wfrec_fm_def  Memrel_fm_def eclose_n_fm_def is_recfun_fm_def is_iterates_fm_def
+  iterates_MH_fm_def is_nat_case_fm_def quasinat_fm_def pre_image_fm_def restriction_fm_def
 
 lemma prebody_fm_type [TC]:
   assumes "\<phi>\<in>formula"
@@ -175,7 +175,7 @@ lemma arity_prebody_fm:
   apply(simp add:  new_fm_defs )
   apply(simp add: nat_simp_union,rule, rule, (rule pred_le,simp+)+)
   apply(subgoal_tac "arity(forces(\<phi>)) \<le> 6 #+length(env)")
-  apply(subgoal_tac "forces(\<phi>)\<in> formula")
+   apply(subgoal_tac "forces(\<phi>)\<in> formula")
     apply(drule arity_renrep[of "forces(\<phi>)"], auto)
   done
 
@@ -193,12 +193,11 @@ lemma arity_body_fm':
   shows
     "arity(body_fm'(\<phi>,env))\<le>5  #+ length(env)"
   unfolding body_fm'_def using assms
-  apply(simp add:  new_fm_defs )
-  apply(simp add: nat_simp_union)
-  apply( rule, (rule pred_le,simp+)+)
+  apply(simp add: new_fm_defs nat_simp_union)
+  apply(intro impI, (rule pred_le,simp+)+)
   apply(frule arity_prebody_fm,auto)
   apply(subgoal_tac "prebody_fm(\<phi>,env)\<in>formula")
-  apply(frule arity_renpbdy[of "prebody_fm(\<phi>,env)"],auto)
+   apply(frule arity_renpbdy[of "prebody_fm(\<phi>,env)"],auto)
   done
 
 lemma sats_body_fm':
@@ -244,7 +243,7 @@ lemma body_lemma:
     "\<exists>t p. x=<t,p>" "x\<in>M" "[x,\<alpha>,m,P,leq,one] @ nenv \<in>list(M)"
     "\<phi>\<in>formula" "arity(\<phi>) \<le> 2 #+ length(nenv)"
   shows 
-  "sats(M,body_fm(\<phi>,nenv),[\<alpha>,x,m,P,leq,one] @ nenv) \<longleftrightarrow> 
+    "sats(M,body_fm(\<phi>,nenv),[\<alpha>,x,m,P,leq,one] @ nenv) \<longleftrightarrow> 
   (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a),\<alpha>,V) \<and> \<tau> \<in> V \<and> (snd(x) \<tturnstile> \<phi> ([fst(x),\<tau>]@nenv)))"
   using assms sats_body_fm[of x \<alpha> m nenv] sats_renpbdy_prebody_fm[of x \<alpha>]
     sats_prebody_fm[of "snd(x)" "fst(x)"] fst_snd_closed[OF \<open>x\<in>M\<close>]
@@ -349,8 +348,8 @@ proof -
   moreover
   have "{y\<in>Y. Ord(y)} \<in> M"
     using \<open>Y\<in>M\<close> separation_ax sats_ordinal_fm trans_M 
-            separation_cong[of "##M" "\<lambda>y. sats(M,ordinal_fm(0),[y])" "Ord"]
-            separation_closed by simp
+      separation_cong[of "##M" "\<lambda>y. sats(M,ordinal_fm(0),[y])" "Ord"]
+      separation_closed by simp
   then
   have "\<Union> {y\<in>Y. Ord(y)} \<in> M" (is "?sup \<in> M")
     using Union_closed by simp
@@ -387,7 +386,7 @@ proof -
     ultimately
     obtain q where "q\<in>G" "q \<tturnstile> \<phi> ([\<rho>,\<sigma>]@nenv)" 
       using truth_lemma[OF \<open>\<phi>\<in>_\<close> generic, symmetric, of "[\<rho>,\<sigma>] @ nenv"] 
-       by auto
+      by auto
     with \<open><\<rho>,p>\<in>\<pi>'\<close> \<open><\<rho>,q>\<in>?\<pi> \<Longrightarrow> f(<\<rho>,q>)\<in>Y\<close>
     have "f(<\<rho>,q>)\<in>Y" 
       using generic unfolding M_generic_def filter_def by blast
@@ -484,7 +483,7 @@ proof -
     show "arity(?\<psi>)\<le>2#+length(env)"
       using pred_mono[OF _ \<open>arity(\<phi>)\<le>2#+length(env)\<close>] lt_trans[OF _ le_refl] 
       by (auto simp add:nat_simp_union) 
-    next
+  next
     from \<open>\<phi>\<in>_\<close>
     show "?\<psi>\<in>formula" by simp
   qed
@@ -515,9 +514,9 @@ proof -
     apply (intro ballI rallI impI)
     apply (rule_tac x="{v . x \<in> A, v\<in>M[G] \<and> sats(M[G], \<phi>, [x, v] @ env)}" in rexI)
      apply (auto)
-     apply (drule_tac x=x in bspec; simp_all)
-     by (blast)
-    (* 44secs *)
+    apply (drule_tac x=x in bspec; simp_all)
+    by (blast)
+      (* 44secs *)
 qed
 
 end (* context G_generic *)

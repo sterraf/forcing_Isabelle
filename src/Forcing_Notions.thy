@@ -24,14 +24,14 @@ lemma compat_inI :
 lemma refl_compat:
   "\<lbrakk> refl(A,r) ; \<langle>p,q\<rangle> \<in> r | p=q | \<langle>q,p\<rangle> \<in> r ; p\<in>A ; q\<in>A\<rbrakk> \<Longrightarrow> compat_in(A,r,p,q)"
   by (auto simp add: refl_def compat_inI)
- 
+
 lemma  chain_compat:
   "refl(A,r) \<Longrightarrow> linear(A,r) \<Longrightarrow>  (\<forall>p\<in>A.\<forall>q\<in>A. compat_in(A,r,p,q))"
   by (simp add: refl_compat linear_def)
 
 lemma subset_fun_image: "f:N\<rightarrow>P \<Longrightarrow> f``N\<subseteq>P"
   by (auto simp add: image_fun apply_funtype)
-    
+
 lemma refl_monot_domain: "refl(B,r) \<Longrightarrow> A\<subseteq>B \<Longrightarrow> refl(A,r)"  
   unfolding refl_def by blast
 
@@ -46,8 +46,8 @@ definition
 locale forcing_notion =
   fixes P leq one
   assumes one_in_P:         "one \<in> P"
-      and leq_preord:       "preorder_on(P,leq)"
-      and one_max:          "\<forall>p\<in>P. <p,one>\<in>leq"
+    and leq_preord:       "preorder_on(P,leq)"
+    and one_max:          "\<forall>p\<in>P. <p,one>\<in>leq"
 begin
 
 abbreviation Leq :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>" 50)
@@ -72,7 +72,7 @@ definition
 
 lemma P_dense: "dense(P)"
   by (insert leq_preord, auto simp add: preorder_on_def refl_def dense_def)
-    
+
 definition 
   increasing :: "i\<Rightarrow>o" where
   "increasing(F) == \<forall>x\<in>F. \<forall> p \<in> P . x\<preceq>p \<longrightarrow> p\<in>F"
@@ -85,7 +85,7 @@ lemma leq_transD:  "a\<preceq>b \<Longrightarrow> b\<preceq>c \<Longrightarrow> 
   using leq_preord trans_onD unfolding preorder_on_def by blast
 
 lemma leq_reflI: "p\<in>P \<Longrightarrow> p\<preceq>p"
- using leq_preord unfolding preorder_on_def refl_def by blast
+  using leq_preord unfolding preorder_on_def refl_def by blast
 
 lemma compatD[dest!]: "compat(p,q) \<Longrightarrow> \<exists>d\<in>P. d\<preceq>p \<and> d\<preceq>q"
   unfolding compat_def compat_in_def .
@@ -106,7 +106,7 @@ lemma dense_belowD [dest]:
   assumes "dense_below(D,p)" "q\<in>P" "q\<preceq>p"
   shows "\<exists>d\<in>D. d\<in>P \<and> d\<preceq>q"
   using assms unfolding dense_below_def by simp
-(*obtains d where "d\<in>D" "d\<in>P" "d\<preceq>q"
+    (*obtains d where "d\<in>D" "d\<in>P" "d\<preceq>q"
   using assms unfolding dense_below_def by blast *)
 
 lemma dense_belowI [intro!]: 
@@ -138,8 +138,8 @@ lemma dense_below_dense_below:
   assumes "dense_below({q\<in>P. dense_below(D,q)},p)" "p\<in>P" 
   shows "dense_below(D,p)"  
   using assms leq_transD leq_reflI  by blast
-(* Long proof *)
-(*  unfolding dense_below_def
+    (* Long proof *)
+    (*  unfolding dense_below_def
 proof (intro ballI impI)
   fix r
   assume "r\<in>P" \<open>r\<preceq>p\<close>
@@ -171,7 +171,7 @@ lemma filterD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> x \<in>
 
 lemma filter_leqD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> y \<in> P \<Longrightarrow> x\<preceq>y \<Longrightarrow> y \<in> G"
   by (simp add: filter_def increasing_def)
-      
+
 lemma filter_imp_compat: "filter(G) \<Longrightarrow> p\<in>G \<Longrightarrow> q\<in>G \<Longrightarrow> compat(p,q)"
   unfolding filter_def compat_in_def compat_def by blast
 
@@ -187,7 +187,7 @@ compatible in $A$.\<close>
 definition  
   upclosure :: "i\<Rightarrow>i" where
   "upclosure(A) == {p\<in>P.\<exists>a\<in>A. a\<preceq>p}"
-  
+
 lemma  upclosureI [intro] : "p\<in>P \<Longrightarrow> a\<in>A \<Longrightarrow> a\<preceq>p \<Longrightarrow> p\<in>upclosure(A)"
   by (simp add:upclosure_def, auto)
 
@@ -196,22 +196,22 @@ lemma  upclosureE [elim] :
   by (auto simp add:upclosure_def)
 
 lemma  upclosureD [dest] :
-   "p\<in>upclosure(A) \<Longrightarrow> \<exists>a\<in>A.(a\<preceq>p) \<and> p\<in>P"
+  "p\<in>upclosure(A) \<Longrightarrow> \<exists>a\<in>A.(a\<preceq>p) \<and> p\<in>P"
   by (simp add:upclosure_def)
-   
+
 lemma   upclosure_increasing :
   "A\<subseteq>P \<Longrightarrow> increasing(upclosure(A))"
   apply (unfold increasing_def upclosure_def, simp)
   apply clarify
   apply (rule_tac x="a" in bexI)
-  apply (insert leq_preord, unfold preorder_on_def)
-  apply (drule conjunct2, unfold trans_on_def) 
-  apply (drule_tac x="a" in bspec, fast)
-  apply (drule_tac x="x" in bspec, assumption) 
-  apply (drule_tac x="p" in bspec, assumption)
-  apply (simp, assumption)
+   apply (insert leq_preord, unfold preorder_on_def)
+   apply (drule conjunct2, unfold trans_on_def)
+   apply (drule_tac x="a" in bspec, fast)
+   apply (drule_tac x="x" in bspec, assumption)
+   apply (drule_tac x="p" in bspec, assumption)
+   apply (simp, assumption)
   done
-  
+
 lemma  upclosure_in_P: "A \<subseteq> P \<Longrightarrow> upclosure(A) \<subseteq> P"
   apply (rule   subsetI)
   apply (simp add:upclosure_def)  
@@ -222,15 +222,15 @@ lemma  A_sub_upclosure: "A \<subseteq> P \<Longrightarrow> A\<subseteq>upclosure
   apply (simp add:upclosure_def, auto)
   apply (insert leq_preord, unfold preorder_on_def refl_def, auto)
   done
- 
+
 lemma  elem_upclosure: "A\<subseteq>P \<Longrightarrow> x\<in>A  \<Longrightarrow> x\<in>upclosure(A)"
   by (blast dest:A_sub_upclosure)
-    
+
 lemma  closure_compat_filter:
   "A\<subseteq>P \<Longrightarrow> (\<forall>p\<in>A.\<forall>q\<in>A. compat_in(A,leq,p,q)) \<Longrightarrow> filter(upclosure(A))"
   apply (unfold filter_def)
   apply (intro conjI)
-  apply (rule upclosure_in_P, assumption)
+    apply (rule upclosure_in_P, assumption)
    apply (rule upclosure_increasing, assumption)
   apply (unfold compat_in_def)
   apply (rule ballI)+
@@ -238,20 +238,18 @@ lemma  closure_compat_filter:
   apply (drule upclosureD)+
   apply (erule bexE)+
   apply (rename_tac a b)
-  apply (drule_tac A="A" 
-               and x="a" in bspec, assumption)
-  apply (drule_tac A="A" 
-               and x="b" in bspec, assumption)
+  apply (drule_tac A="A" and x="a" in bspec, assumption)
+  apply (drule_tac A="A" and x="b" in bspec, assumption)
   apply (auto)
   apply (rule_tac x="d" in bexI)
-  prefer 2 apply (simp add:A_sub_upclosure [THEN subsetD])
-  apply (insert leq_preord, unfold preorder_on_def trans_on_def,  drule conjunct2)
+   prefer 2 apply (simp add:A_sub_upclosure [THEN subsetD])
+  apply (insert leq_preord, unfold preorder_on_def trans_on_def, drule conjunct2)
   apply (rule conjI)
-  apply (drule_tac x="d" in bspec, rule_tac A="A" in subsetD, assumption+) 
-  apply (drule_tac x="a" in bspec, rule_tac A="A" in subsetD, assumption+) 
-  apply (drule_tac x="x" in bspec, assumption, auto)
+   apply (drule_tac x="d" in bspec, rule_tac A="A" in subsetD, assumption+)
+   apply (drule_tac x="a" in bspec, rule_tac A="A" in subsetD, assumption+)
+   apply (drule_tac x="x" in bspec, assumption, auto)
   done
-    
+
 lemma  aux_RS1:  "f \<in> N \<rightarrow> P \<Longrightarrow> n\<in>N \<Longrightarrow> f`n \<in> upclosure(f ``N)"
   apply (rule_tac  elem_upclosure)
    apply (rule subset_fun_image, assumption)
@@ -265,12 +263,12 @@ lemma decr_succ_decr: "f \<in> nat \<rightarrow> P \<Longrightarrow> preorder_on
   apply (induct_tac m, simp add:refl_def, rename_tac x)
   apply (rule impI)
   apply (case_tac "n\<le>x", simp)
-    apply (drule_tac x="x" in bspec, assumption)
+   apply (drule_tac x="x" in bspec, assumption)
    apply (unfold trans_on_def)
    apply (drule_tac x="f`succ(x)" in bspec, simp)
    apply (drule_tac x="f`x" in bspec, simp)
    apply (drule_tac x="f`n" in bspec, auto)
-   apply (drule_tac le_succ_iff [THEN iffD1], simp add: refl_def)
+  apply (drule_tac le_succ_iff [THEN iffD1], simp add: refl_def)
   done
 
 lemma decr_seq_linear: "refl(P,leq) \<Longrightarrow> f \<in> nat \<rightarrow> P \<Longrightarrow>
@@ -279,16 +277,16 @@ lemma decr_seq_linear: "refl(P,leq) \<Longrightarrow> f \<in> nat \<rightarrow> 
   apply (unfold linear_def)
   apply (rule ball_image_simp [THEN iffD2], assumption, simp, rule ballI)+
   apply (rename_tac y)
-    apply (case_tac "x\<le>y")
+  apply (case_tac "x\<le>y")
    apply (drule_tac n="x" and m="y" in decr_succ_decr)
     (* probando que es preorder_on ... capaz sacar esto de todos lados *)
        apply (simp add:preorder_on_def)
     (* listo esa prueba *)
       apply (simp+) 
   apply (drule not_le_iff_lt[THEN iffD1, THEN leI, rotated 2], simp_all)
-   apply (drule_tac n="y" and m="x" in decr_succ_decr)
+  apply (drule_tac n="y" and m="x" in decr_succ_decr)
     (* probando que es preorder_on ... capaz sacar esto de todos lados *)
-       apply (simp add:preorder_on_def)
+      apply (simp add:preorder_on_def)
     (* listo esa prueba *)
      apply (simp+)
   done
@@ -299,10 +297,10 @@ subsection\<open>Towards Rasiowa-Sikorski Lemma (RSL)\<close>
 locale countable_generic = forcing_notion +
   fixes \<D>
   assumes countable_subs_of_P:  "\<D> \<in> nat\<rightarrow>Pow(P)"
-  and     seq_of_denses:        "\<forall>n \<in> nat. dense(\<D>`n)"
+    and     seq_of_denses:        "\<forall>n \<in> nat. dense(\<D>`n)"
 
 begin
-  
+
 definition
   D_generic :: "i\<Rightarrow>o" where
   "D_generic(G) == filter(G) \<and> (\<forall>n\<in>nat.(\<D>`n)\<inter>G\<noteq>0)"
@@ -351,7 +349,7 @@ proof -
   ultimately 
   show ?thesis unfolding D_generic_def by auto
 qed
-  
+
 end (* countable_generic *)
 
 text\<open>Now, the following recursive definition will fulfill the 

@@ -8,7 +8,7 @@ consts dc_witness :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Righta
 primrec
   wit0   : "dc_witness(0,A,a,s,R) = a"
   witrec :"dc_witness(succ(n),A,a,s,R) = s`{x\<in>A. \<langle>dc_witness(n,A,a,s,R),x\<rangle>\<in>R }"
-  
+
 lemma witness_into_A [TC]:  "a\<in>A \<Longrightarrow> n\<in>nat \<Longrightarrow>
                              (\<forall>X . X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X) \<Longrightarrow>
                              \<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0 \<Longrightarrow>
@@ -18,25 +18,26 @@ lemma witness_into_A [TC]:  "a\<in>A \<Longrightarrow> n\<in>nat \<Longrightarro
   apply (drule_tac x="{xa \<in> A . \<langle>dc_witness(x, A, a, s, R), xa\<rangle> \<in> R}" in  spec)
   apply auto 
   done
+
 lemma witness_related :  "a\<in>A \<Longrightarrow> n\<in>nat \<Longrightarrow>
                              (\<forall>X . X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X) \<Longrightarrow>
                              \<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0 \<Longrightarrow>
                              \<langle>dc_witness(n, A, a, s, R),dc_witness(succ(n), A, a, s, R)\<rangle>\<in>R"
   apply (frule_tac n="n" and s="s"  and R="R" in witness_into_A, assumption+)
-   apply (drule_tac x="dc_witness(n, A, a, s, R)" in bspec, assumption)
+  apply (drule_tac x="dc_witness(n, A, a, s, R)" in bspec, assumption)
   apply (drule_tac x= "{x \<in> A . \<langle>dc_witness(n, A, a, s, R), x\<rangle> \<in> R}" in spec)
   apply (simp, blast) 
   done
-    
+
 lemma witness_funtype: "a\<in>A \<Longrightarrow> 
                         (\<forall>X . X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X) \<Longrightarrow>
                         \<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0 \<Longrightarrow>
                         (\<lambda>n\<in>nat. dc_witness(n, A, a, s, R)) \<in> nat \<rightarrow> A"
   apply (rule_tac B="{dc_witness(n, A, a, s, R). n\<in>nat}" in fun_weaken_type)
-  apply (rule lam_funtype)
+   apply (rule lam_funtype)
   apply ( blast intro:witness_into_A)
   done
-    
+
 lemma witness_to_fun: "a\<in>A \<Longrightarrow> (\<forall>X . X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X) \<Longrightarrow>
                              \<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0 \<Longrightarrow>
                              \<exists>f \<in> nat\<rightarrow>A. \<forall>n\<in>nat. f`n =dc_witness(n,A,a,s,R)"
@@ -46,14 +47,14 @@ lemma witness_to_fun: "a\<in>A \<Longrightarrow> (\<forall>X . X\<noteq>0 \<and>
 
 theorem pointed_DC  : "(\<forall>x\<in>A. \<exists>y\<in>A. \<langle>x,y\<rangle>\<in> R) \<Longrightarrow>
                        \<forall>a\<in>A. (\<exists>f \<in> nat\<rightarrow>A. f`0 = a \<and> (\<forall>n \<in> nat. \<langle>f`n,f`succ(n)\<rangle>\<in>R))"
-  apply (rule)
+  apply (rule ballI)
   apply (insert AC_func_Pow)
   apply (drule allI)
   apply (drule_tac x="A" in spec)
   apply (drule_tac P="\<lambda>f .\<forall>x\<in>Pow(A) - {0}. f ` x \<in> x"
-               and A="Pow(A)-{0}\<rightarrow> A" 
-               and Q=" \<exists>f\<in>nat\<rightarrow> A. f ` 0 = a \<and> (\<forall>n\<in>nat. \<langle>f ` n, f ` succ(n)\<rangle> \<in> R)" in bexE)
-  prefer 2 apply (assumption)           
+      and A="Pow(A)-{0}\<rightarrow> A" 
+      and Q=" \<exists>f\<in>nat\<rightarrow> A. f ` 0 = a \<and> (\<forall>n\<in>nat. \<langle>f ` n, f ` succ(n)\<rangle> \<in> R)" in bexE)
+   prefer 2 apply (assumption)
   apply (rename_tac s)
   apply (rule_tac x="\<lambda>n\<in>nat. dc_witness(n,A,a,s,R)" in bexI)
    prefer 2  apply (blast intro:witness_funtype)
@@ -63,15 +64,13 @@ theorem pointed_DC  : "(\<forall>x\<in>A. \<exists>y\<in>A. \<langle>x,y\<rangle
   apply (rule witness_related, auto)
   done
 
-    
 lemma aux_DC_on_AxNat2 : "\<forall>x\<in>A\<times>nat. \<exists>y\<in>A. \<langle>x,\<langle>y,succ(snd(x))\<rangle>\<rangle> \<in> R \<Longrightarrow>
                   \<forall>x\<in>A\<times>nat. \<exists>y\<in>A\<times>nat. \<langle>x,y\<rangle> \<in> {\<langle>a,b\<rangle>\<in>R. snd(b) = succ(snd(a))}"
-  apply (rule ballI, erule_tac x="x" in ballE, simp_all)
-  done
+  by (rule ballI, erule_tac x="x" in ballE, simp_all)
 
 lemma infer_snd : "c\<in> A\<times>B \<Longrightarrow> snd(c) = k \<Longrightarrow> c=\<langle>fst(c),k\<rangle>"
   by auto
-    
+
 corollary DC_on_A_x_nat : 
   "(\<forall>x\<in>A\<times>nat. \<exists>y\<in>A. \<langle>x,\<langle>y,succ(snd(x))\<rangle>\<rangle> \<in> R) \<Longrightarrow>
     \<forall>a\<in>A. (\<exists>f \<in> nat\<rightarrow>A. f`0 = a \<and> (\<forall>n \<in> nat. \<langle>\<langle>f`n,n\<rangle>,\<langle>f`succ(n),succ(n)\<rangle>\<rangle>\<in>R))"
@@ -107,10 +106,9 @@ lemma aux_sequence_DC : "\<And>R. \<forall>x\<in>A. \<forall>n\<in>nat. \<exists
 lemma aux_sequence_DC2 : "\<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. \<langle>x,y\<rangle> \<in> S`n \<Longrightarrow>
         \<forall>x\<in>A\<times>nat. \<exists>y\<in>A. \<langle>x,\<langle>y,succ(snd(x))\<rangle>\<rangle> \<in> {\<langle>\<langle>x,n\<rangle>,\<langle>y,m\<rangle>\<rangle>\<in>(A\<times>nat)\<times>(A\<times>nat). \<langle>x,y\<rangle>\<in>S`m }"
   by auto
-    
+
 lemma sequence_DC: "\<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. \<langle>x,y\<rangle> \<in> S`n \<Longrightarrow>
     \<forall>a\<in>A. (\<exists>f \<in> nat\<rightarrow>A. f`0 = a \<and> (\<forall>n \<in> nat. \<langle>f`n,f`succ(n)\<rangle>\<in>S`succ(n)))"
-  apply (drule aux_sequence_DC2)
-  apply (drule DC_on_A_x_nat, auto)
-  done
+  by (drule aux_sequence_DC2, drule DC_on_A_x_nat, auto)
+
 end
