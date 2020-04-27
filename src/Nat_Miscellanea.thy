@@ -7,31 +7,29 @@ lemmas nat_succI =  Ord_succ_mem_iff [THEN iffD2,OF nat_into_Ord]
 
 lemma nat_succD : "m \<in> nat \<Longrightarrow>  succ(n) \<in> succ(m) \<Longrightarrow> n \<in> m"
   by (drule_tac j="succ(m)" in ltI,auto elim:ltD)
-    
+
 lemmas zero_in =  ltD [OF nat_0_le]
 
 lemma in_n_in_nat :  "m \<in> nat \<Longrightarrow> n \<in> m \<Longrightarrow> n \<in> nat"
   by(drule ltI[of "n"],auto simp add: lt_nat_in_nat)
-    
+
 lemma in_succ_in_nat : "m \<in> nat \<Longrightarrow> n \<in> succ(m) \<Longrightarrow> n \<in> nat"
   by(auto simp add:in_n_in_nat)
-  
+
 lemma ltI_neg : "x \<in> nat \<Longrightarrow> j \<le> x \<Longrightarrow> j \<noteq> x \<Longrightarrow> j < x"
   by (simp add: le_iff)
-    
+
 lemma succ_pred_eq  :  "m \<in> nat \<Longrightarrow> m \<noteq> 0  \<Longrightarrow> succ(pred(m)) = m"
- by (auto elim: natE)
-    
-lemma succ_ltI : "n \<in> nat \<Longrightarrow> succ(j) < n \<Longrightarrow> j < n"
-  apply (rule_tac j="succ(j)" in lt_trans,rule le_refl,rule Ord_succD)
-  apply (rule nat_into_Ord,erule in_n_in_nat,erule ltD,simp)
-done
-      
+  by (auto elim: natE)
+
+lemma succ_ltI : "succ(j) < n \<Longrightarrow> j < n"
+  by (simp add: succ_leE[OF leI])
+
 lemma succ_In : "n \<in> nat \<Longrightarrow> succ(j) \<in> n \<Longrightarrow> j \<in> n"
- by (rule succ_ltI[THEN ltD], auto intro: ltI)
-    
+  by (rule succ_ltI[THEN ltD], auto intro: ltI)
+
 lemmas succ_leD = succ_leE[OF leI]
-    
+
 lemma succpred_leI : "n \<in> nat \<Longrightarrow>  n \<le> succ(pred(n))"
   by (auto elim: natE)
 
@@ -45,19 +43,19 @@ lemma funcI : "f \<in> A \<rightarrow> B \<Longrightarrow> a \<in> A \<Longright
 lemmas natEin = natE [OF lt_nat_in_nat]
 
 lemma succ_in : "succ(x) \<le> y  \<Longrightarrow> x \<in> y"
- by (auto dest:ltD)
-  
+  by (auto dest:ltD)
+
 lemmas Un_least_lt_iffn =  Un_least_lt_iff [OF nat_into_Ord nat_into_Ord]
 
 lemma pred_le2 : "n\<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> pred(n) \<le> m \<Longrightarrow> n \<le> succ(m)"
   by(subgoal_tac "n\<in>nat",rule_tac n="n" in natE,auto)
-    
+
 lemma pred_le : "n\<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> n \<le> succ(m) \<Longrightarrow> pred(n) \<le> m"
   by(subgoal_tac "pred(n)\<in>nat",rule_tac n="n" in natE,auto)
-    
+
 lemma Un_leD1 : "Ord(i)\<Longrightarrow> Ord(j)\<Longrightarrow> Ord(k)\<Longrightarrow>  i \<union> j \<le> k \<Longrightarrow> i \<le> k"   
   by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct1]],simp_all)
-  
+
 lemma Un_leD2 : "Ord(i)\<Longrightarrow> Ord(j)\<Longrightarrow> Ord(k)\<Longrightarrow>  i \<union> j \<le>k \<Longrightarrow> j \<le> k"   
   by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct2]],simp_all)
 
@@ -82,11 +80,10 @@ lemma nat_union_abs1 :
 lemma nat_union_abs2 : 
   "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> j \<union> i = j"
   by (rule Un_absorb2,erule le_imp_subset)
-    
+
 lemma nat_un_max : "Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> i \<union> j = max(i,j)"
-  apply(auto simp add:max_def nat_union_abs1)
-  apply(auto simp add:  not_lt_iff_le leI nat_union_abs2)
-done
+  using max_def nat_union_abs1 not_lt_iff_le leI nat_union_abs2
+  by auto
 
 lemma nat_max_ty : "Ord(i) \<Longrightarrow>Ord(j) \<Longrightarrow> Ord(max(i,j))"
   unfolding max_def by simp
@@ -102,12 +99,12 @@ lemma le_pred : "x\<in>nat \<Longrightarrow> pred(x)\<le>x"
   by simp
 
 lemma Un_le_compat : "o \<le> p \<Longrightarrow> q \<le> r \<Longrightarrow> Ord(o) \<Longrightarrow> Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> o \<union> q \<le> p \<union> r"
-  using  le_trans[of q r "p\<union>r",OF _ Un_upper2_le] le_trans[of o p "p\<union>r",OF _ Un_upper1_le]
-        nat_simp_union 
+  using le_trans[of q r "p\<union>r",OF _ Un_upper2_le] le_trans[of o p "p\<union>r",OF _ Un_upper1_le]
+    nat_simp_union 
   by auto
 
-lemma Un_le : "p \<le> r \<Longrightarrow> q \<le> r \<Longrightarrow> 
-                 Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> 
+lemma Un_le : "p \<le> r \<Longrightarrow> q \<le> r \<Longrightarrow>
+               Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> 
                 p \<union> q \<le> r"
   using nat_simp_union by auto
 
@@ -146,7 +143,7 @@ lemma diff_cancel :
 
 lemma leD : assumes "n\<in>nat" "j \<le> n"
   shows "j < n | j = n"
-using leE[OF \<open>j\<le>n\<close>,of "j<n | j = n"] by auto
+  using leE[OF \<open>j\<le>n\<close>,of "j<n | j = n"] by auto
 
 subsection\<open>Some results in ordinal arithmetic\<close>
 text\<open>The following results are auxiliary to the proof of 
@@ -169,7 +166,7 @@ qed
 lemma max_commutes : 
   assumes "Ord(x)" "Ord(y)"
   shows "max(x,y) = max(y,x)"
-    using assms Un_commute nat_simp_union(1) nat_simp_union(1)[symmetric] by auto
+  using assms Un_commute nat_simp_union(1) nat_simp_union(1)[symmetric] by auto
 
 lemma max_cong2 :
   assumes "x \<le> y" "Ord(y)" "Ord(z)" "Ord(x)" 
