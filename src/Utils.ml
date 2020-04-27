@@ -14,7 +14,6 @@ signature Utils =
     val dest_tp_iff_rhs: term -> term
     val dest_trueprop: term -> term
     val eq_: term -> term -> term
-    val export_thm: thm -> Proof.context -> Proof.context -> thm
     val fix_vars: thm -> string list -> Proof.context -> thm
     val formula_: term
     val freeName: term -> string
@@ -114,12 +113,9 @@ fun thm_concl_tm ctxt thm_ref =
   in (vars, thm_tms |> hd |> Thm.concl_of, ctxt1)
 end
 
-fun fix_vars thm vars ctx = let
-  val (_, ctxt1) = Variable.add_fixes vars ctx
-  in singleton (Proof_Context.export ctxt1 ctx) thm
+fun fix_vars thm vars ctxt = let
+  val (_, ctxt1) = Variable.add_fixes vars ctxt
+  in singleton (Proof_Context.export ctxt1 ctxt) thm
 end
-
-fun export_thm thm ctx ctx' = 
-  singleton (Proof_Context.export ctx ctx') thm
 
 end ;

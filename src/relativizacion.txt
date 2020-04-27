@@ -1,0 +1,25 @@
+Clasificación de conceptos absolutos que todavía no podemos manejar
+
+1. Relativamente fácil si sólo consideramos los casos no dependientes:
+"[| M(A); M(B); M(z) |] ==> cartprod(M,A,B,z) \<longleftrightarrow> z = A*B"
+"[|M(A); M(B); M(F); M(A->B)|] ==> is_funspace(M,A,B,F) \<longleftrightarrow> F = A->B"
+
+2. Muy especial
+"M(a) ==> successor_ordinal(M,a) \<longleftrightarrow> Ord(a) & (\<exists>b[M]. a = succ(b))"
+
+3.a Especiales pero manejables, términos
+"M(a) ==> omega(M,a) \<longleftrightarrow> a = nat"
+"M(a) ==> number1(M,a) \<longleftrightarrow> a = 1"
+"M(a) ==> number2(M,a) \<longleftrightarrow> a = succ(1)"
+"M(a) ==> number3(M,a) \<longleftrightarrow> a = succ(succ(1))"
+
+3.b Especiales pero manejables, relaciones
+"M(a) ==> finite_ordinal(M,a) \<longleftrightarrow> a \<in> nat"
+"[| M(A); M(f) |] ==> injection(M,A,B,f) \<longleftrightarrow> f \<in> inj(A,B)"
+"[| M(A); M(B); M(f) |] ==> surjection(M,A,B,f) \<longleftrightarrow> f \<in> surj(A,B)"
+"[| M(A); M(B); M(f) |] ==> bijection(M,A,B,f) \<longleftrightarrow> f \<in> bij(A,B)"
+"[| M(A); M(f) |] ==> typed_function(M,A,B,f) \<longleftrightarrow> f \<in> A -> B", 
+    requiere un caso especial porque no es inmediato tener B.
+
+4. Problemático pero debería ser manejable
+ "M(z) ==> is_bool_of_o(M,P,z) \<longleftrightarrow> z = bool_of_o(P)"
