@@ -701,13 +701,12 @@ proof -
     using abs1 fty fsats1 farit P_in_M leq_in_M assms forces_nmem
           Collect_in_M_4p[of ?\<phi> _ _ _ _ _ 
           "\<lambda>x p l a1 a2. (\<exists>\<sigma>\<in>domain(a1) \<union> domain(a2). forces_mem'(p,l,x,\<sigma>,a1) \<and> 
-                                                     forces_nmem'(p,l,x,\<sigma>,a2))"] 
-     apply simp
+                                                     forces_nmem'(p,l,x,\<sigma>,a2))"]
     using abs2 fty fsats2 farit P_in_M leq_in_M assms forces_nmem domain_closed Un_closed
           Collect_in_M_4p[of ?\<phi> P leq \<theta> \<tau> ?rel_pred 
           "\<lambda>x p l a2 a1. (\<exists>\<sigma>\<in>domain(a1) \<union> domain(a2). forces_nmem'(p,l,x,\<sigma>,a1) \<and> 
                                                      forces_mem'(p,l,x,\<sigma>,a2))" P]  
-    by simp
+    by simp_all
 qed
 
 (* Lemma IV.2.40(b), equality *)

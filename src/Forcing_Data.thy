@@ -35,11 +35,12 @@ locale M_ctm = M_ZF +
 
 begin
 interpretation intf: M_ZF_trans "M"
-  apply (rule M_ZF_trans.intro)
-          apply (simp_all add: trans_M upair_ax Union_ax power_ax extensionality
+  using M_ZF_trans.intro
+     trans_M upair_ax Union_ax power_ax extensionality
       foundation_ax infinity_ax separation_ax[simplified] 
-      replacement_ax[simplified])
-  done
+      replacement_ax[simplified]
+  by simp
+  
 
 lemmas transitivity = Transset_intf[OF trans_M]
 
