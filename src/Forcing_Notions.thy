@@ -49,7 +49,7 @@ locale forcing_notion =
     and leq_preord:       "preorder_on(P,leq)"
     and one_max:          "\<forall>p\<in>P. <p,one>\<in>leq"
 begin
-
+find_theorems "trans_on"
 abbreviation Leq :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>" 50)
   where "x \<preceq> y \<equiv> <x,y>\<in>leq"
 
@@ -83,6 +83,10 @@ definition
 
 lemma leq_transD:  "a\<preceq>b \<Longrightarrow> b\<preceq>c \<Longrightarrow> a \<in> P\<Longrightarrow> b \<in> P\<Longrightarrow> c \<in> P\<Longrightarrow> a\<preceq>c"
   using leq_preord trans_onD unfolding preorder_on_def by blast
+
+lemma leq_transD':  "A\<subseteq>P \<Longrightarrow> a\<preceq>b \<Longrightarrow> b\<preceq>c \<Longrightarrow> a \<in> A \<Longrightarrow> b \<in> P\<Longrightarrow> c \<in> P\<Longrightarrow> a\<preceq>c"
+  using leq_preord trans_onD subsetD unfolding preorder_on_def by blast
+
 
 lemma leq_reflI: "p\<in>P \<Longrightarrow> p\<preceq>p"
   using leq_preord unfolding preorder_on_def refl_def by blast
@@ -199,97 +203,108 @@ lemma  upclosureD [dest] :
   "p\<in>upclosure(A) \<Longrightarrow> \<exists>a\<in>A.(a\<preceq>p) \<and> p\<in>P"
   by (simp add:upclosure_def)
 
-lemma   upclosure_increasing :
-  "A\<subseteq>P \<Longrightarrow> increasing(upclosure(A))"
-  apply (unfold increasing_def upclosure_def, simp)
-  apply clarify
-  apply (rule_tac x="a" in bexI)
-   apply (insert leq_preord, unfold preorder_on_def)
-   apply (drule conjunct2, unfold trans_on_def)
-   apply (drule_tac x="a" in bspec, fast)
-   apply (drule_tac x="x" in bspec, assumption)
-   apply (drule_tac x="p" in bspec, assumption)
-   apply (simp, assumption)
-  done
+lemma upclosure_increasing :
+  assumes "A\<subseteq>P"
+  shows "increasing(upclosure(A))"
+  unfolding increasing_def upclosure_def
+  using leq_transD'[OF \<open>A\<subseteq>P\<close>] by auto
 
 lemma  upclosure_in_P: "A \<subseteq> P \<Longrightarrow> upclosure(A) \<subseteq> P"
-  apply (rule   subsetI)
-  apply (simp add:upclosure_def)  
-  done
+  using subsetI upclosure_def by simp
 
 lemma  A_sub_upclosure: "A \<subseteq> P \<Longrightarrow> A\<subseteq>upclosure(A)"
-  apply (rule   subsetI)
-  apply (simp add:upclosure_def, auto)
-  apply (insert leq_preord, unfold preorder_on_def refl_def, auto)
-  done
+  using subsetI leq_preord 
+  unfolding upclosure_def preorder_on_def refl_def by auto
 
 lemma  elem_upclosure: "A\<subseteq>P \<Longrightarrow> x\<in>A  \<Longrightarrow> x\<in>upclosure(A)"
   by (blast dest:A_sub_upclosure)
 
 lemma  closure_compat_filter:
-  "A\<subseteq>P \<Longrightarrow> (\<forall>p\<in>A.\<forall>q\<in>A. compat_in(A,leq,p,q)) \<Longrightarrow> filter(upclosure(A))"
-  apply (unfold filter_def)
-  apply (intro conjI)
-    apply (rule upclosure_in_P, assumption)
-   apply (rule upclosure_increasing, assumption)
-  apply (unfold compat_in_def)
-  apply (rule ballI)+
-  apply (rename_tac x y)
-  apply (drule upclosureD)+
-  apply (erule bexE)+
-  apply (rename_tac a b)
-  apply (drule_tac A="A" and x="a" in bspec, assumption)
-  apply (drule_tac A="A" and x="b" in bspec, assumption)
-  apply (auto)
-  apply (rule_tac x="d" in bexI)
-   prefer 2 apply (simp add:A_sub_upclosure [THEN subsetD])
-  apply (insert leq_preord, unfold preorder_on_def trans_on_def, drule conjunct2)
-  apply (rule conjI)
-   apply (drule_tac x="d" in bspec, rule_tac A="A" in subsetD, assumption+)
-   apply (drule_tac x="a" in bspec, rule_tac A="A" in subsetD, assumption+)
-   apply (drule_tac x="x" in bspec, assumption, auto)
-  done
+  assumes "A\<subseteq>P" "(\<forall>p\<in>A.\<forall>q\<in>A. compat_in(A,leq,p,q))"
+  shows "filter(upclosure(A))"
+  unfolding filter_def
+proof(auto)
+  show "increasing(upclosure(A))"
+    using assms upclosure_increasing by simp
+next
+  let ?UA="upclosure(A)"
+  show "compat_in(upclosure(A), leq, p, q)" if "p\<in>?UA" "q\<in>?UA" for p q
+  proof -
+    from that
+    obtain a b where 1:"a\<in>A" "b\<in>A" "a\<preceq>p" "b\<preceq>q" "p\<in>P" "q\<in>P"
+      using upclosureD[OF \<open>p\<in>?UA\<close>] upclosureD[OF \<open>q\<in>?UA\<close>] by auto
+    with assms(2)
+    obtain d where "d\<in>A" "d\<preceq>a" "d\<preceq>b"
+      unfolding compat_in_def by auto
+    with 1
+    have 2:"d\<preceq>p" "d\<preceq>q" "d\<in>?UA"
+      using A_sub_upclosure[THEN subsetD] \<open>A\<subseteq>P\<close>
+        leq_transD'[of A d a] leq_transD'[of A d b] by auto
+    then
+    show ?thesis unfolding compat_in_def by auto
+  qed
+qed
 
 lemma  aux_RS1:  "f \<in> N \<rightarrow> P \<Longrightarrow> n\<in>N \<Longrightarrow> f`n \<in> upclosure(f ``N)"
-  apply (rule_tac  elem_upclosure)
-   apply (rule subset_fun_image, assumption)
-  apply (simp add: image_fun, blast)
-  done    
+  using elem_upclosure[OF subset_fun_image] image_fun
+  by (simp, blast)
 
-lemma decr_succ_decr: "f \<in> nat \<rightarrow> P \<Longrightarrow> preorder_on(P,leq) \<Longrightarrow>
-         \<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq \<Longrightarrow>
-           n\<in>nat \<Longrightarrow> m\<in>nat \<Longrightarrow> n\<le>m \<longrightarrow> \<langle>f ` m, f ` n\<rangle> \<in> leq"
-  apply (unfold preorder_on_def, erule conjE)
-  apply (induct_tac m, simp add:refl_def, rename_tac x)
-  apply (rule impI)
-  apply (case_tac "n\<le>x", simp)
-   apply (drule_tac x="x" in bspec, assumption)
-   apply (unfold trans_on_def)
-   apply (drule_tac x="f`succ(x)" in bspec, simp)
-   apply (drule_tac x="f`x" in bspec, simp)
-   apply (drule_tac x="f`n" in bspec, auto)
-  apply (drule_tac le_succ_iff [THEN iffD1], simp add: refl_def)
-  done
+lemma decr_succ_decr: 
+  assumes "f \<in> nat \<rightarrow> P" "preorder_on(P,leq)"
+    "\<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq"
+    "m\<in>nat"
+  shows "n\<in>nat \<Longrightarrow> n\<le>m \<Longrightarrow> \<langle>f ` m, f ` n\<rangle> \<in> leq"
+  using \<open>m\<in>_\<close>
+proof(induct m)
+  case 0
+  then show ?case using assms leq_reflI by simp
+next
+  case (succ x)
+  then
+  have 1:"f`succ(x) \<preceq> f`x" "f`n\<in>P" "f`x\<in>P" "f`succ(x)\<in>P"
+    using assms by simp_all
+  consider (lt) "n<succ(x)" | (eq) "n=succ(x)"
+    using succ le_succ_iff by auto
+  then 
+  show ?case 
+  proof(cases)
+    case lt
+    with 1 show ?thesis using leI succ leq_transD by auto
+  next
+    case eq
+    with 1 show ?thesis using leq_reflI by simp
+  qed
+qed
 
-lemma decr_seq_linear: "refl(P,leq) \<Longrightarrow> f \<in> nat \<rightarrow> P \<Longrightarrow>
-         \<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq \<Longrightarrow>
-           trans[P](leq) \<Longrightarrow> linear(f `` nat, leq)"
-  apply (unfold linear_def)
-  apply (rule ball_image_simp [THEN iffD2], assumption, simp, rule ballI)+
-  apply (rename_tac y)
-  apply (case_tac "x\<le>y")
-   apply (drule_tac n="x" and m="y" in decr_succ_decr)
-    (* probando que es preorder_on ... capaz sacar esto de todos lados *)
-       apply (simp add:preorder_on_def)
-    (* listo esa prueba *)
-      apply (simp+) 
-  apply (drule not_le_iff_lt[THEN iffD1, THEN leI, rotated 2], simp_all)
-  apply (drule_tac n="y" and m="x" in decr_succ_decr)
-    (* probando que es preorder_on ... capaz sacar esto de todos lados *)
-      apply (simp add:preorder_on_def)
-    (* listo esa prueba *)
-     apply (simp+)
-  done
+lemma decr_seq_linear: 
+  assumes "refl(P,leq)" "f \<in> nat \<rightarrow> P"
+    "\<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq"
+    "trans[P](leq)"
+  shows "linear(f `` nat, leq)"
+proof -
+  have "preorder_on(P,leq)" 
+    unfolding preorder_on_def using assms by simp
+  {
+    fix n m
+    assume "n\<in>nat" "m\<in>nat"
+    then
+    have "f`m \<preceq> f`n \<or> f`n \<preceq> f`m"
+    proof(cases "m\<le>n")
+      case True
+      with \<open>n\<in>_\<close> \<open>m\<in>_\<close>
+      show ?thesis 
+        using decr_succ_decr[of f n m] assms leI \<open>preorder_on(P,leq)\<close> by simp
+    next
+      case False
+      with \<open>n\<in>_\<close> \<open>m\<in>_\<close>
+      show ?thesis 
+        using decr_succ_decr[of f m n] assms leI not_le_iff_lt \<open>preorder_on(P,leq)\<close> by simp
+    qed
+  }
+  then
+  show ?thesis
+    unfolding linear_def using ball_image_simp assms by auto
+qed
 
 end (* forcing_notion *)
 
