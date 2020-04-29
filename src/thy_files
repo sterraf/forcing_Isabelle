@@ -1,33 +1,35 @@
-Forces_Definition.thy
-Arities.thy
-Forcing_Theorems.thy
-Interface.thy
-Names.thy
-Forcing_Main.thy
-FrecR.thy
-Internal_ZFC_Axioms.thy
-Nat_Miscellanea.thy
-Forcing_Data.thy
-Forcing_Notions.thy
-Internalizations.thy
-Relative_Univ.thy
-Renaming.thy
-Choice_Axiom.thy
-Least.thy
-Pointed_DC.thy
-Recursion_Thms.thy
-Renaming_Auto.thy
-Replacement_Axiom.thy
-Separation_Rename.thy
-Succession_Poset.thy
-Union_Axiom.thy
-Extensionality_Axiom.thy
-Foundation_Axiom.thy
-Infinity_Axiom.thy
-Ordinals_In_MG.thy
-Pairing_Axiom.thy
-Powerset_Axiom.thy
-Proper_Extension.thy
-Rasiowa_Sikorski.thy
-Separation_Axiom.thy
-Synthetic_Definition.thy
+# This file is used by various scripts. One can form groups of files using
+# doble quotes for marking the begin and end of each group.
+"Forces_Definition.thy"
+"Arities.thy
+ Forcing_Theorems.thy"
+"Interface.thy
+ Names.thy"
+"Forcing_Main.thy
+ FrecR.thy
+ Internal_ZFC_Axioms.thy
+ Nat_Miscellanea.thy"
+"Forcing_Data.thy
+ Forcing_Notions.thy
+ Internalizations.thy
+ Relative_Univ.thy
+ Renaming.thy"
+"Choice_Axiom.thy
+ Least.thy
+ Pointed_DC.thy
+ Recursion_Thms.thy
+ Renaming_Auto.thy
+ Replacement_Axiom.thy
+ Separation_Rename.thy
+ Succession_Poset.thy
+ Union_Axiom.thy"
+"Extensionality_Axiom.thy
+ Foundation_Axiom.thy
+ Infinity_Axiom.thy
+ Ordinals_In_MG.thy
+ Pairing_Axiom.thy
+ Powerset_Axiom.thy
+ Proper_Extension.thy
+ Rasiowa_Sikorski.thy
+ Separation_Axiom.thy
+ Synthetic_Definition.thy"

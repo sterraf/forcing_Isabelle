@@ -9,8 +9,8 @@ OUT_DIR = output/html
 ML_FILES = Renaming_ML.ml Utils.ml 
 
 LINKING_DIR  = $(PWD)/../scripts
-PARALLEL     = $(shell cat thy_files | sed s/\.thy/\.html/g )
-THY_FILES    = $(shell cat thy_files | tr \" " ")
+PARALLEL     = $(shell cat thy_files | egrep -v '^#' | sed s/\.thy/\.html/g )
+THY_FILES    = $(shell cat thy_files | egrep -v '^#' | tr \" " ")
 USR_HEAPS    = $(shell isabelle getenv ISABELLE_HEAPS | cut -f2 -d"=")
 ML_ID        = $(shell isabelle getenv ML_IDENTIFIER | cut -f2 -d"=")
 HEAP_LOG_DIR = $(USR_HEAPS)/$(ML_ID)/log
@@ -42,9 +42,9 @@ $(SESSION).tar.gz:	$(HTML_DIR) Makefile_distro ROOT
 	rm -rf tmptar
 	mkdir tmptar
 	mkdir tmptar/src
-	cp README tmptar
+	cp README.md tmptar
 	cp -r $(LINKING_DIR) tmptar/
-	cp -r README $(PARALLELIZATION) thy_files $(THY_FILES) $(ML_FILES)\
+	cp -r README.md $(PARALLELIZATION) thy_files $(THY_FILES) $(ML_FILES)\
 	 ROOT document/ tmptar/src
 	cp Makefile_distro tmptar/src/Makefile
 	 ## Avoid temporary sed files from linking:
@@ -64,9 +64,9 @@ linked:	$(HTML_DIR) $(LINKING_DIR)/linking.sh Makefile_distro ROOT
 		 https://cs.famaf.unc.edu.ar/~pedro/forcing/ZF $(PARALLEL); \
 		bash $(LINKING_DIR)/linking.sh ZF-Constructible-Trans $(PWD)/../zf_item_lists/ \
 		 https://cs.famaf.unc.edu.ar/~pedro/forcing/ZF-Constructible-Trans $(PARALLEL)
-	cp README tmptar
+	cp README.md tmptar
 	cp -r $(LINKING_DIR) tmptar/
-	cp -r README $(PARALLELIZATION) thy_files $(THY_FILES) $(ML_FILES)\
+	cp -r README.md $(PARALLELIZATION) thy_files $(THY_FILES) $(ML_FILES)\
 	 ROOT document/ tmptar/src
 	cp Makefile_distro tmptar/src/Makefile
 	 ## Avoid temporary sed files from linking:
