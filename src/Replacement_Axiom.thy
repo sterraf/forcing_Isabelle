@@ -509,17 +509,18 @@ proof -
     fix A
     let ?Y="{v . x \<in> A, v\<in>M[G] \<and> ?R(x,v)}"
     assume 1: "(##M[G])(A)"
-      "\<forall>x[##M[G]]. x \<in> A \<longrightarrow>  (\<forall>y[##M[G]]. \<forall>z[##M[G]]. ?R(x,y) \<and> ?R(x,z) \<longrightarrow> y = z)"
+      "\<forall>x[##M[G]]. x \<in> A \<longrightarrow> (\<forall>y[##M[G]]. \<forall>z[##M[G]]. ?R(x,y) \<and> ?R(x,z) \<longrightarrow> y = z)"
     then
-    have 2:"univalent(##M[G], A, ?R)" "A\<in>M[G]"
+    have "univalent(##M[G], A, ?R)" "A\<in>M[G]"
       unfolding univalent_def by simp_all
-    then
+    with assms \<open>A\<in>_\<close>
     have "(##M[G])(?Y)"
-      using Replace_sats_in_MG assms \<open>A\<in>_\<close> by auto
+      using Replace_sats_in_MG by auto
     have "b \<in> ?Y \<longleftrightarrow> (\<exists>x[##M[G]]. x \<in> A \<and> ?R(x,b))" if "(##M[G])(b)" for b
     proof(rule)
+      from \<open>A\<in>_\<close>
       show "\<exists>x[##M[G]]. x \<in> A \<and> ?R(x,b)" if "b \<in> ?Y"
-        using that transitivity_MG \<open>A\<in>_\<close> by auto
+        using that transitivity_MG by auto
     next
       show "b \<in> ?Y" if "\<exists>x[##M[G]]. x \<in> A \<and> ?R(x,b)"
       proof -
@@ -528,9 +529,9 @@ proof -
         with that
         obtain x where 3: "(##M[G])(x)" "x\<in>A" "b\<in>M[G] \<and> ?R(x,b)"
           by blast
-        then
+        with 1(2) \<open>(##M[G])(b)\<close>
         have "x\<in>M[G]" "z\<in>M[G] \<and> ?R(x,z) \<Longrightarrow> b = z" for z
-          using 1(2) \<open>(##M[G])(b)\<close> by auto
+          by auto
         then
         show ?thesis
           using ReplaceI[of "\<lambda> x y. y\<in>M[G] \<and> ?R(x,y)"] 3 by auto
@@ -540,7 +541,7 @@ proof -
     have 4:"\<forall>b[##M[G]]. b \<in> ?Y \<longleftrightarrow> (\<exists>x[##M[G]]. x \<in> A \<and> ?R(x,b))"
       by simp
     with \<open>(##M[G])(?Y)\<close>
-    have " (\<exists>Y[##M[G]]. \<forall>b[##M[G]]. b \<in> Y \<longleftrightarrow> (\<exists>x[##M[G]]. x \<in> A \<and> M[G], [x, b] @ env \<Turnstile> \<phi>))"
+    have " (\<exists>Y[##M[G]]. \<forall>b[##M[G]]. b \<in> Y \<longleftrightarrow> (\<exists>x[##M[G]]. x \<in> A \<and> ?R(x,b)))"
       by auto
   }
   then show ?thesis unfolding strong_replacement_def univalent_def
