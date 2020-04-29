@@ -257,6 +257,7 @@ lemma Replace_sats_in_MG:
   shows
     "{v. x\<in>c, v\<in>M[G] \<and> (M[G] , [x,v]@env \<Turnstile> \<phi>)} \<in> M[G]"
 proof -
+  let ?R = "\<lambda> x v . v\<in>M[G] \<and> (M[G] , [x,v]@env \<Turnstile> \<phi>)"
   from \<open>c\<in>M[G]\<close>
   obtain \<pi>' where "val(G, \<pi>') = c" "\<pi>' \<in> M"
     using GenExt_def by auto
@@ -299,7 +300,7 @@ proof -
   have "\<rho>p\<in>?\<pi> \<Longrightarrow> \<exists>t p. \<rho>p=<t,p>" for \<rho>p
     by auto
   ultimately
-  have body:"sats(M,body_fm(\<phi>,nenv),[\<alpha>,\<rho>p,m,P,leq,one] @ nenv) \<longleftrightarrow> ?Q(\<rho>p,\<alpha>)"
+  have body:"M , [\<alpha>,\<rho>p,m,P,leq,one] @ nenv \<Turnstile> body_fm(\<phi>,nenv) \<longleftrightarrow> ?Q(\<rho>p,\<alpha>)"
     if "\<rho>p\<in>?\<pi>" "\<rho>p\<in>M" "m\<in>M" "\<alpha>\<in>M" for \<alpha> \<rho>p m
     using that P_in_M leq_in_M one_in_M body_lemma[of \<rho>p \<alpha> m nenv \<phi>] by simp
   let ?f_fm="least_fm(body_fm(\<phi>,nenv),1)"
@@ -310,17 +311,17 @@ proof -
     with body
     have body':"\<And>\<alpha>. \<alpha> \<in> M \<Longrightarrow> (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a), \<alpha>, V) \<and> \<tau> \<in> V \<and>
           (snd(\<rho>p) \<tturnstile> \<phi> ([fst(\<rho>p),\<tau>] @ nenv))) \<longleftrightarrow>
-          sats(M, body_fm(\<phi>,nenv), Cons(\<alpha>, [\<rho>p, m, P, leq, one] @ nenv))" by simp
+          M, Cons(\<alpha>, [\<rho>p, m, P, leq, one] @ nenv) \<Turnstile> body_fm(\<phi>,nenv)" by simp
     from inM
-    have "sats(M, ?f_fm,[\<rho>p,m,P,leq,one] @ nenv) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
+    have "M , [\<rho>p,m,P,leq,one] @ nenv \<Turnstile> ?f_fm \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
       using sats_least_fm[OF body', of 1] unfolding QQ_def
       by (simp, simp flip: setclass_iff)
   }
   then
-  have "sats(M, ?f_fm,[\<rho>p,m,P,leq,one] @ nenv) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
+  have "M, [\<rho>p,m,P,leq,one] @ nenv \<Turnstile> ?f_fm \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
     if "\<rho>p\<in>M" "\<rho>p\<in>?\<pi>" "m\<in>M" for \<rho>p m using that by simp
   then
-  have "univalent(##M, ?\<pi>, \<lambda>\<rho>p m. sats(M, ?f_fm, [\<rho>p,m] @ ([P,leq,one] @ nenv)))"
+  have "univalent(##M, ?\<pi>, \<lambda>\<rho>p m. M , [\<rho>p,m] @ ([P,leq,one] @ nenv) \<Turnstile> ?f_fm)"
     unfolding univalent_def by (auto intro:unique_least)
   moreover from \<open>length(_) = _\<close> \<open>env \<in> _\<close>
   have "length([P,leq,one] @ nenv) = 3 #+ length(env)" by simp
@@ -336,12 +337,12 @@ proof -
   moreover
   note inM = P_in_M leq_in_M one_in_M \<open>nenv\<in>list(M)\<close> \<open>?\<pi>\<in>M\<close>
   ultimately
-  obtain Y where "Y\<in>M" "\<forall>m\<in>M. m \<in> Y \<longleftrightarrow> (\<exists>\<rho>p\<in>M. \<rho>p \<in> ?\<pi> \<and>
-          sats(M, ?f_fm, [\<rho>p,m] @ ([P,leq,one] @ nenv)))"
+  obtain Y where "Y\<in>M"
+    "\<forall>m\<in>M. m \<in> Y \<longleftrightarrow> (\<exists>\<rho>p\<in>M. \<rho>p \<in> ?\<pi> \<and> M, [\<rho>p,m] @ ([P,leq,one] @ nenv) \<Turnstile> ?f_fm)"
     using replacement_ax[of ?f_fm "[P,leq,one] @ nenv"]
     unfolding strong_replacement_def by auto
   with \<open>least(_,QQ(_),f(_))\<close> \<open>f(_) \<in> M\<close> \<open>?\<pi>\<in>M\<close>
-    \<open>_ \<Longrightarrow> _ \<Longrightarrow> _ \<Longrightarrow> sats(M,?f_fm,_) \<longleftrightarrow> least(_,_,_)\<close>
+    \<open>_ \<Longrightarrow> _ \<Longrightarrow> _ \<Longrightarrow> M,_ \<Turnstile> ?f_fm \<longleftrightarrow> least(_,_,_)\<close>
   have "f(\<rho>p)\<in>Y" if "\<rho>p\<in>?\<pi>" for \<rho>p
     using that transitivity[OF _ \<open>?\<pi>\<in>M\<close>]
     by (clarsimp, rule_tac x="<x,y>" in bexI, auto)
@@ -409,12 +410,12 @@ proof -
     obtain \<tau> where "\<tau>\<in>M" "\<tau> \<in> Vset(f(<\<rho>,q>))" "q \<tturnstile> \<phi> ([\<rho>,\<tau>] @ nenv)"
       using LeastI[of "\<lambda> \<alpha>. ?P(<\<rho>,q>,\<alpha>)" ?\<alpha>] by auto
     with \<open>q\<in>G\<close> \<open>\<rho>\<in>M\<close> \<open>nenv\<in>_\<close> \<open>arity(\<phi>)\<le> 2 #+ length(nenv)\<close>
-    have "sats(M[G],\<phi>,map(val(G),[\<rho>,\<tau>] @ nenv))"
+    have "M[G], map(val(G),[\<rho>,\<tau>] @ nenv) \<Turnstile> \<phi>"
       using truth_lemma[OF \<open>\<phi>\<in>_\<close> generic, of "[\<rho>,\<tau>] @ nenv"] by auto
     moreover from \<open>x\<in>c\<close> \<open>c\<in>M[G]\<close>
     have "x\<in>M[G]" using transitivity_MG by simp
     moreover
-    note \<open>sats(M[G],\<phi>,[x,v] @ env)\<close> \<open>env = map(val(G),nenv)\<close> \<open>\<tau>\<in>M\<close> \<open>val(G,\<rho>)=x\<close>
+    note \<open>M[G],[x,v] @ env\<Turnstile> \<phi>\<close> \<open>env = map(val(G),nenv)\<close> \<open>\<tau>\<in>M\<close> \<open>val(G,\<rho>)=x\<close>
       \<open>univalent(##M[G],_,_)\<close> \<open>x\<in>c\<close> \<open>v\<in>M[G]\<close>
     ultimately
     have "v=val(G,\<tau>)"
@@ -431,21 +432,41 @@ proof -
       by simp
   }
   then
-  have "{v. x\<in>c, v\<in>M[G]\<and>sats(M[G],\<phi>,[x,v]@env)} \<subseteq> val(G,?big_name)" (is "?repl\<subseteq>?big")
+  have "{v. x\<in>c, ?R(x,v)} \<subseteq> val(G,?big_name)" (is "?repl\<subseteq>?big")
     by blast
   with \<open>?big_name\<in>M\<close>
-  have "?repl = {v\<in>?big. \<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env )}"
-    apply (intro equality_iffI, subst Replace_iff)
-    apply (auto intro:transitivity_MG[OF _ GenExtI])
-    using \<open>univalent(##M[G],_,_)\<close> unfolding univalent_def
-    apply (rule_tac x=xa in bexI; simp)
-    apply (frule transitivity_MG[OF _ \<open>c\<in>M[G]\<close>])
-    apply (drule bspec, assumption, drule mp, assumption, clarify)
-    apply (drule_tac x=y in bspec, assumption)
-    by (drule_tac y=x in transitivity_MG[OF _ GenExtI], auto)
+  have "?repl = {v\<in>?big. \<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env )}" (is "_ = ?rhs")
+  proof(intro equalityI subsetI)
+    fix v
+    assume "v\<in>?repl"
+    with \<open>?repl\<subseteq>?big\<close>
+    obtain x where "x\<in>c" "M[G], [x, v] @ env \<Turnstile> \<phi>" "v\<in>?big"
+      using subsetD by auto
+    with \<open>univalent(##M[G],_,_)\<close> \<open>c\<in>M[G]\<close>
+    show "v \<in> ?rhs"
+      unfolding univalent_def
+      using transitivity_MG ReplaceI[of "\<lambda> x v. \<exists>x\<in>c. M[G], [x, v] @ env \<Turnstile> \<phi>"] by blast
+  next
+    fix v
+    assume "v\<in>?rhs"
+    then
+    obtain x where
+      "v\<in>val(G, ?big_name)" "M[G], [x, v] @ env \<Turnstile> \<phi>" "x\<in>c"
+      by blast
+    moreover from this \<open>c\<in>M[G]\<close>
+    have "v\<in>M[G]" "x\<in>M[G]"
+      using transitivity_MG GenExtI[OF \<open>?big_name\<in>_\<close>,of G] by auto
+    moreover from calculation \<open>univalent(##M[G],_,_)\<close>
+    have "?R(x,y) \<Longrightarrow> y = v" for y
+      unfolding univalent_def by auto
+    ultimately
+    show "v\<in>?repl"
+      using ReplaceI[of ?R x v c]
+      by blast
+  qed
   moreover
   let ?\<psi> = "Exists(And(Member(0,2#+length(env)),\<phi>))"
-  have "v\<in>M[G] \<Longrightarrow> (\<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env)) \<longleftrightarrow> sats(M[G], ?\<psi>, [v] @ env @ [c])"
+  have "v\<in>M[G] \<Longrightarrow> (\<exists>x\<in>c. M[G], [x,v] @ env \<Turnstile> \<phi>) \<longleftrightarrow> M[G], [v] @ env @ [c] \<Turnstile> ?\<psi>"
     "arity(?\<psi>) \<le> 2 #+ length(env)" "?\<psi>\<in>formula"
     for v
   proof -
@@ -456,25 +477,25 @@ proof -
       using  \<open>env\<in>_\<close>nth_concat[of v c "M[G]" env]
       by auto
     note inMG= \<open>nth(length(env)#+1,[v]@env@[c]) = c\<close> \<open>c\<in>M[G]\<close> \<open>v\<in>M[G]\<close> \<open>env\<in>_\<close>
-    show "(\<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env)) \<longleftrightarrow> sats(M[G], ?\<psi>, [v] @ env @ [c])"
+    show "(\<exists>x\<in>c. M[G], [x,v] @ env \<Turnstile> \<phi>) \<longleftrightarrow> M[G], [v] @ env @ [c] \<Turnstile> ?\<psi>"
     proof
-      assume "\<exists>x\<in>c. sats(M[G], \<phi>, [x, v] @ env)"
-      with \<open>c\<in>M[G]\<close> obtain x where
-        "x\<in>c" "sats(M[G], \<phi>, [x, v] @ env)" "x\<in>M[G]"
+      assume "\<exists>x\<in>c. M[G], [x, v] @ env \<Turnstile> \<phi>"
+      then obtain x where
+        "x\<in>c" "M[G], [x, v] @ env \<Turnstile> \<phi>" "x\<in>M[G]"
         using transitivity_MG[OF _ \<open>c\<in>M[G]\<close>]
         by auto
       with \<open>\<phi>\<in>_\<close> \<open>arity(\<phi>)\<le>2#+length(env)\<close> inMG
-      show "sats(M[G], Exists(And(Member(0, 2 #+ length(env)), \<phi>)), [v] @ env @ [c])"
+      show "M[G], [v] @ env @ [c] \<Turnstile> Exists(And(Member(0, 2 #+ length(env)), \<phi>))"
         using arity_sats_iff[of \<phi> "[c]" _ "[x,v]@env"]
         by auto
     next
-      assume "sats(M[G], Exists(And(Member(0, 2 #+ length(env)), \<phi>)), [v] @ env @ [c])"
+      assume "M[G], [v] @ env @ [c] \<Turnstile> Exists(And(Member(0, 2 #+ length(env)), \<phi>))"
       with inMG
       obtain x where
-        "x\<in>M[G]" "x\<in>c" "sats(M[G],\<phi>,[x,v]@env@[c])"
+        "x\<in>M[G]" "x\<in>c" "M[G], [x,v]@env@[c] \<Turnstile> \<phi>"
         by auto
       with \<open>\<phi>\<in>_\<close> \<open>arity(\<phi>)\<le>2#+length(env)\<close> inMG
-      show "\<exists>x\<in>c. sats(M[G], \<phi>, [x, v] @ env)"
+      show "\<exists>x\<in>c. M[G], [x, v] @ env\<Turnstile> \<phi>"
         using arity_sats_iff[of \<phi> "[c]" _ "[x,v]@env"]
         by auto
     qed
@@ -488,11 +509,11 @@ proof -
     show "?\<psi>\<in>formula" by simp
   qed
   moreover from this
-  have "{v\<in>?big. \<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env)} = {v\<in>?big. sats(M[G], ?\<psi>, [v] @ env @ [c])}"
+  have "{v\<in>?big. \<exists>x\<in>c. M[G], [x,v] @ env \<Turnstile> \<phi>} = {v\<in>?big. M[G], [v] @ env @ [c] \<Turnstile>  ?\<psi>}"
     using transitivity_MG[OF _ GenExtI, OF _ \<open>?big_name\<in>M\<close>]
     by simp
   moreover from calculation and \<open>env\<in>_\<close> \<open>c\<in>_\<close> \<open>?big\<in>M[G]\<close>
-  have "{v\<in>?big. sats(M[G], ?\<psi>, [v] @ env @ [c])} \<in> M[G]"
+  have "{v\<in>?big. M[G] , [v] @ env @ [c] \<Turnstile> ?\<psi>} \<in> M[G]"
     using Collect_sats_in_MG by auto
   ultimately
   show ?thesis by simp
@@ -527,18 +548,18 @@ proof -
         from \<open>(##M[G])(b)\<close>
         have "b\<in>M[G]" by simp
         with that
-        obtain x where 3: "(##M[G])(x)" "x\<in>A" "b\<in>M[G] \<and> ?R(x,b)"
+        obtain x where "(##M[G])(x)" "x\<in>A" "b\<in>M[G] \<and> ?R(x,b)"
           by blast
-        with 1(2) \<open>(##M[G])(b)\<close>
+        moreover from this 1 \<open>(##M[G])(b)\<close>
         have "x\<in>M[G]" "z\<in>M[G] \<and> ?R(x,z) \<Longrightarrow> b = z" for z
           by auto
-        then
+        ultimately
         show ?thesis
-          using ReplaceI[of "\<lambda> x y. y\<in>M[G] \<and> ?R(x,y)"] 3 by auto
+          using ReplaceI[of "\<lambda> x y. y\<in>M[G] \<and> ?R(x,y)"] by auto
       qed
     qed
     then
-    have 4:"\<forall>b[##M[G]]. b \<in> ?Y \<longleftrightarrow> (\<exists>x[##M[G]]. x \<in> A \<and> ?R(x,b))"
+    have "\<forall>b[##M[G]]. b \<in> ?Y \<longleftrightarrow> (\<exists>x[##M[G]]. x \<in> A \<and> ?R(x,b))"
       by simp
     with \<open>(##M[G])(?Y)\<close>
     have " (\<exists>Y[##M[G]]. \<forall>b[##M[G]]. b \<in> Y \<longleftrightarrow> (\<exists>x[##M[G]]. x \<in> A \<and> ?R(x,b)))"
