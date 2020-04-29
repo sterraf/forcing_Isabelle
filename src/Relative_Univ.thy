@@ -80,14 +80,6 @@ schematic_goal is_powapply_iff_sats:
     \<open>nth(z,env) = zz\<close>[symmetric]
   by (rule sats_is_powapply_fm_auto(1); simp add:assms)
 
-lemma trivial_fm:
-  assumes
-    "A\<noteq>0" "env\<in>list(A)"
-  shows
-    "(\<exists>P. P \<in> A) \<longleftrightarrow> sats(A, Equal(0,0), env)"
-  using assms by auto
-
-
 (* rank *)
 definition
   Hrank :: "[i,i] \<Rightarrow> i" where

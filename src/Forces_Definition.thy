@@ -5,7 +5,6 @@ text\<open>This is the core of our development.\<close>
 
 subsection\<open>The relation \<^term>\<open>frecrel\<close>\<close>
 
-(* \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x,y) *)
 definition
   frecrelP :: "[i\<Rightarrow>o,i] \<Rightarrow> o" where
   "frecrelP(M,xy) \<equiv> (\<exists>x[M]. \<exists>y[M]. pair(M,x,y,xy) \<and> is_frecR(M,x,y))"
@@ -38,7 +37,6 @@ lemma frecrelP_iff_sats:
   using assms
   by (simp add:sats_frecrelP_fm)
 
-(* {z\<in>A\<times>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x,y)} *)
 definition
   is_frecrel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "is_frecrel(M,A,r) \<equiv> \<exists>A2[M]. cartprod(M,A,A,A2) \<and> is_Collect(M,A2, frecrelP(M) ,r)"
@@ -471,8 +469,6 @@ definition
   "is_frc_at(M,P,leq,x,z) \<equiv> \<exists>r[M]. is_forcerel(M,P,x,r) \<and> 
                                     is_wfrec(M,is_Hfrc_at(M,P,leq),r,x,z)"
 
-
-(* is_frc_at(x,z) \<equiv> is_wfrec(##M,is_Hfrc_at(##M,P,leq),forcerel(x),x,z) *)
 definition
   frc_at_fm :: "[i,i,i,i] \<Rightarrow> i" where
   "frc_at_fm(p,l,x,z) == Exists(And(forcerel_fm(succ(p),succ(x),0),
@@ -553,42 +549,32 @@ definition
   forces_nmem' :: "[i,i,i,i,i] \<Rightarrow> o" where
   "forces_nmem'(P,l,p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. <q,p>\<in>l \<and> forces_mem'(P,l,q,t1,t2))"
 
-(* frc_at(P,leq,<0,t1,t2,p>) = 1*) 
 definition
   is_forces_eq' :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
   "is_forces_eq'(M,P,l,p,t1,t2) == \<exists>o[M]. \<exists>z[M]. \<exists>t[M]. number1(M,o) \<and> empty(M,z) \<and> 
                                 is_tuple(M,z,t1,t2,p,t) \<and> is_frc_at(M,P,l,t,o)"
 
-(* frc_at(P,leq,<1,t1,t2,p>) = 1*) 
 definition
   is_forces_mem' :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
   "is_forces_mem'(M,P,l,p,t1,t2) == \<exists>o[M]. \<exists>t[M]. number1(M,o) \<and>  
                                 is_tuple(M,o,t1,t2,p,t) \<and> is_frc_at(M,P,l,t,o)"
-
 
 definition
   is_forces_neq' :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
   "is_forces_neq'(M,P,l,p,t1,t2) \<equiv>
       \<not> (\<exists>q[M]. q\<in>P \<and> (\<exists>qp[M]. pair(M,q,p,qp) \<and> qp\<in>l \<and> is_forces_eq'(M,P,l,q,t1,t2)))"
 
-
-(*\<not> (\<exists>q\<in>P. <q,p>\<in>l \<and> forces_eq'(P,l,q,t1,t2))*)
 definition
   is_forces_nmem' :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
   "is_forces_nmem'(M,P,l,p,t1,t2) \<equiv>
       \<not> (\<exists>q[M]. \<exists>qp[M]. q\<in>P \<and> pair(M,q,p,qp) \<and> qp\<in>l \<and> is_forces_mem'(M,P,l,q,t1,t2))"
 
-
-(* \<exists>o\<in>M. \<exists>z\<in>M. \<exists>t\<in>M. number1(##M,o) \<and> empty(##M,z) \<and>
-                                is_tuple(##M,z,t1,t2,p,t) \<and> is_frc_at(t,o) *)
 definition
   forces_eq_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
   "forces_eq_fm(p,l,q,t1,t2) \<equiv> 
      Exists(Exists(Exists(And(number1_fm(2),And(empty_fm(1),
               And(is_tuple_fm(1,t1#+3,t2#+3,q#+3,0),frc_at_fm(p#+3,l#+3,0,2) ))))))"
 
-(* \<exists>o\<in>M. \<exists>t\<in>M. number1(##M,o) \<and>  
-                                is_tuple(##M,o,t1,t2,p,t) \<and> is_frc_at(t,o)*)
 definition
   forces_mem_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
   "forces_mem_fm(p,l,q,t1,t2) \<equiv> Exists(Exists(And(number1_fm(1),
@@ -932,14 +918,17 @@ proof -
       unfolding frecrel_def Rrel_def
       by auto
     obtain f n1 n2 p where
-      A: "x = <f,n1,n2,p>" "f\<in>2" "n1\<in>ecloseN(z)" "n2\<in>ecloseN(z)" "p\<in>P" 
+      "x = <f,n1,n2,p>" "f\<in>2" "n1\<in>ecloseN(z)" "n2\<in>ecloseN(z)" "p\<in>P" 
       using \<open>x\<in>names_below(P,z)\<close>
       unfolding names_below_def by auto
+    moreover
     obtain fy m1 m2 q where
-      B: "q\<in>P" "y = <fy,m1,m2,q>"
+      "q\<in>P" "y = <fy,m1,m2,q>"
       using \<open>y\<in>names_below(P,z)\<close>
       unfolding names_below_def by auto
-    from A B \<open>frecR(x,y)\<close>
+    moreover 
+    note \<open>frecR(x,y)\<close>
+    ultimately 
     have "x\<in>names_below(P,y)" using names_belowI by simp
   }
   then show ?thesis .
@@ -1331,10 +1320,10 @@ lemma names_below_closed:
   by simp
 
 lemma "names_below_productE" :
-  " Q \<in> M \<Longrightarrow>
- x \<in> M \<Longrightarrow> (\<And>A1 A2 A3 A4. A1 \<in> M \<Longrightarrow> A2 \<in> M \<Longrightarrow> A3 \<in> M \<Longrightarrow> A4 \<in> M \<Longrightarrow> R(A1 \<times> A2 \<times> A3 \<times> A4)) 
-       \<Longrightarrow> R(names_below(Q,x))" 
-  unfolding names_below_def using zero_in_M ecloseN_closed[of x] twoN_in_M by auto
+  assumes "Q \<in> M" "x \<in> M"
+   "\<And>A1 A2 A3 A4. A1 \<in> M \<Longrightarrow> A2 \<in> M \<Longrightarrow> A3 \<in> M \<Longrightarrow> A4 \<in> M \<Longrightarrow> R(A1 \<times> A2 \<times> A3 \<times> A4)"
+ shows "R(names_below(Q,x))" 
+  unfolding names_below_def using assms zero_in_M ecloseN_closed[of x] twoN_in_M by auto
 
 lemma forcerel_abs :
   "\<lbrakk>x\<in>M;z\<in>M\<rbrakk> \<Longrightarrow> is_forcerel(##M,P,x,z) \<longleftrightarrow> z = forcerel(P,x)" 
@@ -1406,17 +1395,6 @@ subsection\<open>Forcing for general formulas\<close>
 definition 
   ren_forces_nand :: "i\<Rightarrow>i" where
   "ren_forces_nand(\<phi>) \<equiv> Exists(And(Equal(0,1),iterates(\<lambda>p. incr_bv(p)`1 , 2, \<phi>)))"
-
-(*
-sats(M, ren_forces_nand(\<phi>),[q,p,P,leq,o] @ env) \<longleftrightarrow> sats(M, \<phi>,[q,P,leq,o] @ env)"
-
-Exists(Exists(Exists(Exists(
-          And(Equal(3,4),And(Equal(0,5),And(Equal(1,6),
-          And(Equal(2,7),iterates(\<lambda>p. incr_bv(p)`4 , 5, \<phi>)))))))))" 
-
-sats(M, ren_forces_nand(\<phi>),[q,P,leq,o,p] @ env) \<longleftrightarrow> sats(M, \<phi>,[P,leq,o,q] @ env)"
-
-  *) 
 
 lemma ren_forces_nand_type[TC] :
   "\<phi>\<in>formula \<Longrightarrow> ren_forces_nand(\<phi>) \<in>formula" 

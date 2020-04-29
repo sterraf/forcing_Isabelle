@@ -1,4 +1,5 @@
 section\<open>Interface between set models and Constructibility\<close>
+
 text\<open>This theory provides an interface between Paulson's
 relativization results and set models of ZFC. In particular,
 it is used to prove that the locale \<^term>\<open>forcing_data\<close> is
@@ -37,7 +38,7 @@ abbreviation
 definition
   infinity_ax :: "(i \<Rightarrow> o) \<Rightarrow> o" where
   "infinity_ax(M) ==
-      (\<exists>I[M]. (\<exists>z[M]. empty(M,z) \<and> z\<in>I) \<and>  (\<forall>y[M]. y\<in>I \<longrightarrow> (\<exists>sy[M]. successor(M,y,sy) \<and> sy\<in>I)))"
+      (\<exists>I[M]. (\<exists>z[M]. empty(M,z) \<and> z\<in>I) \<and> (\<forall>y[M]. y\<in>I \<longrightarrow> (\<exists>sy[M]. successor(M,y,sy) \<and> sy\<in>I)))"
 
 definition
   choice_ax :: "(i\<Rightarrow>o) \<Rightarrow> o" where
@@ -52,7 +53,6 @@ lemma choice_ax_abs :
 
 end (* M_basic *)
 
-(* wellfounded trancl *)
 definition
   wellfounded_trancl :: "[i=>o,i,i,i] => o" where
   "wellfounded_trancl(M,Z,r,p) ==
@@ -125,9 +125,7 @@ begin
 
 subsection\<open>Interface with \<^term>\<open>M_basic\<close>\<close>
 
-(* Inter_separation: "M(A) ==> separation(M, \<lambda>x. \<forall>y[M]. y\<in>A \<longrightarrow> x\<in>y)" *)
-
-
+(* Inter_separation: "M(A) ==> separation(M, \<lambda>x. \<forall> y[M]. y\<in>A \<Longrightarrow> x\<in>y)" *)
 schematic_goal inter_fm_auto:
   assumes
     "nth(i,env) = x" "nth(j,env) = B"
@@ -150,7 +148,7 @@ proof -
     and
     "arity(ifm(0,1)) = 2"
     using \<open>A\<in>M\<close> inter_fm_auto
-    by ( simp del:FOL_sats_iff add: nat_simp_union)
+    by (simp del:FOL_sats_iff add: nat_simp_union)
   then
   have "\<forall>a\<in>M. separation(##M, \<lambda>x. sats(M,ifm(0,1) , [x, a]))"
     using separation_ax by simp
@@ -188,7 +186,7 @@ proof -
     and
     "arity(dfm(0,1)) = 2"
     using \<open>B\<in>M\<close> diff_fm_auto
-    by ( simp del:FOL_sats_iff add: nat_simp_union)
+    by (simp del:FOL_sats_iff add: nat_simp_union)
   then
   have "\<forall>b\<in>M. separation(##M, \<lambda>x. sats(M,dfm(0,1) , [x, b]))"
     using separation_ax by simp
@@ -227,7 +225,7 @@ proof -
     "cpfm(0,1,2) \<in> formula"
     and
     "arity(cpfm(0,1,2)) = 3"
-    using cprod_fm_auto by ( simp del:FOL_sats_iff add: fm_defs nat_simp_union)
+    using cprod_fm_auto by (simp del:FOL_sats_iff add: fm_defs nat_simp_union)
   then
   have "\<forall>a\<in>M. \<forall>b\<in>M. separation(##M, \<lambda>z. sats(M,cpfm(0,1,2) , [z, a, b]))"
     using separation_ax by simp

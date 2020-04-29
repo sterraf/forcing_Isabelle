@@ -36,5 +36,5 @@ proof -
     then obtain z where
       "z\<in>R-``{u}\<inter>A" "y=mos(A,R,z)" using assms mos_eq[OF wf_imp_wf_on[OF \<open>wf(R)\<close>] \<open>u\<in>A\<close>] by force
     then have "y \<in> ?mA" by blast
-  } then show ?thesis using TranssetI by blast
+  } then show ?thesis unfolding Transset_def by auto
 qed

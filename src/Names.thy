@@ -1065,5 +1065,5 @@ proof -
     using generic unfolding M_generic_def by auto
 qed
 
-end (* G_generic *)
+end (* context G_generic *)
 end

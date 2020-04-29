@@ -175,9 +175,6 @@ lemma opair_name_closed :
   "\<lbrakk> x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> opair_name(x,y)\<in>M" 
   unfolding opair_name_def using upair_name_closed by simp
 
-
-(*\<exists>upxx\<in>M. \<exists>upxy\<in>M. is_upair_name(x,x,upxx) \<and> is_upair_name(x,y,upxy)
-                                          \<and> is_upair_name(upxx,upxy,z)*)
 definition
   opair_name_fm :: "[i,i,i,i] \<Rightarrow> i" where
   "opair_name_fm(x,y,o,z) \<equiv> Exists(Exists(And(upair_name_fm(x#+2,x#+2,o#+2,1),

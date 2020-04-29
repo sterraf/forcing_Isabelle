@@ -525,28 +525,41 @@ lemma sats_iff_sats_ren :
   using \<open>\<phi> \<in> formula\<close>
 proof(induct \<phi> arbitrary:n m \<rho> \<rho>' f)
   case (Member x y)
-  have 0: "ren(Member(x,y))`n`m`f = Member(f`x,f`y)" using Member assms arity_type by force
-  have 1: "x \<in> n" using Member arity_meml by simp
+  have "ren(Member(x,y))`n`m`f = Member(f`x,f`y)" using Member assms arity_type by force
+  moreover
+  have "x \<in> n" using Member arity_meml by simp
+  moreover 
   have "y \<in> n" using Member arity_memr by simp
-  then show ?case using Member 1 0 ltI by simp
+  ultimately
+  show ?case using Member ltI by simp
 next
   case (Equal x y)
-  have 0: "ren(Equal(x,y))`n`m`f = Equal(f`x,f`y)" using Equal assms arity_type by force
-  have 1: "x \<in> n" using Equal arity_eql by simp
+  have "ren(Equal(x,y))`n`m`f = Equal(f`x,f`y)" using Equal assms arity_type by force
+  moreover
+  have "x \<in> n" using Equal arity_eql by simp
+  moreover
   have "y \<in> n" using Equal arity_eqr by simp
-  then show ?case using Equal 1 0 ltI by simp
+  ultimately show ?case using Equal ltI by simp
 next
   case (Nand p q)
-  have 0:"ren(Nand(p,q))`n`m`f = Nand(ren(p)`n`m`f,ren(q)`n`m`f)" using Nand by simp
+  have "ren(Nand(p,q))`n`m`f = Nand(ren(p)`n`m`f,ren(q)`n`m`f)" using Nand by simp
+  moreover
   have "arity(p) \<le> n" using Nand nand_ar1D by simp
-  then have 1:"i \<in> arity(p) \<Longrightarrow> i \<in> n" for i using subsetD[OF le_imp_subset[OF \<open>arity(p) \<le> n\<close>]] by simp
-  then have "i \<in> arity(p) \<Longrightarrow> nth(i,\<rho>) = nth(f`i,\<rho>')" for i using Nand ltI by simp
-  then have 2:"sats(M,p,\<rho>) \<longleftrightarrow> sats(M,ren(p)`n`m`f,\<rho>')" using \<open>arity(p)\<le>n\<close> 1 Nand by simp
+  moreover from this
+  have "i \<in> arity(p) \<Longrightarrow> i \<in> n" for i using subsetD[OF le_imp_subset[OF \<open>arity(p) \<le> n\<close>]] by simp
+  moreover from this
+  have "i \<in> arity(p) \<Longrightarrow> nth(i,\<rho>) = nth(f`i,\<rho>')" for i using Nand ltI by simp
+  moreover from this
+  have "sats(M,p,\<rho>) \<longleftrightarrow> sats(M,ren(p)`n`m`f,\<rho>')" using \<open>arity(p)\<le>n\<close> Nand by simp
   have "arity(q) \<le> n" using Nand nand_ar2D by simp
-  then have 3:"i \<in> arity(q) \<Longrightarrow> i \<in> n" for i using subsetD[OF le_imp_subset[OF \<open>arity(q) \<le> n\<close>]] by simp
-  then have "i \<in> arity(q) \<Longrightarrow> nth(i,\<rho>) = nth(f`i,\<rho>')" for i using Nand ltI by simp
-  then have 4:"sats(M,q,\<rho>) \<longleftrightarrow> sats(M,ren(q)`n`m`f,\<rho>')" using assms \<open>arity(q)\<le>n\<close> 3 Nand by simp
-  then show ?case using Nand 0 2 4 by simp
+  moreover from this
+  have "i \<in> arity(q) \<Longrightarrow> i \<in> n" for i using subsetD[OF le_imp_subset[OF \<open>arity(q) \<le> n\<close>]] by simp
+  moreover from this
+  have "i \<in> arity(q) \<Longrightarrow> nth(i,\<rho>) = nth(f`i,\<rho>')" for i using Nand ltI by simp
+  moreover from this
+  have "sats(M,q,\<rho>) \<longleftrightarrow> sats(M,ren(q)`n`m`f,\<rho>')" using assms \<open>arity(q)\<le>n\<close> Nand by simp
+  ultimately
+  show ?case using Nand by simp
 next
   case (Forall p)
   have 0:"ren(Forall(p))`n`m`f = Forall(ren(p)`succ(n)`succ(m)`sum_id(n,f))"
@@ -557,7 +570,7 @@ next
   have "succ(n)\<in>nat" "succ(m)\<in>nat" using Forall by auto
   then have A:"\<And> j .j < succ(n) \<Longrightarrow> nth(j, Cons(a, \<rho>)) = nth(?g`j, Cons(a, \<rho>'))" if "a\<in>M" for a
     using that env_coincidence_sum_id Forall ltD by force
-  have 4:
+  have
     "sats(M,p,Cons(a,\<rho>)) \<longleftrightarrow> sats(M,ren(p)`succ(n)`succ(m)`?g,Cons(a,\<rho>'))" if "a\<in>M" for a
   proof -
     have C:"Cons(a,\<rho>) \<in> list(M)" "Cons(a,\<rho>')\<in>list(M)" using Forall that by auto
@@ -565,7 +578,7 @@ next
       using Forall(2)[OF \<open>succ(n)\<in>nat\<close> \<open>succ(m)\<in>nat\<close> C(1) C(2) 1 2 A[OF \<open>a\<in>M\<close>]] by simp
     then show ?thesis .
   qed
-  then show ?case using Forall 0 1 2 4 by simp
+  then show ?case using Forall 0 1 2 by simp
 qed
 
 end

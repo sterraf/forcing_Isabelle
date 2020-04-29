@@ -3,8 +3,7 @@ theory Separation_Rename
   imports Interface
 begin
 
-lemma apply_fun: "f \<in> Pi(A,B) ==> <a,b>: f \<Longrightarrow> f`a = b"
-  by(auto simp add: apply_iff)
+lemmas apply_fun = apply_iff[THEN iffD1]
 
 lemma nth_concat : "[p,t] \<in> list(A) \<Longrightarrow> env\<in> list(A) \<Longrightarrow> nth(1 #+ length(env),[p]@ env @ [t]) = t"
   by(auto simp add:nth_append)
@@ -384,7 +383,8 @@ lemma sep_var_action :
   shows "\<forall> i . i \<in> (7#+length(env)) - weak(length(env),5) \<longrightarrow> 
     nth(sep_var(length(env))`i,[t,p,u,P,leq,o,pi]@env) = nth(i,[p,P,leq,o,t] @ env @ [pi,u])"
   using assms
-  apply (subst sep_var_domain[OF length_type[OF \<open>env\<in>list(M)\<close>],symmetric],subst (1) sep_var_def,auto)
+  apply (subst sep_var_domain[OF length_type[OF \<open>env\<in>list(M)\<close>],symmetric])
+  apply(subst (1) sep_var_def,auto)
   apply (subst apply_fun[OF sep_var_type],simp add: length_type[OF \<open>env\<in>list(M)\<close>],simp add: sep_var_def,simp)+
   apply (simp add: nth_concat2[OF \<open>env\<in>list(M)\<close>])
   apply (subst apply_fun[OF sep_var_type],simp add: length_type[OF \<open>env\<in>list(M)\<close>],simp add: sep_var_def,simp)
@@ -395,7 +395,7 @@ definition
   rensep :: "i \<Rightarrow> i" where
   "rensep(n) == union_fun(sep_var(n),sep_env(n),7#+n-weak(n,5),weak(n,5))"
 
-lemma rensep_aux : 
+lemma rensep_aux :
   assumes "n\<in>nat"
   shows "(7#+n-weak(n,5)) \<union> weak(n,5) = 7#+n" "7#+n \<union> ( 7 #+ n - 7) = 7#+n"
 proof -
