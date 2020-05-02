@@ -6,7 +6,7 @@ begin
 
 lemma RS_relation:
   assumes "p\<in>P" "n\<in>nat"
-  shows "\<exists>y\<in>P. \<langle>p,y\<rangle> \<in> (\<lambda>m\<in>nat. {\<langle>x,y\<rangle>\<in>P*P. y\<preceq>x \<and> y\<in>\<D>`(pred(m))})`n"
+  shows "\<exists>y\<in>P. \<langle>p,y\<rangle> \<in> (\<lambda>m\<in>nat. {\<langle>x,y\<rangle>\<in>P\<times>P. y\<preceq>x \<and> y\<in>\<D>`(pred(m))})`n"
 proof -
   from seq_of_denses \<open>n\<in>nat\<close>
   have "dense(\<D> ` pred(n))" by simp
@@ -33,7 +33,7 @@ lemma DC_imp_RS_sequence:
   shows "\<exists>f. f: nat\<rightarrow>P \<and> f ` 0 = p \<and> 
      (\<forall>n\<in>nat. f ` succ(n)\<preceq> f ` n \<and> f ` succ(n) \<in> \<D> ` n)"
 proof -
-  let ?S="(\<lambda>m\<in>nat. {\<langle>x,y\<rangle>\<in>P*P. y\<preceq>x \<and> y\<in>\<D>`(pred(m))})"
+  let ?S="(\<lambda>m\<in>nat. {\<langle>x,y\<rangle>\<in>P\<times>P. y\<preceq>x \<and> y\<in>\<D>`(pred(m))})"
   have "\<forall>x\<in>P. \<forall>n\<in>nat. \<exists>y\<in>P. \<langle>x,y\<rangle> \<in> ?S`n" 
     using RS_relation by (auto)
   then

@@ -220,14 +220,14 @@ lemma tr_edrel_eclose : "<y,z> \<in> edrel(eclose({x}))^+ \<Longrightarrow> y \<
 
 lemma restrict_edrel_eq :
   assumes "z \<in> domain(x)"
-  shows "edrel(eclose({x}))\<inter> eclose({z})*eclose({z}) = edrel(eclose({z}))"
+  shows "edrel(eclose({x})) \<inter> eclose({z})\<times>eclose({z}) = edrel(eclose({z}))"
 proof
   let ?ec="\<lambda> y . edrel(eclose({y}))"
   let ?ez="eclose({z})"
-  let ?rr="?ec(x)\<inter>?ez*?ez"
+  let ?rr="?ec(x) \<inter> ?ez \<times> ?ez"
   { fix y
     assume yr:"y \<in> ?rr"
-    with yr obtain a b where 1:"<a,b> \<in> ?rr\<inter>?ez*?ez"
+    with yr obtain a b where 1:"<a,b> \<in> ?rr"
       "a \<in> ?ez" "b \<in> ?ez" "<a,b> \<in> ?ec(x)" "y=<a,b>" by blast
     then have "a \<in> domain(b)" using edrelD by blast
     with 1 have "y \<in> edrel(eclose({z}))" by blast
@@ -236,7 +236,7 @@ proof
 next
   let ?ec="\<lambda> y . edrel(eclose({y}))"
   let ?ez="eclose({z})"
-  let ?rr="?ec(x)\<inter>?ez*?ez"
+  let ?rr="?ec(x) \<inter> ?ez \<times> ?ez"
   { fix y
     assume yr:"y \<in> edrel(?ez)"
     then obtain a b where 1: "a \<in> ?ez" "b \<in> ?ez" "y=<a,b>" "a \<in> domain(b)"
