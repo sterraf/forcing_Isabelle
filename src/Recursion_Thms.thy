@@ -7,25 +7,25 @@ recursion on some relation \<^term>\<open>R\<close> and its transitive closure
 \<^term>\<open>R^*\<close>\<close>
   (* Restrict the relation r to the field A*A *)
 
-lemma fld_restrict_eq : "a \<in> A \<Longrightarrow> (r\<inter>A*A)-``{a} = (r-``{a} \<inter> A)"
+lemma fld_restrict_eq : "a \<in> A \<Longrightarrow> (r \<inter> A\<times>A)-``{a} = (r-``{a} \<inter> A)"
   by(force)
 
-lemma fld_restrict_mono : "relation(r) \<Longrightarrow> A \<subseteq> B \<Longrightarrow> r\<inter>A*A \<subseteq> r\<inter>B*B"
+lemma fld_restrict_mono : "relation(r) \<Longrightarrow> A \<subseteq> B \<Longrightarrow> r \<inter> A\<times>A \<subseteq> r \<inter> B\<times>B"
   by(auto)
 
 lemma fld_restrict_dom :
   assumes "relation(r)" "domain(r) \<subseteq> A" "range(r)\<subseteq> A"
-  shows "r\<inter>A*A = r"
+  shows "r\<inter> A\<times>A = r"
 proof (rule equalityI,blast,rule subsetI)
   { fix x
     assume xr: "x \<in> r"
     from xr assms have "\<exists> a b . x = <a,b>" by (simp add: relation_def)
-    then obtain a b where "<a,b> \<in> r" "<a,b> \<in> r\<inter>A*A" "x \<in> r\<inter>A*A"
+    then obtain a b where "<a,b> \<in> r" "<a,b> \<in> r\<inter>A\<times>A" "x \<in> r\<inter>A\<times>A"
       using assms xr
       by force
-    then have "x\<in> r \<inter> A*A" by simp
+    then have "x\<in> r \<inter> A\<times>A" by simp
   }
-  then show "x \<in> r \<Longrightarrow> x\<in> r\<inter>A*A" for x .
+  then show "x \<in> r \<Longrightarrow> x\<in> r\<inter>A\<times>A" for x .
 qed
 
 definition tr_down :: "[i,i] \<Rightarrow> i"
@@ -42,7 +42,7 @@ lemma tr_down_mono : "relation(r) \<Longrightarrow> x \<in> r-``{a} \<Longrighta
 
 lemma rest_eq :
   assumes "relation(r)" and "r-``{a} \<subseteq> B" and "a \<in> B"
-  shows "r-``{a} = (r\<inter>B*B)-``{a}"
+  shows "r-``{a} = (r\<inter>B\<times>B)-``{a}"
 proof (intro equalityI subsetI)
   fix x
   assume "x \<in> r-``{a}"
@@ -51,14 +51,14 @@ proof (intro equalityI subsetI)
   from \<open>x\<in> r-``{a}\<close>
   have "<x,a> \<in> r" using underD by simp
   then
-  show "x \<in> (r\<inter>B*B)-``{a}" using \<open>x \<in> B\<close> \<open>a\<in>B\<close> underI by simp
+  show "x \<in> (r\<inter>B\<times>B)-``{a}" using \<open>x\<in>B\<close> \<open>a\<in>B\<close> underI by simp
 next
   from assms
-  show "x \<in> r -`` {a}" if  "x \<in> (r \<inter> B \<times> B) -`` {a}" for x
+  show "x \<in> r -`` {a}" if  "x \<in> (r \<inter> B\<times>B) -`` {a}" for x
     using vimage_mono that by auto
 qed
 
-lemma wfrec_restr_eq : "r' = r \<inter> A*A \<Longrightarrow> wfrec[A](r,a,H) = wfrec(r',a,H)"
+lemma wfrec_restr_eq : "r' = r \<inter> A\<times>A \<Longrightarrow> wfrec[A](r,a,H) = wfrec(r',a,H)"
   by(simp add:wfrec_on_def)
 
 lemma wfrec_restr :
@@ -100,7 +100,7 @@ proof (induct a arbitrary:A rule:wf_induct_raw[OF wfr] )
   have "... = H(a,\<lambda> x \<in> r-``{a} . wfrec[A](r,x,H))"
     using assms Eq1 by simp
   also from 1 \<open>r-``{a} \<subseteq> A\<close>
-  have "... = H(a,\<lambda> x \<in> (r\<inter>A*A)-``{a} . wfrec[A](r,x,H))"
+  have "... = H(a,\<lambda> x \<in> (r\<inter>A\<times>A)-``{a} . wfrec[A](r,x,H))"
     using assms rest_eq  by simp
   also from \<open>a\<in>A\<close>
   have "... = H(a,\<lambda> x \<in> (r-``{a})\<inter>A . wfrec[A](r,x,H))"
