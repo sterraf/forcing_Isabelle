@@ -38,7 +38,7 @@ $(HTML_DIR):	thy_files $(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT \
 
 html:	$(HTML_DIR)
 
-$(SESSION).tar.gz:	$(HTML_DIR) Makefile_distro ROOT
+$(SESSION).tar.gz:	$(HTML_DIR) Makefile_distro ROOT README.md
 	rm -rf tmptar
 	mkdir tmptar
 	mkdir tmptar/src
@@ -55,7 +55,7 @@ $(SESSION).tar.gz:	$(HTML_DIR) Makefile_distro ROOT
 
 tar:    $(SESSION).tar.gz
 
-linked:	$(HTML_DIR) $(LINKING_DIR)/linking.sh Makefile_distro ROOT
+linked:	$(HTML_DIR) $(LINKING_DIR)/linking.sh Makefile_distro ROOT README.md
 	rm -rf tmptar
 	mkdir tmptar
 	mkdir tmptar/src
