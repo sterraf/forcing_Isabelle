@@ -21,7 +21,7 @@ subsection\<open>Renaming of free variables\<close>
 
 definition
   union_fun :: "[i,i,i,i] \<Rightarrow> i" where
-  "union_fun(f,g,m,p) == \<lambda>j \<in> m \<union> p  . if j\<in>m then f`j else g`j"
+  "union_fun(f,g,m,p) \<equiv> \<lambda>j \<in> m \<union> p  . if j\<in>m then f`j else g`j"
 
 lemma union_fun_type:
   assumes "f \<in> m \<rightarrow> n"
@@ -116,7 +116,7 @@ qed
 
 definition
   sum :: "[i,i,i,i,i] \<Rightarrow> i" where
-  "sum(f,g,m,n,p) == \<lambda>j \<in> m#+p  . if j<m then f`j else (g`(j#-m))#+n"
+  "sum(f,g,m,n,p) \<equiv> \<lambda>j \<in> m#+p  . if j<m then f`j else (g`(j#-m))#+n"
 
 lemma sum_inl:
   assumes "m \<in> nat" "n\<in>nat"
@@ -386,7 +386,7 @@ lemma sum_action_id_aux :
 
 definition
   sum_id :: "[i,i] \<Rightarrow> i" where
-  "sum_id(m,f) == sum(\<lambda>x\<in>1.x,f,1,1,m)"
+  "sum_id(m,f) \<equiv> sum(\<lambda>x\<in>1.x,f,1,1,m)"
 
 lemma sum_id0 : "m\<in>nat\<Longrightarrow>sum_id(m,f)`0 = 0"
   by(unfold sum_id_def,subst sum_inl,auto)

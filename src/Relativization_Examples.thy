@@ -4,22 +4,22 @@ theory Relativization_Examples
 begin
 
 definition test1 :: "i \<Rightarrow> i" where
-  "test1(a) == <0,a>"
+  "test1(a) \<equiv> <0,a>"
 
 definition test2 :: "i \<Rightarrow> o" where
-  "test2(a) == <0,1> \<in> a"
+  "test2(a) \<equiv> <0,1> \<in> a"
 
 definition test2' :: "i \<Rightarrow> o" where
-  "test2'(a) == <{0},{0,1}> \<in> a"
+  "test2'(a) \<equiv> <{0},{0,1}> \<in> a"
 
 definition test3 :: "i" where
-  "test3 == {x \<in> 0 . x = x}"
+  "test3 \<equiv> {x \<in> 0 . x = x}"
 
 definition test4 :: "o" where
-  "test4 == \<exists>x\<in>1. x = 0"
+  "test4 \<equiv> \<exists>x\<in>1. x = 0"
 
 definition test5 :: "o" where
-  "test5 == \<forall>x\<in>1. x = 0"
+  "test5 \<equiv> \<forall>x\<in>1. x = 0"
 
 definition test6 :: "i \<Rightarrow> i" where
   "test6(a) = {x \<in> 2 . test2(a)}"
@@ -53,10 +53,11 @@ end ;
     ["test4","test5","test1","test2","test2'","test3"]
 
 \<close>
+
 relativize "test6" "is_test6" "M"
 
 lemma (in M_trivial) test6_abs : "M(a) \<Longrightarrow> M(t) \<Longrightarrow> t = test6(a) \<longleftrightarrow> is_test6(M,a,t)"
-  unfolding test6_def is_test6_def
-  using successor_abs empty_abs by auto
+  unfolding test6_def is_test6_def 
+  using successor_abs empty_abs by simp
 
 end

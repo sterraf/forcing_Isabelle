@@ -10,7 +10,7 @@ subsection\<open>Basic concepts\<close>
 text\<open>We say that two elements $p,q$ are
   \<^emph>\<open>compatible\<close> if they have a lower bound in $P$\<close>
 definition compat_in :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "compat_in(A,r,p,q) == \<exists>d\<in>A . \<langle>d,p\<rangle>\<in>r \<and> \<langle>d,q\<rangle>\<in>r"
+  "compat_in(A,r,p,q) \<equiv> \<exists>d\<in>A . \<langle>d,p\<rangle>\<in>r \<and> \<langle>d,q\<rangle>\<in>r"
 
 definition
   is_compat_in :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
@@ -37,11 +37,11 @@ lemma refl_monot_domain: "refl(B,r) \<Longrightarrow> A\<subseteq>B \<Longrighta
 
 definition
   antichain :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "antichain(P,leq,A) == A\<subseteq>P \<and> (\<forall>p\<in>A.\<forall>q\<in>A.(\<not> compat_in(P,leq,p,q)))"
+  "antichain(P,leq,A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A.\<forall>q\<in>A.(\<not> compat_in(P,leq,p,q)))"
 
 definition 
   ccc :: "i \<Rightarrow> i \<Rightarrow> o" where
-  "ccc(P,leq) == \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
+  "ccc(P,leq) \<equiv> \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
 
 locale forcing_notion =
   fixes P leq one
@@ -61,25 +61,25 @@ text\<open>A set $D$ is \<^emph>\<open>dense\<close> if every element $p\in P$ h
 bound in $D$.\<close>
 definition 
   dense :: "i\<Rightarrow>o" where
-  "dense(D) == \<forall>p\<in>P. \<exists>d\<in>D . d\<preceq>p"
+  "dense(D) \<equiv> \<forall>p\<in>P. \<exists>d\<in>D . d\<preceq>p"
 
 text\<open>There is also a weaker definition which asks for 
 a lower bound in $D$ only for the elements below some fixed 
 element $q$.\<close>
 definition 
   dense_below :: "i\<Rightarrow>i\<Rightarrow>o" where
-  "dense_below(D,q) == \<forall>p\<in>P. p\<preceq>q \<longrightarrow> (\<exists>d\<in>D. d\<in>P \<and> d\<preceq>p)"
+  "dense_below(D,q) \<equiv> \<forall>p\<in>P. p\<preceq>q \<longrightarrow> (\<exists>d\<in>D. d\<in>P \<and> d\<preceq>p)"
 
 lemma P_dense: "dense(P)"
   by (insert leq_preord, auto simp add: preorder_on_def refl_def dense_def)
 
 definition 
   increasing :: "i\<Rightarrow>o" where
-  "increasing(F) == \<forall>x\<in>F. \<forall> p \<in> P . x\<preceq>p \<longrightarrow> p\<in>F"
+  "increasing(F) \<equiv> \<forall>x\<in>F. \<forall> p \<in> P . x\<preceq>p \<longrightarrow> p\<in>F"
 
 definition 
   compat :: "i\<Rightarrow>i\<Rightarrow>o" where
-  "compat(p,q) == compat_in(P,leq,p,q)"
+  "compat(p,q) \<equiv> compat_in(P,leq,p,q)"
 
 lemma leq_transD:  "a\<preceq>b \<Longrightarrow> b\<preceq>c \<Longrightarrow> a \<in> P\<Longrightarrow> b \<in> P\<Longrightarrow> c \<in> P\<Longrightarrow> a\<preceq>c"
   using leq_preord trans_onD unfolding preorder_on_def by blast
@@ -162,13 +162,13 @@ qed *)
 
 definition
   antichain :: "i\<Rightarrow>o" where
-  "antichain(A) == A\<subseteq>P \<and> (\<forall>p\<in>A.\<forall>q\<in>A.(\<not>compat(p,q)))"
+  "antichain(A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A.\<forall>q\<in>A.(\<not>compat(p,q)))"
 
 text\<open>A filter is an increasing set $G$ with all its elements 
 being compatible in $G$.\<close>
 definition 
   filter :: "i\<Rightarrow>o" where
-  "filter(G) == G\<subseteq>P \<and> increasing(G) \<and> (\<forall>p\<in>G. \<forall>q\<in>G. compat_in(G,leq,p,q))"
+  "filter(G) \<equiv> G\<subseteq>P \<and> increasing(G) \<and> (\<forall>p\<in>G. \<forall>q\<in>G. compat_in(G,leq,p,q))"
 
 lemma filterD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> x \<in> P"
   by (auto simp add : subsetD filter_def)
@@ -190,7 +190,7 @@ and prove that the closure of $A$ is a filter if its elements are
 compatible in $A$.\<close>
 definition  
   upclosure :: "i\<Rightarrow>i" where
-  "upclosure(A) == {p\<in>P.\<exists>a\<in>A. a\<preceq>p}"
+  "upclosure(A) \<equiv> {p\<in>P.\<exists>a\<in>A. a\<preceq>p}"
 
 lemma  upclosureI [intro] : "p\<in>P \<Longrightarrow> a\<in>A \<Longrightarrow> a\<preceq>p \<Longrightarrow> p\<in>upclosure(A)"
   by (simp add:upclosure_def, auto)
@@ -318,7 +318,7 @@ begin
 
 definition
   D_generic :: "i\<Rightarrow>o" where
-  "D_generic(G) == filter(G) \<and> (\<forall>n\<in>nat.(\<D>`n)\<inter>G\<noteq>0)"
+  "D_generic(G) \<equiv> filter(G) \<and> (\<forall>n\<in>nat.(\<D>`n)\<inter>G\<noteq>0)"
 
 text\<open>The next lemma identifies a sufficient condition for obtaining
 RSL.\<close>

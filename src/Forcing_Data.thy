@@ -234,7 +234,7 @@ lemmas P_sub_M = transD[OF trans_M P_in_M]
 
 definition
   M_generic :: "i\<Rightarrow>o" where
-  "M_generic(G) == filter(G) \<and> (\<forall>D\<in>M. D\<subseteq>P \<and> dense(D)\<longrightarrow>D\<inter>G\<noteq>0)"
+  "M_generic(G) \<equiv> filter(G) \<and> (\<forall>D\<in>M. D\<subseteq>P \<and> dense(D)\<longrightarrow>D\<inter>G\<noteq>0)"
 
 lemma M_genericD [dest]: "M_generic(G) \<Longrightarrow> x\<in>G \<Longrightarrow> x\<in>P"
   unfolding M_generic_def by (blast dest:filterD)

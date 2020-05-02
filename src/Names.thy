@@ -10,7 +10,7 @@ begin
 
 definition
   SepReplace :: "[i, i\<Rightarrow>i, i\<Rightarrow> o] \<Rightarrow>i" where
-  "SepReplace(A,b,Q) == {y . x\<in>A, y=b(x) \<and> Q(x)}"
+  "SepReplace(A,b,Q) \<equiv> {y . x\<in>A, y=b(x) \<and> Q(x)}"
 
 syntax
   "_SepReplace"  :: "[i, pttrn, i, o] => i"  ("(1{_ ../ _ \<in> _, _})")
@@ -85,7 +85,7 @@ qed
 
 lemma in_dom_in_eclose :
   assumes "x \<in> domain(z)"
-  shows " x \<in> eclose(z)"
+  shows "x \<in> eclose(z)"
 proof -
   from assms
   obtain y where "<x,y> \<in> z"
@@ -101,11 +101,11 @@ text\<open>\<^term>\<open>ed\<close> is the well-founded relation on which
 \<^term>\<open>val\<close> is defined\<close>
 definition
   ed :: "[i,i] \<Rightarrow> o" where
-  "ed(x,y) == x \<in> domain(y)"
+  "ed(x,y) \<equiv> x \<in> domain(y)"
 
 definition
   edrel :: "i \<Rightarrow> i" where
-  "edrel(A) == Rrel(ed,A)"
+  "edrel(A) \<equiv> Rrel(ed,A)"
 
 
 lemma edI[intro!]: "t\<in>domain(x) \<Longrightarrow> ed(t,x)"
@@ -205,7 +205,7 @@ proof
     unfolding edrel_def Rrel_def ed_def
     by auto
 next
-  show " domain(x) \<subseteq> edrel(eclose({x})) -`` {x}"
+  show "domain(x) \<subseteq> edrel(eclose({x})) -`` {x}"
     unfolding edrel_def Rrel_def
     using in_dom_in_eclose eclose_sing arg_into_eclose
     by blast
@@ -272,9 +272,6 @@ lemma upairM : "x \<in> M \<Longrightarrow> y \<in> M \<Longrightarrow> {x,y} \<
 lemma singletonM : "a \<in> M \<Longrightarrow> {a} \<in> M"
   by (simp flip: setclass_iff)
 
-lemma pairM : "x \<in>  M \<Longrightarrow> y \<in> M \<Longrightarrow> <x,y> \<in> M"
-  by (simp flip: setclass_iff)
-
 lemma Rep_simp : "Replace(u,\<lambda> y z . z = f(y)) = { f(y) . y \<in> u}"
   by(auto)
 
@@ -286,11 +283,11 @@ begin
 
 definition
   Hcheck :: "[i,i] \<Rightarrow> i" where
-  "Hcheck(z,f)  == { <f`y,one> . y \<in> z}"
+  "Hcheck(z,f)  \<equiv> { <f`y,one> . y \<in> z}"
 
 definition
   check :: "i \<Rightarrow> i" where
-  "check(x) == transrec(x , Hcheck)"
+  "check(x) \<equiv> transrec(x , Hcheck)"
 
 lemma checkD:
   "check(x) =  wfrec(Memrel(eclose({x})), x, Hcheck)"
@@ -298,7 +295,7 @@ lemma checkD:
 
 definition
   rcheck :: "i \<Rightarrow> i" where
-  "rcheck(x) == Memrel(eclose({x}))^+"
+  "rcheck(x) \<equiv> Memrel(eclose({x}))^+"
 
 
 lemma Hcheck_trancl:"Hcheck(y, restrict(f,Memrel(eclose({x}))-``{y}))
@@ -365,7 +362,7 @@ qed
 
 definition
   Hv :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i" where
-  "Hv(G,x,f) == { f`y .. y\<in> domain(x), \<exists>p\<in>P. <y,p> \<in> x \<and> p \<in> G }"
+  "Hv(G,x,f) \<equiv> { f`y .. y\<in> domain(x), \<exists>p\<in>P. <y,p> \<in> x \<and> p \<in> G }"
 
 text\<open>The funcion \<^term>\<open>val\<close> interprets a name in \<^term>\<open>M\<close>
 according to a (generic) filter \<^term>\<open>G\<close>. Note the definition
@@ -373,7 +370,7 @@ in terms of the well-founded recursor.\<close>
 
 definition
   val :: "i\<Rightarrow>i\<Rightarrow>i" where
-  "val(G,\<tau>) == wfrec(edrel(eclose({\<tau>})), \<tau> ,Hv(G))"
+  "val(G,\<tau>) \<equiv> wfrec(edrel(eclose({\<tau>})), \<tau> ,Hv(G))"
 
 lemma aux_def_val:
   assumes "z \<in> domain(x)"
@@ -526,7 +523,7 @@ qed
 lemma val_only_pairs: "val(F,\<tau>) = val(F,{x\<in>\<tau>. \<exists>t p. x=<t,p>})"
 proof
   have "val(F,\<tau>) = val(F,{x\<in>\<tau>. \<exists>t\<in>domain(\<tau>). \<exists>p\<in>P. x=<t,p>})"
-    (is " _ = val(F,?name)")
+    (is "_ = val(F,?name)")
     using val_only_names .
   also
   have "... \<subseteq> val(F,{x\<in>\<tau>. \<exists>t p. x=<t,p>})"
@@ -548,7 +545,7 @@ lemma val_subset_domain_times_P: "val(F,\<tau>) \<subseteq> val(F,domain(\<tau>)
 
 definition
   GenExt :: "i\<Rightarrow>i"     ("M[_]")
-  where "GenExt(G)== {val(G,\<tau>). \<tau> \<in> M}"
+  where "GenExt(G)\<equiv> {val(G,\<tau>). \<tau> \<in> M}"
 
 
 lemma val_of_elem: "<\<theta>,p> \<in> \<pi> \<Longrightarrow> p\<in>G \<Longrightarrow> p\<in>P \<Longrightarrow> val(G,\<theta>) \<in> val(G,\<pi>)"
@@ -621,7 +618,7 @@ lemma check_n_M :
 next
   case (succ x)
   have "one \<in> M" using one_in_P P_sub_M subsetD by simp
-  with \<open>check(x)\<in>M\<close> have "<check(x),one> \<in> M" using pairM by simp
+  with \<open>check(x)\<in>M\<close> have "<check(x),one> \<in> M" using tuples_in_M by simp
   then have "{<check(x),one>} \<in> M" using singletonM by simp
   with \<open>check(x)\<in>M\<close> have "check(x) \<union> {<check(x),one>} \<in> M" using Un_closed by simp
   then show ?case using \<open>x\<in>nat\<close> def_checkS by simp
@@ -630,11 +627,11 @@ qed
 
 definition
   PHcheck :: "[i,i,i,i] \<Rightarrow> o" where
-  "PHcheck(o,f,y,p) == p\<in>M \<and> (\<exists>fy[##M]. fun_apply(##M,f,y,fy) \<and> pair(##M,fy,o,p))"
+  "PHcheck(o,f,y,p) \<equiv> p\<in>M \<and> (\<exists>fy[##M]. fun_apply(##M,f,y,fy) \<and> pair(##M,fy,o,p))"
 
 definition
   is_Hcheck :: "[i,i,i,i] \<Rightarrow> o" where
-  "is_Hcheck(o,z,f,hc)  == is_Replace(##M,z,PHcheck(o,f),hc)"
+  "is_Hcheck(o,z,f,hc)  \<equiv> is_Replace(##M,z,PHcheck(o,f),hc)"
 
 
 lemma one_in_M: "one \<in> M"
@@ -660,37 +657,37 @@ proof -
 qed
 
 (*
-  "PHcheck(o,f,y,p) == \<exists>fy[##M]. fun_apply(##M,f,y,fy) \<and> pair(##M,fy,o,p)"
+  "PHcheck(o,f,y,p) \<equiv> \<exists>fy[##M]. fun_apply(##M,f,y,fy) \<and> pair(##M,fy,o,p)"
 *)
 definition
   PHcheck_fm :: "[i,i,i,i] \<Rightarrow> i" where
-  "PHcheck_fm(o,f,y,p) == Exists(And(fun_apply_fm(succ(f),succ(y),0)
+  "PHcheck_fm(o,f,y,p) \<equiv> Exists(And(fun_apply_fm(succ(f),succ(y),0)
                                  ,pair_fm(0,succ(o),succ(p))))"
 
 lemma PHcheck_type [TC]:
-  "[| x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat |] ==> PHcheck_fm(x,y,z,u) \<in> formula"
+  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat \<rbrakk> \<Longrightarrow> PHcheck_fm(x,y,z,u) \<in> formula"
   by (simp add:PHcheck_fm_def)
 
 lemma sats_PHcheck_fm [simp]:
-  "[| x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat ; env \<in> list(M)|]
-    ==> sats(M,PHcheck_fm(x,y,z,u),env) \<longleftrightarrow>
+  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat ; env \<in> list(M)\<rbrakk>
+    \<Longrightarrow> sats(M,PHcheck_fm(x,y,z,u),env) \<longleftrightarrow>
         PHcheck(nth(x,env),nth(y,env),nth(z,env),nth(u,env))"
   using zero_in_M Internalizations.nth_closed by (simp add: PHcheck_def PHcheck_fm_def)
 
 (*
-  "is_Hcheck(o,z,f,hc)  == is_Replace(##M,z,PHcheck(o,f),hc)"
+  "is_Hcheck(o,z,f,hc)  \<equiv> is_Replace(##M,z,PHcheck(o,f),hc)"
 *)
 definition
   is_Hcheck_fm :: "[i,i,i,i] \<Rightarrow> i" where
-  "is_Hcheck_fm(o,z,f,hc) == Replace_fm(z,PHcheck_fm(succ(succ(o)),succ(succ(f)),0,1),hc)"
+  "is_Hcheck_fm(o,z,f,hc) \<equiv> Replace_fm(z,PHcheck_fm(succ(succ(o)),succ(succ(f)),0,1),hc)"
 
 lemma is_Hcheck_type [TC]:
-  "[| x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat |] ==> is_Hcheck_fm(x,y,z,u) \<in> formula"
+  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat \<rbrakk> \<Longrightarrow> is_Hcheck_fm(x,y,z,u) \<in> formula"
   by (simp add:is_Hcheck_fm_def)
 
 lemma sats_is_Hcheck_fm [simp]:
-  "[| x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat ; env \<in> list(M)|]
-    ==> sats(M,is_Hcheck_fm(x,y,z,u),env) \<longleftrightarrow>
+  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat ; env \<in> list(M)\<rbrakk>
+    \<Longrightarrow> sats(M,is_Hcheck_fm(x,y,z,u),env) \<longleftrightarrow>
         is_Hcheck(nth(x,env),nth(y,env),nth(z,env),nth(u,env))"
   using sats_Replace_fm unfolding is_Hcheck_def is_Hcheck_fm_def
   by simp
@@ -805,14 +802,14 @@ end (* forcing_data *)
 (* check if this should go to Relative! *)
 definition
   is_singleton :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_singleton(A,x,z) == \<exists>c[A]. empty(A,c) \<and> is_cons(A,x,c,z)"
+  "is_singleton(A,x,z) \<equiv> \<exists>c[A]. empty(A,c) \<and> is_cons(A,x,c,z)"
 
 lemma (in M_trivial) singleton_abs[simp] : "\<lbrakk> M(x) ; M(s) \<rbrakk> \<Longrightarrow> is_singleton(M,x,s) \<longleftrightarrow> s = {x}"
   unfolding is_singleton_def using nonempty by simp
 
 definition
   singleton_fm :: "[i,i] \<Rightarrow> i" where
-  "singleton_fm(i,j) == Exists(And(empty_fm(0), cons_fm(succ(i),0,succ(j))))"
+  "singleton_fm(i,j) \<equiv> Exists(And(empty_fm(0), cons_fm(succ(i),0,succ(j))))"
 
 lemma singleton_type[TC] : "\<lbrakk> x \<in> nat; y \<in> nat \<rbrakk> \<Longrightarrow> singleton_fm(x,y) \<in> formula"
   unfolding singleton_fm_def by simp
@@ -823,9 +820,9 @@ lemma sats_singleton_fm:
   unfolding is_singleton_def singleton_fm_def by simp
 
 lemma is_singleton_iff_sats:
-  "[| nth(i,env) = x; nth(j,env) = y;
-          i \<in> nat; j\<in>nat ; env \<in> list(A)|]
-       ==> is_singleton(##A,x,y) \<longleftrightarrow> sats(A, singleton_fm(i,j), env)"
+  "\<lbrakk> nth(i,env) = x; nth(j,env) = y;
+          i \<in> nat; j\<in>nat ; env \<in> list(A)\<rbrakk>
+       \<Longrightarrow> is_singleton(##A,x,y) \<longleftrightarrow> sats(A, singleton_fm(i,j), env)"
   using sats_singleton_fm
   by simp
 
@@ -834,7 +831,7 @@ context forcing_data begin
 (* Internalization and absoluteness of rcheck *)
 definition
   is_rcheck :: "[i,i] \<Rightarrow> o" where
-  "is_rcheck(x,z) == \<exists>r\<in>M. tran_closure(##M,r,z) \<and> (\<exists>ec\<in>M. membership(##M,ec,r) \<and>
+  "is_rcheck(x,z) \<equiv> \<exists>r\<in>M. tran_closure(##M,r,z) \<and> (\<exists>ec\<in>M. membership(##M,ec,r) \<and>
                            (\<exists>s\<in>M. is_singleton(##M,x,s) \<and>  is_eclose(##M,s,ec)))"
 
 lemma rcheck_abs :
@@ -869,7 +866,7 @@ lemma rcheck_fm_type[TC] :
 
 definition
   is_check :: "[i,i] \<Rightarrow> o" where
-  "is_check(x,z) == \<exists>rch\<in>M. is_rcheck(x,rch) \<and> is_wfrec(##M,is_Hcheck(one),rch,x,z)"
+  "is_check(x,z) \<equiv> \<exists>rch\<in>M. is_rcheck(x,rch) \<and> is_wfrec(##M,is_Hcheck(one),rch,x,z)"
 
 lemma check_abs :
   assumes
@@ -937,7 +934,7 @@ proof -
 qed
 
 lemma pair_check : "\<lbrakk> p\<in>M ; y\<in>M \<rbrakk>  \<Longrightarrow> (\<exists>c\<in>M. is_check(p,c) \<and> pair(##M,c,p,y)) \<longleftrightarrow> y = <check(p),p>"
-  using check_abs check_in_M pairM by simp
+  using check_abs check_in_M tuples_in_M by simp
 
 
 lemma M_subset_MG :  "one \<in> G \<Longrightarrow> M \<subseteq> M[G]"
@@ -947,7 +944,7 @@ lemma M_subset_MG :  "one \<in> G \<Longrightarrow> M \<subseteq> M[G]"
 text\<open>The name for the generic filter\<close>
 definition
   G_dot :: "i" where
-  "G_dot == {<check(p),p> . p\<in>P}"
+  "G_dot \<equiv> {<check(p),p> . p\<in>P}"
 
 lemma G_dot_in_M :
   "G_dot \<in> M"
@@ -969,7 +966,7 @@ proof -
       is_nat_case_fm_def quasinat_fm_def Memrel_fm_def singleton_fm_def fm_defs iterates_MH_fm_def
     by (simp add:nat_simp_union)
   moreover
-  from P_in_M check_in_M pairM P_sub_M have
+  from P_in_M check_in_M tuples_in_M P_sub_M have
     1: "p\<in>P \<Longrightarrow> <check(p),p> \<in> M" for p
     by auto
   ultimately

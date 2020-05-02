@@ -26,7 +26,7 @@ lemma (in M_trivial) family_union_closed: "\<lbrakk>strong_replacement(M, \<lamb
       \<Longrightarrow> M(\<Union>x\<in>A. f(x))"
   using RepFun_closed ..
 
-(* "Vfrom(A,i) == transrec(i, %x f. A \<union> (\<Union>y\<in>x. Pow(f`y)))" *)
+(* "Vfrom(A,i) \<equiv> transrec(i, %x f. A \<union> (\<Union>y\<in>x. Pow(f`y)))" *)
 (* HVfrom is *not* the recursive step for Vfrom. It is the
    relativized version *)
 definition
@@ -42,7 +42,7 @@ definition
 lemma is_powapply_closed: "is_powapply(M,f,y,z) \<Longrightarrow> M(z)"
   unfolding is_powapply_def by simp
 
-(* is_Replace(M,A,P,z) == \<forall>u[M]. u \<in> z \<longleftrightarrow> (\<exists>x[M]. x\<in>A & P(x,u)) *)
+(* is_Replace(M,A,P,z) \<equiv> \<forall>u[M]. u \<in> z \<longleftrightarrow> (\<exists>x[M]. x\<in>A & P(x,u)) *)
 definition
   is_HVfrom :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
   "is_HVfrom(M,A,x,f,h) \<equiv> \<exists>U[M]. \<exists>R[M].  union(M,A,U,h) 
@@ -51,11 +51,11 @@ definition
 
 definition
   is_Vfrom :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
-  "is_Vfrom(M,A,i,V) == is_transrec(M,is_HVfrom(M,A),i,V)"
+  "is_Vfrom(M,A,i,V) \<equiv> is_transrec(M,is_HVfrom(M,A),i,V)"
 
 definition
   is_Vset :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_Vset(M,i,V) == \<exists>z[M]. empty(M,z) \<and> is_Vfrom(M,z,i,V)"
+  "is_Vset(M,i,V) \<equiv> \<exists>z[M]. empty(M,z) \<and> is_Vfrom(M,z,i,V)"
 
 
 subsection\<open>Formula synthesis\<close>
@@ -87,15 +87,15 @@ definition
 
 definition
   PHrank :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
-  "PHrank(M,f,y,z) == M(z) \<and> (\<exists>fy[M]. fun_apply(M,f,y,fy) \<and> successor(M,fy,z))"
+  "PHrank(M,f,y,z) \<equiv> M(z) \<and> (\<exists>fy[M]. fun_apply(M,f,y,fy) \<and> successor(M,fy,z))"
 
 definition
   is_Hrank :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
-  "is_Hrank(M,x,f,hc) == (\<exists>R[M]. big_union(M,R,hc) \<and>is_Replace(M,x,PHrank(M,f),R)) "
+  "is_Hrank(M,x,f,hc) \<equiv> (\<exists>R[M]. big_union(M,R,hc) \<and>is_Replace(M,x,PHrank(M,f),R)) "
 
 definition
   rrank :: "i \<Rightarrow> i" where
-  "rrank(a) == Memrel(eclose({a}))^+" 
+  "rrank(a) \<equiv> Memrel(eclose({a}))^+" 
 
 lemma (in M_eclose) wf_rrank : "M(x) \<Longrightarrow> wf(rrank(x))" 
   unfolding rrank_def using wf_trancl[OF wf_Memrel] .

@@ -14,7 +14,7 @@ lemma nth_closed :
 lemmas FOL_sats_iff = sats_Nand_iff sats_Forall_iff sats_Neg_iff sats_And_iff
   sats_Or_iff sats_Implies_iff sats_Iff_iff sats_Exists_iff 
 
-lemma nth_ConsI: "[|nth(n,l) = x; n \<in> nat|] ==> nth(succ(n), Cons(a,l)) = x"
+lemma nth_ConsI: "\<lbrakk>nth(n,l) = x; n \<in> nat\<rbrakk> \<Longrightarrow> nth(succ(n), Cons(a,l)) = x"
 by simp
 
 lemmas nth_rules = nth_0 nth_ConsI nat_0I nat_succI

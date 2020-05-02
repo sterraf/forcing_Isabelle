@@ -7,7 +7,7 @@ begin
 rename "renrep1" src "[p,P,leq,o,\<rho>,\<tau>]" tgt "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o]"
 
 definition renrep_fn :: "i \<Rightarrow> i" where
-  "renrep_fn(env) == sum(renrep1_fn,id(length(env)),6,8,length(env))"
+  "renrep_fn(env) \<equiv> sum(renrep1_fn,id(length(env)),6,8,length(env))"
 
 definition
   renrep :: "[i,i] \<Rightarrow> i" where
@@ -40,7 +40,7 @@ lemma renrep_sats :
 rename "renpbdy1" src "[\<rho>,p,\<alpha>,P,leq,o]" tgt "[\<rho>,p,x,\<alpha>,P,leq,o]"
 
 definition renpbdy_fn :: "i \<Rightarrow> i" where
-  "renpbdy_fn(env) == sum(renpbdy1_fn,id(length(env)),6,7,length(env))"
+  "renpbdy_fn(env) \<equiv> sum(renpbdy1_fn,id(length(env)),6,7,length(env))"
 
 definition
   renpbdy :: "[i,i] \<Rightarrow> i" where
@@ -69,7 +69,7 @@ lemma
 rename "renbody1" src "[x,\<alpha>,P,leq,o]" tgt "[\<alpha>,x,m,P,leq,o]"
 
 definition renbody_fn :: "i \<Rightarrow> i" where
-  "renbody_fn(env) == sum(renbody1_fn,id(length(env)),5,6,length(env))"
+  "renbody_fn(env) \<equiv> sum(renbody1_fn,id(length(env)),5,6,length(env))"
 
 definition
   renbody :: "[i,i] \<Rightarrow> i" where

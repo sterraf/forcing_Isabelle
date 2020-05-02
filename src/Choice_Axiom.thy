@@ -7,7 +7,7 @@ begin
 
 definition 
   induced_surj :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i" where
-  "induced_surj(f,a,e) == f-``(range(f)-a)\<times>{e} \<union> restrict(f,f-``a)"
+  "induced_surj(f,a,e) \<equiv> f-``(range(f)-a)\<times>{e} \<union> restrict(f,f-``a)"
   
 lemma domain_induced_surj: "domain(induced_surj(f,a,e)) = domain(f)"
   unfolding induced_surj_def using domain_restrict domain_of_prod by auto
@@ -126,7 +126,7 @@ begin
 
 definition
   upair_name :: "i \<Rightarrow> i \<Rightarrow> i" where
-  "upair_name(\<tau>,\<rho>) == {\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>}"
+  "upair_name(\<tau>,\<rho>) \<equiv> {\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>}"
 
 definition
   is_upair_name :: "[i,i,i] \<Rightarrow> o" where
@@ -159,7 +159,7 @@ lemma sats_upair_name_fm :
 
 definition
   opair_name :: "i \<Rightarrow> i \<Rightarrow> i" where
-  "opair_name(\<tau>,\<rho>) == upair_name(upair_name(\<tau>,\<tau>),upair_name(\<tau>,\<rho>))"
+  "opair_name(\<tau>,\<rho>) \<equiv> upair_name(upair_name(\<tau>,\<tau>),upair_name(\<tau>,\<rho>))"
 
 definition
   is_opair_name :: "[i,i,i] \<Rightarrow> o" where
@@ -309,7 +309,7 @@ proof -
     have "?f_dot = ?g \<times> {one}" by blast
     from one_in_M have "{one} \<in> M" using singletonM by simp
     define f where
-      "f == val(G,?f_dot)" 
+      "f \<equiv> val(G,?f_dot)" 
     from \<open>{one}\<in>M\<close> \<open>?g\<in>M\<close> \<open>?f_dot = ?g\<times>{one}\<close> 
     have "?f_dot\<in>M" 
       using cartprod_closed by simp

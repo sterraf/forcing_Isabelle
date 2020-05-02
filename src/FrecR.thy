@@ -10,7 +10,7 @@ us to define forcing for atomic formulas.\<close>
 (* MOVE THIS. absoluteness of higher-order composition *)
 definition
   is_hcomp :: "[i\<Rightarrow>o,i\<Rightarrow>i\<Rightarrow>o,i\<Rightarrow>i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_hcomp(M,is_f,is_g,a,w) == \<exists>z[M]. is_g(a,z) \<and> is_f(z,w)" 
+  "is_hcomp(M,is_f,is_g,a,w) \<equiv> \<exists>z[M]. is_g(a,z) \<and> is_f(z,w)" 
 
 lemma (in M_trivial) hcomp_abs: 
   assumes
@@ -51,19 +51,19 @@ qed
 (* Preliminary *)
 definition
   ftype :: "i\<Rightarrow>i" where
-  "ftype == fst"
+  "ftype \<equiv> fst"
 
 definition
   name1 :: "i\<Rightarrow>i" where
-  "name1(x) == fst(snd(x))"
+  "name1(x) \<equiv> fst(snd(x))"
 
 definition
   name2 :: "i\<Rightarrow>i" where
-  "name2(x) == fst(snd(snd(x)))"
+  "name2(x) \<equiv> fst(snd(snd(x)))"
 
 definition
   cond_of :: "i\<Rightarrow>i" where
-  "cond_of(x) == snd(snd(snd((x))))"
+  "cond_of(x) \<equiv> snd(snd(snd((x))))"
 
 lemma components_simp:
   "ftype(<f,n1,n2,c>) = f"
@@ -122,11 +122,11 @@ proof -
 qed
 
 
-(* ftype(p) == THE a. \<exists>b. p = <a, b> *)
+(* ftype(p) \<equiv> THE a. \<exists>b. p = <a, b> *)
 
 definition
   is_fst :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "is_fst(M,x,t) == (\<exists>z[M]. pair(M,t,z,x)) \<or> 
+  "is_fst(M,x,t) \<equiv> (\<exists>z[M]. pair(M,t,z,x)) \<or> 
                        (\<not>(\<exists>z[M]. \<exists>w[M]. pair(M,w,z,x)) \<and> empty(M,t))"
 
 definition
@@ -165,7 +165,7 @@ lemma is_ftype_iff_sats:
 
 definition
   is_snd :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "is_snd(M,x,t) == (\<exists>z[M]. pair(M,z,t,x)) \<or> 
+  "is_snd(M,x,t) \<equiv> (\<exists>z[M]. pair(M,z,t,x)) \<or> 
                        (\<not>(\<exists>z[M]. \<exists>w[M]. pair(M,z,w,x)) \<and> empty(M,t))"
 
 definition
@@ -181,7 +181,7 @@ lemma sats_snd_fm :
 
 definition
   is_name1 :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "is_name1(M,x,t2) == is_hcomp(M,is_fst(M),is_snd(M),x,t2)"
+  "is_name1(M,x,t2) \<equiv> is_hcomp(M,is_fst(M),is_snd(M),x,t2)"
 
 definition
   name1_fm :: "[i,i] \<Rightarrow> i" where
@@ -204,11 +204,11 @@ lemma is_name1_iff_sats:
 
 definition
   is_snd_snd :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "is_snd_snd(M,x,t) == is_hcomp(M,is_snd(M),is_snd(M),x,t)"
+  "is_snd_snd(M,x,t) \<equiv> is_hcomp(M,is_snd(M),is_snd(M),x,t)"
 
 definition
   snd_snd_fm :: "[i,i]\<Rightarrow>i" where
-  "snd_snd_fm(x,t) == hcomp_fm(snd_fm,snd_fm,x,t)"
+  "snd_snd_fm(x,t) \<equiv> hcomp_fm(snd_fm,snd_fm,x,t)"
 
 lemma sats_snd2_fm :
   "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk> 
@@ -219,7 +219,7 @@ lemma sats_snd2_fm :
 
 definition
   is_name2 :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "is_name2(M,x,t3) == is_hcomp(M,is_fst(M),is_snd_snd(M),x,t3)"
+  "is_name2(M,x,t3) \<equiv> is_hcomp(M,is_fst(M),is_snd_snd(M),x,t3)"
 
 definition
   name2_fm :: "[i,i] \<Rightarrow> i" where
@@ -242,7 +242,7 @@ lemma is_name2_iff_sats:
 
 definition
   is_cond_of :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "is_cond_of(M,x,t4) == is_hcomp(M,is_snd(M),is_snd_snd(M),x,t4)"
+  "is_cond_of(M,x,t4) \<equiv> is_hcomp(M,is_snd(M),is_snd_snd(M),x,t4)"
 
 definition
   cond_of_fm :: "[i,i] \<Rightarrow> i" where
@@ -286,36 +286,36 @@ lemmas components_defs = fst_fm_def ftype_fm_def snd_fm_def snd_snd_fm_def hcomp
 
 definition
   is_eclose_n :: "[i=>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i,i] => o" where
-  "is_eclose_n(N,is_name,en,t) == 
+  "is_eclose_n(N,is_name,en,t) \<equiv> 
         \<exists>n1[N].\<exists>s1[N]. is_name(N,t,n1) \<and> is_singleton(N,n1,s1) \<and> is_eclose(N,s1,en)"
 
 definition 
   eclose_n1_fm :: "[i,i] \<Rightarrow> i" where
-  "eclose_n1_fm(m,t) == Exists(Exists(And(And(name1_fm(t#+2,0),singleton_fm(0,1)),
+  "eclose_n1_fm(m,t) \<equiv> Exists(Exists(And(And(name1_fm(t#+2,0),singleton_fm(0,1)),
                                        is_eclose_fm(1,m#+2))))"
 
 definition 
   eclose_n2_fm :: "[i,i] \<Rightarrow> i" where
-  "eclose_n2_fm(m,t) == Exists(Exists(And(And(name2_fm(t#+2,0),singleton_fm(0,1)),
+  "eclose_n2_fm(m,t) \<equiv> Exists(Exists(And(And(name2_fm(t#+2,0),singleton_fm(0,1)),
                                        is_eclose_fm(1,m#+2))))"
 
 definition
   is_ecloseN :: "[i=>o,i,i] => o" where
-  "is_ecloseN(N,en,t) == \<exists>en1[N].\<exists>en2[N].
+  "is_ecloseN(N,en,t) \<equiv> \<exists>en1[N].\<exists>en2[N].
                 is_eclose_n(N,is_name1,en1,t) \<and> is_eclose_n(N,is_name2,en2,t)\<and>
                 union(N,en1,en2,en)"
 
 definition 
   ecloseN_fm :: "[i,i] \<Rightarrow> i" where
-  "ecloseN_fm(en,t) == Exists(Exists(And(eclose_n1_fm(1,t#+2),
+  "ecloseN_fm(en,t) \<equiv> Exists(Exists(And(eclose_n1_fm(1,t#+2),
                             And(eclose_n2_fm(0,t#+2),union_fm(1,0,en#+2)))))"
 lemma ecloseN_fm_type [TC] :
   "\<lbrakk> en \<in> nat ; t \<in> nat \<rbrakk> \<Longrightarrow> ecloseN_fm(en,t) \<in> formula"
   unfolding ecloseN_fm_def eclose_n1_fm_def eclose_n2_fm_def by simp
 
 lemma sats_ecloseN_fm [simp]:
-  "[| en \<in> nat; t \<in> nat ; env \<in> list(A)|]
-    ==> sats(A, ecloseN_fm(en,t), env) \<longleftrightarrow> is_ecloseN(##A,nth(en,env),nth(t,env))"
+  "\<lbrakk> en \<in> nat; t \<in> nat ; env \<in> list(A) \<rbrakk>
+    \<Longrightarrow> sats(A, ecloseN_fm(en,t), env) \<longleftrightarrow> is_ecloseN(##A,nth(en,env),nth(t,env))"
   unfolding ecloseN_fm_def is_ecloseN_def eclose_n1_fm_def eclose_n2_fm_def is_eclose_n_def
   using  nth_0 nth_ConsI sats_name1_fm sats_name2_fm 
     is_singleton_iff_sats[symmetric]
@@ -429,7 +429,7 @@ lemma eq_ftypep_not_frecrR:
 
 definition
   rank_names :: "i \<Rightarrow> i" where
-  "rank_names(x) == max(rank(name1(x)),rank(name2(x)))"
+  "rank_names(x) \<equiv> max(rank(name1(x)),rank(name2(x)))"
 
 lemma rank_names_types [TC]: 
   shows "Ord(rank_names(x))"
@@ -437,11 +437,11 @@ lemma rank_names_types [TC]:
 
 definition
   mtype_form :: "i \<Rightarrow> i" where
-  "mtype_form(x) == if rank(name1(x)) < rank(name2(x)) then 0 else 2"
+  "mtype_form(x) \<equiv> if rank(name1(x)) < rank(name2(x)) then 0 else 2"
 
 definition
   type_form :: "i \<Rightarrow> i" where
-  "type_form(x) == if ftype(x) = 0 then 1 else mtype_form(x)"
+  "type_form(x) \<equiv> if ftype(x) = 0 then 1 else mtype_form(x)"
 
 lemma type_form_tc [TC]: 
   shows "type_form(x) \<in> 3"

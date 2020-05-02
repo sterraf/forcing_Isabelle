@@ -334,7 +334,7 @@ proof -
     have "\<langle>\<theta>,q\<rangle> \<in> M" by (simp add:transitivity)
     from \<open>\<langle>\<theta>,q\<rangle>\<in>\<pi>\<close> \<open>\<theta>\<in>M\<close> \<open>p\<in>P\<close>  \<open>p\<in>M\<close> 
     have "\<langle>\<theta>,p\<rangle>\<in>M" "\<langle>\<theta>,p\<rangle>\<in>domain(\<pi>)\<times>P" 
-      using pairM by auto
+      using tuples_in_M by auto
     with \<open>\<theta>\<in>M\<close> Eq6 \<open>p\<in>P\<close>
     have "M, [\<langle>\<theta>,p\<rangle>] @ ?Pl1 @ [\<pi>] @ nenv \<Turnstile> ?\<psi>"
       using Equivalence  by auto

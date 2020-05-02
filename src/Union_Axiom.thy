@@ -8,12 +8,12 @@ begin
 
 
 definition Union_name_body :: "[i,i,i,i] \<Rightarrow> o" where
-  "Union_name_body(P',leq',\<tau>,\<theta>p) == (\<exists> \<sigma>[##M].
+  "Union_name_body(P',leq',\<tau>,\<theta>p) \<equiv> (\<exists> \<sigma>[##M].
            \<exists> q[##M]. (q\<in> P' \<and> (<\<sigma>,q> \<in> \<tau> \<and>
             (\<exists> r[##M].r\<in>P' \<and> (<fst(\<theta>p),r> \<in> \<sigma> \<and> <snd(\<theta>p),r> \<in> leq' \<and> <snd(\<theta>p),q> \<in> leq')))))"
 
 definition Union_name_fm :: "i" where
-  "Union_name_fm ==
+  "Union_name_fm \<equiv>
     Exists(
     Exists(And(pair_fm(1,0,2),
     Exists (
@@ -38,8 +38,8 @@ lemma sats_Union_name_fm :
   "\<lbrakk> a \<in> M; b \<in> M ; P' \<in> M ; p \<in> M ; \<theta> \<in> M ; \<tau> \<in> M ; leq' \<in> M \<rbrakk> \<Longrightarrow>
      sats(M,Union_name_fm,[<\<theta>,p>,\<tau>,leq',P']@[a,b]) \<longleftrightarrow>
      Union_name_body(P',leq',\<tau>,<\<theta>,p>)"
-  unfolding Union_name_fm_def Union_name_body_def pairM
-  by (subgoal_tac "<\<theta>,p> \<in> M", auto simp add : pairM)
+  unfolding Union_name_fm_def Union_name_body_def tuples_in_M
+  by (subgoal_tac "<\<theta>,p> \<in> M", auto simp add : tuples_in_M)
 
 
 lemma domD :
@@ -50,7 +50,7 @@ lemma domD :
 
 
 definition Union_name :: "i \<Rightarrow> i" where
-  "Union_name(\<tau>) ==
+  "Union_name(\<tau>) \<equiv>
     {u \<in> domain(\<Union>(domain(\<tau>))) \<times> P . Union_name_body(P,leq,\<tau>,u)}"
 
 lemma Union_name_M : assumes "\<tau> \<in> M"

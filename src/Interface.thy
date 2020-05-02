@@ -20,29 +20,29 @@ translations
   "(M,env \<Turnstile> \<phi>)" \<rightleftharpoons> "CONST sats(M,\<phi>,env)"
 
 abbreviation
-  dec10  :: i   ("10") where "10 == succ(9)"
+  dec10  :: i   ("10") where "10 \<equiv> succ(9)"
 
 abbreviation
-  dec11  :: i   ("11") where "11 == succ(10)"
+  dec11  :: i   ("11") where "11 \<equiv> succ(10)"
 
 abbreviation
-  dec12  :: i   ("12") where "12 == succ(11)"
+  dec12  :: i   ("12") where "12 \<equiv> succ(11)"
 
 abbreviation
-  dec13  :: i   ("13") where "13 == succ(12)"
+  dec13  :: i   ("13") where "13 \<equiv> succ(12)"
 
 abbreviation
-  dec14  :: i   ("14") where "14 == succ(13)"
+  dec14  :: i   ("14") where "14 \<equiv> succ(13)"
 
 
 definition
   infinity_ax :: "(i \<Rightarrow> o) \<Rightarrow> o" where
-  "infinity_ax(M) ==
+  "infinity_ax(M) \<equiv>
       (\<exists>I[M]. (\<exists>z[M]. empty(M,z) \<and> z\<in>I) \<and> (\<forall>y[M]. y\<in>I \<longrightarrow> (\<exists>sy[M]. successor(M,y,sy) \<and> sy\<in>I)))"
 
 definition
   choice_ax :: "(i\<Rightarrow>o) \<Rightarrow> o" where
-  "choice_ax(M) == \<forall>x[M]. \<exists>a[M]. \<exists>f[M]. ordinal(M,a) \<and> surjection(M,a,x,f)"
+  "choice_ax(M) \<equiv> \<forall>x[M]. \<exists>a[M]. \<exists>f[M]. ordinal(M,a) \<and> surjection(M,a,x,f)"
 
 context M_basic begin
 
@@ -55,7 +55,7 @@ end (* M_basic *)
 
 definition
   wellfounded_trancl :: "[i=>o,i,i,i] => o" where
-  "wellfounded_trancl(M,Z,r,p) ==
+  "wellfounded_trancl(M,Z,r,p) \<equiv>
       \<exists>w[M]. \<exists>wx[M]. \<exists>rp[M].
                w \<in> Z & pair(M,w,p,wx) & tran_closure(M,r,rp) & wx \<in> rp"
 
@@ -125,7 +125,7 @@ begin
 
 subsection\<open>Interface with \<^term>\<open>M_basic\<close>\<close>
 
-(* Inter_separation: "M(A) ==> separation(M, \<lambda>x. \<forall> y[M]. y\<in>A \<Longrightarrow> x\<in>y)" *)
+(* Inter_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>x. \<forall> y[M]. y\<in>A \<Longrightarrow> x\<in>y)" *)
 schematic_goal inter_fm_auto:
   assumes
     "nth(i,env) = x" "nth(j,env) = B"
@@ -163,7 +163,7 @@ proof -
 qed
 
 
-(* Diff_separation: "M(B) ==> separation(M, \<lambda>x. x \<notin> B)" *)
+(* Diff_separation: "M(B) \<Longrightarrow> separation(M, \<lambda>x. x \<notin> B)" *)
 schematic_goal diff_fm_auto:
   assumes
     "nth(i,env) = x" "nth(j,env) = B"
@@ -962,7 +962,7 @@ qed
 
 (*
     and list_replacement2:
-   "M(A) ==> strong_replacement(M,
+   "M(A) \<Longrightarrow> strong_replacement(M,
          \<lambda>n y. n\<in>nat & is_iterates(M, is_list_functor(M,A), 0, n, y))"
 
 *)
@@ -1038,7 +1038,7 @@ qed
 
 
 (*
-   "M(A) ==> strong_replacement(M,
+   "M(A) \<Longrightarrow> strong_replacement(M,
          \<lambda>n y. n\<in>nat & is_iterates(M, big_union(M), A, n, y))"
 *)
 
@@ -1094,33 +1094,18 @@ sublocale M_ZF_trans \<subseteq> M_eclose "##M"
 
 (* Interface with locale M_eclose_pow *)
 
-(* "powerset(M,A,z) == \<forall>x[M]. x \<in> z \<longleftrightarrow> subset(M,x,A)" *)
+(* "powerset(M,A,z) \<equiv> \<forall>x[M]. x \<in> z \<longleftrightarrow> subset(M,x,A)" *)
 definition
   powerset_fm :: "[i,i] \<Rightarrow> i" where
-  "powerset_fm(A,z) == Forall(Iff(Member(0,succ(z)),subset_fm(0,succ(A))))"
+  "powerset_fm(A,z) \<equiv> Forall(Iff(Member(0,succ(z)),subset_fm(0,succ(A))))"
 
 lemma powerset_type [TC]:
-  "[| x \<in> nat; y \<in> nat |] ==> powerset_fm(x,y) \<in> formula"
+  "\<lbrakk> x \<in> nat; y \<in> nat \<rbrakk> \<Longrightarrow> powerset_fm(x,y) \<in> formula"
   by (simp add:powerset_fm_def)
 
-(*
-lemma (in M_ctm) sats_powerset_fm [simp]:
-  "[| x \<in> nat; y \<in> nat ; env \<in> list(M)|]
-    ==> sats(M,powerset_fm(x,y),env) \<longleftrightarrow>
-        powerset(##M,nth(x,env),nth(y,env))"
-  using Internalizations.nth_closed by (simp add: powerset_def powerset_fm_def)
-
-
-
-(* "is_powapply(M,f,y,z) \<equiv> M(z) \<and> (\<exists>fy[M]. fun_apply(M,f,y,fy) \<and> powerset(M,fy,z))" *)
 definition
   is_powapply_fm :: "[i,i,i] \<Rightarrow> i" where
-  "is_powapply_fm(f,y,z) == Exists(And(fun_apply_fm(succ(f),succ(y),0),))"
-*)
-
-definition
-  is_powapply_fm :: "[i,i,i] \<Rightarrow> i" where
-  "is_powapply_fm(f,y,z) ==
+  "is_powapply_fm(f,y,z) \<equiv>
       Exists(And(fun_apply_fm(succ(f), succ(y), 0),
             Forall(Iff(Member(0, succ(succ(z))),
             Forall(Implies(Member(0, 1), Member(0, 2)))))))"
@@ -1162,20 +1147,20 @@ proof -
 qed
 
 
-(*"PHrank(M,f,y,z) == M(z) \<and> (\<exists>fy[M]. fun_apply(M,f,y,fy) \<and> successor(M,fy,z))"*)
+(*"PHrank(M,f,y,z) \<equiv> M(z) \<and> (\<exists>fy[M]. fun_apply(M,f,y,fy) \<and> successor(M,fy,z))"*)
 definition
   PHrank_fm :: "[i,i,i] \<Rightarrow> i" where
-  "PHrank_fm(f,y,z) == Exists(And(fun_apply_fm(succ(f),succ(y),0)
+  "PHrank_fm(f,y,z) \<equiv> Exists(And(fun_apply_fm(succ(f),succ(y),0)
                                  ,succ_fm(0,succ(z))))"
 
 lemma PHrank_type [TC]:
-  "[| x \<in> nat; y \<in> nat; z \<in> nat |] ==> PHrank_fm(x,y,z) \<in> formula"
+  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat \<rbrakk> \<Longrightarrow> PHrank_fm(x,y,z) \<in> formula"
   by (simp add:PHrank_fm_def)
 
 
 lemma (in M_ZF_trans) sats_PHrank_fm [simp]:
-  "[| x \<in> nat; y \<in> nat; z \<in> nat;  env \<in> list(M)|]
-    ==> sats(M,PHrank_fm(x,y,z),env) \<longleftrightarrow>
+  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat;  env \<in> list(M) \<rbrakk> 
+    \<Longrightarrow> sats(M,PHrank_fm(x,y,z),env) \<longleftrightarrow>
         PHrank(##M,nth(x,env),nth(y,env),nth(z,env))"
   using zero_in_M Internalizations.nth_closed by (simp add: PHrank_def PHrank_fm_def)
 
@@ -1199,19 +1184,19 @@ proof -
 qed
 
 
-(*"is_Hrank(M,x,f,hc) == (\<exists>R[M]. big_union(M,R,hc) \<and>is_Replace(M,x,PHrank(M,f),R)) "*)
+(*"is_Hrank(M,x,f,hc) \<equiv> (\<exists>R[M]. big_union(M,R,hc) \<and>is_Replace(M,x,PHrank(M,f),R)) "*)
 definition
   is_Hrank_fm :: "[i,i,i] \<Rightarrow> i" where
-  "is_Hrank_fm(x,f,hc) == Exists(And(big_union_fm(0,succ(hc)),
+  "is_Hrank_fm(x,f,hc) \<equiv> Exists(And(big_union_fm(0,succ(hc)),
                                 Replace_fm(succ(x),PHrank_fm(succ(succ(succ(f))),0,1),0)))"
 
 lemma is_Hrank_type [TC]:
-  "[| x \<in> nat; y \<in> nat; z \<in> nat |] ==> is_Hrank_fm(x,y,z) \<in> formula"
+  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat \<rbrakk> \<Longrightarrow> is_Hrank_fm(x,y,z) \<in> formula"
   by (simp add:is_Hrank_fm_def)
 
 lemma (in M_ZF_trans) sats_is_Hrank_fm [simp]:
-  "[| x \<in> nat; y \<in> nat; z \<in> nat; env \<in> list(M)|]
-    ==> sats(M,is_Hrank_fm(x,y,z),env) \<longleftrightarrow>
+  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat; env \<in> list(M)\<rbrakk>
+    \<Longrightarrow> sats(M,is_Hrank_fm(x,y,z),env) \<longleftrightarrow>
         is_Hrank(##M,nth(x,env),nth(y,env),nth(z,env))"
   using zero_in_M is_Hrank_def is_Hrank_fm_def sats_Replace_fm
   by simp
@@ -1260,17 +1245,17 @@ qed
         \<and> big_union(M,R,U) \<and> is_Replace(M,x,is_powapply(M,f),R)"*)
 definition
   is_HVfrom_fm :: "[i,i,i,i] \<Rightarrow> i" where
-  "is_HVfrom_fm(A,x,f,h) == Exists(Exists(And(union_fm(A #+ 2,1,h #+ 2),
+  "is_HVfrom_fm(A,x,f,h) \<equiv> Exists(Exists(And(union_fm(A #+ 2,1,h #+ 2),
                             And(big_union_fm(0,1),
                             Replace_fm(x #+ 2,is_powapply_fm(f #+ 4,0,1),0)))))"
 
 lemma is_HVfrom_type [TC]:
-  "[| A\<in>nat; x \<in> nat; f \<in> nat; h \<in> nat |] ==> is_HVfrom_fm(A,x,f,h) \<in> formula"
+  "\<lbrakk> A\<in>nat; x \<in> nat; f \<in> nat; h \<in> nat \<rbrakk> \<Longrightarrow> is_HVfrom_fm(A,x,f,h) \<in> formula"
   by (simp add:is_HVfrom_fm_def)
 
 lemma sats_is_HVfrom_fm :
-  "[| a\<in>nat; x \<in> nat; f \<in> nat; h \<in> nat; env \<in> list(A); 0\<in>A|]
-    ==> sats(A,is_HVfrom_fm(a,x,f,h),env) \<longleftrightarrow>
+  "\<lbrakk> a\<in>nat; x \<in> nat; f \<in> nat; h \<in> nat; env \<in> list(A); 0\<in>A\<rbrakk>
+    \<Longrightarrow> sats(A,is_HVfrom_fm(a,x,f,h),env) \<longleftrightarrow>
         is_HVfrom(##A,nth(a,env),nth(x,env),nth(f,env),nth(h,env))"
   using is_HVfrom_def is_HVfrom_fm_def sats_Replace_fm[OF sats_is_powapply_fm]
   by simp

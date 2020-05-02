@@ -262,7 +262,7 @@ qed
 
 definition
   sep_body_fm :: "i \<Rightarrow> i" where
-  "sep_body_fm(p) == Forall(Exists(Forall(
+  "sep_body_fm(p) \<equiv> Forall(Exists(Forall(
                            Iff(Member(0,1),And(Member(0,2),
                                     incr_bv1^2(p))))))"
 
@@ -280,7 +280,7 @@ lemma sats_sep_body_fm:
 
 definition
   ZF_separation_fm :: "i \<Rightarrow> i" where
-  "ZF_separation_fm(p) == Forall^(pred(arity(p)))(sep_body_fm(p))"
+  "ZF_separation_fm(p) \<equiv> Forall^(pred(arity(p)))(sep_body_fm(p))"
 
 lemma ZF_separation_fm_type [TC]: "p \<in> formula \<Longrightarrow> ZF_separation_fm(p) \<in> formula"
   by (simp add: ZF_separation_fm_def)
@@ -428,7 +428,7 @@ lemma sats_univalent_fm_assm:
 
 definition
   rep_body_fm :: "i \<Rightarrow> i" where
-  "rep_body_fm(p) == Forall(Implies(
+  "rep_body_fm(p) \<equiv> Forall(Implies(
         univalent_fm(univalent_Q1(incr_bv(p)`2),univalent_Q2(incr_bv(p)`2),0),
         Exists(Forall(
           Iff(Member(0,1),Exists(And(Member(0,3),incr_bv(incr_bv(p)`2)`2)))))))"
@@ -526,7 +526,7 @@ qed
 
 definition
   ZF_inf :: "i" where
-  "ZF_inf == {ZF_separation_fm(p) . p \<in> formula } \<union> {ZF_replacement_fm(p) . p \<in> formula }"
+  "ZF_inf \<equiv> {ZF_separation_fm(p) . p \<in> formula } \<union> {ZF_replacement_fm(p) . p \<in> formula }"
               
 lemma Un_subset_formula: "A\<subseteq>formula \<and> B\<subseteq>formula \<Longrightarrow> A\<union>B \<subseteq> formula"
   by auto
@@ -536,15 +536,15 @@ lemma ZF_inf_subset_formula : "ZF_inf \<subseteq> formula"
     
 definition
   ZFC :: "i" where
-  "ZFC == ZF_inf \<union> ZFC_fin"
+  "ZFC \<equiv> ZF_inf \<union> ZFC_fin"
 
 definition
   ZF :: "i" where
-  "ZF == ZF_inf \<union> ZF_fin"
+  "ZF \<equiv> ZF_inf \<union> ZF_fin"
 
 definition 
   ZF_minus_P :: "i" where
-  "ZF_minus_P == ZF - { ZF_power_fm }"
+  "ZF_minus_P \<equiv> ZF - { ZF_power_fm }"
 
 lemma ZFC_subset_formula: "ZFC \<subseteq> formula"
   by (simp add:ZFC_def Un_subset_formula ZF_inf_subset_formula ZFC_fin_type)
