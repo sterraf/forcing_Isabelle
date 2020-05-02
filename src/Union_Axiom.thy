@@ -9,8 +9,8 @@ begin
 
 definition Union_name_body :: "[i,i,i,i] \<Rightarrow> o" where
   "Union_name_body(P',leq',\<tau>,\<theta>p) \<equiv> (\<exists> \<sigma>[##M].
-           \<exists> q[##M]. (q\<in> P' \<and> (<\<sigma>,q> \<in> \<tau> \<and>
-            (\<exists> r[##M].r\<in>P' \<and> (<fst(\<theta>p),r> \<in> \<sigma> \<and> <snd(\<theta>p),r> \<in> leq' \<and> <snd(\<theta>p),q> \<in> leq')))))"
+           \<exists> q[##M]. (q\<in> P' \<and> (\<langle>\<sigma>,q\<rangle> \<in> \<tau> \<and>
+            (\<exists> r[##M].r\<in>P' \<and> (\<langle>fst(\<theta>p),r\<rangle> \<in> \<sigma> \<and> \<langle>snd(\<theta>p),r\<rangle> \<in> leq' \<and> \<langle>snd(\<theta>p),q\<rangle> \<in> leq')))))"
 
 definition Union_name_fm :: "i" where
   "Union_name_fm \<equiv>
@@ -36,10 +36,10 @@ lemma arity_Union_name_fm :
 
 lemma sats_Union_name_fm :
   "\<lbrakk> a \<in> M; b \<in> M ; P' \<in> M ; p \<in> M ; \<theta> \<in> M ; \<tau> \<in> M ; leq' \<in> M \<rbrakk> \<Longrightarrow>
-     sats(M,Union_name_fm,[<\<theta>,p>,\<tau>,leq',P']@[a,b]) \<longleftrightarrow>
-     Union_name_body(P',leq',\<tau>,<\<theta>,p>)"
+     sats(M,Union_name_fm,[\<langle>\<theta>,p\<rangle>,\<tau>,leq',P']@[a,b]) \<longleftrightarrow>
+     Union_name_body(P',leq',\<tau>,\<langle>\<theta>,p\<rangle>)"
   unfolding Union_name_fm_def Union_name_body_def tuples_in_M
-  by (subgoal_tac "<\<theta>,p> \<in> M", auto simp add : tuples_in_M)
+  by (subgoal_tac "\<langle>\<theta>,p\<rangle> \<in> M", auto simp add : tuples_in_M)
 
 
 lemma domD :
@@ -75,14 +75,14 @@ proof -
   have "?P(x)\<longleftrightarrow> ?Q(x)" if "x\<in> ?d\<times>P" for x
   proof -
     from \<open>x\<in> ?d\<times>P\<close>
-    have "x = <fst(x),snd(x)>" using Pair_fst_snd_eq by simp
+    have "x = \<langle>fst(x),snd(x)\<rangle>" using Pair_fst_snd_eq by simp
     with \<open>x\<in>?d\<times>P\<close> \<open>?d\<in>M\<close>
     have "fst(x) \<in> M" "snd(x) \<in> M"
       using mtrans fst_type snd_type P_in_M unfolding M_trans_def by auto
     then
-    have "?P(<fst(x),snd(x)>) \<longleftrightarrow>  ?Q(<fst(x),snd(x)>)"
+    have "?P(\<langle>fst(x),snd(x)\<rangle>) \<longleftrightarrow>  ?Q(\<langle>fst(x),snd(x)\<rangle>)"
       using P_in_M sats_Union_name_fm P_in_M \<open>\<tau>\<in>M\<close> leq_in_M by simp
-    with \<open>x = <fst(x),snd(x)>\<close>
+    with \<open>x = \<langle>fst(x),snd(x)\<rangle>\<close>
     show "?P(x) \<longleftrightarrow> ?Q(x)" using that by simp
   qed
   then show ?thesis using Collect_cong A by simp
@@ -99,19 +99,19 @@ proof -
     assume "x \<in> \<Union> (val(G,\<tau>))"
     then obtain i where "i \<in> val(G,\<tau>)" "x \<in> i" by blast
     with \<open>\<tau> \<in> M\<close> obtain \<sigma> q where
-      "q \<in> G" "<\<sigma>,q> \<in> \<tau>" "val(G,\<sigma>) = i" "\<sigma> \<in> M"
+      "q \<in> G" "\<langle>\<sigma>,q\<rangle> \<in> \<tau>" "val(G,\<sigma>) = i" "\<sigma> \<in> M"
       using elem_of_val_pair domD by blast
     with \<open>x \<in> i\<close> obtain \<theta> r where
-      "r \<in> G" "<\<theta>,r> \<in> \<sigma>" "val(G,\<theta>) = x" "\<theta> \<in> M"
+      "r \<in> G" "\<langle>\<theta>,r\<rangle> \<in> \<sigma>" "val(G,\<theta>) = x" "\<theta> \<in> M"
       using elem_of_val_pair domD by blast
-    with \<open><\<sigma>,q>\<in>\<tau>\<close> have "\<theta> \<in> domain(\<Union>(domain(\<tau>)))" by auto
+    with \<open>\<langle>\<sigma>,q\<rangle>\<in>\<tau>\<close> have "\<theta> \<in> domain(\<Union>(domain(\<tau>)))" by auto
     with \<open>filter(G)\<close> \<open>q\<in>G\<close> \<open>r\<in>G\<close> obtain p where
-      A: "p \<in> G" "<p,r> \<in> leq" "<p,q> \<in> leq" "p \<in> P" "r \<in> P" "q \<in> P"
+      A: "p \<in> G" "\<langle>p,r\<rangle> \<in> leq" "\<langle>p,q\<rangle> \<in> leq" "p \<in> P" "r \<in> P" "q \<in> P"
       using low_bound_filter filterD  by blast
     then have "p \<in> M" "q\<in>M" "r\<in>M"
       using mtrans P_in_M unfolding M_trans_def by auto
-    with A \<open><\<theta>,r> \<in> \<sigma>\<close> \<open><\<sigma>,q> \<in> \<tau>\<close> \<open>\<theta> \<in> M\<close> \<open>\<theta> \<in> domain(\<Union>(domain(\<tau>)))\<close>  \<open>\<sigma>\<in>M\<close> have
-      "<\<theta>,p> \<in> Union_name(\<tau>)" unfolding Union_name_def Union_name_body_def
+    with A \<open>\<langle>\<theta>,r\<rangle> \<in> \<sigma>\<close> \<open>\<langle>\<sigma>,q\<rangle> \<in> \<tau>\<close> \<open>\<theta> \<in> M\<close> \<open>\<theta> \<in> domain(\<Union>(domain(\<tau>)))\<close>  \<open>\<sigma>\<in>M\<close> have
+      "\<langle>\<theta>,p\<rangle> \<in> Union_name(\<tau>)" unfolding Union_name_def Union_name_body_def
       by auto
     with \<open>p\<in>P\<close> \<open>p\<in>G\<close> have "val(G,\<theta>) \<in> val(G,Union_name(\<tau>))"
       using val_of_elem by simp
@@ -122,15 +122,15 @@ proof -
     fix x
     assume "x \<in> (val(G,Union_name(\<tau>)))"
     then obtain \<theta> p where
-      "p \<in> G" "<\<theta>,p> \<in> Union_name(\<tau>)" "val(G,\<theta>) = x"
+      "p \<in> G" "\<langle>\<theta>,p\<rangle> \<in> Union_name(\<tau>)" "val(G,\<theta>) = x"
       using elem_of_val_pair by blast
     with \<open>filter(G)\<close> have "p\<in>P" using filterD by simp
-    from \<open><\<theta>,p> \<in> Union_name(\<tau>)\<close> obtain \<sigma> q r where
-      "\<sigma> \<in> domain(\<tau>)"  "<\<sigma>,q> \<in> \<tau> " "<\<theta>,r> \<in> \<sigma>" "r\<in>P" "q\<in>P" "<p,r> \<in> leq" "<p,q> \<in> leq"
+    from \<open>\<langle>\<theta>,p\<rangle> \<in> Union_name(\<tau>)\<close> obtain \<sigma> q r where
+      "\<sigma> \<in> domain(\<tau>)"  "\<langle>\<sigma>,q\<rangle> \<in> \<tau> " "\<langle>\<theta>,r\<rangle> \<in> \<sigma>" "r\<in>P" "q\<in>P" "\<langle>p,r\<rangle> \<in> leq" "\<langle>p,q\<rangle> \<in> leq"
       unfolding Union_name_def Union_name_body_def by force
     with \<open>p\<in>G\<close> \<open>filter(G)\<close> have "r \<in> G" "q \<in> G"
       using filter_leqD by auto
-    with \<open><\<theta>,r> \<in> \<sigma>\<close> \<open><\<sigma>,q>\<in>\<tau>\<close> \<open>q\<in>P\<close> \<open>r\<in>P\<close> have
+    with \<open>\<langle>\<theta>,r\<rangle> \<in> \<sigma>\<close> \<open>\<langle>\<sigma>,q\<rangle>\<in>\<tau>\<close> \<open>q\<in>P\<close> \<open>r\<in>P\<close> have
       "val(G,\<sigma>) \<in> val(G,\<tau>)" "val(G,\<theta>) \<in> val(G,\<sigma>)"
       using val_of_elem by simp+
     then have "val(G,\<theta>) \<in> \<Union> val(G,\<tau>)" by blast

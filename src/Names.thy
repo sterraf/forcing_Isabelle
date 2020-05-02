@@ -9,11 +9,11 @@ theory Names
 begin
 
 definition
-  SepReplace :: "[i, i\<Rightarrow>i, i\<Rightarrow> o] \<Rightarrow>i" where
+  SepReplace :: "[i, i\<Rightarrow>i, i\<Rightarrow> o] \<Rightarrow> i" where
   "SepReplace(A,b,Q) \<equiv> {y . x\<in>A, y=b(x) \<and> Q(x)}"
 
 syntax
-  "_SepReplace"  :: "[i, pttrn, i, o] => i"  ("(1{_ ../ _ \<in> _, _})")
+  "_SepReplace"  :: "[i, pttrn, i, o] \<Rightarrow> i"  ("(1{_ ../ _ \<in> _, _})")
 translations
   "{b .. x\<in>A, Q}" => "CONST SepReplace(A, \<lambda>x. b, \<lambda>x. Q)"
 

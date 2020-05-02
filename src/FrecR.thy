@@ -66,10 +66,10 @@ definition
   "cond_of(x) \<equiv> snd(snd(snd((x))))"
 
 lemma components_simp:
-  "ftype(<f,n1,n2,c>) = f"
-  "name1(<f,n1,n2,c>) = n1"
-  "name2(<f,n1,n2,c>) = n2"
-  "cond_of(<f,n1,n2,c>) = c"
+  "ftype(\<langle>f,n1,n2,c\<rangle>) = f"
+  "name1(\<langle>f,n1,n2,c\<rangle>) = n1"
+  "name2(\<langle>f,n1,n2,c\<rangle>) = n2"
+  "cond_of(\<langle>f,n1,n2,c\<rangle>) = c"
   unfolding ftype_def name1_def name2_def cond_of_def
   by simp_all
 
@@ -81,8 +81,8 @@ definition
   "ecloseN(x) = eclose_n(name1,x) \<union> eclose_n(name2,x)"
 
 lemma components_in_eclose :
-  "n1 \<in> ecloseN(<f,n1,n2,c>)"
-  "n2 \<in> ecloseN(<f,n1,n2,c>)"
+  "n1 \<in> ecloseN(\<langle>f,n1,n2,c\<rangle>)"
+  "n2 \<in> ecloseN(\<langle>f,n1,n2,c\<rangle>)"
   unfolding ecloseN_def eclose_n_def
   using components_simp arg_into_eclose by auto
 
@@ -90,7 +90,7 @@ lemmas names_simp = components_simp(2) components_simp(3)
 
 lemma ecloseNI1 : 
   assumes "x \<in> eclose(n1) \<or> x\<in>eclose(n2)" 
-  shows "x \<in> ecloseN(<f,n1,n2,c>)" 
+  shows "x \<in> ecloseN(\<langle>f,n1,n2,c\<rangle>)" 
   unfolding ecloseN_def eclose_n_def
   using assms eclose_sing names_simp
   by auto
@@ -122,7 +122,7 @@ proof -
 qed
 
 
-(* ftype(p) \<equiv> THE a. \<exists>b. p = <a, b> *)
+(* ftype(p) \<equiv> THE a. \<exists>b. p = \<langle>a, b\<rangle> *)
 
 definition
   is_fst :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
@@ -285,7 +285,7 @@ lemmas components_defs = fst_fm_def ftype_fm_def snd_fm_def snd_snd_fm_def hcomp
 
 
 definition
-  is_eclose_n :: "[i=>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i,i] => o" where
+  is_eclose_n :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "is_eclose_n(N,is_name,en,t) \<equiv> 
         \<exists>n1[N].\<exists>s1[N]. is_name(N,t,n1) \<and> is_singleton(N,n1,s1) \<and> is_eclose(N,s1,en)"
 
@@ -300,7 +300,7 @@ definition
                                        is_eclose_fm(1,m#+2))))"
 
 definition
-  is_ecloseN :: "[i=>o,i,i] => o" where
+  is_ecloseN :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "is_ecloseN(N,en,t) \<equiv> \<exists>en1[N].\<exists>en2[N].
                 is_eclose_n(N,is_name1,en1,t) \<and> is_eclose_n(N,is_name2,en2,t)\<and>
                 union(N,en1,en2,en)"
@@ -373,8 +373,8 @@ lemma frecR_D2 :
   by auto
 
 lemma frecR_DI : 
-  assumes "frecR(<a,b,c,d>,<ftype(y),name1(y),name2(y),cond_of(y)>)"
-  shows "frecR(<a,b,c,d>,y)"
+  assumes "frecR(\<langle>a,b,c,d\<rangle>,\<langle>ftype(y),name1(y),name2(y),cond_of(y)\<rangle>)"
+  shows "frecR(\<langle>a,b,c,d\<rangle>,y)"
   using assms unfolding frecR_def by (force simp add:components_simp)
 
 (*
@@ -581,11 +581,11 @@ definition
 
 lemma frecrelI : 
   assumes "x \<in> A" "y\<in>A" "frecR(x,y)"
-  shows "<x,y>\<in>frecrel(A)"
+  shows "\<langle>x,y\<rangle>\<in>frecrel(A)"
   using assms unfolding frecrel_def Rrel_def by auto
 
 lemma frecrelD :
-  assumes "<x,y> \<in> frecrel(A1\<times>A2\<times>A3\<times>A4)"
+  assumes "\<langle>x,y\<rangle> \<in> frecrel(A1\<times>A2\<times>A3\<times>A4)"
   shows "ftype(x) \<in> A1" "ftype(x) \<in> A1"
     "name1(x) \<in> A2" "name1(y) \<in> A2" "name2(x) \<in> A3" "name2(x) \<in> A3" 
     "cond_of(x) \<in> A4" "cond_of(y) \<in> A4" 
@@ -639,17 +639,17 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
           Transset_eclose_eq_arg[OF \<open>Transset(A1)\<close>] 
         by auto         
       with \<open>q\<in>A2\<close> \<open>?\<theta> \<in> A1\<close> \<open>cond_of(x)\<in>A2\<close> \<open>?\<tau>\<in>A1\<close>
-      have "frecR(<1, \<sigma>, ?\<tau>, q>, x)" (is "frecR(?T,_)")
-        "frecR(<1, \<sigma>, ?\<theta>, q>, x)" (is "frecR(?U,_)")
+      have "frecR(\<langle>1, \<sigma>, ?\<tau>, q\<rangle>, x)" (is "frecR(?T,_)")
+        "frecR(\<langle>1, \<sigma>, ?\<theta>, q\<rangle>, x)" (is "frecR(?U,_)")
         using  frecRI1'[OF that(1)] frecR_DI  \<open>ftype(x) = 0\<close> 
           frecRI2'[OF that(1)] 
         by (auto simp add:components_simp)
       with \<open>x\<in>?D\<close> \<open>\<sigma>\<in>A1\<close> \<open>q\<in>A2\<close>
-      have "<?T,x>\<in> frecrel(?D)" "<?U,x>\<in> frecrel(?D)" 
+      have "\<langle>?T,x\<rangle>\<in> frecrel(?D)" "\<langle>?U,x\<rangle>\<in> frecrel(?D)" 
         using frecrelI[of ?T ?D x]  frecrelI[of ?U ?D x] by (auto simp add:components_simp)
       with \<open>q\<in>A2\<close> \<open>\<sigma>\<in>A1\<close> \<open>?\<tau>\<in>A1\<close> \<open>?\<theta>\<in>A1\<close>
       have "Q(1, \<sigma>, ?\<tau>, q)" using 1 by (force simp add:components_simp)
-      moreover from \<open>q\<in>A2\<close> \<open>\<sigma>\<in>A1\<close> \<open>?\<tau>\<in>A1\<close> \<open>?\<theta>\<in>A1\<close> \<open><?U,x>\<in> frecrel(?D)\<close>
+      moreover from \<open>q\<in>A2\<close> \<open>\<sigma>\<in>A1\<close> \<open>?\<tau>\<in>A1\<close> \<open>?\<theta>\<in>A1\<close> \<open>\<langle>?U,x\<rangle>\<in> frecrel(?D)\<close>
       have "Q(1, \<sigma>, ?\<theta>, q)" using 1 by (force simp add:components_simp)
       ultimately
       show ?thesis using A by simp
@@ -670,11 +670,11 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
         using mem_eclose_subset[OF \<open>?\<theta>\<in>A1\<close>] Transset_eclose_eq_arg[OF \<open>Transset(A1)\<close>] 
         by auto         
       with \<open>q\<in>A2\<close> \<open>?\<theta> \<in> A1\<close> \<open>cond_of(x)\<in>A2\<close> \<open>?\<tau>\<in>A1\<close>
-      have "frecR(<0, ?\<tau>, \<sigma>, q>, x)" (is "frecR(?T,_)")
+      have "frecR(\<langle>0, ?\<tau>, \<sigma>, q\<rangle>, x)" (is "frecR(?T,_)")
         using  frecRI3'[OF that(1)] frecR_DI  \<open>ftype(x) = 1\<close>                 
         by (auto simp add:components_simp)
       with \<open>x\<in>?D\<close> \<open>\<sigma>\<in>A1\<close> \<open>q\<in>A2\<close> \<open>?\<tau>\<in>A1\<close>
-      have "<?T,x>\<in> frecrel(?D)" "?T\<in>?D"
+      have "\<langle>?T,x\<rangle>\<in> frecrel(?D)" "?T\<in>?D"
         using frecrelI[of ?T ?D x] by (auto simp add:components_simp)
       with \<open>q\<in>A2\<close> \<open>\<sigma>\<in>A1\<close> \<open>?\<tau>\<in>A1\<close> \<open>?\<theta>\<in>A1\<close> 1
       show ?thesis by (force simp add:components_simp)

@@ -81,7 +81,7 @@ definition
 lemma names_belowsD:
   assumes "x \<in> names_below(P,z)"
   obtains f n1 n2 p where
-    "x = <f,n1,n2,p>" "f\<in>2" "n1\<in>ecloseN(z)" "n2\<in>ecloseN(z)" "p\<in>P"
+    "x = \<langle>f,n1,n2,p\<rangle>" "f\<in>2" "n1\<in>ecloseN(z)" "n2\<in>ecloseN(z)" "p\<in>P"
   using assms unfolding names_below_def by auto
 
 
@@ -176,11 +176,11 @@ lemma is_tuple_iff_sats:
 subsection\<open>Definition of \<^term>\<open>forces\<close> for equality and membership\<close>
 
 (* p ||- \<tau> = \<theta> \<equiv>
-  \<forall>\<sigma>. \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<longrightarrow> (\<forall>q\<in>P. <q,p>\<in>leq \<longrightarrow> ((q ||- \<sigma>\<in>\<tau>) \<longleftrightarrow> (q ||- \<sigma>\<in>\<theta>)) ) *)
+  \<forall>\<sigma>. \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<longrightarrow> (\<forall>q\<in>P. \<langle>q,p\<rangle>\<in>leq \<longrightarrow> ((q ||- \<sigma>\<in>\<tau>) \<longleftrightarrow> (q ||- \<sigma>\<in>\<theta>)) ) *)
 definition
   eq_case :: "[i,i,i,i,i,i] \<Rightarrow> o" where
   "eq_case(t1,t2,p,P,leq,f) \<equiv> \<forall>s. s\<in>domain(t1) \<union> domain(t2) \<longrightarrow>
-      (\<forall>q. q\<in>P \<and> <q,p>\<in>leq \<longrightarrow> (f`<1,s,t1,q>=1  \<longleftrightarrow> f`<1,s,t2,q> =1))"
+      (\<forall>q. q\<in>P \<and> \<langle>q,p\<rangle>\<in>leq \<longrightarrow> (f`\<langle>1,s,t1,q\<rangle>=1  \<longleftrightarrow> f`\<langle>1,s,t2,q\<rangle> =1))"
 
 
 definition
@@ -195,11 +195,11 @@ definition
              (vf1 = o \<longleftrightarrow> vf2 = o)))"
 
 (* p ||-
-   \<pi> \<in> \<tau> \<equiv> \<forall>v\<in>P. <v,p>\<in>leq \<longrightarrow> (\<exists>q\<in>P. <q,v>\<in>leq \<and> (\<exists>\<sigma>. \<exists>r\<in>P. <\<sigma>,r>\<in>\<tau> \<and> <q,r>\<in>leq \<and>  q ||- \<pi> = \<sigma>)) *)
+   \<pi> \<in> \<tau> \<equiv> \<forall>v\<in>P. \<langle>v,p\<rangle>\<in>leq \<longrightarrow> (\<exists>q\<in>P. \<langle>q,v\<rangle>\<in>leq \<and> (\<exists>\<sigma>. \<exists>r\<in>P. \<langle>\<sigma>,r\<rangle>\<in>\<tau> \<and> \<langle>q,r\<rangle>\<in>leq \<and>  q ||- \<pi> = \<sigma>)) *)
 definition
   mem_case :: "[i,i,i,i,i,i] \<Rightarrow> o" where
-  "mem_case(t1,t2,p,P,leq,f) \<equiv> \<forall>v\<in>P. <v,p>\<in>leq \<longrightarrow>
-    (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> <q,v>\<in>leq \<and> <s,r> \<in> t2 \<and> <q,r>\<in>leq \<and>  f`<0,t1,s,q> = 1)"
+  "mem_case(t1,t2,p,P,leq,f) \<equiv> \<forall>v\<in>P. \<langle>v,p\<rangle>\<in>leq \<longrightarrow>
+    (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> \<langle>q,v\<rangle>\<in>leq \<and> \<langle>s,r\<rangle> \<in> t2 \<and> \<langle>q,r\<rangle>\<in>leq \<and>  f`\<langle>0,t1,s,q\<rangle> = 1)"
 
 definition
   is_mem_case :: "[i\<Rightarrow>o,i,i,i,i,i,i] \<Rightarrow> o" where
@@ -303,7 +303,7 @@ lemma eq_case_iff_sats :
 
 definition
   Hfrc :: "[i,i,i,i] \<Rightarrow> o" where
-  "Hfrc(P,leq,fnnc,f) \<equiv> \<exists>ft. \<exists>n1. \<exists>n2. \<exists>c. c\<in>P \<and> fnnc = <ft,n1,n2,c> \<and>
+  "Hfrc(P,leq,fnnc,f) \<equiv> \<exists>ft. \<exists>n1. \<exists>n2. \<exists>c. c\<in>P \<and> fnnc = \<langle>ft,n1,n2,c\<rangle> \<and>
      (  ft = 0 \<and>  eq_case(n1,n2,c,P,leq,f)
       \<or> ft = 1 \<and> mem_case(n1,n2,c,P,leq,f))"
 
@@ -535,19 +535,19 @@ qed
 
 definition
   forces_eq' :: "[i,i,i,i,i] \<Rightarrow> o" where
-  "forces_eq'(P,l,p,t1,t2) \<equiv> frc_at(P,l,<0,t1,t2,p>) = 1"
+  "forces_eq'(P,l,p,t1,t2) \<equiv> frc_at(P,l,\<langle>0,t1,t2,p\<rangle>) = 1"
 
 definition
   forces_mem' :: "[i,i,i,i,i] \<Rightarrow> o" where
-  "forces_mem'(P,l,p,t1,t2) \<equiv> frc_at(P,l,<1,t1,t2,p>) = 1"
+  "forces_mem'(P,l,p,t1,t2) \<equiv> frc_at(P,l,\<langle>1,t1,t2,p\<rangle>) = 1"
 
 definition
   forces_neq' :: "[i,i,i,i,i] \<Rightarrow> o" where
-  "forces_neq'(P,l,p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. <q,p>\<in>l \<and> forces_eq'(P,l,q,t1,t2))"
+  "forces_neq'(P,l,p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. \<langle>q,p\<rangle>\<in>l \<and> forces_eq'(P,l,q,t1,t2))"
 
 definition
   forces_nmem' :: "[i,i,i,i,i] \<Rightarrow> o" where
-  "forces_nmem'(P,l,p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. <q,p>\<in>l \<and> forces_mem'(P,l,q,t1,t2))"
+  "forces_nmem'(P,l,p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. \<langle>q,p\<rangle>\<in>l \<and> forces_mem'(P,l,q,t1,t2))"
 
 definition
   is_forces_eq' :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
@@ -696,7 +696,7 @@ lemma cond_of_abs[simp]:
 
 lemma tuple_abs[simp]:
   "\<lbrakk>z\<in>M;t1\<in>M;t2\<in>M;p\<in>M;t\<in>M\<rbrakk> \<Longrightarrow>
-   is_tuple(##M,z,t1,t2,p,t) \<longleftrightarrow> t = <z,t1,t2,p>"
+   is_tuple(##M,z,t1,t2,p,t) \<longleftrightarrow> t = \<langle>z,t1,t2,p\<rangle>"
   unfolding is_tuple_def using tuples_in_M by simp
 
 lemma oneN_in_M[simp]: "1\<in>M"
@@ -836,7 +836,7 @@ lemma frecR_abs :
   unfolding frecR_def is_frecR_def using components_closed domain_closed by simp
 
 lemma frecrelP_abs :
-  "z\<in>M \<Longrightarrow> frecrelP(##M,z) \<longleftrightarrow> (\<exists>x y. z = <x,y> \<and> frecR(x,y))"
+  "z\<in>M \<Longrightarrow> frecrelP(##M,z) \<longleftrightarrow> (\<exists>x y. z = \<langle>x,y\<rangle> \<and> frecR(x,y))"
   using pair_in_M_iff frecR_abs unfolding frecrelP_def by auto
 
 lemma frecrel_abs:
@@ -849,7 +849,7 @@ proof -
   have "z\<in>M" if "z\<in>A\<times>A" for z
     using cartprod_closed transitivity that by simp
   then
-  have "Collect(A\<times>A,frecrelP(##M)) = Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = <x,y> \<and> frecR(x,y)))"
+  have "Collect(A\<times>A,frecrelP(##M)) = Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = \<langle>x,y\<rangle> \<and> frecR(x,y)))"
     using Collect_cong[of "A\<times>A" "A\<times>A" "frecrelP(##M)"] assms frecrelP_abs by simp
   with assms
   show ?thesis unfolding is_frecrel_def def_frecrel using cartprod_closed
@@ -862,7 +862,7 @@ lemma frecrel_closed:
   shows
     "frecrel(x)\<in>M"
 proof -
-  have "Collect(x\<times>x,\<lambda>z. (\<exists>x y. z = <x,y> \<and> frecR(x,y)))\<in>M"
+  have "Collect(x\<times>x,\<lambda>z. (\<exists>x y. z = \<langle>x,y\<rangle> \<and> frecR(x,y)))\<in>M"
     using Collect_in_M_0p[of "frecrelP_fm(0)"] arity_frecrelP_fm sats_frecrelP_fm
       frecrelP_abs \<open>x\<in>M\<close> cartprod_closed by simp
   then show ?thesis
@@ -889,8 +889,8 @@ lemma restrict_trancl_forcerel:
   by simp
 
 lemma names_belowI :
-  assumes "frecR(<ft,n1,n2,p>,<a,b,c,d>)" "p\<in>P"
-  shows "<ft,n1,n2,p> \<in> names_below(P,<a,b,c,d>)" (is "?x \<in> names_below(_,?y)")
+  assumes "frecR(\<langle>ft,n1,n2,p\<rangle>,\<langle>a,b,c,d\<rangle>)" "p\<in>P"
+  shows "\<langle>ft,n1,n2,p\<rangle> \<in> names_below(P,\<langle>a,b,c,d\<rangle>)" (is "?x \<in> names_below(_,?y)")
 proof -
   from assms
   have "ft \<in> 2" "a \<in> 2"
@@ -930,11 +930,11 @@ proof -
   let ?A="\<lambda>y . names_below(P,y)"
   from assms
   obtain fx x1 x2 px where
-    "x = <fx,x1,x2,px>" "fx\<in>2" "x1\<in>ecloseN(y)" "x2\<in>ecloseN(y)" "px\<in>P"
+    "x = \<langle>fx,x1,x2,px\<rangle>" "fx\<in>2" "x1\<in>ecloseN(y)" "x2\<in>ecloseN(y)" "px\<in>P"
     unfolding names_below_def by auto
   from assms
   obtain fy y1 y2 py where
-    "y = <fy,y1,y2,py>" "fy\<in>2" "y1\<in>ecloseN(z)" "y2\<in>ecloseN(z)" "py\<in>P"
+    "y = \<langle>fy,y1,y2,py\<rangle>" "fy\<in>2" "y1\<in>ecloseN(z)" "y2\<in>ecloseN(z)" "py\<in>P"
     unfolding names_below_def by auto
   from \<open>x1\<in>_\<close> \<open>x2\<in>_\<close> \<open>y1\<in>_\<close> \<open>y2\<in>_\<close> \<open>x=_\<close> \<open>y=_\<close>
   have "x1\<in>ecloseN(z)" "x2\<in>ecloseN(z)"
@@ -946,7 +946,7 @@ proof -
 qed
 
 lemma arg_into_names_below2 :
-  assumes "<x,y> \<in> frecrel(names_below(P,z))"
+  assumes "\<langle>x,y\<rangle> \<in> frecrel(names_below(P,z))"
   shows  "x \<in> names_below(P,y)"
 proof -
   {
@@ -955,12 +955,12 @@ proof -
       unfolding frecrel_def Rrel_def
       by auto
     obtain f n1 n2 p where
-      "x = <f,n1,n2,p>" "f\<in>2" "n1\<in>ecloseN(z)" "n2\<in>ecloseN(z)" "p\<in>P"
+      "x = \<langle>f,n1,n2,p\<rangle>" "f\<in>2" "n1\<in>ecloseN(z)" "n2\<in>ecloseN(z)" "p\<in>P"
       using \<open>x\<in>names_below(P,z)\<close>
       unfolding names_below_def by auto
     moreover
     obtain fy m1 m2 q where
-      "q\<in>P" "y = <fy,m1,m2,q>"
+      "q\<in>P" "y = \<langle>fy,m1,m2,q\<rangle>"
       using \<open>y\<in>names_below(P,z)\<close>
       unfolding names_below_def by auto
     moreover
@@ -972,7 +972,7 @@ proof -
 qed
 
 lemma arg_into_names_below :
-  assumes "<x,y> \<in> frecrel(names_below(P,z))"
+  assumes "\<langle>x,y\<rangle> \<in> frecrel(names_below(P,z))"
   shows  "x \<in> names_below(P,x)"
 proof -
   {
@@ -982,12 +982,12 @@ proof -
       by auto
     from \<open>x\<in>names_below(P,z)\<close>
     obtain f n1 n2 p where
-      "x = <f,n1,n2,p>" "f\<in>2" "n1\<in>ecloseN(z)" "n2\<in>ecloseN(z)" "p\<in>P"
+      "x = \<langle>f,n1,n2,p\<rangle>" "f\<in>2" "n1\<in>ecloseN(z)" "n2\<in>ecloseN(z)" "p\<in>P"
       unfolding names_below_def by auto
     then
     have "n1\<in>ecloseN(x)" "n2\<in>ecloseN(x)"
       using components_in_eclose by simp_all
-    with \<open>f\<in>2\<close> \<open>p\<in>P\<close> \<open>x = <f,n1,n2,p>\<close>
+    with \<open>f\<in>2\<close> \<open>p\<in>P\<close> \<open>x = \<langle>f,n1,n2,p\<rangle>\<close>
     have "x\<in>names_below(P,x)"
       unfolding names_below_def by simp
   }
@@ -995,7 +995,7 @@ proof -
 qed
 
 lemma forcerel_arg_into_names_below :
-  assumes "<x,y> \<in> forcerel(P,z)"
+  assumes "\<langle>x,y\<rangle> \<in> forcerel(P,z)"
   shows  "x \<in> names_below(P,x)"
   using assms
   unfolding forcerel_def
@@ -1036,14 +1036,14 @@ lemma forcerel_mono :
   shows "forcerel(P,x) \<subseteq> forcerel(P,y)"
   using forcerel_mono_aux assms unfolding forcerel_def by simp
 
-lemma aux: "x \<in> names_below(P, w) \<Longrightarrow> <x,y> \<in> forcerel(P,z) \<Longrightarrow>
-  (y \<in> names_below(P, w) \<longrightarrow> <x,y> \<in> forcerel(P,w))"
+lemma aux: "x \<in> names_below(P, w) \<Longrightarrow> \<langle>x,y\<rangle> \<in> forcerel(P,z) \<Longrightarrow>
+  (y \<in> names_below(P, w) \<longrightarrow> \<langle>x,y\<rangle> \<in> forcerel(P,w))"
   unfolding forcerel_def
-proof(rule_tac a=x and b=y and P="\<lambda> y . y \<in> names_below(P, w) \<longrightarrow> <x,y> \<in> frecrel(names_below(P,w))^+" in trancl_induct,simp)
+proof(rule_tac a=x and b=y and P="\<lambda> y . y \<in> names_below(P, w) \<longrightarrow> \<langle>x,y\<rangle> \<in> frecrel(names_below(P,w))^+" in trancl_induct,simp)
   let ?A="\<lambda> a . names_below(P, a)"
   let ?R="\<lambda> a . frecrel(?A(a))"
   let ?fR="\<lambda> a .forcerel(a)"
-  show "u\<in>?A(w) \<longrightarrow> <x,u>\<in>?R(w)^+" if "x\<in>?A(w)" "<x,y>\<in>?R(z)^+" "<x,u>\<in>?R(z)"  for  u
+  show "u\<in>?A(w) \<longrightarrow> \<langle>x,u\<rangle>\<in>?R(w)^+" if "x\<in>?A(w)" "\<langle>x,y\<rangle>\<in>?R(z)^+" "\<langle>x,u\<rangle>\<in>?R(z)"  for  u
     using that frecrelD frecrelI r_into_trancl unfolding names_below_def by simp
   {
     fix u v
@@ -1088,7 +1088,7 @@ lemma forcerel_eq :
   by auto
 
 lemma forcerel_below_aux :
-  assumes "<z,x> \<in> forcerel(P,x)" "<u,z> \<in> forcerel(P,x)"
+  assumes "\<langle>z,x\<rangle> \<in> forcerel(P,x)" "\<langle>u,z\<rangle> \<in> forcerel(P,x)"
   shows "u \<in> names_below(P,z)"
   using assms(2)
   unfolding forcerel_def
@@ -1105,7 +1105,7 @@ next
 qed
 
 lemma forcerel_below :
-  assumes "<z,x> \<in> forcerel(P,x)"
+  assumes "\<langle>z,x\<rangle> \<in> forcerel(P,x)"
   shows "forcerel(P,x) -`` {z} \<subseteq> names_below(P,z)"
   using vimage_singleton_iff assms forcerel_below_aux by auto
 
@@ -1167,7 +1167,7 @@ qed
 
 lemma forcerelI3 :
   assumes "\<langle>n2, r\<rangle> \<in> c" "p\<in>P" "d\<in>P" "r \<in> P"
-  shows "\<langle>\<langle>0, b, n2, p\<rangle>,\<langle>1, b, c, d\<rangle>\<rangle> \<in> forcerel(P,<1,b,c,d>)"
+  shows "\<langle>\<langle>0, b, n2, p\<rangle>,\<langle>1, b, c, d\<rangle>\<rangle> \<in> forcerel(P,\<langle>1,b,c,d\<rangle>)"
 proof -
   let ?x="\<langle>0, b, n2, p\<rangle>"
   let ?y="\<langle>1, b, c, d\<rangle>"
@@ -1195,12 +1195,12 @@ lemma  aux_def_frc_at:
 proof -
   let ?A="names_below(P,z)"
   from assms
-  have "<z,x> \<in> forcerel(P,x)"
+  have "\<langle>z,x\<rangle> \<in> forcerel(P,x)"
     using vimage_singleton_iff by simp
   then
   have "z \<in> ?A"
     using forcerel_arg_into_names_below by simp
-  from \<open><z,x> \<in> forcerel(P,x)\<close>
+  from \<open>\<langle>z,x\<rangle> \<in> forcerel(P,x)\<close>
   have E:"forcerel(P,z) = forcerel(P,x) \<inter> (?A\<times>?A)"
     "forcerel(P,x) -`` {z} \<subseteq> ?A"
     using forcerel_eq forcerel_below
@@ -1218,16 +1218,16 @@ subsection\<open>Recursive expression of \<^term>\<open>frc_at\<close>\<close>
 lemma def_frc_at :
   assumes "p\<in>P"
   shows
-    "frc_at(P,leq,<ft,n1,n2,p>) =
+    "frc_at(P,leq,\<langle>ft,n1,n2,p\<rangle>) =
    bool_of_o( p \<in>P \<and>
   (  ft = 0 \<and>  (\<forall>s. s\<in>domain(n1) \<union> domain(n2) \<longrightarrow>
-        (\<forall>q. q\<in>P \<and> q \<preceq> p \<longrightarrow> (frc_at(P,leq,<1,s,n1,q>) =1 \<longleftrightarrow> frc_at(P,leq,<1,s,n2,q>) =1)))
+        (\<forall>q. q\<in>P \<and> q \<preceq> p \<longrightarrow> (frc_at(P,leq,\<langle>1,s,n1,q\<rangle>) =1 \<longleftrightarrow> frc_at(P,leq,\<langle>1,s,n2,q\<rangle>) =1)))
    \<or> ft = 1 \<and> ( \<forall>v\<in>P. v \<preceq> p \<longrightarrow>
-    (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> q \<preceq> v \<and> <s,r> \<in> n2 \<and> q \<preceq> r \<and>  frc_at(P,leq,<0,n1,s,q>) = 1))))"
+    (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> q \<preceq> v \<and> \<langle>s,r\<rangle> \<in> n2 \<and> q \<preceq> r \<and>  frc_at(P,leq,\<langle>0,n1,s,q\<rangle>) = 1))))"
 proof -
   let ?r="\<lambda>y. forcerel(P,y)" and ?Hf="\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f))"
   let ?t="\<lambda>y. ?r(y) -`` {y}"
-  let ?arg="<ft,n1,n2,p>"
+  let ?arg="\<langle>ft,n1,n2,p\<rangle>"
   from wf_forcerel
   have wfr: "\<forall>w . wf(?r(w))" ..
   with wfrec [of "?r(?arg)" ?arg ?Hf]
@@ -1550,7 +1550,7 @@ definition
   "is_leq(A,l,q,p) \<equiv> \<exists>qp[A]. (pair(A,q,p,qp) \<and> qp\<in>l)"
 
 lemma (in forcing_data) leq_abs[simp]:
-  "\<lbrakk> l\<in>M ; q\<in>M ; p\<in>M \<rbrakk> \<Longrightarrow> is_leq(##M,l,q,p) \<longleftrightarrow> <q,p>\<in>l"
+  "\<lbrakk> l\<in>M ; q\<in>M ; p\<in>M \<rbrakk> \<Longrightarrow> is_leq(##M,l,q,p) \<longleftrightarrow> \<langle>q,p\<rangle>\<in>l"
   unfolding is_leq_def using pair_in_M_iff by simp
 
 
@@ -1608,12 +1608,12 @@ definition
   forces_mem :: "[i,i,i] \<Rightarrow> o" where
   "forces_mem \<equiv> forces_mem'(P,leq)"
 
-(* frc_at(P,leq,<0,t1,t2,p>) = 1*)
+(* frc_at(P,leq,\<langle>0,t1,t2,p\<rangle>) = 1*)
 definition
   is_forces_eq :: "[i,i,i] \<Rightarrow> o" where
   "is_forces_eq \<equiv> is_forces_eq'(##M,P,leq)"
 
-(* frc_at(P,leq,<1,t1,t2,p>) = 1*)
+(* frc_at(P,leq,\<langle>1,t1,t2,p\<rangle>) = 1*)
 definition
   is_forces_mem :: "[i,i,i] \<Rightarrow> o" where
   "is_forces_mem \<equiv> is_forces_mem'(##M,P,leq)"
@@ -1628,7 +1628,7 @@ lemma def_forces_eq: "p\<in>P \<Longrightarrow> forces_eq(p,t1,t2) \<longleftrig
 
 lemma def_forces_mem: "p\<in>P \<Longrightarrow> forces_mem(p,t1,t2) \<longleftrightarrow>
      (\<forall>v\<in>P. v \<preceq> p \<longrightarrow>
-      (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> q \<preceq> v \<and> <s,r> \<in> t2 \<and> q \<preceq> r \<and> forces_eq(q,t1,s)))"
+      (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> q \<preceq> v \<and> \<langle>s,r\<rangle> \<in> t2 \<and> q \<preceq> r \<and> forces_eq(q,t1,s)))"
   unfolding forces_eq'_def forces_mem'_def forces_eq_def forces_mem_def
   using def_frc_at[of p 1 t1 t2]  unfolding bool_of_o_def
   by auto

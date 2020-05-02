@@ -192,7 +192,7 @@ lemma arity_body_fm':
 
 lemma sats_body_fm':
   assumes
-    "\<exists>t p. x=<t,p>" "x\<in>M" "[\<alpha>,P,leq,one,p,\<rho>] @ nenv \<in>list(M)" "\<phi>\<in>formula" "arity(\<phi>) \<le> 2 #+ length(nenv)"
+    "\<exists>t p. x=\<langle>t,p\<rangle>" "x\<in>M" "[\<alpha>,P,leq,one,p,\<rho>] @ nenv \<in>list(M)" "\<phi>\<in>formula" "arity(\<phi>) \<le> 2 #+ length(nenv)"
   shows
     "sats(M,body_fm'(\<phi>,nenv),[x,\<alpha>,P,leq,one] @ nenv) \<longleftrightarrow>
      sats(M,renpbdy(prebody_fm(\<phi>,nenv),nenv),[fst(x),snd(x),x,\<alpha>,P,leq,one] @ nenv)"
@@ -208,7 +208,7 @@ lemma body_fm_type [TC]: "env\<in>list(M) \<Longrightarrow> \<phi>\<in>formula \
 
 lemma sats_body_fm:
   assumes
-    "\<exists>t p. x=<t,p>" "[\<alpha>,x,m,P,leq,one] @ nenv \<in>list(M)"
+    "\<exists>t p. x=\<langle>t,p\<rangle>" "[\<alpha>,x,m,P,leq,one] @ nenv \<in>list(M)"
     "\<phi>\<in>formula" "arity(\<phi>) \<le> 2 #+ length(nenv)"
   shows
     "sats(M,body_fm(\<phi>,nenv),[\<alpha>,x,m,P,leq,one] @ nenv) \<longleftrightarrow>
@@ -219,7 +219,7 @@ lemma sats_body_fm:
 
 lemma sats_renpbdy_prebody_fm:
   assumes
-    "\<exists>t p. x=<t,p>" "x\<in>M" "[\<alpha>,m,P,leq,one] @ nenv \<in>list(M)"
+    "\<exists>t p. x=\<langle>t,p\<rangle>" "x\<in>M" "[\<alpha>,m,P,leq,one] @ nenv \<in>list(M)"
     "\<phi>\<in>formula" "arity(\<phi>) \<le> 2 #+ length(nenv)"
   shows
     "sats(M,renpbdy(prebody_fm(\<phi>,nenv),nenv),[fst(x),snd(x),x,\<alpha>,P,leq,one] @ nenv) \<longleftrightarrow>
@@ -230,7 +230,7 @@ lemma sats_renpbdy_prebody_fm:
 
 lemma body_lemma:
   assumes
-    "\<exists>t p. x=<t,p>" "x\<in>M" "[x,\<alpha>,m,P,leq,one] @ nenv \<in>list(M)"
+    "\<exists>t p. x=\<langle>t,p\<rangle>" "x\<in>M" "[x,\<alpha>,m,P,leq,one] @ nenv \<in>list(M)"
     "\<phi>\<in>formula" "arity(\<phi>) \<le> 2 #+ length(nenv)"
   shows
     "sats(M,body_fm(\<phi>,nenv),[\<alpha>,x,m,P,leq,one] @ nenv) \<longleftrightarrow>
@@ -287,7 +287,7 @@ proof -
   moreover
   note assms \<open>nenv\<in>list(M)\<close> \<open>?\<pi>\<in>M\<close>
   moreover
-  have "\<rho>p\<in>?\<pi> \<Longrightarrow> \<exists>t p. \<rho>p=<t,p>" for \<rho>p
+  have "\<rho>p\<in>?\<pi> \<Longrightarrow> \<exists>t p. \<rho>p=\<langle>t,p\<rangle>" for \<rho>p
     by auto
   ultimately
   have body:"M , [\<alpha>,\<rho>p,m,P,leq,one] @ nenv \<Turnstile> body_fm(\<phi>,nenv) \<longleftrightarrow> ?Q(\<rho>p,\<alpha>)"
@@ -335,7 +335,7 @@ proof -
     \<open>_ \<Longrightarrow> _ \<Longrightarrow> _ \<Longrightarrow> M,_ \<Turnstile> ?f_fm \<longleftrightarrow> least(_,_,_)\<close>
   have "f(\<rho>p)\<in>Y" if "\<rho>p\<in>?\<pi>" for \<rho>p
     using that transitivity[OF _ \<open>?\<pi>\<in>M\<close>]
-    by (clarsimp, rule_tac x="<x,y>" in bexI, auto)
+    by (clarsimp, rule_tac x="\<langle>x,y\<rangle>" in bexI, auto)
   moreover
   have "{y\<in>Y. Ord(y)} \<in> M"
     using \<open>Y\<in>M\<close> separation_ax sats_ordinal_fm trans_M
@@ -363,7 +363,7 @@ proof -
     note \<open>val(G,\<pi>')=c\<close> \<open>\<pi>'\<in>M\<close>
     moreover
     from calculation
-    obtain \<rho> p where "<\<rho>,p>\<in>\<pi>'"  "val(G,\<rho>) = x" "p\<in>G" "\<rho>\<in>M"
+    obtain \<rho> p where "\<langle>\<rho>,p\<rangle>\<in>\<pi>'"  "val(G,\<rho>) = x" "p\<in>G" "\<rho>\<in>M"
       using elem_of_val_pair'[of \<pi>' x G] by blast
     moreover
     assume "v\<in>M[G]"
@@ -378,8 +378,8 @@ proof -
     obtain q where "q\<in>G" "q \<tturnstile> \<phi> ([\<rho>,\<sigma>]@nenv)"
       using truth_lemma[OF \<open>\<phi>\<in>_\<close> generic, symmetric, of "[\<rho>,\<sigma>] @ nenv"]
       by auto
-    with \<open><\<rho>,p>\<in>\<pi>'\<close> \<open><\<rho>,q>\<in>?\<pi> \<Longrightarrow> f(<\<rho>,q>)\<in>Y\<close>
-    have "f(<\<rho>,q>)\<in>Y"
+    with \<open>\<langle>\<rho>,p\<rangle>\<in>\<pi>'\<close> \<open>\<langle>\<rho>,q\<rangle>\<in>?\<pi> \<Longrightarrow> f(\<langle>\<rho>,q\<rangle>)\<in>Y\<close>
+    have "f(\<langle>\<rho>,q\<rangle>)\<in>Y"
       using generic unfolding M_generic_def filter_def by blast
     let ?\<alpha>="succ(rank(\<sigma>))"
     note \<open>\<sigma>\<in>M\<close>
@@ -392,13 +392,13 @@ proof -
     moreover
     note \<open>q \<tturnstile> \<phi> ([\<rho>,\<sigma>] @ nenv)\<close>
     ultimately
-    have "?P(<\<rho>,q>,?\<alpha>)" by (auto simp del: Vset_rank_iff)
+    have "?P(\<langle>\<rho>,q\<rangle>,?\<alpha>)" by (auto simp del: Vset_rank_iff)
     moreover
-    have "(\<mu> \<alpha>. ?P(<\<rho>,q>,\<alpha>)) = f(<\<rho>,q>)"
+    have "(\<mu> \<alpha>. ?P(\<langle>\<rho>,q\<rangle>,\<alpha>)) = f(\<langle>\<rho>,q\<rangle>)"
       unfolding f_def by simp
     ultimately
-    obtain \<tau> where "\<tau>\<in>M" "\<tau> \<in> Vset(f(<\<rho>,q>))" "q \<tturnstile> \<phi> ([\<rho>,\<tau>] @ nenv)"
-      using LeastI[of "\<lambda> \<alpha>. ?P(<\<rho>,q>,\<alpha>)" ?\<alpha>] by auto
+    obtain \<tau> where "\<tau>\<in>M" "\<tau> \<in> Vset(f(\<langle>\<rho>,q\<rangle>))" "q \<tturnstile> \<phi> ([\<rho>,\<tau>] @ nenv)"
+      using LeastI[of "\<lambda> \<alpha>. ?P(\<langle>\<rho>,q\<rangle>,\<alpha>)" ?\<alpha>] by auto
     with \<open>q\<in>G\<close> \<open>\<rho>\<in>M\<close> \<open>nenv\<in>_\<close> \<open>arity(\<phi>)\<le> 2 #+ length(nenv)\<close>
     have "M[G], map(val(G),[\<rho>,\<tau>] @ nenv) \<Turnstile> \<phi>"
       using truth_lemma[OF \<open>\<phi>\<in>_\<close> generic, of "[\<rho>,\<tau>] @ nenv"] by auto
@@ -410,7 +410,7 @@ proof -
     ultimately
     have "v=val(G,\<tau>)"
       using GenExtI[of \<tau> G] unfolding univalent_def by (auto)
-    from \<open>\<tau> \<in> Vset(f(<\<rho>,q>))\<close> \<open>Ord(f(_))\<close>  \<open>f(<\<rho>,q>)\<in>Y\<close>
+    from \<open>\<tau> \<in> Vset(f(\<langle>\<rho>,q\<rangle>))\<close> \<open>Ord(f(_))\<close>  \<open>f(\<langle>\<rho>,q\<rangle>)\<in>Y\<close>
     have "\<tau> \<in> Vset(?sup)"
       using Vset_Ord_rank_iff lt_Union_iff[of _ "rank(\<tau>)"] by auto
     with \<open>\<tau>\<in>M\<close>

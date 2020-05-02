@@ -406,7 +406,7 @@ lemma sum_id_tc :
 
 subsection\<open>Renaming of formulas\<close>
 
-consts   ren :: "i=>i"
+consts   ren :: "i\<Rightarrow>i"
 primrec
   "ren(Member(x,y)) =
       (\<lambda> n \<in> nat . \<lambda> m \<in> nat. \<lambda>f \<in> n \<rightarrow> m. Member (f`x, f`y))"
