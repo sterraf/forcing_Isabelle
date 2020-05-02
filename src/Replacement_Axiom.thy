@@ -28,15 +28,14 @@ lemma arity_renrep:
   by simp
 
 lemma renrep_sats :
-  "arity(\<phi>) \<le> 6 #+ length(env) \<Longrightarrow>
-    [P,leq,o,p,\<rho>,\<tau>] @ env \<in> list(M) \<Longrightarrow>
-    V \<in> M \<Longrightarrow> \<alpha> \<in> M \<Longrightarrow>
-    \<phi>\<in>formula \<Longrightarrow>
-  sats(M, \<phi>, [p,P,leq,o,\<rho>,\<tau>] @ env) \<longleftrightarrow> sats(M, renrep(\<phi>,env), [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o] @ env)"
+  assumes  "arity(\<phi>) \<le> 6 #+ length(env)"
+          "[P,leq,o,p,\<rho>,\<tau>] @ env \<in> list(M)"
+    "V \<in> M" "\<alpha> \<in> M"
+    "\<phi>\<in>formula"
+  shows "sats(M, \<phi>, [p,P,leq,o,\<rho>,\<tau>] @ env) \<longleftrightarrow> sats(M, renrep(\<phi>,env), [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o] @ env)"
   unfolding  renrep_def renrep_fn_def renrep1_fn_def
-  apply (rule sats_iff_sats_ren,auto simp add:renrep1_thm(1)[of _ M,simplified])
-  apply (auto simp add: renrep1_thm(2)[simplified,of p M P leq o \<rho> \<tau> V \<alpha> _ env])
-  done
+  by (rule sats_iff_sats_ren,insert assms, auto simp add:renrep1_thm(1)[of _ M,simplified]
+        renrep1_thm(2)[simplified,where p=p and \<alpha>=\<alpha>])
 
 rename "renpbdy1" src "[\<rho>,p,\<alpha>,P,leq,o]" tgt "[\<rho>,p,x,\<alpha>,P,leq,o]"
 
@@ -63,9 +62,9 @@ lemma
   sats_renpbdy: "arity(\<phi>) \<le> 6 #+ length(nenv) \<Longrightarrow> [\<rho>,p,x,\<alpha>,P,leq,o,\<pi>] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow>
        sats(M, \<phi>, [\<rho>,p,\<alpha>,P,leq,o] @ nenv) \<longleftrightarrow> sats(M, renpbdy(\<phi>,nenv), [\<rho>,p,x,\<alpha>,P,leq,o] @ nenv)"
   unfolding renpbdy_def renpbdy_fn_def renpbdy1_fn_def
-  apply (rule sats_iff_sats_ren,auto simp add:renpbdy1_thm(1)[of _ M,simplified])
-  apply (auto simp add: renpbdy1_thm(2)[simplified,of \<rho> M p  \<alpha> P leq o x  _ nenv])
-  done
+  by (rule sats_iff_sats_ren,auto simp add: renpbdy1_thm(1)[of _ M,simplified]
+                                            renpbdy1_thm(2)[simplified,where \<alpha>=\<alpha> and x=x])
+
 
 rename "renbody1" src "[x,\<alpha>,P,leq,o]" tgt "[\<alpha>,x,m,P,leq,o]"
 
@@ -92,9 +91,8 @@ lemma
   sats_renbody: "arity(\<phi>) \<le> 5 #+ length(nenv) \<Longrightarrow> [\<alpha>,x,m,P,leq,o] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow>
        sats(M, \<phi>, [x,\<alpha>,P,leq,o] @ nenv) \<longleftrightarrow> sats(M, renbody(\<phi>,nenv), [\<alpha>,x,m,P,leq,o] @ nenv)"
   unfolding renbody_def renbody_fn_def renbody1_fn_def
-  apply (rule sats_iff_sats_ren,auto simp add:renbody1_thm(1)[of _ M,simplified])
-  apply (simp add: renbody1_thm(2)[of x \<alpha> P leq o m M _ nenv,simplified])
-  done
+  by (rule sats_iff_sats_ren, auto simp add:renbody1_thm(1)[of _ M,simplified]
+                                            renbody1_thm(2)[where \<alpha>=\<alpha> and m=m,simplified])
 
 context G_generic
 begin
@@ -169,15 +167,11 @@ lemma arity_prebody_fm:
   assumes
     "\<phi>\<in>formula" "\<alpha>\<in>M" "env \<in> list(M)" "arity(\<phi>) \<le> 2 #+ length(env)"
   shows
-    "arity(prebody_fm(\<phi>,env))\<le>6 #+  length(env)"
+    "arity(prebody_fm(\<phi>,env))\<le>6 #+ length(env)"
   unfolding prebody_fm_def is_HVfrom_fm_def is_powapply_fm_def
-  using assms arity_forces_le[OF _ _ \<open>arity(\<phi>) \<le> _\<close>,simplified]
-  apply(simp add:  new_fm_defs)
-  apply(simp add: nat_simp_union,rule, rule, (rule pred_le,simp+)+)
-  apply(subgoal_tac "arity(forces(\<phi>)) \<le> 6 #+length(env)")
-   apply(subgoal_tac "forces(\<phi>)\<in> formula")
-    apply(drule arity_renrep[of "forces(\<phi>)"], auto)
-  done
+  using assms new_fm_defs nat_simp_union
+    arity_renrep[of "forces(\<phi>)"] arity_forces_le[simplified] pred_le by auto
+
 
 definition
   body_fm' :: "[i,i]\<Rightarrow>i" where
@@ -192,13 +186,9 @@ lemma arity_body_fm':
     "\<phi>\<in>formula" "\<alpha>\<in>M" "env\<in>list(M)" "arity(\<phi>) \<le> 2 #+ length(env)"
   shows
     "arity(body_fm'(\<phi>,env))\<le>5  #+ length(env)"
-  unfolding body_fm'_def using assms
-  apply(simp add: new_fm_defs nat_simp_union)
-  apply(intro impI, (rule pred_le,simp+)+)
-  apply(frule arity_prebody_fm,auto)
-  apply(subgoal_tac "prebody_fm(\<phi>,env)\<in>formula")
-   apply(frule arity_renpbdy[of "prebody_fm(\<phi>,env)"],auto)
-  done
+  unfolding body_fm'_def
+  using assms new_fm_defs nat_simp_union arity_prebody_fm pred_le  arity_renpbdy[of "prebody_fm(\<phi>,env)"]
+  by auto
 
 lemma sats_body_fm':
   assumes
