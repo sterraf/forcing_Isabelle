@@ -154,9 +154,9 @@ fun sum_tc_lemma rho rho' ctxt =
 
 fun sum_rename rho rho' ctxt = 
   let
-    val (_, goal, envVar, left_rename, left_tc_lemma, left_action_lemma, fvs, sum_tc_lemma) = sum_tc_lemma rho rho' ctxt
+    val (_, goal, _, left_rename, left_tc_lemma, left_action_lemma, fvs, sum_tc_lemma) = sum_tc_lemma rho rho' ctxt
     val action_lemma = fix_vars left_action_lemma fvs ctxt
-  in (envVar, fvs, left_rename, sum_tc_lemma, Goal.prove ctxt [] [] goal
+  in (sum_tc_lemma, Goal.prove ctxt [] [] goal
     (fn _ => resolve_tac ctxt [@{thm sum_action_id_aux}] 1
             THEN (simp_tac ctxt 4)
             THEN (simp_tac ctxt 1)
@@ -172,7 +172,7 @@ fun sum_rename rho rho' ctxt =
             THEN (full_simp_tac ctxt  1)
             THEN (full_simp_tac ctxt  1)
     
-   )
+   ), fvs, left_rename
    )
 end ;
 end

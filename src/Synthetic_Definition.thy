@@ -14,12 +14,11 @@ val $` = curry ((op $) o swap)
 infix $`
 
 fun pair f g x = (f x, g x)
-fun var_i v = Free (v, @{typ i})
 
 fun prove_tc_form goal thms ctxt =
   Goal.prove ctxt [] [] goal
      (fn _ => rewrite_goal_tac ctxt thms 1
-              THEN TypeCheck.typecheck_tac ctxt)
+              THEN ALLGOALS (asm_full_simp_tac ctxt))
 
 fun display kind pos (thms,thy) =
   let val _ = Proof_Display.print_results true pos thy ((kind,""),[thms])
@@ -82,12 +81,13 @@ schematic goals. A new definition is added to the context. \<close>
 
 (* example of use *)
 
-(*schematic_goal mem_formula_ex :
+schematic_goal mem_formula_ex :
   assumes "m\<in>nat" "n\<in> nat" "env \<in> list(M)"
   shows "nth(m,env) \<in> nth(n,env) \<longleftrightarrow> sats(M,?frm,env)"
   by (insert assms ; (rule sep_rules empty_iff_sats cartprod_iff_sats | simp del:sats_cartprod_fm)+)
+definition "me" :: "[i,i] \<Rightarrow> i" where
+  "me(x,y) == Member(x,y)"
 
 synthesize "\<phi>" from_schematic mem_formula_ex
-*)
 
 end

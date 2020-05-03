@@ -8,6 +8,7 @@ signature Utils =
     val dest_iff_lhs: term -> term
     val dest_iff_rhs: term -> term
     val dest_lhs_def: term -> term
+    val dest_rhs_def: term -> term
     val dest_satisfies_frm: term -> term
     val dest_eq_tms: term -> term * term
     val dest_sats_frm: term -> term
@@ -85,8 +86,12 @@ val formula_ = @{const formula}
 fun dest_eq_tms (Const (@{const_name IFOL.eq},_) $ t $ u) = (t, u)
   | dest_eq_tms t = raise TERM ("dest_eq_tms", [t])
 
-fun dest_lhs_def (Const (@{const_name Pure.eq},_) $ _ $ y) = y
+fun dest_lhs_def (Const (@{const_name Pure.eq},_) $ x $ _) = x
   | dest_lhs_def t = raise TERM ("dest_sats_lhs", [t])
+
+fun dest_rhs_def (Const (@{const_name Pure.eq},_) $ _ $ y) = y
+  | dest_rhs_def t = raise TERM ("dest_sats_lhs", [t])
+
 
 fun dest_apply_op (@{const apply} $ t $ _) = t
   | dest_apply_op t = raise TERM ("dest_applies_op", [t])

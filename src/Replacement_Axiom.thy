@@ -1,7 +1,7 @@
 section\<open>The Axiom of Replacement in $M[G]$\<close>
 theory Replacement_Axiom
   imports
-    Least Relative_Univ Separation_Axiom  Renaming_Auto
+    Least Relative_Univ Separation_Axiom Renaming_Auto
 begin
 
 rename "renrep1" src "[p,P,leq,o,\<rho>,\<tau>]" tgt "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o]"
