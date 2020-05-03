@@ -22,7 +22,7 @@ proof
   fix y
   assume "y \<in> range(restrict(f,f-``a))"
   then 
-  obtain x where "<x,y> \<in> restrict(f,f-``a)"  "x \<in> f-``a" "x\<in>domain(f)"
+  obtain x where "\<langle>x,y\<rangle> \<in> restrict(f,f-``a)"  "x \<in> f-``a" "x\<in>domain(f)"
     using domain_restrict domainI[of _ _ "restrict(f,f-``a)"] by auto
   moreover 
   note \<open>function(restrict(f,f-``a))\<close> 
@@ -35,7 +35,7 @@ proof
   finally 
   have "y=f`x" .
   moreover from assms \<open>x\<in>domain(f)\<close> 
-  have "<x,f`x> \<in> f" 
+  have "\<langle>x,f`x\<rangle> \<in> f" 
     using function_apply_Pair by auto 
   moreover 
   note assms \<open>x \<in> f-``a\<close> 
@@ -193,21 +193,21 @@ lemma sats_opair_name_fm :
 lemma val_upair_name : "val(G,upair_name(\<tau>,\<rho>)) = {val(G,\<tau>),val(G,\<rho>)}"
   unfolding upair_name_def using val_Upair  generic one_in_G one_in_P by simp
     
-lemma val_opair_name : "val(G,opair_name(\<tau>,\<rho>)) = <val(G,\<tau>),val(G,\<rho>)>"
+lemma val_opair_name : "val(G,opair_name(\<tau>,\<rho>)) = \<langle>val(G,\<tau>),val(G,\<rho>)\<rangle>"
   unfolding opair_name_def Pair_def using val_upair_name  by simp
     
 lemma val_RepFun_one: "val(G,{\<langle>f(x),one\<rangle> . x\<in>a}) = {val(G,f(x)) . x\<in>a}"
 proof -
   let ?A = "{f(x) . x \<in> a}"
-  let ?Q = "\<lambda><x,p> . p = one"
+  let ?Q = "\<lambda>\<langle>x,p\<rangle> . p = one"
   have "one \<in> P\<inter>G" using generic one_in_G one_in_P by simp
-  have "{<f(x),one> . x \<in> a} = {t \<in> ?A \<times> P . ?Q(t)}" 
+  have "{\<langle>f(x),one\<rangle> . x \<in> a} = {t \<in> ?A \<times> P . ?Q(t)}" 
     using one_in_P by force
   then
-  have "val(G,{<f(x),one>  . x \<in> a}) = val(G,{t \<in> ?A \<times> P . ?Q(t)})"
+  have "val(G,{\<langle>f(x),one\<rangle>  . x \<in> a}) = val(G,{t \<in> ?A \<times> P . ?Q(t)})"
     by simp
   also
-  have "... = {val(G,t) .. t \<in> ?A , \<exists>p\<in>P\<inter>G . ?Q(<t,p>)}"
+  have "... = {val(G,t) .. t \<in> ?A , \<exists>p\<in>P\<inter>G . ?Q(\<langle>t,p\<rangle>)}"
     using val_of_name_alt by simp
   also
   have "... = {val(G,t) . t \<in> ?A }"
@@ -319,10 +319,10 @@ proof -
     have "f = {val(G,opair_name(check(\<beta>),s`\<beta>)) . \<beta>\<in>\<alpha>}"
       unfolding f_def using val_RepFun_one by simp
     also
-    have "... = {<\<beta>,val(G,s`\<beta>)> . \<beta>\<in>\<alpha>}"
+    have "... = {\<langle>\<beta>,val(G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}"
       using val_opair_name valcheck generic one_in_G one_in_P by simp
     finally
-    have "f = {<\<beta>,val(G,s`\<beta>)> . \<beta>\<in>\<alpha>}" .
+    have "f = {\<langle>\<beta>,val(G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}" .
     then
     have 1: "domain(f) = \<alpha>" "function(f)"
       unfolding function_def by auto
@@ -340,8 +340,8 @@ proof -
       with \<open>val(G,\<sigma>) = y\<close>
       have "val(G,s`\<beta>) = y" 
         by simp
-      with \<open>f = {<\<beta>,val(G,s`\<beta>)> . \<beta>\<in>\<alpha>}\<close> \<open>\<beta>\<in>\<alpha>\<close>
-      have "<\<beta>,y>\<in>f" 
+      with \<open>f = {\<langle>\<beta>,val(G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}\<close> \<open>\<beta>\<in>\<alpha>\<close>
+      have "\<langle>\<beta>,y\<rangle>\<in>f" 
         by auto
       with \<open>function(f)\<close>
       have "f`\<beta> = y"

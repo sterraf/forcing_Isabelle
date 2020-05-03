@@ -47,11 +47,11 @@ locale forcing_notion =
   fixes P leq one
   assumes one_in_P:         "one \<in> P"
     and leq_preord:       "preorder_on(P,leq)"
-    and one_max:          "\<forall>p\<in>P. <p,one>\<in>leq"
+    and one_max:          "\<forall>p\<in>P. \<langle>p,one\<rangle>\<in>leq"
 begin
 find_theorems "trans_on"
 abbreviation Leq :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>" 50)
-  where "x \<preceq> y \<equiv> <x,y>\<in>leq"
+  where "x \<preceq> y \<equiv> \<langle>x,y\<rangle>\<in>leq"
 
 lemma refl_leq:
   "r\<in>P \<Longrightarrow> r\<preceq>r"

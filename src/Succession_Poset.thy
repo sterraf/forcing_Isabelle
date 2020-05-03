@@ -161,7 +161,7 @@ lemma seqleD[dest!]:
 
 lemma upd_leI : 
   assumes "f\<in>2^<\<omega>" "a\<in>2"
-  shows "<seq_upd(f,a),f>\<in>seqle"  (is "<?f,_>\<in>_")
+  shows "\<langle>seq_upd(f,a),f\<rangle>\<in>seqle"  (is "\<langle>?f,_\<rangle>\<in>_")
 proof
   show " \<langle>?f, f\<rangle> \<in> 2^<\<omega> \<times> 2^<\<omega>" 
     using assms seq_upd_type by auto
@@ -174,7 +174,7 @@ next
     obtain n where  "n\<in>nat" "f : n \<rightarrow> 2"
       using seqspace_type by blast
     moreover from calculation
-    obtain y where "y\<in>n" "x=<y,f`y>" using Pi_memberD[of f n "\<lambda>_ . 2"] 
+    obtain y where "y\<in>n" "x=\<langle>y,f`y\<rangle>" using Pi_memberD[of f n "\<lambda>_ . 2"] 
       by blast
     moreover from \<open>f:n\<rightarrow>2\<close>
     have "domain(f) = n" using domain_of_fun by simp
@@ -216,9 +216,9 @@ proof
   have "?f: succ(y) \<rightarrow> 2" "?g: succ(y) \<rightarrow> 2" 
     using seq_upd_succ_type by blast+
   moreover from this
-  have "<y,?f`y> \<in> ?f" "<y,?g`y> \<in> ?g" using apply_Pair by auto
+  have "\<langle>y,?f`y\<rangle> \<in> ?f" "\<langle>y,?g`y\<rangle> \<in> ?g" using apply_Pair by auto
   ultimately
-  have "<y,0> \<in> h" "<y,1> \<in> h" by auto
+  have "\<langle>y,0\<rangle> \<in> h" "\<langle>y,1\<rangle> \<in> h" by auto
   moreover from \<open>h \<in> 2^<\<omega>\<close>
   obtain n where "n\<in>nat" "h:n\<rightarrow>2" by blast
   ultimately
@@ -264,7 +264,7 @@ lemma (in M_ctm) seqleR_fm_sats :
 
 lemma (in M_basic) is_related_abs :
   assumes "\<And> f g . M(f) \<Longrightarrow> M(g) \<Longrightarrow> rel(f,g) \<longleftrightarrow> is_rel(M,f,g)"
-  shows "\<And>z . M(z) \<Longrightarrow> relP(M,is_rel,z) \<longleftrightarrow> (\<exists>x y. z = <x,y> \<and> rel(x,y))"
+  shows "\<And>z . M(z) \<Longrightarrow> relP(M,is_rel,z) \<longleftrightarrow> (\<exists>x y. z = \<langle>x,y\<rangle> \<and> rel(x,y))"
   unfolding relP_def using pair_in_M_iff assms by auto
 
 definition
@@ -283,7 +283,7 @@ proof -
   have A:"relP(M, is_rel, z) \<longleftrightarrow> (\<exists>x y. z = \<langle>x, y\<rangle> \<and> rel(x, y))" "M(z)" if "z\<in>A\<times>A" for z
     using that is_related_abs[of rel is_rel,OF assms(3)] by auto
   then
-  have "Collect(A\<times>A,relP(M,is_rel)) = Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = <x,y> \<and> rel(x,y)))"
+  have "Collect(A\<times>A,relP(M,is_rel)) = Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = \<langle>x,y\<rangle> \<and> rel(x,y)))"
     using Collect_cong[of "A\<times>A" "A\<times>A" "relP(M,is_rel)",OF _ A(1)] assms(1) assms(2)
     by auto
   with assms
@@ -323,7 +323,7 @@ proof -
     using assms(3) is_related_abs[of rel is_rel]
     by auto
   with assms
-  have "Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = <x,y> \<and> rel(x,y))) \<in> M"
+  have "Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = \<langle>x,y\<rangle> \<and> rel(x,y))) \<in> M"
     using Collect_in_M_0p[of "rel_fm(0)" "\<lambda> A z . relP(A,is_rel,z)" "\<lambda> z.\<exists>x y. z = \<langle>x, y\<rangle> \<and> rel(x, y)" ]
         cartprod_closed
     by simp

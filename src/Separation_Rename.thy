@@ -16,7 +16,7 @@ lemma nth_concat3 : "env\<in> list(A) \<Longrightarrow> u = nth(succ(length(env)
 
 definition 
   sep_var :: "i \<Rightarrow> i" where
-  "sep_var(n) \<equiv> {<0,1>,<1,3>,<2,4>,<3,5>,<4,0>,<5#+n,6>,<6#+n,2>}"
+  "sep_var(n) \<equiv> {\<langle>0,1\<rangle>,\<langle>1,3\<rangle>,\<langle>2,4\<rangle>,\<langle>3,5\<rangle>,\<langle>4,0\<rangle>,\<langle>5#+n,6\<rangle>,\<langle>6#+n,2\<rangle>}"
 
 definition
   sep_env :: "i \<Rightarrow> i" where

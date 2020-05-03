@@ -19,8 +19,8 @@ lemma fld_restrict_dom :
 proof (rule equalityI,blast,rule subsetI)
   { fix x
     assume xr: "x \<in> r"
-    from xr assms have "\<exists> a b . x = <a,b>" by (simp add: relation_def)
-    then obtain a b where "<a,b> \<in> r" "<a,b> \<in> r\<inter>A\<times>A" "x \<in> r\<inter>A\<times>A"
+    from xr assms have "\<exists> a b . x = \<langle>a,b\<rangle>" by (simp add: relation_def)
+    then obtain a b where "\<langle>a,b\<rangle> \<in> r" "\<langle>a,b\<rangle> \<in> r\<inter>A\<times>A" "x \<in> r\<inter>A\<times>A"
       using assms xr
       by force
     then have "x\<in> r \<inter> A\<times>A" by simp
@@ -31,7 +31,7 @@ qed
 definition tr_down :: "[i,i] \<Rightarrow> i"
   where "tr_down(r,a) = (r^+)-``{a}"
 
-lemma tr_downD : "x \<in> tr_down(r,a) \<Longrightarrow> <x,a> \<in> r^+"
+lemma tr_downD : "x \<in> tr_down(r,a) \<Longrightarrow> \<langle>x,a\<rangle> \<in> r^+"
   by (simp add: tr_down_def vimage_singleton_iff)
 
 lemma pred_down : "relation(r) \<Longrightarrow> r-``{a} \<subseteq> tr_down(r,a)"
@@ -49,7 +49,7 @@ proof (intro equalityI subsetI)
   then
   have "x \<in> B" using assms by (simp add: subsetD)
   from \<open>x\<in> r-``{a}\<close>
-  have "<x,a> \<in> r" using underD by simp
+  have "\<langle>x,a\<rangle> \<in> r" using underD by simp
   then
   show "x \<in> (r\<inter>B\<times>B)-``{a}" using \<open>x\<in>B\<close> \<open>a\<in>B\<close> underI by simp
 next
@@ -84,7 +84,7 @@ proof (induct a arbitrary:A rule:wf_induct_raw[OF wfr] )
       using tr_down_mono x_a rr by simp
     with 1
     have "tr_down(r,x) \<subseteq> A" using subset_trans by force
-    have "<x,a> \<in> r" using x_a  underD by simp
+    have "\<langle>x,a\<rangle> \<in> r" using x_a  underD by simp
     with 1 \<open>tr_down(r,x) \<subseteq> A\<close> \<open>x \<in> A\<close>
     have "wfrec(r,x,H) = wfrec[A](r,x,H)" by simp
   }
@@ -158,12 +158,12 @@ proof (cases "y\<in>d")
   proof (cases "w\<in>d")
     case True
     with \<open>y\<in>d\<close> assms
-    have "<w,y>\<in>?r"
+    have "\<langle>w,y\<rangle>\<in>?r"
       unfolding Rrel_def by blast
     then
-    have "<w,y>\<in>?s"
+    have "\<langle>w,y\<rangle>\<in>?s"
       using r_subset_trancl[of ?r] relation_Rrel[of R d] by blast
-    with \<open><w,y>\<in>?r\<close>
+    with \<open>\<langle>w,y\<rangle>\<in>?r\<close>
     have "w\<in>?r-``{y}" "w\<in>?s-``{y}"
       using vimage_singleton_iff by simp_all
     then

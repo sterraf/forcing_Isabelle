@@ -234,7 +234,7 @@ proof -
   from \<open>val(G,\<pi>) = c\<close> 
   have "val(G,?m) =
                {val(G,t) .. t\<in>domain(\<pi>) , \<exists>q\<in>P .  
-                    (\<exists>\<theta>\<in>M. \<exists>p\<in>P. <t,q> = \<langle>\<theta>, p\<rangle> \<and> 
+                    (\<exists>\<theta>\<in>M. \<exists>p\<in>P. \<langle>t,q\<rangle> = \<langle>\<theta>, p\<rangle> \<and> 
             (p \<in> G \<longrightarrow> val(G, \<theta>) \<in> c \<and> (M[G],  [val(G, \<theta>)] @ env @ [c] \<Turnstile>  \<phi>)) \<and> q \<in> G)}"
     using val_of_name by auto
   also 
@@ -243,7 +243,7 @@ proof -
   proof -
 
     have "t\<in>M \<Longrightarrow>
-      (\<exists>q\<in>P. (\<exists>\<theta>\<in>M. \<exists>p\<in>P. <t,q> = \<langle>\<theta>, p\<rangle> \<and> 
+      (\<exists>q\<in>P. (\<exists>\<theta>\<in>M. \<exists>p\<in>P. \<langle>t,q\<rangle> = \<langle>\<theta>, p\<rangle> \<and> 
               (p \<in> G \<longrightarrow> val(G, \<theta>) \<in> c \<and> (M[G],  [val(G, \<theta>)] @ env @ [c] \<Turnstile>  \<phi>)) \<and> q \<in> G)) 
       \<longleftrightarrow> 
       (\<exists>q\<in>P. val(G, t) \<in> c \<and> ( M[G], [val(G, t)]@env@[c]\<Turnstile> \<phi> ) \<and> q \<in> G)" for t

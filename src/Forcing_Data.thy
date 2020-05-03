@@ -47,7 +47,7 @@ lemmas transitivity = Transset_intf[OF trans_M]
 lemma zero_in_M:  "0 \<in> M" 
   by (rule intf.zero_in_M)
 
-lemma tuples_in_M: "A\<in>M \<Longrightarrow> B\<in>M \<Longrightarrow> <A,B>\<in>M" 
+lemma tuples_in_M: "A\<in>M \<Longrightarrow> B\<in>M \<Longrightarrow> \<langle>A,B\<rangle>\<in>M" 
   by (simp flip:setclass_iff)
 
 lemma nat_in_M : "nat \<in> M"

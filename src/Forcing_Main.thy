@@ -18,7 +18,7 @@ lemma surj_imp_well_ord:
 
 definition
   minimum :: "i \<Rightarrow> i \<Rightarrow> i" where
-  "minimum(r,B) \<equiv> THE b. b\<in>B \<and> (\<forall>y\<in>B. y \<noteq> b \<longrightarrow> <b, y> \<in> r)"
+  "minimum(r,B) \<equiv> THE b. b\<in>B \<and> (\<forall>y\<in>B. y \<noteq> b \<longrightarrow> \<langle>b, y\<rangle> \<in> r)"
 
 lemma well_ord_imp_min:
   assumes 
@@ -38,7 +38,7 @@ proof -
     by blast
   with \<open>B\<noteq>0\<close>
   obtain z where
-    B: "z\<in>B \<and> (\<forall>y. <y,z>\<in>r\<inter>B\<times>B \<longrightarrow> y\<notin>B)"
+    B: "z\<in>B \<and> (\<forall>y. \<langle>y,z\<rangle>\<in>r\<inter>B\<times>B \<longrightarrow> y\<notin>B)"
     by blast
   then
   have "z\<in>B \<and> (\<forall>y\<in>B. y \<noteq> z \<longrightarrow> \<langle>z, y\<rangle> \<in> r)"
@@ -47,10 +47,10 @@ proof -
       fix y
       assume "y\<in>B" "y\<noteq>z"
       with \<open>well_ord(A,r)\<close> B \<open>B\<subseteq>A\<close>
-      have "<z,y>\<in>r|<y,z>\<in>r|y=z"
+      have "\<langle>z,y\<rangle>\<in>r|\<langle>y,z\<rangle>\<in>r|y=z"
         unfolding well_ord_def tot_ord_def linear_def by auto
       with B \<open>y\<in>B\<close> \<open>y\<noteq>z\<close>
-      have "<z,y>\<in>r"
+      have "\<langle>z,y\<rangle>\<in>r"
         by (cases;auto)
     }
     with B
