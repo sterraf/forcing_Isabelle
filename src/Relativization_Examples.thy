@@ -40,7 +40,7 @@ structure Ex = struct
   fun relativiz_def ctxt def_name cls_pred db =
   let
     val (_,t,ctxt1) = Utils.thm_concl_tm ctxt (def_name ^ "_def")
-    val t = Utils.dest_lhs_def t
+    val t = Utils.dest_rhs_def t
   in writeln def_name ; test_relativ t ctxt1 cls_pred db
   end
 
