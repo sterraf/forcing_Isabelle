@@ -49,7 +49,7 @@ locale forcing_notion =
     and leq_preord:       "preorder_on(P,leq)"
     and one_max:          "\<forall>p\<in>P. \<langle>p,one\<rangle>\<in>leq"
 begin
-find_theorems "trans_on"
+
 abbreviation Leq :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>" 50)
   where "x \<preceq> y \<equiv> \<langle>x,y\<rangle>\<in>leq"
 
