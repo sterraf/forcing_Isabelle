@@ -33,7 +33,7 @@ schematic_goal seqspace_fm_auto:
   unfolding is_funspace_def 
   by (insert assms ; (rule sep_rules | simp)+)
 
-synthesize "seqspace_rep_fm" from_schematic "seqspace_fm_auto"
+synthesize "seqspace_rep_fm" from_schematic seqspace_fm_auto
  
 locale M_seqspace =  M_trancl +
   assumes 

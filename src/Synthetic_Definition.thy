@@ -4,6 +4,8 @@ theory Synthetic_Definition
   keywords
     "synthesize" :: thy_decl % "ML"
     and
+    "synthesize_notc" :: thy_decl % "ML"
+    and
     "from_schematic"
 
 begin
@@ -18,7 +20,7 @@ fun pair f g x = (f x, g x)
 fun prove_tc_form goal thms ctxt =
   Goal.prove ctxt [] [] goal
      (fn _ => rewrite_goal_tac ctxt thms 1
-              THEN ALLGOALS (asm_full_simp_tac ctxt))
+              THEN TypeCheck.typecheck_tac ctxt)
 
 fun display kind pos (thms,thy) =
   let val _ = Proof_Display.print_results true pos thy ((kind,""),[thms])
@@ -43,14 +45,15 @@ let val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
  end
 
 
-fun synthetic_def def_name thmref pos thy =
+fun synthetic_def def_name thmref pos tc thy =
   let
     val (thm_ref,_) = thmref |>> Facts.ref_name
     val (((_,vars),thm_tms),_) = Variable.import true [Proof_Context.get_thm thy thm_ref] thy
     val (tm,hyps) = thm_tms |> hd |> pair Thm.concl_of Thm.prems_of
     val t = tm |> Utils.dest_tp_iff_rhs o Utils.dest_trueprop
     fun olist t = Ord_List.make String.compare (Term.add_free_names t [])
-    fun relevant ts (@{const mem} $ t $ _) = Ord_List.member String.compare ts (t |> Term.dest_Free |> #1)
+    fun relevant ts (@{const mem} $ t $ _) = not (Term.is_Free t) orelse
+        Ord_List.member String.compare ts (t |> Term.dest_Free |> #1)
       | relevant _ _ = false
     val t_vars = olist t
     val vs = List.filter (fn (((v,_),_),_) => Utils.inList v t_vars) vars
@@ -60,7 +63,7 @@ fun synthetic_def def_name thmref pos thy =
     Local_Theory.define ((Binding.name def_name, NoSyn),
                         ((Binding.name (def_name ^ "_def"), []), at)) thy |>
     (fn ((_,(s,t)),lthy') => display "definition" pos ((s,[t]),lthy')) |>
-    synth_thm_tc def_name (def_name ^ "_def") hyps' vs pos
+    (if tc then synth_thm_tc def_name (def_name ^ "_def") hyps' vs pos else I)
 end
 \<close>
 ML\<open>
@@ -71,23 +74,17 @@ local
 
   val _ =
      Outer_Syntax.local_theory \<^command_keyword>\<open>synthesize\<close> "ML setup for synthetic definitions"
-       (synth_constdecl >> (fn ((bndg,thm),p) => synthetic_def bndg thm p))
+       (synth_constdecl >> (fn ((bndg,thm),p) => synthetic_def bndg thm p true))
+
+  val _ =
+     Outer_Syntax.local_theory \<^command_keyword>\<open>synthesize_notc\<close> "ML setup for synthetic definitions"
+       (synth_constdecl >> (fn ((bndg,thm),p) => synthetic_def bndg thm p false))
+
 in
 
 end
 \<close>
 text\<open>The \<^ML>\<open>synthetic_def\<close> function extracts definitions from
 schematic goals. A new definition is added to the context. \<close>
-
-(* example of use *)
-
-schematic_goal mem_formula_ex :
-  assumes "m\<in>nat" "n\<in> nat" "env \<in> list(M)"
-  shows "nth(m,env) \<in> nth(n,env) \<longleftrightarrow> sats(M,?frm,env)"
-  by (insert assms ; (rule sep_rules empty_iff_sats cartprod_iff_sats | simp del:sats_cartprod_fm)+)
-definition "me" :: "[i,i] \<Rightarrow> i" where
-  "me(x,y) == Member(x,y)"
-
-synthesize "\<phi>" from_schematic mem_formula_ex
 
 end

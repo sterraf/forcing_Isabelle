@@ -41,7 +41,7 @@ ML\<open>
 local
 
   val ren_parser = Parse.position (Parse.string -- 
-      (Parse.$$$ "src" |-- Parse.term --| Parse.$$$ "tgt" -- Parse.term));
+      (Parse.$$$ "src" |-- Parse.string --| Parse.$$$ "tgt" -- Parse.string));
 
   val _ =
    Outer_Syntax.local_theory \<^command_keyword>\<open>rename\<close> "ML setup for synthetic definitions" 

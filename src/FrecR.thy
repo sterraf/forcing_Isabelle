@@ -399,11 +399,7 @@ schematic_goal sats_frecR_fm_auto:
   by (insert assms ; (rule sep_rules' cartprod_iff_sats  components_iff_sats
         | simp del:sats_cartprod_fm)+)
 
-synthesize "frecR_fm" from_schematic "sats_frecR_fm_auto"
-
-lemma frecR_fm_type[TC] :
-  "\<lbrakk>a\<in>nat;b\<in>nat\<rbrakk> \<Longrightarrow> frecR_fm(a,b)\<in>formula"
-  unfolding frecR_fm_def by simp
+synthesize "frecR_fm" from_schematic sats_frecR_fm_auto
 
 lemma sats_frecR_fm :
   assumes "a\<in>nat" "b\<in>nat" "env\<in>list(A)"

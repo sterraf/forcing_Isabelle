@@ -847,7 +847,7 @@ schematic_goal rcheck_fm_auto:
   by (insert assms ; (rule sep_rules is_singleton_iff_sats is_eclose_iff_sats
         tran_closure_iff_sats | simp)+)
 
-synthesize "rcheck_fm" from_schematic "rcheck_fm_auto"
+synthesize "rcheck_fm" from_schematic rcheck_fm_auto
 
 lemma sats_rcheck_fm :
   assumes
@@ -858,9 +858,6 @@ lemma sats_rcheck_fm :
     sats_singleton_fm Memrel_closed
   by simp
 
-lemma rcheck_fm_type[TC] :
-  "\<lbrakk> x\<in>nat ; y\<in>nat \<rbrakk> \<Longrightarrow> rcheck_fm(x,y) \<in> formula"
-  unfolding rcheck_fm_def by simp
 
 definition
   is_check :: "[i,i] \<Rightarrow> o" where

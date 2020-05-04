@@ -220,7 +220,7 @@ schematic_goal sats_is_mem_case_fm_auto:
   by (insert assms ; (rule sep_rules'  is_tuple_iff_sats | simp)+)
 
 
-synthesize "mem_case_fm" from_schematic "sats_is_mem_case_fm_auto"
+synthesize "mem_case_fm" from_schematic sats_is_mem_case_fm_auto
 
 lemma arity_mem_case_fm :
   assumes
@@ -242,7 +242,7 @@ schematic_goal sats_is_eq_case_fm_auto:
   unfolding is_eq_case_def
   by (insert assms ; (rule sep_rules'  is_tuple_iff_sats | simp)+)
 
-synthesize "eq_case_fm" from_schematic "sats_is_eq_case_fm_auto"
+synthesize "eq_case_fm" from_schematic sats_is_eq_case_fm_auto
 
 lemma arity_eq_case_fm :
   assumes
@@ -254,14 +254,6 @@ lemma arity_eq_case_fm :
   using assms arity_pair_fm arity_is_tuple_fm number1arity__fm arity_fun_apply_fm arity_empty_fm
     arity_domain_fm pred_Un_distrib
   by auto
-
-lemma mem_case_fm_type[TC] :
-  "\<lbrakk>n1\<in>nat;n2\<in>nat;p\<in>nat;P\<in>nat;leq\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> mem_case_fm(n1,n2,p,P,leq,f)\<in>formula"
-  unfolding mem_case_fm_def by simp
-
-lemma eq_case_fm_type[TC] :
-  "\<lbrakk>n1\<in>nat;n2\<in>nat;p\<in>nat;P\<in>nat;leq\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> eq_case_fm(n1,n2,p,P,leq,f)\<in>formula"
-  unfolding eq_case_fm_def by simp
 
 lemma sats_eq_case_fm :
   assumes

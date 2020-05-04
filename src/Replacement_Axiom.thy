@@ -135,11 +135,7 @@ proof -
 qed
 
 (* The formula synthesized above *)
-synthesize "prebody_fm" from_schematic "sats_prebody_fm_auto"
-
-lemmas new_fm_defs = fm_defs is_transrec_fm_def is_eclose_fm_def mem_eclose_fm_def
-  finite_ordinal_fm_def is_wfrec_fm_def  Memrel_fm_def eclose_n_fm_def is_recfun_fm_def is_iterates_fm_def
-  iterates_MH_fm_def is_nat_case_fm_def quasinat_fm_def pre_image_fm_def restriction_fm_def
+synthesize_notc "prebody_fm" from_schematic sats_prebody_fm_auto
 
 lemma prebody_fm_type [TC]:
   assumes "\<phi>\<in>formula"
@@ -153,6 +149,10 @@ proof -
     using \<open>env\<in>list(M)\<close> by simp
   then show ?thesis unfolding prebody_fm_def by simp
 qed
+
+lemmas new_fm_defs = fm_defs is_transrec_fm_def is_eclose_fm_def mem_eclose_fm_def
+  finite_ordinal_fm_def is_wfrec_fm_def  Memrel_fm_def eclose_n_fm_def is_recfun_fm_def is_iterates_fm_def
+  iterates_MH_fm_def is_nat_case_fm_def quasinat_fm_def pre_image_fm_def restriction_fm_def
 
 lemma sats_prebody_fm:
   assumes

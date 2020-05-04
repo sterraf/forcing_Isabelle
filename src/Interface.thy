@@ -649,12 +649,7 @@ schematic_goal tran_closure_fm_auto:
   unfolding tran_closure_def
   by (insert assms ; (rule sep_rules rtran_closure_fm_auto | simp))+
 
-synthesize "tran_closure_fm" from_schematic "tran_closure_fm_auto"
-
-lemma tran_closure_fm_type[TC] :
-  "\<lbrakk> x\<in>nat ; y\<in>nat \<rbrakk> \<Longrightarrow> tran_closure_fm(x,y) \<in> formula"
-  unfolding tran_closure_fm_def by simp
-
+synthesize "tran_closure_fm" from_schematic tran_closure_fm_auto
 
 lemma tran_closure_iff_sats:
   assumes

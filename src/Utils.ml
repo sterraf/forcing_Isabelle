@@ -102,10 +102,10 @@ fun dest_satisfies_frm (@{const Formula.satisfies} $ _ $ f) = f
 val dest_sats_frm = dest_satisfies_frm o dest_apply_op o #1 o dest_eq_tms ;
 
 fun dest_trueprop (@{const IFOL.Trueprop} $ t) = t
-  | dest_trueprop t = raise TERM ("dest_trueprop", [t])
+  | dest_trueprop t = t
 
 fun dest_iff_tms (@{const IFOL.iff} $ t $ u) = (t, u)
-  | dest_iff_tms t = raise TERM ("dest_iff_rhs", [t])
+  | dest_iff_tms t = raise TERM ("dest_iff_tms", [t])
 
 val dest_iff_lhs = #1 o dest_iff_tms
 val dest_iff_rhs = #2 o dest_iff_tms
