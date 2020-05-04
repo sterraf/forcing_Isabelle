@@ -45,9 +45,9 @@
 
 \title{Formalization of Forcing in Isabelle/ZF}
 \author{Emmanuel Gunther
-  \and 
+  \and
   Miguel Pagano
-  \and 
+  \and
   Pedro S\'anchez Terraf
 }
 \maketitle
@@ -66,9 +66,27 @@ that the latter also satisfies $\ZFC$.
 \parindent 0pt\parskip 0.5ex
 
 \section{Introduction}
-This development is described in more detail in our papers
+We formalize the theory of forcing. We work on top of the Isabelle/ZF
+framework developed by \citet{DBLP:journals/jar/PaulsonG96}. Our
+mechanization is described in more detail in our papers
 \cite{2018arXiv180705174G} (LSFA 2018), \cite{2019arXiv190103313G},
 and \cite{2020arXiv200109715G} (IJCAR 2020).
+
+\subsection*{Release notes}
+\label{sec:release-notes}
+
+We have improved several aspects of our development before submitting
+it to the AFP:
+\begin{enumerate}
+\item Our session \isatt{Forcing} depends on the new release of
+  \isatt{ZF-Constructible}.
+\item We streamlined the commands for synthesizing renames and formulas.
+\item The command that synthesizes formulas produces the lemmas for
+  them (the synthesized term is a formula and the equivalence between
+  the satisfaction of the synthesized term and the relativized term).
+\item Consistently use of structured proofs using Isar (except for one
+  coming from a schematic goal command).
+\end{enumerate}
 
 % generated text of all theories
 \input{session}
