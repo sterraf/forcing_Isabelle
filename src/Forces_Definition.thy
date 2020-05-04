@@ -27,7 +27,7 @@ lemma sats_frecrelP_fm :
   assumes "a\<in>nat" "env\<in>list(A)"
   shows "sats(A,frecrelP_fm(a),env) \<longleftrightarrow> frecrelP(##A,nth(a, env))"
   unfolding frecrelP_def frecrelP_fm_def
-  using assms by (auto simp add:sats_frecR_fm[symmetric])
+  using assms by (auto simp add:frecR_fm_iff_sats[symmetric])
 
 lemma frecrelP_iff_sats:
   assumes
@@ -299,7 +299,7 @@ lemma sats_Hfrc_fm:
     \<longleftrightarrow> is_Hfrc(##A,nth(P, env), nth(leq, env), nth(fnnc, env),nth(f, env))"
   unfolding is_Hfrc_def Hfrc_fm_def
   using assms  
-  by (simp add: sats_is_tuple_fm sats_eq_case_fm[symmetric] sats_mem_case_fm[symmetric])
+  by (simp add: sats_is_tuple_fm eq_case_fm_iff_sats[symmetric] mem_case_fm_iff_sats[symmetric])
 
 lemma Hfrc_iff_sats:
   assumes
@@ -396,7 +396,7 @@ lemma sats_forcerel_fm:
 proof -
   have "sats(A,trans_closure_fm(1,z #+ 2),Cons(nb,Cons(r,env))) \<longleftrightarrow>
         tran_closure(##A, r, nth(z, env))" if "r\<in>A" "nb\<in>A" for r nb
-    using that assms sats_trans_closure_fm[of "[nb,r]@env" A "z #+ 2" 1] by simp
+    using that assms trans_closure_fm_iff_sats[of 1 "[nb,r]@env" _ "z#+2",symmetric] by simp
   moreover
   have "sats(A, is_names_below_fm(succ(succ(p)), succ(succ(x)), 0), Cons(nb, Cons(r, env))) \<longleftrightarrow>
         is_names_below(##A, nth(p,env), nth(x, env), nb)"

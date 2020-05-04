@@ -36,53 +36,24 @@ fun prove_sats goal thms thm_auto ctxt =
               THEN TypeCheck.typecheck_tac ctxt')
   end
 
-fun prove_sats_iff goal thm_sats ctxt =
-  let
-  val thm_auto = Proof_Context.get_thm ctxt thm_sats
-  val ctxt' = ctxt |> Simplifier.add_simp thm_auto
-  in Goal.prove ctxt [] [] goal (fn _ => asm_full_simp_tac ctxt' 1)
-  end
-
-fun in_env env var = @{const lt} $ var $ Utils.length_ env
 fun is_mem (@{const mem} $ _ $  _) = true
   | is_mem _ = false
-
-fun split_by pred xs =
-  let fun go [] (yes,nos) = (yes , nos)
-        | go (x :: xs) (yes,nos) = if pred x then go xs (x :: yes,nos) else go xs (yes,x ::nos)
-  in go xs ([],[])
-end
-
-fun lemma_iff goal name thm_sats vars pos ctxt =
-let
-  val thm' = prove_sats_iff goal thm_sats ctxt
-  val thm' = Utils.fix_vars thm' (map (#1 o dest_Free) vars) ctxt
-  in Local_Theory.note ((name, []), [thm']) ctxt |> display "theorem" pos
-end
 
 fun synth_thm_sats def_name term lhs set env hyps vars vs pos thm_auto lthy =
 let val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
     val (thm_refs,ctxt2) = Variable.import true [Proof_Context.get_thm lthy term] ctxt1 |>> #2
     val vs' = map (Thm.term_of o #2) vs
     val vars' = map (Thm.term_of o #2) vars
-    val (hyps',change) = split_by (is_mem o Utils.dest_trueprop) hyps
-    val les = map (Utils.tp o in_env env) vs'
-    val change' = map (swap o Utils.dest_eq_tms o Utils.dest_trueprop) change
     val r_tm = tm |> Utils.dest_lhs_def |> fold (op $`) vs'
-    val r_tm' = tm |> Utils.dest_lhs_def |> fold (op $`) vs'
-    val sats = fn t =>  @{const apply} $ (@{const satisfies} $ set $ t) $ env
-    val rhs = fn t => @{const IFOL.eq(i)} $ sats t $ (@{const succ} $ @{const zero})
-    val concl = @{const IFOL.iff} $ lhs $ rhs r_tm
-    val concl' = @{const IFOL.iff} $ Term.subst_free change' lhs $ rhs r_tm'
+    val sats = @{const apply} $ (@{const satisfies} $ set $ r_tm) $ env
+    val rhs = @{const IFOL.eq(i)} $ sats $ (@{const succ} $ @{const zero})
+    val concl = @{const IFOL.iff} $ lhs $ rhs
     val g_iff = Logic.list_implies(hyps, Utils.tp concl)
-    val g_sats = Logic.list_implies(hyps', Utils.tp concl')
     val thm = prove_sats g_iff thm_refs thm_auto ctxt2
     val name = Binding.name (def_name ^ "_iff_sats")
-    val name' = Binding.name ("sats_" ^ def_name)
     val thm = Utils.fix_vars thm (map (#1 o dest_Free) vars') lthy
  in
-   Local_Theory.note ((name, []), [thm]) lthy |> display "theorem" pos  |>
-  lemma_iff g_sats name' (def_name ^ "_iff_sats") vars' pos
+   Local_Theory.note ((name, []), [thm]) lthy |> display "theorem" pos
  end
 
 fun synth_thm_tc def_name term hyps vars pos lthy =

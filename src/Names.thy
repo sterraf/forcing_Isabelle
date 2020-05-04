@@ -849,15 +849,6 @@ schematic_goal rcheck_fm_auto:
 
 synthesize "rcheck_fm" from_schematic rcheck_fm_auto
 
-lemma sats_rcheck_fm' :
-  assumes
-    "i \<in> nat" "j \<in> nat" "i<length(env)" "j<length(env)" "env \<in> list(M)"
-  shows
-    "sats(M,rcheck_fm(i,j),env) \<longleftrightarrow> is_rcheck(nth(i,env),nth(j,env))"
-  unfolding rcheck_fm_def using assms rcheck_fm_auto
-  by simp
-
-
 definition
   is_check :: "[i,i] \<Rightarrow> o" where
   "is_check(x,z) \<equiv> \<exists>rch\<in>M. is_rcheck(x,rch) \<and> is_wfrec(##M,is_Hcheck(one),rch,x,z)"
@@ -906,7 +897,7 @@ proof -
     using that assms one_in_M sats_is_wfrec_fm by simp
   then
   show ?thesis unfolding is_check_def check_fm_def
-    using assms rcheck_in_M one_in_M sats_rcheck_fm' by simp
+    using assms rcheck_in_M one_in_M rcheck_fm_iff_sats[symmetric] by simp
 qed
 
 
