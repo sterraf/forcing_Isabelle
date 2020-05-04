@@ -1,6 +1,6 @@
 section\<open>The Powerset Axiom in $M[G]$\<close>
 theory Powerset_Axiom
-  imports Separation_Axiom Pairing_Axiom Union_Axiom
+  imports Renaming_Auto Separation_Axiom Pairing_Axiom Union_Axiom
 begin
 
 simple_rename "perm_pow" src "[ss,p,l,o,fs,\<chi>]" tgt "[fs,ss,sp,p,l,o,\<chi>]"

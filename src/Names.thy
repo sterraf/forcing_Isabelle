@@ -845,22 +845,9 @@ schematic_goal rcheck_fm_auto:
     "is_rcheck(x,z) \<longleftrightarrow> sats(M,?rch(i,j),env)"
   unfolding is_rcheck_def
   by (insert assms ; (rule sep_rules is_singleton_iff_sats is_eclose_iff_sats
-        tran_closure_iff_sats | simp)+)
+        trans_closure_fm_iff_sats | simp)+)
 
-synthesize "rcheck_fm" from_schematic "rcheck_fm_auto"
-
-lemma sats_rcheck_fm :
-  assumes
-    "i \<in> nat" "j \<in> nat" "i<length(env)" "j<length(env)" "env \<in> list(M)"
-  shows
-    "sats(M,rcheck_fm(i,j),env) \<longleftrightarrow> is_rcheck(nth(i,env),nth(j,env))"
-  unfolding rcheck_fm_def is_rcheck_def using assms sats_tran_closure_fm
-    sats_singleton_fm Memrel_closed
-  by simp
-
-lemma rcheck_fm_type[TC] :
-  "\<lbrakk> x\<in>nat ; y\<in>nat \<rbrakk> \<Longrightarrow> rcheck_fm(x,y) \<in> formula"
-  unfolding rcheck_fm_def by simp
+synthesize "rcheck_fm" from_schematic rcheck_fm_auto
 
 definition
   is_check :: "[i,i] \<Rightarrow> o" where
@@ -910,7 +897,7 @@ proof -
     using that assms one_in_M sats_is_wfrec_fm by simp
   then
   show ?thesis unfolding is_check_def check_fm_def
-    using assms rcheck_in_M one_in_M sats_rcheck_fm by simp
+    using assms rcheck_in_M one_in_M rcheck_fm_iff_sats[symmetric] by simp
 qed
 
 
@@ -918,7 +905,7 @@ lemma check_replacement:
   "{check(x). x\<in>P} \<in> M"
 proof -
   have "arity(check_fm(0,2,1)) = 3"
-    unfolding check_fm_def rcheck_fm_def tran_closure_fm_def is_eclose_fm_def mem_eclose_fm_def
+    unfolding check_fm_def rcheck_fm_def trans_closure_fm_def is_eclose_fm_def mem_eclose_fm_def
       is_Hcheck_fm_def Replace_fm_def PHcheck_fm_def finite_ordinal_fm_def is_iterates_fm_def
       is_wfrec_fm_def is_recfun_fm_def restriction_fm_def pre_image_fm_def eclose_n_fm_def
       is_nat_case_fm_def quasinat_fm_def Memrel_fm_def singleton_fm_def fm_defs iterates_MH_fm_def
@@ -958,7 +945,7 @@ proof -
   have "?pcheck_fm\<in>formula" by simp
   moreover
   have "arity(?pcheck_fm)=3"
-    unfolding check_fm_def rcheck_fm_def tran_closure_fm_def is_eclose_fm_def mem_eclose_fm_def
+    unfolding check_fm_def rcheck_fm_def trans_closure_fm_def is_eclose_fm_def mem_eclose_fm_def
       is_Hcheck_fm_def Replace_fm_def PHcheck_fm_def finite_ordinal_fm_def is_iterates_fm_def
       is_wfrec_fm_def is_recfun_fm_def restriction_fm_def pre_image_fm_def eclose_n_fm_def
       is_nat_case_fm_def quasinat_fm_def Memrel_fm_def singleton_fm_def fm_defs iterates_MH_fm_def

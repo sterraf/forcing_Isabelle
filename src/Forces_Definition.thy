@@ -27,7 +27,7 @@ lemma sats_frecrelP_fm :
   assumes "a\<in>nat" "env\<in>list(A)"
   shows "sats(A,frecrelP_fm(a),env) \<longleftrightarrow> frecrelP(##A,nth(a, env))"
   unfolding frecrelP_def frecrelP_fm_def
-  using assms by (simp add: sats_frecR_fm)
+  using assms by (auto simp add:frecR_fm_iff_sats[symmetric])
 
 lemma frecrelP_iff_sats:
   assumes
@@ -220,7 +220,7 @@ schematic_goal sats_is_mem_case_fm_auto:
   by (insert assms ; (rule sep_rules'  is_tuple_iff_sats | simp)+)
 
 
-synthesize "mem_case_fm" from_schematic "sats_is_mem_case_fm_auto"
+synthesize "mem_case_fm" from_schematic sats_is_mem_case_fm_auto
 
 lemma arity_mem_case_fm :
   assumes
@@ -242,7 +242,7 @@ schematic_goal sats_is_eq_case_fm_auto:
   unfolding is_eq_case_def
   by (insert assms ; (rule sep_rules'  is_tuple_iff_sats | simp)+)
 
-synthesize "eq_case_fm" from_schematic "sats_is_eq_case_fm_auto"
+synthesize "eq_case_fm" from_schematic sats_is_eq_case_fm_auto
 
 lemma arity_eq_case_fm :
   assumes
@@ -254,52 +254,6 @@ lemma arity_eq_case_fm :
   using assms arity_pair_fm arity_is_tuple_fm number1arity__fm arity_fun_apply_fm arity_empty_fm
     arity_domain_fm pred_Un_distrib
   by auto
-
-lemma mem_case_fm_type[TC] :
-  "\<lbrakk>n1\<in>nat;n2\<in>nat;p\<in>nat;P\<in>nat;leq\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> mem_case_fm(n1,n2,p,P,leq,f)\<in>formula"
-  unfolding mem_case_fm_def by simp
-
-lemma eq_case_fm_type[TC] :
-  "\<lbrakk>n1\<in>nat;n2\<in>nat;p\<in>nat;P\<in>nat;leq\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> eq_case_fm(n1,n2,p,P,leq,f)\<in>formula"
-  unfolding eq_case_fm_def by simp
-
-lemma sats_eq_case_fm :
-  assumes
-    "n1\<in>nat" "n2\<in>nat" "p\<in>nat" "P\<in>nat" "leq\<in>nat" "f\<in>nat" "env\<in>list(A)"
-  shows
-    "sats(A,eq_case_fm(n1,n2,p,P,leq,f),env) \<longleftrightarrow>
-    is_eq_case(##A, nth(n1, env),nth(n2, env),nth(p, env),nth(P, env), nth(leq, env),nth(f,env))"
-  unfolding eq_case_fm_def is_eq_case_def using assms by (simp add: sats_is_tuple_fm)
-
-lemma sats_mem_case_fm :
-  assumes
-    "n1\<in>nat" "n2\<in>nat" "p\<in>nat" "P\<in>nat" "leq\<in>nat" "f\<in>nat" "env\<in>list(A)"
-  shows
-    "sats(A,mem_case_fm(n1,n2,p,P,leq,f),env) \<longleftrightarrow>
-    is_mem_case(##A, nth(n1, env),nth(n2, env),nth(p, env),nth(P, env), nth(leq, env),nth(f,env))"
-  unfolding mem_case_fm_def is_mem_case_def using assms by (simp add: sats_is_tuple_fm)
-
-lemma mem_case_iff_sats:
-  assumes
-    "n1\<in>nat" "n2\<in>nat" "p\<in>nat" "P\<in>nat" "leq\<in>nat" "f\<in>nat" "env\<in>list(A)"
-    "nth(n1,env) = nn1" "nth(n2,env) = nn2" "nth(p,env) = pp" "nth(P,env) = PP"
-    "nth(leq,env) = lleq" "nth(f,env) = ff"
-  shows
-    "is_mem_case(##A, nn1,nn2,pp,PP, lleq,ff)
-    \<longleftrightarrow> sats(A,mem_case_fm(n1,n2,p,P,leq,f),env)"
-  using assms
-  by (simp add:sats_mem_case_fm)
-
-lemma eq_case_iff_sats :
-  assumes
-    "n1\<in>nat" "n2\<in>nat" "p\<in>nat" "P\<in>nat" "leq\<in>nat" "f\<in>nat" "env\<in>list(A)"
-    "nth(n1,env) = nn1" "nth(n2,env) = nn2" "nth(p,env) = pp" "nth(P,env) = PP"
-    "nth(leq,env) = lleq" "nth(f,env) = ff"
-  shows
-    "is_eq_case(##A, nn1,nn2,pp,PP, lleq,ff)
-    \<longleftrightarrow> sats(A,eq_case_fm(n1,n2,p,P,leq,f),env)"
-  using assms
-  by (simp add:sats_eq_case_fm)
 
 definition
   Hfrc :: "[i,i,i,i] \<Rightarrow> o" where
@@ -344,8 +298,8 @@ lemma sats_Hfrc_fm:
     "sats(A,Hfrc_fm(P,leq,fnnc,f),env)
     \<longleftrightarrow> is_Hfrc(##A,nth(P, env), nth(leq, env), nth(fnnc, env),nth(f, env))"
   unfolding is_Hfrc_def Hfrc_fm_def
-  using assms
-  by (simp add:sats_eq_case_fm sats_is_tuple_fm sats_mem_case_fm)
+  using assms  
+  by (simp add: sats_is_tuple_fm eq_case_fm_iff_sats[symmetric] mem_case_fm_iff_sats[symmetric])
 
 lemma Hfrc_iff_sats:
   assumes
@@ -401,12 +355,11 @@ lemma is_Hfrc_at_iff_sats:
     \<longleftrightarrow> sats(A,Hfrc_at_fm(P,leq,fnnc,f,z),env)"
   using assms by (simp add:sats_Hfrc_at_fm)
 
-
 lemma arity_tran_closure_fm :
-  "\<lbrakk>x\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> arity(tran_closure_fm(x,f)) = succ(x) \<union> succ(f)"
-  unfolding tran_closure_fm_def
+  "\<lbrakk>x\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> arity(trans_closure_fm(x,f)) = succ(x) \<union> succ(f)"
+  unfolding trans_closure_fm_def
   using arity_omega_fm arity_field_fm arity_typed_function_fm arity_pair_fm arity_empty_fm arity_fun_apply_fm
-    arity_composition_fm arity_succ_fm nat_union_abs2 pred_Un_distrib
+    arity_composition_fm arity_succ_fm nat_union_abs2 pred_Un_distrib 
   by auto
 
 subsection\<open>The well-founded relation \<^term>\<open>forcerel\<close>\<close>
@@ -421,7 +374,7 @@ definition
 
 definition
   forcerel_fm :: "i\<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
-  "forcerel_fm(p,x,z) \<equiv> Exists(Exists(And(tran_closure_fm(1, z#+2),
+  "forcerel_fm(p,x,z) \<equiv> Exists(Exists(And(trans_closure_fm(1, z#+2),
                                         And(is_names_below_fm(p#+2,x#+2,0),frecrel_fm(0,1)))))"
 
 lemma arity_forcerel_fm:
@@ -441,9 +394,9 @@ lemma sats_forcerel_fm:
   shows
     "sats(A,forcerel_fm(p,x,z),env) \<longleftrightarrow> is_forcerel(##A,nth(p,env),nth(x, env),nth(z, env))"
 proof -
-  have "sats(A,tran_closure_fm(1,z #+ 2),Cons(nb,Cons(r,env))) \<longleftrightarrow>
+  have "sats(A,trans_closure_fm(1,z #+ 2),Cons(nb,Cons(r,env))) \<longleftrightarrow>
         tran_closure(##A, r, nth(z, env))" if "r\<in>A" "nb\<in>A" for r nb
-    using that assms sats_tran_closure_fm[of 1 "z #+ 2" "[nb,r]@env"] by simp
+    using that assms trans_closure_fm_iff_sats[of 1 "[nb,r]@env" _ "z#+2",symmetric] by simp
   moreover
   have "sats(A, is_names_below_fm(succ(succ(p)), succ(succ(x)), 0), Cons(nb, Cons(r, env))) \<longleftrightarrow>
         is_names_below(##A, nth(p,env), nth(x, env), nb)"
@@ -455,7 +408,7 @@ proof -
     if "r\<in>A" "nb\<in>A" for r nb
     using assms that sats_frecrel_fm[of 0 1 "[nb,r]@env"] by simp
   ultimately
-  show ?thesis using assms  unfolding is_forcerel_def forcerel_fm_def by simp
+  show ?thesis using assms unfolding is_forcerel_def forcerel_fm_def by simp
 qed
 
 subsection\<open>\<^term>\<open>frc_at\<close>, forcing for atomic formulas\<close>
