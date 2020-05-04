@@ -264,7 +264,7 @@ lemma repl_opname_check :
 proof -
   have "arity(opname_check_fm(3,0,1,2))= 4" 
     unfolding opname_check_fm_def opair_name_fm_def upair_name_fm_def
-          check_fm_def rcheck_fm_def tran_closure_fm_def is_eclose_fm_def mem_eclose_fm_def
+          check_fm_def rcheck_fm_def trans_closure_fm_def is_eclose_fm_def mem_eclose_fm_def
          is_Hcheck_fm_def Replace_fm_def PHcheck_fm_def finite_ordinal_fm_def is_iterates_fm_def
              is_wfrec_fm_def is_recfun_fm_def restriction_fm_def pre_image_fm_def eclose_n_fm_def
         is_nat_case_fm_def quasinat_fm_def Memrel_fm_def singleton_fm_def fm_defs iterates_MH_fm_def

@@ -8,8 +8,7 @@ a sublocale of all relevant locales in ZF-Constructibility
 
 theory Interface
   imports
-    Renaming
-    Renaming_Auto
+    Nat_Miscellanea
     Relative_Univ
     Synthetic_Definition
 begin
@@ -640,7 +639,7 @@ schematic_goal rtran_closure_fm_auto:
   unfolding rtran_closure_def
   by (insert assms ; (rule sep_rules rtran_closure_mem_auto | simp)+)
 
-schematic_goal tran_closure_fm_auto:
+schematic_goal trans_closure_fm_auto:
   assumes
     "nth(i,env) = r" "nth(j,env) = rp"
     "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
@@ -649,22 +648,7 @@ schematic_goal tran_closure_fm_auto:
   unfolding tran_closure_def
   by (insert assms ; (rule sep_rules rtran_closure_fm_auto | simp))+
 
-synthesize "tran_closure_fm" from_schematic tran_closure_fm_auto
-
-lemma tran_closure_iff_sats:
-  assumes
-    "nth(i,env) = r" "nth(j,env) = rp"
-    "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
-  shows
-    "tran_closure(##A,r,rp) \<longleftrightarrow> sats(A,tran_closure_fm(i,j),env)"
-  unfolding tran_closure_fm_def using assms tran_closure_fm_auto by simp
-
-lemma sats_tran_closure_fm :
-  assumes
-    "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
-  shows
-    "sats(A,tran_closure_fm(i,j),env) \<longleftrightarrow> tran_closure(##A,nth(i,env),nth(j,env))"
-  unfolding tran_closure_fm_def using assms tran_closure_fm_auto by simp
+synthesize "trans_closure_fm" from_schematic trans_closure_fm_auto
 
 schematic_goal wellfounded_trancl_fm_auto:
   assumes
@@ -673,7 +657,7 @@ schematic_goal wellfounded_trancl_fm_auto:
   shows
     "wellfounded_trancl(##A,B,r,p) \<longleftrightarrow> sats(A,?wtf(i,j,k),env)"
   unfolding  wellfounded_trancl_def
-  by (insert assms ; (rule sep_rules tran_closure_fm_auto | simp)+)
+  by (insert assms ; (rule sep_rules trans_closure_fm_iff_sats | simp)+)
 
 lemma (in M_ZF_trans) wftrancl_separation_intf:
   assumes
@@ -690,7 +674,7 @@ proof -
     "rcfm(0,1,2) \<in> formula"
     and
     "arity(rcfm(0,1,2)) = 3"
-    using wellfounded_trancl_fm_auto[of concl:M "nth(2,_)"] unfolding fm_defs
+    using wellfounded_trancl_fm_auto[of concl:M "nth(2,_)"] unfolding fm_defs trans_closure_fm_def
     by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
   then
   have "\<forall>x\<in>M. \<forall>z\<in>M. separation(##M, \<lambda>y. sats(M,rcfm(0,1,2) , [y,x,z]))"

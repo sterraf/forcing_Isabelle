@@ -12,29 +12,12 @@ schematic_goal ZF_union_auto:
 
 synthesize "ZF_union_fm" from_schematic ZF_union_auto
 
-lemma sats_ZF_union_fm :
-  "(A, [] \<Turnstile> ZF_union_fm) \<longleftrightarrow> Union_ax(##A)"
-  unfolding ZF_union_fm_def using ZF_union_auto by simp
-
-lemma Union_ax_iff_sats :
-  "Union_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ZF_union_fm)" 
-  unfolding ZF_union_fm_def using ZF_union_auto by simp 
-
-
 schematic_goal ZF_power_auto:
     "power_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ?zfpow)"
   unfolding power_ax_def powerset_def subset_def
   by ((rule sep_rules | simp)+)
 
 synthesize "ZF_power_fm" from_schematic ZF_power_auto
-
-lemma sats_ZF_power_fm :
-  "(A, [] \<Turnstile> ZF_power_fm) \<longleftrightarrow> power_ax(##A)"
-  unfolding ZF_power_fm_def using ZF_power_auto by simp
-
-lemma power_ax_iff_sats :
-  "power_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ZF_power_fm)" 
-  unfolding ZF_power_fm_def using ZF_power_auto by simp 
 
 schematic_goal ZF_pairing_auto:
     "upair_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ?zfpair)"
@@ -43,28 +26,12 @@ schematic_goal ZF_pairing_auto:
 
 synthesize "ZF_pairing_fm" from_schematic ZF_pairing_auto
 
-lemma sats_ZF_pairing_fm :
-  "(A, [] \<Turnstile> ZF_pairing_fm) \<longleftrightarrow> upair_ax(##A)"
-  unfolding ZF_pairing_fm_def using ZF_pairing_auto by simp
-
-lemma upair_ax_iff_sats :
-  "upair_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ZF_pairing_fm)" 
-  unfolding ZF_pairing_fm_def using ZF_pairing_auto by simp 
-
 schematic_goal ZF_foundation_auto:
     "foundation_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ?zfpow)"
   unfolding foundation_ax_def 
   by ((rule sep_rules | simp)+)
 
 synthesize "ZF_foundation_fm" from_schematic ZF_foundation_auto
-
-lemma sats_ZF_foundation_fm :
-  "(A, [] \<Turnstile> ZF_foundation_fm) \<longleftrightarrow> foundation_ax(##A)"
-  unfolding ZF_foundation_fm_def using ZF_foundation_auto by simp
-
-lemma foundation_ax_iff_sats :
-  "foundation_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ZF_foundation_fm)" 
-  unfolding ZF_foundation_fm_def using ZF_foundation_auto by simp 
 
 schematic_goal ZF_extensionality_auto:
     "extensionality(##A) \<longleftrightarrow> (A, [] \<Turnstile> ?zfpow)"
@@ -73,14 +40,6 @@ schematic_goal ZF_extensionality_auto:
 
 synthesize "ZF_extensionality_fm" from_schematic ZF_extensionality_auto
 
-lemma sats_ZF_extensionality_fm :
-  "(A, [] \<Turnstile> ZF_extensionality_fm) \<longleftrightarrow> extensionality(##A)"
-  unfolding ZF_extensionality_fm_def using ZF_extensionality_auto by simp
-
-lemma extensionality_iff_sats :
-  "extensionality(##A) \<longleftrightarrow> (A, [] \<Turnstile> ZF_extensionality_fm)" 
-  unfolding ZF_extensionality_fm_def using ZF_extensionality_auto by simp 
-
 schematic_goal ZF_infinity_auto:
     "infinity_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> (?\<phi>(i,j,h)))"
   unfolding infinity_ax_def 
@@ -88,28 +47,12 @@ schematic_goal ZF_infinity_auto:
 
 synthesize "ZF_infinity_fm" from_schematic ZF_infinity_auto
 
-lemma sats_ZF_infinity_fm :
-  "(A, [] \<Turnstile> ZF_infinity_fm) \<longleftrightarrow> infinity_ax(##A)"
-  unfolding ZF_infinity_fm_def using ZF_infinity_auto by simp
-
-lemma infinity_iff_sats :
-  "infinity_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ZF_infinity_fm)" 
-  unfolding ZF_infinity_fm_def using ZF_infinity_auto by simp 
-
 schematic_goal ZF_choice_auto:
     "choice_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> (?\<phi>(i,j,h)))"
   unfolding choice_ax_def 
   by ((rule sep_rules | simp)+)
 
 synthesize "ZF_choice_fm" from_schematic ZF_choice_auto
-
-lemma sats_ZF_choice_fm :
-  "(A, [] \<Turnstile> ZF_choice_fm) \<longleftrightarrow> choice_ax(##A)"
-  unfolding ZF_choice_fm_def using ZF_choice_auto by simp
-
-lemma choice_iff_sats :
-  "choice_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ZF_choice_fm)" 
-  unfolding ZF_choice_fm_def using ZF_choice_auto by simp 
 
 syntax
   "_choice" :: "i"  ("AC")

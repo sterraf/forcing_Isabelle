@@ -275,7 +275,7 @@ lemma components_type[TC] :
     cond_of_fm_def hcomp_fm_def
   by simp_all
 
-lemmas sats_components_fm = sats_ftype_fm sats_name1_fm sats_name2_fm sats_cond_of_fm
+lemmas sats_components_fm[simp] = sats_ftype_fm sats_name1_fm sats_name2_fm sats_cond_of_fm
 
 lemmas components_iff_sats = is_ftype_iff_sats is_name1_iff_sats is_name2_iff_sats
   is_cond_of_iff_sats
@@ -392,29 +392,14 @@ definition
 
 schematic_goal sats_frecR_fm_auto:
   assumes 
-    "a\<in>nat" "b\<in>nat" "env\<in>list(A)"
+    "i\<in>nat" "j\<in>nat" "env\<in>list(A)" "nth(i,env) = a" "nth(j,env) = b"
   shows
-    "is_frecR(##A,nth(a,env),nth(b,env)) \<longleftrightarrow> sats(A,?fr_fm(a),env)"
+    "is_frecR(##A,a,b) \<longleftrightarrow> sats(A,?fr_fm(i,j),env)"
   unfolding  is_frecR_def is_Collect_def  
   by (insert assms ; (rule sep_rules' cartprod_iff_sats  components_iff_sats
         | simp del:sats_cartprod_fm)+)
 
 synthesize "frecR_fm" from_schematic sats_frecR_fm_auto
-
-lemma sats_frecR_fm :
-  assumes "a\<in>nat" "b\<in>nat" "env\<in>list(A)"
-  shows "sats(A,frecR_fm(a,b),env) \<longleftrightarrow> is_frecR(##A,nth(a,env),nth(b,env))"
-  unfolding is_frecR_def frecR_fm_def
-  using assms by (simp add: sats_components_fm)
-
-lemma is_frecR_iff_sats:
-  assumes
-    "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
-  shows
-    "is_frecR(##A,aa,bb)  \<longleftrightarrow> sats(A, frecR_fm(a,b), env)"
-  using assms
-  by (simp add:sats_frecR_fm)
-
 
 (* Third item of Kunen observations about the trcl relation in p. 257. *)
 lemma eq_ftypep_not_frecrR:

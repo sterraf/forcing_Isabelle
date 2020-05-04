@@ -4,15 +4,16 @@ signature Utils =
     val add_: term -> term -> term
     val app_: term -> term -> term
     val concat_: term -> term -> term
-    val dest_apply_op: term -> term
+    val dest_apply: term -> term * term
     val dest_iff_lhs: term -> term
     val dest_iff_rhs: term -> term
+    val dest_iff_tms: term -> term * term
     val dest_lhs_def: term -> term
     val dest_rhs_def: term -> term
+    val dest_satisfies_tms: term -> term * term
     val dest_satisfies_frm: term -> term
     val dest_eq_tms: term -> term * term
-    val dest_sats_frm: term -> term
-    val dest_tp_iff_rhs: term -> term
+    val dest_sats_frm: term -> (term * term) * term
     val dest_trueprop: term -> term
     val eq_: term -> term -> term
     val fix_vars: thm -> string list -> Proof.context -> thm
@@ -87,19 +88,21 @@ fun dest_eq_tms (Const (@{const_name IFOL.eq},_) $ t $ u) = (t, u)
   | dest_eq_tms t = raise TERM ("dest_eq_tms", [t])
 
 fun dest_lhs_def (Const (@{const_name Pure.eq},_) $ x $ _) = x
-  | dest_lhs_def t = raise TERM ("dest_sats_lhs", [t])
+  | dest_lhs_def t = raise TERM ("dest_lhs_def", [t])
 
 fun dest_rhs_def (Const (@{const_name Pure.eq},_) $ _ $ y) = y
-  | dest_rhs_def t = raise TERM ("dest_sats_lhs", [t])
+  | dest_rhs_def t = raise TERM ("dest_rhs_def", [t])
 
 
-fun dest_apply_op (@{const apply} $ t $ _) = t
-  | dest_apply_op t = raise TERM ("dest_applies_op", [t])
+fun dest_apply (@{const apply} $ t $ u) = (t,u)
+  | dest_apply t = raise TERM ("dest_applies_op", [t])
 
-fun dest_satisfies_frm (@{const Formula.satisfies} $ _ $ f) = f
-  | dest_satisfies_frm t = raise TERM ("dest_satisfies_frm", [t]);
+fun dest_satisfies_tms (@{const Formula.satisfies} $ A $ f) = (A,f)
+  | dest_satisfies_tms t = raise TERM ("dest_satisfies_tms", [t]);
 
-val dest_sats_frm = dest_satisfies_frm o dest_apply_op o #1 o dest_eq_tms ;
+val dest_satisfies_frm = #2 o dest_satisfies_tms
+
+fun dest_sats_frm t = t |> dest_eq_tms |> #1 |> dest_apply |>> dest_satisfies_tms ;
 
 fun dest_trueprop (@{const IFOL.Trueprop} $ t) = t
   | dest_trueprop t = t
@@ -109,9 +112,6 @@ fun dest_iff_tms (@{const IFOL.iff} $ t $ u) = (t, u)
 
 val dest_iff_lhs = #1 o dest_iff_tms
 val dest_iff_rhs = #2 o dest_iff_tms
-
-(* Given a term of the form "P \<longleftrightarrow> sats(M,env,f)" returns f *)
-val dest_tp_iff_rhs = dest_sats_frm o dest_iff_rhs
 
 fun thm_concl_tm ctxt thm_ref = 
   let val (((_,vars),thm_tms),ctxt1) = Variable.import true [Proof_Context.get_thm ctxt thm_ref] ctxt
