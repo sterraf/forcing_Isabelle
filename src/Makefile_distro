@@ -9,8 +9,8 @@ OUT_DIR = output/html
 ML_FILES = Renaming_ML.ml Utils.ml 
 
 LINKING_DIR  = $(PWD)/../scripts
-PARALLEL     = $(shell cat thy_files | egrep -v '^#' | sed s/\.thy/\.html/g )
-THY_FILES    = $(shell cat thy_files | egrep -v '^#' | tr \" " ")
+PARALLEL     = $(shell cat thy_files | egrep -v '^\#' | sed s/\.thy/\.html/g )
+THY_FILES    = $(shell cat thy_files | egrep -v '^\#' | tr \" " ")
 USR_HEAPS    = $(shell isabelle getenv ISABELLE_HEAPS | cut -f2 -d"=")
 ML_ID        = $(shell isabelle getenv ML_IDENTIFIER | cut -f2 -d"=")
 HEAP_LOG_DIR = $(USR_HEAPS)/$(ML_ID)/log
