@@ -44,19 +44,23 @@
 \begin{document}
 
 \title{Formalization of Forcing in Isabelle/ZF}
-\author{Emmanuel Gunther
+\author{Emmanuel Gunther\thanks{Universidad Nacional de C\'ordoba. 
+    Facultad de Matem\'atica, Astronom\'{\i}a,  F\'{\i}sica y
+    Computaci\'on.}
   \and
-  Miguel Pagano
+  Miguel Pagano\footnotemark[1]
   \and
-  Pedro S\'anchez Terraf
+  Pedro S\'anchez Terraf\footnotemark[1] \thanks{Centro de Investigaci\'on y Estudios de Matem\'atica
+    (CIEM-FaMAF), Conicet. C\'ordoba. Argentina.
+    Supported by Secyt-UNC project 33620180100465CB.}
 }
 \maketitle
 
 \begin{abstract}
-We formalize the theory of forcing in the set theory framework of
-Isabelle/ZF. Under the assumption of the existence of a countable
-transitive model of $\ZFC$, we construct a proper generic extension and show
-that the latter also satisfies $\ZFC$.
+  We formalize the theory of forcing in the set theory framework of
+  Isabelle/ZF. Under the assumption of the existence of a countable
+  transitive model of $\ZFC$, we construct a proper generic extension and show
+  that the latter also satisfies $\ZFC$.
 \end{abstract}
 
 
@@ -87,6 +91,9 @@ it to the AFP:
 \item Consistently use of structured proofs using Isar (except for one
   coming from a schematic goal command).
 \end{enumerate}
+
+A cross-linked HTML version of the development can be found at
+\url{https://cs.famaf.unc.edu.ar/~pedro/forcing/}.
 
 % generated text of all theories
 \input{session}
