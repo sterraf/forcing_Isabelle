@@ -14,13 +14,13 @@ signature Utils =
     val dest_satisfies_frm: term -> term
     val dest_eq_tms: term -> term * term
     val dest_sats_frm: term -> (term * term) * term
+    val dest_eq_tms': term -> term * term
     val dest_trueprop: term -> term
     val eq_: term -> term -> term
     val fix_vars: thm -> string list -> Proof.context -> thm
     val formula_: term
     val freeName: term -> string
     val inList: ''a -> ''a list -> bool
-    val isFree: term -> bool
     val length_: term -> term
     val list_: term -> term
     val lt_: term -> term -> term
@@ -45,6 +45,7 @@ struct
 fun inList a = exists (fn b => a = b)
 
 fun binop h t u = h $ t $ u
+
 val mk_Pair  = binop @{const Pair}
 
 fun mk_FinSet nil = @{const zero}
@@ -58,10 +59,7 @@ fun mk_ZFlist _ nil = @{const "Nil"}
 
 fun to_ML_list (@{const Nil}) = nil
   | to_ML_list (@{const Cons} $ t $ ts) = t :: to_ML_list ts
-|   to_ML_list _ = nil
-
-fun isFree (Free (_,_)) = true
-  | isFree _ = false
+  |   to_ML_list _ = nil
 
 fun freeName (Free (n,_)) = n
   | freeName _ = error "Not a free variable"
@@ -86,6 +84,10 @@ val formula_ = @{const formula}
 (** Destructors of terms **)
 fun dest_eq_tms (Const (@{const_name IFOL.eq},_) $ t $ u) = (t, u)
   | dest_eq_tms t = raise TERM ("dest_eq_tms", [t])
+
+
+fun dest_eq_tms' (Const (@{const_name Pure.eq},_) $ t $ u) = (t, u)
+  | dest_eq_tms' t = raise TERM ("dest_eq_tms", [t])
 
 fun dest_lhs_def (Const (@{const_name Pure.eq},_) $ x $ _) = x
   | dest_lhs_def t = raise TERM ("dest_lhs_def", [t])

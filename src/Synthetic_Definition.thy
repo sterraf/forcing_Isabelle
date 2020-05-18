@@ -10,6 +10,11 @@ theory Synthetic_Definition
 
 begin
 ML_file\<open>Utils.ml\<close>
+ML\<open>structure Formulas = Named_Thms
+                      (val name = @{binding "fm_definitions"}
+                      val description = "Theorems for synthetising formulas.") ;
+\<close>
+setup\<open>Formulas.setup\<close>
 
 ML\<open>
 val $` = curry ((op $) o swap)
@@ -33,7 +38,7 @@ fun prove_sats goal thms thm_auto ctxt =
   Goal.prove ctxt [] [] goal
      (fn _ => rewrite_goal_tac ctxt thms 1
               THEN PARALLEL_ALLGOALS (asm_simp_tac ctxt')
-              THEN TypeCheck.typecheck_tac ctxt')
+    )
   end
 
 fun is_mem (@{const mem} $ _ $  _) = true
@@ -88,9 +93,10 @@ fun synthetic_def def_name thmref pos tc auto thy =
     val vs = List.filter (fn (((v,_),_),_) => Utils.inList v t_vars) vars
     val at = List.foldr (fn ((_,var),t') => lambda (Thm.term_of var) t') t vs
     val hyps' = List.filter (relevant t_vars o Utils.dest_trueprop) hyps
+    val def_attrs = @{attributes [fm_definitions]}
   in
     Local_Theory.define ((Binding.name def_name, NoSyn),
-                        ((Binding.name (def_name ^ "_def"), []), at)) thy |> #2 |>
+                        ((Binding.name (def_name ^ "_def"), def_attrs), at)) thy |> #2 |>
     (if tc then synth_thm_tc def_name (def_name ^ "_def") hyps' vs pos else I) |>
     (if auto then synth_thm_sats def_name (def_name ^ "_def") lhs set env hyps vars vs pos thm_tms else I)
 

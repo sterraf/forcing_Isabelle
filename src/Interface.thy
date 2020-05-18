@@ -10,7 +10,6 @@ theory Interface
   imports
     Nat_Miscellanea
     Relative_Univ
-    Synthetic_Definition
 begin
 
 syntax
@@ -224,7 +223,7 @@ proof -
     "cpfm(0,1,2) \<in> formula"
     and
     "arity(cpfm(0,1,2)) = 3"
-    using cprod_fm_auto by (simp del:FOL_sats_iff add: fm_defs nat_simp_union)
+    using cprod_fm_auto by (simp del:FOL_sats_iff add: fm_definitions nat_simp_union)
   then
   have "\<forall>a\<in>M. \<forall>b\<in>M. separation(##M, \<lambda>z. sats(M,cpfm(0,1,2) , [z, a, b]))"
     using separation_ax by simp
@@ -262,7 +261,7 @@ proof -
     "imfm(0,1,2) \<in> formula"
     and
     "arity(imfm(0,1,2)) = 3"
-    using im_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+    using im_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
   then
   have "\<forall>r\<in>M. \<forall>a\<in>M. separation(##M, \<lambda>y. sats(M,imfm(0,1,2) , [y,r,a]))"
     using separation_ax by simp
@@ -300,7 +299,7 @@ proof -
     "cfm(0,1) \<in> formula"
     and
     "arity(cfm(0,1)) = 2"
-    using con_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+    using con_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
   then
   have "\<forall>r\<in>M. separation(##M, \<lambda>z. sats(M,cfm(0,1) , [z,r]))"
     using separation_ax by simp
@@ -340,7 +339,7 @@ proof -
     "rfm(0,1) \<in> formula"
     and
     "arity(rfm(0,1)) = 2"
-    using rest_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+    using rest_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
   then
   have "\<forall>a\<in>M. separation(##M, \<lambda>z. sats(M,rfm(0,1) , [z,a]))"
     using separation_ax by simp
@@ -384,7 +383,7 @@ proof -
     "cfm(0,1,2) \<in> formula"
     and
     "arity(cfm(0,1,2)) = 3"
-    using comp_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+    using comp_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
   then
   have "\<forall>r\<in>M. \<forall>s\<in>M. separation(##M, \<lambda>y. sats(M,cfm(0,1,2) , [y,s,r]))"
     using separation_ax by simp
@@ -426,7 +425,7 @@ proof -
     "pfm(0,1,2) \<in> formula"
     and
     "arity(pfm(0,1,2)) = 3"
-    using pred_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+    using pred_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
   then
   have "\<forall>x\<in>M. \<forall>r\<in>M. separation(##M, \<lambda>y. sats(M,pfm(0,1,2) , [y,r,x]))"
     using separation_ax by simp
@@ -461,7 +460,7 @@ proof -
     "mfm(0) \<in> formula"
     and
     "arity(mfm(0)) = 1"
-    using mem_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+    using mem_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
   then
   have "separation(##M, \<lambda>z. sats(M,mfm(0) , [z]))"
     using separation_ax by simp
@@ -505,7 +504,7 @@ proof -
     "rffm(0,1,2,3,4,5) \<in> formula"
     and
     "arity(rffm(0,1,2,3,4,5)) = 6"
-    using recfun_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+    using recfun_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
   then
   have "\<forall>a1\<in>M. \<forall>a2\<in>M. \<forall>a3\<in>M. \<forall>a4\<in>M. \<forall>a5\<in>M.
         separation(##M, \<lambda>x. sats(M,rffm(0,1,2,3,4,5) , [x,a1,a2,a3,a4,a5]))"
@@ -552,7 +551,7 @@ proof -
       & is_cons(##M,nb,f,cnbf) & upair(##M,cnbf,cnbf,nth(1,env)))
     \<longleftrightarrow> sats(M,fsfm(0,1,2),env)"
     and "fsfm(0,1,2) \<in> formula" and "arity(fsfm(0,1,2)) = 3" for env
-    using funsp_fm_auto[of concl:M] by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+    using funsp_fm_auto[of concl:M] by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
   then
   have "\<forall>n0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,fsfm(0,1,2) , [p,z,n0]))"
     using replacement_ax by simp
@@ -615,7 +614,7 @@ proof -
     "rcfm(0,1,2) \<in> formula"
     and
     "arity(rcfm(0,1,2)) = 3"
-    using rtran_closure_mem_auto by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+    using rtran_closure_mem_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
   then
   have "\<forall>x\<in>M. \<forall>a\<in>M. separation(##M, \<lambda>y. sats(M,rcfm(0,1,2) , [y,x,a]))"
     using separation_ax by simp
@@ -637,7 +636,7 @@ schematic_goal rtran_closure_fm_auto:
   shows
     "rtran_closure(##A,r,rp) \<longleftrightarrow> sats(A,?rtc(i,j),env)"
   unfolding rtran_closure_def
-  by (insert assms ; (rule sep_rules rtran_closure_mem_auto | simp)+)
+  by (insert assms ; (rule sep_rules rtran_closure_mem_auto| simp)+)
 
 schematic_goal trans_closure_fm_auto:
   assumes
@@ -674,8 +673,8 @@ proof -
     "rcfm(0,1,2) \<in> formula"
     and
     "arity(rcfm(0,1,2)) = 3"
-    using wellfounded_trancl_fm_auto[of concl:M "nth(2,_)"] unfolding fm_defs trans_closure_fm_def
-    by (simp del:FOL_sats_iff pair_abs add: fm_defs nat_simp_union)
+    using wellfounded_trancl_fm_auto[of concl:M "nth(2,_)"] unfolding fm_definitions
+    by (simp del:FOL_sats_iff pair_abs add: nat_simp_union)
   then
   have "\<forall>x\<in>M. \<forall>z\<in>M. separation(##M, \<lambda>y. sats(M,rcfm(0,1,2) , [y,x,z]))"
     using separation_ax by simp
@@ -809,9 +808,7 @@ proof -
       if "x\<in>M" "z\<in>M" for x z
       using that 2 1 \<open>0\<in>M\<close> \<open>A\<in>M\<close> by (simp del:pair_abs)
     have "arity(?f) = 5"
-      unfolding iterates_MH_fm_def is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def
-        restriction_fm_def list_functor_fm_def number1_fm_def cartprod_fm_def
-        sum_fm_def quasinat_fm_def pre_image_fm_def fm_defs
+      unfolding fm_definitions
       by (simp add:nat_simp_union)
     then
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),A,0]))"
@@ -875,8 +872,7 @@ proof -
       if "x\<in>M" "z\<in>M" for x z
       using that 2 1 \<open>v\<in>M\<close> by (simp del:pair_abs)
     have "arity(?f) = 4"
-      unfolding iterates_MH_fm_def is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def
-        restriction_fm_def pre_image_fm_def quasinat_fm_def fm_defs
+      unfolding fm_definitions
       using arty by (simp add:nat_simp_union)
     then
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),v]))"
@@ -897,7 +893,7 @@ proof -
   have "0\<in>M"
     using  nat_0I nat_trans_M by simp
   have 1:"arity(formula_functor_fm(1,0)) = 2"
-    unfolding formula_functor_fm_def fm_defs sum_fm_def cartprod_fm_def number1_fm_def
+    unfolding fm_definitions
     by (simp add:nat_simp_union)
   have 2:"formula_functor_fm(1,0)\<in>formula" by simp
   have "is_formula_functor(##M,a,b) \<longleftrightarrow>
@@ -914,8 +910,7 @@ lemma (in M_ZF_trans) nth_repl_intf:
     "iterates_replacement(##M,\<lambda>l' t. is_tl(##M,l',t),l)"
 proof -
   have 1:"arity(tl_fm(1,0)) = 2"
-    unfolding tl_fm_def fm_defs quasilist_fm_def Cons_fm_def Nil_fm_def Inr_fm_def number1_fm_def
-      Inl_fm_def by (simp add:nat_simp_union)
+    unfolding fm_definitions by (simp add:nat_simp_union)
   have 2:"tl_fm(1,0)\<in>formula" by simp
   have "is_tl(##M,a,b) \<longleftrightarrow> sats(M, tl_fm(1,0), [b,a])"
     if "a\<in>M" "b\<in>M" for a b
@@ -931,7 +926,7 @@ lemma (in M_ZF_trans) eclose_repl1_intf:
     "iterates_replacement(##M, big_union(##M), A)"
 proof -
   have 1:"arity(big_union_fm(1,0)) = 2"
-    unfolding big_union_fm_def fm_defs by (simp add:nat_simp_union)
+    unfolding fm_definitions by (simp add:nat_simp_union)
   have 2:"big_union_fm(1,0)\<in>formula" by simp
   have "big_union(##M,a,b) \<longleftrightarrow> sats(M, big_union_fm(1,0), [b,a])"
     if "a\<in>M" "b\<in>M" for a b
@@ -970,9 +965,7 @@ proof -
     if "n\<in>M" "y\<in>M" for n y
     using that \<open>0\<in>M\<close> \<open>A\<in>M\<close> nat_in_M 1 by simp
   have "arity(?f) = 5"
-    unfolding is_iterates_fm_def restriction_fm_def list_functor_fm_def number1_fm_def Memrel_fm_def
-      cartprod_fm_def sum_fm_def quasinat_fm_def pre_image_fm_def fm_defs is_wfrec_fm_def
-      is_recfun_fm_def iterates_MH_fm_def is_nat_case_fm_def
+    unfolding fm_definitions
     by (simp add:nat_simp_union)
   then
   have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,A,0,nat]))"
@@ -1003,10 +996,7 @@ proof -
     if "n\<in>M" "y\<in>M" for n y
     using that \<open>0\<in>M\<close> nat_in_M 1 by simp
   have artyf:"arity(?f) = 4"
-    unfolding is_iterates_fm_def formula_functor_fm_def fm_defs sum_fm_def quasinat_fm_def
-      cartprod_fm_def number1_fm_def Memrel_fm_def ordinal_fm_def transset_fm_def
-      is_wfrec_fm_def is_recfun_fm_def iterates_MH_fm_def is_nat_case_fm_def subset_fm_def
-      pre_image_fm_def restriction_fm_def
+    unfolding fm_definitions
     by (simp add:nat_simp_union)
   then
   have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,0,nat]))"
@@ -1044,10 +1034,7 @@ proof -
     if "n\<in>M" "y\<in>M" for n y
     using that \<open>A\<in>M\<close> nat_in_M 1 by simp
   have artyf:"arity(?f) = 4"
-    unfolding is_iterates_fm_def formula_functor_fm_def fm_defs sum_fm_def quasinat_fm_def
-      cartprod_fm_def number1_fm_def Memrel_fm_def ordinal_fm_def transset_fm_def
-      is_wfrec_fm_def is_recfun_fm_def iterates_MH_fm_def is_nat_case_fm_def subset_fm_def
-      pre_image_fm_def restriction_fm_def
+    unfolding fm_definitions
     by (simp add:nat_simp_union)
   then
   have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,A,nat]))"
@@ -1093,6 +1080,8 @@ lemma is_powapply_type [TC] :
   "\<lbrakk>f\<in>nat ; y\<in>nat; z\<in>nat\<rbrakk> \<Longrightarrow> is_powapply_fm(f,y,z)\<in>formula"
   unfolding is_powapply_fm_def by simp
 
+declare is_powapply_fm_def[fm_definitions add]
+
 lemma sats_is_powapply_fm :
   assumes
     "f\<in>nat" "y\<in>nat" "z\<in>nat" "env\<in>list(A)" "0\<in>A"
@@ -1111,7 +1100,7 @@ lemma (in M_ZF_trans) powapply_repl :
 proof -
   have "arity(is_powapply_fm(2,0,1)) = 3"
     unfolding is_powapply_fm_def
-    by (simp add: fm_defs nat_simp_union)
+    by (simp add: fm_definitions nat_simp_union)
   then
   have "\<forall>f0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,is_powapply_fm(2,0,1) , [p,z,f0]))"
     using replacement_ax by simp
@@ -1152,7 +1141,7 @@ lemma (in M_ZF_trans) phrank_repl :
 proof -
   have "arity(PHrank_fm(2,0,1)) = 3"
     unfolding PHrank_fm_def
-    by (simp add: fm_defs nat_simp_union)
+    by (simp add: fm_definitions nat_simp_union)
   then
   have "\<forall>f0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,PHrank_fm(2,0,1) , [p,z,f0]))"
     using replacement_ax by simp
@@ -1180,6 +1169,8 @@ lemma (in M_ZF_trans) sats_is_Hrank_fm [simp]:
   using zero_in_M is_Hrank_def is_Hrank_fm_def sats_Replace_fm
   by simp
 
+declare is_Hrank_fm_def[fm_definitions add]
+declare PHrank_fm_def[fm_definitions add]
 (* M(x) \<Longrightarrow> wfrec_replacement(M,is_Hrank(M),rrank(x)) *)
 lemma (in M_ZF_trans) wfrec_rank :
   assumes
@@ -1205,9 +1196,7 @@ proof -
     if "x\<in>M" "z\<in>M" for x z
     using that 1 \<open>X\<in>M\<close> rrank_in_M by (simp del:pair_abs)
   have "arity(?f) = 3"
-    unfolding is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def is_Hrank_fm_def PHrank_fm_def
-      restriction_fm_def list_functor_fm_def number1_fm_def cartprod_fm_def
-      sum_fm_def quasinat_fm_def pre_image_fm_def fm_defs
+    unfolding fm_definitions
     by (simp add:nat_simp_union)
   then
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,rrank(X)]))"
@@ -1222,11 +1211,12 @@ qed
 
 (*"is_HVfrom(M,A,x,f,h) \<equiv> \<exists>U[M]. \<exists>R[M].  union(M,A,U,h)
         \<and> big_union(M,R,U) \<and> is_Replace(M,x,is_powapply(M,f),R)"*)
-definition
+definition 
   is_HVfrom_fm :: "[i,i,i,i] \<Rightarrow> i" where
   "is_HVfrom_fm(A,x,f,h) \<equiv> Exists(Exists(And(union_fm(A #+ 2,1,h #+ 2),
                             And(big_union_fm(0,1),
                             Replace_fm(x #+ 2,is_powapply_fm(f #+ 4,0,1),0)))))"
+declare is_HVfrom_fm_def[fm_definitions add]
 
 lemma is_HVfrom_type [TC]:
   "\<lbrakk> A\<in>nat; x \<in> nat; f \<in> nat; h \<in> nat \<rbrakk> \<Longrightarrow> is_HVfrom_fm(A,x,f,h) \<in> formula"
@@ -1301,9 +1291,7 @@ proof -
       if "x\<in>M" "z\<in>M" for x z
       using that 1 \<open>A\<in>M\<close> \<open>mesa\<in>M\<close> by (simp del:pair_abs)
     have "arity(?f) = 4"
-      unfolding is_HVfrom_fm_def is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def
-        restriction_fm_def list_functor_fm_def number1_fm_def cartprod_fm_def
-        is_powapply_fm_def sum_fm_def quasinat_fm_def pre_image_fm_def fm_defs
+      unfolding fm_definitions
       by (simp add:nat_simp_union)
     then
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,A,mesa]))"

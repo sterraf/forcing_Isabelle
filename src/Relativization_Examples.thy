@@ -22,7 +22,7 @@ definition test5 :: "o" where
   "test5 \<equiv> \<forall>x\<in>1. x = 0"
 
 definition test6 :: "i \<Rightarrow> i" where
-  "test6(a) = {x \<in> 2 . test2(a)}"
+  "test6(a) == {x \<in> 2 . test2(a)}"
 
 ML\<open>
 structure Ex = struct

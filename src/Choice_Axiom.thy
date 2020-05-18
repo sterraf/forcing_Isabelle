@@ -2,7 +2,7 @@ section\<open>The Axiom of Choice in $M[G]$\<close>
 theory Choice_Axiom
   imports Powerset_Axiom Pairing_Axiom Union_Axiom Extensionality_Axiom 
           Foundation_Axiom Powerset_Axiom Separation_Axiom 
-          Replacement_Axiom Interface Infinity_Axiom
+          Replacement_Axiom Interface Infinity_Axiom Relativization
 begin
 
 definition 
@@ -124,9 +124,12 @@ qed
 context G_generic 
 begin
 
+
 definition
   upair_name :: "i \<Rightarrow> i \<Rightarrow> i" where
   "upair_name(\<tau>,\<rho>) \<equiv> {\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>}"
+
+relativize "upair_name" "upair_name_def" "N"
 
 definition
   is_upair_name :: "[i,i,i] \<Rightarrow> o" where
@@ -145,7 +148,7 @@ lemma upair_name_closed :
 definition
   upair_name_fm :: "[i,i,i,i] \<Rightarrow> i" where
   "upair_name_fm(x,y,o,z) \<equiv> Exists(Exists(And(pair_fm(x#+2,o#+2,1),
-                                          And(pair_fm(y#+2,o#+2,0),upair_fm(1,0,z#+2)))))" 
+                                          And(pair_fm(y#+2,o#+2,0),upair_fm(1,0,z#+2)))))"
 
 lemma upair_name_fm_type[TC] :
     "\<lbrakk> s\<in>nat;x\<in>nat;y\<in>nat;o\<in>nat\<rbrakk> \<Longrightarrow> upair_name_fm(s,x,y,o)\<in>formula"
@@ -263,11 +266,8 @@ lemma repl_opname_check :
    "{opair_name(check(x),f`x). x\<in>A}\<in>M"
 proof -
   have "arity(opname_check_fm(3,0,1,2))= 4" 
-    unfolding opname_check_fm_def opair_name_fm_def upair_name_fm_def
-          check_fm_def rcheck_fm_def trans_closure_fm_def is_eclose_fm_def mem_eclose_fm_def
-         is_Hcheck_fm_def Replace_fm_def PHcheck_fm_def finite_ordinal_fm_def is_iterates_fm_def
-             is_wfrec_fm_def is_recfun_fm_def restriction_fm_def pre_image_fm_def eclose_n_fm_def
-        is_nat_case_fm_def quasinat_fm_def Memrel_fm_def singleton_fm_def fm_defs iterates_MH_fm_def
+    unfolding fm_definitions opname_check_fm_def opair_name_fm_def upair_name_fm_def
+          check_fm_def is_Hcheck_fm_def PHcheck_fm_def
     by (simp add:nat_simp_union)
   moreover
   have "x\<in>A \<Longrightarrow> opair_name(check(x), f ` x)\<in>M" for x
@@ -280,8 +280,6 @@ proof -
                     "\<lambda>x. opair_name(check(x),f`x)"] 
     by simp
 qed
-
-
 
 theorem choice_in_MG: 
   assumes "choice_ax(##M)"

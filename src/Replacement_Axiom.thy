@@ -150,9 +150,10 @@ proof -
   then show ?thesis unfolding prebody_fm_def by simp
 qed
 
-lemmas new_fm_defs = fm_defs is_transrec_fm_def is_eclose_fm_def mem_eclose_fm_def
-  finite_ordinal_fm_def is_wfrec_fm_def  Memrel_fm_def eclose_n_fm_def is_recfun_fm_def is_iterates_fm_def
-  iterates_MH_fm_def is_nat_case_fm_def quasinat_fm_def pre_image_fm_def restriction_fm_def
+declare is_eclose_fm_def[fm_definitions]
+        is_eclose_fm_def[fm_definitions] 
+        mem_eclose_fm_def[fm_definitions]
+        eclose_n_fm_def[fm_definitions]
 
 lemma sats_prebody_fm:
   assumes
@@ -169,7 +170,7 @@ lemma arity_prebody_fm:
   shows
     "arity(prebody_fm(\<phi>,env))\<le>6 #+ length(env)"
   unfolding prebody_fm_def is_HVfrom_fm_def is_powapply_fm_def
-  using assms new_fm_defs nat_simp_union
+  using assms fm_definitions nat_simp_union
     arity_renrep[of "forces(\<phi>)"] arity_forces_le[simplified] pred_le by auto
 
 
@@ -187,7 +188,7 @@ lemma arity_body_fm':
   shows
     "arity(body_fm'(\<phi>,env))\<le>5  #+ length(env)"
   unfolding body_fm'_def
-  using assms new_fm_defs nat_simp_union arity_prebody_fm pred_le  arity_renpbdy[of "prebody_fm(\<phi>,env)"]
+  using assms fm_definitions nat_simp_union arity_prebody_fm pred_le  arity_renpbdy[of "prebody_fm(\<phi>,env)"]
   by auto
 
 lemma sats_body_fm':
@@ -318,7 +319,7 @@ proof -
   moreover from \<open>arity(_) \<le> 2 #+ length(nenv)\<close>
     \<open>length(_) = length(_)\<close>[symmetric] \<open>nenv\<in>_\<close> \<open>\<phi>\<in>_\<close>
   have "arity(?f_fm) \<le> 5 #+ length(env)"
-    unfolding body_fm_def  new_fm_defs least_fm_def
+    unfolding body_fm_def fm_definitions least_fm_def
     using arity_forces arity_renrep arity_renbody arity_body_fm' nonempty
     by (simp add: pred_Un Un_assoc, simp add: Un_assoc[symmetric] nat_union_abs1 pred_Un)
       (auto simp add: nat_simp_union, rule pred_le, auto intro:leI)

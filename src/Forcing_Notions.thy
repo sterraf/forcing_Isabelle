@@ -237,7 +237,7 @@ next
     obtain d where "d\<in>A" "d\<preceq>a" "d\<preceq>b"
       unfolding compat_in_def by auto
     with 1
-    have 2:"d\<preceq>p" "d\<preceq>q" "d\<in>?UA"
+    have "d\<preceq>p" "d\<preceq>q" "d\<in>?UA"
       using A_sub_upclosure[THEN subsetD] \<open>A\<subseteq>P\<close>
         leq_transD'[of A d a] leq_transD'[of A d b] by auto
     then

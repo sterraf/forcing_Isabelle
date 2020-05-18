@@ -227,7 +227,7 @@ fun relativize_def ctxt cls_pred def_name thm_ref lthy =
   let
     val (cls_pred, ctxt1) = Variable.variant_fixes [cls_pred] ctxt |>> var_io o hd
     val (vars,tm,ctxt1) = Utils.thm_concl_tm ctxt1 (thm_ref ^ "_def")
-    val (v,t) = tm |> #2 o Utils.dest_eq_tms o Utils.dest_trueprop
+    val (v,t) = tm |> #2 o Utils.dest_eq_tms' o Utils.dest_trueprop
                    |> relativ_tm_frm' cls_pred db ctxt1
     val t_vars = Term.add_free_names t []
     val vs = List.filter (fn (((v,_),_),_)  => Utils.inList v t_vars) vars

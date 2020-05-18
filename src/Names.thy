@@ -734,9 +734,7 @@ proof -
     if "x\<in>M" "z\<in>M" for x z
     using that 1 \<open>X\<in>M\<close> rcheck_in_M one_in_M by (simp del:pair_abs)
   have artyf:"arity(?f) = 4"
-    unfolding is_wfrec_fm_def is_Hcheck_fm_def Replace_fm_def PHcheck_fm_def
-      pair_fm_def upair_fm_def is_recfun_fm_def fun_apply_fm_def big_union_fm_def
-      pre_image_fm_def restriction_fm_def image_fm_def
+    unfolding fm_definitions is_Hcheck_fm_def PHcheck_fm_def      
     by (simp add:nat_simp_union)
   then
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,one,rcheck(X)]))"
@@ -825,6 +823,8 @@ lemma (in M_trivial) singleton_abs[simp] : "\<lbrakk> M(x) ; M(s) \<rbrakk> \<Lo
 definition
   singleton_fm :: "[i,i] \<Rightarrow> i" where
   "singleton_fm(i,j) \<equiv> Exists(And(empty_fm(0), cons_fm(succ(i),0,succ(j))))"
+
+declare singleton_fm_def[fm_definitions]
 
 lemma singleton_type[TC] : "\<lbrakk> x \<in> nat; y \<in> nat \<rbrakk> \<Longrightarrow> singleton_fm(x,y) \<in> formula"
   unfolding singleton_fm_def by simp
@@ -915,10 +915,8 @@ lemma check_replacement:
   "{check(x). x\<in>P} \<in> M"
 proof -
   have "arity(check_fm(0,2,1)) = 3"
-    unfolding check_fm_def rcheck_fm_def trans_closure_fm_def is_eclose_fm_def mem_eclose_fm_def
-      is_Hcheck_fm_def Replace_fm_def PHcheck_fm_def finite_ordinal_fm_def is_iterates_fm_def
-      is_wfrec_fm_def is_recfun_fm_def restriction_fm_def pre_image_fm_def eclose_n_fm_def
-      is_nat_case_fm_def quasinat_fm_def Memrel_fm_def singleton_fm_def fm_defs iterates_MH_fm_def
+    unfolding check_fm_def is_Hcheck_fm_def  PHcheck_fm_def 
+      eclose_n_fm_def is_eclose_fm_def mem_eclose_fm_def fm_definitions
     by (simp add:nat_simp_union)
   moreover
   have "check(x)\<in>M" if "x\<in>P" for x
@@ -955,10 +953,8 @@ proof -
   have "?pcheck_fm\<in>formula" by simp
   moreover
   have "arity(?pcheck_fm)=3"
-    unfolding check_fm_def rcheck_fm_def trans_closure_fm_def is_eclose_fm_def mem_eclose_fm_def
-      is_Hcheck_fm_def Replace_fm_def PHcheck_fm_def finite_ordinal_fm_def is_iterates_fm_def
-      is_wfrec_fm_def is_recfun_fm_def restriction_fm_def pre_image_fm_def eclose_n_fm_def
-      is_nat_case_fm_def quasinat_fm_def Memrel_fm_def singleton_fm_def fm_defs iterates_MH_fm_def
+    unfolding check_fm_def is_Hcheck_fm_def PHcheck_fm_def 
+      is_eclose_fm_def mem_eclose_fm_def eclose_n_fm_def fm_definitions
     by (simp add:nat_simp_union)
   moreover
   from P_in_M check_in_M tuples_in_M P_sub_M

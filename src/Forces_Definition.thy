@@ -277,6 +277,8 @@ definition
       Or(And(empty_fm(3),eq_case_fm(2,1,0,P #+ 4,leq #+ 4,f #+ 4)),
          And(number1_fm(3),mem_case_fm(2,1,0,P #+ 4,leq #+ 4,f #+ 4)))))))))"
 
+declare Hfrc_fm_def[fm_definitions]
+
 lemma Hfrc_fm_type[TC] :
   "\<lbrakk>P\<in>nat;leq\<in>nat;fnnc\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> Hfrc_fm(P,leq,fnnc,f)\<in>formula"
   unfolding Hfrc_fm_def by simp
@@ -321,6 +323,7 @@ definition
   Hfrc_at_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
   "Hfrc_at_fm(P,leq,fnnc,f,z) \<equiv> Or(And(empty_fm(z),Neg(Hfrc_fm(P,leq,fnnc,f))),
                                       And(number1_fm(z),Hfrc_fm(P,leq,fnnc,f)))"
+declare Hfrc_at_fm_def[fm_definitions]
 
 lemma arity_Hfrc_at_fm :
   assumes
@@ -1222,7 +1225,7 @@ proof -
     have "arity(frecrelP_fm(0)) = 1"
       unfolding number1_fm_def frecrelP_fm_def
       by (simp del:FOL_sats_iff pair_abs empty_abs
-          add: fm_defs frecR_fm_def number1_fm_def components_defs nat_simp_union)
+          add: fm_definitions components_defs nat_simp_union)
     then
     have "separation(##M, \<lambda>z. sats(M,frecrelP_fm(0) , [z]))"
       using separation_ax by simp
@@ -1278,14 +1281,11 @@ proof -
     if "x\<in>M" "z\<in>M" for x z
     using that 1 \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M by (simp del:pair_abs)
   have artyf:"arity(?f) = 5"
-    unfolding is_wfrec_fm_def Hfrc_at_fm_def Hfrc_fm_def Replace_fm_def PHcheck_fm_def
-      pair_fm_def upair_fm_def is_recfun_fm_def fun_apply_fm_def big_union_fm_def
-      pre_image_fm_def restriction_fm_def image_fm_def fm_defs number1_fm_def
-      eq_case_fm_def mem_case_fm_def is_tuple_fm_def
+    unfolding fm_definitions PHcheck_fm_def is_tuple_fm_def
     by (simp add:nat_simp_union)
   moreover
   have "?f\<in>formula"
-    unfolding fm_defs Hfrc_at_fm_def by simp
+    unfolding fm_definitions by simp
   ultimately
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,P,leq,forcerel(P,X)]))"
     using replacement_ax 1 artyf \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M by simp
