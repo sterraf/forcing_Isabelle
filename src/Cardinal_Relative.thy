@@ -392,6 +392,7 @@ lemma is_cardinal_univalent:
   shows "\<kappa> = \<kappa>'"
   using assms is_cardinal_imp_Least by auto
 
+\<comment> \<open>Perhaps prove that is_cardinal is univalent?\<close>
 lemma Ord_is_cardinal_idem:
   assumes "Ord(A)" "M(A)" "M(\<kappa>)" "M(\<kappa>')" "|A|r= \<kappa>" "|\<kappa>|r= \<kappa>'"
   shows "|A|r= \<kappa>'"
@@ -678,6 +679,7 @@ lemma is_lepoll_is_cardinal_le: "[| M(A); M(i); M(\<kappa>); M(\<kappa>'); A \<l
   apply (erule Ord_is_cardinal_le, simp_all)
   done
 
+\<comment> \<open>Define a function cardinalr :: i => i, assume M(cardinalr(A)), etc.\<close>
 lemma is_lepoll_Ord_imp_is_eqpoll: "[| M(A); M(i); M(\<kappa>); M(\<kappa>'); A \<lesssim>r i; Ord(i) ; |A|r=\<kappa>; |i|r= \<kappa>' |] ==> \<kappa> \<approx>r A"
   using well_ord_Memrel[of i] is_lepoll_well_ord[of A i "Memrel(i)"]
      well_ord_cardinal_is_eqpoll[of A] 
