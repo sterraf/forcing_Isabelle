@@ -148,20 +148,14 @@ definition
   ftype_fm :: "[i,i] \<Rightarrow> i" where
   "ftype_fm \<equiv> fst_fm" 
 
-lemma sats_ftype_fm :
-  "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk> 
-    \<Longrightarrow> sats(A, ftype_fm(x,y), env) \<longleftrightarrow>
-        is_ftype(##A, nth(x,env), nth(y,env))"
-  unfolding ftype_fm_def is_ftype_def
-  by (simp add:sats_fst_fm)
-
 lemma is_ftype_iff_sats:
   assumes
     "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
   shows
     "is_ftype(##A,aa,bb)  \<longleftrightarrow> sats(A,ftype_fm(a,b), env)"
-  using assms
-  by (simp add:sats_ftype_fm)
+  unfolding ftype_fm_def is_ftype_def
+  using assms sats_fst_fm
+  by simp
 
 definition
   is_snd :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
@@ -199,8 +193,8 @@ lemma is_name1_iff_sats:
     "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
   shows
     "is_name1(##A,aa,bb)  \<longleftrightarrow> sats(A,name1_fm(a,b), env)"
-  using assms
-  by (simp add:sats_name1_fm)
+  using assms sats_name1_fm
+  by simp
 
 definition
   is_snd_snd :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
@@ -275,14 +269,11 @@ lemma components_type[TC] :
     cond_of_fm_def hcomp_fm_def
   by simp_all
 
-lemmas sats_components_fm[simp] = sats_ftype_fm sats_name1_fm sats_name2_fm sats_cond_of_fm
-
 lemmas components_iff_sats = is_ftype_iff_sats is_name1_iff_sats is_name2_iff_sats
   is_cond_of_iff_sats
 
 lemmas components_defs = fst_fm_def ftype_fm_def snd_fm_def snd_snd_fm_def hcomp_fm_def
   name1_fm_def name2_fm_def cond_of_fm_def
-
 
 definition
   is_eclose_n :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i,i] \<Rightarrow> o" where
@@ -328,6 +319,7 @@ definition
     (ftype(x) = 1 \<and> ftype(y) = 0 
       \<and> (name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> (name2(x) = name1(y) \<or> name2(x) = name2(y))))
    \<or> (ftype(x) = 0 \<and> ftype(y) =  1 \<and> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y)))"
+
 
 lemma frecR_ftypeD :
   assumes "frecR(x,y)"
@@ -396,7 +388,7 @@ schematic_goal sats_frecR_fm_auto:
   shows
     "is_frecR(##A,a,b) \<longleftrightarrow> sats(A,?fr_fm(i,j),env)"
   unfolding  is_frecR_def is_Collect_def  
-  by (insert assms ; (rule sep_rules' cartprod_iff_sats  components_iff_sats
+  by (insert assms ; (rule sep_rules' cartprod_iff_sats components_iff_sats
         | simp del:sats_cartprod_fm)+)
 
 synthesize "frecR_fm" from_schematic sats_frecR_fm_auto
