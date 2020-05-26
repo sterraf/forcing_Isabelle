@@ -1,9 +1,9 @@
-(* Builds the finite mapping. *)
 structure Renaming_ML = struct
 open Utils
 
 fun sum_ f g m n p = @{const Renaming.sum} $ f $ g $ m $ n $ p
 
+(*Builds a finite mapping from rho to rho'.*)
 fun mk_ren rho rho' ctxt =
   let val rs  = to_ML_list rho
       val rs' = to_ML_list rho'
@@ -22,10 +22,10 @@ fun mk_dom_lemma ren rho =
 end
 
 fun ren_tc_goal fin ren rho rho' =
-  let val n = rho |> to_ML_list |> length
-      val m = rho' |> to_ML_list |> length
+  let val n = rho |> to_ML_list |> length |> mk_ZFnat
+      val m = rho' |> to_ML_list |> length |> mk_ZFnat
       val fun_ty = if fin then @{const_name "FiniteFun"} else @{const_abbrev "function_space"}
-      val ty = Const (fun_ty,@{typ "i \<Rightarrow> i \<Rightarrow> i"}) $ mk_ZFnat n $ mk_ZFnat m
+      val ty = Const (fun_ty,@{typ "i \<Rightarrow> i \<Rightarrow> i"}) $ n $ m
   in  mem_ ren ty |> tp
 end
 
@@ -34,9 +34,9 @@ fun ren_action_goal ren rho rho' ctxt =
       val j = Variable.variant_frees ctxt [] [("j",@{typ i})] |> hd |> Free 
       val vs = rho  |> to_ML_list
       val ws = rho' |> to_ML_list |> filter Term.is_Free 
-      val h1 = subset_ (vs|> mk_FinSet) setV
-      val h2 = lt_ j (mk_ZFnat (length vs))
-      val fvs = ([j,setV ] @ ws |> filter Term.is_Free) |> map freeName
+      val h1 = subset_ (mk_FinSet vs) setV
+      val h2 = lt_ j (length vs |> mk_ZFnat)
+      val fvs = [j,setV ] @ ws |> filter Term.is_Free |> map freeName
       val lhs = nth_ j rho
       val rhs = nth_ (app_ ren j)  rho'
       val concl = eq_ lhs rhs
@@ -154,7 +154,8 @@ fun sum_tc_lemma rho rho' ctxt =
 
 fun sum_rename rho rho' ctxt = 
   let
-    val (_, goal, _, left_rename, left_tc_lemma, left_action_lemma, fvs, sum_tc_lemma) = sum_tc_lemma rho rho' ctxt
+    val (_, goal, _, left_rename, left_tc_lemma, left_action_lemma, fvs, sum_tc_lemma) = 
+          sum_tc_lemma rho rho' ctxt
     val action_lemma = fix_vars left_action_lemma fvs ctxt
   in (sum_tc_lemma, Goal.prove ctxt [] [] goal
     (fn _ => resolve_tac ctxt [@{thm sum_action_id_aux}] 1

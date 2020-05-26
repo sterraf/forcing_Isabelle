@@ -16,11 +16,12 @@ signature Utils =
     val dest_sats_frm: term -> (term * term) * term
     val dest_eq_tms': term -> term * term
     val dest_trueprop: term -> term
+    val display : string -> Position.T -> (string * thm list) * Proof.context -> Proof.context
     val eq_: term -> term -> term
     val fix_vars: thm -> string list -> Proof.context -> thm
     val formula_: term
     val freeName: term -> string
-    val inList: ''a -> ''a list -> bool
+    val inList: ''a list -> ''a -> bool
     val length_: term -> term
     val list_: term -> term
     val lt_: term -> term -> term
@@ -42,7 +43,7 @@ structure Utils : Utils =
 struct 
 (* Smart constructors for ZF-terms *)
 
-fun inList a = exists (fn b => a = b)
+fun inList vars a = exists (fn b => a = b) vars
 
 fun binop h t u = h $ t $ u
 
@@ -85,16 +86,11 @@ val formula_ = @{const formula}
 fun dest_eq_tms (Const (@{const_name IFOL.eq},_) $ t $ u) = (t, u)
   | dest_eq_tms t = raise TERM ("dest_eq_tms", [t])
 
-
 fun dest_eq_tms' (Const (@{const_name Pure.eq},_) $ t $ u) = (t, u)
   | dest_eq_tms' t = raise TERM ("dest_eq_tms", [t])
 
-fun dest_lhs_def (Const (@{const_name Pure.eq},_) $ x $ _) = x
-  | dest_lhs_def t = raise TERM ("dest_lhs_def", [t])
-
-fun dest_rhs_def (Const (@{const_name Pure.eq},_) $ _ $ y) = y
-  | dest_rhs_def t = raise TERM ("dest_rhs_def", [t])
-
+val dest_lhs_def = #1 o dest_eq_tms'
+val dest_rhs_def = #2 o dest_eq_tms'
 
 fun dest_apply (@{const apply} $ t $ u) = (t,u)
   | dest_apply t = raise TERM ("dest_applies_op", [t])
@@ -123,6 +119,11 @@ end
 fun fix_vars thm vars ctxt = let
   val (_, ctxt1) = Variable.add_fixes vars ctxt
   in singleton (Proof_Context.export ctxt1 ctxt) thm
+end
+
+fun display kind pos (thms,thy) =
+  let val _ = Proof_Display.print_results true pos thy ((kind,""),[thms])
+  in thy
 end
 
 end ;

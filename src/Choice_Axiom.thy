@@ -124,26 +124,33 @@ qed
 context G_generic 
 begin
 
-
 definition
   upair_name :: "i \<Rightarrow> i \<Rightarrow> i" where
-  "upair_name(\<tau>,\<rho>) \<equiv> {\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>}"
+  "upair_name(\<tau>,\<rho>) \<equiv> Upair(\<langle>\<tau>,one\<rangle>,\<langle>\<rho>,one\<rangle>)"
 
-relativize "upair_name" "upair_name_def" "N"
+lemma Upair_simp : "Upair(a,b) = {a,b}"
+  by auto
+
+relativize "upair_name" "is_upair_name" "N"
+
+lemma upair_name_abs :
+  assumes "x\<in>M" "y\<in>M" "z\<in>M"
+  shows "is_upair_name(##M,x,y,z) \<longleftrightarrow> z = upair_name(x,y)"
+  unfolding is_upair_name_def upair_name_def
+  using assms zero_in_M one_in_M  empty_abs pair_abs pair_in_M_iff upair_in_M_iff upair_abs
+  Upair_simp
+  by simp
 
 definition
-  is_upair_name :: "[i,i,i] \<Rightarrow> o" where
-  "is_upair_name(x,y,z) \<equiv> \<exists>xo\<in>M. \<exists>yo\<in>M. pair(##M,x,one,xo) \<and> pair(##M,y,one,yo) \<and> 
-                                       upair(##M,xo,yo,z)"
+  opair_name :: "i \<Rightarrow> i \<Rightarrow> i" where
+  "opair_name(\<tau>,\<rho>) \<equiv> upair_name(upair_name(\<tau>,\<tau>),upair_name(\<tau>,\<rho>))"
 
-lemma upair_name_abs : 
-  assumes "x\<in>M" "y\<in>M" "z\<in>M" 
-  shows "is_upair_name(x,y,z) \<longleftrightarrow> z = upair_name(x,y)" 
-  unfolding is_upair_name_def upair_name_def using assms one_in_M pair_in_M_iff by simp
+relativize "opair_name" "is_opair_name" "N"
 
 lemma upair_name_closed :
-  "\<lbrakk> x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> upair_name(x,y)\<in>M" 
-  unfolding upair_name_def using upair_in_M_iff pair_in_M_iff one_in_M by simp
+  "\<lbrakk> x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> upair_name(x,y)\<in>M"
+  unfolding upair_name_def using upair_in_M_iff pair_in_M_iff one_in_M upair_in_M_iff Upair_simp
+  by simp
 
 definition
   upair_name_fm :: "[i,i,i,i] \<Rightarrow> i" where
@@ -155,23 +162,16 @@ lemma upair_name_fm_type[TC] :
   unfolding upair_name_fm_def by simp
 
 lemma sats_upair_name_fm :
-  assumes "x\<in>nat" "y\<in>nat" "z\<in>nat" "o\<in>nat" "env\<in>list(M)""nth(o,env)=one" 
+  assumes "x\<in>nat" "y\<in>nat" "z\<in>nat" "o\<in>nat" "env\<in>list(M)""nth(o,env)=one"
   shows 
-    "sats(M,upair_name_fm(x,y,o,z),env) \<longleftrightarrow> is_upair_name(nth(x,env),nth(y,env),nth(z,env))"
-  unfolding upair_name_fm_def is_upair_name_def using assms by simp
+    "sats(M,upair_name_fm(x,y,o,z),env) \<longleftrightarrow> is_upair_name(##M,nth(x,env),nth(y,env),nth(z,env))"
+  unfolding upair_name_fm_def is_upair_name_def
+  using assms zero_in_M  empty_abs pair_abs one_in_M pair_in_M_iff Upair_simp upair_in_M_iff
+  by auto
 
-definition
-  opair_name :: "i \<Rightarrow> i \<Rightarrow> i" where
-  "opair_name(\<tau>,\<rho>) \<equiv> upair_name(upair_name(\<tau>,\<tau>),upair_name(\<tau>,\<rho>))"
-
-definition
-  is_opair_name :: "[i,i,i] \<Rightarrow> o" where
-  "is_opair_name(x,y,z) \<equiv> \<exists>upxx\<in>M. \<exists>upxy\<in>M. is_upair_name(x,x,upxx) \<and> is_upair_name(x,y,upxy)
-                                          \<and> is_upair_name(upxx,upxy,z)" 
-
-lemma opair_name_abs : 
-  assumes "x\<in>M" "y\<in>M" "z\<in>M" 
-  shows "is_opair_name(x,y,z) \<longleftrightarrow> z = opair_name(x,y)" 
+lemma opair_name_abs :
+  assumes "x\<in>M" "y\<in>M" "z\<in>M"
+  shows "is_opair_name(##M,x,y,z) \<longleftrightarrow> z = opair_name(x,y)"
   unfolding is_opair_name_def opair_name_def using assms upair_name_abs upair_name_closed by simp
 
 lemma opair_name_closed :
@@ -181,7 +181,7 @@ lemma opair_name_closed :
 definition
   opair_name_fm :: "[i,i,i,i] \<Rightarrow> i" where
   "opair_name_fm(x,y,o,z) \<equiv> Exists(Exists(And(upair_name_fm(x#+2,x#+2,o#+2,1),
-                    And(upair_name_fm(x#+2,y#+2,o#+2,0),upair_name_fm(1,0,o#+2,z#+2)))))" 
+                    And(upair_name_fm(x#+2,y#+2,o#+2,0),upair_name_fm(1,0,o#+2,z#+2)))))"
 
 lemma opair_name_fm_type[TC] :
     "\<lbrakk> s\<in>nat;x\<in>nat;y\<in>nat;o\<in>nat\<rbrakk> \<Longrightarrow> opair_name_fm(s,x,y,o)\<in>formula"
@@ -190,14 +190,16 @@ lemma opair_name_fm_type[TC] :
 lemma sats_opair_name_fm :
   assumes "x\<in>nat" "y\<in>nat" "z\<in>nat" "o\<in>nat" "env\<in>list(M)""nth(o,env)=one" 
   shows 
-    "sats(M,opair_name_fm(x,y,o,z),env) \<longleftrightarrow> is_opair_name(nth(x,env),nth(y,env),nth(z,env))"
-  unfolding opair_name_fm_def is_opair_name_def using assms sats_upair_name_fm by simp
+    "sats(M,opair_name_fm(x,y,o,z),env) \<longleftrightarrow> is_opair_name(##M,nth(x,env),nth(y,env),nth(z,env))"
+  unfolding opair_name_fm_def is_opair_name_def
+  using assms sats_upair_name_fm
+  by auto
 
 lemma val_upair_name : "val(G,upair_name(\<tau>,\<rho>)) = {val(G,\<tau>),val(G,\<rho>)}"
-  unfolding upair_name_def using val_Upair  generic one_in_G one_in_P by simp
+  unfolding upair_name_def using val_Upair Upair_simp generic one_in_G one_in_P by simp
     
 lemma val_opair_name : "val(G,opair_name(\<tau>,\<rho>)) = \<langle>val(G,\<tau>),val(G,\<rho>)\<rangle>"
-  unfolding opair_name_def Pair_def using val_upair_name  by simp
+  unfolding opair_name_def Pair_def using val_upair_name by simp
     
 lemma val_RepFun_one: "val(G,{\<langle>f(x),one\<rangle> . x\<in>a}) = {val(G,f(x)) . x\<in>a}"
 proof -
@@ -233,7 +235,7 @@ interpretation mgzf: M_ZF_trans "M[G]"
 definition
   is_opname_check :: "[i,i,i] \<Rightarrow> o" where
   "is_opname_check(s,x,y) \<equiv> \<exists>chx\<in>M. \<exists>sx\<in>M. is_check(x,chx) \<and> fun_apply(##M,s,x,sx) \<and> 
-                             is_opair_name(chx,sx,y)" 
+                             is_opair_name(##M,chx,sx,y)"
 
 definition
   opname_check_fm :: "[i,i,i,i] \<Rightarrow> i" where
@@ -267,7 +269,6 @@ lemma repl_opname_check :
 proof -
   have "arity(opname_check_fm(3,0,1,2))= 4" 
     unfolding fm_definitions opname_check_fm_def opair_name_fm_def upair_name_fm_def
-          check_fm_def is_Hcheck_fm_def PHcheck_fm_def
     by (simp add:nat_simp_union)
   moreover
   have "x\<in>A \<Longrightarrow> opair_name(check(x), f ` x)\<in>M" for x
@@ -379,5 +380,5 @@ proof -
 qed
   
 end (* G_generic_extra_repl *)
-  
+
 end

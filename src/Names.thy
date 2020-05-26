@@ -5,6 +5,7 @@ theory Names
     Forcing_Data
     Interface
     Recursion_Thms
+    Relativization
     Synthetic_Definition
 begin
 
@@ -302,7 +303,6 @@ definition
   rcheck :: "i \<Rightarrow> i" where
   "rcheck(x) \<equiv> Memrel(eclose({x}))^+"
 
-
 lemma Hcheck_trancl:"Hcheck(y, restrict(f,Memrel(eclose({x}))-``{y}))
                    = Hcheck(y, restrict(f,(Memrel(eclose({x}))^+)-``{y}))"
   unfolding Hcheck_def
@@ -315,7 +315,6 @@ lemma check_trancl: "check(x) = wfrec(rcheck(x), x, Hcheck)"
 lemma rcheck_in_M :
   "x \<in> M \<Longrightarrow> rcheck(x) \<in> M"
   unfolding rcheck_def by (simp flip: setclass_iff)
-
 
 lemma  aux_def_check: "x \<in> y \<Longrightarrow>
   wfrec(Memrel(eclose({y})), x, Hcheck) =
@@ -680,6 +679,8 @@ definition
   "PHcheck_fm(o,f,y,p) \<equiv> Exists(And(fun_apply_fm(succ(f),succ(y),0)
                                  ,pair_fm(0,succ(o),succ(p))))"
 
+declare PHcheck_fm_def[fm_definitions]
+
 lemma PHcheck_type [TC]:
   "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat \<rbrakk> \<Longrightarrow> PHcheck_fm(x,y,z,u) \<in> formula"
   by (simp add:PHcheck_fm_def)
@@ -696,6 +697,8 @@ lemma sats_PHcheck_fm [simp]:
 definition
   is_Hcheck_fm :: "[i,i,i,i] \<Rightarrow> i" where
   "is_Hcheck_fm(o,z,f,hc) \<equiv> Replace_fm(z,PHcheck_fm(succ(succ(o)),succ(succ(f)),0,1),hc)"
+
+declare is_Hcheck_fm_def [fm_definitions]
 
 lemma is_Hcheck_type [TC]:
   "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat \<rbrakk> \<Longrightarrow> is_Hcheck_fm(x,y,z,u) \<in> formula"
@@ -734,7 +737,7 @@ proof -
     if "x\<in>M" "z\<in>M" for x z
     using that 1 \<open>X\<in>M\<close> rcheck_in_M one_in_M by (simp del:pair_abs)
   have artyf:"arity(?f) = 4"
-    unfolding fm_definitions is_Hcheck_fm_def PHcheck_fm_def      
+    unfolding fm_definitions
     by (simp add:nat_simp_union)
   then
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,one,rcheck(X)]))"
@@ -838,12 +841,13 @@ lemma is_singleton_iff_sats:
 context forcing_data begin
 
 (* Internalization and absoluteness of rcheck *)
+
 definition
   is_rcheck :: "[i,i] \<Rightarrow> o" where
   "is_rcheck(x,z) \<equiv> \<exists>r\<in>M. tran_closure(##M,r,z) \<and> (\<exists>ec\<in>M. membership(##M,ec,r) \<and>
                            (\<exists>s\<in>M. is_singleton(##M,x,s) \<and>  is_eclose(##M,s,ec)))"
 
-lemma rcheck_abs :
+lemma rcheck_abs[Rel] :
   "\<lbrakk> x\<in>M ; r\<in>M \<rbrakk> \<Longrightarrow> is_rcheck(x,r) \<longleftrightarrow> r = rcheck(x)"
   unfolding rcheck_def is_rcheck_def
   using singletonM trancl_closed Memrel_closed eclose_closed by simp
@@ -886,6 +890,8 @@ definition
   "check_fm(x,o,z) \<equiv> Exists(And(rcheck_fm(1#+x,0),
                       is_wfrec_fm(is_Hcheck_fm(6#+o,2,1,0),0,1#+x,1#+z)))"
 
+declare check_fm_def[fm_definitions]
+
 lemma check_fm_type[TC] :
   "\<lbrakk>x\<in>nat;o\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> check_fm(x,o,z)\<in>formula"
   unfolding check_fm_def by simp
@@ -915,8 +921,7 @@ lemma check_replacement:
   "{check(x). x\<in>P} \<in> M"
 proof -
   have "arity(check_fm(0,2,1)) = 3"
-    unfolding check_fm_def is_Hcheck_fm_def  PHcheck_fm_def 
-      eclose_n_fm_def is_eclose_fm_def mem_eclose_fm_def fm_definitions
+    unfolding eclose_n_fm_def is_eclose_fm_def mem_eclose_fm_def fm_definitions
     by (simp add:nat_simp_union)
   moreover
   have "check(x)\<in>M" if "x\<in>P" for x
@@ -953,8 +958,7 @@ proof -
   have "?pcheck_fm\<in>formula" by simp
   moreover
   have "arity(?pcheck_fm)=3"
-    unfolding check_fm_def is_Hcheck_fm_def PHcheck_fm_def 
-      is_eclose_fm_def mem_eclose_fm_def eclose_n_fm_def fm_definitions
+    unfolding is_eclose_fm_def mem_eclose_fm_def eclose_n_fm_def fm_definitions
     by (simp add:nat_simp_union)
   moreover
   from P_in_M check_in_M tuples_in_M P_sub_M
@@ -966,7 +970,6 @@ proof -
     using one_in_M P_in_M Repl_in_M[of ?pcheck_fm "[one]"]
     by simp
 qed
-
 
 lemma val_G_dot :
   assumes "G \<subseteq> P"

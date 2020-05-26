@@ -10,9 +10,10 @@ theory Synthetic_Definition
 
 begin
 ML_file\<open>Utils.ml\<close>
-ML\<open>structure Formulas = Named_Thms
-                      (val name = @{binding "fm_definitions"}
-                      val description = "Theorems for synthetising formulas.") ;
+ML\<open>
+structure Formulas = Named_Thms
+  (val name = @{binding "fm_definitions"}
+   val description = "Theorems for synthetising formulas.") 
 \<close>
 setup\<open>Formulas.setup\<close>
 
@@ -21,11 +22,6 @@ val $` = curry ((op $) o swap)
 infix $`
 
 fun pair f g x = (f x, g x)
-
-fun display kind pos (thms,thy) =
-  let val _ = Proof_Display.print_results true pos thy ((kind,""),[thms])
-  in thy
-end
 
 fun prove_tc_form goal thms ctxt =
   Goal.prove ctxt [] [] goal
@@ -58,7 +54,7 @@ let val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
     val name = Binding.name (def_name ^ "_iff_sats")
     val thm = Utils.fix_vars thm (map (#1 o dest_Free) vars') lthy
  in
-   Local_Theory.note ((name, []), [thm]) lthy |> display "theorem" pos
+   Local_Theory.note ((name, []), [thm]) lthy |> Utils.display "theorem" pos
  end
 
 fun synth_thm_tc def_name term hyps vars pos lthy =
@@ -74,7 +70,7 @@ let val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
     val name = Binding.name (def_name ^ "_type")
     val thm = Utils.fix_vars thm (map (#1 o dest_Free) vars') ctxt2
  in
-   Local_Theory.note ((name, tc_attrib), [thm]) lthy |> display "theorem" pos
+   Local_Theory.note ((name, tc_attrib), [thm]) lthy |> Utils.display "theorem" pos
  end
 
 
@@ -90,7 +86,7 @@ fun synthetic_def def_name thmref pos tc auto thy =
         Ord_List.member String.compare ts (t |> Term.dest_Free |> #1)
       | relevant _ _ = false
     val t_vars = olist t
-    val vs = List.filter (fn (((v,_),_),_) => Utils.inList v t_vars) vars
+    val vs = List.filter (Utils.inList t_vars o #1 o #1 o #1) vars
     val at = List.foldr (fn ((_,var),t') => lambda (Thm.term_of var) t') t vs
     val hyps' = List.filter (relevant t_vars o Utils.dest_trueprop) hyps
     val def_attrs = @{attributes [fm_definitions]}
