@@ -24,6 +24,8 @@ definition test5 :: "o" where
 definition test6 :: "i \<Rightarrow> i" where
   "test6(a) == {x \<in> 2 . test2(a)}"
 
+ML\<open>Proof_Context.read_term_pattern @{context} "test6"\<close>
+
 ML\<open>
 structure Ex = struct
   val db = Relativization.db
@@ -32,7 +34,7 @@ structure Ex = struct
 
   in
    case fastype_of tm of
-      @{typ i} => (pp tm, Relativization.relativ_tm_frm cls_pred db ctxt tm |> pp)
+      @{typ i} => (pp tm, Relativization.relativ_tm_frm' cls_pred db ctxt tm |> #2 |> pp)
     | @{typ o} => (pp tm, Relativization.relativ_fm cls_pred db ([],ctxt) tm |> pp)
     | ty => raise TYPE ("We can relativize only terms of types i and o",[ty],[tm])
   end
