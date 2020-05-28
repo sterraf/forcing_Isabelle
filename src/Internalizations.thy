@@ -8,9 +8,9 @@ begin
 text\<open>We found it useful to have slightly different versions of some 
 results in ZF-Constructible:\<close>
 lemma nth_closed :
-  assumes "0\<in>A" "env\<in>list(A)"
+  assumes "env\<in>list(A)" "0\<in>A"
   shows "nth(n,env)\<in>A" 
-  using assms(2,1) unfolding nth_def by (induct env; simp)
+  using assms unfolding nth_def by (induct env; simp)
 
 lemmas FOL_sats_iff = sats_Nand_iff sats_Forall_iff sats_Neg_iff sats_And_iff
   sats_Or_iff sats_Implies_iff sats_Iff_iff sats_Exists_iff 
