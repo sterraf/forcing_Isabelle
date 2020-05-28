@@ -1,13 +1,37 @@
 theory Internal_Proofs
   imports
     FrecR
-    "ZF-Constructible.L_axioms"
+    Relativization
     "../Tools/Try0"
 begin
 
 definition
   is_range' :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "is_range'(M,r,c) \<equiv> is_hcomp(M,is_domain(M),is_converse(M),r,c)"
+
+(* setup "Config.put_global Blast.trace true" *)
+
+context M_ctm
+begin
+
+declare [[show_question_marks=false]]
+
+thm strong_replacement_closed
+(*  strong_replacement(##M, P) \<Longrightarrow> (##M)(A) \<Longrightarrow> univalent(##M, A, P) \<Longrightarrow>
+    (\<And>x y. x \<in> A \<Longrightarrow> P(x, y) \<Longrightarrow> (##M)(y)) \<Longrightarrow> (##M)(Replace(A, P)) *)
+
+thm replacement_ax
+(* \<phi> \<in> formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow> arity(\<phi>) \<le> 2 #+ length(env) \<Longrightarrow>
+  strong_replacement(##M, \<lambda>x y. M, [x, y] @ env \<Turnstile> \<phi>) *)
+
+thm ReplaceI
+(* P(x, b) \<Longrightarrow> x \<in> A \<Longrightarrow> (\<And>y. P(x, y) \<Longrightarrow> y = b) \<Longrightarrow> b \<in> {y . x \<in> A, P(x, y)} *)
+
+thm replacement_ax[THEN strong_replacement_closed]
+
+thm Replace_abs[simplified]
+
+end
 
 context M_basic
 begin
@@ -53,18 +77,22 @@ lemma is_domain_witness: "M(r) \<Longrightarrow> \<exists>d[M]. is_domain(M,r,d)
 
 definition
   domain_rel :: "i \<Rightarrow> i" where
-  "domain_rel(r) \<equiv> THE d. is_domain(M,r,d)"
+  "domain_rel(r) \<equiv> THE d. M(d) \<and> is_domain(M,r,d)"
 
 lemma domain_rel_iff: 
   assumes "M(r)"  "M(d)"
   shows "is_domain(M,r,d) \<longleftrightarrow> d = domain_rel(r)"
 proof (intro iffI)
   assume "d = domain_rel(r)"
+  with assms
   show "is_domain(M, r, d)"
-    using univalent_is_domain is_domain_witness
-    theI[OF ex1I[of "is_domain(M,r)"]]
-  sorry
+    using univalent_is_domain[of r] is_domain_witness
+    theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_domain(M,r,d)"], OF _ univalent_is_domain[of r]]
+    unfolding domain_rel_def
+    by auto
 next
+  assume "is_domain(M, r, d)"
+  with assms
   show "d = domain_rel(r)" 
   sorry
 qed
