@@ -21,5 +21,20 @@ Clasificación de conceptos absolutos que todavía no podemos manejar
 "[| M(A); M(f) |] ==> typed_function(M,A,B,f) \<longleftrightarrow> f \<in> A -> B", 
     requiere un caso especial porque no es inmediato tener B.
 
+
+  (* For formulas like "t\<in>nat", we don't handle this yet. *)
+  val db_rels_strange = [
+                     (@{const nat}, @{const Relative.finite_ordinal})
+                   , (@{const inj}, @{const Relative.injection})
+                   , (@{const surj}, @{const Relative.surjection})
+                   , (@{const bij}, @{const Relative.bijection})
+                   ]
+
+
 4. Problemático pero debería ser manejable
  "M(z) ==> is_bool_of_o(M,P,z) \<longleftrightarrow> z = bool_of_o(P)"
+
+Observaciones:
+
+1. Puede ser que haga falta modificar ligeramente las definiciones (ver upair_name).
+2. Sería bueno que la lista de términos relativizados la reconstruyamos automáticamente.

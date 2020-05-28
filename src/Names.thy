@@ -867,7 +867,7 @@ definition
   is_check :: "[i,i] \<Rightarrow> o" where
   "is_check(x,z) \<equiv> \<exists>rch\<in>M. is_rcheck(x,rch) \<and> is_wfrec(##M,is_Hcheck(one),rch,x,z)"
 
-lemma check_abs :
+lemma check_abs[Rel] :
   assumes
     "x\<in>M" "z\<in>M"
   shows
