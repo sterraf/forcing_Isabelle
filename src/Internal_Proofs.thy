@@ -4,54 +4,38 @@ theory Internal_Proofs
     Relativization
     "../Tools/Try0"
 begin
-
-definition
-  is_range' :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_range'(M,r,c) \<equiv> is_hcomp(M,is_domain(M),is_converse(M),r,c)"
-
 (* setup "Config.put_global Blast.trace true" *)
 
-context M_ctm
-begin
+definition
+  is_Pow :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_Pow(M,A,z) \<equiv> \<forall>x[M]. x \<in> z \<longleftrightarrow> subset(M,x,A)"
 
-declare [[show_question_marks=false]]
+definition
+  Pow2 :: "i \<Rightarrow> i" where
+  "Pow2(x) \<equiv> Pow(Pow(x))"
 
-thm strong_replacement_closed
-(*  strong_replacement(##M, P) \<Longrightarrow> (##M)(A) \<Longrightarrow> univalent(##M, A, P) \<Longrightarrow>
-    (\<And>x y. x \<in> A \<Longrightarrow> P(x, y) \<Longrightarrow> (##M)(y)) \<Longrightarrow> (##M)(Replace(A, P)) *)
-
-thm replacement_ax
-(* \<phi> \<in> formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow> arity(\<phi>) \<le> 2 #+ length(env) \<Longrightarrow>
-  strong_replacement(##M, \<lambda>x y. M, [x, y] @ env \<Turnstile> \<phi>) *)
-
-thm ReplaceI
-(* P(x, b) \<Longrightarrow> x \<in> A \<Longrightarrow> (\<And>y. P(x, y) \<Longrightarrow> y = b) \<Longrightarrow> b \<in> {y . x \<in> A, P(x, y)} *)
-
-thm replacement_ax[THEN strong_replacement_closed]
-
-thm Replace_abs[simplified]
-
-end
+definition
+  is_Pow2 :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_Pow2(M,x,p) \<equiv> is_hcomp(M,is_Pow(M),is_Pow(M),x,p)"
 
 context M_basic
 begin
 
 declare 
-  pair_abs[simp del] pair_in_M_iff[simp del]
-  pair_in_MD[rule del] pair_in_MI[rule del]
-  domain_abs[simp del] domain_closed[simp del, rule del]
-  converse_abs[simp del] converse_closed[simp del, rule del]
-  range_abs[simp del] range_closed[simp del, rule del]
+  powerset_abs'[simp del]
 
-lemma extensionality_trans:
-  assumes 
+(****************************************************************)
+subsection\<open>"Discipline" for \<^term>\<open>Pow\<close>\<close>
+
+lemma extensionality_trans: \<comment> \<open>General preliminary result\<close>
+  assumes
     "M(d)" "M(d')"
     "\<forall>x[M]. x\<in>d  \<longleftrightarrow> P(x)"
     "\<forall>x[M]. x\<in>d' \<longleftrightarrow> P(x)"
   shows
     "d=d'"
 proof -
-  from assms 
+  from assms
   have "\<forall>x. x\<in>d \<longleftrightarrow> P(x) \<and> M(x)"
     using transM[of _ d, OF _ \<open>M(d)\<close>] by auto
   moreover from assms
@@ -60,7 +44,153 @@ proof -
   ultimately
   show ?thesis by auto
 qed
-    
+
+lemma is_Pow_uniqueness:
+  assumes
+    "M(r)" "M(d)" "M(d')"
+    "is_Pow(M,r,d)" "is_Pow(M,r,d')"
+  shows
+    "d=d'"
+  using assms
+    extensionality_trans[where P="\<lambda>x. subset(M, x, r)"]
+  unfolding is_Pow_def
+  by force
+
+lemma is_Pow_witness: "M(r) \<Longrightarrow> \<exists>d[M]. is_Pow(M,r,d)"
+  using power_ax unfolding power_ax_def powerset_def is_Pow_def
+  by simp \<comment> \<open>We have to do this by hand, using axioms\<close>
+
+definition
+  Pow_rel :: "i \<Rightarrow> i" where
+  "Pow_rel(r) \<equiv> THE d. M(d) \<and> is_Pow(M,r,d)"
+
+lemma Pow_rel_closed: "M(r) \<Longrightarrow> M(Pow_rel(r))"
+  unfolding Pow_rel_def
+  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_Pow(M,r,d)"], OF _ is_Pow_uniqueness[of r]]
+    is_Pow_witness by auto
+
+lemma Pow_rel_iff:
+  assumes "M(r)"  "M(d)"
+  shows "is_Pow(M,r,d) \<longleftrightarrow> d = Pow_rel(r)"
+proof (intro iffI)
+  assume "d = Pow_rel(r)"
+  with assms
+  show "is_Pow(M, r, d)"
+    using is_Pow_uniqueness[of r] is_Pow_witness
+    theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_Pow(M,r,d)"], OF _ is_Pow_uniqueness[of r]]
+    unfolding Pow_rel_def
+    by auto
+next
+  assume "is_Pow(M, r, d)"
+  with assms
+  show "d = Pow_rel(r)"
+    using is_Pow_uniqueness unfolding Pow_rel_def
+    by (auto del:the_equality intro:the_equality[symmetric])
+qed
+
+(****************************************************************)
+
+section\<open>Discipline for \<^term>\<open>Pow2\<close>\<close>
+
+lemma hcomp_uniqueness: \<comment> \<open>General preliminary result\<close>
+  assumes
+    uniq_is_f: "\<And>r d d'. M(r) \<Longrightarrow> M(d) \<Longrightarrow> M(d') \<Longrightarrow> is_f(M, r, d) \<Longrightarrow> is_f(M, r, d') \<Longrightarrow> d = d'" and
+    uniq_is_g: "\<And>r d d'. M(r) \<Longrightarrow> M(d) \<Longrightarrow> M(d') \<Longrightarrow> is_g(M, r, d) \<Longrightarrow> is_g(M, r, d') \<Longrightarrow> d = d'" and
+    "M(a)" "M(w)" "M(w')"
+    "is_hcomp(M,is_f(M),is_g(M),a,w)"
+    "is_hcomp(M,is_f(M),is_g(M),a,w')"
+  shows
+    "w=w'"
+proof -
+  from assms
+  obtain z z' where "is_g(M, a, z)" "is_g(M, a, z')"
+    "is_f(M,z,w)" "is_f(M,z',w')"
+    "M(z)" "M(z')"
+    unfolding is_hcomp_def by blast
+  moreover from this and uniq_is_g and \<open>M(a)\<close>
+  have "z=z'" by blast
+  moreover note uniq_is_f and \<open>M(w)\<close> \<open>M(w')\<close>
+  ultimately
+  show ?thesis by blast
+qed
+
+lemma hcomp_witness: \<comment> \<open>General preliminary result\<close>
+  assumes
+    wit_is_f: "\<And>r. M(r) \<Longrightarrow> \<exists>d[M]. is_f(M,r,d)" and
+    wit_is_g: "\<And>r. M(r) \<Longrightarrow> \<exists>d[M]. is_g(M,r,d)" and
+    "M(a)"
+  shows
+    "\<exists>w[M]. is_hcomp(M,is_f(M),is_g(M),a,w)"
+proof -
+  from \<open>M(a)\<close> and wit_is_g
+  obtain z where "is_g(M,a,z)" "M(z)" by blast
+  moreover from this and wit_is_f
+  obtain w where "is_f(M,z,w)" "M(w)" by blast
+  ultimately
+  show ?thesis
+    using assms unfolding is_hcomp_def by auto
+qed
+
+lemma is_Pow2_uniqueness:
+  assumes
+    "M(r)" "M(d)" "M(d')"
+    "is_Pow2(M,r,d)" "is_Pow2(M,r,d')"
+  shows
+    "d=d'"
+  using assms hcomp_uniqueness[where is_f=is_Pow and is_g=is_Pow]
+    is_Pow_uniqueness
+  unfolding is_Pow2_def
+  by blast
+
+lemma is_Pow2_witness: "M(r) \<Longrightarrow> \<exists>d[M]. is_Pow2(M,r,d)"
+  using hcomp_witness[where is_f=is_Pow and is_g=is_Pow]
+    is_Pow_witness
+  unfolding is_Pow2_def by simp
+
+definition
+  Pow2_rel :: "i \<Rightarrow> i" where
+  "Pow2_rel(r) \<equiv> THE d. M(d) \<and> is_Pow2(M,r,d)"
+
+lemma Pow2_rel_closed: "M(r) \<Longrightarrow> M(Pow2_rel(r))"
+  unfolding Pow2_rel_def
+  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_Pow2(M,r,d)"], OF _ is_Pow2_uniqueness[of r]]
+    is_Pow2_witness by auto
+
+lemma Pow2_rel_iff:
+  assumes "M(r)"  "M(d)"
+  shows "is_Pow2(M,r,d) \<longleftrightarrow> d = Pow2_rel(r)"
+proof (intro iffI)
+  assume "d = Pow2_rel(r)"
+  with assms
+  show "is_Pow2(M, r, d)"
+    using is_Pow2_uniqueness[of r] is_Pow2_witness
+    theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_Pow2(M,r,d)"], OF _ is_Pow2_uniqueness[of r]]
+    unfolding Pow2_rel_def
+    by auto
+next
+  assume "is_Pow2(M, r, d)"
+  with assms
+  show "d = Pow2_rel(r)"
+    using is_Pow2_uniqueness unfolding Pow2_rel_def
+    by (auto del:the_equality intro:the_equality[symmetric])
+qed
+
+lemma def_Pow2_rel:
+  assumes "M(x)"
+  shows "Pow2_rel(x) = Pow_rel(Pow_rel(x))"
+  using assms Pow2_rel_iff Pow_rel_closed Pow2_rel_closed
+    hcomp_abs[of "is_Pow(M)" Pow_rel "is_Pow(M)" Pow_rel]
+    Pow_rel_iff unfolding is_Pow2_def by simp
+
+(****************************************************************)
+
+declare
+  pair_abs[simp del] pair_in_M_iff[simp del]
+  pair_in_MD[rule del] pair_in_MI[rule del]
+  domain_abs[simp del] domain_closed[simp del, rule del]
+  converse_abs[simp del] converse_closed[simp del, rule del]
+  range_abs[simp del] range_closed[simp del, rule del]
+
 lemma univalent_is_domain:
   assumes 
     "M(r)" "M(d)" "M(d')"
@@ -94,7 +224,8 @@ next
   assume "is_domain(M, r, d)"
   with assms
   show "d = domain_rel(r)" 
-  sorry
+    using univalent_is_domain unfolding domain_rel_def
+    by (auto del:the_equality intro:the_equality[symmetric])
 qed
 
 lemma domain_rel_closed: "M(r) \<Longrightarrow> M(domain_rel(r))" 
