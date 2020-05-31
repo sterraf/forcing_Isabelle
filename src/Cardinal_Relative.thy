@@ -7,6 +7,30 @@ begin
 
 hide_const L
 
+definition
+  eqpoll_rel   :: "[i=>o,i,i] => o" where
+  "eqpoll_rel(M,A,B) \<equiv> \<exists>f[M]. bijection(M,A,B,f)"
+
+definition
+  lepoll_rel   :: "[i=>o,i,i] => o" where
+  "lepoll_rel(M,A,B) \<equiv> \<exists>f[M]. injection(M,A,B,f)"
+
+definition
+  lesspoll_rel :: "[i=>o,i,i] => o" where
+  "lesspoll_rel(M,A,B) \<equiv> lepoll_rel(M,A,B) & ~(eqpoll_rel(M,A,B))"
+
+definition
+  is_cardinal :: "[i\<Rightarrow>o,i,i]\<Rightarrow>o"  where
+  "is_cardinal(M,A,\<kappa>) \<equiv> least(M, \<lambda>i. M(i) \<and> eqpoll_rel(M,i,A), \<kappa>)"
+
+definition
+  Finite_rel   :: "[i\<Rightarrow>o,i]=>o"  where
+  "Finite_rel(M,A) \<equiv> \<exists>om[M]. \<exists>n[M]. omega(M,om) \<and> n\<in>om \<and> eqpoll_rel(M,A,n)"
+
+definition \<comment> \<open>Perhaps eliminate in favor of the Discipline\<close>
+  Card_rel     :: "[i\<Rightarrow>o,i]=>o"  where
+  "Card_rel(M,i) \<equiv> is_cardinal(M,i,i)"
+
 locale M_cardinals = M_ordertype + M_trancl +
   assumes
   id_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>z. \<exists>x\<in>A. z = \<langle>x, x\<rangle>)"
@@ -15,32 +39,24 @@ locale M_cardinals = M_ordertype + M_trancl +
      strong_replacement(M, \<lambda>x y. y = <x,if x \<in> A then f`x else g`x>)"
 begin
 
-definition
-  eqpoll_rel   :: "[i,i] => o"     (infixl \<open>\<approx>r\<close> 50)  where
-  "A \<approx>r B \<equiv> \<exists>f[M]. bijection(M,A,B,f)"
+abbreviation
+  Eqpoll_rel   :: "[i,i] => o"     (infixl \<open>\<approx>r\<close> 50)  where
+  "A \<approx>r B \<equiv> eqpoll_rel(M,A,B)"
 
-definition
-  lepoll_rel   :: "[i,i] => o"     (infixl \<open>\<lesssim>r\<close> 50)  where
-  "A \<lesssim>r B \<equiv> \<exists>f[M]. injection(M,A,B,f)"
+abbreviation
+  Lepoll_rel   :: "[i,i] => o"     (infixl \<open>\<lesssim>r\<close> 50)  where
+  "A \<lesssim>r B \<equiv> lepoll_rel(M,A,B)"
 
-definition
-  lesspoll_rel :: "[i,i] => o"     (infixl \<open>\<prec>r\<close> 50)  where
-  "A \<prec>r B \<equiv> A \<lesssim>r B & ~(A \<approx>r B)"
+abbreviation
+  Lesspoll_rel :: "[i,i] => o"     (infixl \<open>\<prec>r\<close> 50)  where
+  "A \<prec>r B \<equiv> lesspoll_rel(M,A,B)"
 
-definition
-  is_cardinal :: "i\<Rightarrow>i\<Rightarrow>o"  (\<open>|_|r= _\<close> [0,51] 50) where
-  "|A|r= \<kappa> \<equiv> least(M, \<lambda>i. M(i) \<and> i \<approx>r A, \<kappa>)"
-
-definition
-  Finite_rel   :: "i=>o"  where
-  "Finite_rel(A) \<equiv> \<exists>om[M]. \<exists>n[M]. omega(M,om) \<and> n\<in>om \<and> A \<approx>r n"
-
-definition
+definition \<comment> \<open>Perhaps eliminate in favor of the Discipline\<close>
   Card_rel     :: "i=>o"  where
-  "Card_rel(i) \<equiv> |i|r= i"
+  "Card_rel(i) \<equiv> is_cardinal(M,i,i)"
 
 lemma is_cardinal_imp_Least:
-  assumes "|A|r= \<kappa>" "M(A)" "M(\<kappa>)" 
+  assumes "is_cardinal(M,A,\<kappa>)" "M(A)" "M(\<kappa>)" 
   shows "\<kappa> = (\<mu> i. M(i) \<and> i \<approx>r A)"
   using assms unfolding is_cardinal_def
   by (drule_tac least_abs[THEN iffD1, rule_format, rotated 2, of "\<lambda>x. M(x) \<and> x \<approx>r A"])
@@ -49,7 +65,7 @@ lemma is_cardinal_imp_Least:
 (* TO DO: Write a more general version, "least_Least" in Least.thy *)
 lemma is_cardinal_iff_Least:
   assumes "M(A)" "M(\<kappa>)"
-  shows "|A|r= \<kappa> \<longleftrightarrow> \<kappa> = (\<mu> i. M(i) \<and> i \<approx>r A)"
+  shows "is_cardinal(M,A,\<kappa>) \<longleftrightarrow> \<kappa> = (\<mu> i. M(i) \<and> i \<approx>r A)"
   using assms is_cardinal_imp_Least[of A \<kappa>]
     least_abs[symmetric, of "\<lambda>x. M(x) \<and> x \<approx>r A" "(\<mu> i. M(i) \<and> i \<approx>r A)"]
   unfolding is_cardinal_def by auto
@@ -350,7 +366,7 @@ lemma lesspoll_rel_eq_trans [trans]:
 
 lemma is_cardinal_cong:
   assumes "X \<approx>r Y" "M(X)" "M(Y)"
-  shows "\<exists>\<kappa>[M]. |X|r= \<kappa> \<and> |Y|r= \<kappa>"
+  shows "\<exists>\<kappa>[M]. is_cardinal(M,X,\<kappa>) \<and> is_cardinal(M,Y,\<kappa>)"
 proof -
   from assms
   have "(\<mu> i. M(i) \<and> i \<approx>r X) = (\<mu> i. M(i) \<and> i \<approx>r Y)"
@@ -368,9 +384,9 @@ proof -
 qed
 
 lemma well_ord_cardinal_eqpoll_rel:
-  assumes "well_ord(A,r)" shows "|A|r= \<kappa> \<Longrightarrow> M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> M(r) \<Longrightarrow> \<kappa> \<approx>r A"
+  assumes "well_ord(A,r)" shows "is_cardinal(M,A,\<kappa>) \<Longrightarrow> M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> M(r) \<Longrightarrow> \<kappa> \<approx>r A"
 proof (subst is_cardinal_imp_Least[of A \<kappa>])
-  assume "M(A)" "M(\<kappa>)" "M(r)" "|A|r= \<kappa>"
+  assume "M(A)" "M(\<kappa>)" "M(r)" "is_cardinal(M,A,\<kappa>)"
   moreover from assms and calculation
   obtain f i where "M(f)" "Ord(i)" "M(i)" "f \<in> bij(A,i)"
     using ordertype_exists[of A r] ord_iso_is_bij by auto
@@ -384,18 +400,18 @@ proof (subst is_cardinal_imp_Least[of A \<kappa>])
     bij_converse_bij[THEN bij_imp_eqpoll_rel, of f] by simp
 qed
 
-(* @{term"Ord(A) \<Longrightarrow> M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> |A|r= \<kappa> \<Longrightarrow> \<kappa> \<approx>r A *)
+(* @{term"Ord(A) \<Longrightarrow> M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> is_cardinal(M,A,\<kappa>) \<Longrightarrow> \<kappa> \<approx>r A *)
 lemmas Ord_cardinal_eqpoll_rel = well_ord_Memrel[THEN well_ord_cardinal_eqpoll_rel]
 
 lemma is_cardinal_univalent:
-  assumes "|A|r= \<kappa>" "|A|r= \<kappa>'" "M(A)" "M(\<kappa>)" "M(\<kappa>')"
+  assumes "is_cardinal(M,A,\<kappa>)" "is_cardinal(M,A,\<kappa>')" "M(A)" "M(\<kappa>)" "M(\<kappa>')"
   shows "\<kappa> = \<kappa>'"
   using assms is_cardinal_imp_Least by auto
 
 \<comment> \<open>Perhaps prove that is_cardinal is univalent?\<close>
 lemma Ord_is_cardinal_idem:
-  assumes "Ord(A)" "M(A)" "M(\<kappa>)" "M(\<kappa>')" "|A|r= \<kappa>" "|\<kappa>|r= \<kappa>'"
-  shows "|A|r= \<kappa>'"
+  assumes "Ord(A)" "M(A)" "M(\<kappa>)" "M(\<kappa>')" "is_cardinal(M,A,\<kappa>)" "is_cardinal(M,\<kappa>,\<kappa>')"
+  shows "is_cardinal(M,A,\<kappa>')"
   using assms is_cardinal_univalent
     Ord_cardinal_eqpoll_rel[THEN is_cardinal_cong, of A \<kappa>]
   by auto
@@ -405,7 +421,7 @@ lemma well_ord_is_cardinal_eqE:
     "M(X)" "M(Y)" "M(\<kappa>)" "M(r)" "M(s)"
     and
     woX: "well_ord(X,r)" and woY: "well_ord(Y,s)" and
-    eq: "|X|r=\<kappa> \<and> |Y|r=\<kappa>"
+    eq: "is_cardinal(M,X,\<kappa>) \<and> is_cardinal(M,Y,\<kappa>)"
   shows "X \<approx>r Y"
 proof -
   from assms
@@ -421,22 +437,22 @@ lemma well_ord_is_cardinal_eqpoll_rel_iff:
     woX: "well_ord(X,r)" and woY: "well_ord(Y,s)"
     and
     "M(X)" "M(Y)" "M(\<kappa>)" "M(r)" "M(s)"
-  shows "(\<exists>\<kappa>[M]. |X|r=\<kappa> \<and> |Y|r=\<kappa>) \<longleftrightarrow> X \<approx>r Y"
+  shows "(\<exists>\<kappa>[M]. is_cardinal(M,X,\<kappa>) \<and> is_cardinal(M,Y,\<kappa>)) \<longleftrightarrow> X \<approx>r Y"
   using assms
 proof (intro iffI)
   assume "X \<approx>r Y"
   with assms
-  show "\<exists>\<kappa>[M]. |X|r= \<kappa> \<and> |Y|r= \<kappa>"
+  show "\<exists>\<kappa>[M]. is_cardinal(M,X,\<kappa>) \<and> is_cardinal(M,Y,\<kappa>)"
     using is_cardinal_cong by simp
 qed (auto intro: well_ord_is_cardinal_eqE[of _ _ _ r s])
 
 (** Observations from Kunen, page 28 **)
 
-lemma Ord_is_cardinal_le: "Ord(i) \<Longrightarrow> |i|r= \<kappa> \<Longrightarrow> M(i) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> \<kappa> \<le> i"
+lemma Ord_is_cardinal_le: "Ord(i) \<Longrightarrow> is_cardinal(M,i,\<kappa>) \<Longrightarrow> M(i) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> \<kappa> \<le> i"
   by (auto intro:Least_le[of "\<lambda>i. M(i) \<and> i \<approx>r _", of i i]
       simp add:eqpoll_rel_refl is_cardinal_iff_Least)
 
-lemma Card_rel_is_cardinal_eq: "Card_rel(K) \<Longrightarrow> |K|r= K"
+lemma Card_rel_is_cardinal_eq: "Card_rel(K) \<Longrightarrow> is_cardinal(M,K,K)"
   unfolding Card_rel_def .
 
 lemma Card_relI: "\<lbrakk> Ord(i);  \<And>j. j<i \<Longrightarrow> ~(j \<approx>r i);  M(i) \<rbrakk> \<Longrightarrow> Card_rel(i)"
@@ -451,11 +467,11 @@ lemma Card_rel_imp_Ord: "Card_rel(i) \<Longrightarrow> M(i) \<Longrightarrow> Or
   unfolding Card_rel_def
   by (simp) (erule ssubst, blast)
 
-lemma Card_rel_cardinal_le: "Card_rel(K) \<Longrightarrow> |K|r=\<kappa> \<Longrightarrow> M(K) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> K \<le> \<kappa>"
+lemma Card_rel_cardinal_le: "Card_rel(K) \<Longrightarrow> is_cardinal(M,K,\<kappa>) \<Longrightarrow> M(K) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> K \<le> \<kappa>"
   using Card_rel_imp_Ord Card_rel_is_cardinal_eq is_cardinal_univalent
   by blast
 
-lemma Ord_is_cardinal [simp,intro!]: "|A|r= \<kappa> \<Longrightarrow> M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> Ord(\<kappa>)"
+lemma Ord_is_cardinal [simp,intro!]: "is_cardinal(M,A,\<kappa>) \<Longrightarrow> M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> Ord(\<kappa>)"
   using is_cardinal_imp_Least by auto
 
 text\<open>The cardinals are the initial ordinals.\<close>
@@ -502,7 +518,7 @@ lemma Card_rel_Un: "[| Card_rel(K);  Card_rel(L); M(K); M(L) |] ==> Card_rel(K \
 (*Infinite unions of cardinals?  See Devlin, Lemma 6.7, page 98*)
 
 lemma is_cardinal_imp_Card_rel [simp,intro]:
-  assumes "|A|r=\<kappa>" "M(A)" "M(\<kappa>)"
+  assumes "is_cardinal(M,A,\<kappa>)" "M(A)" "M(\<kappa>)"
   shows "Card_rel(\<kappa>)"
   using assms
 proof (frule_tac is_cardinal_imp_Least, simp_all, simp)
@@ -539,7 +555,7 @@ qed
 (*Kunen's Lemma 10.5*)
 lemma is_cardinal_eq_lemma:
   assumes
-    "|i|r=\<kappa>" "|j|r=\<kappa>'"
+    "is_cardinal(M,i,\<kappa>)" "is_cardinal(M,j,\<kappa>')"
     and
     i:"\<kappa> \<le> j" and j: "j \<le> i" 
     and
@@ -564,7 +580,7 @@ proof -
   moreover
   note assms(1,2) types
   moreover from calculation
-  obtain \<delta> where "M(\<delta>)" "|i|r= \<delta>" "|j|r= \<delta>"
+  obtain \<delta> where "M(\<delta>)" "is_cardinal(M,i,\<delta>)" "is_cardinal(M,j,\<delta>)"
     using eqpoll_relI[THEN is_cardinal_cong] by auto
   ultimately
   have "\<kappa> = \<delta>" "\<kappa>'=\<delta>"
@@ -575,14 +591,14 @@ qed
 
 lemma is_cardinal_mono:
   assumes
-    "|i|r= \<kappa>" "|j|r= \<kappa>'"
+    "is_cardinal(M,i,\<kappa>)" "is_cardinal(M,j,\<kappa>')"
     and
     ij: "i \<le> j" 
     and
     "M(i)" "M(j)" "M(\<kappa>)" "M(\<kappa>')"
 shows "\<kappa> \<le> \<kappa>'"
-  using Ord_is_cardinal[OF \<open>|i|r= \<kappa>\<close> \<open>M(i)\<close> \<open>M(\<kappa>)\<close>]
-    Ord_is_cardinal[OF \<open>|j|r= \<kappa>'\<close> \<open>M(j)\<close> \<open>M(\<kappa>')\<close>]
+  using Ord_is_cardinal[OF \<open> is_cardinal(M,i,\<kappa>)\<close> \<open>M(i)\<close> \<open>M(\<kappa>)\<close>]
+    Ord_is_cardinal[OF \<open> is_cardinal(M,j,\<kappa>')\<close> \<open>M(j)\<close> \<open>M(\<kappa>')\<close>]
 proof (cases rule: Ord_linear_le[of \<kappa> \<kappa>'])
   case le
   then
@@ -595,21 +611,21 @@ next
   have ci: "\<kappa> \<le> j"
     using Ord_is_cardinal_le[of i] ij le_trans[of \<kappa> i j]
     by simp
-  from \<open>M(i)\<close> \<open>M(\<kappa>)\<close> \<open>|i|r= \<kappa>\<close>
-  have "|\<kappa>|r= \<kappa>"
+  from \<open>M(i)\<close> \<open>M(\<kappa>)\<close> \<open> is_cardinal(M,i,\<kappa>)\<close>
+  have "is_cardinal(M,\<kappa>,\<kappa>)"
     using is_cardinal_imp_Card_rel Card_rel_is_cardinal_eq by simp
   with assms
   have "... = \<kappa>'"
     by (rule_tac is_cardinal_eq_lemma [OF _ _ ge ci])
   then
   show ?thesis
-    using Ord_is_cardinal[OF \<open>|j|r= \<kappa>'\<close> \<open>M(j)\<close> \<open>M(\<kappa>')\<close>] by simp
+    using Ord_is_cardinal[OF \<open> is_cardinal(M,j,\<kappa>')\<close> \<open>M(j)\<close> \<open>M(\<kappa>')\<close>] by simp
 qed
 
 text\<open>Since we have \<^term>\<open>|succ(nat)| \<le> |nat|\<close>, the converse of \<open>cardinal_mono\<close> fails!\<close>
 lemma cardinal_lt_imp_lt:
   assumes
-    "|i|r=\<kappa>" "|j|r=\<kappa>'"
+    "is_cardinal(M,i,\<kappa>)" "is_cardinal(M,j,\<kappa>')"
     "\<kappa><\<kappa>'"  "Ord(i)"  "Ord(j)"
     "M(i)" "M(j)" "M(\<kappa>)" "M(\<kappa>')"
   shows
@@ -621,27 +637,27 @@ lemma cardinal_lt_imp_lt:
   apply (force elim:is_cardinal_mono)
   done
 
-lemma Card_rel_lt_imp_lt: "[| |i|r= \<kappa>; \<kappa> < K;  Ord(i);  Card_rel(K); M(i); M(\<kappa>); M(K) |] ==> i < K"
+lemma Card_rel_lt_imp_lt: "[| is_cardinal(M,i,\<kappa>); \<kappa> < K;  Ord(i);  Card_rel(K); M(i); M(\<kappa>); M(K) |] ==> i < K"
   using cardinal_lt_imp_lt Card_rel_imp_Ord Card_rel_is_cardinal_eq
   by blast
 
-lemma Card_rel_lt_iff: "[| M(i); M(\<kappa>); M(K); |i|r= \<kappa>; Ord(i);  Card_rel(K) |] ==> (\<kappa> < K) \<longleftrightarrow> (i < K)"
+lemma Card_rel_lt_iff: "[| M(i); M(\<kappa>); M(K); is_cardinal(M,i,\<kappa>); Ord(i);  Card_rel(K) |] ==> (\<kappa> < K) \<longleftrightarrow> (i < K)"
   by (blast intro: Card_rel_lt_imp_lt Ord_is_cardinal_le [THEN lt_trans1])
 
-lemma Card_rel_le_iff: "[| M(i); M(\<kappa>); M(K); |i|r= \<kappa>; Ord(i);  Card_rel(K) |] ==> (K \<le> \<kappa>) \<longleftrightarrow> (K \<le> i)"
+lemma Card_rel_le_iff: "[| M(i); M(\<kappa>); M(K); is_cardinal(M,i,\<kappa>); Ord(i);  Card_rel(K) |] ==> (K \<le> \<kappa>) \<longleftrightarrow> (K \<le> i)"
   by (simp add: Card_rel_lt_iff Card_rel_imp_Ord not_lt_iff_le [THEN iff_sym])
 
 (*Can use AC or finiteness to discharge first premise*)
 lemma well_ord_lepoll_rel_imp_Card_rel_le:
   assumes
-    "|A|r= \<kappa>"  "|B|r= \<kappa>'"
+    "is_cardinal(M,A,\<kappa>)"  "is_cardinal(M,B,\<kappa>')"
     and
     wB: "well_ord(B,r)" and AB: "A \<lesssim>r B"
     and
     "M(A)" "M(B)" "M(\<kappa>)" "M(\<kappa>')" "M(r)"
   shows "\<kappa> \<le> \<kappa>'"
-  using Ord_is_cardinal[OF \<open>|A|r= \<kappa>\<close> \<open>M(A)\<close> \<open>M(\<kappa>)\<close>]
-    Ord_is_cardinal[OF \<open>|B|r= \<kappa>'\<close> \<open>M(B)\<close> \<open>M(\<kappa>')\<close>]
+  using Ord_is_cardinal[OF \<open> is_cardinal(M,A,\<kappa>)\<close> \<open>M(A)\<close> \<open>M(\<kappa>)\<close>]
+    Ord_is_cardinal[OF \<open> is_cardinal(M,B,\<kappa>')\<close> \<open>M(B)\<close> \<open>M(\<kappa>')\<close>]
 proof (cases rule: Ord_linear_le[of \<kappa> \<kappa>'])
   case le
   then
@@ -661,21 +677,21 @@ next
   with assms
   have "A \<approx>r B" by (blast intro: eqpoll_relI AB)
   with assms
-  obtain \<delta> where "M(\<delta>)" "|A|r= \<delta>" "|B|r= \<delta>"
+  obtain \<delta> where "M(\<delta>)" "is_cardinal(M,A,\<delta>)" "is_cardinal(M,B,\<delta>)"
    using is_cardinal_cong[of A B] by auto
   with assms
   have "\<kappa> = \<delta>" "\<kappa>'=\<delta>"
     using is_cardinal_univalent by blast+
   then
   show ?thesis
-    using Ord_is_cardinal[OF \<open>|A|r= \<kappa>\<close> \<open>M(A)\<close> \<open>M(\<kappa>)\<close>] by simp
+    using Ord_is_cardinal[OF \<open> is_cardinal(M,A,\<kappa>)\<close> \<open>M(A)\<close> \<open>M(\<kappa>)\<close>] by simp
 qed
 
 (* Too many assumptions in next result
 This is because of the relational form of \<open>is_cardinal\<close>,
 in arguments that involve iterated cardinals (i.e. \<open>||A||\<close>).
 *)
-lemma lepoll_rel_is_cardinal_le: "[| A \<lesssim>r i; Ord(i) ; |A|r=\<kappa>; |i|r= \<kappa>'; M(A); M(i); M(\<kappa>); M(\<kappa>') |] ==> \<kappa> \<le> i"
+lemma lepoll_rel_is_cardinal_le: "[| A \<lesssim>r i; Ord(i) ; is_cardinal(M,A,\<kappa>);  is_cardinal(M,i,\<kappa>'); M(A); M(i); M(\<kappa>); M(\<kappa>') |] ==> \<kappa> \<le> i"
   apply (rule le_trans)
    apply (erule well_ord_Memrel[THEN [3] well_ord_lepoll_rel_imp_Card_rel_le], assumption+)
        apply (rule Memrel_closed, simp_all)
@@ -683,23 +699,23 @@ lemma lepoll_rel_is_cardinal_le: "[| A \<lesssim>r i; Ord(i) ; |A|r=\<kappa>; |i
   done
 
 \<comment> \<open>Define a function cardinalr :: i => i, assume M(cardinalr(A)), etc.\<close>
-lemma lepoll_rel_Ord_imp_eqpoll_rel: "[| A \<lesssim>r i; Ord(i) ; |A|r=\<kappa>; |i|r= \<kappa>'; M(A); M(i); M(\<kappa>); M(\<kappa>') |] ==> \<kappa> \<approx>r A"
+lemma lepoll_rel_Ord_imp_eqpoll_rel: "[| A \<lesssim>r i; Ord(i) ; is_cardinal(M,A,\<kappa>);  is_cardinal(M,i,\<kappa>'); M(A); M(i); M(\<kappa>); M(\<kappa>') |] ==> \<kappa> \<approx>r A"
   using well_ord_Memrel[of i] lepoll_rel_well_ord[of A i "Memrel(i)"]
      well_ord_cardinal_eqpoll_rel[of A]
   by auto
 
-lemma lesspoll_rel_imp_eqpoll_rel: "[| |A|r=\<kappa>; |i|r= \<kappa>'; A \<prec>r i; Ord(i); M(A); M(i); M(\<kappa>); M(\<kappa>') |] ==> \<kappa> \<approx>r A"
+lemma lesspoll_rel_imp_eqpoll_rel: "[| is_cardinal(M,A,\<kappa>);  is_cardinal(M,i,\<kappa>'); A \<prec>r i; Ord(i); M(A); M(i); M(\<kappa>); M(\<kappa>') |] ==> \<kappa> \<approx>r A"
   apply (unfold lesspoll_rel_def)
   apply (blast intro: lepoll_rel_Ord_imp_eqpoll_rel)
   done
 
-lemma is_cardinal_subset_Ord: "[| |A|r=\<kappa>; |i|r= \<kappa>'; A \<subseteq> i; Ord(i); M(A); M(i); M(\<kappa>); M(\<kappa>')|] ==> \<kappa> \<subseteq> i"
+lemma is_cardinal_subset_Ord: "[| is_cardinal(M,A,\<kappa>);  is_cardinal(M,i,\<kappa>'); A \<subseteq> i; Ord(i); M(A); M(i); M(\<kappa>); M(\<kappa>')|] ==> \<kappa> \<subseteq> i"
   apply (frule subset_imp_lepoll_rel [THEN lepoll_rel_is_cardinal_le])
            apply assumption+
   apply (auto intro: Ord_trans dest:ltD)
   done
 
-lemma Finite_abs: assumes "M(A)" shows "Finite_rel(A) \<longleftrightarrow> Finite(A)"
+lemma Finite_abs: assumes "M(A)" shows "Finite_rel(M,A) \<longleftrightarrow> Finite(A)"
   unfolding Finite_rel_def Finite_def
 proof (simp, intro iffI)
   assume "\<exists>n\<in>nat. A \<approx>r n"
