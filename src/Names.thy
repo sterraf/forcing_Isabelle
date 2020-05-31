@@ -887,10 +887,9 @@ qed
 (* \<exists>rch\<in>M. is_rcheck(x,rch) \<and> is_wfrec(##M,is_Hcheck(one),rch,x,z) *)
 definition
   check_fm :: "[i,i,i] \<Rightarrow> i" where
+  [fm_definitions] :
   "check_fm(x,o,z) \<equiv> Exists(And(rcheck_fm(1#+x,0),
                       is_wfrec_fm(is_Hcheck_fm(6#+o,2,1,0),0,1#+x,1#+z)))"
-
-declare check_fm_def[fm_definitions]
 
 lemma check_fm_type[TC] :
   "\<lbrakk>x\<in>nat;o\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> check_fm(x,o,z)\<in>formula"
