@@ -1,6 +1,6 @@
 section\<open>Automatic relativization of terms.\<close>
 theory Relativization
-  imports "ZF-Constructible.Formula" 
+  imports "ZF-Constructible.Formula"
     "ZF-Constructible.Relative"
     "ZF-Constructible.Datatype_absolute"
   keywords
@@ -13,11 +13,11 @@ ML_file\<open>Utils.ml\<close>
 ML\<open>
 structure Absoluteness = Named_Thms
   (val name = @{binding "absolut"}
-   val description = "Theorems of absoulte terms and predicates.") 
+   val description = "Theorems of absoulte terms and predicates.")
 \<close>
 setup\<open>Absoluteness.setup\<close>
 
-lemmas relative_abs = 
+lemmas relative_abs =
   M_trans.empty_abs
   M_trans.upair_abs
   M_trans.pair_abs
@@ -128,7 +128,7 @@ type relset = { db_rels: (term * term) list};   (*  *)
   (* relativization db of term constructors *)
 
   (* relativization db of relation constructors *)
-  val db = 
+  val db =
            [ (@{const relation}, @{const Relative.is_relation})
            , (@{const mem}, @{const mem})
            , (@{const Memrel}, @{const membership})
@@ -174,7 +174,7 @@ fun add_rel_const thm_name c t ctxt (rs as {db_rels = db}) =
   case lookup_rel db c of
     SOME t' =>
     (warning ("Ignoring duplicate relativization rule" ^
-              const_name c ^ " " ^ Syntax.string_of_term ctxt t ^ 
+              const_name c ^ " " ^ Syntax.string_of_term ctxt t ^
               "(" ^  Syntax.string_of_term ctxt t' ^ " in " ^ thm_name ^ ")"); rs)
   | NONE => {db_rels = (c, t) :: db};
 

@@ -1,10 +1,55 @@
 theory Internal_Proofs
   imports
-    FrecR
     Relativization
     "../Tools/Try0"
 begin
 (* setup "Config.put_global Blast.trace true" *)
+
+(* MOVE THIS. absoluteness of higher-order composition *)
+definition
+  i_comp :: "[i\<Rightarrow>i,i\<Rightarrow>i] \<Rightarrow> i \<Rightarrow> i" (infixr \<open>\<circ>\<close> 60)  where
+  "g \<circ> f \<equiv> \<lambda>x . g(f(x))"
+
+definition
+  is_hcomp :: "[i\<Rightarrow>o,i\<Rightarrow>i\<Rightarrow>o,i\<Rightarrow>i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_hcomp(M,is_f,is_g,a,w) \<equiv> \<exists>z[M]. is_g(a,z) \<and> is_f(z,w)"
+
+lemma (in M_trivial) hcomp_abs:
+  assumes
+    is_f_abs:"\<And>a z. M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_f(a,z) \<longleftrightarrow> z = f(a)" and
+    is_g_abs:"\<And>a z. M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_g(a,z) \<longleftrightarrow> z = g(a)" and
+    g_closed:"\<And>a. M(a) \<Longrightarrow> M(f(a))"
+    "M(a)" "M(w)"
+  shows
+    "is_hcomp(M,is_g,is_f,a,w) \<longleftrightarrow> w = (g \<circ> f)(a)"
+  unfolding is_hcomp_def i_comp_def  using assms by simp
+
+declare M_trivial.hcomp_abs[Rel]
+
+definition
+  hcomp_fm :: "[i\<Rightarrow>i\<Rightarrow>i,i\<Rightarrow>i\<Rightarrow>i,i,i] \<Rightarrow> i" where
+  "hcomp_fm(pf,pg,a,w) \<equiv> Exists(And(pg(succ(a),0),pf(0,succ(w))))"
+
+lemma sats_hcomp_fm:
+  assumes
+    f_iff_sats:"\<And>a b z. a\<in>nat \<Longrightarrow> b\<in>nat \<Longrightarrow> z\<in>M \<Longrightarrow>
+                 is_f(nth(a,Cons(z,env)),nth(b,Cons(z,env))) \<longleftrightarrow> sats(M,pf(a,b),Cons(z,env))"
+    and
+    g_iff_sats:"\<And>a b z. a\<in>nat \<Longrightarrow> b\<in>nat \<Longrightarrow> z\<in>M \<Longrightarrow>
+                is_g(nth(a,Cons(z,env)),nth(b,Cons(z,env))) \<longleftrightarrow> sats(M,pg(a,b),Cons(z,env))"
+    and
+    "a\<in>nat" "w\<in>nat" "env\<in>list(M)"
+  shows
+    "sats(M,hcomp_fm(pf,pg,a,w),env) \<longleftrightarrow> is_hcomp(##M,is_f,is_g,nth(a,env),nth(w,env))"
+proof -
+  have "sats(M, pf(0, succ(w)), Cons(x, env)) \<longleftrightarrow> is_f(x,nth(w,env))" if "x\<in>M" "w\<in>nat" for x w
+    using f_iff_sats[of 0 "succ(w)" x] that by simp
+  moreover
+  have "sats(M, pg(succ(a), 0), Cons(x, env)) \<longleftrightarrow> is_g(nth(a,env),x)" if "x\<in>M" "a\<in>nat" for x a
+    using g_iff_sats[of "succ(a)" 0 x] that by simp
+  ultimately
+  show ?thesis unfolding hcomp_fm_def is_hcomp_def using assms by simp
+qed
 
 definition
   is_Pow :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
@@ -12,17 +57,15 @@ definition
 
 definition
   Pow2 :: "i \<Rightarrow> i" where
-  "Pow2(x) \<equiv> Pow(Pow(x))"
+  "Pow2 \<equiv> i_comp(Pow,Pow)"
 
 definition
   is_Pow2 :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_Pow2(M,x,p) \<equiv> is_hcomp(M,is_Pow(M),is_Pow(M),x,p)"
+  "is_Pow2(M) \<equiv> is_hcomp(M,is_Pow(M),is_Pow(M))"
 
 context M_basic
 begin
 
-declare 
-  powerset_abs'[simp del]
 
 (****************************************************************)
 subsection\<open>"Discipline" for \<^term>\<open>Pow\<close>\<close>
@@ -87,6 +130,7 @@ next
     using is_Pow_uniqueness unfolding Pow_rel_def
     by (auto del:the_equality intro:the_equality[symmetric])
 qed
+
 
 (****************************************************************)
 
@@ -180,7 +224,7 @@ lemma def_Pow2_rel:
   shows "Pow2_rel(x) = Pow_rel(Pow_rel(x))"
   using assms Pow2_rel_iff Pow_rel_closed Pow2_rel_closed
     hcomp_abs[of "is_Pow(M)" Pow_rel "is_Pow(M)" Pow_rel]
-    Pow_rel_iff unfolding is_Pow2_def by simp
+    Pow_rel_iff unfolding is_Pow2_def i_comp_def by simp
 
 (****************************************************************)
 
@@ -192,12 +236,12 @@ declare
   range_abs[simp del] range_closed[simp del, rule del]
 
 lemma univalent_is_domain:
-  assumes 
+  assumes
     "M(r)" "M(d)" "M(d')"
     "is_domain(M,r,d)" "is_domain(M,r,d')"
   shows
     "d=d'"
-  using assms 
+  using assms
     extensionality_trans[where P="\<lambda>x. \<exists>w[M]. w \<in> r \<and> (\<exists>y[M]. pair(M, x, y, w))"]
   unfolding is_domain_def
   by force
@@ -209,7 +253,7 @@ definition
   domain_rel :: "i \<Rightarrow> i" where
   "domain_rel(r) \<equiv> THE d. M(d) \<and> is_domain(M,r,d)"
 
-lemma domain_rel_iff: 
+lemma domain_rel_iff:
   assumes "M(r)"  "M(d)"
   shows "is_domain(M,r,d) \<longleftrightarrow> d = domain_rel(r)"
 proof (intro iffI)
@@ -223,12 +267,12 @@ proof (intro iffI)
 next
   assume "is_domain(M, r, d)"
   with assms
-  show "d = domain_rel(r)" 
+  show "d = domain_rel(r)"
     using univalent_is_domain unfolding domain_rel_def
     by (auto del:the_equality intro:the_equality[symmetric])
 qed
 
-lemma domain_rel_closed: "M(r) \<Longrightarrow> M(domain_rel(r))" 
+lemma domain_rel_closed: "M(r) \<Longrightarrow> M(domain_rel(r))"
   sorry
 
 definition \<comment> \<open>not the one we want\<close>
@@ -257,7 +301,7 @@ lemma converse_rel_iff: "M(a) \<Longrightarrow> M(ab) \<Longrightarrow> is_conve
 
 (* \<langle>?a, ?b\<rangle> \<in> ?r \<Longrightarrow> ?a \<in> domain(?r) *)
 lemma domain_relI [intro]:
-  assumes  "pair_rel(a,b) \<in> r" "M(a)" "M(b)" "M(r)" 
+  assumes  "pair_rel(a,b) \<in> r" "M(a)" "M(b)" "M(r)"
     \<comment> \<open>New typing assumptions go last\<close>
   shows "a \<in> domain_rel(r)"
   sorry \<comment> \<open>It won't work, \<^term>\<open>domain\<close> is a \<^term>\<open>Replace\<close>\<close>
@@ -275,35 +319,35 @@ lemma range_rel_iff: "M(a) \<Longrightarrow> M(ab) \<Longrightarrow> is_range(M,
   sorry
 
 lemma converse_relI [intro!]:
-  assumes "M(a)" "M(b)" "M(r)" 
+  assumes "M(a)" "M(b)" "M(r)"
   shows  "pair_rel(a,b) \<in> r \<Longrightarrow> pair_rel(b,a) \<in> converse_rel(r)"
   sorry
 
 (* \<langle>?a, ?b\<rangle> \<in> ?r \<Longrightarrow> ?b \<in> range(?r) *)
 lemma range_relI [intro]:
-  assumes "M(a)" "M(b)" "M(r)" 
+  assumes "M(a)" "M(b)" "M(r)"
   shows  "pair_rel(a,b) \<in> r \<Longrightarrow> b \<in> range_rel(r)"
-  using assms converse_rel_closed 
+  using assms converse_rel_closed
 (*  unfolding  range_rel_def
-  using converse_relI  domain_relI 
+  using converse_relI  domain_relI
   by blast *)
   apply (unfold range_rel_def)
   apply (erule converse_relI [THEN domain_relI])
        apply (simp_all add:assms) \<comment> \<open>some assms were lost\<close>
   done
 
-(* 
+(*
 lemma nth_closed' :
   assumes "0\<in>A" "env\<in>list(A)"
-  shows "nth(n,env)\<in>A" 
+  shows "nth(n,env)\<in>A"
   using assms(2,1) unfolding nth_def by (induct env; simp)
 
 lemma domain_fmI:
 (* now domain_fm is in the antecedent, it can't be an intro rule *)
-  notes 
+  notes
     Relative.M_trans.pair_abs[simp] nth_closed'[simp]
     Relative.M_basic.domain_closed[simp]
-  assumes 
+  assumes
     "M_trans(##A)" "M_basic(##A)"
     "0\<in>A"
     "env\<in>list(A)" "a\<in>nat" "b\<in>nat" "ab\<in>nat" "d\<in>nat" "r\<in>nat"
@@ -313,7 +357,7 @@ lemma domain_fmI:
     "A, env \<Turnstile> Member(a,d)"
   using assms  unfolding domain_fm_def
   apply (simp del:sats_domain_fm)
-  oops 
+  oops
 *)
 
 end (* M_basic *)
