@@ -1,7 +1,7 @@
 section\<open>Relative, Choice-less Cardinal Numbers\<close>
 
-theory Cardinal_Relative 
-  imports 
+theory Cardinal_Relative
+  imports
     Least "../Tools/Try0"
 begin
 
@@ -11,20 +11,20 @@ locale M_cardinals = M_ordertype + M_trancl +
   assumes
   id_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>z. \<exists>x\<in>A. z = \<langle>x, x\<rangle>)"
   and
-  if_then_replacement: "M(f) \<Longrightarrow> M(g) \<Longrightarrow> 
+  if_then_replacement: "M(f) \<Longrightarrow> M(g) \<Longrightarrow>
      strong_replacement(M, \<lambda>x y. y = <x,if x \<in> A then f`x else g`x>)"
 begin
 
 definition
-  is_eqpoll   :: "[i,i] => o"     (infixl \<open>\<approx>r\<close> 50)  where
+  eqpoll_rel   :: "[i,i] => o"     (infixl \<open>\<approx>r\<close> 50)  where
   "A \<approx>r B \<equiv> \<exists>f[M]. bijection(M,A,B,f)"
 
 definition
-  is_lepoll   :: "[i,i] => o"     (infixl \<open>\<lesssim>r\<close> 50)  where
+  lepoll_rel   :: "[i,i] => o"     (infixl \<open>\<lesssim>r\<close> 50)  where
   "A \<lesssim>r B \<equiv> \<exists>f[M]. injection(M,A,B,f)"
 
 definition
-  is_lesspoll :: "[i,i] => o"     (infixl \<open>\<prec>r\<close> 50)  where
+  lesspoll_rel :: "[i,i] => o"     (infixl \<open>\<prec>r\<close> 50)  where
   "A \<prec>r B \<equiv> A \<lesssim>r B & ~(A \<approx>r B)"
 
 definition
@@ -32,15 +32,15 @@ definition
   "|A|r= \<kappa> \<equiv> least(M, \<lambda>i. M(i) \<and> i \<approx>r A, \<kappa>)"
 
 definition
-  is_Finite   :: "i=>o"  where
-  "is_Finite(A) \<equiv> \<exists>om[M]. \<exists>n[M]. omega(M,om) \<and> n\<in>om \<and> A \<approx>r n"
+  Finite_rel   :: "i=>o"  where
+  "Finite_rel(A) \<equiv> \<exists>om[M]. \<exists>n[M]. omega(M,om) \<and> n\<in>om \<and> A \<approx>r n"
 
 definition
-  is_Card     :: "i=>o"  where
-  "is_Card(i) \<equiv> |i|r= i"
+  Card_rel     :: "i=>o"  where
+  "Card_rel(i) \<equiv> |i|r= i"
 
 lemma is_cardinal_imp_Least:
-  assumes "M(A)" "M(\<kappa>)" "|A|r= \<kappa>"
+  assumes "|A|r= \<kappa>" "M(A)" "M(\<kappa>)" 
   shows "\<kappa> = (\<mu> i. M(i) \<and> i \<approx>r A)"
   using assms unfolding is_cardinal_def
   by (drule_tac least_abs[THEN iffD1, rule_format, rotated 2, of "\<lambda>x. M(x) \<and> x \<approx>r A"])
@@ -48,7 +48,7 @@ lemma is_cardinal_imp_Least:
 
 (* TO DO: Write a more general version, "least_Least" in Least.thy *)
 lemma is_cardinal_iff_Least:
-  assumes "M(A)" "M(\<kappa>)" 
+  assumes "M(A)" "M(\<kappa>)"
   shows "|A|r= \<kappa> \<longleftrightarrow> \<kappa> = (\<mu> i. M(i) \<and> i \<approx>r A)"
   using assms is_cardinal_imp_Least[of A \<kappa>]
     least_abs[symmetric, of "\<lambda>x. M(x) \<and> x \<approx>r A" "(\<mu> i. M(i) \<and> i \<approx>r A)"]
@@ -67,7 +67,7 @@ lemma bnd_mono_banach_functor: "bnd_mono(X, banach_functor(X,Y,f,g))"
   unfolding bnd_mono_def banach_functor_def
   by blast
 
-lemma inj_Inter: 
+lemma inj_Inter:
   assumes "g \<in> inj(Y,X)" "A\<noteq>0" "\<forall>a\<in>A. a \<subseteq> Y"
   shows "g``(\<Inter>A) = (\<Inter>a\<in>A. g``a)"
 proof (intro equalityI subsetI)
@@ -92,7 +92,7 @@ proof (intro equalityI subsetI)
     show ?thesis
       using image_fun[OF inj_is_fun] by auto
   qed
-  with \<open>a\<in>A\<close> 
+  with \<open>a\<in>A\<close>
   obtain z where "z \<in> a" "x = g`z" by auto
   moreover
   have "z \<in> y" if "y\<in>A" for y
@@ -107,7 +107,7 @@ proof (intro equalityI subsetI)
   moreover
   note assms
   moreover from calculation
-  have "z \<in> \<Inter>A" by auto 
+  have "z \<in> \<Inter>A" by auto
   moreover from calculation
   have "z \<in> Y" by blast
   ultimately
@@ -115,8 +115,8 @@ proof (intro equalityI subsetI)
     using inj_is_fun[THEN funcI, of g] by fast
 qed auto
 
-lemma contin_banach_functor: 
-  assumes "g \<in> inj(Y,X)" 
+lemma contin_banach_functor:
+  assumes "g \<in> inj(Y,X)"
   shows "contin(banach_functor(X,Y,f,g))"
   unfolding contin_def
 proof (intro allI impI)
@@ -143,24 +143,24 @@ proof (intro allI impI)
     unfolding banach_functor_def ..
   finally
   show "banach_functor(X,Y,f,g,\<Union>A) = (\<Union>a\<in>A. banach_functor(X,Y,f,g,a))" .
-qed 
+qed
 
-lemma lfp_banach_functor: 
+lemma lfp_banach_functor:
   assumes "g\<in>inj(Y,X)"
-  shows "lfp(X, banach_functor(X,Y,f,g)) = 
+  shows "lfp(X, banach_functor(X,Y,f,g)) =
        (\<Union>n\<in>nat. banach_functor(X,Y,f,g)^n (0))"
   using assms lfp_eq_Union bnd_mono_banach_functor contin_banach_functor
   by simp
 
 (* This is the biggest hole today *)
-lemma lfp_banach_functor_closed: 
+lemma lfp_banach_functor_closed:
   assumes "M(g)" "M(X)" "M(Y)" "M(f)" "g\<in>inj(Y,X)"
-  shows "M(lfp(X, banach_functor(X,Y,f,g)))" 
+  shows "M(lfp(X, banach_functor(X,Y,f,g)))"
   sorry
 
 lemma banach_decomposition_rel:
   "[| M(f); M(g); M(X); M(Y); f \<in> X->Y;  g \<in> inj(Y,X) |] ==>
-      \<exists>XA[M]. \<exists>XB[M]. \<exists>YA[M]. \<exists>YB[M]. 
+      \<exists>XA[M]. \<exists>XB[M]. \<exists>YA[M]. \<exists>YB[M].
          (XA \<inter> XB = 0) & (XA \<union> XB = X) &
          (YA \<inter> YB = 0) & (YA \<union> YB = Y) &
          f``XA=YA & g``YB=XB"
@@ -168,9 +168,9 @@ lemma banach_decomposition_rel:
            apply (rule_tac [6] Banach_last_equation)
            apply (rule_tac [5] refl)
           apply (assumption |
-      rule inj_is_fun Diff_disjoint Diff_partition fun_is_rel 
+      rule inj_is_fun Diff_disjoint Diff_partition fun_is_rel
       image_subset lfp_subset)+
-  using lfp_banach_functor_closed[of g X Y f] 
+  using lfp_banach_functor_closed[of g X Y f]
   unfolding banach_functor_def by simp_all
 
 lemma schroeder_bernstein_closed:
@@ -185,10 +185,10 @@ lemma schroeder_bernstein_closed:
 
 (** Equipollence is an equivalence relation **)
 
-lemma bij_imp_is_eqpoll: 
-  assumes "M(f)" "M(A)" "M(B)" "f \<in> bij(A,B)"
+lemma bij_imp_eqpoll_rel:
+  assumes "f \<in> bij(A,B)" "M(f)" "M(A)" "M(B)"
   shows "A \<approx>r B"
-  using assms unfolding is_eqpoll_def by auto
+  using assms unfolding eqpoll_rel_def by auto
 
 lemma id_closed: "M(A) \<Longrightarrow> M(id(A))"
 proof -
@@ -198,163 +198,163 @@ proof -
   moreover
   assume "M(A)"
   moreover from this
-  have "M({z\<in> A\<times>A. \<exists>x\<in>A. z=<x,x>})" 
+  have "M({z\<in> A\<times>A. \<exists>x\<in>A. z=<x,x>})"
     using id_separation by simp
   ultimately
   show ?thesis by simp
 qed
 
-lemma is_eqpoll_refl: "M(A) \<Longrightarrow> A \<approx>r A"
-  using bij_imp_is_eqpoll[OF _ _ _ id_bij, OF id_closed] .
+lemma eqpoll_rel_refl: "M(A) \<Longrightarrow> A \<approx>r A"
+  using bij_imp_eqpoll_rel[OF id_bij, OF id_closed] .
 
-lemma is_eqpoll_sym: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<approx>r Y \<Longrightarrow> Y \<approx>r X"
-  unfolding is_eqpoll_def using converse_closed
+lemma eqpoll_rel_sym: "X \<approx>r Y \<Longrightarrow> M(X) \<Longrightarrow> M(Y) \<Longrightarrow>  Y \<approx>r X"
+  unfolding eqpoll_rel_def using converse_closed
   by (auto intro: bij_converse_bij)
 
-lemma is_eqpoll_trans [trans]:
+lemma eqpoll_rel_trans [trans]:
   "[|X \<approx>r Y;  Y \<approx>r Z;  M(X); M(Y) ; M(Z) |] ==> X \<approx>r Z"
-  unfolding is_eqpoll_def by (auto intro: comp_bij)
+  unfolding eqpoll_rel_def by (auto intro: comp_bij)
 
 (** Le-pollence is a partial ordering **)
 
-lemma subset_imp_is_lepoll: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<subseteq> Y \<Longrightarrow> X \<lesssim>r Y"
-  unfolding is_lepoll_def using id_subset_inj id_closed
+lemma subset_imp_lepoll_rel: "X \<subseteq> Y \<Longrightarrow> M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<lesssim>r Y"
+  unfolding lepoll_rel_def using id_subset_inj id_closed
   by simp blast
 
-lemmas is_lepoll_refl = subset_refl [THEN [3] subset_imp_is_lepoll, simp]
+lemmas lepoll_rel_refl = subset_refl [THEN subset_imp_lepoll_rel, simp]
 
-lemmas le_imp_is_lepoll = le_imp_subset [THEN [3] subset_imp_is_lepoll]
+lemmas le_imp_lepoll_rel = le_imp_subset [THEN subset_imp_lepoll_rel]
 
-lemma is_eqpoll_imp_is_lepoll: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<approx>r Y ==> X \<lesssim>r Y"
-  unfolding is_eqpoll_def bij_def is_lepoll_def using bij_is_inj
-  by (auto) 
+lemma eqpoll_rel_imp_lepoll_rel: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<approx>r Y ==> X \<lesssim>r Y"
+  unfolding eqpoll_rel_def bij_def lepoll_rel_def using bij_is_inj
+  by (auto)
 
-lemma is_lepoll_trans [trans]: 
-  assumes 
+lemma lepoll_rel_trans [trans]:
+  assumes
     "X \<lesssim>r Y" "Y \<lesssim>r Z" "M(X)" "M(Y)" "M(Z)"
   shows
     "X \<lesssim>r Z"
-  using assms unfolding is_lepoll_def
+  using assms unfolding lepoll_rel_def
   by (auto intro: comp_inj)
 
-lemma eq_is_lepoll_trans [trans]: 
-  assumes 
-    "X \<approx>r Y"  "Y \<lesssim>r Z" "M(X)" "M(Y)" "M(Z)" 
+lemma eq_lepoll_rel_trans [trans]:
+  assumes
+    "X \<approx>r Y"  "Y \<lesssim>r Z" "M(X)" "M(Y)" "M(Z)"
   shows
     "X \<lesssim>r Z"
   using assms
-  by (blast intro: is_eqpoll_imp_is_lepoll is_lepoll_trans)
+  by (blast intro: eqpoll_rel_imp_lepoll_rel lepoll_rel_trans)
 
-lemma is_lepoll_eq_trans [trans]: 
-  assumes "X \<lesssim>r Y"  "Y \<approx>r Z" "M(X)" "M(Y)" "M(Z)" 
+lemma lepoll_rel_eq_trans [trans]:
+  assumes "X \<lesssim>r Y"  "Y \<approx>r Z" "M(X)" "M(Y)" "M(Z)"
   shows "X \<lesssim>r Z"
-  using assms 
-  is_eqpoll_imp_is_lepoll[of Y Z] is_lepoll_trans[of X Y Z]
+  using assms
+  eqpoll_rel_imp_lepoll_rel[of Y Z] lepoll_rel_trans[of X Y Z]
   by simp
 
 (*Antisymmetry law*)
-lemma is_eqpollI: "\<lbrakk> M(X) ; M(Y); X \<lesssim>r Y; Y \<lesssim>r X \<rbrakk> \<Longrightarrow> X \<approx>r Y"
-  unfolding is_lepoll_def is_eqpoll_def using schroeder_bernstein_closed
+lemma eqpoll_relI: "\<lbrakk> X \<lesssim>r Y; Y \<lesssim>r X; M(X) ; M(Y) \<rbrakk> \<Longrightarrow> X \<approx>r Y"
+  unfolding lepoll_rel_def eqpoll_rel_def using schroeder_bernstein_closed
   by auto
 
-lemma is_eqpollE:
-  "[|  M(X) ; M(Y) ; X \<approx>r Y; [| X \<lesssim>r Y; Y \<lesssim>r X |] ==> P |] ==> P"
-  by (blast intro: is_eqpoll_imp_is_lepoll is_eqpoll_sym)
+lemma eqpoll_relE:
+  "[| X \<approx>r Y; [| X \<lesssim>r Y; Y \<lesssim>r X |] ==> P ;  M(X) ; M(Y) |] ==> P"
+  by (blast intro: eqpoll_rel_imp_lepoll_rel eqpoll_rel_sym)
 
-lemma is_eqpoll_iff: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<approx>r Y \<longleftrightarrow> X \<lesssim>r Y & Y \<lesssim>r X"
-  by (blast intro: is_eqpollI elim: is_eqpollE)
+lemma eqpoll_rel_iff: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<approx>r Y \<longleftrightarrow> X \<lesssim>r Y & Y \<lesssim>r X"
+  by (blast intro: eqpoll_relI elim: eqpoll_relE)
 
-lemma is_lepoll_0_is_0: "M(A) \<Longrightarrow> A \<lesssim>r 0 \<Longrightarrow> A = 0"
-  unfolding is_lepoll_def
+lemma lepoll_rel_0_is_0: "A \<lesssim>r 0 \<Longrightarrow> M(A) \<Longrightarrow> A = 0"
+  unfolding lepoll_rel_def
   by (cases "A=0") (auto simp add: inj_def)
 
 (* \<^term>\<open>M(Y) \<Longrightarrow> 0 \<lesssim>r Y\<close> *)
-lemmas empty_is_lepollI = empty_subsetI [THEN [3] subset_imp_is_lepoll, OF nonempty]
+lemmas empty_lepoll_relI = empty_subsetI [THEN subset_imp_lepoll_rel, OF nonempty]
 
-lemma is_lepoll_0_iff: "M(A) \<Longrightarrow> A \<lesssim>r 0 \<longleftrightarrow> A=0"
-  by (blast intro: is_lepoll_0_is_0 is_lepoll_refl)
+lemma lepoll_rel_0_iff: "M(A) \<Longrightarrow> A \<lesssim>r 0 \<longleftrightarrow> A=0"
+  by (blast intro: lepoll_rel_0_is_0 lepoll_rel_refl)
 
-lemma Un_is_lepoll_Un:
-  "[| M(A); M(B); M(C); M(D); A \<lesssim>r B; C \<lesssim>r D; B \<inter> D = 0 |] ==> A \<union> C \<lesssim>r B \<union> D"
-  unfolding is_lepoll_def using inj_disjoint_Un[of _ A B _ C D] if_then_replacement
+lemma Un_lepoll_rel_Un:
+  "[| A \<lesssim>r B; C \<lesssim>r D; B \<inter> D = 0; M(A); M(B); M(C); M(D) |] ==> A \<union> C \<lesssim>r B \<union> D"
+  unfolding lepoll_rel_def using inj_disjoint_Un[of _ A B _ C D] if_then_replacement
   apply (auto)
   apply (rule, assumption)
   apply (auto intro!:lam_closed elim:transM)+
   done
 
-lemma is_eqpoll_0_is_0: "M(A) \<Longrightarrow> A \<approx>r 0 \<Longrightarrow> A = 0" 
-  using is_eqpoll_imp_is_lepoll is_lepoll_0_is_0 nonempty
+lemma eqpoll_rel_0_is_0: "A \<approx>r 0 \<Longrightarrow> M(A) \<Longrightarrow> A = 0"
+  using eqpoll_rel_imp_lepoll_rel lepoll_rel_0_is_0 nonempty
   by blast
 
-lemma is_eqpoll_0_iff: "M(A) \<Longrightarrow> A \<approx>r 0 \<longleftrightarrow> A=0"
-  by (blast intro: is_eqpoll_0_is_0 is_eqpoll_refl)
+lemma eqpoll_rel_0_iff: "M(A) \<Longrightarrow> A \<approx>r 0 \<longleftrightarrow> A=0"
+  by (blast intro: eqpoll_rel_0_is_0 eqpoll_rel_refl)
 
-lemma is_eqpoll_disjoint_Un:
-  "[| M(A); M(B); M(C) ; M(D) ; A \<approx>r B;  C \<approx>r D;  A \<inter> C = 0;  B \<inter> D = 0 |]
+lemma eqpoll_rel_disjoint_Un:
+  "[| A \<approx>r B;  C \<approx>r D;  A \<inter> C = 0;  B \<inter> D = 0; M(A); M(B); M(C) ; M(D) |]
      ==> A \<union> C \<approx>r B \<union> D"
-  unfolding is_eqpoll_def by (auto intro: bij_disjoint_Un)
+  unfolding eqpoll_rel_def by (auto intro: bij_disjoint_Un)
 
-subsection\<open>is_lesspoll: contributions by Krzysztof Grabczewski\<close>
+subsection\<open>lesspoll_rel: contributions by Krzysztof Grabczewski\<close>
 
-lemma is_lesspoll_not_refl: "M(i) \<Longrightarrow> ~ (i \<prec>r i)"
-  by (simp add: is_lesspoll_def is_eqpoll_refl)
+lemma lesspoll_rel_not_refl: "M(i) \<Longrightarrow> ~ (i \<prec>r i)"
+  by (simp add: lesspoll_rel_def eqpoll_rel_refl)
 
-lemma is_lesspoll_irrefl: "M(i) \<Longrightarrow> i \<prec>r i ==> P"
-  by (simp add: is_lesspoll_def is_eqpoll_refl)
+lemma lesspoll_rel_irrefl: "i \<prec>r i ==> M(i) \<Longrightarrow> P"
+  by (simp add: lesspoll_rel_def eqpoll_rel_refl)
 
-lemma is_lesspoll_imp_is_lepoll: "A \<prec>r B ==> A \<lesssim>r B"
-  by (unfold is_lesspoll_def, blast)
+lemma lesspoll_rel_imp_lepoll_rel: "A \<prec>r B ==> A \<lesssim>r B"
+  by (unfold lesspoll_rel_def, blast)
 
-lemma rvimage_closed [intro,simp]: 
-  assumes 
+lemma rvimage_closed [intro,simp]:
+  assumes
     "M(A)" "M(f)" "M(r)"
   shows
     "M(rvimage(A,f,r))"
   sorry
 
-lemma is_lepoll_well_ord: "[| M(A); M(B); M(r); A \<lesssim>r B; well_ord(B,r) |] ==> \<exists>s[M]. well_ord(A,s)"
-  unfolding is_lepoll_def by (auto intro:well_ord_rvimage)
+lemma lepoll_rel_well_ord: "[| A \<lesssim>r B; well_ord(B,r); M(A); M(B); M(r) |] ==> \<exists>s[M]. well_ord(A,s)"
+  unfolding lepoll_rel_def by (auto intro:well_ord_rvimage)
 
-lemma is_lepoll_iff_lis_eqpoll: "\<lbrakk>M(A); M(B)\<rbrakk> \<Longrightarrow> A \<lesssim>r B \<longleftrightarrow> A \<prec>r B | A \<approx>r B"
-  apply (unfold is_lesspoll_def)
-  apply (blast intro: is_eqpollI elim: is_eqpollE)
+lemma lepoll_rel_iff_leqpoll_rel: "\<lbrakk>M(A); M(B)\<rbrakk> \<Longrightarrow> A \<lesssim>r B \<longleftrightarrow> A \<prec>r B | A \<approx>r B"
+  apply (unfold lesspoll_rel_def)
+  apply (blast intro: eqpoll_relI elim: eqpoll_relE)
   done
 
 (** Variations on transitivity **)
 
-lemma is_lesspoll_trans [trans]:
+lemma lesspoll_rel_trans [trans]:
   "[| X \<prec>r Y; Y \<prec>r Z; M(X); M(Y) ; M(Z) |] ==> X \<prec>r Z"
-  apply (unfold is_lesspoll_def)
-  apply (blast elim: is_eqpollE intro: is_eqpollI is_lepoll_trans)
+  apply (unfold lesspoll_rel_def)
+  apply (blast elim: eqpoll_relE intro: eqpoll_relI lepoll_rel_trans)
   done
 
-lemma is_lesspoll_trans1 [trans]:
+lemma lesspoll_rel_trans1 [trans]:
   "[| X \<lesssim>r Y; Y \<prec>r Z; M(X); M(Y) ; M(Z) |] ==> X \<prec>r Z"
-  apply (unfold is_lesspoll_def)
-  apply (blast elim: is_eqpollE intro: is_eqpollI is_lepoll_trans)
+  apply (unfold lesspoll_rel_def)
+  apply (blast elim: eqpoll_relE intro: eqpoll_relI lepoll_rel_trans)
   done
 
-lemma is_lesspoll_trans2 [trans]:
+lemma lesspoll_rel_trans2 [trans]:
   "[|  X \<prec>r Y; Y \<lesssim>r Z; M(X); M(Y) ; M(Z)|] ==> X \<prec>r Z"
-  apply (unfold is_lesspoll_def)
-  apply (blast elim: is_eqpollE intro: is_eqpollI is_lepoll_trans)
+  apply (unfold lesspoll_rel_def)
+  apply (blast elim: eqpoll_relE intro: eqpoll_relI lepoll_rel_trans)
   done
 
-lemma eq_is_lesspoll_trans [trans]:
+lemma eq_lesspoll_rel_trans [trans]:
   "[| X \<approx>r Y; Y \<prec>r Z; M(X); M(Y) ; M(Z) |] ==> X \<prec>r Z"
-  by (blast intro: is_eqpoll_imp_is_lepoll is_lesspoll_trans1)
+  by (blast intro: eqpoll_rel_imp_lepoll_rel lesspoll_rel_trans1)
 
-lemma is_lesspoll_eq_trans [trans]:
+lemma lesspoll_rel_eq_trans [trans]:
   "[| X \<prec>r Y; Y \<approx>r Z; M(X); M(Y) ; M(Z) |] ==> X \<prec>r Z"
-  by (blast intro: is_eqpoll_imp_is_lepoll is_lesspoll_trans2)
+  by (blast intro: eqpoll_rel_imp_lepoll_rel lesspoll_rel_trans2)
 
-lemma is_cardinal_cong: 
-  assumes "M(X)" "M(Y)" "X \<approx>r Y"
+lemma is_cardinal_cong:
+  assumes "X \<approx>r Y" "M(X)" "M(Y)"
   shows "\<exists>\<kappa>[M]. |X|r= \<kappa> \<and> |Y|r= \<kappa>"
 proof -
   from assms
   have "(\<mu> i. M(i) \<and> i \<approx>r X) = (\<mu> i. M(i) \<and> i \<approx>r Y)"
-    unfolding is_eqpoll_def
+    unfolding eqpoll_rel_def
     by (intro Least_cong) (auto intro: comp_bij bij_converse_bij)
   moreover from assms
   have "M(\<mu> i. M(i) \<and> i \<approx>r X)"
@@ -365,10 +365,10 @@ proof -
   show ?thesis
     using is_cardinal_iff_Least
     by auto
-qed 
+qed
 
-lemma well_ord_cardinal_is_eqpoll:
-  assumes "well_ord(A,r)" shows "M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> M(r) \<Longrightarrow> |A|r= \<kappa> \<Longrightarrow> \<kappa> \<approx>r A"  
+lemma well_ord_cardinal_eqpoll_rel:
+  assumes "well_ord(A,r)" shows "|A|r= \<kappa> \<Longrightarrow> M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> M(r) \<Longrightarrow> \<kappa> \<approx>r A"
 proof (subst is_cardinal_imp_Least[of A \<kappa>])
   assume "M(A)" "M(\<kappa>)" "M(r)" "|A|r= \<kappa>"
   moreover from assms and calculation
@@ -381,14 +381,14 @@ proof (subst is_cardinal_imp_Least[of A \<kappa>])
   show "(\<mu> i. M(i) \<and> i \<approx>r A) \<approx>r A"
   using assms[THEN well_ord_imp_relativized]
     LeastI[of "\<lambda>i. M(i) \<and> i \<approx>r A" i] Ord_ordertype[OF assms]
-    bij_converse_bij[THEN [4] bij_imp_is_eqpoll, of f] by simp
+    bij_converse_bij[THEN bij_imp_eqpoll_rel, of f] by simp
 qed
 
 (* @{term"Ord(A) \<Longrightarrow> M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> |A|r= \<kappa> \<Longrightarrow> \<kappa> \<approx>r A *)
-lemmas Ord_cardinal_is_eqpoll = well_ord_Memrel[THEN well_ord_cardinal_is_eqpoll]
+lemmas Ord_cardinal_eqpoll_rel = well_ord_Memrel[THEN well_ord_cardinal_eqpoll_rel]
 
-lemma is_cardinal_univalent: 
-  assumes "M(A)" "M(\<kappa>)" "M(\<kappa>')" "|A|r= \<kappa>" "|A|r= \<kappa>'"
+lemma is_cardinal_univalent:
+  assumes "|A|r= \<kappa>" "|A|r= \<kappa>'" "M(A)" "M(\<kappa>)" "M(\<kappa>')"
   shows "\<kappa> = \<kappa>'"
   using assms is_cardinal_imp_Least by auto
 
@@ -397,30 +397,30 @@ lemma Ord_is_cardinal_idem:
   assumes "Ord(A)" "M(A)" "M(\<kappa>)" "M(\<kappa>')" "|A|r= \<kappa>" "|\<kappa>|r= \<kappa>'"
   shows "|A|r= \<kappa>'"
   using assms is_cardinal_univalent
-    Ord_cardinal_is_eqpoll[THEN [3] is_cardinal_cong, of \<kappa> A]
+    Ord_cardinal_eqpoll_rel[THEN is_cardinal_cong, of A \<kappa>]
   by auto
- 
+
 lemma well_ord_is_cardinal_eqE:
-  assumes 
+  assumes
     "M(X)" "M(Y)" "M(\<kappa>)" "M(r)" "M(s)"
     and
-    woX: "well_ord(X,r)" and woY: "well_ord(Y,s)" and 
+    woX: "well_ord(X,r)" and woY: "well_ord(Y,s)" and
     eq: "|X|r=\<kappa> \<and> |Y|r=\<kappa>"
   shows "X \<approx>r Y"
 proof -
   from assms
-  have "X \<approx>r \<kappa>" by (blast intro: well_ord_cardinal_is_eqpoll [OF woX] is_eqpoll_sym)
+  have "X \<approx>r \<kappa>" by (blast intro: well_ord_cardinal_eqpoll_rel [OF woX] eqpoll_rel_sym)
   also from assms
-  have "... \<approx>r Y" by (blast intro: well_ord_cardinal_is_eqpoll [OF woY])
+  have "... \<approx>r Y" by (blast intro: well_ord_cardinal_eqpoll_rel [OF woY])
   finally
   show ?thesis by (simp add:assms)
 qed
 
-lemma well_ord_is_cardinal_is_eqpoll_iff:
-  assumes 
-    "M(X)" "M(Y)" "M(\<kappa>)" "M(r)" "M(s)"
+lemma well_ord_is_cardinal_eqpoll_rel_iff:
+  assumes
+    woX: "well_ord(X,r)" and woY: "well_ord(Y,s)"
     and
-    woX: "well_ord(X,r)" and woY: "well_ord(Y,s)" 
+    "M(X)" "M(Y)" "M(\<kappa>)" "M(r)" "M(s)"
   shows "(\<exists>\<kappa>[M]. |X|r=\<kappa> \<and> |Y|r=\<kappa>) \<longleftrightarrow> X \<approx>r Y"
   using assms
 proof (intro iffI)
@@ -432,92 +432,92 @@ qed (auto intro: well_ord_is_cardinal_eqE[of _ _ _ r s])
 
 (** Observations from Kunen, page 28 **)
 
-lemma Ord_is_cardinal_le: "M(i) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> Ord(i) \<Longrightarrow> |i|r= \<kappa> \<Longrightarrow> \<kappa> \<le> i"
-  by (auto intro:Least_le[of "\<lambda>i. M(i) \<and> i \<approx>r _", of i i] 
-      simp add:is_eqpoll_refl is_cardinal_iff_Least)
+lemma Ord_is_cardinal_le: "Ord(i) \<Longrightarrow> |i|r= \<kappa> \<Longrightarrow> M(i) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> \<kappa> \<le> i"
+  by (auto intro:Least_le[of "\<lambda>i. M(i) \<and> i \<approx>r _", of i i]
+      simp add:eqpoll_rel_refl is_cardinal_iff_Least)
 
-lemma is_Card_is_cardinal_eq: "is_Card(K) \<Longrightarrow> |K|r= K"
-  unfolding is_Card_def .
+lemma Card_rel_is_cardinal_eq: "Card_rel(K) \<Longrightarrow> |K|r= K"
+  unfolding Card_rel_def .
 
-lemma is_CardI: "\<lbrakk> M(i); Ord(i);  \<And>j. j<i \<Longrightarrow> ~(j \<approx>r i) \<rbrakk> \<Longrightarrow> is_Card(i)"
-  unfolding is_Card_def
+lemma Card_relI: "\<lbrakk> Ord(i);  \<And>j. j<i \<Longrightarrow> ~(j \<approx>r i);  M(i) \<rbrakk> \<Longrightarrow> Card_rel(i)"
+  unfolding Card_rel_def
   apply (rule is_cardinal_iff_Least[THEN iffD2, rule_format], simp_all)
   apply (subst Least_equality)
-  apply (blast intro: is_eqpoll_refl)+
+  apply (blast intro: eqpoll_rel_refl)+
   done
 
-lemma is_Card_imp_Ord: "M(i) \<Longrightarrow> is_Card(i) \<Longrightarrow> Ord(i)"
+lemma Card_rel_imp_Ord: "Card_rel(i) \<Longrightarrow> M(i) \<Longrightarrow> Ord(i)"
   using is_cardinal_imp_Least[of i i] Ord_Least
-  unfolding is_Card_def 
+  unfolding Card_rel_def
   by (simp) (erule ssubst, blast)
 
-lemma is_Card_cardinal_le: "M(K) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> is_Card(K) \<Longrightarrow> |K|r=\<kappa> \<Longrightarrow> K \<le> \<kappa>"
-  using is_Card_imp_Ord is_Card_is_cardinal_eq is_cardinal_univalent
+lemma Card_rel_cardinal_le: "Card_rel(K) \<Longrightarrow> |K|r=\<kappa> \<Longrightarrow> M(K) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> K \<le> \<kappa>"
+  using Card_rel_imp_Ord Card_rel_is_cardinal_eq is_cardinal_univalent
   by blast
 
-lemma Ord_is_cardinal [simp,intro!]: "M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> |A|r= \<kappa> \<Longrightarrow> Ord(\<kappa>)"
+lemma Ord_is_cardinal [simp,intro!]: "|A|r= \<kappa> \<Longrightarrow> M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> Ord(\<kappa>)"
   using is_cardinal_imp_Least by auto
 
 text\<open>The cardinals are the initial ordinals.\<close>
-lemma is_Card_iff_initial: "M(K) \<Longrightarrow> is_Card(K) \<longleftrightarrow> Ord(K) & (\<forall>j. j<K \<longrightarrow> ~ j \<approx>r K)"
+lemma Card_rel_iff_initial: "M(K) \<Longrightarrow> Card_rel(K) \<longleftrightarrow> Ord(K) & (\<forall>j. j<K \<longrightarrow> ~ j \<approx>r K)"
 proof -
-  { 
+  {
     fix j
-    assume K: "M(K)" "is_Card(K)" "j \<approx>r K"
+    assume K: "M(K)" "Card_rel(K)" "j \<approx>r K"
     assume "j < K"
     also have "... = (\<mu> i. M(i) \<and> i \<approx>r K)" (is "_ = Least(?P)")
-      using K is_cardinal_imp_Least by (simp add: is_Card_def)
+      using K is_cardinal_imp_Least by (simp add: Card_rel_def)
     finally have "j < (\<mu> i. M(i) \<and> i \<approx>r K)" (is "_ < ?x") .
     then
-    have "False" 
-      using K less_LeastE[of "?P" j] transM[of j ?x, OF ltD] 
+    have "False"
+      using K less_LeastE[of "?P" j] transM[of j ?x, OF ltD]
         Least_closed[of ?P] by simp
   }
   moreover
   assume "M(K)"
   ultimately
   show ?thesis
-    using is_CardI[of K] is_Card_imp_Ord[of K]
+    using Card_relI[of K] Card_rel_imp_Ord[of K]
     by (intro iffI) auto
 qed
 
-lemma lt_is_Card_imp_is_lesspoll: "\<lbrakk> M(a); is_Card(a); i<a \<rbrakk> \<Longrightarrow> i \<prec>r a"
-  apply (unfold is_lesspoll_def)
-  apply (frule is_Card_iff_initial [THEN iffD1])
-   apply (auto intro!: leI [THEN [3] le_imp_is_lepoll])
+lemma lt_Card_rel_imp_lesspoll_rel: "\<lbrakk> Card_rel(a); i<a; M(a) \<rbrakk> \<Longrightarrow> i \<prec>r a"
+  apply (unfold lesspoll_rel_def)
+  apply (frule Card_rel_iff_initial [THEN iffD1])
+   apply (auto intro!: leI [THEN le_imp_lepoll_rel])
   apply (blast dest!: ltD[THEN transM])
   done
 
-lemma is_Card_0: "is_Card(0)"
-  apply (rule Ord_0 [THEN [2] is_CardI])
+lemma Card_rel_0: "Card_rel(0)"
+  apply (rule Ord_0 [THEN Card_relI])
   apply (blast elim!: ltE)+
   done
 
-lemma is_Card_Un: "[| M(K); M(L); is_Card(K);  is_Card(L) |] ==> is_Card(K \<union> L)"
+lemma Card_rel_Un: "[| Card_rel(K);  Card_rel(L); M(K); M(L) |] ==> Card_rel(K \<union> L)"
   apply (rule Ord_linear_le [of K L])
-  apply (simp_all add: subset_Un_iff [THEN iffD1]  is_Card_imp_Ord le_imp_subset
+  apply (simp_all add: subset_Un_iff [THEN iffD1]  Card_rel_imp_Ord le_imp_subset
       subset_Un_iff2 [THEN iffD1])
   done
 
 (*Infinite unions of cardinals?  See Devlin, Lemma 6.7, page 98*)
 
-lemma is_cardinal_imp_is_Card [simp,intro]: 
-  assumes "M(A)" "M(\<kappa>)" "|A|r=\<kappa>"
-  shows "is_Card(\<kappa>)"
+lemma is_cardinal_imp_Card_rel [simp,intro]:
+  assumes "|A|r=\<kappa>" "M(A)" "M(\<kappa>)"
+  shows "Card_rel(\<kappa>)"
   using assms
 proof (frule_tac is_cardinal_imp_Least, simp_all, simp)
-   show "is_Card(\<mu> i. M(i) \<and> i \<approx>r A)" (is "is_Card(Least(?P))")
+   show "Card_rel(\<mu> i. M(i) \<and> i \<approx>r A)" (is "Card_rel(Least(?P))")
   proof (cases "\<exists>i. Ord (i) \<and> M(i) \<and> i \<approx>r A")
-    case False 
+    case False
     with assms
     show ?thesis           \<comment> \<open>degenerate case\<close>
-      using Least_0[of ?P] is_Card_0 by simp
+      using Least_0[of ?P] Card_rel_0 by simp
   next
     case True                         \<comment> \<open>real case: \<^term>\<open>A\<close> is isomorphic to some ordinal\<close>
     then obtain i where i: "M(i)" "Ord(i)" "i \<approx>r A" by blast
     show ?thesis
-    proof (rule is_CardI[OF _ Ord_Least], rule_tac [2] notI)
-      show "M(\<mu> i. M(i) \<and> i \<approx>r A)" 
+    proof (rule Card_relI[OF Ord_Least], rule_tac notI)
+      show "M(\<mu> i. M(i) \<and> i \<approx>r A)"
         using \<open>M(A)\<close> Least_closed[of ?P] by simp
       fix j
       assume j: "j < (\<mu> i. M(i) \<and> i \<approx>r A)"
@@ -527,44 +527,45 @@ proof (frule_tac is_cardinal_imp_Least, simp_all, simp)
       assume "j \<approx>r (\<mu> i. M(i) \<and> i \<approx>r A)"
       also
       have "... \<approx>r A" using i using LeastI[of ?P] by simp
-      finally 
+      finally
       have "j \<approx>r A" using \<open>M(j)\<close> \<open>M(A)\<close> \<open>M(\<mu> i. M(i) \<and> i \<approx>r A)\<close>
         by simp
       with \<open>M(j)\<close>
       show "False" using less_LeastE [OF _ j] by simp
-    qed 
+    qed
   qed
 qed
 
 (*Kunen's Lemma 10.5*)
 lemma is_cardinal_eq_lemma:
-  assumes 
-    "M(i)" "M(j)" "M(\<kappa>)" "M(\<kappa>')"
-    and
+  assumes
     "|i|r=\<kappa>" "|j|r=\<kappa>'"
     and
-    i:"\<kappa> \<le> j" and j: "j \<le> i" shows "\<kappa>' = \<kappa>"
+    i:"\<kappa> \<le> j" and j: "j \<le> i" 
+    and
+    types: "M(i)" "M(j)" "M(\<kappa>)" "M(\<kappa>')"
+  shows "\<kappa>' = \<kappa>"
 proof -
   from assms
-  have "j \<lesssim>r i" by (rule_tac le_imp_is_lepoll [OF _ _ j])
+  have "j \<lesssim>r i" by (rule_tac le_imp_lepoll_rel [OF j])
   moreover
   have "i \<lesssim>r j"
   proof -
     have Oi: "Ord(i)" using j by (rule le_Ord2)
     with assms
     have "i \<approx>r \<kappa>"
-      using Ord_cardinal_is_eqpoll[THEN [3] is_eqpoll_sym]
+      using Ord_cardinal_eqpoll_rel[THEN eqpoll_rel_sym]
       by simp
     also from assms
     have "... \<lesssim>r j"
-      by (blast intro: le_imp_is_lepoll i)
+      by (blast intro: le_imp_lepoll_rel i)
     finally show "i \<lesssim>r j" using assms by simp
   qed
   moreover
-  note assms(1-6)
+  note assms(1,2) types
   moreover from calculation
   obtain \<delta> where "M(\<delta>)" "|i|r= \<delta>" "|j|r= \<delta>"
-    using is_eqpollI[THEN [3] is_cardinal_cong] by auto
+    using eqpoll_relI[THEN is_cardinal_cong] by auto
   ultimately
   have "\<kappa> = \<delta>" "\<kappa>'=\<delta>"
     using is_cardinal_univalent by blast+
@@ -573,17 +574,17 @@ proof -
 qed
 
 lemma is_cardinal_mono:
-  assumes 
-    "M(i)" "M(j)" "M(\<kappa>)" "M(\<kappa>')"
-    and
+  assumes
     "|i|r= \<kappa>" "|j|r= \<kappa>'"
     and
     ij: "i \<le> j" 
-  shows "\<kappa> \<le> \<kappa>'"
-  using Ord_is_cardinal[OF \<open>M(i)\<close> \<open>M(\<kappa>)\<close> \<open>|i|r= \<kappa>\<close>]
-    Ord_is_cardinal[OF \<open>M(j)\<close> \<open>M(\<kappa>')\<close> \<open>|j|r= \<kappa>'\<close>]
+    and
+    "M(i)" "M(j)" "M(\<kappa>)" "M(\<kappa>')"
+shows "\<kappa> \<le> \<kappa>'"
+  using Ord_is_cardinal[OF \<open>|i|r= \<kappa>\<close> \<open>M(i)\<close> \<open>M(\<kappa>)\<close>]
+    Ord_is_cardinal[OF \<open>|j|r= \<kappa>'\<close> \<open>M(j)\<close> \<open>M(\<kappa>')\<close>]
 proof (cases rule: Ord_linear_le[of \<kappa> \<kappa>'])
-  case le 
+  case le
   then
   show ?thesis by simp
 next
@@ -592,25 +593,26 @@ next
     by (simp add: lt_Ord)
   with assms
   have ci: "\<kappa> \<le> j"
-    using Ord_is_cardinal_le[of i] ij le_trans[of \<kappa> i j] 
+    using Ord_is_cardinal_le[of i] ij le_trans[of \<kappa> i j]
     by simp
-  from \<open>M(i)\<close> \<open>M(\<kappa>)\<close> \<open>|i|r= \<kappa>\<close> 
+  from \<open>M(i)\<close> \<open>M(\<kappa>)\<close> \<open>|i|r= \<kappa>\<close>
   have "|\<kappa>|r= \<kappa>"
-    using is_cardinal_imp_is_Card is_Card_is_cardinal_eq by simp 
+    using is_cardinal_imp_Card_rel Card_rel_is_cardinal_eq by simp
   with assms
   have "... = \<kappa>'"
-    by (rule_tac is_cardinal_eq_lemma [OF _ _ _ _ _ _ ge ci])
-  then 
-  show ?thesis 
-    using Ord_is_cardinal[OF \<open>M(j)\<close> \<open>M(\<kappa>')\<close> \<open>|j|r= \<kappa>'\<close>] by simp
+    by (rule_tac is_cardinal_eq_lemma [OF _ _ ge ci])
+  then
+  show ?thesis
+    using Ord_is_cardinal[OF \<open>|j|r= \<kappa>'\<close> \<open>M(j)\<close> \<open>M(\<kappa>')\<close>] by simp
 qed
 
 text\<open>Since we have \<^term>\<open>|succ(nat)| \<le> |nat|\<close>, the converse of \<open>cardinal_mono\<close> fails!\<close>
-lemma cardinal_lt_imp_lt: 
-  assumes 
-    "M(i)" "M(j)" "M(\<kappa>)" "M(\<kappa>')" "|i|r=\<kappa>" "|j|r=\<kappa>'"
+lemma cardinal_lt_imp_lt:
+  assumes
+    "|i|r=\<kappa>" "|j|r=\<kappa>'"
     "\<kappa><\<kappa>'"  "Ord(i)"  "Ord(j)"
-  shows 
+    "M(i)" "M(j)" "M(\<kappa>)" "M(\<kappa>')"
+  shows
     "i < j"
   using assms
   apply (rule_tac Ord_linear2 [of i j])
@@ -619,44 +621,45 @@ lemma cardinal_lt_imp_lt:
   apply (force elim:is_cardinal_mono)
   done
 
-lemma is_Card_lt_imp_lt: "[| M(i); M(\<kappa>); M(K); |i|r= \<kappa>; \<kappa> < K;  Ord(i);  is_Card(K) |] ==> i < K"
-  by (simp (no_asm_simp) add: cardinal_lt_imp_lt is_Card_imp_Ord is_Card_is_cardinal_eq)
+lemma Card_rel_lt_imp_lt: "[| |i|r= \<kappa>; \<kappa> < K;  Ord(i);  Card_rel(K); M(i); M(\<kappa>); M(K) |] ==> i < K"
+  using cardinal_lt_imp_lt Card_rel_imp_Ord Card_rel_is_cardinal_eq
+  by blast
 
-lemma is_Card_lt_iff: "[| M(i); M(\<kappa>); M(K); |i|r= \<kappa>; Ord(i);  is_Card(K) |] ==> (\<kappa> < K) \<longleftrightarrow> (i < K)"
-  by (blast intro: is_Card_lt_imp_lt Ord_is_cardinal_le [THEN lt_trans1])
+lemma Card_rel_lt_iff: "[| M(i); M(\<kappa>); M(K); |i|r= \<kappa>; Ord(i);  Card_rel(K) |] ==> (\<kappa> < K) \<longleftrightarrow> (i < K)"
+  by (blast intro: Card_rel_lt_imp_lt Ord_is_cardinal_le [THEN lt_trans1])
 
-lemma is_Card_le_iff: "[| M(i); M(\<kappa>); M(K); |i|r= \<kappa>; Ord(i);  is_Card(K) |] ==> (K \<le> \<kappa>) \<longleftrightarrow> (K \<le> i)"
-  by (simp add: is_Card_lt_iff is_Card_imp_Ord not_lt_iff_le [THEN iff_sym])
+lemma Card_rel_le_iff: "[| M(i); M(\<kappa>); M(K); |i|r= \<kappa>; Ord(i);  Card_rel(K) |] ==> (K \<le> \<kappa>) \<longleftrightarrow> (K \<le> i)"
+  by (simp add: Card_rel_lt_iff Card_rel_imp_Ord not_lt_iff_le [THEN iff_sym])
 
 (*Can use AC or finiteness to discharge first premise*)
-lemma well_ord_is_lepoll_imp_is_Card_le:
-  assumes 
-    "M(A)" "M(B)" "M(\<kappa>)" "M(\<kappa>')" "M(r)"
-    and 
+lemma well_ord_lepoll_rel_imp_Card_rel_le:
+  assumes
     "|A|r= \<kappa>"  "|B|r= \<kappa>'"
     and
     wB: "well_ord(B,r)" and AB: "A \<lesssim>r B"
+    and
+    "M(A)" "M(B)" "M(\<kappa>)" "M(\<kappa>')" "M(r)"
   shows "\<kappa> \<le> \<kappa>'"
-  using Ord_is_cardinal[OF \<open>M(A)\<close> \<open>M(\<kappa>)\<close> \<open>|A|r= \<kappa>\<close>]
-    Ord_is_cardinal[OF \<open>M(B)\<close> \<open>M(\<kappa>')\<close> \<open>|B|r= \<kappa>'\<close>]
+  using Ord_is_cardinal[OF \<open>|A|r= \<kappa>\<close> \<open>M(A)\<close> \<open>M(\<kappa>)\<close>]
+    Ord_is_cardinal[OF \<open>|B|r= \<kappa>'\<close> \<open>M(B)\<close> \<open>M(\<kappa>')\<close>]
 proof (cases rule: Ord_linear_le[of \<kappa> \<kappa>'])
-  case le 
-  then 
+  case le
+  then
   show ?thesis .
 next
   case ge
-  from is_lepoll_well_ord [OF assms(1,2,5) AB wB]
+  from lepoll_rel_well_ord [OF AB wB assms(5,6,9)]
   obtain s where s: "well_ord(A, s)" "M(s)" by auto
   from assms
-  have "B  \<approx>r \<kappa>'" by (blast intro: wB is_eqpoll_sym well_ord_cardinal_is_eqpoll)
-  also from assms 
-  have "... \<lesssim>r \<kappa>" by (rule_tac le_imp_is_lepoll [OF _ _ ge])
+  have "B  \<approx>r \<kappa>'" by (blast intro: wB eqpoll_rel_sym well_ord_cardinal_eqpoll_rel)
   also from assms
-  have "... \<approx>r A" by (rule_tac well_ord_cardinal_is_eqpoll [OF s(1) _ _ s(2)])
-  finally 
+  have "... \<lesssim>r \<kappa>" by (rule_tac le_imp_lepoll_rel [OF ge])
+  also from assms
+  have "... \<approx>r A" by (rule_tac well_ord_cardinal_eqpoll_rel [OF s(1) _ _ _ s(2)])
+  finally
   have "B \<lesssim>r A" using assms by simp
   with assms
-  have "A \<approx>r B" by (blast intro: is_eqpollI AB)
+  have "A \<approx>r B" by (blast intro: eqpoll_relI AB)
   with assms
   obtain \<delta> where "M(\<delta>)" "|A|r= \<delta>" "|B|r= \<delta>"
    using is_cardinal_cong[of A B] by auto
@@ -664,47 +667,47 @@ next
   have "\<kappa> = \<delta>" "\<kappa>'=\<delta>"
     using is_cardinal_univalent by blast+
   then
-  show ?thesis 
-    using Ord_is_cardinal[OF \<open>M(A)\<close> \<open>M(\<kappa>)\<close> \<open>|A|r= \<kappa>\<close>] by simp
-qed 
+  show ?thesis
+    using Ord_is_cardinal[OF \<open>|A|r= \<kappa>\<close> \<open>M(A)\<close> \<open>M(\<kappa>)\<close>] by simp
+qed
 
-(* Two many assumptions in next result 
+(* Too many assumptions in next result
 This is because of the relational form of \<open>is_cardinal\<close>,
 in arguments that involve iterated cardinals (i.e. \<open>||A||\<close>).
 *)
-lemma is_lepoll_is_cardinal_le: "[| M(A); M(i); M(\<kappa>); M(\<kappa>'); A \<lesssim>r i; Ord(i) ; |A|r=\<kappa>; |i|r= \<kappa>' |] ==> \<kappa> \<le> i"
+lemma lepoll_rel_is_cardinal_le: "[| A \<lesssim>r i; Ord(i) ; |A|r=\<kappa>; |i|r= \<kappa>'; M(A); M(i); M(\<kappa>); M(\<kappa>') |] ==> \<kappa> \<le> i"
   apply (rule le_trans)
-   apply (erule well_ord_Memrel[THEN [8] well_ord_is_lepoll_imp_is_Card_le, of A i _ \<kappa>'], assumption+)
+   apply (erule well_ord_Memrel[THEN [3] well_ord_lepoll_rel_imp_Card_rel_le], assumption+)
        apply (rule Memrel_closed, simp_all)
   apply (erule Ord_is_cardinal_le, simp_all)
   done
 
 \<comment> \<open>Define a function cardinalr :: i => i, assume M(cardinalr(A)), etc.\<close>
-lemma is_lepoll_Ord_imp_is_eqpoll: "[| M(A); M(i); M(\<kappa>); M(\<kappa>'); A \<lesssim>r i; Ord(i) ; |A|r=\<kappa>; |i|r= \<kappa>' |] ==> \<kappa> \<approx>r A"
-  using well_ord_Memrel[of i] is_lepoll_well_ord[of A i "Memrel(i)"]
-     well_ord_cardinal_is_eqpoll[of A] 
+lemma lepoll_rel_Ord_imp_eqpoll_rel: "[| A \<lesssim>r i; Ord(i) ; |A|r=\<kappa>; |i|r= \<kappa>'; M(A); M(i); M(\<kappa>); M(\<kappa>') |] ==> \<kappa> \<approx>r A"
+  using well_ord_Memrel[of i] lepoll_rel_well_ord[of A i "Memrel(i)"]
+     well_ord_cardinal_eqpoll_rel[of A]
   by auto
 
-lemma is_lesspoll_imp_is_eqpoll: "[| M(A); M(i); M(\<kappa>); M(\<kappa>'); |A|r=\<kappa>; |i|r= \<kappa>'; A \<prec>r i; Ord(i) |] ==> \<kappa> \<approx>r A"
-  apply (unfold is_lesspoll_def)
-  apply (blast intro: is_lepoll_Ord_imp_is_eqpoll)
+lemma lesspoll_rel_imp_eqpoll_rel: "[| |A|r=\<kappa>; |i|r= \<kappa>'; A \<prec>r i; Ord(i); M(A); M(i); M(\<kappa>); M(\<kappa>') |] ==> \<kappa> \<approx>r A"
+  apply (unfold lesspoll_rel_def)
+  apply (blast intro: lepoll_rel_Ord_imp_eqpoll_rel)
   done
 
-lemma is_cardinal_subset_Ord: "[|M(A); M(i); M(\<kappa>); M(\<kappa>'); |A|r=\<kappa>; |i|r= \<kappa>'; A \<subseteq> i; Ord(i)|] ==> \<kappa> \<subseteq> i"
-  apply (frule subset_imp_is_lepoll [THEN [5] is_lepoll_is_cardinal_le])
-  prefer 8 prefer 9 prefer 9 apply assumption+
+lemma is_cardinal_subset_Ord: "[| |A|r=\<kappa>; |i|r= \<kappa>'; A \<subseteq> i; Ord(i); M(A); M(i); M(\<kappa>); M(\<kappa>')|] ==> \<kappa> \<subseteq> i"
+  apply (frule subset_imp_lepoll_rel [THEN lepoll_rel_is_cardinal_le])
+           apply assumption+
   apply (auto intro: Ord_trans dest:ltD)
   done
 
-lemma Finite_abs: assumes "M(A)" shows "is_Finite(A) \<longleftrightarrow> Finite(A)"
-  unfolding is_Finite_def Finite_def
+lemma Finite_abs: assumes "M(A)" shows "Finite_rel(A) \<longleftrightarrow> Finite(A)"
+  unfolding Finite_rel_def Finite_def
 proof (simp, intro iffI)
   assume "\<exists>n\<in>nat. A \<approx>r n"
   then
   obtain n where "A \<approx>r n" "n\<in>nat" by blast
   with assms
   show "\<exists>n\<in>nat. A \<approx> n"
-    unfolding eqpoll_def is_eqpoll_def using nat_into_M by auto
+    unfolding eqpoll_def eqpoll_rel_def using nat_into_M by auto
 next
   fix n
   assume "\<exists>n\<in>nat. A \<approx> n"
@@ -716,15 +719,15 @@ next
   note assms
   moreover from calculation
   have "converse(f) \<in> n\<rightarrow>A"  using bij_is_fun by simp
-  moreover from calculation 
+  moreover from calculation
   have "M(converse(f))" using transM[of _ "n\<rightarrow>A"] by simp
   moreover from calculation
-  have "M(f)" using bij_is_fun 
-      fun_is_rel[of "f" A "\<lambda>_. n", THEN converse_converse] 
+  have "M(f)" using bij_is_fun
+      fun_is_rel[of "f" A "\<lambda>_. n", THEN converse_converse]
       converse_closed[of "converse(f)"] by simp
   ultimately
   show "\<exists>n\<in>nat. A \<approx>r n"
-    unfolding is_eqpoll_def by (force dest:nat_into_M)
+    unfolding eqpoll_rel_def by (force dest:nat_into_M)
 qed
 
 end (* M_cardinals *)
