@@ -1,14 +1,103 @@
 section\<open>Automatic relativization of terms.\<close>
 theory Relativization
-  imports "ZF-Constructible.Formula"  "ZF-Constructible.Relative"
-  "ZF-Constructible.Datatype_absolute"
-keywords
-  "relativize" :: thy_decl % "ML"
-and
-  "relativize_tm" :: thy_decl % "ML"
+  imports "ZF-Constructible.Formula" 
+    "ZF-Constructible.Relative"
+    "ZF-Constructible.Datatype_absolute"
+  keywords
+    "relativize" :: thy_decl % "ML"
+    and
+    "relativize_tm" :: thy_decl % "ML"
 
 begin
 ML_file\<open>Utils.ml\<close>
+ML\<open>
+structure Absoluteness = Named_Thms
+  (val name = @{binding "absolut"}
+   val description = "Theorems of absoulte terms and predicates.") 
+\<close>
+setup\<open>Absoluteness.setup\<close>
+
+lemmas relative_abs = 
+  M_trans.empty_abs
+  M_trans.upair_abs
+  M_trans.pair_abs
+  M_trivial.cartprod_abs
+  M_trans.union_abs
+  M_trans.inter_abs
+  M_trans.setdiff_abs
+  M_trans.Union_abs
+  (*M_trivial.cons_abs*)
+  (*M_trivial.successor_abs*)
+  M_trans.Collect_abs
+  M_trans.Replace_abs
+  M_trivial.lambda_abs2
+  M_trans.image_abs
+(*M_trans.powerset_abs*)
+  M_trivial.nat_case_abs
+(*
+  M_trans.transitive_set_abs
+  M_trans.ordinal_abs
+  M_trivial.limit_ordinal_abs
+  M_trivial.successor_ordinal_abs
+  M_trivial.finite_ordinal_abs
+  M_trivial.omega_abs
+  M_trivial.number1_abs
+  M_trivial.number2_abs
+  M_trivial.number3_abs
+*)
+  M_basic.sum_abs
+  M_trivial.Inl_abs
+  M_trivial.Inr_abs
+  M_basic.converse_abs
+  M_basic.vimage_abs
+  M_trans.domain_abs
+  M_trans.range_abs
+  M_basic.field_abs
+  (*M_trans.relation_abs*)
+  (*M_trivial.function_abs*)
+  M_basic.apply_abs
+  (*M_trivial.typed_function_abs*)
+  M_basic.injection_abs
+  M_basic.surjection_abs
+  M_basic.bijection_abs
+  M_basic.composition_abs
+  M_trans.restriction_abs
+  M_trans.Inter_abs
+  M_trivial.is_funspace_abs
+  M_trivial.bool_of_o_abs
+  M_trivial.not_abs
+  M_trivial.and_abs
+  M_trivial.or_abs
+  M_trivial.Nil_abs
+  M_trivial.Cons_abs
+  (*M_trivial.quasilist_abs*)
+  M_trivial.list_case_abs
+  M_trivial.hd_abs
+  M_trivial.tl_abs
+
+lemmas datatype_abs = M_basic.iterates_MH_abs
+  M_basic.list_functor_abs
+  M_trancl.formula_functor_abs
+  M_datatypes.list_N_abs
+  M_datatypes.mem_list_abs
+  M_datatypes.list_abs
+  M_datatypes.formula_N_abs
+  M_datatypes.mem_formula_abs
+  M_datatypes.formula_abs
+  M_eclose.is_eclose_n_abs
+  M_eclose.mem_eclose_abs
+  M_eclose.eclose_abs
+  M_datatypes.length_abs
+  M_datatypes.nth_abs
+  M_trivial.Member_abs
+  M_trivial.Equal_abs
+  M_trivial.Nand_abs
+  M_trivial.Forall_abs
+  M_datatypes.depth_abs
+  M_datatypes.formula_case_abs
+
+declare relative_abs[absolut]
+declare datatype_abs[absolut]
 
 ML\<open>
 signature Relativization =
@@ -16,7 +105,7 @@ signature Relativization =
     structure Data: GENERIC_DATA
     val Rel_add: attribute
     val Rel_del: attribute
-    val add_rel_const : term -> term -> Proof.context -> Data.T -> Data.T
+    val add_rel_const : string -> term -> term -> Proof.context -> Data.T -> Data.T
     val db: (term * term) list
     val init_db : (term * term) list -> theory -> theory
     val get_db : Proof.context -> (term * term) list
@@ -37,57 +126,18 @@ structure Relativization : Relativization = struct
 type relset = { db_rels: (term * term) list};   (*  *)
 
   (* relativization db of term constructors *)
-  val db_tm_rels = [ (@{const Upair}, @{const Relative.upair})
-           , (@{const Pair}, @{const Relative.pair})
-           , (@{const zero}, @{const Relative.empty})
-           , (@{const succ}, @{const Relative.successor})
-           , (@{const cons}, @{const Relative.is_cons})
-           , (@{const Collect}, @{const Relative.is_Collect})
-           , (@{const Un}, @{const Relative.union})
-           , (@{const Int}, @{const Relative.inter})
-           , (@{const Union}, @{const Relative.big_union})
-           , (@{const Int}, @{const Relative.inter})
-           , (@{const Diff}, @{const Relative.setdiff})
-           , (@{const Image}, @{const Relative.setdiff})
-           , (@{const Sum.sum}, @{const Relative.is_sum})
-           , (@{const Sum.Inl}, @{const Relative.is_Inl})
-           , (@{const Sum.Inr}, @{const Relative.is_Inr})
-           , (@{const domain}, @{const Relative.is_domain})
-           , (@{const range}, @{const Relative.is_range})
-           , (@{const field}, @{const Relative.is_field})
-           , (@{const vimage}, @{const Relative.pre_image})
-           , (@{const apply}, @{const Relative.fun_apply})
-           , (@{const Perm.comp}, @{const Relative.composition})
-           , (@{const Inter}, @{const Relative.big_inter})
-           , (@{const bool_of_o}, @{const Relative.is_bool_of_o})
-           , (@{const Bool.not}, @{const Relative.is_not})
-           , (@{const Bool.and}, @{const Relative.is_and})
-           , (@{const Bool.or}, @{const Relative.is_or})
-           , (@{const List.Nil}, @{const Relative.is_Nil})
-           , (@{const List.Cons}, @{const Relative.is_Cons})
-           , (@{const Relative.is_hd}, @{const Relative.hd'})
-           , (@{const Relative.is_tl}, @{const Relative.tl'})
-           , (@{const Epsilon.eclose}, @{const is_eclose})
-           ]
 
   (* relativization db of relation constructors *)
-  val db_rels = [ (@{const relation}, @{const Relative.is_relation})
+  val db = 
+           [ (@{const relation}, @{const Relative.is_relation})
            , (@{const mem}, @{const mem})
            , (@{const Memrel}, @{const membership})
            , (@{const trancl}, @{const tran_closure})
            , (@{const IFOL.eq(i)}, @{const IFOL.eq(i)})
            , (@{const Subset}, @{const Relative.subset})
            , (@{const quasinat}, @{const Relative.is_quasinat})
-           , (@{const Transset}, @{const Relative.transitive_set})
-           , (@{const quasinat}, @{const Relative.is_quasinat})
-           , (@{const Ord}, @{const Relative.ordinal})
-           , (@{const Limit}, @{const Relative.limit_ordinal})
-           , (@{const relation}, @{const Relative.is_relation})
-           , (@{const function}, @{const Relative.is_function})
-           , (@{const quasinat}, @{const Relative.is_quasinat})
-           , (@{const Relative.quasilist}, @{const Relative.is_quasilist})
+           , (@{const Upair}, @{const Relative.upair})
            ]
-  val db = db_tm_rels @ db_rels
 
 fun var_i v = Free (v, @{typ i})
 fun var_io v = Free (v, @{typ "i \<Rightarrow> o"})
@@ -120,20 +170,25 @@ fun get_db thy = let val db = Data.get (Context.Proof thy)
 
 fun read_new_const cname ctxt' = Proof_Context.read_term_pattern ctxt' cname
 
-fun add_rel_const c t ctxt (rs as {db_rels = db}) =
+fun add_rel_const thm_name c t ctxt (rs as {db_rels = db}) =
   case lookup_rel db c of
-    SOME _ =>
+    SOME t' =>
     (warning ("Ignoring duplicate relativization rule" ^
-              const_name c ^ " " ^ Syntax.string_of_term ctxt t); rs)
+              const_name c ^ " " ^ Syntax.string_of_term ctxt t ^ 
+              "(" ^  Syntax.string_of_term ctxt t' ^ " in " ^ thm_name ^ ")"); rs)
   | NONE => {db_rels = (c, t) :: db};
 
 fun get_consts thm =
-  Thm.concl_of thm |> Utils.dest_trueprop |> Utils.dest_iff_tms |>> head_of ||>
-    (Utils.dest_eq_tms #> #2 #> head_of)
+  let val (c_rel, rhs) = Thm.concl_of thm |> Utils.dest_trueprop |> Utils.dest_iff_tms |>> head_of
+  in case try Utils.dest_eq_tms rhs of
+       SOME tm => (c_rel, tm |> #2 |> head_of)
+     | NONE => (c_rel, rhs |> Utils.dest_mem_tms |> #2 |> head_of)
+  end
 
 fun add_rule ctxt thm rs =
   let val (c_rel,c_abs) = get_consts thm
-  in add_rel_const c_abs c_rel ctxt rs
+      val thm_name = Proof_Context.pretty_fact ctxt ("" , [thm]) |> Pretty.string_of
+  in add_rel_const thm_name c_abs c_rel ctxt rs
 end
 
 fun del_rel_const c (rs as {db_rels = db}) =
@@ -141,7 +196,7 @@ fun del_rel_const c (rs as {db_rels = db}) =
     SOME c' =>
     { db_rels = AList.delete (fn (_,b) => b = c) c' db}
   | NONE => (warning ("The constant " ^
-              const_name c ^ " didn't have a relativization rule associated"); rs) ;
+              const_name c ^ " doesn't have a relativization rule associated"); rs) ;
 
 fun del_rule thm = del_rel_const (thm |> get_consts |> #2)
 
@@ -187,6 +242,7 @@ fun close_rel_tm pred tm tm_var rs =
       | NONE => vars
   in fold (fn v => fn t => rex pred (incr_boundvars 1 t) v) vars (conjs tms tm)
   end
+
 fun relativ_tms _ _ _ ctxt' [] = ([], [], ctxt')
   | relativ_tms pred rel_db rs' ctxt' (u :: us) =
       let val (w_u, rs_u, ctxt_u) = relativ_tm pred rel_db (rs', ctxt') u
@@ -307,7 +363,7 @@ in
    (#2 #> (fn (s,t) => (s,[t]))) |> Utils.display "theorem" pos |>
    Local_Theory.target (
        fn ctxt' => Context.proof_map
-        (Data.map (add_rel_const abs_const (read_new_const def_name ctxt') ctxt')) ctxt')
+        (Data.map (add_rel_const "" abs_const (read_new_const def_name ctxt') ctxt')) ctxt')
   end
 
 fun relativize_tm def_name term pos lthy =
@@ -316,7 +372,7 @@ fun relativize_tm def_name term pos lthy =
     val (cls_pred, ctxt1) = Variable.variant_fixes ["N"] ctxt |>> var_io o hd
     val tm = Syntax.read_term ctxt1 term
     val ({db_rels = db'}) = Data.get (Context.Proof lthy)
-    val (v,t) = tm |> relativ_tm_frm' cls_pred db' ctxt1
+    val (v,t) = relativ_tm_frm' cls_pred db' ctxt1 tm
     val vs' = Term.add_frees t []
     val vs = cls_pred :: map Free vs'
     val at = List.foldr (uncurry lambda) t (vs @ [v])
@@ -353,4 +409,10 @@ in
 end
 \<close>
 setup\<open>Relativization.init_db Relativization.db \<close>
+
+declare relative_abs[Rel]
+(*todo: check all the duplicate cases here.*)
+(*declare datatype_abs[Rel]*)
+
+
 end

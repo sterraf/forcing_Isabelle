@@ -13,6 +13,7 @@ signature Utils =
     val dest_satisfies_tms: term -> term * term
     val dest_satisfies_frm: term -> term
     val dest_eq_tms: term -> term * term
+    val dest_mem_tms: term -> term * term
     val dest_sats_frm: term -> (term * term) * term
     val dest_eq_tms': term -> term * term
     val dest_trueprop: term -> term
@@ -85,6 +86,10 @@ val formula_ = @{const formula}
 (** Destructors of terms **)
 fun dest_eq_tms (Const (@{const_name IFOL.eq},_) $ t $ u) = (t, u)
   | dest_eq_tms t = raise TERM ("dest_eq_tms", [t])
+
+fun dest_mem_tms (@{const mem} $ t $ u) = (t, u)
+  | dest_mem_tms t = raise TERM ("dest_mem_tms", [t])
+
 
 fun dest_eq_tms' (Const (@{const_name Pure.eq},_) $ t $ u) = (t, u)
   | dest_eq_tms' t = raise TERM ("dest_eq_tms", [t])

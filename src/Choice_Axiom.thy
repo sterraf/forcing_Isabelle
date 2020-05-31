@@ -232,8 +232,7 @@ interpretation mgzf: M_ZF_trans "M[G]"
   by unfold_locales simp_all
 
 (* y = opair_name(check(\<beta>),s`\<beta>) *)
-(* relativize_tm "opair_name(check(x),s`x)" "is_opname_check" *)
-
+(*relativize_tm "opair_name(x,s`x)" "is_opname_check"*)
 definition
   is_opname_check :: "[i,i,i] \<Rightarrow> o" where
   "is_opname_check(s,x,y) \<equiv> \<exists>chx\<in>M. \<exists>sx\<in>M. is_check(x,chx) \<and> fun_apply(##M,s,x,sx) \<and>
