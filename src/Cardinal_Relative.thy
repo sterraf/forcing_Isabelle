@@ -51,6 +51,55 @@ abbreviation
   Lesspoll_rel :: "[i,i] => o"     (infixl \<open>\<prec>r\<close> 50)  where
   "A \<prec>r B \<equiv> lesspoll_rel(M,A,B)"
 
+(************* Discipline for cardinal ****************)
+lemma is_cardinal_uniqueness:
+  assumes
+    "M(r)" "M(d)" "M(d')"
+    "is_cardinal(M,r,d)" "is_cardinal(M,r,d')"
+  shows
+    "d=d'"
+  using assms least_abs \<comment> \<open>is using abs legit?\<close>
+  unfolding is_cardinal_def
+  by force \<comment> \<open>non automatic\<close>
+
+lemma is_cardinal_witness: "M(r) \<Longrightarrow> \<exists>d[M]. is_cardinal(M,r,d)"
+  using Least_closed least_abs unfolding is_cardinal_def
+  by fastforce \<comment> \<open>We have to do this by hand, using axioms\<close>
+
+definition
+  cardinal_rel :: "i \<Rightarrow> i" (\<open>|_|r\<close>) where
+  "|x|r \<equiv> THE d. M(d) \<and> is_cardinal(M,x,d)"
+
+lemma cardinal_rel_closed: "M(x) \<Longrightarrow> M(|x|r)"
+  unfolding cardinal_rel_def
+  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_cardinal(M,x,d)"], OF _ is_cardinal_uniqueness[of x]]
+    is_cardinal_witness by auto
+
+lemma cardinal_rel_iff:
+  assumes "M(x)"  "M(d)"
+  shows "is_cardinal(M,x,d) \<longleftrightarrow> d = |x|r"
+proof (intro iffI)
+  assume "d = |x|r"
+  with assms
+  show "is_cardinal(M, x, d)"
+    using is_cardinal_uniqueness[of x] is_cardinal_witness
+    theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_cardinal(M,x,d)"], OF _ is_cardinal_uniqueness[of x]]
+    unfolding cardinal_rel_def
+    by auto
+next
+  assume "is_cardinal(M, x, d)"
+  with assms
+  show "d = |x|r"
+    using is_cardinal_uniqueness unfolding cardinal_rel_def
+    by (auto del:the_equality intro:the_equality[symmetric])
+qed
+
+lemma def_cardinal_rel: "M(x) \<Longrightarrow> |x|r = (\<mu> i. M(i) \<and> i \<approx>r x)"
+  using  least_abs cardinal_rel_closed cardinal_rel_iff
+  unfolding is_cardinal_def by fastforce
+
+(***************  end Discipline  *********************)
+
 definition \<comment> \<open>Perhaps eliminate in favor of the Discipline\<close>
   Card_rel     :: "i=>o"  where
   "Card_rel(i) \<equiv> is_cardinal(M,i,i)"
