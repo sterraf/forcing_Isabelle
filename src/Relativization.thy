@@ -7,7 +7,9 @@ theory Relativization
     "relativize" :: thy_decl % "ML"
     and
     "relativize_tm" :: thy_decl % "ML"
-
+(*    and
+    "reldb_add" :: thy_decl % "ML"
+*)  
 begin
 ML_file\<open>Utils.ml\<close>
 ML\<open>
@@ -16,7 +18,6 @@ structure Absoluteness = Named_Thms
    val description = "Theorems of absoulte terms and predicates.")
 \<close>
 setup\<open>Absoluteness.setup\<close>
-
 lemmas relative_abs =
   M_trans.empty_abs
   M_trans.upair_abs
@@ -106,6 +107,7 @@ signature Relativization =
     val Rel_add: attribute
     val Rel_del: attribute
     val add_rel_const : string -> term -> term -> Proof.context -> Data.T -> Data.T
+    (*val add_constant : string -> string -> Proof.context -> Proof.context*)
     val db: (term * term) list
     val init_db : (term * term) list -> theory -> theory
     val get_db : Proof.context -> (term * term) list
@@ -340,7 +342,8 @@ fun relativ_fm pred rel_db (rs,ctxt) fm =
   in go fm
   end
 
-fun read_const cname ctxt' = Proof_Context.read_const {proper = false, strict = false} ctxt' cname
+fun lname ctxt = Local_Theory.full_name ctxt o Binding.name
+fun read_const cname ctxt' = Proof_Context.read_const {proper = true, strict = true} ctxt' cname
 
 fun relativize_def def_name thm_ref pos lthy =
   let
@@ -354,7 +357,6 @@ fun relativize_def def_name thm_ref pos lthy =
     val vs' = List.filter (#1 #> #1 #> #1 #> Utils.inList t_vars) vars
     val vs = cls_pred :: map (Thm.term_of o #2) vs'
     val at = List.foldr (uncurry lambda) t (vs @ [v])
-    fun lname ctxt = Local_Theory.full_name ctxt o Binding.name
     val abs_const = read_const (lname lthy thm_ref) lthy
 in
    lthy |>
@@ -392,6 +394,12 @@ local
   val relativize_parser =
        Parse.position (Parse.string -- Parse.string);
 
+(*  val _ =
+     Outer_Syntax.local_theory \<^command_keyword>\<open>reldb_add\<close> "ML setup for adding relativized/absolute pairs"
+       (relativize_parser >> (fn ((rel_term,abs_term),_) =>
+          Relativization.add_constant rel_term abs_term))
+*)
+
   val _ =
      Outer_Syntax.local_theory \<^command_keyword>\<open>relativize\<close> "ML setup for relativizing definitions"
        (relativize_parser >> (fn ((bndg,thm),pos) =>
@@ -413,6 +421,4 @@ setup\<open>Relativization.init_db Relativization.db \<close>
 declare relative_abs[Rel]
 (*todo: check all the duplicate cases here.*)
 (*declare datatype_abs[Rel]*)
-
-
 end

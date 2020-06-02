@@ -7,24 +7,34 @@ begin
 
 (* MOVE THIS. absoluteness of higher-order composition *)
 definition
-  i_comp :: "[i\<Rightarrow>i,i\<Rightarrow>i] \<Rightarrow> i \<Rightarrow> i" (infixr \<open>\<circ>\<close> 60)  where
-  "g \<circ> f \<equiv> \<lambda>x . g(f(x))"
+  Comp :: "[i\<Rightarrow>i,i\<Rightarrow>i] \<Rightarrow> i \<Rightarrow> i" (infixr \<open>\<circ>\<close> 60)  where
+  "(g \<circ> f)(x) \<equiv> g(f(x))"
 
 definition
-  is_hcomp :: "[i\<Rightarrow>o,i\<Rightarrow>i\<Rightarrow>o,i\<Rightarrow>i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_hcomp(M,is_f,is_g,a,w) \<equiv> \<exists>z[M]. is_g(a,z) \<and> is_f(z,w)"
+  is_hcomp :: "[i\<Rightarrow>o,(i\<Rightarrow>o) \<Rightarrow>i\<Rightarrow>i\<Rightarrow>o,(i\<Rightarrow>o) \<Rightarrow>i\<Rightarrow>i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_hcomp(M,is_f,is_g,a,w) \<equiv> \<exists>z[M]. is_g(M,a,z) \<and> is_f(M,z,w)"
 
 lemma (in M_trivial) hcomp_abs:
   assumes
-    is_f_abs:"\<And>a z. M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_f(a,z) \<longleftrightarrow> z = f(a)" and
-    is_g_abs:"\<And>a z. M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_g(a,z) \<longleftrightarrow> z = g(a)" and
+    is_f_abs:"\<And>a z. M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_f(M,a,z) \<longleftrightarrow> z = f(a)" and
+    is_g_abs:"\<And>a z. M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_g(M,a,z) \<longleftrightarrow> z = g(a)" and
     g_closed:"\<And>a. M(a) \<Longrightarrow> M(f(a))"
     "M(a)" "M(w)"
   shows
     "is_hcomp(M,is_g,is_f,a,w) \<longleftrightarrow> w = (g \<circ> f)(a)"
-  unfolding is_hcomp_def i_comp_def  using assms by simp
+  unfolding is_hcomp_def Comp_def  using assms by simp
 
-declare M_trivial.hcomp_abs[Rel]
+definition
+  is_Pow :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_Pow(M,A,z) \<equiv> \<forall>x[M]. x \<in> z \<longleftrightarrow> subset(M,x,A)"
+
+lemma pow_rel[Rel] : "False \<Longrightarrow> is_Pow(M,A,z) \<longleftrightarrow> z = Pow(A)"
+  by simp
+
+definition Pow2 :: "i \<Rightarrow> i" where
+  "Pow2(x) \<equiv> Pow(Pow(x))"
+
+relativize "Pow2" "is_Pow2"
 
 definition
   hcomp_fm :: "[i\<Rightarrow>i\<Rightarrow>i,i\<Rightarrow>i\<Rightarrow>i,i,i] \<Rightarrow> i" where
@@ -33,35 +43,24 @@ definition
 lemma sats_hcomp_fm:
   assumes
     f_iff_sats:"\<And>a b z. a\<in>nat \<Longrightarrow> b\<in>nat \<Longrightarrow> z\<in>M \<Longrightarrow>
-                 is_f(nth(a,Cons(z,env)),nth(b,Cons(z,env))) \<longleftrightarrow> sats(M,pf(a,b),Cons(z,env))"
+                 is_f(##M,nth(a,Cons(z,env)),nth(b,Cons(z,env))) \<longleftrightarrow> sats(M,pf(a,b),Cons(z,env))"
     and
     g_iff_sats:"\<And>a b z. a\<in>nat \<Longrightarrow> b\<in>nat \<Longrightarrow> z\<in>M \<Longrightarrow>
-                is_g(nth(a,Cons(z,env)),nth(b,Cons(z,env))) \<longleftrightarrow> sats(M,pg(a,b),Cons(z,env))"
+                is_g(##M,nth(a,Cons(z,env)),nth(b,Cons(z,env))) \<longleftrightarrow> sats(M,pg(a,b),Cons(z,env))"
     and
     "a\<in>nat" "w\<in>nat" "env\<in>list(M)"
   shows
     "sats(M,hcomp_fm(pf,pg,a,w),env) \<longleftrightarrow> is_hcomp(##M,is_f,is_g,nth(a,env),nth(w,env))"
 proof -
-  have "sats(M, pf(0, succ(w)), Cons(x, env)) \<longleftrightarrow> is_f(x,nth(w,env))" if "x\<in>M" "w\<in>nat" for x w
+  have "sats(M, pf(0, succ(w)), Cons(x, env)) \<longleftrightarrow> is_f(##M,x,nth(w,env))" if "x\<in>M" "w\<in>nat" for x w
     using f_iff_sats[of 0 "succ(w)" x] that by simp
   moreover
-  have "sats(M, pg(succ(a), 0), Cons(x, env)) \<longleftrightarrow> is_g(nth(a,env),x)" if "x\<in>M" "a\<in>nat" for x a
+  have "sats(M, pg(succ(a), 0), Cons(x, env)) \<longleftrightarrow> is_g(##M,nth(a,env),x)" if "x\<in>M" "a\<in>nat" for x a
     using g_iff_sats[of "succ(a)" 0 x] that by simp
   ultimately
   show ?thesis unfolding hcomp_fm_def is_hcomp_def using assms by simp
 qed
 
-definition
-  is_Pow :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_Pow(M,A,z) \<equiv> \<forall>x[M]. x \<in> z \<longleftrightarrow> subset(M,x,A)"
-
-definition
-  Pow2 :: "i \<Rightarrow> i" where
-  "Pow2 \<equiv> i_comp(Pow,Pow)"
-
-definition
-  is_Pow2 :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_Pow2(M) \<equiv> is_hcomp(M,is_Pow(M),is_Pow(M))"
 
 context M_basic
 begin
@@ -141,8 +140,8 @@ lemma hcomp_uniqueness: \<comment> \<open>General preliminary result\<close>
     uniq_is_f: "\<And>r d d'. M(r) \<Longrightarrow> M(d) \<Longrightarrow> M(d') \<Longrightarrow> is_f(M, r, d) \<Longrightarrow> is_f(M, r, d') \<Longrightarrow> d = d'" and
     uniq_is_g: "\<And>r d d'. M(r) \<Longrightarrow> M(d) \<Longrightarrow> M(d') \<Longrightarrow> is_g(M, r, d) \<Longrightarrow> is_g(M, r, d') \<Longrightarrow> d = d'" and
     "M(a)" "M(w)" "M(w')"
-    "is_hcomp(M,is_f(M),is_g(M),a,w)"
-    "is_hcomp(M,is_f(M),is_g(M),a,w')"
+    "is_hcomp(M,is_f,is_g,a,w)"
+    "is_hcomp(M,is_f,is_g,a,w')"
   shows
     "w=w'"
 proof -
@@ -164,7 +163,7 @@ lemma hcomp_witness: \<comment> \<open>General preliminary result\<close>
     wit_is_g: "\<And>r. M(r) \<Longrightarrow> \<exists>d[M]. is_g(M,r,d)" and
     "M(a)"
   shows
-    "\<exists>w[M]. is_hcomp(M,is_f(M),is_g(M),a,w)"
+    "\<exists>w[M]. is_hcomp(M,is_f,is_g,a,w)"
 proof -
   from \<open>M(a)\<close> and wit_is_g
   obtain z where "is_g(M,a,z)" "M(z)" by blast
@@ -183,13 +182,13 @@ lemma is_Pow2_uniqueness:
     "d=d'"
   using assms hcomp_uniqueness[where is_f=is_Pow and is_g=is_Pow]
     is_Pow_uniqueness
-  unfolding is_Pow2_def
+  unfolding is_Pow2_def is_hcomp_def
   by blast
 
 lemma is_Pow2_witness: "M(r) \<Longrightarrow> \<exists>d[M]. is_Pow2(M,r,d)"
   using hcomp_witness[where is_f=is_Pow and is_g=is_Pow]
     is_Pow_witness
-  unfolding is_Pow2_def by simp
+  unfolding is_Pow2_def is_hcomp_def by blast
 
 definition
   Pow2_rel :: "i \<Rightarrow> i" where
@@ -221,10 +220,11 @@ qed
 
 lemma def_Pow2_rel:
   assumes "M(x)"
-  shows "Pow2_rel(x) = Pow_rel(Pow_rel(x))"
+  shows "Pow2_rel(x) = (Pow_rel \<circ> Pow_rel)(x)"
   using assms Pow2_rel_iff Pow_rel_closed Pow2_rel_closed
-    hcomp_abs[of "is_Pow(M)" Pow_rel "is_Pow(M)" Pow_rel]
-    Pow_rel_iff unfolding is_Pow2_def i_comp_def by simp
+    hcomp_abs[of "is_Pow" Pow_rel "is_Pow" Pow_rel]
+    Pow_rel_iff 
+  unfolding is_Pow2_def Comp_def is_hcomp_def by auto
 
 (****************************************************************)
 
