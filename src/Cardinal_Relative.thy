@@ -10,6 +10,7 @@ hide_const L
 definition
   eqpoll_rel   :: "[i=>o,i,i] => o" where
   "eqpoll_rel(M,A,B) \<equiv> \<exists>f[M]. bijection(M,A,B,f)"
+  \<comment> \<open> \<^term>\<open>eqpoll_rel(M,A,B) \<equiv> \<exists>f[M]. f \<in> bij_rel(M,A,B)\<close> ?? \<close>
 
 definition
   lepoll_rel   :: "[i=>o,i,i] => o" where
@@ -108,7 +109,7 @@ lemma def_cardinal_rel: "M(x) \<Longrightarrow> |x|r = (\<mu> i. M(i) \<and> i \
 
 abbreviation \<comment> \<open>Perhaps eliminate in favor of the Discipline\<close>
   Card_rel     :: "i=>o"  where
-  "Card_rel(i) \<equiv> is_cardinal(M,i,i)"
+  "Card_rel(i) \<equiv> Cardinal_Relative.Card_rel(M,i)"
 
 \<comment> \<open>same comment as the previous def\<close>
 lemma def_Card_rel: "M(i) \<Longrightarrow> Card_rel(i) \<longleftrightarrow> i = |i|r"
@@ -573,7 +574,7 @@ lemma Card_rel_Un: "[| Card_rel(K);  Card_rel(L); M(K); M(L) |] ==> Card_rel(K \
       subset_Un_iff2 [THEN iffD1])
   done
 
-lemma Card_cardinal [iff]: assumes types:"M(A)" shows "Card_rel(|A|r)"
+lemma Card_rel_cardinal_rel [iff]: assumes types:"M(A)" shows "Card_rel(|A|r)"
   using assms
 proof (unfold def_cardinal_rel)
   show "Card_rel(\<mu> i. M(i) \<and> i \<approx>r A)"
@@ -744,8 +745,8 @@ proof (unfold def_cardinal_rel, rule sym)
   ultimately show "(\<mu> i. M(i) \<and> i \<approx>r n) = n" by (auto intro!: Least_equality types eqpoll_rel_refl)
 qed
 
-lemmas cardinal_rel_0 = nat_0I [THEN nat_into_Card_rel, THEN Card_rel_cardinal_rel_eq, iff]
-lemmas cardinal_rel_1 = nat_1I [THEN nat_into_Card_rel, THEN Card_rel_cardinal_rel_eq, iff]
+lemmas cardinal_rel_0 = nat_0I [THEN nat_into_Card_rel, THEN Card_rel_cardinal_rel_eq, simplified, iff]
+lemmas cardinal_rel_1 = nat_1I [THEN nat_into_Card_rel, THEN Card_rel_cardinal_rel_eq, simplified, iff]
 
 lemma succ_lepoll_rel_natE: "[| succ(n) \<lesssim>r n;  n \<in> nat |] ==> P"
   by (rule nat_lepoll_rel_imp_le [THEN lt_irrefl], auto)
@@ -1093,7 +1094,7 @@ lemma Ord_is_cardinal: "is_cardinal(M,A,\<kappa>) \<Longrightarrow> M(A) \<Longr
 lemma is_cardinal_imp_Card_rel:
   assumes "is_cardinal(M,A,\<kappa>)" "M(A)" "M(\<kappa>)"
   shows "Card_rel(\<kappa>)"
-  using assms Card_cardinal cardinal_rel_iff by simp
+  using assms Card_rel_cardinal_rel cardinal_rel_iff by simp
 
 lemma is_cardinal_eq_lemma:
   assumes
