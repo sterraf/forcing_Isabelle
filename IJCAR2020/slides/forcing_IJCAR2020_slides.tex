@@ -1,0 +1,77 @@
+\documentclass[english]{beamer}
+%\usepackage{beamerarticle}
+\usepackage{graphicx}
+\usepackage{babel}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes}
+\usepackage[all]{xy}
+\usepackage[invisible]{arxiv-beamer-theme}
+
+\usepackage[utf8]{inputenc}
+%%%
+%%% Natbib must be here!! (after Beamer stuff)
+\usepackage[numbers]{natbib}
+\input{header-slides}
+\usepackage{isabelle,isabellesym}
+
+\CompileMatrices
+
+\title[Forcing in Isabelle/ZF]{Formalization of Forcing in Isabelle/ZF}
+
+\author[E.~Gunther, M.~Pagano, PST]{E.~Gunther \qquad M.~Pagano \qquad P.~Sánchez Terraf\thanks{Supported by
+    CONICET and SeCyT-UNC} 
+}
+\institute[UNC]{CIEM-FaMAF --- Universidad Nacional de Córdoba}
+
+\date[IJCAR 2020]{International Joint Conference on Automated
+  Reasoning\\ Paris (Virtual),\ \  2020 / 07 / 02}
+
+\subject{Logic in Computer Science}
+
+\pgfdeclareimage[height=3ex]{UNC-logo}{unc_400_Blanco_Negro}
+\logo{\pgfuseimage{UNC-logo}}
+
+%% Para usar overlays con tikz
+\tikzset{onslide/.code args={<#1>#2}{%
+    \only<#1>{\pgfkeysalso{#2}} % \pgfkeysalso doesn't change the path
+}}
+
+\begin{document}
+\begin{frame}[plain]
+  \titlepage
+  \begin{center}
+    \insertlogo
+  \end{center}
+\end{frame}
+%
+\begin{frame}
+  \frametitle{Summary}
+  \tableofcontents
+  \transwipe
+\end{frame}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{}
+
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
+\subsection{}
+
+\begin{frame}
+  \frametitle{}
+\end{frame}
+
+
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
+\begin{frame}
+  \begin{shadowblock}{}
+    \begin{center}
+      {\Huge Thank you!}
+    \end{center}
+  \end{shadowblock}
+\end{frame}
+
+\end{document}
+%%% Local Variables: 
+%%% mode: latex
+%%% ispell-local-dictionary: "american"
+%%% End: 
