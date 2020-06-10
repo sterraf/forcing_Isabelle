@@ -10,9 +10,10 @@
 \usepackage[utf8]{inputenc}
 %%%
 %%% Natbib must be here!! (after Beamer stuff)
-\usepackage[numbers]{natbib}
+\usepackage[authoryear,square]{natbib}
 \input{header-slides}
 \usepackage{isabelle,isabellesym}
+\newcommand{\uscore}{\isacharunderscore}
 
 \CompileMatrices
 
@@ -37,6 +38,8 @@
 }}
 
 \begin{document}
+%\nobibliography*
+
 \begin{frame}[plain]
   \titlepage
   \begin{center}
@@ -51,7 +54,122 @@
 \end{frame}
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{}
+\section{Introduction}
+
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
+\subsection{Why Isabelle/ZF?}
+
+\begin{frame}
+  \frametitle{Why Isabelle/ZF?}
+\end{frame}
+
+\begin{frame}
+  \frametitle{}
+  
+\end{frame}
+
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
+\subsection{Paulson's \texttt{ZF-Constructible}}
+
+\begin{frame}
+  \frametitle{Paulson's \texttt{ZF-Constructible}}
+\end{frame}
+
+
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
+\subsection{The ctm approach to forcing}
+
+\begin{frame}
+  \frametitle{The ctm approach to forcing, I}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The ctm approach to forcing, II}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Other approaches}
+  \begin{itemize}
+  \item<+-> \emph{Set theory in HOL}
+    \begin{itemize}
+    \item \isatt{HOLZF} \citep{DBLP:conf/ictac/Obua06}
+    \item \isatt{ZFC{\uscore}in{\uscore}HOL}
+      \citep{ZFC_in_HOL-AFP}
+    \end{itemize}
+  \item<+-> \alert{Lean}: Full formalization of the Boolean-valued approach to
+    forcing and the independence of $\CH$ \citep{DBLP:conf/cpp/HanD20}.
+  \end{itemize}
+  %
+  \begin{block}{A word on consistency}<+->
+    \begin{description}
+      \setlength{\labelwidth}{12em}
+      \setlength{\labelsep}{2em}
+      \setlength{\itemindent}{6em}
+    \item[Isabelle/ZF + ctm]  (far) less than $\ZF$ +  one
+      inaccessible.
+    \item[\isatt{HOLZF},
+      \isatt{ZFC{\uscore}in{\uscore}HOL}]
+      approximately $\ZF$ +  one   inaccessible. 
+    \item[Lean (CiC)] $\ZF$ + $\omega$ inaccessibles. 
+    \end{description}
+  \end{block}
+\end{frame}
+
+%% \begin{frame}
+%%   \frametitle{A word on consistency}
+%% \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The development}
+
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
+\subsection{What did we accomplished?}
+
+\begin{frame}
+  \frametitle{What did we accomplished?}
+  %
+  \begin{shadowblock}{}
+    \begin{enumerate}
+    \item We adapted \texttt{ZF-Constructible} to obtain
+      absoluteness results for nonempty transitive classes ($\leftarrow$
+      already in the 2020 release of Isabelle).
+    \item We formalized the forcing relation and proved the Fundamental
+      Theorems.
+    \item We showed that generic extensions of ctms of $\ZF$ are also
+      ctms of $\ZF$ (respectively, adding $\AC$).
+    \item We provided the forcing notion that adds a Cohen real,
+      therefore proving the existence of a nontrivial extension.
+    \end{enumerate}
+  \end{shadowblock}
+\end{frame}
+
+
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
+\subsection{A map}
+
+\begin{frame}
+  \frametitle{A map to the development}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Locale structure} 
+             {  
+               \renewcommand{\arraystretch}{1.5}               \begin{tabular}{rcl}
+                 \texttt{forcing{\uscore}notion} & = & preorder $\PP$ with top. \\
+                 %    \texttt{M{\uscore}ZF} & = & set model of the $\ZF$ axioms \\ 
+                 \texttt{M{\uscore}ZF{\uscore}trans} & = & set model $M$ of the $\ZF$
+                 axioms \alert{+}  $M$ transitive \\ 
+                 \texttt{M{\uscore}ctm} & = &  \texttt{M{\uscore}ZF{\uscore}trans} \alert{+}
+                 $M$ countable \\
+                 \texttt{forcing{\uscore}data} & =  & \texttt{M{\uscore}ctm} \alert{+}
+                 \texttt{forcing{\uscore}notion} in $M$\\
+                 \texttt{separative{\uscore}notion} & = &
+                 \texttt{forcing{\uscore}notion} \alert{+} $\PP$ separative \\
+                 \texttt{M{\uscore}ctm{\uscore}separative} & = &
+                 \texttt{forcing{\uscore}data} \alert{+} \texttt{separative{\uscore}notion}
+               \end{tabular} 
+             }
+\end{frame}
 
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
 \subsection{}
@@ -60,6 +178,36 @@
   \frametitle{}
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{}
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
+\subsection{}
+
+\begin{frame}
+  \frametitle{}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Looking forward}
+
+\begin{frame}
+  \frametitle{Looking forward}
+  \begin{block}{Formalizing math}
+    \begin{itemize}
+    \item<+-> Cofinality, K\H{o}nig's Theorem, Shanin's $\Delta$-system Lemma.
+    \item<+-> Forcing notion for adding $\kappa$ Cohen reals.
+    \item<+-> Theorems on preservation of cardinals.
+    \end{itemize}
+  \end{block}
+  %
+  \begin{block}{Technical aids}<+->
+    \begin{enumerate}
+    \item<.-> Automatic relativization of concepts.
+    \item<+-> Relative functions.
+    \item<+->
+    \end{enumerate}
+  \end{block}
+\end{frame}
 
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
 \begin{frame}
@@ -68,6 +216,12 @@
       {\Huge Thank you!}
     \end{center}
   \end{shadowblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{References}
+  \bibliographystyle{mi-estilo-else}
+  \bibliography{../forcing_in_isabelle_zf}
 \end{frame}
 
 \end{document}
