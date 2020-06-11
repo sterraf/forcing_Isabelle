@@ -66,7 +66,7 @@ schematic_goal sats_is_powapply_fm_auto:
   shows
     "is_powapply(##A,nth(f, env),nth(y, env),nth(z, env))
     \<longleftrightarrow> sats(A,?ipa_fm(f,y,z),env)"
-  unfolding is_powapply_def is_Collect_def powerset_def subset_def
+  unfolding is_powapply_def powerset_def subset_def
   using nth_closed assms
    by (simp) (rule sep_rules  | simp)+
 

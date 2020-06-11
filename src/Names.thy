@@ -325,15 +325,15 @@ lemma def_check : "check(y) = { \<langle>check(w),one\<rangle> . w \<in> y}"
 proof -
   let
     ?r="\<lambda>y. Memrel(eclose({y}))"
-  have wfr:   "\<forall>w . wf(?r(w))" 
+  have wfr:   "\<forall>w . wf(?r(w))"
     using wf_Memrel ..
-  then 
+  then
   have "check(y)= Hcheck( y, \<lambda>x\<in>?r(y) -`` {y}. wfrec(?r(y), x, Hcheck))"
     using wfrec[of "?r(y)" y "Hcheck"] checkD by simp
-  also 
+  also
   have " ... = Hcheck( y, \<lambda>x\<in>y. wfrec(?r(y), x, Hcheck))"
     using under_Memrel_eclose arg_into_eclose by simp
-  also 
+  also
   have " ... = Hcheck( y, \<lambda>x\<in>y. check(x))"
     using aux_def_check checkD by simp
   finally show ?thesis using Hcheck_def by simp
@@ -428,8 +428,8 @@ lemma valcheck : "one \<in> G \<Longrightarrow>  one \<in> P \<Longrightarrow> v
 proof (induct rule:eps_induct)
   case (1 y)
   then show ?case
-  proof -    
-    have "check(y) = { \<langle>check(w), one\<rangle> . w \<in> y}"  (is "_ = ?C") 
+  proof -
+    have "check(y) = { \<langle>check(w), one\<rangle> . w \<in> y}"  (is "_ = ?C")
       using def_check .
     then
     have "val(G,check(y)) = val(G, {\<langle>check(w), one\<rangle> . w \<in> y})"
@@ -924,7 +924,7 @@ proof -
     by (simp add:nat_simp_union)
   moreover
   have "check(x)\<in>M" if "x\<in>P" for x
-    using that Transset_intf[of M x P] trans_M check_in_M P_in_M by simp
+    using that transitivity check_in_M P_in_M by simp
   ultimately
   show ?thesis using sats_check_fm check_abs P_in_M check_in_M one_in_M
       Repl_in_M[of "check_fm(0,2,1)" "[one]" is_check check] by simp
@@ -1040,7 +1040,7 @@ lemma zero_in_MG :
 proof -
   have "0 = val(G,0)"
     using zero_in_M elem_of_val by auto
-  also 
+  also
   have "... \<in> M[G]"
     using GenExtI zero_in_M by simp
   finally show ?thesis .
