@@ -7,9 +7,9 @@ theory Relativization
     "relativize" :: thy_decl % "ML"
     and
     "relativize_tm" :: thy_decl % "ML"
-(*    and
+    and
     "reldb_add" :: thy_decl % "ML"
-*)  
+  
 begin
 ML_file\<open>Utils.ml\<close>
 ML\<open>
@@ -107,7 +107,7 @@ signature Relativization =
     val Rel_add: attribute
     val Rel_del: attribute
     val add_rel_const : string -> term -> term -> Proof.context -> Data.T -> Data.T
-    (*val add_constant : string -> string -> Proof.context -> Proof.context*)
+    val add_constant : string -> string -> Proof.context -> Proof.context
     val db: (term * term) list
     val init_db : (term * term) list -> theory -> theory
     val get_db : Proof.context -> (term * term) list
@@ -192,6 +192,14 @@ fun add_rule ctxt thm rs =
       val thm_name = Proof_Context.pretty_fact ctxt ("" , [thm]) |> Pretty.string_of
   in add_rel_const thm_name c_abs c_rel ctxt rs
 end
+
+
+fun add_constant rel abs thy =
+  let val c_abs = read_new_const abs thy
+      val c_rel = read_new_const rel thy
+  in Local_Theory.target (Context.proof_map 
+    (Data.map (fn db => {db_rels = (c_rel,c_abs) :: #db_rels db}))) thy
+ end
 
 fun del_rel_const c (rs as {db_rels = db}) =
   case lookup_rel db c of
@@ -394,11 +402,11 @@ local
   val relativize_parser =
        Parse.position (Parse.string -- Parse.string);
 
-(*  val _ =
+  val _ =
      Outer_Syntax.local_theory \<^command_keyword>\<open>reldb_add\<close> "ML setup for adding relativized/absolute pairs"
        (relativize_parser >> (fn ((rel_term,abs_term),_) =>
           Relativization.add_constant rel_term abs_term))
-*)
+
 
   val _ =
      Outer_Syntax.local_theory \<^command_keyword>\<open>relativize\<close> "ML setup for relativizing definitions"

@@ -23,19 +23,6 @@ lemma (in M_trivial) hcomp_abs:
   shows
     "is_hcomp(M,is_g,is_f,a,w) \<longleftrightarrow> w = (g \<circ> f)(a)"
   unfolding is_hcomp_def Comp_def  using assms by simp
-
-definition
-  is_Pow :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_Pow(M,A,z) \<equiv> \<forall>x[M]. x \<in> z \<longleftrightarrow> subset(M,x,A)"
-
-lemma pow_rel[Rel] : "False \<Longrightarrow> is_Pow(M,A,z) \<longleftrightarrow> z = Pow(A)"
-  by simp
-
-definition Pow2 :: "i \<Rightarrow> i" where
-  "Pow2(x) \<equiv> Pow(Pow(x))"
-
-relativize "Pow2" "is_Pow2"
-
 definition
   hcomp_fm :: "[i\<Rightarrow>i\<Rightarrow>i,i\<Rightarrow>i\<Rightarrow>i,i,i] \<Rightarrow> i" where
   "hcomp_fm(pf,pg,a,w) \<equiv> Exists(And(pg(succ(a),0),pf(0,succ(w))))"
@@ -64,6 +51,17 @@ qed
 
 context M_basic
 begin
+
+definition
+  is_Pow :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_Pow(N,A,z) \<equiv> \<forall>x[N]. x \<in> z \<longleftrightarrow> subset(N,x,A)"
+
+reldb_add "Pow" "is_Pow"
+
+definition Pow2 :: "i \<Rightarrow> i" where
+  "Pow2(x) \<equiv> Pow(Pow(x))"
+
+relativize "Pow2" "is_Pow2"
 
 
 (****************************************************************)
