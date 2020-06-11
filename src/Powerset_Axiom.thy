@@ -247,16 +247,16 @@ proof -
     show "c\<in>?b" by simp
   qed
   then 
-  have "Pow(a) \<inter> M[G] = {x\<in>?b . x\<subseteq>a & x\<in>M[G]}"
+  have "Pow(a) \<inter> M[G] = {x\<in>?b . x\<subseteq>a \<and> x\<in>M[G]}"
     by auto
   also from \<open>a\<in>M[G]\<close> 
-  have " ... = {x\<in>?b . sats(M[G],subset_fm(0,1),[x,a]) & x\<in>M[G]}"
+  have " ... = {x\<in>?b . (M[G], [x,a] \<Turnstile> subset_fm(0,1)) \<and> x\<in>M[G]}"
     using Transset_MG by force
   also 
-  have " ... = {x\<in>?b . sats(M[G],subset_fm(0,1),[x,a])} \<inter> M[G]"
+  have " ... = {x\<in>?b . (M[G], [x,a] \<Turnstile> subset_fm(0,1))} \<inter> M[G]"
     by auto
   also from \<open>?b\<in>M[G]\<close> 
-  have " ... = {x\<in>?b . sats(M[G],subset_fm(0,1),[x,a])}"
+  have " ... = {x\<in>?b . (M[G], [x,a] \<Turnstile> subset_fm(0,1))}"
     using Collect_inter_Transset Transset_MG
     by simp
   also from \<open>?b\<in>M[G]\<close> \<open>a\<in>M[G]\<close>
