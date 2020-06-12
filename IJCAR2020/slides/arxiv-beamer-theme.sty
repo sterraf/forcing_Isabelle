@@ -141,13 +141,8 @@
 \makeatother
 %% end \Alt for Beamer
 
-\newcommand{\sombra}[1][.]{\visible<#1>{\vspace{-1ex}\centerline{\includegraphics[scale=0.21]{shadow_ancha_white.png}}}}
+\newcommand{\sombra}{\vspace{-1ex}\centerline{\includegraphics[scale=0.207]{shadow_ancha_white.png}}}
 
-
-%% Version sin cambiar los block [alerted] begin
-%% \newenvironment{shadowblock}[1]
-%%                {\begin{alertblock}{\def\temporario{#1}\ifx\temporario\empty\vspace{-3ex}\else#1\fi}}
-%%                {\sombra[1]\vspace{-1ex}\end{alertblock}}
 \newenvironment{shadowblock}[1]
-               {\begin{alertblock}{#1}}
-               {\sombra[1]\vspace{-1ex}\end{alertblock}}
+                 {\begin{alertblock}{#1}}
+                 {\sombra\vspace{-1ex}\end{alertblock}}

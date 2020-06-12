@@ -1421,7 +1421,7 @@ FUNCTION {begin.bib}
     'skip$
     { preamble$ write$ newline$ }
   if$
-  "\begin{small}\begin{thebibliography}{" number.label int.to.str$ * "}" *
+  "\begin{scriptsize}\begin{thebibliography}{" number.label int.to.str$ * "}" *
   write$ newline$
   "\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi"
   write$ newline$
@@ -1435,6 +1435,6 @@ EXECUTE {init.state.consts}
 ITERATE {call.type$}
 FUNCTION {end.bib}
 { newline$
-  "\end{thebibliography}\end{small}" write$ newline$
+  "\end{thebibliography}\end{scriptsize}" write$ newline$
 }
 EXECUTE {end.bib}

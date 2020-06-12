@@ -61,11 +61,38 @@
 
 \begin{frame}
   \frametitle{Why Isabelle/ZF?}
+  \begin{block}{Pros}
+    \begin{itemize}
+    \item Most advanced set theory formalized (around 2017).
+    \item Closer to the mathematical practice of forcing.
+    \item Structured proof language Isar
+      \citep{DBLP:conf/tphol/Wenzel99}.
+    \item Weak metatheory.
+    \end{itemize}
+  \end{block}
+  %
+  \pause
+  %
+  \begin{block}{Cons}
+    \begin{itemize}
+    \item A fraction of automation of Isabelle (\texttt{sledgehammer},
+      etc).
+    \item Untyped, and too weak a metatheory.
+    \end{itemize}
+  \end{block}
 \end{frame}
 
 \begin{frame}
-  \frametitle{}
-  
+  \frametitle{Isabelle/ZF \citep{DBLP:journals/jar/PaulsonG96}}
+  \begin{itemize}
+  \item<+-> An object logic of Isabelle axiomatized over the
+    intuitionistic fragment of HOL \emph{Pure}. 
+  \item<+-> It postulates \alert<3->{two types}: \isatt{i}
+    (sets) and \isatt{o} (booleans). \visible<3->{\alert{Not
+      inductively defined!}}
+    \pause
+  \item<+-> More stuff.
+  \end{itemize}
 \end{frame}
 
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
@@ -73,6 +100,7 @@
 
 \begin{frame}
   \frametitle{Paulson's \texttt{ZF-Constructible}}
+
 \end{frame}
 
 
@@ -81,16 +109,86 @@
 
 \begin{frame}
   \frametitle{The ctm approach to forcing, I}
+  \begin{block}{Countable transitive model (ctm) of $\ZF$}
+    $\lb M, E\rb \models \ZF$ where
+    \begin{itemize}
+    \item $M$ is countable.
+    \item $E \defi {\in}\restriction M$.
+    \item $x\in y \in M \implies x\in M$.
+    \end{itemize}
+  \end{block}
+  %
+  \pause%
+  %
+  \textbf{Note}. If $\lb N, R\rb \models \ZF$ with $R$ wellfounded, then there
+  exists a ctm $M$ of $\ZF$.
+  %
+  \pause
+  %
+  \begin{block}{Forcing notions and generics}
+    \begin{itemize}
+    \item $\lb \PP, {\preceq} ,\1\rb$ preorder with top.
+    \item A filter $G\sbq \PP$ is \textbf{$M$-generic} if it meets
+      every dense $D\sbq \PP$ in $M$.
+    \end{itemize}
+  \end{block}
 \end{frame}
 
 \begin{frame}
   \frametitle{The ctm approach to forcing, II}
+  Given $G\sbq \PP$, we can adjoin it to $M$ to form the
+  \textbf{generic extension} $M[G]$.
+  \pause
+  Every $a\in M[G]$ is coded by
+  some $\punto{a}\in M$ through the definable (in $M$) function $\val$:
+  \[
+  M[G]\defi \{ \val(G,\punto{a}) : \punto{a}\in M\}
+  \]
+  \pause
+  \emph{Fundamentally}, \textbf{truth} in $M[G]$ is coded in $M$ by the
+  function $\forceisa$.
+  \pause
+  \begin{theorem}[Cohen, 1963]
+    \begin{enumerate}
+    \item $\bigl(\forall G\visible<5->{\alert{\ni p}}.\quad M[G], [\val(G,\punto{a})]
+      \models \phi\bigr)
+      \iff
+      M,
+      [\only<-4>{\1}\alert{\only<5->{p\hspace{0.2ex}}},\PP,\preceq,\punto{a}]\models
+      \forceisa(\phi)$.
+    \item $\forceisa$ is definable over $M$.\phantom{$\punto{a}).\models \phi\bigr)
+      \iff M,$}\visible<6->{%
+      $\overset{\searrow}{}$ \ 
+      $\alert{p} \forces^M_{\PP,\preceq} \phi(\punto{a})$
+      \  $\overset{\swarrow}{}$}
+      \pause% 
+      \pause% 
+      \pause%       
+    \item For $env\in\mathsf{list}(M)$,
+      \[
+      M[G], \mathrm{map}(\val(G),env) \models \phi)
+      \iff
+      \exists p\in G.\ M, [p,\preceq,\PP] \mathbin{{+}\!\!\!\!{+}} env \models
+      \forceisa(\phi).
+      \]
+    \end{enumerate}
+  \end{theorem} 
+\end{frame}
+
+\begin{frame}
+  \frametitle{The ctm approach to forcing, III}
+  By choosing the forcing notion $\lb \PP, {\preceq} ,\1\rb$
+  appropriately one can tune the first order properties of  $M[G]$ (for
+  any generic $G$).
+  \pause
+
+  
 \end{frame}
 
 \begin{frame}
   \frametitle{Other approaches}
   \begin{itemize}
-  \item<+-> \emph{Set theory in HOL}
+  \item<+-> Set theory over Isabelle/HOL:
     \begin{itemize}
     \item \isatt{HOLZF} \citep{DBLP:conf/ictac/Obua06}
     \item \isatt{ZFC{\uscore}in{\uscore}HOL}
@@ -100,7 +198,7 @@
     forcing and the independence of $\CH$ \citep{DBLP:conf/cpp/HanD20}.
   \end{itemize}
   %
-  \begin{block}{A word on consistency}<+->
+  \begin{block}{A word on consistency strength}<+->
     \begin{description}
       \setlength{\labelwidth}{12em}
       \setlength{\labelsep}{2em}
@@ -110,7 +208,7 @@
     \item[\isatt{HOLZF},
       \isatt{ZFC{\uscore}in{\uscore}HOL}]
       approximately $\ZF$ +  one   inaccessible. 
-    \item[Lean (CiC)] $\ZF$ + $\omega$ inaccessibles. 
+    \item[Lean (CiC)] $\ZF$ + $\omega$ inaccessibles \citep{carneiro-ms-thesis}. 
     \end{description}
   \end{block}
 \end{frame}
@@ -123,32 +221,77 @@
 \section{The development}
 
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
-\subsection{What did we accomplished?}
+\subsection{What did we accomplish?}
 
 \begin{frame}
-  \frametitle{What did we accomplished?}
+  \frametitle{What did we accomplish?}
   %
   \begin{shadowblock}{}
     \begin{enumerate}
-    \item We adapted \texttt{ZF-Constructible} to obtain
+    \item<+-> We adapted \texttt{ZF-Constructible} to obtain
       absoluteness results for nonempty transitive classes ($\leftarrow$
-      already in the 2020 release of Isabelle).
-    \item We formalized the forcing relation and proved the Fundamental
+      \alert{in Isabelle2020}).
+      %
+      \pause
+      
+      Around 40 absoluteness/closure lemmas now hold using weaker
+      hypotheses on the class $M$ (most of them, just that $M$ is
+      transitive and nonempty). 
+      %
+      \pause
+    \item<+-> We formalized the formula transformer $\forceisa$ and
+      hence the forcing relation $\forces$, and proved the Fundamental
       Theorems.
-    \item We showed that generic extensions of ctms of $\ZF$ are also
+    \item<+-> We showed that generic extensions of ctms of $\ZF$ are also
       ctms of $\ZF$ (respectively, adding $\AC$).
-    \item We provided the forcing notion that adds a Cohen real,
+    \item<+-> We provided the forcing notion that adds a Cohen real,
       therefore proving the existence of a nontrivial extension.
     \end{enumerate}
   \end{shadowblock}
 \end{frame}
 
+\begin{frame}
+  \frametitle{Some details}
+  \begin{enumerate}
+  \item<+-> Modifications to \texttt{ZF-Constructible}.
+
+
+  \item<+-> We formalized the formula transformer $\forceisa$ and
+    hence the forcing relation $\forces$, and proved the Fundamental
+    Theorems.
+  \item<+-> We showed that generic extensions of ctms of $\ZF$ are also
+    ctms of $\ZF$ (respectively, adding $\AC$).
+  \item<+-> We provided the forcing notion that adds a Cohen real,
+    therefore proving the existence of a nontrivial extension.
+  \end{enumerate}
+\end{frame}
 
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
 \subsection{A map}
 
 \begin{frame}
-  \frametitle{A map to the development}
+  \begin{center}
+    \only<01>{\includegraphics[scale=0.23]{kunen_powerset_01.png} \\ \includegraphics[scale=0.26]{isa_converted_01.png}}%
+    \only<02>{\includegraphics[scale=0.23]{kunen_powerset_02.png} \\ \includegraphics[scale=0.26]{isa_converted_02.png}}%
+    \only<03>{\includegraphics[scale=0.23]{kunen_powerset_03.png} \\ \includegraphics[scale=0.26]{isa_converted_03.png}}%
+    \only<04>{\includegraphics[scale=0.23]{kunen_powerset_04.png} \\ \includegraphics[scale=0.26]{isa_converted_04.png}}%
+    \only<05>{\includegraphics[scale=0.23]{kunen_powerset_05.png} \\ \includegraphics[scale=0.26]{isa_converted_05.png}}%
+    \only<06>{\includegraphics[scale=0.23]{kunen_powerset_06.png} \\ \includegraphics[scale=0.26]{isa_converted_06.png}}%
+    \only<07>{\includegraphics[scale=0.23]{kunen_powerset_07.png} \\ \includegraphics[scale=0.26]{isa_converted_07.png}}%
+    \only<08>{\includegraphics[scale=0.23]{kunen_powerset_08.png} \\ \includegraphics[scale=0.26]{isa_converted_08.png}}%
+    \only<09>{\includegraphics[scale=0.23]{kunen_powerset_09.png} \\ \includegraphics[scale=0.26]{isa_converted_09.png}}%
+    \only<10>{\includegraphics[scale=0.23]{kunen_powerset_10.png} \\ \includegraphics[scale=0.26]{isa_converted_10.png}}%
+    \only<11>{\includegraphics[scale=0.23]{kunen_powerset_11.png} \\ \includegraphics[scale=0.26]{isa_converted_11.png}}%
+    \only<12>{\includegraphics[scale=0.23]{kunen_powerset_12.png} \\ \includegraphics[scale=0.26]{isa_converted_12.png}}%
+    \only<13>{\includegraphics[scale=0.23]{kunen_powerset_13.png} \\ \includegraphics[scale=0.26]{isa_converted_13.png}}%
+    \only<14>{\includegraphics[scale=0.23]{kunen_powerset_14.png} \\ \includegraphics[scale=0.26]{isa_converted_14.png}}%
+    \only<15>{\includegraphics[scale=0.23]{kunen_powerset_15.png} \\ \includegraphics[scale=0.26]{isa_converted_15.png}}%
+    \only<16>{\includegraphics[scale=0.23]{kunen_powerset_16.png} \\ \includegraphics[scale=0.26]{isa_converted_16.png}}%
+    \only<17>{\includegraphics[scale=0.23]{kunen_powerset_17.png} \\ \includegraphics[scale=0.26]{isa_converted_17.png}}%
+    \only<18>{\includegraphics[scale=0.23]{kunen_powerset_18.png} \\ \includegraphics[scale=0.26]{isa_converted_18.png}}%
+    \only<19>{\includegraphics[scale=0.23]{kunen_powerset_19.png} \\ \includegraphics[scale=0.26]{isa_converted_19.png}}%
+    \only<20>{\includegraphics[scale=0.23]{kunen_powerset_20.png} \\ \includegraphics[scale=0.26]{isa_converted_20.png}}%
+  \end{center}
 \end{frame}
 
 \begin{frame}
@@ -201,11 +344,11 @@
   \end{block}
   %
   \begin{block}{Technical aids}<+->
-    \begin{enumerate}
-    \item<.-> Automatic relativization of concepts.
-    \item<+-> Relative functions.
-    \item<+->
-    \end{enumerate}
+    \begin{itemize}
+    \item<.-> Automatic relativization and proof of absoluteness of concepts.
+    \item<+-> ``Relative functions'' (e.g., $\P^M$, $\card{\cdot}^M$, $\cf^M$).
+    \item<+-> 
+    \end{itemize}
   \end{block}
 \end{frame}
 
@@ -225,6 +368,29 @@
 \end{frame}
 
 \end{document}
+
+%% - Más bola a la metateoría (ZF).
+%% 
+%% * es weak ---> falta de inducción/recursión, y el objeto
+%% central (forces) se define así.
+%% * too strong ---> not possible to have finitary consistency proofs
+%% 
+%% - ctm approach: bondades 
+%% 
+%% * absolutez de ordinal, etc
+%% * Modelos a dos valores.
+%% 
+%% - no definir locales, hablar menos de la arquitectura modular
+%% (no tanto del codigo en si)
+%% 
+%% - Pruebas mostrar:
+%% 
+%% density_mem ?
+%% powerset?
+%% choice? 
+
+
+
 %%% Local Variables: 
 %%% mode: latex
 %%% ispell-local-dictionary: "american"
