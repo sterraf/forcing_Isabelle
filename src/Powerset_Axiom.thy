@@ -111,8 +111,7 @@ lemma Pow_inter_MG:
   shows
     "Pow(a) \<inter> M[G] \<in> M[G]"
 proof -
-  from assms obtain \<tau> where
-    "\<tau> \<in> M" "val(G, \<tau>) = a"
+  from assms obtain \<tau> where "\<tau> \<in> M" "val(G, \<tau>) = a"
     using GenExtD by auto
   let ?Q="Pow(domain(\<tau>)\<times>P) \<inter> M"
   from \<open>\<tau>\<in>M\<close> 
@@ -138,25 +137,22 @@ proof -
     finally 
     show ?thesis using \<open>Q\<in>M\<close> by simp
   qed
-  let
-    ?\<pi>="?Q\<times>{one}"
-  let
-    ?b="val(G,?\<pi>)"
+  let ?\<pi>="?Q\<times>{one}"
+  let ?b="val(G,?\<pi>)"
   from \<open>?Q\<in>M\<close> 
   have "?\<pi>\<in>M"
     using one_in_P P_in_M transitivity
     by (simp flip: setclass_iff)
-  from \<open>?\<pi>\<in>M\<close> 
+  then
   have "?b \<in> M[G]"
     using GenExtI by simp
   have "Pow(a) \<inter> M[G] \<subseteq> ?b"
   proof
     fix c
     assume "c \<in> Pow(a) \<inter> M[G]"
-    then obtain \<chi> where
-      "c\<in>M[G]" "\<chi> \<in> M" "val(G,\<chi>) = c"
+    then obtain \<chi> where "c\<in>M[G]" "\<chi> \<in> M" "val(G,\<chi>) = c"
       using GenExtD by auto
-    let ?\<theta>="{sp \<in>domain(\<tau>)\<times>P . snd(sp) \<tturnstile> (Member(0,1)) [fst(sp),\<chi>] }"
+    let ?\<theta>="{\<sigma>p \<in>domain(\<tau>)\<times>P . snd(\<sigma>p) \<tturnstile> (Member(0,1)) [fst(\<sigma>p),\<chi>] }"
     have "arity(forces(Member(0,1))) = 6"
       using arity_forces_at by auto
     with \<open>domain(\<tau>) \<in> M\<close> \<open>\<chi> \<in> M\<close> 
@@ -164,8 +160,7 @@ proof -
       using P_in_M one_in_M leq_in_M sats_fst_snd_in_M
       by simp
     then 
-    have "?\<theta> \<in> ?Q"
-      by auto
+    have "?\<theta> \<in> ?Q" by auto
     then 
     have "val(G,?\<theta>) \<in> ?b"
       using one_in_G one_in_P generic val_of_elem [of ?\<theta> one ?\<pi> G]
@@ -201,13 +196,10 @@ proof -
       assume "x \<in> c"
       with \<open>c \<in> Pow(a) \<inter> M[G]\<close> 
       have "x \<in> a" "c\<in>M[G]" "x\<in>M[G]"
-        using transitivity_MG
-        by auto
-      with \<open>val(G, \<tau>) = a\<close> 
-      obtain \<sigma> where
-        "\<sigma>\<in>domain(\<tau>)" "val(G,\<sigma>) =  x"
-        using elem_of_val
-        by blast
+        using transitivity_MG by auto
+      with \<open>val(G, \<tau>) = a\<close>
+      obtain \<sigma> where "\<sigma>\<in>domain(\<tau>)" "val(G,\<sigma>) = x"
+        using elem_of_val by blast
       moreover note \<open>x\<in>c\<close> \<open>val(G,\<chi>) = c\<close>
       moreover from calculation 
       have "val(G,\<sigma>) \<in> val(G,\<chi>)"
@@ -216,8 +208,6 @@ proof -
       moreover from calculation 
       have "sats(M[G],Member(0,1),[x,c])"
         by simp
-      moreover 
-      have "Member(0,1)\<in>formula" by simp
       moreover 
       have "\<sigma>\<in>M"
       proof -
@@ -228,14 +218,15 @@ proof -
         show ?thesis
           using name_components_in_M by blast
       qed
-      moreover note \<open>\<chi> \<in> M\<close>
+      moreover 
+      note \<open>\<chi> \<in> M\<close>
       ultimately 
       obtain p where "p\<in>G" "(p \<tturnstile> Member(0,1) [\<sigma>,\<chi>])"
         using generic truth_lemma[of "Member(0,1)" "G" "[\<sigma>,\<chi>]" ] nat_simp_union
         by auto
       moreover from \<open>p\<in>G\<close> 
       have "p\<in>P"
-        using generic unfolding M_generic_def filter_def by blast
+        using generic by blast
       ultimately
       have "<\<sigma>,p>\<in>?\<theta>"
         using \<open>\<sigma>\<in>domain(\<tau>)\<close> by simp
