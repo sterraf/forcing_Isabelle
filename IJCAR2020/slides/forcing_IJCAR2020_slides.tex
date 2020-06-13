@@ -64,7 +64,7 @@
   \begin{block}{Pros}
     \begin{itemize}
     \item Most advanced set theory formalized (around 2017).
-    \item Closer to the mathematical practice of forcing.
+      % \item Closer to the mathematical practice of forcing.
     \item Structured proof language Isar
       \citep{DBLP:conf/tphol/Wenzel99}.
     \item Weak metatheory.
@@ -100,7 +100,25 @@
 
 \begin{frame}
   \frametitle{Paulson's \texttt{ZF-Constructible}}
-
+  Let $C :: {}$ \isatt{i} $\Rightarrow$ \isatt{o} be a predicate on sets.
+  \pause
+  \begin{block}{Relativization of $\sbq$}
+    $x \sbq^C y \equiv \forall z.\ C(z) \longrightarrow (z\in x
+    \longrightarrow z\in y)$.
+  \end{block}
+  \pause
+  \begin{block}{$\sbq$ is absolute}
+    $\forall x\ y.\ C(x) \land C(y) \longrightarrow (x \sbq^C y
+    \longleftrightarrow x\sbq y)$.
+  \end{block}
+  \pause 
+  \texttt{ZF-Constructible} develops relativized version of the axioms
+  and proves that many concepts are absolute for \textbf{transitive
+    classes} $C$
+  \[
+  x\in y \land C(y)  \longrightarrow C(x).
+  \]
+  satisfying additional axioms.
 \end{frame}
 
 
@@ -144,20 +162,19 @@
   \[
   M[G]\defi \{ \val(G,\punto{a}) : \punto{a}\in M\}
   \]
-  \pause
   \emph{Fundamentally}, \textbf{truth} in $M[G]$ is coded in $M$ by the
   function $\forceisa$.
   \pause
-  \begin{theorem}[Cohen, 1963]
+  \begin{theorem}[\citep{Cohen-CH-PNAS}]
     \begin{enumerate}
-    \item $\bigl(\forall G\visible<5->{\alert{\ni p}}.\quad M[G], [\val(G,\punto{a})]
+    \item $\bigl(\forall G\visible<4->{\alert{\ni p}}.\quad M[G], [\val(G,\punto{a})]
       \models \phi\bigr)
       \iff
       M,
-      [\only<-4>{\1}\alert{\only<5->{p\hspace{0.2ex}}},\PP,\preceq,\punto{a}]\models
+      [\only<-3>{\1}\alert{\only<4->{p\hspace{0.2ex}}},\PP,\preceq,\punto{a}]\models
       \forceisa(\phi)$.
     \item $\forceisa$ is definable over $M$.\phantom{$\punto{a}).\models \phi\bigr)
-      \iff M,$}\visible<6->{%
+      \iff M,$}\visible<5->{%
       $\overset{\searrow}{}$ \ 
       $\alert{p} \forces^M_{\PP,\preceq} \phi(\punto{a})$
       \  $\overset{\swarrow}{}$}
@@ -166,7 +183,7 @@
       \pause%       
     \item For $env\in\mathsf{list}(M)$,
       \[
-      M[G], \mathrm{map}(\val(G),env) \models \phi)
+      M[G], \mathrm{map}(\val(G),env) \models \phi
       \iff
       \exists p\in G.\ M, [p,\preceq,\PP] \mathbin{{+}\!\!\!\!{+}} env \models
       \forceisa(\phi).
@@ -181,8 +198,15 @@
   appropriately one can tune the first order properties of  $M[G]$ (for
   any generic $G$).
   \pause
-
-  
+  %
+  \begin{theorem}[\citep{Cohen-CH-PNAS}]
+    If $\PP$ is the set of finite partial binary functions with domain
+    included in $\aleph_2$, $M[G]$ satisfies the negation of the
+    \textbf{Continuum Hypothesis}:
+    \[
+    M[G] \models 2^{\aleph_0} >\aleph_1
+    \]
+  \end{theorem}
 \end{frame}
 
 \begin{frame}
@@ -228,23 +252,21 @@
   %
   \begin{shadowblock}{}
     \begin{enumerate}
-    \item<+-> We adapted \texttt{ZF-Constructible} to obtain
+    \item<1-> We adapted \texttt{ZF-Constructible} to obtain
       absoluteness results for nonempty transitive classes ($\leftarrow$
       \alert{in Isabelle2020}).
-      %
-      \pause
-      
-      Around 40 absoluteness/closure lemmas now hold using weaker
-      hypotheses on the class $M$ (most of them, just that $M$ is
-      transitive and nonempty). 
-      %
-      \pause
-    \item<+-> We formalized the formula transformer $\forceisa$ and
+
+      \visible<2->{
+        Around 40 absoluteness/closure lemmas now hold using weaker
+        hypotheses on the class $C$ (most of them, just that $C$ is
+        transitive and nonempty).
+      }
+    \item<3-> We formalized the formula transformer $\forceisa$ and
       hence the forcing relation $\forces$, and proved the Fundamental
       Theorems.
-    \item<+-> We showed that generic extensions of ctms of $\ZF$ are also
+    \item<4-> We showed that generic extensions of ctms of $\ZF$ are also
       ctms of $\ZF$ (respectively, adding $\AC$).
-    \item<+-> We provided the forcing notion that adds a Cohen real,
+    \item<5-> We provided the forcing notion that adds a Cohen real,
       therefore proving the existence of a nontrivial extension.
     \end{enumerate}
   \end{shadowblock}
@@ -252,45 +274,47 @@
 
 \begin{frame}
   \frametitle{Some details}
-  \begin{enumerate}
-  \item<+-> Modifications to \texttt{ZF-Constructible}.
-
-
+  \begin{enumerate}\setcounter{enumi}{1}
   \item<+-> We formalized the formula transformer $\forceisa$ and
     hence the forcing relation $\forces$, and proved the Fundamental
     Theorems.
+    \begin{itemize}
+    \item<+-> 
+    \item<+-> 
+    \end{itemize}
   \item<+-> We showed that generic extensions of ctms of $\ZF$ are also
     ctms of $\ZF$ (respectively, adding $\AC$).
-  \item<+-> We provided the forcing notion that adds a Cohen real,
-    therefore proving the existence of a nontrivial extension.
+    \begin{itemize}
+    \item<+-> We can see a bit of the code, compared to the actual math.
+    \end{itemize}
   \end{enumerate}
 \end{frame}
 
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
-\subsection{A map}
+\subsection{Math vs Code}
 
 \begin{frame}
   \begin{center}
-    \only<01>{\includegraphics[scale=0.23]{kunen_powerset_01.png} \\ \includegraphics[scale=0.26]{isa_converted_01.png}}%
-    \only<02>{\includegraphics[scale=0.23]{kunen_powerset_02.png} \\ \includegraphics[scale=0.26]{isa_converted_02.png}}%
-    \only<03>{\includegraphics[scale=0.23]{kunen_powerset_03.png} \\ \includegraphics[scale=0.26]{isa_converted_03.png}}%
-    \only<04>{\includegraphics[scale=0.23]{kunen_powerset_04.png} \\ \includegraphics[scale=0.26]{isa_converted_04.png}}%
-    \only<05>{\includegraphics[scale=0.23]{kunen_powerset_05.png} \\ \includegraphics[scale=0.26]{isa_converted_05.png}}%
-    \only<06>{\includegraphics[scale=0.23]{kunen_powerset_06.png} \\ \includegraphics[scale=0.26]{isa_converted_06.png}}%
-    \only<07>{\includegraphics[scale=0.23]{kunen_powerset_07.png} \\ \includegraphics[scale=0.26]{isa_converted_07.png}}%
-    \only<08>{\includegraphics[scale=0.23]{kunen_powerset_08.png} \\ \includegraphics[scale=0.26]{isa_converted_08.png}}%
-    \only<09>{\includegraphics[scale=0.23]{kunen_powerset_09.png} \\ \includegraphics[scale=0.26]{isa_converted_09.png}}%
-    \only<10>{\includegraphics[scale=0.23]{kunen_powerset_10.png} \\ \includegraphics[scale=0.26]{isa_converted_10.png}}%
-    \only<11>{\includegraphics[scale=0.23]{kunen_powerset_11.png} \\ \includegraphics[scale=0.26]{isa_converted_11.png}}%
-    \only<12>{\includegraphics[scale=0.23]{kunen_powerset_12.png} \\ \includegraphics[scale=0.26]{isa_converted_12.png}}%
-    \only<13>{\includegraphics[scale=0.23]{kunen_powerset_13.png} \\ \includegraphics[scale=0.26]{isa_converted_13.png}}%
-    \only<14>{\includegraphics[scale=0.23]{kunen_powerset_14.png} \\ \includegraphics[scale=0.26]{isa_converted_14.png}}%
-    \only<15>{\includegraphics[scale=0.23]{kunen_powerset_15.png} \\ \includegraphics[scale=0.26]{isa_converted_15.png}}%
-    \only<16>{\includegraphics[scale=0.23]{kunen_powerset_16.png} \\ \includegraphics[scale=0.26]{isa_converted_16.png}}%
-    \only<17>{\includegraphics[scale=0.23]{kunen_powerset_17.png} \\ \includegraphics[scale=0.26]{isa_converted_17.png}}%
-    \only<18>{\includegraphics[scale=0.23]{kunen_powerset_18.png} \\ \includegraphics[scale=0.26]{isa_converted_18.png}}%
-    \only<19>{\includegraphics[scale=0.23]{kunen_powerset_19.png} \\ \includegraphics[scale=0.26]{isa_converted_19.png}}%
-    \only<20>{\includegraphics[scale=0.23]{kunen_powerset_20.png} \\ \includegraphics[scale=0.26]{isa_converted_20.png}}%
+    \only<01>{\includegraphics[draft,scale=0.23]{kunen_powerset_01.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_01.png}}%
+    \only<02>{\includegraphics[draft,scale=0.23]{kunen_powerset_02.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_02.png}}%
+    \only<03>{\includegraphics[draft,scale=0.23]{kunen_powerset_03.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_03.png}}%
+    \only<04>{\includegraphics[draft,scale=0.23]{kunen_powerset_04.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_04.png}}%
+    \only<05>{\includegraphics[draft,scale=0.23]{kunen_powerset_05.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_05.png}}%
+    \only<06>{\includegraphics[draft,scale=0.23]{kunen_powerset_06.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_06.png}}%
+    \only<07>{\includegraphics[draft,scale=0.23]{kunen_powerset_07.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_07.png}}%
+    \only<08>{\includegraphics[draft,scale=0.23]{kunen_powerset_08.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_08.png}}%
+    \only<09>{\includegraphics[draft,scale=0.23]{kunen_powerset_09.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_09.png}}%
+    \only<10>{\includegraphics[draft,scale=0.23]{kunen_powerset_10.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_10.png}}%
+    \only<11>{\includegraphics[draft,scale=0.23]{kunen_powerset_11.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_11.png}}%
+    \only<12>{\includegraphics[draft,scale=0.23]{kunen_powerset_12.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_12.png}}%
+    \only<13>{\includegraphics[draft,scale=0.23]{kunen_powerset_13.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_13.png}}%
+    \only<14>{\includegraphics[draft,scale=0.23]{kunen_powerset_14.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_14.png}}%
+    \only<15>{\includegraphics[draft,scale=0.23]{kunen_powerset_15.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_15.png}}%
+    \only<16>{\includegraphics[draft,scale=0.23]{kunen_powerset_16.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_16.png}}%
+    \only<17>{\includegraphics[draft,scale=0.23]{kunen_powerset_17.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_17.png}}%
+    \only<18>{\includegraphics[draft,scale=0.23]{kunen_powerset_18.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_18.png}}%
+    \only<19>{\includegraphics[draft,scale=0.23]{kunen_powerset_19.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_19.png}}%
+    \only<20>{\includegraphics[draft,scale=0.23]{kunen_powerset_20.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_20.png}}%
   \end{center}
 \end{frame}
 
@@ -314,21 +338,14 @@
              }
 \end{frame}
 
-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
-\subsection{}
-
-\begin{frame}
-  \frametitle{}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{}
-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
-\subsection{}
-
-\begin{frame}
-  \frametitle{}
-\end{frame}
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \section{}
+%% %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
+%% \subsection{}
+%% 
+%% \begin{frame}
+%%   \frametitle{}
+%% \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Looking forward}
@@ -347,7 +364,6 @@
     \begin{itemize}
     \item<.-> Automatic relativization and proof of absoluteness of concepts.
     \item<+-> ``Relative functions'' (e.g., $\P^M$, $\card{\cdot}^M$, $\cf^M$).
-    \item<+-> 
     \end{itemize}
   \end{block}
 \end{frame}
