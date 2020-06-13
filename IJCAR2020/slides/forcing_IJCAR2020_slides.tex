@@ -174,13 +174,12 @@
       [\only<-3>{\1}\alert{\only<4->{p\hspace{0.2ex}}},\PP,\preceq,\punto{a}]\models
       \forceisa(\phi)$.
     \item $\forceisa$ is definable over $M$.\phantom{$\punto{a}).\models \phi\bigr)
-      \iff M,$}\visible<5->{%
+      \iff M,$}\visible<4->{%
       $\overset{\searrow}{}$ \ 
       $\alert{p} \forces^M_{\PP,\preceq} \phi(\punto{a})$
       \  $\overset{\swarrow}{}$}
       \pause% 
       \pause% 
-      \pause%       
     \item For $env\in\mathsf{list}(M)$,
       \[
       M[G], \mathrm{map}(\val(G),env) \models \phi
@@ -204,9 +203,25 @@
     included in $\aleph_2$, $M[G]$ satisfies the negation of the
     \textbf{Continuum Hypothesis}:
     \[
-    M[G] \models 2^{\aleph_0} >\aleph_1
+    M[G] \models 2^{\aleph_0} >\aleph_1.
     \]
   \end{theorem}
+  \pause
+  %
+  In the ctm approach:
+  \begin{enumerate}
+  \item<+-> Countability ensures that generics exist (by
+    Rasiowa-Sikorski Lemma).
+    %  
+  \item<+-> Absoluteness provide seamless
+    treatment of many concepts.
+    \begin{center}
+      $\alpha$ is an ordinal \ $\iff$ \  $M\models \alpha$ is
+      an ordinal \  $\iff$ \  $M[G]\models \alpha$ is an ordinal
+    \end{center}
+    %
+  \item<+-> Both $M$ and $M[G]$ are standard (two-valued) models.
+  \end{enumerate}
 \end{frame}
 
 \begin{frame}
@@ -285,7 +300,8 @@
   \item<+-> We showed that generic extensions of ctms of $\ZF$ are also
     ctms of $\ZF$ (respectively, adding $\AC$).
     \begin{itemize}
-    \item<+-> We can see a bit of the code, compared to the actual math.
+    \item<+-> We may compare some of the code with the actual
+      math \citep{kunen2011set}.
     \end{itemize}
   \end{enumerate}
 \end{frame}
@@ -293,49 +309,29 @@
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
 \subsection{Math vs Code}
 
-\begin{frame}
+\begin{frame}<1-12>[label=code-review]
   \begin{center}
-    \only<01>{\includegraphics[draft,scale=0.23]{kunen_powerset_01.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_01.png}}%
-    \only<02>{\includegraphics[draft,scale=0.23]{kunen_powerset_02.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_02.png}}%
-    \only<03>{\includegraphics[draft,scale=0.23]{kunen_powerset_03.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_03.png}}%
-    \only<04>{\includegraphics[draft,scale=0.23]{kunen_powerset_04.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_04.png}}%
-    \only<05>{\includegraphics[draft,scale=0.23]{kunen_powerset_05.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_05.png}}%
-    \only<06>{\includegraphics[draft,scale=0.23]{kunen_powerset_06.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_06.png}}%
-    \only<07>{\includegraphics[draft,scale=0.23]{kunen_powerset_07.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_07.png}}%
-    \only<08>{\includegraphics[draft,scale=0.23]{kunen_powerset_08.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_08.png}}%
-    \only<09>{\includegraphics[draft,scale=0.23]{kunen_powerset_09.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_09.png}}%
-    \only<10>{\includegraphics[draft,scale=0.23]{kunen_powerset_10.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_10.png}}%
-    \only<11>{\includegraphics[draft,scale=0.23]{kunen_powerset_11.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_11.png}}%
-    \only<12>{\includegraphics[draft,scale=0.23]{kunen_powerset_12.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_12.png}}%
-    \only<13>{\includegraphics[draft,scale=0.23]{kunen_powerset_13.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_13.png}}%
-    \only<14>{\includegraphics[draft,scale=0.23]{kunen_powerset_14.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_14.png}}%
-    \only<15>{\includegraphics[draft,scale=0.23]{kunen_powerset_15.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_15.png}}%
-    \only<16>{\includegraphics[draft,scale=0.23]{kunen_powerset_16.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_16.png}}%
-    \only<17>{\includegraphics[draft,scale=0.23]{kunen_powerset_17.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_17.png}}%
-    \only<18>{\includegraphics[draft,scale=0.23]{kunen_powerset_18.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_18.png}}%
-    \only<19>{\includegraphics[draft,scale=0.23]{kunen_powerset_19.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_19.png}}%
-    \only<20>{\includegraphics[draft,scale=0.23]{kunen_powerset_20.png} \\ \includegraphics[draft,scale=0.26]{isa_converted_20.png}}%
+    \only<01>{\includegraphics[scale=0.23]{kunen_powerset_01.png} \\ \includegraphics[scale=0.26]{isa_converted_01.png}}%
+    \only<02>{\includegraphics[scale=0.23]{kunen_powerset_02.png} \\ \includegraphics[scale=0.26]{isa_converted_02.png}}%
+    \only<03>{\includegraphics[scale=0.23]{kunen_powerset_03.png} \\ \includegraphics[scale=0.26]{isa_converted_03.png}}%
+    \only<04>{\includegraphics[scale=0.23]{kunen_powerset_04.png} \\ \includegraphics[scale=0.26]{isa_converted_04.png}}%
+    \only<05>{\includegraphics[scale=0.23]{kunen_powerset_05.png} \\ \includegraphics[scale=0.26]{isa_converted_05.png}}%
+    \only<06>{\includegraphics[scale=0.23]{kunen_powerset_06.png} \\ \includegraphics[scale=0.26]{isa_converted_06.png}}%
+    \only<07>{\includegraphics[scale=0.23]{kunen_powerset_07.png} \\ \includegraphics[scale=0.26]{isa_converted_07.png}}%
+    \only<08>{\includegraphics[scale=0.23]{kunen_powerset_08.png} \\ \includegraphics[scale=0.26]{isa_converted_08.png}}%
+    \only<09>{\includegraphics[scale=0.23]{kunen_powerset_09.png} \\ \includegraphics[scale=0.26]{isa_converted_09.png}}%
+    \only<10>{\includegraphics[scale=0.23]{kunen_powerset_10.png} \\ \includegraphics[scale=0.26]{isa_converted_10.png}}%
+    \only<11>{\includegraphics[scale=0.23]{kunen_powerset_11.png} \\ \includegraphics[scale=0.26]{isa_converted_11.png}}%
+    \only<12>{\includegraphics[scale=0.23]{kunen_powerset_12.png} \\ \includegraphics[scale=0.26]{isa_converted_12.png}}%
+    \only<13>{\includegraphics[scale=0.23]{kunen_powerset_13.png} \\ \includegraphics[scale=0.26]{isa_converted_13.png}}%
+    \only<14>{\includegraphics[scale=0.23]{kunen_powerset_14.png} \\ \includegraphics[scale=0.26]{isa_converted_14.png}}%
+    \only<15>{\includegraphics[scale=0.23]{kunen_powerset_15.png} \\ \includegraphics[scale=0.26]{isa_converted_15.png}}%
+    \only<16>{\includegraphics[scale=0.23]{kunen_powerset_16.png} \\ \includegraphics[scale=0.26]{isa_converted_16.png}}%
+    \only<17>{\includegraphics[scale=0.23]{kunen_powerset_17.png} \\ \includegraphics[scale=0.26]{isa_converted_17.png}}%
+    \only<18>{\includegraphics[scale=0.23]{kunen_powerset_18.png} \\ \includegraphics[scale=0.26]{isa_converted_18.png}}%
+    \only<19>{\includegraphics[scale=0.23]{kunen_powerset_19.png} \\ \includegraphics[scale=0.26]{isa_converted_19.png}}%
+    \only<20>{\includegraphics[scale=0.23]{kunen_powerset_20.png} \\ \includegraphics[scale=0.26]{isa_converted_20.png}}%
   \end{center}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Locale structure} 
-             {  
-               \renewcommand{\arraystretch}{1.5}               \begin{tabular}{rcl}
-                 \texttt{forcing{\uscore}notion} & = & preorder $\PP$ with top. \\
-                 %    \texttt{M{\uscore}ZF} & = & set model of the $\ZF$ axioms \\ 
-                 \texttt{M{\uscore}ZF{\uscore}trans} & = & set model $M$ of the $\ZF$
-                 axioms \alert{+}  $M$ transitive \\ 
-                 \texttt{M{\uscore}ctm} & = &  \texttt{M{\uscore}ZF{\uscore}trans} \alert{+}
-                 $M$ countable \\
-                 \texttt{forcing{\uscore}data} & =  & \texttt{M{\uscore}ctm} \alert{+}
-                 \texttt{forcing{\uscore}notion} in $M$\\
-                 \texttt{separative{\uscore}notion} & = &
-                 \texttt{forcing{\uscore}notion} \alert{+} $\PP$ separative \\
-                 \texttt{M{\uscore}ctm{\uscore}separative} & = &
-                 \texttt{forcing{\uscore}data} \alert{+} \texttt{separative{\uscore}notion}
-               \end{tabular} 
-             }
 \end{frame}
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -382,6 +378,35 @@
   \bibliographystyle{mi-estilo-else}
   \bibliography{../forcing_in_isabelle_zf}
 \end{frame}
+
+\begin{frame}
+  \frametitle{Extra: Locale structure} 
+             {  
+               \renewcommand{\arraystretch}{1.5}               \begin{tabular}{rcl}
+                 \texttt{forcing{\uscore}notion} & = & preorder $\PP$ with top. \\
+                 %    \texttt{M{\uscore}ZF} & = & set model of the $\ZF$ axioms \\ 
+                 \texttt{M{\uscore}ZF{\uscore}trans} & = & set model $M$ of the $\ZF$
+                 axioms \alert{+}  $M$ transitive \\ 
+                 \texttt{M{\uscore}ctm} & = &  \texttt{M{\uscore}ZF{\uscore}trans} \alert{+}
+                 $M$ countable \\
+                 \texttt{forcing{\uscore}data} & =  & \texttt{M{\uscore}ctm} \alert{+}
+                 \texttt{forcing{\uscore}notion} in $M$\\
+                 \texttt{separative{\uscore}notion} & = &
+                 \texttt{forcing{\uscore}notion} \alert{+} $\PP$ separative \\
+                 \texttt{M{\uscore}ctm{\uscore}separative} & = &
+                 \texttt{forcing{\uscore}data} \alert{+} \texttt{separative{\uscore}notion}
+               \end{tabular} 
+             }
+\end{frame}
+
+\begin{frame}
+  \frametitle{Extra: More code review} 
+  We only show the second inclusion $c\sbq \vartheta_G =
+  \val(G,\vartheta)$ (the first one is proved in the
+  course of the 24 folded lines).
+\end{frame}
+
+\againframe<12-20>{code-review}
 
 \end{document}
 
