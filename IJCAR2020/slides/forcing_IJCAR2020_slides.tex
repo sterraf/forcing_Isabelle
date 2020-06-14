@@ -67,7 +67,7 @@
       % \item Closer to the mathematical practice of forcing.
     \item Structured proof language Isar
       \citep{DBLP:conf/tphol/Wenzel99}.
-    \item Weak metatheory.
+    \item Low in consistency strength.
     \end{itemize}
   \end{block}
   %
@@ -86,7 +86,7 @@
   \frametitle{Isabelle/ZF \citep{DBLP:journals/jar/PaulsonG96}}
   \begin{itemize}
   \item<+-> An object logic of Isabelle axiomatized over the
-    intuitionistic fragment of HOL \emph{Pure}. 
+    intuitionistic fragment  \emph{Pure} of higher order logic.
   \item<+-> It postulates \alert<3->{two types}: \isatt{i}
     (sets) and \isatt{o} (booleans). \visible<3->{\alert{Not
       inductively defined!}}
@@ -95,44 +95,41 @@
   \end{itemize}
 \end{frame}
 
-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
-\subsection{Paulson's \texttt{ZF-Constructible}}
 
-\begin{frame}
-  \frametitle{\texttt{ZF-Constructible} \citep{paulson_2003}}
-  Let $C :: {}$ \isatt{i} $\Rightarrow$ \isatt{o} be a predicate on sets.
-  \pause
-  \begin{block}{Relativization of $\sbq$}
-    $x \sbq^C y \equiv \forall z.\ C(z) \longrightarrow (z\in x
-    \longrightarrow z\in y)$.
-  \end{block}
-  \pause
-  \begin{block}{$\sbq$ is absolute}
-    $\forall x\ y.\ C(x) \land C(y) \longrightarrow (x \sbq^C y
-    \longleftrightarrow x\sbq y)$.
-  \end{block}
-  \pause 
-  \texttt{ZF-Constructible} develops relativized version of the axioms
-  and proves that many concepts are absolute for \textbf{transitive
-    classes} $C$
-  \[
-  x\in y \land C(y)  \longrightarrow C(x).
-  \]
-  satisfying additional axioms.
-\end{frame}
+%% \begin{frame}
+%%   \frametitle{\texttt{ZF-Constructible} \citep{paulson_2003}}
+%%   Let $C :: {}$ \isatt{i} $\Rightarrow$ \isatt{o} be a predicate on sets.
+%%   \pause
+%%   \begin{block}{Relativization of $\sbq$}
+%%     $x \sbq^C y \equiv \forall z.\ C(z) \longrightarrow (z\in x
+%%     \longrightarrow z\in y)$.
+%%   \end{block}
+%%   \pause
+%%   \begin{block}{$\sbq$ is absolute}
+%%     $\forall x\ y.\ C(x) \land C(y) \longrightarrow (x \sbq^C y
+%%     \longleftrightarrow x\sbq y)$.
+%%   \end{block}
+%%   \pause 
+%%   \texttt{ZF-Constructible} develops relativized version of the axioms
+%%   and proves that many concepts are absolute for \textbf{transitive
+%%     classes} $C$
+%%   \[
+%%   x\in y \land C(y)  \longrightarrow C(x).
+%%   \]
+%%   satisfying additional axioms.
+%% \end{frame}
 
 
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
 \subsection{The ctm approach to forcing}
 
 \begin{frame}
-  \frametitle{The ctm approach to forcing, I}
+  \frametitle{The ctm approach to forcing, 1/4}
   \begin{block}{Countable transitive model (ctm) of $\ZF$}
     $\lb M, E\rb \models \ZF$ where
     \begin{itemize}
-    \item $M$ is countable.
-    \item $E \defi {\in}\restriction M$.
-    \item $x\in y \in M \implies x\in M$.
+    \item \alert<3>{$M$ is \emph{standard}:\quad $E \defi {\in}\restriction M$.}
+    \item $M$ is countable, and \emph{transitive}:\quad $x\in y \in M \implies x\in M$.
     \end{itemize}
   \end{block}
   %
@@ -140,25 +137,44 @@
   %
   \textbf{Note}. If $\lb N, R\rb \models \ZF$ with $R$ wellfounded, then there
   exists a ctm $M$ of $\ZF$.
-  %
   \pause
+
+  It makes sense to compare, for $x,y\in M$:
+  \[
+  x \sbq y
+  \begin{overlayarea}{4.5em}{2ex}
+    \ \ \ \only<3-4>{\ \  and}\only<5>{\alert{$\iff$}}
+  \end{overlayarea}
+  M \models x\sbq y
+  \]
+  \pause
+  The right hand side can be written as a term of type \isatt{o}:
+  $\forall z.\ z\in M \longrightarrow (z\in x \longrightarrow z\in
+  y)$,
+  the \textbf{relativization} of $\sbq$ to $M$. 
+  \pause
+
+  In this case, we know that  $\sbq$  is \textbf{absolute}.
   %
-  \begin{block}{Forcing notions and generics}
-    \begin{itemize}
-    \item $\lb \PP, {\preceq} ,\1\rb$ preorder with top.
-    \item A filter $G\sbq \PP$ is \textbf{$M$-generic} if it meets
-      every dense $D\sbq \PP$ in $M$.
-    \end{itemize}
-  \end{block}
+  %% \begin{block}{Forcing notions and generics}
+  %%   \begin{itemize}
+  %%   \item $\lb \PP, {\preceq} ,\1\rb$ preorder with top.
+  %%   \item A filter $G\sbq \PP$ is \textbf{$M$-generic} if it meets
+  %%     every dense $D\sbq \PP$ in $M$.
+  %%   \end{itemize}
+  %% \end{block}
 \end{frame}
 
 \begin{frame}
-  \frametitle{The ctm approach to forcing, II}
-  Given $G\sbq \PP$, we can adjoin it to $M$ to form the
+  \frametitle{The ctm approach to forcing, 2/4}
+  Let $\lb \PP, {\preceq} ,\1\rb \in M$ be a \emph{forcing notion} (a preorder with top). Given 
+  an \emph{$M$-generic} filter $G\sbq \PP$, 
+  we can adjoin it to $M$ to form the
   \textbf{generic extension} $M[G]$.
   \pause
+
   Every $a\in M[G]$ is coded by
-  some $\punto{a}\in M$ through the definable (in $M$) function $\val$:
+  some $\punto{a}\in M$ through the $M$-definable function $\val$:
   \[
   M[G]\defi \{ \val(G,\punto{a}) : \punto{a}\in M\}
   \]
@@ -192,8 +208,30 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{The ctm approach to forcing, III}
-  By choosing the forcing notion $\lb \PP, {\preceq} ,\1\rb$
+  \frametitle{The ctm approach to forcing, 3/4}
+  \begin{block}{Benefits of using ctms}
+    \begin{enumerate}
+    \item<+-> Countability ensures that generics exist (by
+      Rasiowa-Sikorski Lemma).
+      %  
+    \item<+-> Absoluteness provide seamless
+      treatment of many concepts.
+      \begin{center}
+        $\alpha$ is an ordinal \ $\iff$ \  $M\models \alpha$ is
+        an ordinal \  $\iff$ \  $M[G]\models \alpha$ is an ordinal
+      \end{center}
+      %
+    \item<+-> Both $M$ and $M[G]$ are standard (two-valued) models.
+      %
+    \item<+-> Ctms are
+      used in an important (perhaps the greatest) fraction of the literature.
+    \end{enumerate}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The ctm approach to forcing, 4/4}
+  By choosing  $\lb \PP, {\preceq} ,\1\rb$
   appropriately one can tune the first order properties of  $M[G]$ (for
   any generic $G$).
   \pause
@@ -201,40 +239,30 @@
   \begin{theorem}[\citep{Cohen-CH-PNAS}]
     If $\PP$ is the set of finite partial binary functions with domain
     included in $\aleph_2$, $M[G]$ satisfies the negation of the
-    \textbf{Continuum Hypothesis}:
+    \textbf{Continuum Hypothesis} ($\CH$):
     \[
     M[G] \models 2^{\aleph_0} >\aleph_1.
     \]
   \end{theorem}
   \pause
-  %
-  In the ctm approach:
-  \begin{enumerate}
-  \item<+-> Countability ensures that generics exist (by
-    Rasiowa-Sikorski Lemma).
-    %  
-  \item<+-> Absoluteness provide seamless
-    treatment of many concepts.
-    \begin{center}
-      $\alpha$ is an ordinal \ $\iff$ \  $M\models \alpha$ is
-      an ordinal \  $\iff$ \  $M[G]\models \alpha$ is an ordinal
-    \end{center}
-    %
-  \item<+-> Both $M$ and $M[G]$ are standard (two-valued) models.
-  \end{enumerate}
+  
+  Formalizing the independence of $\CH$ from the axioms of $\ZFC$
+  using ctms is one of the main goals of our project.
 \end{frame}
 
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
+\subsection{Other approaches}
 \begin{frame}
-  \frametitle{Other approaches}
+  \frametitle{Other approaches to set theory and forcing}
   \begin{itemize}
+  \item<+-> \alert{Lean}: Full formalization of the Boolean-valued approach to
+    forcing and the independence of $\CH$ \citep{DBLP:conf/cpp/HanD20}.
   \item<+-> Set theory over Isabelle/HOL:
     \begin{itemize}
     \item \isatt{HOLZF} \citep{DBLP:conf/ictac/Obua06}
     \item \isatt{ZFC{\uscore}in{\uscore}HOL}
       \citep{ZFC_in_HOL-AFP}
     \end{itemize}
-  \item<+-> \alert{Lean}: Full formalization of the Boolean-valued approach to
-    forcing and the independence of $\CH$ \citep{DBLP:conf/cpp/HanD20}.
   \end{itemize}
   %
   \begin{block}{A word on consistency strength}<+->
@@ -294,8 +322,11 @@
     hence the forcing relation $\forces$, and proved the Fundamental
     Theorems.
     \begin{itemize}
-    \item<+-> 
-    \item<+-> 
+    \item<+-> $\forceisa$ is defined by induction on internalized
+      formulas.
+    \item<+-> The base cases  $\forceisa(x\in y)$ and  $\forceisa(x =
+      y)$ are  defined by wellfounded
+      recursion, which \alert{must also be internalized}.
     \end{itemize}
   \item<+-> We showed that generic extensions of ctms of $\ZF$ are also
     ctms of $\ZF$ (respectively, adding $\AC$).
@@ -311,26 +342,26 @@
 
 \begin{frame}<1-12>[label=code-review]
   \begin{center}\setlength{\fboxsep}{0pt}
-    \only<01>{\includegraphics[scale=0.23]{kunen_powerset_01.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_01.png}}}%
-    \only<02>{\includegraphics[scale=0.23]{kunen_powerset_02.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_02.png}}}%
-    \only<03>{\includegraphics[scale=0.23]{kunen_powerset_03.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_03.png}}}%
-    \only<04>{\includegraphics[scale=0.23]{kunen_powerset_04.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_04.png}}}%
-    \only<05>{\includegraphics[scale=0.23]{kunen_powerset_05.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_05.png}}}%
-    \only<06>{\includegraphics[scale=0.23]{kunen_powerset_06.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_06.png}}}%
-    \only<07>{\includegraphics[scale=0.23]{kunen_powerset_07.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_07.png}}}%
-    \vspace{3.00115pt}\only<08>{\includegraphics[scale=0.23]{kunen_powerset_08.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_08.png}}}%
-    \only<09>{\includegraphics[scale=0.23]{kunen_powerset_09.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_09.png}}}%
-    \only<10>{\includegraphics[scale=0.23]{kunen_powerset_10.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_10.png}}}%
-    \only<11>{\includegraphics[scale=0.23]{kunen_powerset_11.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_11.png}}}%
-    \only<12>{\includegraphics[scale=0.23]{kunen_powerset_12.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_12.png}}}%
-    \only<13>{\includegraphics[scale=0.23]{kunen_powerset_13.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_13.png}}}%
-    \only<14>{\includegraphics[scale=0.23]{kunen_powerset_14.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_14.png}}}%
-    \only<15>{\includegraphics[scale=0.23]{kunen_powerset_15.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_15.png}}}%
-    \only<16>{\includegraphics[scale=0.23]{kunen_powerset_16.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_16.png}}}%
-    \only<17>{\includegraphics[scale=0.23]{kunen_powerset_17.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_17.png}}}%
-    \only<18>{\includegraphics[scale=0.23]{kunen_powerset_18.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_18.png}}}%
-    \only<19>{\includegraphics[scale=0.23]{kunen_powerset_19.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_19.png}}}%
-    \only<20>{\includegraphics[scale=0.23]{kunen_powerset_20.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_20.png}}}%
+    \only<01>{\includegraphics[draft,scale=0.23]{kunen_powerset_01.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_01.png}}}%
+    \only<02>{\includegraphics[draft,scale=0.23]{kunen_powerset_02.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_02.png}}}%
+    \only<03>{\includegraphics[draft,scale=0.23]{kunen_powerset_03.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_03.png}}}%
+    \only<04>{\includegraphics[draft,scale=0.23]{kunen_powerset_04.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_04.png}}}%
+    \only<05>{\includegraphics[draft,scale=0.23]{kunen_powerset_05.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_05.png}}}%
+    \only<06>{\includegraphics[draft,scale=0.23]{kunen_powerset_06.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_06.png}}}%
+    \only<07>{\includegraphics[draft,scale=0.23]{kunen_powerset_07.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_07.png}}}%
+    \vspace{3.00115pt}\only<08>{\includegraphics[draft,scale=0.23]{kunen_powerset_08.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_08.png}}}%
+    \only<09>{\includegraphics[draft,scale=0.23]{kunen_powerset_09.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_09.png}}}%
+    \only<10>{\includegraphics[draft,scale=0.23]{kunen_powerset_10.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_10.png}}}%
+    \only<11>{\includegraphics[draft,scale=0.23]{kunen_powerset_11.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_11.png}}}%
+    \only<12>{\includegraphics[draft,scale=0.23]{kunen_powerset_12.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_12.png}}}%
+    \only<13>{\includegraphics[draft,scale=0.23]{kunen_powerset_13.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_13.png}}}%
+    \only<14>{\includegraphics[draft,scale=0.23]{kunen_powerset_14.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_14.png}}}%
+    \only<15>{\includegraphics[draft,scale=0.23]{kunen_powerset_15.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_15.png}}}%
+    \only<16>{\includegraphics[draft,scale=0.23]{kunen_powerset_16.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_16.png}}}%
+    \only<17>{\includegraphics[draft,scale=0.23]{kunen_powerset_17.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_17.png}}}%
+    \only<18>{\includegraphics[draft,scale=0.23]{kunen_powerset_18.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_18.png}}}%
+    \only<19>{\includegraphics[draft,scale=0.23]{kunen_powerset_19.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_19.png}}}%
+    \only<20>{\includegraphics[draft,scale=0.23]{kunen_powerset_20.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_20.png}}}%
   \end{center}
 \end{frame}
 
@@ -380,7 +411,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Extra: Locale structure} 
+  \frametitle{Extra: Locale structure involving set models} 
              {  
                \renewcommand{\arraystretch}{1.5}               \begin{tabular}{rcl}
                  \texttt{forcing{\uscore}notion} & = & preorder $\PP$ with top. \\
@@ -390,11 +421,13 @@
                  \texttt{M{\uscore}ctm} & = &  \texttt{M{\uscore}ZF{\uscore}trans} \alert{+}
                  $M$ countable \\
                  \texttt{forcing{\uscore}data} & =  & \texttt{M{\uscore}ctm} \alert{+}
-                 \texttt{forcing{\uscore}notion} in $M$\\
+                 \texttt{forcing{\uscore}notion} $\PP\in M$\\
                  \texttt{separative{\uscore}notion} & = &
                  \texttt{forcing{\uscore}notion} \alert{+} $\PP$ separative \\
                  \texttt{M{\uscore}ctm{\uscore}separative} & = &
-                 \texttt{forcing{\uscore}data} \alert{+} \texttt{separative{\uscore}notion}
+                 \texttt{forcing{\uscore}data} \alert{+}
+                 \texttt{separative{\uscore}notion} \\
+                 \texttt{G{\uscore}generic} & = & \texttt{forcing{\uscore}data} \alert{+} $G$ is $M$-generic
                \end{tabular} 
              }
 \end{frame}
@@ -406,7 +439,7 @@
   course of the 24 folded lines).
 \end{frame}
 
-\againframe<12-20>{code-review}
+\againframe<13-20>{code-review}
 
 \end{document}
 
@@ -416,19 +449,6 @@
 %% central (forces) se define así.
 %% * too strong ---> not possible to have finitary consistency proofs
 %% 
-%% - ctm approach: bondades 
-%% 
-%% * absolutez de ordinal, etc
-%% * Modelos a dos valores.
-%% 
-%% - no definir locales, hablar menos de la arquitectura modular
-%% (no tanto del codigo en si)
-%% 
-%% - Pruebas mostrar:
-%% 
-%% density_mem ?
-%% powerset?
-%% choice? 
 
 
 
