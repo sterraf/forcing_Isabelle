@@ -148,13 +148,15 @@
   M \models x\sbq y
   \]
   \pause
-  The right hand side can be written as a term of type \isatt{o}:
-  $\forall z.\ z\in M \longrightarrow (z\in x \longrightarrow z\in
+  The rhs can be written as a term of type \isatt{o}:
+
+  {} \hfill   $\forall z.\ z\in M \longrightarrow (z\in x \longrightarrow z\in
   y)$,
-  the \textbf{relativization} of $\sbq$ to $M$. 
+  \hfill the \textbf{relativization} $\sbq^M$ of $\sbq$ to $M$. 
   \pause
 
-  In this case, we know that  $\sbq$  is \textbf{absolute}.
+  In this case, we know that  $\sbq$  is \textbf{absolute for
+    transitive models}.
   %
   %% \begin{block}{Forcing notions and generics}
   %%   \begin{itemize}
@@ -178,7 +180,7 @@
   \[
   M[G]\defi \{ \val(G,\punto{a}) : \punto{a}\in M\}
   \]
-  \emph{Fundamentally}, \textbf{truth} in $M[G]$ is coded in $M$ by the
+  Fundamentally, \textbf{truth} in $M[G]$ is coded in $M$ by the
   function $\forceisa$.
   \pause
   \begin{theorem}[\citep{Cohen-CH-PNAS}]
@@ -214,7 +216,7 @@
     \item<+-> Countability ensures that generics exist (by
       Rasiowa-Sikorski Lemma).
       %  
-    \item<+-> Absoluteness provide seamless
+    \item<+-> Absoluteness provides seamless
       treatment of many concepts.
       \begin{center}
         $\alpha$ is an ordinal \ $\iff$ \  $M\models \alpha$ is
@@ -238,7 +240,7 @@
   %
   \begin{theorem}[\citep{Cohen-CH-PNAS}]
     If $\PP$ is the set of finite partial binary functions with domain
-    included in $\aleph_2$, $M[G]$ satisfies the negation of the
+    included in $\aleph_2^M$, $M[G]$ satisfies the negation of the
     \textbf{Continuum Hypothesis} ($\CH$):
     \[
     M[G] \models 2^{\aleph_0} >\aleph_1.
@@ -295,21 +297,16 @@
   %
   \begin{shadowblock}{}
     \begin{enumerate}
-    \item<1-> We adapted \texttt{ZF-Constructible} to obtain
-      absoluteness results for nonempty transitive classes ($\leftarrow$
-      \alert{in Isabelle2020}).
-
-      \visible<2->{
-        Around 40 absoluteness/closure lemmas now hold using weaker
-        hypotheses on the class $C$ (most of them, just that $C$ is
-        transitive and nonempty).
-      }
-    \item<3-> We formalized the formula transformer $\forceisa$ and
+    \item<1-> We adapted the \texttt{ZF-Constructible} library
+      \citep{paulson_2003} to obtain
+      absoluteness results for nonempty transitive classes ($\to$
+      \alert{Isabelle2020}).
+    \item<2-> We formalized the formula transformer $\forceisa$ and
       hence the forcing relation $\forces$, and proved the Fundamental
       Theorems.
-    \item<4-> We showed that generic extensions of ctms of $\ZF$ are also
+    \item<3-> We showed that generic extensions of ctms of $\ZF$ are also
       ctms of $\ZF$ (respectively, adding $\AC$).
-    \item<5-> We provided the forcing notion that adds a Cohen real,
+    \item<4-> We provided the forcing notion that adds a Cohen real,
       therefore proving the existence of a nontrivial extension.
     \end{enumerate}
   \end{shadowblock}
@@ -317,24 +314,64 @@
 
 \begin{frame}
   \frametitle{Some details}
+  \begin{enumerate}%\setcounter{enumi}{1}
+  \item We adapted \texttt{ZF-Constructible} to obtain
+    sharper absoluteness results.
+  \end{enumerate}
+
+  This library contains a major development of relativization and
+  absoluteness for \emph{classes} $C :: {}$ \isatt{i} $\Rightarrow$
+  \isatt{o}, including the definition of the set \isatt{formula} ::
+  \isatt{i} of internal formulas and model theoretic satisfaction. 
+  \pause
+  \begin{block}{Relativization and synthesis discipline}
+    \begin{enumerate}[I]
+    \item<+-> $p=\{x,y\} :: {}$\isatt{i}
+      \hfill
+      (original term).
+    \item<+-> \isatt{upair}$(C,x,y,p) :: {}$\isatt{o}
+      \hfill
+      (relativization, fully
+      relational). 
+    \item<+-> \isatt{upair{\uscore}fm}$(0,1,2) :: {}$\isatt{i} 
+      \hfill
+      (synthesized member of \isatt{formula}).
+    \end{enumerate}
+  \end{block}
+  \begin{alertblock}{}<+->
+    Around 40 absoluteness/closure lemmas now hold using weaker
+    hypotheses on the class $C$ (most of them, just that $C$ is
+    transitive and nonempty).
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Some details}
   \begin{enumerate}\setcounter{enumi}{1}
   \item<+-> We formalized the formula transformer $\forceisa$ and
     hence the forcing relation $\forces$, and proved the Fundamental
     Theorems.
-    \begin{itemize}
-    \item<+-> $\forceisa$ is defined by induction on internalized
-      formulas.
-    \item<+-> The base cases  $\forceisa(x\in y)$ and  $\forceisa(x =
-      y)$ are  defined by wellfounded
-      recursion, which \alert{must also be internalized}.
-    \end{itemize}
-  \item<+-> We showed that generic extensions of ctms of $\ZF$ are also
-    ctms of $\ZF$ (respectively, adding $\AC$).
-    \begin{itemize}
-    \item<+-> We may compare some of the code with the actual
-      math \citep{kunen2011set}.
-    \end{itemize}
   \end{enumerate}
+  \begin{itemize}[I]
+  \item<+-> $\forceisa$ is defined by induction on internalized
+    formulas.
+  \item<+-> The base cases  $\forceisa(x\in y)$ and  $\forceisa(x =
+    y)$ are  defined by wellfounded
+    recursion, which \alert{must also be internalized}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Some details}
+  \begin{enumerate}\setcounter{enumi}{2}
+  \item For any ctm $M$ of $\ZF$ and $M$-generic $G$, $M[G] \models
+    \ZF$ (respectively, adding $\AC$).
+  \end{enumerate}
+  \pause
+  Actually, the modularity of the theory of forcing allowed us to do
+  this \alert{before} we write down the definition of $\forceisa$.
+  \pause
+  
+  We may compare some of the code with the actual
+  math \citep{kunen2011set}.
 \end{frame}
 
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
