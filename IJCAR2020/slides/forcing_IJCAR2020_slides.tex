@@ -38,7 +38,6 @@
 }}
 
 \begin{document}
-%\nobibliography*
 
 \begin{frame}[plain]
   \titlepage
@@ -64,10 +63,9 @@
   \begin{block}{Pros}
     \begin{itemize}
     \item Most advanced set theory formalized (around 2017).
-      % \item Closer to the mathematical practice of forcing.
     \item Structured proof language Isar
       \citep{DBLP:conf/tphol/Wenzel99}.
-    \item Low in consistency strength.
+    \item Comparatively low in consistency strength.
     \end{itemize}
   \end{block}
   %
@@ -246,10 +244,6 @@
   \end{block}
 \end{frame}
 
-%% \begin{frame}
-%%   \frametitle{A word on consistency}
-%% \end{frame}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The development}
 
@@ -285,7 +279,7 @@
     \end{enumerate}
   \end{alertblock}
 
-  This library contains a major development of relativization and
+  This library originally contains a major development of relativization and
   absoluteness for \emph{classes} $C :: {}$ \isatt{i} $\Rightarrow$
   \isatt{o}, including the definition of the set \isatt{formula} ::
   \isatt{i} of internal formulas and model theoretic satisfaction. 
@@ -322,7 +316,7 @@
   %
   \pause
   %
-  \begin{block}{$\forceisa$ is defined by recursion on  formulas}
+  \begin{block}{$\;\forceisa$ is defined by recursion on  formulas}
     This is the main reason we work with the set of internalized
     formulas, and that we require legit first-order expressions for
     the axiom schemes (Separation and Replacement).
@@ -384,15 +378,6 @@
   \end{center}
 \end{frame}
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% \section{}
-%% %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
-%% \subsection{}
-%% 
-%% \begin{frame}
-%%   \frametitle{}
-%% \end{frame}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Looking forward}
 
@@ -434,7 +419,6 @@
              {  
                \renewcommand{\arraystretch}{1.5}               \begin{tabular}{rcl}
                  \texttt{forcing{\uscore}notion} & = & preorder $\PP$ with top. \\
-                 %    \texttt{M{\uscore}ZF} & = & set model of the $\ZF$ axioms \\ 
                  \texttt{M{\uscore}ZF{\uscore}trans} & = & set model $M$ of the $\ZF$
                  axioms \alert{+}  $M$ transitive \\ 
                  \texttt{M{\uscore}ctm} & = &  \texttt{M{\uscore}ZF{\uscore}trans} \alert{+}
@@ -461,15 +445,6 @@
 \againframe<13-20>{code-review}
 
 \end{document}
-
-%% - Más bola a la metateoría (ZF).
-%% 
-%% * es weak ---> falta de inducción/recursión, y el objeto
-%% central (forces) se define así.
-%% * too strong ---> not possible to have finitary consistency proofs
-%% 
-
-
 
 %%% Local Variables: 
 %%% mode: latex
