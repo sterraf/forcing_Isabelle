@@ -77,7 +77,7 @@
     \begin{itemize}
     \item A fraction of automation of Isabelle (\texttt{sledgehammer},
       etc).
-    \item Untyped, and too weak a metatheory.
+    \item ``Untyped'', and too weak a metatheory.
     \end{itemize}
   \end{block}
 \end{frame}
@@ -85,40 +85,18 @@
 \begin{frame}
   \frametitle{Isabelle/ZF \citep{DBLP:journals/jar/PaulsonG96}}
   \begin{itemize}
-  \item<+-> An object logic of Isabelle axiomatized over the
+  \item<.-> An object logic of Isabelle axiomatized over the
     intuitionistic fragment  \emph{Pure} of higher order logic.
-  \item<+-> It postulates \alert<3->{two types}: \isatt{i}
+  \item<+-> It postulates two types: \isatt{i}
     (sets) and \isatt{o} (booleans). \visible<3->{\alert{Not
       inductively defined!}}
-    \pause
-  \item<+-> More stuff.
+  \item<+-> The Replacement and Separation axiom schemes feature free
+    high order variables.
+  \item<+-> Induction/recursion is \emph{internal} to the theory (it works as a
+    layer on top of set-theoretical proofs of well-foundedness (of
+    $\N$, of $\Ord$, etc).
   \end{itemize}
 \end{frame}
-
-
-%% \begin{frame}
-%%   \frametitle{\texttt{ZF-Constructible} \citep{paulson_2003}}
-%%   Let $C :: {}$ \isatt{i} $\Rightarrow$ \isatt{o} be a predicate on sets.
-%%   \pause
-%%   \begin{block}{Relativization of $\sbq$}
-%%     $x \sbq^C y \equiv \forall z.\ C(z) \longrightarrow (z\in x
-%%     \longrightarrow z\in y)$.
-%%   \end{block}
-%%   \pause
-%%   \begin{block}{$\sbq$ is absolute}
-%%     $\forall x\ y.\ C(x) \land C(y) \longrightarrow (x \sbq^C y
-%%     \longleftrightarrow x\sbq y)$.
-%%   \end{block}
-%%   \pause 
-%%   \texttt{ZF-Constructible} develops relativized version of the axioms
-%%   and proves that many concepts are absolute for \textbf{transitive
-%%     classes} $C$
-%%   \[
-%%   x\in y \land C(y)  \longrightarrow C(x).
-%%   \]
-%%   satisfying additional axioms.
-%% \end{frame}
-
 
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
 \subsection{The ctm approach to forcing}
@@ -135,7 +113,7 @@
   %
   \pause%
   %
-  \textbf{Note}. If $\lb N, R\rb \models \ZF$ with $R$ wellfounded, then there
+  \textbf{Note}. If $\lb N, R\rb \models \ZF$ with $R$ well-founded, then there
   exists a ctm $M$ of $\ZF$.
   \pause
 
@@ -157,14 +135,6 @@
 
   In this case, we know that  $\sbq$  is \textbf{absolute for
     transitive models}.
-  %
-  %% \begin{block}{Forcing notions and generics}
-  %%   \begin{itemize}
-  %%   \item $\lb \PP, {\preceq} ,\1\rb$ preorder with top.
-  %%   \item A filter $G\sbq \PP$ is \textbf{$M$-generic} if it meets
-  %%     every dense $D\sbq \PP$ in $M$.
-  %%   \end{itemize}
-  %% \end{block}
 \end{frame}
 
 \begin{frame}
@@ -176,7 +146,7 @@
   \pause
 
   Every $a\in M[G]$ is coded by
-  some $\punto{a}\in M$ through the $M$-definable function $\val$:
+  some $\punto{a}\in M$ through the function $\val$:
   \[
   M[G]\defi \{ \val(G,\punto{a}) : \punto{a}\in M\}
   \]
@@ -185,26 +155,20 @@
   \pause
   \begin{theorem}[\citep{Cohen-CH-PNAS}]
     \begin{enumerate}
-    \item $\bigl(\forall G\visible<4->{\alert{\ni p}}.\quad M[G], [\val(G,\punto{a})]
-      \models \phi\bigr)
-      \iff
-      M,
-      [\only<-3>{\1}\alert{\only<4->{p\hspace{0.2ex}}},\PP,\preceq,\punto{a}]\models
-      \forceisa(\phi)$.
-    \item $\forceisa$ is definable over $M$.\phantom{$\punto{a}).\models \phi\bigr)
-      \iff M,$}\visible<4->{%
-      $\overset{\searrow}{}$ \ 
-      $\alert{p} \forces^M_{\PP,\preceq} \phi(\punto{a})$
-      \  $\overset{\swarrow}{}$}
-      \pause% 
-      \pause% 
-    \item For $env\in\mathsf{list}(M)$,
+    \item $\forceisa$ is definable over $M$.
+      %
+    \item For every $\phi$, $M$-generic $G$, and $\punto{a}\in M$,
       \[
-      M[G], \mathrm{map}(\val(G),env) \models \phi
-      \iff
-      \exists p\in G.\ M, [p,\preceq,\PP] \mathbin{{+}\!\!\!\!{+}} env \models
+      M[G], [\val(G,\punto{a})] \models \phi
+      \quad      \iff  \quad 
+      \exists p\in G.\ \; M, [p,\preceq,\PP, \punto{a}]  \models
       \forceisa(\phi).
       \]
+      \pause
+      \rule{21em}{0pt}
+      \raisebox{1.6ex}[0ex]{$\overset{\searrow}{}$ \ \ 
+        $p \alert{\forces^M_{\PP,\preceq}} \phi(\punto{a})$
+        \  \ $\overset{\swarrow}{}$}
     \end{enumerate}
   \end{theorem} 
 \end{frame}
@@ -347,17 +311,29 @@
 
 \begin{frame}{Some details}
   \begin{enumerate}\setcounter{enumi}{1}
-  \item<+-> We formalized the formula transformer $\forceisa$ and
+  \item We formalized the formula transformer $\forceisa$ and
     hence the forcing relation $\forces$, and proved the Fundamental
     Theorems.
   \end{enumerate}
-  \begin{itemize}[I]
-  \item<+-> $\forceisa$ is defined by induction on internalized
-    formulas.
-  \item<+-> The base cases  $\forceisa(x\in y)$ and  $\forceisa(x =
-    y)$ are  defined by wellfounded
-    recursion, which \alert{must also be internalized}.
-  \end{itemize}
+  %
+  \pause
+  %
+  \begin{block}{$\forceisa$ is defined by recursion on  formulas}
+    This is the main reason we work with the set of internalized
+    formulas, and that we require legit first-order expressions for
+    the axiom schemes (Separation and Replacement).
+
+    The base cases  $\forceisa(x\in y)$ and  $\forceisa(x =
+    y)$ are  defined by \alert{internal} well-founded
+    recursion.
+  \end{block}
+  %
+  \pause
+  \begin{alertblock}{}
+    We enhanced the recursion results of Isabelle/ZF as well as
+    the relevant preservation results in ZF-Constructible, thus
+    showing that forcing is absolute for atomic formulas.
+  \end{alertblock}
 \end{frame}
 
 \begin{frame}{Some details}
@@ -379,26 +355,26 @@
 
 \begin{frame}<1-12>[label=code-review]
   \begin{center}\setlength{\fboxsep}{0pt}
-    \only<01>{\includegraphics[draft,scale=0.23]{kunen_powerset_01.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_01.png}}}%
-    \only<02>{\includegraphics[draft,scale=0.23]{kunen_powerset_02.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_02.png}}}%
-    \only<03>{\includegraphics[draft,scale=0.23]{kunen_powerset_03.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_03.png}}}%
-    \only<04>{\includegraphics[draft,scale=0.23]{kunen_powerset_04.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_04.png}}}%
-    \only<05>{\includegraphics[draft,scale=0.23]{kunen_powerset_05.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_05.png}}}%
-    \only<06>{\includegraphics[draft,scale=0.23]{kunen_powerset_06.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_06.png}}}%
-    \only<07>{\includegraphics[draft,scale=0.23]{kunen_powerset_07.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_07.png}}}%
-    \vspace{3.00115pt}\only<08>{\includegraphics[draft,scale=0.23]{kunen_powerset_08.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_08.png}}}%
-    \only<09>{\includegraphics[draft,scale=0.23]{kunen_powerset_09.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_09.png}}}%
-    \only<10>{\includegraphics[draft,scale=0.23]{kunen_powerset_10.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_10.png}}}%
-    \only<11>{\includegraphics[draft,scale=0.23]{kunen_powerset_11.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_11.png}}}%
-    \only<12>{\includegraphics[draft,scale=0.23]{kunen_powerset_12.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_12.png}}}%
-    \only<13>{\includegraphics[draft,scale=0.23]{kunen_powerset_13.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_13.png}}}%
-    \only<14>{\includegraphics[draft,scale=0.23]{kunen_powerset_14.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_14.png}}}%
-    \only<15>{\includegraphics[draft,scale=0.23]{kunen_powerset_15.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_15.png}}}%
-    \only<16>{\includegraphics[draft,scale=0.23]{kunen_powerset_16.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_16.png}}}%
-    \only<17>{\includegraphics[draft,scale=0.23]{kunen_powerset_17.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_17.png}}}%
-    \only<18>{\includegraphics[draft,scale=0.23]{kunen_powerset_18.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_18.png}}}%
-    \only<19>{\includegraphics[draft,scale=0.23]{kunen_powerset_19.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_19.png}}}%
-    \only<20>{\includegraphics[draft,scale=0.23]{kunen_powerset_20.png} \\ \fbox{\includegraphics[draft,scale=0.26]{isa_converted_20.png}}}%
+    \only<01>{\includegraphics[scale=0.23]{kunen_powerset_01.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_01.png}}}%
+    \only<02>{\includegraphics[scale=0.23]{kunen_powerset_02.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_02.png}}}%
+    \only<03>{\includegraphics[scale=0.23]{kunen_powerset_03.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_03.png}}}%
+    \only<04>{\includegraphics[scale=0.23]{kunen_powerset_04.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_04.png}}}%
+    \only<05>{\includegraphics[scale=0.23]{kunen_powerset_05.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_05.png}}}%
+    \only<06>{\includegraphics[scale=0.23]{kunen_powerset_06.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_06.png}}}%
+    \only<07>{\includegraphics[scale=0.23]{kunen_powerset_07.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_07.png}}}%
+    \vspace{3.00115pt}\only<08>{\includegraphics[scale=0.23]{kunen_powerset_08.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_08.png}}}%
+    \only<09>{\includegraphics[scale=0.23]{kunen_powerset_09.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_09.png}}}%
+    \only<10>{\includegraphics[scale=0.23]{kunen_powerset_10.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_10.png}}}%
+    \only<11>{\includegraphics[scale=0.23]{kunen_powerset_11.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_11.png}}}%
+    \only<12>{\includegraphics[scale=0.23]{kunen_powerset_12.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_12.png}}}%
+    \only<13>{\includegraphics[scale=0.23]{kunen_powerset_13.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_13.png}}}%
+    \only<14>{\includegraphics[scale=0.23]{kunen_powerset_14.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_14.png}}}%
+    \only<15>{\includegraphics[scale=0.23]{kunen_powerset_15.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_15.png}}}%
+    \only<16>{\includegraphics[scale=0.23]{kunen_powerset_16.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_16.png}}}%
+    \only<17>{\includegraphics[scale=0.23]{kunen_powerset_17.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_17.png}}}%
+    \only<18>{\includegraphics[scale=0.23]{kunen_powerset_18.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_18.png}}}%
+    \only<19>{\includegraphics[scale=0.23]{kunen_powerset_19.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_19.png}}}%
+    \only<20>{\includegraphics[scale=0.23]{kunen_powerset_20.png} \\ \fbox{\includegraphics[scale=0.26]{isa_converted_20.png}}}%
   \end{center}
 \end{frame}
 
@@ -418,16 +394,16 @@
   \frametitle{Looking forward}
   \begin{block}{Formalizing math}
     \begin{itemize}
-    \item<+-> Cofinality, K\H{o}nig's Theorem, Shanin's $\Delta$-system Lemma.
-    \item<+-> Forcing notion for adding $\kappa$ Cohen reals.
-    \item<+-> Theorems on preservation of cardinals.
+    \item Cofinality, K\H{o}nig's Theorem, Shanin's $\Delta$-system Lemma.
+    \item Forcing notion for adding $\kappa$ Cohen reals.
+    \item Theorems on preservation of cardinals.
     \end{itemize}
   \end{block}
-  %
-  \begin{block}{Technical aids}<+->
+  \pause
+  \begin{block}{Technical aids}
     \begin{itemize}
-    \item<.-> Automatic relativization and proof of absoluteness of concepts.
-    \item<+-> ``Relative functions'' (e.g., $\P^M$, $\card{\cdot}^M$, $\cf^M$).
+    \item Automatic relativization and proof of absoluteness of concepts.
+    \item ``Relative functions'' (e.g., $\P^M$, $\card{\cdot}^M$, $\cf^M$).
     \end{itemize}
   \end{block}
 \end{frame}
