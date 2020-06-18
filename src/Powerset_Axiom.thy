@@ -38,7 +38,7 @@ lemma sats_fst_snd_in_M:
     "A\<in>M" "B\<in>M" "\<phi> \<in> formula" "p\<in>M" "l\<in>M" "o\<in>M" "\<chi>\<in>M"
     "arity(\<phi>) \<le> 6"
   shows
-    "{sq \<in>A\<times>B . sats(M,\<phi>,[snd(sq),p,l,o,fst(sq),\<chi>])} \<in> M"
+    "{<s,q> \<in>A\<times>B . sats(M,\<phi>,[q,p,l,o,s,\<chi>])} \<in> M"
     (is "?\<theta> \<in> M")
 proof -
   have "6\<in>nat" "7\<in>nat" by simp_all
@@ -152,7 +152,7 @@ proof -
     assume "c \<in> Pow(a) \<inter> M[G]"
     then obtain \<chi> where "c\<in>M[G]" "\<chi> \<in> M" "val(G,\<chi>) = c"
       using GenExtD by auto
-    let ?\<theta>="{\<sigma>p \<in>domain(\<tau>)\<times>P . snd(\<sigma>p) \<tturnstile> (Member(0,1)) [fst(\<sigma>p),\<chi>] }"
+    let ?\<theta>="{<\<sigma>,p> \<in>domain(\<tau>)\<times>P . p \<tturnstile> (Member(0,1)) [\<sigma>,\<chi>] }"
     have "arity(forces(Member(0,1))) = 6"
       using arity_forces_at by auto
     with \<open>domain(\<tau>) \<in> M\<close> \<open>\<chi> \<in> M\<close> 
