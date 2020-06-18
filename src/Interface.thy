@@ -82,6 +82,7 @@ locale M_ZF_trans =
     and trans_M:          "Transset(M)"
 begin
 
+lemmas transitivity = Transset_intf[OF trans_M]
 
 lemma TranssetI :
   "(\<And>y x. y\<in>x \<Longrightarrow> x\<in>M \<Longrightarrow> y\<in>M) \<Longrightarrow> Transset(M)"
@@ -89,22 +90,23 @@ lemma TranssetI :
 
 lemma zero_in_M:  "0 \<in> M"
 proof -
-  from infinity_ax have
-    "(\<exists>z[##M]. empty(##M,z))"
+  from infinity_ax 
+  have "(\<exists>z[##M]. empty(##M,z))"
     by (rule empty_intf)
   then obtain z where
     zm: "empty(##M,z)"  "z\<in>M"
     by auto
-  with trans_M have "z=0"
-    by (simp  add: empty_def, blast intro: Transset_intf )
-  with zm show ?thesis
+  then
+  have "z=0"
+    using transitivity empty_def by auto
+  with zm show ?thesis 
     by simp
 qed
 
 subsection\<open>Interface with \<^term>\<open>M_trivial\<close>\<close>
 lemma mtrans :
   "M_trans(##M)"
-  using Transset_intf[OF trans_M] zero_in_M exI[of "\<lambda>x. x\<in>M"]
+  using transitivity zero_in_M exI[of "\<lambda>x. x\<in>M"]
   by unfold_locales auto
 
 
@@ -723,7 +725,7 @@ proof -
     "I\<in>M" "0\<in>I" "(\<forall>x\<in>M. x\<in>I \<longrightarrow> succ(x)\<in>I)"
     by auto
   then have "\<And>x. x\<in>I \<Longrightarrow> succ(x)\<in>I"
-    using Transset_intf[OF trans_M]  by simp
+    using transitivity by simp
   then have "nat\<subseteq>I"
     using  \<open>I\<in>M\<close> \<open>0\<in>I\<close> nat_subset_I' by simp
   then show ?thesis using \<open>I\<in>M\<close> by auto
@@ -765,7 +767,7 @@ lemma repl_sats:
 
 lemma (in M_ZF_trans) nat_trans_M :
   "n\<in>M" if "n\<in>nat" for n
-  using that nat_in_M Transset_intf[OF trans_M] by simp
+  using that nat_in_M transitivity by simp
 
 lemma (in M_ZF_trans) list_repl1_intf:
   assumes

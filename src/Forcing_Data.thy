@@ -41,8 +41,7 @@ interpretation intf: M_ZF_trans "M"
     replacement_ax[simplified]
   by simp
 
-
-lemmas transitivity = Transset_intf[OF trans_M]
+lemmas transitivity = intf.transitivity
 
 lemma zero_in_M:  "0 \<in> M" 
   by (rule intf.zero_in_M)
@@ -120,7 +119,7 @@ lemma Collect_in_M_0p :
     "Collect(A,Q)\<in>M" 
 proof -
   have "z\<in>A \<Longrightarrow> z\<in>M" for z
-    using \<open>A\<in>M\<close> transitivity[of z A] by simp
+    using \<open>A\<in>M\<close> transitivity by simp
   then
   have 1:"Collect(A,is_Q(##M)) = Collect(A,Q)" 
     using Qabs Collect_cong[of "A" "A" "is_Q(##M)" "Q"] by simp
@@ -147,7 +146,7 @@ lemma Collect_in_M_2p :
     "Collect(A,\<lambda>x. Q(x,y,z))\<in>M" 
 proof -
   have "z\<in>A \<Longrightarrow> z\<in>M" for z
-    using \<open>A\<in>M\<close> transitivity[of z A] by simp
+    using \<open>A\<in>M\<close> transitivity by simp
   then
   have 1:"Collect(A,\<lambda>x. is_Q(##M,x,y,z)) = Collect(A,\<lambda>x. Q(x,y,z))" 
     using Qabs Collect_cong[of "A" "A" "\<lambda>x. is_Q(##M,x,y,z)" "\<lambda>x. Q(x,y,z)"] by simp
@@ -174,7 +173,7 @@ lemma Collect_in_M_4p :
     "Collect(A,\<lambda>x. Q(x,a1,a2,a3,a4))\<in>M" 
 proof -
   have "z\<in>A \<Longrightarrow> z\<in>M" for z
-    using \<open>A\<in>M\<close> transitivity[of z A] by simp
+    using \<open>A\<in>M\<close> transitivity by simp
   then
   have 1:"Collect(A,\<lambda>x. is_Q(##M,x,a1,a2,a3,a4)) = Collect(A,\<lambda>x. Q(x,a1,a2,a3,a4))" 
     using Qabs Collect_cong[of "A" "A" "\<lambda>x. is_Q(##M,x,a1,a2,a3,a4)" "\<lambda>x. Q(x,a1,a2,a3,a4)"] 
