@@ -89,7 +89,7 @@ rex(M, P) \<equiv> \<exists>x. M(x) \<and> P(x)
 subsection\<open>ZF-Constructible\label{sec:def-main-constructible}\<close>
 
 thm Union_ax_def[unfolded big_union_def]
-text\<open>@{thm [display] Union_ax_def}\<close>
+text\<open>@{thm [display] Union_ax_def[unfolded big_union_def]}\<close>
 (*
 Union_ax(M) \<equiv> \<forall>x[M]. \<exists>z[M]. \<forall>xa[M]. xa \<in> z \<longleftrightarrow> (\<exists>y[M]. y \<in> x \<and> xa \<in> y)
 *)
@@ -107,7 +107,7 @@ upair(M, a, b, z) \<equiv> a \<in> z \<and> b \<in> z \<and> (\<forall>x[M]. x \
 *)
 
 thm successor_def[unfolded is_cons_def union_def]
-text\<open>@{thm [display] successor_def}\<close>
+text\<open>@{thm [display] successor_def[unfolded is_cons_def union_def]}\<close>
 (*
 successor(M, a, z) \<equiv> \<exists>x[M]. upair(M, a, a, x) \<and> (\<forall>xa[M]. xa \<in> z \<longleftrightarrow> xa \<in> x \<or> xa \<in> a)
 *)
