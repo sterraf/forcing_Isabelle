@@ -14,6 +14,7 @@ session "Forcing" in "." =  "ZF-Constructible" +
   theories
     "Rasiowa_Sikorski"
     "Forcing_Main"
+    "Definitions_Main"
   document_files
     "root.tex"
     "root.bib"

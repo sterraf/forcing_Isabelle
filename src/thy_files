@@ -1,6 +1,7 @@
 # This file is used by various scripts. One can form groups of files using
 # doble quotes for marking the begin and end of each group.
-"Forces_Definition.thy"
+"Forces_Definition.thy
+ Definitions_Main.thy"
 "Arities.thy
  Forcing_Theorems.thy"
 "Interface.thy
