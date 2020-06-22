@@ -27,6 +27,9 @@ declare [[show_question_marks=false]]
 
 subsection\<open>ZF\label{sec:def-main-ZF}\<close>
 
+text\<open>For the basic logic ZF we restrict ourselves to just a few
+concepts.\<close>
+
 thm bij_def[unfolded inj_def surj_def]
 text\<open>@{thm [display] bij_def[unfolded inj_def surj_def]}\<close>
 (*
@@ -58,38 +61,52 @@ text\<open>@{thm [display] lt_def}\<close>
 i < j \<equiv> i \<in> j \<and> Ord(j)
 *)
 
-thm Limit_nat[unfolded Limit_def]
-text\<open>@{thm [display] Limit_nat[unfolded Limit_def]}\<close>
+text\<open>The set of natural numbers \<^term>\<open>nat\<close> is defined as a
+fixpoint, but here we just write its characterization as the
+first limit ordinal.\<close>
+thm Limit_nat[unfolded Limit_def] nat_le_Limit[unfolded Limit_def]
+text\<open>@{thm [display] Limit_nat[unfolded Limit_def]
+ nat_le_Limit[unfolded Limit_def]}\<close>
 (*
+Ord(nat) \<and> 0 < nat \<and> (\<forall>y. y < nat \<longrightarrow> succ(y) < nat)
 Ord(nat) \<and> 0 < nat \<and> (\<forall>y. y < nat \<longrightarrow> succ(y) < nat)
 *)
 
-thm nat_le_Limit[unfolded Limit_def]
-text\<open>@{thm [display] nat_le_Limit[unfolded Limit_def]}\<close>
+thm add_0_right add_succ_right
+text\<open>@{thm [display] add_succ_right add_0_right}\<close>
 (*
-Ord(nat) \<and> 0 < nat \<and> (\<forall>y. y < nat \<longrightarrow> succ(y) < nat)
+m \<in> nat \<Longrightarrow> m #+ 0 = m
+m #+ succ(n) = succ(m #+ n)
 *)
 
 txt\<open>The relative quantifications, \<^term>\<open>\<forall>x[M]. P(x)\<close> and
 \<^term>\<open>\<exists>x[M]. P(x)\<close> correspond to the ZF terms \<^term>\<open>rall\<close>
 and \<^term>\<open>rex\<close>, respectively:\<close>
 
-thm rall_def
-text\<open>@{thm [display] rall_def}\<close>
+thm rall_def rex_def
+text\<open>@{thm [display] rall_def rex_def}\<close>
 (*
 rall(M, P) \<equiv> \<forall>x. M(x) \<longrightarrow> P(x)
+rex(M, P) \<equiv> \<exists>x. M(x) \<and> P(x)
 *)
 
-thm rex_def
-text\<open>@{thm [display] rex_def}\<close>
+thm setclass_iff
+text\<open>@{thm [display] setclass_iff}\<close>
 (*
-rex(M, P) \<equiv> \<exists>x. M(x) \<and> P(x)
+(##A)(x) \<longleftrightarrow> x \<in> A
 *)
 
 subsection\<open>ZF-Constructible\label{sec:def-main-constructible}\<close>
 
-thm Union_ax_def[unfolded big_union_def]
-text\<open>@{thm [display] Union_ax_def[unfolded big_union_def]}\<close>
+thm big_union_def
+text\<open>@{thm [display] big_union_def}\<close>
+(*
+big_union(M, A, z) \<equiv> \<forall>x[M]. x \<in> z \<longleftrightarrow> (\<exists>y[M]. y \<in> A \<and> x \<in> y)
+*)
+
+
+thm Union_ax_def
+text\<open>@{thm [display] Union_ax_def}\<close>
 (*
 Union_ax(M) \<equiv> \<forall>x[M]. \<exists>z[M]. \<forall>xa[M]. xa \<in> z \<longleftrightarrow> (\<exists>y[M]. y \<in> x \<and> xa \<in> y)
 *)
@@ -104,6 +121,13 @@ thm upair_def
 text\<open>@{thm [display] upair_def}\<close>
 (*
 upair(M, a, b, z) \<equiv> a \<in> z \<and> b \<in> z \<and> (\<forall>x[M]. x \<in> z \<longrightarrow> x = a \<or> x = b)
+*)
+
+thm pair_def
+text\<open>@{thm [display] pair_def}\<close>
+(*
+pair(M, a, b, z) \<equiv> \<exists>x[M]. upair(M, a, a, x) \<and>
+                      (\<exists>y[M]. upair(M, a, b, y) \<and> upair(M, x, y, z))
 *)
 
 thm successor_def[unfolded is_cons_def union_def]
@@ -170,18 +194,54 @@ ordinal(M, a) \<equiv> transitive_set(M, a) \<and> (\<forall>x[M]. x \<in> a \<l
                                             transitive_set(M, x))
 *)
 
+thm image_def
+text\<open>@{thm [display] image_def}\<close>
+(*
+image(M, r, A, z) \<equiv> \<forall>y[M]. y \<in> z \<longleftrightarrow>
+              (\<exists>w[M]. w \<in> r \<and> (\<exists>x[M]. x \<in> A \<and> pair(M, x, y, w)))
+*)
+
+thm fun_apply_def
+text\<open>@{thm [display] fun_apply_def}\<close>
+(*
+fun_apply(M, f, x, y) \<equiv> \<exists>xs[M]. \<exists>fxs[M]. upair(M, x, x, xs) \<and>
+                     image(M, f, xs, fxs) \<and> big_union(M, fxs, y)
+*)
+
+thm is_function_def
+text\<open>@{thm [display] is_function_def}\<close>
+(*
+is_function(M, r) \<equiv> \<forall>x[M]. \<forall>y[M]. \<forall>y'[M]. \<forall>p[M]. \<forall>p'[M].
+     pair(M, x, y, p) \<longrightarrow> pair(M, x, y', p') \<longrightarrow> p \<in> r \<longrightarrow> p' \<in> r \<longrightarrow> y = y'
+*)
+
+thm is_relation_def
+text\<open>@{thm [display] is_relation_def}\<close>
+(*
+is_relation(M, r) \<equiv> \<forall>z[M]. z \<in> r \<longrightarrow> (\<exists>x[M]. \<exists>y[M]. pair(M, x, y, z))
+*)
+
+thm is_domain_def
+text\<open>@{thm [display] is_domain_def}\<close>
+(*
+is_domain(M, r, z) \<equiv> \<forall>x[M]. x \<in> z \<longleftrightarrow>
+                      (\<exists>w[M]. w \<in> r \<and> (\<exists>y[M]. pair(M, x, y, w)))
+*)
+
+thm typed_function_def
+text\<open>@{thm [display] typed_function_def}\<close>
+(*
+typed_function(M, A, B, r) \<equiv> is_function(M, r) \<and> is_relation(M, r) \<and>
+                              is_domain(M, r, A) \<and>
+          (\<forall>u[M]. u \<in> r \<longrightarrow> (\<forall>x[M]. \<forall>y[M]. pair(M, x, y, u) \<longrightarrow> y \<in> B))
+*)
+
 thm surjection_def
 text\<open>@{thm [display] surjection_def}\<close>
 (*
 surjection(M, A, B, f) \<equiv> typed_function(M, A, B, f) \<and> (\<forall>y[M]. y \<in> B \<longrightarrow>
                             (\<exists>x[M]. x \<in> A \<and> fun_apply(M, f, x, y)))
 *)
-txt\<open>The definitions of \<^term>\<open>typed_function\<close> and
- \<^term>\<open>fun_apply\<close> rely on the previously defined terms
-\<^term>\<open>is_function\<close>, \<^term>\<open>is_relation\<close>, \<^term>\<open>is_domain\<close>,
-\<^term>\<open>pair\<close>, \<^term>\<open>image\<close>, and \<^term>\<open>union\<close>, which use in
-turn use concepts presented here.\<close>
-
 
 subsection\<open>Forcing \label{sec:def-main-forcing}\<close>
 
@@ -231,35 +291,16 @@ infinity_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> ZF_infinity_fm
 choice_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> ZF_choice_fm
 *)
 
-thm ZF_fin_def
-text\<open>@{thm [display] ZF_fin_def}\<close>
+thm ZF_fin_def ZF_inf_def ZF_def ZFC_fin_def ZFC_def
+text\<open>@{thm [display] ZF_fin_def ZF_inf_def ZF_def ZFC_fin_def
+  ZFC_def}\<close>
 (*
 ZF_fin \<equiv> {ZF_extensionality_fm, ZF_foundation_fm, ZF_pairing_fm,
            ZF_union_fm, ZF_infinity_fm, ZF_power_fm}
-*)
-
-thm ZF_inf_def
-text\<open>@{thm [display] ZF_inf_def}\<close>
-(*
 ZF_inf \<equiv> {ZF_separation_fm(p) . p \<in> formula} \<union> {ZF_replacement_fm(p) . p \<in> formula}
-*)
-
-thm ZF_def
-text\<open>@{thm [display] ZF_def}\<close>
-(*
 ZF \<equiv> ZF_inf \<union> ZF_fin
-*)
-
-thm ZFC_fin_def
-text\<open>@{thm [display] ZFC_fin_def}\<close>
-(*
-"ZFC_fin \<equiv> ZF_fin \<union> {ZF_choice_fm}"
-*)
-
-thm ZFC_def
-text\<open>@{thm [display] ZFC_def}\<close>
-(*
-"ZFC \<equiv> ZF_inf \<union> ZFC_fin"
+ZFC_fin \<equiv> ZF_fin \<union> {ZF_choice_fm}
+ZFC \<equiv> ZF_inf \<union> ZFC_fin
 *)
 
 thm satT_def
