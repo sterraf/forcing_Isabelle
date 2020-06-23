@@ -1,7 +1,7 @@
 theory Discipline_Basics
   imports
     Least
-    "HOL-Eisbach.Eisbach_Old_Appl_Syntax"
+    "HOL-Eisbach.Eisbach_Old_Appl_Syntax"\<comment> \<open>if put before, it breaks some simps\<close>
     "../Tools/Try0"
 begin
 
@@ -91,17 +91,40 @@ end (* M_basic *)
 
 abbreviation
   "is_apply \<equiv> fun_apply"
-
-\<comment> \<open>It is not necessary to perform the Discipline for \<^term>\<open>is_apply\<close>
+  \<comment> \<open>It is not necessary to perform the Discipline for \<^term>\<open>is_apply\<close>
   since it is absolute in this context\<close>
+
+subsection\<open>Discipline for \<^term>\<open>Collect\<close> terms.\<close>
+
+text\<open>We have to isolate the predicate involved and apply the
+Discipline to it.\<close>
+
+definition
+  injP_rel:: "[i\<Rightarrow>o,i,i,i,i]\<Rightarrow>o" where
+  "injP_rel(M,A,B,I,f) \<equiv> \<forall>w[M]. \<forall>x[M]. \<forall>fw[M]. \<forall>fx[M]. w\<in>A \<and> x\<in>A \<and>
+            is_apply(M,f,w,fw) \<and> is_apply(M,f,x,fx) \<and> fw=fx\<longrightarrow> w=x"
+
+context M_basic
+begin
+
+(************* Discipline for injP_rel ****************)
+
+lemma def_injP_rel:
+  assumes
+    "M(A)" "M(B)" "M(I)" "M(f)"
+  shows
+    "injP_rel(M,A,B,I,f) \<longleftrightarrow>
+    (\<forall>w[M]. \<forall>x[M]. w\<in>A \<and> x\<in>A \<and> f`w=f`x \<longrightarrow> w=x)"
+  using assms unfolding injP_rel_def by simp
+
+(***************  end Discipline  *********************)
+
+end (* M_basic *)
 
 definition (* completely relational *)
   is_inj   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
   "is_inj(M,A,B,I) \<equiv> \<exists>F[M]. is_function_space(M,A,B,F) \<and>
-       is_Collect(M,F,
-        \<lambda>f. \<forall>w[M]. \<forall>x[M]. \<forall>fw[M]. w\<in>A \<and> x\<in>A \<and>
-            is_apply(M,f,w,fw) \<and> is_apply(M,f,x,fw) \<longrightarrow> w=x,
-        I)"
+       is_Collect(M,F,injP_rel(M,A,B,F),I)"
 
 context M_basic
 begin
@@ -116,11 +139,11 @@ lemma is_inj_uniqueness:
     "d=d'"
   using assms is_function_space_uniqueness
     extensionality_trans [where P="\<lambda>f. typed_function(M, r, B, f)"]
-  unfolding is_inj_def is_Collect_def
+  unfolding is_inj_def is_Collect_def injP_rel_def
   sorry \<comment> \<open>This was not trivial\<close>
 
 lemma is_inj_witness: "M(r) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M]. is_inj(M,r,B,d)"
-  unfolding is_inj_def
+  unfolding is_inj_def injP_rel_def
   sorry \<comment> \<open>We have to do this by hand, assuming axiom instance for \<^term>\<open>M\<close>\<close>
 
 definition
@@ -156,21 +179,32 @@ next
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
-\<comment> \<open>This is not the "def_" version we intended: we expected to have
-  the absolute apply operator\<close>
-lemma def_inj_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow>
-    inj_rel(A,B) = { f \<in> A \<rightarrow>r B.  \<forall>w[M]. \<forall>x[M]. \<forall>fw[M].
-        w\<in>A \<and> x\<in>A \<and>
-            is_apply(M,f,w,fw) \<and> is_apply(M,f,x,fw) \<longrightarrow> w=x}"
-  using  inj_rel_closed inj_rel_iff function_space_rel_iff
-  unfolding is_inj_def by simp (* by fastforce *)
+lemma def_inj_rel:
+  assumes "M(A)" "M(B)"
+  shows "inj_rel(A,B) =
+         {f \<in> A \<rightarrow>r B.  \<forall>w[M]. \<forall>x[M]. w\<in>A \<and> x\<in>A \<and> f`w = f`x \<longrightarrow> w=x}"
+         (is "_ = Collect(_,?P)")
+proof -
+  from assms
+  have "inj_rel(A, B) \<subseteq> A \<rightarrow>r B"
+    using inj_rel_iff[of A B "inj_rel(A,B)"] inj_rel_closed function_space_rel_iff
+    unfolding is_inj_def by auto
+  moreover from assms
+  have "f \<in> inj_rel(A, B) \<Longrightarrow> ?P(f)" for f
+    using inj_rel_iff[of A B "inj_rel(A,B)"] inj_rel_closed function_space_rel_iff
+      def_injP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
+    unfolding is_inj_def by auto
+  moreover from assms
+  have "f \<in> A \<rightarrow>r B \<Longrightarrow> ?P(f) \<Longrightarrow> f \<in> inj_rel(A, B)" for f
+    using inj_rel_iff[of A B "inj_rel(A,B)"] inj_rel_closed function_space_rel_iff
+      def_injP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
+    unfolding is_inj_def by auto
+  ultimately
+  show ?thesis by force
+qed
 
 (***************  end Discipline  *********************)
 
-
-(* lemma def_inj_rel : "M(A) ==> M(B) ==>
-  inj_rel(M,A,B) =  Collect_rel(M, A ->r B,
-     %f. \<forall>w[M]. w\<in>A --> (\<forall>x[M] . x\<in>A --> f `r w = f `r x \<longrightarrow> w=x))" *)
 
 end (* M_basic *)
 
