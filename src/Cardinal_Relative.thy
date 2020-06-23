@@ -41,6 +41,10 @@ locale M_cardinals = M_ordertype + M_trancl +
   and
   lam_if_then_replacement: "M(b) \<Longrightarrow> M(a) \<Longrightarrow> M(f) \<Longrightarrow> 
      strong_replacement(M, \<lambda>y ya. ya = \<langle>y, if y = a then b else f ` y\<rangle>)"
+  and
+  lam_if_then_apply_replacement: "M(f) \<Longrightarrow> M(v) \<Longrightarrow> M(u) \<Longrightarrow>
+     strong_replacement(M, \<lambda>x y. y = \<langle>x,  if f ` x = v then f ` u else f ` x\<rangle>)"
+
 begin
 
 abbreviation
@@ -694,7 +698,18 @@ lemma cardinal_rel_subset_Ord: "[|A<=i; Ord(i); M(A); M(i)|] ==> |A|r \<subseteq
 \<comment> \<open>The next lemma is the first with several porting issues\<close>
 lemma cons_lepoll_rel_consD:
   "[| cons(u,A) \<lesssim>r cons(v,B);  u\<notin>A;  v\<notin>B; M(u); M(A); M(v); M(B) |] ==> A \<lesssim>r B"
-  sorry
+apply (simp add: lepoll_rel_def, unfold inj_def, safe)
+apply (rule_tac x = "\<lambda>x\<in>A. if f`x=v then f`u else f`x" in rexI)
+apply (rule CollectI)
+(*Proving it's in the function space A->B*)
+apply (rule if_type [THEN lam_type])
+apply (blast dest: apply_funtype)
+apply (blast elim!: mem_irrefl dest: apply_funtype)
+(*Proving it's injective*)
+   apply (simp (no_asm_simp))
+  using lam_if_then_apply_replacement[THEN lam_closed]
+   apply (blast)
+  sorry \<comment> \<open>This will work with transitivity\<close>
 
 lemma cons_eqpoll_rel_consD: "[| cons(u,A) \<approx>r cons(v,B);  u\<notin>A;  v\<notin>B; M(u); M(A); M(v); M(B) |] ==> A \<approx>r B"
   apply (simp add: eqpoll_rel_iff)
@@ -720,7 +735,7 @@ next
       by (simp add: lepoll_rel_def inj_def)
   next
     case (succ n') thus ?thesis using succ.hyps \<open> succ(m) \<lesssim>r n\<close>
-      by (blast intro!: succ_leI dest!: succ_lepoll_rel_succD)
+      by (blast dest!: succ_lepoll_rel_succD)
   qed
 qed
 
@@ -780,10 +795,15 @@ qed
 
 lemma lesspoll_rel_succ_imp_lepoll_rel:
   "[| A \<prec>r succ(m); m \<in> nat; M(A); M(m) |] ==> A \<lesssim>r m"
-  apply (unfold lesspoll_rel_def lepoll_rel_def eqpoll_rel_def bij_def)
+  apply (unfold lesspoll_rel_def lepoll_rel_def eqpoll_rel_def, simp, unfold bij_def)
   apply (auto dest: inj_not_surj_succ)
-  sorry \<comment> \<open>the last step does not use the introduction rule\<close>
-
+  sorry \<comment> \<open>the last step does not use the destruction rule\<close>
+(*
+\<And>f. m \<in> nat \<Longrightarrow>
+         M(A) \<Longrightarrow>
+         M(m) \<Longrightarrow>
+         \<forall>f[M]. f \<notin> inj(A, succ(m)) \<or> f \<notin> surj(A, succ(m)) \<Longrightarrow> M(f) \<Longrightarrow> f \<in> inj(A, succ(m)) \<Longrightarrow> \<exists>f[M]. f \<in> inj(A, m)
+*)
 lemma lesspoll_rel_succ_iff: "m \<in> nat \<Longrightarrow> M(A) ==> A \<prec>r succ(m) \<longleftrightarrow> A \<lesssim>r m"
   by (blast intro!: lepoll_rel_imp_lesspoll_rel_succ lesspoll_rel_succ_imp_lepoll_rel)
 
@@ -856,7 +876,7 @@ lemma nat_le_cardinal_rel: "nat \<le> i \<Longrightarrow> M(i) ==> nat \<le> |i|
   done
 
 lemma n_lesspoll_rel_nat: "n \<in> nat ==> n \<prec>r nat"
-  by (blast intro: Ord_nat Card_rel_nat ltI lt_Card_rel_imp_lesspoll_rel)
+  by (blast intro: Card_rel_nat ltI lt_Card_rel_imp_lesspoll_rel)
 
 lemma cons_lepoll_rel_cong:
   "[| A \<lesssim>r B;  b \<notin> B; M(A); M(B); M(b); M(a) |] ==> cons(a,A) \<lesssim>r cons(b,B)"
@@ -985,7 +1005,6 @@ lemma disj_Un_eqpoll_rel_sum: "A \<inter> B = 0 ==> A \<union> B \<approx>r A + 
      apply auto
   done
 *)
-
 
 lemma eqpoll_rel_imp_Finite_rel_iff: "A \<approx>r B ==> M(A) \<Longrightarrow> M(B) \<Longrightarrow> Finite_rel(M,A) \<longleftrightarrow> Finite_rel(M,B)"
   apply (unfold Finite_rel_def)
@@ -1142,4 +1161,5 @@ proof (intro iffI)
 qed (auto intro: well_ord_is_cardinal_eqE[of _ r _ s])
 
 end (* M_cardinals *)
+
 end
