@@ -29,7 +29,7 @@ subsection\<open>Discipline for \<^term>\<open>function_space\<close>\<close>
 abbreviation
   "is_function_space \<equiv> is_funspace"
 
-context M_trivial
+context M_basic
 begin
 
 lemma is_function_space_uniqueness:
@@ -43,8 +43,9 @@ lemma is_function_space_uniqueness:
   by simp
 
 lemma is_function_space_witness: "M(r) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M]. is_function_space(M,r,B,d)"
-  unfolding is_funspace_def
-  sorry \<comment> \<open>We have to do this by hand, assuming axiom instance for \<^term>\<open>M\<close>\<close>
+  unfolding is_funspace_def apply simp
+  sorry \<comment> \<open>We have to do this by hand, eventually performing the
+  Discipline for \<^term>\<open>function_space\<close>\<close>
 
 definition
   function_space_rel :: "i \<Rightarrow> i \<Rightarrow> i" (infix \<open>\<rightarrow>r\<close> 60) where
@@ -85,7 +86,7 @@ lemma def_function_space_rel: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> x \
   using  least_abs function_space_rel_closed function_space_rel_iff
   unfolding is_function_space_def by fastforce
 *)
-end (* M_trivial *)
+end (* M_basic *)
 
 (*****************  end Discipline  ***********************)
 
@@ -99,6 +100,8 @@ subsection\<open>Discipline for \<^term>\<open>Collect\<close> terms.\<close>
 text\<open>We have to isolate the predicate involved and apply the
 Discipline to it.\<close>
 
+(*************** Discipline for injP ******************)
+
 definition
   injP_rel:: "[i\<Rightarrow>o,i,i]\<Rightarrow>o" where
   "injP_rel(M,A,f) \<equiv> \<forall>w[M]. \<forall>x[M]. \<forall>fw[M]. \<forall>fx[M]. w\<in>A \<and> x\<in>A \<and>
@@ -106,8 +109,6 @@ definition
 
 context M_basic
 begin
-
-(*************** Discipline for injP_rel ******************)
 
 lemma def_injP_rel:
   assumes
@@ -128,7 +129,10 @@ definition (* completely relational *)
   "is_inj(M,A,B,I) \<equiv> \<exists>F[M]. is_function_space(M,A,B,F) \<and>
        is_Collect(M,F,injP_rel(M,A),I)"
 
-context M_basic
+
+locale M_inj = M_basic +
+  assumes
+    injP_separation: "separation(M,\<lambda>x. injP_rel(M, r, x))"
 begin
 
 lemma is_inj_uniqueness:
@@ -141,8 +145,8 @@ lemma is_inj_uniqueness:
   unfolding is_inj_def by simp
 
 lemma is_inj_witness: "M(r) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M]. is_inj(M,r,B,d)"
-  unfolding is_inj_def injP_rel_def
-  sorry \<comment> \<open>We have to do this by hand, assuming axiom instance for \<^term>\<open>M\<close>\<close>
+  using injP_separation function_space_rel_iff
+  unfolding is_inj_def by simp
 
 definition
   inj_rel :: "i \<Rightarrow> i \<Rightarrow> i"  where
@@ -201,7 +205,7 @@ proof -
   show ?thesis by force
 qed
 
-end (* M_basic *)
+end (* M_inj *)
 
 (***************  end Discipline  *********************)
 
@@ -259,6 +263,24 @@ next
     by (auto del:the_equality intro:the_equality[symmetric])
 qed
 
+text\<open>The next "def_" result really corresponds to @{thm Pow_iff}\<close>
+lemma def_Pow_rel: "M(A) \<Longrightarrow> M(r) \<Longrightarrow> A\<in>Pow_rel(r) \<longleftrightarrow> A \<subseteq> r \<and> M(A)"
+  using Pow_rel_iff[OF _ Pow_rel_closed, of r r]
+  unfolding is_Pow_def by simp
+
+(* New element of Discipline: a characterization result using as much
+  absoluteness as possible  *)
+lemma Pow_rel_char: "M(r) \<Longrightarrow> Pow_rel(r) = {A\<in>Pow(r). M(A)}"
+proof -
+  assume "M(r)"
+  moreover from this
+  have "x \<in> Pow_rel(r) \<Longrightarrow> x\<subseteq>r" "M(x) \<Longrightarrow> x \<subseteq> r \<Longrightarrow> x \<in> Pow_rel(r)" for x
+    using def_Pow_rel by (auto intro!:transM[OF _ Pow_rel_closed])
+  ultimately
+  show ?thesis
+    using transM[OF _ Pow_rel_closed] by blast
+qed
+
 end (* M_basic *)
 
 (******************  end Discipline  **********************)
@@ -306,15 +328,15 @@ lemma Sigma_Sigfun: "Sigma(A,B) = \<Union> {Sigfun(x,B) . x\<in>A}"
 
 definition \<comment> \<open>FIX THIS: not completely relational. Can it be?\<close>
   is_Sigfun :: "[i\<Rightarrow>o,i,i\<Rightarrow>i,i]\<Rightarrow>o"  where
-  "is_Sigfun(M,x,B,Sd) \<equiv> \<exists>RB[M]. is_Replace(M,B(x),\<lambda>y z. z={\<langle>x,y\<rangle>},RB) 
+  "is_Sigfun(M,x,B,Sd) \<equiv> \<exists>RB[M]. is_Replace(M,B(x),\<lambda>y z. z={\<langle>x,y\<rangle>},RB)
                          \<and> big_union(M,RB,Sd)"
 
 context M_trivial
-begin 
+begin
 
 lemma is_Sigfun_abs:
   assumes
-    "strong_replacement(M,\<lambda>y z. z={\<langle>x,y\<rangle>})" 
+    "strong_replacement(M,\<lambda>y z. z={\<langle>x,y\<rangle>})"
     "M(x)" "M(B(x))" "M(Sd)"
   shows
     "is_Sigfun(M,x,B,Sd) \<longleftrightarrow> Sd = Sigfun(x,B)"
@@ -328,7 +350,7 @@ qed
 
 lemma Sigfun_closed:
   assumes
-    "strong_replacement(M, \<lambda>y z. y \<in> B(x) \<and> z = {\<langle>x, y\<rangle>})" 
+    "strong_replacement(M, \<lambda>y z. y \<in> B(x) \<and> z = {\<langle>x, y\<rangle>})"
     "M(x)" "M(B(x))"
   shows
     "M(Sigfun(x,B))"
@@ -339,16 +361,19 @@ end (* M_trivial *)
 
 definition
   is_Sigma :: "[i\<Rightarrow>o,i,i\<Rightarrow>i,i]\<Rightarrow>o"  where
-  "is_Sigma(M,A,B,S) \<equiv> \<exists>RSf[M]. 
+  "is_Sigma(M,A,B,S) \<equiv> \<exists>RSf[M].
       is_Replace(M,A,\<lambda>x z. z=Sigfun(x,B),RSf) \<and> big_union(M,RSf,S)"
 
+
 locale M_Pi = M_basic +
-  fixes A B 
-  assumes     
-    Pi_assumptions: 
-    "\<forall>x\<in>A. strong_replacement(M, \<lambda>y z. y \<in> B(x) \<and> z = {\<langle>x, y\<rangle>})" 
-    "strong_replacement(M,\<lambda>x z. z=Sigfun(x,B))" 
-    "M(A)" 
+  fixes A B
+  assumes
+    Pi_assumptions:
+    "\<forall>x\<in>A. strong_replacement(M, \<lambda>y z. y \<in> B(x) \<and> z = {\<langle>x, y\<rangle>})"
+    "strong_replacement(M,\<lambda>x z. z=Sigfun(x,B))"
+    "separation(M, \<lambda>f. \<exists>df[M].
+           is_domain(M, f, df) \<and> subset(M,A,df) \<and> is_function(M, f))"
+    "M(A)"
     "\<forall>x\<in>A. M(B(x))"
 begin
 
@@ -374,7 +399,7 @@ proof -
     by auto
   then
   show ?thesis
-    using Sigma_Sigfun[of A B] transM[of _ A] 
+    using Sigma_Sigfun[of A B] transM[of _ A]
       Sigfun_closed Pi_assumptions
     by simp
 qed
@@ -386,7 +411,7 @@ subsection\<open>Discipline for \<^term>\<open>Pi\<close>\<close>
 
 definition (* completely relational *)
   is_Pi :: "[i\<Rightarrow>o,i,i\<Rightarrow>i,i]\<Rightarrow>o"  where
-  "is_Pi(M,A,B,I) \<equiv> \<exists>S[M]. \<exists>PS[M]. is_Sigma(M,A,B,S) \<and> 
+  "is_Pi(M,A,B,I) \<equiv> \<exists>S[M]. \<exists>PS[M]. is_Sigma(M,A,B,S) \<and>
        is_Pow(M,S,PS) \<and>
        is_Collect(M,PS,PiP_rel(M,A),I)"
 
@@ -404,10 +429,10 @@ lemma is_Pi_uniqueness:
   unfolding is_Pi_def by simp
 
 lemma is_Pi_witness: "\<exists>d[M]. is_Pi(M,A,B,d)"
-  using Pi_assumptions Pow_rel_iff Pow_rel_closed
-    Sigma_closed Sigma_abs
-  unfolding is_Pi_def PiP_rel_def apply simp
-  sorry \<comment> \<open>We have to do this by hand, assuming axiom instance for \<^term>\<open>M\<close>\<close>
+  using Pi_assumptions Pow_rel_iff Sigma_closed
+    Pow_rel_closed Sigma_abs Pi_assumptions
+  unfolding is_Pi_def PiP_rel_def  by simp
+
 
 end (* M_Pi *)
 
@@ -458,24 +483,118 @@ proof -
   moreover \<comment> \<open>Note the use of transitivity here:\<close>
   have "f \<in> Pi_rel(A, B) \<Longrightarrow> A\<subseteq>domain(f) \<and> function(f)" for f
     using Pi_rel_iff[of "Pi_rel(A,B)"] Pi_rel_closed Sigma_abs
-      Pi_assumptions def_PiP_rel[of A f] transM[OF _ Sigma_closed] 
+      Pi_assumptions def_PiP_rel[of A f] transM[OF _ Sigma_closed]
       transM[OF _ Pi_rel_closed] Pow_rel_iff
       \<comment> \<open>Closure and absoluteness should be in the simpset in this
       context\<close>
     unfolding is_Pi_def by simp
   moreover
   have "f \<in> Pow_rel(Sigma(A,B)) \<Longrightarrow> A\<subseteq>domain(f) \<and> function(f) \<Longrightarrow> f \<in> Pi_rel(A, B)" for f
-    using Pi_rel_iff[of "Pi_rel(A,B)"] Pi_rel_closed Sigma_abs 
+    using Pi_rel_iff[of "Pi_rel(A,B)"] Pi_rel_closed Sigma_abs
       transM[OF _ Sigma_closed]  Pi_assumptions
-      def_PiP_rel[of A f, symmetric] transM[OF _ Sigma_closed] 
+      def_PiP_rel[of A f] transM[OF _ Sigma_closed]
       transM[OF _ Pi_rel_closed] Sigma_closed[THEN Pow_rel_closed, THEN [2] transM, of f]
       Pow_rel_iff
     unfolding is_Pi_def by simp
   ultimately
   show ?thesis by force
 qed
+
+lemma (in M_Pi) Pi_rel_char:
+  "Pi_rel(A,B) = {f\<in>Pi(A,B). M(f)}"
+  using def_Pi_rel Pow_rel_char[OF Sigma_closed] unfolding Pi_def
+  by fastforce
+
 end (* M_Pi *)
 
 (******************  end Discipline  **********************)
+
+
+(**********************************************************)
+subsection\<open>Discipline for \<^term>\<open>function_space\<close>\<close>
+
+abbreviation
+  "is_function_spaceee \<equiv> is_funspace"
+
+context M_basic
+begin
+
+lemma is_function_spaceee_uniqueness:
+  assumes
+    "M(r)" "M(B)" "M(d)" "M(d')"
+    "is_function_spaceee(M,r,B,d)" "is_function_spaceee(M,r,B,d')"
+  shows
+    "d=d'"
+  using assms extensionality_trans
+  unfolding is_funspace_def
+  by simp
+
+lemma is_function_spaceee_witness: "M(r) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M]. is_function_spaceee(M,r,B,d)"
+  unfolding is_funspace_def apply simp
+  sorry \<comment> \<open>We have to do this by hand, eventually performing the
+  Discipline for \<^term>\<open>function_space\<close>\<close>
+
+definition
+  function_spaceee_rel :: "i \<Rightarrow> i \<Rightarrow> i" (infix \<open>\<rightarrow>rr\<close> 60) where
+  "A \<rightarrow>rr B \<equiv> THE d. M(d) \<and> is_function_spaceee(M,A,B,d)"
+
+\<comment> \<open>adding closure to simpset and claset\<close>
+lemma function_spaceee_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(x \<rightarrow>rr y)"
+  unfolding function_spaceee_rel_def
+  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_function_spaceee(M,x,y,d)"], OF _ is_function_spaceee_uniqueness[of x y]]
+    is_function_spaceee_witness by auto
+
+lemma function_spaceee_rel_iff:
+  assumes "M(x)" "M(y)" "M(d)"
+  shows "is_function_spaceee(M,x,y,d) \<longleftrightarrow> d = x \<rightarrow>rr y"
+proof (intro iffI)
+  assume "d = x \<rightarrow>rr y"
+  moreover
+  note assms
+  moreover from this
+  obtain e where "M(e)" "is_function_spaceee(M,x,y,e)"
+    using is_function_spaceee_witness by blast
+  ultimately
+  show "is_function_spaceee(M, x, y, d)"
+    using is_function_spaceee_uniqueness[of x y] is_function_spaceee_witness
+      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_function_spaceee(M,x,y,d)"], OF _ is_function_spaceee_uniqueness[of x y], of e]
+    unfolding function_spaceee_rel_def
+    by auto
+next
+  assume "is_function_spaceee(M, x, y, d)"
+  with assms
+  show "d = x \<rightarrow>rr y"
+    using is_function_spaceee_uniqueness unfolding function_spaceee_rel_def
+    by (blast del:the_equality intro:the_equality[symmetric])
+qed
+
+\<comment> \<open>Move the use of M_Pi assumptions on A and B
+    to an "interpret" inside the proofs\<close>
+lemma (in M_Pi) def_function_spaceee_rel:
+  assumes "\<And>x. B(x) = y" "M(A)" "M(y)"
+  shows "A \<rightarrow>rr y = Pi_rel(A,\<lambda>_. y)"
+proof -
+  from assms
+  have "x\<in>A \<rightarrow>rr y \<longleftrightarrow> x\<in>Pi_rel(A,\<lambda>_. y)" if "M(x)" for x
+    using that function_spaceee_rel_closed
+      function_spaceee_rel_iff[of A y, OF _ _ function_spaceee_rel_closed, of A y]
+      def_Pi_rel Pi_rel_closed  Pi_rel_char[unfolded \<open>\<And>x. B(x) = y\<close>]
+    unfolding is_funspace_def by simp
+  with assms
+  show ?thesis
+    using transM[OF _ function_spaceee_rel_closed, OF _ \<open>M(A)\<close> \<open>M(y)\<close>]
+      transM[OF _ Pi_rel_closed, unfolded \<open>\<And>x. B(x) = y\<close>] by blast
+qed
+
+\<comment> \<open>Same comment as in @{thm def_function_spaceee_rel}\<close>
+lemma (in M_Pi) function_spaceee_char:
+  assumes "\<And>x. B(x) = y" "M(A)" "M(y)"
+  shows "A \<rightarrow>rr y = {f \<in> A \<rightarrow> y. M(f)}"
+  using assms def_function_spaceee_rel Pi_rel_char[unfolded \<open>\<And>x. B(x) = y\<close>]
+  by simp
+
+end (* M_basic *)
+
+(*****************  end Discipline  ***********************)
 
 end
