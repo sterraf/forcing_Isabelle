@@ -457,6 +457,12 @@ definition
 context M_basic
 begin
 
+\<comment> \<open>I'm undecided on keeping the relative quantifiers here.
+    Same with \<^term>\<open>surjP\<close> below. It might relieve from changing
+    @{thm exI allI} to @{thm rexI rallI} in some proofs.
+    I wonder if this escalates well. Assuming that all terms
+    appearing in the "def_" theorem are in \<^term>\<open>M\<close> and using
+    @{thm transM}, it might do.\<close>
 lemma def_injP_rel:
   assumes
     "M(A)" "M(f)"
@@ -479,7 +485,7 @@ definition (* completely relational *)
 
 locale M_inj = M_Pi +
   assumes
-    injP_separation: "separation(M,\<lambda>x. injP_rel(M, r, x))"
+    injP_separation: "M(r) \<Longrightarrow> separation(M,\<lambda>x. injP_rel(M, r, x))"
 begin
 
 lemma is_inj_uniqueness:
@@ -559,6 +565,120 @@ lemma inj_rel_char:
   by simp
 
 end (* M_inj *)
+
+(***************  end Discipline  *********************)
+
+(*************** Discipline for surjP ******************)
+
+definition
+  surjP_rel:: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o" where
+  "surjP_rel(M,A,B,f) \<equiv> \<forall>y[M]. \<exists>x[M]. \<exists>fx[M]. x\<in>A \<longrightarrow> y\<in>B \<and> is_apply(M,f,x,fx) \<and> fx=y"
+
+context M_basic
+begin
+
+lemma def_surjP_rel:
+  assumes
+    "M(A)" "M(B)" "M(f)"
+  shows
+    "surjP_rel(M,A,B,f) \<longleftrightarrow> (\<forall>y[M]. \<exists>x[M]. x\<in>A \<longrightarrow> y\<in>B \<and> f`x=y)"
+  using assms unfolding surjP_rel_def by auto
+
+end (* M_basic *)
+
+(******************  end Discipline  **********************)
+
+(**********************************************************)
+subsection\<open>Discipline for \<^term>\<open>surj\<close>\<close>
+
+definition (* completely relational *)
+  is_surj   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
+  "is_surj(M,A,B,I) \<equiv> \<exists>F[M]. is_function_space(M,A,B,F) \<and>
+       is_Collect(M,F,surjP_rel(M,A,B),I)"
+
+
+locale M_surj = M_Pi +
+  assumes
+    surjP_separation: "M(A)\<Longrightarrow>M(B)\<Longrightarrow>separation(M,\<lambda>x. surjP_rel(M,A,B,x))"
+begin
+
+lemma is_surj_uniqueness:
+  assumes
+    "M(r)" "M(B)" "M(d)" "M(d')"
+    "is_surj(M,r,B,d)" "is_surj(M,r,B,d')"
+  shows
+    "d=d'"
+  using assms function_space_rel_iff extensionality_trans
+  unfolding is_surj_def by simp
+
+lemma is_surj_witness: "M(r) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M]. is_surj(M,r,B,d)"
+  using surjP_separation function_space_rel_iff
+  unfolding is_surj_def by simp
+
+definition
+  surj_rel :: "i \<Rightarrow> i \<Rightarrow> i"  where
+  "surj_rel(A,B) \<equiv> THE d. M(d) \<and> is_surj(M,A,B,d)"
+
+lemma surj_rel_closed: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(surj_rel(x,y))"
+  unfolding surj_rel_def
+  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_surj(M,x,y,d)"], OF _ is_surj_uniqueness[of x y]]
+    is_surj_witness by auto
+
+lemma surj_rel_iff:
+  assumes "M(x)" "M(y)" "M(d)"
+  shows "is_surj(M,x,y,d) \<longleftrightarrow> d = surj_rel(x,y)"
+proof (intro iffI)
+  assume "d = surj_rel(x,y)"
+  moreover
+  note assms
+  moreover from this
+  obtain e where "M(e)" "is_surj(M,x,y,e)"
+    using is_surj_witness by blast
+  ultimately
+  show "is_surj(M, x, y, d)"
+    using is_surj_uniqueness[of x y] is_surj_witness
+      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_surj(M,x,y,d)"], OF _ is_surj_uniqueness[of x y], of e]
+    unfolding surj_rel_def
+    by auto
+next
+  assume "is_surj(M, x, y, d)"
+  with assms
+  show "d = surj_rel(x,y)"
+    using is_surj_uniqueness unfolding surj_rel_def
+    by (blast del:the_equality intro:the_equality[symmetric])
+qed
+
+lemma def_surj_rel:
+  assumes "M(A)" "M(B)"
+  shows "surj_rel(A,B) =
+         {f \<in> A \<rightarrow>r B. \<forall>y[M]. \<exists>x[M]. x\<in>A \<longrightarrow> y\<in>B \<and> f`x=y }"
+    (is "_ = Collect(_,?P)")
+proof -
+  from assms
+  have "surj_rel(A, B) \<subseteq> A \<rightarrow>r B"
+    using surj_rel_iff[of A B "surj_rel(A,B)"] surj_rel_closed function_space_rel_iff
+    unfolding is_surj_def by auto
+  moreover from assms
+  have "f \<in> surj_rel(A, B) \<Longrightarrow> ?P(f)" for f
+    using surj_rel_iff[of A B "surj_rel(A,B)"] surj_rel_closed function_space_rel_iff
+      def_surjP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
+    unfolding is_surj_def by auto
+  moreover from assms
+  have "f \<in> A \<rightarrow>r B \<Longrightarrow> ?P(f) \<Longrightarrow> f \<in> surj_rel(A, B)" for f
+    using surj_rel_iff[of A B "surj_rel(A,B)"] surj_rel_closed function_space_rel_iff
+      def_surjP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
+    unfolding is_surj_def by auto
+  ultimately
+  show ?thesis by force
+qed
+
+lemma surj_rel_char:
+  assumes "M(A)" "M(B)"
+  shows "surj_rel(A,B) = {f \<in> surj_rel(A,B). M(f)}"
+  using assms def_surj_rel function_space_char
+  by simp
+
+end (* M_surj *)
 
 (***************  end Discipline  *********************)
 
