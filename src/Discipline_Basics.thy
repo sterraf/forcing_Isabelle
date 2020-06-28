@@ -23,192 +23,6 @@ proof -
   show ?thesis by auto
 qed
 
-(**********************************************************)
-subsection\<open>Discipline for \<^term>\<open>function_space\<close>\<close>
-
-abbreviation
-  "is_function_space \<equiv> is_funspace"
-
-context M_basic
-begin
-
-lemma is_function_space_uniqueness:
-  assumes
-    "M(r)" "M(B)" "M(d)" "M(d')"
-    "is_function_space(M,r,B,d)" "is_function_space(M,r,B,d')"
-  shows
-    "d=d'"
-  using assms extensionality_trans
-  unfolding is_funspace_def
-  by simp
-
-lemma is_function_space_witness: "M(r) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M]. is_function_space(M,r,B,d)"
-  unfolding is_funspace_def apply simp
-  sorry \<comment> \<open>We have to do this by hand, eventually performing the
-  Discipline for \<^term>\<open>function_space\<close>\<close>
-
-definition
-  function_space_rel :: "i \<Rightarrow> i \<Rightarrow> i" (infix \<open>\<rightarrow>r\<close> 60) where
-  "A \<rightarrow>r B \<equiv> THE d. M(d) \<and> is_function_space(M,A,B,d)"
-
-\<comment> \<open>adding closure to simpset and claset\<close>
-lemma function_space_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(x \<rightarrow>r y)"
-  unfolding function_space_rel_def
-  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_function_space(M,x,y,d)"], OF _ is_function_space_uniqueness[of x y]]
-    is_function_space_witness by auto
-
-lemma function_space_rel_iff:
-  assumes "M(x)" "M(y)" "M(d)"
-  shows "is_function_space(M,x,y,d) \<longleftrightarrow> d = x \<rightarrow>r y"
-proof (intro iffI)
-  assume "d = x \<rightarrow>r y"
-  moreover
-  note assms
-  moreover from this
-  obtain e where "M(e)" "is_function_space(M,x,y,e)"
-    using is_function_space_witness by blast
-  ultimately
-  show "is_function_space(M, x, y, d)"
-    using is_function_space_uniqueness[of x y] is_function_space_witness
-      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_function_space(M,x,y,d)"], OF _ is_function_space_uniqueness[of x y], of e]
-    unfolding function_space_rel_def
-    by auto
-next
-  assume "is_function_space(M, x, y, d)"
-  with assms
-  show "d = x \<rightarrow>r y"
-    using is_function_space_uniqueness unfolding function_space_rel_def
-    by (blast del:the_equality intro:the_equality[symmetric])
-qed
-
-(*
-lemma def_function_space_rel: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> x \<rightarrow>r y = \<dots>"
-  using  least_abs function_space_rel_closed function_space_rel_iff
-  unfolding is_function_space_def by fastforce
-*)
-end (* M_basic *)
-
-(*****************  end Discipline  ***********************)
-
-abbreviation
-  "is_apply \<equiv> fun_apply"
-  \<comment> \<open>It is not necessary to perform the Discipline for \<^term>\<open>is_apply\<close>
-  since it is absolute in this context\<close>
-
-subsection\<open>Discipline for \<^term>\<open>Collect\<close> terms.\<close>
-
-text\<open>We have to isolate the predicate involved and apply the
-Discipline to it.\<close>
-
-(*************** Discipline for injP ******************)
-
-definition
-  injP_rel:: "[i\<Rightarrow>o,i,i]\<Rightarrow>o" where
-  "injP_rel(M,A,f) \<equiv> \<forall>w[M]. \<forall>x[M]. \<forall>fw[M]. \<forall>fx[M]. w\<in>A \<and> x\<in>A \<and>
-            is_apply(M,f,w,fw) \<and> is_apply(M,f,x,fx) \<and> fw=fx\<longrightarrow> w=x"
-
-context M_basic
-begin
-
-lemma def_injP_rel:
-  assumes
-    "M(A)" "M(f)"
-  shows
-    "injP_rel(M,A,f) \<longleftrightarrow> (\<forall>w[M]. \<forall>x[M]. w\<in>A \<and> x\<in>A \<and> f`w=f`x \<longrightarrow> w=x)"
-  using assms unfolding injP_rel_def by simp
-
-end (* M_basic *)
-
-(******************  end Discipline  **********************)
-
-(**********************************************************)
-subsection\<open>Discipline for \<^term>\<open>inj\<close>\<close>
-
-definition (* completely relational *)
-  is_inj   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
-  "is_inj(M,A,B,I) \<equiv> \<exists>F[M]. is_function_space(M,A,B,F) \<and>
-       is_Collect(M,F,injP_rel(M,A),I)"
-
-
-locale M_inj = M_basic +
-  assumes
-    injP_separation: "separation(M,\<lambda>x. injP_rel(M, r, x))"
-begin
-
-lemma is_inj_uniqueness:
-  assumes
-    "M(r)" "M(B)" "M(d)" "M(d')"
-    "is_inj(M,r,B,d)" "is_inj(M,r,B,d')"
-  shows
-    "d=d'"
-  using assms function_space_rel_iff extensionality_trans
-  unfolding is_inj_def by simp
-
-lemma is_inj_witness: "M(r) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M]. is_inj(M,r,B,d)"
-  using injP_separation function_space_rel_iff
-  unfolding is_inj_def by simp
-
-definition
-  inj_rel :: "i \<Rightarrow> i \<Rightarrow> i"  where
-  "inj_rel(A,B) \<equiv> THE d. M(d) \<and> is_inj(M,A,B,d)"
-
-lemma inj_rel_closed: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(inj_rel(x,y))"
-  unfolding inj_rel_def
-  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_inj(M,x,y,d)"], OF _ is_inj_uniqueness[of x y]]
-    is_inj_witness by auto
-
-lemma inj_rel_iff:
-  assumes "M(x)" "M(y)" "M(d)"
-  shows "is_inj(M,x,y,d) \<longleftrightarrow> d = inj_rel(x,y)"
-proof (intro iffI)
-  assume "d = inj_rel(x,y)"
-  moreover
-  note assms
-  moreover from this
-  obtain e where "M(e)" "is_inj(M,x,y,e)"
-    using is_inj_witness by blast
-  ultimately
-  show "is_inj(M, x, y, d)"
-    using is_inj_uniqueness[of x y] is_inj_witness
-      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_inj(M,x,y,d)"], OF _ is_inj_uniqueness[of x y], of e]
-    unfolding inj_rel_def
-    by auto
-next
-  assume "is_inj(M, x, y, d)"
-  with assms
-  show "d = inj_rel(x,y)"
-    using is_inj_uniqueness unfolding inj_rel_def
-    by (blast del:the_equality intro:the_equality[symmetric])
-qed
-
-lemma def_inj_rel:
-  assumes "M(A)" "M(B)"
-  shows "inj_rel(A,B) =
-         {f \<in> A \<rightarrow>r B.  \<forall>w[M]. \<forall>x[M]. w\<in>A \<and> x\<in>A \<and> f`w = f`x \<longrightarrow> w=x}"
-    (is "_ = Collect(_,?P)")
-proof -
-  from assms
-  have "inj_rel(A, B) \<subseteq> A \<rightarrow>r B"
-    using inj_rel_iff[of A B "inj_rel(A,B)"] inj_rel_closed function_space_rel_iff
-    unfolding is_inj_def by auto
-  moreover from assms
-  have "f \<in> inj_rel(A, B) \<Longrightarrow> ?P(f)" for f
-    using inj_rel_iff[of A B "inj_rel(A,B)"] inj_rel_closed function_space_rel_iff
-      def_injP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
-    unfolding is_inj_def by auto
-  moreover from assms
-  have "f \<in> A \<rightarrow>r B \<Longrightarrow> ?P(f) \<Longrightarrow> f \<in> inj_rel(A, B)" for f
-    using inj_rel_iff[of A B "inj_rel(A,B)"] inj_rel_closed function_space_rel_iff
-      def_injP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
-    unfolding is_inj_def by auto
-  ultimately
-  show ?thesis by force
-qed
-
-end (* M_inj *)
-
-(***************  end Discipline  *********************)
-
 (******************************************************)
 subsection\<open>Discipline for \<^term>\<open>Pow\<close>\<close>
 
@@ -264,7 +78,7 @@ next
 qed
 
 text\<open>The next "def_" result really corresponds to @{thm Pow_iff}\<close>
-lemma def_Pow_rel: "M(A) \<Longrightarrow> M(r) \<Longrightarrow> A\<in>Pow_rel(r) \<longleftrightarrow> A \<subseteq> r \<and> M(A)"
+lemma def_Pow_rel: "M(A) \<Longrightarrow> M(r) \<Longrightarrow> A\<in>Pow_rel(r) \<longleftrightarrow> A \<subseteq> r"
   using Pow_rel_iff[OF _ Pow_rel_closed, of r r]
   unfolding is_Pow_def by simp
 
@@ -364,15 +178,23 @@ definition
   "is_Sigma(M,A,B,S) \<equiv> \<exists>RSf[M].
       is_Replace(M,A,\<lambda>x z. z=Sigfun(x,B),RSf) \<and> big_union(M,RSf,S)"
 
-
 locale M_Pi = M_basic +
+  assumes
+    Pi_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>f. \<exists>df[M].
+           is_domain(M, f, df) \<and> subset(M,A,df) \<and> is_function(M, f))"
+    and
+    Pi_replacement: 
+    "M(A) \<Longrightarrow> M(y) \<Longrightarrow> 
+      \<forall>x\<in>A. strong_replacement(M, \<lambda>ya z. ya \<in> y \<and> z = {\<langle>x, ya\<rangle>})"
+    "M(A) \<Longrightarrow> M(y) \<Longrightarrow> 
+      strong_replacement(M, \<lambda>x z. z = (\<Union>xa\<in>y. {\<langle>x, xa\<rangle>}))"
+
+locale M_Pi_assumptions = M_Pi +
   fixes A B
   assumes
     Pi_assumptions:
     "\<forall>x\<in>A. strong_replacement(M, \<lambda>y z. y \<in> B(x) \<and> z = {\<langle>x, y\<rangle>})"
     "strong_replacement(M,\<lambda>x z. z=Sigfun(x,B))"
-    "separation(M, \<lambda>f. \<exists>df[M].
-           is_domain(M, f, df) \<and> subset(M,A,df) \<and> is_function(M, f))"
     "M(A)"
     "\<forall>x\<in>A. M(B(x))"
 begin
@@ -404,7 +226,7 @@ proof -
     by simp
 qed
 
-end (* M_Pi *)
+end (* M_Pi_assumptions *)
 
 (**********************************************************)
 subsection\<open>Discipline for \<^term>\<open>Pi\<close>\<close>
@@ -415,7 +237,7 @@ definition (* completely relational *)
        is_Pow(M,S,PS) \<and>
        is_Collect(M,PS,PiP_rel(M,A),I)"
 
-context M_Pi
+context M_Pi_assumptions
 begin
 
 lemma is_Pi_uniqueness:
@@ -430,17 +252,16 @@ lemma is_Pi_uniqueness:
 
 lemma is_Pi_witness: "\<exists>d[M]. is_Pi(M,A,B,d)"
   using Pi_assumptions Pow_rel_iff Sigma_closed
-    Pow_rel_closed Sigma_abs Pi_assumptions
-  unfolding is_Pi_def PiP_rel_def  by simp
+    Pow_rel_closed Sigma_abs Pi_assumptions Pi_separation
+  unfolding is_Pi_def PiP_rel_def by simp
 
-
-end (* M_Pi *)
+end (* M_Pi_assumptions *)
 
 definition (in M_basic)
   Pi_rel :: "i \<Rightarrow> (i\<Rightarrow>i) \<Rightarrow> i"  where
   "Pi_rel(A,B) \<equiv> THE d. M(d) \<and> is_Pi(M,A,B,d)"
 
-context M_Pi
+context M_Pi_assumptions
 begin
   \<comment> \<open>From this point on, the higher order variable \<^term>\<open>y\<close> must be
 explicitly instantiated, and proof methods are slower\<close>
@@ -500,12 +321,12 @@ proof -
   show ?thesis by force
 qed
 
-lemma (in M_Pi) Pi_rel_char:
+lemma (in M_Pi_assumptions) Pi_rel_char:
   "Pi_rel(A,B) = {f\<in>Pi(A,B). M(f)}"
   using def_Pi_rel Pow_rel_char[OF Sigma_closed] unfolding Pi_def
   by fastforce
 
-end (* M_Pi *)
+end (* M_Pi_assumptions *)
 
 (******************  end Discipline  **********************)
 
@@ -514,87 +335,225 @@ end (* M_Pi *)
 subsection\<open>Discipline for \<^term>\<open>function_space\<close>\<close>
 
 abbreviation
-  "is_function_spaceee \<equiv> is_funspace"
+  "is_function_space \<equiv> is_funspace"
 
-context M_basic
+context M_Pi
 begin
 
-lemma is_function_spaceee_uniqueness:
+lemma is_function_space_uniqueness:
   assumes
     "M(r)" "M(B)" "M(d)" "M(d')"
-    "is_function_spaceee(M,r,B,d)" "is_function_spaceee(M,r,B,d')"
+    "is_function_space(M,r,B,d)" "is_function_space(M,r,B,d')"
   shows
     "d=d'"
   using assms extensionality_trans
   unfolding is_funspace_def
   by simp
 
-lemma is_function_spaceee_witness: "M(r) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M]. is_function_spaceee(M,r,B,d)"
-  unfolding is_funspace_def apply simp
-  sorry \<comment> \<open>We have to do this by hand, eventually performing the
-  Discipline for \<^term>\<open>function_space\<close>\<close>
+lemma is_function_space_witness: 
+  assumes "M(A)" "M(B)" 
+  shows "\<exists>d[M]. is_function_space(M,A,B,d)"
+proof -
+  from assms
+  interpret M_Pi_assumptions M A "\<lambda>_. B" 
+    using Pi_replacement Pi_separation
+    by unfold_locales (simp_all add:Sigfun_def)
+  from assms
+  have "\<forall>f[M]. f \<in> Pi_rel(A, \<lambda>_. B) \<longleftrightarrow> f \<in> A \<rightarrow> B"
+    using Pi_rel_char by simp
+  with assms
+  show ?thesis using Pi_rel_closed 
+    unfolding is_funspace_def by auto
+qed
 
 definition
-  function_spaceee_rel :: "i \<Rightarrow> i \<Rightarrow> i" (infix \<open>\<rightarrow>rr\<close> 60) where
-  "A \<rightarrow>rr B \<equiv> THE d. M(d) \<and> is_function_spaceee(M,A,B,d)"
+  function_space_rel :: "i \<Rightarrow> i \<Rightarrow> i" (infix \<open>\<rightarrow>r\<close> 60) where
+  "A \<rightarrow>r B \<equiv> THE d. M(d) \<and> is_function_space(M,A,B,d)"
 
 \<comment> \<open>adding closure to simpset and claset\<close>
-lemma function_spaceee_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(x \<rightarrow>rr y)"
-  unfolding function_spaceee_rel_def
-  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_function_spaceee(M,x,y,d)"], OF _ is_function_spaceee_uniqueness[of x y]]
-    is_function_spaceee_witness by auto
+lemma function_space_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(x \<rightarrow>r y)"
+  unfolding function_space_rel_def
+  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_function_space(M,x,y,d)"], OF _ is_function_space_uniqueness[of x y]]
+    is_function_space_witness by auto
 
-lemma function_spaceee_rel_iff:
+lemma function_space_rel_iff:
   assumes "M(x)" "M(y)" "M(d)"
-  shows "is_function_spaceee(M,x,y,d) \<longleftrightarrow> d = x \<rightarrow>rr y"
+  shows "is_function_space(M,x,y,d) \<longleftrightarrow> d = x \<rightarrow>r y"
 proof (intro iffI)
-  assume "d = x \<rightarrow>rr y"
+  assume "d = x \<rightarrow>r y"
   moreover
   note assms
   moreover from this
-  obtain e where "M(e)" "is_function_spaceee(M,x,y,e)"
-    using is_function_spaceee_witness by blast
+  obtain e where "M(e)" "is_function_space(M,x,y,e)"
+    using is_function_space_witness by blast
   ultimately
-  show "is_function_spaceee(M, x, y, d)"
-    using is_function_spaceee_uniqueness[of x y] is_function_spaceee_witness
-      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_function_spaceee(M,x,y,d)"], OF _ is_function_spaceee_uniqueness[of x y], of e]
-    unfolding function_spaceee_rel_def
+  show "is_function_space(M, x, y, d)"
+    using is_function_space_uniqueness[of x y] is_function_space_witness
+      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_function_space(M,x,y,d)"], OF _ is_function_space_uniqueness[of x y], of e]
+    unfolding function_space_rel_def
     by auto
 next
-  assume "is_function_spaceee(M, x, y, d)"
+  assume "is_function_space(M, x, y, d)"
   with assms
-  show "d = x \<rightarrow>rr y"
-    using is_function_spaceee_uniqueness unfolding function_spaceee_rel_def
+  show "d = x \<rightarrow>r y"
+    using is_function_space_uniqueness unfolding function_space_rel_def
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
-\<comment> \<open>Move the use of M_Pi assumptions on A and B
-    to an "interpret" inside the proofs\<close>
-lemma (in M_Pi) def_function_spaceee_rel:
-  assumes "\<And>x. B(x) = y" "M(A)" "M(y)"
-  shows "A \<rightarrow>rr y = Pi_rel(A,\<lambda>_. y)"
+lemma def_function_space_rel:
+  assumes "M(A)" "M(y)"
+  shows "A \<rightarrow>r y = Pi_rel(A,\<lambda>_. y)"
 proof -
   from assms
-  have "x\<in>A \<rightarrow>rr y \<longleftrightarrow> x\<in>Pi_rel(A,\<lambda>_. y)" if "M(x)" for x
-    using that function_spaceee_rel_closed
-      function_spaceee_rel_iff[of A y, OF _ _ function_spaceee_rel_closed, of A y]
-      def_Pi_rel Pi_rel_closed  Pi_rel_char[unfolded \<open>\<And>x. B(x) = y\<close>]
-    unfolding is_funspace_def by simp
+  interpret M_Pi_assumptions M A "\<lambda>_. y" 
+    using Pi_replacement Pi_separation
+    by unfold_locales (simp_all add:Sigfun_def)
+  from assms
+  have "x\<in>A \<rightarrow>r y \<longleftrightarrow> x\<in>Pi_rel(A,\<lambda>_. y)" if "M(x)" for x
+    using that function_space_rel_closed
+      function_space_rel_iff[of A y, OF _ _ function_space_rel_closed, of A y]
+      def_Pi_rel Pi_rel_closed  Pi_rel_char Pow_rel_char
+    unfolding is_funspace_def by (simp add:Pi_def)
   with assms
   show ?thesis
-    using transM[OF _ function_spaceee_rel_closed, OF _ \<open>M(A)\<close> \<open>M(y)\<close>]
-      transM[OF _ Pi_rel_closed, unfolded \<open>\<And>x. B(x) = y\<close>] by blast
+    using transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(y)\<close>]
+      transM[OF _ Pi_rel_closed] by blast
 qed
 
-\<comment> \<open>Same comment as in @{thm def_function_spaceee_rel}\<close>
-lemma (in M_Pi) function_spaceee_char:
-  assumes "\<And>x. B(x) = y" "M(A)" "M(y)"
-  shows "A \<rightarrow>rr y = {f \<in> A \<rightarrow> y. M(f)}"
-  using assms def_function_spaceee_rel Pi_rel_char[unfolded \<open>\<And>x. B(x) = y\<close>]
+lemma function_space_char:
+  assumes "M(A)" "M(y)"
+  shows "A \<rightarrow>r y = {f \<in> A \<rightarrow> y. M(f)}"
+proof -
+  from assms
+  interpret M_Pi_assumptions M A "\<lambda>_. y"
+    using Pi_replacement Pi_separation
+    by unfold_locales (simp_all add:Sigfun_def)
+  show ?thesis
+  using assms def_function_space_rel Pi_rel_char
   by simp
+qed
+
+end (* M_Pi *)
+
+(*****************  end Discipline  ***********************)
+
+abbreviation
+  "is_apply \<equiv> fun_apply"
+  \<comment> \<open>It is not necessary to perform the Discipline for \<^term>\<open>is_apply\<close>
+  since it is absolute in this context\<close>
+
+subsection\<open>Discipline for \<^term>\<open>Collect\<close> terms.\<close>
+
+text\<open>We have to isolate the predicate involved and apply the
+Discipline to it.\<close>
+
+(*************** Discipline for injP ******************)
+
+definition
+  injP_rel:: "[i\<Rightarrow>o,i,i]\<Rightarrow>o" where
+  "injP_rel(M,A,f) \<equiv> \<forall>w[M]. \<forall>x[M]. \<forall>fw[M]. \<forall>fx[M]. w\<in>A \<and> x\<in>A \<and>
+            is_apply(M,f,w,fw) \<and> is_apply(M,f,x,fx) \<and> fw=fx\<longrightarrow> w=x"
+
+context M_basic
+begin
+
+lemma def_injP_rel:
+  assumes
+    "M(A)" "M(f)"
+  shows
+    "injP_rel(M,A,f) \<longleftrightarrow> (\<forall>w[M]. \<forall>x[M]. w\<in>A \<and> x\<in>A \<and> f`w=f`x \<longrightarrow> w=x)"
+  using assms unfolding injP_rel_def by simp
 
 end (* M_basic *)
 
-(*****************  end Discipline  ***********************)
+(******************  end Discipline  **********************)
+
+(**********************************************************)
+subsection\<open>Discipline for \<^term>\<open>inj\<close>\<close>
+
+definition (* completely relational *)
+  is_inj   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
+  "is_inj(M,A,B,I) \<equiv> \<exists>F[M]. is_function_space(M,A,B,F) \<and>
+       is_Collect(M,F,injP_rel(M,A),I)"
+
+
+locale M_inj = M_Pi +
+  assumes
+    injP_separation: "separation(M,\<lambda>x. injP_rel(M, r, x))" 
+begin
+
+lemma is_inj_uniqueness:
+  assumes
+    "M(r)" "M(B)" "M(d)" "M(d')"
+    "is_inj(M,r,B,d)" "is_inj(M,r,B,d')"
+  shows
+    "d=d'"
+  using assms function_space_rel_iff extensionality_trans
+  unfolding is_inj_def by simp
+
+lemma is_inj_witness: "M(r) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M]. is_inj(M,r,B,d)"
+  using injP_separation function_space_rel_iff
+  unfolding is_inj_def by simp
+
+definition
+  inj_rel :: "i \<Rightarrow> i \<Rightarrow> i"  where
+  "inj_rel(A,B) \<equiv> THE d. M(d) \<and> is_inj(M,A,B,d)"
+
+lemma inj_rel_closed: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(inj_rel(x,y))"
+  unfolding inj_rel_def
+  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_inj(M,x,y,d)"], OF _ is_inj_uniqueness[of x y]]
+    is_inj_witness by auto
+
+lemma inj_rel_iff:
+  assumes "M(x)" "M(y)" "M(d)"
+  shows "is_inj(M,x,y,d) \<longleftrightarrow> d = inj_rel(x,y)"
+proof (intro iffI)
+  assume "d = inj_rel(x,y)"
+  moreover
+  note assms
+  moreover from this
+  obtain e where "M(e)" "is_inj(M,x,y,e)"
+    using is_inj_witness by blast
+  ultimately
+  show "is_inj(M, x, y, d)"
+    using is_inj_uniqueness[of x y] is_inj_witness
+      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_inj(M,x,y,d)"], OF _ is_inj_uniqueness[of x y], of e]
+    unfolding inj_rel_def
+    by auto
+next
+  assume "is_inj(M, x, y, d)"
+  with assms
+  show "d = inj_rel(x,y)"
+    using is_inj_uniqueness unfolding inj_rel_def
+    by (blast del:the_equality intro:the_equality[symmetric])
+qed
+
+lemma def_inj_rel:
+  assumes "M(A)" "M(B)"
+  shows "inj_rel(A,B) =
+         {f \<in> A \<rightarrow>r B.  \<forall>w[M]. \<forall>x[M]. w\<in>A \<and> x\<in>A \<and> f`w = f`x \<longrightarrow> w=x}"
+    (is "_ = Collect(_,?P)")
+proof -
+  from assms
+  have "inj_rel(A, B) \<subseteq> A \<rightarrow>r B"
+    using inj_rel_iff[of A B "inj_rel(A,B)"] inj_rel_closed function_space_rel_iff
+    unfolding is_inj_def by auto
+  moreover from assms
+  have "f \<in> inj_rel(A, B) \<Longrightarrow> ?P(f)" for f
+    using inj_rel_iff[of A B "inj_rel(A,B)"] inj_rel_closed function_space_rel_iff
+      def_injP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
+    unfolding is_inj_def by auto
+  moreover from assms
+  have "f \<in> A \<rightarrow>r B \<Longrightarrow> ?P(f) \<Longrightarrow> f \<in> inj_rel(A, B)" for f
+    using inj_rel_iff[of A B "inj_rel(A,B)"] inj_rel_closed function_space_rel_iff
+      def_injP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
+    unfolding is_inj_def by auto
+  ultimately
+  show ?thesis by force
+qed
+
+end (* M_inj *)
+
+(***************  end Discipline  *********************)
 
 end
