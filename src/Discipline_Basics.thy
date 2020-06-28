@@ -183,10 +183,10 @@ locale M_Pi = M_basic +
     Pi_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>f. \<exists>df[M].
            is_domain(M, f, df) \<and> subset(M,A,df) \<and> is_function(M, f))"
     and
-    Pi_replacement: 
-    "M(A) \<Longrightarrow> M(y) \<Longrightarrow> 
+    Pi_replacement:
+    "M(A) \<Longrightarrow> M(y) \<Longrightarrow>
       \<forall>x\<in>A. strong_replacement(M, \<lambda>ya z. ya \<in> y \<and> z = {\<langle>x, ya\<rangle>})"
-    "M(A) \<Longrightarrow> M(y) \<Longrightarrow> 
+    "M(A) \<Longrightarrow> M(y) \<Longrightarrow>
       strong_replacement(M, \<lambda>x z. z = (\<Union>xa\<in>y. {\<langle>x, xa\<rangle>}))"
 
 locale M_Pi_assumptions = M_Pi +
@@ -350,19 +350,19 @@ lemma is_function_space_uniqueness:
   unfolding is_funspace_def
   by simp
 
-lemma is_function_space_witness: 
-  assumes "M(A)" "M(B)" 
+lemma is_function_space_witness:
+  assumes "M(A)" "M(B)"
   shows "\<exists>d[M]. is_function_space(M,A,B,d)"
 proof -
   from assms
-  interpret M_Pi_assumptions M A "\<lambda>_. B" 
+  interpret M_Pi_assumptions M A "\<lambda>_. B"
     using Pi_replacement Pi_separation
     by unfold_locales (simp_all add:Sigfun_def)
   from assms
   have "\<forall>f[M]. f \<in> Pi_rel(A, \<lambda>_. B) \<longleftrightarrow> f \<in> A \<rightarrow> B"
     using Pi_rel_char by simp
   with assms
-  show ?thesis using Pi_rel_closed 
+  show ?thesis using Pi_rel_closed
     unfolding is_funspace_def by auto
 qed
 
@@ -405,7 +405,7 @@ lemma def_function_space_rel:
   shows "A \<rightarrow>r y = Pi_rel(A,\<lambda>_. y)"
 proof -
   from assms
-  interpret M_Pi_assumptions M A "\<lambda>_. y" 
+  interpret M_Pi_assumptions M A "\<lambda>_. y"
     using Pi_replacement Pi_separation
     by unfold_locales (simp_all add:Sigfun_def)
   from assms
@@ -429,8 +429,8 @@ proof -
     using Pi_replacement Pi_separation
     by unfold_locales (simp_all add:Sigfun_def)
   show ?thesis
-  using assms def_function_space_rel Pi_rel_char
-  by simp
+    using assms def_function_space_rel Pi_rel_char
+    by simp
 qed
 
 end (* M_Pi *)
@@ -479,7 +479,7 @@ definition (* completely relational *)
 
 locale M_inj = M_Pi +
   assumes
-    injP_separation: "separation(M,\<lambda>x. injP_rel(M, r, x))" 
+    injP_separation: "separation(M,\<lambda>x. injP_rel(M, r, x))"
 begin
 
 lemma is_inj_uniqueness:
@@ -551,6 +551,12 @@ proof -
   ultimately
   show ?thesis by force
 qed
+
+lemma inj_rel_char:
+  assumes "M(A)" "M(B)"
+  shows "inj_rel(A,B) = {f \<in> inj_rel(A,B). M(f)}"
+  using assms def_inj_rel function_space_char
+  by simp
 
 end (* M_inj *)
 
