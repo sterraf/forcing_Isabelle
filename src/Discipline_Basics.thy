@@ -560,9 +560,19 @@ qed
 
 lemma inj_rel_char:
   assumes "M(A)" "M(B)"
-  shows "inj_rel(A,B) = {f \<in> inj_rel(A,B). M(f)}"
-  using assms def_inj_rel function_space_char
-  by simp
+  shows "inj_rel(A,B) = {f \<in> inj(A,B). M(f)}"
+proof -
+  from assms
+  interpret M_Pi_assumptions M A "\<lambda>_. B"
+    using Pi_replacement Pi_separation
+    by unfold_locales (simp_all add:Sigfun_def)
+  from assms
+  show ?thesis
+    using def_inj_rel[OF assms] def_function_space_rel[OF assms]
+      transM[OF _ \<open>M(A)\<close>] Pi_rel_char
+    unfolding inj_def
+    by auto
+qed
 
 end (* M_inj *)
 
@@ -572,7 +582,7 @@ end (* M_inj *)
 
 definition
   surjP_rel:: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o" where
-  "surjP_rel(M,A,B,f) \<equiv> \<forall>y[M]. \<exists>x[M]. \<exists>fx[M]. x\<in>A \<longrightarrow> y\<in>B \<and> is_apply(M,f,x,fx) \<and> fx=y"
+  "surjP_rel(M,A,B,f) \<equiv> \<forall>y[M]. \<exists>x[M]. \<exists>fx[M]. y\<in>B \<longrightarrow> x\<in>A \<and> is_apply(M,f,x,fx) \<and> fx=y"
 
 context M_basic
 begin
@@ -581,7 +591,7 @@ lemma def_surjP_rel:
   assumes
     "M(A)" "M(B)" "M(f)"
   shows
-    "surjP_rel(M,A,B,f) \<longleftrightarrow> (\<forall>y[M]. \<exists>x[M]. x\<in>A \<longrightarrow> y\<in>B \<and> f`x=y)"
+    "surjP_rel(M,A,B,f) \<longleftrightarrow> (\<forall>y[M]. \<exists>x[M]. y\<in>B \<longrightarrow> x\<in>A \<and> f`x=y)"
   using assms unfolding surjP_rel_def by auto
 
 end (* M_basic *)
@@ -651,7 +661,7 @@ qed
 lemma def_surj_rel:
   assumes "M(A)" "M(B)"
   shows "surj_rel(A,B) =
-         {f \<in> A \<rightarrow>r B. \<forall>y[M]. \<exists>x[M]. x\<in>A \<longrightarrow> y\<in>B \<and> f`x=y }"
+         {f \<in> A \<rightarrow>r B. \<forall>y[M]. \<exists>x[M]. y\<in>B \<longrightarrow> x\<in>A \<and> f`x=y }"
     (is "_ = Collect(_,?P)")
 proof -
   from assms
@@ -674,9 +684,19 @@ qed
 
 lemma surj_rel_char:
   assumes "M(A)" "M(B)"
-  shows "surj_rel(A,B) = {f \<in> surj_rel(A,B). M(f)}"
-  using assms def_surj_rel function_space_char
-  by simp
+  shows "surj_rel(A,B) = {f \<in> surj(A,B). M(f)}"
+proof -
+  from assms
+  interpret M_Pi_assumptions M A "\<lambda>_. B"
+    using Pi_replacement Pi_separation
+    by unfold_locales (simp_all add:Sigfun_def)
+  from assms
+  show ?thesis
+    using def_surj_rel[OF assms] def_function_space_rel[OF assms]
+      transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>] Pi_rel_char
+    unfolding surj_def
+    by auto
+qed
 
 end (* M_surj *)
 
