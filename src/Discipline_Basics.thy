@@ -5,7 +5,7 @@ theory Discipline_Basics
     "../Tools/Try0"
 begin
 
-lemma (in M_trivial) extensionality_trans: \<comment> \<open>General preliminary result\<close>
+lemma (in M_trivial) extensionality_trans:
   assumes
     "M(d)" "M(d')"
     "\<forall>x[M]. x\<in>d  \<longleftrightarrow> P(x)"
@@ -21,6 +21,136 @@ proof -
     using transM[of _ d', OF _ \<open>M(d')\<close>] by auto
   ultimately
   show ?thesis by auto
+qed
+
+definition
+  is_hcomp :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_hcomp(M,is_f,is_g,a,w) \<equiv> \<exists>z[M]. is_g(M,a,z) \<and> is_f(M,z,w)"
+
+definition
+  is_hcomp2_2 :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i,i]\<Rightarrow>o,[i\<Rightarrow>o,i,i,i]\<Rightarrow>o,[i\<Rightarrow>o,i,i,i]\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
+  "is_hcomp2_2(M,is_f,is_g1,is_g2,a,b,w) \<equiv> \<exists>g1ab[M]. \<exists>g2ab[M].
+       is_g1(M,a,b,g1ab) \<and> is_g2(M,a,b,g2ab) \<and> is_f(M,g1ab,g2ab,w)"
+
+lemma (in M_trivial) hcomp_abs:
+  assumes
+    is_f_abs:"\<And>a z. M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_f(M,a,z) \<longleftrightarrow> z = f(a)" and
+    is_g_abs:"\<And>a z. M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_g(M,a,z) \<longleftrightarrow> z = g(a)" and
+    g_closed:"\<And>a. M(a) \<Longrightarrow> M(g(a))"
+    "M(a)" "M(w)"
+  shows
+    "is_hcomp(M,is_f,is_g,a,w) \<longleftrightarrow> w = f(g(a))"
+  unfolding is_hcomp_def using assms by simp
+
+lemma hcomp_uniqueness:
+  assumes
+    uniq_is_f:
+    "\<And>r d d'. M(r) \<Longrightarrow> M(d) \<Longrightarrow> M(d') \<Longrightarrow> is_f(M, r, d) \<Longrightarrow> is_f(M, r, d') \<Longrightarrow>
+               d = d'"
+    and
+    uniq_is_g:
+    "\<And>r d d'. M(r) \<Longrightarrow> M(d) \<Longrightarrow> M(d') \<Longrightarrow> is_g(M, r, d) \<Longrightarrow> is_g(M, r, d') \<Longrightarrow>
+               d = d'"
+    and
+    "M(a)" "M(w)" "M(w')"
+    "is_hcomp(M,is_f,is_g,a,w)"
+    "is_hcomp(M,is_f,is_g,a,w')"
+  shows
+    "w=w'"
+proof -
+  from assms
+  obtain z z' where "is_g(M, a, z)" "is_g(M, a, z')"
+    "is_f(M,z,w)" "is_f(M,z',w')"
+    "M(z)" "M(z')"
+    unfolding is_hcomp_def by blast
+  moreover from this and uniq_is_g and \<open>M(a)\<close>
+  have "z=z'" by blast
+  moreover note uniq_is_f and \<open>M(w)\<close> \<open>M(w')\<close>
+  ultimately
+  show ?thesis by blast
+qed
+
+lemma hcomp_witness:
+  assumes
+    wit_is_f: "\<And>r. M(r) \<Longrightarrow> \<exists>d[M]. is_f(M,r,d)" and
+    wit_is_g: "\<And>r. M(r) \<Longrightarrow> \<exists>d[M]. is_g(M,r,d)" and
+    "M(a)"
+  shows
+    "\<exists>w[M]. is_hcomp(M,is_f,is_g,a,w)"
+proof -
+  from \<open>M(a)\<close> and wit_is_g
+  obtain z where "is_g(M,a,z)" "M(z)" by blast
+  moreover from this and wit_is_f
+  obtain w where "is_f(M,z,w)" "M(w)" by blast
+  ultimately
+  show ?thesis
+    using assms unfolding is_hcomp_def by auto
+qed
+
+lemma (in M_trivial) hcomp2_2_abs:
+  assumes
+    is_f_abs:"\<And>r1 r2 z. M(r1) \<Longrightarrow> M(r2) \<Longrightarrow>  M(z) \<Longrightarrow> is_f(M,r1,r2,z) \<longleftrightarrow> z = f(r1,r2)" and
+    is_g1_abs:"\<And>r1 r2 z. M(r1) \<Longrightarrow> M(r2) \<Longrightarrow>  M(z) \<Longrightarrow> is_g1(M,r1,r2,z) \<longleftrightarrow> z = g1(r1,r2)" and
+    is_g2_abs:"\<And>r1 r2 z. M(r1) \<Longrightarrow> M(r2) \<Longrightarrow>  M(z) \<Longrightarrow> is_g2(M,r1,r2,z) \<longleftrightarrow> z = g2(r1,r2)" and
+    types: "M(a)" "M(b)" "M(w)" "M(g1(a,b))" "M(g2(a,b))"
+  shows
+    "is_hcomp2_2(M,is_f,is_g1,is_g2,a,b,w) \<longleftrightarrow> w = f(g1(a,b),g2(a,b))"
+  unfolding is_hcomp2_2_def using assms
+    \<comment> \<open>We only need some particular cases of the abs assumptions\<close>
+    (* is_f_abs types is_g1_abs[of a b] is_g2_abs[of a b] *)
+  by simp
+
+lemma hcomp2_2_uniqueness:
+  assumes
+    uniq_is_f:
+    "\<And>r1 r2 d d'. M(r1) \<Longrightarrow> M(r2) \<Longrightarrow> M(d) \<Longrightarrow> M(d') \<Longrightarrow>
+        is_f(M, r1, r2 , d) \<Longrightarrow> is_f(M, r1, r2, d') \<Longrightarrow>  d = d'"
+    and
+    uniq_is_g1:
+    "\<And>r1 r2 d d'. M(r1) \<Longrightarrow> M(r2)\<Longrightarrow> M(d) \<Longrightarrow> M(d') \<Longrightarrow> is_g1(M, r1,r2, d) \<Longrightarrow> is_g1(M, r1,r2, d') \<Longrightarrow>
+               d = d'"
+    and
+    uniq_is_g2:
+    "\<And>r1 r2 d d'. M(r1) \<Longrightarrow> M(r2)\<Longrightarrow> M(d) \<Longrightarrow> M(d') \<Longrightarrow> is_g2(M, r1,r2, d) \<Longrightarrow> is_g2(M, r1,r2, d') \<Longrightarrow>
+               d = d'"
+    and
+    "M(a)" "M(b)" "M(w)" "M(w')"
+    "is_hcomp2_2(M,is_f,is_g1,is_g2,a,b,w)"
+    "is_hcomp2_2(M,is_f,is_g1,is_g2,a,b,w')"
+  shows
+    "w=w'"
+proof -
+  from assms
+  obtain z z' y y' where "is_g1(M, a,b, z)" "is_g1(M, a,b, z')"
+    "is_g2(M, a,b, y)" "is_g2(M, a,b, y')"
+    "is_f(M,z,y,w)" "is_f(M,z',y',w')"
+    "M(z)" "M(z')" "M(y)" "M(y')"
+    unfolding is_hcomp2_2_def by force
+  moreover from this and uniq_is_g1 uniq_is_g2 and \<open>M(a)\<close> \<open>M(b)\<close>
+  have "z=z'" "y=y'" by blast+
+  moreover note uniq_is_f and \<open>M(w)\<close> \<open>M(w')\<close>
+  ultimately
+  show ?thesis by blast
+qed
+
+lemma hcomp2_2_witness:
+  assumes
+    wit_is_f: "\<And>r1 r2. M(r1) \<Longrightarrow> M(r2) \<Longrightarrow> \<exists>d[M]. is_f(M,r1,r2,d)" and
+    wit_is_g1: "\<And>r1 r2. M(r1) \<Longrightarrow> M(r2) \<Longrightarrow> \<exists>d[M]. is_g1(M,r1,r2,d)" and
+    wit_is_g2: "\<And>r1 r2. M(r1) \<Longrightarrow> M(r2) \<Longrightarrow> \<exists>d[M]. is_g2(M,r1,r2,d)" and
+    "M(a)" "M(b)"
+  shows
+    "\<exists>w[M]. is_hcomp2_2(M,is_f,is_g1,is_g2,a,b,w)"
+proof -
+  from \<open>M(a)\<close> \<open>M(b)\<close> and wit_is_g1
+  obtain g1a where "is_g1(M,a,b,g1a)" "M(g1a)" by blast
+  moreover from \<open>M(a)\<close> \<open>M(b)\<close> and wit_is_g2
+  obtain g2a where "is_g2(M,a,b,g2a)" "M(g2a)" by blast
+  moreover from calculation and wit_is_f
+  obtain w where "is_f(M,g1a,g2a,w)" "M(w)" by blast
+  ultimately
+  show ?thesis
+    using assms unfolding is_hcomp2_2_def by auto
 qed
 
 (******************************************************)
@@ -699,6 +829,116 @@ proof -
 qed
 
 end (* M_surj *)
+
+(***************  end Discipline  *********************)
+
+definition
+  is_Int :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
+  "is_Int(M,A,B,I) \<equiv> \<forall>x[M]. x \<in> I \<longleftrightarrow> x \<in> A \<and> x \<in> B"
+
+context M_basic
+begin
+
+lemma is_Int_abs:
+  assumes
+    "M(A)" "M(B)" "M(I)"
+  shows
+    "is_Int(M,A,B,I) \<longleftrightarrow> I = A \<inter> B"
+  using assms transM[OF _ \<open>M(B)\<close>] transM[OF _ \<open>M(I)\<close>]
+  unfolding is_Int_def by blast
+
+lemma is_Int_uniqueness:
+  assumes
+    "M(r)" "M(B)" "M(d)" "M(d')"
+    "is_Int(M,r,B,d)" "is_Int(M,r,B,d')"
+  shows
+    "d=d'"
+  using assms is_Int_abs by simp
+
+text\<open>Note: @{thm Int_closed} already in Relative.\<close>
+
+end (* M_trivial *)
+
+(**********************************************************)
+subsection\<open>Discipline for \<^term>\<open>bij\<close>\<close>
+
+definition (* completely relational *)
+  is_bij   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
+  "is_bij(M,A,B,bj) \<equiv> is_hcomp2_2(M,is_Int,is_inj,is_surj,A,B,bj)"
+  (* Old def: "is_bij(M,A,B,bj) \<equiv> \<exists>I[M]. \<exists>S[M].
+      is_inj(M,A,B,I) \<and> is_surj(M,A,B,S) \<and> is_Int(M,I,S,bj)" *)
+
+locale M_Perm = M_Pi + M_inj + M_surj
+begin
+
+lemma is_bij_uniqueness:
+  assumes
+    "M(A)" "M(B)" "M(d)" "M(d')"
+    "is_bij(M,A,B,d)" "is_bij(M,A,B,d')"
+  shows
+    "d=d'"
+  using assms hcomp2_2_uniqueness[of M is_Int is_inj is_surj A B]
+    is_Int_uniqueness is_inj_uniqueness is_surj_uniqueness
+  unfolding is_bij_def
+  by auto
+
+lemma is_bij_witness: "M(A) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M]. is_bij(M,A,B,d)"
+  using hcomp2_2_witness[of M is_Int is_inj is_surj A B]
+    is_inj_witness is_surj_witness is_Int_abs
+  unfolding is_bij_def by simp
+
+definition
+  bij_rel :: "i \<Rightarrow> i \<Rightarrow> i"  where
+  "bij_rel(A,B) \<equiv> THE d. M(d) \<and> is_bij(M,A,B,d)"
+
+lemma bij_rel_closed: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(bij_rel(x,y))"
+  unfolding bij_rel_def
+  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_bij(M,x,y,d)"], OF _ is_bij_uniqueness[of x y]]
+    is_bij_witness by auto
+
+lemma bij_rel_iff:
+  assumes "M(x)" "M(y)" "M(d)"
+  shows "is_bij(M,x,y,d) \<longleftrightarrow> d = bij_rel(x,y)"
+proof (intro iffI)
+  assume "d = bij_rel(x,y)"
+  moreover
+  note assms
+  moreover from this
+  obtain e where "M(e)" "is_bij(M,x,y,e)"
+    using is_bij_witness by blast
+  ultimately
+  show "is_bij(M, x, y, d)"
+    using is_bij_uniqueness[of x y] is_bij_witness
+      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_bij(M,x,y,d)"], OF _ is_bij_uniqueness[of x y], of e]
+    unfolding bij_rel_def
+    by auto
+next
+  assume "is_bij(M, x, y, d)"
+  with assms
+  show "d = bij_rel(x,y)"
+    using is_bij_uniqueness unfolding bij_rel_def
+    by (blast del:the_equality intro:the_equality[symmetric])
+qed
+
+lemma def_bij_rel:
+  assumes "M(A)" "M(B)"
+  shows "bij_rel(A,B) = inj_rel(A,B) \<inter> surj_rel(A,B)"
+  using assms bij_rel_iff bij_rel_closed
+    is_Int_abs\<comment> \<open>For absolute terms, "_abs" replaces "_iff".
+                 Also, in this case "_closed" is in the simpset.\<close>
+    inj_rel_iff inj_rel_closed
+    surj_rel_iff surj_rel_closed
+    hcomp2_2_abs
+  unfolding is_bij_def by simp
+
+lemma bij_rel_char:
+  assumes "M(A)" "M(B)"
+  shows "bij_rel(A,B) = {f \<in> bij(A,B). M(f)}"
+  using assms def_bij_rel inj_rel_char surj_rel_char
+  unfolding bij_def\<comment> \<open>Unfolding this might be a pattern already\<close>
+  by auto
+
+end (* M_bij *)
 
 (***************  end Discipline  *********************)
 
