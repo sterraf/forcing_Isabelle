@@ -1,6 +1,7 @@
 theory Discipline_Basics
   imports
-    Least
+    "ZF-Constructible.Rank"
+    Relativization
     "HOL-Eisbach.Eisbach_Old_Appl_Syntax"\<comment> \<open>if put before, it breaks some simps\<close>
     "../Tools/Try0"
 begin
@@ -938,8 +939,36 @@ lemma bij_rel_char:
   unfolding bij_def\<comment> \<open>Unfolding this might be a pattern already\<close>
   by auto
 
-end (* M_bij *)
+end (* M_Perm *)
 
 (***************  end Discipline  *********************)
+
+\<comment> \<open>The following new definition of "eqpoll" breaks what we
+have done in Cardinal_Relative.\<close>
+(**********************************************************
+subsection\<open>Discipline for \<^term>\<open>eqpoll\<close>\<close>
+
+definition (* completely relational *)
+  eqpoll_rel   :: "[i=>o,i,i] => o" where
+  "eqpoll_rel(M,A,B) \<equiv> \<exists>bi[M]. \<exists>f[M]. is_bij(M,A,B,bi) \<and> f\<in>bi"
+
+context M_Perm
+begin
+
+abbreviation
+  Eqpoll_rel   :: "[i,i] => o"     (infixl \<open>\<approx>r\<close> 50)  where
+  "A \<approx>r B \<equiv> eqpoll_rel(M,A,B)"
+
+lemma def_eqpoll_rel:
+  assumes
+    "M(A)" "M(B)"
+  shows
+    "A \<approx>r B \<longleftrightarrow> (\<exists>f[M]. f \<in> bij_rel(A,B))"
+  using assms bij_rel_iff bij_rel_closed 
+  unfolding eqpoll_rel_def by simp
+
+end (* M_Perm *)
+
+******************  end Discipline  **********************)
 
 end
