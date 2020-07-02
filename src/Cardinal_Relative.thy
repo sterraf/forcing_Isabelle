@@ -2,7 +2,8 @@ section\<open>Relative, Choice-less Cardinal Numbers\<close>
 
 theory Cardinal_Relative
   imports
-    Least "../Tools/Try0"
+    Discipline_Basics
+    Least
 begin
 
 hide_const L
@@ -10,7 +11,7 @@ hide_const L
 definition
   eqpoll_rel   :: "[i=>o,i,i] => o" where
   "eqpoll_rel(M,A,B) \<equiv> \<exists>f[M]. bijection(M,A,B,f)"
-  \<comment> \<open> \<^term>\<open>eqpoll_rel(M,A,B) \<equiv> \<exists>f[M]. f \<in> bij_rel(M,A,B)\<close> ?? \<close>
+  \<comment> \<open>A different version is commented out in @{theory \<open>Draft.Discipline_Basics\<close>}\<close>
 
 definition
   lepoll_rel   :: "[i=>o,i,i] => o" where
@@ -39,7 +40,7 @@ locale M_cardinals = M_ordertype + M_trancl +
   if_then_replacement: "M(f) \<Longrightarrow> M(g) \<Longrightarrow>
      strong_replacement(M, \<lambda>x y. y = <x,if x \<in> A then f`x else g`x>)"
   and
-  lam_if_then_replacement: "M(b) \<Longrightarrow> M(a) \<Longrightarrow> M(f) \<Longrightarrow> 
+  lam_if_then_replacement: "M(b) \<Longrightarrow> M(a) \<Longrightarrow> M(f) \<Longrightarrow>
      strong_replacement(M, \<lambda>y ya. ya = \<langle>y, if y = a then b else f ` y\<rangle>)"
   and
   lam_if_then_apply_replacement: "M(f) \<Longrightarrow> M(v) \<Longrightarrow> M(u) \<Longrightarrow>
@@ -135,8 +136,89 @@ lemma is_cardinal_iff_Least:
     least_abs[symmetric, of "\<lambda>x. M(x) \<and> x \<approx>r A" "(\<mu> i. M(i) \<and> i \<approx>r A)"]
   unfolding is_cardinal_def by auto
 
+end (* M_cardinals *)
+
+(**********************************************************)
+subsection\<open>Discipline for \<^term>\<open>cadd\<close>\<close>
+
+definition (* completely relational *)
+  is_cadd   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
+  "is_cadd(M,A,B,bj) \<equiv> is_hcomp2_2(M,\<lambda>M _. is_cardinal(M),\<lambda>_ _. (=),is_sum,A,B,bj)"
+
+context M_cardinals
+begin
+
+lemma is_cadd_uniqueness:
+  assumes
+    "M(A)" "M(B)" "M(d)" "M(d')"
+    "is_cadd(M,A,B,d)" "is_cadd(M,A,B,d')"
+  shows
+    "d=d'"
+  using assms \<comment> \<open>using projections (\<^term>\<open>\<lambda>_ _. (=)\<close>)
+                  requires more instantiations\<close>
+    is_cardinal_uniqueness hcomp2_2_uniqueness[of
+      M "\<lambda>M _. is_cardinal(M)" "\<lambda>_ _. (=)" is_sum A B d d']
+  unfolding is_cadd_def
+  by auto
+
+lemma is_cadd_witness: "M(A) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M]. is_cadd(M,A,B,d)"
+  using hcomp2_2_witness[of M "\<lambda>M _. is_cardinal(M)" "\<lambda>_ _. (=)" is_sum A B]
+    is_cardinal_witness
+  unfolding is_cadd_def by simp
+
+definition
+  cadd_rel :: "i \<Rightarrow> i \<Rightarrow> i"  where
+  "cadd_rel(A,B) \<equiv> THE d. M(d) \<and> is_cadd(M,A,B,d)"
+
+lemma cadd_rel_closed[simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(cadd_rel(x,y))"
+  unfolding cadd_rel_def
+  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_cadd(M,x,y,d)"], OF _ is_cadd_uniqueness[of x y]]
+    is_cadd_witness by auto
+
+lemma cadd_rel_iff:
+  assumes "M(x)" "M(y)" "M(d)"
+  shows "is_cadd(M,x,y,d) \<longleftrightarrow> d = cadd_rel(x,y)"
+proof (intro iffI)
+  assume "d = cadd_rel(x,y)"
+  moreover
+  note assms
+  moreover from this
+  obtain e where "M(e)" "is_cadd(M,x,y,e)"
+    using is_cadd_witness by blast
+  ultimately
+  show "is_cadd(M, x, y, d)"
+    using is_cadd_uniqueness[of x y] is_cadd_witness
+      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_cadd(M,x,y,d)"], OF _ is_cadd_uniqueness[of x y], of e]
+    unfolding cadd_rel_def
+    by auto
+next
+  assume "is_cadd(M, x, y, d)"
+  with assms
+  show "d = cadd_rel(x,y)"
+    using is_cadd_uniqueness unfolding cadd_rel_def
+    by (blast del:the_equality intro:the_equality[symmetric])
+qed
+
+lemma def_cadd_rel:
+  assumes "M(A)" "M(B)"
+  shows "cadd_rel(A,B) = |A+B|r"
+  using assms cadd_rel_iff cadd_rel_closed
+    cardinal_rel_iff cardinal_rel_closed
+    hcomp2_2_abs[of "\<lambda>M _. is_cardinal(M)" "\<lambda>_.cardinal_rel"
+      "\<lambda>_ _. (=)" "\<lambda>x y. y" is_sum "(+)" A B "cadd_rel(A,B)"]
+  unfolding is_cadd_def by force
+
+notation cadd_rel (infix \<open>\<oplus>r\<close> 65)
+
+end (* M_cardinals *)
+
+(***************  end Discipline  *********************)
+
 subsection\<open>The Schroeder-Bernstein Theorem\<close>
 text\<open>See Davey and Priestly, page 106\<close>
+
+context M_cardinals
+begin
 
 (** Lemma: Banach's Decomposition Theorem **)
 
