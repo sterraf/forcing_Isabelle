@@ -788,10 +788,8 @@ apply (rule if_type [THEN lam_type])
 apply (blast dest: apply_funtype)
 apply (blast elim!: mem_irrefl dest: apply_funtype)
 (*Proving it's injective*)
-   apply (simp (no_asm_simp))
-  using lam_if_then_apply_replacement[THEN lam_closed]
-   apply (blast)
-  sorry \<comment> \<open>This will work with transitivity\<close>
+   apply (auto intro: lam_if_then_apply_replacement[THEN lam_closed] simp add:transM[of _ A])
+  done
 
 lemma cons_eqpoll_rel_consD: "[| cons(u,A) \<approx>r cons(v,B);  u\<notin>A;  v\<notin>B; M(u); M(A); M(v); M(B) |] ==> A \<approx>r B"
   apply (simp add: eqpoll_rel_iff)
