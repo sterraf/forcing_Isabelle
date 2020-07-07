@@ -154,6 +154,10 @@ proof -
     using assms unfolding is_hcomp2_2_def by auto
 qed
 
+text\<open>The following named theorems gather instances of transitivity
+that arise from closure theorems\<close>
+named_theorems trans_closed
+
 (******************************************************)
 subsection\<open>Discipline for \<^term>\<open>Pow\<close>\<close>
 
@@ -184,10 +188,13 @@ definition
   Pow_rel :: "i \<Rightarrow> i" where
   "Pow_rel(r) \<equiv> THE d. M(d) \<and> is_Pow(M,r,d)"
 
-lemma Pow_rel_closed: "M(r) \<Longrightarrow> M(Pow_rel(r))"
+lemma Pow_rel_closed[intro,simp]: "M(r) \<Longrightarrow> M(Pow_rel(r))"
   unfolding Pow_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_Pow(M,r,d)"], OF _ is_Pow_uniqueness[of r]]
     is_Pow_witness by auto
+
+(* New element of Discipline: declaring transitivity rules*)
+lemmas trans_Pow_rel_closed[trans_closed] = transM[OF _ Pow_rel_closed]
 
 lemma Pow_rel_iff:
   assumes "M(r)"  "M(d)"
@@ -220,10 +227,10 @@ proof -
   assume "M(r)"
   moreover from this
   have "x \<in> Pow_rel(r) \<Longrightarrow> x\<subseteq>r" "M(x) \<Longrightarrow> x \<subseteq> r \<Longrightarrow> x \<in> Pow_rel(r)" for x
-    using def_Pow_rel by (auto intro!:transM[OF _ Pow_rel_closed])
+    using def_Pow_rel by (auto intro!:trans_closed)
   ultimately
   show ?thesis
-    using transM[OF _ Pow_rel_closed] by blast
+    using trans_closed by blast
 qed
 
 end (* M_basic *)
@@ -302,6 +309,8 @@ lemma Sigfun_closed:
   using assms transM[OF _ \<open>M(B(x))\<close>] RepFun_closed2
   unfolding Sigfun_def by simp
 
+lemmas trans_Sigfun_closed[trans_closed] = transM[OF _ Sigfun_closed]
+
 end (* M_trivial *)
 
 definition
@@ -330,7 +339,7 @@ locale M_Pi_assumptions = M_Pi +
     "\<forall>x\<in>A. M(B(x))"
 begin
 
-lemma Sigma_abs:
+lemma Sigma_abs[simp]:
   assumes
     "M(S)"
   shows
@@ -346,7 +355,7 @@ proof -
     unfolding is_Sigma_def by simp
 qed
 
-lemma Sigma_closed: "M(Sigma(A,B))"
+lemma Sigma_closed[intro,simp]: "M(Sigma(A,B))"
 proof -
   have "(\<Union>x\<in>A. Sigfun(x, B)) = \<Union>{z . x \<in> A, z = Sigfun(x, B)}"
     by auto
@@ -356,6 +365,8 @@ proof -
       Sigfun_closed Pi_assumptions
     by simp
 qed
+
+lemmas trans_Sigma_closed[trans_closed] = transM[OF _ Sigma_closed]
 
 end (* M_Pi_assumptions *)
 
@@ -377,13 +388,13 @@ lemma is_Pi_uniqueness:
     "is_Pi(M,A,B,d)" "is_Pi(M,A,B,d')"
   shows
     "d=d'"
-  using assms Sigma_abs extensionality_trans Pi_assumptions
+  using assms extensionality_trans Pi_assumptions
     Pow_rel_iff
   unfolding is_Pi_def by simp
 
 lemma is_Pi_witness: "\<exists>d[M]. is_Pi(M,A,B,d)"
-  using Pi_assumptions Pow_rel_iff Sigma_closed
-    Pow_rel_closed Sigma_abs Pi_assumptions Pi_separation
+  using Pi_assumptions Pow_rel_iff
+    Pi_assumptions Pi_separation
   unfolding is_Pi_def PiP_rel_def by simp
 
 end (* M_Pi_assumptions *)
@@ -396,10 +407,12 @@ context M_Pi_assumptions
 begin
   \<comment> \<open>From this point on, the higher order variable \<^term>\<open>y\<close> must be
 explicitly instantiated, and proof methods are slower\<close>
-lemma Pi_rel_closed: "M(Pi_rel(A,B))"
+lemma Pi_rel_closed[intro,simp]: "M(Pi_rel(A,B))"
   unfolding Pi_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_Pi(M,A,B,d)"], OF _ is_Pi_uniqueness]
     is_Pi_witness by auto
+
+lemmas trans_Pi_rel_closed[trans_closed] = transM[OF _ Pi_rel_closed]
 
 lemma Pi_rel_iff:
   assumes "M(d)"
@@ -429,24 +442,17 @@ lemma def_Pi_rel:
   "Pi_rel(A,B) = {f\<in>Pow_rel(Sigma(A,B)). A\<subseteq>domain(f) \<and> function(f)}"
 proof -
   have "Pi_rel(A, B) \<subseteq> Pow_rel(Sigma(A,B))"
-    using Pi_rel_iff[of "Pi_rel(A,B)"] Pi_rel_closed Sigma_abs
-      Pi_assumptions Pow_rel_iff
+    using Pi_rel_iff[of "Pi_rel(A,B)"] Pi_assumptions Pow_rel_iff
     unfolding is_Pi_def by auto
-  moreover \<comment> \<open>Note the use of transitivity here:\<close>
+  moreover
   have "f \<in> Pi_rel(A, B) \<Longrightarrow> A\<subseteq>domain(f) \<and> function(f)" for f
-    using Pi_rel_iff[of "Pi_rel(A,B)"] Pi_rel_closed Sigma_abs
-      Pi_assumptions def_PiP_rel[of A f] transM[OF _ Sigma_closed]
-      transM[OF _ Pi_rel_closed] Pow_rel_iff
-      \<comment> \<open>Closure and absoluteness should be in the simpset in this
-      context\<close>
+    using Pi_rel_iff[of "Pi_rel(A,B)"]
+      Pi_assumptions def_PiP_rel[of A f] trans_closed Pow_rel_iff
     unfolding is_Pi_def by simp
   moreover
   have "f \<in> Pow_rel(Sigma(A,B)) \<Longrightarrow> A\<subseteq>domain(f) \<and> function(f) \<Longrightarrow> f \<in> Pi_rel(A, B)" for f
-    using Pi_rel_iff[of "Pi_rel(A,B)"] Pi_rel_closed Sigma_abs
-      transM[OF _ Sigma_closed]  Pi_assumptions
-      def_PiP_rel[of A f] transM[OF _ Sigma_closed]
-      transM[OF _ Pi_rel_closed] Sigma_closed[THEN Pow_rel_closed, THEN [2] transM, of f]
-      Pow_rel_iff
+    using Pi_rel_iff[of "Pi_rel(A,B)"]
+      Pi_assumptions def_PiP_rel[of A f] trans_closed Pow_rel_iff
     unfolding is_Pi_def by simp
   ultimately
   show ?thesis by force
@@ -493,8 +499,7 @@ proof -
   have "\<forall>f[M]. f \<in> Pi_rel(A, \<lambda>_. B) \<longleftrightarrow> f \<in> A \<rightarrow> B"
     using Pi_rel_char by simp
   with assms
-  show ?thesis using Pi_rel_closed
-    unfolding is_funspace_def by auto
+  show ?thesis unfolding is_funspace_def by auto
 qed
 
 definition
@@ -506,6 +511,8 @@ lemma function_space_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Long
   unfolding function_space_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_function_space(M,x,y,d)"], OF _ is_function_space_uniqueness[of x y]]
     is_function_space_witness by auto
+
+lemmas trans_function_space_rel_closed[trans_closed] = transM[OF _ function_space_rel_closed]
 
 lemma function_space_rel_iff:
   assumes "M(x)" "M(y)" "M(d)"
@@ -541,12 +548,12 @@ proof -
     by unfold_locales (simp_all add:Sigfun_def)
   from assms
   have "x\<in>A \<rightarrow>r y \<longleftrightarrow> x\<in>Pi_rel(A,\<lambda>_. y)" if "M(x)" for x
-    using that function_space_rel_closed
+    using that
       function_space_rel_iff[of A y, OF _ _ function_space_rel_closed, of A y]
-      def_Pi_rel Pi_rel_closed  Pi_rel_char Pow_rel_char
+      def_Pi_rel Pi_rel_char Pow_rel_char
     unfolding is_funspace_def by (simp add:Pi_def)
   with assms
-  show ?thesis
+  show ?thesis \<comment> \<open>At this point, quoting "trans_rules" doesn't work\<close>
     using transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(y)\<close>]
       transM[OF _ Pi_rel_closed] by blast
 qed
@@ -636,10 +643,12 @@ definition
   inj_rel :: "i \<Rightarrow> i \<Rightarrow> i"  where
   "inj_rel(A,B) \<equiv> THE d. M(d) \<and> is_inj(M,A,B,d)"
 
-lemma inj_rel_closed: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(inj_rel(x,y))"
+lemma inj_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(inj_rel(x,y))"
   unfolding inj_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_inj(M,x,y,d)"], OF _ is_inj_uniqueness[of x y]]
     is_inj_witness by auto
+
+lemmas trans_inj_rel_closed[trans_closed] = transM[OF _ inj_rel_closed]
 
 lemma inj_rel_iff:
   assumes "M(x)" "M(y)" "M(d)"
@@ -673,16 +682,16 @@ lemma def_inj_rel:
 proof -
   from assms
   have "inj_rel(A, B) \<subseteq> A \<rightarrow>r B"
-    using inj_rel_iff[of A B "inj_rel(A,B)"] inj_rel_closed function_space_rel_iff
+    using inj_rel_iff[of A B "inj_rel(A,B)"] function_space_rel_iff
     unfolding is_inj_def by auto
   moreover from assms
   have "f \<in> inj_rel(A, B) \<Longrightarrow> ?P(f)" for f
-    using inj_rel_iff[of A B "inj_rel(A,B)"] inj_rel_closed function_space_rel_iff
+    using inj_rel_iff[of A B "inj_rel(A,B)"] function_space_rel_iff
       def_injP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
     unfolding is_inj_def by auto
   moreover from assms
   have "f \<in> A \<rightarrow>r B \<Longrightarrow> ?P(f) \<Longrightarrow> f \<in> inj_rel(A, B)" for f
-    using inj_rel_iff[of A B "inj_rel(A,B)"] inj_rel_closed function_space_rel_iff
+    using inj_rel_iff[of A B "inj_rel(A,B)"] function_space_rel_iff
       def_injP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
     unfolding is_inj_def by auto
   ultimately
@@ -760,10 +769,12 @@ definition
   surj_rel :: "i \<Rightarrow> i \<Rightarrow> i"  where
   "surj_rel(A,B) \<equiv> THE d. M(d) \<and> is_surj(M,A,B,d)"
 
-lemma surj_rel_closed: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(surj_rel(x,y))"
+lemma surj_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(surj_rel(x,y))"
   unfolding surj_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_surj(M,x,y,d)"], OF _ is_surj_uniqueness[of x y]]
     is_surj_witness by auto
+
+lemmas trans_surj_rel_closed[trans_closed] = transM[OF _ surj_rel_closed]
 
 lemma surj_rel_iff:
   assumes "M(x)" "M(y)" "M(d)"
@@ -797,16 +808,16 @@ lemma def_surj_rel:
 proof -
   from assms
   have "surj_rel(A, B) \<subseteq> A \<rightarrow>r B"
-    using surj_rel_iff[of A B "surj_rel(A,B)"] surj_rel_closed function_space_rel_iff
+    using surj_rel_iff[of A B "surj_rel(A,B)"] function_space_rel_iff
     unfolding is_surj_def by auto
   moreover from assms
   have "f \<in> surj_rel(A, B) \<Longrightarrow> ?P(f)" for f
-    using surj_rel_iff[of A B "surj_rel(A,B)"] surj_rel_closed function_space_rel_iff
+    using surj_rel_iff[of A B "surj_rel(A,B)"] function_space_rel_iff
       def_surjP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
     unfolding is_surj_def by auto
   moreover from assms
   have "f \<in> A \<rightarrow>r B \<Longrightarrow> ?P(f) \<Longrightarrow> f \<in> surj_rel(A, B)" for f
-    using surj_rel_iff[of A B "surj_rel(A,B)"] surj_rel_closed function_space_rel_iff
+    using surj_rel_iff[of A B "surj_rel(A,B)"] function_space_rel_iff
       def_surjP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
     unfolding is_surj_def by auto
   ultimately
@@ -892,10 +903,12 @@ definition
   bij_rel :: "i \<Rightarrow> i \<Rightarrow> i"  where
   "bij_rel(A,B) \<equiv> THE d. M(d) \<and> is_bij(M,A,B,d)"
 
-lemma bij_rel_closed: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(bij_rel(x,y))"
+lemma bij_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(bij_rel(x,y))"
   unfolding bij_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_bij(M,x,y,d)"], OF _ is_bij_uniqueness[of x y]]
     is_bij_witness by auto
+
+lemmas trans_bij_rel_closed[trans_closed] = transM[OF _ bij_rel_closed]
 
 lemma bij_rel_iff:
   assumes "M(x)" "M(y)" "M(d)"
@@ -924,11 +937,9 @@ qed
 lemma def_bij_rel:
   assumes "M(A)" "M(B)"
   shows "bij_rel(A,B) = inj_rel(A,B) \<inter> surj_rel(A,B)"
-  using assms bij_rel_iff bij_rel_closed
+  using assms bij_rel_iff inj_rel_iff surj_rel_iff
     is_Int_abs\<comment> \<open>For absolute terms, "_abs" replaces "_iff".
                  Also, in this case "_closed" is in the simpset.\<close>
-    inj_rel_iff inj_rel_closed
-    surj_rel_iff surj_rel_closed
     hcomp2_2_abs
   unfolding is_bij_def by simp
 
@@ -943,9 +954,7 @@ end (* M_Perm *)
 
 (***************  end Discipline  *********************)
 
-\<comment> \<open>The following new definition of "eqpoll" breaks what we
-have done in Cardinal_Relative.\<close>
-(**********************************************************
+(******************************************************)
 subsection\<open>Discipline for \<^term>\<open>eqpoll\<close>\<close>
 
 definition (* completely relational *)
@@ -964,11 +973,62 @@ lemma def_eqpoll_rel:
     "M(A)" "M(B)"
   shows
     "A \<approx>r B \<longleftrightarrow> (\<exists>f[M]. f \<in> bij_rel(A,B))"
-  using assms bij_rel_iff bij_rel_closed 
+  using assms bij_rel_iff
   unfolding eqpoll_rel_def by simp
 
 end (* M_Perm *)
 
-******************  end Discipline  **********************)
+(******************  end Discipline  ******************)
+
+(******************************************************)
+subsection\<open>Discipline for \<^term>\<open>lepoll\<close>\<close>
+
+definition (* completely relational *)
+  lepoll_rel   :: "[i=>o,i,i] => o" where
+  "lepoll_rel(M,A,B) \<equiv> \<exists>bi[M]. \<exists>f[M]. is_inj(M,A,B,bi) \<and> f\<in>bi"
+
+context M_Perm
+begin
+
+abbreviation
+  Lepoll_rel   :: "[i,i] => o"     (infixl \<open>\<lesssim>r\<close> 50)  where
+  "A \<lesssim>r B \<equiv> lepoll_rel(M,A,B)"
+
+lemma def_lepoll_rel:
+  assumes
+    "M(A)" "M(B)"
+  shows
+    "A \<lesssim>r B \<longleftrightarrow> (\<exists>f[M]. f \<in> inj_rel(A,B))"
+  using assms inj_rel_iff
+  unfolding lepoll_rel_def by simp
+
+end (* M_Perm *)
+
+(******************  end Discipline  ******************)
+
+(******************************************************)
+subsection\<open>Discipline for \<^term>\<open>lesspoll\<close>\<close>
+
+definition
+  lesspoll_rel :: "[i=>o,i,i] => o" where
+  "lesspoll_rel(M,A,B) \<equiv> lepoll_rel(M,A,B) \<and> \<not>(eqpoll_rel(M,A,B))"
+
+context M_Perm
+begin
+
+abbreviation
+  Lesspoll_rel   :: "[i,i] => o"     (infixl \<open>\<prec>r\<close> 50)  where
+  "A \<prec>r B \<equiv> lesspoll_rel(M,A,B)"
+
+lemma def_lesspoll_rel:
+  assumes
+    "M(A)" "M(B)"
+  shows
+    "A \<prec>r B \<longleftrightarrow> A \<lesssim>r B \<and> \<not>(A \<approx>r B)"
+  using assms unfolding lesspoll_rel_def by simp
+
+end (* M_Perm *)
+
+(******************  end Discipline  ******************)
 
 end
