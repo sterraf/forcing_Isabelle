@@ -9,19 +9,6 @@ begin
 hide_const L
 
 definition
-  eqpoll_rel   :: "[i=>o,i,i] => o" where
-  "eqpoll_rel(M,A,B) \<equiv> \<exists>f[M]. bijection(M,A,B,f)"
-  \<comment> \<open>A different version is commented out in @{theory \<open>Draft.Discipline_Basics\<close>}\<close>
-
-definition
-  lepoll_rel   :: "[i=>o,i,i] => o" where
-  "lepoll_rel(M,A,B) \<equiv> \<exists>f[M]. injection(M,A,B,f)"
-
-definition
-  lesspoll_rel :: "[i=>o,i,i] => o" where
-  "lesspoll_rel(M,A,B) \<equiv> lepoll_rel(M,A,B) & ~(eqpoll_rel(M,A,B))"
-
-definition
   is_cardinal :: "[i\<Rightarrow>o,i,i]\<Rightarrow>o"  where
   "is_cardinal(M,A,\<kappa>) \<equiv> least(M, \<lambda>i. M(i) \<and> eqpoll_rel(M,i,A), \<kappa>)"
 
@@ -33,32 +20,38 @@ definition \<comment> \<open>Perhaps eliminate in favor of the Discipline\<close
   Card_rel     :: "[i\<Rightarrow>o,i]=>o"  where
   "Card_rel(M,i) \<equiv> is_cardinal(M,i,i)"
 
-locale M_cardinals = M_ordertype + M_trancl +
+locale M_cardinals = M_ordertype + M_trancl + M_Perm +
   assumes
   id_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>z. \<exists>x\<in>A. z = \<langle>x, x\<rangle>)"
   and
+  radd_separation: "M(R) \<Longrightarrow> M(S) \<Longrightarrow>
+    separation(M, \<lambda>z.
+      (\<exists>x y. z = \<langle>Inl(x), Inr(y)\<rangle>) \<or>
+         (\<exists>x' x. z = \<langle>Inl(x'), Inl(x)\<rangle> \<and> \<langle>x', x\<rangle> \<in> R) \<or>
+         (\<exists>y' y. z = \<langle>Inr(y'), Inr(y)\<rangle> \<and> \<langle>y', y\<rangle> \<in> S))"
+  and
   if_then_replacement: "M(f) \<Longrightarrow> M(g) \<Longrightarrow>
      strong_replacement(M, \<lambda>x y. y = <x,if x \<in> A then f`x else g`x>)"
+  and
+  if_then_Inl_replacement: "M(f) \<Longrightarrow> M(g) \<Longrightarrow>
+     strong_replacement(M, \<lambda>x y. y = \<langle>x, if x \<in> A then Inl(x) else Inr(x)\<rangle>)"
   and
   lam_if_then_replacement: "M(b) \<Longrightarrow> M(a) \<Longrightarrow> M(f) \<Longrightarrow>
      strong_replacement(M, \<lambda>y ya. ya = \<langle>y, if y = a then b else f ` y\<rangle>)"
   and
   lam_if_then_apply_replacement: "M(f) \<Longrightarrow> M(v) \<Longrightarrow> M(u) \<Longrightarrow>
      strong_replacement(M, \<lambda>x y. y = \<langle>x,  if f ` x = v then f ` u else f ` x\<rangle>)"
+  and
+  lam_if_then_replacement2: "M(b) \<Longrightarrow> M(a) \<Longrightarrow> M(f) \<Longrightarrow>
+     strong_replacement(M, \<lambda>x y. y = \<langle>x, if x \<in> A then f ` x else x\<rangle>)"
+  and
+  sum_bij_rel_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow>
+     strong_replacement(M, \<lambda>x y. y = \<langle>x, case(\<lambda>u. Inl(f ` u), \<lambda>z. Inr(g ` z), x)\<rangle>)"
+  and
+  prod_bij_rel_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow>
+     strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>f ` x, g ` y\<rangle>)(x)\<rangle>)"
 
 begin
-
-abbreviation
-  Eqpoll_rel   :: "[i,i] => o"     (infixl \<open>\<approx>r\<close> 50)  where
-  "A \<approx>r B \<equiv> eqpoll_rel(M,A,B)"
-
-abbreviation
-  Lepoll_rel   :: "[i,i] => o"     (infixl \<open>\<lesssim>r\<close> 50)  where
-  "A \<lesssim>r B \<equiv> lepoll_rel(M,A,B)"
-
-abbreviation
-  Lesspoll_rel :: "[i,i] => o"     (infixl \<open>\<prec>r\<close> 50)  where
-  "A \<prec>r B \<equiv> lesspoll_rel(M,A,B)"
 
 (************* Discipline for cardinal ****************)
 \<comment> \<open>Note addition to the Simpset and Claset below\<close>
@@ -107,7 +100,7 @@ next
 qed
 
 lemma def_cardinal_rel: "M(x) \<Longrightarrow> |x|r = (\<mu> i. M(i) \<and> i \<approx>r x)"
-  using  least_abs cardinal_rel_closed cardinal_rel_iff
+  using  least_abs cardinal_rel_iff
   unfolding is_cardinal_def by fastforce
 
 (***************  end Discipline  *********************)
@@ -175,7 +168,7 @@ definition
   cadd_rel :: "i \<Rightarrow> i \<Rightarrow> i"  where
   "cadd_rel(A,B) \<equiv> THE d. M(d) \<and> is_cadd(M,A,B,d)"
 
-lemma cadd_rel_closed[simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(cadd_rel(x,y))"
+lemma cadd_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(cadd_rel(x,y))"
   unfolding cadd_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_cadd(M,x,y,d)"], OF _ is_cadd_uniqueness[of x y]]
     is_cadd_witness by auto
@@ -207,8 +200,8 @@ qed
 lemma def_cadd_rel:
   assumes "M(A)" "M(B)"
   shows "cadd_rel(A,B) = |A+B|r"
-  using assms cadd_rel_iff cadd_rel_closed
-    cardinal_rel_iff cardinal_rel_closed
+  using assms cadd_rel_iff
+    cardinal_rel_iff
     hcomp2_2_abs[of "\<lambda>M _. is_cardinal(M)" "\<lambda>_.cardinal_rel"
       "\<lambda>_ _. (=)" "\<lambda>x y. y" is_sum "(+)" A B "cadd_rel(A,B)"]
   unfolding is_cadd_def by force
@@ -251,7 +244,7 @@ definition
   cmult_rel :: "i \<Rightarrow> i \<Rightarrow> i"  where
   "cmult_rel(A,B) \<equiv> THE d. M(d) \<and> is_cmult(M,A,B,d)"
 
-lemma cmult_rel_closed[simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(cmult_rel(x,y))"
+lemma cmult_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(cmult_rel(x,y))"
   unfolding cmult_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_cmult(M,x,y,d)"], OF _ is_cmult_uniqueness[of x y]]
     is_cmult_witness by auto
@@ -283,8 +276,8 @@ qed
 lemma def_cmult_rel:
   assumes "M(A)" "M(B)"
   shows "cmult_rel(A,B) = |A\<times>B|r"
-  using assms cmult_rel_iff cmult_rel_closed
-    cardinal_rel_iff cardinal_rel_closed
+  using assms cmult_rel_iff
+    cardinal_rel_iff
     hcomp2_2_abs[of "\<lambda>M _. is_cardinal(M)" "\<lambda>_.cardinal_rel"
       "\<lambda>_ _. (=)" "\<lambda>x y. y" cartprod "(\<times>)" A B "cmult_rel(A,B)"]
   unfolding is_cmult_def by force
@@ -426,13 +419,18 @@ lemma schroeder_bernstein_closed:
    apply (auto intro!: restrict_bij bij_disjoint_Un intro: bij_converse_bij)
   done
 
-
 (** Equipollence is an equivalence relation **)
+
+lemma mem_bij_abs[simp]: "\<lbrakk>M(f);M(A);M(B)\<rbrakk> \<Longrightarrow>  f \<in> bij_rel(A,B) \<longleftrightarrow> f\<in>bij(A,B)"
+  using bij_rel_char by simp
+
+lemma mem_inj_abs[simp]: "\<lbrakk>M(f);M(A);M(B)\<rbrakk> \<Longrightarrow>  f \<in> inj_rel(A,B) \<longleftrightarrow> f\<in>inj(A,B)"
+  using inj_rel_char by simp
 
 lemma bij_imp_eqpoll_rel:
   assumes "f \<in> bij(A,B)" "M(f)" "M(A)" "M(B)"
   shows "A \<approx>r B"
-  using assms unfolding eqpoll_rel_def by auto
+  using assms by (auto simp add:def_eqpoll_rel)
 
 lemma id_closed: "M(A) \<Longrightarrow> M(id(A))"
 proof -
@@ -452,17 +450,17 @@ lemma eqpoll_rel_refl: "M(A) \<Longrightarrow> A \<approx>r A"
   using bij_imp_eqpoll_rel[OF id_bij, OF id_closed] .
 
 lemma eqpoll_rel_sym: "X \<approx>r Y \<Longrightarrow> M(X) \<Longrightarrow> M(Y) \<Longrightarrow>  Y \<approx>r X"
-  unfolding eqpoll_rel_def using converse_closed
+  unfolding def_eqpoll_rel using converse_closed
   by (auto intro: bij_converse_bij)
 
 lemma eqpoll_rel_trans [trans]:
   "[|X \<approx>r Y;  Y \<approx>r Z;  M(X); M(Y) ; M(Z) |] ==> X \<approx>r Z"
-  unfolding eqpoll_rel_def by (auto intro: comp_bij)
+  unfolding def_eqpoll_rel by (auto intro: comp_bij)
 
 (** Le-pollence is a partial ordering **)
 
 lemma subset_imp_lepoll_rel: "X \<subseteq> Y \<Longrightarrow> M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<lesssim>r Y"
-  unfolding lepoll_rel_def using id_subset_inj id_closed
+  unfolding def_lepoll_rel using id_subset_inj id_closed
   by simp blast
 
 lemmas lepoll_rel_refl = subset_refl [THEN subset_imp_lepoll_rel, simp]
@@ -470,7 +468,7 @@ lemmas lepoll_rel_refl = subset_refl [THEN subset_imp_lepoll_rel, simp]
 lemmas le_imp_lepoll_rel = le_imp_subset [THEN subset_imp_lepoll_rel]
 
 lemma eqpoll_rel_imp_lepoll_rel: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<approx>r Y ==> X \<lesssim>r Y"
-  unfolding eqpoll_rel_def bij_def lepoll_rel_def using bij_is_inj
+  unfolding def_eqpoll_rel bij_def def_lepoll_rel using bij_is_inj
   by (auto)
 
 lemma lepoll_rel_trans [trans]:
@@ -478,7 +476,7 @@ lemma lepoll_rel_trans [trans]:
     "X \<lesssim>r Y" "Y \<lesssim>r Z" "M(X)" "M(Y)" "M(Z)"
   shows
     "X \<lesssim>r Z"
-  using assms unfolding lepoll_rel_def
+  using assms def_lepoll_rel
   by (auto intro: comp_inj)
 
 lemma eq_lepoll_rel_trans [trans]:
@@ -497,7 +495,7 @@ lemma lepoll_rel_eq_trans [trans]:
   by simp
 
 lemma eqpoll_relI: "\<lbrakk> X \<lesssim>r Y; Y \<lesssim>r X; M(X) ; M(Y) \<rbrakk> \<Longrightarrow> X \<approx>r Y"
-  unfolding lepoll_rel_def eqpoll_rel_def using schroeder_bernstein_closed
+  unfolding def_lepoll_rel def_eqpoll_rel using schroeder_bernstein_closed
   by auto
 
 lemma eqpoll_relE:
@@ -508,7 +506,7 @@ lemma eqpoll_rel_iff: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<approx>
   by (blast intro: eqpoll_relI elim: eqpoll_relE)
 
 lemma lepoll_rel_0_is_0: "A \<lesssim>r 0 \<Longrightarrow> M(A) \<Longrightarrow> A = 0"
-  unfolding lepoll_rel_def
+  using def_lepoll_rel
   by (cases "A=0") (auto simp add: inj_def)
 
 (* \<^term>\<open>M(Y) \<Longrightarrow> 0 \<lesssim>r Y\<close> *)
@@ -519,7 +517,7 @@ lemma lepoll_rel_0_iff: "M(A) \<Longrightarrow> A \<lesssim>r 0 \<longleftrighta
 
 lemma Un_lepoll_rel_Un:
   "[| A \<lesssim>r B; C \<lesssim>r D; B \<inter> D = 0; M(A); M(B); M(C); M(D) |] ==> A \<union> C \<lesssim>r B \<union> D"
-  unfolding lepoll_rel_def using inj_disjoint_Un[of _ A B _ C D] if_then_replacement
+  using def_lepoll_rel using inj_disjoint_Un[of _ A B _ C D] if_then_replacement
   apply (auto)
   apply (rule, assumption)
   apply (auto intro!:lam_closed elim:transM)+
@@ -535,18 +533,18 @@ lemma eqpoll_rel_0_iff: "M(A) \<Longrightarrow> A \<approx>r 0 \<longleftrightar
 lemma eqpoll_rel_disjoint_Un:
   "[| A \<approx>r B;  C \<approx>r D;  A \<inter> C = 0;  B \<inter> D = 0; M(A); M(B); M(C) ; M(D) |]
      ==> A \<union> C \<approx>r B \<union> D"
-  unfolding eqpoll_rel_def by (auto intro: bij_disjoint_Un)
+   by (auto intro: bij_disjoint_Un simp add:def_eqpoll_rel)
 
 subsection\<open>lesspoll_rel: contributions by Krzysztof Grabczewski\<close>
 
 lemma lesspoll_rel_not_refl: "M(i) \<Longrightarrow> ~ (i \<prec>r i)"
-  by (simp add: lesspoll_rel_def eqpoll_rel_refl)
+  by (simp add: def_lesspoll_rel eqpoll_rel_refl)
 
 lemma lesspoll_rel_irrefl: "i \<prec>r i ==> M(i) \<Longrightarrow> P"
-  by (simp add: lesspoll_rel_def eqpoll_rel_refl)
+  by (simp add: def_lesspoll_rel eqpoll_rel_refl)
 
-lemma lesspoll_rel_imp_lepoll_rel: "A \<prec>r B ==> A \<lesssim>r B"
-  by (unfold lesspoll_rel_def, blast)
+lemma lesspoll_rel_imp_lepoll_rel: "\<lbrakk>A \<prec>r B; M(A); M(B)\<rbrakk>\<Longrightarrow> A \<lesssim>r B"
+  by (unfold def_lesspoll_rel, blast)
 
 lemma rvimage_closed [intro,simp]:
   assumes
@@ -556,10 +554,10 @@ lemma rvimage_closed [intro,simp]:
   sorry
 
 lemma lepoll_rel_well_ord: "[| A \<lesssim>r B; well_ord(B,r); M(A); M(B); M(r) |] ==> \<exists>s[M]. well_ord(A,s)"
-  unfolding lepoll_rel_def by (auto intro:well_ord_rvimage)
+  unfolding def_lepoll_rel by (auto intro:well_ord_rvimage)
 
 lemma lepoll_rel_iff_leqpoll_rel: "\<lbrakk>M(A); M(B)\<rbrakk> \<Longrightarrow> A \<lesssim>r B \<longleftrightarrow> A \<prec>r B | A \<approx>r B"
-  apply (unfold lesspoll_rel_def)
+  apply (unfold def_lesspoll_rel)
   apply (blast intro: eqpoll_relI elim: eqpoll_relE)
   done
 
@@ -567,19 +565,19 @@ lemma lepoll_rel_iff_leqpoll_rel: "\<lbrakk>M(A); M(B)\<rbrakk> \<Longrightarrow
 
 lemma lesspoll_rel_trans [trans]:
   "[| X \<prec>r Y; Y \<prec>r Z; M(X); M(Y) ; M(Z) |] ==> X \<prec>r Z"
-  apply (unfold lesspoll_rel_def)
+  apply (unfold def_lesspoll_rel)
   apply (blast elim: eqpoll_relE intro: eqpoll_relI lepoll_rel_trans)
   done
 
 lemma lesspoll_rel_trans1 [trans]:
   "[| X \<lesssim>r Y; Y \<prec>r Z; M(X); M(Y) ; M(Z) |] ==> X \<prec>r Z"
-  apply (unfold lesspoll_rel_def)
+  apply (unfold def_lesspoll_rel)
   apply (blast elim: eqpoll_relE intro: eqpoll_relI lepoll_rel_trans)
   done
 
 lemma lesspoll_rel_trans2 [trans]:
   "[|  X \<prec>r Y; Y \<lesssim>r Z; M(X); M(Y) ; M(Z)|] ==> X \<prec>r Z"
-  apply (unfold lesspoll_rel_def)
+  apply (unfold def_lesspoll_rel)
   apply (blast elim: eqpoll_relE intro: eqpoll_relI lepoll_rel_trans)
   done
 
@@ -597,8 +595,7 @@ lemma is_cardinal_cong:
 proof -
   from assms
   have "(\<mu> i. M(i) \<and> i \<approx>r X) = (\<mu> i. M(i) \<and> i \<approx>r Y)"
-    unfolding eqpoll_rel_def
-    by (intro Least_cong) (auto intro: comp_bij bij_converse_bij)
+    by (intro Least_cong) (auto intro: comp_bij bij_converse_bij simp add:def_eqpoll_rel)
   moreover from assms
   have "M(\<mu> i. M(i) \<and> i \<approx>r X)"
     using Least_closed by fastforce
@@ -612,7 +609,7 @@ qed
 
 \<comment> \<open>ported from Cardinal\<close>
 lemma cardinal_rel_cong: "X \<approx>r Y \<Longrightarrow> M(X) \<Longrightarrow> M(Y) \<Longrightarrow> |X|r = |Y|r"
-  apply (unfold eqpoll_rel_def def_cardinal_rel)
+  apply (simp add: def_eqpoll_rel def_cardinal_rel)
   apply (rule Least_cong)
   apply (auto intro: comp_bij bij_converse_bij)
   done
@@ -656,7 +653,6 @@ lemma well_ord_cardinal_rel_eqpoll_rel:
 lemmas Ord_cardinal_rel_eqpoll_rel = well_ord_Memrel[THEN well_ord_cardinal_rel_eqpoll_rel]
 
 lemma Ord_cardinal_rel_idem: "Ord(A) \<Longrightarrow> M(A) \<Longrightarrow> ||A|r|r = |A|r"
-  using cardinal_rel_closed
   by (rule_tac Ord_cardinal_rel_eqpoll_rel [THEN cardinal_rel_cong]) auto
 
 lemma well_ord_cardinal_rel_eqE:
@@ -725,7 +721,7 @@ proof -
 qed
 
 lemma lt_Card_rel_imp_lesspoll_rel: "[| Card_rel(a); i<a; M(a); M(i) |] ==> i \<prec>r a"
-  apply (unfold lesspoll_rel_def)
+  apply (unfold def_lesspoll_rel)
   apply (frule Card_rel_iff_initial [THEN iffD1], assumption)
   apply (blast intro!: leI [THEN le_imp_lepoll_rel])
   done
@@ -848,7 +844,7 @@ lemma lepoll_rel_Ord_imp_eqpoll_rel: "[| A \<lesssim>r i; Ord(i); M(A); M(i) |] 
   by (blast intro: lepoll_rel_cardinal_rel_le well_ord_Memrel well_ord_cardinal_rel_eqpoll_rel dest!: lepoll_rel_well_ord)
 
 lemma lesspoll_rel_imp_eqpoll_rel: "[| A \<prec>r i; Ord(i); M(A); M(i) |] ==> |A|r \<approx>r A"
-  apply (unfold lesspoll_rel_def)
+  apply (unfold def_lesspoll_rel)
   apply (blast intro: lepoll_rel_Ord_imp_eqpoll_rel)
   done
 
@@ -861,7 +857,7 @@ lemma cardinal_rel_subset_Ord: "[|A<=i; Ord(i); M(A); M(i)|] ==> |A|r \<subseteq
 \<comment> \<open>The next lemma is the first with several porting issues\<close>
 lemma cons_lepoll_rel_consD:
   "[| cons(u,A) \<lesssim>r cons(v,B);  u\<notin>A;  v\<notin>B; M(u); M(A); M(v); M(B) |] ==> A \<lesssim>r B"
-apply (simp add: lepoll_rel_def, unfold inj_def, safe)
+apply (simp add: def_lepoll_rel, unfold inj_def, safe)
 apply (rule_tac x = "\<lambda>x\<in>A. if f`x=v then f`u else f`x" in rexI)
 apply (rule CollectI)
 (*Proving it's in the function space A->B*)
@@ -893,7 +889,7 @@ next
   show ?case  using \<open>n \<in> nat\<close>
   proof (cases rule: natE)
     case 0 thus ?thesis using succ
-      by (simp add: lepoll_rel_def inj_def)
+      by (simp add: def_lepoll_rel inj_def)
   next
     case (succ n') thus ?thesis using succ.hyps \<open> succ(m) \<lesssim>r n\<close>
       by (blast dest!: succ_lepoll_rel_succD)
@@ -929,7 +925,7 @@ lemma succ_lepoll_rel_natE: "[| succ(n) \<lesssim>r n;  n \<in> nat |] ==> P"
 
 lemma nat_lepoll_rel_imp_ex_eqpoll_rel_n:
   "[| n \<in> nat;  nat \<lesssim>r X ; M(n); M(X)|] ==> \<exists>Y[M]. Y \<subseteq> X & n \<approx>r Y"
-  apply (unfold lepoll_rel_def eqpoll_rel_def, simp)
+  apply (simp add: def_lepoll_rel def_eqpoll_rel)
   apply (fast del: subsetI subsetCE
       intro!: subset_SIs
       dest!: Ord_nat [THEN [2] OrdmemD, THEN [2] restrict_inj]
@@ -951,12 +947,12 @@ proof -
     finally have "succ(m) \<lesssim>r m" by (auto simp add:types)
     hence False by (rule succ_lepoll_rel_natE) (rule m) }
   moreover have "A \<lesssim>r succ(m)" by (blast intro: lepoll_rel_trans A lepoll_rel_succ types)
-  ultimately show ?thesis by (auto simp add: lesspoll_rel_def)
+  ultimately show ?thesis by (auto simp add: types def_lesspoll_rel)
 qed
 
 lemma lesspoll_rel_succ_imp_lepoll_rel:
   "[| A \<prec>r succ(m); m \<in> nat; M(A); M(m) |] ==> A \<lesssim>r m"
-  apply (unfold lesspoll_rel_def lepoll_rel_def eqpoll_rel_def, simp, unfold bij_def)
+  apply (unfold def_lepoll_rel, simp add:def_eqpoll_rel def_lesspoll_rel, unfold bij_def)
   apply (auto dest: inj_not_surj_succ)
   sorry \<comment> \<open>the last step does not use the destruction rule\<close>
 (*
@@ -972,11 +968,11 @@ lemma lepoll_rel_succ_disj: "[| A \<lesssim>r succ(m);  m \<in> nat; M(A) ; M(m)
   apply (rule disjCI)
   apply (rule lesspoll_rel_succ_imp_lepoll_rel)
    prefer 2 apply assumption
-  apply (simp (no_asm_simp) add: lesspoll_rel_def, assumption+)
+  apply (simp (no_asm_simp) add: def_lesspoll_rel, assumption+)
   done
 
 lemma lesspoll_rel_cardinal_rel_lt: "[| A \<prec>r i; Ord(i); M(A); M(i) |] ==> |A|r < i"
-  apply (unfold lesspoll_rel_def, clarify)
+  apply (unfold def_lesspoll_rel, clarify)
   apply (frule lepoll_rel_cardinal_rel_le, assumption+) \<comment> \<open>because of types\<close>
   apply (blast intro: well_ord_Memrel well_ord_cardinal_rel_eqpoll_rel [THEN eqpoll_rel_sym]
       dest: lepoll_rel_well_ord  elim!: leE)
@@ -1041,7 +1037,7 @@ lemma n_lesspoll_rel_nat: "n \<in> nat ==> n \<prec>r nat"
 
 lemma cons_lepoll_rel_cong:
   "[| A \<lesssim>r B;  b \<notin> B; M(A); M(B); M(b); M(a) |] ==> cons(a,A) \<lesssim>r cons(b,B)"
-  apply (unfold lepoll_rel_def, safe, simp)
+  apply (subst (asm) def_lepoll_rel, simp_all, subst def_lepoll_rel, simp_all, safe)
   apply (rule_tac x = "\<lambda>y\<in>cons (a,A) . if y=a then b else f`y" in rexI)
    apply (rule_tac d = "%z. if z \<in> B then converse (f) `z else a" in lam_injective)
     apply (safe elim!: consE')
@@ -1073,37 +1069,124 @@ lemma cardinal_rel_singleton: "M(a) \<Longrightarrow> |{a}|r = 1"
   apply auto
   done
 
-\<comment> \<open>From here on, problems pile up\<close>
-
-(*
-
 lemma not_0_is_lepoll_rel_1: "A \<noteq> 0 ==> M(A) \<Longrightarrow> 1 \<lesssim>r A"
   apply (erule not_emptyE)
   apply (rule_tac a = "cons (x, A-{x}) " in subst)
    apply (rule_tac [2] a = "cons(0,0)" and P= "%y. y \<lesssim>r cons (x, A-{x})" in subst)
-    prefer 3 apply (blast intro: cons_lepoll_rel_cong subset_imp_lepoll_rel, auto)
-  done
+    apply auto
+proof -
+  fix x
+  assume "M(A)"
+  then
+  show "x \<in> A \<Longrightarrow> {0} \<lesssim>r cons(x, A - {x})"
+    by (auto intro: cons_lepoll_rel_cong transM[OF _ \<open>M(A)\<close>] subset_imp_lepoll_rel)
+qed
+
 
 lemma succ_eqpoll_rel_cong: "A \<approx>r B \<Longrightarrow> M(A) \<Longrightarrow> M(B) ==> succ(A) \<approx>r succ(B)"
   apply (unfold succ_def)
   apply (simp add: cons_eqpoll_rel_cong mem_not_refl)
   done
 
-lemma sum_eqpoll_rel_cong: "[| A \<approx>r C;  B \<approx>r D; M(A); M(C); M(B); M(D) |] ==> A+B \<approx>r C+D"
-  apply (unfold eqpoll_rel_def)
-  apply (auto intro!: sum_bij)
-  done
+text\<open>The next result was not straightforward to port, and even a
+different statement was needed.\<close>
+
+lemma sum_bij_rel:
+  "[| f \<in> bij_rel(A,C); g \<in> bij_rel(B,D); M(f); M(A); M(C); M(g); M(B); M(D)|]
+      ==> (\<lambda>z\<in>A+B. case(%x. Inl(f`x), %y. Inr(g`y), z)) \<in> bij_rel(A+B, C+D)"
+proof -
+  assume asm:"f \<in> bij_rel(A,C)" "g \<in> bij_rel(B,D)" "M(f)" "M(A)" "M(C)" "M(g)" "M(B)" "M(D)"
+  then
+  have "M(\<lambda>z\<in>A+B. case(%x. Inl(f`x), %y. Inr(g`y), z))"
+    using transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>]
+    by (auto intro:sum_bij_rel_replacement[THEN lam_closed])
+  with asm
+  show ?thesis
+    apply simp
+    apply (rule_tac d = "case (%x. Inl (converse(f)`x), %y. Inr(converse(g)`y))"
+        in lam_bijective)
+       apply (typecheck add: bij_is_inj inj_is_fun)
+     apply (auto simp add: left_inverse_bij right_inverse_bij)
+    done
+qed
+
+lemma sum_bij_rel':
+  assumes "f \<in> bij_rel(A,C)" "g \<in> bij_rel(B,D)" "M(f)"
+    "M(A)" "M(C)" "M(g)" "M(B)" "M(D)"
+  shows
+    "(\<lambda>z\<in>A+B. case(\<lambda>x. Inl(f`x), \<lambda>y. Inr(g`y), z)) \<in> bij(A+B, C+D)"
+    "M(\<lambda>z\<in>A+B. case(\<lambda>x. Inl(f`x), \<lambda>y. Inr(g`y), z))"
+proof -
+  from assms
+  show "M(\<lambda>z\<in>A+B. case(\<lambda>x. Inl(f`x), \<lambda>y. Inr(g`y), z))"
+    using transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>]
+    by (auto intro:sum_bij_rel_replacement[THEN lam_closed])
+  with assms
+  show "(\<lambda>z\<in>A+B. case(\<lambda>x. Inl(f`x), \<lambda>y. Inr(g`y), z)) \<in> bij(A+B, C+D)"
+    apply simp
+    apply (rule_tac d = "case (%x. Inl (converse(f)`x), %y. Inr(converse(g)`y))"
+        in lam_bijective)
+       apply (typecheck add: bij_is_inj inj_is_fun)
+     apply (auto simp add: left_inverse_bij right_inverse_bij)
+    done
+qed
+
+lemma sum_eqpoll_rel_cong:
+  assumes "A \<approx>r C" "B \<approx>r D" "M(A)" "M(C)" "M(B)" "M(D)"
+  shows "A+B \<approx>r C+D"
+  using assms
+proof (simp add: def_eqpoll_rel, safe, rename_tac g)
+  fix f g
+  assume  "M(f)" "f \<in> bij(A, C)" "M(g)" "g \<in> bij(B, D)"
+  with assms
+  obtain h where "h\<in>bij(A+B, C+D)" "M(h)"
+    using sum_bij_rel'[of f A C g B D] by simp
+  then
+  show "\<exists>f[M]. f \<in> bij(A + B, C + D)"
+    by auto
+qed
+
+lemma prod_bij_rel':
+  assumes "f \<in> bij_rel(A,C)" "g \<in> bij_rel(B,D)" "M(f)"
+    "M(A)" "M(C)" "M(g)" "M(B)" "M(D)"
+  shows
+    "(\<lambda><x,y>\<in>A*B. <f`x, g`y>) \<in> bij(A*B, C*D)"
+    "M(\<lambda><x,y>\<in>A*B. <f`x, g`y>)"
+proof -
+  from assms
+  show "M((\<lambda><x,y>\<in>A*B. <f`x, g`y>))"
+    using transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>]
+      transM[OF _ cartprod_closed, of _ A B]
+    by (auto intro:prod_bij_rel_replacement[THEN lam_closed, of f g "A\<times>B"])
+  with assms
+  show "(\<lambda><x,y>\<in>A*B. <f`x, g`y>) \<in> bij(A*B, C*D)"
+    apply simp
+    apply (rule_tac d = "%<x,y>. <converse (f) `x, converse (g) `y>"
+        in lam_bijective)
+       apply (typecheck add: bij_is_inj inj_is_fun)
+     apply (auto simp add: left_inverse_bij right_inverse_bij)
+    done
+qed
 
 lemma prod_eqpoll_rel_cong:
-  "[| A \<approx>r C;  B \<approx>r D |] ==> A*B \<approx>r C*D"
-  apply (unfold eqpoll_rel_def)
-  apply (blast intro!: prod_bij)
-  done
+  assumes "A \<approx>r C" "B \<approx>r D" "M(A)" "M(C)" "M(B)" "M(D)"
+  shows "A\<times>B \<approx>r C\<times>D"
+  using assms
+proof (simp add: def_eqpoll_rel, safe, rename_tac g)
+  fix f g
+  assume  "M(f)" "f \<in> bij(A, C)" "M(g)" "g \<in> bij(B, D)"
+  with assms
+  obtain h where "h\<in>bij(A\<times>B, C\<times>D)" "M(h)"
+    using prod_bij_rel'[of f A C g B D] by simp
+  then
+  show "\<exists>f[M]. f \<in> bij(A \<times> B, C \<times> D)"
+    by auto
+qed
 
-lemma inj_disjoint_eqpoll_rel:
-  "[| f \<in> inj(A,B);  A \<inter> B = 0 |] ==> A \<union> (B - range(f)) \<approx>r B"
-  apply (unfold eqpoll_rel_def)
-  apply (rule exI)
+lemma inj_rel_disjoint_eqpoll_rel:
+  "[| f \<in> inj_rel(A,B);  A \<inter> B = 0;M(f); M(A);M(B) |] ==> A \<union> (B - range(f)) \<approx>r B"
+  apply (simp add: def_eqpoll_rel)
+  apply (rule rexI)
   apply (rule_tac c = "%x. if x \<in> A then f`x else x"
       and d = "%y. if y \<in> range (f) then converse (f) `y else y"
       in lam_bijective)
@@ -1111,61 +1194,84 @@ lemma inj_disjoint_eqpoll_rel:
     apply (simp (no_asm_simp) add: inj_converse_fun [THEN apply_funtype])
    apply (safe elim!: UnE')
     apply (simp_all add: inj_is_fun [THEN apply_rangeI])
-  apply (blast intro: inj_converse_fun [THEN apply_type])+
-  done
-
+   apply (blast intro: inj_converse_fun [THEN apply_type])
+proof -
+  assume "f \<in> inj(A, B)" "A \<inter> B = 0" "M(f)" "M(A)" "M(B)"
+  then
+  show "M(\<lambda>x\<in>A \<union> (B - range(f)). if x \<in> A then f ` x else x)"
+    using  transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>] lam_if_then_replacement2
+    by (rule_tac lam_closed) auto
+qed
 
 lemma Diff_sing_lepoll_rel:
-  "[| a \<in> A;  A \<lesssim>r succ(n) |] ==> A - {a} \<lesssim>r n"
+  "[| a \<in> A;  A \<lesssim>r succ(n); M(a); M(A); M(n) |] ==> A - {a} \<lesssim>r n"
   apply (unfold succ_def)
   apply (rule cons_lepoll_rel_consD)
     apply (rule_tac [3] mem_not_refl)
-   apply (erule cons_Diff [THEN ssubst], safe)
+   apply (erule cons_Diff [THEN ssubst], simp_all)
   done
 
 lemma lepoll_rel_Diff_sing:
-  assumes A: "succ(n) \<lesssim>r A" shows "n \<lesssim>r A - {a}"
+  assumes A: "succ(n) \<lesssim>r A"
+    and types: "M(n)" "M(A)" "M(a)"
+  shows "n \<lesssim>r A - {a}"
 proof -
   have "cons(n,n) \<lesssim>r A" using A
     by (unfold succ_def)
-  also have "... \<lesssim>r cons(a, A-{a})"
+  also from types
+  have "... \<lesssim>r cons(a, A-{a})"
     by (blast intro: subset_imp_lepoll_rel)
-  finally have "cons(n,n) \<lesssim>r cons(a, A-{a})" .
-  thus ?thesis
+  finally have "cons(n,n) \<lesssim>r cons(a, A-{a})" by (simp_all add:types)
+  with types
+  show ?thesis
     by (blast intro: cons_lepoll_rel_consD mem_irrefl)
 qed
 
-lemma Diff_sing_eqpoll_rel: "[| a \<in> A; A \<approx>r succ(n) |] ==> A - {a} \<approx>r n"
+lemma Diff_sing_eqpoll_rel: "[| a \<in> A; A \<approx>r succ(n); M(a); M(A); M(n) |] ==> A - {a} \<approx>r n"
   by (blast intro!: eqpoll_relI
       elim!: eqpoll_relE
       intro: Diff_sing_lepoll_rel lepoll_rel_Diff_sing)
 
-lemma lepoll_rel_1_is_sing: "[| A \<lesssim>r 1; a \<in> A |] ==> A = {a}"
-  apply (frule Diff_sing_lepoll_rel, assumption)
-  apply (drule lepoll_rel_0_is_0)
+lemma lepoll_rel_1_is_sing: "[| A \<lesssim>r 1; a \<in> A ;M(a); M(A) |] ==> A = {a}"
+  apply (frule Diff_sing_lepoll_rel, assumption+, simp)
+  apply (drule lepoll_rel_0_is_0, simp)
   apply (blast elim: equalityE)
   done
 
-lemma Un_lepoll_rel_sum: "A \<union> B \<lesssim>r A+B"
-  apply (unfold lepoll_rel_def)
-  apply (rule_tac x = "\<lambda>x\<in>A \<union> B. if x\<in>A then Inl (x) else Inr (x)" in exI)
+lemma Un_lepoll_rel_sum: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> A \<union> B \<lesssim>r A+B"
+  apply (simp add: def_lepoll_rel)
+  apply (rule_tac x = "\<lambda>x\<in>A \<union> B. if x\<in>A then Inl (x) else Inr (x)" in rexI)
   apply (rule_tac d = "%z. snd (z)" in lam_injective)
    apply force
   apply (simp add: Inl_def Inr_def)
-  done
+proof -
+  assume "M(A)" "M(B)"
+  then
+  show "M(\<lambda>x\<in>A \<union> B. if x \<in> A then Inl(x) else Inr(x))"
+    using transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>] if_then_Inl_replacement
+    by (rule_tac lam_closed) auto
+qed
 
-lemma well_ord_Un:
-  "[| well_ord(X,R); well_ord(Y,S) |] ==> \<exists>T. well_ord(X \<union> Y, T)"
-  by (erule well_ord_radd [THEN Un_lepoll_rel_sum [THEN lepoll_rel_well_ord]],
-      assumption)
+lemma well_ord_Un_M:
+  assumes "well_ord(X,R)" "well_ord(Y,S)"
+    and types: "M(X)" "M(R)" "M(Y)" "M(S)"
+  shows "\<exists>T[M]. well_ord(X \<union> Y, T)"
+  using assms
+  by (erule_tac well_ord_radd [THEN [3] Un_lepoll_rel_sum [THEN lepoll_rel_well_ord]])
+    (auto simp add: types radd_def radd_separation)
 
-lemma disj_Un_eqpoll_rel_sum: "A \<inter> B = 0 ==> A \<union> B \<approx>r A + B"
-  apply (unfold eqpoll_rel_def)
-  apply (rule_tac x = "\<lambda>a\<in>A \<union> B. if a \<in> A then Inl (a) else Inr (a)" in exI)
+lemma disj_Un_eqpoll_rel_sum: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> A \<inter> B = 0 \<Longrightarrow> A \<union> B \<approx>r A + B"
+  apply (simp add: def_eqpoll_rel)
+  apply (rule_tac x = "\<lambda>a\<in>A \<union> B. if a \<in> A then Inl (a) else Inr (a)" in rexI)
   apply (rule_tac d = "%z. case (%x. x, %x. x, z)" in lam_bijective)
      apply auto
-  done
-*)
+proof -
+  assume "M(A)" "M(B)"
+  then
+  show "M(\<lambda>x\<in>A \<union> B. if x \<in> A then Inl(x) else Inr(x))"
+    using transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>] if_then_Inl_replacement
+    by (rule_tac lam_closed) auto
+qed
 
 lemma eqpoll_rel_imp_Finite_rel_iff: "A \<approx>r B ==> M(A) \<Longrightarrow> M(B) \<Longrightarrow> Finite_rel(M,A) \<longleftrightarrow> Finite_rel(M,B)"
   apply (unfold Finite_rel_def)
@@ -1178,7 +1284,7 @@ and deduce the rest of the results from this.
 Perhaps modularize that proof to have absoluteness of injections and
 bijections of finite sets (cf. @{thm lesspoll_rel_succ_imp_lepoll_rel}.\<close>
 
-lemma Finite_abs: assumes "M(A)" shows "Finite_rel(M,A) \<longleftrightarrow> Finite(A)"
+lemma Finite_abs[simp]: assumes "M(A)" shows "Finite_rel(M,A) \<longleftrightarrow> Finite(A)"
   unfolding Finite_rel_def Finite_def
 proof (simp, intro iffI)
   assume "\<exists>n\<in>nat. A \<approx>r n"
@@ -1186,7 +1292,7 @@ proof (simp, intro iffI)
   obtain n where "A \<approx>r n" "n\<in>nat" by blast
   with assms
   show "\<exists>n\<in>nat. A \<approx> n"
-    unfolding eqpoll_def eqpoll_rel_def using nat_into_M by auto
+    unfolding eqpoll_def using nat_into_M by (auto simp add:def_eqpoll_rel)
 next
   fix n
   assume "\<exists>n\<in>nat. A \<approx> n"
@@ -1206,120 +1312,61 @@ next
       converse_closed[of "converse(f)"] by simp
   ultimately
   show "\<exists>n\<in>nat. A \<approx>r n"
-    unfolding eqpoll_rel_def by (force dest:nat_into_M)
+    by (force dest:nat_into_M simp add:def_eqpoll_rel)
 qed
 
-\<comment> \<open>In the following, I'm leaving results that involve the other
-relativized cardinality notions.\<close>
-
 (*
+\<comment> \<open>From the next result, the relative versions of
+@{thm Finite_Fin_lemma} and @{thm Fin_lemma} should follow\<close>
+lemma nat_eqpoll_rel_imp_eqpoll:
+  assumes "n \<in> nat" "A \<approx>r n" and types:"M(n)" "M(A)"
+  shows "A \<approx> n"
+*)
 
 lemma lepoll_rel_nat_imp_Finite_rel:
   assumes A: "A \<lesssim>r n" and n: "n \<in> nat"
   and types: "M(A)" "M(n)"
   shows "Finite_rel(M,A)"
-  oops
+proof -
+  have "A \<lesssim>r n \<Longrightarrow> Finite_rel(M,A)" using n
+    proof (induct n)
+      case 0
+      hence "A = 0" by (rule lepoll_rel_0_is_0, simp_all add:types)
+      thus ?case by simp
+    next
+      case (succ n)
+      hence "A \<lesssim>r n \<or> A \<approx>r succ(n)" by (blast dest: lepoll_rel_succ_disj intro:types)
+      thus ?case using succ by (auto simp add: Finite_rel_def types)
+    qed
+  thus ?thesis using A .
+qed
 
 lemma lesspoll_rel_nat_is_Finite_rel:
-  "A \<prec>r nat ==> M(A) \<Longrightarrow> Finite_rel(M,A)"
-  oops
+  "A \<prec>r nat \<Longrightarrow> M(A) \<Longrightarrow> Finite_rel(M,A)"
+apply (unfold Finite_rel_def)
+apply (auto dest: ltD lesspoll_rel_cardinal_rel_lt
+                   lesspoll_rel_imp_eqpoll_rel [THEN eqpoll_rel_sym])
+done
 
 lemma lepoll_rel_Finite_rel:
   assumes Y: "Y \<lesssim>r X" and X: "Finite_rel(M,X)"
     and types:"M(Y)" "M(X)"
   shows "Finite_rel(M,Y)"
-  oops
+proof -
+  obtain n where n: "n \<in> nat" "X \<approx>r n" "M(n)" using X
+    by (auto simp add: Finite_rel_def)
+  have "Y \<lesssim>r X"         by (rule Y)
+  also have "... \<approx>r n"  by (rule n)
+  finally have "Y \<lesssim>r n" by (simp_all add:types \<open>M(n)\<close>)
+  thus ?thesis using n
+    by (simp add: lepoll_rel_nat_imp_Finite_rel types \<open>M(n)\<close> del:Finite_abs)
+qed
 
 lemma succ_lepoll_rel_imp_not_empty: "succ(x) \<lesssim>r y ==> M(x) \<Longrightarrow> M(y) \<Longrightarrow> y \<noteq> 0"
-  oops
+  by (fast dest!: lepoll_rel_0_is_0)
 
 lemma eqpoll_rel_succ_imp_not_empty: "x \<approx>r succ(n) ==> M(x) \<Longrightarrow> M(n) \<Longrightarrow> x \<noteq> 0"
-  oops
-
-lemma Finite_rel_Fin_lemma [rule_format]:
-  "n \<in> nat ==> M(n) \<Longrightarrow> M(X) \<Longrightarrow> \<forall>A[M]. (A\<approx>r n & A \<subseteq> X) \<longrightarrow> A \<in> Fin(X)"
-  oops
-
-lemma Fin_lemma [rule_format]: "n \<in> nat ==> \<forall>A. A \<approx>r n \<longrightarrow> A \<in> Fin(A)"
-  oops
-
-*)
-
-(**********************************************************************)
-(**********************************************************************)
-
-\<comment> \<open>Old ported results (using \<^term>\<open>is_cardinal\<close> instead of
-\<^term>\<open>cardinal_rel\<close> now follow immediately.\<close>
-
-lemma Ord_is_cardinal_idem:
-  assumes "Ord(A)" "M(A)" "M(\<kappa>)" "M(\<kappa>')" "is_cardinal(M,A,\<kappa>)" "is_cardinal(M,\<kappa>,\<kappa>')"
-  shows "is_cardinal(M,A,\<kappa>')"
-  using assms Ord_cardinal_rel_idem cardinal_rel_iff by simp
-
-lemma well_ord_is_cardinal_eqE:
-  assumes
-    woX: "well_ord(X,r)" and woY: "well_ord(Y,s)" and
-    eq: "is_cardinal(M,X,\<kappa>) \<and> is_cardinal(M,Y,\<kappa>)"
-    and
-    "M(X)" "M(r)" "M(Y)" "M(s)" "M(\<kappa>)"
-  shows "X \<approx>r Y"
-  using assms well_ord_cardinal_rel_eqE cardinal_rel_iff by simp
-
-lemma Ord_is_cardinal_le: "Ord(i) \<Longrightarrow> is_cardinal(M,i,\<kappa>) \<Longrightarrow> M(i) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> \<kappa> \<le> i"
-  using Ord_cardinal_rel_le cardinal_rel_iff by simp
-
-lemma Ord_is_cardinal: "is_cardinal(M,A,\<kappa>) \<Longrightarrow> M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> Ord(\<kappa>)"
-  using Ord_cardinal_rel cardinal_rel_iff by simp
-
-lemma is_cardinal_imp_Card_rel:
-  assumes "is_cardinal(M,A,\<kappa>)" "M(A)" "M(\<kappa>)"
-  shows "Card_rel(\<kappa>)"
-  using assms Card_rel_cardinal_rel cardinal_rel_iff by simp
-
-lemma is_cardinal_eq_lemma:
-  assumes
-    "is_cardinal(M,i,\<kappa>)" "is_cardinal(M,j,\<kappa>')"
-    and
-    i:"\<kappa> \<le> j" and j: "j \<le> i"
-    and
-    types: "M(i)" "M(j)" "M(\<kappa>)" "M(\<kappa>')"
-  shows "\<kappa>' = \<kappa>"
-  using assms cardinal_rel_eq_lemma cardinal_rel_iff by simp
-
-lemma is_cardinal_mono:
-  assumes
-    "is_cardinal(M,i,\<kappa>)" "is_cardinal(M,j,\<kappa>')"
-    and
-    ij: "i \<le> j"
-    and
-    "M(i)" "M(\<kappa>)" "M(j)" "M(\<kappa>')"
-  shows "\<kappa> \<le> \<kappa>'"
-  using assms cardinal_rel_mono cardinal_rel_iff by simp
-
-lemma is_cardinal_lt_imp_lt:
-  assumes
-    "is_cardinal(M,i,\<kappa>)" "is_cardinal(M,j,\<kappa>')"
-    "\<kappa><\<kappa>'"  "Ord(i)"  "Ord(j)"
-    "M(i)" "M(\<kappa>)" "M(j)" "M(\<kappa>')"
-  shows
-    "i < j"
-  using assms cardinal_rel_lt_imp_lt cardinal_rel_iff by simp
-
-\<comment> \<open>This oldly ported result involves some first order reasoning
-and doesn't follow as simply as the previous ones.\<close>
-lemma well_ord_is_cardinal_eqpoll_rel_iff:
-  assumes
-    woX: "well_ord(X,r)" and woY: "well_ord(Y,s)"
-    and
-    "M(X)" "M(r)" "M(Y)" "M(s)" "M(\<kappa>)"
-  shows "(\<exists>\<kappa>[M]. is_cardinal(M,X,\<kappa>) \<and> is_cardinal(M,Y,\<kappa>)) \<longleftrightarrow> X \<approx>r Y"
-  using assms
-proof (intro iffI)
-  assume "X \<approx>r Y"
-  with assms
-  show "\<exists>\<kappa>[M]. is_cardinal(M,X,\<kappa>) \<and> is_cardinal(M,Y,\<kappa>)"
-    using is_cardinal_cong by simp
-qed (auto intro: well_ord_is_cardinal_eqE[of _ r _ s])
+  by (fast elim!: eqpoll_rel_sym [THEN eqpoll_rel_0_is_0, THEN succ_neq_0])
 
 end (* M_cardinals *)
 
