@@ -24,6 +24,9 @@ locale M_cardinals = M_ordertype + M_trancl + M_Perm +
   assumes
   id_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>z. \<exists>x\<in>A. z = \<langle>x, x\<rangle>)"
   and
+  rvimage_separation: "M(f) \<Longrightarrow> M(r) \<Longrightarrow>
+    separation(M, \<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> \<langle>f ` x, f ` y\<rangle> \<in> r)"
+  and
   radd_separation: "M(R) \<Longrightarrow> M(S) \<Longrightarrow>
     separation(M, \<lambda>z.
       (\<exists>x y. z = \<langle>Inl(x), Inr(y)\<rangle>) \<or>
@@ -41,6 +44,9 @@ locale M_cardinals = M_ordertype + M_trancl + M_Perm +
   and
   lam_if_then_apply_replacement: "M(f) \<Longrightarrow> M(v) \<Longrightarrow> M(u) \<Longrightarrow>
      strong_replacement(M, \<lambda>x y. y = \<langle>x,  if f ` x = v then f ` u else f ` x\<rangle>)"
+  and
+  lam_if_then_apply_replacement2: "M(f) \<Longrightarrow> M(m) \<Longrightarrow> M(y) \<Longrightarrow>
+     strong_replacement(M, \<lambda>z ya. ya = \<langle>z, if f ` z = m then y else f ` z\<rangle>)"
   and
   lam_if_then_replacement2: "M(b) \<Longrightarrow> M(a) \<Longrightarrow> M(f) \<Longrightarrow>
      strong_replacement(M, \<lambda>x y. y = \<langle>x, if x \<in> A then f ` x else x\<rangle>)"
@@ -551,7 +557,7 @@ lemma rvimage_closed [intro,simp]:
     "M(A)" "M(f)" "M(r)"
   shows
     "M(rvimage(A,f,r))"
-  sorry
+  unfolding rvimage_def using assms rvimage_separation by auto
 
 lemma lepoll_rel_well_ord: "[| A \<lesssim>r B; well_ord(B,r); M(A); M(B); M(r) |] ==> \<exists>s[M]. well_ord(A,s)"
   unfolding def_lepoll_rel by (auto intro:well_ord_rvimage)
@@ -560,6 +566,43 @@ lemma lepoll_rel_iff_leqpoll_rel: "\<lbrakk>M(A); M(B)\<rbrakk> \<Longrightarrow
   apply (unfold def_lesspoll_rel)
   apply (blast intro: eqpoll_relI elim: eqpoll_relE)
   done
+
+end (* M_cardinals *)
+
+context M_cardinals
+begin
+
+lemma inj_rel_is_fun_M: "f \<in> inj_rel(A,B) \<Longrightarrow> M(f) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> f \<in> A \<rightarrow>r B"
+  using inj_is_fun function_space_rel_char by simp
+
+\<comment> \<open>In porting the following theorem, I tried to follow the Discipline
+strictly, though finally only an approach maximizing the use of
+absoluteness results (@{thm function_space_rel_char inj_rel_char}) was
+ the one paying dividends.\<close>
+lemma inj_rel_not_surj_rel_succ:
+  notes mem_inj_abs[simp del]
+  assumes fi: "f \<in> inj_rel(A, succ(m))" and fns: "f \<notin> surj_rel(A, succ(m))"
+    and types: "M(f)" "M(A)" "M(m)"
+  shows "\<exists>f[M]. f \<in> inj_rel(A,m)"
+proof -
+  from fi [THEN inj_rel_is_fun_M] fns types
+  obtain y where y: "y \<in> succ(m)" "\<And>x. x\<in>A \<Longrightarrow> f ` x \<noteq> y" "M(y)"
+    by (auto simp add: def_surj_rel)
+  show ?thesis
+  proof
+    from types and \<open>M(y)\<close>
+    show "M(\<lambda>z\<in>A. if f ` z = m then y else f ` z)"
+      using transM[OF _ \<open>M(A)\<close>] lam_if_then_apply_replacement2[THEN lam_closed]
+      by (auto)
+    with types y fi
+    have "(\<lambda>z\<in>A. if f`z = m then y else f`z) \<in> A\<rightarrow>r m"
+      using function_space_rel_char inj_rel_char inj_is_fun[of f A "succ(m)"]
+      by (auto intro!: if_type [THEN lam_type] dest: apply_funtype)
+    with types y fi
+    show "(\<lambda>z\<in>A. if f`z = m then y else f`z) \<in> inj_rel(A, m)"
+      by (simp add: def_inj_rel) blast
+  qed
+qed
 
 (** Variations on transitivity **)
 
@@ -952,15 +995,25 @@ qed
 
 lemma lesspoll_rel_succ_imp_lepoll_rel:
   "[| A \<prec>r succ(m); m \<in> nat; M(A); M(m) |] ==> A \<lesssim>r m"
-  apply (unfold def_lepoll_rel, simp add:def_eqpoll_rel def_lesspoll_rel, unfold bij_def)
-  apply (auto dest: inj_not_surj_succ)
-  sorry \<comment> \<open>the last step does not use the destruction rule\<close>
-(*
-\<And>f. m \<in> nat \<Longrightarrow>
-         M(A) \<Longrightarrow>
-         M(m) \<Longrightarrow>
-         \<forall>f[M]. f \<notin> inj(A, succ(m)) \<or> f \<notin> surj(A, succ(m)) \<Longrightarrow> M(f) \<Longrightarrow> f \<in> inj(A, succ(m)) \<Longrightarrow> \<exists>f[M]. f \<in> inj(A, m)
-*)
+proof -
+  {
+    assume "m \<in> nat" "M(A)" "M(m)" "A \<lesssim>r succ(m)"
+      "\<forall>f\<in>inj_rel(A, succ(m)). f \<notin> surj_rel(A, succ(m))"
+    moreover from this
+    obtain f where "M(f)" "f\<in>inj_rel(A,succ(m))"
+      using def_lepoll_rel by auto
+    moreover from calculation
+    have "f \<notin> surj_rel(A, succ(m))" by simp
+    ultimately
+    have "\<exists>f[M]. f \<in> inj_rel(A, m)"
+      using inj_rel_not_surj_rel_succ by auto
+  }
+  from this
+  show "\<lbrakk> A \<prec>r succ(m); m \<in> nat; M(A); M(m) \<rbrakk> \<Longrightarrow> A \<lesssim>r m"
+    using def_lepoll_rel def_eqpoll_rel def_bij_rel def_lesspoll_rel
+    by (simp del:mem_inj_abs)
+qed
+
 lemma lesspoll_rel_succ_iff: "m \<in> nat \<Longrightarrow> M(A) ==> A \<prec>r succ(m) \<longleftrightarrow> A \<lesssim>r m"
   by (blast intro!: lepoll_rel_imp_lesspoll_rel_succ lesspoll_rel_succ_imp_lepoll_rel)
 

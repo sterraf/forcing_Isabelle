@@ -336,7 +336,7 @@ locale M_Pi_assumptions = M_Pi +
     "\<forall>x\<in>A. strong_replacement(M, \<lambda>y z. y \<in> B(x) \<and> z = {\<langle>x, y\<rangle>})"
     "strong_replacement(M,\<lambda>x z. z=Sigfun(x,B))"
     "M(A)"
-    "\<forall>x\<in>A. M(B(x))"
+    "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))"
 begin
 
 lemma Sigma_abs[simp]:
@@ -458,7 +458,7 @@ proof -
   show ?thesis by force
 qed
 
-lemma (in M_Pi_assumptions) Pi_rel_char:
+lemma Pi_rel_char:
   "Pi_rel(A,B) = {f\<in>Pi(A,B). M(f)}"
   using def_Pi_rel Pow_rel_char[OF Sigma_closed] unfolding Pi_def
   by fastforce
@@ -466,7 +466,46 @@ lemma (in M_Pi_assumptions) Pi_rel_char:
 end (* M_Pi_assumptions *)
 
 (******************  end Discipline  **********************)
+context M_Pi_assumptions
+begin
 
+subsection\<open>Auxiliary ported results on \<^term>\<open>Pi_rel\<close>, now unused\<close>
+
+lemma Pi_rel_iff':
+  assumes types:"M(f)" "M(A)"
+  shows
+    "f \<in> Pi_rel(A,B) \<longleftrightarrow> function(f) \<and> f \<subseteq> Sigma(A,B) \<and> A \<subseteq> domain(f)"
+  using assms Pow_rel_char
+  by (simp add:def_Pi_rel, blast)
+
+lemma (in M_Pi_assumptions) lam_type_M:
+  assumes "\<And>x. x \<in> A \<Longrightarrow> b(x)\<in>B(x)" "strong_replacement(M,\<lambda>x y. y=\<langle>x, b(x)\<rangle>) "
+  shows "(\<lambda>x\<in>A. b(x)) \<in> Pi_rel(A,B)"
+proof (auto simp add: lam_def def_Pi_rel function_def)
+  from assms
+  have "M({\<langle>x, b(x)\<rangle> . x \<in> A})"
+    using Pi_assumptions transM[OF _ Pi_assumptions(3)]
+    by (rule_tac RepFun_closed, auto intro!:transM[OF _ Pi_assumptions(4)])
+  with assms
+  show "{\<langle>x, b(x)\<rangle> . x \<in> A} \<in> Pow_rel(Sigma(A, B))"
+    using Pow_rel_char by auto
+qed
+
+end (* M_Pi_assumptions *)
+
+locale M_Pi_assumptions2 = M_Pi_assumptions +
+  PiC: M_Pi_assumptions _ _ C for C
+begin
+
+lemma Pi_rel_type:
+  assumes "f \<in> Pi_rel(A,C)" "\<And>x. x \<in> A \<Longrightarrow> f`x \<in> B(x)"
+    and types: "M(f)" "M(A)"
+  shows "f \<in> Pi_rel(A,B)"
+  using assms
+  by (simp only: Pi_rel_iff' PiC.Pi_rel_iff')
+    (blast dest: function_apply_equality)
+
+end (* M_Pi_assumptions2 *)
 
 (**********************************************************)
 subsection\<open>Discipline for \<^term>\<open>function_space\<close>\<close>
@@ -558,7 +597,7 @@ proof -
       transM[OF _ Pi_rel_closed] by blast
 qed
 
-lemma function_space_char:
+lemma function_space_rel_char:
   assumes "M(A)" "M(y)"
   shows "A \<rightarrow>r y = {f \<in> A \<rightarrow> y. M(f)}"
 proof -
