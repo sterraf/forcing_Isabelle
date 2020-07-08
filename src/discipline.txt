@@ -1,0 +1,35 @@
+In our work described in IJCAR 2020 we dealt with concepts that are absolute,
+meaning that the relativized version (wrt the ground model) coincide with the
+concept on the universe. For absolute concepts one can reason about concepts
+in the ground model using results about the universe; in contrast, there are
+other concepts that are not absolute, for instance, cardinal. 
+
+\<guillemotleft>The discipline\<guillemotright> aims to fill the lack of a method to reason about relativized
+concepts using results that are valid in the universe. Instead of trying to 
+re-develop several results already present in the Constructible library, we aim
+to port them to a relativized context and try to reuse as much as possible Paulson's
+mechanization.
+
+The discipline relies on noticing that if a relativized concept (wrt a class M) 
+is univalent and defined, then one can refer to *the* unique element in the class
+satisfying the relational property that defines the concept. 
+
+The discipline (for unary concepts):
+1.[is_foo] Given a concept "foo" relativize it in "is_foo", if necessary one has to apply 
+the discipline to every other concept on which "foo" depends. 
+2. Prove univalence and definedness for "is_foo":
+  a.[is_foo_uniqueness] \<forall>[M] a b. is_foo(M,r,a) \<and> is_foo(M,r,b) \<rightarrow> a = b
+  b.[is_foo_witness] \<exists>[M] a. is_foo(M,r,a)
+3. [foo_rel] Define the relative concept "foo_rel"
+  definition
+    foo_rel :: "i \<Rightarrow> i" where
+    "foo_rel(r) \<equiv> THE d. M(d) \<and> is_foo(M,r,d)"
+4. [foo_rel_closed] Prove that M is closed under foo_rel
+5. [foo_rel_iff] Prove that the element defined by foo_rel satisfies is_foo.
+
+
+TODO:
+- Characterization of foo_rel (as in def_Pow_rel and Pow_rel_char)
+- Benefits of using this approach
+- Relativized concept according to the discipline coincides with the
+  absolut one if one instantiate M to the whole universe (M \<equiv> \<lambda>_ . True)
