@@ -65,11 +65,7 @@ lemmas bad_M_basic_rules[simp del, rule del] =
   cartprod_closed finite_funspace_closed converse_closed 
   list_case'_closed pred_closed
 
-interpretation M_cardinals "\<lambda>_. True"
-  by unfold_locales 
-    (auto intro:separation_absolute replacement_absolute)
-
-interpretation M_Perm "\<lambda>_. True"
+interpretation M_cardinal_arith "\<lambda>_. True"
   by unfold_locales 
     (auto intro:separation_absolute replacement_absolute)
 

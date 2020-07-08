@@ -1214,9 +1214,9 @@ qed
 (*
 \<comment> \<open>From the next result, the relative versions of
 @{thm Finite_Fin_lemma} and @{thm Fin_lemma} should follow\<close>
-lemma nat_eqpoll_rel_imp_eqpoll:
-  assumes "n \<in> nat" "A \<approx>r n" and types:"M(n)" "M(A)"
-  shows "A \<approx> n"
+lemma nat_eqpoll_imp_eqpoll_rel:
+  assumes "n \<in> nat" "A \<approx> n" and types:"M(n)" "M(A)"
+  shows "A \<approx>r n"
 *)
 
 lemma lepoll_rel_nat_imp_Finite_rel:

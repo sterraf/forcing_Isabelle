@@ -499,9 +499,9 @@ begin
 
 lemma Pi_rel_type:
   assumes "f \<in> Pi_rel(A,C)" "\<And>x. x \<in> A \<Longrightarrow> f`x \<in> B(x)"
-    and types: "M(f)" "M(A)"
+    and types: "M(f)"
   shows "f \<in> Pi_rel(A,B)"
-  using assms
+  using assms Pi_assumptions
   by (simp only: Pi_rel_iff' PiC.Pi_rel_iff')
     (blast dest: function_apply_equality)
 
