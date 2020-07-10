@@ -29,9 +29,8 @@ the discipline to every other concept on which "foo" depends.
 5. [foo_rel_iff] Prove that the element defined by foo_rel satisfies is_foo.
 6. [def_foo_rel] Prove a lemma characterising "foo_rel" in terms of the other
   _rel terms. This is fundamental to port seamlessly the original proofs.
-7. [foo_rel_char] Prove that the concept is the restriction of the original
-  absolute concept but relativized; this is particular suitable for concepts
-  defined by comprehension; for instance:
+7. [foo_rel_char] (when it applies) State and prove the relationship
+   between the relative concept and the original absolute one; for instance:
     lemma inj_rel_char:
       assumes "M(A)" "M(B)"
       shows "inj_rel(A,B) = {f \<in> inj(A,B). M(f)}"
