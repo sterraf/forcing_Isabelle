@@ -27,15 +27,32 @@ the discipline to every other concept on which "foo" depends.
 4. [foo_rel_closed] Prove that M is closed under foo_rel; add this to
    the simpset and as an intro rule.
 5. [foo_rel_iff] Prove that the element defined by foo_rel satisfies is_foo.
+6. [def_foo_rel] Prove a lemma characterising "foo_rel" in terms of the other
+  _rel terms. This is fundamental to port seamlessly the original proofs.
+7. [foo_rel_char] Prove that the concept is the restriction of the original
+  absolute concept but relativized; this is particular suitable for concepts
+  defined by comprehension; for instance:
+    lemma inj_rel_char:
+      assumes "M(A)" "M(B)"
+      shows "inj_rel(A,B) = {f \<in> inj(A,B). M(f)}"
+
 
 Notice that for absolute concepts, the absoluteness theorem "foo_abs"
-corresponds to the "foo_rel_iff" theorem.
+corresponds to the "foo_rel_iff" theorem. This observation enables us
+to understand the benefit of pursuing the discipline: if the concept isn't 
+absolute then one ends up with relativized concepts described by formulas,
+the composition of such concepts is more and more unwieldly. In contrast
+with the discipline one has a concept as in every day mathematics that
+permits to define new relativized concepts by composing other relativized
+concepts. Moreover the proofs for the unrestricted concept can be easily
+adapted to its relativized counterpart.
+
+
 
 TODO:
 - Description for the case of predicates foo :: "... => o", where "foo_rel"
   is defined fully relationally (as if it were "is_foo"), and then then next
   theorem to prove is "def_foo_rel" (and  "foo_rel_char", if applies).
-- Characterization of foo_rel (as in def_Pow_rel and Pow_rel_char)
-- Benefits of using this approach
 - Relativized concept according to the discipline coincides with the
   absolute one if one instantiate M to the whole universe (M \<equiv> \<lambda>_ . True)
+- Identify from the above description the possibilities to automate things.
