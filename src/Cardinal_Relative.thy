@@ -33,6 +33,9 @@ locale M_cardinals = M_ordertype + M_trancl + M_Perm +
          (\<exists>x' x. z = \<langle>Inl(x'), Inl(x)\<rangle> \<and> \<langle>x', x\<rangle> \<in> R) \<or>
          (\<exists>y' y. z = \<langle>Inr(y'), Inr(y)\<rangle> \<and> \<langle>y', y\<rangle> \<in> S))"
   and
+  rmult_separation: "M(b) \<Longrightarrow> M(d) \<Longrightarrow> separation(M,
+    \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> b \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> d))"
+  and
   if_then_replacement: "M(f) \<Longrightarrow> M(g) \<Longrightarrow>
      strong_replacement(M, \<lambda>x y. y = <x,if x \<in> A then f`x else g`x>)"
   and
@@ -58,6 +61,13 @@ locale M_cardinals = M_ordertype + M_trancl + M_Perm +
      strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>f ` x, g ` y\<rangle>)(x)\<rangle>)"
 
 begin
+
+lemma radd_closed[intro,simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> M(c) \<Longrightarrow> M(d) \<Longrightarrow> M(radd(a,b,c,d))"
+  using radd_separation by (auto simp add: radd_def)
+
+lemma rmult_closed[intro,simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> M(c) \<Longrightarrow> M(d) \<Longrightarrow> M(rmult(a,b,c,d))"
+  using rmult_separation by (auto simp add: rmult_def)
+
 
 (************* Discipline for cardinal ****************)
 \<comment> \<open>Note addition to the Simpset and Claset below\<close>
@@ -580,7 +590,7 @@ lemma Card_rel_is_Ord: "Card_rel(i) ==> M(i) \<Longrightarrow> Ord(i)"
   apply (rule Ord_Least)
   done
 
-lemma Card_rel_cardinal_le: "Card_rel(K) ==> M(K) \<Longrightarrow> K \<le> |K|r"
+lemma Card_rel_cardinal_rel_le: "Card_rel(K) ==> M(K) \<Longrightarrow> K \<le> |K|r"
   apply (simp (no_asm_simp) add: Card_rel_is_Ord Card_rel_cardinal_rel_eq)
   done
 
@@ -1154,7 +1164,7 @@ lemma well_ord_Un_M:
   shows "\<exists>T[M]. well_ord(X \<union> Y, T)"
   using assms
   by (erule_tac well_ord_radd [THEN [3] Un_lepoll_rel_sum [THEN lepoll_rel_well_ord]])
-    (auto simp add: types radd_def radd_separation)
+    (auto simp add: types)
 
 lemma disj_Un_eqpoll_rel_sum: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> A \<inter> B = 0 \<Longrightarrow> A \<union> B \<approx>r A + B"
   apply (simp add: def_eqpoll_rel)
