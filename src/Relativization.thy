@@ -20,14 +20,14 @@ structure Absoluteness = Named_Thms
 setup\<open>Absoluteness.setup\<close>
 lemmas relative_abs =
   M_trans.empty_abs
-  M_trans.upair_abs
   M_trans.pair_abs
   M_trivial.cartprod_abs
   M_trans.union_abs
   M_trans.inter_abs
   M_trans.setdiff_abs
   M_trans.Union_abs
-  (*M_trivial.cons_abs*)
+  M_trivial.cons_abs
+  (*M_trans.upair_abs*)
   (*M_trivial.successor_abs*)
   M_trans.Collect_abs
   M_trans.Replace_abs
@@ -76,17 +76,12 @@ lemmas relative_abs =
   M_trivial.hd_abs
   M_trivial.tl_abs
 
-lemmas datatype_abs = M_basic.iterates_MH_abs
-  M_basic.list_functor_abs
-  M_trancl.formula_functor_abs
+lemmas datatype_abs = 
   M_datatypes.list_N_abs
-  M_datatypes.mem_list_abs
   M_datatypes.list_abs
   M_datatypes.formula_N_abs
-  M_datatypes.mem_formula_abs
   M_datatypes.formula_abs
   M_eclose.is_eclose_n_abs
-  M_eclose.mem_eclose_abs
   M_eclose.eclose_abs
   M_datatypes.length_abs
   M_datatypes.nth_abs
@@ -138,6 +133,7 @@ type relset = { db_rels: (term * term) list};   (*  *)
            , (@{const IFOL.eq(i)}, @{const IFOL.eq(i)})
            , (@{const Subset}, @{const Relative.subset})
            , (@{const quasinat}, @{const Relative.is_quasinat})
+           , (@{const apply}, @{const Relative.fun_apply})
            , (@{const Upair}, @{const Relative.upair})
            ]
 
@@ -169,8 +165,8 @@ fun get_db thy = let val db = Data.get (Context.Proof thy)
                  in #db_rels db
                  end
 
-
-fun read_new_const cname ctxt' = Proof_Context.read_term_pattern ctxt' cname
+fun read_const cname ctxt' = Proof_Context.read_const {proper = true, strict = true} ctxt' cname
+fun read_new_const cname ctxt' =  Proof_Context.read_term_pattern ctxt' cname
 
 fun add_rel_const thm_name c t ctxt (rs as {db_rels = db}) =
   case lookup_rel db c of
@@ -351,7 +347,6 @@ fun relativ_fm pred rel_db (rs,ctxt) fm =
   end
 
 fun lname ctxt = Local_Theory.full_name ctxt o Binding.name
-fun read_const cname ctxt' = Proof_Context.read_const {proper = true, strict = true} ctxt' cname
 
 fun relativize_def def_name thm_ref pos lthy =
   let
@@ -383,9 +378,9 @@ fun relativize_tm def_name term pos lthy =
     val tm = Syntax.read_term ctxt1 term
     val ({db_rels = db'}) = Data.get (Context.Proof lthy)
     val (v,t) = relativ_tm_frm' cls_pred db' ctxt1 tm
-    val vs' = Term.add_frees t []
+    val vs' = Variable.add_frees ctxt1 t []
     val vs = cls_pred :: map Free vs'
-    val at = List.foldr (uncurry lambda) t (vs @ [v])
+    val at = List.foldr (uncurry lambda) t (vs)
 in
    lthy |>
     Local_Theory.define ((Binding.name def_name, NoSyn),
@@ -428,5 +423,5 @@ setup\<open>Relativization.init_db Relativization.db \<close>
 
 declare relative_abs[Rel]
 (*todo: check all the duplicate cases here.*)
-(*declare datatype_abs[Rel]*)
+declare datatype_abs[Rel]
 end
