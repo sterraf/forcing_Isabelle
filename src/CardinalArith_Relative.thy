@@ -263,45 +263,58 @@ locale M_cardinal_arith = M_cardinals +
       \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>w,y\<rangle>. \<langle>f ` w, g ` y\<rangle>)(x)\<rangle>)"
 begin
 
-(*
 lemma Card_Union [simp,intro,TC]:
-  assumes A: "\<And>x. x\<in>A \<Longrightarrow> Card(x)" shows "Card(\<Union>(A))"
-proof (rule CardI)
+  assumes A: "\<And>x. x\<in>A \<Longrightarrow> Card_rel(x)" and
+    types:"M(A)"
+  shows "Card_rel(\<Union>(A))"
+proof (rule Card_relI)
   show "Ord(\<Union>A)" using A
-    by (simp add: Card_is_Ord)
+    by (simp add: Card_rel_is_Ord types transM)
 next
   fix j
   assume j: "j < \<Union>A"
-  hence "\<exists>c\<in>A. j < c & Card(c)" using A
-    by (auto simp add: lt_def intro: Card_is_Ord)
-  then obtain c where c: "c\<in>A" "j < c" "Card(c)"
-    by blast
-  hence jls: "j \<prec> c"
-    by (simp add: lt_Card_imp_lesspoll)
+  moreover from this
+  have "M(j)" unfolding lt_def by (auto simp add:types dest:transM)
+  from j
+  have "\<exists>c\<in>A. j \<in> c \<and> Card_rel(c)" using A types
+    unfolding lt_def
+    by (simp)
+  then
+  obtain c where c: "c\<in>A" "j < c" "Card_rel(c)" "M(c)"
+    using Card_rel_is_Ord types unfolding lt_def
+    by (auto dest:transM)
+  with \<open>M(j)\<close>
+  have jls: "j \<prec>r c"
+    by (simp add: lt_Card_rel_imp_lesspoll_rel types)
   { assume eqp: "j \<approx>r \<Union>A"
     have  "c \<lesssim>r \<Union>A" using c
-      by (blast intro: subset_imp_lepoll)
-    also have "... \<approx>r j"  by (rule eqpoll_sym [OF eqp])
-    also have "... \<prec> c"  by (rule jls)
-    finally have "c \<prec> c" .
-    hence False
+      by (blast intro: subset_imp_lepoll_rel types)
+    also from types \<open>M(j)\<close>
+    have "... \<approx>r j"  by (rule_tac eqpoll_rel_sym [OF eqp]) (simp_all add:types)
+    also have "... \<prec>r c"  by (rule jls)
+    finally have "c \<prec>r c" by (simp_all add:\<open>M(c)\<close> \<open>M(j)\<close> types)
+    with \<open>M(c)\<close>
+    have False
       by auto
   } thus "\<not> j \<approx>r \<Union>A" by blast
-qed
+qed (simp_all add:types)
 
+(*
 lemma Card_UN: "(!!x. x \<in> A ==> Card(K(x))) ==> Card(\<Union>x\<in>A. K(x))"
   by blast
+
 
 lemma Card_OUN [simp,intro,TC]:
      "(!!x. x \<in> A ==> Card(K(x))) ==> Card(\<Union>x<A. K(x))"
   by (auto simp add: OUnion_def Card_0)
-
-lemma in_Card_imp_lesspoll: "[| Card(K); b \<in> K |] ==> b \<prec> K"
-apply (unfold lesspoll_def)
-apply (simp add: Card_iff_initial)
-apply (fast intro!: le_imp_lepoll ltI leI)
-done
 *)
+
+lemma in_Card_imp_lesspoll: "[| Card_rel(K); b \<in> K; M(K); M(b) |] ==> b \<prec>r K"
+apply (unfold def_lesspoll_rel)
+apply (simp add: Card_rel_iff_initial)
+apply (fast intro!: le_imp_lepoll_rel ltI leI)
+done
+
 
 subsection\<open>Cardinal addition\<close>
 
@@ -1206,36 +1219,22 @@ next
   thus ?case using cons
     by (auto simp add: card_Un_disjoint)
 qed
-
+*)
 
 subsubsection\<open>Theorems by Krzysztof Grabczewski, proofs by lcp\<close>
 
-lemmas nat_implies_well_ord = nat_into_Ord [THEN well_ord_Memrel]
-
-lemma nat_sum_eqpoll_sum:
+lemma nat_sum_eqpoll_rel_sum:
   assumes m: "m \<in> nat" and n: "n \<in> nat" shows "m + n \<approx>r m #+ n"
 proof -
-  have "m + n \<approx>r |m+n|" using m n
-    by (blast intro: nat_implies_well_ord well_ord_radd well_ord_cardinal_eqpoll eqpoll_sym)
+  have "m + n \<approx>r |m+n|r" using m n
+    by (blast intro: nat_implies_well_ord well_ord_radd well_ord_cardinal_rel_eqpoll_rel eqpoll_rel_sym)
   also have "... = m #+ n" using m n
-    by (simp add: nat_cadd_eq_add [symmetric] cadd_def)
+    by (simp add: nat_cadd_rel_eq_add [symmetric] def_cadd_rel transM[OF _ M_nat])
   finally show ?thesis .
 qed
 
-lemma Ord_subset_natD [rule_format]: "Ord(i) ==> i \<subseteq> nat \<Longrightarrow> i \<in> nat | i=nat"
-proof (induct i rule: trans_induct3)
-  case 0 thus ?case by auto
-next
-  case (succ i) thus ?case by auto
-next
-  case (limit l) thus ?case
-    by (blast dest: nat_le_Limit le_imp_subset)
-qed
-
-lemma Ord_nat_subset_into_Card: "[| Ord(i); i \<subseteq> nat |] ==> Card(i)"
-by (blast dest: Ord_subset_natD intro: Card_nat nat_into_Card)
-
-*)
+lemma Ord_nat_subset_into_Card_rel: "[| Ord(i); i \<subseteq> nat |] ==> Card_rel(i)"
+by (blast dest: Ord_subset_natD intro: Card_rel_nat nat_into_Card_rel)
 
 end (* M_cardinal_arith *)
 end
