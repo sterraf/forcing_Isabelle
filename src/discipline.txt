@@ -55,3 +55,10 @@ TODO:
 - Relativized concept according to the discipline coincides with the
   absolute one if one instantiate M to the whole universe (M \<equiv> \<lambda>_ . True)
 - Identify from the above description the possibilities to automate things.
+- Add to the Discipline the proof of implications/inequalities between relative
+  Pi_1 and Sigma_1 concepts and absolute versions:
+
+  eqpoll ==> eqpoll_rel
+  |_|r ≤ |_|
+
+  
