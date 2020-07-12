@@ -9,7 +9,7 @@ theory Relativization
     "relativize_tm" :: thy_decl % "ML"
     and
     "reldb_add" :: thy_decl % "ML"
-  
+
 begin
 ML_file\<open>Utils.ml\<close>
 ML\<open>
@@ -76,7 +76,7 @@ lemmas relative_abs =
   M_trivial.hd_abs
   M_trivial.tl_abs
 
-lemmas datatype_abs = 
+lemmas datatype_abs =
   M_datatypes.list_N_abs
   M_datatypes.list_abs
   M_datatypes.formula_N_abs
@@ -106,23 +106,16 @@ signature Relativization =
     val db: (term * term) list
     val init_db : (term * term) list -> theory -> theory
     val get_db : Proof.context -> (term * term) list
-    val relativ_fm: term -> (term * term) list -> (term * (term * term)) list * Proof.context -> term -> term
-    val relativ_tm:
-       term ->
-         (term * term) list ->
-           (term * (term * term)) list * Proof.context -> term ->
-       term * (term * (term * term)) list * Proof.context
-    (*val relativ_tm_frm: term -> (term * term) list -> Proof.context -> term -> term*)
-    val read_new_const : string -> Proof.context -> term
-    val relativ_tm_frm': term -> (term * term) list -> Proof.context -> term -> term * term
+    val relativ_fm: term -> (term * term) list ->  (term * (term * term)) list * Proof.context -> term -> term
+    val relativ_tm: term -> (term * term) list ->  (term * (term * term)) list * Proof.context -> term -> term * (term * (term * term)) list * Proof.context
+    val read_new_const : Proof.context -> string -> term
+    val relativ_tm_frm': term -> (term * term) list -> Proof.context -> term -> term option * term
     val relativize_def: bstring -> string -> Position.T -> Proof.context -> Proof.context
     val relativize_tm: bstring -> string -> Position.T -> Proof.context -> Proof.context
   end
 
 structure Relativization : Relativization = struct
-type relset = { db_rels: (term * term) list};   (*  *)
-
-  (* relativization db of term constructors *)
+type relset = { db_rels: (term * term) list};
 
   (* relativization db of relation constructors *)
   val db =
@@ -165,8 +158,8 @@ fun get_db thy = let val db = Data.get (Context.Proof thy)
                  in #db_rels db
                  end
 
-fun read_const cname ctxt' = Proof_Context.read_const {proper = true, strict = true} ctxt' cname
-fun read_new_const cname ctxt' =  Proof_Context.read_term_pattern ctxt' cname
+val read_const = Proof_Context.read_const {proper = true, strict = true}
+val read_new_const = Proof_Context.read_term_pattern
 
 fun add_rel_const thm_name c t ctxt (rs as {db_rels = db}) =
   case lookup_rel db c of
@@ -177,7 +170,8 @@ fun add_rel_const thm_name c t ctxt (rs as {db_rels = db}) =
   | NONE => {db_rels = (c, t) :: db};
 
 fun get_consts thm =
-  let val (c_rel, rhs) = Thm.concl_of thm |> Utils.dest_trueprop |> Utils.dest_iff_tms |>> head_of
+  let val (c_rel, rhs) = Thm.concl_of thm |> Utils.dest_trueprop |>
+                          Utils.dest_iff_tms |>> head_of
   in case try Utils.dest_eq_tms rhs of
        SOME tm => (c_rel, tm |> #2 |> head_of)
      | NONE => (c_rel, rhs |> Utils.dest_mem_tms |> #2 |> head_of)
@@ -191,9 +185,9 @@ end
 
 
 fun add_constant rel abs thy =
-  let val c_abs = read_new_const abs thy
-      val c_rel = read_new_const rel thy
-  in Local_Theory.target (Context.proof_map 
+  let val c_abs = read_new_const thy abs
+      val c_rel = read_new_const thy rel
+  in Local_Theory.target (Context.proof_map
     (Data.map (fn db => {db_rels = (c_rel,c_abs) :: #db_rels db}))) thy
  end
 
@@ -220,7 +214,8 @@ val Rel_del =
 
 (* Conjunction of a list of terms; avoids a superflous conjunction
 with True if the last argument is SOME *)
-fun conjs [] _ = @{term IFOL.True}
+fun conjs [] NONE = @{term IFOL.True}
+  | conjs [] (SOME f) = f
   | conjs (f :: []) NONE = f
   | conjs (f :: []) (SOME f') = conj_ f f'
   | conjs (f :: fs) f' = conj_ f (conjs fs f')
@@ -301,10 +296,6 @@ and
          | SOME (w, _) => (w, rs, ctxt)
       end
 
-fun relativ_tm_frm' cls_pred db ctxt tm =
-      let val (w, rs, _) = relativ_tm cls_pred db ([],ctxt) tm
-      in (w, close_rel_tm cls_pred NONE (SOME w) rs)
-      end
 
 fun relativ_fm pred rel_db (rs,ctxt) fm =
   let
@@ -346,6 +337,18 @@ fun relativ_fm pred rel_db (rs,ctxt) fm =
   in go fm
   end
 
+
+fun relativ_tm_frm' cls_pred db ctxt tm =
+  let val ty = fastype_of tm
+  in case ty of
+        @{typ i} =>
+          let val (w, rs, _) =  relativ_tm cls_pred db ([],ctxt) tm
+          in (SOME w, close_rel_tm cls_pred NONE (SOME w) rs)
+          end
+      | @{typ o} => (NONE, relativ_fm cls_pred db ([],ctxt) tm)
+      | ty' => raise TYPE ("We can relativize only terms of types i and o",[ty'],[tm])
+  end
+
 fun lname ctxt = Local_Theory.full_name ctxt o Binding.name
 
 fun relativize_def def_name thm_ref pos lthy =
@@ -359,8 +362,9 @@ fun relativize_def def_name thm_ref pos lthy =
     val t_vars = Term.add_free_names t []
     val vs' = List.filter (#1 #> #1 #> #1 #> Utils.inList t_vars) vars
     val vs = cls_pred :: map (Thm.term_of o #2) vs'
-    val at = List.foldr (uncurry lambda) t (vs @ [v])
-    val abs_const = read_const (lname lthy thm_ref) lthy
+    val v' = case v of SOME u => [u] | NONE => []
+    val at = List.foldr (uncurry lambda) t (vs @ v')
+    val abs_const = read_const lthy (lname lthy thm_ref)
 in
    lthy |>
    Local_Theory.define ((Binding.name def_name, NoSyn),
@@ -368,7 +372,7 @@ in
    (#2 #> (fn (s,t) => (s,[t]))) |> Utils.display "theorem" pos |>
    Local_Theory.target (
        fn ctxt' => Context.proof_map
-        (Data.map (add_rel_const "" abs_const (read_new_const def_name ctxt') ctxt')) ctxt')
+        (Data.map (add_rel_const "" abs_const (read_new_const ctxt' def_name) ctxt')) ctxt')
   end
 
 fun relativize_tm def_name term pos lthy =
@@ -415,7 +419,7 @@ local
 val _ =
   Theory.setup
    (Attrib.setup \<^binding>\<open>Rel\<close> (Attrib.add_del Relativization.Rel_add Relativization.Rel_del)
-      "declaration of type-checking rule") ;
+      "declaration of relativization rule") ;
 in
 end
 \<close>
@@ -424,4 +428,5 @@ setup\<open>Relativization.init_db Relativization.db \<close>
 declare relative_abs[Rel]
 (*todo: check all the duplicate cases here.*)
 declare datatype_abs[Rel]
+
 end
