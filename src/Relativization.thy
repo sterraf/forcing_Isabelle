@@ -214,8 +214,7 @@ val Rel_del =
 
 (* Conjunction of a list of terms; avoids a superflous conjunction
 with True if the last argument is SOME *)
-fun conjs [] NONE = @{term IFOL.True}
-  | conjs [] (SOME f) = f
+fun conjs [] tm = the_default @{term IFOL.True} tm
   | conjs (f :: []) NONE = f
   | conjs (f :: []) (SOME f') = conj_ f f'
   | conjs (f :: fs) f' = conj_ f (conjs fs f')

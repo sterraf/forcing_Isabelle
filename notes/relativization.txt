@@ -13,7 +13,7 @@ which relativized term corresponds to a given absolute term.
 
 The following commands are defined:
 - relativize name new_name: introduces a new definition "new_name_def" whose
-    definiens is the relativization of the term named "name" and adds the entry 
+    definiens is the relativization of the term named "name" and adds the entry
     ("name","new_name") to the database.
 - relativize_tm term name: introduces a new definition "name_def" whose 
     definiens is the relativization of "term".
@@ -28,11 +28,11 @@ There are two attributes defined:
     In that case it adds the entry (term,is_term) to the database.
 
 ToDo (in no particular order):
-0. Handling of formulas in commands: at this point the commands relativize* can
-  only deal with terms of type "i".
 1. Fix the broken attribute (issue 0).
 2. Fix the relativization in contexts (issue 1).
 3. Consider the cases described in (issue 2).
+4. The relativization of terms with the command relativize does not add 
+  the pair (abs,rel) to the database.
 
 Issues
 ------
