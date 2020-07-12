@@ -465,6 +465,21 @@ lemma Pi_rel_char:
 
 end (* M_Pi_assumptions *)
 
+text\<open>The next locale (and similar ones below) are used to
+show the relationship between versions of simple (i.e. 
+$\Sigma_1^{\mathit{ZF}}$, $\Pi_1^{\mathit{ZF}}$) concepts in two
+different transitive models.\<close>
+locale M_N_Pi_assumptions = M:M_Pi_assumptions + N:M_Pi_assumptions N for N +
+  assumes
+    M_imp_N:"M(x) \<Longrightarrow> N(x)"
+begin
+
+lemma Pi_rel_transfer: "M.Pi_rel(A,B) \<subseteq> N.Pi_rel(A,B)"
+  using M.Pi_rel_char N.Pi_rel_char M_imp_N by auto
+
+end (* M_N_Pi_assumptions *)
+
+
 (******************  end Discipline  **********************)
 context M_Pi_assumptions
 begin
@@ -612,6 +627,19 @@ qed
 
 end (* M_Pi *)
 
+locale M_N_Pi = M:M_Pi + N:M_Pi N for N +
+  assumes
+    M_imp_N:"M(x) \<Longrightarrow> N(x)"
+begin
+notation M.function_space_rel (infix \<open>\<rightarrow>\<^sup>M\<close> 60)
+notation N.function_space_rel (infix \<open>\<rightarrow>\<^sup>N\<close> 60)
+
+lemma function_space_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> A \<rightarrow>\<^sup>M B \<subseteq> A\<rightarrow>\<^sup>N B"
+  using M.function_space_rel_char N.function_space_rel_char 
+  by (auto dest!:M_imp_N)
+
+end (* M_N_Pi *)
+
 (*****************  end Discipline  ***********************)
 
 abbreviation
@@ -755,6 +783,20 @@ qed
 
 end (* M_inj *)
 
+locale M_N_inj = M:M_inj + N:M_inj N for N +
+  assumes
+    M_imp_N:"M(x) \<Longrightarrow> N(x)"
+begin
+notation M.inj_rel (\<open>inj\<^sup>M\<close>)
+notation N.inj_rel (\<open>inj\<^sup>N\<close>)
+
+lemma inj_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> inj\<^sup>M(A,B) \<subseteq> inj\<^sup>N(A,B)"
+  using M.inj_rel_char N.inj_rel_char 
+  by (auto dest!:M_imp_N)
+
+end (* M_N_inj *)
+
+
 (***************  end Discipline  *********************)
 
 (*************** Discipline for surjP ******************)
@@ -881,6 +923,19 @@ qed
 
 end (* M_surj *)
 
+locale M_N_surj = M:M_surj + N:M_surj N for N +
+  assumes
+    M_imp_N:"M(x) \<Longrightarrow> N(x)"
+begin
+notation M.surj_rel (\<open>surj\<^sup>M\<close>)
+notation N.surj_rel (\<open>surj\<^sup>N\<close>)
+
+lemma surj_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> surj\<^sup>M(A,B) \<subseteq> surj\<^sup>N(A,B)"
+  using M.surj_rel_char N.surj_rel_char 
+  by (auto dest!:M_imp_N)
+
+end (* M_N_surj *)
+
 (***************  end Discipline  *********************)
 
 definition
@@ -906,7 +961,7 @@ lemma is_Int_uniqueness:
     "d=d'"
   using assms is_Int_abs by simp
 
-text\<open>Note: @{thm Int_closed} already in Relative.\<close>
+text\<open>Note: @{thm Int_closed} already in \<^theory>\<open>ZF-Constructible.Relative\<close>.\<close>
 
 end (* M_trivial *)
 
@@ -991,6 +1046,18 @@ lemma bij_rel_char:
 
 end (* M_Perm *)
 
+locale M_N_Perm = M_N_Pi + M_N_inj + M_N_surj + M:M_Perm + N:M_Perm N
+
+begin
+notation M.bij_rel (\<open>bij\<^sup>M\<close>)
+notation N.bij_rel (\<open>bij\<^sup>N\<close>)
+
+lemma bij_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> bij\<^sup>M(A,B) \<subseteq> bij\<^sup>N(A,B)"
+  using M.bij_rel_char N.bij_rel_char 
+  by (auto dest!:M_imp_N)
+
+end (* M_N_Perm *)
+
 (***************  end Discipline  *********************)
 
 (******************************************************)
@@ -1016,6 +1083,29 @@ lemma def_eqpoll_rel:
   unfolding eqpoll_rel_def by simp
 
 end (* M_Perm *)
+
+context M_N_Perm
+begin
+
+notation M.Eqpoll_rel (infixl \<open>\<approx>\<^sup>M\<close> 50)
+notation N.Eqpoll_rel (infixl \<open>\<approx>\<^sup>N\<close> 50)
+
+lemma eqpoll_rel_transfer: assumes "A \<approx>\<^sup>M B" "M(A)" "M(B)" 
+  shows "A \<approx>\<^sup>N B"
+proof -
+  note assms
+  moreover from this
+  obtain f where "f \<in> bij\<^sup>M(A,B)" "N(f)"
+    using M.def_eqpoll_rel by (auto dest!:M_imp_N)
+  moreover from calculation
+  have "f \<in> bij\<^sup>N(A,B)"
+    using bij_rel_transfer by (auto)
+  ultimately
+  show ?thesis
+    using N.def_eqpoll_rel by (blast dest!:M_imp_N)
+qed
+
+end (* M_N_Perm *)
 
 (******************  end Discipline  ******************)
 
@@ -1043,6 +1133,29 @@ lemma def_lepoll_rel:
 
 end (* M_Perm *)
 
+context M_N_Perm
+begin
+
+notation M.Lepoll_rel (infixl \<open>\<lesssim>\<^sup>M\<close> 50)
+notation N.Lepoll_rel (infixl \<open>\<lesssim>\<^sup>N\<close> 50)
+
+lemma lepoll_rel_transfer: assumes "A \<lesssim>\<^sup>M B" "M(A)" "M(B)" 
+  shows "A \<lesssim>\<^sup>N B"
+proof -
+  note assms
+  moreover from this
+  obtain f where "f \<in> inj\<^sup>M(A,B)" "N(f)"
+    using M.def_lepoll_rel by (auto dest!:M_imp_N)
+  moreover from calculation
+  have "f \<in> inj\<^sup>N(A,B)"
+    using inj_rel_transfer by (auto)
+  ultimately
+  show ?thesis
+    using N.def_lepoll_rel by (blast dest!:M_imp_N)
+qed
+
+end (* M_N_Perm *)
+
 (******************  end Discipline  ******************)
 
 (******************************************************)
@@ -1065,6 +1178,9 @@ lemma def_lesspoll_rel:
   shows
     "A \<prec>r B \<longleftrightarrow> A \<lesssim>r B \<and> \<not>(A \<approx>r B)"
   using assms unfolding lesspoll_rel_def by simp
+
+text\<open>Note that \<^term>\<open>(\<lesssim>r)\<close> is neither $\Sigma_1^{\mathit{ZF}}$ nor
+ $\Pi_1^{\mathit{ZF}}$, so there is no “transfer” theorem for it.\<close>
 
 end (* M_Perm *)
 
