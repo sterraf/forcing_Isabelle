@@ -3,6 +3,7 @@ section\<open>Relative, Choice-less Cardinal Arithmetic\<close>
 theory CardinalArith_Relative 
   imports 
     Cardinal_Relative
+
 begin
 
 definition
@@ -197,14 +198,144 @@ notation cmult_rel (infixl \<open>\<otimes>r\<close> 70)
 end (* M_cardinals *)
 
 (***************  end Discipline  *********************)
-(*
-definition
-  csquare_rel   :: "i=>i"  where
-    "csquare_rel(K) ==
-          rvimage(K*K,
-                  lam <x,y>:K*K. <x \<union> y, x, y>,
-                  rmult(K,Memrel(K), K*K, rmult(K,Memrel(K), K,Memrel(K))))"
 
+(* FIXME: these definitions already appear in FrecR.thy ! *)
+definition
+  is_fst :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
+  "is_fst(M,x,t) \<equiv> (\<exists>z[M]. pair(M,t,z,x)) \<or>
+                       (\<not>(\<exists>z[M]. \<exists>w[M]. pair(M,w,z,x)) \<and> empty(M,t))"
+
+definition
+  is_snd :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
+  "is_snd(M,x,t) \<equiv> (\<exists>z[M]. pair(M,z,t,x)) \<or>
+                       (\<not>(\<exists>z[M]. \<exists>w[M]. pair(M,z,w,x)) \<and> empty(M,t))"
+
+context M_trans
+begin
+\<comment> \<open>Using attribute "absolut" instead of overpopulating the simpset\<close>
+lemma fst_abs[absolut]: "M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_fst(M,a,z) \<longleftrightarrow> z = fst(a)"
+  unfolding is_fst_def fst_def the_def
+  by (cases "\<exists>b c. a = \<langle>b, c\<rangle>"; auto)
+    (auto simp add: Pair_def dest:transM)
+
+lemma snd_abs[absolut]: "M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_snd(M,a,z) \<longleftrightarrow> z = snd(a)"
+  unfolding is_snd_def snd_def the_def
+  by (cases "\<exists>b c. a = \<langle>b, c\<rangle>"; auto)
+    (auto simp add: Pair_def dest:transM)
+end (* M_trans *)
+
+(* rvimage(?A, ?f, ?r) \<equiv> {z \<in> ?A \<times> ?A . \<exists>x y. z = \<langle>x, y\<rangle> \<and> \<langle>?f ` x, ?f ` y\<rangle> \<in> ?r} *)
+definition
+  rvimageP :: "[i,i,i] \<Rightarrow> o" where
+  "rvimageP(f,r,z) \<equiv> \<exists>x y. z = \<langle>x, y\<rangle> \<and> \<langle>f ` x, f ` y\<rangle> \<in> r"
+
+definition
+  is_rvimageP :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
+  "is_rvimageP(M,f,r,z) \<equiv> \<exists>x[M]. \<exists>y[M]. \<exists>fx[M]. \<exists>fy[M]. \<exists>fxfy[M].
+      pair(M,x,y,z) \<and> is_apply(M,f,x,fx) \<and> is_apply(M,f,y,fy) \<and>
+      pair(M,fx,fy,fxfy) \<and> fxfy \<in> r"
+
+definition
+  is_rvimage :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
+  "is_rvimage(M,A,f,r,rvi) \<equiv> \<exists>A2[M]. cartprod(M,A,A,A2) \<and>
+        is_Collect(M,A2,is_rvimageP(M,f,r),rvi)"
+
+definition
+  csquare_lam :: "i\<Rightarrow>i" where
+  "csquare_lam(K) \<equiv> \<lambda>\<langle>x,y\<rangle>\<in>K\<times>K. \<langle>x \<union> y, x, y\<rangle>"
+
+lemma (in M_basic) fst_closed[intro,simp]: "M(x) \<Longrightarrow> M(fst(x))" sorry
+
+lemma (in M_basic) snd_closed[intro,simp]: "M(x) \<Longrightarrow> M(snd(x))" sorry
+
+(* FIXME: Remove these after fixing relativize_tm *)
+lemma fst_abs[Rel]: "is_fst(M,a,z) \<longleftrightarrow> z = fst(a) \<Longrightarrow> is_fst(M,a,z) \<longleftrightarrow> z = fst(a)" .
+lemma snd_abs[Rel]: "is_snd(M,a,z) \<longleftrightarrow> z = snd(a) \<Longrightarrow> is_snd(M,a,z) \<longleftrightarrow> z = snd(a)" .
+
+relativize_tm "<fst(x) \<union> snd(x), fst(x), snd(x)>" "is_csquare_lam_body"
+
+definition
+  is_csquare_lam :: "[i\<Rightarrow>o,i,i]\<Rightarrow>o" where
+  "is_csquare_lam(M,K,l) \<equiv> \<exists>K2[M]. cartprod(M,K,K,K2) \<and>
+        is_lambda(M,K2,is_csquare_lam_body(M),l)"
+
+lemma (in M_cardinals) csquare_lam_closed[intro,simp]: "M(K) \<Longrightarrow> M(csquare_lam(K))" sorry
+
+relativize_tm "\<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> r \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> s)" 
+  "is_rmultP"
+
+definition
+  is_rmult:: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
+  "is_rmult(M,A,r,B,s,rm) \<equiv> \<exists>AB[M]. \<exists>AB2[M]. cartprod(M,A,B,AB) \<and>
+        cartprod(M,AB,AB,AB2) \<and> is_Collect(M,AB2,is_rmultP(M,s,r),rm)"
+
+context M_trivial
+begin
+
+lemma rmultP_abs [absolut]: "\<lbrakk> M(r); M(s); M(z) \<rbrakk> \<Longrightarrow> is_rmultP(M,s,r,z) \<longleftrightarrow>
+    (\<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> r \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> s))"
+  unfolding is_rmultP_def by (auto dest:transM)
+
+end (* M_trivial *)
+
+
+definition
+  is_csquare_rel :: "[i\<Rightarrow>o,i,i]\<Rightarrow>o"  where
+    "is_csquare_rel(M,K,cs) \<equiv> \<exists>K2[M]. \<exists>la[M]. \<exists>memK[M].
+      \<exists>rmKK[M]. \<exists>rmKK2[M].
+        cartprod(M,K,K,K2) \<and> is_csquare_lam(M,K,la) \<and>
+        membership(M,K,memK) \<and> is_rmult(M,K,memK,K,memK,rmKK) \<and>
+        is_rmult(M,K,memK,K2,rmKK,rmKK2) \<and> is_rvimage(M,K2,la,rmKK2,cs)"
+
+context M_basic
+begin
+
+lemma rvimage_abs[absolut]:
+  assumes "M(A)" "M(f)" "M(r)" "M(z)"
+  shows "is_rvimage(M,A,f,r,z) \<longleftrightarrow> z = rvimage(A,f,r)"
+  using assms transM[OF _ \<open>M(A)\<close>]
+  unfolding is_rvimage_def rvimage_def is_rvimageP_def
+  by auto
+
+lemma rmult_abs [absolut]: "\<lbrakk> M(A); M(r); M(B); M(s); M(z) \<rbrakk> \<Longrightarrow>
+    is_rmult(M,A,r,B,s,z) \<longleftrightarrow> z=rmult(A,r,B,s)"
+  unfolding is_rmult_def rmult_def using transM[of _ "(A \<times> B) \<times> A \<times> B"] 
+  by (auto simp add:absolut del: iffI)
+
+lemma csquare_lam_body_abs[absolut]: "M(x) \<Longrightarrow> M(z) \<Longrightarrow> 
+  is_csquare_lam_body(M,x,z) \<longleftrightarrow> z = <fst(x) \<union> snd(x), fst(x), snd(x)>"
+  unfolding is_csquare_lam_body_def by (simp add:absolut)
+
+lemma csquare_lam_abs[absolut]: "M(K) \<Longrightarrow> M(l) \<Longrightarrow>
+  is_csquare_lam(M,K,l) \<longleftrightarrow> l = (\<lambda>x\<in>K\<times>K. \<langle>fst(x) \<union> snd(x), fst(x), snd(x)\<rangle>)"
+  unfolding is_csquare_lam_def 
+  using lambda_abs2[of "K\<times>K" "is_csquare_lam_body(M)"
+      "\<lambda>x. \<langle>fst(x) \<union> snd(x), fst(x), snd(x)\<rangle>"] 
+  unfolding Relation1_def by (simp add:absolut)
+
+lemma csquare_lam_eq_lam:"csquare_lam(K) = (\<lambda>z\<in>K\<times>K. <fst(z) \<union> snd(z), fst(z), snd(z)>)"
+proof -
+  have "(\<lambda>\<langle>x,y\<rangle>\<in>K \<times> K. \<langle>x \<union> y, x, y\<rangle>)`z =
+      (\<lambda>z\<in>K\<times>K. <fst(z) \<union> snd(z), fst(z), snd(z)>)`z" if "z\<in>K\<times>K" for z
+    using that by auto
+  then
+  show ?thesis
+    unfolding csquare_lam_def
+    by simp
+qed
+
+end (* M_basic *)
+
+lemma (in M_cardinals) csquare_rel_closed[intro,simp]: "M(K) \<Longrightarrow> M(csquare_rel(K))" sorry
+
+(* Ugly proof ahead, please enhance *)
+lemma (in M_cardinals) csquare_rel_abs[absolut]: "\<lbrakk> M(K); M(cs)\<rbrakk> \<Longrightarrow>
+     is_csquare_rel(M,K,cs) \<longleftrightarrow> cs = csquare_rel(K)"
+  unfolding is_csquare_rel_def csquare_rel_def
+  using csquare_lam_closed[unfolded csquare_lam_eq_lam] 
+  by (simp add:absolut csquare_lam_eq_lam[unfolded csquare_lam_def])
+
+(*
 definition
   jump_cardinal :: "i=>i"  where
     \<comment> \<open>This definition is more complex than Kunen's but it more easily proved to
@@ -240,14 +371,14 @@ locale M_cardinal_arith = M_cardinals +
     Inl_replacement2:"M(A) \<Longrightarrow> strong_replacement(M,
        \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. if x = A then Inl(y) else Inr(\<langle>x, y\<rangle>))(x)\<rangle>)"
     and
-    if_then_range_replacement:"M(f) \<Longrightarrow>
-      strong_replacement(M, \<lambda>z y. y = \<langle>z, if z = u then f ` 0
-                            else if z \<in> range(f) then f ` succ(converse(f) ` z) else z\<rangle>)"
+    if_then_range_replacement:"M(f) \<Longrightarrow> strong_replacement(M, 
+      \<lambda>z y. y = \<langle>z, if z = u then f ` 0 else 
+        if z \<in> range(f) then f ` succ(converse(f) ` z) else z\<rangle>)"
     and
     if_then_range_replacement2:"M(A) \<Longrightarrow> M(C)\<Longrightarrow> strong_replacement(M,
       \<lambda>x y. y = \<langle>x, if x = Inl(A) then C else x\<rangle>)"
     and
-  swap_replacement:"strong_replacement(M,
+    swap_replacement:"strong_replacement(M,
       \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>y, x\<rangle>)(x)\<rangle>)"
     and
     assoc_replacement:"strong_replacement(M,
