@@ -41,8 +41,8 @@ lemmas relative_abs =
   M_trivial.limit_ordinal_abs
   M_trivial.successor_ordinal_abs
   M_trivial.finite_ordinal_abs
-  M_trivial.omega_abs
-  M_trivial.number1_abs
+*)  M_trivial.omega_abs
+(*  M_trivial.number1_abs
   M_trivial.number2_abs
   M_trivial.number3_abs
 *)
@@ -285,6 +285,10 @@ and
       fun go (Var _) = raise TERM ("Var: Is this possible?",[])
         | go (@{const Collect} $ t $ pc) =
             relativ_app tm [pc] @{const Collect} [t]
+        | go (tm as @{const Sigma} $ t $ Abs (_,_,t')) = 
+            relativ_app tm [] @{const Sigma} [t, t']
+        | go (tm as @{const Pi} $ t $ Abs (_,_,t')) = 
+            relativ_app tm [] @{const Pi} [t, t']
         | go (tm as Const _) = relativ_app tm [] tm []
         | go (tm as _ $ _) = strip_comb tm |> uncurry (relativ_app tm [])
         | go tm = (tm, update_tm (tm,(tm,tm)) rs, ctxt)
@@ -358,11 +362,10 @@ fun relativize_def def_name thm_ref pos lthy =
     val tm = tm |> #2 o Utils.dest_eq_tms' o Utils.dest_trueprop
     val (cls_pred, ctxt1) = Variable.variant_fixes ["N"] ctxt1 |>> var_io o hd
     val (v,t) = relativ_tm_frm' cls_pred db' ctxt1 tm
-    val t_vars = Term.add_free_names t []
+    val t_vars = Term.add_free_names tm []
     val vs' = List.filter (#1 #> #1 #> #1 #> Utils.inList t_vars) vars
-    val vs = cls_pred :: map (Thm.term_of o #2) vs'
-    val v' = case v of SOME u => [u] | NONE => []
-    val at = List.foldr (uncurry lambda) t (vs @ v')
+    val vs = cls_pred :: map (Thm.term_of o #2) vs' @ the_list v
+    val at = List.foldr (uncurry lambda) t vs
     val abs_const = read_const lthy (lname lthy thm_ref)
 in
    lthy |>
@@ -381,9 +384,9 @@ fun relativize_tm def_name term pos lthy =
     val tm = Syntax.read_term ctxt1 term
     val ({db_rels = db'}) = Data.get (Context.Proof lthy)
     val (v,t) = relativ_tm_frm' cls_pred db' ctxt1 tm
-    val vs' = Variable.add_frees ctxt1 t []
-    val vs = cls_pred :: map Free vs'
-    val at = List.foldr (uncurry lambda) t (vs)
+    val vs' = Variable.add_frees ctxt1 tm []
+    val vs = cls_pred :: map Free vs' @ the_list v
+    val at = List.foldr (uncurry lambda) t vs
 in
    lthy |>
     Local_Theory.define ((Binding.name def_name, NoSyn),
@@ -428,4 +431,5 @@ declare relative_abs[Rel]
 (*todo: check all the duplicate cases here.*)
 declare datatype_abs[Rel]
 
+relativize_tm "a\<times><0,0> \<rightarrow> B" "test"
 end

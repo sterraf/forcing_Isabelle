@@ -47,10 +47,6 @@ Issues
   the following classes (the statements are taken from the ZF-Constructible
   library):
 
-a. They should be feasible if we consider non-dependent cases:
-"[| M(A); M(B); M(z) |] ==> cartprod(M,A,B,z) \<longleftrightarrow> z = A*B"
-"[|M(A); M(B); M(F); M(A->B)|] ==> is_funspace(M,A,B,F) \<longleftrightarrow> F = A->B"
-
 b. Very peculiar:
 "M(a) ==> successor_ordinal(M,a) \<longleftrightarrow> Ord(a) & (\<exists>b[M]. a = succ(b))"
 
