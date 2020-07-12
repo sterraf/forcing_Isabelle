@@ -32,7 +32,8 @@ ToDo (in no particular order):
 2. Fix the relativization in contexts (issue 1).
 3. Consider the cases described in (issue 2).
 4. The relativization of terms with the command relativize does not add 
-  the pair (abs,rel) to the database.
+  the pair (abs,rel) to the database when the command is outside a locale
+  context.
 
 Issues
 ------
