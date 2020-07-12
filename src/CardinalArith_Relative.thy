@@ -244,9 +244,18 @@ definition
   csquare_lam :: "i\<Rightarrow>i" where
   "csquare_lam(K) \<equiv> \<lambda>\<langle>x,y\<rangle>\<in>K\<times>K. \<langle>x \<union> y, x, y\<rangle>"
 
-lemma (in M_basic) fst_closed[intro,simp]: "M(x) \<Longrightarrow> M(fst(x))" sorry
+context M_trans
+begin
 
-lemma (in M_basic) snd_closed[intro,simp]: "M(x) \<Longrightarrow> M(snd(x))" sorry
+(* FIXME: move the following two to an appropriate place. Should be
+used for @{thm fst_snd_closed} in Names.thy *)
+lemma fst_closed[intro,simp]: "M(x) \<Longrightarrow> M(fst(x))"
+  unfolding fst_def by (auto intro:theI2)
+
+lemma (in M_basic) snd_closed[intro,simp]: "M(x) \<Longrightarrow> M(snd(x))"
+  unfolding snd_def by (auto intro:theI2)
+
+end (* M_trans *)
 
 (* FIXME: Remove these after fixing relativize_tm *)
 lemma fst_abs[Rel]: "is_fst(M,a,z) \<longleftrightarrow> z = fst(a) \<Longrightarrow> is_fst(M,a,z) \<longleftrightarrow> z = fst(a)" .
