@@ -1,0 +1,30 @@
+Patterns found during porting absolute results
+==============================================
+
+Porting (combinatorial?) results to relative versions often require
+defining functions of the shape "λx∈K. P(x) :: i" in order to prove
+"typing" restrictions ("M(A)" for various A). Proving "M(λx∈K. P(x))"
+requires a new instance of strong replacement.
+
+What I've been doing is to 
+
+1) Take the proof to the point where only
+remaining subgoal(s) is of that shape. (Reaching that point is almost
+automatic, i.e. requires no insights.)
+
+2) "apply (rule_tac lam_closed)" gives me exactly (as a subgoal) the
+required replacement instance.
+
+3) I add it as "X_replacement" to the active locale.
+
+4) Now the proof follows by replacing the "apply" from (2) by 
+     using X_replacement by (rule_tac lam_closed) (auto dest:transM)
+
+Declaring transM as a destruction rule helps inferring that elements
+of K are indeed in M.
+
+Though this process is not automatic, it is clear that there is a
+proliferation of replacement instances, and a valuable target for
+automation would be to provide an interface (relativization &
+synthesis) between the latter and the locale M_ctm for transitive
+models of ZF.
