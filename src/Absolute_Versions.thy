@@ -85,4 +85,15 @@ lemma cardinal_rel_absolute[V_simps]: "cardinal_rel(x) = cardinal(x)"
 lemma Ord_cardinal_idem': "Ord(A) \<Longrightarrow> ||A|| = |A|"
   using Ord_cardinal_rel_idem by (simp add:V_simps)
 
+\<comment> \<open>Example of a transfer result between a transitive model and $V$\<close>
+lemma (in M_Perm) assumes "M(A)" "M(B)" "A \<approx>r B"
+  shows "A \<approx> B"
+proof -
+  interpret M_N_Perm M "\<lambda>_. True"
+    by (unfold_locales, simp)
+  from assms
+  show ?thesis using eqpoll_rel_transfer 
+    by (simp add:V_simps)
+qed
+
 end
