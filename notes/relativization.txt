@@ -29,10 +29,7 @@ There are two attributes defined:
 
 Some notes:
 - We don't use the abbreviated relativized concepts for 1,2,3.
-- We don't handle replacements.
-- When relativizing collects we assume the predicate to be already
- relativized.
-- In contrast, when relativizing bool_of_o we relativize the formula.
+- When relativizing bool_of_o, Collect, and Replace we relativize the formula.
 
 To Do
 -----
@@ -44,9 +41,9 @@ To Do
   the pair (abs,rel) to the database when the command is outside a locale
   context.
 5. Check if the relativization of collects should relativize the predicate.
-6. Test the handling of bool_of_o: we relativize the formula, should we?
-7. Handle replacement.
-8. We could use relativ_fm or relativ_tm by inspecting the type in the 
+6. Test the handling of bool_of_o, Collect, and Replace: we relativize 
+  the formula, is that correct?
+7. We could use relativ_fm or relativ_tm by inspecting the type in the 
   recursive calls.
  
 Issues

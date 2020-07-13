@@ -285,8 +285,14 @@ and
             raise TERM ("Tried to relativize an application with a non-constant in head position",[t])
 
       fun go (Var _) = raise TERM ("Var: Is this possible?",[])
-        | go (@{const Collect} $ t $ pc) =
-            relativ_app tm [pc] @{const Collect} [t]
+        | go (@{const Replace} $ t $ Abs (x,tx,Abs (y,ty,pc))) =
+            let val pc' = relativ_fm pred rel_db (rs,ctxt) pc
+            in relativ_app tm [Abs (x,tx,Abs (y,ty,pc'))] @{const Replace} [t]
+            end
+        | go (@{const Collect} $ t $ Abs (x,tx,pc)) =
+            let val pc' = relativ_fm pred rel_db (rs,ctxt) pc
+            in relativ_app tm [Abs (x,tx,pc')] @{const Collect} [t]
+            end
         | go (tm as @{const Sigma} $ t $ Abs (_,_,t')) =
             relativ_app tm [] @{const Sigma} [t, t']
         | go (tm as @{const Pi} $ t $ Abs (_,_,t')) =
