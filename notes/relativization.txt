@@ -27,15 +27,28 @@ There are two attributes defined:
     is exactly of the form "is_term(A,v_1,\<dots>,v_n,z) \<longleftrightarrow> z = term(tm_1,\<dots>,tm_n)".
     In that case it adds the entry (term,is_term) to the database.
 
-ToDo (in no particular order):
+Some notes:
+- We don't use the abbreviated relativized concepts for 1,2,3.
+- We don't handle replacements.
+- When relativizing collects we assume the predicate to be already
+ relativized.
+- In contrast, when relativizing bool_of_o we relativize the formula.
+
+To Do
+-----
+
 1. Fix the broken attribute (issue 0).
 2. Fix the relativization in contexts (issue 1).
-3. Consider the cases described in (issue 2).
+3. Consider the cases described in (issue 3).
 4. The relativization of terms with the command relativize does not add 
   the pair (abs,rel) to the database when the command is outside a locale
   context.
-5. The command relativize_tm repeats variables names.
-
+5. Check if the relativization of collects should relativize the predicate.
+6. Test the handling of bool_of_o: we relativize the formula, should we?
+7. Handle replacement.
+8. We could use relativ_fm or relativ_tm by inspecting the type in the 
+  recursive calls.
+ 
 Issues
 ------
 
@@ -44,34 +57,26 @@ Issues
   subsequent lemmas in that context warns about duplication of rules.
 1. The relativization commands are fragile when used in contexts. This needs to
   better understood.
-2. There are some concepts that cannot be relativized. We group them in
+2. The command relativize_tm repeats variables names.
+3. There are some concepts that cannot be relativized. We group them in
   the following classes (the statements are taken from the ZF-Constructible
   library):
 
-b. Very peculiar:
+
+a. Very peculiar:
 "M(a) ==> successor_ordinal(M,a) \<longleftrightarrow> Ord(a) & (\<exists>b[M]. a = succ(b))"
 
-c. Peculiar, but they might be handled:
-"M(a) ==> omega(M,a) \<longleftrightarrow> a = nat"
-"M(a) ==> number1(M,a) \<longleftrightarrow> a = 1"
-"M(a) ==> number2(M,a) \<longleftrightarrow> a = succ(1)"
-"M(a) ==> number3(M,a) \<longleftrightarrow> a = succ(succ(1))"
-
-c Peculiar, but perhaps manageable:
+b. Peculiar, but perhaps manageable:
 "M(a) ==> finite_ordinal(M,a) \<longleftrightarrow> a \<in> nat"
 "[| M(A); M(f) |] ==> injection(M,A,B,f) \<longleftrightarrow> f \<in> inj(A,B)"
 "[| M(A); M(B); M(f) |] ==> surjection(M,A,B,f) \<longleftrightarrow> f \<in> surj(A,B)"
 "[| M(A); M(B); M(f) |] ==> bijection(M,A,B,f) \<longleftrightarrow> f \<in> bij(A,B)"
 "[| M(A); M(f) |] ==> typed_function(M,A,B,f) \<longleftrightarrow> f \<in> A -> B", 
 
-
-  (* For formulas like "t\<in>nat", we don't handle this yet. *)
+(* For formulas like "t\<in>nat", we don't handle this yet. *)
   val db_rels_strange = [
                      (@{const nat}, @{const Relative.finite_ordinal})
                    , (@{const inj}, @{const Relative.injection})
                    , (@{const surj}, @{const Relative.surjection})
                    , (@{const bij}, @{const Relative.bijection})
                    ]
-
-d. Problematic?
- "M(z) ==> is_bool_of_o(M,P,z) \<longleftrightarrow> z = bool_of_o(P)"

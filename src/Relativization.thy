@@ -28,7 +28,7 @@ lemmas relative_abs =
   M_trans.Union_abs
   M_trivial.cons_abs
   (*M_trans.upair_abs*)
-  (*M_trivial.successor_abs*)
+  M_trivial.successor_abs
   M_trans.Collect_abs
   M_trans.Replace_abs
   M_trivial.lambda_abs2
@@ -41,11 +41,8 @@ lemmas relative_abs =
   M_trivial.limit_ordinal_abs
   M_trivial.successor_ordinal_abs
   M_trivial.finite_ordinal_abs
-*)  M_trivial.omega_abs
-(*  M_trivial.number1_abs
-  M_trivial.number2_abs
-  M_trivial.number3_abs
 *)
+  M_trivial.omega_abs
   M_basic.sum_abs
   M_trivial.Inl_abs
   M_trivial.Inr_abs
@@ -121,6 +118,8 @@ type relset = { db_rels: (term * term) list};
   val db =
            [ (@{const relation}, @{const Relative.is_relation})
            , (@{const mem}, @{const mem})
+           , (@{const True}, @{const True})
+           , (@{const False}, @{const False})
            , (@{const Memrel}, @{const membership})
            , (@{const trancl}, @{const tran_closure})
            , (@{const IFOL.eq(i)}, @{const IFOL.eq(i)})
@@ -228,6 +227,8 @@ fun rex p t (Free v) = @{const rex} $ p $ lambda (Free v) t
 val absolute_rels = [ @{const ZF_Base.mem}
                     , @{const IFOL.eq(i)}
                     , @{const Memrel}
+                    , @{const True}
+                    , @{const False}
                     ]
 
 (* Creates the relational term corresponding to a term of type i. If the last
@@ -285,10 +286,14 @@ and
       fun go (Var _) = raise TERM ("Var: Is this possible?",[])
         | go (@{const Collect} $ t $ pc) =
             relativ_app tm [pc] @{const Collect} [t]
-        | go (tm as @{const Sigma} $ t $ Abs (_,_,t')) = 
+        | go (tm as @{const Sigma} $ t $ Abs (_,_,t')) =
             relativ_app tm [] @{const Sigma} [t, t']
-        | go (tm as @{const Pi} $ t $ Abs (_,_,t')) = 
+        | go (tm as @{const Pi} $ t $ Abs (_,_,t')) =
             relativ_app tm [] @{const Pi} [t, t']
+        | go (tm as @{const bool_of_o} $ t) =
+            let val t' = relativ_fm pred rel_db (rs,ctxt) t
+            in relativ_app tm [t'] @{const bool_of_o} []
+            end
         | go (tm as Const _) = relativ_app tm [] tm []
         | go (tm as _ $ _) = strip_comb tm |> uncurry (relativ_app tm [])
         | go tm = (tm, update_tm (tm,(tm,tm)) rs, ctxt)
@@ -298,9 +303,8 @@ and
            NONE => go tm
          | SOME (w, _) => (w, rs, ctxt)
       end
-
-
-fun relativ_fm pred rel_db (rs,ctxt) fm =
+and
+  relativ_fm pred rel_db (rs,ctxt) fm =
   let
 
   (* relativization of a fully applied constant *)
