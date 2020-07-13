@@ -286,11 +286,11 @@ and
 
       fun go (Var _) = raise TERM ("Var: Is this possible?",[])
         | go (@{const Replace} $ t $ Abs (x,tx,Abs (y,ty,pc))) =
-            let val pc' = relativ_fm pred rel_db (rs,ctxt) pc
+            let val pc' = relativ_fm pred rel_db (rs,ctxt) (incr_boundvars 2 pc)
             in relativ_app tm [Abs (x,tx,Abs (y,ty,pc'))] @{const Replace} [t]
             end
         | go (@{const Collect} $ t $ Abs (x,tx,pc)) =
-            let val pc' = relativ_fm pred rel_db (rs,ctxt) pc
+            let val pc' = relativ_fm pred rel_db (rs,ctxt) (incr_boundvars 1 pc)
             in relativ_app tm [Abs (x,tx,pc')] @{const Collect} [t]
             end
         | go (tm as @{const Sigma} $ t $ Abs (_,_,t')) =
