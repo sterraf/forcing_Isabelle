@@ -51,13 +51,13 @@ lemmas relative_abs =
   M_trans.domain_abs
   M_trans.range_abs
   M_basic.field_abs
-  (*M_trans.relation_abs*)
-  (*M_trivial.function_abs*)
   M_basic.apply_abs
-  (*M_trivial.typed_function_abs*)
+  (*
+  M_trivial.typed_function_abs
   M_basic.injection_abs
   M_basic.surjection_abs
   M_basic.bijection_abs
+  *)
   M_basic.composition_abs
   M_trans.restriction_abs
   M_trans.Inter_abs
@@ -117,6 +117,7 @@ type relset = { db_rels: (term * term) list};
   (* relativization db of relation constructors *)
   val db =
            [ (@{const relation}, @{const Relative.is_relation})
+           , (@{const function}, @{const Relative.is_function})
            , (@{const mem}, @{const mem})
            , (@{const True}, @{const True})
            , (@{const False}, @{const False})
