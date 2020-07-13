@@ -84,10 +84,6 @@ begin
 
 lemmas transitivity = Transset_intf[OF trans_M]
 
-lemma TranssetI :
-  "(\<And>y x. y\<in>x \<Longrightarrow> x\<in>M \<Longrightarrow> y\<in>M) \<Longrightarrow> Transset(M)"
-  by (auto simp add: Transset_def)
-
 lemma zero_in_M:  "0 \<in> M"
 proof -
   from infinity_ax 
