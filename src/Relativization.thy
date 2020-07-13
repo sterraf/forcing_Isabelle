@@ -431,5 +431,4 @@ declare relative_abs[Rel]
 (*todo: check all the duplicate cases here.*)
 declare datatype_abs[Rel]
 
-relativize_tm "a\<times><0,0> \<rightarrow> B" "test"
 end

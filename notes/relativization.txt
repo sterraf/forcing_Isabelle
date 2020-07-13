@@ -34,6 +34,7 @@ ToDo (in no particular order):
 4. The relativization of terms with the command relativize does not add 
   the pair (abs,rel) to the database when the command is outside a locale
   context.
+5. The command relativize_tm repeats variables names.
 
 Issues
 ------
