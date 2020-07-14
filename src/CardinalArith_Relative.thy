@@ -574,7 +574,7 @@ apply (rule_tac d = "case (%w. Inl(converse(f) `w), %y. Inr(converse(fa) ` y))"
   apply (rule_tac lam_closed, auto dest:transM intro:case_replacement4)
 done
 
-lemma cadd_le_mono:
+lemma cadd_rel_le_mono:
     "[| K' \<le> K;  L' \<le> L;M(K');M(K);M(L');M(L) |] ==> (K' \<oplus>r L') \<le> (K \<oplus>r L)"
 apply (unfold def_cadd_rel)
 apply (safe dest!: le_subset_iff [THEN iffD1])
@@ -639,7 +639,7 @@ apply (rule_tac c = "%<x,y>.<y,x>" and d = "%<x,y>.<y,x>" in lam_bijective,
   apply(rule_tac lam_closed, auto intro:swap_replacement dest:transM)
 done
 
-lemma cmult_commute: "M(i) \<Longrightarrow> M(j) \<Longrightarrow> i \<otimes>r j = j \<otimes>r i"
+lemma cmult_rel_commute: "M(i) \<Longrightarrow> M(j) \<Longrightarrow> i \<otimes>r j = j \<otimes>r i"
 apply (unfold def_cmult_rel)
   apply (rule prod_commute_eqpoll_rel [THEN cardinal_rel_cong], simp_all)
 done
@@ -897,7 +897,7 @@ apply (simp add: def_InfCard_rel)
 apply (simp add: Card_rel_Un Un_upper1_le [THEN [2] le_trans]  Card_rel_is_Ord)
 done
 
-lemma InfCard_is_Limit: "InfCard_r(K) ==> M(K) \<Longrightarrow> Limit(K)"
+lemma InfCard_rel_is_Limit: "InfCard_r(K) ==> M(K) \<Longrightarrow> Limit(K)"
 apply (simp add: def_InfCard_rel)
 apply (erule conjE)
 apply (frule Card_rel_is_Ord, assumption)
@@ -913,20 +913,26 @@ apply (rule le_eqI) prefer 2
 apply (rule Ord_cardinal_rel, assumption+)
 done
 
-(*
 (*** An infinite cardinal equals its square (Kunen, Thm 10.12, page 29) ***)
+
+lemma ordermap_closed[intro,simp]: "\<lbrakk> M(A);M(r)\<rbrakk> \<Longrightarrow> M(ordermap(A,r))"
+  sorry
+
+lemma ordertype_closed[intro,simp]: "\<lbrakk> M(A);M(r)\<rbrakk> \<Longrightarrow> M(ordertype(A,r))"
+  sorry
 
 (*A general fact about ordermap*)
 lemma ordermap_eqpoll_pred:
-    "[| well_ord(A,r);  x \<in> A |] ==> ordermap(A,r)`x \<approx>r Order.pred(A,x,r)"
-apply (unfold eqpoll_def)
-apply (rule exI)
+    "[| well_ord(A,r);  x \<in> A ; M(A);M(r);M(x)|] ==> ordermap(A,r)`x \<approx>r Order.pred(A,x,r)"
+apply (simp add: def_eqpoll_rel)
+apply (rule rexI)
 apply (simp add: ordermap_eq_image well_ord_is_wf)
 apply (erule ordermap_bij [THEN bij_is_inj, THEN restrict_bij,
                            THEN bij_converse_bij])
-apply (rule pred_subset)
+apply (rule pred_subset, simp)
 done
 
+(*
 subsubsection\<open>Establishing the well-ordering\<close>
 
 lemma well_ord_csquare:
@@ -980,6 +986,7 @@ apply (simp_all add: subset_Un_iff [THEN iff_sym]
                      subset_Un_iff2 [THEN iff_sym] OrdmemD)
 done
 
+
 subsubsection\<open>The cardinality of initial segments\<close>
 
 lemma ordermap_z_lt:
@@ -993,51 +1000,57 @@ apply (rule csquare_ltI [THEN ordermap_mono, THEN ltI])
 apply (erule_tac [4] well_ord_is_wf)
 apply (blast intro!: Un_upper1_le Un_upper2_le Ord_ordermap elim!: ltE)+
 done
+*)
 
 text\<open>Kunen: "each \<^term>\<open>\<langle>x,y\<rangle> \<in> K \<times> K\<close> has no more than \<^term>\<open>z \<times> z\<close> predecessors..." (page 29)\<close>
 lemma ordermap_csquare_le:
   assumes K: "Limit(K)" and x: "x<K" and y: " y<K"
-  defines "z \<equiv> succ(x \<union> y)"
-  shows "|ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x,y\<rangle>| \<le> |succ(z)| \<otimes> |succ(z)|"
-proof (unfold cmult_def, rule well_ord_lepoll_imp_Card_le)
-  show "well_ord(|succ(z)| \<times> |succ(z)|,
-                 rmult(|succ(z)|, Memrel(|succ(z)|), |succ(z)|, Memrel(|succ(z)|)))"
-    by (blast intro: Ord_cardinal well_ord_Memrel well_ord_rmult)
+    and types: "M(K)" "M(x)" "M(y)"
+  shows "|ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x,y\<rangle>|r \<le> |succ(succ(x \<union> y))|r \<otimes>r |succ(succ(x \<union> y))|r"
+  using types
+proof (simp add: def_cmult_rel, rule_tac well_ord_lepoll_rel_imp_Card_rel_le)
+  let ?z="succ(x \<union> y)"
+  show "well_ord(|succ(?z)|r \<times> |succ(?z)|r,
+                 rmult(|succ(?z)|r, Memrel(|succ(?z)|r), |succ(?z)|r, Memrel(|succ(?z)|r)))"
+    by (blast intro: well_ord_Memrel well_ord_rmult types)
 next
-  have zK: "z<K" using x y K z_def
+  let ?z="succ(x \<union> y)"
+  have zK: "?z<K" using x y K
     by (blast intro: Un_least_lt Limit_has_succ)
-  hence oz: "Ord(z)" by (elim ltE)
-  have "ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x,y\<rangle> \<lesssim>r ordermap(K \<times> K, csquare_rel(K)) ` \<langle>z,z\<rangle>"
-    using z_def
-    by (blast intro: ordermap_z_lt leI le_imp_lepoll K x y)
-  also have "... \<approx>r  Order.pred(K \<times> K, \<langle>z,z\<rangle>, csquare_rel(K))"
+  hence oz: "Ord(?z)" by (elim ltE)
+  have "ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x,y\<rangle> \<lesssim>r ordermap(K \<times> K, csquare_rel(K)) ` \<langle>?z,?z\<rangle>"
+    by (blast intro: ordermap_z_lt leI le_imp_lepoll_rel K x y types)
+  also have "... \<approx>r  Order.pred(K \<times> K, \<langle>?z,?z\<rangle>, csquare_rel(K))"
     proof (rule ordermap_eqpoll_pred)
       show "well_ord(K \<times> K, csquare_rel(K))" using K
         by (rule Limit_is_Ord [THEN well_ord_csquare])
     next
-      show "\<langle>z, z\<rangle> \<in> K \<times> K" using zK
+      show "\<langle>?z, ?z\<rangle> \<in> K \<times> K" using zK
         by (blast intro: ltD)
-    qed
-  also have "...  \<lesssim>r succ(z) \<times> succ(z)" using zK
-    by (rule pred_csquare_subset [THEN subset_imp_lepoll])
-  also have "... \<approx>r |succ(z)| \<times> |succ(z)|" using oz
-    by (blast intro: prod_eqpoll_cong Ord_succ Ord_cardinal_eqpoll eqpoll_sym)
-  finally show "ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x,y\<rangle> \<lesssim>r |succ(z)| \<times> |succ(z)|" .
-qed
+    qed (simp_all add:types)
+  also have "...  \<lesssim>r succ(?z) \<times> succ(?z)" using zK
+    by (rule_tac pred_csquare_subset [THEN subset_imp_lepoll_rel]) (simp_all add:types)
+  also have "... \<approx>r |succ(?z)|r \<times> |succ(?z)|r" using oz
+    by (blast intro: prod_eqpoll_rel_cong Ord_cardinal_rel_eqpoll_rel eqpoll_rel_sym types)
+  finally show "ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x,y\<rangle> \<lesssim>r |succ(?z)|r \<times> |succ(?z)|r"
+    by (simp_all add:types)
+qed (simp_all add:types)
 
 text\<open>Kunen: "... so the order type is \<open>\<le>\<close> K"\<close>
-lemma ordertype_csquare_le:
-  assumes IK: "InfCard(K)" and eq: "\<And>y. y\<in>K \<Longrightarrow> InfCard(y) \<Longrightarrow> y \<otimes> y = y"
+lemma ordertype_csquare_le_M:
+  assumes IK: "InfCard_r(K)" and eq: "\<And>y. y\<in>K \<Longrightarrow> InfCard_r(y) \<Longrightarrow> M(y) \<Longrightarrow> y \<otimes>r y = y"
+  \<comment> \<open>Note the weakened hypothesis @{thm eq}\<close>
+    and types: "M(K)"
   shows "ordertype(K*K, csquare_rel(K)) \<le> K"
 proof -
-  have  CK: "Card(K)" using IK by (rule InfCard_is_Card)
-  hence OK: "Ord(K)"  by (rule Card_is_Ord)
+  have  CK: "Card_rel(K)" using IK by (rule_tac InfCard_rel_is_Card_rel) (simp_all add:types)
+  hence OK: "Ord(K)"  by (rule Card_rel_is_Ord) (simp_all add:types)
   moreover have "Ord(ordertype(K \<times> K, csquare_rel(K)))" using OK
     by (rule well_ord_csquare [THEN Ord_ordertype])
   ultimately show ?thesis
   proof (rule all_lt_imp_le)
     fix i
-    assume i: "i < ordertype(K \<times> K, csquare_rel(K))"
+    assume i:"i < ordertype(K \<times> K, csquare_rel(K))"
     hence Oi: "Ord(i)" by (elim ltE)
     obtain x y where x: "x \<in> K" and y: "y \<in> K"
                  and ieq: "i = ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x,y\<rangle>"
@@ -1045,131 +1058,142 @@ proof -
     hence xy: "Ord(x)" "Ord(y)" "x < K" "y < K" using OK
       by (blast intro: Ord_in_Ord ltI)+
     hence ou: "Ord(x \<union> y)"
-      by (simp add: Ord_Un)
+      by (simp)
+    from i x y types
+    have types': "M(K)" "M(i)" "M(x)" "M(y)"
+      using types by (auto dest:transM ltD)
     show "i < K"
-      proof (rule Card_lt_imp_lt [OF _ Oi CK])
-        have "|i| \<le> |succ(succ(x \<union> y))| \<otimes> |succ(succ(x \<union> y))|" using IK xy
-          by (auto simp add: ieq intro: InfCard_is_Limit [THEN ordermap_csquare_le])
-        moreover have "|succ(succ(x \<union> y))| \<otimes> |succ(succ(x \<union> y))| < K"
+      proof (rule Card_rel_lt_imp_lt [OF _ Oi CK])
+        have "|i|r \<le> |succ(succ(x \<union> y))|r \<otimes>r |succ(succ(x \<union> y))|r" using IK xy
+          by (auto simp add: ieq types intro: InfCard_rel_is_Limit [THEN ordermap_csquare_le] types')
+        moreover have "|succ(succ(x \<union> y))|r \<otimes>r |succ(succ(x \<union> y))|r < K"
           proof (cases rule: Ord_linear2 [OF ou Ord_nat])
             assume "x \<union> y < nat"
-            hence "|succ(succ(x \<union> y))| \<otimes> |succ(succ(x \<union> y))| \<in> nat"
-              by (simp add: lt_def nat_cmult_eq_mult nat_succI mult_type
-                         nat_into_Card [THEN Card_cardinal_eq]  Ord_nat)
+            hence "|succ(succ(x \<union> y))|r \<otimes>r |succ(succ(x \<union> y))|r \<in> nat"
+              by (simp add: lt_def nat_cmult_rel_eq_mult nat_succI
+                         nat_into_Card_rel [THEN Card_rel_cardinal_rel_eq] types')
             also have "... \<subseteq> K" using IK
-              by (simp add: InfCard_def le_imp_subset)
-            finally show "|succ(succ(x \<union> y))| \<otimes> |succ(succ(x \<union> y))| < K"
+              by (simp add: def_InfCard_rel le_imp_subset types)
+            finally show "|succ(succ(x \<union> y))|r \<otimes>r |succ(succ(x \<union> y))|r < K"
               by (simp add: ltI OK)
           next
             assume natxy: "nat \<le> x \<union> y"
-            hence seq: "|succ(succ(x \<union> y))| = |x \<union> y|" using xy
-              by (simp add: le_imp_subset nat_succ_eqpoll [THEN cardinal_cong] le_succ_iff)
+            hence seq: "|succ(succ(x \<union> y))|r = |x \<union> y|r" using xy
+              by (simp add: le_imp_subset nat_succ_eqpoll_rel [THEN cardinal_rel_cong] le_succ_iff types')
             also have "... < K" using xy
-              by (simp add: Un_least_lt Ord_cardinal_le [THEN lt_trans1])
-            finally have "|succ(succ(x \<union> y))| < K" .
-            moreover have "InfCard(|succ(succ(x \<union> y))|)" using xy natxy
-              by (simp add: seq InfCard_def Card_cardinal nat_le_cardinal)
-            ultimately show ?thesis  by (simp add: eq ltD)
+              by (simp add: Un_least_lt Ord_cardinal_rel_le [THEN lt_trans1] types')
+            finally have "|succ(succ(x \<union> y))|r < K" .
+            moreover have "InfCard_r(|succ(succ(x \<union> y))|r)" using xy natxy
+              by (simp add: seq def_InfCard_rel nat_le_cardinal_rel types')
+            ultimately show ?thesis by (simp add: eq ltD types')
           qed
-        ultimately show "|i| < K" by (blast intro: lt_trans1)
-    qed
+        ultimately show "|i|r < K" by (blast intro: lt_trans1)
+      qed (simp_all add:types')
   qed
 qed
 
 (*Main result: Kunen's Theorem 10.12*)
-lemma InfCard_csquare_eq:
-  assumes IK: "InfCard(K)" shows "InfCard(K) ==> K \<otimes> K = K"
+lemma InfCard_rel_csquare_eq:
+  assumes IK: "InfCard_r(K)" and
+  types: "M(K)"
+  shows "InfCard_r(K) \<Longrightarrow> M(K) \<Longrightarrow> K \<otimes>r K = K"
 proof -
-  have  OK: "Ord(K)" using IK by (simp add: Card_is_Ord InfCard_is_Card)
-  show "InfCard(K) ==> K \<otimes> K = K" using OK
+  have  OK: "Ord(K)" using IK by (simp add: Card_rel_is_Ord InfCard_rel_is_Card_rel types)
+  show "InfCard_r(K) \<Longrightarrow> M(K) \<Longrightarrow> K \<otimes>r K = K" using OK
   proof (induct rule: trans_induct)
     case (step i)
-    show "i \<otimes> i = i"
+    note types = \<open>M(K)\<close> \<open>M(i)\<close>
+    show "i \<otimes>r i = i"
     proof (rule le_anti_sym)
-      have "|i \<times> i| = |ordertype(i \<times> i, csquare_rel(i))|"
-        by (rule cardinal_cong,
-          simp add: step.hyps well_ord_csquare [THEN ordermap_bij, THEN bij_imp_eqpoll])
-      hence "i \<otimes> i \<le> ordertype(i \<times> i, csquare_rel(i))"
-        by (simp add: step.hyps cmult_def Ord_cardinal_le well_ord_csquare [THEN Ord_ordertype])
+      have "|i \<times> i|r = |ordertype(i \<times> i, csquare_rel(i))|r"
+        by (rule cardinal_rel_cong,
+          simp_all add: step.hyps well_ord_csquare [THEN ordermap_bij, THEN bij_imp_eqpoll_rel] types)
+      hence "i \<otimes>r i \<le> ordertype(i \<times> i, csquare_rel(i))"
+        by (simp add: step.hyps def_cmult_rel Ord_cardinal_rel_le well_ord_csquare [THEN Ord_ordertype] types)
       moreover
       have "ordertype(i \<times> i, csquare_rel(i)) \<le> i" using step
-        by (simp add: ordertype_csquare_le)
-      ultimately show "i \<otimes> i \<le> i" by (rule le_trans)
+        by (rule_tac ordertype_csquare_le_M) (simp add: types)
+      ultimately show "i \<otimes>r i \<le> i" by (rule le_trans)
     next
-      show "i \<le> i \<otimes> i" using step
-        by (blast intro: cmult_square_le InfCard_is_Card)
+      show "i \<le> i \<otimes>r i" using step
+        by (blast intro: cmult_rel_square_le InfCard_rel_is_Card_rel)
     qed
   qed
 qed
 
+
 (*Corollary for arbitrary well-ordered sets (all sets, assuming AC)*)
-lemma well_ord_InfCard_square_eq:
-  assumes r: "well_ord(A,r)" and I: "InfCard(|A|)" shows "A \<times> A \<approx>r A"
+lemma well_ord_InfCard_rel_square_eq:
+  assumes r: "well_ord(A,r)" and I: "InfCard_r(|A|r)" and
+    types: "M(A)" "M(r)"
+  shows "A \<times> A \<approx>r A"
 proof -
-  have "A \<times> A \<approx>r |A| \<times> |A|"
-    by (blast intro: prod_eqpoll_cong well_ord_cardinal_eqpoll eqpoll_sym r)
+  have "A \<times> A \<approx>r |A|r \<times> |A|r"
+    by (blast intro: prod_eqpoll_rel_cong well_ord_cardinal_rel_eqpoll_rel eqpoll_rel_sym r types)
   also have "... \<approx>r A"
-    proof (rule well_ord_cardinal_eqE [OF _ r])
-      show "well_ord(|A| \<times> |A|, rmult(|A|, Memrel(|A|), |A|, Memrel(|A|)))"
-        by (blast intro: Ord_cardinal well_ord_rmult well_ord_Memrel r)
+    proof (rule well_ord_cardinal_rel_eqE [OF _ r])
+      show "well_ord(|A|r \<times> |A|r, rmult(|A|r, Memrel(|A|r), |A|r, Memrel(|A|r)))"
+        by (blast intro: well_ord_rmult well_ord_Memrel r types)
     next
-      show "||A| \<times> |A|| = |A|" using InfCard_csquare_eq I
-        by (simp add: cmult_def)
-    qed
-  finally show ?thesis .
+      show "||A|r \<times> |A|r|r = |A|r" using InfCard_rel_csquare_eq I
+        by (simp add: def_cmult_rel types)
+    qed (simp_all add:types)
+  finally show ?thesis by (simp_all add:types)
 qed
 
-lemma InfCard_square_eqpoll: "InfCard(K) ==> K \<times> K \<approx>r K"
-apply (rule well_ord_InfCard_square_eq)
- apply (erule InfCard_is_Card [THEN Card_is_Ord, THEN well_ord_Memrel])
-apply (simp add: InfCard_is_Card [THEN Card_cardinal_eq])
+lemma InfCard_rel_square_eqpoll:
+  assumes "InfCard_r(K)" and types:"M(K)" shows "K \<times> K \<approx>r K"
+  using assms
+apply (rule_tac well_ord_InfCard_rel_square_eq)
+ apply (erule InfCard_rel_is_Card_rel [THEN Card_rel_is_Ord, THEN well_ord_Memrel])
+apply (simp_all add: InfCard_rel_is_Card_rel [THEN Card_rel_cardinal_rel_eq] types)
 done
 
-lemma Inf_Card_is_InfCard: "[| Card(i); ~ Finite(i) |] ==> InfCard(i)"
-by (simp add: InfCard_def Card_is_Ord [THEN nat_le_infinite_Ord])
+lemma Inf_Card_rel_is_InfCard_rel: "[| Card_rel(i); ~ Finite_rel(M,i) ; M(i) |] ==> InfCard_r(i)"
+  by (simp add: def_InfCard_rel Card_rel_is_Ord [THEN nat_le_infinite_Ord])
 
 subsubsection\<open>Toward's Kunen's Corollary 10.13 (1)\<close>
 
-lemma InfCard_le_cmult_eq: "[| InfCard(K);  L \<le> K;  0<L |] ==> K \<otimes> L = K"
+lemma InfCard_rel_le_cmult_rel_eq: "[| InfCard_r(K);  L \<le> K;  0<L; M(K) ; M(L) |] ==> K \<otimes>r L = K"
 apply (rule le_anti_sym)
  prefer 2
- apply (erule ltE, blast intro: cmult_le_self InfCard_is_Card)
-apply (frule InfCard_is_Card [THEN Card_is_Ord, THEN le_refl])
-apply (rule cmult_le_mono [THEN le_trans], assumption+)
-apply (simp add: InfCard_csquare_eq)
+ apply (erule ltE, blast intro: cmult_rel_le_self InfCard_rel_is_Card_rel)
+apply (frule InfCard_rel_is_Card_rel [THEN Card_rel_is_Ord, THEN le_refl]) prefer 3
+apply (rule cmult_rel_le_mono [THEN le_trans], assumption+)
+apply (simp_all add: InfCard_rel_csquare_eq)
 done
 
 (*Corollary 10.13 (1), for cardinal multiplication*)
-lemma InfCard_cmult_eq: "[| InfCard(K);  InfCard(L) |] ==> K \<otimes> L = K \<union> L"
+lemma InfCard_rel_cmult_rel_eq: "[| InfCard_r(K);  InfCard_r(L); M(K) ; M(L) |] ==> K \<otimes>r L = K \<union> L"
 apply (rule_tac i = K and j = L in Ord_linear_le)
-apply (typecheck add: InfCard_is_Card Card_is_Ord)
-apply (rule cmult_commute [THEN ssubst])
+apply (typecheck add: InfCard_rel_is_Card_rel Card_rel_is_Ord)
+apply (rule cmult_rel_commute [THEN ssubst]) prefer 3
 apply (rule Un_commute [THEN ssubst])
-apply (simp_all add: InfCard_is_Limit [THEN Limit_has_0] InfCard_le_cmult_eq
+apply (simp_all add: InfCard_rel_is_Limit [THEN Limit_has_0] InfCard_rel_le_cmult_rel_eq
                      subset_Un_iff2 [THEN iffD1] le_imp_subset)
 done
 
-lemma InfCard_cdouble_eq: "InfCard(K) ==> K \<oplus>r K = K"
-apply (simp add: cmult_2 [symmetric] InfCard_is_Card cmult_commute)
-apply (simp add: InfCard_le_cmult_eq InfCard_is_Limit Limit_has_0 Limit_has_succ)
+lemma InfCard_rel_cdouble_eq: "InfCard_r(K) \<Longrightarrow> M(K) \<Longrightarrow>  K \<oplus>r K = K"
+apply (simp add: cmult_rel_2 [symmetric] InfCard_rel_is_Card_rel cmult_rel_commute)
+apply (simp add: InfCard_rel_le_cmult_rel_eq InfCard_rel_is_Limit Limit_has_0 Limit_has_succ)
 done
 
 (*Corollary 10.13 (1), for cardinal addition*)
-lemma InfCard_le_cadd_eq: "[| InfCard(K);  L \<le> K |] ==> K \<oplus>r L = K"
+lemma InfCard_rel_le_cadd_rel_eq: "[| InfCard_r(K);  L \<le> K ; M(K) ; M(L)|] ==> K \<oplus>r L = K"
 apply (rule le_anti_sym)
  prefer 2
- apply (erule ltE, blast intro: cadd_le_self InfCard_is_Card)
-apply (frule InfCard_is_Card [THEN Card_is_Ord, THEN le_refl])
-apply (rule cadd_le_mono [THEN le_trans], assumption+)
-apply (simp add: InfCard_cdouble_eq)
+ apply (erule ltE, blast intro: cadd_rel_le_self InfCard_rel_is_Card_rel)
+apply (frule InfCard_rel_is_Card_rel [THEN Card_rel_is_Ord, THEN le_refl]) prefer 3
+apply (rule cadd_rel_le_mono [THEN le_trans], assumption+)
+apply (simp_all add: InfCard_rel_cdouble_eq)
 done
 
-lemma InfCard_cadd_eq: "[| InfCard(K);  InfCard(L) |] ==> K \<oplus>r L = K \<union> L"
+lemma InfCard_rel_cadd_rel_eq: "[| InfCard_r(K);  InfCard_r(L); M(K) ; M(L) |] ==> K \<oplus>r L = K \<union> L"
 apply (rule_tac i = K and j = L in Ord_linear_le)
-apply (typecheck add: InfCard_is_Card Card_is_Ord)
-apply (rule cadd_commute [THEN ssubst])
+apply (typecheck add: InfCard_rel_is_Card_rel Card_rel_is_Ord)
+apply (rule cadd_rel_commute [THEN ssubst]) prefer 3
 apply (rule Un_commute [THEN ssubst])
-apply (simp_all add: InfCard_le_cadd_eq subset_Un_iff2 [THEN iffD1] le_imp_subset)
+apply (simp_all add: InfCard_rel_le_cadd_rel_eq subset_Un_iff2 [THEN iffD1] le_imp_subset)
 done
 
 (*The other part, Corollary 10.13 (2), refers to the cardinality of the set
@@ -1181,6 +1205,7 @@ subsection\<open>For Every Cardinal Number There Exists A Greater One\<close>
 
 text\<open>This result is Kunen's Theorem 10.16, which would be trivial using AC\<close>
 
+(*
 lemma Ord_jump_cardinal: "Ord(jump_cardinal(K))"
 apply (unfold jump_cardinal_def)
 apply (rule Ord_is_Transset [THEN [2] OrdI])
