@@ -45,6 +45,7 @@ To Do
   the formula, is that correct?
 7. We could use relativ_fm or relativ_tm by inspecting the type in the 
   recursive calls.
+8. The command relativize does not handle qualified names.
  
 Issues
 ------
