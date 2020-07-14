@@ -81,13 +81,11 @@ lemma cadd_cmult_distrib: "\<lbrakk>M(i); M(j); M(k)\<rbrakk> \<Longrightarrow> 
      apply (rule well_ord_cadd_cmult_distrib, assumption+)
   done
 
-(*
-lemma InfCard_rel_square_eq: "InfCard_r(|A|r) \<Longrightarrow> M(A) \<Longrightarrow> A\<times>A \<approx>r A"
-apply (rule choice_ax_well_ord [THEN rexE])
-apply (erule well_ord_InfCard_rel_square_eq, assumption)
-done
 
-*)
+lemma InfCard_rel_square_eq: "InfCard_r(|A|r) \<Longrightarrow> M(A) \<Longrightarrow> A\<times>A \<approx>r A"
+apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
+   apply (erule well_ord_InfCard_rel_square_eq, assumption, simp_all)
+done
 
 subsection \<open>The relationship between cardinality and le-pollence\<close>
 
