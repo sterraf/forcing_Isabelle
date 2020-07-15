@@ -915,61 +915,31 @@ done
 
 (*** An infinite cardinal equals its square (Kunen, Thm 10.12, page 29) ***)
 
-\<comment> \<open>NOTE: The following proof is an instance of the fact that there is
- a *unique* isomorphism between a well-ordered set and an ordinal.
- Perhaps it is better to have that general result.\<close>
-lemma (in M_ordertype) ordermap_closed[intro,simp]:
-  assumes "wellordered(M,A,r)" and types:"M(A)" "M(r)"
-  shows "M(ordermap(A,r))"
-proof -
-  from assms
-  obtain i f where "Ord(i)" "f \<in> ord_iso(A, r, i, Memrel(i))"
-    "M(i)" "M(f)" using ordertype_exists by blast
-  from assms
-  have "wf(r \<inter> A\<times>A)" using well_ord_is_wf unfolding wf_on_def by auto
-  then
-  have ext:"a\<in>A \<Longrightarrow> f ` a = ordermap(A,r) ` a" for a
-  proof (induct a rule:wf_induct)
-    case (step a)
-    with \<open>wf(r \<inter> A\<times>A)\<close>
-    have "ordermap(A,r)`a = {ordermap(A, r)`y . y\<in>{y \<in> A . \<langle>y, a\<rangle> \<in> r} }"
-      using ordermap_unfold unfolding wf_on_def by blast
-    also from step
-    have " \<dots> = {f`y . y \<in> {y \<in> A . \<langle>y, a\<rangle> \<in> r}}" by simp
-    also
-    have " \<dots> = f`a" unfolding ord_iso_def
-    proof
-      from \<open>f \<in> ord_iso(A, r, i, Memrel(i))\<close> and step
-      show "{f ` y . y \<in> {y \<in> A . \<langle>y, a\<rangle> \<in> r}} \<subseteq> f ` a"
-        unfolding ord_iso_def by blast
-      from \<open>f \<in> ord_iso(A, r, i, Memrel(i))\<close> and \<open>Ord(i)\<close> and \<open>a\<in>A\<close>
-      have "x \<in> f`a \<Longrightarrow> x \<in> i" for x
-        using bij_is_fun[of f A i] Ord_trans[of x "f`a" i] apply_funtype
-        unfolding ord_iso_def by fastforce
-      with \<open>f \<in> ord_iso(A, r, i, Memrel(i))\<close> and step
-      show "f ` a \<subseteq> {f ` y . y \<in> {y \<in> A . \<langle>y, a\<rangle> \<in> r}}"
-        using bij_is_surj[of f A i]
-        unfolding surj_def ord_iso_def
-        apply auto
-        apply (rename_tac z) sorry
-    qed
-    finally
-    show ?case ..
-  qed
-  with \<open>f \<in> ord_iso(A, r, i, Memrel(i))\<close>
-  have "f = ordermap(A,r)" unfolding ord_iso_def
-    using bij_is_fun ordermap_type[of A r]
-      fun_extension[OF _ _ ext, of A "\<lambda>_.i"] by force
-  with \<open>M(f)\<close>
-  show ?thesis by simp
-qed
-
 \<comment> \<open>FIXME: this result in stated **without name**
   in \<^theory>\<open>ZF-Constructible.Rank\<close>\<close>
 lemma (in M_ordertype) ordertype_abs':"[| wellordered(M,A,r); f \<in> ord_iso(A, r, i, Memrel(i));
        M(A); M(r); M(f); M(i); Ord(i) |] ==> i = ordertype(A,r)"
 by (blast intro: Ord_ordertype relativized_imp_well_ord ordertype_ord_iso
                  Ord_iso_implies_eq ord_iso_sym ord_iso_trans)
+
+lemma (in M_ordertype) ordermap_closed[intro,simp]:
+  assumes "wellordered(M,A,r)" and types:"M(A)" "M(r)"
+  shows "M(ordermap(A,r))"
+proof -
+  note assms
+  moreover from this
+  obtain i f where "Ord(i)" "f \<in> ord_iso(A, r, i, Memrel(i))"
+    "M(i)" "M(f)" using ordertype_exists by blast
+  moreover from calculation
+  have "i = ordertype(A,r)" using ordertype_abs' by force
+  moreover from calculation
+  have "ordermap(A,r) \<in> ord_iso(A, r, i, Memrel(i))"
+    using ordertype_ord_iso by simp
+  ultimately
+  have "f = ordermap(A,r)" using well_ord_iso_unique by fastforce
+  with \<open>M(f)\<close>
+  show ?thesis by simp
+qed
 
 lemma (in M_ordertype) ordertype_closed[intro,simp]: "\<lbrakk> wellordered(M,A,r);M(A);M(r)\<rbrakk> \<Longrightarrow> M(ordertype(A,r))"
   using ordertype_exists ordertype_abs' by blast
