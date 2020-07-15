@@ -18,52 +18,7 @@ lemma surj_imp_well_ord:
 
 definition
   minimum :: "i \<Rightarrow> i \<Rightarrow> i" where
-  "minimum(r,B) \<equiv> THE b. b\<in>B \<and> (\<forall>y\<in>B. y \<noteq> b \<longrightarrow> \<langle>b, y\<rangle> \<in> r)"
-
-lemma well_ord_imp_min:
-  assumes 
-    "well_ord(A,r)" "B \<subseteq> A" "B \<noteq> 0"
-  shows 
-    "minimum(r,B) \<in> B" 
-proof -
-  from \<open>well_ord(A,r)\<close>
-  have "wf[A](r)"
-    using well_ord_is_wf[OF \<open>well_ord(A,r)\<close>] by simp
-  with \<open>B\<subseteq>A\<close>
-  have "wf[B](r)"
-    using Sigma_mono Int_mono wf_subset unfolding wf_on_def by simp
-  then
-  have "\<forall> x. x \<in> B \<longrightarrow> (\<exists>z\<in>B. \<forall>y. \<langle>y, z\<rangle> \<in> r\<inter>B\<times>B \<longrightarrow> y \<notin> B)"
-    unfolding wf_on_def using wf_eq_minimal
-    by blast
-  with \<open>B\<noteq>0\<close>
-  obtain z where
-    B: "z\<in>B \<and> (\<forall>y. \<langle>y,z\<rangle>\<in>r\<inter>B\<times>B \<longrightarrow> y\<notin>B)"
-    by blast
-  then
-  have "z\<in>B \<and> (\<forall>y\<in>B. y \<noteq> z \<longrightarrow> \<langle>z, y\<rangle> \<in> r)"
-  proof -
-    {
-      fix y
-      assume "y\<in>B" "y\<noteq>z"
-      with \<open>well_ord(A,r)\<close> B \<open>B\<subseteq>A\<close>
-      have "\<langle>z,y\<rangle>\<in>r|\<langle>y,z\<rangle>\<in>r|y=z"
-        unfolding well_ord_def tot_ord_def linear_def by auto
-      with B \<open>y\<in>B\<close> \<open>y\<noteq>z\<close>
-      have "\<langle>z,y\<rangle>\<in>r"
-        by (cases;auto)
-    }
-    with B
-    show ?thesis by blast
-  qed
-  have "v = z" if "v\<in>B \<and> (\<forall>y\<in>B. y \<noteq> v \<longrightarrow> \<langle>v, y\<rangle> \<in> r)" for v
-    using that B by auto
-  with \<open>z\<in>B \<and> (\<forall>y\<in>B. y \<noteq> z \<longrightarrow> \<langle>z, y\<rangle> \<in> r)\<close>
-  show ?thesis
-    unfolding minimum_def 
-    using the_equality2[OF ex1I[of "\<lambda>x .x\<in>B \<and> (\<forall>y\<in>B. y \<noteq> x \<longrightarrow> \<langle>x, y\<rangle> \<in> r)" z]]
-    by auto
-qed
+  "minimum(r,B) \<equiv> THE b. first(b,B,r)"
 
 lemma well_ord_surj_imp_lepoll:
   assumes "well_ord(A,r)" "h \<in> surj(A,B)"
@@ -82,7 +37,7 @@ proof -
       by auto
     with assms
     show "minimum(r,{a\<in>A. h`a=b}) \<in> {a\<in>A. h`a=b}"
-      using well_ord_imp_min by blast
+      unfolding minimum_def using the_first_in by blast
   qed
   moreover from this
   have "?f : B \<rightarrow> A"
@@ -91,14 +46,14 @@ proof -
   have "?f ` w = ?f ` x \<Longrightarrow> w = x" if "w\<in>B" "x\<in>B" for w x
   proof -
     from calculation(1)[OF that(1)] calculation(1)[OF that(2)]
-    have "w = h ` minimum(r, {a \<in> A . h ` a = w})"
-         "x = h ` minimum(r, {a \<in> A . h ` a = x})"
+    have "w = h ` minimum(r,{a\<in>A. h`a=w})"
+         "x = h ` minimum(r,{a\<in>A. h`a=x})"
       by simp_all  
     moreover
     assume "?f ` w = ?f ` x"
     moreover from this and that
     have "minimum(r, {a \<in> A . h ` a = w}) = minimum(r, {a \<in> A . h ` a = x})"
-      by simp_all
+      unfolding minimum_def by simp_all
     moreover from calculation(1,2,4)
     show "w=x" by simp
     qed

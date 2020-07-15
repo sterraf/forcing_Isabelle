@@ -3,7 +3,7 @@ Assorted To-Dos
 
 - Add comments about Definitions_Main in root.tex.
 - pred_set_abs in ZF-Constructible.Wellorderings holds in M_trans.
-- Perhaps use "first" in place of "minimum" in Forcing_Main.
+- Check if "minimum" should be in Forcing_Main.
 
 Porting
 =======
