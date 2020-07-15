@@ -5,6 +5,15 @@ General Tasks
   that.
 
 
+Tidying up sources for release
+==============================
+
+- Put all the development according to the style guides.
+- Remove auxiliary commands (find_theorems, try, try0).
+- Remove diagnostic commands (term, thm --- keep this last one in
+  Definitions_Main.thy!)
+
+
 Porting
 =======
 
