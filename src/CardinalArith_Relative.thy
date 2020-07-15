@@ -915,11 +915,64 @@ done
 
 (*** An infinite cardinal equals its square (Kunen, Thm 10.12, page 29) ***)
 
-lemma ordermap_closed[intro,simp]: "\<lbrakk> M(A);M(r)\<rbrakk> \<Longrightarrow> M(ordermap(A,r))"
-  sorry
+\<comment> \<open>NOTE: The following proof is an instance of the fact that there is
+ a *unique* isomorphism between a well-ordered set and an ordinal.
+ Perhaps it is better to have that general result.\<close>
+lemma (in M_ordertype) ordermap_closed[intro,simp]:
+  assumes "wellordered(M,A,r)" and types:"M(A)" "M(r)"
+  shows "M(ordermap(A,r))"
+proof -
+  from assms
+  obtain i f where "Ord(i)" "f \<in> ord_iso(A, r, i, Memrel(i))"
+    "M(i)" "M(f)" using ordertype_exists by blast
+  from assms
+  have "wf(r \<inter> A\<times>A)" using well_ord_is_wf unfolding wf_on_def by auto
+  then
+  have ext:"a\<in>A \<Longrightarrow> f ` a = ordermap(A,r) ` a" for a
+  proof (induct a rule:wf_induct)
+    case (step a)
+    with \<open>wf(r \<inter> A\<times>A)\<close>
+    have "ordermap(A,r)`a = {ordermap(A, r)`y . y\<in>{y \<in> A . \<langle>y, a\<rangle> \<in> r} }"
+      using ordermap_unfold unfolding wf_on_def by blast
+    also from step
+    have " \<dots> = {f`y . y \<in> {y \<in> A . \<langle>y, a\<rangle> \<in> r}}" by simp
+    also
+    have " \<dots> = f`a" unfolding ord_iso_def
+    proof
+      from \<open>f \<in> ord_iso(A, r, i, Memrel(i))\<close> and step
+      show "{f ` y . y \<in> {y \<in> A . \<langle>y, a\<rangle> \<in> r}} \<subseteq> f ` a"
+        unfolding ord_iso_def by blast
+      from \<open>f \<in> ord_iso(A, r, i, Memrel(i))\<close> and \<open>Ord(i)\<close> and \<open>a\<in>A\<close>
+      have "x \<in> f`a \<Longrightarrow> x \<in> i" for x
+        using bij_is_fun[of f A i] Ord_trans[of x "f`a" i] apply_funtype
+        unfolding ord_iso_def by fastforce
+      with \<open>f \<in> ord_iso(A, r, i, Memrel(i))\<close> and step
+      show "f ` a \<subseteq> {f ` y . y \<in> {y \<in> A . \<langle>y, a\<rangle> \<in> r}}"
+        using bij_is_surj[of f A i]
+        unfolding surj_def ord_iso_def
+        apply auto
+        apply (rename_tac z) sorry
+    qed
+    finally
+    show ?case ..
+  qed
+  with \<open>f \<in> ord_iso(A, r, i, Memrel(i))\<close>
+  have "f = ordermap(A,r)" unfolding ord_iso_def
+    using bij_is_fun ordermap_type[of A r]
+      fun_extension[OF _ _ ext, of A "\<lambda>_.i"] by force
+  with \<open>M(f)\<close>
+  show ?thesis by simp
+qed
 
-lemma ordertype_closed[intro,simp]: "\<lbrakk> M(A);M(r)\<rbrakk> \<Longrightarrow> M(ordertype(A,r))"
-  sorry
+\<comment> \<open>FIXME: this result in stated **without name**
+  in \<^theory>\<open>ZF-Constructible.Rank\<close>\<close>
+lemma (in M_ordertype) ordertype_abs':"[| wellordered(M,A,r); f \<in> ord_iso(A, r, i, Memrel(i));
+       M(A); M(r); M(f); M(i); Ord(i) |] ==> i = ordertype(A,r)"
+by (blast intro: Ord_ordertype relativized_imp_well_ord ordertype_ord_iso
+                 Ord_iso_implies_eq ord_iso_sym ord_iso_trans)
+
+lemma (in M_ordertype) ordertype_closed[intro,simp]: "\<lbrakk> wellordered(M,A,r);M(A);M(r)\<rbrakk> \<Longrightarrow> M(ordertype(A,r))"
+  using ordertype_exists ordertype_abs' by blast
 
 (*A general fact about ordermap*)
 lemma ordermap_eqpoll_pred:
@@ -1018,6 +1071,10 @@ next
   have zK: "?z<K" using x y K
     by (blast intro: Un_least_lt Limit_has_succ)
   hence oz: "Ord(?z)" by (elim ltE)
+  from assms
+  have Mom:"M(ordermap(K \<times> K, csquare_rel(K)))"
+    using well_ord_csquare Limit_is_Ord by fastforce
+  then
   have "ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x,y\<rangle> \<lesssim>r ordermap(K \<times> K, csquare_rel(K)) ` \<langle>?z,?z\<rangle>"
     by (blast intro: ordermap_z_lt leI le_imp_lepoll_rel K x y types)
   also have "... \<approx>r  Order.pred(K \<times> K, \<langle>?z,?z\<rangle>, csquare_rel(K))"
@@ -1033,7 +1090,9 @@ next
   also have "... \<approx>r |succ(?z)|r \<times> |succ(?z)|r" using oz
     by (blast intro: prod_eqpoll_rel_cong Ord_cardinal_rel_eqpoll_rel eqpoll_rel_sym types)
   finally show "ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x,y\<rangle> \<lesssim>r |succ(?z)|r \<times> |succ(?z)|r"
-    by (simp_all add:types)
+    by (simp_all add:types Mom)
+  from Mom
+  show "M(ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x, y\<rangle>)" by (simp_all add:types)
 qed (simp_all add:types)
 
 text\<open>Kunen: "... so the order type is \<open>\<le>\<close> K"\<close>
@@ -1059,7 +1118,10 @@ proof -
       by (blast intro: Ord_in_Ord ltI)+
     hence ou: "Ord(x \<union> y)"
       by (simp)
-    from i x y types
+    from OK types
+    have "M(ordertype(K \<times> K, csquare_rel(K)))"
+       using well_ord_csquare by fastforce
+    with i x y types
     have types': "M(K)" "M(i)" "M(x)" "M(y)"
       using types by (auto dest:transM ltD)
     show "i < K"
@@ -1096,19 +1158,25 @@ qed
 lemma InfCard_rel_csquare_eq:
   assumes IK: "InfCard_r(K)" and
   types: "M(K)"
-  shows "InfCard_r(K) \<Longrightarrow> M(K) \<Longrightarrow> K \<otimes>r K = K"
+  shows "K \<otimes>r K = K"
 proof -
   have  OK: "Ord(K)" using IK by (simp add: Card_rel_is_Ord InfCard_rel_is_Card_rel types)
-  show "InfCard_r(K) \<Longrightarrow> M(K) \<Longrightarrow> K \<otimes>r K = K" using OK
+  from OK assms
+  show "K \<otimes>r K = K"
   proof (induct rule: trans_induct)
     case (step i)
     note types = \<open>M(K)\<close> \<open>M(i)\<close>
     show "i \<otimes>r i = i"
     proof (rule le_anti_sym)
+      from step types
+      have Mot:"M(ordertype(i \<times> i, csquare_rel(i)))" "M(ordermap(i \<times> i, csquare_rel(i)))"
+        using well_ord_csquare Limit_is_Ord by simp_all
+      then
       have "|i \<times> i|r = |ordertype(i \<times> i, csquare_rel(i))|r"
-        by (rule cardinal_rel_cong,
+        by (rule_tac cardinal_rel_cong,
           simp_all add: step.hyps well_ord_csquare [THEN ordermap_bij, THEN bij_imp_eqpoll_rel] types)
-      hence "i \<otimes>r i \<le> ordertype(i \<times> i, csquare_rel(i))"
+      with Mot
+      have "i \<otimes>r i \<le> ordertype(i \<times> i, csquare_rel(i))"
         by (simp add: step.hyps def_cmult_rel Ord_cardinal_rel_le well_ord_csquare [THEN Ord_ordertype] types)
       moreover
       have "ordertype(i \<times> i, csquare_rel(i)) \<le> i" using step
