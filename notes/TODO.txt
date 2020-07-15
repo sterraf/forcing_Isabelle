@@ -1,11 +1,37 @@
-Assorted To-Dos
-===============
+General Tasks
+=============
 
-- Add comments about Definitions_Main in root.tex.
-- pred_set_abs in ZF-Constructible.Wellorderings holds in M_trans.
-- Check if "minimum" should be in Forcing_Main.
+- Search sources for "FIXME", "FIX ME", "NOTE", "MOVE (THIS)" and do
+  that.
+
 
 Porting
 =======
 
 - Revise the locale structure of ported theories.
+
+
+ZF-Constructible
+================
+
+- pred_set_abs in ZF-Constructible.Wellorderings holds in M_trans.
+- ZF-Constructible.Rank
+  - Text comments referring to "oB", "om": Should that be "obase",
+    "omap"?
+  - Put some name to the result after well_ord_abs.
+- Add resuls like fst_closed? (cf. General tasks)
+
+
+ZF
+==
+
+- Erase superfluous hypotheses from the conclusion of
+  InfCard_rel_csquare_eq.
+
+
+Assorted To-Dos
+===============
+
+- Add comments about Definitions_Main in root.tex.
+- Prettyprint for elements of "formula".
+- Check if "minimum" should be in Forcing_Main.
