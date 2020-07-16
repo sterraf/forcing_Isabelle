@@ -1,0 +1,96 @@
+Style Guide for Forcing
+=======================
+
+The following guidelines intend to maximize readability of the code,
+taking into account
+
+  1) trying to obtain a “mathematical proof” style and reading
+     experience;
+  2) the folding enforced by the PIDE jEdit;
+  3) ease to find lemmas by name.
+
+We adhere to most of the suggestions offered in the
+http://proofcraft.org/ site by Gerwin Klein, though many rules here
+are stricter than his.
+
+
+General Concepts
+================
+
+The main idea is that the look and feel of the produced proof document
+mimics as much as possible the way you would write down a proof in
+paper. 
+
+A formalized proof will never look exactly like that, in part
+because of the abudance of “bureaucracy” that accompanies any
+formalization, and the multitude of lemmas that one must manage to be
+able to achieve any reasonable goal. Neither long lines with commands
+cluttering up help much to the non expert.
+
+Thus, we aim to make proof structure very clear, highlighting facts
+locally obtained avoiding quoted results in the forefront, and using
+simple (automatic) proof commands as much as possible.
+
+
+Naming Conventions
+==================
+
+Lemmas are labelled using `under_score_names` and those names will
+spell, as far as possible, the “main subterm” that appears in the
+statement of the lemma, using the ASCII names of the relevant
+operators. For example,
+
+  lemma (in forcing_data) surj_nat_GenExt :
+    "∃f. f ∈ surj(nat,M[G])"
+
+Here, `M[G]` is the notation set up for the term `GenExt`.
+
+In some cases, some (terms in) notable assumptions might be included
+in the name, and are separated from the conclusion using `_imp_` (for
+"imply"):
+
+  lemma well_ord_surj_imp_lepoll:
+    assumes "well_ord(A,r)" "h ∈ surj(A,B)"
+    shows "B ≲ A"
+
+
+Proof style
+===========
+
+Statements in long format `assumes`...`shows` are preferred, unless
+the proof follows immediately (thus saving one `using assms`).
+
+Methods given as arguments to `proof` are to be kept to a minimum,
+only when the refined goal is what to be expected a human prover would
+take as an equivalent statement with no effort--- most of the times,
+the `standard` (default) initial method or slight variations are
+enough for this. Also, terminal proof methods should not take more
+than two lines.
+
+The general structure of proof steps should follow the next pattern
+
+  [chaining NEWLINE]
+  {`have`,`show`,`obtain` vars `where`} facts NEWLINE
+    [using *lemmas already proved*] [unfolding *lemmas*]
+    `by` [terminal proof]
+
+where
+
+  chaining = `from` local facts
+  	     `also`
+  	     `also` `from` local facts
+	     `finally`
+	     `moreover`
+	     `moreover` `from` local facts
+	     `ultimately`
+  	     `then`
+	     `with` local facts
+
+Newlines are mandatory where indicated. Due to jEdit folding, `obtain`
+and `where` must be on the same line. If facts are too long to fit in
+a line, leave less relevant information (like typing) to the end.
+
+  1) New code must be written in Isar. 
+  2) Try to keep labelled facts and cross-references inside proofs to
+     a minimum. This can be achieved by judiciously using the
+     `moreover`...`finally` commands.
