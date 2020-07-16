@@ -922,6 +922,11 @@ lemma (in M_ordertype) ordertype_abs':"[| wellordered(M,A,r); f \<in> ord_iso(A,
 by (blast intro: Ord_ordertype relativized_imp_well_ord ordertype_ord_iso
                  Ord_iso_implies_eq ord_iso_sym ord_iso_trans)
 
+\<comment> \<open>This should be true\<close>
+lemma (in M_ordertype) ordertype_abs:
+      "[| wellordered(M,A,r); M(A); M(r); M(i)|] ==> otype(M,A,r,i) \<longleftrightarrow> i = ordertype(A,r)"
+  oops
+
 lemma (in M_ordertype) ordermap_closed[intro,simp]:
   assumes "wellordered(M,A,r)" and types:"M(A)" "M(r)"
   shows "M(ordermap(A,r))"
@@ -954,76 +959,6 @@ apply (erule ordermap_bij [THEN bij_is_inj, THEN restrict_bij,
                            THEN bij_converse_bij])
 apply (rule pred_subset, simp)
 done
-
-(*
-subsubsection\<open>Establishing the well-ordering\<close>
-
-lemma well_ord_csquare:
-  assumes K: "Ord(K)" shows "well_ord(K*K, csquare_rel(K))"
-proof (unfold csquare_rel_def, rule well_ord_rvimage)
-  show "(\<lambda>\<langle>x,y\<rangle>\<in>K \<times> K. \<langle>x \<union> y, x, y\<rangle>) \<in> inj(K \<times> K, K \<times> K \<times> K)" using K
-    by (force simp add: inj_def intro: lam_type Un_least_lt [THEN ltD] ltI)
-next
-  show "well_ord(K \<times> K \<times> K, rmult(K, Memrel(K), K \<times> K, rmult(K, Memrel(K), K, Memrel(K))))"
-    using K by (blast intro: well_ord_rmult well_ord_Memrel)
-qed
-
-subsubsection\<open>Characterising initial segments of the well-ordering\<close>
-
-lemma csquareD:
- "[| <<x,y>, <z,z>> \<in> csquare_rel(K);  x<K;  y<K;  z<K |] ==> x \<le> z & y \<le> z"
-apply (unfold csquare_rel_def)
-apply (erule rev_mp)
-apply (elim ltE)
-apply (simp add: rvimage_iff Un_absorb Un_least_mem_iff ltD)
-apply (safe elim!: mem_irrefl intro!: Un_upper1_le Un_upper2_le)
-apply (simp_all add: lt_def succI2)
-done
-
-lemma pred_csquare_subset:
-    "z<K ==> Order.pred(K*K, <z,z>, csquare_rel(K)) \<subseteq> succ(z)*succ(z)"
-apply (unfold Order.pred_def)
-apply (safe del: SigmaI dest!: csquareD)
-apply (unfold lt_def, auto)
-done
-
-lemma csquare_ltI:
- "[| x<z;  y<z;  z<K |] ==>  <<x,y>, <z,z>> \<in> csquare_rel(K)"
-apply (unfold csquare_rel_def)
-apply (subgoal_tac "x<K & y<K")
- prefer 2 apply (blast intro: lt_trans)
-apply (elim ltE)
-apply (simp add: rvimage_iff Un_absorb Un_least_mem_iff ltD)
-done
-
-(*Part of the traditional proof.  UNUSED since it's harder to prove & apply *)
-lemma csquare_or_eqI:
- "[| x \<le> z;  y \<le> z;  z<K |] ==> <<x,y>, <z,z>> \<in> csquare_rel(K) | x=z & y=z"
-apply (unfold csquare_rel_def)
-apply (subgoal_tac "x<K & y<K")
- prefer 2 apply (blast intro: lt_trans1)
-apply (elim ltE)
-apply (simp add: rvimage_iff Un_absorb Un_least_mem_iff ltD)
-apply (elim succE)
-apply (simp_all add: subset_Un_iff [THEN iff_sym]
-                     subset_Un_iff2 [THEN iff_sym] OrdmemD)
-done
-
-
-subsubsection\<open>The cardinality of initial segments\<close>
-
-lemma ordermap_z_lt:
-      "[| Limit(K);  x<K;  y<K;  z=succ(x \<union> y) |] ==>
-          ordermap(K*K, csquare_rel(K)) ` <x,y> <
-          ordermap(K*K, csquare_rel(K)) ` <z,z>"
-apply (subgoal_tac "z<K & well_ord (K*K, csquare_rel (K))")
-prefer 2 apply (blast intro!: Un_least_lt Limit_has_succ
-                              Limit_is_Ord [THEN well_ord_csquare], clarify)
-apply (rule csquare_ltI [THEN ordermap_mono, THEN ltI])
-apply (erule_tac [4] well_ord_is_wf)
-apply (blast intro!: Un_upper1_le Un_upper2_le Ord_ordermap elim!: ltE)+
-done
-*)
 
 text\<open>Kunen: "each \<^term>\<open>\<langle>x,y\<rangle> \<in> K \<times> K\<close> has no more than \<^term>\<open>z \<times> z\<close> predecessors..." (page 29)\<close>
 lemma ordermap_csquare_le:
@@ -1340,88 +1275,6 @@ by (simp add: InfCard_def Card_csucc Card_is_Ord
               lt_csucc [THEN leI, THEN [2] le_trans])
 
 
-subsubsection\<open>Removing elements from a finite set decreases its cardinality\<close>
-
-lemma Finite_imp_cardinal_cons [simp]:
-  assumes FA: "Finite(A)" and a: "a\<notin>A" shows "|cons(a,A)| = succ(|A|)"
-proof -
-  { fix X
-    have "Finite(X) ==> a \<notin> X \<Longrightarrow> cons(a,X) \<lesssim>r X \<Longrightarrow> False"
-      proof (induct X rule: Finite_induct)
-        case 0 thus False  by (simp add: lepoll_0_iff)
-      next
-        case (cons x Y)
-        hence "cons(x, cons(a, Y)) \<lesssim>r cons(x, Y)" by (simp add: cons_commute)
-        hence "cons(a, Y) \<lesssim>r Y" using cons        by (blast dest: cons_lepoll_consD)
-        thus False using cons by auto
-      qed
-  }
-  hence [simp]: "~ cons(a,A) \<lesssim>r A" using a FA by auto
-  have [simp]: "|A| \<approx>r A" using Finite_imp_well_ord [OF FA]
-    by (blast intro: well_ord_cardinal_eqpoll)
-  have "(\<mu> i. i \<approx>r cons(a, A)) = succ(|A|)"
-    proof (rule Least_equality [OF _ _ notI])
-      show "succ(|A|) \<approx>r cons(a, A)"
-        by (simp add: succ_def cons_eqpoll_cong mem_not_refl a)
-    next
-      show "Ord(succ(|A|))" by simp
-    next
-      fix i
-      assume i: "i \<le> |A|" "i \<approx>r cons(a, A)"
-      have "cons(a, A) \<approx>r i" by (rule eqpoll_sym) (rule i)
-      also have "... \<lesssim>r |A|" by (rule le_imp_lepoll) (rule i)
-      also have "... \<approx>r A"   by simp
-      finally have "cons(a, A) \<lesssim>r A" .
-      thus False by simp
-    qed
-  thus ?thesis by (simp add: cardinal_def)
-qed
-
-lemma Finite_imp_succ_cardinal_Diff:
-     "[| Finite(A);  a \<in> A |] ==> succ(|A-{a}|) = |A|"
-apply (rule_tac b = A in cons_Diff [THEN subst], assumption)
-apply (simp add: Finite_imp_cardinal_cons Diff_subset [THEN subset_Finite])
-apply (simp add: cons_Diff)
-done
-
-lemma Finite_imp_cardinal_Diff: "[| Finite(A);  a \<in> A |] ==> |A-{a}| < |A|"
-apply (rule succ_leE)
-apply (simp add: Finite_imp_succ_cardinal_Diff)
-done
-
-lemma Finite_cardinal_in_nat [simp]: "Finite(A) ==> |A| \<in> nat"
-proof (induct rule: Finite_induct)
-  case 0 thus ?case by (simp add: cardinal_0)
-next
-  case (cons x A) thus ?case by (simp add: Finite_imp_cardinal_cons)
-qed
-
-lemma card_Un_Int:
-     "[|Finite(A); Finite(B)|] ==> |A| #+ |B| = |A \<union> B| #+ |A \<inter> B|"
-apply (erule Finite_induct, simp)
-apply (simp add: Finite_Int cons_absorb Un_cons Int_cons_left)
-done
-
-lemma card_Un_disjoint:
-     "[|Finite(A); Finite(B); A \<inter> B = 0|] ==> |A \<union> B| = |A| #+ |B|"
-by (simp add: Finite_Un card_Un_Int)
-
-lemma card_partition:
-  assumes FC: "Finite(C)"
-  shows
-     "Finite (\<Union> C) \<Longrightarrow>
-        (\<forall>c\<in>C. |c| = k) \<Longrightarrow>
-        (\<forall>c1 \<in> C. \<forall>c2 \<in> C. c1 \<noteq> c2 \<longrightarrow> c1 \<inter> c2 = 0) \<Longrightarrow>
-        k #* |C| = |\<Union> C|"
-using FC
-proof (induct rule: Finite_induct)
-  case 0 thus ?case by simp
-next
-  case (cons x B)
-  hence "x \<inter> \<Union>B = 0" by auto
-  thus ?case using cons
-    by (auto simp add: card_Un_disjoint)
-qed
 *)
 
 subsubsection\<open>Theorems by Krzysztof Grabczewski, proofs by lcp\<close>
