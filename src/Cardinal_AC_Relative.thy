@@ -6,19 +6,84 @@ theory Cardinal_AC_Relative
     CardinalArith_Relative 
 begin
 
-context M_ordertype
+\<comment> \<open>MOVE THIS to an appropriate place. Now it is repeated in
+   \<^file>\<open>Forcing_Main.thy\<close>. But consider that ported versions follow,
+   and hence perhaps we should only have the relative version.\<close>
+definition
+  minimum :: "i \<Rightarrow> i \<Rightarrow> i" where
+  "minimum(r,B) \<equiv> THE b. first(b,B,r)"
+
+lemma minimum_in: "\<lbrakk> well_ord(A,r); B\<subseteq>A; B\<noteq>0 \<rbrakk> \<Longrightarrow> minimum(r,B) \<in> B"
+  using the_first_in unfolding minimum_def by simp
+
+lemma well_ord_surj_imp_lepoll:
+  assumes "well_ord(A,r)" "h \<in> surj(A,B)"
+  shows "B \<lesssim> A"
+proof -
+  let ?f="\<lambda>b\<in>B. minimum(r, {a\<in>A. h`a=b})"
+  have "minimum(r, {a \<in> A . h ` a = b}) \<in> {a\<in>A. h`a=b}" if "b\<in>B" for b
+  proof -
+    from \<open>h \<in> surj(A,B)\<close> that
+    have "{a\<in>A. h`a=b} \<noteq> 0"
+      unfolding surj_def by blast
+    with \<open>well_ord(A,r)\<close>
+    show "minimum(r,{a\<in>A. h`a=b}) \<in> {a\<in>A. h`a=b}"
+      using minimum_in by blast
+  qed
+  moreover from this
+  have "?f : B \<rightarrow> A"
+      using lam_type[of B _ "\<lambda>_.A"] by simp
+  moreover
+  have "?f ` w = ?f ` x \<Longrightarrow> w = x" if "w\<in>B" "x\<in>B" for w x
+  proof -
+    from calculation that
+    have "w = h ` minimum(r,{a\<in>A. h`a=w})"
+         "x = h ` minimum(r,{a\<in>A. h`a=x})"
+      by simp_all
+    moreover
+    assume "?f ` w = ?f ` x"
+    moreover from this and that
+    have "minimum(r, {a \<in> A . h ` a = w}) = minimum(r, {a \<in> A . h ` a = x})"
+      unfolding minimum_def by simp_all
+    moreover from calculation(1,2,4)
+    show "w=x" by simp
+    qed
+  ultimately
+  show ?thesis
+  unfolding lepoll_def inj_def by blast
+qed
+
+\<comment> \<open>New result\<close>
+lemma surj_imp_well_ord:
+  assumes "well_ord(A,r)" "h \<in> surj(A,B)"
+  shows "\<exists>s. well_ord(B,s)"
+  using assms lepoll_well_ord[OF well_ord_surj_imp_lepoll]
+  by force
+
+
+context M_cardinal_arith
 begin
 
-lemma surj_imp_well_ord_M:
-  assumes "well_ord(A,r)" "h \<in> surj(A,B)"
-    and
-  types: "M(A)" "M(r)" "M(h)" "M(B)"
-  shows "\<exists>s[M]. well_ord(B,s)"
+lemma well_ord_surj_imp_lepoll_rel:
+  assumes "well_ord(A,r)" "h \<in> surj(A,B)" and
+    types:"M(A)" "M(r)" "M(h)" "M(B)"
+  shows "B \<lesssim>r A"
   sorry
+
+lemma minimum_closed[intro,simp]:"M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(minimum(A,r))"
+  sorry
+
+lemma surj_imp_well_ord_M:
+  assumes wos: "well_ord(A,r)" "h \<in> surj(A,B)"
+    and
+    types: "M(A)" "M(r)" "M(h)" "M(B)"
+  shows "\<exists>s[M]. well_ord(B,s)"
+  using assms lepoll_rel_well_ord
+    well_ord_surj_imp_lepoll_rel by fast
 
 end (* M_ordertype *)
 
-locale M_choice = M_ordertype +
+locale M_cardinal_AC = M_cardinal_arith +
   assumes
   choice_ax: "choice_ax(M)"
 begin
@@ -27,9 +92,61 @@ lemma choice_ax_well_ord: "M(S) \<Longrightarrow> \<exists>r[M]. well_ord(S,r)"
   using choice_ax well_ord_Memrel[THEN surj_imp_well_ord_M]
   unfolding choice_ax_def by auto
 
-end (* M_choice *)
+end (* M_cardinal_AC *)
 
-locale M_cardinals_choice = M_cardinal_arith + M_choice
+locale M_Pi_assumptions_choice = M_Pi_assumptions + M_cardinal_AC +
+  assumes
+    B_replacement: "strong_replacement(M, \<lambda>x y. y = B(x))"
+    and
+    \<comment> \<open>The next one should be derivable from (some variant)
+        of B_replacement. Proving both instances each time seems
+        inconvenient.\<close>
+    minimum_replacement: "strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, B(x))\<rangle>)"
+begin
+
+lemma AC_M:
+  assumes "a \<in> A" "\<And>x. x \<in> A \<Longrightarrow> \<exists>y. y \<in> B(x)"
+  shows "\<exists>z[M]. z \<in> Pi_rel(A, B)"
+proof -
+  have "M(\<Union>x\<in>A. B(x))" using family_union_closed Pi_assumptions B_replacement by simp
+  then
+  obtain r where "well_ord(\<Union>x\<in>A. B(x),r)" "M(r)"
+    using choice_ax_well_ord by blast
+  let ?f="\<lambda>x\<in>A. minimum(r,B(x))"
+  from assms and \<open>M(r)\<close>
+  have "M(?f)"
+    using minimum_replacement Pi_assumptions
+    by (rule_tac lam_closed) (auto)
+  moreover from assms and calculation
+  have "?f \<in> Pi_rel(A,B)"
+    using lam_type[OF minimum_in, OF \<open>well_ord(\<Union>x\<in>A. B(x),r)\<close>, of A B]
+     Pi_rel_char by auto
+  ultimately
+  show ?thesis by blast
+qed
+
+lemma AC_Pi_rel: assumes "\<And>x. x \<in> A \<Longrightarrow> \<exists>y. y \<in> B(x)"
+  shows "\<exists>z[M]. z \<in> Pi_rel(A, B)"
+proof (cases "A=0")
+  interpret Pi0:M_Pi_assumptions_0
+    using Pi_assumptions by unfold_locales auto
+  case True
+  then
+  show ?thesis by simp
+next
+  case False
+  then
+  obtain a where "a \<in> A" by auto
+    \<comment> \<open>It is noteworthy that without obtaining an element of
+        \<^term>\<open>A\<close>, the final step won't work\<close>
+  with assms
+  show ?thesis by (blast intro!: AC_M)
+qed
+
+end (* M_Pi_assumptions_choice *)
+
+
+context M_cardinal_AC
 begin
 
 subsection\<open>Strengthened Forms of Existing Theorems on Cardinals\<close>

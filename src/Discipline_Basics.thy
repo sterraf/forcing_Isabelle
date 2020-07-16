@@ -481,6 +481,17 @@ end (* M_N_Pi_assumptions *)
 
 
 (******************  end Discipline  **********************)
+
+locale M_Pi_assumptions_0 = M_Pi_assumptions _ 0
+begin
+
+text\<open>This is used in the proof of AC_Pi_rel\<close>
+lemma Pi_rel_empty1[simp]: "Pi_rel(0,B) = {0}"
+  using Pi_assumptions Pow_rel_char
+  by (unfold def_Pi_rel function_def) (auto)
+
+end (* M_Pi_assumptions_0 *)
+
 context M_Pi_assumptions
 begin
 
