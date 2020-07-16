@@ -9,16 +9,13 @@ theory Forcing_Main
 begin
 
 subsection\<open>The generic extension is countable\<close>
-(*
-\<comment> \<open>Useful missing lemma\<close>
-lemma surj_imp_well_ord:
-  assumes "well_ord(A,r)" "h \<in> surj(A,B)"
-  shows "\<exists>s. well_ord(B,r)"
-*)
 
 definition
   minimum :: "i \<Rightarrow> i \<Rightarrow> i" where
   "minimum(r,B) \<equiv> THE b. first(b,B,r)"
+
+lemma minimum_in: "\<lbrakk> well_ord(A,r); B\<subseteq>A; B\<noteq>0 \<rbrakk> \<Longrightarrow> minimum(r,B) \<in> B"
+  using the_first_in unfolding minimum_def by simp
 
 lemma well_ord_surj_imp_lepoll:
   assumes "well_ord(A,r)" "h \<in> surj(A,B)"
@@ -32,7 +29,7 @@ proof -
       unfolding surj_def by blast
     with \<open>well_ord(A,r)\<close>
     show "minimum(r,{a\<in>A. h`a=b}) \<in> {a\<in>A. h`a=b}"
-      unfolding minimum_def using the_first_in by blast
+      using minimum_in by blast
   qed
   moreover from this
   have "?f : B \<rightarrow> A"
