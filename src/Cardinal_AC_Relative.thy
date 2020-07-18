@@ -86,6 +86,12 @@ end (* M_ordertype *)
 locale M_cardinal_AC = M_cardinal_arith +
   assumes
   choice_ax: "choice_ax(M)"
+  and
+  surj_imp_inj_replacement:
+  "M(f) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> f -`` {x} \<and> z = {\<langle>x, y\<rangle>})"
+  "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>y. f -`` {y}))"
+  "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = f -`` {x})"
+  "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, f -`` {x})\<rangle>)"
 begin
 
 lemma choice_ax_well_ord: "M(S) \<Longrightarrow> \<exists>r[M]. well_ord(S,r)"
@@ -254,35 +260,50 @@ qed
 lemma cardinal_rel_le_imp_lepoll_rel: " i \<le> |A|r ==> M(i) \<Longrightarrow> M(A) \<Longrightarrow>i \<lesssim>r A"
   by (blast intro: lt_Ord Card_rel_le_imp_lepoll_rel Ord_cardinal_rel_le le_trans)
 
-(*
 
 subsection\<open>Other Applications of AC\<close>
 
-lemma surj_implies_inj:
-  assumes f: "f \<in> surj(X,Y)" and
+text\<open>We have an example of instantiating a locale involving higher
+order variables inside a proof, by using the assumptions of the
+first orde, active locale.\<close>
+lemma surj_rel_implies_inj_rel:
+  assumes f: "f \<in> surj_rel(X,Y)" and
     types: "M(f)" "M(X)" "M(Y)"
-  shows "\<exists>g[M]. g \<in> inj(Y,X)"
+  shows "\<exists>g[M]. g \<in> inj_rel(Y,X)"
 proof -
-  from f AC_Pi [of Y "%y. f-``{y}"]
-  obtain z where z: "z \<in> (\<Prod>y\<in>Y. f -`` {y})"  
-    by (auto simp add: surj_def) (fast dest: apply_Pair)
+  from types
+  interpret M_Pi_assumptions_choice _ Y "\<lambda>y. f-``{y}"
+    by unfold_locales (auto intro:surj_imp_inj_replacement dest:transM)
+  from f AC_Pi_rel
+  obtain z where z: "z \<in> Pi_rel(Y, \<lambda>y. f -`` {y})"
+    \<comment> \<open>In this and the following ported result, it is not clear how
+        uniformly are "_char" theorems to be used\<close>
+    using surj_rel_char
+    by (auto simp add: surj_def types) (fast dest: apply_Pair)
   show ?thesis
-    proof
-      show "z \<in> inj(Y, X)" using z surj_is_fun [OF f]
-        by (blast dest: apply_type Pi_memberD
-                  intro: apply_equality Pi_type f_imp_injective)
-    qed
+  proof
+    show "z \<in> inj_rel(Y, X)" "M(z)"
+      using z surj_is_fun[of f X Y] f Pi_rel_char
+      by (auto dest: apply_type Pi_memberD
+          intro: apply_equality Pi_type f_imp_injective
+          simp add:types mem_surj_abs)
+  qed
 qed
 
 text\<open>Kunen's Lemma 10.20\<close>
-lemma surj_implies_cardinal_rel_le: 
-  assumes f: "f \<in> surj(X,Y)" shows "|Y|r \<le> |X|r"
+lemma surj_rel_implies_cardinal_rel_le:
+  assumes f: "f \<in> surj_rel(X,Y)" and
+    types:"M(f)" "M(X)" "M(Y)"
+  shows "|Y|r \<le> |X|r"
 proof (rule lepoll_rel_imp_Card_rel_le)
-  from f [THEN surj_implies_inj] obtain g where "g \<in> inj(Y,X)" ..
-  thus "Y \<lesssim>r X"
-    by (auto simp add: lepoll_rel_def)
-qed
-*)
+  from f [THEN surj_rel_implies_inj_rel]
+  obtain g where "g \<in> inj_rel(Y,X)"
+    by (blast intro:types)
+  then
+  show "Y \<lesssim>r X"
+    using inj_rel_char
+    by (auto simp add: def_lepoll_rel types)
+qed (simp_all add:types)
 
 end (* M_cardinal_AC *)
 

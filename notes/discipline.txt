@@ -15,20 +15,29 @@ is univalent and defined, then one can refer to *the* unique element in the clas
 satisfying the relational property that defines the concept. 
 
 The discipline (for unary concepts):
-1.[is_foo] Given a concept "foo" relativize it in "is_foo", if necessary one has to apply 
-the discipline to every other concept on which "foo" depends. 
+
+1. [is_foo] Given a concept "foo" relativize it in "is_foo", if necessary one has to apply
+   the discipline to every other concept on which "foo" depends.
+
 2. Prove univalence and definedness for "is_foo":
-  a.[is_foo_uniqueness] \<forall>[M] a b. is_foo(M,r,a) \<and> is_foo(M,r,b) \<rightarrow> a = b
-  b.[is_foo_witness] \<exists>[M] a. is_foo(M,r,a)
+   a.[is_foo_uniqueness] \<forall>[M] a b. is_foo(M,r,a) \<and> is_foo(M,r,b) \<rightarrow> a = b
+   b.[is_foo_witness] \<exists>[M] a. is_foo(M,r,a)
+   This last step requires invoking axioms (perhaps separation and
+   replacement instances) that hold in the model M.
+
 3. [foo_rel] Define the relative concept "foo_rel"
   definition
     foo_rel :: "i \<Rightarrow> i" where
     "foo_rel(r) \<equiv> THE d. M(d) \<and> is_foo(M,r,d)"
+
 4. [foo_rel_closed] Prove that M is closed under foo_rel; add this to
    the simpset and as an intro rule.
+
 5. [foo_rel_iff] Prove that the element defined by foo_rel satisfies is_foo.
+
 6. [def_foo_rel] Prove a lemma characterising "foo_rel" in terms of the other
   _rel terms. This is fundamental to port seamlessly the original proofs.
+
 7. [foo_rel_char] (when it applies) State and prove the relationship
    between the relative concept and the original absolute one; for instance:
     lemma inj_rel_char:
@@ -47,6 +56,21 @@ concepts. Moreover the proofs for the unrestricted concept can be easily
 adapted to its relativized counterpart.
 
 
+Known Issues
+============
+
+It is not clear which is the most uniform way to apply absoluteness or
+characterization results like "mem_inj_abs":
+
+  lemma mem_inj_abs[simp]: "⟦M(f);M(A);M(B)⟧ ⟹
+                              f ∈ inj_rel(A,B) ⟷ f∈inj(A,B)"
+
+or "inj_rel_char". Right now, "mem_inj_abs" is included in the
+simpset, but an analogous "mem_surj_abs" is not. This showed up in
+porting "surj_implies_inj" and "surj_implies_cardinal_le" (now in
+Cardinal_AC_Relative.thy).
+
+
 
 TODO:
 - Description for the case of predicates foo :: "... => o", where "foo_rel"
@@ -62,3 +86,6 @@ TODO:
   |_|r ≤ |_|
 
   
+%%% Local Variables:
+%%% ispell-local-dictionary: "american"
+%%% End:

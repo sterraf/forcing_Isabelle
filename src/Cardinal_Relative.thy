@@ -286,6 +286,9 @@ lemma mem_bij_abs[simp]: "\<lbrakk>M(f);M(A);M(B)\<rbrakk> \<Longrightarrow>  f 
 lemma mem_inj_abs[simp]: "\<lbrakk>M(f);M(A);M(B)\<rbrakk> \<Longrightarrow>  f \<in> inj_rel(A,B) \<longleftrightarrow> f\<in>inj(A,B)"
   using inj_rel_char by simp
 
+lemma mem_surj_abs: "\<lbrakk>M(f);M(A);M(B)\<rbrakk> \<Longrightarrow>  f \<in> surj_rel(A,B) \<longleftrightarrow> f\<in>surj(A,B)"
+  using surj_rel_char by simp
+
 lemma bij_imp_eqpoll_rel:
   assumes "f \<in> bij(A,B)" "M(f)" "M(A)" "M(B)"
   shows "A \<approx>r B"

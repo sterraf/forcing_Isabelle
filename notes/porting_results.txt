@@ -28,3 +28,7 @@ proliferation of replacement instances, and a valuable target for
 automation would be to provide an interface (relativization &
 synthesis) between the latter and the locale M_ctm for transitive
 models of ZF.
+
+%%% Local Variables:
+%%% ispell-local-dictionary: "american"
+%%% End:
