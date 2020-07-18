@@ -4,6 +4,7 @@ theory Cardinal_AC_Relative
   imports 
     Interface
     CardinalArith_Relative 
+
 begin
 
 \<comment> \<open>MOVE THIS to an appropriate place. Now it is repeated in
@@ -59,7 +60,6 @@ lemma surj_imp_well_ord:
   shows "\<exists>s. well_ord(B,s)"
   using assms lepoll_well_ord[OF well_ord_surj_imp_lepoll]
   by force
-
 
 context M_cardinal_arith
 begin
@@ -261,7 +261,7 @@ subsection\<open>Other Applications of AC\<close>
 lemma surj_implies_inj:
   assumes f: "f \<in> surj(X,Y)" and
     types: "M(f)" "M(X)" "M(Y)"
-  shows "\<exists>g. g \<in> inj(Y,X)"
+  shows "\<exists>g[M]. g \<in> inj(Y,X)"
 proof -
   from f AC_Pi [of Y "%y. f-``{y}"]
   obtain z where z: "z \<in> (\<Prod>y\<in>Y. f -`` {y})"  
@@ -282,26 +282,109 @@ proof (rule lepoll_rel_imp_Card_rel_le)
   thus "Y \<lesssim>r X"
     by (auto simp add: lepoll_rel_def)
 qed
+*)
+
+end (* M_cardinal_AC *)
+
+lemma separation_absolute: "separation(\<lambda>_. True, P)"
+  unfolding separation_def
+  by (rule rallI, rule_tac x="{x\<in>_ . P(x)}" in rexI) auto
+
+lemma univalent_absolute:
+  assumes "univalent(\<lambda>_. True, A, P)"
+    "P(x, b)"  "x \<in> A"
+  shows "P(x, y) \<Longrightarrow> y = b"
+  using assms
+  unfolding univalent_def by force
+
+lemma replacement_absolute: "strong_replacement(\<lambda>_. True, P)"
+  unfolding strong_replacement_def
+proof (intro rallI impI)
+  fix A
+  assume "univalent(\<lambda>_. True, A, P)"
+  then
+  show "\<exists>Y[\<lambda>_. True]. \<forall>b[\<lambda>_. True]. b \<in> Y \<longleftrightarrow> (\<exists>x[\<lambda>_. True]. x \<in> A \<and> P(x, b))"
+    by (rule_tac x="{y. x\<in>A , P(x,y)}" in rexI)
+      (auto dest:univalent_absolute[of _ P])
+qed
+
+lemma Union_ax_absolute: "Union_ax(\<lambda>_. True)"
+    unfolding Union_ax_def big_union_def
+    by (auto intro:rexI[of _ "\<Union>_"])
+
+lemma upair_ax_absolute: "upair_ax(\<lambda>_. True)"
+  unfolding upair_ax_def upair_def rall_def rex_def
+    by (auto)
+
+lemma power_ax_absolute:"power_ax(\<lambda>_. True)"
+proof -
+  {
+    fix x
+    have "\<forall>y[\<lambda>_. True]. y \<in> Pow(x) \<longleftrightarrow> (\<forall>z[\<lambda>_. True]. z \<in> y \<longrightarrow> z \<in> x)"
+      by auto
+  }
+  then
+  show "power_ax(\<lambda>_. True)"
+    unfolding power_ax_def powerset_def subset_def by blast
+qed
+
+locale M_cardinal_UN =  M_Pi_assumptions_choice _ K X for K X +
+  assumes
+    \<comment> \<open>The next assumption is required by @{thm Least_closed}\<close>
+    support_in_M: "x \<in> X(i) \<Longrightarrow> M(i)"
+    and
+    lam_m_replacement:"M(f) \<Longrightarrow> strong_replacement(M,
+      \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> X(i), f ` (\<mu> i. x \<in> X(i)) ` x\<rangle>)"
+    and
+    inj_replacement:
+    "strong_replacement(M, \<lambda>y z. y \<in> inj(X(x), K) \<and> z = {\<langle>x, y\<rangle>})"
+    "strong_replacement(M, \<lambda>x y. y = inj_rel(X(x), K))"
+    "strong_replacement(M,
+      \<lambda>x z. z = Sigfun(x, \<lambda>i. inj_rel(X(i), K)))"
+    "strong_replacement(M,
+      \<lambda>x y. y = \<langle>x, minimum(r, inj_rel(X(x), K))\<rangle>)"
+
+begin
 
 text\<open>Kunen's Lemma 10.21\<close>
 lemma cardinal_UN_le:
   assumes K: "InfCard_r(K)" 
-    and types: "M(K)" "M(\<Union>i\<in>K. X(i))"
-      "\<And>f. M(f) \<Longrightarrow> M(\<lambda>x\<in>(\<Union>x\<in>K. X(x)). \<langle>\<mu> i. x \<in> X(i), f ` (\<mu> i. x \<in> X(i)) ` x\<rangle>)"
-  shows "(\<And>i. i\<in>K \<Longrightarrow> M(X(i)) \<and> |X(i)|r \<le> K) \<Longrightarrow> |\<Union>i\<in>K. X(i)|r \<le> K"
-proof (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff types)
-  have "i\<in>K \<Longrightarrow> M(i)" for i
-    using transM[OF _ \<open>M(K)\<close>] by simp
-  have [intro]: "Ord(K)" by (blast intro: InfCard_rel_is_Card_rel Card_rel_is_Ord K types) 
-  assume "\<And>i. i\<in>K \<Longrightarrow> M(X(i)) \<and> X(i) \<lesssim>r K"
-  moreover from this
-  have "\<And>i. i\<in>K \<Longrightarrow> \<exists>f[M]. f \<in> inj_rel(X(i), K)" by (simp add: types def_lepoll_rel) 
-  moreover from \<open>\<And>i. i\<in>K \<Longrightarrow> M(X(i)) \<and> X(i) \<lesssim>r K\<close>
+  shows "(\<And>i. i\<in>K \<Longrightarrow> |X(i)|r \<le> K) \<Longrightarrow> |\<Union>i\<in>K. X(i)|r \<le> K"
+proof (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff Pi_assumptions)
+  have "M(\<Union>i\<in>K. X(i))"
+    using family_union_closed B_replacement Pi_assumptions
+    by (simp)
+  then
+  have "M(f) \<Longrightarrow> M(\<lambda>x\<in>(\<Union>x\<in>K. X(x)). \<langle>\<mu> i. x \<in> X(i), f ` (\<mu> i. x \<in> X(i)) ` x\<rangle>)" for f
+    using lam_m_replacement support_in_M Least_closed Pi_assumptions
+    by (rule_tac lam_closed) (auto dest:transM)
+  note types = this \<open>M(\<Union>i\<in>K. X(i))\<close> Pi_assumptions
+  have [intro]: "Ord(K)" by (blast intro: InfCard_rel_is_Card_rel
+        Card_rel_is_Ord K types)
+  interpret pii:M_Pi_assumptions_choice _ K "\<lambda>i. inj_rel(X(i), K)"
+    using inj_replacement Pi_assumptions by unfold_locales auto
+  assume asm:"\<And>i. i\<in>K \<Longrightarrow> X(i) \<lesssim>r K"
+  then
   have "\<And>i. i\<in>K \<Longrightarrow> M(inj_rel(X(i), K))"
     by (auto simp add: types)
-  ultimately
-  obtain f where f: "f \<in> (\<Prod>i\<in>K. inj_rel(X(i), K))" "M(f)"
-    using AC_Pi_rel[OF _ \<open>M(K)\<close>, of "\<lambda>i. inj_rel(X(i), K)"] by force
+  interpret V:M_N_Perm M "\<lambda>_. True"
+    using separation_absolute replacement_absolute Union_ax_absolute
+      power_ax_absolute upair_ax_absolute
+    by unfold_locales auto
+  note bad_simps[simp del] = V.N.Forall_in_M_iff V.N.Equal_in_M_iff
+    V.N.nonempty
+  have abs:"V.N.inj_rel(x,y) = inj(x,y)" for x y
+    using V.N.inj_rel_char by simp
+  from asm
+  have "\<And>i. i\<in>K \<Longrightarrow> \<exists>f[M]. f \<in> inj_rel(X(i), K)"
+    by (simp add: types def_lepoll_rel)
+  then
+  obtain f where "f \<in> (\<Prod>i\<in>K. inj_rel(X(i), K))" "M(f)"
+    using pii.AC_Pi_rel pii.Pi_rel_char by auto
+  with abs
+  have f:"f \<in> (\<Prod>i\<in>K. inj(X(i), K))"
+    using Pi_weaken_type[OF _ V.inj_rel_transfer, of f K X "\<lambda>_. K"]
+      Pi_assumptions by simp
   { fix z
     assume z: "z \<in> (\<Union>i\<in>K. X(i))"
     then obtain i where i: "i \<in> K" "Ord(i)" "z \<in> X(i)"
@@ -313,20 +396,24 @@ proof (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff types)
   } note mems = this
   have "(\<Union>i\<in>K. X(i)) \<lesssim>r K \<times> K" 
     proof (simp add:types def_lepoll_rel)
-      show "\<exists>f[M]. f \<in> inj(\<Union>RepFun(K, X), K \<times> K)"
+      show "\<exists>f[M]. f \<in> inj(\<Union>x\<in>K. X(x), K \<times> K)"
         apply (rule rexI)
         apply (rule_tac c = "\<lambda>z. \<langle>\<mu> i. z \<in> X(i), f ` (\<mu> i. z \<in> X(i)) ` z\<rangle>"
                     and d = "\<lambda>\<langle>i,j\<rangle>. converse (f`i) ` j" in lam_injective) 
-          apply (force intro: f inj_is_fun mems apply_type Perm.left_inverse .)+
+          apply (force intro: f inj_is_fun mems apply_type Perm.left_inverse)+
         apply (simp add:types \<open>M(f)\<close>)
         done
     qed
-  also have "... \<approx>r K" 
+    also have "... \<approx>r K"
     by (simp add: K InfCard_rel_square_eq InfCard_rel_is_Card_rel
         Card_rel_cardinal_rel_eq types)
-  finally show "(\<Union>i\<in>K. X(i)) \<lesssim>r K" by (simp_all add:types)
+  finally have "(\<Union>i\<in>K. X(i)) \<lesssim>r K" by (simp_all add:types)
+  then
+  show ?thesis
+    by (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff types)
 qed
 
+(*
 text\<open>The same again, using \<^term>\<open>csucc\<close>\<close>
 lemma cardinal_UN_lt_csucc:
      "[| InfCard(K);  \<And>i. i\<in>K \<Longrightarrow> |X(i)| < csucc(K) |]
@@ -397,6 +484,6 @@ proof -
 qed
 *)
 
-end (* M_cardinals_choice *)
+end (* M_cardinal_UN *)
 
 end
