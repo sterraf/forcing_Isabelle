@@ -272,10 +272,10 @@ proof -
     by (simp, simp del:setclass_iff)
   moreover
   have "f(\<rho>p) \<in> M" for \<rho>p
-    unfolding f_def using Least_closed[of "?P(\<rho>p)"] by simp
+    unfolding f_def using Least_closed'[of "?P(\<rho>p)"] by simp
   ultimately
   have 1:"least(##M,\<lambda>\<alpha>. ?Q(\<rho>p,\<alpha>),f(\<rho>p))" for \<rho>p
-    using least_abs[of "\<lambda>\<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>)" "f(\<rho>p)"] least_conj
+    using least_abs'[of "\<lambda>\<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>)" "f(\<rho>p)"] least_conj
     by (simp flip: setclass_iff)
   have "Ord(f(\<rho>p))" for \<rho>p unfolding f_def by simp
   define QQ where "QQ\<equiv>?Q"

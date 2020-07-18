@@ -78,12 +78,12 @@ lemma is_cardinal_uniqueness:
     "is_cardinal(M,r,d)" "is_cardinal(M,r,d')"
   shows
     "d=d'"
-  using assms least_abs \<comment> \<open>is using abs legit?\<close>
+  using assms least_abs' \<comment> \<open>is using abs legit?\<close>
   unfolding is_cardinal_def
   by force \<comment> \<open>non automatic\<close>
 
 lemma is_cardinal_witness: "M(r) \<Longrightarrow> \<exists>d[M]. is_cardinal(M,r,d)"
-  using Least_closed least_abs unfolding is_cardinal_def
+  using Least_closed' least_abs' unfolding is_cardinal_def
   by fastforce \<comment> \<open>We have to do this by hand, using axioms\<close>
 
 definition
@@ -116,7 +116,7 @@ next
 qed
 
 lemma def_cardinal_rel: "M(x) \<Longrightarrow> |x|r = (\<mu> i. M(i) \<and> i \<approx>r x)"
-  using  least_abs cardinal_rel_iff
+  using  least_abs' cardinal_rel_iff
   unfolding is_cardinal_def by fastforce
 
 (***************  end Discipline  *********************)
@@ -130,19 +130,10 @@ lemma def_Card_rel: "M(i) \<Longrightarrow> Card_rel(i) \<longleftrightarrow> i 
   using cardinal_rel_iff unfolding Card_rel_def
   by simp
 
-lemma is_cardinal_imp_Least:
-  assumes "is_cardinal(M,A,\<kappa>)" "M(A)" "M(\<kappa>)"
-  shows "\<kappa> = (\<mu> i. M(i) \<and> i \<approx>r A)"
-  using assms unfolding is_cardinal_def
-  by (drule_tac least_abs[THEN iffD1, rule_format, rotated 2, of "\<lambda>x. M(x) \<and> x \<approx>r A"])
-    simp_all
-
-(* TO DO: Write a more general version, "least_Least" in Least.thy *)
 lemma is_cardinal_iff_Least:
   assumes "M(A)" "M(\<kappa>)"
   shows "is_cardinal(M,A,\<kappa>) \<longleftrightarrow> \<kappa> = (\<mu> i. M(i) \<and> i \<approx>r A)"
-  using assms is_cardinal_imp_Least[of A \<kappa>]
-    least_abs[symmetric, of "\<lambda>x. M(x) \<and> x \<approx>r A" "(\<mu> i. M(i) \<and> i \<approx>r A)"]
+  using assms least_abs[of "\<lambda>x. M(x) \<and> x \<approx>r A"]
   unfolding is_cardinal_def by auto
 
 end (* M_cardinals *)
@@ -497,7 +488,7 @@ proof -
     by (intro Least_cong) (auto intro: comp_bij bij_converse_bij simp add:def_eqpoll_rel)
   moreover from assms
   have "M(\<mu> i. M(i) \<and> i \<approx>r X)"
-    using Least_closed by fastforce
+    using Least_closed' by fastforce
   moreover
   note assms
   ultimately
@@ -515,14 +506,14 @@ lemma cardinal_rel_cong: "X \<approx>r Y \<Longrightarrow> M(X) \<Longrightarrow
 
 lemma well_ord_is_cardinal_eqpoll_rel:
   assumes "well_ord(A,r)" shows "is_cardinal(M,A,\<kappa>) \<Longrightarrow> M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> M(r) \<Longrightarrow> \<kappa> \<approx>r A"
-proof (subst is_cardinal_imp_Least[of A \<kappa>])
+proof (subst is_cardinal_iff_Least[THEN iffD1, of A \<kappa>])
   assume "M(A)" "M(\<kappa>)" "M(r)" "is_cardinal(M,A,\<kappa>)"
   moreover from assms and calculation
   obtain f i where "M(f)" "Ord(i)" "M(i)" "f \<in> bij(A,i)"
     using ordertype_exists[of A r] ord_iso_is_bij by auto
   moreover
   have "M(\<mu> i. M(i) \<and> i \<approx>r A)"
-    using Least_closed by fastforce
+    using Least_closed' by fastforce
   ultimately
   show "(\<mu> i. M(i) \<and> i \<approx>r A) \<approx>r A"
   using assms[THEN well_ord_imp_relativized]
@@ -654,7 +645,7 @@ proof (unfold def_cardinal_rel)
       assume "j \<approx>r (\<mu> i. M(i) \<and> i \<approx>r A)"
       also have "... \<approx>r A" using i LeastI[of "\<lambda>i. M(i) \<and> i \<approx>r A"] by (auto)
       finally have "j \<approx>r A"
-        using Least_closed[of "\<lambda>i. M(i) \<and> i \<approx>r A"] by (simp add: \<open>M(j)\<close> types)
+        using Least_closed'[of "\<lambda>i. M(i) \<and> i \<approx>r A"] by (simp add: \<open>M(j)\<close> types)
       thus False
         using \<open>M(j)\<close> by (blast intro:less_LeastE [OF _ j])
     qed (auto intro:Least_closed)

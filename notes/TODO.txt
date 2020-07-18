@@ -1,8 +1,8 @@
 General Tasks
 =============
 
-- Search sources for "FIXME", "FIX ME", "NOTE", "MOVE (THIS)" and do
-  that.
+- Search sources for "FIXME", "FIX ME", "NOTE", "MOVE (THIS)", "TODO",
+  "TO DO", and do that.
 
 
 Tidying up sources for release
