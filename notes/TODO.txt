@@ -23,7 +23,9 @@ Porting
 ZF-Constructible
 ================
 
-- pred_set_abs in ZF-Constructible.Wellorderings holds in M_trans.
+- rename "L_axioms.range_type" to "L_axioms.range_fm_type" (clash with
+  ZF.func).
+- "pred_set_abs" in ZF-Constructible.Wellorderings holds in M_trans.
 - ZF-Constructible.Rank
   - Text comments referring to "oB", "om": Should that be "obase",
     "omap"?
