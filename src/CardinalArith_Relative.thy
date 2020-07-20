@@ -7,20 +7,26 @@ theory CardinalArith_Relative
 begin
 
 definition
-  less :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "less(M,a,b) \<equiv> a\<in>b \<and> ordinal(M,b)"
+  lt_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "lt_rel(M,a,b) \<equiv> a\<in>b \<and> ordinal(M,b)"
 
-lemma (in M_trans) less_abs[simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> less(M,a,b) \<longleftrightarrow> a<b"
-  unfolding less_def lt_def by auto
+lemma (in M_trans) less_abs[simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> lt_rel(M,a,b) \<longleftrightarrow> a<b"
+  unfolding lt_rel_def lt_def by auto
+
+definition
+  le_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "le_rel(M,a,b) \<equiv> \<exists>sb[M]. successor(M,b,sb) \<and> lt_rel(M,a,sb)"
+
+lemma (in M_trivial) le_abs[simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> le_rel(M,a,b) \<longleftrightarrow> a\<le>b"
+  unfolding le_rel_def by simp
 
 (******************************************************)
 subsection\<open>Discipline for \<^term>\<open>InfCard\<close>\<close>
 
-\<comment> \<open>Next definition expands the abbreviation for \<^term>\<open>(\<le>)\<close>\<close>
 definition (* completely relational *)
   InfCard_rel   :: "[i\<Rightarrow>o,i] \<Rightarrow> o" where
-  "InfCard_rel(M,A) \<equiv> \<exists>om[M]. \<exists>sA[M]. omega(M,om) \<and> Card_rel(M,A) \<and> 
-    successor(M,A,sA) \<and> less(M,om,sA)"
+  "InfCard_rel(M,A) \<equiv> \<exists>om[M]. omega(M,om) \<and> Card_rel(M,A) \<and>
+                         le_rel(M,om,A)"
 
 context M_cardinals
 begin

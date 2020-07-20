@@ -192,21 +192,18 @@ lemma zero_seqle_max: "x\<in>2^<\<omega> \<Longrightarrow> \<langle>x,0\<rangle>
   using zero_in_seqspace 
   by auto
 
-interpretation forcing_notion "2^<\<omega>" "seqle" "0"
+interpretation sp:forcing_notion "2^<\<omega>" "seqle" "0"
   using preorder_on_seqle zero_seqle_max zero_in_seqspace 
   by unfold_locales simp_all
 
-abbreviation SEQle :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>s" 50)
-  where "x \<preceq>s y \<equiv> Leq(x,y)"
-
-abbreviation SEQIncompatible :: "[i, i] \<Rightarrow> o"  (infixl "\<bottom>s" 50)
-  where "x \<bottom>s y \<equiv> Incompatible(x,y)"
+notation sp.Leq (infixl "\<preceq>s" 50)
+notation sp.Incompatible (infixl "\<bottom>s" 50)
 
 lemma seqspace_separative:
   assumes "f\<in>2^<\<omega>"
   shows "seq_upd(f,0) \<bottom>s seq_upd(f,1)" (is "?f \<bottom>s ?g")
 proof 
-  assume "compat(?f, ?g)"
+  assume "sp.compat(?f, ?g)"
   then 
   obtain h where "h \<in> 2^<\<omega>" "?f \<subseteq> h" "?g \<subseteq> h"
     by blast

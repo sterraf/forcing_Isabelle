@@ -49,3 +49,7 @@ Assorted To-Dos
 - Relativization results / synthesis discipline should be rewritten
   for a general class M in the appropriate locales (and not only for
   ##M).
+- Check for duplicate names of results, for example:
+    Forcing_Theorems.forcing_data.GenExtD
+  vs
+    Names.forcing_data.GenExtD.
