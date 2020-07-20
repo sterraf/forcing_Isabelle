@@ -46,3 +46,6 @@ Assorted To-Dos
 - Add comments about Definitions_Main in root.tex.
 - Prettyprint for elements of "formula".
 - Check if "minimum" should be in Forcing_Main.
+- Relativization results / synthesis discipline should be rewritten
+  for a general class M in the appropriate locales (and not only for
+  ##M).

@@ -2,7 +2,9 @@ section\<open>Cohen forcing notions\<close>
 
 theory Cohen_Posets
   imports
-    Least "../Tools/Try0"
+    Least
+    Renaming_Auto \<comment> \<open>for @{thm app_fun}\<close>
+    "../Tools/Try0"
 begin
 
 definition
