@@ -326,23 +326,17 @@ proof -
   show ?thesis unfolding M_generic_def by auto
 qed
 
+end (* forcing_data *)
+
 (* Compatibility lemmas *)
-lemma compat_in_abs :
+lemma (in M_trivial) compat_in_abs :
   assumes
-    "A\<in>M" "r\<in>M" "p\<in>M" "q\<in>M" 
+    "M(A)" "M(r)" "M(p)" "M(q)" 
   shows
-    "is_compat_in(##M,A,r,p,q) \<longleftrightarrow> compat_in(A,r,p,q)" 
-proof -
-  have "d\<in>A \<Longrightarrow> d\<in>M" for d
-    using transitivity \<open>A\<in>M\<close> by simp
-  moreover from this
-  have "d\<in>A \<Longrightarrow> \<langle>d, t\<rangle> \<in> M" if "t\<in>M" for t d
-    using that pair_in_M_iff by simp
-  ultimately 
-  show ?thesis
-    unfolding is_compat_in_def compat_in_def 
-    using assms pair_in_M_iff transitivity by auto
-qed
+    "is_compat_in(M,A,r,p,q) \<longleftrightarrow> compat_in(A,r,p,q)"
+  using assms unfolding is_compat_in_def compat_in_def by simp
+
+context forcing_data begin
 
 definition
   compat_in_fm :: "[i,i,i,i] \<Rightarrow> i" where
