@@ -24,13 +24,17 @@ ZF-Constructible
 ================
 
 - rename "L_axioms.range_type" to "L_axioms.range_fm_type" (clash with
-  ZF.func).
+  ZF.func). In general, uniformize notation
+  (e.g. typed_function_type).
 - "pred_set_abs" in ZF-Constructible.Wellorderings holds in M_trans.
 - ZF-Constructible.Rank
   - Text comments referring to "oB", "om": Should that be "obase",
     "omap"?
   - Put some name to the result after well_ord_abs.
 - Add resuls like fst_closed? (cf. General tasks)
+- Bad behaviour of abbreviation
+  ¬(sats(·)) ---> satisfies(·)`_≠ 1
+  because of definition of ≠.
 
 
 ZF
@@ -44,12 +48,28 @@ Assorted To-Dos
 ===============
 
 - Add comments about Definitions_Main in root.tex.
+
 - Prettyprint for elements of "formula".
+
 - Check if "minimum" should be in Forcing_Main.
+
 - Relativization results / synthesis discipline should be rewritten
   for a general class M in the appropriate locales (and not only for
   ##M).
+
 - Check for duplicate names of results, for example:
     Forcing_Theorems.forcing_data.GenExtD
   vs
     Names.forcing_data.GenExtD.
+
+- Have instances of valcheck in forcing_data, G_generic (discharging
+  assumptions). Add it to the simpset?
+
+- Add to simpset? Simplified versions of class version theorems
+  instantiated for a set model, because the original versions are not
+  effective enough. Example:
+
+  apply_closed: (##M)(?f) ⟹ (##M)(?a) ⟹ (##M)(?f ` ?a)
+  apply_closed[simplified]: ?f ∈ M ⟹ ?a ∈ M ⟹ ?f ` ?a ∈ M
+
+- Named theorems for arities.
