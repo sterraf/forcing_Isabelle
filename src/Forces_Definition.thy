@@ -689,7 +689,7 @@ proof -
       domain_trans[OF trans_M,of t2] by auto
   then show ?thesis
     unfolding eq_case_def is_eq_case_def
-    using assms pair_in_M_iff n_in_M[of 1] domain_closed tuples_in_M
+    using assms pair_in_M_iff nat_into_M[of 1] domain_closed tuples_in_M
       apply_closed leq_in_M
     by simp
 qed
@@ -1253,7 +1253,7 @@ lemma relation2_Hfrc_at_abs:
 
 lemma Hfrc_at_closed :
   "\<forall>x\<in>M. \<forall>g\<in>M. function(g) \<longrightarrow> bool_of_o(Hfrc(P,leq,x,g))\<in>M"
-  unfolding bool_of_o_def using zero_in_M n_in_M[of 1] by simp
+  unfolding bool_of_o_def using zero_in_M nat_into_M[of 1] by simp
 
 lemma wfrec_Hfrc_at :
   assumes

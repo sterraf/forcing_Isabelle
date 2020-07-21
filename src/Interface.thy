@@ -66,23 +66,30 @@ lemma Transset_intf :
   "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
   by (simp add: Transset_def,auto)
 
-locale M_ZF_trans =
+locale M_ZF =
   fixes M
   assumes
-    upair_ax:         "upair_ax(##M)"
-    and Union_ax:         "Union_ax(##M)"
-    and power_ax:         "power_ax(##M)"
-    and extensionality:   "extensionality(##M)"
-    and foundation_ax:    "foundation_ax(##M)"
-    and infinity_ax:      "infinity_ax(##M)"
-    and separation_ax:    "\<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow> arity(\<phi>) \<le> 1 #+ length(env) \<Longrightarrow>
-                    separation(##M,\<lambda>x. sats(M,\<phi>,[x] @ env))"
-    and replacement_ax:   "\<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow> arity(\<phi>) \<le> 2 #+ length(env) \<Longrightarrow>
+    upair_ax:      "upair_ax(##M)" and
+    Union_ax:      "Union_ax(##M)" and
+    power_ax:      "power_ax(##M)" and
+    extensionality:"extensionality(##M)" and
+    foundation_ax: "foundation_ax(##M)" and
+    infinity_ax:   "infinity_ax(##M)" and
+    separation_ax: "\<phi> \<in> formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow>
+                    arity(\<phi>) \<le> 1 #+ length(env) \<Longrightarrow>
+                    separation(##M,\<lambda>x. sats(M,\<phi>,[x] @ env))" and
+    replacement_ax:"\<phi> \<in> formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow>
+                    arity(\<phi>) \<le> 2 #+ length(env) \<Longrightarrow>
                     strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y] @ env))"
-    and trans_M:          "Transset(M)"
+
+locale M_ZF_trans = M_ZF +
+  assumes
+    trans_M:       "Transset(M)"
 begin
 
 lemmas transitivity = Transset_intf[OF trans_M]
+
+subsection\<open>Interface with \<^term>\<open>M_trivial\<close>\<close>
 
 lemma zero_in_M:  "0 \<in> M"
 proof -
@@ -99,22 +106,15 @@ proof -
     by simp
 qed
 
-subsection\<open>Interface with \<^term>\<open>M_trivial\<close>\<close>
-lemma mtrans :
-  "M_trans(##M)"
+end (* M_ZF_trans *)
+
+sublocale M_ZF_trans \<subseteq> M_trans "##M"
   using transitivity zero_in_M exI[of "\<lambda>x. x\<in>M"]
-  by unfold_locales auto
-
-
-lemma mtriv :
-  "M_trivial(##M)"
-  using trans_M M_trivial.intro mtrans M_trivial_axioms.intro upair_ax Union_ax
-  by simp
-
-end
+  by unfold_locales simp_all
 
 sublocale M_ZF_trans \<subseteq> M_trivial "##M"
-  by (rule mtriv)
+  using trans_M M_trivial.intro M_trivial_axioms.intro upair_ax
+    Union_ax by unfold_locales
 
 context M_ZF_trans
 begin
@@ -575,14 +575,11 @@ lemmas M_basic_sep_instances =
   image_sep_intf converse_sep_intf restrict_sep_intf
   pred_sep_intf memrel_sep_intf comp_sep_intf is_recfun_sep_intf
 
-lemma mbasic : "M_basic(##M)"
-  using trans_M zero_in_M power_ax M_basic_sep_instances funspace_succ_rep_intf mtriv
-  by unfold_locales auto
-
-end
+end (* M_ZF_trans *)
 
 sublocale M_ZF_trans \<subseteq> M_basic "##M"
-  by (rule mbasic)
+  using trans_M zero_in_M power_ax M_basic_sep_instances funspace_succ_rep_intf
+  by unfold_locales auto
 
 subsection\<open>Interface with \<^term>\<open>M_trancl\<close>\<close>
 
@@ -656,11 +653,12 @@ schematic_goal wellfounded_trancl_fm_auto:
   unfolding  wellfounded_trancl_def
   by (insert assms ; (rule sep_rules trans_closure_fm_iff_sats | simp)+)
 
-lemma (in M_ZF_trans) wftrancl_separation_intf:
+context M_ZF_trans
+begin
+
+lemma wftrancl_separation_intf:
   assumes
-    "r\<in>M"
-    and
-    "Z\<in>M"
+    "r\<in>M" and "Z\<in>M"
   shows
     "separation (##M, wellfounded_trancl(##M,Z,r))"
 proof -
@@ -687,10 +685,9 @@ proof -
   with \<open>r\<in>M\<close> \<open>Z\<in>M\<close> show ?thesis by simp
 qed
 
-(* nat \<in> M *)
+text\<open>Proof that \<^term>\<open>nat \<in> M\<close>\<close>
 
-lemma (in M_ZF_trans) finite_sep_intf:
-  "separation(##M, \<lambda>x. x\<in>nat)"
+lemma finite_sep_intf: "separation(##M, \<lambda>x. x\<in>nat)"
 proof -
   have "arity(finite_ordinal_fm(0)) = 1 "
     unfolding finite_ordinal_fm_def limit_ordinal_fm_def empty_fm_def succ_fm_def cons_fm_def
@@ -706,14 +703,11 @@ proof -
   then show ?thesis unfolding separation_def by simp
 qed
 
-
-lemma (in M_ZF_trans) nat_subset_I' :
+lemma nat_subset_I':
   "\<lbrakk> I\<in>M ; 0\<in>I ; \<And>x. x\<in>I \<Longrightarrow> succ(x)\<in>I \<rbrakk> \<Longrightarrow> nat \<subseteq> I"
   by (rule subsetI,induct_tac x,simp+)
 
-
-lemma (in M_ZF_trans) nat_subset_I :
-  "\<exists>I\<in>M. nat \<subseteq> I"
+lemma nat_subset_I: "\<exists>I\<in>M. nat \<subseteq> I"
 proof -
   have "\<exists>I\<in>M. 0\<in>I \<and> (\<forall>x\<in>M. x\<in>I \<longrightarrow> succ(x)\<in>I)"
     using infinity_ax unfolding infinity_ax_def by auto
@@ -727,8 +721,7 @@ proof -
   then show ?thesis using \<open>I\<in>M\<close> by auto
 qed
 
-lemma (in M_ZF_trans) nat_in_M :
-  "nat \<in> M"
+lemma nat_in_M: "nat \<in> M"
 proof -
   have 1:"{x\<in>B . x\<in>A}=A" if "A\<subseteq>B" for A B
     using that by auto
@@ -740,16 +733,12 @@ proof -
   then show ?thesis
     using \<open>nat\<subseteq>I\<close> 1 by simp
 qed
-  (* end nat \<in> M *)
 
-
-lemma (in M_ZF_trans) mtrancl : "M_trancl(##M)"
-  using  mbasic rtrancl_separation_intf wftrancl_separation_intf nat_in_M
-    wellfounded_trancl_def
-  by unfold_locales auto
+end (* M_ZF_trans *)
 
 sublocale M_ZF_trans \<subseteq> M_trancl "##M"
-  by (rule mtrancl)
+  using rtrancl_separation_intf wftrancl_separation_intf nat_in_M
+    wellfounded_trancl_def by unfold_locales auto
 
 subsection\<open>Interface with \<^term>\<open>M_eclose\<close>\<close>
 
@@ -761,10 +750,6 @@ lemma repl_sats:
    strong_replacement(##M,P)"
   by (rule strong_replacement_cong,simp add:sat)
 
-lemma (in M_ZF_trans) nat_trans_M :
-  "n\<in>M" if "n\<in>nat" for n
-  using that nat_in_M transitivity by simp
-
 lemma (in M_ZF_trans) list_repl1_intf:
   assumes
     "A\<in>M"
@@ -775,11 +760,11 @@ proof -
     fix n
     assume "n\<in>nat"
     have "succ(n)\<in>M"
-      using \<open>n\<in>nat\<close> nat_trans_M by simp
+      using \<open>n\<in>nat\<close> nat_into_M by simp
     then have 1:"Memrel(succ(n))\<in>M"
       using \<open>n\<in>nat\<close> Memrel_closed by simp
     have "0\<in>M"
-      using  nat_0I nat_trans_M by simp
+      using  nat_0I nat_into_M by simp
     then have "is_list_functor(##M, A, a, b)
        \<longleftrightarrow> sats(M, list_functor_fm(13,1,0), [b,a,c,d,a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),A,0])"
       if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "a0\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "y\<in>M" "x\<in>M" "z\<in>M"
@@ -838,7 +823,7 @@ proof -
     fix n
     assume "n\<in>nat"
     have "succ(n)\<in>M"
-      using \<open>n\<in>nat\<close> nat_trans_M by simp
+      using \<open>n\<in>nat\<close> nat_into_M by simp
     then have 1:"Memrel(succ(n))\<in>M"
       using \<open>n\<in>nat\<close> Memrel_closed by simp
     {
@@ -889,7 +874,7 @@ lemma (in M_ZF_trans) formula_repl1_intf :
   "iterates_replacement(##M, is_formula_functor(##M), 0)"
 proof -
   have "0\<in>M"
-    using  nat_0I nat_trans_M by simp
+    using  nat_0I nat_into_M by simp
   have 1:"arity(formula_functor_fm(1,0)) = 2"
     unfolding fm_definitions
     by (simp add:nat_simp_union)
@@ -945,7 +930,7 @@ lemma (in M_ZF_trans) list_repl2_intf:
     "strong_replacement(##M,\<lambda>n y. n\<in>nat & is_iterates(##M, is_list_functor(##M,A), 0, n, y))"
 proof -
   have "0\<in>M"
-    using  nat_0I nat_trans_M by simp
+    using  nat_0I nat_into_M by simp
   have "is_list_functor(##M,A,a,b) \<longleftrightarrow>
         sats(M,list_functor_fm(13,1,0),[b,a,c,d,e,f,g,h,i,j,k,n,y,A,0,nat])"
     if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "e\<in>M" "f\<in>M""g\<in>M""h\<in>M""i\<in>M""j\<in>M" "k\<in>M" "n\<in>M" "y\<in>M"
@@ -976,7 +961,7 @@ lemma (in M_ZF_trans) formula_repl2_intf:
   "strong_replacement(##M,\<lambda>n y. n\<in>nat & is_iterates(##M, is_formula_functor(##M), 0, n, y))"
 proof -
   have "0\<in>M"
-    using  nat_0I nat_trans_M by simp
+    using  nat_0I nat_into_M by simp
   have "is_formula_functor(##M,a,b) \<longleftrightarrow>
         sats(M,formula_functor_fm(1,0),[b,a,c,d,e,f,g,h,i,j,k,n,y,0,nat])"
     if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "e\<in>M" "f\<in>M""g\<in>M""h\<in>M""i\<in>M""j\<in>M" "k\<in>M" "n\<in>M" "y\<in>M"
@@ -1041,20 +1026,14 @@ proof -
   show ?thesis using repl_sats[of M ?f "[A,nat]"]  satsf  by simp
 qed
 
-lemma (in M_ZF_trans) mdatatypes : "M_datatypes(##M)"
-  using  mtrancl list_repl1_intf list_repl2_intf formula_repl1_intf
+sublocale M_ZF_trans \<subseteq> M_datatypes "##M"
+  using list_repl1_intf list_repl2_intf formula_repl1_intf
     formula_repl2_intf nth_repl_intf
   by unfold_locales auto
 
-sublocale M_ZF_trans \<subseteq> M_datatypes "##M"
-  by (rule mdatatypes)
-
-lemma (in M_ZF_trans) meclose : "M_eclose(##M)"
-  using mdatatypes eclose_repl1_intf eclose_repl2_intf
-  by unfold_locales auto
-
 sublocale M_ZF_trans \<subseteq> M_eclose "##M"
-  by (rule meclose)
+  using eclose_repl1_intf eclose_repl2_intf
+  by unfold_locales auto
 
 (* Interface with locale M_eclose_pow *)
 
@@ -1306,13 +1285,9 @@ proof -
     using \<open>i\<in>M\<close> memrel_eclose_sing by simp
 qed
 
-
-lemma (in M_ZF_trans) meclose_pow : "M_eclose_pow(##M)"
-  using meclose power_ax powapply_repl phrank_repl trans_repl_HVFrom wfrec_rank
-  by unfold_locales auto
-
 sublocale M_ZF_trans \<subseteq> M_eclose_pow "##M"
-  by (rule meclose_pow)
+  using power_ax powapply_repl phrank_repl trans_repl_HVFrom
+    wfrec_rank by unfold_locales auto
 
 lemma (in M_ZF_trans) repl_gen :
   assumes

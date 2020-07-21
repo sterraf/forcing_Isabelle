@@ -4,6 +4,23 @@ General Tasks
 - Search sources for "FIXME", "FIX ME", "NOTE", "MOVE (THIS)", "TODO",
   "TO DO", and do that.
 
+- Search for code duplication. Examples:
+    Forcing_Data.Transset_M
+  vs
+    Interface.Transset_intf
+
+- Relativization results / synthesis discipline should be rewritten
+  for a general class M in the appropriate locales (and not only for
+  ##M).
+
+- Check for duplicate names of results, for example:
+    Forcing_Theorems.forcing_data.GenExtD
+  vs
+    Names.forcing_data.GenExtD.
+
+- Revise naming conventions of results (esp. for the next section;
+  check style_guide.txt).
+
 
 Tidying up sources for release
 ==============================
@@ -52,15 +69,6 @@ Assorted To-Dos
 - Prettyprint for elements of "formula".
 
 - Check if "minimum" should be in Forcing_Main.
-
-- Relativization results / synthesis discipline should be rewritten
-  for a general class M in the appropriate locales (and not only for
-  ##M).
-
-- Check for duplicate names of results, for example:
-    Forcing_Theorems.forcing_data.GenExtD
-  vs
-    Names.forcing_data.GenExtD.
 
 - Have instances of valcheck in forcing_data, G_generic (discharging
   assumptions). Add it to the simpset?

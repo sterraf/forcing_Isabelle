@@ -105,13 +105,19 @@ theorem extensions_of_ctms:
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)) \<and>
       (M, []\<Turnstile> AC \<longrightarrow> N \<Turnstile> ZFC)"
 proof -
+  from \<open>M \<Turnstile> ZF\<close>
+  interpret M_ZF M
+    using M_ZF_iff_M_satT
+    by simp
+  from \<open>Transset(M)\<close>
+  interpret M_ZF_trans M
+    using M_ZF_iff_M_satT
+    by unfold_locales
   from \<open>M \<approx> nat\<close>
   obtain enum where "enum \<in> bij(nat,M)"
     using eqpoll_sym unfolding eqpoll_def by blast
-  with assms
-  interpret M_ctm M enum
-    using M_ZF_iff_M_satT
-    by intro_locales (simp_all add:M_ctm_axioms_def)
+  then
+  interpret M_ctm M enum by unfold_locales
   interpret ctm_separative "2^<\<omega>" seqle 0 M enum
   proof (unfold_locales)
     fix f

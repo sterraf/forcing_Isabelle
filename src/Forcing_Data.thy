@@ -14,98 +14,14 @@ lemma Transset_M :
   by (simp add: Transset_def,auto)  
 
 
-locale M_ZF = 
-  fixes M 
-  assumes 
-    upair_ax:         "upair_ax(##M)"
-    and Union_ax:         "Union_ax(##M)"
-    and power_ax:         "power_ax(##M)"
-    and extensionality:   "extensionality(##M)"
-    and foundation_ax:    "foundation_ax(##M)"
-    and infinity_ax:      "infinity_ax(##M)"
-    and separation_ax:    "\<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow> arity(\<phi>) \<le> 1 #+ length(env) \<Longrightarrow>
-                    separation(##M,\<lambda>x. sats(M,\<phi>,[x] @ env))" 
-    and replacement_ax:   "\<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow> arity(\<phi>) \<le> 2 #+ length(env) \<Longrightarrow> 
-                    strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y] @ env))" 
 
-locale M_ctm = M_ZF +
+locale M_ctm = M_ZF_trans +
   fixes enum
   assumes M_countable:      "enum\<in>bij(nat,M)"
-    and trans_M:          "Transset(M)"
-
 begin
-interpretation intf: M_ZF_trans "M"
-  using M_ZF_trans.intro
-    trans_M upair_ax Union_ax power_ax extensionality
-    foundation_ax infinity_ax separation_ax[simplified] 
-    replacement_ax[simplified]
-  by simp
-
-lemmas transitivity = intf.transitivity
-
-lemma zero_in_M:  "0 \<in> M" 
-  by (rule intf.zero_in_M)
 
 lemma tuples_in_M: "A\<in>M \<Longrightarrow> B\<in>M \<Longrightarrow> \<langle>A,B\<rangle>\<in>M" 
   by (simp flip:setclass_iff)
-
-lemma nat_in_M : "nat \<in> M"
-  by (rule intf.nat_in_M)
-
-lemma n_in_M : "n\<in>nat \<Longrightarrow> n\<in>M"
-  using nat_in_M transitivity by simp
-
-lemma mtriv: "M_trivial(##M)" 
-  by (rule intf.mtriv)
-
-lemma mtrans: "M_trans(##M)"
-  by (rule intf.mtrans)
-
-lemma mbasic: "M_basic(##M)"
-  by (rule intf.mbasic)
-
-lemma mtrancl: "M_trancl(##M)"
-  by (rule intf.mtrancl)
-
-lemma mdatatypes: "M_datatypes(##M)"
-  by (rule intf.mdatatypes)
-
-lemma meclose: "M_eclose(##M)"
-  by (rule intf.meclose)
-
-lemma meclose_pow: "M_eclose_pow(##M)"
-  by (rule intf.meclose_pow)
-
-
-
-end (* M_ctm *)
-
-(* M_ctm interface *)
-sublocale M_ctm \<subseteq> M_trivial "##M"
-  by  (rule mtriv)
-
-sublocale M_ctm \<subseteq> M_trans "##M"
-  by  (rule mtrans)
-
-sublocale M_ctm \<subseteq> M_basic "##M"
-  by  (rule mbasic)
-
-sublocale M_ctm \<subseteq> M_trancl "##M"
-  by  (rule mtrancl)
-
-sublocale M_ctm \<subseteq> M_datatypes "##M"
-  by  (rule mdatatypes)
-
-sublocale M_ctm \<subseteq> M_eclose "##M"
-  by  (rule meclose)
-
-sublocale M_ctm \<subseteq> M_eclose_pow "##M"
-  by  (rule meclose_pow)
-
-(* end interface *)
-
-context M_ctm
-begin
 
 subsection\<open>\<^term>\<open>Collects\<close> in $M$\<close>
 lemma Collect_in_M_0p :

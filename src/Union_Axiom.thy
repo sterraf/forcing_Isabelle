@@ -97,7 +97,7 @@ proof -
       using low_bound_filter filterD  by blast
     then
     have "p \<in> M" "q\<in>M" "r\<in>M"
-      using mtrans P_in_M unfolding M_trans_def by auto
+      using P_in_M by (auto dest:transM)
     with A \<open>\<langle>\<theta>,r\<rangle> \<in> \<sigma>\<close> \<open>\<langle>\<sigma>,q\<rangle> \<in> \<tau>\<close> \<open>\<theta> \<in> M\<close> \<open>\<theta> \<in> domain(\<Union>(domain(\<tau>)))\<close>  \<open>\<sigma>\<in>M\<close>
     have "\<langle>\<theta>,p\<rangle> \<in> Union_name(\<tau>)"
       unfolding Union_name_def Union_name_body_def
