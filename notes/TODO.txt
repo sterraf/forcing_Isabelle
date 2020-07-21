@@ -21,6 +21,13 @@ General Tasks
 - Revise naming conventions of results (esp. for the next section;
   check style_guide.txt).
 
+- Move general results proved in some context to the definition
+  of the context.
+
+  For instance:
+  * upairM singletonM Rep_simp from Names.thy to Forcing_Data.thy
+
+
 
 Tidying up sources for release
 ==============================
