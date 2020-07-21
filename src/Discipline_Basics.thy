@@ -531,6 +531,14 @@ lemma Pi_rel_type:
   by (simp only: Pi_rel_iff' PiC.Pi_rel_iff')
     (blast dest: function_apply_equality)
 
+lemma Pi_rel_weaken_type:
+  assumes "f \<in> Pi_rel(A,B)" "\<And>x. x \<in> A \<Longrightarrow> B(x) \<subseteq> C(x)"
+    and types: "M(f)"
+  shows "f \<in> Pi_rel(A,C)"
+  using assms Pi_assumptions
+  by (simp only: Pi_rel_iff' PiC.Pi_rel_iff')
+    (blast intro: Pi_rel_type  dest: apply_type)
+
 end (* M_Pi_assumptions2 *)
 
 (**********************************************************)

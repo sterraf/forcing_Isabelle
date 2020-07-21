@@ -42,7 +42,7 @@ end (* M_cardinals *)
 
 (******************  end Discipline  ******************)
 
-sublocale forcing_data \<subseteq> M_cardinal_AC "##M"
+sublocale M_ZF_trans \<subseteq> M_cardinal_AC "##M"
   sorry
 
 context G_generic begin
@@ -50,12 +50,18 @@ context G_generic begin
 notation cardinal_rel (\<open>|_|\<^sup>M\<close>)
 notation ccc_rel (\<open>ccc\<^sup>M\<close>)
 notation check (\<open>_\<^sup>v\<close> [101] 100)
+notation function_space_rel (infix \<open>\<rightarrow>\<^sup>M\<close> 60)
+notation inj_rel (\<open>inj\<^sup>M\<close>)
 
 \<comment> \<open>NOTE: The following bundled additions to the simpset might be of
     use later on, perhaps add them globally to some appropriate
     locale.\<close>
-bundle generic_simps = generic[THEN one_in_G, THEN valcheck, OF one_in_P, simp] GenExtI[simp]
-  generic[THEN one_in_G, THEN M_subset_MG, THEN subsetD, simp] check_in_M[simp]
+lemmas generic_simps = generic[THEN one_in_G, THEN valcheck, OF one_in_P]
+  generic[THEN one_in_G, THEN M_subset_MG, THEN subsetD]
+  check_in_M GenExtI P_in_M
+lemmas generic_dests = M_genericD[OF generic] M_generic_compatD[OF generic]
+
+bundle G_generic_lemmas = generic_simps[simp] generic_dests[dest]
 
 text\<open>The following interpretation makes the simplifications from the
 locales \<open>M_trans\<close>, \<open>M_trivial\<close>, etc., available for \<^term>\<open>M[G]\<close> \<close>
@@ -66,16 +72,17 @@ interpretation mgzf: M_ZF_trans "M[G]"
   by unfold_locales simp_all
 
 context
-  includes generic_simps
+  includes G_generic_lemmas
 begin
 
 \<comment> \<open>@{thm mgzf.apply_closed} does not simplifies appropriately\<close>
 lemmas apply_closed_in_MG = mgzf.apply_closed[simplified, simp]
 lemmas apply_closed_in_M = apply_closed[simplified, simp]
+lemmas nonempty_ctm = nonempty[simplified, simp]
 
-\<comment> \<open>Kunen IV.3.35\<close>
-lemma 
-  assumes "ccc\<^sup>M(##M,P,leq)" "A\<in>M" "B\<in>M" "f\<in>M[G]" "f : A\<rightarrow> B"
+\<comment> \<open>Kunen IV.3.5\<close>
+lemma ccc_fun_approximation_lemma:
+  assumes "ccc\<^sup>M(##M,P,leq)" "A\<in>M" "B\<in>M" "f\<in>M[G]" "f : A \<rightarrow> B"
   shows 
     "\<exists>F\<in>M. F : A \<rightarrow> Pow(B) \<and> (\<forall>a\<in>A. f`a \<in> F`a \<and> |F`a|\<^sup>M \<le> nat)"
 proof -
@@ -88,11 +95,12 @@ proof -
     by (auto simp add:nat_simp_union arity_typed_function_fm
         \<comment> \<open>NOTE: type-checking is not performed here by the Simplifier\<close>
         typed_function_type)
-  let ?F="\<lambda>a\<in>A. {b\<in>B. \<exists>q\<in>P. q \<preceq> p \<and> (q \<tturnstile> fun_apply_fm(0,1,2) [f_dot, a\<^sup>v, b\<^sup>v])}"
-  have "?F \<in> M" sorry
-  have "f`a \<in> ?F`a" if "a \<in> A" for a
+  define F where "F\<equiv>\<lambda>a\<in>A. {b\<in>B. \<exists>q\<in>P. q \<preceq> p \<and> (q \<tturnstile> fun_apply_fm(0,1,2) [f_dot, a\<^sup>v, b\<^sup>v])}"
+  let ?app_fm="fun_apply_fm(0,1,2)"\<comment> \<open>formula for \<open>f`x=z\<close>\<close>
+  have "F \<in> M" sorry
+  moreover
+  have "f`a \<in> F`a" if "a \<in> A" for a
   proof -
-    let ?app_fm="fun_apply_fm(0,1,2)"\<comment> \<open>formula for \<open>f`x=z\<close>\<close>
     note \<open>f: A \<rightarrow> B\<close> \<open>a \<in> A\<close>
     moreover from this
     have "f ` a \<in> B" by simp
@@ -113,16 +121,46 @@ proof -
       using generic truth_lemma[of ?app_fm G "[f_dot, a\<^sup>v, (f`a)\<^sup>v]"]
       by (auto simp add: nat_simp_union arity_fun_apply_fm
           fun_apply_type)
-    then
-    have "\<exists>q\<in>P. q \<preceq> p \<and> q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, (f`a)\<^sup>v]"
-      sorry
-    with \<open>f`a \<in> B\<close>
+    moreover from this and \<open>p\<in>G\<close>
+    obtain q where "q \<preceq> p" "q \<preceq> r" "q \<in> G" by auto
+    ultimately
+    have "q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, (f`a)\<^sup>v]" "q\<in>G"
+      using strengthening_lemma[of r ?app_fm _ "[f_dot, a\<^sup>v, (f`a)\<^sup>v]"]
+      by (auto simp add: nat_simp_union arity_fun_apply_fm
+          fun_apply_type)
+    with \<open>f`a \<in> B\<close> \<open>q \<preceq> p\<close>
     have "f`a \<in> {b\<in>B . \<exists>q\<in>P. q \<preceq> p \<and> q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v]}"
-      by simp
+      by blast
     with \<open>a\<in>A\<close>
-    show ?thesis by simp
+    show ?thesis unfolding F_def by simp
   qed
-  oops
+  moreover
+  have "|F`a|\<^sup>M \<le> nat" if "a \<in> A" for a
+  proof -
+    let ?Q="\<lambda>b. {q\<in>P. q \<preceq> p \<and> (q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v])}"
+    interpret M_Pi_assumptions_choice "##M" "F`a" ?Q sorry
+    have "\<exists>y. y \<in> ?Q(b)" if "b \<in> F`a" for b sorry
+    then
+    obtain q where "q \<in> Pi_rel(F`a,?Q)" "q\<in>M" using AC_Pi_rel by auto
+    moreover from \<open>F \<in> M\<close>
+    have "F`a \<in> M" sorry
+    moreover from calculation
+    have "q : F`a \<rightarrow>\<^sup>M P" sorry
+    moreover
+    have "q`b \<bottom> q`c" if "b \<noteq> c" "b \<in> F`a" "c \<in> F`a" for b c sorry
+    moreover from this
+    have "q`b \<noteq> q`c" if "b \<noteq> c" "b \<in> F`a" "c \<in> F`a" for b c sorry
+    ultimately
+    have "q \<in> inj_rel(F`a,P)" using def_inj_rel by auto
+    with \<open>F`a \<in> M\<close> \<open>q \<in> M\<close>
+    show ?thesis sorry
+  qed
+  moreover
+  have "F : A \<rightarrow> Pow(B)"
+    unfolding F_def by (rule_tac lam_type) blast
+  ultimately
+  show ?thesis by auto
+qed
 
 end (* includes generic_simps *)
 
