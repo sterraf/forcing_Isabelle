@@ -270,20 +270,14 @@ lemma lfp_banach_functor_closed:
   assumes "M(g)" "M(X)" "M(Y)" "M(f)" "g\<in>inj(Y,X)"
   shows "M(lfp(X, banach_functor(X,Y,f,g)))"
 proof -
+  from assms
   have "M(banach_functor(X,Y,f,g)^n (0))" if "n\<in>nat" for n
-    using assms that banach_functor_abs nonempty banach_functor_closed
+    using that banach_functor_abs nonempty banach_functor_closed
           iterates_closed[OF iterates_banach banach_functor_abs]
     by simp
-  then 
-  have "\<forall>n\<in>nat. M(banach_functor(X,Y,f,g)^n (0))" 
-    by simp
-  then
-  have "M(\<Union>n\<in>nat. banach_functor(X,Y,f,g)^n (0))" 
-    using assms family_union_closed[OF banach_repl_iter M_nat]
-    by simp
-  then 
+  with assms
   show ?thesis 
-    using assms lfp_banach_functor 
+    using family_union_closed[OF banach_repl_iter M_nat] lfp_banach_functor 
     by simp
 qed
 
