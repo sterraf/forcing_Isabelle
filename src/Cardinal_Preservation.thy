@@ -13,11 +13,19 @@ definition
   "antichain_rel(M,P,leq,A) \<equiv> subset(M,A,P) \<and> (\<forall>p[M]. \<forall>q[M].
        p\<in>A \<longrightarrow> q\<in>A \<longrightarrow> \<not> is_compat_in(M,P,leq,p,q))"
 
-lemma (in M_trivial) antichain_abs [absolut]: 
+context M_trivial
+begin
+
+abbreviation
+  antichain_r :: "[i,i,i] \<Rightarrow> o" where
+  "antichain_r(P,leq,A) \<equiv> antichain_rel(M,P,leq,A)"
+
+lemma antichain_abs [absolut]:
   "\<lbrakk>M(X); M(A); M(r); M(P); M(leq)\<rbrakk> \<Longrightarrow> 
-  antichain_rel(M,P,leq,A) \<longleftrightarrow> antichain(P,leq,A)"
+  antichain_r(P,leq,A) \<longleftrightarrow> antichain(P,leq,A)"
   unfolding antichain_rel_def antichain_def by (simp add:absolut)
 
+end (* M_trivial *)
 
 (******************************************************)
 subsection\<open>Discipline for \<^term>\<open>ccc\<close>\<close>
@@ -30,11 +38,15 @@ definition (* completely relational *)
 context M_cardinals
 begin
 
+abbreviation
+  ccc_r     :: "[i,i]\<Rightarrow>o"  where
+  "ccc_r(P,leq) \<equiv> ccc_rel(M,P,leq)"
+
 lemma def_ccc_rel:
   assumes
     "M(i)"
   shows
-    "ccc_rel(M,P,leq) \<longleftrightarrow> (\<forall>A[M]. antichain_rel(M,P,leq,A) \<longrightarrow> |A|r \<le> nat)"
+    "ccc_r(P,leq) \<longleftrightarrow> (\<forall>A[M]. antichain_r(P,leq,A) \<longrightarrow> |A|r \<le> nat)"
   using assms cardinal_rel_iff
   unfolding ccc_rel_def by (simp add:absolut)
 
@@ -48,7 +60,7 @@ sublocale M_ZF_trans \<subseteq> M_cardinal_AC "##M"
 context G_generic begin
 
 notation cardinal_rel (\<open>|_|\<^sup>M\<close>)
-notation ccc_rel (\<open>ccc\<^sup>M\<close>)
+notation ccc_r (\<open>ccc\<^sup>M\<close>)
 notation check (\<open>_\<^sup>v\<close> [101] 100)
 notation function_space_rel (infix \<open>\<rightarrow>\<^sup>M\<close> 60)
 notation inj_rel (\<open>inj\<^sup>M\<close>)
@@ -75,14 +87,108 @@ context
   includes G_generic_lemmas
 begin
 
-\<comment> \<open>@{thm mgzf.apply_closed} does not simplifies appropriately\<close>
-lemmas apply_closed_in_MG = mgzf.apply_closed[simplified, simp]
-lemmas apply_closed_in_M = apply_closed[simplified, simp]
-lemmas nonempty_ctm = nonempty[simplified, simp]
+\<comment> \<open>Simplifying simp rules (because of the occurrence of "##")\<close>
+lemmas sharp_simps = Card_Union Card_rel_cardinal_rel Collect_abs
+  Cons_abs Cons_in_M_iff Diff_closed Equal_abs Equal_in_M_iff Finite_abs
+  Forall_abs Forall_in_M_iff Inl_abs Inl_in_M_iff Inr_abs Inr_in_M_iff
+  Int_closed Inter_abs Inter_closed M_nat Member_abs Member_in_M_iff
+  Memrel_closed Nand_abs Nand_in_M_iff Nil_abs Nil_in_M Ord_cardinal_rel
+  Pow_rel_closed Un_closed Union_abs Union_closed and_abs and_closed
+  apply_abs apply_closed bij_rel_closed bijection_abs bool_of_o_abs
+  bool_of_o_closed cadd_rel_0 cadd_rel_closed cardinal_rel_0_iff_0
+  cardinal_rel_closed cardinal_rel_idem cartprod_abs cartprod_closed
+  cmult_rel_0 cmult_rel_1 cmult_rel_closed comp_closed composition_abs
+  cons_abs cons_closed converse_abs converse_closed csquare_lam_closed
+  csquare_rel_closed depth_closed domain_abs domain_closed eclose_abs
+  eclose_closed empty_abs field_abs field_closed finite_funspace_closed
+  finite_ordinal_abs formula_N_abs formula_N_closed formula_abs
+  formula_case_abs formula_case_closed formula_closed
+  formula_functor_abs fst_closed function_abs function_space_rel_closed
+  hd_abs image_abs image_closed inj_rel_closed injection_abs inter_abs
+  irreflexive_abs is_depth_apply_abs is_eclose_n_abs is_funspace_abs
+  iterates_closed le_abs length_abs length_closed lepoll_rel_refl
+  limit_ordinal_abs linear_rel_abs list_N_abs list_N_closed list_abs
+  list_case'_closed list_case_abs list_closed list_functor_abs lt_abs
+  mem_bij_abs mem_eclose_abs mem_inj_abs mem_list_abs membership_abs
+  minimum_closed nat_case_abs nat_case_closed nonempty not_abs
+  not_closed nth_abs number1_abs number2_abs number3_abs omega_abs
+  or_abs or_closed order_isomorphism_abs ordermap_closed
+  ordertype_closed ordinal_abs pair_abs pair_in_M_iff powerset_abs
+  pred_closed pred_set_abs quasilist_abs quasinat_abs radd_closed
+  rall_abs range_abs range_closed relation_abs restrict_closed
+  restriction_abs rex_abs rmult_closed rtrancl_abs rtrancl_closed
+  rvimage_closed separation_closed setdiff_abs singleton_abs
+  singleton_in_M_iff snd_closed strong_replacement_closed subset_abs
+  succ_in_M_iff successor_abs successor_ordinal_abs sum_abs sum_closed
+  surj_rel_closed surjection_abs tl_abs trancl_abs trancl_closed
+  transitive_rel_abs transitive_set_abs typed_function_abs union_abs
+  upair_abs upair_in_M_iff vimage_abs vimage_closed well_ord_abs
+  mem_formula_abs fst_abs snd_abs nth_closed
+
+\<comment> \<open>NOTE: there is a theorem missing from those above\<close>
+lemmas mg_sharp_simps = mgzf.Card_Union mgzf.Card_rel_cardinal_rel
+  mgzf.Collect_abs mgzf.Cons_abs mgzf.Cons_in_M_iff mgzf.Diff_closed
+  mgzf.Equal_abs mgzf.Equal_in_M_iff mgzf.Finite_abs mgzf.Forall_abs
+  mgzf.Forall_in_M_iff mgzf.Inl_abs mgzf.Inl_in_M_iff mgzf.Inr_abs
+  mgzf.Inr_in_M_iff mgzf.Int_closed mgzf.Inter_abs mgzf.Inter_closed
+  mgzf.M_nat mgzf.Member_abs mgzf.Member_in_M_iff mgzf.Memrel_closed
+  mgzf.Nand_abs mgzf.Nand_in_M_iff mgzf.Nil_abs mgzf.Nil_in_M
+  mgzf.Ord_cardinal_rel mgzf.Pow_rel_closed mgzf.Un_closed
+  mgzf.Union_abs mgzf.Union_closed mgzf.and_abs mgzf.and_closed
+  mgzf.apply_abs mgzf.apply_closed mgzf.bij_rel_closed
+  mgzf.bijection_abs mgzf.bool_of_o_abs mgzf.bool_of_o_closed
+  mgzf.cadd_rel_0 mgzf.cadd_rel_closed mgzf.cardinal_rel_0_iff_0
+  mgzf.cardinal_rel_closed mgzf.cardinal_rel_idem mgzf.cartprod_abs
+  mgzf.cartprod_closed mgzf.cmult_rel_0 mgzf.cmult_rel_1
+  mgzf.cmult_rel_closed mgzf.comp_closed mgzf.composition_abs
+  mgzf.cons_abs mgzf.cons_closed mgzf.converse_abs mgzf.converse_closed
+  mgzf.csquare_lam_closed mgzf.csquare_rel_closed mgzf.depth_closed
+  mgzf.domain_abs mgzf.domain_closed mgzf.eclose_abs mgzf.eclose_closed
+  mgzf.empty_abs mgzf.field_abs mgzf.field_closed
+  mgzf.finite_funspace_closed mgzf.finite_ordinal_abs mgzf.formula_N_abs
+  mgzf.formula_N_closed mgzf.formula_abs mgzf.formula_case_abs
+  mgzf.formula_case_closed mgzf.formula_closed mgzf.formula_functor_abs
+  mgzf.fst_closed mgzf.function_abs mgzf.function_space_rel_closed
+  mgzf.hd_abs mgzf.image_abs mgzf.image_closed mgzf.inj_rel_closed
+  mgzf.injection_abs mgzf.inter_abs mgzf.irreflexive_abs
+  mgzf.is_depth_apply_abs mgzf.is_eclose_n_abs mgzf.is_funspace_abs
+  mgzf.iterates_closed mgzf.le_abs mgzf.length_abs mgzf.length_closed
+  mgzf.lepoll_rel_refl mgzf.limit_ordinal_abs mgzf.linear_rel_abs
+  mgzf.list_N_abs mgzf.list_N_closed mgzf.list_abs
+  mgzf.list_case'_closed mgzf.list_case_abs mgzf.list_closed
+  mgzf.list_functor_abs mgzf.lt_abs mgzf.mem_bij_abs mgzf.mem_eclose_abs
+  mgzf.mem_inj_abs mgzf.mem_list_abs mgzf.membership_abs
+  mgzf.minimum_closed mgzf.nat_case_abs mgzf.nat_case_closed
+  mgzf.nonempty mgzf.not_abs mgzf.not_closed mgzf.nth_abs
+  mgzf.number1_abs mgzf.number2_abs mgzf.number3_abs mgzf.omega_abs
+  mgzf.or_abs mgzf.or_closed mgzf.order_isomorphism_abs
+  mgzf.ordermap_closed mgzf.ordertype_closed mgzf.ordinal_abs
+  mgzf.pair_abs mgzf.pair_in_M_iff mgzf.powerset_abs mgzf.pred_closed
+  mgzf.pred_set_abs mgzf.quasilist_abs mgzf.quasinat_abs
+  mgzf.radd_closed mgzf.rall_abs mgzf.range_abs mgzf.range_closed
+  mgzf.relation_abs mgzf.restrict_closed mgzf.restriction_abs
+  mgzf.rex_abs mgzf.rmult_closed mgzf.rtrancl_abs mgzf.rtrancl_closed
+  mgzf.rvimage_closed mgzf.separation_closed mgzf.setdiff_abs
+  mgzf.singleton_abs mgzf.singleton_in_M_iff mgzf.snd_closed
+  mgzf.strong_replacement_closed mgzf.subset_abs mgzf.succ_in_M_iff
+  mgzf.successor_abs mgzf.successor_ordinal_abs mgzf.sum_abs
+  mgzf.sum_closed mgzf.surj_rel_closed mgzf.surjection_abs mgzf.tl_abs
+  mgzf.trancl_abs mgzf.trancl_closed mgzf.transitive_rel_abs
+  mgzf.transitive_set_abs mgzf.typed_function_abs mgzf.union_abs
+  mgzf.upair_abs mgzf.upair_in_M_iff mgzf.vimage_abs mgzf.vimage_closed
+  mgzf.well_ord_abs mgzf.mem_formula_abs mgzf.nth_closed
+
+declare sharp_simps[simp del, simplified, simp]
+\<comment> \<open>The following was motivated by the fact that
+    @{thm mgzf.apply_closed} did not simplify appropriately
+
+    NOTE: @{thm fst_abs} and @{thm snd_abs} not in mgzf
+    interpretation.\<close>
+declare mg_sharp_simps[simp del, simplified, simp]
 
 \<comment> \<open>Kunen IV.3.5\<close>
 lemma ccc_fun_approximation_lemma:
-  assumes "ccc\<^sup>M(##M,P,leq)" "A\<in>M" "B\<in>M" "f\<in>M[G]" "f : A \<rightarrow> B"
+  assumes "ccc\<^sup>M(P,leq)" "A\<in>M" "B\<in>M" "f\<in>M[G]" "f : A \<rightarrow> B"
   shows 
     "\<exists>F\<in>M. F : A \<rightarrow> Pow(B) \<and> (\<forall>a\<in>A. f`a \<in> F`a \<and> |F`a|\<^sup>M \<le> nat)"
 proof -
@@ -95,8 +201,8 @@ proof -
     by (auto simp add:nat_simp_union arity_typed_function_fm
         \<comment> \<open>NOTE: type-checking is not performed here by the Simplifier\<close>
         typed_function_type)
-  define F where "F\<equiv>\<lambda>a\<in>A. {b\<in>B. \<exists>q\<in>P. q \<preceq> p \<and> (q \<tturnstile> fun_apply_fm(0,1,2) [f_dot, a\<^sup>v, b\<^sup>v])}"
   let ?app_fm="fun_apply_fm(0,1,2)"\<comment> \<open>formula for \<open>f`x=z\<close>\<close>
+  define F where "F\<equiv>\<lambda>a\<in>A. {b\<in>B. \<exists>q\<in>P. q \<preceq> p \<and> (q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v])}"
   have "F \<in> M" sorry
   moreover
   have "f`a \<in> F`a" if "a \<in> A" for a
@@ -162,7 +268,7 @@ proof -
   show ?thesis by auto
 qed
 
-end (* includes generic_simps *)
+end (* includes G_generic_lemmas *)
 
 end (* forcing_data *)
 
