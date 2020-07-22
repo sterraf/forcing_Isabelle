@@ -88,3 +88,5 @@ Assorted To-Dos
   apply_closed[simplified]: ?f ∈ M ⟹ ?a ∈ M ⟹ ?f ` ?a ∈ M
 
 - Named theorems for arities.
+
+- Discipline for Vfrom_abs and Vfrom_closed

@@ -7,12 +7,7 @@ theory Relative_Univ
 
 begin
 
-lemma (in M_trivial) powerset_abs' [simp]: 
-  assumes
-    "M(x)" "M(y)"
-  shows
-    "powerset(M,x,y) \<longleftrightarrow> y = {a\<in>Pow(x) . M(a)}"
-  using powerset_abs assms by simp
+declare (in M_trivial) powerset_abs[simp]
 
 lemma Collect_inter_Transset:
   assumes 

@@ -1103,7 +1103,7 @@ lemma PHrank_type [TC]:
   by (simp add:PHrank_fm_def)
 
 
-lemma (in M_ZF_trans) sats_PHrank_fm [simp]:
+lemma (in M_ZF_trans) sats_PHrank_fm:
   "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat;  env \<in> list(M) \<rbrakk> 
     \<Longrightarrow> sats(M,PHrank_fm(x,y,z),env) \<longleftrightarrow>
         PHrank(##M,nth(x,env),nth(y,env),nth(z,env))"
@@ -1124,7 +1124,7 @@ proof -
     using replacement_ax by simp
   then
   have "\<forall>f0\<in>M. strong_replacement(##M, PHrank(##M,f0))"
-    unfolding strong_replacement_def univalent_def by simp
+    unfolding strong_replacement_def univalent_def by (simp add:sats_PHrank_fm)
   with \<open>f\<in>M\<close> show ?thesis by simp
 qed
 
@@ -1139,12 +1139,12 @@ lemma is_Hrank_type [TC]:
   "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat \<rbrakk> \<Longrightarrow> is_Hrank_fm(x,y,z) \<in> formula"
   by (simp add:is_Hrank_fm_def)
 
-lemma (in M_ZF_trans) sats_is_Hrank_fm [simp]:
+lemma (in M_ZF_trans) sats_is_Hrank_fm:
   "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat; env \<in> list(M)\<rbrakk>
     \<Longrightarrow> sats(M,is_Hrank_fm(x,y,z),env) \<longleftrightarrow>
         is_Hrank(##M,nth(x,env),nth(y,env),nth(z,env))"
   using zero_in_M is_Hrank_def is_Hrank_fm_def sats_Replace_fm
-  by simp
+  by (simp add:sats_PHrank_fm)
 
 declare is_Hrank_fm_def[fm_definitions add]
 declare PHrank_fm_def[fm_definitions add]
@@ -1159,13 +1159,13 @@ proof -
     "is_Hrank(##M,a2, a1, a0) \<longleftrightarrow>
              sats(M, is_Hrank_fm(2,1,0), [a0,a1,a2,a3,a4,y,x,z,rrank(X)])"
     if "a4\<in>M" "a3\<in>M" "a2\<in>M" "a1\<in>M" "a0\<in>M" "y\<in>M" "x\<in>M" "z\<in>M" for a4 a3 a2 a1 a0 y x z
-    using that rrank_in_M \<open>X\<in>M\<close> by simp
+    using that rrank_in_M \<open>X\<in>M\<close> by (simp add:sats_is_Hrank_fm)
   then
   have
     1:"sats(M, is_wfrec_fm(is_Hrank_fm(2,1,0),3,1,0),[y,x,z,rrank(X)])
   \<longleftrightarrow> is_wfrec(##M, is_Hrank(##M) ,rrank(X), x, y)"
     if "y\<in>M" "x\<in>M" "z\<in>M" for y x z
-    using that \<open>X\<in>M\<close> rrank_in_M sats_is_wfrec_fm by simp
+    using that \<open>X\<in>M\<close> rrank_in_M sats_is_wfrec_fm by (simp add:sats_is_Hrank_fm)
   let
     ?f="Exists(And(pair_fm(1,0,2),is_wfrec_fm(is_Hrank_fm(2,1,0),3,1,0)))"
   have satsf:"sats(M, ?f, [x,z,rrank(X)])

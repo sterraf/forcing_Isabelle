@@ -627,10 +627,10 @@ lemma snd_abs [simp]:
   unfolding snd_def is_snd_def using pair_in_M_iff zero_in_M
   by (auto;rule_tac the_0 the_0[symmetric],auto)
 
-lemma ftype_abs[simp] :
+lemma ftype_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_ftype(##M,x,y) \<longleftrightarrow> y = ftype(x)" unfolding ftype_def  is_ftype_def by simp
 
-lemma name1_abs[simp] :
+lemma name1_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_name1(##M,x,y) \<longleftrightarrow> y = name1(x)"
   unfolding name1_def is_name1_def
   by (rule hcomp_abs[OF fst_abs];simp_all add:fst_snd_closed)
@@ -640,20 +640,23 @@ lemma snd_snd_abs:
   unfolding is_snd_snd_def
   by (rule hcomp_abs[OF snd_abs];simp_all add:fst_snd_closed)
 
-lemma name2_abs[simp]:
+lemma name2_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_name2(##M,x,y) \<longleftrightarrow> y = name2(x)"
   unfolding name2_def is_name2_def
   by (rule hcomp_abs[OF fst_abs snd_snd_abs];simp_all add:fst_snd_closed)
 
-lemma cond_of_abs[simp]:
+lemma cond_of_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_cond_of(##M,x,y) \<longleftrightarrow> y = cond_of(x)"
   unfolding cond_of_def is_cond_of_def
   by (rule hcomp_abs[OF snd_abs snd_snd_abs];simp_all add:fst_snd_closed)
 
-lemma tuple_abs[simp]:
+lemma tuple_abs:
   "\<lbrakk>z\<in>M;t1\<in>M;t2\<in>M;p\<in>M;t\<in>M\<rbrakk> \<Longrightarrow>
    is_tuple(##M,z,t1,t2,p,t) \<longleftrightarrow> t = \<langle>z,t1,t2,p\<rangle>"
   unfolding is_tuple_def using tuples_in_M by simp
+
+lemmas components_abs = ftype_abs name1_abs name2_abs cond_of_abs 
+  tuple_abs
 
 lemma oneN_in_M[simp]: "1\<in>M"
   by (simp flip: setclass_iff)
@@ -691,7 +694,7 @@ proof -
     unfolding eq_case_def is_eq_case_def
     using assms pair_in_M_iff nat_into_M[of 1] domain_closed tuples_in_M
       apply_closed leq_in_M
-    by simp
+    by (simp add:components_abs)
 qed
 
 lemma mem_case_abs [simp]:
@@ -713,7 +716,7 @@ proof
     obtain q r s where
       "r \<in> P \<and> q \<in> P \<and> \<langle>q, v\<rangle> \<in> M \<and> \<langle>s, r\<rangle> \<in> M \<and> \<langle>q, r\<rangle> \<in> M \<and> 0 \<in> M \<and>
        \<langle>0, t1, s, q\<rangle> \<in> M \<and> q \<preceq> v \<and> \<langle>s, r\<rangle> \<in> t2 \<and> q \<preceq> r \<and> f ` \<langle>0, t1, s, q\<rangle> = 1"
-      unfolding is_mem_case_def by auto
+      unfolding is_mem_case_def by (auto simp add:components_abs)
     then
     have "\<exists>q s r. r \<in> P \<and> q \<in> P \<and> q \<preceq> v \<and> \<langle>s, r\<rangle> \<in> t2 \<and> q \<preceq> r \<and> f ` \<langle>0, t1, s, q\<rangle> = 1"
       by auto
@@ -742,7 +745,7 @@ next
   }
   then
   show "is_mem_case(##M, t1, t2, p, P, leq, f)" if "mem_case(t1, t2, p, P, leq, f)"
-    unfolding is_mem_case_def using assms that by auto
+    unfolding is_mem_case_def using assms that by (auto simp add:components_abs)
 qed
 
 
@@ -750,7 +753,7 @@ lemma Hfrc_abs:
   "\<lbrakk>fnnc\<in>M; f\<in>M\<rbrakk> \<Longrightarrow>
    is_Hfrc(##M,P,leq,fnnc,f) \<longleftrightarrow> Hfrc(P,leq,fnnc,f)"
   unfolding is_Hfrc_def Hfrc_def using pair_in_M_iff
-  by auto
+  by (auto simp add:components_abs)
 
 lemma Hfrc_at_abs:
   "\<lbrakk>fnnc\<in>M; f\<in>M ; z\<in>M\<rbrakk> \<Longrightarrow>
@@ -772,7 +775,7 @@ lemma ecloseN_closed:
   unfolding ecloseN_def eclose_n_def
   using components_closed eclose_closed singletonM Un_closed by auto
 
-lemma is_eclose_n_abs :
+lemma eclose_n_abs :
   assumes "x\<in>M" "ec\<in>M"
   shows "is_eclose_n(##M,is_name1,ec,x) \<longleftrightarrow> ec = eclose_n(name1,x)"
     "is_eclose_n(##M,is_name2,ec,x) \<longleftrightarrow> ec = eclose_n(name2,x)"
@@ -784,12 +787,13 @@ lemma is_eclose_n_abs :
 lemma is_ecloseN_abs :
   "\<lbrakk>x\<in>M;ec\<in>M\<rbrakk> \<Longrightarrow> is_ecloseN(##M,ec,x) \<longleftrightarrow> ec = ecloseN(x)"
   unfolding is_ecloseN_def ecloseN_def
-  using is_eclose_n_abs Un_closed union_abs ecloseN_closed
+  using eclose_n_abs Un_closed union_abs ecloseN_closed
   by auto
 
 lemma frecR_abs :
   "x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> frecR(x,y) \<longleftrightarrow> is_frecR(##M,x,y)"
-  unfolding frecR_def is_frecR_def using components_closed domain_closed by simp
+  unfolding frecR_def is_frecR_def using components_closed domain_closed 
+  by (simp add:components_abs)
 
 lemma frecrelP_abs :
   "z\<in>M \<Longrightarrow> frecrelP(##M,z) \<longleftrightarrow> (\<exists>x y. z = \<langle>x,y\<rangle> \<and> frecR(x,y))"
@@ -1342,12 +1346,12 @@ qed
 lemma forces_eq'_abs :
   "\<lbrakk>p\<in>M ; t1\<in>M ; t2\<in>M\<rbrakk> \<Longrightarrow> is_forces_eq'(##M,P,leq,p,t1,t2) \<longleftrightarrow> forces_eq'(P,leq,p,t1,t2)"
   unfolding is_forces_eq'_def forces_eq'_def
-  using frc_at_abs zero_in_M tuples_in_M by auto
+  using frc_at_abs zero_in_M tuples_in_M by (auto simp add:components_abs)
 
 lemma forces_mem'_abs :
   "\<lbrakk>p\<in>M ; t1\<in>M ; t2\<in>M\<rbrakk> \<Longrightarrow> is_forces_mem'(##M,P,leq,p,t1,t2) \<longleftrightarrow> forces_mem'(P,leq,p,t1,t2)"
   unfolding is_forces_mem'_def forces_mem'_def
-  using frc_at_abs zero_in_M tuples_in_M by auto
+  using frc_at_abs zero_in_M tuples_in_M by (auto simp add:components_abs)
 
 lemma forces_neq'_abs :
   assumes
@@ -1360,7 +1364,7 @@ proof -
   then show ?thesis
     unfolding is_forces_neq'_def forces_neq'_def
     using assms forces_eq'_abs pair_in_M_iff
-    by (auto,blast)
+    by (auto simp add:components_abs,blast)
 qed
 
 
@@ -1375,7 +1379,7 @@ proof -
   then show ?thesis
     unfolding is_forces_nmem'_def forces_nmem'_def
     using assms forces_mem'_abs pair_in_M_iff
-    by (auto,blast)
+    by (auto simp add:components_abs,blast)
 qed
 
 end (* forcing_data *)
@@ -1502,7 +1506,7 @@ definition
   is_leq :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
   "is_leq(A,l,q,p) \<equiv> \<exists>qp[A]. (pair(A,q,p,qp) \<and> qp\<in>l)"
 
-lemma (in forcing_data) leq_abs[simp]:
+lemma (in forcing_data) leq_abs:
   "\<lbrakk> l\<in>M ; q\<in>M ; p\<in>M \<rbrakk> \<Longrightarrow> is_leq(##M,l,q,p) \<longleftrightarrow> \<langle>q,p\<rangle>\<in>l"
   unfolding is_leq_def using pair_in_M_iff by simp
 

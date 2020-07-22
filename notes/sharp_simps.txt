@@ -81,6 +81,7 @@ formula_case_abs
 formula_case_closed
 formula_closed
 formula_functor_abs
+fst_abs
 fst_closed
 function_abs
 function_space_rel_closed
@@ -123,6 +124,7 @@ nonempty
 not_abs
 not_closed
 nth_abs
+nth_closed
 number1_abs
 number2_abs
 number3_abs
@@ -156,6 +158,7 @@ separation_closed
 setdiff_abs
 singleton_abs
 singleton_in_M_iff
+snd_abs
 snd_closed
 strong_replacement_closed
 subset_abs
