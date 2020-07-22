@@ -138,11 +138,11 @@ lemma def_cardinal_rel: "M(x) \<Longrightarrow> |x|r = (\<mu> i. M(i) \<and> i \
 (***************  end Discipline  *********************)
 
 abbreviation \<comment> \<open>Perhaps eliminate in favor of the Discipline\<close>
-  Card_rel     :: "i=>o"  where
-  "Card_rel(i) \<equiv> Cardinal_Relative.Card_rel(M,i)"
+  Card_r     :: "i=>o"  where
+  "Card_r(i) \<equiv> Card_rel(M,i)"
 
 \<comment> \<open>same comment as the previous def\<close>
-lemma def_Card_rel: "M(i) \<Longrightarrow> Card_rel(i) \<longleftrightarrow> i = |i|r"
+lemma def_Card_rel: "M(i) \<Longrightarrow> Card_r(i) \<longleftrightarrow> i = |i|r"
   using cardinal_rel_iff unfolding Card_rel_def
   by simp
 
@@ -603,24 +603,24 @@ lemma Ord_cardinal_rel_le: "Ord(i) \<Longrightarrow> M(i) ==> |i|r \<le> i"
   unfolding def_cardinal_rel
   using eqpoll_rel_refl Least_le by simp
 
-lemma Card_rel_cardinal_rel_eq: "Card_rel(K) ==> M(K) \<Longrightarrow> |K|r = K"
+lemma Card_rel_cardinal_rel_eq: "Card_r(K) ==> M(K) \<Longrightarrow> |K|r = K"
   apply (unfold def_Card_rel)
   apply (erule sym)
   done
 
-lemma Card_relI: "[| Ord(i);  !!j. j<i \<Longrightarrow> M(j) ==> ~(j \<approx>r i); M(i) |] ==> Card_rel(i)"
+lemma Card_relI: "[| Ord(i);  !!j. j<i \<Longrightarrow> M(j) ==> ~(j \<approx>r i); M(i) |] ==> Card_r(i)"
   apply (unfold def_Card_rel def_cardinal_rel)
   apply (subst Least_equality)
      apply (blast intro: eqpoll_rel_refl)+
   done
 
-lemma Card_rel_is_Ord: "Card_rel(i) ==> M(i) \<Longrightarrow> Ord(i)"
+lemma Card_rel_is_Ord: "Card_r(i) ==> M(i) \<Longrightarrow> Ord(i)"
   apply (unfold def_Card_rel def_cardinal_rel)
   apply (erule ssubst)
   apply (rule Ord_Least)
   done
 
-lemma Card_rel_cardinal_rel_le: "Card_rel(K) ==> M(K) \<Longrightarrow> K \<le> |K|r"
+lemma Card_rel_cardinal_rel_le: "Card_r(K) ==> M(K) \<Longrightarrow> K \<le> |K|r"
   apply (simp (no_asm_simp) add: Card_rel_is_Ord Card_rel_cardinal_rel_eq)
   done
 
@@ -630,10 +630,10 @@ lemma Ord_cardinal_rel [simp,intro!]: "M(A) \<Longrightarrow> Ord(|A|r)"
   done
 
 lemma Card_rel_iff_initial: assumes types:"M(K)"
-  shows "Card_rel(K) \<longleftrightarrow> Ord(K) & (\<forall>j[M]. j<K \<longrightarrow> ~ (j \<approx>r K))"
+  shows "Card_r(K) \<longleftrightarrow> Ord(K) & (\<forall>j[M]. j<K \<longrightarrow> ~ (j \<approx>r K))"
 proof -
   { fix j
-    assume K: "Card_rel(K)" "M(j) \<and> j \<approx>r K"
+    assume K: "Card_r(K)" "M(j) \<and> j \<approx>r K"
     assume "j < K"
     also have "... = (\<mu> i. M(i) \<and> i \<approx>r K)" using K
       by (simp add: def_Card_rel def_cardinal_rel types)
@@ -646,27 +646,27 @@ proof -
     by (blast intro: Card_relI Card_rel_is_Ord)
 qed
 
-lemma lt_Card_rel_imp_lesspoll_rel: "[| Card_rel(a); i<a; M(a); M(i) |] ==> i \<prec>r a"
+lemma lt_Card_rel_imp_lesspoll_rel: "[| Card_r(a); i<a; M(a); M(i) |] ==> i \<prec>r a"
   apply (unfold def_lesspoll_rel)
   apply (frule Card_rel_iff_initial [THEN iffD1], assumption)
   apply (blast intro!: leI [THEN le_imp_lepoll_rel])
   done
 
-lemma Card_rel_0: "Card_rel(0)"
+lemma Card_rel_0: "Card_r(0)"
   apply (rule Ord_0 [THEN Card_relI])
    apply (auto elim!: ltE)
   done
 
-lemma Card_rel_Un: "[| Card_rel(K);  Card_rel(L); M(K); M(L) |] ==> Card_rel(K \<union> L)"
+lemma Card_rel_Un: "[| Card_r(K);  Card_r(L); M(K); M(L) |] ==> Card_r(K \<union> L)"
   apply (rule Ord_linear_le [of K L])
      apply (simp_all add: subset_Un_iff [THEN iffD1]  Card_rel_is_Ord le_imp_subset
       subset_Un_iff2 [THEN iffD1])
   done
 
-lemma Card_rel_cardinal_rel [iff]: assumes types:"M(A)" shows "Card_rel(|A|r)"
+lemma Card_rel_cardinal_rel [iff]: assumes types:"M(A)" shows "Card_r(|A|r)"
   using assms
 proof (unfold def_cardinal_rel)
-  show "Card_rel(\<mu> i. M(i) \<and> i \<approx>r A)"
+  show "Card_r(\<mu> i. M(i) \<and> i \<approx>r A)"
   proof (cases "\<exists>i[M]. Ord (i) \<and> i \<approx>r A")
     case False thus ?thesis           \<comment> \<open>degenerate case\<close>
       using Least_0[of "\<lambda>i. M(i) \<and> i \<approx>r A"] Card_rel_0
@@ -729,13 +729,13 @@ lemma cardinal_rel_lt_imp_lt: "[| |i|r < |j|r;  Ord(i);  Ord(j); M(i); M(j) |] =
   apply (erule cardinal_rel_mono, assumption+)
   done
 
-lemma Card_rel_lt_imp_lt: "[| |i|r < K;  Ord(i);  Card_rel(K); M(i); M(K)|] ==> i < K"
+lemma Card_rel_lt_imp_lt: "[| |i|r < K;  Ord(i);  Card_r(K); M(i); M(K)|] ==> i < K"
   by (simp (no_asm_simp) add: cardinal_rel_lt_imp_lt Card_rel_is_Ord Card_rel_cardinal_rel_eq)
 
-lemma Card_rel_lt_iff: "[| Ord(i);  Card_rel(K); M(i); M(K) |] ==> (|i|r < K) \<longleftrightarrow> (i < K)"
+lemma Card_rel_lt_iff: "[| Ord(i);  Card_r(K); M(i); M(K) |] ==> (|i|r < K) \<longleftrightarrow> (i < K)"
   by (blast intro: Card_rel_lt_imp_lt Ord_cardinal_rel_le [THEN lt_trans1])
 
-lemma Card_rel_le_iff: "[| Ord(i);  Card_rel(K); M(i); M(K) |] ==> (K \<le> |i|r) \<longleftrightarrow> (K \<le> i)"
+lemma Card_rel_le_iff: "[| Ord(i);  Card_r(K); M(i); M(K) |] ==> (K \<le> |i|r) \<longleftrightarrow> (K \<le> i)"
   by (simp add: Card_rel_lt_iff Card_rel_is_Ord not_lt_iff_le [THEN iff_sym])
 
 lemma well_ord_lepoll_rel_imp_Card_rel_le:
@@ -829,7 +829,7 @@ lemma nat_eqpoll_rel_iff: "[| m \<in> nat; n \<in> nat; M(m); M(n) |] ==> m \<ap
   done
 
 lemma nat_into_Card_rel:
-  assumes n: "n \<in> nat" and types: "M(n)" shows "Card_rel(n)"
+  assumes n: "n \<in> nat" and types: "M(n)" shows "Card_r(n)"
   using types
   apply (subst def_Card_rel, assumption)
 proof (unfold def_cardinal_rel, rule sym)
@@ -949,7 +949,7 @@ next
   ultimately show ?thesis by blast
 qed
 
-lemma Card_rel_nat: "Card_rel(nat)"
+lemma Card_rel_nat: "Card_r(nat)"
 proof -
   { fix i
     assume i: "i < nat" "i \<approx>r nat" "M(i)"

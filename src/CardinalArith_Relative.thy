@@ -10,7 +10,7 @@ definition
   lt_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "lt_rel(M,a,b) \<equiv> a\<in>b \<and> ordinal(M,b)"
 
-lemma (in M_trans) less_abs[simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> lt_rel(M,a,b) \<longleftrightarrow> a<b"
+lemma (in M_trans) lt_abs[simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> lt_rel(M,a,b) \<longleftrightarrow> a<b"
   unfolding lt_rel_def lt_def by auto
 
 definition
@@ -40,7 +40,7 @@ lemma def_InfCard_rel:
   assumes
     "M(i)"
   shows
-    "InfCard_r(i) \<longleftrightarrow> Card_rel(i) \<and> nat \<le> i"
+    "InfCard_r(i) \<longleftrightarrow> Card_r(i) \<and> nat \<le> i"
   using assms 
   unfolding InfCard_rel_def Card_rel_def by simp
 
@@ -350,6 +350,11 @@ lemma (in M_cardinals) csquare_rel_abs[absolut]: "\<lbrakk> M(K); M(cs)\<rbrakk>
   using csquare_lam_closed[unfolded csquare_lam_eq_lam] 
   by (simp add:absolut csquare_lam_eq_lam[unfolded csquare_lam_def])
 
+\<comment> \<open>Discipline for \<^term>\<open>jump_cardinal\<close> requires:
+    1) Proving ordertype_abs above (?)
+    2) Develop Discipline for \<^term>\<open>Replace\<close>
+    3) Use the the conjunction of  \<^term>\<open>well_ord\<close> and \<^term>\<open>ordertype\<close>
+      to apply absoluteness.\<close>
 (*
 definition
   jump_cardinal :: "i=>i"  where
@@ -357,7 +362,12 @@ definition
         be a cardinal\<close>
     "jump_cardinal(K) ==
          \<Union>X\<in>Pow(K). {z. r \<in> Pow(K*K), well_ord(X,r) & z = ordertype(X,r)}"
+*)
 
+\<comment> \<open>Discipline for \<^term>\<open>csucc\<close> requires one for \<^term>\<open>least\<close>, and
+  that might need a new locale "M_Least_assumptions" similar to
+  the one for Pi (due to higher order arguments).\<close>
+(*
 definition
   csucc         :: "i=>i"  where
     \<comment> \<open>needed because \<^term>\<open>jump_cardinal(K)\<close> might not be the successor
@@ -410,9 +420,9 @@ locale M_cardinal_arith = M_cardinals +
 begin
 
 lemma Card_Union [simp,intro,TC]:
-  assumes A: "\<And>x. x\<in>A \<Longrightarrow> Card_rel(x)" and
+  assumes A: "\<And>x. x\<in>A \<Longrightarrow> Card_r(x)" and
     types:"M(A)"
-  shows "Card_rel(\<Union>(A))"
+  shows "Card_r(\<Union>(A))"
 proof (rule Card_relI)
   show "Ord(\<Union>A)" using A
     by (simp add: Card_rel_is_Ord types transM)
@@ -422,11 +432,11 @@ next
   moreover from this
   have "M(j)" unfolding lt_def by (auto simp add:types dest:transM)
   from j
-  have "\<exists>c\<in>A. j \<in> c \<and> Card_rel(c)" using A types
+  have "\<exists>c\<in>A. j \<in> c \<and> Card_r(c)" using A types
     unfolding lt_def
     by (simp)
   then
-  obtain c where c: "c\<in>A" "j < c" "Card_rel(c)" "M(c)"
+  obtain c where c: "c\<in>A" "j < c" "Card_r(c)" "M(c)"
     using Card_rel_is_Ord types unfolding lt_def
     by (auto dest:transM)
   with \<open>M(j)\<close>
@@ -455,7 +465,7 @@ lemma Card_OUN [simp,intro,TC]:
   by (auto simp add: OUnion_def Card_0)
 *)
 
-lemma in_Card_imp_lesspoll: "[| Card_rel(K); b \<in> K; M(K); M(b) |] ==> b \<prec>r K"
+lemma in_Card_imp_lesspoll: "[| Card_r(K); b \<in> K; M(K); M(b) |] ==> b \<prec>r K"
 apply (unfold def_lesspoll_rel)
 apply (simp add: Card_rel_iff_initial)
 apply (fast intro!: le_imp_lepoll_rel ltI leI)
@@ -533,7 +543,7 @@ lemma sum_0_eqpoll_rel: "M(A) \<Longrightarrow> 0+A \<approx>r A"
   by (rule lam_closed)
     (auto simp add:case_def cond_def Inr_def dest:transM)
 
-lemma cadd_rel_0 [simp]: "Card_rel(K) \<Longrightarrow> M(K) \<Longrightarrow> 0 \<oplus>r K = K"
+lemma cadd_rel_0 [simp]: "Card_r(K) \<Longrightarrow> M(K) \<Longrightarrow> 0 \<oplus>r K = K"
 apply (simp add: def_cadd_rel)
 apply (simp add: sum_0_eqpoll_rel [THEN cardinal_rel_cong] Card_rel_cardinal_rel_eq)
 done
@@ -554,7 +564,7 @@ qed
 (*Could probably weaken the premises to well_ord(K,r), or removing using AC*)
 
 lemma cadd_rel_le_self:
-  assumes K: "Card_rel(K)" and L: "Ord(L)" and
+  assumes K: "Card_r(K)" and L: "Ord(L)" and
     types:"M(K)" "M(L)"
   shows "K \<le> (K \<oplus>r L)"
 proof (simp add:types def_cadd_rel)
@@ -729,7 +739,7 @@ apply (rule rexI)
   apply(rule_tac lam_closed, auto intro:prepend_replacement dest:transM)
 done
 
-lemma cmult_rel_1 [simp]: "Card_rel(K) \<Longrightarrow> M(K) \<Longrightarrow> 1 \<otimes>r K = K"
+lemma cmult_rel_1 [simp]: "Card_r(K) \<Longrightarrow> M(K) \<Longrightarrow> 1 \<otimes>r K = K"
 apply (simp add: def_cmult_rel succ_def)
 apply (simp add: prod_singleton_eqpoll_rel[THEN cardinal_rel_cong] Card_rel_cardinal_rel_eq)
 done
@@ -743,7 +753,7 @@ apply (rule_tac x = "\<lambda>x\<in>A. <x,x>" in rexI, simp)
 done
 
 (*Could probably weaken the premise to well_ord(K,r), or remove using AC*)
-lemma cmult_rel_square_le: "Card_rel(K) \<Longrightarrow> M(K) \<Longrightarrow> K \<le> K \<otimes>r K"
+lemma cmult_rel_square_le: "Card_r(K) \<Longrightarrow> M(K) \<Longrightarrow> K \<le> K \<otimes>r K"
 apply (unfold def_cmult_rel)
 apply (rule le_trans)
 apply (rule_tac [2] well_ord_lepoll_rel_imp_Card_rel_le)
@@ -763,7 +773,7 @@ done
 
 (*Could probably weaken the premises to well_ord(K,r), or removing using AC*)
 lemma cmult_rel_le_self:
-    "[| Card_rel(K);  Ord(L);  0<L; M(K);M(L) |] ==> K \<le> (K \<otimes>r L)"
+    "[| Card_r(K);  Ord(L);  0<L; M(K);M(L) |] ==> K \<le> (K \<otimes>r L)"
 apply (unfold def_cmult_rel)
 apply (rule le_trans [OF Card_rel_cardinal_rel_le well_ord_lepoll_rel_imp_Card_rel_le])
   apply assumption apply simp
@@ -822,7 +832,7 @@ apply (induct_tac m)
 apply (simp_all add: cmult_rel_succ_lemma nat_cadd_rel_eq_add)
 done
 
-lemma cmult_rel_2: "Card_rel(n) \<Longrightarrow> M(n) \<Longrightarrow> 2 \<otimes>r n = n \<oplus>r n"
+lemma cmult_rel_2: "Card_r(n) \<Longrightarrow> M(n) \<Longrightarrow> 2 \<otimes>r n = n \<oplus>r n"
   by (simp add: cmult_rel_succ_lemma Card_rel_is_Ord cadd_rel_commute [of _ 0])
 
 lemma sum_lepoll_rel_prod:
@@ -893,12 +903,12 @@ apply (simp add: def_InfCard_rel)
 apply (blast intro: Card_rel_nat Card_rel_is_Ord)
 done
 
-lemma InfCard_rel_is_Card_rel: "M(K) \<Longrightarrow> InfCard_r(K) \<Longrightarrow> Card_rel(K)"
+lemma InfCard_rel_is_Card_rel: "M(K) \<Longrightarrow> InfCard_r(K) \<Longrightarrow> Card_r(K)"
 apply (simp add: def_InfCard_rel)
 done
 
 lemma InfCard_rel_Un:
-    "[| InfCard_r(K);  Card_rel(L); M(K); M(L) |] ==> InfCard_r(K \<union> L)"
+    "[| InfCard_r(K);  Card_r(L); M(K); M(L) |] ==> InfCard_r(K \<union> L)"
 apply (simp add: def_InfCard_rel)
 apply (simp add: Card_rel_Un Un_upper1_le [THEN [2] le_trans]  Card_rel_is_Ord)
 done
@@ -1013,7 +1023,7 @@ lemma ordertype_csquare_le_M:
     and types: "M(K)"
   shows "ordertype(K*K, csquare_rel(K)) \<le> K"
 proof -
-  have  CK: "Card_rel(K)" using IK by (rule_tac InfCard_rel_is_Card_rel) (simp_all add:types)
+  have  CK: "Card_r(K)" using IK by (rule_tac InfCard_rel_is_Card_rel) (simp_all add:types)
   hence OK: "Ord(K)"  by (rule Card_rel_is_Ord) (simp_all add:types)
   moreover have "Ord(ordertype(K \<times> K, csquare_rel(K)))" using OK
     by (rule well_ord_csquare [THEN Ord_ordertype])
@@ -1128,7 +1138,7 @@ apply (rule_tac well_ord_InfCard_rel_square_eq)
 apply (simp_all add: InfCard_rel_is_Card_rel [THEN Card_rel_cardinal_rel_eq] types)
 done
 
-lemma Inf_Card_rel_is_InfCard_rel: "[| Card_rel(i); ~ Finite_rel(M,i) ; M(i) |] ==> InfCard_r(i)"
+lemma Inf_Card_rel_is_InfCard_rel: "[| Card_r(i); ~ Finite_rel(M,i) ; M(i) |] ==> InfCard_r(i)"
   by (simp add: def_InfCard_rel Card_rel_is_Ord [THEN nat_le_infinite_Ord])
 
 subsubsection\<open>Toward's Kunen's Corollary 10.13 (1)\<close>
@@ -1295,7 +1305,7 @@ proof -
   finally show ?thesis .
 qed
 
-lemma Ord_nat_subset_into_Card_rel: "[| Ord(i); i \<subseteq> nat |] ==> Card_rel(i)"
+lemma Ord_nat_subset_into_Card_rel: "[| Ord(i); i \<subseteq> nat |] ==> Card_r(i)"
 by (blast dest: Ord_subset_natD intro: Card_rel_nat nat_into_Card_rel)
 
 end (* M_cardinal_arith *)

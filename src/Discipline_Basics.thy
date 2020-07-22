@@ -233,6 +233,9 @@ proof -
     using trans_closed by blast
 qed
 
+lemma mem_Pow_rel_abs: "M(a) \<Longrightarrow> M(r) \<Longrightarrow> a \<in> Pow_rel(r) \<longleftrightarrow> a \<in> Pow(r)"
+  using Pow_rel_char by simp
+
 end (* M_basic *)
 
 (******************  end Discipline  **********************)
@@ -673,7 +676,7 @@ Discipline to it.\<close>
 
 (*************** Discipline for injP ******************)
 
-definition
+definition (* completely relational *)
   injP_rel:: "[i\<Rightarrow>o,i,i]\<Rightarrow>o" where
   "injP_rel(M,A,f) \<equiv> \<forall>w[M]. \<forall>x[M]. \<forall>fw[M]. \<forall>fx[M]. w\<in>A \<and> x\<in>A \<and>
             is_apply(M,f,w,fw) \<and> is_apply(M,f,x,fx) \<and> fw=fx\<longrightarrow> w=x"

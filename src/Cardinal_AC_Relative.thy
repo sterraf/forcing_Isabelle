@@ -226,7 +226,7 @@ proof -
   finally show ?thesis by (simp_all add:types)
 qed
 
-lemma le_Card_rel_iff: "Card_rel(K) ==> M(K) \<Longrightarrow> M(A) \<Longrightarrow> |A|r \<le> K \<longleftrightarrow> A \<lesssim>r K"
+lemma le_Card_rel_iff: "Card_r(K) ==> M(K) \<Longrightarrow> M(A) \<Longrightarrow> |A|r \<le> K \<longleftrightarrow> A \<lesssim>r K"
 apply (erule Card_rel_cardinal_rel_eq [THEN subst], assumption, rule iffI,
        erule Card_rel_le_imp_lepoll_rel, assumption+)
 apply (erule lepoll_rel_imp_Card_rel_le, assumption+)
