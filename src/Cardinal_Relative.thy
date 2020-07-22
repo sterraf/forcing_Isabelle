@@ -20,6 +20,17 @@ definition \<comment> \<open>Perhaps eliminate in favor of the Discipline\<close
   Card_rel     :: "[i\<Rightarrow>o,i]=>o"  where
   "Card_rel(M,i) \<equiv> is_cardinal(M,i,i)"
 
+
+definition
+  banach_functor :: "[i,i,i,i,i] \<Rightarrow> i" where
+  "banach_functor(X,Y,f,g,W) \<equiv> X - g``(Y - f``W)"
+
+definition
+  is_banach_functor :: "[i\<Rightarrow>o,i,i,i,i,i,i]\<Rightarrow>o"  where
+  "is_banach_functor(M,X,Y,f,g,W,b) \<equiv> 
+      \<exists>fW[M]. \<exists>YfW[M]. \<exists>gYfW[M]. image(M,f,W,fW) \<and> setdiff(M,Y,fW,YfW) \<and> 
+                                 image(M,g,YfW,gYfW) \<and> setdiff(M,X,gYfW,b)"
+
 locale M_cardinals = M_ordertype + M_trancl + M_Perm +
   assumes
   id_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>z. \<exists>x\<in>A. z = \<langle>x, x\<rangle>)"
@@ -59,7 +70,12 @@ locale M_cardinals = M_ordertype + M_trancl + M_Perm +
   and
   prod_bij_rel_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow>
      strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>f ` x, g ` y\<rangle>)(x)\<rangle>)"
-
+  and
+  iterates_banach: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow>
+                    iterates_replacement(M,is_banach_functor(M,X,Y,f,g),0)"
+  and
+  banach_repl_iter: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow> 
+               strong_replacement(M, \<lambda>x y. y = banach_functor(X, Y, f, g)^x (0))"
 begin
 
 lemma radd_closed[intro,simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> M(c) \<Longrightarrow> M(d) \<Longrightarrow> M(radd(a,b,c,d))"
@@ -145,10 +161,6 @@ context M_cardinals
 begin
 
 (** Lemma: Banach's Decomposition Theorem **)
-
-definition
-  banach_functor :: "[i,i,i,i,i] \<Rightarrow> i" where
-  "banach_functor(X,Y,f,g,W) \<equiv> X - g``(Y - f``W)"
 
 lemma bnd_mono_banach_functor: "bnd_mono(X, banach_functor(X,Y,f,g))"
   unfolding bnd_mono_def banach_functor_def
@@ -239,11 +251,41 @@ lemma lfp_banach_functor:
   using assms lfp_eq_Union bnd_mono_banach_functor contin_banach_functor
   by simp
 
+
+lemma banach_functor_abs : 
+  assumes "M(X)" "M(Y)" "M(f)" "M(g)"
+  shows "relation1(M,is_banach_functor(M,X,Y,f,g),banach_functor(X,Y,f,g))"
+  unfolding relation1_def is_banach_functor_def banach_functor_def 
+  using assms    
+  by simp
+
+lemma banach_functor_closed:
+  assumes "M(X)" "M(Y)" "M(f)" "M(g)" "M(W)"
+  shows "M(banach_functor(X,Y,f,g,W))"
+  unfolding banach_functor_def using assms image_closed
+  by simp
+
 (* This is the biggest hole today *)
 lemma lfp_banach_functor_closed:
   assumes "M(g)" "M(X)" "M(Y)" "M(f)" "g\<in>inj(Y,X)"
   shows "M(lfp(X, banach_functor(X,Y,f,g)))"
-  sorry
+proof -
+  have "M(banach_functor(X,Y,f,g)^n (0))" if "n\<in>nat" for n
+    using assms that banach_functor_abs nonempty banach_functor_closed
+          iterates_closed[OF iterates_banach banach_functor_abs]
+    by simp
+  then 
+  have "\<forall>n\<in>nat. M(banach_functor(X,Y,f,g)^n (0))" 
+    by simp
+  then
+  have "M(\<Union>n\<in>nat. banach_functor(X,Y,f,g)^n (0))" 
+    using assms family_union_closed[OF banach_repl_iter M_nat]
+    by simp
+  then 
+  show ?thesis 
+    using assms lfp_banach_functor 
+    by simp
+qed
 
 lemma banach_decomposition_rel:
   "[| M(f); M(g); M(X); M(Y); f \<in> X->Y;  g \<in> inj(Y,X) |] ==>
