@@ -1,0 +1,36 @@
+Issues concerning simp rules
+============================
+
+
+Should be included?
+-------------------
+
+Or should they just be absolut?
+And decide about names!
+
+is_Int_abs
+rmult_abs
+compat_in_abs
+rvimage_abs
+is_Rrel_abs
+csquare_rel_abs
+antichain_abs
+fst_abs
+snd_abs
+least_abs
+
+seqspace_closed
+rrank_in_M
+Least_closed
+
+
+Not originally included
+-----------------------
+
+Instead of adding, set a new named_theorem "closure"?
+
+(##M)(?a) ⟹ (##M)(rank(?a)) ---   local.rank_closed: 
+(##M)(?a) ⟹ (##M)(succ(?a)) ---   local.succ_in_MI: 
+(##M)(?a) ⟹ (##M)({?a}) ---   local.singleton_in_MI: 
+
+
