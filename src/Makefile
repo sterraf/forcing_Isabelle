@@ -34,7 +34,9 @@ $(HTML_DIR):	thy_files $(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT \
 	cat $(LINKING_DIR)/links.css >> $(HTML_DIR)/isabelle.css
 	cd $(HTML_DIR); \
 		bash $(LINKING_DIR)/parsing.sh $(SESSION); \
-		bash $(LINKING_DIR)/linking.sh $(SESSION) . . $(PARALLEL)
+		cat ../../../../locale_assumptions.txt >> lemas_$(SESSION).txt; \
+		bash $(LINKING_DIR)/linking.sh $(SESSION) . . $(PARALLEL); \
+		bash $(LINKING_DIR)/link_locales.sh  ../../../../ . $(PARALLEL)
 
 html:	$(HTML_DIR)
 
@@ -44,7 +46,7 @@ $(SESSION).tar.gz:	$(HTML_DIR) Makefile_distro ROOT README.md
 	mkdir tmptar/src
 	cp README.md tmptar
 	cp -r $(LINKING_DIR) tmptar/
-	cp -r README.md $(PARALLELIZATION) thy_files $(THY_FILES) $(ML_FILES)\
+	cp -r README.md thy_files $(THY_FILES) $(ML_FILES)\
 	 ROOT document/ tmptar/src
 	cp Makefile_distro tmptar/src/Makefile
 	 ## Avoid temporary sed files from linking:
@@ -61,12 +63,12 @@ linked:	$(HTML_DIR) $(LINKING_DIR)/linking.sh Makefile_distro ROOT README.md
 	mkdir tmptar/src
 	cd $(HTML_DIR); \
 		bash $(LINKING_DIR)/linking.sh ZF $(PWD)/../zf_item_lists/ \
-		 https://cs.famaf.unc.edu.ar/~pedro/forcing/ZF $(PARALLEL); \
-		bash $(LINKING_DIR)/linking.sh ZF-Constructible-Trans $(PWD)/../zf_item_lists/ \
-		 https://cs.famaf.unc.edu.ar/~pedro/forcing/ZF-Constructible-Trans $(PARALLEL)
+		 https://cs.famaf.unc.edu.ar/~pedro/forcing/Forcing/ZF $(PARALLEL); \
+		bash $(LINKING_DIR)/linking.sh ZF-Constructible $(PWD)/../zf_item_lists/ \
+		 https://cs.famaf.unc.edu.ar/~pedro/forcing/Forcing/ZF-Constructible $(PARALLEL)
 	cp README.md tmptar
 	cp -r $(LINKING_DIR) tmptar/
-	cp -r README.md $(PARALLELIZATION) thy_files $(THY_FILES) $(ML_FILES)\
+	cp -r README.md thy_files $(THY_FILES) $(ML_FILES)\
 	 ROOT document/ tmptar/src
 	cp Makefile_distro tmptar/src/Makefile
 	 ## Avoid temporary sed files from linking:

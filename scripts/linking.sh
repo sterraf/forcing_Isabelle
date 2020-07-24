@@ -3,17 +3,34 @@ session=$1 # link to this ---
 src_dir=$2 # where are the lists of items of $session
 href=$3    # where to link
 
+function echolog {
+    #
+    # Echoes and writes to the logfile linking.log
+    #
+    echo $@ # | tee --append linking.log
+}
+
 function link_item {
     #
     # Usage:
     # 
     #   link_item HTML ITEMLIST SUFFIX
+    #echo Linking $1 >> linking_$1.log
     for z in `cat $2`
-    do 
-	l=`echo $z | cut -d"." -f2`
-	lprime=`echo $l | sed -e "s/&/\\\\\\&/g"`
+    do
 	t=`echo $z | cut -d"." -f1`
-	sed -i -e "s|>$l$3<|><a class=\"pst-lnk\" href=\"$href/$t.html#$t.$lprime\">$lprime$3</a><|g" $1
+	ctxt=`echo $z | cut -d"." -f2`
+	l=`echo $z | cut -d"." -f3`
+	lprime=`echo $l | sed -e "s/&/\\\\\\&/g"`
+	if [ $ctxt = "GLOBAL" ];
+	then
+	    link=.$lprime
+	else
+	    link=""
+	fi
+	# echo Item: $t.$l ---\> $t.$lprime ... >> linking_$1.log
+	sed -i -e "s|>$l$3<|><a class=\"pst-lnk\" href=\"$href/$t.html#$t.$ctxt$link\">$lprime$3</a><|g" $1
+	# echo  Done >> linking_$1.log
     done
 }
 
@@ -42,25 +59,25 @@ function full_job {
 
 echo ${@:4} | grep "|"  -q && \
 { 
-    echo Error: a filename contains a pipe \("|"\).
-    echo Aborted
+    echolog Error: a filename contains a pipe \("|"\).
+    echolog Aborted
     exit 1
 }
 cat $src_dir/lemas_$session.txt $src_dir/lemaslemmas_$session.txt\
    $src_dir/definiciones_$session.txt | grep "|"  -q && \
 { 
-    echo Error: an item contains a pipe \("|"\).
-    echo Aborted
+    echolog Error: an item contains a pipe \("|"\).
+    echolog Aborted
     exit 1
 }
 
-echo -n Crosslinking "lemma" items...
+echolog -n Crosslinking "lemma" items...
 full_job $src_dir/lemas_$session.txt "" ${@:4}
-echo  Done
-echo -n Crosslinking "lemmas" items...
+echolog  Done
+echolog -n Crosslinking "lemmas" items...
 full_job $src_dir/lemaslemmas_$session.txt "" ${@:4}
-echo  Done
-echo -n Crosslinking "definition" items...
+echolog  Done
+echolog -n Crosslinking "definition" items...
 full_job $src_dir/definiciones_$session.txt _def ${@:4}
-echo  Done
-echo Finished
+echolog  Done
+echolog Finished
