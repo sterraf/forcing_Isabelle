@@ -9,8 +9,8 @@ OUT_DIR = output/html
 ML_FILES = 
 
 LINKING_DIR  = $(PWD)/../scripts
-PARALLEL     = $(shell cat thy_files | sed s/\.thy/\.html/g )
-THY_FILES    = $(shell cat thy_files | tr \" " ")
+PARALLEL     = $(shell cat thy_files | egrep -v '^\#' | sed s/\.thy/\.html/g )
+THY_FILES    = $(shell cat thy_files | egrep -v '^\#' | tr \" " ")
 USR_HEAPS    = $(shell isabelle getenv ISABELLE_HEAPS | cut -f2 -d"=")
 ML_ID        = $(shell isabelle getenv ML_IDENTIFIER | cut -f2 -d"=")
 HEAP_LOG_DIR = $(USR_HEAPS)/$(ML_ID)/log
@@ -26,7 +26,7 @@ $(DB):	thy_files $(THY_FILES) $(ML_FILES) Makefile document/root.tex \
 build: 	$(DB)
 
 $(HTML_DIR):	thy_files $(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT \
-			document/root.tex Makefile
+			document/root.tex document/root.bib Makefile
 	isabelle env \
 	  ISABELLE_BROWSER_INFO=$(OUT_DIR)\
 	  isabelle build $(OPTION) -d . -c -o browser_info -v $(SESSION)
@@ -38,13 +38,13 @@ $(HTML_DIR):	thy_files $(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT \
 
 html:	$(HTML_DIR)
 
-$(SESSION).tar.gz:	$(HTML_DIR) ROOT
+$(SESSION).tar.gz:	$(HTML_DIR) ROOT README.md
 	rm -rf tmptar
 	mkdir tmptar
 	mkdir tmptar/src
-	cp README tmptar
+	cp README.md tmptar
 	cp -r $(LINKING_DIR) tmptar/
-	cp -r README $(PARALLELIZATION) thy_files $(THY_FILES) $(ML_FILES)\
+	cp -r README.md thy_files $(THY_FILES) $(ML_FILES)\
 	 ROOT document/ tmptar/src
 	cp Makefile tmptar/src/
 	 ## Avoid temporary sed files from linking:
@@ -55,18 +55,18 @@ $(SESSION).tar.gz:	$(HTML_DIR) ROOT
 
 tar:    $(SESSION).tar.gz
 
-linked:	$(HTML_DIR) $(LINKING_DIR)/linking.sh ROOT
+linked:	$(HTML_DIR) $(LINKING_DIR)/linking.sh ROOT README.md
 	rm -rf tmptar
 	mkdir tmptar
 	mkdir tmptar/src
 	cd $(HTML_DIR); \
 		bash $(LINKING_DIR)/linking.sh ZF $(PWD)/../zf_item_lists/ \
-		 https://cs.famaf.unc.edu.ar/~pedro/forcing/ZF $(PARALLEL); \
-		bash $(LINKING_DIR)/linking.sh ZF-Constructible-Trans $(PWD)/../zf_item_lists/ \
-		 https://cs.famaf.unc.edu.ar/~pedro/forcing/ZF-Constructible-Trans $(PARALLEL)
-	cp README tmptar
+		 https://cs.famaf.unc.edu.ar/~pedro/forcing/Forcing/ZF $(PARALLEL); \
+		bash $(LINKING_DIR)/linking.sh ZF-Constructible $(PWD)/../zf_item_lists/ \
+		 https://cs.famaf.unc.edu.ar/~pedro/forcing/Forcing/ZF-Constructible $(PARALLEL)
+	cp README.md tmptar
 	cp -r $(LINKING_DIR) tmptar/
-	cp -r README $(PARALLELIZATION) thy_files $(THY_FILES) $(ML_FILES)\
+	cp -r README.md thy_files $(THY_FILES) $(ML_FILES)\
 	 ROOT document/ tmptar/src
 	cp Makefile tmptar/src/
 	 ## Avoid temporary sed files from linking:
@@ -75,7 +75,8 @@ linked:	$(HTML_DIR) $(LINKING_DIR)/linking.sh ROOT
 	 -cvzf $(SESSION).tar.gz tmptar
 	rm -rf tmptar
 
-$(SESSION)-AFP.tar.gz:    thy_files $(THY_FILES) $(ML_FILES) ROOT_AFP document/root.tex
+$(SESSION)-AFP.tar.gz:    thy_files $(THY_FILES) $(ML_FILES) ROOT_AFP document/root.tex \
+			  document/root.bib
 	rm -rf tmpafp
 	mkdir tmpafp
 	cp $(THY_FILES) $(ML_FILES) tmpafp

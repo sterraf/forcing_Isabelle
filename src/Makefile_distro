@@ -41,7 +41,7 @@ $(SESSION).tar.gz:	$(HTML_DIR) Makefile ROOT README.md
 	mkdir tmptar/src
 	cp README.md tmptar
 	cp -r $(LINKING_DIR) tmptar/
-	cp -r README.md $(PARALLELIZATION) thy_files $(THY_FILES) $(ML_FILES)\
+	cp -r README.md thy_files $(THY_FILES) $(ML_FILES)\
 	 ROOT document/ tmptar/src
 	cp Makefile tmptar/src/
 	 ## Avoid temporary sed files from linking:
