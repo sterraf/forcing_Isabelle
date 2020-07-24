@@ -99,7 +99,6 @@ Nat.nat_0_le
 Nat.nat_le_refl
 Nat.succ_in_naturalD
 Nat.complete_induct
-Nat.complete_induct_rule
 OrderArith.field_radd
 OrderArith.field_rmult
 OrderArith.field_rvimage
@@ -115,8 +114,6 @@ Ordinal.lt0E
 Ordinal.lt_asym
 Ordinal.le_refl
 Ordinal.le0D
-Ordinal.Ord_induct
-Ordinal.trans_induct3
 OrdQuant.rall_simps
 OrdQuant.rex_simps
 pair.Pair_inject
@@ -199,7 +196,6 @@ upair.UN_extend_simps
 upair.INT_simps
 upair.INT_extend_simps
 WF.wf_induct
-WF.wf_on_induct
 WF.wf_asym
 WF.underI
 WF.underD

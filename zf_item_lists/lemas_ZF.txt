@@ -1742,7 +1742,7 @@ Nat.nat_succ_iff
 Nat.nat_le_Limit
 Nat.lt_nat_in_nat
 Nat.le_in_nat
-Nat.nat_induct_from_lemma
+Nat.complete_induct_rule
 Nat.nat_induct_from
 Nat.diff_induct
 Nat.succ_lt_induct_lemma
@@ -2088,6 +2088,7 @@ Ordinal.trans_Memrel
 Ordinal.Transset_trans_Memrel
 Ordinal.Transset_Memrel_iff
 Ordinal.Transset_induct
+Ordinal.Ord_induct
 Ordinal.trans_induct
 Ordinal.Ord_linear
 Ordinal.Ord_linear_lt
@@ -2160,6 +2161,7 @@ Ordinal.Limit_le_succD
 Ordinal.Ord_cases_disj
 Ordinal.Ord_cases
 Ordinal.trans_induct3_raw
+Ordinal.trans_induct3
 Ordinal.Union_le
 Ordinal.Ord_set_cases
 Ordinal.Ord_Union_eq_succD
@@ -2675,6 +2677,7 @@ WF.wf_induct_raw
 WF.wf_induct2
 WF.field_Int_square
 WF.wf_on_induct_raw
+WF.wf_on_induct
 WF.wfI
 WF.wf_not_refl
 WF.wf_not_sym
@@ -2804,3 +2807,11 @@ Zorn.choice_Diff
 Zorn.Zermelo_next_exists
 Zorn.choice_imp_injection
 Zorn.mono_Chain
+Cardinal_AC.le_UN_Ord_lt_csucc
+List.list_complete_induct
+OrderArith.wf_iff_subset_rvimage
+Order.well_ord_trichotomy
+Zorn.Hausdorff
+Zorn.Zorn2
+Zorn.AC_well_ord
+Zorn.Zorn_po
