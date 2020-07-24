@@ -11,8 +11,8 @@ ML_FILES = Renaming_ML.ml Utils.ml
 LINKING_DIR  = $(PWD)/../scripts
 PARALLEL     = $(shell cat thy_files | egrep -v '^\#' | sed s/\.thy/\.html/g )
 THY_FILES    = $(shell cat thy_files | egrep -v '^\#' | tr \" " ")
-USR_HEAPS    = $(shell isabelle getenv ISABELLE_HEAPS | cut -f2 -d"=")
-ML_ID        = $(shell isabelle getenv ML_IDENTIFIER | cut -f2 -d"=")
+USR_HEAPS    = $(shell isabelle getenv -b ISABELLE_HEAPS)
+ML_ID        = $(shell isabelle getenv -b ML_IDENTIFIER)
 HEAP_LOG_DIR = $(USR_HEAPS)/$(ML_ID)/log
 HTML_DIR     = $(OUT_DIR)/$(CHAPTER)/$(SESSION)
 DB           = $(HEAP_LOG_DIR)/$(SESSION).db 
@@ -32,11 +32,11 @@ $(HTML_DIR):	thy_files $(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT \
 	  isabelle build $(OPTION) -d . -c -o browser_info -v $(SESSION)
 	sh $(LINKING_DIR)/fix_links.sh  $(SESSION) $(CHAPTER) $(OUT_DIR)
 	cat $(LINKING_DIR)/links.css >> $(HTML_DIR)/isabelle.css
+	cp locale_assumptions_$(SESSION).txt $(HTML_DIR)
 	cd $(HTML_DIR); \
 		bash $(LINKING_DIR)/parsing.sh $(SESSION); \
-		cat ../../../../locale_assumptions.txt >> lemas_$(SESSION).txt; \
-		bash $(LINKING_DIR)/linking.sh $(SESSION) . . $(PARALLEL); \
-		bash $(LINKING_DIR)/link_locales.sh  ../../../../ . $(PARALLEL)
+		bash $(LINKING_DIR)/link_locales.sh $(SESSION) . . $(PARALLEL); \
+		bash $(LINKING_DIR)/linking.sh $(SESSION) . . $(PARALLEL)
 
 html:	$(HTML_DIR)
 

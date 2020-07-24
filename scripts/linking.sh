@@ -22,7 +22,7 @@ function link_item {
 	ctxt=`echo $z | cut -d"." -f2`
 	l=`echo $z | cut -d"." -f3`
 	lprime=`echo $l | sed -e "s/&/\\\\\\&/g"`
-	if [ $ctxt = "GLOBAL" ];
+	if [ $ctxt = "GBL" ];
 	then
 	    link=.$lprime
 	else
@@ -39,9 +39,9 @@ function partial_job {
     # Usage:
     #
     #   partial_job HTMLS ITEMLIST SUFFIX
-    for x in $1
+    for y in $1
     do 
-	link_item $x $2 $3
+	link_item $y $2 $3
     done
 }
 
@@ -73,6 +73,9 @@ cat $src_dir/lemas_$session.txt $src_dir/lemaslemmas_$session.txt\
 
 echolog -n Crosslinking "lemma" items...
 full_job $src_dir/lemas_$session.txt "" ${@:4}
+echolog  Done
+echolog -n Crosslinking locale assumptions...
+full_job $src_dir/locale_assumptions_$session.txt "" ${@:4}
 echolog  Done
 echolog -n Crosslinking "lemmas" items...
 full_job $src_dir/lemaslemmas_$session.txt "" ${@:4}

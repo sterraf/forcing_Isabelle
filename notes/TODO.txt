@@ -59,7 +59,7 @@ ZF-Constructible
 - Bad behaviour of abbreviation
   ¬(sats(·)) ---> satisfies(·)`_≠ 1
   because of definition of ≠.
-
+- rename "nonempty" to "M_zero" or "zero_into_M".
 
 ZF
 ==

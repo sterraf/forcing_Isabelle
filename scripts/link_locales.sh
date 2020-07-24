@@ -1,6 +1,7 @@
 #!/bin/bash
-src_dir=$1 # where are the lists of items of $session
-href=$2   # where to link
+session=$1 # link to this ---
+src_dir=$2 # where are the lists of items of $session
+href=$3    # where to link
 
 function echolog {
     #
@@ -45,20 +46,20 @@ function full_job {
     # Usage:
     #
     #   full_job ITEMLIST SUFFIX LISTS
-    for (( x=2; $#-$x ; x=$x+1))
+    for (( x=3; $#-$x ; x=$x+1))
     do 
 	partial_job "${!x}" $1 $2
     done
     partial_job "${!#}" $1 $2
 }
 
-echo ${@:3} | grep "|"  -q && \
+echo ${@:4} | grep "|"  -q && \
 { 
     echolog Error: a filename contains a pipe \("|"\).
     echolog Aborted
     exit 1
 }
-cat $src_dir/locale_assumptions.txt | grep "|"  -q && \
+cat $src_dir/locale_assumptions_$session.txt | grep "|"  -q && \
 { 
     echolog Error: an item contains a pipe \("|"\).
     echolog Aborted
@@ -66,5 +67,5 @@ cat $src_dir/locale_assumptions.txt | grep "|"  -q && \
 }
 
 echolog -n Linking locales...
-full_job $src_dir/locale_assumptions.txt "" ${@:3}
+full_job $src_dir/locale_assumptions_$session.txt "" ${@:4}
 echolog Finished
