@@ -29,7 +29,7 @@ function link_item {
 	    link=""
 	fi
 	# echo Item: $t.$l ---\> $t.$lprime ... >> linking_$1.log
-	sed -i -e "s|>$l$3<|><a class=\"pst-lnk\" href=\"$href/$t.html#$t.$ctxt$link\">$lprime$3</a><|g" $1
+	sed -i -e "s|span>$l$3</span|span><a class=\"pst-lnk\" href=\"$href/$t.html#$t.$ctxt$link\">$lprime$3</a></span|g" $1
 	# echo  Done >> linking_$1.log
     done
 }
@@ -57,19 +57,19 @@ function full_job {
     partial_job "${!#}" $1 $2
 }
 
-echo ${@:4} | grep "|"  -q && \
-{ 
-    echolog Error: a filename contains a pipe \("|"\).
-    echolog Aborted
-    exit 1
-}
-cat $src_dir/lemas_$session.txt $src_dir/lemaslemmas_$session.txt\
-   $src_dir/definiciones_$session.txt | grep "|"  -q && \
-{ 
-    echolog Error: an item contains a pipe \("|"\).
-    echolog Aborted
-    exit 1
-}
+# echo ${@:4} | grep "|"  -q && \
+# { 
+#     echolog Error: a filename contains a pipe \("|"\).
+#     echolog Aborted
+#     exit 1
+# }
+# cat $src_dir/lemas_$session.txt $src_dir/lemaslemmas_$session.txt\
+#    $src_dir/definiciones_$session.txt | grep "|"  -q && \
+# { 
+#     echolog Error: an item contains a pipe \("|"\).
+#     echolog Aborted
+#     exit 1
+# }
 
 echolog -n Crosslinking "lemma" items...
 full_job $src_dir/lemas_$session.txt "" ${@:4}

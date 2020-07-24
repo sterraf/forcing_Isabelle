@@ -23,7 +23,7 @@ function link_item {
 	then
 	    ctxt=`echo $z | cut -d"." -f2`
 	    lprime=`echo $ctxt | sed -e "s/&/\\\\\\&/g"`
-	    echo Item: $t.$l ---\> $t.$lprime ... >> linking_$1_locale.log
+	    #echo Item: $t.$l ---\> $t.$lprime ... >> linking_$1_locale.log
 	    sed -i -e "s|\(<span class=\"command\">locale</span></span><span> </span><span\)>$ctxt<|\1 id=\"$t.$lprime\" class=\"pst-lnk\">$lprime</a><|g" $1
 	    #echo  Done >> linking_$1.log
 	fi
@@ -53,18 +53,18 @@ function full_job {
     partial_job "${!#}" $1 $2
 }
 
-echo ${@:4} | grep "|"  -q && \
-{ 
-    echolog Error: a filename contains a pipe \("|"\).
-    echolog Aborted
-    exit 1
-}
-cat $src_dir/locale_assumptions_$session.txt | grep "|"  -q && \
-{ 
-    echolog Error: an item contains a pipe \("|"\).
-    echolog Aborted
-    exit 1
-}
+# echo ${@:4} | grep "|"  -q && \
+# { 
+#     echolog Error: a filename contains a pipe \("|"\).
+#     echolog Aborted
+#     exit 1
+# }
+# cat $src_dir/locale_assumptions_$session.txt | grep "|"  -q && \
+# { 
+#     echolog Error: an item contains a pipe \("|"\).
+#     echolog Aborted
+#     exit 1
+# }
 
 echolog -n Linking locales...
 full_job $src_dir/locale_assumptions_$session.txt "" ${@:4}
