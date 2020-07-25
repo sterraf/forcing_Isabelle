@@ -11,5 +11,5 @@ pipelines:
         name: Build
           - docker
         script: # Modify the commands below to build your repository.
-          - apt-get install build-essential
+          - sudo apt-get install build-essential
           - cd src ; make
