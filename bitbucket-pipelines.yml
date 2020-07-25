@@ -11,5 +11,4 @@ pipelines:
         name: Build
           - docker
         script: # Modify the commands below to build your repository.
-          - sudo apt-get install build-essential
-          - cd src ; make
+          - cd src ; isabelle build  -v -c -d . Forcing
