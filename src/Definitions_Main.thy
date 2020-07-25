@@ -287,7 +287,7 @@ text\<open>@{thm [display] arity.simps}\<close>
   arity(Member(x, y)) = succ(x) \<union> succ(y)
   arity(Equal(x, y)) = succ(x) \<union> succ(y)
   arity(Nand(p, q)) = arity(p) \<union> arity(q)
-  arity(Forall(p)) = Arith.pred(arity(p))
+  arity(Forall(p)) = pred(arity(p))
 *)
 
 thm mem_iff_sats equal_iff_sats sats_Nand_iff sats_Forall_iff

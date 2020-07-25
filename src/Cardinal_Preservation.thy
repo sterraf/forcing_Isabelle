@@ -178,13 +178,31 @@ lemmas mg_sharp_simps = mgzf.Card_Union mgzf.Card_rel_cardinal_rel
   mgzf.upair_abs mgzf.upair_in_M_iff mgzf.vimage_abs mgzf.vimage_closed
   mgzf.well_ord_abs mgzf.mem_formula_abs mgzf.nth_closed
 
-declare sharp_simps[simp del, simplified, simp]
+declare sharp_simps[simp del, simplified setclass_iff, simp]
 \<comment> \<open>The following was motivated by the fact that
     @{thm mgzf.apply_closed} did not simplify appropriately
 
     NOTE: @{thm fst_abs} and @{thm snd_abs} not in mgzf
     interpretation.\<close>
-declare mg_sharp_simps[simp del, simplified, simp]
+declare mg_sharp_simps[simp del, simplified setclass_iff, simp]
+
+\<comment> \<open>Kunen IV.2.31\<close>
+lemma forces_below_filter:
+  assumes "M[G], map(val(G),env) \<Turnstile> \<phi>" "p \<in> G"
+    "arity(\<phi>) \<le> length(env)" "\<phi> \<in> formula" "env \<in> list(M)"
+  shows "\<exists>q\<in>G. q \<preceq> p \<and> q \<tturnstile> \<phi> env"
+proof -
+  note assms
+  moreover from this
+  obtain r where "r \<tturnstile> \<phi> env" "r\<in>G"
+    using generic truth_lemma[of  \<phi> _ env]
+    by blast
+  moreover from this and \<open>p\<in>G\<close>
+  obtain q where "q \<preceq> p" "q \<preceq> r" "q \<in> G" by auto
+  ultimately
+  show ?thesis
+    using strengthening_lemma[of r \<phi> _ env] by blast
+qed
 
 \<comment> \<open>Kunen IV.3.5\<close>
 lemma ccc_fun_approximation_lemma:
@@ -211,30 +229,23 @@ proof -
     moreover from this
     have "f ` a \<in> B" by simp
     moreover
-    note \<open>f\<in>M[G]\<close> \<open>a\<in>A\<close> \<open>A\<in>M\<close>
+    note \<open>f\<in>M[G]\<close> \<open>A\<in>M\<close>
     moreover from calculation
     have "M[G], [f, a, f`a] \<Turnstile> ?app_fm"
       by (auto dest:transM)
     moreover
-    note \<open>B\<in>M\<close> \<open>f`a\<in>B\<close> \<open>f = val(G,f_dot)\<close>
+    note \<open>B\<in>M\<close> \<open>f = val(G,f_dot)\<close>
     moreover from calculation
-    have "a\<in>M[G]" "a\<in>M" "val(G, f_dot)`a\<in>M"
+    have "a\<in>M" "val(G, f_dot)`a\<in>M"
       by (auto dest:transM)
     moreover
-    note \<open>f_dot\<in>M\<close>
-    moreover from calculation
-    obtain r where "r \<tturnstile> ?app_fm [f_dot, a\<^sup>v, (f`a)\<^sup>v]" "r\<in>G"
-      using generic truth_lemma[of ?app_fm G "[f_dot, a\<^sup>v, (f`a)\<^sup>v]"]
-      by (auto simp add: nat_simp_union arity_fun_apply_fm
-          fun_apply_type)
-    moreover from this and \<open>p\<in>G\<close>
-    obtain q where "q \<preceq> p" "q \<preceq> r" "q \<in> G" by auto
+    note \<open>f_dot\<in>M\<close> \<open>p\<in>G\<close>
     ultimately
-    have "q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, (f`a)\<^sup>v]" "q\<in>G"
-      using strengthening_lemma[of r ?app_fm _ "[f_dot, a\<^sup>v, (f`a)\<^sup>v]"]
+    obtain q where "q \<preceq> p" "q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, (f`a)\<^sup>v]" "q\<in>G"
+      using forces_below_filter[of ?app_fm "[f_dot, a\<^sup>v, (f`a)\<^sup>v]" p]
       by (auto simp add: nat_simp_union arity_fun_apply_fm
           fun_apply_type)
-    with \<open>f`a \<in> B\<close> \<open>q \<preceq> p\<close>
+    with \<open>f`a \<in> B\<close>
     have "f`a \<in> {b\<in>B . \<exists>q\<in>P. q \<preceq> p \<and> q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v]}"
       by blast
     with \<open>a\<in>A\<close>
