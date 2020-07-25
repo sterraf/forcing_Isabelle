@@ -1,0 +1,4 @@
+Cofinality.cofinal_factor
+Cofinality.cofinal_factor.j_mono
+Cofinality.cofinal_factor.ords
+Cofinality.cofinal_factor.f_type
