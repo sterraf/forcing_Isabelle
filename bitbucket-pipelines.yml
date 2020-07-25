@@ -8,8 +8,7 @@ image: makarius/isabelle:Isabelle2020
 pipelines:
   default:
     - step:
-        services:
+        name: Build
           - docker
         script: # Modify the commands below to build your repository.
-          - cd src
-          - make
+          - cd src ; make
