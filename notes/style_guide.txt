@@ -22,7 +22,7 @@ mimics as much as possible the way you would write down a proof in
 paper. 
 
 A formalized proof will never look exactly like that, in part
-because of the abudance of “bureaucracy” that accompanies any
+because of the abundance of “bureaucracy” that accompanies any
 formalization, and the multitude of lemmas that one must manage to be
 able to achieve any reasonable goal. Neither long lines with commands
 cluttering up help much to the non expert.
@@ -32,15 +32,48 @@ locally obtained avoiding quoted results in the forefront, and using
 simple (automatic) proof commands as much as possible.
 
 
+Structuring Theories
+====================
+
+Example of header (indented with 2 spaces for demonstration purposes):
+
+  theory Cardinal_Preservation
+    imports
+      Cardinal_AC_Relative
+      Forcing_Main
+
+  begin
+  
+  [contents]
+
+A blank line show follow every `begin` command (the one before is
+optional), and every `end` command should be preceded by a blank
+line. For contexts, the syntax is similar:
+
+  context M_trivial
+  begin
+
+  [contents]
+
+  end (* M_trivial *)
+
+A closing `end` must be followed by a comment stating which context is
+being closed. (This is not needed for the `end` closing a theory.)
+This requires special attention due to context (name) changes.
+
+
+Statements and Proof style
+==========================
+
 Naming Conventions
-==================
+------------------
 
 Lemmas are labelled using `under_score_names` and those names will
 spell, as far as possible, the “main subterm” that appears in the
 statement of the lemma, using the ASCII names of the relevant
 operators. For example,
 
-  lemma (in forcing_data) surj_nat_GenExt :
+  lemma (in forcing_data) surj_nat_GenExt:
     "∃f. f ∈ surj(nat,M[G])"
 
 Here, `M[G]` is the notation set up for the term `GenExt`.
@@ -53,12 +86,29 @@ in the name, and are separated from the conclusion using `_imp_` (for
     assumes "well_ord(A,r)" "h ∈ surj(A,B)"
     shows "B ≲ A"
 
+All results must have a name.
 
-Proof style
-===========
+
+Statements
+----------
 
 Statements in long format `assumes`...`shows` are preferred, unless
-the proof follows immediately (thus saving one `using assms`).
+the proof follows immediately (thus saving one `using assms`). In
+stating assumptions, the most significant ones are to be put first. In
+particular, various typing assumptions go last. Example:
+
+  lemma forces_below_filter:
+    assumes "M[G], map(val(G),env) ⊨ φ" "p ∈ G"
+      "arity(φ) ≤ length(env)" "φ ∈ formula" "env ∈ list(M)"
+    shows "∃q∈G. q ≼ p ∧ q ⊩ φ env"
+
+There is no space between the lemma name and the colon. The statement
+(with its assumptions) should start in a new line unless everything
+fits on the first one.
+
+
+Proofs
+------
 
 Methods given as arguments to `proof` are to be kept to a minimum,
 only when the refined goal is what to be expected a human prover would
@@ -72,7 +122,7 @@ The general structure of proof steps should follow the next pattern
   [chaining NEWLINE]
   {`have`,`show`,`obtain` vars `where`} facts NEWLINE
     [using *lemmas already proved*] [unfolding *lemmas*]
-    `by` [terminal proof]
+    `by` terminal proof
 
 where
 
@@ -94,3 +144,8 @@ a line, leave less relevant information (like typing) to the end.
   2) Try to keep labelled facts and cross-references inside proofs to
      a minimum. This can be achieved by judiciously using the
      `moreover`...`finally` commands.
+
+
+;; Local Variables:
+;; ispell-dictionary: american
+;; End:
