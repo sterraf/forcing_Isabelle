@@ -11,4 +11,5 @@ pipelines:
         services:
           - docker
         script: # Modify the commands below to build your repository.
-          - echo "Hola Mundo"
+          - cd src
+	  - make
