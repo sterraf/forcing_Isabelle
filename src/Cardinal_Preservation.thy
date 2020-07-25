@@ -204,6 +204,9 @@ proof -
     using strengthening_lemma[of r \<phi> _ env] by blast
 qed
 
+lemma Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
+   using refl_leq by blast
+
 \<comment> \<open>Kunen IV.3.5\<close>
 lemma ccc_fun_approximation_lemma:
   assumes "ccc\<^sup>M(P,leq)" "A\<in>M" "B\<in>M" "f\<in>M[G]" "f : A \<rightarrow> B"
@@ -265,8 +268,10 @@ proof -
     have "q : F`a \<rightarrow>\<^sup>M P" sorry
     moreover
     have "q`b \<bottom> q`c" if "b \<noteq> c" "b \<in> F`a" "c \<in> F`a" for b c sorry
-    moreover from this
-    have "q`b \<noteq> q`c" if "b \<noteq> c" "b \<in> F`a" "c \<in> F`a" for b c sorry
+    moreover from calculation
+    have "q`b \<noteq> q`c" if "b \<noteq> c" "b \<in> F`a" "c \<in> F`a" for b c
+      using that Incompatible_imp_not_eq apply_type
+        mem_function_space_rel_abs by simp
     ultimately
     have "q \<in> inj_rel(F`a,P)" using def_inj_rel by auto
     with \<open>F`a \<in> M\<close> \<open>q \<in> M\<close>

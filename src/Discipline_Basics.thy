@@ -461,10 +461,12 @@ proof -
   show ?thesis by force
 qed
 
-lemma Pi_rel_char:
-  "Pi_rel(A,B) = {f\<in>Pi(A,B). M(f)}"
+lemma Pi_rel_char: "Pi_rel(A,B) = {f\<in>Pi(A,B). M(f)}"
   using def_Pi_rel Pow_rel_char[OF Sigma_closed] unfolding Pi_def
   by fastforce
+
+lemma mem_Pi_rel_abs: "M(f) \<Longrightarrow> f \<in> Pi_rel(A,B) \<longleftrightarrow> f \<in> Pi(A,B)"
+  using Pi_rel_char by simp
 
 end (* M_Pi_assumptions *)
 
@@ -646,6 +648,11 @@ proof -
     using assms def_function_space_rel Pi_rel_char
     by simp
 qed
+
+lemma mem_function_space_rel_abs:
+  assumes "M(A)" "M(y)" "M(f)"
+  shows "f \<in> A \<rightarrow>r y  \<longleftrightarrow>  f \<in> A \<rightarrow> y"
+  using assms function_space_rel_char by simp
 
 end (* M_Pi *)
 
