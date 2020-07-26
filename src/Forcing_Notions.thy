@@ -35,14 +35,6 @@ lemma subset_fun_image: "f:N\<rightarrow>P \<Longrightarrow> f``N\<subseteq>P"
 lemma refl_monot_domain: "refl(B,r) \<Longrightarrow> A\<subseteq>B \<Longrightarrow> refl(A,r)"  
   unfolding refl_def by blast
 
-definition
-  antichain :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "antichain(P,leq,A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A.\<forall>q\<in>A.(\<not> compat_in(P,leq,p,q)))"
-
-definition 
-  ccc :: "i \<Rightarrow> i \<Rightarrow> o" where
-  "ccc(P,leq) \<equiv> \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
-
 locale forcing_notion =
   fixes P leq one
   assumes one_in_P:         "one \<in> P"
@@ -106,8 +98,6 @@ lemma dense_belowD [dest]:
   assumes "dense_below(D,p)" "q\<in>P" "q\<preceq>p"
   shows "\<exists>d\<in>D. d\<in>P \<and> d\<preceq>q"
   using assms unfolding dense_below_def by simp
-    (*obtains d where "d\<in>D" "d\<in>P" "d\<preceq>q"
-  using assms unfolding dense_below_def by blast *)
 
 lemma dense_belowI [intro!]: 
   assumes "\<And>q. q\<in>P \<Longrightarrow> q\<preceq>p \<Longrightarrow> \<exists>d\<in>D. d\<in>P \<and> d\<preceq>q" 
@@ -138,27 +128,6 @@ lemma dense_below_dense_below:
   assumes "dense_below({q\<in>P. dense_below(D,q)},p)" "p\<in>P" 
   shows "dense_below(D,p)"  
   using assms leq_transD refl_leq  by blast
-    (* Long proof *)
-    (*  unfolding dense_below_def
-proof (intro ballI impI)
-  fix r
-  assume "r\<in>P" \<open>r\<preceq>p\<close>
-  with assms
-  obtain q where "q\<in>P" "q\<preceq>r" "dense_below(D,q)"
-    using assms by auto
-  moreover from this
-  obtain d where "d\<in>P" "d\<preceq>q" "d\<in>D"
-    using assms leq_preord unfolding preorder_on_def refl_def by blast
-  moreover
-  note \<open>r\<in>P\<close>
-  ultimately
-  show "\<exists>d\<in>D. d \<in> P \<and> d\<preceq> r"
-    using leq_preord trans_onD unfolding preorder_on_def by blast
-qed *)
-
-definition
-  antichain :: "i\<Rightarrow>o" where
-  "antichain(A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A.\<forall>q\<in>A.(\<not>compat(p,q)))"
 
 text\<open>A filter is an increasing set $G$ with all its elements 
 being compatible in $G$.\<close>
@@ -455,6 +424,7 @@ lemma RS_seq_funtype:
 
 lemmas countable_rasiowa_sikorski = 
   RS_sequence_imp_rasiowa_sikorski[OF _ RS_seq_funtype countable_RS_sequence(1,2)]
+
 end (* countable_generic *)
 
 end

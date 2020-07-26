@@ -61,11 +61,16 @@ ZF-Constructible
   because of definition of ≠.
 - rename "nonempty" to "M_zero" or "zero_into_M".
 
+
 ZF
 ==
 
 - Erase superfluous hypotheses from the conclusion of
   InfCard_rel_csquare_eq.
+
+- Eliminate alternative definition names:
+  image_def ---> Image_def
+  the_def ---> THE_def
 
 
 Assorted To-Dos
@@ -90,3 +95,6 @@ Assorted To-Dos
 - Named theorems for arities.
 
 - Discipline for Vfrom_abs and Vfrom_closed
+
+- Relocate material on antichains (in Forcing_Notions?) and results on
+  range (both now in Cardinal_Preservation).

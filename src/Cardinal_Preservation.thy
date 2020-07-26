@@ -5,6 +5,27 @@ theory Cardinal_Preservation
 
 begin
 
+definition
+  antichain :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
+  "antichain(P,leq,A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A.\<forall>q\<in>A.(\<not> compat_in(P,leq,p,q)))"
+
+definition
+  ccc :: "i \<Rightarrow> i \<Rightarrow> o" where
+  "ccc(P,leq) \<equiv> \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
+
+context forcing_notion
+begin
+
+definition
+  antichain :: "i\<Rightarrow>o" where
+  "antichain(A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A. \<forall>q\<in>A. p \<bottom> q)"
+
+definition
+  ccc :: "o" where
+  "ccc \<equiv> \<forall>A. antichain(A) \<longrightarrow> |A| \<le> nat"
+
+end (* forcing_notion *)
+
 (* MOVE THIS to some appropriate place *)
 declare (in M_trivial) compat_in_abs[absolut]
 
@@ -56,6 +77,13 @@ end (* M_cardinals *)
 
 sublocale M_ZF_trans \<subseteq> M_cardinal_AC "##M"
   sorry
+
+lemma Pi_range_eq: "f \<in> Pi(A,B) \<Longrightarrow> range(f) = {f ` x . x \<in> A}"
+  using Pi_rangeD[of f A B] apply_rangeI[of f A B]
+  by blast
+
+lemma Pi_rangeE: "\<lbrakk>b\<in>range(f); f\<in>Pi(A,B); \<And>a. a\<in>A \<Longrightarrow> Q(f`a)\<rbrakk> \<Longrightarrow> Q(b)"
+  using Pi_range_eq by auto
 
 context G_generic begin
 
@@ -269,13 +297,20 @@ proof -
     moreover
     have "q`b \<bottom> q`c" if "b \<noteq> c" "b \<in> F`a" "c \<in> F`a" for b c sorry
     moreover from calculation
+    have "antichain(q``(F`a))"
+      unfolding antichain_def  sorry
+    moreover from calculation
     have "q`b \<noteq> q`c" if "b \<noteq> c" "b \<in> F`a" "c \<in> F`a" for b c
       using that Incompatible_imp_not_eq apply_type
         mem_function_space_rel_abs by simp
     ultimately
     have "q \<in> inj_rel(F`a,P)" using def_inj_rel by auto
     with \<open>F`a \<in> M\<close> \<open>q \<in> M\<close>
-    show ?thesis sorry
+    show ?thesis
+      using lepoll_rel_imp_Card_rel_le[of "F`a" nat]
+        def_lepoll_rel Card_rel_cardinal_rel_eq[OF Card_rel_nat]
+      apply (auto intro:lepoll_rel_imp_Card_rel_le)
+      sorry
   qed
   moreover
   have "F : A \<rightarrow> Pow(B)"
