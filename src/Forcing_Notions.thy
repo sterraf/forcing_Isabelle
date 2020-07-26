@@ -87,10 +87,6 @@ lemma leq_transD:  "a\<preceq>b \<Longrightarrow> b\<preceq>c \<Longrightarrow> 
 lemma leq_transD':  "A\<subseteq>P \<Longrightarrow> a\<preceq>b \<Longrightarrow> b\<preceq>c \<Longrightarrow> a \<in> A \<Longrightarrow> b \<in> P\<Longrightarrow> c \<in> P\<Longrightarrow> a\<preceq>c"
   using leq_preord trans_onD subsetD unfolding preorder_on_def by blast
 
-
-lemma leq_reflI: "p\<in>P \<Longrightarrow> p\<preceq>p"
-  using leq_preord unfolding preorder_on_def refl_def by blast
-
 lemma compatD[dest!]: "compat(p,q) \<Longrightarrow> \<exists>d\<in>P. d\<preceq>p \<and> d\<preceq>q"
   unfolding compat_def compat_in_def .
 
@@ -136,12 +132,12 @@ lemma dense_below_under:
 lemma ideal_dense_below:
   assumes "\<And>q. q\<in>P \<Longrightarrow> q\<preceq>p \<Longrightarrow> q\<in>D"
   shows "dense_below(D,p)"
-  using assms leq_reflI by blast
+  using assms refl_leq by blast
 
 lemma dense_below_dense_below: 
   assumes "dense_below({q\<in>P. dense_below(D,q)},p)" "p\<in>P" 
   shows "dense_below(D,p)"  
-  using assms leq_transD leq_reflI  by blast
+  using assms leq_transD refl_leq  by blast
     (* Long proof *)
     (*  unfolding dense_below_def
 proof (intro ballI impI)
@@ -257,7 +253,7 @@ lemma decr_succ_decr:
   using \<open>m\<in>_\<close>
 proof(induct m)
   case 0
-  then show ?case using assms leq_reflI by simp
+  then show ?case using assms refl_leq by simp
 next
   case (succ x)
   then
@@ -272,7 +268,7 @@ next
     with 1 show ?thesis using leI succ leq_transD by auto
   next
     case eq
-    with 1 show ?thesis using leq_reflI by simp
+    with 1 show ?thesis using refl_leq by simp
   qed
 qed
 
@@ -367,6 +363,11 @@ qed
 
 end (* countable_generic *)
 
+lemma Pi_rangeD:
+  assumes "f\<in>Pi(A,B)" "b \<in> range(f)"
+  shows "\<exists>a\<in>A. f`a = b"
+  using assms apply_equality[OF _ assms(1), of _ b] domain_type[OF _ assms(1)] by auto
+
 text\<open>Now, the following recursive definition will fulfill the 
 requirements of lemma \<^term>\<open>RS_sequence_imp_rasiowa_sikorski\<close> \<close>
 
@@ -378,11 +379,6 @@ primrec
 
 context countable_generic
 begin
-
-lemma preimage_rangeD:
-  assumes "f\<in>Pi(A,B)" "b \<in> range(f)" 
-  shows "\<exists>a\<in>A. f`a = b"
-  using assms apply_equality[OF _ assms(1), of _ b] domain_type[OF _ assms(1)] by auto
 
 lemma countable_RS_sequence_aux:
   fixes p enum
@@ -399,7 +395,7 @@ proof (induct)
   obtain q where "q\<in>P" "q\<preceq> p" "q \<in> \<D> ` 0" by blast
   moreover from this and \<open>P \<subseteq> range(enum)\<close>
   obtain m where "m\<in>nat" "enum`m = q" 
-    using preimage_rangeD[OF \<open>enum:nat\<rightarrow>M\<close>] by blast
+    using Pi_rangeD[OF \<open>enum:nat\<rightarrow>M\<close>] by blast
   moreover 
   have "\<D>`0 \<subseteq> P"
     using apply_funtype[OF countable_subs_of_P] by simp
@@ -413,7 +409,7 @@ next
   obtain q where "q\<in>P" "q\<preceq> f(succ(n))" "q \<in> \<D> ` succ(n)" by blast
   moreover from this and \<open>P \<subseteq> range(enum)\<close>
   obtain m where "m\<in>nat" "enum`m\<preceq> f(succ(n))" "enum`m \<in> \<D> ` succ(n)"
-    using preimage_rangeD[OF \<open>enum:nat\<rightarrow>M\<close>] by blast
+    using Pi_rangeD[OF \<open>enum:nat\<rightarrow>M\<close>] by blast
   moreover note succ
   moreover from calculation
   have "\<D>`succ(n) \<subseteq> P" 

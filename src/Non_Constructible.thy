@@ -84,7 +84,7 @@ proof
   next
     case False
     with \<open>p\<in>list(2)\<close> 
-    show ?thesis using ch.leq_reflI unfolding Diff_def by auto
+    show ?thesis using ch.refl_leq unfolding Diff_def by auto
   qed
 qed
 
@@ -332,7 +332,7 @@ proof
   next
     case False
     with \<open>p\<in>2^<\<omega>\<close> 
-    show ?thesis using fun.leq_reflI unfolding Diff_def by auto
+    show ?thesis using fun.refl_leq unfolding Diff_def by auto
   qed
 qed
 

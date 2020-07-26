@@ -112,7 +112,7 @@ proof
   note \<open>forces_mem(q,s,t1)\<close> \<open>dense_below(_,p)\<close> \<open>q\<in>P\<close>
   ultimately
   obtain q1 where "q1\<preceq>r" "q1\<in>P" "forces_mem(q1,s,t2)"
-    using strengthening_mem[of q _ s t1] leq_reflI leq_transD[of _ r q] by blast
+    using strengthening_mem[of q _ s t1] refl_leq leq_transD[of _ r q] by blast
   then
   show "\<exists>d\<in>{r \<in> P . forces_mem(r, s, t2)}. d \<in> P \<and> d\<preceq> r"
     by blast
@@ -305,7 +305,7 @@ proof -
       case True
       with \<open>r\<in>P\<close>
         (* Automatic tools can't handle this case for some reason... *)
-      show ?thesis using leq_reflI[of r] by (intro bexI) (blast+)
+      show ?thesis using refl_leq[of r] by (intro bexI) (blast+)
     next
       case False
       then
@@ -343,7 +343,7 @@ proof -
   moreover from this and \<open>M_generic(G)\<close>
   have "x\<in>D"
     using M_generic_compatD[OF _ \<open>p\<in>G\<close>, of x]
-      leq_reflI compatI[of _ p x] by force
+      refl_leq compatI[of _ p x] by force
   ultimately
   show ?thesis by auto
 qed
@@ -418,7 +418,7 @@ lemma refl_forces_eq:"p\<in>P \<Longrightarrow> forces_eq(p,x,x)"
   using def_forces_eq by simp
 
 lemma forces_memI: "\<langle>\<sigma>,r\<rangle>\<in>\<tau> \<Longrightarrow> p\<in>P \<Longrightarrow> r\<in>P \<Longrightarrow> p\<preceq>r \<Longrightarrow> forces_mem(p,\<sigma>,\<tau>)"
-  using refl_forces_eq[of _ \<sigma>] leq_transD leq_reflI 
+  using refl_forces_eq[of _ \<sigma>] leq_transD refl_leq
   by (blast intro:forces_mem_iff_dense_below[THEN iffD2])
 
 (* Lemma IV.2.40(a), equality, first inclusion *)
@@ -636,7 +636,7 @@ proof -
     using that leq_transD[of _ p r] by blast
   then
   have "dense_below({q\<in>P. \<exists>s r. r\<in>P \<and> \<langle>s,r\<rangle> \<in> \<tau> \<and> q\<preceq>r \<and> forces_eq(q,\<pi>,s)},p)"
-    using leq_reflI by blast
+    using refl_leq by blast
   moreover
   note \<open>M_generic(G)\<close> \<open>p\<in>G\<close>
   moreover from calculation
@@ -744,7 +744,7 @@ proof -
     proof (cases "forces_eq(p, \<tau>, \<theta>)")
       case True
       with \<open>p\<in>P\<close> 
-      show ?thesis using leq_reflI by blast
+      show ?thesis using refl_leq by blast
     next
       case False
       moreover note \<open>p\<in>P\<close>
@@ -1006,7 +1006,7 @@ case (Nand \<phi> \<psi>)
       using dense_belowI by auto
     moreover from calculation
     have "\<not>(d\<tturnstile> \<psi> env)" if "d \<tturnstile> \<phi> env"
-      using that Forces_Nand leq_reflI transitivity[OF _ P_in_M, of d] by auto
+      using that Forces_Nand refl_leq transitivity[OF _ P_in_M, of d] by auto
     moreover 
     note arity_Nand_le[of \<phi> \<psi>]
     moreover from calculation
@@ -1060,7 +1060,7 @@ next
   assume "p \<tturnstile> \<phi> env"
   with assms
   show "dense_below({q\<in>P. q \<tturnstile> \<phi> env},p)"
-    using strengthening_lemma leq_reflI by auto
+    using strengthening_lemma refl_leq by auto
 qed
 
 subsection\<open>The Truth Lemma\<close>
@@ -1089,7 +1089,7 @@ next
     assume "q\<in>P" "q\<preceq> p"
     with assms \<open>(p \<tturnstile> \<phi> env) \<and> (p \<tturnstile> \<psi> env)\<close>
     show "q\<in>{r \<in> P . (r \<tturnstile> \<phi> env) \<and> (r \<tturnstile> \<psi> env)}" "q\<preceq> q"
-      using strengthening_lemma leq_reflI by auto
+      using strengthening_lemma refl_leq by auto
   qed
   with assms
   show "p \<tturnstile> And(\<phi>,\<psi>) env"
@@ -1160,7 +1160,7 @@ next
     proof (cases "q \<tturnstile> Neg(\<phi>) env")
       case True
       with \<open>q\<in>P\<close>
-      show ?thesis using leq_reflI by blast
+      show ?thesis using refl_leq by blast
     next
       case False
       with \<open>q\<in>P\<close> and assms
@@ -1442,7 +1442,7 @@ next
       proof (cases "p \<tturnstile> Forall(\<phi>) env")
         case True
         with \<open>p\<in>P\<close> 
-        show ?thesis unfolding D_def using leq_reflI by blast
+        show ?thesis unfolding D_def using refl_leq by blast
       next
         case False
         with Forall \<open>p\<in>P\<close>

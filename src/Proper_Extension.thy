@@ -37,7 +37,7 @@ proof
   next
     case False
     with \<open>p\<in>P\<close> 
-    show ?thesis using leq_reflI unfolding Diff_def by auto
+    show ?thesis using refl_leq unfolding Diff_def by auto
   qed
 qed
 
