@@ -7,24 +7,12 @@ begin
 
 definition
   antichain :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "antichain(P,leq,A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A.\<forall>q\<in>A.(\<not> compat_in(P,leq,p,q)))"
+  "antichain(P,leq,A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A. \<forall>q\<in>A.
+                p\<noteq>q \<longrightarrow> \<not>compat_in(P,leq,p,q))"
 
 definition
   ccc :: "i \<Rightarrow> i \<Rightarrow> o" where
   "ccc(P,leq) \<equiv> \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
-
-context forcing_notion
-begin
-
-definition
-  antichain :: "i\<Rightarrow>o" where
-  "antichain(A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A. \<forall>q\<in>A. p \<bottom> q)"
-
-definition
-  ccc :: "o" where
-  "ccc \<equiv> \<forall>A. antichain(A) \<longrightarrow> |A| \<le> nat"
-
-end (* forcing_notion *)
 
 (* MOVE THIS to some appropriate place *)
 declare (in M_trivial) compat_in_abs[absolut]
@@ -32,7 +20,7 @@ declare (in M_trivial) compat_in_abs[absolut]
 definition
   antichain_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
   "antichain_rel(M,P,leq,A) \<equiv> subset(M,A,P) \<and> (\<forall>p[M]. \<forall>q[M].
-       p\<in>A \<longrightarrow> q\<in>A \<longrightarrow> \<not> is_compat_in(M,P,leq,p,q))"
+       p\<in>A \<longrightarrow> q\<in>A \<longrightarrow> p \<noteq> q\<longrightarrow> \<not> is_compat_in(M,P,leq,p,q))"
 
 context M_trivial
 begin
@@ -42,11 +30,49 @@ abbreviation
   "antichain_r(P,leq,A) \<equiv> antichain_rel(M,P,leq,A)"
 
 lemma antichain_abs [absolut]:
-  "\<lbrakk>M(X); M(A); M(r); M(P); M(leq)\<rbrakk> \<Longrightarrow> 
-  antichain_r(P,leq,A) \<longleftrightarrow> antichain(P,leq,A)"
+  "\<lbrakk> M(A); M(P); M(leq) \<rbrakk> \<Longrightarrow> antichain_r(P,leq,A) \<longleftrightarrow> antichain(P,leq,A)"
   unfolding antichain_rel_def antichain_def by (simp add:absolut)
 
 end (* M_trivial *)
+
+context forcing_notion
+begin
+
+definition
+  antichain :: "i\<Rightarrow>o" where
+  "antichain(A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A. \<forall>q\<in>A. p \<noteq> q \<longrightarrow> p \<bottom> q)"
+
+definition
+  ccc :: "o" where
+  "ccc \<equiv> \<forall>A. antichain(A) \<longrightarrow> |A| \<le> nat"
+
+end (* forcing_notion *)
+
+locale M_trivial_notion = M_trivial + forcing_notion
+begin
+
+abbreviation
+  antichain_r' :: "i \<Rightarrow> o" where
+  "antichain_r'(A) \<equiv> antichain_rel(M,P,leq,A)"
+
+lemma antichain_abs' [absolut]:
+  "\<lbrakk> M(A); M(P); M(leq) \<rbrakk> \<Longrightarrow> antichain_r'(A) \<longleftrightarrow> antichain(A)"
+  unfolding antichain_rel_def antichain_def compat_def
+    by (simp add:absolut)
+
+end (* M_trivial_notion *)
+
+sublocale forcing_data \<subseteq> M_trivial_notion "##M" ..
+
+context forcing_data
+begin
+
+lemma antichain_abs'' [absolut]: "A\<in>M \<Longrightarrow> antichain_r'(A) \<longleftrightarrow> antichain(A)"
+  using P_in_M leq_in_M
+  unfolding antichain_rel_def antichain_def compat_def
+    by (auto simp add:absolut transitivity)
+
+end (* M_trivial_notion *)
 
 (******************************************************)
 subsection\<open>Discipline for \<^term>\<open>ccc\<close>\<close>
@@ -237,6 +263,7 @@ lemma Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbra
 
 \<comment> \<open>Kunen IV.3.5\<close>
 lemma ccc_fun_approximation_lemma:
+  notes le_trans[trans]
   assumes "ccc\<^sup>M(P,leq)" "A\<in>M" "B\<in>M" "f\<in>M[G]" "f : A \<rightarrow> B"
   shows 
     "\<exists>F\<in>M. F : A \<rightarrow> Pow(B) \<and> (\<forall>a\<in>A. f`a \<in> F`a \<and> |F`a|\<^sup>M \<le> nat)"
@@ -286,31 +313,54 @@ proof -
   have "|F`a|\<^sup>M \<le> nat" if "a \<in> A" for a
   proof -
     let ?Q="\<lambda>b. {q\<in>P. q \<preceq> p \<and> (q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v])}"
-    interpret M_Pi_assumptions_choice "##M" "F`a" ?Q sorry
+    from \<open>F \<in> M\<close> \<open>a\<in>A\<close> \<open>A\<in>M\<close>
+    have "F`a \<in> M" by (auto dest:transM)
+    then
+    interpret M_Pi_assumptions_choice "##M" "F`a" ?Q
+      apply unfold_locales apply simp_all sorry
+    from \<open>F`a \<in> M\<close>
+    interpret M_Pi_assumptions2 "##M" "F`a" ?Q "\<lambda>_ . P"
+      using P_in_M
+      apply unfold_locales apply simp_all sorry
     have "\<exists>y. y \<in> ?Q(b)" if "b \<in> F`a" for b sorry
     then
     obtain q where "q \<in> Pi_rel(F`a,?Q)" "q\<in>M" using AC_Pi_rel by auto
-    moreover from \<open>F \<in> M\<close>
-    have "F`a \<in> M" sorry
-    moreover from calculation
-    have "q : F`a \<rightarrow>\<^sup>M P" sorry
     moreover
-    have "q`b \<bottom> q`c" if "b \<noteq> c" "b \<in> F`a" "c \<in> F`a" for b c sorry
+    note \<open>F`a \<in> M\<close>
     moreover from calculation
-    have "antichain(q``(F`a))"
-      unfolding antichain_def  sorry
+    have "q : F`a \<rightarrow>\<^sup>M P"
+      using Pi_rel_weaken_type def_function_space_rel by auto
+    moreover from calculation
+    have "q : F`a \<rightarrow> range(q)" "q : F`a \<rightarrow> P" "q : F`a \<rightarrow>\<^sup>M range(q)"
+      using mem_function_space_rel_abs range_of_fun by simp_all
+    moreover
+    have "q`b \<bottom> q`c" if "b \<in> F`a" "c \<in> F`a" "b \<noteq> c"
+    \<comment> \<open>For the next step, if the premise \<^term>\<open>b \<noteq> c\<close> is first,
+        the proof breaks down badly\<close>
+      for b c sorry
+    moreover from calculation
+    have "antichain(range(q))"
+      using Pi_range_eq[of _  _ "\<lambda>_ . P"]
+      unfolding antichain_def by auto
+    moreover from this and \<open>q\<in>M\<close>
+    have "antichain_r'(range(q))"
+      by (simp add:absolut)
     moreover from calculation
     have "q`b \<noteq> q`c" if "b \<noteq> c" "b \<in> F`a" "c \<in> F`a" for b c
       using that Incompatible_imp_not_eq apply_type
         mem_function_space_rel_abs by simp
     ultimately
-    have "q \<in> inj_rel(F`a,P)" using def_inj_rel by auto
-    with \<open>F`a \<in> M\<close> \<open>q \<in> M\<close>
-    show ?thesis
-      using lepoll_rel_imp_Card_rel_le[of "F`a" nat]
-        def_lepoll_rel Card_rel_cardinal_rel_eq[OF Card_rel_nat]
-      apply (auto intro:lepoll_rel_imp_Card_rel_le)
-      sorry
+    have "q \<in> inj\<^sup>M(F`a,range(q))"
+      using def_inj_rel by auto
+    with \<open>F`a \<in> M\<close> \<open>q\<in>M\<close>
+    have "|F`a|\<^sup>M \<le> |range(q)|\<^sup>M"
+      using def_lepoll_rel
+      by (rule_tac lepoll_rel_imp_Card_rel_le) auto
+    also from \<open>antichain_r'(range(q))\<close> \<open>ccc\<^sup>M(P,leq)\<close> \<open>q\<in>M\<close>
+    have "|range(q)|\<^sup>M \<le> nat"
+      using def_ccc_rel by simp
+    finally
+    show ?thesis .
   qed
   moreover
   have "F : A \<rightarrow> Pow(B)"
