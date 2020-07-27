@@ -151,6 +151,54 @@ lemmas generic_dests = M_genericD[OF generic] M_generic_compatD[OF generic]
 
 bundle G_generic_lemmas = generic_simps[simp] generic_dests[dest]
 
+end (* G_generic *)
+
+lemma (in forcing_data) forces_neq_apply_imp_incompatible:
+  assumes
+    "p \<tturnstile> fun_apply_fm(0,1,2) [f,a,check(b)]"
+    "q \<tturnstile> fun_apply_fm(0,1,2) [f,a,check(b')]"
+    "b \<noteq> b'"
+    and
+    types:"f\<in>M" "a\<in>M" "b\<in>M" "b'\<in>M" "p\<in>P" "q\<in>P"
+  shows
+    "p \<bottom> q"
+proof -
+  let ?\<phi>="fun_apply_fm(0,1,2)"
+  {
+    fix G
+    assume "M_generic(G)"
+    then
+    interpret G_generic _ _ _ _ _ G by unfold_locales
+    include G_generic_lemmas
+      \<comment> \<open>FIXME: make a locale containg two \<open>M_ZF_trans\<close> instances, one
+          for \<^term>\<open>M\<close> and one for \<^term>\<open>M[G]\<close>\<close>
+    interpret mgzf: M_ZF_trans "M[G]"
+      using Transset_MG generic pairing_in_MG Union_MG
+        extensionality_in_MG power_in_MG foundation_in_MG
+        strong_replacement_in_MG separation_in_MG infinity_in_MG
+      by unfold_locales simp_all
+    assume "q\<in>G"
+    with assms \<open>M_generic(G)\<close>
+    have "M[G], map(val(G),[f,a,check(b')]) \<Turnstile> ?\<phi>"
+      using truth_lemma[of ?\<phi> G "[f,a,check(b')]"]
+      by (auto simp add:nat_simp_union arity_fun_apply_fm
+          fun_apply_type)
+    with \<open>b \<noteq> b'\<close> types
+    have "M[G], map(val(G),[f,a,check(b)]) \<Turnstile> Neg(?\<phi>)"
+      using GenExtI by auto
+  }
+  with types
+  have "q \<tturnstile> Neg(?\<phi>) [f,a,check(b)]"
+    using definition_of_forcing check_in_M
+    by (auto simp add:nat_simp_union arity_fun_apply_fm)
+  with \<open>p \<tturnstile> ?\<phi> [f,a,check(b)]\<close> and types
+  show "p \<bottom> q"
+    using check_in_M inconsistent_imp_incompatible
+    by (simp add:nat_simp_union arity_fun_apply_fm fun_apply_type)
+qed
+
+context G_generic begin
+
 text\<open>The following interpretation makes the simplifications from the
 locales \<open>M_trans\<close>, \<open>M_trivial\<close>, etc., available for \<^term>\<open>M[G]\<close> \<close>
 interpretation mgzf: M_ZF_trans "M[G]"
