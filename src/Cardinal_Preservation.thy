@@ -111,6 +111,28 @@ lemma Pi_range_eq: "f \<in> Pi(A,B) \<Longrightarrow> range(f) = {f ` x . x \<in
 lemma Pi_rangeE: "\<lbrakk>b\<in>range(f); f\<in>Pi(A,B); \<And>a. a\<in>A \<Longrightarrow> Q(f`a)\<rbrakk> \<Longrightarrow> Q(b)"
   using Pi_range_eq by auto
 
+lemma (in forcing_notion) Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
+   using refl_leq by blast
+
+lemma (in forcing_data) inconsistent_imp_incompatible:
+  assumes "p \<tturnstile> \<phi> env" "q \<tturnstile> Neg(\<phi>) env" "p\<in>P" "q\<in>P"
+    "arity(\<phi>) \<le> length(env)" "\<phi> \<in> formula" "env \<in> list(M)"
+  shows "p \<bottom> q"
+proof
+  assume "compat(p,q)"
+  then
+  obtain d where "d \<preceq> p" "d \<preceq> q" "d \<in> P" by blast
+  moreover
+  note assms
+  moreover from calculation
+  have "d \<tturnstile> \<phi> env" "d \<tturnstile> Neg(\<phi>) env"
+    using strengthening_lemma by simp_all
+  ultimately
+  show "False"
+    using Forces_Neg[of d env \<phi>] refl_leq P_in_M
+    by (auto dest:transM; drule_tac bspec; auto dest:transM)
+qed
+
 context G_generic begin
 
 notation cardinal_rel (\<open>|_|\<^sup>M\<close>)
@@ -257,9 +279,6 @@ proof -
   show ?thesis
     using strengthening_lemma[of r \<phi> _ env] by blast
 qed
-
-lemma Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
-   using refl_leq by blast
 
 \<comment> \<open>Kunen IV.3.5\<close>
 lemma ccc_fun_approximation_lemma:
