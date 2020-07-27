@@ -404,7 +404,20 @@ proof -
     have "q`b \<bottom> q`c" if "b \<in> F`a" "c \<in> F`a" "b \<noteq> c"
     \<comment> \<open>For the next step, if the premise \<^term>\<open>b \<noteq> c\<close> is first,
         the proof breaks down badly\<close>
-      for b c sorry
+      for b c
+    proof -
+      from \<open>b \<in> F`a\<close> \<open>c \<in> F`a\<close> \<open>q \<in> Pi_rel(F`a,?Q)\<close> \<open>q\<in>M\<close>
+      have "q`b \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v]"
+           "q`c \<tturnstile> ?app_fm [f_dot, a\<^sup>v, c\<^sup>v]"
+        using mem_Pi_rel_abs[of q] apply_type[of _ _  ?Q]
+        by simp_all
+      with \<open>b \<noteq> c\<close> \<open>q : F`a \<rightarrow> P\<close> \<open>a\<in>A\<close> \<open>b\<in>_\<close> \<open>c\<in>_\<close>
+        \<open>A\<in>M\<close> \<open>f_dot\<in>M\<close> \<open>F`a\<in>M\<close>
+      show ?thesis
+        using forces_neq_apply_imp_incompatible
+          transitivity[of _ A] transitivity[of _ "F`a"]
+        by auto
+    qed
     moreover from calculation
     have "antichain(range(q))"
       using Pi_range_eq[of _  _ "\<lambda>_ . P"]
