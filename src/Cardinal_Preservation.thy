@@ -389,7 +389,9 @@ proof -
     interpret M_Pi_assumptions2 "##M" "F`a" ?Q "\<lambda>_ . P"
       using P_in_M
       apply unfold_locales apply simp_all sorry
-    have "\<exists>y. y \<in> ?Q(b)" if "b \<in> F`a" for b sorry
+    from \<open>p \<tturnstile> ?\<phi> [f_dot, A\<^sup>v, B\<^sup>v]\<close> \<open>a\<in>A\<close>
+    have "\<exists>y. y \<in> ?Q(b)" if "b \<in> F`a" for b
+      using that unfolding F_def by auto
     then
     obtain q where "q \<in> Pi_rel(F`a,?Q)" "q\<in>M" using AC_Pi_rel by auto
     moreover
