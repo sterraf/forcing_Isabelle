@@ -133,11 +133,12 @@ proof
     by (auto dest:transM; drule_tac bspec; auto dest:transM)
 qed
 
+notation (in forcing_data) check (\<open>_\<^sup>v\<close> [101] 100)
+
 context G_generic begin
 
 notation cardinal_rel (\<open>|_|\<^sup>M\<close>)
 notation ccc_r (\<open>ccc\<^sup>M\<close>)
-notation check (\<open>_\<^sup>v\<close> [101] 100)
 notation function_space_rel (infix \<open>\<rightarrow>\<^sup>M\<close> 60)
 notation inj_rel (\<open>inj\<^sup>M\<close>)
 
@@ -179,19 +180,19 @@ proof -
       by unfold_locales simp_all
     assume "q\<in>G"
     with assms \<open>M_generic(G)\<close>
-    have "M[G], map(val(G),[f,a,check(b')]) \<Turnstile> ?\<phi>"
-      using truth_lemma[of ?\<phi> G "[f,a,check(b')]"]
+    have "M[G], map(val(G),[f,a,b'\<^sup>v]) \<Turnstile> ?\<phi>"
+      using truth_lemma[of ?\<phi> G "[f,a,b'\<^sup>v]"]
       by (auto simp add:nat_simp_union arity_fun_apply_fm
           fun_apply_type)
     with \<open>b \<noteq> b'\<close> types
-    have "M[G], map(val(G),[f,a,check(b)]) \<Turnstile> Neg(?\<phi>)"
+    have "M[G], map(val(G),[f,a,b\<^sup>v]) \<Turnstile> Neg(?\<phi>)"
       using GenExtI by auto
   }
   with types
-  have "q \<tturnstile> Neg(?\<phi>) [f,a,check(b)]"
+  have "q \<tturnstile> Neg(?\<phi>) [f,a,b\<^sup>v]"
     using definition_of_forcing check_in_M
     by (auto simp add:nat_simp_union arity_fun_apply_fm)
-  with \<open>p \<tturnstile> ?\<phi> [f,a,check(b)]\<close> and types
+  with \<open>p \<tturnstile> ?\<phi> [f,a,b\<^sup>v]\<close> and types
   show "p \<bottom> q"
     using check_in_M inconsistent_imp_incompatible
     by (simp add:nat_simp_union arity_fun_apply_fm fun_apply_type)
