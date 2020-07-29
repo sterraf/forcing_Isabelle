@@ -1,0 +1,12 @@
+Milestones to reach ¬CH
+=======================
+
+1. Port completely CardinalArith, this involves porting
+ZF-Constructible.Normal (mainly because of ℵ)
+
+2. Finish Delta_Systems: port the existing development and
+complete the remaining parts.
+
+3. Develop Cohen_Posets in the relativized style.
+
+4. Finish the formalization of Kunen's IV.3
