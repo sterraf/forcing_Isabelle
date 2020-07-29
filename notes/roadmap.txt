@@ -1,12 +1,22 @@
 Milestones to reach ¬CH
 =======================
 
-1. Port completely CardinalArith, this involves porting
-ZF-Constructible.Normal (mainly because of ℵ)
+0. Find a way to automate synthesis of separation and strong
+   replacement instances (required for 1-4 below, and perhaps also for
+   item 5).
 
-2. Finish Delta_Systems: port the existing development and
-complete the remaining parts.
+1. Finish porting CardinalArith.
 
-3. Develop Cohen_Posets in the relativized style.
+2. Port ZF-Constructible.Normal (mainly because of ℵ)
 
-4. Finish the formalization of Kunen's IV.3
+3. Finish Delta_System_Lemma: port the existing development and
+   complete the remaining parts now in relativized way.
+
+4. Develop Cohen_Posets in the relativized style.
+
+5. Finish the formalization of Kunen's IV.3
+
+
+;; Local Variables:
+;; ispell-dictionary: american
+;; End:
