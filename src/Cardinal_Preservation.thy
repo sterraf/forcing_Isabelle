@@ -62,6 +62,9 @@ lemma antichain_abs' [absolut]:
 
 end (* M_trivial_notion *)
 
+\<comment> \<open>MOVE THIS to an appropiate place\<close>
+text\<open>The following interpretation makes the simplifications from the
+locales \<open>M_trans\<close>, \<open>M_trivial\<close>, etc., available for \<open>M[G]\<close>\<close>
 sublocale forcing_data \<subseteq> M_trivial_notion "##M" ..
 
 context forcing_data
@@ -154,11 +157,21 @@ bundle G_generic_lemmas = generic_simps[simp] generic_dests[dest]
 
 end (* G_generic *)
 
+sublocale G_generic \<subseteq> ext:M_ZF_trans "M[G]"
+  using Transset_MG generic pairing_in_MG Union_MG
+    extensionality_in_MG power_in_MG foundation_in_MG
+    strong_replacement_in_MG separation_in_MG infinity_in_MG
+  by unfold_locales simp_all
+
 lemma (in forcing_data) forces_neq_apply_imp_incompatible:
   assumes
-    "p \<tturnstile> fun_apply_fm(0,1,2) [f,a,check(b)]"
-    "q \<tturnstile> fun_apply_fm(0,1,2) [f,a,check(b')]"
+    "p \<tturnstile> fun_apply_fm(0,1,2) [f,a,b\<^sup>v]"
+    "q \<tturnstile> fun_apply_fm(0,1,2) [f,a,b'\<^sup>v]"
     "b \<noteq> b'"
+    \<comment> \<open>More general version: taking general names
+       \<^term>\<open>b\<^sup>v\<close> and \<^term>\<open>b'\<^sup>v\<close>, satisfying
+       \<^term>\<open>p \<tturnstile> Neg(Equal(0,1)) [b,b']\<close> and
+       \<^term>\<open>q \<tturnstile> Neg(Equal(0,1)) [b,b']\<close>.\<close>
     and
     types:"f\<in>M" "a\<in>M" "b\<in>M" "b'\<in>M" "p\<in>P" "q\<in>P"
   shows
@@ -173,11 +186,6 @@ proof -
     include G_generic_lemmas
       \<comment> \<open>FIXME: make a locale containg two \<open>M_ZF_trans\<close> instances, one
           for \<^term>\<open>M\<close> and one for \<^term>\<open>M[G]\<close>\<close>
-    interpret mgzf: M_ZF_trans "M[G]"
-      using Transset_MG generic pairing_in_MG Union_MG
-        extensionality_in_MG power_in_MG foundation_in_MG
-        strong_replacement_in_MG separation_in_MG infinity_in_MG
-      by unfold_locales simp_all
     assume "q\<in>G"
     with assms \<open>M_generic(G)\<close>
     have "M[G], map(val(G),[f,a,b'\<^sup>v]) \<Turnstile> ?\<phi>"
@@ -199,14 +207,6 @@ proof -
 qed
 
 context G_generic begin
-
-text\<open>The following interpretation makes the simplifications from the
-locales \<open>M_trans\<close>, \<open>M_trivial\<close>, etc., available for \<^term>\<open>M[G]\<close> \<close>
-interpretation mgzf: M_ZF_trans "M[G]"
-  using Transset_MG generic pairing_in_MG Union_MG
-    extensionality_in_MG power_in_MG foundation_in_MG
-    strong_replacement_in_MG separation_in_MG infinity_in_MG
-  by unfold_locales simp_all
 
 context
   includes G_generic_lemmas
@@ -251,61 +251,61 @@ lemmas sharp_simps = Card_Union Card_rel_cardinal_rel Collect_abs
   mem_formula_abs fst_abs snd_abs nth_closed
 
 \<comment> \<open>NOTE: there is a theorem missing from those above\<close>
-lemmas mg_sharp_simps = mgzf.Card_Union mgzf.Card_rel_cardinal_rel
-  mgzf.Collect_abs mgzf.Cons_abs mgzf.Cons_in_M_iff mgzf.Diff_closed
-  mgzf.Equal_abs mgzf.Equal_in_M_iff mgzf.Finite_abs mgzf.Forall_abs
-  mgzf.Forall_in_M_iff mgzf.Inl_abs mgzf.Inl_in_M_iff mgzf.Inr_abs
-  mgzf.Inr_in_M_iff mgzf.Int_closed mgzf.Inter_abs mgzf.Inter_closed
-  mgzf.M_nat mgzf.Member_abs mgzf.Member_in_M_iff mgzf.Memrel_closed
-  mgzf.Nand_abs mgzf.Nand_in_M_iff mgzf.Nil_abs mgzf.Nil_in_M
-  mgzf.Ord_cardinal_rel mgzf.Pow_rel_closed mgzf.Un_closed
-  mgzf.Union_abs mgzf.Union_closed mgzf.and_abs mgzf.and_closed
-  mgzf.apply_abs mgzf.apply_closed mgzf.bij_rel_closed
-  mgzf.bijection_abs mgzf.bool_of_o_abs mgzf.bool_of_o_closed
-  mgzf.cadd_rel_0 mgzf.cadd_rel_closed mgzf.cardinal_rel_0_iff_0
-  mgzf.cardinal_rel_closed mgzf.cardinal_rel_idem mgzf.cartprod_abs
-  mgzf.cartprod_closed mgzf.cmult_rel_0 mgzf.cmult_rel_1
-  mgzf.cmult_rel_closed mgzf.comp_closed mgzf.composition_abs
-  mgzf.cons_abs mgzf.cons_closed mgzf.converse_abs mgzf.converse_closed
-  mgzf.csquare_lam_closed mgzf.csquare_rel_closed mgzf.depth_closed
-  mgzf.domain_abs mgzf.domain_closed mgzf.eclose_abs mgzf.eclose_closed
-  mgzf.empty_abs mgzf.field_abs mgzf.field_closed
-  mgzf.finite_funspace_closed mgzf.finite_ordinal_abs mgzf.formula_N_abs
-  mgzf.formula_N_closed mgzf.formula_abs mgzf.formula_case_abs
-  mgzf.formula_case_closed mgzf.formula_closed mgzf.formula_functor_abs
-  mgzf.fst_closed mgzf.function_abs mgzf.function_space_rel_closed
-  mgzf.hd_abs mgzf.image_abs mgzf.image_closed mgzf.inj_rel_closed
-  mgzf.injection_abs mgzf.inter_abs mgzf.irreflexive_abs
-  mgzf.is_depth_apply_abs mgzf.is_eclose_n_abs mgzf.is_funspace_abs
-  mgzf.iterates_closed mgzf.le_abs mgzf.length_abs mgzf.length_closed
-  mgzf.lepoll_rel_refl mgzf.limit_ordinal_abs mgzf.linear_rel_abs
-  mgzf.list_N_abs mgzf.list_N_closed mgzf.list_abs
-  mgzf.list_case'_closed mgzf.list_case_abs mgzf.list_closed
-  mgzf.list_functor_abs mgzf.lt_abs mgzf.mem_bij_abs mgzf.mem_eclose_abs
-  mgzf.mem_inj_abs mgzf.mem_list_abs mgzf.membership_abs
-  mgzf.minimum_closed mgzf.nat_case_abs mgzf.nat_case_closed
-  mgzf.nonempty mgzf.not_abs mgzf.not_closed mgzf.nth_abs
-  mgzf.number1_abs mgzf.number2_abs mgzf.number3_abs mgzf.omega_abs
-  mgzf.or_abs mgzf.or_closed mgzf.order_isomorphism_abs
-  mgzf.ordermap_closed mgzf.ordertype_closed mgzf.ordinal_abs
-  mgzf.pair_abs mgzf.pair_in_M_iff mgzf.powerset_abs mgzf.pred_closed
-  mgzf.pred_set_abs mgzf.quasilist_abs mgzf.quasinat_abs
-  mgzf.radd_closed mgzf.rall_abs mgzf.range_abs mgzf.range_closed
-  mgzf.relation_abs mgzf.restrict_closed mgzf.restriction_abs
-  mgzf.rex_abs mgzf.rmult_closed mgzf.rtrancl_abs mgzf.rtrancl_closed
-  mgzf.rvimage_closed mgzf.separation_closed mgzf.setdiff_abs
-  mgzf.singleton_abs mgzf.singleton_in_M_iff mgzf.snd_closed
-  mgzf.strong_replacement_closed mgzf.subset_abs mgzf.succ_in_M_iff
-  mgzf.successor_abs mgzf.successor_ordinal_abs mgzf.sum_abs
-  mgzf.sum_closed mgzf.surj_rel_closed mgzf.surjection_abs mgzf.tl_abs
-  mgzf.trancl_abs mgzf.trancl_closed mgzf.transitive_rel_abs
-  mgzf.transitive_set_abs mgzf.typed_function_abs mgzf.union_abs
-  mgzf.upair_abs mgzf.upair_in_M_iff mgzf.vimage_abs mgzf.vimage_closed
-  mgzf.well_ord_abs mgzf.mem_formula_abs mgzf.nth_closed
+lemmas mg_sharp_simps = ext.Card_Union ext.Card_rel_cardinal_rel
+  ext.Collect_abs ext.Cons_abs ext.Cons_in_M_iff ext.Diff_closed
+  ext.Equal_abs ext.Equal_in_M_iff ext.Finite_abs ext.Forall_abs
+  ext.Forall_in_M_iff ext.Inl_abs ext.Inl_in_M_iff ext.Inr_abs
+  ext.Inr_in_M_iff ext.Int_closed ext.Inter_abs ext.Inter_closed
+  ext.M_nat ext.Member_abs ext.Member_in_M_iff ext.Memrel_closed
+  ext.Nand_abs ext.Nand_in_M_iff ext.Nil_abs ext.Nil_in_M
+  ext.Ord_cardinal_rel ext.Pow_rel_closed ext.Un_closed
+  ext.Union_abs ext.Union_closed ext.and_abs ext.and_closed
+  ext.apply_abs ext.apply_closed ext.bij_rel_closed
+  ext.bijection_abs ext.bool_of_o_abs ext.bool_of_o_closed
+  ext.cadd_rel_0 ext.cadd_rel_closed ext.cardinal_rel_0_iff_0
+  ext.cardinal_rel_closed ext.cardinal_rel_idem ext.cartprod_abs
+  ext.cartprod_closed ext.cmult_rel_0 ext.cmult_rel_1
+  ext.cmult_rel_closed ext.comp_closed ext.composition_abs
+  ext.cons_abs ext.cons_closed ext.converse_abs ext.converse_closed
+  ext.csquare_lam_closed ext.csquare_rel_closed ext.depth_closed
+  ext.domain_abs ext.domain_closed ext.eclose_abs ext.eclose_closed
+  ext.empty_abs ext.field_abs ext.field_closed
+  ext.finite_funspace_closed ext.finite_ordinal_abs ext.formula_N_abs
+  ext.formula_N_closed ext.formula_abs ext.formula_case_abs
+  ext.formula_case_closed ext.formula_closed ext.formula_functor_abs
+  ext.fst_closed ext.function_abs ext.function_space_rel_closed
+  ext.hd_abs ext.image_abs ext.image_closed ext.inj_rel_closed
+  ext.injection_abs ext.inter_abs ext.irreflexive_abs
+  ext.is_depth_apply_abs ext.is_eclose_n_abs ext.is_funspace_abs
+  ext.iterates_closed ext.le_abs ext.length_abs ext.length_closed
+  ext.lepoll_rel_refl ext.limit_ordinal_abs ext.linear_rel_abs
+  ext.list_N_abs ext.list_N_closed ext.list_abs
+  ext.list_case'_closed ext.list_case_abs ext.list_closed
+  ext.list_functor_abs ext.lt_abs ext.mem_bij_abs ext.mem_eclose_abs
+  ext.mem_inj_abs ext.mem_list_abs ext.membership_abs
+  ext.minimum_closed ext.nat_case_abs ext.nat_case_closed
+  ext.nonempty ext.not_abs ext.not_closed ext.nth_abs
+  ext.number1_abs ext.number2_abs ext.number3_abs ext.omega_abs
+  ext.or_abs ext.or_closed ext.order_isomorphism_abs
+  ext.ordermap_closed ext.ordertype_closed ext.ordinal_abs
+  ext.pair_abs ext.pair_in_M_iff ext.powerset_abs ext.pred_closed
+  ext.pred_set_abs ext.quasilist_abs ext.quasinat_abs
+  ext.radd_closed ext.rall_abs ext.range_abs ext.range_closed
+  ext.relation_abs ext.restrict_closed ext.restriction_abs
+  ext.rex_abs ext.rmult_closed ext.rtrancl_abs ext.rtrancl_closed
+  ext.rvimage_closed ext.separation_closed ext.setdiff_abs
+  ext.singleton_abs ext.singleton_in_M_iff ext.snd_closed
+  ext.strong_replacement_closed ext.subset_abs ext.succ_in_M_iff
+  ext.successor_abs ext.successor_ordinal_abs ext.sum_abs
+  ext.sum_closed ext.surj_rel_closed ext.surjection_abs ext.tl_abs
+  ext.trancl_abs ext.trancl_closed ext.transitive_rel_abs
+  ext.transitive_set_abs ext.typed_function_abs ext.union_abs
+  ext.upair_abs ext.upair_in_M_iff ext.vimage_abs ext.vimage_closed
+  ext.well_ord_abs ext.mem_formula_abs ext.nth_closed
 
 declare sharp_simps[simp del, simplified setclass_iff, simp]
 \<comment> \<open>The following was motivated by the fact that
-    @{thm mgzf.apply_closed} did not simplify appropriately
+    @{thm ext.apply_closed} did not simplify appropriately
 
     NOTE: @{thm fst_abs} and @{thm snd_abs} not in mgzf
     interpretation.\<close>
