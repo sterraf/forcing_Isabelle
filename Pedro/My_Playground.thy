@@ -2,6 +2,8 @@ theory My_Playground
   imports 
     "../src/Pointed_DC"
     "ZF-Constructible.MetaExists"
+    "ZF-Constructible.Formula"
+    "../Tools/Try0"
 begin
 
 (* Clone of "forcing_posets.thy" to try understand Isabelle/ML *)
@@ -586,5 +588,21 @@ lemma "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow> \<exists>d\<in>D . <
 
 end
 
+(*
+syntax
+  "_sats"  :: "[i, i, i] \<Rightarrow> o"  ("(_, _ \<Turnstile> _)" [36,36,36] 60)
+translations
+  "(M,env \<Turnstile> \<phi>)" \<rightleftharpoons> "CONST sats(M,\<phi>,env)"
+*)
+
+text\<open>Some aberrations when one omits the assumption that arities
+are less than the length of the environment, and when the environment
+is not a list on the relevant domain.\<close>
+lemma
+  "  sats({   1, {1} }, Member(1,0), [  1  ])"
+  "\<not> sats({      {1} }, Member(1,0), [ {1} ])"
+  "  sats({0, 1, {1} }, Member(1,0), [  1 , 0 ])"
+  "\<not> sats({   1, {1} }, Member(1,0), [  1 , 0 ])"
+  by (simp_all add:satisfies.simps(1))
 
 end
