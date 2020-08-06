@@ -86,6 +86,9 @@ in the name, and are separated from the conclusion using `_imp_` (for
     assumes "well_ord(A,r)" "h ∈ surj(A,B)"
     shows "B ≲ A"
 
+- Absolutness theorems: foo_abs, where foo is the absolute term.
+- Closure theorems: foo_closed, where foo is the absolute term.
+
 All results must have a name.
 
 

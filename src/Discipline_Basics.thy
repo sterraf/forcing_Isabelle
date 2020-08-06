@@ -323,8 +323,7 @@ definition
 
 locale M_Pi = M_basic +
   assumes
-    Pi_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>f. \<exists>df[M].
-           is_domain(M, f, df) \<and> subset(M,A,df) \<and> is_function(M, f))"
+    Pi_separation: "M(A) \<Longrightarrow> separation(M, PiP_rel(M,A))"
     and
     Pi_replacement:
     "M(A) \<Longrightarrow> M(y) \<Longrightarrow>
@@ -398,7 +397,7 @@ lemma is_Pi_uniqueness:
 lemma is_Pi_witness: "\<exists>d[M]. is_Pi(M,A,B,d)"
   using Pi_assumptions Pow_rel_iff
     Pi_assumptions Pi_separation
-  unfolding is_Pi_def PiP_rel_def by simp
+  unfolding is_Pi_def by simp
 
 end (* M_Pi_assumptions *)
 
@@ -503,7 +502,7 @@ begin
 subsection\<open>Auxiliary ported results on \<^term>\<open>Pi_rel\<close>, now unused\<close>
 
 lemma Pi_rel_iff':
-  assumes types:"M(f)" "M(A)"
+  assumes types:"M(f)"
   shows
     "f \<in> Pi_rel(A,B) \<longleftrightarrow> function(f) \<and> f \<subseteq> Sigma(A,B) \<and> A \<subseteq> domain(f)"
   using assms Pow_rel_char
