@@ -1,0 +1,11 @@
+notas
+*~
+output
+*.pdf
+*.out
+*.log
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
