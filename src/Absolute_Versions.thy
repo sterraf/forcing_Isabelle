@@ -33,8 +33,8 @@ lemmas bad_M_basic_rules[simp del, rule del] =
   V.list_case'_closed V.pred_closed
 
 interpretation V:M_cardinal_arith "\<lambda>_. True"
-  by unfold_locales 
-    (auto intro:separation_absolute replacement_absolute)
+  by unfold_locales (auto intro:separation_absolute replacement_absolute
+      simp add:iterates_replacement_def wfrec_replacement_def)
 
 lemmas bad_M_cardinals_rules[simp del, rule del] =
   V.iterates_closed V.M_nat V.trancl_closed V.rvimage_closed

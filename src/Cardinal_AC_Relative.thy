@@ -352,7 +352,7 @@ qed
 locale M_cardinal_UN =  M_Pi_assumptions_choice _ K X for K X +
   assumes
     \<comment> \<open>The next assumption is required by @{thm Least_closed}\<close>
-    Q_witness_in_M: "\<And>x. Q(x) \<Longrightarrow> Ord(x) \<Longrightarrow> \<exists>y[M]. Q(y) \<and> Ord(y)"
+    X_witness_in_M: "w \<in> X(x) \<Longrightarrow> Ord(x) \<Longrightarrow> \<exists>y[M]. w \<in> X(y) \<and> Ord(y)"
     and
     lam_m_replacement:"M(f) \<Longrightarrow> strong_replacement(M,
       \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> X(i), f ` (\<mu> i. x \<in> X(i)) ` x\<rangle>)"
@@ -377,7 +377,7 @@ proof (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff Pi_assumptions)
     by (simp)
   then
   have "M(f) \<Longrightarrow> M(\<lambda>x\<in>(\<Union>x\<in>K. X(x)). \<langle>\<mu> i. x \<in> X(i), f ` (\<mu> i. x \<in> X(i)) ` x\<rangle>)" for f
-    using lam_m_replacement Q_witness_in_M Least_closed Pi_assumptions
+    using lam_m_replacement X_witness_in_M Least_closed Pi_assumptions
     by (rule_tac lam_closed) (auto dest:transM)
   note types = this \<open>M(\<Union>i\<in>K. X(i))\<close> Pi_assumptions
   have [intro]: "Ord(K)" by (blast intro: InfCard_rel_is_Card_rel
