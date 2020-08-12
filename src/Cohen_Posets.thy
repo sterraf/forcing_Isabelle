@@ -76,7 +76,19 @@ lemma Fn_csucc:
 lemma Finite_imp_lesspoll_nat:
   assumes "Finite(A)"
   shows "A \<prec> nat"
-  sorry
+  unfolding lesspoll_def
+proof
+  from \<open>Finite(A)\<close>
+  obtain n f where "n\<in>nat" and "f\<in>bij(A,n)" and "A \<approx> n"
+    unfolding Finite_def eqpoll_def by auto
+  then
+  show "A \<lesssim> nat"
+    using inj_weaken_type[OF bij_is_inj] naturals_subset_nat
+    unfolding lepoll_def by blast
+  from \<open>n \<in> nat\<close> and \<open>A \<approx> n\<close>
+  show "\<not> A \<approx> nat"
+    using n_lesspoll_nat eq_lesspoll_trans unfolding lesspoll_def by simp
+qed
 
 lemma Fn_nat_eq_FiniteFun: "Fn(nat,I,J) = I -||> J"
   unfolding Fn_def
