@@ -50,21 +50,16 @@ next
   have "d \<lesssim> csucc(\<kappa>)"
     using le_imp_lepoll leI lepoll_trans by simp
   moreover
+  from \<open>d \<lesssim> \<kappa>\<close> \<open>Ord(\<kappa>)\<close>
+  have "csucc(\<kappa>) \<lesssim> \<kappa>" if "d \<approx> csucc(\<kappa>)"
+    using eqpoll_sym[OF that] eq_lepoll_trans[OF _ \<open>d\<lesssim>\<kappa>\<close>] by simp
+  moreover from calculation \<open>Card(_)\<close>
   have "\<not> d \<approx> csucc(\<kappa>)"
-  proof
-    assume "d \<approx> csucc(\<kappa>)"
-    moreover
-    from \<open>d \<lesssim> \<kappa>\<close> \<open>Ord(\<kappa>)\<close>
-    have "csucc(\<kappa>) \<lesssim> \<kappa>"
-      using eqpoll_sym[OF \<open>d\<approx>_\<close>] eq_lepoll_trans[OF _ \<open>d\<lesssim>\<kappa>\<close>] by simp
-    with \<open>Card(_)\<close>
-    show "False"
-      using lesspoll_irrefl lesspoll_trans1 lt_Card_imp_lesspoll[OF _ \<open>\<kappa> <_\<close>]
-      by auto
-  qed
+    using lesspoll_irrefl lesspoll_trans1 lt_Card_imp_lesspoll[OF _ \<open>\<kappa> <_\<close>]
+    by auto
   ultimately
   show "d \<prec> csucc(\<kappa>)"
-    unfolding lesspoll_def ..
+    unfolding lesspoll_def by simp
 qed
 
 lemma Fn_csucc:
@@ -76,19 +71,9 @@ lemma Fn_csucc:
 lemma Finite_imp_lesspoll_nat:
   assumes "Finite(A)"
   shows "A \<prec> nat"
-  unfolding lesspoll_def
-proof
-  from \<open>Finite(A)\<close>
-  obtain n f where "n\<in>nat" and "f\<in>bij(A,n)" and "A \<approx> n"
-    unfolding Finite_def eqpoll_def by auto
-  then
-  show "A \<lesssim> nat"
-    using inj_weaken_type[OF bij_is_inj] naturals_subset_nat
-    unfolding lepoll_def by blast
-  from \<open>n \<in> nat\<close> and \<open>A \<approx> n\<close>
-  show "\<not> A \<approx> nat"
-    using n_lesspoll_nat eq_lesspoll_trans unfolding lesspoll_def by simp
-qed
+  using assms subset_imp_lepoll[OF naturals_subset_nat] eq_lepoll_trans
+    n_lesspoll_nat eq_lesspoll_trans
+  unfolding Finite_def lesspoll_def by auto
 
 lemma Fn_nat_eq_FiniteFun: "Fn(nat,I,J) = I -||> J"
   unfolding Fn_def
