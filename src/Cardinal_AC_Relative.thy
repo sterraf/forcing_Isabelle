@@ -205,7 +205,7 @@ lemma cadd_cmult_distrib: "\<lbrakk>M(i); M(j); M(k)\<rbrakk> \<Longrightarrow> 
   done
 
 
-lemma InfCard_rel_square_eq: "InfCard_r(|A|r) \<Longrightarrow> M(A) \<Longrightarrow> A\<times>A \<approx>r A"
+lemma InfCard_rel_square_eq: "InfCard\<^sup>M(|A|r) \<Longrightarrow> M(A) \<Longrightarrow> A\<times>A \<approx>r A"
 apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
    apply (erule well_ord_InfCard_rel_square_eq, assumption, simp_all)
 done
@@ -226,7 +226,7 @@ proof -
   finally show ?thesis by (simp_all add:types)
 qed
 
-lemma le_Card_rel_iff: "Card_r(K) ==> M(K) \<Longrightarrow> M(A) \<Longrightarrow> |A|r \<le> K \<longleftrightarrow> A \<lesssim>r K"
+lemma le_Card_rel_iff: "Card\<^sup>M(K) ==> M(K) \<Longrightarrow> M(A) \<Longrightarrow> |A|r \<le> K \<longleftrightarrow> A \<lesssim>r K"
 apply (erule Card_rel_cardinal_rel_eq [THEN subst], assumption, rule iffI,
        erule Card_rel_le_imp_lepoll_rel, assumption+)
 apply (erule lepoll_rel_imp_Card_rel_le, assumption+)
@@ -369,7 +369,7 @@ begin
 
 text\<open>Kunen's Lemma 10.21\<close>
 lemma cardinal_UN_le:
-  assumes K: "InfCard_r(K)" 
+  assumes K: "InfCard\<^sup>M(K)"
   shows "(\<And>i. i\<in>K \<Longrightarrow> |X(i)|r \<le> K) \<Longrightarrow> |\<Union>i\<in>K. X(i)|r \<le> K"
 proof (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff Pi_assumptions)
   have "M(\<Union>i\<in>K. X(i))"

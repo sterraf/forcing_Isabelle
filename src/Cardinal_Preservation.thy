@@ -62,7 +62,7 @@ lemma antichain_abs' [absolut]:
 
 end (* M_trivial_notion *)
 
-\<comment> \<open>MOVE THIS to an appropiate place\<close>
+\<comment> \<open>MOVE THIS to an appropriate place\<close>
 text\<open>The following interpretation makes the simplifications from the
 locales \<open>M_trans\<close>, \<open>M_trivial\<close>, etc., available for \<open>M[G]\<close>\<close>
 sublocale forcing_data \<subseteq> M_trivial_notion "##M" ..
