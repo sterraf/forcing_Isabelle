@@ -996,7 +996,82 @@ definition
          \<Union>X\<in>Pow(K). {z. r \<in> Pow(K*K), well_ord(X,r) & z = ordertype(X,r)}"
 *)
 
-(*************   Discipline for jump_cardinal  ****************)
+(******************************************************)
+subsection\<open>Discipline for \<^term>\<open>jcardDom\<close>\<close>
+
+definition (* completely relational *)
+  is_jcardDom   :: "[i\<Rightarrow>o,i,i]\<Rightarrow>o"  where
+  "is_jcardDom(M,k,pkk) \<equiv> is_hcomp2_2(M,\<lambda>M _. is_Pow(M),\<lambda>_ _. (=),cartprod,k,k,pkk)"
+
+context M_cardinals
+begin
+
+lemma is_jcardDom_uniqueness:
+  assumes
+    "M(A)" "M(d)" "M(d')"
+    "is_jcardDom(M,A,d)" "is_jcardDom(M,A,d')"
+  shows
+    "d=d'"
+  using assms
+    is_Pow_uniqueness hcomp2_2_uniqueness[of
+      M "\<lambda>M _. is_Pow(M)" "\<lambda>_ _. (=)" cartprod A A d d']
+  unfolding is_jcardDom_def
+  by auto
+
+lemma is_jcardDom_witness: "M(A) \<Longrightarrow> \<exists>d[M]. is_jcardDom(M,A,d)"
+  using hcomp2_2_witness[of M "\<lambda>M _. is_Pow(M)" "\<lambda>_ _. (=)" cartprod A A]
+    is_Pow_witness
+  unfolding is_jcardDom_def by simp
+
+definition
+  jcardDom_rel :: "i \<Rightarrow> i"  where
+  "jcardDom_rel(A) \<equiv> THE d. M(d) \<and> is_jcardDom(M,A,d)"
+
+lemma jcardDom_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(jcardDom_rel(x))"
+  unfolding jcardDom_rel_def
+  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_jcardDom(M,x,d)"], OF _ is_jcardDom_uniqueness[of x]]
+    is_jcardDom_witness by auto
+
+lemma jcardDom_rel_iff:
+  assumes "M(x)" "M(d)"
+  shows "is_jcardDom(M,x,d) \<longleftrightarrow> d = jcardDom_rel(x)"
+proof (intro iffI)
+  assume "d = jcardDom_rel(x)"
+  moreover
+  note assms
+  moreover from this
+  obtain e where "M(e)" "is_jcardDom(M,x,e)"
+    using is_jcardDom_witness by blast
+  ultimately
+  show "is_jcardDom(M, x, d)"
+    using is_jcardDom_uniqueness[of x] is_jcardDom_witness
+      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_jcardDom(M,x,d)"], OF _ is_jcardDom_uniqueness[of x], of e]
+    unfolding jcardDom_rel_def
+    by auto
+next
+  assume "is_jcardDom(M, x, d)"
+  with assms
+  show "d = jcardDom_rel(x)"
+    using is_jcardDom_uniqueness unfolding jcardDom_rel_def
+    by (blast del:the_equality intro:the_equality[symmetric])
+qed
+
+lemma def_jcardDom_rel:
+  assumes "M(A)"
+  shows "jcardDom_rel(A) = Pow_rel(A\<times>A)"
+  using assms jcardDom_rel_iff
+    Pow_rel_iff
+    hcomp2_2_abs[of "\<lambda>M _. is_Pow(M)" "\<lambda>_.Pow_rel"
+      "\<lambda>_ _. (=)" "\<lambda>x y. y" cartprod "(\<times>)" A A "jcardDom_rel(A)"]
+  unfolding is_jcardDom_def by force
+
+end (* M_cardinals *)
+
+(***************  end Discipline  *********************)
+
+(******************************************************)
+subsection\<open>Discipline for \<^term>\<open>jump_cardinal\<close>\<close>
+
 definition
   jcardP_rel :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
   "jcardP_rel(M,X,r,z) \<equiv> wellordered(M,X,r) \<and> otype(M,X,r,z)"
@@ -1007,9 +1082,8 @@ lemma (in M_ordertype) jcardP_abs:
   using assms  unfolding jcardP_rel_def                
   by (simp add:absolut)
 
-
 lemma (in M_ordertype) univalent_jcardP:
-  assumes "M(A)" "M(X)" 
+  assumes "M(A)" "M(X)"
   shows "univalent(M,A,jcardP_rel(M,X))"
   using assms ordertype_abs unfolding jcardP_rel_def univalent_def 
   by simp
@@ -1019,21 +1093,18 @@ lemma (in M_ordertype) jcardP_closed:
   shows "\<And>x y.  \<lbrakk> x\<in>A; jcardP_rel(M,X,x,y) \<rbrakk> \<Longrightarrow> M(y)"
   sorry
 
-
 definition
   is_jcardRepl :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
-  "is_jcardRepl(M,K,X,j) \<equiv> \<exists>KK[M]. \<exists>pKK[M]. 
-       cartprod(M,K,K,KK) \<and> is_Pow(M,KK,pKK) \<and> is_Replace(M,pKK,jcardP_rel(M,X),j)"
-
+  "is_jcardRepl(M,K,X,j) \<equiv>  \<exists>pKK[M]. is_jcardDom(M,K,pKK)
+                  \<and> is_Replace(M,pKK,jcardP_rel(M,X),j)"
 
 definition
   jcardRepl_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" where
   "jcardRepl_rel(M,K,X) \<equiv> THE d. M(d) \<and> is_jcardRepl(M,K,X,d)"
 
-context M_ordertype
+context M_cardinals
 begin
 
-(* esto sale, pero reniego con la prueba:*)
 lemma is_jcardRepl_uniqueness:
   assumes
     "M(K)" "M(X)" "M(d)" "M(d')"
@@ -1041,7 +1112,26 @@ lemma is_jcardRepl_uniqueness:
   shows
     "d=d'"
 proof -
-
+  from assms
+  have
+    "\<exists>pKK[M]. is_jcardDom(M, K, pKK) \<and> is_Replace(M,pKK,jcardP_rel(M,X),d)"
+    "\<exists>pKK[M]. is_jcardDom(M, K, pKK) \<and> is_Replace(M,pKK,jcardP_rel(M,X),d')"
+    unfolding is_jcardRepl_def by simp_all
+  then
+  obtain d1 d2 where
+    "is_jcardDom(M, K, d1)" "is_Replace(M,d1,jcardP_rel(M,X),d)" "M(d1)"
+    "is_jcardDom(M, K, d2)" "is_Replace(M,d2,jcardP_rel(M,X),d')" "M(d2)"
+    by auto
+  moreover from this and \<open>M(K)\<close>
+  have "d1 = d2"
+    using is_jcardDom_uniqueness[of K d1 d2] by fast
+  moreover note assms
+  ultimately
+  show "d=d'"
+    using
+    extensionality_trans[where P="\<lambda>u. \<exists>y[M]. y \<in> d1 \<and> jcardP_rel(M, X, y, u)"]
+    unfolding is_Replace_def by blast
+qed
 
 lemma jcardRepl_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M, 
       \<lambda>r z. well_ord(X,r) & z = ordertype(X,r))"
