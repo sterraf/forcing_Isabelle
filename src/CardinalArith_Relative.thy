@@ -345,20 +345,6 @@ lemma (in M_cardinals) csquare_rel_abs[absolut]: "\<lbrakk> M(K); M(cs)\<rbrakk>
   using csquare_lam_closed[unfolded csquare_lam_eq_lam] 
   by (simp add:absolut csquare_lam_eq_lam[unfolded csquare_lam_def])
 
-\<comment> \<open>Discipline for \<^term>\<open>jump_cardinal\<close> requires:
-    1) Proving ordertype_abs above (?)
-    2) Develop Discipline for \<^term>\<open>Replace\<close>
-    3) Use the the conjunction of  \<^term>\<open>well_ord\<close> and \<^term>\<open>ordertype\<close>
-      to apply absoluteness.\<close>
-(*
-definition
-  jump_cardinal :: "i=>i"  where
-    \<comment> \<open>This definition is more complex than Kunen's but it more easily proved to
-        be a cardinal\<close>
-    "jump_cardinal(K) ==
-         \<Union>X\<in>Pow(K). {z. r \<in> Pow(K*K), well_ord(X,r) & z = ordertype(X,r)}"
-*)
-
 (*************   Discipline for csucc  ****************)
 \<comment> \<open>Note addition to the Simpset and Claset below\<close>
 
@@ -978,6 +964,8 @@ apply (rule le_eqI) prefer 2
 apply (rule Ord_cardinal_rel, assumption+)
 done
 
+end (* M_cardinal_arith *)
+
 (*** An infinite cardinal equals its square (Kunen, Thm 10.12, page 29) ***)
 
 \<comment> \<open>FIXME: this result in stated **without name**
@@ -988,9 +976,126 @@ by (blast intro: Ord_ordertype relativized_imp_well_ord ordertype_ord_iso
                  Ord_iso_implies_eq ord_iso_sym ord_iso_trans)
 
 \<comment> \<open>This should be true\<close>
-lemma (in M_ordertype) ordertype_abs:
+lemma (in M_ordertype) ordertype_abs[absolut]:
       "[| wellordered(M,A,r); M(A); M(r); M(i)|] ==> otype(M,A,r,i) \<longleftrightarrow> i = ordertype(A,r)"
-  oops
+  sorry
+
+
+
+\<comment> \<open>Discipline for \<^term>\<open>jump_cardinal\<close> requires:
+    1) Proving ordertype_abs above (?)
+    2) Develop Discipline for \<^term>\<open>Replace\<close>
+    3) Use the the conjunction of  \<^term>\<open>well_ord\<close> and \<^term>\<open>ordertype\<close>
+      to apply absoluteness.\<close>
+(*
+definition
+  jump_cardinal :: "i=>i"  where
+    \<comment> \<open>This definition is more complex than Kunen's but it more easily proved to
+        be a cardinal\<close>
+    "jump_cardinal(K) ==
+         \<Union>X\<in>Pow(K). {z. r \<in> Pow(K*K), well_ord(X,r) & z = ordertype(X,r)}"
+*)
+
+(*************   Discipline for jump_cardinal  ****************)
+definition
+  jcardP_rel :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
+  "jcardP_rel(M,X,r,z) \<equiv> wellordered(M,X,r) \<and> otype(M,X,r,z)"
+
+lemma (in M_ordertype) jcardP_abs:
+  assumes "M(X)" "M(r)" "M(z)"
+  shows "jcardP_rel(M,X,r,z) \<longleftrightarrow> well_ord(X,r) & z = ordertype(X,r)"
+  using assms  unfolding jcardP_rel_def                
+  by (simp add:absolut)
+
+
+lemma (in M_ordertype) univalent_jcardP:
+  assumes "M(A)" "M(X)" 
+  shows "univalent(M,A,jcardP_rel(M,X))"
+  using assms ordertype_abs unfolding jcardP_rel_def univalent_def 
+  by simp
+
+lemma (in M_ordertype) jcardP_closed:
+  assumes "M(X)" "M(A)"
+  shows "\<And>x y.  \<lbrakk> x\<in>A; jcardP_rel(M,X,x,y) \<rbrakk> \<Longrightarrow> M(y)"
+  sorry
+
+
+definition
+  is_jcardRepl :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
+  "is_jcardRepl(M,K,X,j) \<equiv> \<exists>KK[M]. \<exists>pKK[M]. 
+       cartprod(M,K,K,KK) \<and> is_Pow(M,KK,pKK) \<and> is_Replace(M,pKK,jcardP_rel(M,X),j)"
+
+
+definition
+  jcardRepl_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" where
+  "jcardRepl_rel(M,K,X) \<equiv> THE d. M(d) \<and> is_jcardRepl(M,K,X,d)"
+
+context M_ordertype
+begin
+
+(* esto sale, pero reniego con la prueba:*)
+lemma is_jcardRepl_uniqueness:
+  assumes
+    "M(K)" "M(X)" "M(d)" "M(d')"
+    "is_jcardRepl(M,K,X,d)" "is_jcardRepl(M,K,X,d')"
+  shows
+    "d=d'"
+proof -
+
+
+lemma jcardRepl_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M, 
+      \<lambda>r z. well_ord(X,r) & z = ordertype(X,r))"
+  sorry
+
+lemma is_jcardRepl_witness: "M(X) \<Longrightarrow> M(K) \<Longrightarrow> \<exists>d[M]. is_jcardRepl(M,K,X,d)"
+  using  univalent_jcardP jcardP_closed jcardRepl_replacement Replace_abs is_Pow_witness 
+  unfolding is_jcardRepl_def
+  sorry
+
+
+\<comment> \<open>adding closure to simpset and claset\<close>
+lemma jcardRepl_rel_closed[intro,simp]: "M(K) \<Longrightarrow> M(X) \<Longrightarrow> M(jcardRepl_rel(M,K,X))"
+  unfolding jcardRepl_rel_def
+  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_jcardRepl(M,K,X,d)"], 
+             OF _ is_jcardRepl_uniqueness[of K X]]
+    is_jcardRepl_witness by auto
+
+lemma jcardRepl_rel_iff:
+  assumes "M(K)"  "M(X)" "M(d)"
+  shows "is_jcardRepl(M,K,X,d) \<longleftrightarrow> d = jcardRepl_rel(M,K,X)"
+proof (intro iffI)
+  assume "d = jcardRepl_rel(M,K,X)"
+  moreover
+  note assms
+  moreover from this
+  obtain e where "M(e)" "is_jcardRepl(M,K,X,e)"
+    using is_jcardRepl_witness by blast
+  ultimately
+  show "is_jcardRepl(M, K, X, d)"
+    using is_jcardRepl_uniqueness[of K X] is_jcardRepl_witness
+      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_jcardRepl(M,K,X,d)"], OF _ is_jcardRepl_uniqueness[of K X], of e]
+    unfolding jcardRepl_rel_def
+    by auto
+next
+  assume "is_jcardRepl(M, K, X, d)"
+  with assms
+  show "d = jcardRepl_rel(M,K,X)"
+    using is_jcardRepl_uniqueness unfolding jcardRepl_rel_def
+    by (blast del:the_equality intro:the_equality[symmetric])
+qed
+
+
+lemma def_csucc_rel: "M(x) \<Longrightarrow> csucc_rel(M,x) = (\<mu> i. M(i) \<and> Card\<^sup>M(i) \<and> x < i)"
+  using  least_abs' csucc_rel_iff
+  unfolding is_csucc_def by fastforce
+
+end (* M_cardinals *)
+
+
+(*{z. r \<in> Pow(K*K), well_ord(X,r) & z = ordertype(X,r)}*)
+
+context M_cardinal_arith
+begin
 
 lemma (in M_ordertype) ordermap_closed[intro,simp]:
   assumes "wellordered(M,A,r)" and types:"M(A)" "M(r)"
