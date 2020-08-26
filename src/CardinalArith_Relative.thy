@@ -980,6 +980,8 @@ lemma (in M_ordertype) ordertype_abs[absolut]:
       "[| wellordered(M,A,r); M(A); M(r); M(i)|] ==> otype(M,A,r,i) \<longleftrightarrow> i = ordertype(A,r)"
   sorry
 
+lemma (in M_ordertype) ordertype_closed[intro,simp]: "\<lbrakk> wellordered(M,A,r);M(A);M(r)\<rbrakk> \<Longrightarrow> M(ordertype(A,r))"
+  using ordertype_exists ordertype_abs' by blast
 
 
 \<comment> \<open>Discipline for \<^term>\<open>jump_cardinal\<close> requires:
@@ -1003,7 +1005,11 @@ definition (* completely relational *)
   is_jcardDom   :: "[i\<Rightarrow>o,i,i]\<Rightarrow>o"  where
   "is_jcardDom(M,k,pkk) \<equiv> is_hcomp2_2(M,\<lambda>M _. is_Pow(M),\<lambda>_ _. (=),cartprod,k,k,pkk)"
 
-context M_cardinals
+definition
+  jcardDom_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i"  where
+  "jcardDom_rel(M,A) \<equiv> THE d. M(d) \<and> is_jcardDom(M,A,d)"
+
+context M_ordertype
 begin
 
 lemma is_jcardDom_uniqueness:
@@ -1023,20 +1029,16 @@ lemma is_jcardDom_witness: "M(A) \<Longrightarrow> \<exists>d[M]. is_jcardDom(M,
     is_Pow_witness
   unfolding is_jcardDom_def by simp
 
-definition
-  jcardDom_rel :: "i \<Rightarrow> i"  where
-  "jcardDom_rel(A) \<equiv> THE d. M(d) \<and> is_jcardDom(M,A,d)"
-
-lemma jcardDom_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(jcardDom_rel(x))"
+lemma jcardDom_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(jcardDom_rel(M,x))"
   unfolding jcardDom_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_jcardDom(M,x,d)"], OF _ is_jcardDom_uniqueness[of x]]
     is_jcardDom_witness by auto
 
 lemma jcardDom_rel_iff:
   assumes "M(x)" "M(d)"
-  shows "is_jcardDom(M,x,d) \<longleftrightarrow> d = jcardDom_rel(x)"
+  shows "is_jcardDom(M,x,d) \<longleftrightarrow> d = jcardDom_rel(M,x)"
 proof (intro iffI)
-  assume "d = jcardDom_rel(x)"
+  assume "d = jcardDom_rel(M,x)"
   moreover
   note assms
   moreover from this
@@ -1051,18 +1053,18 @@ proof (intro iffI)
 next
   assume "is_jcardDom(M, x, d)"
   with assms
-  show "d = jcardDom_rel(x)"
+  show "d = jcardDom_rel(M,x)"
     using is_jcardDom_uniqueness unfolding jcardDom_rel_def
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
 lemma def_jcardDom_rel:
   assumes "M(A)"
-  shows "jcardDom_rel(A) = Pow_rel(A\<times>A)"
+  shows "jcardDom_rel(M,A) = Pow_rel(A\<times>A)"
   using assms jcardDom_rel_iff
     Pow_rel_iff
     hcomp2_2_abs[of "\<lambda>M _. is_Pow(M)" "\<lambda>_.Pow_rel"
-      "\<lambda>_ _. (=)" "\<lambda>x y. y" cartprod "(\<times>)" A A "jcardDom_rel(A)"]
+      "\<lambda>_ _. (=)" "\<lambda>x y. y" cartprod "(\<times>)" A A "jcardDom_rel(M,A)"]
   unfolding is_jcardDom_def by force
 
 end (* M_cardinals *)
@@ -1088,10 +1090,14 @@ lemma (in M_ordertype) univalent_jcardP:
   using assms ordertype_abs unfolding jcardP_rel_def univalent_def 
   by simp
 
+
 lemma (in M_ordertype) jcardP_closed:
-  assumes "M(X)" "M(A)"
-  shows "\<And>x y.  \<lbrakk> x\<in>A; jcardP_rel(M,X,x,y) \<rbrakk> \<Longrightarrow> M(y)"
+  assumes "M(X)"
+  shows "\<And>x y. \<lbrakk> x\<in>jcardDom_rel(M,X) ; jcardP_rel(M,X,x,y) \<rbrakk> \<Longrightarrow> M(y)"
+  using assms  ordertype_closed unfolding jcardP_rel_def 
+  apply auto
   sorry
+
 
 definition
   is_jcardRepl :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
@@ -1102,7 +1108,7 @@ definition
   jcardRepl_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" where
   "jcardRepl_rel(M,K,X) \<equiv> THE d. M(d) \<and> is_jcardRepl(M,K,X,d)"
 
-context M_cardinals
+context M_ordertype
 begin
 
 lemma is_jcardRepl_uniqueness:
@@ -1133,16 +1139,17 @@ proof -
     unfolding is_Replace_def by blast
 qed
 
+
 lemma jcardRepl_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M, 
-      \<lambda>r z. well_ord(X,r) & z = ordertype(X,r))"
+      jcardP_rel(M,X))"
   sorry
 
 lemma is_jcardRepl_witness: "M(X) \<Longrightarrow> M(K) \<Longrightarrow> \<exists>d[M]. is_jcardRepl(M,K,X,d)"
-  using  univalent_jcardP jcardP_closed jcardRepl_replacement Replace_abs is_Pow_witness 
-  unfolding is_jcardRepl_def
-  sorry
-
-
+  using strong_replacementD[OF jcardRepl_replacement _ univalent_jcardP]
+        jcardDom_rel_iff
+  unfolding is_jcardRepl_def is_Replace_def
+  by auto
+  
 \<comment> \<open>adding closure to simpset and claset\<close>
 lemma jcardRepl_rel_closed[intro,simp]: "M(K) \<Longrightarrow> M(X) \<Longrightarrow> M(jcardRepl_rel(M,K,X))"
   unfolding jcardRepl_rel_def
@@ -1174,10 +1181,114 @@ next
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
+lemma def_jcardRepl_rel: 
+  "M(K) \<Longrightarrow> M(X) \<Longrightarrow> jcardRepl_rel(M,K,X) = 
+        {z. r \<in> Pow_rel(K*K), well_ord(X,r) & z = ordertype(X,r)}"
+  using  Replace_abs[OF _ _ univalent_jcardP jcardP_closed] 
+         jcardDom_rel_iff  jcardRepl_rel_iff[of K X "jcardRepl_rel(M, K, X)"] 
+         jcardP_abs def_jcardDom_rel
+  unfolding is_jcardRepl_def apply (simp add:absolut)
+  sorry
 
-lemma def_csucc_rel: "M(x) \<Longrightarrow> csucc_rel(M,x) = (\<mu> i. M(i) \<and> Card\<^sup>M(i) \<and> x < i)"
-  using  least_abs' csucc_rel_iff
-  unfolding is_csucc_def by fastforce
+
+end (* context M_ordertype *)
+
+definition
+  is_jump_cardinal :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_jump_cardinal(M,K,j) \<equiv> \<exists>pK[M]. \<exists>u[M].
+   is_Pow(M,K,pK) \<and>
+   is_Replace(M,pK,\<lambda>x z. is_jcardRepl(M,K,x,z),u) \<and> big_union(M,u,j)"
+
+definition
+  jump_cardinal_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" where
+  "jump_cardinal_rel(M,K) \<equiv> THE d. M(d) \<and> is_jump_cardinal(M,K,d)"
+
+context M_ordertype
+begin
+
+lemma (in M_ordertype) univalent_is_jcardRepl:
+  assumes "M(A)" "M(K)" 
+  shows "univalent(M,A,is_jcardRepl(M,K))"
+  using assms is_jcardRepl_uniqueness transM[of _ A] unfolding univalent_def 
+  sorry
+
+lemma (in M_ordertype) is_jcardRepl_closed:
+  assumes "M(K)" "M(A)"
+  shows "\<And>x y.  \<lbrakk> x\<in>A; is_jcardRepl(M,K,x,y) \<rbrakk> \<Longrightarrow> M(y)"
+  sorry
+
+lemma is_jump_cardinal_uniqueness:
+  assumes
+    "M(K)" "M(d)" "M(d')"
+    "is_jump_cardinal(M,K,d)" "is_jump_cardinal(M,K,d')"
+  shows
+    "d=d'"
+  using assms Replace_abs[OF _ _ univalent_is_jcardRepl is_jcardRepl_closed]
+        is_Pow_uniqueness[of "K"]
+  unfolding is_jump_cardinal_def
+  by force
+
+
+lemma is_jcardRepl_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M, 
+      is_jcardRepl(M,X))"
+  sorry
+
+(* VER por qué no sale igual que el witness anterior *)
+lemma is_jump_cardinal_witness: 
+  assumes "M(K)"
+  shows "\<exists>d[M]. is_jump_cardinal(M,K,d)"
+proof -
+  have "\<exists>u[M]. \<exists>pK[M]. is_Pow(M,K,pK) \<and> is_Replace(M,pK,\<lambda>x z. is_jcardRepl(M,K,x,z),u)"
+    using assms strong_replacementD[OF is_jcardRepl_replacement _ univalent_is_jcardRepl]
+          Pow_rel_iff 
+    unfolding is_Replace_def
+    by simp
+  then show ?thesis
+    unfolding is_jump_cardinal_def
+    using assms
+    by auto
+qed
+
+
+\<comment> \<open>adding closure to simpset and claset\<close>
+lemma jump_cardinal_rel_closed[intro,simp]: "M(K) \<Longrightarrow> M(jump_cardinal_rel(M,K))"
+  unfolding jump_cardinal_rel_def
+  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_jump_cardinal(M,K,d)"], 
+             OF _ is_jump_cardinal_uniqueness[of K]]
+    is_jump_cardinal_witness by auto
+
+lemma jump_cardinal_rel_iff:
+  assumes "M(K)" "M(d)"
+  shows "is_jump_cardinal(M,K,d) \<longleftrightarrow> d = jump_cardinal_rel(M,K)"
+proof (intro iffI)
+  assume "d = jump_cardinal_rel(M,K)"
+  moreover
+  note assms
+  moreover from this
+  obtain e where "M(e)" "is_jump_cardinal(M,K,e)"
+    using is_jump_cardinal_witness by blast
+  ultimately
+  show "is_jump_cardinal(M, K, d)"
+    using is_jump_cardinal_uniqueness[of K] is_jump_cardinal_witness
+      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_jump_cardinal(M,K,d)"], OF _ is_jump_cardinal_uniqueness[of K], of e]
+    unfolding jump_cardinal_rel_def
+    by auto
+next
+  assume "is_jump_cardinal(M, K, d)"
+  with assms
+  show "d = jump_cardinal_rel(M,K)"
+    using is_jump_cardinal_uniqueness unfolding jump_cardinal_rel_def
+    by (blast del:the_equality intro:the_equality[symmetric])
+qed
+
+
+lemma def_jump_cardinal_rel: 
+  "M(K) \<Longrightarrow> jump_cardinal_rel(M,K) = 
+   (\<Union>X\<in>Pow_rel(K). {z. r \<in> Pow_rel(K*K), well_ord(X,r) & z = ordertype(X,r)})"
+  sorry
+
+
+
 
 end (* M_cardinals *)
 
@@ -1206,8 +1317,7 @@ proof -
   show ?thesis by simp
 qed
 
-lemma (in M_ordertype) ordertype_closed[intro,simp]: "\<lbrakk> wellordered(M,A,r);M(A);M(r)\<rbrakk> \<Longrightarrow> M(ordertype(A,r))"
-  using ordertype_exists ordertype_abs' by blast
+
 
 (*A general fact about ordermap*)
 lemma ordermap_eqpoll_pred:
