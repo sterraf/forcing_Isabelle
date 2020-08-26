@@ -62,7 +62,9 @@ ZF-Constructible
   ¬(sats(·)) ---> satisfies(·)`_≠ 1
   because of definition of ≠.
 - rename "nonempty" to "M_zero" or "zero_into_M".
-
+- In strong_replacementD, use "is_Replace(M,A,P,Y)" in the conclusion.
+  Same for separationD. Then use this for the "_witness" theorems for
+  strong replacement and (separation?) instances.
 
 ZF
 ==
