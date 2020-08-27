@@ -1076,7 +1076,8 @@ subsection\<open>Discipline for \<^term>\<open>jump_cardinal\<close>\<close>
 
 definition
   jcardP_rel :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
-  "jcardP_rel(M,X,r,z) \<equiv> wellordered(M,X,r) \<and> otype(M,X,r,z)"
+  "jcardP_rel(M,X,r,z) \<equiv> wellordered(M,X,r) \<and> otype(M,X,r,z) \<and> M(z)"
+  \<comment> \<open>NOTE: The trick of adding \<^term>\<open>M(z)\<close> here was also used in \<^file>\<open>Relative_Univ.thy\<close>\<close>
 
 lemma (in M_ordertype) jcardP_abs:
   assumes "M(X)" "M(r)" "M(z)"
@@ -1092,12 +1093,9 @@ lemma (in M_ordertype) univalent_jcardP:
 
 
 lemma (in M_ordertype) jcardP_closed:
-  assumes "M(X)"
-  shows "\<And>x y. \<lbrakk> x\<in>jcardDom_rel(M,X) ; jcardP_rel(M,X,x,y) \<rbrakk> \<Longrightarrow> M(y)"
-  using assms  ordertype_closed unfolding jcardP_rel_def 
-  apply auto
-  sorry
-
+  "jcardP_rel(M,X,x,y) \<Longrightarrow> M(y)"
+  unfolding jcardP_rel_def
+  by fast
 
 definition
   is_jcardRepl :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
@@ -1138,7 +1136,6 @@ proof -
     extensionality_trans[where P="\<lambda>u. \<exists>y[M]. y \<in> d1 \<and> jcardP_rel(M, X, y, u)"]
     unfolding is_Replace_def by blast
 qed
-
 
 lemma jcardRepl_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M, 
       jcardP_rel(M,X))"
@@ -1186,10 +1183,10 @@ lemma def_jcardRepl_rel:
         {z. r \<in> Pow_rel(K*K), well_ord(X,r) & z = ordertype(X,r)}"
   using  Replace_abs[OF _ _ univalent_jcardP jcardP_closed] 
          jcardDom_rel_iff  jcardRepl_rel_iff[of K X "jcardRepl_rel(M, K, X)"] 
-         jcardP_abs def_jcardDom_rel
-  unfolding is_jcardRepl_def apply (simp add:absolut)
-  sorry
-
+         jcardP_abs def_jcardDom_rel ordertype_closed
+  unfolding is_jcardRepl_def
+  apply (simp add:absolut)
+  by (intro equalityI) (auto simp add:absolut Replace_iff jcardP_rel_def trans_closed)
 
 end (* context M_ordertype *)
 
@@ -1233,7 +1230,7 @@ lemma is_jcardRepl_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> st
       is_jcardRepl(M,X))"
   sorry
 
-(* VER por quÃ© no sale igual que el witness anterior *)
+(* VER por qué no sale igual que el witness anterior *)
 lemma is_jump_cardinal_witness: 
   assumes "M(K)"
   shows "\<exists>d[M]. is_jump_cardinal(M,K,d)"
