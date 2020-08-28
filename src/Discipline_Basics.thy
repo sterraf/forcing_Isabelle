@@ -158,6 +158,9 @@ text\<open>The following named theorems gather instances of transitivity
 that arise from closure theorems\<close>
 named_theorems trans_closed
 
+\<comment> \<open>NOTE THIS: To overload for set models\<close>
+declare [[syntax_ambiguity_warning = false]]
+
 (******************************************************)
 subsection\<open>Discipline for \<^term>\<open>Pow\<close>\<close>
 
@@ -166,6 +169,14 @@ definition
   "is_Pow(N,A,z) \<equiv> \<forall>x[N]. x \<in> z \<longleftrightarrow> subset(N,x,A)"
 
 reldb_add "Pow" "is_Pow"
+
+definition
+  Pow_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>Pow\<^bsup>_\<^esup>'(_')\<close>) where
+  "Pow_rel(M,r) \<equiv> THE d. M(d) \<and> is_Pow(M,r,d)"
+
+abbreviation
+  Pow_r_set ::  "[i,i] \<Rightarrow> i" (\<open>Pow\<^bsup>_\<^esup>'(_')\<close>) where
+  "Pow_r_set(M) \<equiv> Pow_rel(##M)"
 
 context M_basic
 begin
@@ -184,11 +195,7 @@ lemma is_Pow_witness: "M(r) \<Longrightarrow> \<exists>d[M]. is_Pow(M,r,d)"
   using power_ax unfolding power_ax_def powerset_def is_Pow_def
   by simp \<comment> \<open>We have to do this by hand, using axioms\<close>
 
-definition
-  Pow_rel :: "i \<Rightarrow> i" where
-  "Pow_rel(r) \<equiv> THE d. M(d) \<and> is_Pow(M,r,d)"
-
-lemma Pow_rel_closed[intro,simp]: "M(r) \<Longrightarrow> M(Pow_rel(r))"
+lemma Pow_rel_closed[intro,simp]: "M(r) \<Longrightarrow> M(Pow_rel(M,r))"
   unfolding Pow_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_Pow(M,r,d)"], OF _ is_Pow_uniqueness[of r]]
     is_Pow_witness by auto
@@ -198,9 +205,9 @@ lemmas trans_Pow_rel_closed[trans_closed] = transM[OF _ Pow_rel_closed]
 
 lemma Pow_rel_iff:
   assumes "M(r)"  "M(d)"
-  shows "is_Pow(M,r,d) \<longleftrightarrow> d = Pow_rel(r)"
+  shows "is_Pow(M,r,d) \<longleftrightarrow> d = Pow_rel(M,r)"
 proof (intro iffI)
-  assume "d = Pow_rel(r)"
+  assume "d = Pow_rel(M,r)"
   with assms
   show "is_Pow(M, r, d)"
     using is_Pow_uniqueness[of r] is_Pow_witness
@@ -210,30 +217,30 @@ proof (intro iffI)
 next
   assume "is_Pow(M, r, d)"
   with assms
-  show "d = Pow_rel(r)"
+  show "d = Pow_rel(M,r)"
     using is_Pow_uniqueness unfolding Pow_rel_def
     by (auto del:the_equality intro:the_equality[symmetric])
 qed
 
 text\<open>The next "def_" result really corresponds to @{thm Pow_iff}\<close>
-lemma def_Pow_rel: "M(A) \<Longrightarrow> M(r) \<Longrightarrow> A\<in>Pow_rel(r) \<longleftrightarrow> A \<subseteq> r"
+lemma def_Pow_rel: "M(A) \<Longrightarrow> M(r) \<Longrightarrow> A\<in>Pow_rel(M,r) \<longleftrightarrow> A \<subseteq> r"
   using Pow_rel_iff[OF _ Pow_rel_closed, of r r]
   unfolding is_Pow_def by simp
 
 (* New element of Discipline: a characterization result using as much
   absoluteness as possible  *)
-lemma Pow_rel_char: "M(r) \<Longrightarrow> Pow_rel(r) = {A\<in>Pow(r). M(A)}"
+lemma Pow_rel_char: "M(r) \<Longrightarrow> Pow_rel(M,r) = {A\<in>Pow(r). M(A)}"
 proof -
   assume "M(r)"
   moreover from this
-  have "x \<in> Pow_rel(r) \<Longrightarrow> x\<subseteq>r" "M(x) \<Longrightarrow> x \<subseteq> r \<Longrightarrow> x \<in> Pow_rel(r)" for x
+  have "x \<in> Pow_rel(M,r) \<Longrightarrow> x\<subseteq>r" "M(x) \<Longrightarrow> x \<subseteq> r \<Longrightarrow> x \<in> Pow_rel(M,r)" for x
     using def_Pow_rel by (auto intro!:trans_closed)
   ultimately
   show ?thesis
     using trans_closed by blast
 qed
 
-lemma mem_Pow_rel_abs: "M(a) \<Longrightarrow> M(r) \<Longrightarrow> a \<in> Pow_rel(r) \<longleftrightarrow> a \<in> Pow(r)"
+lemma mem_Pow_rel_abs: "M(a) \<Longrightarrow> M(r) \<Longrightarrow> a \<in> Pow_rel(M,r) \<longleftrightarrow> a \<in> Pow(r)"
   using Pow_rel_char by simp
 
 end (* M_basic *)
@@ -381,6 +388,14 @@ definition (* completely relational *)
        is_Pow(M,S,PS) \<and>
        is_Collect(M,PS,PiP_rel(M,A),I)"
 
+definition
+  Pi_rel :: "[i\<Rightarrow>o,i,i\<Rightarrow>i] \<Rightarrow> i"  (\<open>Pi\<^bsup>_\<^esup>'(_,_')\<close>) where
+  "Pi_rel(M,A,B) \<equiv> THE d. M(d) \<and> is_Pi(M,A,B,d)"
+
+abbreviation
+  Pi_r_set ::  "[i,i,i\<Rightarrow>i] \<Rightarrow> i" (\<open>Pi\<^bsup>_\<^esup>'(_')\<close>) where
+  "Pi_r_set(M,A,B) \<equiv> Pi_rel(##M,A,B)"
+
 context M_Pi_assumptions
 begin
 
@@ -401,15 +416,11 @@ lemma is_Pi_witness: "\<exists>d[M]. is_Pi(M,A,B,d)"
 
 end (* M_Pi_assumptions *)
 
-definition (in M_basic)
-  Pi_rel :: "i \<Rightarrow> (i\<Rightarrow>i) \<Rightarrow> i"  where
-  "Pi_rel(A,B) \<equiv> THE d. M(d) \<and> is_Pi(M,A,B,d)"
-
 context M_Pi_assumptions
 begin
   \<comment> \<open>From this point on, the higher order variable \<^term>\<open>y\<close> must be
 explicitly instantiated, and proof methods are slower\<close>
-lemma Pi_rel_closed[intro,simp]: "M(Pi_rel(A,B))"
+lemma Pi_rel_closed[intro,simp]: "M(Pi_rel(M,A,B))"
   unfolding Pi_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_Pi(M,A,B,d)"], OF _ is_Pi_uniqueness]
     is_Pi_witness by auto
@@ -418,9 +429,9 @@ lemmas trans_Pi_rel_closed[trans_closed] = transM[OF _ Pi_rel_closed]
 
 lemma Pi_rel_iff:
   assumes "M(d)"
-  shows "is_Pi(M,A,B,d) \<longleftrightarrow> d = Pi_rel(A,B)"
+  shows "is_Pi(M,A,B,d) \<longleftrightarrow> d = Pi_rel(M,A,B)"
 proof (intro iffI)
-  assume "d = Pi_rel(A,B)"
+  assume "d = Pi_rel(M,A,B)"
   moreover
   note assms
   moreover from this
@@ -435,36 +446,36 @@ proof (intro iffI)
 next
   assume "is_Pi(M, A, B, d)"
   with assms
-  show "d = Pi_rel(A,B)"
+  show "d = Pi_rel(M,A,B)"
     using is_Pi_uniqueness unfolding Pi_rel_def
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
 lemma def_Pi_rel:
-  "Pi_rel(A,B) = {f\<in>Pow_rel(Sigma(A,B)). A\<subseteq>domain(f) \<and> function(f)}"
+  "Pi_rel(M,A,B) = {f\<in>Pow_rel(M,Sigma(A,B)). A\<subseteq>domain(f) \<and> function(f)}"
 proof -
-  have "Pi_rel(A, B) \<subseteq> Pow_rel(Sigma(A,B))"
-    using Pi_rel_iff[of "Pi_rel(A,B)"] Pi_assumptions Pow_rel_iff
+  have "Pi_rel(M,A, B) \<subseteq> Pow_rel(M,Sigma(A,B))"
+    using Pi_rel_iff[of "Pi_rel(M,A,B)"] Pi_assumptions Pow_rel_iff
     unfolding is_Pi_def by auto
   moreover
-  have "f \<in> Pi_rel(A, B) \<Longrightarrow> A\<subseteq>domain(f) \<and> function(f)" for f
-    using Pi_rel_iff[of "Pi_rel(A,B)"]
+  have "f \<in> Pi_rel(M,A, B) \<Longrightarrow> A\<subseteq>domain(f) \<and> function(f)" for f
+    using Pi_rel_iff[of "Pi_rel(M,A,B)"]
       Pi_assumptions def_PiP_rel[of A f] trans_closed Pow_rel_iff
     unfolding is_Pi_def by simp
   moreover
-  have "f \<in> Pow_rel(Sigma(A,B)) \<Longrightarrow> A\<subseteq>domain(f) \<and> function(f) \<Longrightarrow> f \<in> Pi_rel(A, B)" for f
-    using Pi_rel_iff[of "Pi_rel(A,B)"]
+  have "f \<in> Pow_rel(M,Sigma(A,B)) \<Longrightarrow> A\<subseteq>domain(f) \<and> function(f) \<Longrightarrow> f \<in> Pi_rel(M,A, B)" for f
+    using Pi_rel_iff[of "Pi_rel(M,A,B)"]
       Pi_assumptions def_PiP_rel[of A f] trans_closed Pow_rel_iff
     unfolding is_Pi_def by simp
   ultimately
   show ?thesis by force
 qed
 
-lemma Pi_rel_char: "Pi_rel(A,B) = {f\<in>Pi(A,B). M(f)}"
+lemma Pi_rel_char: "Pi_rel(M,A,B) = {f\<in>Pi(A,B). M(f)}"
   using def_Pi_rel Pow_rel_char[OF Sigma_closed] unfolding Pi_def
   by fastforce
 
-lemma mem_Pi_rel_abs: "M(f) \<Longrightarrow> f \<in> Pi_rel(A,B) \<longleftrightarrow> f \<in> Pi(A,B)"
+lemma mem_Pi_rel_abs: "M(f) \<Longrightarrow> f \<in> Pi_rel(M,A,B) \<longleftrightarrow> f \<in> Pi(A,B)"
   using Pi_rel_char by simp
 
 end (* M_Pi_assumptions *)
@@ -478,7 +489,7 @@ locale M_N_Pi_assumptions = M:M_Pi_assumptions + N:M_Pi_assumptions N for N +
     M_imp_N:"M(x) \<Longrightarrow> N(x)"
 begin
 
-lemma Pi_rel_transfer: "M.Pi_rel(A,B) \<subseteq> N.Pi_rel(A,B)"
+lemma Pi_rel_transfer: "Pi\<^bsup>M\<^esup>(A,B) \<subseteq> Pi\<^bsup>N\<^esup>(A,B)"
   using M.Pi_rel_char N.Pi_rel_char M_imp_N by auto
 
 end (* M_N_Pi_assumptions *)
@@ -490,7 +501,7 @@ locale M_Pi_assumptions_0 = M_Pi_assumptions _ 0
 begin
 
 text\<open>This is used in the proof of AC_Pi_rel\<close>
-lemma Pi_rel_empty1[simp]: "Pi_rel(0,B) = {0}"
+lemma Pi_rel_empty1[simp]: "Pi\<^bsup>M\<^esup>(0,B) = {0}"
   using Pi_assumptions Pow_rel_char
   by (unfold def_Pi_rel function_def) (auto)
 
@@ -504,20 +515,20 @@ subsection\<open>Auxiliary ported results on \<^term>\<open>Pi_rel\<close>, now 
 lemma Pi_rel_iff':
   assumes types:"M(f)"
   shows
-    "f \<in> Pi_rel(A,B) \<longleftrightarrow> function(f) \<and> f \<subseteq> Sigma(A,B) \<and> A \<subseteq> domain(f)"
+    "f \<in> Pi\<^bsup>M\<^esup>(A,B) \<longleftrightarrow> function(f) \<and> f \<subseteq> Sigma(A,B) \<and> A \<subseteq> domain(f)"
   using assms Pow_rel_char
   by (simp add:def_Pi_rel, blast)
 
 lemma (in M_Pi_assumptions) lam_type_M:
   assumes "\<And>x. x \<in> A \<Longrightarrow> b(x)\<in>B(x)" "strong_replacement(M,\<lambda>x y. y=\<langle>x, b(x)\<rangle>) "
-  shows "(\<lambda>x\<in>A. b(x)) \<in> Pi_rel(A,B)"
+  shows "(\<lambda>x\<in>A. b(x)) \<in> Pi\<^bsup>M\<^esup>(A,B)"
 proof (auto simp add: lam_def def_Pi_rel function_def)
   from assms
   have "M({\<langle>x, b(x)\<rangle> . x \<in> A})"
     using Pi_assumptions transM[OF _ Pi_assumptions(3)]
     by (rule_tac RepFun_closed, auto intro!:transM[OF _ Pi_assumptions(4)])
   with assms
-  show "{\<langle>x, b(x)\<rangle> . x \<in> A} \<in> Pow_rel(Sigma(A, B))"
+  show "{\<langle>x, b(x)\<rangle> . x \<in> A} \<in> Pow\<^bsup>M\<^esup>(Sigma(A, B))"
     using Pow_rel_char by auto
 qed
 
@@ -528,17 +539,17 @@ locale M_Pi_assumptions2 = M_Pi_assumptions +
 begin
 
 lemma Pi_rel_type:
-  assumes "f \<in> Pi_rel(A,C)" "\<And>x. x \<in> A \<Longrightarrow> f`x \<in> B(x)"
+  assumes "f \<in> Pi\<^bsup>M\<^esup>(A,C)" "\<And>x. x \<in> A \<Longrightarrow> f`x \<in> B(x)"
     and types: "M(f)"
-  shows "f \<in> Pi_rel(A,B)"
+  shows "f \<in> Pi\<^bsup>M\<^esup>(A,B)"
   using assms Pi_assumptions
   by (simp only: Pi_rel_iff' PiC.Pi_rel_iff')
     (blast dest: function_apply_equality)
 
 lemma Pi_rel_weaken_type:
-  assumes "f \<in> Pi_rel(A,B)" "\<And>x. x \<in> A \<Longrightarrow> B(x) \<subseteq> C(x)"
+  assumes "f \<in> Pi\<^bsup>M\<^esup>(A,B)" "\<And>x. x \<in> A \<Longrightarrow> B(x) \<subseteq> C(x)"
     and types: "M(f)"
-  shows "f \<in> Pi_rel(A,C)"
+  shows "f \<in> Pi\<^bsup>M\<^esup>(A,C)"
   using assms Pi_assumptions
   by (simp only: Pi_rel_iff' PiC.Pi_rel_iff')
     (blast intro: Pi_rel_type  dest: apply_type)
@@ -550,6 +561,18 @@ subsection\<open>Discipline for \<^term>\<open>function_space\<close>\<close>
 
 abbreviation
   "is_function_space \<equiv> is_funspace"
+
+definition
+  function_space_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i"  where
+  "function_space_rel(M,A,B) \<equiv> THE d. M(d) \<and> is_function_space(M,A,B,d)"
+
+abbreviation
+  function_space_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<rightarrow>\<^bsup>_\<^esup> _\<close> [61,1,61] 60) where
+  "A \<rightarrow>\<^bsup>M\<^esup> B \<equiv> function_space_rel(M,A,B)"
+
+abbreviation
+  function_space_r_set ::  "[i,i,i] \<Rightarrow> i" (\<open>_ \<rightarrow>\<^bsup>_\<^esup> _\<close> [61,1,61] 60) where
+  "function_space_r_set(A,M) \<equiv> function_space_rel(##M,A)"
 
 context M_Pi
 begin
@@ -573,18 +596,14 @@ proof -
     using Pi_replacement Pi_separation
     by unfold_locales (simp_all add:Sigfun_def)
   from assms
-  have "\<forall>f[M]. f \<in> Pi_rel(A, \<lambda>_. B) \<longleftrightarrow> f \<in> A \<rightarrow> B"
+  have "\<forall>f[M]. f \<in> Pi_rel(M,A, \<lambda>_. B) \<longleftrightarrow> f \<in> A \<rightarrow> B"
     using Pi_rel_char by simp
   with assms
   show ?thesis unfolding is_funspace_def by auto
 qed
 
-definition
-  function_space_rel :: "i \<Rightarrow> i \<Rightarrow> i" (infix \<open>\<rightarrow>r\<close> 60) where
-  "A \<rightarrow>r B \<equiv> THE d. M(d) \<and> is_function_space(M,A,B,d)"
-
 \<comment> \<open>adding closure to simpset and claset\<close>
-lemma function_space_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(x \<rightarrow>r y)"
+lemma function_space_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(x \<rightarrow>\<^bsup>M\<^esup> y)"
   unfolding function_space_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_function_space(M,x,y,d)"], OF _ is_function_space_uniqueness[of x y]]
     is_function_space_witness by auto
@@ -593,9 +612,9 @@ lemmas trans_function_space_rel_closed[trans_closed] = transM[OF _ function_spac
 
 lemma function_space_rel_iff:
   assumes "M(x)" "M(y)" "M(d)"
-  shows "is_function_space(M,x,y,d) \<longleftrightarrow> d = x \<rightarrow>r y"
+  shows "is_function_space(M,x,y,d) \<longleftrightarrow> d = x \<rightarrow>\<^bsup>M\<^esup> y"
 proof (intro iffI)
-  assume "d = x \<rightarrow>r y"
+  assume "d = x \<rightarrow>\<^bsup>M\<^esup> y"
   moreover
   note assms
   moreover from this
@@ -610,21 +629,21 @@ proof (intro iffI)
 next
   assume "is_function_space(M, x, y, d)"
   with assms
-  show "d = x \<rightarrow>r y"
+  show "d = x \<rightarrow>\<^bsup>M\<^esup> y"
     using is_function_space_uniqueness unfolding function_space_rel_def
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
 lemma def_function_space_rel:
   assumes "M(A)" "M(y)"
-  shows "A \<rightarrow>r y = Pi_rel(A,\<lambda>_. y)"
+  shows "A \<rightarrow>\<^bsup>M\<^esup> y = Pi\<^bsup>M\<^esup>(A,\<lambda>_. y)"
 proof -
   from assms
   interpret M_Pi_assumptions M A "\<lambda>_. y"
     using Pi_replacement Pi_separation
     by unfold_locales (simp_all add:Sigfun_def)
   from assms
-  have "x\<in>A \<rightarrow>r y \<longleftrightarrow> x\<in>Pi_rel(A,\<lambda>_. y)" if "M(x)" for x
+  have "x\<in>A \<rightarrow>\<^bsup>M\<^esup> y \<longleftrightarrow> x\<in>Pi\<^bsup>M\<^esup>(A,\<lambda>_. y)" if "M(x)" for x
     using that
       function_space_rel_iff[of A y, OF _ _ function_space_rel_closed, of A y]
       def_Pi_rel Pi_rel_char Pow_rel_char
@@ -637,7 +656,7 @@ qed
 
 lemma function_space_rel_char:
   assumes "M(A)" "M(y)"
-  shows "A \<rightarrow>r y = {f \<in> A \<rightarrow> y. M(f)}"
+  shows "A \<rightarrow>\<^bsup>M\<^esup> y = {f \<in> A \<rightarrow> y. M(f)}"
 proof -
   from assms
   interpret M_Pi_assumptions M A "\<lambda>_. y"
@@ -650,7 +669,7 @@ qed
 
 lemma mem_function_space_rel_abs:
   assumes "M(A)" "M(y)" "M(f)"
-  shows "f \<in> A \<rightarrow>r y  \<longleftrightarrow>  f \<in> A \<rightarrow> y"
+  shows "f \<in> A \<rightarrow>\<^bsup>M\<^esup> y  \<longleftrightarrow>  f \<in> A \<rightarrow> y"
   using assms function_space_rel_char by simp
 
 end (* M_Pi *)
@@ -659,10 +678,8 @@ locale M_N_Pi = M:M_Pi + N:M_Pi N for N +
   assumes
     M_imp_N:"M(x) \<Longrightarrow> N(x)"
 begin
-notation M.function_space_rel (infix \<open>\<rightarrow>\<^sup>M\<close> 60)
-notation N.function_space_rel (infix \<open>\<rightarrow>\<^sup>N\<close> 60)
 
-lemma function_space_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> A \<rightarrow>\<^sup>M B \<subseteq> A\<rightarrow>\<^sup>N B"
+lemma function_space_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> A \<rightarrow>\<^bsup>M\<^esup> B \<subseteq> A\<rightarrow>\<^bsup>N\<^esup> B"
   using M.function_space_rel_char N.function_space_rel_char 
   by (auto dest!:M_imp_N)
 
@@ -715,6 +732,13 @@ definition (* completely relational *)
   "is_inj(M,A,B,I) \<equiv> \<exists>F[M]. is_function_space(M,A,B,F) \<and>
        is_Collect(M,F,injP_rel(M,A),I)"
 
+definition
+  inj_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" (\<open>inj\<^bsup>_\<^esup>'(_,_')\<close>) where
+  "inj\<^bsup>M\<^esup>(A,B) \<equiv> THE d. M(d) \<and> is_inj(M,A,B,d)"
+
+abbreviation
+  inj_r_set ::  "[i,i,i] \<Rightarrow> i" (\<open>inj\<^bsup>_\<^esup>'(_,_')\<close>) where
+  "inj_r_set(M) \<equiv> inj_rel(##M)"
 
 locale M_inj = M_Pi +
   assumes
@@ -734,11 +758,7 @@ lemma is_inj_witness: "M(r) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M
   using injP_separation function_space_rel_iff
   unfolding is_inj_def by simp
 
-definition
-  inj_rel :: "i \<Rightarrow> i \<Rightarrow> i"  where
-  "inj_rel(A,B) \<equiv> THE d. M(d) \<and> is_inj(M,A,B,d)"
-
-lemma inj_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(inj_rel(x,y))"
+lemma inj_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(inj\<^bsup>M\<^esup>(x,y))"
   unfolding inj_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_inj(M,x,y,d)"], OF _ is_inj_uniqueness[of x y]]
     is_inj_witness by auto
@@ -747,9 +767,9 @@ lemmas trans_inj_rel_closed[trans_closed] = transM[OF _ inj_rel_closed]
 
 lemma inj_rel_iff:
   assumes "M(x)" "M(y)" "M(d)"
-  shows "is_inj(M,x,y,d) \<longleftrightarrow> d = inj_rel(x,y)"
+  shows "is_inj(M,x,y,d) \<longleftrightarrow> d = inj\<^bsup>M\<^esup>(x,y)"
 proof (intro iffI)
-  assume "d = inj_rel(x,y)"
+  assume "d = inj\<^bsup>M\<^esup>(x,y)"
   moreover
   note assms
   moreover from this
@@ -764,29 +784,29 @@ proof (intro iffI)
 next
   assume "is_inj(M, x, y, d)"
   with assms
-  show "d = inj_rel(x,y)"
+  show "d = inj\<^bsup>M\<^esup>(x,y)"
     using is_inj_uniqueness unfolding inj_rel_def
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
 lemma def_inj_rel:
   assumes "M(A)" "M(B)"
-  shows "inj_rel(A,B) =
-         {f \<in> A \<rightarrow>r B.  \<forall>w[M]. \<forall>x[M]. w\<in>A \<and> x\<in>A \<and> f`w = f`x \<longrightarrow> w=x}"
+  shows "inj\<^bsup>M\<^esup>(A,B) =
+         {f \<in> A \<rightarrow>\<^bsup>M\<^esup> B.  \<forall>w[M]. \<forall>x[M]. w\<in>A \<and> x\<in>A \<and> f`w = f`x \<longrightarrow> w=x}"
     (is "_ = Collect(_,?P)")
 proof -
   from assms
-  have "inj_rel(A, B) \<subseteq> A \<rightarrow>r B"
-    using inj_rel_iff[of A B "inj_rel(A,B)"] function_space_rel_iff
+  have "inj\<^bsup>M\<^esup>(A, B) \<subseteq> A \<rightarrow>\<^bsup>M\<^esup> B"
+    using inj_rel_iff[of A B "inj\<^bsup>M\<^esup>(A,B)"] function_space_rel_iff
     unfolding is_inj_def by auto
   moreover from assms
-  have "f \<in> inj_rel(A, B) \<Longrightarrow> ?P(f)" for f
-    using inj_rel_iff[of A B "inj_rel(A,B)"] function_space_rel_iff
+  have "f \<in> inj\<^bsup>M\<^esup>(A, B) \<Longrightarrow> ?P(f)" for f
+    using inj_rel_iff[of A B "inj\<^bsup>M\<^esup>(A,B)"] function_space_rel_iff
       def_injP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
     unfolding is_inj_def by auto
   moreover from assms
-  have "f \<in> A \<rightarrow>r B \<Longrightarrow> ?P(f) \<Longrightarrow> f \<in> inj_rel(A, B)" for f
-    using inj_rel_iff[of A B "inj_rel(A,B)"] function_space_rel_iff
+  have "f \<in> A \<rightarrow>\<^bsup>M\<^esup> B \<Longrightarrow> ?P(f) \<Longrightarrow> f \<in> inj\<^bsup>M\<^esup>(A, B)" for f
+    using inj_rel_iff[of A B "inj\<^bsup>M\<^esup>(A,B)"] function_space_rel_iff
       def_injP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
     unfolding is_inj_def by auto
   ultimately
@@ -795,7 +815,7 @@ qed
 
 lemma inj_rel_char:
   assumes "M(A)" "M(B)"
-  shows "inj_rel(A,B) = {f \<in> inj(A,B). M(f)}"
+  shows "inj\<^bsup>M\<^esup>(A,B) = {f \<in> inj(A,B). M(f)}"
 proof -
   from assms
   interpret M_Pi_assumptions M A "\<lambda>_. B"
@@ -815,10 +835,8 @@ locale M_N_inj = M:M_inj + N:M_inj N for N +
   assumes
     M_imp_N:"M(x) \<Longrightarrow> N(x)"
 begin
-notation M.inj_rel (\<open>inj\<^sup>M\<close>)
-notation N.inj_rel (\<open>inj\<^sup>N\<close>)
 
-lemma inj_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> inj\<^sup>M(A,B) \<subseteq> inj\<^sup>N(A,B)"
+lemma inj_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> inj\<^bsup>M\<^esup>(A,B) \<subseteq> inj\<^bsup>N\<^esup>(A,B)"
   using M.inj_rel_char N.inj_rel_char 
   by (auto dest!:M_imp_N)
 
@@ -855,6 +873,13 @@ definition (* completely relational *)
   "is_surj(M,A,B,I) \<equiv> \<exists>F[M]. is_function_space(M,A,B,F) \<and>
        is_Collect(M,F,surjP_rel(M,A,B),I)"
 
+definition
+  surj_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" (\<open>surj\<^bsup>_\<^esup>'(_,_')\<close>) where
+  "surj\<^bsup>M\<^esup>(A,B) \<equiv> THE d. M(d) \<and> is_surj(M,A,B,d)"
+
+abbreviation
+  surj_r_set ::  "[i,i,i] \<Rightarrow> i" (\<open>surj\<^bsup>_\<^esup>'(_,_')\<close>) where
+  "surj_r_set(M) \<equiv> surj_rel(##M)"
 
 locale M_surj = M_Pi +
   assumes
@@ -874,11 +899,7 @@ lemma is_surj_witness: "M(r) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[
   using surjP_separation function_space_rel_iff
   unfolding is_surj_def by simp
 
-definition
-  surj_rel :: "i \<Rightarrow> i \<Rightarrow> i"  where
-  "surj_rel(A,B) \<equiv> THE d. M(d) \<and> is_surj(M,A,B,d)"
-
-lemma surj_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(surj_rel(x,y))"
+lemma surj_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(surj\<^bsup>M\<^esup>(x,y))"
   unfolding surj_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_surj(M,x,y,d)"], OF _ is_surj_uniqueness[of x y]]
     is_surj_witness by auto
@@ -887,9 +908,9 @@ lemmas trans_surj_rel_closed[trans_closed] = transM[OF _ surj_rel_closed]
 
 lemma surj_rel_iff:
   assumes "M(x)" "M(y)" "M(d)"
-  shows "is_surj(M,x,y,d) \<longleftrightarrow> d = surj_rel(x,y)"
+  shows "is_surj(M,x,y,d) \<longleftrightarrow> d = surj\<^bsup>M\<^esup>(x,y)"
 proof (intro iffI)
-  assume "d = surj_rel(x,y)"
+  assume "d = surj\<^bsup>M\<^esup>(x,y)"
   moreover
   note assms
   moreover from this
@@ -904,29 +925,29 @@ proof (intro iffI)
 next
   assume "is_surj(M, x, y, d)"
   with assms
-  show "d = surj_rel(x,y)"
+  show "d = surj\<^bsup>M\<^esup>(x,y)"
     using is_surj_uniqueness unfolding surj_rel_def
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
 lemma def_surj_rel:
   assumes "M(A)" "M(B)"
-  shows "surj_rel(A,B) =
-         {f \<in> A \<rightarrow>r B. \<forall>y[M]. \<exists>x[M]. y\<in>B \<longrightarrow> x\<in>A \<and> f`x=y }"
+  shows "surj\<^bsup>M\<^esup>(A,B) =
+         {f \<in> A \<rightarrow>\<^bsup>M\<^esup> B. \<forall>y[M]. \<exists>x[M]. y\<in>B \<longrightarrow> x\<in>A \<and> f`x=y }"
     (is "_ = Collect(_,?P)")
 proof -
   from assms
-  have "surj_rel(A, B) \<subseteq> A \<rightarrow>r B"
-    using surj_rel_iff[of A B "surj_rel(A,B)"] function_space_rel_iff
+  have "surj\<^bsup>M\<^esup>(A, B) \<subseteq> A \<rightarrow>\<^bsup>M\<^esup> B"
+    using surj_rel_iff[of A B "surj\<^bsup>M\<^esup>(A,B)"] function_space_rel_iff
     unfolding is_surj_def by auto
   moreover from assms
-  have "f \<in> surj_rel(A, B) \<Longrightarrow> ?P(f)" for f
-    using surj_rel_iff[of A B "surj_rel(A,B)"] function_space_rel_iff
+  have "f \<in> surj\<^bsup>M\<^esup>(A, B) \<Longrightarrow> ?P(f)" for f
+    using surj_rel_iff[of A B "surj\<^bsup>M\<^esup>(A,B)"] function_space_rel_iff
       def_surjP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
     unfolding is_surj_def by auto
   moreover from assms
-  have "f \<in> A \<rightarrow>r B \<Longrightarrow> ?P(f) \<Longrightarrow> f \<in> surj_rel(A, B)" for f
-    using surj_rel_iff[of A B "surj_rel(A,B)"] function_space_rel_iff
+  have "f \<in> A \<rightarrow>\<^bsup>M\<^esup> B \<Longrightarrow> ?P(f) \<Longrightarrow> f \<in> surj\<^bsup>M\<^esup>(A, B)" for f
+    using surj_rel_iff[of A B "surj\<^bsup>M\<^esup>(A,B)"] function_space_rel_iff
       def_surjP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
     unfolding is_surj_def by auto
   ultimately
@@ -935,7 +956,7 @@ qed
 
 lemma surj_rel_char:
   assumes "M(A)" "M(B)"
-  shows "surj_rel(A,B) = {f \<in> surj(A,B). M(f)}"
+  shows "surj\<^bsup>M\<^esup>(A,B) = {f \<in> surj(A,B). M(f)}"
 proof -
   from assms
   interpret M_Pi_assumptions M A "\<lambda>_. B"
@@ -955,10 +976,8 @@ locale M_N_surj = M:M_surj + N:M_surj N for N +
   assumes
     M_imp_N:"M(x) \<Longrightarrow> N(x)"
 begin
-notation M.surj_rel (\<open>surj\<^sup>M\<close>)
-notation N.surj_rel (\<open>surj\<^sup>N\<close>)
 
-lemma surj_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> surj\<^sup>M(A,B) \<subseteq> surj\<^sup>N(A,B)"
+lemma surj_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> surj\<^bsup>M\<^esup>(A,B) \<subseteq> surj\<^bsup>N\<^esup>(A,B)"
   using M.surj_rel_char N.surj_rel_char 
   by (auto dest!:M_imp_N)
 
@@ -1002,6 +1021,14 @@ definition (* completely relational *)
   (* Old def: "is_bij(M,A,B,bj) \<equiv> \<exists>I[M]. \<exists>S[M].
       is_inj(M,A,B,I) \<and> is_surj(M,A,B,S) \<and> is_Int(M,I,S,bj)" *)
 
+definition
+  bij_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" (\<open>bij\<^bsup>_\<^esup>'(_,_')\<close>) where
+  "bij\<^bsup>M\<^esup>(A,B) \<equiv> THE d. M(d) \<and> is_bij(M,A,B,d)"
+
+abbreviation
+  bij_r_set ::  "[i,i,i] \<Rightarrow> i" (\<open>bij\<^bsup>_\<^esup>'(_,_')\<close>) where
+  "bij_r_set(M) \<equiv> bij_rel(##M)"
+
 locale M_Perm = M_Pi + M_inj + M_surj
 begin
 
@@ -1021,11 +1048,7 @@ lemma is_bij_witness: "M(A) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M
     is_inj_witness is_surj_witness is_Int_abs
   unfolding is_bij_def by simp
 
-definition
-  bij_rel :: "i \<Rightarrow> i \<Rightarrow> i"  where
-  "bij_rel(A,B) \<equiv> THE d. M(d) \<and> is_bij(M,A,B,d)"
-
-lemma bij_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(bij_rel(x,y))"
+lemma bij_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(bij\<^bsup>M\<^esup>(x,y))"
   unfolding bij_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_bij(M,x,y,d)"], OF _ is_bij_uniqueness[of x y]]
     is_bij_witness by auto
@@ -1034,9 +1057,9 @@ lemmas trans_bij_rel_closed[trans_closed] = transM[OF _ bij_rel_closed]
 
 lemma bij_rel_iff:
   assumes "M(x)" "M(y)" "M(d)"
-  shows "is_bij(M,x,y,d) \<longleftrightarrow> d = bij_rel(x,y)"
+  shows "is_bij(M,x,y,d) \<longleftrightarrow> d = bij\<^bsup>M\<^esup>(x,y)"
 proof (intro iffI)
-  assume "d = bij_rel(x,y)"
+  assume "d = bij\<^bsup>M\<^esup>(x,y)"
   moreover
   note assms
   moreover from this
@@ -1051,14 +1074,14 @@ proof (intro iffI)
 next
   assume "is_bij(M, x, y, d)"
   with assms
-  show "d = bij_rel(x,y)"
+  show "d = bij\<^bsup>M\<^esup>(x,y)"
     using is_bij_uniqueness unfolding bij_rel_def
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
 lemma def_bij_rel:
   assumes "M(A)" "M(B)"
-  shows "bij_rel(A,B) = inj_rel(A,B) \<inter> surj_rel(A,B)"
+  shows "bij\<^bsup>M\<^esup>(A,B) = inj\<^bsup>M\<^esup>(A,B) \<inter> surj\<^bsup>M\<^esup>(A,B)"
   using assms bij_rel_iff inj_rel_iff surj_rel_iff
     is_Int_abs\<comment> \<open>For absolute terms, "_abs" replaces "_iff".
                  Also, in this case "_closed" is in the simpset.\<close>
@@ -1067,7 +1090,7 @@ lemma def_bij_rel:
 
 lemma bij_rel_char:
   assumes "M(A)" "M(B)"
-  shows "bij_rel(A,B) = {f \<in> bij(A,B). M(f)}"
+  shows "bij\<^bsup>M\<^esup>(A,B) = {f \<in> bij(A,B). M(f)}"
   using assms def_bij_rel inj_rel_char surj_rel_char
   unfolding bij_def\<comment> \<open>Unfolding this might be a pattern already\<close>
   by auto
@@ -1077,10 +1100,8 @@ end (* M_Perm *)
 locale M_N_Perm = M_N_Pi + M_N_inj + M_N_surj + M:M_Perm + N:M_Perm N
 
 begin
-notation M.bij_rel (\<open>bij\<^sup>M\<close>)
-notation N.bij_rel (\<open>bij\<^sup>N\<close>)
 
-lemma bij_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> bij\<^sup>M(A,B) \<subseteq> bij\<^sup>N(A,B)"
+lemma bij_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> bij\<^bsup>M\<^esup>(A,B) \<subseteq> bij\<^bsup>N\<^esup>(A,B)"
   using M.bij_rel_char N.bij_rel_char 
   by (auto dest!:M_imp_N)
 
@@ -1092,21 +1113,25 @@ end (* M_N_Perm *)
 subsection\<open>Discipline for \<^term>\<open>eqpoll\<close>\<close>
 
 definition (* completely relational *)
-  eqpoll_rel   :: "[i=>o,i,i] => o" where
+  eqpoll_rel   :: "[i\<Rightarrow>o,i,i] => o" where
   "eqpoll_rel(M,A,B) \<equiv> \<exists>bi[M]. \<exists>f[M]. is_bij(M,A,B,bi) \<and> f\<in>bi"
+
+abbreviation
+  eqpoll_r :: "[i,i\<Rightarrow>o,i] => o" (\<open>_ \<approx>\<^bsup>_\<^esup> _\<close> [51,1,51] 50) where
+  "A \<approx>\<^bsup>M\<^esup> B \<equiv> eqpoll_rel(M,A,B)"
+
+abbreviation
+  eqpoll_r_set ::  "[i,i,i] \<Rightarrow> o" (\<open>_ \<approx>\<^bsup>_\<^esup> _\<close> [51,1,51] 50) where
+  "eqpoll_r_set(A,M) \<equiv> eqpoll_rel(##M,A)"
 
 context M_Perm
 begin
-
-abbreviation
-  Eqpoll_rel   :: "[i,i] => o"     (infixl \<open>\<approx>r\<close> 50)  where
-  "A \<approx>r B \<equiv> eqpoll_rel(M,A,B)"
 
 lemma def_eqpoll_rel:
   assumes
     "M(A)" "M(B)"
   shows
-    "A \<approx>r B \<longleftrightarrow> (\<exists>f[M]. f \<in> bij_rel(A,B))"
+    "A \<approx>\<^bsup>M\<^esup> B \<longleftrightarrow> (\<exists>f[M]. f \<in> bij\<^bsup>M\<^esup>(A,B))"
   using assms bij_rel_iff
   unfolding eqpoll_rel_def by simp
 
@@ -1115,18 +1140,15 @@ end (* M_Perm *)
 context M_N_Perm
 begin
 
-notation M.Eqpoll_rel (infixl \<open>\<approx>\<^sup>M\<close> 50)
-notation N.Eqpoll_rel (infixl \<open>\<approx>\<^sup>N\<close> 50)
-
-lemma eqpoll_rel_transfer: assumes "A \<approx>\<^sup>M B" "M(A)" "M(B)" 
-  shows "A \<approx>\<^sup>N B"
+lemma eqpoll_rel_transfer: assumes "A \<approx>\<^bsup>M\<^esup> B" "M(A)" "M(B)"
+  shows "A \<approx>\<^bsup>N\<^esup> B"
 proof -
   note assms
   moreover from this
-  obtain f where "f \<in> bij\<^sup>M(A,B)" "N(f)"
+  obtain f where "f \<in> bij\<^bsup>M\<^esup>(A,B)" "N(f)"
     using M.def_eqpoll_rel by (auto dest!:M_imp_N)
   moreover from calculation
-  have "f \<in> bij\<^sup>N(A,B)"
+  have "f \<in> bij\<^bsup>N\<^esup>(A,B)"
     using bij_rel_transfer by (auto)
   ultimately
   show ?thesis
@@ -1141,21 +1163,25 @@ end (* M_N_Perm *)
 subsection\<open>Discipline for \<^term>\<open>lepoll\<close>\<close>
 
 definition (* completely relational *)
-  lepoll_rel   :: "[i=>o,i,i] => o" where
+  lepoll_rel   :: "[i\<Rightarrow>o,i,i] => o" where
   "lepoll_rel(M,A,B) \<equiv> \<exists>bi[M]. \<exists>f[M]. is_inj(M,A,B,bi) \<and> f\<in>bi"
+
+abbreviation
+  lepoll_r :: "[i,i\<Rightarrow>o,i] => o" (\<open>_ \<lesssim>\<^bsup>_\<^esup> _\<close> [51,1,51] 50) where
+  "A \<lesssim>\<^bsup>M\<^esup> B \<equiv> lepoll_rel(M,A,B)"
+
+abbreviation
+  lepoll_r_set ::  "[i,i,i] \<Rightarrow> o" (\<open>_ \<lesssim>\<^bsup>_\<^esup> _\<close> [51,1,51] 50) where
+  "lepoll_r_set(A,M) \<equiv> lepoll_rel(##M,A)"
 
 context M_Perm
 begin
-
-abbreviation
-  Lepoll_rel   :: "[i,i] => o"     (infixl \<open>\<lesssim>r\<close> 50)  where
-  "A \<lesssim>r B \<equiv> lepoll_rel(M,A,B)"
 
 lemma def_lepoll_rel:
   assumes
     "M(A)" "M(B)"
   shows
-    "A \<lesssim>r B \<longleftrightarrow> (\<exists>f[M]. f \<in> inj_rel(A,B))"
+    "A \<lesssim>\<^bsup>M\<^esup> B \<longleftrightarrow> (\<exists>f[M]. f \<in> inj\<^bsup>M\<^esup>(A,B))"
   using assms inj_rel_iff
   unfolding lepoll_rel_def by simp
 
@@ -1164,18 +1190,15 @@ end (* M_Perm *)
 context M_N_Perm
 begin
 
-notation M.Lepoll_rel (infixl \<open>\<lesssim>\<^sup>M\<close> 50)
-notation N.Lepoll_rel (infixl \<open>\<lesssim>\<^sup>N\<close> 50)
-
-lemma lepoll_rel_transfer: assumes "A \<lesssim>\<^sup>M B" "M(A)" "M(B)" 
-  shows "A \<lesssim>\<^sup>N B"
+lemma lepoll_rel_transfer: assumes "A \<lesssim>\<^bsup>M\<^esup> B" "M(A)" "M(B)"
+  shows "A \<lesssim>\<^bsup>N\<^esup> B"
 proof -
   note assms
   moreover from this
-  obtain f where "f \<in> inj\<^sup>M(A,B)" "N(f)"
+  obtain f where "f \<in> inj\<^bsup>M\<^esup>(A,B)" "N(f)"
     using M.def_lepoll_rel by (auto dest!:M_imp_N)
   moreover from calculation
-  have "f \<in> inj\<^sup>N(A,B)"
+  have "f \<in> inj\<^bsup>N\<^esup>(A,B)"
     using inj_rel_transfer by (auto)
   ultimately
   show ?thesis
@@ -1189,28 +1212,25 @@ end (* M_N_Perm *)
 (******************************************************)
 subsection\<open>Discipline for \<^term>\<open>lesspoll\<close>\<close>
 
-definition
-  lesspoll_rel :: "[i=>o,i,i] => o" where
-  "lesspoll_rel(M,A,B) \<equiv> lepoll_rel(M,A,B) \<and> \<not>(eqpoll_rel(M,A,B))"
 
-context M_Perm
-begin
+definition
+  lesspoll_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o"  where
+  "lesspoll_rel(M,A,B) \<equiv> A \<lesssim>\<^bsup>M\<^esup> B \<and> \<not>(A \<approx>\<^bsup>M\<^esup> B)"
 
 abbreviation
-  Lesspoll_rel   :: "[i,i] => o"     (infixl \<open>\<prec>r\<close> 50)  where
-  "A \<prec>r B \<equiv> lesspoll_rel(M,A,B)"
+  lesspoll_r :: "[i,i\<Rightarrow>o,i] => o" (\<open>_ \<prec>\<^bsup>_\<^esup> _\<close> [51,1,51] 50) where
+  "A \<prec>\<^bsup>M\<^esup> B \<equiv> lesspoll_rel(M,A,B)"
 
-lemma def_lesspoll_rel:
-  assumes
-    "M(A)" "M(B)"
-  shows
-    "A \<prec>r B \<longleftrightarrow> A \<lesssim>r B \<and> \<not>(A \<approx>r B)"
-  using assms unfolding lesspoll_rel_def by simp
+abbreviation
+  lesspoll_r_set ::  "[i,i,i] \<Rightarrow> o" (\<open>_ \<prec>\<^bsup>_\<^esup> _\<close> [51,1,51] 50) where
+  "lesspoll_r_set(A,M) \<equiv> lesspoll_rel(##M,A)"
 
-text\<open>Note that \<^term>\<open>(\<lesssim>r)\<close> is neither $\Sigma_1^{\mathit{ZF}}$ nor
+text\<open>Since \<^term>\<open>lesspoll_rel\<close> is defined as a propositional
+combination of older terms, there is no need for a separate “def”
+theorem for it.\<close>
+
+text\<open>Note that \<^term>\<open>lesspoll_rel\<close> is neither $\Sigma_1^{\mathit{ZF}}$ nor
  $\Pi_1^{\mathit{ZF}}$, so there is no “transfer” theorem for it.\<close>
-
-end (* M_Perm *)
 
 (******************  end Discipline  ******************)
 

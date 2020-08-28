@@ -18,19 +18,19 @@ definition
 declare (in M_trivial) compat_in_abs[absolut]
 
 definition
-  antichain_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
+  antichain_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" (\<open>antichain\<^bsup>_\<^esup>'(_,_,_')\<close>) where
   "antichain_rel(M,P,leq,A) \<equiv> subset(M,A,P) \<and> (\<forall>p[M]. \<forall>q[M].
        p\<in>A \<longrightarrow> q\<in>A \<longrightarrow> p \<noteq> q\<longrightarrow> \<not> is_compat_in(M,P,leq,p,q))"
+
+abbreviation
+  antichain_r_set :: "[i,i,i,i] \<Rightarrow> o" (\<open>antichain\<^bsup>_\<^esup>'(_,_,_')\<close>) where
+  "antichain\<^bsup>M\<^esup>(P,leq,A) \<equiv> antichain_rel(##M,P,leq,A)"
 
 context M_trivial
 begin
 
-abbreviation
-  antichain_r :: "[i,i,i] \<Rightarrow> o" where
-  "antichain_r(P,leq,A) \<equiv> antichain_rel(M,P,leq,A)"
-
 lemma antichain_abs [absolut]:
-  "\<lbrakk> M(A); M(P); M(leq) \<rbrakk> \<Longrightarrow> antichain_r(P,leq,A) \<longleftrightarrow> antichain(P,leq,A)"
+  "\<lbrakk> M(A); M(P); M(leq) \<rbrakk> \<Longrightarrow> antichain\<^bsup>M\<^esup>(P,leq,A) \<longleftrightarrow> antichain(P,leq,A)"
   unfolding antichain_rel_def antichain_def by (simp add:absolut)
 
 end (* M_trivial *)
@@ -81,22 +81,22 @@ end (* M_trivial_notion *)
 subsection\<open>Discipline for \<^term>\<open>ccc\<close>\<close>
 
 definition (* completely relational *)
-  ccc_rel   :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  ccc_rel   :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" (\<open>ccc\<^bsup>_\<^esup>'(_,_')\<close>) where
   "ccc_rel(M,P,leq) \<equiv> \<forall>A[M]. antichain_rel(M,P,leq,A) \<longrightarrow> 
       (\<forall>\<kappa>[M]. is_cardinal(M,A,\<kappa>) \<longrightarrow> (\<exists>om[M]. omega(M,om) \<and> le_rel(M,\<kappa>,om)))"
 
+abbreviation
+  ccc_r_set :: "[i,i,i]\<Rightarrow>o" (\<open>ccc\<^bsup>_\<^esup>'(_,_')\<close>) where
+  "ccc_r_set(M) \<equiv> ccc_rel(##M)"
+
 context M_cardinals
 begin
-
-abbreviation
-  ccc_r     :: "[i,i]\<Rightarrow>o"  where
-  "ccc_r(P,leq) \<equiv> ccc_rel(M,P,leq)"
 
 lemma def_ccc_rel:
   assumes
     "M(i)"
   shows
-    "ccc_r(P,leq) \<longleftrightarrow> (\<forall>A[M]. antichain_r(P,leq,A) \<longrightarrow> |A|r \<le> nat)"
+    "ccc\<^bsup>M\<^esup>(P,leq) \<longleftrightarrow> (\<forall>A[M]. antichain\<^bsup>M\<^esup>(P,leq,A) \<longrightarrow> |A|\<^bsup>M\<^esup> \<le> nat)"
   using assms cardinal_rel_iff
   unfolding ccc_rel_def by (simp add:absolut)
 
@@ -139,11 +139,6 @@ qed
 notation (in forcing_data) check (\<open>_\<^sup>v\<close> [101] 100)
 
 context G_generic begin
-
-notation cardinal_rel (\<open>|_|\<^sup>M\<close>)
-notation ccc_r (\<open>ccc\<^sup>M\<close>)
-notation function_space_rel (infix \<open>\<rightarrow>\<^sup>M\<close> 60)
-notation inj_rel (\<open>inj\<^sup>M\<close>)
 
 \<comment> \<open>NOTE: The following bundled additions to the simpset might be of
     use later on, perhaps add them globally to some appropriate
@@ -332,9 +327,9 @@ qed
 \<comment> \<open>Kunen IV.3.5\<close>
 lemma ccc_fun_approximation_lemma:
   notes le_trans[trans]
-  assumes "ccc\<^sup>M(P,leq)" "A\<in>M" "B\<in>M" "f\<in>M[G]" "f : A \<rightarrow> B"
+  assumes "ccc\<^bsup>M\<^esup>(P,leq)" "A\<in>M" "B\<in>M" "f\<in>M[G]" "f : A \<rightarrow> B"
   shows 
-    "\<exists>F\<in>M. F : A \<rightarrow> Pow(B) \<and> (\<forall>a\<in>A. f`a \<in> F`a \<and> |F`a|\<^sup>M \<le> nat)"
+    "\<exists>F\<in>M. F : A \<rightarrow> Pow(B) \<and> (\<forall>a\<in>A. f`a \<in> F`a \<and> |F`a|\<^bsup>M\<^esup> \<le> nat)"
 proof -
   let ?\<phi>="typed_function_fm(1,2,0)"\<comment> \<open>formula for \<^term>\<open>f : A\<rightarrow> B\<close>\<close>
   from \<open>f\<in>M[G]\<close>
@@ -378,7 +373,7 @@ proof -
     show ?thesis unfolding F_def by simp
   qed
   moreover
-  have "|F`a|\<^sup>M \<le> nat" if "a \<in> A" for a
+  have "|F`a|\<^bsup>M\<^esup> \<le> nat" if "a \<in> A" for a
   proof -
     let ?Q="\<lambda>b. {q\<in>P. q \<preceq> p \<and> (q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v])}"
     from \<open>F \<in> M\<close> \<open>a\<in>A\<close> \<open>A\<in>M\<close>
@@ -394,14 +389,15 @@ proof -
     have "\<exists>y. y \<in> ?Q(b)" if "b \<in> F`a" for b
       using that unfolding F_def by auto
     then
-    obtain q where "q \<in> Pi_rel(F`a,?Q)" "q\<in>M" using AC_Pi_rel by auto
+      \<comment> \<open>FIX THIS: notation for Pi_r_set is forgotten!\<close>
+    obtain q where "q \<in> Pi\<^bsup>##M\<^esup>(F`a,?Q)" "q\<in>M" using AC_Pi_rel by auto
     moreover
     note \<open>F`a \<in> M\<close>
     moreover from calculation
-    have "q : F`a \<rightarrow>\<^sup>M P"
+    have "q : F`a \<rightarrow>\<^bsup>M\<^esup> P"
       using Pi_rel_weaken_type def_function_space_rel by auto
     moreover from calculation
-    have "q : F`a \<rightarrow> range(q)" "q : F`a \<rightarrow> P" "q : F`a \<rightarrow>\<^sup>M range(q)"
+    have "q : F`a \<rightarrow> range(q)" "q : F`a \<rightarrow> P" "q : F`a \<rightarrow>\<^bsup>M\<^esup> range(q)"
       using mem_function_space_rel_abs range_of_fun by simp_all
     moreover
     have "q`b \<bottom> q`c" if "b \<in> F`a" "c \<in> F`a" "b \<noteq> c"
@@ -409,7 +405,7 @@ proof -
         the proof breaks down badly\<close>
       for b c
     proof -
-      from \<open>b \<in> F`a\<close> \<open>c \<in> F`a\<close> \<open>q \<in> Pi_rel(F`a,?Q)\<close> \<open>q\<in>M\<close>
+      from \<open>b \<in> F`a\<close> \<open>c \<in> F`a\<close> \<open>q \<in> Pi\<^bsup>##M\<^esup>(F`a,?Q)\<close> \<open>q\<in>M\<close>
       have "q`b \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v]"
            "q`c \<tturnstile> ?app_fm [f_dot, a\<^sup>v, c\<^sup>v]"
         using mem_Pi_rel_abs[of q] apply_type[of _ _  ?Q]
@@ -433,14 +429,14 @@ proof -
       using that Incompatible_imp_not_eq apply_type
         mem_function_space_rel_abs by simp
     ultimately
-    have "q \<in> inj\<^sup>M(F`a,range(q))"
+    have "q \<in> inj\<^bsup>M\<^esup>(F`a,range(q))"
       using def_inj_rel by auto
     with \<open>F`a \<in> M\<close> \<open>q\<in>M\<close>
-    have "|F`a|\<^sup>M \<le> |range(q)|\<^sup>M"
+    have "|F`a|\<^bsup>M\<^esup> \<le> |range(q)|\<^bsup>M\<^esup>"
       using def_lepoll_rel
       by (rule_tac lepoll_rel_imp_Card_rel_le) auto
-    also from \<open>antichain_r'(range(q))\<close> \<open>ccc\<^sup>M(P,leq)\<close> \<open>q\<in>M\<close>
-    have "|range(q)|\<^sup>M \<le> nat"
+    also from \<open>antichain_r'(range(q))\<close> \<open>ccc\<^bsup>M\<^esup>(P,leq)\<close> \<open>q\<in>M\<close>
+    have "|range(q)|\<^bsup>M\<^esup> \<le> nat"
       using def_ccc_rel by simp
     finally
     show ?thesis .
@@ -454,7 +450,7 @@ qed
 
 end (* includes G_generic_lemmas *)
 
-end (* forcing_data *)
+end (* G_generic *)
 
 
 end

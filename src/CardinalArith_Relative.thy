@@ -24,7 +24,7 @@ lemma (in M_trivial) le_abs[simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow
 subsection\<open>Discipline for \<^term>\<open>InfCard\<close>\<close>
 
 definition (* completely relational *)
-  InfCard_rel   :: "[i\<Rightarrow>o,i] \<Rightarrow> o" (\<open>InfCard\<^sup>_'(_')\<close>) where
+  InfCard_rel   :: "[i\<Rightarrow>o,i] \<Rightarrow> o" (\<open>InfCard\<^bsup>_\<^esup>'(_')\<close>) where
   "InfCard_rel(M,A) \<equiv> \<exists>om[M]. omega(M,om) \<and> Card_rel(M,A) \<and>
                          le_rel(M,om,A)"
 
@@ -35,7 +35,7 @@ lemma def_InfCard_rel:
   assumes
     "M(i)"
   shows
-    "InfCard\<^sup>M(i) \<longleftrightarrow> Card\<^sup>M(i) \<and> nat \<le> i"
+    "InfCard\<^bsup>M\<^esup>(i) \<longleftrightarrow> Card\<^bsup>M\<^esup>(i) \<and> nat \<le> i"
   using assms 
   unfolding InfCard_rel_def Card_rel_def by simp
 
@@ -54,6 +54,14 @@ projections we can express its relational version using
 definition (* completely relational *)
   is_cadd   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
   "is_cadd(M,A,B,bj) \<equiv> is_hcomp2_2(M,\<lambda>M _. is_cardinal(M),\<lambda>_ _. (=),is_sum,A,B,bj)"
+
+definition
+  cadd_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i"  where
+  "cadd_rel(M,A,B) \<equiv> THE d. M(d) \<and> is_cadd(M,A,B,d)"
+
+abbreviation
+  cadd_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<oplus>\<^bsup>_\<^esup> _\<close> [66,1,66] 65) where
+  "A \<oplus>\<^bsup>M\<^esup> B \<equiv> cadd_rel(M,A,B)"
 
 context M_cardinals
 begin
@@ -76,20 +84,16 @@ lemma is_cadd_witness: "M(A) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[
     is_cardinal_witness
   unfolding is_cadd_def by simp
 
-definition
-  cadd_rel :: "i \<Rightarrow> i \<Rightarrow> i"  where
-  "cadd_rel(A,B) \<equiv> THE d. M(d) \<and> is_cadd(M,A,B,d)"
-
-lemma cadd_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(cadd_rel(x,y))"
+lemma cadd_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(cadd_rel(M,x,y))"
   unfolding cadd_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_cadd(M,x,y,d)"], OF _ is_cadd_uniqueness[of x y]]
     is_cadd_witness by auto
 
 lemma cadd_rel_iff:
   assumes "M(x)" "M(y)" "M(d)"
-  shows "is_cadd(M,x,y,d) \<longleftrightarrow> d = cadd_rel(x,y)"
+  shows "is_cadd(M,x,y,d) \<longleftrightarrow> d = cadd_rel(M,x,y)"
 proof (intro iffI)
-  assume "d = cadd_rel(x,y)"
+  assume "d = cadd_rel(M,x,y)"
   moreover
   note assms
   moreover from this
@@ -104,21 +108,19 @@ proof (intro iffI)
 next
   assume "is_cadd(M, x, y, d)"
   with assms
-  show "d = cadd_rel(x,y)"
+  show "d = cadd_rel(M,x,y)"
     using is_cadd_uniqueness unfolding cadd_rel_def
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
 lemma def_cadd_rel:
   assumes "M(A)" "M(B)"
-  shows "cadd_rel(A,B) = |A+B|r"
+  shows "cadd_rel(M,A,B) = |A+B|\<^bsup>M\<^esup>"
   using assms cadd_rel_iff
     cardinal_rel_iff
-    hcomp2_2_abs[of "\<lambda>M _. is_cardinal(M)" "\<lambda>_.cardinal_rel"
-      "\<lambda>_ _. (=)" "\<lambda>x y. y" is_sum "(+)" A B "cadd_rel(A,B)"]
+    hcomp2_2_abs[of "\<lambda>M _ . is_cardinal(M)" "\<lambda>_. cardinal_rel(M)"
+      "\<lambda>_ _. (=)" "\<lambda>x y. y" is_sum "(+)" A B "cadd_rel(M,A,B)"]
   unfolding is_cadd_def by force
-
-notation cadd_rel (infixl \<open>\<oplus>r\<close> 65)
 
 end (* M_cardinals *)
 
@@ -130,6 +132,14 @@ subsection\<open>Discipline for \<^term>\<open>cmult\<close>\<close>
 definition (* completely relational *)
   is_cmult   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
   "is_cmult(M,A,B,bj) \<equiv> is_hcomp2_2(M,\<lambda>M _. is_cardinal(M),\<lambda>_ _. (=),cartprod,A,B,bj)"
+
+definition
+  cmult_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i"  where
+  "cmult_rel(M,A,B) \<equiv> THE d. M(d) \<and> is_cmult(M,A,B,d)"
+
+abbreviation
+  cmult_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<otimes>\<^bsup>_\<^esup> _\<close> [66,1,66] 65) where
+  "A \<otimes>\<^bsup>M\<^esup> B \<equiv> cmult_rel(M,A,B)"
 
 context M_cardinals
 begin
@@ -152,20 +162,16 @@ lemma is_cmult_witness: "M(A) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d
     is_cardinal_witness
   unfolding is_cmult_def by simp
 
-definition
-  cmult_rel :: "i \<Rightarrow> i \<Rightarrow> i"  where
-  "cmult_rel(A,B) \<equiv> THE d. M(d) \<and> is_cmult(M,A,B,d)"
-
-lemma cmult_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(cmult_rel(x,y))"
+lemma cmult_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(cmult_rel(M,x,y))"
   unfolding cmult_rel_def
   using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_cmult(M,x,y,d)"], OF _ is_cmult_uniqueness[of x y]]
     is_cmult_witness by auto
 
 lemma cmult_rel_iff:
   assumes "M(x)" "M(y)" "M(d)"
-  shows "is_cmult(M,x,y,d) \<longleftrightarrow> d = cmult_rel(x,y)"
+  shows "is_cmult(M,x,y,d) \<longleftrightarrow> d = cmult_rel(M,x,y)"
 proof (intro iffI)
-  assume "d = cmult_rel(x,y)"
+  assume "d = cmult_rel(M,x,y)"
   moreover
   note assms
   moreover from this
@@ -180,21 +186,19 @@ proof (intro iffI)
 next
   assume "is_cmult(M, x, y, d)"
   with assms
-  show "d = cmult_rel(x,y)"
+  show "d = cmult_rel(M,x,y)"
     using is_cmult_uniqueness unfolding cmult_rel_def
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
 lemma def_cmult_rel:
   assumes "M(A)" "M(B)"
-  shows "cmult_rel(A,B) = |A\<times>B|r"
+  shows "cmult_rel(M,A,B) = |A\<times>B|\<^bsup>M\<^esup>"
   using assms cmult_rel_iff
     cardinal_rel_iff
-    hcomp2_2_abs[of "\<lambda>M _. is_cardinal(M)" "\<lambda>_.cardinal_rel"
-      "\<lambda>_ _. (=)" "\<lambda>x y. y" cartprod "(\<times>)" A B "cmult_rel(A,B)"]
+    hcomp2_2_abs[of "\<lambda>M _. is_cardinal(M)" "\<lambda>_.cardinal_rel(M)"
+      "\<lambda>_ _. (=)" "\<lambda>x y. y" cartprod "(\<times>)" A B "cmult_rel(M,A,B)"]
   unfolding is_cmult_def by force
-
-notation cmult_rel (infixl \<open>\<otimes>r\<close> 70)
 
 end (* M_cardinals *)
 
@@ -350,13 +354,13 @@ lemma (in M_cardinals) csquare_rel_abs[absolut]: "\<lbrakk> M(K); M(cs)\<rbrakk>
 
 definition
   is_csucc :: "[i\<Rightarrow>o,i,i]\<Rightarrow>o"  where
-  "is_csucc(M,K,cs) \<equiv> least(M, \<lambda>i. M(i) \<and> Card\<^sup>M(i) \<and> lt_rel(M,K,i),cs)"
+  "is_csucc(M,K,cs) \<equiv> least(M, \<lambda>i. M(i) \<and> Card\<^bsup>M\<^esup>(i) \<and> lt_rel(M,K,i),cs)"
 
 text\<open>New in Discipline: If we are to maintain an explicit mention
 of the class argument, "rel" versions should be outside of the
 relevant contexts\<close>
 definition
-  csucc_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>csucc\<^sup>M'(_')\<close>) where
+  csucc_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>csucc\<^bsup>M\<^esup>'(_')\<close>) where
   "csucc_rel(M,x) \<equiv> THE d. M(d) \<and> is_csucc(M,x,d)"
 
 context M_cardinals
@@ -401,7 +405,7 @@ next
     by (auto del:the_equality intro:the_equality[symmetric])
 qed
 
-lemma def_csucc_rel: "M(x) \<Longrightarrow> csucc_rel(M,x) = (\<mu> i. M(i) \<and> Card\<^sup>M(i) \<and> x < i)"
+lemma def_csucc_rel: "M(x) \<Longrightarrow> csucc_rel(M,x) = (\<mu> i. M(i) \<and> Card\<^bsup>M\<^esup>(i) \<and> x < i)"
   using  least_abs' csucc_rel_iff
   unfolding is_csucc_def by fastforce
 
@@ -455,9 +459,9 @@ locale M_cardinal_arith = M_cardinals +
 begin
 
 lemma Card_Union [simp,intro,TC]:
-  assumes A: "\<And>x. x\<in>A \<Longrightarrow> Card\<^sup>M(x)" and
+  assumes A: "\<And>x. x\<in>A \<Longrightarrow> Card\<^bsup>M\<^esup>(x)" and
     types:"M(A)"
-  shows "Card\<^sup>M(\<Union>(A))"
+  shows "Card\<^bsup>M\<^esup>(\<Union>(A))"
 proof (rule Card_relI)
   show "Ord(\<Union>A)" using A
     by (simp add: Card_rel_is_Ord types transM)
@@ -467,27 +471,27 @@ next
   moreover from this
   have "M(j)" unfolding lt_def by (auto simp add:types dest:transM)
   from j
-  have "\<exists>c\<in>A. j \<in> c \<and> Card\<^sup>M(c)" using A types
+  have "\<exists>c\<in>A. j \<in> c \<and> Card\<^bsup>M\<^esup>(c)" using A types
     unfolding lt_def
     by (simp)
   then
-  obtain c where c: "c\<in>A" "j < c" "Card\<^sup>M(c)" "M(c)"
+  obtain c where c: "c\<in>A" "j < c" "Card\<^bsup>M\<^esup>(c)" "M(c)"
     using Card_rel_is_Ord types unfolding lt_def
     by (auto dest:transM)
   with \<open>M(j)\<close>
-  have jls: "j \<prec>r c"
+  have jls: "j \<prec>\<^bsup>M\<^esup> c"
     by (simp add: lt_Card_rel_imp_lesspoll_rel types)
-  { assume eqp: "j \<approx>r \<Union>A"
-    have  "c \<lesssim>r \<Union>A" using c
+  { assume eqp: "j \<approx>\<^bsup>M\<^esup> \<Union>A"
+    have  "c \<lesssim>\<^bsup>M\<^esup> \<Union>A" using c
       by (blast intro: subset_imp_lepoll_rel types)
     also from types \<open>M(j)\<close>
-    have "... \<approx>r j"  by (rule_tac eqpoll_rel_sym [OF eqp]) (simp_all add:types)
-    also have "... \<prec>r c"  by (rule jls)
-    finally have "c \<prec>r c" by (simp_all add:\<open>M(c)\<close> \<open>M(j)\<close> types)
+    have "... \<approx>\<^bsup>M\<^esup> j"  by (rule_tac eqpoll_rel_sym [OF eqp]) (simp_all add:types)
+    also have "... \<prec>\<^bsup>M\<^esup> c"  by (rule jls)
+    finally have "c \<prec>\<^bsup>M\<^esup> c" by (simp_all add:\<open>M(c)\<close> \<open>M(j)\<close> types)
     with \<open>M(c)\<close>
     have False
       by auto
-  } thus "\<not> j \<approx>r \<Union>A" by blast
+  } thus "\<not> j \<approx>\<^bsup>M\<^esup> \<Union>A" by blast
 qed (simp_all add:types)
 
 (*
@@ -500,8 +504,8 @@ lemma Card_OUN [simp,intro,TC]:
   by (auto simp add: OUnion_def Card_0)
 *)
 
-lemma in_Card_imp_lesspoll: "[| Card\<^sup>M(K); b \<in> K; M(K); M(b) |] ==> b \<prec>r K"
-apply (unfold def_lesspoll_rel)
+lemma in_Card_imp_lesspoll: "[| Card\<^bsup>M\<^esup>(K); b \<in> K; M(K); M(b) |] ==> b \<prec>\<^bsup>M\<^esup> K"
+apply (unfold lesspoll_rel_def)
 apply (simp add: Card_rel_iff_initial)
 apply (fast intro!: le_imp_lepoll_rel ltI leI)
 done
@@ -516,7 +520,7 @@ coincide with union (maximum).  Either way we get most laws for free.\<close>
 
 subsubsection\<open>Cardinal addition is commutative\<close>
 
-lemma sum_commute_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> A+B \<approx>r B+A"
+lemma sum_commute_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> A+B \<approx>\<^bsup>M\<^esup> B+A"
 proof (simp add: def_eqpoll_rel, rule rexI)
   show "(\<lambda>z\<in>A+B. case(Inr,Inl,z)) \<in> bij(A+B, B+A)"
     by (auto intro: lam_bijective [where d = "case(Inr,Inl)"])
@@ -527,14 +531,14 @@ proof (simp add: def_eqpoll_rel, rule rexI)
     by (rule_tac lam_closed) (auto dest:transM)
 qed
 
-lemma cadd_rel_commute: "M(i) \<Longrightarrow> M(j) \<Longrightarrow> i \<oplus>r j = j \<oplus>r i"
+lemma cadd_rel_commute: "M(i) \<Longrightarrow> M(j) \<Longrightarrow> i \<oplus>\<^bsup>M\<^esup> j = j \<oplus>\<^bsup>M\<^esup> i"
 apply (unfold def_cadd_rel)
 apply (auto intro: sum_commute_eqpoll_rel [THEN cardinal_rel_cong])
 done
 
 subsubsection\<open>Cardinal addition is associative\<close>
 
-lemma sum_assoc_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(C) \<Longrightarrow> (A+B)+C \<approx>r A+(B+C)"
+lemma sum_assoc_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(C) \<Longrightarrow> (A+B)+C \<approx>\<^bsup>M\<^esup> A+(B+C)"
   apply (simp add: def_eqpoll_rel)
   apply (rule rexI)
    apply (rule sum_assoc_bij)
@@ -546,31 +550,31 @@ lemma well_ord_cadd_rel_assoc:
   assumes i: "well_ord(i,ri)" and j: "well_ord(j,rj)" and k: "well_ord(k,rk)"
     and
     types: "M(i)" "M(ri)" "M(j)" "M(rj)" "M(k)" "M(rk)"
-  shows "(i \<oplus>r j) \<oplus>r k = i \<oplus>r (j \<oplus>r k)"
+  shows "(i \<oplus>\<^bsup>M\<^esup> j) \<oplus>\<^bsup>M\<^esup> k = i \<oplus>\<^bsup>M\<^esup> (j \<oplus>\<^bsup>M\<^esup> k)"
 proof (simp add: assms def_cadd_rel, rule cardinal_rel_cong)
   from types
-  have "|i + j|r + k \<approx>r (i + j) + k"
+  have "|i + j|\<^bsup>M\<^esup> + k \<approx>\<^bsup>M\<^esup> (i + j) + k"
     by (auto intro!: sum_eqpoll_rel_cong well_ord_cardinal_rel_eqpoll_rel eqpoll_rel_refl well_ord_radd i j)
-  also have "...  \<approx>r i + (j + k)"
+  also have "...  \<approx>\<^bsup>M\<^esup> i + (j + k)"
     by (rule sum_assoc_eqpoll_rel) (simp_all add:types)
   also
-  have "...  \<approx>r i + |j + k|r"
+  have "...  \<approx>\<^bsup>M\<^esup> i + |j + k|\<^bsup>M\<^esup>"
   proof (auto intro!: sum_eqpoll_rel_cong intro:eqpoll_rel_refl simp add:types)
     from types
-    have "|j + k|r \<approx>r j + k"
+    have "|j + k|\<^bsup>M\<^esup> \<approx>\<^bsup>M\<^esup> j + k"
       using well_ord_cardinal_rel_eqpoll_rel[OF well_ord_radd, OF j k]
       by (simp)
     with types
-    show "j + k \<approx>r |j + k|r"
+    show "j + k \<approx>\<^bsup>M\<^esup> |j + k|\<^bsup>M\<^esup>"
       using eqpoll_rel_sym by simp
   qed
-  finally show "|i + j|r + k \<approx>r i + |j + k|r" by (simp_all add:types)
+  finally show "|i + j|\<^bsup>M\<^esup> + k \<approx>\<^bsup>M\<^esup> i + |j + k|\<^bsup>M\<^esup>" by (simp_all add:types)
 qed (simp_all add:types)
 
 
 subsubsection\<open>0 is the identity for addition\<close>
 
-lemma sum_0_eqpoll_rel: "M(A) \<Longrightarrow> 0+A \<approx>r A"
+lemma sum_0_eqpoll_rel: "M(A) \<Longrightarrow> 0+A \<approx>\<^bsup>M\<^esup> A"
   apply (simp add:def_eqpoll_rel)
   apply (rule rexI)
    apply (rule bij_0_sum)
@@ -578,14 +582,14 @@ lemma sum_0_eqpoll_rel: "M(A) \<Longrightarrow> 0+A \<approx>r A"
   by (rule lam_closed)
     (auto simp add:case_def cond_def Inr_def dest:transM)
 
-lemma cadd_rel_0 [simp]: "Card\<^sup>M(K) \<Longrightarrow> M(K) \<Longrightarrow> 0 \<oplus>r K = K"
+lemma cadd_rel_0 [simp]: "Card\<^bsup>M\<^esup>(K) \<Longrightarrow> M(K) \<Longrightarrow> 0 \<oplus>\<^bsup>M\<^esup> K = K"
 apply (simp add: def_cadd_rel)
 apply (simp add: sum_0_eqpoll_rel [THEN cardinal_rel_cong] Card_rel_cardinal_rel_eq)
 done
 
 subsubsection\<open>Addition by another cardinal\<close>
 
-lemma sum_lepoll_rel_self: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> A \<lesssim>r A+B"
+lemma sum_lepoll_rel_self: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> A \<lesssim>\<^bsup>M\<^esup> A+B"
 proof (simp add: def_lepoll_rel, rule rexI)
   show "(\<lambda>x\<in>A. Inl (x)) \<in> inj(A, A + B)"
     by (simp add: inj_def)
@@ -599,23 +603,23 @@ qed
 (*Could probably weaken the premises to well_ord(K,r), or removing using AC*)
 
 lemma cadd_rel_le_self:
-  assumes K: "Card\<^sup>M(K)" and L: "Ord(L)" and
+  assumes K: "Card\<^bsup>M\<^esup>(K)" and L: "Ord(L)" and
     types:"M(K)" "M(L)"
-  shows "K \<le> (K \<oplus>r L)"
+  shows "K \<le> (K \<oplus>\<^bsup>M\<^esup> L)"
 proof (simp add:types def_cadd_rel)
-  have "K \<le> |K|r"
+  have "K \<le> |K|\<^bsup>M\<^esup>"
     by (rule Card_rel_cardinal_rel_le [OF K]) (simp add:types)
-  moreover have "|K|r \<le> |K + L|r" using K L
+  moreover have "|K|\<^bsup>M\<^esup> \<le> |K + L|\<^bsup>M\<^esup>" using K L
     by (blast intro: well_ord_lepoll_rel_imp_Card_rel_le sum_lepoll_rel_self
                      well_ord_radd well_ord_Memrel Card_rel_is_Ord types)
-  ultimately show "K \<le> |K + L|r"
+  ultimately show "K \<le> |K + L|\<^bsup>M\<^esup>"
     by (blast intro: le_trans)
 qed
 
 subsubsection\<open>Monotonicity of addition\<close>
 
 lemma sum_lepoll_rel_mono:
-     "[| A \<lesssim>r C;  B \<lesssim>r D; M(A); M(B); M(C); M(D) |] ==> A + B \<lesssim>r C + D"
+     "[| A \<lesssim>\<^bsup>M\<^esup> C;  B \<lesssim>\<^bsup>M\<^esup> D; M(A); M(B); M(C); M(D) |] ==> A + B \<lesssim>\<^bsup>M\<^esup> C + D"
 apply (simp add: def_lepoll_rel)
 apply (elim rexE)
 apply (rule_tac x = "\<lambda>z\<in>A+B. case (%w. Inl(f`w), %y. Inr(fa`y), z)" in rexI)
@@ -626,7 +630,7 @@ apply (rule_tac d = "case (%w. Inl(converse(f) `w), %y. Inr(converse(fa) ` y))"
 done
 
 lemma cadd_rel_le_mono:
-    "[| K' \<le> K;  L' \<le> L;M(K');M(K);M(L');M(L) |] ==> (K' \<oplus>r L') \<le> (K \<oplus>r L)"
+    "[| K' \<le> K;  L' \<le> L;M(K');M(K);M(L');M(L) |] ==> (K' \<oplus>\<^bsup>M\<^esup> L') \<le> (K \<oplus>\<^bsup>M\<^esup> L)"
 apply (unfold def_cadd_rel)
 apply (safe dest!: le_subset_iff [THEN iffD1])
 apply (rule well_ord_lepoll_rel_imp_Card_rel_le)
@@ -636,7 +640,7 @@ done
 
 subsubsection\<open>Addition of finite cardinals is "ordinary" addition\<close>
 
-lemma sum_succ_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> succ(A)+B \<approx>r succ(A+B)"
+lemma sum_succ_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> succ(A)+B \<approx>\<^bsup>M\<^esup> succ(A+B)"
 apply (simp add:def_eqpoll_rel)
 apply (rule rexI)
 apply (rule_tac c = "%z. if z=Inl (A) then A+B else z"
@@ -651,21 +655,21 @@ done
 lemma cadd_succ_lemma:
   assumes "Ord(m)" "Ord(n)" and
     types: "M(m)" "M(n)"
-  shows "succ(m) \<oplus>r n = |succ(m \<oplus>r n)|r"
+  shows "succ(m) \<oplus>\<^bsup>M\<^esup> n = |succ(m \<oplus>\<^bsup>M\<^esup> n)|\<^bsup>M\<^esup>"
   using types
 proof (simp add: def_cadd_rel)
-  have [intro]: "m + n \<approx>r |m + n|r" using assms
+  have [intro]: "m + n \<approx>\<^bsup>M\<^esup> |m + n|\<^bsup>M\<^esup>" using assms
     by (blast intro: eqpoll_rel_sym well_ord_cardinal_rel_eqpoll_rel well_ord_radd well_ord_Memrel)
 
-  have "|succ(m) + n|r = |succ(m + n)|r"
+  have "|succ(m) + n|\<^bsup>M\<^esup> = |succ(m + n)|\<^bsup>M\<^esup>"
     by (rule sum_succ_eqpoll_rel [THEN cardinal_rel_cong]) (simp_all add:types)
-  also have "... = |succ(|m + n|r)|r"
+  also have "... = |succ(|m + n|\<^bsup>M\<^esup>)|\<^bsup>M\<^esup>"
     by (blast intro: succ_eqpoll_rel_cong cardinal_rel_cong types)
-  finally show "|succ(m) + n|r = |succ(|m + n|r)|r" .
+  finally show "|succ(m) + n|\<^bsup>M\<^esup> = |succ(|m + n|\<^bsup>M\<^esup>)|\<^bsup>M\<^esup>" .
 qed
 
 lemma nat_cadd_rel_eq_add:
-  assumes m: "m \<in> nat" and [simp]: "n \<in> nat" shows"m \<oplus>r n = m #+ n"
+  assumes m: "m \<in> nat" and [simp]: "n \<in> nat" shows"m \<oplus>\<^bsup>M\<^esup> n = m #+ n"
   using m
 proof (induct m)
   case 0 thus ?case 
@@ -682,7 +686,7 @@ subsection\<open>Cardinal multiplication\<close>
 
 subsubsection\<open>Cardinal multiplication is commutative\<close>
 
-lemma prod_commute_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> A*B \<approx>r B*A"
+lemma prod_commute_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> A*B \<approx>\<^bsup>M\<^esup> B*A"
 apply (simp add: def_eqpoll_rel)
 apply (rule rexI)
 apply (rule_tac c = "%<x,y>.<y,x>" and d = "%<x,y>.<y,x>" in lam_bijective,
@@ -690,14 +694,14 @@ apply (rule_tac c = "%<x,y>.<y,x>" and d = "%<x,y>.<y,x>" in lam_bijective,
   apply(rule_tac lam_closed, auto intro:swap_replacement dest:transM)
 done
 
-lemma cmult_rel_commute: "M(i) \<Longrightarrow> M(j) \<Longrightarrow> i \<otimes>r j = j \<otimes>r i"
+lemma cmult_rel_commute: "M(i) \<Longrightarrow> M(j) \<Longrightarrow> i \<otimes>\<^bsup>M\<^esup> j = j \<otimes>\<^bsup>M\<^esup> i"
 apply (unfold def_cmult_rel)
   apply (rule prod_commute_eqpoll_rel [THEN cardinal_rel_cong], simp_all)
 done
 
 subsubsection\<open>Cardinal multiplication is associative\<close>
 
-lemma prod_assoc_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(C) \<Longrightarrow> (A*B)*C \<approx>r A*(B*C)"
+lemma prod_assoc_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(C) \<Longrightarrow> (A*B)*C \<approx>\<^bsup>M\<^esup> A*(B*C)"
 apply (simp add: def_eqpoll_rel)
 apply (rule rexI)
 apply (rule prod_assoc_bij)
@@ -710,24 +714,24 @@ lemma well_ord_cmult_rel_assoc:
   assumes i: "well_ord(i,ri)" and j: "well_ord(j,rj)" and k: "well_ord(k,rk)"
     and
     types: "M(i)" "M(ri)" "M(j)" "M(rj)" "M(k)" "M(rk)"
-  shows "(i \<otimes>r j) \<otimes>r k = i \<otimes>r (j \<otimes>r k)"
+  shows "(i \<otimes>\<^bsup>M\<^esup> j) \<otimes>\<^bsup>M\<^esup> k = i \<otimes>\<^bsup>M\<^esup> (j \<otimes>\<^bsup>M\<^esup> k)"
 proof (simp add: assms def_cmult_rel, rule cardinal_rel_cong)
-  have "|i * j|r * k \<approx>r (i * j) * k"
+  have "|i * j|\<^bsup>M\<^esup> * k \<approx>\<^bsup>M\<^esup> (i * j) * k"
     by (auto intro!: prod_eqpoll_rel_cong 
         well_ord_cardinal_rel_eqpoll_rel eqpoll_rel_refl 
         well_ord_rmult i j simp add:types) 
-  also have "...  \<approx>r i * (j * k)"
+  also have "...  \<approx>\<^bsup>M\<^esup> i * (j * k)"
     by (rule prod_assoc_eqpoll_rel, simp_all add:types)
-  also have "...  \<approx>r i * |j * k|r"
+  also have "...  \<approx>\<^bsup>M\<^esup> i * |j * k|\<^bsup>M\<^esup>"
     by (blast intro: prod_eqpoll_rel_cong well_ord_cardinal_rel_eqpoll_rel 
         eqpoll_rel_refl well_ord_rmult j k eqpoll_rel_sym types)
-  finally show "|i * j|r * k \<approx>r i * |j * k|r" by (simp add:types)
+  finally show "|i * j|\<^bsup>M\<^esup> * k \<approx>\<^bsup>M\<^esup> i * |j * k|\<^bsup>M\<^esup>" by (simp add:types)
 qed (simp_all add:types)
 
 
 subsubsection\<open>Cardinal multiplication distributes over addition\<close>
 
-lemma sum_prod_distrib_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(C) \<Longrightarrow> (A+B)*C \<approx>r (A*C)+(B*C)"
+lemma sum_prod_distrib_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(C) \<Longrightarrow> (A+B)*C \<approx>\<^bsup>M\<^esup> (A*C)+(B*C)"
 apply (simp add: def_eqpoll_rel)
 apply (rule rexI)
    apply (rule sum_prod_distrib_bij)
@@ -739,34 +743,34 @@ lemma well_ord_cadd_cmult_distrib:
   assumes i: "well_ord(i,ri)" and j: "well_ord(j,rj)" and k: "well_ord(k,rk)"
     and
     types: "M(i)" "M(ri)" "M(j)" "M(rj)" "M(k)" "M(rk)"
-  shows "(i \<oplus>r j) \<otimes>r k = (i \<otimes>r k) \<oplus>r (j \<otimes>r k)"
+  shows "(i \<oplus>\<^bsup>M\<^esup> j) \<otimes>\<^bsup>M\<^esup> k = (i \<otimes>\<^bsup>M\<^esup> k) \<oplus>\<^bsup>M\<^esup> (j \<otimes>\<^bsup>M\<^esup> k)"
 proof (simp add: assms def_cadd_rel def_cmult_rel, rule cardinal_rel_cong)
-  have "|i + j|r * k \<approx>r (i + j) * k"
+  have "|i + j|\<^bsup>M\<^esup> * k \<approx>\<^bsup>M\<^esup> (i + j) * k"
     by (blast intro: prod_eqpoll_rel_cong well_ord_cardinal_rel_eqpoll_rel
         eqpoll_rel_refl well_ord_radd i j types)
-  also have "...  \<approx>r i * k + j * k"
+  also have "...  \<approx>\<^bsup>M\<^esup> i * k + j * k"
     by (rule sum_prod_distrib_eqpoll_rel) (simp_all add:types)
-  also have "...  \<approx>r |i * k|r + |j * k|r"
+  also have "...  \<approx>\<^bsup>M\<^esup> |i * k|\<^bsup>M\<^esup> + |j * k|\<^bsup>M\<^esup>"
     by (blast intro: sum_eqpoll_rel_cong well_ord_cardinal_rel_eqpoll_rel
         well_ord_rmult i j k eqpoll_rel_sym types)
-  finally show "|i + j|r * k \<approx>r |i * k|r + |j * k|r" by (simp add:types)
+  finally show "|i + j|\<^bsup>M\<^esup> * k \<approx>\<^bsup>M\<^esup> |i * k|\<^bsup>M\<^esup> + |j * k|\<^bsup>M\<^esup>" by (simp add:types)
 qed (simp_all add:types)
 
 
 subsubsection\<open>Multiplication by 0 yields 0\<close>
 
-lemma prod_0_eqpoll_rel: "M(A) \<Longrightarrow> 0*A \<approx>r 0"
+lemma prod_0_eqpoll_rel: "M(A) \<Longrightarrow> 0*A \<approx>\<^bsup>M\<^esup> 0"
 apply (simp add: def_eqpoll_rel)
 apply (rule rexI)
 apply (rule lam_bijective, auto)
 done
 
-lemma cmult_rel_0 [simp]: "M(i) \<Longrightarrow> 0 \<otimes>r i = 0"
+lemma cmult_rel_0 [simp]: "M(i) \<Longrightarrow> 0 \<otimes>\<^bsup>M\<^esup> i = 0"
 by (simp add: def_cmult_rel prod_0_eqpoll_rel [THEN cardinal_rel_cong])
 
 subsubsection\<open>1 is the identity for multiplication\<close>
 
-lemma prod_singleton_eqpoll_rel: "M(x) \<Longrightarrow> M(A) \<Longrightarrow> {x}*A \<approx>r A"
+lemma prod_singleton_eqpoll_rel: "M(x) \<Longrightarrow> M(A) \<Longrightarrow> {x}*A \<approx>\<^bsup>M\<^esup> A"
 apply (simp add: def_eqpoll_rel)
 apply (rule rexI)
    apply (rule singleton_prod_bij [THEN bij_converse_bij])
@@ -774,21 +778,21 @@ apply (rule rexI)
   apply(rule_tac lam_closed, auto intro:prepend_replacement dest:transM)
 done
 
-lemma cmult_rel_1 [simp]: "Card\<^sup>M(K) \<Longrightarrow> M(K) \<Longrightarrow> 1 \<otimes>r K = K"
+lemma cmult_rel_1 [simp]: "Card\<^bsup>M\<^esup>(K) \<Longrightarrow> M(K) \<Longrightarrow> 1 \<otimes>\<^bsup>M\<^esup> K = K"
 apply (simp add: def_cmult_rel succ_def)
 apply (simp add: prod_singleton_eqpoll_rel[THEN cardinal_rel_cong] Card_rel_cardinal_rel_eq)
 done
 
 subsection\<open>Some inequalities for multiplication\<close>
 
-lemma prod_square_lepoll_rel: "M(A) \<Longrightarrow> A \<lesssim>r A*A"
+lemma prod_square_lepoll_rel: "M(A) \<Longrightarrow> A \<lesssim>\<^bsup>M\<^esup> A*A"
 apply (simp add:def_lepoll_rel inj_def)
 apply (rule_tac x = "\<lambda>x\<in>A. <x,x>" in rexI, simp)
   apply(rule_tac lam_closed, auto intro:id_replacement dest:transM)
 done
 
 (*Could probably weaken the premise to well_ord(K,r), or remove using AC*)
-lemma cmult_rel_square_le: "Card\<^sup>M(K) \<Longrightarrow> M(K) \<Longrightarrow> K \<le> K \<otimes>r K"
+lemma cmult_rel_square_le: "Card\<^bsup>M\<^esup>(K) \<Longrightarrow> M(K) \<Longrightarrow> K \<le> K \<otimes>\<^bsup>M\<^esup> K"
 apply (unfold def_cmult_rel)
 apply (rule le_trans)
 apply (rule_tac [2] well_ord_lepoll_rel_imp_Card_rel_le)
@@ -800,7 +804,7 @@ done
 
 subsubsection\<open>Multiplication by a non-zero cardinal\<close>
 
-lemma prod_lepoll_rel_self: "b \<in> B \<Longrightarrow> M(b) \<Longrightarrow> M(B) \<Longrightarrow> M(A) \<Longrightarrow> A \<lesssim>r A*B"
+lemma prod_lepoll_rel_self: "b \<in> B \<Longrightarrow> M(b) \<Longrightarrow> M(B) \<Longrightarrow> M(A) \<Longrightarrow> A \<lesssim>\<^bsup>M\<^esup> A*B"
 apply (simp add: def_lepoll_rel inj_def)
 apply (rule_tac x = "\<lambda>x\<in>A. <x,b>" in rexI, simp)
   apply(rule_tac lam_closed, auto intro:pospend_replacement dest:transM)
@@ -808,7 +812,7 @@ done
 
 (*Could probably weaken the premises to well_ord(K,r), or removing using AC*)
 lemma cmult_rel_le_self:
-    "[| Card\<^sup>M(K);  Ord(L);  0<L; M(K);M(L) |] ==> K \<le> (K \<otimes>r L)"
+    "[| Card\<^bsup>M\<^esup>(K);  Ord(L);  0<L; M(K);M(L) |] ==> K \<le> (K \<otimes>\<^bsup>M\<^esup> L)"
 apply (unfold def_cmult_rel)
 apply (rule le_trans [OF Card_rel_cardinal_rel_le well_ord_lepoll_rel_imp_Card_rel_le])
   apply assumption apply simp
@@ -819,7 +823,7 @@ done
 subsubsection\<open>Monotonicity of multiplication\<close>
 
 lemma prod_lepoll_rel_mono:
-     "[| A \<lesssim>r C;  B \<lesssim>r D; M(A); M(B); M(C); M(D)|] ==> A * B  \<lesssim>r  C * D"
+     "[| A \<lesssim>\<^bsup>M\<^esup> C;  B \<lesssim>\<^bsup>M\<^esup> D; M(A); M(B); M(C); M(D)|] ==> A * B  \<lesssim>\<^bsup>M\<^esup>  C * D"
 apply (simp add:def_lepoll_rel)
 apply (elim rexE)
 apply (rule_tac x = "lam <w,y>:A*B. <f`w, fa`y>" in rexI)
@@ -830,7 +834,7 @@ apply (rule_tac d = "%<w,y>. <converse (f) `w, converse (fa) `y>"
 done
 
 lemma cmult_rel_le_mono:
-    "[| K' \<le> K;  L' \<le> L;M(K');M(K);M(L');M(L) |] ==> (K' \<otimes>r L') \<le> (K \<otimes>r L)"
+    "[| K' \<le> K;  L' \<le> L;M(K');M(K);M(L');M(L) |] ==> (K' \<otimes>\<^bsup>M\<^esup> L') \<le> (K \<otimes>\<^bsup>M\<^esup> L)"
 apply (unfold def_cmult_rel)
 apply (safe dest!: le_subset_iff [THEN iffD1])
 apply (rule well_ord_lepoll_rel_imp_Card_rel_le)
@@ -840,7 +844,7 @@ done
 
 subsection\<open>Multiplication of finite cardinals is "ordinary" multiplication\<close>
 
-lemma prod_succ_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> succ(A)*B \<approx>r B + A*B"
+lemma prod_succ_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> succ(A)*B \<approx>\<^bsup>M\<^esup> B + A*B"
 apply (simp add: def_eqpoll_rel)
 apply (rule rexI)
 apply (rule_tac c = "%<x,y>. if x=A then Inl (y) else Inr (<x,y>)"
@@ -852,7 +856,7 @@ done
 
 (*Unconditional version requires AC*)
 lemma cmult_rel_succ_lemma:
-    "[| Ord(m);  Ord(n) ; M(m); M(n) |] ==> succ(m) \<otimes>r n = n \<oplus>r (m \<otimes>r n)"
+    "[| Ord(m);  Ord(n) ; M(m); M(n) |] ==> succ(m) \<otimes>\<^bsup>M\<^esup> n = n \<oplus>\<^bsup>M\<^esup> (m \<otimes>\<^bsup>M\<^esup> n)"
 apply (simp add: def_cmult_rel def_cadd_rel)
 apply (rule prod_succ_eqpoll_rel [THEN cardinal_rel_cong, THEN trans], simp_all)
 apply (rule cardinal_rel_cong [symmetric], simp_all)
@@ -861,28 +865,28 @@ apply (rule sum_eqpoll_rel_cong [OF eqpoll_rel_refl well_ord_cardinal_rel_eqpoll
   apply simp_all
 done
 
-lemma nat_cmult_rel_eq_mult: "[| m \<in> nat;  n \<in> nat |] ==> m \<otimes>r n = m#*n"
+lemma nat_cmult_rel_eq_mult: "[| m \<in> nat;  n \<in> nat |] ==> m \<otimes>\<^bsup>M\<^esup> n = m#*n"
   using transM[OF _ M_nat]
 apply (induct_tac m)
 apply (simp_all add: cmult_rel_succ_lemma nat_cadd_rel_eq_add)
 done
 
-lemma cmult_rel_2: "Card\<^sup>M(n) \<Longrightarrow> M(n) \<Longrightarrow> 2 \<otimes>r n = n \<oplus>r n"
+lemma cmult_rel_2: "Card\<^bsup>M\<^esup>(n) \<Longrightarrow> M(n) \<Longrightarrow> 2 \<otimes>\<^bsup>M\<^esup> n = n \<oplus>\<^bsup>M\<^esup> n"
   by (simp add: cmult_rel_succ_lemma Card_rel_is_Ord cadd_rel_commute [of _ 0])
 
 lemma sum_lepoll_rel_prod:
-  assumes C: "2 \<lesssim>r C" and
+  assumes C: "2 \<lesssim>\<^bsup>M\<^esup> C" and
     types:"M(C)" "M(B)"
-  shows "B+B \<lesssim>r C*B"
+  shows "B+B \<lesssim>\<^bsup>M\<^esup> C*B"
 proof -
-  have "B+B \<lesssim>r 2*B"
+  have "B+B \<lesssim>\<^bsup>M\<^esup> 2*B"
     by (simp add: sum_eq_2_times types)
-  also have "... \<lesssim>r C*B"
+  also have "... \<lesssim>\<^bsup>M\<^esup> C*B"
     by (blast intro: prod_lepoll_rel_mono lepoll_rel_refl C types)
-  finally show "B+B \<lesssim>r C*B" by (simp_all add:types)
+  finally show "B+B \<lesssim>\<^bsup>M\<^esup> C*B" by (simp_all add:types)
 qed
 
-lemma lepoll_imp_sum_lepoll_prod: "[| A \<lesssim>r B; 2 \<lesssim>r A; M(A) ;M(B) |] ==> A+B \<lesssim>r A*B"
+lemma lepoll_imp_sum_lepoll_prod: "[| A \<lesssim>\<^bsup>M\<^esup> B; 2 \<lesssim>\<^bsup>M\<^esup> A; M(A) ;M(B) |] ==> A+B \<lesssim>\<^bsup>M\<^esup> A*B"
 by (blast intro: sum_lepoll_rel_mono sum_lepoll_rel_prod lepoll_rel_trans lepoll_rel_refl)
 
 end (* M_cardinals *)
@@ -898,7 +902,7 @@ subsection\<open>Infinite Cardinals are Limit Ordinals\<close>
 context M_cardinal_arith
 begin
 
-lemma nat_cons_lepoll_rel: "nat \<lesssim>r A \<Longrightarrow> M(A) \<Longrightarrow> M(u) ==> cons(u,A) \<lesssim>r A"
+lemma nat_cons_lepoll_rel: "nat \<lesssim>\<^bsup>M\<^esup> A \<Longrightarrow> M(A) \<Longrightarrow> M(u) ==> cons(u,A) \<lesssim>\<^bsup>M\<^esup> A"
 apply (simp add: def_lepoll_rel)
 apply (erule rexE)
 apply (rule_tac x =
@@ -923,32 +927,32 @@ proof -
   by (rule_tac lam_closed, auto)
 qed
 
-lemma nat_cons_eqpoll_rel: "nat \<lesssim>r A ==> M(A) \<Longrightarrow> M(u) \<Longrightarrow> cons(u,A) \<approx>r A"
+lemma nat_cons_eqpoll_rel: "nat \<lesssim>\<^bsup>M\<^esup> A ==> M(A) \<Longrightarrow> M(u) \<Longrightarrow> cons(u,A) \<approx>\<^bsup>M\<^esup> A"
 apply (erule nat_cons_lepoll_rel [THEN eqpoll_relI], assumption+)
 apply (rule subset_consI [THEN subset_imp_lepoll_rel], simp_all)
 done
 
-lemma nat_succ_eqpoll_rel: "nat \<subseteq> A ==> M(A) \<Longrightarrow> succ(A) \<approx>r A"
+lemma nat_succ_eqpoll_rel: "nat \<subseteq> A ==> M(A) \<Longrightarrow> succ(A) \<approx>\<^bsup>M\<^esup> A"
 apply (unfold succ_def)
 apply (erule subset_imp_lepoll_rel [THEN nat_cons_eqpoll_rel], simp_all)
 done
 
-lemma InfCard_rel_nat: "InfCard\<^sup>M(nat)"
+lemma InfCard_rel_nat: "InfCard\<^bsup>M\<^esup>(nat)"
 apply (simp add: def_InfCard_rel)
 apply (blast intro: Card_rel_nat Card_rel_is_Ord)
 done
 
-lemma InfCard_rel_is_Card_rel: "M(K) \<Longrightarrow> InfCard\<^sup>M(K) \<Longrightarrow> Card\<^sup>M(K)"
+lemma InfCard_rel_is_Card_rel: "M(K) \<Longrightarrow> InfCard\<^bsup>M\<^esup>(K) \<Longrightarrow> Card\<^bsup>M\<^esup>(K)"
 apply (simp add: def_InfCard_rel)
 done
 
 lemma InfCard_rel_Un:
-    "[| InfCard\<^sup>M(K);  Card\<^sup>M(L); M(K); M(L) |] ==> InfCard\<^sup>M(K \<union> L)"
+    "[| InfCard\<^bsup>M\<^esup>(K);  Card\<^bsup>M\<^esup>(L); M(K); M(L) |] ==> InfCard\<^bsup>M\<^esup>(K \<union> L)"
 apply (simp add: def_InfCard_rel)
 apply (simp add: Card_rel_Un Un_upper1_le [THEN [2] le_trans]  Card_rel_is_Ord)
 done
 
-lemma InfCard_rel_is_Limit: "InfCard\<^sup>M(K) ==> M(K) \<Longrightarrow> Limit(K)"
+lemma InfCard_rel_is_Limit: "InfCard\<^bsup>M\<^esup>(K) ==> M(K) \<Longrightarrow> Limit(K)"
 apply (simp add: def_InfCard_rel)
 apply (erule conjE)
 apply (frule Card_rel_is_Ord, assumption)
@@ -1060,10 +1064,10 @@ qed
 
 lemma def_jcardDom_rel:
   assumes "M(A)"
-  shows "jcardDom_rel(M,A) = Pow_rel(A\<times>A)"
+  shows "jcardDom_rel(M,A) = Pow\<^bsup>M\<^esup>(A\<times>A)"
   using assms jcardDom_rel_iff
     Pow_rel_iff
-    hcomp2_2_abs[of "\<lambda>M _. is_Pow(M)" "\<lambda>_.Pow_rel"
+    hcomp2_2_abs[of "\<lambda>M _. is_Pow(M)" "\<lambda>_.Pow_rel(M)"
       "\<lambda>_ _. (=)" "\<lambda>x y. y" cartprod "(\<times>)" A A "jcardDom_rel(M,A)"]
   unfolding is_jcardDom_def by force
 
@@ -1180,7 +1184,7 @@ qed
 
 lemma def_jcardRepl_rel: 
   "M(K) \<Longrightarrow> M(X) \<Longrightarrow> jcardRepl_rel(M,K,X) = 
-        {z. r \<in> Pow_rel(K*K), well_ord(X,r) & z = ordertype(X,r)}"
+        {z. r \<in> Pow\<^bsup>M\<^esup>(K*K), well_ord(X,r) & z = ordertype(X,r)}"
   using  Replace_abs[OF _ _ univalent_jcardP jcardP_closed] 
          jcardDom_rel_iff  jcardRepl_rel_iff[of K X "jcardRepl_rel(M, K, X)"] 
          jcardP_abs def_jcardDom_rel ordertype_closed
@@ -1278,16 +1282,12 @@ next
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
-
 lemma def_jump_cardinal_rel: 
   "M(K) \<Longrightarrow> jump_cardinal_rel(M,K) = 
-   (\<Union>X\<in>Pow_rel(K). {z. r \<in> Pow_rel(K*K), well_ord(X,r) & z = ordertype(X,r)})"
+   (\<Union>X\<in>Pow\<^bsup>M\<^esup>(K). {z. r \<in> Pow\<^bsup>M\<^esup>(K*K), well_ord(X,r) & z = ordertype(X,r)})"
   sorry
 
-
-
-
-end (* M_cardinals *)
+end (* M_ordertype *)
 
 
 (*{z. r \<in> Pow(K*K), well_ord(X,r) & z = ordertype(X,r)}*)
@@ -1318,7 +1318,7 @@ qed
 
 (*A general fact about ordermap*)
 lemma ordermap_eqpoll_pred:
-    "[| well_ord(A,r);  x \<in> A ; M(A);M(r);M(x)|] ==> ordermap(A,r)`x \<approx>r Order.pred(A,x,r)"
+    "[| well_ord(A,r);  x \<in> A ; M(A);M(r);M(x)|] ==> ordermap(A,r)`x \<approx>\<^bsup>M\<^esup> Order.pred(A,x,r)"
 apply (simp add: def_eqpoll_rel)
 apply (rule rexI)
 apply (simp add: ordermap_eq_image well_ord_is_wf)
@@ -1331,12 +1331,12 @@ text\<open>Kunen: "each \<^term>\<open>\<langle>x,y\<rangle> \<in> K \<times> K\
 lemma ordermap_csquare_le:
   assumes K: "Limit(K)" and x: "x<K" and y: " y<K"
     and types: "M(K)" "M(x)" "M(y)"
-  shows "|ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x,y\<rangle>|r \<le> |succ(succ(x \<union> y))|r \<otimes>r |succ(succ(x \<union> y))|r"
+  shows "|ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x,y\<rangle>|\<^bsup>M\<^esup> \<le> |succ(succ(x \<union> y))|\<^bsup>M\<^esup> \<otimes>\<^bsup>M\<^esup> |succ(succ(x \<union> y))|\<^bsup>M\<^esup>"
   using types
 proof (simp add: def_cmult_rel, rule_tac well_ord_lepoll_rel_imp_Card_rel_le)
   let ?z="succ(x \<union> y)"
-  show "well_ord(|succ(?z)|r \<times> |succ(?z)|r,
-                 rmult(|succ(?z)|r, Memrel(|succ(?z)|r), |succ(?z)|r, Memrel(|succ(?z)|r)))"
+  show "well_ord(|succ(?z)|\<^bsup>M\<^esup> \<times> |succ(?z)|\<^bsup>M\<^esup>,
+                 rmult(|succ(?z)|\<^bsup>M\<^esup>, Memrel(|succ(?z)|\<^bsup>M\<^esup>), |succ(?z)|\<^bsup>M\<^esup>, Memrel(|succ(?z)|\<^bsup>M\<^esup>)))"
     by (blast intro: well_ord_Memrel well_ord_rmult types)
 next
   let ?z="succ(x \<union> y)"
@@ -1347,9 +1347,9 @@ next
   have Mom:"M(ordermap(K \<times> K, csquare_rel(K)))"
     using well_ord_csquare Limit_is_Ord by fastforce
   then
-  have "ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x,y\<rangle> \<lesssim>r ordermap(K \<times> K, csquare_rel(K)) ` \<langle>?z,?z\<rangle>"
+  have "ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x,y\<rangle> \<lesssim>\<^bsup>M\<^esup> ordermap(K \<times> K, csquare_rel(K)) ` \<langle>?z,?z\<rangle>"
     by (blast intro: ordermap_z_lt leI le_imp_lepoll_rel K x y types)
-  also have "... \<approx>r  Order.pred(K \<times> K, \<langle>?z,?z\<rangle>, csquare_rel(K))"
+  also have "... \<approx>\<^bsup>M\<^esup>  Order.pred(K \<times> K, \<langle>?z,?z\<rangle>, csquare_rel(K))"
     proof (rule ordermap_eqpoll_pred)
       show "well_ord(K \<times> K, csquare_rel(K))" using K
         by (rule Limit_is_Ord [THEN well_ord_csquare])
@@ -1357,11 +1357,11 @@ next
       show "\<langle>?z, ?z\<rangle> \<in> K \<times> K" using zK
         by (blast intro: ltD)
     qed (simp_all add:types)
-  also have "...  \<lesssim>r succ(?z) \<times> succ(?z)" using zK
+  also have "...  \<lesssim>\<^bsup>M\<^esup> succ(?z) \<times> succ(?z)" using zK
     by (rule_tac pred_csquare_subset [THEN subset_imp_lepoll_rel]) (simp_all add:types)
-  also have "... \<approx>r |succ(?z)|r \<times> |succ(?z)|r" using oz
+  also have "... \<approx>\<^bsup>M\<^esup> |succ(?z)|\<^bsup>M\<^esup> \<times> |succ(?z)|\<^bsup>M\<^esup>" using oz
     by (blast intro: prod_eqpoll_rel_cong Ord_cardinal_rel_eqpoll_rel eqpoll_rel_sym types)
-  finally show "ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x,y\<rangle> \<lesssim>r |succ(?z)|r \<times> |succ(?z)|r"
+  finally show "ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x,y\<rangle> \<lesssim>\<^bsup>M\<^esup> |succ(?z)|\<^bsup>M\<^esup> \<times> |succ(?z)|\<^bsup>M\<^esup>"
     by (simp_all add:types Mom)
   from Mom
   show "M(ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x, y\<rangle>)" by (simp_all add:types)
@@ -1369,12 +1369,12 @@ qed (simp_all add:types)
 
 text\<open>Kunen: "... so the order type is \<open>\<le>\<close> K"\<close>
 lemma ordertype_csquare_le_M:
-  assumes IK: "InfCard\<^sup>M(K)" and eq: "\<And>y. y\<in>K \<Longrightarrow> InfCard\<^sup>M(y) \<Longrightarrow> M(y) \<Longrightarrow> y \<otimes>r y = y"
+  assumes IK: "InfCard\<^bsup>M\<^esup>(K)" and eq: "\<And>y. y\<in>K \<Longrightarrow> InfCard\<^bsup>M\<^esup>(y) \<Longrightarrow> M(y) \<Longrightarrow> y \<otimes>\<^bsup>M\<^esup> y = y"
   \<comment> \<open>Note the weakened hypothesis @{thm eq}\<close>
     and types: "M(K)"
   shows "ordertype(K*K, csquare_rel(K)) \<le> K"
 proof -
-  have  CK: "Card\<^sup>M(K)" using IK by (rule_tac InfCard_rel_is_Card_rel) (simp_all add:types)
+  have  CK: "Card\<^bsup>M\<^esup>(K)" using IK by (rule_tac InfCard_rel_is_Card_rel) (simp_all add:types)
   hence OK: "Ord(K)"  by (rule Card_rel_is_Ord) (simp_all add:types)
   moreover have "Ord(ordertype(K \<times> K, csquare_rel(K)))" using OK
     by (rule well_ord_csquare [THEN Ord_ordertype])
@@ -1398,64 +1398,64 @@ proof -
       using types by (auto dest:transM ltD)
     show "i < K"
       proof (rule Card_rel_lt_imp_lt [OF _ Oi CK])
-        have "|i|r \<le> |succ(succ(x \<union> y))|r \<otimes>r |succ(succ(x \<union> y))|r" using IK xy
+        have "|i|\<^bsup>M\<^esup> \<le> |succ(succ(x \<union> y))|\<^bsup>M\<^esup> \<otimes>\<^bsup>M\<^esup> |succ(succ(x \<union> y))|\<^bsup>M\<^esup>" using IK xy
           by (auto simp add: ieq types intro: InfCard_rel_is_Limit [THEN ordermap_csquare_le] types')
-        moreover have "|succ(succ(x \<union> y))|r \<otimes>r |succ(succ(x \<union> y))|r < K"
+        moreover have "|succ(succ(x \<union> y))|\<^bsup>M\<^esup> \<otimes>\<^bsup>M\<^esup> |succ(succ(x \<union> y))|\<^bsup>M\<^esup> < K"
           proof (cases rule: Ord_linear2 [OF ou Ord_nat])
             assume "x \<union> y < nat"
-            hence "|succ(succ(x \<union> y))|r \<otimes>r |succ(succ(x \<union> y))|r \<in> nat"
+            hence "|succ(succ(x \<union> y))|\<^bsup>M\<^esup> \<otimes>\<^bsup>M\<^esup> |succ(succ(x \<union> y))|\<^bsup>M\<^esup> \<in> nat"
               by (simp add: lt_def nat_cmult_rel_eq_mult nat_succI
                          nat_into_Card_rel [THEN Card_rel_cardinal_rel_eq] types')
             also have "... \<subseteq> K" using IK
               by (simp add: def_InfCard_rel le_imp_subset types)
-            finally show "|succ(succ(x \<union> y))|r \<otimes>r |succ(succ(x \<union> y))|r < K"
+            finally show "|succ(succ(x \<union> y))|\<^bsup>M\<^esup> \<otimes>\<^bsup>M\<^esup> |succ(succ(x \<union> y))|\<^bsup>M\<^esup> < K"
               by (simp add: ltI OK)
           next
             assume natxy: "nat \<le> x \<union> y"
-            hence seq: "|succ(succ(x \<union> y))|r = |x \<union> y|r" using xy
+            hence seq: "|succ(succ(x \<union> y))|\<^bsup>M\<^esup> = |x \<union> y|\<^bsup>M\<^esup>" using xy
               by (simp add: le_imp_subset nat_succ_eqpoll_rel [THEN cardinal_rel_cong] le_succ_iff types')
             also have "... < K" using xy
               by (simp add: Un_least_lt Ord_cardinal_rel_le [THEN lt_trans1] types')
-            finally have "|succ(succ(x \<union> y))|r < K" .
-            moreover have "InfCard\<^sup>M(|succ(succ(x \<union> y))|r)" using xy natxy
+            finally have "|succ(succ(x \<union> y))|\<^bsup>M\<^esup> < K" .
+            moreover have "InfCard\<^bsup>M\<^esup>(|succ(succ(x \<union> y))|\<^bsup>M\<^esup>)" using xy natxy
               by (simp add: seq def_InfCard_rel nat_le_cardinal_rel types')
             ultimately show ?thesis by (simp add: eq ltD types')
           qed
-        ultimately show "|i|r < K" by (blast intro: lt_trans1)
+        ultimately show "|i|\<^bsup>M\<^esup> < K" by (blast intro: lt_trans1)
       qed (simp_all add:types')
   qed
 qed
 
 (*Main result: Kunen's Theorem 10.12*)
 lemma InfCard_rel_csquare_eq:
-  assumes IK: "InfCard\<^sup>M(K)" and
+  assumes IK: "InfCard\<^bsup>M\<^esup>(K)" and
   types: "M(K)"
-  shows "K \<otimes>r K = K"
+  shows "K \<otimes>\<^bsup>M\<^esup> K = K"
 proof -
   have  OK: "Ord(K)" using IK by (simp add: Card_rel_is_Ord InfCard_rel_is_Card_rel types)
   from OK assms
-  show "K \<otimes>r K = K"
+  show "K \<otimes>\<^bsup>M\<^esup> K = K"
   proof (induct rule: trans_induct)
     case (step i)
     note types = \<open>M(K)\<close> \<open>M(i)\<close>
-    show "i \<otimes>r i = i"
+    show "i \<otimes>\<^bsup>M\<^esup> i = i"
     proof (rule le_anti_sym)
       from step types
       have Mot:"M(ordertype(i \<times> i, csquare_rel(i)))" "M(ordermap(i \<times> i, csquare_rel(i)))"
         using well_ord_csquare Limit_is_Ord by simp_all
       then
-      have "|i \<times> i|r = |ordertype(i \<times> i, csquare_rel(i))|r"
+      have "|i \<times> i|\<^bsup>M\<^esup> = |ordertype(i \<times> i, csquare_rel(i))|\<^bsup>M\<^esup>"
         by (rule_tac cardinal_rel_cong,
           simp_all add: step.hyps well_ord_csquare [THEN ordermap_bij, THEN bij_imp_eqpoll_rel] types)
       with Mot
-      have "i \<otimes>r i \<le> ordertype(i \<times> i, csquare_rel(i))"
+      have "i \<otimes>\<^bsup>M\<^esup> i \<le> ordertype(i \<times> i, csquare_rel(i))"
         by (simp add: step.hyps def_cmult_rel Ord_cardinal_rel_le well_ord_csquare [THEN Ord_ordertype] types)
       moreover
       have "ordertype(i \<times> i, csquare_rel(i)) \<le> i" using step
         by (rule_tac ordertype_csquare_le_M) (simp add: types)
-      ultimately show "i \<otimes>r i \<le> i" by (rule le_trans)
+      ultimately show "i \<otimes>\<^bsup>M\<^esup> i \<le> i" by (rule le_trans)
     next
-      show "i \<le> i \<otimes>r i" using step
+      show "i \<le> i \<otimes>\<^bsup>M\<^esup> i" using step
         by (blast intro: cmult_rel_square_le InfCard_rel_is_Card_rel)
     qed
   qed
@@ -1464,37 +1464,37 @@ qed
 
 (*Corollary for arbitrary well-ordered sets (all sets, assuming AC)*)
 lemma well_ord_InfCard_rel_square_eq:
-  assumes r: "well_ord(A,r)" and I: "InfCard\<^sup>M(|A|r)" and
+  assumes r: "well_ord(A,r)" and I: "InfCard\<^bsup>M\<^esup>(|A|\<^bsup>M\<^esup>)" and
     types: "M(A)" "M(r)"
-  shows "A \<times> A \<approx>r A"
+  shows "A \<times> A \<approx>\<^bsup>M\<^esup> A"
 proof -
-  have "A \<times> A \<approx>r |A|r \<times> |A|r"
+  have "A \<times> A \<approx>\<^bsup>M\<^esup> |A|\<^bsup>M\<^esup> \<times> |A|\<^bsup>M\<^esup>"
     by (blast intro: prod_eqpoll_rel_cong well_ord_cardinal_rel_eqpoll_rel eqpoll_rel_sym r types)
-  also have "... \<approx>r A"
+  also have "... \<approx>\<^bsup>M\<^esup> A"
     proof (rule well_ord_cardinal_rel_eqE [OF _ r])
-      show "well_ord(|A|r \<times> |A|r, rmult(|A|r, Memrel(|A|r), |A|r, Memrel(|A|r)))"
+      show "well_ord(|A|\<^bsup>M\<^esup> \<times> |A|\<^bsup>M\<^esup>, rmult(|A|\<^bsup>M\<^esup>, Memrel(|A|\<^bsup>M\<^esup>), |A|\<^bsup>M\<^esup>, Memrel(|A|\<^bsup>M\<^esup>)))"
         by (blast intro: well_ord_rmult well_ord_Memrel r types)
     next
-      show "||A|r \<times> |A|r|r = |A|r" using InfCard_rel_csquare_eq I
+      show "||A|\<^bsup>M\<^esup> \<times> |A|\<^bsup>M\<^esup>|\<^bsup>M\<^esup> = |A|\<^bsup>M\<^esup>" using InfCard_rel_csquare_eq I
         by (simp add: def_cmult_rel types)
     qed (simp_all add:types)
   finally show ?thesis by (simp_all add:types)
 qed
 
 lemma InfCard_rel_square_eqpoll:
-  assumes "InfCard\<^sup>M(K)" and types:"M(K)" shows "K \<times> K \<approx>r K"
+  assumes "InfCard\<^bsup>M\<^esup>(K)" and types:"M(K)" shows "K \<times> K \<approx>\<^bsup>M\<^esup> K"
   using assms
 apply (rule_tac well_ord_InfCard_rel_square_eq)
  apply (erule InfCard_rel_is_Card_rel [THEN Card_rel_is_Ord, THEN well_ord_Memrel])
 apply (simp_all add: InfCard_rel_is_Card_rel [THEN Card_rel_cardinal_rel_eq] types)
 done
 
-lemma Inf_Card_rel_is_InfCard_rel: "[| Card\<^sup>M(i); ~ Finite_rel(M,i) ; M(i) |] ==> InfCard\<^sup>M(i)"
+lemma Inf_Card_rel_is_InfCard_rel: "[| Card\<^bsup>M\<^esup>(i); ~ Finite_rel(M,i) ; M(i) |] ==> InfCard\<^bsup>M\<^esup>(i)"
   by (simp add: def_InfCard_rel Card_rel_is_Ord [THEN nat_le_infinite_Ord])
 
 subsubsection\<open>Toward's Kunen's Corollary 10.13 (1)\<close>
 
-lemma InfCard_rel_le_cmult_rel_eq: "[| InfCard\<^sup>M(K);  L \<le> K;  0<L; M(K) ; M(L) |] ==> K \<otimes>r L = K"
+lemma InfCard_rel_le_cmult_rel_eq: "[| InfCard\<^bsup>M\<^esup>(K);  L \<le> K;  0<L; M(K) ; M(L) |] ==> K \<otimes>\<^bsup>M\<^esup> L = K"
 apply (rule le_anti_sym)
  prefer 2
  apply (erule ltE, blast intro: cmult_rel_le_self InfCard_rel_is_Card_rel)
@@ -1504,7 +1504,7 @@ apply (simp_all add: InfCard_rel_csquare_eq)
 done
 
 (*Corollary 10.13 (1), for cardinal multiplication*)
-lemma InfCard_rel_cmult_rel_eq: "[| InfCard\<^sup>M(K);  InfCard\<^sup>M(L); M(K) ; M(L) |] ==> K \<otimes>r L = K \<union> L"
+lemma InfCard_rel_cmult_rel_eq: "[| InfCard\<^bsup>M\<^esup>(K);  InfCard\<^bsup>M\<^esup>(L); M(K) ; M(L) |] ==> K \<otimes>\<^bsup>M\<^esup> L = K \<union> L"
 apply (rule_tac i = K and j = L in Ord_linear_le)
 apply (typecheck add: InfCard_rel_is_Card_rel Card_rel_is_Ord)
 apply (rule cmult_rel_commute [THEN ssubst]) prefer 3
@@ -1513,13 +1513,13 @@ apply (simp_all add: InfCard_rel_is_Limit [THEN Limit_has_0] InfCard_rel_le_cmul
                      subset_Un_iff2 [THEN iffD1] le_imp_subset)
 done
 
-lemma InfCard_rel_cdouble_eq: "InfCard\<^sup>M(K) \<Longrightarrow> M(K) \<Longrightarrow>  K \<oplus>r K = K"
+lemma InfCard_rel_cdouble_eq: "InfCard\<^bsup>M\<^esup>(K) \<Longrightarrow> M(K) \<Longrightarrow>  K \<oplus>\<^bsup>M\<^esup> K = K"
 apply (simp add: cmult_rel_2 [symmetric] InfCard_rel_is_Card_rel cmult_rel_commute)
 apply (simp add: InfCard_rel_le_cmult_rel_eq InfCard_rel_is_Limit Limit_has_0 Limit_has_succ)
 done
 
 (*Corollary 10.13 (1), for cardinal addition*)
-lemma InfCard_rel_le_cadd_rel_eq: "[| InfCard\<^sup>M(K);  L \<le> K ; M(K) ; M(L)|] ==> K \<oplus>r L = K"
+lemma InfCard_rel_le_cadd_rel_eq: "[| InfCard\<^bsup>M\<^esup>(K);  L \<le> K ; M(K) ; M(L)|] ==> K \<oplus>\<^bsup>M\<^esup> L = K"
 apply (rule le_anti_sym)
  prefer 2
  apply (erule ltE, blast intro: cadd_rel_le_self InfCard_rel_is_Card_rel)
@@ -1528,7 +1528,7 @@ apply (rule cadd_rel_le_mono [THEN le_trans], assumption+)
 apply (simp_all add: InfCard_rel_cdouble_eq)
 done
 
-lemma InfCard_rel_cadd_rel_eq: "[| InfCard\<^sup>M(K);  InfCard\<^sup>M(L); M(K) ; M(L) |] ==> K \<oplus>r L = K \<union> L"
+lemma InfCard_rel_cadd_rel_eq: "[| InfCard\<^bsup>M\<^esup>(K);  InfCard\<^bsup>M\<^esup>(L); M(K) ; M(L) |] ==> K \<oplus>\<^bsup>M\<^esup> L = K \<union> L"
 apply (rule_tac i = K and j = L in Ord_linear_le)
 apply (typecheck add: InfCard_rel_is_Card_rel Card_rel_is_Ord)
 apply (rule cadd_rel_commute [THEN ssubst]) prefer 3
@@ -1647,16 +1647,16 @@ by (simp add: InfCard_def Card_csucc Card_is_Ord
 subsubsection\<open>Theorems by Krzysztof Grabczewski, proofs by lcp\<close>
 
 lemma nat_sum_eqpoll_rel_sum:
-  assumes m: "m \<in> nat" and n: "n \<in> nat" shows "m + n \<approx>r m #+ n"
+  assumes m: "m \<in> nat" and n: "n \<in> nat" shows "m + n \<approx>\<^bsup>M\<^esup> m #+ n"
 proof -
-  have "m + n \<approx>r |m+n|r" using m n
+  have "m + n \<approx>\<^bsup>M\<^esup> |m+n|\<^bsup>M\<^esup>" using m n
     by (blast intro: nat_implies_well_ord well_ord_radd well_ord_cardinal_rel_eqpoll_rel eqpoll_rel_sym)
   also have "... = m #+ n" using m n
     by (simp add: nat_cadd_rel_eq_add [symmetric] def_cadd_rel transM[OF _ M_nat])
   finally show ?thesis .
 qed
 
-lemma Ord_nat_subset_into_Card_rel: "[| Ord(i); i \<subseteq> nat |] ==> Card\<^sup>M(i)"
+lemma Ord_nat_subset_into_Card_rel: "[| Ord(i); i \<subseteq> nat |] ==> Card\<^bsup>M\<^esup>(i)"
 by (blast dest: Ord_subset_natD intro: Card_rel_nat nat_into_Card_rel)
 
 end (* M_cardinal_arith *)

@@ -67,7 +67,7 @@ begin
 lemma well_ord_surj_imp_lepoll_rel:
   assumes "well_ord(A,r)" "h \<in> surj(A,B)" and
     types:"M(A)" "M(r)" "M(h)" "M(B)"
-  shows "B \<lesssim>r A"
+  shows "B \<lesssim>\<^bsup>M\<^esup> A"
   sorry
 
 lemma minimum_closed[intro,simp]:"M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(minimum(A,r))"
@@ -112,7 +112,7 @@ begin
 
 lemma AC_M:
   assumes "a \<in> A" "\<And>x. x \<in> A \<Longrightarrow> \<exists>y. y \<in> B(x)"
-  shows "\<exists>z[M]. z \<in> Pi_rel(A, B)"
+  shows "\<exists>z[M]. z \<in> Pi\<^bsup>M\<^esup>(A, B)"
 proof -
   have "M(\<Union>x\<in>A. B(x))" using family_union_closed Pi_assumptions B_replacement by simp
   then
@@ -124,7 +124,7 @@ proof -
     using minimum_replacement Pi_assumptions
     by (rule_tac lam_closed) (auto)
   moreover from assms and calculation
-  have "?f \<in> Pi_rel(A,B)"
+  have "?f \<in> Pi\<^bsup>M\<^esup>(A,B)"
     using lam_type[OF minimum_in, OF \<open>well_ord(\<Union>x\<in>A. B(x),r)\<close>, of A B]
      Pi_rel_char by auto
   ultimately
@@ -132,7 +132,7 @@ proof -
 qed
 
 lemma AC_Pi_rel: assumes "\<And>x. x \<in> A \<Longrightarrow> \<exists>y. y \<in> B(x)"
-  shows "\<exists>z[M]. z \<in> Pi_rel(A, B)"
+  shows "\<exists>z[M]. z \<in> Pi\<^bsup>M\<^esup>(A, B)"
 proof (cases "A=0")
   interpret Pi0:M_Pi_assumptions_0
     using Pi_assumptions by unfold_locales auto
@@ -157,47 +157,47 @@ begin
 
 subsection\<open>Strengthened Forms of Existing Theorems on Cardinals\<close>
 
-lemma cardinal_rel_eqpoll_rel: "M(A) \<Longrightarrow> |A|r \<approx>r A"
+lemma cardinal_rel_eqpoll_rel: "M(A) \<Longrightarrow> |A|\<^bsup>M\<^esup> \<approx>\<^bsup>M\<^esup> A"
 apply (rule choice_ax_well_ord [THEN rexE])
 apply (auto intro:well_ord_cardinal_rel_eqpoll_rel)
 done
 
 lemmas cardinal_rel_idem = cardinal_rel_eqpoll_rel [THEN cardinal_rel_cong, simp]
 
-lemma cardinal_rel_eqE: "|X|r = |Y|r ==> M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<approx>r Y"
+lemma cardinal_rel_eqE: "|X|\<^bsup>M\<^esup> = |Y|\<^bsup>M\<^esup> ==> M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<approx>\<^bsup>M\<^esup> Y"
 apply (rule choice_ax_well_ord [THEN rexE], assumption)
    apply (rule choice_ax_well_ord [THEN rexE, of Y], assumption)
     apply (rule well_ord_cardinal_rel_eqE, assumption+)
 done
 
-lemma cardinal_rel_eqpoll_rel_iff: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> |X|r = |Y|r \<longleftrightarrow> X \<approx>r Y"
+lemma cardinal_rel_eqpoll_rel_iff: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> |X|\<^bsup>M\<^esup> = |Y|\<^bsup>M\<^esup> \<longleftrightarrow> X \<approx>\<^bsup>M\<^esup> Y"
 by (blast intro: cardinal_rel_cong cardinal_rel_eqE)
 
 lemma cardinal_rel_disjoint_Un:
-     "[| |A|r=|B|r;  |C|r=|D|r;  A \<inter> C = 0;  B \<inter> D = 0; M(A); M(B); M(C); M(D)|]
-      ==> |A \<union> C|r = |B \<union> D|r"
+     "[| |A|\<^bsup>M\<^esup>=|B|\<^bsup>M\<^esup>;  |C|\<^bsup>M\<^esup>=|D|\<^bsup>M\<^esup>;  A \<inter> C = 0;  B \<inter> D = 0; M(A); M(B); M(C); M(D)|]
+      ==> |A \<union> C|\<^bsup>M\<^esup> = |B \<union> D|\<^bsup>M\<^esup>"
 by (simp add: cardinal_rel_eqpoll_rel_iff eqpoll_rel_disjoint_Un)
 
-lemma lepoll_rel_imp_Card_rel_le: "A \<lesssim>r B ==> M(A) \<Longrightarrow> M(B) \<Longrightarrow> |A|r \<le> |B|r"
+lemma lepoll_rel_imp_Card_rel_le: "A \<lesssim>\<^bsup>M\<^esup> B ==> M(A) \<Longrightarrow> M(B) \<Longrightarrow> |A|\<^bsup>M\<^esup> \<le> |B|\<^bsup>M\<^esup>"
   apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
    apply (erule well_ord_lepoll_rel_imp_Card_rel_le, assumption+)
   done
 
-lemma cadd_rel_assoc: "\<lbrakk>M(i); M(j); M(k)\<rbrakk> \<Longrightarrow> (i \<oplus>r j) \<oplus>r k = i \<oplus>r (j \<oplus>r k)"
+lemma cadd_rel_assoc: "\<lbrakk>M(i); M(j); M(k)\<rbrakk> \<Longrightarrow> (i \<oplus>\<^bsup>M\<^esup> j) \<oplus>\<^bsup>M\<^esup> k = i \<oplus>\<^bsup>M\<^esup> (j \<oplus>\<^bsup>M\<^esup> k)"
   apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
    apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
     apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
      apply (rule well_ord_cadd_rel_assoc, assumption+)
 done
 
-lemma cmult_rel_assoc: "\<lbrakk>M(i); M(j); M(k)\<rbrakk> \<Longrightarrow> (i \<otimes>r j) \<otimes>r k = i \<otimes>r (j \<otimes>r k)"
+lemma cmult_rel_assoc: "\<lbrakk>M(i); M(j); M(k)\<rbrakk> \<Longrightarrow> (i \<otimes>\<^bsup>M\<^esup> j) \<otimes>\<^bsup>M\<^esup> k = i \<otimes>\<^bsup>M\<^esup> (j \<otimes>\<^bsup>M\<^esup> k)"
   apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
    apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
     apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
      apply (rule well_ord_cmult_rel_assoc, assumption+)
   done
 
-lemma cadd_cmult_distrib: "\<lbrakk>M(i); M(j); M(k)\<rbrakk> \<Longrightarrow> (i \<oplus>r j) \<otimes>r k = (i \<otimes>r k) \<oplus>r (j \<otimes>r k)"
+lemma cadd_cmult_distrib: "\<lbrakk>M(i); M(j); M(k)\<rbrakk> \<Longrightarrow> (i \<oplus>\<^bsup>M\<^esup> j) \<otimes>\<^bsup>M\<^esup> k = (i \<otimes>\<^bsup>M\<^esup> k) \<oplus>\<^bsup>M\<^esup> (j \<otimes>\<^bsup>M\<^esup> k)"
   apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
    apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
     apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
@@ -205,7 +205,7 @@ lemma cadd_cmult_distrib: "\<lbrakk>M(i); M(j); M(k)\<rbrakk> \<Longrightarrow> 
   done
 
 
-lemma InfCard_rel_square_eq: "InfCard\<^sup>M(|A|r) \<Longrightarrow> M(A) \<Longrightarrow> A\<times>A \<approx>r A"
+lemma InfCard_rel_square_eq: "InfCard\<^bsup>M\<^esup>(|A|\<^bsup>M\<^esup>) \<Longrightarrow> M(A) \<Longrightarrow> A\<times>A \<approx>\<^bsup>M\<^esup> A"
 apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
    apply (erule well_ord_InfCard_rel_square_eq, assumption, simp_all)
 done
@@ -213,26 +213,26 @@ done
 subsection \<open>The relationship between cardinality and le-pollence\<close>
 
 lemma Card_rel_le_imp_lepoll_rel:
-  assumes "|A|r \<le> |B|r"
+  assumes "|A|\<^bsup>M\<^esup> \<le> |B|\<^bsup>M\<^esup>"
     and types: "M(A)" "M(B)"
-  shows "A \<lesssim>r B"
+  shows "A \<lesssim>\<^bsup>M\<^esup> B"
 proof -
-  have "A \<approx>r |A|r" 
+  have "A \<approx>\<^bsup>M\<^esup> |A|\<^bsup>M\<^esup>"
     by (rule cardinal_rel_eqpoll_rel [THEN eqpoll_rel_sym], simp_all add:types)
-  also have "... \<lesssim>r |B|r"
+  also have "... \<lesssim>\<^bsup>M\<^esup> |B|\<^bsup>M\<^esup>"
     by (rule le_imp_subset [THEN subset_imp_lepoll_rel]) (rule assms, simp_all add:types)
-  also have "... \<approx>r B" 
+  also have "... \<approx>\<^bsup>M\<^esup> B"
     by (rule cardinal_rel_eqpoll_rel, simp_all add:types)
   finally show ?thesis by (simp_all add:types)
 qed
 
-lemma le_Card_rel_iff: "Card\<^sup>M(K) ==> M(K) \<Longrightarrow> M(A) \<Longrightarrow> |A|r \<le> K \<longleftrightarrow> A \<lesssim>r K"
+lemma le_Card_rel_iff: "Card\<^bsup>M\<^esup>(K) ==> M(K) \<Longrightarrow> M(A) \<Longrightarrow> |A|\<^bsup>M\<^esup> \<le> K \<longleftrightarrow> A \<lesssim>\<^bsup>M\<^esup> K"
 apply (erule Card_rel_cardinal_rel_eq [THEN subst], assumption, rule iffI,
        erule Card_rel_le_imp_lepoll_rel, assumption+)
 apply (erule lepoll_rel_imp_Card_rel_le, assumption+)
 done
 
-lemma cardinal_rel_0_iff_0 [simp]: "M(A) \<Longrightarrow> |A|r = 0 \<longleftrightarrow> A = 0"
+lemma cardinal_rel_0_iff_0 [simp]: "M(A) \<Longrightarrow> |A|\<^bsup>M\<^esup> = 0 \<longleftrightarrow> A = 0"
   using cardinal_rel_0 eqpoll_rel_0_iff [THEN iffD1] 
     cardinal_rel_eqpoll_rel_iff [THEN iffD1, OF _ nonempty]
   by auto
@@ -240,24 +240,24 @@ lemma cardinal_rel_0_iff_0 [simp]: "M(A) \<Longrightarrow> |A|r = 0 \<longleftri
 lemma cardinal_rel_lt_iff_lesspoll_rel:
   assumes i: "Ord(i)" and
     types: "M(i)" "M(A)" 
-  shows "i < |A|r \<longleftrightarrow> i \<prec>r A"
+  shows "i < |A|\<^bsup>M\<^esup> \<longleftrightarrow> i \<prec>\<^bsup>M\<^esup> A"
 proof
-  assume "i < |A|r"
-  hence  "i \<prec>r |A|r" 
+  assume "i < |A|\<^bsup>M\<^esup>"
+  hence  "i \<prec>\<^bsup>M\<^esup> |A|\<^bsup>M\<^esup>"
     by (blast intro: lt_Card_rel_imp_lesspoll_rel types) 
-  also have "...  \<approx>r A" 
+  also have "...  \<approx>\<^bsup>M\<^esup> A"
     by (rule cardinal_rel_eqpoll_rel) (simp_all add:types)
-  finally show "i \<prec>r A" by (simp_all add:types)
+  finally show "i \<prec>\<^bsup>M\<^esup> A" by (simp_all add:types)
 next
-  assume "i \<prec>r A"
-  also have "...  \<approx>r |A|r" 
+  assume "i \<prec>\<^bsup>M\<^esup> A"
+  also have "...  \<approx>\<^bsup>M\<^esup> |A|\<^bsup>M\<^esup>"
     by (blast intro: cardinal_rel_eqpoll_rel eqpoll_rel_sym types) 
-  finally have "i \<prec>r |A|r" by (simp_all add:types)
-  thus  "i < |A|r" using i types
+  finally have "i \<prec>\<^bsup>M\<^esup> |A|\<^bsup>M\<^esup>" by (simp_all add:types)
+  thus  "i < |A|\<^bsup>M\<^esup>" using i types
     by (force intro: cardinal_rel_lt_imp_lt lesspoll_rel_cardinal_rel_lt)
 qed
 
-lemma cardinal_rel_le_imp_lepoll_rel: " i \<le> |A|r ==> M(i) \<Longrightarrow> M(A) \<Longrightarrow>i \<lesssim>r A"
+lemma cardinal_rel_le_imp_lepoll_rel: " i \<le> |A|\<^bsup>M\<^esup> ==> M(i) \<Longrightarrow> M(A) \<Longrightarrow>i \<lesssim>\<^bsup>M\<^esup> A"
   by (blast intro: lt_Ord Card_rel_le_imp_lepoll_rel Ord_cardinal_rel_le le_trans)
 
 
@@ -267,22 +267,22 @@ text\<open>We have an example of instantiating a locale involving higher
 order variables inside a proof, by using the assumptions of the
 first orde, active locale.\<close>
 lemma surj_rel_implies_inj_rel:
-  assumes f: "f \<in> surj_rel(X,Y)" and
+  assumes f: "f \<in> surj\<^bsup>M\<^esup>(X,Y)" and
     types: "M(f)" "M(X)" "M(Y)"
-  shows "\<exists>g[M]. g \<in> inj_rel(Y,X)"
+  shows "\<exists>g[M]. g \<in> inj\<^bsup>M\<^esup>(Y,X)"
 proof -
   from types
   interpret M_Pi_assumptions_choice _ Y "\<lambda>y. f-``{y}"
     by unfold_locales (auto intro:surj_imp_inj_replacement dest:transM)
   from f AC_Pi_rel
-  obtain z where z: "z \<in> Pi_rel(Y, \<lambda>y. f -`` {y})"
+  obtain z where z: "z \<in> Pi\<^bsup>M\<^esup>(Y, \<lambda>y. f -`` {y})"
     \<comment> \<open>In this and the following ported result, it is not clear how
         uniformly are "_char" theorems to be used\<close>
     using surj_rel_char
     by (auto simp add: surj_def types) (fast dest: apply_Pair)
   show ?thesis
   proof
-    show "z \<in> inj_rel(Y, X)" "M(z)"
+    show "z \<in> inj\<^bsup>M\<^esup>(Y, X)" "M(z)"
       using z surj_is_fun[of f X Y] f Pi_rel_char
       by (auto dest: apply_type Pi_memberD
           intro: apply_equality Pi_type f_imp_injective
@@ -292,15 +292,15 @@ qed
 
 text\<open>Kunen's Lemma 10.20\<close>
 lemma surj_rel_implies_cardinal_rel_le:
-  assumes f: "f \<in> surj_rel(X,Y)" and
+  assumes f: "f \<in> surj\<^bsup>M\<^esup>(X,Y)" and
     types:"M(f)" "M(X)" "M(Y)"
-  shows "|Y|r \<le> |X|r"
+  shows "|Y|\<^bsup>M\<^esup> \<le> |X|\<^bsup>M\<^esup>"
 proof (rule lepoll_rel_imp_Card_rel_le)
   from f [THEN surj_rel_implies_inj_rel]
-  obtain g where "g \<in> inj_rel(Y,X)"
+  obtain g where "g \<in> inj\<^bsup>M\<^esup>(Y,X)"
     by (blast intro:types)
   then
-  show "Y \<lesssim>r X"
+  show "Y \<lesssim>\<^bsup>M\<^esup> X"
     using inj_rel_char
     by (auto simp add: def_lepoll_rel types)
 qed (simp_all add:types)
@@ -359,18 +359,18 @@ locale M_cardinal_UN =  M_Pi_assumptions_choice _ K X for K X +
     and
     inj_replacement:
     "strong_replacement(M, \<lambda>y z. y \<in> inj(X(x), K) \<and> z = {\<langle>x, y\<rangle>})"
-    "strong_replacement(M, \<lambda>x y. y = inj_rel(X(x), K))"
+    "strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(X(x), K))"
     "strong_replacement(M,
-      \<lambda>x z. z = Sigfun(x, \<lambda>i. inj_rel(X(i), K)))"
+      \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(X(i), K)))"
     "strong_replacement(M,
-      \<lambda>x y. y = \<langle>x, minimum(r, inj_rel(X(x), K))\<rangle>)"
+      \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(X(x), K))\<rangle>)"
 
 begin
 
 text\<open>Kunen's Lemma 10.21\<close>
 lemma cardinal_UN_le:
-  assumes K: "InfCard\<^sup>M(K)"
-  shows "(\<And>i. i\<in>K \<Longrightarrow> |X(i)|r \<le> K) \<Longrightarrow> |\<Union>i\<in>K. X(i)|r \<le> K"
+  assumes K: "InfCard\<^bsup>M\<^esup>(K)"
+  shows "(\<And>i. i\<in>K \<Longrightarrow> |X(i)|\<^bsup>M\<^esup> \<le> K) \<Longrightarrow> |\<Union>i\<in>K. X(i)|\<^bsup>M\<^esup> \<le> K"
 proof (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff Pi_assumptions)
   have "M(\<Union>i\<in>K. X(i))"
     using family_union_closed B_replacement Pi_assumptions
@@ -382,11 +382,11 @@ proof (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff Pi_assumptions)
   note types = this \<open>M(\<Union>i\<in>K. X(i))\<close> Pi_assumptions
   have [intro]: "Ord(K)" by (blast intro: InfCard_rel_is_Card_rel
         Card_rel_is_Ord K types)
-  interpret pii:M_Pi_assumptions_choice _ K "\<lambda>i. inj_rel(X(i), K)"
+  interpret pii:M_Pi_assumptions_choice _ K "\<lambda>i. inj\<^bsup>M\<^esup>(X(i), K)"
     using inj_replacement Pi_assumptions by unfold_locales auto
-  assume asm:"\<And>i. i\<in>K \<Longrightarrow> X(i) \<lesssim>r K"
+  assume asm:"\<And>i. i\<in>K \<Longrightarrow> X(i) \<lesssim>\<^bsup>M\<^esup> K"
   then
-  have "\<And>i. i\<in>K \<Longrightarrow> M(inj_rel(X(i), K))"
+  have "\<And>i. i\<in>K \<Longrightarrow> M(inj\<^bsup>M\<^esup>(X(i), K))"
     by (auto simp add: types)
   interpret V:M_N_Perm M "\<lambda>_. True"
     using separation_absolute replacement_absolute Union_ax_absolute
@@ -394,13 +394,13 @@ proof (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff Pi_assumptions)
     by unfold_locales auto
   note bad_simps[simp del] = V.N.Forall_in_M_iff V.N.Equal_in_M_iff
     V.N.nonempty
-  have abs:"V.N.inj_rel(x,y) = inj(x,y)" for x y
+  have abs:"inj_rel(\<lambda>_. True,x,y) = inj(x,y)" for x y
     using V.N.inj_rel_char by simp
   from asm
-  have "\<And>i. i\<in>K \<Longrightarrow> \<exists>f[M]. f \<in> inj_rel(X(i), K)"
+  have "\<And>i. i\<in>K \<Longrightarrow> \<exists>f[M]. f \<in> inj\<^bsup>M\<^esup>(X(i), K)"
     by (simp add: types def_lepoll_rel)
   then
-  obtain f where "f \<in> (\<Prod>i\<in>K. inj_rel(X(i), K))" "M(f)"
+  obtain f where "f \<in> (\<Prod>i\<in>K. inj\<^bsup>M\<^esup>(X(i), K))" "M(f)"
     using pii.AC_Pi_rel pii.Pi_rel_char by auto
   with abs
   have f:"f \<in> (\<Prod>i\<in>K. inj(X(i), K))"
@@ -415,7 +415,7 @@ proof (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff Pi_assumptions)
     hence "(\<mu> i. z \<in> X(i)) \<in> K" and "z \<in> X(\<mu> i. z \<in> X(i))"  
       by (auto intro: LeastI ltD i) 
   } note mems = this
-  have "(\<Union>i\<in>K. X(i)) \<lesssim>r K \<times> K" 
+  have "(\<Union>i\<in>K. X(i)) \<lesssim>\<^bsup>M\<^esup> K \<times> K"
     proof (simp add:types def_lepoll_rel)
       show "\<exists>f[M]. f \<in> inj(\<Union>x\<in>K. X(x), K \<times> K)"
         apply (rule rexI)
@@ -425,10 +425,10 @@ proof (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff Pi_assumptions)
         apply (simp add:types \<open>M(f)\<close>)
         done
     qed
-    also have "... \<approx>r K"
+    also have "... \<approx>\<^bsup>M\<^esup> K"
     by (simp add: K InfCard_rel_square_eq InfCard_rel_is_Card_rel
         Card_rel_cardinal_rel_eq types)
-  finally have "(\<Union>i\<in>K. X(i)) \<lesssim>r K" by (simp_all add:types)
+  finally have "(\<Union>i\<in>K. X(i)) \<lesssim>\<^bsup>M\<^esup> K" by (simp_all add:types)
   then
   show ?thesis
     by (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff types)
