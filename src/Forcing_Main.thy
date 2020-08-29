@@ -55,16 +55,16 @@ proof -
 qed
 
 lemma (in forcing_data) surj_nat_MG :
-  "\<exists>f. f \<in> surj(nat,M[G])"
+  "\<exists>f. f \<in> surj(\<omega>,M[G])"
 proof -
-  let ?f="\<lambda>n\<in>nat. val(G,enum`n)"
-  have "x \<in> nat \<Longrightarrow> val(G, enum ` x)\<in> M[G]" for x
+  let ?f="\<lambda>n\<in>\<omega>. val(G,enum`n)"
+  have "x \<in> \<omega> \<Longrightarrow> val(G, enum ` x)\<in> M[G]" for x
     using GenExtD[THEN iffD2, of _ G] bij_is_fun[OF M_countable] by force
   then
-  have "?f: nat \<rightarrow> M[G]"
-    using lam_type[of nat "\<lambda>n. val(G,enum`n)" "\<lambda>_.M[G]"] by simp
+  have "?f: \<omega> \<rightarrow> M[G]"
+    using lam_type[of \<omega> "\<lambda>n. val(G,enum`n)" "\<lambda>_.M[G]"] by simp
   moreover
-  have "\<exists>n\<in>nat. ?f`n = x" if "x\<in>M[G]" for x
+  have "\<exists>n\<in>\<omega>. ?f`n = x" if "x\<in>M[G]" for x
     using that GenExtD[of _ G] bij_is_surj[OF M_countable]
     unfolding surj_def by auto
   ultimately
@@ -72,7 +72,7 @@ proof -
     unfolding surj_def by blast
 qed
 
-lemma (in G_generic) MG_eqpoll_nat: "M[G] \<approx> nat"
+lemma (in G_generic) MG_eqpoll_nat: "M[G] \<approx> \<omega>"
 proof -
   interpret MG: M_ZF_trans "M[G]"
     using Transset_MG generic pairing_in_MG
@@ -80,14 +80,14 @@ proof -
       foundation_in_MG  strong_replacement_in_MG[simplified]
       separation_in_MG[simplified] infinity_in_MG
     by unfold_locales simp_all
-  obtain f where "f \<in> surj(nat,M[G])"
+  obtain f where "f \<in> surj(\<omega>,M[G])"
     using surj_nat_MG by blast
   then
-  have "M[G] \<lesssim> nat"
-    using well_ord_surj_imp_lepoll well_ord_Memrel[of nat]
+  have "M[G] \<lesssim> \<omega>"
+    using well_ord_surj_imp_lepoll well_ord_Memrel[of \<omega>]
     by simp
   moreover
-  have "nat \<lesssim> M[G]"
+  have "\<omega> \<lesssim> M[G]"
     using MG.nat_into_M subset_imp_lepoll by auto
   ultimately
   show ?thesis using eqpollI
@@ -98,10 +98,10 @@ subsection\<open>The main result\<close>
 
 theorem extensions_of_ctms:
   assumes
-    "M \<approx> nat" "Transset(M)" "M \<Turnstile> ZF"
+    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZF"
   shows
     "\<exists>N.
-      M \<subseteq> N \<and> N \<approx> nat \<and> Transset(N) \<and> N \<Turnstile> ZF \<and> M\<noteq>N \<and>
+      M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZF \<and> M\<noteq>N \<and>
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)) \<and>
       (M, []\<Turnstile> AC \<longrightarrow> N \<Turnstile> ZFC)"
 proof -
@@ -113,8 +113,8 @@ proof -
   interpret M_ZF_trans M
     using M_ZF_iff_M_satT
     by unfold_locales
-  from \<open>M \<approx> nat\<close>
-  obtain enum where "enum \<in> bij(nat,M)"
+  from \<open>M \<approx> \<omega>\<close>
+  obtain enum where "enum \<in> bij(\<omega>,M)"
     using eqpoll_sym unfolding eqpoll_def by blast
   then
   interpret M_ctm M enum by unfold_locales

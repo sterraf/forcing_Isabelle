@@ -61,22 +61,22 @@ text\<open>@{thm [display] lt_def}\<close>
   i < j \<equiv> i \<in> j \<and> Ord(j)
 *)
 
-text\<open>The set of natural numbers \<^term>\<open>nat\<close> is defined as a
+text\<open>The set of natural numbers \<^term>\<open>\<omega>\<close> is defined as a
 fixpoint, but here we just write its characterization as the
 first limit ordinal.\<close>
 thm Limit_nat[unfolded Limit_def] nat_le_Limit[unfolded Limit_def]
 text\<open>@{thm [display] Limit_nat[unfolded Limit_def]
  nat_le_Limit[unfolded Limit_def]}\<close>
 (*
-  Ord(nat) \<and> 0 < nat \<and> (\<forall>y. y < nat \<longrightarrow> succ(y) < nat)
-  Ord(i) \<and> 0 < i \<and> (\<forall>y. y < i \<longrightarrow> succ(y) < i) \<Longrightarrow> nat \<le> i
+  Ord(\<omega>) \<and> 0 < \<omega> \<and> (\<forall>y. y < \<omega> \<longrightarrow> succ(y) < \<omega>)
+  Ord(i) \<and> 0 < i \<and> (\<forall>y. y < i \<longrightarrow> succ(y) < i) \<Longrightarrow> \<omega> \<le> i
 *)
 
 hide_const (open) Order.pred
 thm add_0_right add_succ_right pred_0 pred_succ_eq
 text\<open>@{thm [display] add_succ_right add_0_right pred_0 pred_succ_eq}\<close>
 (*
-  m \<in> nat \<Longrightarrow> m #+ 0 = m
+  m \<in> \<omega> \<Longrightarrow> m #+ 0 = m
   m #+ succ(n) = succ(m #+ n)
 
   pred(0) = 0
@@ -102,7 +102,7 @@ text\<open>@{thm [display] length.simps app.simps nth_0 nth_Cons}\<close>
   Cons(a, l) @ ys = Cons(a, l @ ys)
 
   nth(0, Cons(a, l)) = a
-  n \<in> nat \<Longrightarrow> nth(succ(n), Cons(a, l)) = nth(n, l)
+  n \<in> \<omega> \<Longrightarrow> nth(succ(n), Cons(a, l)) = nth(n, l)
 *)
 
 txt\<open>Relative quantifications\<close>
@@ -269,14 +269,14 @@ text\<open>Internalized formulas\<close>
 thm Member Equal Nand Forall formula.induct
 text\<open>@{thm [display] Member Equal Nand Forall formula.induct}\<close>
 (*
-  x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> Member(x, y) \<in> formula
-  x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> Equal(x, y) \<in> formula
+  x \<in> \<omega> \<Longrightarrow> y \<in> \<omega> \<Longrightarrow> Member(x, y) \<in> formula
+  x \<in> \<omega> \<Longrightarrow> y \<in> \<omega> \<Longrightarrow> Equal(x, y) \<in> formula
   p \<in> formula \<Longrightarrow> Forall(p) \<in> formula
   p \<in> formula \<Longrightarrow> q \<in> formula \<Longrightarrow> Nand(p, q) \<in> formula
 
   x \<in> formula \<Longrightarrow>
-  (\<And>x y. x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> P(Member(x, y))) \<Longrightarrow>
-  (\<And>x y. x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> P(Equal(x, y))) \<Longrightarrow>
+  (\<And>x y. x \<in> \<omega> \<Longrightarrow> y \<in> \<omega> \<Longrightarrow> P(Member(x, y))) \<Longrightarrow>
+  (\<And>x y. x \<in> \<omega> \<Longrightarrow> y \<in> \<omega> \<Longrightarrow> P(Equal(x, y))) \<Longrightarrow>
   (\<And>p q. p \<in> formula \<Longrightarrow> P(p) \<Longrightarrow> q \<in> formula \<Longrightarrow> P(q) \<Longrightarrow> P(Nand(p, q))) \<Longrightarrow>
   (\<And>p. p \<in> formula \<Longrightarrow> P(p) \<Longrightarrow> P(Forall(p))) \<Longrightarrow> P(x)
 *)
@@ -368,11 +368,11 @@ text\<open>@{thm [display] satT_def}\<close>
 thm extensions_of_ctms
 text\<open>@{thm [display] extensions_of_ctms}\<close>
 (*
-  M \<approx> nat \<Longrightarrow>
+  M \<approx> \<omega> \<Longrightarrow>
   Transset(M) \<Longrightarrow>
   M \<Turnstile> ZF \<Longrightarrow>
   \<exists>N. M \<subseteq> N \<and>
-      N \<approx> nat \<and>
+      N \<approx> \<omega> \<and>
       Transset(N) \<and> N \<Turnstile> ZF \<and> M \<noteq> N \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
         \<and> (M, [] \<Turnstile> ZF_choice_fm \<longrightarrow> N \<Turnstile> ZFC)
 *)

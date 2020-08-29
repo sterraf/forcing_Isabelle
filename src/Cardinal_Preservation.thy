@@ -12,7 +12,7 @@ definition
 
 definition
   ccc :: "i \<Rightarrow> i \<Rightarrow> o" where
-  "ccc(P,leq) \<equiv> \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
+  "ccc(P,leq) \<equiv> \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> \<omega>"
 
 (* MOVE THIS to some appropriate place *)
 declare (in M_trivial) compat_in_abs[absolut]
@@ -44,7 +44,7 @@ definition
 
 definition
   ccc :: "o" where
-  "ccc \<equiv> \<forall>A. antichain(A) \<longrightarrow> |A| \<le> nat"
+  "ccc \<equiv> \<forall>A. antichain(A) \<longrightarrow> |A| \<le> \<omega>"
 
 end (* forcing_notion *)
 
@@ -96,7 +96,7 @@ lemma def_ccc_rel:
   assumes
     "M(i)"
   shows
-    "ccc\<^bsup>M\<^esup>(P,leq) \<longleftrightarrow> (\<forall>A[M]. antichain\<^bsup>M\<^esup>(P,leq,A) \<longrightarrow> |A|\<^bsup>M\<^esup> \<le> nat)"
+    "ccc\<^bsup>M\<^esup>(P,leq) \<longleftrightarrow> (\<forall>A[M]. antichain\<^bsup>M\<^esup>(P,leq,A) \<longrightarrow> |A|\<^bsup>M\<^esup> \<le> \<omega>)"
   using assms cardinal_rel_iff
   unfolding ccc_rel_def by (simp add:absolut)
 
@@ -329,7 +329,7 @@ lemma ccc_fun_approximation_lemma:
   notes le_trans[trans]
   assumes "ccc\<^bsup>M\<^esup>(P,leq)" "A\<in>M" "B\<in>M" "f\<in>M[G]" "f : A \<rightarrow> B"
   shows 
-    "\<exists>F\<in>M. F : A \<rightarrow> Pow(B) \<and> (\<forall>a\<in>A. f`a \<in> F`a \<and> |F`a|\<^bsup>M\<^esup> \<le> nat)"
+    "\<exists>F\<in>M. F : A \<rightarrow> Pow(B) \<and> (\<forall>a\<in>A. f`a \<in> F`a \<and> |F`a|\<^bsup>M\<^esup> \<le> \<omega>)"
 proof -
   let ?\<phi>="typed_function_fm(1,2,0)"\<comment> \<open>formula for \<^term>\<open>f : A\<rightarrow> B\<close>\<close>
   from \<open>f\<in>M[G]\<close>
@@ -373,7 +373,7 @@ proof -
     show ?thesis unfolding F_def by simp
   qed
   moreover
-  have "|F`a|\<^bsup>M\<^esup> \<le> nat" if "a \<in> A" for a
+  have "|F`a|\<^bsup>M\<^esup> \<le> \<omega>" if "a \<in> A" for a
   proof -
     let ?Q="\<lambda>b. {q\<in>P. q \<preceq> p \<and> (q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v])}"
     from \<open>F \<in> M\<close> \<open>a\<in>A\<close> \<open>A\<in>M\<close>
@@ -436,7 +436,7 @@ proof -
       using def_lepoll_rel
       by (rule_tac lepoll_rel_imp_Card_rel_le) auto
     also from \<open>antichain_r'(range(q))\<close> \<open>ccc\<^bsup>M\<^esup>(P,leq)\<close> \<open>q\<in>M\<close>
-    have "|range(q)|\<^bsup>M\<^esup> \<le> nat"
+    have "|range(q)|\<^bsup>M\<^esup> \<le> \<omega>"
       using def_ccc_rel by simp
     finally
     show ?thesis .
