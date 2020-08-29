@@ -118,22 +118,22 @@ proof -
     using eqpoll_sym unfolding eqpoll_def by blast
   then
   interpret M_ctm M enum by unfold_locales
-  interpret ctm_separative "2^<\<omega>" seqle 0 M enum
+  interpret ctm_separative "2\<^bsup><\<omega>\<^esup>" seqle 0 M enum
   proof (unfold_locales)
     fix f
     let ?q="seq_upd(f,0)" and ?r="seq_upd(f,1)"
-    assume "f \<in> 2^<\<omega>"
+    assume "f \<in> 2\<^bsup><\<omega>\<^esup>"
     then
     have "?q \<preceq>s f \<and> ?r \<preceq>s f \<and> ?q \<bottom>s ?r"
       using upd_leI seqspace_separative by auto
     moreover from calculation
-    have "?q \<in> 2^<\<omega>"  "?r \<in> 2^<\<omega>"
+    have "?q \<in> 2\<^bsup><\<omega>\<^esup>"  "?r \<in> 2\<^bsup><\<omega>\<^esup>"
       using seq_upd_type[of f 2] by auto
     ultimately
-    show "\<exists>q\<in>2^<\<omega>.  \<exists>r\<in>2^<\<omega>. q \<preceq>s f \<and> r \<preceq>s f \<and> q \<bottom>s r"
+    show "\<exists>q\<in>2\<^bsup><\<omega>\<^esup>.  \<exists>r\<in>2\<^bsup><\<omega>\<^esup>. q \<preceq>s f \<and> r \<preceq>s f \<and> q \<bottom>s r"
       by (rule_tac bexI)+ \<comment> \<open>why the heck auto-tools don't solve this?\<close>
   next
-    show "2^<\<omega> \<in> M" using nat_into_M seqspace_closed by simp
+    show "2\<^bsup><\<omega>\<^esup> \<in> M" using nat_into_M seqspace_closed by simp
   next
     show "seqle \<in> M" using seqle_in_M .
   qed
@@ -142,7 +142,7 @@ proof -
     "M \<noteq> GenExt(G)" (is "M\<noteq>?N")
     by blast
   then
-  interpret G_generic "2^<\<omega>" seqle 0 _ enum G by unfold_locales
+  interpret G_generic "2\<^bsup><\<omega>\<^esup>" seqle 0 _ enum G by unfold_locales
   interpret MG: M_ZF "?N"
     using generic pairing_in_MG
       Union_MG  extensionality_in_MG power_in_MG

@@ -11,7 +11,7 @@ text\<open>We implement the poset for adding one Cohen real, the set
 $2^{<\omega}$ of of finite binary sequences.\<close>
 
 definition
-  seqspace :: "i \<Rightarrow> i" ("_^<\<omega>" [100]100) where
+  seqspace :: "i \<Rightarrow> i" (\<open>_\<^bsup><\<omega>\<^esup>\<close> [100]100) where
   "seqspace(B) \<equiv> \<Union>n\<in>nat. (n\<rightarrow>B)"
 
 lemma seqspaceI[intro]: "n\<in>nat \<Longrightarrow> f:n\<rightarrow>B \<Longrightarrow> f\<in>seqspace(B)"
@@ -21,7 +21,7 @@ lemma seqspaceD[dest]: "f\<in>seqspace(B) \<Longrightarrow> \<exists>n\<in>nat. 
   unfolding seqspace_def by blast
 
 lemma seqspace_type: 
-  "f \<in> B^<\<omega> \<Longrightarrow> \<exists>n\<in>nat. f:n\<rightarrow>B" 
+  "f \<in> B\<^bsup><\<omega>\<^esup> \<Longrightarrow> \<exists>n\<in>nat. f:n\<rightarrow>B" 
   unfolding seqspace_def by auto
 
 schematic_goal seqspace_fm_auto:
@@ -41,7 +41,7 @@ locale M_seqspace =  M_trancl +
 begin
 
 lemma seqspace_closed:
-  "M(B) \<Longrightarrow> M(B^<\<omega>)"
+  "M(B) \<Longrightarrow> M(B\<^bsup><\<omega>\<^esup>)"
   unfolding seqspace_def using seqspace_replacement[of B] RepFun_closed2 
   by simp
 
@@ -113,8 +113,8 @@ proof -
 qed
 
 lemma seq_upd_type : 
-  assumes "f\<in>A^<\<omega>" "a\<in>A"
-  shows "seq_upd(f,a) \<in> A^<\<omega>"
+  assumes "f\<in>A\<^bsup><\<omega>\<^esup>" "a\<in>A"
+  shows "seq_upd(f,a) \<in> A\<^bsup><\<omega>\<^esup>"
 proof -
   from \<open>f\<in>_\<close>
   obtain y where "y\<in>nat" "f\<in>y\<rightarrow>A"
@@ -133,7 +133,7 @@ lemma seq_upd_apply_domain [simp]:
   unfolding seq_upd_def using assms domain_of_fun by auto
 
 lemma zero_in_seqspace : 
-  shows "0 \<in> A^<\<omega>"
+  shows "0 \<in> A\<^bsup><\<omega>\<^esup>"
   unfolding seqspace_def
   by force
 
@@ -143,34 +143,34 @@ definition
 
 definition
   seqlerel :: "i \<Rightarrow> i" where
-  "seqlerel(A) \<equiv> Rrel(\<lambda>x y. y \<subseteq> x,A^<\<omega>)"
+  "seqlerel(A) \<equiv> Rrel(\<lambda>x y. y \<subseteq> x,A\<^bsup><\<omega>\<^esup>)"
 
 definition
   seqle :: "i" where
   "seqle \<equiv> seqlerel(2)"
 
 lemma seqleI[intro!]: 
-  "\<langle>f,g\<rangle> \<in> 2^<\<omega>\<times>2^<\<omega> \<Longrightarrow> g \<subseteq> f  \<Longrightarrow> \<langle>f,g\<rangle> \<in> seqle"
+  "\<langle>f,g\<rangle> \<in> 2\<^bsup><\<omega>\<^esup>\<times>2\<^bsup><\<omega>\<^esup> \<Longrightarrow> g \<subseteq> f  \<Longrightarrow> \<langle>f,g\<rangle> \<in> seqle"
   unfolding  seqspace_def seqle_def seqlerel_def Rrel_def 
   by blast
 
 lemma seqleD[dest!]: 
-  "z \<in> seqle \<Longrightarrow> \<exists>x y. \<langle>x,y\<rangle> \<in> 2^<\<omega>\<times>2^<\<omega> \<and> y \<subseteq> x \<and> z = \<langle>x,y\<rangle>"
+  "z \<in> seqle \<Longrightarrow> \<exists>x y. \<langle>x,y\<rangle> \<in> 2\<^bsup><\<omega>\<^esup>\<times>2\<^bsup><\<omega>\<^esup> \<and> y \<subseteq> x \<and> z = \<langle>x,y\<rangle>"
   unfolding seqle_def seqlerel_def Rrel_def 
   by blast
 
 lemma upd_leI : 
-  assumes "f\<in>2^<\<omega>" "a\<in>2"
+  assumes "f\<in>2\<^bsup><\<omega>\<^esup>" "a\<in>2"
   shows "\<langle>seq_upd(f,a),f\<rangle>\<in>seqle"  (is "\<langle>?f,_\<rangle>\<in>_")
 proof
-  show " \<langle>?f, f\<rangle> \<in> 2^<\<omega> \<times> 2^<\<omega>" 
+  show " \<langle>?f, f\<rangle> \<in> 2\<^bsup><\<omega>\<^esup> \<times> 2\<^bsup><\<omega>\<^esup>" 
     using assms seq_upd_type by auto
 next
   show  "f \<subseteq> seq_upd(f,a)" 
   proof 
     fix x
     assume "x \<in> f"
-    moreover from \<open>f \<in> 2^<\<omega>\<close>
+    moreover from \<open>f \<in> 2\<^bsup><\<omega>\<^esup>\<close>
     obtain n where  "n\<in>nat" "f : n \<rightarrow> 2"
       using seqspace_type by blast
     moreover from calculation
@@ -185,14 +185,14 @@ next
   qed
 qed
 
-lemma preorder_on_seqle: "preorder_on(2^<\<omega>,seqle)"
+lemma preorder_on_seqle: "preorder_on(2\<^bsup><\<omega>\<^esup>,seqle)"
   unfolding preorder_on_def refl_def trans_on_def by blast
 
-lemma zero_seqle_max: "x\<in>2^<\<omega> \<Longrightarrow> \<langle>x,0\<rangle> \<in> seqle"
+lemma zero_seqle_max: "x\<in>2\<^bsup><\<omega>\<^esup> \<Longrightarrow> \<langle>x,0\<rangle> \<in> seqle"
   using zero_in_seqspace 
   by auto
 
-interpretation sp:forcing_notion "2^<\<omega>" "seqle" "0"
+interpretation sp:forcing_notion "2\<^bsup><\<omega>\<^esup>" "seqle" "0"
   using preorder_on_seqle zero_seqle_max zero_in_seqspace 
   by unfold_locales simp_all
 
@@ -200,12 +200,12 @@ notation sp.Leq (infixl "\<preceq>s" 50)
 notation sp.Incompatible (infixl "\<bottom>s" 50)
 
 lemma seqspace_separative:
-  assumes "f\<in>2^<\<omega>"
+  assumes "f\<in>2\<^bsup><\<omega>\<^esup>"
   shows "seq_upd(f,0) \<bottom>s seq_upd(f,1)" (is "?f \<bottom>s ?g")
 proof 
   assume "sp.compat(?f, ?g)"
   then 
-  obtain h where "h \<in> 2^<\<omega>" "?f \<subseteq> h" "?g \<subseteq> h"
+  obtain h where "h \<in> 2\<^bsup><\<omega>\<^esup>" "?f \<subseteq> h" "?g \<subseteq> h"
     by blast
   moreover from \<open>f\<in>_\<close>
   obtain y where "y\<in>nat" "f:y\<rightarrow>2" by blast
@@ -216,7 +216,7 @@ proof
   have "\<langle>y,?f`y\<rangle> \<in> ?f" "\<langle>y,?g`y\<rangle> \<in> ?g" using apply_Pair by auto
   ultimately
   have "\<langle>y,0\<rangle> \<in> h" "\<langle>y,1\<rangle> \<in> h" by auto
-  moreover from \<open>h \<in> 2^<\<omega>\<close>
+  moreover from \<open>h \<in> 2\<^bsup><\<omega>\<^esup>\<close>
   obtain n where "n\<in>nat" "h:n\<rightarrow>2" by blast
   ultimately
   show "False"
@@ -337,22 +337,22 @@ lemma seqle_in_M: "seqle \<in> M"
 
 subsection\<open>Cohen extension is proper\<close>
 
-interpretation ctm_separative "2^<\<omega>" seqle 0
+interpretation ctm_separative "2\<^bsup><\<omega>\<^esup>" seqle 0
 proof (unfold_locales)
   fix f
   let ?q="seq_upd(f,0)" and ?r="seq_upd(f,1)"
-  assume "f \<in> 2^<\<omega>"
+  assume "f \<in> 2\<^bsup><\<omega>\<^esup>"
   then
   have "?q \<preceq>s f \<and> ?r \<preceq>s f \<and> ?q \<bottom>s ?r" 
     using upd_leI seqspace_separative by auto
   moreover from calculation
-  have "?q \<in> 2^<\<omega>"  "?r \<in> 2^<\<omega>"
+  have "?q \<in> 2\<^bsup><\<omega>\<^esup>"  "?r \<in> 2\<^bsup><\<omega>\<^esup>"
     using seq_upd_type[of f 2] by auto
   ultimately
-  show "\<exists>q\<in>2^<\<omega>. \<exists>r\<in>2^<\<omega>. q \<preceq>s f \<and> r \<preceq>s f \<and> q \<bottom>s r"
+  show "\<exists>q\<in>2\<^bsup><\<omega>\<^esup>. \<exists>r\<in>2\<^bsup><\<omega>\<^esup>. q \<preceq>s f \<and> r \<preceq>s f \<and> q \<bottom>s r"
     by (rule_tac bexI)+ \<comment> \<open>why the heck auto-tools don't solve this?\<close>
 next
-  show "2^<\<omega> \<in> M" using nat_into_M seqspace_closed by simp
+  show "2\<^bsup><\<omega>\<^esup> \<in> M" using nat_into_M seqspace_closed by simp
 next
   show "seqle \<in> M" using seqle_in_M .
 qed
