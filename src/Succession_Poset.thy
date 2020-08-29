@@ -1,29 +1,31 @@
 section\<open>A poset of successions\<close>
 theory Succession_Poset
   imports
-    Arities Proper_Extension Synthetic_Definition
+    Arities
+    Proper_Extension
+    Synthetic_Definition
     Names
 begin
 
 subsection\<open>The set of finite binary sequences\<close>
 
+notation nat (\<open>\<omega>\<close>) \<comment> \<open>MOVE THIS to an appropriate place\<close>
+
 text\<open>We implement the poset for adding one Cohen real, the set 
-$2^{<\omega}$ of of finite binary sequences.\<close>
+$2^{<\omega}$ of finite binary sequences.\<close>
 
 definition
-  seqspace :: "i \<Rightarrow> i" (\<open>_\<^bsup><\<omega>\<^esup>\<close> [100]100) where
-  "seqspace(B) \<equiv> \<Union>n\<in>nat. (n\<rightarrow>B)"
+  seqspace :: "[i,i] \<Rightarrow> i" (\<open>_\<^bsup><_\<^esup>\<close> [100,1]100) where
+  "B\<^bsup><\<alpha>\<^esup> \<equiv> \<Union>n\<in>\<alpha>. (n\<rightarrow>B)"
 
-lemma seqspaceI[intro]: "n\<in>nat \<Longrightarrow> f:n\<rightarrow>B \<Longrightarrow> f\<in>seqspace(B)"
+lemma seqspaceI[intro]: "n\<in>\<alpha> \<Longrightarrow> f:n\<rightarrow>B \<Longrightarrow> f\<in>B\<^bsup><\<alpha>\<^esup>"
   unfolding seqspace_def by blast
 
-lemma seqspaceD[dest]: "f\<in>seqspace(B) \<Longrightarrow> \<exists>n\<in>nat. f:n\<rightarrow>B"
+lemma seqspaceD[dest]: "f\<in>B\<^bsup><\<alpha>\<^esup> \<Longrightarrow> \<exists>n\<in>\<alpha>. f:n\<rightarrow>B"
   unfolding seqspace_def by blast
 
-lemma seqspace_type: 
-  "f \<in> B\<^bsup><\<omega>\<^esup> \<Longrightarrow> \<exists>n\<in>nat. f:n\<rightarrow>B" 
-  unfolding seqspace_def by auto
-
+\<comment> \<open>FIXME: Now this is too particular (only for \<^term>\<open>\<omega>\<close>-sequences.
+  A relative definition for \<^term>\<open>seqspace\<close> would be appropriate.\<close>
 schematic_goal seqspace_fm_auto:
   assumes 
     "nth(i,env) = n" "nth(j,env) = z"  "nth(h,env) = B" 
@@ -172,7 +174,7 @@ next
     assume "x \<in> f"
     moreover from \<open>f \<in> 2\<^bsup><\<omega>\<^esup>\<close>
     obtain n where  "n\<in>nat" "f : n \<rightarrow> 2"
-      using seqspace_type by blast
+      by blast
     moreover from calculation
     obtain y where "y\<in>n" "x=\<langle>y,f`y\<rangle>" using Pi_memberD[of f n "\<lambda>_ . 2"] 
       by blast
