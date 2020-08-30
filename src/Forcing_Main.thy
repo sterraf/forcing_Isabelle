@@ -118,25 +118,9 @@ proof -
     using eqpoll_sym unfolding eqpoll_def by blast
   then
   interpret M_ctm M enum by unfold_locales
-  interpret ctm_separative "2\<^bsup><\<omega>\<^esup>" seqle 0 M enum
-  proof (unfold_locales)
-    fix f
-    let ?q="seq_upd(f,0)" and ?r="seq_upd(f,1)"
-    assume "f \<in> 2\<^bsup><\<omega>\<^esup>"
-    then
-    have "?q \<preceq>s f \<and> ?r \<preceq>s f \<and> ?q \<bottom>s ?r"
-      using upd_leI seqspace_separative by auto
-    moreover from calculation
-    have "?q \<in> 2\<^bsup><\<omega>\<^esup>"  "?r \<in> 2\<^bsup><\<omega>\<^esup>"
-      using seq_upd_type[of f 2] by auto
-    ultimately
-    show "\<exists>q\<in>2\<^bsup><\<omega>\<^esup>.  \<exists>r\<in>2\<^bsup><\<omega>\<^esup>. q \<preceq>s f \<and> r \<preceq>s f \<and> q \<bottom>s r"
-      by (rule_tac bexI)+ \<comment> \<open>why the heck auto-tools don't solve this?\<close>
-  next
-    show "2\<^bsup><\<omega>\<^esup> \<in> M" using nat_into_M seqspace_closed by simp
-  next
-    show "seqle \<in> M" using seqle_in_M .
-  qed
+  interpret forcing_data "2\<^bsup><\<omega>\<^esup>" seqle 0 M enum
+    using nat_into_M seqspace_closed seqle_in_M
+    by unfold_locales simp
   obtain G where "M_generic(G)" "M \<noteq> M\<^bsup>2\<^bsup><\<omega>\<^esup>\<^esup>[G]" (is "M\<noteq>?N")
     using cohen_extension_is_proper
     by blast
