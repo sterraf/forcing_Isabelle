@@ -2,8 +2,10 @@ section\<open>Cohen forcing notions\<close>
 
 theory Cohen_Posets
   imports
-    Least
-    Renaming_Auto \<comment> \<open>for @{thm app_fun}\<close>
+    Forcing_Notions
+    Names \<comment> \<open>only for \<^term>\<open>SepReplace\<close>\<close>
+    Recursion_Thms \<comment> \<open>only for the definition of \<^term>\<open>Rrel\<close>\<close>
+    Renaming_Auto \<comment> \<open>only for @{thm app_fun}\<close>
     "../Tools/Try0"
 begin
 
