@@ -1,20 +1,22 @@
 theory Konig
   imports
     ZF.Cardinal_AC
-    "~~/src/ZF/Constructible/Normal"
+    "ZF-Constructible.Normal"
     Cofinality
 
 begin
 
-definition
-  cexp :: "[i,i] \<Rightarrow> i" (infixr "\<up>" 75) where
-  "\<kappa> \<up> \<nu> \<equiv> |\<nu> \<rightarrow> \<kappa>|"
+notation Aleph (\<open>\<aleph>\<^bsub>_\<^esub>\<close>)
 
-lemma Card_cexp: "Card(\<kappa> \<up> \<nu>)"
+definition
+  cexp :: "[i,i] \<Rightarrow> i" ("_\<^bsup>\<up>_\<^esup>" [76,1] 75) where
+  "\<kappa>\<^bsup>\<up>\<nu>\<^esup> \<equiv> |\<nu> \<rightarrow> \<kappa>|"
+
+lemma Card_cexp: "Card(\<kappa>\<^bsup>\<up>\<nu>\<^esup>)"
   unfolding cexp_def Card_cardinal by simp
 
 (* 
-lemma cexp_cardinal: "X \<up> Y = |X| \<up> |Y|"
+lemma cexp_cardinal: "X\<^bsup>\<up>Y\<^esup> = |X|\<^bsup>\<up>|Y|\<^esup>"
   oops
 *)
 
@@ -102,7 +104,7 @@ lemma cexp_eqpoll_cong:
   assumes 
     "A \<approx> A'" "B \<approx> B'"
   shows
-    "A \<up> B = A' \<up> B'"
+    "A\<^bsup>\<up>B\<^esup> = A'\<^bsup>\<up>B'\<^esup>"
   unfolding cexp_def using cardinal_eqpoll_iff 
     function_space_eqpoll_cong assms
   by simp
@@ -141,16 +143,16 @@ next \<comment> \<open>one composition is the identity:\<close>
     by (auto intro:fun_extension)
 qed simp \<comment> \<open>the other composition follows automatically\<close>
 
-lemma cexp_cexp_cmult: "(\<kappa> \<up> \<nu>1) \<up> \<nu>2 = \<kappa> \<up> (\<nu>2 \<otimes> \<nu>1)"
+lemma cexp_cexp_cmult: "(\<kappa>\<^bsup>\<up>\<nu>1\<^esup>)\<^bsup>\<up>\<nu>2\<^esup> = \<kappa>\<^bsup>\<up>\<nu>2 \<otimes> \<nu>1\<^esup>"
 proof -
-  have "(\<kappa> \<up> \<nu>1) \<up> \<nu>2 = (\<nu>1 \<rightarrow> \<kappa>) \<up> \<nu>2"
+  have "(\<kappa>\<^bsup>\<up>\<nu>1\<^esup>)\<^bsup>\<up>\<nu>2\<^esup> = (\<nu>1 \<rightarrow> \<kappa>)\<^bsup>\<up>\<nu>2\<^esup>"
     using cardinal_eqpoll
     by (intro cexp_eqpoll_cong) (simp_all add:cexp_def)
   also
-  have " \<dots> = \<kappa> \<up> (\<nu>2 \<times> \<nu>1)"
+  have " \<dots> = \<kappa>\<^bsup>\<up>\<nu>2 \<times> \<nu>1\<^esup>"
     unfolding cexp_def using curry_eqpoll cardinal_cong by blast
   also
-  have " \<dots> = \<kappa> \<up> (\<nu>2 \<otimes> \<nu>1)" 
+  have " \<dots> = \<kappa>\<^bsup>\<up>\<nu>2 \<otimes> \<nu>1\<^esup>" 
     using cardinal_eqpoll[THEN eqpoll_sym]
     unfolding cmult_def by (intro cexp_eqpoll_cong) (simp)
   finally
@@ -184,7 +186,7 @@ next
     by (force intro:fun_extension)
 qed blast
 
-lemma cardinal_Pow: "|Pow(X)| = 2 \<up> X" \<comment> \<open>Perhaps it's better with |X|\<close>
+lemma cardinal_Pow: "|Pow(X)| = 2\<^bsup>\<up>X\<^esup>" \<comment> \<open>Perhaps it's better with |X|\<close>
   using cardinal_eqpoll_iff[THEN iffD2, OF Pow_eqpoll_function_space]
   unfolding cexp_def by simp
 
@@ -193,10 +195,10 @@ lemma cantor_inj : "f \<notin> inj(Pow(A),A)"
 
 lemma cantor_cexp:
   assumes "Card(\<nu>)"
-  shows "\<nu> < 2 \<up> \<nu>"
+  shows "\<nu> < 2\<^bsup>\<up>\<nu>\<^esup>"
   using assms Card_is_Ord Card_cexp
 proof (intro not_le_iff_lt[THEN iffD1] notI)
-  assume "2 \<up> \<nu> \<le> \<nu>"
+  assume "2\<^bsup>\<up>\<nu>\<^esup> \<le> \<nu>"
   then
   have "|Pow(\<nu>)| \<le> \<nu>"
     using cardinal_Pow by simp
@@ -214,7 +216,7 @@ qed simp
 
 lemma cexp_left_mono:
   assumes "\<kappa>1 \<le> \<kappa>2" 
-  shows "\<kappa>1 \<up> \<nu> \<le> \<kappa>2 \<up> \<nu>"
+  shows "\<kappa>1\<^bsup>\<up>\<nu>\<^esup> \<le> \<kappa>2\<^bsup>\<up>\<nu>\<^esup>"
 (* \<comment> \<open>short, unreadable proof: \<close>  
   unfolding cexp_def 
   using subset_imp_lepoll[THEN lepoll_imp_Card_le]
@@ -234,12 +236,12 @@ qed
 
 lemma cantor_cexp':
   assumes "2 \<le> \<kappa>" "Card(\<nu>)"
-  shows "\<nu> < \<kappa> \<up> \<nu>"
+  shows "\<nu> < \<kappa>\<^bsup>\<up>\<nu>\<^esup>"
  using cexp_left_mono assms cantor_cexp lt_trans2 by blast
 
 lemma InfCard_cexp:
   assumes "2 \<le> \<kappa>" "InfCard(\<nu>)"
-  shows "InfCard(\<kappa> \<up> \<nu>)"
+  shows "InfCard(\<kappa>\<^bsup>\<up>\<nu>\<^esup>)"
   using assms cantor_cexp'[THEN leI] le_trans Card_cexp
   unfolding InfCard_def by auto
 
@@ -251,7 +253,7 @@ lemma nats_le_InfCard:
   unfolding InfCard_def Transset_def by simp
 
 lemmas InfCard_cexp' = InfCard_cexp[OF nats_le_InfCard, simplified]
-  \<comment> \<open>\<^term>\<open>InfCard(\<kappa>) \<Longrightarrow> InfCard(\<nu>) \<Longrightarrow> InfCard(\<kappa> \<up> \<nu>)\<close>\<close>
+  \<comment> \<open>\<^term>\<open>InfCard(\<kappa>) \<Longrightarrow> InfCard(\<nu>) \<Longrightarrow> InfCard(\<kappa>\<^bsup>\<up>\<nu>\<^esup>)\<close>\<close>
 
 lemma nat_into_InfCard:
   assumes "n\<in>nat" "InfCard(\<kappa>)"
@@ -263,29 +265,29 @@ subsection\<open>Alephs are infinite cardinals\<close>
 
 lemmas Aleph_mono = Normal_imp_mono[OF _ Normal_Aleph]
 
-lemma Aleph_zero_eq_nat: "\<aleph>0 = nat"
+lemma Aleph_zero_eq_nat: "\<aleph>\<^bsub>0\<^esub> = nat"
   unfolding Aleph_def by simp
 
 lemma InfCard_Aleph: 
   notes Aleph_zero_eq_nat[simp]
   assumes "Ord(\<alpha>)" 
-  shows "InfCard(\<aleph>\<alpha>)"
+  shows "InfCard(\<aleph>\<^bsub>\<alpha>\<^esub>)"
 proof -
-  have "\<not> (\<aleph>\<alpha> \<in> nat)" 
+  have "\<not> (\<aleph>\<^bsub>\<alpha>\<^esub> \<in> nat)" 
   proof (cases "\<alpha>=0")
     case True
     then show ?thesis using mem_irrefl by auto
   next
     case False
     with \<open>Ord(\<alpha>)\<close>
-    have "nat \<in> \<aleph>\<alpha>" using Ord_0_lt[of \<alpha>] ltD  by (auto dest:Aleph_mono)
+    have "nat \<in> \<aleph>\<^bsub>\<alpha>\<^esub>" using Ord_0_lt[of \<alpha>] ltD  by (auto dest:Aleph_mono)
     then show ?thesis using foundation by blast 
   qed
   with \<open>Ord(\<alpha>)\<close>
-  have "\<not> (|\<aleph>\<alpha>| \<in> nat)" 
+  have "\<not> (|\<aleph>\<^bsub>\<alpha>\<^esub>| \<in> nat)" 
     using Card_cardinal_eq by auto
   then
-  have "\<not> Finite(\<aleph>\<alpha>)" by auto
+  have "\<not> Finite(\<aleph>\<^bsub>\<alpha>\<^esub>)" by auto
   with \<open>Ord(\<alpha>)\<close>
   show ?thesis
     using Inf_Card_is_InfCard by simp
@@ -334,16 +336,16 @@ lemma Ord_eq_Collect_lt: "i<\<alpha> \<Longrightarrow> {j\<in>\<alpha>. j<i} = i
    apply (rule Ord_trans ltI[OF _ lt_Ord]; auto simp add:lt_def dest:ltD)+
   done
 
-lemma konigs_lemma:
+lemma konigs_theorem:
   notes [dest] = InfCard_is_Card Card_is_Ord
     and [trans] = lt_trans1 lt_trans2
   assumes
     "InfCard(\<kappa>)" "InfCard(\<nu>)" "cf(\<kappa>) \<le> \<nu>"
   shows
-    "\<kappa> < \<kappa> \<up> \<nu>"
+    "\<kappa> < \<kappa>\<^bsup>\<up>\<nu>\<^esup>"
   using assms(1,2) Card_cexp
 proof (intro not_le_iff_lt[THEN iffD1] notI)
-  assume "\<kappa> \<up> \<nu> \<le> \<kappa>"
+  assume "\<kappa>\<^bsup>\<up>\<nu>\<^esup> \<le> \<kappa>"
   moreover
   note \<open>InfCard(\<kappa>)\<close>
   moreover from calculation
@@ -415,24 +417,24 @@ lemma cf_cexp:
   assumes
     "Card(\<kappa>)" "InfCard(\<nu>)" "2 \<le> \<kappa>"
   shows
-    "\<nu> < cf(\<kappa> \<up> \<nu>)"
+    "\<nu> < cf(\<kappa>\<^bsup>\<up>\<nu>\<^esup>)"
 proof (rule ccontr)
-  assume "\<not> \<nu> < cf(\<kappa> \<up> \<nu>)"
+  assume "\<not> \<nu> < cf(\<kappa>\<^bsup>\<up>\<nu>\<^esup>)"
   with \<open>InfCard(\<nu>)\<close>
-  have "cf(\<kappa> \<up> \<nu>) \<le> \<nu>" 
+  have "cf(\<kappa>\<^bsup>\<up>\<nu>\<^esup>) \<le> \<nu>" 
     using not_lt_iff_le Ord_cf InfCard_is_Card Card_is_Ord by simp
   moreover
   note assms
   moreover from calculation
-  have "InfCard(\<kappa> \<up> \<nu>)" using InfCard_cexp by simp
+  have "InfCard(\<kappa>\<^bsup>\<up>\<nu>\<^esup>)" using InfCard_cexp by simp
   moreover from calculation
-  have "\<kappa> \<up> \<nu> < (\<kappa> \<up> \<nu>) \<up> \<nu>" 
-    using konigs_lemma by simp
+  have "\<kappa>\<^bsup>\<up>\<nu>\<^esup> < (\<kappa>\<^bsup>\<up>\<nu>\<^esup>)\<^bsup>\<up>\<nu>\<^esup>" 
+    using konigs_theorem by simp
   ultimately
   show "False" using cexp_cexp_cmult InfCard_csquare_eq by auto
 qed
 
-corollary cf_continuum: "\<aleph>0 < cf(2 \<up> \<aleph>0)"
+corollary cf_continuum: "\<aleph>\<^bsub>0\<^esub> < cf(2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^esup>)"
   using cf_cexp InfCard_Aleph nat_into_Card by simp
 
 end

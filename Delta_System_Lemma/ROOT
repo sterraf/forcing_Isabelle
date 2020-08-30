@@ -1,6 +1,6 @@
 chapter "ZF"
 
-session Delta_System_Lemma in "." =  "ZF" +
+session Delta_System_Lemma in "." =  "ZF-Constructible" +
   description "
     Delta System Lemma
 
@@ -9,8 +9,6 @@ session Delta_System_Lemma in "." =  "ZF" +
   options [document = pdf, document_output = "output", 
   	   quick_and_dirty (* sorry *),
   	   document_variants = "document:outline=/proof,/ML"]
-  theories [ document = false ]
-    "~~/src/ZF/Constructible/Normal"
   theories
     "Delta_System"
   document_files

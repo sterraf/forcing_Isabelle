@@ -1,6 +1,7 @@
 theory Cofinality 
   imports 
-    ZF "../Tools/Try0"
+    ZF 
+    "../Tools/Try0"
 begin
 
 definition

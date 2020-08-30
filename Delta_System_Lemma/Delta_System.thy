@@ -29,59 +29,59 @@ begin
 
 lemma cf_Aleph_Limit:
   assumes "Limit(\<gamma>)"
-  shows "cf(\<aleph>\<gamma>) = cf(\<gamma>)" 
+  shows "cf(\<aleph>\<^bsub>\<gamma>\<^esub>) = cf(\<gamma>)" 
 proof -
   note \<open>Limit(\<gamma>)\<close>
   moreover from this
-  have "(\<lambda>x\<in>\<gamma>. \<aleph>x) : \<gamma> \<rightarrow> \<aleph>\<gamma>" (is "?f : _ \<rightarrow> _")
-    using lam_funtype[of _ Aleph] fun_weaken_type[of _ _ _ "\<aleph>\<gamma>"] by blast
+  have "(\<lambda>x\<in>\<gamma>. \<aleph>\<^bsub>x\<^esub>) : \<gamma> \<rightarrow> \<aleph>\<^bsub>\<gamma>\<^esub>" (is "?f : _ \<rightarrow> _")
+    using lam_funtype[of _ Aleph] fun_weaken_type[of _ _ _ "\<aleph>\<^bsub>\<gamma>\<^esub>"] by blast
   moreover from \<open>Limit(\<gamma>)\<close>
-  have "x \<in> y \<Longrightarrow> \<aleph>x \<in> \<aleph>y" if "x \<in> \<gamma>" "y \<in> \<gamma>" for x y
+  have "x \<in> y \<Longrightarrow> \<aleph>\<^bsub>x\<^esub> \<in> \<aleph>\<^bsub>y\<^esub>" if "x \<in> \<gamma>" "y \<in> \<gamma>" for x y
     using that Ord_in_Ord[of \<gamma>] Ord_trans[of _ _ \<gamma>] by blast
   ultimately
-  have "?f \<in> mono_map(\<gamma>,Memrel(\<gamma>),\<aleph>\<gamma>, Memrel(\<aleph>\<gamma>))"
+  have "?f \<in> mono_map(\<gamma>,Memrel(\<gamma>),\<aleph>\<^bsub>\<gamma>\<^esub>, Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>))"
     by auto
   with  \<open>Limit(\<gamma>)\<close> 
-  have "?f \<in> \<langle>\<gamma>, Memrel(\<gamma>)\<rangle> \<cong> \<langle>?f``\<gamma>, Memrel(\<aleph>\<gamma>)\<rangle>"
-    using mono_map_imp_ord_iso_Memrel[of \<gamma> "\<aleph>\<gamma>" ?f] 
+  have "?f \<in> \<langle>\<gamma>, Memrel(\<gamma>)\<rangle> \<cong> \<langle>?f``\<gamma>, Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>)\<rangle>"
+    using mono_map_imp_ord_iso_Memrel[of \<gamma> "\<aleph>\<^bsub>\<gamma>\<^esub>" ?f] 
       Card_Aleph (* Already an intro rule, but need it explicitly *)
     by blast
   then
-  have "converse(?f) \<in> \<langle>?f``\<gamma>, Memrel(\<aleph>\<gamma>)\<rangle> \<cong> \<langle>\<gamma>, Memrel(\<gamma>)\<rangle>"
+  have "converse(?f) \<in> \<langle>?f``\<gamma>, Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>)\<rangle> \<cong> \<langle>\<gamma>, Memrel(\<gamma>)\<rangle>"
     using ord_iso_sym by simp
   with \<open>Limit(\<gamma>)\<close>
-  have "ordertype(?f``\<gamma>, Memrel(\<aleph>\<gamma>)) = \<gamma>"
+  have "ordertype(?f``\<gamma>, Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>)) = \<gamma>"
     using ordertype_eq[OF _ well_ord_Memrel]
     ordertype_Memrel by auto
   moreover from \<open>Limit(\<gamma>)\<close>
-  have "cofinal(?f``\<gamma>, \<aleph>\<gamma>, Memrel(\<aleph>\<gamma>))" 
+  have "cofinal(?f``\<gamma>, \<aleph>\<^bsub>\<gamma>\<^esub>, Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>))" 
     unfolding cofinal_def 
   proof (standard, intro ballI)
     fix a
-    assume "a\<in>\<aleph>\<gamma>" "\<aleph>\<gamma> = (\<Union>i<\<gamma>. \<aleph>i)"
+    assume "a\<in>\<aleph>\<^bsub>\<gamma>\<^esub>" "\<aleph>\<^bsub>\<gamma>\<^esub> = (\<Union>i<\<gamma>. \<aleph>\<^bsub>i\<^esub>)"
     moreover from this
-    obtain i where "i<\<gamma>" "a\<in>\<aleph>i"
+    obtain i where "i<\<gamma>" "a\<in>\<aleph>\<^bsub>i\<^esub>"
       by auto
     moreover from this and \<open>Limit(\<gamma>)\<close>
     have "Ord(i)" using ltD Ord_in_Ord by blast
     moreover from \<open>Limit(\<gamma>)\<close> and calculation
     have "succ(i) \<in> \<gamma>" using ltD by auto
     moreover from this and \<open>Ord(i)\<close>
-    have "\<aleph>i < \<aleph>(succ(i))" 
+    have "\<aleph>\<^bsub>i\<^esub> < \<aleph>\<^bsub>succ(i)\<^esub>" 
       by (auto) 
     ultimately
-    have "<a,\<aleph>i> \<in> Memrel(\<aleph>\<gamma>)"
+    have "<a,\<aleph>\<^bsub>i\<^esub>> \<in> Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>)"
       using ltD by (auto dest:Aleph_mono)
     moreover from \<open>i<\<gamma>\<close>
-    have "\<aleph>i \<in> ?f``\<gamma>" 
+    have "\<aleph>\<^bsub>i\<^esub> \<in> ?f``\<gamma>" 
       using ltD apply_in_image[OF \<open>?f : _ \<rightarrow> _\<close>] by auto
     ultimately
-    show "\<exists>x\<in>?f `` \<gamma>. \<langle>a, x\<rangle> \<in> Memrel(\<aleph>\<gamma>) \<or> a = x" by blast
+    show "\<exists>x\<in>?f `` \<gamma>. \<langle>a, x\<rangle> \<in> Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>) \<or> a = x" by blast
   qed
   moreover
-  note \<open>?f: \<gamma> \<rightarrow> \<aleph>\<gamma>\<close> \<open>Limit(\<gamma>)\<close>
+  note \<open>?f: \<gamma> \<rightarrow> \<aleph>\<^bsub>\<gamma>\<^esub>\<close> \<open>Limit(\<gamma>)\<close>
   ultimately
-  show "cf(\<aleph>\<gamma>) =  cf(\<gamma>)"
+  show "cf(\<aleph>\<^bsub>\<gamma>\<^esub>) =  cf(\<gamma>)"
     using cf_ordertype_cofinal[OF Limit_Aleph Image_sub_codomain, of \<gamma> ?f \<gamma> \<gamma> ] 
       Limit_is_Ord by simp 
 qed
@@ -127,22 +127,22 @@ proof -
     by (rule_tac le_trans[OF _ cardinal_UN_le]) (auto intro:Ord_0_le)+
 qed
 
-lemma nat_lt_aleph1: "nat<\<aleph>1"
+lemma nat_lt_aleph1: "nat<\<aleph>\<^bsub>1\<^esub>"
   by (simp add: Aleph_def lt_csucc)
 
-lemma zero_lt_aleph1: "0<\<aleph>1"
+lemma zero_lt_aleph1: "0<\<aleph>\<^bsub>1\<^esub>"
   by (rule lt_trans[of _ "nat"], auto simp add: ltI nat_lt_aleph1)
 
-lemma le_aleph1_nat: "Card(k) \<Longrightarrow> k<\<aleph>1 \<Longrightarrow> k \<le> nat"    
+lemma le_aleph1_nat: "Card(k) \<Longrightarrow> k<\<aleph>\<^bsub>1\<^esub> \<Longrightarrow> k \<le> nat"    
   by (simp add: Aleph_def  Card_lt_csucc_iff Card_nat)
 
 lemma cof_aleph1_aux: "function(G) \<Longrightarrow> domain(G) \<lesssim> nat \<Longrightarrow> 
-   \<forall>n\<in>domain(G). |G`n|<\<aleph>1 \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<le>nat"
+   \<forall>n\<in>domain(G). |G`n|<\<aleph>\<^bsub>1\<^esub> \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<le>nat"
 proof -
   assume "function(G)"
   let ?N="domain(G)" and ?R="\<Union>n\<in>domain(G). G`n"
   assume "?N \<lesssim> nat"
-  assume Eq1: "\<forall>n\<in>?N. |G`n|<\<aleph>1"
+  assume Eq1: "\<forall>n\<in>?N. |G`n|<\<aleph>\<^bsub>1\<^esub>"
   {
     fix n
     assume "n\<in>?N"
@@ -159,47 +159,47 @@ qed
 lemma Pi_vimage_subset : "f \<in> Pi(A,B) \<Longrightarrow> f-``C \<subseteq> A"
   unfolding Pi_def by auto
 
-lemma aleph1_eq_cardinal_vimage: "f:\<aleph>1\<rightarrow>nat \<Longrightarrow> \<exists>n\<in>nat. |f-``{n}| = \<aleph>1"
+lemma aleph1_eq_cardinal_vimage: "f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>nat \<Longrightarrow> \<exists>n\<in>nat. |f-``{n}| = \<aleph>\<^bsub>1\<^esub>"
 proof -
-  assume "f:\<aleph>1\<rightarrow>nat"
+  assume "f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>nat"
   then
-  have "function(f)" "domain(f) = \<aleph>1" "range(f)\<subseteq>nat"
+  have "function(f)" "domain(f) = \<aleph>\<^bsub>1\<^esub>" "range(f)\<subseteq>nat"
     by (simp_all add: domain_of_fun fun_is_function range_of_function)
   let ?G="\<lambda>n\<in>range(f). f-``{n}"
-  from \<open>f:\<aleph>1\<rightarrow>nat\<close>
+  from \<open>f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>nat\<close>
   have "range(f) \<subseteq> nat" by (simp add: range_of_function)
   then
   have "domain(?G) \<lesssim> nat"
     using subset_imp_lepoll by simp
   have "function(?G)" by (simp add:function_lam)
-  from \<open>f:\<aleph>1\<rightarrow>nat\<close>
-  have "n\<in>nat \<Longrightarrow> f-``{n} \<subseteq> \<aleph>1" for n
+  from \<open>f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>nat\<close>
+  have "n\<in>nat \<Longrightarrow> f-``{n} \<subseteq> \<aleph>\<^bsub>1\<^esub>" for n
     using Pi_vimage_subset by simp
   with \<open>range(f) \<subseteq> nat\<close>
-  have "\<aleph>1 = (\<Union>n\<in>range(f). f-``{n})"
+  have "\<aleph>\<^bsub>1\<^esub> = (\<Union>n\<in>range(f). f-``{n})"
   proof (intro equalityI, intro subsetI)
     fix x 
-    assume "x \<in> \<aleph>1"
-    with \<open>f:\<aleph>1\<rightarrow>nat\<close> \<open>function(f)\<close> \<open>domain(f) = \<aleph>1\<close>
+    assume "x \<in> \<aleph>\<^bsub>1\<^esub>"
+    with \<open>f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>nat\<close> \<open>function(f)\<close> \<open>domain(f) = \<aleph>\<^bsub>1\<^esub>\<close>
     have "x \<in> f-``{f`x}" "f`x \<in> range(f)" 
       using function_apply_Pair vimage_iff apply_rangeI by simp_all
     then 
     show "x \<in> (\<Union>n\<in>range(f). f-``{n})" by auto
   qed auto
   {
-    assume "\<forall>n\<in>range(f). |f-``{n}| < \<aleph>1"
+    assume "\<forall>n\<in>range(f). |f-``{n}| < \<aleph>\<^bsub>1\<^esub>"
     then 
-    have "\<forall>n\<in>domain(?G). |?G`n| < \<aleph>1" 
+    have "\<forall>n\<in>domain(?G). |?G`n| < \<aleph>\<^bsub>1\<^esub>" 
       using zero_lt_aleph1 by (auto)
     with \<open>function(?G)\<close> \<open>domain(?G) \<lesssim> nat\<close> 
     have "|\<Union>n\<in>domain(?G). ?G`n|\<le>nat"
       using cof_aleph1_aux by (blast del:lepollD)  (* force/auto won't do it here *)
     then 
     have "|\<Union>n\<in>range(f). f-``{n}|\<le>nat" by simp
-    with \<open>\<aleph>1 = _\<close>
-    have "|\<aleph>1| \<le> nat" by simp
+    with \<open>\<aleph>\<^bsub>1\<^esub> = _\<close>
+    have "|\<aleph>\<^bsub>1\<^esub>| \<le> nat" by simp
     then 
-    have "\<aleph>1 \<le> nat"
+    have "\<aleph>\<^bsub>1\<^esub> \<le> nat"
       using Card_Aleph Card_cardinal_eq
       by simp
     then 
@@ -207,22 +207,22 @@ proof -
       using nat_lt_aleph1 by (blast dest:lt_trans2)
   }
   with \<open>range(f)\<subseteq>nat\<close> 
-  obtain n where "n\<in>nat" "\<not>(|f -`` {n}| < \<aleph>1)"
+  obtain n where "n\<in>nat" "\<not>(|f -`` {n}| < \<aleph>\<^bsub>1\<^esub>)"
     by blast
   moreover from this
-  have "\<aleph>1 \<le> |f-``{n}|"
+  have "\<aleph>\<^bsub>1\<^esub> \<le> |f-``{n}|"
     using not_lt_iff_le Card_is_Ord by auto
   moreover
-  note \<open>n\<in>nat \<Longrightarrow> f-``{n} \<subseteq> \<aleph>1\<close>
+  note \<open>n\<in>nat \<Longrightarrow> f-``{n} \<subseteq> \<aleph>\<^bsub>1\<^esub>\<close>
   ultimately
   show ?thesis
-    using subset_imp_le_cardinal[THEN le_anti_sym, of _ "\<aleph>1"]
+    using subset_imp_le_cardinal[THEN le_anti_sym, of _ "\<aleph>\<^bsub>1\<^esub>"]
       Card_Aleph Card_cardinal_eq by auto
 qed
 
 lemma eqpoll_aleph1_cardinal_vimage:
-  assumes "X \<approx> \<aleph>1" "f : X \<rightarrow> nat"
-  shows "\<exists>n\<in>nat. |f-``{n}| = \<aleph>1"
+  assumes "X \<approx> \<aleph>\<^bsub>1\<^esub>" "f : X \<rightarrow> nat"
+  shows "\<exists>n\<in>nat. |f-``{n}| = \<aleph>\<^bsub>1\<^esub>"
   oops
 
 definition
@@ -239,7 +239,7 @@ lemma delta_systemD[dest!]:
   unfolding delta_system_def by simp
 
 lemma delta_system_aleph1:
-  assumes "\<forall>A\<in>F. Finite(A)" "F \<approx> \<aleph>1"
+  assumes "\<forall>A\<in>F. Finite(A)" "F \<approx> \<aleph>\<^bsub>1\<^esub>"
   shows "\<exists>D. D \<subseteq> F \<and> delta_system(D)"
 proof -
   obtain n G where "n\<in>nat" "G \<subseteq> F" "A\<in>F \<Longrightarrow> |A| = n" for A
@@ -255,10 +255,10 @@ proof -
   next
     case (succ n)
     show ?case
-    proof (cases "\<exists>p. {A\<in>G . p \<in> A} \<approx> \<aleph>1")
+    proof (cases "\<exists>p. {A\<in>G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>")
       case True
       then
-      obtain p where "{A\<in>G . p \<in> A} \<approx> \<aleph>1" by blast
+      obtain p where "{A\<in>G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>" by blast
       from succ(1,3-5)
       have "\<forall>A\<in>G. p\<in>A \<longrightarrow> |A - {p}| = n"
         using Finite_imp_succ_cardinal_Diff[of _ p] by force
@@ -272,11 +272,11 @@ proof -
       show ?thesis by auto
     next
       case False
-      moreover from \<open>G\<subseteq>F\<close> \<open>F \<approx> \<aleph>1\<close>
-      have "{A \<in> G . p \<in> A} \<lesssim> \<aleph>1" for p
+      moreover from \<open>G\<subseteq>F\<close> \<open>F \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+      have "{A \<in> G . p \<in> A} \<lesssim> \<aleph>\<^bsub>1\<^esub>" for p
         by (blast intro:lepoll_eq_trans[OF subset_imp_lepoll])
       ultimately
-      have "{A \<in> G . p \<in> A} \<prec> \<aleph>1" for p
+      have "{A \<in> G . p \<in> A} \<prec> \<aleph>\<^bsub>1\<^esub>" for p
         unfolding lesspoll_def by simp
       then show ?thesis sorry
     qed
