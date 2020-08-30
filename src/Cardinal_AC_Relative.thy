@@ -307,45 +307,50 @@ qed (simp_all add:types)
 
 end (* M_cardinal_AC *)
 
-lemma separation_absolute: "separation(\<lambda>_. True, P)"
+text\<open>The set-theoretic universe.\<close>
+
+abbreviation
+  Universe :: "i\<Rightarrow>o" (\<open>\<V>\<close>) where
+  "\<V>(x) \<equiv> True"
+
+lemma separation_absolute: "separation(\<V>, P)"
   unfolding separation_def
   by (rule rallI, rule_tac x="{x\<in>_ . P(x)}" in rexI) auto
 
 lemma univalent_absolute:
-  assumes "univalent(\<lambda>_. True, A, P)"
-    "P(x, b)"  "x \<in> A"
+  assumes "univalent(\<V>, A, P)" "P(x, b)" "x \<in> A"
   shows "P(x, y) \<Longrightarrow> y = b"
   using assms
   unfolding univalent_def by force
 
-lemma replacement_absolute: "strong_replacement(\<lambda>_. True, P)"
+lemma replacement_absolute: "strong_replacement(\<V>, P)"
   unfolding strong_replacement_def
 proof (intro rallI impI)
   fix A
-  assume "univalent(\<lambda>_. True, A, P)"
+  assume "univalent(\<V>, A, P)"
   then
-  show "\<exists>Y[\<lambda>_. True]. \<forall>b[\<lambda>_. True]. b \<in> Y \<longleftrightarrow> (\<exists>x[\<lambda>_. True]. x \<in> A \<and> P(x, b))"
+  show "\<exists>Y[\<V>]. \<forall>b[\<V>]. b \<in> Y \<longleftrightarrow> (\<exists>x[\<V>]. x \<in> A \<and> P(x, b))"
     by (rule_tac x="{y. x\<in>A , P(x,y)}" in rexI)
       (auto dest:univalent_absolute[of _ P])
 qed
 
-lemma Union_ax_absolute: "Union_ax(\<lambda>_. True)"
+lemma Union_ax_absolute: "Union_ax(\<V>)"
     unfolding Union_ax_def big_union_def
     by (auto intro:rexI[of _ "\<Union>_"])
 
-lemma upair_ax_absolute: "upair_ax(\<lambda>_. True)"
+lemma upair_ax_absolute: "upair_ax(\<V>)"
   unfolding upair_ax_def upair_def rall_def rex_def
     by (auto)
 
-lemma power_ax_absolute:"power_ax(\<lambda>_. True)"
+lemma power_ax_absolute:"power_ax(\<V>)"
 proof -
   {
     fix x
-    have "\<forall>y[\<lambda>_. True]. y \<in> Pow(x) \<longleftrightarrow> (\<forall>z[\<lambda>_. True]. z \<in> y \<longrightarrow> z \<in> x)"
+    have "\<forall>y[\<V>]. y \<in> Pow(x) \<longleftrightarrow> (\<forall>z[\<V>]. z \<in> y \<longrightarrow> z \<in> x)"
       by auto
   }
   then
-  show "power_ax(\<lambda>_. True)"
+  show "power_ax(\<V>)"
     unfolding power_ax_def powerset_def subset_def by blast
 qed
 
@@ -388,13 +393,13 @@ proof (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff Pi_assumptions)
   then
   have "\<And>i. i\<in>K \<Longrightarrow> M(inj\<^bsup>M\<^esup>(X(i), K))"
     by (auto simp add: types)
-  interpret V:M_N_Perm M "\<lambda>_. True"
+  interpret V:M_N_Perm M "\<V>"
     using separation_absolute replacement_absolute Union_ax_absolute
       power_ax_absolute upair_ax_absolute
     by unfold_locales auto
   note bad_simps[simp del] = V.N.Forall_in_M_iff V.N.Equal_in_M_iff
     V.N.nonempty
-  have abs:"inj_rel(\<lambda>_. True,x,y) = inj(x,y)" for x y
+  have abs:"inj_rel(\<V>,x,y) = inj(x,y)" for x y
     using V.N.inj_rel_char by simp
   from asm
   have "\<And>i. i\<in>K \<Longrightarrow> \<exists>f[M]. f \<in> inj\<^bsup>M\<^esup>(X(i), K)"

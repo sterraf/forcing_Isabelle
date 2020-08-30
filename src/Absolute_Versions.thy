@@ -6,9 +6,9 @@ theory Absolute_Versions
 
 begin
 
-subsection\<open>Locales of a class "M" hold in V\<close>
+subsection\<open>Locales of a class "M" hold in \<^term>\<open>\<V>\<close>\<close>
 
-interpretation V: M_trivial "\<lambda>_. True"
+interpretation V: M_trivial \<V>
   using Union_ax_absolute upair_ax_absolute
   by unfold_locales auto
 
@@ -24,7 +24,7 @@ lemmas bad_M_trivial_rules[rule del] =  V.pair_in_MI V.singleton_in_MI V.pair_in
   V.Un_closed V.strong_replacement_closed V.nonempty
 
 
-interpretation V:M_basic "\<lambda>_. True"
+interpretation V:M_basic \<V>
   using power_ax_absolute separation_absolute replacement_absolute
   by unfold_locales auto
 
@@ -32,7 +32,7 @@ lemmas bad_M_basic_rules[simp del, rule del] =
   V.cartprod_closed V.finite_funspace_closed V.converse_closed
   V.list_case'_closed V.pred_closed
 
-interpretation V:M_cardinal_arith "\<lambda>_. True"
+interpretation V:M_cardinal_arith \<V>
   by unfold_locales (auto intro:separation_absolute replacement_absolute
       simp add:iterates_replacement_def wfrec_replacement_def)
 
@@ -41,10 +41,12 @@ lemmas bad_M_cardinals_rules[simp del, rule del] =
 
 named_theorems V_simps
 
-lemma eqpoll_rel_absolute[V_simps]: "eqpoll_rel(\<lambda>_. True,x,y) \<longleftrightarrow> eqpoll(x,y)"
+\<comment> \<open>To work systematically, ASCII versions of "_absolute" theorems as
+    those below are preferable.\<close>
+lemma eqpoll_rel_absolute[V_simps]: "x \<approx>\<^bsup>\<V>\<^esup> y \<longleftrightarrow> x \<approx> y"
   unfolding eqpoll_def using V.def_eqpoll_rel by auto
 
-lemma cardinal_rel_absolute[V_simps]: "V.cardinal_rel(x) = cardinal(x)"
+lemma cardinal_rel_absolute[V_simps]: "|x|\<^bsup>\<V>\<^esup> = |x|"
   unfolding cardinal_def using V.def_cardinal_rel eqpoll_rel_absolute
   by simp
 
@@ -53,10 +55,10 @@ lemma Ord_cardinal_idem': "Ord(A) \<Longrightarrow> ||A|| = |A|"
   using V.Ord_cardinal_rel_idem by (simp add:V_simps)
 
 \<comment> \<open>Example of a transfer result between a transitive model and $V$\<close>
-lemma (in M_Perm) assumes "M(A)" "M(B)" "A \<approx>r B"
+lemma (in M_Perm) assumes "M(A)" "M(B)" "A \<approx>\<^bsup>M\<^esup> B"
   shows "A \<approx> B"
 proof -
-  interpret M_N_Perm M "\<lambda>_. True"
+  interpret M_N_Perm M "\<V>"
     by (unfold_locales, simp)
   from assms
   show ?thesis using eqpoll_rel_transfer 
