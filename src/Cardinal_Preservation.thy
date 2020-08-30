@@ -183,12 +183,12 @@ proof -
           for \<^term>\<open>M\<close> and one for \<^term>\<open>M[G]\<close>\<close>
     assume "q\<in>G"
     with assms \<open>M_generic(G)\<close>
-    have "M[G], map(val(G),[f,a,b'\<^sup>v]) \<Turnstile> ?\<phi>"
+    have "M[G], map(val(P,G),[f,a,b'\<^sup>v]) \<Turnstile> ?\<phi>"
       using truth_lemma[of ?\<phi> G "[f,a,b'\<^sup>v]"]
       by (auto simp add:nat_simp_union arity_fun_apply_fm
           fun_apply_type)
     with \<open>b \<noteq> b'\<close> types
-    have "M[G], map(val(G),[f,a,b\<^sup>v]) \<Turnstile> Neg(?\<phi>)"
+    have "M[G], map(val(P,G),[f,a,b\<^sup>v]) \<Turnstile> Neg(?\<phi>)"
       using GenExtI by auto
   }
   with types
@@ -308,7 +308,7 @@ declare mg_sharp_simps[simp del, simplified setclass_iff, simp]
 
 \<comment> \<open>Kunen IV.2.31\<close>
 lemma forces_below_filter:
-  assumes "M[G], map(val(G),env) \<Turnstile> \<phi>" "p \<in> G"
+  assumes "M[G], map(val(P,G),env) \<Turnstile> \<phi>" "p \<in> G"
     "arity(\<phi>) \<le> length(env)" "\<phi> \<in> formula" "env \<in> list(M)"
   shows "\<exists>q\<in>G. q \<preceq> p \<and> q \<tturnstile> \<phi> env"
 proof -
@@ -333,7 +333,7 @@ lemma ccc_fun_approximation_lemma:
 proof -
   let ?\<phi>="typed_function_fm(1,2,0)"\<comment> \<open>formula for \<^term>\<open>f : A\<rightarrow> B\<close>\<close>
   from \<open>f\<in>M[G]\<close>
-  obtain f_dot where "f = val(G,f_dot)" "f_dot\<in>M" using GenExtD by force
+  obtain f_dot where "f = val(P,G,f_dot)" "f_dot\<in>M" using GenExtD by force
   with assms
   obtain p where "p \<tturnstile> ?\<phi> [f_dot, A\<^sup>v, B\<^sup>v]" "p\<in>G"
     using generic truth_lemma[of ?\<phi> G "[f_dot, A\<^sup>v, B\<^sup>v]"]
@@ -355,9 +355,9 @@ proof -
     have "M[G], [f, a, f`a] \<Turnstile> ?app_fm"
       by (auto dest:transM)
     moreover
-    note \<open>B\<in>M\<close> \<open>f = val(G,f_dot)\<close>
+    note \<open>B\<in>M\<close> \<open>f = val(P,G,f_dot)\<close>
     moreover from calculation
-    have "a\<in>M" "val(G, f_dot)`a\<in>M"
+    have "a\<in>M" "val(P,G, f_dot)`a\<in>M"
       by (auto dest:transM)
     moreover
     note \<open>f_dot\<in>M\<close> \<open>p\<in>G\<close>

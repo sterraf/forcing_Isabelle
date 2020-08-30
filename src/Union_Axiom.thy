@@ -78,18 +78,18 @@ proof -
 qed
 
 lemma Union_MG_Eq :
-  assumes "a \<in> M[G]" and "a = val(G,\<tau>)" and "filter(G)" and "\<tau> \<in> M"
-  shows "\<Union> a = val(G,Union_name(\<tau>))"
+  assumes "a \<in> M[G]" and "a = val(P,G,\<tau>)" and "filter(G)" and "\<tau> \<in> M"
+  shows "\<Union> a = val(P,G,Union_name(\<tau>))"
 proof -
   {
     fix x
-    assume "x \<in> \<Union> (val(G,\<tau>))"
-    then obtain i where "i \<in> val(G,\<tau>)" "x \<in> i" by blast
+    assume "x \<in> \<Union> (val(P,G,\<tau>))"
+    then obtain i where "i \<in> val(P,G,\<tau>)" "x \<in> i" by blast
     with \<open>\<tau> \<in> M\<close> obtain \<sigma> q where
-      "q \<in> G" "\<langle>\<sigma>,q\<rangle> \<in> \<tau>" "val(G,\<sigma>) = i" "\<sigma> \<in> M"
+      "q \<in> G" "\<langle>\<sigma>,q\<rangle> \<in> \<tau>" "val(P,G,\<sigma>) = i" "\<sigma> \<in> M"
       using elem_of_val_pair domain_trans[OF trans_M] by blast
     with \<open>x \<in> i\<close> obtain \<theta> r where
-      "r \<in> G" "\<langle>\<theta>,r\<rangle> \<in> \<sigma>" "val(G,\<theta>) = x" "\<theta> \<in> M"
+      "r \<in> G" "\<langle>\<theta>,r\<rangle> \<in> \<sigma>" "val(P,G,\<theta>) = x" "\<theta> \<in> M"
       using elem_of_val_pair domain_trans[OF trans_M] by blast
     with \<open>\<langle>\<sigma>,q\<rangle>\<in>\<tau>\<close> have "\<theta> \<in> domain(\<Union>(domain(\<tau>)))" by auto
     with \<open>filter(G)\<close> \<open>q\<in>G\<close> \<open>r\<in>G\<close> obtain p where
@@ -103,18 +103,18 @@ proof -
       unfolding Union_name_def Union_name_body_def
       by auto
     with \<open>p\<in>P\<close> \<open>p\<in>G\<close>
-    have "val(G,\<theta>) \<in> val(G,Union_name(\<tau>))"
+    have "val(P,G,\<theta>) \<in> val(P,G,Union_name(\<tau>))"
       using val_of_elem by simp
-    with \<open>val(G,\<theta>)=x\<close>
-    have "x \<in> val(G,Union_name(\<tau>))" by simp
+    with \<open>val(P,G,\<theta>)=x\<close>
+    have "x \<in> val(P,G,Union_name(\<tau>))" by simp
   }
-  with \<open>a=val(G,\<tau>)\<close>
-  have 1: "x \<in> \<Union> a \<Longrightarrow> x \<in> val(G,Union_name(\<tau>))" for x by simp
+  with \<open>a=val(P,G,\<tau>)\<close>
+  have 1: "x \<in> \<Union> a \<Longrightarrow> x \<in> val(P,G,Union_name(\<tau>))" for x by simp
   {
     fix x
-    assume "x \<in> (val(G,Union_name(\<tau>)))"
+    assume "x \<in> (val(P,G,Union_name(\<tau>)))"
     then obtain \<theta> p where
-      "p \<in> G" "\<langle>\<theta>,p\<rangle> \<in> Union_name(\<tau>)" "val(G,\<theta>) = x"
+      "p \<in> G" "\<langle>\<theta>,p\<rangle> \<in> Union_name(\<tau>)" "val(P,G,\<theta>) = x"
       using elem_of_val_pair by blast
     with \<open>filter(G)\<close> have "p\<in>P" using filterD by simp
     from \<open>\<langle>\<theta>,p\<rangle> \<in> Union_name(\<tau>)\<close> obtain \<sigma> q r where
@@ -123,14 +123,14 @@ proof -
     with \<open>p\<in>G\<close> \<open>filter(G)\<close> have "r \<in> G" "q \<in> G"
       using filter_leqD by auto
     with \<open>\<langle>\<theta>,r\<rangle> \<in> \<sigma>\<close> \<open>\<langle>\<sigma>,q\<rangle>\<in>\<tau>\<close> \<open>q\<in>P\<close> \<open>r\<in>P\<close> have
-      "val(G,\<sigma>) \<in> val(G,\<tau>)" "val(G,\<theta>) \<in> val(G,\<sigma>)"
+      "val(P,G,\<sigma>) \<in> val(P,G,\<tau>)" "val(P,G,\<theta>) \<in> val(P,G,\<sigma>)"
       using val_of_elem by simp+
-    then have "val(G,\<theta>) \<in> \<Union> val(G,\<tau>)" by blast
-    with \<open>val(G,\<theta>)=x\<close> \<open>a=val(G,\<tau>)\<close> have
+    then have "val(P,G,\<theta>) \<in> \<Union> val(P,G,\<tau>)" by blast
+    with \<open>val(P,G,\<theta>)=x\<close> \<open>a=val(P,G,\<tau>)\<close> have
       "x \<in> \<Union> a" by simp
   }
-  with \<open>a=val(G,\<tau>)\<close>
-  have "x \<in> val(G,Union_name(\<tau>)) \<Longrightarrow> x \<in> \<Union> a" for x by blast
+  with \<open>a=val(P,G,\<tau>)\<close>
+  have "x \<in> val(P,G,Union_name(\<tau>)) \<Longrightarrow> x \<in> \<Union> a" for x by blast
   then
   show ?thesis using 1 by blast
 qed
@@ -143,14 +143,14 @@ proof -
     then
     interpret mgtrans : M_trans "##M[G]"
       using transitivity_MG by (unfold_locales; auto)
-    from \<open>a\<in>_\<close> obtain \<tau> where "\<tau> \<in> M" "a=val(G,\<tau>)" using GenExtD by blast
+    from \<open>a\<in>_\<close> obtain \<tau> where "\<tau> \<in> M" "a=val(P,G,\<tau>)" using GenExtD by blast
     then
     have "Union_name(\<tau>) \<in> M" (is "?\<pi> \<in> _") using Union_name_M unfolding Union_name_def by simp
     then
-    have "val(G,?\<pi>) \<in> M[G]" (is "?U \<in> _") using GenExtI by simp
+    have "val(P,G,?\<pi>) \<in> M[G]" (is "?U \<in> _") using GenExtI by simp
     with \<open>a\<in>_\<close>
     have "(##M[G])(a)" "(##M[G])(?U)" by auto
-    with \<open>\<tau> \<in> M\<close> \<open>filter(G)\<close> \<open>?U \<in> M[G]\<close> \<open>a=val(G,\<tau>)\<close>
+    with \<open>\<tau> \<in> M\<close> \<open>filter(G)\<close> \<open>?U \<in> M[G]\<close> \<open>a=val(P,G,\<tau>)\<close>
     have "big_union(##M[G],a,?U)"
       using Union_MG_Eq Union_abs by simp
     with \<open>?U \<in> M[G]\<close>

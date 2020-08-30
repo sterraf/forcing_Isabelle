@@ -111,7 +111,7 @@ lemma Pow_inter_MG:
   shows
     "Pow(a) \<inter> M[G] \<in> M[G]"
 proof -
-  from assms obtain \<tau> where "\<tau> \<in> M" "val(G, \<tau>) = a"
+  from assms obtain \<tau> where "\<tau> \<in> M" "val(P,G, \<tau>) = a"
     using GenExtD by auto
   let ?Q="Pow(domain(\<tau>)\<times>P) \<inter> M"
   from \<open>\<tau>\<in>M\<close> 
@@ -138,7 +138,7 @@ proof -
     show ?thesis using \<open>Q\<in>M\<close> by simp
   qed
   let ?\<pi>="?Q\<times>{one}"
-  let ?b="val(G,?\<pi>)"
+  let ?b="val(P,G,?\<pi>)"
   from \<open>?Q\<in>M\<close> 
   have "?\<pi>\<in>M"
     using one_in_P P_in_M transitivity
@@ -150,7 +150,7 @@ proof -
   proof
     fix c
     assume "c \<in> Pow(a) \<inter> M[G]"
-    then obtain \<chi> where "c\<in>M[G]" "\<chi> \<in> M" "val(G,\<chi>) = c"
+    then obtain \<chi> where "c\<in>M[G]" "\<chi> \<in> M" "val(P,G,\<chi>) = c"
       using GenExtD by auto
     let ?\<theta>="{<\<sigma>,p> \<in>domain(\<tau>)\<times>P . p \<tturnstile> (Member(0,1)) [\<sigma>,\<chi>] }"
     have "arity(forces(Member(0,1))) = 6"
@@ -162,15 +162,15 @@ proof -
     then 
     have "?\<theta> \<in> ?Q" by auto
     then 
-    have "val(G,?\<theta>) \<in> ?b"
+    have "val(P,G,?\<theta>) \<in> ?b"
       using one_in_G one_in_P generic val_of_elem [of ?\<theta> one ?\<pi> G]
       by auto
-    have "val(G,?\<theta>) = c"
+    have "val(P,G,?\<theta>) = c"
     proof(intro equalityI subsetI)
       fix x
-      assume "x \<in> val(G,?\<theta>)"
+      assume "x \<in> val(P,G,?\<theta>)"
       then obtain \<sigma> p where
-        1: "<\<sigma>,p>\<in>?\<theta>" "p\<in>G" "val(G,\<sigma>) =  x"
+        1: "<\<sigma>,p>\<in>?\<theta>" "p\<in>G" "val(P,G,\<sigma>) =  x"
         using elem_of_val_pair
         by blast
       moreover from \<open><\<sigma>,p>\<in>?\<theta>\<close> \<open>?\<theta> \<in> M\<close>
@@ -180,14 +180,14 @@ proof -
       have "(p \<tturnstile> (Member(0,1)) [\<sigma>,\<chi>])" "p\<in>P"
         by simp_all
       moreover 
-      note \<open>val(G,\<chi>) = c\<close>
+      note \<open>val(P,G,\<chi>) = c\<close>
       ultimately 
       have "sats(M[G],Member(0,1),[x,c])"
         using \<open>\<chi> \<in> M\<close> generic definition_of_forcing nat_simp_union
         by auto
       moreover 
       have "x\<in>M[G]"
-        using \<open>val(G,\<sigma>) =  x\<close> \<open>\<sigma>\<in>M\<close>  \<open>\<chi>\<in>M\<close> GenExtI by blast
+        using \<open>val(P,G,\<sigma>) =  x\<close> \<open>\<sigma>\<in>M\<close>  \<open>\<chi>\<in>M\<close> GenExtI by blast
       ultimately 
       show "x\<in>c"
         using \<open>c\<in>M[G]\<close> by simp
@@ -197,12 +197,12 @@ proof -
       with \<open>c \<in> Pow(a) \<inter> M[G]\<close> 
       have "x \<in> a" "c\<in>M[G]" "x\<in>M[G]"
         using transitivity_MG by auto
-      with \<open>val(G, \<tau>) = a\<close>
-      obtain \<sigma> where "\<sigma>\<in>domain(\<tau>)" "val(G,\<sigma>) = x"
+      with \<open>val(P,G, \<tau>) = a\<close>
+      obtain \<sigma> where "\<sigma>\<in>domain(\<tau>)" "val(P,G,\<sigma>) = x"
         using elem_of_val by blast
-      moreover note \<open>x\<in>c\<close> \<open>val(G,\<chi>) = c\<close>
+      moreover note \<open>x\<in>c\<close> \<open>val(P,G,\<chi>) = c\<close>
       moreover from calculation 
-      have "val(G,\<sigma>) \<in> val(G,\<chi>)"
+      have "val(P,G,\<sigma>) \<in> val(P,G,\<chi>)"
         by simp
       moreover note \<open>c\<in>M[G]\<close> \<open>x\<in>M[G]\<close>
       moreover from calculation 
@@ -230,11 +230,11 @@ proof -
       ultimately
       have "<\<sigma>,p>\<in>?\<theta>"
         using \<open>\<sigma>\<in>domain(\<tau>)\<close> by simp
-      with \<open>val(G,\<sigma>) =  x\<close> \<open>p\<in>G\<close> 
-      show "x\<in>val(G,?\<theta>)"
+      with \<open>val(P,G,\<sigma>) =  x\<close> \<open>p\<in>G\<close> 
+      show "x\<in>val(P,G,?\<theta>)"
         using val_of_elem [of _ _ "?\<theta>"] by auto
     qed
-    with \<open>val(G,?\<theta>) \<in> ?b\<close> 
+    with \<open>val(P,G,?\<theta>) \<in> ?b\<close> 
     show "c\<in>?b" by simp
   qed
   then 

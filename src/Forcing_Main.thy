@@ -57,12 +57,12 @@ qed
 lemma (in forcing_data) surj_nat_MG :
   "\<exists>f. f \<in> surj(\<omega>,M[G])"
 proof -
-  let ?f="\<lambda>n\<in>\<omega>. val(G,enum`n)"
-  have "x \<in> \<omega> \<Longrightarrow> val(G, enum ` x)\<in> M[G]" for x
+  let ?f="\<lambda>n\<in>\<omega>. val(P,G,enum`n)"
+  have "x \<in> \<omega> \<Longrightarrow> val(P,G, enum ` x)\<in> M[G]" for x
     using GenExtD[THEN iffD2, of _ G] bij_is_fun[OF M_countable] by force
   then
   have "?f: \<omega> \<rightarrow> M[G]"
-    using lam_type[of \<omega> "\<lambda>n. val(G,enum`n)" "\<lambda>_.M[G]"] by simp
+    using lam_type[of \<omega> "\<lambda>n. val(P,G,enum`n)" "\<lambda>_.M[G]"] by simp
   moreover
   have "\<exists>n\<in>\<omega>. ?f`n = x" if "x\<in>M[G]" for x
     using that GenExtD[of _ G] bij_is_surj[OF M_countable]
@@ -137,9 +137,8 @@ proof -
   next
     show "seqle \<in> M" using seqle_in_M .
   qed
-  from cohen_extension_is_proper
-  obtain G where "M_generic(G)"
-    "M \<noteq> GenExt(G)" (is "M\<noteq>?N")
+  obtain G where "M_generic(G)" "M \<noteq> M\<^bsup>2\<^bsup><\<omega>\<^esup>\<^esup>[G]" (is "M\<noteq>?N")
+    using cohen_extension_is_proper
     by blast
   then
   interpret G_generic "2\<^bsup><\<omega>\<^esup>" seqle 0 _ enum G by unfold_locales

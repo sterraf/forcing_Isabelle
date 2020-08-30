@@ -268,6 +268,25 @@ proof(intro subsetI)
   show "y \<in> eclose({z})" using tr_edrel_eclose eclose_sing by simp
 qed
 
+definition
+  Hv :: "[i,i,i,i]\<Rightarrow>i" where
+  "Hv(P,G,x,f) \<equiv> { f`y .. y\<in> domain(x), \<exists>p\<in>P. \<langle>y,p\<rangle> \<in> x \<and> p \<in> G }"
+
+text\<open>The funcion \<^term>\<open>val\<close> interprets a name in \<^term>\<open>M\<close>
+according to a (generic) filter \<^term>\<open>G\<close>. Note the definition
+in terms of the well-founded recursor.\<close>
+
+definition
+  val :: "[i,i,i]\<Rightarrow>i" where
+  "val(P,G,\<tau>) \<equiv> wfrec(edrel(eclose({\<tau>})), \<tau> ,Hv(P,G))"
+
+definition
+  GenExt :: "[i,i,i]\<Rightarrow>i"     ("_\<^bsup>_\<^esup>[_]" [71,1])
+  where "M\<^bsup>P\<^esup>[G] \<equiv> {val(P,G,\<tau>). \<tau> \<in> M}"
+
+abbreviation (in forcing_notion)
+  GenExt_at_P :: "i\<Rightarrow>i\<Rightarrow>i"     ("_[_]" [71,1])
+  where "M[G] \<equiv> M\<^bsup>P\<^esup>[G]"
 
 context M_ctm
 begin
@@ -277,9 +296,6 @@ lemma upairM : "x \<in> M \<Longrightarrow> y \<in> M \<Longrightarrow> {x,y} \<
 
 lemma singletonM : "a \<in> M \<Longrightarrow> {a} \<in> M"
   by (simp flip: setclass_iff)
-
-lemma Rep_simp : "Replace(u,\<lambda> y z . z = f(y)) = { f(y) . y \<in> u}"
-  by(auto)
 
 end (* M_ctm *)
 
@@ -364,21 +380,9 @@ proof -
   show ?thesis using subset_trans by simp
 qed
 
-definition
-  Hv :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i" where
-  "Hv(G,x,f) \<equiv> { f`y .. y\<in> domain(x), \<exists>p\<in>P. \<langle>y,p\<rangle> \<in> x \<and> p \<in> G }"
-
-text\<open>The funcion \<^term>\<open>val\<close> interprets a name in \<^term>\<open>M\<close>
-according to a (generic) filter \<^term>\<open>G\<close>. Note the definition
-in terms of the well-founded recursor.\<close>
-
-definition
-  val :: "i\<Rightarrow>i\<Rightarrow>i" where
-  "val(G,\<tau>) \<equiv> wfrec(edrel(eclose({\<tau>})), \<tau> ,Hv(G))"
-
 lemma aux_def_val:
   assumes "z \<in> domain(x)"
-  shows "wfrec(edrel(eclose({x})),z,Hv(G)) = wfrec(edrel(eclose({z})),z,Hv(G))"
+  shows "wfrec(edrel(eclose({x})),z,Hv(P,G)) = wfrec(edrel(eclose({z})),z,Hv(P,G))"
 proof -
   let ?r="\<lambda>x . edrel(eclose({x}))"
   have "z\<in>eclose({z})" using arg_in_eclose_sing .
@@ -389,42 +393,42 @@ proof -
   moreover from assms
   have "tr_down(?r(x),z) \<subseteq> eclose({z})" using tr_edrel_subset by simp
   ultimately
-  have "wfrec(?r(x),z,Hv(G)) = wfrec[eclose({z})](?r(x),z,Hv(G))"
+  have "wfrec(?r(x),z,Hv(P,G)) = wfrec[eclose({z})](?r(x),z,Hv(P,G))"
     using wfrec_restr by simp
   also from \<open>z\<in>domain(x)\<close>
-  have "... = wfrec(?r(z),z,Hv(G))"
+  have "... = wfrec(?r(z),z,Hv(P,G))"
     using restrict_edrel_eq wfrec_restr_eq by simp
   finally show ?thesis .
 qed
 
 text\<open>The next lemma provides the usual recursive expresion for the definition of term\<open>val\<close>.\<close>
 
-lemma def_val:  "val(G,x) = {val(G,t) .. t\<in>domain(x) , \<exists>p\<in>P .  \<langle>t,p\<rangle>\<in>x \<and> p \<in> G }"
+lemma def_val:  "val(P,G,x) = {val(P,G,t) .. t\<in>domain(x) , \<exists>p\<in>P .  \<langle>t,p\<rangle>\<in>x \<and> p \<in> G }"
 proof -
   let
     ?r="\<lambda>\<tau> . edrel(eclose({\<tau>}))"
   let
-    ?f="\<lambda>z\<in>?r(x)-``{x}. wfrec(?r(x),z,Hv(G))"
+    ?f="\<lambda>z\<in>?r(x)-``{x}. wfrec(?r(x),z,Hv(P,G))"
   have "\<forall>\<tau>. wf(?r(\<tau>))" using wf_edrel by simp
   with wfrec [of _ x]
-  have "val(G,x) = Hv(G,x,?f)" using val_def by simp
+  have "val(P,G,x) = Hv(P,G,x,?f)" using val_def by simp
   also
-  have " ... = Hv(G,x,\<lambda>z\<in>domain(x). wfrec(?r(x),z,Hv(G)))"
+  have " ... = Hv(P,G,x,\<lambda>z\<in>domain(x). wfrec(?r(x),z,Hv(P,G)))"
     using dom_under_edrel_eclose by simp
   also
-  have " ... = Hv(G,x,\<lambda>z\<in>domain(x). val(G,z))"
+  have " ... = Hv(P,G,x,\<lambda>z\<in>domain(x). val(P,G,z))"
     using aux_def_val val_def by simp
   finally
   show ?thesis using Hv_def SepReplace_def by simp
 qed
 
-lemma val_mono : "x\<subseteq>y \<Longrightarrow> val(G,x) \<subseteq> val(G,y)"
+lemma val_mono : "x\<subseteq>y \<Longrightarrow> val(P,G,x) \<subseteq> val(P,G,y)"
   by (subst (1 2) def_val, force)
 
 text\<open>Check-names are the canonical names for elements of the
 ground model. Here we show that this is the case.\<close>
 
-lemma valcheck : "one \<in> G \<Longrightarrow>  one \<in> P \<Longrightarrow> val(G,check(y))  = y"
+lemma valcheck : "one \<in> G \<Longrightarrow>  one \<in> P \<Longrightarrow> val(P,G,check(y))  = y"
 proof (induct rule:eps_induct)
   case (1 y)
   then show ?case
@@ -432,129 +436,124 @@ proof (induct rule:eps_induct)
     have "check(y) = { \<langle>check(w), one\<rangle> . w \<in> y}"  (is "_ = ?C")
       using def_check .
     then
-    have "val(G,check(y)) = val(G, {\<langle>check(w), one\<rangle> . w \<in> y})"
+    have "val(P,G,check(y)) = val(P,G, {\<langle>check(w), one\<rangle> . w \<in> y})"
       by simp
     also
-    have " ...  = {val(G,t) .. t\<in>domain(?C) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>?C \<and> p \<in> G }"
+    have " ...  = {val(P,G,t) .. t\<in>domain(?C) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>?C \<and> p \<in> G }"
       using def_val by blast
     also
-    have " ... =  {val(G,t) .. t\<in>domain(?C) , \<exists>w\<in>y. t=check(w) }"
+    have " ... =  {val(P,G,t) .. t\<in>domain(?C) , \<exists>w\<in>y. t=check(w) }"
       using 1 by simp
     also
-    have " ... = {val(G,check(w)) . w\<in>y }"
+    have " ... = {val(P,G,check(w)) . w\<in>y }"
       by force
     finally
-    show "val(G,check(y)) = y"
+    show "val(P,G,check(y)) = y"
       using 1 by simp
   qed
 qed
 
 lemma val_of_name :
-  "val(G,{x\<in>A\<times>P. Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>P .  Q(\<langle>t,p\<rangle>) \<and> p \<in> G }"
+  "val(P,G,{x\<in>A\<times>P. Q(x)}) = {val(P,G,t) .. t\<in>A , \<exists>p\<in>P .  Q(\<langle>t,p\<rangle>) \<and> p \<in> G }"
 proof -
   let
     ?n="{x\<in>A\<times>P. Q(x)}" and
     ?r="\<lambda>\<tau> . edrel(eclose({\<tau>}))"
   let
-    ?f="\<lambda>z\<in>?r(?n)-``{?n}. val(G,z)"
+    ?f="\<lambda>z\<in>?r(?n)-``{?n}. val(P,G,z)"
   have
     wfR : "wf(?r(\<tau>))" for \<tau>
     by (simp add: wf_edrel)
   have "domain(?n) \<subseteq> A" by auto
   { fix t
     assume H:"t \<in> domain({x \<in> A \<times> P . Q(x)})"
-    then have "?f ` t = (if t \<in> ?r(?n)-``{?n} then val(G,t) else 0)"
+    then have "?f ` t = (if t \<in> ?r(?n)-``{?n} then val(P,G,t) else 0)"
       by simp
-    moreover have "... = val(G,t)"
+    moreover have "... = val(P,G,t)"
       using dom_under_edrel_eclose H if_P by auto
   }
   then
-  have Eq1: "t \<in> domain({x \<in> A \<times> P . Q(x)}) \<Longrightarrow> val(G,t) = ?f` t"  for t
+  have Eq1: "t \<in> domain({x \<in> A \<times> P . Q(x)}) \<Longrightarrow> val(P,G,t) = ?f` t"  for t
     by simp
-  have "val(G,?n) = {val(G,t) .. t\<in>domain(?n), \<exists>p \<in> P . \<langle>t,p\<rangle> \<in> ?n \<and> p \<in> G}"
+  have "val(P,G,?n) = {val(P,G,t) .. t\<in>domain(?n), \<exists>p \<in> P . \<langle>t,p\<rangle> \<in> ?n \<and> p \<in> G}"
     by (subst def_val,simp)
   also
   have "... = {?f`t .. t\<in>domain(?n), \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G}"
     unfolding Hv_def
     by (subst SepReplace_dom_implies,auto simp add:Eq1)
   also
-  have  "... = { (if t\<in>?r(?n)-``{?n} then val(G,t) else 0) .. t\<in>domain(?n), \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G}"
+  have  "... = { (if t\<in>?r(?n)-``{?n} then val(P,G,t) else 0) .. t\<in>domain(?n), \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G}"
     by (simp)
   also
-  have Eq2:  "... = { val(G,t) .. t\<in>domain(?n), \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G}"
+  have Eq2:  "... = { val(P,G,t) .. t\<in>domain(?n), \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G}"
   proof -
     have "domain(?n) \<subseteq> ?r(?n)-``{?n}"
       using dom_under_edrel_eclose by simp
     then
-    have "\<forall>t\<in>domain(?n). (if t\<in>?r(?n)-``{?n} then val(G,t) else 0) = val(G,t)"
+    have "\<forall>t\<in>domain(?n). (if t\<in>?r(?n)-``{?n} then val(P,G,t) else 0) = val(P,G,t)"
       by auto
     then
-    show "{ (if t\<in>?r(?n)-``{?n} then val(G,t) else 0) .. t\<in>domain(?n), \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G} =
-          { val(G,t) .. t\<in>domain(?n), \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G}"
+    show "{ (if t\<in>?r(?n)-``{?n} then val(P,G,t) else 0) .. t\<in>domain(?n), \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G} =
+          { val(P,G,t) .. t\<in>domain(?n), \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G}"
       by auto
   qed
   also
-  have " ... = { val(G,t) .. t\<in>A, \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G}"
+  have " ... = { val(P,G,t) .. t\<in>A, \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G}"
     by force
   finally
-  show " val(G,?n)  = { val(G,t) .. t\<in>A, \<exists>p\<in>P . Q(\<langle>t,p\<rangle>) \<and> p\<in>G}"
+  show " val(P,G,?n)  = { val(P,G,t) .. t\<in>A, \<exists>p\<in>P . Q(\<langle>t,p\<rangle>) \<and> p\<in>G}"
     by auto
 qed
 
 lemma val_of_name_alt :
-  "val(G,{x\<in>A\<times>P. Q(x)}) = {val(G,t) .. t\<in>A , \<exists>p\<in>P\<inter>G .  Q(\<langle>t,p\<rangle>) }"
+  "val(P,G,{x\<in>A\<times>P. Q(x)}) = {val(P,G,t) .. t\<in>A , \<exists>p\<in>P\<inter>G .  Q(\<langle>t,p\<rangle>) }"
   using val_of_name by force
 
-lemma val_only_names: "val(F,\<tau>) = val(F,{x\<in>\<tau>. \<exists>t\<in>domain(\<tau>). \<exists>p\<in>P. x=\<langle>t,p\<rangle>})"
-  (is "_ = val(F,?name)")
+lemma val_only_names: "val(P,F,\<tau>) = val(P,F,{x\<in>\<tau>. \<exists>t\<in>domain(\<tau>). \<exists>p\<in>P. x=\<langle>t,p\<rangle>})"
+  (is "_ = val(P,F,?name)")
 proof -
-  have "val(F,?name) = {val(F, t).. t\<in>domain(?name), \<exists>p\<in>P. \<langle>t, p\<rangle> \<in> ?name \<and> p \<in> F}"
+  have "val(P,F,?name) = {val(P,F, t).. t\<in>domain(?name), \<exists>p\<in>P. \<langle>t, p\<rangle> \<in> ?name \<and> p \<in> F}"
     using def_val by blast
   also
-  have " ... = {val(F, t). t\<in>{y\<in>domain(?name). \<exists>p\<in>P. \<langle>y, p\<rangle> \<in> ?name \<and> p \<in> F}}"
+  have " ... = {val(P,F, t). t\<in>{y\<in>domain(?name). \<exists>p\<in>P. \<langle>y, p\<rangle> \<in> ?name \<and> p \<in> F}}"
     using Sep_and_Replace by simp
   also
-  have " ... = {val(F, t). t\<in>{y\<in>domain(\<tau>). \<exists>p\<in>P. \<langle>y, p\<rangle> \<in> \<tau> \<and> p \<in> F}}"
+  have " ... = {val(P,F, t). t\<in>{y\<in>domain(\<tau>). \<exists>p\<in>P. \<langle>y, p\<rangle> \<in> \<tau> \<and> p \<in> F}}"
     by blast
   also
-  have " ... = {val(F, t).. t\<in>domain(\<tau>), \<exists>p\<in>P. \<langle>t, p\<rangle> \<in> \<tau> \<and> p \<in> F}"
+  have " ... = {val(P,F, t).. t\<in>domain(\<tau>), \<exists>p\<in>P. \<langle>t, p\<rangle> \<in> \<tau> \<and> p \<in> F}"
     using Sep_and_Replace by simp
   also
-  have " ... = val(F, \<tau>)"
+  have " ... = val(P,F, \<tau>)"
     using def_val[symmetric] by blast
   finally
   show ?thesis ..
 qed
 
-lemma val_only_pairs: "val(F,\<tau>) = val(F,{x\<in>\<tau>. \<exists>t p. x=\<langle>t,p\<rangle>})"
+lemma val_only_pairs: "val(P,F,\<tau>) = val(P,F,{x\<in>\<tau>. \<exists>t p. x=\<langle>t,p\<rangle>})"
 proof
-  have "val(F,\<tau>) = val(F,{x\<in>\<tau>. \<exists>t\<in>domain(\<tau>). \<exists>p\<in>P. x=\<langle>t,p\<rangle>})"
-    (is "_ = val(F,?name)")
+  have "val(P,F,\<tau>) = val(P,F,{x\<in>\<tau>. \<exists>t\<in>domain(\<tau>). \<exists>p\<in>P. x=\<langle>t,p\<rangle>})"
+    (is "_ = val(P,F,?name)")
     using val_only_names .
   also
-  have "... \<subseteq> val(F,{x\<in>\<tau>. \<exists>t p. x=\<langle>t,p\<rangle>})"
+  have "... \<subseteq> val(P,F,{x\<in>\<tau>. \<exists>t p. x=\<langle>t,p\<rangle>})"
     using val_mono[of ?name "{x\<in>\<tau>. \<exists>t p. x=\<langle>t,p\<rangle>}"] by auto
   finally
-  show "val(F,\<tau>) \<subseteq> val(F,{x\<in>\<tau>. \<exists>t p. x=\<langle>t,p\<rangle>})" by simp
+  show "val(P,F,\<tau>) \<subseteq> val(P,F,{x\<in>\<tau>. \<exists>t p. x=\<langle>t,p\<rangle>})" by simp
 next
-  show "val(F,{x\<in>\<tau>. \<exists>t p. x=\<langle>t,p\<rangle>}) \<subseteq> val(F,\<tau>)"
+  show "val(P,F,{x\<in>\<tau>. \<exists>t p. x=\<langle>t,p\<rangle>}) \<subseteq> val(P,F,\<tau>)"
     using val_mono[of "{x\<in>\<tau>. \<exists>t p. x=\<langle>t,p\<rangle>}"] by auto
 qed
 
-lemma val_subset_domain_times_range: "val(F,\<tau>) \<subseteq> val(F,domain(\<tau>)\<times>range(\<tau>))"
+lemma val_subset_domain_times_range: "val(P,F,\<tau>) \<subseteq> val(P,F,domain(\<tau>)\<times>range(\<tau>))"
   using val_only_pairs[THEN equalityD1]
     val_mono[of "{x \<in> \<tau> . \<exists>t p. x = \<langle>t, p\<rangle>}" "domain(\<tau>)\<times>range(\<tau>)"] by blast
 
-lemma val_subset_domain_times_P: "val(F,\<tau>) \<subseteq> val(F,domain(\<tau>)\<times>P)"
+lemma val_subset_domain_times_P: "val(P,F,\<tau>) \<subseteq> val(P,F,domain(\<tau>)\<times>P)"
   using val_only_names[of F \<tau>] val_mono[of "{x\<in>\<tau>. \<exists>t\<in>domain(\<tau>). \<exists>p\<in>P. x=\<langle>t,p\<rangle>}" "domain(\<tau>)\<times>P" F]
   by auto
 
-definition
-  GenExt :: "i\<Rightarrow>i"     ("M[_]")
-  where "GenExt(G)\<equiv> {val(G,\<tau>). \<tau> \<in> M}"
-
-
-lemma val_of_elem: "\<langle>\<theta>,p\<rangle> \<in> \<pi> \<Longrightarrow> p\<in>G \<Longrightarrow> p\<in>P \<Longrightarrow> val(G,\<theta>) \<in> val(G,\<pi>)"
+lemma val_of_elem: "\<langle>\<theta>,p\<rangle> \<in> \<pi> \<Longrightarrow> p\<in>G \<Longrightarrow> p\<in>P \<Longrightarrow> val(P,G,\<theta>) \<in> val(P,G,\<pi>)"
 proof -
   assume
     "\<langle>\<theta>,p\<rangle> \<in> \<pi>"
@@ -562,24 +561,24 @@ proof -
   have "\<theta>\<in>domain(\<pi>)" by auto
   assume "p\<in>G" "p\<in>P"
   with \<open>\<theta>\<in>domain(\<pi>)\<close> \<open>\<langle>\<theta>,p\<rangle> \<in> \<pi>\<close>
-  have "val(G,\<theta>) \<in> {val(G,t) .. t\<in>domain(\<pi>) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>\<pi> \<and> p \<in> G }"
+  have "val(P,G,\<theta>) \<in> {val(P,G,t) .. t\<in>domain(\<pi>) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>\<pi> \<and> p \<in> G }"
     by auto
   then
   show ?thesis by (subst def_val)
 qed
 
-lemma elem_of_val: "x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>\<in>domain(\<pi>). val(G,\<theta>) = x"
+lemma elem_of_val: "x\<in>val(P,G,\<pi>) \<Longrightarrow> \<exists>\<theta>\<in>domain(\<pi>). val(P,G,\<theta>) = x"
   by (subst (asm) def_val,auto)
 
-lemma elem_of_val_pair: "x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>. \<exists>p\<in>G.  \<langle>\<theta>,p\<rangle>\<in>\<pi> \<and> val(G,\<theta>) = x"
+lemma elem_of_val_pair: "x\<in>val(P,G,\<pi>) \<Longrightarrow> \<exists>\<theta>. \<exists>p\<in>G.  \<langle>\<theta>,p\<rangle>\<in>\<pi> \<and> val(P,G,\<theta>) = x"
   by (subst (asm) def_val,auto)
 
 lemma elem_of_val_pair':
-  assumes "\<pi>\<in>M" "x\<in>val(G,\<pi>)"
-  shows "\<exists>\<theta>\<in>M. \<exists>p\<in>G.  \<langle>\<theta>,p\<rangle>\<in>\<pi> \<and> val(G,\<theta>) = x"
+  assumes "\<pi>\<in>M" "x\<in>val(P,G,\<pi>)"
+  shows "\<exists>\<theta>\<in>M. \<exists>p\<in>G.  \<langle>\<theta>,p\<rangle>\<in>\<pi> \<and> val(P,G,\<theta>) = x"
 proof -
   from assms
-  obtain \<theta> p where "p\<in>G" "\<langle>\<theta>,p\<rangle>\<in>\<pi>" "val(G,\<theta>) = x"
+  obtain \<theta> p where "p\<in>G" "\<langle>\<theta>,p\<rangle>\<in>\<pi>" "val(P,G,\<theta>) = x"
     using elem_of_val_pair by blast
   moreover from this \<open>\<pi>\<in>M\<close>
   have "\<theta>\<in>M"
@@ -591,21 +590,21 @@ qed
 
 
 lemma GenExtD:
-  "x \<in> M[G] \<Longrightarrow> \<exists>\<tau>\<in>M. x = val(G,\<tau>)"
+  "x \<in> M[G] \<Longrightarrow> \<exists>\<tau>\<in>M. x = val(P,G,\<tau>)"
   by (simp add:GenExt_def)
 
 lemma GenExtI:
-  "x \<in> M \<Longrightarrow> val(G,x) \<in> M[G]"
+  "x \<in> M \<Longrightarrow> val(P,G,x) \<in> M[G]"
   by (auto simp add: GenExt_def)
 
 lemma Transset_MG : "Transset(M[G])"
 proof -
   { fix vc y
     assume "vc \<in> M[G]" and "y \<in> vc"
-    then obtain c where "c\<in>M" "val(G,c)\<in>M[G]" "y \<in> val(G,c)"
+    then obtain c where "c\<in>M" "val(P,G,c)\<in>M[G]" "y \<in> val(P,G,c)"
       using GenExtD by auto
-    from \<open>y \<in> val(G,c)\<close>
-    obtain \<theta> where "\<theta>\<in>domain(c)" "val(G,\<theta>) = y"
+    from \<open>y \<in> val(P,G,c)\<close>
+    obtain \<theta> where "\<theta>\<in>domain(c)" "val(P,G,\<theta>) = y"
       using elem_of_val by blast
     with trans_M \<open>c\<in>M\<close>
     have "y \<in> M[G]"
@@ -973,11 +972,11 @@ qed
 lemma val_G_dot :
   assumes "G \<subseteq> P"
     "one \<in> G"
-  shows "val(G,G_dot) = G"
+  shows "val(P,G,G_dot) = G"
 proof (intro equalityI subsetI)
   fix x
-  assume "x\<in>val(G,G_dot)"
-  then obtain \<theta> p where "p\<in>G" "\<langle>\<theta>,p\<rangle> \<in> G_dot" "val(G,\<theta>) = x" "\<theta> = check(p)"
+  assume "x\<in>val(P,G,G_dot)"
+  then obtain \<theta> p where "p\<in>G" "\<langle>\<theta>,p\<rangle> \<in> G_dot" "val(P,G,\<theta>) = x" "\<theta> = check(p)"
     unfolding G_dot_def using elem_of_val_pair G_dot_in_M
     by force
   with \<open>one\<in>G\<close> \<open>G\<subseteq>P\<close> show
@@ -989,10 +988,10 @@ next
   have "\<langle>check(q),q\<rangle> \<in> G_dot" if "q\<in>P" for q
     unfolding G_dot_def using that by simp
   with \<open>p\<in>G\<close> \<open>G\<subseteq>P\<close>
-  have "val(G,check(p)) \<in> val(G,G_dot)"
+  have "val(P,G,check(p)) \<in> val(P,G,G_dot)"
     using val_of_elem G_dot_in_M by blast
   with \<open>p\<in>G\<close> \<open>G\<subseteq>P\<close> \<open>one\<in>G\<close>
-  show "p \<in> val(G,G_dot)"
+  show "p \<in> val(P,G,G_dot)"
     using P_sub_M valcheck by auto
 qed
 
@@ -1038,7 +1037,7 @@ begin
 lemma zero_in_MG :
   "0 \<in> M[G]"
 proof -
-  have "0 = val(G,0)"
+  have "0 = val(P,G,0)"
     using zero_in_M elem_of_val by auto
   also
   have "... \<in> M[G]"

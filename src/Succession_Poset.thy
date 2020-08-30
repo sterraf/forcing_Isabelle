@@ -359,7 +359,7 @@ next
   show "seqle \<in> M" using seqle_in_M .
 qed
 
-lemma cohen_extension_is_proper: "\<exists>G. M_generic(G) \<and> M \<noteq> GenExt(G)"
+lemma cohen_extension_is_proper: "\<exists>G. M_generic(G) \<and> M \<noteq> M\<^bsup>2\<^bsup><\<omega>\<^esup>\<^esup>[G]"
   using proper_extension generic_filter_existence zero_in_seqspace
   by force
 

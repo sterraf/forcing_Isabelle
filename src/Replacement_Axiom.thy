@@ -250,17 +250,17 @@ lemma Replace_sats_in_MG:
 proof -
   let ?R = "\<lambda> x v . v\<in>M[G] \<and> (M[G] , [x,v]@env \<Turnstile> \<phi>)"
   from \<open>c\<in>M[G]\<close>
-  obtain \<pi>' where "val(G, \<pi>') = c" "\<pi>' \<in> M"
+  obtain \<pi>' where "val(P,G, \<pi>') = c" "\<pi>' \<in> M"
     using GenExt_def by auto
   then
   have "domain(\<pi>')\<times>P\<in>M" (is "?\<pi>\<in>M")
     using cartprod_closed P_in_M domain_closed by simp
-  from \<open>val(G, \<pi>') = c\<close>
-  have "c \<subseteq> val(G,?\<pi>)"
+  from \<open>val(P,G, \<pi>') = c\<close>
+  have "c \<subseteq> val(P,G,?\<pi>)"
     using def_val[of G ?\<pi>] one_in_P one_in_G[OF generic] elem_of_val
       domain_of_prod[OF one_in_P, of "domain(\<pi>')"] by force
   from \<open>env \<in> _\<close>
-  obtain nenv where "nenv\<in>list(M)" "env = map(val(G),nenv)"
+  obtain nenv where "nenv\<in>list(M)" "env = map(val(P,G),nenv)"
     using map_val by auto
   then
   have "length(nenv) = length(env)" by simp
@@ -355,21 +355,21 @@ proof -
   have "{x\<in>Vset(?sup). x \<in> M} \<times> {one} \<in> M" (is "?big_name \<in> M")
     using cartprod_closed by simp
   then
-  have "val(G,?big_name) \<in> M[G]"
+  have "val(P,G,?big_name) \<in> M[G]"
     by (blast intro:GenExtI)
   {
     fix v x
     assume "x\<in>c"
     moreover
-    note \<open>val(G,\<pi>')=c\<close> \<open>\<pi>'\<in>M\<close>
+    note \<open>val(P,G,\<pi>')=c\<close> \<open>\<pi>'\<in>M\<close>
     moreover
     from calculation
-    obtain \<rho> p where "\<langle>\<rho>,p\<rangle>\<in>\<pi>'"  "val(G,\<rho>) = x" "p\<in>G" "\<rho>\<in>M"
+    obtain \<rho> p where "\<langle>\<rho>,p\<rangle>\<in>\<pi>'"  "val(P,G,\<rho>) = x" "p\<in>G" "\<rho>\<in>M"
       using elem_of_val_pair'[of \<pi>' x G] by blast
     moreover
     assume "v\<in>M[G]"
     then
-    obtain \<sigma> where "val(G,\<sigma>) = v" "\<sigma>\<in>M"
+    obtain \<sigma> where "val(P,G,\<sigma>) = v" "\<sigma>\<in>M"
       using GenExtD by auto
     moreover
     assume "sats(M[G], \<phi>, [x,v] @ env)"
@@ -401,29 +401,29 @@ proof -
     obtain \<tau> where "\<tau>\<in>M" "\<tau> \<in> Vset(f(\<langle>\<rho>,q\<rangle>))" "q \<tturnstile> \<phi> ([\<rho>,\<tau>] @ nenv)"
       using LeastI[of "\<lambda> \<alpha>. ?P(\<langle>\<rho>,q\<rangle>,\<alpha>)" ?\<alpha>] by auto
     with \<open>q\<in>G\<close> \<open>\<rho>\<in>M\<close> \<open>nenv\<in>_\<close> \<open>arity(\<phi>)\<le> 2 #+ length(nenv)\<close>
-    have "M[G], map(val(G),[\<rho>,\<tau>] @ nenv) \<Turnstile> \<phi>"
+    have "M[G], map(val(P,G),[\<rho>,\<tau>] @ nenv) \<Turnstile> \<phi>"
       using truth_lemma[OF \<open>\<phi>\<in>_\<close> generic, of "[\<rho>,\<tau>] @ nenv"] by auto
     moreover from \<open>x\<in>c\<close> \<open>c\<in>M[G]\<close>
     have "x\<in>M[G]" using transitivity_MG by simp
     moreover
-    note \<open>M[G],[x,v] @ env\<Turnstile> \<phi>\<close> \<open>env = map(val(G),nenv)\<close> \<open>\<tau>\<in>M\<close> \<open>val(G,\<rho>)=x\<close>
+    note \<open>M[G],[x,v] @ env\<Turnstile> \<phi>\<close> \<open>env = map(val(P,G),nenv)\<close> \<open>\<tau>\<in>M\<close> \<open>val(P,G,\<rho>)=x\<close>
       \<open>univalent(##M[G],_,_)\<close> \<open>x\<in>c\<close> \<open>v\<in>M[G]\<close>
     ultimately
-    have "v=val(G,\<tau>)"
+    have "v=val(P,G,\<tau>)"
       using GenExtI[of \<tau> G] unfolding univalent_def by (auto)
     from \<open>\<tau> \<in> Vset(f(\<langle>\<rho>,q\<rangle>))\<close> \<open>Ord(f(_))\<close>  \<open>f(\<langle>\<rho>,q\<rangle>)\<in>Y\<close>
     have "\<tau> \<in> Vset(?sup)"
       using Vset_Ord_rank_iff lt_Union_iff[of _ "rank(\<tau>)"] by auto
     with \<open>\<tau>\<in>M\<close>
-    have "val(G,\<tau>) \<in> val(G,?big_name)"
+    have "val(P,G,\<tau>) \<in> val(P,G,?big_name)"
       using domain_of_prod[of one "{one}" "{x\<in>Vset(?sup). x \<in> M}" ] def_val[of G ?big_name]
         one_in_G[OF generic] one_in_P  by (auto simp del: Vset_rank_iff)
-    with \<open>v=val(G,\<tau>)\<close>
-    have "v \<in> val(G,{x\<in>Vset(?sup). x \<in> M} \<times> {one})"
+    with \<open>v=val(P,G,\<tau>)\<close>
+    have "v \<in> val(P,G,{x\<in>Vset(?sup). x \<in> M} \<times> {one})"
       by simp
   }
   then
-  have "{v. x\<in>c, ?R(x,v)} \<subseteq> val(G,?big_name)" (is "?repl\<subseteq>?big")
+  have "{v. x\<in>c, ?R(x,v)} \<subseteq> val(P,G,?big_name)" (is "?repl\<subseteq>?big")
     by blast
   with \<open>?big_name\<in>M\<close>
   have "?repl = {v\<in>?big. \<exists>x\<in>c. sats(M[G], \<phi>, [x,v] @ env )}" (is "_ = ?rhs")
@@ -442,7 +442,7 @@ proof -
     assume "v\<in>?rhs"
     then
     obtain x where
-      "v\<in>val(G, ?big_name)" "M[G], [x, v] @ env \<Turnstile> \<phi>" "x\<in>c"
+      "v\<in>val(P,G, ?big_name)" "M[G], [x, v] @ env \<Turnstile> \<phi>" "x\<in>c"
       by blast
     moreover from this \<open>c\<in>M[G]\<close>
     have "v\<in>M[G]" "x\<in>M[G]"

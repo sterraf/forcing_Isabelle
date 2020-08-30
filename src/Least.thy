@@ -1,7 +1,8 @@
 section\<open>The binder \<^term>\<open>Least\<close>\<close>
 theory Least
   imports
-    Names
+    "Forcing_Data" \<comment> \<open>only for a result to be moved below\<close>
+    "Internalizations"   
 
 begin
 
@@ -64,7 +65,8 @@ lemma least_iff_sats:
 lemma least_conj: "a\<in>M \<Longrightarrow> least(##M, \<lambda>x. x\<in>M \<and> Q(x),a) \<longleftrightarrow> least(##M,Q,a)"
   unfolding least_def by simp
 
-(* Better to have this in M_basic or similar *)
+\<comment> \<open>FIXME: Better to have this in M_basic or similar. And perhaps to
+    have it disciplined\<close>
 lemma (in M_ctm) unique_least: "a\<in>M \<Longrightarrow> b\<in>M \<Longrightarrow> least(##M,Q,a) \<Longrightarrow> least(##M,Q,b) \<Longrightarrow> a=b"
   unfolding least_def
   by (auto, erule_tac i=a and j=b in Ord_linear_lt; (drule ltD | simp); auto intro:Ord_in_Ord)
