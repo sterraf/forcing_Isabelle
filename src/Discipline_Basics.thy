@@ -393,7 +393,7 @@ definition
   "Pi_rel(M,A,B) \<equiv> THE d. M(d) \<and> is_Pi(M,A,B,d)"
 
 abbreviation
-  Pi_r_set ::  "[i,i,i\<Rightarrow>i] \<Rightarrow> i" (\<open>Pi\<^bsup>_\<^esup>'(_')\<close>) where
+  Pi_r_set ::  "[i,i,i\<Rightarrow>i] \<Rightarrow> i" (\<open>Pi\<^bsup>_\<^esup>'(_,_')\<close>) where
   "Pi_r_set(M,A,B) \<equiv> Pi_rel(##M,A,B)"
 
 context M_Pi_assumptions

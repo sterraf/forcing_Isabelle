@@ -390,7 +390,7 @@ proof -
       using that unfolding F_def by auto
     then
       \<comment> \<open>FIX THIS: notation for Pi_r_set is forgotten!\<close>
-    obtain q where "q \<in> Pi\<^bsup>##M\<^esup>(F`a,?Q)" "q\<in>M" using AC_Pi_rel by auto
+    obtain q where "q \<in> Pi\<^bsup>M\<^esup>(F`a,?Q)" "q\<in>M" using AC_Pi_rel by auto
     moreover
     note \<open>F`a \<in> M\<close>
     moreover from calculation
