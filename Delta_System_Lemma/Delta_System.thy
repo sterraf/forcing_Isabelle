@@ -4,6 +4,8 @@ theory Delta_System
 
 begin
 
+notation csucc (\<open>_\<^sup>+\<close> [90])
+
 lemma mono_mapI: 
   assumes "f: A\<rightarrow>B" "\<And>x y. x\<in>A \<Longrightarrow> y\<in>A \<Longrightarrow> <x,y>\<in>r \<Longrightarrow> <f`x,f`y>\<in>s"
   shows   "f \<in> mono_map(A,r,B,s)"
@@ -134,7 +136,64 @@ lemma zero_lt_aleph1: "0<\<aleph>\<^bsub>1\<^esub>"
   by (rule lt_trans[of _ "nat"], auto simp add: ltI nat_lt_aleph1)
 
 lemma le_aleph1_nat: "Card(k) \<Longrightarrow> k<\<aleph>\<^bsub>1\<^esub> \<Longrightarrow> k \<le> nat"    
-  by (simp add: Aleph_def  Card_lt_csucc_iff Card_nat)
+  by (simp add: Aleph_def Card_lt_csucc_iff Card_nat)
+
+lemma Aleph_succ: "\<aleph>\<^bsub>succ(\<alpha>)\<^esub> = \<aleph>\<^bsub>\<alpha>\<^esub>\<^sup>+"
+  unfolding Aleph_def by simp
+
+lemma cardinal_lt_csucc_iff':
+  includes Ord_dests
+  assumes "Card(\<kappa>)"
+  shows "\<kappa> < |X| \<longleftrightarrow> \<kappa>\<^sup>+ \<le> |X|"
+  using assms cardinal_lt_csucc_iff[of \<kappa> X] Card_csucc[of \<kappa>]
+    not_le_iff_lt[of "\<kappa>\<^sup>+" "|X|"] not_le_iff_lt[of "|X|" \<kappa>]
+  by blast
+
+lemma lepoll_imp_subset_bij: "X \<lesssim> Y \<longleftrightarrow> (\<exists>Z. Z \<subseteq> Y \<and> Z \<approx> X)"
+proof
+  assume "X \<lesssim> Y"
+  then
+  obtain j where  "j \<in> inj(X,Y)"
+    unfolding lepoll_def by blast
+  then
+  have "range(j) \<subseteq> Y" "j \<in> bij(X,range(j))"
+    using inj_bij_range inj_is_fun Cofinality.range_of_function
+    by blast+
+  then
+  show "\<exists>Z. Z \<subseteq> Y \<and> Z \<approx> X"
+    using eqpoll_sym unfolding eqpoll_def
+    by force
+next
+  assume "\<exists>Z. Z \<subseteq> Y \<and> Z \<approx> X"
+  then
+  obtain Z f where "f \<in> bij(Z,X)" "Z \<subseteq> Y"
+    unfolding eqpoll_def by force
+  then
+  have "converse(f) \<in> inj(X,Y)"
+    using bij_is_inj inj_weaken_type bij_converse_bij by blast
+  then
+  show "X \<lesssim> Y" unfolding lepoll_def by blast
+qed
+
+lemma cardinal_Aleph [simp]: "Ord(\<alpha>) \<Longrightarrow> |\<aleph>\<^bsub>\<alpha>\<^esub>| = \<aleph>\<^bsub>\<alpha>\<^esub>"
+  using Card_cardinal_eq by simp
+
+lemma uncountable_imp_cardinal_subset_aleph1:
+  includes Ord_dests
+  notes Aleph_zero_eq_nat[simp] Card_nat[simp] Aleph_succ[simp]
+  assumes "nat < |X|"
+  shows "\<exists>S. S \<subseteq> X \<and> |S| = \<aleph>\<^bsub>1\<^esub>"
+proof -
+  from assms
+  have a:"\<aleph>\<^bsub>1\<^esub> \<lesssim> X"
+    using cardinal_lt_csucc_iff' cardinal_le_imp_lepoll by force
+  then
+  obtain S where "S \<subseteq> X" "S \<approx> \<aleph>\<^bsub>1\<^esub>"
+    using lepoll_imp_subset_bij by auto
+  then
+  show ?thesis
+    using cardinal_cong Card_csucc[of nat] Card_cardinal_eq by auto
+qed
 
 lemma cof_aleph1_aux: "function(G) \<Longrightarrow> domain(G) \<lesssim> nat \<Longrightarrow> 
    \<forall>n\<in>domain(G). |G`n|<\<aleph>\<^bsub>1\<^esub> \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<le>nat"
@@ -242,7 +301,9 @@ lemma delta_system_aleph1:
   assumes "\<forall>A\<in>F. Finite(A)" "F \<approx> \<aleph>\<^bsub>1\<^esub>"
   shows "\<exists>D. D \<subseteq> F \<and> delta_system(D)"
 proof -
-  obtain n G where "n\<in>nat" "G \<subseteq> F" "A\<in>F \<Longrightarrow> |A| = n" for A
+  from assms
+  obtain n G where "n\<in>nat" "G \<subseteq> F" "A\<in>G \<Longrightarrow> |A| = n" "G \<approx> \<aleph>\<^bsub>1\<^esub>" for A
+    using Finite_cardinal_in_nat
     sorry
   moreover
   note assms
@@ -259,7 +320,8 @@ proof -
       case True
       then
       obtain p where "{A\<in>G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>" by blast
-      from succ(1,3-5)
+      text\<open>Now using the inductive hypothesis:\<close>
+      from \<open>G \<subseteq> F\<close> \<open>\<And>A. A\<in>G \<Longrightarrow> |A|=succ(n)\<close> \<open>\<forall>a\<in>F. Finite(a)\<close>
       have "\<forall>A\<in>G. p\<in>A \<longrightarrow> |A - {p}| = n"
         using Finite_imp_succ_cardinal_Diff[of _ p] by force
       with succ
