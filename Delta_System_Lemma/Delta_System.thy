@@ -104,7 +104,6 @@ lemma leqpoll_imp_cardinal_UN_le:
 proof -
   from \<open>J \<lesssim> K\<close>
   obtain f where "f \<in> inj(J,K)" by blast
-  find_theorems converse inj
   define Y where "Y(k) \<equiv> if k\<in>range(f) then X(converse(f)`k) else 0" for k
   have "i\<in>J \<Longrightarrow> f`i \<in> K" for i
     using inj_is_fun[OF \<open>f \<in> inj(J,K)\<close>] by auto
@@ -279,10 +278,36 @@ proof -
       Card_Aleph Card_cardinal_eq by auto
 qed
 
+lemma range_of_subset_eqpoll:
+  assumes "f \<in> inj(X,Y)" "S \<subseteq> X"
+  shows "S \<approx> f `` S"
+  using assms restrict_bij unfolding eqpoll_def by blast
+
 lemma eqpoll_aleph1_cardinal_vimage:
   assumes "X \<approx> \<aleph>\<^bsub>1\<^esub>" "f : X \<rightarrow> nat"
   shows "\<exists>n\<in>nat. |f-``{n}| = \<aleph>\<^bsub>1\<^esub>"
-  oops
+proof -
+  from assms
+  obtain g where "g\<in>bij(\<aleph>\<^bsub>1\<^esub>,X)"
+    using eqpoll_sym unfolding eqpoll_def by blast
+  with \<open>f : X \<rightarrow> nat\<close>
+  have "f O g : \<aleph>\<^bsub>1\<^esub> \<rightarrow> nat" "converse(g) \<in> bij(X, \<aleph>\<^bsub>1\<^esub>)"
+    using bij_is_fun comp_fun bij_converse_bij by blast+
+  then
+  obtain n where "n\<in>nat" "|(f O g)-``{n}| = \<aleph>\<^bsub>1\<^esub>"
+    using aleph1_eq_cardinal_vimage by auto
+  then
+  have "\<aleph>\<^bsub>1\<^esub> = |converse(g) `` (f -``{n})|"
+    using image_comp converse_comp
+    unfolding vimage_def by simp
+  also from \<open>converse(g) \<in> bij(X, \<aleph>\<^bsub>1\<^esub>)\<close> \<open>f: X\<rightarrow> nat\<close>
+  have "\<dots> = |f -``{n}|"
+    using range_of_subset_eqpoll[of "converse(g)" X  _ "f -``{n}"]
+      bij_is_inj cardinal_cong bij_is_fun eqpoll_sym Pi_vimage_subset
+    by fastforce
+  finally
+  show ?thesis using \<open>n\<in>nat\<close> by auto
+qed
 
 definition
   delta_system :: "i \<Rightarrow> o" where
