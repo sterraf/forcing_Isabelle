@@ -283,6 +283,8 @@ lemma range_of_subset_eqpoll:
   shows "S \<approx> f `` S"
   using assms restrict_bij unfolding eqpoll_def by blast
 
+\<comment> \<open>FIXME: asymmetry between assumptions and conclusion
+    (\<^term>\<open>(\<approx>)\<close> versus \<^term>\<open>cardinal\<close>)\<close>
 lemma eqpoll_aleph1_cardinal_vimage:
   assumes "X \<approx> \<aleph>\<^bsub>1\<^esub>" "f : X \<rightarrow> nat"
   shows "\<exists>n\<in>nat. |f-``{n}| = \<aleph>\<^bsub>1\<^esub>"
@@ -322,17 +324,32 @@ lemma delta_systemD[dest!]:
   "delta_system(D) \<Longrightarrow> \<exists>r. \<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
   unfolding delta_system_def by simp
 
+lemma vimage_lam: "(\<lambda>x\<in>A. f(x)) -`` B = { x\<in>A . f(x) \<in> B }"
+  using lam_funtype[of A f, THEN [2] domain_type]
+    lam_funtype[of A f, THEN [2] apply_equality] lamI[of _ A f]
+  by auto blast
+
 lemma delta_system_aleph1:
   assumes "\<forall>A\<in>F. Finite(A)" "F \<approx> \<aleph>\<^bsub>1\<^esub>"
   shows "\<exists>D. D \<subseteq> F \<and> delta_system(D)"
 proof -
-  from assms
-  obtain n G where "n\<in>nat" "G \<subseteq> F" "A\<in>G \<Longrightarrow> |A| = n" "G \<approx> \<aleph>\<^bsub>1\<^esub>" for A
-    using Finite_cardinal_in_nat
-    sorry
+  from \<open>\<forall>A\<in>F. Finite(A)\<close>
+  have "(\<lambda>A\<in>F. |A|) : F \<rightarrow> nat" (is "?cards : _")
+    by (rule_tac lam_type) simp
+  moreover from this
+  have a:"?cards -`` {n} = { A\<in>F . |A| = n }" for n
+    using vimage_lam by auto
   moreover
-  note assms
+  note \<open>F \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+  moreover from calculation
+  obtain n where "n\<in>nat" "|?cards -`` {n}| = \<aleph>\<^bsub>1\<^esub>"
+    using eqpoll_aleph1_cardinal_vimage[of F ?cards] by auto
+  moreover
+  define G where "G \<equiv> ?cards -`` {n}"
   ultimately
+  have "G \<subseteq> F" "A\<in>G \<Longrightarrow> |A| = n" "|G| = \<aleph>\<^bsub>1\<^esub>" for A
+    by auto
+  with \<open>n\<in>nat\<close> and assms
   show ?thesis
   proof (induct arbitrary:F)
     case 0
