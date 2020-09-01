@@ -387,4 +387,10 @@ proof -
   qed
 qed
 
+lemma delta_system_uncountable:
+  assumes "\<forall>A\<in>F. Finite(A)" "nat < |F|"
+  shows "\<exists>D. D \<subseteq> F \<and> delta_system(D)"
+  using assms delta_system_aleph1 uncountable_imp_cardinal_subset_aleph1
+  by blast
+
 end
