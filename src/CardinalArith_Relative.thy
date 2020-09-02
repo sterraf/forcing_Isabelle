@@ -1234,7 +1234,7 @@ lemma is_jcardRepl_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> st
       is_jcardRepl(M,X))"
   sorry
 
-(* VER por qué no sale igual que el witness anterior *)
+(* VER por que no sale igual que el witness anterior *)
 lemma is_jump_cardinal_witness: 
   assumes "M(K)"
   shows "\<exists>d[M]. is_jump_cardinal(M,K,d)"
