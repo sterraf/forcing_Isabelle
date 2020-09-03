@@ -65,7 +65,7 @@ lemma least_iff_sats:
 lemma least_conj: "a\<in>M \<Longrightarrow> least(##M, \<lambda>x. x\<in>M \<and> Q(x),a) \<longleftrightarrow> least(##M,Q,a)"
   unfolding least_def by simp
 
-\<comment> \<open>FIXME: Better to have this in M_basic or similar. And perhaps to
+\<comment> \<open>FIXME: Better to have this in \<^term>\<open>M_basic\<close> or similar. And perhaps to
     have it disciplined\<close>
 lemma (in M_ctm) unique_least: "a\<in>M \<Longrightarrow> b\<in>M \<Longrightarrow> least(##M,Q,a) \<Longrightarrow> least(##M,Q,b) \<Longrightarrow> a=b"
   unfolding least_def
