@@ -6,15 +6,65 @@ begin
 
 notation csucc (\<open>_\<^sup>+\<close> [90])
 
+\<comment> \<open>Copy-pasted from \<^file>\<open>../src/Cohen_Posets.thy\<close>. MOVE to an
+    appropriate place\<close>
+lemma eq_csucc_ord:
+  "Ord(i) \<Longrightarrow> csucc(i) = csucc(|i|)"
+  using Card_lt_iff Least_cong unfolding csucc_def by auto
+
+lemma lesspoll_csucc:
+  assumes "Ord(\<kappa>)"
+  shows "d \<prec> csucc(\<kappa>) \<longleftrightarrow> d \<lesssim> \<kappa>"
+proof
+  assume "d \<prec> csucc(\<kappa>)"
+  moreover
+  note Card_is_Ord \<open>Ord(\<kappa>)\<close>
+  moreover from calculation
+  have "\<kappa> < csucc(\<kappa>)" "Card(csucc(\<kappa>))"
+    using Ord_cardinal_eqpoll csucc_basic by simp_all
+  moreover from calculation
+  have "d \<prec> csucc(|\<kappa>|)" "Card(|\<kappa>|)" "d \<approx> |d|"
+    using eq_csucc_ord[of \<kappa>] lesspoll_imp_eqpoll eqpoll_sym by simp_all
+  moreover from calculation
+  have "|d| < csucc(|\<kappa>|)"
+    using lesspoll_cardinal_lt csucc_basic by simp
+  moreover from calculation
+  have "|d| \<lesssim> |\<kappa>|"
+    using Card_lt_csucc_iff le_imp_lepoll by simp
+  moreover from calculation
+  have "|d| \<lesssim> \<kappa>"
+    using lepoll_eq_trans Ord_cardinal_eqpoll by simp
+  ultimately
+  show "d \<lesssim> \<kappa>"
+    using eq_lepoll_trans by simp
+next
+  from \<open>Ord(\<kappa>)\<close>
+  have "\<kappa> < csucc(\<kappa>)" "Card(csucc(\<kappa>))"
+    using csucc_basic by simp_all
+  moreover
+  assume "d \<lesssim> \<kappa>"
+  ultimately
+  have "d \<lesssim> csucc(\<kappa>)"
+    using le_imp_lepoll leI lepoll_trans by simp
+  moreover
+  from \<open>d \<lesssim> \<kappa>\<close> \<open>Ord(\<kappa>)\<close>
+  have "csucc(\<kappa>) \<lesssim> \<kappa>" if "d \<approx> csucc(\<kappa>)"
+    using eqpoll_sym[OF that] eq_lepoll_trans[OF _ \<open>d\<lesssim>\<kappa>\<close>] by simp
+  moreover from calculation \<open>Card(_)\<close>
+  have "\<not> d \<approx> csucc(\<kappa>)"
+    using lesspoll_irrefl lesspoll_trans1 lt_Card_imp_lesspoll[OF _ \<open>\<kappa> <_\<close>]
+    by auto
+  ultimately
+  show "d \<prec> csucc(\<kappa>)"
+    unfolding lesspoll_def by simp
+qed
+
 lemma mono_mapI: 
   assumes "f: A\<rightarrow>B" "\<And>x y. x\<in>A \<Longrightarrow> y\<in>A \<Longrightarrow> <x,y>\<in>r \<Longrightarrow> <f`x,f`y>\<in>s"
   shows   "f \<in> mono_map(A,r,B,s)"
   unfolding mono_map_def using assms by simp
 
-lemma mono_mapD: 
-  assumes "f \<in> mono_map(A,r,B,s)"
-  shows   "f: A\<rightarrow>B" "\<And>x y. x\<in>A \<Longrightarrow> y\<in>A \<Longrightarrow> <x,y>\<in>r \<Longrightarrow> <f`x,f`y>\<in>s"
-  using assms unfolding mono_map_def by simp_all
+lemmas mono_mapD = mono_map_is_fun mono_map_increasing
 
 lemmas Aleph_cont = Normal_imp_cont[OF Normal_Aleph]
 lemmas Aleph_sup = Normal_Union[OF _ _ Normal_Aleph]
@@ -23,7 +73,7 @@ bundle Ord_dests = Limit_is_Ord[dest] Card_is_Ord[dest]
 bundle Aleph_dests = Aleph_cont[dest] Aleph_sup[dest]
 bundle Aleph_intros = Aleph_mono[intro!]
 bundle Aleph_mem_dests = Aleph_mono[OF ltI, THEN ltD, dest]
-bundle mono_map_rules =  mono_mapI[intro!] mono_mapD[dest]
+bundle mono_map_rules =  mono_mapI[intro!] mono_map_is_fun[dest] mono_mapD[dest]
 
 context
   includes Ord_dests Aleph_dests Aleph_intros Aleph_mem_dests mono_map_rules
@@ -103,7 +153,7 @@ lemma leqpoll_imp_cardinal_UN_le:
   shows "|\<Union>i\<in>J. X(i)| \<le> K"
 proof -
   from \<open>J \<lesssim> K\<close>
-  obtain f where "f \<in> inj(J,K)" by blast
+  obtain f where "f \<in> inj(J,K)" by (blast dest:lepollD)
   define Y where "Y(k) \<equiv> if k\<in>range(f) then X(converse(f)`k) else 0" for k
   have "i\<in>J \<Longrightarrow> f`i \<in> K" for i
     using inj_is_fun[OF \<open>f \<in> inj(J,K)\<close>] by auto

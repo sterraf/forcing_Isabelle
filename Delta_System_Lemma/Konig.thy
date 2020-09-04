@@ -208,7 +208,7 @@ proof (intro not_le_iff_lt[THEN iffD1] notI)
     by auto
   then
   obtain g where "g \<in> inj(Pow(\<nu>), \<nu>)"
-    by blast
+    by (blast dest:lepollD)
   then
   show "False"
     using cantor_inj by simp
@@ -356,7 +356,7 @@ proof (intro not_le_iff_lt[THEN iffD1] notI)
   ultimately
   obtain G where "G \<in> surj(\<kappa>, \<nu> \<rightarrow> \<kappa>)"
     using inj_imp_surj[OF _ function_space_nonempty,
-        OF _ nat_into_InfCard] by blast
+        OF _ nat_into_InfCard] by (blast dest:lepollD)
   from assms
   obtain f where "f:\<nu> \<rightarrow> \<kappa>" "cf_fun(f,\<kappa>)"
     using cf_le_cf_fun[OF _ InfCard_is_Limit] by blast
