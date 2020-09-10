@@ -54,10 +54,7 @@ schematic_goal ZF_choice_auto:
 
 synthesize "ZF_choice_fm" from_schematic ZF_choice_auto
 
-syntax
-  "_choice" :: "i"  ("AC")
-translations
-  "AC" \<rightharpoonup> "CONST ZF_choice_fm"
+notation ZF_choice_fm (\<open>AC\<close>)
 
 lemmas ZFC_fm_defs = ZF_extensionality_fm_def ZF_foundation_fm_def ZF_pairing_fm_def
               ZF_union_fm_def ZF_infinity_fm_def ZF_power_fm_def ZF_choice_fm_def

@@ -24,6 +24,9 @@ on which our definitions are built.
 \<close>
 
 declare [[show_question_marks=false]]
+no_notation add (infixl \<open>#+\<close> 65)
+notation add (infixl \<open>+\<^sub>\<omega>\<close> 65)
+hide_const (open) Order.pred
 
 subsection\<open>ZF\label{sec:def-main-ZF}\<close>
 
@@ -72,12 +75,11 @@ text\<open>@{thm [display] Limit_nat[unfolded Limit_def]
   Ord(i) \<and> 0 < i \<and> (\<forall>y. y < i \<longrightarrow> succ(y) < i) \<Longrightarrow> \<omega> \<le> i
 *)
 
-hide_const (open) Order.pred
 thm add_0_right add_succ_right pred_0 pred_succ_eq
 text\<open>@{thm [display] add_succ_right add_0_right pred_0 pred_succ_eq}\<close>
 (*
-  m \<in> \<omega> \<Longrightarrow> m #+ 0 = m
-  m #+ succ(n) = succ(m #+ n)
+  m \<in> \<omega> \<Longrightarrow> m +\<^sub>\<omega> 0 = m
+  m +\<^sub>\<omega> succ(n) = succ(m +\<^sub>\<omega> n)
 
   pred(0) = 0
   pred(succ(y)) = y
@@ -338,13 +340,13 @@ text\<open>@{thm [display] ZF_union_fm_iff_sats ZF_power_fm_iff_sats
 
   \<phi> \<in> formula \<Longrightarrow>
     M, [] \<Turnstile> ZF_separation_fm(\<phi>) \<longleftrightarrow>
-    (\<forall>env\<in>list(M). arity(\<phi>) \<le> 1 #+ length(env) \<longrightarrow> separation(##M, \<lambda>x. M, [x] @ env \<Turnstile> \<phi>))
+    (\<forall>env\<in>list(M). arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env) \<longrightarrow> separation(##M, \<lambda>x. M, [x] @ env \<Turnstile> \<phi>))
 
   \<phi> \<in> formula \<Longrightarrow>
     M, [] \<Turnstile> ZF_replacement_fm(\<phi>) \<longleftrightarrow>
-    (\<forall>env\<in>list(M). arity(\<phi>) \<le> 2 #+ length(env) \<longrightarrow> strong_replacement(##M, \<lambda>x y. M, [x, y] @ env \<Turnstile> \<phi>))
+    (\<forall>env\<in>list(M). arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env) \<longrightarrow> strong_replacement(##M, \<lambda>x y. M, [x, y] @ env \<Turnstile> \<phi>))
 
-  choice_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> ZF_choice_fm
+  choice_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> AC
 *)
 
 thm ZF_fin_def ZF_inf_def ZF_def ZFC_fin_def ZFC_def
@@ -355,7 +357,7 @@ text\<open>@{thm [display] ZF_fin_def ZF_inf_def ZF_def ZFC_fin_def
              ZF_union_fm, ZF_infinity_fm, ZF_power_fm}
   ZF_inf \<equiv> {ZF_separation_fm(p) . p \<in> formula} \<union> {ZF_replacement_fm(p) . p \<in> formula}
   ZF \<equiv> ZF_inf \<union> ZF_fin
-  ZFC_fin \<equiv> ZF_fin \<union> {ZF_choice_fm}
+  ZFC_fin \<equiv> ZF_fin \<union> {AC}
   ZFC \<equiv> ZF_inf \<union> ZFC_fin
 *)
 
@@ -374,7 +376,7 @@ text\<open>@{thm [display] extensions_of_ctms}\<close>
   \<exists>N. M \<subseteq> N \<and>
       N \<approx> \<omega> \<and>
       Transset(N) \<and> N \<Turnstile> ZF \<and> M \<noteq> N \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
-        \<and> (M, [] \<Turnstile> ZF_choice_fm \<longrightarrow> N \<Turnstile> ZFC)
+        \<and> (M, [] \<Turnstile> AC \<longrightarrow> N \<Turnstile> ZFC)
 *)
 
 end
