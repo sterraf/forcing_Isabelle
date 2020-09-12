@@ -4,6 +4,15 @@ theory Delta_System
 
 begin
 
+no_notation oadd (infixl \<open>++\<close> 65)
+no_notation sum (infixr \<open>+\<close> 65)
+notation oadd (infixl \<open>+\<close> 65)
+
+lemma nat_oadd_add[simp]:
+  assumes "m \<in> nat" "n \<in> nat" shows "n + m = n #+ m"
+  using assms
+  by induct simp_all
+
 notation csucc (\<open>_\<^sup>+\<close> [90])
 
 \<comment> \<open>Copy-pasted from \<^file>\<open>../src/Cohen_Posets.thy\<close>. MOVE to an
@@ -140,7 +149,7 @@ qed
 
 end (* includes *)
 
-lemma cardinal_lt_csucc_iff: "Card(K) \<Longrightarrow> |K'| < csucc(K) \<longleftrightarrow> |K'| \<le> K"
+lemma cardinal_lt_csucc_iff: "Card(K) \<Longrightarrow> |K'| < K\<^sup>+ \<longleftrightarrow> |K'| \<le> K"
   by (simp add: Card_lt_csucc_iff)
 
 lemma cardinal_UN_le_nat:
@@ -153,7 +162,7 @@ lemma leqpoll_imp_cardinal_UN_le:
   shows "|\<Union>i\<in>J. X(i)| \<le> K"
 proof -
   from \<open>J \<lesssim> K\<close>
-  obtain f where "f \<in> inj(J,K)" by (blast dest:lepollD)
+  obtain f where "f \<in> inj(J,K)" by blast
   define Y where "Y(k) \<equiv> if k\<in>range(f) then X(converse(f)`k) else 0" for k
   have "i\<in>J \<Longrightarrow> f`i \<in> K" for i
     using inj_is_fun[OF \<open>f \<in> inj(J,K)\<close>] by auto
@@ -178,17 +187,22 @@ proof -
     by (rule_tac le_trans[OF _ cardinal_UN_le]) (auto intro:Ord_0_le)+
 qed
 
-lemma nat_lt_aleph1: "nat<\<aleph>\<^bsub>1\<^esub>"
+lemma nat_lt_Aleph1: "nat<\<aleph>\<^bsub>1\<^esub>"
   by (simp add: Aleph_def lt_csucc)
 
-lemma zero_lt_aleph1: "0<\<aleph>\<^bsub>1\<^esub>"
-  by (rule lt_trans[of _ "nat"], auto simp add: ltI nat_lt_aleph1)
+lemma zero_lt_Aleph1: "0<\<aleph>\<^bsub>1\<^esub>"
+  by (rule lt_trans[of _ "nat"], auto simp add: ltI nat_lt_Aleph1)
 
 lemma le_aleph1_nat: "Card(k) \<Longrightarrow> k<\<aleph>\<^bsub>1\<^esub> \<Longrightarrow> k \<le> nat"    
   by (simp add: Aleph_def Card_lt_csucc_iff Card_nat)
 
 lemma Aleph_succ: "\<aleph>\<^bsub>succ(\<alpha>)\<^esub> = \<aleph>\<^bsub>\<alpha>\<^esub>\<^sup>+"
   unfolding Aleph_def by simp
+
+lemma lesspoll_aleph_plus_one:
+  assumes "Ord(\<alpha>)"
+  shows "d \<prec> \<aleph>\<^bsub>succ(\<alpha>)\<^esub> \<longleftrightarrow> d \<lesssim> \<aleph>\<^bsub>\<alpha>\<^esub>"
+  using assms lesspoll_csucc Aleph_succ Card_is_Ord by simp
 
 lemma cardinal_lt_csucc_iff':
   includes Ord_dests
@@ -203,7 +217,7 @@ proof
   assume "X \<lesssim> Y"
   then
   obtain j where  "j \<in> inj(X,Y)"
-    unfolding lepoll_def by blast
+    by blast
   then
   have "range(j) \<subseteq> Y" "j \<in> bij(X,range(j))"
     using inj_bij_range inj_is_fun Cofinality.range_of_function
@@ -221,17 +235,17 @@ next
   have "converse(f) \<in> inj(X,Y)"
     using bij_is_inj inj_weaken_type bij_converse_bij by blast
   then
-  show "X \<lesssim> Y" unfolding lepoll_def by blast
+  show "X \<lesssim> Y" by blast
 qed
 
 lemma cardinal_Aleph [simp]: "Ord(\<alpha>) \<Longrightarrow> |\<aleph>\<^bsub>\<alpha>\<^esub>| = \<aleph>\<^bsub>\<alpha>\<^esub>"
   using Card_cardinal_eq by simp
 
-lemma uncountable_imp_cardinal_subset_aleph1:
+lemma uncountable_imp_subset_eqpoll_aleph1:
   includes Ord_dests
   notes Aleph_zero_eq_nat[simp] Card_nat[simp] Aleph_succ[simp]
   assumes "nat < |X|"
-  shows "\<exists>S. S \<subseteq> X \<and> |S| = \<aleph>\<^bsub>1\<^esub>"
+  shows "\<exists>S. S \<subseteq> X \<and> S \<approx> \<aleph>\<^bsub>1\<^esub>"
 proof -
   from assms
   have a:"\<aleph>\<^bsub>1\<^esub> \<lesssim> X"
@@ -298,10 +312,10 @@ proof -
     assume "\<forall>n\<in>range(f). |f-``{n}| < \<aleph>\<^bsub>1\<^esub>"
     then 
     have "\<forall>n\<in>domain(?G). |?G`n| < \<aleph>\<^bsub>1\<^esub>" 
-      using zero_lt_aleph1 by (auto)
+      using zero_lt_Aleph1 by (auto)
     with \<open>function(?G)\<close> \<open>domain(?G) \<lesssim> nat\<close> 
     have "|\<Union>n\<in>domain(?G). ?G`n|\<le>nat"
-      using cof_aleph1_aux by (blast del:lepollD)  (* force/auto won't do it here *)
+      using cof_aleph1_aux by blast
     then 
     have "|\<Union>n\<in>range(f). f-``{n}|\<le>nat" by simp
     with \<open>\<aleph>\<^bsub>1\<^esub> = _\<close>
@@ -312,7 +326,7 @@ proof -
       by simp
     then 
     have "False"
-      using nat_lt_aleph1 by (blast dest:lt_trans2)
+      using nat_lt_Aleph1 by (blast dest:lt_trans2)
   }
   with \<open>range(f)\<subseteq>nat\<close> 
   obtain n where "n\<in>nat" "\<not>(|f -`` {n}| < \<aleph>\<^bsub>1\<^esub>)"
@@ -331,7 +345,7 @@ qed
 lemma range_of_subset_eqpoll:
   assumes "f \<in> inj(X,Y)" "S \<subseteq> X"
   shows "S \<approx> f `` S"
-  using assms restrict_bij unfolding eqpoll_def by blast
+  using assms restrict_bij by blast
 
 \<comment> \<open>FIXME: asymmetry between assumptions and conclusion
     (\<^term>\<open>(\<approx>)\<close> versus \<^term>\<open>cardinal\<close>)\<close>
@@ -341,7 +355,7 @@ lemma eqpoll_aleph1_cardinal_vimage:
 proof -
   from assms
   obtain g where "g\<in>bij(\<aleph>\<^bsub>1\<^esub>,X)"
-    using eqpoll_sym unfolding eqpoll_def by blast
+    using eqpoll_sym by blast
   with \<open>f : X \<rightarrow> nat\<close>
   have "f O g : \<aleph>\<^bsub>1\<^esub> \<rightarrow> nat" "converse(g) \<in> bij(X, \<aleph>\<^bsub>1\<^esub>)"
     using bij_is_fun comp_fun bij_converse_bij by blast+
@@ -370,7 +384,7 @@ lemma delta_systemI[intro]:
   shows "delta_system(D)"
   using assms unfolding delta_system_def by simp
 
-lemma delta_systemD[dest!]:
+lemma delta_systemD[dest]:
   "delta_system(D) \<Longrightarrow> \<exists>r. \<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
   unfolding delta_system_def by simp
 
@@ -379,9 +393,64 @@ lemma vimage_lam: "(\<lambda>x\<in>A. f(x)) -`` B = { x\<in>A . f(x) \<in> B }"
     lam_funtype[of A f, THEN [2] apply_equality] lamI[of _ A f]
   by auto blast
 
-lemma delta_system_aleph1:
+lemma Int_eq_zero_imp_not_eq:
+  assumes
+    "\<And>x y. x\<in>D \<Longrightarrow> y \<in> D \<Longrightarrow> x \<noteq> y \<Longrightarrow> A(x) \<inter> A(y) = 0"
+    "\<And>x. x\<in>D \<Longrightarrow> A(x) \<noteq> 0" "a\<in>D" "b\<in>D" "a\<noteq>b"
+  shows
+    "A(a) \<noteq> A(b)"
+  using assms by fastforce
+
+lemma cardinal_succ_not_0: "|A| = succ(n) \<Longrightarrow> A \<noteq> 0"
+  by auto
+
+lemma lt_neq_symmetry:
+  assumes
+    "\<And>\<alpha> \<beta>. \<alpha> \<in> \<gamma> \<Longrightarrow> \<beta> \<in> \<gamma> \<Longrightarrow> \<alpha> < \<beta> \<Longrightarrow> Q(\<alpha>,\<beta>)"
+    "\<And>\<alpha> \<beta>. Q(\<alpha>,\<beta>) \<Longrightarrow> Q(\<beta>,\<alpha>)"
+    "\<alpha> \<in> \<gamma>" "\<beta> \<in> \<gamma>" "\<alpha> \<noteq> \<beta>"
+    "Ord(\<gamma>)"
+  shows
+    "Q(\<alpha>,\<beta>)"
+proof -
+  from assms
+  consider "\<alpha><\<beta>" | "\<beta><\<alpha>"
+    using Ord_linear_lt[of \<alpha> \<beta> thesis] Ord_in_Ord[of \<gamma>]
+    by auto
+  then
+  show ?thesis by cases (auto simp add:assms)
+qed
+
+lemma naturals_lt_nat[intro]: "n \<in> nat \<Longrightarrow> n < nat"
+  unfolding lt_def by simp
+
+lemma cardinal_map_Un:
+  assumes
+    "nat \<le> |X|"
+    "|b| < nat"
+  shows "|{a \<union> b . a \<in> X}| = |X|"
+  sorry
+
+lemma Diff_bij:
+  assumes "\<forall>A\<in>F. X \<subseteq> A" shows "(\<lambda>A\<in>F. A-X) \<in> bij(F, {A-X. A\<in>F})"
+  sorry
+
+lemma cardinal_Card_eqpoll_iff: "Card(\<kappa>) \<Longrightarrow> |X| = \<kappa> \<longleftrightarrow> X \<approx> \<kappa>"
+  using Card_cardinal_eq[of \<kappa>] cardinal_eqpoll_iff[of X \<kappa>] by auto
+
+lemma
+  assumes
+    "\<And>X. |X| < \<gamma> \<Longrightarrow> X \<subseteq> G \<Longrightarrow> \<exists>a\<in>G. \<forall>s\<in>X. Q(s,a)" "Card(\<gamma>)"
+  obtains S where "S : \<gamma> \<rightarrow> G"
+    "\<And>\<alpha> \<beta>. \<alpha> \<in> \<gamma> \<Longrightarrow> \<beta> \<in> \<gamma> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> Q(S`\<alpha>,S`\<beta>)"
+  oops
+
+lemma Finite_cardinal_iff_AC: "Finite(|i|) \<longleftrightarrow> Finite(i)"
+  using cardinal_eqpoll_iff eqpoll_imp_Finite_iff by fastforce
+
+lemma delta_system_Aleph1:
   assumes "\<forall>A\<in>F. Finite(A)" "F \<approx> \<aleph>\<^bsub>1\<^esub>"
-  shows "\<exists>D. D \<subseteq> F \<and> delta_system(D)"
+  shows "\<exists>D. D \<subseteq> F \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>"
 proof -
   from \<open>\<forall>A\<in>F. Finite(A)\<close>
   have "(\<lambda>A\<in>F. |A|) : F \<rightarrow> nat" (is "?cards : _")
@@ -396,51 +465,149 @@ proof -
     using eqpoll_aleph1_cardinal_vimage[of F ?cards] by auto
   moreover
   define G where "G \<equiv> ?cards -`` {n}"
+  moreover from calculation
+  have "G \<subseteq> F" by auto
   ultimately
-  have "G \<subseteq> F" "A\<in>G \<Longrightarrow> |A| = n" "|G| = \<aleph>\<^bsub>1\<^esub>" for A
-    by auto
-  with \<open>n\<in>nat\<close> and assms
-  show ?thesis
-  proof (induct arbitrary:F)
-    case 0
+  have "A\<in>G \<Longrightarrow> |A| = n" "G \<approx> \<aleph>\<^bsub>1\<^esub>" for A
+    using cardinal_Card_eqpoll_iff by auto
+  with \<open>n\<in>nat\<close>
+  have "\<exists>D. D \<subseteq> G \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>"
+  proof (induct arbitrary:G)
+    case 0 \<comment> \<open>This case is impossible\<close>
     then
-    show ?case by auto
+    have "G \<subseteq> {0}"
+      using cardinal_0_iff_0 by auto
+    with \<open>G \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+    show ?case
+      using nat_lt_Aleph1 subset_imp_le_cardinal[of G "{0}"]
+        lt_trans2 cardinal_Card_eqpoll_iff by auto
   next
     case (succ n)
+    then
+    have "\<forall>a\<in>G. Finite(a)"
+      using Finite_cardinal_iff_AC nat_into_Finite[of "succ(n)"]
+      by fastforce
     show ?case
     proof (cases "\<exists>p. {A\<in>G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>")
       case True
       then
       obtain p where "{A\<in>G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>" by blast
+      moreover from this
+      have "{A-{p} . A\<in>{X\<in>G. p\<in>X}} \<approx> \<aleph>\<^bsub>1\<^esub>" (is "?F \<approx> _")
+        using Diff_bij[of "{A\<in>G . p \<in> A}" "{p}"]
+          comp_bij[OF bij_converse_bij, where C="\<aleph>\<^bsub>1\<^esub>"] by fast
       text\<open>Now using the inductive hypothesis:\<close>
-      from \<open>G \<subseteq> F\<close> \<open>\<And>A. A\<in>G \<Longrightarrow> |A|=succ(n)\<close> \<open>\<forall>a\<in>F. Finite(a)\<close>
-      have "\<forall>A\<in>G. p\<in>A \<longrightarrow> |A - {p}| = n"
+      moreover from \<open>\<And>A. A\<in>G \<Longrightarrow> |A|=succ(n)\<close> \<open>\<forall>a\<in>G. Finite(a)\<close>
+        and this
+      have "p\<in>A \<Longrightarrow> A\<in>G \<Longrightarrow> |A - {p}| = n" for A
         using Finite_imp_succ_cardinal_Diff[of _ p] by force
-      with succ
-      obtain D where "D\<subseteq>{A-{p} . A\<in>G}" "delta_system(D)"
+      moreover from this and \<open>n\<in>nat\<close>
+      have "\<forall>a\<in>?F. Finite(a)" using Finite_cardinal_iff_AC
+          nat_into_Finite by auto
+      moreover \<comment> \<open>the inductive hypothesis\<close>
+      note \<open>(\<And>A. A \<in> ?F \<Longrightarrow> |A| = n) \<Longrightarrow> ?F \<approx> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<exists>D. D \<subseteq> ?F \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+      ultimately
+      obtain D where "D\<subseteq>{A-{p} . A\<in>{X\<in>G. p\<in>X}}" "delta_system(D)" "D \<approx> \<aleph>\<^bsub>1\<^esub>"
         by auto
-      then
+      moreover from this
       obtain r where "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
-        by blast
+        by fastforce
       then
+      have "\<forall>A\<in>D. \<forall>B\<in>D. A \<union> {p} \<noteq> B \<union> {p} \<longrightarrow> (A \<union> {p}) \<inter> (B \<union> {p}) = r \<union> {p}"
+        by blast
+      ultimately
+      have "delta_system({B \<union> {p} . B\<in>D})" (is "delta_system(?D)")
+        by fastforce
+      moreover
+      note \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+      then
+      have \<open>|D| = \<aleph>\<^bsub>1\<^esub>\<close> using cardinal_eqpoll_iff by force
+      moreover from this
+      have "?D \<approx> \<aleph>\<^bsub>1\<^esub>"
+        using cardinal_map_Un leI naturals_lt_nat
+          cardinal_eqpoll_iff[THEN iffD1] nat_lt_Aleph1
+        by auto
+      moreover
+      note \<open>D \<subseteq> {A-{p} . A\<in>{X\<in>G. p\<in>X}}\<close>
+      have "?D \<subseteq> G"
+      proof -
+        {
+          fix A
+          assume "A\<in>G" "p\<in>A"
+          moreover from this
+          have "A = A - {p} \<union> {p}"
+            by blast
+          ultimately
+          have "A -{p} \<union> {p} \<in> G"
+            by auto
+        }
+        with \<open>D \<subseteq> {A-{p} . A\<in>{X\<in>G. p\<in>X}}\<close>
+        show ?thesis
+          by blast
+      qed
+      ultimately
       show ?thesis by auto
     next
       case False
-      moreover from \<open>G\<subseteq>F\<close> \<open>F \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
-      have "{A \<in> G . p \<in> A} \<lesssim> \<aleph>\<^bsub>1\<^esub>" for p
+      note \<open>\<not> (\<exists>p. {A \<in> G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>)\<close> \<comment> \<open>the inductive hypothesis\<close>
+      moreover from \<open>G \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+      have "{A \<in> G . p \<in> A} \<lesssim> \<aleph>\<^bsub>1\<^esub>" (is "?G(p) \<lesssim> _") for p
         by (blast intro:lepoll_eq_trans[OF subset_imp_lepoll])
       ultimately
-      have "{A \<in> G . p \<in> A} \<prec> \<aleph>\<^bsub>1\<^esub>" for p
+      have "?G(p) \<prec> \<aleph>\<^bsub>1\<^esub>" for p
         unfolding lesspoll_def by simp
-      then show ?thesis sorry
+      then \<comment> \<open>may omit the previous step if unfolding here:\<close>
+      have "?G(p) \<lesssim> nat" for p
+        using lesspoll_aleph_plus_one[of 0] Aleph_zero_eq_nat by auto
+      moreover
+      have "{A \<in> G . S \<inter> A \<noteq> 0} = (\<Union>p\<in>S. ?G(p))" for S
+        by auto
+      ultimately
+      have "S \<lesssim> nat \<Longrightarrow> |{A \<in> G . S \<inter> A \<noteq> 0}| \<le> nat" for S
+        using leqpoll_imp_cardinal_UN_le InfCard_nat
+          lepoll_cardinal_le by simp
+      from \<open>n\<in>nat\<close> \<open>\<And>A. A\<in>G \<Longrightarrow> |A| = succ(n)\<close>
+      have "S\<in>G \<Longrightarrow> \<exists>A\<in>G. S \<inter> A = 0" for S sorry
+      then
+      obtain S where "S : \<aleph>\<^bsub>1\<^esub> \<rightarrow> G" "\<alpha> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<beta> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0" for \<alpha> \<beta> sorry
+      then
+      have "\<alpha> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<beta> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<alpha>\<noteq>\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0" for \<alpha> \<beta>
+        using lt_neq_symmetry[of "\<aleph>\<^bsub>1\<^esub>" "\<lambda>\<alpha> \<beta>. S`\<alpha> \<inter> S`\<beta> = 0"] Card_is_Ord
+        by auto blast
+      moreover from this and \<open>\<And>A. A\<in>G \<Longrightarrow> |A| = succ(n)\<close> \<open>S : \<aleph>\<^bsub>1\<^esub> \<rightarrow> G\<close>
+      have "S \<in> inj(\<aleph>\<^bsub>1\<^esub>, G)"
+        using cardinal_succ_not_0 Int_eq_zero_imp_not_eq[of "\<aleph>\<^bsub>1\<^esub>" "\<lambda>x. S`x"]
+        unfolding inj_def by fastforce
+      moreover from calculation
+      have "range(S) \<approx> \<aleph>\<^bsub>1\<^esub>"
+        using inj_bij_range eqpoll_sym unfolding eqpoll_def by fast
+      moreover from calculation
+      have "range(S) \<subseteq> G"
+        using inj_is_fun range_of_function by fast
+      ultimately
+      show ?thesis
+        using inj_is_fun range_eq_image[of S "\<aleph>\<^bsub>1\<^esub>" G]
+          image_function[OF fun_is_function, OF inj_is_fun, of S "\<aleph>\<^bsub>1\<^esub>" G]
+          domain_of_fun[OF inj_is_fun, of S "\<aleph>\<^bsub>1\<^esub>" G]
+        by (rule_tac x="S``\<aleph>\<^bsub>1\<^esub>" in exI) auto
     qed
   qed
+  with \<open>G \<subseteq> F\<close>
+  show ?thesis by blast
 qed
 
 lemma delta_system_uncountable:
   assumes "\<forall>A\<in>F. Finite(A)" "nat < |F|"
-  shows "\<exists>D. D \<subseteq> F \<and> delta_system(D)"
-  using assms delta_system_aleph1 uncountable_imp_cardinal_subset_aleph1
-  by blast
+  shows "\<exists>D. D \<subseteq> F \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>"
+proof -
+  from assms
+  obtain S where "S \<subseteq> F" "S \<approx> \<aleph>\<^bsub>1\<^esub>"
+    using uncountable_imp_subset_eqpoll_aleph1[of F] by auto
+  moreover from \<open>\<forall>A\<in>F. Finite(A)\<close> and this
+  have "\<forall>A\<in>S. Finite(A)" by auto
+  ultimately
+  show ?thesis using delta_system_Aleph1[of S]
+    by auto
+qed
 
 end

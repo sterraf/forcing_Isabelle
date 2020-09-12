@@ -37,7 +37,7 @@ lemma function_space_eqpoll_cong:
 proof -
   from assms(1)[THEN eqpoll_sym] assms(2)
   obtain f g where "f \<in> bij(A',A)" "g \<in> bij(B,B')"
-    unfolding eqpoll_def by blast
+    by blast
   then
   have "converse(g) : B' \<rightarrow> B" "converse(f): A \<rightarrow> A'"
     using bij_converse_bij bij_is_fun by auto
@@ -208,7 +208,7 @@ proof (intro not_le_iff_lt[THEN iffD1] notI)
     by auto
   then
   obtain g where "g \<in> inj(Pow(\<nu>), \<nu>)"
-    by (blast dest:lepollD)
+    by blast
   then
   show "False"
     using cantor_inj by simp
@@ -356,7 +356,7 @@ proof (intro not_le_iff_lt[THEN iffD1] notI)
   ultimately
   obtain G where "G \<in> surj(\<kappa>, \<nu> \<rightarrow> \<kappa>)"
     using inj_imp_surj[OF _ function_space_nonempty,
-        OF _ nat_into_InfCard] by (blast dest:lepollD)
+        OF _ nat_into_InfCard] by blast
   from assms
   obtain f where "f:\<nu> \<rightarrow> \<kappa>" "cf_fun(f,\<kappa>)"
     using cf_le_cf_fun[OF _ InfCard_is_Limit] by blast

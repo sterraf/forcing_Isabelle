@@ -4,6 +4,17 @@ theory Cofinality
     "../Tools/Try0"
 begin
 
+lemma lepollD[dest]: "A \<lesssim> B \<Longrightarrow> \<exists>f. f \<in> inj(A, B)"
+  unfolding lepoll_def .
+
+lemma lepollI[intro]: "f \<in> inj(A, B) \<Longrightarrow> A \<lesssim> B"
+  unfolding lepoll_def by blast
+
+lemma eqpollD[dest]: "A \<approx> B \<Longrightarrow> \<exists>f. f \<in> bij(A, B)"
+  unfolding eqpoll_def .
+
+declare bij_imp_eqpoll[intro]
+
 definition
   cofinal :: "[i,i,i] \<Rightarrow> o" where
   "cofinal(X,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>X. <a,x>\<in>r \<or> a = x"
@@ -1298,9 +1309,6 @@ lemma InfCard_cf: "Limit(\<kappa>) \<Longrightarrow> InfCard(cf(\<kappa>))"
   using regular_is_Card cf_idemp Limit_cf nat_le_Limit Limit_cf
   unfolding InfCard_def by simp
 
-lemma lepollD: "A \<lesssim> B \<Longrightarrow> \<exists>f. f \<in> inj(A, B)"
-  unfolding lepoll_def .
-
 lemma cf_le_cf_fun:
   notes [dest] = Limit_is_Ord
   assumes "cf(\<kappa>) \<le> \<nu>" "Limit(\<kappa>)"
@@ -1314,7 +1322,7 @@ proof -
     using cofinal_mono_map_cf mono_map_is_fun by force
   moreover from calculation
   obtain g where "g \<in> inj(cf(\<kappa>), \<nu>)"
-    using le_imp_lepoll by (blast dest:lepollD)
+    using le_imp_lepoll by blast
   from this and calculation(2,3,5)
   obtain f where "f \<in> surj(\<nu>, cf(\<kappa>))" "f: \<nu> \<rightarrow> cf(\<kappa>)"
     using inj_imp_surj[OF _ Limit_has_0[THEN ltD]]
