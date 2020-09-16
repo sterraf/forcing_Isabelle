@@ -6,6 +6,8 @@ theory CardinalArith_Relative
 
 begin
 
+declare [[syntax_ambiguity_warning = false]]
+
 definition
   lt_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "lt_rel(M,a,b) \<equiv> a\<in>b \<and> ordinal(M,b)"
@@ -53,11 +55,12 @@ projections we can express its relational version using
 
 definition (* completely relational *)
   is_cadd   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
-  "is_cadd(M,A,B,bj) \<equiv> is_hcomp2_2(M,\<lambda>M _. is_cardinal(M),\<lambda>_ _. (=),is_sum,A,B,bj)"
+  "is_cadd(M,A,B,bj) \<equiv> 
+      M(bj) \<and> is_hcomp2_2(M,\<lambda>M _. is_cardinal(M),\<lambda>_ _. (=),is_sum,A,B,bj)"
 
 definition
   cadd_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i"  where
-  "cadd_rel(M,A,B) \<equiv> THE d. M(d) \<and> is_cadd(M,A,B,d)"
+  "cadd_rel(M,A,B) \<equiv> THE d. is_cadd(M,A,B,d)"
 
 abbreviation
   cadd_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<oplus>\<^bsup>_\<^esup> _\<close> [66,1,66] 65) where
@@ -68,7 +71,7 @@ begin
 
 lemma is_cadd_uniqueness:
   assumes
-    "M(A)" "M(B)" "M(d)" "M(d')"
+    "M(A)" "M(B)"
     "is_cadd(M,A,B,d)" "is_cadd(M,A,B,d')"
   shows
     "d=d'"
@@ -84,10 +87,23 @@ lemma is_cadd_witness: "M(A) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[
     is_cardinal_witness
   unfolding is_cadd_def by simp
 
-lemma cadd_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(cadd_rel(M,x,y))"
-  unfolding cadd_rel_def
-  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_cadd(M,x,y,d)"], OF _ is_cadd_uniqueness[of x y]]
-    is_cadd_witness by auto
+lemma is_cadd_closed: "is_cadd(M,A,B,d) \<Longrightarrow> M(d)" 
+  unfolding is_cadd_def by simp
+
+lemma cadd_rel_closed[intro,simp]: 
+  assumes "M(x)" "M(y)"
+  shows "M(cadd_rel(M,x,y))"
+proof -
+  have "is_cadd(M, x, y, THE xa. is_cadd(M, x, y, xa))" 
+    using assms 
+          theI[OF ex1I[of "\<lambda>d. is_cadd(M,x,y,d)"], OF _ is_cadd_uniqueness[of x y]]
+          is_cadd_witness
+    by auto
+  then show ?thesis 
+    using assms is_cadd_closed
+    unfolding cadd_rel_def
+    by blast
+qed
 
 lemma cadd_rel_iff:
   assumes "M(x)" "M(y)" "M(d)"
@@ -102,7 +118,7 @@ proof (intro iffI)
   ultimately
   show "is_cadd(M, x, y, d)"
     using is_cadd_uniqueness[of x y] is_cadd_witness
-      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_cadd(M,x,y,d)"], OF _ is_cadd_uniqueness[of x y], of e]
+      theI[OF ex1I[of "is_cadd(M,x,y)"], OF _ is_cadd_uniqueness[of x y], of e]
     unfolding cadd_rel_def
     by auto
 next
@@ -131,11 +147,12 @@ subsection\<open>Discipline for \<^term>\<open>cmult\<close>\<close>
 
 definition (* completely relational *)
   is_cmult   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
-  "is_cmult(M,A,B,bj) \<equiv> is_hcomp2_2(M,\<lambda>M _. is_cardinal(M),\<lambda>_ _. (=),cartprod,A,B,bj)"
+  "is_cmult(M,A,B,bj) \<equiv> M(bj) \<and>
+          is_hcomp2_2(M,\<lambda>M _. is_cardinal(M),\<lambda>_ _. (=),cartprod,A,B,bj)"
 
 definition
   cmult_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i"  where
-  "cmult_rel(M,A,B) \<equiv> THE d. M(d) \<and> is_cmult(M,A,B,d)"
+  "cmult_rel(M,A,B) \<equiv> THE d. is_cmult(M,A,B,d)"
 
 abbreviation
   cmult_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<otimes>\<^bsup>_\<^esup> _\<close> [66,1,66] 65) where
@@ -146,7 +163,7 @@ begin
 
 lemma is_cmult_uniqueness:
   assumes
-    "M(A)" "M(B)" "M(d)" "M(d')"
+    "M(A)" "M(B)"
     "is_cmult(M,A,B,d)" "is_cmult(M,A,B,d')"
   shows
     "d=d'"
@@ -162,10 +179,24 @@ lemma is_cmult_witness: "M(A) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d
     is_cardinal_witness
   unfolding is_cmult_def by simp
 
-lemma cmult_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(cmult_rel(M,x,y))"
-  unfolding cmult_rel_def
-  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_cmult(M,x,y,d)"], OF _ is_cmult_uniqueness[of x y]]
-    is_cmult_witness by auto
+lemma is_cmult_closed :
+ "is_cmult(M,x,y,d) \<Longrightarrow> M(d)"
+  unfolding is_cmult_def by simp
+
+lemma cmult_rel_closed[intro,simp]: 
+  assumes "M(x)" "M(y)"
+  shows "M(cmult_rel(M,x,y))"
+proof -
+  have "is_cmult(M, x, y, THE xa. is_cmult(M, x, y, xa))" 
+    using assms 
+          theI[OF ex1I[of "is_cmult(M,x,y)"], OF _ is_cmult_uniqueness[of x y]]
+          is_cmult_witness
+    by auto
+  then show ?thesis 
+    using assms is_cmult_closed
+    unfolding cmult_rel_def
+    by blast
+qed
 
 lemma cmult_rel_iff:
   assumes "M(x)" "M(y)" "M(d)"
@@ -180,7 +211,7 @@ proof (intro iffI)
   ultimately
   show "is_cmult(M, x, y, d)"
     using is_cmult_uniqueness[of x y] is_cmult_witness
-      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_cmult(M,x,y,d)"], OF _ is_cmult_uniqueness[of x y], of e]
+      theI[OF ex1I[of "is_cmult(M,x,y)"], OF _ is_cmult_uniqueness[of x y], of e]
     unfolding cmult_rel_def
     by auto
 next
@@ -354,21 +385,18 @@ lemma (in M_cardinals) csquare_rel_abs[absolut]: "\<lbrakk> M(K); M(cs)\<rbrakk>
 
 definition
   is_csucc :: "[i\<Rightarrow>o,i,i]\<Rightarrow>o"  where
-  "is_csucc(M,K,cs) \<equiv> least(M, \<lambda>i. M(i) \<and> Card\<^bsup>M\<^esup>(i) \<and> lt_rel(M,K,i),cs)"
+  "is_csucc(M,K,cs) \<equiv> M(cs) \<and> least(M, \<lambda>i. M(i) \<and> Card_rel(M,i) \<and> lt_rel(M,K,i),cs)"
 
-text\<open>New in Discipline: If we are to maintain an explicit mention
-of the class argument, "rel" versions should be outside of the
-relevant contexts\<close>
 definition
   csucc_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>csucc\<^bsup>M\<^esup>'(_')\<close>) where
-  "csucc_rel(M,x) \<equiv> THE d. M(d) \<and> is_csucc(M,x,d)"
+  "csucc_rel(M,x) \<equiv> THE d. is_csucc(M,x,d)"
 
 context M_cardinals
 begin
 
 lemma is_csucc_uniqueness:
   assumes
-    "M(r)" "M(d)" "M(d')"
+    "M(r)" 
     "is_csucc(M,r,d)" "is_csucc(M,r,d')"
   shows
     "d=d'"
@@ -380,11 +408,23 @@ lemma is_csucc_witness: "M(r) \<Longrightarrow> \<exists>d[M]. is_csucc(M,r,d)"
   using Least_closed' least_abs' unfolding is_csucc_def
   by fastforce \<comment> \<open>We have to do this by hand, using axioms\<close>
 
-\<comment> \<open>adding closure to simpset and claset\<close>
-lemma csucc_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(csucc_rel(M,x))"
-  unfolding csucc_rel_def
-  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_csucc(M,x,d)"], OF _ is_csucc_uniqueness[of x]]
-    is_csucc_witness by auto
+lemma is_csucc_closed : "is_csucc(M,f,d) \<Longrightarrow> M(d)" 
+  unfolding is_csucc_def by simp
+
+lemma csucc_rel_closed[intro,simp]: 
+  assumes "M(x)" 
+  shows "M(csucc_rel(M,x))"
+proof -
+  have "is_csucc(M, x, THE xa. is_csucc(M, x,xa))" 
+    using assms 
+          theI[OF ex1I[of "\<lambda>d. is_csucc(M,x,d)"], OF _ is_csucc_uniqueness[of x]]
+          is_csucc_witness
+    by auto
+  then show ?thesis 
+    using assms is_csucc_closed
+    unfolding csucc_rel_def
+    by blast
+qed
 
 lemma csucc_rel_iff:
   assumes "M(x)"  "M(d)"
@@ -394,7 +434,7 @@ proof (intro iffI)
   with assms
   show "is_csucc(M, x, d)"
     using is_csucc_uniqueness[of x] is_csucc_witness
-    theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_csucc(M,x,d)"], OF _ is_csucc_uniqueness[of x]]
+    theI[OF ex1I[of "is_csucc(M,x)"], OF _ is_csucc_uniqueness[of x]]
     unfolding csucc_rel_def
     by auto
 next
@@ -405,7 +445,7 @@ next
     by (auto del:the_equality intro:the_equality[symmetric])
 qed
 
-lemma def_csucc_rel: "M(x) \<Longrightarrow> csucc_rel(M,x) = (\<mu> i. M(i) \<and> Card\<^bsup>M\<^esup>(i) \<and> x < i)"
+lemma def_csucc_rel: "M(x) \<Longrightarrow> csucc_rel(M,x) = (\<mu> i. M(i) \<and> Card_rel(M,i) \<and> x < i)"
   using  least_abs' csucc_rel_iff
   unfolding is_csucc_def by fastforce
 
@@ -1007,7 +1047,8 @@ subsection\<open>Discipline for \<^term>\<open>jcardDom\<close>\<close>
 
 definition (* completely relational *)
   is_jcardDom   :: "[i\<Rightarrow>o,i,i]\<Rightarrow>o"  where
-  "is_jcardDom(M,k,pkk) \<equiv> is_hcomp2_2(M,\<lambda>M _. is_Pow(M),\<lambda>_ _. (=),cartprod,k,k,pkk)"
+  "is_jcardDom(M,k,pkk) \<equiv> M(pkk) \<and>
+        is_hcomp2_2(M,\<lambda>M _. is_Pow(M),\<lambda>_ _. (=),cartprod,k,k,pkk)"
 
 definition
   jcardDom_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i"  where
@@ -1018,7 +1059,7 @@ begin
 
 lemma is_jcardDom_uniqueness:
   assumes
-    "M(A)" "M(d)" "M(d')"
+    "M(A)"
     "is_jcardDom(M,A,d)" "is_jcardDom(M,A,d')"
   shows
     "d=d'"
@@ -1103,60 +1144,55 @@ lemma (in M_ordertype) jcardP_closed:
 
 definition
   is_jcardRepl :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
-  "is_jcardRepl(M,K,X,j) \<equiv>  \<exists>pKK[M]. is_jcardDom(M,K,pKK)
-                  \<and> is_Replace(M,pKK,jcardP_rel(M,X),j)"
+  "is_jcardRepl(M,K,X,j) \<equiv>  M(j) \<and> (\<exists>pKK[M]. is_jcardDom(M,K,pKK)
+                  \<and> is_Replace(M,pKK,jcardP_rel(M,X),j))"
 
 definition
   jcardRepl_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" where
-  "jcardRepl_rel(M,K,X) \<equiv> THE d. M(d) \<and> is_jcardRepl(M,K,X,d)"
+  "jcardRepl_rel(M,K,X) \<equiv> THE d. is_jcardRepl(M,K,X,d)"
 
-context M_ordertype
+locale M_jump_cardinal = M_ordertype +
+  assumes
+    jcardRepl_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M,jcardP_rel(M,X))"
+    and
+    is_jcardRepl_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M,is_jcardRepl(M,X))"
 begin
 
 lemma is_jcardRepl_uniqueness:
   assumes
-    "M(K)" "M(X)" "M(d)" "M(d')"
+    "M(K)" "M(X)" 
     "is_jcardRepl(M,K,X,d)" "is_jcardRepl(M,K,X,d')"
   shows
     "d=d'"
-proof -
-  from assms
-  have
-    "\<exists>pKK[M]. is_jcardDom(M, K, pKK) \<and> is_Replace(M,pKK,jcardP_rel(M,X),d)"
-    "\<exists>pKK[M]. is_jcardDom(M, K, pKK) \<and> is_Replace(M,pKK,jcardP_rel(M,X),d')"
-    unfolding is_jcardRepl_def by simp_all
-  then
-  obtain d1 d2 where
-    "is_jcardDom(M, K, d1)" "is_Replace(M,d1,jcardP_rel(M,X),d)" "M(d1)"
-    "is_jcardDom(M, K, d2)" "is_Replace(M,d2,jcardP_rel(M,X),d')" "M(d2)"
-    by auto
-  moreover from this and \<open>M(K)\<close>
-  have "d1 = d2"
-    using is_jcardDom_uniqueness[of K d1 d2] by fast
-  moreover note assms
-  ultimately
-  show "d=d'"
-    using
-    extensionality_trans[where P="\<lambda>u. \<exists>y[M]. y \<in> d1 \<and> jcardP_rel(M, X, y, u)"]
-    unfolding is_Replace_def by blast
-qed
-
-lemma jcardRepl_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M, 
-      jcardP_rel(M,X))"
-  sorry
+  using assms  is_jcardDom_uniqueness
+        Replace_abs[OF _ _ univalent_jcardP jcardP_closed]
+  unfolding is_jcardRepl_def
+  by force
 
 lemma is_jcardRepl_witness: "M(X) \<Longrightarrow> M(K) \<Longrightarrow> \<exists>d[M]. is_jcardRepl(M,K,X,d)"
   using strong_replacementD[OF jcardRepl_replacement _ univalent_jcardP]
         jcardDom_rel_iff
   unfolding is_jcardRepl_def is_Replace_def
   by auto
-  
-\<comment> \<open>adding closure to simpset and claset\<close>
-lemma jcardRepl_rel_closed[intro,simp]: "M(K) \<Longrightarrow> M(X) \<Longrightarrow> M(jcardRepl_rel(M,K,X))"
-  unfolding jcardRepl_rel_def
-  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_jcardRepl(M,K,X,d)"], 
-             OF _ is_jcardRepl_uniqueness[of K X]]
-    is_jcardRepl_witness by auto
+
+lemma is_jcardRepl_closed: "is_jcardRepl(M,K,X,d) \<Longrightarrow> M(d)"
+  unfolding is_jcardRepl_def by simp
+
+lemma jcardRepl_rel_closed[intro,simp]: 
+  assumes "M(x)" "M(y)"
+  shows "M(jcardRepl_rel(M,x,y))"
+proof -
+  have "is_jcardRepl(M, x, y, THE xa. is_jcardRepl(M, x, y, xa))" 
+    using assms 
+          theI[OF ex1I[of "\<lambda>d. is_jcardRepl(M,x,y,d)"], OF _ is_jcardRepl_uniqueness[of x y]]
+          is_jcardRepl_witness
+    by auto
+  then show ?thesis 
+    using assms is_jcardRepl_closed
+    unfolding jcardRepl_rel_def
+    by blast
+qed
+
 
 lemma jcardRepl_rel_iff:
   assumes "M(K)"  "M(X)" "M(d)"
@@ -1171,7 +1207,7 @@ proof (intro iffI)
   ultimately
   show "is_jcardRepl(M, K, X, d)"
     using is_jcardRepl_uniqueness[of K X] is_jcardRepl_witness
-      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_jcardRepl(M,K,X,d)"], OF _ is_jcardRepl_uniqueness[of K X], of e]
+      theI[OF ex1I[of "is_jcardRepl(M,K,X)"], OF _ is_jcardRepl_uniqueness[of K X], of e]
     unfolding jcardRepl_rel_def
     by auto
 next
@@ -1192,35 +1228,32 @@ lemma def_jcardRepl_rel:
   apply (simp add:absolut)
   by (intro equalityI) (auto simp add:absolut Replace_iff jcardP_rel_def trans_closed)
 
-end (* context M_ordertype *)
+end (* context M_jump_cardinal *)
 
 definition
   is_jump_cardinal :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_jump_cardinal(M,K,j) \<equiv> \<exists>pK[M]. \<exists>u[M].
+  "is_jump_cardinal(M,K,j) \<equiv> M(j) \<and> (\<exists>pK[M]. \<exists>u[M].
    is_Pow(M,K,pK) \<and>
-   is_Replace(M,pK,\<lambda>x z. is_jcardRepl(M,K,x,z),u) \<and> big_union(M,u,j)"
+   is_Replace(M,pK,\<lambda>x z. is_jcardRepl(M,K,x,z),u) \<and> big_union(M,u,j))"
 
 definition
   jump_cardinal_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" where
-  "jump_cardinal_rel(M,K) \<equiv> THE d. M(d) \<and> is_jump_cardinal(M,K,d)"
+  "jump_cardinal_rel(M,K) \<equiv> THE d. is_jump_cardinal(M,K,d)"
 
-context M_ordertype
+
+context M_jump_cardinal
 begin
 
-lemma (in M_ordertype) univalent_is_jcardRepl:
+lemma univalent_is_jcardRepl:
   assumes "M(A)" "M(K)" 
   shows "univalent(M,A,is_jcardRepl(M,K))"
   using assms is_jcardRepl_uniqueness transM[of _ A] unfolding univalent_def 
-  sorry
+  by blast
 
-lemma (in M_ordertype) is_jcardRepl_closed:
-  assumes "M(K)" "M(A)"
-  shows "\<And>x y.  \<lbrakk> x\<in>A; is_jcardRepl(M,K,x,y) \<rbrakk> \<Longrightarrow> M(y)"
-  sorry
 
 lemma is_jump_cardinal_uniqueness:
   assumes
-    "M(K)" "M(d)" "M(d')"
+    "M(K)"
     "is_jump_cardinal(M,K,d)" "is_jump_cardinal(M,K,d')"
   shows
     "d=d'"
@@ -1228,11 +1261,6 @@ lemma is_jump_cardinal_uniqueness:
         is_Pow_uniqueness[of "K"]
   unfolding is_jump_cardinal_def
   by force
-
-
-lemma is_jcardRepl_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M, 
-      is_jcardRepl(M,X))"
-  sorry
 
 (* VER por que no sale igual que el witness anterior *)
 lemma is_jump_cardinal_witness: 
@@ -1250,13 +1278,23 @@ proof -
     by auto
 qed
 
+lemma is_jump_cardinal_closed: "is_jump_cardinal(M,K,d) \<Longrightarrow> M(d)"
+  unfolding is_jump_cardinal_def by simp
 
-\<comment> \<open>adding closure to simpset and claset\<close>
-lemma jump_cardinal_rel_closed[intro,simp]: "M(K) \<Longrightarrow> M(jump_cardinal_rel(M,K))"
-  unfolding jump_cardinal_rel_def
-  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_jump_cardinal(M,K,d)"], 
-             OF _ is_jump_cardinal_uniqueness[of K]]
-    is_jump_cardinal_witness by auto
+lemma jump_cardinal_rel_closed[intro,simp]: 
+  assumes "M(x)" 
+  shows "M(jump_cardinal_rel(M,x))"
+proof -
+  have "is_jump_cardinal(M, x, THE xa. is_jump_cardinal(M, x, xa))" 
+    using assms 
+          theI[OF ex1I[of "\<lambda>d. is_jump_cardinal(M,x,d)"], OF _ is_jump_cardinal_uniqueness[of x]]
+          is_jump_cardinal_witness
+    by auto
+  then show ?thesis 
+    using assms is_jump_cardinal_closed
+    unfolding jump_cardinal_rel_def
+    by blast
+qed
 
 lemma jump_cardinal_rel_iff:
   assumes "M(K)" "M(d)"
@@ -1271,7 +1309,7 @@ proof (intro iffI)
   ultimately
   show "is_jump_cardinal(M, K, d)"
     using is_jump_cardinal_uniqueness[of K] is_jump_cardinal_witness
-      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_jump_cardinal(M,K,d)"], OF _ is_jump_cardinal_uniqueness[of K], of e]
+      theI[OF ex1I[of "is_jump_cardinal(M,K)"], OF _ is_jump_cardinal_uniqueness[of K], of e]
     unfolding jump_cardinal_rel_def
     by auto
 next
@@ -1282,11 +1320,22 @@ next
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
+
 lemma def_jump_cardinal_rel: 
-  "M(K) \<Longrightarrow> jump_cardinal_rel(M,K) = 
-   (\<Union>X\<in>Pow\<^bsup>M\<^esup>(K). {z. r \<in> Pow\<^bsup>M\<^esup>(K*K), well_ord(X,r) & z = ordertype(X,r)})"
+  assumes "M(K)"
+  shows "jump_cardinal_rel(M,K) = (\<Union>X\<in>Pow\<^bsup>M\<^esup>(K). jcardRepl_rel(M,K,X))"
   sorry
 
+  (*using jump_cardinal_rel_closed jump_cardinal_rel_iff[symmetric]
+    Replace_abs[OF _ _ univalent_is_jcardRepl is_jcardRepl_closed]
+     def_jcardRepl_rel
+  apply auto
+  *)
+  (*
+  using jump_cardinal_rel_closed jump_cardinal_rel_iff[symmetric]
+        Replace_abs[OF _ _ univalent_is_jcardRepl is_jcardRepl_closed]
+  apply auto
+*)
 end (* M_ordertype *)
 
 
