@@ -51,11 +51,11 @@ definition test5 :: "o" where
 
 relativize "test5" "is_test5"
 
-relativize_tm "<0,a>" "test_6"
+relativize_tm "<0,a>" "test6"
 
 (* Specific context should not be required *)
-(* context M_trans
-begin *)
+context M_trans
+begin
 
 definition "test7" :: "i \<Rightarrow> o" where
   "test7(a) \<equiv> a \<in> a"
@@ -67,6 +67,52 @@ definition "test8" :: "o" where
 
 relativize "test8" "is_test8"
 
-(* end *) (* M_trans *)
+end (* M_trans *)
+
+definition "test9" :: "o" where
+  "test9 \<equiv> \<forall> a . a = a \<inter> a \<and> (\<exists> b . a = a \<inter> a \<or> a = b)"
+
+relativize "test9" "is_test9"
+
+definition "test10" :: "o" where
+  "test10 \<equiv> \<forall> a b c . a = b \<inter> c \<longrightarrow> (\<forall> b d . d \<subseteq> a \<rightarrow> b \<inter> c)"
+
+relativize "test10" "is_test10"
+
+definition "test11" :: "o" where
+  "test11 \<equiv> \<forall> a b c . a = (b \<inter> c) \<longrightarrow> (\<forall> d . a \<subseteq> d \<rightarrow> (b \<inter> c))"
+
+relativize "test11" "is_test11"
+
+lemma (in M_basic) test11_ok:
+  "(\<forall>a[M]. \<forall>b[M]. \<forall>c[M]. \<exists>e[M]. (a = e \<longrightarrow> (\<forall>d[M]. \<exists>f[M]. subset(M, a, f) \<and> is_funspace(M, d, e, f))) \<and> inter(M, b, c, e)) \<longleftrightarrow> is_test11(M)"
+  unfolding is_test11_def
+  using inter_abs Int_closed
+  by simp
+
+definition "test12" :: "o" where
+  "test12 \<equiv> \<forall> a b c . (\<forall> d . a \<subseteq> d \<rightarrow> (b \<inter> c)) \<longrightarrow> a = b \<inter> c"
+
+relativize "test12" "is_test12"
+
+relativize_tm "\<forall> b . b = a \<rightarrow> a \<inter> b" "test13"
+
+relativize_tm "\<forall> a . a = 0" "test14"
+
+lemma (in M_trans) test14_ok:
+  "(\<forall>a[M]. \<exists>b[M]. a = b \<and> empty(M,b)) \<longleftrightarrow> test14(M)"
+  unfolding test14_def
+  using empty_abs nonempty
+  by blast
+
+relativize_tm "\<forall> a . 0 \<subseteq> a" "test15"
+
+relativize_tm "\<forall> a . a = <a,0>" "test16"
+
+(* collect { a \<in> 0 . a=a} *)
+(* rep_fun { a. <a,b>\<in>0 } *)
+(* replace { a. a\<in>0, a=a } *)
+(*         { b. a\<in>0, b=a\<times>a } *)
+(* RepFun { a\<times>a. a\<in>0 } *)
 
 end
