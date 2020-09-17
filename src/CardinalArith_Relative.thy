@@ -1230,6 +1230,159 @@ lemma def_jcardRepl_rel:
 
 end (* context M_jump_cardinal *)
 
+
+definition
+  jc_Repl :: "i\<Rightarrow>i" where
+  "jc_Repl(K) \<equiv> {z . X\<in>Pow(K), z = {z. r \<in> Pow(K*K), well_ord(X,r) & z = ordertype(X,r)}}"
+
+subsection\<open>Discipline for \<^term>\<open>jc_Repl\<close>\<close>
+
+definition
+  is_jc_Repl :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_jc_Repl(M,K,u) \<equiv> M(u) \<and> (\<exists>pK[M].
+   is_Pow(M,K,pK) \<and> is_Replace(M,pK,\<lambda>x z. is_jcardRepl(M,K,x,z),u))"
+
+definition
+  jc_Repl_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" where
+  "jc_Repl_rel(M,K) \<equiv> THE d. is_jc_Repl(M,K,d)"
+
+
+context M_jump_cardinal
+begin
+
+lemma univalent_is_jcardRepl:
+  assumes "M(A)" "M(K)"
+  shows "univalent(M,A,is_jcardRepl(M,K))"
+  using assms is_jcardRepl_uniqueness transM[of _ A] unfolding univalent_def
+  by blast
+
+lemma is_jc_Repl_uniqueness:
+  assumes
+    "M(K)"
+    "is_jc_Repl(M,K,d)" "is_jc_Repl(M,K,d')"
+  shows
+    "d=d'"
+  using assms Replace_abs[OF _ _ univalent_is_jcardRepl is_jcardRepl_closed]
+    is_Pow_uniqueness[of "K"]
+  unfolding is_jc_Repl_def
+  by force
+
+\<comment> \<open>NOTE: it is different from previous witness theorems\<close>
+lemma is_jc_Repl_witness:
+  assumes "M(K)"
+  shows "\<exists>d[M]. is_jc_Repl(M,K,d)"
+proof -
+  have "\<exists>u[M]. \<exists>pK[M]. is_Pow(M,K,pK) \<and> is_Replace(M,pK,\<lambda>x z. is_jcardRepl(M,K,x,z),u)"
+    using assms strong_replacementD[OF is_jcardRepl_replacement _ univalent_is_jcardRepl]
+      Pow_rel_iff
+    unfolding is_Replace_def
+    by simp
+  then show ?thesis
+    unfolding is_jc_Repl_def
+    using assms
+    by auto
+qed
+
+lemma is_jc_Repl_closed: "is_jc_Repl(M,K,d) \<Longrightarrow> M(d)"
+  unfolding is_jc_Repl_def by simp
+
+lemma jc_Repl_rel_closed[intro,simp]:
+  assumes "M(x)"
+  shows "M(jc_Repl_rel(M,x))"
+proof -
+  have "is_jc_Repl(M, x, THE xa. is_jc_Repl(M, x, xa))"
+    using assms
+      theI[OF ex1I[of "\<lambda>d. is_jc_Repl(M,x,d)"], OF _ is_jc_Repl_uniqueness[of x]]
+      is_jc_Repl_witness
+    by auto
+  then show ?thesis
+    using assms is_jc_Repl_closed
+    unfolding jc_Repl_rel_def
+    by blast
+qed
+
+lemma jc_Repl_rel_iff:
+  assumes "M(K)" "M(d)"
+  shows "is_jc_Repl(M,K,d) \<longleftrightarrow> d = jc_Repl_rel(M,K)"
+proof (intro iffI)
+  assume "d = jc_Repl_rel(M,K)"
+  moreover
+  note assms
+  moreover from this
+  obtain e where "M(e)" "is_jc_Repl(M,K,e)"
+    using is_jc_Repl_witness by blast
+  ultimately
+  show "is_jc_Repl(M, K, d)"
+    using is_jc_Repl_uniqueness[of K] is_jc_Repl_witness
+      theI[OF ex1I[of "is_jc_Repl(M,K)"], OF _ is_jc_Repl_uniqueness[of K], of e]
+    unfolding jc_Repl_rel_def
+    by auto
+next
+  assume "is_jc_Repl(M, K, d)"
+  with assms
+  show "d = jc_Repl_rel(M,K)"
+    using is_jc_Repl_uniqueness unfolding jc_Repl_rel_def
+    by (blast del:the_equality intro:the_equality[symmetric])
+qed
+
+lemma def_jc_Repl_rel:
+  assumes "M(K)"
+  shows
+    (* "jc_Repl_rel(M,K) = {z . X\<in>Pow_rel(M,K), z = {z. r \<in> Pow_rel(M,K*K), well_ord(X,r) & z = ordertype(X,r)}}" *)
+    "jc_Repl_rel(M,K) = {z . X\<in>Pow_rel(M,K), z = jcardRepl_rel(M,K,X)}"
+    (is "_ = Replace(?D,?P(K))")
+proof -
+  from assms
+  have "X \<in> ?D \<Longrightarrow> is_jcardRepl(M, K, X, z) \<Longrightarrow> ?P(K,X,z)" for X z
+    using is_jcardRepl_closed[of K X z] jcardRepl_rel_iff
+    by (auto dest!:trans_closed)
+  with assms
+  show ?thesis
+    using Replace_abs[OF _ _ univalent_is_jcardRepl is_jcardRepl_closed]
+      Pow_rel_iff  jc_Repl_rel_iff[of K "jc_Repl_rel(M, K)"]
+      jcardRepl_rel_iff
+    unfolding is_jc_Repl_def
+    by (intro equalityI) (auto intro!:ReplaceI simp add:absolut trans_closed)
+qed
+
+(*
+(* Old try following *)
+proof -
+  from assms
+  have "M(z) \<Longrightarrow> z \<in> jc_Repl_rel(M,K) \<Longrightarrow> z \<in> Replace(?D,?P)" for z
+    using Replace_abs[ where P="is_jcardRepl(M,K)",
+        OF _ _  univalent_is_jcardRepl is_jcardRepl_closed]
+      jc_Repl_rel_iff[of ?D  "jc_Repl_rel(M,K)"]
+      transM[OF _ jcardRepl_rel_closed]
+      jcardRepl_rel_iff
+      transM[OF _ Pow_rel_closed]
+    unfolding is_jc_Repl_def
+    apply (auto dest:transM intro!:ReplaceI)
+  with assms
+  have "z \<in> jc_Repl_rel(M,K) \<Longrightarrow> z \<in> Replace(?D,?P)" for z
+    using transM[OF _ jc_Repl_rel_closed]
+    by (auto dest:transM)
+  moreover from assms
+  have "a \<in> ?D \<Longrightarrow> ?P(a,z) \<Longrightarrow> z\<in>jc_Repl_rel(M,K)" for a z
+    using Replace_abs[ where P="is_jcardRepl(M,K)",
+        OF _ _  univalent_is_jcardRepl is_jcardRepl_closed]
+      jc_Repl_rel_iff[of ?D  "jc_Repl_rel(M,K)"]
+      transM[OF _ jcardRepl_rel_closed]
+      jcardRepl_rel_iff
+    unfolding is_jc_Repl_def
+    by (auto dest:transM
+        intro!:ReplaceI
+        intro:jcardRepl_rel_iff[OF _  _ is_jcardRepl_closed', of f _ _ f, THEN iffD1])
+  ultimately
+  show ?thesis
+    by auto
+qed
+*)
+
+end (* M_ordertype *)
+
+subsection\<open>Discipline for \<^term>\<open>jump_cardinal\<close>\<close>
+
 definition
   is_jump_cardinal :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "is_jump_cardinal(M,K,j) \<equiv> M(j) \<and> (\<exists>pK[M]. \<exists>u[M].
@@ -1324,18 +1477,8 @@ qed
 lemma def_jump_cardinal_rel: 
   assumes "M(K)"
   shows "jump_cardinal_rel(M,K) = (\<Union>X\<in>Pow\<^bsup>M\<^esup>(K). jcardRepl_rel(M,K,X))"
-  sorry
+  oops
 
-  (*using jump_cardinal_rel_closed jump_cardinal_rel_iff[symmetric]
-    Replace_abs[OF _ _ univalent_is_jcardRepl is_jcardRepl_closed]
-     def_jcardRepl_rel
-  apply auto
-  *)
-  (*
-  using jump_cardinal_rel_closed jump_cardinal_rel_iff[symmetric]
-        Replace_abs[OF _ _ univalent_is_jcardRepl is_jcardRepl_closed]
-  apply auto
-*)
 end (* M_ordertype *)
 
 
