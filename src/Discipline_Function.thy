@@ -44,6 +44,9 @@ lemma is_function_space_witness:
   shows "\<exists>d[M]. is_function_space(M,A,B,d)"
 proof -
   from assms
+  interpret M_Pi_assumptions M A "\<lambda>_. B"
+    using Pi_replacement Pi_separation
+    by unfold_locales (simp_all add:Sigfun_def)
   have "\<forall>f[M]. f \<in> Pi_rel(M,A, \<lambda>_. B) \<longleftrightarrow> f \<in> A \<rightarrow> B"
     using Pi_rel_char by simp
   with assms
@@ -96,10 +99,15 @@ next
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
+
 lemma def_function_space_rel:
   assumes "M(A)" "M(y)"
   shows "function_space_rel(M,A,y) = Pi_rel(M,A,\<lambda>_. y)"
 proof -
+  from assms
+  interpret M_Pi_assumptions M A "\<lambda>_. y"
+    using Pi_replacement Pi_separation
+    by unfold_locales (simp_all add:Sigfun_def)
   from assms
   have "x\<in>function_space_rel(M,A,y) \<longleftrightarrow> x\<in>Pi_rel(M,A,\<lambda>_. y)" if "M(x)" for x
     using that
@@ -109,21 +117,28 @@ proof -
   with assms
   show ?thesis \<comment> \<open>At this point, quoting "trans_rules" doesn't work\<close>
     using transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(y)\<close>]
-      transM[OF _ Pi_rel_closed[of A "\<lambda>_. y"]] by blast
+      transM[OF _ Pi_rel_closed] by blast
 qed
 
 lemma function_space_rel_char:
   assumes "M(A)" "M(y)"
   shows "function_space_rel(M,A,y) = {f \<in> A \<rightarrow> y. M(f)}"
-  using assms def_function_space_rel Pi_rel_char
-  by simp
+proof -
+  from assms
+  interpret M_Pi_assumptions M A "\<lambda>_. y"
+    using Pi_replacement Pi_separation
+    by unfold_locales (simp_all add:Sigfun_def)
+  show ?thesis
+    using assms def_function_space_rel Pi_rel_char
+    by simp
+qed
 
 lemma mem_function_space_rel_abs:
   assumes "M(A)" "M(y)" "M(f)"
   shows "f \<in> function_space_rel(M,A,y) \<longleftrightarrow>  f \<in> A \<rightarrow> y"
   using assms function_space_rel_char by simp
 
-end (* M_Pi *)
+end (* M_Pi_assumptions *)
 
 
 
@@ -377,10 +392,18 @@ qed
 lemma inj_rel_char:
   assumes "M(A)" "M(B)"
   shows "inj_rel(M,A,B) = {f \<in> inj(A,B). M(f)}"
-  using assms def_inj_rel[OF assms] def_function_space_rel[OF assms]
-    transM[OF _ \<open>M(A)\<close>] Pi_rel_char[of A "\<lambda>_. B"]
-  unfolding inj_def
-  by auto
+proof -
+  from assms
+  interpret M_Pi_assumptions M A "\<lambda>_. B"
+    using Pi_replacement Pi_separation
+    by unfold_locales (simp_all add:Sigfun_def)
+  from assms
+  show ?thesis
+    using def_inj_rel[OF assms] def_function_space_rel[OF assms]
+      transM[OF _ \<open>M(A)\<close>] Pi_rel_char
+    unfolding inj_def
+    by auto
+qed
 
 
 end (* M_inj *)
@@ -526,10 +549,19 @@ qed
 lemma surj_rel_char:
   assumes "M(A)" "M(B)"
   shows "surj_rel(M,A,B) = {f \<in> surj(A,B). M(f)}"
-  using assms def_surj_rel[OF assms] def_function_space_rel[OF assms]
-    transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>] Pi_rel_char
-  unfolding surj_def
-  by auto
+proof -
+  from assms
+  interpret M_Pi_assumptions M A "\<lambda>_. B"
+    using Pi_replacement Pi_separation
+    by unfold_locales (simp_all add:Sigfun_def)
+  from assms
+  show ?thesis
+    using def_surj_rel[OF assms] def_function_space_rel[OF assms]
+      transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>] Pi_rel_char
+    unfolding surj_def
+    by auto
+qed
+
 
 
 end (* M_surj *)

@@ -101,7 +101,7 @@ lemma choice_ax_well_ord: "M(S) \<Longrightarrow> \<exists>r[M]. well_ord(S,r)"
 end (* M_cardinal_AC *)
 
 locale M_Pi_assumptions_choice = M_Pi_assumptions + M_cardinal_AC +
-  assumes
+  assumes                         
     B_replacement: "strong_replacement(M, \<lambda>x y. y = B(x))"
     and
     \<comment> \<open>The next one should be derivable from (some variant)
@@ -114,7 +114,7 @@ lemma AC_M:
   assumes "a \<in> A" "\<And>x. x \<in> A \<Longrightarrow> \<exists>y. y \<in> B(x)"
   shows "\<exists>z[M]. z \<in> Pi\<^bsup>M\<^esup>(A, B)"
 proof -
-  have "M(\<Union>x\<in>A. B(x))" using family_union_closed Pi_assumptions B_replacement by simp
+  have "M(\<Union>x\<in>A. B(x))" using assms family_union_closed Pi_assumptions B_replacement by simp
   then
   obtain r where "well_ord(\<Union>x\<in>A. B(x),r)" "M(r)"
     using choice_ax_well_ord by blast
@@ -138,7 +138,7 @@ proof (cases "A=0")
     using Pi_assumptions by unfold_locales auto
   case True
   then
-  show ?thesis by simp
+  show ?thesis using assms by simp
 next
   case False
   then
@@ -266,13 +266,14 @@ subsection\<open>Other Applications of AC\<close>
 text\<open>We have an example of instantiating a locale involving higher
 order variables inside a proof, by using the assumptions of the
 first orde, active locale.\<close>
+(*
 lemma surj_rel_implies_inj_rel:
   assumes f: "f \<in> surj\<^bsup>M\<^esup>(X,Y)" and
     types: "M(f)" "M(X)" "M(Y)"
   shows "\<exists>g[M]. g \<in> inj\<^bsup>M\<^esup>(Y,X)"
 proof -
   from types
-  interpret M_Pi_assumptions_choice _ Y "\<lambda>y. f-``{y}"
+  interpret M_Pi_assumptions_choice 
     by unfold_locales (auto intro:surj_imp_inj_replacement dest:transM)
   from f AC_Pi_rel
   obtain z where z: "z \<in> Pi\<^bsup>M\<^esup>(Y, \<lambda>y. f -`` {y})"
@@ -290,6 +291,7 @@ proof -
   qed
 qed
 
+
 text\<open>Kunen's Lemma 10.20\<close>
 lemma surj_rel_implies_cardinal_rel_le:
   assumes f: "f \<in> surj\<^bsup>M\<^esup>(X,Y)" and
@@ -304,7 +306,7 @@ proof (rule lepoll_rel_imp_Card_rel_le)
     using inj_rel_char
     by (auto simp add: def_lepoll_rel types)
 qed (simp_all add:types)
-
+*)
 end (* M_cardinal_AC *)
 
 text\<open>The set-theoretic universe.\<close>

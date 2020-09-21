@@ -329,7 +329,7 @@ definition
   is_Sigma :: "[i\<Rightarrow>o,i,i\<Rightarrow>i,i]\<Rightarrow>o"  where
   "is_Sigma(M,A,B,S) \<equiv> M(S) \<and> (\<exists>RSf[M].
       is_Replace(M,A,\<lambda>x z. z=Sigfun(x,B),RSf) \<and> big_union(M,RSf,S))"
-                                
+
 locale M_Pi = M_basic +
   assumes
     Pi_separation: "M(A) \<Longrightarrow> separation(M, PiP_rel(M,A))"
@@ -339,16 +339,20 @@ locale M_Pi = M_basic +
       \<forall>x\<in>A. strong_replacement(M, \<lambda>ya z. ya \<in> y \<and> z = {\<langle>x, ya\<rangle>})"
     "M(A) \<Longrightarrow> M(y) \<Longrightarrow>
       strong_replacement(M, \<lambda>x z. z = (\<Union>xa\<in>y. {\<langle>x, xa\<rangle>}))"
-    and
+
+locale M_Pi_assumptions = M_Pi +
+  fixes A B
+  assumes
     Pi_assumptions:
+    "M(A)"
+    "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))"
     "\<forall>x\<in>A. strong_replacement(M, \<lambda>y z. y \<in> B(x) \<and> z = {\<langle>x, y\<rangle>})"
     "strong_replacement(M,\<lambda>x z. z=Sigfun(x,B))"
-
 begin
 
 lemma Sigma_abs[simp]:
   assumes
-    "M(S)" "M(A)" "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))"
+    "M(S)" 
   shows
     "is_Sigma(M,A,B,S) \<longleftrightarrow> S = Sigma(A,B)"
 proof -
@@ -362,17 +366,14 @@ proof -
     unfolding is_Sigma_def by simp
 qed
 
-lemma Sigma_closed[intro,simp]: 
-  assumes
-    "M(A)" "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))" 
-  shows "M(Sigma(A,B))"
+lemma Sigma_closed[intro,simp]: "M(Sigma(A,B))"
 proof -
   have "(\<Union>x\<in>A. Sigfun(x, B)) = \<Union>{z . x \<in> A, z = Sigfun(x, B)}"
     by auto
   then
   show ?thesis
     using Sigma_Sigfun[of A B] transM[of _ A]
-      Sigfun_closed Pi_assumptions assms
+      Sigfun_closed Pi_assumptions 
     by simp
 qed
 
@@ -398,37 +399,32 @@ abbreviation
   "Pi_r_set(M,A,B) \<equiv> Pi_rel(##M,A,B)"
 
 
-context M_Pi
+context M_Pi_assumptions
 begin
 
 lemma is_Pi_uniqueness:
   assumes
-    "M(A)" "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))"
     "is_Pi(M,A,B,d)" "is_Pi(M,A,B,d')"
   shows
     "d=d'"
-  using assms extensionality_trans
+  using assms Pi_assumptions extensionality_trans
     Pow_rel_iff
   unfolding is_Pi_def by simp
 
 
-lemma is_Pi_witness: 
-  assumes "M(A)" "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))"
-  shows "\<exists>d[M]. is_Pi(M,A,B,d)"
-  using  Pow_rel_iff Pi_separation assms
+lemma is_Pi_witness: "\<exists>d[M]. is_Pi(M,A,B,d)"
+  using  Pow_rel_iff Pi_separation Pi_assumptions
   unfolding is_Pi_def by simp
 
 lemma is_Pi_closed : "is_Pi(M,A,B,d) \<Longrightarrow> M(d)" 
   unfolding is_Pi_def by simp
 
-lemma Pi_rel_closed[intro,simp]: 
-  assumes "M(A)" "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))"
-  shows "M(Pi_rel(M,A,B))"
+lemma Pi_rel_closed[intro,simp]:  "M(Pi_rel(M,A,B))"
 proof -
   have "is_Pi(M, A, B, THE xa. is_Pi(M, A, B, xa))" 
-    using assms
-          theI[OF ex1I[of "is_Pi(M,A,B)"], OF _ is_Pi_uniqueness[of A B]]
-          is_Pi_witness[of A B] is_Pi_closed 
+    using Pi_assumptions
+          theI[OF ex1I[of "is_Pi(M,A,B)"], OF _ is_Pi_uniqueness]
+          is_Pi_witness is_Pi_closed 
     by auto
   then show ?thesis 
     using is_Pi_closed
@@ -442,7 +438,7 @@ explicitly instantiated, and proof methods are slower\<close>
 lemmas trans_Pi_rel_closed[trans_closed] = transM[OF _ Pi_rel_closed]
 
 lemma Pi_rel_iff:
-  assumes "M(A)" "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))" "M(d)"
+  assumes "M(d)"
   shows "is_Pi(M,A,B,d) \<longleftrightarrow> d = Pi_rel(M,A,B)"
 proof (intro iffI)
   assume "d = Pi_rel(M,A,B)"
@@ -450,50 +446,47 @@ proof (intro iffI)
   note assms
   moreover from this
   obtain e where "M(e)" "is_Pi(M,A,B,e)"
-    using is_Pi_witness[of A B] by blast
+    using is_Pi_witness by blast
   ultimately
   show "is_Pi(M, A, B, d)"
     using is_Pi_uniqueness is_Pi_witness is_Pi_closed
-      theI[OF ex1I[of "is_Pi(M,A,B)"], OF _ is_Pi_uniqueness[of A B], of e]
+      theI[OF ex1I[of "is_Pi(M,A,B)"], OF _ is_Pi_uniqueness, of e]
     unfolding Pi_rel_def
     by simp
 next
   assume "is_Pi(M, A, B, d)"
   with assms
   show "d = Pi_rel(M,A,B)"
-    using is_Pi_uniqueness[of A B] is_Pi_closed[of A B] unfolding Pi_rel_def
+    using is_Pi_uniqueness is_Pi_closed unfolding Pi_rel_def
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
 lemma def_Pi_rel:
-  assumes "M(A)" "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))"
-  shows  "Pi_rel(M,A,B) = {f\<in>Pow_rel(M,Sigma(A,B)). A\<subseteq>domain(f) \<and> function(f)}"
+    "Pi_rel(M,A,B) = {f\<in>Pow_rel(M,Sigma(A,B)). A\<subseteq>domain(f) \<and> function(f)}"
 proof -
   have "Pi_rel(M,A, B) \<subseteq> Pow_rel(M,Sigma(A,B))"
-    using assms Pi_rel_iff[of A B "Pi_rel(M,A,B)"]  Pow_rel_iff
+    using Pi_assumptions Pi_rel_iff[of "Pi_rel(M,A,B)"]  Pow_rel_iff
     unfolding is_Pi_def by auto
   moreover
   have "f \<in> Pi_rel(M,A, B) \<Longrightarrow> A\<subseteq>domain(f) \<and> function(f)" for f
-    using assms Pi_rel_iff[of A B "Pi_rel(M,A,B)"]
+    using Pi_assumptions Pi_rel_iff[of "Pi_rel(M,A,B)"]
           def_PiP_rel[of A f] trans_closed Pow_rel_iff
     unfolding is_Pi_def by simp
   moreover
   have "f \<in> Pow_rel(M,Sigma(A,B)) \<Longrightarrow> A\<subseteq>domain(f) \<and> function(f) \<Longrightarrow> f \<in> Pi_rel(M,A, B)" for f
-    using Pi_rel_iff[of A B "Pi_rel(M,A,B)"] assms
+    using Pi_rel_iff[of "Pi_rel(M,A,B)"] Pi_assumptions
           def_PiP_rel[of A f] trans_closed Pow_rel_iff
     unfolding is_Pi_def by simp
   ultimately
   show ?thesis by force
 qed
 
-lemma Pi_rel_char: 
-  assumes "M(A)" "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))"
-  shows "Pi_rel(M,A,B) = {f\<in>Pi(A,B). M(f)}"
-  using assms def_Pi_rel Pow_rel_char[OF Sigma_closed] unfolding Pi_def
+lemma Pi_rel_char: "Pi_rel(M,A,B) = {f\<in>Pi(A,B). M(f)}"
+  using Pi_assumptions def_Pi_rel Pow_rel_char[OF Sigma_closed] unfolding Pi_def
   by fastforce
 
 lemma mem_Pi_rel_abs: 
-  assumes "M(A)" "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))" "M(f)"
+  assumes "M(f)"
   shows  "f \<in> Pi_rel(M,A,B) \<longleftrightarrow> f \<in> Pi(A,B)"
   using assms Pi_rel_char by simp
 
@@ -503,40 +496,41 @@ text\<open>The next locale (and similar ones below) are used to
 show the relationship between versions of simple (i.e. 
 $\Sigma_1^{\mathit{ZF}}$, $\Pi_1^{\mathit{ZF}}$) concepts in two
 different transitive models.\<close>
-locale M_N_Pi_assumptions = M:M_Pi + N:M_Pi N for N +
+locale M_N_Pi_assumptions = M:M_Pi_assumptions + N:M_Pi_assumptions N for N +
   assumes
     M_imp_N:"M(x) \<Longrightarrow> N(x)"
 begin
 
-lemma Pi_rel_transfer: 
-  assumes "M(A)" "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))" 
-  shows "Pi\<^bsup>M\<^esup>(A,B) \<subseteq> Pi\<^bsup>N\<^esup>(A,B)"
-  using assms M.Pi_rel_char N.Pi_rel_char M_imp_N by auto
+lemma Pi_rel_transfer: "Pi\<^bsup>M\<^esup>(A,B) \<subseteq> Pi\<^bsup>N\<^esup>(A,B)"
+  using  M.Pi_rel_char N.Pi_rel_char M_imp_N by auto
 
 end (* M_N_Pi_assumptions *)
 
-context M_Pi
+
+(******************  end Discipline  **********************)
+
+locale M_Pi_assumptions_0 = M_Pi_assumptions _ 0
 begin
 
-find_theorems "M(0)"
-
 text\<open>This is used in the proof of AC_Pi_rel\<close>
-lemma Pi_rel_empty1[simp]: "Pi_rel(M,0,B) = {0}"
-  using Pi_assumptions Pow_rel_char nonempty
-    def_Pi_rel[of 0 B]
-  unfolding function_def
-  by auto
+lemma Pi_rel_empty1[simp]: "Pi\<^bsup>M\<^esup>(0,B) = {0}"
+  using Pi_assumptions Pow_rel_char
+  by (unfold def_Pi_rel function_def) (auto)
+
+end (* M_Pi_assumptions_0 *)
+
+context M_Pi_assumptions
+begin
 
 subsection\<open>Auxiliary ported results on \<^term>\<open>Pi_rel\<close>, now unused\<close>
-
 lemma Pi_rel_iff':
-  assumes types:"M(f)" "M(A)" "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))"
+  assumes types:"M(f)" 
   shows
     "f \<in> Pi_rel(M,A,B) \<longleftrightarrow> function(f) \<and> f \<subseteq> Sigma(A,B) \<and> A \<subseteq> domain(f)"
   using assms Pow_rel_char
   by (simp add:def_Pi_rel, blast)
 
-(*
+
 lemma lam_type_M:
   assumes "M(A)" "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))" 
           "\<And>x. x \<in> A \<Longrightarrow> b(x)\<in>B(x)" "strong_replacement(M,\<lambda>x y. y=\<langle>x, b(x)\<rangle>) "
@@ -550,12 +544,11 @@ proof (auto simp add: lam_def def_Pi_rel function_def)
   show "{\<langle>x, b(x)\<rangle> . x \<in> A} \<in> Pow\<^bsup>M\<^esup>(Sigma(A, B))"
     using Pow_rel_char by auto
 qed
-*)
 
 end (* M_Pi *)
 
-(*locale M_Pi2 = M_Pi +
-  PiC: M_Pi _ _ C for C
+locale M_Pi_assumptions2 = M_Pi_assumptions +
+  PiC: M_Pi_assumptions _ _ C for C
 begin
 
 lemma Pi_rel_type:
@@ -575,6 +568,6 @@ lemma Pi_rel_weaken_type:
     (blast intro: Pi_rel_type  dest: apply_type)
 
 end (* M_Pi_assumptions2 *)
-*)
+
 
 end
