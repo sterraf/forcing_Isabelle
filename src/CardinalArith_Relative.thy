@@ -388,7 +388,7 @@ definition
   "is_csucc(M,K,cs) \<equiv> M(cs) \<and> least(M, \<lambda>i. M(i) \<and> Card_rel(M,i) \<and> lt_rel(M,K,i),cs)"
 
 definition
-  csucc_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>csucc\<^bsup>M\<^esup>'(_')\<close>) where
+  csucc_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>csucc\<^bsup>_\<^esup>'(_')\<close>) where
   "csucc_rel(M,x) \<equiv> THE d. is_csucc(M,x,d)"
 
 context M_cardinals
