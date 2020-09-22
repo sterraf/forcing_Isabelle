@@ -1117,7 +1117,7 @@ end (* M_cardinals *)
 (***************  end Discipline  *********************)
 
 (******************************************************)
-subsection\<open>Discipline for \<^term>\<open>jump_cardinal\<close>\<close>
+subsection\<open>Discipline for \<^term>\<open>jcardRepl\<close>\<close>
 
 definition
   jcardP_rel :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
@@ -1193,7 +1193,6 @@ proof -
     by blast
 qed
 
-
 lemma jcardRepl_rel_iff:
   assumes "M(K)"  "M(X)" "M(d)"
   shows "is_jcardRepl(M,K,X,d) \<longleftrightarrow> d = jcardRepl_rel(M,K,X)"
@@ -1230,6 +1229,7 @@ lemma def_jcardRepl_rel:
 
 end (* context M_jump_cardinal *)
 
+(***************  end Discipline  *********************)
 
 definition
   jc_Repl :: "i\<Rightarrow>i" where
@@ -1345,44 +1345,11 @@ proof -
     by (intro equalityI) (auto intro!:ReplaceI simp add:absolut trans_closed)
 qed
 
-(*
-(* Old try following *)
-proof -
-  from assms
-  have "M(z) \<Longrightarrow> z \<in> jc_Repl_rel(M,K) \<Longrightarrow> z \<in> Replace(?D,?P)" for z
-    using Replace_abs[ where P="is_jcardRepl(M,K)",
-        OF _ _  univalent_is_jcardRepl is_jcardRepl_closed]
-      jc_Repl_rel_iff[of ?D  "jc_Repl_rel(M,K)"]
-      transM[OF _ jcardRepl_rel_closed]
-      jcardRepl_rel_iff
-      transM[OF _ Pow_rel_closed]
-    unfolding is_jc_Repl_def
-    apply (auto dest:transM intro!:ReplaceI)
-  with assms
-  have "z \<in> jc_Repl_rel(M,K) \<Longrightarrow> z \<in> Replace(?D,?P)" for z
-    using transM[OF _ jc_Repl_rel_closed]
-    by (auto dest:transM)
-  moreover from assms
-  have "a \<in> ?D \<Longrightarrow> ?P(a,z) \<Longrightarrow> z\<in>jc_Repl_rel(M,K)" for a z
-    using Replace_abs[ where P="is_jcardRepl(M,K)",
-        OF _ _  univalent_is_jcardRepl is_jcardRepl_closed]
-      jc_Repl_rel_iff[of ?D  "jc_Repl_rel(M,K)"]
-      transM[OF _ jcardRepl_rel_closed]
-      jcardRepl_rel_iff
-    unfolding is_jc_Repl_def
-    by (auto dest:transM
-        intro!:ReplaceI
-        intro:jcardRepl_rel_iff[OF _  _ is_jcardRepl_closed', of f _ _ f, THEN iffD1])
-  ultimately
-  show ?thesis
-    by auto
-qed
-*)
-
 end (* M_ordertype *)
 
-subsection\<open>Discipline for \<^term>\<open>jump_cardinal\<close>\<close>
+(***************  end Discipline  *********************)
 
+subsection\<open>Discipline for \<^term>\<open>jump_cardinal\<close>\<close>
 
 definition
   is_jump_cardinal :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
@@ -1395,7 +1362,6 @@ definition
 context M_jump_cardinal
 begin
 
-
 lemma is_jump_cardinal_uniqueness:
   assumes
     "M(K)"
@@ -1406,7 +1372,7 @@ lemma is_jump_cardinal_uniqueness:
   unfolding is_jump_cardinal_def
   by auto
 
-(* VER por que no sale igual que el witness anterior *)
+\<comment> \<open>NOTE: it is different from previous witness theorems\<close>
 lemma is_jump_cardinal_witness: 
   assumes "M(K)"
   shows "\<exists>d[M]. is_jump_cardinal(M,K,d)"
@@ -1456,8 +1422,7 @@ next
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
-
-lemma def_jump_cardinal_rel: 
+lemma def_jump_cardinal_rel:
   assumes "M(K)"
   shows "jump_cardinal_rel(M,K) = 
          (\<Union>X\<in>Pow_rel(M,K). {z. r \<in> Pow_rel(M,K*K), well_ord(X,r) & z = ordertype(X,r)})"
@@ -1467,24 +1432,30 @@ proof -
     using jump_cardinal_rel_iff jc_Repl_rel_iff
     unfolding is_jump_cardinal_def
     by simp
-  also from assms have "... = \<Union>({z . X\<in>Pow_rel(M,K), z = jcardRepl_rel(M,K,X)})"
-  using def_jc_Repl_rel
-  by simp
-  also have "... = \<Union>({u . X\<in>Pow_rel(M,K), u = 
-                      {z. r \<in> Pow\<^bsup>M\<^esup>(K*K), well_ord(X,r) & z = ordertype(X,r)}})"
+  also from assms
+  have "\<dots> = \<Union> {z . X\<in>Pow_rel(M,K), z = jcardRepl_rel(M,K,X)}"
+    using def_jc_Repl_rel
+    by simp
+  also
+  have "\<dots> = \<Union> {u . X\<in>Pow_rel(M,K), u =
+                {z. r \<in> Pow\<^bsup>M\<^esup>(K*K), well_ord(X,r) & z = ordertype(X,r)}}"
   proof -
     from assms
-    have
-      "jcardRepl_rel(M, K, X) =
+    have "jcardRepl_rel(M, K, X) =
     {z . r \<in> Pow_rel(M,K \<times> K), well_ord(X, r) \<and> z = ordertype(X, r)}"
       if "X\<in>Pow_rel(M,K)" for X
       using def_jcardRepl_rel that by (auto dest:transM)
-    then show ?thesis by simp
+    then
+    show ?thesis by simp
   qed
-  finally show ?thesis by auto
+  finally
+  show ?thesis by auto
 qed
     
-end
+end (* M_jump_cardinal *)
+
+(***************  end Discipline  *********************)
+
 
 context M_cardinal_arith
 begin

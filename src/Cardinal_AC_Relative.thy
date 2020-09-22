@@ -266,14 +266,14 @@ subsection\<open>Other Applications of AC\<close>
 text\<open>We have an example of instantiating a locale involving higher
 order variables inside a proof, by using the assumptions of the
 first orde, active locale.\<close>
-(*
+
 lemma surj_rel_implies_inj_rel:
   assumes f: "f \<in> surj\<^bsup>M\<^esup>(X,Y)" and
     types: "M(f)" "M(X)" "M(Y)"
   shows "\<exists>g[M]. g \<in> inj\<^bsup>M\<^esup>(Y,X)"
 proof -
   from types
-  interpret M_Pi_assumptions_choice 
+  interpret M_Pi_assumptions_choice _ Y "\<lambda>y. f-``{y}"
     by unfold_locales (auto intro:surj_imp_inj_replacement dest:transM)
   from f AC_Pi_rel
   obtain z where z: "z \<in> Pi\<^bsup>M\<^esup>(Y, \<lambda>y. f -`` {y})"
@@ -306,7 +306,7 @@ proof (rule lepoll_rel_imp_Card_rel_le)
     using inj_rel_char
     by (auto simp add: def_lepoll_rel types)
 qed (simp_all add:types)
-*)
+
 end (* M_cardinal_AC *)
 
 text\<open>The set-theoretic universe.\<close>

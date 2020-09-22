@@ -121,7 +121,7 @@ lemma is_cardinal_closed :
  "is_cardinal(M,r,d) \<Longrightarrow> M(d)"
   unfolding is_cardinal_def by simp
 
-lemma cardinal_closed[intro,simp]: 
+lemma cardinal_rel_closed[intro,simp]: 
   assumes "M(x)"
   shows "M(cardinal_rel(M,x))"
 proof -
