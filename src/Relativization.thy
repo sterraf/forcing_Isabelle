@@ -1,4 +1,6 @@
-section\<open>Automatic relativization of terms.\<close>
+section\<open>Automatic relativization of terms and formulas.\<close>
+text\<open>Relativization of terms and formulas. Relativization of formulas shares relativized terms as
+far as possible; assuming that the witnesses for the relativized terms are always unique.\<close>
 theory Relativization
   imports "ZF-Constructible.Formula"
     "ZF-Constructible.Relative"
@@ -103,7 +105,7 @@ signature Relativization =
     val db: (term * term) list
     val init_db : (term * term) list -> theory -> theory
     val get_db : Proof.context -> (term * term) list
-    val relativ_fm: term -> (term * term) list ->  (term * (term * term)) list * Proof.context -> term -> term
+    val relativ_fm: term -> (term * term) list ->  (term * (term * term)) list * Proof.context -> term -> term * (term * (term * term)) list
     val relativ_tm: term -> (term * term) list ->  (term * (term * term)) list * Proof.context -> term -> term * (term * (term * term)) list * Proof.context
     val read_new_const : Proof.context -> string -> term
     val relativ_tm_frm': term -> (term * term) list -> Proof.context -> term -> term option * term
@@ -272,40 +274,40 @@ and
         | NONE => raise TERM ("Constant " ^ const_name c ^ " is not present in the db." , nil)
 
       (* relativization of a partially applied constant *)
-      fun relativ_app tm abs_args (Const c) args =
+      fun relativ_app tm abs_args (Const c) args rs =
             let val (w_ts, rs_ts, ctxt_ts) = relativ_tms pred rel_db rs ctxt args
                 val (w_tm, r_tm, ctxt_tm) = mk_rel_const (Const c) w_ts abs_args ctxt_ts
                 val rs_ts' = update_tm (tm, (w_tm, r_tm)) rs_ts
             in (w_tm, rs_ts', ctxt_tm)
             end
-        | relativ_app _ _ t _ =
+        | relativ_app _ _ t _ _ =
             raise TERM ("Tried to relativize an application with a non-constant in head position",[t])
 
       (* relativization of non dependent product and sum *)
-      fun relativ_app_no_dep tm c t t' =
+      fun relativ_app_no_dep tm c t t' rs =
           if loose_bvar1 (t', 0)
           then raise TERM("A dependency was found when trying to relativize", [tm])
-          else relativ_app tm [] c [t, t']
+          else relativ_app tm [] c [t, incr_boundvars ~1 t'] rs
 
       fun go (Var _) = raise TERM ("Var: Is this possible?",[])
         | go (@{const Replace} $ t $ pc) =
-            let val pc' = relativ_fm pred rel_db (rs,ctxt) pc
-            in relativ_app tm [pc'] @{const Replace} [t]
+            let val (pc', rs') = relativ_fm pred rel_db (rs, ctxt) pc
+            in relativ_app tm [pc'] @{const Replace} [t] rs'
             end
         | go (@{const Collect} $ t $ pc) =
-            let val pc' = relativ_fm pred rel_db (rs,ctxt) pc
-            in relativ_app tm [pc'] @{const Collect} [t]
+            let val (pc', rs') = relativ_fm pred rel_db (rs,ctxt) pc
+            in relativ_app tm [pc'] @{const Collect} [t] rs'
             end
         | go (tm as @{const Sigma} $ t $ Abs (_,_,t')) =
-            relativ_app_no_dep tm @{const Sigma} t t'
+            relativ_app_no_dep tm @{const Sigma} t t' rs
         | go (tm as @{const Pi} $ t $ Abs (_,_,t')) =
-            relativ_app_no_dep tm @{const Pi} t t'
+            relativ_app_no_dep tm @{const Pi} t t' rs
         | go (tm as @{const bool_of_o} $ t) =
-            let val t' = relativ_fm pred rel_db (rs,ctxt) t
-            in relativ_app tm [t'] @{const bool_of_o} []
+            let val (t', rs') = relativ_fm pred rel_db (rs, ctxt) t
+            in relativ_app tm [t'] @{const bool_of_o} [] rs'
             end
-        | go (tm as Const _) = relativ_app tm [] tm []
-        | go (tm as _ $ _) = strip_comb tm |> uncurry (relativ_app tm [])
+        | go (tm as Const _) = relativ_app tm [] tm [] rs
+        | go (tm as _ $ _) = (strip_comb tm |> uncurry (relativ_app tm [])) rs
         | go tm = (tm, update_tm (tm,(tm,tm)) rs, ctxt)
 
       (* we first check if the term has been already relativized as a variable *)
@@ -318,46 +320,106 @@ and
   let
 
   (* relativization of a fully applied constant *)
-  fun relativ_app ctxt c args = case lookup_rel rel_db c of
+  fun relativ_app (ctxt, rs) c args = case lookup_rel rel_db c of
     SOME p =>
       let (* flag indicates whether the relativized constant is absolute or not. *)
         val flag = not (exists (curry op aconv c) absolute_rels)
         val frees = fold_aterms (fn t => if is_Free t then cons t else I) p []
-        val (args, rs_ts, _) = relativ_tms pred rel_db rs ctxt args
+        val (args, rs_ts, ctxt') = relativ_tms pred rel_db rs ctxt args
         val args' = List.filter (not o Utils.inList frees) args
         val tm = list_comb (p, if flag then pred :: args' else args')
-       in close_rel_tm pred (SOME tm) NONE rs_ts
+        val news = filter (not o (fn x => is_Free x orelse is_Bound x) o #1) rs_ts
+        val (vars, tms) = split_list (map #2 news)
+        val vars = filter (fn v => not (v = tm)) vars
+       in (tm, (rs_ts, vars, tms, ctxt'))
        end
    | NONE   => raise TERM ("Constant " ^ const_name c ^ " is not present in the db." , nil)
 
+  infix 6 --
+  fun op -- (xs, ys) = subtract (op =) ys xs
+
+  infix 6 @@
+  fun op @@ (xs, ys) = union (op =) ys xs
+
+  fun concatt xss = fold (curry op @@) xss []
+
+  fun reachable p u xs =
+    let
+      val step = map (fn x => filter (p x) (u -- xs)) xs |> concatt
+      val acc = if null step then [] else reachable p (u -- xs) step
+    in
+      xs @@ acc
+    end
+
+  fun get_frees t =
+        fold_aterms (fn t => fn acc => case t of Free v => (Free v) :: acc | _ => acc) t []
+
+  fun close_fm (f, (rs, vars, tms, ctxt)) =
+    let
+      fun contains_b0 t = loose_bvar1 (t, 0)
+
+      (* t1 $ v \<hookrightarrow> t2 iff v \<in> FV(t2) *)
+      fun chained_frees (_ $ v) t2 = Utils.inList (get_frees t2) v
+        | chained_frees t _ = raise TERM ("Malformed term", [t])
+
+      val tms_to_close = filter contains_b0 tms |> reachable chained_frees tms
+      val tms_to_keep = map (incr_boundvars ~1) (tms -- tms_to_close)          
+      val vars_to_close = inter (op =) (map (List.last o #2 o strip_comb) tms_to_close) vars
+      val vars_to_keep = vars -- vars_to_close
+      val new_rs =
+        rs
+        |> filter (fn (k, (v, rel)) => not (contains_b0 k orelse contains_b0 v orelse contains_b0 rel))
+        |> map (fn (k, (v, rel)) => (incr_boundvars ~1 k, (incr_boundvars ~1 v, incr_boundvars ~1 rel)))
+    in
+      (fold (fn v => fn t => rex pred (incr_boundvars 1 t) v) vars_to_close (conjs (f :: tms_to_close)),
+       (new_rs, vars_to_keep, tms_to_keep, ctxt))
+    end
+
+  fun finally_close_fm (f, (rs, vars, tms, ctxt)) =
+    (fold (fn  v => fn t => rex pred (incr_boundvars 1 t) v) vars (conjs (f :: tms)), (rs, [], [], ctxt))
+
+  fun get_bounds (l as Abs _) = op @@ (strip_abs l |>> map (op #1) ||> get_bounds)
+    | get_bounds (t as _$_) = strip_comb t |> op :: |> map get_bounds |> concatt
+    | get_bounds _ = []
+
+  fun update_ctxt v c = if Variable.is_fixed c v then c else #2 (Variable.add_fixes [v] c)
+
+  val initial_ctxt = fold update_ctxt (get_bounds fm) ctxt
+
   (* Handling of bounded quantifiers. *)
-  fun bquant ctxt quant conn dom pred =
+  fun bquant (ctxt, rs) quant conn dom pred =
     let val (v,pred') = Term.dest_abs pred |>> var_i
     in
-      go ctxt (quant $ lambda v (conn $ (@{const mem} $ v $ dom) $ pred'))
+      go (ctxt, rs) (quant $ lambda v (conn $ (@{const mem} $ v $ dom) $ pred'))
     end
   and
-  (* We could share relativizations of terms occuring inside propositional connectives. *)
-      go ctxt (@{const IFOL.conj} $ f $ f') = @{const IFOL.conj} $ go ctxt f $ go ctxt f'
-    | go ctxt (@{const IFOL.disj} $ f $ f') = @{const IFOL.disj} $ go ctxt f $ go ctxt f'
-    | go ctxt (@{const IFOL.Not} $ f) = @{const IFOL.Not} $ go ctxt f
-    | go ctxt (@{const IFOL.iff} $ f $ f') = @{const IFOL.iff} $ go ctxt f $ go ctxt f'
-    | go ctxt (@{const IFOL.imp} $ f $ f') = @{const IFOL.imp} $ go ctxt f $ go ctxt f'
-    | go ctxt (@{const IFOL.All(i)} $ f) = @{const OrdQuant.rall} $ pred $ go ctxt f
-    | go ctxt (@{const IFOL.Ex(i)} $ f) = @{const OrdQuant.rex} $ pred $ go ctxt f
-    | go ctxt (@{const Bex} $ f $ Abs p) = bquant ctxt @{const Ex(i)} @{const IFOL.conj} f p
-    | go ctxt (@{const Ball} $ f $ Abs p) = bquant ctxt @{const All(i)} @{const IFOL.imp} f p
-    | go ctxt (Const c) = relativ_app ctxt (Const c) []
-    | go ctxt (tm as _ $ _) = strip_comb tm |> uncurry (relativ_app ctxt)
-    | go ctxt (Abs body) =
+  bind_go (ctxt, rs) const f f' =
+    let
+      val (r , (rs1, vars1, tms1, ctxt1)) = go (ctxt, rs) f
+      val (r', (rs2, vars2, tms2, ctxt2)) = go (ctxt1, rs1) f'
+    in
+      (const $ r $ r', (rs2, vars1 @@ vars2, tms1 @@ tms2, ctxt2))
+    end
+  and
+      go (ctxt, rs) (@{const IFOL.conj} $ f $ f') = bind_go (ctxt, rs) @{const IFOL.conj} f f'
+    | go (ctxt, rs) (@{const IFOL.disj} $ f $ f') = bind_go (ctxt, rs) @{const IFOL.disj} f f'
+    | go (ctxt, rs) (@{const IFOL.Not} $ f) = go (ctxt, rs) f |>> ((curry op $) @{const IFOL.Not})
+    | go (ctxt, rs) (@{const IFOL.iff} $ f $ f') = bind_go (ctxt, rs) @{const IFOL.iff} f f'
+    | go (ctxt, rs) (@{const IFOL.imp} $ f $ f') = bind_go (ctxt, rs) @{const IFOL.imp} f f'
+    | go (ctxt, rs) (@{const IFOL.All(i)} $ f) = go (ctxt, rs) f |>> ((curry op $) (@{const OrdQuant.rall} $ pred))
+    | go (ctxt, rs) (@{const IFOL.Ex(i)} $ f) = go (ctxt, rs) f |>> ((curry op $) (@{const OrdQuant.rex} $ pred))
+    | go (ctxt, rs) (@{const Bex} $ f $ Abs p) = bquant (ctxt, rs) @{const Ex(i)} @{const IFOL.conj} f p
+    | go (ctxt, rs) (@{const Ball} $ f $ Abs p) = bquant (ctxt, rs) @{const All(i)} @{const IFOL.imp} f p
+    | go (ctxt, rs) (Const c) = relativ_app (ctxt, rs) (Const c) []
+    | go (ctxt, rs) (tm as _ $ _) = strip_comb tm |> uncurry (relativ_app (ctxt, rs))
+    | go (ctxt, rs) (Abs (v, _, t)) =
       let
-        val (v, t) = Term.dest_abs body
-        val new_ctxt = if Variable.is_fixed ctxt v then ctxt else #2 (Variable.add_fixes [v] ctxt)
+        val new_rs = map (fn (k, (v, rel)) => (incr_boundvars 1 k, (incr_boundvars 1 v, incr_boundvars 1 rel))) rs
       in
-        lambda (var_i v) (go new_ctxt t)
+        go (ctxt, new_rs) t |> close_fm |>> lambda (var_i v)
       end
     | go _ t = raise TERM ("Relativization of formulas cannot handle this case.",[t])
-  in go ctxt fm
+  in go (initial_ctxt, rs) fm |> finally_close_fm ||> #1
   end
 
 
@@ -368,7 +430,7 @@ fun relativ_tm_frm' cls_pred db ctxt tm =
           let val (w, rs, _) =  relativ_tm cls_pred db ([],ctxt) tm
           in (SOME w, close_rel_tm cls_pred NONE (SOME w) rs)
           end
-      | @{typ o} => (NONE, relativ_fm cls_pred db ([],ctxt) tm)
+      | @{typ o} => (NONE, #1 (relativ_fm cls_pred db ([],ctxt) tm))
       | ty' => raise TYPE ("We can relativize only terms of types i and o",[ty'],[tm])
   end
 
@@ -404,7 +466,7 @@ fun relativize_tm def_name term pos lthy =
     val tm = Syntax.read_term ctxt1 term
     val ({db_rels = db'}) = Data.get (Context.Proof lthy)
     val vs' = Variable.add_frees ctxt1 tm []
-    fun update_ctxt (v,_) c = if Variable.is_fixed c v then c else #2 (Variable.add_fixes [v] c)
+    fun update_ctxt (v, _) c = if Variable.is_fixed c v then c else #2 (Variable.add_fixes [v] c)
     val ctxt2 = fold update_ctxt vs' ctxt1
     val (v,t) = relativ_tm_frm' cls_pred db' ctxt2 tm
     val vs = cls_pred :: map Free vs' @ the_list v
