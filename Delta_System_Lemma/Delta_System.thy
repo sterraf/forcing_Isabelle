@@ -241,15 +241,32 @@ qed
 lemma cardinal_Aleph [simp]: "Ord(\<alpha>) \<Longrightarrow> |\<aleph>\<^bsub>\<alpha>\<^esub>| = \<aleph>\<^bsub>\<alpha>\<^esub>"
   using Card_cardinal_eq by simp
 
+lemma cardinal_Card_eqpoll_iff: "Card(\<kappa>) \<Longrightarrow> |X| = \<kappa> \<longleftrightarrow> X \<approx> \<kappa>"
+  using Card_cardinal_eq[of \<kappa>] cardinal_eqpoll_iff[of X \<kappa>] by auto
+
+\<comment> \<open>Kunen's Definition I.10.5\<close>
+definition
+  countable :: "i\<Rightarrow>o" where
+  "countable(X) \<equiv> X \<lesssim> nat"
+
+abbreviation
+  uncountable :: "i\<Rightarrow>o" where
+  "uncountable(X) \<equiv> \<not> countable(X)"
+
+lemma uncountable_iff_nat_lt_cardinal:
+  "uncountable(X) \<longleftrightarrow> nat < |X|"
+  sorry
+
 lemma uncountable_imp_subset_eqpoll_aleph1:
   includes Ord_dests
   notes Aleph_zero_eq_nat[simp] Card_nat[simp] Aleph_succ[simp]
-  assumes "nat < |X|"
+  assumes "uncountable(X)"
   shows "\<exists>S. S \<subseteq> X \<and> S \<approx> \<aleph>\<^bsub>1\<^esub>"
 proof -
   from assms
   have a:"\<aleph>\<^bsub>1\<^esub> \<lesssim> X"
-    using cardinal_lt_csucc_iff' cardinal_le_imp_lepoll by force
+    using uncountable_iff_nat_lt_cardinal cardinal_lt_csucc_iff'
+      cardinal_le_imp_lepoll by force
   then
   obtain S where "S \<subseteq> X" "S \<approx> \<aleph>\<^bsub>1\<^esub>"
     using lepoll_imp_subset_bij by auto
@@ -435,9 +452,6 @@ lemma Diff_bij:
   assumes "\<forall>A\<in>F. X \<subseteq> A" shows "(\<lambda>A\<in>F. A-X) \<in> bij(F, {A-X. A\<in>F})"
   sorry
 
-lemma cardinal_Card_eqpoll_iff: "Card(\<kappa>) \<Longrightarrow> |X| = \<kappa> \<longleftrightarrow> X \<approx> \<kappa>"
-  using Card_cardinal_eq[of \<kappa>] cardinal_eqpoll_iff[of X \<kappa>] by auto
-
 lemma
   assumes
     "\<And>X. |X| < \<gamma> \<Longrightarrow> X \<subseteq> G \<Longrightarrow> \<exists>a\<in>G. \<forall>s\<in>X. Q(s,a)" "Card(\<gamma>)"
@@ -597,7 +611,7 @@ proof -
 qed
 
 lemma delta_system_uncountable:
-  assumes "\<forall>A\<in>F. Finite(A)" "nat < |F|"
+  assumes "\<forall>A\<in>F. Finite(A)" "uncountable(F)"
   shows "\<exists>D. D \<subseteq> F \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>"
 proof -
   from assms
