@@ -501,7 +501,7 @@ proof -
     have "\<forall>a\<in>G. Finite(a)"
       using Finite_cardinal_iff_AC nat_into_Finite[of "succ(n)"]
       by fastforce
-    show ?case
+    show "\<exists>D. D \<subseteq> G \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>"
     proof (cases "\<exists>p. {A\<in>G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>")
       case True
       then
@@ -560,7 +560,7 @@ proof -
           by blast
       qed
       ultimately
-      show ?thesis by auto
+      show "\<exists>D. D \<subseteq> G \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>" by auto
     next
       case False
       note \<open>\<not> (\<exists>p. {A \<in> G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>)\<close> \<comment> \<open>the inductive hypothesis\<close>
@@ -599,7 +599,7 @@ proof -
       have "range(S) \<subseteq> G"
         using inj_is_fun range_of_function by fast
       ultimately
-      show ?thesis
+      show "\<exists>D. D \<subseteq> G \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>"
         using inj_is_fun range_eq_image[of S "\<aleph>\<^bsub>1\<^esub>" G]
           image_function[OF fun_is_function, OF inj_is_fun, of S "\<aleph>\<^bsub>1\<^esub>" G]
           domain_of_fun[OF inj_is_fun, of S "\<aleph>\<^bsub>1\<^esub>" G]
