@@ -761,11 +761,16 @@ lemma Hfrc_at_abs:
   unfolding is_Hfrc_at_def using Hfrc_abs
   by auto
 
+(* FIX *)
 lemma components_closed :
   "x\<in>M \<Longrightarrow> ftype(x)\<in>M"
   "x\<in>M \<Longrightarrow> name1(x)\<in>M"
   "x\<in>M \<Longrightarrow> name2(x)\<in>M"
   "x\<in>M \<Longrightarrow> cond_of(x)\<in>M"
+  "x\<in>M \<Longrightarrow> (##M)(ftype(x))"
+  "x\<in>M \<Longrightarrow> (##M)(name1(x))"
+  "x\<in>M \<Longrightarrow> (##M)(name2(x))"
+  "x\<in>M \<Longrightarrow> (##M)(cond_of(x))"
   unfolding ftype_def name1_def name2_def cond_of_def using fst_snd_closed by simp_all
 
 lemma ecloseN_closed:
@@ -792,8 +797,8 @@ lemma is_ecloseN_abs :
 
 lemma frecR_abs :
   "x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> frecR(x,y) \<longleftrightarrow> is_frecR(##M,x,y)"
-  unfolding frecR_def is_frecR_def using components_closed domain_closed 
-  by (simp add:components_abs)
+  unfolding frecR_def is_frecR_def using nonempty domain_closed Un_closed
+  by (simp add:components_closed components_abs)
 
 lemma frecrelP_abs :
   "z\<in>M \<Longrightarrow> frecrelP(##M,z) \<longleftrightarrow> (\<exists>x y. z = \<langle>x,y\<rangle> \<and> frecR(x,y))"

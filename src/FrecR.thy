@@ -369,18 +369,11 @@ lemma frecR_DI :
   shows "frecR(\<langle>a,b,c,d\<rangle>,y)"
   using assms unfolding frecR_def by (force simp add:components_simp)
 
-(*
-name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and>
-            (name2(x) = name1(y) \<or> name2(x) = name2(y))
-          \<or> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y))*)
-definition
-  is_frecR :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_frecR(M,x,y) \<equiv> \<exists> ftx[M]. \<exists> n1x[M]. \<exists>n2x[M]. \<exists>fty[M]. \<exists>n1y[M]. \<exists>n2y[M]. \<exists>dn1[M]. \<exists>dn2[M].
-  is_ftype(M,x,ftx) \<and> is_name1(M,x,n1x)\<and> is_name2(M,x,n2x) \<and>
-  is_ftype(M,y,fty) \<and> is_name1(M,y,n1y) \<and> is_name2(M,y,n2y)
-          \<and> is_domain(M,n1y,dn1) \<and> is_domain(M,n2y,dn2) \<and>
-          (  (number1(M,ftx) \<and> empty(M,fty) \<and> (n1x \<in> dn1 \<or> n1x \<in> dn2) \<and> (n2x = n1y \<or> n2x = n2y))
-           \<or> (empty(M,ftx) \<and> number1(M,fty) \<and> n1x = n1y \<and> n2x \<in> dn2))"
+reldb_add "ftype" "is_ftype"
+reldb_add "name1" "is_name1"
+reldb_add "name2" "is_name2"
+
+relativize "frecR" "is_frecR"
 
 schematic_goal sats_frecR_fm_auto:
   assumes

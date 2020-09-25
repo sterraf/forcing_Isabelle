@@ -351,8 +351,9 @@ lemma arity_frecR_fm :
   "\<lbrakk>a\<in>nat;b\<in>nat\<rbrakk> \<Longrightarrow> arity(frecR_fm(a,b)) = succ(a) \<union> succ(b)"
   unfolding frecR_fm_def
   using arity_ftype_fm name1arity__fm name2arity__fm arity_domain_fm 
-      number1arity__fm arity_empty_fm nat_union_abs2 pred_Un_distrib
+      number1arity__fm arity_empty_fm arity_union_fm pred_Un_distrib arity_succ_fm
   by auto
+
 
 lemma arity_Collect_fm :
   assumes "x \<in> nat" "y \<in> nat" "p\<in>formula" 
