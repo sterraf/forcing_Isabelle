@@ -99,10 +99,10 @@ lemma number2_fm_type[TC] :
   "a\<in>nat \<Longrightarrow> number2_fm(a) \<in> formula"
   unfolding number2_fm_def by simp
 
-lemma number2arity__fm :
+lemma arity_number2_fm :
   "a\<in>nat \<Longrightarrow> arity(number2_fm(a)) = succ(a)"
   unfolding number2_fm_def
-  using number1arity__fm arity_succ_fm nat_union_abs2 pred_Un_distrib
+  using arity_number1_fm arity_succ_fm nat_union_abs2 pred_Un_distrib
   by simp
 
 lemma sats_number2_fm [simp]:
@@ -119,7 +119,7 @@ definition
 lemma arity_is_names_below_fm :
   "\<lbrakk>P\<in>nat;x\<in>nat;nb\<in>nat\<rbrakk> \<Longrightarrow> arity(is_names_below_fm(P,x,nb)) = succ(P) \<union> succ(x) \<union> succ(nb)"
   unfolding is_names_below_fm_def
-  using arity_cartprod_fm number2arity__fm arity_ecloseN_fm nat_union_abs2 pred_Un_distrib
+  using arity_cartprod_fm arity_number2_fm arity_ecloseN_fm nat_union_abs2 pred_Un_distrib
   by auto
 
 
@@ -229,7 +229,7 @@ lemma arity_mem_case_fm :
     "arity(mem_case_fm(n1,n2,p,P,leq,f)) =
     succ(n1) \<union> succ(n2) \<union> succ(p) \<union> succ(P) \<union> succ(leq) \<union> succ(f)"
   unfolding mem_case_fm_def
-  using assms arity_pair_fm arity_is_tuple_fm number1arity__fm arity_fun_apply_fm arity_empty_fm
+  using assms arity_pair_fm arity_is_tuple_fm arity_number1_fm arity_fun_apply_fm arity_empty_fm
     pred_Un_distrib
   by auto
 
@@ -251,7 +251,7 @@ lemma arity_eq_case_fm :
     "arity(eq_case_fm(n1,n2,p,P,leq,f)) =
     succ(n1) \<union> succ(n2) \<union> succ(p) \<union> succ(P) \<union> succ(leq) \<union> succ(f)"
   unfolding eq_case_fm_def
-  using assms arity_pair_fm arity_is_tuple_fm number1arity__fm arity_fun_apply_fm arity_empty_fm
+  using assms arity_pair_fm arity_is_tuple_fm arity_number1_fm arity_fun_apply_fm arity_empty_fm
     arity_domain_fm pred_Un_distrib
   by auto
 
@@ -290,7 +290,7 @@ lemma arity_Hfrc_fm :
     "arity(Hfrc_fm(P,leq,fnnc,f)) = succ(P) \<union> succ(leq) \<union> succ(fnnc) \<union> succ(f)"
   unfolding Hfrc_fm_def
   using assms arity_is_tuple_fm arity_mem_case_fm arity_eq_case_fm
-    arity_empty_fm number1arity__fm pred_Un_distrib
+    arity_empty_fm arity_number1_fm pred_Un_distrib
   by auto
 
 lemma sats_Hfrc_fm:
@@ -331,7 +331,7 @@ lemma arity_Hfrc_at_fm :
   shows
     "arity(Hfrc_at_fm(P,leq,fnnc,f,z)) = succ(P) \<union> succ(leq) \<union> succ(fnnc) \<union> succ(f) \<union> succ(z)"
   unfolding Hfrc_at_fm_def
-  using assms arity_Hfrc_fm arity_empty_fm number1arity__fm pred_Un_distrib
+  using assms arity_Hfrc_fm arity_empty_fm arity_number1_fm pred_Un_distrib
   by auto
 
 
@@ -571,7 +571,7 @@ lemma arity_forces_eq_fm :
   "p\<in>nat \<Longrightarrow> l\<in>nat \<Longrightarrow> q\<in>nat \<Longrightarrow> t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow>
    arity(forces_eq_fm(p,l,q,t1,t2)) = succ(t1) \<union> succ(t2) \<union> succ(q) \<union> succ(p) \<union> succ(l)"
   unfolding forces_eq_fm_def
-  using number1arity__fm arity_empty_fm arity_is_tuple_fm arity_frc_at_fm
+  using arity_number1_fm arity_empty_fm arity_is_tuple_fm arity_frc_at_fm
     pred_Un_distrib
   by auto
 
@@ -579,7 +579,7 @@ lemma arity_forces_mem_fm :
   "p\<in>nat \<Longrightarrow> l\<in>nat \<Longrightarrow> q\<in>nat \<Longrightarrow> t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow>
    arity(forces_mem_fm(p,l,q,t1,t2)) = succ(t1) \<union> succ(t2) \<union> succ(q) \<union> succ(p) \<union> succ(l)"
   unfolding forces_mem_fm_def
-  using number1arity__fm arity_empty_fm arity_is_tuple_fm arity_frc_at_fm
+  using arity_number1_fm arity_empty_fm arity_is_tuple_fm arity_frc_at_fm
     pred_Un_distrib
   by auto
 
@@ -761,12 +761,7 @@ lemma Hfrc_at_abs:
   unfolding is_Hfrc_at_def using Hfrc_abs
   by auto
 
-(* FIX *)
 lemma components_closed :
-  "x\<in>M \<Longrightarrow> ftype(x)\<in>M"
-  "x\<in>M \<Longrightarrow> name1(x)\<in>M"
-  "x\<in>M \<Longrightarrow> name2(x)\<in>M"
-  "x\<in>M \<Longrightarrow> cond_of(x)\<in>M"
   "x\<in>M \<Longrightarrow> (##M)(ftype(x))"
   "x\<in>M \<Longrightarrow> (##M)(name1(x))"
   "x\<in>M \<Longrightarrow> (##M)(name2(x))"
@@ -797,8 +792,9 @@ lemma is_ecloseN_abs :
 
 lemma frecR_abs :
   "x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> frecR(x,y) \<longleftrightarrow> is_frecR(##M,x,y)"
-  unfolding frecR_def is_frecR_def using nonempty domain_closed Un_closed
-  by (simp add:components_closed components_abs)
+  unfolding frecR_def is_frecR_def 
+  using nonempty domain_closed Un_closed components_closed
+  by (auto simp add: components_abs)
 
 lemma frecrelP_abs :
   "z\<in>M \<Longrightarrow> frecrelP(##M,z) \<longleftrightarrow> (\<exists>x y. z = \<langle>x,y\<rangle> \<and> frecR(x,y))"
