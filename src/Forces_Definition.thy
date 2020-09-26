@@ -84,12 +84,12 @@ lemma names_belowsD:
     "x = \<langle>f,n1,n2,p\<rangle>" "f\<in>2" "n1\<in>ecloseN(z)" "n2\<in>ecloseN(z)" "p\<in>P"
   using assms unfolding names_below_def by auto
 
+reldb_add "ecloseN" "is_ecloseN"
+relativize "names_below" "is_names_below"
 
-definition
-  is_names_below :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
-  "is_names_below(M,P,x,nb) \<equiv> \<exists>p1[M]. \<exists>p0[M]. \<exists>t[M]. \<exists>ec[M].
-              is_ecloseN(M,ec,x) \<and> number2(M,t) \<and> cartprod(M,ec,P,p0) \<and> cartprod(M,ec,p0,p1)
-              \<and> cartprod(M,t,p1,nb)"
+lemma number2_iff :
+  "(A)(c) \<Longrightarrow> number2(A,c) \<longleftrightarrow> (\<exists>b[A]. \<exists>a[A]. successor(A, b, c) \<and> successor(A, a, b) \<and> empty(A, a))"
+  unfolding number2_def number1_def by auto
 
 definition
   number2_fm :: "i\<Rightarrow>i" where
@@ -133,7 +133,9 @@ lemma sats_is_names_below_fm :
   shows
     "sats(A,is_names_below_fm(P,x,nb),env)
     \<longleftrightarrow> is_names_below(##A,nth(P, env),nth(x, env),nth(nb, env))"
-  unfolding is_names_below_fm_def is_names_below_def using assms by simp
+  unfolding is_names_below_fm_def is_names_below_def
+  using assms number2_iff
+  by force
 
 definition
   is_tuple :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
@@ -300,7 +302,7 @@ lemma sats_Hfrc_fm:
     "sats(A,Hfrc_fm(P,leq,fnnc,f),env)
     \<longleftrightarrow> is_Hfrc(##A,nth(P, env), nth(leq, env), nth(fnnc, env),nth(f, env))"
   unfolding is_Hfrc_def Hfrc_fm_def
-  using assms  
+  using assms
   by (simp add: sats_is_tuple_fm eq_case_fm_iff_sats[symmetric] mem_case_fm_iff_sats[symmetric])
 
 lemma Hfrc_iff_sats:
@@ -362,7 +364,7 @@ lemma arity_tran_closure_fm :
   "\<lbrakk>x\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> arity(trans_closure_fm(x,f)) = succ(x) \<union> succ(f)"
   unfolding trans_closure_fm_def
   using arity_omega_fm arity_field_fm arity_typed_function_fm arity_pair_fm arity_empty_fm arity_fun_apply_fm
-    arity_composition_fm arity_succ_fm nat_union_abs2 pred_Un_distrib 
+    arity_composition_fm arity_succ_fm nat_union_abs2 pred_Un_distrib
   by auto
 
 subsection\<open>The well-founded relation \<^term>\<open>forcerel\<close>\<close>
@@ -655,7 +657,7 @@ lemma tuple_abs:
    is_tuple(##M,z,t1,t2,p,t) \<longleftrightarrow> t = \<langle>z,t1,t2,p\<rangle>"
   unfolding is_tuple_def using tuples_in_M by simp
 
-lemmas components_abs = ftype_abs name1_abs name2_abs cond_of_abs 
+lemmas components_abs = ftype_abs name1_abs name2_abs cond_of_abs
   tuple_abs
 
 lemma oneN_in_M[simp]: "1\<in>M"
@@ -784,15 +786,15 @@ lemma eclose_n_abs :
   by auto
 
 
-lemma is_ecloseN_abs :
-  "\<lbrakk>x\<in>M;ec\<in>M\<rbrakk> \<Longrightarrow> is_ecloseN(##M,ec,x) \<longleftrightarrow> ec = ecloseN(x)"
+lemma ecloseN_abs :
+  "\<lbrakk>x\<in>M;ec\<in>M\<rbrakk> \<Longrightarrow> is_ecloseN(##M,x,ec) \<longleftrightarrow> ec = ecloseN(x)"
   unfolding is_ecloseN_def ecloseN_def
   using eclose_n_abs Un_closed union_abs ecloseN_closed
   by auto
 
 lemma frecR_abs :
   "x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> frecR(x,y) \<longleftrightarrow> is_frecR(##M,x,y)"
-  unfolding frecR_def is_frecR_def 
+  unfolding frecR_def is_frecR_def
   using nonempty domain_closed Un_closed components_closed
   by (auto simp add: components_abs)
 
@@ -1305,7 +1307,7 @@ qed
 lemma names_below_abs :
   "\<lbrakk>Q\<in>M;x\<in>M;nb\<in>M\<rbrakk> \<Longrightarrow> is_names_below(##M,Q,x,nb) \<longleftrightarrow> nb = names_below(Q,x)"
   unfolding is_names_below_def names_below_def
-  using succ_in_M_iff zero_in_M cartprod_closed is_ecloseN_abs ecloseN_closed
+  using succ_in_M_iff zero_in_M cartprod_closed ecloseN_abs ecloseN_closed
   by auto
 
 lemma names_below_closed:

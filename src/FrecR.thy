@@ -292,7 +292,7 @@ definition
 
 definition
   is_ecloseN :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_ecloseN(N,en,t) \<equiv> \<exists>en1[N].\<exists>en2[N].
+  "is_ecloseN(N,t,en) \<equiv> \<exists>en1[N].\<exists>en2[N].
                 is_eclose_n(N,is_name1,en1,t) \<and> is_eclose_n(N,is_name2,en2,t)\<and>
                 union(N,en1,en2,en)"
 
@@ -306,7 +306,7 @@ lemma ecloseN_fm_type [TC] :
 
 lemma sats_ecloseN_fm [simp]:
   "\<lbrakk> en \<in> nat; t \<in> nat ; env \<in> list(A) \<rbrakk>
-    \<Longrightarrow> sats(A, ecloseN_fm(en,t), env) \<longleftrightarrow> is_ecloseN(##A,nth(en,env),nth(t,env))"
+    \<Longrightarrow> sats(A, ecloseN_fm(en,t), env) \<longleftrightarrow> is_ecloseN(##A,nth(t,env),nth(en,env))"
   unfolding ecloseN_fm_def is_ecloseN_def eclose_n1_fm_def eclose_n2_fm_def is_eclose_n_def
   using  nth_0 nth_ConsI sats_name1_fm sats_name2_fm
     is_singleton_iff_sats[symmetric]
