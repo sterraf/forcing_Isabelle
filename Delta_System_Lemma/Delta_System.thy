@@ -508,22 +508,24 @@ proof -
   then
   obtain f where f_type:"f \<in> Pi(?cdlt\<gamma>,?inQ)"
     by auto
+  moreover
+  define Cb where "Cb \<equiv> \<lambda>_\<in>Pow(G)-?cdlt\<gamma>. b"
   moreover from \<open>b\<in>G\<close>
-  have "(\<lambda>_\<in>Pow(G)-?cdlt\<gamma>. b) \<in> Pow(G)-?cdlt\<gamma> \<rightarrow> G" (is "?Cb \<in> _")
-    by simp
+  have "Cb \<in> Pow(G)-?cdlt\<gamma> \<rightarrow> G"
+    unfolding Cb_def by simp
   moreover
   note \<open>Card(\<gamma>)\<close>
   ultimately
-  have "f \<union> ?Cb : (\<Prod>x\<in>Pow(G). ?inQ(x) \<union> G)" using
-      fun_Pi_disjoint_Un[ of f ?cdlt\<gamma>  ?inQ ?Cb "Pow(G)-?cdlt\<gamma>" "\<lambda>_.G"]
+  have "f \<union> Cb : (\<Prod>x\<in>Pow(G). ?inQ(x) \<union> G)" using
+      fun_Pi_disjoint_Un[ of f ?cdlt\<gamma>  ?inQ Cb "Pow(G)-?cdlt\<gamma>" "\<lambda>_.G"]
       Diff_partition[of "{X\<in>Pow(G). |X|<\<gamma>}" "Pow(G)", OF Collect_subset]
     by auto
   moreover
   have "?inQ(x) \<union> G = G" for x by auto
   ultimately
-  have "f \<union> ?Cb : Pow(G) \<rightarrow> G" by simp
-  define S where "S\<equiv>\<lambda>\<alpha>\<in>\<gamma>. rec_constr(f \<union> ?Cb, \<alpha>)"
-  from \<open>f \<union> ?Cb: Pow(G) \<rightarrow> G\<close> \<open>Card(\<gamma>)\<close>
+  have "f \<union> Cb : Pow(G) \<rightarrow> G" by simp
+  define S where "S\<equiv>\<lambda>\<alpha>\<in>\<gamma>. rec_constr(f \<union> Cb, \<alpha>)"
+  from \<open>f \<union> Cb: Pow(G) \<rightarrow> G\<close> \<open>Card(\<gamma>)\<close>
   have "S : \<gamma> \<rightarrow> G"
     using Ord_in_Ord unfolding S_def
     by (intro lam_type rec_constr_type) auto
@@ -533,12 +535,7 @@ proof -
     fix \<alpha> \<beta>
     assume "\<beta>\<in>\<gamma>"
     with \<open>Card(\<gamma>)\<close>
-      \<comment> \<open>The next fact makes the final goal of this proof block
-          unnecessarily complicated, since it is only needed in
-          one substitution (see proof method commented out below)
-          If used in that way, it is then not needed to be added to the
-          in the calculation below\<close>
-    have 1:"{rec_constr(f \<union> ?Cb, x) . x\<in>\<beta>} = {S`x . x \<in> \<beta>}"
+    have "{rec_constr(f \<union> Cb, x) . x\<in>\<beta>} = {S`x . x \<in> \<beta>}"
       using Ord_trans[OF _ _ Card_is_Ord, of _ \<beta> \<gamma>]
       unfolding S_def
       by auto
@@ -565,13 +562,12 @@ proof -
     moreover
     assume "\<alpha>\<in>\<gamma>" "\<alpha> < \<beta>"
     moreover
-    note \<open>\<beta>\<in>\<gamma>\<close>
+    note \<open>\<beta>\<in>\<gamma>\<close> \<open>Cb \<in> Pow(G)-?cdlt\<gamma> \<rightarrow> G\<close>
     ultimately
     show "Q(S ` \<alpha>, S ` \<beta>)"
-      using fun_disjoint_apply1[of "{S`x . x \<in> \<beta>}" ?Cb f]
-        domain_of_fun[of ?Cb] ltD[of \<alpha> \<beta>]
-      by (subst (2) S_def)
-        (auto, subst rec_constr_unfold, (* subst 1,*) auto)
+      using fun_disjoint_apply1[of "{S`x . x \<in> \<beta>}" Cb f]
+        domain_of_fun[of Cb] ltD[of \<alpha> \<beta>]
+      by (subst (2) S_def, auto) (subst rec_constr_unfold, auto)
   qed
   ultimately
   show ?thesis by blast
