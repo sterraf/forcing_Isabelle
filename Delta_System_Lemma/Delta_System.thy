@@ -7,6 +7,8 @@ begin
 no_notation oadd (infixl \<open>++\<close> 65)
 no_notation sum (infixr \<open>+\<close> 65)
 notation oadd (infixl \<open>+\<close> 65)
+syntax "_ge"  :: "[i,i] \<Rightarrow> o"  (infixl \<open>\<ge>\<close> 50)
+translations "x \<ge> y" \<rightharpoonup> "y \<le> x"
 
 lemma nat_oadd_add[simp]:
   assumes "m \<in> nat" "n \<in> nat" shows "n + m = n #+ m"
@@ -452,12 +454,128 @@ lemma Diff_bij:
   assumes "\<forall>A\<in>F. X \<subseteq> A" shows "(\<lambda>A\<in>F. A-X) \<in> bij(F, {A-X. A\<in>F})"
   sorry
 
-lemma
+definition
+  rec_constr :: "[i,i] \<Rightarrow> i" where
+  "rec_constr(f,\<alpha>) \<equiv> transrec(\<alpha>,\<lambda>a g. f`(g``a))"
+
+lemma rec_constr_unfold: "rec_constr(f,\<alpha>) = f`({rec_constr(f,\<beta>). \<beta>\<in>\<alpha>})"
+  using def_transrec[OF rec_constr_def, of f \<alpha>] image_lam by simp
+
+lemma rec_constr_type: assumes "f:Pow(G)\<rightarrow> G" "Ord(\<alpha>)"
+  shows "rec_constr(f,\<alpha>) \<in> G"
+  using assms(2,1)
+  by (induct rule:trans_induct)
+    (subst rec_constr_unfold, rule apply_type[of f "Pow(G)" "\<lambda>_. G"], auto)
+
+lemma cardinal_subset_of_Card:
+  assumes "Card(\<gamma>)" "a \<subseteq> \<gamma>"
+  shows "|a| < \<gamma> \<or> |a| = \<gamma>"
+proof -
+  from assms
+  have "|a| < |\<gamma>| \<or> |a| = |\<gamma>|"
+    using subset_imp_le_cardinal le_iff by simp
+  with assms
+  show ?thesis
+    using Card_cardinal_eq by simp
+qed
+
+lemma cardinal_cases:
+  includes Ord_dests
+  shows "Card(\<gamma>) \<Longrightarrow> |X| < \<gamma> \<longleftrightarrow> \<not> |X| \<ge> \<gamma>"
+  using not_le_iff_lt
+  by auto
+
+lemma fun_Pi_disjoint_Un:
+  assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)"  "A \<inter> C = 0"
+  shows "f \<union> g \<in> Pi(A \<union> C, \<lambda>x. B(x) \<union> D(x))"
+  using assms
+  by (simp add: Pi_iff extension Un_rls) (unfold function_def, blast)
+
+lemma bounded_cardinal_selection:
+  includes Ord_dests
   assumes
-    "\<And>X. |X| < \<gamma> \<Longrightarrow> X \<subseteq> G \<Longrightarrow> \<exists>a\<in>G. \<forall>s\<in>X. Q(s,a)" "Card(\<gamma>)"
-  obtains S where "S : \<gamma> \<rightarrow> G"
-    "\<And>\<alpha> \<beta>. \<alpha> \<in> \<gamma> \<Longrightarrow> \<beta> \<in> \<gamma> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> Q(S`\<alpha>,S`\<beta>)"
-  oops
+    "\<And>X. |X| < \<gamma> \<Longrightarrow> X \<subseteq> G \<Longrightarrow> \<exists>a\<in>G. \<forall>s\<in>X. Q(s,a)" "b\<in>G" "Card(\<gamma>)"
+  shows
+    "\<exists>S. S : \<gamma> \<rightarrow> G \<and> (\<forall>\<alpha> \<in> \<gamma>. \<forall>\<beta> \<in> \<gamma>.  \<alpha><\<beta> \<longrightarrow> Q(S`\<alpha>,S`\<beta>))"
+proof -
+  let ?cdlt\<gamma>="{X\<in>Pow(G) . |X|<\<gamma>}" and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. Q(s,a)}"
+  from assms
+  have "\<forall>Y \<in> ?cdlt\<gamma>. \<exists>a. a \<in> ?inQ(Y)"
+    by blast
+  then
+  have "\<exists>f. f \<in> Pi(?cdlt\<gamma>,?inQ)"
+    using AC_ball_Pi by simp
+  then
+  obtain f where f_type:"f \<in> Pi(?cdlt\<gamma>,?inQ)"
+    by auto
+  moreover from \<open>b\<in>G\<close>
+  have "(\<lambda>_\<in>Pow(G)-?cdlt\<gamma>. b) \<in> Pow(G)-?cdlt\<gamma> \<rightarrow> G" (is "?Cb \<in> _")
+    by simp
+  moreover
+  note \<open>Card(\<gamma>)\<close>
+  ultimately
+  have "f \<union> ?Cb : (\<Prod>x\<in>Pow(G). ?inQ(x) \<union> G)" using
+      fun_Pi_disjoint_Un[ of f ?cdlt\<gamma>  ?inQ ?Cb "Pow(G)-?cdlt\<gamma>" "\<lambda>_.G"]
+      Diff_partition[of "{X\<in>Pow(G). |X|<\<gamma>}" "Pow(G)", OF Collect_subset]
+    by auto
+  moreover
+  have "?inQ(x) \<union> G = G" for x by auto
+  ultimately
+  have "f \<union> ?Cb : Pow(G) \<rightarrow> G" by simp
+  define S where "S\<equiv>\<lambda>\<alpha>\<in>\<gamma>. rec_constr(f \<union> ?Cb, \<alpha>)"
+  from \<open>f \<union> ?Cb: Pow(G) \<rightarrow> G\<close> \<open>Card(\<gamma>)\<close>
+  have "S : \<gamma> \<rightarrow> G"
+    using Ord_in_Ord unfolding S_def
+    by (intro lam_type rec_constr_type) auto
+  moreover
+  have "\<forall>\<alpha>\<in>\<gamma>. \<forall>\<beta>\<in>\<gamma>. \<alpha> < \<beta> \<longrightarrow> Q(S ` \<alpha>, S ` \<beta>)"
+  proof (intro ballI impI)
+    fix \<alpha> \<beta>
+    assume "\<beta>\<in>\<gamma>"
+    with \<open>Card(\<gamma>)\<close>
+      \<comment> \<open>The next fact makes the final goal of this proof block
+          unnecessarily complicated, since it is only needed in
+          one substitution (see proof method commented out below)
+          If used in that way, it is then not needed to be added to the
+          in the calculation below\<close>
+    have 1:"{rec_constr(f \<union> ?Cb, x) . x\<in>\<beta>} = {S`x . x \<in> \<beta>}"
+      using Ord_trans[OF _ _ Card_is_Ord, of _ \<beta> \<gamma>]
+      unfolding S_def
+      by auto
+    moreover from \<open>\<beta>\<in>\<gamma>\<close> \<open>S : \<gamma> \<rightarrow> G\<close> \<open>Card(\<gamma>)\<close>
+    have "{S`x . x \<in> \<beta>} \<subseteq> G"
+      using Ord_trans[OF _ _ Card_is_Ord, of _ \<beta> \<gamma>]
+        apply_type[of S \<gamma> "\<lambda>_. G"] by auto
+    moreover from \<open>Card(\<gamma>)\<close> \<open>\<beta>\<in>\<gamma>\<close>
+    have "|{S`x . x \<in> \<beta>}| < \<gamma>"
+      using cardinal_RepFun_le[of \<beta>]  Ord_in_Ord
+        lt_trans1[of "|{S`x . x \<in> \<beta>}|" "|\<beta>|" \<gamma>]
+        Card_lt_iff[THEN iffD2, of \<beta> \<gamma>, OF _ _ ltI]
+      by force
+    moreover
+    have "\<forall>x\<in>\<beta>. Q(S`x, f ` {S`x . x \<in> \<beta>})"
+    proof -
+      from calculation and f_type
+      have "f ` {S`x . x \<in> \<beta>} \<in> {a\<in>G. \<forall>x\<in>\<beta>. Q(S`x,a)}"
+        using apply_type[of f ?cdlt\<gamma> ?inQ "{S`x . x \<in> \<beta>}"]
+        by blast
+      then
+      show ?thesis by simp
+    qed
+    moreover
+    assume "\<alpha>\<in>\<gamma>" "\<alpha> < \<beta>"
+    moreover
+    note \<open>\<beta>\<in>\<gamma>\<close>
+    ultimately
+    show "Q(S ` \<alpha>, S ` \<beta>)"
+      using fun_disjoint_apply1[of "{S`x . x \<in> \<beta>}" ?Cb f]
+        domain_of_fun[of ?Cb] ltD[of \<alpha> \<beta>]
+      by (subst (2) S_def)
+        (auto, subst rec_constr_unfold, (* subst 1,*) auto)
+  qed
+  ultimately
+  show ?thesis by blast
+qed
 
 lemma Finite_cardinal_iff_AC: "Finite(|i|) \<longleftrightarrow> Finite(i)"
   using cardinal_eqpoll_iff eqpoll_imp_Finite_iff by fastforce
