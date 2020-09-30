@@ -413,9 +413,9 @@ lemma Vfrom_rel_iff :
    x and f belong to M *)
 lemma def_Vfrom_rel :
   "\<lbrakk> M(A);M(i) \<rbrakk> \<Longrightarrow> 
-    Vfrom_rel(M,A,i) = transrec(i, %x f. A \<union> (\<Union>y\<in>x. Powapply_rel(M,f,y)))"
-  unfolding Vfrom_rel_def 
+    Vfrom_rel(M,A,i) = transrec(i, %x f. A \<union> (\<Union>y\<in>x. Powapply_rel(M,f,y)))" 
   using def_HVfrom_rel
+  unfolding Vfrom_rel_def
   sorry
 end
 
@@ -434,9 +434,9 @@ definition
   is_factor_body :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
   "is_factor_body(M,\<beta>,h,x) \<equiv> M(x) \<and>
     (\<exists>j\<beta>[M]. \<exists>fx[M]. fun_apply(M,j,\<beta>,j\<beta>) \<and> fun_apply(M,f,x,fx) \<and>
-    (x\<in>\<delta> \<and> j\<beta> \<le> fx \<and> (\<forall>\<alpha>[M]. \<alpha><\<beta> \<longrightarrow> 
+    (x\<in>\<delta> \<and> le_rel(M,j\<beta>,fx) \<and> (\<forall>\<alpha>[M]. lt_rel(M,\<alpha>,\<beta>) \<longrightarrow> 
           (\<exists>h\<alpha>[M]. \<exists>fh\<alpha>[M]. fun_apply(M,h,\<alpha>,h\<alpha>) \<and> fun_apply(M,f,h\<alpha>,fh\<alpha>) \<and>
-                                    fh\<alpha> < fx)) \<or> x=\<delta>))"
+                                    lt_rel(M,fh\<alpha>,fx))) \<or> x=\<delta>))"
 
 end
                                 
