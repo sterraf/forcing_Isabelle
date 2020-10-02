@@ -3,6 +3,8 @@ theory Relativization_Test
   imports Relativization
 begin
 
+declare [[ML_print_depth = 50]]
+
 definition test1 :: "i \<Rightarrow> o" where
   "test1(a) \<equiv> \<forall> x . x \<subseteq> Pi(x, (\<lambda> y . x \<inter> y))"
 
@@ -169,6 +171,16 @@ lemma (in M_trans) "atoms_abs":
 relativize_tm "{ a : u . <0,0> \<in> a } \<inter> { b : u . 0 \<in> b }" "test17"
 
 relativize_tm "{ b . f \<in> x \<rightarrow> y, \<forall> x . \<exists> a . f ` (f ` x) = f ` x \<and>  f ` a = b }" "test18"
+
+relativize_tm "{ a \<rightarrow> a . a \<in> u }" "test19"
+
+relativize_tm "{ a . a \<in> f ` <x,y> }" "test20"
+
+relativize_tm "\<forall> a b . { x \<rightarrow> b . x \<in> a } = { x \<rightarrow> b . x \<in> a }" "test21"
+
+relativize_tm "\<forall> a . {x \<inter> a . x \<in> a} \<subseteq> a" "test22"
+
+relativize_tm "\<forall> a . {y . x \<in> <0,0> , y \<inter> a \<subseteq> x} \<subseteq> a" "test23"
 
 (* collect { a \<in> 0 . a=a} *)
 (* rep_fun { a. <a,b>\<in>0 } *)
