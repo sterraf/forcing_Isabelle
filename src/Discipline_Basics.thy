@@ -327,7 +327,7 @@ definition
   is_Sigma :: "[i\<Rightarrow>o,i,i\<Rightarrow>i,i]\<Rightarrow>o"  where
   "is_Sigma(M,A,B,S) \<equiv> \<exists>RSf[M].
       is_Replace(M,A,\<lambda>x z. z=Sigfun(x,B),RSf) \<and> big_union(M,RSf,S)"
-
+                                
 locale M_Pi = M_basic +
   assumes
     Pi_separation: "M(A) \<Longrightarrow> separation(M, PiP_rel(M,A))"
@@ -1233,5 +1233,208 @@ text\<open>Note that \<^term>\<open>lesspoll_rel\<close> is neither $\Sigma_1^{\
  $\Pi_1^{\mathit{ZF}}$, so there is no “transfer” theorem for it.\<close>
 
 (******************  end Discipline  ******************)
+
+(**** Discipline for PowApply ****)
+
+definition
+  Pow_apply :: "[i,i] \<Rightarrow> i"  where
+  "Pow_apply(f,y) \<equiv> Pow(f`y)"
+
+definition
+  is_Pow_apply :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
+  "is_Pow_apply(M,f,y,pa) \<equiv>  
+   is_hcomp2_2(M,\<lambda>M _. is_Pow(M),\<lambda>_ _. (=),fun_apply,f,y,pa) \<and> M(pa)"
+
+definition
+  Pow_apply_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i"  where
+  "Pow_apply_rel(M,f,y) \<equiv> THE d. M(d) \<and> is_Pow_apply(M,f,y,d)"
+
+
+context M_basic
+begin
+
+lemma is_Pow_apply_uniqueness:
+  assumes
+    "M(A)" "M(B)" "M(d)" "M(d')"
+    "is_Pow_apply(M,A,B,d)" "is_Pow_apply(M,A,B,d')"
+  shows
+    "d=d'"
+  using assms \<comment> \<open>using projections (\<^term>\<open>\<lambda>_ _. (=)\<close>)
+                  requires more instantiations\<close>
+    is_Pow_uniqueness hcomp2_2_uniqueness[of
+      M "\<lambda>M _. is_Pow(M)" "\<lambda>_ _. (=)" fun_apply A B d d']
+  unfolding is_Pow_apply_def
+  by auto
+
+lemma is_Pow_apply_witness: "M(A) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M]. is_Pow_apply(M,A,B,d)"
+  using hcomp2_2_witness[of M "\<lambda>M _. is_Pow(M)" "\<lambda>_ _. (=)" fun_apply A B]
+    is_Pow_witness
+  unfolding is_Pow_apply_def by simp
+
+lemma Pow_apply_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(Pow_apply_rel(M,x,y))"
+  unfolding Pow_apply_rel_def
+  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_Pow_apply(M,x,y,d)"], OF _ is_Pow_apply_uniqueness[of x y]]
+    is_Pow_apply_witness by auto
+
+lemma Pow_apply_rel_iff:
+  assumes "M(x)" "M(y)" "M(d)"
+  shows "is_Pow_apply(M,x,y,d) \<longleftrightarrow> d = Pow_apply_rel(M,x,y)"
+proof (intro iffI)
+  assume "d = Pow_apply_rel(M,x,y)"
+  moreover
+  note assms
+  moreover from this
+  obtain e where "M(e)" "is_Pow_apply(M,x,y,e)"
+    using is_Pow_apply_witness by blast
+  ultimately
+  show "is_Pow_apply(M, x, y, d)"
+    using is_Pow_apply_uniqueness[of x y] is_Pow_apply_witness
+      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_Pow_apply(M,x,y,d)"], OF _ is_Pow_apply_uniqueness[of x y], of e]
+    unfolding Pow_apply_rel_def
+    by auto
+next
+  assume "is_Pow_apply(M, x, y, d)"
+  with assms
+  show "d = Pow_apply_rel(M,x,y)"
+    using is_Pow_apply_uniqueness unfolding Pow_apply_rel_def
+    by (blast del:the_equality intro:the_equality[symmetric])
+qed
+
+lemma def_Pow_apply_rel:
+  assumes "M(f)" "M(y)"
+  shows "Pow_apply_rel(M,f,y) = Pow_rel(M,f`y)"
+  using assms Pow_apply_rel_iff
+    Pow_rel_iff
+    hcomp2_2_abs[of "\<lambda>M _ . is_Pow(M)" "\<lambda>_. Pow_rel(M)"
+      "\<lambda>_ _. (=)" "\<lambda>x y. y" fun_apply "(`)" f y "Pow_apply_rel(M,f,y)"]
+  unfolding is_Pow_apply_def by force
+
+end (* context M_basic *)
+
+(**** end discipline for PowApply ****)
+
+(*** Discipline for Replace of Pow_Apply  ***)
+
+definition
+  Repl_Pow_apply :: "[i,i] \<Rightarrow> i"  where
+  "Repl_Pow_apply(x,f) \<equiv> {z. y\<in>x, z = Pow_apply(f,y)}"
+
+definition
+  is_Repl_Pow_apply :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
+  "is_Repl_Pow_apply(M,x,f,rpa) \<equiv> is_Replace(M,x,is_Pow_apply(M,f),rpa)"
+
+definition
+  Repl_Pow_apply_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i"  where
+  "Repl_Pow_apply_rel(M,x,f) \<equiv> THE d. M(d) \<and> is_Repl_Pow_apply(M,x,f,d)"
+
+context M_basic
+begin
+
+(* The next two lemmas are necessary for absoluteness of Replace *)
+lemma univalent_is_Pow_apply:
+  assumes "M(A)" "M(f)"
+  shows "univalent(M,A,is_Pow_apply(M,f))"
+  using assms is_Pow_apply_uniqueness unfolding  univalent_def 
+  by blast
+
+lemma is_Pow_apply_closed:
+  assumes "M(A)" "M(f)"
+  shows "\<And>x y. \<lbrakk> x\<in>A ; is_Pow_apply(M,f,x,y) \<rbrakk> \<Longrightarrow> M(y)"
+  using assms unfolding is_Pow_apply_def
+  by simp
+
+
+lemma is_Repl_Pow_apply_uniqueness:
+  assumes
+    "M(x)" "M(f)" "M(d)" "M(d')"
+    " is_Repl_Pow_apply(M,x,f,d)" "is_Repl_Pow_apply(M,x,f,d')"
+  shows
+    "d=d'"
+  using assms Replace_abs[OF _ _ univalent_is_Pow_apply is_Pow_apply_closed]
+        is_Pow_apply_uniqueness unfolding is_Repl_Pow_apply_def
+  by simp
+
+(* instance of Replacement needed *) 
+lemma is_Pow_apply_replacement:
+    "M(f) \<Longrightarrow> strong_replacement(M,is_Pow_apply(M,f))"
+  sorry
+
+lemma is_Repl_Pow_apply_witness: "M(X) \<Longrightarrow> M(K) \<Longrightarrow> \<exists>d[M]. is_Repl_Pow_apply(M,K,X,d)"
+  using strong_replacementD[OF is_Pow_apply_replacement _ univalent_is_Pow_apply]
+  unfolding is_Repl_Pow_apply_def is_Replace_def
+  by auto
+  
+\<comment> \<open>adding closure to simpset and claset\<close>
+lemma Repl_Pow_apply_rel_closed[intro,simp]: "M(K) \<Longrightarrow> M(X) \<Longrightarrow> M(Repl_Pow_apply_rel(M,K,X))"
+  unfolding Repl_Pow_apply_rel_def
+  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_Repl_Pow_apply(M,K,X,d)"], 
+             OF _ is_Repl_Pow_apply_uniqueness[of K X]]
+    is_Repl_Pow_apply_witness by auto
+
+lemma Repl_Pow_apply_rel_iff:
+  assumes "M(K)"  "M(X)" "M(d)"
+  shows "is_Repl_Pow_apply(M,K,X,d) \<longleftrightarrow> d = Repl_Pow_apply_rel(M,K,X)"
+proof (intro iffI)
+  assume "d = Repl_Pow_apply_rel(M,K,X)"
+  moreover
+  note assms
+  moreover from this
+  obtain e where "M(e)" "is_Repl_Pow_apply(M,K,X,e)"
+    using is_Repl_Pow_apply_witness by blast
+  ultimately
+  show "is_Repl_Pow_apply(M, K, X, d)"
+    using is_Repl_Pow_apply_uniqueness[of K X] is_Repl_Pow_apply_witness
+      theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_Repl_Pow_apply(M,K,X,d)"], OF _ is_Repl_Pow_apply_uniqueness[of K X], of e]
+    unfolding Repl_Pow_apply_rel_def
+    by auto
+next
+  assume "is_Repl_Pow_apply(M, K, X, d)"
+  with assms
+  show "d = Repl_Pow_apply_rel(M,K,X)"
+    using is_Repl_Pow_apply_uniqueness unfolding Repl_Pow_apply_rel_def
+    by (blast del:the_equality intro:the_equality[symmetric])
+qed
+
+
+lemma def_Repl_Pow_apply_rel:
+  assumes "M(x)" "M(f)"
+  shows "Repl_Pow_apply_rel(M,x,f) = {z. y\<in>x, z = Pow_apply_rel(M,f,y)}"
+    (is "_ = Replace(_,?P)")
+  sorry
+(*proof -
+  from assms
+  have "M(z) \<Longrightarrow> z \<in> Repl_Pow_apply_rel(M,x,f) \<Longrightarrow> z \<in> Replace(x,?P)" for z
+    using Replace_abs[where P="is_Pow_apply(M,f)", 
+        OF _ _  univalent_is_Pow_apply is_Pow_apply_closed]
+      Repl_Pow_apply_rel_iff[of x f "Repl_Pow_apply_rel(M,x,f)"] 
+      def_Pow_apply_rel
+      transM[OF _ Pow_apply_rel_closed, of _ f]
+      Pow_apply_rel_iff
+    unfolding is_Repl_Pow_apply_def
+    by (auto dest:transM intro!:ReplaceI)
+  with assms
+  have "z \<in> Repl_Pow_apply_rel(M,x,f) \<Longrightarrow> z \<in> Replace(x,?P)" for z
+    using transM[OF _ Repl_Pow_apply_rel_closed, OF _ \<open>M(f)\<close>] 
+    by (auto dest:transM)
+  moreover from assms
+  have "a \<in> x \<Longrightarrow> ?P(a,z) \<Longrightarrow> z\<in>Repl_Pow_apply_rel(M,x,f)" for a z
+    using Replace_abs[where P="is_Pow_apply(M,f)", 
+        OF _ _  univalent_is_Pow_apply is_Pow_apply_closed]
+      Repl_Pow_apply_rel_iff[of x f "Repl_Pow_apply_rel(M,x,f)"] 
+      def_Pow_apply_rel
+      transM[OF _ Pow_apply_rel_closed, of _ f]
+      Pow_apply_rel_iff
+    unfolding is_Repl_Pow_apply_def
+    by (auto dest:transM 
+        intro!:ReplaceI 
+        intro:Pow_apply_rel_iff[OF _  _ is_Pow_apply_closed', of f _ _ f, THEN iffD1])
+  ultimately 
+  show ?thesis
+    by auto
+qed
+*)  
+
+
+end 
 
 end

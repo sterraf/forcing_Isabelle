@@ -2,9 +2,12 @@ section\<open>Relative, Choice-less Cardinal Numbers\<close>
 
 theory Cardinal_Relative
   imports
-    Discipline_Basics
+    "Discipline_Base"
+    "Discipline_Function"
     Least
 begin
+
+declare [[syntax_ambiguity_warning = false]]
 
 hide_const (open) L
 
@@ -83,11 +86,11 @@ end (* M_cardinals *)
 
 definition
   is_cardinal :: "[i\<Rightarrow>o,i,i]\<Rightarrow>o"  where
-  "is_cardinal(M,A,\<kappa>) \<equiv> least(M, \<lambda>i. M(i) \<and> eqpoll_rel(M,i,A), \<kappa>)"
+  "is_cardinal(M,A,\<kappa>) \<equiv> M(\<kappa>) \<and> least(M, \<lambda>i. M(i) \<and> eqpoll_rel(M,i,A), \<kappa>)"
 
 definition
   cardinal_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" where
-  "cardinal_rel(M,x) \<equiv> THE d. M(d) \<and> is_cardinal(M,x,d)"
+  "cardinal_rel(M,x) \<equiv> THE d. is_cardinal(M,x,d)"
 
 abbreviation
   cardinal_r :: "[i,i\<Rightarrow>o] \<Rightarrow> i" (\<open>|_|\<^bsup>_\<^esup>\<close>) where
@@ -102,7 +105,7 @@ begin
 
 lemma is_cardinal_uniqueness:
   assumes
-    "M(r)" "M(d)" "M(d')"
+    "M(r)"
     "is_cardinal(M,r,d)" "is_cardinal(M,r,d')"
   shows
     "d=d'"
@@ -114,33 +117,47 @@ lemma is_cardinal_witness: "M(r) \<Longrightarrow> \<exists>d[M]. is_cardinal(M,
   using Least_closed' least_abs' unfolding is_cardinal_def
   by fastforce \<comment> \<open>We have to do this by hand, using axioms\<close>
 
-\<comment> \<open>adding closure to simpset and claset\<close>
-lemma cardinal_rel_closed[intro,simp]: "M(x) \<Longrightarrow> M(|x|\<^bsup>M\<^esup>)"
-  unfolding cardinal_rel_def
-  using theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_cardinal(M,x,d)"], OF _ is_cardinal_uniqueness[of x]]
-    is_cardinal_witness by auto
+lemma is_cardinal_closed :
+ "is_cardinal(M,r,d) \<Longrightarrow> M(d)"
+  unfolding is_cardinal_def by simp
+
+lemma cardinal_rel_closed[intro,simp]: 
+  assumes "M(x)"
+  shows "M(cardinal_rel(M,x))"
+proof -
+  have "is_cardinal(M, x, THE xa. is_cardinal(M, x, xa))" 
+    using assms 
+          theI[OF ex1I[of "is_cardinal(M,x)"], OF _ is_cardinal_uniqueness[of x]]
+          is_cardinal_witness
+    by auto
+  then show ?thesis 
+    using assms is_cardinal_closed
+    unfolding cardinal_rel_def
+    by blast
+qed
 
 lemma cardinal_rel_iff:
   assumes "M(x)"  "M(d)"
-  shows "is_cardinal(M,x,d) \<longleftrightarrow> d = |x|\<^bsup>M\<^esup>"
+  shows "is_cardinal(M,x,d) \<longleftrightarrow> d = cardinal_rel(M,x)"
 proof (intro iffI)
-  assume "d = |x|\<^bsup>M\<^esup>"
+  assume "d = cardinal_rel(M,x)"
   with assms
   show "is_cardinal(M, x, d)"
     using is_cardinal_uniqueness[of x] is_cardinal_witness
-    theI[OF ex1I[of "\<lambda>d. M(d) \<and> is_cardinal(M,x,d)"], OF _ is_cardinal_uniqueness[of x]]
+    theI[OF ex1I[of "is_cardinal(M,x)"], OF _ is_cardinal_uniqueness[of x]]
     unfolding cardinal_rel_def
     by auto
 next
   assume "is_cardinal(M, x, d)"
   with assms
-  show "d = |x|\<^bsup>M\<^esup>"
+  show "d = cardinal_rel(M,x)"
     using is_cardinal_uniqueness unfolding cardinal_rel_def
     by (auto del:the_equality intro:the_equality[symmetric])
 qed
 
 \<comment> \<open>This proof takes too long; it should have worked "by fastforce"\<close>
-lemma def_cardinal_rel: "M(x) \<Longrightarrow> |x|\<^bsup>M\<^esup> = (\<mu> i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x)"
+lemma def_cardinal_rel: 
+    "M(x) \<Longrightarrow> cardinal_rel(M,x) = (\<mu> i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x)"
   using least_abs'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x"] cardinal_rel_iff
   unfolding is_cardinal_def by auto
 
