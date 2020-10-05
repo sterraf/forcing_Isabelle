@@ -1,7 +1,11 @@
 signature Utils =
  sig
+    val &&& : ('a -> 'b) * ('a -> 'c) -> 'a -> 'b * 'c
+    val @@ : ''a list * ''a list -> ''a list
+    val --- : ''a list * ''a list -> ''a list
     val binop : term -> term -> term -> term
     val add_: term -> term -> term
+    val add_to_context : string -> Proof.context -> Proof.context
     val app_: term -> term -> term
     val concat_: term -> term -> term
     val dest_apply: term -> term * term
@@ -20,8 +24,10 @@ signature Utils =
     val display : string -> Position.T -> (string * thm list) * Proof.context -> Proof.context
     val eq_: term -> term -> term
     val fix_vars: thm -> string list -> Proof.context -> thm
+    val flat : ''a list list -> ''a list
     val formula_: term
     val freeName: term -> string
+    val frees : term -> term list
     val inList: ''a list -> ''a -> bool
     val length_: term -> term
     val list_: term -> term
@@ -33,6 +39,7 @@ signature Utils =
     val mk_ZFnat: int -> term
     val nat_: term
     val nth_: term -> term -> term
+    val reachable : (''a -> ''a -> bool) -> ''a list -> ''a list -> ''a list
     val subset_: term -> term -> term
     val thm_concl_tm :  Proof.context -> xstring -> 
         ((indexname * typ) * cterm) list * term * Proof.context
@@ -131,4 +138,36 @@ fun display kind pos (thms,thy) =
   in thy
 end
 
-end ;
+(* lists as sets *)
+
+infix 6 @@
+fun op @@ (xs, ys) = union (op =) ys xs
+
+fun flat xss = fold (curry op @@) xss []
+
+infix 6 ---
+fun op --- (xs, ys) = subtract (op =) ys xs
+
+(* function product *)
+infix 6 &&&
+fun op &&& (f, g) = fn x => (f x, g x)
+
+(* add variable to context *)
+fun add_to_context v c = if Variable.is_fixed c v then c else #2 (Variable.add_fixes [v] c)
+
+(* get free variables of a term *)
+fun frees t = fold_aterms (fn t => if is_Free t then cons t else I) t []
+
+(* closure of a set wrt a preorder *)
+(* the preorder is the reflexive-transitive closure of the given relation p *)
+(* u represents the universe, and xs represents the starting points *)
+(* [xs]_{p,u} = { v \<in> u . \<exists> x \<in> xs . p*(x, v) }*)
+fun reachable p u xs =
+  let
+    val step = map (fn x => filter (p x) (u --- xs)) xs |> flat
+    val acc = if null step then [] else reachable p (u --- xs) step
+  in
+    xs @@ acc
+  end
+
+end
