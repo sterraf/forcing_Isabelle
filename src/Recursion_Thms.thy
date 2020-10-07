@@ -1,6 +1,9 @@
 section\<open>Some enhanced theorems on recursion\<close>
 
-theory Recursion_Thms imports ZF.Epsilon begin
+theory Recursion_Thms 
+  imports ZF.Epsilon "ZF-Constructible.Datatype_absolute"
+
+begin
 
 text\<open>We prove results concerning definitions by well-founded
 recursion on some relation \<^term>\<open>R\<close> and its transitive closure
@@ -222,5 +225,53 @@ proof -
   finally
   show ?thesis .
 qed
+
+lemma (in M_eclose) transrec_equal_on_M:
+assumes 
+   "\<And>x f . M(x) \<Longrightarrow> M(f) \<Longrightarrow> foo(x,f) = bar(x,f)"
+   "\<And>\<beta>. M(\<beta>) \<Longrightarrow> transrec_replacement(M,is_foo,\<beta>)" "relation2(M,is_foo,foo)"
+   "strong_replacement(M, \<lambda>x y. y = \<langle>x, transrec(x, foo)\<rangle>)"
+   "\<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(foo(x,g))"  
+   "M(\<alpha>)" "Ord(\<alpha>)" 
+shows 
+  "transrec(\<alpha>, foo) = transrec(\<alpha>, bar)"
+proof -
+  have "M(transrec(x, foo))" if "Ord(x)" and "M(x)" for x
+    using that assms transrec_closed[of is_foo]
+    by simp
+  have "transrec(\<beta>,foo) = transrec(\<beta>,bar)" "M(transrec(\<beta>,foo))" if "Ord(\<beta>)" "M(\<beta>)" for \<beta>
+    using that
+  proof (induct rule:trans_induct)
+    case (step \<beta>)
+    moreover
+    assume "M(\<beta>)"
+    moreover
+    note \<open>Ord(\<beta>)\<Longrightarrow> M(\<beta>) \<Longrightarrow> M(transrec(\<beta>, foo))\<close>
+    ultimately
+    show "M(transrec(\<beta>, foo))" by blast 
+    with step \<open>M(\<beta>)\<close> \<open>\<And>x. Ord(x)\<Longrightarrow> M(x) \<Longrightarrow> M(transrec(x, foo))\<close>
+      \<open>strong_replacement(M, \<lambda>x y. y = \<langle>x, transrec(x, foo)\<rangle>)\<close>
+    have "M(\<lambda>x\<in>\<beta>. transrec(x, foo))"
+      using Ord_in_Ord transM[of _ \<beta>]
+      by (rule_tac lam_closed) auto
+    have "transrec(\<beta>, foo) = foo(\<beta>, \<lambda>x\<in>\<beta>. transrec(x, foo))"
+      using def_transrec[of "\<lambda>x. transrec(x, foo)" foo] by blast
+    also from assms and \<open>M(\<lambda>x\<in>\<beta>. transrec(x, foo))\<close> \<open>M(\<beta>)\<close>
+    have " \<dots> = bar(\<beta>, \<lambda>x\<in>\<beta>. transrec(x, foo))"
+      by simp
+    also from step and \<open>M(\<beta>)\<close>
+    have " \<dots> = bar(\<beta>, \<lambda>x\<in>\<beta>. transrec(x, bar))"
+      using transM[of _ \<beta>] by (auto)
+    also
+    have " \<dots> = transrec(\<beta>, bar)"
+      using def_transrec[of "\<lambda>x. transrec(x, bar)" bar, symmetric]
+      by blast
+    finally
+    show "transrec(\<beta>, foo) = transrec(\<beta>, bar)" .
+  qed
+  with assms
+  show ?thesis by simp
+qed
+
 
 end

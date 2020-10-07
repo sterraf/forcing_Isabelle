@@ -398,6 +398,10 @@ definition
 locale M_Vfrom = M_HVfrom +
   assumes
     trepl_HVfrom : "\<lbrakk> M(A);M(i) \<rbrakk> \<Longrightarrow> transrec_replacement(M,is_HVfrom(M,A),i)"
+    and 
+    repl_trec_HVfrom : 
+       "M(A) \<Longrightarrow> 
+            strong_replacement(M, \<lambda>x y. y = \<langle>x, transrec(x, HVfrom_rel(M, A))\<rangle>)"
 
 begin 
 
@@ -408,16 +412,19 @@ lemma Vfrom_rel_iff :
   unfolding is_Vfrom_def Vfrom_rel_def
   by simp
 
-
 (* It's not possible to apply def_HVfrom_rel because is necessary that
    x and f belong to M *)
 lemma def_Vfrom_rel :
-  "\<lbrakk> M(A);M(i) \<rbrakk> \<Longrightarrow> 
-    Vfrom_rel(M,A,i) = transrec(i, %x f. A \<union> (\<Union>y\<in>x. Powapply_rel(M,f,y)))" 
-  using def_HVfrom_rel
+  assumes "M(A)" "M(i)" "Ord(i)"
+  shows
+    " Vfrom_rel(M,A,i) = transrec(i, %x f. A \<union> (\<Union>y\<in>x. Powapply_rel(M,f,y)))" 
+  using assms 
+        transrec_equal_on_M[OF def_HVfrom_rel trepl_HVfrom 
+                               relation2_HVfrom repl_trec_HVfrom]  
   unfolding Vfrom_rel_def
-  sorry
-end
+  by simp
+
+end (* context M_Vfrom *)
 
 context cofinal_factor
 begin
