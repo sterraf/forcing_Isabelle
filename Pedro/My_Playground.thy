@@ -605,4 +605,8 @@ lemma
   "\<not> sats({   1, {1} }, Member(1,0), [  1 , 0 ])"
   by (simp_all add:satisfies.simps(1))
 
+text\<open>\<^term>\<open>(\<equiv>)\<close> is \<^bold>\<open>not\<close> definitional equality\<close>
+
+lemma "0 #+ 1 \<equiv> 1"  by simp
+
 end
