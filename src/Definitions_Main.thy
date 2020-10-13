@@ -316,15 +316,15 @@ text\<open>@{thm [display] choice_ax_def}\<close>
   choice_ax(M) \<equiv> \<forall>x[M]. \<exists>a[M]. \<exists>f[M]. ordinal(M, a) \<and> surjection(M, a, x, f)
 *)
 
-thm ZF_union_fm_iff_sats ZF_power_fm_iff_sats ZF_pairing_fm_iff_sats
-  ZF_foundation_fm_iff_sats ZF_extensionality_fm_iff_sats
-  ZF_infinity_fm_iff_sats sats_ZF_separation_fm_iff
-  sats_ZF_replacement_fm_iff ZF_choice_fm_iff_sats
-text\<open>@{thm [display] ZF_union_fm_iff_sats ZF_power_fm_iff_sats
-  ZF_pairing_fm_iff_sats
-  ZF_foundation_fm_iff_sats ZF_extensionality_fm_iff_sats
-  ZF_infinity_fm_iff_sats sats_ZF_separation_fm_iff
-  sats_ZF_replacement_fm_iff ZF_choice_fm_iff_sats}\<close>
+thm ZF_union_iff_sats ZF_power_iff_sats ZF_pairing_iff_sats
+  ZF_foundation_iff_sats ZF_extensionality_iff_sats
+  ZF_infinity_iff_sats sats_ZF_separation_fm_iff
+  sats_ZF_replacement_fm_iff ZF_choice_iff_sats
+text\<open>@{thm [display] ZF_union_iff_sats ZF_power_iff_sats
+  ZF_pairing_iff_sats
+  ZF_foundation_iff_sats ZF_extensionality_iff_sats
+  ZF_infinity_iff_sats sats_ZF_separation_fm_iff
+  sats_ZF_replacement_fm_iff ZF_choice_iff_sats}\<close>
 (*
   Union_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> ZF_union_fm
 

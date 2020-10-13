@@ -1,6 +1,7 @@
 signature Utils =
  sig
     val &&& : ('a -> 'b) * ('a -> 'c) -> 'a -> 'b * 'c
+    val *** : ('a -> 'b) * ('c -> 'd) -> 'a * 'c -> 'b * 'd
     val @@ : ''a list * ''a list -> ''a list
     val --- : ''a list * ''a list -> ''a list
     val binop : term -> term -> term -> term
@@ -45,6 +46,7 @@ signature Utils =
         ((indexname * typ) * cterm) list * term * Proof.context
     val to_ML_list: term -> term list
     val tp: term -> term
+    val zip_with : ('a -> 'b -> 'c) -> 'a list -> 'b list -> 'c list
   end
 
 structure Utils : Utils =
@@ -152,6 +154,9 @@ fun op --- (xs, ys) = subtract (op =) ys xs
 infix 6 &&&
 fun op &&& (f, g) = fn x => (f x, g x)
 
+infix 6 ***
+fun op *** (f, g) = fn (x, y) => (f x, g y)
+
 (* add variable to context *)
 fun add_to_context v c = if Variable.is_fixed c v then c else #2 (Variable.add_fixes [v] c)
 
@@ -169,5 +174,9 @@ fun reachable p u xs =
   in
     xs @@ acc
   end
+
+fun zip_with _ [] _ = []
+  | zip_with _ _ [] = []
+  | zip_with f (x :: xs) (y :: ys) = f x y :: zip_with f xs ys
 
 end

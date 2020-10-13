@@ -27,7 +27,7 @@ lemma sats_frecrelP_fm :
   assumes "a\<in>nat" "env\<in>list(A)"
   shows "sats(A,frecrelP_fm(a),env) \<longleftrightarrow> frecrelP(##A,nth(a, env))"
   unfolding frecrelP_def frecrelP_fm_def
-  using assms by (auto simp add:frecR_fm_iff_sats[symmetric])
+  using assms by (auto simp add:frecR_iff_sats[symmetric])
 
 lemma frecrelP_iff_sats:
   assumes
@@ -87,28 +87,26 @@ lemma names_belowsD:
 reldb_add "ecloseN" "is_ecloseN"
 relativize "names_below" "is_names_below"
 
+schematic_goal sats_number2_fm_auto:
+  assumes
+    "n\<in>nat" "env\<in>list(A)"
+  shows
+    "number2(##A, nth(n, env))
+    \<longleftrightarrow> sats(A,?n2_fm(n),env)"
+  unfolding number2_def
+  by (insert assms ; (rule sep_rules' | simp)+)
+
+synthesize "number2" from_schematic "sats_number2_fm_auto"
+
 lemma number2_iff :
   "(A)(c) \<Longrightarrow> number2(A,c) \<longleftrightarrow> (\<exists>b[A]. \<exists>a[A]. successor(A, b, c) \<and> successor(A, a, b) \<and> empty(A, a))"
   unfolding number2_def number1_def by auto
-
-definition
-  number2_fm :: "i\<Rightarrow>i" where
-  "number2_fm(a) \<equiv> Exists(And(number1_fm(0), succ_fm(0,succ(a))))"
-
-lemma number2_fm_type[TC] :
-  "a\<in>nat \<Longrightarrow> number2_fm(a) \<in> formula"
-  unfolding number2_fm_def by simp
 
 lemma arity_number2_fm :
   "a\<in>nat \<Longrightarrow> arity(number2_fm(a)) = succ(a)"
   unfolding number2_fm_def
   using arity_number1_fm arity_succ_fm nat_union_abs2 pred_Un_distrib
   by simp
-
-lemma sats_number2_fm [simp]:
-  "\<lbrakk> x \<in> nat; env \<in> list(A) \<rbrakk>
-    \<Longrightarrow> sats(A, number2_fm(x), env) \<longleftrightarrow> number2(##A, nth(x,env))"
-  by (simp add: number2_fm_def number2_def)
 
 definition
   is_names_below_fm :: "[i,i,i] \<Rightarrow> i" where
@@ -135,7 +133,7 @@ lemma sats_is_names_below_fm :
     \<longleftrightarrow> is_names_below(##A,nth(P, env),nth(x, env),nth(nb, env))"
   unfolding is_names_below_fm_def is_names_below_def
   using assms number2_iff
-  by force
+  by (force simp add:number2_iff_sats[symmetric])
 
 definition
   is_tuple :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
@@ -222,7 +220,7 @@ schematic_goal sats_is_mem_case_fm_auto:
   by (insert assms ; (rule sep_rules'  is_tuple_iff_sats | simp)+)
 
 
-synthesize "mem_case_fm" from_schematic sats_is_mem_case_fm_auto
+synthesize "mem_case" from_schematic sats_is_mem_case_fm_auto
 
 lemma arity_mem_case_fm :
   assumes
@@ -244,7 +242,7 @@ schematic_goal sats_is_eq_case_fm_auto:
   unfolding is_eq_case_def
   by (insert assms ; (rule sep_rules'  is_tuple_iff_sats | simp)+)
 
-synthesize "eq_case_fm" from_schematic sats_is_eq_case_fm_auto
+synthesize "eq_case" from_schematic sats_is_eq_case_fm_auto
 
 lemma arity_eq_case_fm :
   assumes
@@ -303,7 +301,7 @@ lemma sats_Hfrc_fm:
     \<longleftrightarrow> is_Hfrc(##A,nth(P, env), nth(leq, env), nth(fnnc, env),nth(f, env))"
   unfolding is_Hfrc_def Hfrc_fm_def
   using assms
-  by (simp add: sats_is_tuple_fm eq_case_fm_iff_sats[symmetric] mem_case_fm_iff_sats[symmetric])
+  by (simp add: sats_is_tuple_fm eq_case_iff_sats[symmetric] mem_case_iff_sats[symmetric])
 
 lemma Hfrc_iff_sats:
   assumes
@@ -401,7 +399,7 @@ lemma sats_forcerel_fm:
 proof -
   have "sats(A,trans_closure_fm(1,z #+ 2),Cons(nb,Cons(r,env))) \<longleftrightarrow>
         tran_closure(##A, r, nth(z, env))" if "r\<in>A" "nb\<in>A" for r nb
-    using that assms trans_closure_fm_iff_sats[of 1 "[nb,r]@env" _ "z#+2",symmetric] by simp
+    using that assms trans_closure_iff_sats[of 1 "[nb,r]@env" _ "z#+2",symmetric] by simp
   moreover
   have "sats(A, is_names_below_fm(succ(succ(p)), succ(succ(x)), 0), Cons(nb, Cons(r, env))) \<longleftrightarrow>
         is_names_below(##A, nth(p,env), nth(x, env), nb)"

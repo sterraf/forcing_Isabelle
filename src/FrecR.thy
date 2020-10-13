@@ -384,7 +384,7 @@ schematic_goal sats_frecR_fm_auto:
   by (insert assms ; (rule sep_rules' cartprod_iff_sats components_iff_sats
         | simp del:sats_cartprod_fm)+)
 
-synthesize "frecR_fm" from_schematic sats_frecR_fm_auto
+synthesize "frecR" from_schematic sats_frecR_fm_auto
 
 (* Third item of Kunen observations about the trcl relation in p. 257. *)
 lemma eq_ftypep_not_frecrR:

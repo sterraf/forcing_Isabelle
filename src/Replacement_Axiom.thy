@@ -135,7 +135,7 @@ proof -
 qed
 
 (* The formula synthesized above *)
-synthesize_notc "prebody_fm" from_schematic sats_prebody_fm_auto
+synthesize_notc "prebody" from_schematic sats_prebody_fm_auto
 
 lemma prebody_fm_type [TC]:
   assumes "\<phi>\<in>formula"

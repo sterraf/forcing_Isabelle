@@ -21,44 +21,81 @@ ML\<open>
 val $` = curry ((op $) o swap)
 infix $`
 
-fun pair f g x = (f x, g x)
+infix 6 &&&
+val op &&& = Utils.&&&
+
+infix 6 ***
+val op *** = Utils.***
 
 fun prove_tc_form goal thms ctxt =
-  Goal.prove ctxt [] [] goal
-     (fn _ => rewrite_goal_tac ctxt thms 1
-              THEN TypeCheck.typecheck_tac ctxt)
+  Goal.prove ctxt [] [] goal (K (rewrite_goal_tac ctxt thms 1 THEN TypeCheck.typecheck_tac ctxt))
 
-fun prove_sats goal thms thm_auto ctxt =
-  let val ctxt' = ctxt |> Simplifier.add_simp (thm_auto |> hd)
+fun prove_sats_tm goal thms thm_auto ctxt =
+  let
+    val ctxt' = ctxt |> Simplifier.add_simp (hd thm_auto)
   in
-  Goal.prove ctxt [] [] goal
-     (fn _ => rewrite_goal_tac ctxt thms 1
-              THEN PARALLEL_ALLGOALS (asm_simp_tac ctxt')
-    )
+    Goal.prove ctxt [] [] goal
+    (K (rewrite_goal_tac ctxt thms 1 THEN PARALLEL_ALLGOALS (asm_simp_tac ctxt')))
   end
+
+fun prove_sats_iff goal ctxt = Goal.prove ctxt [] [] goal (K (asm_simp_tac ctxt 1))
 
 fun is_mem (@{const mem} $ _ $  _) = true
   | is_mem _ = false
 
-fun synth_thm_sats def_name term lhs set env hyps vars vs pos thm_auto lthy =
-let val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
+fun synth_thm_sats_iff def_name term lhs set env hyps vars vs pos lthy =
+  let
+    val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
+    val (_,ctxt2) = Variable.import true [Proof_Context.get_thm lthy term] ctxt1 |>> #2
+    val vs' = map (Thm.term_of o #2) vs
+    val vars' = map (Thm.term_of o #2) vars
+    val r_tm = tm |> Utils.dest_lhs_def |> fold (op $`) vs'
+    val sats = @{const apply} $ (@{const satisfies} $ set $ r_tm) $ env
+    val rhs = @{const IFOL.eq(i)} $ sats $ (@{const succ} $ @{const zero})
+    val ctxt3 = fold Utils.add_to_context (map Utils.freeName vars') ctxt2
+    fun var_i s = Free (s, @{typ "i"})
+    val (new_vs, ctxt4) = Variable.variant_fixes (map Utils.freeName vs') ctxt3 |>> map var_i
+    val new_hyps =
+      Utils.zip_with (fn v => fn nv => Utils.eq_ (Utils.nth_ v env) nv) vs' new_vs
+      |> map Utils.tp
+    val subst = Utils.zip_with (curry (I *** I)) vs' new_vs
+    fun from_option (SOME v) = v
+      | from_option NONE = raise TERM ("from_option", [])
+    fun subst_nth (@{const "nth"} $ v $ _) = AList.lookup (op =) subst v |> from_option
+      | subst_nth (t1 $ t2) = (subst_nth t1) $ (subst_nth t2)
+      | subst_nth (Abs (v, ty, t)) = Abs (v, ty, subst_nth t)
+      | subst_nth t = t
+    val concl = @{const IFOL.iff} $ (subst_nth lhs) $ rhs
+    val g_iff = Logic.list_implies (hyps @ new_hyps, Utils.tp concl)
+    val thm =  prove_sats_iff g_iff ctxt4
+    val name = Binding.name (def_name ^ "_iff_sats")
+    val thm = Utils.fix_vars thm (map Utils.freeName (vars' @ new_vs)) lthy
+  in
+    Local_Theory.note ((name, []), [thm]) lthy |> Utils.display "theorem" pos
+  end
+
+fun synth_thm_sats_fm def_name term lhs set env hyps vars vs pos thm_auto lthy =
+  let
+    val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
     val (thm_refs,ctxt2) = Variable.import true [Proof_Context.get_thm lthy term] ctxt1 |>> #2
     val vs' = map (Thm.term_of o #2) vs
     val vars' = map (Thm.term_of o #2) vars
     val r_tm = tm |> Utils.dest_lhs_def |> fold (op $`) vs'
     val sats = @{const apply} $ (@{const satisfies} $ set $ r_tm) $ env
     val rhs = @{const IFOL.eq(i)} $ sats $ (@{const succ} $ @{const zero})
-    val concl = @{const IFOL.iff} $ lhs $ rhs
-    val g_iff = Logic.list_implies(hyps, Utils.tp concl)
-    val thm = prove_sats g_iff thm_refs thm_auto ctxt2
-    val name = Binding.name (def_name ^ "_iff_sats")
-    val thm = Utils.fix_vars thm (map (#1 o dest_Free) vars') lthy
- in
-   Local_Theory.note ((name, []), [thm]) lthy |> Utils.display "theorem" pos
- end
+    val concl = @{const IFOL.iff} $ rhs $ lhs
+    val g_iff = Logic.list_implies (hyps, Utils.tp concl)
+    val thm = prove_sats_tm g_iff thm_refs thm_auto ctxt2
+    val name = Binding.name ("sats_" ^ def_name ^ "_fm")
+    val thm = Utils.fix_vars thm (map Utils.freeName vars') lthy
+    val simp_attrib = @{attributes [simp]}
+  in
+    Local_Theory.note ((name, simp_attrib), [thm]) lthy |> Utils.display "theorem" pos
+  end
 
 fun synth_thm_tc def_name term hyps vars pos lthy =
-let val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
+  let
+    val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
     val (thm_refs,ctxt2) = Variable.import true [Proof_Context.get_thm lthy term] ctxt1
                     |>> #2
     val vars' = map (Thm.term_of o #2) vars
@@ -68,17 +105,17 @@ let val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
     val g = Logic.list_implies(hyps, Utils.tp concl)
     val thm = prove_tc_form g thm_refs ctxt2
     val name = Binding.name (def_name ^ "_type")
-    val thm = Utils.fix_vars thm (map (#1 o dest_Free) vars') ctxt2
- in
+    val thm = Utils.fix_vars thm (map Utils.freeName vars') ctxt2
+  in
    Local_Theory.note ((name, tc_attrib), [thm]) lthy |> Utils.display "theorem" pos
- end
+  end
 
 
 fun synthetic_def def_name thmref pos tc auto thy =
   let
     val (thm_ref,_) = thmref |>> Facts.ref_name
     val (((_,vars),thm_tms),_) = Variable.import true [Proof_Context.get_thm thy thm_ref] thy
-    val (tm,hyps) = thm_tms |> hd |> pair Thm.concl_of Thm.prems_of
+    val (tm,hyps) = thm_tms |> hd |> Thm.concl_of &&& Thm.prems_of
     val (lhs,rhs) = tm |> Utils.dest_iff_tms o Utils.dest_trueprop
     val ((set,t),env) = rhs |> Utils.dest_sats_frm
     fun olist t = Ord_List.make String.compare (Term.add_free_names t [])
@@ -91,12 +128,15 @@ fun synthetic_def def_name thmref pos tc auto thy =
     val hyps' = List.filter (relevant t_vars o Utils.dest_trueprop) hyps
     val def_attrs = @{attributes [fm_definitions]}
   in
-    Local_Theory.define ((Binding.name def_name, NoSyn),
-                        ((Binding.name (def_name ^ "_def"), def_attrs), at)) thy |> #2 |>
-    (if tc then synth_thm_tc def_name (def_name ^ "_def") hyps' vs pos else I) |>
-    (if auto then synth_thm_sats def_name (def_name ^ "_def") lhs set env hyps vars vs pos thm_tms else I)
-
-end
+    Local_Theory.define ((Binding.name (def_name ^ "_fm"), NoSyn),
+                        ((Binding.name (def_name ^ "_fm_def"), def_attrs), at)) thy
+    |>> (#2 #> I *** single) |> Utils.display "theorem" pos |>
+    (if tc then synth_thm_tc def_name (def_name ^ "_fm_def") hyps' vs pos else I) |>
+    (if auto then
+      synth_thm_sats_fm def_name (def_name ^ "_fm_def") lhs set env hyps vars vs pos thm_tms
+      #> synth_thm_sats_iff def_name (def_name ^ "_fm_def") lhs set env hyps vars vs pos
+    else I)
+  end
 \<close>
 ML\<open>
 
