@@ -691,13 +691,35 @@ proof -
       have "{A \<in> G . S \<inter> A \<noteq> 0} = (\<Union>p\<in>S. ?G(p))" for S
         by auto
       ultimately
-      have "S \<lesssim> nat \<Longrightarrow> |{A \<in> G . S \<inter> A \<noteq> 0}| \<le> nat" for S
+      (*  have "countable(S) \<Longrightarrow> |{A \<in> G . S \<inter> A \<noteq> 0}| \<le> nat" for S
         using leqpoll_imp_cardinal_UN_le InfCard_nat
-          lepoll_cardinal_le by simp
-      from \<open>n\<in>nat\<close> \<open>\<And>A. A\<in>G \<Longrightarrow> |A| = succ(n)\<close>
-      have "S\<in>G \<Longrightarrow> \<exists>A\<in>G. S \<inter> A = 0" for S sorry
-      then
-      obtain S where "S : \<aleph>\<^bsub>1\<^esub> \<rightarrow> G" "\<alpha> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<beta> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0" for \<alpha> \<beta> sorry
+          lepoll_cardinal_le unfolding countable_def by simp *)
+      have "countable(S) \<Longrightarrow> countable({A \<in> G . S \<inter> A \<noteq> 0})" for S
+        using InfCard_nat Card_nat
+         le_Card_iff[THEN iffD2, THEN [3] leqpoll_imp_cardinal_UN_le,
+           THEN [2] le_Card_iff[THEN iffD1], of nat S]
+          unfolding countable_def by simp
+      have "\<exists>A\<in>G. \<forall>S\<in>X. S \<inter> A = 0" if "|X| < \<aleph>\<^bsub>1\<^esub>" "X \<subseteq> G" for X
+      proof -
+        from \<open>|X| < \<aleph>\<^bsub>1\<^esub>\<close> \<open>X\<subseteq>G\<close> \<open>n\<in>nat\<close> \<open>\<And>A. A\<in>G \<Longrightarrow> |A| = succ(n)\<close>
+        have "countable(\<Union>X)" sorry
+        with \<open>countable(_) \<Longrightarrow> countable({A \<in> G . _  \<inter> A \<noteq> 0})\<close>
+        have "countable({A \<in> G . (\<Union>X) \<inter> A \<noteq> 0})" .
+        with \<open>G \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+        obtain B where "B\<in>G" "B \<notin> {A \<in> G . (\<Union>X) \<inter> A \<noteq> 0}" sorry
+        then
+        show "\<exists>A\<in>G. \<forall>S\<in>X. S \<inter> A = 0" by auto
+      qed
+      moreover
+      obtain b where "b\<in>G"
+        using eqpoll_sym[OF \<open>G \<approx> \<aleph>\<^bsub>1\<^esub>\<close>] zero_lt_Aleph1[THEN ltD]
+          eqpoll_0_iff[THEN iffD2, of G]
+          eqpoll_trans[of "\<aleph>\<^bsub>1\<^esub>" G 0, THEN eqpoll_0_iff[THEN iffD1]]
+        by blast
+      ultimately
+      obtain S where "S : \<aleph>\<^bsub>1\<^esub> \<rightarrow> G" "\<alpha> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<beta> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0" for \<alpha> \<beta>
+        using bounded_cardinal_selection[of "\<aleph>\<^bsub>1\<^esub>" G "\<lambda>s a. s \<inter> a = 0" b]
+        by force
       then
       have "\<alpha> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<beta> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<alpha>\<noteq>\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0" for \<alpha> \<beta>
         using lt_neq_symmetry[of "\<aleph>\<^bsub>1\<^esub>" "\<lambda>\<alpha> \<beta>. S`\<alpha> \<inter> S`\<beta> = 0"] Card_is_Ord
