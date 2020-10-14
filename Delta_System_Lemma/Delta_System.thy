@@ -20,24 +20,24 @@ notation csucc (\<open>_\<^sup>+\<close> [90])
 \<comment> \<open>Copy-pasted from \<^file>\<open>../src/Cohen_Posets.thy\<close>. MOVE to an
     appropriate place\<close>
 lemma eq_csucc_ord:
-  "Ord(i) \<Longrightarrow> csucc(i) = csucc(|i|)"
+  "Ord(i) \<Longrightarrow> i\<^sup>+ = |i|\<^sup>+"
   using Card_lt_iff Least_cong unfolding csucc_def by auto
 
 lemma lesspoll_csucc:
   assumes "Ord(\<kappa>)"
-  shows "d \<prec> csucc(\<kappa>) \<longleftrightarrow> d \<lesssim> \<kappa>"
+  shows "d \<prec> \<kappa>\<^sup>+ \<longleftrightarrow> d \<lesssim> \<kappa>"
 proof
-  assume "d \<prec> csucc(\<kappa>)"
+  assume "d \<prec> \<kappa>\<^sup>+"
   moreover
   note Card_is_Ord \<open>Ord(\<kappa>)\<close>
   moreover from calculation
-  have "\<kappa> < csucc(\<kappa>)" "Card(csucc(\<kappa>))"
+  have "\<kappa> < \<kappa>\<^sup>+" "Card(\<kappa>\<^sup>+)"
     using Ord_cardinal_eqpoll csucc_basic by simp_all
   moreover from calculation
-  have "d \<prec> csucc(|\<kappa>|)" "Card(|\<kappa>|)" "d \<approx> |d|"
+  have "d \<prec> |\<kappa>|\<^sup>+" "Card(|\<kappa>|)" "d \<approx> |d|"
     using eq_csucc_ord[of \<kappa>] lesspoll_imp_eqpoll eqpoll_sym by simp_all
   moreover from calculation
-  have "|d| < csucc(|\<kappa>|)"
+  have "|d| < |\<kappa>|\<^sup>+"
     using lesspoll_cardinal_lt csucc_basic by simp
   moreover from calculation
   have "|d| \<lesssim> |\<kappa>|"
@@ -50,23 +50,23 @@ proof
     using eq_lepoll_trans by simp
 next
   from \<open>Ord(\<kappa>)\<close>
-  have "\<kappa> < csucc(\<kappa>)" "Card(csucc(\<kappa>))"
+  have "\<kappa> < \<kappa>\<^sup>+" "Card(\<kappa>\<^sup>+)"
     using csucc_basic by simp_all
   moreover
   assume "d \<lesssim> \<kappa>"
   ultimately
-  have "d \<lesssim> csucc(\<kappa>)"
+  have "d \<lesssim> \<kappa>\<^sup>+"
     using le_imp_lepoll leI lepoll_trans by simp
   moreover
   from \<open>d \<lesssim> \<kappa>\<close> \<open>Ord(\<kappa>)\<close>
-  have "csucc(\<kappa>) \<lesssim> \<kappa>" if "d \<approx> csucc(\<kappa>)"
+  have "\<kappa>\<^sup>+ \<lesssim> \<kappa>" if "d \<approx> \<kappa>\<^sup>+"
     using eqpoll_sym[OF that] eq_lepoll_trans[OF _ \<open>d\<lesssim>\<kappa>\<close>] by simp
   moreover from calculation \<open>Card(_)\<close>
-  have "\<not> d \<approx> csucc(\<kappa>)"
+  have "\<not> d \<approx> \<kappa>\<^sup>+"
     using lesspoll_irrefl lesspoll_trans1 lt_Card_imp_lesspoll[OF _ \<open>\<kappa> <_\<close>]
     by auto
   ultimately
-  show "d \<prec> csucc(\<kappa>)"
+  show "d \<prec> \<kappa>\<^sup>+"
     unfolding lesspoll_def by simp
 qed
 
@@ -243,6 +243,7 @@ qed
 lemma cardinal_Aleph [simp]: "Ord(\<alpha>) \<Longrightarrow> |\<aleph>\<^bsub>\<alpha>\<^esub>| = \<aleph>\<^bsub>\<alpha>\<^esub>"
   using Card_cardinal_eq by simp
 
+\<comment> \<open>Compare @{thm "le_Card_iff"}\<close>
 lemma cardinal_Card_eqpoll_iff: "Card(\<kappa>) \<Longrightarrow> |X| = \<kappa> \<longleftrightarrow> X \<approx> \<kappa>"
   using Card_cardinal_eq[of \<kappa>] cardinal_eqpoll_iff[of X \<kappa>] by auto
 
@@ -251,13 +252,25 @@ definition
   countable :: "i\<Rightarrow>o" where
   "countable(X) \<equiv> X \<lesssim> nat"
 
+lemma countable_iff_cardinal_le_nat: "countable(X) \<longleftrightarrow> |X| \<le> nat"
+  using le_Card_iff[of nat X] Card_nat
+  unfolding countable_def by simp
+
+lemma Finite_imp_countable: "Finite(X) \<Longrightarrow> countable(X)"
+  sorry
+
+lemma countable_union_countable:
+  assumes "\<And>x. x \<in> C \<Longrightarrow> countable(x)" "countable(C)"
+  shows "countable(\<Union>C)"
+  sorry
+
 abbreviation
   uncountable :: "i\<Rightarrow>o" where
   "uncountable(X) \<equiv> \<not> countable(X)"
 
 lemma uncountable_iff_nat_lt_cardinal:
   "uncountable(X) \<longleftrightarrow> nat < |X|"
-  sorry
+  using countable_iff_cardinal_le_nat not_le_iff_lt by simp
 
 lemma uncountable_imp_subset_eqpoll_aleph1:
   includes Ord_dests
@@ -701,8 +714,18 @@ proof -
           unfolding countable_def by simp
       have "\<exists>A\<in>G. \<forall>S\<in>X. S \<inter> A = 0" if "|X| < \<aleph>\<^bsub>1\<^esub>" "X \<subseteq> G" for X
       proof -
-        from \<open>|X| < \<aleph>\<^bsub>1\<^esub>\<close> \<open>X\<subseteq>G\<close> \<open>n\<in>nat\<close> \<open>\<And>A. A\<in>G \<Longrightarrow> |A| = succ(n)\<close>
-        have "countable(\<Union>X)" sorry
+        from \<open>n\<in>nat\<close> \<open>\<And>A. A\<in>G \<Longrightarrow> |A| = succ(n)\<close>
+        have "A\<in>G \<Longrightarrow> Finite(A)" for A
+          using cardinal_Card_eqpoll_iff
+          unfolding Finite_def by fastforce
+        with \<open>X\<subseteq>G\<close>
+        have "A\<in>X \<Longrightarrow> countable(A)" for A
+          using Finite_imp_countable by auto
+        with \<open>|X| < \<aleph>\<^bsub>1\<^esub>\<close>
+        have "countable(\<Union>X)"
+          using Card_nat[THEN cardinal_lt_csucc_iff, of X]
+            countable_union_countable countable_iff_cardinal_le_nat
+          unfolding Aleph_def by simp
         with \<open>countable(_) \<Longrightarrow> countable({A \<in> G . _  \<inter> A \<noteq> 0})\<close>
         have "countable({A \<in> G . (\<Union>X) \<inter> A \<noteq> 0})" .
         with \<open>G \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
