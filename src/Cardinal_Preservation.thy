@@ -405,7 +405,7 @@ proof -
         the proof breaks down badly\<close>
       for b c
     proof -
-      from \<open>b \<in> F`a\<close> \<open>c \<in> F`a\<close> \<open>q \<in> Pi\<^bsup>##M\<^esup>(F`a,?Q)\<close> \<open>q\<in>M\<close>
+      from \<open>b \<in> F`a\<close> \<open>c \<in> F`a\<close> \<open>q \<in> Pi\<^bsup>M\<^esup>(F`a,?Q)\<close> \<open>q\<in>M\<close>
       have "q`b \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v]"
            "q`c \<tturnstile> ?app_fm [f_dot, a\<^sup>v, c\<^sup>v]"
         using mem_Pi_rel_abs[of q] apply_type[of _ _  ?Q]

@@ -6,6 +6,7 @@ theory Konig
 
 begin
 
+no_notation Aleph (\<open>\<aleph>_\<close> [90] 90)
 notation Aleph (\<open>\<aleph>\<^bsub>_\<^esub>\<close>)
 
 definition
