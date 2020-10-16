@@ -1,8 +1,8 @@
 section\<open>Well-founded relation on names\<close>
 theory FrecR imports Names Synthetic_Definition begin
 
-lemmas sep_rules' = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
-  fun_plus_iff_sats omega_iff_sats FOL_sats_iff
+lemmas sep_rules' [iff_sats]  = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
+  fun_plus_iff_sats omega_iff_sats FOL_sats_iff (* NOTE: why FOL_sats_iff? *)
 
 text\<open>\<^term>\<open>frecR\<close> is the well-founded relation on names that allows
 us to define forcing for atomic formulas.\<close>
@@ -377,9 +377,9 @@ relativize "frecR" "is_frecR"
 
 schematic_goal sats_frecR_fm_auto:
   assumes
-    "i\<in>nat" "j\<in>nat" "env\<in>list(A)" "nth(i,env) = a" "nth(j,env) = b"
+    "i\<in>nat" "j\<in>nat" "env\<in>list(A)"
   shows
-    "is_frecR(##A,a,b) \<longleftrightarrow> sats(A,?fr_fm(i,j),env)"
+    "is_frecR(##A,nth(i,env),nth(j,env)) \<longleftrightarrow> sats(A,?fr_fm(i,j),env)"
   unfolding  is_frecR_def
   by (insert assms ; (rule sep_rules' cartprod_iff_sats components_iff_sats
         | simp del:sats_cartprod_fm)+)

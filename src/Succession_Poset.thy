@@ -28,10 +28,9 @@ lemma seqspaceD[dest]: "f\<in>B\<^bsup><\<alpha>\<^esup> \<Longrightarrow> \<exi
   A relative definition for \<^term>\<open>seqspace\<close> would be appropriate.\<close>
 schematic_goal seqspace_fm_auto:
   assumes 
-    "nth(i,env) = n" "nth(j,env) = z"  "nth(h,env) = B" 
     "i \<in> nat" "j \<in> nat" "h\<in>nat" "env \<in> list(A)"
   shows 
-    "(\<exists>om\<in>A. omega(##A,om) \<and> n \<in> om \<and> is_funspace(##A, n, B, z)) \<longleftrightarrow> (A, env \<Turnstile> (?sqsprp(i,j,h)))"
+    "(\<exists>om\<in>A. omega(##A,om) \<and> nth(i,env) \<in> om \<and> is_funspace(##A, nth(i,env), nth(j,env), nth(h,env))) \<longleftrightarrow> (A, env \<Turnstile> (?sqsprp(i,j,h)))"
   unfolding is_funspace_def 
   by (insert assms ; (rule sep_rules | simp)+)
 

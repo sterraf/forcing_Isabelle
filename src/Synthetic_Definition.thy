@@ -10,12 +10,17 @@ theory Synthetic_Definition
 
 begin
 ML_file\<open>Utils.ml\<close>
+
 ML\<open>
 structure Formulas = Named_Thms
   (val name = @{binding "fm_definitions"}
    val description = "Theorems for synthetising formulas.") 
 \<close>
 setup\<open>Formulas.setup\<close>
+
+(* FIXME: named_theorems fm_definitions "Theorems for synthetising formulas." *)
+
+named_theorems iff_sats
 
 ML\<open>
 val $` = curry ((op $) o swap)
@@ -68,7 +73,7 @@ fun synth_thm_sats_gen name lhs hyps pos attribs aux_funs environment lthy =
     val (new_vs, ctxt') = (#create_variables aux_funs) (#vs environment, ctxt)
     val new_hyps = (#create_hyps aux_funs) (#vs environment, new_vs)
     val concl = (#make_concl aux_funs) (lhs, #sats environment, new_vs)
-    val g_iff = Logic.list_implies (hyps @ new_hyps, Utils.tp concl)
+    val g_iff = Logic.list_implies (new_hyps @ hyps, Utils.tp concl)
     val thm = (#prover aux_funs) g_iff ctxt'
     val thm = Utils.fix_vars thm (map Utils.freeName ((#vars environment) @ new_vs)) lthy
   in
@@ -85,6 +90,7 @@ fun synth_thm_sats_iff def_name lhs hyps pos environment =
       | subst_nth (Abs (v, ty, t)) new_vs = Abs (v, ty, subst_nth t new_vs)
       | subst_nth t _ = t
     val name = Binding.name (def_name ^ "_iff_sats")
+    val iff_sats_attrib = @{attributes [iff_sats]}
     val aux_funs = { prepare_ctxt = fold Utils.add_to_context (map Utils.freeName (#vs environment))
                    , create_variables = fn (vs, ctxt) => Variable.variant_fixes (map Utils.freeName vs) ctxt |>> map Utils.var_i
                    , create_hyps = fn (vs, new_vs) => Utils.zip_with (fn (v, nv) => Utils.eq_ (Utils.nth_ v (#env environment)) nv) vs new_vs |> map Utils.tp
@@ -92,7 +98,7 @@ fun synth_thm_sats_iff def_name lhs hyps pos environment =
                    , prover = prove_sats_iff
                    }
   in
-    synth_thm_sats_gen name lhs hyps pos [] aux_funs environment
+    synth_thm_sats_gen name lhs hyps pos iff_sats_attrib aux_funs environment
   end
 
 fun synth_thm_sats_fm def_name lhs hyps pos thm_auto environment =
@@ -119,7 +125,7 @@ fun synth_thm_tc def_name term hyps vars pos lthy =
     val concl = @{const mem} $ r_tm $ @{const formula}
     val g = Logic.list_implies(hyps, Utils.tp concl)
     val thm = prove_tc_form g thm_refs ctxt2
-    val name = Binding.name (def_name ^ "_type")
+    val name = Binding.name (def_name ^ "_fm_type")
     val thm = Utils.fix_vars thm (map Utils.freeName vars') ctxt2
   in
     Local_Theory.note ((name, tc_attrib), [thm]) lthy |> Utils.display "theorem" pos
@@ -154,6 +160,9 @@ fun synthetic_def def_name thmref pos tc auto thy =
       #> uncurry (synth_thm_sats_iff def_name lhs hyps pos)
     else I)
   end
+
+  (* val dummy = Specification.theorem_cmd false Thm.theoremK NONE (K I) Binding.empty_atts []
+  [Element.Fixes [], Element.Assumes []] (Element.Shows [((@{binding "dummy"}, []), [("0 = 0", [])])]) *)
 \<close>
 ML\<open>
 

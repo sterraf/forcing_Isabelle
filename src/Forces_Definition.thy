@@ -9,9 +9,20 @@ definition
   frecrelP :: "[i\<Rightarrow>o,i] \<Rightarrow> o" where
   "frecrelP(M,xy) \<equiv> (\<exists>x[M]. \<exists>y[M]. pair(M,x,y,xy) \<and> is_frecR(M,x,y))"
 
-definition
+(*definition
   frecrelP_fm :: "i \<Rightarrow> i" where
-  "frecrelP_fm(a) \<equiv> Exists(Exists(And(pair_fm(1,0,a#+2),frecR_fm(1,0))))"
+  "frecrelP_fm(a) \<equiv> Exists(Exists(And(pair_fm(1,0,a#+2),frecR_fm(1,0))))"*)
+
+schematic_goal sats_frecrelP_fm_auto:
+  assumes
+    "a\<in>nat" "env\<in>list(A)"
+  shows
+    "frecrelP(##A, nth(a, env))
+    \<longleftrightarrow> sats(A,?fm(a),env)"
+  unfolding frecrelP_def
+  by (insert assms ; (rule iff_sats | simp)+)
+
+synthesize "frecrelP" from_schematic "sats_frecrelP_fm_auto"
 
 lemma arity_frecrelP_fm :
   "a\<in>nat \<Longrightarrow> arity(frecrelP_fm(a)) = succ(a)"
@@ -19,23 +30,24 @@ lemma arity_frecrelP_fm :
   using arity_frecR_fm arity_pair_fm pred_Un_distrib
   by simp
 
-lemma frecrelP_fm_type[TC] :
+(*lemma frecrelP_fm_type[TC] :
   "a\<in>nat \<Longrightarrow> frecrelP_fm(a)\<in>formula"
-  unfolding frecrelP_fm_def by simp
+  unfolding frecrelP_fm_def by simp*)
 
-lemma sats_frecrelP_fm :
+(*lemma sats_frecrelP_fm :
   assumes "a\<in>nat" "env\<in>list(A)"
   shows "sats(A,frecrelP_fm(a),env) \<longleftrightarrow> frecrelP(##A,nth(a, env))"
   unfolding frecrelP_def frecrelP_fm_def
-  using assms by (auto simp add:frecR_iff_sats[symmetric])
+  using assms by (auto simp add:frecR_iff_sats[symmetric])*)
 
-lemma frecrelP_iff_sats:
+(*lemma frecrelP_iff_sats:
   assumes
     "nth(a,env) = aa" "a\<in> nat"  "env \<in> list(A)"
   shows
     "frecrelP(##A,aa)  \<longleftrightarrow> sats(A, frecrelP_fm(a), env)"
   using assms
-  by (simp add:sats_frecrelP_fm)
+  by (simp add:sats_frecrelP_fm)*)
+
 
 definition
   is_frecrel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
@@ -64,7 +76,7 @@ lemma sats_frecrel_fm :
     \<longleftrightarrow> is_frecrel(##A,nth(a, env),nth(r, env))"
   unfolding is_frecrel_def frecrel_fm_def
   using assms
-  by (simp add:sats_Collect_fm sats_frecrelP_fm)
+  by (simp add:sats_Collect_fm)
 
 lemma is_frecrel_iff_sats:
   assumes
