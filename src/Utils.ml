@@ -46,7 +46,8 @@ signature Utils =
         ((indexname * typ) * cterm) list * term * Proof.context
     val to_ML_list: term -> term list
     val tp: term -> term
-    val zip_with : ('a -> 'b -> 'c) -> 'a list -> 'b list -> 'c list
+    val var_i : string -> term
+    val zip_with : ('a * 'b -> 'c) -> 'a list -> 'b list -> 'c list
   end
 
 structure Utils : Utils =
@@ -177,6 +178,8 @@ fun reachable p u xs =
 
 fun zip_with _ [] _ = []
   | zip_with _ _ [] = []
-  | zip_with f (x :: xs) (y :: ys) = f x y :: zip_with f xs ys
+  | zip_with f (x :: xs) (y :: ys) = f (x, y) :: zip_with f xs ys
+
+fun var_i s = Free (s, @{typ "i"})
 
 end

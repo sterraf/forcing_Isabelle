@@ -30,7 +30,7 @@ val op *** = Utils.***
 fun prove_tc_form goal thms ctxt =
   Goal.prove ctxt [] [] goal (K (rewrite_goal_tac ctxt thms 1 THEN TypeCheck.typecheck_tac ctxt))
 
-fun prove_sats_tm goal thms thm_auto ctxt =
+fun prove_sats_tm thm_auto thms goal ctxt =
   let
     val ctxt' = ctxt |> Simplifier.add_simp (hd thm_auto)
   in
@@ -43,61 +43,76 @@ fun prove_sats_iff goal ctxt = Goal.prove ctxt [] [] goal (K (asm_simp_tac ctxt 
 fun is_mem (@{const mem} $ _ $  _) = true
   | is_mem _ = false
 
-fun synth_thm_sats_iff def_name term lhs set env hyps vars vs pos lthy =
+fun pre_synth_thm_sats term set env vars vs lthy =
   let
-    val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
-    val (_,ctxt2) = Variable.import true [Proof_Context.get_thm lthy term] ctxt1 |>> #2
+    val (_, tm, ctxt1) = Utils.thm_concl_tm lthy term
+    val (thm_refs, ctxt2) = Variable.import true [Proof_Context.get_thm lthy term] ctxt1 |>> #2
     val vs' = map (Thm.term_of o #2) vs
     val vars' = map (Thm.term_of o #2) vars
     val r_tm = tm |> Utils.dest_lhs_def |> fold (op $`) vs'
     val sats = @{const apply} $ (@{const satisfies} $ set $ r_tm) $ env
-    val rhs = @{const IFOL.eq(i)} $ sats $ (@{const succ} $ @{const zero})
-    val ctxt3 = fold Utils.add_to_context (map Utils.freeName vars') ctxt2
-    fun var_i s = Free (s, @{typ "i"})
-    val (new_vs, ctxt4) = Variable.variant_fixes (map Utils.freeName vs') ctxt3 |>> map var_i
-    val new_hyps =
-      Utils.zip_with (fn v => fn nv => Utils.eq_ (Utils.nth_ v env) nv) vs' new_vs
-      |> map Utils.tp
-    val subst = Utils.zip_with (curry (I *** I)) vs' new_vs
-    fun from_option (SOME v) = v
-      | from_option NONE = raise TERM ("from_option", [])
-    fun subst_nth (@{const "nth"} $ v $ _) = AList.lookup (op =) subst v |> from_option
-      | subst_nth (t1 $ t2) = (subst_nth t1) $ (subst_nth t2)
-      | subst_nth (Abs (v, ty, t)) = Abs (v, ty, subst_nth t)
-      | subst_nth t = t
-    val concl = @{const IFOL.iff} $ (subst_nth lhs) $ rhs
-    val g_iff = Logic.list_implies (hyps @ new_hyps, Utils.tp concl)
-    val thm =  prove_sats_iff g_iff ctxt4
-    val name = Binding.name (def_name ^ "_iff_sats")
-    val thm = Utils.fix_vars thm (map Utils.freeName (vars' @ new_vs)) lthy
+    val sats' = @{const IFOL.eq(i)} $ sats $ (@{const succ} $ @{const zero})
   in
-    Local_Theory.note ((name, []), [thm]) lthy |> Utils.display "theorem" pos
+    { vars = vars'
+    , vs = vs'
+    , sats = sats'
+    , thm_refs = thm_refs
+    , lthy = ctxt2
+    , env = env
+    }
   end
 
-fun synth_thm_sats_fm def_name term lhs set env hyps vars vs pos thm_auto lthy =
+fun synth_thm_sats_gen name lhs hyps pos attribs aux_funs environment lthy =
   let
-    val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
-    val (thm_refs,ctxt2) = Variable.import true [Proof_Context.get_thm lthy term] ctxt1 |>> #2
-    val vs' = map (Thm.term_of o #2) vs
-    val vars' = map (Thm.term_of o #2) vars
-    val r_tm = tm |> Utils.dest_lhs_def |> fold (op $`) vs'
-    val sats = @{const apply} $ (@{const satisfies} $ set $ r_tm) $ env
-    val rhs = @{const IFOL.eq(i)} $ sats $ (@{const succ} $ @{const zero})
-    val concl = @{const IFOL.iff} $ rhs $ lhs
-    val g_iff = Logic.list_implies (hyps, Utils.tp concl)
-    val thm = prove_sats_tm g_iff thm_refs thm_auto ctxt2
-    val name = Binding.name ("sats_" ^ def_name ^ "_fm")
-    val thm = Utils.fix_vars thm (map Utils.freeName vars') lthy
-    val simp_attrib = @{attributes [simp]}
+    val ctxt = (#prepare_ctxt aux_funs) lthy
+    val (new_vs, ctxt') = (#create_variables aux_funs) (#vs environment, ctxt)
+    val new_hyps = (#create_hyps aux_funs) (#vs environment, new_vs)
+    val concl = (#make_concl aux_funs) (lhs, #sats environment, new_vs)
+    val g_iff = Logic.list_implies (hyps @ new_hyps, Utils.tp concl)
+    val thm = (#prover aux_funs) g_iff ctxt'
+    val thm = Utils.fix_vars thm (map Utils.freeName ((#vars environment) @ new_vs)) lthy
   in
-    Local_Theory.note ((name, simp_attrib), [thm]) lthy |> Utils.display "theorem" pos
+    Local_Theory.note ((name, attribs), [thm]) lthy |> Utils.display "theorem" pos
+  end
+
+fun synth_thm_sats_iff def_name lhs hyps pos environment =
+  let
+    val subst = Utils.zip_with (I *** I) (#vs environment)
+    fun from_option (SOME v) = v
+      | from_option NONE = error "from_option: received NONE"
+    fun subst_nth (@{const "nth"} $ v $ _) new_vs = AList.lookup (op =) (subst new_vs) v |> from_option
+      | subst_nth (t1 $ t2) new_vs = (subst_nth t1 new_vs) $ (subst_nth t2 new_vs)
+      | subst_nth (Abs (v, ty, t)) new_vs = Abs (v, ty, subst_nth t new_vs)
+      | subst_nth t _ = t
+    val name = Binding.name (def_name ^ "_iff_sats")
+    val aux_funs = { prepare_ctxt = fold Utils.add_to_context (map Utils.freeName (#vs environment))
+                   , create_variables = fn (vs, ctxt) => Variable.variant_fixes (map Utils.freeName vs) ctxt |>> map Utils.var_i
+                   , create_hyps = fn (vs, new_vs) => Utils.zip_with (fn (v, nv) => Utils.eq_ (Utils.nth_ v (#env environment)) nv) vs new_vs |> map Utils.tp
+                   , make_concl = fn (lhs, rhs, new_vs) => @{const IFOL.iff} $ (subst_nth lhs new_vs) $ rhs
+                   , prover = prove_sats_iff
+                   }
+  in
+    synth_thm_sats_gen name lhs hyps pos [] aux_funs environment
+  end
+
+fun synth_thm_sats_fm def_name lhs hyps pos thm_auto environment =
+  let
+    val name = Binding.name ("sats_" ^ def_name ^ "_fm")
+    val simp_attrib = @{attributes [simp]}
+    val aux_funs = { prepare_ctxt = I
+                   , create_variables = K [] *** I
+                   , create_hyps = K []
+                   , make_concl = fn (rhs, lhs, _) => @{const IFOL.iff} $ lhs $ rhs
+                   , prover = prove_sats_tm thm_auto (#thm_refs environment)
+                   }
+  in
+    synth_thm_sats_gen name lhs hyps pos simp_attrib aux_funs environment
   end
 
 fun synth_thm_tc def_name term hyps vars pos lthy =
   let
     val (_,tm,ctxt1) = Utils.thm_concl_tm lthy term
-    val (thm_refs,ctxt2) = Variable.import true [Proof_Context.get_thm lthy term] ctxt1
-                    |>> #2
+    val (thm_refs,ctxt2) = Variable.import true [Proof_Context.get_thm lthy term] ctxt1 |>> #2
     val vars' = map (Thm.term_of o #2) vars
     val tc_attrib = @{attributes [TC]}
     val r_tm = tm |> Utils.dest_lhs_def |> fold (op $`) vars'
@@ -107,7 +122,7 @@ fun synth_thm_tc def_name term hyps vars pos lthy =
     val name = Binding.name (def_name ^ "_type")
     val thm = Utils.fix_vars thm (map Utils.freeName vars') ctxt2
   in
-   Local_Theory.note ((name, tc_attrib), [thm]) lthy |> Utils.display "theorem" pos
+    Local_Theory.note ((name, tc_attrib), [thm]) lthy |> Utils.display "theorem" pos
   end
 
 
@@ -133,8 +148,10 @@ fun synthetic_def def_name thmref pos tc auto thy =
     |>> (#2 #> I *** single) |> Utils.display "theorem" pos |>
     (if tc then synth_thm_tc def_name (def_name ^ "_fm_def") hyps' vs pos else I) |>
     (if auto then
-      synth_thm_sats_fm def_name (def_name ^ "_fm_def") lhs set env hyps vars vs pos thm_tms
-      #> synth_thm_sats_iff def_name (def_name ^ "_fm_def") lhs set env hyps vars vs pos
+      pre_synth_thm_sats (def_name ^ "_fm_def") set env vars vs
+      #> I &&& #lthy
+      #> #1 &&& uncurry (synth_thm_sats_fm def_name lhs hyps pos thm_tms)
+      #> uncurry (synth_thm_sats_iff def_name lhs hyps pos)
     else I)
   end
 \<close>
