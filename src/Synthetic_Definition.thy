@@ -6,7 +6,13 @@ theory Synthetic_Definition
     and
     "synthesize_notc" :: thy_decl % "ML"
     and
+    "generate_schematic" :: thy_decl % "ML"
+    and
     "from_schematic"
+    and
+    "for"
+    and
+    "as"
 
 begin
 ML_file\<open>Utils.ml\<close>
@@ -131,10 +137,9 @@ fun synth_thm_tc def_name term hyps vars pos lthy =
     Local_Theory.note ((name, tc_attrib), [thm]) lthy |> Utils.display "theorem" pos
   end
 
-
-fun synthetic_def def_name thmref pos tc auto thy =
+fun synthetic_def def_name thm_ref pos tc auto thy =
   let
-    val (thm_ref,_) = thmref |>> Facts.ref_name
+    (* val thm_ref = #1 (thmref |>> Facts.ref_name) *)
     val (((_,vars),thm_tms),_) = Variable.import true [Proof_Context.get_thm thy thm_ref] thy
     val (tm,hyps) = thm_tms |> hd |> Thm.concl_of &&& Thm.prems_of
     val (lhs,rhs) = tm |> Utils.dest_iff_tms o Utils.dest_trueprop
@@ -161,22 +166,86 @@ fun synthetic_def def_name thmref pos tc auto thy =
     else I)
   end
 
+fun prove_schematic thms goal ctxt =
+  let
+    val rules = Named_Theorems.get ctxt \<^named_theorems>\<open>iff_sats\<close>
+  in
+    Goal.prove ctxt [] [] goal
+    (K (rewrite_goal_tac ctxt thms 1 THEN REPEAT1 (resolve_tac ctxt rules 1 ORELSE asm_simp_tac ctxt 1)))
+  end
+
+fun schematic_def def_name target pos lthy =
+  let
+    val thm = Proof_Context.get_thm lthy (target ^ "_def")
+    val (vars, tm, ctxt1) = Utils.thm_concl_tm lthy (target ^ "_def")
+    val (const, tm) = tm |> Utils.dest_eq_tms' o Utils.dest_trueprop |>> #1 o strip_comb
+    val t_vars = Term.add_free_names tm []
+    val vs = List.filter (#1 #> #1 #> #1 #> Utils.inList t_vars) vars
+             |> List.filter ((curry op = @{typ "i"}) o #2 o #1)
+             |> List.map (Utils.var_i o #1 o #1 o #1)
+    val (set, ctxt2) = Variable.variant_fixes ["A"] ctxt1 |>> Utils.var_i o hd
+    val class = @{const "setclass"} $ set
+    val (env, ctxt3) = Variable.variant_fixes ["env"] ctxt2 |>> Utils.var_i o hd
+    val hyps = (List.map (fn v => Utils.tp (Utils.mem_ v Utils.nat_)) vs) @ [Utils.tp (Utils.mem_ env (Utils.list_ set))]
+    val args = class :: map (fn v => Utils.nth_ v env) vs
+    val (fm_name, ctxt4) = Variable.variant_fixes ["fm"] ctxt3 |>> hd
+    val fm_type = fold (K (fn acc => Type ("fun", [@{typ "i"}, acc]))) vs @{typ "i"}
+    val fm = Var ((fm_name, 0), fm_type)
+    val lhs = fold (op $`) args const
+    val fm_app = fold (op $`) vs fm
+    val sats = @{const apply} $ (@{const satisfies} $ set $ fm_app) $ env
+    val rhs = @{const IFOL.eq(i)} $ sats $ (@{const succ} $ @{const zero})
+    val concl = @{const "IFOL.iff"} $ lhs $ rhs
+    val schematic = Logic.list_implies (hyps, Utils.tp concl)
+    val thm = prove_schematic [thm] schematic ctxt4
+    val thm = Utils.fix_vars thm (map Utils.freeName (set :: env :: vs)) lthy
+  in
+    Local_Theory.note ((Binding.name def_name, []), [thm]) lthy |> Utils.display "theorem" pos
+  end
+
+fun schematic_synthetic_def def_name target pos tc auto =
+    (synthetic_def def_name ("sats_" ^ def_name ^ "_fm_auto") pos tc auto)
+    o (schematic_def ("sats_" ^ def_name ^ "_fm_auto") target pos)
+
   (* val dummy = Specification.theorem_cmd false Thm.theoremK NONE (K I) Binding.empty_atts []
   [Element.Fixes [], Element.Assumes []] (Element.Shows [((@{binding "dummy"}, []), [("0 = 0", [])])]) *)
 \<close>
 ML\<open>
 
 local
+  val full_synth_constdecl =
+       Parse.string -- ((Parse.$$$ "from_schematic" |-- Parse.thm))
+       >> (fn (bndg,thm) => synthetic_def bndg (#1 (thm |>> Facts.ref_name)))
+
+  val simple_as_synth_constdecl =
+       Parse.string -- ((Parse.$$$ "as" |-- Parse.string))
+       >> (fn (target,bndg) => schematic_synthetic_def bndg target)
+
+  val simple_synth_constdecl =
+     Parse.string
+     >> (fn bndg => schematic_synthetic_def bndg bndg)
+
   val synth_constdecl =
-       Parse.position (Parse.string -- ((Parse.$$$ "from_schematic" |-- Parse.thm)));
+       Parse.position (full_synth_constdecl || simple_as_synth_constdecl || simple_synth_constdecl)
+
+  val full_schematic_decl =
+       Parse.string -- ((Parse.$$$ "for" |-- Parse.string))
+
+  val simple_schematic_decl =
+       Parse.$$$ "for" |-- Parse.string >> (fn name => "sats_" ^ name ^ "_fm_auto") &&& I
+
+  val schematic_decl = Parse.position (full_schematic_decl || simple_schematic_decl)
 
   val _ =
      Outer_Syntax.local_theory \<^command_keyword>\<open>synthesize\<close> "ML setup for synthetic definitions"
-       (synth_constdecl >> (fn ((bndg,thm),p) => synthetic_def bndg thm p true true))
+       (synth_constdecl >> (fn (f,p) => f p true true))
 
   val _ =
      Outer_Syntax.local_theory \<^command_keyword>\<open>synthesize_notc\<close> "ML setup for synthetic definitions"
-       (synth_constdecl >> (fn ((bndg,thm),p) => synthetic_def bndg thm p false false))
+       (synth_constdecl >> (fn (f,p) => f p false false))
+
+  val _ = Outer_Syntax.local_theory \<^command_keyword>\<open>generate_schematic\<close> "ML setup for schematic goals"
+       (schematic_decl >> (fn ((bndg,target),p) => schematic_def bndg target p))
 
 in
 
