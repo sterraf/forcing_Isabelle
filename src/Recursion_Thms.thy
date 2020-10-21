@@ -226,6 +226,37 @@ proof -
   show ?thesis .
 qed
 
+lemma transrec_equal_on_Ord:
+assumes 
+   "\<And>x f . Ord(x) \<Longrightarrow> foo(x,f) = bar(x,f)"
+   "Ord(\<alpha>)" 
+shows 
+  "transrec(\<alpha>, foo) = transrec(\<alpha>, bar)"
+proof -
+  have "transrec(\<beta>,foo) = transrec(\<beta>,bar)" if "Ord(\<beta>)" for \<beta>
+    using that
+  proof (induct rule:trans_induct)
+    case (step \<beta>)
+    have "transrec(\<beta>, foo) = foo(\<beta>, \<lambda>x\<in>\<beta>. transrec(x, foo))"
+      using def_transrec[of "\<lambda>x. transrec(x, foo)" foo] by blast
+    also from assms and step
+    have " \<dots> = bar(\<beta>, \<lambda>x\<in>\<beta>. transrec(x, foo))"
+      by simp
+    also from step
+    have " \<dots> = bar(\<beta>, \<lambda>x\<in>\<beta>. transrec(x, bar))"
+      by (auto)
+    also
+    have " \<dots> = transrec(\<beta>, bar)"
+      using def_transrec[of "\<lambda>x. transrec(x, bar)" bar, symmetric]
+      by blast
+    finally
+    show "transrec(\<beta>, foo) = transrec(\<beta>, bar)" .
+  qed
+  with assms
+  show ?thesis by simp
+qed
+
+\<comment> \<open>Next theorem is very similar to @{thm transrec_equal_on_Ord}\<close>
 lemma (in M_eclose) transrec_equal_on_M:
 assumes 
    "\<And>x f . M(x) \<Longrightarrow> M(f) \<Longrightarrow> foo(x,f) = bar(x,f)"
