@@ -635,10 +635,9 @@ schematic_goal rtran_closure_fm_auto:
 
 schematic_goal trans_closure_fm_auto:
   assumes
-    "nth(i,env) = r" "nth(j,env) = rp"
     "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
   shows
-    "tran_closure(##A,r,rp) \<longleftrightarrow> sats(A,?tc(i,j),env)"
+    "tran_closure(##A,nth(i,env),nth(j,env)) \<longleftrightarrow> sats(A,?tc(i,j),env)"
   unfolding tran_closure_def
   by (insert assms ; (rule sep_rules rtran_closure_fm_auto | simp))+
 

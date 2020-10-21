@@ -148,7 +148,7 @@ definition
   ftype_fm :: "[i,i] \<Rightarrow> i" where
   "ftype_fm \<equiv> fst_fm"
 
-lemma is_ftype_iff_sats:
+lemma is_ftype_iff_sats [iff_sats]:
   assumes
     "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
   shows
@@ -181,14 +181,14 @@ definition
   name1_fm :: "[i,i] \<Rightarrow> i" where
   "name1_fm(x,t) \<equiv> hcomp_fm(fst_fm,snd_fm,x,t)"
 
-lemma sats_name1_fm :
+lemma sats_name1_fm [simp]:
   "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk>
     \<Longrightarrow> sats(A, name1_fm(x,y), env) \<longleftrightarrow>
         is_name1(##A, nth(x,env), nth(y,env))"
   unfolding name1_fm_def is_name1_def using sats_fst_fm sats_snd_fm
     sats_hcomp_fm[of A "is_fst(##A)" _ fst_fm "is_snd(##A)"] by simp
 
-lemma is_name1_iff_sats:
+lemma is_name1_iff_sats [iff_sats]:
   assumes
     "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
   shows
@@ -204,7 +204,7 @@ definition
   snd_snd_fm :: "[i,i]\<Rightarrow>i" where
   "snd_snd_fm(x,t) \<equiv> hcomp_fm(snd_fm,snd_fm,x,t)"
 
-lemma sats_snd2_fm :
+lemma sats_snd2_fm [simp]:
   "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk>
     \<Longrightarrow> sats(A,snd_snd_fm(x,y), env) \<longleftrightarrow>
         is_snd_snd(##A, nth(x,env), nth(y,env))"
@@ -311,6 +311,11 @@ lemma sats_ecloseN_fm [simp]:
   using  nth_0 nth_ConsI sats_name1_fm sats_name2_fm
     is_singleton_iff_sats[symmetric]
   by auto
+
+lemma is_ecloseN_iff_sats [iff_sats]:
+  "\<lbrakk> nth(en, env) = ena; nth(t, env) = ta; en \<in> nat; t \<in> nat ; env \<in> list(A) \<rbrakk>
+    \<Longrightarrow> is_ecloseN(##A,ta,ena) \<longleftrightarrow> sats(A, ecloseN_fm(en,t), env)"
+  by simp
 
 (* Relation of forces *)
 definition
