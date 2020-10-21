@@ -12,21 +12,14 @@ theory Synthetic_Definition
     and
     "for"
     and
-    "as"
+    "from_definition"
 
 begin
 ML_file\<open>Utils.ml\<close>
 
-ML\<open>
-structure Formulas = Named_Thms
-  (val name = @{binding "fm_definitions"}
-   val description = "Theorems for synthetising formulas.") 
-\<close>
-setup\<open>Formulas.setup\<close>
+named_theorems fm_definitions "Definitions of synthetized formulas."
 
-(* FIXME: named_theorems fm_definitions "Theorems for synthetising formulas." *)
-
-named_theorems iff_sats
+named_theorems iff_sats "Theorems for synthetising formulas."
 
 ML\<open>
 val $` = curry ((op $) o swap)
@@ -70,12 +63,14 @@ fun pre_synth_thm_sats term set env vars vs lthy =
     , thm_refs = thm_refs
     , lthy = ctxt2
     , env = env
+    , set = set
     }
   end
 
 fun synth_thm_sats_gen name lhs hyps pos attribs aux_funs environment lthy =
   let
     val ctxt = (#prepare_ctxt aux_funs) lthy
+    val ctxt = Utils.add_to_context (Utils.freeName (#set environment)) ctxt
     val (new_vs, ctxt') = (#create_variables aux_funs) (#vs environment, ctxt)
     val new_hyps = (#create_hyps aux_funs) (#vs environment, new_vs)
     val concl = (#make_concl aux_funs) (lhs, #sats environment, new_vs)
@@ -139,7 +134,6 @@ fun synth_thm_tc def_name term hyps vars pos lthy =
 
 fun synthetic_def def_name thm_ref pos tc auto thy =
   let
-    (* val thm_ref = #1 (thmref |>> Facts.ref_name) *)
     val (((_,vars),thm_tms),_) = Variable.import true [Proof_Context.get_thm thy thm_ref] thy
     val (tm,hyps) = thm_tms |> hd |> Thm.concl_of &&& Thm.prems_of
     val (lhs,rhs) = tm |> Utils.dest_iff_tms o Utils.dest_trueprop
@@ -183,7 +177,14 @@ fun schematic_def def_name target pos lthy =
     val vs = List.filter (#1 #> #1 #> #1 #> Utils.inList t_vars) vars
              |> List.filter ((curry op = @{typ "i"}) o #2 o #1)
              |> List.map (Utils.var_i o #1 o #1 o #1)
-    val (set, ctxt2) = Variable.variant_fixes ["A"] ctxt1 |>> Utils.var_i o hd
+    fun first_lambdas (Abs (body as (_, ty, _))) =
+        if ty = @{typ "i"}
+          then (op ::) (Term.dest_abs body |>> Utils.var_i ||> first_lambdas)
+          else Term.dest_abs body |> first_lambdas o #2
+      | first_lambdas _ = []
+    val vs = vs @ (first_lambdas tm)
+    val ctxt1' = fold Utils.add_to_context (map Utils.freeName vs) ctxt1
+    val (set, ctxt2) = Variable.variant_fixes ["A"] ctxt1' |>> Utils.var_i o hd
     val class = @{const "setclass"} $ set
     val (env, ctxt3) = Variable.variant_fixes ["env"] ctxt2 |>> Utils.var_i o hd
     val hyps = (List.map (fn v => Utils.tp (Utils.mem_ v Utils.nat_)) vs) @ [Utils.tp (Utils.mem_ env (Utils.list_ set))]
@@ -213,20 +214,26 @@ fun schematic_synthetic_def def_name target pos tc auto =
 ML\<open>
 
 local
-  val full_synth_constdecl =
+  val simple_from_schematic_synth_constdecl =
+       Parse.string --| (Parse.$$$ "from_schematic")
+       >> (fn bndg => synthetic_def bndg ("sats_" ^ bndg ^ "fm_auto"))
+
+  val full_from_schematic_synth_constdecl =
        Parse.string -- ((Parse.$$$ "from_schematic" |-- Parse.thm))
        >> (fn (bndg,thm) => synthetic_def bndg (#1 (thm |>> Facts.ref_name)))
 
-  val simple_as_synth_constdecl =
-       Parse.string -- ((Parse.$$$ "as" |-- Parse.string))
-       >> (fn (target,bndg) => schematic_synthetic_def bndg target)
+  val full_from_definition_synth_constdecl =
+       Parse.string -- ((Parse.$$$ "from_definition" |-- Parse.string))
+       >> (fn (bndg,target) => schematic_synthetic_def bndg target)
 
-  val simple_synth_constdecl =
-     Parse.string
+  val simple_from_definition_synth_constdecl =
+     Parse.string --| (Parse.$$$ "from_definition")
      >> (fn bndg => schematic_synthetic_def bndg bndg)
 
   val synth_constdecl =
-       Parse.position (full_synth_constdecl || simple_as_synth_constdecl || simple_synth_constdecl)
+       Parse.position (full_from_schematic_synth_constdecl || simple_from_schematic_synth_constdecl
+                       || full_from_definition_synth_constdecl
+                       || simple_from_definition_synth_constdecl)
 
   val full_schematic_decl =
        Parse.string -- ((Parse.$$$ "for" |-- Parse.string))
