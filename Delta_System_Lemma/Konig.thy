@@ -264,8 +264,6 @@ lemma nat_into_InfCard:
 
 subsection\<open>Alephs are infinite cardinals\<close>
 
-lemmas Aleph_mono = Normal_imp_mono[OF _ Normal_Aleph]
-
 lemma Aleph_zero_eq_nat: "\<aleph>\<^bsub>0\<^esub> = nat"
   unfolding Aleph_def by simp
 
@@ -281,7 +279,7 @@ proof -
   next
     case False
     with \<open>Ord(\<alpha>)\<close>
-    have "nat \<in> \<aleph>\<^bsub>\<alpha>\<^esub>" using Ord_0_lt[of \<alpha>] ltD  by (auto dest:Aleph_mono)
+    have "nat \<in> \<aleph>\<^bsub>\<alpha>\<^esub>" using Ord_0_lt[of \<alpha>] ltD  by (auto dest:Aleph_increasing)
     then show ?thesis using foundation by blast 
   qed
   with \<open>Ord(\<alpha>)\<close>

@@ -82,8 +82,8 @@ lemmas Aleph_sup = Normal_Union[OF _ _ Normal_Aleph]
 
 bundle Ord_dests = Limit_is_Ord[dest] Card_is_Ord[dest]
 bundle Aleph_dests = Aleph_cont[dest] Aleph_sup[dest]
-bundle Aleph_intros = Aleph_mono[intro!]
-bundle Aleph_mem_dests = Aleph_mono[OF ltI, THEN ltD, dest]
+bundle Aleph_intros = Aleph_increasing[intro!]
+bundle Aleph_mem_dests = Aleph_increasing[OF ltI, THEN ltD, dest]
 bundle mono_map_rules =  mono_mapI[intro!] mono_map_is_fun[dest] mono_mapD[dest]
 
 context
@@ -134,7 +134,7 @@ proof -
       by (auto) 
     ultimately
     have "<a,\<aleph>\<^bsub>i\<^esub>> \<in> Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>)"
-      using ltD by (auto dest:Aleph_mono)
+      using ltD by (auto dest:Aleph_increasing)
     moreover from \<open>i<\<gamma>\<close>
     have "\<aleph>\<^bsub>i\<^esub> \<in> ?f``\<gamma>" 
       using ltD apply_in_image[OF \<open>?f : _ \<rightarrow> _\<close>] by auto
