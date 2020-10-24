@@ -42,7 +42,12 @@ abbreviation
   csucc_r_set :: "[i,i] \<Rightarrow> i"  (\<open>'(_\<^sup>+')\<^bsup>_\<^esup>\<close>) where
   "csucc_r_set(x,M) \<equiv> csucc_rel(##M,x)"
 
-locale M_master = M_cardinal_AC
+locale M_master = M_cardinal_AC +
+  assumes
+  apply_replacement: "M(x) \<Longrightarrow> M(f) \<Longrightarrow>
+      strong_replacement(M, \<lambda>z y. y = \<langle>z, f ` \<langle>x,z\<rangle>\<rangle>)" and
+  lam_apply_replacement: "M(A) \<Longrightarrow> M(f) \<Longrightarrow>
+      strong_replacement(M, \<lambda>x y. y = \<langle>x, \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>\<rangle>)"
 begin
 
 lemma FiniteFun_closed[intro,simp]:
@@ -119,6 +124,10 @@ context
   includes G_generic_lemmas
 begin
 
+lemma G_in_MG: "G \<in> M[G]"
+  using G_in_Gen_Ext[ OF _ one_in_G, OF _ generic]
+  by blast
+
 lemma ccc_preserves_Aleph_1:
   assumes "ccc\<^bsup>M\<^esup>(P,leq)"
   shows "Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)"
@@ -134,24 +143,21 @@ begin
 
 abbreviation
   Add :: "i" where
-  "Add \<equiv> Add_subs(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>,\<omega>)"
+  "Add \<equiv> Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>, 2)"
 
 end (* M_ctm *)
 
 locale add_generic = G_generic "Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" "Fnle(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" 0
 
-\<comment> \<open>FIXME: all the unfoldings of @{thm Add_subs_def}\<close>
 sublocale add_generic \<subseteq> ext:M_ZF_trans "M\<^bsup>Add\<^esup>[G]"
   using Transset_MG generic pairing_in_MG
     Union_MG extensionality_in_MG power_in_MG
     foundation_in_MG strong_replacement_in_MG
     separation_in_MG infinity_in_MG
-  unfolding Add_subs_def
   by unfold_locales
 
 sublocale add_generic \<subseteq> M_master_sub "##M" "##(M\<^bsup>Add\<^esup>[G])"
   using M_subset_MG[OF one_in_G] generic
-  unfolding Add_subs_def
   by unfold_locales auto
 
 context add_generic
@@ -167,7 +173,7 @@ definition
 
 lemma Add_subs_preserves_Aleph_1:  "Card\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)"
   using ccc_preserves_Aleph_1 ccc_Add_subs_Aleph_2
-  by (auto simp add: Add_subs_def)
+  by auto
 
 lemma Aleph_rel_MG_eq_Aleph_rel_M: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
 proof -
@@ -185,8 +191,17 @@ qed
 lemma "f\<^bsub>G\<^esub> : \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<rightarrow> 2"
   sorry
 
-lemma h_G_in_MG[simp]: "h\<^bsub>G\<^esub> \<in> M\<^bsup>Add\<^esup>[G]"
-  sorry
+lemma h_G_in_MG[simp]:
+  includes G_generic_lemmas
+  shows "h\<^bsub>G\<^esub> \<in> M\<^bsup>Add\<^esup>[G]"
+  using Aleph_rel2_closed
+    ext.lam_apply_replacement ext.apply_replacement
+    ext.Union_closed[simplified, OF G_in_MG]
+    \<comment> \<open>The "simplified" here is because of
+        the \<^term>\<open>setclass\<close> ocurrences\<close>
+    ext.nat_in_M Aleph_rel2_closed ext.nat_into_M
+  unfolding h_G_def
+  by (rule_tac ext.lam_closed[simplified] | auto dest:transM)+
 
 lemma h_G_inj_Aleph_rel2_reals:"h\<^bsub>G\<^esub> \<in> inj\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2)"
   sorry
@@ -198,7 +213,6 @@ proof -
   have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<in> M\<^bsup>Add\<^esup>[G]" "Ord(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
     using Card_rel_Aleph_rel[THEN Card_rel_is_Ord, of 2]
       Aleph_rel2_closed
-    unfolding Add_subs_def
     by auto
   moreover from this
   have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>  \<lesssim>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2"
