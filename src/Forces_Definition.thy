@@ -127,87 +127,7 @@ definition
      (  ft = 0 \<and>  eq_case(n1,n2,c,P,leq,f)
       \<or> ft = 1 \<and> mem_case(n1,n2,c,P,leq,f))"
 
-definition
-  is_Hfrc :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
-  "is_Hfrc(M,P,leq,fnnc,f) \<equiv>
-     \<exists>ft[M]. \<exists>n1[M]. \<exists>n2[M]. \<exists>co[M].
-      co\<in>P \<and> is_tuple(M,ft,n1,n2,co,fnnc) \<and>
-      (  (empty(M,ft) \<and> is_eq_case(M,n1,n2,co,P,leq,f))
-       \<or> (number1(M,ft) \<and>  is_mem_case(M,n1,n2,co,P,leq,f)))"
-
-(* relativize "Hfrc" "is_Hfrc"
-
-schematic_goal sats_Hfrc_fm_auto:
-  assumes
-    "P \<in> nat" "leq \<in> nat" "fnnc \<in> nat" "f \<in> nat" "env \<in> list(A)"
-  shows
-    "is_Hfrc(##A, nth(P,env), nth(leq,env), nth(fnnc,env), nth(f,env))
-     \<longleftrightarrow> sats(A, ?fm(P,leq,fnnc,f), env)"
-  unfolding is_Hfrc_def
-  apply (insert assms)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule mem_iff_sats)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  sorry
-*)
+relativize "Hfrc" "is_Hfrc"
 
 synthesize "Hfrc" from_definition "is_Hfrc"
 
@@ -217,8 +137,8 @@ lemma arity_Hfrc_fm :
   shows
     "arity(Hfrc_fm(P,leq,fnnc,f)) = succ(P) \<union> succ(leq) \<union> succ(fnnc) \<union> succ(f)"
   unfolding Hfrc_fm_def
-  using assms arity_is_tuple_fm arity_mem_case_fm arity_eq_case_fm
-    arity_empty_fm arity_number1_fm pred_Un_distrib
+  using assms arity_pair_fm arity_mem_case_fm arity_eq_case_fm
+    arity_empty_fm arity_succ_fm pred_Un_distrib
   by auto
 
 definition
@@ -634,7 +554,7 @@ qed
 lemma Hfrc_abs:
   "\<lbrakk>fnnc\<in>M; f\<in>M\<rbrakk> \<Longrightarrow>
    is_Hfrc(##M,P,leq,fnnc,f) \<longleftrightarrow> Hfrc(P,leq,fnnc,f)"
-  unfolding is_Hfrc_def Hfrc_def using pair_in_M_iff
+  unfolding is_Hfrc_def Hfrc_def using pair_in_M_iff nonempty
   by (auto simp add:components_abs)
 
 lemma Hfrc_at_abs:

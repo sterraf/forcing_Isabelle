@@ -84,9 +84,7 @@ fun synth_thm_sats_gen name lhs hyps pos attribs aux_funs environment lthy =
 fun synth_thm_sats_iff def_name lhs hyps pos environment =
   let
     val subst = Utils.zip_with (I *** I) (#vs environment)
-    fun from_option (SOME v) = v
-      | from_option NONE = error "from_option: received NONE"
-    fun subst_nth (@{const "nth"} $ v $ _) new_vs = AList.lookup (op =) (subst new_vs) v |> from_option
+    fun subst_nth (@{const "nth"} $ v $ _) new_vs = AList.lookup (op =) (subst new_vs) v |> the
       | subst_nth (t1 $ t2) new_vs = (subst_nth t1 new_vs) $ (subst_nth t2 new_vs)
       | subst_nth (Abs (v, ty, t)) new_vs = Abs (v, ty, subst_nth t new_vs)
       | subst_nth t _ = t
@@ -139,8 +137,8 @@ fun synthetic_def def_name thm_ref pos tc auto thy =
     val (lhs,rhs) = tm |> Utils.dest_iff_tms o Utils.dest_trueprop
     val ((set,t),env) = rhs |> Utils.dest_sats_frm
     fun olist t = Ord_List.make String.compare (Term.add_free_names t [])
-    fun relevant ts (@{const mem} $ t $ _) = not (Term.is_Free t) orelse
-        Ord_List.member String.compare ts (t |> Term.dest_Free |> #1)
+    fun relevant ts (@{const mem} $ t $ _) = (not (t = @{term "0"})) andalso (not (Term.is_Free t) orelse
+        Ord_List.member String.compare ts (t |> Term.dest_Free |> #1))
       | relevant _ _ = false
     val t_vars = olist t
     val vs = List.filter (Utils.inList t_vars o #1 o #1 o #1) vars

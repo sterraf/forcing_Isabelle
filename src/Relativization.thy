@@ -107,7 +107,7 @@ signature Relativization =
     val init_db : (term * term) list -> theory -> theory
     val get_db : Proof.context -> (term * term) list
     val relativ_fm: term -> (term * term) list ->  (term * (term * term)) list * Proof.context * term option -> term -> term * ((term * (term * term)) list * term list * term list * Proof.context)
-    val relativ_tm: term -> (term * term) list ->  (term * (term * term)) list * Proof.context -> term -> term * (term * (term * term)) list * Proof.context
+    val relativ_tm: term option -> term -> (term * term) list ->  (term * (term * term)) list * Proof.context -> term -> term * (term * (term * term)) list * Proof.context
     val read_new_const : Proof.context -> string -> term
     val relativ_tm_frm': term -> (term * term) list -> Proof.context -> term -> term option * term
     val relativize_def: bstring -> string -> Position.T -> Proof.context -> Proof.context
@@ -263,7 +263,7 @@ fun close_rel_tm pred tm tm_var rs =
 
 fun relativ_tms _ _ _ ctxt' [] = ([], [], ctxt')
   | relativ_tms pred rel_db rs' ctxt' (u :: us) =
-      let val (w_u, rs_u, ctxt_u) = relativ_tm pred rel_db (rs', ctxt') u
+      let val (w_u, rs_u, ctxt_u) = relativ_tm NONE pred rel_db (rs', ctxt') u
           val (w_us, rs_us, ctxt_us) = relativ_tms pred rel_db rs_u ctxt_u us
       in (w_u :: w_us, join_tm (rs_u , rs_us), ctxt_us)
       end
@@ -276,82 +276,85 @@ and
          and the last one is the predicate corresponding to it.
       c. the resulting context of created variables.
     *)
-    relativ_tm pred rel_db (rs,ctxt) tm =
+    relativ_tm mv pred rel_db (rs,ctxt) tm =
       let
       (* relativization of a fully applied constant *)
-      fun mk_rel_const c args abs_args ctxt =
+      fun mk_rel_const mv c args abs_args ctxt =
         case lookup_rel rel_db c of
           SOME p =>
             let
               val args' = List.filter (not o Utils.inList (Utils.frees p)) args
-              val (v, ctxt1) = Variable.variant_fixes [""] ctxt |>> var_i o hd
+              val (v, ctxt1) =
+                the_default
+                  (Variable.variant_fixes [""] ctxt |>> var_i o hd)
+                  (Utils.map_option (I &&& K ctxt) mv)
               val r_tm = list_comb (p, pred :: args' @ abs_args @ [v])
             in
               (v, r_tm, ctxt1)
             end
         | NONE => raise TERM ("Constant " ^ const_name c ^ " is not present in the db." , nil)
       (* relativization of a partially applied constant *)
-      fun relativ_app ctxt' tm abs_args (Const c) args rs =
+      fun relativ_app mv mctxt tm abs_args (Const c) args rs =
             let
-              val (w_ts, rs_ts, ctxt_ts) = relativ_tms pred rel_db rs (the_default ctxt ctxt') args
-              val (w_tm, r_tm, ctxt_tm) = mk_rel_const (Const c) w_ts abs_args ctxt_ts
+              val (w_ts, rs_ts, ctxt_ts) = relativ_tms pred rel_db rs (the_default ctxt mctxt) args
+              val (w_tm, r_tm, ctxt_tm) = mk_rel_const mv (Const c) w_ts abs_args ctxt_ts
               val rs_ts' = update_tm (tm, (w_tm, r_tm)) rs_ts
             in
               (w_tm, rs_ts', ctxt_tm)
             end
-        | relativ_app _ _ _ t _ _ =
+        | relativ_app _ _ _ _ t _ _ =
             raise TERM ("Tried to relativize an application with a non-constant in head position",[t])
 
       (* relativization of non dependent product and sum *)
-      fun relativ_app_no_dep tm c t t' rs =
+      fun relativ_app_no_dep mv tm c t t' rs =
           if loose_bvar1 (t', 0)
           then
             raise TERM("A dependency was found when trying to relativize", [tm])
           else
-            relativ_app NONE tm [] c [t, incr_boundvars ~1 t'] rs
+            relativ_app mv NONE tm [] c [t, incr_boundvars ~1 t'] rs
 
-      fun relativ_replace t body after ctxt' =
+      fun relativ_replace mv t body after ctxt' =
         let
           val (v, b) = Term.dest_abs body |>> var_i ||> after
           val (b', (rs', ctxt'')) =
             relativ_fm pred rel_db (rs, ctxt', SOME v) b |>> incr_boundvars 1 ||> #1 &&& #4
         in
-          relativ_app (SOME ctxt'') tm [lambda v b'] @{const Replace} [t] rs'
+          relativ_app mv (SOME ctxt'') tm [lambda v b'] @{const Replace} [t] rs'
         end
 
-      fun go (Var _) = raise TERM ("Var: Is this possible?",[])
-        | go (@{const Replace} $ t $ Abs body) = relativ_replace t body I ctxt
+      fun go _ (Var _) = raise TERM ("Var: Is this possible?",[])
+        | go mv (@{const Replace} $ t $ Abs body) = relativ_replace mv t body I ctxt
         (* It is easier to rewrite RepFun as Replace before relativizing,
            since { f(x) . x \<in> t } = { y . x \<in> t, y = f(x) } *)
-        | go (@{const RepFun} $ t $ Abs body) =
+        | go mv (@{const RepFun} $ t $ Abs body) =
             let
               val (y, ctxt') = Variable.variant_fixes [""] ctxt |>> var_i o hd
             in
-              relativ_replace t body (lambda y o Utils.eq_ y o incr_boundvars 1) ctxt'
+              relativ_replace mv t body (lambda y o Utils.eq_ y o incr_boundvars 1) ctxt'
             end
-        | go (@{const Collect} $ t $ pc) =
+        | go mv (@{const Collect} $ t $ pc) =
             let
               val (pc', (rs', ctxt')) = relativ_fm pred rel_db (rs,ctxt, NONE) pc ||> #1 &&& #4
             in
-              relativ_app (SOME ctxt') tm [pc'] @{const Collect} [t] rs'
+              relativ_app mv (SOME ctxt') tm [pc'] @{const Collect} [t] rs'
             end
-        | go (tm as @{const Sigma} $ t $ Abs (_,_,t')) =
-            relativ_app_no_dep tm @{const Sigma} t t' rs
-        | go (tm as @{const Pi} $ t $ Abs (_,_,t')) =
-            relativ_app_no_dep tm @{const Pi} t t' rs
-        | go (tm as @{const bool_of_o} $ t) =
+        | go mv (tm as @{const Sigma} $ t $ Abs (_,_,t')) =
+            relativ_app_no_dep mv tm @{const Sigma} t t' rs
+        | go mv (tm as @{const Pi} $ t $ Abs (_,_,t')) =
+            relativ_app_no_dep mv tm @{const Pi} t t' rs
+        | go mv (tm as @{const bool_of_o} $ t) =
             let
               val (t', (rs', ctxt')) = relativ_fm pred rel_db (rs, ctxt, NONE) t ||> #1 &&& #4
             in
-              relativ_app (SOME ctxt') tm [t'] @{const bool_of_o} [] rs'
+              relativ_app mv (SOME ctxt') tm [t'] @{const bool_of_o} [] rs'
             end
-        | go (tm as Const _) = relativ_app NONE tm [] tm [] rs
-        | go (tm as _ $ _) = (strip_comb tm |> uncurry (relativ_app NONE tm [])) rs
-        | go tm = (tm, update_tm (tm,(tm,tm)) rs, ctxt)
+        | go mv (tm as Const _) = relativ_app mv NONE tm [] tm [] rs
+        | go mv (tm as _ $ _) = (strip_comb tm |> uncurry (relativ_app mv NONE tm [])) rs
+        | go _ tm = (tm, update_tm (tm,(tm,tm)) rs, ctxt)
 
       (* we first check if the term has been already relativized as a variable *)
       in case lookup_tm rs tm of
-           NONE => go tm
+           NONE => go mv tm
          | SOME (w, _) => (w, rs, ctxt)
       end
 and
@@ -364,11 +367,13 @@ and
       let (* flag indicates whether the relativized constant is absolute or not. *)
         val flag = not (exists (curry op aconv c) absolute_rels)
         val (args, rs_ts, ctxt') = relativ_tms pred rel_db rs ctxt args
+        (* TODO: Verify if next line takes care of locales' definitions *)
         val args' = List.filter (not o Utils.inList (Utils.frees p)) args
         val tm = list_comb (p, if flag then pred :: args' else args')
+        (* TODO: Verify if next line is necessary *)
         val news = filter (not o (fn x => is_Free x orelse is_Bound x) o #1) rs_ts
         val (vars, tms) = split_list (map #2 news)
-        val vars = filter (fn v => not (v = tm)) vars
+        (* val vars = filter (fn v => not (v = tm)) vars *) (* Verify if this line is necessary *)
        in (tm, (rs_ts, vars, tms, ctxt'))
        end
    | NONE   => raise TERM ("Constant " ^ const_name c ^ " is not present in the db." , nil)
@@ -416,6 +421,27 @@ and
       (const $ r $ r', (rs2, vars1 @@ vars2, tms1 @@ tms2, ctxt2))
     end
   and
+      relativ_eq_var (ctxt, rs) v t =
+        let
+          val (_, rs', ctxt') = relativ_tm (SOME v) pred rel_db (rs, ctxt) t
+          val f = lookup_tm rs' t |> #2 o the
+          val rs'' = filter (not o (curry (op =) t) o #1) rs'
+          val news = filter (not o (fn x => is_Free x orelse is_Bound x) o #1) rs''
+          val (vars, tms) = split_list (map #2 news)
+        in
+          (f, (rs'', vars, tms, ctxt'))
+        end
+  and
+      relativ_eq (ctxt, rs) t1 t2 =
+        if (is_Free t1 orelse is_Bound t1) andalso (is_Free t2 orelse is_Bound t2) then
+          relativ_app (ctxt, rs) @{const IFOL.eq(i)} [t1, t2]
+        else if is_Free t1 orelse is_Bound t1 then
+          relativ_eq_var (ctxt, rs) t1 t2
+        else if is_Free t2 orelse is_Bound t2 then
+          relativ_eq_var (ctxt, rs) t2 t1
+        else
+          relativ_app (ctxt, rs) @{const IFOL.eq(i)} [t1, t2]
+  and
       go (ctxt, rs) (@{const IFOL.conj} $ f $ f') = bind_go (ctxt, rs) @{const IFOL.conj} f f'
     | go (ctxt, rs) (@{const IFOL.disj} $ f $ f') = bind_go (ctxt, rs) @{const IFOL.disj} f f'
     | go (ctxt, rs) (@{const IFOL.Not} $ f) = go (ctxt, rs) f |>> ((curry op $) @{const IFOL.Not})
@@ -425,6 +451,7 @@ and
     | go (ctxt, rs) (@{const IFOL.Ex(i)} $ f) = go (ctxt, rs) f |>> ((curry op $) (@{const OrdQuant.rex} $ pred))
     | go (ctxt, rs) (@{const Bex} $ f $ Abs p) = bquant (ctxt, rs) @{const Ex(i)} @{const IFOL.conj} f p
     | go (ctxt, rs) (@{const Ball} $ f $ Abs p) = bquant (ctxt, rs) @{const All(i)} @{const IFOL.imp} f p
+    | go (ctxt, rs) (@{const IFOL.eq(i)} $ t1 $ t2) = relativ_eq (ctxt, rs) t1 t2
     | go (ctxt, rs) (Const c) = relativ_app (ctxt, rs) (Const c) []
     | go (ctxt, rs) (tm as _ $ _) = strip_comb tm |> uncurry (relativ_app (ctxt, rs))
     | go (ctxt, rs) (Abs (v, _, t)) =
@@ -451,7 +478,7 @@ fun relativ_tm_frm' cls_pred db ctxt tm =
     case ty of
         @{typ i} =>
           let
-            val (w, rs, _) =  relativ_tm cls_pred db ([], initial_ctxt) tm
+            val (w, rs, _) =  relativ_tm NONE cls_pred db ([], initial_ctxt) tm
           in
             (SOME w, close_rel_tm cls_pred NONE (SOME w) rs)
           end

@@ -33,6 +33,7 @@ signature Utils =
     val length_: term -> term
     val list_: term -> term
     val lt_: term -> term -> term
+    val map_option : ('a -> 'b) -> 'a option -> 'b option
     val mem_: term -> term -> term
     val mk_FinSet: term list -> term
     val mk_Pair: term -> term -> term
@@ -181,5 +182,8 @@ fun zip_with _ [] _ = []
   | zip_with f (x :: xs) (y :: ys) = f (x, y) :: zip_with f xs ys
 
 fun var_i s = Free (s, @{typ "i"})
+
+fun map_option f (SOME a) = SOME (f a)
+  | map_option _ NONE = NONE
 
 end

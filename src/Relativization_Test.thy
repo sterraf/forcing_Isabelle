@@ -194,6 +194,13 @@ Local_Theory.target I @{context}
 \<close>
 *)
 
+definition bla :: "i => o" where
+ "bla(x) \<equiv> x = 0"
+relativize "bla" "is_bla"
+
+relativize_tm "x = <0,0> \<and> bla(x)" "test24"
+relativize_tm "bla(x)" "test25"
+
 context M_trans
 begin
 ML\<open>
