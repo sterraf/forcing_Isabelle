@@ -615,7 +615,7 @@ definition
   HAleph :: "[i,i] \<Rightarrow> i" where
   "HAleph(i,r) \<equiv> if(i=0, nat, if(\<exists>j. i=succ(j),
                             csucc(r`( \<Union> i )),
-                                   \<Union>j<i. r`j))"
+                                   \<Union>j\<in>i. r`j))"
 
 lemma HAleph_eq_Aleph_recursive: 
   "Ord(i) \<Longrightarrow> HAleph(i,r) = (if i = 0 then nat
@@ -625,9 +625,9 @@ proof -
   then
   have "i = succ(j) \<Longrightarrow> (\<Union>succ(j)) = j" for j
     using Ord_Union_succ_eq by simp
-  then
+  with \<open>Ord(i)\<close>
   show ?thesis 
-    unfolding HAleph_def
+    unfolding HAleph_def OUnion_def
     by auto
 qed
 
