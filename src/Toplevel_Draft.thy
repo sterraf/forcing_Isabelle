@@ -163,13 +163,8 @@ sublocale add_generic \<subseteq> M_master_sub "##M" "##(M\<^bsup>Add\<^esup>[G]
 context add_generic
 begin
 
-abbreviation
-  f_G :: "i" (\<open>f\<^bsub>G\<^esub>\<close>) where
-  "f\<^bsub>G\<^esub> \<equiv> \<Union>G"
-
-definition
-  h_G :: "i" (\<open>h\<^bsub>G\<^esub>\<close>) where
-  "h\<^bsub>G\<^esub> \<equiv> \<lambda>\<alpha>\<in>\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>. \<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub>`<\<alpha>,n>"
+notation Leq (infixl "\<preceq>" 50)
+notation Incompatible (infixl "\<bottom>" 50)
 
 lemma Add_subs_preserves_Aleph_1:  "Card\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)"
   using ccc_preserves_Aleph_1 ccc_Add_subs_Aleph_2
@@ -188,8 +183,79 @@ proof -
   show ?thesis using le_anti_sym by auto
 qed
 
-lemma "f\<^bsub>G\<^esub> : \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<rightarrow> 2"
+abbreviation
+  f_G :: "i" (\<open>f\<^bsub>G\<^esub>\<close>) where
+  "f\<^bsub>G\<^esub> \<equiv> \<Union>G"
+
+abbreviation
+  dom_dense :: "i\<Rightarrow>i" where
+  "dom_dense(x) \<equiv> { p\<in>Add . x \<in> domain(p) }"
+
+\<comment> \<open>FIXME write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close>
+    in a context with a generic filter for it\<close>
+lemma dense_dom_dense: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> dense(dom_dense(x))"
+proof
+  fix p
+  assume "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" "p \<in> Add"
+  show "\<exists>d\<in>dom_dense(x). d \<preceq> p"
+  proof (cases "x \<in> domain(p)")
+    case True
+    with \<open>x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>\<close> \<open>p \<in> Add\<close>
+    show ?thesis using refl_leq by auto
+  next
+    case False
+    note \<open>p \<in> Add\<close>
+    moreover from this and False and \<open>x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>\<close>
+    have "cons(\<langle>x,0\<rangle>, p) \<in> Add"
+      using FiniteFun.consI Fn_nat_eq_FiniteFun sorry
+    moreover from \<open>p \<in> Add\<close>
+    have "x\<in>domain(cons(\<langle>x,0\<rangle>, p))" sorry
+    ultimately
+    show ?thesis
+      \<comment> \<open>FIXME: Too many unfoldings following\<close>
+      unfolding Fnle_def Fnlerel_def Rrel_def
+      by fastforce
+  qed
+qed
+
+(*
+NOTE Class model version?
+lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> M(dom_dense(x))" *)
+lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> dom_dense(x) \<in> M"
   sorry
+
+lemma domain_f_G: assumes "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "y \<in> \<omega>"
+  shows "\<langle>x, y\<rangle> \<in> domain(f\<^bsub>G\<^esub>)"
+proof -
+  from assms
+  have "dense(dom_dense(\<langle>x, y\<rangle>))" using dense_dom_dense by simp
+  with assms
+  obtain p where "p\<in>dom_dense(\<langle>x, y\<rangle>)" "p\<in>G"
+    using generic[THEN M_generic_denseD, of "dom_dense(\<langle>x, y\<rangle>)"]
+    by auto
+  then
+  show "\<langle>x, y\<rangle> \<in> domain(f\<^bsub>G\<^esub>)" by blast
+qed
+
+\<comment> \<open>MOVE THIS to \<^file>\<open>Cohen_Posets.thy\<close>\<close>
+lemma Fn_nat_subset_Pow: "Fn(\<omega>,I,J) \<subseteq> Pow(I\<times>J)"
+  using subset_trans[OF FiniteFun.dom_subset Fin.dom_subset]
+    Fn_nat_eq_FiniteFun by simp
+
+lemma f_G_funtype:
+  includes G_generic_lemmas
+  shows "f\<^bsub>G\<^esub> : \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<rightarrow> 2"
+  using generic domain_f_G
+  unfolding Pi_def
+proof (auto)
+  show "x \<in> B \<Longrightarrow> B \<in> G \<Longrightarrow> x \<in> (\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>) \<times> 2" for B x
+    using Fn_nat_subset_Pow by blast
+  show "function(f\<^bsub>G\<^esub>)" sorry
+qed
+
+definition
+  h_G :: "i" (\<open>h\<^bsub>G\<^esub>\<close>) where
+  "h\<^bsub>G\<^esub> \<equiv> \<lambda>\<alpha>\<in>\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>. \<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub>`<\<alpha>,n>"
 
 lemma h_G_in_MG[simp]:
   includes G_generic_lemmas
