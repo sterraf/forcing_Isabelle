@@ -44,8 +44,17 @@ abbreviation
 
 locale M_master = M_cardinal_AC +
   assumes
-  apply_replacement: "M(x) \<Longrightarrow> M(f) \<Longrightarrow>
-      strong_replacement(M, \<lambda>z y. y = \<langle>z, f ` \<langle>x,z\<rangle>\<rangle>)" and
+  domain_separation: "M(x) \<Longrightarrow> separation(M, \<lambda>z. x \<in> domain(z))"
+  and
+  inj_dense_separation: "M(x) \<Longrightarrow> M(w) \<Longrightarrow>
+    separation(M, \<lambda>z. \<exists>n\<in>\<omega>.    \<langle>\<langle>w, n\<rangle>, 1\<rangle> \<in> z \<and> \<langle>\<langle>x, n\<rangle>, 0\<rangle> \<in> z)"
+  and
+  apply_replacement1: "M(x) \<Longrightarrow> M(f) \<Longrightarrow>
+      strong_replacement(M, \<lambda>z y. y = \<langle>z, f ` \<langle>x,z\<rangle>\<rangle>)"
+  and
+  apply_replacement2: "M(x) \<Longrightarrow> M(f) \<Longrightarrow> M(z) \<Longrightarrow>
+      strong_replacement(M, \<lambda>x y. y = \<langle>x, f ` \<langle>z, x\<rangle>\<rangle>)"
+  and
   lam_apply_replacement: "M(A) \<Longrightarrow> M(f) \<Longrightarrow>
       strong_replacement(M, \<lambda>x y. y = \<langle>x, \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>\<rangle>)"
 begin
@@ -109,6 +118,11 @@ lemma Aleph_rel_le_Aleph_rel: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Lon
 
 lemma cardinal_rel_le_cardinal_rel: "M(X) \<Longrightarrow> |X|\<^bsup>N\<^esup> \<le> |X|\<^bsup>M\<^esup>"
   sorry
+
+lemma Aleph_rel_sub_closed: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> N(\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)"
+  using Aleph_rel2_closed Ord_iff[THEN iffD1,
+      OF Card_rel_Aleph_rel[THEN Card_rel_is_Ord]]
+  by simp
 
 end (* M_master_sub *)
 
@@ -266,7 +280,8 @@ qed
 NOTE Class model version?
 lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> M(dom_dense(x))" *)
 lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> dom_dense(x) \<in> M"
-  sorry
+  using Fn_nat_closed Aleph_rel2_closed domain_separation[of x] nat_into_M
+  by (rule_tac separation_closed[simplified], blast dest:transM) simp
 
 lemma domain_f_G: assumes "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "y \<in> \<omega>"
   shows "\<langle>x, y\<rangle> \<in> domain(f\<^bsub>G\<^esub>)"
@@ -297,6 +312,70 @@ proof (auto)
   show "function(f\<^bsub>G\<^esub>)" sorry
 qed
 
+abbreviation
+  inj_dense :: "i\<Rightarrow>i\<Rightarrow>i" where
+  "inj_dense(w,x) \<equiv>
+    { p\<in>Add . (\<exists>n\<in>\<omega>. <<w,n>,1> \<in> p \<and> <<x,n>,0> \<in> p) }"
+
+\<comment> \<open>FIXME write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close>
+    in a context with a generic filter for it\<close>
+lemma dense_inj_dense:
+  assumes "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "w \<noteq> x"
+  shows "dense(inj_dense(w,x))"
+proof
+  fix p
+  assume "p \<in> Add"
+  then
+  obtain n where "<w,n> \<notin> domain(p)" "<x,n> \<notin> domain(p)" "n \<in> \<omega>"
+    using Fn_nat_eq_FiniteFun sorry
+  moreover
+  note \<open>p \<in> Add\<close> assms
+  moreover from calculation
+  have "cons(\<langle>\<langle>x,n\<rangle>,0\<rangle>, p) \<in> Add"
+    using FiniteFun.consI[of "\<langle>x,n\<rangle>" "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 0 2 p]
+      Fn_nat_eq_FiniteFun by auto
+  ultimately
+  have "cons(\<langle>\<langle>w,n\<rangle>,1\<rangle>, cons(\<langle>\<langle>x,n\<rangle>,0\<rangle>, p) ) \<in> Add"
+    using FiniteFun.consI[of "\<langle>w,n\<rangle>" "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 1 2 "cons(\<langle>\<langle>x,n\<rangle>,0\<rangle>, p)"]
+      Fn_nat_eq_FiniteFun by auto
+  with \<open>n \<in> \<omega>\<close>
+  show "\<exists>d\<in>inj_dense(w,x). d \<preceq> p"
+    using \<open>p \<in> Add\<close> unfolding Fnle_def Fnlerel_def Rrel_def
+    by (intro bexI) auto
+qed
+
+lemma inj_dense_closed[intro,simp]:
+  "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> inj_dense(w,x) \<in> M"
+  using Fn_nat_closed Aleph_rel2_closed domain_separation[of x] nat_into_M
+    inj_dense_separation transM[OF _ Aleph_rel2_closed]
+  by (rule_tac separation_closed[simplified]; simp_all)
+
+lemma Aleph_rel2_new_reals:
+  assumes "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "w \<noteq> x"
+  shows "(\<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub> ` \<langle>w, n\<rangle>) \<noteq> (\<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub> ` \<langle>x, n\<rangle>)"
+proof -
+  from assms
+  have "dense(inj_dense(w,x))" using dense_inj_dense by simp
+  with assms
+  obtain p where "p\<in>inj_dense(w,x)" "p\<in>G"
+    using generic[THEN M_generic_denseD, of "inj_dense(w,x)"]
+    by blast
+  then
+  obtain n where "n \<in> \<omega>" "\<langle>\<langle>w, n\<rangle>, 1\<rangle> \<in> p" "\<langle>\<langle>x, n\<rangle>, 0\<rangle> \<in> p"
+    by blast
+  moreover from this and \<open>p\<in>G\<close>
+  have "\<langle>\<langle>w, n\<rangle>, 1\<rangle> \<in> f\<^bsub>G\<^esub>" "\<langle>\<langle>x, n\<rangle>, 0\<rangle> \<in> f\<^bsub>G\<^esub>" by auto
+  moreover from calculation
+  have "f\<^bsub>G\<^esub> ` \<langle>w, n\<rangle> = 1" "f\<^bsub>G\<^esub> ` \<langle>x, n\<rangle> = 0"
+    using f_G_funtype apply_equality[of _ _ _ _ "\<lambda>_. 2"]
+    by auto
+  ultimately
+  have "(\<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub> ` \<langle>w, n\<rangle>) ` n \<noteq> (\<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub> ` \<langle>x, n\<rangle>) ` n"
+    by simp
+  then
+  show ?thesis by fastforce
+qed
+
 definition
   h_G :: "i" (\<open>h\<^bsub>G\<^esub>\<close>) where
   "h\<^bsub>G\<^esub> \<equiv> \<lambda>\<alpha>\<in>\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>. \<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub>`<\<alpha>,n>"
@@ -305,7 +384,7 @@ lemma h_G_in_MG[simp]:
   includes G_generic_lemmas
   shows "h\<^bsub>G\<^esub> \<in> M\<^bsup>Add\<^esup>[G]"
   using Aleph_rel2_closed
-    ext.lam_apply_replacement ext.apply_replacement
+    ext.lam_apply_replacement ext.apply_replacement1
     ext.Union_closed[simplified, OF G_in_MG]
     \<comment> \<open>The "simplified" here is because of
         the \<^term>\<open>setclass\<close> ocurrences\<close>
@@ -313,8 +392,26 @@ lemma h_G_in_MG[simp]:
   unfolding h_G_def
   by (rule_tac ext.lam_closed[simplified] | auto dest:transM)+
 
-lemma h_G_inj_Aleph_rel2_reals:"h\<^bsub>G\<^esub> \<in> inj\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2)"
-  sorry
+lemma h_G_inj_Aleph_rel2_reals: "h\<^bsub>G\<^esub> \<in> inj\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2)"
+  using Aleph_rel_sub_closed
+proof (intro ext.mem_inj_abs[THEN iffD2])
+  show "h\<^bsub>G\<^esub> \<in> inj(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2)"
+    unfolding inj_def
+  proof (intro ballI CollectI impI)
+    show "h\<^bsub>G\<^esub> \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<rightarrow> \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
+      using f_G_funtype G_in_MG ext.nat_into_M unfolding h_G_def
+      apply (intro lam_type ext.mem_function_space_rel_abs[THEN iffD2], simp_all)
+      apply (rule_tac ext.lam_closed[simplified], simp_all)
+       apply (rule ext.apply_replacement2)
+         apply (auto dest:ext.transM[OF _ Aleph_rel_sub_closed])
+      done
+    fix w x
+    assume "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "h\<^bsub>G\<^esub> ` w = h\<^bsub>G\<^esub> ` x"
+    then
+    show "w = x"
+      unfolding h_G_def using Aleph_rel2_new_reals by auto
+  qed
+qed simp_all
 
 lemma Aleph2_submodel_le_continuum_rel:
   includes G_generic_lemmas
