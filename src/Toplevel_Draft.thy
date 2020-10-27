@@ -88,13 +88,13 @@ lemma Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esu
 lemma Card_rel_Aleph_rel[simp]: "Ord(\<alpha>) \<Longrightarrow> Card\<^bsup>M\<^esup>(\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)"
   sorry
 
-lemma Aleph_rel_zero_eq_nat: "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup> =  \<omega>"
+lemma Aleph_rel_zero_eq_nat: "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup> = \<omega>"
   sorry
 
 lemma Aleph_rel_succ: "\<aleph>\<^bsub>succ(\<alpha>)\<^esub>\<^bsup>M\<^esup> = (\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup>"
   sorry
 
-lemma Aleph_rel_increasing:  "a < b  \<Longrightarrow> M(a) \<Longrightarrow> M(b) \<Longrightarrow> \<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup> < \<aleph>\<^bsub>b\<^esub>\<^bsup>M\<^esup>"
+lemma Aleph_rel_increasing: "a < b  \<Longrightarrow> M(a) \<Longrightarrow> M(b) \<Longrightarrow> \<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup> < \<aleph>\<^bsub>b\<^esub>\<^bsup>M\<^esup>"
   sorry
 
 lemma Fnle_closed[intro,simp]:
@@ -177,13 +177,6 @@ abbreviation
 end (* M_ctm *)
 
 locale add_generic = G_generic "Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" "Fnle(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" 0
-
-sublocale add_generic \<subseteq> ext:M_ZF_trans "M\<^bsup>Add\<^esup>[G]"
-  using Transset_MG generic pairing_in_MG
-    Union_MG extensionality_in_MG power_in_MG
-    foundation_in_MG strong_replacement_in_MG
-    separation_in_MG infinity_in_MG
-  by unfold_locales
 
 sublocale add_generic \<subseteq> M_master_sub "##M" "##(M\<^bsup>Add\<^esup>[G])"
   using M_subset_MG[OF one_in_G] generic Ord_MG_iff
@@ -367,7 +360,7 @@ proof -
   have "\<langle>\<langle>w, n\<rangle>, 1\<rangle> \<in> f\<^bsub>G\<^esub>" "\<langle>\<langle>x, n\<rangle>, 0\<rangle> \<in> f\<^bsub>G\<^esub>" by auto
   moreover from calculation
   have "f\<^bsub>G\<^esub> ` \<langle>w, n\<rangle> = 1" "f\<^bsub>G\<^esub> ` \<langle>x, n\<rangle> = 0"
-    using f_G_funtype apply_equality[of _ _ _ _ "\<lambda>_. 2"]
+    using f_G_funtype apply_equality
     by auto
   ultimately
   have "(\<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub> ` \<langle>w, n\<rangle>) ` n \<noteq> (\<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub> ` \<langle>x, n\<rangle>) ` n"
