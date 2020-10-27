@@ -207,9 +207,10 @@ proof
     note \<open>p \<in> Add\<close>
     moreover from this and False and \<open>x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>\<close>
     have "cons(\<langle>x,0\<rangle>, p) \<in> Add"
-      using FiniteFun.consI Fn_nat_eq_FiniteFun sorry
+      using FiniteFun.consI[of x "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 0 2 p]
+        Fn_nat_eq_FiniteFun by auto
     moreover from \<open>p \<in> Add\<close>
-    have "x\<in>domain(cons(\<langle>x,0\<rangle>, p))" sorry
+    have "x\<in>domain(cons(\<langle>x,0\<rangle>, p))" by simp
     ultimately
     show ?thesis
       \<comment> \<open>FIXME: Too many unfoldings following\<close>
