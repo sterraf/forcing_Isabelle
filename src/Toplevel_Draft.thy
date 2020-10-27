@@ -97,7 +97,8 @@ end (* M_master *)
 
 locale M_master_sub = M_master + N:M_master N for N +
   assumes
-    M_imp_N:"M(x) \<Longrightarrow> N(x)"
+    M_imp_N: "M(x) \<Longrightarrow> N(x)" and
+    Ord_iff: "Ord(x) \<Longrightarrow> M(x) \<longleftrightarrow> N(x)"
 begin
 
 lemma Card_rel_imp_Card_rel: "M(\<kappa>) \<Longrightarrow> Card\<^bsup>N\<^esup>(\<kappa>) \<Longrightarrow> Card\<^bsup>M\<^esup>(\<kappa>)"
@@ -171,7 +172,7 @@ sublocale add_generic \<subseteq> ext:M_ZF_trans "M\<^bsup>Add\<^esup>[G]"
   by unfold_locales
 
 sublocale add_generic \<subseteq> M_master_sub "##M" "##(M\<^bsup>Add\<^esup>[G])"
-  using M_subset_MG[OF one_in_G] generic
+  using M_subset_MG[OF one_in_G] generic Ord_MG_iff
   by unfold_locales auto
 
 context add_generic
