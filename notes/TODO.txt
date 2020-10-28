@@ -47,6 +47,7 @@ Porting
 ZF-Constructible
 ================
 
+- rename "separation_closed" to "Collect_closed".
 - rename "L_axioms.range_type" to "L_axioms.range_fm_type" (clash with
   ZF.func). In general, uniformize notation
   (e.g. typed_function_type).
