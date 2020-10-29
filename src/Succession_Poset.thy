@@ -28,14 +28,13 @@ lemma seqspaceD[dest]: "f\<in>B\<^bsup><\<alpha>\<^esup> \<Longrightarrow> \<exi
   A relative definition for \<^term>\<open>seqspace\<close> would be appropriate.\<close>
 schematic_goal seqspace_fm_auto:
   assumes 
-    "nth(i,env) = n" "nth(j,env) = z"  "nth(h,env) = B" 
     "i \<in> nat" "j \<in> nat" "h\<in>nat" "env \<in> list(A)"
   shows 
-    "(\<exists>om\<in>A. omega(##A,om) \<and> n \<in> om \<and> is_funspace(##A, n, B, z)) \<longleftrightarrow> (A, env \<Turnstile> (?sqsprp(i,j,h)))"
+    "(\<exists>om\<in>A. omega(##A,om) \<and> nth(i,env) \<in> om \<and> is_funspace(##A, nth(i,env), nth(h,env), nth(j,env))) \<longleftrightarrow> (A, env \<Turnstile> (?sqsprp(i,j,h)))"
   unfolding is_funspace_def 
-  by (insert assms ; (rule sep_rules | simp)+)
+  by (insert assms ; (rule iff_sats | simp)+)
 
-synthesize "seqspace_rep_fm" from_schematic seqspace_fm_auto
+synthesize "seqspace_rep" from_schematic seqspace_fm_auto
  
 locale M_seqspace =  M_trancl +
   assumes 
@@ -72,7 +71,7 @@ proof (unfold_locales, simp)
     by (auto, blast dest:transitivity)
   ultimately
   have "strong_replacement(##M, \<lambda>n z. \<exists>om[##M]. omega(##M,om) \<and> n \<in> om \<and> is_funspace(##M, n, B, z))"
-    using seqspace_fm_auto[of 0 "[_,_,B]" _ 1 _ 2 B M] unfolding seqspace_rep_fm_def strong_replacement_def
+    using seqspace_rep_iff_sats[of 0 "[_,_,B]" _ 1 _ 2 B M] unfolding seqspace_rep_fm_def strong_replacement_def
     by simp
   with \<open>B\<in>M\<close> 
   show "strong_replacement(##M, \<lambda>n z. n \<in> nat \<and> is_funspace(##M, n, B, z))"

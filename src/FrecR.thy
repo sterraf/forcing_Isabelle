@@ -1,8 +1,8 @@
 section\<open>Well-founded relation on names\<close>
 theory FrecR imports Names Synthetic_Definition begin
 
-lemmas sep_rules' = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
-  fun_plus_iff_sats omega_iff_sats FOL_sats_iff
+lemmas sep_rules' [iff_sats]  = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
+  fun_plus_iff_sats omega_iff_sats FOL_sats_iff (* NOTE: why FOL_sats_iff? *)
 
 text\<open>\<^term>\<open>frecR\<close> is the well-founded relation on names that allows
 us to define forcing for atomic formulas.\<close>
@@ -148,7 +148,7 @@ definition
   ftype_fm :: "[i,i] \<Rightarrow> i" where
   "ftype_fm \<equiv> fst_fm"
 
-lemma is_ftype_iff_sats:
+lemma is_ftype_iff_sats [iff_sats]:
   assumes
     "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
   shows
@@ -181,14 +181,14 @@ definition
   name1_fm :: "[i,i] \<Rightarrow> i" where
   "name1_fm(x,t) \<equiv> hcomp_fm(fst_fm,snd_fm,x,t)"
 
-lemma sats_name1_fm :
+lemma sats_name1_fm [simp]:
   "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk>
     \<Longrightarrow> sats(A, name1_fm(x,y), env) \<longleftrightarrow>
         is_name1(##A, nth(x,env), nth(y,env))"
   unfolding name1_fm_def is_name1_def using sats_fst_fm sats_snd_fm
     sats_hcomp_fm[of A "is_fst(##A)" _ fst_fm "is_snd(##A)"] by simp
 
-lemma is_name1_iff_sats:
+lemma is_name1_iff_sats [iff_sats]:
   assumes
     "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
   shows
@@ -204,7 +204,7 @@ definition
   snd_snd_fm :: "[i,i]\<Rightarrow>i" where
   "snd_snd_fm(x,t) \<equiv> hcomp_fm(snd_fm,snd_fm,x,t)"
 
-lemma sats_snd2_fm :
+lemma sats_snd2_fm [simp]:
   "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk>
     \<Longrightarrow> sats(A,snd_snd_fm(x,y), env) \<longleftrightarrow>
         is_snd_snd(##A, nth(x,env), nth(y,env))"
@@ -312,6 +312,11 @@ lemma sats_ecloseN_fm [simp]:
     is_singleton_iff_sats[symmetric]
   by auto
 
+lemma is_ecloseN_iff_sats [iff_sats]:
+  "\<lbrakk> nth(en, env) = ena; nth(t, env) = ta; en \<in> nat; t \<in> nat ; env \<in> list(A) \<rbrakk>
+    \<Longrightarrow> is_ecloseN(##A,ta,ena) \<longleftrightarrow> sats(A, ecloseN_fm(en,t), env)"
+  by simp
+
 (* Relation of forces *)
 definition
   frecR :: "i \<Rightarrow> i \<Rightarrow> o" where
@@ -377,14 +382,14 @@ relativize "frecR" "is_frecR"
 
 schematic_goal sats_frecR_fm_auto:
   assumes
-    "i\<in>nat" "j\<in>nat" "env\<in>list(A)" "nth(i,env) = a" "nth(j,env) = b"
+    "i\<in>nat" "j\<in>nat" "env\<in>list(A)"
   shows
-    "is_frecR(##A,a,b) \<longleftrightarrow> sats(A,?fr_fm(i,j),env)"
+    "is_frecR(##A,nth(i,env),nth(j,env)) \<longleftrightarrow> sats(A,?fr_fm(i,j),env)"
   unfolding  is_frecR_def
   by (insert assms ; (rule sep_rules' cartprod_iff_sats components_iff_sats
         | simp del:sats_cartprod_fm)+)
 
-synthesize "frecR_fm" from_schematic sats_frecR_fm_auto
+synthesize "frecR" from_schematic sats_frecR_fm_auto
 
 (* Third item of Kunen observations about the trcl relation in p. 257. *)
 lemma eq_ftypep_not_frecrR:

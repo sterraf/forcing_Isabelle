@@ -10,49 +10,49 @@ schematic_goal ZF_union_auto:
   unfolding Union_ax_def 
   by ((rule sep_rules | simp)+)
 
-synthesize "ZF_union_fm" from_schematic ZF_union_auto
+synthesize "ZF_union" from_schematic ZF_union_auto
 
 schematic_goal ZF_power_auto:
     "power_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ?zfpow)"
   unfolding power_ax_def powerset_def subset_def
   by ((rule sep_rules | simp)+)
 
-synthesize "ZF_power_fm" from_schematic ZF_power_auto
+synthesize "ZF_power" from_schematic ZF_power_auto
 
 schematic_goal ZF_pairing_auto:
     "upair_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ?zfpair)"
   unfolding upair_ax_def 
   by ((rule sep_rules | simp)+)
 
-synthesize "ZF_pairing_fm" from_schematic ZF_pairing_auto
+synthesize "ZF_pairing" from_schematic ZF_pairing_auto
 
 schematic_goal ZF_foundation_auto:
     "foundation_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ?zfpow)"
   unfolding foundation_ax_def 
   by ((rule sep_rules | simp)+)
 
-synthesize "ZF_foundation_fm" from_schematic ZF_foundation_auto
+synthesize "ZF_foundation" from_schematic ZF_foundation_auto
 
 schematic_goal ZF_extensionality_auto:
     "extensionality(##A) \<longleftrightarrow> (A, [] \<Turnstile> ?zfpow)"
   unfolding extensionality_def 
   by ((rule sep_rules | simp)+)
 
-synthesize "ZF_extensionality_fm" from_schematic ZF_extensionality_auto
+synthesize "ZF_extensionality" from_schematic ZF_extensionality_auto
 
 schematic_goal ZF_infinity_auto:
     "infinity_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> (?\<phi>(i,j,h)))"
   unfolding infinity_ax_def 
   by ((rule sep_rules | simp)+)
 
-synthesize "ZF_infinity_fm" from_schematic ZF_infinity_auto
+synthesize "ZF_infinity" from_schematic ZF_infinity_auto
 
 schematic_goal ZF_choice_auto:
     "choice_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> (?\<phi>(i,j,h)))"
   unfolding choice_ax_def 
   by ((rule sep_rules | simp)+)
 
-synthesize "ZF_choice_fm" from_schematic ZF_choice_auto
+synthesize "ZF_choice" from_schematic ZF_choice_auto
 
 notation ZF_choice_fm (\<open>AC\<close>)
 
@@ -279,7 +279,7 @@ schematic_goal sats_univalent_fm_auto:
   unfolding univalent_def 
   by (insert asms; (rule sep_rules Q_iff_sats | simp)+)
   
-synthesize_notc "univalent_fm" from_schematic sats_univalent_fm_auto
+synthesize_notc "univalent" from_schematic sats_univalent_fm_auto
 
 lemma univalent_fm_type [TC]: "q1\<in> formula \<Longrightarrow> q2\<in>formula \<Longrightarrow> i\<in>nat \<Longrightarrow> 
   univalent_fm(q2,q1,i) \<in>formula"

@@ -635,14 +635,13 @@ schematic_goal rtran_closure_fm_auto:
 
 schematic_goal trans_closure_fm_auto:
   assumes
-    "nth(i,env) = r" "nth(j,env) = rp"
     "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
   shows
-    "tran_closure(##A,r,rp) \<longleftrightarrow> sats(A,?tc(i,j),env)"
+    "tran_closure(##A,nth(i,env),nth(j,env)) \<longleftrightarrow> sats(A,?tc(i,j),env)"
   unfolding tran_closure_def
   by (insert assms ; (rule sep_rules rtran_closure_fm_auto | simp))+
 
-synthesize "trans_closure_fm" from_schematic trans_closure_fm_auto
+synthesize "trans_closure" from_schematic trans_closure_fm_auto
 
 schematic_goal wellfounded_trancl_fm_auto:
   assumes
@@ -651,7 +650,7 @@ schematic_goal wellfounded_trancl_fm_auto:
   shows
     "wellfounded_trancl(##A,B,r,p) \<longleftrightarrow> sats(A,?wtf(i,j,k),env)"
   unfolding  wellfounded_trancl_def
-  by (insert assms ; (rule sep_rules trans_closure_fm_iff_sats | simp)+)
+  by (insert assms ; (rule sep_rules trans_closure_iff_sats | simp)+)
 
 context M_ZF_trans
 begin

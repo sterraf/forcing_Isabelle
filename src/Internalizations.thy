@@ -32,16 +32,12 @@ lemmas fm_defs =
   relation_fm_def composition_fm_def field_fm_def ordinal_fm_def range_fm_def
   transset_fm_def subset_fm_def Replace_fm_def
 
-lemmas formulas_def = fm_defs
+lemmas formulas_def [fm_definitions] = fm_defs
   is_iterates_fm_def iterates_MH_fm_def is_wfrec_fm_def is_recfun_fm_def is_transrec_fm_def
   is_nat_case_fm_def quasinat_fm_def number1_fm_def ordinal_fm_def finite_ordinal_fm_def
   cartprod_fm_def sum_fm_def Inr_fm_def Inl_fm_def
   formula_functor_fm_def 
   Memrel_fm_def transset_fm_def subset_fm_def pre_image_fm_def restriction_fm_def
-  list_functor_fm_def tl_fm_def quasilist_fm_def Cons_fm_def Nil_fm_def 
-
-setup\<open>
-fold (Context.theory_map o Formulas.add_thm) (rev @{thms formulas_def})\<close>
-
+  list_functor_fm_def tl_fm_def quasilist_fm_def Cons_fm_def Nil_fm_def
 
 end
