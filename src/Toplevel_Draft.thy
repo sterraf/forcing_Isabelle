@@ -44,8 +44,17 @@ abbreviation
 
 locale M_master = M_cardinal_AC +
   assumes
-  apply_replacement: "M(x) \<Longrightarrow> M(f) \<Longrightarrow>
-      strong_replacement(M, \<lambda>z y. y = \<langle>z, f ` \<langle>x,z\<rangle>\<rangle>)" and
+  domain_separation: "M(x) \<Longrightarrow> separation(M, \<lambda>z. x \<in> domain(z))"
+  and
+  inj_dense_separation: "M(x) \<Longrightarrow> M(w) \<Longrightarrow>
+    separation(M, \<lambda>z. \<exists>n\<in>\<omega>.    \<langle>\<langle>w, n\<rangle>, 1\<rangle> \<in> z \<and> \<langle>\<langle>x, n\<rangle>, 0\<rangle> \<in> z)"
+  and
+  apply_replacement1: "M(x) \<Longrightarrow> M(f) \<Longrightarrow>
+      strong_replacement(M, \<lambda>z y. y = \<langle>z, f ` \<langle>x,z\<rangle>\<rangle>)"
+  and
+  apply_replacement2: "M(x) \<Longrightarrow> M(f) \<Longrightarrow> M(z) \<Longrightarrow>
+      strong_replacement(M, \<lambda>x y. y = \<langle>x, f ` \<langle>z, x\<rangle>\<rangle>)"
+  and
   lam_apply_replacement: "M(A) \<Longrightarrow> M(f) \<Longrightarrow>
       strong_replacement(M, \<lambda>x y. y = \<langle>x, \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>\<rangle>)"
 begin
@@ -59,7 +68,12 @@ lemma Fn_nat_closed[intro,simp]:
   using assms Fn_nat_eq_FiniteFun
   by simp
 
-lemma csucc_rel_le: "Card\<^bsup>M\<^esup>(l) \<Longrightarrow> K < l \<Longrightarrow> (K\<^sup>+)\<^bsup>M\<^esup> \<le> l"
+lemma lepoll_rel_imp_lepoll_rel_cardinal_rel:
+  assumes "X \<lesssim>\<^bsup>M\<^esup> Y"  "M(X)" "M(Y)"
+  shows "X \<lesssim>\<^bsup>M\<^esup> |Y|\<^bsup>M\<^esup>"
+  sorry
+
+lemma csucc_rel_le: "Card\<^bsup>M\<^esup>(l) \<Longrightarrow> K < l \<Longrightarrow> M(l) \<Longrightarrow> M(K) \<Longrightarrow> (K\<^sup>+)\<^bsup>M\<^esup> \<le> l"
   sorry
 
 lemma nat_lt_Aleph_rel1: "\<omega> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
@@ -74,13 +88,13 @@ lemma Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esu
 lemma Card_rel_Aleph_rel[simp]: "Ord(\<alpha>) \<Longrightarrow> Card\<^bsup>M\<^esup>(\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)"
   sorry
 
-lemma Aleph_rel_zero_eq_nat: "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup> =  \<omega>"
+lemma Aleph_rel_zero_eq_nat: "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup> = \<omega>"
   sorry
 
 lemma Aleph_rel_succ: "\<aleph>\<^bsub>succ(\<alpha>)\<^esub>\<^bsup>M\<^esup> = (\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup>"
   sorry
 
-lemma Aleph_rel_increasing:  "a < b  \<Longrightarrow> M(a) \<Longrightarrow> M(b) \<Longrightarrow> \<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup> < \<aleph>\<^bsub>b\<^esub>\<^bsup>M\<^esup>"
+lemma Aleph_rel_increasing: "a < b  \<Longrightarrow> M(a) \<Longrightarrow> M(b) \<Longrightarrow> \<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup> < \<aleph>\<^bsub>b\<^esub>\<^bsup>M\<^esup>"
   sorry
 
 lemma Fnle_closed[intro,simp]:
@@ -92,14 +106,23 @@ end (* M_master *)
 
 locale M_master_sub = M_master + N:M_master N for N +
   assumes
-    M_imp_N:"M(x) \<Longrightarrow> N(x)"
+    M_imp_N: "M(x) \<Longrightarrow> N(x)" and
+    Ord_iff: "Ord(x) \<Longrightarrow> M(x) \<longleftrightarrow> N(x)"
 begin
+
+lemma Card_rel_imp_Card_rel: "M(\<kappa>) \<Longrightarrow> Card\<^bsup>N\<^esup>(\<kappa>) \<Longrightarrow> Card\<^bsup>M\<^esup>(\<kappa>)"
+  sorry
 
 lemma Aleph_rel_le_Aleph_rel: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>N\<^esup>"
   sorry
 
-lemma cardinal_rel_le_cardinal_rel: "|X|\<^bsup>M\<^esup> \<le> |X|\<^bsup>N\<^esup>"
+lemma cardinal_rel_le_cardinal_rel: "M(X) \<Longrightarrow> |X|\<^bsup>N\<^esup> \<le> |X|\<^bsup>M\<^esup>"
   sorry
+
+lemma Aleph_rel_sub_closed: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> N(\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)"
+  using Aleph_rel2_closed Ord_iff[THEN iffD1,
+      OF Card_rel_Aleph_rel[THEN Card_rel_is_Ord]]
+  by simp
 
 end (* M_master_sub *)
 
@@ -134,6 +157,12 @@ lemma ccc_preserves_Aleph_1:
   using Card_rel_Aleph_rel
   sorry
 
+lemma ccc_preserves_Aleph_2:
+  assumes "ccc\<^bsup>M\<^esup>(P,leq)"
+  shows "Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
+  using Card_rel_Aleph_rel
+  sorry
+
 end (* G_generic_lemmas *)
 
 end (* G_generic *)
@@ -149,37 +178,34 @@ end (* M_ctm *)
 
 locale add_generic = G_generic "Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" "Fnle(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" 0
 
-sublocale add_generic \<subseteq> ext:M_ZF_trans "M\<^bsup>Add\<^esup>[G]"
-  using Transset_MG generic pairing_in_MG
-    Union_MG extensionality_in_MG power_in_MG
-    foundation_in_MG strong_replacement_in_MG
-    separation_in_MG infinity_in_MG
-  by unfold_locales
-
 sublocale add_generic \<subseteq> M_master_sub "##M" "##(M\<^bsup>Add\<^esup>[G])"
-  using M_subset_MG[OF one_in_G] generic
+  using M_subset_MG[OF one_in_G] generic Ord_MG_iff
   by unfold_locales auto
 
 context add_generic
 begin
 
-abbreviation
-  f_G :: "i" (\<open>f\<^bsub>G\<^esub>\<close>) where
-  "f\<^bsub>G\<^esub> \<equiv> \<Union>G"
-
-definition
-  h_G :: "i" (\<open>h\<^bsub>G\<^esub>\<close>) where
-  "h\<^bsub>G\<^esub> \<equiv> \<lambda>\<alpha>\<in>\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>. \<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub>`<\<alpha>,n>"
+notation Leq (infixl "\<preceq>" 50)
+notation Incompatible (infixl "\<bottom>" 50)
+notation GenExt_at_P ("_[_]" [71,1])
 
 lemma Add_subs_preserves_Aleph_1:  "Card\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)"
   using ccc_preserves_Aleph_1 ccc_Add_subs_Aleph_2
   by auto
 
-lemma Aleph_rel_MG_eq_Aleph_rel_M: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+lemma Add_subs_preserves_Aleph_2:  "Card\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
+  using ccc_preserves_Aleph_2 ccc_Add_subs_Aleph_2
+  by auto
+
+lemma Aleph_rel1_MG_eq_Aleph_rel1_M:
+  includes G_generic_lemmas
+  shows "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
 proof -
   have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
     using Aleph_rel_le_Aleph_rel by simp
   moreover
+  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<in> M[G]" using Aleph_rel_closed by simp
+  moreover from this
   have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<le> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
     using Add_subs_preserves_Aleph_1[THEN ext.csucc_rel_le, of \<omega>]
       nat_lt_Aleph_rel1 ext.Aleph_rel_succ ext.Aleph_rel_zero_eq_nat
@@ -188,14 +214,170 @@ proof -
   show ?thesis using le_anti_sym by auto
 qed
 
-lemma "f\<^bsub>G\<^esub> : \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<rightarrow> 2"
-  sorry
+\<comment> \<open>FIXME: repeated proof, unify\<close>
+lemma Aleph_rel2_MG_eq_Aleph_rel2_M:
+  includes G_generic_lemmas
+  shows "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> = \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>"
+proof -
+  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
+    using Aleph_rel_le_Aleph_rel by simp
+  moreover
+  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<in> M[G]" "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<in> M[G]" using Aleph_rel_closed by simp_all
+  moreover from this
+  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<le> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>"
+    using ext.Aleph_rel_succ Aleph_rel1_MG_eq_Aleph_rel1_M
+      Add_subs_preserves_Aleph_2[THEN ext.csucc_rel_le, of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"]
+      Aleph_rel_increasing[of 1 2]
+    by simp
+  ultimately
+  show ?thesis using le_anti_sym by auto
+qed
+
+abbreviation
+  f_G :: "i" (\<open>f\<^bsub>G\<^esub>\<close>) where
+  "f\<^bsub>G\<^esub> \<equiv> \<Union>G"
+
+abbreviation
+  dom_dense :: "i\<Rightarrow>i" where
+  "dom_dense(x) \<equiv> { p\<in>Add . x \<in> domain(p) }"
+
+\<comment> \<open>FIXME write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close>
+    in a context with a generic filter for it\<close>
+lemma dense_dom_dense: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> dense(dom_dense(x))"
+proof
+  fix p
+  assume "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" "p \<in> Add"
+  show "\<exists>d\<in>dom_dense(x). d \<preceq> p"
+  proof (cases "x \<in> domain(p)")
+    case True
+    with \<open>x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>\<close> \<open>p \<in> Add\<close>
+    show ?thesis using refl_leq by auto
+  next
+    case False
+    note \<open>p \<in> Add\<close>
+    moreover from this and False and \<open>x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>\<close>
+    have "cons(\<langle>x,0\<rangle>, p) \<in> Add"
+      using FiniteFun.consI[of x "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 0 2 p]
+        Fn_nat_eq_FiniteFun by auto
+    moreover from \<open>p \<in> Add\<close>
+    have "x\<in>domain(cons(\<langle>x,0\<rangle>, p))" by simp
+    ultimately
+    show ?thesis
+      \<comment> \<open>FIXME: Too many unfoldings following\<close>
+      unfolding Fnle_def Fnlerel_def Rrel_def
+      by fastforce
+  qed
+qed
+
+(*
+NOTE Class model version?
+lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> M(dom_dense(x))" *)
+lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> dom_dense(x) \<in> M"
+  using Fn_nat_closed Aleph_rel2_closed domain_separation[of x] nat_into_M
+  by (rule_tac separation_closed[simplified], blast dest:transM) simp
+
+lemma domain_f_G: assumes "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "y \<in> \<omega>"
+  shows "\<langle>x, y\<rangle> \<in> domain(f\<^bsub>G\<^esub>)"
+proof -
+  from assms
+  have "dense(dom_dense(\<langle>x, y\<rangle>))" using dense_dom_dense by simp
+  with assms
+  obtain p where "p\<in>dom_dense(\<langle>x, y\<rangle>)" "p\<in>G"
+    using generic[THEN M_generic_denseD, of "dom_dense(\<langle>x, y\<rangle>)"]
+    by auto
+  then
+  show "\<langle>x, y\<rangle> \<in> domain(f\<^bsub>G\<^esub>)" by blast
+qed
+
+\<comment> \<open>MOVE THIS to \<^file>\<open>Cohen_Posets.thy\<close>\<close>
+lemma Fn_nat_subset_Pow: "Fn(\<omega>,I,J) \<subseteq> Pow(I\<times>J)"
+  using subset_trans[OF FiniteFun.dom_subset Fin.dom_subset]
+    Fn_nat_eq_FiniteFun by simp
+
+lemma f_G_funtype:
+  includes G_generic_lemmas
+  shows "f\<^bsub>G\<^esub> : \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<rightarrow> 2"
+  using generic domain_f_G
+  unfolding Pi_def
+proof (auto)
+  show "x \<in> B \<Longrightarrow> B \<in> G \<Longrightarrow> x \<in> (\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>) \<times> 2" for B x
+    using Fn_nat_subset_Pow by blast
+  show "function(f\<^bsub>G\<^esub>)" sorry
+qed
+
+abbreviation
+  inj_dense :: "i\<Rightarrow>i\<Rightarrow>i" where
+  "inj_dense(w,x) \<equiv>
+    { p\<in>Add . (\<exists>n\<in>\<omega>. <<w,n>,1> \<in> p \<and> <<x,n>,0> \<in> p) }"
+
+\<comment> \<open>FIXME write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close>
+    in a context with a generic filter for it\<close>
+lemma dense_inj_dense:
+  assumes "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "w \<noteq> x"
+  shows "dense(inj_dense(w,x))"
+proof
+  fix p
+  assume "p \<in> Add"
+  then
+  obtain n where "<w,n> \<notin> domain(p)" "<x,n> \<notin> domain(p)" "n \<in> \<omega>"
+    using Fn_nat_eq_FiniteFun sorry
+  moreover
+  note \<open>p \<in> Add\<close> assms
+  moreover from calculation
+  have "cons(\<langle>\<langle>x,n\<rangle>,0\<rangle>, p) \<in> Add"
+    using FiniteFun.consI[of "\<langle>x,n\<rangle>" "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 0 2 p]
+      Fn_nat_eq_FiniteFun by auto
+  ultimately
+  have "cons(\<langle>\<langle>w,n\<rangle>,1\<rangle>, cons(\<langle>\<langle>x,n\<rangle>,0\<rangle>, p) ) \<in> Add"
+    using FiniteFun.consI[of "\<langle>w,n\<rangle>" "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 1 2 "cons(\<langle>\<langle>x,n\<rangle>,0\<rangle>, p)"]
+      Fn_nat_eq_FiniteFun by auto
+  with \<open>n \<in> \<omega>\<close>
+  show "\<exists>d\<in>inj_dense(w,x). d \<preceq> p"
+    using \<open>p \<in> Add\<close> unfolding Fnle_def Fnlerel_def Rrel_def
+    by (intro bexI) auto
+qed
+
+lemma inj_dense_closed[intro,simp]:
+  "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> inj_dense(w,x) \<in> M"
+  using Fn_nat_closed Aleph_rel2_closed domain_separation[of x] nat_into_M
+    inj_dense_separation transM[OF _ Aleph_rel2_closed]
+  by (rule_tac separation_closed[simplified]; simp_all)
+
+lemma Aleph_rel2_new_reals:
+  assumes "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "w \<noteq> x"
+  shows "(\<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub> ` \<langle>w, n\<rangle>) \<noteq> (\<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub> ` \<langle>x, n\<rangle>)"
+proof -
+  from assms
+  have "dense(inj_dense(w,x))" using dense_inj_dense by simp
+  with assms
+  obtain p where "p\<in>inj_dense(w,x)" "p\<in>G"
+    using generic[THEN M_generic_denseD, of "inj_dense(w,x)"]
+    by blast
+  then
+  obtain n where "n \<in> \<omega>" "\<langle>\<langle>w, n\<rangle>, 1\<rangle> \<in> p" "\<langle>\<langle>x, n\<rangle>, 0\<rangle> \<in> p"
+    by blast
+  moreover from this and \<open>p\<in>G\<close>
+  have "\<langle>\<langle>w, n\<rangle>, 1\<rangle> \<in> f\<^bsub>G\<^esub>" "\<langle>\<langle>x, n\<rangle>, 0\<rangle> \<in> f\<^bsub>G\<^esub>" by auto
+  moreover from calculation
+  have "f\<^bsub>G\<^esub> ` \<langle>w, n\<rangle> = 1" "f\<^bsub>G\<^esub> ` \<langle>x, n\<rangle> = 0"
+    using f_G_funtype apply_equality
+    by auto
+  ultimately
+  have "(\<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub> ` \<langle>w, n\<rangle>) ` n \<noteq> (\<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub> ` \<langle>x, n\<rangle>) ` n"
+    by simp
+  then
+  show ?thesis by fastforce
+qed
+
+definition
+  h_G :: "i" (\<open>h\<^bsub>G\<^esub>\<close>) where
+  "h\<^bsub>G\<^esub> \<equiv> \<lambda>\<alpha>\<in>\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>. \<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub>`<\<alpha>,n>"
 
 lemma h_G_in_MG[simp]:
   includes G_generic_lemmas
   shows "h\<^bsub>G\<^esub> \<in> M\<^bsup>Add\<^esup>[G]"
   using Aleph_rel2_closed
-    ext.lam_apply_replacement ext.apply_replacement
+    ext.lam_apply_replacement ext.apply_replacement1
     ext.Union_closed[simplified, OF G_in_MG]
     \<comment> \<open>The "simplified" here is because of
         the \<^term>\<open>setclass\<close> ocurrences\<close>
@@ -203,43 +385,61 @@ lemma h_G_in_MG[simp]:
   unfolding h_G_def
   by (rule_tac ext.lam_closed[simplified] | auto dest:transM)+
 
-lemma h_G_inj_Aleph_rel2_reals:"h\<^bsub>G\<^esub> \<in> inj\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2)"
-  sorry
+lemma h_G_inj_Aleph_rel2_reals: "h\<^bsub>G\<^esub> \<in> inj\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2)"
+  using Aleph_rel_sub_closed
+proof (intro ext.mem_inj_abs[THEN iffD2])
+  show "h\<^bsub>G\<^esub> \<in> inj(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2)"
+    unfolding inj_def
+  proof (intro ballI CollectI impI)
+    show "h\<^bsub>G\<^esub> \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<rightarrow> \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
+      using f_G_funtype G_in_MG ext.nat_into_M unfolding h_G_def
+      apply (intro lam_type ext.mem_function_space_rel_abs[THEN iffD2], simp_all)
+      apply (rule_tac ext.lam_closed[simplified], simp_all)
+       apply (rule ext.apply_replacement2)
+         apply (auto dest:ext.transM[OF _ Aleph_rel_sub_closed])
+      done
+    fix w x
+    assume "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "h\<^bsub>G\<^esub> ` w = h\<^bsub>G\<^esub> ` x"
+    then
+    show "w = x"
+      unfolding h_G_def using Aleph_rel2_new_reals by auto
+  qed
+qed simp_all
 
 lemma Aleph2_submodel_le_continuum_rel:
   includes G_generic_lemmas
-  shows "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>\<^esup>)\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
+  shows "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>\<^esup>)\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
 proof -
   have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<in> M\<^bsup>Add\<^esup>[G]" "Ord(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
     using Card_rel_Aleph_rel[THEN Card_rel_is_Ord, of 2]
       Aleph_rel2_closed
     by auto
   moreover from this
-  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>  \<lesssim>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2"
+  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<lesssim>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2"
     using ext.def_lepoll_rel[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2",
         OF _ ext.function_space_rel_closed]
       h_G_inj_Aleph_rel2_reals h_G_in_MG ext.nat_into_M ext.M_nat
     by auto
+  moreover from calculation
+  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<lesssim>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> |\<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2|\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
+    using ext.lepoll_rel_imp_lepoll_rel_cardinal_rel by simp
   ultimately
   have "|\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>|\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>\<^esup>)\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
     using ext.lepoll_rel_imp_Card_rel_le[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2",
         OF _ _ ext.function_space_rel_closed] ext.nat_into_M ext.M_nat
-      ext.Aleph_rel_zero_eq_nat
+      ext.Aleph_rel_zero_eq_nat Aleph_rel2_MG_eq_Aleph_rel2_M
     unfolding def_cexp_rel by simp
-  moreover
-  have "|\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>|\<^bsup>M\<^esup> \<le> |\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>|\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
-    using cardinal_rel_le_cardinal_rel .
-  moreover
-  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> = |\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>|\<^bsup>M\<^esup>"
-    using Card_rel_cardinal_rel_eq[OF _ Aleph_rel2_closed] by simp
-  ultimately
-  show ?thesis using le_trans by simp
+  then
+  show "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>\<^esup>)\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
+    using Aleph_rel2_MG_eq_Aleph_rel2_M
+      ext.Card_rel_Aleph_rel[of 2, THEN ext.Card_rel_cardinal_rel_eq]
+      ext.Aleph_rel2_closed
+    by simp
 qed
 
 lemma Aleph_rel_lt_continuum_rel: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> < (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>\<^esup>)\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
   using Aleph2_submodel_le_continuum_rel
-    Aleph_rel_increasing[of 1 2] Aleph_rel_MG_eq_Aleph_rel_M
-    le_trans by auto
+    ext.Aleph_rel_increasing[of 1 2] le_trans by auto
 
 corollary not_CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<noteq> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>\<^esup>)\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
   using Aleph_rel_lt_continuum_rel by auto
