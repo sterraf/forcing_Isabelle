@@ -42,6 +42,19 @@ abbreviation
   csucc_r_set :: "[i,i] \<Rightarrow> i"  (\<open>'(_\<^sup>+')\<^bsup>_\<^esup>\<close>) where
   "csucc_r_set(x,M) \<equiv> csucc_rel(##M,x)"
 
+locale M_cardinal_UN_lepoll = M_cardinal_UN _ J for J
+begin
+
+lemma leqpoll_rel_imp_cardinal_rel_UN_le:
+  notes [dest] = InfCard_is_Card Card_is_Ord
+  assumes "InfCard\<^bsup>M\<^esup>(K)" "J \<lesssim>\<^bsup>M\<^esup> K" "\<And>i. i\<in>J \<Longrightarrow> |X(i)|\<^bsup>M\<^esup> \<le> K"
+    and types:"M(K)"
+  shows "|\<Union>i\<in>J. X(i)|\<^bsup>M\<^esup> \<le> K"
+  sorry
+
+end (* M_cardinal_UN_lepoll *)
+
+
 locale M_master = M_cardinal_AC +
   assumes
   domain_separation: "M(x) \<Longrightarrow> separation(M, \<lambda>z. x \<in> domain(z))"
@@ -73,7 +86,36 @@ lemma lepoll_rel_imp_lepoll_rel_cardinal_rel:
   shows "X \<lesssim>\<^bsup>M\<^esup> |Y|\<^bsup>M\<^esup>"
   sorry
 
+lemma subset_imp_le_cardinal_rel: "A \<subseteq> B \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> |A|\<^bsup>M\<^esup> \<le> |B|\<^bsup>M\<^esup>"
+  sorry
+
+lemma cardinal_rel_subset_of_Card_rel:
+  assumes "Card\<^bsup>M\<^esup>(\<gamma>)" "a \<subseteq> \<gamma>"
+    and types: "M(\<gamma>)" "M(a)"
+  shows "|a|\<^bsup>M\<^esup> < \<gamma> \<or> |a|\<^bsup>M\<^esup> = \<gamma>"
+  sorry
+
+lemma lt_surj_rel_empty_imp_Card:
+  assumes "\<And>\<alpha>. \<alpha> < \<kappa> \<Longrightarrow> surj\<^bsup>M\<^esup>(\<alpha>,\<kappa>) = 0"
+  shows "Card\<^bsup>M\<^esup>(\<kappa>)"
+  sorry
+
+lemma Card_rel_csucc_rel: "Ord(K) \<Longrightarrow> M(K) \<Longrightarrow> Card\<^bsup>M\<^esup>((K\<^sup>+)\<^bsup>M\<^esup>)"
+  sorry
+
 lemma csucc_rel_le: "Card\<^bsup>M\<^esup>(l) \<Longrightarrow> K < l \<Longrightarrow> M(l) \<Longrightarrow> M(K) \<Longrightarrow> (K\<^sup>+)\<^bsup>M\<^esup> \<le> l"
+  sorry
+
+lemma cardinal_rel_lt_csucc_rel_iff: "Card\<^bsup>M\<^esup>(K) \<Longrightarrow> M(K) \<Longrightarrow> M(K') \<Longrightarrow>
+  |K'|\<^bsup>M\<^esup> < (K\<^sup>+)\<^bsup>M\<^esup> \<longleftrightarrow> |K'|\<^bsup>M\<^esup> \<le> K"
+  sorry
+
+lemma InfCard_rel_Aleph_rel:
+  assumes "Ord(\<alpha>)" "M(\<alpha>)"
+  shows "InfCard\<^bsup>M\<^esup>(\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)"
+  sorry
+
+lemma cardinal_rel_Aleph_rel [simp]: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> |\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>|\<^bsup>M\<^esup> = \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>"
   sorry
 
 lemma nat_lt_Aleph_rel1: "\<omega> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
@@ -141,6 +183,10 @@ lemma ccc_Add_subs_Aleph_2: "ccc\<^bsup>M\<^esup>(Fn(\<omega>,\<aleph>\<^bsub>2\
 
 end (* M_ctm *)
 
+sublocale G_generic \<subseteq> M_master_sub "##M" "##(M[G])"
+  using M_subset_MG[OF one_in_G] generic Ord_MG_iff
+  by unfold_locales auto
+
 context G_generic begin
 
 context
@@ -154,14 +200,187 @@ lemma G_in_MG: "G \<in> M[G]"
 lemma ccc_preserves_Aleph_1:
   assumes "ccc\<^bsup>M\<^esup>(P,leq)"
   shows "Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)"
-  using Card_rel_Aleph_rel
-  sorry
+proof (rule ccontr)
+  assume "\<not> Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)"
+  then
+  obtain \<alpha> f where "\<alpha> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "f \<in> surj\<^bsup>M[G]\<^esup>(\<alpha>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)"
+    using ext.lt_surj_rel_empty_imp_Card by blast
+  moreover from this
+  have "\<alpha> \<in> M" "f \<in> M[G]"
+    using Aleph_rel_closed[of 1] ext.trans_surj_rel_closed
+    by (auto dest:transM ext.transM dest!:ltD)
+  moreover
+  note \<open>ccc\<^bsup>M\<^esup>(P,leq)\<close>
+  ultimately
+  obtain F where "F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)" "\<forall>\<beta>\<in>\<alpha>. f`\<beta> \<in> F`\<beta>" "\<forall>\<beta>\<in>\<alpha>. |F`\<beta>|\<^bsup>M\<^esup> \<le> \<omega>"
+    "F \<in> M"
+    using ccc_fun_approximation_lemma[of \<alpha> "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" f]
+      ext.mem_surj_abs[of f \<alpha> "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"]
+      Aleph_rel_closed[of 1] surj_is_fun[of f \<alpha> "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"] by auto
+  then
+  have "\<beta> \<in> \<alpha> \<Longrightarrow> |F`\<beta>|\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>" for \<beta>
+    using Aleph_rel_zero_eq_nat by simp
+  from \<open>\<alpha> \<in> M\<close> \<open>F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)\<close> \<open>F\<in>M\<close>
+  interpret M_cardinal_UN_lepoll "##M" "\<lambda>\<beta>. F`\<beta>" \<alpha>
+    using Aleph_rel_closed[of 0]
+  proof (unfold_locales, auto dest:transM)
+    show "w \<in> F ` x \<Longrightarrow> x \<in> M" for w x
+    proof -
+      fix w x
+      assume "w \<in> F`x"
+      then
+      have "x \<in> domain(F)"
+        using apply_0 by auto
+      with \<open>F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)\<close>
+      have "x \<in> \<alpha>"
+        using domain_of_fun by simp
+      with \<open>\<alpha> \<in> M\<close>
+      show "x \<in> M" by (auto dest:transM)
+    qed
+    show "strong_replacement(##M, \<lambda>y z. y \<in> F ` x \<and> z = {\<langle>x, y\<rangle>})"
+      "strong_replacement(##M, \<lambda>x z. z = Sigfun(x, (`)(F)))"
+      "strong_replacement(##M, \<lambda>x y. y = F ` x)"
+      "strong_replacement(##M, \<lambda>x y. y = \<langle>x, Cardinal_AC_Relative.minimum(r, F ` x)\<rangle>)"
+      "strong_replacement(##M, \<lambda>y z. y \<in> inj(F ` x, \<alpha>) \<and> z = {\<langle>x, y\<rangle>})"
+      "strong_replacement(##M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(F ` x,\<alpha>))"
+      "strong_replacement(##M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(F ` i,\<alpha>)))"
+      "strong_replacement(##M, \<lambda>x y. y = \<langle>x, Cardinal_AC_Relative.minimum(r, inj\<^bsup>M\<^esup>(F ` x,\<alpha>))\<rangle>)"
+      "strong_replacement(##M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> F ` i, f ` (\<mu> i. x \<in> F ` i) ` x\<rangle>)" for x r f
+      sorry
+  qed
+  from \<open>\<alpha> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> \<open>\<alpha> \<in> M\<close>
+  have "\<alpha> \<lesssim>\<^bsup>M\<^esup> \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>"
+    using
+      Aleph_rel_zero_eq_nat
+      cardinal_rel_lt_csucc_rel_iff[of "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>" \<alpha>]
+      le_Card_rel_iff[of "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>" \<alpha>]
+      Aleph_rel_succ[of 0] Card_rel_lt_iff[of \<alpha> "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"]
+      lt_Ord[of \<alpha> "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"]
+      csucc_rel_closed[of "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>"] Card_rel_csucc_rel[of "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>"]
+      Card_rel_nat
+    by simp
+  with \<open>\<alpha> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> \<open>\<forall>\<beta>\<in>\<alpha>. |F`\<beta>|\<^bsup>M\<^esup> \<le> \<omega>\<close> \<open>\<alpha> \<in> M\<close>
+  have "|\<Union>\<beta>\<in>\<alpha>. F`\<beta>|\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>"
+    using InfCard_rel_Aleph_rel[of 0] Aleph_rel_zero_eq_nat
+      subset_imp_lepoll_rel[THEN lepoll_rel_imp_cardinal_rel_le,
+        of "\<Union>\<beta>\<in>\<alpha>. F`\<beta>" "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>"]
+    by (rule_tac leqpoll_rel_imp_cardinal_rel_UN_le) simp_all
+  moreover from \<open>\<forall>\<beta>\<in>\<alpha>. f`\<beta> \<in> F`\<beta>\<close> \<open>f \<in> surj\<^bsup>M[G]\<^esup>(\<alpha>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)\<close>
+    \<open>\<alpha> \<in> M\<close> \<open>f \<in> M[G]\<close>
+  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<subseteq> (\<Union>\<beta>\<in>\<alpha>. F`\<beta>)"
+    using Aleph_rel_closed[of 1] ext.mem_surj_abs
+    by (force simp add:surj_def)
+  moreover from \<open>F \<in> M\<close> \<open>\<alpha> \<in> M\<close>
+  have "(\<Union>x\<in>\<alpha>. F ` x) \<in> M"
+    using B_replacement
+    by (intro Union_closed[simplified] RepFun_closed[simplified])
+      (auto dest:transM)
+  ultimately
+  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>"
+    using subset_imp_le_cardinal_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<Union>\<beta>\<in>\<alpha>. F`\<beta>"]
+      Aleph_rel_closed[of 1] le_trans
+    by auto
+  then
+  show "False"
+    using Aleph_rel_increasing not_le_iff_lt[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>"]
+      Card_rel_Aleph_rel[THEN Card_rel_is_Ord, OF _ Aleph_rel_closed]
+    by auto
+qed
 
+\<comment> \<open>FIXME: copy-paste of previous proof.
+    Make a diff to compare and get a general strategy\<close>
 lemma ccc_preserves_Aleph_2:
   assumes "ccc\<^bsup>M\<^esup>(P,leq)"
   shows "Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
-  using Card_rel_Aleph_rel
-  sorry
+proof (rule ccontr)
+  assume "\<not> Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
+  then
+  obtain \<alpha> f where "\<alpha> < \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "f \<in> surj\<^bsup>M[G]\<^esup>(\<alpha>, \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
+    using ext.lt_surj_rel_empty_imp_Card by blast
+  moreover from this
+  have "\<alpha> \<in> M" "f \<in> M[G]"
+    using Aleph_rel_closed[of 2] ext.trans_surj_rel_closed
+    by (auto dest:transM ext.transM dest!:ltD)
+  moreover
+  note \<open>ccc\<^bsup>M\<^esup>(P,leq)\<close>
+  ultimately
+  obtain F where "F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)" "\<forall>\<beta>\<in>\<alpha>. f`\<beta> \<in> F`\<beta>" "\<forall>\<beta>\<in>\<alpha>. |F`\<beta>|\<^bsup>M\<^esup> \<le> \<omega>"
+    "F \<in> M"
+    using ccc_fun_approximation_lemma[of \<alpha> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" f]
+      ext.mem_surj_abs[of f \<alpha> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>"]
+      Aleph_rel_closed[of 2] surj_is_fun[of f \<alpha> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>"] by auto
+  then
+  have "\<beta> \<in> \<alpha> \<Longrightarrow> |F`\<beta>|\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>" for \<beta>
+    using Aleph_rel_zero_eq_nat by simp
+  from \<open>\<alpha> \<in> M\<close> \<open>F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)\<close> \<open>F\<in>M\<close>
+  interpret M_cardinal_UN_lepoll "##M" "\<lambda>\<beta>. F`\<beta>" \<alpha>
+    using Aleph_rel_closed[of 0]
+  proof (unfold_locales, auto dest:transM)
+    show "w \<in> F ` x \<Longrightarrow> x \<in> M" for w x
+    proof -
+      fix w x
+      assume "w \<in> F`x"
+      then
+      have "x \<in> domain(F)"
+        using apply_0 by auto
+      with \<open>F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)\<close>
+      have "x \<in> \<alpha>"
+        using domain_of_fun by simp
+      with \<open>\<alpha> \<in> M\<close>
+      show "x \<in> M" by (auto dest:transM)
+    qed
+    show "strong_replacement(##M, \<lambda>y z. y \<in> F ` x \<and> z = {\<langle>x, y\<rangle>})"
+      "strong_replacement(##M, \<lambda>x z. z = Sigfun(x, (`)(F)))"
+      "strong_replacement(##M, \<lambda>x y. y = F ` x)"
+      "strong_replacement(##M, \<lambda>x y. y = \<langle>x, Cardinal_AC_Relative.minimum(r, F ` x)\<rangle>)"
+      "strong_replacement(##M, \<lambda>y z. y \<in> inj(F ` x, \<alpha>) \<and> z = {\<langle>x, y\<rangle>})"
+      "strong_replacement(##M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(F ` x,\<alpha>))"
+      "strong_replacement(##M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(F ` i,\<alpha>)))"
+      "strong_replacement(##M, \<lambda>x y. y = \<langle>x, Cardinal_AC_Relative.minimum(r, inj\<^bsup>M\<^esup>(F ` x,\<alpha>))\<rangle>)"
+      "strong_replacement(##M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> F ` i, f ` (\<mu> i. x \<in> F ` i) ` x\<rangle>)" for x r f
+      sorry
+  qed
+  from \<open>\<alpha> < \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>\<close> \<open>\<alpha> \<in> M\<close>
+  have "\<alpha> \<lesssim>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+    using
+      Aleph_rel_zero_eq_nat
+      cardinal_rel_lt_csucc_rel_iff[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" \<alpha>]
+      le_Card_rel_iff[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" \<alpha>]
+      Aleph_rel_succ[of 1] Card_rel_lt_iff[of \<alpha> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>"]
+      lt_Ord[of \<alpha> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>"]
+      csucc_rel_closed[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"] Card_rel_csucc_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"]
+      Aleph_rel_closed[of 1]
+      Card_rel_Aleph_rel[THEN Card_rel_is_Ord, OF _ Aleph_rel_closed]
+    by simp
+  with \<open>\<alpha> < \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>\<close> \<open>\<forall>\<beta>\<in>\<alpha>. |F`\<beta>|\<^bsup>M\<^esup> \<le> \<omega>\<close> \<open>\<alpha> \<in> M\<close>
+  have "|\<Union>\<beta>\<in>\<alpha>. F`\<beta>|\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+    using InfCard_rel_Aleph_rel[of 1] Aleph_rel_zero_eq_nat
+      subset_imp_lepoll_rel[THEN lepoll_rel_imp_cardinal_rel_le,
+        of "\<Union>\<beta>\<in>\<alpha>. F`\<beta>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"]
+      Aleph_rel_closed[of 1] Aleph_rel_succ
+      Aleph_rel_increasing[THEN leI, THEN [2] le_trans, of _ 0 1]
+    by (rule_tac leqpoll_rel_imp_cardinal_rel_UN_le) auto
+  moreover from \<open>\<forall>\<beta>\<in>\<alpha>. f`\<beta> \<in> F`\<beta>\<close> \<open>f \<in> surj\<^bsup>M[G]\<^esup>(\<alpha>, \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)\<close>
+    \<open>\<alpha> \<in> M\<close> \<open>f \<in> M[G]\<close>
+  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<subseteq> (\<Union>\<beta>\<in>\<alpha>. F`\<beta>)"
+    using Aleph_rel_closed[of 2] ext.mem_surj_abs
+    by (force simp add:surj_def)
+  moreover from \<open>F \<in> M\<close> \<open>\<alpha> \<in> M\<close>
+  have "(\<Union>x\<in>\<alpha>. F ` x) \<in> M"
+    using B_replacement
+    by (intro Union_closed[simplified] RepFun_closed[simplified])
+      (auto dest:transM)
+  ultimately
+  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+    using subset_imp_le_cardinal_rel[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<Union>\<beta>\<in>\<alpha>. F`\<beta>"]
+      Aleph_rel_closed[of 2] le_trans
+    by auto
+  then
+  show "False"
+    using Aleph_rel_increasing not_le_iff_lt[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"]
+      Card_rel_Aleph_rel[THEN Card_rel_is_Ord, OF _ Aleph_rel_closed]
+    by auto
+qed
 
 end (* G_generic_lemmas *)
 
@@ -177,10 +396,6 @@ abbreviation
 end (* M_ctm *)
 
 locale add_generic = G_generic "Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" "Fnle(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" 0
-
-sublocale add_generic \<subseteq> M_master_sub "##M" "##(M\<^bsup>Add\<^esup>[G])"
-  using M_subset_MG[OF one_in_G] generic Ord_MG_iff
-  by unfold_locales auto
 
 context add_generic
 begin
@@ -425,7 +640,7 @@ proof -
     using ext.lepoll_rel_imp_lepoll_rel_cardinal_rel by simp
   ultimately
   have "|\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>|\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>\<^esup>)\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
-    using ext.lepoll_rel_imp_Card_rel_le[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2",
+    using ext.lepoll_rel_imp_cardinal_rel_le[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2",
         OF _ _ ext.function_space_rel_closed] ext.nat_into_M ext.M_nat
       ext.Aleph_rel_zero_eq_nat Aleph_rel2_MG_eq_Aleph_rel2_M
     unfolding def_cexp_rel by simp
