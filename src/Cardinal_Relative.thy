@@ -776,7 +776,7 @@ lemma Card_rel_lt_iff: "[| Ord(i);  Card\<^bsup>M\<^esup>(K); M(i); M(K) |] ==> 
 lemma Card_rel_le_iff: "[| Ord(i);  Card\<^bsup>M\<^esup>(K); M(i); M(K) |] ==> (K \<le> |i|\<^bsup>M\<^esup>) \<longleftrightarrow> (K \<le> i)"
   by (simp add: Card_rel_lt_iff Card_rel_is_Ord not_lt_iff_le [THEN iff_sym])
 
-lemma well_ord_lepoll_rel_imp_Card_rel_le:
+lemma well_ord_lepoll_rel_imp_cardinal_rel_le:
   assumes wB: "well_ord(B,r)" and AB: "A \<lesssim>\<^bsup>M\<^esup> B"
     and
     types: "M(B)" "M(r)" "M(A)"
@@ -800,7 +800,7 @@ qed
 lemma lepoll_rel_cardinal_rel_le: "[| A \<lesssim>\<^bsup>M\<^esup> i; Ord(i); M(A); M(i) |] ==> |A|\<^bsup>M\<^esup> \<le> i"
   using Memrel_closed
   apply (rule_tac le_trans)
-   apply (erule well_ord_Memrel [THEN well_ord_lepoll_rel_imp_Card_rel_le], assumption+)
+   apply (erule well_ord_Memrel [THEN well_ord_lepoll_rel_imp_cardinal_rel_le], assumption+)
   apply (erule Ord_cardinal_rel_le, assumption)
   done
 

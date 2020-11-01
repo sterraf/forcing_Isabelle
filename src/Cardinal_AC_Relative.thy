@@ -178,9 +178,9 @@ lemma cardinal_rel_disjoint_Un:
       ==> |A \<union> C|\<^bsup>M\<^esup> = |B \<union> D|\<^bsup>M\<^esup>"
 by (simp add: cardinal_rel_eqpoll_rel_iff eqpoll_rel_disjoint_Un)
 
-lemma lepoll_rel_imp_Card_rel_le: "A \<lesssim>\<^bsup>M\<^esup> B ==> M(A) \<Longrightarrow> M(B) \<Longrightarrow> |A|\<^bsup>M\<^esup> \<le> |B|\<^bsup>M\<^esup>"
+lemma lepoll_rel_imp_cardinal_rel_le: "A \<lesssim>\<^bsup>M\<^esup> B ==> M(A) \<Longrightarrow> M(B) \<Longrightarrow> |A|\<^bsup>M\<^esup> \<le> |B|\<^bsup>M\<^esup>"
   apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
-   apply (erule well_ord_lepoll_rel_imp_Card_rel_le, assumption+)
+   apply (erule well_ord_lepoll_rel_imp_cardinal_rel_le, assumption+)
   done
 
 lemma cadd_rel_assoc: "\<lbrakk>M(i); M(j); M(k)\<rbrakk> \<Longrightarrow> (i \<oplus>\<^bsup>M\<^esup> j) \<oplus>\<^bsup>M\<^esup> k = i \<oplus>\<^bsup>M\<^esup> (j \<oplus>\<^bsup>M\<^esup> k)"
@@ -229,7 +229,7 @@ qed
 lemma le_Card_rel_iff: "Card\<^bsup>M\<^esup>(K) ==> M(K) \<Longrightarrow> M(A) \<Longrightarrow> |A|\<^bsup>M\<^esup> \<le> K \<longleftrightarrow> A \<lesssim>\<^bsup>M\<^esup> K"
 apply (erule Card_rel_cardinal_rel_eq [THEN subst], assumption, rule iffI,
        erule Card_rel_le_imp_lepoll_rel, assumption+)
-apply (erule lepoll_rel_imp_Card_rel_le, assumption+)
+apply (erule lepoll_rel_imp_cardinal_rel_le, assumption+)
 done
 
 lemma cardinal_rel_0_iff_0 [simp]: "M(A) \<Longrightarrow> |A|\<^bsup>M\<^esup> = 0 \<longleftrightarrow> A = 0"
@@ -297,7 +297,7 @@ lemma surj_rel_implies_cardinal_rel_le:
   assumes f: "f \<in> surj\<^bsup>M\<^esup>(X,Y)" and
     types:"M(f)" "M(X)" "M(Y)"
   shows "|Y|\<^bsup>M\<^esup> \<le> |X|\<^bsup>M\<^esup>"
-proof (rule lepoll_rel_imp_Card_rel_le)
+proof (rule lepoll_rel_imp_cardinal_rel_le)
   from f [THEN surj_rel_implies_inj_rel]
   obtain g where "g \<in> inj\<^bsup>M\<^esup>(Y,X)"
     by (blast intro:types)

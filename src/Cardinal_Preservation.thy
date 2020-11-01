@@ -434,7 +434,7 @@ proof -
     with \<open>F`a \<in> M\<close> \<open>q\<in>M\<close>
     have "|F`a|\<^bsup>M\<^esup> \<le> |range(q)|\<^bsup>M\<^esup>"
       using def_lepoll_rel
-      by (rule_tac lepoll_rel_imp_Card_rel_le) auto
+      by (rule_tac lepoll_rel_imp_cardinal_rel_le) auto
     also from \<open>antichain_r'(range(q))\<close> \<open>ccc\<^bsup>M\<^esup>(P,leq)\<close> \<open>q\<in>M\<close>
     have "|range(q)|\<^bsup>M\<^esup> \<le> \<omega>"
       using def_ccc_rel by simp

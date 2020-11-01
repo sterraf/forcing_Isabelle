@@ -637,7 +637,7 @@ proof (simp add:types def_cadd_rel)
   have "K \<le> |K|\<^bsup>M\<^esup>"
     by (rule Card_rel_cardinal_rel_le [OF K]) (simp add:types)
   moreover have "|K|\<^bsup>M\<^esup> \<le> |K + L|\<^bsup>M\<^esup>" using K L
-    by (blast intro: well_ord_lepoll_rel_imp_Card_rel_le sum_lepoll_rel_self
+    by (blast intro: well_ord_lepoll_rel_imp_cardinal_rel_le sum_lepoll_rel_self
                      well_ord_radd well_ord_Memrel Card_rel_is_Ord types)
   ultimately show "K \<le> |K + L|\<^bsup>M\<^esup>"
     by (blast intro: le_trans)
@@ -660,7 +660,7 @@ lemma cadd_rel_le_mono:
     "[| K' \<le> K;  L' \<le> L;M(K');M(K);M(L');M(L) |] ==> (K' \<oplus>\<^bsup>M\<^esup> L') \<le> (K \<oplus>\<^bsup>M\<^esup> L)"
 apply (unfold def_cadd_rel)
 apply (safe dest!: le_subset_iff [THEN iffD1])
-apply (rule well_ord_lepoll_rel_imp_Card_rel_le)
+apply (rule well_ord_lepoll_rel_imp_cardinal_rel_le)
 apply (blast intro: well_ord_radd well_ord_Memrel)
 apply (auto intro: sum_lepoll_rel_mono subset_imp_lepoll_rel)
 done
@@ -822,7 +822,7 @@ done
 lemma cmult_rel_square_le: "Card\<^bsup>M\<^esup>(K) \<Longrightarrow> M(K) \<Longrightarrow> K \<le> K \<otimes>\<^bsup>M\<^esup> K"
 apply (unfold def_cmult_rel)
 apply (rule le_trans)
-apply (rule_tac [2] well_ord_lepoll_rel_imp_Card_rel_le)
+apply (rule_tac [2] well_ord_lepoll_rel_imp_cardinal_rel_le)
        apply (rule_tac [3] prod_square_lepoll_rel)
 apply (simp add: le_refl Card_rel_is_Ord Card_rel_cardinal_rel_eq)
       apply (blast intro: well_ord_rmult well_ord_Memrel Card_rel_is_Ord)
@@ -841,7 +841,7 @@ done
 lemma cmult_rel_le_self:
     "[| Card\<^bsup>M\<^esup>(K);  Ord(L);  0<L; M(K);M(L) |] ==> K \<le> (K \<otimes>\<^bsup>M\<^esup> L)"
 apply (unfold def_cmult_rel)
-apply (rule le_trans [OF Card_rel_cardinal_rel_le well_ord_lepoll_rel_imp_Card_rel_le])
+apply (rule le_trans [OF Card_rel_cardinal_rel_le well_ord_lepoll_rel_imp_cardinal_rel_le])
   apply assumption apply simp
  apply (blast intro: well_ord_rmult well_ord_Memrel Card_rel_is_Ord)
 apply (auto intro: prod_lepoll_rel_self ltD)
@@ -864,7 +864,7 @@ lemma cmult_rel_le_mono:
     "[| K' \<le> K;  L' \<le> L;M(K');M(K);M(L');M(L) |] ==> (K' \<otimes>\<^bsup>M\<^esup> L') \<le> (K \<otimes>\<^bsup>M\<^esup> L)"
 apply (unfold def_cmult_rel)
 apply (safe dest!: le_subset_iff [THEN iffD1])
-apply (rule well_ord_lepoll_rel_imp_Card_rel_le)
+apply (rule well_ord_lepoll_rel_imp_cardinal_rel_le)
  apply (blast intro: well_ord_rmult well_ord_Memrel)
 apply (auto intro: prod_lepoll_rel_mono subset_imp_lepoll_rel)
 done
@@ -1484,7 +1484,7 @@ lemma ordermap_csquare_le:
     and types: "M(K)" "M(x)" "M(y)"
   shows "|ordermap(K \<times> K, csquare_rel(K)) ` \<langle>x,y\<rangle>|\<^bsup>M\<^esup> \<le> |succ(succ(x \<union> y))|\<^bsup>M\<^esup> \<otimes>\<^bsup>M\<^esup> |succ(succ(x \<union> y))|\<^bsup>M\<^esup>"
   using types
-proof (simp add: def_cmult_rel, rule_tac well_ord_lepoll_rel_imp_Card_rel_le)
+proof (simp add: def_cmult_rel, rule_tac well_ord_lepoll_rel_imp_cardinal_rel_le)
   let ?z="succ(x \<union> y)"
   show "well_ord(|succ(?z)|\<^bsup>M\<^esup> \<times> |succ(?z)|\<^bsup>M\<^esup>,
                  rmult(|succ(?z)|\<^bsup>M\<^esup>, Memrel(|succ(?z)|\<^bsup>M\<^esup>), |succ(?z)|\<^bsup>M\<^esup>, Memrel(|succ(?z)|\<^bsup>M\<^esup>)))"

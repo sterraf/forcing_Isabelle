@@ -77,6 +77,9 @@ ZF
   image_def ---> Image_def
   the_def ---> THE_def
 
+- Rename lepoll_imp_Card_le to lepoll_imp_cardinal_le and
+  well_ord_lepoll_imp_Card_le to well_ord_lepoll_imp_cardinal_le.
+
 
 Assorted To-Dos
 ===============
