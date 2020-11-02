@@ -319,40 +319,36 @@ lemma Add_subs_preserves_Aleph_succ: "Ord(z) \<Longrightarrow> z\<in>M \<Longrig
   using ccc_preserves_Aleph_succ ccc_Add_subs_Aleph_2
   by auto
 
-lemma Aleph_rel1_MG_eq_Aleph_rel1_M:
+lemma Aleph_rel_nats_MG_eq_Aleph_rel_nats_M:
   includes G_generic_lemmas
-  shows "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
-proof -
-  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
-    using Aleph_rel_le_Aleph_rel by simp
-  moreover
-  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<in> M[G]" using Aleph_rel_closed by simp
-  moreover from this
-  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<le> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
-    using Add_subs_preserves_Aleph_succ[THEN ext.csucc_rel_le, of 0]
-      nat_lt_Aleph_rel1 ext.Aleph_rel_succ ext.Aleph_rel_zero_eq_nat
+  assumes "z \<in> \<omega>"
+  shows "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"
+  using assms
+proof (induct)
+  case 0
+  have "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> = \<omega>"
+    using ext.Aleph_rel_zero_eq_nat .
+  also
+  have "\<omega> = \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>"
+    using Aleph_rel_zero_eq_nat by simp
+  finally
+  show ?case .
+next
+  case (succ z)
+  then
+  have "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
+    using Aleph_rel_le_Aleph_rel nat_into_M by simp
+  moreover from \<open>z \<in> \<omega>\<close>
+  have "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup> \<in> M[G]" "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup> \<in> M[G]"
+    using Aleph_rel_closed nat_into_M by simp_all
+  moreover from this and \<open>\<aleph>\<^bsub>z\<^esub>\<^bsup>M[G]\<^esup> = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>\<close> \<open>z \<in> \<omega>\<close>
+  have "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<le> \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"
+    using ext.Aleph_rel_succ nat_into_M
+      Add_subs_preserves_Aleph_succ[THEN ext.csucc_rel_le, of z]
+      Aleph_rel_increasing[of z "succ(z)"]
     by simp
   ultimately
-  show ?thesis using le_anti_sym by auto
-qed
-
-\<comment> \<open>FIXME: repeated proof, unify\<close>
-lemma Aleph_rel2_MG_eq_Aleph_rel2_M:
-  includes G_generic_lemmas
-  shows "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> = \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>"
-proof -
-  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
-    using Aleph_rel_le_Aleph_rel by simp
-  moreover
-  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<in> M[G]" "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<in> M[G]" using Aleph_rel_closed by simp_all
-  moreover from this
-  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<le> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>"
-    using ext.Aleph_rel_succ Aleph_rel1_MG_eq_Aleph_rel1_M
-      Add_subs_preserves_Aleph_succ[THEN ext.csucc_rel_le, of 1]
-      Aleph_rel_increasing[of 1 2]
-    by simp
-  ultimately
-  show ?thesis using le_anti_sym by auto
+  show ?case using le_anti_sym by blast
 qed
 
 abbreviation
@@ -549,11 +545,11 @@ proof -
   have "|\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>|\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>\<^esup>)\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
     using ext.lepoll_rel_imp_cardinal_rel_le[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2",
         OF _ _ ext.function_space_rel_closed] ext.nat_into_M ext.M_nat
-      ext.Aleph_rel_zero_eq_nat Aleph_rel2_MG_eq_Aleph_rel2_M
+      ext.Aleph_rel_zero_eq_nat Aleph_rel_nats_MG_eq_Aleph_rel_nats_M
     unfolding def_cexp_rel by simp
   then
   show "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>\<^esup>)\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
-    using Aleph_rel2_MG_eq_Aleph_rel2_M
+    using Aleph_rel_nats_MG_eq_Aleph_rel_nats_M
       ext.Card_rel_Aleph_rel[of 2, THEN ext.Card_rel_cardinal_rel_eq]
       ext.Aleph_rel2_closed
     by simp
