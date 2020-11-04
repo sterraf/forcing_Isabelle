@@ -7,6 +7,89 @@ begin
 
 declare [[syntax_ambiguity_warning = false]]
 
+
+text\<open>
+Disciplina de Relativización.
+
+En la teoría de conjuntos pura no podemos construir términos, sino
+que cada concepto sobre conjuntos está caracterizado por una fórmula de
+primer orden. Trabajar de esa manera es por demás impráctico, por lo que
+en la teoría Isabelle/ZF se definen algunos términos básicos a partir de los
+cuales se pueden construir otros. Los términos "viven" en el universo "i", que
+está implementado como un tipo de datos de Isabelle. 
+
+
+Cuando Paulson necesitó probar resultados relativos a una clase, lo hizo
+del modo full relacional, es decir, sin términos, sino que expresando cada
+concepto con una fórmula de primer orden. Consideremos como ejemplo los pares
+ordenados, que en Isabelle/ZF están definidos mediante
+
+definition Pair :: "[i, i] => i"
+  where "Pair(a,b) == {{a,a}, {a,b}}"
+
+y la versión relativa definida por Paulson:
+
+definition
+  pair :: "[i=>o,i,i,i] => o" where
+    "pair(M,a,b,z) == \<exists>x[M]. upair(M,a,a,x) &
+                     (\<exists>y[M]. upair(M,a,b,y) & upair(M,x,y,z))"
+
+Cuando un concepto es *absoluto*, podemos utilizar equivalentemente
+la versión definida originalmente en I/ZF y la full-relacional. Por lo
+tanto los resultados dentro y fuera del modelo se obtienen de la misma manera.
+
+Sin embargo cuando tenemos conceptos que no son equivalentes dentro y 
+fuera del modelo, tenemos problemas para obtener resultados. 
+Consideremos f :: i => i, y alguna propiedad P(f) :: o. Si queremos obtener
+la versión de P relativa a M, en el diseño de Paulson deberíamos dar la
+versión full-relacional relativa de f, is_f :: [i=>o,i,i] => o, y luego
+traducir la prueba de P(f), en una P'(is_f). No queremos hacer ese trabajo.
+
+La idea de la "disciplina de relativización consiste en obtener para cada
+término f :: i => i, un término f_rel :: [i=>o,i] => i que se corresponda con
+f, obteniendo el mismo resultado pero restringido a una clase M :: i=>o.
+
+Para ello, partimos de un core de relativizaciones de conceptos básicos
+donde para cada concepto 
+
+   f = t(h)
+
+tenemos su correspondiente is_f, tal como lo
+hace Paulson, y luego obtenemos f_rel a partir de este último, probando
+la equivalencia
+
+     is_f(M,x,y) <--> y = f_rel(M,x)
+
+y un lema de definición
+     f_rel(M,x) = t_rel(h_rel)
+
+Una vez que tenemos ese core de definiciones básicas, podemos obtener
+nuevos términos relativos simplemente definiendo cada nuevo término
+de la misma manera en que está definido el término original, aplicando
+la versión relativa de cada uno de los subtérminos. 
+De esta manera podemos copiar todas las pruebas hechas para los términos
+originales, reemplazando aquellos que no sean absolutos por sus
+versiones _rel.
+
+Debemos además dar la versión full-relacional de cada término ya que
+en nuestro diseño de forcing tenemos que utilizar fórmulas internalizadas
+y ahí no escapamos del problema. 
+
+La nueva disciplina obtiene la versión full-relacional a partir
+de la definición f_rel.
+A continuación un ejemplo.
+\<close>
+
+
+
+text\<open>Consideremos el término \<^term>\<open>cardinal\<close>.
+
+
+Lo que debemos hacer es definir su versión relativa simplemente
+"mapeando" la _función de relativización_ sobre todos los subtérminos
+que no sean absolutos:
+\<close>
+
 definition
   cardinal_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" where
   "cardinal_rel(M,x) \<equiv> (\<mu> i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x)"
@@ -19,24 +102,32 @@ abbreviation
   cardinal_r_set :: "[i,i]\<Rightarrow>i"  (\<open>|_|\<^bsup>_\<^esup>\<close>) where
   "|x|\<^bsup>M\<^esup> \<equiv> cardinal_rel(##M,x)"
 
+
+text\<open>Probamos el lema closed\<close>
+
 lemma (in M_trivial) cardinal_rel_closed: "M(x) \<Longrightarrow> M(|x|\<^bsup>M\<^esup>)"
   using Least_closed'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x"]
   unfolding cardinal_rel_def
   by simp
 
-(* la herramienta de relativización/internalización 
-debería generar la siguiente definición, su internalización con
-lema sats, y el lema _iff *)
+text\<open>Damos la versión full-relacional (se podrá calcular
+automáticamente)\<close>
 definition
   is_cardinal :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "is_cardinal(M,x,c) \<equiv> least(M, \<lambda>i. M(i) \<and> eqpoll_rel(M,i,x), c)"
 
+
+text\<open>Y probamos la equivalencia entre la versión full-relacional
+y el concepto relativo\<close>
 lemma (in M_trivial) is_cardinal_iff :
   assumes "M(x)" "M(c)"
   shows "is_cardinal(M,x,c) \<longleftrightarrow> c = |x|\<^bsup>M\<^esup>"
   using assms least_abs'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x"]
   unfolding is_cardinal_def cardinal_rel_def
   by simp
+
+text\<open>Esa es toda la disciplina.\<close>
+
 
 definition
   Card_rel     :: "[i\<Rightarrow>o,i]\<Rightarrow>o"  (\<open>Card\<^bsup>_\<^esup>'(_')\<close>) where
