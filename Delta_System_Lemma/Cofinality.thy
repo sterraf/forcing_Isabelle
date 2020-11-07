@@ -616,43 +616,34 @@ lemma Image_subset_Ord_imp_lt:
 
 lemma cofinal_mono_map_cf:
   assumes "Ord(\<gamma>)"
-  shows "\<exists>j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>)) . cf_fun(j,\<gamma>)"
-  using assms
-proof - 
-  from assms
-  consider (zero) "\<gamma>=0" | (succ) "\<exists>b. \<gamma> =succ(b)" | (lim) "Limit(\<gamma>)" using Ord_cases_disj by auto
-  then
-  show ?thesis
-  proof(cases)
-    case zero
-    have "cf(0) = 0" using cf_zero by simp
-    then 
-    have  "id(0) \<in> \<langle>cf(0), Memrel(cf(0))\<rangle> \<cong> \<langle>0, Memrel(0)\<rangle>" 
-      using ord_iso_refl by simp
-    then 
-    have "id(0)\<in>mono_map(cf(0),Memrel(cf(0)),0,Memrel(0))" 
-      using ord_iso_is_mono_map by simp
-    with zero
-    show ?thesis unfolding cofinal_fun_def cf_fun_def by fast
-  next
-    case succ  
-    moreover from this
-    obtain b where "\<gamma> = succ(b)" by auto
-    moreover from this
-    have "Ord(b)"  using Ord_succ_iff \<open>Ord(\<gamma>)\<close> by simp
-    obtain f where "f : 1\<rightarrow>succ(b)" "f`0 = b" 
-      using singleton_fun_succ \<open>Ord(b)\<close> by blast
-    ultimately
-    have "cf_fun(f,\<gamma>)" using cf_fun_succ \<open>Ord(b)\<close>  by simp
-    have "f\<in>mono_map(1,Memrel(1),\<gamma>,Memrel(\<gamma>))"
-      unfolding mono_map_def  using \<open>f:1\<rightarrow>succ(b)\<close> \<open>\<gamma>=succ(b)\<close>  by simp
-    then
-    show ?thesis using \<open>cf_fun(f,\<gamma>)\<close> cf_succ \<open>\<gamma>=succ(b)\<close> \<open>Ord(\<gamma>)\<close> by auto
-  next    
-    case lim
-    then
-    show ?thesis sorry
-  qed
+  shows "\<exists>j \<in> mono_map(cf(\<gamma>), Memrel(cf(\<gamma>)), \<gamma>, Memrel(\<gamma>)) . cf_fun(j,\<gamma>)"
+proof -
+  note assms
+  moreover from this
+  obtain A where "A \<subseteq> \<gamma>" "cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))"
+    "cofinal(A,\<gamma>,Memrel(\<gamma>))"
+    using cf_is_ordertype by blast
+  moreover
+  define j where "j \<equiv> converse(ordermap(A,Memrel(\<gamma>)))"
+  moreover from calculation
+  have "j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))"
+    using ordertype_ord_iso[THEN ord_iso_sym,
+        THEN ord_iso_is_mono_map, THEN mono_map_mono,
+        of A "Memrel(\<gamma>)" \<gamma>] well_ord_Memrel[THEN well_ord_subset]
+    by simp
+  moreover from calculation
+  have "j \<in> surj(cf(\<gamma>),A)"
+    using well_ord_Memrel[THEN well_ord_subset, THEN ordertype_ord_iso,
+        THEN ord_iso_sym, of \<gamma> A, THEN ord_iso_is_bij,
+        THEN bij_is_surj]
+    by simp
+  with \<open>cofinal(A,\<gamma>,Memrel(\<gamma>))\<close>
+  have "cf_fun(j,\<gamma>)"
+    using cofinal_range_imp_cofinal_fun[of j \<gamma> "Memrel(\<gamma>)"]
+      surj_range[of j "cf(\<gamma>)" A] surj_is_fun fun_is_function
+    by fastforce
+  with \<open>j \<in> mono_map(_,_,_,_)\<close>
+  show ?thesis by auto
 qed
 
 locale cofinal_factor =
