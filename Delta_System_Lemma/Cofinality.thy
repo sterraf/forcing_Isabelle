@@ -349,28 +349,68 @@ lemma surj_is_cofinal: "f \<in> surj(\<delta>,\<gamma>) \<Longrightarrow> cf_fun
   unfolding surj_def cofinal_fun_def cf_fun_def 
   using domain_of_fun by force
 
+lemma ordertype_zero_imp_zero: "ordertype(A,r) = 0 \<Longrightarrow> A = 0"
+  using ordermap_type[of A r]
+  by (cases "A=0") auto
+
 lemma cf_zero_iff: "Ord(\<alpha>) \<Longrightarrow> cf(\<alpha>) = 0 \<longleftrightarrow> \<alpha> = 0"
 proof (intro iffI)
   assume "\<alpha> = 0" "Ord(\<alpha>)"
   then
   show "cf(\<alpha>) = 0" using cf_zero by simp
 next
-  assume "cf(\<alpha>) =0" "Ord(\<alpha>)"
+  assume "cf(\<alpha>) = 0" "Ord(\<alpha>)"
+  moreover from this
+  obtain A where "A\<subseteq>\<alpha>" "cf(\<alpha>) = ordertype(A,Memrel(\<alpha>))"
+    "cofinal(A,\<alpha>,Memrel(\<alpha>))"
+    using cf_is_ordertype by blast
+  ultimately
+  have "cofinal(0,\<alpha>,Memrel(\<alpha>))"
+    using ordertype_zero_imp_zero[of A "Memrel(\<alpha>)"] by simp
   then
-  show "\<alpha>=0" sorry
+  show "\<alpha>=0"
+    unfolding cofinal_def by blast
 qed
 
-lemma cf_is_one_iff:
+lemma Ord_has_max_imp_succ:
+  assumes "Ord(\<gamma>)" "\<beta> \<in> \<gamma>" "\<forall>\<alpha>\<in>\<gamma>. \<alpha> \<le> \<beta>"
+  shows "\<gamma> = succ(\<beta>)"
+  using assms Ord_trans[of _ \<beta> \<gamma>]
+  unfolding lt_def
+  by (intro equalityI subsetI) auto
+
+lemma cf_eq_one_iff:
   assumes "Ord(\<gamma>)"
   shows "cf(\<gamma>) = 1 \<longleftrightarrow> (\<exists>\<alpha>. Ord(\<alpha>) \<and> \<gamma>  = succ(\<alpha>))"
 proof (intro iffI)
   assume "\<exists>\<alpha>. Ord(\<alpha>) \<and> \<gamma>  = succ(\<alpha>)"
-  then 
+  then
   show "cf(\<gamma>) = 1" using cf_succ by auto
 next
   assume "cf(\<gamma>) = 1"
-  then
-  show "\<exists>\<alpha>. Ord(\<alpha>) \<and> \<gamma>  = succ(\<alpha>)" sorry
+  moreover from assms
+  obtain A where "A \<subseteq> \<gamma>" "cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))"
+    "cofinal(A,\<gamma>,Memrel(\<gamma>))"
+    using cf_is_ordertype by blast
+  ultimately
+  have "ordertype(A,Memrel(\<gamma>)) = 1" by simp
+  moreover
+  define f where "f\<equiv>converse(ordermap(A,Memrel(\<gamma>)))"
+  moreover from this \<open>ordertype(A,Memrel(\<gamma>)) = 1\<close> \<open>A \<subseteq> \<gamma>\<close> assms
+  have "f \<in> surj(1,A)"
+    using well_ord_subset[OF well_ord_Memrel, THEN ordermap_bij,
+        THEN bij_converse_bij, of \<gamma> A] bij_is_surj
+    by simp
+  with \<open>cofinal(A,\<gamma>,Memrel(\<gamma>))\<close>
+  have "\<forall>a\<in>\<gamma>. \<langle>a, f`0\<rangle> \<in> Memrel(\<gamma>) \<or> a = f`0"
+    unfolding cofinal_def surj_def
+    by auto
+  with assms \<open>A \<subseteq> \<gamma>\<close> \<open>f \<in> surj(1,A)\<close>
+  show "\<exists>\<alpha>. Ord(\<alpha>) \<and> \<gamma>  = succ(\<alpha>)"
+    using Ord_has_max_imp_succ[of \<gamma> "f`0"]
+      surj_is_fun[of f 1 A] apply_type[of f 1 "\<lambda>_.A" 0]
+    unfolding lt_def
+    by (auto intro:Ord_in_Ord)
 qed 
 
 lemma mono_map_increasing: 
@@ -395,7 +435,7 @@ lemma le_neq_imp_lt:
 
 lemma apply_in_range:
   assumes 
-    "Ord(\<gamma>)" " \<gamma>\<noteq>0" "f: A \<rightarrow> \<gamma>"
+    "Ord(\<gamma>)" "\<gamma>\<noteq>0" "f: A \<rightarrow> \<gamma>"
   shows
     "f`x\<in>\<gamma>"
 proof (cases "x\<in>A")
@@ -1301,7 +1341,7 @@ next
     using cf_idemp cf_succ by fastforce
   ultimately
   show ?thesis 
-    using succ_LimitE cf_is_one_iff Limit_is_Ord
+    using succ_LimitE cf_eq_one_iff Limit_is_Ord
     by auto
 qed
 
