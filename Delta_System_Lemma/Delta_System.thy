@@ -252,6 +252,12 @@ definition
   countable :: "i\<Rightarrow>o" where
   "countable(X) \<equiv> X \<lesssim> nat"
 
+lemma countableI[intro]: "X \<lesssim> nat \<Longrightarrow> countable(X)"
+  unfolding countable_def by simp
+
+lemma countableD[dest]: "countable(X) \<Longrightarrow> X \<lesssim> nat"
+  unfolding countable_def by simp
+
 lemma countable_iff_cardinal_le_nat: "countable(X) \<longleftrightarrow> |X| \<le> nat"
   using le_Card_iff[of nat X] Card_nat
   unfolding countable_def by simp
@@ -271,6 +277,12 @@ abbreviation
 lemma uncountable_iff_nat_lt_cardinal:
   "uncountable(X) \<longleftrightarrow> nat < |X|"
   using countable_iff_cardinal_le_nat not_le_iff_lt by simp
+
+lemma uncountable_not_subset_countable:
+  assumes "countable(X)" "uncountable(Y)"
+  shows "\<not> (Y \<subseteq> X)"
+  using assms lepoll_trans subset_imp_lepoll[of Y X]
+    by blast
 
 lemma uncountable_imp_subset_eqpoll_aleph1:
   includes Ord_dests
@@ -729,7 +741,11 @@ proof -
         with \<open>countable(_) \<Longrightarrow> countable({A \<in> G . _  \<inter> A \<noteq> 0})\<close>
         have "countable({A \<in> G . (\<Union>X) \<inter> A \<noteq> 0})" .
         with \<open>G \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
-        obtain B where "B\<in>G" "B \<notin> {A \<in> G . (\<Union>X) \<inter> A \<noteq> 0}" sorry
+        obtain B where "B\<in>G" "B \<notin> {A \<in> G . (\<Union>X) \<inter> A \<noteq> 0}" 
+          using nat_lt_Aleph1 cardinal_Card_eqpoll_iff[of "\<aleph>\<^bsub>1\<^esub>" G]
+            uncountable_not_subset_countable[of "{A \<in> G . (\<Union>X) \<inter> A \<noteq> 0}" G]
+            uncountable_iff_nat_lt_cardinal
+          by auto
         then
         show "\<exists>A\<in>G. \<forall>S\<in>X. S \<inter> A = 0" by auto
       qed
