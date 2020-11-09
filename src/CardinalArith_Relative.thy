@@ -291,7 +291,58 @@ definition
   "is_csquare_lam(M,K,l) \<equiv> \<exists>K2[M]. cartprod(M,K,K,K2) \<and>
         is_lambda(M,K2,is_csquare_lam_body(M),l)"
 
-lemma (in M_cardinals) csquare_lam_closed[intro,simp]: "M(K) \<Longrightarrow> M(csquare_lam(K))" sorry
+locale M_cardinal_arith = M_cardinals +
+  assumes
+    csquare_lam_replacement:"M(K) \<Longrightarrow>
+      strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>x \<union> y, x, y\<rangle>)(x)\<rangle>)"
+    and
+    case_replacement1:"strong_replacement(M, \<lambda>z y. y = \<langle>z, case(Inr, Inl, z)\<rangle>)"
+    and
+    case_replacement2:"strong_replacement(M,
+      \<lambda>z y. y = \<langle>z, case(case(Inl, \<lambda>y. Inr(Inl(y))), \<lambda>y. Inr(Inr(y)), z)\<rangle>)"
+    and
+    case_replacement3:"strong_replacement(M,
+      \<lambda>z y. y = \<langle>z, case(\<lambda>x. x, \<lambda>y. y, z)\<rangle>)"
+    and
+    case_replacement4:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M,
+      \<lambda>z y. y = \<langle>z, case(\<lambda>w. Inl(f ` w), \<lambda>y. Inr(g ` y), z)\<rangle>)"
+    and
+    case_replacement5:"strong_replacement(M,
+      \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,z\<rangle>. case(\<lambda>y. Inl(\<langle>y, z\<rangle>), \<lambda>y. Inr(\<langle>y, z\<rangle>), x))(x)\<rangle>)"
+    and
+    Inl_replacement1:"strong_replacement(M, \<lambda>x y. y = \<langle>x, Inl(x)\<rangle>)"
+    and
+    Inl_replacement2:"M(A) \<Longrightarrow> strong_replacement(M,
+       \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. if x = A then Inl(y) else Inr(\<langle>x, y\<rangle>))(x)\<rangle>)"
+    and
+    if_then_range_replacement:"M(f) \<Longrightarrow> strong_replacement(M,
+      \<lambda>z y. y = \<langle>z, if z = u then f ` 0 else
+        if z \<in> range(f) then f ` succ(converse(f) ` z) else z\<rangle>)"
+    and
+    if_then_range_replacement2:"M(A) \<Longrightarrow> M(C)\<Longrightarrow> strong_replacement(M,
+      \<lambda>x y. y = \<langle>x, if x = Inl(A) then C else x\<rangle>)"
+    and
+    swap_replacement:"strong_replacement(M,
+      \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>y, x\<rangle>)(x)\<rangle>)"
+    and
+    assoc_replacement:"strong_replacement(M,
+      \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>. \<langle>x, y, z\<rangle>)(x)\<rangle>)"
+    and
+    prepend_replacement:"M(x) \<Longrightarrow> strong_replacement(M, \<lambda>z y. y = \<langle>z, x, z\<rangle>)"
+    and
+    pospend_replacement:"M(b) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, x, b\<rangle>)"
+    and
+    id_replacement:"strong_replacement(M, \<lambda>x y. y = \<langle>x, x, x\<rangle>)"
+    and
+    prod_fun_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M,
+      \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>w,y\<rangle>. \<langle>f ` w, g ` y\<rangle>)(x)\<rangle>)"
+begin
+
+lemma csquare_lam_closed[intro,simp]: "M(K) \<Longrightarrow> M(csquare_lam(K))"
+  using csquare_lam_replacement  unfolding csquare_lam_def
+  by (rule lam_closed) (auto dest:transM)
+
+end (* M_cardinal_arith *)
 
 relativize_tm "\<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> r \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> s)" 
   "is_rmultP"
@@ -358,15 +409,21 @@ qed
 
 end (* M_basic *)
 
-lemma (in M_cardinals) csquare_rel_closed[intro,simp]: "M(K) \<Longrightarrow> M(csquare_rel(K))" sorry
+context M_cardinal_arith
+begin
+
+lemma csquare_rel_closed[intro,simp]: "M(K) \<Longrightarrow> M(csquare_rel(K))"
+  using csquare_lam_replacement unfolding csquare_rel_def
+  by (intro rvimage_closed lam_closed) (auto dest:transM)
 
 (* Ugly proof ahead, please enhance *)
-lemma (in M_cardinals) csquare_rel_abs[absolut]: "\<lbrakk> M(K); M(cs)\<rbrakk> \<Longrightarrow>
+lemma csquare_rel_abs[absolut]: "\<lbrakk> M(K); M(cs)\<rbrakk> \<Longrightarrow>
      is_csquare_rel(M,K,cs) \<longleftrightarrow> cs = csquare_rel(K)"
   unfolding is_csquare_rel_def csquare_rel_def
   using csquare_lam_closed[unfolded csquare_lam_eq_lam] 
   by (simp add:absolut csquare_lam_eq_lam[unfolded csquare_lam_def])
 
+end (* M_cardinal_arith *)
 (*************   Discipline for csucc  ****************)
 \<comment> \<open>Note addition to the Simpset and Claset below\<close>
 
@@ -440,49 +497,7 @@ end (* M_cardinals *)
 
 (***************  end Discipline  *********************)
 
-
-locale M_cardinal_arith = M_cardinals +
-  assumes
-    case_replacement1:"strong_replacement(M, \<lambda>z y. y = \<langle>z, case(Inr, Inl, z)\<rangle>)"
-    and
-    case_replacement2:"strong_replacement(M,
-      \<lambda>z y. y = \<langle>z, case(case(Inl, \<lambda>y. Inr(Inl(y))), \<lambda>y. Inr(Inr(y)), z)\<rangle>)"
-    and
-    case_replacement3:"strong_replacement(M,
-      \<lambda>z y. y = \<langle>z, case(\<lambda>x. x, \<lambda>y. y, z)\<rangle>)"
-    and
-    case_replacement4:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M,
-      \<lambda>z y. y = \<langle>z, case(\<lambda>w. Inl(f ` w), \<lambda>y. Inr(g ` y), z)\<rangle>)"
-    and
-    case_replacement5:"strong_replacement(M,
-      \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,z\<rangle>. case(\<lambda>y. Inl(\<langle>y, z\<rangle>), \<lambda>y. Inr(\<langle>y, z\<rangle>), x))(x)\<rangle>)"
-    and
-    Inl_replacement1:"strong_replacement(M, \<lambda>x y. y = \<langle>x, Inl(x)\<rangle>)"
-    and
-    Inl_replacement2:"M(A) \<Longrightarrow> strong_replacement(M,
-       \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. if x = A then Inl(y) else Inr(\<langle>x, y\<rangle>))(x)\<rangle>)"
-    and
-    if_then_range_replacement:"M(f) \<Longrightarrow> strong_replacement(M, 
-      \<lambda>z y. y = \<langle>z, if z = u then f ` 0 else 
-        if z \<in> range(f) then f ` succ(converse(f) ` z) else z\<rangle>)"
-    and
-    if_then_range_replacement2:"M(A) \<Longrightarrow> M(C)\<Longrightarrow> strong_replacement(M,
-      \<lambda>x y. y = \<langle>x, if x = Inl(A) then C else x\<rangle>)"
-    and
-    swap_replacement:"strong_replacement(M,
-      \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>y, x\<rangle>)(x)\<rangle>)"
-    and
-    assoc_replacement:"strong_replacement(M,
-      \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>. \<langle>x, y, z\<rangle>)(x)\<rangle>)"
-    and
-    prepend_replacement:"M(x) \<Longrightarrow> strong_replacement(M, \<lambda>z y. y = \<langle>z, x, z\<rangle>)"
-    and
-    pospend_replacement:"M(b) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, x, b\<rangle>)"
-    and
-    id_replacement:"strong_replacement(M, \<lambda>x y. y = \<langle>x, x, x\<rangle>)"
-    and
-    prod_fun_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M, 
-      \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>w,y\<rangle>. \<langle>f ` w, g ` y\<rangle>)(x)\<rangle>)"
+context M_cardinal_arith
 begin
 
 lemma Card_Union [simp,intro,TC]:
