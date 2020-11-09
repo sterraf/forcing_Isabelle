@@ -48,6 +48,7 @@ ZF-Constructible
 ================
 
 - rename "separation_closed" to "Collect_closed".
+- rename "obase_exists" to "obase_closed".
 - rename "L_axioms.range_type" to "L_axioms.range_fm_type" (clash with
   ZF.func). In general, uniformize notation
   (e.g. typed_function_type).
@@ -66,6 +67,7 @@ ZF-Constructible
 - In strong_replacementD, use "is_Replace(M,A,P,Y)" in the conclusion.
   Same for separationD. Then use this for the "_witness" theorems for
   strong replacement and (separation?) instances.
+
 
 ZF
 ==
