@@ -1022,11 +1022,13 @@ lemma (in M_ordertype) ordertype_abs':"[| wellordered(M,A,r); f \<in> ord_iso(A,
 by (blast intro: Ord_ordertype relativized_imp_well_ord ordertype_ord_iso
                  Ord_iso_implies_eq ord_iso_sym ord_iso_trans)
 
+\<comment> \<open>FIXME: Awful proof, it essentially repeats the same
+    argument twice\<close>
 lemma (in M_ordertype) ordertype_abs[absolut]:
       "[| wellordered(M,A,r); M(A); M(r); M(i)|] ==>
       otype(M,A,r,i) \<longleftrightarrow> i = ordertype(A,r)"
-proof (auto)
-  assume "well_ord(A, r)" "M(A)" "M(r)" "M(i)" "otype(M, A, r, i)"
+proof (intro iffI)
+  assume "wellordered(M, A, r)" "M(A)" "M(r)" "M(i)" "otype(M, A, r, i)"
   moreover from this
   obtain f j where "M(f)"  "M(j)"  "Ord(j)" "f \<in> \<langle>A, r\<rangle> \<cong> \<langle>j, Memrel(j)\<rangle>"
     using ordertype_exists[of A r] by auto
@@ -1057,17 +1059,36 @@ proof (auto)
     by (force intro:ordertype_abs'[of A r _ i]
         simp add:Ord_otype[OF _ well_ord_is_trans_on])
 next
-  assume "well_ord(A, r)" "M(A)" "M(r)" "M(ordertype(A, r))" " i = ordertype(A, r)"
-  then
-  show "otype(M, A, r, ordertype(A, r))"
-    unfolding otype_def
-      \<comment> \<open>Mimicking the proof of @{thm otype_exists}\<close>
-    apply (insert omap_exists [of A r], auto)
-    apply (rename_tac x)
-    apply (rule_tac x="x" in rexI)
-     apply (auto)
-    unfolding omap_def
-    sorry
+  assume "wellordered(M,A, r)" "i = ordertype(A, r)"
+    "M(i)" "M(A)" "M(r)"
+  moreover from this
+  obtain h where "omap(M, A, r, h)" "M(h)"
+    using omap_exists by auto
+  moreover from calculation
+  obtain j where "otype(M,A,r,j)" "M(j)"
+    using otype_exists by auto
+  moreover from calculation
+  have "h \<in> \<langle>A, r\<rangle> \<cong> \<langle>j, Memrel(j)\<rangle>"
+    using omap_ord_iso_otype by simp
+  moreover from calculation
+  obtain f where "f \<in> \<langle>A, r\<rangle> \<cong> \<langle>i, Memrel(i)\<rangle>"
+    using ordertype_ord_iso by auto
+  moreover
+  have "j=i"
+  proof -
+    note calculation
+    moreover from this
+    have "h O converse(f) \<in> \<langle>i, Memrel(i)\<rangle> \<cong> \<langle>j, Memrel(j)\<rangle>"
+      using ord_iso_sym ord_iso_trans by blast
+    moreover from calculation
+    have "Ord(i)" using Ord_ordertype by simp
+    ultimately
+    show "j=i"
+      using Ord_iso_implies_eq[of i j "h O converse(f)"]
+        Ord_otype[OF _ well_ord_is_trans_on] by simp
+  qed
+  ultimately
+  show "otype(M, A, r, i)" by simp
 qed
 
 lemma (in M_ordertype) ordertype_closed[intro,simp]: "\<lbrakk> wellordered(M,A,r);M(A);M(r)\<rbrakk> \<Longrightarrow> M(ordertype(A,r))"
