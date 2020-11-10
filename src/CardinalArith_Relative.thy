@@ -424,6 +424,7 @@ lemma csquare_rel_abs[absolut]: "\<lbrakk> M(K); M(cs)\<rbrakk> \<Longrightarrow
   by (simp add:absolut csquare_lam_eq_lam[unfolded csquare_lam_def])
 
 end (* M_cardinal_arith *)
+
 (*************   Discipline for csucc  ****************)
 \<comment> \<open>Note addition to the Simpset and Claset below\<close>
 
@@ -1021,14 +1022,56 @@ lemma (in M_ordertype) ordertype_abs':"[| wellordered(M,A,r); f \<in> ord_iso(A,
 by (blast intro: Ord_ordertype relativized_imp_well_ord ordertype_ord_iso
                  Ord_iso_implies_eq ord_iso_sym ord_iso_trans)
 
-\<comment> \<open>This should be true\<close>
 lemma (in M_ordertype) ordertype_abs[absolut]:
-      "[| wellordered(M,A,r); M(A); M(r); M(i)|] ==> otype(M,A,r,i) \<longleftrightarrow> i = ordertype(A,r)"
-  sorry
+      "[| wellordered(M,A,r); M(A); M(r); M(i)|] ==>
+      otype(M,A,r,i) \<longleftrightarrow> i = ordertype(A,r)"
+proof (auto)
+  assume "well_ord(A, r)" "M(A)" "M(r)" "M(i)" "otype(M, A, r, i)"
+  moreover from this
+  obtain f j where "M(f)"  "M(j)"  "Ord(j)" "f \<in> \<langle>A, r\<rangle> \<cong> \<langle>j, Memrel(j)\<rangle>"
+    using ordertype_exists[of A r] by auto
+  moreover from calculation
+  have "\<exists>f[M]. f \<in> \<langle>A, r\<rangle> \<cong> \<langle>j, Memrel(j)\<rangle>" by auto
+  moreover
+  have "\<exists>f[M]. f \<in> \<langle>A, r\<rangle> \<cong> \<langle>i, Memrel(i)\<rangle>"
+  proof -
+    note calculation
+    moreover from this
+    obtain h where "omap(M, A, r, h)" "M(h)"
+      using omap_exists by auto
+    moreover from calculation
+    have "h \<in> \<langle>A, r\<rangle> \<cong> \<langle>i, Memrel(i)\<rangle>"
+      using omap_ord_iso obase_equals by simp
+    moreover from calculation
+    have "h O converse(f) \<in> \<langle>j, Memrel(j)\<rangle> \<cong> \<langle>i, Memrel(i)\<rangle>"
+      using ord_iso_sym ord_iso_trans by blast
+    moreover from calculation
+    have "i=j"
+      using Ord_iso_implies_eq[of j i "h O converse(f)"]
+        Ord_otype[OF _ well_ord_is_trans_on] by simp
+    ultimately
+    show ?thesis by simp
+  qed
+  ultimately
+  show "i = ordertype(A, r)"
+    by (force intro:ordertype_abs'[of A r _ i]
+        simp add:Ord_otype[OF _ well_ord_is_trans_on])
+next
+  assume "well_ord(A, r)" "M(A)" "M(r)" "M(ordertype(A, r))" " i = ordertype(A, r)"
+  then
+  show "otype(M, A, r, ordertype(A, r))"
+    unfolding otype_def
+      \<comment> \<open>Mimicking the proof of @{thm otype_exists}\<close>
+    apply (insert omap_exists [of A r], auto)
+    apply (rename_tac x)
+    apply (rule_tac x="x" in rexI)
+     apply (auto)
+    unfolding omap_def
+    sorry
+qed
 
 lemma (in M_ordertype) ordertype_closed[intro,simp]: "\<lbrakk> wellordered(M,A,r);M(A);M(r)\<rbrakk> \<Longrightarrow> M(ordertype(A,r))"
   using ordertype_exists ordertype_abs' by blast
-
 
 \<comment> \<open>Discipline for \<^term>\<open>jump_cardinal\<close> requires:
     1) Proving ordertype_abs above (?)
