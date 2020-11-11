@@ -14,6 +14,7 @@ theory Relativization
 
 begin
 ML_file\<open>Utils.ml\<close>
+ML_file\<open>Relativization_Database.ml\<close>
 
 ML\<open>
 structure Absoluteness = Named_Thms
@@ -101,25 +102,35 @@ signature Relativization =
     structure Data: GENERIC_DATA
     val Rel_add: attribute
     val Rel_del: attribute
-    val add_rel_const : string -> term -> term -> Proof.context -> Data.T -> Data.T
+    val add_rel_const : bool -> term -> term -> Data.T -> Data.T
     val add_constant : string -> string -> Proof.context -> Proof.context
-    val db: (term * term) list
-    val init_db : (term * term) list -> theory -> theory
-    val get_db : Proof.context -> (term * term) list
-    val relativ_fm: term -> (term * term) list ->  (term * (term * term)) list * Proof.context * term option -> term -> term * ((term * (term * term)) list * term list * term list * Proof.context)
-    val relativ_tm: term option -> term -> (term * term) list ->  (term * (term * term)) list * Proof.context -> term -> term * (term * (term * term)) list * Proof.context
+    val db: Data.T
+    val init_db : Data.T -> theory -> theory
+    val get_db : Proof.context -> Data.T
+    val relativ_fm: term -> Data.T -> (term * (term * term)) list * Proof.context * term option -> term -> term * ((term * (term * term)) list * term list * term list * Proof.context)
+    val relativ_tm: term option -> term -> Data.T -> (term * (term * term)) list * Proof.context -> term -> term * (term * (term * term)) list * Proof.context
     val read_new_const : Proof.context -> string -> term
-    val relativ_tm_frm': term -> (term * term) list -> Proof.context -> term -> term option * term
+    val relativ_tm_frm': term -> Data.T -> Proof.context -> term -> term option * term
     val relativize_def: bstring -> string -> Position.T -> Proof.context -> Proof.context
     val relativize_tm: bstring -> string -> Position.T -> Proof.context -> Proof.context
   end
 
 structure Relativization : Relativization = struct
-type relset = { db_rels: (term * term) list};
+
+infix 6 &&&
+val op &&& = Utils.&&&
+
+infix 6 ***
+val op *** = Utils.***
+
+infix 6 @@
+val op @@ = Utils.@@
+
+infix 6 ---
+val op --- = Utils.---
 
 (* relativization db of relation constructors *)
-val db =
-         [ (@{const relation}, @{const Relative.is_relation})
+val db = [ (@{const relation}, @{const Relative.is_relation})
          , (@{const function}, @{const Relative.is_function})
          , (@{const mem}, @{const mem})
          , (@{const True}, @{const True})
@@ -132,6 +143,7 @@ val db =
          , (@{const apply}, @{const Relative.fun_apply})
          , (@{const Upair}, @{const Relative.upair})
          ]
+         |> List.foldr (uncurry (Database.insert Database.abs2rel) o (#1 &&& #1) *** I o (#1 &&& uncurry (Database.insert Database.abs2is))) Database.empty
 
 fun var_i v = Free (v, @{typ i})
 fun var_io v = Free (v, @{typ "i \<Rightarrow> o"})
@@ -141,40 +153,27 @@ val lookup_tm  = AList.lookup (op aconv)
 val update_tm  =  AList.update (op aconv)
 val join_tm = AList.join (op aconv) (K #1)
 
-(* instantiated with diferent types than lookup_tm *)
-val lookup_rel = AList.lookup (op aconv)
-
 val conj_ = Utils.binop @{const "IFOL.conj"}
 
 (* generic data *)
 structure Data = Generic_Data
 (
-  type T = relset;
-  val empty = {db_rels = []}; (* Should we initialize this outside this file? *)
-  val extend = I;
-  fun merge ({db_rels = db},  {db_rels = db'}) =
-     {db_rels = AList.join (op aconv) (K #1) (db', db)};
+  type T = Database.db
+  val empty = Database.empty (* Should we initialize this outside this file? *)
+  val extend = I
+  val merge = Database.merge
 );
 
-fun init_db db = Context.theory_map (Data.put {db_rels = db})
+fun init_db db = Context.theory_map (Data.put db)
 
-fun get_db thy =
-  let
-    val db = Data.get (Context.Proof thy)
- in
-    #db_rels db
-end
+fun get_db thy = Data.get (Context.Proof thy)
 
 val read_const = Proof_Context.read_const {proper = true, strict = true}
 val read_new_const = Proof_Context.read_term_pattern
 
-fun add_rel_const thm_name c t ctxt (rs as {db_rels = db}) =
-  case lookup_rel db c of
-    SOME t' =>
-    (warning ("Ignoring duplicate relativization rule" ^
-              const_name c ^ " " ^ Syntax.string_of_term ctxt t ^
-              "(" ^  Syntax.string_of_term ctxt t' ^ " in " ^ thm_name ^ ")"); rs)
-  | NONE => {db_rels = (c, t) :: db}
+fun add_rel_const absolute c t =
+  Database.insert Database.abs2is (c, t)
+  o (if absolute then Database.insert Database.abs2rel (c, c) else I)
 
 fun get_consts thm =
   let val (c_rel, rhs) = Thm.concl_of thm |> Utils.dest_trueprop |>
@@ -184,52 +183,34 @@ fun get_consts thm =
      | NONE => (c_rel, rhs |> Utils.dest_mem_tms |> #2 |> head_of)
   end
 
-fun add_rule ctxt thm rs =
+fun add_rule thm rs =
   let val (c_rel,c_abs) = get_consts thm
-      val thm_name = Proof_Context.pretty_fact ctxt ("" , [thm]) |> Pretty.string_of
-  in add_rel_const thm_name c_abs c_rel ctxt rs
+  in add_rel_const true c_abs c_rel rs
 end
 
 
-fun add_constant rel abs thy =
+fun add_constant abs rel thy =
   let
     val c_abs = read_new_const thy abs
     val c_rel = read_new_const thy rel
-    val db_map = Data.map (fn db => {db_rels = (c_rel,c_abs) :: #db_rels db})
+    val db_map = Data.map (fn db => Database.insert Database.abs2is (c_abs, c_rel) db)
     fun add_to_context ctxt' = Context.proof_map db_map ctxt'
     fun add_to_theory ctxt' = Local_Theory.raw_theory (Context.theory_map db_map) ctxt'
   in
     Local_Theory.target (add_to_theory o add_to_context) thy
  end
 
-fun del_rel_const c (rs as {db_rels = db}) =
-  case lookup_rel db c of
-    SOME c' =>
-    { db_rels = AList.delete (fn (_,b) => b = c) c' db}
-  | NONE => (warning ("The constant " ^
-              const_name c ^ " doesn't have a relativization rule associated"); rs) ;
+fun del_rel_const c = Database.remove Database.abs2is c o Database.remove Database.abs2rel c
 
 fun del_rule thm = del_rel_const (thm |> get_consts |> #2)
 
-
 val Rel_add =
   Thm.declaration_attribute (fn thm => fn context =>
-    Data.map (add_rule (Context.proof_of context) (Thm.trim_context thm)) context);
+    Data.map (add_rule (Thm.trim_context thm)) context);
 
 val Rel_del =
   Thm.declaration_attribute (fn thm => fn context =>
     Data.map (del_rule (Thm.trim_context thm)) context);
-
-(* *)
-
-infix 6 &&&
-val op &&& = Utils.&&&
-
-infix 6 @@
-val op @@ = Utils.@@
-
-infix 6 ---
-val op --- = Utils.---
 
 (* Conjunction of a list of terms *)
 fun conjs [] = @{term IFOL.True}
@@ -280,7 +261,7 @@ and
       let
       (* relativization of a fully applied constant *)
       fun mk_rel_const mv c args abs_args ctxt =
-        case lookup_rel rel_db c of
+        case Database.lookup Database.abs2is c rel_db of
           SOME p =>
             let
               val args' = List.filter (not o Utils.inList (Utils.frees p)) args
@@ -362,7 +343,7 @@ and
   let
 
   (* relativization of a fully applied constant *)
-  fun relativ_app (ctxt, rs) c args = case lookup_rel rel_db c of
+  fun relativ_app (ctxt, rs) c args = case Database.lookup Database.abs2is c rel_db of
     SOME p =>
       let (* flag indicates whether the relativized constant is absolute or not. *)
         val flag = not (exists (curry op aconv c) absolute_rels)
@@ -498,7 +479,7 @@ fun relativize_def def_name thm_ref pos lthy =
   let
     val ctxt = lthy
     val (vars,tm,ctxt1) = Utils.thm_concl_tm ctxt (thm_ref ^ "_def")
-    val ({db_rels = db'}) = Data.get (Context.Proof lthy)
+    val db' = Data.get (Context.Proof lthy)
     val tm = tm |> #2 o Utils.dest_eq_tms' o Utils.dest_trueprop
     val (cls_pred, ctxt1) = Variable.variant_fixes ["N"] ctxt1 |>> var_io o hd
     val (v,t) = relativ_tm_frm' cls_pred db' ctxt1 tm
@@ -507,7 +488,7 @@ fun relativize_def def_name thm_ref pos lthy =
     val vs = cls_pred :: map (Thm.term_of o #2) vs' @ the_list v
     val at = List.foldr (uncurry lambda) t vs
     val abs_const = read_const lthy (lname lthy thm_ref)
-    fun db_map ctxt' = Data.map (add_rel_const "" abs_const (read_new_const ctxt' def_name) ctxt')
+    fun db_map ctxt' = Data.map (add_rel_const false abs_const (read_new_const ctxt' def_name))
     fun add_to_context ctxt' = Context.proof_map (db_map ctxt') ctxt'
     fun add_to_theory ctxt' = Local_Theory.raw_theory (Context.theory_map (db_map ctxt')) ctxt'
   in
@@ -523,7 +504,7 @@ fun relativize_tm def_name term pos lthy =
     val ctxt = lthy
     val (cls_pred, ctxt1) = Variable.variant_fixes ["N"] ctxt |>> var_io o hd
     val tm = Syntax.read_term ctxt1 term
-    val ({db_rels = db'}) = Data.get (Context.Proof lthy)
+    val db' = Data.get (Context.Proof lthy)
     val vs' = Variable.add_frees ctxt1 tm []
     val ctxt2 = fold Utils.add_to_context (map #1 vs') ctxt1
     val (v,t) = relativ_tm_frm' cls_pred db' ctxt2 tm
@@ -546,8 +527,8 @@ local
 
   val _ =
      Outer_Syntax.local_theory \<^command_keyword>\<open>reldb_add\<close> "ML setup for adding relativized/absolute pairs"
-       (relativize_parser >> (fn ((rel_term,abs_term),_) =>
-          Relativization.add_constant rel_term abs_term))
+       (relativize_parser >> (fn ((abs_term,rel_term),_) =>
+          Relativization.add_constant abs_term rel_term))
 
   val _ =
      Outer_Syntax.local_theory \<^command_keyword>\<open>relativize\<close> "ML setup for relativizing definitions"
