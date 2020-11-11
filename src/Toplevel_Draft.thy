@@ -139,9 +139,9 @@ lemma Aleph_rel_succ: "\<aleph>\<^bsub>succ(\<alpha>)\<^esub>\<^bsup>M\<^esup> =
 lemma Aleph_rel_increasing: "a < b  \<Longrightarrow> M(a) \<Longrightarrow> M(b) \<Longrightarrow> \<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup> < \<aleph>\<^bsub>b\<^esub>\<^bsup>M\<^esup>"
   sorry
 
-lemma Fnle_closed[intro,simp]:
-  assumes "M(\<kappa>)" "M(I)" "M(J)"
-  shows "M(Fnle(\<kappa>,I,J))"
+lemma Fnle_nat_closed[intro,simp]:
+  assumes "M(I)" "M(J)"
+  shows "M(Fnle(\<omega>,I,J))"
   sorry
 
 end (* M_master *)
@@ -592,7 +592,7 @@ begin
     show "forcing_data(Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>, 2), Fnle(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>, 2), 0, M, enum)"
       using nat_into_M[of 2] M_nat
         Fn_nat_closed[OF cartprod_closed, OF Aleph_rel_closed, of 2 \<omega> 2]
-        Fnle_closed[OF _ cartprod_closed, OF _ Aleph_rel_closed, of  \<omega> 2 \<omega> 2]
+        Fnle_nat_closed[OF cartprod_closed, OF Aleph_rel_closed, of 2 \<omega> 2]
       by (unfold_locales, simp_all)
   qed
   obtain G where "M_generic(G)"
