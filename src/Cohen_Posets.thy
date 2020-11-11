@@ -17,6 +17,21 @@ definition
   Fn :: "[i,i,i] \<Rightarrow> i" where
   "Fn(\<kappa>,I,J) \<equiv> \<Union>{(d\<rightarrow>J) .. d \<in> Pow(I),  d\<prec>\<kappa>}"
 
+lemma FnI[intro]:
+  assumes "p : d \<rightarrow> J" "d \<subseteq> I" "d \<prec> \<kappa>"
+  shows "p \<in> Fn(\<kappa>,I,J)"
+  using assms Sep_and_Replace
+  unfolding Fn_def by auto
+
+lemma FnD[dest]:
+  assumes "p \<in> Fn(\<kappa>,I,J)"
+  shows "\<exists>d. p : d \<rightarrow> J \<and> d \<subseteq> I \<and> d \<prec> \<kappa>"
+  using assms Sep_and_Replace
+  unfolding Fn_def by auto
+
+lemma Fn_is_function: "p \<in> Fn(\<kappa>,I,J) \<Longrightarrow> function(p)"
+  unfolding Fn_def using Sep_and_Replace fun_is_function by auto
+
 lemma lesspoll_csucc:
   assumes "Ord(\<kappa>)"
   shows "d \<prec> csucc(\<kappa>) \<longleftrightarrow> d \<lesssim> \<kappa>"
@@ -184,6 +199,42 @@ qed
 context cohen_data
 begin
 notation Leq (infixl "\<preceq>" 50)
+
+\<comment> \<open>Really necessary?\<close>
+lemma fun_compat_Un:
+  assumes "f \<in> A\<rightarrow>B" "g \<in> C\<rightarrow>D" "restrict(f, A \<inter> C) = restrict(g, A \<inter> C)"
+  shows "(f \<union> g) \<in> (A \<union> C) \<rightarrow> (B \<union> D)"
+  oops
+
+lemma compat_imp_Un_is_function:
+  assumes "G \<subseteq> Fn(\<kappa>, I, J)" "\<And>p q. p \<in> G \<Longrightarrow> q \<in> G \<Longrightarrow> compat(p,q)"
+  shows "function(\<Union>G)"
+  unfolding function_def
+proof (intro allI ballI impI)
+  fix x y y'
+  assume "\<langle>x, y\<rangle> \<in> \<Union>G" "\<langle>x, y'\<rangle> \<in> \<Union>G"
+  then
+  obtain p q where "\<langle>x, y\<rangle> \<in> p" "\<langle>x, y'\<rangle> \<in> q" "p \<in> G" "q \<in> G"
+    by auto
+  moreover from this and assms
+  obtain r where "r \<in> Fn(\<kappa>, I, J)" "r \<supseteq> p" "r \<supseteq> q"
+    using compatD[of p q]
+    unfolding Fnlerel_def Fnle_def FnleR_def Rrel_def
+    by auto
+  moreover from this
+  have "function(r)"
+    using Fn_is_function by simp
+  ultimately
+  show "y = y'"
+    unfolding function_def by fastforce
+qed
+
+lemma filter_subset_notion: "filter(G) \<Longrightarrow> G \<subseteq> Fn(\<kappa>, I, J)"
+  unfolding filter_def by simp
+
+lemma Un_filter_is_function: "filter(G) \<Longrightarrow> function(\<Union>G)"
+  using compat_imp_Un_is_function filter_imp_compat[of G]
+    filter_subset_notion by simp
 
 end (* cohen_data *)
 

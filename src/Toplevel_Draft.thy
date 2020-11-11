@@ -308,6 +308,8 @@ end (* M_ctm *)
 
 locale add_generic = G_generic "Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" "Fnle(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" 0
 
+sublocale add_generic \<subseteq> cohen_data \<omega> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 2 by unfold_locales auto
+
 context add_generic
 begin
 
@@ -383,7 +385,7 @@ proof
     show ?thesis
       \<comment> \<open>FIXME: Too many unfoldings following\<close>
       unfolding Fnle_def Fnlerel_def Rrel_def
-      by fastforce
+      by (fastforce del:FnD)
   qed
 qed
 
@@ -420,7 +422,9 @@ lemma f_G_funtype:
 proof (auto)
   show "x \<in> B \<Longrightarrow> B \<in> G \<Longrightarrow> x \<in> (\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>) \<times> 2" for B x
     using Fn_nat_subset_Pow by blast
-  show "function(f\<^bsub>G\<^esub>)" sorry
+  show "function(f\<^bsub>G\<^esub>)"
+    using Un_filter_is_function generic
+    unfolding M_generic_def by fast
 qed
 
 abbreviation
