@@ -1,18 +1,10 @@
 theory Cardinal_Preservation
   imports
     Cardinal_AC_Relative
+    Cohen_Posets
     Forcing_Main
 
 begin
-
-definition
-  antichain :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "antichain(P,leq,A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A. \<forall>q\<in>A.
-                p\<noteq>q \<longrightarrow> \<not>compat_in(P,leq,p,q))"
-
-definition
-  ccc :: "i \<Rightarrow> i \<Rightarrow> o" where
-  "ccc(P,leq) \<equiv> \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> \<omega>"
 
 (* MOVE THIS to some appropriate place *)
 declare (in M_trivial) compat_in_abs[absolut]

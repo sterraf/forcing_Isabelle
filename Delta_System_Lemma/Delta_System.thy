@@ -17,8 +17,6 @@ lemma nat_oadd_add[simp]:
 
 notation csucc (\<open>_\<^sup>+\<close> [90])
 
-\<comment> \<open>Copy-pasted from \<^file>\<open>../src/Cohen_Posets.thy\<close>. MOVE to an
-    appropriate place\<close>
 lemma eq_csucc_ord:
   "Ord(i) \<Longrightarrow> i\<^sup>+ = |i|\<^sup>+"
   using Card_lt_iff Least_cong unfolding csucc_def by auto

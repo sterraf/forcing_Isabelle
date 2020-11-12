@@ -6,12 +6,8 @@ theory Cohen_Posets
     Names \<comment> \<open>only for \<^term>\<open>SepReplace\<close>\<close>
     Recursion_Thms \<comment> \<open>only for the definition of \<^term>\<open>Rrel\<close>\<close>
     Renaming_Auto \<comment> \<open>only for @{thm app_fun}\<close>
-    "../Tools/Try0"
+    "../Delta_System_Lemma/Delta_System"
 begin
-
-lemma eq_csucc_ord:
-  "Ord(i) \<Longrightarrow> csucc(i) = csucc(|i|)"
-  using Card_lt_iff Least_cong unfolding csucc_def by auto
 
 definition
   Fn :: "[i,i,i] \<Rightarrow> i" where
@@ -155,7 +151,7 @@ definition
   FnleR :: "i \<Rightarrow> i \<Rightarrow> o" (infixl \<open>\<supseteq>\<close> 50) where
   "f \<supseteq> g \<equiv> g \<subseteq> f"
 
-lemma FnleR_iff_subset [simp]: "f \<supseteq> g \<longleftrightarrow> g \<subseteq> f"
+lemma FnleR_iff_subset [iff]: "f \<supseteq> g \<longleftrightarrow> g \<subseteq> f"
   unfolding FnleR_def ..
 
 definition
@@ -165,6 +161,18 @@ definition
 definition
   Fnle :: "[i,i,i] \<Rightarrow> i" where
   "Fnle(\<kappa>,I,J) \<equiv> Fnlerel(Fn(\<kappa>,I,J))"
+
+lemma FnleI[intro]:
+  assumes "p \<in> Fn(\<kappa>,I,J)" "q \<in> Fn(\<kappa>,I,J)" "p \<supseteq> q"
+  shows "<p,q> \<in> Fnle(\<kappa>,I,J)"
+  using assms unfolding Fnlerel_def Fnle_def FnleR_def Rrel_def
+  by auto
+
+lemma FnleD[dest]:
+  assumes "<p,q> \<in> Fnle(\<kappa>,I,J)"
+  shows "p \<in> Fn(\<kappa>,I,J)" "q \<in> Fn(\<kappa>,I,J)" "p \<supseteq> q"
+  using assms unfolding Fnlerel_def Fnle_def FnleR_def Rrel_def
+  by auto
 
 lemma zero_lesspoll: assumes "0<\<kappa>" shows "0 \<prec> \<kappa>"
   using assms eqpoll_0_iff[THEN iffD1, of \<kappa>] eqpoll_sym
@@ -189,22 +197,148 @@ proof
   then
   show "\<forall>p\<in>Fn(\<kappa>, I, J). \<langle>p, 0\<rangle> \<in> Fnle(\<kappa>, I, J)"
     unfolding preorder_on_def refl_def trans_on_def
-      Fnle_def Fnlerel_def Rrel_def by simp
+    by auto
 next
   show "preorder_on(Fn(\<kappa>, I, J), Fnle(\<kappa>, I, J))"
     unfolding preorder_on_def refl_def trans_on_def
-      Fnle_def Fnlerel_def Rrel_def by auto
+    by blast
 qed
+
+lemma restrict_eq_imp_Un_into_Pi:
+  assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)" "restrict(f, A \<inter> C) = restrict(g, A \<inter> C)"
+  shows "f \<union> g \<in> Pi(A \<union> C, \<lambda>x. B(x) \<union> D(x))"
+  sorry
+
+lemma restrict_eq_imp_Un_into_Pi':
+  assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)" "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
+  shows "f \<union> g \<in> Pi(A \<union> C, \<lambda>x. B(x) \<union> D(x))"
+  using  assms domain_of_fun restrict_eq_imp_Un_into_Pi by simp
+
+lemma InfCard_lesspoll_Un:
+  assumes "InfCard(\<kappa>)" "A \<prec> \<kappa>" "B \<prec> \<kappa>"
+  shows "A \<union> B \<prec> \<kappa>"
+  sorry
+
+subsection\<open>MOVE THIS to an appropriate place\<close>
+
+definition
+  antichain :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
+  "antichain(P,leq,A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A. \<forall>q\<in>A.
+                p\<noteq>q \<longrightarrow> \<not>compat_in(P,leq,p,q))"
+definition
+  ccc :: "i \<Rightarrow> i \<Rightarrow> o" where
+  "ccc(P,leq) \<equiv> \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
+
+lemma Replace_sing1:
+    "\<lbrakk> (\<exists>a. P(d,a)) \<and> (\<forall>y y'. P(d,y) \<longrightarrow> P(d,y') \<longrightarrow> y=y') \<rbrakk> \<Longrightarrow> \<exists>a. {y . x \<in> {d}, P(x,y)} = {a}"
+  by blast
+
+\<comment> \<open>Not really necessary\<close>
+lemma Replace_sing2:
+  assumes "\<forall>a. \<not> P(d,a)"
+  shows "{y . x \<in> {d}, P(x,y)} = 0"
+  using assms by auto
+
+lemma Replace_sing3:
+  assumes "\<exists>c e. c \<noteq> e \<and> P(d,c) \<and> P(d,e)"
+  shows "{y . x \<in> {d}, P(x,y)} = 0"
+proof -
+  {
+    fix z
+    {
+      assume "\<forall>y. P(d, y) \<longrightarrow> y = z"
+      with assms
+      have "False" by auto
+    }
+    then
+    have "z \<notin> {y . x \<in> {d}, P(x,y)}"
+      using Replace_iff by auto
+  }
+  then
+  show ?thesis
+    by (intro equalityI subsetI) simp_all
+qed
+
+lemma Replace_Un: "{b . a \<in> A \<union> B, Q(a, b)} =
+        {b . a \<in> A, Q(a, b)} \<union> {b . a \<in> B, Q(a, b)}"
+  sorry
+
+lemma Replace_subset_sing: "\<exists>z. {y . x \<in> {d}, P(x,y)} \<subseteq> {z}"
+proof -
+  consider
+    (1) "(\<exists>a. P(d,a)) \<and> (\<forall>y y'. P(d,y) \<longrightarrow> P(d,y') \<longrightarrow> y=y')" |
+    (2) "\<forall>a. \<not> P(d,a)" | (3) "\<exists>c e. c \<noteq> e \<and> P(d,c) \<and> P(d,e)" by auto
+  then
+  show "\<exists>z. {y . x \<in> {d}, P(x,y)} \<subseteq> {z}"
+  proof (cases)
+    case 1
+    then show ?thesis using Replace_sing1[of P d] by auto
+  next
+    case 2
+    then show ?thesis by auto
+  next
+    case 3
+    then show ?thesis using Replace_sing3[of P d] by auto
+  qed
+qed
+
+lemma Finite_Replace: "Finite(A) \<Longrightarrow> Finite(Replace(A,Q))"
+proof (induct rule:Finite_induct)
+  case 0
+  then
+  show ?case by simp
+next
+  case (cons x B)
+  moreover
+  have "{b . a \<in> cons(x, B), Q(a, b)} =
+        {b . a \<in> B, Q(a, b)} \<union> {b . a \<in> {x}, Q(a, b)}"
+    using Replace_Un unfolding cons_def by auto
+  moreover
+  obtain d where "{b . a \<in> {x}, Q(a, b)} \<subseteq> {d}"
+    using Replace_subset_sing[of _ Q] by blast
+  moreover from this
+  have "Finite({b . a \<in> {x}, Q(a, b)})"
+    using subset_Finite by simp
+  ultimately
+  show ?case using subset_Finite by simp
+qed
+
+lemma Finite_domain: "Finite(A) \<Longrightarrow> Finite(domain(A))"
+  using Finite_Replace unfolding domain_def
+  by auto
+
+lemma Finite_converse: "Finite(A) \<Longrightarrow> Finite(converse(A))"
+  using Finite_Replace unfolding converse_def
+  by auto
+
+lemma Finite_range: "Finite(A) \<Longrightarrow> Finite(range(A))"
+  using Finite_domain Finite_converse unfolding range_def
+  by blast
+
+lemma Finite_prod: "Finite(A) \<Longrightarrow> Finite(B) \<Longrightarrow> Finite(A\<times>B)"
+  sorry
+
+subsection\<open>Combinatorial results on Cohen posets\<close>
 
 context cohen_data
 begin
 notation Leq (infixl "\<preceq>" 50)
 
-\<comment> \<open>Really necessary?\<close>
-lemma fun_compat_Un:
-  assumes "f \<in> A\<rightarrow>B" "g \<in> C\<rightarrow>D" "restrict(f, A \<inter> C) = restrict(g, A \<inter> C)"
-  shows "(f \<union> g) \<in> (A \<union> C) \<rightarrow> (B \<union> D)"
-  oops
+lemma restrict_eq_imp_compat:
+  assumes "f \<in> Fn(\<kappa>, I, J)" "g \<in> Fn(\<kappa>, I, J)" "InfCard(\<kappa>)"
+    "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
+  shows "f \<union> g \<in> Fn(\<kappa>, I, J)"
+proof -
+  from assms
+  obtain d1 d2 where "f : d1 \<rightarrow> J" "d1 \<in> Pow(I)" "d1 \<prec> \<kappa>"
+    "g : d2 \<rightarrow> J" "d2 \<in> Pow(I)" "d2 \<prec> \<kappa>"
+    by blast
+  with assms
+  show ?thesis
+    using domain_of_fun InfCard_lesspoll_Un[of \<kappa> d1 d2]
+      restrict_eq_imp_Un_into_Pi[of f d1 "\<lambda>_. J" g d2 "\<lambda>_. J"]
+    by auto
+qed
 
 lemma compat_imp_Un_is_function:
   assumes "G \<subseteq> Fn(\<kappa>, I, J)" "\<And>p q. p \<in> G \<Longrightarrow> q \<in> G \<Longrightarrow> compat(p,q)"
@@ -218,9 +352,7 @@ proof (intro allI ballI impI)
     by auto
   moreover from this and assms
   obtain r where "r \<in> Fn(\<kappa>, I, J)" "r \<supseteq> p" "r \<supseteq> q"
-    using compatD[of p q]
-    unfolding Fnlerel_def Fnle_def FnleR_def Rrel_def
-    by auto
+    using compatD[of p q] by force
   moreover from this
   have "function(r)"
     using Fn_is_function by simp
@@ -237,5 +369,61 @@ lemma Un_filter_is_function: "filter(G) \<Longrightarrow> function(\<Union>G)"
     filter_subset_notion by simp
 
 end (* cohen_data *)
+
+locale add_reals = cohen_data nat _ 2
+begin
+
+lemma ccc_Fn_nat: "ccc(Fn(nat,I,2), Fnle(nat,I,2))"
+proof -
+  {
+    fix A
+    assume "\<not> |A| \<le> nat" "A \<subseteq> Fn(nat, I, 2)"
+    moreover from this
+    have "uncountable({domain(p) . p \<in> A})" sorry
+    moreover from \<open>A \<subseteq> Fn(nat, I, 2)\<close>
+    have "p \<in> A \<Longrightarrow> Finite(domain(p))" for p
+      using lesspoll_nat_is_Finite[of "domain(p)"]
+        domain_of_fun[of p _ "\<lambda>_. 2"] by auto
+    ultimately
+    obtain D where "delta_system(D)" "D \<subseteq> {domain(p) . p \<in> A}" "D \<approx> \<aleph>\<^bsub>1\<^esub>"
+      using delta_system_uncountable[of "{domain(p) . p \<in> A}"] by auto
+    moreover from this
+    obtain r where "\<forall>d1\<in>D. \<forall>d2\<in>D. d1 \<noteq> d2 \<longrightarrow> d1 \<inter> d2 = r"
+      by auto
+    ultimately
+    have delta:"\<forall>p\<in>A. \<forall>q\<in>A. domain(p) \<noteq> domain(q) \<longrightarrow> domain(p) \<in> D \<longrightarrow>
+               domain(q)\<in>D \<longrightarrow> domain(p) \<inter> domain(q) = r" by simp
+    moreover from \<open>D \<subseteq> {domain(p) . p \<in> A}\<close> \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+    obtain p1 q1 where "domain(p1) \<noteq> domain(q1)" "p1 \<in> A"
+      "domain(p1) \<in> D" "q1 \<in> A" "domain(q1) \<in> D" sorry
+    moreover from this and \<open>p1 \<in> A \<Longrightarrow> Finite(domain(p1))\<close>
+    have "Finite(domain(p1))" using Finite_domain by simp
+    ultimately
+    have "Finite(r)" using subset_Finite[of r "domain(p1)"] by auto
+    then
+    have "Finite(r \<rightarrow> 2)"
+      using Finite_prod[THEN Finite_Pow, of r 2, THEN [2] subset_Finite, of "r\<rightarrow>2"]
+      unfolding Pi_def by auto
+    with \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+    obtain p q where "domain(p) \<noteq> domain(q)" "p \<in> A" "q \<in> A"
+      "domain(p) \<in> D" "q1 \<in> A" "domain(q) \<in> D"
+      "restrict(p,r) = restrict(q,r)" sorry
+    moreover from this and delta
+    have "domain(p) \<inter> domain(q) = r" by simp
+    moreover
+    note \<open>A \<subseteq> Fn(nat, I, 2)\<close>
+    moreover from calculation
+    have "p \<union> q \<in> Fn(nat, I, 2)"
+      using restrict_eq_imp_compat InfCard_nat by blast
+    ultimately
+    have "\<exists>p\<in>A. \<exists>q\<in>A. p \<noteq> q \<and> compat_in(Fn(nat, I, 2), Fnle(nat, I, 2), p, q)"
+      unfolding compat_in_def
+      by (rule_tac bexI[of _ p], rule_tac bexI[of _ q]) blast
+  }
+  then
+  show ?thesis unfolding ccc_def antichain_def by auto
+qed
+
+end (* add_reals *)
 
 end
