@@ -69,9 +69,9 @@ structure Database : Database = struct
 
   fun insert (mode as (Absolute, Relational)) (t, u) db =
       (case lookup mode t db of
-        SOME _ => (warning ("duplicate entry for " ^ (@{make_string} t)); db)
+        SOME _ => (warning ("insert abs2is: duplicate entry for " ^ (@{make_string} t)); db)
       | NONE => case lookup (Relational, Functional) u db of
-                  SOME v => if is_none (lookup (Relational, Absolute) v db)
+                  SOME v => if is_none (lookup (Functional, Absolute) v db)
                               then { ar = #ar db
                                    , af = AList.update (op aconv) (t, v) (#af db)
                                    , fr = #fr db
@@ -84,7 +84,7 @@ structure Database : Database = struct
       )
     | insert (mode as (Absolute, Functional)) (t, u) db =
       (case lookup mode t db of
-        SOME _ => (warning ("duplicate entry for " ^ (@{make_string} t)); db)
+        SOME _ => (warning ("insert abs2rel: duplicate entry for " ^ (@{make_string} t)); db)
       | NONE => case (transpose (#ar db) COMP #fr db) u of
                   SOME v => if v = t
                               then { ar = AList.delete (op aconv) t (#ar db)
@@ -99,14 +99,14 @@ structure Database : Database = struct
       )
     | insert (mode as (Functional, Relational)) (t, u) db =
       (case lookup mode t db of
-        SOME _ => (warning ("duplicate entry for " ^ (@{make_string} t)); db)
+        SOME _ => (warning ("insert rel2is: duplicate entry for " ^ (@{make_string} t)); db)
       | NONE => case (lookup (Functional, Absolute) t db, lookup (Relational, Absolute) u db) of
                   (SOME v, SOME v') => if v = v'
                                          then { ar = AList.delete (op aconv) v (#ar db)
                                               , af = #af db
                                               , fr = AList.update (op aconv) (t, u) (#fr db)
                                               }
-                                         else error "invariant violation, insert rel2is"
+                                         else error ("invariant violation, insert rel2is: " ^ (@{make_string} (t, u, v, v')))
                 | (SOME _, NONE) => { ar = #ar db
                                     , af = #af db
                                     , fr = AList.update (op aconv) (t, u) (#fr db)
