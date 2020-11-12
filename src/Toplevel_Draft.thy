@@ -432,6 +432,92 @@ abbreviation
   "inj_dense(w,x) \<equiv>
     { p\<in>Add . (\<exists>n\<in>\<omega>. <<w,n>,1> \<in> p \<and> <<x,n>,0> \<in> p) }"
 
+lemma Replace_sing1:
+    "\<lbrakk> (\<exists>a. P(d,a)) \<and> (\<forall>y y'. P(d,y) \<longrightarrow> P(d,y') \<longrightarrow> y=y') \<rbrakk> \<Longrightarrow> \<exists>a. {y . x \<in> {d}, P(x,y)} = {a}"
+  by blast
+
+\<comment> \<open>Not really necessary\<close>
+lemma Replace_sing2:
+  assumes "\<forall>a. \<not> P(d,a)"
+  shows "{y . x \<in> {d}, P(x,y)} = 0"
+  using assms by auto
+
+lemma Replace_sing3:
+  assumes "\<exists>c e. c \<noteq> e \<and> P(d,c) \<and> P(d,e)"
+  shows "{y . x \<in> {d}, P(x,y)} = 0"
+proof -
+  {
+    fix z
+    {
+      assume "\<forall>y. P(d, y) \<longrightarrow> y = z"
+      with assms
+      have "False" by auto
+    }
+    then
+    have "z \<notin> {y . x \<in> {d}, P(x,y)}"
+      using Replace_iff by auto
+  }
+  then
+  show ?thesis
+    by (intro equalityI subsetI) simp_all
+qed
+
+lemma Replace_Un: "{b . a \<in> A \<union> B, Q(a, b)} =
+        {b . a \<in> A, Q(a, b)} \<union> {b . a \<in> B, Q(a, b)}"
+  sorry
+
+lemma Replace_subset_sing: "\<exists>z. {y . x \<in> {d}, P(x,y)} \<subseteq> {z}"
+proof -
+  consider
+    (1) "(\<exists>a. P(d,a)) \<and> (\<forall>y y'. P(d,y) \<longrightarrow> P(d,y') \<longrightarrow> y=y')" |
+    (2) "\<forall>a. \<not> P(d,a)" | (3) "\<exists>c e. c \<noteq> e \<and> P(d,c) \<and> P(d,e)" by auto
+  then
+  show "\<exists>z. {y . x \<in> {d}, P(x,y)} \<subseteq> {z}"
+  proof (cases)
+    case 1
+    then show ?thesis using Replace_sing1[of P d] by auto
+  next
+    case 2
+    then show ?thesis by auto
+  next
+    case 3
+    then show ?thesis using Replace_sing3[of P d] by auto
+  qed
+qed
+
+lemma Finite_Replace: "Finite(A) \<Longrightarrow> Finite(Replace(A,Q))"
+proof (induct rule:Finite_induct)
+  case 0
+  then
+  show ?case by simp
+next
+  case (cons x B)
+  moreover
+  have "{b . a \<in> cons(x, B), Q(a, b)} =
+        {b . a \<in> B, Q(a, b)} \<union> {b . a \<in> {x}, Q(a, b)}"
+    using Replace_Un unfolding cons_def by auto
+  moreover
+  obtain d where "{b . a \<in> {x}, Q(a, b)} \<subseteq> {d}"
+    using Replace_subset_sing[of _ Q] by blast
+  moreover from this
+  have "Finite({b . a \<in> {x}, Q(a, b)})"
+    using subset_Finite by simp
+  ultimately
+  show ?case using subset_Finite by simp
+qed
+
+lemma Finite_domain: "Finite(A) \<Longrightarrow> Finite(domain(A))"
+  using Finite_Replace unfolding domain_def
+  by auto
+
+lemma Finite_converse: "Finite(A) \<Longrightarrow> Finite(converse(A))"
+  using Finite_Replace unfolding converse_def
+  by auto
+
+lemma Finite_range: "Finite(A) \<Longrightarrow> Finite(range(A))"
+  using Finite_domain Finite_converse unfolding range_def
+  by blast
+
 \<comment> \<open>FIXME write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close>
     in a context with a generic filter for it\<close>
 lemma dense_inj_dense:
@@ -442,7 +528,23 @@ proof
   assume "p \<in> Add"
   then
   obtain n where "<w,n> \<notin> domain(p)" "<x,n> \<notin> domain(p)" "n \<in> \<omega>"
-    using Fn_nat_eq_FiniteFun sorry
+  proof -
+    {
+      assume "<w,n> \<in> domain(p) \<or> <x,n> \<in> domain(p)" if "n \<in> \<omega>" for n
+      then
+      have "\<omega> \<subseteq> range(domain(p))" by blast
+      then
+      have "\<not> Finite(p)"
+        using Finite_range Finite_domain subset_Finite nat_not_Finite
+        by auto
+      with \<open>p \<in> Add\<close>
+      have False
+        using Fn_nat_eq_FiniteFun FiniteFun.dom_subset[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 2]
+          Fin_into_Finite by auto
+    }
+    with that\<comment> \<open>the shape of the goal puts assumptions in this variable\<close>
+    show ?thesis by auto
+  qed
   moreover
   note \<open>p \<in> Add\<close> assms
   moreover from calculation
