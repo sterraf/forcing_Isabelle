@@ -90,9 +90,12 @@ Lo que debemos hacer es definir su versión relativa simplemente
 que no sean absolutos:
 \<close>
 
-definition
+reldb_add "eqpoll" "eqpoll_rel"
+relativize functional "cardinal" "cardinal_rel"
+
+(* definition
   cardinal_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" where
-  "cardinal_rel(M,x) \<equiv> (\<mu> i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x)"
+  "cardinal_rel(M,x) \<equiv> (\<mu> i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x)" *)
 
 abbreviation
   cardinal_r :: "[i,i\<Rightarrow>o] \<Rightarrow> i" (\<open>|_|\<^bsup>_\<^esup>\<close>) where
@@ -110,12 +113,78 @@ lemma (in M_trivial) cardinal_rel_closed: "M(x) \<Longrightarrow> M(|x|\<^bsup>M
   unfolding cardinal_rel_def
   by simp
 
+(* relationalize "cardinal_rel" "is_cardinal" *)
+
 text\<open>Damos la versión full-relacional (se podrá calcular
 automáticamente)\<close>
-definition
-  is_cardinal :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_cardinal(M,x,c) \<equiv> least(M, \<lambda>i. M(i) \<and> eqpoll_rel(M,i,x), c)"
 
+reldb_add "eqpoll_rel" "eqpoll_rel"
+relationalize "cardinal_rel" "is_cardinal"
+
+(* definition
+  is_cardinal :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  (* "is_cardinal(M,x,c) \<equiv> least(M, \<lambda>i. M(i) \<and> eqpoll_rel(M,i,x), c)" *)
+  "is_cardinal(M,x,c) \<equiv> least(M, \<lambda>i. M(i) \<and> i \<in> x, c)" *)
+
+(* declare least_iff_sats[iff_sats]
+
+lemma mem_model_iff_sats:
+      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A)|]
+       ==> (x\<in>A) \<longleftrightarrow> sats(A, Exists(Equal(0,0)), env)"
+  using nth_closed[of env A i]
+  by auto
+
+lemma aux[iff_sats]:
+  assumes
+    "x \<in> nat" "env \<in> list(A)" "0 \<in> A" "a \<in> A"
+  shows
+    "a = nth(x,env) \<longleftrightarrow> sats(A, Equal(0,x#+1), Cons(a,env))"
+  using assms nth_closed
+  by simp
+
+lemma aux2[]:
+  assumes
+    "x \<in> nat" "env \<in> list(A)" "0 \<in> A" "a \<in> A"
+  shows
+    "a \<in> nth(x,env) \<longleftrightarrow> sats(A, Member(0,x#+1), Cons(a,env))"
+  using assms nth_closed
+  by simp
+
+lemma aux3[iff_sats]:
+  assumes
+    "env \<in> list(A)" "a \<in> A"
+  shows
+    "sats(A, Equal(0,0), Cons(a,env))"
+  using assms nth_closed
+  by simp *)
+
+(* synthesize "is_cardinal" from definition assuming_nonempty *)
+
+(* schematic_goal t:
+  assumes
+    "x \<in> nat" "c \<in> nat" "env \<in> list(A)" "0 \<in> A"
+  shows
+    "is_cardinal(##A, nth(x,env), nth(c,env))
+     \<longleftrightarrow> sats(A, ?fm, env)"
+  unfolding is_cardinal_def
+  apply (insert assms)
+  (* by (rule mem_model_iff_sats iff_sats | simp)+ *)
+  apply (rule iff_sats | simp)
+      apply (rule iff_sats | simp)
+      apply (rule iff_sats | simp)
+  apply (rule iff_sats | simp)
+  apply (rule iff_sats | simp)
+  apply (rule iff_sats | simp)
+  apply (rule iff_sats | simp)
+  apply (rule iff_sats | simp)
+    apply (rule iff_sats | simp)
+   apply (rule iff_sats | simp)
+  apply (rule iff_sats | simp)
+apply (rule iff_sats | simp) *)
+
+(* synthesize "is_cardinal" from_schematic t *)
+
+(* nth(j,env) \<in> M \<longleftrightarrow> sats(M, ?fm, env) *)
 
 text\<open>Y probamos la equivalencia entre la versión full-relacional
 y el concepto relativo\<close>
@@ -128,18 +197,28 @@ lemma (in M_trivial) is_cardinal_iff :
 
 text\<open>Esa es toda la disciplina.\<close>
 
+relativize functional "Card" "Card_rel"
 
-definition
+(* definition
   Card_rel     :: "[i\<Rightarrow>o,i]\<Rightarrow>o"  (\<open>Card\<^bsup>_\<^esup>'(_')\<close>) where
-  "Card\<^bsup>M\<^esup>(i) \<equiv> i = |i|\<^bsup>M\<^esup>"
+  "Card\<^bsup>M\<^esup>(i) \<equiv> i = |i|\<^bsup>M\<^esup>" *)
 
-definition 
-  InfCard_rel   :: "[i\<Rightarrow>o,i] \<Rightarrow> o" (\<open>InfCard\<^bsup>_\<^esup>'(_')\<close>) where
-  "InfCard_rel(M,i) \<equiv> Card\<^bsup>M\<^esup>(i) \<and> nat \<le> i"
+abbreviation   Card_rel'     :: "[i\<Rightarrow>o,i]\<Rightarrow>o"  (\<open>Card\<^bsup>_\<^esup>'(_')\<close>) where
+  "Card\<^bsup>M\<^esup>(i) \<equiv> Card_rel(M,i)"
 
-definition
+reldb_add "lt" "lt"
+relativize functional "InfCard" "InfCard_rel"
+
+abbreviation 
+  InfCard_rel'   :: "[i\<Rightarrow>o,i] \<Rightarrow> o" (\<open>InfCard\<^bsup>_\<^esup>'(_')\<close>) where
+  (* "InfCard_rel(M,i) \<equiv> Card\<^bsup>M\<^esup>(i) \<and> nat \<le> i" *)
+  "InfCard\<^bsup>M\<^esup>(i) \<equiv> InfCard_rel(M,i)"
+
+relativize functional "cadd" "cadd_rel"
+
+(*definition
   cadd_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i"  where
-  "cadd_rel(M,A,B) \<equiv> |A+B|\<^bsup>M\<^esup>"
+  "cadd_rel(M,A,B) \<equiv> |A+B|\<^bsup>M\<^esup>"*)
 
 abbreviation
   cadd_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<oplus>\<^bsup>_\<^esup> _\<close> [66,1,66] 65) where
@@ -153,9 +232,12 @@ lemma (in M_basic) cadd_rel_closed:
 
 
 (* relativization *)
-definition
+
+relationalize "cadd_rel" "is_cadd"
+
+(* definition
   is_cadd :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
-  "is_cadd(M,A,B,a) \<equiv> \<exists>s[M]. is_sum(M,A,B,s) \<and> is_cardinal(M,s,a)"
+  "is_cadd(M,A,B,a) \<equiv> \<exists>s[M]. is_sum(M,A,B,s) \<and> is_cardinal(M,s,a)" *)
 
 lemma (in M_basic) is_cadd_iff :
   assumes "M(A)" "M(B)" "M(a)"

@@ -201,6 +201,19 @@ relativize "bla" "is_bla"
 relativize_tm "x = <0,0> \<and> bla(x)" "test24"
 relativize_tm "bla(x)" "test25"
 
+relativize_tm functional "x = <0,0>" "test26"
+relativize_tm functional "\<forall> x y . x \<subseteq> y \<longrightarrow> 0 \<in> x \<inter> y" "test27"
+
+definition test28 :: "i \<Rightarrow> i \<Rightarrow> i" where
+  "test28(x, y) \<equiv> (x \<inter> y) \<rightarrow> (x \<union> y)"
+relativize functional "test28" "test28_rel"
+relationalize "test28_rel" "is_test28"
+
+definition test29 :: "i \<Rightarrow> i" where
+  "test29(x) \<equiv> test28(x,x)"
+relativize functional "test29" "test29_rel"
+relationalize "test29_rel" "is_test29"
+
 context M_trans
 begin
 ML\<open>
