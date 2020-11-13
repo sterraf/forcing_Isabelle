@@ -18,6 +18,8 @@ theory Relativization
     "functional"
     and
     "relational"
+    and
+    "external"
 
 begin
 ML_file\<open>Utils.ml\<close>
@@ -73,7 +75,7 @@ lemmas relative_abs =
   M_basic.composition_abs
   M_trans.restriction_abs
   M_trans.Inter_abs
-  M_trivial.is_funspace_abs
+  M_trivial.is_funspace_abs (* FIXME: this is not absolute *)
   M_trivial.bool_of_o_abs
   M_trivial.not_abs
   M_trivial.and_abs
@@ -120,7 +122,7 @@ signature Relativization =
     val relativ_tm: bool -> bool -> term option -> term -> Data.T -> (term * (term * term)) list * Proof.context -> term -> term * (term * (term * term)) list * Proof.context
     val read_new_const : Proof.context -> string -> term
     val relativ_tm_frm': bool -> bool -> term -> Data.T -> Proof.context -> term -> term option * term * bool
-    val relativize_def: bool -> bool -> bstring -> string -> Position.T -> Proof.context -> Proof.context
+    val relativize_def: bool -> bool -> bool -> bstring -> string -> Position.T -> Proof.context -> Proof.context
     val relativize_tm: bool -> bstring -> string -> Position.T -> Proof.context -> Proof.context
   end
 
@@ -196,7 +198,8 @@ fun get_consts thm =
 
 fun add_rule thm rs =
   let val (c_rel,c_abs) = get_consts thm
-  in (add_rel_const Database.rel2is c_abs c_rel o add_rel_const Database.abs2rel c_abs c_abs) rs
+  (* in (add_rel_const Database.rel2is c_abs c_rel o add_rel_const Database.abs2rel c_abs c_abs) rs *)
+  in (add_rel_const Database.abs2rel c_abs c_abs o add_rel_const Database.abs2is c_abs c_rel) rs
 end
 
 fun get_mode is_functional relationalising = if relationalising then Database.rel2is else if is_functional then Database.abs2rel else Database.abs2is
@@ -212,7 +215,7 @@ fun add_constant mode abs rel thy =
     Local_Theory.target (add_to_theory o add_to_context) thy
  end
 
-fun del_rel_const c = Database.remove Database.abs2is c o Database.remove Database.abs2rel c
+val del_rel_const = Database.remove_abs
 
 fun del_rule thm = del_rel_const (thm |> get_consts |> #2)
 
@@ -333,7 +336,7 @@ and
             in
               relativ_replace mv t body (lambda y o Utils.eq_ y o incr_boundvars 1) ctxt'
             end
-        | go mv (@{const Collect} $ t $ pc) =
+        | go mv (@{const Collect} $ t $ pc) = (* FIXME *)
             let
               val (pc', (rs', ctxt')) = relativ_fm is_functional relationalising pred rel_db (rs,ctxt, NONE) pc ||> #1 &&& #4
             in
@@ -463,6 +466,7 @@ and
     | go (ctxt, rs, _         ) (@{const IFOL.Ex(i)} $ f) = go (ctxt, rs, true) f |>> ((curry op $) (@{const OrdQuant.rex} $ pred))
     | go (ctxt, rs, _         ) (@{const Bex} $ f $ Abs p) = bquant (ctxt, rs) @{const Ex(i)} @{const IFOL.conj} f p
     | go (ctxt, rs, _         ) (@{const Ball} $ f $ Abs p) = bquant (ctxt, rs) @{const All(i)} @{const IFOL.imp} f p
+    (* FIXME: Rall and Rex cases *)
     | go (ctxt, rs, _         ) (@{const IFOL.eq(i)} $ t1 $ t2) = relativ_eq (ctxt, rs) t1 t2
     | go (ctxt, rs, _         ) (Const c) = relativ_app (ctxt, rs) (Const c) []
     | go (ctxt, rs, _         ) (tm as _ $ _) = strip_comb tm |> uncurry (relativ_app (ctxt, rs))
@@ -515,7 +519,7 @@ fun destroy_first_lambdas (Abs (body as (_, ty, _))) =
 fun freeType (Free (_, ty)) = ty
   | freeType t = raise TERM ("freeType", [t])
 
-fun relativize_def is_functional relationalising def_name thm_ref pos lthy =
+fun relativize_def is_external is_functional relationalising def_name thm_ref pos lthy =
   let
     val ctxt = lthy
     val (vars,tm,ctxt1) = Utils.thm_concl_tm ctxt (thm_ref ^ "_def")
@@ -535,7 +539,7 @@ fun relativize_def is_functional relationalising def_name thm_ref pos lthy =
     val vs' = List.filter (#1 #> #1 #> #1 #> Utils.inList t_vars) vars
     val vs = cls_pred :: map (Thm.term_of o #2) vs' @ lambdavars @ the_list v
     val at = List.foldr (uncurry lambda) t vs
-    val abs_const = read_const lthy (* (lname lthy thm_ref) *) thm_ref
+    val abs_const = read_const lthy (if is_external then thm_ref else lname lthy thm_ref)
     fun new_const ctxt' = read_new_const ctxt' def_name
     fun db_map ctxt' = 
       if is_formula
@@ -578,8 +582,8 @@ ML\<open>
 local
   val full_mode_parser =
        Scan.option (((Parse.$$$ "functional" |-- Parse.$$$ "relational") >> K Database.rel2is)
-                    || (Parse.$$$ "relational" >> K Database.abs2rel)
-                    || (Parse.$$$ "functional" >> K Database.abs2is))
+                    || (Parse.$$$ "functional" >> K Database.abs2rel)
+                    || (Parse.$$$ "relational" >> K Database.abs2is))
        >> (fn mode => if is_none mode then Database.abs2is else the mode)
 
   val reldb_parser =
@@ -590,7 +594,7 @@ local
        >> (fn mode => if is_none mode then false else the mode)
 
   val relativize_parser =
-       Parse.position (mode_parser -- (Parse.string -- Parse.string));
+       Parse.position (mode_parser -- (Parse.string -- Parse.string) -- (Scan.optional (Parse.$$$ "external" >> K true) false));
 
   val _ =
      Outer_Syntax.local_theory \<^command_keyword>\<open>reldb_add\<close> "ML setup for adding relativized/absolute pairs"
@@ -599,18 +603,18 @@ local
 
   val _ =
      Outer_Syntax.local_theory \<^command_keyword>\<open>relativize\<close> "ML setup for relativizing definitions"
-       (relativize_parser >> (fn ((is_functional, (bndg,thm)),pos) =>
-          Relativization.relativize_def is_functional false thm bndg pos))
+       (relativize_parser >> (fn (((is_functional, (bndg,thm)), is_external),pos) =>
+          Relativization.relativize_def is_external is_functional false thm bndg pos))
 
   val _ =
      Outer_Syntax.local_theory \<^command_keyword>\<open>relativize_tm\<close> "ML setup for relativizing definitions"
-       (relativize_parser >> (fn ((is_functional, (bndg,term)),pos) =>
+       (relativize_parser >> (fn (((is_functional, (bndg,term)), _),pos) =>
           Relativization.relativize_tm is_functional term bndg pos))
 
   val _ =
      Outer_Syntax.local_theory \<^command_keyword>\<open>relationalize\<close> "ML setup for relativizing definitions"
-       (relativize_parser >> (fn ((is_functional, (bndg,thm)),pos) =>
-          Relativization.relativize_def is_functional true thm bndg pos))
+       (relativize_parser >> (fn (((is_functional, (bndg,thm)), is_external),pos) =>
+          Relativization.relativize_def is_external is_functional true thm bndg pos))
 
 val _ =
   Theory.setup
@@ -624,5 +628,9 @@ setup\<open>Relativization.init_db Relativization.db \<close>
 declare relative_abs[Rel]
 (*todo: check all the duplicate cases here.*)
 declare datatype_abs[Rel]
+
+ML\<open>
+val db = Relativization.get_db @{context}
+\<close>
 
 end
