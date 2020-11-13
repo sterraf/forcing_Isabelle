@@ -13,6 +13,8 @@ theory Synthetic_Definition
     "for"
     and
     "from_definition"
+    and
+    "assuming"
 
 begin
 ML_file\<open>Utils.ml\<close>
@@ -166,7 +168,10 @@ fun prove_schematic thms goal ctxt =
     (K (rewrite_goal_tac ctxt thms 1 THEN REPEAT1 (resolve_tac ctxt rules 1 ORELSE asm_simp_tac ctxt 1)))
   end
 
-fun schematic_def def_name target pos lthy =
+val valid_assumptions = [ ("nonempty", Utils.mem_ @{term "0"})
+                        ]
+
+fun schematic_def def_name target assuming pos lthy =
   let
     val thm = Proof_Context.get_thm lthy (target ^ "_def")
     val (vars, tm, ctxt1) = Utils.thm_concl_tm lthy (target ^ "_def")
@@ -185,7 +190,10 @@ fun schematic_def def_name target pos lthy =
     val (set, ctxt2) = Variable.variant_fixes ["A"] ctxt1' |>> Utils.var_i o hd
     val class = @{const "setclass"} $ set
     val (env, ctxt3) = Variable.variant_fixes ["env"] ctxt2 |>> Utils.var_i o hd
-    val hyps = (List.map (fn v => Utils.tp (Utils.mem_ v Utils.nat_)) vs) @ [Utils.tp (Utils.mem_ env (Utils.list_ set))]
+    val assumptions = filter (Utils.inList assuming o #1) valid_assumptions |> map #2
+    val hyps = (List.map (fn v => Utils.tp (Utils.mem_ v Utils.nat_)) vs)
+               @ [Utils.tp (Utils.mem_ env (Utils.list_ set))]
+               @ Utils.zip_with (fn (f,x) => Utils.tp (f x)) assumptions (replicate (length assumptions) set)
     val args = class :: map (fn v => Utils.nth_ v env) vs
     val (fm_name, ctxt4) = Variable.variant_fixes ["fm"] ctxt3 |>> hd
     val fm_type = fold (K (fn acc => Type ("fun", [@{typ "i"}, acc]))) vs @{typ "i"}
@@ -202,9 +210,9 @@ fun schematic_def def_name target pos lthy =
     Local_Theory.note ((Binding.name def_name, []), [thm]) lthy |> Utils.display "theorem" pos
   end
 
-fun schematic_synthetic_def def_name target pos tc auto =
+fun schematic_synthetic_def def_name target assuming pos tc auto =
     (synthetic_def def_name ("sats_" ^ def_name ^ "_fm_auto") pos tc auto)
-    o (schematic_def ("sats_" ^ def_name ^ "_fm_auto") target pos)
+    o (schematic_def ("sats_" ^ def_name ^ "_fm_auto") target assuming pos)
 
   (* val dummy = Specification.theorem_cmd false Thm.theoremK NONE (K I) Binding.empty_atts []
   [Element.Fixes [], Element.Assumes []] (Element.Shows [((@{binding "dummy"}, []), [("0 = 0", [])])]) *)
@@ -221,12 +229,12 @@ local
        >> (fn (bndg,thm) => synthetic_def bndg (#1 (thm |>> Facts.ref_name)))
 
   val full_from_definition_synth_constdecl =
-       Parse.string -- ((Parse.$$$ "from_definition" |-- Parse.string))
-       >> (fn (bndg,target) => schematic_synthetic_def bndg target)
+       Parse.string -- ((Parse.$$$ "from_definition" |-- Parse.string)) -- (Scan.optional (Parse.$$$ "assuming" |-- Scan.repeat Parse.string) [])
+       >> (fn ((bndg,target), assuming) => schematic_synthetic_def bndg target assuming)
 
   val simple_from_definition_synth_constdecl =
-     Parse.string --| (Parse.$$$ "from_definition")
-     >> (fn bndg => schematic_synthetic_def bndg bndg)
+     Parse.string -- (Parse.$$$ "from_definition" |-- (Scan.optional (Parse.$$$ "assuming" |-- Scan.repeat Parse.string)) [])
+     >> (fn (bndg, assuming) => schematic_synthetic_def bndg bndg assuming)
 
   val synth_constdecl =
        Parse.position (full_from_schematic_synth_constdecl || simple_from_schematic_synth_constdecl
@@ -234,10 +242,10 @@ local
                        || simple_from_definition_synth_constdecl)
 
   val full_schematic_decl =
-       Parse.string -- ((Parse.$$$ "for" |-- Parse.string))
+       Parse.string -- ((Parse.$$$ "for" |-- Parse.string)) -- (Scan.optional (Parse.$$$ "assuming" |-- Scan.repeat Parse.string) [])
 
   val simple_schematic_decl =
-       Parse.$$$ "for" |-- Parse.string >> (fn name => "sats_" ^ name ^ "_fm_auto") &&& I
+       (Parse.$$$ "for" |-- Parse.string >> (fn name => "sats_" ^ name ^ "_fm_auto") &&& I) -- (Scan.optional (Parse.$$$ "assuming" |-- Scan.repeat Parse.string) [])
 
   val schematic_decl = Parse.position (full_schematic_decl || simple_schematic_decl)
 
@@ -250,7 +258,7 @@ local
        (synth_constdecl >> (fn (f,p) => f p false false))
 
   val _ = Outer_Syntax.local_theory \<^command_keyword>\<open>generate_schematic\<close> "ML setup for schematic goals"
-       (schematic_decl >> (fn ((bndg,target),p) => schematic_def bndg target p))
+       (schematic_decl >> (fn (((bndg,target), assuming),p) => schematic_def bndg target assuming p))
 
 in
 
