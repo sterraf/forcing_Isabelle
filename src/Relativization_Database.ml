@@ -8,7 +8,7 @@ signature Database =
     val rel2is : mode
     val lookup : mode -> term -> db -> term option
     val insert : mode -> term * term -> db -> db
-    val remove : mode -> term -> db -> db
+    val remove_abs : term -> db -> db
     val merge : db * db -> db
 
     (* INVARIANTS *)
@@ -77,73 +77,99 @@ structure Database : Database = struct
                                    , fr = #fr db
                                    }
                               else error "invariant violation, insert abs2is"
-                | NONE => { ar = AList.update (op aconv) (t, u) (#ar db)
-                          , af = #af db
-                          , fr = #fr db
-                          }
+                | NONE => case lookup (Absolute, Functional) t db of
+                            SOME v => { ar = #ar db
+                                      , af = #ar db
+                                      , fr = AList.update (op aconv) (v, u) (#fr db)
+                                      }
+                          | NONE => { ar = AList.update (op aconv) (t, u) (#ar db)
+                                    , af = #af db
+                                    , fr = #fr db
+                                    }
       )
-    | insert (mode as (Absolute, Functional)) (t, u) db =
+    | insert (mode as (Absolute, Functional)) (t, v) db =
       (case lookup mode t db of
         SOME _ => (warning ("insert abs2rel: duplicate entry for " ^ (@{make_string} t)); db)
-      | NONE => case (transpose (#ar db) COMP #fr db) u of
-                  SOME v => if v = t
-                              then { ar = AList.delete (op aconv) t (#ar db)
-                                   , af = AList.update (op aconv) (t, u) (#af db)
-                                   , fr = #fr db
-                                   }
-                              else error "invariant violation, insert abs2rel "
-                | NONE => { ar = #ar db
-                          , af = AList.update (op aconv) (t, u) (#af db)
-                          , fr = #fr db
-                          }
+      | NONE => case lookup (Functional, Relational) v db of
+                  SOME u => (case lookup (Relational, Absolute) u db of
+                              NONE => { ar = #ar db
+                                      , af = AList.update (op aconv) (t, v) (#af db)
+                                      , fr = #fr db
+                                      }
+                            | SOME t' => if t = t'
+                                           then { ar = AList.delete (op aconv) t (#ar db)
+                                                , af = AList.update (op aconv) (t, v) (#af db)
+                                                , fr = #fr db
+                                                }
+                                           else error "invariant violation, insert abs2rel"
+                            )
+                | NONE => case lookup (Absolute, Relational) t db of
+                            SOME u => { ar = AList.delete (op aconv) t (#ar db)
+                                      , af = AList.update (op aconv) (t, v) (#af db)
+                                      , fr = AList.update (op aconv) (v, u) (#fr db)
+                                      }
+                          | NONE => { ar = #ar db
+                                    , af = AList.update (op aconv) (t, v) (#af db)
+                                    , fr = #fr db
+                                    }
       )
-    | insert (mode as (Functional, Relational)) (t, u) db =
-      (case lookup mode t db of
-        SOME _ => (warning ("insert rel2is: duplicate entry for " ^ (@{make_string} t)); db)
-      | NONE => case (lookup (Functional, Absolute) t db, lookup (Relational, Absolute) u db) of
-                  (SOME v, SOME v') => if v = v'
-                                         then { ar = AList.delete (op aconv) v (#ar db)
+    | insert (mode as (Functional, Relational)) (v, u) db =
+      (case lookup mode v db of
+        SOME _ => (warning ("insert rel2is: duplicate entry for " ^ (@{make_string} v)); db)
+      | NONE => case (lookup (Functional, Absolute) v db, lookup (Relational, Absolute) u db) of
+                  (SOME t, SOME t') => if t = t'
+                                         then { ar = AList.delete (op aconv) t (#ar db)
                                               , af = #af db
-                                              , fr = AList.update (op aconv) (t, u) (#fr db)
+                                              , fr = AList.update (op aconv) (v, u) (#fr db)
                                               }
-                                         else error ("invariant violation, insert rel2is: " ^ (@{make_string} (t, u, v, v')))
+                                         else error ("invariant violation, insert rel2is: " ^ (@{make_string} (v, u, t, t')))
                 | (SOME _, NONE) => { ar = #ar db
                                     , af = #af db
-                                    , fr = AList.update (op aconv) (t, u) (#fr db)
+                                    , fr = AList.update (op aconv) (v, u) (#fr db)
                                     }
-                | (NONE, SOME v') => { ar = AList.delete (op aconv) v' (#ar db)
-                                     , af = AList.update (op aconv) (v', t) (#af db)
-                                     , fr = AList.update (op aconv) (t, u) (#fr db)
+                | (NONE, SOME t') => { ar = AList.delete (op aconv) t' (#ar db)
+                                     , af = AList.update (op aconv) (t', v) (#af db)
+                                     , fr = AList.update (op aconv) (v, u) (#fr db)
                                      }
                 | (NONE, NONE) => { ar = #ar db
                                   , af = #af db
-                                  , fr = AList.update (op aconv) (t, u) (#fr db)
+                                  , fr = AList.update (op aconv) (v, u) (#fr db)
                                   }
       )
     | insert _ _ _ = error "insert: unreachable clause"
 
-  fun remove (Absolute, Relational) t db = { ar = AList.delete (op aconv) t (#ar db)
-                                           , af = AList.delete (op aconv) t (#af db)
-                                           , fr = #fr db
-                                           }
-    | remove (Absolute, Functional) t db = { ar = AList.delete (op aconv) t (#ar db)
-                                           , af = AList.delete (op aconv) t (#af db)
-                                           , fr = #fr db
-                                           }
-    | remove (mode as (Functional, Relational)) t db =
-      (case lookup mode t db of
-        SOME u => if is_none (lookup (Relational, Absolute) u db)
-                    then { ar = #ar db
-                         , af = #af db
-                         , fr = AList.delete (op aconv) t (#fr db)
-                         }
-                    else error "invariant violation, remove rel2is"
-      | NONE => db
+  fun remove Absolute t db = { ar = AList.delete (op aconv) t (#ar db)
+                             , af = AList.delete (op aconv) t (#af db)
+                             , fr = #fr db
+                             }
+    | remove Functional v db =
+      (case lookup (Functional, Absolute) v db of
+        SOME t => (case lookup (Functional, Relational) v db of
+                    SOME u => { ar = AList.update (op aconv) (t, u) (#ar db)
+                              , af = transpose (AList.delete (op aconv) v (transpose (#af db)))
+                              , fr = AList.delete (op aconv) v (#fr db)
+                              }
+                  | NONE => { ar = #ar db
+                            , af = transpose (AList.delete (op aconv) v (transpose (#af db)))
+                            , fr = #fr db
+                            }
+                  )
+      | NONE => { ar = #ar db
+                , af = #af db
+                , fr = AList.delete (op aconv) v (#fr db)
+                }
       )
-    | remove _ _ _ = error "remove: unreachable clause"
+    | remove Relational u db = { ar = transpose (AList.delete (op aconv) u (transpose (#ar db)))
+                               , af = #af db
+                               , fr = transpose (AList.delete (op aconv) u (transpose (#fr db)))
+                               }
 
-    fun merge (db, db') = { ar = AList.join (op aconv) (K #1) (#ar db, #ar db')
-                          , af = AList.join (op aconv) (K #1) (#af db, #af db')
-                          , fr = AList.join (op aconv) (K #1) (#fr db, #fr db')
-                          }
+  val remove_abs = remove Absolute
+
+  fun merge (db, db') =
+    let
+      val modes = [(abs2rel, #af db'), (rel2is, #fr db'), (abs2is, #ar db)]
+    in
+      List.foldr (fn ((m, db'), db) => List.foldr (uncurry (insert m)) db db') db modes
+    end
 end (* structure Database : Database *)
