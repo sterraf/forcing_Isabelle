@@ -315,8 +315,9 @@ lemma Finite_range: "Finite(A) \<Longrightarrow> Finite(range(A))"
   using Finite_domain Finite_converse unfolding range_def
   by blast
 
-lemma Finite_prod: "Finite(A) \<Longrightarrow> Finite(B) \<Longrightarrow> Finite(A\<times>B)"
-  sorry
+lemma Finite_Sigma: "Finite(A) \<Longrightarrow> \<forall>x. Finite(B(x)) \<Longrightarrow> Finite(Sigma(A,B))"
+  unfolding Sigma_def using Finite_RepFun Finite_Union
+  by simp
 
 subsection\<open>Combinatorial results on Cohen posets\<close>
 
@@ -402,7 +403,7 @@ proof -
     have "Finite(r)" using subset_Finite[of r "domain(p1)"] by auto
     then
     have "Finite(r \<rightarrow> 2)"
-      using Finite_prod[THEN Finite_Pow, of r 2, THEN [2] subset_Finite, of "r\<rightarrow>2"]
+      using Finite_Sigma[THEN Finite_Pow, of r "\<lambda>_.2", THEN [2] subset_Finite, of "r\<rightarrow>2"]
       unfolding Pi_def by auto
     with \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
     obtain p q where "domain(p) \<noteq> domain(q)" "p \<in> A" "q \<in> A"
