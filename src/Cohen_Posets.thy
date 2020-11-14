@@ -261,7 +261,7 @@ qed
 
 lemma Replace_Un: "{b . a \<in> A \<union> B, Q(a, b)} =
         {b . a \<in> A, Q(a, b)} \<union> {b . a \<in> B, Q(a, b)}"
-  sorry
+  by (intro equalityI subsetI) (auto simp add:Replace_iff)
 
 lemma Replace_subset_sing: "\<exists>z. {y . x \<in> {d}, P(x,y)} \<subseteq> {z}"
 proof -
@@ -318,6 +318,12 @@ lemma Finite_range: "Finite(A) \<Longrightarrow> Finite(range(A))"
 lemma Finite_Sigma: "Finite(A) \<Longrightarrow> \<forall>x. Finite(B(x)) \<Longrightarrow> Finite(Sigma(A,B))"
   unfolding Sigma_def using Finite_RepFun Finite_Union
   by simp
+
+lemma Finite_Pi: "Finite(A) \<Longrightarrow> \<forall>x. Finite(B(x)) \<Longrightarrow> Finite(Pi(A,B))"
+  using Finite_Sigma
+    Finite_Pow subset_Finite[of "Pi(A,B)" "Pow(Sigma(A,B))"]
+  unfolding Pi_def
+  by auto
 
 subsection\<open>Combinatorial results on Cohen posets\<close>
 
@@ -403,8 +409,7 @@ proof -
     have "Finite(r)" using subset_Finite[of r "domain(p1)"] by auto
     then
     have "Finite(r \<rightarrow> 2)"
-      using Finite_Sigma[THEN Finite_Pow, of r "\<lambda>_.2", THEN [2] subset_Finite, of "r\<rightarrow>2"]
-      unfolding Pi_def by auto
+      using Finite_Pi by auto
     with \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
     obtain p q where "domain(p) \<noteq> domain(q)" "p \<in> A" "q \<in> A"
       "domain(p) \<in> D" "q1 \<in> A" "domain(q) \<in> D"
