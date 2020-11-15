@@ -245,6 +245,10 @@ lemma cardinal_Aleph [simp]: "Ord(\<alpha>) \<Longrightarrow> |\<aleph>\<^bsub>\
 lemma cardinal_Card_eqpoll_iff: "Card(\<kappa>) \<Longrightarrow> |X| = \<kappa> \<longleftrightarrow> X \<approx> \<kappa>"
   using Card_cardinal_eq[of \<kappa>] cardinal_eqpoll_iff[of X \<kappa>] by auto
 
+abbreviation
+  Infinite :: "i\<Rightarrow>o" where
+  "Infinite(X) \<equiv> \<not> Finite(X)"
+
 \<comment> \<open>Kunen's Definition I.10.5\<close>
 definition
   countable :: "i\<Rightarrow>o" where
@@ -429,6 +433,63 @@ lemma delta_systemI[intro]:
 lemma delta_systemD[dest]:
   "delta_system(D) \<Longrightarrow> \<exists>r. \<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
   unfolding delta_system_def by simp
+
+lemma delta_system_root_eq_Inter:
+  assumes "A\<in>D" "B\<in>D" "A\<noteq>B" "delta_system(D)"
+  shows "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = \<Inter>D"
+proof (clarify, intro equalityI, auto)
+  fix A' B' x C
+  assume hyp:"A'\<in>D" "B'\<in> D" "A'\<noteq>B'" "x\<in>A'" "x\<in>B'" "C\<in>D"
+  with assms
+  obtain r where delta:"\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
+    by auto
+  show "x \<in> C"
+  proof (cases "C=A'")
+    case True
+    with hyp and assms
+    show ?thesis by simp
+  next
+    case False
+    moreover
+    note hyp
+    moreover from calculation and delta
+    have "r = C \<inter> A'" "A' \<inter> B' = r" "x\<in>r" by auto
+    ultimately
+    show ?thesis by simp
+  qed
+qed
+
+lemma Infinite_imp_nats_lepoll:
+  assumes "Infinite(X)" "n \<in> nat"
+  shows "n \<lesssim> X"
+  using \<open>n \<in> nat\<close>
+proof (induct)
+  case 0
+  then
+  show ?case using empty_lepollI by simp
+next
+  case (succ x)
+  show ?case
+  proof (rule ccontr)
+    assume "\<not> succ(x) \<lesssim> X"
+    show False
+      sorry
+  qed
+qed
+
+lemma Infinite_delta_system_root_eq_Inter:
+  assumes "Infinite(D)" "delta_system(D)"
+  shows "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = \<Inter>D"
+proof -
+  from \<open>Infinite(D)\<close>
+  obtain A B where "A\<in>D" "B\<in>D" "A\<noteq>B"
+    using Infinite_imp_nats_lepoll[of D 2]
+      apply_type[of _ 2 "\<lambda>_. D"]
+    unfolding inj_def lepoll_def
+    by auto
+  with \<open>delta_system(D)\<close>
+  show ?thesis using delta_system_root_eq_Inter by simp
+qed
 
 lemma vimage_lam: "(\<lambda>x\<in>A. f(x)) -`` B = { x\<in>A . f(x) \<in> B }"
   using lam_funtype[of A f, THEN [2] domain_type]
