@@ -395,27 +395,31 @@ proof -
     obtain D where "delta_system(D)" "D \<subseteq> {domain(p) . p \<in> A}" "D \<approx> \<aleph>\<^bsub>1\<^esub>"
       using delta_system_uncountable[of "{domain(p) . p \<in> A}"] by auto
     moreover from this
-    obtain r where "\<forall>d1\<in>D. \<forall>d2\<in>D. d1 \<noteq> d2 \<longrightarrow> d1 \<inter> d2 = r"
-      by auto
+    have "uncountable(D)"
+      using uncountable_iff_subset_eqpoll_aleph1 by auto
     ultimately
-    have delta:"\<forall>p\<in>A. \<forall>q\<in>A. domain(p) \<noteq> domain(q) \<longrightarrow> domain(p) \<in> D \<longrightarrow>
-               domain(q)\<in>D \<longrightarrow> domain(p) \<inter> domain(q) = r" by simp
+    have delta:"\<forall>d1\<in>D. \<forall>d2\<in>D. d1 \<noteq> d2 \<longrightarrow> d1 \<inter> d2 = \<Inter>D"
+      using uncountable_imp_Infinite[THEN Infinite_delta_system_root_eq_Inter]
+      by simp
     moreover from \<open>D \<subseteq> {domain(p) . p \<in> A}\<close> \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
-    obtain p1 q1 where "domain(p1) \<noteq> domain(q1)" "p1 \<in> A"
-      "domain(p1) \<in> D" "q1 \<in> A" "domain(q1) \<in> D" sorry
+    obtain p1 where "p1 \<in> A" "domain(p1) \<in> D"
+      using uncountable_iff_subset_eqpoll_aleph1[of D]
+        uncountable_not_empty[of D] by blast
     moreover from this and \<open>p1 \<in> A \<Longrightarrow> Finite(domain(p1))\<close>
     have "Finite(domain(p1))" using Finite_domain by simp
+    moreover
+    define r where "r \<equiv> \<Inter>D"
     ultimately
-    have "Finite(r)" using subset_Finite[of r "domain(p1)"] by auto
+    have "Finite(r)" using subset_Finite[of "r" "domain(p1)"] by auto
     then
-    have "Finite(r \<rightarrow> 2)"
+    have "Finite((r) \<rightarrow> 2)"
       using Finite_Pi by auto
     with \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
     obtain p q where "domain(p) \<noteq> domain(q)" "p \<in> A" "q \<in> A"
       "domain(p) \<in> D" "q1 \<in> A" "domain(q) \<in> D"
       "restrict(p,r) = restrict(q,r)" sorry
     moreover from this and delta
-    have "domain(p) \<inter> domain(q) = r" by simp
+    have "domain(p) \<inter> domain(q) = r" unfolding r_def by simp
     moreover
     note \<open>A \<subseteq> Fn(nat, I, 2)\<close>
     moreover from calculation

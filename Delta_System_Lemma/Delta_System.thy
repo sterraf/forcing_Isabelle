@@ -280,28 +280,64 @@ lemma uncountable_iff_nat_lt_cardinal:
   "uncountable(X) \<longleftrightarrow> nat < |X|"
   using countable_iff_cardinal_le_nat not_le_iff_lt by simp
 
+lemma lepoll_nat_imp_Infinite: "nat \<lesssim> X \<Longrightarrow> Infinite(X)"
+proof (rule ccontr, simp)
+  assume "nat \<lesssim> X" "Finite(X)"
+  moreover from this
+  obtain n where "X \<approx> n" "n \<in> nat"
+    unfolding Finite_def by auto
+  moreover from calculation
+  have "nat \<lesssim> n"
+    using lepoll_eq_trans by simp
+  ultimately
+  show "False"
+    using lepoll_nat_imp_Finite nat_not_Finite by simp
+qed
+
+lemma uncountable_imp_Infinite: "uncountable(X) \<Longrightarrow> Infinite(X)"
+  using uncountable_iff_nat_lt_cardinal[of X] lepoll_nat_imp_Infinite[of X]
+    cardinal_le_imp_lepoll[of nat X] leI
+  by simp
+
 lemma uncountable_not_subset_countable:
   assumes "countable(X)" "uncountable(Y)"
   shows "\<not> (Y \<subseteq> X)"
   using assms lepoll_trans subset_imp_lepoll[of Y X]
     by blast
 
-lemma uncountable_imp_subset_eqpoll_aleph1:
+lemma Aleph_lesspoll_increasing: "a < b \<Longrightarrow> \<aleph>\<^bsub>a\<^esub> \<prec> \<aleph>\<^bsub>b\<^esub>"
+  sorry
+
+lemma uncountable_not_empty: "uncountable(X) \<Longrightarrow> X \<noteq> 0"
+  using empty_lepollI by auto
+
+lemma uncountable_iff_subset_eqpoll_aleph1:
   includes Ord_dests
   notes Aleph_zero_eq_nat[simp] Card_nat[simp] Aleph_succ[simp]
-  assumes "uncountable(X)"
-  shows "\<exists>S. S \<subseteq> X \<and> S \<approx> \<aleph>\<^bsub>1\<^esub>"
-proof -
-  from assms
-  have a:"\<aleph>\<^bsub>1\<^esub> \<lesssim> X"
+  shows "uncountable(X) \<longleftrightarrow> (\<exists>S. S \<subseteq> X \<and> S \<approx> \<aleph>\<^bsub>1\<^esub>)"
+proof
+  assume "uncountable(X)"
+  then
+  have "\<aleph>\<^bsub>1\<^esub> \<lesssim> X"
     using uncountable_iff_nat_lt_cardinal cardinal_lt_csucc_iff'
       cardinal_le_imp_lepoll by force
   then
   obtain S where "S \<subseteq> X" "S \<approx> \<aleph>\<^bsub>1\<^esub>"
     using lepoll_imp_subset_bij by auto
   then
-  show ?thesis
+  show "\<exists>S. S \<subseteq> X \<and> S \<approx> \<aleph>\<^bsub>1\<^esub>"
     using cardinal_cong Card_csucc[of nat] Card_cardinal_eq by auto
+next
+  assume "\<exists>S. S \<subseteq> X \<and> S \<approx> \<aleph>\<^bsub>1\<^esub>"
+  then
+  have "\<aleph>\<^bsub>1\<^esub> \<lesssim> X"
+    using subset_imp_lepoll[THEN [2] eq_lepoll_trans, of "\<aleph>\<^bsub>1\<^esub>" _ X,
+        OF eqpoll_sym] by auto
+  then
+  show "uncountable(X)"
+    using Aleph_lesspoll_increasing[of 0 1, THEN [2] lesspoll_trans1,
+        of "\<aleph>\<^bsub>1\<^esub>"] lepoll_trans[of "\<aleph>\<^bsub>1\<^esub>" X nat]
+    by auto
 qed
 
 lemma cof_aleph1_aux: "function(G) \<Longrightarrow> domain(G) \<lesssim> nat \<Longrightarrow> 
@@ -808,12 +844,10 @@ proof -
         then
         show "\<exists>A\<in>G. \<forall>S\<in>X. S \<inter> A = 0" by auto
       qed
-      moreover
+      moreover from \<open>G \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
       obtain b where "b\<in>G"
-        using eqpoll_sym[OF \<open>G \<approx> \<aleph>\<^bsub>1\<^esub>\<close>] zero_lt_Aleph1[THEN ltD]
-          eqpoll_0_iff[THEN iffD2, of G]
-          eqpoll_trans[of "\<aleph>\<^bsub>1\<^esub>" G 0, THEN eqpoll_0_iff[THEN iffD1]]
-        by blast
+        using uncountable_iff_subset_eqpoll_aleph1
+          uncountable_not_empty by blast
       ultimately
       obtain S where "S : \<aleph>\<^bsub>1\<^esub> \<rightarrow> G" "\<alpha> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<beta> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0" for \<alpha> \<beta>
         using bounded_cardinal_selection[of "\<aleph>\<^bsub>1\<^esub>" G "\<lambda>s a. s \<inter> a = 0" b]
@@ -850,7 +884,7 @@ lemma delta_system_uncountable:
 proof -
   from assms
   obtain S where "S \<subseteq> F" "S \<approx> \<aleph>\<^bsub>1\<^esub>"
-    using uncountable_imp_subset_eqpoll_aleph1[of F] by auto
+    using uncountable_iff_subset_eqpoll_aleph1[of F] by auto
   moreover from \<open>\<forall>A\<in>F. Finite(A)\<close> and this
   have "\<forall>A\<in>S. Finite(A)" by auto
   ultimately
