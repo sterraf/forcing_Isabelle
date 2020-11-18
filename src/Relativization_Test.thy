@@ -205,7 +205,7 @@ relativize_tm functional "x = <0,0>" "test26"
 relativize_tm functional "\<forall> x y . x \<subseteq> y \<longrightarrow> 0 \<in> x \<inter> y" "test27"
 
 definition test28 :: "i \<Rightarrow> i \<Rightarrow> i" where
-  "test28(x, y) \<equiv> (x \<inter> y) \<rightarrow> (x \<union> y)"
+  "test28(x, y) \<equiv> <x \<inter> y, x \<union> y>"
 relativize functional "test28" "test28_rel"
 relationalize "test28_rel" "is_test28"
 

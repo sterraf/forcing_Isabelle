@@ -9,6 +9,8 @@ signature Database =
     val lookup : mode -> term -> db -> term option
     val insert : mode -> term * term -> db -> db
     val remove_abs : term -> db -> db
+    val remove_rel : term -> db -> db
+    val remove_is : term -> db -> db
     val merge : db * db -> db
 
     (* INVARIANTS *)
@@ -67,9 +69,9 @@ structure Database : Database = struct
     | lookup (Relational, Functional) t db = AList.lookup (op aconv) (transpose (#fr db)) t
     | lookup _ _ _ = error "lookup: unreachable clause"
 
-  fun insert (mode as (Absolute, Relational)) (t, u) db =
+  fun insert' warn (mode as (Absolute, Relational)) (t, u) db =
       (case lookup mode t db of
-        SOME _ => (warning ("insert abs2is: duplicate entry for " ^ (@{make_string} t)); db)
+        SOME _ => (warn ("insert abs2is: duplicate entry for " ^ (@{make_string} t)); db)
       | NONE => case lookup (Relational, Functional) u db of
                   SOME v => if is_none (lookup (Functional, Absolute) v db)
                               then { ar = #ar db
@@ -79,7 +81,7 @@ structure Database : Database = struct
                               else error "invariant violation, insert abs2is"
                 | NONE => case lookup (Absolute, Functional) t db of
                             SOME v => { ar = #ar db
-                                      , af = #ar db
+                                      , af = #af db
                                       , fr = AList.update (op aconv) (v, u) (#fr db)
                                       }
                           | NONE => { ar = AList.update (op aconv) (t, u) (#ar db)
@@ -87,9 +89,9 @@ structure Database : Database = struct
                                     , fr = #fr db
                                     }
       )
-    | insert (mode as (Absolute, Functional)) (t, v) db =
+    | insert' warn (mode as (Absolute, Functional)) (t, v) db =
       (case lookup mode t db of
-        SOME _ => (warning ("insert abs2rel: duplicate entry for " ^ (@{make_string} t)); db)
+        SOME _ => (warn ("insert abs2rel: duplicate entry for " ^ (@{make_string} t)); db)
       | NONE => case lookup (Functional, Relational) v db of
                   SOME u => (case lookup (Relational, Absolute) u db of
                               NONE => { ar = #ar db
@@ -113,9 +115,9 @@ structure Database : Database = struct
                                     , fr = #fr db
                                     }
       )
-    | insert (mode as (Functional, Relational)) (v, u) db =
+    | insert' warn (mode as (Functional, Relational)) (v, u) db =
       (case lookup mode v db of
-        SOME _ => (warning ("insert rel2is: duplicate entry for " ^ (@{make_string} v)); db)
+        SOME _ => (warn ("insert rel2is: duplicate entry for " ^ (@{make_string} v)); db)
       | NONE => case (lookup (Functional, Absolute) v db, lookup (Relational, Absolute) u db) of
                   (SOME t, SOME t') => if t = t'
                                          then { ar = AList.delete (op aconv) t (#ar db)
@@ -136,7 +138,9 @@ structure Database : Database = struct
                                   , fr = AList.update (op aconv) (v, u) (#fr db)
                                   }
       )
-    | insert _ _ _ = error "insert: unreachable clause"
+    | insert' _ _ _ _ = error "insert: unreachable clause"
+
+  val insert = insert' warning
 
   fun remove Absolute t db = { ar = AList.delete (op aconv) t (#ar db)
                              , af = AList.delete (op aconv) t (#af db)
@@ -166,10 +170,14 @@ structure Database : Database = struct
 
   val remove_abs = remove Absolute
 
+  val remove_rel = remove Functional
+
+  val remove_is = remove Relational
+
   fun merge (db, db') =
     let
       val modes = [(abs2rel, #af db'), (rel2is, #fr db'), (abs2is, #ar db)]
     in
-      List.foldr (fn ((m, db'), db) => List.foldr (uncurry (insert m)) db db') db modes
+      List.foldr (fn ((m, db'), db) => List.foldr (uncurry (insert' (K ())  m)) db db') db modes
     end
 end (* structure Database : Database *)
