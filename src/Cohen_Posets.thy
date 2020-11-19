@@ -414,6 +414,7 @@ proof (intro allI ballI impI)
     unfolding function_def by fastforce
 qed
 
+(* MOVE THIS to an appropriate place *)
 lemma filter_subset_notion: "filter(G) \<Longrightarrow> G \<subseteq> Fn(\<kappa>, I, J)"
   unfolding filter_def by simp
 
@@ -430,9 +431,48 @@ lemma ccc_Fn_nat: "ccc(Fn(nat,I,2), Fnle(nat,I,2))"
 proof -
   {
     fix A
-    assume "\<not> |A| \<le> nat" "A \<subseteq> Fn(nat, I, 2)"
+    assume "\<not> |A| \<le> nat"
+    assume "A \<subseteq> Fn(nat, I, 2)"
     moreover from this
-    have "uncountable({domain(p) . p \<in> A})" sorry
+    have "countable({p\<in>A. domain(p) = d})" for d
+    proof (cases "d\<prec>nat \<and> d \<subseteq> I")
+      case True
+      with \<open>A \<subseteq> Fn(nat, I, 2)\<close>
+      have "{p \<in> A . domain(p) = d} \<subseteq> d \<rightarrow> 2"
+        using domain_of_fun by fastforce
+      moreover from True
+      have "Finite(d \<rightarrow> 2)"
+        using Finite_Pi lesspoll_nat_is_Finite by auto
+      ultimately
+      show ?thesis using subset_Finite[of _ "d\<rightarrow>2" ] Finite_imp_countable
+        by auto
+    next
+      case False
+      with \<open>A \<subseteq> Fn(nat, I, 2)\<close>
+      have "{p \<in> A . domain(p) = d} = 0"
+        by (intro equalityI) (auto dest!: domain_of_fun)
+      then
+      show ?thesis using empty_lepollI by auto
+    qed
+    moreover
+    have "uncountable({domain(p) . p \<in> A})"
+    proof
+      from \<open>A \<subseteq> Fn(nat, I, 2)\<close>
+      have "A = (\<Union>d\<in>{domain(p) . p \<in> A}. {p\<in>A. domain(p) = d})"
+        by auto
+      moreover
+      assume "countable({domain(p) . p \<in> A})"
+      moreover
+      note \<open>\<And>d. countable({p\<in>A. domain(p) = d})\<close>
+      ultimately
+      have "countable(A)"
+        using countable_imp_countable_UN[of "{domain(p). p\<in>A}"
+            "\<lambda>d. {p \<in> A. domain(p) = d }"]
+        by simp
+      with \<open>\<not> |A| \<le> nat\<close>
+      show False
+        using countable_iff_cardinal_le_nat by simp
+    qed
     moreover from \<open>A \<subseteq> Fn(nat, I, 2)\<close>
     have "p \<in> A \<Longrightarrow> Finite(domain(p))" for p
       using lesspoll_nat_is_Finite[of "domain(p)"]
