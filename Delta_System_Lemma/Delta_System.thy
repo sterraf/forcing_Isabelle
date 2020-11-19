@@ -265,12 +265,21 @@ lemma countable_iff_cardinal_le_nat: "countable(X) \<longleftrightarrow> |X| \<l
   unfolding countable_def by simp
 
 lemma Finite_imp_countable: "Finite(X) \<Longrightarrow> countable(X)"
-  sorry
+  unfolding Finite_def
+  by (auto intro:InfCard_nat nats_le_InfCard[of _ nat,
+        THEN le_imp_lepoll] dest!:eq_lepoll_trans[of X _ nat])
+
+lemma countable_imp_countable_UN:
+  assumes "countable(J)" "\<And>i. i\<in>J \<Longrightarrow> countable(X(i))"
+  shows "countable(\<Union>i\<in>J. X(i))"
+  using assms leqpoll_imp_cardinal_UN_le[of nat J X] InfCard_nat
+    countable_iff_cardinal_le_nat
+  by auto
 
 lemma countable_union_countable:
   assumes "\<And>x. x \<in> C \<Longrightarrow> countable(x)" "countable(C)"
   shows "countable(\<Union>C)"
-  sorry
+  using assms countable_imp_countable_UN[of C "\<lambda>x. x"] by simp
 
 abbreviation
   uncountable :: "i\<Rightarrow>o" where
