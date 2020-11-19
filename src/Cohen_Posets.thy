@@ -204,13 +204,59 @@ next
     by blast
 qed
 
+lemma Un_restrict_decomposition:
+  assumes "f \<in> Pi(A,B)"
+  shows "f = restrict(f, A \<inter> C) \<union> restrict(f, A - C)"
+  using assms
+proof (rule fun_extension)
+  from assms
+  have "restrict(f,A\<inter>C) \<union> restrict(f,A-C) \<in> Pi(A\<inter>C \<union> (A-C), \<lambda>x. B(x)\<union>B(x))"
+    using restrict_type2[of f A B]
+    by (rule_tac fun_Pi_disjoint_Un) force+
+  moreover
+  have "(A \<inter> C) \<union> (A - C) = A" by auto
+  ultimately
+  show "restrict(f, A \<inter> C) \<union> restrict(f, A - C) \<in> Pi(A, B)" by simp
+next
+  fix x
+  assume "x \<in> A"
+  with assms
+  show "f ` x = (restrict(f, A \<inter> C) \<union> restrict(f, A - C)) ` x"
+    using restrict fun_disjoint_apply1[of _ "restrict(f,_)"]
+      fun_disjoint_apply2[of _ "restrict(f,_)"]
+      domain_restrict[of f] apply_0 domain_of_fun
+    by (cases "x\<in>C") simp_all
+qed
+
 lemma restrict_eq_imp_Un_into_Pi:
   assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)" "restrict(f, A \<inter> C) = restrict(g, A \<inter> C)"
   shows "f \<union> g \<in> Pi(A \<union> C, \<lambda>x. B(x) \<union> D(x))"
-  sorry
+proof -
+  note assms
+  moreover from this
+  have "x \<notin> g \<Longrightarrow> x \<notin> restrict(g, A \<inter> C)" for x
+    using restrict_subset[of g "A \<inter> C"] by auto
+  moreover from calculation
+  have "x \<in> f \<Longrightarrow> x \<in> restrict(f, A - C) \<or> x \<in> restrict(g, A \<inter> C)" for x
+    by (subst (asm) Un_restrict_decomposition[of f A B "C"]) auto
+  ultimately
+  have "f \<union> g = restrict(f, A - C) \<union> g"
+    using restrict_subset[of g "A \<inter> C"]
+    by (subst Un_restrict_decomposition[of f A B "C"]) auto
+  moreover
+  have "A - C \<union> C = A \<union> C" by auto
+  moreover
+  note assms
+  ultimately
+  show ?thesis
+    using fun_Pi_disjoint_Un[OF
+        restrict_type2[of f A B "A-C"], of g C D]
+    by auto
+qed
 
 lemma restrict_eq_imp_Un_into_Pi':
-  assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)" "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
+  assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)"
+    "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
   shows "f \<union> g \<in> Pi(A \<union> C, \<lambda>x. B(x) \<union> D(x))"
   using  assms domain_of_fun restrict_eq_imp_Un_into_Pi by simp
 
@@ -412,11 +458,11 @@ proof -
     ultimately
     have "Finite(r)" using subset_Finite[of "r" "domain(p1)"] by auto
     then
-    have "Finite((r) \<rightarrow> 2)"
+    have "Finite(r \<rightarrow> 2)"
       using Finite_Pi by auto
     with \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
     obtain p q where "domain(p) \<noteq> domain(q)" "p \<in> A" "q \<in> A"
-      "domain(p) \<in> D" "q1 \<in> A" "domain(q) \<in> D"
+      "domain(p) \<in> D" "domain(q) \<in> D"
       "restrict(p,r) = restrict(q,r)" sorry
     moreover from this and delta
     have "domain(p) \<inter> domain(q) = r" unfolding r_def by simp
