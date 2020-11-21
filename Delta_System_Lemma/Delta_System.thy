@@ -322,8 +322,12 @@ lemma uncountable_not_subset_countable:
   using assms lepoll_trans subset_imp_lepoll[of Y X]
     by blast
 
-lemma Aleph_lesspoll_increasing: "a < b \<Longrightarrow> \<aleph>\<^bsub>a\<^esub> \<prec> \<aleph>\<^bsub>b\<^esub>"
-  sorry
+\<comment> \<open>Could be proved without using AC\<close>
+lemma Aleph_lesspoll_increasing:
+  includes Aleph_intros
+  shows "a < b \<Longrightarrow> \<aleph>\<^bsub>a\<^esub> \<prec> \<aleph>\<^bsub>b\<^esub>"
+  using cardinal_lt_iff_lesspoll[of "\<aleph>\<^bsub>a\<^esub>" "\<aleph>\<^bsub>b\<^esub>"] Card_cardinal_eq[of "\<aleph>\<^bsub>b\<^esub>"]
+    lt_Ord lt_Ord2 Card_Aleph[THEN Card_is_Ord] by auto
 
 lemma uncountable_not_empty: "uncountable(X) \<Longrightarrow> X \<noteq> 0"
   using empty_lepollI by auto
@@ -523,10 +527,27 @@ proof (induct)
 next
   case (succ x)
   show ?case
-  proof (rule ccontr)
-    assume "\<not> succ(x) \<lesssim> X"
-    show False
-      sorry
+  proof -
+    from \<open>Infinite(X)\<close> and \<open>x \<in> nat\<close>
+    have "\<not> (x \<approx> X)"
+      using eqpoll_sym unfolding Finite_def by auto
+    with \<open>x \<lesssim> X\<close>
+    obtain f where "f \<in> inj(x,X)" "f \<notin> surj(x,X)"
+      unfolding bij_def eqpoll_def by auto
+    moreover from this
+    obtain b where "b \<in> X" "\<forall>a\<in>x. f`a \<noteq> b"
+      using inj_is_fun unfolding surj_def by auto
+    ultimately
+    have "f \<in> inj(x,X-{b})"
+      unfolding inj_def by (auto intro:Pi_type)
+    then
+    have "cons(\<langle>x, b\<rangle>, f) \<in> inj(succ(x), cons(b, X - {b}))"
+      using inj_extend[of f x "X-{b}" x b] unfolding succ_def
+      by (auto dest:mem_irrefl)
+    moreover from \<open>b\<in>X\<close>
+    have "cons(b, X - {b}) = X" by auto
+    ultimately
+    show "succ(x) \<lesssim> X" by auto
   qed
 qed
 
