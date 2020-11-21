@@ -608,9 +608,12 @@ lemma cardinal_map_Un:
   shows "|{a \<union> b . a \<in> X}| = |X|"
   sorry
 
+lemma subset_Diff_Un: "X \<subseteq> A \<Longrightarrow> A = (A - X) \<union> X " by auto
+
 lemma Diff_bij:
   assumes "\<forall>A\<in>F. X \<subseteq> A" shows "(\<lambda>A\<in>F. A-X) \<in> bij(F, {A-X. A\<in>F})"
-  sorry
+  using assms unfolding bij_def inj_def surj_def
+  by (auto intro:lam_type, subst subset_Diff_Un[of X]) auto
 
 definition
   rec_constr :: "[i,i] \<Rightarrow> i" where
