@@ -371,6 +371,9 @@ lemma Finite_Pi: "Finite(A) \<Longrightarrow> \<forall>x. Finite(B(x)) \<Longrig
   unfolding Pi_def
   by auto
 
+lemma restrict_subset_Sigma: "f \<subseteq> Sigma(C,B) \<Longrightarrow> restrict(f,A) \<subseteq> Sigma(A\<inter>C, B)"
+  by (auto simp add: restrict_def)
+
 subsection\<open>Combinatorial results on Cohen posets\<close>
 
 context cohen_data
@@ -427,7 +430,9 @@ end (* cohen_data *)
 locale add_reals = cohen_data nat _ 2
 begin
 
-lemma ccc_Fn_nat: "ccc(Fn(nat,I,2), Fnle(nat,I,2))"
+lemma ccc_Fn_nat:
+  notes Sep_and_Replace [simp]\<comment> \<open>FIXME with all \<^term>\<open>SepReplace\<close> instances\<close>
+  shows "ccc(Fn(nat,I,2), Fnle(nat,I,2))"
 proof -
   {
     fix A
@@ -487,23 +492,100 @@ proof -
     have delta:"\<forall>d1\<in>D. \<forall>d2\<in>D. d1 \<noteq> d2 \<longrightarrow> d1 \<inter> d2 = \<Inter>D"
       using uncountable_imp_Infinite[THEN Infinite_delta_system_root_eq_Inter]
       by simp
-    moreover from \<open>D \<subseteq> {domain(p) . p \<in> A}\<close> \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+    moreover from \<open>D \<subseteq> {domain(p) . p \<in> A}\<close> \<open>uncountable(D)\<close>
     obtain p1 where "p1 \<in> A" "domain(p1) \<in> D"
-      using uncountable_iff_subset_eqpoll_aleph1[of D]
-        uncountable_not_empty[of D] by blast
+      using uncountable_not_empty[of D] by blast
     moreover from this and \<open>p1 \<in> A \<Longrightarrow> Finite(domain(p1))\<close>
     have "Finite(domain(p1))" using Finite_domain by simp
     moreover
     define r where "r \<equiv> \<Inter>D"
     ultimately
     have "Finite(r)" using subset_Finite[of "r" "domain(p1)"] by auto
+    have "countable({restrict(p,r) . p\<in>A})"
+    proof -
+      have "f\<in>Fn(nat, I, 2) \<Longrightarrow> restrict(f,r) \<in> Pow(r \<times> 2)" for f
+        using restrict_subset_Sigma[of f _ "\<lambda>_. 2" r]
+        by (auto dest!:FnD simp: Pi_def) auto
+      with \<open>A \<subseteq> Fn(nat, I, 2)\<close>
+      have "{restrict(f,r) . f \<in> A } \<subseteq> Pow(r \<times> 2)"
+        by fast
+      with \<open>Finite(r)\<close>
+      show ?thesis
+        using Finite_Sigma[THEN Finite_Pow, of r "\<lambda>_. 2"]
+        by (intro Finite_imp_countable) (auto intro:subset_Finite)
+    qed
+    moreover
+    have "uncountable({p\<in>A. domain(p) \<in> D})" (is "uncountable(?X)")
+    proof
+      from \<open>D \<subseteq> {domain(p) . p \<in> A}\<close>
+      have "(\<lambda>p\<in>?X. domain(p)) \<in> surj(?X, D)"
+        using lam_type unfolding surj_def by auto
+      moreover
+      assume "countable(?X)"
+      moreover
+      note \<open>uncountable(D)\<close>
+      ultimately
+      show False
+        using surj_countable by auto
+    qed
+    moreover
+    have "D = (\<Union>f\<in>Pow(r\<times>2) . {domain(p) .. p\<in>A, restrict(p,r) = f \<and> domain(p) \<in> D})"
+    proof -
+      {
+        fix z
+        assume "z \<in> D"
+        with \<open>D \<subseteq> _\<close>
+        obtain p  where "domain(p) = z" "p \<in> A"
+          by auto
+        moreover from \<open>A \<subseteq> Fn(nat, I, 2)\<close> and this
+        have "p : z \<rightarrow> 2"
+          using domain_of_fun by (auto dest!:FnD)
+        moreover from this
+        have "restrict(p,r) \<subseteq> r \<times> 2"
+          using function_restrictI[of p r] fun_is_function[of p z "\<lambda>_. 2"]
+            restrict_subset_Sigma[of p z "\<lambda>_. 2" r]
+          by (auto simp:Pi_def)
+        ultimately
+        have "\<exists>p\<in>A.  restrict(p,r) \<in> Pow(r\<times>2) \<and> domain(p) = z" by auto
+      }
+      then
+      show ?thesis
+        by (intro equalityI) (force)+
+    qed
+    obtain f where "uncountable({domain(p) .. p\<in>A, restrict(p,r) = f \<and> domain(p) \<in> D})"
+      (is "uncountable(?Y(f))")
+    proof -
+      {
+        from \<open>Finite(r)\<close>
+        have "countable(Pow(r\<times>2))"
+          using Finite_Sigma[THEN Finite_Pow, THEN Finite_imp_countable]
+          by simp
+        moreover
+        assume "countable(?Y(f))" for f
+        moreover
+        note \<open>D = (\<Union>f\<in>Pow(r\<times>2) .?Y(f))\<close>
+        moreover
+        note \<open>uncountable(D)\<close>
+        ultimately
+        have "False"
+          using countable_imp_countable_UN[of "Pow(r\<times>2)" ?Y] by auto
+      }
+      with that
+      show ?thesis by auto
+    qed
     then
-    have "Finite(r \<rightarrow> 2)"
-      using Finite_Pi by auto
-    with \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+    obtain j where "j \<in> inj(nat, ?Y(f))"
+      using uncountable_iff_nat_lt_cardinal[THEN iffD1, THEN leI,
+          THEN cardinal_le_imp_lepoll, THEN lepollD]
+      by auto
+    then
+    have "j`0 \<noteq> j`1" "j`0 \<in> ?Y(f)" "j`1 \<in> ?Y(f)"
+      using inj_is_fun[THEN apply_type, of j nat "?Y(f)"]
+      unfolding inj_def by auto
+    then
     obtain p q where "domain(p) \<noteq> domain(q)" "p \<in> A" "q \<in> A"
       "domain(p) \<in> D" "domain(q) \<in> D"
-      "restrict(p,r) = restrict(q,r)" sorry
+      "restrict(p,r) = restrict(q,r)" by auto
     moreover from this and delta
     have "domain(p) \<inter> domain(q) = r" unfolding r_def by simp
     moreover

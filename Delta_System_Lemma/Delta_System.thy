@@ -264,6 +264,14 @@ lemma countable_iff_cardinal_le_nat: "countable(X) \<longleftrightarrow> |X| \<l
   using le_Card_iff[of nat X] Card_nat
   unfolding countable_def by simp
 
+lemma lepoll_countable: "X \<lesssim> Y \<Longrightarrow> countable(Y) \<Longrightarrow> countable(X)"
+  using lepoll_trans[of X Y] by blast
+
+\<comment> \<open>Next lemma can be proved without using AC\<close>
+lemma surj_countable: "countable(X) \<Longrightarrow> f \<in> surj(X,Y) \<Longrightarrow> countable(Y)"
+  using surj_implies_cardinal_le[of f X Y, THEN le_trans]
+    countable_iff_cardinal_le_nat by simp
+
 lemma Finite_imp_countable: "Finite(X) \<Longrightarrow> countable(X)"
   unfolding Finite_def
   by (auto intro:InfCard_nat nats_le_InfCard[of _ nat,
