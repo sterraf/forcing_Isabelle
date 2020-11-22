@@ -252,6 +252,32 @@ abbreviation
 lemma Infinite_InfCard_cardinal: "Infinite(X) \<Longrightarrow> InfCard(|X|)"
   sorry
 
+\<comment> \<open>FIXME: tons of uses of @{thm InfCard_is_Card}\<close>
+lemma lepoll_Un:
+  assumes "InfCard(\<kappa>)" "A \<lesssim> \<kappa>" "B \<lesssim> \<kappa>"
+  shows "A \<union> B \<lesssim> \<kappa>"
+proof -
+  have "A \<union> B \<lesssim> sum(A,B)"
+    using Un_lepoll_sum .
+  moreover
+  note assms
+  moreover from this
+  have "|sum(A,B)| \<le> \<kappa> \<oplus> \<kappa>"
+    using sum_lepoll_mono[of A \<kappa> B \<kappa>] lepoll_imp_Card_le
+    unfolding cadd_def by auto
+  ultimately
+  show ?thesis
+    using InfCard_cdouble_eq Card_cardinal_eq
+      InfCard_is_Card Card_le_imp_lepoll[of "sum(A,B)" \<kappa>]
+      lepoll_trans[of "A\<union>B"]
+    by auto
+qed
+
+lemma cardinal_Un_le:
+  assumes "InfCard(\<kappa>)" "|A| \<le> \<kappa>" "|B| \<le> \<kappa>"
+  shows "|A \<union> B| \<le> \<kappa>"
+  using assms lepoll_Un le_Card_iff InfCard_is_Card by auto
+
 \<comment> \<open>Kunen's Definition I.10.5\<close>
 definition
   countable :: "i\<Rightarrow>o" where
