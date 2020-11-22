@@ -82,6 +82,8 @@ ZF
 - Rename lepoll_imp_Card_le to lepoll_imp_cardinal_le and
   well_ord_lepoll_imp_Card_le to well_ord_lepoll_imp_cardinal_le.
 
+- Fix precedence of UN (now too low to work with "=", for instance).
+
 
 Assorted To-Dos
 ===============
