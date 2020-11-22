@@ -260,10 +260,56 @@ lemma restrict_eq_imp_Un_into_Pi':
   shows "f \<union> g \<in> Pi(A \<union> C, \<lambda>x. B(x) \<union> D(x))"
   using  assms domain_of_fun restrict_eq_imp_Un_into_Pi by simp
 
+lemma InfCard_imp_Infinite: "InfCard(\<kappa>) \<Longrightarrow> Infinite(\<kappa>)"
+  using le_imp_lepoll[THEN lepoll_nat_imp_Infinite, of \<kappa>]
+  unfolding InfCard_def by simp
+
 lemma InfCard_lesspoll_Un:
+  includes Ord_dests
   assumes "InfCard(\<kappa>)" "A \<prec> \<kappa>" "B \<prec> \<kappa>"
   shows "A \<union> B \<prec> \<kappa>"
-  sorry
+proof -
+  from assms
+  have "|A| < \<kappa>" "|B| < \<kappa>"
+    using lesspoll_cardinal_lt InfCard_is_Card by auto
+  show ?thesis
+  proof (cases "Finite(A) \<and> Finite(B)")
+    case True
+    with assms
+    show ?thesis
+      using lesspoll_trans2[OF _ le_imp_lepoll, of _ nat \<kappa>]
+        Finite_imp_lesspoll_nat[OF Finite_Un]
+      unfolding InfCard_def by simp
+  next
+    case False
+    then
+    have "InfCard(max(|A|,|B|))"
+      using Infinite_InfCard_cardinal InfCard_is_Card
+        le_trans[of nat] not_le_iff_lt[THEN iffD1, THEN leI, of "|A|" "|B|"]
+      unfolding max_def InfCard_def
+      by (auto)
+    then
+    have "|A \<union> B| \<le> max(|A|,|B|)"
+      using cardinal_Un_le[of "max(|A|,|B|)"]
+        not_le_iff_lt[THEN iffD1, THEN leI, of "|A|" "|B|" ]
+      unfolding max_def
+      by auto
+    moreover from \<open>|A| < \<kappa>\<close> \<open>|B| < \<kappa>\<close>
+    have "max(|A|,|B|) < \<kappa>"
+      unfolding max_def by simp
+    ultimately
+    have "|A \<union> B| <  \<kappa>"
+      using lt_trans1 by blast
+    moreover
+    note \<open>InfCard(\<kappa>)\<close>
+    moreover from calculation
+    have "|A \<union> B| \<prec> \<kappa>"
+      using lt_Card_imp_lesspoll InfCard_is_Card by simp
+    ultimately
+    show ?thesis
+      using  cardinal_eqpoll eq_lesspoll_trans eqpoll_sym by blast
+  qed
+qed
 
 subsection\<open>MOVE THIS to an appropriate place\<close>
 
