@@ -249,6 +249,9 @@ abbreviation
   Infinite :: "i\<Rightarrow>o" where
   "Infinite(X) \<equiv> \<not> Finite(X)"
 
+lemma Infinite_InfCard_cardinal: "Infinite(X) \<Longrightarrow> InfCard(|X|)"
+  sorry
+
 \<comment> \<open>Kunen's Definition I.10.5\<close>
 definition
   countable :: "i\<Rightarrow>o" where
@@ -601,12 +604,77 @@ qed
 lemma naturals_lt_nat[intro]: "n \<in> nat \<Longrightarrow> n < nat"
   unfolding lt_def by simp
 
+definition
+  Finite_to_one :: "[i,i] \<Rightarrow> i" where
+  "Finite_to_one(X,Y) \<equiv> {f:X\<rightarrow>Y. \<forall>y\<in>Y. Finite({x\<in>X . f`x = y})}"
+
+lemma Finite_to_oneI[intro]:
+  assumes "f:X\<rightarrow>Y" "\<And>y. y\<in>Y \<Longrightarrow> Finite({x\<in>X . f`x = y})"
+  shows "f \<in> Finite_to_one(X,Y)"
+  using assms unfolding Finite_to_one_def by simp
+
+lemma Finite_to_oneD[dest]:
+  "f \<in> Finite_to_one(X,Y) \<Longrightarrow> f:X\<rightarrow>Y"
+  "f \<in> Finite_to_one(X,Y) \<Longrightarrow> y\<in>Y \<Longrightarrow>  Finite({x\<in>X . f`x = y})"
+  unfolding Finite_to_one_def by simp_all
+
+lemma Finite_to_one_surj_imp_cardinal_eq:
+  assumes "F \<in> Finite_to_one(X,Y) \<inter> surj(X,Y)" "Infinite(X)"
+  shows "|Y| = |X|"
+proof -
+  from \<open>F \<in> Finite_to_one(X,Y) \<inter> surj(X,Y)\<close>
+  have "X = (\<Union>y\<in>Y. {x\<in>X . F`x = y})"
+    using apply_type by fastforce
+  show ?thesis
+  proof (cases "Finite(Y)")
+    case True
+    with \<open>X = (\<Union>y\<in>Y. {x\<in>X . F`x = y})\<close> and assms
+    show ?thesis
+      using Finite_RepFun[THEN [2] Finite_Union, of Y "\<lambda>y. {x\<in>X . F`x = y}"]
+      by auto
+  next
+    case False
+    moreover from this
+    have "Y \<lesssim> |Y|"
+      using cardinal_eqpoll eqpoll_sym eqpoll_imp_lepoll by simp
+    moreover
+    note assms
+    moreover from calculation
+    have "y \<in> Y \<Longrightarrow> |{x\<in>X . F`x = y}| \<le> |Y|" for y
+      using Infinite_imp_nats_lepoll[THEN lepoll_imp_Card_le, of Y
+          "|{x\<in>X . F`x = y}|"] cardinal_idem by auto
+    ultimately
+    have "|\<Union>y\<in>Y. {x\<in>X . F`x = y}| \<le> |Y|"
+      using leqpoll_imp_cardinal_UN_le[of "|Y|" Y]
+        Infinite_InfCard_cardinal[of Y] by simp
+    moreover from \<open>F \<in> Finite_to_one(X,Y) \<inter> surj(X,Y)\<close>
+    have "|Y| \<le> |X|"
+      using surj_implies_cardinal_le by auto
+    moreover
+    note \<open>X = (\<Union>y\<in>Y. {x\<in>X . F`x = y})\<close>
+    ultimately
+    show ?thesis
+      using le_anti_sym by auto
+  qed
+qed
+
 lemma cardinal_map_Un:
-  assumes
-    "nat \<le> |X|"
-    "|b| < nat"
+  assumes "Infinite(X)" "Finite(b)"
   shows "|{a \<union> b . a \<in> X}| = |X|"
-  sorry
+proof -
+  have "(\<lambda>a\<in>X. a \<union> b) \<in> Finite_to_one(X,{a \<union> b . a \<in> X})"
+    "(\<lambda>a\<in>X. a \<union> b) \<in>  surj(X,{a \<union> b . a \<in> X})"
+    unfolding surj_def
+  proof
+    fix y
+    assume "y \<in> {a \<union> b . a \<in> X}"
+    show "Finite({x \<in> X . (\<lambda>a\<in>X. a \<union> b) ` x = y})"
+      sorry
+  qed (auto intro:lam_funtype)
+  with assms
+  show ?thesis
+    using Finite_to_one_surj_imp_cardinal_eq by fast
+qed
 
 lemma subset_Diff_Un: "X \<subseteq> A \<Longrightarrow> A = (A - X) \<union> X " by auto
 
@@ -807,15 +875,15 @@ proof -
       ultimately
       have "delta_system({B \<union> {p} . B\<in>D})" (is "delta_system(?D)")
         by fastforce
-      moreover
-      note \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
-      then
-      have \<open>|D| = \<aleph>\<^bsub>1\<^esub>\<close> using cardinal_eqpoll_iff by force
+      moreover from \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+      have "|D| = \<aleph>\<^bsub>1\<^esub>" "Infinite(D)"
+        using cardinal_eqpoll_iff
+        by (auto intro!: uncountable_iff_subset_eqpoll_aleph1[THEN iffD2]
+            uncountable_imp_Infinite) force
       moreover from this
       have "?D \<approx> \<aleph>\<^bsub>1\<^esub>"
-        using cardinal_map_Un leI naturals_lt_nat
-          cardinal_eqpoll_iff[THEN iffD1] nat_lt_Aleph1
-        by auto
+        using cardinal_map_Un[of D "{p}"] naturals_lt_nat
+          cardinal_eqpoll_iff[THEN iffD1] by simp
       moreover
       note \<open>D \<subseteq> {A-{p} . A\<in>{X\<in>G. p\<in>X}}\<close>
       have "?D \<subseteq> G"
