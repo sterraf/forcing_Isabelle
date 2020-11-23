@@ -829,10 +829,30 @@ proof -
     "(\<lambda>a\<in>X. a \<union> b) \<in>  surj(X,{a \<union> b . a \<in> X})"
     unfolding surj_def
   proof
-    fix y
-    assume "y \<in> {a \<union> b . a \<in> X}"
-    show "Finite({x \<in> X . (\<lambda>a\<in>X. a \<union> b) ` x = y})"
-      sorry
+    fix d
+    have "Finite({a \<in> X . a \<union> b = d})" (is "Finite(?Y(b,d))")
+      using \<open>Finite(b)\<close>
+    proof (induct arbitrary:d)
+      case 0
+      have "{a \<in> X . a \<union> 0 = d} = (if d\<in>X then {d} else 0)"
+        by auto
+      then
+      show ?case by simp
+    next
+      case (cons c b)
+      from \<open>c \<notin> b\<close>
+      have "?Y(cons(c,b),d) \<subseteq> (if c\<in>d then ?Y(b,d) \<union> ?Y(b,d-{c}) else 0)"
+        by auto
+      with cons
+      show ?case
+        using subset_Finite
+        by simp
+    qed
+    moreover
+    assume "d \<in> {x \<union> b . x \<in> X}"
+    ultimately
+    show "Finite({a \<in> X . (\<lambda>x\<in>X. x \<union> b) ` a = d})"
+      by simp
   qed (auto intro:lam_funtype)
   with assms
   show ?thesis
