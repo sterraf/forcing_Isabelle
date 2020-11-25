@@ -12,6 +12,54 @@ lemma nth_closed :
   shows "nth(n,env)\<in>A" 
   using assms unfolding nth_def by (induct env; simp)
 
+lemma mem_model_iff_sats [iff_sats]:
+      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A)|]
+       ==> (x\<in>A) \<longleftrightarrow> sats(A, Exists(Equal(0,0)), env)"
+  using nth_closed[of env A i]
+  by auto
+
+lemma not_mem_model_iff_sats [iff_sats]:
+      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A)|]
+       ==> (\<forall> x . x \<notin> A) \<longleftrightarrow> sats(A, Neg(Exists(Equal(0,0))), env)"
+  by auto
+
+lemma top_iff_sats [iff_sats]:
+  "env \<in> list(A) \<Longrightarrow> 0 \<in> A \<Longrightarrow> sats(A, Exists(Equal(0,0)), env)"
+  by auto
+
+lemma prefix1_iff_sats[iff_sats]:
+  assumes
+    "x \<in> nat" "env \<in> list(A)" "0 \<in> A" "a \<in> A"
+  shows
+    "a = nth(x,env) \<longleftrightarrow> sats(A, Equal(0,x#+1), Cons(a,env))"
+    "nth(x,env) = a \<longleftrightarrow> sats(A, Equal(x#+1,0), Cons(a,env))"
+    "a \<in> nth(x,env) \<longleftrightarrow> sats(A, Member(0,x#+1), Cons(a,env))"
+    "nth(x,env) \<in> a \<longleftrightarrow> sats(A, Member(x#+1,0), Cons(a,env))"
+  using assms nth_closed
+  by simp_all
+
+lemma prefix2_iff_sats[iff_sats]:
+  assumes
+    "x \<in> nat" "env \<in> list(A)" "0 \<in> A" "a \<in> A" "b \<in> A"
+  shows
+    "b = nth(x,env) \<longleftrightarrow> sats(A, Equal(1,x#+2), Cons(a,Cons(b,env)))"
+    "nth(x,env) = b \<longleftrightarrow> sats(A, Equal(x#+2,1), Cons(a,Cons(b,env)))"
+    "b \<in> nth(x,env) \<longleftrightarrow> sats(A, Member(1,x#+2), Cons(a,Cons(b,env)))"
+    "nth(x,env) \<in> b \<longleftrightarrow> sats(A, Member(x#+2,1), Cons(a,Cons(b,env)))"
+  using assms nth_closed
+  by simp_all
+
+lemma prefix3_iff_sats[iff_sats]:
+  assumes
+    "x \<in> nat" "env \<in> list(A)" "0 \<in> A" "a \<in> A" "b \<in> A" "c \<in> A"
+  shows
+    "c = nth(x,env) \<longleftrightarrow> sats(A, Equal(2,x#+3), Cons(a,Cons(b,Cons(c,env))))"
+    "nth(x,env) = c \<longleftrightarrow> sats(A, Equal(x#+3,2), Cons(a,Cons(b,Cons(c,env))))"
+    "c \<in> nth(x,env) \<longleftrightarrow> sats(A, Member(2,x#+3), Cons(a,Cons(b,Cons(c,env))))"
+    "nth(x,env) \<in> c \<longleftrightarrow> sats(A, Member(x#+3,2), Cons(a,Cons(b,Cons(c,env))))"
+  using assms nth_closed
+  by simp_all
+
 lemmas FOL_sats_iff = sats_Nand_iff sats_Forall_iff sats_Neg_iff sats_And_iff
   sats_Or_iff sats_Implies_iff sats_Iff_iff sats_Exists_iff 
 
@@ -39,5 +87,8 @@ lemmas formulas_def [fm_definitions] = fm_defs
   formula_functor_fm_def 
   Memrel_fm_def transset_fm_def subset_fm_def pre_image_fm_def restriction_fm_def
   list_functor_fm_def tl_fm_def quasilist_fm_def Cons_fm_def Nil_fm_def
+
+lemmas sep_rules' [iff_sats]  = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
+  fun_plus_iff_sats omega_iff_sats FOL_sats_iff (* NOTE: why FOL_sats_iff? *)
 
 end
