@@ -1,8 +1,5 @@
 section\<open>Well-founded relation on names\<close>
-theory FrecR imports Names Synthetic_Definition begin
-
-lemmas sep_rules' [iff_sats]  = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
-  fun_plus_iff_sats omega_iff_sats FOL_sats_iff (* NOTE: why FOL_sats_iff? *)
+theory FrecR imports Names Synthetic_Definition Internalizations begin
 
 text\<open>\<^term>\<open>frecR\<close> is the well-founded relation on names that allows
 us to define forcing for atomic formulas.\<close>
