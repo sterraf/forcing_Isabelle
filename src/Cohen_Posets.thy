@@ -28,53 +28,6 @@ lemma FnD[dest]:
 lemma Fn_is_function: "p \<in> Fn(\<kappa>,I,J) \<Longrightarrow> function(p)"
   unfolding Fn_def using Sep_and_Replace fun_is_function by auto
 
-lemma lesspoll_csucc:
-  assumes "Ord(\<kappa>)"
-  shows "d \<prec> csucc(\<kappa>) \<longleftrightarrow> d \<lesssim> \<kappa>"
-proof
-  assume "d \<prec> csucc(\<kappa>)"
-  moreover
-  note Card_is_Ord \<open>Ord(\<kappa>)\<close>
-  moreover from calculation
-  have "\<kappa> < csucc(\<kappa>)" "Card(csucc(\<kappa>))"
-    using Ord_cardinal_eqpoll csucc_basic by simp_all
-  moreover from calculation
-  have "d \<prec> csucc(|\<kappa>|)" "Card(|\<kappa>|)" "d \<approx> |d|"
-    using eq_csucc_ord[of \<kappa>] lesspoll_imp_eqpoll eqpoll_sym by simp_all
-  moreover from calculation
-  have "|d| < csucc(|\<kappa>|)"
-    using lesspoll_cardinal_lt csucc_basic by simp
-  moreover from calculation
-  have "|d| \<lesssim> |\<kappa>|"
-    using Card_lt_csucc_iff le_imp_lepoll by simp
-  moreover from calculation
-  have "|d| \<lesssim> \<kappa>"
-    using lepoll_eq_trans Ord_cardinal_eqpoll by simp
-  ultimately
-  show "d \<lesssim> \<kappa>"
-    using eq_lepoll_trans by simp
-next
-  from \<open>Ord(\<kappa>)\<close>
-  have "\<kappa> < csucc(\<kappa>)" "Card(csucc(\<kappa>))"
-    using csucc_basic by simp_all
-  moreover
-  assume "d \<lesssim> \<kappa>"
-  ultimately
-  have "d \<lesssim> csucc(\<kappa>)"
-    using le_imp_lepoll leI lepoll_trans by simp
-  moreover
-  from \<open>d \<lesssim> \<kappa>\<close> \<open>Ord(\<kappa>)\<close>
-  have "csucc(\<kappa>) \<lesssim> \<kappa>" if "d \<approx> csucc(\<kappa>)"
-    using eqpoll_sym[OF that] eq_lepoll_trans[OF _ \<open>d\<lesssim>\<kappa>\<close>] by simp
-  moreover from calculation \<open>Card(_)\<close>
-  have "\<not> d \<approx> csucc(\<kappa>)"
-    using lesspoll_irrefl lesspoll_trans1 lt_Card_imp_lesspoll[OF _ \<open>\<kappa> <_\<close>]
-    by auto
-  ultimately
-  show "d \<prec> csucc(\<kappa>)"
-    unfolding lesspoll_def by simp
-qed
-
 lemma Fn_csucc:
   assumes "Ord(\<kappa>)"
   shows "Fn(csucc(\<kappa>),I,J) = \<Union>{(d\<rightarrow>J) .. d \<in> Pow(I), d\<lesssim>\<kappa>}"
@@ -174,11 +127,6 @@ lemma FnleD[dest]:
   using assms unfolding Fnlerel_def Fnle_def FnleR_def Rrel_def
   by auto
 
-lemma zero_lesspoll: assumes "0<\<kappa>" shows "0 \<prec> \<kappa>"
-  using assms eqpoll_0_iff[THEN iffD1, of \<kappa>] eqpoll_sym
-  unfolding lesspoll_def lepoll_def
-  by (auto simp add:inj_def)
-
 locale cohen_data =
   fixes \<kappa> I J::i
   assumes zero_lt_kappa: "0<\<kappa>"
@@ -203,66 +151,6 @@ next
     unfolding preorder_on_def refl_def trans_on_def
     by blast
 qed
-
-lemma Un_restrict_decomposition:
-  assumes "f \<in> Pi(A,B)"
-  shows "f = restrict(f, A \<inter> C) \<union> restrict(f, A - C)"
-  using assms
-proof (rule fun_extension)
-  from assms
-  have "restrict(f,A\<inter>C) \<union> restrict(f,A-C) \<in> Pi(A\<inter>C \<union> (A-C), \<lambda>x. B(x)\<union>B(x))"
-    using restrict_type2[of f A B]
-    by (rule_tac fun_Pi_disjoint_Un) force+
-  moreover
-  have "(A \<inter> C) \<union> (A - C) = A" by auto
-  ultimately
-  show "restrict(f, A \<inter> C) \<union> restrict(f, A - C) \<in> Pi(A, B)" by simp
-next
-  fix x
-  assume "x \<in> A"
-  with assms
-  show "f ` x = (restrict(f, A \<inter> C) \<union> restrict(f, A - C)) ` x"
-    using restrict fun_disjoint_apply1[of _ "restrict(f,_)"]
-      fun_disjoint_apply2[of _ "restrict(f,_)"]
-      domain_restrict[of f] apply_0 domain_of_fun
-    by (cases "x\<in>C") simp_all
-qed
-
-lemma restrict_eq_imp_Un_into_Pi:
-  assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)" "restrict(f, A \<inter> C) = restrict(g, A \<inter> C)"
-  shows "f \<union> g \<in> Pi(A \<union> C, \<lambda>x. B(x) \<union> D(x))"
-proof -
-  note assms
-  moreover from this
-  have "x \<notin> g \<Longrightarrow> x \<notin> restrict(g, A \<inter> C)" for x
-    using restrict_subset[of g "A \<inter> C"] by auto
-  moreover from calculation
-  have "x \<in> f \<Longrightarrow> x \<in> restrict(f, A - C) \<or> x \<in> restrict(g, A \<inter> C)" for x
-    by (subst (asm) Un_restrict_decomposition[of f A B "C"]) auto
-  ultimately
-  have "f \<union> g = restrict(f, A - C) \<union> g"
-    using restrict_subset[of g "A \<inter> C"]
-    by (subst Un_restrict_decomposition[of f A B "C"]) auto
-  moreover
-  have "A - C \<union> C = A \<union> C" by auto
-  moreover
-  note assms
-  ultimately
-  show ?thesis
-    using fun_Pi_disjoint_Un[OF
-        restrict_type2[of f A B "A-C"], of g C D]
-    by auto
-qed
-
-lemma restrict_eq_imp_Un_into_Pi':
-  assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)"
-    "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
-  shows "f \<union> g \<in> Pi(A \<union> C, \<lambda>x. B(x) \<union> D(x))"
-  using  assms domain_of_fun restrict_eq_imp_Un_into_Pi by simp
-
-lemma InfCard_imp_Infinite: "InfCard(\<kappa>) \<Longrightarrow> Infinite(\<kappa>)"
-  using le_imp_lepoll[THEN lepoll_nat_imp_Infinite, of \<kappa>]
-  unfolding InfCard_def by simp
 
 lemma InfCard_lesspoll_Un:
   includes Ord_dests
@@ -320,105 +208,6 @@ definition
 definition
   ccc :: "i \<Rightarrow> i \<Rightarrow> o" where
   "ccc(P,leq) \<equiv> \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
-
-lemma Replace_sing1:
-    "\<lbrakk> (\<exists>a. P(d,a)) \<and> (\<forall>y y'. P(d,y) \<longrightarrow> P(d,y') \<longrightarrow> y=y') \<rbrakk> \<Longrightarrow> \<exists>a. {y . x \<in> {d}, P(x,y)} = {a}"
-  by blast
-
-\<comment> \<open>Not really necessary\<close>
-lemma Replace_sing2:
-  assumes "\<forall>a. \<not> P(d,a)"
-  shows "{y . x \<in> {d}, P(x,y)} = 0"
-  using assms by auto
-
-lemma Replace_sing3:
-  assumes "\<exists>c e. c \<noteq> e \<and> P(d,c) \<and> P(d,e)"
-  shows "{y . x \<in> {d}, P(x,y)} = 0"
-proof -
-  {
-    fix z
-    {
-      assume "\<forall>y. P(d, y) \<longrightarrow> y = z"
-      with assms
-      have "False" by auto
-    }
-    then
-    have "z \<notin> {y . x \<in> {d}, P(x,y)}"
-      using Replace_iff by auto
-  }
-  then
-  show ?thesis
-    by (intro equalityI subsetI) simp_all
-qed
-
-lemma Replace_Un: "{b . a \<in> A \<union> B, Q(a, b)} =
-        {b . a \<in> A, Q(a, b)} \<union> {b . a \<in> B, Q(a, b)}"
-  by (intro equalityI subsetI) (auto simp add:Replace_iff)
-
-lemma Replace_subset_sing: "\<exists>z. {y . x \<in> {d}, P(x,y)} \<subseteq> {z}"
-proof -
-  consider
-    (1) "(\<exists>a. P(d,a)) \<and> (\<forall>y y'. P(d,y) \<longrightarrow> P(d,y') \<longrightarrow> y=y')" |
-    (2) "\<forall>a. \<not> P(d,a)" | (3) "\<exists>c e. c \<noteq> e \<and> P(d,c) \<and> P(d,e)" by auto
-  then
-  show "\<exists>z. {y . x \<in> {d}, P(x,y)} \<subseteq> {z}"
-  proof (cases)
-    case 1
-    then show ?thesis using Replace_sing1[of P d] by auto
-  next
-    case 2
-    then show ?thesis by auto
-  next
-    case 3
-    then show ?thesis using Replace_sing3[of P d] by auto
-  qed
-qed
-
-lemma Finite_Replace: "Finite(A) \<Longrightarrow> Finite(Replace(A,Q))"
-proof (induct rule:Finite_induct)
-  case 0
-  then
-  show ?case by simp
-next
-  case (cons x B)
-  moreover
-  have "{b . a \<in> cons(x, B), Q(a, b)} =
-        {b . a \<in> B, Q(a, b)} \<union> {b . a \<in> {x}, Q(a, b)}"
-    using Replace_Un unfolding cons_def by auto
-  moreover
-  obtain d where "{b . a \<in> {x}, Q(a, b)} \<subseteq> {d}"
-    using Replace_subset_sing[of _ Q] by blast
-  moreover from this
-  have "Finite({b . a \<in> {x}, Q(a, b)})"
-    using subset_Finite by simp
-  ultimately
-  show ?case using subset_Finite by simp
-qed
-
-lemma Finite_domain: "Finite(A) \<Longrightarrow> Finite(domain(A))"
-  using Finite_Replace unfolding domain_def
-  by auto
-
-lemma Finite_converse: "Finite(A) \<Longrightarrow> Finite(converse(A))"
-  using Finite_Replace unfolding converse_def
-  by auto
-
-lemma Finite_range: "Finite(A) \<Longrightarrow> Finite(range(A))"
-  using Finite_domain Finite_converse unfolding range_def
-  by blast
-
-lemma Finite_Sigma: "Finite(A) \<Longrightarrow> \<forall>x. Finite(B(x)) \<Longrightarrow> Finite(Sigma(A,B))"
-  unfolding Sigma_def using Finite_RepFun Finite_Union
-  by simp
-
-lemma Finite_Pi: "Finite(A) \<Longrightarrow> \<forall>x. Finite(B(x)) \<Longrightarrow> Finite(Pi(A,B))"
-  using Finite_Sigma
-    Finite_Pow subset_Finite[of "Pi(A,B)" "Pow(Sigma(A,B))"]
-  unfolding Pi_def
-  by auto
-
-lemma restrict_subset_Sigma: "f \<subseteq> Sigma(C,B) \<Longrightarrow> restrict(f,A) \<subseteq> Sigma(A\<inter>C, B)"
-  by (auto simp add: restrict_def)
 
 subsection\<open>Combinatorial results on Cohen posets\<close>
 

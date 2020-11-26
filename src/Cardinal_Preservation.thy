@@ -99,12 +99,10 @@ end (* M_cardinals *)
 sublocale M_ZF_trans \<subseteq> M_cardinal_AC "##M"
   sorry
 
+\<comment> \<open>TODO: already in ZF_Library\<close>
 lemma Pi_range_eq: "f \<in> Pi(A,B) \<Longrightarrow> range(f) = {f ` x . x \<in> A}"
   using Pi_rangeD[of f A B] apply_rangeI[of f A B]
   by blast
-
-lemma Pi_rangeE: "\<lbrakk>b\<in>range(f); f\<in>Pi(A,B); \<And>a. a\<in>A \<Longrightarrow> Q(f`a)\<rbrakk> \<Longrightarrow> Q(b)"
-  using Pi_range_eq by auto
 
 lemma (in forcing_notion) Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
    using refl_leq by blast
