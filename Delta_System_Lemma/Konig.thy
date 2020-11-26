@@ -5,7 +5,7 @@ theory Konig
 
 begin
 
-subsection\<open>König's Lemma\<close>
+subsection\<open>König's Theorem\<close>
 
 lemma konigs_theorem:
   notes [dest] = InfCard_is_Card Card_is_Ord

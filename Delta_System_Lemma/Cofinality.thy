@@ -1,7 +1,11 @@
+section\<open>Cofinality\<close>
+
 theory Cofinality
   imports
     ZF_Library
 begin
+
+subsection\<open>Basic results and definitions\<close>
 
 definition
   cofinal :: "[i,i,i] \<Rightarrow> o" where
@@ -81,14 +85,14 @@ proof
   show  "\<exists>y\<in>D. \<langle>b, y\<rangle> \<in> r \<or> b = y" by auto
 qed
 
-lemma cofinal_range_imp_cofinal_fun:
-  assumes "cofinal(range(f),A,r)" "function(f)"
-  shows "cofinal_fun(f,A,r)"
+lemma cofinal_range_iff_cofinal_fun:
+  assumes "function(f)"
+  shows "cofinal(range(f),A,r) \<longleftrightarrow> cofinal_fun(f,A,r)"
   unfolding cofinal_fun_def
-proof
+proof (intro iffI ballI)
   fix a
-  assume "a\<in>A"
-  with \<open>cofinal(range(f),_,_)\<close>
+  assume "a\<in>A" \<open>cofinal(range(f),A,r)\<close>
+  then
   obtain y where "y\<in>range(f)" "\<langle>a,y\<rangle> \<in> r \<or> a = y"
     unfolding cofinal_def by blast
   moreover from this
@@ -101,6 +105,11 @@ proof
     using function_apply_equality by blast
   with \<open><x,y>\<in>f\<close>
   show "\<exists>x\<in>domain(f). \<langle>a, f ` x\<rangle> \<in> r \<or> a = f ` x"  by blast
+next
+  assume "\<forall>a\<in>A. \<exists>x\<in>domain(f). \<langle>a, f ` x\<rangle> \<in> r \<or> a = f ` x"
+  with assms
+  show "cofinal(range(f), A, r)"
+    using function_apply_Pair[of f] unfolding cofinal_def by fast
 qed
 
 lemma cofinal_comp:
@@ -383,7 +392,7 @@ proof -
     by simp
   with \<open>cofinal(A,\<gamma>,Memrel(\<gamma>))\<close>
   have "cf_fun(j,\<gamma>)"
-    using cofinal_range_imp_cofinal_fun[of j \<gamma> "Memrel(\<gamma>)"]
+    using cofinal_range_iff_cofinal_fun[of j \<gamma> "Memrel(\<gamma>)"]
       surj_range[of j "cf(\<gamma>)" A] surj_is_fun fun_is_function
     by fastforce
   with \<open>j \<in> mono_map(_,_,_,_)\<close>
@@ -852,7 +861,7 @@ proof (intro le_anti_sym)
   moreover note \<open>cofinal(A,\<gamma>,_)\<close>
   ultimately
   have "cf_fun(f,\<gamma>)"
-    using cofinal_range_imp_cofinal_fun by blast
+    using cofinal_range_iff_cofinal_fun by blast
   moreover from \<open>Ord(\<alpha>)\<close>
   obtain h where "h \<in> mono_map(cf(\<alpha>),Memrel(cf(\<alpha>)),\<alpha>,Memrel(\<alpha>))" "cf_fun(h,\<alpha>)"
     using cofinal_mono_map_cf by blast
