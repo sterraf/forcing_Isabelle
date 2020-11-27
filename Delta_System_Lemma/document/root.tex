@@ -1,5 +1,6 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage{isabelle,isabellesym}
+\usepackage[numbers]{natbib}
 
 % further packages required for unusual symbols (see also
 % isabellesym.sty), use only when needed
@@ -22,6 +23,8 @@
   %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
   %\<currency>
 
+\input{header-delta-system}
+
 % this should be the last package used
 \usepackage{pdfsetup}
 
@@ -37,15 +40,27 @@
 \renewcommand{\isasymtturnstile}{\isamath{\Vdash}}
 \renewcommand{\isacharminus}{-}
 
-
 \begin{document}
 
-\title{The Delta System Lemma}
-\author{Edwin Pacheco Rodr\'{\i}guez
-  \and 
-  Pedro S\'anchez Terraf
+\title{Cofinality and the Delta System Lemma}
+\author{
+  Pedro S\'anchez Terraf\thanks{Universidad Nacional de C\'ordoba. 
+    Facultad de Matem\'atica, Astronom\'{\i}a,  F\'{\i}sica y
+    Computaci\'on.}
+  \thanks{%
+    Centro de Investigaci\'on y Estudios de Matem\'atica
+    (CIEM-FaMAF), Conicet. C\'ordoba. Argentina.
+    Supported by Secyt-UNC project 33620180100465CB.}
 }
 \maketitle
+
+\begin{abstract}
+  We formalize the basic results on cofinality of linearly ordered
+  sets and ordinals and \v{S}anin's Lemma for uncountable families of
+  finite sets. We work in the set theory framework of
+  Isabelle/ZF, using the Axiom of Choice as needed.
+\end{abstract}
+
 
 \tableofcontents
 
@@ -56,8 +71,8 @@
 \input{session}
 
 % optional bibliography
-%\bibliographystyle{abbrv}
-%\bibliography{root}
+\bibliographystyle{root}
+\bibliography{root}
 
 \end{document}
 

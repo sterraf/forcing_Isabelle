@@ -1,3 +1,5 @@
+section\<open>The Delta System Lemma\<close>
+
 theory Delta_System
   imports 
     Cardinal_Library

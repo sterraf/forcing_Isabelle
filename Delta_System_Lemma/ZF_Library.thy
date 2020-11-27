@@ -4,7 +4,6 @@ theory ZF_Library
   imports
     ZF
     "ZF-Constructible.Normal"
-    "../Tools/Try0"
 begin
 
 text\<open>This theory gathers basic ``combinatorial'' results that can be proved
