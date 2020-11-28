@@ -33,6 +33,7 @@ Tidying up sources for release
 ==============================
 
 - Put all the development according to the style guides.
+- Remove "Try0" imports.
 - Remove auxiliary commands (find_theorems, try, try0).
 - Remove diagnostic commands (term, thm --- keep this last one in
   Definitions_Main.thy!)
@@ -82,7 +83,7 @@ ZF
 
 - Eliminate alternative definition names:
   image_def ---> Image_def
-  the_def ---> THE_def
+  the_def ---> The_def
 
 - Rename lepoll_imp_Card_le to lepoll_imp_cardinal_le and
   well_ord_lepoll_imp_Card_le to well_ord_lepoll_imp_cardinal_le.
@@ -94,8 +95,6 @@ Assorted To-Dos
 ===============
 
 - Add comments about Definitions_Main in root.tex.
-
-- Prettyprint for elements of "formula".
 
 - Check if "minimum" should be in Forcing_Main.
 
