@@ -48,47 +48,20 @@ Porting
 ZF-Constructible
 ================
 
-- rename "separation_closed" to "Collect_closed".
-- rename "obase_exists" to "obase_closed".
 - rename "L_axioms.range_type" to "L_axioms.range_fm_type" (clash with
-  ZF.func). In general, uniformize notation
-  (e.g. typed_function_type).
-- "pred_set_abs" in ZF-Constructible.Wellorderings holds in M_trans.
-- ZF-Constructible.Rank
-  - Text comments referring to "oB", "om": Should that be "obase",
-    "omap"?
-  - Put some name to the result after well_ord_abs.
-- Two nameless lemmas in ZF-Constructible.Formula are declared [simp]
-  Name them "sats_Member_iff" and "sats_Equal_iff".
+  ZF.func).
+  In general, uniformize notation (e.g. typed_function_type).
+  Too many of them!
+
 - Add resuls like fst_closed? (cf. General tasks)
+
 - Bad behaviour of abbreviation
   ¬(sats(·)) ---> satisfies(·)`_≠ 1
   because of definition of ≠.
-- rename "nonempty" to "M_zero" or "zero_into_M".
+
 - In strong_replacementD, use "is_Replace(M,A,P,Y)" in the conclusion.
   Same for separationD. Then use this for the "_witness" theorems for
   strong replacement and (separation?) instances.
-
-
-ZF
-==
-
-- Erase superfluous hypotheses from the conclusion of
-  InfCard_rel_csquare_eq.
-
-- Erase superfluous hypotheses from Finite_cardinal_iff and correct
-  proof:
-  lemma Finite_cardinal_iff: "Finite(|i|) ⟷ Finite(i)"
-    using cardinal_eqpoll_iff eqpoll_imp_Finite_iff by fastforce
-
-- Eliminate alternative definition names:
-  image_def ---> Image_def
-  the_def ---> The_def
-
-- Rename lepoll_imp_Card_le to lepoll_imp_cardinal_le and
-  well_ord_lepoll_imp_Card_le to well_ord_lepoll_imp_cardinal_le.
-
-- Fix precedence of UN (now too low to work with "=", for instance).
 
 
 Assorted To-Dos
