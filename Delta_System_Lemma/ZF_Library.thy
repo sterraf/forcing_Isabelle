@@ -4,6 +4,7 @@ theory ZF_Library
   imports
     ZF
     "ZF-Constructible.Normal"
+
 begin
 
 text\<open>This theory gathers basic ``combinatorial'' results that can be proved
@@ -659,6 +660,25 @@ qed
 lemma InfCard_imp_Infinite: "InfCard(\<kappa>) \<Longrightarrow> Infinite(\<kappa>)"
   using le_imp_lepoll[THEN lepoll_nat_imp_Infinite, of \<kappa>]
   unfolding InfCard_def by simp
+
+lemma lt_surj_empty_imp_Card:
+  assumes "Ord(\<kappa>)" "\<And>\<alpha>. \<alpha> < \<kappa> \<Longrightarrow> surj(\<alpha>,\<kappa>) = 0"
+  shows "Card(\<kappa>)"
+proof -
+  {
+    assume "|\<kappa>| < \<kappa>"
+    with assms
+    have "False"
+      using LeastI[of "\<lambda>i. i \<approx> \<kappa>" \<kappa>, OF eqpoll_refl]
+        Least_le[of "\<lambda>i. i \<approx> \<kappa>" "|\<kappa>|", OF Ord_cardinal_eqpoll]
+      unfolding Card_def cardinal_def eqpoll_def bij_def
+      by simp
+  }
+  with assms
+  show ?thesis
+    using Ord_cardinal_le[of \<kappa>] not_lt_imp_le[of "|\<kappa>|" \<kappa>] le_anti_sym
+    unfolding Card_def by auto
+qed
 
 subsection\<open>Morphisms of binary relations\<close>
 

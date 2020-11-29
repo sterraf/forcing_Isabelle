@@ -93,8 +93,8 @@ lemma cardinal_rel_subset_of_Card_rel:
   shows "|a|\<^bsup>M\<^esup> < \<gamma> \<or> |a|\<^bsup>M\<^esup> = \<gamma>"
   sorry
 
-lemma lt_surj_rel_empty_imp_Card:
-  assumes "\<And>\<alpha>. \<alpha> < \<kappa> \<Longrightarrow> surj\<^bsup>M\<^esup>(\<alpha>,\<kappa>) = 0"
+lemma lt_surj_rel_empty_imp_Card_rel:
+  assumes "Ord(\<kappa>)" "\<And>\<alpha>. \<alpha> < \<kappa> \<Longrightarrow> surj\<^bsup>M\<^esup>(\<alpha>,\<kappa>) = 0"
   shows "Card\<^bsup>M\<^esup>(\<kappa>)"
   sorry
 
@@ -200,9 +200,13 @@ lemma ccc_preserves_Aleph_succ:
   shows "Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
 proof (rule ccontr)
   assume "\<not> Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
-  then
+  moreover from \<open>Ord(z)\<close> \<open>z \<in> M\<close>
+  have "Ord(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
+    using Card_rel_Aleph_rel[of "succ(z)", THEN Card_rel_is_Ord]
+    by fastforce
+  ultimately
   obtain \<alpha> f where "\<alpha> < \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>" "f \<in> surj\<^bsup>M[G]\<^esup>(\<alpha>, \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
-    using ext.lt_surj_rel_empty_imp_Card by blast
+    using ext.lt_surj_rel_empty_imp_Card_rel by blast
   moreover from this and \<open>z\<in>M\<close>
   have "\<alpha> \<in> M" "f \<in> M[G]"
     using Aleph_rel_closed[of "succ(z)"] ext.trans_surj_rel_closed

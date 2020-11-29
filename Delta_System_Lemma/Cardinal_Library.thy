@@ -204,6 +204,10 @@ lemma cardinal_Aleph [simp]: "Ord(\<alpha>) \<Longrightarrow> |\<aleph>\<^bsub>\
 lemma cardinal_Card_eqpoll_iff: "Card(\<kappa>) \<Longrightarrow> |X| = \<kappa> \<longleftrightarrow> X \<approx> \<kappa>"
   using Card_cardinal_eq[of \<kappa>] cardinal_eqpoll_iff[of X \<kappa>] by auto
 
+lemma lepoll_imp_lepoll_cardinal: assumes "X \<lesssim> Y" shows "X \<lesssim> |Y|"
+  using assms cardinal_Card_eqpoll_iff[of "|Y|" Y]
+    lepoll_eq_trans[of _ _ "|Y|"] by simp
+
 \<comment> \<open>FIXME: tons of uses of @{thm InfCard_is_Card}\<close>
 lemma lepoll_Un:
   assumes "InfCard(\<kappa>)" "A \<lesssim> \<kappa>" "B \<lesssim> \<kappa>"
