@@ -107,7 +107,7 @@ abbreviation
 
 text\<open>Probamos el lema closed\<close>
 
-lemma (in M_trivial) cardinal_rel_closed: "M(x) \<Longrightarrow> M(|x|\<^bsup>M\<^esup>)"
+lemma (in M_trivial) cardinal_rel_closed[intro,simp]:"M(x) \<Longrightarrow> M(|x|\<^bsup>M\<^esup>)"
   using Least_closed'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x"]
   unfolding cardinal_rel_def
   by simp
@@ -168,15 +168,20 @@ text\<open>Esa es toda la disciplina.\<close>
 
 relativize functional "Card" "Card_rel" external
 
-abbreviation   Card_rel'     :: "[i\<Rightarrow>o,i]\<Rightarrow>o"  (\<open>Card\<^bsup>_\<^esup>'(_')\<close>) where
-  "Card\<^bsup>M\<^esup>(i) \<equiv> Card_rel(M,i)"
+notation Card_rel (\<open>Card\<^bsup>_\<^esup>'(_')\<close>)
+
+abbreviation
+  Card_r_set  :: "[i,i]\<Rightarrow>o"  (\<open>Card\<^bsup>_\<^esup>'(_')\<close>) where
+  "Card\<^bsup>M\<^esup>(i) \<equiv> Card_rel(##M,i)"
 
 reldb_add functional "lt" "lt"
 relativize functional "InfCard" "InfCard_rel" external
 
-abbreviation 
-  InfCard_rel'   :: "[i\<Rightarrow>o,i] \<Rightarrow> o" (\<open>InfCard\<^bsup>_\<^esup>'(_')\<close>) where
-  "InfCard\<^bsup>M\<^esup>(i) \<equiv> InfCard_rel(M,i)"
+notation InfCard_rel (\<open>InfCard\<^bsup>_\<^esup>'(_')\<close>)
+
+abbreviation
+  InfCard_r_set  :: "[i,i]\<Rightarrow>o"  (\<open>InfCard\<^bsup>_\<^esup>'(_')\<close>) where
+  "InfCard\<^bsup>M\<^esup>(i) \<equiv> InfCard_rel(##M,i)"
 
 relativize functional "cadd" "cadd_rel" external
 
@@ -184,7 +189,7 @@ abbreviation
   cadd_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<oplus>\<^bsup>_\<^esup> _\<close> [66,1,66] 65) where
   "A \<oplus>\<^bsup>M\<^esup> B \<equiv> cadd_rel(M,A,B)"
 
-lemma (in M_basic) cadd_rel_closed: 
+lemma (in M_basic) cadd_rel_closed[intro,simp]:
   "\<lbrakk> M(A);M(B) \<rbrakk> \<Longrightarrow> M(A \<oplus>\<^bsup>M\<^esup> B)"
   using cardinal_rel_closed
   unfolding cadd_rel_def
@@ -216,7 +221,7 @@ abbreviation
   cmult_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<otimes>\<^bsup>_\<^esup> _\<close> [66,1,66] 65) where
   "A \<otimes>\<^bsup>M\<^esup> B \<equiv> cmult_rel(M,A,B)"
 
-lemma (in M_basic) cmult_rel_closed: 
+lemma (in M_basic) cmult_rel_closed[intro,simp]:
   "\<lbrakk> M(A);M(B) \<rbrakk> \<Longrightarrow> M(A \<otimes>\<^bsup>M\<^esup> B)"
   using cardinal_rel_closed
   unfolding cmult_rel_def
@@ -372,5 +377,6 @@ proof -
   by simp
 qed
 
-end
+end (* M_Vfrom *)
 
+end

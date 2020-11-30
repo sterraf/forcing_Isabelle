@@ -6,6 +6,8 @@ theory Discipline_Base
     "../Tools/Try0"
 begin
 
+declare [[syntax_ambiguity_warning = false]]
+
 text\<open>Discipline of Relativization of basic concepts.\<close>
 
 

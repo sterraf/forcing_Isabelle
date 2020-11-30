@@ -89,7 +89,7 @@ lemma def_ccc_rel:
     "M(i)"
   shows
     "ccc\<^bsup>M\<^esup>(P,leq) \<longleftrightarrow> (\<forall>A[M]. antichain\<^bsup>M\<^esup>(P,leq,A) \<longrightarrow> |A|\<^bsup>M\<^esup> \<le> \<omega>)"
-  using assms cardinal_rel_iff
+  using assms is_cardinal_iff
   unfolding ccc_rel_def by (simp add:absolut)
 
 end (* M_cardinals *)
