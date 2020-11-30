@@ -2,8 +2,6 @@ theory Discipline_Function
   imports
     "ZF-Constructible.Rank"
     "Relativization"
-    "HOL-Eisbach.Eisbach_Old_Appl_Syntax"\<comment> \<open>if put before, it breaks some simps\<close>
-    "../Tools/Try0"
     "Internalizations"
     "Discipline_Base" 
 begin
