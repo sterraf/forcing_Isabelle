@@ -17,6 +17,12 @@ theory Relativization
     and
     "relationalize" :: thy_decl % "ML"
     and
+    "rel_closed" :: thy_goal_stmt % "ML"
+    and
+    "is_iff_rel" :: thy_goal_stmt % "ML"
+    and
+    "univalent" :: thy_goal_stmt % "ML"
+    and
     "absolute"
     and
     "functional"
@@ -24,6 +30,8 @@ theory Relativization
     "relational"
     and
     "external"
+    and
+    "for"
 
 begin
 ML_file\<open>Utils.ml\<close>
@@ -128,6 +136,9 @@ signature Relativization =
     val relativ_tm_frm': bool -> bool -> term -> Data.T -> Proof.context -> term -> term option * term * bool
     val relativize_def: bool -> bool -> bool -> bstring -> string -> Position.T -> Proof.context -> Proof.context
     val relativize_tm: bool -> bstring -> string -> Position.T -> Proof.context -> Proof.context
+    val rel_closed_goal : string -> Position.T -> Proof.context -> Proof.state
+    val iff_goal : string -> Position.T -> Proof.context -> Proof.state
+    val univalent_goal : string -> Position.T -> Proof.context -> Proof.state
   end
 
 structure Relativization : Relativization = struct
@@ -600,6 +611,86 @@ fun relativize_tm is_functional def_name term pos lthy =
     |> Utils.display "theorem" pos
   end
 
+val op $` = curry ((op $) o swap)
+infix $`
+
+fun is_free_i (Free (_, @{typ "i"})) = true
+  | is_free_i _ = false
+
+fun rel_closed_goal target pos lthy =
+  let
+    val (_, tm, _) = Utils.thm_concl_tm lthy (target ^ "_rel_def")
+    val (def, tm) = tm |> Utils.dest_eq_tms'
+    fun first_lambdas (Abs (body as (_, ty, _))) =
+        if ty = @{typ "i"}
+          then (op ::) (Term.dest_abs body |>> Utils.var_i ||> first_lambdas)
+          else Term.dest_abs body |> first_lambdas o #2
+      | first_lambdas _ = []
+    val (def, vars) = Term.strip_comb def ||> filter is_free_i
+    val vs = vars @ first_lambdas tm
+    val class = Free ("M", @{typ "i \<Rightarrow> o"})
+    val def = fold (op $`) (class :: vs) def
+    val hyps = map (fn v => class $ v |> Utils.tp) vs
+    val concl = class $ def
+    val goal = Logic.list_implies (hyps, Utils.tp concl)
+    val attribs = @{attributes [intro, simp]}
+  in
+    Proof.theorem NONE (fn thmss => Utils.display "theorem" pos
+                                    o Local_Theory.note ((Binding.name (target ^ "_rel_closed"), attribs), hd thmss))
+    [[(goal, [])]] lthy
+  end
+
+fun iff_goal target pos lthy =
+  let
+    val (_, tm, ctxt') = Utils.thm_concl_tm lthy (target ^ "_rel_def")
+    val (_, is_def, ctxt) = Utils.thm_concl_tm ctxt' ("is_" ^ target ^ "_def")
+    val is_def = is_def |> Utils.dest_eq_tms' |> #1 |> Term.strip_comb |> #1
+    val (def, tm) = tm |> Utils.dest_eq_tms'
+    fun first_lambdas (Abs (body as (_, ty, _))) =
+        if ty = @{typ "i"}
+          then (op ::) (Term.dest_abs body |>> Utils.var_i ||> first_lambdas)
+          else Term.dest_abs body |> first_lambdas o #2
+      | first_lambdas _ = []
+    val (def, vars) = Term.strip_comb def ||> filter is_free_i
+    val vs = vars @ first_lambdas tm
+    val res = Variable.variant_fixes ["res"] ctxt |> Utils.var_i o hd o #1
+    val class = Free ("M", @{typ "i \<Rightarrow> o"})
+    val def = fold (op $`) (class :: vs) def
+    val is_def = fold (op $`) (class :: vs @ [res]) is_def
+    val hyps = map (fn v => class $ v |> Utils.tp) (vs @ [res])
+    val concl = @{const "IFOL.iff"} $ is_def $ (@{const IFOL.eq(i)} $ res $ def)
+    val goal = Logic.list_implies (hyps, Utils.tp concl)
+  in
+    Proof.theorem NONE (fn thmss => Utils.display "theorem" pos
+                                    o Local_Theory.note ((Binding.name ("is_" ^ target ^ "_iff"), []), hd thmss))
+    [[(goal, [])]] lthy
+  end
+
+fun univalent_goal target pos lthy =
+  let
+    val (_, tm, ctxt) = Utils.thm_concl_tm lthy ("is_" ^ target ^ "_def")
+    val (def, tm) = tm |> Utils.dest_eq_tms'
+    fun first_lambdas (Abs (body as (_, ty, _))) =
+        if ty = @{typ "i"}
+          then (op ::) (Term.dest_abs body |>> Utils.var_i ||> first_lambdas)
+          else Term.dest_abs body |> first_lambdas o #2
+      | first_lambdas _ = []
+    val (def, vars) = Term.strip_comb def ||> filter is_free_i
+    val vs = vars @ first_lambdas tm 
+    val n = length vs
+    val vs = List.take (vs, n - 2)
+    val class = Free ("M", @{typ "i \<Rightarrow> o"})
+    val def = fold (op $`) (class :: vs) def
+    val v = Variable.variant_fixes ["A"] ctxt |> Utils.var_i o hd o #1
+    val hyps = map (fn v => class $ v |> Utils.tp) (v :: vs)
+    val concl = @{const "Relative.univalent"} $ class $ v $ def
+    val goal = Logic.list_implies (hyps, Utils.tp concl)
+  in
+    Proof.theorem NONE (fn thmss => Utils.display "theorem" pos
+                                    o Local_Theory.note ((Binding.name ("univalent_is_" ^ target), []), hd thmss))
+    [[(goal, [])]] lthy
+  end
+
 end
 \<close>
 
@@ -650,6 +741,21 @@ local
      Outer_Syntax.local_theory \<^command_keyword>\<open>relationalize\<close> "ML setup for relativizing definitions"
        (relativize_parser >> (fn (((is_functional, (bndg,thm)), is_external),pos) =>
           Relativization.relativize_def is_external is_functional true thm bndg pos))
+
+  val _ =
+    Outer_Syntax.local_theory_to_proof \<^command_keyword>\<open>rel_closed\<close> "ML setup for rel_closed theorem"
+      (Parse.position (Parse.$$$ "for" |-- Parse.string) >> (fn (target,pos) =>
+        Relativization.rel_closed_goal target pos))
+
+  val _ =
+    Outer_Syntax.local_theory_to_proof \<^command_keyword>\<open>is_iff_rel\<close> "ML setup for rel_closed theorem"
+      (Parse.position (Parse.$$$ "for" |-- Parse.string) >> (fn (target,pos) =>
+        Relativization.iff_goal target pos))
+
+  val _ =
+    Outer_Syntax.local_theory_to_proof \<^command_keyword>\<open>univalent\<close> "ML setup for rel_closed theorem"
+      (Parse.position (Parse.$$$ "for" |-- Parse.string) >> (fn (target,pos) =>
+        Relativization.univalent_goal target pos))
 
 val _ =
   Theory.setup
