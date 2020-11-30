@@ -53,7 +53,7 @@ lemma sats_least_fm :
   using nth_closed p_iff_sats unfolding least_def least_fm_def
   by (simp add:basic_fm_simps)
 
-lemma least_iff_sats:
+lemma least_iff_sats [iff_sats]:
   assumes is_Q_iff_sats: 
       "\<And>a. a \<in> A \<Longrightarrow> is_Q(a) \<longleftrightarrow> sats(A, q, Cons(a,env))"
   shows 

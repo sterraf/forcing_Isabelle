@@ -4,6 +4,7 @@ theory Discipline_Function
     "Relativization"
     "HOL-Eisbach.Eisbach_Old_Appl_Syntax"\<comment> \<open>if put before, it breaks some simps\<close>
     "../Tools/Try0"
+    "Internalizations"
     "Discipline_Base" 
 begin
 
@@ -17,6 +18,10 @@ definition
 definition
   function_space_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i"  where
   "function_space_rel(M,A,B) \<equiv> THE d. is_function_space(M,A,B,d)"
+
+reldb_rem absolute "Pi"
+reldb_add relational "Pi" "is_function_space"
+reldb_add functional "Pi" "function_space_rel"
 
 abbreviation
   function_space_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<rightarrow>\<^bsup>_\<^esup> _\<close> [61,1,61] 60) where
@@ -266,6 +271,8 @@ definition (* completely relational *)
   "injP_rel(M,A,f) \<equiv> \<forall>w[M]. \<forall>x[M]. \<forall>fw[M]. \<forall>fx[M]. w\<in>A \<and> x\<in>A \<and>
             is_apply(M,f,w,fw) \<and> is_apply(M,f,x,fx) \<and> fw=fx\<longrightarrow> w=x"
 
+synthesize "injP_rel" from_definition assuming "nonempty"
+
 context M_basic
 begin
 
@@ -289,10 +296,25 @@ end (* M_basic *)
 (**********************************************************)
 subsection\<open>Discipline for \<^term>\<open>inj\<close>\<close>
 
+term function_space_rel
+
+ML\<open>
+@{term "is_function_space"}
+\<close>
+
 definition (* completely relational *)
   is_inj   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
   "is_inj(M,A,B,I) \<equiv> M(I) \<and> (\<exists>F[M]. is_function_space(M,A,B,F) \<and>
        is_Collect(M,F,injP_rel(M,A),I))"
+
+
+declare typed_function_iff_sats Collect_iff_sats [iff_sats]
+
+synthesize "is_funspace" from_definition assuming "nonempty"
+
+synthesize "is_function_space" from_definition assuming "nonempty"
+
+synthesize "is_inj" from_definition assuming "nonempty"
 
 definition
   inj_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" (\<open>inj\<^bsup>_\<^esup>'(_,_')\<close>) where
@@ -429,6 +451,33 @@ definition
   "surjP_rel(M,A,B,f) \<equiv> 
     \<forall>y[M]. \<exists>x[M]. \<exists>fx[M]. y\<in>B \<longrightarrow> x\<in>A \<and> is_apply(M,f,x,fx) \<and> fx=y"
 
+synthesize "surjP_rel" from_definition assuming "nonempty"
+
+schematic_goal t:
+  assumes
+    "A \<in> nat" "B \<in> nat" "f \<in> nat" "env \<in> list(M)" "0 \<in> M"
+  shows
+    "surjP_rel(##M, nth(A,env), nth(B,env), nth(f,env)) \<longleftrightarrow> sats(M, ?fm(A,B,f), env)"
+  unfolding surjP_rel_def
+  apply (insert assms)
+  apply (rule iff_sats | simp)
+  apply (rule iff_sats | simp)
+   apply (rule iff_sats | simp)
+  apply (rule iff_sats | simp)
+       apply (rule iff_sats | simp)
+  apply (rule iff_sats | simp)
+       apply (rule iff_sats | simp)
+  by (rule iff_sats | simp)+
+
+lemma t':
+  assumes
+    "A \<in> nat" "B \<in> nat" "f \<in> nat" "env \<in> list(M)" "0 \<in> M"
+  shows
+    "\<forall>y\<in>M. \<exists>x\<in>M. Y(y) \<longrightarrow> X(x,y)" (* x \<in> nth(A, env) \<and> is_apply(##M, nth(f, env), x, fx) \<and> fx = y *)
+  using assms [[simp_trace]]
+  apply simp
+  oops
+
 context M_basic
 begin
 
@@ -450,6 +499,8 @@ definition (* completely relational *)
   is_surj   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
   "is_surj(M,A,B,I) \<equiv> M(I) \<and> (\<exists>F[M]. is_function_space(M,A,B,F) \<and>
        is_Collect(M,F,surjP_rel(M,A,B),I))"
+
+synthesize "is_surj" from_definition assuming "nonempty"
 
 definition
   surj_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" (\<open>surj\<^bsup>_\<^esup>'(_,_')\<close>) where
@@ -583,6 +634,11 @@ definition
   is_Int :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
   "is_Int(M,A,B,I) \<equiv> M(I) \<and> (\<forall>x[M]. x \<in> I \<longleftrightarrow> x \<in> A \<and> x \<in> B)"
 
+reldb_rem relational "inter"
+reldb_add absolute relational "ZF_Base.Int" "is_Int"
+
+synthesize "is_Int" from_definition assuming "nonempty"
+
 context M_basic
 begin
 
@@ -618,13 +674,26 @@ end (* M_trivial *)
 (**********************************************************)
 subsection\<open>Discipline for \<^term>\<open>bij\<close>\<close>
 
-definition (* completely relational *)
+reldb_add functional "inj" "inj_rel"
+reldb_add functional relational "inj_rel" "is_inj"
+reldb_add functional "surj" "surj_rel"
+reldb_add functional relational "surj_rel" "is_surj"
+relativize functional "bij" "bij_rel" external
+relationalize "bij_rel" "is_bij"
+
+(* definition (* completely relational *)
   is_bij   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
   "is_bij(M,A,B,bj) \<equiv> M(bj) \<and> is_hcomp2_2(M,is_Int,is_inj,is_surj,A,B,bj)"
 
 definition
   bij_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" (\<open>bij\<^bsup>_\<^esup>'(_,_')\<close>) where
-  "bij_rel(M,A,B) \<equiv> THE d. is_bij(M,A,B,d)"
+  "bij_rel(M,A,B) \<equiv> THE d. is_bij(M,A,B,d)" *)
+
+synthesize "is_bij" from_definition assuming "nonempty"
+
+abbreviation
+  bij_r_class ::  "[i\<Rightarrow>o,i,i] \<Rightarrow> i" (\<open>bij\<^bsup>_\<^esup>'(_,_')\<close>) where
+  "bij_r_class \<equiv> bij_rel"
 
 abbreviation
   bij_r_set ::  "[i,i,i] \<Rightarrow> i" (\<open>bij\<^bsup>_\<^esup>'(_,_')\<close>) where
@@ -633,7 +702,7 @@ abbreviation
 locale M_Perm = M_Pi + M_inj + M_surj
 begin
 
-lemma is_bij_uniqueness:
+(* lemma is_bij_uniqueness:
   assumes
     "M(A)" "M(B)"
     "is_bij(M,A,B,d)" "is_bij(M,A,B,d')"
@@ -651,9 +720,19 @@ lemma is_bij_witness: "M(A) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M
   unfolding is_bij_def by simp
 
 lemma is_bij_closed : "is_bij(M,f,y,d) \<Longrightarrow> M(d)" 
-  unfolding is_bij_def by simp
+  unfolding is_bij_def by simp *)
 
-lemma bij_rel_closed[intro,simp]: 
+lemma is_bij_closed : "is_bij(M,f,y,d) \<Longrightarrow> M(d)"
+  unfolding is_bij_def using is_Int_closed is_inj_witness is_surj_witness by auto
+
+lemma bij_rel_closed[intro,simp]:
+  assumes "M(x)" "M(y)"
+  shows "M(bij_rel(M,x,y))"
+  unfolding bij_rel_def
+  using assms Int_closed surj_rel_closed inj_rel_closed
+  by auto
+
+(* lemma bij_rel_closed[intro,simp]: 
   assumes "M(x)" "M(y)"
   shows "M(bij_rel(M,x,y))"
 proof -
@@ -666,33 +745,37 @@ proof -
     using assms is_bij_closed
     unfolding bij_rel_def
     by blast
-qed
+qed *)
 
 lemmas trans_bij_rel_closed[trans_closed] = transM[OF _ bij_rel_closed]
 
 lemma bij_rel_iff:
   assumes "M(x)" "M(y)" "M(d)"
   shows "is_bij(M,x,y,d) \<longleftrightarrow> d = bij_rel(M,x,y)"
-proof (intro iffI)
+  unfolding is_bij_def bij_rel_def
+  using assms surj_rel_iff inj_rel_iff is_Int_abs
+  by auto
+
+(*proof (intro iffI)
   assume "d = bij_rel(M,x,y)"
   moreover
   note assms
   moreover from this
   obtain e where "M(e)" "is_bij(M,x,y,e)"
-    using is_bij_witness by blast
+    using is_bij_witness by blast)
   ultimately
   show "is_bij(M, x, y, d)"
     using is_bij_uniqueness[of x y] is_bij_witness
       theI[OF ex1I[of "is_bij(M,x,y)"], OF _ is_bij_uniqueness[of x y], of e]
     unfolding bij_rel_def
-    by auto
+    by auto)
 next
   assume "is_bij(M, x, y, d)"
   with assms
   show "d = bij_rel(M,x,y)"
     using is_bij_uniqueness unfolding bij_rel_def
-    by (blast del:the_equality intro:the_equality[symmetric])
-qed
+    by (blast del:the_equality intro:the_equality[symmetric]))
+qed*)
 
 lemma def_bij_rel:
   assumes "M(A)" "M(B)"
@@ -700,7 +783,6 @@ lemma def_bij_rel:
   using assms bij_rel_iff inj_rel_iff surj_rel_iff
     is_Int_abs\<comment> \<open>For absolute terms, "_abs" replaces "_iff".
                  Also, in this case "_closed" is in the simpset.\<close>
-    hcomp2_2_abs
   unfolding is_bij_def by simp
 
 lemma bij_rel_char:
@@ -730,6 +812,8 @@ subsection\<open>Discipline for \<^term>\<open>eqpoll\<close>\<close>
 definition (* completely relational *)
   eqpoll_rel   :: "[i\<Rightarrow>o,i,i] => o" where
   "eqpoll_rel(M,A,B) \<equiv> \<exists>bi[M]. \<exists>f[M]. is_bij(M,A,B,bi) \<and> f\<in>bi"
+
+synthesize "eqpoll_rel" from_definition assuming "nonempty"
 
 abbreviation
   eqpoll_r :: "[i,i\<Rightarrow>o,i] => o" (\<open>_ \<approx>\<^bsup>_\<^esup> _\<close> [51,1,51] 50) where
@@ -782,6 +866,8 @@ definition (* completely relational *)
   lepoll_rel   :: "[i\<Rightarrow>o,i,i] => o" where
   "lepoll_rel(M,A,B) \<equiv> \<exists>bi[M]. \<exists>f[M]. is_inj(M,A,B,bi) \<and> f\<in>bi"
 
+synthesize "lepoll_rel" from_definition assuming "nonempty"
+
 abbreviation
   lepoll_r :: "[i,i\<Rightarrow>o,i] => o" (\<open>_ \<lesssim>\<^bsup>_\<^esup> _\<close> [51,1,51] 50) where
   "A \<lesssim>\<^bsup>M\<^esup> B \<equiv> lepoll_rel(M,A,B)"
@@ -833,6 +919,8 @@ subsection\<open>Discipline for \<^term>\<open>lesspoll\<close>\<close>
 definition
   lesspoll_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o"  where
   "lesspoll_rel(M,A,B) \<equiv> lepoll_rel(M,A,B) \<and> \<not>(eqpoll_rel(M,A,B))"
+
+synthesize "lesspoll_rel" from_definition assuming "nonempty"
 
 abbreviation
   lesspoll_r :: "[i,i\<Rightarrow>o,i] => o" (\<open>_ \<prec>\<^bsup>_\<^esup> _\<close> [51,1,51] 50) where
