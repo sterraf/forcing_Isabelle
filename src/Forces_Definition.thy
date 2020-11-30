@@ -1,5 +1,5 @@
 section\<open>The definition of \<^term>\<open>forces\<close>\<close>
-theory Forces_Definition imports Arities FrecR Synthetic_Definition begin
+theory Forces_Definition imports Arities FrecR Synthetic_Definition FrecR_Arities begin
 
 text\<open>This is the core of our development.\<close>
 
