@@ -299,6 +299,18 @@ and
                 the_default
                   (Variable.variant_fixes [""] ctxt |>> var_i o hd)
                   (Utils.map_option (I &&& K ctxt) mv)
+              val args' =
+                (* FIXME: This special case for functional relativization of sigma should not be needed *)
+                if c = @{const Sigma} andalso is_functional
+                  then
+                    let
+                      val t = hd args'
+                      val t' = Abs ("uu_", @{typ "i"}, (hd o tl) args' |> incr_boundvars 1)
+                    in
+                      [t, t']
+                    end
+                  else
+                    args'
               val r_tm =
                 if is_functional
                   then list_comb (p, if p = c then args' @ abs_args else pred :: args' @ abs_args)

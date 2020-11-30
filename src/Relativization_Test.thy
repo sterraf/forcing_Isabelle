@@ -214,6 +214,12 @@ definition test29 :: "i \<Rightarrow> i" where
 relativize functional "test29" "test29_rel"
 relationalize "test29_rel" "is_test29"
 
+definition test30 :: "i" where
+  "test30 \<equiv> 0 \<times> test29(0)"
+
+relativize functional "test30" "test30_rel"
+relationalize "test30_rel" "is_test30"
+
 context M_trans
 begin
 ML\<open>
