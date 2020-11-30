@@ -31,7 +31,7 @@ named_theorems fm_definitions "Definitions of synthetized formulas."
 
 named_theorems iff_sats "Theorems for synthetising formulas."
 
-named_theorems arity
+named_theorems arity "Theorems for arity of formulas."
 
 ML\<open>
 val $` = curry ((op $) o swap)
@@ -42,21 +42,6 @@ val op &&& = Utils.&&&
 
 infix 6 ***
 val op *** = Utils.***
-
-fun apply_pred n (@{const succ} $ t) = if n = 0 then @{const succ} $ t else apply_pred (n - 1) t
-  | apply_pred n t = if n = 0 then t else apply_pred (n - 1) (@{const pred} $ t)
-
-fun get_arity n_pred (@{const Member} $ t $ t') = @{const Un} $ apply_pred n_pred (@{const succ} $ t) $ apply_pred n_pred (@{const succ} $ t')
-  | get_arity n_pred (@{const Equal} $ t $ t') = @{const Un} $ apply_pred n_pred (@{const succ} $ t) $ apply_pred n_pred (@{const succ} $ t')
-  | get_arity n_pred (@{const Neg} $ t) = get_arity n_pred t
-  | get_arity n_pred (@{const And} $ t $ t') = @{const Un} $ get_arity n_pred t $ get_arity n_pred t'
-  | get_arity n_pred (@{const Or} $ t $ t') = @{const Un} $ get_arity n_pred t $ get_arity n_pred t'
-  | get_arity n_pred (@{const Implies} $ t $ t') = @{const Un} $ get_arity n_pred t $ get_arity n_pred t'
-  | get_arity n_pred (@{const Iff} $ t $ t') = @{const Un} $ get_arity n_pred t $ get_arity n_pred t'
-  | get_arity n_pred (@{const Nand} $ t $ t') = @{const Un} $ get_arity n_pred t $ get_arity n_pred t'
-  | get_arity n_pred (@{const Forall} $ t) = get_arity (n_pred + 1) t
-  | get_arity n_pred (@{const Exists} $ t) = get_arity (n_pred + 1) t
-  | get_arity n_pred t = apply_pred n_pred (@{const arity} $ t)
 
 fun arity_goal intermediate def_name lthy =
   let
@@ -72,7 +57,7 @@ fun arity_goal intermediate def_name lthy =
     val vs = vars @ first_lambdas tm
     val def = fold (op $`) vs def
     val hyps = map (fn v => Utils.mem_ v Utils.nat_ |> Utils.tp) vs
-    val concl = @{const IFOL.eq(i)} $ (@{const arity} $ def) $ Var (("ar", 0), @{typ "i"}) (* (get_arity 0 term) *)
+    val concl = @{const IFOL.eq(i)} $ (@{const arity} $ def) $ Var (("ar", 0), @{typ "i"})
     val g_iff = Logic.list_implies (hyps, Utils.tp concl)
     val attribs = if intermediate then [] else @{attributes [arity]}
   in
@@ -309,9 +294,6 @@ fun schematic_synthetic_def def_name target assuming pos tc auto =
     (synthetic_def def_name ("sats_" ^ def_name ^ "_fm_auto") pos tc auto)
     o (schematic_def ("sats_" ^ def_name ^ "_fm_auto") target assuming pos)
 
-(* val dummy = Specification.theorem_cmd false Thm.theoremK NONE (K I) Binding.empty_atts []
-[Element.Fixes [], Element.Assumes []] (Element.Shows [((@{binding "dummy"}, []), [("0 = 0", [])])]) *)
-
 fun manual_schematic def_name target assuming pos lthy =
   let
     val (schematic, _, _, _, _, _) = pre_schematic_def target assuming lthy
@@ -320,7 +302,6 @@ fun manual_schematic def_name target assuming pos lthy =
                                     o Local_Theory.note ((Binding.name def_name, []), hd thmss))
     [[(schematic, [])]] lthy
   end
-val _ = Proof.apply
 \<close>
 
 ML\<open>
@@ -380,6 +361,7 @@ in
 
 end
 \<close>
+
 text\<open>The \<^ML>\<open>synthetic_def\<close> function extracts definitions from
 schematic goals. A new definition is added to the context. \<close>
 
