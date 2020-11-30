@@ -2,7 +2,10 @@ theory New_Discipline_Draft
   imports
     "Discipline_Base"
     "Discipline_Function"
-    Least
+    "Least"
+    "FrecR"
+    Arities
+    FrecR_Arities
 begin
 
 declare [[syntax_ambiguity_warning = false]]
@@ -90,12 +93,8 @@ Lo que debemos hacer es definir su versión relativa simplemente
 que no sean absolutos:
 \<close>
 
-reldb_add "eqpoll" "eqpoll_rel"
-relativize functional "cardinal" "cardinal_rel"
-
-(* definition
-  cardinal_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" where
-  "cardinal_rel(M,x) \<equiv> (\<mu> i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x)" *)
+reldb_add functional "eqpoll" "eqpoll_rel"
+relativize functional "cardinal" "cardinal_rel" external
 
 abbreviation
   cardinal_r :: "[i,i\<Rightarrow>o] \<Rightarrow> i" (\<open>|_|\<^bsup>_\<^esup>\<close>) where
@@ -113,78 +112,48 @@ lemma (in M_trivial) cardinal_rel_closed: "M(x) \<Longrightarrow> M(|x|\<^bsup>M
   unfolding cardinal_rel_def
   by simp
 
-(* relationalize "cardinal_rel" "is_cardinal" *)
-
 text\<open>Damos la versión full-relacional (se podrá calcular
 automáticamente)\<close>
 
-reldb_add "eqpoll_rel" "eqpoll_rel"
+reldb_add relational "eqpoll" "eqpoll_rel"
 relationalize "cardinal_rel" "is_cardinal"
 
-(* definition
-  is_cardinal :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  (* "is_cardinal(M,x,c) \<equiv> least(M, \<lambda>i. M(i) \<and> eqpoll_rel(M,i,x), c)" *)
-  "is_cardinal(M,x,c) \<equiv> least(M, \<lambda>i. M(i) \<and> i \<in> x, c)" *)
+synthesize "is_cardinal" from_definition assuming "nonempty"
 
-(* declare least_iff_sats[iff_sats]
+manual_arity intermediate for "is_Int_fm"
+  unfolding is_Int_fm_def
+  using arity
+  by simp
 
-lemma mem_model_iff_sats:
-      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A)|]
-       ==> (x\<in>A) \<longleftrightarrow> sats(A, Exists(Equal(0,0)), env)"
-  using nth_closed[of env A i]
+arity_theorem for "is_Int_fm"
+
+arity_theorem for "is_funspace_fm"
+
+arity_theorem for "is_function_space_fm"
+
+arity_theorem for "surjP_rel_fm"
+
+arity_theorem intermediate for "is_surj_fm"
+
+lemma arity_is_surj_fm [arity] :
+  "A \<in> nat \<Longrightarrow> B \<in> nat \<Longrightarrow> I \<in> nat \<Longrightarrow> arity(is_surj_fm(A, B, I)) = succ(A) \<union> succ(B) \<union> succ(I)"
+  using arity_is_surj_fm'
   by auto
 
-lemma aux[iff_sats]:
-  assumes
-    "x \<in> nat" "env \<in> list(A)" "0 \<in> A" "a \<in> A"
-  shows
-    "a = nth(x,env) \<longleftrightarrow> sats(A, Equal(0,x#+1), Cons(a,env))"
-  using assms nth_closed
-  by simp
+arity_theorem for "injP_rel_fm"
 
-lemma aux2[]:
-  assumes
-    "x \<in> nat" "env \<in> list(A)" "0 \<in> A" "a \<in> A"
-  shows
-    "a \<in> nth(x,env) \<longleftrightarrow> sats(A, Member(0,x#+1), Cons(a,env))"
-  using assms nth_closed
-  by simp
+arity_theorem intermediate for "is_inj_fm"
 
-lemma aux3[iff_sats]:
-  assumes
-    "env \<in> list(A)" "a \<in> A"
-  shows
-    "sats(A, Equal(0,0), Cons(a,env))"
-  using assms nth_closed
-  by simp *)
+lemma arity_is_inj_fm [arity]:
+  "A \<in> nat \<Longrightarrow> B \<in> nat \<Longrightarrow> I \<in> nat \<Longrightarrow> arity(is_inj_fm(A, B, I)) = succ(A) \<union> succ(B) \<union> succ(I)"
+  using arity_is_inj_fm'
+  by auto
 
-(* synthesize "is_cardinal" from definition assuming_nonempty *)
+arity_theorem for "is_bij_fm"
 
-(* schematic_goal t:
-  assumes
-    "x \<in> nat" "c \<in> nat" "env \<in> list(A)" "0 \<in> A"
-  shows
-    "is_cardinal(##A, nth(x,env), nth(c,env))
-     \<longleftrightarrow> sats(A, ?fm, env)"
-  unfolding is_cardinal_def
-  apply (insert assms)
-  (* by (rule mem_model_iff_sats iff_sats | simp)+ *)
-  apply (rule iff_sats | simp)
-      apply (rule iff_sats | simp)
-      apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-    apply (rule iff_sats | simp)
-   apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-apply (rule iff_sats | simp) *)
+arity_theorem for "eqpoll_rel_fm"
 
-(* synthesize "is_cardinal" from_schematic t *)
-
-(* nth(j,env) \<in> M \<longleftrightarrow> sats(M, ?fm, env) *)
+arity_theorem for "is_cardinal_fm"
 
 text\<open>Y probamos la equivalencia entre la versión full-relacional
 y el concepto relativo\<close>
@@ -197,28 +166,19 @@ lemma (in M_trivial) is_cardinal_iff :
 
 text\<open>Esa es toda la disciplina.\<close>
 
-relativize functional "Card" "Card_rel"
-
-(* definition
-  Card_rel     :: "[i\<Rightarrow>o,i]\<Rightarrow>o"  (\<open>Card\<^bsup>_\<^esup>'(_')\<close>) where
-  "Card\<^bsup>M\<^esup>(i) \<equiv> i = |i|\<^bsup>M\<^esup>" *)
+relativize functional "Card" "Card_rel" external
 
 abbreviation   Card_rel'     :: "[i\<Rightarrow>o,i]\<Rightarrow>o"  (\<open>Card\<^bsup>_\<^esup>'(_')\<close>) where
   "Card\<^bsup>M\<^esup>(i) \<equiv> Card_rel(M,i)"
 
-reldb_add "lt" "lt"
-relativize functional "InfCard" "InfCard_rel"
+reldb_add functional "lt" "lt"
+relativize functional "InfCard" "InfCard_rel" external
 
 abbreviation 
   InfCard_rel'   :: "[i\<Rightarrow>o,i] \<Rightarrow> o" (\<open>InfCard\<^bsup>_\<^esup>'(_')\<close>) where
-  (* "InfCard_rel(M,i) \<equiv> Card\<^bsup>M\<^esup>(i) \<and> nat \<le> i" *)
   "InfCard\<^bsup>M\<^esup>(i) \<equiv> InfCard_rel(M,i)"
 
-relativize functional "cadd" "cadd_rel"
-
-(*definition
-  cadd_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i"  where
-  "cadd_rel(M,A,B) \<equiv> |A+B|\<^bsup>M\<^esup>"*)
+relativize functional "cadd" "cadd_rel" external
 
 abbreviation
   cadd_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<oplus>\<^bsup>_\<^esup> _\<close> [66,1,66] 65) where
@@ -230,14 +190,18 @@ lemma (in M_basic) cadd_rel_closed:
   unfolding cadd_rel_def
   by simp
 
-
 (* relativization *)
 
 relationalize "cadd_rel" "is_cadd"
 
-(* definition
-  is_cadd :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
-  "is_cadd(M,A,B,a) \<equiv> \<exists>s[M]. is_sum(M,A,B,s) \<and> is_cardinal(M,s,a)" *)
+manual_schematic for "is_cadd" assuming "nonempty"
+  unfolding is_cadd_def
+  by (rule iff_sats cartprod_iff_sats sum_iff_sats | simp)+
+synthesize "is_cadd" from_schematic
+
+arity_theorem for "sum_fm"
+
+arity_theorem for "is_cadd_fm"
 
 lemma (in M_basic) is_cadd_iff :
   assumes "M(A)" "M(B)" "M(a)"
@@ -246,9 +210,7 @@ lemma (in M_basic) is_cadd_iff :
   unfolding is_cadd_def cadd_rel_def
   by simp
 
-definition
-  cmult_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i"  where
-  "cmult_rel(M,A,B) \<equiv> |A\<times>B|\<^bsup>M\<^esup>"
+relativize functional "cmult" "cmult_rel" external
 
 abbreviation
   cmult_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<otimes>\<^bsup>_\<^esup> _\<close> [66,1,66] 65) where
@@ -261,9 +223,13 @@ lemma (in M_basic) cmult_rel_closed:
   by simp
 
 (* relativization *)
-definition
-  is_cmult :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
-  "is_cmult(M,A,B,m) \<equiv> \<exists>p[M]. cartprod(M,A,B,p) \<and> is_cardinal(M,p,m)"
+relationalize "cmult_rel" "is_cmult"
+
+declare cartprod_iff_sats [iff_sats]
+
+synthesize "is_cmult" from_definition assuming "nonempty"
+
+arity_theorem for "is_cmult_fm"
 
 lemma (in M_basic) is_cmult_iff :
   assumes "M(A)" "M(B)" "M(a)"
