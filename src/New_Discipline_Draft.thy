@@ -107,10 +107,17 @@ abbreviation
 
 text\<open>Probamos el lema closed\<close>
 
-lemma (in M_trivial) cardinal_rel_closed[intro,simp]:"M(x) \<Longrightarrow> M(|x|\<^bsup>M\<^esup>)"
-  using Least_closed'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x"]
+context M_trivial begin
+rel_closed for "cardinal"
+  using Least_closed'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> A"]
   unfolding cardinal_rel_def
   by simp
+end
+
+(*lemma (in M_trivial) cardinal_rel_closed: "M(x) \<Longrightarrow> M(|x|\<^bsup>M\<^esup>)"
+  using Least_closed'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x"]
+  unfolding cardinal_rel_def
+  by simp*)
 
 text\<open>Damos la versión full-relacional (se podrá calcular
 automáticamente)\<close>
@@ -157,12 +164,20 @@ arity_theorem for "is_cardinal_fm"
 
 text\<open>Y probamos la equivalencia entre la versión full-relacional
 y el concepto relativo\<close>
-lemma (in M_trivial) is_cardinal_iff :
+
+context M_trivial begin
+is_iff_rel for "cardinal"
+  using least_abs'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> A"]
+  unfolding is_cardinal_def cardinal_rel_def
+  by simp
+end
+
+(*lemma (in M_trivial) is_cardinal_iff :
   assumes "M(x)" "M(c)"
   shows "is_cardinal(M,x,c) \<longleftrightarrow> c = |x|\<^bsup>M\<^esup>"
   using assms least_abs'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x"]
   unfolding is_cardinal_def cardinal_rel_def
-  by simp
+  by simp*)
 
 text\<open>Esa es toda la disciplina.\<close>
 
@@ -189,11 +204,12 @@ abbreviation
   cadd_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<oplus>\<^bsup>_\<^esup> _\<close> [66,1,66] 65) where
   "A \<oplus>\<^bsup>M\<^esup> B \<equiv> cadd_rel(M,A,B)"
 
-lemma (in M_basic) cadd_rel_closed[intro,simp]:
-  "\<lbrakk> M(A);M(B) \<rbrakk> \<Longrightarrow> M(A \<oplus>\<^bsup>M\<^esup> B)"
+context M_basic begin
+rel_closed for "cadd"
   using cardinal_rel_closed
   unfolding cadd_rel_def
   by simp
+end
 
 (* relativization *)
 
@@ -208,24 +224,18 @@ arity_theorem for "sum_fm"
 
 arity_theorem for "is_cadd_fm"
 
-lemma (in M_basic) is_cadd_iff :
-  assumes "M(A)" "M(B)" "M(a)"
-  shows "is_cadd(M,A,B,a) \<longleftrightarrow> a = A \<oplus>\<^bsup>M\<^esup> B"
-  using is_cardinal_iff assms 
+context M_basic begin
+is_iff_rel for "cadd"
+  using is_cardinal_iff
   unfolding is_cadd_def cadd_rel_def
   by simp
+end
 
 relativize functional "cmult" "cmult_rel" external
 
 abbreviation
   cmult_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<otimes>\<^bsup>_\<^esup> _\<close> [66,1,66] 65) where
   "A \<otimes>\<^bsup>M\<^esup> B \<equiv> cmult_rel(M,A,B)"
-
-lemma (in M_basic) cmult_rel_closed[intro,simp]:
-  "\<lbrakk> M(A);M(B) \<rbrakk> \<Longrightarrow> M(A \<otimes>\<^bsup>M\<^esup> B)"
-  using cardinal_rel_closed
-  unfolding cmult_rel_def
-  by simp
 
 (* relativization *)
 relationalize "cmult_rel" "is_cmult"
@@ -236,12 +246,19 @@ synthesize "is_cmult" from_definition assuming "nonempty"
 
 arity_theorem for "is_cmult_fm"
 
-lemma (in M_basic) is_cmult_iff :
-  assumes "M(A)" "M(B)" "M(a)"
-  shows "is_cmult(M,A,B,a) \<longleftrightarrow> a = A \<otimes>\<^bsup>M\<^esup> B"
-  using is_cardinal_iff assms 
+context M_basic begin
+
+rel_closed for "cmult"
+  using cardinal_rel_closed
+  unfolding cmult_rel_def
+  by simp
+
+is_iff_rel for "cmult"
+  using is_cardinal_iff 
   unfolding is_cmult_def cmult_rel_def
   by simp
+
+end
 
 definition
   Powapply_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" (\<open>Powapply\<^bsup>_\<^esup>'(_,_')\<close>) where
@@ -282,10 +299,9 @@ locale M_HVfrom = M_eclose +
 
 begin
 
-lemma univalent_is_Powapply:
-  assumes "M(A)" "M(K)"
-  shows "univalent(M,A,is_Powapply(M,K))"
-  using assms is_Powapply_iff  unfolding univalent_def
+univalent for "Powapply"
+  using is_Powapply_iff
+  unfolding univalent_def
   by simp
 
 lemma is_HVfrom_iff :
