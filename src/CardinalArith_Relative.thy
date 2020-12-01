@@ -417,7 +417,7 @@ done
 subsubsection\<open>Addition by another cardinal\<close>
 
 lemma sum_lepoll_rel_self: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> A \<lesssim>\<^bsup>M\<^esup> A+B"
-(* proof (simp add: def_lepoll_rel, rule rexI)
+proof (simp add: def_lepoll_rel, rule rexI)
   show "(\<lambda>x\<in>A. Inl (x)) \<in> inj(A, A + B)"
     by (simp add: inj_def)
   assume "M(A)" "M(B)"
@@ -425,8 +425,7 @@ lemma sum_lepoll_rel_self: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> A \<le
   show "M(\<lambda>x\<in>A. Inl(x))"
     using Inl_replacement1 transM[OF _ \<open>M(A)\<close>]
     by (rule_tac lam_closed) (auto simp add: Inl_def)
-qed *)
-  sorry
+qed
 
 (*Could probably weaken the premises to well_ord(K,r), or removing using AC*)
 
@@ -455,7 +454,7 @@ apply (rule_tac d = "case (%w. Inl(converse(f) `w), %y. Inr(converse(fa) ` y))"
        in lam_injective)
     apply (typecheck add: inj_is_fun, auto)
   apply (rule_tac lam_closed, auto dest:transM intro:case_replacement4)
-  sorry
+  done
 
 lemma cadd_rel_le_mono:
     "[| K' \<le> K;  L' \<le> L;M(K');M(K);M(L');M(L) |] ==> (K' \<oplus>\<^bsup>M\<^esup> L') \<le> (K \<oplus>\<^bsup>M\<^esup> L)"
