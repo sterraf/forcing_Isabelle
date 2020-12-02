@@ -217,7 +217,7 @@ relationalize "cadd_rel" "is_cadd"
 
 manual_schematic for "is_cadd" assuming "nonempty"
   unfolding is_cadd_def
-  by (rule iff_sats cartprod_iff_sats sum_iff_sats | simp)+
+  by (rule iff_sats sum_iff_sats | simp)+
 synthesize "is_cadd" from_schematic
 
 arity_theorem for "sum_fm"
@@ -261,26 +261,45 @@ is_iff_rel for "cmult"
 end
 
 definition
-  Powapply_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" (\<open>Powapply\<^bsup>_\<^esup>'(_,_')\<close>) where
-  "Powapply\<^bsup>M\<^esup>(f,y) \<equiv> Pow\<^bsup>M\<^esup>(f`y)"
+  Powapply :: "[i,i] \<Rightarrow> i"  where
+  "Powapply(f,y) \<equiv> Pow(f`y)"
 
-lemma (in M_basic) Powapply_rel_closed: 
-  "\<lbrakk> M(f);M(y) \<rbrakk> \<Longrightarrow> M(Powapply\<^bsup>M\<^esup>(f,y))"
-  using Pow_rel_closed
+reldb_add functional "Pow" "Pow_rel"
+reldb_add relational "Pow" "is_Pow"
+
+lemma subset_fm_iff_sats[iff_sats]:
+  "nth(i, env) = x \<Longrightarrow> nth(j, env) = y \<Longrightarrow> i\<in>nat \<Longrightarrow> j\<in>nat \<Longrightarrow>
+   env \<in> list(A) \<Longrightarrow> subset(##A, x, y) \<longleftrightarrow> A, env \<Turnstile> subset_fm(i, j)"
+  using sats_subset_fm'  by simp
+
+synthesize "is_Pow" from_definition assuming "nonempty"
+arity_theorem for "is_Pow_fm"
+
+relativize functional "Powapply" "Powapply_rel"
+relationalize "Powapply_rel" "is_Powapply"
+synthesize "is_Powapply" from_definition assuming "nonempty"
+arity_theorem for "is_Powapply_fm"
+
+notation Powapply_rel (\<open>Powapply\<^bsup>_\<^esup>'(_,_')\<close>)
+
+context M_basic
+begin
+
+rel_closed for "Powapply"
   unfolding Powapply_rel_def
   by simp
 
-(* relativization *)
-definition
-  is_Powapply :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
-  "is_Powapply(M,f,y,p) \<equiv> \<exists>fy[M]. fun_apply(M,f,y,fy) \<and> is_Pow(M,fy,p)"
-
-lemma (in M_basic) is_Powapply_iff :
-  assumes "M(f)" "M(y)" "M(p)"
-  shows "is_Powapply(M,f,y,p) \<longleftrightarrow> p = Powapply\<^bsup>M\<^esup>(f,y)"
-  using Pow_rel_iff assms 
+is_iff_rel for "Powapply"
+  using Pow_rel_iff
   unfolding is_Powapply_def Powapply_rel_def
   by simp
+
+univalent for "Powapply"
+  using is_Powapply_iff
+  unfolding univalent_def
+  by simp
+
+end
 
 definition
   HVfrom_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> i" (\<open>HVfrom\<^bsup>_\<^esup>'(_,_,_')\<close>) where
@@ -298,11 +317,6 @@ locale M_HVfrom = M_eclose +
       "M(K) \<Longrightarrow> strong_replacement(M,\<lambda>y z. z = Powapply\<^bsup>M\<^esup>(f,y))"
 
 begin
-
-univalent for "Powapply"
-  using is_Powapply_iff
-  unfolding univalent_def
-  by simp
 
 lemma is_HVfrom_iff :
   assumes "M(A)" "M(x)" "M(f)" "M(z)"
