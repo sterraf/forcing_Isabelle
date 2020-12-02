@@ -133,7 +133,7 @@ signature Relativization =
     val relativ_fm: bool -> bool -> term -> Data.T -> (term * (term * term)) list * Proof.context * term option -> term -> term * ((term * (term * term)) list * term list * term list * Proof.context)
     val relativ_tm: bool -> bool -> term option -> term -> Data.T -> (term * (term * term)) list * Proof.context -> term -> term * (term * (term * term)) list * Proof.context
     val read_new_const : Proof.context -> string -> term
-    val relativ_tm_frm': bool -> bool -> term -> Data.T -> Proof.context -> term -> term option * term * bool
+    val relativ_tm_frm': bool -> bool -> term -> Data.T -> Proof.context -> term -> term option * term
     val relativize_def: bool -> bool -> bool -> bstring -> string -> Position.T -> Proof.context -> Proof.context
     val relativize_tm: bool -> bstring -> string -> Position.T -> Proof.context -> Proof.context
     val rel_closed_goal : string -> Position.T -> Proof.context -> Proof.state
@@ -414,7 +414,8 @@ and
         val (args, rs_ts, ctxt') = relativ_tms is_functional relationalising pred rel_db rs ctxt args
         (* TODO: Verify if next line takes care of locales' definitions *)
         val args' = List.filter (not o Utils.inList (Utils.frees p)) args
-        val tm = list_comb (p, if flag then pred :: args' else args')
+        val args'' = if not (null args') andalso hd args' = pred then args' else pred :: args'
+        val tm = list_comb (p, if flag then args'' else args')
         (* TODO: Verify if next line is necessary *)
         val news = filter (not o (fn x => is_Free x orelse is_Bound x) o #1) rs_ts
         val (vars, tms) = split_list (map #2 news)
@@ -533,15 +534,15 @@ fun relativ_tm_frm' is_functional relationalising cls_pred db ctxt tm =
             val (w, rs, _) =  relativ_tm is_functional relationalising NONE cls_pred db ([], initial_ctxt) tm
           in
             if is_functional
-              then (NONE, w, false)
-              else (SOME w, close_rel_tm cls_pred NONE (SOME w) rs, false)
+              then (NONE, w)
+              else (SOME w, close_rel_tm cls_pred NONE (SOME w) rs)
           end
       | @{typ o} =>
           let
             fun close_fm (f, (_, vars, tms, _)) =
               fold (fn  v => fn t => rex cls_pred (incr_boundvars 1 t) v) vars (conjs (f :: tms))
           in
-            (NONE, relativ_fm is_functional relationalising cls_pred db ([], initial_ctxt, NONE) tm |> close_fm, true)
+            (NONE, relativ_fm is_functional relationalising cls_pred db ([], initial_ctxt, NONE) tm |> close_fm)
           end
       | ty' => raise TYPE ("We can relativize only terms of types i and o", [ty'], [tm])
   end
@@ -570,7 +571,7 @@ fun relativize_def is_external is_functional relationalising def_name thm_ref po
       else Variable.variant_fixes ["N"] ctxt1 |>> var_io o hd |> (fn (cls, ctxt) => (cls, ctxt, vars, lambdavars))
     val db' = db' |> Database.insert Database.abs2rel (cls_pred, cls_pred)
                      o Database.insert Database.rel2is (cls_pred, cls_pred)
-    val (v,t, is_formula) = relativ_tm_frm' is_functional relationalising cls_pred db' ctxt1 tm
+    val (v,t) = relativ_tm_frm' is_functional relationalising cls_pred db' ctxt1 tm
     val t_vars = Term.add_free_names tm []
     val vs' = List.filter (#1 #> #1 #> #1 #> Utils.inList t_vars) vars
     val vs = cls_pred :: map (Thm.term_of o #2) vs' @ lambdavars @ the_list v
@@ -578,9 +579,7 @@ fun relativize_def is_external is_functional relationalising def_name thm_ref po
     val abs_const = read_const lthy (if is_external then thm_ref else lname lthy thm_ref)
     fun new_const ctxt' = read_new_const ctxt' def_name
     fun db_map ctxt' = 
-      if is_formula
-        then Data.map (add_rel_const Database.rel2is (new_const ctxt') (new_const ctxt') o add_rel_const Database.abs2rel abs_const (new_const ctxt'))
-        else Data.map (add_rel_const (get_mode is_functional relationalising) abs_const (new_const ctxt'))
+       Data.map (add_rel_const (get_mode is_functional relationalising) abs_const (new_const ctxt'))
     fun add_to_context ctxt' = Context.proof_map (db_map ctxt') ctxt'
     fun add_to_theory ctxt' = Local_Theory.raw_theory (Context.theory_map (db_map ctxt')) ctxt'
   in
@@ -601,7 +600,7 @@ fun relativize_tm is_functional def_name term pos lthy =
                      o Database.insert Database.rel2is (cls_pred, cls_pred)
     val vs' = Variable.add_frees ctxt1 tm []
     val ctxt2 = fold Utils.add_to_context (map #1 vs') ctxt1
-    val (v,t, _) = relativ_tm_frm' is_functional false cls_pred db' ctxt2 tm
+    val (v,t) = relativ_tm_frm' is_functional false cls_pred db' ctxt2 tm
     val vs = cls_pred :: map Free vs' @ the_list v
     val at = List.foldr (uncurry lambda) t vs
   in
