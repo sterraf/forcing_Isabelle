@@ -220,6 +220,19 @@ definition test30 :: "i" where
 relativize functional "test30" "test30_rel"
 relationalize "test30_rel" "is_test30"
 
+definition le :: "i \<Rightarrow> i \<Rightarrow> o" where
+  "le(x, y) \<equiv> x \<union> y = y"
+
+relativize functional "le" "le_rel"
+relationalize "le_rel" "is_le"
+
+context M_trivial
+begin
+is_iff_rel for "le"
+  unfolding is_le_def le_rel_def
+  by auto
+end
+
 context M_trans
 begin
 ML\<open>

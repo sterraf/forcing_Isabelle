@@ -652,12 +652,16 @@ fun iff_goal target pos lthy =
       | first_lambdas _ = []
     val (def, vars) = Term.strip_comb def ||> filter is_free_i
     val vs = vars @ first_lambdas tm
-    val res = Variable.variant_fixes ["res"] ctxt |> Utils.var_i o hd o #1
     val class = Free ("M", @{typ "i \<Rightarrow> o"})
     val def = fold (op $`) (class :: vs) def
-    val is_def = fold (op $`) (class :: vs @ [res]) is_def
-    val hyps = map (fn v => class $ v |> Utils.tp) (vs @ [res])
-    val concl = @{const "IFOL.iff"} $ is_def $ (@{const IFOL.eq(i)} $ res $ def)
+    val ty = fastype_of def
+    val res = if ty = @{typ "i"}
+                then Variable.variant_fixes ["res"] ctxt |> SOME o Utils.var_i o hd o #1
+                else NONE
+    val is_def = fold (op $`) (class :: vs @ the_list res) is_def
+    val hyps = map (fn v => class $ v |> Utils.tp) (vs @ the_list res)
+    val concl = @{const "IFOL.iff"} $ is_def
+              $ (if ty = @{typ "i"} then (@{const IFOL.eq(i)} $ the res $ def) else def)
     val goal = Logic.list_implies (hyps, Utils.tp concl)
   in
     Proof.theorem NONE (fn thmss => Utils.display "theorem" pos
