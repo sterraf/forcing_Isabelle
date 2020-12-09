@@ -233,6 +233,35 @@ is_iff_rel for "le"
   by auto
 end
 
+term transrec
+term is_transrec
+
+definition trec_test1 :: "i" where
+  "trec_test1 \<equiv> transrec(<0,1>, \<lambda> x y . x \<times> y)"
+
+relativize functional "trec_test1" "trec_test1_rel"
+relationalize "trec_test1_rel" "is_trec_test1"
+
+definition addition :: "i \<Rightarrow> i \<Rightarrow> i" where
+  "addition(x, y) \<equiv> x \<union> y - x \<inter> y"
+
+relativize functional "addition" "addition_rel"
+relationalize "addition_rel" "is_addition"
+
+definition trec_test2 :: "i \<Rightarrow> i" where
+  "trec_test2(x) \<equiv> transrec(x, addition)"
+
+relativize functional "trec_test2" "trec_test2_rel"
+(* This won't work: relationalize "trec_test2_rel" "is_trec_test2" *)
+
+(* In order to get a proper relativization, \<eta>-expansion must be performed on the second argument
+   of transrec. *)
+definition trec_test3 :: "i \<Rightarrow> i" where
+  "trec_test3(x) \<equiv> transrec(x, \<lambda> a b. addition(a, b))"
+
+relativize functional "trec_test3" "trec_test3_rel"
+relationalize "trec_test3_rel" "is_trec_test3"
+
 context M_trans
 begin
 ML\<open>
