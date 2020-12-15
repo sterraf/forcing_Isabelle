@@ -131,7 +131,7 @@ signature Relativization =
     val db: Data.T
     val init_db : Data.T -> theory -> theory
     val get_db : Proof.context -> Data.T
-    val relativ_fm: bool -> bool -> term -> Data.T -> (term * (term * term)) list * Proof.context * term list -> term -> term * ((term * (term * term)) list * term list * term list * Proof.context)
+    val relativ_fm: bool -> bool -> term -> Data.T -> (term * (term * term)) list * Proof.context * term list * bool -> term -> term * ((term * (term * term)) list * term list * term list * Proof.context)
     val relativ_tm: bool -> bool -> term option -> term -> Data.T -> (term * (term * term)) list * Proof.context -> term -> term * (term * (term * term)) list * Proof.context
     val read_new_const : Proof.context -> string -> term
     val relativ_tm_frm': bool -> bool -> term -> Data.T -> Proof.context -> term -> term option * term
@@ -358,7 +358,7 @@ and
         let
           val (v, b) = Term.dest_abs body |>> var_i ||> after
           val (b', (rs', ctxt'')) =
-            relativ_fm is_functional relationalising pred rel_db (rs, ctxt', single v) b |>> incr_boundvars 1 ||> #1 &&& #4
+            relativ_fm is_functional relationalising pred rel_db (rs, ctxt', single v, false) b |>> incr_boundvars 1 ||> #1 &&& #4
         in
           relativ_app mv (SOME ctxt'') tm [lambda v b'] @{const Replace} ([t], false) rs'
         end
@@ -375,13 +375,13 @@ and
             end
         | go mv (@{const Collect} $ t $ pc) =
             let
-              val (pc', (rs', ctxt')) = relativ_fm is_functional relationalising pred rel_db (rs,ctxt, []) pc ||> #1 &&& #4
+              val (pc', (rs', ctxt')) = relativ_fm is_functional relationalising pred rel_db (rs,ctxt, [], false) pc ||> #1 &&& #4
             in
               relativ_app mv (SOME ctxt') tm [pc'] @{const Collect} ([t], false) rs'
             end
         | go mv (@{const Least} $ pc) =
             let
-              val (pc', (rs', ctxt')) = relativ_fm is_functional relationalising pred rel_db (rs,ctxt, []) pc ||> #1 &&& #4
+              val (pc', (rs', ctxt')) = relativ_fm is_functional relationalising pred rel_db (rs,ctxt, [], false) pc ||> #1 &&& #4
             in
               relativ_app mv (SOME ctxt') tm [pc'] @{const Least} ([], false) rs'
             end
@@ -389,14 +389,14 @@ and
             let
               fun get_abs_body (Abs body) = body
                 | get_abs_body t = raise TERM ("Term is not Abs", [t])
-              val (res, ctxt') = Variable.variant_fixes [if is_functional then "aux_" else ""] ctxt |>> var_i o hd
+              val (res, ctxt') = Variable.variant_fixes [if is_functional then "_aux" else ""] ctxt |>> var_i o hd
               val (x, b') = Term.dest_abs body |>> var_i
               val (y, b) = get_abs_body b' |> Term.dest_abs |>> var_i
-              val p = Utils.eq_ res b
-              val (p', (rs', ctxt'')) = relativ_fm is_functional relationalising pred rel_db (rs, ctxt', [x, y]) p |>> incr_boundvars 3 ||> #1 &&& #4
-              val p' = if is_functional then Utils.dest_eq_tms p' |> #2 else p'
+              val p = Utils.eq_ res b |> lambda res
+              val (p', (rs', ctxt'')) = relativ_fm is_functional relationalising pred rel_db (rs, ctxt', [x, y], true) p |>> incr_boundvars 3 ||> #1 &&& #4
+              val p' = if is_functional then p' |> #2 o Utils.dest_eq_tms o #2 o Term.dest_abs o get_abs_body else p'
             in
-              relativ_app mv (SOME ctxt'') tm [p' |> lambda x o lambda y o (if is_functional then I else lambda res)] @{const transrec} ([t], not is_functional) rs'
+              relativ_app mv (SOME ctxt'') tm [p' |> lambda x o lambda y] @{const transrec} ([t], not is_functional) rs'
             end
         | go mv (tm as @{const Sigma} $ t $ Abs (_, _, t')) =
             relativ_app_no_dep mv tm @{const Sigma} t t' rs
@@ -404,7 +404,7 @@ and
             relativ_app_no_dep mv tm @{const Pi} t t' rs
         | go mv (tm as @{const bool_of_o} $ t) =
             let
-              val (t', (rs', ctxt')) = relativ_fm is_functional relationalising pred rel_db (rs, ctxt, []) t ||> #1 &&& #4
+              val (t', (rs', ctxt')) = relativ_fm is_functional relationalising pred rel_db (rs, ctxt, [], false) t ||> #1 &&& #4
             in
               relativ_app mv (SOME ctxt') tm [t'] @{const bool_of_o} ([], false) rs'
             end
@@ -418,7 +418,7 @@ and
          | SOME (w, _) => (w, rs, ctxt)
       end
 and
-  relativ_fm is_functional relationalising pred rel_db (rs, ctxt, vs) fm =
+  relativ_fm is_functional relationalising pred rel_db (rs, ctxt, vs, is_term) fm =
   let
 
   (* relativization of a fully applied constant *)
@@ -461,7 +461,7 @@ and
         |> map (fn (k, (v, rel)) => (incr_boundvars ~1 k, (incr_boundvars ~1 v, incr_boundvars ~1 rel)))
 
       val f' =
-        if not quantifier andalso is_functional
+        if not is_term andalso not quantifier andalso is_functional
           then pred $ Bound 0 :: (map (curry (op $) pred) vs) @ [f]
           else [f]
     in
@@ -554,7 +554,7 @@ fun relativ_tm_frm' is_functional relationalising cls_pred db ctxt tm =
             fun close_fm (f, (_, vars, tms, _)) =
               fold (fn  v => fn t => rex cls_pred (incr_boundvars 1 t) v) vars (conjs (f :: tms))
           in
-            (NONE, relativ_fm is_functional relationalising cls_pred db ([], initial_ctxt, []) tm |> close_fm)
+            (NONE, relativ_fm is_functional relationalising cls_pred db ([], initial_ctxt, [], false) tm |> close_fm)
           end
       | ty' => raise TYPE ("We can relativize only terms of types i and o", [ty'], [tm])
   end
