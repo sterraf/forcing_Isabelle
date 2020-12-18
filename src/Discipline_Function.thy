@@ -3,7 +3,8 @@ theory Discipline_Function
     "ZF-Constructible.Rank"
     "Relativization"
     "Internalizations"
-    "Discipline_Base" 
+    "Discipline_Base"
+    Arities
 begin
 
 (**********************************************************)
@@ -264,12 +265,15 @@ Discipline to it.\<close>
 
 (*************** Discipline for injP ******************)
 
+
 definition (* completely relational *)
   injP_rel:: "[i\<Rightarrow>o,i,i]\<Rightarrow>o" where
   "injP_rel(M,A,f) \<equiv> \<forall>w[M]. \<forall>x[M]. \<forall>fw[M]. \<forall>fx[M]. w\<in>A \<and> x\<in>A \<and>
             is_apply(M,f,w,fw) \<and> is_apply(M,f,x,fx) \<and> fw=fx\<longrightarrow> w=x"
 
 synthesize "injP_rel" from_definition assuming "nonempty"
+
+arity_theorem for "injP_rel_fm"
 
 context M_basic
 begin
@@ -310,9 +314,20 @@ declare typed_function_iff_sats Collect_iff_sats [iff_sats]
 
 synthesize "is_funspace" from_definition assuming "nonempty"
 
+arity_theorem for "is_funspace_fm"
+
 synthesize "is_function_space" from_definition assuming "nonempty"
 
+arity_theorem for "is_function_space_fm"
+
 synthesize "is_inj" from_definition assuming "nonempty"
+
+arity_theorem intermediate for "is_inj_fm"
+
+lemma arity_is_inj_fm[arity]:
+    "A \<in> nat \<Longrightarrow>
+    B \<in> nat \<Longrightarrow> I \<in> nat \<Longrightarrow> arity(is_inj_fm(A, B, I)) = succ(A) \<union> succ(B) \<union> succ(I)"
+  using arity_is_inj_fm' by auto
 
 definition
   inj_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" (\<open>inj\<^bsup>_\<^esup>'(_,_')\<close>) where
@@ -860,11 +875,18 @@ end (* M_N_Perm *)
 (******************************************************)
 subsection\<open>Discipline for \<^term>\<open>lepoll\<close>\<close>
 
-definition (* completely relational *)
-  lepoll_rel   :: "[i\<Rightarrow>o,i,i] => o" where
-  "lepoll_rel(M,A,B) \<equiv> \<exists>bi[M]. \<exists>f[M]. is_inj(M,A,B,bi) \<and> f\<in>bi"
+relativize functional "lepoll" "lepoll_rel" external
+relationalize "lepoll_rel" "is_lepoll"
 
-synthesize "lepoll_rel" from_definition assuming "nonempty"
+synthesize "is_lepoll" from_definition assuming "nonempty"
+arity_theorem for "is_lepoll_fm"
+
+context M_inj begin
+
+is_iff_rel for "lepoll"
+  using inj_rel_iff unfolding is_lepoll_def lepoll_rel_def by simp
+
+end (* M_inj *)
 
 abbreviation
   lepoll_r :: "[i,i\<Rightarrow>o,i] => o" (\<open>_ \<lesssim>\<^bsup>_\<^esup> _\<close> [51,1,51] 50) where
