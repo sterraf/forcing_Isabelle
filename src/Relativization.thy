@@ -6,6 +6,7 @@ theory Relativization
     "ZF-Constructible.Relative"
     "ZF-Constructible.Datatype_absolute"
     Least
+    Higher_Order_Constructs
   keywords
     "relativize" :: thy_decl % "ML"
     and
@@ -99,6 +100,9 @@ lemmas relative_abs =
   M_trivial.tl_abs
   M_trivial.least_abs'
   M_eclose.transrec_abs
+  M_trans.If_abs
+  M_trans.The_abs
+  M_eclose.recursor_abs
 
 lemmas datatype_abs =
   M_datatypes.list_N_abs
@@ -284,9 +288,9 @@ fun close_rel_tm pred tm tm_var rs =
   in fold (fn v => fn t => rex pred (incr_boundvars 1 t) v) vars (conjs tms)
   end
 
-fun relativ_tms __ _ _ _ ctxt' [] = ([], [], ctxt')
-  | relativ_tms is_functional relationalising pred rel_db rs' ctxt' (u :: us) =
-      let val (w_u, rs_u, ctxt_u) = relativ_tm is_functional relationalising NONE pred rel_db (rs', ctxt') u
+fun relativ_tms __ _ _ rs ctxt [] = ([], rs, ctxt)
+  | relativ_tms is_functional relationalising pred rel_db rs ctxt (u :: us) =
+      let val (w_u, rs_u, ctxt_u) = relativ_tm is_functional relationalising NONE pred rel_db (rs, ctxt) u
           val (w_us, rs_us, ctxt_us) = relativ_tms is_functional relationalising pred rel_db rs_u ctxt_u us
       in (w_u :: w_us, join_tm (rs_u , rs_us), ctxt_us)
       end
@@ -363,6 +367,9 @@ and
           relativ_app mv (SOME ctxt'') tm [lambda v b'] @{const Replace} ([t], false) rs'
         end
 
+      fun get_abs_body (Abs body) = body
+        | get_abs_body t = raise TERM ("Term is not Abs", [t])
+
       fun go _ (Var _) = raise TERM ("Var: Is this possible?",[])
         | go mv (@{const Replace} $ t $ Abs body) = relativ_replace mv t body I ctxt
         (* It is easier to rewrite RepFun as Replace before relativizing,
@@ -387,8 +394,6 @@ and
             end
         | go mv (@{const transrec} $ t $ Abs body) =
             let
-              fun get_abs_body (Abs body) = body
-                | get_abs_body t = raise TERM ("Term is not Abs", [t])
               val (res, ctxt') = Variable.variant_fixes [if is_functional then "_aux" else ""] ctxt |>> var_i o hd
               val (x, b') = Term.dest_abs body |>> var_i
               val (y, b) = get_abs_body b' |> Term.dest_abs |>> var_i
@@ -408,6 +413,31 @@ and
             in
               relativ_app mv (SOME ctxt') tm [t'] @{const bool_of_o} ([], false) rs'
             end
+        | go mv (tm as @{const If} $ b $ t $ t') =
+            let
+              val (br, (rs', ctxt')) = relativ_fm is_functional relationalising pred rel_db (rs, ctxt, [], false) b ||> #1 &&& #4
+            in
+              relativ_app mv (SOME ctxt') tm [br] @{const If} ([t,t'], true) rs'
+            end
+        | go mv (@{const The} $ pc) =
+            let
+              val (pc', (rs', ctxt')) = relativ_fm is_functional relationalising pred rel_db (rs,ctxt, [], false) pc ||> #1 &&& #4
+            in
+              relativ_app mv (SOME ctxt') tm [pc'] @{const The} ([], false) rs'
+            end
+        | go mv (@{const recursor} $ t $ Abs body $ t') =
+            let
+              val (res, ctxt') = Variable.variant_fixes [if is_functional then "_aux" else ""] ctxt |>> var_i o hd
+              val (x, b') = Term.dest_abs body |>> var_i
+              val (y, b) = get_abs_body b' |> Term.dest_abs |>> var_i
+              val p = Utils.eq_ res b |> lambda res
+              val (p', (rs', ctxt'')) = relativ_fm is_functional relationalising pred rel_db (rs, ctxt', [x, y], true) p |>> incr_boundvars 3 ||> #1 &&& #4
+              val p' = if is_functional then p' |> #2 o Utils.dest_eq_tms o #2 o Term.dest_abs o get_abs_body else p'
+              val (tr, rs'', ctxt''') = relativ_tm is_functional relationalising NONE pred rel_db (rs', ctxt'') t
+            in
+              relativ_app mv (SOME ctxt''') tm [tr, p' |> lambda x o lambda y] @{const recursor} ([t'], true) rs''
+            end
+        (* The following are the generic cases *)
         | go mv (tm as Const _) = relativ_app mv NONE tm [] tm ([], false) rs
         | go mv (tm as _ $ _) = (strip_comb tm ||> I &&& K false |> uncurry (relativ_app mv NONE tm [])) rs
         | go _ tm = if is_functional then (tm, rs, ctxt) else (tm, update_tm (tm,(tm,tm)) rs, ctxt)
@@ -435,7 +465,7 @@ and
         val news = filter (not o (fn x => is_Free x orelse is_Bound x) o #1) rs_ts
         val (vars, tms) = split_list (map #2 news)
         (* val vars = filter (fn v => not (v = tm)) vars *) (* Verify if this line is necessary *)
-       in (tm, (rs_ts, vars, tms, ctxt'))
+       in (tm, (rs_ts, vars, tms, ctxt')) 
        end
    | NONE   => raise TERM ("Constant " ^ const_name c ^ " is not present in the db." , nil)
 
