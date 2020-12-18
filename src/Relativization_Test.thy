@@ -262,6 +262,30 @@ definition trec_test3 :: "i \<Rightarrow> i" where
 relativize functional "trec_test3" "trec_test3_rel"
 relationalize "trec_test3_rel" "is_trec_test3"
 
+definition
+  test_boo :: "i\<Rightarrow>i" where
+  "test_boo(x) == bool_of_o(0 \<in>x)"
+
+relativize functional "test_boo" "test_boo_rel" external
+relationalize "test_boo_rel" "is_test_boo"
+
+definition 
+  test_cons :: "i\<Rightarrow>i" where
+  "test_cons(x) == {x}"
+
+definition
+  contents' :: "i=>i"  where
+   "contents'(X) == THE x. X = <x,<X,x>>"
+
+relativize functional "test_cons" "test_cons_rel" external
+relationalize "test_cons_rel" "is_test_cons"
+
+relativize functional "contents" "contents_rel" external
+relationalize "contents_rel" "is_contents"
+
+relativize functional "contents'" "contents'_rel" external
+relationalize "contents'_rel" "is_contents'"
+
 context M_trans
 begin
 ML\<open>
