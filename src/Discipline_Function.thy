@@ -822,11 +822,18 @@ end (* M_N_Perm *)
 (******************************************************)
 subsection\<open>Discipline for \<^term>\<open>eqpoll\<close>\<close>
 
-definition (* completely relational *)
-  eqpoll_rel   :: "[i\<Rightarrow>o,i,i] => o" where
-  "eqpoll_rel(M,A,B) \<equiv> \<exists>bi[M]. \<exists>f[M]. is_bij(M,A,B,bi) \<and> f\<in>bi"
+relativize functional "eqpoll" "eqpoll_rel" external
+relationalize "eqpoll_rel" "is_eqpoll"
 
-synthesize "eqpoll_rel" from_definition assuming "nonempty"
+synthesize "is_eqpoll" from_definition assuming "nonempty"
+arity_theorem for "is_eqpoll_fm"
+
+context M_Perm begin
+
+is_iff_rel for "eqpoll"
+  using bij_rel_iff unfolding is_eqpoll_def eqpoll_rel_def by simp
+
+end (* M_Perm *)
 
 abbreviation
   eqpoll_r :: "[i,i\<Rightarrow>o,i] => o" (\<open>_ \<approx>\<^bsup>_\<^esup> _\<close> [51,1,51] 50) where
@@ -935,12 +942,19 @@ end (* M_N_Perm *)
 (******************************************************)
 subsection\<open>Discipline for \<^term>\<open>lesspoll\<close>\<close>
 
+relativize functional "lesspoll" "lesspoll_rel" external
+relationalize "lesspoll_rel" "is_lesspoll"
 
-definition
-  lesspoll_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o"  where
-  "lesspoll_rel(M,A,B) \<equiv> lepoll_rel(M,A,B) \<and> \<not>(eqpoll_rel(M,A,B))"
+synthesize "is_lesspoll" from_definition assuming "nonempty"
+arity_theorem for "is_lesspoll_fm"
 
-synthesize "lesspoll_rel" from_definition assuming "nonempty"
+context M_Perm begin
+
+is_iff_rel for "lesspoll"
+  using is_lepoll_iff is_eqpoll_iff
+  unfolding is_lesspoll_def lesspoll_rel_def by simp
+
+end (* M_Perm *)
 
 abbreviation
   lesspoll_r :: "[i,i\<Rightarrow>o,i] => o" (\<open>_ \<prec>\<^bsup>_\<^esup> _\<close> [51,1,51] 50) where

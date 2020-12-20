@@ -93,8 +93,10 @@ Lo que debemos hacer es definir su versión relativa simplemente
 que no sean absolutos:
 \<close>
 
-reldb_add functional "eqpoll" "eqpoll_rel"
 relativize functional "cardinal" "cardinal_rel" external
+relationalize "cardinal_rel" "is_cardinal"
+synthesize "is_cardinal" from_definition assuming "nonempty"
+
 
 abbreviation
   cardinal_r :: "[i,i\<Rightarrow>o] \<Rightarrow> i" (\<open>|_|\<^bsup>_\<^esup>\<close>) where
@@ -119,13 +121,7 @@ end
   unfolding cardinal_rel_def
   by simp*)
 
-text\<open>Damos la versión full-relacional (se podrá calcular
-automáticamente)\<close>
 
-reldb_add relational "eqpoll" "eqpoll_rel"
-relationalize "cardinal_rel" "is_cardinal"
-
-synthesize "is_cardinal" from_definition assuming "nonempty"
 
 manual_arity intermediate for "is_Int_fm"
   unfolding is_Int_fm_def
@@ -158,16 +154,18 @@ lemma arity_is_inj_fm [arity]:
 
 arity_theorem for "is_bij_fm"
 
-arity_theorem for "eqpoll_rel_fm"
+arity_theorem for "is_eqpoll_fm"
 
 arity_theorem for "is_cardinal_fm"
 
 text\<open>Y probamos la equivalencia entre la versión full-relacional
 y el concepto relativo\<close>
 
-context M_trivial begin
+context M_Perm begin
+
 is_iff_rel for "cardinal"
   using least_abs'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> A"]
+    is_eqpoll_iff
   unfolding is_cardinal_def cardinal_rel_def
   by simp
 end
@@ -224,7 +222,7 @@ arity_theorem for "sum_fm"
 
 arity_theorem for "is_cadd_fm"
 
-context M_basic begin
+context M_Perm begin
 is_iff_rel for "cadd"
   using is_cardinal_iff
   unfolding is_cadd_def cadd_rel_def
@@ -246,7 +244,7 @@ synthesize "is_cmult" from_definition assuming "nonempty"
 
 arity_theorem for "is_cmult_fm"
 
-context M_basic begin
+context M_Perm begin
 
 rel_closed for "cmult"
   using cardinal_rel_closed

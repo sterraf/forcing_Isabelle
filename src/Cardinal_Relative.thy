@@ -79,8 +79,8 @@ end (* M_cardinals *)
 lemma (in M_cardinals) is_cardinal_iff_Least:
   assumes "M(A)" "M(\<kappa>)"
   shows "is_cardinal(M,A,\<kappa>) \<longleftrightarrow> \<kappa> = (\<mu> i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> A)"
-  using assms least_abs[of "\<lambda>x. M(x) \<and> x \<approx>\<^bsup>M\<^esup> A"]
-  unfolding is_cardinal_def by auto
+  using is_cardinal_iff assms
+  unfolding cardinal_rel_def by simp
 
 subsection\<open>The Schroeder-Bernstein Theorem\<close>
 text\<open>See Davey and Priestly, page 106\<close>
@@ -821,7 +821,7 @@ proof -
   }
   from this
   show "\<lbrakk> A \<prec>\<^bsup>M\<^esup> succ(m); m \<in> nat; M(A); M(m) \<rbrakk> \<Longrightarrow> A \<lesssim>\<^bsup>M\<^esup> m"
-    using def_lepoll_rel def_eqpoll_rel def_bij_rel lesspoll_rel_def
+    unfolding lepoll_rel_def eqpoll_rel_def bij_rel_def lesspoll_rel_def
     by (simp del:mem_inj_abs)
 qed
 
