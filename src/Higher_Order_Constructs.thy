@@ -77,4 +77,17 @@ lemma (in M_eclose) recursor_abs:
   apply (auto simp:relation1_def)
   done
 
+definition
+  is_wfrec_on :: "[i=>o,[i,i,i]=>o,i,i,i, i] => o" where
+  "is_wfrec_on(M,MH,A,r,a,z) == is_wfrec(M,MH,r,a,z)"
+
+lemma (in M_trancl) trans_wfrec_on_abs:
+  "[|wf(r);  trans(r);  relation(r);  M(r);  M(a);  M(z);
+     wfrec_replacement(M,MH,r);  relation2(M,MH,H);
+     \<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(H(x,g));
+     r-``{a}\<subseteq>A; a \<in> A|]
+   ==> is_wfrec_on(M,MH,A,r,a,z) \<longleftrightarrow> z=wfrec[A](r,a,H)"
+  using trans_wfrec_abs wfrec_trans_restr
+  unfolding is_wfrec_on_def by simp
+
 end

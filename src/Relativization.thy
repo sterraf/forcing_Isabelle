@@ -103,6 +103,8 @@ lemmas relative_abs =
   M_trans.If_abs
   M_trans.The_abs
   M_eclose.recursor_abs
+  M_trancl.trans_wfrec_abs
+  M_trancl.trans_wfrec_on_abs
 
 lemmas datatype_abs =
   M_datatypes.list_N_abs
@@ -436,6 +438,28 @@ and
               val (tr, rs'', ctxt''') = relativ_tm is_functional relationalising NONE pred rel_db (rs', ctxt'') t
             in
               relativ_app mv (SOME ctxt''') tm [tr, p' |> lambda x o lambda y] @{const recursor} ([t'], true) rs''
+            end
+        | go mv (@{const wfrec} $ t1 $ t2 $ Abs body) =
+            let
+              val (res, ctxt') = Variable.variant_fixes [if is_functional then "_aux" else ""] ctxt |>> var_i o hd
+              val (x, b') = Term.dest_abs body |>> var_i
+              val (y, b) = get_abs_body b' |> Term.dest_abs |>> var_i
+              val p = Utils.eq_ res b |> lambda res
+              val (p', (rs', ctxt'')) = relativ_fm is_functional relationalising pred rel_db (rs, ctxt', [x, y], true) p |>> incr_boundvars 3 ||> #1 &&& #4
+              val p' = if is_functional then p' |> #2 o Utils.dest_eq_tms o #2 o Term.dest_abs o get_abs_body else p'
+            in
+              relativ_app mv (SOME ctxt'') tm [p' |> lambda x o lambda y] @{const wfrec} ([t1,t2], not is_functional) rs'
+            end
+        | go mv (@{const wfrec_on} $ t1 $ t2 $ t3 $ Abs body) =
+            let
+              val (res, ctxt') = Variable.variant_fixes [if is_functional then "_aux" else ""] ctxt |>> var_i o hd
+              val (x, b') = Term.dest_abs body |>> var_i
+              val (y, b) = get_abs_body b' |> Term.dest_abs |>> var_i
+              val p = Utils.eq_ res b |> lambda res
+              val (p', (rs', ctxt'')) = relativ_fm is_functional relationalising pred rel_db (rs, ctxt', [x, y], true) p |>> incr_boundvars 3 ||> #1 &&& #4
+              val p' = if is_functional then p' |> #2 o Utils.dest_eq_tms o #2 o Term.dest_abs o get_abs_body else p'
+            in
+              relativ_app mv (SOME ctxt'') tm [p' |> lambda x o lambda y] @{const wfrec_on} ([t1,t2,t3], not is_functional) rs'
             end
         (* The following are the generic cases *)
         | go mv (tm as Const _) = relativ_app mv NONE tm [] tm ([], false) rs

@@ -286,6 +286,18 @@ relationalize "contents_rel" "is_contents"
 relativize functional "contents'" "contents'_rel" external
 relationalize "contents'_rel" "is_contents'"
 
+definition wfr_test1 :: "i \<Rightarrow> i" where
+  "wfr_test1(x) \<equiv> wfrec(x,Memrel({x}),\<lambda>a b. addition(a,b))"
+
+relativize functional "wfr_test1" "wfr_test1_rel"
+relationalize "wfr_test1_rel" "is_wfr_test1"
+
+definition wfro_test1 :: "i \<Rightarrow> i" where
+  "wfro_test1(x) \<equiv> wfrec[{x}](x,Memrel({x}),\<lambda>a b. addition(a,b))"
+
+relativize functional "wfro_test1" "wfro_test1_rel"
+relationalize "wfro_test1_rel" "is_wfro_test1"
+
 context M_trans
 begin
 ML\<open>
