@@ -166,15 +166,15 @@ definition
   lt_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "lt_rel(M,a,b) \<equiv> a\<in>b \<and> ordinal(M,b)"
 
-lemma (in M_trans) lt_abs[simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> lt_rel(M,a,b) \<longleftrightarrow> a<b"
+lemma (in M_trans) lt_abs[absolut]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> lt_rel(M,a,b) \<longleftrightarrow> a<b"
   unfolding lt_rel_def lt_def by auto
 
 definition
   le_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "le_rel(M,a,b) \<equiv> \<exists>sb[M]. successor(M,b,sb) \<and> lt_rel(M,a,sb)"
 
-lemma (in M_trivial) le_abs[simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> le_rel(M,a,b) \<longleftrightarrow> a\<le>b"
-  unfolding le_rel_def by simp
+lemma (in M_trivial) le_abs[absolut]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> le_rel(M,a,b) \<longleftrightarrow> a\<le>b"
+  unfolding le_rel_def by (simp add:absolut)
 
 subsection\<open>Discipline for \<^term>\<open>Pow\<close>\<close>
 
