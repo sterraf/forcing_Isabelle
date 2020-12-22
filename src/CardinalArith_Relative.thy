@@ -210,75 +210,28 @@ lemma csquare_rel_abs[absolut]: "\<lbrakk> M(K); M(cs)\<rbrakk> \<Longrightarrow
 end (* M_cardinal_arith *)
 
 (*************   Discipline for csucc  ****************)
-\<comment> \<open>Note addition to the Simpset and Claset below\<close>
+relativize functional "csucc" "csucc_rel" external
+relationalize "csucc_rel" "is_csucc"
+synthesize "is_csucc" from_definition assuming "nonempty"
+arity_theorem for "is_csucc_fm"
 
-definition
-  is_csucc :: "[i\<Rightarrow>o,i,i]\<Rightarrow>o"  where
-  "is_csucc(M,K,cs) \<equiv> M(cs) \<and> least(M, \<lambda>i. M(i) \<and> Card_rel(M,i) \<and> lt_rel(M,K,i),cs)"
-
-definition
-  csucc_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>csucc\<^bsup>_\<^esup>'(_')\<close>) where
-  "csucc_rel(M,x) \<equiv> THE d. is_csucc(M,x,d)"
-
-context M_cardinals
+context M_Perm
 begin
 
-lemma is_csucc_uniqueness:
-  assumes
-    "M(r)" 
-    "is_csucc(M,r,d)" "is_csucc(M,r,d')"
-  shows
-    "d=d'"
-  using assms least_abs'
-  unfolding is_csucc_def
-  by force \<comment> \<open>non automatic\<close>
+rel_closed for "csucc"
+  using Least_closed'[of "\<lambda> L. M(L) \<and> Card\<^bsup>M\<^esup>(L) \<and> K < L"]
+  unfolding csucc_rel_def
+  by simp
 
-lemma is_csucc_witness: "M(r) \<Longrightarrow> \<exists>d[M]. is_csucc(M,r,d)"
-  using Least_closed' least_abs' unfolding is_csucc_def
-  by fastforce \<comment> \<open>We have to do this by hand, using axioms\<close>
+is_iff_rel for "csucc"
+  using least_abs'[of "\<lambda> L. M(L) \<and> Card\<^bsup>M\<^esup>(L) \<and> K < L" res]
+    is_Card_iff
+  unfolding is_csucc_def csucc_rel_def
+  by (simp add:absolut)
 
-lemma is_csucc_closed : "is_csucc(M,f,d) \<Longrightarrow> M(d)" 
-  unfolding is_csucc_def by simp
+end (* M_Perm *)
 
-lemma csucc_rel_closed[intro,simp]: 
-  assumes "M(x)" 
-  shows "M(csucc_rel(M,x))"
-proof -
-  have "is_csucc(M, x, THE xa. is_csucc(M, x,xa))" 
-    using assms 
-          theI[OF ex1I[of "\<lambda>d. is_csucc(M,x,d)"], OF _ is_csucc_uniqueness[of x]]
-          is_csucc_witness
-    by auto
-  then show ?thesis 
-    using assms is_csucc_closed
-    unfolding csucc_rel_def
-    by blast
-qed
-
-lemma csucc_rel_iff:
-  assumes "M(x)"  "M(d)"
-  shows "is_csucc(M,x,d) \<longleftrightarrow> d = csucc_rel(M,x)"
-proof (intro iffI)
-  assume "d = csucc_rel(M,x)"
-  with assms
-  show "is_csucc(M, x, d)"
-    using is_csucc_uniqueness[of x] is_csucc_witness
-    theI[OF ex1I[of "is_csucc(M,x)"], OF _ is_csucc_uniqueness[of x]]
-    unfolding csucc_rel_def
-    by auto
-next
-  assume "is_csucc(M, x, d)"
-  with assms
-  show "d = csucc_rel(M,x)"
-    using is_csucc_uniqueness unfolding csucc_rel_def
-    by (auto del:the_equality intro:the_equality[symmetric])
-qed
-
-lemma csucc_rel_def: "M(x) \<Longrightarrow> csucc_rel(M,x) = (\<mu> i. M(i) \<and> Card_rel(M,i) \<and> x < i)"
-  using  least_abs' csucc_rel_iff
-  unfolding is_csucc_def by fastforce
-
-end (* M_cardinals *)
+notation csucc_rel (\<open>csucc\<^bsup>_\<^esup>'(_')\<close>)
 
 (***************  end Discipline  *********************)
 
@@ -891,8 +844,215 @@ definition
          \<Union>X\<in>Pow(K). {z. r \<in> Pow(K*K), well_ord(X,r) & z = ordertype(X,r)}"
 *)
 
+relationalize "transitive_rel" "is_transitive" external
+synthesize "is_transitive" from_definition assuming "nonempty"
+
+lemma (in M_trivial) is_transitive_iff_transitive_rel:
+  "M(A)\<Longrightarrow> M(r) \<Longrightarrow> transitive_rel(M, A, r) \<longleftrightarrow> is_transitive(M,A, r)"
+  unfolding transitive_rel_def is_transitive_def by simp
+
+relationalize "linear_rel" "is_linear" external
+synthesize "is_linear" from_definition assuming "nonempty"
+
+lemma (in M_trivial) is_linear_iff_linear_rel:
+  "M(A)\<Longrightarrow> M(r) \<Longrightarrow> is_linear(M,A, r) \<longleftrightarrow> linear_rel(M, A, r)"
+  unfolding linear_rel_def is_linear_def by simp
+
+relationalize "wellfounded_on" "is_wellfounded_on" external
+synthesize "is_wellfounded_on" from_definition assuming "nonempty"
+
+lemma (in M_trivial) is_wellfounded_on_iff_wellfounded_on:
+  "M(A)\<Longrightarrow> M(r) \<Longrightarrow> is_wellfounded_on(M,A, r) \<longleftrightarrow> wellfounded_on(M, A, r)"
+  unfolding wellfounded_on_def is_wellfounded_on_def by simp
+
+definition
+  is_well_ord :: "[i=>o,i,i]=>o" where
+    \<comment> \<open>linear and wellfounded on \<open>A\<close>\<close>
+    "is_well_ord(M,A,r) ==
+        is_transitive(M,A,r) \<and> is_linear(M,A,r) \<and> is_wellfounded_on(M,A,r)"
+
+lemma (in M_trivial) is_well_ord_iff_wellordered:
+  "M(A)\<Longrightarrow> M(r) \<Longrightarrow>  is_well_ord(M,A, r) \<longleftrightarrow> wellordered(M, A, r)"
+  using is_wellfounded_on_iff_wellfounded_on is_linear_iff_linear_rel
+    is_transitive_iff_transitive_rel
+  unfolding wellordered_def is_well_ord_def by simp
+
+reldb_add relational "well_ord" "is_well_ord"
+reldb_add functional "well_ord" "well_ord"
+synthesize "is_well_ord" from_definition assuming "nonempty"
+
+\<comment> \<open>One keyword (functional or relational) means going
+    from an absolute term to that kind of term\<close>
+reldb_add relational "Order.pred" "pred_set"
+
+\<comment> \<open>The following form (twice the same argument) is only correct
+    when an "_abs" theorem is available\<close>
+reldb_add functional "Order.pred" "Order.pred"
+reldb_add functional "Ord" "Ord"
+
+(*
+\<comment> \<open>Two keywords denote origin and destination, respectively\<close>
+reldb_add functional relational "Ord" "ordinal"
+*)
+
+relativize functional "ord_iso" "ord_iso_rel" external
+\<comment> \<open>The following corresponds to "relativize functional relational"\<close>
+relationalize "ord_iso_rel" "is_ord_iso"
+
+context M_Perm
+begin
+is_iff_rel for "ord_iso"
+  using bij_rel_iff
+  unfolding is_ord_iso_def ord_iso_rel_def
+  by simp
+end (* M_Perm *)
+
+synthesize "is_ord_iso" from_definition assuming "nonempty"
+
+lemma is_lambda_iff_sats[iff_sats]:
+  assumes is_F_iff_sats:
+    "!!a0 a1 a2.
+        [|a0\<in>Aa; a1\<in>Aa; a2\<in>Aa|]
+        ==> is_F(a1, a0) \<longleftrightarrow> sats(Aa, is_F_fm, Cons(a0,Cons(a1,Cons(a2,env))))"
+  shows
+    "nth(A, env) = Ab \<Longrightarrow>
+    nth(r, env) = ra \<Longrightarrow>
+    A \<in> nat \<Longrightarrow>
+    r \<in> nat \<Longrightarrow>
+    env \<in> list(Aa) \<Longrightarrow>
+    is_lambda(##Aa, Ab, is_F, ra) \<longleftrightarrow> Aa, env \<Turnstile> lambda_fm(is_F_fm,A, r)"
+  using sats_lambda_fm[OF assms, of A r] by simp
+
+\<comment> \<open>same as @{thm sats_is_wfrec_fm}, but changing length assumptions to
+    \<^term>\<open>0\<close> being in the model\<close>
+lemma sats_is_wfrec_fm':
+  assumes MH_iff_sats:
+    "!!a0 a1 a2 a3 a4.
+        [|a0\<in>A; a1\<in>A; a2\<in>A; a3\<in>A; a4\<in>A|]
+        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(A, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
+  shows
+    "[|x \<in> nat; y \<in> nat; z \<in> nat; env \<in> list(A); 0 \<in> A|]
+       ==> sats(A, is_wfrec_fm(p,x,y,z), env) \<longleftrightarrow>
+           is_wfrec(##A, MH, nth(x,env), nth(y,env), nth(z,env))"
+  using MH_iff_sats [THEN iff_sym] nth_closed sats_is_recfun_fm
+  by (simp add: is_wfrec_fm_def is_wfrec_def) blast
+
+lemma is_wfrec_iff_sats'[iff_sats]:
+  assumes MH_iff_sats:
+    "!!a0 a1 a2 a3 a4.
+        [|a0\<in>Aa; a1\<in>Aa; a2\<in>Aa; a3\<in>Aa; a4\<in>Aa|]
+        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(Aa, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
+    "x \<in> nat" "y \<in> nat" "z \<in> nat" "env \<in> list(Aa)" "0 \<in> Aa"
+    "nth(x, env) = xx" "nth(y, env) = yy" "nth(z, env) = zz"
+  shows
+    "is_wfrec(##Aa, MH, xx, yy, zz) \<longleftrightarrow> Aa, env \<Turnstile> is_wfrec_fm(p,x,y,z)"
+  using assms(7-9) sats_is_wfrec_fm'[OF assms(1-6)] by simp
+
+lemma is_wfrec_on_iff_sats[iff_sats]:
+  assumes MH_iff_sats:
+    "!!a0 a1 a2 a3 a4.
+        [|a0\<in>Aa; a1\<in>Aa; a2\<in>Aa; a3\<in>Aa; a4\<in>Aa|]
+        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(Aa, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
+  shows
+    "nth(x, env) = xx \<Longrightarrow>
+    nth(y, env) = yy \<Longrightarrow>
+    nth(z, env) = zz \<Longrightarrow>
+    x \<in> nat \<Longrightarrow>
+    y \<in> nat \<Longrightarrow>
+    z \<in> nat \<Longrightarrow>
+    env \<in> list(Aa) \<Longrightarrow>
+    0 \<in> Aa \<Longrightarrow> is_wfrec_on(##Aa, MH, aa,xx, yy, zz) \<longleftrightarrow> Aa, env \<Turnstile> is_wfrec_fm(p,x,y,z)"
+  using assms sats_is_wfrec_fm'[OF assms] unfolding is_wfrec_on_def by simp
+
+text\<open>Discipline for \<^term>\<open>ordermap\<close>\<close>
+relativize functional "ordermap" "ordermap_rel" external
+relationalize "ordermap_rel" "is_ordermap"
+
+context M_Perm
+begin
+is_iff_rel for "ordermap"
+  using bij_rel_iff
+  unfolding is_ordermap_def ordermap_rel_def
+  by simp
+end (* M_Perm *)
+
+synthesize "is_ordermap" from_definition assuming "nonempty"
+
+text\<open>Discipline for \<^term>\<open>ordertype\<close>\<close>
+relativize functional "ordertype" "ordertype_rel" external
+relationalize "ordertype_rel" "is_ordertype"
+
+context M_Perm
+begin
+is_iff_rel for "ordertype"
+  using bij_rel_iff
+  unfolding is_ordertype_def ordertype_rel_def
+  by simp
+end (* M_Perm *)
+
+synthesize "is_ordertype" from_definition assuming "nonempty"
+
+
+lemma (in M_Perm) is_omap_iff_omap:
+  assumes
+    "M(A)" "M(r)" "M(f)"
+  shows
+    "omap(M, A, r, f) \<longleftrightarrow> is_ordermap(M,A,r,f)"
+  using assms is_ordermap_iff
+  unfolding omap_def ordermap_rel_def wfrec_on_def
+  apply simp
+  sorry
+
+(*
+relativize functional "jump_cardinal" "jump_cardinal_rel" external
+relationalize "jump_cardinal_rel" "is_jump_cardinal"
+synthesize "is_jump_cardinal" from_definition assuming "nonempty"
+arity_theorem for "is_jump_cardinal_fm"
+
+context M_Perm
+begin
+
+rel_closed for "jump_cardinal"
+  unfolding jump_cardinal_rel_def
+  apply (intro Union_closed)
+  oops
+
+is_iff_rel for "jump_cardinal"
+  using Pow_rel_iff is_ordertype_iff
+  unfolding is_jump_cardinal_def jump_cardinal_rel_def
+  by simp
+
+end
+*)
+
 (******************************************************)
 subsection\<open>Discipline for \<^term>\<open>jcardDom\<close>\<close>
+
+(*
+definition
+  jcardDom   :: "i\<Rightarrow>i"  where
+  "jcardDom(A) \<equiv> Pow(A\<times>A)"
+
+relativize functional "jcardDom" "jcardDom_rel"
+relationalize "jcardDom_rel" "is_jcardDom"
+synthesize "is_jcardDom" from_definition assuming "nonempty"
+arity_theorem for "is_jcardDom_fm"
+
+context M_basic
+begin
+
+rel_closed for "jcardDom"
+  unfolding jcardDom_rel_def
+  by simp
+
+is_iff_rel for "jcardDom"
+  using Pow_rel_iff
+  unfolding is_jcardDom_def jcardDom_rel_def
+  by simp
+
+end
+
+*)
 
 definition (* completely relational *)
   is_jcardDom   :: "[i\<Rightarrow>o,i,i]\<Rightarrow>o"  where
