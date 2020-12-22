@@ -77,6 +77,9 @@ definition
 
 locale M_cardinal_arith = M_cardinals +
   assumes
+    ord_iso_separation: "M(s) \<Longrightarrow>
+      separation(M, \<lambda>f. \<forall>x\<in>A. \<forall>y\<in>A. \<langle>x, y\<rangle> \<in> r \<longleftrightarrow> \<langle>f ` x, f ` y\<rangle> \<in> s)"
+    and
     csquare_lam_replacement:"M(K) \<Longrightarrow>
       strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>x \<union> y, x, y\<rangle>)(x)\<rangle>)"
     and
@@ -120,6 +123,9 @@ locale M_cardinal_arith = M_cardinals +
     and
     prod_fun_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M,
       \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>w,y\<rangle>. \<langle>f ` w, g ` y\<rangle>)(x)\<rangle>)"
+    and
+    ordermap_replacement:"M(A) \<Longrightarrow> M(r) \<Longrightarrow>
+      strong_replacement(M, \<lambda>x y. y = \<langle>x, wfrec[A](r,x,\<lambda>x f. f `` Order.pred(A, x, r))\<rangle>)"
 begin
 
 lemma csquare_lam_closed[intro,simp]: "M(K) \<Longrightarrow> M(csquare_lam(K))"
@@ -899,12 +905,18 @@ relativize functional "ord_iso" "ord_iso_rel" external
 \<comment> \<open>The following corresponds to "relativize functional relational"\<close>
 relationalize "ord_iso_rel" "is_ord_iso"
 
-context M_Perm
+context M_cardinal_arith
 begin
+
 is_iff_rel for "ord_iso"
   using bij_rel_iff
   unfolding is_ord_iso_def ord_iso_rel_def
   by simp
+
+rel_closed for "ord_iso"
+  using ord_iso_separation unfolding ord_iso_rel_def
+  by simp
+
 end (* M_Perm *)
 
 synthesize "is_ord_iso" from_definition assuming "nonempty"
@@ -968,13 +980,24 @@ text\<open>Discipline for \<^term>\<open>ordermap\<close>\<close>
 relativize functional "ordermap" "ordermap_rel" external
 relationalize "ordermap_rel" "is_ordermap"
 
-context M_Perm
+context M_cardinal_arith
 begin
+
+(*
+(* Closure needs more hypotheses *)
+rel_closed for "ordermap"
+  using ordermap_replacement unfolding ordermap_rel_def wfrec_on_def
+  apply (rule lam_closed)
+     apply auto
+  apply (rule trans_wfrec_closed)
+*)
+
 is_iff_rel for "ordermap"
   using bij_rel_iff
   unfolding is_ordermap_def ordermap_rel_def
   (* by simp *) sorry
-end (* M_Perm *)
+
+end (* M_cardinal_arith *)
 
 synthesize "is_ordermap" from_definition assuming "nonempty"
 
@@ -984,6 +1007,7 @@ relationalize "ordertype_rel" "is_ordertype"
 
 context M_Perm
 begin
+
 is_iff_rel for "ordertype"
   using bij_rel_iff
   unfolding is_ordertype_def ordertype_rel_def
@@ -993,7 +1017,7 @@ end (* M_Perm *)
 synthesize "is_ordertype" from_definition assuming "nonempty"
 
 
-lemma (in M_Perm) is_omap_iff_omap:
+lemma (in M_cardinal_arith) is_omap_iff_omap:
   assumes
     "M(A)" "M(r)" "M(f)"
   shows
