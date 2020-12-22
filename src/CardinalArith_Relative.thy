@@ -973,7 +973,7 @@ begin
 is_iff_rel for "ordermap"
   using bij_rel_iff
   unfolding is_ordermap_def ordermap_rel_def
-  by simp
+  (* by simp *) sorry
 end (* M_Perm *)
 
 synthesize "is_ordermap" from_definition assuming "nonempty"
@@ -987,7 +987,7 @@ begin
 is_iff_rel for "ordertype"
   using bij_rel_iff
   unfolding is_ordertype_def ordertype_rel_def
-  by simp
+  (* by simp *) sorry
 end (* M_Perm *)
 
 synthesize "is_ordertype" from_definition assuming "nonempty"
@@ -1714,59 +1714,76 @@ done
   might be  InfCard(K) ==> |list(K)| = K.
 *)
 
+end (* M_cardinal_arith *)
+
 subsection\<open>For Every Cardinal Number There Exists A Greater One\<close>
 
 text\<open>This result is Kunen's Theorem 10.16, which would be trivial using AC\<close>
 
-(*
-lemma Ord_jump_cardinal: "Ord(jump_cardinal(K))"
-apply (unfold jump_cardinal_def)
+locale M_cardinal_arith_jump = M_cardinal_arith + M_jump_cardinal
+begin
+
+lemma Ord_jump_cardinal_rel: "M(K) \<Longrightarrow> Ord(jump_cardinal_rel(M,K))"
+apply (unfold def_jump_cardinal_rel)
 apply (rule Ord_is_Transset [THEN [2] OrdI])
  prefer 2 apply (blast intro!: Ord_ordertype)
 apply (unfold Transset_def)
 apply (safe del: subsetI)
-apply (simp add: ordertype_pred_unfold, safe)
-apply (rule UN_I)
+  apply (subst ordertype_pred_unfold, simp, safe)
+  apply (rule UN_I)
 apply (rule_tac [2] ReplaceI)
-   prefer 4 apply (blast intro: well_ord_subset elim!: predE)+
-done
+    prefer 4 apply (blast intro: well_ord_subset elim!: predE, simp_all)
+   prefer 2 apply (blast intro: well_ord_subset elim!: predE)
+proof -
+  fix X r xb
+  assume "M(K)" "X \<in> Pow\<^bsup>M\<^esup>(K)" "r \<in> Pow\<^bsup>M\<^esup>(K \<times> K)" "well_ord(X, r)" "xb \<in> X"
+  moreover from this
+  have "M(X)" "M(r)" "M(xb)" sorry
+  ultimately
+  show "Order.pred(X, xb, r) \<in> Pow\<^bsup>M\<^esup>(K)"
+    using def_Pow_rel by (auto dest:predE)
+qed
 
-(*Allows selective unfolding.  Less work than deriving intro/elim rules*)
-lemma jump_cardinal_iff:
-     "i \<in> jump_cardinal(K) \<longleftrightarrow>
-      (\<exists>r X. r \<subseteq> K*K & X \<subseteq> K & well_ord(X,r) & i = ordertype(X,r))"
-apply (unfold jump_cardinal_def)
-apply (blast del: subsetI)
-done
+\<comment> \<open>Perhaps replace the \<^term>\<open>Ex\<close> below with \<^term>\<open>rex\<close>.
+    This produces several problems below\<close>
+lemma jump_cardinal_rel_iff_old:
+     "M(i) \<Longrightarrow> M(K) \<Longrightarrow> i \<in> jump_cardinal_rel(M,K) \<longleftrightarrow>
+      (\<exists>r[M]. \<exists>X[M]. r \<subseteq> K*K & X \<subseteq> K & well_ord(X,r) & i = ordertype(X,r))"
+  apply (unfold def_jump_cardinal_rel)
+ (* apply (blast del: subsetI) *)
+  sorry
 
-(*The easy part of Theorem 10.16: jump_cardinal(K) exceeds K*)
-lemma K_lt_jump_cardinal: "Ord(K) ==> K < jump_cardinal(K)"
-apply (rule Ord_jump_cardinal [THEN [2] ltI])
-apply (rule jump_cardinal_iff [THEN iffD2])
-apply (rule_tac x="Memrel(K)" in exI)
-apply (rule_tac x=K in exI)
-apply (simp add: ordertype_Memrel well_ord_Memrel)
-apply (simp add: Memrel_def subset_iff)
+(*The easy part of Theorem 10.16: jump_cardinal_rel(K) exceeds K*)
+lemma K_lt_jump_cardinal_rel: "Ord(K) ==> M(K) \<Longrightarrow> K < jump_cardinal_rel(M,K)"
+apply (rule Ord_jump_cardinal_rel [THEN [2] ltI])
+apply (rule jump_cardinal_rel_iff_old [THEN iffD2], assumption+)
+apply (rule_tac x="Memrel(K)" in rexI)
+apply (rule_tac x=K in rexI)
+     apply (simp add: ordertype_Memrel well_ord_Memrel)
+  using Memrel_closed
+apply (simp_all add: Memrel_def subset_iff)
 done
 
 (*The proof by contradiction: the bijection f yields a wellordering of X
-  whose ordertype is jump_cardinal(K).  *)
-lemma Card_jump_cardinal_lemma:
+  whose ordertype is jump_cardinal_rel(K).  *)
+lemma Card_rel_jump_cardinal_rel_lemma:
      "[| well_ord(X,r);  r \<subseteq> K * K;  X \<subseteq> K;
-         f \<in> bij(ordertype(X,r), jump_cardinal(K)) |]
-      ==> jump_cardinal(K) \<in> jump_cardinal(K)"
-apply (subgoal_tac "f O ordermap (X,r) \<in> bij (X, jump_cardinal (K))")
+         f \<in> bij(ordertype(X,r), jump_cardinal_rel(M,K));
+         M(X); M(r); M(K); M(f) |]
+      ==> jump_cardinal_rel(M,K) \<in> jump_cardinal_rel(M,K)"
+apply (subgoal_tac "f O ordermap (X,r) \<in> bij (X, jump_cardinal_rel (M,K))")
  prefer 2 apply (blast intro: comp_bij ordermap_bij)
-apply (rule jump_cardinal_iff [THEN iffD2])
-apply (intro exI conjI)
+apply (rule jump_cardinal_rel_iff_old [THEN iffD2], simp+)
+apply (intro rexI conjI)
 apply (rule subset_trans [OF rvimage_type Sigma_mono], assumption+)
 apply (erule bij_is_inj [THEN well_ord_rvimage])
-apply (rule Ord_jump_cardinal [THEN well_ord_Memrel])
-apply (simp add: well_ord_Memrel [THEN [2] bij_ordertype_vimage]
-                 ordertype_Memrel Ord_jump_cardinal)
+     apply (rule Ord_jump_cardinal_rel [THEN well_ord_Memrel])
+apply (simp_all add: well_ord_Memrel [THEN [2] bij_ordertype_vimage]
+                 ordertype_Memrel Ord_jump_cardinal_rel)
 done
 
-(*The hard part of Theorem 10.16: jump_cardinal(K) is itself a cardinal*)
+
+\<comment> \<open>Original proof of the next theorem:\<close>
 lemma Card_jump_cardinal: "Card(jump_cardinal(K))"
 apply (rule Ord_jump_cardinal [THEN CardI])
 apply (unfold eqpoll_def)
@@ -1774,48 +1791,55 @@ apply (safe dest!: ltD jump_cardinal_iff [THEN iffD1])
 apply (blast intro: Card_jump_cardinal_lemma [THEN mem_irrefl])
 done
 
+
+(*The hard part of Theorem 10.16: jump_cardinal_rel(K) is itself a cardinal*)
+lemma Card_rel_jump_cardinal_rel: "M(K) \<Longrightarrow> Card_rel(M,jump_cardinal_rel(M,K))"
+  apply (rule Ord_jump_cardinal_rel [THEN Card_relI])
+    apply (simp_all add: def_eqpoll_rel)
+  apply (drule_tac i1=j in jump_cardinal_rel_iff_old [THEN iffD1, OF _ _ ltD, of _ K], safe)
+  apply (blast intro: Card_rel_jump_cardinal_rel_lemma [THEN mem_irrefl])
+  done
+
 subsection\<open>Basic Properties of Successor Cardinals\<close>
 
-lemma csucc_basic: "Ord(K) ==> Card(csucc(K)) & K < csucc(K)"
-apply (unfold csucc_def)
-apply (rule LeastI)
-apply (blast intro: Card_jump_cardinal K_lt_jump_cardinal Ord_jump_cardinal)+
+lemma csucc_rel_basic: "Ord(K) ==> M(K) \<Longrightarrow> Card_rel(M,csucc_rel(M,K)) & K < csucc_rel(M,K)"
+apply (unfold csucc_rel_def)
+apply (rule LeastI[of "\<lambda>i. M(i) \<and> Card_rel(M,i) \<and> K < i", THEN conjunct2])
+apply (blast intro: Card_rel_jump_cardinal_rel K_lt_jump_cardinal_rel Ord_jump_cardinal_rel)+
 done
 
-lemmas Card_csucc = csucc_basic [THEN conjunct1]
+lemmas Card_rel_csucc_rel = csucc_rel_basic [THEN conjunct1]
 
-lemmas lt_csucc = csucc_basic [THEN conjunct2]
+lemmas lt_csucc_rel = csucc_rel_basic [THEN conjunct2]
 
-lemma Ord_0_lt_csucc: "Ord(K) ==> 0 < csucc(K)"
-by (blast intro: Ord_0_le lt_csucc lt_trans1)
+lemma Ord_0_lt_csucc_rel: "Ord(K) ==> M(K) \<Longrightarrow> 0 < csucc_rel(M,K)"
+by (blast intro: Ord_0_le lt_csucc_rel lt_trans1)
 
-lemma csucc_le: "[| Card(L);  K<L |] ==> csucc(K) \<le> L"
-apply (unfold csucc_def)
+lemma csucc_rel_le: "[| Card_rel(M,L);  K<L; M(K); M(L) |] ==> csucc_rel(M,K) \<le> L"
+apply (unfold csucc_rel_def)
 apply (rule Least_le)
-apply (blast intro: Card_is_Ord)+
+apply (blast intro: Card_rel_is_Ord)+
 done
 
-lemma lt_csucc_iff: "[| Ord(i); Card(K) |] ==> i < csucc(K) \<longleftrightarrow> |i| \<le> K"
+lemma lt_csucc_rel_iff: "[| Ord(i); Card_rel(M,K); M(K); M(i)|] ==> i < csucc_rel(M,K) \<longleftrightarrow> |i|\<^bsup>M\<^esup> \<le> K"
 apply (rule iffI)
-apply (rule_tac [2] Card_lt_imp_lt)
+apply (rule_tac [2] Card_rel_lt_imp_lt)
 apply (erule_tac [2] lt_trans1)
-apply (simp_all add: lt_csucc Card_csucc Card_is_Ord)
+apply (simp_all add: lt_csucc_rel Card_rel_csucc_rel Card_rel_is_Ord)
 apply (rule notI [THEN not_lt_imp_le])
-apply (rule Card_cardinal [THEN csucc_le, THEN lt_trans1, THEN lt_irrefl], assumption)
-apply (rule Ord_cardinal_le [THEN lt_trans1])
-apply (simp_all add: Ord_cardinal Card_is_Ord)
+apply (rule Card_rel_cardinal_rel [THEN csucc_rel_le, THEN lt_trans1, THEN lt_irrefl], simp_all+)
+apply (rule Ord_cardinal_rel_le [THEN lt_trans1])
+apply (simp_all add: Card_rel_is_Ord)
 done
 
-lemma Card_lt_csucc_iff:
-     "[| Card(K'); Card(K) |] ==> K' < csucc(K) \<longleftrightarrow> K' \<le> K"
-by (simp add: lt_csucc_iff Card_cardinal_eq Card_is_Ord)
+lemma Card_rel_lt_csucc_rel_iff:
+     "[| Card_rel(M,K'); Card_rel(M,K); M(K'); M(K) |] ==> K' < csucc_rel(M,K) \<longleftrightarrow> K' \<le> K"
+by (simp add: lt_csucc_rel_iff Card_rel_cardinal_rel_eq Card_rel_is_Ord)
 
-lemma InfCard_csucc: "InfCard(K) ==> InfCard(csucc(K))"
-by (simp add: InfCard_def Card_csucc Card_is_Ord
-              lt_csucc [THEN leI, THEN [2] le_trans])
+lemma InfCard_rel_csucc_rel: "InfCard_rel(M,K) \<Longrightarrow> M(K) ==> InfCard_rel(M,csucc_rel(M,K))"
+by (simp add: InfCard_rel_def Card_rel_csucc_rel Card_rel_is_Ord
+              lt_csucc_rel [THEN leI, THEN [2] le_trans])
 
-
-*)
 
 subsubsection\<open>Theorems by Krzysztof Grabczewski, proofs by lcp\<close>
 
