@@ -298,6 +298,12 @@ definition wfro_test1 :: "i \<Rightarrow> i" where
 relativize functional "wfro_test1" "wfro_test1_rel"
 relationalize "wfro_test1_rel" "is_wfro_test1"
 
+definition lam_test1 :: "i \<Rightarrow> i" where
+  "lam_test1(A) \<equiv> \<lambda>x\<in>A. wfro_test1(x)"
+
+relativize functional "lam_test1" "lam_test1_rel"
+relationalize "lam_test1_rel" "is_lam_test1"
+
 context M_trans
 begin
 ML\<open>

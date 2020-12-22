@@ -461,6 +461,17 @@ and
             in
               relativ_app mv (SOME ctxt'') tm [p' |> lambda x o lambda y] @{const wfrec_on} ([t1,t2,t3], not is_functional) rs'
             end
+        | go mv (@{const Lambda} $ t $ Abs body) =
+            let
+              val (res, ctxt') = Variable.variant_fixes [if is_functional then "_aux" else ""] ctxt |>> var_i o hd
+              val (x, b) = Term.dest_abs body |>> var_i
+              val p = Utils.eq_ res b |> lambda res
+              val (p', (rs', ctxt'')) = relativ_fm is_functional relationalising pred rel_db (rs, ctxt', [x], true) p |>> incr_boundvars 2 ||> #1 &&& #4
+              val p' = if is_functional then p' |> #2 o Utils.dest_eq_tms o #2 o Term.dest_abs o get_abs_body else p'
+              val (tr, rs'', ctxt''') = relativ_tm is_functional relationalising NONE pred rel_db (rs', ctxt'') t
+            in
+              relativ_app mv (SOME ctxt''') tm [tr, p' |> lambda x] @{const Lambda} ([], true) rs''
+            end
         (* The following are the generic cases *)
         | go mv (tm as Const _) = relativ_app mv NONE tm [] tm ([], false) rs
         | go mv (tm as _ $ _) = (strip_comb tm ||> I &&& K false |> uncurry (relativ_app mv NONE tm [])) rs
