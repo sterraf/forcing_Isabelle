@@ -169,6 +169,9 @@ lemma Pi_range_eq: "f \<in> Pi(A,B) \<Longrightarrow> range(f) = {f ` x . x \<in
   using Pi_rangeD[of f A B] apply_rangeI[of f A B]
   by blast
 
+lemma Pi_vimage_subset : "f \<in> Pi(A,B) \<Longrightarrow> f-``C \<subseteq> A"
+  unfolding Pi_def by auto
+
 lemma apply_in_range:
   assumes
     "Ord(\<gamma>)" "\<gamma>\<noteq>0" "f: A \<rightarrow> \<gamma>"
@@ -206,7 +209,7 @@ qed
 lemma Image_sub_codomain: "f:A\<rightarrow>B \<Longrightarrow> f``C \<subseteq> B"
   using image_subset fun_is_rel[of _ _ "\<lambda>_ . B"] by force
 
-lemma inj_to_codomain:
+lemma inj_to_Image:
   assumes
     "f:A\<rightarrow>B" "f \<in> inj(A,B)"
   shows
@@ -412,6 +415,11 @@ lemma eqpollD[dest]: "A \<approx> B \<Longrightarrow> \<exists>f. f \<in> bij(A,
 
 declare bij_imp_eqpoll[intro]
 
+lemma range_of_subset_eqpoll:
+  assumes "f \<in> inj(X,Y)" "S \<subseteq> X"
+  shows "S \<approx> f `` S"
+  using assms restrict_bij by blast
+
 text\<open>I thank Miguel Pagano for this proof.\<close>
 lemma function_space_eqpoll_cong:
   assumes
@@ -534,7 +542,7 @@ next
     by (force intro:fun_extension)
 qed blast
 
-lemma cantor_inj : "f \<notin> inj(Pow(A),A)"
+lemma cantor_inj: "f \<notin> inj(Pow(A),A)"
   using inj_imp_surj[OF _ Pow_bottom] cantor_surj by blast
 
 definition
@@ -758,11 +766,12 @@ lemmas Memrel_mono_map_reflects = linear_mono_map_reflects
   [OF well_ord_is_linear[OF well_ord_Memrel] well_ord_is_trans_on[OF well_ord_Memrel]
     irrefl_Memrel]
 
-(* Same proof as Paulson's *)
+\<comment> \<open>Same proof as Paulson's @{thm mono_map_is_inj}\<close>
 lemma mono_map_is_inj':
   "\<lbrakk> linear(A,r);  irrefl(B,s);  f \<in> mono_map(A,r,B,s) \<rbrakk> \<Longrightarrow> f \<in> inj(A,B)"
   unfolding irrefl_def mono_map_def inj_def using linearE
-  by (clarify) (erule_tac x=w and y=x in linearE, assumption+, (force intro: apply_type)+)
+  by (clarify, rename_tac x w)
+    (erule_tac x=w and y=x in linearE, assumption+, (force intro: apply_type)+)
 
 lemma mono_map_imp_ord_iso_image:
   assumes
@@ -771,16 +780,16 @@ lemma mono_map_imp_ord_iso_image:
     "f \<in> ord_iso(\<alpha>,r,f``\<alpha>,s)"
   unfolding ord_iso_def
 proof (intro CollectI ballI iffI)
-  (* Enough to show it's bijective and preserves both ways *)
+  \<comment> \<open>Enough to show it's bijective and preserves both ways\<close>
   from assms
   have "f \<in> inj(\<alpha>,\<beta>)"
     using mono_map_is_inj' by blast
-  moreover from \<open>f\<in>mono_map(_,_,_,_)\<close>
-  have "f \<in> surj(\<alpha>,f``\<alpha>)"
+  moreover from \<open>f \<in> mono_map(_,_,_,_)\<close>
+  have "f \<in> surj(\<alpha>, f``\<alpha>)"
     unfolding mono_map_def using surj_image by auto
   ultimately
-  show "f \<in> bij(\<alpha>,f``\<alpha>)"
-    unfolding bij_def using inj_is_fun inj_to_codomain by simp
+  show "f \<in> bij(\<alpha>, f``\<alpha>)"
+    unfolding bij_def using inj_is_fun inj_to_Image by simp
   from \<open>f\<in>mono_map(_,_,_,_)\<close>
   show "x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>r \<Longrightarrow> \<langle>f`x,f`y\<rangle>\<in>s" for x y
     unfolding mono_map_def by blast
@@ -904,7 +913,7 @@ proof -
   show ?thesis .
 qed
 
-(* Ord(A) \<Longrightarrow> f \<in> mono_map(A, Memrel(A), B, Memrel(Aa)) \<Longrightarrow> f \<in> inj(A, B) *)
+\<comment> \<open>\<^term>\<open>Ord(A) \<Longrightarrow> f \<in> mono_map(A, Memrel(A), B, Memrel(Aa)) \<Longrightarrow> f \<in> inj(A, B)\<close>\<close> 
 lemmas Memrel_mono_map_is_inj = mono_map_is_inj
   [OF well_ord_is_linear[OF well_ord_Memrel]
     wf_imp_wf_on[OF wf_Memrel]]

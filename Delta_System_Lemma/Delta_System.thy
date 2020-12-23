@@ -72,7 +72,7 @@ proof -
   note \<open>F \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
   moreover from calculation
   obtain n where "n\<in>\<omega>" "|?cards -`` {n}| = \<aleph>\<^bsub>1\<^esub>"
-    using eqpoll_aleph1_cardinal_vimage[of F ?cards] by auto
+    using eqpoll_Aleph1_cardinal_vimage[of F ?cards] by auto
   moreover
   define G where "G \<equiv> ?cards -`` {n}"
   moreover from calculation
@@ -95,7 +95,7 @@ proof -
     case (succ n)
     then
     have "\<forall>a\<in>G. Finite(a)"
-      using Finite_cardinal_iff nat_into_Finite[of "succ(n)"]
+      using Finite_cardinal_iff' nat_into_Finite[of "succ(n)"]
       by fastforce
     show "\<exists>D. D \<subseteq> G \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>"
     proof (cases "\<exists>p. {A\<in>G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>")
@@ -113,7 +113,7 @@ proof -
         using Finite_imp_succ_cardinal_Diff[of _ p] by force
       moreover from this and \<open>n\<in>\<omega>\<close>
       have "\<forall>a\<in>?F. Finite(a)"
-          using Finite_cardinal_iff nat_into_Finite by auto
+          using Finite_cardinal_iff' nat_into_Finite by auto
       moreover \<comment> \<open>the inductive hypothesis\<close>
       note \<open>(\<And>A. A \<in> ?F \<Longrightarrow> |A| = n) \<Longrightarrow> ?F \<approx> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<exists>D. D \<subseteq> ?F \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
       ultimately
@@ -131,7 +131,7 @@ proof -
       moreover from \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
       have "|D| = \<aleph>\<^bsub>1\<^esub>" "Infinite(D)"
         using cardinal_eqpoll_iff
-        by (auto intro!: uncountable_iff_subset_eqpoll_aleph1[THEN iffD2]
+        by (auto intro!: uncountable_iff_subset_eqpoll_Aleph1[THEN iffD2]
             uncountable_imp_Infinite) force
       moreover from this
       have "?D \<approx> \<aleph>\<^bsub>1\<^esub>"
@@ -208,7 +208,7 @@ proof -
       qed
       moreover from \<open>G \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
       obtain b where "b\<in>G"
-        using uncountable_iff_subset_eqpoll_aleph1
+        using uncountable_iff_subset_eqpoll_Aleph1
           uncountable_not_empty by blast
       ultimately
       obtain S where "S : \<aleph>\<^bsub>1\<^esub> \<rightarrow> G" "\<alpha> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<beta> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0" for \<alpha> \<beta>
@@ -246,7 +246,7 @@ lemma delta_system_uncountable:
 proof -
   from assms
   obtain S where "S \<subseteq> F" "S \<approx> \<aleph>\<^bsub>1\<^esub>"
-    using uncountable_iff_subset_eqpoll_aleph1[of F] by auto
+    using uncountable_iff_subset_eqpoll_Aleph1[of F] by auto
   moreover from \<open>\<forall>A\<in>F. Finite(A)\<close> and this
   have "\<forall>A\<in>S. Finite(A)" by auto
   ultimately

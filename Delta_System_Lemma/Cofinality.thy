@@ -17,7 +17,7 @@ definition
 
 definition
   f_cofinal :: "[i\<Rightarrow>i,i,i,i] \<Rightarrow> o" where
-  "f_cofinal(f,C,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>C. <a,f(x)>\<in>r \<or> a = f(x)" (* "predic" version ? *)
+  "f_cofinal(f,C,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>C. <a,f(x)>\<in>r \<or> a = f(x)"
 
 definition
   cofinal_fun :: "[i,i,i] \<Rightarrow> o" where
@@ -172,11 +172,9 @@ lemma cf_fun_comp:
   shows "cf_fun(f O h,\<alpha>)"
   using assms cofinal_comp[OF _ _ _ _ trans_Memrel] by auto
 
-(* lemma "Limit(A) \<Longrightarrow> cf_fun(f,A) \<longleftrightarrow> cofinal_fun'(f,A,Memrel(A))" *)
-
 definition
   cf :: "i\<Rightarrow>i" where
-  "cf(\<gamma>) == \<mu> \<beta>.  \<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> \<beta> = ordertype(A,Memrel(\<gamma>))"
+  "cf(\<gamma>) \<equiv> \<mu> \<beta>.  \<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> \<beta> = ordertype(A,Memrel(\<gamma>))"
 
 lemma Ord_cf [TC]: "Ord(cf(\<beta>))"
   unfolding cf_def using Ord_Least by simp
