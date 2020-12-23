@@ -9,6 +9,7 @@ begin
 
 text\<open>This theory includes results on cardinalities that depend on $\AC$\<close>
 
+
 subsection\<open>Results on cardinal exponentiation\<close>
 
 text\<open>Non trivial instances of cardinal exponentiation require that
@@ -98,6 +99,7 @@ lemma InfCard_cexp:
 
 lemmas InfCard_cexp' = InfCard_cexp[OF nats_le_InfCard, simplified]
   \<comment> \<open>\<^term>\<open>InfCard(\<kappa>) \<Longrightarrow> InfCard(\<nu>) \<Longrightarrow> InfCard(\<kappa>\<^bsup>\<up>\<nu>\<^esup>)\<close>\<close>
+
 
 subsection\<open>Miscellaneous\<close>
 
@@ -246,6 +248,7 @@ lemma cardinal_cases:
   shows "Card(\<gamma>) \<Longrightarrow> |X| < \<gamma> \<longleftrightarrow> \<not> |X| \<ge> \<gamma>"
   using not_le_iff_lt
   by auto
+
 
 subsection\<open>Countable and uncountable sets\<close>
 
@@ -479,6 +482,7 @@ proof -
   show ?thesis using \<open>n\<in>\<omega>\<close> by auto
 qed
 
+
 subsection\<open>Applications of transfinite recursive constructions\<close>
 
 definition
@@ -487,7 +491,7 @@ definition
 
 text\<open>The function \<^term>\<open>rec_constr\<close> allows to perform \<^emph>\<open>recursive
      constructions\<close>: given a choice function on the powerset of some
-     set, a transfinite sequences is created by successively choosing
+     set, a transfinite sequence is created by successively choosing
      some new element.
 
      The next result explains its use.\<close>
@@ -512,7 +516,7 @@ lemma bounded_cardinal_selection:
   shows
     "\<exists>S. S : \<gamma> \<rightarrow> G \<and> (\<forall>\<alpha> \<in> \<gamma>. \<forall>\<beta> \<in> \<gamma>.  \<alpha><\<beta> \<longrightarrow> Q(S`\<alpha>,S`\<beta>))"
 proof -
-  let ?cdlt\<gamma>="{X\<in>Pow(G) . |X|<\<gamma>}" \<comment> \<open>"cardinal less than \<^term>\<open>\<gamma>\<close>"\<close>
+  let ?cdlt\<gamma>="{X\<in>Pow(G) . |X|<\<gamma>}" \<comment> \<open>“cardinal less than \<^term>\<open>\<gamma>\<close>”\<close>
     and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. Q(s,a)}"
   from assms
   have "\<forall>Y \<in> ?cdlt\<gamma>. \<exists>a. a \<in> ?inQ(Y)"

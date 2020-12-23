@@ -23,6 +23,7 @@ notation Aleph (\<open>\<aleph>\<^bsub>_\<^esub>\<close>)
 syntax "_ge"  :: "[i,i] \<Rightarrow> o"  (infixl \<open>\<ge>\<close> 50)
 translations "x \<ge> y" \<rightharpoonup> "y \<le> x"
 
+
 subsection\<open>Some minimal arithmetic/ordinal stuff\<close>
 
 lemma Un_leD1 : "i \<union> j \<le> k \<Longrightarrow> Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow> i \<le> k"
@@ -120,6 +121,7 @@ lemma Ord_eq_Collect_lt: "i<\<alpha> \<Longrightarrow> {j\<in>\<alpha>. j<i} = i
   apply (auto simp add: Ord_mem_iff_lt)
   apply (rule Ord_trans ltI[OF _ lt_Ord]; auto simp add:lt_def dest:ltD)+
   done
+
 
 subsection\<open>Manipulation of function spaces\<close>
 
@@ -304,6 +306,7 @@ lemma restrict_eq_imp_Un_into_Pi':
 lemma restrict_subset_Sigma: "f \<subseteq> Sigma(C,B) \<Longrightarrow> restrict(f,A) \<subseteq> Sigma(A\<inter>C, B)"
   by (auto simp add: restrict_def)
 
+
 subsection\<open>Finite sets\<close>
 
 lemma Replace_sing1:
@@ -401,6 +404,7 @@ lemma Finite_Pi: "Finite(A) \<Longrightarrow> \<forall>x. Finite(B(x)) \<Longrig
     Finite_Pow subset_Finite[of "Pi(A,B)" "Pow(Sigma(A,B))"]
   unfolding Pi_def
   by auto
+
 
 subsection\<open>Basic results on equipollence, cardinality and related concepts\<close>
 
@@ -688,6 +692,7 @@ proof -
     unfolding Card_def by auto
 qed
 
+
 subsection\<open>Morphisms of binary relations\<close>
 
 text\<open>The main case of interest is in the case of partial orders.\<close>
@@ -939,6 +944,7 @@ lemma nat_into_InfCard:
   shows "n \<in> \<kappa>"
   using assms  le_imp_subset[of \<omega> \<kappa>]
   unfolding InfCard_def by auto
+
 
 subsection\<open>Alephs are infinite cardinals\<close>
 

@@ -2,6 +2,12 @@
 \usepackage{isabelle,isabellesym}
 \usepackage[numbers]{natbib}
 
+\usepackage{relsize}
+\DeclareRobustCommand{\isactrlbsub}{\emph\bgroup\math{}\sb\bgroup\mbox\bgroup\isaspacing\itshape\smaller}
+\DeclareRobustCommand{\isactrlesub}{\egroup\egroup\endmath\egroup}
+\DeclareRobustCommand{\isactrlbsup}{\emph\bgroup\math{}\sp\bgroup\mbox\bgroup\isaspacing\itshape\smaller}
+\DeclareRobustCommand{\isactrlesup}{\egroup\egroup\endmath\egroup}
+
 % further packages required for unusual symbols (see also
 % isabellesym.sty), use only when needed
 
