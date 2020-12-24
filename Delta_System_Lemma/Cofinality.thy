@@ -1072,8 +1072,7 @@ qed
 
 lemma Limit_cofinal_fun_lt:
   notes [dest] = Limit_is_Ord
-  assumes "Limit(\<kappa>)" "f: \<nu> \<rightarrow> \<kappa>" "cf_fun(f,\<kappa>)"
-    "n\<in>\<kappa>"
+  assumes "Limit(\<kappa>)" "f: \<nu> \<rightarrow> \<kappa>" "cf_fun(f,\<kappa>)" "n\<in>\<kappa>"
   shows "\<exists>\<alpha>\<in>\<nu>. n < f`\<alpha>"
 proof -
   from \<open>Limit(\<kappa>)\<close> \<open>n\<in>\<kappa>\<close>
@@ -1123,6 +1122,17 @@ qed
 context
   includes Ord_dests Aleph_dests Aleph_intros Aleph_mem_dests mono_map_rules
 begin
+
+text\<open>We end this section by calculating the cofinality of Alephs, for
+the zero and limit case. The successor case depends on $\AC$.\<close>
+
+lemma cf_nat: "cf(\<omega>) = \<omega>"
+  using Limit_nat[THEN InfCard_cf] cf_le_cardinal[of \<omega>]
+    Card_nat[THEN Card_cardinal_eq] le_anti_sym
+  unfolding InfCard_def by auto
+
+lemma cf_Aleph_zero: "cf(\<aleph>\<^bsub>0\<^esub>) = \<aleph>\<^bsub>0\<^esub>" 
+  using cf_nat unfolding Aleph_def by simp
 
 lemma cf_Aleph_Limit:
   assumes "Limit(\<gamma>)"
