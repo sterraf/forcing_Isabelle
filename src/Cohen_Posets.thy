@@ -322,7 +322,7 @@ proof -
       using delta_system_uncountable[of "{domain(p) . p \<in> A}"] by auto
     moreover from this
     have "uncountable(D)"
-      using uncountable_iff_subset_eqpoll_aleph1 by auto
+      using uncountable_iff_subset_eqpoll_Aleph1 by auto
     ultimately
     have delta:"\<forall>d1\<in>D. \<forall>d2\<in>D. d1 \<noteq> d2 \<longrightarrow> d1 \<inter> d2 = \<Inter>D"
       using uncountable_imp_Infinite[THEN Infinite_delta_system_root_eq_Inter]

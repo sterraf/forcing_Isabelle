@@ -68,6 +68,21 @@ locale M_master = M_cardinal_AC +
   and
   lam_apply_replacement: "M(A) \<Longrightarrow> M(f) \<Longrightarrow>
       strong_replacement(M, \<lambda>x y. y = \<langle>x, \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>\<rangle>)"
+  and
+  ccc_replacement:
+  "M(F) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> F ` x \<and> z = {\<langle>x, y\<rangle>})"
+  "M(F) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, (`)(F)))"
+  "M(F) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = F ` x)"
+  "M(F) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(F ` x,\<alpha>))"
+  "M(F) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(F ` i,\<alpha>)))"
+  "M(F) \<Longrightarrow> M(f) \<Longrightarrow>
+   strong_replacement(M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> F ` i, f ` (\<mu> i. x \<in> F ` i) ` x\<rangle>)"
+  "M(F) \<Longrightarrow> M(r) \<Longrightarrow>
+   strong_replacement(M, \<lambda>x y. y = \<langle>x, Cardinal_AC_Relative.minimum(r, F ` x)\<rangle>)"
+  "M(F) \<Longrightarrow> M(x) \<Longrightarrow> M(\<alpha>) \<Longrightarrow>
+   strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(F ` x, \<alpha>) \<and> z = {\<langle>x, y\<rangle>})"
+  "M(F) \<Longrightarrow> M(r) \<Longrightarrow> M(\<alpha>) \<Longrightarrow>
+  strong_replacement(M, \<lambda>x y. y = \<langle>x, Cardinal_AC_Relative.minimum(r, inj\<^bsup>M\<^esup>(F ` x,\<alpha>))\<rangle>)"
 begin
 
 lemma FiniteFun_closed[intro,simp]:
@@ -224,7 +239,7 @@ proof (rule ccontr)
     using Aleph_rel_zero_eq_nat by simp
   from \<open>\<alpha> \<in> M\<close> \<open>F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close> \<open>F\<in>M\<close>
   interpret M_cardinal_UN_lepoll "##M" "\<lambda>\<beta>. F`\<beta>" \<alpha>
-    using Aleph_rel_closed[of 0]
+    using Aleph_rel_closed[of 0] ccc_replacement
   proof (unfold_locales, auto dest:transM)
     show "w \<in> F ` x \<Longrightarrow> x \<in> M" for w x
     proof -
@@ -239,16 +254,6 @@ proof (rule ccontr)
       with \<open>\<alpha> \<in> M\<close>
       show "x \<in> M" by (auto dest:transM)
     qed
-    show "strong_replacement(##M, \<lambda>y z. y \<in> F ` x \<and> z = {\<langle>x, y\<rangle>})"
-      "strong_replacement(##M, \<lambda>x z. z = Sigfun(x, (`)(F)))"
-      "strong_replacement(##M, \<lambda>x y. y = F ` x)"
-      "strong_replacement(##M, \<lambda>x y. y = \<langle>x, Cardinal_AC_Relative.minimum(r, F ` x)\<rangle>)"
-      "strong_replacement(##M, \<lambda>y z. y \<in> inj(F ` x, \<alpha>) \<and> z = {\<langle>x, y\<rangle>})"
-      "strong_replacement(##M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(F ` x,\<alpha>))"
-      "strong_replacement(##M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(F ` i,\<alpha>)))"
-      "strong_replacement(##M, \<lambda>x y. y = \<langle>x, Cardinal_AC_Relative.minimum(r, inj\<^bsup>M\<^esup>(F ` x,\<alpha>))\<rangle>)"
-      "strong_replacement(##M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> F ` i, f ` (\<mu> i. x \<in> F ` i) ` x\<rangle>)" for x r f
-      sorry
   qed
   from \<open>\<alpha> < \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>\<close> \<open>\<alpha> \<in> M\<close> assms
   have "\<alpha> \<lesssim>\<^bsup>M\<^esup> \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"
@@ -319,18 +324,18 @@ notation Leq (infixl "\<preceq>" 50)
 notation Incompatible (infixl "\<bottom>" 50)
 notation GenExt_at_P ("_[_]" [71,1])
 
-lemma Add_subs_preserves_Aleph_succ: "Ord(z) \<Longrightarrow> z\<in>M \<Longrightarrow> Card\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
+lemma Add_subs_preserves_Aleph_succ: "Ord(z) \<Longrightarrow> z\<in>M \<Longrightarrow> Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
   using ccc_preserves_Aleph_succ ccc_Add_subs_Aleph_2
   by auto
 
 lemma Aleph_rel_nats_MG_eq_Aleph_rel_nats_M:
   includes G_generic_lemmas
   assumes "z \<in> \<omega>"
-  shows "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"
+  shows "\<aleph>\<^bsub>z\<^esub>\<^bsup>M[G]\<^esup> = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"
   using assms
 proof (induct)
   case 0
-  have "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> = \<omega>"
+  have "\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup> = \<omega>"
     using ext.Aleph_rel_zero_eq_nat .
   also
   have "\<omega> = \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>"
@@ -340,13 +345,13 @@ proof (induct)
 next
   case (succ z)
   then
-  have "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
+  have "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M[G]\<^esup>"
     using Aleph_rel_le_Aleph_rel nat_into_M by simp
   moreover from \<open>z \<in> \<omega>\<close>
   have "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup> \<in> M[G]" "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup> \<in> M[G]"
     using Aleph_rel_closed nat_into_M by simp_all
   moreover from this and \<open>\<aleph>\<^bsub>z\<^esub>\<^bsup>M[G]\<^esup> = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>\<close> \<open>z \<in> \<omega>\<close>
-  have "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<le> \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"
+  have "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M[G]\<^esup> \<le> \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"
     using ext.Aleph_rel_succ nat_into_M
       Add_subs_preserves_Aleph_succ[THEN ext.csucc_rel_le, of z]
       Aleph_rel_increasing[of z "succ(z)"]
@@ -512,7 +517,7 @@ definition
 
 lemma h_G_in_MG[simp]:
   includes G_generic_lemmas
-  shows "h\<^bsub>G\<^esub> \<in> M\<^bsup>Add\<^esup>[G]"
+  shows "h\<^bsub>G\<^esub> \<in> M[G]"
   using Aleph_rel2_closed
     ext.lam_apply_replacement ext.apply_replacement1
     ext.Union_closed[simplified, OF G_in_MG]
@@ -522,7 +527,7 @@ lemma h_G_in_MG[simp]:
   unfolding h_G_def
   by (rule_tac ext.lam_closed[simplified] | auto dest:transM)+
 
-lemma h_G_inj_Aleph_rel2_reals: "h\<^bsub>G\<^esub> \<in> inj\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2)"
+lemma h_G_inj_Aleph_rel2_reals: "h\<^bsub>G\<^esub> \<in> inj\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2)"
   using Aleph_rel_sub_closed
 proof (intro ext.mem_inj_abs[THEN iffD2])
   show "h\<^bsub>G\<^esub> \<in> inj(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2)"
@@ -543,42 +548,42 @@ proof (intro ext.mem_inj_abs[THEN iffD2])
   qed
 qed simp_all
 
-lemma Aleph2_submodel_le_continuum_rel:
+lemma Aleph2_extension_le_continuum_rel:
   includes G_generic_lemmas
-  shows "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>\<^esup>)\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
+  shows "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>\<^esup>)\<^bsup>M[G]\<^esup>"
 proof -
-  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<in> M\<^bsup>Add\<^esup>[G]" "Ord(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
+  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<in> M[G]" "Ord(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
     using Card_rel_Aleph_rel[THEN Card_rel_is_Ord, of 2]
       Aleph_rel2_closed
     by auto
   moreover from this
-  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<lesssim>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2"
-    using ext.def_lepoll_rel[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2",
+  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<lesssim>\<^bsup>M[G]\<^esup> \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
+    using ext.def_lepoll_rel[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2",
         OF _ ext.function_space_rel_closed]
       h_G_inj_Aleph_rel2_reals h_G_in_MG ext.nat_into_M ext.M_nat
     by auto
   moreover from calculation
-  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<lesssim>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> |\<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2|\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
+  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<lesssim>\<^bsup>M[G]\<^esup> |\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2|\<^bsup>M[G]\<^esup>"
     using ext.lepoll_rel_imp_lepoll_rel_cardinal_rel by simp
   ultimately
-  have "|\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>|\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>\<^esup>)\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
-    using ext.lepoll_rel_imp_cardinal_rel_le[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> 2",
+  have "|\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>|\<^bsup>M[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>\<^esup>)\<^bsup>M[G]\<^esup>"
+    using ext.lepoll_rel_imp_cardinal_rel_le[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2",
         OF _ _ ext.function_space_rel_closed] ext.nat_into_M ext.M_nat
       ext.Aleph_rel_zero_eq_nat Aleph_rel_nats_MG_eq_Aleph_rel_nats_M
     unfolding def_cexp_rel by simp
   then
-  show "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>\<^esup>)\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
+  show "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>\<^esup>)\<^bsup>M[G]\<^esup>"
     using Aleph_rel_nats_MG_eq_Aleph_rel_nats_M
       ext.Card_rel_Aleph_rel[of 2, THEN ext.Card_rel_cardinal_rel_eq]
       ext.Aleph_rel2_closed
     by simp
 qed
 
-lemma Aleph_rel_lt_continuum_rel: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> < (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>\<^esup>)\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
-  using Aleph2_submodel_le_continuum_rel
+lemma Aleph_rel_lt_continuum_rel: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> < (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>\<^esup>)\<^bsup>M[G]\<^esup>"
+  using Aleph2_extension_le_continuum_rel
     ext.Aleph_rel_increasing[of 1 2] le_trans by auto
 
-corollary not_CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<noteq> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>\<^esup>)\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
+corollary not_CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> \<noteq> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>\<^esup>)\<^bsup>M[G]\<^esup>"
   using Aleph_rel_lt_continuum_rel by auto
 
 end (* add_generic *)
@@ -615,7 +620,7 @@ begin
     by auto
   then
   interpret add_generic M enum G by unfold_locales
-  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup> \<noteq> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>\<^esup>)\<^bsup>M\<^bsup>Add\<^esup>[G]\<^esup>"
+  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> \<noteq> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>\<^esup>)\<^bsup>M[G]\<^esup>"
     using not_CH .
 
 end (* notepad *)
