@@ -67,6 +67,13 @@ lemma cf_Aleph_succ: "Ord(z) \<Longrightarrow> cf(\<aleph>\<^bsub>succ(z)\<^esub
 
 subsection\<open>König's Theorem\<close>
 
+text\<open>We end this session by proving König's Theorem on the cofinality
+of cardinal exponentiation. This is a strengthening of Cantor's theorem
+and it is essentially the only basic way to prove strict cardinal
+inequalities.
+
+It is proved rather straightforwardly with the tools already developed.\<close>
+
 lemma konigs_theorem:
   notes [dest] = InfCard_is_Card Card_is_Ord
     and [trans] = lt_trans1 lt_trans2
@@ -165,7 +172,16 @@ proof (rule ccontr)
   show "False" using cexp_cexp_cmult InfCard_csquare_eq by auto
 qed
 
+text\<open>Finally, the next two corollaries illustrate the only possible
+exceptions to the value of the cardinality of the continuum: The limit
+cardinals of countable cofinality. That these are the only exceptions
+is a consequence of Easton's Theorem~\cite[Thm 15.18]{Jech_Millennium}.\<close>
+
 corollary cf_continuum: "\<aleph>\<^bsub>0\<^esub> < cf(2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^esup>)"
   using cf_cexp InfCard_Aleph nat_into_Card by simp
+
+corollary continuum_not_eq_Aleph_nat: "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^esup> \<noteq> \<aleph>\<^bsub>\<omega>\<^esub>"
+  using cf_continuum cf_Aleph_Limit[OF Limit_nat] cf_nat
+    Aleph_zero_eq_nat by auto
 
 end

@@ -18,3 +18,5 @@ session Delta_System_Lemma in "." =  "ZF-Constructible" +
     "root.tex"
     "header-delta-system.tex"
     "multidef.sty"
+    "root.bib"
+    "root.bst"
