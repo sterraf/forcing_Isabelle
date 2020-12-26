@@ -35,7 +35,7 @@
 \usepackage{pdfsetup}
 
 % urls in roman style, theory text in math-similar italics
-\urlstyle{rm}
+\urlstyle{tt}
 \isabellestyle{it}
 
 % for uniform font size
@@ -72,6 +72,36 @@
 
 % sane default for proof documents
 \parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+
+The session we present gathers very basic results built on the set
+theory formalization of Isabelle/ZF
+\cite{DBLP:journals/jar/PaulsonG96}. In a sense, some of the material
+formalized here corresponds to a natural continuation of that
+work. This is even clearer after perusing Section~\ref{sec:zf-lib},
+where notions like cardinal exponentiation are first defined, together
+with various lemmas that do not depend on the Axiom of Choice ($\AC$);
+the same holds for the basic theory of cofinality of ordinals, which
+is developed in Section~\ref{sec:cofinality}. In
+Section~\ref{sec:cardinal-lib}, (un)countability is defined
+and several results proved, now using $\AC$ freely; the latter is also
+needed to prove König's Theorem on cofinality of cardinal
+exponentiation. Finally, the simplest infinitary version of the Delta
+System Lemma (DSL, also known as the ``Sunflower Lemma'') due to  \v{S}anin
+is proved in Section~\ref{sec:dsl}.
+
+A greater part of this development was motivated by a joint project on
+the formalization of the ctm approach to
+forcing~\cite{2020arXiv200109715G} by Gunther, Pagano, Steinberg, and
+the author. Indeed, most of the results presented here are required
+for the development of forcing; in particular, DSL is used in the
+proof that Cohen posets satisfy \emph{countable chain condition}, which
+in turn is used to characterize cardinals in generic extensions
+\cite[Chap.~IV]{kunen2011set}. As it turns out, the material as
+formalized presently will not be part of the forcing formalization,
+since for that goal we need relativized versions of both the
+concepts and the proofs.
 
 % generated text of all theories
 \input{session}
