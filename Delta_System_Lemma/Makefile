@@ -20,7 +20,7 @@ DB           = $(HEAP_LOG_DIR)/$(SESSION).db
 .PHONY: build html tar clean afp
 
 $(DB):	thy_files $(THY_FILES) $(ML_FILES) Makefile document/root.tex \
-		document/root.bib
+		document/root.bib document/root.bst
 	isabelle build $(OPTION) -v -c -d . $(SESSION)
 
 build: 	$(DB)
