@@ -1542,6 +1542,12 @@ FUNCTION {begin.bib}
   write$ newline$
   "\providecommand{\bibinfo}[2]{#2}"
   write$ newline$
+  "\providecommand{\doi}[1]{doi:\href{https://doi.org/#1}{#1}}"
+  write$ newline$
+ "\providecommand{\eprint}[2][]{arXiv:\href{https://arxiv.org/abs/#2}{#2}}"
+  write$ newline$
+  "\providecommand{\zbl}[1]{\hfill {\small Zbl~\href{https://zbmath.org/?q=an\%3A#1}{#1}}}"
+  write$ newline$
 	"\ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi"
   write$ newline$
 }
