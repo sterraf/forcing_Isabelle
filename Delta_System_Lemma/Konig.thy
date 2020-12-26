@@ -65,7 +65,7 @@ text\<open>And this finishes the calculation of cofinality of Alephs.\<close>
 lemma cf_Aleph_succ: "Ord(z) \<Longrightarrow> cf(\<aleph>\<^bsub>succ(z)\<^esub>) = \<aleph>\<^bsub>succ(z)\<^esub>"
   using Aleph_succ cf_csucc InfCard_Aleph by simp
 
-subsection\<open>König's Theorem\<close>
+subsection\<open>König's Theorem\label{sec:konig}\<close>
 
 text\<open>We end this session by proving König's Theorem on the cofinality
 of cardinal exponentiation. This is a strengthening of Cantor's theorem

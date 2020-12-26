@@ -1,4 +1,4 @@
-section\<open>Cardinal Arithmetic under Choice\<close>
+section\<open>Cardinal Arithmetic under Choice\label{sec:cardinal-lib}\<close>
 
 theory Cardinal_Library
   imports

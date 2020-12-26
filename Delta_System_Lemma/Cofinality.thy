@@ -1,4 +1,4 @@
-section\<open>Cofinality\<close>
+section\<open>Cofinality\label{sec:cofinality}\<close>
 
 theory Cofinality
   imports

@@ -1,4 +1,4 @@
-section\<open>The Delta System Lemma\<close>
+section\<open>The Delta System Lemma\label{sec:dsl}\<close>
 
 theory Delta_System
   imports 

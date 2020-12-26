@@ -12,8 +12,8 @@ session Delta_System_Lemma in "." =  "ZF-Constructible" +
   options [document = pdf, document_output = "output", 
   	   document_variants = "document:outline=/proof,/ML"]
   theories
-    "Delta_System"
     "Konig"
+    "Delta_System"
   document_files
     "root.tex"
     "header-delta-system.tex"
