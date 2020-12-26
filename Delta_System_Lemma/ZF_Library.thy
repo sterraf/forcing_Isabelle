@@ -804,9 +804,16 @@ proof (intro CollectI ballI iffI)
     by blast
 qed
 
+text\<open>We introduce the following notation for strictly increasing maps
+between ordinals.\<close>
+
+abbreviation
+  mono_map_Memrel :: "[i,i] \<Rightarrow> i" (infixr \<open>\<rightarrow>\<^sub><\<close> 60) where
+  "\<alpha> \<rightarrow>\<^sub>< \<beta> \<equiv> mono_map(\<alpha>,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
+
 lemma mono_map_imp_ord_iso_Memrel:
   assumes
-    "Ord(\<alpha>)" "Ord(\<beta>)" "f\<in>mono_map(\<alpha>,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
+    "Ord(\<alpha>)" "Ord(\<beta>)" "f:\<alpha> \<rightarrow>\<^sub>< \<beta>"
   shows
     "f \<in> ord_iso(\<alpha>,Memrel(\<alpha>),f``\<alpha>,Memrel(\<beta>))"
   using assms mono_map_imp_ord_iso_image[OF well_ord_is_linear[OF well_ord_Memrel]
@@ -814,7 +821,7 @@ lemma mono_map_imp_ord_iso_Memrel:
 
 lemma mono_map_ordertype_image':
   assumes
-    "X\<subseteq>\<alpha>" "Ord(\<alpha>)" "Ord(\<beta>)" "f\<in>mono_map(X,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
+    "X\<subseteq>\<alpha>" "Ord(\<alpha>)" "Ord(\<beta>)" "f \<in> mono_map(X,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
   shows
     "ordertype(f``X,Memrel(\<beta>)) = ordertype(X,Memrel(\<alpha>))"
   using assms mono_map_is_fun[of f X _ \<beta>]  ordertype_eq
@@ -824,7 +831,7 @@ lemma mono_map_ordertype_image':
 
 lemma mono_map_ordertype_image:
   assumes
-    "Ord(\<alpha>)" "Ord(\<beta>)" "f\<in>mono_map(\<alpha>,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
+    "Ord(\<alpha>)" "Ord(\<beta>)" "f:\<alpha> \<rightarrow>\<^sub>< \<beta>"
   shows
     "ordertype(f``\<alpha>,Memrel(\<beta>)) = \<alpha>"
   using assms mono_map_is_fun ordertype_Memrel ordertype_eq[of f \<alpha> "Memrel(\<alpha>)"]

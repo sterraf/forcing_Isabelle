@@ -383,7 +383,7 @@ proof -
   moreover
   define j where "j \<equiv> converse(ordermap(A,Memrel(\<gamma>)))"
   moreover from calculation
-  have "j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))"
+  have "j :cf(\<gamma>) \<rightarrow>\<^sub>< \<gamma>"
     using ordertype_ord_iso[THEN ord_iso_sym,
         THEN ord_iso_is_mono_map, THEN mono_map_mono,
         of A "Memrel(\<gamma>)" \<gamma>] well_ord_Memrel[THEN well_ord_subset]
@@ -419,14 +419,16 @@ This is a consequence that the proof encapsulates uses of transfinite
 recursion in the basic theory of cofinality; indeed, only one use is needed.
 In the setting of Isabelle/ZF, this is convenient since the machinery of
 recursion is pretty clumsy. On the downside, this way of presenting things 
-results in a longer proof of the factorization lemma. 
+results in a longer proof of the factorization lemma. This approach was
+taken by the author in the notes \cite{apunte_st} for an introductory course
+in Set Theory.
 
-To organize the use of its hypotheses,
+To organize the use of the hypotheses of the factorization lemma,
 we set up a locale containing all the relevant ingredients.
 \<close>
 locale cofinal_factor =
   fixes j \<delta> \<xi> \<gamma> f
-  assumes j_mono: "j \<in> mono_map(\<xi>,Memrel(\<xi>),\<gamma>,Memrel(\<gamma>))"
+  assumes j_mono: "j :\<xi> \<rightarrow>\<^sub>< \<gamma>"
     and     ords: "Ord(\<delta>)" "Ord(\<xi>)" "Limit(\<gamma>)"
     and   f_type: "f: \<delta> \<rightarrow> \<gamma>"
 begin
@@ -509,7 +511,7 @@ lemma factor_rec_mono:
   unfolding factor_rec_def
   using assms ords factor_body_mono Least_antitone by simp
 
-text\<open>Finally, we define the factor as higher-order function.
+text\<open>We now define the factor as higher-order function.
 Later it will be restricted to a set to obtain a bona fide function of
 type @{typ i}.\<close>
 definition
@@ -642,19 +644,20 @@ qed
 
 end (* cofinal_factor *)
 
+text\<open>We state next the factorization lemma.\<close>
+
 lemma cofinal_fun_factorization:
   notes le_imp_subset [dest] lt_trans2 [trans]
   assumes
     "Ord(\<delta>)" "Limit(\<gamma>)" "f: \<delta> \<rightarrow> \<gamma>" "cf_fun(f,\<gamma>)"
   shows
-    "\<exists>g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<delta>,Memrel(\<delta>)).
-     f O g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>)) \<and>
-     cofinal_fun(f O g,\<gamma>,Memrel(\<gamma>))"
+    "\<exists>g \<in> cf(\<gamma>) \<rightarrow>\<^sub>< \<delta>.  f O g : cf(\<gamma>) \<rightarrow>\<^sub>< \<gamma> \<and>
+           cofinal_fun(f O g,\<gamma>,Memrel(\<gamma>))"
 proof -
   from \<open>Limit(\<gamma>)\<close>
   have "Ord(\<gamma>)" using Limit_is_Ord by simp
   then
-  obtain j where "j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))" "cf_fun(j,\<gamma>)"
+  obtain j where "j :cf(\<gamma>) \<rightarrow>\<^sub>< \<gamma>" "cf_fun(j,\<gamma>)"
     using cofinal_mono_map_cf by blast
   then
   have "domain(j) = cf(\<gamma>)"
@@ -664,10 +667,14 @@ proof -
     by (unfold_locales) (simp_all)
   text\<open>The core of the argument is to show that the factor function
   indeed maps into \<^term>\<open>\<delta>\<close>, therefore its values satisfy the first
-  disjunct of \<^term>\<open>factor_body\<close>\<close>
+  disjunct of \<^term>\<open>factor_body\<close>. This holds in turn because no
+  restriction of the factor composed with \<^term>\<open>f\<close> to a proper initial
+  segment of \<^term>\<open>cf(\<gamma>)\<close> can be cofinal in \<^term>\<open>\<gamma>\<close> by definition of
+  cofinality. Hence there must be a witness that satisfies the first
+  disjunct.\<close>
   have factor_not_delta: "factor(\<beta>)\<noteq>\<delta>" if "\<beta> \<in> cf(\<gamma>)" for \<beta>
+    text\<open>For this, we induct on \<^term>\<open>\<beta>\<close> ranging over \<^term>\<open>cf(\<gamma>)\<close>.\<close>
   proof (induct \<beta> rule:Ord_induct[OF _ Ord_cf[of \<gamma>]])
-    (* Induction on cf(\<gamma>) *)
     case 1 with that show ?case .
   next
     case (2 \<beta>)
@@ -678,9 +685,9 @@ proof -
     have "z\<in>\<beta> \<Longrightarrow> factor(z) \<in> \<delta>" for z
       using factor_in_delta by blast
     with \<open>f:\<delta>\<rightarrow>\<gamma>\<close>
-    have "h \<in> \<beta> \<rightarrow> \<gamma>" unfolding h_def using apply_funtype lam_type by auto
+    have "h : \<beta> \<rightarrow> \<gamma>" unfolding h_def using apply_funtype lam_type by auto
     then
-    have "h \<in> mono_map(\<beta>,Memrel(\<beta>),\<gamma>,Memrel(\<gamma>))"
+    have "h : \<beta> \<rightarrow>\<^sub>< \<gamma>"
       unfolding mono_map_def
     proof (intro CollectI ballI impI)
       fix x y
@@ -823,7 +830,7 @@ cofinal map was increasing, then the factor function is also cofinal.\<close>
 lemma factor_is_cofinal:
   assumes
     "Ord(\<delta>)" "Ord(\<gamma>)"
-    "f \<in> mono_map(\<delta>,Memrel(\<delta>),\<gamma>,Memrel(\<gamma>))"  "f O g \<in> mono_map(\<alpha>,r,\<gamma>,Memrel(\<gamma>))"
+    "f :\<delta> \<rightarrow>\<^sub>< \<gamma>"  "f O g \<in> mono_map(\<alpha>,r,\<gamma>,Memrel(\<gamma>))"
     "cofinal_fun(f O g,\<gamma>,Memrel(\<gamma>))" "g: \<alpha> \<rightarrow> \<delta>"
   shows
     "cf_fun(g,\<delta>)"
@@ -884,7 +891,7 @@ next
 next
   case (limit)
   with assms
-  obtain g where "g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<delta>,Memrel(\<delta>))"
+  obtain g where "g :cf(\<gamma>) \<rightarrow>\<^sub>< \<delta>"
     using cofinal_fun_factorization by blast
   with assms
   show ?thesis using mono_map_imp_le by simp
@@ -919,7 +926,7 @@ proof (intro le_anti_sym)
   have "cf_fun(f,\<gamma>)"
     using cofinal_range_iff_cofinal_fun by blast
   moreover from \<open>Ord(\<alpha>)\<close>
-  obtain h where "h \<in> mono_map(cf(\<alpha>),Memrel(cf(\<alpha>)),\<alpha>,Memrel(\<alpha>))" "cf_fun(h,\<alpha>)"
+  obtain h where "h :cf(\<alpha>) \<rightarrow>\<^sub>< \<alpha>" "cf_fun(h,\<alpha>)"
     using cofinal_mono_map_cf by blast
   moreover from \<open>Ord(\<gamma>)\<close>
   have "trans(Memrel(\<gamma>))"
@@ -941,14 +948,14 @@ proof (intro le_anti_sym)
     by (auto simp add:cf_fun_def)
       (********************************************************)
   from \<open>f:\<langle>\<alpha>, _\<rangle> \<cong> \<langle>A,_\<rangle>\<close> \<open>A\<subseteq>\<gamma>\<close>
-  have "f \<in> mono_map(\<alpha>,Memrel(\<alpha>),\<gamma>,Memrel(\<gamma>))"
+  have "f :\<alpha> \<rightarrow>\<^sub>< \<gamma>"
     using mono_map_mono[OF ord_iso_is_mono_map] by simp
   then
   have "f: \<alpha> \<rightarrow> \<gamma>"
     using mono_map_is_fun by simp
   with \<open>cf_fun(f,\<gamma>)\<close> \<open>Limit(\<gamma>)\<close> \<open>Ord(\<alpha>)\<close>
-  obtain g where "g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<alpha>,Memrel(\<alpha>))"
-    "f O g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))"
+  obtain g where "g :cf(\<gamma>) \<rightarrow>\<^sub>< \<alpha>"
+    "f O g :cf(\<gamma>) \<rightarrow>\<^sub>< \<gamma>"
     "cofinal_fun(f O g,\<gamma>,Memrel(\<gamma>))"
     using cofinal_fun_factorization by blast
   moreover from this
@@ -956,7 +963,7 @@ proof (intro le_anti_sym)
     using mono_map_is_fun by simp
   moreover
   note \<open>Ord(\<alpha>)\<close>
-  moreover from calculation and \<open>f \<in> mono_map(\<alpha>,Memrel(\<alpha>),\<gamma>,Memrel(\<gamma>))\<close> \<open>Ord(\<gamma>)\<close>
+  moreover from calculation and \<open>f :\<alpha> \<rightarrow>\<^sub>< \<gamma>\<close> \<open>Ord(\<gamma>)\<close>
   have "cf_fun(g,\<alpha>)"
     using factor_is_cofinal by blast
   moreover
@@ -1045,7 +1052,7 @@ proof -
   note assms
   moreover from this
   obtain h where h_cofinal_mono: "cf_fun(h,\<kappa>)"
-    "h \<in> mono_map(cf(\<kappa>),Memrel(cf(\<kappa>)),\<kappa>,Memrel(\<kappa>))"
+    "h :cf(\<kappa>) \<rightarrow>\<^sub>< \<kappa>"
     "h : cf(\<kappa>) \<rightarrow> \<kappa>"
     using cofinal_mono_map_cf mono_map_is_fun by force
   moreover from calculation
