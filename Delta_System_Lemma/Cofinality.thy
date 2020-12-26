@@ -14,7 +14,7 @@ text\<open>A set \<^term>\<open>X\<close> is \<^emph>\<open>cofinal\<close> in \
     to be a subset of \<^term>\<open>A\<close>.\<close>
 definition
   cofinal :: "[i,i,i] \<Rightarrow> o" where
-  "cofinal(X,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>X. <a,x>\<in>r \<or> a = x"
+  "cofinal(X,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>X. \<langle>a,x\<rangle>\<in>r \<or> a = x"
 
 (*
 (* Alternative definitions *)
@@ -24,7 +24,7 @@ definition
 
 definition
   f_cofinal :: "[i\<Rightarrow>i,i,i,i] \<Rightarrow> o" where
-  "f_cofinal(f,C,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>C. <a,f(x)>\<in>r \<or> a = f(x)"
+  "f_cofinal(f,C,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>C. \<langle>a,f(x)\<rangle>\<in>r \<or> a = f(x)"
 
 (* The next definition doesn't work if 0 is the top element of A.
    But it works for limit ordinals. *)
@@ -36,16 +36,16 @@ definition
 text\<open>A function is cofinal if it range is.\<close>
 definition
   cofinal_fun :: "[i,i,i] \<Rightarrow> o" where
-  "cofinal_fun(f,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>domain(f). <a,f`x>\<in>r \<or> a = f`x"
+  "cofinal_fun(f,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>domain(f). \<langle>a,f`x\<rangle>\<in>r \<or> a = f`x"
 
 lemma cofinal_funI:
-  assumes "\<And>a. a\<in>A \<Longrightarrow> \<exists>x\<in>domain(f). <a,f`x>\<in>r \<or> a = f`x"
+  assumes "\<And>a. a\<in>A \<Longrightarrow> \<exists>x\<in>domain(f). \<langle>a,f`x\<rangle>\<in>r \<or> a = f`x"
   shows "cofinal_fun(f,A,r)"
   using assms unfolding cofinal_fun_def by simp
 
 lemma cofinal_funD:
   assumes "cofinal_fun(f,A,r)" "a\<in>A"
-  shows "\<exists>x\<in>domain(f). <a,f`x>\<in>r \<or> a = f`x"
+  shows "\<exists>x\<in>domain(f). \<langle>a,f`x\<rangle>\<in>r \<or> a = f`x"
   using assms unfolding cofinal_fun_def by simp
 
 lemma cofinal_in_cofinal:
@@ -58,17 +58,17 @@ proof
   fix a
   assume "a\<in>A"
   moreover from \<open>cofinal(X,A,r)\<close>
-  have "b\<in>A\<Longrightarrow>\<exists>x\<in>X. <b,x>\<in>r \<or> b=x" for b
+  have "b\<in>A\<Longrightarrow>\<exists>x\<in>X. \<langle>b,x\<rangle>\<in>r \<or> b=x" for b
     unfolding cofinal_def by simp
   ultimately
-  obtain y where "y\<in>X" "<a,y>\<in>r \<or> a=y" by auto
+  obtain y where "y\<in>X" "\<langle>a,y\<rangle>\<in>r \<or> a=y" by auto
   moreover from \<open>cofinal(Y,X,r)\<close>
-  have "c\<in>X\<Longrightarrow>\<exists>y\<in>Y. <c,y>\<in>r \<or> c=y" for c
+  have "c\<in>X\<Longrightarrow>\<exists>y\<in>Y. \<langle>c,y\<rangle>\<in>r \<or> c=y" for c
     unfolding cofinal_def by simp
   ultimately
-  obtain x where "x\<in>Y" "<y,x>\<in>r \<or> y=x" by auto
-  with \<open>a\<in>A\<close> \<open>y\<in>X\<close> \<open><a,y>\<in>r \<or> a=y\<close> \<open>trans(r)\<close>
-  show "\<exists>x\<in>Y. <a,x>\<in>r \<or> a=x" unfolding trans_def by auto
+  obtain x where "x\<in>Y" "\<langle>y,x\<rangle>\<in>r \<or> y=x" by auto
+  with \<open>a\<in>A\<close> \<open>y\<in>X\<close> \<open>\<langle>a,y\<rangle>\<in>r \<or> a=y\<close> \<open>trans(r)\<close>
+  show "\<exists>x\<in>Y. \<langle>a,x\<rangle>\<in>r \<or> a=x" unfolding trans_def by auto
 qed
 
 lemma codomain_is_cofinal:
@@ -102,14 +102,14 @@ proof (intro iffI ballI)
   obtain y where "y\<in>range(f)" "\<langle>a,y\<rangle> \<in> r \<or> a = y"
     unfolding cofinal_def by blast
   moreover from this
-  obtain x where "<x,y>\<in>f"
+  obtain x where "\<langle>x,y\<rangle>\<in>f"
     unfolding range_def domain_def converse_def by blast
   moreover
   note \<open>function(f)\<close>
   ultimately
   have "\<langle>a, f ` x\<rangle> \<in> r \<or> a = f ` x"
     using function_apply_equality by blast
-  with \<open><x,y>\<in>f\<close>
+  with \<open>\<langle>x,y\<rangle>\<in>f\<close>
   show "\<exists>x\<in>domain(f). \<langle>a, f ` x\<rangle> \<in> r \<or> a = f ` x"  by blast
 next
   assume "\<forall>a\<in>A. \<exists>x\<in>domain(f). \<langle>a, f ` x\<rangle> \<in> r \<or> a = f ` x"
@@ -250,7 +250,7 @@ lemma cf_succ:
   assumes "Ord(\<alpha>)"
   shows "cf(succ(\<alpha>)) = 1"
 proof -
-  define f where "f \<equiv> {<0,\<alpha>>}"
+  define f where "f \<equiv> {\<langle>0,\<alpha>\<rangle>}"
   then
   have  "f : 1\<rightarrow>succ(\<alpha>)" "f`0 = \<alpha>"
     using fun_extend3[of 0 0 "succ(\<alpha>)" 0 \<alpha>] singleton_0 by auto
@@ -880,7 +880,7 @@ next
   obtain x where "x\<in>\<delta>" "f`x=\<gamma>" using cf_fun_succ' by blast
   then
   have "\<delta>\<noteq>0" by blast
-  let ?f="{<0,f`x>}"
+  let ?f="{\<langle>0,f`x\<rangle>}"
   from \<open>f`x=\<gamma>\<close>
   have "?f:1\<rightarrow>succ(\<gamma>)"
     using singleton_0 singleton_fun[of 0 \<gamma>] singleton_subsetI fun_weaken_type by simp
@@ -1184,7 +1184,7 @@ proof -
     have "\<aleph>\<^bsub>i\<^esub> < \<aleph>\<^bsub>succ(i)\<^esub>" 
       by (auto) 
     ultimately
-    have "<a,\<aleph>\<^bsub>i\<^esub>> \<in> Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>)"
+    have "\<langle>a,\<aleph>\<^bsub>i\<^esub>\<rangle> \<in> Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>)"
       using ltD by (auto dest:Aleph_increasing)
     moreover from \<open>i<\<gamma>\<close>
     have "\<aleph>\<^bsub>i\<^esub> \<in> ?f``\<gamma>" 

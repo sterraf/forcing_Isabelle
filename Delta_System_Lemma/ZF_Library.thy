@@ -711,7 +711,7 @@ proof (intro CollectI ballI impI)
   show "f: A \<rightarrow> C"
     using fun_weaken_type by simp
   fix x y
-  assume "x\<in>A" "y\<in>A" "<x,y> \<in> r"
+  assume "x\<in>A" "y\<in>A" "\<langle>x,y\<rangle> \<in> r"
   moreover from this and \<open>f: A \<rightarrow> B\<close>
   have "f`x \<in> B" "f`y \<in> B"
     using apply_type by simp_all
@@ -727,7 +727,7 @@ lemma ordertype_zero_imp_zero: "ordertype(A,r) = 0 \<Longrightarrow> A = 0"
   by (cases "A=0") auto
 
 lemma mono_map_increasing:
-  "j\<in>mono_map(A,r,B,s) \<Longrightarrow> a\<in>A \<Longrightarrow> c\<in>A \<Longrightarrow> <a,c>\<in>r \<Longrightarrow> <j`a,j`c>\<in>s"
+  "j\<in>mono_map(A,r,B,s) \<Longrightarrow> a\<in>A \<Longrightarrow> c\<in>A \<Longrightarrow> \<langle>a,c\<rangle>\<in>r \<Longrightarrow> \<langle>j`a,j`c\<rangle>\<in>s"
   unfolding mono_map_def by simp
 
 lemma linear_mono_map_reflects:
@@ -931,7 +931,7 @@ lemmas Memrel_mono_map_is_inj = mono_map_is_inj
     wf_imp_wf_on[OF wf_Memrel]]
 
 lemma mono_mapI:
-  assumes "f: A\<rightarrow>B" "\<And>x y. x\<in>A \<Longrightarrow> y\<in>A \<Longrightarrow> <x,y>\<in>r \<Longrightarrow> <f`x,f`y>\<in>s"
+  assumes "f: A\<rightarrow>B" "\<And>x y. x\<in>A \<Longrightarrow> y\<in>A \<Longrightarrow> \<langle>x,y\<rangle>\<in>r \<Longrightarrow> \<langle>f`x,f`y\<rangle>\<in>s"
   shows   "f \<in> mono_map(A,r,B,s)"
   unfolding mono_map_def using assms by simp
 
