@@ -67,7 +67,7 @@ lemma cf_Aleph_succ: "Ord(z) \<Longrightarrow> cf(\<aleph>\<^bsub>succ(z)\<^esub
 
 subsection\<open>König's Theorem\label{sec:konig}\<close>
 
-text\<open>We end this session by proving König's Theorem on the cofinality
+text\<open>We end this section by proving König's Theorem on the cofinality
 of cardinal exponentiation. This is a strengthening of Cantor's theorem
 and it is essentially the only basic way to prove strict cardinal
 inequalities.

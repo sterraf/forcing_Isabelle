@@ -559,7 +559,7 @@ lemma eq_csucc_ord:
   "Ord(i) \<Longrightarrow> i\<^sup>+ = |i|\<^sup>+"
   using Card_lt_iff Least_cong unfolding csucc_def by auto
 
-text\<open>I thank Miguel Pagano and Matías Steinberg for this proof.\<close>
+text\<open>I thank Miguel Pagano for this proof.\<close>
 lemma lesspoll_csucc:
   assumes "Ord(\<kappa>)"
   shows "d \<prec> \<kappa>\<^sup>+ \<longleftrightarrow> d \<lesssim> \<kappa>"
