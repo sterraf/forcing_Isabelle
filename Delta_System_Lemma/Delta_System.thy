@@ -6,6 +6,9 @@ theory Delta_System
 
 begin
 
+text\<open>A \<^emph>\<open>delta system\<close> is family of sets with a common pairwise
+intersection.\<close>
+
 definition
   delta_system :: "i \<Rightarrow> o" where
   "delta_system(D) \<equiv> \<exists>r. \<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
@@ -19,8 +22,11 @@ lemma delta_systemD[dest]:
   "delta_system(D) \<Longrightarrow> \<exists>r. \<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
   unfolding delta_system_def by simp
 
+text\<open>Hence, pairwise intersections equal the intersection of the whole
+family.\<close>
+
 lemma delta_system_root_eq_Inter:
-  assumes "A\<in>D" "B\<in>D" "A\<noteq>B" "delta_system(D)"
+  assumes "delta_system(D)"
   shows "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = \<Inter>D"
 proof (clarify, intro equalityI, auto)
   fix A' B' x C
@@ -44,24 +50,21 @@ proof (clarify, intro equalityI, auto)
   qed
 qed
 
-lemma Infinite_delta_system_root_eq_Inter:
-  assumes "Infinite(D)" "delta_system(D)"
-  shows "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = \<Inter>D"
-proof -
-  from \<open>Infinite(D)\<close>
-  obtain A B where "A\<in>D" "B\<in>D" "A\<noteq>B"
-    using Infinite_imp_nats_lepoll[of D 2]
-      apply_type[of _ 2 "\<lambda>_. D"]
-    unfolding inj_def lepoll_def
-    by auto
-  with \<open>delta_system(D)\<close>
-  show ?thesis using delta_system_root_eq_Inter by simp
-qed
+text\<open>The \<^emph>\<open>Delta System Lemma\<close> (DSL) states that any uncountable family of
+finite sets includes an uncountable delta system. This is the simplest
+non trivial version; others, for cardinals greater than \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>  assume
+some weak versions of the generalized continuum hypothesis for the
+cardinals involved.
+
+The proof is essentially the one in \cite[III.2.6]{kunen2011set} for the
+case  \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>; another similar presentation can be found in
+\cite[Chap.~16]{JW}.\<close>
 
 lemma delta_system_Aleph1:
   assumes "\<forall>A\<in>F. Finite(A)" "F \<approx> \<aleph>\<^bsub>1\<^esub>"
   shows "\<exists>D. D \<subseteq> F \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>"
 proof -
+  text\<open>Since all members are finite,\<close>
   from \<open>\<forall>A\<in>F. Finite(A)\<close>
   have "(\<lambda>A\<in>F. |A|) : F \<rightarrow> \<omega>" (is "?cards : _")
     by (rule_tac lam_type) simp
@@ -71,6 +74,7 @@ proof -
   moreover
   note \<open>F \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
   moreover from calculation
+  text\<open>there are uncountably many have the same cardinal:\<close>
   obtain n where "n\<in>\<omega>" "|?cards -`` {n}| = \<aleph>\<^bsub>1\<^esub>"
     using eqpoll_Aleph1_cardinal_vimage[of F ?cards] by auto
   moreover
@@ -78,9 +82,14 @@ proof -
   moreover from calculation
   have "G \<subseteq> F" by auto
   ultimately
+  text\<open>Therefore, without loss of generality, we can assume that all
+  elements of the family have cardinality \<^term>\<open>n\<in>\<omega>\<close>.\<close>
   have "A\<in>G \<Longrightarrow> |A| = n" "G \<approx> \<aleph>\<^bsub>1\<^esub>" for A
     using cardinal_Card_eqpoll_iff by auto
   with \<open>n\<in>\<omega>\<close>
+  text\<open>So we prove the result by induction on this \<^term>\<open>n\<close>,
+  generalizing \<^term>\<open>G\<close>, since the argument requires changing the
+  family in order to apply the inductive hypothesis.\<close>
   have "\<exists>D. D \<subseteq> G \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>"
   proof (induct arbitrary:G)
     case 0 \<comment> \<open>This case is impossible\<close>
@@ -99,7 +108,8 @@ proof -
       by fastforce
     show "\<exists>D. D \<subseteq> G \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>"
     proof (cases "\<exists>p. {A\<in>G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>")
-      case True
+      case True \<comment> \<open>the positive case, uncountably many sets with a
+                    common element\<close>
       then
       obtain p where "{A\<in>G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>" by blast
       moreover from this
@@ -159,23 +169,20 @@ proof -
       show "\<exists>D. D \<subseteq> G \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>" by auto
     next
       case False
-      note \<open>\<not> (\<exists>p. {A \<in> G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>)\<close> \<comment> \<open>the inductive hypothesis\<close>
+      note \<open>\<not> (\<exists>p. {A \<in> G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>)\<close> \<comment> \<open>the other case\<close>
       moreover from \<open>G \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
       have "{A \<in> G . p \<in> A} \<lesssim> \<aleph>\<^bsub>1\<^esub>" (is "?G(p) \<lesssim> _") for p
         by (blast intro:lepoll_eq_trans[OF subset_imp_lepoll])
       ultimately
       have "?G(p) \<prec> \<aleph>\<^bsub>1\<^esub>" for p
         unfolding lesspoll_def by simp
-      then \<comment> \<open>may omit the previous step if unfolding here:\<close>
+      then (* may omit the previous step if unfolding here: *)
       have "?G(p) \<lesssim> \<omega>" for p
         using lesspoll_aleph_plus_one[of 0] Aleph_zero_eq_nat by auto
       moreover
       have "{A \<in> G . S \<inter> A \<noteq> 0} = (\<Union>p\<in>S. ?G(p))" for S
         by auto
       ultimately
-      (*  have "countable(S) \<Longrightarrow> |{A \<in> G . S \<inter> A \<noteq> 0}| \<le> \<omega>" for S
-        using leqpoll_imp_cardinal_UN_le InfCard_nat
-          lepoll_cardinal_le unfolding countable_def by simp *)
       have "countable(S) \<Longrightarrow> countable({A \<in> G . S \<inter> A \<noteq> 0})" for S
         using InfCard_nat Card_nat
          le_Card_iff[THEN iffD2, THEN [3] leqpoll_imp_cardinal_UN_le,

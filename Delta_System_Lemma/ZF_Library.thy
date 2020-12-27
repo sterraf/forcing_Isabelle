@@ -2,7 +2,6 @@ section\<open>Library of basic $\ZF$ results\label{sec:zf-lib}\<close>
 
 theory ZF_Library
   imports
-    ZF
     "ZF-Constructible.Normal"
 
 begin
