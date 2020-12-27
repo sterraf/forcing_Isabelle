@@ -8,25 +8,28 @@ OUT_DIR = output/html
 
 ML_FILES = Renaming_ML.ml Utils.ml 
 
+DOC_FILES = root.tex root.bib root.bst
+
 LINKING_DIR  = $(PWD)/../scripts
 PARALLEL     = $(shell cat thy_files | egrep -v '^\#' | sed s/\.thy/\.html/g )
 THY_FILES    = $(shell cat thy_files | egrep -v '^\#' | tr \" " ")
+DOCU_FILES   = $(shell echo $(DOC_FILES) | sed "s_ _ document/_g" | \
+	 sed "s_^_document/_g")
 USR_HEAPS    = $(shell isabelle getenv -b ISABELLE_HEAPS)
 ML_ID        = $(shell isabelle getenv -b ML_IDENTIFIER)
 HEAP_LOG_DIR = $(USR_HEAPS)/$(ML_ID)/log
 HTML_DIR     = $(OUT_DIR)/$(CHAPTER)/$(SESSION)
 DB           = $(HEAP_LOG_DIR)/$(SESSION).db 
 
-.PHONY: build html tar clean afp
+.PHONY: build html tar clean afp debug
 
-$(DB):	thy_files $(THY_FILES) $(ML_FILES) Makefile document/root.tex \
-		document/root.bib document/root.bst
+$(DB):	thy_files $(THY_FILES) $(ML_FILES) Makefile $(DOCU_FILES) ROOT
 	isabelle build $(OPTION) -v -c -d . $(SESSION)
 
 build: 	$(DB)
 
 $(HTML_DIR):	thy_files $(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT \
-			document/root.tex document/root.bib Makefile
+		$(DOCU_FILES) Makefile
 	isabelle env \
 	  ISABELLE_BROWSER_INFO=$(OUT_DIR)\
 	  isabelle build $(OPTION) -d . -c -o browser_info -v $(SESSION)
@@ -77,8 +80,7 @@ linked:	$(HTML_DIR) $(LINKING_DIR)/linking.sh Makefile_distro ROOT README.md
 	 -cvzf $(SESSION).tar.gz tmptar
 	rm -rf tmptar
 
-$(SESSION)-AFP.tar.gz:    thy_files $(THY_FILES) $(ML_FILES) ROOT_AFP document/root.tex \
-			  document/root.bib
+$(SESSION)-AFP.tar.gz:    thy_files $(THY_FILES) $(ML_FILES) ROOT_AFP $(DOCU_FILES)
 	rm -rf tmpafp
 	mkdir tmpafp
 	cp $(THY_FILES) $(ML_FILES) tmpafp
@@ -91,3 +93,24 @@ afp:	$(SESSION)-AFP.tar.gz
 
 clean:
 	rm -rf output/ tmptar tmpafp
+debug:
+	@echo "================================="
+	@echo "Arguments:"
+	@echo
+	@echo "OPTION  = " $(OPTION)
+	@echo "CHAPTER = "$(CHAPTER)
+	@echo "SESSION = "$(SESSION)
+	@echo "OUT_DIR = "$(OUT_DIR)
+	@echo "ML_FILES  ="$(ML_FILES)
+	@echo "================================="
+	@echo "Automatic values:"
+	@echo
+	@echo "LINKING_DIR  = "$(LINKING_DIR)
+	@echo "PARALLEL     = "$(PARALLEL)
+	@echo "THY_FILES    = "$(THY_FILES)
+	@echo "DOCU_FILES   = "$(DOCU_FILES)
+	@echo "USR_HEAPS    = "$(USR_HEAPS)
+	@echo "ML_ID        = "$(ML_ID)
+	@echo "HEAP_LOG_DIR = "$(HEAP_LOG_DIR)
+	@echo "HTML_DIR     = "$(HTML_DIR)
+	@echo "DB           = "$(DB)
