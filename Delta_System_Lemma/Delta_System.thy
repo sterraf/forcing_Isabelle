@@ -84,10 +84,10 @@ proof -
   ultimately
   text\<open>Therefore, without loss of generality, we can assume that all
   elements of the family have cardinality \<^term>\<open>n\<in>\<omega>\<close>.\<close>
-  have "A\<in>G \<Longrightarrow> |A| = n" "G \<approx> \<aleph>\<^bsub>1\<^esub>" for A
+  have "A\<in>G \<Longrightarrow> |A| = n" and "G \<approx> \<aleph>\<^bsub>1\<^esub>" for A
     using cardinal_Card_eqpoll_iff by auto
   with \<open>n\<in>\<omega>\<close>
-  text\<open>So we prove the result by induction on this \<^term>\<open>n\<close>,
+  text\<open>So we prove the result by induction on this \<^term>\<open>n\<close> and
   generalizing \<^term>\<open>G\<close>, since the argument requires changing the
   family in order to apply the inductive hypothesis.\<close>
   have "\<exists>D. D \<subseteq> G \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>"
@@ -116,16 +116,18 @@ proof -
       have "{A-{p} . A\<in>{X\<in>G. p\<in>X}} \<approx> \<aleph>\<^bsub>1\<^esub>" (is "?F \<approx> _")
         using Diff_bij[of "{A\<in>G . p \<in> A}" "{p}"]
           comp_bij[OF bij_converse_bij, where C="\<aleph>\<^bsub>1\<^esub>"] by fast
-      text\<open>Now using the inductive hypothesis:\<close>
+      text\<open>Now using the hypothesis of the successor case,\<close>
       moreover from \<open>\<And>A. A\<in>G \<Longrightarrow> |A|=succ(n)\<close> \<open>\<forall>a\<in>G. Finite(a)\<close>
         and this
       have "p\<in>A \<Longrightarrow> A\<in>G \<Longrightarrow> |A - {p}| = n" for A
         using Finite_imp_succ_cardinal_Diff[of _ p] by force
       moreover from this and \<open>n\<in>\<omega>\<close>
       have "\<forall>a\<in>?F. Finite(a)"
-          using Finite_cardinal_iff' nat_into_Finite by auto
-      moreover \<comment> \<open>the inductive hypothesis\<close>
-      note \<open>(\<And>A. A \<in> ?F \<Longrightarrow> |A| = n) \<Longrightarrow> ?F \<approx> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<exists>D. D \<subseteq> ?F \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+        using Finite_cardinal_iff' nat_into_Finite by auto
+      moreover
+      text\<open>we may apply the inductive hypothesis to the new family \<^term>\<open>?F\<close>:\<close>
+      note \<open>(\<And>A. A \<in> ?F \<Longrightarrow> |A| = n) \<Longrightarrow> ?F \<approx> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow>
+             \<exists>D. D \<subseteq> ?F \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
       ultimately
       obtain D where "D\<subseteq>{A-{p} . A\<in>{X\<in>G. p\<in>X}}" "delta_system(D)" "D \<approx> \<aleph>\<^bsub>1\<^esub>"
         by auto
@@ -133,7 +135,7 @@ proof -
       obtain r where "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
         by fastforce
       then
-      have "\<forall>A\<in>D. \<forall>B\<in>D. A \<union> {p} \<noteq> B \<union> {p} \<longrightarrow> (A \<union> {p}) \<inter> (B \<union> {p}) = r \<union> {p}"
+      have "\<forall>A\<in>D.\<forall>B\<in>D. A\<union>{p} \<noteq> B\<union>{p}\<longrightarrow>(A \<union> {p}) \<inter> (B \<union> {p}) = r\<union>{p}"
         by blast
       ultimately
       have "delta_system({B \<union> {p} . B\<in>D})" (is "delta_system(?D)")
@@ -187,7 +189,9 @@ proof -
         using InfCard_nat Card_nat
          le_Card_iff[THEN iffD2, THEN [3] leqpoll_imp_cardinal_UN_le,
            THEN [2] le_Card_iff[THEN iffD1], of \<omega> S]
-          unfolding countable_def by simp
+        unfolding countable_def by simp
+      text\<open>For every countable subfamily of \<^term>\<open>G\<close> there is another some
+      element disjoint from all of them:\<close>
       have "\<exists>A\<in>G. \<forall>S\<in>X. S \<inter> A = 0" if "|X| < \<aleph>\<^bsub>1\<^esub>" "X \<subseteq> G" for X
       proof -
         from \<open>n\<in>\<omega>\<close> \<open>\<And>A. A\<in>G \<Longrightarrow> |A| = succ(n)\<close>
@@ -218,13 +222,18 @@ proof -
         using uncountable_iff_subset_eqpoll_Aleph1
           uncountable_not_empty by blast
       ultimately
-      obtain S where "S : \<aleph>\<^bsub>1\<^esub> \<rightarrow> G" "\<alpha> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<beta> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0" for \<alpha> \<beta>
+      text\<open>Hence, the hypotheses to perform a bounded-cardinal selection
+      are satisfied,\<close>
+      obtain S where "S:\<aleph>\<^bsub>1\<^esub>\<rightarrow>G" "\<alpha>\<in>\<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<beta>\<in>\<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0"
+        for \<alpha> \<beta>
         using bounded_cardinal_selection[of "\<aleph>\<^bsub>1\<^esub>" G "\<lambda>s a. s \<inter> a = 0" b]
         by force
       then
       have "\<alpha> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<beta> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<alpha>\<noteq>\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0" for \<alpha> \<beta>
         using lt_neq_symmetry[of "\<aleph>\<^bsub>1\<^esub>" "\<lambda>\<alpha> \<beta>. S`\<alpha> \<inter> S`\<beta> = 0"] Card_is_Ord
         by auto blast
+      text\<open>and a symmetry argument shows that obtained \<^term>\<open>S\<close> is
+      an injective  \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>-sequence of disjoint elements of \<^term>\<open>G\<close>.\<close>
       moreover from this and \<open>\<And>A. A\<in>G \<Longrightarrow> |A| = succ(n)\<close> \<open>S : \<aleph>\<^bsub>1\<^esub> \<rightarrow> G\<close>
       have "S \<in> inj(\<aleph>\<^bsub>1\<^esub>, G)"
         using cardinal_succ_not_0 Int_eq_zero_imp_not_eq[of "\<aleph>\<^bsub>1\<^esub>" "\<lambda>x. S`x"]
@@ -241,6 +250,7 @@ proof -
           image_function[OF fun_is_function, OF inj_is_fun, of S "\<aleph>\<^bsub>1\<^esub>" G]
           domain_of_fun[OF inj_is_fun, of S "\<aleph>\<^bsub>1\<^esub>" G]
         by (rule_tac x="S``\<aleph>\<^bsub>1\<^esub>" in exI) auto
+      text\<open>This finishes the successor case and hence the proof.\<close>
     qed
   qed
   with \<open>G \<subseteq> F\<close>

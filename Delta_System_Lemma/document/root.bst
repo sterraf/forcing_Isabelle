@@ -1188,8 +1188,8 @@ FUNCTION {misc}
   howpublished "howpublished" bibinfo.check output
   format.date "year" output.check
   new.sentence
-  format.url output
   format.note output
+  format.url output
   format.doi output
   format.eprint output
   new.block
