@@ -1,4 +1,4 @@
-chapter "ZF"
+chapter AFP
 
 session Delta_System_Lemma (AFP) =  "ZF-Constructible" +
   description "
