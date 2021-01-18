@@ -66,8 +66,6 @@ proof (intro not_le_iff_lt[THEN iffD1] notI)
     using cantor_inj by simp
 qed simp
 
-lemmas lepoll_imp_cardinal_le = lepoll_imp_Card_le
-
 lemma cexp_left_mono:
   assumes "\<kappa>1 \<le> \<kappa>2"
   shows "\<kappa>1\<^bsup>\<up>\<nu>\<^esup> \<le> \<kappa>2\<^bsup>\<up>\<nu>\<^esup>"
