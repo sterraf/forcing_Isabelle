@@ -648,9 +648,6 @@ definition
   is_Hcheck :: "[i,i,i,i] \<Rightarrow> o" where
   "is_Hcheck(o,z,f,hc)  \<equiv> is_Replace(##M,z,PHcheck(o,f),hc)"
 
-lemma one_in_M: "one \<in> M"
-  by (insert one_in_P P_in_M, simp add: transitivity)
-
 lemma def_PHcheck:
   assumes
     "z\<in>M" "f\<in>M"
