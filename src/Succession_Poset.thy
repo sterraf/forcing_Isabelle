@@ -9,7 +9,7 @@ begin
 
 subsection\<open>The set of finite binary sequences\<close>
 
-notation nat (\<open>\<omega>\<close>) \<comment> \<open>TODO: already in ZF_Library\<close>
+notation nat (\<open>\<omega>\<close>) \<comment> \<open>TODO: already in ZF Library\<close>
 
 text\<open>We implement the poset for adding one Cohen real, the set 
 $2^{<\omega}$ of finite binary sequences.\<close>

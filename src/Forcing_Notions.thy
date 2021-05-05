@@ -332,7 +332,7 @@ qed
 
 end (* countable_generic *)
 
-\<comment> \<open>TODO: already in ZF_Library\<close>
+\<comment> \<open>TODO: already in ZF Library\<close>
 lemma Pi_rangeD:
   assumes "f\<in>Pi(A,B)" "b \<in> range(f)"
   shows "\<exists>a\<in>A. f`a = b"
