@@ -6,11 +6,12 @@ theory FiniteFun_Relative
     Synthetic_Definition
     Names
     FrecR
+    Discipline_Function
 begin
 
 subsection\<open>The set of finite binary sequences\<close>
 
-notation nat (\<open>\<omega>\<close>) \<comment> \<open>TODO: already in ZF Library\<close>
+notation nat (\<open>\<omega>\<close>) \<comment> \<open>to_FiniteFunDO: already in ZF Library\<close>
 
 text\<open>We implement the poset for adding one Cohen real, the set 
 $2^{<\omega}$ of finite binary sequences.\<close>
@@ -34,13 +35,62 @@ schematic_goal seqspace_fm_auto:
   shows 
     "(\<exists>om\<in>A. omega(##A,om) \<and> nth(i,env) \<in> om \<and> is_funspace(##A, nth(i,env), nth(h,env), nth(j,env))) \<longleftrightarrow> (A, env \<Turnstile> (?sqsprp(i,j,h)))"
   unfolding is_funspace_def 
-  by (insert assms ; (rule iff_sats | simp)+)
+ by (insert assms ; (rule iff_sats | simp)+)
+synthesize "seqspace_rel" from_schematic "seqspace_fm_auto"
+arity_theorem for "seqspace_rel_fm"
 
-synthesize "seqspace_rep" from_schematic seqspace_fm_auto
+subsection\<open>Representation of finite functions\<close>
+text\<open>
+A function $f\inA\to_{\mathit{fin}}B$ can be represented by a function 
+$g\in |f| \to A\times B$. It is clear that $f$ can be represented by
+any $g' = g \cdot \pi$, where $\pi$ is a permutation $\pi\in dom(g)\to dom(g)$.
+
+We use this representation of $A\to_{\mathit{fin}}B$ to prove that our model is
+closed under $\_\to_{\mathit{fin}}\_$.
+
+\<close>
+
+\<comment> \<open>A function g\<in>n\<rightarrow>A\<times>B that is functional in the first components.\<close>
+definition cons_like :: "i \<Rightarrow> o" where
+  "cons_like(f) \<equiv> \<forall> i\<in>domain(f) . \<forall>j\<in>i . fst(f`i) \<noteq> fst(f`j)"
+
+relativize "cons_like" "cons_like_rel"
+lemma cons_like_abs :
+  assumes "M(f)"
+  shows "cons_like(f) \<longleftrightarrow> cons_like_rel(M,f)"
+  unfolding cons_like_def cons_like_rel_def
+  sorry
+
+manual_schematic for "cons_like_rel"
+  unfolding cons_like_rel_def
+  by (rule  iff_sats | simp)+
+
+synthesize "cons_like_rel" from_schematic
+arity_theorem for "cons_like_rel_fm"
+
+definition FiniteFun_iso :: "[i,i,i,i,i] \<Rightarrow> o" where
+  "FiniteFun_iso(A,B,n,g,f) \<equiv>  (\<forall> i\<in>n . g`i \<in> f) \<and> (\<forall> ab\<in>f. (\<exists> i\<in>n. g`i=ab))"
+
+\<comment> \<open>From a function g\<in>n\<rightarrow>A\<times>B we obtain a finite function A-||>B.\<close>
+definition to_FiniteFun :: "i \<Rightarrow> i" where
+  "to_FiniteFun(f) \<equiv> {f`i . i \<in> domain(f)}"
+
+definition FiniteFun_Repr :: "[i,i] \<Rightarrow> i" where
+  "FiniteFun_Repr(A,B) \<equiv> {f \<in> (A\<times>B)\<^bsup><\<omega>\<^esup> . cons_like(f) }"
+
 
 locale M_seqspace =  M_trancl +
   assumes 
     seqspace_replacement: "M(B) \<Longrightarrow> strong_replacement(M,\<lambda>n z. n\<in>nat \<and> is_funspace(M,n,B,z))"
+    and
+    cons_like_closed : "separation(M,\<lambda>f. cons_like(f))"
+    and 
+    to_finiteFun_body_replacement:
+    "strong_replacement(M, \<lambda>x y. x \<in> domain(f) \<and> y = f ` x)"
+    and
+    to_finiteFun_replacement:
+    "strong_replacement(M, \<lambda>x y. x \<in> FiniteFun_Repr(A,B) \<and> y = to_FiniteFun(x))"
+
 begin
 
 lemma seqspace_closed:
@@ -53,59 +103,52 @@ lemma FiniteFun_fst_type:
   shows  "fst(p)\<in>domain(h)"
   using assms by(induct h, auto)
 
-
 lemma FinFun_closed:
   "M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(\<Union>{n\<rightarrow>A\<times>B . n\<in>\<omega>})"
   using cartprod_closed seqspace_closed 
   unfolding seqspace_def by simp
 
-definition cons_like :: "i \<Rightarrow> i \<Rightarrow> o" where
-  "cons_like(n,f) \<equiv> \<forall> i \<in> n. \<forall> j. j\<in>i \<longrightarrow> fst(f`i) \<noteq> fst(f`j)"
 
 
 lemma cons_like_lt : 
-  assumes "n\<in>\<omega>" "f\<in>succ(n)\<rightarrow>A\<times>B" "cons_like(succ(n),f)"
-  shows "restrict(f,n)\<in>n\<rightarrow>A\<times>B" "cons_like(n,restrict(f,n))"
+  assumes "n\<in>\<omega>" "f\<in>succ(n)\<rightarrow>A\<times>B" "cons_like(f)"
+  shows "restrict(f,n)\<in>n\<rightarrow>A\<times>B" "cons_like(restrict(f,n))"
   using assms
 proof (auto simp add: le_imp_subset restrict_type2)
+  from \<open>f\<in>_\<close>
+  have D:"domain(restrict(f,n)) = n" "domain(f) = succ(n)"
+    using domain_of_fun domain_restrict by auto
   { 
     fix i j
-    assume "i\<in>n" "j\<in>i" 
-    with \<open>n\<in>_\<close>
-    have "j\<in>n" using Ord_trans[of j] by simp
-    with \<open>cons_like(succ(n),f)\<close>  \<open>j\<in>n\<close> \<open>i\<in>n\<close> \<open>j\<in>i\<close>
+    assume "i\<in>domain(restrict(f,n))" (is "i\<in>?D") "j\<in>i" 
+    with \<open>n\<in>_\<close> D
+    have "j\<in>?D" "i\<in>n" "j\<in>n" using Ord_trans[of j] by simp_all
+    with D \<open>cons_like(f)\<close>  \<open>j\<in>n\<close> \<open>i\<in>n\<close> \<open>j\<in>i\<close>
     have "fst(restrict(f,n)`i) \<noteq> fst(restrict(f,n)`j)"
       using restrict_if unfolding cons_like_def by auto
   }
-  then show "cons_like(n,restrict(f,n))" 
+  then show "cons_like(restrict(f,n))" 
     unfolding cons_like_def by auto
 qed
 
 
-definition iso_FinFun :: "[i,i,i,i,i] \<Rightarrow> o" where
-  "iso_FinFun(A,B,n,f,g) \<equiv> 
-    (\<forall> i \<in> n . f`i \<in> g) \<and> (\<forall> ab \<in> g. (\<exists> i\<in>n. f`i=ab))"
 
-lemma iso_consD : 
-  assumes"n\<in>\<omega>" "f\<in>A-||> B" "ab\<in>A\<times>B"  "g\<in>n\<rightarrow>A\<times>B"  "iso_FinFun(A,B,n,g,cons(ab,f))"
-  shows "\<exists> x\<in>nat. n=succ(x)"
-  using assms unfolding iso_FinFun_def by(induct n, auto)
-
-
-lemma Iso_intro1:
+\<comment>\<open>A finite function f \<in> A -||> B can be represented by a 
+function g \<in> n \<rightarrow> A\<times>B, with n=|f|.\<close>
+lemma FiniteFun_iso_intro1:
   assumes "f \<in> (A -||> B)"
-  shows "\<exists>n\<in>\<omega> . \<exists>g\<in>n\<rightarrow>A\<times>B. iso_FinFun(A,B,n,g,f) \<and> cons_like(n,g)"
+  shows "\<exists>n\<in>\<omega> . \<exists>g\<in>n\<rightarrow>A\<times>B. FiniteFun_iso(A,B,n,g,f) \<and> cons_like(g)"
   using assms
-proof(induct f,force simp add:emptyI iso_FinFun_def cons_like_def)
+proof(induct f,force simp add:emptyI FiniteFun_iso_def cons_like_def)
   case (consI a b h)
   then obtain n g where
-    HI: "n\<in>\<omega>" "g\<in>n\<rightarrow>A\<times>B" "iso_FinFun(A,B,n,g,h)" "cons_like(n,g)" by auto
+    HI: "n\<in>\<omega>" "g\<in>n\<rightarrow>A\<times>B" "FiniteFun_iso(A,B,n,g,h)" "cons_like(g)" by auto
   let ?G="\<lambda> i \<in> succ(n) . if i=n then <a,b> else g`i"
   from HI \<open>a\<in>_\<close> \<open>b\<in>_\<close>
   have G: "?G \<in> succ(n)\<rightarrow>A\<times>B" 
     by (auto intro:lam_type) 
-  have "iso_FinFun(A,B,succ(n),?G,cons(<a,b>,h))"
-    unfolding iso_FinFun_def 
+  have "FiniteFun_iso(A,B,succ(n),?G,cons(<a,b>,h))"
+    unfolding FiniteFun_iso_def 
   proof(intro conjI)
     {
       fix i
@@ -113,7 +156,7 @@ proof(induct f,force simp add:emptyI iso_FinFun_def cons_like_def)
       then consider "i=n" | "i\<in>n\<and>i\<noteq>n" by auto
       then have "?G ` i \<in> cons(<a,b>,h)"
         using HI
-        by(cases,simp;auto simp add:HI iso_FinFun_def)
+        by(cases,simp;auto simp add:HI FiniteFun_iso_def)
     }
     then show "\<forall>i\<in>succ(n). ?G ` i \<in> cons(\<langle>a, b\<rangle>, h)" ..
   next
@@ -122,11 +165,11 @@ proof(induct f,force simp add:emptyI iso_FinFun_def cons_like_def)
       then
       consider  "ab' = <a,b>" | "ab' \<in> h" using cons_iff by auto
       then
-      have "\<exists>i \<in> succ(n) . ?G`i = ab'" unfolding iso_FinFun_def 
+      have "\<exists>i \<in> succ(n) . ?G`i = ab'" unfolding FiniteFun_iso_def 
       proof(cases,simp)
         case 2
         with HI obtain i
-          where "i\<in>n" "g`i=ab'" unfolding iso_FinFun_def by auto
+          where "i\<in>n" "g`i=ab'" unfolding FiniteFun_iso_def by auto
         with HI show ?thesis using  ltI[OF \<open>i\<in>_\<close>] by auto
       qed
     }
@@ -134,12 +177,14 @@ proof(induct f,force simp add:emptyI iso_FinFun_def cons_like_def)
     show "\<forall>ab\<in>cons(\<langle>a, b\<rangle>, h). \<exists>i\<in>succ(n). ?G`i = ab"  ..
   qed
   with HI G
-  have 1: "?G\<in>succ(n)\<rightarrow>A\<times>B" "iso_FinFun(A,B,succ(n),?G,cons(<a,b>,h))" "succ(n)\<in>\<omega>" by simp_all
-  have "cons_like(succ(n),?G)" 
+  have 1: "?G\<in>succ(n)\<rightarrow>A\<times>B" "FiniteFun_iso(A,B,succ(n),?G,cons(<a,b>,h))" "succ(n)\<in>\<omega>" by simp_all
+  have "cons_like(?G)" 
   proof -
+    from \<open>?G\<in>_\<close> \<open>g\<in>_\<close>
+    have "domain(g) = n" using domain_of_fun by simp
     {
       fix i j
-      assume "i\<in>succ(n)" "j\<in>i"
+      assume "i\<in>domain(?G)" "j\<in>i"
       with \<open>n\<in>_\<close>
       have "j\<in>n" using Ord_trans[of j _ n] by auto
       from \<open>i\<in>_\<close> consider (a) "i=n \<and> i\<notin>n" | (b) "i\<in>n" by auto
@@ -149,13 +194,14 @@ proof(induct f,force simp add:emptyI iso_FinFun_def cons_like_def)
         case a
         with \<open>j\<in>n\<close> HI
         have "?G`i=<a,b>" "?G`j=g`j" "g`j\<in>h" 
-          unfolding iso_FinFun_def by auto
+          unfolding FiniteFun_iso_def by auto
         with \<open>a\<notin>_\<close> \<open>h\<in>_\<close> 
         show ?thesis using  FiniteFun_fst_type by auto
       next
         case b
-        with \<open>i\<in>n\<close> \<open>j\<in>i\<close> \<open>j\<in>n\<close> HI
-        show ?thesis unfolding cons_like_def using mem_not_refl by auto
+        with \<open>i\<in>n\<close> \<open>j\<in>i\<close> \<open>j\<in>n\<close> HI \<open>domain(g) = n\<close>
+        show ?thesis unfolding cons_like_def 
+          using mem_not_refl by auto
       qed
     }
     then show ?thesis unfolding cons_like_def by auto
@@ -164,167 +210,197 @@ proof(induct f,force simp add:emptyI iso_FinFun_def cons_like_def)
 qed
 
 
-definition TO :: "i \<Rightarrow> i" where
-  "TO(f) \<equiv> {f`i . i \<in> domain(f)}"
-
-
-lemma IsoD_eq : 
-  assumes "n\<in>\<omega>" "g\<in>n\<rightarrow>A\<times>B" "f\<in>A-||> B" "iso_FinFun(A,B,n,g,f)"
-  shows "TO(g) = f"
+\<comment> \<open>All the representations of f\<in>A-||>B are equal.\<close>
+lemma FiniteFun_isoD : 
+  assumes "n\<in>\<omega>" "g\<in>n\<rightarrow>A\<times>B" "f\<in>A-||>B" "FiniteFun_iso(A,B,n,g,f)"
+  shows "to_FiniteFun(g) = f"
 proof
   {
     fix ab
-    assume "ab\<in>TO(g)"
+    assume "ab\<in>to_FiniteFun(g)"
     with assms
     obtain i where "i\<in>n" "g`i=ab" "ab\<in>A\<times>B"
-      unfolding TO_def using domain_of_fun by auto
+      unfolding to_FiniteFun_def using domain_of_fun by auto
     with assms
-    have "ab\<in>f" unfolding iso_FinFun_def by auto
+    have "ab\<in>f" unfolding FiniteFun_iso_def by auto
   }
-  then show "TO(g) \<subseteq> f" by auto
+  then show "to_FiniteFun(g) \<subseteq> f" by auto
 next
   {
     fix ab
     assume "ab\<in>f"
     with assms
     obtain i where "i\<in>n" "g`i=ab" "ab\<in>A\<times>B"
-      unfolding iso_FinFun_def by auto
-    with assms have "ab \<in> TO(g)" unfolding TO_def using domain_of_fun by auto
+      unfolding FiniteFun_iso_def by auto
+    with assms have "ab \<in> to_FiniteFun(g)" unfolding to_FiniteFun_def using domain_of_fun by auto
   }
-  then show "f \<subseteq> TO(g)" ..
+  then show "f \<subseteq> to_FiniteFun(g)" ..
 qed
 
-lemma TO_succ_eq :
+lemma to_FiniteFun_succ_eq :
   assumes "n\<in>\<omega>" "f\<in>succ(n) \<rightarrow> A"
-  shows "TO(f) = cons(f`n,TO(restrict(f,n)))"
+  shows "to_FiniteFun(f) = cons(f`n,to_FiniteFun(restrict(f,n)))"
   using assms domain_restrict domain_of_fun 
-  unfolding TO_def by auto
+  unfolding to_FiniteFun_def by auto
 
-lemma Iso_Intro2:
-  assumes "n\<in>\<omega>" "f\<in>n\<rightarrow>A\<times>B" "cons_like(n,f)"
-  shows "TO(f) \<in> (A -||> B) \<and> iso_FinFun(A,B,n,f,TO(f))" 
+\<comment> \<open>If g\<in>n\<rightarrow>A\<times>B is cons_like, then it is a representation of to_FiniteFun(g).\<close>
+lemma FiniteFun_iso_intro_to:
+  assumes "n\<in>\<omega>" "g\<in>n\<rightarrow>A\<times>B" "cons_like(g)"
+  shows "to_FiniteFun(g) \<in> (A -||> B) \<and> FiniteFun_iso(A,B,n,g,to_FiniteFun(g))" 
   using assms
-proof(induct n  arbitrary:f rule:nat_induct)
+proof(induct n  arbitrary:g rule:nat_induct)
   case 0
-  fix f
-  assume "f\<in>0\<rightarrow>A\<times>B"
+  fix g
+  assume "g\<in>0\<rightarrow>A\<times>B"
   then
-  have "f=0" by simp
-  then have "TO(f)=0" unfolding TO_def by simp 
-  then show "TO(f) \<in> (A -||> B) \<and> iso_FinFun(A,B,0,f,TO(f))" 
-    using emptyI unfolding iso_FinFun_def by simp 
+  have "g=0" by simp
+  then have "to_FiniteFun(g)=0" unfolding to_FiniteFun_def by simp 
+  then show "to_FiniteFun(g) \<in> (A -||> B) \<and> FiniteFun_iso(A,B,0,g,to_FiniteFun(g))" 
+    using emptyI unfolding FiniteFun_iso_def by simp 
 next
   case (succ x)
-  fix f
-  let ?f'="restrict(f,x)"
-  assume "f\<in>succ(x)\<rightarrow>A\<times>B" "cons_like(succ(x),f)"
-  with succ.hyps \<open>f\<in>_\<close>
-  have "cons_like(x,?f')" "?f' \<in> x\<rightarrow>A\<times>B" "f`x\<in>A\<times>B" 
-    using cons_like_lt succI1 apply_funtype by simp_all
-  with succ.hyps  \<open>?f'\<in>_\<close> \<open>x\<in>\<omega>\<close>
-  have HI: "TO(?f') \<in> A -||> B" (is "(?h) \<in> _") "iso_FinFun(A,B,x,?f',TO(?f'))"
-    by auto
+  fix g
+  let ?g'="restrict(g,x)"
+  assume "g\<in>succ(x)\<rightarrow>A\<times>B" "cons_like(g)"
+  with succ.hyps \<open>g\<in>_\<close>
+  have "cons_like(?g')" "?g' \<in> x\<rightarrow>A\<times>B" "g`x\<in>A\<times>B" "domain(g) = succ(x)"
+    using cons_like_lt succI1 apply_funtype domain_of_fun by simp_all
+  with succ.hyps  \<open>?g'\<in>_\<close> \<open>x\<in>\<omega>\<close>
+  have HI: 
+    "to_FiniteFun(?g') \<in> A -||> B" (is "(?h) \<in> _") 
+    "FiniteFun_iso(A,B,x,?g',to_FiniteFun(?g'))"
+    by simp_all
   then
-  have "fst(f`x) \<notin> domain(?h)" 
+  have "fst(g`x) \<notin> domain(?h)" 
   proof -
-    {assume "fst(f`x) \<in> domain(?h)"
-      with HI \<open>x\<in>_\<close> obtain i b
-        where "i\<in>x" "<fst(?f'`i),b>\<in>?h" "i<x" "fst(f`x) = fst(?f'`i)"
-        unfolding iso_FinFun_def using ltI by auto
-      with \<open>cons_like(succ(x),f)\<close> 
+    {
+      assume "fst(g`x) \<in> domain(?h)"
+      with HI \<open>x\<in>_\<close> 
+      obtain i b
+        where "i\<in>x" "<fst(?g'`i),b>\<in>?h" "i<x" "fst(g`x) = fst(?g'`i)"
+        unfolding FiniteFun_iso_def using ltI by auto
+      with \<open>cons_like(g)\<close> \<open>domain(g) = _\<close>
       have False
         unfolding cons_like_def by auto
-    }then show ?thesis ..
+    }
+    then show ?thesis ..
   qed
-  with HI assms \<open>f`x\<in>_\<close>
-  have "cons(f`x,?h) \<in> A-||>B" (is "?h' \<in>_") using consI by auto
-  have "iso_FinFun(A,B,succ(x),f,?h')"
-    unfolding iso_FinFun_def
+  with HI assms \<open>g`x\<in>_\<close>
+  have "cons(g`x,?h) \<in> A-||>B" (is "?h' \<in>_") using consI by auto
+  have "FiniteFun_iso(A,B,succ(x),g,?h')"
+    unfolding FiniteFun_iso_def
   proof
     { fix i
       assume "i\<in>succ(x)"
       with \<open>x\<in>_\<close> consider (a) "i=x"| (b) "i\<in>x\<and>i\<noteq>x" by auto
-      then have "f`i\<in> ?h'" 
+      then have "g`i\<in> ?h'" 
       proof(cases,simp)
         case b
-        with \<open>iso_FinFun(_,_,_,?f',?h)\<close> 
-        show ?thesis unfolding iso_FinFun_def by simp
+        with \<open>FiniteFun_iso(_,_,_,?g',?h)\<close> 
+        show ?thesis unfolding FiniteFun_iso_def by simp
       qed
     }
-    then show "\<forall>i\<in>succ(x). f ` i \<in> cons(f ` x, ?h)" ..
+    then show "\<forall>i\<in>succ(x). g ` i \<in> cons(g ` x, ?h)" ..
   next
     {
       fix ab
       assume "ab\<in>?h'"
-      then consider "ab=f`x" | "ab \<in> ?h" using cons_iff by auto
+      then consider "ab=g`x" | "ab \<in> ?h" using cons_iff by auto
       then
-      have "\<exists>i \<in> succ(x) . f`i = ab" unfolding iso_FinFun_def 
+      have "\<exists>i \<in> succ(x) . g`i = ab" unfolding FiniteFun_iso_def 
       proof(cases,simp)
         case 2
         with HI obtain i
-          where 2:"i\<in>x" "?f'`i=ab"  unfolding iso_FinFun_def by auto
+          where 2:"i\<in>x" "?g'`i=ab"  unfolding FiniteFun_iso_def by auto
         with \<open>x\<in>_\<close>
         have "i\<noteq>x" "i\<in>succ(x)" using  ltI[OF \<open>i\<in>_\<close>] by auto
         with 2 HI show ?thesis by auto
       qed
-    } then show "\<forall>ab\<in>cons(f ` x, ?h). \<exists>i\<in>succ(x). f ` i = ab" ..
+    } then show "\<forall>ab\<in>cons(g ` x, ?h). \<exists>i\<in>succ(x). g ` i = ab" ..
   qed
   with \<open>?h'\<in>_\<close>
-  show "TO(f) \<in> A -||>B \<and> iso_FinFun(A,B,succ(x),f,TO(f))" 
-    using TO_succ_eq[OF \<open>x\<in>_\<close> \<open>f\<in>_\<close>,symmetric] by auto
+  show "to_FiniteFun(g) \<in> A -||>B \<and> FiniteFun_iso(A,B,succ(x),g,to_FiniteFun(g))" 
+    using to_FiniteFun_succ_eq[OF \<open>x\<in>_\<close> \<open>g\<in>_\<close>,symmetric] by auto
 qed
 
-lemma Iso_Intro2':
-  assumes "n\<in>\<omega>" "f\<in>n\<rightarrow>A\<times>B" "cons_like(n,f)"
-  shows "\<exists> g \<in> (A -||> B) . iso_FinFun(A,B,n,f,g)" 
-  using assms Iso_Intro2 by blast
+lemma FiniteFun_iso_intro2:
+  assumes "n\<in>\<omega>" "f\<in>n\<rightarrow>A\<times>B" "cons_like(f)"
+  shows "\<exists> g \<in> (A -||> B) . FiniteFun_iso(A,B,n,f,g)" 
+  using assms FiniteFun_iso_intro_to by blast
 
-definition H :: "[i,i] \<Rightarrow> i" where
-  "H(A,B) \<equiv> {f \<in> (A\<times>B)\<^bsup><\<omega>\<^esup> . cons_like(domain(f),f) }"
-
-
-lemma ISO_eq :
-  shows "A-||>B = {TO(h) . h \<in> H(A,B) } " 
+lemma FiniteFun_eq_to_FiniteFun_Repr :
+  shows "A-||>B = {to_FiniteFun(h) . h \<in> FiniteFun_Repr(A,B) } " 
     (is "?Y=?X")
 proof
   {
     fix f
-    assume "f\<in> ?Y"
+    assume "f\<in>A-||>B"
     then obtain n g where 
-      1: "n\<in>\<omega>" "g\<in>n\<rightarrow>A\<times>B" "iso_FinFun(A,B,n,g,f)" "cons_like(n,g)"
-      using Iso_intro1 by blast
+      1: "n\<in>\<omega>" "g\<in>n\<rightarrow>A\<times>B" "FiniteFun_iso(A,B,n,g,f)" "cons_like(g)"
+      using FiniteFun_iso_intro1 by blast
     with \<open>f\<in>_\<close>
-    have "cons_like(n,g)" "f=TO(g)" "domain(g) = n" "g\<in>H(A,B)"
-      using  IsoD_eq domain_of_fun
-      unfolding H_def
+    have "cons_like(g)" "f=to_FiniteFun(g)" "domain(g) = n" "g\<in>FiniteFun_Repr(A,B)"
+      using  FiniteFun_isoD domain_of_fun
+      unfolding FiniteFun_Repr_def
       by auto
     with 1 have "f\<in>?X" 
       by auto
   } then show "?Y\<subseteq>?X" ..
 next
   {
-    fix g
-    assume "g\<in> ?X"
-    then obtain f where 
-      1: "f\<in>H(A,B)" "g=TO(f)" "cons_like(domain(f),f)"
-      using RepFun_iff unfolding H_def by auto
-    then obtain n where "n\<in>\<omega>" "f\<in>n\<rightarrow>A\<times>B" "domain(f) = n"
-      unfolding H_def using domain_of_fun by force
-    with 1
-    have "g\<in>?Y"
-      using Iso_Intro2 by auto
+    fix f
+    assume "f\<in>?X"
+    then obtain g where 
+      A:"g\<in>FiniteFun_Repr(A,B)" "f=to_FiniteFun(g)" "cons_like(g)"
+      using RepFun_iff unfolding FiniteFun_Repr_def by auto
+    then obtain n where "n\<in>\<omega>" "g\<in>n\<rightarrow>A\<times>B" "domain(g) = n"
+      unfolding FiniteFun_Repr_def using domain_of_fun by force
+    with A
+    have "f\<in>?Y"
+      using FiniteFun_iso_intro_to by simp
   } then show "?X\<subseteq>?Y" ..
 qed
 
-reldb_add "fst" "is_fst"
-relativize "cons_like" "cons_like_rel"
-relativize "TO" "TO_r"
-\<comment> \<open>
-TODO:
 
-1. Prove M(H), should be easy because we know M(A\<times>B^\<omega>).
-2. Prove M({TO(f) . f\<in>H}), should be easy because TO is trivial.
-\<close>
+lemma FiniteFun_Repr_closed :
+  assumes "M(A)" "M(B)"
+  shows "M(FiniteFun_Repr(A,B))"
+  unfolding FiniteFun_Repr_def 
+  using assms cartprod_closed 
+    seqspace_closed separation_closed cons_like_closed by simp
+
+
+lemma to_FiniteFun_closed:
+  assumes "M(A)" "f\<in>A" 
+  shows "M(to_FiniteFun(f))"
+proof -
+  from assms
+  have "M(f)" using transM[OF \<open>f\<in>_\<close>] by simp
+  then have "M(domain(f))" using domain_closed by simp
+  with \<open>M(f)\<close>
+  have "M(f`i)" if "i\<in>domain(f)" for i 
+    using that apply_closed transM[OF _ \<open>M(domain(f))\<close>] by auto
+  with \<open>M(f)\<close> show ?thesis unfolding to_FiniteFun_def
+    using RepFun_closed2 
+      to_finiteFun_body_replacement
+      apply_closed[OF \<open>M(f)\<close>] transM[OF _ \<open>M(domain(f))\<close>]
+    by simp
+qed
+
+lemma To_FiniteFun_Repr_closed : 
+  assumes "M(A)" "M(B)"
+  shows "M({to_FiniteFun(h) . h \<in> FiniteFun_Repr(A,B) })"
+  using assms FiniteFun_Repr_closed 
+    RepFun_closed2  to_finiteFun_replacement 
+    to_FiniteFun_closed[OF FiniteFun_Repr_closed]
+  by simp
+
+lemma FiniteFun_closed :
+  assumes "M(A)" "M(B)"
+  shows "M(A -||> B)"
+  using assms To_FiniteFun_Repr_closed FiniteFun_eq_to_FiniteFun_Repr
+  by simp
+
 
 end (* M_seqspace *)
 

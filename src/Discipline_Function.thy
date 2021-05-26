@@ -4,10 +4,20 @@ theory Discipline_Function
     "Relativization"
     "Internalizations"
     "Discipline_Base"
+    FrecR
     Arities
 begin
 
 (**********************************************************)
+paragraph\<open>Discipline for \<^term>\<open>fst\<close>\<close>
+
+definition fst_rel ::  "[i\<Rightarrow>o,i] \<Rightarrow> i"  where
+  "fst_rel(M,p) \<equiv> THE d. is_fst(M,p,d)"
+
+reldb_rem absolute "fst"
+reldb_add relational "fst" "is_fst"
+reldb_add functional "fst" "fst_rel"
+
 subsection\<open>Discipline for \<^term>\<open>function_space\<close>\<close>
 
 definition

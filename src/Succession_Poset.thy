@@ -5,77 +5,48 @@ theory Succession_Poset
     Proper_Extension
     Synthetic_Definition
     Names
+    FiniteFun_Relative
 begin
-
-subsection\<open>The set of finite binary sequences\<close>
-
-notation nat (\<open>\<omega>\<close>) \<comment> \<open>TODO: already in ZF Library\<close>
-
-text\<open>We implement the poset for adding one Cohen real, the set 
-$2^{<\omega}$ of finite binary sequences.\<close>
-
-definition
-  seqspace :: "[i,i] \<Rightarrow> i" (\<open>_\<^bsup><_\<^esup>\<close> [100,1]100) where
-  "B\<^bsup><\<alpha>\<^esup> \<equiv> \<Union>n\<in>\<alpha>. (n\<rightarrow>B)"
-
-lemma seqspaceI[intro]: "n\<in>\<alpha> \<Longrightarrow> f:n\<rightarrow>B \<Longrightarrow> f\<in>B\<^bsup><\<alpha>\<^esup>"
-  unfolding seqspace_def by blast
-
-lemma seqspaceD[dest]: "f\<in>B\<^bsup><\<alpha>\<^esup> \<Longrightarrow> \<exists>n\<in>\<alpha>. f:n\<rightarrow>B"
-  unfolding seqspace_def by blast
-
-\<comment> \<open>FIXME: Now this is too particular (only for \<^term>\<open>\<omega>\<close>-sequences.
-  A relative definition for \<^term>\<open>seqspace\<close> would be appropriate.\<close>
-schematic_goal seqspace_fm_auto:
-  assumes 
-    "i \<in> nat" "j \<in> nat" "h\<in>nat" "env \<in> list(A)"
-  shows 
-    "(\<exists>om\<in>A. omega(##A,om) \<and> nth(i,env) \<in> om \<and> is_funspace(##A, nth(i,env), nth(h,env), nth(j,env))) \<longleftrightarrow> (A, env \<Turnstile> (?sqsprp(i,j,h)))"
-  unfolding is_funspace_def 
-  by (insert assms ; (rule iff_sats | simp)+)
-
-synthesize "seqspace_rep" from_schematic seqspace_fm_auto
- 
-locale M_seqspace =  M_trancl +
-  assumes 
-    seqspace_replacement: "M(B) \<Longrightarrow> strong_replacement(M,\<lambda>n z. n\<in>nat \<and> is_funspace(M,n,B,z))"
-begin
-
-lemma seqspace_closed:
-  "M(B) \<Longrightarrow> M(B\<^bsup><\<omega>\<^esup>)"
-  unfolding seqspace_def using seqspace_replacement[of B] RepFun_closed2 
-  by simp
-
-end (* M_seqspace *)
-
 
 sublocale M_ctm \<subseteq> M_seqspace "##M"
 proof (unfold_locales, simp)
   fix B
-  have "arity(seqspace_rep_fm(0,1,2)) \<le> 3" "seqspace_rep_fm(0,1,2)\<in>formula" 
-    unfolding seqspace_rep_fm_def 
-    using arity_pair_fm arity_omega_fm arity_typed_function_fm nat_simp_union 
-    by auto
+  have "arity(seqspace_rel_fm(0,1,2)) \<le> 3" "seqspace_rel_fm(0,1,2)\<in>formula"  
+    using arity_seqspace_rel_fm seqspace_rel_fm_type nat_union_abs1
+    by simp_all
   moreover
   assume "B\<in>M"
   ultimately
-  have "strong_replacement(##M, \<lambda>x y. M, [x, y, B] \<Turnstile> seqspace_rep_fm(0, 1, 2))"
-    using replacement_ax[of "seqspace_rep_fm(0,1,2)"]
+  have "strong_replacement(##M, \<lambda>x y. M, [x, y, B] \<Turnstile> seqspace_rel_fm(0, 1, 2))"
+    using replacement_ax[of "seqspace_rel_fm(0,1,2)"]
     by simp
   moreover 
   note \<open>B\<in>M\<close>
   moreover from this
-  have "univalent(##M, A, \<lambda>x y. M, [x, y, B] \<Turnstile> seqspace_rep_fm(0, 1, 2))" 
+  have "univalent(##M, A, \<lambda>x y. M, [x, y, B] \<Turnstile> seqspace_rel_fm(0, 1, 2))" 
     if "A\<in>M" for A 
-    using that unfolding univalent_def seqspace_rep_fm_def  
+    using that unfolding univalent_def seqspace_rel_fm_def  
     by (auto, blast dest:transitivity)
   ultimately
   have "strong_replacement(##M, \<lambda>n z. \<exists>om[##M]. omega(##M,om) \<and> n \<in> om \<and> is_funspace(##M, n, B, z))"
-    using seqspace_rep_iff_sats[of 0 "[_,_,B]" _ 1 _ 2 B M] unfolding seqspace_rep_fm_def strong_replacement_def
+    using seqspace_rel_iff_sats[of 0 "[_,_,B]" _ 1 _ 2 B M] 
+    unfolding seqspace_rel_fm_def strong_replacement_def
     by simp
   with \<open>B\<in>M\<close> 
   show "strong_replacement(##M, \<lambda>n z. n \<in> nat \<and> is_funspace(##M, n, B, z))"
     using M_nat by simp
+next
+  have "arity(cons_like_rel_fm(0)) \<le> 1"   
+    using arity_cons_like_rel_fm 
+    by simp
+  then
+  have "separation(##M, \<lambda>x . M, [x] \<Turnstile> cons_like_rel_fm(0))"
+    using separation_ax[of "cons_like_rel_fm(0)"]
+    by simp
+  then
+  have "separation(##M, \<lambda>x . cons_like_rel(##M,x))"
+    using separation_cong[OF _ cons_like_rel_iff_sats]
+
 qed
 
 definition seq_upd :: "i \<Rightarrow> i \<Rightarrow> i" where

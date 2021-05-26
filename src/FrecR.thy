@@ -120,22 +120,15 @@ qed
 
 
 (* ftype(p) \<equiv> THE a. \<exists>b. p = \<langle>a, b\<rangle> *)
-
+arity_theorem for "empty_fm"
+arity_theorem for "upair_fm"
+arity_theorem for "pair_fm"
 definition
   is_fst :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
   "is_fst(M,x,t) \<equiv> (\<exists>z[M]. pair(M,t,z,x)) \<or>
                        (\<not>(\<exists>z[M]. \<exists>w[M]. pair(M,w,z,x)) \<and> empty(M,t))"
-
-definition
-  fst_fm :: "[i,i] \<Rightarrow> i" where
-  "fst_fm(x,t) \<equiv> Or(Exists(pair_fm(succ(t),0,succ(x))),
-                   And(Neg(Exists(Exists(pair_fm(0,1,2 #+ x)))),empty_fm(t)))"
-
-lemma sats_fst_fm :
-  "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk>
-    \<Longrightarrow> sats(A, fst_fm(x,y), env) \<longleftrightarrow>
-        is_fst(##A, nth(x,env), nth(y,env))"
-  by (simp add: fst_fm_def is_fst_def)
+synthesize "fst" from_definition "is_fst"
+arity_theorem for "fst_fm" 
 
 definition
   is_ftype :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
