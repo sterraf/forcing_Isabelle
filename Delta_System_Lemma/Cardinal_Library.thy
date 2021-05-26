@@ -1,4 +1,4 @@
-section\<open>Cardinal Arithmetic under Choice\<close>
+section\<open>Cardinal Arithmetic under Choice\label{sec:cardinal-lib}\<close>
 
 theory Cardinal_Library
   imports
@@ -8,6 +8,13 @@ theory Cardinal_Library
 begin
 
 text\<open>This theory includes results on cardinalities that depend on $\AC$\<close>
+
+
+subsection\<open>Results on cardinal exponentiation\<close>
+
+text\<open>Non trivial instances of cardinal exponentiation require that
+     the relevant function spaces are well-ordered, hence this 
+     implies a strong use of choice.\<close>
 
 lemma cexp_eqpoll_cong:
   assumes
@@ -64,7 +71,7 @@ lemma cexp_left_mono:
   shows "\<kappa>1\<^bsup>\<up>\<nu>\<^esup> \<le> \<kappa>2\<^bsup>\<up>\<nu>\<^esup>"
     (* \<comment> \<open>short, unreadable proof: \<close>
   unfolding cexp_def
-  using subset_imp_lepoll[THEN lepoll_imp_Card_le]
+  using subset_imp_lepoll[THEN lepoll_imp_cardinal_le]
     assms le_subset_iff[THEN iffD1, OF assms]
     Pi_weaken_type[of _ _ "\<lambda>_. \<kappa>1" "\<lambda>_. \<kappa>2"] by auto *)
 proof -
@@ -76,7 +83,7 @@ proof -
     using Pi_weaken_type by auto
   then
   show ?thesis unfolding cexp_def
-    using lepoll_imp_Card_le subset_imp_lepoll by simp
+    using lepoll_imp_cardinal_le subset_imp_lepoll by simp
 qed
 
 lemma cantor_cexp':
@@ -93,6 +100,9 @@ lemma InfCard_cexp:
 lemmas InfCard_cexp' = InfCard_cexp[OF nats_le_InfCard, simplified]
   \<comment> \<open>\<^term>\<open>InfCard(\<kappa>) \<Longrightarrow> InfCard(\<nu>) \<Longrightarrow> InfCard(\<kappa>\<^bsup>\<up>\<nu>\<^esup>)\<close>\<close>
 
+
+subsection\<open>Miscellaneous\<close>
+
 lemma cardinal_RepFun_le: "|{f(a) . a\<in>A}| \<le> |A|"
 proof -
   have "(\<lambda>x\<in>A. f(x)) \<in> surj(A, {f(a) . a\<in>A})"
@@ -103,7 +113,7 @@ proof -
 qed
 
 lemma subset_imp_le_cardinal: "A \<subseteq> B \<Longrightarrow> |A| \<le> |B|"
-  using subset_imp_lepoll[THEN lepoll_imp_Card_le] .
+  using subset_imp_lepoll[THEN lepoll_imp_cardinal_le] .
 
 lemma lt_cardinal_imp_not_subset: "|A| < |B| \<Longrightarrow> \<not> B \<subseteq> A"
   using subset_imp_le_cardinal le_imp_not_lt by blast
@@ -146,23 +156,6 @@ proof -
     by (rule_tac le_trans[OF _ cardinal_UN_le]) (auto intro:Ord_0_le)+
 qed
 
-lemma nat_lt_Aleph1: "\<omega> < \<aleph>\<^bsub>1\<^esub>"
-  by (simp add: Aleph_def lt_csucc)
-
-lemma zero_lt_Aleph1: "0 < \<aleph>\<^bsub>1\<^esub>"
-  by (rule lt_trans[of _ "\<omega>"], auto simp add: ltI nat_lt_Aleph1)
-
-lemma le_aleph1_nat: "Card(k) \<Longrightarrow> k<\<aleph>\<^bsub>1\<^esub> \<Longrightarrow> k \<le> \<omega>"
-  by (simp add: Aleph_def Card_lt_csucc_iff Card_nat)
-
-lemma Aleph_succ: "\<aleph>\<^bsub>succ(\<alpha>)\<^esub> = \<aleph>\<^bsub>\<alpha>\<^esub>\<^sup>+"
-  unfolding Aleph_def by simp
-
-lemma lesspoll_aleph_plus_one:
-  assumes "Ord(\<alpha>)"
-  shows "d \<prec> \<aleph>\<^bsub>succ(\<alpha>)\<^esub> \<longleftrightarrow> d \<lesssim> \<aleph>\<^bsub>\<alpha>\<^esub>"
-  using assms lesspoll_csucc Aleph_succ Card_is_Ord by simp
-
 lemma cardinal_lt_csucc_iff':
   includes Ord_dests
   assumes "Card(\<kappa>)"
@@ -197,18 +190,17 @@ next
   show "X \<lesssim> Y" by blast
 qed
 
-lemma cardinal_Aleph [simp]: "Ord(\<alpha>) \<Longrightarrow> |\<aleph>\<^bsub>\<alpha>\<^esub>| = \<aleph>\<^bsub>\<alpha>\<^esub>"
-  using Card_cardinal_eq by simp
+text\<open>The following result proves to be very useful when combining
+     \<^term>\<open>cardinal\<close> and \<^term>\<open>eqpoll\<close> in a calculation.\<close>
 
-\<comment> \<open>Compare @{thm "le_Card_iff"}\<close>
 lemma cardinal_Card_eqpoll_iff: "Card(\<kappa>) \<Longrightarrow> |X| = \<kappa> \<longleftrightarrow> X \<approx> \<kappa>"
   using Card_cardinal_eq[of \<kappa>] cardinal_eqpoll_iff[of X \<kappa>] by auto
+    \<comment> \<open>Compare @{thm "le_Card_iff"}\<close>
 
 lemma lepoll_imp_lepoll_cardinal: assumes "X \<lesssim> Y" shows "X \<lesssim> |Y|"
   using assms cardinal_Card_eqpoll_iff[of "|Y|" Y]
     lepoll_eq_trans[of _ _ "|Y|"] by simp
 
-\<comment> \<open>FIXME: tons of uses of @{thm InfCard_is_Card}\<close>
 lemma lepoll_Un:
   assumes "InfCard(\<kappa>)" "A \<lesssim> \<kappa>" "B \<lesssim> \<kappa>"
   shows "A \<union> B \<lesssim> \<kappa>"
@@ -219,7 +211,7 @@ proof -
   note assms
   moreover from this
   have "|sum(A,B)| \<le> \<kappa> \<oplus> \<kappa>"
-    using sum_lepoll_mono[of A \<kappa> B \<kappa>] lepoll_imp_Card_le
+    using sum_lepoll_mono[of A \<kappa> B \<kappa>] lepoll_imp_cardinal_le
     unfolding cadd_def by auto
   ultimately
   show ?thesis
@@ -233,6 +225,32 @@ lemma cardinal_Un_le:
   assumes "InfCard(\<kappa>)" "|A| \<le> \<kappa>" "|B| \<le> \<kappa>"
   shows "|A \<union> B| \<le> \<kappa>"
   using assms lepoll_Un le_Card_iff InfCard_is_Card by auto
+
+text\<open>This is the unconditional version under choice of 
+     @{thm Cardinal.Finite_cardinal_iff}.\<close>
+lemma Finite_cardinal_iff': "Finite(|i|) \<longleftrightarrow> Finite(i)"
+  using cardinal_eqpoll_iff eqpoll_imp_Finite_iff by fastforce
+
+lemma cardinal_subset_of_Card:
+  assumes "Card(\<gamma>)" "a \<subseteq> \<gamma>"
+  shows "|a| < \<gamma> \<or> |a| = \<gamma>"
+proof -
+  from assms
+  have "|a| < |\<gamma>| \<or> |a| = |\<gamma>|"
+    using subset_imp_le_cardinal le_iff by simp
+  with assms
+  show ?thesis
+    using Card_cardinal_eq by simp
+qed
+
+lemma cardinal_cases:
+  includes Ord_dests
+  shows "Card(\<gamma>) \<Longrightarrow> |X| < \<gamma> \<longleftrightarrow> \<not> |X| \<ge> \<gamma>"
+  using not_le_iff_lt
+  by auto
+
+
+subsection\<open>Countable and uncountable sets\<close>
 
 \<comment> \<open>Kunen's Definition I.10.5\<close>
 definition
@@ -282,9 +300,201 @@ lemma uncountable_iff_nat_lt_cardinal:
   "uncountable(X) \<longleftrightarrow> \<omega> < |X|"
   using countable_iff_cardinal_le_nat not_le_iff_lt by simp
 
+lemma uncountable_not_empty: "uncountable(X) \<Longrightarrow> X \<noteq> 0"
+  using empty_lepollI by auto
+
+lemma uncountable_imp_Infinite: "uncountable(X) \<Longrightarrow> Infinite(X)"
+  using uncountable_iff_nat_lt_cardinal[of X] lepoll_nat_imp_Infinite[of X]
+    cardinal_le_imp_lepoll[of \<omega> X] leI
+  by simp
+
+lemma uncountable_not_subset_countable:
+  assumes "countable(X)" "uncountable(Y)"
+  shows "\<not> (Y \<subseteq> X)"
+  using assms lepoll_trans subset_imp_lepoll[of Y X]
+  by blast
+
+
+subsection\<open>Results on Alephs\<close>
+
+lemma nat_lt_Aleph1: "\<omega> < \<aleph>\<^bsub>1\<^esub>"
+  by (simp add: Aleph_def lt_csucc)
+
+lemma zero_lt_Aleph1: "0 < \<aleph>\<^bsub>1\<^esub>"
+  by (rule lt_trans[of _ "\<omega>"], auto simp add: ltI nat_lt_Aleph1)
+
+lemma le_aleph1_nat: "Card(k) \<Longrightarrow> k<\<aleph>\<^bsub>1\<^esub> \<Longrightarrow> k \<le> \<omega>"
+  by (simp add: Aleph_def Card_lt_csucc_iff Card_nat)
+
+lemma Aleph_succ: "\<aleph>\<^bsub>succ(\<alpha>)\<^esub> = \<aleph>\<^bsub>\<alpha>\<^esub>\<^sup>+"
+  unfolding Aleph_def by simp
+
+lemma lesspoll_aleph_plus_one:
+  assumes "Ord(\<alpha>)"
+  shows "d \<prec> \<aleph>\<^bsub>succ(\<alpha>)\<^esub> \<longleftrightarrow> d \<lesssim> \<aleph>\<^bsub>\<alpha>\<^esub>"
+  using assms lesspoll_csucc Aleph_succ Card_is_Ord by simp
+
+lemma cardinal_Aleph [simp]: "Ord(\<alpha>) \<Longrightarrow> |\<aleph>\<^bsub>\<alpha>\<^esub>| = \<aleph>\<^bsub>\<alpha>\<^esub>"
+  using Card_cardinal_eq by simp
+
+\<comment> \<open>Could be proved without using AC\<close>
+lemma Aleph_lesspoll_increasing:
+  includes Aleph_intros
+  shows "a < b \<Longrightarrow> \<aleph>\<^bsub>a\<^esub> \<prec> \<aleph>\<^bsub>b\<^esub>"
+  using cardinal_lt_iff_lesspoll[of "\<aleph>\<^bsub>a\<^esub>" "\<aleph>\<^bsub>b\<^esub>"] Card_cardinal_eq[of "\<aleph>\<^bsub>b\<^esub>"]
+    lt_Ord lt_Ord2 Card_Aleph[THEN Card_is_Ord] by auto
+
+lemma uncountable_iff_subset_eqpoll_Aleph1:
+  includes Ord_dests
+  notes Aleph_zero_eq_nat[simp] Card_nat[simp] Aleph_succ[simp]
+  shows "uncountable(X) \<longleftrightarrow> (\<exists>S. S \<subseteq> X \<and> S \<approx> \<aleph>\<^bsub>1\<^esub>)"
+proof
+  assume "uncountable(X)"
+  then
+  have "\<aleph>\<^bsub>1\<^esub> \<lesssim> X"
+    using uncountable_iff_nat_lt_cardinal cardinal_lt_csucc_iff'
+      cardinal_le_imp_lepoll by force
+  then
+  obtain S where "S \<subseteq> X" "S \<approx> \<aleph>\<^bsub>1\<^esub>"
+    using lepoll_imp_subset_bij by auto
+  then
+  show "\<exists>S. S \<subseteq> X \<and> S \<approx> \<aleph>\<^bsub>1\<^esub>"
+    using cardinal_cong Card_csucc[of \<omega>] Card_cardinal_eq by auto
+next
+  assume "\<exists>S. S \<subseteq> X \<and> S \<approx> \<aleph>\<^bsub>1\<^esub>"
+  then
+  have "\<aleph>\<^bsub>1\<^esub> \<lesssim> X"
+    using subset_imp_lepoll[THEN [2] eq_lepoll_trans, of "\<aleph>\<^bsub>1\<^esub>" _ X,
+        OF eqpoll_sym] by auto
+  then
+  show "uncountable(X)"
+    using Aleph_lesspoll_increasing[of 0 1, THEN [2] lesspoll_trans1,
+        of "\<aleph>\<^bsub>1\<^esub>"] lepoll_trans[of "\<aleph>\<^bsub>1\<^esub>" X \<omega>]
+    by auto
+qed
+
+lemma lt_Aleph_imp_cardinal_UN_le_nat: "function(G) \<Longrightarrow> domain(G) \<lesssim> \<omega> \<Longrightarrow>
+   \<forall>n\<in>domain(G). |G`n|<\<aleph>\<^bsub>1\<^esub> \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<le>\<omega>"
+proof -
+  assume "function(G)"
+  let ?N="domain(G)" and ?R="\<Union>n\<in>domain(G). G`n"
+  assume "?N \<lesssim> \<omega>"
+  assume Eq1: "\<forall>n\<in>?N. |G`n|<\<aleph>\<^bsub>1\<^esub>"
+  {
+    fix n
+    assume "n\<in>?N"
+    with Eq1 have "|G`n| \<le> \<omega>"
+      using le_aleph1_nat by simp
+  }
+  then
+  have "n\<in>?N \<Longrightarrow> |G`n| \<le> \<omega>" for n .
+  with \<open>?N \<lesssim> \<omega>\<close>
+  show ?thesis
+    using InfCard_nat leqpoll_imp_cardinal_UN_le by simp
+qed
+
+lemma Aleph1_eq_cardinal_vimage: "f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>\<omega> \<Longrightarrow> \<exists>n\<in>\<omega>. |f-``{n}| = \<aleph>\<^bsub>1\<^esub>"
+proof -
+  assume "f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>\<omega>"
+  then
+  have "function(f)" "domain(f) = \<aleph>\<^bsub>1\<^esub>" "range(f)\<subseteq>\<omega>"
+    by (simp_all add: domain_of_fun fun_is_function range_fun_subset_codomain)
+  let ?G="\<lambda>n\<in>range(f). f-``{n}"
+  from \<open>f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>\<omega>\<close>
+  have "range(f) \<subseteq> \<omega>" by (simp add: range_fun_subset_codomain)
+  then
+  have "domain(?G) \<lesssim> \<omega>"
+    using subset_imp_lepoll by simp
+  have "function(?G)" by (simp add:function_lam)
+  from \<open>f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>\<omega>\<close>
+  have "n\<in>\<omega> \<Longrightarrow> f-``{n} \<subseteq> \<aleph>\<^bsub>1\<^esub>" for n
+    using Pi_vimage_subset by simp
+  with \<open>range(f) \<subseteq> \<omega>\<close>
+  have "\<aleph>\<^bsub>1\<^esub> = (\<Union>n\<in>range(f). f-``{n})"
+  proof (intro equalityI, intro subsetI)
+    fix x
+    assume "x \<in> \<aleph>\<^bsub>1\<^esub>"
+    with \<open>f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>\<omega>\<close> \<open>function(f)\<close> \<open>domain(f) = \<aleph>\<^bsub>1\<^esub>\<close>
+    have "x \<in> f-``{f`x}" "f`x \<in> range(f)"
+      using function_apply_Pair vimage_iff apply_rangeI by simp_all
+    then
+    show "x \<in> (\<Union>n\<in>range(f). f-``{n})" by auto
+  qed auto
+  {
+    assume "\<forall>n\<in>range(f). |f-``{n}| < \<aleph>\<^bsub>1\<^esub>"
+    then
+    have "\<forall>n\<in>domain(?G). |?G`n| < \<aleph>\<^bsub>1\<^esub>"
+      using zero_lt_Aleph1 by (auto)
+    with \<open>function(?G)\<close> \<open>domain(?G) \<lesssim> \<omega>\<close>
+    have "|\<Union>n\<in>domain(?G). ?G`n|\<le>\<omega>"
+      using lt_Aleph_imp_cardinal_UN_le_nat by blast
+    then
+    have "|\<Union>n\<in>range(f). f-``{n}|\<le>\<omega>" by simp
+    with \<open>\<aleph>\<^bsub>1\<^esub> = _\<close>
+    have "|\<aleph>\<^bsub>1\<^esub>| \<le> \<omega>" by simp
+    then
+    have "\<aleph>\<^bsub>1\<^esub> \<le> \<omega>"
+      using Card_Aleph Card_cardinal_eq
+      by simp
+    then
+    have "False"
+      using nat_lt_Aleph1 by (blast dest:lt_trans2)
+  }
+  with \<open>range(f)\<subseteq>\<omega>\<close>
+  obtain n where "n\<in>\<omega>" "\<not>(|f -`` {n}| < \<aleph>\<^bsub>1\<^esub>)"
+    by blast
+  moreover from this
+  have "\<aleph>\<^bsub>1\<^esub> \<le> |f-``{n}|"
+    using not_lt_iff_le Card_is_Ord by auto
+  moreover
+  note \<open>n\<in>\<omega> \<Longrightarrow> f-``{n} \<subseteq> \<aleph>\<^bsub>1\<^esub>\<close>
+  ultimately
+  show ?thesis
+    using subset_imp_le_cardinal[THEN le_anti_sym, of _ "\<aleph>\<^bsub>1\<^esub>"]
+      Card_Aleph Card_cardinal_eq by auto
+qed
+
+\<comment> \<open>There is some asymmetry between assumptions and conclusion
+    (\<^term>\<open>(\<approx>)\<close> versus \<^term>\<open>cardinal\<close>)\<close>
+lemma eqpoll_Aleph1_cardinal_vimage:
+  assumes "X \<approx> \<aleph>\<^bsub>1\<^esub>" "f : X \<rightarrow> \<omega>"
+  shows "\<exists>n\<in>\<omega>. |f-``{n}| = \<aleph>\<^bsub>1\<^esub>"
+proof -
+  from assms
+  obtain g where "g\<in>bij(\<aleph>\<^bsub>1\<^esub>,X)"
+    using eqpoll_sym by blast
+  with \<open>f : X \<rightarrow> \<omega>\<close>
+  have "f O g : \<aleph>\<^bsub>1\<^esub> \<rightarrow> \<omega>" "converse(g) \<in> bij(X, \<aleph>\<^bsub>1\<^esub>)"
+    using bij_is_fun comp_fun bij_converse_bij by blast+
+  then
+  obtain n where "n\<in>\<omega>" "|(f O g)-``{n}| = \<aleph>\<^bsub>1\<^esub>"
+    using Aleph1_eq_cardinal_vimage by auto
+  then
+  have "\<aleph>\<^bsub>1\<^esub> = |converse(g) `` (f -``{n})|"
+    using image_comp converse_comp
+    unfolding vimage_def by simp
+  also from \<open>converse(g) \<in> bij(X, \<aleph>\<^bsub>1\<^esub>)\<close> \<open>f: X\<rightarrow> \<omega>\<close>
+  have "\<dots> = |f -``{n}|"
+    using range_of_subset_eqpoll[of "converse(g)" X  _ "f -``{n}"]
+      bij_is_inj cardinal_cong bij_is_fun eqpoll_sym Pi_vimage_subset
+    by fastforce
+  finally
+  show ?thesis using \<open>n\<in>\<omega>\<close> by auto
+qed
+
+
+subsection\<open>Applications of transfinite recursive constructions\<close>
+
 definition
   rec_constr :: "[i,i] \<Rightarrow> i" where
   "rec_constr(f,\<alpha>) \<equiv> transrec(\<alpha>,\<lambda>a g. f`(g``a))"
+
+text\<open>The function \<^term>\<open>rec_constr\<close> allows to perform \<^emph>\<open>recursive
+     constructions\<close>: given a choice function on the powerset of some
+     set, a transfinite sequence is created by successively choosing
+     some new element.
+
+     The next result explains its use.\<close>
 
 lemma rec_constr_unfold: "rec_constr(f,\<alpha>) = f`({rec_constr(f,\<beta>). \<beta>\<in>\<alpha>})"
   using def_transrec[OF rec_constr_def, of f \<alpha>] image_lam by simp
@@ -295,6 +505,10 @@ lemma rec_constr_type: assumes "f:Pow(G)\<rightarrow> G" "Ord(\<alpha>)"
   by (induct rule:trans_induct)
     (subst rec_constr_unfold, rule apply_type[of f "Pow(G)" "\<lambda>_. G"], auto)
 
+text\<open>The next lemma is an application of recursive constructions.
+     It works under the assumption that whenever the already constructed
+     subsequence is small enough, another element can be added.\<close>
+
 lemma bounded_cardinal_selection:
   includes Ord_dests
   assumes
@@ -302,7 +516,8 @@ lemma bounded_cardinal_selection:
   shows
     "\<exists>S. S : \<gamma> \<rightarrow> G \<and> (\<forall>\<alpha> \<in> \<gamma>. \<forall>\<beta> \<in> \<gamma>.  \<alpha><\<beta> \<longrightarrow> Q(S`\<alpha>,S`\<beta>))"
 proof -
-  let ?cdlt\<gamma>="{X\<in>Pow(G) . |X|<\<gamma>}" and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. Q(s,a)}"
+  let ?cdlt\<gamma>="{X\<in>Pow(G) . |X|<\<gamma>}" \<comment> \<open>“cardinal less than \<^term>\<open>\<gamma>\<close>”\<close>
+    and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. Q(s,a)}"
   from assms
   have "\<forall>Y \<in> ?cdlt\<gamma>. \<exists>a. a \<in> ?inQ(Y)"
     by blast
@@ -377,9 +592,8 @@ proof -
   show ?thesis by blast
 qed
 
-lemma Finite_cardinal_iff: "Finite(|i|) \<longleftrightarrow> Finite(i)"
-  using cardinal_eqpoll_iff eqpoll_imp_Finite_iff by fastforce
-
+text\<open>The following basic result can, in turn, be proved by a
+     bounded-cardinal selection.\<close>
 lemma Infinite_iff_lepoll_nat: "Infinite(X) \<longleftrightarrow> \<omega> \<lesssim> X"
 proof
   assume "Infinite(X)"
@@ -391,7 +605,7 @@ proof
     assume "|Y| < \<omega>"
     then
     have "Finite(Y)"
-      using Finite_cardinal_iff ltD nat_into_Finite by blast
+      using Finite_cardinal_iff' ltD nat_into_Finite by blast
     with \<open>Infinite(X)\<close>
     have "X \<noteq> Y" by auto
   }
@@ -412,173 +626,6 @@ lemma Infinite_InfCard_cardinal: "Infinite(X) \<Longrightarrow> InfCard(|X|)"
   using lepoll_eq_trans eqpoll_sym lepoll_nat_imp_Infinite
     Infinite_iff_lepoll_nat Inf_Card_is_InfCard cardinal_eqpoll
   by simp
-
-lemma uncountable_imp_Infinite: "uncountable(X) \<Longrightarrow> Infinite(X)"
-  using uncountable_iff_nat_lt_cardinal[of X] lepoll_nat_imp_Infinite[of X]
-    cardinal_le_imp_lepoll[of \<omega> X] leI
-  by simp
-
-lemma uncountable_not_subset_countable:
-  assumes "countable(X)" "uncountable(Y)"
-  shows "\<not> (Y \<subseteq> X)"
-  using assms lepoll_trans subset_imp_lepoll[of Y X]
-  by blast
-
-\<comment> \<open>Could be proved without using AC\<close>
-lemma Aleph_lesspoll_increasing:
-  includes Aleph_intros
-  shows "a < b \<Longrightarrow> \<aleph>\<^bsub>a\<^esub> \<prec> \<aleph>\<^bsub>b\<^esub>"
-  using cardinal_lt_iff_lesspoll[of "\<aleph>\<^bsub>a\<^esub>" "\<aleph>\<^bsub>b\<^esub>"] Card_cardinal_eq[of "\<aleph>\<^bsub>b\<^esub>"]
-    lt_Ord lt_Ord2 Card_Aleph[THEN Card_is_Ord] by auto
-
-lemma uncountable_not_empty: "uncountable(X) \<Longrightarrow> X \<noteq> 0"
-  using empty_lepollI by auto
-
-lemma uncountable_iff_subset_eqpoll_aleph1:
-  includes Ord_dests
-  notes Aleph_zero_eq_nat[simp] Card_nat[simp] Aleph_succ[simp]
-  shows "uncountable(X) \<longleftrightarrow> (\<exists>S. S \<subseteq> X \<and> S \<approx> \<aleph>\<^bsub>1\<^esub>)"
-proof
-  assume "uncountable(X)"
-  then
-  have "\<aleph>\<^bsub>1\<^esub> \<lesssim> X"
-    using uncountable_iff_nat_lt_cardinal cardinal_lt_csucc_iff'
-      cardinal_le_imp_lepoll by force
-  then
-  obtain S where "S \<subseteq> X" "S \<approx> \<aleph>\<^bsub>1\<^esub>"
-    using lepoll_imp_subset_bij by auto
-  then
-  show "\<exists>S. S \<subseteq> X \<and> S \<approx> \<aleph>\<^bsub>1\<^esub>"
-    using cardinal_cong Card_csucc[of \<omega>] Card_cardinal_eq by auto
-next
-  assume "\<exists>S. S \<subseteq> X \<and> S \<approx> \<aleph>\<^bsub>1\<^esub>"
-  then
-  have "\<aleph>\<^bsub>1\<^esub> \<lesssim> X"
-    using subset_imp_lepoll[THEN [2] eq_lepoll_trans, of "\<aleph>\<^bsub>1\<^esub>" _ X,
-        OF eqpoll_sym] by auto
-  then
-  show "uncountable(X)"
-    using Aleph_lesspoll_increasing[of 0 1, THEN [2] lesspoll_trans1,
-        of "\<aleph>\<^bsub>1\<^esub>"] lepoll_trans[of "\<aleph>\<^bsub>1\<^esub>" X \<omega>]
-    by auto
-qed
-
-lemma cof_aleph1_aux: "function(G) \<Longrightarrow> domain(G) \<lesssim> \<omega> \<Longrightarrow>
-   \<forall>n\<in>domain(G). |G`n|<\<aleph>\<^bsub>1\<^esub> \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<le>\<omega>"
-proof -
-  assume "function(G)"
-  let ?N="domain(G)" and ?R="\<Union>n\<in>domain(G). G`n"
-  assume "?N \<lesssim> \<omega>"
-  assume Eq1: "\<forall>n\<in>?N. |G`n|<\<aleph>\<^bsub>1\<^esub>"
-  {
-    fix n
-    assume "n\<in>?N"
-    with Eq1 have "|G`n| \<le> \<omega>"
-      using le_aleph1_nat by simp
-  }
-  then
-  have "n\<in>?N \<Longrightarrow> |G`n| \<le> \<omega>" for n .
-  with \<open>?N \<lesssim> \<omega>\<close>
-  show ?thesis
-    using InfCard_nat leqpoll_imp_cardinal_UN_le by simp
-qed
-
-lemma Pi_vimage_subset : "f \<in> Pi(A,B) \<Longrightarrow> f-``C \<subseteq> A"
-  unfolding Pi_def by auto
-
-lemma aleph1_eq_cardinal_vimage: "f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>\<omega> \<Longrightarrow> \<exists>n\<in>\<omega>. |f-``{n}| = \<aleph>\<^bsub>1\<^esub>"
-proof -
-  assume "f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>\<omega>"
-  then
-  have "function(f)" "domain(f) = \<aleph>\<^bsub>1\<^esub>" "range(f)\<subseteq>\<omega>"
-    by (simp_all add: domain_of_fun fun_is_function range_fun_subset_codomain)
-  let ?G="\<lambda>n\<in>range(f). f-``{n}"
-  from \<open>f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>\<omega>\<close>
-  have "range(f) \<subseteq> \<omega>" by (simp add: range_fun_subset_codomain)
-  then
-  have "domain(?G) \<lesssim> \<omega>"
-    using subset_imp_lepoll by simp
-  have "function(?G)" by (simp add:function_lam)
-  from \<open>f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>\<omega>\<close>
-  have "n\<in>\<omega> \<Longrightarrow> f-``{n} \<subseteq> \<aleph>\<^bsub>1\<^esub>" for n
-    using Pi_vimage_subset by simp
-  with \<open>range(f) \<subseteq> \<omega>\<close>
-  have "\<aleph>\<^bsub>1\<^esub> = (\<Union>n\<in>range(f). f-``{n})"
-  proof (intro equalityI, intro subsetI)
-    fix x
-    assume "x \<in> \<aleph>\<^bsub>1\<^esub>"
-    with \<open>f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>\<omega>\<close> \<open>function(f)\<close> \<open>domain(f) = \<aleph>\<^bsub>1\<^esub>\<close>
-    have "x \<in> f-``{f`x}" "f`x \<in> range(f)"
-      using function_apply_Pair vimage_iff apply_rangeI by simp_all
-    then
-    show "x \<in> (\<Union>n\<in>range(f). f-``{n})" by auto
-  qed auto
-  {
-    assume "\<forall>n\<in>range(f). |f-``{n}| < \<aleph>\<^bsub>1\<^esub>"
-    then
-    have "\<forall>n\<in>domain(?G). |?G`n| < \<aleph>\<^bsub>1\<^esub>"
-      using zero_lt_Aleph1 by (auto)
-    with \<open>function(?G)\<close> \<open>domain(?G) \<lesssim> \<omega>\<close>
-    have "|\<Union>n\<in>domain(?G). ?G`n|\<le>\<omega>"
-      using cof_aleph1_aux by blast
-    then
-    have "|\<Union>n\<in>range(f). f-``{n}|\<le>\<omega>" by simp
-    with \<open>\<aleph>\<^bsub>1\<^esub> = _\<close>
-    have "|\<aleph>\<^bsub>1\<^esub>| \<le> \<omega>" by simp
-    then
-    have "\<aleph>\<^bsub>1\<^esub> \<le> \<omega>"
-      using Card_Aleph Card_cardinal_eq
-      by simp
-    then
-    have "False"
-      using nat_lt_Aleph1 by (blast dest:lt_trans2)
-  }
-  with \<open>range(f)\<subseteq>\<omega>\<close>
-  obtain n where "n\<in>\<omega>" "\<not>(|f -`` {n}| < \<aleph>\<^bsub>1\<^esub>)"
-    by blast
-  moreover from this
-  have "\<aleph>\<^bsub>1\<^esub> \<le> |f-``{n}|"
-    using not_lt_iff_le Card_is_Ord by auto
-  moreover
-  note \<open>n\<in>\<omega> \<Longrightarrow> f-``{n} \<subseteq> \<aleph>\<^bsub>1\<^esub>\<close>
-  ultimately
-  show ?thesis
-    using subset_imp_le_cardinal[THEN le_anti_sym, of _ "\<aleph>\<^bsub>1\<^esub>"]
-      Card_Aleph Card_cardinal_eq by auto
-qed
-
-lemma range_of_subset_eqpoll:
-  assumes "f \<in> inj(X,Y)" "S \<subseteq> X"
-  shows "S \<approx> f `` S"
-  using assms restrict_bij by blast
-
-\<comment> \<open>FIXME: asymmetry between assumptions and conclusion
-    (\<^term>\<open>(\<approx>)\<close> versus \<^term>\<open>cardinal\<close>)\<close>
-lemma eqpoll_aleph1_cardinal_vimage:
-  assumes "X \<approx> \<aleph>\<^bsub>1\<^esub>" "f : X \<rightarrow> \<omega>"
-  shows "\<exists>n\<in>\<omega>. |f-``{n}| = \<aleph>\<^bsub>1\<^esub>"
-proof -
-  from assms
-  obtain g where "g\<in>bij(\<aleph>\<^bsub>1\<^esub>,X)"
-    using eqpoll_sym by blast
-  with \<open>f : X \<rightarrow> \<omega>\<close>
-  have "f O g : \<aleph>\<^bsub>1\<^esub> \<rightarrow> \<omega>" "converse(g) \<in> bij(X, \<aleph>\<^bsub>1\<^esub>)"
-    using bij_is_fun comp_fun bij_converse_bij by blast+
-  then
-  obtain n where "n\<in>\<omega>" "|(f O g)-``{n}| = \<aleph>\<^bsub>1\<^esub>"
-    using aleph1_eq_cardinal_vimage by auto
-  then
-  have "\<aleph>\<^bsub>1\<^esub> = |converse(g) `` (f -``{n})|"
-    using image_comp converse_comp
-    unfolding vimage_def by simp
-  also from \<open>converse(g) \<in> bij(X, \<aleph>\<^bsub>1\<^esub>)\<close> \<open>f: X\<rightarrow> \<omega>\<close>
-  have "\<dots> = |f -``{n}|"
-    using range_of_subset_eqpoll[of "converse(g)" X  _ "f -``{n}"]
-      bij_is_inj cardinal_cong bij_is_fun eqpoll_sym Pi_vimage_subset
-    by fastforce
-  finally
-  show ?thesis using \<open>n\<in>\<omega>\<close> by auto
-qed
 
 lemma Finite_to_one_surj_imp_cardinal_eq:
   assumes "F \<in> Finite_to_one(X,Y) \<inter> surj(X,Y)" "Infinite(X)"
@@ -603,7 +650,7 @@ proof -
     note assms
     moreover from calculation
     have "y \<in> Y \<Longrightarrow> |{x\<in>X . F`x = y}| \<le> |Y|" for y
-      using Infinite_imp_nats_lepoll[THEN lepoll_imp_Card_le, of Y
+      using Infinite_imp_nats_lepoll[THEN lepoll_imp_cardinal_le, of Y
           "|{x\<in>X . F`x = y}|"] cardinal_idem by auto
     ultimately
     have "|\<Union>y\<in>Y. {x\<in>X . F`x = y}| \<le> |Y|"
@@ -657,23 +704,5 @@ proof -
   show ?thesis
     using Finite_to_one_surj_imp_cardinal_eq by fast
 qed
-
-lemma cardinal_subset_of_Card:
-  assumes "Card(\<gamma>)" "a \<subseteq> \<gamma>"
-  shows "|a| < \<gamma> \<or> |a| = \<gamma>"
-proof -
-  from assms
-  have "|a| < |\<gamma>| \<or> |a| = |\<gamma>|"
-    using subset_imp_le_cardinal le_iff by simp
-  with assms
-  show ?thesis
-    using Card_cardinal_eq by simp
-qed
-
-lemma cardinal_cases:
-  includes Ord_dests
-  shows "Card(\<gamma>) \<Longrightarrow> |X| < \<gamma> \<longleftrightarrow> \<not> |X| \<ge> \<gamma>"
-  using not_le_iff_lt
-  by auto
 
 end

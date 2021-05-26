@@ -107,7 +107,7 @@ locale M_Pi_assumptions_choice = M_Pi_assumptions + M_cardinal_AC +
     \<comment> \<open>The next one should be derivable from (some variant)
         of B_replacement. Proving both instances each time seems
         inconvenient.\<close>
-    minimum_replacement: "strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, B(x))\<rangle>)"
+    minimum_replacement: "M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, B(x))\<rangle>)"
 begin
 
 lemma AC_M:
@@ -365,11 +365,11 @@ locale M_cardinal_UN =  M_Pi_assumptions_choice _ K X for K X +
       \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> X(i), f ` (\<mu> i. x \<in> X(i)) ` x\<rangle>)"
     and
     inj_replacement:
-    "strong_replacement(M, \<lambda>y z. y \<in> inj(X(x), K) \<and> z = {\<langle>x, y\<rangle>})"
+    "M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(X(x), K) \<and> z = {\<langle>x, y\<rangle>})"
     "strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(X(x), K))"
     "strong_replacement(M,
       \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(X(i), K)))"
-    "strong_replacement(M,
+    "M(r) \<Longrightarrow> strong_replacement(M,
       \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(X(x), K))\<rangle>)"
 
 begin
@@ -390,7 +390,8 @@ proof (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff Pi_assumptions)
   have [intro]: "Ord(K)" by (blast intro: InfCard_rel_is_Card_rel
         Card_rel_is_Ord K types)
   interpret pii:M_Pi_assumptions_choice _ K "\<lambda>i. inj\<^bsup>M\<^esup>(X(i), K)"
-    using inj_replacement Pi_assumptions by unfold_locales auto
+    using inj_replacement Pi_assumptions transM[of _ K]
+    by unfold_locales (simp_all del:mem_inj_abs)
   assume asm:"\<And>i. i\<in>K \<Longrightarrow> X(i) \<lesssim>\<^bsup>M\<^esup> K"
   then
   have "\<And>i. i\<in>K \<Longrightarrow> M(inj\<^bsup>M\<^esup>(X(i), K))"

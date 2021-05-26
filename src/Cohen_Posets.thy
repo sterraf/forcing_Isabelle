@@ -320,14 +320,14 @@ proof -
     ultimately
     obtain D where "delta_system(D)" "D \<subseteq> {domain(p) . p \<in> A}" "D \<approx> \<aleph>\<^bsub>1\<^esub>"
       using delta_system_uncountable[of "{domain(p) . p \<in> A}"] by auto
-    moreover from this
-    have "uncountable(D)"
-      using uncountable_iff_subset_eqpoll_aleph1 by auto
-    ultimately
+    then
     have delta:"\<forall>d1\<in>D. \<forall>d2\<in>D. d1 \<noteq> d2 \<longrightarrow> d1 \<inter> d2 = \<Inter>D"
-      using uncountable_imp_Infinite[THEN Infinite_delta_system_root_eq_Inter]
+      using delta_system_root_eq_Inter
       by simp
-    moreover from \<open>D \<subseteq> {domain(p) . p \<in> A}\<close> \<open>uncountable(D)\<close>
+    moreover from \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+    have "uncountable(D)"
+      using uncountable_iff_subset_eqpoll_Aleph1 by auto
+    moreover from this and \<open>D \<subseteq> {domain(p) . p \<in> A}\<close>
     obtain p1 where "p1 \<in> A" "domain(p1) \<in> D"
       using uncountable_not_empty[of D] by blast
     moreover from this and \<open>p1 \<in> A \<Longrightarrow> Finite(domain(p1))\<close>

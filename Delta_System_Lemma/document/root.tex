@@ -2,6 +2,12 @@
 \usepackage{isabelle,isabellesym}
 \usepackage[numbers]{natbib}
 
+\usepackage{relsize}
+\DeclareRobustCommand{\isactrlbsub}{\emph\bgroup\math{}\sb\bgroup\mbox\bgroup\isaspacing\itshape\smaller}
+\DeclareRobustCommand{\isactrlesub}{\egroup\egroup\endmath\egroup}
+\DeclareRobustCommand{\isactrlbsup}{\emph\bgroup\math{}\sp\bgroup\mbox\bgroup\isaspacing\itshape\smaller}
+\DeclareRobustCommand{\isactrlesup}{\egroup\egroup\endmath\egroup}
+
 % further packages required for unusual symbols (see also
 % isabellesym.sty), use only when needed
 
@@ -29,7 +35,7 @@
 \usepackage{pdfsetup}
 
 % urls in roman style, theory text in math-similar italics
-\urlstyle{rm}
+\urlstyle{tt}
 \isabellestyle{it}
 
 % for uniform font size
@@ -66,6 +72,37 @@
 
 % sane default for proof documents
 \parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+
+The session we present gathers very basic results built on the set
+theory formalization of Isabelle/ZF
+\cite{DBLP:journals/jar/PaulsonG96}. In a sense, some of the material
+formalized here corresponds to a natural continuation of that
+work. This is even clearer after perusing Section~\ref{sec:zf-lib},
+where notions like cardinal exponentiation are first defined, together
+with various lemmas that do not depend on the Axiom of Choice ($\AC$);
+the same holds for the basic theory of cofinality of ordinals, which
+is developed in Section~\ref{sec:cofinality}. In
+Section~\ref{sec:cardinal-lib}, (un)countability is defined
+and several results proved, now using $\AC$ freely; the latter is also
+needed to prove König's Theorem on cofinality of cardinal
+exponentiation. The simplest infinitary version of the Delta
+System Lemma (DSL, also known as the ``Sunflower Lemma'') due to  \v{S}anin
+is proved in Section~\ref{sec:dsl}, and it is applied to prove
+that Cohen posets satisfy the \emph{countable chain condition}.
+
+A greater part of this development was motivated by an ongoing joint
+project on the formalization of the ctm approach to
+forcing~\cite{2020arXiv200109715G} by Gunther, Pagano, Steinberg, and
+the author. Indeed, most of the results presented here are required
+for the development of forcing. As it turns out, the material as
+formalized presently will not be part of the forcing formalization,
+since for that goal we need relativized versions of both the concepts
+and the proofs.
+
+A cross-linked HTML version of the development can be found at
+\url{https://cs.famaf.unc.edu.ar/~pedro/Delta_System_Lemma/html}.
 
 % generated text of all theories
 \input{session}

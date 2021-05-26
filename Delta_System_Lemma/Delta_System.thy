@@ -1,10 +1,13 @@
-section\<open>The Delta System Lemma\<close>
+section\<open>The Delta System Lemma\label{sec:dsl}\<close>
 
 theory Delta_System
   imports 
     Cardinal_Library
 
 begin
+
+text\<open>A \<^emph>\<open>delta system\<close> is family of sets with a common pairwise
+intersection.\<close>
 
 definition
   delta_system :: "i \<Rightarrow> o" where
@@ -19,8 +22,11 @@ lemma delta_systemD[dest]:
   "delta_system(D) \<Longrightarrow> \<exists>r. \<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
   unfolding delta_system_def by simp
 
+text\<open>Hence, pairwise intersections equal the intersection of the whole
+family.\<close>
+
 lemma delta_system_root_eq_Inter:
-  assumes "A\<in>D" "B\<in>D" "A\<noteq>B" "delta_system(D)"
+  assumes "delta_system(D)"
   shows "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = \<Inter>D"
 proof (clarify, intro equalityI, auto)
   fix A' B' x C
@@ -44,24 +50,21 @@ proof (clarify, intro equalityI, auto)
   qed
 qed
 
-lemma Infinite_delta_system_root_eq_Inter:
-  assumes "Infinite(D)" "delta_system(D)"
-  shows "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = \<Inter>D"
-proof -
-  from \<open>Infinite(D)\<close>
-  obtain A B where "A\<in>D" "B\<in>D" "A\<noteq>B"
-    using Infinite_imp_nats_lepoll[of D 2]
-      apply_type[of _ 2 "\<lambda>_. D"]
-    unfolding inj_def lepoll_def
-    by auto
-  with \<open>delta_system(D)\<close>
-  show ?thesis using delta_system_root_eq_Inter by simp
-qed
+text\<open>The \<^emph>\<open>Delta System Lemma\<close> (DSL) states that any uncountable family of
+finite sets includes an uncountable delta system. This is the simplest
+non trivial version; others, for cardinals greater than \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>  assume
+some weak versions of the generalized continuum hypothesis for the
+cardinals involved.
+
+The proof is essentially the one in \cite[III.2.6]{kunen2011set} for the
+case  \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>; another similar presentation can be found in
+\cite[Chap.~16]{JW}.\<close>
 
 lemma delta_system_Aleph1:
   assumes "\<forall>A\<in>F. Finite(A)" "F \<approx> \<aleph>\<^bsub>1\<^esub>"
   shows "\<exists>D. D \<subseteq> F \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>"
 proof -
+  text\<open>Since all members are finite,\<close>
   from \<open>\<forall>A\<in>F. Finite(A)\<close>
   have "(\<lambda>A\<in>F. |A|) : F \<rightarrow> \<omega>" (is "?cards : _")
     by (rule_tac lam_type) simp
@@ -71,16 +74,22 @@ proof -
   moreover
   note \<open>F \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
   moreover from calculation
+  text\<open>there are uncountably many have the same cardinal:\<close>
   obtain n where "n\<in>\<omega>" "|?cards -`` {n}| = \<aleph>\<^bsub>1\<^esub>"
-    using eqpoll_aleph1_cardinal_vimage[of F ?cards] by auto
+    using eqpoll_Aleph1_cardinal_vimage[of F ?cards] by auto
   moreover
   define G where "G \<equiv> ?cards -`` {n}"
   moreover from calculation
   have "G \<subseteq> F" by auto
   ultimately
-  have "A\<in>G \<Longrightarrow> |A| = n" "G \<approx> \<aleph>\<^bsub>1\<^esub>" for A
+  text\<open>Therefore, without loss of generality, we can assume that all
+  elements of the family have cardinality \<^term>\<open>n\<in>\<omega>\<close>.\<close>
+  have "A\<in>G \<Longrightarrow> |A| = n" and "G \<approx> \<aleph>\<^bsub>1\<^esub>" for A
     using cardinal_Card_eqpoll_iff by auto
   with \<open>n\<in>\<omega>\<close>
+  text\<open>So we prove the result by induction on this \<^term>\<open>n\<close> and
+  generalizing \<^term>\<open>G\<close>, since the argument requires changing the
+  family in order to apply the inductive hypothesis.\<close>
   have "\<exists>D. D \<subseteq> G \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>"
   proof (induct arbitrary:G)
     case 0 \<comment> \<open>This case is impossible\<close>
@@ -95,27 +104,30 @@ proof -
     case (succ n)
     then
     have "\<forall>a\<in>G. Finite(a)"
-      using Finite_cardinal_iff nat_into_Finite[of "succ(n)"]
+      using Finite_cardinal_iff' nat_into_Finite[of "succ(n)"]
       by fastforce
     show "\<exists>D. D \<subseteq> G \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>"
     proof (cases "\<exists>p. {A\<in>G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>")
-      case True
+      case True \<comment> \<open>the positive case, uncountably many sets with a
+                    common element\<close>
       then
       obtain p where "{A\<in>G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>" by blast
       moreover from this
       have "{A-{p} . A\<in>{X\<in>G. p\<in>X}} \<approx> \<aleph>\<^bsub>1\<^esub>" (is "?F \<approx> _")
         using Diff_bij[of "{A\<in>G . p \<in> A}" "{p}"]
           comp_bij[OF bij_converse_bij, where C="\<aleph>\<^bsub>1\<^esub>"] by fast
-      text\<open>Now using the inductive hypothesis:\<close>
+      text\<open>Now using the hypothesis of the successor case,\<close>
       moreover from \<open>\<And>A. A\<in>G \<Longrightarrow> |A|=succ(n)\<close> \<open>\<forall>a\<in>G. Finite(a)\<close>
         and this
       have "p\<in>A \<Longrightarrow> A\<in>G \<Longrightarrow> |A - {p}| = n" for A
         using Finite_imp_succ_cardinal_Diff[of _ p] by force
       moreover from this and \<open>n\<in>\<omega>\<close>
       have "\<forall>a\<in>?F. Finite(a)"
-          using Finite_cardinal_iff nat_into_Finite by auto
-      moreover \<comment> \<open>the inductive hypothesis\<close>
-      note \<open>(\<And>A. A \<in> ?F \<Longrightarrow> |A| = n) \<Longrightarrow> ?F \<approx> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<exists>D. D \<subseteq> ?F \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+        using Finite_cardinal_iff' nat_into_Finite by auto
+      moreover
+      text\<open>we may apply the inductive hypothesis to the new family \<^term>\<open>?F\<close>:\<close>
+      note \<open>(\<And>A. A \<in> ?F \<Longrightarrow> |A| = n) \<Longrightarrow> ?F \<approx> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow>
+             \<exists>D. D \<subseteq> ?F \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
       ultimately
       obtain D where "D\<subseteq>{A-{p} . A\<in>{X\<in>G. p\<in>X}}" "delta_system(D)" "D \<approx> \<aleph>\<^bsub>1\<^esub>"
         by auto
@@ -123,7 +135,7 @@ proof -
       obtain r where "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
         by fastforce
       then
-      have "\<forall>A\<in>D. \<forall>B\<in>D. A \<union> {p} \<noteq> B \<union> {p} \<longrightarrow> (A \<union> {p}) \<inter> (B \<union> {p}) = r \<union> {p}"
+      have "\<forall>A\<in>D.\<forall>B\<in>D. A\<union>{p} \<noteq> B\<union>{p}\<longrightarrow>(A \<union> {p}) \<inter> (B \<union> {p}) = r\<union>{p}"
         by blast
       ultimately
       have "delta_system({B \<union> {p} . B\<in>D})" (is "delta_system(?D)")
@@ -131,7 +143,7 @@ proof -
       moreover from \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
       have "|D| = \<aleph>\<^bsub>1\<^esub>" "Infinite(D)"
         using cardinal_eqpoll_iff
-        by (auto intro!: uncountable_iff_subset_eqpoll_aleph1[THEN iffD2]
+        by (auto intro!: uncountable_iff_subset_eqpoll_Aleph1[THEN iffD2]
             uncountable_imp_Infinite) force
       moreover from this
       have "?D \<approx> \<aleph>\<^bsub>1\<^esub>"
@@ -159,28 +171,27 @@ proof -
       show "\<exists>D. D \<subseteq> G \<and> delta_system(D) \<and> D \<approx> \<aleph>\<^bsub>1\<^esub>" by auto
     next
       case False
-      note \<open>\<not> (\<exists>p. {A \<in> G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>)\<close> \<comment> \<open>the inductive hypothesis\<close>
+      note \<open>\<not> (\<exists>p. {A \<in> G . p \<in> A} \<approx> \<aleph>\<^bsub>1\<^esub>)\<close> \<comment> \<open>the other case\<close>
       moreover from \<open>G \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
       have "{A \<in> G . p \<in> A} \<lesssim> \<aleph>\<^bsub>1\<^esub>" (is "?G(p) \<lesssim> _") for p
         by (blast intro:lepoll_eq_trans[OF subset_imp_lepoll])
       ultimately
       have "?G(p) \<prec> \<aleph>\<^bsub>1\<^esub>" for p
         unfolding lesspoll_def by simp
-      then \<comment> \<open>may omit the previous step if unfolding here:\<close>
+      then (* may omit the previous step if unfolding here: *)
       have "?G(p) \<lesssim> \<omega>" for p
         using lesspoll_aleph_plus_one[of 0] Aleph_zero_eq_nat by auto
       moreover
       have "{A \<in> G . S \<inter> A \<noteq> 0} = (\<Union>p\<in>S. ?G(p))" for S
         by auto
       ultimately
-      (*  have "countable(S) \<Longrightarrow> |{A \<in> G . S \<inter> A \<noteq> 0}| \<le> \<omega>" for S
-        using leqpoll_imp_cardinal_UN_le InfCard_nat
-          lepoll_cardinal_le unfolding countable_def by simp *)
       have "countable(S) \<Longrightarrow> countable({A \<in> G . S \<inter> A \<noteq> 0})" for S
         using InfCard_nat Card_nat
          le_Card_iff[THEN iffD2, THEN [3] leqpoll_imp_cardinal_UN_le,
            THEN [2] le_Card_iff[THEN iffD1], of \<omega> S]
-          unfolding countable_def by simp
+        unfolding countable_def by simp
+      text\<open>For every countable subfamily of \<^term>\<open>G\<close> there is another some
+      element disjoint from all of them:\<close>
       have "\<exists>A\<in>G. \<forall>S\<in>X. S \<inter> A = 0" if "|X| < \<aleph>\<^bsub>1\<^esub>" "X \<subseteq> G" for X
       proof -
         from \<open>n\<in>\<omega>\<close> \<open>\<And>A. A\<in>G \<Longrightarrow> |A| = succ(n)\<close>
@@ -208,16 +219,21 @@ proof -
       qed
       moreover from \<open>G \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
       obtain b where "b\<in>G"
-        using uncountable_iff_subset_eqpoll_aleph1
+        using uncountable_iff_subset_eqpoll_Aleph1
           uncountable_not_empty by blast
       ultimately
-      obtain S where "S : \<aleph>\<^bsub>1\<^esub> \<rightarrow> G" "\<alpha> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<beta> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0" for \<alpha> \<beta>
+      text\<open>Hence, the hypotheses to perform a bounded-cardinal selection
+      are satisfied,\<close>
+      obtain S where "S:\<aleph>\<^bsub>1\<^esub>\<rightarrow>G" "\<alpha>\<in>\<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<beta>\<in>\<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0"
+        for \<alpha> \<beta>
         using bounded_cardinal_selection[of "\<aleph>\<^bsub>1\<^esub>" G "\<lambda>s a. s \<inter> a = 0" b]
         by force
       then
       have "\<alpha> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<beta> \<in> \<aleph>\<^bsub>1\<^esub> \<Longrightarrow> \<alpha>\<noteq>\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0" for \<alpha> \<beta>
         using lt_neq_symmetry[of "\<aleph>\<^bsub>1\<^esub>" "\<lambda>\<alpha> \<beta>. S`\<alpha> \<inter> S`\<beta> = 0"] Card_is_Ord
         by auto blast
+      text\<open>and a symmetry argument shows that obtained \<^term>\<open>S\<close> is
+      an injective  \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>-sequence of disjoint elements of \<^term>\<open>G\<close>.\<close>
       moreover from this and \<open>\<And>A. A\<in>G \<Longrightarrow> |A| = succ(n)\<close> \<open>S : \<aleph>\<^bsub>1\<^esub> \<rightarrow> G\<close>
       have "S \<in> inj(\<aleph>\<^bsub>1\<^esub>, G)"
         using cardinal_succ_not_0 Int_eq_zero_imp_not_eq[of "\<aleph>\<^bsub>1\<^esub>" "\<lambda>x. S`x"]
@@ -234,6 +250,7 @@ proof -
           image_function[OF fun_is_function, OF inj_is_fun, of S "\<aleph>\<^bsub>1\<^esub>" G]
           domain_of_fun[OF inj_is_fun, of S "\<aleph>\<^bsub>1\<^esub>" G]
         by (rule_tac x="S``\<aleph>\<^bsub>1\<^esub>" in exI) auto
+      text\<open>This finishes the successor case and hence the proof.\<close>
     qed
   qed
   with \<open>G \<subseteq> F\<close>
@@ -246,7 +263,7 @@ lemma delta_system_uncountable:
 proof -
   from assms
   obtain S where "S \<subseteq> F" "S \<approx> \<aleph>\<^bsub>1\<^esub>"
-    using uncountable_iff_subset_eqpoll_aleph1[of F] by auto
+    using uncountable_iff_subset_eqpoll_Aleph1[of F] by auto
   moreover from \<open>\<forall>A\<in>F. Finite(A)\<close> and this
   have "\<forall>A\<in>S. Finite(A)" by auto
   ultimately

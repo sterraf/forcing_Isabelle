@@ -6,11 +6,15 @@
 %%
 ENTRY
   { address
+    archive
     author
     booktitle
     chapter
+    doi
     edition
     editor
+    eid
+    eprint
     howpublished
     institution
     journal
@@ -25,8 +29,10 @@ ENTRY
     series
     title
     type
+    url
     volume
     year
+    zbl
   }
   {}
   { label extra.label sort.label short.list }
@@ -225,6 +231,33 @@ FUNCTION {bbl.mthesis}
 FUNCTION {bbl.phdthesis}
 { "Ph.D. thesis" }
 
+FUNCTION {bbl.first}
+{ "1st" }
+
+FUNCTION {bbl.second}
+{ "2nd" }
+
+FUNCTION {bbl.third}
+{ "3rd" }
+
+FUNCTION {bbl.fourth}
+{ "4th" }
+
+FUNCTION {bbl.fifth}
+{ "5th" }
+
+FUNCTION {bbl.th}
+{ "th" }
+
+FUNCTION {bbl.st}
+{ "st" }
+
+FUNCTION {bbl.nd}
+{ "nd" }
+
+FUNCTION {bbl.rd}
+{ "rd" }
+
 MACRO {jan} {"January"}
 
 MACRO {feb} {"February"}
@@ -248,6 +281,27 @@ MACRO {oct} {"October"}
 MACRO {nov} {"November"}
 
 MACRO {dec} {"December"}
+
+FUNCTION {eng.ord}
+{ duplicate$ "1" swap$ *
+  #-2 #1 substring$ "1" =
+     { bbl.th * }
+     { duplicate$ #-1 #1 substring$
+       duplicate$ "1" =
+         { pop$ bbl.st * }
+         { duplicate$ "2" =
+             { pop$ bbl.nd * }
+             { "3" =
+                 { bbl.rd * }
+                 { bbl.th * }
+               if$
+             }
+           if$
+          }
+       if$
+     }
+   if$
+}
 
 MACRO {acmcs} {"ACM Comput. Surv."}
 
@@ -326,6 +380,42 @@ FUNCTION {bibinfo.warn}
     }
   if$
 }
+FUNCTION {format.zbl}
+{ zbl empty$
+    { "" }
+%    { "\urlprefix\url{" url * "}" * }
+    { "\zbl{" zbl * "}" * }  % changed in titto-lncs-02.bst
+  if$
+}
+FUNCTION {format.url}
+{ url empty$
+    { "" }
+%    { "\urlprefix\url{" url * "}" * }
+    { "\url{" url * "}" * }  % changed in titto-lncs-02.bst
+  if$
+}
+
+FUNCTION {format.doi} % added in splncs04.bst
+{ doi empty$
+     { "" }
+     { after.block 'output.state :=
+       "\doi{" doi * "}" * }
+  if$
+}
+
+FUNCTION {format.eprint}
+{ eprint duplicate$ empty$
+    'skip$
+    { "\eprint"
+      archive empty$
+        'skip$
+        { "[" * archive * "]" * }
+      if$
+      "{" * swap$ * "}" *
+    }
+  if$
+}
+
 STRINGS  { bibinfo}
 INTEGERS { nameptr namesleft numnames }
 
@@ -899,6 +989,7 @@ FUNCTION {article}
 %  format.journal.pages
   new.sentence
   format.note output
+  format.doi output
   fin.entry
 }
 FUNCTION {book}
@@ -931,6 +1022,8 @@ FUNCTION {book}
   % format.date "year" output.check
   new.sentence
   format.note output
+  format.doi output
+  format.eprint output
   fin.entry
 }
 FUNCTION {booklet}
@@ -944,6 +1037,8 @@ FUNCTION {booklet}
   format.date "year" output.check
   new.sentence
   format.note output
+  format.doi output
+  format.eprint output
   fin.entry
 }
 
@@ -980,6 +1075,7 @@ FUNCTION {inbook}
 %  format.pages "pages" output.check
   new.sentence
   format.note output
+  format.doi output
   fin.entry
 }
 
@@ -1005,6 +1101,7 @@ FUNCTION {incollection}
 %  format.pages "pages" output.check
   new.sentence
   format.note output
+  format.doi output
   fin.entry
 }
 FUNCTION {inproceedings}
@@ -1042,6 +1139,7 @@ FUNCTION {inproceedings}
 % format.journal.pages
   new.sentence
   format.note output
+  format.doi output
   fin.entry
 }
 FUNCTION {conference} { inproceedings }
@@ -1057,6 +1155,8 @@ FUNCTION {manual}
   format.date "year" output.check
   new.sentence
   format.note output
+  format.doi output
+  format.eprint output
   fin.entry
 }
 
@@ -1074,6 +1174,8 @@ FUNCTION {mastersthesis}
   school.address.year output
   new.sentence
   format.note output
+  format.doi output
+  format.eprint output
   fin.entry
 }
 
@@ -1087,6 +1189,10 @@ FUNCTION {misc}
   format.date "year" output.check
   new.sentence
   format.note output
+  format.url output
+  format.doi output
+  format.eprint output
+  new.block
   fin.entry
 }
 FUNCTION {phdthesis}
@@ -1103,6 +1209,8 @@ FUNCTION {phdthesis}
   school.address.year output
   new.sentence
   format.note output
+  format.doi output
+  format.eprint output
   fin.entry
 }
 
@@ -1123,6 +1231,7 @@ FUNCTION {proceedings}
   format.date "year" output.check
   new.sentence
   format.note output
+  format.doi output
   fin.entry
 }
 
@@ -1139,6 +1248,9 @@ FUNCTION {techreport}
   format.date "year" output.check
   new.sentence
   format.note output
+  format.url output
+  format.doi output
+  format.eprint output
   fin.entry
 }
 
@@ -1151,6 +1263,9 @@ FUNCTION {unpublished}
   format.date "year" output.check
   new.sentence
   format.note "note" output.check
+  format.url output
+  format.doi output
+  format.eprint output
   fin.entry
 }
 
@@ -1426,6 +1541,12 @@ FUNCTION {begin.bib}
   "\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi"
   write$ newline$
   "\providecommand{\bibinfo}[2]{#2}"
+  write$ newline$
+  "\providecommand{\doi}[1]{doi:\href{https://doi.org/#1}{#1}}"
+  write$ newline$
+ "\providecommand{\eprint}[2][]{arXiv:\href{https://arxiv.org/abs/#2}{#2}}"
+  write$ newline$
+  "\providecommand{\zbl}[1]{\hfill {\small Zbl~\href{https://zbmath.org/?q=an\%3A#1}{#1}}}"
   write$ newline$
 	"\ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi"
   write$ newline$
