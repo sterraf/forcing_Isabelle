@@ -10,14 +10,72 @@ declare [[syntax_ambiguity_warning = false]]
 
 text\<open>Discipline of Relativization of basic concepts.\<close>
 
+definition
+  is_singleton :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_singleton(A,x,z) \<equiv> \<exists>c[A]. empty(A,c) \<and> is_cons(A,x,c,z)"
+
+lemma (in M_trivial) singleton_abs[simp] : 
+  "\<lbrakk> M(x) ; M(s) \<rbrakk> \<Longrightarrow> is_singleton(M,x,s) \<longleftrightarrow> s = {x}"
+  unfolding is_singleton_def using nonempty by simp
+
+
+synthesize "singleton" from_definition "is_singleton"
+
+(* TODO: check if the following lemmas should be here or not? *)
+lemma (in M_trivial) singleton_closed [simp]:
+  "M(x) \<Longrightarrow> M({x})"
+  by simp
+
+lemma (in M_trivial) upair_closed[simp] : "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M({x,y})"
+  by simp
 
 text\<open>The following named theorems gather instances of transitivity
 that arise from closure theorems\<close>
 named_theorems trans_closed
 
 definition
-  is_hcomp :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_hcomp(M,is_f,is_g,a,w) \<equiv> \<exists>z[M]. is_g(M,a,z) \<and> is_f(M,z,w)"
+  is_hcomp :: "[i\<Rightarrow>o,i\<Rightarrow>i\<Rightarrow>o,i\<Rightarrow>i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "is_hcomp(M,is_f,is_g,a,w) \<equiv> \<exists>z[M]. is_g(a,z) \<and> is_f(z,w)"
+
+lemma (in M_trivial) is_hcomp_abs:
+  assumes
+    is_f_abs:"\<And>a z. M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_f(a,z) \<longleftrightarrow> z = f(a)" and
+    is_g_abs:"\<And>a z. M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_g(a,z) \<longleftrightarrow> z = g(a)" and
+    g_closed:"\<And>a. M(a) \<Longrightarrow> M(g(a))"
+    "M(a)" "M(w)"
+  shows
+    "is_hcomp(M,is_f,is_g,a,w) \<longleftrightarrow> w = f(g(a))"
+  unfolding is_hcomp_def using assms by simp
+
+definition
+  hcomp_fm :: "[i\<Rightarrow>i\<Rightarrow>i,i\<Rightarrow>i\<Rightarrow>i,i,i] \<Rightarrow> i" where
+  "hcomp_fm(pf,pg,a,w) \<equiv> Exists(And(pg(succ(a),0),pf(0,succ(w))))"
+
+lemma sats_hcomp_fm:
+  assumes
+    f_iff_sats:"\<And>a b z. a\<in>nat \<Longrightarrow> b\<in>nat \<Longrightarrow> z\<in>M \<Longrightarrow>
+                 is_f(nth(a,Cons(z,env)),nth(b,Cons(z,env))) \<longleftrightarrow> sats(M,pf(a,b),Cons(z,env))"
+    and
+    g_iff_sats:"\<And>a b z. a\<in>nat \<Longrightarrow> b\<in>nat \<Longrightarrow> z\<in>M \<Longrightarrow>
+                is_g(nth(a,Cons(z,env)),nth(b,Cons(z,env))) \<longleftrightarrow> sats(M,pg(a,b),Cons(z,env))"
+    and
+    "a\<in>nat" "w\<in>nat" "env\<in>list(M)"
+  shows
+    "sats(M,hcomp_fm(pf,pg,a,w),env) \<longleftrightarrow> is_hcomp(##M,is_f,is_g,nth(a,env),nth(w,env))"
+proof -
+  have "sats(M, pf(0, succ(w)), Cons(x, env)) \<longleftrightarrow> is_f(x,nth(w,env))" if "x\<in>M" "w\<in>nat" for x w
+    using f_iff_sats[of 0 "succ(w)" x] that by simp
+  moreover
+  have "sats(M, pg(succ(a), 0), Cons(x, env)) \<longleftrightarrow> is_g(nth(a,env),x)" if "x\<in>M" "a\<in>nat" for x a
+    using g_iff_sats[of "succ(a)" 0 x] that by simp
+  ultimately
+  show ?thesis unfolding hcomp_fm_def is_hcomp_def using assms by simp
+qed
+
+
+definition
+  hcomp_r :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "hcomp_r(M,is_f,is_g,a,w) \<equiv> \<exists>z[M]. is_g(M,a,z) \<and> is_f(M,z,w)"
 
 definition
   is_hcomp2_2 :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i,i]\<Rightarrow>o,[i\<Rightarrow>o,i,i,i]\<Rightarrow>o,[i\<Rightarrow>o,i,i,i]\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
@@ -31,8 +89,8 @@ lemma (in M_trivial) hcomp_abs:
     g_closed:"\<And>a. M(a) \<Longrightarrow> M(g(a))"
     "M(a)" "M(w)"
   shows
-    "is_hcomp(M,is_f,is_g,a,w) \<longleftrightarrow> w = f(g(a))"
-  unfolding is_hcomp_def using assms by simp
+    "hcomp_r(M,is_f,is_g,a,w) \<longleftrightarrow> w = f(g(a))"
+  unfolding hcomp_r_def using assms by simp
 
 lemma hcomp_uniqueness:
   assumes
@@ -45,8 +103,8 @@ lemma hcomp_uniqueness:
                d = d'"
     and
     "M(a)" "M(w)" "M(w')"
-    "is_hcomp(M,is_f,is_g,a,w)"
-    "is_hcomp(M,is_f,is_g,a,w')"
+    "hcomp_r(M,is_f,is_g,a,w)"
+    "hcomp_r(M,is_f,is_g,a,w')"
   shows
     "w=w'"
 proof -
@@ -54,7 +112,7 @@ proof -
   obtain z z' where "is_g(M, a, z)" "is_g(M, a, z')"
     "is_f(M,z,w)" "is_f(M,z',w')"
     "M(z)" "M(z')"
-    unfolding is_hcomp_def by blast
+    unfolding hcomp_r_def by blast
   moreover from this and uniq_is_g and \<open>M(a)\<close>
   have "z=z'" by blast
   moreover note uniq_is_f and \<open>M(w)\<close> \<open>M(w')\<close>
@@ -68,7 +126,7 @@ lemma hcomp_witness:
     wit_is_g: "\<And>r. M(r) \<Longrightarrow> \<exists>d[M]. is_g(M,r,d)" and
     "M(a)"
   shows
-    "\<exists>w[M]. is_hcomp(M,is_f,is_g,a,w)"
+    "\<exists>w[M]. hcomp_r(M,is_f,is_g,a,w)"
 proof -
   from \<open>M(a)\<close> and wit_is_g
   obtain z where "is_g(M,a,z)" "M(z)" by blast
@@ -76,7 +134,7 @@ proof -
   obtain w where "is_f(M,z,w)" "M(w)" by blast
   ultimately
   show ?thesis
-    using assms unfolding is_hcomp_def by auto
+    using assms unfolding hcomp_r_def by auto
 qed
 
 lemma (in M_trivial) hcomp2_2_abs:

@@ -6,6 +6,7 @@ theory Names
     Interface
     Recursion_Thms
     Relativization
+    "Discipline_Base"
     Synthetic_Definition
 begin
 
@@ -287,17 +288,6 @@ definition
 abbreviation (in forcing_notion)
   GenExt_at_P :: "i\<Rightarrow>i\<Rightarrow>i"     ("_[_]" [71,1])
   where "M[G] \<equiv> M\<^bsup>P\<^esup>[G]"
-
-context M_ctm
-begin
-
-lemma upairM : "x \<in> M \<Longrightarrow> y \<in> M \<Longrightarrow> {x,y} \<in> M"
-  by (simp flip: setclass_iff)
-
-lemma singletonM : "a \<in> M \<Longrightarrow> {a} \<in> M"
-  by (simp flip: setclass_iff)
-
-end (* M_ctm *)
 
 subsection\<open>Values and check-names\<close>
 context forcing_data
@@ -632,7 +622,7 @@ next
     using tuples_in_M by simp
   then
   have "{\<langle>check(x),one\<rangle>} \<in> M"
-    using singletonM by simp
+    using singleton_closed by simp
   with \<open>check(x)\<in>M\<close>
   have "check(x) \<union> {\<langle>check(x),one\<rangle>} \<in> M"
     using Un_closed by simp
@@ -811,29 +801,6 @@ lemma check_in_M : "x\<in>M \<Longrightarrow> check(x) \<in> M"
 
 end (* forcing_data *)
 
-(* check if this should go to Relative! *)
-definition
-  is_singleton :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_singleton(A,x,z) \<equiv> \<exists>c[A]. empty(A,c) \<and> is_cons(A,x,c,z)"
-
-lemma (in M_trivial) singleton_abs[simp] : "\<lbrakk> M(x) ; M(s) \<rbrakk> \<Longrightarrow> is_singleton(M,x,s) \<longleftrightarrow> s = {x}"
-  unfolding is_singleton_def using nonempty by simp
-
-definition
-  singleton_fm :: "[i,i] \<Rightarrow> i" where
-  "singleton_fm(i,j) \<equiv> Exists(And(empty_fm(0), cons_fm(succ(i),0,succ(j))))"
-
-declare singleton_fm_def[fm_definitions]
-
-lemma singleton_type[TC] : "\<lbrakk> x \<in> nat; y \<in> nat \<rbrakk> \<Longrightarrow> singleton_fm(x,y) \<in> formula"
-  unfolding singleton_fm_def by simp
-
-lemma is_singleton_iff_sats:
-  "\<lbrakk> nth(i,env) = x; nth(j,env) = y;
-          i \<in> nat; j\<in>nat ; env \<in> list(A)\<rbrakk>
-       \<Longrightarrow> is_singleton(##A,x,y) \<longleftrightarrow> sats(A, singleton_fm(i,j), env)"
-  unfolding is_singleton_def singleton_fm_def by simp
-
 context forcing_data begin
 
 (* Internalization and absoluteness of rcheck *)
@@ -846,7 +813,7 @@ definition
 lemma rcheck_abs[Rel] :
   "\<lbrakk> x\<in>M ; r\<in>M \<rbrakk> \<Longrightarrow> is_rcheck(x,r) \<longleftrightarrow> r = rcheck(x)"
   unfolding rcheck_def is_rcheck_def
-  using singletonM trancl_closed Memrel_closed eclose_closed by simp
+  using singleton_closed trancl_closed Memrel_closed eclose_closed by simp
 
 schematic_goal rcheck_fm_auto:
   assumes
@@ -854,7 +821,7 @@ schematic_goal rcheck_fm_auto:
   shows
     "is_rcheck(nth(i,env),nth(j,env)) \<longleftrightarrow> sats(M,?rch(i,j),env)"
   unfolding is_rcheck_def
-  by (insert assms ; (rule sep_rules is_singleton_iff_sats is_eclose_iff_sats
+  by (insert assms ; (rule sep_rules singleton_iff_sats is_eclose_iff_sats
         trans_closure_iff_sats | simp)+)
 
 synthesize "rcheck" from_schematic rcheck_fm_auto
@@ -998,31 +965,6 @@ lemma G_in_Gen_Ext :
   shows   "G \<in> M[G]"
   using assms val_G_dot GenExtI[of _ G] G_dot_in_M
   by force
-
-(* Move this to M_trivial *)
-lemma fst_snd_closed: "p\<in>M \<Longrightarrow> fst(p) \<in> M \<and> snd(p)\<in> M"
-proof (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>")
-  case False
-  then
-  show "fst(p) \<in> M \<and> snd(p) \<in> M" unfolding fst_def snd_def using zero_in_M by auto
-next
-  case True
-  then
-  obtain a b where "p = \<langle>a, b\<rangle>" by blast
-  with True
-  have "fst(p) = a" "snd(p) = b" unfolding fst_def snd_def by simp_all
-  moreover
-  assume "p\<in>M"
-  moreover from this
-  have "a\<in>M"
-    unfolding \<open>p = _\<close> Pair_def by (force intro:Transset_M[OF trans_M])
-  moreover from  \<open>p\<in>M\<close>
-  have "b\<in>M"
-    using Transset_M[OF trans_M, of "{a,b}" p] Transset_M[OF trans_M, of "b" "{a,b}"]
-    unfolding \<open>p = _\<close> Pair_def by (simp)
-  ultimately
-  show ?thesis by simp
-qed
 
 end (* forcing_data *)
 

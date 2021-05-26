@@ -5,7 +5,7 @@ theory Discipline_Basics
     "HOL-Eisbach.Eisbach_Old_Appl_Syntax"\<comment> \<open>if put before, it breaks some simps\<close>
     "../Tools/Try0"
 begin
-\<comment> \<open>NOTE: This is an outdated version. See Discipline\_Base for the current discipline. \<close>
+\<comment> \<open>NOTE: This is an outdated version. See \<^file>\<open>Discipline_Base.thy\<close> for the current discipline.\<close>
 
 text\<open>This is an out-dated discipline for relativization. Basically it boils down
 to define the fully relational versions of concepts and prove its definedness (i.e.

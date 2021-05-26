@@ -1,11 +1,7 @@
 section\<open>Relativization of Finite Functiions\<close>
 theory FiniteFun_Relative
   imports
-    Arities
-    Proper_Extension
     Synthetic_Definition
-    Names
-    FrecR
     Discipline_Function
 begin
 
@@ -55,11 +51,6 @@ definition cons_like :: "i \<Rightarrow> o" where
   "cons_like(f) \<equiv> \<forall> i\<in>domain(f) . \<forall>j\<in>i . fst(f`i) \<noteq> fst(f`j)"
 
 relativize "cons_like" "cons_like_rel"
-lemma cons_like_abs :
-  assumes "M(f)"
-  shows "cons_like(f) \<longleftrightarrow> cons_like_rel(M,f)"
-  unfolding cons_like_def cons_like_rel_def
-  sorry
 
 manual_schematic for "cons_like_rel"
   unfolding cons_like_rel_def
@@ -82,15 +73,6 @@ definition FiniteFun_Repr :: "[i,i] \<Rightarrow> i" where
 locale M_seqspace =  M_trancl +
   assumes 
     seqspace_replacement: "M(B) \<Longrightarrow> strong_replacement(M,\<lambda>n z. n\<in>nat \<and> is_funspace(M,n,B,z))"
-    and
-    cons_like_closed : "separation(M,\<lambda>f. cons_like(f))"
-    and 
-    to_finiteFun_body_replacement:
-    "strong_replacement(M, \<lambda>x y. x \<in> domain(f) \<and> y = f ` x)"
-    and
-    to_finiteFun_replacement:
-    "strong_replacement(M, \<lambda>x y. x \<in> FiniteFun_Repr(A,B) \<and> y = to_FiniteFun(x))"
-
 begin
 
 lemma seqspace_closed:
@@ -98,10 +80,23 @@ lemma seqspace_closed:
   unfolding seqspace_def using seqspace_replacement[of B] RepFun_closed2 
   by simp
 
+end
+
+locale M_finite_fun_space =  M_seqspace +
+  assumes 
+    cons_like_closed : "separation(M,\<lambda>f. cons_like(f))"
+    and 
+    to_finiteFun_body_replacement:
+    "strong_replacement(M, \<lambda>x y. x \<in> domain(f) \<and> y = f ` x)"
+    and
+    to_finiteFun_replacement:
+    "strong_replacement(M, \<lambda>x y. x \<in> FiniteFun_Repr(A,B) \<and> y = to_FiniteFun(x))"
+begin
 lemma FiniteFun_fst_type:
   assumes "h\<in>A-||>B" "p\<in>h"
   shows  "fst(p)\<in>domain(h)"
-  using assms by(induct h, auto)
+  using assms 
+  by(induct h, auto)
 
 lemma FinFun_closed:
   "M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(\<Union>{n\<rightarrow>A\<times>B . n\<in>\<omega>})"
@@ -401,8 +396,6 @@ lemma FiniteFun_closed :
   using assms To_FiniteFun_Repr_closed FiniteFun_eq_to_FiniteFun_Repr
   by simp
 
-
-end (* M_seqspace *)
-
+end (* M_finite_fun_space *)
 
 end

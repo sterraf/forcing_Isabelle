@@ -4,12 +4,24 @@ theory Discipline_Function
     "Relativization"
     "Internalizations"
     "Discipline_Base"
-    FrecR
+    "Synthetic_Definition" 
     Arities
 begin
 
 (**********************************************************)
 paragraph\<open>Discipline for \<^term>\<open>fst\<close>\<close>
+
+
+(* ftype(p) \<equiv> THE a. \<exists>b. p = \<langle>a, b\<rangle> *)
+arity_theorem for "empty_fm"
+arity_theorem for "upair_fm"
+arity_theorem for "pair_fm"
+definition
+  is_fst :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
+  "is_fst(M,x,t) \<equiv> (\<exists>z[M]. pair(M,t,z,x)) \<or>
+                       (\<not>(\<exists>z[M]. \<exists>w[M]. pair(M,w,z,x)) \<and> empty(M,t))"
+synthesize "fst" from_definition "is_fst"
+arity_theorem for "fst_fm" 
 
 definition fst_rel ::  "[i\<Rightarrow>o,i] \<Rightarrow> i"  where
   "fst_rel(M,p) \<equiv> THE d. is_fst(M,p,d)"
@@ -17,6 +29,35 @@ definition fst_rel ::  "[i\<Rightarrow>o,i] \<Rightarrow> i"  where
 reldb_rem absolute "fst"
 reldb_add relational "fst" "is_fst"
 reldb_add functional "fst" "fst_rel"
+
+definition
+  is_snd :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
+  "is_snd(M,x,t) \<equiv> (\<exists>z[M]. pair(M,z,t,x)) \<or>
+                       (\<not>(\<exists>z[M]. \<exists>w[M]. pair(M,z,w,x)) \<and> empty(M,t))"
+synthesize "snd" from_definition "is_snd"
+arity_theorem for "snd_fm" 
+
+reldb_rem absolute "snd"
+reldb_add relational "snd" "is_snd"
+reldb_add functional "snd" "fst_snd"
+
+lemma (in M_trivial) fst_snd_closed: 
+  assumes "M(p)"
+  shows "M(fst(p)) \<and> M(snd(p))"
+  unfolding fst_def snd_def using assms
+  by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto)
+
+lemma (in M_trivial) fst_abs [simp]:
+  "\<lbrakk>M(p); M(x) \<rbrakk> \<Longrightarrow> is_fst(M,p,x) \<longleftrightarrow> x = fst(p)"
+  unfolding is_fst_def fst_def 
+  by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto)
+  
+
+lemma (in M_trivial) snd_abs [simp]:
+  "\<lbrakk>M(p); M(y) \<rbrakk> \<Longrightarrow> is_snd(M,p,y) \<longleftrightarrow> y = snd(p)"
+  unfolding is_snd_def snd_def 
+  by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto)
+
 
 subsection\<open>Discipline for \<^term>\<open>function_space\<close>\<close>
 

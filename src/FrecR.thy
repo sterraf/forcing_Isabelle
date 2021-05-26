@@ -1,49 +1,14 @@
 section\<open>Well-founded relation on names\<close>
-theory FrecR imports Names Synthetic_Definition Internalizations begin
+theory FrecR 
+  imports 
+    Names 
+    "Synthetic_Definition" 
+    Internalizations 
+    Discipline_Function
+begin
 
 text\<open>\<^term>\<open>frecR\<close> is the well-founded relation on names that allows
 us to define forcing for atomic formulas.\<close>
-
-(* MOVE THIS. absoluteness of higher-order composition *)
-definition
-  is_hcomp :: "[i\<Rightarrow>o,i\<Rightarrow>i\<Rightarrow>o,i\<Rightarrow>i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_hcomp(M,is_f,is_g,a,w) \<equiv> \<exists>z[M]. is_g(a,z) \<and> is_f(z,w)"
-
-lemma (in M_trivial) hcomp_abs:
-  assumes
-    is_f_abs:"\<And>a z. M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_f(a,z) \<longleftrightarrow> z = f(a)" and
-    is_g_abs:"\<And>a z. M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_g(a,z) \<longleftrightarrow> z = g(a)" and
-    g_closed:"\<And>a. M(a) \<Longrightarrow> M(g(a))"
-    "M(a)" "M(w)"
-  shows
-    "is_hcomp(M,is_f,is_g,a,w) \<longleftrightarrow> w = f(g(a))"
-  unfolding is_hcomp_def using assms by simp
-
-definition
-  hcomp_fm :: "[i\<Rightarrow>i\<Rightarrow>i,i\<Rightarrow>i\<Rightarrow>i,i,i] \<Rightarrow> i" where
-  "hcomp_fm(pf,pg,a,w) \<equiv> Exists(And(pg(succ(a),0),pf(0,succ(w))))"
-
-lemma sats_hcomp_fm:
-  assumes
-    f_iff_sats:"\<And>a b z. a\<in>nat \<Longrightarrow> b\<in>nat \<Longrightarrow> z\<in>M \<Longrightarrow>
-                 is_f(nth(a,Cons(z,env)),nth(b,Cons(z,env))) \<longleftrightarrow> sats(M,pf(a,b),Cons(z,env))"
-    and
-    g_iff_sats:"\<And>a b z. a\<in>nat \<Longrightarrow> b\<in>nat \<Longrightarrow> z\<in>M \<Longrightarrow>
-                is_g(nth(a,Cons(z,env)),nth(b,Cons(z,env))) \<longleftrightarrow> sats(M,pg(a,b),Cons(z,env))"
-    and
-    "a\<in>nat" "w\<in>nat" "env\<in>list(M)"
-  shows
-    "sats(M,hcomp_fm(pf,pg,a,w),env) \<longleftrightarrow> is_hcomp(##M,is_f,is_g,nth(a,env),nth(w,env))"
-proof -
-  have "sats(M, pf(0, succ(w)), Cons(x, env)) \<longleftrightarrow> is_f(x,nth(w,env))" if "x\<in>M" "w\<in>nat" for x w
-    using f_iff_sats[of 0 "succ(w)" x] that by simp
-  moreover
-  have "sats(M, pg(succ(a), 0), Cons(x, env)) \<longleftrightarrow> is_g(nth(a,env),x)" if "x\<in>M" "a\<in>nat" for x a
-    using g_iff_sats[of "succ(a)" 0 x] that by simp
-  ultimately
-  show ?thesis unfolding hcomp_fm_def is_hcomp_def using assms by simp
-qed
-
 
 (* Preliminary *)
 definition
@@ -118,18 +83,6 @@ proof -
   qed
 qed
 
-
-(* ftype(p) \<equiv> THE a. \<exists>b. p = \<langle>a, b\<rangle> *)
-arity_theorem for "empty_fm"
-arity_theorem for "upair_fm"
-arity_theorem for "pair_fm"
-definition
-  is_fst :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "is_fst(M,x,t) \<equiv> (\<exists>z[M]. pair(M,t,z,x)) \<or>
-                       (\<not>(\<exists>z[M]. \<exists>w[M]. pair(M,w,z,x)) \<and> empty(M,t))"
-synthesize "fst" from_definition "is_fst"
-arity_theorem for "fst_fm" 
-
 definition
   is_ftype :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
   "is_ftype \<equiv> is_fst"
@@ -146,22 +99,6 @@ lemma is_ftype_iff_sats [iff_sats]:
   unfolding ftype_fm_def is_ftype_def
   using assms sats_fst_fm
   by simp
-
-definition
-  is_snd :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "is_snd(M,x,t) \<equiv> (\<exists>z[M]. pair(M,z,t,x)) \<or>
-                       (\<not>(\<exists>z[M]. \<exists>w[M]. pair(M,z,w,x)) \<and> empty(M,t))"
-
-definition
-  snd_fm :: "[i,i] \<Rightarrow> i" where
-  "snd_fm(x,t) \<equiv> Or(Exists(pair_fm(0,succ(t),succ(x))),
-                   And(Neg(Exists(Exists(pair_fm(1,0,2 #+ x)))),empty_fm(t)))"
-
-lemma sats_snd_fm :
-  "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk>
-    \<Longrightarrow> sats(A, snd_fm(x,y), env) \<longleftrightarrow>
-        is_snd(##A, nth(x,env), nth(y,env))"
-  by (simp add: snd_fm_def is_snd_def)
 
 definition
   is_name1 :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
@@ -262,7 +199,7 @@ lemma components_type[TC] :
 lemmas components_iff_sats = is_ftype_iff_sats is_name1_iff_sats is_name2_iff_sats
   is_cond_of_iff_sats
 
-lemmas components_defs = fst_fm_def ftype_fm_def snd_fm_def snd_snd_fm_def hcomp_fm_def
+lemmas components_defs = ftype_fm_def snd_snd_fm_def hcomp_fm_def
   name1_fm_def name2_fm_def cond_of_fm_def
 
 definition
@@ -299,7 +236,7 @@ lemma sats_ecloseN_fm [simp]:
     \<Longrightarrow> sats(A, ecloseN_fm(en,t), env) \<longleftrightarrow> is_ecloseN(##A,nth(t,env),nth(en,env))"
   unfolding ecloseN_fm_def is_ecloseN_def eclose_n1_fm_def eclose_n2_fm_def is_eclose_n_def
   using  nth_0 nth_ConsI sats_name1_fm sats_name2_fm
-    is_singleton_iff_sats[symmetric]
+    singleton_iff_sats[symmetric]
   by auto
 
 lemma is_ecloseN_iff_sats [iff_sats]:

@@ -1,10 +1,7 @@
 section\<open>A poset of successions\<close>
 theory Succession_Poset
   imports
-    Arities
     Proper_Extension
-    Synthetic_Definition
-    Names
     FiniteFun_Relative
 begin
 
@@ -35,18 +32,6 @@ proof (unfold_locales, simp)
   with \<open>B\<in>M\<close> 
   show "strong_replacement(##M, \<lambda>n z. n \<in> nat \<and> is_funspace(##M, n, B, z))"
     using M_nat by simp
-next
-  have "arity(cons_like_rel_fm(0)) \<le> 1"   
-    using arity_cons_like_rel_fm 
-    by simp
-  then
-  have "separation(##M, \<lambda>x . M, [x] \<Turnstile> cons_like_rel_fm(0))"
-    using separation_ax[of "cons_like_rel_fm(0)"]
-    by simp
-  then
-  have "separation(##M, \<lambda>x . cons_like_rel(##M,x))"
-    using separation_cong[OF _ cons_like_rel_iff_sats]
-
 qed
 
 definition seq_upd :: "i \<Rightarrow> i \<Rightarrow> i" where
