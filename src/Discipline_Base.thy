@@ -288,7 +288,7 @@ lemma Pow_rel_closed[intro,simp]: "M(r) \<Longrightarrow> M(Pow_rel(M,r))"
 
 lemmas trans_Pow_rel_closed[trans_closed] = transM[OF _ Pow_rel_closed]
 
-text\<open>The proof of f_rel_iff lemma is schematic and it can reused by copy-paste 
+text\<open>The proof of \<^term>\<open>f_rel_iff\<close> lemma is schematic and it can reused by copy-paste 
      replacing appropriately.\<close>
 
 lemma Pow_rel_iff:
@@ -310,7 +310,7 @@ next
     by (auto del:the_equality intro:the_equality[symmetric])
 qed
 
-text\<open>The next "def_" result really corresponds to @{thm Pow_iff}\<close>
+text\<open>The next "def\_" result really corresponds to @{thm Pow_iff}\<close>
 lemma def_Pow_rel: "M(A) \<Longrightarrow> M(r) \<Longrightarrow> A\<in>Pow_rel(M,r) \<longleftrightarrow> A \<subseteq> r"
   using Pow_rel_iff[OF _ Pow_rel_closed, of r r]
   unfolding is_Pow_def by simp
@@ -595,7 +595,7 @@ end (* M_N_Pi_assumptions *)
 locale M_Pi_assumptions_0 = M_Pi_assumptions _ 0
 begin
 
-text\<open>This is used in the proof of AC_Pi_rel\<close>
+text\<open>This is used in the proof of \<^term>\<open>AC_Pi_rel\<close>\<close>
 lemma Pi_rel_empty1[simp]: "Pi\<^bsup>M\<^esup>(0,B) = {0}"
   using Pi_assumptions Pow_rel_char
   by (unfold def_Pi_rel function_def) (auto)

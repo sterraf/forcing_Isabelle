@@ -170,7 +170,7 @@ proof -
       def_Pi_rel Pi_rel_char Pow_rel_char
     unfolding is_function_space_def is_funspace_def by (simp add:Pi_def)
   with assms
-  show ?thesis \<comment> \<open>At this point, quoting "trans_rules" doesn't work\<close>
+  show ?thesis \<comment> \<open>At this point, quoting "trans\_rules" doesn't work\<close>
     using transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(y)\<close>]
       transM[OF _ Pi_rel_closed] by blast
 qed
@@ -333,7 +333,7 @@ begin
     Same with \<^term>\<open>surjP\<close> below. It might relieve from changing
     @{thm exI allI} to @{thm rexI rallI} in some proofs.
     I wonder if this escalates well. Assuming that all terms
-    appearing in the "def_" theorem are in \<^term>\<open>M\<close> and using
+    appearing in the "def\_" theorem are in \<^term>\<open>M\<close> and using
     @{thm transM}, it might do.\<close>
 lemma def_injP_rel:
   assumes
@@ -845,8 +845,8 @@ lemma def_bij_rel:
   assumes "M(A)" "M(B)"
   shows "bij_rel(M,A,B) = inj_rel(M,A,B) \<inter> surj_rel(M,A,B)"
   using assms bij_rel_iff inj_rel_iff surj_rel_iff
-    is_Int_abs\<comment> \<open>For absolute terms, "_abs" replaces "_iff".
-                 Also, in this case "_closed" is in the simpset.\<close>
+    is_Int_abs\<comment> \<open>For absolute terms, "\_abs" replaces "\_iff".
+                 Also, in this case "\_closed" is in the simpset.\<close>
   unfolding is_bij_def by simp
 
 lemma bij_rel_char:
@@ -1016,11 +1016,11 @@ abbreviation
   "lesspoll_r_set(A,M) \<equiv> lesspoll_rel(##M,A)"
 
 text\<open>Since \<^term>\<open>lesspoll_rel\<close> is defined as a propositional
-combination of older terms, there is no need for a separate “def”
+combination of older terms, there is no need for a separate ``def''
 theorem for it.\<close>
 
 text\<open>Note that \<^term>\<open>lesspoll_rel\<close> is neither $\Sigma_1^{\mathit{ZF}}$ nor
- $\Pi_1^{\mathit{ZF}}$, so there is no “transfer” theorem for it.\<close>
+ $\Pi_1^{\mathit{ZF}}$, so there is no ``transfer'' theorem for it.\<close>
 
 
 

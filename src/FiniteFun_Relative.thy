@@ -1,4 +1,4 @@
-section\<open>Relativization of Finite Functiions\<close>
+section\<open>Relativization of Finite Functions\<close>
 theory FiniteFun_Relative
   imports
     Synthetic_Definition
@@ -7,7 +7,7 @@ begin
 
 subsection\<open>The set of finite binary sequences\<close>
 
-notation nat (\<open>\<omega>\<close>) \<comment> \<open>to_FiniteFunDO: already in ZF Library\<close>
+notation nat (\<open>\<omega>\<close>) \<comment> \<open>TODO: already in ZF Library\<close>
 
 text\<open>We implement the poset for adding one Cohen real, the set 
 $2^{<\omega}$ of finite binary sequences.\<close>
@@ -22,8 +22,22 @@ lemma seqspaceI[intro]: "n\<in>\<alpha> \<Longrightarrow> f:n\<rightarrow>B \<Lo
 lemma seqspaceD[dest]: "f\<in>B\<^bsup><\<alpha>\<^esup> \<Longrightarrow> \<exists>n\<in>\<alpha>. f:n\<rightarrow>B"
   unfolding seqspace_def by blast
 
-\<comment> \<open>FIXME: Now this is too particular (only for \<^term>\<open>\<omega>\<close>-sequences.
+
+\<comment> \<open>FIXME: Now this is too particular (only for \<^term>\<open>\<omega>\<close>-sequences).
   A relative definition for \<^term>\<open>seqspace\<close> would be appropriate.\<close>
+
+locale M_seqspace =  M_trancl +
+  assumes 
+    seqspace_replacement: "M(B) \<Longrightarrow> strong_replacement(M,\<lambda>n z. n\<in>nat \<and> is_funspace(M,n,B,z))"
+begin
+
+lemma seqspace_closed:
+  "M(B) \<Longrightarrow> M(B\<^bsup><\<omega>\<^esup>)"
+  unfolding seqspace_def using seqspace_replacement[of B] RepFun_closed2 
+  by simp
+
+end
+
 
 schematic_goal seqspace_fm_auto:
   assumes 
@@ -36,17 +50,14 @@ synthesize "seqspace_rel" from_schematic "seqspace_fm_auto"
 arity_theorem for "seqspace_rel_fm"
 
 subsection\<open>Representation of finite functions\<close>
-text\<open>
-A function $f\inA\to_{\mathit{fin}}B$ can be represented by a function 
+
+text\<open>A function $f\in A\to_{\mathit{fin}}B$ can be represented by a function
 $g\in |f| \to A\times B$. It is clear that $f$ can be represented by
-any $g' = g \cdot \pi$, where $\pi$ is a permutation $\pi\in dom(g)\to dom(g)$.
-
+any $g' = g \cdot \pi$, where $\pi$ is a permutation $\pi\in dom(g)\to dom(g)$. 
 We use this representation of $A\to_{\mathit{fin}}B$ to prove that our model is
-closed under $\_\to_{\mathit{fin}}\_$.
+closed under $\_\to_{\mathit{fin}}\_$.\<close>
 
-\<close>
-
-\<comment> \<open>A function g\<in>n\<rightarrow>A\<times>B that is functional in the first components.\<close>
+text\<open>A function $g\in n\to A\times B$ that is functional in the first components.\<close>
 definition cons_like :: "i \<Rightarrow> o" where
   "cons_like(f) \<equiv> \<forall> i\<in>domain(f) . \<forall>j\<in>i . fst(f`i) \<noteq> fst(f`j)"
 
@@ -62,25 +73,13 @@ arity_theorem for "cons_like_rel_fm"
 definition FiniteFun_iso :: "[i,i,i,i,i] \<Rightarrow> o" where
   "FiniteFun_iso(A,B,n,g,f) \<equiv>  (\<forall> i\<in>n . g`i \<in> f) \<and> (\<forall> ab\<in>f. (\<exists> i\<in>n. g`i=ab))"
 
-\<comment> \<open>From a function g\<in>n\<rightarrow>A\<times>B we obtain a finite function A-||>B.\<close>
+text\<open>From a function $g\in n \to A\times B$ we obtain a finite function in \<^term>\<open>A-||>B\<close>.\<close>
 definition to_FiniteFun :: "i \<Rightarrow> i" where
   "to_FiniteFun(f) \<equiv> {f`i . i \<in> domain(f)}"
 
 definition FiniteFun_Repr :: "[i,i] \<Rightarrow> i" where
   "FiniteFun_Repr(A,B) \<equiv> {f \<in> (A\<times>B)\<^bsup><\<omega>\<^esup> . cons_like(f) }"
 
-
-locale M_seqspace =  M_trancl +
-  assumes 
-    seqspace_replacement: "M(B) \<Longrightarrow> strong_replacement(M,\<lambda>n z. n\<in>nat \<and> is_funspace(M,n,B,z))"
-begin
-
-lemma seqspace_closed:
-  "M(B) \<Longrightarrow> M(B\<^bsup><\<omega>\<^esup>)"
-  unfolding seqspace_def using seqspace_replacement[of B] RepFun_closed2 
-  by simp
-
-end
 
 locale M_finite_fun_space =  M_seqspace +
   assumes 
@@ -128,8 +127,8 @@ qed
 
 
 
-\<comment>\<open>A finite function f \<in> A -||> B can be represented by a 
-function g \<in> n \<rightarrow> A\<times>B, with n=|f|.\<close>
+text\<open>A finite function \<^term>\<open>f \<in> A -||> B\<close> can be represented by a 
+function $g \in n \to A \times B$, with $n=|f|$.\<close>
 lemma FiniteFun_iso_intro1:
   assumes "f \<in> (A -||> B)"
   shows "\<exists>n\<in>\<omega> . \<exists>g\<in>n\<rightarrow>A\<times>B. FiniteFun_iso(A,B,n,g,f) \<and> cons_like(g)"
@@ -205,7 +204,7 @@ proof(induct f,force simp add:emptyI FiniteFun_iso_def cons_like_def)
 qed
 
 
-\<comment> \<open>All the representations of f\<in>A-||>B are equal.\<close>
+text\<open>All the representations of \<^term>\<open>f\<in>A-||>B\<close> are equal.\<close>
 lemma FiniteFun_isoD : 
   assumes "n\<in>\<omega>" "g\<in>n\<rightarrow>A\<times>B" "f\<in>A-||>B" "FiniteFun_iso(A,B,n,g,f)"
   shows "to_FiniteFun(g) = f"
@@ -238,7 +237,8 @@ lemma to_FiniteFun_succ_eq :
   using assms domain_restrict domain_of_fun 
   unfolding to_FiniteFun_def by auto
 
-\<comment> \<open>If g\<in>n\<rightarrow>A\<times>B is cons_like, then it is a representation of to_FiniteFun(g).\<close>
+text\<open>If $g \in n\to A\times B$ is \<^term>\<open>cons_like\<close>, then it is a representation of 
+\<^term>\<open>to_FiniteFun(g)\<close>.\<close>
 lemma FiniteFun_iso_intro_to:
   assumes "n\<in>\<omega>" "g\<in>n\<rightarrow>A\<times>B" "cons_like(g)"
   shows "to_FiniteFun(g) \<in> (A -||> B) \<and> FiniteFun_iso(A,B,n,g,to_FiniteFun(g))" 
