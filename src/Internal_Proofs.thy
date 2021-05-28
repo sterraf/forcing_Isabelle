@@ -3,6 +3,7 @@ theory Internal_Proofs
     Relativization
     "../Tools/Try0"
 begin
+\<comment> \<open>NOTE: This theory is a playground.\<close>
 (* setup "Config.put_global Blast.trace true" *)
 
 (* MOVE THIS. absoluteness of higher-order composition *)

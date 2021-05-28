@@ -307,7 +307,7 @@ proof -
     have "?g \<in> M" using \<open>s\<in>M\<close> \<open>\<alpha>\<in>M\<close> repl_opname_check by simp
     let ?f_dot="{\<langle>opair_name(check(\<beta>),s`\<beta>),one\<rangle>. \<beta>\<in>\<alpha>}"
     have "?f_dot = ?g \<times> {one}" by blast
-    from one_in_M have "{one} \<in> M" using singletonM by simp
+    from one_in_M have "{one} \<in> M" using singleton_closed by simp
     define f where
       "f \<equiv> val(P,G,?f_dot)"
     from \<open>{one}\<in>M\<close> \<open>?g\<in>M\<close> \<open>?f_dot = ?g\<times>{one}\<close>

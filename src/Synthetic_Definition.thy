@@ -8,11 +8,21 @@ theory Synthetic_Definition
     and
     "generate_schematic" :: thy_decl % "ML"
     and
+    "arity_theorem" :: thy_decl % "ML"
+    and
+    "manual_schematic" :: thy_goal_stmt % "ML"
+    and
+    "manual_arity" :: thy_goal_stmt % "ML"
+    and
     "from_schematic"
     and
     "for"
     and
     "from_definition"
+    and
+    "assuming"
+    and
+    "intermediate"
 
 begin
 ML_file\<open>Utils.ml\<close>
@@ -20,6 +30,8 @@ ML_file\<open>Utils.ml\<close>
 named_theorems fm_definitions "Definitions of synthetized formulas."
 
 named_theorems iff_sats "Theorems for synthetising formulas."
+
+named_theorems arity "Theorems for arity of formulas."
 
 ML\<open>
 val $` = curry ((op $) o swap)
@@ -30,6 +42,57 @@ val op &&& = Utils.&&&
 
 infix 6 ***
 val op *** = Utils.***
+
+fun arity_goal intermediate def_name lthy =
+  let
+    val thm = Proof_Context.get_thm lthy (def_name ^ "_def")
+    val (_, tm, _) = Utils.thm_concl_tm lthy (def_name ^ "_def")
+    val (def, tm) = tm |> Utils.dest_eq_tms'
+    fun first_lambdas (Abs (body as (_, ty, _))) =
+        if ty = @{typ "i"}
+          then (op ::) (Term.dest_abs body |>> Utils.var_i ||> first_lambdas)
+          else Term.dest_abs body |> first_lambdas o #2
+      | first_lambdas _ = []
+    val (def, vars) = Term.strip_comb def
+    val vs = vars @ first_lambdas tm
+    val def = fold (op $`) vs def
+    val hyps = map (fn v => Utils.mem_ v Utils.nat_ |> Utils.tp) vs
+    val concl = @{const IFOL.eq(i)} $ (@{const arity} $ def) $ Var (("ar", 0), @{typ "i"})
+    val g_iff = Logic.list_implies (hyps, Utils.tp concl)
+    val attribs = if intermediate then [] else @{attributes [arity]}
+  in
+    (g_iff, "arity_" ^ def_name ^ (if intermediate then "'" else ""), attribs, thm, vs)
+  end
+
+fun manual_arity intermediate def_name pos lthy =
+  let
+    val (goal, thm_name, attribs, _, _) = arity_goal intermediate def_name lthy
+  in
+    Proof.theorem NONE (fn thmss => Utils.display "theorem" pos
+                                    o Local_Theory.note ((Binding.name thm_name, attribs), hd thmss))
+    [[(goal, [])]] lthy
+  end
+
+fun prove_arity thms goal ctxt =
+  let
+    val rules = Named_Theorems.get ctxt \<^named_theorems>\<open>arity\<close>
+  in
+    Goal.prove ctxt [] [] goal
+    (K (rewrite_goal_tac ctxt thms 1 THEN Method.insert_tac ctxt rules 1 THEN asm_simp_tac ctxt 1))
+  end
+
+fun auto_arity intermediate def_name pos lthy =
+  let
+    val (goal, thm_name, attribs, def_thm, vs) = arity_goal intermediate def_name lthy
+    val intermediate_text = if intermediate then "intermediate" else ""
+    val help = "You can manually prove the arity_theorem by typing:\n"
+             ^ "manual_arity " ^ intermediate_text ^ " for \"" ^ def_name ^ "\"\n"
+    val thm = prove_arity [def_thm] goal lthy
+              handle ERROR s => help ^ "\n\n" ^ s |> Exn.reraise o ERROR
+    val thm = Utils.fix_vars thm (map Utils.freeName vs) lthy
+  in
+    Local_Theory.note ((Binding.name thm_name, attribs), [thm]) lthy |> Utils.display "theorem" pos
+  end
 
 fun prove_tc_form goal thms ctxt =
   Goal.prove ctxt [] [] goal (K (rewrite_goal_tac ctxt thms 1 THEN TypeCheck.typecheck_tac ctxt))
@@ -163,11 +226,14 @@ fun prove_schematic thms goal ctxt =
     val rules = Named_Theorems.get ctxt \<^named_theorems>\<open>iff_sats\<close>
   in
     Goal.prove ctxt [] [] goal
-    (K (rewrite_goal_tac ctxt thms 1 THEN REPEAT1 (resolve_tac ctxt rules 1 ORELSE asm_simp_tac ctxt 1)))
+    (K (rewrite_goal_tac ctxt thms 1 THEN REPEAT1 (CHANGED (resolve_tac ctxt rules 1 ORELSE asm_simp_tac ctxt 1))))
   end
 
-fun schematic_def def_name target pos lthy =
-  let
+val valid_assumptions = [ ("nonempty", Utils.mem_ @{term "0"})
+                        ]
+
+fun pre_schematic_def target assuming lthy =
+let
     val thm = Proof_Context.get_thm lthy (target ^ "_def")
     val (vars, tm, ctxt1) = Utils.thm_concl_tm lthy (target ^ "_def")
     val (const, tm) = tm |> Utils.dest_eq_tms' o Utils.dest_trueprop |>> #1 o strip_comb
@@ -185,7 +251,10 @@ fun schematic_def def_name target pos lthy =
     val (set, ctxt2) = Variable.variant_fixes ["A"] ctxt1' |>> Utils.var_i o hd
     val class = @{const "setclass"} $ set
     val (env, ctxt3) = Variable.variant_fixes ["env"] ctxt2 |>> Utils.var_i o hd
-    val hyps = (List.map (fn v => Utils.tp (Utils.mem_ v Utils.nat_)) vs) @ [Utils.tp (Utils.mem_ env (Utils.list_ set))]
+    val assumptions = filter (Utils.inList assuming o #1) valid_assumptions |> map #2
+    val hyps = (List.map (fn v => Utils.tp (Utils.mem_ v Utils.nat_)) vs)
+               @ [Utils.tp (Utils.mem_ env (Utils.list_ set))]
+               @ Utils.zip_with (fn (f,x) => Utils.tp (f x)) assumptions (replicate (length assumptions) set)
     val args = class :: map (fn v => Utils.nth_ v env) vs
     val (fm_name, ctxt4) = Variable.variant_fixes ["fm"] ctxt3 |>> hd
     val fm_type = fold (K (fn acc => Type ("fun", [@{typ "i"}, acc]))) vs @{typ "i"}
@@ -196,37 +265,62 @@ fun schematic_def def_name target pos lthy =
     val rhs = @{const IFOL.eq(i)} $ sats $ (@{const succ} $ @{const zero})
     val concl = @{const "IFOL.iff"} $ lhs $ rhs
     val schematic = Logic.list_implies (hyps, Utils.tp concl)
-    val thm = prove_schematic [thm] schematic ctxt4
+  in
+    (schematic, ctxt4, thm, set, env, vs)
+  end
+
+fun str_join _ [] = ""
+  | str_join _ [s] = s
+  | str_join c (s :: ss) = s ^ c ^ (str_join c ss)
+
+fun schematic_def def_name target assuming pos lthy =
+  let
+    val (schematic, ctxt, thm, set, env, vs) = pre_schematic_def target assuming lthy
+    val assuming_text = if null assuming then "" else "assuming " ^ (map (fn s => "\"" ^ s ^ "\"") assuming |> str_join " ")
+    val help = "You can manually prove the schematic_goal by typing:\n"
+             ^ "manual_schematic [sch_name] for \"" ^ target ^ "\"" ^ assuming_text ^"\n"
+             ^ "And then complete the synthesis with:\n"
+             ^ "synthesize \"" ^ target ^ "\" from_schematic [sch_name]\n"
+             ^ "In both commands, \<guillemotleft>sch_name\<guillemotright> must be the same and, if ommited, will be defaulted to sats_" ^ target ^ "_fm_auto.\n"
+             ^ "You can also try adding new assumptions and/or synthetizing definitions of sub-terms."
+    val thm = prove_schematic [thm] schematic ctxt
+              handle ERROR s => help ^ "\n\n" ^ s |> Exn.reraise o ERROR
     val thm = Utils.fix_vars thm (map Utils.freeName (set :: env :: vs)) lthy
   in
     Local_Theory.note ((Binding.name def_name, []), [thm]) lthy |> Utils.display "theorem" pos
   end
 
-fun schematic_synthetic_def def_name target pos tc auto =
+fun schematic_synthetic_def def_name target assuming pos tc auto =
     (synthetic_def def_name ("sats_" ^ def_name ^ "_fm_auto") pos tc auto)
-    o (schematic_def ("sats_" ^ def_name ^ "_fm_auto") target pos)
+    o (schematic_def ("sats_" ^ def_name ^ "_fm_auto") target assuming pos)
 
-  (* val dummy = Specification.theorem_cmd false Thm.theoremK NONE (K I) Binding.empty_atts []
-  [Element.Fixes [], Element.Assumes []] (Element.Shows [((@{binding "dummy"}, []), [("0 = 0", [])])]) *)
+fun manual_schematic def_name target assuming pos lthy =
+  let
+    val (schematic, _, _, _, _, _) = pre_schematic_def target assuming lthy
+  in
+    Proof.theorem NONE (fn thmss => Utils.display "theorem" pos
+                                    o Local_Theory.note ((Binding.name def_name, []), hd thmss))
+    [[(schematic, [])]] lthy
+  end
 \<close>
-ML\<open>
 
+ML\<open>
 local
   val simple_from_schematic_synth_constdecl =
        Parse.string --| (Parse.$$$ "from_schematic")
-       >> (fn bndg => synthetic_def bndg ("sats_" ^ bndg ^ "fm_auto"))
+       >> (fn bndg => synthetic_def bndg ("sats_" ^ bndg ^ "_fm_auto"))
 
   val full_from_schematic_synth_constdecl =
        Parse.string -- ((Parse.$$$ "from_schematic" |-- Parse.thm))
        >> (fn (bndg,thm) => synthetic_def bndg (#1 (thm |>> Facts.ref_name)))
 
   val full_from_definition_synth_constdecl =
-       Parse.string -- ((Parse.$$$ "from_definition" |-- Parse.string))
-       >> (fn (bndg,target) => schematic_synthetic_def bndg target)
+       Parse.string -- ((Parse.$$$ "from_definition" |-- Parse.string)) -- (Scan.optional (Parse.$$$ "assuming" |-- Scan.repeat Parse.string) [])
+       >> (fn ((bndg,target), assuming) => schematic_synthetic_def bndg target assuming)
 
   val simple_from_definition_synth_constdecl =
-     Parse.string --| (Parse.$$$ "from_definition")
-     >> (fn bndg => schematic_synthetic_def bndg bndg)
+     Parse.string -- (Parse.$$$ "from_definition" |-- (Scan.optional (Parse.$$$ "assuming" |-- Scan.repeat Parse.string)) [])
+     >> (fn (bndg, assuming) => schematic_synthetic_def bndg bndg assuming)
 
   val synth_constdecl =
        Parse.position (full_from_schematic_synth_constdecl || simple_from_schematic_synth_constdecl
@@ -234,10 +328,10 @@ local
                        || simple_from_definition_synth_constdecl)
 
   val full_schematic_decl =
-       Parse.string -- ((Parse.$$$ "for" |-- Parse.string))
+       Parse.string -- ((Parse.$$$ "for" |-- Parse.string)) -- (Scan.optional (Parse.$$$ "assuming" |-- Scan.repeat Parse.string) [])
 
   val simple_schematic_decl =
-       Parse.$$$ "for" |-- Parse.string >> (fn name => "sats_" ^ name ^ "_fm_auto") &&& I
+       (Parse.$$$ "for" |-- Parse.string >> (fn name => "sats_" ^ name ^ "_fm_auto") &&& I) -- (Scan.optional (Parse.$$$ "assuming" |-- Scan.repeat Parse.string) [])
 
   val schematic_decl = Parse.position (full_schematic_decl || simple_schematic_decl)
 
@@ -250,12 +344,24 @@ local
        (synth_constdecl >> (fn (f,p) => f p false false))
 
   val _ = Outer_Syntax.local_theory \<^command_keyword>\<open>generate_schematic\<close> "ML setup for schematic goals"
-       (schematic_decl >> (fn ((bndg,target),p) => schematic_def bndg target p))
+       (schematic_decl >> (fn (((bndg,target), assuming),p) => schematic_def bndg target assuming p))
+
+  val _ = Outer_Syntax.local_theory_to_proof \<^command_keyword>\<open>manual_schematic\<close> "ML setup for schematic goals"
+       (schematic_decl >> (fn (((bndg,target), assuming),p) => manual_schematic bndg target assuming p))
+
+  val arity_parser = Parse.position ((Scan.option (Parse.$$$ "intermediate") >> is_some) -- (Parse.$$$ "for" |-- Parse.string))
+
+  val _ = Outer_Syntax.local_theory_to_proof \<^command_keyword>\<open>manual_arity\<close> "ML setup for arities"
+       (arity_parser >> (fn ((intermediate, target), pos) => manual_arity intermediate target pos))
+
+  val _ = Outer_Syntax.local_theory \<^command_keyword>\<open>arity_theorem\<close> "ML setup for arities"
+       (arity_parser >> (fn ((intermediate, target), pos) => auto_arity intermediate target pos))
 
 in
 
 end
 \<close>
+
 text\<open>The \<^ML>\<open>synthetic_def\<close> function extracts definitions from
 schematic goals. A new definition is added to the context. \<close>
 

@@ -2,7 +2,10 @@ theory New_Discipline_Draft
   imports
     "Discipline_Base"
     "Discipline_Function"
-    Least
+    "Least"
+    "FrecR"
+    Arities
+    FrecR_Arities
 begin
 
 declare [[syntax_ambiguity_warning = false]]
@@ -90,9 +93,10 @@ Lo que debemos hacer es definir su versión relativa simplemente
 que no sean absolutos:
 \<close>
 
-definition
-  cardinal_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" where
-  "cardinal_rel(M,x) \<equiv> (\<mu> i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x)"
+relativize functional "cardinal" "cardinal_rel" external
+relationalize "cardinal_rel" "is_cardinal"
+synthesize "is_cardinal" from_definition assuming "nonempty"
+
 
 abbreviation
   cardinal_r :: "[i,i\<Rightarrow>o] \<Rightarrow> i" (\<open>|_|\<^bsup>_\<^esup>\<close>) where
@@ -105,143 +109,246 @@ abbreviation
 
 text\<open>Probamos el lema closed\<close>
 
-lemma (in M_trivial) cardinal_rel_closed: "M(x) \<Longrightarrow> M(|x|\<^bsup>M\<^esup>)"
-  using Least_closed'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x"]
+context M_trivial begin
+rel_closed for "cardinal"
+  using Least_closed'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> A"]
   unfolding cardinal_rel_def
   by simp
+end
 
-text\<open>Damos la versión full-relacional (se podrá calcular
-automáticamente)\<close>
-definition
-  is_cardinal :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
-  "is_cardinal(M,x,c) \<equiv> least(M, \<lambda>i. M(i) \<and> eqpoll_rel(M,i,x), c)"
+(*lemma (in M_trivial) cardinal_rel_closed: "M(x) \<Longrightarrow> M(|x|\<^bsup>M\<^esup>)"
+  using Least_closed'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x"]
+  unfolding cardinal_rel_def
+  by simp*)
 
+
+
+manual_arity intermediate for "is_Int_fm"
+  unfolding is_Int_fm_def
+  using arity
+  by simp
+
+arity_theorem for "is_Int_fm"
+
+arity_theorem for "is_funspace_fm"
+
+arity_theorem for "is_function_space_fm"
+
+arity_theorem for "surjP_rel_fm"
+
+arity_theorem intermediate for "is_surj_fm"
+
+lemma arity_is_surj_fm [arity] :
+  "A \<in> nat \<Longrightarrow> B \<in> nat \<Longrightarrow> I \<in> nat \<Longrightarrow> arity(is_surj_fm(A, B, I)) = succ(A) \<union> succ(B) \<union> succ(I)"
+  using arity_is_surj_fm'
+  by auto
+
+arity_theorem for "injP_rel_fm"
+
+arity_theorem intermediate for "is_inj_fm"
+
+lemma arity_is_inj_fm [arity]:
+  "A \<in> nat \<Longrightarrow> B \<in> nat \<Longrightarrow> I \<in> nat \<Longrightarrow> arity(is_inj_fm(A, B, I)) = succ(A) \<union> succ(B) \<union> succ(I)"
+  using arity_is_inj_fm'
+  by auto
+
+arity_theorem for "is_bij_fm"
+
+arity_theorem for "is_eqpoll_fm"
+
+arity_theorem for "is_cardinal_fm"
 
 text\<open>Y probamos la equivalencia entre la versión full-relacional
 y el concepto relativo\<close>
-lemma (in M_trivial) is_cardinal_iff :
+
+context M_Perm begin
+
+is_iff_rel for "cardinal"
+  using least_abs'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> A"]
+    is_eqpoll_iff
+  unfolding is_cardinal_def cardinal_rel_def
+  by simp
+end
+
+(*lemma (in M_trivial) is_cardinal_iff :
   assumes "M(x)" "M(c)"
   shows "is_cardinal(M,x,c) \<longleftrightarrow> c = |x|\<^bsup>M\<^esup>"
   using assms least_abs'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x"]
   unfolding is_cardinal_def cardinal_rel_def
-  by simp
+  by simp*)
 
 text\<open>Esa es toda la disciplina.\<close>
 
+reldb_add relational "Ord" "ordinal"
+reldb_add functional "lt" "lt"
+reldb_add relational "lt" "lt_rel"
+synthesize "lt_rel" from_definition
+arity_theorem intermediate for "lt_rel_fm"
 
-definition
-  Card_rel     :: "[i\<Rightarrow>o,i]\<Rightarrow>o"  (\<open>Card\<^bsup>_\<^esup>'(_')\<close>) where
-  "Card\<^bsup>M\<^esup>(i) \<equiv> i = |i|\<^bsup>M\<^esup>"
+lemma arity_lt_rel_fm[arity]: "a \<in> nat \<Longrightarrow> b \<in> nat \<Longrightarrow> arity(lt_rel_fm(a, b)) = succ(a) \<union> succ(b)"
+  using arity_lt_rel_fm'
+  by auto
 
-definition 
-  InfCard_rel   :: "[i\<Rightarrow>o,i] \<Rightarrow> o" (\<open>InfCard\<^bsup>_\<^esup>'(_')\<close>) where
-  "InfCard_rel(M,i) \<equiv> Card\<^bsup>M\<^esup>(i) \<and> nat \<le> i"
+relativize functional "Card" "Card_rel" external
+relationalize "Card_rel" "is_Card"
+synthesize "is_Card" from_definition assuming "nonempty"
+arity_theorem for "is_Card_fm"
 
-definition
-  cadd_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i"  where
-  "cadd_rel(M,A,B) \<equiv> |A+B|\<^bsup>M\<^esup>"
+notation Card_rel (\<open>Card\<^bsup>_\<^esup>'(_')\<close>)
+
+lemma (in M_Perm) is_Card_iff: "M(A) \<Longrightarrow> is_Card(M, A) \<longleftrightarrow> Card\<^bsup>M\<^esup>(A)"
+  using is_cardinal_iff
+  unfolding is_Card_def Card_rel_def by simp
+
+abbreviation
+  Card_r_set  :: "[i,i]\<Rightarrow>o"  (\<open>Card\<^bsup>_\<^esup>'(_')\<close>) where
+  "Card\<^bsup>M\<^esup>(i) \<equiv> Card_rel(##M,i)"
+
+relativize functional "InfCard" "InfCard_rel" external
+relationalize "InfCard_rel" "is_InfCard"
+synthesize "is_InfCard" from_definition assuming "nonempty"
+arity_theorem for "is_InfCard_fm"
+
+notation InfCard_rel (\<open>InfCard\<^bsup>_\<^esup>'(_')\<close>)
+
+abbreviation
+  InfCard_r_set  :: "[i,i]\<Rightarrow>o"  (\<open>InfCard\<^bsup>_\<^esup>'(_')\<close>) where
+  "InfCard\<^bsup>M\<^esup>(i) \<equiv> InfCard_rel(##M,i)"
+
+relativize functional "cadd" "cadd_rel" external
 
 abbreviation
   cadd_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<oplus>\<^bsup>_\<^esup> _\<close> [66,1,66] 65) where
   "A \<oplus>\<^bsup>M\<^esup> B \<equiv> cadd_rel(M,A,B)"
 
-lemma (in M_basic) cadd_rel_closed: 
-  "\<lbrakk> M(A);M(B) \<rbrakk> \<Longrightarrow> M(A \<oplus>\<^bsup>M\<^esup> B)"
+context M_basic begin
+rel_closed for "cadd"
   using cardinal_rel_closed
   unfolding cadd_rel_def
   by simp
-
+end
 
 (* relativization *)
-definition
-  is_cadd :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
-  "is_cadd(M,A,B,a) \<equiv> \<exists>s[M]. is_sum(M,A,B,s) \<and> is_cardinal(M,s,a)"
 
-lemma (in M_basic) is_cadd_iff :
-  assumes "M(A)" "M(B)" "M(a)"
-  shows "is_cadd(M,A,B,a) \<longleftrightarrow> a = A \<oplus>\<^bsup>M\<^esup> B"
-  using is_cardinal_iff assms 
+relationalize "cadd_rel" "is_cadd"
+
+manual_schematic for "is_cadd" assuming "nonempty"
+  unfolding is_cadd_def
+  by (rule iff_sats sum_iff_sats | simp)+
+synthesize "is_cadd" from_schematic
+
+arity_theorem for "sum_fm"
+
+arity_theorem for "is_cadd_fm"
+
+context M_Perm begin
+is_iff_rel for "cadd"
+  using is_cardinal_iff
   unfolding is_cadd_def cadd_rel_def
   by simp
+end
 
-definition
-  cmult_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i"  where
-  "cmult_rel(M,A,B) \<equiv> |A\<times>B|\<^bsup>M\<^esup>"
+relativize functional "cmult" "cmult_rel" external
 
 abbreviation
   cmult_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<otimes>\<^bsup>_\<^esup> _\<close> [66,1,66] 65) where
   "A \<otimes>\<^bsup>M\<^esup> B \<equiv> cmult_rel(M,A,B)"
 
-lemma (in M_basic) cmult_rel_closed: 
-  "\<lbrakk> M(A);M(B) \<rbrakk> \<Longrightarrow> M(A \<otimes>\<^bsup>M\<^esup> B)"
+(* relativization *)
+relationalize "cmult_rel" "is_cmult"
+
+declare cartprod_iff_sats [iff_sats]
+
+synthesize "is_cmult" from_definition assuming "nonempty"
+
+arity_theorem for "is_cmult_fm"
+
+context M_Perm begin
+
+rel_closed for "cmult"
   using cardinal_rel_closed
   unfolding cmult_rel_def
   by simp
 
-(* relativization *)
-definition
-  is_cmult :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
-  "is_cmult(M,A,B,m) \<equiv> \<exists>p[M]. cartprod(M,A,B,p) \<and> is_cardinal(M,p,m)"
-
-lemma (in M_basic) is_cmult_iff :
-  assumes "M(A)" "M(B)" "M(a)"
-  shows "is_cmult(M,A,B,a) \<longleftrightarrow> a = A \<otimes>\<^bsup>M\<^esup> B"
-  using is_cardinal_iff assms 
+is_iff_rel for "cmult"
+  using is_cardinal_iff 
   unfolding is_cmult_def cmult_rel_def
   by simp
 
-definition
-  Powapply_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" (\<open>Powapply\<^bsup>_\<^esup>'(_,_')\<close>) where
-  "Powapply\<^bsup>M\<^esup>(f,y) \<equiv> Pow\<^bsup>M\<^esup>(f`y)"
+end
 
-lemma (in M_basic) Powapply_rel_closed: 
-  "\<lbrakk> M(f);M(y) \<rbrakk> \<Longrightarrow> M(Powapply\<^bsup>M\<^esup>(f,y))"
-  using Pow_rel_closed
+
+definition
+  Powapply :: "[i,i] \<Rightarrow> i"  where
+  "Powapply(f,y) \<equiv> Pow(f`y)"
+
+reldb_add functional "Pow" "Pow_rel"
+reldb_add relational "Pow" "is_Pow"
+
+lemma subset_iff_sats[iff_sats]:
+  "nth(i, env) = x \<Longrightarrow> nth(j, env) = y \<Longrightarrow> i\<in>nat \<Longrightarrow> j\<in>nat \<Longrightarrow>
+   env \<in> list(A) \<Longrightarrow> subset(##A, x, y) \<longleftrightarrow> A, env \<Turnstile> subset_fm(i, j)"
+  using sats_subset_fm' by simp
+
+declare Replace_iff_sats[iff_sats]
+
+synthesize "is_Pow" from_definition assuming "nonempty"
+arity_theorem for "is_Pow_fm"
+
+relativize functional "Powapply" "Powapply_rel"
+relationalize "Powapply_rel" "is_Powapply"
+synthesize "is_Powapply" from_definition assuming "nonempty"
+arity_theorem for "is_Powapply_fm"
+
+notation Powapply_rel (\<open>Powapply\<^bsup>_\<^esup>'(_,_')\<close>)
+
+context M_basic
+begin
+
+rel_closed for "Powapply"
   unfolding Powapply_rel_def
   by simp
 
-(* relativization *)
-definition
-  is_Powapply :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
-  "is_Powapply(M,f,y,p) \<equiv> \<exists>fy[M]. fun_apply(M,f,y,fy) \<and> is_Pow(M,fy,p)"
-
-lemma (in M_basic) is_Powapply_iff :
-  assumes "M(f)" "M(y)" "M(p)"
-  shows "is_Powapply(M,f,y,p) \<longleftrightarrow> p = Powapply\<^bsup>M\<^esup>(f,y)"
-  using Pow_rel_iff assms 
+is_iff_rel for "Powapply"
+  using Pow_rel_iff
   unfolding is_Powapply_def Powapply_rel_def
   by simp
 
-definition
-  HVfrom_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> i" (\<open>HVfrom\<^bsup>_\<^esup>'(_,_,_')\<close>) where
-  "HVfrom\<^bsup>M\<^esup>(A,x,f) \<equiv> A \<union> (\<Union>y\<in>x. Powapply\<^bsup>M\<^esup>(f,y))"
-
-(* relativization *)
-definition
-  is_HVfrom :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
-  "is_HVfrom(M,A,x,f,z) \<equiv> (\<exists>u[M]. \<exists>hr[M]. is_Replace(M,x,is_Powapply(M,f),hr) \<and> 
-                          big_union(M,hr,u) \<and> union(M,A,u,z))"
-
-locale M_HVfrom = M_eclose + 
-  assumes 
-    Powapply_replacement : 
-      "M(K) \<Longrightarrow> strong_replacement(M,\<lambda>y z. z = Powapply\<^bsup>M\<^esup>(f,y))"
-
-begin
-
-lemma univalent_is_Powapply:
-  assumes "M(A)" "M(K)"
-  shows "univalent(M,A,is_Powapply(M,K))"
-  using assms is_Powapply_iff  unfolding univalent_def
+univalent for "Powapply"
+  using is_Powapply_iff
+  unfolding univalent_def
   by simp
 
-lemma is_HVfrom_iff :
-  assumes "M(A)" "M(x)" "M(f)" "M(z)"
-  shows "is_HVfrom(M,A,x,f,z) \<longleftrightarrow> z = HVfrom\<^bsup>M\<^esup>(A,x,f)"
+end
+
+(* definition
+  HVfrom_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> i" (\<open>HVfrom\<^bsup>_\<^esup>'(_,_,_')\<close>) where
+  "HVfrom\<^bsup>M\<^esup>(A,x,f) \<equiv> A \<union> (\<Union>y\<in>x. Powapply\<^bsup>M\<^esup>(f,y))" *)
+
+definition
+  HVfrom :: "[i,i,i] \<Rightarrow> i" where
+  "HVfrom(A,x,f) \<equiv> A \<union> (\<Union>y\<in>x. Powapply(f,y))"
+
+relativize functional "HVfrom" "HVfrom_rel"
+relationalize "HVfrom_rel" "is_HVfrom"
+synthesize "is_HVfrom" from_definition assuming "nonempty"
+arity_theorem for "is_HVfrom_fm"
+
+notation HVfrom_rel (\<open>HVfrom\<^bsup>_\<^esup>'(_,_,_')\<close>)
+
+locale M_HVfrom = M_eclose +
+  assumes
+    Powapply_replacement:
+      "M(K) \<Longrightarrow> strong_replacement(M,\<lambda>y z. z = Powapply\<^bsup>M\<^esup>(f,y))"
+begin
+
+is_iff_rel for "HVfrom"
 proof -
+  assume assms:"M(A)" "M(x)" "M(f)" "M(res)"
+  then
   have "is_Replace(M,x,\<lambda>y z. z = Powapply\<^bsup>M\<^esup>(f,y),r) \<longleftrightarrow> r = {z . y\<in>x, z = Powapply\<^bsup>M\<^esup>(f,y)}"
     if "M(r)" for r
-    using assms that Powapply_rel_closed 
+    using that Powapply_rel_closed
           Replace_abs[of x r "\<lambda>y z. z = Powapply\<^bsup>M\<^esup>(f,y)"] transM[of _ x]
     by simp
   moreover
@@ -259,18 +366,25 @@ proof -
     using assms strong_replacement_closed[OF Powapply_replacement] 
           Powapply_rel_closed transM[of _ x]
     by simp
+  moreover from assms
+  \<comment> \<open>intermediate step for body of Replace\<close>
+  have "{z . y \<in> x, z = Powapply\<^bsup>M\<^esup>(f,y)} = {y . w \<in> x, M(y) \<and> M(w) \<and> y = Powapply\<^bsup>M\<^esup>(f,w)}" 
+    by (auto dest:transM)
   ultimately
   show ?thesis
-  using assms 
+    using assms
   unfolding is_HVfrom_def HVfrom_rel_def
-  by auto
+    by (auto dest:transM)
 qed
 
+univalent for "HVfrom"
+  using is_HVfrom_iff
+  unfolding univalent_def
+  by simp
 
-lemma HVfrom_rel_closed: 
-  assumes "M(A)" "M(x)" "M(f)"
-  shows "M(HVfrom\<^bsup>M\<^esup>(A,x,f))"
+rel_closed for "HVfrom"
 proof -
+  assume assms:"M(A)" "M(x)" "M(f)"
   have "M({z . y \<in> x, z = Powapply\<^bsup>M\<^esup>(f,y)})" 
     using assms strong_replacement_closed[OF Powapply_replacement] 
           Powapply_rel_closed transM[of _ x]
@@ -279,11 +393,10 @@ proof -
   have "M(A \<union> \<Union>({z . y\<in>x, z = Powapply\<^bsup>M\<^esup>(f,y)}))"
     using assms
     by simp
-  moreover
-  have "A \<union> \<Union>({z . y\<in>x, z = Powapply\<^bsup>M\<^esup>(f,y)}) =
-        HVfrom\<^bsup>M\<^esup>(A,x,f)" 
-    unfolding HVfrom_rel_def
-    by auto
+  moreover from assms
+  \<comment> \<open>intermediate step for body of Replace\<close>
+  have "{z . y \<in> x, z = Powapply\<^bsup>M\<^esup>(f,y)} = {y . w \<in> x, M(y) \<and> M(w) \<and> y = Powapply\<^bsup>M\<^esup>(f,w)}" 
+    by (auto dest:transM)
   ultimately
   show ?thesis
     using assms
@@ -291,7 +404,34 @@ proof -
     by simp    
 qed
 
-end (* context M_HVfrom *)
+end (*  M_HVfrom *)
+
+(*
+relativize functional "Vfrom" "Vfrom_rel" external
+relationalize "Vfrom_rel" "is_Vfrom"
+synthesize "is_Vfrom" from_definition assuming "nonempty"
+arity_theorem for "is_Vfrom_fm"
+
+notation Vfrom_rel (\<open>Vfrom\<^bsup>_\<^esup>'(_,_')\<close>)
+
+context M_basic
+begin
+
+is_iff_rel for "Vfrom"
+  using Pow_rel_iff
+  unfolding is_Vfrom_def Vfrom_rel_def
+  by simp
+
+univalent for "Vfrom"
+  using is_Vfrom_iff
+  unfolding univalent_def
+  by simp
+
+rel_closed for "Vfrom"
+  unfolding Vfrom_rel_def
+  by simp
+
+*)
 
 definition
   Vfrom_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" (\<open>Vfrom\<^bsup>_\<^esup>'(_,_')\<close>) where
@@ -324,5 +464,6 @@ proof -
   by simp
 qed
 
-end
+end (* M_Vfrom *)
 
+end

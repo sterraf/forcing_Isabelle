@@ -201,6 +201,109 @@ relativize "bla" "is_bla"
 relativize_tm "x = <0,0> \<and> bla(x)" "test24"
 relativize_tm "bla(x)" "test25"
 
+relativize_tm functional "x = <0,0>" "test26"
+relativize_tm functional "\<forall> x y . x \<subseteq> y \<longrightarrow> 0 \<in> x \<inter> y" "test27"
+
+definition test28 :: "i \<Rightarrow> i \<Rightarrow> i" where
+  "test28(x, y) \<equiv> <x \<inter> y, x \<union> y>"
+relativize functional "test28" "test28_rel"
+relationalize "test28_rel" "is_test28"
+
+definition test29 :: "i \<Rightarrow> i" where
+  "test29(x) \<equiv> test28(x,x)"
+relativize functional "test29" "test29_rel"
+relationalize "test29_rel" "is_test29"
+
+definition test30 :: "i" where
+  "test30 \<equiv> 0 \<times> test29(0)"
+
+relativize functional "test30" "test30_rel"
+relationalize "test30_rel" "is_test30"
+
+definition le :: "i \<Rightarrow> i \<Rightarrow> o" where
+  "le(x, y) \<equiv> x \<union> y = y"
+
+relativize functional "le" "le_rel"
+relationalize "le_rel" "is_le"
+
+context M_trivial
+begin
+is_iff_rel for "le"
+  unfolding is_le_def le_rel_def
+  by auto
+end
+
+term transrec
+term is_transrec
+
+definition trec_test1 :: "i" where
+  "trec_test1 \<equiv> transrec(<0,1>, \<lambda> x y . x \<times> y)"
+
+relativize functional "trec_test1" "trec_test1_rel"
+relationalize "trec_test1_rel" "is_trec_test1"
+
+definition addition :: "i \<Rightarrow> i \<Rightarrow> i" where
+  "addition(x, y) \<equiv> x \<union> y - x \<inter> y"
+
+relativize functional "addition" "addition_rel"
+relationalize "addition_rel" "is_addition"
+
+definition trec_test2 :: "i \<Rightarrow> i" where
+  "trec_test2(x) \<equiv> transrec(x, addition)"
+
+relativize functional "trec_test2" "trec_test2_rel"
+(* This won't work: relationalize "trec_test2_rel" "is_trec_test2" *)
+
+(* In order to get a proper relativization, \<eta>-expansion must be performed on the second argument
+   of transrec. *)
+definition trec_test3 :: "i \<Rightarrow> i" where
+  "trec_test3(x) \<equiv> transrec(x, \<lambda> a b. addition(a, b))"
+
+relativize functional "trec_test3" "trec_test3_rel"
+relationalize "trec_test3_rel" "is_trec_test3"
+
+definition
+  test_boo :: "i\<Rightarrow>i" where
+  "test_boo(x) == bool_of_o(0 \<in>x)"
+
+relativize functional "test_boo" "test_boo_rel" external
+relationalize "test_boo_rel" "is_test_boo"
+
+definition 
+  test_cons :: "i\<Rightarrow>i" where
+  "test_cons(x) == {x}"
+
+definition
+  contents' :: "i=>i"  where
+   "contents'(X) == THE x. X = <x,<X,x>>"
+
+relativize functional "test_cons" "test_cons_rel" external
+relationalize "test_cons_rel" "is_test_cons"
+
+relativize functional "contents" "contents_rel" external
+relationalize "contents_rel" "is_contents"
+
+relativize functional "contents'" "contents'_rel" external
+relationalize "contents'_rel" "is_contents'"
+
+definition wfr_test1 :: "i \<Rightarrow> i" where
+  "wfr_test1(x) \<equiv> wfrec(x,Memrel({x}),\<lambda>a b. addition(a,b))"
+
+relativize functional "wfr_test1" "wfr_test1_rel"
+relationalize "wfr_test1_rel" "is_wfr_test1"
+
+definition wfro_test1 :: "i \<Rightarrow> i" where
+  "wfro_test1(x) \<equiv> wfrec[{x}](x,Memrel({x}),\<lambda>a b. addition(a,b))"
+
+relativize functional "wfro_test1" "wfro_test1_rel"
+relationalize "wfro_test1_rel" "is_wfro_test1"
+
+definition lam_test1 :: "i \<Rightarrow> i" where
+  "lam_test1(A) \<equiv> \<lambda>x\<in>A. wfro_test1(x)"
+
+relativize functional "lam_test1" "lam_test1_rel"
+relationalize "lam_test1_rel" "is_lam_test1"
+
 context M_trans
 begin
 ML\<open>

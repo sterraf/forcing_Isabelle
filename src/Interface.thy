@@ -10,6 +10,7 @@ theory Interface
   imports
     Nat_Miscellanea
     Relative_Univ
+    Synthetic_Definition
 begin
 
 syntax
@@ -122,13 +123,14 @@ begin
 subsection\<open>Interface with \<^term>\<open>M_basic\<close>\<close>
 
 (* Inter_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>x. \<forall> y[M]. y\<in>A \<Longrightarrow> x\<in>y)" *)
-schematic_goal inter_fm_auto:
-  assumes
-    "nth(i,env) = x" "nth(j,env) = B"
-    "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
-  shows
-    "(\<forall>y\<in>A . y\<in>B \<longrightarrow> x\<in>y) \<longleftrightarrow> sats(A,?ifm(i,j),env)"
-  by (insert assms ; (rule sep_rules | simp)+)
+definition Intersection where
+ "Intersection(N,B,x) \<equiv> (\<forall>y[N]. y\<in>B \<longrightarrow> x\<in>y)"
+
+manual_schematic "Inter_fm" for "Intersection"
+  unfolding Intersection_def 
+  by (rule sep_rules | simp)+
+synthesize "Intersection" from_schematic Inter_fm
+arity_theorem for "Intersection_fm" 
 
 lemma inter_sep_intf :
   assumes
@@ -136,22 +138,17 @@ lemma inter_sep_intf :
   shows
     "separation(##M,\<lambda>x . \<forall>y\<in>M . y\<in>A \<longrightarrow> x\<in>y)"
 proof -
-  obtain ifm where
-    fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow> (\<forall> y\<in>M. y\<in>(nth(1,env)) \<longrightarrow> nth(0,env)\<in>y)
-    \<longleftrightarrow> sats(M,ifm(0,1),env)"
-    and
-    "ifm(0,1) \<in> formula"
-    and
-    "arity(ifm(0,1)) = 2"
-    using \<open>A\<in>M\<close> inter_fm_auto
-    by (simp del:FOL_sats_iff add: nat_simp_union)
+  have "arity(Intersection_fm(1,0)) = 2" "0\<in>nat" "1\<in>nat" 
+    using arity_Intersection_fm pred_Un_distrib by auto
   then
-  have "\<forall>a\<in>M. separation(##M, \<lambda>x. sats(M,ifm(0,1) , [x, a]))"
-    using separation_ax by simp
+    have "\<forall>a\<in>M. separation(##M, \<lambda>x. sats(M,Intersection_fm(1,0) , [x, a]))"
+      using separation_ax Intersection_fm_type
+      by simp
   moreover
-  have "(\<forall>y\<in>M . y\<in>a \<longrightarrow> x\<in>y) \<longleftrightarrow> sats(M,ifm(0,1),[x,a])"
+  have "(\<forall>y\<in>M . y\<in>a \<longrightarrow> x\<in>y) \<longleftrightarrow> sats(M,Intersection_fm(1,0),[x,a])"
     if "a\<in>M" "x\<in>M" for a x
-    using that fmsats[of "[x,a]"] by simp
+    using that Intersection_iff_sats[of 1 "[x,a]" a 0 x M] 
+    unfolding Intersection_def by simp
   ultimately
   have "\<forall>a\<in>M. separation(##M, \<lambda>x . \<forall>y\<in>M . y\<in>a \<longrightarrow> x\<in>y)"
     unfolding separation_def by simp

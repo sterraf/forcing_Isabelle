@@ -197,7 +197,7 @@ lemma sats_body_fm':
   shows
     "sats(M,body_fm'(\<phi>,nenv),[x,\<alpha>,P,leq,one] @ nenv) \<longleftrightarrow>
      sats(M,renpbdy(prebody_fm(\<phi>,nenv),nenv),[fst(x),snd(x),x,\<alpha>,P,leq,one] @ nenv)"
-  using assms fst_snd_closed[OF \<open>x\<in>M\<close>] unfolding body_fm'_def
+  using assms fst_snd_closed[simplified,OF \<open>x\<in>M\<close>] unfolding body_fm'_def
   by (auto)
 
 definition
@@ -225,7 +225,7 @@ lemma sats_renpbdy_prebody_fm:
   shows
     "sats(M,renpbdy(prebody_fm(\<phi>,nenv),nenv),[fst(x),snd(x),x,\<alpha>,P,leq,one] @ nenv) \<longleftrightarrow>
      sats(M,prebody_fm(\<phi>,nenv),[fst(x),snd(x),\<alpha>,P,leq,one] @ nenv)"
-  using assms fst_snd_closed[OF \<open>x\<in>M\<close>]
+  using assms fst_snd_closed[simplified,OF \<open>x\<in>M\<close>]
     sats_renpbdy[OF arity_prebody_fm _ prebody_fm_type, of concl:M, symmetric]
   by force
 
@@ -237,7 +237,7 @@ lemma body_lemma:
     "sats(M,body_fm(\<phi>,nenv),[\<alpha>,x,m,P,leq,one] @ nenv) \<longleftrightarrow>
   (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a),\<alpha>,V) \<and> \<tau> \<in> V \<and> (snd(x) \<tturnstile> \<phi> ([fst(x),\<tau>]@nenv)))"
   using assms sats_body_fm[of x \<alpha> m nenv] sats_renpbdy_prebody_fm[of x \<alpha>]
-    sats_prebody_fm[of "snd(x)" "fst(x)"] fst_snd_closed[OF \<open>x\<in>M\<close>]
+    sats_prebody_fm[of "snd(x)" "fst(x)"] fst_snd_closed[simplified,OF \<open>x\<in>M\<close>]
   by (simp, simp flip: setclass_iff,simp)
 
 lemma Replace_sats_in_MG:
@@ -350,7 +350,7 @@ proof -
     using Vset_closed by simp
   moreover
   have "{one} \<in> M"
-    using one_in_M singletonM by simp
+    using one_in_M singleton_closed by simp
   ultimately
   have "{x\<in>Vset(?sup). x \<in> M} \<times> {one} \<in> M" (is "?big_name \<in> M")
     using cartprod_closed by simp
@@ -546,7 +546,7 @@ proof -
           by auto
         ultimately
         show ?thesis
-          using ReplaceI[of "\<lambda> x y. y\<in>M[G] \<and> ?R(x,y)"] by auto
+          using ReplaceI[of "\<lambda> x y. y\<in>M[G] \<and> ?R(x,y)"] by blast
       qed
     qed
     then

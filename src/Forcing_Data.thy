@@ -242,6 +242,9 @@ proof -
   show ?thesis unfolding M_generic_def by auto
 qed
 
+lemma one_in_M: "one \<in> M"
+  by (insert one_in_P P_in_M, simp add: transitivity)
+
 end (* forcing_data *)
 
 (* Compatibility lemmas *)

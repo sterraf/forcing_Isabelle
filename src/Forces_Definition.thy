@@ -1,5 +1,5 @@
 section\<open>The definition of \<^term>\<open>forces\<close>\<close>
-theory Forces_Definition imports Arities FrecR Synthetic_Definition begin
+theory Forces_Definition imports Arities FrecR Synthetic_Definition FrecR_Arities begin
 
 text\<open>This is the core of our development.\<close>
 
@@ -417,38 +417,29 @@ context forcing_data
 begin
 
 (* Absoluteness of components *)
-lemma fst_abs [simp]:
-  "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_fst(##M,x,y) \<longleftrightarrow> y = fst(x)"
-  unfolding fst_def is_fst_def using pair_in_M_iff zero_in_M
-  by (auto;rule_tac the_0 the_0[symmetric],auto)
-
-lemma snd_abs [simp]:
-  "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_snd(##M,x,y) \<longleftrightarrow> y = snd(x)"
-  unfolding snd_def is_snd_def using pair_in_M_iff zero_in_M
-  by (auto;rule_tac the_0 the_0[symmetric],auto)
-
 lemma ftype_abs:
-  "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_ftype(##M,x,y) \<longleftrightarrow> y = ftype(x)" unfolding ftype_def  is_ftype_def by simp
+  "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_ftype(##M,x,y) \<longleftrightarrow> y = ftype(x)" 
+  unfolding ftype_def  is_ftype_def by simp
 
 lemma name1_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_name1(##M,x,y) \<longleftrightarrow> y = name1(x)"
   unfolding name1_def is_name1_def
-  by (rule hcomp_abs[OF fst_abs];simp_all add:fst_snd_closed)
-
+  by (rule is_hcomp_abs[OF fst_abs],simp_all add: fst_snd_closed[simplified])
+  
 lemma snd_snd_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_snd_snd(##M,x,y) \<longleftrightarrow> y = snd(snd(x))"
   unfolding is_snd_snd_def
-  by (rule hcomp_abs[OF snd_abs];simp_all add:fst_snd_closed)
+  by (rule is_hcomp_abs[OF snd_abs],simp_all add: conjunct2[OF fst_snd_closed,simplified])
 
 lemma name2_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_name2(##M,x,y) \<longleftrightarrow> y = name2(x)"
   unfolding name2_def is_name2_def
-  by (rule hcomp_abs[OF fst_abs snd_snd_abs];simp_all add:fst_snd_closed)
+  by (rule is_hcomp_abs[OF fst_abs snd_snd_abs],simp_all add: conjunct2[OF fst_snd_closed,simplified])
 
 lemma cond_of_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_cond_of(##M,x,y) \<longleftrightarrow> y = cond_of(x)"
   unfolding cond_of_def is_cond_of_def
-  by (rule hcomp_abs[OF snd_abs snd_snd_abs];simp_all add:fst_snd_closed)
+  by (rule is_hcomp_abs[OF snd_abs snd_snd_abs];simp_all add:fst_snd_closed[simplified])
 
 lemma tuple_abs:
   "\<lbrakk>z\<in>M;t1\<in>M;t2\<in>M;p\<in>M;t\<in>M\<rbrakk> \<Longrightarrow>
@@ -575,14 +566,14 @@ lemma ecloseN_closed:
   "(##M)(A) \<Longrightarrow> (##M)(eclose_n(name1,A))"
   "(##M)(A) \<Longrightarrow> (##M)(eclose_n(name2,A))"
   unfolding ecloseN_def eclose_n_def
-  using components_closed eclose_closed singletonM Un_closed by auto
+  using components_closed eclose_closed singleton_closed Un_closed by auto
 
 lemma eclose_n_abs :
   assumes "x\<in>M" "ec\<in>M"
   shows "is_eclose_n(##M,is_name1,ec,x) \<longleftrightarrow> ec = eclose_n(name1,x)"
     "is_eclose_n(##M,is_name2,ec,x) \<longleftrightarrow> ec = eclose_n(name2,x)"
   unfolding is_eclose_n_def eclose_n_def
-  using assms name1_abs name2_abs eclose_abs singletonM components_closed
+  using assms name1_abs name2_abs eclose_abs singleton_closed components_closed
   by auto
 
 
@@ -1009,13 +1000,6 @@ qed
 
 subsection\<open>Absoluteness of \<^term>\<open>frc_at\<close>\<close>
 
-lemma trans_forcerel_t : "trans(forcerel(P,x))"
-  unfolding forcerel_def using trans_trancl .
-
-lemma relation_forcerel_t : "relation(forcerel(P,x))"
-  unfolding forcerel_def using relation_trancl .
-
-
 lemma forcerel_in_M :
   assumes
     "x\<in>M"
@@ -1140,7 +1124,7 @@ proof -
   then
   show ?thesis
     unfolding frc_at_trancl is_frc_at_def
-    using assms wfrec_Hfrc_at[of fnnc] wf_forcerel trans_forcerel_t relation_forcerel_t forcerel_in_M
+    using assms wfrec_Hfrc_at[of fnnc] wf_forcerel relation_forcerel forcerel_in_M
       Hfrc_at_closed relation2_Hfrc_at_abs
       trans_wfrec_abs[of "forcerel(P,fnnc)" fnnc z "is_Hfrc_at(##M,P,leq)" "\<lambda>x f. bool_of_o(Hfrc(P,leq,x,f))"]
     by (simp flip:setclass_iff)

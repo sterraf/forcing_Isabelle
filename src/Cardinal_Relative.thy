@@ -2,12 +2,8 @@ section\<open>Relative, Choice-less Cardinal Numbers\<close>
 
 theory Cardinal_Relative
   imports
-    "Discipline_Base"
-    "Discipline_Function"
-    Least
+    "New_Discipline_Draft"
 begin
-
-declare [[syntax_ambiguity_warning = false]]
 
 hide_const (open) L
 
@@ -80,117 +76,11 @@ lemma rmult_closed[intro,simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> M
 
 end (* M_cardinals *)
 
-
-(************* Discipline for cardinal ****************)
-\<comment> \<open>Note addition to the Simpset and Claset below\<close>
-
-definition
-  is_cardinal :: "[i\<Rightarrow>o,i,i]\<Rightarrow>o"  where
-  "is_cardinal(M,A,\<kappa>) \<equiv> M(\<kappa>) \<and> least(M, \<lambda>i. M(i) \<and> eqpoll_rel(M,i,A), \<kappa>)"
-
-definition
-  cardinal_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" where
-  "cardinal_rel(M,x) \<equiv> THE d. is_cardinal(M,x,d)"
-
-abbreviation
-  cardinal_r :: "[i,i\<Rightarrow>o] \<Rightarrow> i" (\<open>|_|\<^bsup>_\<^esup>\<close>) where
-  "|x|\<^bsup>M\<^esup> \<equiv> cardinal_rel(M,x)"
-
-abbreviation
-  cardinal_r_set :: "[i,i]\<Rightarrow>i"  (\<open>|_|\<^bsup>_\<^esup>\<close>) where
-  "|x|\<^bsup>M\<^esup> \<equiv> cardinal_rel(##M,x)"
-
-context M_cardinals
-begin
-
-lemma is_cardinal_uniqueness:
-  assumes
-    "M(r)"
-    "is_cardinal(M,r,d)" "is_cardinal(M,r,d')"
-  shows
-    "d=d'"
-  using assms least_abs' \<comment> \<open>is using abs legit?\<close>
-  unfolding is_cardinal_def
-  by force \<comment> \<open>non automatic\<close>
-
-lemma is_cardinal_witness: "M(r) \<Longrightarrow> \<exists>d[M]. is_cardinal(M,r,d)"
-  using Least_closed' least_abs' unfolding is_cardinal_def
-  by fastforce \<comment> \<open>We have to do this by hand, using axioms\<close>
-
-lemma is_cardinal_closed :
- "is_cardinal(M,r,d) \<Longrightarrow> M(d)"
-  unfolding is_cardinal_def by simp
-
-lemma cardinal_rel_closed[intro,simp]: 
-  assumes "M(x)"
-  shows "M(cardinal_rel(M,x))"
-proof -
-  have "is_cardinal(M, x, THE xa. is_cardinal(M, x, xa))" 
-    using assms 
-          theI[OF ex1I[of "is_cardinal(M,x)"], OF _ is_cardinal_uniqueness[of x]]
-          is_cardinal_witness
-    by auto
-  then show ?thesis 
-    using assms is_cardinal_closed
-    unfolding cardinal_rel_def
-    by blast
-qed
-
-lemma cardinal_rel_iff:
-  assumes "M(x)"  "M(d)"
-  shows "is_cardinal(M,x,d) \<longleftrightarrow> d = cardinal_rel(M,x)"
-proof (intro iffI)
-  assume "d = cardinal_rel(M,x)"
-  with assms
-  show "is_cardinal(M, x, d)"
-    using is_cardinal_uniqueness[of x] is_cardinal_witness
-    theI[OF ex1I[of "is_cardinal(M,x)"], OF _ is_cardinal_uniqueness[of x]]
-    unfolding cardinal_rel_def
-    by auto
-next
-  assume "is_cardinal(M, x, d)"
-  with assms
-  show "d = cardinal_rel(M,x)"
-    using is_cardinal_uniqueness unfolding cardinal_rel_def
-    by (auto del:the_equality intro:the_equality[symmetric])
-qed
-
-\<comment> \<open>This proof takes too long; it should have worked "by fastforce"\<close>
-lemma def_cardinal_rel: 
-    "M(x) \<Longrightarrow> cardinal_rel(M,x) = (\<mu> i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x)"
-  using least_abs'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> x"] cardinal_rel_iff
-  unfolding is_cardinal_def by auto
-
-end (* M_cardinals *)
-
-(***************  end Discipline  *********************)
-
-(************* Discipline for Card  *******************)
-
-definition
-  Card_rel     :: "[i\<Rightarrow>o,i]\<Rightarrow>o"  (\<open>Card\<^bsup>_\<^esup>'(_')\<close>) where
-  "Card\<^bsup>M\<^esup>(i) \<equiv> \<exists>c[M]. is_cardinal(M,i,c) \<and> i = c"
-
-abbreviation
-  Card_rel_set :: "[i,i]\<Rightarrow>o"  (\<open>Card\<^bsup>_\<^esup>'(_')\<close>) where
-  "Card\<^bsup>M\<^esup>(i) \<equiv> Card_rel(##M,i)"
-
-context M_cardinals
-begin
-
-lemma def_Card_rel: "M(i) \<Longrightarrow> Card\<^bsup>M\<^esup>(i) \<longleftrightarrow> i = |i|\<^bsup>M\<^esup>"
-  using cardinal_rel_iff unfolding Card_rel_def
-  by simp
-
-end (* M_cardinals *)
-
-(***************  end Discipline  *********************)
-
 lemma (in M_cardinals) is_cardinal_iff_Least:
   assumes "M(A)" "M(\<kappa>)"
   shows "is_cardinal(M,A,\<kappa>) \<longleftrightarrow> \<kappa> = (\<mu> i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> A)"
-  using assms least_abs[of "\<lambda>x. M(x) \<and> x \<approx>\<^bsup>M\<^esup> A"]
-  unfolding is_cardinal_def by auto
+  using is_cardinal_iff assms
+  unfolding cardinal_rel_def by simp
 
 subsection\<open>The Schroeder-Bernstein Theorem\<close>
 text\<open>See Davey and Priestly, page 106\<close>
@@ -573,7 +463,7 @@ qed
 
 \<comment> \<open>ported from Cardinal\<close>
 lemma cardinal_rel_cong: "X \<approx>\<^bsup>M\<^esup> Y \<Longrightarrow> M(X) \<Longrightarrow> M(Y) \<Longrightarrow> |X|\<^bsup>M\<^esup> = |Y|\<^bsup>M\<^esup>"
-  apply (simp add: def_eqpoll_rel def_cardinal_rel)
+  apply (simp add: def_eqpoll_rel cardinal_rel_def)
   apply (rule Least_cong)
   apply (auto intro: comp_bij bij_converse_bij)
   done
@@ -611,7 +501,7 @@ txt\<open>The following results were ported more or less directly from \<^theory
    thus cannot be translated directly\<close>
 lemma well_ord_cardinal_rel_eqpoll_rel:
   assumes r: "well_ord(A,r)" and "M(A)" "M(r)" shows "|A|\<^bsup>M\<^esup> \<approx>\<^bsup>M\<^esup> A"
-  using assms well_ord_is_cardinal_eqpoll_rel cardinal_rel_iff
+  using assms well_ord_is_cardinal_eqpoll_rel is_cardinal_iff
   by blast
 
 lemmas Ord_cardinal_rel_eqpoll_rel = well_ord_Memrel[THEN well_ord_cardinal_rel_eqpoll_rel]
@@ -638,22 +528,22 @@ lemma well_ord_cardinal_rel_eqpoll_rel_iff:
   by (blast intro: cardinal_rel_cong well_ord_cardinal_rel_eqE)
 
 lemma Ord_cardinal_rel_le: "Ord(i) \<Longrightarrow> M(i) ==> |i|\<^bsup>M\<^esup> \<le> i"
-  unfolding def_cardinal_rel
+  unfolding cardinal_rel_def
   using eqpoll_rel_refl Least_le by simp
 
 lemma Card_rel_cardinal_rel_eq: "Card\<^bsup>M\<^esup>(K) ==> M(K) \<Longrightarrow> |K|\<^bsup>M\<^esup> = K"
-  apply (unfold def_Card_rel)
+  apply (unfold Card_rel_def)
   apply (erule sym)
   done
 
 lemma Card_relI: "[| Ord(i);  !!j. j<i \<Longrightarrow> M(j) ==> ~(j \<approx>\<^bsup>M\<^esup> i); M(i) |] ==> Card\<^bsup>M\<^esup>(i)"
-  apply (unfold def_Card_rel def_cardinal_rel)
+  apply (unfold Card_rel_def cardinal_rel_def)
   apply (subst Least_equality)
      apply (blast intro: eqpoll_rel_refl)+
   done
 
 lemma Card_rel_is_Ord: "Card\<^bsup>M\<^esup>(i) ==> M(i) \<Longrightarrow> Ord(i)"
-  apply (unfold def_Card_rel def_cardinal_rel)
+  apply (unfold Card_rel_def cardinal_rel_def)
   apply (erule ssubst)
   apply (rule Ord_Least)
   done
@@ -663,7 +553,7 @@ lemma Card_rel_cardinal_rel_le: "Card\<^bsup>M\<^esup>(K) ==> M(K) \<Longrightar
   done
 
 lemma Ord_cardinal_rel [simp,intro!]: "M(A) \<Longrightarrow> Ord(|A|\<^bsup>M\<^esup>)"
-  apply (unfold def_cardinal_rel)
+  apply (unfold cardinal_rel_def)
   apply (rule Ord_Least)
   done
 
@@ -674,7 +564,7 @@ proof -
     assume K: "Card\<^bsup>M\<^esup>(K)" "M(j) \<and> j \<approx>\<^bsup>M\<^esup> K"
     assume "j < K"
     also have "... = (\<mu> i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> K)" using K
-      by (simp add: def_Card_rel def_cardinal_rel types)
+      by (simp add: Card_rel_def cardinal_rel_def types)
     finally have "j < (\<mu> i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> K)" .
     then have "False" using K
       by (best intro: less_LeastE[of "\<lambda>j. M(j) \<and> j \<approx>\<^bsup>M\<^esup> K"])
@@ -703,7 +593,7 @@ lemma Card_rel_Un: "[| Card\<^bsup>M\<^esup>(K);  Card\<^bsup>M\<^esup>(L); M(K)
 
 lemma Card_rel_cardinal_rel [iff]: assumes types:"M(A)" shows "Card\<^bsup>M\<^esup>(|A|\<^bsup>M\<^esup>)"
   using assms
-proof (unfold def_cardinal_rel)
+proof (unfold cardinal_rel_def)
   show "Card\<^bsup>M\<^esup>(\<mu> i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> A)"
   proof (cases "\<exists>i[M]. Ord (i) \<and> i \<approx>\<^bsup>M\<^esup> A")
     case False thus ?thesis           \<comment> \<open>degenerate case\<close>
@@ -869,8 +759,8 @@ lemma nat_eqpoll_rel_iff: "[| m \<in> nat; n \<in> nat; M(m); M(n) |] ==> m \<ap
 lemma nat_into_Card_rel:
   assumes n: "n \<in> nat" and types: "M(n)" shows "Card\<^bsup>M\<^esup>(n)"
   using types
-  apply (subst def_Card_rel, assumption)
-proof (unfold def_cardinal_rel, rule sym)
+  apply (subst Card_rel_def)
+proof (unfold cardinal_rel_def, rule sym)
   have "Ord(n)" using n  by auto
   moreover
   { fix i
@@ -931,7 +821,7 @@ proof -
   }
   from this
   show "\<lbrakk> A \<prec>\<^bsup>M\<^esup> succ(m); m \<in> nat; M(A); M(m) \<rbrakk> \<Longrightarrow> A \<lesssim>\<^bsup>M\<^esup> m"
-    using def_lepoll_rel def_eqpoll_rel def_bij_rel lesspoll_rel_def
+    unfolding lepoll_rel_def eqpoll_rel_def bij_rel_def lesspoll_rel_def
     by (simp del:mem_inj_abs)
 qed
 
@@ -998,7 +888,7 @@ proof -
   }
   hence "(\<mu> i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> nat) = nat" by (blast intro: Least_equality eqpoll_rel_refl)
   thus ?thesis
-    by (auto simp add: def_Card_rel def_cardinal_rel)
+    by (auto simp add: Card_rel_def cardinal_rel_def)
 qed
 
 lemma nat_le_cardinal_rel: "nat \<le> i \<Longrightarrow> M(i) ==> nat \<le> |i|\<^bsup>M\<^esup>"
