@@ -1,0 +1,94 @@
+General Tasks
+=============
+
+- Search sources for "FIXME", "FIX ME", "NOTE", "MOVE (THIS)", "TODO",
+  "TO DO", and do that.
+
+- Search for code duplication. Examples:
+    Forcing_Data.Transset_M
+  vs
+    Interface.Transset_intf
+
+- Relativization results / synthesis discipline should be rewritten
+  for a general class M in the appropriate locales (and not only for
+  ##M).
+
+- Check for duplicate names of results, for example:
+    Forcing_Theorems.forcing_data.GenExtD
+  vs
+    Names.forcing_data.GenExtD.
+
+- Revise naming conventions of results (esp. for the next section;
+  check style_guide.txt).
+
+- Move general results proved in some context to the definition
+  of the context.
+
+  For instance:
+  * upairM singletonM Rep_simp from Names.thy to Forcing_Data.thy
+
+
+
+Tidying up sources for release
+==============================
+
+- Put all the development according to the style guides.
+- Remove "Try0" imports.
+- Remove auxiliary commands (find_theorems, try, try0).
+- Remove diagnostic commands (term, thm --- keep this last one in
+  Definitions_Main.thy!)
+
+
+Porting
+=======
+
+- Revise the locale structure of ported theories.
+
+
+ZF-Constructible
+================
+
+- rename "L_axioms.range_type" to "L_axioms.range_fm_type" (clash with
+  ZF.func).
+  In general, uniformize notation (e.g. typed_function_type).
+  Too many of them!
+
+- Add resuls like fst_closed? (cf. General tasks)
+
+- Bad behaviour of abbreviation
+  ¬(sats(·)) ---> satisfies(·)`_≠ 1
+  because of definition of ≠.
+
+- In strong_replacementD, use "is_Replace(M,A,P,Y)" in the conclusion.
+  Same for separationD. Then use this for the "_witness" theorems for
+  strong replacement and (separation?) instances.
+
+
+Assorted To-Dos
+===============
+
+- Add comments about Definitions_Main in root.tex.
+
+- Check if "minimum" should be in Forcing_Main.
+
+- Have instances of valcheck in forcing_data, G_generic (discharging
+  assumptions). Add it to the simpset?
+
+- Add to simpset? Simplified versions of class version theorems
+  instantiated for a set model, because the original versions are not
+  effective enough. Example:
+
+  apply_closed: (##M)(?f) ⟹ (##M)(?a) ⟹ (##M)(?f ` ?a)
+  apply_closed[simplified]: ?f ∈ M ⟹ ?a ∈ M ⟹ ?f ` ?a ∈ M
+
+- Named theorems for arities.
+
+- Discipline for Vfrom_abs and Vfrom_closed
+
+- Relocate material on antichains (in Forcing_Notions?) and results on
+  range (both now in Cardinal_Preservation).
+
+
+;; Local Variables:
+;; ispell-dictionary: american
+;; End:

@@ -28,5 +28,5 @@ proof -
   then show ?thesis unfolding extensionality_def by simp
 qed
  
-end
+end  (* context forcing_data *)
 end

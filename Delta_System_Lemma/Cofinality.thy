@@ -1,90 +1,88 @@
-theory Cofinality 
-  imports 
-    ZF "../Tools/Try0"
+section\<open>Cofinality\label{sec:cofinality}\<close>
+
+theory Cofinality
+  imports
+    ZF_Library
 begin
 
+
+subsection\<open>Basic results and definitions\<close>
+
+text\<open>A set \<^term>\<open>X\<close> is \<^emph>\<open>cofinal\<close> in \<^term>\<open>A\<close> (with respect to the relation
+    \<^term>\<open>r\<close>) if every element of \<^term>\<open>A\<close> is “bounded
+    above” by some element of \<^term>\<open>X\<close>. Note that \<^term>\<open>X\<close> does not need 
+    to be a subset of \<^term>\<open>A\<close>.\<close>
 definition
   cofinal :: "[i,i,i] \<Rightarrow> o" where
-  "cofinal(X,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>X. <a,x>\<in>r \<or> a = x"
+  "cofinal(X,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>X. \<langle>a,x\<rangle>\<in>r \<or> a = x"
 
+(*
+(* Alternative definitions *)
 definition
   cofinal_predic :: "[i,i,[i,i]\<Rightarrow>o] \<Rightarrow> o" where
   "cofinal_predic(X,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>X. r(a,x) \<or> a = x"
 
 definition
   f_cofinal :: "[i\<Rightarrow>i,i,i,i] \<Rightarrow> o" where
-  "f_cofinal(f,C,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>C. <a,f(x)>\<in>r \<or> a = f(x)" (* "predic" version ? *)
-  
+  "f_cofinal(f,C,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>C. \<langle>a,f(x)\<rangle>\<in>r \<or> a = f(x)"
+
+(* The next definition doesn't work if 0 is the top element of A.
+   But it works for limit ordinals. *)
+definition
+  cofinal_fun' :: "[i,i,i] \<Rightarrow> o" where
+  "cofinal_fun'(f,A,r) == f_cofinal(\<lambda>x. f`x,domain(f),A, r)"
+*)
+
+text\<open>A function is cofinal if it range is.\<close>
 definition
   cofinal_fun :: "[i,i,i] \<Rightarrow> o" where
-  "cofinal_fun(f,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>domain(f). <a,f`x>\<in>r \<or> a = f`x"
+  "cofinal_fun(f,A,r) \<equiv> \<forall>a\<in>A. \<exists>x\<in>domain(f). \<langle>a,f`x\<rangle>\<in>r \<or> a = f`x"
 
-lemma cofinal_funI: 
-  assumes "\<And>a. a\<in>A \<Longrightarrow> \<exists>x\<in>domain(f). <a,f`x>\<in>r \<or> a = f`x"
+lemma cofinal_funI:
+  assumes "\<And>a. a\<in>A \<Longrightarrow> \<exists>x\<in>domain(f). \<langle>a,f`x\<rangle>\<in>r \<or> a = f`x"
   shows "cofinal_fun(f,A,r)"
   using assms unfolding cofinal_fun_def by simp
 
 lemma cofinal_funD:
   assumes "cofinal_fun(f,A,r)" "a\<in>A"
-  shows "\<exists>x\<in>domain(f). <a,f`x>\<in>r \<or> a = f`x"
+  shows "\<exists>x\<in>domain(f). \<langle>a,f`x\<rangle>\<in>r \<or> a = f`x"
   using assms unfolding cofinal_fun_def by simp
 
-(*
-The next definition doesn't work if 0 is the top element of A.
-But it works for limit ordinals.
-*)
-
-definition
-  cofinal_fun' :: "[i,i,i] \<Rightarrow> o" where
-  "cofinal_fun'(f,A,r) == f_cofinal(\<lambda>x. f`x,domain(f),A, r)"
-  
 lemma cofinal_in_cofinal:
   assumes
-    "trans(r)" "cofinal(Y,X,r)" "cofinal(X,A,r)" 
-  shows 
+    "trans(r)" "cofinal(Y,X,r)" "cofinal(X,A,r)"
+  shows
     "cofinal(Y,A,r)"
-    unfolding cofinal_def
+  unfolding cofinal_def
 proof
   fix a
   assume "a\<in>A"
   moreover from \<open>cofinal(X,A,r)\<close>
-  have "b\<in>A\<Longrightarrow>\<exists>x\<in>X. <b,x>\<in>r \<or> b=x" for b
+  have "b\<in>A\<Longrightarrow>\<exists>x\<in>X. \<langle>b,x\<rangle>\<in>r \<or> b=x" for b
     unfolding cofinal_def by simp
   ultimately
-  obtain y where "y\<in>X" "<a,y>\<in>r \<or> a=y" by auto
+  obtain y where "y\<in>X" "\<langle>a,y\<rangle>\<in>r \<or> a=y" by auto
   moreover from \<open>cofinal(Y,X,r)\<close>
-  have "c\<in>X\<Longrightarrow>\<exists>y\<in>Y. <c,y>\<in>r \<or> c=y" for c
+  have "c\<in>X\<Longrightarrow>\<exists>y\<in>Y. \<langle>c,y\<rangle>\<in>r \<or> c=y" for c
     unfolding cofinal_def by simp
   ultimately
-  obtain x where "x\<in>Y" "<y,x>\<in>r \<or> y=x" by auto
-  with \<open>a\<in>A\<close> \<open>y\<in>X\<close> \<open><a,y>\<in>r \<or> a=y\<close> \<open>trans(r)\<close>
-  show "\<exists>x\<in>Y. <a,x>\<in>r \<or> a=x" unfolding trans_def by auto
+  obtain x where "x\<in>Y" "\<langle>y,x\<rangle>\<in>r \<or> y=x" by auto
+  with \<open>a\<in>A\<close> \<open>y\<in>X\<close> \<open>\<langle>a,y\<rangle>\<in>r \<or> a=y\<close> \<open>trans(r)\<close>
+  show "\<exists>x\<in>Y. \<langle>a,x\<rangle>\<in>r \<or> a=x" unfolding trans_def by auto
 qed
-
-lemma Un_leD1 : "i \<union> j \<le> k \<Longrightarrow> Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow> i \<le> k"
-  by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct1]],simp_all)
-  
-lemma Un_leD2 : "i \<union> j \<le> k \<Longrightarrow> Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow> j \<le> k"
-  by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct2]],simp_all)
-
-lemma Un_memD1: "i \<union> j \<in> k \<Longrightarrow> Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow> i \<le> k"
-  by (drule ltI, assumption, drule leI, rule Un_least_lt_iff[THEN iffD1[THEN conjunct1]],simp_all)
-
-lemma Un_memD2 : "i \<union> j \<in> k \<Longrightarrow> Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow> j \<le> k"
-  by (drule ltI, assumption, drule leI, rule Un_least_lt_iff[THEN iffD1[THEN conjunct2]],simp_all)
 
 lemma codomain_is_cofinal:
   assumes "cofinal_fun(f,A,r)" "f:C \<rightarrow> D"
   shows "cofinal(D,A,r)"
   unfolding cofinal_def
-proof 
-  fix b 
+proof
+  fix b
   assume "b \<in> A"
   moreover from assms
   have "a\<in>A \<Longrightarrow> \<exists>x\<in>domain(f). \<langle>a, f ` x\<rangle> \<in> r \<or> a = f`x" for a
     unfolding cofinal_fun_def by simp
   ultimately
-  obtain x where "x\<in>domain(f)" "\<langle>b, f ` x\<rangle> \<in> r \<or> b = f`x" 
+  obtain x where "x\<in>domain(f)" "\<langle>b, f ` x\<rangle> \<in> r \<or> b = f`x"
     by blast
   moreover from \<open>f:C \<rightarrow> D\<close>  \<open>x\<in>domain(f)\<close>
   have "f`x\<in>D"
@@ -93,40 +91,40 @@ proof
   show  "\<exists>y\<in>D. \<langle>b, y\<rangle> \<in> r \<or> b = y" by auto
 qed
 
-lemma cofinal_range_imp_cofinal_fun:
-  assumes "cofinal(range(f),A,r)" "function(f)"
-  shows "cofinal_fun(f,A,r)"
+lemma cofinal_range_iff_cofinal_fun:
+  assumes "function(f)"
+  shows "cofinal(range(f),A,r) \<longleftrightarrow> cofinal_fun(f,A,r)"
   unfolding cofinal_fun_def
-proof
+proof (intro iffI ballI)
   fix a
-  assume "a\<in>A"
-  with \<open>cofinal(range(f),_,_)\<close>
+  assume "a\<in>A" \<open>cofinal(range(f),A,r)\<close>
+  then
   obtain y where "y\<in>range(f)" "\<langle>a,y\<rangle> \<in> r \<or> a = y"
     unfolding cofinal_def by blast
   moreover from this
-  obtain x where "<x,y>\<in>f"
+  obtain x where "\<langle>x,y\<rangle>\<in>f"
     unfolding range_def domain_def converse_def by blast
   moreover
   note \<open>function(f)\<close>
   ultimately
   have "\<langle>a, f ` x\<rangle> \<in> r \<or> a = f ` x"
     using function_apply_equality by blast
-  with \<open><x,y>\<in>f\<close>
+  with \<open>\<langle>x,y\<rangle>\<in>f\<close>
   show "\<exists>x\<in>domain(f). \<langle>a, f ` x\<rangle> \<in> r \<or> a = f ` x"  by blast
+next
+  assume "\<forall>a\<in>A. \<exists>x\<in>domain(f). \<langle>a, f ` x\<rangle> \<in> r \<or> a = f ` x"
+  with assms
+  show "cofinal(range(f), A, r)"
+    using function_apply_Pair[of f] unfolding cofinal_def by fast
 qed
 
-lemma range_fun_subset_codomain: 
-  assumes "h:B \<rightarrow> C"
-  shows "range(h) \<subseteq> C"
-  unfolding range_def domain_def converse_def using range_type[OF _ assms]  by auto 
-
 lemma cofinal_comp:
-  assumes 
+  assumes
     "f\<in> mono_map(C,s,D,r)" "cofinal_fun(f,D,r)" "h:B \<rightarrow> C"  "cofinal_fun(h,C,s)"
     "trans(r)"
   shows "cofinal_fun(f O h,D,r)"
   unfolding cofinal_fun_def
-proof 
+proof
   fix a
   from \<open>f\<in> mono_map(C,s,D,r)\<close>
   have "f:C \<rightarrow> D"
@@ -134,7 +132,7 @@ proof
   with \<open>h:B \<rightarrow> C\<close>
   have "domain(f) = C" "domain(h) = B"
     using domain_of_fun by simp_all
-  moreover 
+  moreover
   assume "a \<in> D"
   moreover
   note \<open>cofinal_fun(f,D,r)\<close>
@@ -174,56 +172,29 @@ lemma cf_funD[dest!]: "cf_fun(f,\<alpha>) \<Longrightarrow> cofinal_fun(f,\<alph
   unfolding cf_fun_def by simp
 
 lemma cf_fun_comp:
-  assumes 
-    "Ord(\<alpha>)" "f\<in> mono_map(C,s,\<alpha>,Memrel(\<alpha>))" "cf_fun(f,\<alpha>)" 
+  assumes
+    "Ord(\<alpha>)" "f\<in> mono_map(C,s,\<alpha>,Memrel(\<alpha>))" "cf_fun(f,\<alpha>)"
     "h:B \<rightarrow> C" "cofinal_fun(h,C,s)"
   shows "cf_fun(f O h,\<alpha>)"
   using assms cofinal_comp[OF _ _ _ _ trans_Memrel] by auto
 
-lemma mono_map_mono:
-  assumes 
-    "f \<in> mono_map(A,r,B,s)" "B \<subseteq> C"
-  shows
-    "f \<in> mono_map(A,r,C,s)"
-  unfolding mono_map_def
-proof (intro CollectI ballI impI)
-  from \<open>f \<in> mono_map(A,_,B,_)\<close>
-  have "f: A \<rightarrow> B"
-    using mono_map_is_fun by simp
-  with \<open>B\<subseteq>C\<close>
-  show "f: A \<rightarrow> C"
-    using fun_weaken_type by simp
-  fix x y 
-  assume "x\<in>A" "y\<in>A" "<x,y> \<in> r"
-  moreover from this and \<open>f: A \<rightarrow> B\<close>
-  have "f`x \<in> B" "f`y \<in> B"
-    using apply_type by simp_all
-  moreover
-  note \<open>f \<in> mono_map(_,r,_,s)\<close>
-  ultimately
-  show "\<langle>f ` x, f ` y\<rangle> \<in> s"
-    unfolding mono_map_def by blast
-qed
-
-(* lemma "Limit(A) \<Longrightarrow> cf_fun(f,A) \<longleftrightarrow> cofinal_fun'(f,A,Memrel(A))" *)
-
 definition
-  cf :: "i\<Rightarrow>i" where 
-  "cf(\<gamma>) == \<mu> \<beta>.  \<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> \<beta> = ordertype(A,Memrel(\<gamma>))"
+  cf :: "i\<Rightarrow>i" where
+  "cf(\<gamma>) \<equiv> \<mu> \<beta>.  \<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> \<beta> = ordertype(A,Memrel(\<gamma>))"
 
 lemma Ord_cf [TC]: "Ord(cf(\<beta>))"
   unfolding cf_def using Ord_Least by simp
-    
+
 lemma gamma_cofinal_gamma:
   assumes "Ord(\<gamma>)"
   shows "cofinal(\<gamma>,\<gamma>,Memrel(\<gamma>))"
   unfolding cofinal_def by auto
-    
+
 lemma cf_is_ordertype:
   assumes "Ord(\<gamma>)"
-  shows "\<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))" 
+  shows "\<exists>A. A\<subseteq>\<gamma> \<and> cofinal(A,\<gamma>,Memrel(\<gamma>)) \<and> cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))"
     (is "?P(cf(\<gamma>))")
-  using gamma_cofinal_gamma LeastI[of ?P \<gamma>] ordertype_Memrel[symmetric] assms 
+  using gamma_cofinal_gamma LeastI[of ?P \<gamma>] ordertype_Memrel[symmetric] assms
   unfolding cf_def by blast
 
 lemma cf_fun_succ':
@@ -233,13 +204,13 @@ proof (intro iffI)
   assume "(\<exists>x\<in>\<alpha>. f`x=\<beta>)"
   with assms
   show "cf_fun(f,succ(\<beta>))"
-    using domain_of_fun[OF \<open>f:\<alpha>\<rightarrow>succ(\<beta>)\<close>] 
+    using domain_of_fun[OF \<open>f:\<alpha>\<rightarrow>succ(\<beta>)\<close>]
     unfolding cf_fun_def cofinal_fun_def by auto
 next
   assume "cf_fun(f,succ(\<beta>))"
-  with assms 
+  with assms
   obtain x where "x\<in>\<alpha>" "\<langle>\<beta>,f`x\<rangle> \<in> Memrel(succ(\<beta>)) \<or> \<beta> = f ` x"
-    using domain_of_fun[OF \<open>f:\<alpha>\<rightarrow>succ(\<beta>)\<close>] 
+    using domain_of_fun[OF \<open>f:\<alpha>\<rightarrow>succ(\<beta>)\<close>]
     unfolding cf_fun_def cofinal_fun_def by auto
   moreover from \<open>Ord(\<beta>)\<close>
   have "\<langle>\<beta>,y\<rangle> \<notin> Memrel(succ(\<beta>))" for y
@@ -254,87 +225,73 @@ lemma cf_fun_succ:
 
 lemma ordertype_0_not_cofinal_succ:
   assumes "ordertype(A,Memrel(succ(i))) = 0"  "A\<subseteq>succ(i)" "Ord(i)"
-shows "\<not>cofinal(A,succ(i),Memrel(succ(i)))"
-proof 
+  shows "\<not>cofinal(A,succ(i),Memrel(succ(i)))"
+proof
   have 1:"ordertype(A,Memrel(succ(i))) = ordertype(0,Memrel(0))"
-    using \<open>ordertype(A,Memrel(succ(i))) = 0\<close> ordertype_0 by simp     
+    using \<open>ordertype(A,Memrel(succ(i))) = 0\<close> ordertype_0 by simp
   from  \<open>A\<subseteq>succ(i)\<close> \<open>Ord(i)\<close>
-  have "\<exists>f. f \<in> \<langle>A, Memrel(succ(i))\<rangle> \<cong> \<langle>0, Memrel(0)\<rangle>" 
+  have "\<exists>f. f \<in> \<langle>A, Memrel(succ(i))\<rangle> \<cong> \<langle>0, Memrel(0)\<rangle>"
     using   well_ord_Memrel well_ord_subset
       ordertype_eq_imp_ord_iso[OF 1] Ord_0  by blast
   then
   have "A=0"
     using  ord_iso_is_bij bij_imp_eqpoll eqpoll_0_is_0 by blast
   moreover
-  assume "cofinal(A, succ(i), Memrel(succ(i)))" 
-  moreover 
-    note \<open>Ord(i)\<close>
-    ultimately
-    show "False" 
-      using not_mem_empty unfolding cofinal_def by auto
-qed
-
-lemma singleton_fun_succ:
-  assumes "Ord(\<alpha>)" 
-  defines "f \<equiv> {<0,\<alpha>>}"
-  shows "f : 1\<rightarrow>succ(\<alpha>)" "f`0 = \<alpha>"
-proof -
-  define b where "b = succ(\<alpha>)"
-  then 
-  have "Ord(b)"  using Ord_succ_iff \<open>Ord(\<alpha>)\<close> by simp
-  then
-  show "f  : 1\<rightarrow>succ(\<alpha>)" 
-    using fun_extend3[of 0 0 b 0 \<alpha>] singleton_0 succI1
-    unfolding f_def b_def by simp 
+  assume "cofinal(A, succ(i), Memrel(succ(i)))"
   moreover
-  show "f`0=\<alpha>" 
-    unfolding f_def using function_apply_equality  by simp
+  note \<open>Ord(i)\<close>
+  ultimately
+  show "False"
+    using not_mem_empty unfolding cofinal_def by auto
 qed
 
+text\<open>I thank Edwin Pacheco Rodríguez for the following lemma.\<close>
 lemma cf_succ:
   assumes "Ord(\<alpha>)"
   shows "cf(succ(\<alpha>)) = 1"
 proof -
-  obtain f where "f : 1\<rightarrow>succ(\<alpha>)" "f`0 = \<alpha>" 
-    using singleton_fun_succ \<open>Ord(\<alpha>)\<close> by blast
+  define f where "f \<equiv> {\<langle>0,\<alpha>\<rangle>}"
+  then
+  have  "f : 1\<rightarrow>succ(\<alpha>)" "f`0 = \<alpha>"
+    using fun_extend3[of 0 0 "succ(\<alpha>)" 0 \<alpha>] singleton_0 by auto
   with assms
-  have "cf_fun(f,succ(\<alpha>))" 
+  have "cf_fun(f,succ(\<alpha>))"
     using cf_fun_succ unfolding cofinal_fun_def by simp
   from \<open>f:1\<rightarrow>succ(\<alpha>)\<close>
   have "0\<in>domain(f)" using domain_of_fun by simp
   define A where "A={f`0}"
   with \<open>cf_fun(f,succ(\<alpha>))\<close> \<open>0\<in>domain(f)\<close> \<open>f`0=\<alpha>\<close>
-  have "cofinal(A,succ(\<alpha>),Memrel(succ(\<alpha>)))" 
+  have "cofinal(A,succ(\<alpha>),Memrel(succ(\<alpha>)))"
     unfolding cofinal_def cofinal_fun_def by simp
   moreover from  \<open>f`0=\<alpha>\<close> \<open>A={f`0}\<close>
   have "A \<subseteq> succ(\<alpha>)" unfolding succ_def  by auto
   moreover from \<open>Ord(\<alpha>)\<close> \<open>A\<subseteq> succ(\<alpha>)\<close>
-  have "well_ord(A,Memrel(succ(\<alpha>)))" 
+  have "well_ord(A,Memrel(succ(\<alpha>)))"
     using Ord_succ well_ord_Memrel  well_ord_subset relation_Memrel by blast
   moreover from \<open>Ord(\<alpha>)\<close>
   have "\<not>(\<exists>A. A \<subseteq> succ(\<alpha>) \<and> cofinal(A, succ(\<alpha>), Memrel(succ(\<alpha>))) \<and> 0 = ordertype(A, Memrel(succ(\<alpha>))))"
     (is "\<not>?P(0)")
     using ordertype_0_not_cofinal_succ  unfolding cf_def  by auto
   moreover
-  have "1 = ordertype(A,Memrel(succ(\<alpha>)))" 
-  proof - 
+  have "1 = ordertype(A,Memrel(succ(\<alpha>)))"
+  proof -
     from \<open>A={f`0}\<close>
     have "A\<approx>1" using singleton_eqpoll_1 by simp
     with \<open>well_ord(A,Memrel(succ(\<alpha>)))\<close>
     show ?thesis using nat_1I ordertype_eq_n by simp
   qed
   ultimately
-  show "cf(succ(\<alpha>)) = 1" using Ord_1  Least_equality[of ?P 1]  
+  show "cf(succ(\<alpha>)) = 1" using Ord_1  Least_equality[of ?P 1]
     unfolding cf_def by blast
 qed
-       
+
 lemma cf_zero [simp]:
   "cf(0) = 0"
-  unfolding cf_def cofinal_def using 
+  unfolding cf_def cofinal_def using
     ordertype_0 subset_empty_iff Least_le[of _ 0] by auto
 
 lemma surj_is_cofinal: "f \<in> surj(\<delta>,\<gamma>) \<Longrightarrow> cf_fun(f,\<gamma>)"
-  unfolding surj_def cofinal_fun_def cf_fun_def 
+  unfolding surj_def cofinal_fun_def cf_fun_def
   using domain_of_fun by force
 
 lemma cf_zero_iff: "Ord(\<alpha>) \<Longrightarrow> cf(\<alpha>) = 0 \<longleftrightarrow> \<alpha> = 0"
@@ -343,198 +300,61 @@ proof (intro iffI)
   then
   show "cf(\<alpha>) = 0" using cf_zero by simp
 next
-  assume "cf(\<alpha>) =0" "Ord(\<alpha>)"
+  assume "cf(\<alpha>) = 0" "Ord(\<alpha>)"
+  moreover from this
+  obtain A where "A\<subseteq>\<alpha>" "cf(\<alpha>) = ordertype(A,Memrel(\<alpha>))"
+    "cofinal(A,\<alpha>,Memrel(\<alpha>))"
+    using cf_is_ordertype by blast
+  ultimately
+  have "cofinal(0,\<alpha>,Memrel(\<alpha>))"
+    using ordertype_zero_imp_zero[of A "Memrel(\<alpha>)"] by simp
   then
-  show "\<alpha>=0" sorry
+  show "\<alpha>=0"
+    unfolding cofinal_def by blast
 qed
 
-lemma cf_is_one_iff:
+\<comment> \<open>TODO: define Succ (predicate for successor ordinals)\<close>
+lemma cf_eq_one_iff:
   assumes "Ord(\<gamma>)"
   shows "cf(\<gamma>) = 1 \<longleftrightarrow> (\<exists>\<alpha>. Ord(\<alpha>) \<and> \<gamma>  = succ(\<alpha>))"
 proof (intro iffI)
   assume "\<exists>\<alpha>. Ord(\<alpha>) \<and> \<gamma>  = succ(\<alpha>)"
-  then 
+  then
   show "cf(\<gamma>) = 1" using cf_succ by auto
 next
   assume "cf(\<gamma>) = 1"
-  then
-  show "\<exists>\<alpha>. Ord(\<alpha>) \<and> \<gamma>  = succ(\<alpha>)" sorry
-qed 
-
-lemma mono_map_increasing: 
-  "j\<in>mono_map(A,r,B,s) \<Longrightarrow> a\<in>A \<Longrightarrow> c\<in>A \<Longrightarrow> <a,c>\<in>r \<Longrightarrow> <j`a,j`c>\<in>s"
-  unfolding mono_map_def by simp
-
-lemma Least_antitone:
-  assumes 
-    "Ord(j)" "P(j)" "\<And>i. P(i) \<Longrightarrow> Q(i)"
-  shows
-    "(\<mu> i. Q(i)) \<le> (\<mu> i. P(i))"
-  using assms LeastI2[of P j Q] Least_le by simp
-
-lemma Least_set_antitone:
-  "Ord(j) \<Longrightarrow> j\<in>A \<Longrightarrow> A \<subseteq> B \<Longrightarrow> (\<mu> i. i\<in>B) \<le> (\<mu> i. i\<in>A)"
-  using subset_iff by (auto intro:Least_antitone)
-
-lemma le_neq_imp_lt:
-  "x\<le>y \<Longrightarrow> x\<noteq>y \<Longrightarrow> x<y"
-  using ltD ltI[of x y] le_Ord2
-  unfolding succ_def by auto
-
-lemma apply_in_range:
-  assumes 
-    "Ord(\<gamma>)" " \<gamma>\<noteq>0" "f: A \<rightarrow> \<gamma>"
-  shows
-    "f`x\<in>\<gamma>"
-proof (cases "x\<in>A")
-  case True
-  from assms \<open>x\<in>A\<close>
-  show ?thesis
-    using   domain_of_fun apply_rangeI  by simp
-next
-  case False
-  from assms \<open>x\<notin>A\<close>
-  show ?thesis
-    using apply_0  Ord_0_lt ltD domain_of_fun by auto
-qed
-
-lemma range_eq_image:
-  assumes "f:A\<rightarrow>B"
-  shows "range(f) = f``A"
-proof
-  show "f `` A \<subseteq> range(f)"
-    unfolding image_def by blast
-  {
-    fix x
-    assume "x\<in>range(f)"
-    with assms
-    have "x\<in>f``A"
-      using domain_of_fun[of f A "\<lambda>_. B"] by auto
-  }
-  then 
-  show "range(f) \<subseteq> f `` A" ..
-qed
-
-lemma inj_to_codomain: 
-  assumes 
-    "f:A\<rightarrow>B" "f \<in> inj(A,B)"
-  shows 
-    "f \<in> inj(A,f``A)"
-  using assms inj_inj_range range_eq_image by force
-
-lemma linear_mono_map_reflects:
-  assumes
-    "linear(\<alpha>,r)" "trans[\<beta>](s)" "irrefl(\<beta>,s)" "f\<in>mono_map(\<alpha>,r,\<beta>,s)"
-    "x\<in>\<alpha>" "y\<in>\<alpha>" "\<langle>f`x,f`y\<rangle>\<in>s"
-  shows
-    "\<langle>x,y\<rangle>\<in>r"
-proof -
-  from \<open>f\<in>mono_map(_,_,_,_)\<close>
-  have preserves:"x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>r \<Longrightarrow> \<langle>f`x,f`y\<rangle>\<in>s" for x y    
-    unfolding mono_map_def by blast
-  {
-    assume "\<langle>x, y\<rangle> \<notin> r" "x\<in>\<alpha>" "y\<in>\<alpha>"
-    moreover
-    note \<open>\<langle>f`x,f`y\<rangle>\<in>s\<close> and \<open>linear(\<alpha>,r)\<close>
-    moreover from calculation
-    have "y = x \<or> \<langle>y,x\<rangle>\<in>r"
-      unfolding linear_def by blast
-    moreover
-    note preserves [of y x]
-    ultimately
-    have "y = x \<or> \<langle>f`y, f`x\<rangle>\<in> s" by blast
-    moreover from \<open>f\<in>mono_map(_,_,\<beta>,_)\<close> \<open>x\<in>\<alpha>\<close> \<open>y\<in>\<alpha>\<close>
-    have "f`x\<in>\<beta>" "f`y\<in>\<beta>"
-      using apply_type[OF mono_map_is_fun] by simp_all
-    moreover
-    note \<open>\<langle>f`x,f`y\<rangle>\<in>s\<close>  \<open>trans[\<beta>](s)\<close> \<open>irrefl(\<beta>,s)\<close>
-    ultimately
-    have "False"
-      using trans_onD[of \<beta> s "f`x" "f`y" "f`x"] irreflE by blast
-  }
-  with assms
-  show "\<langle>x,y\<rangle>\<in>r" by blast
-qed
-
-lemma irrefl_Memrel: "irrefl(x, Memrel(x))"
-    unfolding irrefl_def using mem_irrefl by auto
-
-lemmas Memrel_mono_map_reflects = linear_mono_map_reflects
-  [OF well_ord_is_linear[OF well_ord_Memrel] well_ord_is_trans_on[OF well_ord_Memrel]
-    irrefl_Memrel]
-
-(* Same proof as Paulson's *)
-lemma mono_map_is_inj':
-    "\<lbrakk> linear(A,r);  irrefl(B,s);  f \<in> mono_map(A,r,B,s) \<rbrakk> \<Longrightarrow> f \<in> inj(A,B)"
-  unfolding irrefl_def mono_map_def inj_def using linearE
-  by (clarify) (erule_tac x=w and y=x in linearE, assumption+, (force intro: apply_type)+)
-
-lemma mono_map_imp_ord_iso_image:
-  assumes 
-    "linear(\<alpha>,r)" "trans[\<beta>](s)"  "irrefl(\<beta>,s)" "f\<in>mono_map(\<alpha>,r,\<beta>,s)"
-  shows
-    "f \<in> ord_iso(\<alpha>,r,f``\<alpha>,s)"
-  unfolding ord_iso_def
-proof (intro CollectI ballI iffI)
-  (* Enough to show it's bijective and preserves both ways *)
-  from assms
-  have "f \<in> inj(\<alpha>,\<beta>)"
-    using mono_map_is_inj' by blast
-  moreover from \<open>f\<in>mono_map(_,_,_,_)\<close>
-  have "f \<in> surj(\<alpha>,f``\<alpha>)"
-    unfolding mono_map_def using surj_image by auto
+  moreover from assms
+  obtain A where "A \<subseteq> \<gamma>" "cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))"
+    "cofinal(A,\<gamma>,Memrel(\<gamma>))"
+    using cf_is_ordertype by blast
   ultimately
-  show "f \<in> bij(\<alpha>,f``\<alpha>)" 
-    unfolding bij_def using inj_is_fun inj_to_codomain by simp
-  from \<open>f\<in>mono_map(_,_,_,_)\<close>
-  show "x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>r \<Longrightarrow> \<langle>f`x,f`y\<rangle>\<in>s" for x y    
-    unfolding mono_map_def by blast
-  with assms
-  show "\<langle>f`x,f`y\<rangle>\<in>s \<Longrightarrow> x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>r" for x y
-    using linear_mono_map_reflects
-    by blast
+  have "ordertype(A,Memrel(\<gamma>)) = 1" by simp
+  moreover
+  define f where "f\<equiv>converse(ordermap(A,Memrel(\<gamma>)))"
+  moreover from this \<open>ordertype(A,Memrel(\<gamma>)) = 1\<close> \<open>A \<subseteq> \<gamma>\<close> assms
+  have "f \<in> surj(1,A)"
+    using well_ord_subset[OF well_ord_Memrel, THEN ordermap_bij,
+        THEN bij_converse_bij, of \<gamma> A] bij_is_surj
+    by simp
+  with \<open>cofinal(A,\<gamma>,Memrel(\<gamma>))\<close>
+  have "\<forall>a\<in>\<gamma>. \<langle>a, f`0\<rangle> \<in> Memrel(\<gamma>) \<or> a = f`0"
+    unfolding cofinal_def surj_def
+    by auto
+  with assms \<open>A \<subseteq> \<gamma>\<close> \<open>f \<in> surj(1,A)\<close>
+  show "\<exists>\<alpha>. Ord(\<alpha>) \<and> \<gamma>  = succ(\<alpha>)"
+    using Ord_has_max_imp_succ[of \<gamma> "f`0"]
+      surj_is_fun[of f 1 A] apply_type[of f 1 "\<lambda>_.A" 0]
+    unfolding lt_def
+    by (auto intro:Ord_in_Ord)
 qed
-
-lemma mono_map_imp_ord_iso_Memrel:
-  assumes 
-    "Ord(\<alpha>)" "Ord(\<beta>)" "f\<in>mono_map(\<alpha>,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
-  shows
-    "f \<in> ord_iso(\<alpha>,Memrel(\<alpha>),f``\<alpha>,Memrel(\<beta>))"
-  using assms mono_map_imp_ord_iso_image[OF well_ord_is_linear[OF well_ord_Memrel]
-      well_ord_is_trans_on[OF well_ord_Memrel] irrefl_Memrel] by blast
-
-lemma Image_sub_codomain: "f:A\<rightarrow>B \<Longrightarrow> f``C \<subseteq> B"
-  using image_subset fun_is_rel[of _ _ "\<lambda>_ . B"] by force
-
-lemma linear_sub_linear: "linear(A,r) \<Longrightarrow> B\<subseteq>A \<Longrightarrow> linear (B,r)"
-  unfolding linear_def by blast
-
-lemma mono_map_ordertype_image':
-  assumes 
-    "X\<subseteq>\<alpha>" "Ord(\<alpha>)" "Ord(\<beta>)" "f\<in>mono_map(X,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
-  shows
-    "ordertype(f``X,Memrel(\<beta>)) = ordertype(X,Memrel(\<alpha>))"
-  using assms mono_map_is_fun[of f X _ \<beta>]  ordertype_eq
-    mono_map_imp_ord_iso_image[OF well_ord_is_linear[OF well_ord_Memrel, THEN linear_sub_linear]
-      well_ord_is_trans_on[OF well_ord_Memrel] irrefl_Memrel, of \<alpha> X \<beta> f]
-    well_ord_subset[OF well_ord_Memrel]  Image_sub_codomain[of f X \<beta> X] by auto 
-
-lemma mono_map_ordertype_image:
-  assumes 
-    "Ord(\<alpha>)" "Ord(\<beta>)" "f\<in>mono_map(\<alpha>,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
-  shows
-    "ordertype(f``\<alpha>,Memrel(\<beta>)) = \<alpha>"
-  using assms mono_map_is_fun ordertype_Memrel ordertype_eq[of f \<alpha> "Memrel(\<alpha>)"]
-    mono_map_imp_ord_iso_Memrel well_ord_subset[OF well_ord_Memrel] Image_sub_codomain[of _ \<alpha>]
-      by auto 
 
 lemma ordertype_in_cf_imp_not_cofinal:
   assumes
-    "ordertype(A,Memrel(\<gamma>)) \<in> cf(\<gamma>)" 
-    "A \<subseteq> \<gamma>" 
+    "ordertype(A,Memrel(\<gamma>)) \<in> cf(\<gamma>)"
+    "A \<subseteq> \<gamma>"
   shows
     "\<not> cofinal(A,\<gamma>,Memrel(\<gamma>))"
-proof 
+proof
   note \<open>A \<subseteq> \<gamma>\<close>
   moreover
   assume "cofinal(A,\<gamma>,Memrel(\<gamma>))"
@@ -547,97 +367,109 @@ proof
     using Ord_cf ltI by blast
   ultimately
   show "False"
-    unfolding cf_def using less_LeastE[of ?P  "ordertype(A,Memrel(\<gamma>))"]  
+    unfolding cf_def using less_LeastE[of ?P  "ordertype(A,Memrel(\<gamma>))"]
     by auto
 qed
 
-lemma apply_in_image: "f:A\<rightarrow>B \<Longrightarrow> a\<in>A \<Longrightarrow> f`a \<in> f``A"
-  using range_eq_image apply_rangeI[of f]  by simp
-
-lemma Image_subset_Ord_imp_lt:
-  assumes
-    "Ord(\<alpha>)" "h``A \<subseteq> \<alpha>" "x\<in>domain(h)" "x\<in>A" "function(h)"
-  shows
-    "h`x < \<alpha>"
-  using assms
-  unfolding domain_def using imageI ltI function_apply_equality by auto
-
 lemma cofinal_mono_map_cf:
   assumes "Ord(\<gamma>)"
-  shows "\<exists>j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>)) . cf_fun(j,\<gamma>)"
-  using assms
-proof - 
-  from assms
-  consider (zero) "\<gamma>=0" | (succ) "\<exists>b. \<gamma> =succ(b)" | (lim) "Limit(\<gamma>)" using Ord_cases_disj by auto
-  then
-  show ?thesis
-  proof(cases)
-    case zero
-    have "cf(0) = 0" using cf_zero by simp
-    then 
-    have  "id(0) \<in> \<langle>cf(0), Memrel(cf(0))\<rangle> \<cong> \<langle>0, Memrel(0)\<rangle>" 
-      using ord_iso_refl by simp
-    then 
-    have "id(0)\<in>mono_map(cf(0),Memrel(cf(0)),0,Memrel(0))" 
-      using ord_iso_is_mono_map by simp
-    with zero
-    show ?thesis unfolding cofinal_fun_def cf_fun_def by fast
-  next
-    case succ  
-    moreover from this
-    obtain b where "\<gamma> = succ(b)" by auto
-    moreover from this
-    have "Ord(b)"  using Ord_succ_iff \<open>Ord(\<gamma>)\<close> by simp
-    obtain f where "f : 1\<rightarrow>succ(b)" "f`0 = b" 
-      using singleton_fun_succ \<open>Ord(b)\<close> by blast
-    ultimately
-    have "cf_fun(f,\<gamma>)" using cf_fun_succ \<open>Ord(b)\<close>  by simp
-    have "f\<in>mono_map(1,Memrel(1),\<gamma>,Memrel(\<gamma>))"
-      unfolding mono_map_def  using \<open>f:1\<rightarrow>succ(b)\<close> \<open>\<gamma>=succ(b)\<close>  by simp
-    then
-    show ?thesis using \<open>cf_fun(f,\<gamma>)\<close> cf_succ \<open>\<gamma>=succ(b)\<close> \<open>Ord(\<gamma>)\<close> by auto
-  next    
-    case lim
-    then
-    show ?thesis sorry
-  qed
+  shows "\<exists>j \<in> mono_map(cf(\<gamma>), Memrel(cf(\<gamma>)), \<gamma>, Memrel(\<gamma>)) . cf_fun(j,\<gamma>)"
+proof -
+  note assms
+  moreover from this
+  obtain A where "A \<subseteq> \<gamma>" "cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))"
+    "cofinal(A,\<gamma>,Memrel(\<gamma>))"
+    using cf_is_ordertype by blast
+  moreover
+  define j where "j \<equiv> converse(ordermap(A,Memrel(\<gamma>)))"
+  moreover from calculation
+  have "j :cf(\<gamma>) \<rightarrow>\<^sub>< \<gamma>"
+    using ordertype_ord_iso[THEN ord_iso_sym,
+        THEN ord_iso_is_mono_map, THEN mono_map_mono,
+        of A "Memrel(\<gamma>)" \<gamma>] well_ord_Memrel[THEN well_ord_subset]
+    by simp
+  moreover from calculation
+  have "j \<in> surj(cf(\<gamma>),A)"
+    using well_ord_Memrel[THEN well_ord_subset, THEN ordertype_ord_iso,
+        THEN ord_iso_sym, of \<gamma> A, THEN ord_iso_is_bij,
+        THEN bij_is_surj]
+    by simp
+  with \<open>cofinal(A,\<gamma>,Memrel(\<gamma>))\<close>
+  have "cf_fun(j,\<gamma>)"
+    using cofinal_range_iff_cofinal_fun[of j \<gamma> "Memrel(\<gamma>)"]
+      surj_range[of j "cf(\<gamma>)" A] surj_is_fun fun_is_function
+    by fastforce
+  with \<open>j \<in> mono_map(_,_,_,_)\<close>
+  show ?thesis by auto
 qed
 
+
+subsection\<open>The factorization lemma\<close>
+
+text\<open>In this subsection we prove a factorization lemma for cofinal functions
+into ordinals, which shows that any cofinal function between ordinals can be
+“decomposed” in such a way that a commutative triangle of strictly increasing
+maps arises.
+
+The factorization lemma has a kind of
+fundamental character, in that the rest of the basic results on cofinality
+(for, instance, idempotence) follow easily from it, in a more algebraic way.
+
+This is a consequence that the proof encapsulates uses of transfinite
+recursion in the basic theory of cofinality; indeed, only one use is needed.
+In the setting of Isabelle/ZF, this is convenient since the machinery of
+recursion is pretty clumsy. On the downside, this way of presenting things 
+results in a longer proof of the factorization lemma. This approach was
+taken by the author in the notes \cite{apunte_st} for an introductory course
+in Set Theory.
+
+To organize the use of the hypotheses of the factorization lemma,
+we set up a locale containing all the relevant ingredients.
+\<close>
 locale cofinal_factor =
   fixes j \<delta> \<xi> \<gamma> f
-  assumes j_mono: "j \<in> mono_map(\<xi>,Memrel(\<xi>),\<gamma>,Memrel(\<gamma>))"
-    and     ords: "Ord(\<delta>)" "Ord(\<xi>)" "Limit(\<gamma>)"  
+  assumes j_mono: "j :\<xi> \<rightarrow>\<^sub>< \<gamma>"
+    and     ords: "Ord(\<delta>)" "Ord(\<xi>)" "Limit(\<gamma>)"
     and   f_type: "f: \<delta> \<rightarrow> \<gamma>"
 begin
 
-txt\<open>This is the predicate from which we minimize to define
-the recursive step for the cofinal factor function\<close>
+text\<open>Here, \<^term>\<open>f\<close> is cofinal function from \<^term>\<open>\<delta>\<close> to \<^term>\<open>\<gamma>\<close>, and the
+ordinal \<^term>\<open>\<xi>\<close> is meant to be the cofinality of \<^term>\<open>\<gamma>\<close>. Hence, there exists
+an increasing map \<^term>\<open>j\<close> from  \<^term>\<open>\<xi>\<close> to  \<^term>\<open>\<gamma>\<close> by the last lemma.
+
+The main goal is to construct an increasing function \<^term>\<open>g:\<xi>\<rightarrow>\<delta>\<close> such that
+the composition \<^term>\<open>f O g\<close> is still cofinal but also increasing.\<close>
+
 definition
   factor_body :: "[i,i,i] \<Rightarrow> o" where
   "factor_body(\<beta>,h,x) \<equiv> (x\<in>\<delta> \<and> j`\<beta> \<le> f`x \<and> (\<forall>\<alpha><\<beta> . f`(h`\<alpha>) < f`x)) \<or> x=\<delta>"
 
-txt\<open>The recursive step for the cofinal factor function\<close>
 definition
   factor_rec :: "[i,i] \<Rightarrow> i" where
   "factor_rec(\<beta>,h) \<equiv>  \<mu> x. factor_body(\<beta>,h,x)"
 
+txt\<open>\<^term>\<open>factor_rec\<close> is the inductive step for the definition by transfinite
+recursion of the \<^emph>\<open>factor\<close> function (called \<^term>\<open>g\<close> above), which in
+turn is obtained by minimizing the predicate \<^term>\<open>factor_body\<close>. Next we show
+that this predicate is monotonous.\<close>
+
 lemma factor_body_mono:
-  assumes 
-    "\<beta>\<in>\<xi>" "\<alpha><\<beta>" 
+  assumes
+    "\<beta>\<in>\<xi>" "\<alpha><\<beta>"
     "factor_body(\<beta>,\<lambda>x\<in>\<beta>. G(x),x)"
   shows
     "factor_body(\<alpha>,\<lambda>x\<in>\<alpha>. G(x),x)"
 proof -
   from \<open>\<alpha><\<beta>\<close>
-  have "\<alpha>\<in>\<beta>" using ltD by simp 
+  have "\<alpha>\<in>\<beta>" using ltD by simp
   moreover
   note \<open>\<beta>\<in>\<xi>\<close>
   moreover from calculation
   have "\<alpha>\<in>\<xi>" using ords ltD Ord_cf Ord_trans by blast
-  ultimately 
-  have "j`\<alpha> \<in> j`\<beta>" using j_mono mono_map_increasing by blast 
+  ultimately
+  have "j`\<alpha> \<in> j`\<beta>" using j_mono mono_map_increasing by blast
   moreover from \<open>\<beta>\<in>\<xi>\<close>
-  have "j`\<beta>\<in>\<gamma>" 
+  have "j`\<beta>\<in>\<gamma>"
     using j_mono domain_of_fun apply_rangeI mono_map_is_fun by force
   moreover from this
   have "Ord(j`\<beta>)"
@@ -649,7 +481,7 @@ proof -
   moreover
   have "f`((\<lambda>w\<in>\<alpha>. G(w))`y) < f`z" if "z\<in>\<delta>" "\<forall>x<\<beta>. f`((\<lambda>w\<in>\<beta>. G(w))`x) < f`z" "y<\<alpha>" for y z
   proof -
-    note \<open>y<\<alpha>\<close> 
+    note \<open>y<\<alpha>\<close>
     also
     note \<open>\<alpha><\<beta>\<close>
     finally
@@ -657,7 +489,7 @@ proof -
     with \<open>\<forall>x<\<beta>. f`((\<lambda>w\<in>\<beta>. G(w))`x) < f`z\<close>
     have "f ` ((\<lambda>w\<in>\<beta>. G(w)) ` y) < f ` z" by simp
     moreover from \<open>y<\<alpha>\<close> \<open>y<\<beta>\<close>
-    have "(\<lambda>w\<in>\<beta>. G(w)) ` y = (\<lambda>w\<in>\<alpha>. G(w)) ` y" 
+    have "(\<lambda>w\<in>\<beta>. G(w)) ` y = (\<lambda>w\<in>\<alpha>. G(w)) ` y"
       using beta_if  by (auto dest:ltD)
     ultimately show ?thesis by simp
   qed
@@ -672,18 +504,21 @@ lemma factor_body_simp[simp]: "factor_body(\<alpha>,g,\<delta>)"
   unfolding factor_body_def by simp
 
 lemma factor_rec_mono:
-  assumes 
-    "\<beta>\<in>\<xi>" "\<alpha><\<beta>" 
+  assumes
+    "\<beta>\<in>\<xi>" "\<alpha><\<beta>"
   shows
     "factor_rec(\<alpha>,\<lambda>x\<in>\<alpha>. G(x)) \<le> factor_rec(\<beta>,\<lambda>x\<in>\<beta>. G(x))"
   unfolding factor_rec_def
   using assms ords factor_body_mono Least_antitone by simp
 
+text\<open>We now define the factor as higher-order function.
+Later it will be restricted to a set to obtain a bona fide function of
+type @{typ i}.\<close>
 definition
   factor :: "i \<Rightarrow> i" where
   "factor(\<beta>) \<equiv> transrec(\<beta>,factor_rec)"
 
-lemma def_factor: 
+lemma factor_unfold:
   "factor(\<alpha>) = factor_rec(\<alpha>,\<lambda>x\<in>\<alpha>. factor(x))"
   using def_transrec[OF factor_def] .
 
@@ -692,36 +527,41 @@ lemma factor_mono:
   shows "factor(\<alpha>) \<le> factor(\<beta>)"
 proof -
   have "factor(\<alpha>) = factor_rec(\<alpha>, \<lambda>x\<in>\<alpha>. factor(x))"
-    using def_factor .
+    using factor_unfold .
   also from assms and factor_rec_mono
-  have "... \<le> factor_rec(\<beta>, \<lambda>x\<in>\<beta>. factor(x))" 
+  have "... \<le> factor_rec(\<beta>, \<lambda>x\<in>\<beta>. factor(x))"
     by simp
   also
-  have "factor_rec(\<beta>, \<lambda>x\<in>\<beta>. factor(x)) = factor(\<beta>)" 
+  have "factor_rec(\<beta>, \<lambda>x\<in>\<beta>. factor(x)) = factor(\<beta>)"
     using def_transrec[OF factor_def, symmetric] .
   finally show ?thesis .
 qed
 
-text\<open>The cofinal factor satisfies the predicate body of the
-minimization\<close>
+text\<open>The factor satisfies the predicate body of the minimization.\<close>
+
 lemma factor_body_factor:
   "factor_body(\<alpha>,\<lambda>x\<in>\<alpha>. factor(x),factor(\<alpha>))"
-  using ords def_factor[of \<alpha>] 
-    LeastI[of "factor_body(_,_)" \<delta>] 
+  using ords factor_unfold[of \<alpha>]
+    LeastI[of "factor_body(_,_)" \<delta>]
   unfolding factor_rec_def by simp
 
 lemma factor_type [TC]: "Ord(factor(\<alpha>))"
-  using ords def_factor[of \<alpha>] 
+  using ords factor_unfold[of \<alpha>]
   unfolding factor_rec_def by simp
+
+text\<open>The value \<^term>\<open>\<delta>\<close> in \<^term>\<open>factor_body\<close> (and therefore, in
+\<^term>\<open>factor\<close>) is meant to be a “default value”. Whenever it is not 
+attained, the factor function behaves as expected: It is increasing
+and its composition with \<^term>\<open>f\<close> also is.\<close>
 
 lemma f_factor_increasing:
   assumes "\<beta>\<in>\<xi>" "\<alpha><\<beta>" "factor(\<beta>)\<noteq>\<delta>"
   shows "f`factor(\<alpha>) < f`factor(\<beta>)"
 proof -
-  from assms 
+  from assms
   have "f ` ((\<lambda>x\<in>\<beta>. factor(x)) ` \<alpha>) < f ` factor(\<beta>)"
-     using def_factor[of \<beta>] ords LeastI[of "factor_body(\<beta>,\<lambda>x\<in>\<beta>. factor(x))"]
-     unfolding factor_rec_def factor_body_def
+    using factor_unfold[of \<beta>] ords LeastI[of "factor_body(\<beta>,\<lambda>x\<in>\<beta>. factor(x))"]
+    unfolding factor_rec_def factor_body_def
     by (auto simp del:beta_if)
   with \<open>\<alpha><\<beta>\<close>
   show ?thesis using ltD by auto
@@ -735,10 +575,13 @@ lemma factor_increasing:
 lemma factor_in_delta:
   assumes "factor(\<beta>) \<noteq> \<delta>"
   shows "factor(\<beta>) \<in> \<delta>"
-  using assms factor_body_factor ords 
+  using assms factor_body_factor ords
   unfolding factor_body_def by auto
 
-definition 
+text\<open>Finally, we define the (set) factor function as the restriction of
+factor to the ordinal  \<^term>\<open>\<xi>\<close>.\<close>
+
+definition
   fun_factor :: "i" where
   "fun_factor \<equiv> \<lambda>\<beta>\<in>\<xi>. factor(\<beta>)"
 
@@ -748,19 +591,19 @@ lemma fun_factor_is_mono_map:
   unfolding mono_map_def
 proof (intro CollectI ballI impI)
   (* Proof that \<^term>\<open>fun_factor\<close> respects membership *)
-  fix \<alpha> \<beta> 
-  assume "\<alpha>\<in>\<xi>" "\<beta>\<in>\<xi>" 
+  fix \<alpha> \<beta>
+  assume "\<alpha>\<in>\<xi>" "\<beta>\<in>\<xi>"
   moreover
-  note assms 
+  note assms
   moreover from calculation
-  have "factor(\<alpha>)\<noteq>\<delta>" "factor(\<beta>)\<noteq>\<delta>" "Ord(\<beta>)" 
+  have "factor(\<alpha>)\<noteq>\<delta>" "factor(\<beta>)\<noteq>\<delta>" "Ord(\<beta>)"
     using factor_in_delta Ord_in_Ord ords by auto
   moreover
   assume "\<langle>\<alpha>, \<beta>\<rangle> \<in> Memrel(\<xi>)"
   ultimately
-  show "\<langle>fun_factor ` \<alpha>, fun_factor ` \<beta>\<rangle> \<in> Memrel(\<delta>)" 
+  show "\<langle>fun_factor ` \<alpha>, fun_factor ` \<beta>\<rangle> \<in> Memrel(\<delta>)"
     unfolding fun_factor_def
-    using ltI factor_increasing[THEN ltD] factor_in_delta 
+    using ltI factor_increasing[THEN ltD] factor_in_delta
     by simp
 next
   (* Proof of type *)
@@ -772,21 +615,21 @@ qed
 
 lemma f_fun_factor_is_mono_map:
   assumes "\<And>\<beta>. \<beta> \<in> \<xi> \<Longrightarrow> factor(\<beta>) \<noteq> \<delta>"
-  shows "f O fun_factor \<in> mono_map(\<xi>, Memrel(\<xi>), \<gamma>, Memrel(\<gamma>))" 
-  unfolding mono_map_def 
+  shows "f O fun_factor \<in> mono_map(\<xi>, Memrel(\<xi>), \<gamma>, Memrel(\<gamma>))"
+  unfolding mono_map_def
   using f_type
-proof (intro CollectI ballI impI comp_fun[of _ _ \<delta>]) 
+proof (intro CollectI ballI impI comp_fun[of _ _ \<delta>])
   from assms
-  show "fun_factor : \<xi> \<rightarrow> \<delta>" 
+  show "fun_factor : \<xi> \<rightarrow> \<delta>"
     using fun_factor_is_mono_map mono_map_is_fun by simp
-  (* Proof that f O ?g respects membership *)
-  fix \<alpha> \<beta> 
+      (* Proof that f O ?g respects membership *)
+  fix \<alpha> \<beta>
   assume "\<langle>\<alpha>, \<beta>\<rangle> \<in> Memrel(\<xi>)"
   then
   have "\<alpha><\<beta>"
     using Ord_in_Ord[of "\<xi>"] ltI ords by blast
-  assume "\<alpha>\<in>\<xi>" "\<beta>\<in>\<xi>"   
-  moreover from this and assms   
+  assume "\<alpha>\<in>\<xi>" "\<beta>\<in>\<xi>"
+  moreover from this and assms
   have "factor(\<alpha>)\<noteq>\<delta>" "factor(\<beta>)\<noteq>\<delta>" by auto
   moreover
   have "Ord(\<gamma>)" "\<gamma>\<noteq>0" using ords Limit_is_Ord by auto
@@ -794,52 +637,57 @@ proof (intro CollectI ballI impI comp_fun[of _ _ \<delta>])
   note \<open>\<alpha><\<beta>\<close> \<open>fun_factor : \<xi> \<rightarrow> \<delta>\<close>
   ultimately
   show "\<langle>(f O fun_factor) ` \<alpha>, (f O fun_factor) ` \<beta>\<rangle> \<in> Memrel(\<gamma>)"
-    using ltD[of "f ` factor(\<alpha>)" "f ` factor(\<beta>)"] 
+    using ltD[of "f ` factor(\<alpha>)" "f ` factor(\<beta>)"]
       f_factor_increasing apply_in_range f_type
     unfolding fun_factor_def by auto
 qed
 
 end (* cofinal_factor *)
 
+text\<open>We state next the factorization lemma.\<close>
+
 lemma cofinal_fun_factorization:
   notes le_imp_subset [dest] lt_trans2 [trans]
-  assumes 
-    "Ord(\<delta>)" "Limit(\<gamma>)" "f: \<delta> \<rightarrow> \<gamma>" "cf_fun(f,\<gamma>)" 
+  assumes
+    "Ord(\<delta>)" "Limit(\<gamma>)" "f: \<delta> \<rightarrow> \<gamma>" "cf_fun(f,\<gamma>)"
   shows
-    "\<exists>g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<delta>,Memrel(\<delta>)).
-     f O g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>)) \<and> 
-     cofinal_fun(f O g,\<gamma>,Memrel(\<gamma>))"
+    "\<exists>g \<in> cf(\<gamma>) \<rightarrow>\<^sub>< \<delta>.  f O g : cf(\<gamma>) \<rightarrow>\<^sub>< \<gamma> \<and>
+           cofinal_fun(f O g,\<gamma>,Memrel(\<gamma>))"
 proof -
   from \<open>Limit(\<gamma>)\<close>
   have "Ord(\<gamma>)" using Limit_is_Ord by simp
   then
-  obtain j where "j \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))" "cf_fun(j,\<gamma>)"
+  obtain j where "j :cf(\<gamma>) \<rightarrow>\<^sub>< \<gamma>" "cf_fun(j,\<gamma>)"
     using cofinal_mono_map_cf by blast
   then
-  have "domain(j) = cf(\<gamma>)" 
+  have "domain(j) = cf(\<gamma>)"
     using domain_of_fun mono_map_is_fun by force
   from \<open>j \<in> _\<close> assms
   interpret cofinal_factor j \<delta> "cf(\<gamma>)"
     by (unfold_locales) (simp_all)
   text\<open>The core of the argument is to show that the factor function
-  indeed maps into \<^term>\<open>\<delta>\<close>, therefore its values satisfy the first 
-  disjunct of \<^term>\<open>factor_body\<close>\<close>
+  indeed maps into \<^term>\<open>\<delta>\<close>, therefore its values satisfy the first
+  disjunct of \<^term>\<open>factor_body\<close>. This holds in turn because no
+  restriction of the factor composed with \<^term>\<open>f\<close> to a proper initial
+  segment of \<^term>\<open>cf(\<gamma>)\<close> can be cofinal in \<^term>\<open>\<gamma>\<close> by definition of
+  cofinality. Hence there must be a witness that satisfies the first
+  disjunct.\<close>
   have factor_not_delta: "factor(\<beta>)\<noteq>\<delta>" if "\<beta> \<in> cf(\<gamma>)" for \<beta>
+    text\<open>For this, we induct on \<^term>\<open>\<beta>\<close> ranging over \<^term>\<open>cf(\<gamma>)\<close>.\<close>
   proof (induct \<beta> rule:Ord_induct[OF _ Ord_cf[of \<gamma>]])
-    (* Induction on cf(\<gamma>) *)
     case 1 with that show ?case .
   next
     case (2 \<beta>)
-    then 
+    then
     have IH: "z\<in>\<beta> \<Longrightarrow> factor(z)\<noteq>\<delta>" for z by simp
     define h where "h \<equiv> \<lambda>x\<in>\<beta>. f`factor(x)"
     from IH
-    have "z\<in>\<beta> \<Longrightarrow> factor(z) \<in> \<delta>" for z 
+    have "z\<in>\<beta> \<Longrightarrow> factor(z) \<in> \<delta>" for z
       using factor_in_delta by blast
     with \<open>f:\<delta>\<rightarrow>\<gamma>\<close>
-    have "h \<in> \<beta> \<rightarrow> \<gamma>" unfolding h_def using apply_funtype lam_type by auto
+    have "h : \<beta> \<rightarrow> \<gamma>" unfolding h_def using apply_funtype lam_type by auto
     then
-    have "h \<in> mono_map(\<beta>,Memrel(\<beta>),\<gamma>,Memrel(\<gamma>))"
+    have "h : \<beta> \<rightarrow>\<^sub>< \<gamma>"
       unfolding mono_map_def
     proof (intro CollectI ballI impI)
       fix x y
@@ -862,7 +710,7 @@ proof -
       show "\<langle>h ` x, h ` y\<rangle> \<in> Memrel(\<gamma>)"
         unfolding h_def using f_factor_increasing ltD by (auto)
     qed
-    with \<open>\<beta>\<in>cf(\<gamma>)\<close> \<open>Ord(\<gamma>)\<close> 
+    with \<open>\<beta>\<in>cf(\<gamma>)\<close> \<open>Ord(\<gamma>)\<close>
     have "ordertype(h``\<beta>,Memrel(\<gamma>)) = \<beta>" (* Maybe should use range(h) *)
       using mono_map_ordertype_image[of \<beta>] Ord_cf Ord_in_Ord by blast
     also
@@ -880,15 +728,15 @@ proof -
       unfolding cofinal_def by auto
     with \<open>Ord(\<gamma>)\<close> \<open>h``\<beta> \<subseteq> \<gamma>\<close>
     have "\<forall>x\<in>h `` \<beta>. x \<in> \<alpha>_0"
-      using well_ord_Memrel[of \<gamma>] well_ord_is_linear[of \<gamma> "Memrel(\<gamma>)"] 
+      using well_ord_Memrel[of \<gamma>] well_ord_is_linear[of \<gamma> "Memrel(\<gamma>)"]
       unfolding linear_def by blast
     from \<open>\<alpha>_0 \<in> \<gamma>\<close> \<open>j \<in> mono_map(_,_,\<gamma>,_)\<close> \<open>Ord(\<gamma>)\<close>
     have "j`\<beta> \<in> \<gamma>"
-      using mono_map_is_fun apply_in_range by force 
+      using mono_map_is_fun apply_in_range by force
     with \<open>\<alpha>_0 \<in> \<gamma>\<close> \<open>Ord(\<gamma>)\<close>
     have "\<alpha>_0 \<union> j`\<beta> \<in> \<gamma>"
       using Un_least_mem_iff Ord_in_Ord by auto
-    with \<open>cf_fun(f,\<gamma>)\<close> 
+    with \<open>cf_fun(f,\<gamma>)\<close>
     obtain \<theta> where "\<theta>\<in>domain(f)" "\<langle>\<alpha>_0 \<union> j`\<beta>, f ` \<theta>\<rangle> \<in> Memrel(\<gamma>) \<or>  \<alpha>_0 \<union> j`\<beta> = f ` \<theta>"
       by (auto simp add:cofinal_fun_def) blast
     moreover from this and \<open>f:\<delta>\<rightarrow>\<gamma>\<close>
@@ -906,17 +754,17 @@ proof -
       using fun_is_function[of h \<beta> "\<lambda>_. \<gamma>"]
         Image_subset_Ord_imp_lt domain_of_fun[of h \<beta> "\<lambda>_. \<gamma>"]
       by blast
-    moreover 
+    moreover
     have "x\<in>\<beta> \<Longrightarrow> h`x < f`\<theta>" for x
     proof -
       fix x
       assume "x\<in>\<beta>"
       with \<open>\<forall>x\<in>h `` \<beta>. x \<in> \<alpha>_0\<close> \<open>Ord(\<alpha>_0)\<close> \<open>h:\<beta>\<rightarrow>\<gamma>\<close>
-      have "h`x < \<alpha>_0" 
-        using fun_is_function[of h \<beta> "\<lambda>_. \<gamma>"] 
+      have "h`x < \<alpha>_0"
+        using fun_is_function[of h \<beta> "\<lambda>_. \<gamma>"]
           Image_subset_Ord_imp_lt domain_of_fun[of h \<beta> "\<lambda>_. \<gamma>"]
         by blast
-      also from \<open>\<langle>\<alpha>_0 \<union> _, f ` \<theta>\<rangle> \<in> Memrel(\<gamma>) \<or> \<alpha>_0 \<union> _= f ` \<theta>\<close> 
+      also from \<open>\<langle>\<alpha>_0 \<union> _, f ` \<theta>\<rangle> \<in> Memrel(\<gamma>) \<or> \<alpha>_0 \<union> _= f ` \<theta>\<close>
         \<open>Ord(f`\<theta>)\<close> \<open>Ord(\<alpha>_0)\<close> \<open>Ord(j`\<beta>)\<close>
       have "\<alpha>_0 \<le> f`\<theta>"
         using Un_leD1[OF leI [OF ltI]] Un_leD1[OF le_eqI] by blast
@@ -925,17 +773,17 @@ proof -
     qed
     ultimately
     have "factor_body(\<beta>,\<lambda>x\<in>\<beta>. factor(x),\<theta>)"
-      unfolding h_def factor_body_def using ltD 
+      unfolding h_def factor_body_def using ltD
       by (auto dest:Un_memD2 Un_leD2[OF le_eqI])
     with \<open>Ord(\<theta>)\<close>
     have "factor(\<beta>) \<le> \<theta>"
-      using def_factor[of \<beta>] Least_le unfolding factor_rec_def by auto
+      using factor_unfold[of \<beta>] Least_le unfolding factor_rec_def by auto
     with \<open>\<theta>\<in>\<delta>\<close> \<open>Ord(\<delta>)\<close>
     have "factor(\<beta>) \<in> \<delta>"
       using leI[of \<theta>] ltI[of \<theta>]  by (auto dest:ltD)
     then
     show ?case by (auto elim:mem_irrefl)
-  qed 
+  qed
   moreover
   have "cofinal_fun(f O fun_factor, \<gamma>, Memrel(\<gamma>))"
   proof (intro cofinal_funI)
@@ -945,17 +793,17 @@ proof -
     obtain x where "x\<in>cf(\<gamma>)" "a \<in> j`x \<or> a = j`x"
       by (auto simp add:cofinal_fun_def) blast
     with factor_not_delta
-    have "x \<in> domain(f O fun_factor)" 
+    have "x \<in> domain(f O fun_factor)"
       using f_fun_factor_is_mono_map mono_map_is_fun domain_of_fun by force
     moreover
     have "a \<in> (f O fun_factor) `x \<or> a = (f O fun_factor) `x"
     proof -
       from \<open>x\<in>cf(\<gamma>)\<close> factor_not_delta
-      have "j ` x \<le> f ` factor(x)" 
+      have "j ` x \<le> f ` factor(x)"
         using mem_not_refl factor_body_factor factor_in_delta
         unfolding factor_body_def by auto
       with \<open>a \<in> j`x \<or> a = j`x\<close>
-      have "a \<in> f ` factor(x) \<or> a = f ` factor(x)" 
+      have "a \<in> f ` factor(x) \<or> a = f ` factor(x)"
         using ltD by blast
       with \<open>x\<in>cf(\<gamma>)\<close>
       show ?thesis using lam_funtype[of "cf(\<gamma>)" factor]
@@ -966,7 +814,7 @@ proof -
     moreover from calculation and \<open>Ord(\<gamma>)\<close> and factor_not_delta
     have "(f O fun_factor) `x \<in> \<gamma>"
       using Limit_nonzero apply_in_range mono_map_is_fun[of "f O fun_factor"]
-      f_fun_factor_is_mono_map by blast
+        f_fun_factor_is_mono_map by blast
     ultimately
     show "\<exists>x \<in> domain(f O fun_factor). \<langle>a, (f O fun_factor) ` x\<rangle> \<in> Memrel(\<gamma>)
                                        \<or> a = (f O fun_factor) `x"
@@ -977,123 +825,12 @@ proof -
     using fun_factor_is_mono_map f_fun_factor_is_mono_map by blast
 qed
 
-lemma ordermap_le_arg:
-  assumes 
-    "X\<subseteq>\<beta>" "x\<in>X" "Ord(\<beta>)"
-  shows
-    "x\<in>X \<Longrightarrow> ordermap(X,Memrel(\<beta>))`x\<le>x"
-proof (induct rule:Ord_induct[OF subsetD, OF assms])
-  case (1 x)
-  have "wf[X](Memrel(\<beta>))" 
-    using wf_imp_wf_on[OF wf_Memrel] .
-  with 1
-  have "ordermap(X,Memrel(\<beta>))`x = {ordermap(X,Memrel(\<beta>))`y . y\<in>{y\<in>X . y\<in>x \<and> y\<in>\<beta>}}"
-    using ordermap_unfold Ord_trans[of _ x \<beta>] by auto
-  also from assms 
-  have "... = {ordermap(X,Memrel(\<beta>))`y . y\<in>{y\<in>X . y\<in>x}}"
-    using Ord_trans[of _ x \<beta>] Ord_in_Ord by blast
-  finally
-  have ordm:"ordermap(X,Memrel(\<beta>))`x = {ordermap(X,Memrel(\<beta>))`y . y\<in>{y\<in>X . y\<in>x}}" .
-  from 1
-  have "y\<in>x \<Longrightarrow> y\<in>X \<Longrightarrow> ordermap(X,Memrel(\<beta>))`y \<le> y" for y by simp
-  with \<open>x\<in>\<beta>\<close> and \<open>Ord(\<beta>)\<close>
-  have "y\<in>x \<Longrightarrow> y\<in>X \<Longrightarrow> ordermap(X,Memrel(\<beta>))`y \<in> x" for y 
-    using ltI[OF _ Ord_in_Ord[of \<beta> x]] lt_trans1 ltD by blast
-  with ordm 
-  have "ordermap(X,Memrel(\<beta>))`x \<subseteq> x" by auto
-  with \<open>x\<in>X\<close> assms
-  show ?case 
-    using subset_imp_le Ord_in_Ord[of \<beta> x] Ord_ordermap
-      well_ord_subset[OF well_ord_Memrel, of \<beta>] by force
-qed
-
-lemma subset_imp_ordertype_le: 
-  assumes 
-    "X\<subseteq>\<beta>" "Ord(\<beta>)"
-  shows
-    "ordertype(X,Memrel(\<beta>))\<le>\<beta>"
-proof -
-  {
-    fix x
-    assume "x\<in>X"
-    with assms
-    have "ordermap(X,Memrel(\<beta>))`x \<le> x"
-      using ordermap_le_arg by simp
-    with \<open>x\<in>X\<close> and assms
-    have "ordermap(X,Memrel(\<beta>))`x \<in> \<beta>" (is "?y \<in> _")
-      using ltD[of ?y "succ(x)"] Ord_trans[of  ?y x \<beta>] by auto
-  }
-  then
-  have "ordertype(X, Memrel(\<beta>)) \<subseteq> \<beta>"
-    using ordertype_unfold[of X] by auto
-  with assms
-  show ?thesis
-    using subset_imp_le Ord_ordertype[OF well_ord_subset, OF well_ord_Memrel] by simp
-qed
-
-lemma mono_map_imp_le:
-  assumes 
-    "f\<in>mono_map(\<alpha>, Memrel(\<alpha>),\<beta>, Memrel(\<beta>))" "Ord(\<alpha>)" "Ord(\<beta>)"
-  shows
-    "\<alpha>\<le>\<beta>"
-proof -
-  from assms
-  have "f \<in> \<langle>\<alpha>, Memrel(\<alpha>)\<rangle> \<cong> \<langle>f``\<alpha>, Memrel(\<beta>)\<rangle>"
-    using mono_map_imp_ord_iso_Memrel by simp
-  then
-  have "converse(f) \<in> \<langle>f``\<alpha>, Memrel(\<beta>)\<rangle> \<cong> \<langle>\<alpha>, Memrel(\<alpha>)\<rangle>"
-    using ord_iso_sym by simp
-  with \<open>Ord(\<alpha>)\<close>
-  have "\<alpha> = ordertype(f``\<alpha>,Memrel(\<beta>))"
-    using ordertype_eq well_ord_Memrel ordertype_Memrel by auto
-  also from assms
-  have "ordertype(f``\<alpha>,Memrel(\<beta>)) \<le> \<beta>"
-    using subset_imp_ordertype_le mono_map_is_fun[of f] Image_sub_codomain[of f] by force
-  finally
-  show ?thesis .
-qed
-
-lemma cf_le_domain_cofinal_fun:
-  assumes 
-    "Ord(\<gamma>)" "Ord(\<delta>)" "f:\<delta> \<rightarrow> \<gamma>" "cf_fun(f,\<gamma>)" 
-  shows
-    "cf(\<gamma>)\<le>\<delta>"
-  using assms
-proof (induct rule:trans_induct3)
-  case 0
-  with \<open>Ord(\<delta>)\<close>
-  show ?case using Ord_0_le by simp
-next
-  case (succ \<gamma>)
-  with \<open>Ord(\<gamma>)\<close>
-  obtain x where "x\<in>\<delta>" "f`x=\<gamma>" using cf_fun_succ' by blast
-  then
-  have "\<delta>\<noteq>0" by blast
-  let ?f="{<0,f`x>}"
-  from \<open>f`x=\<gamma>\<close>
-  have "?f:1\<rightarrow>succ(\<gamma>)"
-    using singleton_0 singleton_fun[of 0 \<gamma>] singleton_subsetI fun_weaken_type by simp
-  with \<open>Ord(\<gamma>)\<close>  \<open>f`x=\<gamma>\<close>
-  have "cf(succ(\<gamma>)) = 1" using cf_succ by simp 
-  then show ?case using \<open>\<delta>\<noteq>0\<close> Ord_0_lt_iff succ_leI \<open>Ord(\<delta>)\<close> by simp
-next
-  case (limit \<gamma>)
-  with assms 
-  obtain g where "g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<delta>,Memrel(\<delta>))"
-    using cofinal_fun_factorization by blast
-  with assms
-  show ?case using mono_map_imp_le by simp
-qed
-
-(* Ord(A) \<Longrightarrow> f \<in> mono_map(A, Memrel(A), B, Memrel(Aa)) \<Longrightarrow> f \<in> inj(A, B) *)
-lemmas Memrel_mono_map_is_inj = mono_map_is_inj
-  [OF well_ord_is_linear[OF well_ord_Memrel]
-      wf_imp_wf_on[OF wf_Memrel]]
-
+text\<open>As a final observation in this part, we note that if the original
+cofinal map was increasing, then the factor function is also cofinal.\<close>
 lemma factor_is_cofinal:
   assumes
     "Ord(\<delta>)" "Ord(\<gamma>)"
-    "f \<in> mono_map(\<delta>,Memrel(\<delta>),\<gamma>,Memrel(\<gamma>))"  "f O g \<in> mono_map(\<alpha>,r,\<gamma>,Memrel(\<gamma>))"
+    "f :\<delta> \<rightarrow>\<^sub>< \<gamma>"  "f O g \<in> mono_map(\<alpha>,r,\<gamma>,Memrel(\<gamma>))"
     "cofinal_fun(f O g,\<gamma>,Memrel(\<gamma>))" "g: \<alpha> \<rightarrow> \<delta>"
   shows
     "cf_fun(g,\<delta>)"
@@ -1113,10 +850,51 @@ proof
   with assms(1-3) and \<open>a\<in>\<delta>\<close>
   have "\<langle>a, g ` y\<rangle> \<in> Memrel(\<delta>) \<or> a = g ` y"
     using Memrel_mono_map_reflects Memrel_mono_map_is_inj[of \<delta> f \<gamma> \<gamma>]
-    inj_apply_equality[of f \<delta> \<gamma>]  by blast
+      inj_apply_equality[of f \<delta> \<gamma>]  by blast
   with \<open>y\<in>\<alpha>\<close>
   show "\<exists>x\<in>domain(g). \<langle>a, g ` x\<rangle> \<in> Memrel(\<delta>) \<or> a = g ` x"
     using domain_of_fun[OF \<open>g:\<alpha> \<rightarrow> \<delta>\<close>] by blast
+qed
+
+
+subsection\<open>Classical results on cofinalities\<close>
+
+text\<open>Now the rest of the results follow in a more algebraic way. The
+next proof one invokes a case analysis on whether the argument is zero,
+a successor ordinal or a limit one; the last case being the most
+relevant one and is immediate from the factorization lemma.\<close>
+
+lemma cf_le_domain_cofinal_fun:
+  assumes
+    "Ord(\<gamma>)" "Ord(\<delta>)" "f:\<delta> \<rightarrow> \<gamma>" "cf_fun(f,\<gamma>)"
+  shows
+    "cf(\<gamma>)\<le>\<delta>"
+  using assms
+proof (cases rule:Ord_cases)
+  case 0
+  with \<open>Ord(\<delta>)\<close>
+  show ?thesis using Ord_0_le by simp
+next
+  case (succ \<gamma>)
+  with assms
+  obtain x where "x\<in>\<delta>" "f`x=\<gamma>" using cf_fun_succ' by blast
+  then
+  have "\<delta>\<noteq>0" by blast
+  let ?f="{\<langle>0,f`x\<rangle>}"
+  from \<open>f`x=\<gamma>\<close>
+  have "?f:1\<rightarrow>succ(\<gamma>)"
+    using singleton_0 singleton_fun[of 0 \<gamma>] singleton_subsetI fun_weaken_type by simp
+  with \<open>Ord(\<gamma>)\<close>  \<open>f`x=\<gamma>\<close>
+  have "cf(succ(\<gamma>)) = 1" using cf_succ by simp
+  with \<open>\<delta>\<noteq>0\<close> succ
+  show ?thesis using Ord_0_lt_iff succ_leI \<open>Ord(\<delta>)\<close> by simp
+next
+  case (limit)
+  with assms
+  obtain g where "g :cf(\<gamma>) \<rightarrow>\<^sub>< \<delta>"
+    using cofinal_fun_factorization by blast
+  with assms
+  show ?thesis using mono_map_imp_le by simp
 qed
 
 lemma cf_ordertype_cofinal:
@@ -1146,9 +924,9 @@ proof (intro le_anti_sym)
   moreover note \<open>cofinal(A,\<gamma>,_)\<close>
   ultimately
   have "cf_fun(f,\<gamma>)"
-    using cofinal_range_imp_cofinal_fun by blast
+    using cofinal_range_iff_cofinal_fun by blast
   moreover from \<open>Ord(\<alpha>)\<close>
-  obtain h where "h \<in> mono_map(cf(\<alpha>),Memrel(cf(\<alpha>)),\<alpha>,Memrel(\<alpha>))" "cf_fun(h,\<alpha>)"
+  obtain h where "h :cf(\<alpha>) \<rightarrow>\<^sub>< \<alpha>" "cf_fun(h,\<alpha>)"
     using cofinal_mono_map_cf by blast
   moreover from \<open>Ord(\<gamma>)\<close>
   have "trans(Memrel(\<gamma>))"
@@ -1156,7 +934,7 @@ proof (intro le_anti_sym)
   moreover
   note \<open>A\<subseteq>\<gamma>\<close>
   ultimately
-  have "cofinal_fun(f O h,\<gamma>,Memrel(\<gamma>))" 
+  have "cofinal_fun(f O h,\<gamma>,Memrel(\<gamma>))"
     using cofinal_comp ord_iso_is_mono_map[OF \<open>f:\<langle>\<alpha>,_\<rangle> \<cong> \<langle>A,_\<rangle>\<close>] mono_map_is_fun
       mono_map_mono by blast
   moreover from \<open>f:\<alpha>\<rightarrow>A\<close> \<open>A\<subseteq>\<gamma>\<close> \<open>h\<in>mono_map(cf(\<alpha>),_,\<alpha>,_)\<close>
@@ -1166,26 +944,26 @@ proof (intro le_anti_sym)
   note \<open>Ord(\<gamma>)\<close> \<open>Ord(\<alpha>)\<close> \<open>\<alpha> = ordertype(A,Memrel(\<gamma>))\<close>
   ultimately
   show "cf(\<gamma>) \<le> cf(ordertype(A,Memrel(\<gamma>)))"
-    using cf_le_domain_cofinal_fun[of _ _ "f O h"] 
+    using cf_le_domain_cofinal_fun[of _ _ "f O h"]
     by (auto simp add:cf_fun_def)
-  (********************************************************)
+      (********************************************************)
   from \<open>f:\<langle>\<alpha>, _\<rangle> \<cong> \<langle>A,_\<rangle>\<close> \<open>A\<subseteq>\<gamma>\<close>
-  have "f \<in> mono_map(\<alpha>,Memrel(\<alpha>),\<gamma>,Memrel(\<gamma>))"
+  have "f :\<alpha> \<rightarrow>\<^sub>< \<gamma>"
     using mono_map_mono[OF ord_iso_is_mono_map] by simp
   then
   have "f: \<alpha> \<rightarrow> \<gamma>"
     using mono_map_is_fun by simp
   with \<open>cf_fun(f,\<gamma>)\<close> \<open>Limit(\<gamma>)\<close> \<open>Ord(\<alpha>)\<close>
-  obtain g where "g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<alpha>,Memrel(\<alpha>))"
-     "f O g \<in> mono_map(cf(\<gamma>),Memrel(cf(\<gamma>)),\<gamma>,Memrel(\<gamma>))"
-     "cofinal_fun(f O g,\<gamma>,Memrel(\<gamma>))"
+  obtain g where "g :cf(\<gamma>) \<rightarrow>\<^sub>< \<alpha>"
+    "f O g :cf(\<gamma>) \<rightarrow>\<^sub>< \<gamma>"
+    "cofinal_fun(f O g,\<gamma>,Memrel(\<gamma>))"
     using cofinal_fun_factorization by blast
   moreover from this
   have "g:cf(\<gamma>)\<rightarrow>\<alpha>"
     using mono_map_is_fun by simp
   moreover
   note \<open>Ord(\<alpha>)\<close>
-  moreover from calculation and \<open>f \<in> mono_map(\<alpha>,Memrel(\<alpha>),\<gamma>,Memrel(\<gamma>))\<close> \<open>Ord(\<gamma>)\<close>
+  moreover from calculation and \<open>f :\<alpha> \<rightarrow>\<^sub>< \<gamma>\<close> \<open>Ord(\<gamma>)\<close>
   have "cf_fun(g,\<alpha>)"
     using factor_is_cofinal by blast
   moreover
@@ -1195,24 +973,22 @@ proof (intro le_anti_sym)
     using cf_le_domain_cofinal_fun[OF _ Ord_cf mono_map_is_fun] by simp
 qed
 
-(* probar 5.12 y 5.13(1,2) *)
-  
 lemma cf_idemp:
   assumes "Limit(\<gamma>)"
-  shows "cf(\<gamma>) = cf(cf(\<gamma>))"  
+  shows "cf(\<gamma>) = cf(cf(\<gamma>))"
 proof -
   from assms
   obtain A where "A\<subseteq>\<gamma>" "cofinal(A,\<gamma>,Memrel(\<gamma>))" "cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))"
     using Limit_is_Ord cf_is_ordertype by blast
   with assms
   have "cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))" using cf_ordertype_cofinal by simp
-  also 
-  have "... = cf(cf(\<gamma>))" 
+  also
+  have "... = cf(cf(\<gamma>))"
     using \<open>cf(\<gamma>) = ordertype(A,Memrel(\<gamma>))\<close> by simp
   finally
   show "cf(\<gamma>) = cf(cf(\<gamma>))"  .
 qed
-  
+
 lemma cf_le_cardinal:
   assumes "Limit(\<gamma>)"
   shows "cf(\<gamma>) \<le> |\<gamma>|"
@@ -1220,10 +996,10 @@ proof -
   from assms
   have \<open>Ord(\<gamma>)\<close> using Limit_is_Ord by simp
   then
-  obtain f where "f \<in> surj(|\<gamma>|,\<gamma>)" 
+  obtain f where "f \<in> surj(|\<gamma>|,\<gamma>)"
     using Ord_cardinal_eqpoll unfolding eqpoll_def bij_def by blast
   with \<open>Ord(\<gamma>)\<close>
-  show ?thesis 
+  show ?thesis
     using Card_is_Ord[OF Card_cardinal] surj_is_cofinal
       cf_le_domain_cofinal_fun[of \<gamma>] surj_is_fun by blast
 qed
@@ -1234,43 +1010,14 @@ lemma regular_is_Card:
   shows "Card(\<gamma>)"
 proof -
   from assms
-  have "|\<gamma>| \<subseteq> \<gamma>" 
+  have "|\<gamma>| \<subseteq> \<gamma>"
     using Limit_is_Ord Ord_cardinal_le by blast
   also from \<open>\<gamma> = cf(\<gamma>)\<close>
   have "\<gamma> \<subseteq> cf(\<gamma>)" by simp
   finally
   have "|\<gamma>| \<subseteq> cf(\<gamma>)" .
   with assms
-  show ?thesis unfolding Card_def using cf_le_cardinal by force     
-qed 
-
-lemma fun_sub: "f:A\<rightarrow>B \<Longrightarrow> f \<subseteq> Sigma(A,\<lambda> _ . B)"
-  by(auto simp add: Pi_iff)
-
-lemma range_of_function: "f:A\<rightarrow>B \<Longrightarrow> range(f) \<subseteq> B"
-  by(rule range_rel_subset,erule fun_sub[of _ "A"])
-
-lemma inj_imp_surj : 
-  fixes f b
-  notes inj_is_fun[dest] 
-  defines [simp]: "ifx(x) \<equiv> if x\<in>range(f) then converse(f)`x else b"
-  assumes "f \<in> inj(B,A)" "b\<in>B"
-  shows "(\<lambda>x\<in>A. ifx(x)) \<in> surj(A,B)"
-proof -
-  from assms
-  have "converse(f) \<in> surj(range(f),B)" "range(f) \<subseteq> A"
-       "converse(f) : range(f) \<rightarrow> B"
-    using inj_converse_surj range_of_function surj_is_fun by blast+
-  with \<open>b\<in>B\<close>
-  show "(\<lambda>x\<in>A. ifx(x)) \<in> surj(A,B)"
-    unfolding surj_def 
-  proof (intro CollectI lam_type ballI; elim CollectE) 
-    fix y
-    assume "y \<in> B" "\<forall>y\<in>B. \<exists>x\<in>range(f). converse(f) ` x = y"
-    with \<open>range(f) \<subseteq> A\<close>
-    show "\<exists>x\<in>A. (\<lambda>x\<in>A. ifx(x)) ` x = y" 
-      by (drule_tac bspec, auto)
-  qed simp
+  show ?thesis unfolding Card_def using cf_le_cardinal by force
 qed
 
 lemma Limit_cf: assumes "Limit(\<kappa>)" shows "Limit(cf(\<kappa>))"
@@ -1288,17 +1035,14 @@ next
   have "cf(\<kappa>) = 1"
     using cf_idemp cf_succ by fastforce
   ultimately
-  show ?thesis 
-    using succ_LimitE cf_is_one_iff Limit_is_Ord
+  show ?thesis
+    using succ_LimitE cf_eq_one_iff Limit_is_Ord
     by auto
 qed
 
 lemma InfCard_cf: "Limit(\<kappa>) \<Longrightarrow> InfCard(cf(\<kappa>))"
   using regular_is_Card cf_idemp Limit_cf nat_le_Limit Limit_cf
   unfolding InfCard_def by simp
-
-lemma lepollD[dest!]: "A \<lesssim> B \<Longrightarrow> \<exists>f. f \<in> inj(A, B)"
-  unfolding lepoll_def .
 
 lemma cf_le_cf_fun:
   notes [dest] = Limit_is_Ord
@@ -1308,7 +1052,7 @@ proof -
   note assms
   moreover from this
   obtain h where h_cofinal_mono: "cf_fun(h,\<kappa>)"
-    "h \<in> mono_map(cf(\<kappa>),Memrel(cf(\<kappa>)),\<kappa>,Memrel(\<kappa>))"
+    "h :cf(\<kappa>) \<rightarrow>\<^sub>< \<kappa>"
     "h : cf(\<kappa>) \<rightarrow> \<kappa>"
     using cofinal_mono_map_cf mono_map_is_fun by force
   moreover from calculation
@@ -1335,8 +1079,7 @@ qed
 
 lemma Limit_cofinal_fun_lt:
   notes [dest] = Limit_is_Ord
-  assumes "Limit(\<kappa>)" "f: \<nu> \<rightarrow> \<kappa>" "cf_fun(f,\<kappa>)"
-    "n\<in>\<kappa>"
+  assumes "Limit(\<kappa>)" "f: \<nu> \<rightarrow> \<kappa>" "cf_fun(f,\<kappa>)" "n\<in>\<kappa>"
   shows "\<exists>\<alpha>\<in>\<nu>. n < f`\<alpha>"
 proof -
   from \<open>Limit(\<kappa>)\<close> \<open>n\<in>\<kappa>\<close>
@@ -1358,7 +1101,7 @@ proof -
   then
   have "n < f`\<alpha>"
   proof (cases)
-    case 1 
+    case 1
     moreover
     have "n \<in> succ(n)" by simp
     moreover
@@ -1382,5 +1125,81 @@ proof -
   ultimately
   show ?thesis by blast
 qed
+
+context
+  includes Ord_dests Aleph_dests Aleph_intros Aleph_mem_dests mono_map_rules
+begin
+
+text\<open>We end this section by calculating the cofinality of Alephs, for
+the zero and limit case. The successor case depends on $\AC$.\<close>
+
+lemma cf_nat: "cf(\<omega>) = \<omega>"
+  using Limit_nat[THEN InfCard_cf] cf_le_cardinal[of \<omega>]
+    Card_nat[THEN Card_cardinal_eq] le_anti_sym
+  unfolding InfCard_def by auto
+
+lemma cf_Aleph_zero: "cf(\<aleph>\<^bsub>0\<^esub>) = \<aleph>\<^bsub>0\<^esub>" 
+  using cf_nat unfolding Aleph_def by simp
+
+lemma cf_Aleph_Limit:
+  assumes "Limit(\<gamma>)"
+  shows "cf(\<aleph>\<^bsub>\<gamma>\<^esub>) = cf(\<gamma>)" 
+proof -
+  note \<open>Limit(\<gamma>)\<close>
+  moreover from this
+  have "(\<lambda>x\<in>\<gamma>. \<aleph>\<^bsub>x\<^esub>) : \<gamma> \<rightarrow> \<aleph>\<^bsub>\<gamma>\<^esub>" (is "?f : _ \<rightarrow> _")
+    using lam_funtype[of _ Aleph] fun_weaken_type[of _ _ _ "\<aleph>\<^bsub>\<gamma>\<^esub>"] by blast
+  moreover from \<open>Limit(\<gamma>)\<close>
+  have "x \<in> y \<Longrightarrow> \<aleph>\<^bsub>x\<^esub> \<in> \<aleph>\<^bsub>y\<^esub>" if "x \<in> \<gamma>" "y \<in> \<gamma>" for x y
+    using that Ord_in_Ord[of \<gamma>] Ord_trans[of _ _ \<gamma>] by blast
+  ultimately
+  have "?f \<in> mono_map(\<gamma>,Memrel(\<gamma>),\<aleph>\<^bsub>\<gamma>\<^esub>, Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>))"
+    by auto
+  with  \<open>Limit(\<gamma>)\<close> 
+  have "?f \<in> \<langle>\<gamma>, Memrel(\<gamma>)\<rangle> \<cong> \<langle>?f``\<gamma>, Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>)\<rangle>"
+    using mono_map_imp_ord_iso_Memrel[of \<gamma> "\<aleph>\<^bsub>\<gamma>\<^esub>" ?f] 
+      Card_Aleph (* Already an intro rule, but need it explicitly *)
+    by blast
+  then
+  have "converse(?f) \<in> \<langle>?f``\<gamma>, Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>)\<rangle> \<cong> \<langle>\<gamma>, Memrel(\<gamma>)\<rangle>"
+    using ord_iso_sym by simp
+  with \<open>Limit(\<gamma>)\<close>
+  have "ordertype(?f``\<gamma>, Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>)) = \<gamma>"
+    using ordertype_eq[OF _ well_ord_Memrel]
+    ordertype_Memrel by auto
+  moreover from \<open>Limit(\<gamma>)\<close>
+  have "cofinal(?f``\<gamma>, \<aleph>\<^bsub>\<gamma>\<^esub>, Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>))" 
+    unfolding cofinal_def 
+  proof (standard, intro ballI)
+    fix a
+    assume "a\<in>\<aleph>\<^bsub>\<gamma>\<^esub>" "\<aleph>\<^bsub>\<gamma>\<^esub> = (\<Union>i<\<gamma>. \<aleph>\<^bsub>i\<^esub>)"
+    moreover from this
+    obtain i where "i<\<gamma>" "a\<in>\<aleph>\<^bsub>i\<^esub>"
+      by auto
+    moreover from this and \<open>Limit(\<gamma>)\<close>
+    have "Ord(i)" using ltD Ord_in_Ord by blast
+    moreover from \<open>Limit(\<gamma>)\<close> and calculation
+    have "succ(i) \<in> \<gamma>" using ltD by auto
+    moreover from this and \<open>Ord(i)\<close>
+    have "\<aleph>\<^bsub>i\<^esub> < \<aleph>\<^bsub>succ(i)\<^esub>" 
+      by (auto) 
+    ultimately
+    have "\<langle>a,\<aleph>\<^bsub>i\<^esub>\<rangle> \<in> Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>)"
+      using ltD by (auto dest:Aleph_increasing)
+    moreover from \<open>i<\<gamma>\<close>
+    have "\<aleph>\<^bsub>i\<^esub> \<in> ?f``\<gamma>" 
+      using ltD apply_in_image[OF \<open>?f : _ \<rightarrow> _\<close>] by auto
+    ultimately
+    show "\<exists>x\<in>?f `` \<gamma>. \<langle>a, x\<rangle> \<in> Memrel(\<aleph>\<^bsub>\<gamma>\<^esub>) \<or> a = x" by blast
+  qed
+  moreover
+  note \<open>?f: \<gamma> \<rightarrow> \<aleph>\<^bsub>\<gamma>\<^esub>\<close> \<open>Limit(\<gamma>)\<close>
+  ultimately
+  show "cf(\<aleph>\<^bsub>\<gamma>\<^esub>) =  cf(\<gamma>)"
+    using cf_ordertype_cofinal[OF Limit_Aleph Image_sub_codomain, of \<gamma> ?f \<gamma> \<gamma> ] 
+      Limit_is_Ord by simp 
+qed
+
+end (* includes *)
 
 end

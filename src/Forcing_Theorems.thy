@@ -35,7 +35,7 @@ proof -
 qed
 
 lemma forces_mem_iff_dense_below:  "p\<in>P \<Longrightarrow> forces_mem(p,t1,t2) \<longleftrightarrow> dense_below(
-    {q\<in>P. \<exists>s. \<exists>r. r\<in>P \<and> <s,r> \<in> t2 \<and> q\<preceq>r \<and> forces_eq(q,t1,s)}
+    {q\<in>P. \<exists>s. \<exists>r. r\<in>P \<and> \<langle>s,r\<rangle> \<in> t2 \<and> q\<preceq>r \<and> forces_eq(q,t1,s)}
     ,p)"
   using def_forces_mem[of p t1 t2] by blast
 
@@ -112,7 +112,7 @@ proof
   note \<open>forces_mem(q,s,t1)\<close> \<open>dense_below(_,p)\<close> \<open>q\<in>P\<close>
   ultimately
   obtain q1 where "q1\<preceq>r" "q1\<in>P" "forces_mem(q1,s,t2)"
-    using strengthening_mem[of q _ s t1] leq_reflI leq_transD[of _ r q] by blast
+    using strengthening_mem[of q _ s t1] refl_leq leq_transD[of _ r q] by blast
   then
   show "\<exists>d\<in>{r \<in> P . forces_mem(r, s, t2)}. d \<in> P \<and> d\<preceq> r"
     by blast
@@ -273,21 +273,21 @@ lemma Forces_Forall:
     "(p \<tturnstile> Forall(\<phi>) env) \<longleftrightarrow> (\<forall>x\<in>M. (p \<tturnstile> \<phi> ([x] @ env)))"
    using sats_forces_Forall' assms by simp
 
-(* "x\<in>val(G,\<pi>) \<Longrightarrow> \<exists>\<theta>. \<exists>p\<in>G.  <\<theta>,p>\<in>\<pi> \<and> val(G,\<theta>) = x" *)
+(* "x\<in>val(P,G,\<pi>) \<Longrightarrow> \<exists>\<theta>. \<exists>p\<in>G.  \<langle>\<theta>,p\<rangle>\<in>\<pi> \<and> val(P,G,\<theta>) = x" *)
 bundle some_rules =  elem_of_val_pair [dest] SepReplace_iff [simp del] SepReplace_iff[iff]
 
 context 
   includes some_rules
 begin
 
-lemma elem_of_valI: "\<exists>\<theta>. \<exists>p\<in>P. p\<in>G \<and> <\<theta>,p>\<in>\<pi> \<and> val(G,\<theta>) = x \<Longrightarrow> x\<in>val(G,\<pi>)"
+lemma elem_of_valI: "\<exists>\<theta>. \<exists>p\<in>P. p\<in>G \<and> \<langle>\<theta>,p\<rangle>\<in>\<pi> \<and> val(P,G,\<theta>) = x \<Longrightarrow> x\<in>val(P,G,\<pi>)"
   by (subst def_val, auto)
 
-lemma GenExtD: "x\<in>M[G] \<longleftrightarrow> (\<exists>\<tau>\<in>M. x = val(G,\<tau>))"
+lemma GenExtD: "x\<in>M[G] \<longleftrightarrow> (\<exists>\<tau>\<in>M. x = val(P,G,\<tau>))"
   unfolding GenExt_def by simp
 
-lemma left_in_M : "tau\<in>M \<Longrightarrow> <a,b>\<in>tau \<Longrightarrow> a\<in>M"
-  using fst_snd_closed[of "<a,b>"] transitivity by auto
+lemma left_in_M : "tau\<in>M \<Longrightarrow> \<langle>a,b\<rangle>\<in>tau \<Longrightarrow> a\<in>M"
+  using fst_snd_closed[of "\<langle>a,b\<rangle>"] transitivity by auto
 
 
 subsection\<open>Kunen 2013, Lemma IV.2.29\<close>
@@ -305,7 +305,7 @@ proof -
       case True
       with \<open>r\<in>P\<close>
         (* Automatic tools can't handle this case for some reason... *)
-      show ?thesis using leq_reflI[of r] by (intro bexI) (blast+)
+      show ?thesis using refl_leq[of r] by (intro bexI) (blast+)
     next
       case False
       then
@@ -343,7 +343,7 @@ proof -
   moreover from this and \<open>M_generic(G)\<close>
   have "x\<in>D"
     using M_generic_compatD[OF _ \<open>p\<in>G\<close>, of x]
-      leq_reflI compatI[of _ p x] by force
+      refl_leq compatI[of _ p x] by force
   ultimately
   show ?thesis by auto
 qed
@@ -353,16 +353,16 @@ lemma IV240a_mem_Collect:
   assumes
     "\<pi>\<in>M" "\<tau>\<in>M"
   shows
-    "{q\<in>P. \<exists>\<sigma>. \<exists>r. r\<in>P \<and> <\<sigma>,r> \<in> \<tau> \<and> q\<preceq>r \<and> forces_eq(q,\<pi>,\<sigma>)}\<in>M"
+    "{q\<in>P. \<exists>\<sigma>. \<exists>r. r\<in>P \<and> \<langle>\<sigma>,r\<rangle> \<in> \<tau> \<and> q\<preceq>r \<and> forces_eq(q,\<pi>,\<sigma>)}\<in>M"
 proof -
   let ?rel_pred= "\<lambda>M x a1 a2 a3 a4. \<exists>\<sigma>[M]. \<exists>r[M]. \<exists>\<sigma>r[M]. 
                 r\<in>a1 \<and> pair(M,\<sigma>,r,\<sigma>r) \<and> \<sigma>r\<in>a4 \<and> is_leq(M,a2,x,r) \<and> is_forces_eq'(M,a1,a2,x,a3,\<sigma>)"
   let ?\<phi>="Exists(Exists(Exists(And(Member(1,4),And(pair_fm(2,1,0),
           And(Member(0,7),And(leq_fm(5,3,1),forces_eq_fm(4,5,3,6,2))))))))" 
   have "\<sigma>\<in>M \<and> r\<in>M" if "\<langle>\<sigma>, r\<rangle> \<in> \<tau>"  for \<sigma> r
-    using that \<open>\<tau>\<in>M\<close> pair_in_M_iff transitivity[of "<\<sigma>,r>" \<tau>] by simp
+    using that \<open>\<tau>\<in>M\<close> pair_in_M_iff transitivity[of "\<langle>\<sigma>,r\<rangle>" \<tau>] by simp
   then
-  have "?rel_pred(##M,q,P,leq,\<pi>,\<tau>) \<longleftrightarrow> (\<exists>\<sigma>. \<exists>r. r\<in>P \<and> <\<sigma>,r> \<in> \<tau> \<and> q\<preceq>r \<and> forces_eq(q,\<pi>,\<sigma>))"
+  have "?rel_pred(##M,q,P,leq,\<pi>,\<tau>) \<longleftrightarrow> (\<exists>\<sigma>. \<exists>r. r\<in>P \<and> \<langle>\<sigma>,r\<rangle> \<in> \<tau> \<and> q\<preceq>r \<and> forces_eq(q,\<pi>,\<sigma>))"
     if "q\<in>M" for q
     unfolding forces_eq_def using assms that P_in_M leq_in_M leq_abs forces_eq'_abs pair_in_M_iff 
     by auto
@@ -379,7 +379,7 @@ proof -
   show ?thesis 
     unfolding forces_eq_def using P_in_M leq_in_M assms 
         Collect_in_M_4p[of ?\<phi> _ _ _ _ _ 
-            "\<lambda>q a1 a2 a3 a4. \<exists>\<sigma>. \<exists>r. r\<in>a1 \<and> <\<sigma>,r> \<in> \<tau> \<and> q\<preceq>r \<and> forces_eq'(a1,a2,q,a3,\<sigma>)"] by simp
+            "\<lambda>q a1 a2 a3 a4. \<exists>\<sigma>. \<exists>r. r\<in>a1 \<and> \<langle>\<sigma>,r\<rangle> \<in> \<tau> \<and> q\<preceq>r \<and> forces_eq'(a1,a2,q,a3,\<sigma>)"] by simp
 qed
 
 (* Lemma IV.2.40(a), membership *)
@@ -387,11 +387,11 @@ lemma IV240a_mem:
   assumes
     "M_generic(G)" "p\<in>G" "\<pi>\<in>M" "\<tau>\<in>M" "forces_mem(p,\<pi>,\<tau>)"
     "\<And>q \<sigma>. q\<in>P \<Longrightarrow> q\<in>G \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_eq(q,\<pi>,\<sigma>) \<Longrightarrow> 
-      val(G,\<pi>) = val(G,\<sigma>)" (* inductive hypothesis *)
+      val(P,G,\<pi>) = val(P,G,\<sigma>)" (* inductive hypothesis *)
   shows
-    "val(G,\<pi>)\<in>val(G,\<tau>)"
+    "val(P,G,\<pi>)\<in>val(P,G,\<tau>)"
 proof (intro elem_of_valI)
-  let ?D="{q\<in>P. \<exists>\<sigma>. \<exists>r. r\<in>P \<and> <\<sigma>,r> \<in> \<tau> \<and> q\<preceq>r \<and> forces_eq(q,\<pi>,\<sigma>)}"
+  let ?D="{q\<in>P. \<exists>\<sigma>. \<exists>r. r\<in>P \<and> \<langle>\<sigma>,r\<rangle> \<in> \<tau> \<and> q\<preceq>r \<and> forces_eq(q,\<pi>,\<sigma>)}"
   from \<open>M_generic(G)\<close> \<open>p\<in>G\<close>
   have "p\<in>P" by blast
   moreover
@@ -406,19 +406,19 @@ proof (intro elem_of_valI)
   ultimately
   obtain q where "q\<in>G" "q\<in>?D" using generic_inter_dense_below by blast
   then
-  obtain \<sigma> r where "r\<in>P" "<\<sigma>,r> \<in> \<tau>" "q\<preceq>r" "forces_eq(q,\<pi>,\<sigma>)" by blast
+  obtain \<sigma> r where "r\<in>P" "\<langle>\<sigma>,r\<rangle> \<in> \<tau>" "q\<preceq>r" "forces_eq(q,\<pi>,\<sigma>)" by blast
   moreover from this and \<open>q\<in>G\<close> assms
-  have "r \<in> G" "val(G,\<pi>) = val(G,\<sigma>)" by blast+
+  have "r \<in> G" "val(P,G,\<pi>) = val(P,G,\<sigma>)" by blast+
   ultimately
-  show "\<exists> \<sigma>. \<exists>p\<in>P. p \<in> G \<and> \<langle>\<sigma>, p\<rangle> \<in> \<tau> \<and> val(G, \<sigma>) = val(G, \<pi>)" by auto
+  show "\<exists> \<sigma>. \<exists>p\<in>P. p \<in> G \<and> \<langle>\<sigma>, p\<rangle> \<in> \<tau> \<and> val(P,G, \<sigma>) = val(P,G, \<pi>)" by auto
 qed
 
 (* Example IV.2.36 (next two lemmas) *)
 lemma refl_forces_eq:"p\<in>P \<Longrightarrow> forces_eq(p,x,x)"
   using def_forces_eq by simp
 
-lemma forces_memI: "<\<sigma>,r>\<in>\<tau> \<Longrightarrow> p\<in>P \<Longrightarrow> r\<in>P \<Longrightarrow> p\<preceq>r \<Longrightarrow> forces_mem(p,\<sigma>,\<tau>)"
-  using refl_forces_eq[of _ \<sigma>] leq_transD leq_reflI 
+lemma forces_memI: "\<langle>\<sigma>,r\<rangle>\<in>\<tau> \<Longrightarrow> p\<in>P \<Longrightarrow> r\<in>P \<Longrightarrow> p\<preceq>r \<Longrightarrow> forces_mem(p,\<sigma>,\<tau>)"
+  using refl_forces_eq[of _ \<sigma>] leq_transD refl_leq
   by (blast intro:forces_mem_iff_dense_below[THEN iffD2])
 
 (* Lemma IV.2.40(a), equality, first inclusion *)
@@ -427,18 +427,18 @@ lemma IV240a_eq_1st_incl:
     "M_generic(G)" "p\<in>G" "forces_eq(p,\<tau>,\<theta>)"
     and
     IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> q\<in>G \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
-        (forces_mem(q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
-        (forces_mem(q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
+        (forces_mem(q,\<sigma>,\<tau>) \<longrightarrow> val(P,G,\<sigma>) \<in> val(P,G,\<tau>)) \<and>
+        (forces_mem(q,\<sigma>,\<theta>) \<longrightarrow> val(P,G,\<sigma>) \<in> val(P,G,\<theta>))"
 (* Strong enough for this case: *)
 (*  IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> forces_mem(q,\<sigma>,\<theta>) \<Longrightarrow> 
-      val(G,\<sigma>) \<in> val(G,\<theta>)" *)
+      val(P,G,\<sigma>) \<in> val(P,G,\<theta>)" *)
   shows
-    "val(G,\<tau>) \<subseteq> val(G,\<theta>)"
+    "val(P,G,\<tau>) \<subseteq> val(P,G,\<theta>)"
 proof
   fix x
-  assume "x\<in>val(G,\<tau>)"
+  assume "x\<in>val(P,G,\<tau>)"
   then
-  obtain \<sigma> r where "<\<sigma>,r>\<in>\<tau>" "r\<in>G" "val(G,\<sigma>)=x" by blast
+  obtain \<sigma> r where "\<langle>\<sigma>,r\<rangle>\<in>\<tau>" "r\<in>G" "val(P,G,\<sigma>)=x" by blast
   moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
   obtain q where "q\<in>G" "q\<preceq>p" "q\<preceq>r" by force
   moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
@@ -451,8 +451,8 @@ proof
   ultimately
   have "forces_mem(q,\<sigma>,\<theta>)"
     using def_forces_eq by blast
-  with \<open>q\<in>P\<close> \<open>q\<in>G\<close> IH[of q \<sigma>] \<open><\<sigma>,r>\<in>\<tau>\<close> \<open>val(G,\<sigma>) = x\<close>
-  show "x\<in>val(G,\<theta>)" by (blast)
+  with \<open>q\<in>P\<close> \<open>q\<in>G\<close> IH[of q \<sigma>] \<open>\<langle>\<sigma>,r\<rangle>\<in>\<tau>\<close> \<open>val(P,G,\<sigma>) = x\<close>
+  show "x\<in>val(P,G,\<theta>)" by (blast)
 qed
 
 (* Lemma IV.2.40(a), equality, second inclusion--- COPY-PASTE *)
@@ -461,15 +461,15 @@ lemma IV240a_eq_2nd_incl:
     "M_generic(G)" "p\<in>G" "forces_eq(p,\<tau>,\<theta>)"
     and
     IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> q\<in>G \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
-        (forces_mem(q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
-        (forces_mem(q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
+        (forces_mem(q,\<sigma>,\<tau>) \<longrightarrow> val(P,G,\<sigma>) \<in> val(P,G,\<tau>)) \<and>
+        (forces_mem(q,\<sigma>,\<theta>) \<longrightarrow> val(P,G,\<sigma>) \<in> val(P,G,\<theta>))"
   shows
-    "val(G,\<theta>) \<subseteq> val(G,\<tau>)"
+    "val(P,G,\<theta>) \<subseteq> val(P,G,\<tau>)"
 proof
   fix x
-  assume "x\<in>val(G,\<theta>)"
+  assume "x\<in>val(P,G,\<theta>)"
   then
-  obtain \<sigma> r where "<\<sigma>,r>\<in>\<theta>" "r\<in>G" "val(G,\<sigma>)=x" by blast
+  obtain \<sigma> r where "\<langle>\<sigma>,r\<rangle>\<in>\<theta>" "r\<in>G" "val(P,G,\<sigma>)=x" by blast
   moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
   obtain q where "q\<in>G" "q\<preceq>p" "q\<preceq>r" by force
   moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
@@ -482,8 +482,8 @@ proof
   ultimately
   have "forces_mem(q,\<sigma>,\<tau>)"
     using def_forces_eq by blast
-  with \<open>q\<in>P\<close> \<open>q\<in>G\<close> IH[of q \<sigma>] \<open><\<sigma>,r>\<in>\<theta>\<close> \<open>val(G,\<sigma>) = x\<close>
-  show "x\<in>val(G,\<tau>)" by (blast)
+  with \<open>q\<in>P\<close> \<open>q\<in>G\<close> IH[of q \<sigma>] \<open>\<langle>\<sigma>,r\<rangle>\<in>\<theta>\<close> \<open>val(P,G,\<sigma>) = x\<close>
+  show "x\<in>val(P,G,\<tau>)" by (blast)
 qed
 
 (* Lemma IV.2.40(a), equality, second inclusion--- COPY-PASTE *)
@@ -492,10 +492,10 @@ lemma IV240a_eq:
     "M_generic(G)" "p\<in>G" "forces_eq(p,\<tau>,\<theta>)"
     and
     IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> q\<in>G \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> 
-        (forces_mem(q,\<sigma>,\<tau>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<tau>)) \<and>
-        (forces_mem(q,\<sigma>,\<theta>) \<longrightarrow> val(G,\<sigma>) \<in> val(G,\<theta>))"
+        (forces_mem(q,\<sigma>,\<tau>) \<longrightarrow> val(P,G,\<sigma>) \<in> val(P,G,\<tau>)) \<and>
+        (forces_mem(q,\<sigma>,\<theta>) \<longrightarrow> val(P,G,\<sigma>) \<in> val(P,G,\<theta>))"
   shows
-    "val(G,\<tau>) = val(G,\<theta>)"
+    "val(P,G,\<tau>) = val(P,G,\<theta>)"
   using IV240a_eq_1st_incl[OF assms] IV240a_eq_2nd_incl[OF assms] IH by blast 
 
 subsection\<open>Induction on names\<close>
@@ -517,7 +517,7 @@ proof -
     moreover
     assume "ft \<in> 2" "p \<in> P"
     ultimately
-    have "<ft,\<tau>,\<theta>,p>\<in> 2\<times>?e\<times>?e\<times>P" (is "?a\<in>2\<times>?e\<times>?e\<times>P") by simp
+    have "\<langle>ft,\<tau>,\<theta>,p\<rangle>\<in> 2\<times>?e\<times>?e\<times>P" (is "?a\<in>2\<times>?e\<times>?e\<times>P") by simp
     then 
     have "Q(ftype(?a), name1(?a), name2(?a), cond_of(?a))"
       using core_induction_aux[of ?e P Q ?a,OF \<open>Transset(?e)\<close> assms(1,2) \<open>?a\<in>_\<close>] 
@@ -576,31 +576,31 @@ lemma IV240a:
   assumes
     "M_generic(G)"
   shows 
-    "(\<tau>\<in>M \<longrightarrow> \<theta>\<in>M \<longrightarrow> (\<forall>p\<in>G. forces_eq(p,\<tau>,\<theta>) \<longrightarrow> val(G,\<tau>) = val(G,\<theta>))) \<and> 
-     (\<tau>\<in>M \<longrightarrow> \<theta>\<in>M \<longrightarrow> (\<forall>p\<in>G. forces_mem(p,\<tau>,\<theta>) \<longrightarrow> val(G,\<tau>) \<in> val(G,\<theta>)))"
+    "(\<tau>\<in>M \<longrightarrow> \<theta>\<in>M \<longrightarrow> (\<forall>p\<in>G. forces_eq(p,\<tau>,\<theta>) \<longrightarrow> val(P,G,\<tau>) = val(P,G,\<theta>))) \<and> 
+     (\<tau>\<in>M \<longrightarrow> \<theta>\<in>M \<longrightarrow> (\<forall>p\<in>G. forces_mem(p,\<tau>,\<theta>) \<longrightarrow> val(P,G,\<tau>) \<in> val(P,G,\<theta>)))"
     (is "?Q(\<tau>,\<theta>) \<and> ?R(\<tau>,\<theta>)")
 proof (intro forces_induction[of ?Q ?R] impI)
   fix \<tau> \<theta> 
   assume "\<tau>\<in>M" "\<theta>\<in>M"  "\<sigma>\<in>domain(\<theta>) \<Longrightarrow> ?Q(\<tau>,\<sigma>)" for \<sigma>
   moreover from this
-  have "\<sigma>\<in>domain(\<theta>) \<Longrightarrow> forces_eq(q, \<tau>, \<sigma>) \<Longrightarrow> val(G, \<tau>) = val(G, \<sigma>)" 
+  have "\<sigma>\<in>domain(\<theta>) \<Longrightarrow> forces_eq(q, \<tau>, \<sigma>) \<Longrightarrow> val(P,G, \<tau>) = val(P,G, \<sigma>)" 
     if "q\<in>P" "q\<in>G" for q \<sigma>
     using that domain_closed[of \<theta>] transitivity by auto
   moreover 
   note assms
   ultimately
-  show "\<forall>p\<in>G. forces_mem(p,\<tau>,\<theta>) \<longrightarrow> val(G,\<tau>) \<in> val(G,\<theta>)"
+  show "\<forall>p\<in>G. forces_mem(p,\<tau>,\<theta>) \<longrightarrow> val(P,G,\<tau>) \<in> val(P,G,\<theta>)"
     using IV240a_mem domain_closed transitivity by (simp)
 next
   fix \<tau> \<theta> 
   assume "\<tau>\<in>M" "\<theta>\<in>M" "\<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> ?R(\<sigma>,\<tau>) \<and> ?R(\<sigma>,\<theta>)" for \<sigma>
   moreover from this
   have IH':"\<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> q\<in>G \<Longrightarrow>
-            (forces_mem(q, \<sigma>, \<tau>) \<longrightarrow> val(G, \<sigma>) \<in> val(G, \<tau>)) \<and> 
-            (forces_mem(q, \<sigma>, \<theta>) \<longrightarrow> val(G, \<sigma>) \<in> val(G, \<theta>))" for q \<sigma> 
+            (forces_mem(q, \<sigma>, \<tau>) \<longrightarrow> val(P,G, \<sigma>) \<in> val(P,G, \<tau>)) \<and> 
+            (forces_mem(q, \<sigma>, \<theta>) \<longrightarrow> val(P,G, \<sigma>) \<in> val(P,G, \<theta>))" for q \<sigma> 
     by (auto intro:  transitivity[OF _ domain_closed[simplified]])
   ultimately
-  show "\<forall>p\<in>G. forces_eq(p,\<tau>,\<theta>) \<longrightarrow> val(G,\<tau>) = val(G,\<theta>)"
+  show "\<forall>p\<in>G. forces_eq(p,\<tau>,\<theta>) \<longrightarrow> val(P,G,\<tau>) = val(P,G,\<theta>)"
     using IV240a_eq[OF assms(1) _ _ IH'] by (simp)
 qed
 
@@ -608,15 +608,15 @@ subsection\<open>Lemma IV.2.40(b)\<close>
 (* Lemma IV.2.40(b), membership *)
 lemma IV240b_mem:
   assumes
-    "M_generic(G)" "val(G,\<pi>)\<in>val(G,\<tau>)" "\<pi>\<in>M" "\<tau>\<in>M"
+    "M_generic(G)" "val(P,G,\<pi>)\<in>val(P,G,\<tau>)" "\<pi>\<in>M" "\<tau>\<in>M"
     and
-    IH:"\<And>\<sigma>. \<sigma>\<in>domain(\<tau>) \<Longrightarrow> val(G,\<pi>) = val(G,\<sigma>) \<Longrightarrow> 
+    IH:"\<And>\<sigma>. \<sigma>\<in>domain(\<tau>) \<Longrightarrow> val(P,G,\<pi>) = val(P,G,\<sigma>) \<Longrightarrow> 
       \<exists>p\<in>G. forces_eq(p,\<pi>,\<sigma>)" (* inductive hypothesis *)
   shows
     "\<exists>p\<in>G. forces_mem(p,\<pi>,\<tau>)"
 proof -
-  from \<open>val(G,\<pi>)\<in>val(G,\<tau>)\<close>
-  obtain \<sigma> r where "r\<in>G" "<\<sigma>,r>\<in>\<tau>" "val(G,\<pi>) = val(G,\<sigma>)" by auto
+  from \<open>val(P,G,\<pi>)\<in>val(P,G,\<tau>)\<close>
+  obtain \<sigma> r where "r\<in>G" "\<langle>\<sigma>,r\<rangle>\<in>\<tau>" "val(P,G,\<pi>) = val(P,G,\<sigma>)" by auto
   moreover from this and IH
   obtain p' where "p'\<in>G" "forces_eq(p',\<pi>,\<sigma>)" by blast
   moreover
@@ -630,13 +630,13 @@ proof -
   have "forces_eq(q,\<pi>,\<sigma>)" if "q\<in>P" "q\<preceq>p" for q
     using that strengthening_eq by blast
   moreover 
-  note \<open><\<sigma>,r>\<in>\<tau>\<close> \<open>r\<in>G\<close>
+  note \<open>\<langle>\<sigma>,r\<rangle>\<in>\<tau>\<close> \<open>r\<in>G\<close>
   ultimately
   have "r\<in>P \<and> \<langle>\<sigma>,r\<rangle> \<in> \<tau> \<and> q\<preceq>r \<and> forces_eq(q,\<pi>,\<sigma>)" if "q\<in>P" "q\<preceq>p" for q
     using that leq_transD[of _ p r] by blast
   then
   have "dense_below({q\<in>P. \<exists>s r. r\<in>P \<and> \<langle>s,r\<rangle> \<in> \<tau> \<and> q\<preceq>r \<and> forces_eq(q,\<pi>,s)},p)"
-    using leq_reflI by blast
+    using refl_leq by blast
   moreover
   note \<open>M_generic(G)\<close> \<open>p\<in>G\<close>
   moreover from calculation
@@ -669,8 +669,8 @@ proof -
   let ?\<phi>="Exists(Exists(Exists(Exists(And(domain_fm(7,1),And(domain_fm(8,0),
           And(union_fm(1,0,2),And(Member(3,2),And(forces_mem_fm(5,6,4,3,7),
                               forces_nmem_fm(5,6,4,3,8))))))))))" 
-  have 1:"\<sigma>\<in>M" if "<\<sigma>,y>\<in>\<delta>" "\<delta>\<in>M" for \<sigma> \<delta> y
-    using that pair_in_M_iff transitivity[of "<\<sigma>,y>" \<delta>] by simp
+  have 1:"\<sigma>\<in>M" if "\<langle>\<sigma>,y\<rangle>\<in>\<delta>" "\<delta>\<in>M" for \<sigma> \<delta> y
+    using that pair_in_M_iff transitivity[of "\<langle>\<sigma>,y\<rangle>" \<delta>] by simp
   have abs1:"?rel_pred(##M,p,P,leq,\<tau>,\<theta>) \<longleftrightarrow> 
         (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem'(P,leq,p,\<sigma>,\<tau>) \<and> forces_nmem'(P,leq,p,\<sigma>,\<theta>))" 
         if "p\<in>M" for p
@@ -701,23 +701,22 @@ proof -
     using abs1 fty fsats1 farit P_in_M leq_in_M assms forces_nmem
           Collect_in_M_4p[of ?\<phi> _ _ _ _ _ 
           "\<lambda>x p l a1 a2. (\<exists>\<sigma>\<in>domain(a1) \<union> domain(a2). forces_mem'(p,l,x,\<sigma>,a1) \<and> 
-                                                     forces_nmem'(p,l,x,\<sigma>,a2))"] 
-     apply simp
+                                                     forces_nmem'(p,l,x,\<sigma>,a2))"]
     using abs2 fty fsats2 farit P_in_M leq_in_M assms forces_nmem domain_closed Un_closed
           Collect_in_M_4p[of ?\<phi> P leq \<theta> \<tau> ?rel_pred 
           "\<lambda>x p l a2 a1. (\<exists>\<sigma>\<in>domain(a1) \<union> domain(a2). forces_nmem'(p,l,x,\<sigma>,a1) \<and> 
                                                      forces_mem'(p,l,x,\<sigma>,a2))" P]  
-    by simp
+    by simp_all
 qed
 
 (* Lemma IV.2.40(b), equality *)
 lemma IV240b_eq:
   assumes
-    "M_generic(G)" "val(G,\<tau>) = val(G,\<theta>)" "\<tau>\<in>M" "\<theta>\<in>M" 
+    "M_generic(G)" "val(P,G,\<tau>) = val(P,G,\<theta>)" "\<tau>\<in>M" "\<theta>\<in>M" 
     and
     IH:"\<And>\<sigma>. \<sigma>\<in>domain(\<tau>)\<union>domain(\<theta>) \<Longrightarrow> 
-      (val(G,\<sigma>)\<in>val(G,\<tau>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(q,\<sigma>,\<tau>))) \<and> 
-      (val(G,\<sigma>)\<in>val(G,\<theta>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(q,\<sigma>,\<theta>)))"
+      (val(P,G,\<sigma>)\<in>val(P,G,\<tau>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(q,\<sigma>,\<tau>))) \<and> 
+      (val(P,G,\<sigma>)\<in>val(P,G,\<theta>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(q,\<sigma>,\<theta>)))"
     (* inductive hypothesis *)
   shows
     "\<exists>p\<in>G. forces_eq(p,\<tau>,\<theta>)"
@@ -745,7 +744,7 @@ proof -
     proof (cases "forces_eq(p, \<tau>, \<theta>)")
       case True
       with \<open>p\<in>P\<close> 
-      show ?thesis using leq_reflI by blast
+      show ?thesis using refl_leq by blast
     next
       case False
       moreover note \<open>p\<in>P\<close>
@@ -791,9 +790,9 @@ proof -
     obtain \<sigma> where "\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)" "forces_mem(p,\<sigma>,\<tau>)" "forces_nmem(p,\<sigma>,\<theta>)" 
       by blast
     moreover from this and \<open>p\<in>G\<close> and assms
-    have "val(G,\<sigma>)\<in>val(G,\<tau>)"
+    have "val(P,G,\<sigma>)\<in>val(P,G,\<tau>)"
       using IV240a[of G \<sigma> \<tau>] transitivity[OF _ domain_closed[simplified]] by blast
-    moreover note IH \<open>val(G,\<tau>) = _\<close>
+    moreover note IH \<open>val(P,G,\<tau>) = _\<close>
     ultimately
     obtain q where "q\<in>G" "forces_mem(q, \<sigma>, \<theta>)" by auto
     moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
@@ -815,9 +814,9 @@ proof -
     obtain \<sigma> where "\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>)" "forces_mem(p,\<sigma>,\<theta>)" "forces_nmem(p,\<sigma>,\<tau>)" 
       by blast
     moreover from this and \<open>p\<in>G\<close> and assms
-    have "val(G,\<sigma>)\<in>val(G,\<theta>)"
+    have "val(P,G,\<sigma>)\<in>val(P,G,\<theta>)"
       using IV240a[of G \<sigma> \<theta>] transitivity[OF _ domain_closed[simplified]] by blast
-    moreover note IH \<open>val(G,\<tau>) = _\<close>
+    moreover note IH \<open>val(P,G,\<tau>) = _\<close>
     ultimately
     obtain q where "q\<in>G" "forces_mem(q, \<sigma>, \<tau>)" by auto
     moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
@@ -841,8 +840,8 @@ lemma IV240b:
   assumes
     "M_generic(G)"
   shows 
-    "(\<tau>\<in>M\<longrightarrow>\<theta>\<in>M\<longrightarrow>val(G,\<tau>) = val(G,\<theta>) \<longrightarrow> (\<exists>p\<in>G. forces_eq(p,\<tau>,\<theta>))) \<and>
-     (\<tau>\<in>M\<longrightarrow>\<theta>\<in>M\<longrightarrow>val(G,\<tau>) \<in> val(G,\<theta>) \<longrightarrow> (\<exists>p\<in>G. forces_mem(p,\<tau>,\<theta>)))" 
+    "(\<tau>\<in>M\<longrightarrow>\<theta>\<in>M\<longrightarrow>val(P,G,\<tau>) = val(P,G,\<theta>) \<longrightarrow> (\<exists>p\<in>G. forces_eq(p,\<tau>,\<theta>))) \<and>
+     (\<tau>\<in>M\<longrightarrow>\<theta>\<in>M\<longrightarrow>val(P,G,\<tau>) \<in> val(P,G,\<theta>) \<longrightarrow> (\<exists>p\<in>G. forces_mem(p,\<tau>,\<theta>)))" 
     (is "?Q(\<tau>,\<theta>) \<and> ?R(\<tau>,\<theta>)")
 proof (intro forces_induction)
   fix \<tau> \<theta> p
@@ -855,8 +854,8 @@ next
   assume "\<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> ?R(\<sigma>,\<tau>) \<and> ?R(\<sigma>,\<theta>)" for \<sigma>
   moreover from this
   have IH':"\<tau>\<in>M \<Longrightarrow> \<theta>\<in>M \<Longrightarrow> \<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow>
-          (val(G, \<sigma>) \<in> val(G, \<tau>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(q, \<sigma>, \<tau>))) \<and>
-          (val(G, \<sigma>) \<in> val(G, \<theta>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(q, \<sigma>, \<theta>)))" for \<sigma> 
+          (val(P,G, \<sigma>) \<in> val(P,G, \<tau>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(q, \<sigma>, \<tau>))) \<and>
+          (val(P,G, \<sigma>) \<in> val(P,G, \<theta>) \<longrightarrow> (\<exists>q\<in>G. forces_mem(q, \<sigma>, \<theta>)))" for \<sigma> 
     by (blast intro:left_in_M) 
   ultimately
   show "?Q(\<tau>,\<theta>)"
@@ -867,7 +866,7 @@ lemma map_val_in_MG:
   assumes 
     "env\<in>list(M)"
   shows 
-    "map(val(G),env)\<in>list(M[G])"
+    "map(val(P,G),env)\<in>list(M[G])"
   unfolding GenExt_def using assms map_type2 by simp
 
 lemma truth_lemma_mem:
@@ -875,7 +874,7 @@ lemma truth_lemma_mem:
     "env\<in>list(M)" "M_generic(G)"
     "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)"
   shows 
-    "(\<exists>p\<in>G. p \<tturnstile> Member(n,m) env)  \<longleftrightarrow>  M[G], map(val(G),env) \<Turnstile> Member(n,m)"
+    "(\<exists>p\<in>G. p \<tturnstile> Member(n,m) env)  \<longleftrightarrow>  M[G], map(val(P,G),env) \<Turnstile> Member(n,m)"
   using assms IV240a[OF assms(2), of "nth(n,env)" "nth(m,env)"] 
     IV240b[OF assms(2), of "nth(n,env)" "nth(m,env)"] 
     P_in_M leq_in_M one_in_M 
@@ -887,7 +886,7 @@ lemma truth_lemma_eq:
     "env\<in>list(M)" "M_generic(G)" 
     "n\<in>nat" "m\<in>nat" "n<length(env)" "m<length(env)"
   shows 
-    "(\<exists>p\<in>G. p \<tturnstile> Equal(n,m) env)  \<longleftrightarrow>  M[G], map(val(G),env) \<Turnstile> Equal(n,m)"
+    "(\<exists>p\<in>G. p \<tturnstile> Equal(n,m) env)  \<longleftrightarrow>  M[G], map(val(P,G),env) \<Turnstile> Equal(n,m)"
   using assms IV240a(1)[OF assms(2), of "nth(n,env)" "nth(m,env)"] 
     IV240b(1)[OF assms(2), of "nth(n,env)" "nth(m,env)"] 
     P_in_M leq_in_M one_in_M 
@@ -1007,7 +1006,7 @@ case (Nand \<phi> \<psi>)
       using dense_belowI by auto
     moreover from calculation
     have "\<not>(d\<tturnstile> \<psi> env)" if "d \<tturnstile> \<phi> env"
-      using that Forces_Nand leq_reflI transitivity[OF _ P_in_M, of d] by auto
+      using that Forces_Nand refl_leq transitivity[OF _ P_in_M, of d] by auto
     moreover 
     note arity_Nand_le[of \<phi> \<psi>]
     moreover from calculation
@@ -1061,7 +1060,7 @@ next
   assume "p \<tturnstile> \<phi> env"
   with assms
   show "dense_below({q\<in>P. q \<tturnstile> \<phi> env},p)"
-    using strengthening_lemma leq_reflI by auto
+    using strengthening_lemma refl_leq by auto
 qed
 
 subsection\<open>The Truth Lemma\<close>
@@ -1090,7 +1089,7 @@ next
     assume "q\<in>P" "q\<preceq> p"
     with assms \<open>(p \<tturnstile> \<phi> env) \<and> (p \<tturnstile> \<psi> env)\<close>
     show "q\<in>{r \<in> P . (r \<tturnstile> \<phi> env) \<and> (r \<tturnstile> \<psi> env)}" "q\<preceq> q"
-      using strengthening_lemma leq_reflI by auto
+      using strengthening_lemma refl_leq by auto
   qed
   with assms
   show "p \<tturnstile> And(\<phi>,\<psi>) env"
@@ -1108,17 +1107,17 @@ lemma Forces_Nand_alt:
 lemma truth_lemma_Neg:
   assumes 
     "\<phi>\<in>formula" "M_generic(G)" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)" and
-    IH: "(\<exists>p\<in>G. p \<tturnstile> \<phi> env) \<longleftrightarrow> M[G], map(val(G),env) \<Turnstile> \<phi>"
+    IH: "(\<exists>p\<in>G. p \<tturnstile> \<phi> env) \<longleftrightarrow> M[G], map(val(P,G),env) \<Turnstile> \<phi>"
   shows
-    "(\<exists>p\<in>G. p \<tturnstile> Neg(\<phi>) env)  \<longleftrightarrow>  M[G], map(val(G),env) \<Turnstile> Neg(\<phi>)"
+    "(\<exists>p\<in>G. p \<tturnstile> Neg(\<phi>) env)  \<longleftrightarrow>  M[G], map(val(P,G),env) \<Turnstile> Neg(\<phi>)"
 proof (intro iffI, elim bexE, rule ccontr) 
   (* Direct implication by contradiction *)
   fix p 
-  assume "p\<in>G" "p \<tturnstile> Neg(\<phi>) env" "\<not>(M[G],map(val(G),env) \<Turnstile> Neg(\<phi>))"
+  assume "p\<in>G" "p \<tturnstile> Neg(\<phi>) env" "\<not>(M[G],map(val(P,G),env) \<Turnstile> Neg(\<phi>))"
   moreover 
   note assms
   moreover from calculation
-  have "M[G], map(val(G),env) \<Turnstile> \<phi>"
+  have "M[G], map(val(P,G),env) \<Turnstile> \<phi>"
     using map_val_in_MG by simp
   with IH
   obtain r where "r \<tturnstile> \<phi> env" "r\<in>G" by blast
@@ -1132,9 +1131,9 @@ proof (intro iffI, elim bexE, rule ccontr)
   show "False"
     using Forces_Neg[where \<phi>=\<phi>] transitivity[OF _ P_in_M] by blast
 next
-  assume "M[G], map(val(G),env) \<Turnstile> Neg(\<phi>)"
+  assume "M[G], map(val(P,G),env) \<Turnstile> Neg(\<phi>)"
   with assms 
-  have "\<not> (M[G], map(val(G),env) \<Turnstile> \<phi>)"
+  have "\<not> (M[G], map(val(P,G),env) \<Turnstile> \<phi>)"
     using map_val_in_MG by simp
   let ?D="{p\<in>P. (p \<tturnstile> \<phi> env) \<or> (p \<tturnstile> Neg(\<phi>) env)}"
   have "separation(##M,\<lambda>p. (p \<tturnstile> \<phi> env))" 
@@ -1161,7 +1160,7 @@ next
     proof (cases "q \<tturnstile> Neg(\<phi>) env")
       case True
       with \<open>q\<in>P\<close>
-      show ?thesis using leq_reflI by blast
+      show ?thesis using refl_leq by blast
     next
       case False
       with \<open>q\<in>P\<close> and assms
@@ -1179,7 +1178,7 @@ next
   show "\<exists>p\<in>G. (p \<tturnstile> Neg(\<phi>) env)"
   proof (cases)
     case 1
-    with \<open>\<not> (M[G],map(val(G),env) \<Turnstile> \<phi>)\<close> \<open>p\<in>G\<close> IH
+    with \<open>\<not> (M[G],map(val(P,G),env) \<Turnstile> \<phi>)\<close> \<open>p\<in>G\<close> IH
     show ?thesis
       by blast
   next
@@ -1194,19 +1193,19 @@ lemma truth_lemma_And:
     "env\<in>list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
     "arity(\<phi>)\<le>length(env)" "arity(\<psi>) \<le> length(env)" "M_generic(G)"
     and
-    IH: "(\<exists>p\<in>G. p \<tturnstile> \<phi> env)  \<longleftrightarrow>   M[G], map(val(G),env) \<Turnstile> \<phi>"
-        "(\<exists>p\<in>G. p \<tturnstile> \<psi> env)  \<longleftrightarrow>   M[G], map(val(G),env) \<Turnstile> \<psi>"
+    IH: "(\<exists>p\<in>G. p \<tturnstile> \<phi> env)  \<longleftrightarrow>   M[G], map(val(P,G),env) \<Turnstile> \<phi>"
+        "(\<exists>p\<in>G. p \<tturnstile> \<psi> env)  \<longleftrightarrow>   M[G], map(val(P,G),env) \<Turnstile> \<psi>"
   shows
-    "(\<exists>p\<in>G. (p \<tturnstile> And(\<phi>,\<psi>) env)) \<longleftrightarrow> M[G] , map(val(G),env) \<Turnstile> And(\<phi>,\<psi>)"
+    "(\<exists>p\<in>G. (p \<tturnstile> And(\<phi>,\<psi>) env)) \<longleftrightarrow> M[G] , map(val(P,G),env) \<Turnstile> And(\<phi>,\<psi>)"
   using assms map_val_in_MG Forces_And[OF M_genericD assms(1-5)]
 proof (intro iffI, elim bexE)
   fix p
   assume "p\<in>G" "p \<tturnstile> And(\<phi>,\<psi>) env"
   with assms
-  show "M[G], map(val(G),env) \<Turnstile> And(\<phi>,\<psi>)" 
+  show "M[G], map(val(P,G),env) \<Turnstile> And(\<phi>,\<psi>)" 
     using Forces_And[OF M_genericD, of _ _ _ \<phi> \<psi>] map_val_in_MG by auto
 next 
-  assume "M[G], map(val(G),env) \<Turnstile> And(\<phi>,\<psi>)"
+  assume "M[G], map(val(P,G),env) \<Turnstile> And(\<phi>,\<psi>)"
   moreover
   note assms
   moreover from calculation
@@ -1374,7 +1373,7 @@ lemma truth_lemma:
     "\<phi>\<in>formula" "M_generic(G)"
   shows 
      "\<And>env. env\<in>list(M) \<Longrightarrow> arity(\<phi>)\<le>length(env) \<Longrightarrow> 
-      (\<exists>p\<in>G. p \<tturnstile> \<phi> env)   \<longleftrightarrow>   M[G], map(val(G),env) \<Turnstile> \<phi>"
+      (\<exists>p\<in>G. p \<tturnstile> \<phi> env)   \<longleftrightarrow>   M[G], map(val(P,G),env) \<Turnstile> \<phi>"
   using assms(1)
 proof (induct)
   case (Member x y)
@@ -1410,11 +1409,11 @@ next
       using that Forces_Forall by simp
     with \<open>p\<in>G\<close> \<open>\<phi>\<in>formula\<close> \<open>env\<in>_\<close> \<open>arity(Forall(\<phi>)) \<le> length(env)\<close>
       Forall(2)[of "Cons(_,env)"] 
-    show "M[G], map(val(G),env) \<Turnstile>  Forall(\<phi>)"
+    show "M[G], map(val(P,G),env) \<Turnstile>  Forall(\<phi>)"
       using pred_le2 map_val_in_MG
       by (auto iff:GenExtD)
   next
-    assume "M[G], map(val(G),env) \<Turnstile> Forall(\<phi>)"
+    assume "M[G], map(val(P,G),env) \<Turnstile> Forall(\<phi>)"
     let ?D1="{d\<in>P. (d \<tturnstile> Forall(\<phi>) env)}"
     let ?D2="{d\<in>P. \<exists>b\<in>M. \<forall>q\<in>P. q\<preceq>d \<longrightarrow> \<not>(q \<tturnstile> \<phi> ([b]@env))}"
     define D where "D \<equiv> ?D1 \<union> ?D2"
@@ -1443,7 +1442,7 @@ next
       proof (cases "p \<tturnstile> Forall(\<phi>) env")
         case True
         with \<open>p\<in>P\<close> 
-        show ?thesis unfolding D_def using leq_reflI by blast
+        show ?thesis unfolding D_def using refl_leq by blast
       next
         case False
         with Forall \<open>p\<in>P\<close>
@@ -1501,15 +1500,15 @@ lemma definition_of_forcing:
     "p\<in>P" "\<phi>\<in>formula" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"
   shows
     "(p \<tturnstile> \<phi> env) \<longleftrightarrow>
-     (\<forall>G. M_generic(G) \<and> p\<in>G  \<longrightarrow>  M[G], map(val(G),env) \<Turnstile> \<phi>)"
+     (\<forall>G. M_generic(G) \<and> p\<in>G  \<longrightarrow>  M[G], map(val(P,G),env) \<Turnstile> \<phi>)"
 proof (intro iffI allI impI, elim conjE)
   fix G
   assume "(p \<tturnstile> \<phi> env)" "M_generic(G)" "p \<in> G"
   with assms 
-  show "M[G], map(val(G),env) \<Turnstile> \<phi>"
+  show "M[G], map(val(P,G),env) \<Turnstile> \<phi>"
     using truth_lemma by blast
 next
-  assume 1: "\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow> M[G] , map(val(G),env) \<Turnstile> \<phi>"
+  assume 1: "\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow> M[G] , map(val(P,G),env) \<Turnstile> \<phi>"
   {
     fix r 
     assume 2: "r\<in>P" "r\<preceq>p"
@@ -1521,7 +1520,7 @@ next
       unfolding M_generic_def using filter_leqD by simp
     moreover note 1
     ultimately
-    have "M[G], map(val(G),env) \<Turnstile> \<phi>"
+    have "M[G], map(val(P,G),env) \<Turnstile> \<phi>"
       by simp
     with assms \<open>M_generic(G)\<close> 
     obtain s where "s\<in>G" "(s \<tturnstile> \<phi> env)"

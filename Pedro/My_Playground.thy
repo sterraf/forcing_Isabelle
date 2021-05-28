@@ -2,6 +2,10 @@ theory My_Playground
   imports 
     "../src/Pointed_DC"
     "ZF-Constructible.MetaExists"
+    "ZF-Constructible.Formula"
+    "ZF-Constructible.Normal"
+    "../src/Recursion_Thms"
+    "../Tools/Try0"
 begin
 
 (* Clone of "forcing_posets.thy" to try understand Isabelle/ML *)
@@ -586,5 +590,51 @@ lemma "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow> \<exists>d\<in>D . <
 
 end
 
+(*
+syntax
+  "_sats"  :: "[i, i, i] \<Rightarrow> o"  ("(_, _ \<Turnstile> _)" [36,36,36] 60)
+translations
+  "(M,env \<Turnstile> \<phi>)" \<rightleftharpoons> "CONST sats(M,\<phi>,env)"
+*)
+
+text\<open>Some aberrations when one omits the assumption that arities
+are less than the length of the environment, and when the environment
+is not a list on the relevant domain.\<close>
+lemma
+  "  sats({   1, {1} }, Member(1,0), [  1  ])"
+  "\<not> sats({      {1} }, Member(1,0), [ {1} ])"
+  "  sats({0, 1, {1} }, Member(1,0), [  1 , 0 ])"
+  "\<not> sats({   1, {1} }, Member(1,0), [  1 , 0 ])"
+  by (simp_all add:satisfies.simps(1))
+
+text\<open>\<^term>\<open>(\<equiv>)\<close> is \<^bold>\<open>not\<close> definitional equality\<close>
+
+lemma "0 #+ 1 \<equiv> 1"  by simp
+
+definition
+  HAleph :: "[i,i] \<Rightarrow> i" where
+  "HAleph(i,r) \<equiv> if(i=0, nat, if(\<exists>j. i=succ(j),
+                            csucc(r`( \<Union> i )),
+                                   \<Union>j\<in>i. r`j))"
+
+lemma HAleph_eq_Aleph_recursive: 
+  "Ord(i) \<Longrightarrow> HAleph(i,r) = (if i = 0 then nat
+                else if \<exists>j. i = succ(j) then csucc(r ` (THE j. i = succ(j))) else \<Union>j<i. r ` j)"
+proof -
+  assume "Ord(i)"
+  then
+  have "i = succ(j) \<Longrightarrow> (\<Union>succ(j)) = j" for j
+    using Ord_Union_succ_eq by simp
+  with \<open>Ord(i)\<close>
+  show ?thesis 
+    unfolding HAleph_def OUnion_def
+    by auto
+qed
+
+lemma "Ord(a) \<Longrightarrow> transrec(a,\<lambda>i r. HAleph(i,r)) = Aleph(a)"
+  unfolding Aleph_def transrec2_def
+  using HAleph_eq_Aleph_recursive
+  by (intro transrec_equal_on_Ord) auto
+  
 
 end

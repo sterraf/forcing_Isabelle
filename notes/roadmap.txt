@@ -1,0 +1,29 @@
+Milestones to reach ¬CH
+=======================
+
+0. Find a way to automate synthesis of separation and strong
+   replacement instances (required for 1-4 below, and perhaps also for
+   item 5).
+
+1. Finish porting CardinalArith.
+
+2. Define a discipline for wfrec to Port ZF-Constructible.Normal
+   (mainly because of ℵ) and Delta_System_Lemma.Cofinality.
+
+3. Finish Delta_System_Lemma: port the existing development and
+   complete the remaining parts now in relativized way.
+
+4. Develop Cohen_Posets in the relativized style, prove the ccc for
+   them using Delta_System_Lemma.
+
+5. Finish the formalization of Kunen's IV.3:
+
+   5a. Formalize IV.3.3: given M ⊆ N transitive models, if regulars
+       are absolute betwee M and N, then cardinals are absolute. (No
+       forcing needed for this, but Cofinality for regular).
+
+   5b. Prove IV.3.4 and then IV.3.7.
+
+;; Local Variables:
+;; ispell-dictionary: american
+;; End:

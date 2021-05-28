@@ -1,17 +1,24 @@
 chapter "ZF"
 
-session Delta_System_Lemma in "." =  "ZF" +
+session Delta_System_Lemma in "." =  "ZF-Constructible" +
   description "
-    Delta System Lemma
+    Cofinality and Delta System Lemma
 
-    We formalize Shanin's Lemma.
+    We formalize the basic results on cofinality of linearly ordered
+    sets and ordinals and Shanin's Lemma for uncountable families of
+    finite sets. This last result is used to prove the countable chain
+    condition for Cohen posets. We work in the set theory framework of
+    Isabelle/ZF, using the Axiom of Choice as needed.
   "  
   options [document = pdf, document_output = "output", 
-  	   quick_and_dirty (* sorry *),
   	   document_variants = "document:outline=/proof,/ML"]
-  theories [ document = false ]
-    "~~/src/ZF/Constructible/Normal"
   theories
+    "Konig"
     "Delta_System"
+    "Cohen_Posets"
   document_files
     "root.tex"
+    "header-delta-system.tex"
+    "multidef.sty"
+    "root.bib"
+    "root.bst"

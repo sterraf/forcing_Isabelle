@@ -1,7 +1,8 @@
 section\<open>The binder \<^term>\<open>Least\<close>\<close>
 theory Least
   imports
-    Names
+    "Forcing_Data" \<comment> \<open>only for a result to be moved below\<close>
+    "Internalizations"   
 
 begin
 
@@ -52,7 +53,7 @@ lemma sats_least_fm :
   using nth_closed p_iff_sats unfolding least_def least_fm_def
   by (simp add:basic_fm_simps)
 
-lemma least_iff_sats:
+lemma least_iff_sats [iff_sats]:
   assumes is_Q_iff_sats: 
       "\<And>a. a \<in> A \<Longrightarrow> is_Q(a) \<longleftrightarrow> sats(A, q, Cons(a,env))"
   shows 
@@ -64,7 +65,8 @@ lemma least_iff_sats:
 lemma least_conj: "a\<in>M \<Longrightarrow> least(##M, \<lambda>x. x\<in>M \<and> Q(x),a) \<longleftrightarrow> least(##M,Q,a)"
   unfolding least_def by simp
 
-(* Better to have this in M_basic or similar *)
+\<comment> \<open>FIXME: Better to have this in \<^term>\<open>M_basic\<close> or similar. And perhaps to
+    have it disciplined\<close>
 lemma (in M_ctm) unique_least: "a\<in>M \<Longrightarrow> b\<in>M \<Longrightarrow> least(##M,Q,a) \<Longrightarrow> least(##M,Q,b) \<Longrightarrow> a=b"
   unfolding least_def
   by (auto, erule_tac i=a and j=b in Ord_linear_lt; (drule ltD | simp); auto intro:Ord_in_Ord)
@@ -75,12 +77,12 @@ begin
 subsection\<open>Absoluteness and closure under \<^term>\<open>Least\<close>\<close>
 
 lemma least_abs:
-  assumes "\<And>x. Q(x) \<Longrightarrow> M(x)" "M(a)" 
+  assumes "\<And>x. Q(x) \<Longrightarrow> Ord(x) \<Longrightarrow> \<exists>y[M]. Q(y) \<and> Ord(y)" "M(a)"
   shows "least(M,Q,a) \<longleftrightarrow> a = (\<mu> x. Q(x))"
   unfolding least_def
 proof (cases "\<forall>b[M]. Ord(b) \<longrightarrow> \<not> Q(b)"; intro iffI; simp add:assms)
   case True
-  with \<open>\<And>x. Q(x) \<Longrightarrow> M(x)\<close>
+  with assms
   have "\<not> (\<exists>i. Ord(i) \<and> Q(i)) " by blast
   then
   show "0 =(\<mu> x. Q(x))" using Least_0 by simp
@@ -112,9 +114,9 @@ next
   with 1
   have "Ord(a)" "Q(a)" "\<forall>b[M]. Ord(b) \<and> b \<in> a \<longrightarrow> \<not> Q(b)"
     by blast+
-  moreover from this and \<open>\<And>x. Q(x) \<Longrightarrow> M(x)\<close>
+  moreover from this and assms
   have "Ord(b) \<Longrightarrow> b \<in> a \<Longrightarrow> \<not> Q(b)" for b
-    by blast
+    by (auto dest:transM)
   moreover from this and \<open>Ord(a)\<close>
   have "b < a \<Longrightarrow> \<not> Q(b)" for b
     unfolding lt_def using Ord_in_Ord by blast
@@ -124,9 +126,22 @@ next
 qed
 
 lemma Least_closed:
+  assumes "\<And>x. Q(x) \<Longrightarrow> Ord(x) \<Longrightarrow> \<exists>y[M]. Q(y) \<and> Ord(y)"
+  shows "M(\<mu> x. Q(x))"
+  using assms Least_le[of Q] Least_0[of Q]
+  by (cases "(\<exists>i[M]. Ord(i) \<and> Q(i))") (force dest:transM ltD)+
+
+text\<open>Older, easier to apply versions (with a simpler assumption
+on \<^term>\<open>Q\<close>).\<close>
+lemma least_abs':
+  assumes "\<And>x. Q(x) \<Longrightarrow> M(x)" "M(a)"
+  shows "least(M,Q,a) \<longleftrightarrow> a = (\<mu> x. Q(x))"
+  using assms least_abs[of Q] by auto
+
+lemma Least_closed':
   assumes "\<And>x. Q(x) \<Longrightarrow> M(x)"
   shows "M(\<mu> x. Q(x))"
-  using assms LeastI[of Q] Least_0 by (cases "(\<exists>i. Ord(i) \<and> Q(i))", auto)
+  using assms Least_closed[of Q] by auto
 
 end (* M_trivial *)
 

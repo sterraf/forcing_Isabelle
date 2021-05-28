@@ -8,109 +8,141 @@ consts dc_witness :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Righta
 primrec
   wit0   : "dc_witness(0,A,a,s,R) = a"
   witrec :"dc_witness(succ(n),A,a,s,R) = s`{x\<in>A. \<langle>dc_witness(n,A,a,s,R),x\<rangle>\<in>R }"
-  
-lemma witness_into_A [TC]:  "a\<in>A \<Longrightarrow> n\<in>nat \<Longrightarrow>
-                             (\<forall>X . X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X) \<Longrightarrow>
-                             \<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0 \<Longrightarrow>
-                             dc_witness(n, A, a, s, R)\<in>A"
-  apply (induct_tac n ,simp+)
-  apply (drule_tac x="dc_witness(x, A, a, s, R)" in bspec, assumption)
-  apply (drule_tac x="{xa \<in> A . \<langle>dc_witness(x, A, a, s, R), xa\<rangle> \<in> R}" in  spec)
-  apply auto 
-  done
-lemma witness_related :  "a\<in>A \<Longrightarrow> n\<in>nat \<Longrightarrow>
-                             (\<forall>X . X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X) \<Longrightarrow>
-                             \<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0 \<Longrightarrow>
-                             \<langle>dc_witness(n, A, a, s, R),dc_witness(succ(n), A, a, s, R)\<rangle>\<in>R"
-  apply (frule_tac n="n" and s="s"  and R="R" in witness_into_A, assumption+)
-   apply (drule_tac x="dc_witness(n, A, a, s, R)" in bspec, assumption)
-  apply (drule_tac x= "{x \<in> A . \<langle>dc_witness(n, A, a, s, R), x\<rangle> \<in> R}" in spec)
-  apply (simp, blast) 
-  done
-    
-lemma witness_funtype: "a\<in>A \<Longrightarrow> 
-                        (\<forall>X . X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X) \<Longrightarrow>
-                        \<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0 \<Longrightarrow>
-                        (\<lambda>n\<in>nat. dc_witness(n, A, a, s, R)) \<in> nat \<rightarrow> A"
-  apply (rule_tac B="{dc_witness(n, A, a, s, R). n\<in>nat}" in fun_weaken_type)
-  apply (rule lam_funtype)
-  apply ( blast intro:witness_into_A)
-  done
-    
-lemma witness_to_fun: "a\<in>A \<Longrightarrow> (\<forall>X . X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X) \<Longrightarrow>
-                             \<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0 \<Longrightarrow>
-                             \<exists>f \<in> nat\<rightarrow>A. \<forall>n\<in>nat. f`n =dc_witness(n,A,a,s,R)"
-  apply (rule_tac x="\<lambda>n\<in>nat. dc_witness(n,A,a,s,R)" in  bexI, simp)
-  apply (rule witness_funtype, simp+)
-  done
 
-theorem pointed_DC  : "(\<forall>x\<in>A. \<exists>y\<in>A. \<langle>x,y\<rangle>\<in> R) \<Longrightarrow>
-                       \<forall>a\<in>A. (\<exists>f \<in> nat\<rightarrow>A. f`0 = a \<and> (\<forall>n \<in> nat. \<langle>f`n,f`succ(n)\<rangle>\<in>R))"
-  apply (rule)
-  apply (insert AC_func_Pow)
-  apply (drule allI)
-  apply (drule_tac x="A" in spec)
-  apply (drule_tac P="\<lambda>f .\<forall>x\<in>Pow(A) - {0}. f ` x \<in> x"
-               and A="Pow(A)-{0}\<rightarrow> A" 
-               and Q=" \<exists>f\<in>nat\<rightarrow> A. f ` 0 = a \<and> (\<forall>n\<in>nat. \<langle>f ` n, f ` succ(n)\<rangle> \<in> R)" in bexE)
-  prefer 2 apply (assumption)           
-  apply (rename_tac s)
-  apply (rule_tac x="\<lambda>n\<in>nat. dc_witness(n,A,a,s,R)" in bexI)
-   prefer 2  apply (blast intro:witness_funtype)
-  apply (rule  conjI, simp)
-  apply (rule ballI, rename_tac m)
-  apply (subst beta, simp)+
-  apply (rule witness_related, auto)
-  done
+lemma witness_into_A [TC]:
+  assumes "a\<in>A"
+    "(\<forall>X . X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X)"
+    "\<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0" "n\<in>nat"
+  shows "dc_witness(n, A, a, s, R)\<in>A"
+  using \<open>n\<in>nat\<close>
+proof(induct n)
+  case 0
+  then show ?case using \<open>a\<in>A\<close> by simp
+next
+  case (succ x)
+  then
+  show ?case using assms by auto
+qed
 
-    
+lemma witness_related :
+  assumes "a\<in>A"
+    "(\<forall>X . X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X)"
+    "\<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0" "n\<in>nat"
+  shows "\<langle>dc_witness(n, A, a, s, R),dc_witness(succ(n), A, a, s, R)\<rangle>\<in>R"
+proof -
+  from assms
+  have "dc_witness(n, A, a, s, R)\<in>A" (is "?x \<in> A")
+    using witness_into_A[of _ _ s R n] by simp
+  with assms
+  show ?thesis by auto
+qed
+
+lemma witness_funtype:
+  assumes "a\<in>A"
+    "(\<forall>X . X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X)"
+    "\<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0"
+  shows "(\<lambda>n\<in>nat. dc_witness(n, A, a, s, R)) \<in> nat \<rightarrow> A" (is "?f \<in> _ \<rightarrow> _")
+proof -
+  have "?f \<in> nat \<rightarrow> {dc_witness(n, A, a, s, R). n\<in>nat}" (is "_ \<in> _ \<rightarrow> ?B")
+    using lam_funtype assms by simp
+  then
+  have "?B \<subseteq> A"
+    using witness_into_A assms by auto
+  with \<open>?f \<in> _\<close>
+  show ?thesis
+    using fun_weaken_type
+    by simp
+qed
+
+lemma witness_to_fun:   assumes "a\<in>A"
+  "(\<forall>X . X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X)"
+  "\<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0"
+shows "\<exists>f \<in> nat\<rightarrow>A. \<forall>n\<in>nat. f`n =dc_witness(n,A,a,s,R)"
+  using assms bexI[of _ "\<lambda>n\<in>nat. dc_witness(n,A,a,s,R)"] witness_funtype
+  by simp
+
+theorem pointed_DC  :
+  assumes "(\<forall>x\<in>A. \<exists>y\<in>A. \<langle>x,y\<rangle>\<in> R)"
+  shows "\<forall>a\<in>A. (\<exists>f \<in> nat\<rightarrow>A. f`0 = a \<and> (\<forall>n \<in> nat. \<langle>f`n,f`succ(n)\<rangle>\<in>R))"
+proof -
+  have 0:"\<forall>y\<in>A. {x \<in> A . \<langle>y, x\<rangle> \<in> R} \<noteq> 0"
+    using assms by auto
+  from AC_func_Pow[of A]
+  obtain g
+    where 1: "g \<in> Pow(A) - {0} \<rightarrow> A"
+      "\<forall>X. X \<noteq> 0 \<and> X \<subseteq> A \<longrightarrow> g ` X \<in> X"
+    by auto
+  let ?f ="\<lambda>a.\<lambda>n\<in>nat. dc_witness(n,A,a,g,R)"
+  {
+    fix a
+    assume "a\<in>A"
+    from \<open>a\<in>A\<close>
+    have f0: "?f(a)`0 = a" by simp
+    with \<open>a\<in>A\<close>
+    have "\<langle>?f(a) ` n, ?f(a) ` succ(n)\<rangle> \<in> R" if "n\<in>nat" for n
+      using witness_related[OF \<open>a\<in>A\<close> 1(2) 0] beta that by simp
+    then
+    have "\<exists>f\<in>nat \<rightarrow> A. f ` 0 = a \<and> (\<forall>n\<in>nat. \<langle>f ` n, f ` succ(n)\<rangle> \<in> R)" (is "\<exists>x\<in>_ .?P(x)")
+      using f0 witness_funtype 0 1 \<open>a\<in>_\<close> by blast
+  }
+  then show ?thesis by auto
+qed
+
 lemma aux_DC_on_AxNat2 : "\<forall>x\<in>A\<times>nat. \<exists>y\<in>A. \<langle>x,\<langle>y,succ(snd(x))\<rangle>\<rangle> \<in> R \<Longrightarrow>
                   \<forall>x\<in>A\<times>nat. \<exists>y\<in>A\<times>nat. \<langle>x,y\<rangle> \<in> {\<langle>a,b\<rangle>\<in>R. snd(b) = succ(snd(a))}"
-  apply (rule ballI, erule_tac x="x" in ballE, simp_all)
-  done
+  by (rule ballI, erule_tac x="x" in ballE, simp_all)
 
 lemma infer_snd : "c\<in> A\<times>B \<Longrightarrow> snd(c) = k \<Longrightarrow> c=\<langle>fst(c),k\<rangle>"
   by auto
-    
-corollary DC_on_A_x_nat : 
-  "(\<forall>x\<in>A\<times>nat. \<exists>y\<in>A. \<langle>x,\<langle>y,succ(snd(x))\<rangle>\<rangle> \<in> R) \<Longrightarrow>
-    \<forall>a\<in>A. (\<exists>f \<in> nat\<rightarrow>A. f`0 = a \<and> (\<forall>n \<in> nat. \<langle>\<langle>f`n,n\<rangle>,\<langle>f`succ(n),succ(n)\<rangle>\<rangle>\<in>R))"
-  apply (frule aux_DC_on_AxNat2)
-  apply (drule_tac R="{\<langle>a,b\<rangle>\<in>R. snd(b) = succ(snd(a))}" in  pointed_DC)
-  apply (rule ballI)
-  apply (rotate_tac)
-  apply (drule_tac x="\<langle>a,0\<rangle>" in  bspec, simp)
-  apply (erule bexE, rename_tac g)  
-  apply (rule_tac x="\<lambda>x\<in>nat. fst(g`x)" and A="nat\<rightarrow>A" in bexI, auto)
-  apply (subgoal_tac "\<forall>n\<in>nat. g`n= \<langle>fst(g ` n), n\<rangle>")
-   prefer 2 apply (rule ballI, rename_tac m)
-   apply (induct_tac m, simp)
-   apply (rename_tac d, auto)
-  apply (frule_tac A="nat" and x="d" in bspec, simp)
-  apply (rule_tac A="A" and B="nat" in infer_snd, auto)
-  apply (rule_tac a="\<langle>fst(g ` d), d\<rangle>" and b="g ` d" in ssubst, assumption)
-    (* Notorio: simp, auto ni blast lo hacen aquí! 
-       El problema es que está usando "mal" las assumptions: esta sí sirve
-       apply (simp (no_asm)) *)
-  apply (subst snd_conv, simp)
-  done
 
-lemma aux_sequence_DC : "\<And>R. \<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. \<langle>x,y\<rangle> \<in> S`n \<Longrightarrow>
-                        R={\<langle>\<langle>x,n\<rangle>,\<langle>y,m\<rangle>\<rangle>\<in>(A\<times>nat)\<times>(A\<times>nat). \<langle>x,y\<rangle>\<in>S`m } \<Longrightarrow>
-                        \<forall>x\<in>A\<times>nat. \<exists>y\<in>A. \<langle>x,\<langle>y,succ(snd(x))\<rangle>\<rangle> \<in> R"
-  apply (rule ballI, rename_tac v)
-  apply (frule Pair_fst_snd_eq)  
-  apply (erule_tac x="fst(v)" in ballE)
-   apply (drule_tac x="succ(snd(v))" in bspec, auto)
-  done
+corollary DC_on_A_x_nat :
+  assumes "(\<forall>x\<in>A\<times>nat. \<exists>y\<in>A. \<langle>x,\<langle>y,succ(snd(x))\<rangle>\<rangle> \<in> R)" "a\<in>A"
+  shows "\<exists>f \<in> nat\<rightarrow>A. f`0 = a \<and> (\<forall>n \<in> nat. \<langle>\<langle>f`n,n\<rangle>,\<langle>f`succ(n),succ(n)\<rangle>\<rangle>\<in>R)" (is "\<exists>x\<in>_.?P(x)")
+proof -
+  let ?R'="{\<langle>a,b\<rangle>\<in>R. snd(b) = succ(snd(a))}"
+  from assms(1)
+  have "\<forall>x\<in>A\<times>nat. \<exists>y\<in>A\<times>nat. \<langle>x,y\<rangle> \<in> ?R'"
+    using aux_DC_on_AxNat2 by simp
+  with \<open>a\<in>_\<close>
+  obtain f where
+    F:"f\<in>nat\<rightarrow>A\<times>nat" "f ` 0 = \<langle>a,0\<rangle>"  "\<forall>n\<in>nat. \<langle>f ` n, f ` succ(n)\<rangle> \<in> ?R'"
+    using pointed_DC[of "A\<times>nat" ?R'] by blast
+  let ?f="\<lambda>x\<in>nat. fst(f`x)"
+  from F
+  have "?f\<in>nat\<rightarrow>A" "?f ` 0 = a" by auto
+  have 1:"n\<in> nat \<Longrightarrow> f`n= \<langle>?f`n, n\<rangle>" for n
+  proof(induct n set:nat)
+    case 0
+    then show ?case using F by simp
+  next
+    case (succ x)
+    then
+    have "\<langle>f`x, f`succ(x)\<rangle> \<in> ?R'" "f`x \<in> A\<times>nat" "f`succ(x)\<in>A\<times>nat"
+      using F by simp_all
+    then
+    have "snd(f`succ(x)) = succ(snd(f`x))" by simp
+    with succ \<open>f`x\<in>_\<close>
+    show ?case using infer_snd[OF \<open>f`succ(_)\<in>_\<close>] by auto
+  qed
+  have "\<langle>\<langle>?f`n,n\<rangle>,\<langle>?f`succ(n),succ(n)\<rangle>\<rangle> \<in> R" if "n\<in>nat" for n
+    using that 1[of "succ(n)"] 1[OF \<open>n\<in>_\<close>] F(3) by simp
+  with \<open>f`0=\<langle>a,0\<rangle>\<close>
+  show ?thesis using rev_bexI[OF \<open>?f\<in>_\<close>] by simp
+qed
+
+lemma aux_sequence_DC :
+  assumes "\<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. \<langle>x,y\<rangle> \<in> S`n"
+    "R={\<langle>\<langle>x,n\<rangle>,\<langle>y,m\<rangle>\<rangle> \<in> (A\<times>nat)\<times>(A\<times>nat). \<langle>x,y\<rangle>\<in>S`m }"
+  shows "\<forall> x\<in>A\<times>nat . \<exists>y\<in>A. \<langle>x,\<langle>y,succ(snd(x))\<rangle>\<rangle> \<in> R"
+  using assms Pair_fst_snd_eq by auto
 
 lemma aux_sequence_DC2 : "\<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. \<langle>x,y\<rangle> \<in> S`n \<Longrightarrow>
         \<forall>x\<in>A\<times>nat. \<exists>y\<in>A. \<langle>x,\<langle>y,succ(snd(x))\<rangle>\<rangle> \<in> {\<langle>\<langle>x,n\<rangle>,\<langle>y,m\<rangle>\<rangle>\<in>(A\<times>nat)\<times>(A\<times>nat). \<langle>x,y\<rangle>\<in>S`m }"
   by auto
-    
-lemma sequence_DC: "\<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. \<langle>x,y\<rangle> \<in> S`n \<Longrightarrow>
-    \<forall>a\<in>A. (\<exists>f \<in> nat\<rightarrow>A. f`0 = a \<and> (\<forall>n \<in> nat. \<langle>f`n,f`succ(n)\<rangle>\<in>S`succ(n)))"
-  apply (drule aux_sequence_DC2)
-  apply (drule DC_on_A_x_nat, auto)
-  done
+
+lemma sequence_DC:
+  assumes "\<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. \<langle>x,y\<rangle> \<in> S`n"
+  shows "\<forall>a\<in>A. (\<exists>f \<in> nat\<rightarrow>A. f`0 = a \<and> (\<forall>n \<in> nat. \<langle>f`n,f`succ(n)\<rangle>\<in>S`succ(n)))"
+  by (rule ballI,insert assms,drule aux_sequence_DC2, drule DC_on_A_x_nat, auto)
+
 end

@@ -5,8 +5,7 @@ theory Non_Constructible
 begin
 
 lemmas sep_rules' = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
-                   fun_plus_iff_sats fun_apply_iff_sats
-                    omega_iff_sats FOL_sats_iff 
+  fun_plus_iff_sats fun_apply_iff_sats omega_iff_sats FOL_sats_iff 
 
 definition
   chleR :: "i \<Rightarrow> i \<Rightarrow> o" where
@@ -85,7 +84,7 @@ proof
   next
     case False
     with \<open>p\<in>list(2)\<close> 
-    show ?thesis using ch.leq_reflI unfolding Diff_def by auto
+    show ?thesis using ch.refl_leq unfolding Diff_def by auto
   qed
 qed
 
@@ -101,8 +100,6 @@ lemma chle_in_M: "chle \<in> M"
 
 end (* M_ctm *)
 
-(* Versión con n \<rightarrow> 2 *)
-(* f \<le> n g sii \<forall>j\<in>n. g`j=f`j *)
 definition 
   seqspace :: "i \<Rightarrow> i" ("_^<\<omega>" [100]100) where
   "B^<\<omega> \<equiv> \<Union>n\<in>nat. (n\<rightarrow>B)"
@@ -335,7 +332,7 @@ proof
   next
     case False
     with \<open>p\<in>2^<\<omega>\<close> 
-    show ?thesis using fun.leq_reflI unfolding Diff_def by auto
+    show ?thesis using fun.refl_leq unfolding Diff_def by auto
   qed
 qed
 

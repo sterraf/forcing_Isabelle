@@ -1,76 +1,33 @@
 section\<open>A poset of successions\<close>
 theory Succession_Poset
   imports
-    Arities Proper_Extension Synthetic_Definition
-    Names
+    Proper_Extension
+    FiniteFun_Relative
 begin
-
-subsection\<open>The set of finite binary sequences\<close>
-
-text\<open>We implement the poset for adding one Cohen real, the set 
-$2^{<\omega}$ of of finite binary sequences.\<close>
-
-definition
-  seqspace :: "i \<Rightarrow> i" ("_^<\<omega>" [100]100) where
-  "seqspace(B) \<equiv> \<Union>n\<in>nat. (n\<rightarrow>B)"
-
-lemma seqspaceI[intro]: "n\<in>nat \<Longrightarrow> f:n\<rightarrow>B \<Longrightarrow> f\<in>seqspace(B)"
-  unfolding seqspace_def by blast
-
-lemma seqspaceD[dest]: "f\<in>seqspace(B) \<Longrightarrow> \<exists>n\<in>nat. f:n\<rightarrow>B"
-  unfolding seqspace_def by blast
-
-lemma seqspace_type: 
-  "f \<in> B^<\<omega> \<Longrightarrow> \<exists>n\<in>nat. f:n\<rightarrow>B" 
-  unfolding seqspace_def by auto
-
-schematic_goal seqspace_fm_auto:
-  assumes 
-    "nth(i,env) = n" "nth(j,env) = z"  "nth(h,env) = B" 
-    "i \<in> nat" "j \<in> nat" "h\<in>nat" "env \<in> list(A)"
-  shows 
-    "(\<exists>om\<in>A. omega(##A,om) \<and> n \<in> om \<and> is_funspace(##A, n, B, z)) \<longleftrightarrow> (A, env \<Turnstile> (?sqsprp(i,j,h)))"
-  unfolding is_funspace_def 
-  by (insert assms ; (rule sep_rules | simp)+)
-
-synthesize "seqspace_rep_fm" from_schematic "seqspace_fm_auto"
- 
-locale M_seqspace =  M_trancl +
-  assumes 
-    seqspace_replacement: "M(B) \<Longrightarrow> strong_replacement(M,\<lambda>n z. n\<in>nat \<and> is_funspace(M,n,B,z))"
-begin
-
-lemma seqspace_closed:
-  "M(B) \<Longrightarrow> M(B^<\<omega>)"
-  unfolding seqspace_def using seqspace_replacement[of B] RepFun_closed2 
-  by simp
-
-end (* M_seqspace *)
-
 
 sublocale M_ctm \<subseteq> M_seqspace "##M"
 proof (unfold_locales, simp)
   fix B
-  have "arity(seqspace_rep_fm(0,1,2)) \<le> 3" "seqspace_rep_fm(0,1,2)\<in>formula" 
-    unfolding seqspace_rep_fm_def 
-    using arity_pair_fm arity_omega_fm arity_typed_function_fm nat_simp_union 
-    by auto
+  have "arity(seqspace_rel_fm(0,1,2)) \<le> 3" "seqspace_rel_fm(0,1,2)\<in>formula"  
+    using arity_seqspace_rel_fm seqspace_rel_fm_type nat_union_abs1
+    by simp_all
   moreover
   assume "B\<in>M"
   ultimately
-  have "strong_replacement(##M, \<lambda>x y. M, [x, y, B] \<Turnstile> seqspace_rep_fm(0, 1, 2))"
-    using replacement_ax[of "seqspace_rep_fm(0,1,2)"]
+  have "strong_replacement(##M, \<lambda>x y. M, [x, y, B] \<Turnstile> seqspace_rel_fm(0, 1, 2))"
+    using replacement_ax[of "seqspace_rel_fm(0,1,2)"]
     by simp
   moreover 
   note \<open>B\<in>M\<close>
   moreover from this
-  have "univalent(##M, A, \<lambda>x y. M, [x, y, B] \<Turnstile> seqspace_rep_fm(0, 1, 2))" 
+  have "univalent(##M, A, \<lambda>x y. M, [x, y, B] \<Turnstile> seqspace_rel_fm(0, 1, 2))" 
     if "A\<in>M" for A 
-    using that unfolding univalent_def seqspace_rep_fm_def  
+    using that unfolding univalent_def seqspace_rel_fm_def  
     by (auto, blast dest:transitivity)
   ultimately
   have "strong_replacement(##M, \<lambda>n z. \<exists>om[##M]. omega(##M,om) \<and> n \<in> om \<and> is_funspace(##M, n, B, z))"
-    using seqspace_fm_auto[of 0 "[_,_,B]" _ 1 _ 2 B M] unfolding seqspace_rep_fm_def strong_replacement_def
+    using seqspace_rel_iff_sats[of 0 "[_,_,B]" _ 1 _ 2 B M] 
+    unfolding seqspace_rel_fm_def strong_replacement_def
     by simp
   with \<open>B\<in>M\<close> 
   show "strong_replacement(##M, \<lambda>n z. n \<in> nat \<and> is_funspace(##M, n, B, z))"
@@ -113,8 +70,8 @@ proof -
 qed
 
 lemma seq_upd_type : 
-  assumes "f\<in>A^<\<omega>" "a\<in>A"
-  shows "seq_upd(f,a) \<in> A^<\<omega>"
+  assumes "f\<in>A\<^bsup><\<omega>\<^esup>" "a\<in>A"
+  shows "seq_upd(f,a) \<in> A\<^bsup><\<omega>\<^esup>"
 proof -
   from \<open>f\<in>_\<close>
   obtain y where "y\<in>nat" "f\<in>y\<rightarrow>A"
@@ -133,7 +90,7 @@ lemma seq_upd_apply_domain [simp]:
   unfolding seq_upd_def using assms domain_of_fun by auto
 
 lemma zero_in_seqspace : 
-  shows "0 \<in> A^<\<omega>"
+  shows "0 \<in> A\<^bsup><\<omega>\<^esup>"
   unfolding seqspace_def
   by force
 
@@ -143,38 +100,38 @@ definition
 
 definition
   seqlerel :: "i \<Rightarrow> i" where
-  "seqlerel(A) \<equiv> Rrel(\<lambda>x y. y \<subseteq> x,A^<\<omega>)"
+  "seqlerel(A) \<equiv> Rrel(\<lambda>x y. y \<subseteq> x,A\<^bsup><\<omega>\<^esup>)"
 
 definition
   seqle :: "i" where
   "seqle \<equiv> seqlerel(2)"
 
 lemma seqleI[intro!]: 
-  "\<langle>f,g\<rangle> \<in> 2^<\<omega>\<times>2^<\<omega> \<Longrightarrow> g \<subseteq> f  \<Longrightarrow> \<langle>f,g\<rangle> \<in> seqle"
+  "\<langle>f,g\<rangle> \<in> 2\<^bsup><\<omega>\<^esup>\<times>2\<^bsup><\<omega>\<^esup> \<Longrightarrow> g \<subseteq> f  \<Longrightarrow> \<langle>f,g\<rangle> \<in> seqle"
   unfolding  seqspace_def seqle_def seqlerel_def Rrel_def 
   by blast
 
 lemma seqleD[dest!]: 
-  "z \<in> seqle \<Longrightarrow> \<exists>x y. \<langle>x,y\<rangle> \<in> 2^<\<omega>\<times>2^<\<omega> \<and> y \<subseteq> x \<and> z = \<langle>x,y\<rangle>"
+  "z \<in> seqle \<Longrightarrow> \<exists>x y. \<langle>x,y\<rangle> \<in> 2\<^bsup><\<omega>\<^esup>\<times>2\<^bsup><\<omega>\<^esup> \<and> y \<subseteq> x \<and> z = \<langle>x,y\<rangle>"
   unfolding seqle_def seqlerel_def Rrel_def 
   by blast
 
 lemma upd_leI : 
-  assumes "f\<in>2^<\<omega>" "a\<in>2"
-  shows "<seq_upd(f,a),f>\<in>seqle"  (is "<?f,_>\<in>_")
+  assumes "f\<in>2\<^bsup><\<omega>\<^esup>" "a\<in>2"
+  shows "\<langle>seq_upd(f,a),f\<rangle>\<in>seqle"  (is "\<langle>?f,_\<rangle>\<in>_")
 proof
-  show " \<langle>?f, f\<rangle> \<in> 2^<\<omega> \<times> 2^<\<omega>" 
+  show " \<langle>?f, f\<rangle> \<in> 2\<^bsup><\<omega>\<^esup> \<times> 2\<^bsup><\<omega>\<^esup>" 
     using assms seq_upd_type by auto
 next
   show  "f \<subseteq> seq_upd(f,a)" 
   proof 
     fix x
     assume "x \<in> f"
-    moreover from \<open>f \<in> 2^<\<omega>\<close>
+    moreover from \<open>f \<in> 2\<^bsup><\<omega>\<^esup>\<close>
     obtain n where  "n\<in>nat" "f : n \<rightarrow> 2"
-      using seqspace_type by blast
+      by blast
     moreover from calculation
-    obtain y where "y\<in>n" "x=<y,f`y>" using Pi_memberD[of f n "\<lambda>_ . 2"] 
+    obtain y where "y\<in>n" "x=\<langle>y,f`y\<rangle>" using Pi_memberD[of f n "\<lambda>_ . 2"] 
       by blast
     moreover from \<open>f:n\<rightarrow>2\<close>
     have "domain(f) = n" using domain_of_fun by simp
@@ -185,30 +142,27 @@ next
   qed
 qed
 
-lemma preorder_on_seqle: "preorder_on(2^<\<omega>,seqle)"
+lemma preorder_on_seqle: "preorder_on(2\<^bsup><\<omega>\<^esup>,seqle)"
   unfolding preorder_on_def refl_def trans_on_def by blast
 
-lemma zero_seqle_max: "x\<in>2^<\<omega> \<Longrightarrow> \<langle>x,0\<rangle> \<in> seqle"
+lemma zero_seqle_max: "x\<in>2\<^bsup><\<omega>\<^esup> \<Longrightarrow> \<langle>x,0\<rangle> \<in> seqle"
   using zero_in_seqspace 
   by auto
 
-interpretation forcing_notion "2^<\<omega>" "seqle" "0"
+interpretation sp:forcing_notion "2\<^bsup><\<omega>\<^esup>" "seqle" "0"
   using preorder_on_seqle zero_seqle_max zero_in_seqspace 
   by unfold_locales simp_all
 
-abbreviation SEQle :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>s" 50)
-  where "x \<preceq>s y \<equiv> Leq(x,y)"
-
-abbreviation SEQIncompatible :: "[i, i] \<Rightarrow> o"  (infixl "\<bottom>s" 50)
-  where "x \<bottom>s y \<equiv> Incompatible(x,y)"
+notation sp.Leq (infixl "\<preceq>s" 50)
+notation sp.Incompatible (infixl "\<bottom>s" 50)
 
 lemma seqspace_separative:
-  assumes "f\<in>2^<\<omega>"
+  assumes "f\<in>2\<^bsup><\<omega>\<^esup>"
   shows "seq_upd(f,0) \<bottom>s seq_upd(f,1)" (is "?f \<bottom>s ?g")
 proof 
-  assume "compat(?f, ?g)"
+  assume "sp.compat(?f, ?g)"
   then 
-  obtain h where "h \<in> 2^<\<omega>" "?f \<subseteq> h" "?g \<subseteq> h"
+  obtain h where "h \<in> 2\<^bsup><\<omega>\<^esup>" "?f \<subseteq> h" "?g \<subseteq> h"
     by blast
   moreover from \<open>f\<in>_\<close>
   obtain y where "y\<in>nat" "f:y\<rightarrow>2" by blast
@@ -216,10 +170,10 @@ proof
   have "?f: succ(y) \<rightarrow> 2" "?g: succ(y) \<rightarrow> 2" 
     using seq_upd_succ_type by blast+
   moreover from this
-  have "<y,?f`y> \<in> ?f" "<y,?g`y> \<in> ?g" using apply_Pair by auto
+  have "\<langle>y,?f`y\<rangle> \<in> ?f" "\<langle>y,?g`y\<rangle> \<in> ?g" using apply_Pair by auto
   ultimately
-  have "<y,0> \<in> h" "<y,1> \<in> h" by auto
-  moreover from \<open>h \<in> 2^<\<omega>\<close>
+  have "\<langle>y,0\<rangle> \<in> h" "\<langle>y,1\<rangle> \<in> h" by auto
+  moreover from \<open>h \<in> 2\<^bsup><\<omega>\<^esup>\<close>
   obtain n where "n\<in>nat" "h:n\<rightarrow>2" by blast
   ultimately
   show "False"
@@ -264,7 +218,7 @@ lemma (in M_ctm) seqleR_fm_sats :
 
 lemma (in M_basic) is_related_abs :
   assumes "\<And> f g . M(f) \<Longrightarrow> M(g) \<Longrightarrow> rel(f,g) \<longleftrightarrow> is_rel(M,f,g)"
-  shows "\<And>z . M(z) \<Longrightarrow> relP(M,is_rel,z) \<longleftrightarrow> (\<exists>x y. z = <x,y> \<and> rel(x,y))"
+  shows "\<And>z . M(z) \<Longrightarrow> relP(M,is_rel,z) \<longleftrightarrow> (\<exists>x y. z = \<langle>x,y\<rangle> \<and> rel(x,y))"
   unfolding relP_def using pair_in_M_iff assms by auto
 
 definition
@@ -283,7 +237,7 @@ proof -
   have A:"relP(M, is_rel, z) \<longleftrightarrow> (\<exists>x y. z = \<langle>x, y\<rangle> \<and> rel(x, y))" "M(z)" if "z\<in>A\<times>A" for z
     using that is_related_abs[of rel is_rel,OF assms(3)] by auto
   then
-  have "Collect(A\<times>A,relP(M,is_rel)) = Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = <x,y> \<and> rel(x,y)))"
+  have "Collect(A\<times>A,relP(M,is_rel)) = Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = \<langle>x,y\<rangle> \<and> rel(x,y)))"
     using Collect_cong[of "A\<times>A" "A\<times>A" "relP(M,is_rel)",OF _ A(1)] assms(1) assms(2)
     by auto
   with assms
@@ -323,7 +277,7 @@ proof -
     using assms(3) is_related_abs[of rel is_rel]
     by auto
   with assms
-  have "Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = <x,y> \<and> rel(x,y))) \<in> M"
+  have "Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = \<langle>x,y\<rangle> \<and> rel(x,y))) \<in> M"
     using Collect_in_M_0p[of "rel_fm(0)" "\<lambda> A z . relP(A,is_rel,z)" "\<lambda> z.\<exists>x y. z = \<langle>x, y\<rangle> \<and> rel(x, y)" ]
         cartprod_closed
     by simp
@@ -340,27 +294,27 @@ lemma seqle_in_M: "seqle \<in> M"
 
 subsection\<open>Cohen extension is proper\<close>
 
-interpretation ctm_separative "2^<\<omega>" seqle 0
+interpretation ctm_separative "2\<^bsup><\<omega>\<^esup>" seqle 0
 proof (unfold_locales)
   fix f
   let ?q="seq_upd(f,0)" and ?r="seq_upd(f,1)"
-  assume "f \<in> 2^<\<omega>"
+  assume "f \<in> 2\<^bsup><\<omega>\<^esup>"
   then
   have "?q \<preceq>s f \<and> ?r \<preceq>s f \<and> ?q \<bottom>s ?r" 
     using upd_leI seqspace_separative by auto
   moreover from calculation
-  have "?q \<in> 2^<\<omega>"  "?r \<in> 2^<\<omega>"
+  have "?q \<in> 2\<^bsup><\<omega>\<^esup>"  "?r \<in> 2\<^bsup><\<omega>\<^esup>"
     using seq_upd_type[of f 2] by auto
   ultimately
-  show "\<exists>q\<in>2^<\<omega>. \<exists>r\<in>2^<\<omega>. q \<preceq>s f \<and> r \<preceq>s f \<and> q \<bottom>s r"
+  show "\<exists>q\<in>2\<^bsup><\<omega>\<^esup>. \<exists>r\<in>2\<^bsup><\<omega>\<^esup>. q \<preceq>s f \<and> r \<preceq>s f \<and> q \<bottom>s r"
     by (rule_tac bexI)+ \<comment> \<open>why the heck auto-tools don't solve this?\<close>
 next
-  show "2^<\<omega> \<in> M" using nat_into_M seqspace_closed by simp
+  show "2\<^bsup><\<omega>\<^esup> \<in> M" using nat_into_M seqspace_closed by simp
 next
   show "seqle \<in> M" using seqle_in_M .
 qed
 
-lemma cohen_extension_is_proper: "\<exists>G. M_generic(G) \<and> M \<noteq> GenExt(G)"
+lemma cohen_extension_is_proper: "\<exists>G. M_generic(G) \<and> M \<noteq> M\<^bsup>2\<^bsup><\<omega>\<^esup>\<^esup>[G]"
   using proper_extension generic_filter_existence zero_in_seqspace
   by force
 

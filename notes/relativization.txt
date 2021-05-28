@@ -1,0 +1,80 @@
+User manual for relativization
+==============================
+
+The relativization of a term/formula consists in changing every quantifier
+into a bounded quantifier, where the bound is a class. In Isabelle/ZF 
+relativization can be thought as a term/formula transformer mapping terms
+of type "a" to terms of type "[i\<Rightarrow>o] \<Rightarrow> a" (where "a" is "i" for terms
+and "o" for formulas).
+
+The theory Relativization implements a simple algorithm to relativize terms.
+Since Isabelle/ZF has constants, the algorithm uses a database that indicates
+which relativized term corresponds to a given absolute term. 
+
+The following commands are defined:
+- relativize name new_name: introduces a new definition "new_name_def" whose
+    definiens is the relativization of the term named "name" and adds the entry
+    ("name","new_name") to the database.
+- relativize_tm term name: introduces a new definition "name_def" whose 
+    definiens is the relativization of "term".
+- reldb_add abs_term rel_term: adds an entry to the database. 
+
+There are two attributes defined:
+- absolut: corresponds to a named theorems called "Absoluteness", this is used
+    to keep track of all the absoluteness results. In Relativization we pack
+    most of the absoluteness results proved in ZF-Constructible.
+- Rel: only useful in theorems proving an absoluteness theorem whose conclusion
+    is exactly of the form "is_term(A,v_1,\<dots>,v_n,z) \<longleftrightarrow> z = term(tm_1,\<dots>,tm_n)".
+    In that case it adds the entry (term,is_term) to the database.
+
+Some notes:
+- We don't use the abbreviated relativized concepts for 1,2,3.
+- When relativizing bool_of_o, Collect, and Replace we relativize the formula.
+
+To Do
+-----
+
+1. Fix the broken attribute (issue 0).
+2. Fix the relativization in contexts (issue 1).
+3. Consider the cases described in (issue 3).
+4. The relativization of terms with the command relativize does not add 
+  the pair (abs,rel) to the database when the command is outside a locale
+  context.
+5. Check if the relativization of collects should relativize the predicate.
+6. Test the handling of bool_of_o, Collect, and Replace: we relativize 
+  the formula, is that correct?
+7. We could use relativ_fm or relativ_tm by inspecting the type in the 
+  recursive calls.
+8. The command relativize does not handle qualified names.
+ 
+Issues
+------
+
+0. The attribute Rel breaks at least the TC attribute. The situation arises 
+  when the attribute is used in a lemma declared in a context; all the 
+  subsequent lemmas in that context warns about duplication of rules.
+1. The relativization commands are fragile when used in contexts. This needs to
+  better understood.
+2. The command relativize_tm repeats variables names.
+3. There are some concepts that cannot be relativized. We group them in
+  the following classes (the statements are taken from the ZF-Constructible
+  library):
+
+
+a. Very peculiar:
+"M(a) ==> successor_ordinal(M,a) \<longleftrightarrow> Ord(a) & (\<exists>b[M]. a = succ(b))"
+
+b. Peculiar, but perhaps manageable:
+"M(a) ==> finite_ordinal(M,a) \<longleftrightarrow> a \<in> nat"
+"[| M(A); M(f) |] ==> injection(M,A,B,f) \<longleftrightarrow> f \<in> inj(A,B)"
+"[| M(A); M(B); M(f) |] ==> surjection(M,A,B,f) \<longleftrightarrow> f \<in> surj(A,B)"
+"[| M(A); M(B); M(f) |] ==> bijection(M,A,B,f) \<longleftrightarrow> f \<in> bij(A,B)"
+"[| M(A); M(f) |] ==> typed_function(M,A,B,f) \<longleftrightarrow> f \<in> A -> B", 
+
+(* For formulas like "t\<in>nat", we don't handle this yet. *)
+  val db_rels_strange = [
+                     (@{const nat}, @{const Relative.finite_ordinal})
+                   , (@{const inj}, @{const Relative.injection})
+                   , (@{const surj}, @{const Relative.surjection})
+                   , (@{const bij}, @{const Relative.bijection})
+                   ]
