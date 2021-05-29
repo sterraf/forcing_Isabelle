@@ -43,6 +43,7 @@ abbreviation
 locale M_cardinal_UN_lepoll = M_cardinal_UN _ J for J
 begin
 
+\<comment>\<open>FIXME: this "LEQpoll" should be "LEPOLL"; same correction in Delta System\<close>
 lemma leqpoll_rel_imp_cardinal_rel_UN_le:
   notes [dest] = InfCard_is_Card Card_is_Ord
   assumes "InfCard\<^bsup>M\<^esup>(K)" "J \<lesssim>\<^bsup>M\<^esup> K" "\<And>i. i\<in>J \<Longrightarrow> |X(i)|\<^bsup>M\<^esup> \<le> K"

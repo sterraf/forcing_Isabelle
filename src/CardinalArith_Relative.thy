@@ -757,13 +757,6 @@ end (* M_cardinal_arith *)
 
 (*** An infinite cardinal equals its square (Kunen, Thm 10.12, page 29) ***)
 
-\<comment> \<open>FIXME: this result in stated **without name**
-  in \<^theory>\<open>ZF-Constructible.Rank\<close>\<close>
-lemma (in M_ordertype) ordertype_abs':"[| wellordered(M,A,r); f \<in> ord_iso(A, r, i, Memrel(i));
-       M(A); M(r); M(f); M(i); Ord(i) |] ==> i = ordertype(A,r)"
-by (blast intro: Ord_ordertype relativized_imp_well_ord ordertype_ord_iso
-                 Ord_iso_implies_eq ord_iso_sym ord_iso_trans)
-
 \<comment> \<open>FIXME: Awful proof, it essentially repeats the same
     argument twice\<close>
 lemma (in M_ordertype) ordertype_abs[absolut]:
@@ -798,7 +791,7 @@ proof (intro iffI)
   qed
   ultimately
   show "i = ordertype(A, r)"
-    by (force intro:ordertype_abs'[of A r _ i]
+    by (force intro:ordertypes_are_absolute[of A r _ i]
         simp add:Ord_otype[OF _ well_ord_is_trans_on])
 next
   assume "wellordered(M,A, r)" "i = ordertype(A, r)"
@@ -834,7 +827,7 @@ next
 qed
 
 lemma (in M_ordertype) ordertype_closed[intro,simp]: "\<lbrakk> wellordered(M,A,r);M(A);M(r)\<rbrakk> \<Longrightarrow> M(ordertype(A,r))"
-  using ordertype_exists ordertype_abs' by blast
+  using ordertype_exists ordertypes_are_absolute by blast
 
 \<comment> \<open>Discipline for \<^term>\<open>jump_cardinal\<close> requires:
     1) Proving ordertype_abs above (?)
@@ -1502,7 +1495,7 @@ proof -
   obtain i f where "Ord(i)" "f \<in> ord_iso(A, r, i, Memrel(i))"
     "M(i)" "M(f)" using ordertype_exists by blast
   moreover from calculation
-  have "i = ordertype(A,r)" using ordertype_abs' by force
+  have "i = ordertype(A,r)" using ordertypes_are_absolute by force
   moreover from calculation
   have "ordermap(A,r) \<in> ord_iso(A, r, i, Memrel(i))"
     using ordertype_ord_iso by simp
