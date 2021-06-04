@@ -26,7 +26,6 @@ arity_theorem for "fst_fm"
 definition fst_rel ::  "[i\<Rightarrow>o,i] \<Rightarrow> i"  where
   "fst_rel(M,p) \<equiv> THE d. is_fst(M,p,d)"
 
-reldb_rem absolute "fst"
 reldb_add relational "fst" "is_fst"
 reldb_add functional "fst" "fst_rel"
 
@@ -37,26 +36,35 @@ definition
 synthesize "snd" from_definition "is_snd"
 arity_theorem for "snd_fm" 
 
-reldb_rem absolute "snd"
 reldb_add relational "snd" "is_snd"
 reldb_add functional "snd" "fst_snd"
 
-lemma (in M_trivial) fst_snd_closed: 
+context M_trans
+begin
+
+lemma fst_snd_closed:
   assumes "M(p)"
   shows "M(fst(p)) \<and> M(snd(p))"
   unfolding fst_def snd_def using assms
   by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto)
 
-lemma (in M_trivial) fst_abs [simp]:
+lemma fst_closed[intro,simp]: "M(x) \<Longrightarrow> M(fst(x))"
+  using fst_snd_closed by auto
+
+lemma snd_closed[intro,simp]: "M(x) \<Longrightarrow> M(snd(x))"
+  using fst_snd_closed by auto
+
+lemma fst_abs [absolut]:
   "\<lbrakk>M(p); M(x) \<rbrakk> \<Longrightarrow> is_fst(M,p,x) \<longleftrightarrow> x = fst(p)"
   unfolding is_fst_def fst_def 
   by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto)
-  
 
-lemma (in M_trivial) snd_abs [simp]:
+lemma snd_abs [absolut]:
   "\<lbrakk>M(p); M(y) \<rbrakk> \<Longrightarrow> is_snd(M,p,y) \<longleftrightarrow> y = snd(p)"
   unfolding is_snd_def snd_def 
   by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto)
+
+end (* M_trans *)
 
 
 subsection\<open>Discipline for \<^term>\<open>function_space\<close>\<close>

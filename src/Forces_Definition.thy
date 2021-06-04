@@ -419,22 +419,23 @@ begin
 (* Absoluteness of components *)
 lemma ftype_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_ftype(##M,x,y) \<longleftrightarrow> y = ftype(x)" 
-  unfolding ftype_def  is_ftype_def by simp
+  unfolding ftype_def  is_ftype_def by (simp add:absolut)
 
 lemma name1_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_name1(##M,x,y) \<longleftrightarrow> y = name1(x)"
   unfolding name1_def is_name1_def
-  by (rule is_hcomp_abs[OF fst_abs],simp_all add: fst_snd_closed[simplified])
+  by (rule is_hcomp_abs[OF fst_abs],simp_all add: fst_snd_closed[simplified] absolut)
   
 lemma snd_snd_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_snd_snd(##M,x,y) \<longleftrightarrow> y = snd(snd(x))"
   unfolding is_snd_snd_def
-  by (rule is_hcomp_abs[OF snd_abs],simp_all add: conjunct2[OF fst_snd_closed,simplified])
+  by (rule is_hcomp_abs[OF snd_abs],
+      simp_all add: conjunct2[OF fst_snd_closed,simplified] absolut)
 
 lemma name2_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_name2(##M,x,y) \<longleftrightarrow> y = name2(x)"
   unfolding name2_def is_name2_def
-  by (rule is_hcomp_abs[OF fst_abs snd_snd_abs],simp_all add: conjunct2[OF fst_snd_closed,simplified])
+  by (rule is_hcomp_abs[OF fst_abs snd_snd_abs],simp_all add:absolut conjunct2[OF fst_snd_closed,simplified])
 
 lemma cond_of_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_cond_of(##M,x,y) \<longleftrightarrow> y = cond_of(x)"

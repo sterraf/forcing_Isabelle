@@ -117,9 +117,6 @@ sublocale M_ZF_trans \<subseteq> M_trivial "##M"
   using trans_M M_trivial.intro M_trivial_axioms.intro upair_ax
     Union_ax by unfold_locales
 
-context M_ZF_trans
-begin
-
 subsection\<open>Interface with \<^term>\<open>M_basic\<close>\<close>
 
 (* Inter_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>x. \<forall> y[M]. y\<in>A \<Longrightarrow> x\<in>y)" *)
@@ -131,6 +128,9 @@ manual_schematic "Inter_fm" for "Intersection"
   by (rule sep_rules | simp)+
 synthesize "Intersection" from_schematic Inter_fm
 arity_theorem for "Intersection_fm" 
+
+context M_ZF_trans
+begin
 
 lemma inter_sep_intf :
   assumes

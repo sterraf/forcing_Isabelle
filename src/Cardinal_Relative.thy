@@ -357,7 +357,7 @@ subsection\<open>lesspoll_rel: contributions by Krzysztof Grabczewski\<close>
 lemma lesspoll_rel_not_refl: "M(i) \<Longrightarrow> ~ (i \<prec>\<^bsup>M\<^esup> i)"
   by (simp add: lesspoll_rel_def eqpoll_rel_refl)
 
-lemma lesspoll_rel_irrefl[elim!]: "i \<prec>\<^bsup>M\<^esup> i ==> M(i) \<Longrightarrow> P"
+lemma lesspoll_rel_irrefl: "i \<prec>\<^bsup>M\<^esup> i ==> M(i) \<Longrightarrow> P"
   by (simp add: lesspoll_rel_def eqpoll_rel_refl)
 
 lemma lesspoll_rel_imp_lepoll_rel: "\<lbrakk>A \<prec>\<^bsup>M\<^esup> B; M(A); M(B)\<rbrakk>\<Longrightarrow> A \<lesssim>\<^bsup>M\<^esup> B"

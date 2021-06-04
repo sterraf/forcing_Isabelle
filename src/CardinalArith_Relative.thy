@@ -1,35 +1,10 @@
 section\<open>Relative, Choice-less Cardinal Arithmetic\<close>
 
 theory CardinalArith_Relative 
-  imports 
+  imports
     Cardinal_Relative
 
 begin
-
-(* FIXME: these definitions already appear in FrecR.thy ! *)
-definition
-  is_fst :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "is_fst(M,x,t) \<equiv> (\<exists>z[M]. pair(M,t,z,x)) \<or>
-                       (\<not>(\<exists>z[M]. \<exists>w[M]. pair(M,w,z,x)) \<and> empty(M,t))"
-
-definition
-  is_snd :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "is_snd(M,x,t) \<equiv> (\<exists>z[M]. pair(M,z,t,x)) \<or>
-                       (\<not>(\<exists>z[M]. \<exists>w[M]. pair(M,z,w,x)) \<and> empty(M,t))"
-
-context M_trans
-begin
-\<comment> \<open>Using attribute "absolut" instead of overpopulating the simpset\<close>
-lemma fst_abs[absolut]: "M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_fst(M,a,z) \<longleftrightarrow> z = fst(a)"
-  unfolding is_fst_def fst_def the_def
-  by (cases "\<exists>b c. a = \<langle>b, c\<rangle>"; auto)
-    (auto simp add: Pair_def dest:transM)
-
-lemma snd_abs[absolut]: "M(a) \<Longrightarrow> M(z) \<Longrightarrow> is_snd(M,a,z) \<longleftrightarrow> z = snd(a)"
-  unfolding is_snd_def snd_def the_def
-  by (cases "\<exists>b c. a = \<langle>b, c\<rangle>"; auto)
-    (auto simp add: Pair_def dest:transM)
-end (* M_trans *)
 
 (* rvimage(?A, ?f, ?r) \<equiv> {z \<in> ?A \<times> ?A . \<exists>x y. z = \<langle>x, y\<rangle> \<and> \<langle>?f ` x, ?f ` y\<rangle> \<in> ?r} *)
 definition
@@ -50,23 +25,6 @@ definition
 definition
   csquare_lam :: "i\<Rightarrow>i" where
   "csquare_lam(K) \<equiv> \<lambda>\<langle>x,y\<rangle>\<in>K\<times>K. \<langle>x \<union> y, x, y\<rangle>"
-
-context M_trans
-begin
-
-(* FIXME: move the following two to an appropriate place. Should be
-used for @{thm fst_snd_closed} in Names.thy *)
-lemma fst_closed[intro,simp]: "M(x) \<Longrightarrow> M(fst(x))"
-  unfolding fst_def by (auto intro:theI2)
-
-lemma (in M_basic) snd_closed[intro,simp]: "M(x) \<Longrightarrow> M(snd(x))"
-  unfolding snd_def by (auto intro:theI2)
-
-end (* M_trans *)
-
-(* FIXME: Remove these after fixing relativize_tm *)
-lemma fst_abs[Rel]: "is_fst(M,a,z) \<longleftrightarrow> z = fst(a) \<Longrightarrow> is_fst(M,a,z) \<longleftrightarrow> z = fst(a)" .
-lemma snd_abs[Rel]: "is_snd(M,a,z) \<longleftrightarrow> z = snd(a) \<Longrightarrow> is_snd(M,a,z) \<longleftrightarrow> z = snd(a)" .
 
 relativize_tm "<fst(x) \<union> snd(x), fst(x), snd(x)>" "is_csquare_lam_body"
 
@@ -276,7 +234,7 @@ next
     finally have "c \<prec>\<^bsup>M\<^esup> c" by (simp_all add:\<open>M(c)\<close> \<open>M(j)\<close> types)
     with \<open>M(c)\<close>
     have False
-      by auto
+      by (auto dest:lesspoll_rel_irrefl)
   } thus "\<not> j \<approx>\<^bsup>M\<^esup> \<Union>A" by blast
 qed (simp_all add:types)
 
