@@ -6,26 +6,17 @@ theory CardinalArith_Relative
 
 begin
 
+
 (* rvimage(?A, ?f, ?r) \<equiv> {z \<in> ?A \<times> ?A . \<exists>x y. z = \<langle>x, y\<rangle> \<and> \<langle>?f ` x, ?f ` y\<rangle> \<in> ?r} *)
-definition
-  rvimageP :: "[i,i,i] \<Rightarrow> o" where
-  "rvimageP(f,r,z) \<equiv> \<exists>x y. z = \<langle>x, y\<rangle> \<and> \<langle>f ` x, f ` y\<rangle> \<in> r"
-
-definition
-  is_rvimageP :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
-  "is_rvimageP(M,f,r,z) \<equiv> \<exists>x[M]. \<exists>y[M]. \<exists>fx[M]. \<exists>fy[M]. \<exists>fxfy[M].
-      pair(M,x,y,z) \<and> is_apply(M,f,x,fx) \<and> is_apply(M,f,y,fy) \<and>
-      pair(M,fx,fy,fxfy) \<and> fxfy \<in> r"
-
-definition
-  is_rvimage :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
-  "is_rvimage(M,A,f,r,rvi) \<equiv> \<exists>A2[M]. cartprod(M,A,A,A2) \<and>
-        is_Collect(M,A2,is_rvimageP(M,f,r),rvi)"
+relativize functional "rvimage" "rvimage_rel" external
+relationalize "rvimage_rel" "is_rvimage"
 
 definition
   csquare_lam :: "i\<Rightarrow>i" where
   "csquare_lam(K) \<equiv> \<lambda>\<langle>x,y\<rangle>\<in>K\<times>K. \<langle>x \<union> y, x, y\<rangle>"
 
+\<comment> \<open>Can't do the next thing because split is a missing HOC\<close>
+(* relativize functional "csquare_lam" "csquare_lam_rel" *)
 relativize_tm "<fst(x) \<union> snd(x), fst(x), snd(x)>" "is_csquare_lam_body"
 
 definition
@@ -95,10 +86,8 @@ end (* M_cardinal_arith *)
 relativize_tm "\<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> r \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> s)" 
   "is_rmultP"
 
-definition
-  is_rmult:: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
-  "is_rmult(M,A,r,B,s,rm) \<equiv> \<exists>AB[M]. \<exists>AB2[M]. cartprod(M,A,B,AB) \<and>
-        cartprod(M,AB,AB,AB2) \<and> is_Collect(M,AB2,is_rmultP(M,s,r),rm)"
+relativize functional "rmult" "rmult_rel" external
+relationalize "rmult_rel" "is_rmult"
 
 context M_trivial
 begin
@@ -125,13 +114,14 @@ lemma rvimage_abs[absolut]:
   assumes "M(A)" "M(f)" "M(r)" "M(z)"
   shows "is_rvimage(M,A,f,r,z) \<longleftrightarrow> z = rvimage(A,f,r)"
   using assms transM[OF _ \<open>M(A)\<close>]
-  unfolding is_rvimage_def rvimage_def is_rvimageP_def
+  unfolding is_rvimage_def rvimage_def
   by auto
 
 lemma rmult_abs [absolut]: "\<lbrakk> M(A); M(r); M(B); M(s); M(z) \<rbrakk> \<Longrightarrow>
     is_rmult(M,A,r,B,s,z) \<longleftrightarrow> z=rmult(A,r,B,s)"
-  unfolding is_rmult_def rmult_def using transM[of _ "(A \<times> B) \<times> A \<times> B"] 
-  by (auto simp add:absolut del: iffI)
+  using rmultP_abs transM[of _ "(A \<times> B) \<times> A \<times> B"]
+  unfolding is_rmultP_def is_rmult_def rmult_def
+  by (auto del: iffI)
 
 lemma csquare_lam_body_abs[absolut]: "M(x) \<Longrightarrow> M(z) \<Longrightarrow> 
   is_csquare_lam_body(M,x,z) \<longleftrightarrow> z = <fst(x) \<union> snd(x), fst(x), snd(x)>"
