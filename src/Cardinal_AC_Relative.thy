@@ -91,7 +91,7 @@ locale M_cardinal_AC = M_cardinal_arith +
   "M(f) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> f -`` {x} \<and> z = {\<langle>x, y\<rangle>})"
   "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>y. f -`` {y}))"
   "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = f -`` {x})"
-  "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, f -`` {x})\<rangle>)"
+  "M(f) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, f -`` {x})\<rangle>)"
 begin
 
 lemma choice_ax_well_ord: "M(S) \<Longrightarrow> \<exists>r[M]. well_ord(S,r)"
