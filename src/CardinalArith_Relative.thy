@@ -1703,7 +1703,10 @@ proof -
   fix X r xb
   assume "M(K)" "X \<in> Pow\<^bsup>M\<^esup>(K)" "r \<in> Pow\<^bsup>M\<^esup>(K \<times> K)" "well_ord(X, r)" "xb \<in> X"
   moreover from this
-  have "M(X)" "M(r)" "M(xb)" sorry
+  have "M(X)" "M(r)"
+    using cartprod_closed trans_Pow_rel_closed by auto
+  moreover from this
+  have "M(xb)" using transM[OF \<open>xb\<in>X\<close>] by simp
   ultimately
   show "Order.pred(X, xb, r) \<in> Pow\<^bsup>M\<^esup>(K)"
     using def_Pow_rel by (auto dest:predE)
