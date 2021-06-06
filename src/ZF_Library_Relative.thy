@@ -366,7 +366,7 @@ qed
 
 (************ End of ported material ************)
 
-lemma fun_Pi_disjoint_Un:
+lemma fun_Pi_disjoint_Un:\<comment> \<open>Only needed for \<^term>\<open>function_space_rel\<close>\<close>
   assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)"  "A \<inter> C = 0"
   shows "f \<union> g \<in> Pi(A \<union> C, \<lambda>x. B(x) \<union> D(x))"
   using assms
@@ -396,7 +396,7 @@ next
     by (cases "x\<in>C") simp_all
 qed
 
-lemma restrict_eq_imp_Un_into_Pi:
+lemma restrict_eq_imp_Un_into_Pi:\<comment> \<open>Only needed for \<^term>\<open>function_space_rel\<close>\<close>
   assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)" "restrict(f, A \<inter> C) = restrict(g, A \<inter> C)"
   shows "f \<union> g \<in> Pi(A \<union> C, \<lambda>x. B(x) \<union> D(x))"
 proof -
@@ -422,17 +422,20 @@ proof -
     by auto
 qed
 
+(* \<comment> \<open>Unused\<close>
 lemma restrict_eq_imp_Un_into_Pi':
   assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)"
     "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
   shows "f \<union> g \<in> Pi(A \<union> C, \<lambda>x. B(x) \<union> D(x))"
   using  assms domain_of_fun restrict_eq_imp_Un_into_Pi by simp
+*)
 
-lemma restrict_subset_Sigma: "f \<subseteq> Sigma(C,B) \<Longrightarrow> restrict(f,A) \<subseteq> Sigma(A\<inter>C, B)"
+lemma restrict_subset_Sigma:\<comment> \<open>Only needed for \<^term>\<open>(\<times>)\<close>\<close>
+ "f \<subseteq> Sigma(C,B) \<Longrightarrow> restrict(f,A) \<subseteq> Sigma(A\<inter>C, B)"
   by (auto simp add: restrict_def)
 
 
-subsection\<open>Finite sets\<close>
+subsection\<open>Finite sets\<close> \<comment> \<open>Perhaps this section can be omitted by absoluteness\<close>
 
 lemma Replace_sing1:
   "\<lbrakk> (\<exists>a. P(d,a)) \<and> (\<forall>y y'. P(d,y) \<longrightarrow> P(d,y') \<longrightarrow> y=y') \<rbrakk> \<Longrightarrow> \<exists>a. {y . x \<in> {d}, P(x,y)} = {a}"
@@ -1078,7 +1081,7 @@ lemma nat_into_InfCard:
   unfolding InfCard_def by auto
 
 
-subsection\<open>Alephs are infinite cardinals\<close>
+subsection\<open>Alephs are infinite cardinals\<close>\<comment> \<open>This requires porting \<^term>\<open>Aleph\<close>\<close>
 
 lemma Aleph_zero_eq_nat: "\<aleph>\<^bsub>0\<^esub> = \<omega>"
   unfolding Aleph_def by simp
