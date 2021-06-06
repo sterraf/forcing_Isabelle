@@ -1,9 +1,9 @@
 section\<open>Relative, Cardinal Arithmetic Using AC\<close>
 
-theory Cardinal_AC_Relative 
-  imports 
+theory Cardinal_AC_Relative
+  imports
     Interface
-    CardinalArith_Relative 
+    CardinalArith_Relative
 
 begin
 
@@ -17,6 +17,50 @@ definition
 lemma minimum_in: "\<lbrakk> well_ord(A,r); B\<subseteq>A; B\<noteq>0 \<rbrakk> \<Longrightarrow> minimum(r,B) \<in> B"
   using the_first_in unfolding minimum_def by simp
 
+relativize functional "first" "first_rel" external
+relativize functional "minimum" "minimum_rel"
+context M_trans
+begin
+
+lemma minimum_closed[simp,intro]:
+  assumes "M(A)" "A\<noteq>0" "well_ord(A,r)"
+  shows "M(minimum(r,A))"
+proof -
+  from assms
+  have "minimum(r,A) \<in> A" using minimum_in by simp
+  with \<open>M(A)\<close>
+  show ?thesis using transM[OF \<open>_\<in>_\<close>] by simp
+qed
+
+lemma first_abs :
+  assumes "M(B)"
+  shows "first(z,B,r) \<longleftrightarrow> first_rel(M,z,B,r)"
+  unfolding first_def first_rel_def using assms by auto
+
+lemma minimum_abs:
+  assumes "M(B)"
+  shows "minimum(r,B) = minimum_rel(M,r,B)"
+proof -
+  from assms
+  have "first(b, B, r) \<longleftrightarrow> M(b) \<and> first_rel(M,b,B,r)" for b
+    using first_abs
+  proof (auto)
+    fix b
+    assume "first_rel(M,b,B,r)"
+    with \<open>M(B)\<close>
+    have "b\<in>B" using first_abs first_is_elem by simp
+    with \<open>M(B)\<close>
+    show "M(b)" using transM[OF \<open>b\<in>B\<close>] by simp
+  qed
+  with assms
+  show ?thesis unfolding minimum_rel_def minimum_def
+    by simp
+qed
+end
+
+\<comment> \<open>MOVE THIS to an appropriate place. Now it is repeated in
+   \<^file>\<open>Forcing_Main.thy\<close>. But consider that ported versions follow,
+   and hence perhaps we should only have the relative version.\<close>
 lemma well_ord_surj_imp_lepoll:
   assumes "well_ord(A,r)" "h \<in> surj(A,B)"
   shows "B \<lesssim> A"
@@ -70,9 +114,6 @@ lemma well_ord_surj_imp_lepoll_rel:
   shows "B \<lesssim>\<^bsup>M\<^esup> A"
   sorry
 
-lemma minimum_closed[intro,simp]:"M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(minimum(A,r))"
-  sorry
-
 lemma surj_imp_well_ord_M:
   assumes wos: "well_ord(A,r)" "h \<in> surj(A,B)"
     and
@@ -101,7 +142,7 @@ lemma choice_ax_well_ord: "M(S) \<Longrightarrow> \<exists>r[M]. well_ord(S,r)"
 end (* M_cardinal_AC *)
 
 locale M_Pi_assumptions_choice = M_Pi_assumptions + M_cardinal_AC +
-  assumes                         
+  assumes
     B_replacement: "strong_replacement(M, \<lambda>x y. y = B(x))"
     and
     \<comment> \<open>The next one should be derivable from (some variant)
@@ -119,10 +160,17 @@ proof -
   obtain r where "well_ord(\<Union>x\<in>A. B(x),r)" "M(r)"
     using choice_ax_well_ord by blast
   let ?f="\<lambda>x\<in>A. minimum(r,B(x))"
-  from assms and \<open>M(r)\<close>
+  have "M(minimum(r, B(x)))" if "x\<in>A" for x
+  proof -
+    from \<open>well_ord(_,r)\<close> \<open>x\<in>A\<close>
+    have "well_ord(B(x),r)" using well_ord_subset UN_upper by simp
+    with assms \<open>x\<in>A\<close> \<open>M(r)\<close>
+    show ?thesis using Pi_assumptions by blast
+  qed
+  with assms and \<open>M(r)\<close>
   have "M(?f)"
-    using minimum_replacement Pi_assumptions
-    by (rule_tac lam_closed) (auto)
+    using Pi_assumptions minimum_replacement lam_closed
+    by simp
   moreover from assms and calculation
   have "?f \<in> Pi\<^bsup>M\<^esup>(A,B)"
     using lam_type[OF minimum_in, OF \<open>well_ord(\<Union>x\<in>A. B(x),r)\<close>, of A B]
@@ -233,25 +281,25 @@ apply (erule lepoll_rel_imp_cardinal_rel_le, assumption+)
 done
 
 lemma cardinal_rel_0_iff_0 [simp]: "M(A) \<Longrightarrow> |A|\<^bsup>M\<^esup> = 0 \<longleftrightarrow> A = 0"
-  using cardinal_rel_0 eqpoll_rel_0_iff [THEN iffD1] 
+  using cardinal_rel_0 eqpoll_rel_0_iff [THEN iffD1]
     cardinal_rel_eqpoll_rel_iff [THEN iffD1, OF _ nonempty]
   by auto
 
 lemma cardinal_rel_lt_iff_lesspoll_rel:
   assumes i: "Ord(i)" and
-    types: "M(i)" "M(A)" 
+    types: "M(i)" "M(A)"
   shows "i < |A|\<^bsup>M\<^esup> \<longleftrightarrow> i \<prec>\<^bsup>M\<^esup> A"
 proof
   assume "i < |A|\<^bsup>M\<^esup>"
   hence  "i \<prec>\<^bsup>M\<^esup> |A|\<^bsup>M\<^esup>"
-    by (blast intro: lt_Card_rel_imp_lesspoll_rel types) 
+    by (blast intro: lt_Card_rel_imp_lesspoll_rel types)
   also have "...  \<approx>\<^bsup>M\<^esup> A"
     by (rule cardinal_rel_eqpoll_rel) (simp_all add:types)
   finally show "i \<prec>\<^bsup>M\<^esup> A" by (simp_all add:types)
 next
   assume "i \<prec>\<^bsup>M\<^esup> A"
   also have "...  \<approx>\<^bsup>M\<^esup> |A|\<^bsup>M\<^esup>"
-    by (blast intro: cardinal_rel_eqpoll_rel eqpoll_rel_sym types) 
+    by (blast intro: cardinal_rel_eqpoll_rel eqpoll_rel_sym types)
   finally have "i \<prec>\<^bsup>M\<^esup> |A|\<^bsup>M\<^esup>" by (simp_all add:types)
   thus  "i < |A|\<^bsup>M\<^esup>" using i types
     by (force intro: cardinal_rel_lt_imp_lt lesspoll_rel_cardinal_rel_lt)
@@ -417,18 +465,18 @@ proof (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff Pi_assumptions)
   { fix z
     assume z: "z \<in> (\<Union>i\<in>K. X(i))"
     then obtain i where i: "i \<in> K" "Ord(i)" "z \<in> X(i)"
-      by (blast intro: Ord_in_Ord [of K]) 
-    hence "(\<mu> i. z \<in> X(i)) \<le> i" by (fast intro: Least_le) 
-    hence "(\<mu> i. z \<in> X(i)) < K" by (best intro: lt_trans1 ltI i) 
-    hence "(\<mu> i. z \<in> X(i)) \<in> K" and "z \<in> X(\<mu> i. z \<in> X(i))"  
-      by (auto intro: LeastI ltD i) 
+      by (blast intro: Ord_in_Ord [of K])
+    hence "(\<mu> i. z \<in> X(i)) \<le> i" by (fast intro: Least_le)
+    hence "(\<mu> i. z \<in> X(i)) < K" by (best intro: lt_trans1 ltI i)
+    hence "(\<mu> i. z \<in> X(i)) \<in> K" and "z \<in> X(\<mu> i. z \<in> X(i))"
+      by (auto intro: LeastI ltD i)
   } note mems = this
   have "(\<Union>i\<in>K. X(i)) \<lesssim>\<^bsup>M\<^esup> K \<times> K"
     proof (simp add:types def_lepoll_rel)
       show "\<exists>f[M]. f \<in> inj(\<Union>x\<in>K. X(x), K \<times> K)"
         apply (rule rexI)
         apply (rule_tac c = "\<lambda>z. \<langle>\<mu> i. z \<in> X(i), f ` (\<mu> i. z \<in> X(i)) ` z\<rangle>"
-                    and d = "\<lambda>\<langle>i,j\<rangle>. converse (f`i) ` j" in lam_injective) 
+                    and d = "\<lambda>\<langle>i,j\<rangle>. converse (f`i) ` j" in lam_injective)
           apply (force intro: f inj_is_fun mems apply_type Perm.left_inverse)+
         apply (simp add:types \<open>M(f)\<close>)
         done
@@ -474,10 +522,10 @@ proof (rule UN_least)
   fix x
   assume x: "x \<in> A"
   hence fx: "f ` x \<in> B" by (blast intro: f inj_is_fun [THEN apply_type])
-  have "C(x) \<subseteq> C(if f ` x \<in> range(f) then converse(f) ` (f ` x) else a)" 
+  have "C(x) \<subseteq> C(if f ` x \<in> range(f) then converse(f) ` (f ` x) else a)"
     using f x by (simp add: inj_is_fun [THEN apply_rangeI])
   also have "... \<subseteq> (\<Union>y\<in>B. C(if y \<in> range(f) then converse(f) ` y else a))"
-    by (rule UN_upper [OF fx]) 
+    by (rule UN_upper [OF fx])
   finally show "C(x) \<subseteq> (\<Union>y\<in>B. C(if y \<in> range(f) then converse(f)`y else a))" .
 qed
 
@@ -485,7 +533,7 @@ theorem le_UN_Ord_lt_csucc:
   assumes IK: "InfCard(K)" and WK: "|W| \<le> K" and j: "\<And>w. w\<in>W \<Longrightarrow> j(w) < csucc(K)"
   shows "(\<Union>w\<in>W. j(w)) < csucc(K)"
 proof -
-  have CK: "Card(K)" 
+  have CK: "Card(K)"
     by (simp add: InfCard_is_Card IK)
   then obtain f where f: "f \<in> inj(W, K)" using WK
     by(auto simp add: le_Card_iff lepoll_def)
@@ -500,7 +548,7 @@ proof -
       case False
         then obtain x where x: "x \<in> W" by blast
         have "(\<Union>x\<in>W. j(x)) \<subseteq> (\<Union>k\<in>K. j(if k \<in> range(f) then converse(f) ` k else x))"
-          by (rule inj_UN_subset [OF f x]) 
+          by (rule inj_UN_subset [OF f x])
         also have "... < csucc(K)" using IK
           proof (rule cardinal_UN_Ord_lt_csucc)
             fix k
