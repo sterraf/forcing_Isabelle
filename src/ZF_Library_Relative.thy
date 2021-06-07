@@ -2,7 +2,9 @@ section\<open>Library of basic $\ZF$ results\label{sec:zf-lib}\<close>
 
 theory ZF_Library_Relative
   imports
-    "ZF-Constructible.Normal" "Cardinal_AC_Relative"
+    "ZF-Constructible.Normal"
+    Aleph_Relative
+    Cardinal_AC_Relative
 
 begin
 
@@ -139,7 +141,7 @@ abbreviation
   Finite_to_one_r_set :: "[i,i,i] \<Rightarrow> i" (\<open>Finite'_to'_one\<^bsup>_\<^esup>'(_,_')\<close>) where
   "Finite_to_one\<^bsup>M\<^esup>(X,Y) \<equiv> Finite_to_one_rel(##M,X,Y)"
 
-locale M_library =  M_cardinal_AC +
+locale M_library =  M_cardinal_AC + M_cardinal_arith_jump +
   assumes
   Pair_diff_replacement: "M(X) \<Longrightarrow> strong_replacement(M, \<lambda>A y. y = \<langle>A, A - X\<rangle>)"
   and
@@ -364,7 +366,8 @@ proof -
     using inj_imp_surj mem_surj_abs by simp
 qed
 
-(************ End of ported material ************)
+(************ End of ported material, BUT NOTE: ************)
+(***** Below, some material on Aleph is already ported *****)
 
 lemma fun_Pi_disjoint_Un:\<comment> \<open>Only needed for \<^term>\<open>function_space_rel\<close>\<close>
   assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)"  "A \<inter> C = 0"
@@ -1113,12 +1116,11 @@ qed
 
 lemmas Limit_Aleph = InfCard_Aleph[THEN InfCard_is_Limit]
 
-lemmas Aleph_cont = Normal_imp_cont[OF Normal_Aleph]
-
-bundle Ord_dests = Limit_is_Ord[dest] Card_is_Ord[dest]
-bundle Aleph_dests = Aleph_cont[dest]
-bundle Aleph_intros = Aleph_increasing[intro!]
-bundle Aleph_mem_dests = Aleph_increasing[OF ltI, THEN ltD, dest]
+(* Already ported:  *)
+bundle Ord_dests = Limit_is_Ord[dest] Card_rel_is_Ord[dest]
+bundle Aleph_rel_dests = Aleph_rel_cont[dest]
+bundle Aleph_rel_intros = Aleph_rel_increasing[intro!]
+bundle Aleph_rel_mem_dests = Aleph_rel_increasing[OF ltI, THEN ltD, dest]
 
 
 end (* M_library *)
