@@ -1114,10 +1114,9 @@ qed
 lemmas Limit_Aleph = InfCard_Aleph[THEN InfCard_is_Limit]
 
 lemmas Aleph_cont = Normal_imp_cont[OF Normal_Aleph]
-lemmas Aleph_sup = Normal_Union[OF _ _ Normal_Aleph]
 
 bundle Ord_dests = Limit_is_Ord[dest] Card_is_Ord[dest]
-bundle Aleph_dests = Aleph_cont[dest] Aleph_sup[dest]
+bundle Aleph_dests = Aleph_cont[dest]
 bundle Aleph_intros = Aleph_increasing[intro!]
 bundle Aleph_mem_dests = Aleph_increasing[OF ltI, THEN ltD, dest]
 

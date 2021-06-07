@@ -236,7 +236,7 @@ lemmas sharp_simps = Card_Union Card_rel_cardinal_rel Collect_abs
   mem_formula_abs fst_abs snd_abs nth_closed
 
 \<comment> \<open>NOTE: there is a theorem missing from those above\<close>
-lemmas mg_sharp_simps = ext.Card_Union ext.Card_rel_cardinal_rel
+lemmas mg_sharp_simps = ext.Card_rel_Union ext.Card_rel_cardinal_rel
   ext.Collect_abs ext.Cons_abs ext.Cons_in_M_iff ext.Diff_closed
   ext.Equal_abs ext.Equal_in_M_iff ext.Finite_abs ext.Forall_abs
   ext.Forall_in_M_iff ext.Inl_abs ext.Inl_in_M_iff ext.Inr_abs

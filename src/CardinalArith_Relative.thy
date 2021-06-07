@@ -192,7 +192,7 @@ notation csucc_rel (\<open>csucc\<^bsup>_\<^esup>'(_')\<close>)
 context M_cardinal_arith
 begin
 
-lemma Card_Union [simp,intro,TC]:
+lemma Card_rel_Union [simp,intro,TC]:
   assumes A: "\<And>x. x\<in>A \<Longrightarrow> Card\<^bsup>M\<^esup>(x)" and
     types:"M(A)"
   shows "Card\<^bsup>M\<^esup>(\<Union>(A))"
