@@ -22,8 +22,13 @@ definition
 relativize functional "Aleph'" "Aleph_rel"
 relationalize "Aleph_rel" "is_Aleph"
 
+context M_cardinal_arith_jump
+begin
+
 rel_closed for "Aleph"
   sorry
+
+end (* M_cardinal_arith_jump *)
 
 lemma HAleph_eq_Aleph_recursive:
   "Ord(i) \<Longrightarrow> HAleph(i,r) = (if i = 0 then nat

@@ -8,18 +8,6 @@ definition
   Add_subs :: "[i,i] \<Rightarrow> i" where
   "Add_subs(\<kappa>,\<alpha>) \<equiv> Fn(\<omega>,\<kappa>\<times>\<alpha>,2)"
 
-definition (* fake def *)
-  Aleph_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> i" where
-  "Aleph_rel(M,a) \<equiv> Aleph(a)"
-
-abbreviation
-  Aleph_r :: "[i,i\<Rightarrow>o] \<Rightarrow> i" (\<open>\<aleph>\<^bsub>_\<^esub>\<^bsup>_\<^esup>\<close>) where
-  "Aleph_r(a,M) \<equiv> Aleph_rel(M,a)"
-
-abbreviation
-  Aleph_r_set :: "[i,i] \<Rightarrow> i" (\<open>\<aleph>\<^bsub>_\<^esub>\<^bsup>_\<^esup>\<close>) where
-  "Aleph_r_set(a,M) \<equiv> Aleph_rel(##M,a)"
-
 definition
   cexp_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" where
   def_cexp_rel:"cexp_rel(M,x,y) \<equiv> |y\<rightarrow>\<^bsup>M\<^esup> x|\<^bsup>M\<^esup>"
@@ -54,7 +42,7 @@ lemma leqpoll_rel_imp_cardinal_rel_UN_le:
 end (* M_cardinal_UN_lepoll *)
 
 
-locale M_master = M_cardinal_AC +
+locale M_master = M_cardinal_AC + M_cardinal_arith_jump +
   assumes
   domain_separation: "M(x) \<Longrightarrow> separation(M, \<lambda>z. x \<in> domain(z))"
   and
@@ -135,8 +123,6 @@ lemma cardinal_rel_Aleph_rel [simp]: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>
 lemma nat_lt_Aleph_rel1: "\<omega> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
   sorry
 
-lemma Aleph_rel_closed[intro,simp]: "M(a) \<Longrightarrow> M(\<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup>)"
-  sorry
 
 lemma Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
   using  nat_into_M[of 2, THEN Aleph_rel_closed] by simp
