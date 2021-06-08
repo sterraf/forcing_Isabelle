@@ -917,6 +917,7 @@ lemma is_wfrec_on_iff_sats[iff_sats]:
     0 \<in> Aa \<Longrightarrow> is_wfrec_on(##Aa, MH, aa,xx, yy, zz) \<longleftrightarrow> Aa, env \<Turnstile> is_wfrec_fm(p,x,y,z)"
   using assms sats_is_wfrec_fm'[OF assms] unfolding is_wfrec_on_def by simp
 
+(*
 text\<open>Discipline for \<^term>\<open>ordermap\<close>\<close>
 relativize functional "ordermap" "ordermap_rel" external
 relationalize "ordermap_rel" "is_ordermap"
@@ -949,15 +950,16 @@ relationalize "ordertype_rel" "is_ordertype"
 context M_Perm
 begin
 
-is_iff_rel for "ordertype"
+(* is_iff_rel for "ordertype"
   using bij_rel_iff
   unfolding is_ordertype_def ordertype_rel_def
-  (* by simp *) sorry
+  (* by simp *) sorry *)
 end (* M_Perm *)
 
 synthesize "is_ordertype" from_definition assuming "nonempty"
 
 
+(*
 lemma (in M_cardinal_arith) is_omap_iff_omap:
   assumes
     "M(A)" "M(r)" "M(f)"
@@ -967,6 +969,7 @@ lemma (in M_cardinal_arith) is_omap_iff_omap:
   unfolding omap_def ordermap_rel_def wfrec_on_def
   apply simp
   sorry
+*)
 
 (*
 relativize functional "jump_cardinal" "jump_cardinal_rel" external
@@ -990,6 +993,7 @@ is_iff_rel for "jump_cardinal"
 end
 *)
 
+*)
 (******************************************************)
 subsection\<open>Discipline for \<^term>\<open>jcardDom\<close>\<close>
 
@@ -1712,14 +1716,32 @@ proof -
     using def_Pow_rel by (auto dest:predE)
 qed
 
-\<comment> \<open>Perhaps replace the \<^term>\<open>Ex\<close> below with \<^term>\<open>rex\<close>.
-    This produces several problems below\<close>
+declare conj_cong [cong del]
+\<comment> \<open>incompatible with some of the proofs of the original theory\<close>
+
+lemma mem_Pow_rel: "M(r) \<Longrightarrow> a \<in> Pow_rel(M,r) \<Longrightarrow> a \<in> Pow(r) \<and> M(a)"
+  using Pow_rel_char by simp
+
 lemma jump_cardinal_rel_iff_old:
      "M(i) \<Longrightarrow> M(K) \<Longrightarrow> i \<in> jump_cardinal_rel(M,K) \<longleftrightarrow>
       (\<exists>r[M]. \<exists>X[M]. r \<subseteq> K*K & X \<subseteq> K & well_ord(X,r) & i = ordertype(X,r))"
   apply (unfold def_jump_cardinal_rel)
- (* apply (blast del: subsetI) *)
-  sorry
+  apply (auto del: subsetI)
+  apply (rename_tac y r)
+   apply (rule_tac x=r in rexI, intro conjI) prefer 2
+     apply (rule_tac x=y in rexI, intro conjI)
+        apply (auto dest:mem_Pow_rel transM)
+  apply (rule_tac A=r in rev_subsetD, assumption)
+   defer
+  apply (rename_tac r y)
+   apply (rule_tac x=y in bexI)
+    apply (rule_tac x=r in ReplaceI, auto)
+  using def_Pow_rel
+  apply (force+)[2]
+  apply (rule_tac A=r in rev_subsetD, assumption)
+  using mem_Pow_rel[THEN conjunct1]
+  apply auto
+  done
 
 (*The easy part of Theorem 10.16: jump_cardinal_rel(K) exceeds K*)
 lemma K_lt_jump_cardinal_rel: "Ord(K) ==> M(K) \<Longrightarrow> K < jump_cardinal_rel(M,K)"
