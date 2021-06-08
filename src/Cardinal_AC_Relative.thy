@@ -37,6 +37,7 @@ lemma first_abs :
   shows "first(z,B,r) \<longleftrightarrow> first_rel(M,z,B,r)"
   unfolding first_def first_rel_def using assms by auto
 
+\<comment> \<open>FIXME: find a naming convention for absoluteness results like this.\<close>
 lemma minimum_abs:
   assumes "M(B)"
   shows "minimum(r,B) = minimum_rel(M,r,B)"
@@ -61,9 +62,9 @@ end
 \<comment> \<open>MOVE THIS to an appropriate place. Now it is repeated in
    \<^file>\<open>Forcing_Main.thy\<close>. But consider that ported versions follow,
    and hence perhaps we should only have the relative version.\<close>
-lemma well_ord_surj_imp_lepoll:
+lemma well_ord_surj_imp_inj_inverse:
   assumes "well_ord(A,r)" "h \<in> surj(A,B)"
-  shows "B \<lesssim> A"
+  shows "(\<lambda>b\<in>B. minimum(r, {a\<in>A. h`a=b})) \<in> inj(B,A)"
 proof -
   let ?f="\<lambda>b\<in>B. minimum(r, {a\<in>A. h`a=b})"
   have "minimum(r, {a \<in> A . h ` a = b}) \<in> {a\<in>A. h`a=b}" if "b\<in>B" for b
@@ -95,8 +96,14 @@ proof -
     qed
   ultimately
   show ?thesis
-  unfolding lepoll_def inj_def by blast
+    unfolding inj_def by blast
 qed
+
+lemma well_ord_surj_imp_lepoll:
+  assumes "well_ord(A,r)" "h \<in> surj(A,B)"
+  shows "B\<lesssim>A"
+   unfolding lepoll_def using well_ord_surj_imp_inj_inverse[OF assms]
+   by blast
 
 \<comment> \<open>New result\<close>
 lemma surj_imp_well_ord:
@@ -105,24 +112,10 @@ lemma surj_imp_well_ord:
   using assms lepoll_well_ord[OF well_ord_surj_imp_lepoll]
   by force
 
-context M_cardinal_arith
-begin
-
-lemma well_ord_surj_imp_lepoll_rel:
-  assumes "well_ord(A,r)" "h \<in> surj(A,B)" and
-    types:"M(A)" "M(r)" "M(h)" "M(B)"
-  shows "B \<lesssim>\<^bsup>M\<^esup> A"
-  sorry
-
-lemma surj_imp_well_ord_M:
-  assumes wos: "well_ord(A,r)" "h \<in> surj(A,B)"
-    and
-    types: "M(A)" "M(r)" "M(h)" "M(B)"
-  shows "\<exists>s[M]. well_ord(B,s)"
-  using assms lepoll_rel_well_ord
-    well_ord_surj_imp_lepoll_rel by fast
-
-end (* M_ordertype *)
+lemma vimage_fun_sing:
+  assumes "f\<in>A\<rightarrow>B" "b\<in>B"
+  shows "{a\<in>A . f`a=b} = f-``{b}"
+using assms vimage_singleton_iff function_apply_equality Pi_iff funcI by auto
 
 locale M_cardinal_AC = M_cardinal_arith +
   assumes
@@ -134,6 +127,37 @@ locale M_cardinal_AC = M_cardinal_arith +
   "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = f -`` {x})"
   "M(f) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, f -`` {x})\<rangle>)"
 begin
+
+lemma well_ord_surj_imp_lepoll_rel:
+  assumes "well_ord(A,r)" "h \<in> surj(A,B)" and
+    types:"M(A)" "M(r)" "M(h)" "M(B)"
+  shows "B \<lesssim>\<^bsup>M\<^esup> A"
+proof -
+  note eq=vimage_fun_sing[OF surj_is_fun[OF \<open>h\<in>_\<close>]]
+  from assms
+  have "(\<lambda>b\<in>B. minimum(r, {a\<in>A. h`a=b})) \<in> inj(B,A)" (is "?f\<in>_")
+    using well_ord_surj_imp_inj_inverse assms(1,2) by simp
+  with assms
+  have "M(?f`b)" if "b\<in>B" for b
+    using apply_type[OF inj_is_fun[OF \<open>?f\<in>_\<close>]] that transM[OF _ \<open>M(A)\<close>] by simp
+  with assms
+  have "M(?f)"
+    using lam_closed surj_imp_inj_replacement(4) eq by auto
+  with \<open>?f\<in>_\<close> assms
+  have "?f \<in> inj\<^bsup>M\<^esup>(B,A)"
+    using mem_inj_abs by simp
+  with \<open>M(?f)\<close>
+  show ?thesis unfolding lepoll_rel_def by auto
+qed
+
+lemma surj_imp_well_ord_M:
+  assumes wos: "well_ord(A,r)" "h \<in> surj(A,B)"
+    and
+    types: "M(A)" "M(r)" "M(h)" "M(B)"
+  shows "\<exists>s[M]. well_ord(B,s)"
+  using assms lepoll_rel_well_ord
+    well_ord_surj_imp_lepoll_rel by fast
+
 
 lemma choice_ax_well_ord: "M(S) \<Longrightarrow> \<exists>r[M]. well_ord(S,r)"
   using choice_ax well_ord_Memrel[THEN surj_imp_well_ord_M]
