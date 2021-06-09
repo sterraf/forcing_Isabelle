@@ -161,19 +161,22 @@ proof -
         apply (rule_tac OUN_upper_lt)
         apply (blast intro: Card_rel_is_Ord ltD lt_Ord)
       proof -
-        from \<open>x<l\<close> \<open>Limit(l)\<close> \<open>M(x)\<close>
+        from \<open>x<l\<close> \<open>Limit(l)\<close>
+        have "Ord(x)"
+          using Limit_is_Ord Ord_in_Ord
+          by (auto dest!:ltD)
+        with \<open>M(x)\<close>
         show "\<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup> < \<aleph>\<^bsub>succ(x)\<^esub>\<^bsup>M\<^esup>"
           using Card_rel_csucc_rel Ord_Aleph_rel lt_csucc_rel
             ltD[THEN [2] Ord_in_Ord] succ_in_MI[OF \<open>M(x)\<close>]
-          apply (subst (2) def_transrec[OF Aleph_rel_def'])
-          apply (simp add: HAleph_rel_def)
-          sorry
+            Aleph_rel_succ[of x]
+          by (simp)
       next
         from \<open>M(l)\<close> \<open>Limit(l)\<close>
         show "Ord(\<Union>j<l. \<aleph>\<^bsub>j\<^esub>\<^bsup>M\<^esup>)"
-          using Ord_Aleph_rel lt_Ord Limit_is_Ord ltD
-            (* by (auto dest:transM) *)
-          sorry
+          using Ord_Aleph_rel lt_Ord Limit_is_Ord Ord_in_Ord
+          by (rule_tac Ord_OUN)
+            (auto dest:transM ltD intro!:Ord_Aleph_rel)
       qed
       then
       show ?case using limit Aleph_rel_cont by simp
