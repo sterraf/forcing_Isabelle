@@ -38,7 +38,6 @@ lemma seqspace_closed:
 
 end
 
-
 schematic_goal seqspace_fm_auto:
   assumes 
     "i \<in> nat" "j \<in> nat" "h\<in>nat" "env \<in> list(A)"
@@ -81,7 +80,7 @@ definition FiniteFun_Repr :: "[i,i] \<Rightarrow> i" where
   "FiniteFun_Repr(A,B) \<equiv> {f \<in> (A\<times>B)\<^bsup><\<omega>\<^esup> . cons_like(f) }"
 
 
-locale M_finite_fun_space =  M_seqspace +
+locale M_FiniteFun =  M_seqspace +
   assumes 
     cons_like_closed : "separation(M,\<lambda>f. cons_like(f))"
     and 
@@ -101,8 +100,6 @@ lemma FinFun_closed:
   "M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(\<Union>{n\<rightarrow>A\<times>B . n\<in>\<omega>})"
   using cartprod_closed seqspace_closed 
   unfolding seqspace_def by simp
-
-
 
 lemma cons_like_lt : 
   assumes "n\<in>\<omega>" "f\<in>succ(n)\<rightarrow>A\<times>B" "cons_like(f)"
@@ -124,8 +121,6 @@ proof (auto simp add: le_imp_subset restrict_type2)
   then show "cons_like(restrict(f,n))" 
     unfolding cons_like_def by auto
 qed
-
-
 
 text\<open>A finite function \<^term>\<open>f \<in> A -||> B\<close> can be represented by a 
 function $g \in n \to A \times B$, with $n=|f|$.\<close>
@@ -202,7 +197,6 @@ proof(induct f,force simp add:emptyI FiniteFun_iso_def cons_like_def)
   qed
   with 1 show ?case by auto
 qed
-
 
 text\<open>All the representations of \<^term>\<open>f\<in>A-||>B\<close> are equal.\<close>
 lemma FiniteFun_isoD : 
@@ -356,14 +350,12 @@ next
   } then show "?X\<subseteq>?Y" ..
 qed
 
-
 lemma FiniteFun_Repr_closed :
   assumes "M(A)" "M(B)"
   shows "M(FiniteFun_Repr(A,B))"
   unfolding FiniteFun_Repr_def 
   using assms cartprod_closed 
     seqspace_closed separation_closed cons_like_closed by simp
-
 
 lemma to_FiniteFun_closed:
   assumes "M(A)" "f\<in>A" 
@@ -390,12 +382,12 @@ lemma To_FiniteFun_Repr_closed :
     to_FiniteFun_closed[OF FiniteFun_Repr_closed]
   by simp
 
-lemma FiniteFun_closed :
+lemma FiniteFun_closed[intro,simp] :
   assumes "M(A)" "M(B)"
   shows "M(A -||> B)"
   using assms To_FiniteFun_Repr_closed FiniteFun_eq_to_FiniteFun_Repr
   by simp
 
-end (* M_finite_fun_space *)
+end (* M_FiniteFun *)
 
 end

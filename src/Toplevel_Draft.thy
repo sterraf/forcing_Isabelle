@@ -1,6 +1,7 @@
 theory Toplevel_Draft
   imports
     Cardinal_Preservation
+    FiniteFun_Relative
 
 begin
 
@@ -42,7 +43,7 @@ lemma leqpoll_rel_imp_cardinal_rel_UN_le:
 end (* M_cardinal_UN_lepoll *)
 
 
-locale M_master = M_cardinal_AC + M_cardinal_arith_jump +
+locale M_master = M_cardinal_AC + M_cardinal_arith_jump + M_FiniteFun +
   assumes
   domain_separation: "M(x) \<Longrightarrow> separation(M, \<lambda>z. x \<in> domain(z))"
   and
@@ -74,11 +75,8 @@ locale M_master = M_cardinal_AC + M_cardinal_arith_jump +
   strong_replacement(M, \<lambda>x y. y = \<langle>x, Cardinal_AC_Relative.minimum(r, inj\<^bsup>M\<^esup>(F ` x,\<alpha>))\<rangle>)"
 begin
 
-lemma FiniteFun_closed[intro,simp]:
-  assumes "M(A)" "M(B)" shows "M(A-||>B)"
-  sorry
 
-lemma Fn_nat_closed[intro,simp]:
+lemma Fn_nat_closed:
   assumes "M(A)" "M(B)" shows "M(Fn(\<omega>,A,B))"
   using assms Fn_nat_eq_FiniteFun
   by simp
