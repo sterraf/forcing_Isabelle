@@ -78,7 +78,7 @@ lemma cardinal_rel_absolute[V_simps]: "|x|\<^bsup>\<V>\<^esup> = |x|"
 
 \<comment> \<open>Example of an absolute lemma obtained from the relative version\<close>
 lemma Ord_cardinal_idem': "Ord(A) \<Longrightarrow> ||A|| = |A|"
-  using V.Ord_cardinal_rel_idem by (simp add:V_simps)
+  using V.Ord_cardinal_rel_idem by (simp only:V_simps)
 
 \<comment> \<open>Example of a transfer result between a transitive model and $V$\<close>
 lemma (in M_Perm) assumes "M(A)" "M(B)" "A \<approx>\<^bsup>M\<^esup> B"

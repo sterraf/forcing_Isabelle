@@ -1,8 +1,9 @@
 section\<open>Main definitions of the development\<close>
 
 theory Definitions_Main
-  imports Forcing_Main
-
+  imports
+    Toplevel_Draft
+    Absolute_Versions
 begin
 
 text\<open>This theory gathers the main definitions of the Forcing session.

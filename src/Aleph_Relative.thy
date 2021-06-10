@@ -47,7 +47,7 @@ proof -
     by auto
 qed
 
-lemma "Ord(a) \<Longrightarrow> Aleph'(a) = Aleph(a)"
+lemma Aleph'_eq_Aleph: "Ord(a) \<Longrightarrow> Aleph'(a) = Aleph(a)"
   unfolding Aleph'_def Aleph_def transrec2_def
   using HAleph_eq_Aleph_recursive
   by (intro transrec_equal_on_Ord) auto
