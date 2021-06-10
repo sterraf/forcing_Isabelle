@@ -2,7 +2,9 @@ section\<open>From M to V\<close>
 
 theory Absolute_Versions
   imports
+    Aleph_Relative
     Cardinal_AC_Relative
+    ZF.Cardinal_AC
 
 begin
 
@@ -39,6 +41,30 @@ interpretation V:M_cardinal_arith \<V>
 lemmas bad_M_cardinals_rules[simp del, rule del] =
   V.iterates_closed V.M_nat V.trancl_closed V.rvimage_closed
 
+interpretation V:M_cardinal_arith_jump \<V>
+  by unfold_locales (auto intro:separation_absolute replacement_absolute)
+
+lemma choice_ax_Universe: "choice_ax(\<V>)"
+proof -
+  {
+    fix x
+    obtain f where "f \<in> surj(|x|,x)"
+      using cardinal_eqpoll unfolding eqpoll_def bij_def by fast
+    moreover
+    have "Ord(|x|)" by simp
+    ultimately
+    have "\<exists>a. Ord(a) \<and> (\<exists>f. f \<in> surj(a,x))"
+      by fast
+  }
+  then
+  show ?thesis  unfolding choice_ax_def rall_def rex_def
+    by simp
+qed
+
+interpretation V:M_cardinal_AC \<V>
+  using choice_ax_Universe
+  by unfold_locales (auto intro:separation_absolute replacement_absolute)
+
 named_theorems V_simps
 
 \<comment> \<open>To work systematically, ASCII versions of "_absolute" theorems as
@@ -47,7 +73,7 @@ lemma eqpoll_rel_absolute[V_simps]: "x \<approx>\<^bsup>\<V>\<^esup> y \<longlef
   unfolding eqpoll_def using V.def_eqpoll_rel by auto
 
 lemma cardinal_rel_absolute[V_simps]: "|x|\<^bsup>\<V>\<^esup> = |x|"
-  unfolding cardinal_def using V.def_cardinal_rel eqpoll_rel_absolute
+  unfolding cardinal_def cardinal_rel_def using eqpoll_rel_absolute
   by simp
 
 \<comment> \<open>Example of an absolute lemma obtained from the relative version\<close>
