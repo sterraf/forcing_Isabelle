@@ -71,7 +71,7 @@ lemma Aleph_rel_def': "Aleph_rel(M,a) \<equiv> transrec(a, \<lambda>i r. HAleph_
 lemma succ_mem_Limit: "Limit(j) \<Longrightarrow> i \<in> j \<Longrightarrow> succ(i) \<in> j"
   using Limit_has_succ[THEN ltD] ltI Limit_is_Ord by auto
 
-locale M_cardinal_rel_closed =  M_cardinal_arith_jump +
+locale M_aleph =  M_cardinal_arith_jump +
   assumes 
   aleph_rel_replacement:  "strong_replacement(M, \<lambda>x y. y = \<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>)" 
 
@@ -191,6 +191,6 @@ proof -
 qed
 
 
-end (* M_cardinal_arith_jump *)
+end (* M_aleph *)
 
 end
