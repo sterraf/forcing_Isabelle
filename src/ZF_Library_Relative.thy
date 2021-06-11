@@ -5,7 +5,7 @@ theory ZF_Library_Relative
     "ZF-Constructible.Normal"
     Aleph_Relative
     Cardinal_AC_Relative
-
+    "../Tools/Try0"
 begin
 
 text\<open>This theory gathers basic ``combinatorial'' results that can be proved
@@ -366,14 +366,19 @@ proof -
     using inj_imp_surj mem_surj_abs by simp
 qed
 
-(************ End of ported material, BUT NOTE: ************)
-(***** Below, some material on Aleph is already ported *****)
-
 lemma fun_Pi_disjoint_Un:\<comment> \<open>Only needed for \<^term>\<open>function_space_rel\<close>\<close>
   assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)"  "A \<inter> C = 0"
   shows "f \<union> g \<in> Pi(A \<union> C, \<lambda>x. B(x) \<union> D(x))"
   using assms
   by (simp add: Pi_iff extension Un_rls) (unfold function_def, blast)
+
+lemma function_space_rel_disjoint_Un:
+  assumes "f \<in> A\<rightarrow>\<^bsup>M\<^esup>B" "g \<in> C\<rightarrow>\<^bsup>M\<^esup>D"  "A \<inter> C = 0"
+    and types:"M(A)" "M(B)" "M(C)" "M(D)"
+  shows "f \<union> g \<in> (A \<union> C)\<rightarrow>\<^bsup>M\<^esup> (B \<union> D)"
+  using assms fun_Pi_disjoint_Un[OF mem_function_space_rel
+      mem_function_space_rel, OF assms(1) _ _ assms(2)]
+    function_space_rel_char by auto
 
 lemma Un_restrict_decomposition:
   assumes "f \<in> Pi(A,B)"
@@ -425,6 +430,14 @@ proof -
     by auto
 qed
 
+lemma restrict_eq_imp_Un_into_function_space_rel:
+  assumes "f \<in> A\<rightarrow>\<^bsup>M\<^esup>B" "g \<in> C\<rightarrow>\<^bsup>M\<^esup>D"  "restrict(f, A \<inter> C) = restrict(g, A \<inter> C)"
+    and types:"M(A)" "M(B)" "M(C)" "M(D)"
+  shows "f \<union> g \<in> (A \<union> C)\<rightarrow>\<^bsup>M\<^esup> (B \<union> D)"
+  using assms restrict_eq_imp_Un_into_Pi[OF mem_function_space_rel
+      mem_function_space_rel, OF assms(1) _ _ assms(2)]
+    function_space_rel_char by auto
+
 (* \<comment> \<open>Unused\<close>
 lemma restrict_eq_imp_Un_into_Pi':
   assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)"
@@ -432,6 +445,9 @@ lemma restrict_eq_imp_Un_into_Pi':
   shows "f \<union> g \<in> Pi(A \<union> C, \<lambda>x. B(x) \<union> D(x))"
   using  assms domain_of_fun restrict_eq_imp_Un_into_Pi by simp
 *)
+
+(************ End of ported material, BUT NOTE: ************)
+(***** Below, some material on Aleph is already ported *****)
 
 lemma restrict_subset_Sigma:\<comment> \<open>Only needed for \<^term>\<open>(\<times>)\<close>\<close>
  "f \<subseteq> Sigma(C,B) \<Longrightarrow> restrict(f,A) \<subseteq> Sigma(A\<inter>C, B)"
@@ -686,6 +702,9 @@ definition
 
 lemma Card_cexp: "Card(\<kappa>\<^bsup>\<up>\<nu>\<^esup>)"
   unfolding cexp_def Card_cardinal by simp
+
+\<comment> \<open>Restoring congruence rule, but NOTE: beware\<close>
+declare conj_cong[cong]
 
 lemma eq_csucc_ord:
   "Ord(i) \<Longrightarrow> i\<^sup>+ = |i|\<^sup>+"
