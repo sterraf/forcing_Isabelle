@@ -71,7 +71,10 @@ lemma Aleph_rel_def': "Aleph_rel(M,a) \<equiv> transrec(a, \<lambda>i r. HAleph_
 lemma succ_mem_Limit: "Limit(j) \<Longrightarrow> i \<in> j \<Longrightarrow> succ(i) \<in> j"
   using Limit_has_succ[THEN ltD] ltI Limit_is_Ord by auto
 
-context M_cardinal_arith_jump
+locale M_cardinal_rel_closed =  M_cardinal_arith_jump +
+  assumes 
+  aleph_rel_replacement:  "strong_replacement(M, \<lambda>x y. y = \<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>)" 
+
 begin
 
 lemma Ord_Aleph_rel:
@@ -119,7 +122,8 @@ next
 next
   case (limit x)
   moreover from this
-  have "M({y . z \<in> x, M(y) \<and> M(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>})" sorry
+  have "M({y . z \<in> x, M(y) \<and> M(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>})"
+    using aleph_rel_replacement by simp
   ultimately
   show ?case
     using Ord_Aleph_rel Card_nat
