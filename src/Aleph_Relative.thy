@@ -77,14 +77,38 @@ locale M_aleph =  M_cardinal_arith_jump +
 
 begin
 
-lemma Ord_Aleph_rel:
-  assumes "Ord(a)" and types: "M(a)" shows "Ord(\<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup>)"
-  sorry
+lemma Aleph_rel_zero: "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup> = nat"
+  using def_transrec [OF Aleph_rel_def',of _ 0] 
+  unfolding HAleph_rel_def by simp
 
 lemma Aleph_rel_succ: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>succ(\<alpha>)\<^esub>\<^bsup>M\<^esup> = csucc_rel(M,\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)"
   using Ord_Union_succ_eq
   by (subst def_transrec [OF Aleph_rel_def'])
     (simp add:HAleph_rel_def)
+
+lemma Ord_Aleph_rel:
+  assumes "Ord(a)"shows "M(a) \<Longrightarrow> Ord(\<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup>)"
+  using \<open>Ord(a)\<close>
+proof(induct a rule:trans_induct3)
+  case 0
+  show ?case using Aleph_rel_zero by simp
+next
+  case (succ x)
+  with \<open>Ord(x)\<close>
+  have "M(x)" "Ord(\<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>)" by simp_all
+  then
+  have "Ord(csucc_rel(M,\<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>))"
+    using Card_rel_is_Ord Card_rel_csucc_rel Aleph_rel_closed
+    by simp  
+  with \<open>Ord(x)\<close> \<open>M(x)\<close>
+  show ?case using Aleph_rel_succ by simp
+next
+  case (limit x)
+  then 
+  show ?case
+    sorry
+qed
+
 
 \<comment> \<open>You can tell I'm really tired by seeing the next proof\<close>
 lemma Aleph_rel_cont: "Limit(l) \<Longrightarrow> M(l) \<Longrightarrow> \<aleph>\<^bsub>l\<^esub>\<^bsup>M\<^esup> = (\<Union>i<l. \<aleph>\<^bsub>i\<^esub>\<^bsup>M\<^esup>)"
@@ -110,9 +134,8 @@ proof (induct rule:trans_induct3)
   case 0
   then
   show ?case
-    using Card_rel_csucc_rel Card_nat Card_rel_is_Ord Card_rel_nat
-    by (subst def_transrec [OF Aleph_rel_def'])
-      (simp add: HAleph_rel_def)
+    using Aleph_rel_zero Card_rel_nat
+    by simp
 next
   case (succ x)
   then
