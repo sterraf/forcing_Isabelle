@@ -169,6 +169,14 @@ relationalize "csucc_rel" "is_csucc"
 synthesize "is_csucc" from_definition assuming "nonempty"
 arity_theorem for "is_csucc_fm"
 
+abbreviation
+  csucc_r :: "[i,i\<Rightarrow>o] \<Rightarrow> i"  (\<open>'(_\<^sup>+')\<^bsup>_\<^esup>\<close>) where
+  "csucc_r(x,M) \<equiv> csucc_rel(M,x)"
+
+abbreviation
+  csucc_r_set :: "[i,i] \<Rightarrow> i"  (\<open>'(_\<^sup>+')\<^bsup>_\<^esup>\<close>) where
+  "csucc_r_set(x,M) \<equiv> csucc_rel(##M,x)"
+
 context M_Perm
 begin
 

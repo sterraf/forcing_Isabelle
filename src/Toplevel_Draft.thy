@@ -21,14 +21,6 @@ abbreviation
   cexp_r_set :: "[i,i,i] \<Rightarrow> i"  (\<open>'(_\<^bsup>\<up>_\<^esup>')\<^bsup>_\<^esup>\<close>) where
   "cexp_r_set(x,y,M) \<equiv> cexp_rel(##M,x,y)"
 
-abbreviation
-  csucc_r :: "[i,i\<Rightarrow>o] \<Rightarrow> i"  (\<open>'(_\<^sup>+')\<^bsup>_\<^esup>\<close>) where
-  "csucc_r(x,M) \<equiv> csucc_rel(M,x)"
-
-abbreviation
-  csucc_r_set :: "[i,i] \<Rightarrow> i"  (\<open>'(_\<^sup>+')\<^bsup>_\<^esup>\<close>) where
-  "csucc_r_set(x,M) \<equiv> csucc_rel(##M,x)"
-
 locale M_cardinal_UN_lepoll = M_cardinal_UN _ J for J
 begin
 

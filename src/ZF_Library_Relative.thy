@@ -2,56 +2,14 @@ section\<open>Library of basic $\ZF$ results\label{sec:zf-lib}\<close>
 
 theory ZF_Library_Relative
   imports
+    "../Delta_System_Lemma/ZF_Library"
     "ZF-Constructible.Normal"
     Aleph_Relative
     Cardinal_AC_Relative
     "../Tools/Try0"
 begin
 
-text\<open>This theory gathers basic ``combinatorial'' results that can be proved
-in $\ZF$ (that is, without using the Axiom of Choice $\AC$).
-\<close>
-
-text\<open>We begin by setting up math-friendly notation.\<close>
-
-no_notation oadd (infixl \<open>++\<close> 65)
-no_notation sum (infixr \<open>+\<close> 65)
-notation oadd (infixl \<open>+\<close> 65)
-notation nat (\<open>\<omega>\<close>)
-notation csucc (\<open>_\<^sup>+\<close> [90])
-no_notation Aleph (\<open>\<aleph>_\<close> [90] 90)
-notation Aleph (\<open>\<aleph>\<^bsub>_\<^esub>\<close>)
-syntax "_ge"  :: "[i,i] \<Rightarrow> o"  (infixl \<open>\<ge>\<close> 50)
-translations "x \<ge> y" \<rightharpoonup> "y \<le> x"
-
-
-subsection\<open>Some minimal arithmetic/ordinal stuff\<close>
-(* \<comment> \<open>In \<^file>\<open>Nat_Miscellanea.thy\<close>\<close>
-lemma Un_leD1 : "i \<union> j \<le> k \<Longrightarrow> Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow> i \<le> k"
-  by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct1]],simp_all)
-
-lemma Un_leD2 : "i \<union> j \<le> k \<Longrightarrow> Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow> j \<le> k"
-  by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct2]],simp_all)
-*)
-lemma Un_memD1: "i \<union> j \<in> k \<Longrightarrow> Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow> i \<le> k"
-  by (drule ltI, assumption, drule leI, rule Un_least_lt_iff[THEN iffD1[THEN conjunct1]],simp_all)
-
-lemma Un_memD2 : "i \<union> j \<in> k \<Longrightarrow> Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> Ord(k) \<Longrightarrow> j \<le> k"
-  by (drule ltI, assumption, drule leI, rule Un_least_lt_iff[THEN iffD1[THEN conjunct2]],simp_all)
-
-text\<open>This lemma allows to apply arithmetic simprocs to ordinal addition\<close>
-lemma nat_oadd_add[simp]:
-  assumes "m \<in> \<omega>" "n \<in> \<omega>" shows "n + m = n #+ m"
-  using assms
-  by induct simp_all
-
-lemma Ord_has_max_imp_succ:
-  assumes "Ord(\<gamma>)" "\<beta> \<in> \<gamma>" "\<forall>\<alpha>\<in>\<gamma>. \<alpha> \<le> \<beta>"
-  shows "\<gamma> = succ(\<beta>)"
-  using assms Ord_trans[of _ \<beta> \<gamma>]
-  unfolding lt_def
-  by (intro equalityI subsetI) auto
-
+(*
 lemma Least_antitone:
   assumes
     "Ord(j)" "P(j)" "\<And>i. P(i) \<Longrightarrow> Q(i)"
@@ -67,21 +25,6 @@ lemma le_neq_imp_lt:
   "x\<le>y \<Longrightarrow> x\<noteq>y \<Longrightarrow> x<y"
   using ltD ltI[of x y] le_Ord2
   unfolding succ_def by auto
-(* \<comment> \<open>Unused\<close>
-text\<open>Strict upper bound of a set of ordinals.\<close>
-definition
-  str_bound :: "i\<Rightarrow>i" where
-  "str_bound(A) \<equiv> \<Union>a\<in>A. succ(a)"
-
-lemma str_bound_type [TC]: "\<forall>a\<in>A. Ord(a) \<Longrightarrow> Ord(str_bound(A))"
-  unfolding str_bound_def by auto
-
-lemma str_bound_lt: "\<forall>a\<in>A. Ord(a) \<Longrightarrow> \<forall>a\<in>A. a < str_bound(A)"
-  unfolding str_bound_def using str_bound_type
-  by (blast intro:ltI)
-*)
-lemma naturals_lt_nat[intro]: "n \<in> \<omega> \<Longrightarrow> n < \<omega>"
-  unfolding lt_def by simp
 
 text\<open>The next two lemmas are handy when one is constructing
 some object recursively. The first handles injectivity (of recursively
@@ -112,26 +55,16 @@ proof -
   show ?thesis by cases (auto simp add:assms)
 qed
 
+*)
+
 lemma (in M_cardinal_AC) cardinal_rel_succ_not_0:   "|A|\<^bsup>M\<^esup> = succ(n) \<Longrightarrow> M(A) \<Longrightarrow> M(n) \<Longrightarrow> A \<noteq> 0"
   by auto
 
-lemma Ord_eq_Collect_lt: "i<\<alpha> \<Longrightarrow> {j\<in>\<alpha>. j<i} = i"
-  \<comment> \<open>almost the same proof as @{thm nat_eq_Collect_lt}\<close>
-  apply (rule equalityI)
-  apply (blast dest: ltD)
-  apply (auto simp add: Ord_mem_iff_lt)
-  apply (rule Ord_trans ltI[OF _ lt_Ord]; auto simp add:lt_def dest:ltD)+
-  done
 
-
-subsection\<open>Manipulation of function spaces\<close>
-
-definition
-  Finite_to_one :: "[i,i] \<Rightarrow> i" where
-  "Finite_to_one(X,Y) \<equiv> {f:X\<rightarrow>Y. \<forall>y\<in>Y. Finite({x\<in>X . f`x = y})}"
+(* "Finite_to_one(X,Y) \<equiv> {f:X\<rightarrow>Y. \<forall>y\<in>Y. Finite({x\<in>X . f`x = y})}" *)
 
 reldb_add functional "Finite" "Finite" \<comment> \<open>wrongly done? Finite is absolute\<close>
-relativize functional "Finite_to_one" "Finite_to_one_rel"
+relativize functional "Finite_to_one" "Finite_to_one_rel" external
 (* reldb_add relational "Finite" "is_Finite" \<comment> \<open>don't have is_Finite yet\<close>
 relationalize "Finite_to_one_rel" "is_Finite_to_one" *)
 
@@ -141,7 +74,7 @@ abbreviation
   Finite_to_one_r_set :: "[i,i,i] \<Rightarrow> i" (\<open>Finite'_to'_one\<^bsup>_\<^esup>'(_,_')\<close>) where
   "Finite_to_one\<^bsup>M\<^esup>(X,Y) \<equiv> Finite_to_one_rel(##M,X,Y)"
 
-locale M_library =  M_cardinal_AC + M_cardinal_arith_jump +
+locale M_library =  M_cardinal_AC + M_aleph +
   assumes
   Pair_diff_replacement: "M(X) \<Longrightarrow> strong_replacement(M, \<lambda>A y. y = \<langle>A, A - X\<rangle>)"
   and
@@ -175,8 +108,6 @@ lemma Finite_to_one_relD[dest]:
   "f \<in> Finite_to_one\<^bsup>M\<^esup>(X,Y) \<Longrightarrow>f:X\<rightarrow>\<^bsup>M\<^esup>Y"
   "f \<in> Finite_to_one\<^bsup>M\<^esup>(X,Y) \<Longrightarrow> y\<in>Y \<Longrightarrow> M(Y) \<Longrightarrow> Finite({x\<in>X . M(x) \<and> f`x = y})"
   unfolding Finite_to_one_rel_def by simp_all
-
-lemma subset_Diff_Un: "X \<subseteq> A \<Longrightarrow> A = (A - X) \<union> X " by auto
 
 lemma Diff_bij_rel:
   assumes "\<forall>A\<in>F. X \<subseteq> A" 
@@ -217,20 +148,10 @@ proof -
     by (simp add:mem_function_space_rel_abs)
 qed
 
-lemma vimage_lam: "(\<lambda>x\<in>A. f(x)) -`` B = { x\<in>A . f(x) \<in> B }"
-  using lam_funtype[of A f, THEN [2] func.domain_type]
-    lam_funtype[of A f, THEN [2] apply_equality] lamI[of _ A f]
-  by auto blast
-
 lemma mem_function_space_rel:
   assumes "f \<in> A \<rightarrow>\<^bsup>M\<^esup> y" "M(A)" "M(y)"
   shows  "f \<in> A \<rightarrow> y"
   using assms function_space_rel_char by simp
-
-lemma range_fun_subset_codomain:
-  assumes "h:B \<rightarrow> C"
-  shows "range(h) \<subseteq> C"
-  unfolding range_def domain_def converse_def using func.range_type[OF _ assms] by auto
 
 lemmas range_fun_rel_subset_codomain = range_fun_subset_codomain[OF mem_function_space_rel]
 
@@ -249,14 +170,7 @@ lemmas rel_apply_Pair = apply_Pair[OF mem_Pi_rel]
 
 lemmas rel_apply_rangeI = apply_rangeI[OF mem_Pi_rel]
 
-lemma Pi_range_eq: "f \<in> Pi(A,B) \<Longrightarrow> range(f) = {f ` x . x \<in> A}"
-  using Pi_rangeD[of f A B] apply_rangeI[of f A B]
-  by blast
-
 lemmas Pi_rel_range_eq = Pi_range_eq[OF mem_Pi_rel]
-
-lemma Pi_vimage_subset : "f \<in> Pi(A,B) \<Longrightarrow> f-``C \<subseteq> A"
-  unfolding Pi_def by auto
 
 lemmas Pi_rel_vimage_subset = Pi_vimage_subset[OF mem_Pi_rel]
 
@@ -274,83 +188,15 @@ lemma mem_inj_rel: "\<lbrakk>f \<in> inj\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rbra
 lemma mem_surj_rel: "\<lbrakk>f \<in> surj\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rbrakk> \<Longrightarrow> f\<in>surj(A,B)"
   using surj_rel_char by simp
 
-
-lemma apply_in_range:
-  assumes
-    "Ord(\<gamma>)" "\<gamma>\<noteq>0" "f: A \<rightarrow> \<gamma>"
-  shows
-    "f`x\<in>\<gamma>"
-proof (cases "x\<in>A")
-  case True
-  from assms \<open>x\<in>A\<close>
-  show ?thesis
-    using   domain_of_fun apply_rangeI  by simp
-next
-  case False
-  from assms \<open>x\<notin>A\<close>
-  show ?thesis
-    using apply_0 Ord_0_lt ltD domain_of_fun by auto
-qed
-
 lemmas rel_apply_in_range = apply_in_range[OF _ _ mem_function_space_rel]
 
-lemma range_eq_image:
-  assumes "f:A\<rightarrow>B"
-  shows "range(f) = f``A"
-proof
-  show "f `` A \<subseteq> range(f)"
-    unfolding image_def by blast
-  {
-    fix x
-    assume "x\<in>range(f)"
-    with assms
-    have "x\<in>f``A"
-      using domain_of_fun[of f A "\<lambda>_. B"] by auto
-  }
-  then
-  show "range(f) \<subseteq> f `` A" ..
-qed
-
-lemmas rel_range_eq_image = range_eq_image[OF mem_function_space_rel]
-
-lemma Image_sub_codomain: "f:A\<rightarrow>B \<Longrightarrow> f``C \<subseteq> B"
-  using image_subset fun_is_rel[of _ _ "\<lambda>_ . B"] by force
+lemmas rel_range_eq_image = ZF_Library.range_eq_image[OF mem_function_space_rel]
 
 lemmas rel_Image_sub_codomain = Image_sub_codomain[OF mem_function_space_rel]
-
-lemma inj_to_Image:
-  assumes
-    "f:A\<rightarrow>B" "f \<in> inj(A,B)"
-  shows
-    "f \<in> inj(A,f``A)"
-  using assms inj_inj_range range_eq_image by force
 
 lemma rel_inj_to_Image: "\<lbrakk>f:A\<rightarrow>\<^bsup>M\<^esup>B; f \<in> inj\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rbrakk> \<Longrightarrow> f \<in> inj\<^bsup>M\<^esup>(A,f``A)"
   using inj_to_Image[OF mem_function_space_rel mem_inj_rel]
     transM[OF _ function_space_rel_closed] by simp
-
-lemma inj_imp_surj:
-  fixes f b
-  notes inj_is_fun[dest]
-  defines [simp]: "ifx(x) \<equiv> if x\<in>range(f) then converse(f)`x else b"
-  assumes "f \<in> inj(B,A)" "b\<in>B"
-  shows "(\<lambda>x\<in>A. ifx(x)) \<in> surj(A,B)"
-proof -
-  from assms
-  have "converse(f) \<in> surj(range(f),B)" "range(f) \<subseteq> A"
-    "converse(f) : range(f) \<rightarrow> B"
-    using inj_converse_surj range_fun_subset_codomain surj_is_fun by blast+
-  with \<open>b\<in>B\<close>
-  show "(\<lambda>x\<in>A. ifx(x)) \<in> surj(A,B)"
-    unfolding surj_def
-  proof (intro CollectI lam_type ballI; elim CollectE)
-    fix y
-    assume "y \<in> B" "\<forall>y\<in>B. \<exists>x\<in>range(f). converse(f) ` x = y"
-    with \<open>range(f) \<subseteq> A\<close>
-    show "\<exists>x\<in>A. (\<lambda>x\<in>A. ifx(x)) ` x = y"
-      by (drule_tac bspec, auto)
-  qed simp
-qed
 
 lemma inj_rel_imp_surj_rel:
   fixes f b
@@ -366,12 +212,6 @@ proof -
     using inj_imp_surj mem_surj_abs by simp
 qed
 
-lemma fun_Pi_disjoint_Un:\<comment> \<open>Only needed for \<^term>\<open>function_space_rel\<close>\<close>
-  assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)"  "A \<inter> C = 0"
-  shows "f \<union> g \<in> Pi(A \<union> C, \<lambda>x. B(x) \<union> D(x))"
-  using assms
-  by (simp add: Pi_iff extension Un_rls) (unfold function_def, blast)
-
 lemma function_space_rel_disjoint_Un:
   assumes "f \<in> A\<rightarrow>\<^bsup>M\<^esup>B" "g \<in> C\<rightarrow>\<^bsup>M\<^esup>D"  "A \<inter> C = 0"
     and types:"M(A)" "M(B)" "M(C)" "M(D)"
@@ -379,56 +219,6 @@ lemma function_space_rel_disjoint_Un:
   using assms fun_Pi_disjoint_Un[OF mem_function_space_rel
       mem_function_space_rel, OF assms(1) _ _ assms(2)]
     function_space_rel_char by auto
-
-lemma Un_restrict_decomposition:
-  assumes "f \<in> Pi(A,B)"
-  shows "f = restrict(f, A \<inter> C) \<union> restrict(f, A - C)"
-  using assms
-proof (rule fun_extension)
-  from assms
-  have "restrict(f,A\<inter>C) \<union> restrict(f,A-C) \<in> Pi(A\<inter>C \<union> (A-C), \<lambda>x. B(x)\<union>B(x))"
-    using restrict_type2[of f A B]
-    by (rule_tac fun_Pi_disjoint_Un) force+
-  moreover
-  have "(A \<inter> C) \<union> (A - C) = A" by auto
-  ultimately
-  show "restrict(f, A \<inter> C) \<union> restrict(f, A - C) \<in> Pi(A, B)" by simp
-next
-  fix x
-  assume "x \<in> A"
-  with assms
-  show "f ` x = (restrict(f, A \<inter> C) \<union> restrict(f, A - C)) ` x"
-    using restrict fun_disjoint_apply1[of _ "restrict(f,_)"]
-      fun_disjoint_apply2[of _ "restrict(f,_)"]
-      domain_restrict[of f] apply_0 domain_of_fun
-    by (cases "x\<in>C") simp_all
-qed
-
-lemma restrict_eq_imp_Un_into_Pi:\<comment> \<open>Only needed for \<^term>\<open>function_space_rel\<close>\<close>
-  assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)" "restrict(f, A \<inter> C) = restrict(g, A \<inter> C)"
-  shows "f \<union> g \<in> Pi(A \<union> C, \<lambda>x. B(x) \<union> D(x))"
-proof -
-  note assms
-  moreover from this
-  have "x \<notin> g \<Longrightarrow> x \<notin> restrict(g, A \<inter> C)" for x
-    using restrict_subset[of g "A \<inter> C"] by auto
-  moreover from calculation
-  have "x \<in> f \<Longrightarrow> x \<in> restrict(f, A - C) \<or> x \<in> restrict(g, A \<inter> C)" for x
-    by (subst (asm) Un_restrict_decomposition[of f A B "C"]) auto
-  ultimately
-  have "f \<union> g = restrict(f, A - C) \<union> g"
-    using restrict_subset[of g "A \<inter> C"]
-    by (subst Un_restrict_decomposition[of f A B "C"]) auto
-  moreover
-  have "A - C \<union> C = A \<union> C" by auto
-  moreover
-  note assms
-  ultimately
-  show ?thesis
-    using fun_Pi_disjoint_Un[OF
-        restrict_type2[of f A B "A-C"], of g C D]
-    by auto
-qed
 
 lemma restrict_eq_imp_Un_into_function_space_rel:
   assumes "f \<in> A\<rightarrow>\<^bsup>M\<^esup>B" "g \<in> C\<rightarrow>\<^bsup>M\<^esup>D"  "restrict(f, A \<inter> C) = restrict(g, A \<inter> C)"
@@ -438,141 +228,38 @@ lemma restrict_eq_imp_Un_into_function_space_rel:
       mem_function_space_rel, OF assms(1) _ _ assms(2)]
     function_space_rel_char by auto
 
-(* \<comment> \<open>Unused\<close>
-lemma restrict_eq_imp_Un_into_Pi':
-  assumes "f \<in> Pi(A,B)" "g \<in> Pi(C,D)"
-    "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
-  shows "f \<union> g \<in> Pi(A \<union> C, \<lambda>x. B(x) \<union> D(x))"
-  using  assms domain_of_fun restrict_eq_imp_Un_into_Pi by simp
-*)
+lemma lepoll_relD[dest]: "A \<lesssim>\<^bsup>M\<^esup> B \<Longrightarrow> \<exists>f[M]. f \<in> inj\<^bsup>M\<^esup>(A, B)"
+  unfolding lepoll_rel_def .
 
-(************ End of ported material, BUT NOTE: ************)
-(***** Below, some material on Aleph is already ported *****)
+\<comment> \<open>Should the assumptions be on \<^term>\<open>f\<close> or on \<^term>\<open>A\<close> and \<^term>\<open>B\<close>?
+    Should BOTH be intro rules?\<close>
+lemma lepoll_relI[intro]: "f \<in> inj\<^bsup>M\<^esup>(A, B) \<Longrightarrow> M(f) \<Longrightarrow> A \<lesssim>\<^bsup>M\<^esup> B"
+  unfolding lepoll_rel_def by blast
 
-lemma restrict_subset_Sigma:\<comment> \<open>Only needed for \<^term>\<open>(\<times>)\<close>\<close>
- "f \<subseteq> Sigma(C,B) \<Longrightarrow> restrict(f,A) \<subseteq> Sigma(A\<inter>C, B)"
-  by (auto simp add: restrict_def)
+lemma eqpollD[dest]: "A \<approx>\<^bsup>M\<^esup> B \<Longrightarrow> \<exists>f[M]. f \<in> bij\<^bsup>M\<^esup>(A, B)"
+  unfolding eqpoll_rel_def .
 
+\<comment> \<open>Same as @{thm lepoll_relI}}\<close>
+lemma bij_rel_imp_eqpoll_rel[intro]: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(f) \<Longrightarrow> A \<approx>\<^bsup>M\<^esup> B"
+  unfolding eqpoll_rel_def by blast
 
-subsection\<open>Finite sets\<close> \<comment> \<open>Perhaps this section can be omitted by absoluteness\<close>
+lemma restrict_bij_rel:\<comment> \<open>Unused\<close>
+  assumes "f \<in> inj\<^bsup>M\<^esup>(A,B)"  "C\<subseteq>A"
+    and types:"M(A)" "M(B)" "M(C)"
+  shows "restrict(f,C)\<in> bij\<^bsup>M\<^esup>(C, f``C)"
+  using assms restrict_bij inj_rel_char bij_rel_char by auto
 
-lemma Replace_sing1:
-  "\<lbrakk> (\<exists>a. P(d,a)) \<and> (\<forall>y y'. P(d,y) \<longrightarrow> P(d,y') \<longrightarrow> y=y') \<rbrakk> \<Longrightarrow> \<exists>a. {y . x \<in> {d}, P(x,y)} = {a}"
-  by blast
-
-\<comment> \<open>Not really necessary\<close>
-lemma Replace_sing2:
-  assumes "\<forall>a. \<not> P(d,a)"
-  shows "{y . x \<in> {d}, P(x,y)} = 0"
-  using assms by auto
-
-lemma Replace_sing3:
-  assumes "\<exists>c e. c \<noteq> e \<and> P(d,c) \<and> P(d,e)"
-  shows "{y . x \<in> {d}, P(x,y)} = 0"
-proof -
-  {
-    fix z
-    {
-      assume "\<forall>y. P(d, y) \<longrightarrow> y = z"
-      with assms
-      have "False" by auto
-    }
-    then
-    have "z \<notin> {y . x \<in> {d}, P(x,y)}"
-      using Replace_iff by auto
-  }
-  then
-  show ?thesis
-    by (intro equalityI subsetI) simp_all
-qed
-
-lemma Replace_Un: "{b . a \<in> A \<union> B, Q(a, b)} =
-        {b . a \<in> A, Q(a, b)} \<union> {b . a \<in> B, Q(a, b)}"
-  by (intro equalityI subsetI) (auto simp add:Replace_iff)
-
-lemma Replace_subset_sing: "\<exists>z. {y . x \<in> {d}, P(x,y)} \<subseteq> {z}"
-proof -
-  consider
-    (1) "(\<exists>a. P(d,a)) \<and> (\<forall>y y'. P(d,y) \<longrightarrow> P(d,y') \<longrightarrow> y=y')" |
-    (2) "\<forall>a. \<not> P(d,a)" | (3) "\<exists>c e. c \<noteq> e \<and> P(d,c) \<and> P(d,e)" by auto
-  then
-  show "\<exists>z. {y . x \<in> {d}, P(x,y)} \<subseteq> {z}"
-  proof (cases)
-    case 1
-    then show ?thesis using Replace_sing1[of P d] by auto
-  next
-    case 2
-    then show ?thesis by auto
-  next
-    case 3
-    then show ?thesis using Replace_sing3[of P d] by auto
-  qed
-qed
-
-lemma Finite_Replace: "Finite(A) \<Longrightarrow> Finite(Replace(A,Q))"
-proof (induct rule:Finite_induct)
-  case 0
-  then
-  show ?case by simp
-next
-  case (cons x B)
-  moreover
-  have "{b . a \<in> cons(x, B), Q(a, b)} =
-        {b . a \<in> B, Q(a, b)} \<union> {b . a \<in> {x}, Q(a, b)}"
-    using Replace_Un unfolding cons_def by auto
-  moreover
-  obtain d where "{b . a \<in> {x}, Q(a, b)} \<subseteq> {d}"
-    using Replace_subset_sing[of _ Q] by blast
-  moreover from this
-  have "Finite({b . a \<in> {x}, Q(a, b)})"
-    using subset_Finite by simp
-  ultimately
-  show ?case using subset_Finite by simp
-qed
-
-lemma Finite_domain: "Finite(A) \<Longrightarrow> Finite(domain(A))"
-  using Finite_Replace unfolding domain_def
-  by auto
-
-lemma Finite_converse: "Finite(A) \<Longrightarrow> Finite(converse(A))"
-  using Finite_Replace unfolding converse_def
-  by auto
-
-lemma Finite_range: "Finite(A) \<Longrightarrow> Finite(range(A))"
-  using Finite_domain Finite_converse unfolding range_def
-  by blast
-
-lemma Finite_Sigma: "Finite(A) \<Longrightarrow> \<forall>x. Finite(B(x)) \<Longrightarrow> Finite(Sigma(A,B))"
-  unfolding Sigma_def using Finite_RepFun Finite_Union
-  by simp
-
-lemma Finite_Pi: "Finite(A) \<Longrightarrow> \<forall>x. Finite(B(x)) \<Longrightarrow> Finite(Pi(A,B))"
-  using Finite_Sigma
-    Finite_Pow subset_Finite[of "Pi(A,B)" "Pow(Sigma(A,B))"]
-  unfolding Pi_def
-  by auto
-
-
-subsection\<open>Basic results on equipollence, cardinality and related concepts\<close>
-
-lemma lepollD[dest]: "A \<lesssim> B \<Longrightarrow> \<exists>f. f \<in> inj(A, B)"
-  unfolding lepoll_def .
-
-lemma lepollI[intro]: "f \<in> inj(A, B) \<Longrightarrow> A \<lesssim> B"
-  unfolding lepoll_def by blast
-
-lemma eqpollD[dest]: "A \<approx> B \<Longrightarrow> \<exists>f. f \<in> bij(A, B)"
-  unfolding eqpoll_def .
-
-declare bij_imp_eqpoll[intro]
-
-lemma range_of_subset_eqpoll:
-  assumes "f \<in> inj(X,Y)" "S \<subseteq> X"
-  shows "S \<approx> f `` S"
-  using assms restrict_bij by blast
+lemma range_of_subset_eqpoll_rel:
+  assumes "f \<in> inj\<^bsup>M\<^esup>(X,Y)" "S \<subseteq> X"
+    and types:"M(X)" "M(Y)" "M(S)"
+  shows "S \<approx>\<^bsup>M\<^esup> f `` S"
+  using assms restrict_bij bij_rel_char
+    trans_inj_rel_closed[OF \<open>f \<in> inj\<^bsup>M\<^esup>(X,Y)\<close>]
+  unfolding eqpoll_rel_def
+  by (rule_tac x="restrict(f,S)" in rexI) auto
 
 text\<open>I thank Miguel Pagano for this proof.\<close>
-lemma function_space_eqpoll_cong:
+lemma function_space_eqpoll_cong: (* FIXME: not ported yet *)
   assumes
     "A \<approx> A'" "B \<approx> B'"
   shows
@@ -642,7 +329,7 @@ proof -
   qed
 qed
 
-lemma curry_eqpoll:
+lemma curry_eqpoll: (* FIXME: not ported yet *)
   fixes d \<nu>1 \<nu>2  \<kappa>
   shows "\<nu>1 \<rightarrow> \<nu>2 \<rightarrow> \<kappa> \<approx> \<nu>1 \<times> \<nu>2 \<rightarrow> \<kappa>"
   unfolding eqpoll_def
@@ -696,22 +383,37 @@ qed blast
 lemma cantor_inj: "f \<notin> inj(Pow(A),A)"
   using inj_imp_surj[OF _ Pow_bottom] cantor_surj by blast
 
-definition
-  cexp :: "[i,i] \<Rightarrow> i" ("_\<^bsup>\<up>_\<^esup>" [76,1] 75) where
-  "\<kappa>\<^bsup>\<up>\<nu>\<^esup> \<equiv> |\<nu> \<rightarrow> \<kappa>|"
+end (* M_library *)
 
-lemma Card_cexp: "Card(\<kappa>\<^bsup>\<up>\<nu>\<^esup>)"
-  unfolding cexp_def Card_cardinal by simp
+relativize functional "cexp" "cexp_rel" external
+(*
+relationalize "cexp" "is_cexp"
+\<comment> \<open>fails with "Constant ZF_Base.Pi is not present in the db"\<close>
+*)
+
+abbreviation
+  cexp_r :: "[i,i,i\<Rightarrow>o] \<Rightarrow> i"  (\<open>'(_\<^bsup>\<up>_\<^esup>')\<^bsup>_\<^esup>\<close>) where
+  "cexp_r(x,y,M) \<equiv> cexp_rel(M,x,y)"
+
+abbreviation
+  cexp_r_set :: "[i,i,i] \<Rightarrow> i"  (\<open>'(_\<^bsup>\<up>_\<^esup>')\<^bsup>_\<^esup>\<close>) where
+  "cexp_r_set(x,y,M) \<equiv> cexp_rel(##M,x,y)"
+
+context M_library
+begin
+
+lemma Card_cexp: "M(\<kappa>) \<Longrightarrow> M(\<nu>) \<Longrightarrow> Card\<^bsup>M\<^esup>((\<kappa>\<^bsup>\<up>\<nu>\<^esup>)\<^bsup>M\<^esup>)"
+  unfolding cexp_rel_def by simp
 
 \<comment> \<open>Restoring congruence rule, but NOTE: beware\<close>
 declare conj_cong[cong]
 
-lemma eq_csucc_ord:
-  "Ord(i) \<Longrightarrow> i\<^sup>+ = |i|\<^sup>+"
-  using Card_lt_iff Least_cong unfolding csucc_def by auto
+lemma eq_csucc_rel_ord:
+  "Ord(i) \<Longrightarrow> M(i) \<Longrightarrow> (i\<^sup>+)\<^bsup>M\<^esup> = (|i|\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup>"
+  using Card_rel_lt_iff Least_cong unfolding csucc_rel_def by auto
 
 text\<open>I thank Miguel Pagano for this proof.\<close>
-lemma lesspoll_csucc:
+lemma lesspoll_csucc: (* FIXME: not ported yet *)
   assumes "Ord(\<kappa>)"
   shows "d \<prec> \<kappa>\<^sup>+ \<longleftrightarrow> d \<lesssim> \<kappa>"
 proof
@@ -758,14 +460,7 @@ next
     unfolding lesspoll_def by simp
 qed
 
-abbreviation
-  Infinite :: "i\<Rightarrow>o" where
-  "Infinite(X) \<equiv> \<not> Finite(X)"
-
-lemma Infinite_not_empty: "Infinite(X) \<Longrightarrow> X \<noteq> 0"
-  using empty_lepollI by auto
-
-lemma Infinite_imp_nats_lepoll:
+lemma Infinite_imp_nats_lepoll: (* FIXME: not ported yet *)
   assumes "Infinite(X)" "n \<in> \<omega>"
   shows "n \<lesssim> X"
   using \<open>n \<in> \<omega>\<close>
@@ -800,46 +495,56 @@ next
   qed
 qed
 
+(* \<comment> \<open>Unused?\<close>
 lemma zero_lesspoll: assumes "0<\<kappa>" shows "0 \<prec> \<kappa>"
   using assms eqpoll_0_iff[THEN iffD1, of \<kappa>] eqpoll_sym
   unfolding lesspoll_def lepoll_def
   by (auto simp add:inj_def)
+*)
 
-lemma lepoll_nat_imp_Infinite: "\<omega> \<lesssim> X \<Longrightarrow> Infinite(X)"
-proof (rule ccontr, simp)
-  assume "\<omega> \<lesssim> X" "Finite(X)"
-  moreover from this
-  obtain n where "X \<approx> n" "n \<in> \<omega>"
-    unfolding Finite_def by auto
-  moreover from calculation
-  have "\<omega> \<lesssim> n"
-    using lepoll_eq_trans by simp
-  ultimately
-  show "False"
-    using lepoll_nat_imp_Finite nat_not_Finite by simp
-qed
+lemma lepoll_rel_imp_lepoll: "A \<lesssim>\<^bsup>M\<^esup> B \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> A \<lesssim> B"
+  unfolding lepoll_rel_def by auto
 
-lemma InfCard_imp_Infinite: "InfCard(\<kappa>) \<Longrightarrow> Infinite(\<kappa>)"
-  using le_imp_lepoll[THEN lepoll_nat_imp_Infinite, of \<kappa>]
-  unfolding InfCard_def by simp
+lemma lepoll_rel_nat_imp_Infinite: "\<omega> \<lesssim>\<^bsup>M\<^esup> X \<Longrightarrow> M(X) \<Longrightarrow> Infinite(X)"
+  using  lepoll_nat_imp_Infinite lepoll_rel_imp_lepoll by simp
 
-lemma lt_surj_empty_imp_Card:
-  assumes "Ord(\<kappa>)" "\<And>\<alpha>. \<alpha> < \<kappa> \<Longrightarrow> surj(\<alpha>,\<kappa>) = 0"
-  shows "Card(\<kappa>)"
+lemma InfCard_rel_imp_Infinite: "InfCard\<^bsup>M\<^esup>(\<kappa>) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> Infinite(\<kappa>)"
+  using le_imp_lepoll_rel[THEN lepoll_rel_nat_imp_Infinite, of \<kappa>]
+  unfolding InfCard_rel_def by simp
+
+lemma lt_surj_rel_empty_imp_Card_rel:
+  assumes "Ord(\<kappa>)" "\<And>\<alpha>. \<alpha> < \<kappa> \<Longrightarrow> surj\<^bsup>M\<^esup>(\<alpha>,\<kappa>) = 0"
+    and types:"M(\<kappa>)"
+  shows "Card\<^bsup>M\<^esup>(\<kappa>)"
 proof -
   {
-    assume "|\<kappa>| < \<kappa>"
-    with assms
+    define min where "min\<equiv>\<mu> x. \<exists>f[M]. f \<in> bij\<^bsup>M\<^esup>(x,\<kappa>)"
+    moreover
+    note \<open>Ord(\<kappa>)\<close> \<open>M(\<kappa>)\<close>
+    moreover
+    assume "|\<kappa>|\<^bsup>M\<^esup> < \<kappa>"
+    moreover from calculation 
+    have "\<exists>f. f \<in> bij\<^bsup>M\<^esup>(min,\<kappa>)"
+      using LeastI[of "\<lambda>i. i \<approx>\<^bsup>M\<^esup> \<kappa>" \<kappa>, OF eqpoll_rel_refl]
+      unfolding Card_rel_def cardinal_rel_def eqpoll_rel_def
+      by (auto)
+    moreover from calculation
+    have "min < \<kappa>"
+      using LeastI[of "\<lambda>i. i \<approx>\<^bsup>M\<^esup> \<kappa>" \<kappa>, OF eqpoll_rel_refl]
+        Least_le[of "\<lambda>i. i \<approx>\<^bsup>M\<^esup> \<kappa>" "|\<kappa>|\<^bsup>M\<^esup>", OF Ord_cardinal_rel_eqpoll_rel]
+        lt_trans1[of min "\<mu> i. M(i) \<and> (\<exists>f[M]. f \<in> bij\<^bsup>M\<^esup>(i, \<kappa>))" \<kappa>]
+      unfolding Card_rel_def cardinal_rel_def eqpoll_rel_def
+      by (simp)
+    moreover
+    note \<open>min < \<kappa> \<Longrightarrow> surj\<^bsup>M\<^esup>(min,\<kappa>) = 0\<close>
+    ultimately
     have "False"
-      using LeastI[of "\<lambda>i. i \<approx> \<kappa>" \<kappa>, OF eqpoll_refl]
-        Least_le[of "\<lambda>i. i \<approx> \<kappa>" "|\<kappa>|", OF Ord_cardinal_eqpoll]
-      unfolding Card_def cardinal_def eqpoll_def bij_def
-      by simp
+      unfolding bij_rel_def by simp
   }
   with assms
   show ?thesis
-    using Ord_cardinal_le[of \<kappa>] not_lt_imp_le[of "|\<kappa>|" \<kappa>] le_anti_sym
-    unfolding Card_def by auto
+    using Ord_cardinal_rel_le[of \<kappa>] not_lt_imp_le[of "|\<kappa>|\<^bsup>M\<^esup>" \<kappa>] le_anti_sym
+    unfolding Card_rel_def by auto
 qed
 
 
@@ -954,13 +659,6 @@ proof (intro CollectI ballI iffI)
     by blast
 qed
 
-text\<open>We introduce the following notation for strictly increasing maps
-between ordinals.\<close>
-
-abbreviation
-  mono_map_Memrel :: "[i,i] \<Rightarrow> i" (infixr \<open>\<rightarrow>\<^sub><\<close> 60) where
-  "\<alpha> \<rightarrow>\<^sub>< \<beta> \<equiv> mono_map(\<alpha>,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
-
 lemma mono_map_imp_ord_iso_Memrel:
   assumes
     "Ord(\<alpha>)" "Ord(\<beta>)" "f:\<alpha> \<rightarrow>\<^sub>< \<beta>"
@@ -987,9 +685,6 @@ lemma mono_map_ordertype_image:
   using assms mono_map_is_fun ordertype_Memrel ordertype_eq[of f \<alpha> "Memrel(\<alpha>)"]
     mono_map_imp_ord_iso_Memrel well_ord_subset[OF well_ord_Memrel] Image_sub_codomain[of _ \<alpha>]
   by auto
-
-lemma apply_in_image: "f:A\<rightarrow>B \<Longrightarrow> a\<in>A \<Longrightarrow> f`a \<in> f``A"
-  using range_eq_image apply_rangeI[of f]  by simp
 
 lemma Image_subset_Ord_imp_lt:
   assumes
