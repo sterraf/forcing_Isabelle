@@ -378,6 +378,7 @@ qed
 
 lemma Infinite_imp_nats_lepoll_rel: (* FIXME: not ported yet *)
   assumes "Infinite(X)" "n \<in> \<omega>"
+    and types: "M(X)"
   shows "n \<lesssim>\<^bsup>M\<^esup> X"
   sorry
 
@@ -454,14 +455,14 @@ lemma mono_map_rel_mono:
     "f \<in> mono_map\<^bsup>M\<^esup>(A,r,C,s)"
   using assms mono_map_mono mono_map_rel_char by auto
 
-lemma nats_le_InfCard:
+lemma nats_le_InfCard_rel:
   assumes "n \<in> \<omega>" "InfCard\<^bsup>M\<^esup>(\<kappa>)"
   shows "n \<le> \<kappa>"
   using assms Ord_is_Transset
     le_trans[of n \<omega> \<kappa>, OF le_subset_iff[THEN iffD2]]
   unfolding InfCard_rel_def Transset_def by simp
 
-lemma nat_into_InfCard:
+lemma nat_into_InfCard_rel:
   assumes "n \<in> \<omega>" "InfCard\<^bsup>M\<^esup>(\<kappa>)"
   shows "n \<in> \<kappa>"
   using assms  le_imp_subset[of \<omega> \<kappa>]

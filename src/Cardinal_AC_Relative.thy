@@ -447,7 +447,7 @@ locale M_cardinal_UN =  M_Pi_assumptions_choice _ K X for K X +
 begin
 
 text\<open>Kunen's Lemma 10.21\<close>
-lemma cardinal_UN_le:
+lemma cardinal_rel_UN_le:
   assumes K: "InfCard\<^bsup>M\<^esup>(K)"
   shows "(\<And>i. i\<in>K \<Longrightarrow> |X(i)|\<^bsup>M\<^esup> \<le> K) \<Longrightarrow> |\<Union>i\<in>K. X(i)|\<^bsup>M\<^esup> \<le> K"
 proof (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff Pi_assumptions)
@@ -519,7 +519,7 @@ text\<open>The same again, using \<^term>\<open>csucc\<close>\<close>
 lemma cardinal_UN_lt_csucc:
      "[| InfCard(K);  \<And>i. i\<in>K \<Longrightarrow> |X(i)| < csucc(K) |]
       ==> |\<Union>i\<in>K. X(i)| < csucc(K)"
-by (simp add: Card_lt_csucc_iff cardinal_UN_le InfCard_is_Card Card_cardinal)
+by (simp add: Card_lt_csucc_iff cardinal_rel_UN_le InfCard_is_Card Card_cardinal)
 
 text\<open>The same again, for a union of ordinals.  In use, j(i) is a bit like rank(i),
   the least ordinal j such that i:Vfrom(A,j).\<close>
