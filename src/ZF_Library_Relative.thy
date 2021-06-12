@@ -329,60 +329,6 @@ proof -
   qed
 qed
 
-lemma curry_eqpoll: (* FIXME: not ported yet *)
-  fixes d \<nu>1 \<nu>2  \<kappa>
-  shows "\<nu>1 \<rightarrow> \<nu>2 \<rightarrow> \<kappa> \<approx> \<nu>1 \<times> \<nu>2 \<rightarrow> \<kappa>"
-  unfolding eqpoll_def
-proof (intro exI, rule lam_bijective,
-    rule_tac [1-2] lam_type, rule_tac [2] lam_type)
-  fix f z
-  assume "f : \<nu>1 \<rightarrow> \<nu>2 \<rightarrow> \<kappa>" "z \<in> \<nu>1 \<times> \<nu>2"
-  then
-  show "f`fst(z)`snd(z) \<in> \<kappa>"
-    by simp
-next
-  fix f x y
-  assume "f : \<nu>1 \<times> \<nu>2 \<rightarrow> \<kappa>" "x\<in>\<nu>1" "y\<in>\<nu>2"
-  then
-  show "f`\<langle>x,y\<rangle> \<in> \<kappa>" by simp
-next \<comment> \<open>one composition is the identity:\<close>
-  fix f
-  assume "f : \<nu>1 \<times> \<nu>2 \<rightarrow> \<kappa>"
-  then
-  show "(\<lambda>x\<in>\<nu>1 \<times> \<nu>2. (\<lambda>x\<in>\<nu>1. \<lambda>xa\<in>\<nu>2. f ` \<langle>x, xa\<rangle>) ` fst(x) ` snd(x)) = f"
-    by (auto intro:fun_extension)
-qed simp \<comment> \<open>the other composition follows automatically\<close>
-
-lemma Pow_eqpoll_function_space:
-  fixes d X
-  notes bool_of_o_def [simp]
-  defines [simp]:"d(A) \<equiv> (\<lambda>x\<in>X. bool_of_o(x\<in>A))"
-    \<comment> \<open>the witnessing map for the thesis:\<close>
-  shows "Pow(X) \<approx> X \<rightarrow> 2"
-  unfolding eqpoll_def
-proof (intro exI, rule lam_bijective)
-  \<comment> \<open>We give explicit mutual inverses\<close>
-  fix A
-  assume "A\<in>Pow(X)"
-  then
-  show "d(A) : X \<rightarrow> 2"
-    using lam_type[of _ "\<lambda>x. bool_of_o(x\<in>A)" "\<lambda>_. 2"]
-    by force
-  from \<open>A\<in>Pow(X)\<close>
-  show "{y\<in>X. d(A)`y = 1} = A"
-    by (auto)
-next
-  fix f
-  assume "f: X\<rightarrow>2"
-  then
-  show "d({y \<in> X . f ` y = 1}) = f"
-    using apply_type[OF \<open>f: X\<rightarrow>2\<close>]
-    by (force intro:fun_extension)
-qed blast
-
-lemma cantor_inj: "f \<notin> inj(Pow(A),A)"
-  using inj_imp_surj[OF _ Pow_bottom] cantor_surj by blast
-
 end (* M_library *)
 
 relativize functional "cexp" "cexp_rel" external
