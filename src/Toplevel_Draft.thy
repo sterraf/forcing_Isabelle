@@ -1,25 +1,12 @@
 theory Toplevel_Draft
   imports
     Cardinal_Preservation
-    FiniteFun_Relative
 
 begin
 
 definition
   Add_subs :: "[i,i] \<Rightarrow> i" where
   "Add_subs(\<kappa>,\<alpha>) \<equiv> Fn(\<omega>,\<kappa>\<times>\<alpha>,2)"
-
-definition
-  cexp_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" where
-  def_cexp_rel:"cexp_rel(M,x,y) \<equiv> |y\<rightarrow>\<^bsup>M\<^esup> x|\<^bsup>M\<^esup>"
-
-abbreviation
-  cexp_r :: "[i,i,i\<Rightarrow>o] \<Rightarrow> i"  (\<open>'(_\<^bsup>\<up>_\<^esup>')\<^bsup>_\<^esup>\<close>) where
-  "cexp_r(x,y,M) \<equiv> cexp_rel(M,x,y)"
-
-abbreviation
-  cexp_r_set :: "[i,i,i] \<Rightarrow> i"  (\<open>'(_\<^bsup>\<up>_\<^esup>')\<^bsup>_\<^esup>\<close>) where
-  "cexp_r_set(x,y,M) \<equiv> cexp_rel(##M,x,y)"
 
 locale M_cardinal_UN_lepoll = M_cardinal_UN _ J for J
 begin
@@ -35,7 +22,7 @@ lemma leqpoll_rel_imp_cardinal_rel_UN_le:
 end (* M_cardinal_UN_lepoll *)
 
 
-locale M_master = M_cardinal_AC + M_cardinal_arith_jump + M_FiniteFun +
+locale M_master = M_library +
   assumes
   domain_separation: "M(x) \<Longrightarrow> separation(M, \<lambda>z. x \<in> domain(z))"
   and
@@ -102,17 +89,11 @@ lemma cardinal_rel_lt_csucc_rel_iff: "Card\<^bsup>M\<^esup>(K) \<Longrightarrow>
   |K'|\<^bsup>M\<^esup> < (K\<^sup>+)\<^bsup>M\<^esup> \<longleftrightarrow> |K'|\<^bsup>M\<^esup> \<le> K"
   sorry
 
-lemma InfCard_rel_Aleph_rel:
-  assumes "Ord(\<alpha>)" "M(\<alpha>)"
-  shows "InfCard\<^bsup>M\<^esup>(\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)"
-  sorry
-
 lemma cardinal_rel_Aleph_rel [simp]: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> |\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>|\<^bsup>M\<^esup> = \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>"
   sorry
 
 lemma nat_lt_Aleph_rel1: "\<omega> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
   sorry
-
 
 lemma Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
   using  nat_into_M[of 2, THEN Aleph_rel_closed] by simp
@@ -120,13 +101,7 @@ lemma Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esu
 lemma Card_rel_Aleph_rel[simp]: "Ord(\<alpha>) \<Longrightarrow> Card\<^bsup>M\<^esup>(\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)"
   sorry
 
-lemma Aleph_rel_zero_eq_nat: "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup> = \<omega>"
-  sorry
-
 lemma Aleph_rel_succ: "\<aleph>\<^bsub>succ(\<alpha>)\<^esub>\<^bsup>M\<^esup> = (\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup>"
-  sorry
-
-lemma Aleph_rel_increasing: "a < b  \<Longrightarrow> M(a) \<Longrightarrow> M(b) \<Longrightarrow> \<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup> < \<aleph>\<^bsub>b\<^esub>\<^bsup>M\<^esup>"
   sorry
 
 lemma Fnle_nat_closed[intro,simp]:
@@ -213,7 +188,7 @@ proof (rule ccontr)
       Aleph_rel_closed[of "succ(z)"] surj_is_fun[of f \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"] by auto
   then
   have "\<beta> \<in> \<alpha> \<Longrightarrow> |F`\<beta>|\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>" for \<beta>
-    using Aleph_rel_zero_eq_nat by simp
+    using Aleph_rel_zero by simp
   from \<open>\<alpha> \<in> M\<close> \<open>F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close> \<open>F\<in>M\<close>
   interpret M_cardinal_UN_lepoll "##M" "\<lambda>\<beta>. F`\<beta>" \<alpha>
     using Aleph_rel_closed[of 0] ccc_replacement
@@ -235,7 +210,7 @@ proof (rule ccontr)
   from \<open>\<alpha> < \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>\<close> \<open>\<alpha> \<in> M\<close> assms
   have "\<alpha> \<lesssim>\<^bsup>M\<^esup> \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"
     using
-      Aleph_rel_zero_eq_nat
+      Aleph_rel_zero
       cardinal_rel_lt_csucc_rel_iff[of "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>" \<alpha>]
       le_Card_rel_iff[of "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>" \<alpha>]
       Aleph_rel_succ[of z] Card_rel_lt_iff[of \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"]
@@ -246,7 +221,7 @@ proof (rule ccontr)
     by simp
   with \<open>\<alpha> < \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>\<close> \<open>\<forall>\<beta>\<in>\<alpha>. |F`\<beta>|\<^bsup>M\<^esup> \<le> \<omega>\<close> \<open>\<alpha> \<in> M\<close> assms
   have "|\<Union>\<beta>\<in>\<alpha>. F`\<beta>|\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"
-    using InfCard_rel_Aleph_rel[of z] Aleph_rel_zero_eq_nat
+    using InfCard_rel_Aleph_rel[of z] Aleph_rel_zero
       subset_imp_lepoll_rel[THEN lepoll_rel_imp_cardinal_rel_le,
         of "\<Union>\<beta>\<in>\<alpha>. F`\<beta>" "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"]
       Aleph_rel_closed[of z] Aleph_rel_succ
@@ -313,10 +288,10 @@ lemma Aleph_rel_nats_MG_eq_Aleph_rel_nats_M:
 proof (induct)
   case 0
   have "\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup> = \<omega>"
-    using ext.Aleph_rel_zero_eq_nat .
+    using ext.Aleph_rel_zero .
   also
   have "\<omega> = \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>"
-    using Aleph_rel_zero_eq_nat by simp
+    using Aleph_rel_zero by simp
   finally
   show ?case .
 next
@@ -546,8 +521,8 @@ proof -
   have "|\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>|\<^bsup>M[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>\<^esup>)\<^bsup>M[G]\<^esup>"
     using ext.lepoll_rel_imp_cardinal_rel_le[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2",
         OF _ _ ext.function_space_rel_closed] ext.nat_into_M ext.M_nat
-      ext.Aleph_rel_zero_eq_nat Aleph_rel_nats_MG_eq_Aleph_rel_nats_M
-    unfolding def_cexp_rel by simp
+      ext.Aleph_rel_zero Aleph_rel_nats_MG_eq_Aleph_rel_nats_M
+    unfolding cexp_rel_def by simp
   then
   show "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>\<^esup>)\<^bsup>M[G]\<^esup>"
     using Aleph_rel_nats_MG_eq_Aleph_rel_nats_M

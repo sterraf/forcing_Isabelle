@@ -6,6 +6,7 @@ theory Cohen_Posets
     Names \<comment> \<open>only for \<^term>\<open>SepReplace\<close>\<close>
     Recursion_Thms \<comment> \<open>only for the definition of \<^term>\<open>Rrel\<close>\<close>
     Renaming_Auto \<comment> \<open>only for @{thm app_fun}\<close>
+    ZF_Library_Relative
     "../Delta_System_Lemma/Delta_System"
 begin
 

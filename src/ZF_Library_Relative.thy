@@ -4,9 +4,9 @@ theory ZF_Library_Relative
   imports
     "../Delta_System_Lemma/ZF_Library"
     "ZF-Constructible.Normal"
-    Aleph_Relative
+    Aleph_Relative\<comment> \<open>must be before Cardinal_AC_Relative!\<close>
     Cardinal_AC_Relative
-    "../Tools/Try0"
+    FiniteFun_Relative
 begin
 
 (*
@@ -74,7 +74,7 @@ abbreviation
   Finite_to_one_r_set :: "[i,i,i] \<Rightarrow> i" (\<open>Finite'_to'_one\<^bsup>_\<^esup>'(_,_')\<close>) where
   "Finite_to_one\<^bsup>M\<^esup>(X,Y) \<equiv> Finite_to_one_rel(##M,X,Y)"
 
-locale M_library =  M_cardinal_AC + M_aleph +
+locale M_library =  M_cardinal_AC + M_aleph + M_FiniteFun +
   assumes
   Pair_diff_replacement: "M(X) \<Longrightarrow> strong_replacement(M, \<lambda>A y. y = \<langle>A, A - X\<rangle>)"
   and
@@ -530,9 +530,8 @@ proof -
       by (auto)
     moreover from calculation
     have "min < \<kappa>"
-      using LeastI[of "\<lambda>i. i \<approx>\<^bsup>M\<^esup> \<kappa>" \<kappa>, OF eqpoll_rel_refl]
-        Least_le[of "\<lambda>i. i \<approx>\<^bsup>M\<^esup> \<kappa>" "|\<kappa>|\<^bsup>M\<^esup>", OF Ord_cardinal_rel_eqpoll_rel]
-        lt_trans1[of min "\<mu> i. M(i) \<and> (\<exists>f[M]. f \<in> bij\<^bsup>M\<^esup>(i, \<kappa>))" \<kappa>]
+      using lt_trans1[of min "\<mu> i. M(i) \<and> (\<exists>f[M]. f \<in> bij\<^bsup>M\<^esup>(i, \<kappa>))" \<kappa>]
+       Least_le[of "\<lambda>i. i \<approx>\<^bsup>M\<^esup> \<kappa>" "|\<kappa>|\<^bsup>M\<^esup>", OF Ord_cardinal_rel_eqpoll_rel]
       unfolding Card_rel_def cardinal_rel_def eqpoll_rel_def
       by (simp)
     moreover
@@ -547,290 +546,101 @@ proof -
     unfolding Card_rel_def by auto
 qed
 
+end (* M_library *)
 
-subsection\<open>Morphisms of binary relations\<close>
+relativize functional "mono_map" "mono_map_rel" external
+relationalize "mono_map_rel" "is_mono_map"
 
-text\<open>The main case of interest is in the case of partial orders.\<close>
+notation mono_map_rel (\<open>mono'_map\<^bsup>_\<^esup>'(_,_,_,_')\<close>)
 
-lemma mono_map_mono:
-  assumes
-    "f \<in> mono_map(A,r,B,s)" "B \<subseteq> C"
-  shows
-    "f \<in> mono_map(A,r,C,s)"
-  unfolding mono_map_def
-proof (intro CollectI ballI impI)
-  from \<open>f \<in> mono_map(A,_,B,_)\<close>
-  have "f: A \<rightarrow> B"
-    using mono_map_is_fun by simp
-  with \<open>B\<subseteq>C\<close>
-  show "f: A \<rightarrow> C"
-    using fun_weaken_type by simp
-  fix x y
-  assume "x\<in>A" "y\<in>A" "\<langle>x,y\<rangle> \<in> r"
-  moreover from this and \<open>f: A \<rightarrow> B\<close>
-  have "f`x \<in> B" "f`y \<in> B"
-    using apply_type by simp_all
-  moreover
-  note \<open>f \<in> mono_map(_,r,_,s)\<close>
-  ultimately
-  show "\<langle>f ` x, f ` y\<rangle> \<in> s"
-    unfolding mono_map_def by blast
-qed
+abbreviation
+  mono_map_r_set  :: "[i,i,i,i,i]\<Rightarrow>i"  (\<open>mono'_map\<^bsup>_\<^esup>'(_,_,_,_')\<close>) where
+  "mono_map\<^bsup>M\<^esup>(a,r,b,s) \<equiv> mono_map_rel(##M,a,r,b,s)"
 
-lemma ordertype_zero_imp_zero: "ordertype(A,r) = 0 \<Longrightarrow> A = 0"
-  using ordermap_type[of A r]
-  by (cases "A=0") auto
+context M_library
+begin
 
-lemma mono_map_increasing:
-  "j\<in>mono_map(A,r,B,s) \<Longrightarrow> a\<in>A \<Longrightarrow> c\<in>A \<Longrightarrow> \<langle>a,c\<rangle>\<in>r \<Longrightarrow> \<langle>j`a,j`c\<rangle>\<in>s"
-  unfolding mono_map_def by simp
-
-lemma linear_mono_map_reflects:
-  assumes
-    "linear(\<alpha>,r)" "trans[\<beta>](s)" "irrefl(\<beta>,s)" "f\<in>mono_map(\<alpha>,r,\<beta>,s)"
-    "x\<in>\<alpha>" "y\<in>\<alpha>" "\<langle>f`x,f`y\<rangle>\<in>s"
-  shows
-    "\<langle>x,y\<rangle>\<in>r"
-proof -
-  from \<open>f\<in>mono_map(_,_,_,_)\<close>
-  have preserves:"x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>r \<Longrightarrow> \<langle>f`x,f`y\<rangle>\<in>s" for x y
-    unfolding mono_map_def by blast
-  {
-    assume "\<langle>x, y\<rangle> \<notin> r" "x\<in>\<alpha>" "y\<in>\<alpha>"
-    moreover
-    note \<open>\<langle>f`x,f`y\<rangle>\<in>s\<close> and \<open>linear(\<alpha>,r)\<close>
-    moreover from calculation
-    have "y = x \<or> \<langle>y,x\<rangle>\<in>r"
-      unfolding linear_def by blast
-    moreover
-    note preserves [of y x]
-    ultimately
-    have "y = x \<or> \<langle>f`y, f`x\<rangle>\<in> s" by blast
-    moreover from \<open>f\<in>mono_map(_,_,\<beta>,_)\<close> \<open>x\<in>\<alpha>\<close> \<open>y\<in>\<alpha>\<close>
-    have "f`x\<in>\<beta>" "f`y\<in>\<beta>"
-      using apply_type[OF mono_map_is_fun] by simp_all
-    moreover
-    note \<open>\<langle>f`x,f`y\<rangle>\<in>s\<close>  \<open>trans[\<beta>](s)\<close> \<open>irrefl(\<beta>,s)\<close>
-    ultimately
-    have "False"
-      using trans_onD[of \<beta> s "f`x" "f`y" "f`x"] irreflE by blast
-  }
-  with assms
-  show "\<langle>x,y\<rangle>\<in>r" by blast
-qed
-
-lemma irrefl_Memrel: "irrefl(x, Memrel(x))"
-  unfolding irrefl_def using mem_irrefl by auto
-
-lemmas Memrel_mono_map_reflects = linear_mono_map_reflects
-  [OF well_ord_is_linear[OF well_ord_Memrel] well_ord_is_trans_on[OF well_ord_Memrel]
-    irrefl_Memrel]
-
-\<comment> \<open>Same proof as Paulson's @{thm mono_map_is_inj}\<close>
-lemma mono_map_is_inj':
-  "\<lbrakk> linear(A,r);  irrefl(B,s);  f \<in> mono_map(A,r,B,s) \<rbrakk> \<Longrightarrow> f \<in> inj(A,B)"
-  unfolding irrefl_def mono_map_def inj_def using linearE
-  by (clarify, rename_tac x w)
-    (erule_tac x=w and y=x in linearE, assumption+, (force intro: apply_type)+)
-
-lemma mono_map_imp_ord_iso_image:
-  assumes
-    "linear(\<alpha>,r)" "trans[\<beta>](s)"  "irrefl(\<beta>,s)" "f\<in>mono_map(\<alpha>,r,\<beta>,s)"
-  shows
-    "f \<in> ord_iso(\<alpha>,r,f``\<alpha>,s)"
-  unfolding ord_iso_def
-proof (intro CollectI ballI iffI)
-  \<comment> \<open>Enough to show it's bijective and preserves both ways\<close>
-  from assms
-  have "f \<in> inj(\<alpha>,\<beta>)"
-    using mono_map_is_inj' by blast
-  moreover from \<open>f \<in> mono_map(_,_,_,_)\<close>
-  have "f \<in> surj(\<alpha>, f``\<alpha>)"
-    unfolding mono_map_def using surj_image by auto
-  ultimately
-  show "f \<in> bij(\<alpha>, f``\<alpha>)"
-    unfolding bij_def using inj_is_fun inj_to_Image by simp
-  from \<open>f\<in>mono_map(_,_,_,_)\<close>
-  show "x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>r \<Longrightarrow> \<langle>f`x,f`y\<rangle>\<in>s" for x y
-    unfolding mono_map_def by blast
-  with assms
-  show "\<langle>f`x,f`y\<rangle>\<in>s \<Longrightarrow> x\<in>\<alpha> \<Longrightarrow> y\<in>\<alpha> \<Longrightarrow> \<langle>x,y\<rangle>\<in>r" for x y
-    using linear_mono_map_reflects
-    by blast
-qed
-
-lemma mono_map_imp_ord_iso_Memrel:
-  assumes
-    "Ord(\<alpha>)" "Ord(\<beta>)" "f:\<alpha> \<rightarrow>\<^sub>< \<beta>"
-  shows
-    "f \<in> ord_iso(\<alpha>,Memrel(\<alpha>),f``\<alpha>,Memrel(\<beta>))"
-  using assms mono_map_imp_ord_iso_image[OF well_ord_is_linear[OF well_ord_Memrel]
-      well_ord_is_trans_on[OF well_ord_Memrel] irrefl_Memrel] by blast
-
-lemma mono_map_ordertype_image':
-  assumes
-    "X\<subseteq>\<alpha>" "Ord(\<alpha>)" "Ord(\<beta>)" "f \<in> mono_map(X,Memrel(\<alpha>),\<beta>,Memrel(\<beta>))"
-  shows
-    "ordertype(f``X,Memrel(\<beta>)) = ordertype(X,Memrel(\<alpha>))"
-  using assms mono_map_is_fun[of f X _ \<beta>]  ordertype_eq
-    mono_map_imp_ord_iso_image[OF well_ord_is_linear[OF well_ord_Memrel, THEN linear_subset]
-      well_ord_is_trans_on[OF well_ord_Memrel] irrefl_Memrel, of \<alpha> X \<beta> f]
-    well_ord_subset[OF well_ord_Memrel]  Image_sub_codomain[of f X \<beta> X] by auto
-
-lemma mono_map_ordertype_image:
-  assumes
-    "Ord(\<alpha>)" "Ord(\<beta>)" "f:\<alpha> \<rightarrow>\<^sub>< \<beta>"
-  shows
-    "ordertype(f``\<alpha>,Memrel(\<beta>)) = \<alpha>"
-  using assms mono_map_is_fun ordertype_Memrel ordertype_eq[of f \<alpha> "Memrel(\<alpha>)"]
-    mono_map_imp_ord_iso_Memrel well_ord_subset[OF well_ord_Memrel] Image_sub_codomain[of _ \<alpha>]
+lemma mono_map_rel_char:
+  assumes "M(a)" "M(b)"
+  shows "mono_map\<^bsup>M\<^esup>(a,r,b,s) = {f\<in>mono_map(a,r,b,s) . M(f)}"
+  using assms function_space_rel_char unfolding mono_map_rel_def mono_map_def
   by auto
 
-lemma Image_subset_Ord_imp_lt:
+text\<open>Just a sample of porting results on \<^term>\<open>mono_map\<close>\<close>
+lemma mono_map_rel_mono:
   assumes
-    "Ord(\<alpha>)" "h``A \<subseteq> \<alpha>" "x\<in>domain(h)" "x\<in>A" "function(h)"
+    "f \<in> mono_map\<^bsup>M\<^esup>(A,r,B,s)" "B \<subseteq> C"
+    and types:"M(A)" "M(B)" "M(C)"
   shows
-    "h`x < \<alpha>"
-  using assms
-  unfolding domain_def using imageI ltI function_apply_equality by auto
-
-lemma ordermap_le_arg:
-  assumes
-    "X\<subseteq>\<beta>" "x\<in>X" "Ord(\<beta>)"
-  shows
-    "x\<in>X \<Longrightarrow> ordermap(X,Memrel(\<beta>))`x\<le>x"
-proof (induct rule:Ord_induct[OF subsetD, OF assms])
-  case (1 x)
-  have "wf[X](Memrel(\<beta>))"
-    using wf_imp_wf_on[OF wf_Memrel] .
-  with 1
-  have "ordermap(X,Memrel(\<beta>))`x = {ordermap(X,Memrel(\<beta>))`y . y\<in>{y\<in>X . y\<in>x \<and> y\<in>\<beta>}}"
-    using ordermap_unfold Ord_trans[of _ x \<beta>] by auto
-  also from assms
-  have "... = {ordermap(X,Memrel(\<beta>))`y . y\<in>{y\<in>X . y\<in>x}}"
-    using Ord_trans[of _ x \<beta>] Ord_in_Ord by blast
-  finally
-  have ordm:"ordermap(X,Memrel(\<beta>))`x = {ordermap(X,Memrel(\<beta>))`y . y\<in>{y\<in>X . y\<in>x}}" .
-  from 1
-  have "y\<in>x \<Longrightarrow> y\<in>X \<Longrightarrow> ordermap(X,Memrel(\<beta>))`y \<le> y" for y by simp
-  with \<open>x\<in>\<beta>\<close> and \<open>Ord(\<beta>)\<close>
-  have "y\<in>x \<Longrightarrow> y\<in>X \<Longrightarrow> ordermap(X,Memrel(\<beta>))`y \<in> x" for y
-    using ltI[OF _ Ord_in_Ord[of \<beta> x]] lt_trans1 ltD by blast
-  with ordm
-  have "ordermap(X,Memrel(\<beta>))`x \<subseteq> x" by auto
-  with \<open>x\<in>X\<close> assms
-  show ?case
-    using subset_imp_le Ord_in_Ord[of \<beta> x] Ord_ordermap
-      well_ord_subset[OF well_ord_Memrel, of \<beta>] by force
-qed
-
-lemma subset_imp_ordertype_le:
-  assumes
-    "X\<subseteq>\<beta>" "Ord(\<beta>)"
-  shows
-    "ordertype(X,Memrel(\<beta>))\<le>\<beta>"
-proof -
-  {
-    fix x
-    assume "x\<in>X"
-    with assms
-    have "ordermap(X,Memrel(\<beta>))`x \<le> x"
-      using ordermap_le_arg by simp
-    with \<open>x\<in>X\<close> and assms
-    have "ordermap(X,Memrel(\<beta>))`x \<in> \<beta>" (is "?y \<in> _")
-      using ltD[of ?y "succ(x)"] Ord_trans[of  ?y x \<beta>] by auto
-  }
-  then
-  have "ordertype(X, Memrel(\<beta>)) \<subseteq> \<beta>"
-    using ordertype_unfold[of X] by auto
-  with assms
-  show ?thesis
-    using subset_imp_le Ord_ordertype[OF well_ord_subset, OF well_ord_Memrel] by simp
-qed
-
-lemma mono_map_imp_le:
-  assumes
-    "f\<in>mono_map(\<alpha>, Memrel(\<alpha>),\<beta>, Memrel(\<beta>))" "Ord(\<alpha>)" "Ord(\<beta>)"
-  shows
-    "\<alpha>\<le>\<beta>"
-proof -
-  from assms
-  have "f \<in> \<langle>\<alpha>, Memrel(\<alpha>)\<rangle> \<cong> \<langle>f``\<alpha>, Memrel(\<beta>)\<rangle>"
-    using mono_map_imp_ord_iso_Memrel by simp
-  then
-  have "converse(f) \<in> \<langle>f``\<alpha>, Memrel(\<beta>)\<rangle> \<cong> \<langle>\<alpha>, Memrel(\<alpha>)\<rangle>"
-    using ord_iso_sym by simp
-  with \<open>Ord(\<alpha>)\<close>
-  have "\<alpha> = ordertype(f``\<alpha>,Memrel(\<beta>))"
-    using ordertype_eq well_ord_Memrel ordertype_Memrel by auto
-  also from assms
-  have "ordertype(f``\<alpha>,Memrel(\<beta>)) \<le> \<beta>"
-    using subset_imp_ordertype_le mono_map_is_fun[of f] Image_sub_codomain[of f] by force
-  finally
-  show ?thesis .
-qed
-
-\<comment> \<open>\<^term>\<open>Ord(A) \<Longrightarrow> f \<in> mono_map(A, Memrel(A), B, Memrel(Aa)) \<Longrightarrow> f \<in> inj(A, B)\<close>\<close> 
-lemmas Memrel_mono_map_is_inj = mono_map_is_inj
-  [OF well_ord_is_linear[OF well_ord_Memrel]
-    wf_imp_wf_on[OF wf_Memrel]]
-
-lemma mono_mapI:
-  assumes "f: A\<rightarrow>B" "\<And>x y. x\<in>A \<Longrightarrow> y\<in>A \<Longrightarrow> \<langle>x,y\<rangle>\<in>r \<Longrightarrow> \<langle>f`x,f`y\<rangle>\<in>s"
-  shows   "f \<in> mono_map(A,r,B,s)"
-  unfolding mono_map_def using assms by simp
-
-lemmas mono_mapD = mono_map_is_fun mono_map_increasing
-
-bundle mono_map_rules =  mono_mapI[intro!] mono_map_is_fun[dest] mono_mapD[dest]
+    "f \<in> mono_map\<^bsup>M\<^esup>(A,r,C,s)"
+  using assms mono_map_mono mono_map_rel_char by auto
 
 lemma nats_le_InfCard:
-  assumes "n \<in> \<omega>" "InfCard(\<kappa>)"
+  assumes "n \<in> \<omega>" "InfCard\<^bsup>M\<^esup>(\<kappa>)"
   shows "n \<le> \<kappa>"
   using assms Ord_is_Transset
     le_trans[of n \<omega> \<kappa>, OF le_subset_iff[THEN iffD2]]
-  unfolding InfCard_def Transset_def by simp
+  unfolding InfCard_rel_def Transset_def by simp
 
 lemma nat_into_InfCard:
-  assumes "n \<in> \<omega>" "InfCard(\<kappa>)"
+  assumes "n \<in> \<omega>" "InfCard\<^bsup>M\<^esup>(\<kappa>)"
   shows "n \<in> \<kappa>"
   using assms  le_imp_subset[of \<omega> \<kappa>]
-  unfolding InfCard_def by auto
+  unfolding InfCard_rel_def by auto
 
-
-subsection\<open>Alephs are infinite cardinals\<close>\<comment> \<open>This requires porting \<^term>\<open>Aleph\<close>\<close>
-
-lemma Aleph_zero_eq_nat: "\<aleph>\<^bsub>0\<^esub> = \<omega>"
-  unfolding Aleph_def by simp
-
-lemma InfCard_Aleph:
-  notes Aleph_zero_eq_nat[simp]
-  assumes "Ord(\<alpha>)"
-  shows "InfCard(\<aleph>\<^bsub>\<alpha>\<^esub>)"
+lemma Finite_cardinal_rel_in_nat [simp]:
+  assumes "Finite(A)" "M(A)" shows "|A|\<^bsup>M\<^esup> \<in> \<omega>"
 proof -
-  have "\<not> (\<aleph>\<^bsub>\<alpha>\<^esub> \<in> \<omega>)"
+  note assms
+  moreover from this
+  obtain n where "n \<in> \<omega>" "M(n)" "A \<approx> n"
+    unfolding Finite_def by auto
+  moreover from calculation
+  obtain f where "f \<in> bij(A,n)" "f: A-||>n"
+    using Finite_Fin[THEN fun_FiniteFunI, OF _ subset_refl] bij_is_fun
+    unfolding eqpoll_def by auto
+  ultimately
+  have "A \<approx>\<^bsup>M\<^esup> n" unfolding eqpoll_rel_def by (auto dest:transM)
+  with assms and \<open>M(n)\<close>
+  have "n \<approx>\<^bsup>M\<^esup> A" using eqpoll_rel_sym by simp
+  moreover
+  note \<open>n\<in>\<omega>\<close> \<open>M(n)\<close>
+  ultimately
+  show ?thesis
+    using assms Least_le[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> A" n]
+      lt_trans1[of _ n \<omega>, THEN ltD]
+    unfolding cardinal_rel_def Finite_def
+    by (auto dest!:naturals_lt_nat)
+qed
+
+lemma InfCard_rel_Aleph_rel:
+  notes Aleph_rel_zero[simp]
+  assumes "Ord(\<alpha>)"
+    and types: "M(\<alpha>)"
+  shows "InfCard\<^bsup>M\<^esup>(\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)"
+proof -
+  have "\<not> (\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup> \<in> \<omega>)"
   proof (cases "\<alpha>=0")
     case True
     then show ?thesis using mem_irrefl by auto
   next
     case False
-    with \<open>Ord(\<alpha>)\<close>
-    have "\<omega> \<in> \<aleph>\<^bsub>\<alpha>\<^esub>" using Ord_0_lt[of \<alpha>] ltD  by (auto dest:Aleph_increasing)
+    with assms
+    have "\<omega> \<in> \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>" using Ord_0_lt[of \<alpha>] ltD by (auto dest:Aleph_rel_increasing)
     then show ?thesis using foundation by blast
   qed
-  with \<open>Ord(\<alpha>)\<close>
-  have "\<not> (|\<aleph>\<^bsub>\<alpha>\<^esub>| \<in> \<omega>)"
-    using Card_cardinal_eq by auto
-  then
-  have "\<not> Finite(\<aleph>\<^bsub>\<alpha>\<^esub>)" by auto
-  with \<open>Ord(\<alpha>)\<close>
+  with assms
+  have "\<not> (|\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>|\<^bsup>M\<^esup> \<in> \<omega>)"
+    using Card_rel_cardinal_rel_eq by auto
+  with assms
+  have "Infinite(\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)" using Ord_Aleph_rel by clarsimp
+  with assms
   show ?thesis
-    using Inf_Card_is_InfCard by simp
+    using Inf_Card_rel_is_InfCard_rel by simp
 qed
 
-lemmas Limit_Aleph = InfCard_Aleph[THEN InfCard_is_Limit]
+lemmas Limit_Aleph_rel = InfCard_rel_Aleph_rel[THEN InfCard_rel_is_Limit]
 
-(* Already ported:  *)
 bundle Ord_dests = Limit_is_Ord[dest] Card_rel_is_Ord[dest]
 bundle Aleph_rel_dests = Aleph_rel_cont[dest]
 bundle Aleph_rel_intros = Aleph_rel_increasing[intro!]
