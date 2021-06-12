@@ -110,7 +110,8 @@ lemma Aleph_rel_cont: "Limit(l) \<Longrightarrow> M(l) \<Longrightarrow> \<aleph
   by (simp add:OUnion_def)
 
 lemma Ord_Aleph_rel:
-  assumes "Ord(a)"shows "M(a) \<Longrightarrow> Ord(\<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup>)"
+  assumes "Ord(a)" 
+  shows "M(a) \<Longrightarrow> Ord(\<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup>)"
   using \<open>Ord(a)\<close>
 proof(induct a rule:trans_induct3)
   case 0
