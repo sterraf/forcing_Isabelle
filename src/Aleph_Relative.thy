@@ -86,6 +86,29 @@ lemma Aleph_rel_succ: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightar
   by (subst def_transrec [OF Aleph_rel_def'])
     (simp add:HAleph_rel_def)
 
+lemma Aleph_rel_limit:
+  assumes "Limit(\<alpha>)" "M(\<alpha>)"
+  shows "\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup> = \<Union>{\<aleph>\<^bsub>j\<^esub>\<^bsup>M\<^esup> . j \<in> \<alpha>}"
+proof -
+  note trans=transM[OF _ \<open>M(\<alpha>)\<close>]
+  from \<open>M(\<alpha>)\<close>
+  have "\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup> = HAleph_rel(M, \<alpha>, \<lambda>x\<in>\<alpha>. \<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>)"
+    using def_transrec [OF Aleph_rel_def',of M \<alpha>] by simp
+  also
+  have "... = \<Union>{a . j \<in> \<alpha>, M(a) \<and> a = \<aleph>\<^bsub>j\<^esub>\<^bsup>M\<^esup>}"
+    unfolding HAleph_rel_def
+    using assms zero_not_Limit trans by auto
+  also
+  have "... = \<Union>{\<aleph>\<^bsub>j\<^esub>\<^bsup>M\<^esup> . j \<in> \<alpha>}"
+    using Aleph_rel_closed[OF trans] by auto
+  finally
+  show ?thesis .
+qed
+
+lemma Aleph_rel_cont: "Limit(l) \<Longrightarrow> M(l) \<Longrightarrow> \<aleph>\<^bsub>l\<^esub>\<^bsup>M\<^esup> = (\<Union>i<l. \<aleph>\<^bsub>i\<^esub>\<^bsup>M\<^esup>)"
+  using Limit_is_Ord Aleph_rel_limit
+  by (simp add:OUnion_def)
+
 lemma Ord_Aleph_rel:
   assumes "Ord(a)"shows "M(a) \<Longrightarrow> Ord(\<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup>)"
   using \<open>Ord(a)\<close>
@@ -99,33 +122,19 @@ next
   then
   have "Ord(csucc_rel(M,\<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>))"
     using Card_rel_is_Ord Card_rel_csucc_rel Aleph_rel_closed
-    by simp  
+    by simp
   with \<open>Ord(x)\<close> \<open>M(x)\<close>
   show ?case using Aleph_rel_succ by simp
 next
   case (limit x)
-  then 
-  show ?case
-    sorry
+  note trans=transM[OF _ \<open>M(x)\<close>]
+  from limit
+  have "\<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup> = (\<Union>i\<in>x. \<aleph>\<^bsub>i\<^esub>\<^bsup>M\<^esup>)"
+    using Aleph_rel_cont OUnion_def Limit_is_Ord
+    by auto
+  with limit
+  show ?case using Ord_UN Aleph_rel_closed trans by auto
 qed
-
-
-\<comment> \<open>You can tell I'm really tired by seeing the next proof\<close>
-lemma Aleph_rel_cont: "Limit(l) \<Longrightarrow> M(l) \<Longrightarrow> \<aleph>\<^bsub>l\<^esub>\<^bsup>M\<^esup> = (\<Union>i<l. \<aleph>\<^bsub>i\<^esub>\<^bsup>M\<^esup>)"
-  using Limit_is_Ord Ord_in_Ord'
-  apply (subst def_transrec [OF Aleph_rel_def'])
-  apply (subgoal_tac "l\<noteq>0")
-   apply (simp add:HAleph_rel_def OUnion_def, intro equalityI)
-    apply auto[1]
-   apply (clarify, intro UnionI ReplaceI conjI)
-        prefer 4 apply (rule succ_mem_Limit)
-  defer apply simp prefer 3 apply simp
-  defer 4
-  apply (auto dest!:transM)[5]
-  apply (subst Aleph_rel_succ) prefer 3
-  apply (intro lt_trans[OF _ lt_csucc_rel, THEN ltD] ltI Ord_Aleph_rel)
-  apply (auto dest!:transM)
-  done
 
 lemma Card_rel_Aleph_rel [simp, intro]:
   assumes "Ord(a)" and types: "M(a)" shows "Card\<^bsup>M\<^esup>(\<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup>)"
@@ -134,17 +143,16 @@ proof (induct rule:trans_induct3)
   case 0
   then
   show ?case
-    using Aleph_rel_zero Card_rel_nat
-    by simp
+    using Aleph_rel_zero Card_rel_nat by simp
 next
   case (succ x)
   then
   show ?case
-    using Card_rel_csucc_rel Aleph_rel_succ Ord_Aleph_rel
-    by simp
+    using Card_rel_csucc_rel Aleph_rel_succ Ord_Aleph_rel by simp
 next
   case (limit x)
-  moreover from this
+  moreover
+  from this
   have "M({y . z \<in> x, M(y) \<and> M(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>})"
     using aleph_rel_replacement by simp
   ultimately
