@@ -392,17 +392,17 @@ relationalize "cexp" "is_cexp"
 *)
 
 abbreviation
-  cexp_r :: "[i,i,i\<Rightarrow>o] \<Rightarrow> i"  (\<open>'(_\<^bsup>\<up>_\<^esup>')\<^bsup>_\<^esup>\<close>) where
+  cexp_r :: "[i,i,i\<Rightarrow>o] \<Rightarrow> i"  (\<open>_\<^bsup>\<up>_,_\<^esup>\<close>) where
   "cexp_r(x,y,M) \<equiv> cexp_rel(M,x,y)"
 
 abbreviation
-  cexp_r_set :: "[i,i,i] \<Rightarrow> i"  (\<open>'(_\<^bsup>\<up>_\<^esup>')\<^bsup>_\<^esup>\<close>) where
+  cexp_r_set :: "[i,i,i] \<Rightarrow> i"  (\<open>_\<^bsup>\<up>_,_\<^esup>\<close>) where
   "cexp_r_set(x,y,M) \<equiv> cexp_rel(##M,x,y)"
 
 context M_library
 begin
 
-lemma Card_cexp: "M(\<kappa>) \<Longrightarrow> M(\<nu>) \<Longrightarrow> Card\<^bsup>M\<^esup>((\<kappa>\<^bsup>\<up>\<nu>\<^esup>)\<^bsup>M\<^esup>)"
+lemma Card_cexp: "M(\<kappa>) \<Longrightarrow> M(\<nu>) \<Longrightarrow> Card\<^bsup>M\<^esup>(\<kappa>\<^bsup>\<up>\<nu>,M\<^esup>)"
   unfolding cexp_rel_def by simp
 
 \<comment> \<open>Restoring congruence rule, but NOTE: beware\<close>

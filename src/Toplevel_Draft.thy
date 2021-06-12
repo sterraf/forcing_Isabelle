@@ -502,7 +502,7 @@ qed simp_all
 
 lemma Aleph2_extension_le_continuum_rel:
   includes G_generic_lemmas
-  shows "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>\<^esup>)\<^bsup>M[G]\<^esup>"
+  shows "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
 proof -
   have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<in> M[G]" "Ord(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
     using Card_rel_Aleph_rel[THEN Card_rel_is_Ord, of 2]
@@ -518,24 +518,24 @@ proof -
   have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<lesssim>\<^bsup>M[G]\<^esup> |\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2|\<^bsup>M[G]\<^esup>"
     using ext.lepoll_rel_imp_lepoll_rel_cardinal_rel by simp
   ultimately
-  have "|\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>|\<^bsup>M[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>\<^esup>)\<^bsup>M[G]\<^esup>"
+  have "|\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>|\<^bsup>M[G]\<^esup> \<le> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
     using ext.lepoll_rel_imp_cardinal_rel_le[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2",
         OF _ _ ext.function_space_rel_closed] ext.nat_into_M ext.M_nat
       ext.Aleph_rel_zero Aleph_rel_nats_MG_eq_Aleph_rel_nats_M
     unfolding cexp_rel_def by simp
   then
-  show "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>\<^esup>)\<^bsup>M[G]\<^esup>"
+  show "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
     using Aleph_rel_nats_MG_eq_Aleph_rel_nats_M
       ext.Card_rel_Aleph_rel[of 2, THEN ext.Card_rel_cardinal_rel_eq]
       ext.Aleph_rel2_closed
     by simp
 qed
 
-lemma Aleph_rel_lt_continuum_rel: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> < (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>\<^esup>)\<^bsup>M[G]\<^esup>"
+lemma Aleph_rel_lt_continuum_rel: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> < 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
   using Aleph2_extension_le_continuum_rel
     ext.Aleph_rel_increasing[of 1 2] le_trans by auto
 
-corollary not_CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> \<noteq> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>\<^esup>)\<^bsup>M[G]\<^esup>"
+corollary not_CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> \<noteq> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
   using Aleph_rel_lt_continuum_rel by auto
 
 end (* add_generic *)
@@ -572,7 +572,7 @@ begin
     by auto
   then
   interpret add_generic M enum G by unfold_locales
-  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> \<noteq> (2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>\<^esup>)\<^bsup>M[G]\<^esup>"
+  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> \<noteq> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
     using not_CH .
 
 end (* notepad *)
