@@ -258,77 +258,6 @@ lemma range_of_subset_eqpoll_rel:
   unfolding eqpoll_rel_def
   by (rule_tac x="restrict(f,S)" in rexI) auto
 
-text\<open>I thank Miguel Pagano for this proof.\<close>
-lemma function_space_eqpoll_cong: (* FIXME: not ported yet *)
-  assumes
-    "A \<approx> A'" "B \<approx> B'"
-  shows
-    "A \<rightarrow> B \<approx> A' \<rightarrow> B'"
-proof -
-  from assms(1)[THEN eqpoll_sym] assms(2)
-  obtain f g where "f \<in> bij(A',A)" "g \<in> bij(B,B')"
-    by blast
-  then
-  have "converse(g) : B' \<rightarrow> B" "converse(f): A \<rightarrow> A'"
-    using bij_converse_bij bij_is_fun by auto
-  show ?thesis
-    unfolding eqpoll_def
-  proof (intro exI fg_imp_bijective, rule_tac [1-2] lam_type)
-    fix F
-    assume "F: A \<rightarrow> B"
-    with \<open>f \<in> bij(A',A)\<close> \<open>g \<in> bij(B,B')\<close>
-    show "g O F O f : A' \<rightarrow> B'"
-      using bij_is_fun comp_fun by blast
-  next
-    fix F
-    assume "F: A' \<rightarrow> B'"
-    with \<open>converse(g) : B' \<rightarrow> B\<close> \<open>converse(f): A \<rightarrow> A'\<close>
-    show "converse(g) O F O converse(f) : A \<rightarrow> B"
-      using comp_fun by blast
-  next
-    from \<open>f\<in>_\<close> \<open>g\<in>_\<close> \<open>converse(f)\<in>_\<close> \<open>converse(g)\<in>_\<close>
-    have "(\<And>x. x \<in> A' \<rightarrow> B' \<Longrightarrow> converse(g) O x O converse(f) \<in> A \<rightarrow> B)"
-      using bij_is_fun comp_fun by blast
-    then
-    have "(\<lambda>x\<in>A \<rightarrow> B. g O x O f) O (\<lambda>x\<in>A' \<rightarrow> B'. converse(g) O x O converse(f))
-          =  (\<lambda>x\<in>A' \<rightarrow> B' . (g O converse(g)) O x O (converse(f) O f))"
-      using lam_cong comp_assoc comp_lam[of "A' \<rightarrow> B'" ] by auto
-    also
-    have "... = (\<lambda>x\<in>A' \<rightarrow> B' . id(B') O x O (id(A')))"
-      using left_comp_inverse[OF bij_is_inj[OF \<open>f\<in>_\<close>]]
-        right_comp_inverse[OF bij_is_surj[OF \<open>g\<in>_\<close>]]
-      by auto
-    also
-    have "... = (\<lambda>x\<in>A' \<rightarrow> B' . x)"
-      using left_comp_id[OF fun_is_rel] right_comp_id[OF fun_is_rel]  lam_cong by auto
-    also
-    have "... = id(A'\<rightarrow>B')" unfolding id_def by simp
-    finally
-    show "(\<lambda>x\<in>A -> B. g O x O f) O (\<lambda>x\<in>A' -> B'. converse(g) O x O converse(f)) = id(A' -> B')" .
-  next
-    from \<open>f\<in>_\<close> \<open>g\<in>_\<close>
-    have "(\<And>x. x \<in> A \<rightarrow> B \<Longrightarrow> g O x O f \<in> A' \<rightarrow> B')"
-      using bij_is_fun comp_fun by blast
-    then
-    have "(\<lambda>x\<in>A' -> B'. converse(g) O x O converse(f)) O (\<lambda>x\<in>A -> B. g O x O f)
-          = (\<lambda>x\<in>A \<rightarrow> B . (converse(g) O g) O x O (f O converse(f)))"
-      using comp_lam comp_assoc by auto
-    also
-    have "... = (\<lambda>x\<in>A \<rightarrow> B . id(B) O x O (id(A)))"
-      using
-        right_comp_inverse[OF bij_is_surj[OF \<open>f\<in>_\<close>]]
-        left_comp_inverse[OF bij_is_inj[OF \<open>g\<in>_\<close>]] lam_cong
-      by auto
-    also
-    have "... = (\<lambda>x\<in>A \<rightarrow> B . x)"
-      using left_comp_id[OF fun_is_rel] right_comp_id[OF fun_is_rel] lam_cong by auto
-    also
-    have "... = id(A\<rightarrow>B)" unfolding id_def by simp
-    finally
-    show "(\<lambda>x\<in>A' \<rightarrow> B'. converse(g) O x O converse(f)) O (\<lambda>x\<in>A -> B. g O x O f) = id(A -> B)" .
-  qed
-qed
-
 end (* M_library *)
 
 relativize functional "cexp" "cexp_rel" external
@@ -406,6 +335,12 @@ next
     unfolding lesspoll_def by simp
 qed
 
+lemma lesspoll_rel_csucc_rel:
+  assumes "Ord(\<kappa>)"
+    and types:"M(\<kappa>)"
+  shows "d \<prec>\<^bsup>M\<^esup> (\<kappa>\<^sup>+)\<^bsup>M\<^esup> \<longleftrightarrow> d \<lesssim>\<^bsup>M\<^esup> \<kappa>"
+  sorry
+
 lemma Infinite_imp_nats_lepoll: (* FIXME: not ported yet *)
   assumes "Infinite(X)" "n \<in> \<omega>"
   shows "n \<lesssim> X"
@@ -441,12 +376,10 @@ next
   qed
 qed
 
-(* \<comment> \<open>Unused?\<close>
-lemma zero_lesspoll: assumes "0<\<kappa>" shows "0 \<prec> \<kappa>"
-  using assms eqpoll_0_iff[THEN iffD1, of \<kappa>] eqpoll_sym
-  unfolding lesspoll_def lepoll_def
-  by (auto simp add:inj_def)
-*)
+lemma Infinite_imp_nats_lepoll_rel: (* FIXME: not ported yet *)
+  assumes "Infinite(X)" "n \<in> \<omega>"
+  shows "n \<lesssim>\<^bsup>M\<^esup> X"
+  sorry
 
 lemma lepoll_rel_imp_lepoll: "A \<lesssim>\<^bsup>M\<^esup> B \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> A \<lesssim> B"
   unfolding lepoll_rel_def by auto
