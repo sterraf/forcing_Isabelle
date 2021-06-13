@@ -341,7 +341,7 @@ lemma lesspoll_rel_csucc_rel:
   shows "d \<prec>\<^bsup>M\<^esup> (\<kappa>\<^sup>+)\<^bsup>M\<^esup> \<longleftrightarrow> d \<lesssim>\<^bsup>M\<^esup> \<kappa>"
   sorry
 
-lemma Infinite_imp_nats_lepoll: (* FIXME: not ported yet *)
+lemma Infinite_imp_nats_lepoll:
   assumes "Infinite(X)" "n \<in> \<omega>"
   shows "n \<lesssim> X"
   using \<open>n \<in> \<omega>\<close>
@@ -376,11 +376,61 @@ next
   qed
 qed
 
-lemma Infinite_imp_nats_lepoll_rel: (* FIXME: not ported yet *)
+lemma nepoll_imp_nepoll_rel :
+  assumes "\<not> x \<approx> X" "M(x)" "M(X)"
+  shows "\<not> (x \<approx>\<^bsup>M\<^esup> X)"
+  using assms unfolding eqpoll_def eqpoll_rel_def by simp
+
+lemma Infinite_imp_nats_lepoll_rel:
   assumes "Infinite(X)" "n \<in> \<omega>"
     and types: "M(X)"
   shows "n \<lesssim>\<^bsup>M\<^esup> X"
-  sorry
+  using \<open>n \<in> \<omega>\<close>
+proof (induct)
+  case 0
+  then
+  show ?case using empty_lepoll_relI types by simp
+next
+  case (succ x)
+  show ?case
+  proof -
+    from \<open>Infinite(X)\<close> and \<open>x \<in> \<omega>\<close>
+    have "\<not> (x \<approx> X)" "M(x)" "M(succ(x))"
+      using eqpoll_sym unfolding Finite_def by auto
+    then
+    have "\<not> (x \<approx>\<^bsup>M\<^esup> X)"
+      using nepoll_imp_nepoll_rel types by simp
+    with \<open>x \<lesssim>\<^bsup>M\<^esup> X\<close>
+    obtain f where "f \<in> inj\<^bsup>M\<^esup>(x,X)" "f \<notin> surj\<^bsup>M\<^esup>(x,X)" "M(f)"
+      unfolding bij_rel_def eqpoll_rel_def by auto
+    with \<open>M(X)\<close> \<open>M(x)\<close>
+    have "f\<notin>surj(x,X)" "f\<in>inj(x,X)"
+      using surj_rel_char by simp_all
+    moreover
+    from this
+    obtain b where "b \<in> X" "\<forall>a\<in>x. f`a \<noteq> b"
+      using inj_is_fun unfolding surj_def by auto
+    moreover
+    from this calculation \<open>M(x)\<close>
+    have "f \<in> inj(x,X-{b})" "M(<x,b>)"
+      unfolding inj_def using transM[OF _ \<open>M(X)\<close>]
+      by (auto intro:Pi_type)
+    moreover
+    from this
+    have "cons(\<langle>x, b\<rangle>, f) \<in> inj(succ(x), cons(b, X - {b}))" (is "?g\<in>_")
+      using inj_extend[of f x "X-{b}" x b] unfolding succ_def
+      by (auto dest:mem_irrefl)
+    moreover
+    note \<open>M(<x,b>)\<close> \<open>M(f)\<close> \<open>b\<in>X\<close> \<open>M(X)\<close> \<open>M(succ(x))\<close>
+    moreover from this
+    have "M(?g)" "cons(b, X - {b}) = X" by auto
+    moreover from calculation
+    have "?g\<in>inj_rel(M,succ(x),X)"
+      using mem_inj_abs by simp
+    with \<open>M(?g)\<close>
+    show "succ(x) \<lesssim>\<^bsup>M\<^esup> X" using lepoll_relI by simp
+  qed
+qed
 
 lemma lepoll_rel_imp_lepoll: "A \<lesssim>\<^bsup>M\<^esup> B \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> A \<lesssim> B"
   unfolding lepoll_rel_def by auto
