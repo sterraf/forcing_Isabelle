@@ -2,13 +2,12 @@ section\<open>From M to V\<close>
 
 theory Absolute_Versions
   imports
-    Aleph_Relative
-    Cardinal_AC_Relative
+    ZF_Library_Relative
     ZF.Cardinal_AC
-
+    "../Delta_System_Lemma/Cardinal_Library"
 begin
 
-subsection\<open>Locales of a class "M" hold in \<^term>\<open>\<V>\<close>\<close>
+subsection\<open>Locales of a class \<^term>\<open>M\<close> hold in \<^term>\<open>\<V>\<close>\<close>
 
 interpretation V: M_trivial \<V>
   using Union_ax_absolute upair_ax_absolute
@@ -65,30 +64,61 @@ interpretation V:M_cardinal_AC \<V>
   using choice_ax_Universe
   by unfold_locales (auto intro:separation_absolute replacement_absolute)
 
+interpretation V:M_library \<V>
+  using choice_ax_Universe
+  by unfold_locales (auto intro:separation_absolute replacement_absolute)
+
 named_theorems V_simps
 
-\<comment> \<open>To work systematically, ASCII versions of "_absolute" theorems as
+\<comment> \<open>To work systematically, ASCII versions of "\_absolute" theorems as
     those below are preferable.\<close>
 lemma eqpoll_rel_absolute[V_simps]: "x \<approx>\<^bsup>\<V>\<^esup> y \<longleftrightarrow> x \<approx> y"
   unfolding eqpoll_def using V.def_eqpoll_rel by auto
 
 lemma cardinal_rel_absolute[V_simps]: "|x|\<^bsup>\<V>\<^esup> = |x|"
-  unfolding cardinal_def cardinal_rel_def using eqpoll_rel_absolute
-  by simp
+  unfolding cardinal_def cardinal_rel_def by (simp add:V_simps)
 
-\<comment> \<open>Example of an absolute lemma obtained from the relative version\<close>
+lemma Card_rel_absolute[V_simps]:"Card_rel(\<V>,a) \<longleftrightarrow> Card(a)"
+  unfolding Card_rel_def Card_def by (simp add:V_simps)
+
+lemma csucc_rel_absolute[V_simps]:"csucc_rel(\<V>,a) = csucc(a)"
+  unfolding csucc_rel_def csucc_def by (simp add:V_simps)
+
+lemma HAleph_rel_absolute[V_simps]:"HAleph_rel(\<V>,a,b) = HAleph(a,b)"
+  unfolding HAleph_rel_def HAleph_def by (auto simp add:V_simps)
+
+lemma Aleph_rel_absolute[V_simps]: "Ord(x) \<Longrightarrow> \<aleph>\<^bsub>x\<^esub>\<^bsup>\<V>\<^esup> = \<aleph>x"
+proof -
+  assume "Ord(x)"
+  have "\<aleph>\<^bsub>x\<^esub>\<^bsup>\<V>\<^esup> = transrec(x, \<lambda>a b. HAleph_rel(\<V>,a,b))"
+    unfolding Aleph_rel_def by simp
+  also
+  have "\<dots> = transrec(x, HAleph)"
+    by (simp add:V_simps)
+  also from \<open>Ord(x)\<close>
+  have "\<dots> = \<aleph>x"
+    using Aleph'_eq_Aleph unfolding Aleph'_def by simp
+  finally
+  show ?thesis .
+qed
+
+txt\<open>Example of absolute lemmas obtained from the relative versions. 
+    Note the \<^emph>\<open>only\<close> declarations\<close>
 lemma Ord_cardinal_idem': "Ord(A) \<Longrightarrow> ||A|| = |A|"
   using V.Ord_cardinal_rel_idem by (simp only:V_simps)
 
-\<comment> \<open>Example of a transfer result between a transitive model and $V$\<close>
+lemma Aleph_succ': "Ord(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>succ(\<alpha>)\<^esub> = \<aleph>\<^bsub>\<alpha>\<^esub>\<^sup>+"
+  using V.Aleph_rel_succ by (simp only:V_simps)
+
+txt\<open>Example of a transfer result between a transitive model and $V$\<close>
 lemma (in M_Perm) assumes "M(A)" "M(B)" "A \<approx>\<^bsup>M\<^esup> B"
   shows "A \<approx> B"
 proof -
   interpret M_N_Perm M "\<V>"
-    by (unfold_locales, simp)
+    by (unfold_locales, simp only:V_simps)
   from assms
   show ?thesis using eqpoll_rel_transfer 
-    by (simp add:V_simps)
+    by (simp only:V_simps)
 qed
 
 end
