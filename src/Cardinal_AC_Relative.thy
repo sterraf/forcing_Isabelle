@@ -446,17 +446,17 @@ locale M_cardinal_UN =  M_Pi_assumptions_choice _ K X for K X +
 
 begin
 
+lemma UN_K_X_closed: "M(\<Union>i\<in>K. X(i))"
+  using family_union_closed B_replacement Pi_assumptions by simp
+
 text\<open>Kunen's Lemma 10.21\<close>
 lemma cardinal_rel_UN_le:
   assumes K: "InfCard\<^bsup>M\<^esup>(K)"
   shows "(\<And>i. i\<in>K \<Longrightarrow> |X(i)|\<^bsup>M\<^esup> \<le> K) \<Longrightarrow> |\<Union>i\<in>K. X(i)|\<^bsup>M\<^esup> \<le> K"
 proof (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff Pi_assumptions)
-  have "M(\<Union>i\<in>K. X(i))"
-    using family_union_closed B_replacement Pi_assumptions
-    by (simp)
-  then
   have "M(f) \<Longrightarrow> M(\<lambda>x\<in>(\<Union>x\<in>K. X(x)). \<langle>\<mu> i. x \<in> X(i), f ` (\<mu> i. x \<in> X(i)) ` x\<rangle>)" for f
     using lam_m_replacement X_witness_in_M Least_closed' Pi_assumptions
+      UN_K_X_closed
     by (rule_tac lam_closed) (auto dest:transM)
   note types = this \<open>M(\<Union>i\<in>K. X(i))\<close> Pi_assumptions
   have [intro]: "Ord(K)" by (blast intro: InfCard_rel_is_Card_rel

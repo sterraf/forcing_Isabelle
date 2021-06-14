@@ -57,21 +57,26 @@ qed
 
 end (* M_cardinal_UN_nat *)
 
-locale M_cardinal_UN_lepoll = M_library + M_cardinal_UN _ J for J
+\<comment> \<open>This is not the correct version, since we'll gonna closure under
+    \<^term>\<open>\<Union>x\<in>A. B(x)\<close> for several \<^term>\<open>A\<close> and \<^term>\<open>B\<close>.\<close>
+locale M_cardinal_UN_lepoll = M_library + M_cardinal_UN _ K + j:M_cardinal_UN _ J for K J
 begin
 
 \<comment>\<open>FIXME: this "LEQpoll" should be "LEPOLL"; same correction in Delta System\<close>
 lemma leqpoll_rel_imp_cardinal_rel_UN_le:
   notes [dest] = InfCard_is_Card Card_is_Ord
   assumes "InfCard\<^bsup>M\<^esup>(K)" "J \<lesssim>\<^bsup>M\<^esup> K" "\<And>i. i\<in>J \<Longrightarrow> |X(i)|\<^bsup>M\<^esup> \<le> K"
-    and types:"M(K)"
   shows "|\<Union>i\<in>J. X(i)|\<^bsup>M\<^esup> \<le> K"
 proof -
   from \<open>J \<lesssim>\<^bsup>M\<^esup> K\<close>
-  obtain f where "f \<in> inj_rel(M,J,K)" by blast
+  obtain f where "f \<in> inj_rel(M,J,K)" "M(f)" by blast
+  have "M(K)" "M(J)" "\<And>w x. w \<in> X(x) \<Longrightarrow> M(x)"
+    using Pi_assumptions j.Pi_assumptions X_witness_in_M by simp_all
+  note inM = \<open>M(f)\<close> and this
   define Y where "Y(k) \<equiv> if k\<in>range(f) then X(converse(f)`k) else 0" for k
   have "i\<in>J \<Longrightarrow> f`i \<in> K" for i
-    using inj_rel_is_fun_M[OF \<open>f \<in> inj_rel(M,J,K)\<close>] by auto
+    using inj_rel_is_fun_M[OF \<open>f \<in> inj_rel(M,J,K)\<close>]
+      function_space_rel_char by (auto simp add:inM)
   have "(\<Union>i\<in>J. X(i)) \<subseteq> (\<Union>i\<in>K. Y(i))"
   proof (standard, elim UN_E)
     fix x i
@@ -79,14 +84,17 @@ proof -
     with \<open>f \<in> inj_rel(M,J,K)\<close> \<open>i\<in>J \<Longrightarrow> f`i \<in> K\<close>
     have "x \<in> Y(f`i)" "f`i \<in> K"
       unfolding Y_def
-      using inj_rel_is_fun_M[OF \<open>f \<in> inj_rel(M,J,K)\<close>]
-        right_inverse apply_rangeI by auto
+      using inj_is_fun right_inverse
+      by (auto simp add:inM intro: apply_rangeI)
     then
     show "x \<in> (\<Union>i\<in>K. Y(i))" by auto
   qed
-  then
-  have "|\<Union>i\<in>J. X(i)|\<^bsup>M\<^esup> \<le> |\<Union>i\<in>K. Y(i)|"
-    unfolding Y_def using subset_imp_le_cardinal_rel by simp
+  moreover
+  have "M(\<Union>i\<in>K. Y(i))" sorry
+  ultimately
+  have "|\<Union>i\<in>J. X(i)|\<^bsup>M\<^esup> \<le> |\<Union>i\<in>K. Y(i)|\<^bsup>M\<^esup>"
+    using subset_imp_le_cardinal_rel j.UN_closed
+    unfolding Y_def by (simp add:inM)
   with assms \<open>\<And>i. i\<in>J \<Longrightarrow> f`i \<in> K\<close>
   show "|\<Union>i\<in>J. X(i)|\<^bsup>M\<^esup> \<le> K"
     using inj_rel_converse_fun[OF \<open>f \<in> inj_rel(M,J,K)\<close>] unfolding Y_def
