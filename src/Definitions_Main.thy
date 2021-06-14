@@ -307,35 +307,34 @@ text\<open>Internalized formulas\<close>
 thm Member Equal Nand Forall formula.induct
 text\<open>@{thm [display] Member Equal Nand Forall formula.induct}\<close>
 (*
-  x \<in> \<omega> \<Longrightarrow> y \<in> \<omega> \<Longrightarrow> Member(x, y) \<in> formula
-  x \<in> \<omega> \<Longrightarrow> y \<in> \<omega> \<Longrightarrow> Equal(x, y) \<in> formula
-  p \<in> formula \<Longrightarrow> Forall(p) \<in> formula
-  p \<in> formula \<Longrightarrow> q \<in> formula \<Longrightarrow> Nand(p, q) \<in> formula
+  x \<in> \<omega> \<Longrightarrow> y \<in> \<omega> \<Longrightarrow> \<cdot>x \<in> y\<cdot> \<in> formula
+  x \<in> \<omega> \<Longrightarrow> y \<in> \<omega> \<Longrightarrow> \<cdot>x = y\<cdot> \<in> formula
+  p \<in> formula \<Longrightarrow> q \<in> formula \<Longrightarrow> \<cdot>\<not>(p \<and> q)\<cdot> \<in> formula
+  p \<in> formula \<Longrightarrow> (\<forall>p) \<in> formula
 
   x \<in> formula \<Longrightarrow>
-  (\<And>x y. x \<in> \<omega> \<Longrightarrow> y \<in> \<omega> \<Longrightarrow> P(Member(x, y))) \<Longrightarrow>
-  (\<And>x y. x \<in> \<omega> \<Longrightarrow> y \<in> \<omega> \<Longrightarrow> P(Equal(x, y))) \<Longrightarrow>
-  (\<And>p q. p \<in> formula \<Longrightarrow> P(p) \<Longrightarrow> q \<in> formula \<Longrightarrow> P(q) \<Longrightarrow> P(Nand(p, q))) \<Longrightarrow>
-  (\<And>p. p \<in> formula \<Longrightarrow> P(p) \<Longrightarrow> P(Forall(p))) \<Longrightarrow> P(x)
+  (\<And>x y. x \<in> \<omega> \<Longrightarrow> y \<in> \<omega> \<Longrightarrow> P(\<cdot>x \<in> y\<cdot>)) \<Longrightarrow>
+  (\<And>x y. x \<in> \<omega> \<Longrightarrow> y \<in> \<omega> \<Longrightarrow> P(\<cdot>x = y\<cdot>)) \<Longrightarrow>
+  (\<And>p q. p \<in> formula \<Longrightarrow> P(p) \<Longrightarrow> q \<in> formula \<Longrightarrow> P(q) \<Longrightarrow> P(\<cdot>\<not>(p \<and> q)\<cdot>)) \<Longrightarrow>
+  (\<And>p. p \<in> formula \<Longrightarrow> P(p) \<Longrightarrow> P((\<forall>p))) \<Longrightarrow> P(x)
 *)
 
 thm arity.simps
 text\<open>@{thm [display] arity.simps}\<close>
 (*
-  arity(Member(x, y)) = succ(x) \<union> succ(y)
-  arity(Equal(x, y)) = succ(x) \<union> succ(y)
-  arity(Nand(p, q)) = arity(p) \<union> arity(q)
-  arity(Forall(p)) = pred(arity(p))
+  arity(\<cdot>x \<in> y\<cdot>) = succ(x) \<union> succ(y)
+  arity(\<cdot>x = y\<cdot>) = succ(x) \<union> succ(y)
+  arity(\<cdot>\<not>(p \<and> q)\<cdot>) = arity(p) \<union> arity(q)
+  arity((\<forall>p)) = pred(arity(p))
 *)
 
 thm mem_iff_sats equal_iff_sats sats_Nand_iff sats_Forall_iff
 text\<open>@{thm [display] mem_iff_sats equal_iff_sats sats_Nand_iff sats_Forall_iff}\<close>
 (*
-  nth(i, env) = x \<Longrightarrow> nth(j, env) = y \<Longrightarrow> env \<in> list(A) \<Longrightarrow> x \<in> y \<longleftrightarrow> A, env \<Turnstile> Member(i, j)
-  nth(i, env) = x \<Longrightarrow> nth(j, env) = y \<Longrightarrow> env \<in> list(A) \<Longrightarrow> x = y \<longleftrightarrow> A, env \<Turnstile> Equal(i, j)
-  env \<in> list(A) \<Longrightarrow> A, env \<Turnstile> Nand(p, q) \<longleftrightarrow> \<not> (A, env \<Turnstile> p \<and> A, env \<Turnstile> q)
-  env \<in> list(A) \<Longrightarrow> A, env \<Turnstile> Forall(p) \<longleftrightarrow> (\<forall>x\<in>A. A, Cons(x, env) \<Turnstile> p
-*)
+  nth(i, env) = x \<Longrightarrow> nth(j, env) = y \<Longrightarrow> env \<in> list(A) \<Longrightarrow> x \<in> y \<longleftrightarrow> A, env \<Turnstile> \<cdot>i \<in> j\<cdot>
+  nth(i, env) = x \<Longrightarrow> nth(j, env) = y \<Longrightarrow> env \<in> list(A) \<Longrightarrow> x = y \<longleftrightarrow> A, env \<Turnstile> \<cdot>i = j\<cdot>
+  env \<in> list(A) \<Longrightarrow> A, env \<Turnstile> \<cdot>\<not>(p \<and> q)\<cdot> \<longleftrightarrow> \<not> (A, env \<Turnstile> p \<and> A, env \<Turnstile> q)
+  env \<in> list(A) \<Longrightarrow> A, env \<Turnstile> (\<forall>p) \<longleftrightarrow> (\<forall>x\<in>A. A, Cons(x, env) \<Turnstile> p)*)
 
 subsection\<open>Forcing \label{sec:def-main-forcing}\<close>
 
