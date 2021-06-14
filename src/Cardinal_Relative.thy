@@ -698,9 +698,44 @@ lemma lepoll_rel_Ord_imp_eqpoll_rel: "[| A \<lesssim>\<^bsup>M\<^esup> i; Ord(i)
   by (blast intro: lepoll_rel_cardinal_rel_le well_ord_Memrel well_ord_cardinal_rel_eqpoll_rel dest!: lepoll_rel_well_ord)
 
 lemma lesspoll_rel_imp_eqpoll_rel: "[| A \<prec>\<^bsup>M\<^esup> i; Ord(i); M(A); M(i) |] ==> |A|\<^bsup>M\<^esup> \<approx>\<^bsup>M\<^esup> A"
-  apply (unfold lesspoll_rel_def)
-  apply (blast intro: lepoll_rel_Ord_imp_eqpoll_rel)
-  done
+  using lepoll_rel_Ord_imp_eqpoll_rel[OF lesspoll_rel_imp_lepoll_rel] .
+
+lemma lesspoll_cardinal_lt_rel:
+  shows "[| A \<prec>\<^bsup>M\<^esup> i; Ord(i); M(i); M(A) |] ==> |A|\<^bsup>M\<^esup> < i"
+proof -
+  assume assms:"A \<prec>\<^bsup>M\<^esup> i" \<open>Ord(i)\<close> \<open>M(i)\<close> \<open>M(A)\<close>
+  then
+  have A:"Ord(|A|\<^bsup>M\<^esup>)" "|A|\<^bsup>M\<^esup> \<approx>\<^bsup>M\<^esup> A" "M(|A|\<^bsup>M\<^esup>)"
+    using Ord_cardinal_rel lesspoll_rel_imp_eqpoll_rel
+    by simp_all
+  with assms
+  have "|A|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> i"
+    using eq_lesspoll_rel_trans by auto
+  consider "|A|\<^bsup>M\<^esup>\<in>i" | "|A|\<^bsup>M\<^esup>=i" | "i\<in>|A|\<^bsup>M\<^esup>"
+    using Ord_linear[OF \<open>Ord(i)\<close> \<open>Ord(|A|\<^bsup>M\<^esup>)\<close>] by auto
+  then
+  have "|A|\<^bsup>M\<^esup> < i"
+  proof(cases)
+    case 1
+    then show ?thesis using ltI \<open>Ord(i)\<close> by simp
+  next
+    case 2
+    with \<open>|A|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> i\<close> \<open>M(i)\<close>
+    show ?thesis using lesspoll_rel_irrefl by simp
+  next
+    case 3
+    with \<open>Ord(|A|\<^bsup>M\<^esup>)\<close>
+    have "i<|A|\<^bsup>M\<^esup>" using ltI by simp
+    with \<open>M(A)\<close> A \<open>M(i)\<close>
+    have "i \<prec>\<^bsup>M\<^esup> |A|\<^bsup>M\<^esup>"
+      using lt_Card_rel_imp_lesspoll_rel Card_rel_cardinal_rel by simp
+    with \<open>M(|A|\<^bsup>M\<^esup>)\<close> \<open>M(i)\<close>
+    show ?thesis
+      using lesspoll_rel_irrefl lesspoll_rel_trans[OF \<open>|A|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> i\<close> \<open>i \<prec>\<^bsup>M\<^esup> _ \<close>]
+      by simp
+  qed
+  then show ?thesis by simp
+qed
 
 lemma cardinal_rel_subset_Ord: "[|A<=i; Ord(i); M(A); M(i)|] ==> |A|\<^bsup>M\<^esup> \<subseteq> i"
   apply (drule subset_imp_lepoll_rel [THEN lepoll_rel_cardinal_rel_le])

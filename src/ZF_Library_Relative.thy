@@ -287,59 +287,68 @@ lemma eq_csucc_rel_ord:
   "Ord(i) \<Longrightarrow> M(i) \<Longrightarrow> (i\<^sup>+)\<^bsup>M\<^esup> = (|i|\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup>"
   using Card_rel_lt_iff Least_cong unfolding csucc_rel_def by auto
 
-text\<open>I thank Miguel Pagano for this proof.\<close>
-lemma lesspoll_csucc: (* FIXME: not ported yet *)
-  assumes "Ord(\<kappa>)"
-  shows "d \<prec> \<kappa>\<^sup>+ \<longleftrightarrow> d \<lesssim> \<kappa>"
-proof
-  assume "d \<prec> \<kappa>\<^sup>+"
-  moreover
-  note Card_is_Ord \<open>Ord(\<kappa>)\<close>
-  moreover from calculation
-  have "\<kappa> < \<kappa>\<^sup>+" "Card(\<kappa>\<^sup>+)"
-    using Ord_cardinal_eqpoll csucc_basic by simp_all
-  moreover from calculation
-  have "d \<prec> |\<kappa>|\<^sup>+" "Card(|\<kappa>|)" "d \<approx> |d|"
-    using eq_csucc_ord[of \<kappa>] lesspoll_imp_eqpoll eqpoll_sym by simp_all
-  moreover from calculation
-  have "|d| < |\<kappa>|\<^sup>+"
-    using lesspoll_cardinal_lt csucc_basic by simp
-  moreover from calculation
-  have "|d| \<lesssim> |\<kappa>|"
-    using Card_lt_csucc_iff le_imp_lepoll by simp
-  moreover from calculation
-  have "|d| \<lesssim> \<kappa>"
-    using lepoll_eq_trans Ord_cardinal_eqpoll by simp
-  ultimately
-  show "d \<lesssim> \<kappa>"
-    using eq_lepoll_trans by simp
-next
-  from \<open>Ord(\<kappa>)\<close>
-  have "\<kappa> < \<kappa>\<^sup>+" "Card(\<kappa>\<^sup>+)"
-    using csucc_basic by simp_all
-  moreover
-  assume "d \<lesssim> \<kappa>"
-  ultimately
-  have "d \<lesssim> \<kappa>\<^sup>+"
-    using le_imp_lepoll leI lepoll_trans by simp
-  moreover
-  from \<open>d \<lesssim> \<kappa>\<close> \<open>Ord(\<kappa>)\<close>
-  have "\<kappa>\<^sup>+ \<lesssim> \<kappa>" if "d \<approx> \<kappa>\<^sup>+"
-    using eqpoll_sym[OF that] eq_lepoll_trans[OF _ \<open>d\<lesssim>\<kappa>\<close>] by simp
-  moreover from calculation \<open>Card(_)\<close>
-  have "\<not> d \<approx> \<kappa>\<^sup>+"
-    using lesspoll_irrefl lesspoll_trans1 lt_Card_imp_lesspoll[OF _ \<open>\<kappa> <_\<close>]
-    by auto
-  ultimately
-  show "d \<prec> \<kappa>\<^sup>+"
-    unfolding lesspoll_def by simp
-qed
+lemma lesspoll_succ_rel:
+  assumes "Ord(\<kappa>)" "M(\<kappa>)"
+  shows "\<kappa> \<lesssim>\<^bsup>M\<^esup> (\<kappa>\<^sup>+)\<^bsup>M\<^esup>"
+  using csucc_rel_basic assms lt_Card_rel_imp_lesspoll_rel
+    Card_rel_csucc_rel lepoll_rel_iff_leqpoll_rel
+  by auto
 
 lemma lesspoll_rel_csucc_rel:
   assumes "Ord(\<kappa>)"
-    and types:"M(\<kappa>)"
+    and types:"M(\<kappa>)" "M(d)"
   shows "d \<prec>\<^bsup>M\<^esup> (\<kappa>\<^sup>+)\<^bsup>M\<^esup> \<longleftrightarrow> d \<lesssim>\<^bsup>M\<^esup> \<kappa>"
-  sorry
+proof
+  assume "d \<prec>\<^bsup>M\<^esup> (\<kappa>\<^sup>+)\<^bsup>M\<^esup>"
+  moreover
+  note Card_rel_csucc_rel assms Card_rel_is_Ord
+  moreover from calculation
+  have "Card\<^bsup>M\<^esup>((\<kappa>\<^sup>+)\<^bsup>M\<^esup>)" "M((\<kappa>\<^sup>+)\<^bsup>M\<^esup>)" "Ord((\<kappa>\<^sup>+)\<^bsup>M\<^esup>)"
+    using Card_rel_is_Ord by simp_all
+  moreover from calculation
+  have "d \<prec>\<^bsup>M\<^esup> (|\<kappa>|\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup>" "d \<approx>\<^bsup>M\<^esup> |d|\<^bsup>M\<^esup>"
+    using eq_csucc_rel_ord[OF _ \<open>M(\<kappa>)\<close>]
+      lesspoll_rel_imp_eqpoll_rel eqpoll_rel_sym by simp_all
+  moreover from calculation
+  have "|d|\<^bsup>M\<^esup> < (|\<kappa>|\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup>"
+    using lesspoll_cardinal_lt_rel by simp
+  moreover from calculation
+  have "|d|\<^bsup>M\<^esup> \<lesssim>\<^bsup>M\<^esup> |\<kappa>|\<^bsup>M\<^esup>"
+    using lt_csucc_rel_iff le_imp_lepoll_rel by simp
+  moreover from calculation
+  have "|d|\<^bsup>M\<^esup> \<lesssim>\<^bsup>M\<^esup> \<kappa>"
+    using Ord_cardinal_rel_eqpoll_rel lepoll_rel_eq_trans
+    by simp
+  ultimately
+  show "d \<lesssim>\<^bsup>M\<^esup> \<kappa>"
+    using eq_lepoll_rel_trans by simp
+next
+  from \<open>Ord(\<kappa>)\<close>
+  have "\<kappa> < (\<kappa>\<^sup>+)\<^bsup>M\<^esup>" "Card\<^bsup>M\<^esup>((\<kappa>\<^sup>+)\<^bsup>M\<^esup>)" "M((\<kappa>\<^sup>+)\<^bsup>M\<^esup>)"
+    using Card_rel_csucc_rel lt_csucc_rel_iff types eq_csucc_rel_ord[OF _ \<open>M(\<kappa>)\<close>]
+    by simp_all
+  then
+  have "\<kappa> \<prec>\<^bsup>M\<^esup> (\<kappa>\<^sup>+)\<^bsup>M\<^esup>"
+  using lt_Card_rel_imp_lesspoll_rel[OF _ \<open>\<kappa> <_\<close>] types by simp
+  moreover
+  assume "d \<lesssim>\<^bsup>M\<^esup> \<kappa>"
+  ultimately
+  have "d \<lesssim>\<^bsup>M\<^esup> (\<kappa>\<^sup>+)\<^bsup>M\<^esup>"
+    using Card_rel_csucc_rel types lesspoll_succ_rel lepoll_rel_trans \<open>Ord(\<kappa>)\<close>
+    by simp
+  moreover
+  from \<open>d \<lesssim>\<^bsup>M\<^esup> \<kappa>\<close> \<open>Ord(\<kappa>)\<close>
+  have "(\<kappa>\<^sup>+)\<^bsup>M\<^esup> \<lesssim>\<^bsup>M\<^esup> \<kappa>" if "d \<approx>\<^bsup>M\<^esup> (\<kappa>\<^sup>+)\<^bsup>M\<^esup>"
+    using eqpoll_rel_sym[OF that] types eq_lepoll_rel_trans[OF _ \<open>d\<lesssim>\<^bsup>M\<^esup>\<kappa>\<close>]
+    by simp
+  moreover from calculation \<open>\<kappa> \<prec>\<^bsup>M\<^esup> (\<kappa>\<^sup>+)\<^bsup>M\<^esup>\<close>
+  have False if "d \<approx>\<^bsup>M\<^esup> (\<kappa>\<^sup>+)\<^bsup>M\<^esup>"
+    using lesspoll_rel_irrefl[OF _ \<open>M((\<kappa>\<^sup>+)\<^bsup>M\<^esup>)\<close>] lesspoll_rel_trans1 types that
+    by auto
+  ultimately
+  show "d \<prec>\<^bsup>M\<^esup> (\<kappa>\<^sup>+)\<^bsup>M\<^esup>"
+    unfolding lesspoll_rel_def by auto
+qed
 
 lemma Infinite_imp_nats_lepoll:
   assumes "Infinite(X)" "n \<in> \<omega>"
