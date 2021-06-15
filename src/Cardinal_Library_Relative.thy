@@ -110,7 +110,8 @@ proof -
   with assms \<open>\<And>i. i\<in>J \<Longrightarrow> f`i \<in> K\<close>
   show "|\<Union>i\<in>J. X(i)|\<^bsup>M\<^esup> \<le> K"
     using inj_rel_converse_fun[OF \<open>f \<in> inj_rel(M,J,K)\<close>] unfolding Y_def
-    by (rule_tac le_trans[OF _ cardinal_rel_UN_le]) (auto intro:Ord_0_le)+
+    sorry
+    (* by (rule_tac le_trans[OF _ cardinal_rel_UN_le]) (auto intro:Ord_0_le)+ *)
 qed
 
 end (* M_cardinal_UN_lepoll *)
@@ -138,6 +139,9 @@ lemma inj_rel_weaken_type: "[| f \<in> inj\<^bsup>M\<^esup>(A,B);  B\<subseteq>D
 
 lemma bij_rel_converse_bij_rel [TC]: "f \<in> bij\<^bsup>M\<^esup>(A,B)  \<Longrightarrow> M(A) \<Longrightarrow> M(B) ==> converse(f): bij\<^bsup>M\<^esup>(B,A)"
   using bij_rel_char by force
+
+lemma bij_rel_is_fun: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow>  f \<in> A\<rightarrow>\<^bsup>M\<^esup>B"
+  using bij_rel_char mem_function_space_rel_abs bij_is_fun by simp
 
 lemma lepoll_rel_imp_subset_bij_rel: 
   assumes "M(X)" "M(Y)"
@@ -176,26 +180,30 @@ qed
 text\<open>The following result proves to be very useful when combining
      \<^term>\<open>cardinal_rel\<close> and \<^term>\<open>eqpoll_rel\<close> in a calculation.\<close>
 
-lemma cardinal_rel_Card_rel_eqpoll_rel_iff: "Card_rel(M,\<kappa>) \<Longrightarrow> |X|\<^bsup>M\<^esup> = \<kappa> \<longleftrightarrow> X \<approx>\<^bsup>M\<^esup> \<kappa>"
+lemma cardinal_rel_Card_rel_eqpoll_rel_iff: 
+  "M(\<kappa>) \<Longrightarrow> M(X) \<Longrightarrow> Card_rel(M,\<kappa>) \<Longrightarrow> |X|\<^bsup>M\<^esup> = \<kappa> \<longleftrightarrow> X \<approx>\<^bsup>M\<^esup> \<kappa>"
   using Card_rel_cardinal_rel_eq[of \<kappa>] cardinal_rel_eqpoll_rel_iff[of X \<kappa>] by auto
-    \<comment> \<open>Compare @{thm "le_Card_rel_iff"}\<close>
 
-lemma lepoll_rel_imp_lepoll_rel_cardinal_rel: assumes "X \<lesssim>\<^bsup>M\<^esup> Y" shows "X \<lesssim>\<^bsup>M\<^esup> |Y|"
-  using assms cardinal_rel_Card_rel_eqpoll_rel_iff[of "|Y|" Y]
-    lepoll_rel_eq_trans[of _ _ "|Y|"] by simp
+lemma lepoll_rel_imp_lepoll_rel_cardinal_rel: 
+  assumes "M(X)" "M(Y)" "X \<lesssim>\<^bsup>M\<^esup> Y" 
+  shows "X \<lesssim>\<^bsup>M\<^esup> |Y|\<^bsup>M\<^esup>"
+  using assms cardinal_rel_Card_rel_eqpoll_rel_iff[of "|Y|\<^bsup>M\<^esup>" Y]
+  Card_rel_cardinal_rel
+    lepoll_rel_eq_trans[of _ _ "|Y|\<^bsup>M\<^esup>"] by simp
 
 lemma lepoll_rel_Un:
-  assumes "InfCard_rel(M,\<kappa>)" "A \<lesssim>\<^bsup>M\<^esup> \<kappa>" "B \<lesssim>\<^bsup>M\<^esup> \<kappa>"
+  assumes "InfCard_rel(M,\<kappa>)" "M(A)" "M(B)" "M(\<kappa>)"  "A \<lesssim>\<^bsup>M\<^esup> \<kappa>" "B \<lesssim>\<^bsup>M\<^esup> \<kappa>"
   shows "A \<union> B \<lesssim>\<^bsup>M\<^esup> \<kappa>"
 proof -
+  from assms
   have "A \<union> B \<lesssim>\<^bsup>M\<^esup> sum(A,B)"
-    using Un_lepoll_rel_sum (* . *) sorry
+    using Un_lepoll_rel_sum by simp
   moreover
   note assms
   moreover from this
-  have "|sum(A,B)|\<^bsup>M\<^esup> \<le> \<kappa> \<oplus> \<kappa>"
+  have "|sum(A,B)|\<^bsup>M\<^esup> \<le> \<kappa> \<oplus>\<^bsup>M\<^esup> \<kappa>"
     using sum_lepoll_rel_mono[of A \<kappa> B \<kappa>] lepoll_rel_imp_cardinal_rel_le
-    unfolding cadd_def by auto
+    unfolding cadd_rel_def by auto
   ultimately
   show ?thesis
     using InfCard_rel_cdouble_eq Card_rel_cardinal_rel_eq
@@ -205,33 +213,50 @@ proof -
 qed
 
 lemma cardinal_rel_Un_le:
-  assumes "InfCard_rel(M,\<kappa>)" "|A|\<^bsup>M\<^esup> \<le> \<kappa>" "|B|\<^bsup>M\<^esup> \<le> \<kappa>"
+  assumes "M(A)" "M(B)" "M(\<kappa>)" "InfCard_rel(M,\<kappa>)" "|A|\<^bsup>M\<^esup> \<le> \<kappa>" "|B|\<^bsup>M\<^esup> \<le> \<kappa>"
   shows "|A \<union> B|\<^bsup>M\<^esup> \<le> \<kappa>"
   using assms lepoll_rel_Un le_Card_rel_iff InfCard_rel_is_Card_rel by auto
 
-lemma eqpoll_rel_imp_Finite_iff: "A \<approx>\<^bsup>M\<^esup> B \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> Finite(A) \<longleftrightarrow> Finite(B)"
-  sorry
+lemma eqpoll_rel_imp_Finite: "A \<approx>\<^bsup>M\<^esup> B \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> Finite(A) \<Longrightarrow> Finite(B)" 
+proof -
+  assume "A \<approx>\<^bsup>M\<^esup> B" "Finite(A)" "M(A)" "M(B)"
+  then obtain f n g where "f\<in>bij(A,B)" "n\<in>\<omega>" "g\<in>bij(A,n)"
+    unfolding Finite_def eqpoll_def eqpoll_rel_def
+    using bij_rel_char
+    by auto
+  then
+  have "g O converse(f) \<in> bij(B,n)"
+    using bij_converse_bij comp_bij by simp
+  with \<open>n\<in>_\<close>
+  show"Finite(B)"
+    unfolding Finite_def eqpoll_def by auto
+qed
 
-lemma Finite_cardinal_rel_iff': "Finite(|i|\<^bsup>M\<^esup>) \<longleftrightarrow> Finite(i)"
-  using cardinal_rel_eqpoll_rel_iff eqpoll_rel_imp_Finite_iff (* by fastforce *) sorry
+lemma eqpoll_rel_imp_Finite_iff: "A \<approx>\<^bsup>M\<^esup> B \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> Finite(A) \<longleftrightarrow> Finite(B)"
+  using eqpoll_rel_imp_Finite eqpoll_rel_sym by force
+
+lemma Finite_cardinal_rel_iff': "M(i) \<Longrightarrow> Finite(|i|\<^bsup>M\<^esup>) \<longleftrightarrow> Finite(i)"
+  using eqpoll_rel_imp_Finite_iff[OF cardinal_rel_eqpoll_rel]
+  by auto
 
 lemma cardinal_rel_subset_of_Card_rel:
-  assumes "Card_rel(M,\<gamma>)" "a \<subseteq> \<gamma>"
+  assumes "Card_rel(M,\<gamma>)" "a \<subseteq> \<gamma>" "M(a)" "M(\<gamma>)"
   shows "|a|\<^bsup>M\<^esup> < \<gamma> \<or> |a|\<^bsup>M\<^esup> = \<gamma>"
 proof -
   from assms
-  have "|a|\<^bsup>M\<^esup> < |\<gamma>|\<^bsup>M\<^esup> \<or> |a|\<^bsup>M\<^esup> = |\<gamma>|"
-    using subset_imp_le_cardinal_rel le_iff by simp
+  have "|a|\<^bsup>M\<^esup> < |\<gamma>|\<^bsup>M\<^esup> \<or> |a|\<^bsup>M\<^esup> = |\<gamma>|\<^bsup>M\<^esup>"
+    using subset_imp_le_cardinal_rel[THEN le_iff[THEN iffD1]] by simp
   with assms
   show ?thesis
-    using Card_rel_cardinal_rel_eq by simp
+    using Card_rel_cardinal_rel_eq by auto
 qed
 
 lemma cardinal_rel_cases:
   includes Ord_dests
+  assumes "M(\<gamma>)" "M(X)"
   shows "Card_rel(M,\<gamma>) \<Longrightarrow> |X|\<^bsup>M\<^esup> < \<gamma> \<longleftrightarrow> \<not> |X|\<^bsup>M\<^esup> \<ge> \<gamma>"
-  using not_le_iff_lt
-  (* by auto *) sorry
+  using assms not_le_iff_lt Card_rel_is_Ord Ord_cardinal_rel
+  by auto
 
 end (* M_library *)
 
@@ -249,34 +274,35 @@ lemma countableI[intro]: "X \<lesssim>\<^bsup>M\<^esup> \<omega> \<Longrightarro
 lemma countableD[dest]: "countable_rel(M,X) \<Longrightarrow> X \<lesssim>\<^bsup>M\<^esup> \<omega>"
   unfolding countable_rel_def by simp
 
-lemma countable_rel_iff_cardinal_rel_le_nat: "countable_rel(M,X) \<longleftrightarrow> |X|\<^bsup>M\<^esup> \<le> \<omega>"
+lemma countable_rel_iff_cardinal_rel_le_nat: "M(X) \<Longrightarrow> countable_rel(M,X) \<longleftrightarrow> |X|\<^bsup>M\<^esup> \<le> \<omega>"
   using le_Card_rel_iff[of \<omega> X] Card_rel_nat
   unfolding countable_rel_def by simp
 
-lemma lepoll_rel_countable: "X \<lesssim>\<^bsup>M\<^esup> Y \<Longrightarrow> countable_rel(M,Y) \<Longrightarrow> countable_rel(M,X)"
-  using lepoll_rel_trans[of X Y] by blast*
+lemma lepoll_rel_countable: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<lesssim>\<^bsup>M\<^esup> Y \<Longrightarrow> countable_rel(M,Y) \<Longrightarrow> countable_rel(M,X)"
+  using lepoll_rel_trans[of X Y] by blast
 
 \<comment> \<open>Next lemma can be proved without using AC\<close>
-lemma surj_rel_countable: "countable_rel(M,X) \<Longrightarrow> f \<in> surj_rel(M,X,Y) \<Longrightarrow> countable_rel(M,Y)"
+lemma surj_rel_countable: 
+  "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> countable_rel(M,X) \<Longrightarrow> f \<in> surj_rel(M,X,Y) \<Longrightarrow> countable_rel(M,Y)"
   using surj_rel_implies_cardinal_rel_le[of f X Y, THEN le_trans]
     countable_rel_iff_cardinal_rel_le_nat by simp
 
-lemma Finite_imp_countable: "Finite(X) \<Longrightarrow> countable_rel(M,X)"
-  unfolding Finite_def
+lemma Finite_imp_countable: "M(X) \<Longrightarrow> Finite_rel(M,X) \<Longrightarrow> countable_rel(M,X)"
+  unfolding Finite_rel_def
   by (auto intro:InfCard_rel_nat nats_le_InfCard_rel[of _ \<omega>,
-        THEN le_imp_lepoll_rel] dest!:eq_lepoll_rel_trans[of X _ \<omega>])
+        THEN le_imp_lepoll_rel] dest!:eq_lepoll_rel_trans[of X _ \<omega>] )
 
 lemma countable_rel_imp_countable_rel_UN:
-  assumes "countable_rel(M,J)" "\<And>i. i\<in>J \<Longrightarrow> countable_rel(M,X(i))"
+  assumes "M(J)" "countable_rel(M,J)" "\<And>i. i\<in>J \<Longrightarrow> countable_rel(M,X(i))"
   shows "countable_rel(M,\<Union>i\<in>J. X(i))"
-  using assms leqpoll_rel_imp_cardinal_rel_UN_le[of \<omega> J X] InfCard_rel_nat
-    countable_rel_iff_cardinal_rel_le_nat
-  by auto
-
+using assms M_cardinal_UN_lepoll.leqpoll_rel_imp_cardinal_rel_UN_le[where X="\<lambda>c . c"] InfCard_rel_nat
+    countable_rel_iff_cardinal_rel_le_nat 
+  sorry
+ 
 lemma countable_rel_union_countable:
-  assumes "\<And>x. x \<in> C \<Longrightarrow> countable_rel(M,x)" "countable_rel(M,C)"
+  assumes "M(C)" "\<And>x. x \<in> C \<Longrightarrow> countable_rel(M,x)" "countable_rel(M,C)"
   shows "countable_rel(M,\<Union>C)"
-  using assms countable_rel_imp_countable_rel_UN[of C "\<lambda>x. x"] by simp
+  using assms countable_rel_imp_countable_rel_UN[where X="\<lambda>c . c"] by simp
 
 end (* M_library *)
 
@@ -288,19 +314,19 @@ context M_library
 begin
 
 lemma uncountable_rel_iff_nat_lt_cardinal_rel:
-  "uncountable_rel(M,X) \<longleftrightarrow> \<omega> < |X|"
+  "M(X) \<Longrightarrow> uncountable_rel(M,X) \<longleftrightarrow> \<omega> < |X|\<^bsup>M\<^esup>"
   using countable_rel_iff_cardinal_rel_le_nat not_le_iff_lt by simp
 
 lemma uncountable_rel_not_empty: "uncountable_rel(M,X) \<Longrightarrow> X \<noteq> 0"
   using empty_lepoll_relI by auto
 
-lemma uncountable_rel_imp_Infinite: "uncountable_rel(M,X) \<Longrightarrow> Infinite(X)"
+lemma uncountable_rel_imp_Infinite: "M(X) \<Longrightarrow> uncountable_rel(M,X) \<Longrightarrow> Infinite(X)"
   using uncountable_rel_iff_nat_lt_cardinal_rel[of X] lepoll_rel_nat_imp_Infinite[of X]
     cardinal_rel_le_imp_lepoll_rel[of \<omega> X] leI
   by simp
 
 lemma uncountable_rel_not_subset_countable:
-  assumes "countable_rel(M,X)" "uncountable_rel(M,Y)"
+  assumes "M(X)" "M(Y)" "countable_rel(M,X)" "uncountable_rel(M,Y)"
   shows "\<not> (Y \<subseteq> X)"
   using assms lepoll_rel_trans subset_imp_lepoll_rel[of Y X]
   by blast
@@ -314,14 +340,15 @@ lemma nat_lt_Aleph_rel1: "\<omega> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
 lemma zero_lt_Aleph_rel1: "0 < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
   by (rule lt_trans[of _ "\<omega>"], auto simp add: ltI nat_lt_Aleph_rel1)
 
-lemma le_Aleph_rel1_nat: "Card_rel(M,k) \<Longrightarrow> k<\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> k \<le> \<omega>"
-  by (simp add: Aleph_rel_def Card_rel_lt_csucc_rel_iff Card_rel_nat)
-
+lemma le_Aleph_rel1_nat: "M(k) \<Longrightarrow> Card_rel(M,k) \<Longrightarrow> k<\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> k \<le> \<omega>"
+  by (simp add: Aleph_rel_succ Aleph_rel_zero Card_rel_lt_csucc_rel_iff Card_rel_nat)
+ 
 lemma lesspoll_rel_Aleph_rel_plus_one:
   assumes "Ord(\<alpha>)"
-    and types:"M(\<alpha>)"
+    and types:"M(\<alpha>)" "M(d)"
   shows "d \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>succ(\<alpha>)\<^esub>\<^bsup>M\<^esup> \<longleftrightarrow> d \<lesssim>\<^bsup>M\<^esup> \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>"
-  using assms lesspoll_rel_csucc_rel Aleph_rel_succ Card_rel_is_Ord by simp
+  using assms Aleph_rel_succ Card_rel_is_Ord Ord_Aleph_rel lesspoll_rel_csucc_rel 
+  by simp
 
 lemma cardinal_rel_Aleph_rel [simp]: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> |\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>|\<^bsup>M\<^esup> = \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>"
   using Card_rel_cardinal_rel_eq by simp
@@ -329,58 +356,61 @@ lemma cardinal_rel_Aleph_rel [simp]: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>
 \<comment> \<open>Could be proved without using AC\<close>
 lemma Aleph_rel_lesspoll_rel_increasing:
   includes Aleph_rel_intros
-  assumes "M(b)"
+  assumes "M(b)" "M(a)"
   shows "a < b \<Longrightarrow> \<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup> \<prec> \<aleph>\<^bsub>b\<^esub>\<^bsup>M\<^esup>"
   using cardinal_rel_lt_iff_lesspoll_rel[of "\<aleph>\<^bsub>a\<^esub>" "\<aleph>\<^bsub>b\<^esub>"] Card_rel_cardinal_rel_eq[of "\<aleph>\<^bsub>b\<^esub>"]
-    lt_Ord lt_Ord2 Card_rel_Aleph_rel[THEN Card_rel_is_Ord] by auto
+    lt_Ord lt_Ord2 Card_rel_Aleph_rel[THEN Card_rel_is_Ord] sorry
 
 lemma uncountable_rel_iff_subset_eqpoll_rel_Aleph_rel1:
   includes Ord_dests
+  assumes "M(X)"
   notes Aleph_rel_zero[simp] Card_rel_nat[simp] Aleph_rel_succ[simp]
-  shows "uncountable_rel(M,X) \<longleftrightarrow> (\<exists>S. S \<subseteq> X \<and> S \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>)"
+  shows "uncountable_rel(M,X) \<longleftrightarrow> (\<exists>S[M]. S \<subseteq> X \<and> S \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)"
 proof
   assume "uncountable_rel(M,X)"
-  then
-  have "\<aleph>\<^bsub>1\<^esub> \<lesssim>\<^bsup>M\<^esup> X"
+  with \<open>M(X)\<close>
+  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<lesssim>\<^bsup>M\<^esup> X"
     using uncountable_rel_iff_nat_lt_cardinal_rel cardinal_rel_lt_csucc_rel_iff'
-      cardinal_rel_le_imp_lepoll_rel by force*
-  then
-  obtain S where "S \<subseteq> X" "S \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>"
+      cardinal_rel_le_imp_lepoll_rel by auto
+  with \<open>M(X)\<close>
+  obtain S where "M(S)" "S \<subseteq> X" "S \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
     using lepoll_rel_imp_subset_bij_rel by auto
   then
-  show "\<exists>S. S \<subseteq> X \<and> S \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>"
+  show "\<exists>S[M]. S \<subseteq> X \<and> S \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
     using cardinal_rel_cong Card_rel_csucc_rel[of \<omega>] Card_rel_cardinal_rel_eq by auto
 next
-  assume "\<exists>S. S \<subseteq> X \<and> S \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>"
-  then
-  have "\<aleph>\<^bsub>1\<^esub> \<lesssim>\<^bsup>M\<^esup> X"
-    using subset_imp_lepoll_rel[THEN [2] eq_lepoll_rel_trans, of "\<aleph>\<^bsub>1\<^esub>" _ X,
+  assume "\<exists>S[M]. S \<subseteq> X \<and> S \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+  with \<open>M(X)\<close>
+  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<lesssim>\<^bsup>M\<^esup> X"
+    using subset_imp_lepoll_rel[THEN [2] eq_lepoll_rel_trans, of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" _ X,
         OF eqpoll_rel_sym] by auto
-  then
+  with \<open>M(X)\<close>
   show "uncountable_rel(M,X)"
-    using Aleph_rel_lesspoll_rel_increasing[of 0 1, THEN [2] lesspoll_rel_trans1,
-        of "\<aleph>\<^bsub>1\<^esub>"] lepoll_rel_trans[of "\<aleph>\<^bsub>1\<^esub>" X \<omega>]
-    by auto
+    using Aleph_rel_lesspoll_rel_increasing[of 1 0,simplified] Aleph_rel_closed[of 1]
+      lesspoll_rel_trans1[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" X "(\<omega>\<^sup>+)\<^bsup>M\<^esup>" ,simplified] 
+      lepoll_rel_trans[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" X \<omega>,simplified]
+    unfolding countable_rel_def sorry
 qed
 
 lemma lt_Aleph_rel_imp_cardinal_rel_UN_le_nat: "function(G) \<Longrightarrow> domain(G) \<lesssim>\<^bsup>M\<^esup> \<omega> \<Longrightarrow>
-   \<forall>n\<in>domain(G). |G`n|<\<aleph>\<^bsub>1\<^esub> \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<le>\<omega>"
+   \<forall>n\<in>domain(G). |G`n|<\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<le>\<omega>"
 proof -
   assume "function(G)"
   let ?N="domain(G)" and ?R="\<Union>n\<in>domain(G). G`n"
   assume "?N \<lesssim>\<^bsup>M\<^esup> \<omega>"
-  assume Eq1: "\<forall>n\<in>?N. |G`n|<\<aleph>\<^bsub>1\<^esub>"
+  assume Eq1: "\<forall>n\<in>?N. |G`n|<\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
   {
     fix n
     assume "n\<in>?N"
     with Eq1 have "|G`n|\<^bsup>M\<^esup> \<le> \<omega>"
-      using le_Aleph_rel1_nat by simp
+      using le_Aleph_rel1_nat leqpoll_imp_cardinal_UN_le
+      sorry
   }
   then
   have "n\<in>?N \<Longrightarrow> |G`n|\<^bsup>M\<^esup> \<le> \<omega>" for n .
   with \<open>?N \<lesssim>\<^bsup>M\<^esup> \<omega>\<close>
   show ?thesis
-    using InfCard_rel_nat leqpoll_rel_imp_cardinal_rel_UN_le by simp
+    using InfCard_rel_nat leqpoll_rel_imp_cardinal_rel_UN_le sorry
 qed
 
 lemma Aleph_rel1_eq_cardinal_rel_vimage: "f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>\<omega> \<Longrightarrow> \<exists>n\<in>\<omega>. |f-``{n}|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>"
@@ -394,7 +424,7 @@ proof -
   have "range(f) \<subseteq> \<omega>" by (simp add: range_fun_subset_codomain)
   then
   have "domain(?G) \<lesssim>\<^bsup>M\<^esup> \<omega>"
-    using subset_imp_lepoll_rel by simp
+    using subset_imp_lepoll_rel sorry
   have "function(?G)" by (simp add:function_lam)
   from \<open>f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>\<omega>\<close>
   have "n\<in>\<omega> \<Longrightarrow> f-``{n} \<subseteq> \<aleph>\<^bsub>1\<^esub>" for n
@@ -417,63 +447,66 @@ proof -
       using zero_lt_Aleph_rel1 by (auto)
     with \<open>function(?G)\<close> \<open>domain(?G) \<lesssim>\<^bsup>M\<^esup> \<omega>\<close>
     have "|\<Union>n\<in>domain(?G). ?G`n|\<le>\<omega>"
-      using lt_Aleph_rel_imp_cardinal_rel_UN_le_nat by blast*
+      using lt_Aleph_rel_imp_cardinal_rel_UN_le_nat sorry
     then
     have "|\<Union>n\<in>range(f). f-``{n}|\<le>\<omega>" by simp
     with \<open>\<aleph>\<^bsub>1\<^esub> = _\<close>
-    have "|\<aleph>\<^bsub>1\<^esub>|\<^bsup>M\<^esup> \<le> \<omega>" by simp
+    have "|\<aleph>\<^bsub>1\<^esub>|\<^bsup>M\<^esup> \<le> \<omega>" sorry
     then
     have "\<aleph>\<^bsub>1\<^esub> \<le> \<omega>"
       using Card_rel_Aleph_rel Card_rel_cardinal_rel_eq
-      by simp
+      sorry
     then
     have "False"
       using nat_lt_Aleph_rel1 (* by (blast dest:lt_trans2) *)
+      sorry
   }
   with \<open>range(f)\<subseteq>\<omega>\<close>
   obtain n where "n\<in>\<omega>" "\<not>(|f -`` {n}|\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>)"
     by blast
   moreover from this
   have "\<aleph>\<^bsub>1\<^esub> \<le> |f-``{n}|"
-    using not_lt_iff_le Card_rel_is_Ord by auto
+    using not_lt_iff_le Card_rel_is_Ord sorry
   moreover
   note \<open>n\<in>\<omega> \<Longrightarrow> f-``{n} \<subseteq> \<aleph>\<^bsub>1\<^esub>\<close>
   ultimately
   show ?thesis
     using subset_imp_le_cardinal_rel[THEN le_anti_sym, of _ "\<aleph>\<^bsub>1\<^esub>"]
-      Card_rel_Aleph_rel Card_rel_cardinal_rel_eq by auto
+      Card_rel_Aleph_rel Card_rel_cardinal_rel_eq sorry
 qed
-
-lemma bij_rel_is_fun: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow>  f \<in> A\<rightarrow>\<^bsup>M\<^esup>B"
-  sorry
 
 \<comment> \<open>There is some asymmetry between assumptions and conclusion
     (\<^term>\<open>eqpoll_rel\<close> versus \<^term>\<open>cardinal_rel\<close>)\<close>
 
 lemma eqpoll_rel_Aleph_rel1_cardinal_rel_vimage:
-  assumes "X \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>" "f : X \<rightarrow> \<omega>"
-  shows "\<exists>n\<in>\<omega>. |f-``{n}|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>"
+  assumes "Z \<approx>\<^bsup>M\<^esup> (\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)" "f \<in> Z \<rightarrow> \<omega>" "M(Z)"
+  shows "\<exists>n\<in>\<omega>. |f-``{n}|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
 proof -
-  from assms
-  obtain g where "g\<in>bij_rel(M,\<aleph>\<^bsub>1\<^esub>,X)"
-    using eqpoll_rel_sym by blast
-  with \<open>f : X \<rightarrow> \<omega>\<close>
-  have "f O g : \<aleph>\<^bsub>1\<^esub> \<rightarrow> \<omega>" "converse(g) \<in> bij_rel(M,X, \<aleph>\<^bsub>1\<^esub>)"
-    using bij_rel_is_fun comp_fun bij_rel_converse_bij_rel by blast+
+  have "M(1)" by simp
+  note Aleph_rel_closed[of 1] 
+  with assms \<open>M(1)\<close>
+  obtain g where "g\<in>bij_rel(M,\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,Z)" "M(g)"
+    using eqpoll_rel_sym unfolding eqpoll_rel_def by blast
+  with \<open>f : Z \<rightarrow> \<omega>\<close> assms
+  have "f O g : \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightarrow> \<omega>" "converse(g) \<in> bij_rel(M,Z, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)"
+    using bij_rel_is_fun comp_fun bij_rel_converse_bij_rel 
+    sorry
   then
-  obtain n where "n\<in>\<omega>" "|(f O g)-``{n}|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>"
-    using Aleph_rel1_eq_cardinal_rel_vimage by auto
+  obtain n where "n\<in>\<omega>" "|(f O g)-``{n}|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+    using Aleph_rel1_eq_cardinal_rel_vimage 
+    sorry
   then
-  have "\<aleph>\<^bsub>1\<^esub> = |converse(g) `` (f -``{n})|"
+  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> = |converse(g) `` (f -``{n})|"
     using image_comp converse_comp
-    unfolding vimage_def by simp
-  also from \<open>converse(g) \<in> bij_rel(M,X, \<aleph>\<^bsub>1\<^esub>)\<close> \<open>f: X\<rightarrow> \<omega>\<close>
+    unfolding vimage_def 
+    sorry
+  also from \<open>converse(g) \<in> bij_rel(M,Z, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)\<close> \<open>f: Z\<rightarrow> \<omega>\<close>
   have "\<dots> = |f -``{n}|"
-    using range_of_subset_eqpoll_rel[of "converse(g)" X  _ "f -``{n}"]
+    using range_of_subset_eqpoll_rel[of "converse(g)" Z  _ "f -``{n}"]
       bij_rel_is_inj_rel cardinal_rel_cong bij_rel_is_fun eqpoll_rel_sym Pi_vimage_subset
-    by fastforce*
+    sorry
   finally
-  show ?thesis using \<open>n\<in>\<omega>\<close> by auto
+  show ?thesis using \<open>n\<in>\<omega>\<close> sorry
 qed
 
 
@@ -496,8 +529,10 @@ lemma rec_constr_unfold: "rec_constr(f,\<alpha>) = f`({rec_constr(f,\<beta>). \<
 lemma rec_constr_type: assumes "f:Pow_rel(M,G)\<rightarrow> G" "Ord(\<alpha>)"
   shows "rec_constr(f,\<alpha>) \<in> G"
   using assms(2,1)
-  by (induct rule:trans_induct)
+(*   by (induct rule:trans_induct)
     (subst rec_constr_unfold, rule apply_type[of f "Pow_rel(M,G)" "\<lambda>_. G"], auto)
+ *)
+  sorry
 
 text\<open>The next lemma is an application of recursive constructions.
      It works under the assumption that whenever the already constructed
@@ -506,15 +541,16 @@ text\<open>The next lemma is an application of recursive constructions.
 lemma bounded_cardinal_rel_selection:
   includes Ord_dests
   assumes
-    "\<And>X. |X|\<^bsup>M\<^esup> < \<gamma> \<Longrightarrow> X \<subseteq> G \<Longrightarrow> \<exists>a\<in>G. \<forall>s\<in>X. Q(s,a)" "b\<in>G" "Card_rel(M,\<gamma>)"
+    "\<And>Z. |Z|\<^bsup>M\<^esup> < \<gamma> \<Longrightarrow> Z \<subseteq> G \<Longrightarrow> \<exists>a\<in>G. \<forall>s\<in>Z. Q(s,a)" "b\<in>G" "Card_rel(M,\<gamma>)"
   shows
     "\<exists>S. S : \<gamma> \<rightarrow> G \<and> (\<forall>\<alpha> \<in> \<gamma>. \<forall>\<beta> \<in> \<gamma>.  \<alpha><\<beta> \<longrightarrow> Q(S`\<alpha>,S`\<beta>))"
 proof -
-  let ?cdlt\<gamma>="{X\<in>Pow_rel(M,G) . |X|<\<gamma>}" \<comment> \<open>“cardinal_rel less than \<^term>\<open>\<gamma>\<close>”\<close>
+  let ?cdlt\<gamma>="{Z\<in>Pow_rel(M,G) . |Z|<\<gamma>}" \<comment> \<open>“cardinal_rel less than \<^term>\<open>\<gamma>\<close>”\<close>
     and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. Q(s,a)}"
   from assms
   have "\<forall>Y \<in> ?cdlt\<gamma>. \<exists>a. a \<in> ?inQ(Y)"
-    by blast
+(*     by blast *)
+  sorry
   then
   have "\<exists>f. f \<in> Pi(?cdlt\<gamma>,?inQ)"
     using AC_ball_Pi[of ?cdlt\<gamma> ?inQ] by simp
@@ -531,7 +567,7 @@ proof -
   ultimately
   have "f \<union> Cb : (\<Prod>x\<in>Pow_rel(M,G). ?inQ(x) \<union> G)" using
       fun_Pi_disjoint_Un[ of f ?cdlt\<gamma>  ?inQ Cb "Pow_rel(M,G)-?cdlt\<gamma>" "\<lambda>_.G"]
-      Diff_partition[of "{X\<in>Pow_rel(M,G). |X|<\<gamma>}" "Pow_rel(M,G)", OF Collect_subset]
+      Diff_partition[of "{Z\<in>Pow_rel(M,G). |Z|<\<gamma>}" "Pow_rel(M,G)", OF Collect_subset]
     by auto
   moreover
   have "?inQ(x) \<union> G = G" for x by auto
@@ -541,7 +577,8 @@ proof -
   from \<open>f \<union> Cb: Pow_rel(M,G) \<rightarrow> G\<close> \<open>Card_rel(M,\<gamma>)\<close>
   have "S : \<gamma> \<rightarrow> G"
     using Ord_in_Ord unfolding S_def
-    by (intro lam_type rec_constr_type) auto
+    (* by (intro lam_type rec_constr_type) auto *)
+    sorry
   moreover
   have "\<forall>\<alpha>\<in>\<gamma>. \<forall>\<beta>\<in>\<gamma>. \<alpha> < \<beta> \<longrightarrow> Q(S ` \<alpha>, S ` \<beta>)"
   proof (intro ballI impI)
@@ -551,11 +588,14 @@ proof -
     have "{rec_constr(f \<union> Cb, x) . x\<in>\<beta>} = {S`x . x \<in> \<beta>}"
       using Ord_trans[OF _ _ Card_rel_is_Ord, of _ \<beta> \<gamma>]
       unfolding S_def
-      by auto
+      (* by auto *)
+      sorry
     moreover from \<open>\<beta>\<in>\<gamma>\<close> \<open>S : \<gamma> \<rightarrow> G\<close> \<open>Card_rel(M,\<gamma>)\<close>
     have "{S`x . x \<in> \<beta>} \<subseteq> G"
       using Ord_trans[OF _ _ Card_rel_is_Ord, of _ \<beta> \<gamma>]
-        apply_type[of S \<gamma> "\<lambda>_. G"] by auto
+        apply_type[of S \<gamma> "\<lambda>_. G"] 
+      sorry
+      (* by auto *)
     moreover from \<open>Card_rel(M,\<gamma>)\<close> \<open>\<beta>\<in>\<gamma>\<close>
     have "|{S`x . x \<in> \<beta>}|\<^bsup>M\<^esup> < \<gamma>"
       using cardinal_rel_RepFun_le[of \<beta>]  Ord_in_Ord
@@ -580,7 +620,8 @@ proof -
     show "Q(S ` \<alpha>, S ` \<beta>)"
       using fun_disjoint_apply1[of "{S`x . x \<in> \<beta>}" Cb f]
         domain_of_fun[of Cb] ltD[of \<alpha> \<beta>]
-      by (subst (2) S_def, auto) (subst rec_constr_unfold, auto)
+      (* by (subst (2) S_def, auto) (subst rec_constr_unfold, auto) *)
+      sorry
   qed
   ultimately
   show ?thesis by blast
@@ -588,75 +629,75 @@ qed
 
 text\<open>The following basic result can, in turn, be proved by a
      bounded-cardinal_rel selection.\<close>
-lemma Infinite_iff_lepoll_rel_nat: "Infinite(X) \<longleftrightarrow> \<omega> \<lesssim>\<^bsup>M\<^esup> X"
+lemma Infinite_iff_lepoll_rel_nat: "M(Z) \<Longrightarrow> Infinite(Z) \<longleftrightarrow> \<omega> \<lesssim>\<^bsup>M\<^esup> Z"
 proof
-  assume "Infinite(X)"
+  assume "Infinite(Z)" "M(Z)"
   then
-  obtain b where "b\<in>X"
+  obtain b where "b\<in>Z"
     using Infinite_not_empty by auto
   {
     fix Y
     assume "|Y|\<^bsup>M\<^esup> < \<omega>"
     then
     have "Finite(Y)"
-      using Finite_cardinal_rel_iff' ltD nat_into_Finite by blast
-    with \<open>Infinite(X)\<close>
-    have "X \<noteq> Y" by auto
+      using Finite_cardinal_rel_iff' ltD nat_into_Finite sorry 
+    with \<open>Infinite(Z)\<close>
+    have "Z \<noteq> Y" by auto
   }
-  with \<open>b\<in>X\<close>
-  obtain S where "S : \<omega> \<rightarrow> X"  "\<forall>\<alpha>\<in>\<omega>. \<forall>\<beta>\<in>\<omega>. \<alpha> < \<beta> \<longrightarrow> S`\<alpha> \<noteq> S`\<beta>"
-    using bounded_cardinal_rel_selection[of \<omega> X "\<lambda>x y. x\<noteq>y"]
+  with \<open>b\<in>Z\<close>
+  obtain S where "S : \<omega> \<rightarrow> Z"  "\<forall>\<alpha>\<in>\<omega>. \<forall>\<beta>\<in>\<omega>. \<alpha> < \<beta> \<longrightarrow> S`\<alpha> \<noteq> S`\<beta>"
+    using bounded_cardinal_rel_selection[of \<omega> Z "\<lambda>x y. x\<noteq>y"]
       Card_rel_nat by blast
   moreover from this
   have "\<alpha> \<in> \<omega> \<Longrightarrow> \<beta> \<in> \<omega> \<Longrightarrow> \<alpha>\<noteq>\<beta> \<Longrightarrow> S`\<alpha> \<noteq> S`\<beta>" for \<alpha> \<beta>
     by (rule_tac lt_neq_symmetry[of "\<omega>" "\<lambda>\<alpha> \<beta>. S`\<alpha> \<noteq> S`\<beta>"])
-      auto
+      auto                                                               
   ultimately
-  show "\<omega> \<lesssim>\<^bsup>M\<^esup> X"
+  show "\<omega> \<lesssim>\<^bsup>M\<^esup> Z"
     unfolding lepoll_rel_def inj_rel_def (* by blast *) sorry
 next
-  show "Infinite(X)" sorry 
+  show "Infinite(Z)" sorry 
 qed (* (intro lepoll_rel_nat_imp_Infinite) *)
 
-lemma Infinite_InfCard_rel_cardinal_rel: "Infinite(X) \<Longrightarrow> InfCard_rel(M,|X|\<^bsup>M\<^esup>)"
+lemma Infinite_InfCard_rel_cardinal_rel: "M(Z) \<Longrightarrow> Infinite(Z) \<Longrightarrow> InfCard_rel(M,|Z|\<^bsup>M\<^esup>)"
   using lepoll_rel_eq_trans eqpoll_rel_sym lepoll_rel_nat_imp_Infinite
     Infinite_iff_lepoll_rel_nat Inf_Card_rel_is_InfCard_rel cardinal_rel_eqpoll_rel
   by simp
 
 lemma Finite_to_one_rel_surj_rel_imp_cardinal_rel_eq:
-  assumes "F \<in> Finite_to_one_rel(M,X,Y) \<inter> surj_rel(M,X,Y)" "Infinite(X)"
-  shows "|Y|\<^bsup>M\<^esup> = |X|\<^bsup>M\<^esup>"
+  assumes "F \<in> Finite_to_one_rel(M,Z,Y) \<inter> surj_rel(M,Z,Y)" "Infinite(Z)" "M(Z)"
+  shows "|Y|\<^bsup>M\<^esup> = |Z|\<^bsup>M\<^esup>"
 proof -
-  from \<open>F \<in> Finite_to_one_rel(M,X,Y) \<inter> surj_rel(M,X,Y)\<close>
-  have "X = (\<Union>y\<in>Y. {x\<in>X . F`x = y})"
-    using apply_type by fastforce
+  from \<open>F \<in> Finite_to_one_rel(M,Z,Y) \<inter> surj_rel(M,Z,Y)\<close> \<open>M(Z)\<close>
+  have "Z = (\<Union>y\<in>Y. {x\<in>Z . F`x = y})"
+    using apply_type sorry
   show ?thesis
   proof (cases "Finite(Y)")
     case True
-    with \<open>X = (\<Union>y\<in>Y. {x\<in>X . F`x = y})\<close> and assms
+    with \<open>Z = (\<Union>y\<in>Y. {x\<in>Z . F`x = y})\<close> and assms
     show ?thesis
-      using Finite_RepFun[THEN [2] Finite_Union, of Y "\<lambda>y. {x\<in>X . F`x = y}"]
-      by auto
+      using Finite_RepFun[THEN [2] Finite_Union, of Y "\<lambda>y. {x\<in>Z . F`x = y}"]
+      sorry
   next
     case False
     moreover from this
     have "Y \<lesssim>\<^bsup>M\<^esup> |Y|"
-      using cardinal_rel_eqpoll_rel eqpoll_rel_sym eqpoll_rel_imp_lepoll_rel by simp
+      using cardinal_rel_eqpoll_rel eqpoll_rel_sym eqpoll_rel_imp_lepoll_rel sorry
     moreover
     note assms
     moreover from calculation
-    have "y \<in> Y \<Longrightarrow> |{x\<in>X . F`x = y}|\<^bsup>M\<^esup> \<le> |Y|\<^bsup>M\<^esup>" for y
+    have "y \<in> Y \<Longrightarrow> |{x\<in>Z . F`x = y}|\<^bsup>M\<^esup> \<le> |Y|\<^bsup>M\<^esup>" for y
       using Infinite_imp_nats_lepoll_rel[THEN lepoll_rel_imp_cardinal_rel_le, of Y
-          "|{x\<in>X . F`x = y}|\<^bsup>M\<^esup>"] cardinal_rel_idem by auto
+          "|{x\<in>Z . F`x = y}|\<^bsup>M\<^esup>"] cardinal_rel_idem sorry
     ultimately
-    have "|\<Union>y\<in>Y. {x\<in>X . F`x = y}|\<^bsup>M\<^esup> \<le> |Y|\<^bsup>M\<^esup>"
-      using leqpoll_rel_imp_cardinal_rel_UN_le[of "|Y|\<^bsup>M\<^esup>" Y]
-        Infinite_InfCard_rel_cardinal_rel[of Y] by simp
-    moreover from \<open>F \<in> Finite_to_one_rel(M,X,Y) \<inter> surj_rel(M,X,Y)\<close>
-    have "|Y|\<^bsup>M\<^esup> \<le> |X|\<^bsup>M\<^esup>"
-      using surj_rel_implies_cardinal_rel_le by auto
+    have "|\<Union>y\<in>Y. {x\<in>Z . F`x = y}|\<^bsup>M\<^esup> \<le> |Y|\<^bsup>M\<^esup>"
+      using leqpoll_rel_imp_cardinal_rel_UN_le
+        Infinite_InfCard_rel_cardinal_rel[of Y] sorry
+    moreover from \<open>F \<in> Finite_to_one_rel(M,Z,Y) \<inter> surj_rel(M,Z,Y)\<close> \<open>M(Z)\<close>
+    have "|Y|\<^bsup>M\<^esup> \<le> |Z|\<^bsup>M\<^esup>"
+      using surj_rel_implies_cardinal_rel_le sorry
     moreover
-    note \<open>X = (\<Union>y\<in>Y. {x\<in>X . F`x = y})\<close>
+    note \<open>Z = (\<Union>y\<in>Y. {x\<in>Z . F`x = y})\<close>
     ultimately
     show ?thesis
       using le_anti_sym by auto
@@ -664,19 +705,19 @@ proof -
 qed
 
 lemma cardinal_rel_map_Un:
-  assumes "Infinite(X)" "Finite(b)"
-  shows "|{a \<union> b . a \<in> X}|\<^bsup>M\<^esup> = |X|\<^bsup>M\<^esup>"
+  assumes "Infinite(Z)" "Finite(b)" "M(Z)"
+  shows "|{a \<union> b . a \<in> Z}|\<^bsup>M\<^esup> = |Z|\<^bsup>M\<^esup>"
 proof -
-  have "(\<lambda>a\<in>X. a \<union> b) \<in> Finite_to_one_rel(M,X,{a \<union> b . a \<in> X})"
-    "(\<lambda>a\<in>X. a \<union> b) \<in>  surj_rel(M,X,{a \<union> b . a \<in> X})"
+  have "(\<lambda>a\<in>Z. a \<union> b) \<in> Finite_to_one_rel(M,Z,{a \<union> b . a \<in> Z})"
+    "(\<lambda>a\<in>Z. a \<union> b) \<in>  surj_rel(M,Z,{a \<union> b . a \<in> Z})"
     unfolding surj_rel_def
   proof
     fix d
-    have "Finite({a \<in> X . a \<union> b = d})" (is "Finite(?Y(b,d))")
+    have "Finite({a \<in> Z . a \<union> b = d})" (is "Finite(?Y(b,d))")
       using \<open>Finite(b)\<close>
     proof (induct arbitrary:d)
       case 0
-      have "{a \<in> X . a \<union> 0 = d} = (if d\<in>X then {d} else 0)"
+      have "{a \<in> Z . a \<union> 0 = d} = (if d\<in>Z then {d} else 0)"
         by auto
       then
       show ?case by simp
@@ -691,16 +732,15 @@ proof -
         by simp
     qed
     moreover
-    assume "d \<in> {x \<union> b . x \<in> X}"
+    assume "d \<in> {x \<union> b . x \<in> Z}"
     ultimately
-    show "Finite({a \<in> X . (\<lambda>x\<in>X. x \<union> b) ` a = d})"
+    have "Finite({a \<in> Z . (\<lambda>x\<in>Z. x \<union> b) ` a = d})"
       by simp
   qed (auto intro:lam_funtype)
   with assms
   show ?thesis
     using Finite_to_one_rel_surj_rel_imp_cardinal_rel_eq by fast
 qed
-
 end (* M_library *)
 
 end
