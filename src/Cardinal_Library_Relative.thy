@@ -128,16 +128,16 @@ lemma cardinal_rel_lt_csucc_rel_iff':
   by blast
 
 lemma inj_rel_bij_rel_range: "f \<in> inj\<^bsup>M\<^esup>(A,B) \<Longrightarrow>M(A) \<Longrightarrow> M(B) \<Longrightarrow> f \<in> bij\<^bsup>M\<^esup>(A,range(f))"
-  sorry
+  using bij_rel_char inj_rel_char inj_bij_range by force
 
 lemma bij_rel_is_inj_rel: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> f \<in> inj\<^bsup>M\<^esup>(A,B)"
   unfolding bij_rel_def by simp
 
 lemma inj_rel_weaken_type: "[| f \<in> inj\<^bsup>M\<^esup>(A,B);  B\<subseteq>D; M(A); M(B); M(D) |] ==> f \<in> inj\<^bsup>M\<^esup>(A,D)"
-  sorry
+  using inj_rel_char inj_rel_is_fun inj_weaken_type by auto
 
 lemma bij_rel_converse_bij_rel [TC]: "f \<in> bij\<^bsup>M\<^esup>(A,B)  \<Longrightarrow> M(A) \<Longrightarrow> M(B) ==> converse(f): bij\<^bsup>M\<^esup>(B,A)"
-  sorry
+  using bij_rel_char by force
 
 lemma lepoll_rel_imp_subset_bij_rel: 
   assumes "M(X)" "M(Y)"
