@@ -39,8 +39,19 @@ lemma cardinal_rel_lt_csucc_rel_iff:
 "Card_rel(M,K) \<Longrightarrow> M(K) \<Longrightarrow> M(K') \<Longrightarrow> |K'|\<^bsup>M\<^esup> < (K\<^sup>+)\<^bsup>M\<^esup> \<longleftrightarrow> |K'|\<^bsup>M\<^esup> \<le> K"
   by (simp add: Card_rel_lt_csucc_rel_iff)
 
+lemmas inj_rel_is_fun = inj_is_fun[OF mem_inj_abs[THEN iffD1]]
+
 lemma inj_rel_converse_fun: "f \<in> inj\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> converse(f) \<in> range(f)\<rightarrow>\<^bsup>M\<^esup>A"
-  sorry
+proof -
+  assume "f \<in> inj\<^bsup>M\<^esup>(A,B)" "M(A)" "M(B)"
+  then
+  have "M(f)" "M(converse(f))" "M(range(f))" "f\<in>inj(A,B)"
+    using inj_rel_char converse_closed range_closed
+    by auto
+  then
+  show ?thesis
+    using inj_converse_inj function_space_rel_char inj_is_fun \<open>M(A)\<close> by auto
+qed
 
 end (* M_library *)
 
@@ -74,8 +85,9 @@ proof -
     using Pi_assumptions j.Pi_assumptions X_witness_in_M by simp_all
   note inM = \<open>M(f)\<close> and this
   define Y where "Y(k) \<equiv> if k\<in>range(f) then X(converse(f)`k) else 0" for k
+  from \<open>M(J)\<close> \<open>M(K)\<close>
   have "i\<in>J \<Longrightarrow> f`i \<in> K" for i
-    using inj_rel_is_fun_M[OF \<open>f \<in> inj_rel(M,J,K)\<close>]
+    using inj_rel_is_fun[OF _ _ _ \<open>f \<in> inj\<^bsup>M\<^esup>(J,K)\<close>] apply_type
       function_space_rel_char by (auto simp add:inM)
   have "(\<Union>i\<in>J. X(i)) \<subseteq> (\<Union>i\<in>K. Y(i))"
   proof (standard, elim UN_E)
@@ -119,7 +131,7 @@ lemma inj_rel_bij_rel_range: "f \<in> inj\<^bsup>M\<^esup>(A,B) \<Longrightarrow
   sorry
 
 lemma bij_rel_is_inj_rel: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> f \<in> inj\<^bsup>M\<^esup>(A,B)"
-  sorry
+  unfolding bij_rel_def by simp
 
 lemma inj_rel_weaken_type: "[| f \<in> inj\<^bsup>M\<^esup>(A,B);  B\<subseteq>D; M(A); M(B); M(D) |] ==> f \<in> inj\<^bsup>M\<^esup>(A,D)"
   sorry
