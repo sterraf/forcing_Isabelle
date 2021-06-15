@@ -83,9 +83,9 @@ proof -
   obtain f where "f \<in> inj_rel(M,J,K)" "M(f)" by blast
   have "M(K)" "M(J)" "\<And>w x. w \<in> X(x) \<Longrightarrow> M(x)"
     using Pi_assumptions j.Pi_assumptions X_witness_in_M by simp_all
-  note inM = \<open>M(f)\<close> and this
+  note inM = \<open>M(f)\<close> this
   define Y where "Y(k) \<equiv> if k\<in>range(f) then X(converse(f)`k) else 0" for k
-  from \<open>M(J)\<close> \<open>M(K)\<close>
+  from inM
   have "i\<in>J \<Longrightarrow> f`i \<in> K" for i
     using inj_rel_is_fun[OF _ _ _ \<open>f \<in> inj\<^bsup>M\<^esup>(J,K)\<close>] apply_type
       function_space_rel_char by (auto simp add:inM)
@@ -121,7 +121,7 @@ begin
 lemma cardinal_rel_lt_csucc_rel_iff':
   includes Ord_dests
   assumes "Card_rel(M,\<kappa>)"
-    and types:"M(\<kappa>)"
+    and types:"M(\<kappa>)" "M(X)"
   shows "\<kappa> < |X|\<^bsup>M\<^esup> \<longleftrightarrow> (\<kappa>\<^sup>+)\<^bsup>M\<^esup> \<le> |X|\<^bsup>M\<^esup>"
   using assms cardinal_rel_lt_csucc_rel_iff[of \<kappa> X] Card_rel_csucc_rel[of \<kappa>]
     not_le_iff_lt[of "(\<kappa>\<^sup>+)\<^bsup>M\<^esup>" "|X|\<^bsup>M\<^esup>"] not_le_iff_lt[of "|X|\<^bsup>M\<^esup>" \<kappa>]
@@ -147,24 +147,30 @@ proof
   then
   obtain j where  "j \<in> inj_rel(M,X,Y)"
     by blast
-  then
-  have "range(j) \<subseteq> Y" "j \<in> bij_rel(M,X,range(j))"
-    using inj_rel_bij_rel_range inj_rel_is_fun_M range_fun_subset_codomain
-    by blast+
-  then
-  show "\<exists>Z. Z \<subseteq> Y \<and> Z \<approx>\<^bsup>M\<^esup> X"
-    using eqpoll_rel_sym unfolding eqpoll_rel_def
-    by force*
+  with assms
+  have "range(j) \<subseteq> Y" "j \<in> bij_rel(M,X,range(j))" "M(range(j))" "M(j)"
+    using inj_rel_bij_rel_range inj_rel_char
+      inj_rel_is_fun[THEN range_fun_subset_codomain]
+    by auto
+  with assms
+  have "range(j) \<subseteq> Y" "X \<approx>\<^bsup>M\<^esup> range(j)"
+    unfolding eqpoll_rel_def by auto
+  with assms \<open>M(j)\<close>
+  show "\<exists>Z[M]. Z \<subseteq> Y \<and> Z \<approx>\<^bsup>M\<^esup> X"
+    using eqpoll_rel_sym[OF \<open>X \<approx>\<^bsup>M\<^esup> range(j)\<close>]
+    by auto
 next
-  assume "\<exists>Z. Z \<subseteq> Y \<and> Z \<approx>\<^bsup>M\<^esup> X"
+  assume "\<exists>Z[M]. Z \<subseteq> Y \<and> Z \<approx>\<^bsup>M\<^esup> X"
   then
-  obtain Z f where "f \<in> bij_rel(M,Z,X)" "Z \<subseteq> Y"
-    unfolding eqpoll_rel_def by force*
+  obtain Z f where "f \<in> bij_rel(M,Z,X)" "Z \<subseteq> Y" "M(Z)" "M(f)"
+    unfolding eqpoll_rel_def by blast
+  with assms
+  have "converse(f) \<in> inj_rel(M,X,Y)" "M(converse(f))"
+    using inj_rel_weaken_type[OF bij_rel_converse_bij_rel[THEN bij_rel_is_inj_rel],of f Z X Y]
+    by auto
   then
-  have "converse(f) \<in> inj_rel(M,X,Y)"
-    using bij_rel_is_inj_rel inj_rel_weaken_type bij_rel_converse_bij_rel by blast
-  then
-  show "X \<lesssim>\<^bsup>M\<^esup> Y" by blast
+  show "X \<lesssim>\<^bsup>M\<^esup> Y"
+    unfolding lepoll_rel_def by auto
 qed
 
 text\<open>The following result proves to be very useful when combining
