@@ -729,19 +729,19 @@ proof -
 qed
 
 lemma cardinal_rel_map_Un:
-  assumes "Infinite(Z)" "Finite(b)" "M(Z)"
-  shows "|{a \<union> b . a \<in> Z}|\<^bsup>M\<^esup> = |Z|\<^bsup>M\<^esup>"
+  assumes "Infinite(X)" "Finite(b)" "M(X)" "M(b)"
+  shows "|{a \<union> b . a \<in> X}|\<^bsup>M\<^esup> = |X|\<^bsup>M\<^esup>"
 proof -
-  have "(\<lambda>a\<in>Z. a \<union> b) \<in> Finite_to_one_rel(M,Z,{a \<union> b . a \<in> Z})"
-    "(\<lambda>a\<in>Z. a \<union> b) \<in>  surj_rel(M,Z,{a \<union> b . a \<in> Z})"
+  have "(\<lambda>a\<in>X. a \<union> b) \<in> Finite_to_one_rel(M,X,{a \<union> b . a \<in> X})"
+    "(\<lambda>a\<in>X. a \<union> b) \<in>  surj_rel(M,X,{a \<union> b . a \<in> X})"
     unfolding surj_rel_def
   proof
     fix d
-    have "Finite({a \<in> Z . a \<union> b = d})" (is "Finite(?Y(b,d))")
+    have "Finite({a \<in> X . a \<union> b = d})" (is "Finite(?Y(b,d))")
       using \<open>Finite(b)\<close>
     proof (induct arbitrary:d)
       case 0
-      have "{a \<in> Z . a \<union> 0 = d} = (if d\<in>Z then {d} else 0)"
+      have "{a \<in> X . a \<union> 0 = d} = (if d\<in>X then {d} else 0)"
         by auto
       then
       show ?case by simp
@@ -756,24 +756,24 @@ proof -
         by simp
     qed
     moreover
-    assume "d \<in> {x \<union> b . x \<in> Z}"
+    assume "d \<in> {x \<union> b . x \<in> X}"
     ultimately
-    have "Finite({a \<in> Z . (\<lambda>x\<in>Z. x \<union> b) ` a = d})"
+    have "Finite({a \<in> X . (\<lambda>x\<in>X. x \<union> b) ` a = d})"
       by simp
   next
-    show "M(\<lambda>a\<in>Z. a \<union> b)" sorry
+    show "M(\<lambda>a\<in>X. a \<union> b)" sorry
     moreover
-    show "M({a \<union> b . a \<in> Z})" sorry
+    show "M({a \<union> b . a \<in> X})" sorry
     moreover
-    note \<open>M(Z)\<close>
+    note \<open>M(X)\<close>
     ultimately
-    show "(\<lambda>a\<in>Z. a \<union> b) \<in> Z \<rightarrow>\<^bsup>M\<^esup> {a \<union> b . a \<in> Z}"
+    show "(\<lambda>a\<in>X. a \<union> b) \<in> X \<rightarrow>\<^bsup>M\<^esup> {a \<union> b . a \<in> X}"
       using function_space_rel_char by (auto intro:lam_funtype)
   next
-    show "\<And>y. y \<in> {a \<union> b . a \<in> Z} \<Longrightarrow> Finite({x \<in> Z . M(x) \<and> (\<lambda>a\<in>Z. a \<union> b) ` x = y})" sorry
+    show "\<And>y. y \<in> {a \<union> b . a \<in> X} \<Longrightarrow> Finite({x \<in> X . M(x) \<and> (\<lambda>a\<in>X. a \<union> b) ` x = y})" sorry
   next
-    show "(\<lambda>a\<in>Z. a \<union> b) \<in> (THE d. is_surj(M, Z, {a \<union> b . a \<in> Z}, d))" sorry
-  qed (simp add:\<open>M(Z)\<close>)
+    show "(\<lambda>a\<in>X. a \<union> b) \<in> (THE d. is_surj(M, X, {a \<union> b . a \<in> X}, d))" sorry
+  qed (simp add:\<open>M(X)\<close>)
   with assms
   show ?thesis
     using Finite_to_one_rel_surj_rel_imp_cardinal_rel_eq by fast
