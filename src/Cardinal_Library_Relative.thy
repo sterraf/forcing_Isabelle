@@ -70,7 +70,9 @@ end (* M_cardinal_UN_nat *)
 
 \<comment> \<open>This is not the correct version, since we'll gonna closure under
     \<^term>\<open>\<Union>x\<in>A. B(x)\<close> for several \<^term>\<open>A\<close> and \<^term>\<open>B\<close>.\<close>
-locale M_cardinal_UN_lepoll = M_library + M_cardinal_UN _ K + j:M_cardinal_UN _ J for K J
+locale M_cardinal_UN_lepoll = M_library +
+  k:M_cardinal_UN _ K +
+  j:M_cardinal_UN _ J for J K
 begin
 
 \<comment>\<open>FIXME: this "LEQpoll" should be "LEPOLL"; same correction in Delta System\<close>
@@ -82,13 +84,31 @@ proof -
   from \<open>J \<lesssim>\<^bsup>M\<^esup> K\<close>
   obtain f where "f \<in> inj_rel(M,J,K)" "M(f)" by blast
   have "M(K)" "M(J)" "\<And>w x. w \<in> X(x) \<Longrightarrow> M(x)"
-    using Pi_assumptions j.Pi_assumptions X_witness_in_M by simp_all
+    using k.Pi_assumptions j.Pi_assumptions j.X_witness_in_M by simp_all
   note inM = \<open>M(f)\<close> this
   define Y where "Y(k) \<equiv> if k\<in>range(f) then X(converse(f)`k) else 0" for k
-  from inM
   have "i\<in>J \<Longrightarrow> f`i \<in> K" for i
     using inj_rel_is_fun[OF _ _ _ \<open>f \<in> inj\<^bsup>M\<^esup>(J,K)\<close>] apply_type
       function_space_rel_char by (auto simp add:inM)
+  from inM
+  interpret y:M_Pi_assumptions _ K Y
+    sorry
+  from inM
+  interpret y:M_Pi_assumptions_choice _ K Y
+    sorry
+  interpret y:M_cardinal_UN _ K Y
+    using k.lam_m_replacement k.inj_replacement
+    apply unfold_locales
+(*   proof -
+    fix w x
+    assume "w\<in>Y(x)"
+    then
+    have "x\<in>range(f)"
+      unfolding Y_def by (cases "x\<in>range(f)", auto)
+    with \<open>M(f)\<close>
+    show "M(x)" by (auto dest:transM)
+  qed
+ *) sorry
   have "(\<Union>i\<in>J. X(i)) \<subseteq> (\<Union>i\<in>K. Y(i))"
   proof (standard, elim UN_E)
     fix x i
@@ -101,17 +121,21 @@ proof -
     then
     show "x \<in> (\<Union>i\<in>K. Y(i))" by auto
   qed
-  moreover
-  have "M(\<Union>i\<in>K. Y(i))" sorry
-  ultimately
+  then
   have "|\<Union>i\<in>J. X(i)|\<^bsup>M\<^esup> \<le> |\<Union>i\<in>K. Y(i)|\<^bsup>M\<^esup>"
-    using subset_imp_le_cardinal_rel j.UN_closed
+    using subset_imp_le_cardinal_rel j.UN_closed y.UN_closed
     unfolding Y_def by (simp add:inM)
-  with assms \<open>\<And>i. i\<in>J \<Longrightarrow> f`i \<in> K\<close>
+  moreover
+  note assms \<open>\<And>i. i\<in>J \<Longrightarrow> f`i \<in> K\<close> inM
+  moreover from this
+  have "k\<in>range(f) \<Longrightarrow> converse(f)`k \<in> J" for k
+    using inj_rel_converse_fun[OF \<open>f \<in> inj_rel(M,J,K)\<close>]
+      range_fun_subset_codomain function_space_rel_char by simp
+  ultimately
   show "|\<Union>i\<in>J. X(i)|\<^bsup>M\<^esup> \<le> K"
-    using inj_rel_converse_fun[OF \<open>f \<in> inj_rel(M,J,K)\<close>] unfolding Y_def
-    sorry
-    (* by (rule_tac le_trans[OF _ cardinal_rel_UN_le]) (auto intro:Ord_0_le)+ *)
+    using InfCard_rel_is_Card_rel[THEN Card_rel_is_Ord,THEN Ord_0_le, of K]
+    by (rule_tac le_trans[OF _ y.cardinal_rel_UN_le])
+      (auto intro:Ord_0_le simp:Y_def)+
 qed
 
 end (* M_cardinal_UN_lepoll *)
@@ -736,7 +760,20 @@ proof -
     ultimately
     have "Finite({a \<in> Z . (\<lambda>x\<in>Z. x \<union> b) ` a = d})"
       by simp
-  qed (auto intro:lam_funtype)
+  next
+    show "M(\<lambda>a\<in>Z. a \<union> b)" sorry
+    moreover
+    show "M({a \<union> b . a \<in> Z})" sorry
+    moreover
+    note \<open>M(Z)\<close>
+    ultimately
+    show "(\<lambda>a\<in>Z. a \<union> b) \<in> Z \<rightarrow>\<^bsup>M\<^esup> {a \<union> b . a \<in> Z}"
+      using function_space_rel_char by (auto intro:lam_funtype)
+  next
+    show "\<And>y. y \<in> {a \<union> b . a \<in> Z} \<Longrightarrow> Finite({x \<in> Z . M(x) \<and> (\<lambda>a\<in>Z. a \<union> b) ` x = y})" sorry
+  next
+    show "(\<lambda>a\<in>Z. a \<union> b) \<in> (THE d. is_surj(M, Z, {a \<union> b . a \<in> Z}, d))" sorry
+  qed (simp add:\<open>M(Z)\<close>)
   with assms
   show ?thesis
     using Finite_to_one_rel_surj_rel_imp_cardinal_rel_eq by fast
