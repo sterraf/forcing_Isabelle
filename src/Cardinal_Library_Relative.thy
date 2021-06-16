@@ -758,8 +758,9 @@ proof -
     moreover
     assume "d \<in> {x \<union> b . x \<in> X}"
     ultimately
-    have "Finite({a \<in> X . (\<lambda>x\<in>X. x \<union> b) ` a = d})"
-      by simp
+    show "Finite({a \<in> X . M(a) \<and> (\<lambda>x\<in>X. x \<union> b) ` a = d})"
+      using subset_Finite[of "{a \<in> X . M(a) \<and> (\<lambda>x\<in>X. x \<union> b) ` a = d}"
+          "{a \<in> X . (\<lambda>x\<in>X. x \<union> b) ` a = d}"] by auto
   next
     show "M(\<lambda>a\<in>X. a \<union> b)" sorry
     moreover
@@ -769,9 +770,6 @@ proof -
     ultimately
     show "(\<lambda>a\<in>X. a \<union> b) \<in> X \<rightarrow>\<^bsup>M\<^esup> {a \<union> b . a \<in> X}"
       using function_space_rel_char by (auto intro:lam_funtype)
-  next
-    show "\<And>y. y \<in> {a \<union> b . a \<in> X} \<Longrightarrow> Finite({x \<in> X . M(x) \<and> (\<lambda>a\<in>X. a \<union> b) ` x = y})" sorry
-  next
     show "(\<lambda>a\<in>X. a \<union> b) \<in> (THE d. is_surj(M, X, {a \<union> b . a \<in> X}, d))" sorry
   qed (simp add:\<open>M(X)\<close>)
   with assms
