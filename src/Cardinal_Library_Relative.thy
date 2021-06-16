@@ -762,11 +762,14 @@ proof -
       using subset_Finite[of "{a \<in> X . M(a) \<and> (\<lambda>x\<in>X. x \<union> b) ` a = d}"
           "{a \<in> X . (\<lambda>x\<in>X. x \<union> b) ` a = d}"] by auto
   next
-    show "M(\<lambda>a\<in>X. a \<union> b)" sorry
-    moreover
-    show "M({a \<union> b . a \<in> X})" sorry
-    moreover
     note \<open>M(X)\<close>
+    moreover
+    show "M(\<lambda>a\<in>X. a \<union> b)" sorry
+    moreover from this
+    have "{a \<union> b . a \<in> X} = (\<lambda>x\<in>X. x \<union> b) `` X"
+      using image_lam by simp
+    with calculation
+    show "M({a \<union> b . a \<in> X})" by auto
     ultimately
     show "(\<lambda>a\<in>X. a \<union> b) \<in> X \<rightarrow>\<^bsup>M\<^esup> {a \<union> b . a \<in> X}"
       using function_space_rel_char by (auto intro:lam_funtype)
