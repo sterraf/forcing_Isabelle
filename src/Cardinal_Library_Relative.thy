@@ -15,15 +15,22 @@ declare eqpoll_rel_refl [simp]
 subsection\<open>Miscellaneous\<close>
 
 lemma cardinal_rel_RepFun_le:
-  assumes "M(S)" "M(A)"
+  assumes "S \<in> A\<rightarrow>B" "M(S)" "M(A)" "M(B)"
   shows "|{S`a . a\<in>A}|\<^bsup>M\<^esup> \<le> |A|\<^bsup>M\<^esup>"
 proof -
   note assms
   moreover from this
-  have "M(\<lambda>x\<in>A. S ` x)" "M({S ` a . a \<in> A})" sorry
+  have "{S ` a . a \<in> A} = S``A"
+    using image_eq_UN RepFun_def UN_iff by force
   moreover from calculation
+  have "M(\<lambda>x\<in>A. S ` x)" "M({S ` a . a \<in> A})"
+    using lam_closed[of "\<lambda> x. S`x"] apply_type[OF \<open>S\<in>_\<close>]
+      transM[OF _ \<open>M(B)\<close>] image_closed
+     by auto
+  moreover from assms this
   have "(\<lambda>x\<in>A. S`x) \<in> surj_rel(M,A, {S`a . a\<in>A})"
-    using mem_surj_abs lam_funtype  sorry (* by auto *)
+    using mem_surj_abs lam_funtype[of A "\<lambda>x . S`x"]
+    unfolding surj_def by auto
   ultimately
   show ?thesis
     using surj_rel_char surj_rel_implies_cardinal_rel_le by simp
@@ -39,7 +46,25 @@ lemma cardinal_rel_lt_csucc_rel_iff:
 "Card_rel(M,K) \<Longrightarrow> M(K) \<Longrightarrow> M(K') \<Longrightarrow> |K'|\<^bsup>M\<^esup> < (K\<^sup>+)\<^bsup>M\<^esup> \<longleftrightarrow> |K'|\<^bsup>M\<^esup> \<le> K"
   by (simp add: Card_rel_lt_csucc_rel_iff)
 
+lemma fun_rel_is_fun: "f \<in> A\<rightarrow>\<^bsup>M\<^esup>B \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> f \<in> A\<rightarrow>B"
+  using function_space_rel_char by simp
+
 lemmas inj_rel_is_fun = inj_is_fun[OF mem_inj_abs[THEN iffD1]]
+
+lemma inj_rel_bij_rel_range: "f \<in> inj\<^bsup>M\<^esup>(A,B) \<Longrightarrow>M(A) \<Longrightarrow> M(B) \<Longrightarrow> f \<in> bij\<^bsup>M\<^esup>(A,range(f))"
+  using bij_rel_char inj_rel_char inj_bij_range by force
+
+lemma bij_rel_is_inj_rel: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> f \<in> inj\<^bsup>M\<^esup>(A,B)"
+  unfolding bij_rel_def by simp
+
+lemma inj_rel_weaken_type: "[| f \<in> inj\<^bsup>M\<^esup>(A,B);  B\<subseteq>D; M(A); M(B); M(D) |] ==> f \<in> inj\<^bsup>M\<^esup>(A,D)"
+  using inj_rel_char inj_rel_is_fun inj_weaken_type by auto
+
+lemma bij_rel_converse_bij_rel [TC]: "f \<in> bij\<^bsup>M\<^esup>(A,B)  \<Longrightarrow> M(A) \<Longrightarrow> M(B) ==> converse(f): bij\<^bsup>M\<^esup>(B,A)"
+  using bij_rel_char by force
+
+lemma bij_rel_is_fun: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow>  f \<in> A\<rightarrow>\<^bsup>M\<^esup>B"
+  using bij_rel_char mem_function_space_rel_abs bij_is_fun by simp
 
 lemma inj_rel_converse_fun: "f \<in> inj\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> converse(f) \<in> range(f)\<rightarrow>\<^bsup>M\<^esup>A"
 proof -
@@ -161,21 +186,6 @@ lemma cardinal_rel_lt_csucc_rel_iff':
   using assms cardinal_rel_lt_csucc_rel_iff[of \<kappa> X] Card_rel_csucc_rel[of \<kappa>]
     not_le_iff_lt[of "(\<kappa>\<^sup>+)\<^bsup>M\<^esup>" "|X|\<^bsup>M\<^esup>"] not_le_iff_lt[of "|X|\<^bsup>M\<^esup>" \<kappa>]
   by blast
-
-lemma inj_rel_bij_rel_range: "f \<in> inj\<^bsup>M\<^esup>(A,B) \<Longrightarrow>M(A) \<Longrightarrow> M(B) \<Longrightarrow> f \<in> bij\<^bsup>M\<^esup>(A,range(f))"
-  using bij_rel_char inj_rel_char inj_bij_range by force
-
-lemma bij_rel_is_inj_rel: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> f \<in> inj\<^bsup>M\<^esup>(A,B)"
-  unfolding bij_rel_def by simp
-
-lemma inj_rel_weaken_type: "[| f \<in> inj\<^bsup>M\<^esup>(A,B);  B\<subseteq>D; M(A); M(B); M(D) |] ==> f \<in> inj\<^bsup>M\<^esup>(A,D)"
-  using inj_rel_char inj_rel_is_fun inj_weaken_type by auto
-
-lemma bij_rel_converse_bij_rel [TC]: "f \<in> bij\<^bsup>M\<^esup>(A,B)  \<Longrightarrow> M(A) \<Longrightarrow> M(B) ==> converse(f): bij\<^bsup>M\<^esup>(B,A)"
-  using bij_rel_char by force
-
-lemma bij_rel_is_fun: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow>  f \<in> A\<rightarrow>\<^bsup>M\<^esup>B"
-  using bij_rel_char mem_function_space_rel_abs bij_is_fun by simp
 
 lemma lepoll_rel_imp_subset_bij_rel: 
   assumes "M(X)" "M(Y)"
@@ -404,8 +414,11 @@ lemma Aleph_rel_lesspoll_rel_increasing:
   includes Aleph_rel_intros
   assumes "M(b)" "M(a)"
   shows "a < b \<Longrightarrow> \<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>b\<^esub>\<^bsup>M\<^esup>"
-  using assms cardinal_rel_lt_iff_lesspoll_rel[of "\<aleph>\<^bsub>a\<^esub>" "\<aleph>\<^bsub>b\<^esub>"] Card_rel_cardinal_rel_eq[of "\<aleph>\<^bsub>b\<^esub>"]
-    lt_Ord lt_Ord2 Card_rel_Aleph_rel[THEN Card_rel_is_Ord] sorry
+  using assms 
+    cardinal_rel_lt_iff_lesspoll_rel[of "\<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>b\<^esub>\<^bsup>M\<^esup>"]
+    Aleph_rel_increasing[of a b] Card_rel_cardinal_rel_eq[of "\<aleph>\<^bsub>b\<^esub>"]
+    lt_Ord lt_Ord2 Card_rel_Aleph_rel[THEN Card_rel_is_Ord] 
+  by auto 
 
 lemma uncountable_rel_iff_subset_eqpoll_rel_Aleph_rel1:
   includes Ord_dests
@@ -463,43 +476,45 @@ lemma Aleph_rel1_eq_cardinal_rel_vimage: "f:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<
 proof -
   assume "f:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<^bsup>M\<^esup>\<omega>"
   then
-  have "function(f)" "domain(f) = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "range(f)\<subseteq>\<omega>"
-    by (simp_all add: domain_of_fun fun_is_function range_fun_subset_codomain)
+  have "function(f)" "domain(f) = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "range(f)\<subseteq>\<omega>" "f\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<omega>"
+    using fun_rel_is_fun[OF \<open>f\<in>_\<close>] domain_of_fun fun_is_function range_fun_subset_codomain
+      Aleph_rel_closed 
+    by auto
   let ?G="\<lambda>n\<in>range(f). f-``{n}"
-  from \<open>f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>\<^bsup>M\<^esup>\<omega>\<close>
+  from \<open>f:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<omega>\<close>
   have "range(f) \<subseteq> \<omega>" by (simp add: range_fun_subset_codomain)
   then
   have "domain(?G) \<lesssim>\<^bsup>M\<^esup> \<omega>"
     using subset_imp_lepoll_rel sorry
   have "function(?G)" by (simp add:function_lam)
-  from \<open>f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>\<^bsup>M\<^esup>\<omega>\<close>
-  have "n\<in>\<omega> \<Longrightarrow> f-``{n} \<subseteq> \<aleph>\<^bsub>1\<^esub>" for n
+  from \<open>f:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<omega>\<close>
+  have "n\<in>\<omega> \<Longrightarrow> f-``{n} \<subseteq> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" for n
     using Pi_vimage_subset by simp
   with \<open>range(f) \<subseteq> \<omega>\<close>
   have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> = (\<Union>n\<in>range(f). f-``{n})"
   proof (intro equalityI, intro subsetI)
     fix x
-    assume "x \<in> \<aleph>\<^bsub>1\<^esub>"
-    with \<open>f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>\<omega>\<close> \<open>function(f)\<close> \<open>domain(f) = \<aleph>\<^bsub>1\<^esub>\<close>
+    assume "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+    with \<open>f:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<omega>\<close> \<open>function(f)\<close> \<open>domain(f) = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
     have "x \<in> f-``{f`x}" "f`x \<in> range(f)"
       using function_apply_Pair vimage_iff apply_rangeI by simp_all
     then
     show "x \<in> (\<Union>n\<in>range(f). f-``{n})" by auto
   qed auto
   {
-    assume "\<forall>n\<in>range(f). |f-``{n}|\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>"
+    assume "\<forall>n\<in>range(f). |f-``{n}|\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
     then
-    have "\<forall>n\<in>domain(?G). |?G`n|\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>"
+    have "\<forall>n\<in>domain(?G). |?G`n|\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
       using zero_lt_Aleph_rel1 by (auto)
     with \<open>function(?G)\<close> \<open>domain(?G) \<lesssim>\<^bsup>M\<^esup> \<omega>\<close>
     have "|\<Union>n\<in>domain(?G). ?G`n|\<^bsup>M\<^esup>\<le>\<omega>"
       using lt_Aleph_rel_imp_cardinal_rel_UN_le_nat sorry
     then
     have "|\<Union>n\<in>range(f). f-``{n}|\<^bsup>M\<^esup>\<le>\<omega>" by simp
-    with \<open>\<aleph>\<^bsub>1\<^esub> = _\<close>
-    have "|\<aleph>\<^bsub>1\<^esub>|\<^bsup>M\<^esup> \<le> \<omega>" sorry
+    with \<open>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> = _\<close>
+    have "|\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>|\<^bsup>M\<^esup> \<le> \<omega>" sorry
     then
-    have "\<aleph>\<^bsub>1\<^esub> \<le> \<omega>"
+    have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<le> \<omega>"
       using Card_rel_Aleph_rel Card_rel_cardinal_rel_eq
       sorry
     then
@@ -642,12 +657,13 @@ proof -
         apply_type[of S \<gamma> "\<lambda>_. G"] 
       sorry
       (* by auto *)
-    moreover from \<open>Card_rel(M,\<gamma>)\<close> \<open>\<beta>\<in>\<gamma>\<close>
+    moreover from \<open>Card_rel(M,\<gamma>)\<close> \<open>\<beta>\<in>\<gamma>\<close> \<open>S\<in>_\<close>
     have "|{S`x . x \<in> \<beta>}|\<^bsup>M\<^esup> < \<gamma>"
-      using cardinal_rel_RepFun_le[of \<beta>]  Ord_in_Ord
-        lt_trans1[of "|{S`x . x \<in> \<beta>}|" "|\<beta>|" \<gamma>]
+      using cardinal_rel_RepFun_le[of \<beta>]  Ord_in_Ord Ord_cardinal_rel
+        lt_trans1[of "|{S`x . x \<in> \<beta>}|\<^bsup>M\<^esup>" "|\<beta>|\<^bsup>M\<^esup>" \<gamma>]
         Card_rel_lt_iff[THEN iffD2, of \<beta> \<gamma>, OF _ _ _ _ ltI]
-      (* by force *) sorry
+        Card_rel_is_Ord
+       
     moreover
     have "\<forall>x\<in>\<beta>. Q(S`x, f ` {S`x . x \<in> \<beta>})"
     proof -
