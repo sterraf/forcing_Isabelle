@@ -68,9 +68,63 @@ qed
 
 end (* M_cardinal_UN_nat *)
 
-\<comment> \<open>This is not the correct version, since we'll gonna closure under
-    \<^term>\<open>\<Union>x\<in>A. B(x)\<close> for several \<^term>\<open>A\<close> and \<^term>\<open>B\<close>.\<close>
+locale M_cardinal_UN_inj = M_library +
+  j:M_cardinal_UN _ J +
+  y:M_cardinal_UN _ K Y for J K Y +
+fixes f
+assumes
+  f_inj: "f \<in> inj_rel(M,J,K)" and
+  Y_def: "Y(k) \<equiv> if k\<in>range(f) then X(converse(f)`k) else 0"
+begin
+
+lemma inj_rel_imp_cardinal_rel_UN_le:
+  notes [dest] = InfCard_is_Card Card_is_Ord
+  assumes "InfCard\<^bsup>M\<^esup>(K)" "\<And>i. i\<in>J \<Longrightarrow> |X(i)|\<^bsup>M\<^esup> \<le> K"
+  shows "|\<Union>i\<in>J. X(i)|\<^bsup>M\<^esup> \<le> K"
+proof -
+  have "M(K)" "M(J)" "\<And>w x. w \<in> X(x) \<Longrightarrow> M(x)"
+    using y.Pi_assumptions j.Pi_assumptions j.X_witness_in_M by simp_all
+  then
+  have "M(f)"
+    using inj_rel_char f_inj by simp
+  note inM = \<open>M(f)\<close> \<open>M(K)\<close> \<open>M(J)\<close> \<open>\<And>w x. w \<in> X(x) \<Longrightarrow> M(x)\<close>
+  have "i\<in>J \<Longrightarrow> f`i \<in> K" for i
+    using inj_rel_is_fun[OF _ _ _ f_inj] apply_type
+      function_space_rel_char by (auto simp add:inM)
+  have "(\<Union>i\<in>J. X(i)) \<subseteq> (\<Union>i\<in>K. Y(i))"
+  proof (standard, elim UN_E)
+    fix x i
+    assume "i\<in>J" "x\<in>X(i)"
+    with \<open>i\<in>J \<Longrightarrow> f`i \<in> K\<close>
+    have "x \<in> Y(f`i)" "f`i \<in> K"
+      unfolding Y_def
+      using inj_is_fun right_inverse f_inj
+      by (auto simp add:inM Y_def intro: apply_rangeI)
+    then
+    show "x \<in> (\<Union>i\<in>K. Y(i))" by auto
+  qed
+  then
+  have "|\<Union>i\<in>J. X(i)|\<^bsup>M\<^esup> \<le> |\<Union>i\<in>K. Y(i)|\<^bsup>M\<^esup>"
+    using subset_imp_le_cardinal_rel j.UN_closed y.UN_closed
+    unfolding Y_def by (simp add:inM)
+  moreover
+  note assms \<open>\<And>i. i\<in>J \<Longrightarrow> f`i \<in> K\<close> inM
+  moreover from this
+  have "k\<in>range(f) \<Longrightarrow> converse(f)`k \<in> J" for k
+    using inj_rel_converse_fun[OF f_inj]
+      range_fun_subset_codomain function_space_rel_char by simp
+  ultimately
+  show "|\<Union>i\<in>J. X(i)|\<^bsup>M\<^esup> \<le> K"
+    using InfCard_rel_is_Card_rel[THEN Card_rel_is_Ord,THEN Ord_0_le, of K]
+    by (rule_tac le_trans[OF _ y.cardinal_rel_UN_le])
+      (auto intro:Ord_0_le simp:Y_def)+
+qed
+
+end (* M_cardinal_UN_inj *)
+
 locale M_cardinal_UN_lepoll = M_library +
+\<comment> \<open>We'll probable need more assumptions than those in \<^term>\<open>M_library\<close>
+    to interpret the locale \<^term>\<open>M_cardinal_UN_inj\<close> below\<close>
   j:M_cardinal_UN _ J for J
 begin
 
@@ -83,58 +137,15 @@ lemma leqpoll_rel_imp_cardinal_rel_UN_le:
 proof -
   from \<open>J \<lesssim>\<^bsup>M\<^esup> K\<close>
   obtain f where "f \<in> inj_rel(M,J,K)" "M(f)" by blast
-  have "M(J)" "\<And>w x. w \<in> X(x) \<Longrightarrow> M(x)"
-    using j.Pi_assumptions j.X_witness_in_M by simp_all
-  note inM = \<open>M(f)\<close> \<open>M(K)\<close> this
-  define Y where "Y(k) \<equiv> if k\<in>range(f) then X(converse(f)`k) else 0" for k
-  have "i\<in>J \<Longrightarrow> f`i \<in> K" for i
-    using inj_rel_is_fun[OF _ _ _ \<open>f \<in> inj\<^bsup>M\<^esup>(J,K)\<close>] apply_type
-      function_space_rel_char by (auto simp add:inM)
-  from inM
-  interpret y:M_Pi_assumptions _ K Y
-    sorry
-  from inM
-  interpret y:M_Pi_assumptions_choice _ K Y
-    sorry
-  interpret y:M_cardinal_UN _ K Y
-    apply unfold_locales
-(*   proof -
-    fix w x
-    assume "w\<in>Y(x)"
-    then
-    have "x\<in>range(f)"
-      unfolding Y_def by (cases "x\<in>range(f)", auto)
-    with \<open>M(f)\<close>
-    show "M(x)" by (auto dest:transM)
-  qed
- *) sorry
-  have "(\<Union>i\<in>J. X(i)) \<subseteq> (\<Union>i\<in>K. Y(i))"
-  proof (standard, elim UN_E)
-    fix x i
-    assume "i\<in>J" "x\<in>X(i)"
-    with \<open>f \<in> inj_rel(M,J,K)\<close> \<open>i\<in>J \<Longrightarrow> f`i \<in> K\<close>
-    have "x \<in> Y(f`i)" "f`i \<in> K"
-      unfolding Y_def
-      using inj_is_fun right_inverse
-      by (auto simp add:inM intro: apply_rangeI)
-    then
-    show "x \<in> (\<Union>i\<in>K. Y(i))" by auto
-  qed
-  then
-  have "|\<Union>i\<in>J. X(i)|\<^bsup>M\<^esup> \<le> |\<Union>i\<in>K. Y(i)|\<^bsup>M\<^esup>"
-    using subset_imp_le_cardinal_rel j.UN_closed y.UN_closed
-    unfolding Y_def by (simp add:inM)
   moreover
-  note assms \<open>\<And>i. i\<in>J \<Longrightarrow> f`i \<in> K\<close> inM
-  moreover from this
-  have "k\<in>range(f) \<Longrightarrow> converse(f)`k \<in> J" for k
-    using inj_rel_converse_fun[OF \<open>f \<in> inj_rel(M,J,K)\<close>]
-      range_fun_subset_codomain function_space_rel_char by simp
+  define Y where "Y(k) \<equiv> if k\<in>range(f) then X(converse(f)`k) else 0" for k
+  moreover
+  note \<open>M(K)\<close>
   ultimately
-  show "|\<Union>i\<in>J. X(i)|\<^bsup>M\<^esup> \<le> K"
-    using InfCard_rel_is_Card_rel[THEN Card_rel_is_Ord,THEN Ord_0_le, of K]
-    by (rule_tac le_trans[OF _ y.cardinal_rel_UN_le])
-      (auto intro:Ord_0_le simp:Y_def)+
+  interpret M_cardinal_UN_inj _ _ _ _ Y f
+    sorry
+  from assms
+  show ?thesis using inj_rel_imp_cardinal_rel_UN_le by simp
 qed
 
 end (* M_cardinal_UN_lepoll *)
