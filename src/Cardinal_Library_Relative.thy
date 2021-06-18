@@ -368,15 +368,17 @@ lemma Finite_imp_countable: "M(X) \<Longrightarrow> Finite_rel(M,X) \<Longrighta
   by (auto intro:InfCard_rel_nat nats_le_InfCard_rel[of _ \<omega>,
         THEN le_imp_lepoll_rel] dest!:eq_lepoll_rel_trans[of X _ \<omega>] )
 
-lemma (in M_cardinal_UN_lepoll) countable_rel_imp_countable_rel_UN:
-  assumes "countable_rel(M,J)" "\<And>i. i\<in>J \<Longrightarrow> countable_rel(M,X(i))" "M(J)"
-  shows "countable_rel(M,\<Union>i\<in>J. X(i))"
-  using assms leqpoll_rel_imp_cardinal_rel_UN_le InfCard_rel_nat
-    countable_rel_iff_cardinal_rel_le_nat 
-  sorry
- 
 end (* M_library *)
 
+lemma (in M_cardinal_UN_lepoll) countable_rel_imp_countable_rel_UN:
+  assumes "countable_rel(M,J)" "\<And>i. i\<in>J \<Longrightarrow> countable_rel(M,X(i))"
+  shows "countable_rel(M,\<Union>i\<in>J. X(i))"
+  using assms leqpoll_rel_imp_cardinal_rel_UN_le[of \<omega>] InfCard_rel_nat
+    InfCard_rel_is_Card_rel j.UN_closed
+    countable_rel_iff_cardinal_rel_le_nat j.Pi_assumptions
+    Card_rel_le_imp_lepoll_rel[of J \<omega>] Card_rel_cardinal_rel_eq[of \<omega>]
+  by auto
+ 
 locale M_cardinal_library = M_library +
   assumes
     cardinal_lib_assms1:"M(C) \<Longrightarrow> \<forall>x\<in>C. strong_replacement(M, \<lambda>y z. y \<in> (if M(x) then x else 0) \<and> z = {\<langle>x, y\<rangle>})"
