@@ -148,9 +148,27 @@ qed
 end (* M_cardinal_UN_inj *)
 
 locale M_cardinal_UN_lepoll = M_library +
-\<comment> \<open>We'll probable need more assumptions than those in \<^term>\<open>M_library\<close>
-    to interpret the locale \<^term>\<open>M_cardinal_UN_inj\<close> below\<close>
-  j:M_cardinal_UN _ J for J
+  j:M_cardinal_UN _ J for J +
+assumes
+  lepoll_assumptions:
+  "M(f) \<Longrightarrow> strong_replacement(M,
+    \<lambda>x z. z = Sigfun(x, \<lambda>k. if k \<in> range(f) then X(converse(f) ` k) else 0))"
+  "M(f) \<Longrightarrow> strong_replacement(M,
+    \<lambda>x y. y = (if x \<in> range(f) then X(converse(f) ` x) else 0))"
+  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> X(converse(f) ` x) \<and> z = {\<langle>x, y\<rangle>})"
+  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M,
+    \<lambda>x y. y = \<langle>x, minimum(r, if x \<in> range(f) then X(converse(f) ` x) else 0)\<rangle>)"
+  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> strong_replacement(M,
+    \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> (if i \<in> range(f) then X(converse(f) ` i) else 0),
+		fa ` (\<mu> i. x \<in> (if i \<in> range(f) then X(converse(f) ` i) else 0)) ` x\<rangle>)"
+	"M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M,
+    \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if x \<in> range(f) then X(converse(f) ` x) else 0,K) \<and> z = {\<langle>x, y\<rangle>})"
+  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> strong_replacement(M,
+    \<lambda>x y. y = inj\<^bsup>M\<^esup>(if x \<in> range(f) then X(converse(f) ` x) else 0,K))"
+  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> strong_replacement(M,
+    \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(if i \<in> range(f) then X(converse(f) ` i) else 0,K)))"
+  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M,
+    \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(if x \<in> range(f) then X(converse(f) ` x) else 0,K))\<rangle>)"
 begin
 
 \<comment>\<open>FIXME: this "LEQpoll" should be "LEPOLL"; same correction in Delta System\<close>
@@ -164,11 +182,32 @@ proof -
   obtain f where "f \<in> inj_rel(M,J,K)" "M(f)" by blast
   moreover
   define Y where "Y(k) \<equiv> if k\<in>range(f) then X(converse(f)`k) else 0" for k
-  moreover
   note \<open>M(K)\<close>
-  ultimately
+  moreover from calculation
+  have "k \<in> range(f) \<Longrightarrow> converse(f)`k \<in> J" for k
+    using mem_inj_rel[THEN inj_converse_fun, THEN apply_type]
+      j.Pi_assumptions by blast
+  moreover from \<open>M(f)\<close>
+  have "w \<in> Y(x) \<Longrightarrow> M(x)" for w x
+    unfolding Y_def by (cases "x\<in>range(f)") (auto dest:transM)
+  moreover from calculation
+  interpret M_Pi_assumptions_choice _ K Y
+    using j.Pi_assumptions lepoll_assumptions(1-3)[of f] lepoll_assumptions(4-)[of f K]
+  proof (unfold_locales, auto simp: Y_def dest:transM)
+    show "strong_replacement(M, \<lambda>y z. False)"
+      unfolding strong_replacement_def by auto
+    from \<open>M(f)\<close>
+    show "strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>k. Y(k)))"
+      unfolding Y_def
+      using lepoll_assumptions(1)[of f] by simp
+  qed
+  from calculation
+  interpret M_cardinal_UN _ K Y
+    using j.Pi_assumptions lepoll_assumptions(1-3)[of f] lepoll_assumptions(4-)[of f K]
+    by unfold_locales (auto simp add:Y_def)
+  from calculation
   interpret M_cardinal_UN_inj _ _ _ _ Y f
-    sorry
+    by unfold_locales (auto simp:Y_def)
   from assms
   show ?thesis using inj_rel_imp_cardinal_rel_UN_le by simp
 qed
