@@ -671,6 +671,8 @@ cardinal_lib_assms3:"M(Z) \<Longrightarrow> M(F) \<Longrightarrow> \<forall>x\<i
                             (r, inj\<^bsup>M\<^esup>(if x \<in> range(f)
                                        then if M(converse(f) ` x) then {xa \<in> Z . F ` xa = converse(f) ` x} else 0
                                        else 0,K))\<rangle>)"
+and cardinal_lib_assms4: "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, f -`` {x}\<rangle>)"
+
 begin
 
 lemma countable_rel_union_countable:
@@ -857,9 +859,13 @@ proof -
   have "range(f) \<subseteq> \<omega>" "domain(?G) = range(f)"
     using range_fun_subset_codomain 
     by simp_all
-  with \<open>M(f)\<close>
+  from \<open>f:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<omega>\<close> \<open>M(f)\<close> \<open>range(f) \<subseteq> \<omega>\<close>
+  have "M(f-``{n})" if "n \<in> range(f)" for n
+    using vimage_closed that singleton_closed transM[of _ \<omega>] by auto
+  with \<open>M(f)\<close> \<open>range(f) \<subseteq> \<omega>\<close>
   have "domain(?G) \<lesssim>\<^bsup>M\<^esup> \<omega>" "M(?G)"
-    using subset_imp_lepoll_rel range_closed sorry
+    using subset_imp_lepoll_rel range_closed lam_closed[of "\<lambda>x . f-``{x}"] cardinal_lib_assms4
+    by simp_all
   have "function(?G)" by (simp add:function_lam)
   from \<open>f:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<omega>\<close>
   have "n\<in>\<omega> \<Longrightarrow> f-``{n} \<subseteq> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" for n
