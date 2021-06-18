@@ -84,6 +84,8 @@ locale M_library =  M_cardinal_AC + M_aleph + M_FiniteFun +
   and
   ifx_replacement: "M(f) \<Longrightarrow> M(b) \<Longrightarrow> 
     strong_replacement(M, \<lambda>x y. y = \<langle>x, if x \<in> range(f) then converse(f) ` x else b\<rangle>)"
+  and
+  tag_union_replacement : "M(b) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, x \<union> b\<rangle>)"
 begin
 
 lemma Finite_Collect_imp: "Finite({x\<in>X . Q(x)}) \<Longrightarrow> Finite({x\<in>X . M(x) \<and> Q(x)})"
