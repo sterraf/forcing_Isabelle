@@ -785,8 +785,8 @@ next
     by auto
 qed
 
-lemma UN_if_zero: "(\<Union>x\<in>K. if M(x) then G ` x else 0) =(\<Union>x\<in>K. G ` x)"
-  sorry
+lemma UN_if_zero: "M(K) \<Longrightarrow> (\<Union>x\<in>K. if M(x) then G ` x else 0) =(\<Union>x\<in>K. G ` x)"
+  using transM[of _ K] by auto
 
 lemma lt_Aleph_rel_imp_cardinal_rel_UN_le_nat: "function(G) \<Longrightarrow> domain(G) \<lesssim>\<^bsup>M\<^esup> \<omega> \<Longrightarrow>
    \<forall>n\<in>domain(G). |G`n|\<^bsup>M\<^esup><\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> M(G) \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<^bsup>M\<^esup>\<le>\<omega>"
@@ -817,9 +817,23 @@ proof -
   moreover
   note \<open>?N \<lesssim>\<^bsup>M\<^esup> \<omega>\<close> \<open>M(G)\<close>
   moreover
-  have "(if M(i) then G ` i else 0) \<subseteq> G ` i" for i sorry
-  then
-  have "|if M(i) then G ` i else 0|\<^bsup>M\<^esup> \<le> |G ` i|\<^bsup>M\<^esup>" for i sorry
+  have "(if M(i) then G ` i else 0) \<subseteq> G ` i" for i
+    by auto
+  with \<open>M(G)\<close>
+  have "|if M(i) then G ` i else 0|\<^bsup>M\<^esup> \<le> |G ` i|\<^bsup>M\<^esup>" for i
+  proof(cases "M(i)")
+    case True
+    with \<open>M(G)\<close> show ?thesis using Ord_cardinal_rel[OF apply_closed]
+      by simp
+  next
+    case False
+    then
+    have "i\<notin>domain(G)"
+      using transM[OF _ domain_closed[OF \<open>M(G)\<close>]] by auto
+    then
+    show ?thesis
+      using Ord_cardinal_rel[OF apply_closed] apply_0 by simp
+  qed
   ultimately
   show ?thesis
     using InfCard_rel_nat leqpoll_rel_imp_cardinal_rel_UN_le[of \<omega>]
