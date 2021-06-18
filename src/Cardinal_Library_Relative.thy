@@ -389,12 +389,15 @@ proof -
   from \<open>M(C)\<close>
     \<comment> \<open>This is an experiment, since we still need to change
     the locale \<^term>\<open>M_cardinal_UN_lepoll\<close>\<close>
-  interpret M_cardinal_UN_lepoll _ "\<lambda>c. if M(c) then c else 0" C C
+  interpret M_cardinal_UN_lepoll _ "\<lambda>c. if M(c) then c else 0" C 
     apply unfold_locales
                prefer 5
-               apply (auto dest:transM simp:strong_replacement_def)[3]
+                        apply (auto dest:transM simp:strong_replacement_def)[3]
     sorry
       \<comment> \<open>Need to add assumptions to the ambient locale\<close>
+  have "(if M(i) then i else 0) = i" if "i\<in>C" for i 
+    using transM[OF _ \<open>M(C)\<close>] that by simp
+  then
   show ?thesis
     using assms countable_rel_imp_countable_rel_UN by simp
 qed
