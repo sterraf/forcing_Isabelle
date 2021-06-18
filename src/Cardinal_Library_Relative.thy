@@ -95,15 +95,15 @@ end (* M_cardinal_UN_nat *)
 
 locale M_cardinal_UN_inj = M_library +
   j:M_cardinal_UN _ J +
-  y:M_cardinal_UN _ K Y for J K Y +
-fixes f
+  y:M_cardinal_UN _ K "\<lambda>k. if k\<in>range(f) then X(converse(f)`k) else 0" for J K f +
 assumes
-  f_inj: "f \<in> inj_rel(M,J,K)" and
-  Y_def: "Y(k) \<equiv> if k\<in>range(f) then X(converse(f)`k) else 0"
+  f_inj: "f \<in> inj_rel(M,J,K)"
 begin
 
 lemma inj_rel_imp_cardinal_rel_UN_le:
   notes [dest] = InfCard_is_Card Card_is_Ord
+  fixes Y
+  defines "Y(k) \<equiv> if k\<in>range(f) then X(converse(f)`k) else 0"
   assumes "InfCard\<^bsup>M\<^esup>(K)" "\<And>i. i\<in>J \<Longrightarrow> |X(i)|\<^bsup>M\<^esup> \<le> K"
   shows "|\<Union>i\<in>J. X(i)|\<^bsup>M\<^esup> \<le> K"
 proof -
@@ -181,33 +181,26 @@ proof -
   from \<open>J \<lesssim>\<^bsup>M\<^esup> K\<close>
   obtain f where "f \<in> inj_rel(M,J,K)" "M(f)" by blast
   moreover
-  define Y where "Y(k) \<equiv> if k\<in>range(f) then X(converse(f)`k) else 0" for k
+  let ?Y="\<lambda>k. if k\<in>range(f) then X(converse(f)`k) else 0"
   note \<open>M(K)\<close>
   moreover from calculation
   have "k \<in> range(f) \<Longrightarrow> converse(f)`k \<in> J" for k
     using mem_inj_rel[THEN inj_converse_fun, THEN apply_type]
       j.Pi_assumptions by blast
   moreover from \<open>M(f)\<close>
-  have "w \<in> Y(x) \<Longrightarrow> M(x)" for w x
-    unfolding Y_def by (cases "x\<in>range(f)") (auto dest:transM)
+  have "w \<in> ?Y(x) \<Longrightarrow> M(x)" for w x
+    by (cases "x\<in>range(f)") (auto dest:transM)
   moreover from calculation
-  interpret M_Pi_assumptions_choice _ K Y
+  interpret M_Pi_assumptions_choice _ K ?Y
     using j.Pi_assumptions lepoll_assumptions(1-3)[of f] lepoll_assumptions(4-)[of f K]
-  proof (unfold_locales, auto simp: Y_def dest:transM)
+  proof (unfold_locales, auto dest:transM)
     show "strong_replacement(M, \<lambda>y z. False)"
       unfolding strong_replacement_def by auto
-    from \<open>M(f)\<close>
-    show "strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>k. Y(k)))"
-      unfolding Y_def
-      using lepoll_assumptions(1)[of f] by simp
   qed
   from calculation
-  interpret M_cardinal_UN _ K Y
-    using j.Pi_assumptions lepoll_assumptions(1-3)[of f] lepoll_assumptions(4-)[of f K]
-    by unfold_locales (auto simp add:Y_def)
-  from calculation
-  interpret M_cardinal_UN_inj _ _ _ _ Y f
-    by unfold_locales (auto simp:Y_def)
+  interpret M_cardinal_UN_inj _ _ _ _ f
+    using lepoll_assumptions(5-)[of f K]
+    by unfold_locales auto
   from assms
   show ?thesis using inj_rel_imp_cardinal_rel_UN_le by simp
 qed
@@ -382,6 +375,199 @@ lemma (in M_cardinal_UN_lepoll) countable_rel_imp_countable_rel_UN:
     countable_rel_iff_cardinal_rel_le_nat 
   sorry
  
+end (* M_library *)
+
+locale M_cardinal_library = M_library +
+  assumes
+    cardinal_lib_assms1:"M(C) \<Longrightarrow> \<forall>x\<in>C. strong_replacement(M, \<lambda>y z. y \<in> (if M(x) then C ` x else 0) \<and> z = {\<langle>x, y\<rangle>})"
+    "M(C) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>n. if M(n) then C ` n else 0))"
+    "M(C) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = (if M(x) then C ` x else 0))"
+    "M(C) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, if M(x) then C ` x else 0)\<rangle>)"
+    "M(C) \<Longrightarrow>
+         M(f) \<Longrightarrow>
+         strong_replacement
+          (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> (if M(i) then C ` i else 0),
+                         f ` (\<mu> i. x \<in> (if M(i) then C ` i else 0)) ` x\<rangle>)"
+    "M(C) \<Longrightarrow>
+         M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if M(x) then C ` x else 0,C) \<and> z = {\<langle>x, y\<rangle>})"
+    "M(C) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if M(x) then C ` x else 0,C))"
+    "M(C) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(if M(i) then C ` i else 0,C)))"
+    "M(C) \<Longrightarrow>
+         M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(if M(x) then C ` x else 0,C))\<rangle>)"
+    "M(C) \<Longrightarrow>
+          M(f) \<Longrightarrow>
+          strong_replacement
+           (M, \<lambda>x z. z = Sigfun
+                           (x, \<lambda>k. if k \<in> range(f)
+                                    then if M(converse(f) ` k) then C ` (converse(f) ` k) else 0 else 0))"
+    "M(C) \<Longrightarrow>
+          M(f) \<Longrightarrow>
+          strong_replacement
+           (M, \<lambda>x y. y = (if x \<in> range(f) then if M(converse(f) ` x) then C ` (converse(f) ` x) else 0
+                           else 0))"
+    "M(C) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        M(fa) \<Longrightarrow>
+        M(x) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>y z. y \<in> (if M(converse(f) ` x) then C ` (converse(f) ` x) else 0) \<and> z = {\<langle>x, y\<rangle>})"
+    "M(C) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, minimum
+                            (r, if x \<in> range(f)
+                                then if M(converse(f) ` x) then C ` (converse(f) ` x) else 0 else 0)\<rangle>)"
+    "M(C) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        M(fa) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in>
+                                (if i \<in> range(f)
+                                 then if M(converse(f) ` i) then C ` (converse(f) ` i) else 0 else 0),
+                        fa `
+                        (\<mu> i. x \<in> (if i \<in> range(f)
+                                    then if M(converse(f) ` i) then C ` (converse(f) ` i) else 0
+                                    else 0)) `
+                        x\<rangle>)"
+    "M(C) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        M(fa) \<Longrightarrow>
+        M(x) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if x \<in> range(f)
+                               then if M(converse(f) ` x) then C ` (converse(f) ` x) else 0 else 0,K) \<and>
+                    z = {\<langle>x, y\<rangle>})"
+    "M(C) \<Longrightarrow>
+            M(f) \<Longrightarrow>
+            M(K) \<Longrightarrow>
+            strong_replacement
+             (M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if x \<in> range(f)
+                                   then if M(converse(f) ` x) then C ` (converse(f) ` x) else 0
+                                   else 0,K))"
+    "M(C) \<Longrightarrow>
+            M(f) \<Longrightarrow>
+            M(K) \<Longrightarrow>
+            strong_replacement
+             (M, \<lambda>x z. z = Sigfun
+                             (x, \<lambda>i. inj\<^bsup>M\<^esup>(if i \<in> range(f)
+                                             then if M(converse(f) ` i) then C ` (converse(f) ` i) else 0
+                                             else 0,K)))"
+    "M(C) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, minimum
+                            (r, inj\<^bsup>M\<^esup>(if x \<in> range(f)
+                                       then if M(converse(f) ` x) then C ` (converse(f) ` x) else 0
+                                       else 0,K))\<rangle>)"
+
+  and
+
+    cardinal_lib_assms2:
+    "M(G) \<Longrightarrow> \<forall>x\<in>domain(G). strong_replacement(M, \<lambda>y z. y \<in> (if M(x) then G ` x else 0) \<and> z = {\<langle>x, y\<rangle>})"
+    "M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>n. if M(n) then G ` n else 0))"
+    "M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = (if M(x) then G ` x else 0))"
+    "M(G) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, if M(x) then G ` x else 0)\<rangle>)"
+    "M(G) \<Longrightarrow>
+         M(f) \<Longrightarrow>
+         strong_replacement
+          (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> (if M(i) then G ` i else 0),
+                         f ` (\<mu> i. x \<in> (if M(i) then G ` i else 0)) ` x\<rangle>)"
+    "M(G) \<Longrightarrow>
+         M(x) \<Longrightarrow>
+         strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if M(x) then G ` x else 0,domain(G)) \<and> z = {\<langle>x, y\<rangle>})"
+    "M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if M(x) then G ` x else 0,domain(G)))"
+    "M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(if M(i) then G ` i else 0,domain(G))))"
+    "M(G) \<Longrightarrow>
+          M(r) \<Longrightarrow>
+          strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(if M(x) then G ` x else 0,domain(G)))\<rangle>)"
+    "M(G) \<Longrightarrow>
+          M(f) \<Longrightarrow>
+          strong_replacement
+           (M, \<lambda>x z. z = Sigfun
+                           (x, \<lambda>k. if k \<in> range(f)
+                                    then if M(converse(f) ` k) then G ` (converse(f) ` k) else 0 else 0))"
+    "M(G) \<Longrightarrow>
+          M(f) \<Longrightarrow>
+          strong_replacement
+           (M, \<lambda>x y. y = (if x \<in> range(f) then if M(converse(f) ` x) then G ` (converse(f) ` x) else 0
+                           else 0))"
+    "M(G) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        M(fa) \<Longrightarrow>
+        M(x) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>y z. y \<in> (if M(converse(f) ` x) then G ` (converse(f) ` x) else 0) \<and> z = {\<langle>x, y\<rangle>})"
+    "M(G) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, minimum
+                            (r, if x \<in> range(f)
+                                then if M(converse(f) ` x) then G ` (converse(f) ` x) else 0 else 0)\<rangle>)"
+    "M(G) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        M(fa) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in>
+                                (if i \<in> range(f)
+                                 then if M(converse(f) ` i) then G ` (converse(f) ` i) else 0 else 0),
+                        fa `
+                        (\<mu> i. x \<in> (if i \<in> range(f)
+                                    then if M(converse(f) ` i) then G ` (converse(f) ` i) else 0
+                                    else 0)) `
+                        x\<rangle>)"
+    "M(G) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        M(fa) \<Longrightarrow>
+        M(x) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if x \<in> range(f)
+                               then if M(converse(f) ` x) then G ` (converse(f) ` x) else 0 else 0,K) \<and>
+                    z = {\<langle>x, y\<rangle>})"
+    "M(G) \<Longrightarrow>
+            M(f) \<Longrightarrow>
+            M(K) \<Longrightarrow>
+            strong_replacement
+             (M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if x \<in> range(f)
+                                   then if M(converse(f) ` x) then G ` (converse(f) ` x) else 0
+                                   else 0,K))"
+    "M(G) \<Longrightarrow>
+            M(f) \<Longrightarrow>
+            M(K) \<Longrightarrow>
+            strong_replacement
+             (M, \<lambda>x z. z = Sigfun
+                             (x, \<lambda>i. inj\<^bsup>M\<^esup>(if i \<in> range(f)
+                                             then if M(converse(f) ` i) then G ` (converse(f) ` i) else 0
+                                             else 0,K)))"
+    "M(G) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, minimum
+                            (r, inj\<^bsup>M\<^esup>(if x \<in> range(f)
+                                       then if M(converse(f) ` x) then G ` (converse(f) ` x) else 0
+                                       else 0,K))\<rangle>)"
+
+begin
+
 lemma countable_rel_union_countable:
   assumes "\<And>x. x \<in> C \<Longrightarrow> countable_rel(M,x)" "countable_rel(M,C)" "M(C)"
   shows "countable_rel(M,\<Union>C)"
@@ -389,10 +575,9 @@ proof -
   from \<open>M(C)\<close>
     \<comment> \<open>This is an experiment, since we still need to change
     the locale \<^term>\<open>M_cardinal_UN_lepoll\<close>\<close>
-  interpret M_cardinal_UN_lepoll _ "\<lambda>c. if M(c) then c else 0" C 
-    apply unfold_locales
-               prefer 5
-                        apply (auto dest:transM simp:strong_replacement_def)[3]
+  interpret M_cardinal_UN_lepoll _ "\<lambda>c. if M(c) then c else 0" C
+    using cardinal_lib_assms2
+    (* by unfold_locales auto *)
     sorry
       \<comment> \<open>Need to add assumptions to the ambient locale\<close>
   have "(if M(i) then i else 0) = i" if "i\<in>C" for i 
@@ -408,7 +593,7 @@ abbreviation
   uncountable_rel :: "[i\<Rightarrow>o,i]\<Rightarrow>o" where
   "uncountable_rel(M,X) \<equiv> \<not> countable_rel(M,X)"
 
-context M_library
+context M_cardinal_library
 begin
 
 lemma uncountable_rel_iff_nat_lt_cardinal_rel:
@@ -496,9 +681,20 @@ next
     by auto
 qed
 
+lemma UN_if_zero: "(\<Union>x\<in>K. if M(x) then G ` x else 0) =(\<Union>x\<in>K. G ` x)"
+  sorry
+
 lemma lt_Aleph_rel_imp_cardinal_rel_UN_le_nat: "function(G) \<Longrightarrow> domain(G) \<lesssim>\<^bsup>M\<^esup> \<omega> \<Longrightarrow>
    \<forall>n\<in>domain(G). |G`n|\<^bsup>M\<^esup><\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> M(G) \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<^bsup>M\<^esup>\<le>\<omega>"
 proof -
+  assume "M(G)"
+  moreover
+  have  "w \<in> (if M(x) then G ` x else 0) \<Longrightarrow> M(x)" for w x
+    by (cases "M(x)") auto
+  ultimately
+  interpret M_cardinal_UN_lepoll _  "\<lambda>n. if M(n) then G`n else 0" "domain(G)"
+    using cardinal_lib_assms2
+    by unfold_locales simp_all
   assume "function(G)"
   let ?N="domain(G)" and ?R="\<Union>n\<in>domain(G). G`n"
   assume "?N \<lesssim>\<^bsup>M\<^esup> \<omega>"
@@ -506,15 +702,26 @@ proof -
   {
     fix n
     assume "n\<in>?N"
-    with Eq1 have "|G`n|\<^bsup>M\<^esup> \<le> \<omega>"
-      using le_Aleph_rel1_nat leqpoll_imp_cardinal_UN_le
-      sorry
+    with Eq1 \<open>M(G)\<close>
+    have "|G`n|\<^bsup>M\<^esup> \<le> \<omega>"
+      using le_Aleph_rel1_nat[of "|G ` n|\<^bsup>M\<^esup>"] leqpoll_rel_imp_cardinal_rel_UN_le
+        UN_if_zero[of "domain(G)" G]
+      by (auto dest:transM)
   }
   then
   have "n\<in>?N \<Longrightarrow> |G`n|\<^bsup>M\<^esup> \<le> \<omega>" for n .
-  with \<open>?N \<lesssim>\<^bsup>M\<^esup> \<omega>\<close>
+  moreover
+  note \<open>?N \<lesssim>\<^bsup>M\<^esup> \<omega>\<close> \<open>M(G)\<close>
+  moreover
+  have "(if M(i) then G ` i else 0) \<subseteq> G ` i" for i sorry
+  then
+  have "|if M(i) then G ` i else 0|\<^bsup>M\<^esup> \<le> |G ` i|\<^bsup>M\<^esup>" for i sorry
+  ultimately
   show ?thesis
-    using InfCard_rel_nat leqpoll_rel_imp_cardinal_rel_UN_le sorry
+    using InfCard_rel_nat leqpoll_rel_imp_cardinal_rel_UN_le[of \<omega>]
+      UN_if_zero[of "domain(G)" G]
+      le_trans[of "|if M(_) then G ` _ else 0|\<^bsup>M\<^esup>" "|G ` _|\<^bsup>M\<^esup>" \<omega>]
+    by auto blast
 qed
 
 lemma Aleph_rel1_eq_cardinal_rel_vimage: "f:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<^bsup>M\<^esup>\<omega> \<Longrightarrow> \<exists>n\<in>\<omega>. |f-``{n}|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
@@ -881,6 +1088,21 @@ proof -
   show ?thesis
     using Finite_to_one_rel_surj_rel_imp_cardinal_rel_eq by simp
 qed
-end (* M_library *)
+
+end (* M_cardinal_library *)
+
+\<comment> \<open>I'm using this notepad to expand locale assumptions\<close>
+notepad
+begin
+  fix C M
+  have "M(C) \<Longrightarrow> M_cardinal_UN_lepoll(M,\<lambda>n. if M(n) then C`n else 0,C)"
+    unfolding M_cardinal_UN_lepoll_def M_cardinal_UN_lepoll_axioms_def
+      M_cardinal_UN_def M_cardinal_UN_axioms_def
+      M_Pi_assumptions_choice_def M_Pi_assumptions_choice_axioms_def
+      M_Pi_assumptions_def M_Pi_assumptions_axioms_def
+    apply (intro allI conjI impI)
+    defer defer defer defer defer 3 defer 5
+    sorry
+end (* notepad *)
 
 end
