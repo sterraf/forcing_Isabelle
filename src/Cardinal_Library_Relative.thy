@@ -379,31 +379,31 @@ end (* M_library *)
 
 locale M_cardinal_library = M_library +
   assumes
-    cardinal_lib_assms1:"M(C) \<Longrightarrow> \<forall>x\<in>C. strong_replacement(M, \<lambda>y z. y \<in> (if M(x) then C ` x else 0) \<and> z = {\<langle>x, y\<rangle>})"
-    "M(C) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>n. if M(n) then C ` n else 0))"
-    "M(C) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = (if M(x) then C ` x else 0))"
-    "M(C) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, if M(x) then C ` x else 0)\<rangle>)"
+    cardinal_lib_assms1:"M(C) \<Longrightarrow> \<forall>x\<in>C. strong_replacement(M, \<lambda>y z. y \<in> (if M(x) then x else 0) \<and> z = {\<langle>x, y\<rangle>})"
+    "M(C) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>n. if M(n) then n else 0))"
+    "M(C) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = (if M(x) then x else 0))"
+    "M(C) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, if M(x) then x else 0)\<rangle>)"
     "M(C) \<Longrightarrow>
          M(f) \<Longrightarrow>
          strong_replacement
-          (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> (if M(i) then C ` i else 0),
-                         f ` (\<mu> i. x \<in> (if M(i) then C ` i else 0)) ` x\<rangle>)"
+          (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> (if M(i) then i else 0),
+                         f ` (\<mu> i. x \<in> (if M(i) then i else 0)) ` x\<rangle>)"
     "M(C) \<Longrightarrow>
-         M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if M(x) then C ` x else 0,C) \<and> z = {\<langle>x, y\<rangle>})"
-    "M(C) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if M(x) then C ` x else 0,C))"
-    "M(C) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(if M(i) then C ` i else 0,C)))"
+         M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if M(x) then x else 0,C) \<and> z = {\<langle>x, y\<rangle>})"
+    "M(C) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if M(x) then x else 0,C))"
+    "M(C) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(if M(i) then i else 0,C)))"
     "M(C) \<Longrightarrow>
-         M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(if M(x) then C ` x else 0,C))\<rangle>)"
+         M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(if M(x) then x else 0,C))\<rangle>)"
     "M(C) \<Longrightarrow>
           M(f) \<Longrightarrow>
           strong_replacement
            (M, \<lambda>x z. z = Sigfun
                            (x, \<lambda>k. if k \<in> range(f)
-                                    then if M(converse(f) ` k) then C ` (converse(f) ` k) else 0 else 0))"
+                                    then if M(converse(f) ` k) then (converse(f) ` k) else 0 else 0))"
     "M(C) \<Longrightarrow>
           M(f) \<Longrightarrow>
           strong_replacement
-           (M, \<lambda>x y. y = (if x \<in> range(f) then if M(converse(f) ` x) then C ` (converse(f) ` x) else 0
+           (M, \<lambda>x y. y = (if x \<in> range(f) then if M(converse(f) ` x) then (converse(f) ` x) else 0
                            else 0))"
     "M(C) \<Longrightarrow>
         M(f) \<Longrightarrow>
@@ -412,7 +412,7 @@ locale M_cardinal_library = M_library +
         M(fa) \<Longrightarrow>
         M(x) \<Longrightarrow>
         strong_replacement
-         (M, \<lambda>y z. y \<in> (if M(converse(f) ` x) then C ` (converse(f) ` x) else 0) \<and> z = {\<langle>x, y\<rangle>})"
+         (M, \<lambda>y z. y \<in> (if M(converse(f) ` x) then (converse(f) ` x) else 0) \<and> z = {\<langle>x, y\<rangle>})"
     "M(C) \<Longrightarrow>
         M(f) \<Longrightarrow>
         M(K) \<Longrightarrow>
@@ -420,7 +420,7 @@ locale M_cardinal_library = M_library +
         strong_replacement
          (M, \<lambda>x y. y = \<langle>x, minimum
                             (r, if x \<in> range(f)
-                                then if M(converse(f) ` x) then C ` (converse(f) ` x) else 0 else 0)\<rangle>)"
+                                then if M(converse(f) ` x) then (converse(f) ` x) else 0 else 0)\<rangle>)"
     "M(C) \<Longrightarrow>
         M(f) \<Longrightarrow>
         M(K) \<Longrightarrow>
@@ -429,10 +429,10 @@ locale M_cardinal_library = M_library +
         strong_replacement
          (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in>
                                 (if i \<in> range(f)
-                                 then if M(converse(f) ` i) then C ` (converse(f) ` i) else 0 else 0),
+                                 then if M(converse(f) ` i) then (converse(f) ` i) else 0 else 0),
                         fa `
                         (\<mu> i. x \<in> (if i \<in> range(f)
-                                    then if M(converse(f) ` i) then C ` (converse(f) ` i) else 0
+                                    then if M(converse(f) ` i) then (converse(f) ` i) else 0
                                     else 0)) `
                         x\<rangle>)"
     "M(C) \<Longrightarrow>
@@ -443,14 +443,14 @@ locale M_cardinal_library = M_library +
         M(x) \<Longrightarrow>
         strong_replacement
          (M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if x \<in> range(f)
-                               then if M(converse(f) ` x) then C ` (converse(f) ` x) else 0 else 0,K) \<and>
+                               then if M(converse(f) ` x) then (converse(f) ` x) else 0 else 0,K) \<and>
                     z = {\<langle>x, y\<rangle>})"
     "M(C) \<Longrightarrow>
             M(f) \<Longrightarrow>
             M(K) \<Longrightarrow>
             strong_replacement
              (M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if x \<in> range(f)
-                                   then if M(converse(f) ` x) then C ` (converse(f) ` x) else 0
+                                   then if M(converse(f) ` x) then (converse(f) ` x) else 0
                                    else 0,K))"
     "M(C) \<Longrightarrow>
             M(f) \<Longrightarrow>
@@ -458,7 +458,7 @@ locale M_cardinal_library = M_library +
             strong_replacement
              (M, \<lambda>x z. z = Sigfun
                              (x, \<lambda>i. inj\<^bsup>M\<^esup>(if i \<in> range(f)
-                                             then if M(converse(f) ` i) then C ` (converse(f) ` i) else 0
+                                             then if M(converse(f) ` i) then (converse(f) ` i) else 0
                                              else 0,K)))"
     "M(C) \<Longrightarrow>
         M(f) \<Longrightarrow>
@@ -467,7 +467,7 @@ locale M_cardinal_library = M_library +
         strong_replacement
          (M, \<lambda>x y. y = \<langle>x, minimum
                             (r, inj\<^bsup>M\<^esup>(if x \<in> range(f)
-                                       then if M(converse(f) ` x) then C ` (converse(f) ` x) else 0
+                                       then if M(converse(f) ` x) then (converse(f) ` x) else 0
                                        else 0,K))\<rangle>)"
 
   and
@@ -566,20 +566,124 @@ locale M_cardinal_library = M_library +
                                        then if M(converse(f) ` x) then G ` (converse(f) ` x) else 0
                                        else 0,K))\<rangle>)"
 
+and
+
+cardinal_lib_assms3:"M(Z) \<Longrightarrow> M(F) \<Longrightarrow> \<forall>x\<in>Y. strong_replacement(M, \<lambda>y z. y \<in> (if M(x) then {xa \<in> Z . F ` xa = x} else 0) \<and> z = {\<langle>x, y\<rangle>})"
+"M(Z) \<Longrightarrow> M(F) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>y. if M(y) then {x \<in> Z . F ` x = y} else 0))"
+"M(Z) \<Longrightarrow> M(F) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = (if M(x) then {xa \<in> Z . F ` xa = x} else 0))"
+"M(Z) \<Longrightarrow>
+         M(F) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, if M(x) then {xa \<in> Z . F ` xa = x} else 0)\<rangle>)"
+"M(Z) \<Longrightarrow>
+         M(F) \<Longrightarrow>
+         M(f) \<Longrightarrow>
+         strong_replacement
+          (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> (if M(i) then {x \<in> Z . F ` x = i} else 0),
+                         f ` (\<mu> i. x \<in> (if M(i) then {x \<in> Z . F ` x = i} else 0)) ` x\<rangle>)"
+"M(Z) \<Longrightarrow>
+         M(F) \<Longrightarrow>
+         M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if M(x) then {xa \<in> Z . F ` xa = x} else 0,Y) \<and> z = {\<langle>x, y\<rangle>})"
+"M(Z) \<Longrightarrow> M(F) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if M(x) then {xa \<in> Z . F ` xa = x} else 0,Y))"
+"M(Z) \<Longrightarrow> M(F) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(if M(i) then {x \<in> Z . F ` x = i} else 0,Y)))"
+"M(Z) \<Longrightarrow>
+         M(F) \<Longrightarrow>
+         M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(if M(x) then {xa \<in> Z . F ` xa = x} else 0,Y))\<rangle>)"
+"M(Z) \<Longrightarrow>
+          M(F) \<Longrightarrow>
+          M(f) \<Longrightarrow>
+          strong_replacement
+           (M, \<lambda>x z. z = Sigfun
+                           (x, \<lambda>k. if k \<in> range(f)
+                                    then if M(converse(f) ` k) then {x \<in> Z . F ` x = converse(f) ` k} else 0 else 0))"
+"M(Z) \<Longrightarrow>
+          M(F) \<Longrightarrow>
+          M(f) \<Longrightarrow>
+          strong_replacement
+           (M, \<lambda>x y. y = (if x \<in> range(f) then if M(converse(f) ` x) then {xa \<in> Z . F ` xa = converse(f) ` x} else 0
+                           else 0))"
+"M(Z) \<Longrightarrow>
+        M(F) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        M(fa) \<Longrightarrow>
+        M(x) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>y z. y \<in> (if M(converse(f) ` x) then {xa \<in> Z . F ` xa = converse(f) ` x} else 0) \<and> z = {\<langle>x, y\<rangle>})"
+"M(Z) \<Longrightarrow>
+        M(F) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, minimum
+                            (r, if x \<in> range(f)
+                                then if M(converse(f) ` x) then {xa \<in> Z . F ` xa = converse(f) ` x} else 0 else 0)\<rangle>)"
+"M(Z) \<Longrightarrow>
+        M(F) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        M(fa) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in>
+                                (if i \<in> range(f) then if M(converse(f) ` i) then {x \<in> Z . F ` x = converse(f) ` i} else 0
+                                 else 0),
+                        fa `
+                        (\<mu> i. x \<in> (if i \<in> range(f)
+                                    then if M(converse(f) ` i) then {x \<in> Z . F ` x = converse(f) ` i} else 0 else 0)) `
+                        x\<rangle>)"
+"M(Z) \<Longrightarrow>
+        M(F) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        M(fa) \<Longrightarrow>
+        M(x) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if x \<in> range(f) then if M(converse(f) ` x) then {xa \<in> Z . F ` xa = converse(f) ` x} else 0
+                               else 0,K) \<and>
+                    z = {\<langle>x, y\<rangle>})"
+"M(Z) \<Longrightarrow>
+            M(F) \<Longrightarrow>
+            M(f) \<Longrightarrow>
+            M(K) \<Longrightarrow>
+            strong_replacement
+             (M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if x \<in> range(f)
+                                   then if M(converse(f) ` x) then {xa \<in> Z . F ` xa = converse(f) ` x} else 0 else 0,K))"
+"M(Z) \<Longrightarrow>
+            M(F) \<Longrightarrow>
+            M(f) \<Longrightarrow>
+            M(K) \<Longrightarrow>
+            strong_replacement
+             (M, \<lambda>x z. z = Sigfun
+                             (x, \<lambda>i. inj\<^bsup>M\<^esup>(if i \<in> range(f)
+                                             then if M(converse(f) ` i) then {x \<in> Z . F ` x = converse(f) ` i} else 0
+                                             else 0,K)))"
+"M(Z) \<Longrightarrow>
+        M(F) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, minimum
+                            (r, inj\<^bsup>M\<^esup>(if x \<in> range(f)
+                                       then if M(converse(f) ` x) then {xa \<in> Z . F ` xa = converse(f) ` x} else 0
+                                       else 0,K))\<rangle>)"
 begin
 
 lemma countable_rel_union_countable:
   assumes "\<And>x. x \<in> C \<Longrightarrow> countable_rel(M,x)" "countable_rel(M,C)" "M(C)"
   shows "countable_rel(M,\<Union>C)"
 proof -
-  from \<open>M(C)\<close>
-    \<comment> \<open>This is an experiment, since we still need to change
-    the locale \<^term>\<open>M_cardinal_UN_lepoll\<close>\<close>
+  \<comment> \<open>These few lines repeat below mutatis mutandis\<close>
+  note \<open>M(C)\<close>
+  moreover
+  have  "w \<in> (if M(x) then x else 0) \<Longrightarrow> M(x)" for w x
+    by (cases "M(x)") auto
+  ultimately
   interpret M_cardinal_UN_lepoll _ "\<lambda>c. if M(c) then c else 0" C
-    using cardinal_lib_assms2
-    (* by unfold_locales auto *)
-    sorry
-      \<comment> \<open>Need to add assumptions to the ambient locale\<close>
+    using cardinal_lib_assms1
+    by unfold_locales simp_all
   have "(if M(i) then i else 0) = i" if "i\<in>C" for i 
     using transM[OF _ \<open>M(C)\<close>] that by simp
   then
@@ -993,6 +1097,18 @@ lemma Finite_to_one_rel_surj_rel_imp_cardinal_rel_eq:
   assumes "F \<in> Finite_to_one_rel(M,Z,Y) \<inter> surj_rel(M,Z,Y)" "Infinite(Z)" "M(Z)" "M(Y)"
   shows "|Y|\<^bsup>M\<^esup> = |Z|\<^bsup>M\<^esup>"
 proof -
+  note \<open>M(Z)\<close> \<open>M(Y)\<close>
+  moreover from this
+  have "M(F)" sorry
+  moreover
+  have "M(y) \<Longrightarrow> M({x\<in>Z . F`x = y})" for y sorry
+  moreover
+  have  "w \<in> (if M(y) then {x\<in>Z . F`x = y} else 0) \<Longrightarrow> M(y)" for w y
+    by (cases "M(y)") auto
+  ultimately
+  interpret M_cardinal_UN_lepoll _ "\<lambda>y. if M(y) then {x\<in>Z . F`x = y} else 0" Y
+    using cardinal_lib_assms3
+    by unfold_locales (auto dest:transM simp del:mem_inj_abs)
   from \<open>F \<in> Finite_to_one_rel(M,Z,Y) \<inter> surj_rel(M,Z,Y)\<close> \<open>M(Z)\<close>
   have "Z = (\<Union>y\<in>Y. {x\<in>Z . F`x = y})" "M(F)"
     using apply_type sorry
@@ -1094,8 +1210,8 @@ end (* M_cardinal_library *)
 \<comment> \<open>I'm using this notepad to expand locale assumptions\<close>
 notepad
 begin
-  fix C M
-  have "M(C) \<Longrightarrow> M_cardinal_UN_lepoll(M,\<lambda>n. if M(n) then C`n else 0,C)"
+  fix Y M Z F
+  have "M(Z) \<Longrightarrow> M(F) \<Longrightarrow> M_cardinal_UN_lepoll(M,\<lambda>y. if M(y) then {x\<in>Z . F`x = y} else 0,Y)"
     unfolding M_cardinal_UN_lepoll_def M_cardinal_UN_lepoll_axioms_def
       M_cardinal_UN_def M_cardinal_UN_axioms_def
       M_Pi_assumptions_choice_def M_Pi_assumptions_choice_axioms_def
