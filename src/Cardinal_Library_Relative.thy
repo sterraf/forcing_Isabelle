@@ -930,7 +930,7 @@ lemma eqpoll_rel_Aleph_rel1_cardinal_rel_vimage:
   assumes "Z \<approx>\<^bsup>M\<^esup> (\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)" "f \<in> Z \<rightarrow>\<^bsup>M\<^esup> \<omega>" "M(Z)"
   shows "\<exists>n\<in>\<omega>. |f-``{n}|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
 proof -
-  have "M(1)" by simp
+  have "M(1)" "M(\<omega>)" by simp_all
   then
   have "M(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)" using Aleph_rel_closed[of 1] by simp
   with assms \<open>M(1)\<close>
@@ -940,26 +940,34 @@ proof -
   have "M(f)" "converse(g) \<in> bij_rel(M,Z, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)" "f\<in>Z\<rightarrow>\<omega>" "g\<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>Z"
     using bij_rel_is_fun_rel bij_rel_converse_bij_rel bij_rel_char function_space_rel_char
     by simp_all
-  with \<open>g\<in>bij_rel(M,\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,Z)\<close> \<open>M(g)\<close>
-  have "f O g : \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightarrow>\<^bsup>M\<^esup> \<omega>"
+  with \<open>g\<in>bij_rel(M,\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,Z)\<close> \<open>M(g)\<close> 
+  have "f O g : \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightarrow>\<^bsup>M\<^esup> \<omega>" "M(converse(g))"
     using comp_fun[OF _ \<open>f\<in> Z\<rightarrow>_\<close>,of g] comp_closed function_space_rel_char
-    by simp
+      converse_closed
+    by simp_all
   then
-  obtain n where "n\<in>\<omega>" "|(f O g)-``{n}|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "f -`` {n} \<subseteq> Z"
-    "M(converse(g) `` (f -`` {n}))"
+  obtain n where "n\<in>\<omega>" "|(f O g)-``{n}|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
     using Aleph_rel1_eq_cardinal_rel_vimage
-    sorry
-  then
-  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> = |converse(g) `` (f -``{n})|\<^bsup>M\<^esup>"
-    using image_comp converse_comp
+    by auto
+  with \<open>M(f)\<close> \<open>M(converse(g))\<close>
+  have "M(converse(g) `` (f -`` {n}))" "f -`` {n} \<subseteq> Z" 
+    using image_comp converse_comp Pi_iff[THEN iffD1,OF \<open>f\<in>Z\<rightarrow>\<omega>\<close>] vimage_subset
     unfolding vimage_def
+    using image_closed singleton_closed transM[OF \<open>n\<in>\<omega>\<close>]
+    by auto
+  from \<open>n\<in>\<omega>\<close> \<open>|(f O g)-``{n}|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
+  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> = |converse(g) `` (f -``{n})|\<^bsup>M\<^esup>"
+    using image_comp converse_comp unfolding vimage_def
     by auto
   also from \<open>converse(g) \<in> bij_rel(M,Z, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)\<close> \<open>f: Z\<rightarrow>\<^bsup>M\<^esup> \<omega>\<close> \<open>M(Z)\<close> \<open>M(f)\<close> \<open>M(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)\<close>
     \<open>M(converse(g) `` (f -`` {n}))\<close>
   have "\<dots> = |f -``{n}|\<^bsup>M\<^esup>"
-    sorry
+    using range_of_subset_eqpoll_rel[of "converse(g)" Z  _ "f -``{n}",
+        OF bij_rel_is_inj_rel[OF \<open>converse(g)\<in>_\<close>] \<open>f -`` {n} \<subseteq> Z\<close>]
+      cardinal_rel_cong vimage_closed[OF singleton_closed[OF transM[OF \<open>n\<in>\<omega>\<close>]],of f]
+    by auto
   finally
-  show ?thesis using  \<open>n\<in>_\<close> by auto
+  show ?thesis using \<open>n\<in>_\<close> by auto 
 qed
 
 
