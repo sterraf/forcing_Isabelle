@@ -63,8 +63,14 @@ lemma inj_rel_weaken_type: "[| f \<in> inj\<^bsup>M\<^esup>(A,B);  B\<subseteq>D
 lemma bij_rel_converse_bij_rel [TC]: "f \<in> bij\<^bsup>M\<^esup>(A,B)  \<Longrightarrow> M(A) \<Longrightarrow> M(B) ==> converse(f): bij\<^bsup>M\<^esup>(B,A)"
   using bij_rel_char by force
 
-lemma bij_rel_is_fun: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow>  f \<in> A\<rightarrow>\<^bsup>M\<^esup>B"
+lemma bij_rel_is_fun_rel: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow>  f \<in> A\<rightarrow>\<^bsup>M\<^esup>B"
   using bij_rel_char mem_function_space_rel_abs bij_is_fun by simp
+
+lemmas bij_rel_is_fun = bij_rel_is_fun_rel[THEN fun_rel_is_fun]
+
+lemma comp_bij_rel:
+    "g \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> f \<in> bij\<^bsup>M\<^esup>(B,C) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(C) \<Longrightarrow> (f O g) \<in> bij\<^bsup>M\<^esup>(A,C)"
+  using bij_rel_char comp_bij by force
 
 lemma inj_rel_converse_fun: "f \<in> inj\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> converse(f) \<in> range(f)\<rightarrow>\<^bsup>M\<^esup>A"
 proof -
@@ -925,34 +931,35 @@ lemma eqpoll_rel_Aleph_rel1_cardinal_rel_vimage:
   shows "\<exists>n\<in>\<omega>. |f-``{n}|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
 proof -
   have "M(1)" by simp
-  note Aleph_rel_closed[of 1] 
+  then
+  have "M(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)" using Aleph_rel_closed[of 1] by simp
   with assms \<open>M(1)\<close>
   obtain g where A:"g\<in>bij_rel(M,\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,Z)" "M(g)"
     using eqpoll_rel_sym unfolding eqpoll_rel_def by blast
   with \<open>f : Z \<rightarrow>\<^bsup>M\<^esup> \<omega>\<close> assms
   have "M(f)" "converse(g) \<in> bij_rel(M,Z, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)" "f\<in>Z\<rightarrow>\<omega>" "g\<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>Z"
-    using bij_rel_is_fun  bij_rel_converse_bij_rel bij_rel_char function_space_rel_char 
+    using bij_rel_is_fun_rel bij_rel_converse_bij_rel bij_rel_char function_space_rel_char
     by simp_all
-  with A
+  with \<open>g\<in>bij_rel(M,\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,Z)\<close> \<open>M(g)\<close>
   have "f O g : \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightarrow>\<^bsup>M\<^esup> \<omega>"
-    using comp_fun[OF _ \<open>f\<in> Z\<rightarrow>_\<close>,of g] comp_closed function_space_rel_char 
+    using comp_fun[OF _ \<open>f\<in> Z\<rightarrow>_\<close>,of g] comp_closed function_space_rel_char
     by simp
   then
-  obtain n where "n\<in>\<omega>" "|(f O g)-``{n}|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+  obtain n where "n\<in>\<omega>" "|(f O g)-``{n}|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "f -`` {n} \<subseteq> Z"
+    "M(converse(g) `` (f -`` {n}))"
     using Aleph_rel1_eq_cardinal_rel_vimage
-    by auto
+    sorry
   then
   have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> = |converse(g) `` (f -``{n})|\<^bsup>M\<^esup>"
     using image_comp converse_comp
-    unfolding vimage_def 
+    unfolding vimage_def
     by auto
-  also from \<open>converse(g) \<in> bij_rel(M,Z, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)\<close> \<open>f: Z\<rightarrow>\<^bsup>M\<^esup> \<omega>\<close>
+  also from \<open>converse(g) \<in> bij_rel(M,Z, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)\<close> \<open>f: Z\<rightarrow>\<^bsup>M\<^esup> \<omega>\<close> \<open>M(Z)\<close> \<open>M(f)\<close> \<open>M(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)\<close>
+    \<open>M(converse(g) `` (f -`` {n}))\<close>
   have "\<dots> = |f -``{n}|\<^bsup>M\<^esup>"
-    using range_of_subset_eqpoll_rel[of "converse(g)" Z  _ "f -``{n}"]
-      bij_rel_is_inj_rel cardinal_rel_cong bij_rel_is_fun eqpoll_rel_sym Pi_vimage_subset
     sorry
   finally
-  show ?thesis using  \<open>n\<in>_\<close> by auto  
+  show ?thesis using  \<open>n\<in>_\<close> by auto
 qed
 
 
@@ -972,16 +979,15 @@ text\<open>The function \<^term>\<open>rec_constr\<close> allows to perform \<^e
 lemma rec_constr_unfold: "rec_constr(f,\<alpha>) = f`({rec_constr(f,\<beta>). \<beta>\<in>\<alpha>})"
   using def_transrec[OF rec_constr_def, of f \<alpha>] image_lam by simp
 
-lemma rec_constr_type: assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)"
-  shows "rec_constr(f,\<alpha>) \<in> G"
-  using assms(2,1)
-(*   by (induct rule:trans_induct)
-    (subst rec_constr_unfold, rule apply_type[of f "Pow_rel(M,G)" "\<lambda>_. G"], auto)
- *)
+lemma rec_constr_type: assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)" "M(G)" "M(\<alpha>)"
+   shows "rec_constr(f,\<alpha>) \<in> G"
+  using assms(2,1,3,4) Pow_rel_char 
+  apply (induct rule:trans_induct)
+  apply (subst rec_constr_unfold, rule apply_type[of f "Pow_rel(M,G)" "\<lambda>_. G"], auto dest:transM)
   sorry
 
 lemma rec_constr_closed :
-  assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)" "M(G)"
+  assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)" "M(G)" "M(\<alpha>)"
   shows "M(rec_constr(f,\<alpha>))"
   using transM[OF rec_constr_type \<open>M(G)\<close>] assms by auto
 
@@ -1145,24 +1151,40 @@ lemma Finite_to_one_rel_surj_rel_imp_cardinal_rel_eq:
 proof -
   note \<open>M(Z)\<close> \<open>M(Y)\<close>
   moreover from this assms
-  have "M(F)"
-    unfolding Finite_to_one_rel_def by simp
+  have "M(F)" "F \<in> Z \<rightarrow> Y"
+    unfolding Finite_to_one_rel_def
+    using function_space_rel_char by simp_all
   moreover
-  have "M(y) \<Longrightarrow> M({x\<in>Z . F`x = y})" for y sorry
+  have "M(y) \<Longrightarrow> M({x\<in>Z . F`x = y})" for y
+  proof(cases "y\<in>Y")
+    case True
+    with \<open>M(Y)\<close> \<open>M(F)\<close>
+    show ?thesis
+      using vimage_fun_sing[OF \<open>F\<in>Z\<rightarrow>Y\<close> \<open>y\<in>Y\<close>] vimage_closed transM[OF _ \<open>M(Y)\<close>]
+      by auto
+  next
+    case False
+    then
+    have "{x \<in> Z . F ` x = y} = 0"
+      using apply_type[OF \<open>F\<in>Z\<rightarrow>Y\<close>] by auto
+    then
+    show ?thesis by simp
+  qed
   moreover
-  have  "w \<in> (if M(y) then {x\<in>Z . F`x = y} else 0) \<Longrightarrow> M(y)" for w y
+  have "w \<in> (if M(y) then {x\<in>Z . F`x = y} else 0) \<Longrightarrow> M(y)" for w y
     by (cases "M(y)") auto
   ultimately
   interpret M_cardinal_UN_lepoll _ "\<lambda>y. if M(y) then {x\<in>Z . F`x = y} else 0" Y
     using cardinal_lib_assms3
     by unfold_locales (auto dest:transM simp del:mem_inj_abs)
-  from \<open>F \<in> Finite_to_one_rel(M,Z,Y) \<inter> surj_rel(M,Z,Y)\<close> \<open>M(Z)\<close>
-  have "Z = (\<Union>y\<in>Y. {x\<in>Z . F`x = y})" "M(F)"
-    using apply_type sorry
+  from \<open>F\<in>Z\<rightarrow>Y\<close>
+  have "Z = (\<Union>y\<in>Y. {x\<in>Z . F`x = y})"
+    using apply_type by auto
+  then
   show ?thesis
   proof (cases "Finite(Y)")
     case True
-    with \<open>Z = (\<Union>y\<in>Y. {x\<in>Z . F`x = y})\<close> and assms
+    with \<open>Z = (\<Union>y\<in>Y. {x\<in>Z . F`x = y})\<close> and assms and \<open>F\<in>Z\<rightarrow>Y\<close>
     show ?thesis
       using Finite_RepFun[THEN [2] Finite_Union, of Y "\<lambda>y. {x\<in>Z . F`x = y}"]
       sorry
@@ -1253,19 +1275,5 @@ proof -
 qed
 
 end (* M_cardinal_library *)
-
-\<comment> \<open>I'm using this notepad to expand locale assumptions\<close>
-notepad
-begin
-  fix Y M Z F
-  have "M(Z) \<Longrightarrow> M(F) \<Longrightarrow> M_cardinal_UN_lepoll(M,\<lambda>y. if M(y) then {x\<in>Z . F`x = y} else 0,Y)"
-    unfolding M_cardinal_UN_lepoll_def M_cardinal_UN_lepoll_axioms_def
-      M_cardinal_UN_def M_cardinal_UN_axioms_def
-      M_Pi_assumptions_choice_def M_Pi_assumptions_choice_axioms_def
-      M_Pi_assumptions_def M_Pi_assumptions_axioms_def
-    apply (intro allI conjI impI)
-    defer defer defer defer defer 3 defer 5
-    sorry
-end (* notepad *)
 
 end

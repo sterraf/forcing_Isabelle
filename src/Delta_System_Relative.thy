@@ -11,10 +11,6 @@ relativize functional "delta_system" "delta_system_rel" external
 context M_cardinal_library
 begin
 
-lemma comp_bij_rel:
-    "[| g \<in> bij\<^bsup>M\<^esup>(A,B);  f \<in> bij\<^bsup>M\<^esup>(B,C); M(A); M(B); M(C) |] ==> (f O g) \<in> bij\<^bsup>M\<^esup>(A,C)"
-  sorry
-
 lemma Finite_imp_succ_cardinal_rel_Diff:
      "[| Finite(A);  a \<in> A; M(A) ; M(a) |] ==> succ(|A-{a}|\<^bsup>M\<^esup>) = |A|\<^bsup>M\<^esup>"
 (* apply (rule_tac b = A in cons_Diff [THEN subst], assumption)
