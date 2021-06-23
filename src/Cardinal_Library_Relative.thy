@@ -360,16 +360,16 @@ lemma countable_rel_iff_cardinal_rel_le_nat: "M(X) \<Longrightarrow> countable_r
   using le_Card_rel_iff[of \<omega> X] Card_rel_nat
   unfolding countable_rel_def by simp
 
-lemma lepoll_rel_countable: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<lesssim>\<^bsup>M\<^esup> Y \<Longrightarrow> countable_rel(M,Y) \<Longrightarrow> countable_rel(M,X)"
+lemma lepoll_rel_countable_rel: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<lesssim>\<^bsup>M\<^esup> Y \<Longrightarrow> countable_rel(M,Y) \<Longrightarrow> countable_rel(M,X)"
   using lepoll_rel_trans[of X Y] by blast
 
 \<comment> \<open>Next lemma can be proved without using AC\<close>
-lemma surj_rel_countable: 
+lemma surj_rel_countable_rel:
   "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> countable_rel(M,X) \<Longrightarrow> f \<in> surj_rel(M,X,Y) \<Longrightarrow> countable_rel(M,Y)"
   using surj_rel_implies_cardinal_rel_le[of f X Y, THEN le_trans]
     countable_rel_iff_cardinal_rel_le_nat by simp
 
-lemma Finite_imp_countable: "M(X) \<Longrightarrow> Finite_rel(M,X) \<Longrightarrow> countable_rel(M,X)"
+lemma Finite_imp_countable_rel: "M(X) \<Longrightarrow> Finite_rel(M,X) \<Longrightarrow> countable_rel(M,X)"
   unfolding Finite_rel_def
   by (auto intro:InfCard_rel_nat nats_le_InfCard_rel[of _ \<omega>,
         THEN le_imp_lepoll_rel] dest!:eq_lepoll_rel_trans[of X _ \<omega>] )
@@ -681,7 +681,7 @@ and cardinal_lib_assms4: "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>
 
 begin
 
-lemma countable_rel_union_countable:
+lemma countable_rel_union_countable_rel:
   assumes "\<And>x. x \<in> C \<Longrightarrow> countable_rel(M,x)" "countable_rel(M,C)" "M(C)"
   shows "countable_rel(M,\<Union>C)"
 proof -
@@ -717,12 +717,12 @@ lemma uncountable_rel_iff_nat_lt_cardinal_rel:
 lemma uncountable_rel_not_empty: "uncountable_rel(M,X) \<Longrightarrow> X \<noteq> 0"
   using empty_lepoll_relI by auto
 
-lemma uncountable_rel_imp_Infinite: "M(X) \<Longrightarrow> uncountable_rel(M,X) \<Longrightarrow> Infinite(X)"
+lemma uncountable_rel_imp_Infinite: "uncountable_rel(M,X) \<Longrightarrow> M(X) \<Longrightarrow> Infinite(X)"
   using uncountable_rel_iff_nat_lt_cardinal_rel[of X] lepoll_rel_nat_imp_Infinite[of X]
     cardinal_rel_le_imp_lepoll_rel[of \<omega> X] leI
   by simp
 
-lemma uncountable_rel_not_subset_countable:
+lemma uncountable_rel_not_subset_countable_rel:
   assumes "M(X)" "M(Y)" "countable_rel(M,X)" "uncountable_rel(M,Y)"
   shows "\<not> (Y \<subseteq> X)"
   using assms lepoll_rel_trans subset_imp_lepoll_rel[of Y X]
