@@ -554,6 +554,57 @@ proof -
     by (auto dest!:naturals_lt_nat)
 qed
 
+lemma Finite_cardinal_rel_eq_cardinal:
+  assumes "Finite(A)" "M(A)" shows "|A|\<^bsup>M\<^esup> = |A|"
+proof -
+  \<comment> \<open>Copy-paste from @{thm Finite_cardinal_rel_in_nat}\<close>
+  note assms
+  moreover from this
+  obtain n where "n \<in> \<omega>" "M(n)" "A \<approx> n"
+    unfolding Finite_def by auto
+  moreover from this
+  have "|A| = n"
+    using cardinal_cong[of A n]
+      nat_into_Card[THEN Card_cardinal_eq, of n] by simp
+  moreover from calculation
+  obtain f where "f \<in> bij(A,n)" "f: A-||>n"
+    using Finite_Fin[THEN fun_FiniteFunI, OF _ subset_refl] bij_is_fun
+    unfolding eqpoll_def by auto
+  ultimately
+  have "A \<approx>\<^bsup>M\<^esup> n" unfolding eqpoll_rel_def by (auto dest:transM)
+  with assms and \<open>M(n)\<close> \<open>n\<in>\<omega>\<close>
+  have "|A|\<^bsup>M\<^esup> = n"
+    using cardinal_rel_cong[of A n]
+      nat_into_Card_rel[THEN Card_rel_cardinal_rel_eq, of n]
+    by simp
+  with \<open>|A| = n\<close>
+  show ?thesis by simp
+qed
+
+lemma Finite_imp_cardinal_rel_cons:
+  assumes FA: "Finite(A)" and a: "a\<notin>A" and types:"M(A)" "M(a)"
+  shows "|cons(a,A)|\<^bsup>M\<^esup> = succ(|A|\<^bsup>M\<^esup>)"
+  using assms Finite_imp_cardinal_cons Finite_cardinal_rel_eq_cardinal by simp
+
+lemma Finite_imp_succ_cardinal_rel_Diff:
+  assumes "Finite(A)" "a \<in> A" "M(A)"
+  shows "succ(|A-{a}|\<^bsup>M\<^esup>) = |A|\<^bsup>M\<^esup>"
+proof -
+  from assms
+  have inM: "M(A-{a})" "M(a)" "M(A)" by (auto dest:transM)
+  with \<open>Finite(A)\<close>
+  have "succ(|A-{a}|\<^bsup>M\<^esup>) = succ(|A-{a}|)"
+    using Diff_subset[THEN subset_Finite,
+        THEN Finite_cardinal_rel_eq_cardinal, of A "{a}"] by simp
+  also from assms
+  have "\<dots> = |A|"
+    using Finite_imp_succ_cardinal_Diff by simp
+  also from assms
+  have "\<dots> = |A|\<^bsup>M\<^esup>" using Finite_cardinal_rel_eq_cardinal by simp
+  finally
+  show ?thesis .
+qed
+
 lemma InfCard_rel_Aleph_rel:
   notes Aleph_rel_zero[simp]
   assumes "Ord(\<alpha>)"
