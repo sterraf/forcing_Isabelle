@@ -8,36 +8,38 @@ begin
 
 relativize functional "delta_system" "delta_system_rel" external
 
-context M_cardinal_library
+locale M_delta = M_cardinal_library +
+  assumes
+  cardinal_replacement:"strong_replacement(M, \<lambda>A y. y = \<langle>A, |A|\<^bsup>M\<^esup>\<rangle>)"
 begin
-
-lemma Finite_imp_succ_cardinal_rel_Diff:
-     "[| Finite(A);  a \<in> A; M(A) ; M(a) |] ==> succ(|A-{a}|\<^bsup>M\<^esup>) = |A|\<^bsup>M\<^esup>"
-(* apply (rule_tac b = A in cons_Diff [THEN subst], assumption)
-apply (simp add: Finite_imp_cardinal_cons Diff_subset [THEN subset_Finite])
-apply (simp add: cons_Diff)
-done
- *) sorry
 
 lemma delta_system_Aleph_rel1:
   assumes "\<forall>A\<in>F. Finite(A)" "F \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "M(F)"
   shows "\<exists>D[M]. D \<subseteq> F \<and> delta_system(D) \<and> D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
 proof -
+  have "M(G) \<Longrightarrow> M(p) \<Longrightarrow> M({A\<in>G . p \<in> A})" for G p sorry
+  from \<open>M(F)\<close>
+  have "M(\<lambda>A\<in>F. |A|\<^bsup>M\<^esup>)"
+    using cardinal_replacement
+    by (rule_tac lam_closed) (auto dest:transM)
   text\<open>Since all members are finite,\<close>
-  from \<open>\<forall>A\<in>F. Finite(A)\<close>
+  with \<open>\<forall>A\<in>F. Finite(A)\<close> \<open>M(F)\<close>
   have "(\<lambda>A\<in>F. |A|\<^bsup>M\<^esup>) : F \<rightarrow>\<^bsup>M\<^esup> \<omega>" (is "?cards : _")
-    by (rule_tac lam_type) simp
+    by (simp add:mem_function_space_rel_abs, rule_tac lam_type)
+      (force dest:transM)
   moreover from this
   have a:"?cards -`` {n} = { A\<in>F . |A|\<^bsup>M\<^esup> = n }" for n
     using vimage_lam by auto
   moreover
-  note \<open>F \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
+  note \<open>F \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> \<open>M(F)\<close>
   moreover from calculation
   text\<open>there are uncountably many have the same cardinal:\<close>
   obtain n where "n\<in>\<omega>" "|?cards -`` {n}|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
     using eqpoll_rel_Aleph_rel1_cardinal_rel_vimage[of F ?cards] by auto
   moreover
   define G where "G \<equiv> ?cards -`` {n}"
+  moreover from calculation and \<open>M(?cards)\<close>
+  have "M(G)" by blast
   moreover from calculation
   have "G \<subseteq> F" by auto
   ultimately
@@ -61,28 +63,59 @@ proof -
         lt_trans2 cardinal_rel_Card_rel_eqpoll_rel_iff by auto
   next
     case (succ n)
-    then
     have "\<forall>a\<in>G. Finite(a)"
-      using Finite_cardinal_rel_iff' nat_into_Finite[of "succ(n)"]
-      by fastforce*
+    proof
+      fix a
+      assume "a \<in> G"
+      moreover
+      note \<open>M(G)\<close> \<open>n\<in>\<omega>\<close>
+      moreover from calculation
+      have "M(a)" by (auto dest: transM)
+      moreover from succ and \<open>a\<in>G\<close>
+      have "|a|\<^bsup>M\<^esup> = succ(n)" by simp
+      ultimately
+      show "Finite(a)"
+        using Finite_cardinal_rel_iff' nat_into_Finite[of "succ(n)"]
+        by fastforce
+    qed
     show "\<exists>D[M]. D \<subseteq> G \<and> delta_system(D) \<and> D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
     proof (cases "\<exists>p[M]. {A\<in>G . p \<in> A} \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>")
       case True \<comment> \<open>the positive case, uncountably many sets with a
                     common element\<close>
       then
-      obtain p where "{A\<in>G . p \<in> A} \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" by blast
-      moreover from this
+      obtain p where "{A\<in>G . p \<in> A} \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "M(p)" by blast
+      moreover
+      note \<open>M(G)\<close> \<open>M(G) \<Longrightarrow> M(p) \<Longrightarrow> M({A\<in>G . p \<in> A})\<close>
+      moreover
+      have "M({x - {p} . x \<in> {x \<in> G . p \<in> x}})" sorry
+      moreover
+      have "M(f) \<Longrightarrow> M(converse(\<lambda>x\<in>{x \<in> G . p \<in> x}. x - {p}))" for f sorry
+      moreover from calculation
       have "{A-{p} . A\<in>{X\<in>G. p\<in>X}} \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" (is "?F \<approx>\<^bsup>M\<^esup> _")
-        using Diff_bij_rel[of "{A\<in>G . p \<in> A}" "{p}"]
-          comp_bij_rel[OF bij_rel_converse_bij_rel, where C="\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"] by fast
+        using Diff_bij_rel[of "{A\<in>G . p \<in> A}" "{p}", THEN
+          comp_bij_rel[OF bij_rel_converse_bij_rel, where C="\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>",
+            THEN bij_rel_imp_eqpoll_rel, of _ _ ?F]]
+        unfolding eqpoll_rel_def
+        by (auto simp del:mem_bij_abs)
       text\<open>Now using the hypothesis of the successor case,\<close>
       moreover from \<open>\<And>A. A\<in>G \<Longrightarrow> |A|\<^bsup>M\<^esup>=succ(n)\<close> \<open>\<forall>a\<in>G. Finite(a)\<close>
-        and this
+        and this \<open>M(G)\<close>
       have "p\<in>A \<Longrightarrow> A\<in>G \<Longrightarrow> |A - {p}|\<^bsup>M\<^esup> = n" for A
-        using Finite_imp_succ_cardinal_rel_Diff[of _ p] by force*
-      moreover from this and \<open>n\<in>\<omega>\<close>
+        using Finite_imp_succ_cardinal_rel_Diff[of _ p] by (force dest: transM)
+      moreover
       have "\<forall>a\<in>?F. Finite(a)"
-        using Finite_cardinal_rel_iff' nat_into_Finite by auto*
+      proof (clarsimp)
+        fix A
+        assume "p\<in>A" "A\<in>G"
+        with \<open>\<And>A. p \<in> A \<Longrightarrow> A \<in> G \<Longrightarrow> |A - {p}|\<^bsup>M\<^esup> = n\<close> and \<open>n\<in>\<omega>\<close> \<open>M(G)\<close>
+        have "Finite(|A - {p}|\<^bsup>M\<^esup>)"
+          using nat_into_Finite by simp
+        moreover from \<open>p\<in>A\<close> \<open>A\<in>G\<close> \<open>M(G)\<close>
+        have "M(A - {p})" by (auto dest: transM)
+        ultimately
+        show "Finite(A - {p})"
+          using Finite_cardinal_rel_iff' by simp
+      qed
       moreover
       text\<open>we may apply the inductive hypothesis to the new family \<^term>\<open>?F\<close>:\<close>
       note \<open>(\<And>A. A \<in> ?F \<Longrightarrow> |A|\<^bsup>M\<^esup> = n) \<Longrightarrow> ?F \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> M(?F) \<Longrightarrow>
@@ -104,12 +137,14 @@ proof -
         by fastforce
       moreover
       have "M(?D)" sorry
-      moreover from \<open>D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
-      have "|D|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "Infinite(D)"
-        using cardinal_rel_eqpoll_rel_iff
-        by (auto intro!: uncountable_rel_iff_subset_eqpoll_rel_Aleph_rel1[THEN iffD2]
-            uncountable_rel_imp_Infinite) (force*)
-      moreover from this
+      moreover from \<open>D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> \<open>M(D)\<close>
+      have "Infinite(D)" "|D|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+        using uncountable_rel_iff_subset_eqpoll_rel_Aleph_rel1[THEN iffD2,
+            THEN uncountable_rel_imp_Infinite, of D]
+         apply auto[1]
+        using cardinal_rel_eqpoll_rel_iff[of D "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"] \<open>M(D)\<close> \<open>D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
+        by simp
+      moreover from this \<open>M(?D)\<close> \<open>M(D)\<close> \<open>M(p)\<close>
       have "?D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
         using cardinal_rel_map_Un[of D "{p}"] naturals_lt_nat
           cardinal_rel_eqpoll_rel_iff[THEN iffD1] by simp
@@ -138,47 +173,69 @@ proof -
     next
       case False
       note \<open>\<not> (\<exists>p[M]. {A \<in> G . p \<in> A} \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)\<close> \<comment> \<open>the other case\<close>
-      moreover from \<open>G \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
-      have "{A \<in> G . p \<in> A} \<lesssim> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" (is "?G(p) \<lesssim> _") for p
-        (* by (blast intro:lepoll_rel_eq_trans[OF subset_imp_lepoll_rel]) *) sorry
-      ultimately
-      have "?G(p) \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" for p
+        \<open>M(G)\<close> \<open>\<And>p. M(G) \<Longrightarrow> M(p) \<Longrightarrow> M({A\<in>G . p \<in> A})\<close>
+      moreover from \<open>G \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> and this
+      have "M(p) \<Longrightarrow> {A \<in> G . p \<in> A} \<lesssim>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" (is "_ \<Longrightarrow> ?G(p) \<lesssim>\<^bsup>M\<^esup> _") for p
+        by (auto intro!:lepoll_rel_eq_trans[OF subset_imp_lepoll_rel] dest:transM)
+      moreover from calculation
+      have "M(p) \<Longrightarrow> ?G(p) \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" for p
+        using \<open>M(G) \<Longrightarrow> M(p) \<Longrightarrow> M({A\<in>G . p \<in> A})\<close>
         unfolding lesspoll_rel_def by simp
-      then (* may omit the previous step if unfolding here: *)
-      have "?G(p) \<lesssim>\<^bsup>M\<^esup> \<omega>" for p
+      moreover from calculation
+      have "M(p) \<Longrightarrow> ?G(p) \<lesssim>\<^bsup>M\<^esup> \<omega>" for p
         using lesspoll_rel_Aleph_rel_plus_one[of 0] Aleph_rel_zero by auto
       moreover
       have "{A \<in> G . S \<inter> A \<noteq> 0} = (\<Union>p\<in>S. ?G(p))" for S
         by auto
-      ultimately
-      have "countable_rel(M,S) \<Longrightarrow> countable_rel(M,{A \<in> G . S \<inter> A \<noteq> 0})" for S
-        using InfCard_rel_nat Card_rel_nat
-         le_Card_rel_iff[THEN iffD2, THEN [3] leqpoll_rel_imp_cardinal_rel_UN_le,
-           THEN [2] le_Card_rel_iff[THEN iffD1], of \<omega> S]
-        unfolding countable_rel_def by simp
+      moreover from calculation
+      have "M(S) \<Longrightarrow> i \<in> S \<Longrightarrow> M({x \<in> G . i \<in> x})" for i S
+        by (auto dest: transM)
+      moreover
+      have "M(S) \<Longrightarrow> countable_rel(M,S) \<Longrightarrow> countable_rel(M,{A \<in> G . S \<inter> A \<noteq> 0})" for S
+      proof -
+        fix S
+        interpret M_cardinal_UN_lepoll _ ?G S
+          sorry
+        assume "countable_rel(M,S)" "M(S)"
+        with calculation(6) calculation(7,8)[of S]
+        show "countable_rel(M,{A \<in> G . S \<inter> A \<noteq> 0})"
+          using InfCard_rel_nat Card_rel_nat
+            le_Card_rel_iff[THEN iffD2, THEN [3] leqpoll_rel_imp_cardinal_rel_UN_le,
+              THEN [4] le_Card_rel_iff[THEN iffD1], of \<omega>] j.UN_closed
+          unfolding countable_rel_def by (auto dest: transM)
+      qed
       text\<open>For every countable_rel subfamily of \<^term>\<open>G\<close> there is another some
       element disjoint from all of them:\<close>
-      have "\<exists>A\<in>G. \<forall>S\<in>X. S \<inter> A = 0" if "|X|\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "X \<subseteq> G" for X
+      have "\<exists>A\<in>G. \<forall>S\<in>X. S \<inter> A = 0" if "|X|\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "X \<subseteq> G" "M(X)" for X
       proof -
-        from \<open>n\<in>\<omega>\<close> \<open>\<And>A. A\<in>G \<Longrightarrow> |A|\<^bsup>M\<^esup> = succ(n)\<close>
+        note \<open>n\<in>\<omega>\<close> \<open>M(G)\<close>
+        moreover from this and  \<open>\<And>A. A\<in>G \<Longrightarrow> |A|\<^bsup>M\<^esup> = succ(n)\<close>
+        have "A\<in>G \<Longrightarrow> |A|= succ(n)" for A
+          using Finite_cardinal_rel_eq_cardinal[of A] Finite_cardinal_rel_iff'[of A]
+            nat_into_Finite transM[of A G] by simp
+        ultimately
         have "A\<in>G \<Longrightarrow> Finite(A)" for A
-          using cardinal_rel_Card_rel_eqpoll_rel_iff
-          unfolding Finite_def by fastforce*
-        with \<open>X\<subseteq>G\<close>
+          using cardinal_Card_eqpoll_iff
+          unfolding Finite_def by fastforce
+        with \<open>X\<subseteq>G\<close> \<open>M(X)\<close>
         have "A\<in>X \<Longrightarrow> countable_rel(M,A)" for A
-          using Finite_imp_countable\<comment> \<open>FIXME: bad name\<close> by auto
-        with \<open>|X|\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
+          using Finite_imp_countable_rel by (auto dest: transM)
+        moreover from \<open>M(X)\<close>
+        have "M(\<Union>X)" by simp
+        moreover
+        note \<open>|X|\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> \<open>M(X)\<close>
+        ultimately
         have "countable_rel(M,\<Union>X)"
           using Card_rel_nat[THEN cardinal_rel_lt_csucc_rel_iff, of X]
-            countable_rel_union_countable \<comment> \<open>FIXME: bad name\<close>
-            countable_rel_iff_cardinal_rel_le_nat
-          unfolding Aleph_rel_def by simp
-        with \<open>countable_rel(M,_) \<Longrightarrow> countable_rel(M,{A \<in> G . _  \<inter> A \<noteq> 0})\<close>
-        have "countable_rel(M,{A \<in> G . (\<Union>X) \<inter> A \<noteq> 0})" .
+            countable_rel_union_countable_rel[of X]
+            countable_rel_iff_cardinal_rel_le_nat[of X] Aleph_rel_succ
+            Aleph_rel_zero by simp
+        with \<open>M(\<Union>X)\<close> \<open>M(_) \<Longrightarrow> countable_rel(M,_) \<Longrightarrow> countable_rel(M,{A \<in> G . _  \<inter> A \<noteq> 0})\<close>
+        have "countable_rel(M,{A \<in> G . (\<Union>X) \<inter> A \<noteq> 0})" by simp
         with \<open>G \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
         obtain B where "B\<in>G" "B \<notin> {A \<in> G . (\<Union>X) \<inter> A \<noteq> 0}" 
           using nat_lt_Aleph_rel1 cardinal_rel_Card_rel_eqpoll_rel_iff[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" G]
-            uncountable_rel_not_subset_countable\<comment> \<open>FIXME: bad name\<close>
+            uncountable_rel_not_subset_countable_rel
             [of "{A \<in> G . (\<Union>X) \<inter> A \<noteq> 0}" G]
             uncountable_rel_iff_nat_lt_cardinal_rel
           by auto
@@ -239,6 +296,20 @@ proof -
     by (auto dest:transM)
 qed
 
-end (* M_cardinal_rel_library *)
+end (* M_delta *)
+
+\<comment> \<open>FIXME: I'm using this notepad to expand locale assumptions\<close>
+notepad
+begin
+  fix Y M Z F
+  have "M(Z) \<Longrightarrow> M(F) \<Longrightarrow> M_cardinal_UN_lepoll(M,\<lambda>y. if M(y) then {x\<in>Z . F`x = y} else 0,Y)"
+    unfolding M_cardinal_UN_lepoll_def M_cardinal_UN_lepoll_axioms_def
+      M_cardinal_UN_def M_cardinal_UN_axioms_def
+      M_Pi_assumptions_choice_def M_Pi_assumptions_choice_axioms_def
+      M_Pi_assumptions_def M_Pi_assumptions_axioms_def
+    apply (intro allI conjI impI)
+    defer defer defer defer defer 3 defer 5
+    sorry
+end (* notepad *)
 
 end
