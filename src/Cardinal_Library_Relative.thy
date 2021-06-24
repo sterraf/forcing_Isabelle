@@ -989,10 +989,25 @@ lemma rec_constr_unfold: "rec_constr(f,\<alpha>) = f`({rec_constr(f,\<beta>). \<
 
 lemma rec_constr_type: assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)" "M(G)" "M(\<alpha>)"
    shows "rec_constr(f,\<alpha>) \<in> G"
-  using assms(2,1,3,4) Pow_rel_char 
-  apply (induct rule:trans_induct)
-  apply (subst rec_constr_unfold, rule apply_type[of f "Pow_rel(M,G)" "\<lambda>_. G"], auto dest:transM)
-  sorry
+  using assms(2)
+proof(induct rule:trans_induct)
+  case (step \<beta>)
+  then
+  have "{rec_constr(f, x) . x \<in> \<beta>} \<in> Pow(G)" (is "?X\<in>_") by auto
+  moreover
+  have "M(?X)"
+    sorry
+  moreover from calculation \<open>M(G)\<close>
+  have "?X\<in>Pow_rel(M,G)"
+    using Pow_rel_char by simp
+  ultimately
+  have "f`?X \<in> G"
+    using assms apply_type[OF fun_rel_is_fun[of f],of "Pow_rel(M,G)" G ?X]
+    by auto
+  then
+  show ?case
+    by (subst rec_constr_unfold,simp)
+qed
 
 lemma rec_constr_closed :
   assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)" "M(G)" "M(\<alpha>)"
@@ -1003,6 +1018,12 @@ text\<open>The next lemma is an application of recursive constructions.
      It works under the assumption that whenever the already constructed
      subsequence is small enough, another element can be added.\<close>
 
+\<comment>\<open>FIXME: this should be postulated in some locale.\<close>
+lemma aux : "separation(M, \<lambda>Z . cardinal_rel(M,Z)<\<gamma>)" sorry
+
+lemma ble: "S\<in>A\<rightarrow>B \<Longrightarrow> C\<subseteq>A\<Longrightarrow> {S ` x . x\<in> C} = S``C"
+  using image_function[symmetric,of S C] domain_of_fun Pi_iff by auto
+
 lemma bounded_cardinal_rel_selection:
   includes Ord_dests
   assumes
@@ -1012,8 +1033,10 @@ lemma bounded_cardinal_rel_selection:
 proof -
   let ?cdlt\<gamma>="{Z\<in>Pow_rel(M,G) . |Z|\<^bsup>M\<^esup><\<gamma>}" \<comment> \<open>“cardinal_rel less than \<^term>\<open>\<gamma>\<close>”\<close>
     and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. Q(s,a)}"
+  from \<open>M(G)\<close>
+  have "M(?cdlt\<gamma>)" using Pow_rel_closed separation_closed aux by simp
   from assms
-  have "\<forall>Y \<in> ?cdlt\<gamma>. \<exists>a. a \<in> ?inQ(Y)"
+  have H:"\<exists>a. a \<in> ?inQ(Y)" if "Y\<in>?cdlt\<gamma>" for Y
   proof -
     {
       fix Y
@@ -1025,22 +1048,31 @@ proof -
       with A
       obtain a where "a\<in>G" "\<forall>s\<in>Y. Q(s,a)"
         using assms(1) by force
-      then
+      with \<open>M(G)\<close>
       have "\<exists>a. a \<in> ?inQ(Y)" by auto
     }
-    then show ?thesis by simp
+    then show ?thesis using that by simp
   qed
   then
-  have "\<exists>f. f \<in> Pi(?cdlt\<gamma>,?inQ)"
-    using AC_ball_Pi[of ?cdlt\<gamma> ?inQ] by simp
+  have "\<exists>f[M]. f \<in> Pi_rel(M,?cdlt\<gamma>,?inQ) \<and> f \<in> Pi(?cdlt\<gamma>,?inQ)" 
+  proof - 
+    interpret M_Pi_assumptions_choice M  ?cdlt\<gamma> ?inQ
+      using \<open>M(?cdlt\<gamma>)\<close>
+      apply (unfold_locales,simp_all)
+      sorry
+    show ?thesis using AC_Pi_rel Pi_rel_char H by auto
+    qed
   then
-  obtain f where f_type:"f \<in> Pi(?cdlt\<gamma>,?inQ)"
+  obtain f where f_type:"f \<in> Pi_rel(M,?cdlt\<gamma>,?inQ)" "f \<in> Pi(?cdlt\<gamma>,?inQ)" and "M(f)"
     by auto
   moreover
   define Cb where "Cb \<equiv> \<lambda>_\<in>Pow_rel(M,G)-?cdlt\<gamma>. b"
-  moreover from \<open>b\<in>G\<close>
-  have "Cb \<in> Pow_rel(M,G)-?cdlt\<gamma> \<rightarrow> G"
-    unfolding Cb_def by simp
+  moreover from \<open>b\<in>G\<close> \<open>M(?cdlt\<gamma>)\<close> \<open>M(G)\<close>
+  have "Cb \<in> Pow_rel(M,G)-?cdlt\<gamma> \<rightarrow> G" "M(Cb)"
+    using lam_closed[of "\<lambda>_.b" "Pow_rel(M,G)-?cdlt\<gamma>"]
+      tag_replacement transM[OF \<open>b\<in>G\<close>]
+      Diff_closed Pow_rel_closed 
+    unfolding Cb_def by auto
   moreover
   note \<open>Card_rel(M,\<gamma>)\<close>
   ultimately
@@ -1050,12 +1082,17 @@ proof -
     by auto
   moreover
   have "?inQ(x) \<union> G = G" for x by auto
+  moreover from calculation 
+  have "f \<union> Cb : Pow_rel(M,G) \<rightarrow> G" 
+    using function_space_rel_char by simp
   ultimately
-  have "f \<union> Cb : Pow_rel(M,G) \<rightarrow>\<^bsup>M\<^esup> G" sorry
+  have "f \<union> Cb : Pow_rel(M,G) \<rightarrow>\<^bsup>M\<^esup> G"
+    using function_space_rel_char \<open>M(f)\<close> \<open>M(Cb)\<close> Pow_rel_closed \<open>M(G)\<close>
+    by auto
   define S where "S\<equiv>\<lambda>\<alpha>\<in>\<gamma>. rec_constr(f \<union> Cb, \<alpha>)"
   from \<open>f \<union> Cb: Pow_rel(M,G) \<rightarrow>\<^bsup>M\<^esup> G\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close>
   have "S : \<gamma> \<rightarrow> G" "M(S)"
-    using Ord_in_Ord Card_rel_is_Ord rec_constr_type lam_type
+    using Ord_in_Ord Card_rel_is_Ord
     unfolding S_def
     sorry
   moreover
@@ -1063,22 +1100,26 @@ proof -
   proof (intro ballI impI)
     fix \<alpha> \<beta>
     assume "\<beta>\<in>\<gamma>"
-    with \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close>
+    with \<open>Card_rel(M,\<gamma>)\<close> \<open>M(S)\<close>
+    have "\<beta>\<subseteq>\<gamma>" "M(S``\<beta>)" 
+      using transM[OF \<open>\<beta>\<in>\<gamma>\<close> \<open>M(\<gamma>)\<close>] image_closed 
+      sorry
+    with \<open>\<beta>\<in>_\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close>
     have "{rec_constr(f \<union> Cb, x) . x\<in>\<beta>} = {S`x . x \<in> \<beta>}"
       using Ord_trans[OF _ _ Card_rel_is_Ord, of _ \<beta> \<gamma>]
       unfolding S_def
       by auto
-    moreover from \<open>\<beta>\<in>\<gamma>\<close> \<open>S : \<gamma> \<rightarrow> G\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close>
+    moreover from \<open>\<beta>\<in>\<gamma>\<close> \<open>S : \<gamma> \<rightarrow> G\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close> \<open>M(S``\<beta>)\<close>
     have "{S`x . x \<in> \<beta>} \<subseteq> G" "M({S`x . x \<in> \<beta>})"
       using Ord_trans[OF _ _ Card_rel_is_Ord, of _ \<beta> \<gamma>]
-        apply_type[of S \<gamma> "\<lambda>_. G"]
+        apply_type[of S \<gamma> "\<lambda>_. G"] ble[OF \<open>S\<in>_\<close> \<open>\<beta>\<subseteq>_\<close>]
       sorry
     moreover from \<open>Card_rel(M,\<gamma>)\<close> \<open>\<beta>\<in>\<gamma>\<close> \<open>S\<in>_\<close>
     have "|{S`x . x \<in> \<beta>}|\<^bsup>M\<^esup> < \<gamma>"
       using cardinal_rel_RepFun_le[of \<beta>]  Ord_in_Ord Ord_cardinal_rel
         lt_trans1[of "|{S`x . x \<in> \<beta>}|\<^bsup>M\<^esup>" "|\<beta>|\<^bsup>M\<^esup>" \<gamma>]
         Card_rel_lt_iff[THEN iffD2, of \<beta> \<gamma>, OF _ _ _ _ ltI]
-        Card_rel_is_Ord
+        Card_rel_is_Ord 
       sorry
     moreover
     have "\<forall>x\<in>\<beta>. Q(S`x, f ` {S`x . x \<in> \<beta>})"
@@ -1127,7 +1168,7 @@ proof
     have "Z \<noteq> Y" by auto
   }
   moreover
-  have A: "(\<And>Za. |Za|\<^bsup>M\<^esup> < \<omega> \<Longrightarrow> Za \<subseteq> Z \<Longrightarrow> \<exists>a\<in>Z. \<forall>s\<in>Za. s \<noteq> a)"
+  have A: "(\<And>W. |W|\<^bsup>M\<^esup> < \<omega> \<Longrightarrow> W \<subseteq> Z \<Longrightarrow> \<exists>a\<in>Z. \<forall>s\<in>W. s \<noteq> a)"
     sorry
   moreover from \<open>b\<in>Z\<close> \<open>M(Z)\<close>
   obtain S where "S : \<omega> \<rightarrow>\<^bsup>M\<^esup> Z" "M(S)" "\<forall>\<alpha>\<in>\<omega>. \<forall>\<beta>\<in>\<omega>. \<alpha> < \<beta> \<longrightarrow> S`\<alpha> \<noteq> S`\<beta>"
