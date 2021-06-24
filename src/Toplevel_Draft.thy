@@ -9,20 +9,6 @@ definition
   Add_subs :: "[i,i] \<Rightarrow> i" where
   "Add_subs(\<kappa>,\<alpha>) \<equiv> Fn(\<omega>,\<kappa>\<times>\<alpha>,2)"
 
-locale M_cardinal_UN_lepoll = M_cardinal_UN _ J for J
-begin
-
-\<comment>\<open>FIXME: this "LEQpoll" should be "LEPOLL"; same correction in Delta System\<close>
-lemma leqpoll_rel_imp_cardinal_rel_UN_le:
-  notes [dest] = InfCard_is_Card Card_is_Ord
-  assumes "InfCard\<^bsup>M\<^esup>(K)" "J \<lesssim>\<^bsup>M\<^esup> K" "\<And>i. i\<in>J \<Longrightarrow> |X(i)|\<^bsup>M\<^esup> \<le> K"
-    and types:"M(K)"
-  shows "|\<Union>i\<in>J. X(i)|\<^bsup>M\<^esup> \<le> K"
-  sorry
-
-end (* M_cardinal_UN_lepoll *)
-
-
 locale M_master = M_cardinal_library +
   assumes
   domain_separation: "M(x) \<Longrightarrow> separation(M, \<lambda>z. x \<in> domain(z))"
@@ -53,6 +39,76 @@ locale M_master = M_cardinal_library +
    strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(F ` x, \<alpha>) \<and> z = {\<langle>x, y\<rangle>})"
   "M(F) \<Longrightarrow> M(r) \<Longrightarrow> M(\<alpha>) \<Longrightarrow>
   strong_replacement(M, \<lambda>x y. y = \<langle>x, Cardinal_AC_Relative.minimum(r, inj\<^bsup>M\<^esup>(F ` x,\<alpha>))\<rangle>)"
+  and
+  UN_lepoll_assumptions:
+  "M(Z) \<Longrightarrow> M(F) \<Longrightarrow> \<forall>x\<in>\<alpha>. strong_replacement(M, \<lambda>y z. y \<in> F ` x \<and> z = {\<langle>x, y\<rangle>})"
+  "M(Z) \<Longrightarrow> M(F) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, (`)(F)))"
+  "M(Z) \<Longrightarrow> M(F) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = F ` x)"
+  "M(Z) \<Longrightarrow> M(F) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, F ` x)\<rangle>)"
+  "M(Z) \<Longrightarrow>
+         M(F) \<Longrightarrow>
+         M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> F ` i, f ` (\<mu> i. x \<in> F ` i) ` x\<rangle>)"
+  "M(Z) \<Longrightarrow> M(F) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(F ` x,\<alpha>) \<and> z = {\<langle>x, y\<rangle>})"
+  "M(Z) \<Longrightarrow> M(F) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(F ` x,\<alpha>))"
+  "M(Z) \<Longrightarrow> M(F) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(F ` i,\<alpha>)))"
+  "M(Z) \<Longrightarrow> M(F) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(F ` x,\<alpha>))\<rangle>)"
+  "M(Z) \<Longrightarrow>
+          M(F) \<Longrightarrow>
+          M(f) \<Longrightarrow>
+          strong_replacement
+           (M, \<lambda>x z. z = Sigfun(x, \<lambda>k. if k \<in> range(f) then F ` (converse(f) ` k) else 0))"
+  "M(Z) \<Longrightarrow>
+          M(F) \<Longrightarrow>
+          M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = (if x \<in> range(f) then F ` (converse(f) ` x) else 0))"
+  "M(Z) \<Longrightarrow>
+        M(F) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        M(fa) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> F ` (converse(f) ` x) \<and> z = {\<langle>x, y\<rangle>})"
+  "M(Z) \<Longrightarrow>
+        M(F) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, Cardinal_AC_Relative.minimum(r, if x \<in> range(f) then F ` (converse(f) ` x) else 0)\<rangle>)"
+  "M(Z) \<Longrightarrow>
+        M(F) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        M(fa) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> (if i \<in> range(f) then F ` (converse(f) ` i) else 0),
+                        fa ` (\<mu> i. x \<in> (if i \<in> range(f) then F ` (converse(f) ` i) else 0)) ` x\<rangle>)"
+  "M(Z) \<Longrightarrow>
+        M(F) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        M(fa) \<Longrightarrow>
+        M(x) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if x \<in> range(f) then F ` (converse(f) ` x) else 0,K) \<and> z = {\<langle>x, y\<rangle>})"
+  "M(F) \<Longrightarrow>
+            M(f) \<Longrightarrow>
+            M(K) \<Longrightarrow>
+            strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if x \<in> range(f) then F ` (converse(f) ` x) else 0,K))"
+  "M(Z) \<Longrightarrow>
+            M(F) \<Longrightarrow>
+            M(f) \<Longrightarrow>
+            M(K) \<Longrightarrow>
+            strong_replacement
+             (M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(if i \<in> range(f) then F ` (converse(f) ` i) else 0,K)))"
+  "M(Z) \<Longrightarrow>
+        M(F) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, Cardinal_AC_Relative.minimum(r, inj\<^bsup>M\<^esup>(if x \<in> range(f) then F ` (converse(f) ` x) else 0,K))\<rangle>)"
+
 begin
 
 lemma Fn_nat_closed:
@@ -161,7 +217,7 @@ proof (rule ccontr)
     using Aleph_rel_zero by simp
   from \<open>\<alpha> \<in> M\<close> \<open>F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close> \<open>F\<in>M\<close>
   interpret M_cardinal_UN_lepoll "##M" "\<lambda>\<beta>. F`\<beta>" \<alpha>
-    using Aleph_rel_closed[of 0] ccc_replacement
+    using Aleph_rel_closed[of 0] ccc_replacement UN_lepoll_assumptions
   proof (unfold_locales, auto dest:transM)
     show "w \<in> F ` x \<Longrightarrow> x \<in> M" for w x
     proof -
@@ -207,7 +263,7 @@ proof (rule ccontr)
     by (force simp add:surj_def)
   moreover from \<open>F \<in> M\<close> \<open>\<alpha> \<in> M\<close>
   have "(\<Union>x\<in>\<alpha>. F ` x) \<in> M"
-    using B_replacement
+    using j.B_replacement\<comment> \<open>NOTE: it didn't require @{thm j.UN_closed} before!\<close>
     by (intro Union_closed[simplified] RepFun_closed[simplified])
       (auto dest:transM)
   ultimately
