@@ -116,19 +116,8 @@ lemma Fn_nat_closed:
   using assms Fn_nat_eq_FiniteFun
   by simp
 
-lemma lt_surj_rel_empty_imp_Card_rel:
-  assumes "Ord(\<kappa>)" "\<And>\<alpha>. \<alpha> < \<kappa> \<Longrightarrow> surj\<^bsup>M\<^esup>(\<alpha>,\<kappa>) = 0"
-  shows "Card\<^bsup>M\<^esup>(\<kappa>)"
-  sorry
-
 lemma Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
   using  nat_into_M[of 2, THEN Aleph_rel_closed] by simp
-
-lemma Card_rel_Aleph_rel[simp]: "Ord(\<alpha>) \<Longrightarrow> Card\<^bsup>M\<^esup>(\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)"
-  sorry
-
-lemma Aleph_rel_succ: "\<aleph>\<^bsub>succ(\<alpha>)\<^esub>\<^bsup>M\<^esup> = (\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup>"
-  sorry
 
 lemma Fnle_nat_closed[intro,simp]:
   assumes "M(I)" "M(J)"
@@ -193,13 +182,16 @@ lemma ccc_preserves_Aleph_succ:
   shows "Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
 proof (rule ccontr)
   assume "\<not> Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
-  moreover from \<open>Ord(z)\<close> \<open>z \<in> M\<close>
+  moreover
+  note \<open>z \<in> M\<close>
+  moreover from this and \<open>Ord(z)\<close>
   have "Ord(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
     using Card_rel_Aleph_rel[of "succ(z)", THEN Card_rel_is_Ord]
     by fastforce
   ultimately
   obtain \<alpha> f where "\<alpha> < \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>" "f \<in> surj\<^bsup>M[G]\<^esup>(\<alpha>, \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
-    using ext.lt_surj_rel_empty_imp_Card_rel by blast
+    using ext.lt_surj_rel_empty_imp_Card_rel M_subset_MG[OF one_in_G, OF generic]
+      Aleph_rel_closed[of "succ(z)"] by simp blast
   moreover from this and \<open>z\<in>M\<close>
   have "\<alpha> \<in> M" "f \<in> M[G]"
     using Aleph_rel_closed[of "succ(z)"] ext.trans_surj_rel_closed
@@ -243,7 +235,7 @@ proof (rule ccontr)
       lt_Ord[of \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"]
       csucc_rel_closed[of "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"] Card_rel_csucc_rel[of "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"]
       Aleph_rel_closed[of z]
-      Card_rel_Aleph_rel[THEN Card_rel_is_Ord, OF _ Aleph_rel_closed]
+      Card_rel_Aleph_rel[THEN Card_rel_is_Ord, OF _ _ Aleph_rel_closed]
     by simp
   with \<open>\<alpha> < \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>\<close> \<open>\<forall>\<beta>\<in>\<alpha>. |F`\<beta>|\<^bsup>M\<^esup> \<le> \<omega>\<close> \<open>\<alpha> \<in> M\<close> assms
   have "|\<Union>\<beta>\<in>\<alpha>. F`\<beta>|\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"
@@ -274,7 +266,7 @@ proof (rule ccontr)
   with assms
   show "False"
     using Aleph_rel_increasing not_le_iff_lt[of "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"]
-      Card_rel_Aleph_rel[THEN Card_rel_is_Ord, OF _ Aleph_rel_closed]
+      Card_rel_Aleph_rel[THEN Card_rel_is_Ord, OF _ _ Aleph_rel_closed]
     by auto
 qed
 
