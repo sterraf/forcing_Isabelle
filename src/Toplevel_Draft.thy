@@ -1,6 +1,7 @@
 theory Toplevel_Draft
   imports
     Cardinal_Preservation
+    Cardinal_Library_Relative
 
 begin
 
@@ -22,7 +23,7 @@ lemma leqpoll_rel_imp_cardinal_rel_UN_le:
 end (* M_cardinal_UN_lepoll *)
 
 
-locale M_master = M_library +
+locale M_master = M_cardinal_library +
   assumes
   domain_separation: "M(x) \<Longrightarrow> separation(M, \<lambda>z. x \<in> domain(z))"
   and
@@ -54,45 +55,14 @@ locale M_master = M_library +
   strong_replacement(M, \<lambda>x y. y = \<langle>x, Cardinal_AC_Relative.minimum(r, inj\<^bsup>M\<^esup>(F ` x,\<alpha>))\<rangle>)"
 begin
 
-
 lemma Fn_nat_closed:
   assumes "M(A)" "M(B)" shows "M(Fn(\<omega>,A,B))"
   using assms Fn_nat_eq_FiniteFun
   by simp
 
-lemma lepoll_rel_imp_lepoll_rel_cardinal_rel:
-  assumes "X \<lesssim>\<^bsup>M\<^esup> Y"  "M(X)" "M(Y)"
-  shows "X \<lesssim>\<^bsup>M\<^esup> |Y|\<^bsup>M\<^esup>"
-  sorry
-
-lemma subset_imp_le_cardinal_rel: "A \<subseteq> B \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> |A|\<^bsup>M\<^esup> \<le> |B|\<^bsup>M\<^esup>"
-  sorry
-
-lemma cardinal_rel_subset_of_Card_rel:
-  assumes "Card\<^bsup>M\<^esup>(\<gamma>)" "a \<subseteq> \<gamma>"
-    and types: "M(\<gamma>)" "M(a)"
-  shows "|a|\<^bsup>M\<^esup> < \<gamma> \<or> |a|\<^bsup>M\<^esup> = \<gamma>"
-  sorry
-
 lemma lt_surj_rel_empty_imp_Card_rel:
   assumes "Ord(\<kappa>)" "\<And>\<alpha>. \<alpha> < \<kappa> \<Longrightarrow> surj\<^bsup>M\<^esup>(\<alpha>,\<kappa>) = 0"
   shows "Card\<^bsup>M\<^esup>(\<kappa>)"
-  sorry
-
-lemma Card_rel_csucc_rel: "Ord(K) \<Longrightarrow> M(K) \<Longrightarrow> Card\<^bsup>M\<^esup>((K\<^sup>+)\<^bsup>M\<^esup>)"
-  sorry
-
-lemma csucc_rel_le: "Card\<^bsup>M\<^esup>(l) \<Longrightarrow> K < l \<Longrightarrow> M(l) \<Longrightarrow> M(K) \<Longrightarrow> (K\<^sup>+)\<^bsup>M\<^esup> \<le> l"
-  sorry
-
-lemma cardinal_rel_lt_csucc_rel_iff: "Card\<^bsup>M\<^esup>(K) \<Longrightarrow> M(K) \<Longrightarrow> M(K') \<Longrightarrow>
-  |K'|\<^bsup>M\<^esup> < (K\<^sup>+)\<^bsup>M\<^esup> \<longleftrightarrow> |K'|\<^bsup>M\<^esup> \<le> K"
-  sorry
-
-lemma cardinal_rel_Aleph_rel [simp]: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> |\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>|\<^bsup>M\<^esup> = \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>"
-  sorry
-
-lemma nat_lt_Aleph_rel1: "\<omega> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
   sorry
 
 lemma Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
