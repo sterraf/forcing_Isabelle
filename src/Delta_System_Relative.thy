@@ -249,14 +249,14 @@ proof -
       ultimately
       text\<open>Hence, the hypotheses to perform a bounded-cardinal selection
       are satisfied,\<close>
-      obtain S where "S:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>G" "\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<beta>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0"
+      obtain S where "S:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<^bsup>M\<^esup>G" "\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<beta>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0"
         for \<alpha> \<beta>
         using bounded_cardinal_rel_selection[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" G "\<lambda>s a. s \<inter> a = 0" b]
-        by force*
+        by force
       then
       have "\<alpha> \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<beta> \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<alpha>\<noteq>\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0" for \<alpha> \<beta>
         using lt_neq_symmetry[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<lambda>\<alpha> \<beta>. S`\<alpha> \<inter> S`\<beta> = 0"] Card_rel_is_Ord
-        by auto (blast*)
+        by auto (blast)
       text\<open>and a symmetry argument shows that obtained \<^term>\<open>S\<close> is
       an injective  \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>-sequence of disjoint elements of \<^term>\<open>G\<close>.\<close>
       moreover from this and \<open>\<And>A. A\<in>G \<Longrightarrow> |A|\<^bsup>M\<^esup> = succ(n)\<close> \<open>S : \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightarrow> G\<close>

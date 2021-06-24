@@ -1027,7 +1027,7 @@ lemma ble: "S\<in>A\<rightarrow>B \<Longrightarrow> C\<subseteq>A\<Longrightarro
 lemma bounded_cardinal_rel_selection:
   includes Ord_dests
   assumes
-    "\<And>Z. |Z|\<^bsup>M\<^esup> < \<gamma> \<Longrightarrow> Z \<subseteq> G \<Longrightarrow> \<exists>a\<in>G. \<forall>s\<in>Z. Q(s,a)" "b\<in>G" "Card_rel(M,\<gamma>)" "M(G)" "M(\<gamma>)"
+    "\<And>Z. |Z|\<^bsup>M\<^esup> < \<gamma> \<Longrightarrow> Z \<subseteq> G \<Longrightarrow> M(Z) \<Longrightarrow> \<exists>a\<in>G. \<forall>s\<in>Z. Q(s,a)" "b\<in>G" "Card_rel(M,\<gamma>)" "M(G)" "M(\<gamma>)"
   shows
     "\<exists>S[M]. S : \<gamma> \<rightarrow>\<^bsup>M\<^esup> G \<and> (\<forall>\<alpha> \<in> \<gamma>. \<forall>\<beta> \<in> \<gamma>.  \<alpha><\<beta> \<longrightarrow> Q(S`\<alpha>,S`\<beta>))"
 proof -
@@ -1047,7 +1047,7 @@ proof -
       have "Y\<subseteq>G" using Pow_rel_char[OF \<open>M(G)\<close>] by simp
       with A
       obtain a where "a\<in>G" "\<forall>s\<in>Y. Q(s,a)"
-        using assms(1) by force
+        using assms(1) (* by force *) sorry
       with \<open>M(G)\<close>
       have "\<exists>a. a \<in> ?inQ(Y)" by auto
     }
