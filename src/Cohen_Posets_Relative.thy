@@ -1,0 +1,372 @@
+section\<open>Cohen forcing notions\<close>
+
+theory Cohen_Posets_Relative
+  imports
+    Cohen_Posets\<comment> \<open>FIXME: This theory is going obsolete\<close>
+    Delta_System_Relative
+begin
+
+locale M_add_reals = M_delta + add_reals
+begin
+
+lemmas zero_lesspoll_rel_kappa = zero_lesspoll_rel[OF zero_lt_kappa]
+
+lemma lesspoll_nat_imp_lesspoll_rel: 
+  assumes "A \<prec> \<omega>" "M(A)"
+  shows "A \<prec>\<^bsup>M\<^esup> \<omega>"
+proof -
+  from assms obtain f n where "f\<in>bij\<^bsup>M\<^esup>(A,n)" "n\<in>\<omega>"
+    using lesspoll_nat_is_Finite using Finite_rel_def[of M A] by auto
+  moreover from this and assms
+  have "\<not> g \<in> bij\<^bsup>M\<^esup>(A,\<omega>)" for g 
+    using mem_bij_rel unfolding lesspoll_def by auto
+  ultimately
+  show ?thesis unfolding lesspoll_rel_def eqpoll_rel_def bij_rel_is_inj_rel rex_def
+    sorry
+qed
+
+lemma Finite_imp_lesspoll_rel_nat:
+  assumes "Finite(A)" "M(A)"
+  shows "A \<prec>\<^bsup>M\<^esup> \<omega>"
+  using Finite_imp_lesspoll_nat assms lesspoll_nat_imp_lesspoll_rel by auto
+
+lemma InfCard_rel_lesspoll_rel_Un:
+  includes Ord_dests
+  assumes "InfCard_rel(M,\<kappa>)" "A \<prec>\<^bsup>M\<^esup> \<kappa>" "B \<prec>\<^bsup>M\<^esup> \<kappa>"
+    and types: "M(\<kappa>)" "M(A)" "M(B)"
+  shows "A \<union> B \<prec>\<^bsup>M\<^esup> \<kappa>"
+proof -
+  from assms
+  have "|A|\<^bsup>M\<^esup> < \<kappa>" "|B|\<^bsup>M\<^esup> < \<kappa>"
+    using lesspoll_rel_cardinal_rel_lt InfCard_rel_is_Card_rel by auto
+  show ?thesis
+  proof (cases "Finite(A) \<and> Finite(B)")
+    case True
+    with assms
+    show ?thesis
+      using lesspoll_rel_trans2[OF _ le_imp_lepoll_rel, of _ nat \<kappa>]
+        Finite_imp_lesspoll_rel_nat[OF Finite_Un]
+      unfolding InfCard_rel_def by simp
+  next
+    case False
+    with types
+    have "InfCard_rel(M,max(|A|\<^bsup>M\<^esup>,|B|\<^bsup>M\<^esup>))"
+      using Infinite_InfCard_rel_cardinal_rel InfCard_rel_is_Card_rel
+        le_trans[of nat] not_le_iff_lt[THEN iffD1, THEN leI, of "|A|\<^bsup>M\<^esup>" "|B|\<^bsup>M\<^esup>"]
+      unfolding max_def InfCard_rel_def
+      by (auto)
+    with \<open>M(A)\<close> \<open>M(B)\<close>
+    have "|A \<union> B|\<^bsup>M\<^esup> \<le> max(|A|\<^bsup>M\<^esup>,|B|\<^bsup>M\<^esup>)"
+      using cardinal_rel_Un_le[of "max(|A|\<^bsup>M\<^esup>,|B|\<^bsup>M\<^esup>)" A B]
+        not_le_iff_lt[THEN iffD1, THEN leI, of "|A|\<^bsup>M\<^esup>" "|B|\<^bsup>M\<^esup>" ]
+      unfolding max_def by simp
+    moreover from \<open>|A|\<^bsup>M\<^esup> < \<kappa>\<close> \<open>|B|\<^bsup>M\<^esup> < \<kappa>\<close>
+    have "max(|A|\<^bsup>M\<^esup>,|B|\<^bsup>M\<^esup>) < \<kappa>"
+      unfolding max_def by simp
+    ultimately
+    have "|A \<union> B|\<^bsup>M\<^esup> <  \<kappa>"
+      using lt_trans1 by blast
+    moreover
+    note \<open>InfCard_rel(M,\<kappa>)\<close>
+    moreover from calculation types
+    have "|A \<union> B|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>"
+      using lt_Card_rel_imp_lesspoll_rel InfCard_rel_is_Card_rel by simp
+    ultimately
+    show ?thesis
+      using cardinal_rel_eqpoll_rel eq_lesspoll_rel_trans[of "A \<union> B" "|A \<union> B|\<^bsup>M\<^esup>" \<kappa>]
+        eqpoll_rel_sym types by simp
+  qed
+qed
+
+notation Leq (infixl "\<preceq>" 50)
+
+lemma restrict_eq_imp_compat:
+  assumes "f \<in> Fn(\<kappa>, I, J)" "g \<in> Fn(\<kappa>, I, J)" "InfCard_rel(M,\<kappa>)"
+    "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
+  shows "f \<union> g \<in> Fn(\<kappa>, I, J)"
+proof -
+  from assms
+  obtain d1 d2 where "f : d1 \<rightarrow>\<^bsup>M\<^esup> J" "d1 \<in> Pow_rel(M,I)" "d1 \<prec>\<^bsup>M\<^esup> \<kappa>"
+    "g : d2 \<rightarrow>\<^bsup>M\<^esup> J" "d2 \<in> Pow_rel(M,I)" "d2 \<prec>\<^bsup>M\<^esup> \<kappa>"
+    by blast
+  with assms
+  show ?thesis
+    using domain_of_fun InfCard_rel_lesspoll_rel_Un[of \<kappa> d1 d2]
+      restrict_eq_imp_Un_into_Pi[of f d1 "\<lambda>_. J" g d2 "\<lambda>_. J"]
+    by auto
+qed
+
+end (* M_add_reals *)
+
+(* FIXME This is old-style discipline *)
+(* MOVE THIS to some appropriate place *)
+declare (in M_trivial) compat_in_abs[absolut]
+
+definition
+  antichain_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" (\<open>antichain\<^bsup>_\<^esup>'(_,_,_')\<close>) where
+  "antichain_rel(M,P,leq,A) \<equiv> subset(M,A,P) \<and> (\<forall>p[M]. \<forall>q[M].
+       p\<in>A \<longrightarrow> q\<in>A \<longrightarrow> p \<noteq> q\<longrightarrow> \<not> is_compat_in(M,P,leq,p,q))"
+
+abbreviation
+  antichain_r_set :: "[i,i,i,i] \<Rightarrow> o" (\<open>antichain\<^bsup>_\<^esup>'(_,_,_')\<close>) where
+  "antichain\<^bsup>M\<^esup>(P,leq,A) \<equiv> antichain_rel(##M,P,leq,A)"
+
+context M_trivial
+begin
+
+lemma antichain_abs [absolut]:
+  "\<lbrakk> M(A); M(P); M(leq) \<rbrakk> \<Longrightarrow> antichain\<^bsup>M\<^esup>(P,leq,A) \<longleftrightarrow> antichain(P,leq,A)"
+  unfolding antichain_rel_def antichain_def by (simp add:absolut)
+
+end (* M_trivial *)
+
+(******************************************************)
+(* FIXME This is old-style discipline *)
+
+definition (* completely relational *)
+  ccc_rel   :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" (\<open>ccc\<^bsup>_\<^esup>'(_,_')\<close>) where
+  "ccc_rel(M,P,leq) \<equiv> \<forall>A[M]. antichain_rel(M,P,leq,A) \<longrightarrow> 
+      (\<forall>\<kappa>[M]. is_cardinal(M,A,\<kappa>) \<longrightarrow> (\<exists>om[M]. omega(M,om) \<and> le_rel(M,\<kappa>,om)))"
+
+abbreviation
+  ccc_r_set :: "[i,i,i]\<Rightarrow>o" (\<open>ccc\<^bsup>_\<^esup>'(_,_')\<close>) where
+  "ccc_r_set(M) \<equiv> ccc_rel(##M)"
+
+context M_cardinals
+begin
+
+lemma def_ccc_rel:
+  assumes
+    "M(i)"
+  shows
+    "ccc\<^bsup>M\<^esup>(P,leq) \<longleftrightarrow> (\<forall>A[M]. antichain\<^bsup>M\<^esup>(P,leq,A) \<longrightarrow> |A|\<^bsup>M\<^esup> \<le> \<omega>)"
+  using assms is_cardinal_iff
+  unfolding ccc_rel_def by (simp add:absolut)
+
+end (* M_cardinals *)
+
+(******************  end Discipline  ******************)
+
+context M_add_reals
+begin
+
+lemma ccc_Fn_nat:
+  notes Sep_and_Replace [simp]\<comment> \<open>FIXME with all \<^term>\<open>SepReplace\<close> instances\<close>
+  assumes "M(I)"
+  shows "ccc\<^bsup>M\<^esup>(Fn(nat,I,2), Fnle(nat,I,2))"
+proof -
+  from assms
+  have "M(Fn(nat,I,2))" using Fn_nat_eq_FiniteFun by simp
+  {
+    fix A
+    assume "\<not> |A|\<^bsup>M\<^esup> \<le> nat" "M(A)"
+    assume "A \<subseteq> Fn(nat, I, 2)"
+    moreover from this
+    have "countable_rel(M,{p\<in>A. domain(p) = d})" if "M(d)" for d
+    proof (cases "d\<prec>\<^bsup>M\<^esup>nat \<and> d \<subseteq> I")
+      case True
+      with \<open>A \<subseteq> Fn(nat, I, 2)\<close> \<open>M(A)\<close>
+      have "{p \<in> A . domain(p) = d} \<subseteq> d \<rightarrow>\<^bsup>M\<^esup> 2"
+        using domain_of_fun function_space_rel_char[of _ 2]
+        by (auto,subgoal_tac "M(domain(x))") (force dest: transM)+\<comment> \<open>slow\<close>
+      moreover from True \<open>M(d)\<close>
+      have "Finite(d \<rightarrow>\<^bsup>M\<^esup> 2)"
+        using Finite_Pi[THEN [2] subset_Finite, of _ d "\<lambda>_. 2"]
+          lesspoll_rel_nat_is_Finite_rel function_space_rel_char[of _ 2] by auto
+      moreover from \<open>M(d)\<close>
+      have "M(d \<rightarrow>\<^bsup>M\<^esup> 2)" by simp
+      moreover
+      have "M({p \<in> A . domain(p) = d})" sorry
+      ultimately
+      show ?thesis using subset_Finite[of _ "d\<rightarrow>\<^bsup>M\<^esup>2" ] 
+        by (auto intro!:Finite_imp_countable_rel)
+    next
+      case False
+      with \<open>A \<subseteq> Fn(nat, I, 2)\<close> \<open>M(A)\<close>
+      have "{p \<in> A . domain(p) = d} = 0"
+        using function_space_rel_char[of _ 2, OF transM, of _ A]
+        by (intro equalityI) (auto dest!: domain_of_fun[ of _ _ "\<lambda>_. 2"])
+      then
+      show ?thesis using empty_lepoll_relI by auto
+    qed
+    moreover
+    have "uncountable_rel(M,{domain(p) . p \<in> A})"
+    proof
+      from \<open>A \<subseteq> Fn(nat, I, 2)\<close>
+      have "A = (\<Union>d\<in>{domain(p) . p \<in> A}. {p\<in>A. domain(p) = d})"
+        by auto
+      moreover
+      assume "countable_rel(M,{domain(p) . p \<in> A})"
+      moreover
+      note \<open>\<And>d. M(d) \<Longrightarrow> countable_rel(M,{p\<in>A. domain(p) = d})\<close>
+      ultimately
+      have "countable_rel(M,A)"
+        using countable_rel_imp_countable_rel_UN[of "{domain(p). p\<in>A}"
+            "\<lambda>d. {p \<in> A. domain(p) = d }"]
+        by simp
+      with \<open>\<not> |A|\<^bsup>M\<^esup> \<le> nat\<close>
+      show False
+        using countable_rel_iff_cardinal_rel_le_nat by simp
+    qed
+    moreover from \<open>A \<subseteq> Fn(nat, I, 2)\<close> \<open>M(A)\<close>
+    have "p \<in> A \<Longrightarrow> Finite(domain(p))" for p
+        using lesspoll_rel_nat_is_Finite_rel[of "domain(p)"] 
+          lesspoll_nat_imp_lesspoll_rel[of "domain(p)"]
+        domain_of_fun[of p _ "\<lambda>_. 2"] by (auto dest:transM)
+    ultimately
+    obtain D where "delta_system(D)" "D \<subseteq> {domain(p) . p \<in> A}" "D \<approx> \<aleph>\<^bsub>1\<^esub>" "M(D)"
+      using delta_system_uncountable_rel[of "{domain(p) . p \<in> A}"] by auto
+    then
+    have delta:"\<forall>d1\<in>D. \<forall>d2\<in>D. d1 \<noteq> d2 \<longrightarrow> d1 \<inter> d2 = \<Inter>D"
+      using delta_system_root_eq_Inter
+      by simp
+    moreover from \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+    have "uncountable_rel(M,D)"
+      using uncountable_rel_iff_subset_eqpoll_rel_Aleph_rel1 by auto
+    moreover from this and \<open>D \<subseteq> {domain(p) . p \<in> A}\<close>
+    obtain p1 where "p1 \<in> A" "domain(p1) \<in> D"
+      using uncountable_rel_not_empty[of D] by blast
+    moreover from this and \<open>p1 \<in> A \<Longrightarrow> Finite(domain(p1))\<close>
+    have "Finite(domain(p1))" using Finite_domain by simp
+    moreover
+    define r where "r \<equiv> \<Inter>D"
+    moreover from \<open>M(D)\<close>
+    have "M(r)" unfolding r_def by simp
+    ultimately
+    have "Finite(r)" using subset_Finite[of "r" "domain(p1)"] by auto
+    have "countable_rel(M,{restrict(p,r) . p\<in>A})"
+    proof -
+      note \<open>M(Fn(nat, I, 2))\<close> \<open>M(r)\<close>
+      moreover from this
+      have "f\<in>Fn(nat, I, 2) \<Longrightarrow> M(restrict(f,r))" for f 
+        by (blast dest: transM)
+      ultimately
+      have "f\<in>Fn(nat, I, 2) \<Longrightarrow> restrict(f,r) \<in> Pow_rel(M,r \<times> 2)" for f
+        using restrict_subset_Sigma[of f _ "\<lambda>_. 2" r] Pow_rel_char
+        by (auto dest!:FnD simp: Pi_def) (auto dest:transM)
+      with \<open>A \<subseteq> Fn(nat, I, 2)\<close>
+      have "{restrict(f,r) . f \<in> A } \<subseteq> Pow_rel(M,r \<times> 2)"
+        by fast
+      moreover from \<open>M(A)\<close> \<open>M(r)\<close>
+      have "M({restrict(f,r) . f \<in> A })" sorry
+      moreover
+      note \<open>Finite(r)\<close> \<open>M(r)\<close>
+      ultimately
+      show ?thesis
+        using Finite_Sigma[THEN Finite_Pow_rel, of r "\<lambda>_. 2"]
+        by (intro Finite_imp_countable_rel) (auto intro:subset_Finite)
+    qed
+    moreover from \<open>M(A)\<close> \<open>M(D)\<close>
+    have "M({p\<in>A. domain(p) \<in> D})" sorry
+    have "uncountable_rel(M,{p\<in>A. domain(p) \<in> D})" (is "uncountable_rel(M,?X)")
+    proof
+      from \<open>D \<subseteq> {domain(p) . p \<in> A}\<close>
+      have "(\<lambda>p\<in>?X. domain(p)) \<in> surj(?X, D)"
+        using lam_type unfolding surj_def by auto
+      moreover
+      have "M(\<lambda>p\<in>?X. domain(p))" sorry
+      moreover
+      note \<open>M(?X)\<close> \<open>M(D)\<close>
+      moreover from calculation
+      have surjection:"(\<lambda>p\<in>?X. domain(p)) \<in> surj\<^bsup>M\<^esup>(?X, D)"
+        using surj_rel_char by simp
+      moreover
+      assume "countable_rel(M,?X)"
+      moreover
+      note \<open>uncountable_rel(M,D)\<close>
+      ultimately
+      show False
+        using surj_rel_countable_rel[OF _ surjection] by auto
+    qed
+    moreover
+    have "D = (\<Union>f\<in>Pow_rel(M,r\<times>2) . {domain(p) .. p\<in>A, restrict(p,r) = f \<and> domain(p) \<in> D})"
+    proof -
+      {
+        fix z
+        assume "z \<in> D"
+        with \<open>D \<subseteq> _\<close>
+        obtain p  where "domain(p) = z" "p \<in> A"
+          by auto
+        moreover from \<open>A \<subseteq> Fn(nat, I, 2)\<close> and this
+        have "p : z \<rightarrow>\<^bsup>M\<^esup> 2"
+          using domain_of_fun by (auto dest!:FnD)
+        moreover from this
+        have "restrict(p,r) \<subseteq> r \<times> 2"
+          using function_restrictI[of p r] fun_is_function[of p z "\<lambda>_. 2"]
+            restrict_subset_Sigma[of p z "\<lambda>_. 2" r]
+          by (auto simp:Pi_def)
+        ultimately
+        have "\<exists>p\<in>A.  restrict(p,r) \<in> Pow_rel(M,r\<times>2) \<and> domain(p) = z" by auto
+      }
+      then
+      show ?thesis
+        by (intro equalityI) (force)+
+    qed
+    obtain f where "uncountable_rel(M,{domain(p) .. p\<in>A, restrict(p,r) = f \<and> domain(p) \<in> D})"
+      (is "uncountable_rel(M,?Y(f))")
+    proof -
+      {thm Finite_Pow
+        from \<open>Finite(r)\<close>
+        have "countable_rel(M,Pow_rel(M,r\<times>2))"
+          using Finite_Sigma[THEN Finite_Pow_rel, THEN Finite_imp_countable_rel]
+          by simp
+        moreover
+        assume "countable_rel(M,?Y(f))" for f
+        moreover
+        note \<open>D = (\<Union>f\<in>Pow_rel(M,r\<times>2) .?Y(f))\<close>
+        moreover
+        note \<open>uncountable_rel(M,D)\<close>
+        ultimately
+        have "False"
+          using countable_rel_imp_countable_rel_UN[of "Pow_rel(M,r\<times>2)" ?Y] by auto
+      }
+      with that
+      show ?thesis by auto
+    qed
+    then
+    obtain j where "j \<in> inj(nat, ?Y(f))"
+      using uncountable_rel_iff_nat_lt_cardinal_rel[THEN iffD1, THEN leI,
+          THEN cardinal_rel_le_imp_lepoll_rel, THEN lepoll_relD]
+      by auto
+    then
+    have "j`0 \<noteq> j`1" "j`0 \<in> ?Y(f)" "j`1 \<in> ?Y(f)"
+      using inj_is_fun[THEN apply_type, of j nat "?Y(f)"]
+      unfolding inj_def by auto
+    then
+    obtain p q where "domain(p) \<noteq> domain(q)" "p \<in> A" "q \<in> A"
+      "domain(p) \<in> D" "domain(q) \<in> D"
+      "restrict(p,r) = restrict(q,r)" by auto
+    moreover from this and delta
+    have "domain(p) \<inter> domain(q) = r" unfolding r_def by simp
+    moreover
+    note \<open>A \<subseteq> Fn(nat, I, 2)\<close>
+    moreover from calculation
+    have "p \<union> q \<in> Fn(nat, I, 2)"
+      using restrict_eq_imp_compat InfCard_rel_nat by blast
+    ultimately
+    have "\<exists>p\<in>A. \<exists>q\<in>A. p \<noteq> q \<and> compat_in(Fn(nat, I, 2), Fnle(nat, I, 2), p, q)"
+      unfolding compat_in_def
+      by (rule_tac bexI[of _ p], rule_tac bexI[of _ q]) blast
+  }
+  then
+  show ?thesis unfolding ccc_def antichain_def by auto
+qed
+
+end (* M_add_reals *)
+
+
+\<comment> \<open>FIXME: I'm using this notepad to expand locale assumptions\<close>
+notepad
+begin
+  fix M G S
+  have "M(G) \<Longrightarrow> M_cardinal_rel_UN_lepoll_rel(M, \<lambda>a. {A \<in> G . a \<in> A}, S)"
+    unfolding M_cardinal_rel_UN_lepoll_rel_def M_cardinal_rel_UN_lepoll_rel_axioms_def
+      M_cardinal_rel_UN_def M_cardinal_rel_UN_axioms_def
+      M_Pi_assumptions_choice_def M_Pi_assumptions_choice_axioms_def
+      M_Pi_assumptions_def M_Pi_assumptions_axioms_def
+    apply (intro allI conjI impI)
+    defer defer defer defer defer 3 defer 5
+    sorry
+end (* notepad *)
+
+end
