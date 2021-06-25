@@ -10,7 +10,81 @@ relativize functional "delta_system" "delta_system_rel" external
 
 locale M_delta = M_cardinal_library +
   assumes
-  cardinal_replacement:"strong_replacement(M, \<lambda>A y. y = \<langle>A, |A|\<^bsup>M\<^esup>\<rangle>)"
+    cardinal_replacement:"strong_replacement(M, \<lambda>A y. y = \<langle>A, |A|\<^bsup>M\<^esup>\<rangle>)"
+    and
+    apply_replacement:"M(S) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = S ` x)"
+    and
+    countable_lepoll_assms:
+    "M(G) \<Longrightarrow> \<forall>x\<in>S. strong_replacement(M, \<lambda>y z. y \<in> Collect(G, (\<in>)(x)) \<and> z = {\<langle>x, y\<rangle>})"
+    "M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>a. Collect(G, (\<in>)(a))))"
+    "M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = Collect(G, (\<in>)(x)))"
+    "M(G) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, Collect(G, (\<in>)(x)))\<rangle>)"
+    "M(G) \<Longrightarrow>
+         M(f) \<Longrightarrow>
+         strong_replacement
+          (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> Collect(G, (\<in>)(i)), f ` (\<mu> i. x \<in> Collect(G, (\<in>)(i))) ` x\<rangle>)"
+    "M(G) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(Collect(G, (\<in>)(x)),S) \<and> z = {\<langle>x, y\<rangle>})"
+    "M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(Collect(G, (\<in>)(x)),S))"
+    "M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(Collect(G, (\<in>)(i)),S)))"
+    "M(G) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(Collect(G, (\<in>)(x)),S))\<rangle>)"
+    "M(G) \<Longrightarrow>
+          M(f) \<Longrightarrow>
+          strong_replacement
+           (M, \<lambda>x z. z = Sigfun(x, \<lambda>k. if k \<in> range(f) then Collect(G, (\<in>)(converse(f) ` k)) else 0))"
+    "M(G) \<Longrightarrow>
+          M(f) \<Longrightarrow>
+          strong_replacement
+           (M, \<lambda>x y. y = (if x \<in> range(f) then Collect(G, (\<in>)(converse(f) ` x)) else 0))"
+    "M(G) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        M(fa) \<Longrightarrow>
+        M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> Collect(G, (\<in>)(converse(f) ` x)) \<and> z = {\<langle>x, y\<rangle>})"
+    "M(G) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, minimum(r, if x \<in> range(f) then Collect(G, (\<in>)(converse(f) ` x)) else 0)\<rangle>)"
+    "M(G) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        M(fa) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> (if i \<in> range(f) then Collect(G, (\<in>)(converse(f) ` i)) else 0),
+                        fa ` (\<mu> i. x \<in> (if i \<in> range(f) then Collect(G, (\<in>)(converse(f) ` i)) else 0)) `
+                        x\<rangle>)"
+    "M(G) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        M(fa) \<Longrightarrow>
+        M(x) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if x \<in> range(f) then Collect(G, (\<in>)(converse(f) ` x)) else 0,K) \<and>
+                    z = {\<langle>x, y\<rangle>})"
+    "M(G) \<Longrightarrow>
+            M(f) \<Longrightarrow>
+            M(K) \<Longrightarrow>
+            strong_replacement
+             (M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if x \<in> range(f) then Collect(G, (\<in>)(converse(f) ` x)) else 0,K))"
+    "M(G) \<Longrightarrow>
+            M(f) \<Longrightarrow>
+            M(K) \<Longrightarrow>
+            strong_replacement
+             (M, \<lambda>x z. z = Sigfun
+                             (x, \<lambda>i. inj\<^bsup>M\<^esup>(if i \<in> range(f) then Collect(G, (\<in>)(converse(f) ` i))
+                                             else 0,K)))"
+    "M(G) \<Longrightarrow>
+        M(f) \<Longrightarrow>
+        M(K) \<Longrightarrow>
+        M(r) \<Longrightarrow>
+        strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, minimum
+                            (r, inj\<^bsup>M\<^esup>(if x \<in> range(f) then Collect(G, (\<in>)(converse(f) ` x))
+                                       else 0,K))\<rangle>)"
 begin
 
 lemma delta_system_Aleph_rel1:
@@ -194,10 +268,12 @@ proof -
       have "M(S) \<Longrightarrow> countable_rel(M,S) \<Longrightarrow> countable_rel(M,{A \<in> G . S \<inter> A \<noteq> 0})" for S
       proof -
         fix S
+        assume "M(S)"
+        with \<open>M(G)\<close> \<open>\<And>i. M(S) \<Longrightarrow> i \<in> S \<Longrightarrow> M({x \<in> G . i \<in> x})\<close>
         interpret M_cardinal_UN_lepoll _ ?G S
-          sorry
-        assume "countable_rel(M,S)" "M(S)"
-        with calculation(6) calculation(7,8)[of S]
+          using countable_lepoll_assms by unfold_locales (auto dest:transM)
+        assume "countable_rel(M,S)"
+        with \<open>M(S)\<close> calculation(6) calculation(7,8)[of S]
         show "countable_rel(M,{A \<in> G . S \<inter> A \<noteq> 0})"
           using InfCard_rel_nat Card_rel_nat
             le_Card_rel_iff[THEN iffD2, THEN [3] leqpoll_rel_imp_cardinal_rel_UN_le,
@@ -232,20 +308,20 @@ proof -
             Aleph_rel_zero by simp
         with \<open>M(\<Union>X)\<close> \<open>M(_) \<Longrightarrow> countable_rel(M,_) \<Longrightarrow> countable_rel(M,{A \<in> G . _  \<inter> A \<noteq> 0})\<close>
         have "countable_rel(M,{A \<in> G . (\<Union>X) \<inter> A \<noteq> 0})" by simp
-        with \<open>G \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
+        with \<open>G \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> \<open>M(G)\<close>
         obtain B where "B\<in>G" "B \<notin> {A \<in> G . (\<Union>X) \<inter> A \<noteq> 0}" 
           using nat_lt_Aleph_rel1 cardinal_rel_Card_rel_eqpoll_rel_iff[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" G]
             uncountable_rel_not_subset_countable_rel
             [of "{A \<in> G . (\<Union>X) \<inter> A \<noteq> 0}" G]
-            uncountable_rel_iff_nat_lt_cardinal_rel
-          by auto
+            uncountable_rel_iff_nat_lt_cardinal_rel[of G]
+          by force
         then
         show "\<exists>A\<in>G. \<forall>S\<in>X. S \<inter> A = 0" by auto
       qed
-      moreover from \<open>G \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
+      moreover from \<open>G \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> \<open>M(G)\<close>
       obtain b where "b\<in>G"
         using uncountable_rel_iff_subset_eqpoll_rel_Aleph_rel1
-          uncountable_rel_not_empty by blast*
+          uncountable_rel_not_empty by blast
       ultimately
       text\<open>Hence, the hypotheses to perform a bounded-cardinal selection
       are satisfied,\<close>
@@ -253,28 +329,50 @@ proof -
         for \<alpha> \<beta>
         using bounded_cardinal_rel_selection[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" G "\<lambda>s a. s \<inter> a = 0" b]
         by force
-      then
+      moreover from this \<open>n\<in>\<omega>\<close> \<open>M(G)\<close>
+      have inM:"M(S)" "M(n)" "\<And>x. x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> S ` x \<in> G" "\<And>x. x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> M(x)"
+        using function_space_rel_char by (auto dest: transM)
+      ultimately
       have "\<alpha> \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<beta> \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<alpha>\<noteq>\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0" for \<alpha> \<beta>
         using lt_neq_symmetry[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<lambda>\<alpha> \<beta>. S`\<alpha> \<inter> S`\<beta> = 0"] Card_rel_is_Ord
         by auto (blast)
       text\<open>and a symmetry argument shows that obtained \<^term>\<open>S\<close> is
       an injective  \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>-sequence of disjoint elements of \<^term>\<open>G\<close>.\<close>
-      moreover from this and \<open>\<And>A. A\<in>G \<Longrightarrow> |A|\<^bsup>M\<^esup> = succ(n)\<close> \<open>S : \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightarrow> G\<close>
+      moreover from this and \<open>\<And>A. A\<in>G \<Longrightarrow> |A|\<^bsup>M\<^esup> = succ(n)\<close> inM
+        \<open>S : \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightarrow>\<^bsup>M\<^esup> G\<close> \<open>M(G)\<close>
       have "S \<in> inj_rel(M,\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, G)"
-        using cardinal_rel_succ_not_0 Int_eq_zero_imp_not_eq[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<lambda>x. S`x"]
-        unfolding inj_rel_def by fastforce*
-      moreover from calculation
+        using def_inj_rel[OF Aleph_rel_closed \<open>M(G)\<close>, of 1]
+      proof (clarsimp)
+        fix w x
+        from inM
+        have "a \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> b \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> a \<noteq> b \<Longrightarrow> S ` a \<noteq> S ` b" for a b
+          using \<open>\<And>A. A\<in>G \<Longrightarrow> |A|\<^bsup>M\<^esup> = succ(n)\<close>[THEN [4] cardinal_rel_succ_not_0[THEN [4]
+                Int_eq_zero_imp_not_eq[OF calculation, of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<lambda>x. x"],
+                of "\<lambda>_.n"], OF _ _ _ _ apply_closed] by auto
+        moreover
+        assume "w \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "S ` w = S ` x"
+        ultimately
+        show "w = x" by blast
+      qed
+      moreover from this \<open>M(G)\<close>
       have "range(S) \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
-        using inj_rel_bij_rel_range eqpoll_rel_sym unfolding eqpoll_rel_def by fast*
+        using inj_rel_bij_rel_range eqpoll_rel_sym unfolding eqpoll_rel_def
+        by (blast dest: transM)
+      moreover
+      note \<open>M(G)\<close>
       moreover from calculation
       have "range(S) \<subseteq> G"
-        using inj_rel_is_fun range_fun_subset_codomain by fast*
+        using inj_rel_is_fun range_fun_subset_codomain
+        by (fastforce dest: transM)
+      moreover
+      note \<open>M(S)\<close>
+      find_theorems "M(?S) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = ?S ` x)"
       ultimately
       show "\<exists>D[M]. D \<subseteq> G \<and> delta_system(D) \<and> D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
         using inj_rel_is_fun ZF_Library.range_eq_image[of S "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" G]
           image_function[OF fun_is_function, OF inj_rel_is_fun, of S "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" G]
-          domain_of_fun[OF inj_rel_is_fun, of S "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" G]
-        by (rule_tac x="S``\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" in rexI) auto
+          domain_of_fun[OF inj_rel_is_fun, of S "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" G] apply_replacement[of S]
+        by (rule_tac x="S``\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" in rexI) (auto dest:transM intro!:RepFun_closed)
       text\<open>This finishes the successor case and hence the proof.\<close>
     qed
   qed
@@ -297,19 +395,5 @@ proof -
 qed
 
 end (* M_delta *)
-
-\<comment> \<open>FIXME: I'm using this notepad to expand locale assumptions\<close>
-notepad
-begin
-  fix Y M Z F
-  have "M(Z) \<Longrightarrow> M(F) \<Longrightarrow> M_cardinal_UN_lepoll(M,\<lambda>y. if M(y) then {x\<in>Z . F`x = y} else 0,Y)"
-    unfolding M_cardinal_UN_lepoll_def M_cardinal_UN_lepoll_axioms_def
-      M_cardinal_UN_def M_cardinal_UN_axioms_def
-      M_Pi_assumptions_choice_def M_Pi_assumptions_choice_axioms_def
-      M_Pi_assumptions_def M_Pi_assumptions_axioms_def
-    apply (intro allI conjI impI)
-    defer defer defer defer defer 3 defer 5
-    sorry
-end (* notepad *)
 
 end
