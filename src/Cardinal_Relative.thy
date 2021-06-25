@@ -1267,6 +1267,30 @@ lemma succ_lepoll_rel_imp_not_empty: "succ(x) \<lesssim>\<^bsup>M\<^esup> y ==> 
 lemma eqpoll_rel_succ_imp_not_empty: "x \<approx>\<^bsup>M\<^esup> succ(n) ==> M(x) \<Longrightarrow> M(n) \<Longrightarrow> x \<noteq> 0"
   by (fast elim!: eqpoll_rel_sym [THEN eqpoll_rel_0_is_0, THEN succ_neq_0])
 
+lemma Pow_rel_0 [simp]: "Pow_rel(M,0) = {0}"
+  using Pow_rel_char by auto
+
+lemma Pow_rel_insert: assumes "M(a)" "M(A)"
+  shows "Pow_rel(M,cons(a,A)) = Pow_rel(M,A) \<union> {cons(a,X) . X: Pow_rel(M,A)}"
+  sorry
+
+\<comment> \<open>NOTE: The following result (and @{thm Pow_rel_0}) is subsumed by
+   \<^term>\<open>Finite(A) \<Longrightarrow> M(A) \<Longrightarrow> Pow(A) = Pow_rel(M,A)\<close>, which
+    would be desirable to have\<close>
+lemma Finite_Pow_rel: assumes "Finite(A)"
+  shows "M(A) ==> Finite(Pow_rel(M,A))"
+  using assms
+proof (induct)
+  case 0
+  then show ?case by simp
+next
+  case (cons x B)
+  then
+  have "M(B)" sorry
+  with cons
+  show ?case sorry
+qed
+
 end (* M_cardinals *)
 
 end
