@@ -14,6 +14,9 @@ declare eqpoll_rel_refl [simp]
 
 subsection\<open>Miscellaneous\<close>
 
+lemma image_fun_subset: "S\<in>A\<rightarrow>B \<Longrightarrow> C\<subseteq>A\<Longrightarrow> {S ` x . x\<in> C} = S``C"
+  using image_function[symmetric,of S C] domain_of_fun Pi_iff by auto
+
 lemma cardinal_rel_RepFun_le:
   assumes "S \<in> A\<rightarrow>B" "M(S)" "M(A)" "M(B)"
   shows "|{S`a . a\<in>A}|\<^bsup>M\<^esup> \<le> |A|\<^bsup>M\<^esup>"
@@ -1021,9 +1024,6 @@ lemma aux : "separation(M, \<lambda>Z . cardinal_rel(M,Z)<\<gamma>)"
 lemma aux2 : "f\<in>Pow_rel(M,G) \<rightarrow>\<^bsup>M\<^esup> G \<Longrightarrow> M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, rec_constr(f, x)\<rangle>)"
   sorry
 
-lemma ble: "S\<in>A\<rightarrow>B \<Longrightarrow> C\<subseteq>A\<Longrightarrow> {S ` x . x\<in> C} = S``C"
-  using image_function[symmetric,of S C] domain_of_fun Pi_iff by auto
-
 lemma bounded_cardinal_rel_selection:
   includes Ord_dests
   assumes
@@ -1118,7 +1118,7 @@ proof -
     have "{S`x . x \<in> \<beta>} \<subseteq> G" "M({S`x . x \<in> \<beta>})"
       using Ord_trans[OF _ _ Card_rel_is_Ord, of _ \<beta> \<gamma>]
         apply_type[of S \<gamma> "\<lambda>_. G"]
-      by(auto,simp add:ble[OF \<open>S\<in>_\<close> \<open>\<beta>\<subseteq>_\<close>])
+      by(auto,simp add:image_fun_subset[OF \<open>S\<in>_\<close> \<open>\<beta>\<subseteq>_\<close>])
     moreover from \<open>Card_rel(M,\<gamma>)\<close> \<open>\<beta>\<in>\<gamma>\<close> \<open>S\<in>_\<close> \<open>\<beta>\<subseteq>\<gamma>\<close> \<open>M(S)\<close> \<open>M(\<beta>)\<close> \<open>M(G)\<close> \<open>M(\<gamma>)\<close>
     have "|{S`x . x \<in> \<beta>}|\<^bsup>M\<^esup> < \<gamma>"
       using
