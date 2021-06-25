@@ -51,7 +51,7 @@ lemma cardinal_rel_lt_csucc_rel_iff:
 
 lemmas inj_rel_is_fun = inj_is_fun[OF mem_inj_rel]
 
-lemma inj_rel_bij_rel_range: "f \<in> inj\<^bsup>M\<^esup>(A,B) \<Longrightarrow>M(A) \<Longrightarrow> M(B) \<Longrightarrow> f \<in> bij\<^bsup>M\<^esup>(A,range(f))"
+lemma inj_rel_bij_rel_range: "f \<in> inj\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> f \<in> bij\<^bsup>M\<^esup>(A,range(f))"
   using bij_rel_char inj_rel_char inj_bij_range by force
 
 lemma bij_rel_is_inj_rel: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> f \<in> inj\<^bsup>M\<^esup>(A,B)"
@@ -263,18 +263,18 @@ text\<open>The following result proves to be very useful when combining
      \<^term>\<open>cardinal_rel\<close> and \<^term>\<open>eqpoll_rel\<close> in a calculation.\<close>
 
 lemma cardinal_rel_Card_rel_eqpoll_rel_iff:
-  "M(\<kappa>) \<Longrightarrow> M(X) \<Longrightarrow> Card_rel(M,\<kappa>) \<Longrightarrow> |X|\<^bsup>M\<^esup> = \<kappa> \<longleftrightarrow> X \<approx>\<^bsup>M\<^esup> \<kappa>"
+  "Card_rel(M,\<kappa>) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> M(X) \<Longrightarrow> |X|\<^bsup>M\<^esup> = \<kappa> \<longleftrightarrow> X \<approx>\<^bsup>M\<^esup> \<kappa>"
   using Card_rel_cardinal_rel_eq[of \<kappa>] cardinal_rel_eqpoll_rel_iff[of X \<kappa>] by auto
 
 lemma lepoll_rel_imp_lepoll_rel_cardinal_rel:
-  assumes "M(X)" "M(Y)" "X \<lesssim>\<^bsup>M\<^esup> Y"
+  assumes"X \<lesssim>\<^bsup>M\<^esup> Y"  "M(X)" "M(Y)"
   shows "X \<lesssim>\<^bsup>M\<^esup> |Y|\<^bsup>M\<^esup>"
   using assms cardinal_rel_Card_rel_eqpoll_rel_iff[of "|Y|\<^bsup>M\<^esup>" Y]
   Card_rel_cardinal_rel
     lepoll_rel_eq_trans[of _ _ "|Y|\<^bsup>M\<^esup>"] by simp
 
 lemma lepoll_rel_Un:
-  assumes "InfCard_rel(M,\<kappa>)" "M(A)" "M(B)" "M(\<kappa>)"  "A \<lesssim>\<^bsup>M\<^esup> \<kappa>" "B \<lesssim>\<^bsup>M\<^esup> \<kappa>"
+  assumes "InfCard_rel(M,\<kappa>)" "A \<lesssim>\<^bsup>M\<^esup> \<kappa>" "B \<lesssim>\<^bsup>M\<^esup> \<kappa>" "M(A)" "M(B)" "M(\<kappa>)"
   shows "A \<union> B \<lesssim>\<^bsup>M\<^esup> \<kappa>"
 proof -
   from assms
@@ -299,7 +299,7 @@ lemma cardinal_rel_Un_le:
   shows "|A \<union> B|\<^bsup>M\<^esup> \<le> \<kappa>"
   using assms lepoll_rel_Un le_Card_rel_iff InfCard_rel_is_Card_rel by auto
 
-lemma eqpoll_rel_imp_Finite: "A \<approx>\<^bsup>M\<^esup> B \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> Finite(A) \<Longrightarrow> Finite(B)"
+lemma eqpoll_rel_imp_Finite: "A \<approx>\<^bsup>M\<^esup> B \<Longrightarrow> Finite(A) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> Finite(B)"
 proof -
   assume "A \<approx>\<^bsup>M\<^esup> B" "Finite(A)" "M(A)" "M(B)"
   then obtain f n g where "f\<in>bij(A,B)" "n\<in>\<omega>" "g\<in>bij(A,n)"
@@ -360,16 +360,16 @@ lemma countable_rel_iff_cardinal_rel_le_nat: "M(X) \<Longrightarrow> countable_r
   using le_Card_rel_iff[of \<omega> X] Card_rel_nat
   unfolding countable_rel_def by simp
 
-lemma lepoll_rel_countable_rel: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<lesssim>\<^bsup>M\<^esup> Y \<Longrightarrow> countable_rel(M,Y) \<Longrightarrow> countable_rel(M,X)"
+lemma lepoll_rel_countable_rel: "X \<lesssim>\<^bsup>M\<^esup> Y \<Longrightarrow> countable_rel(M,Y) \<Longrightarrow> M(X) \<Longrightarrow> M(Y) \<Longrightarrow> countable_rel(M,X)"
   using lepoll_rel_trans[of X Y] by blast
 
 \<comment> \<open>Next lemma can be proved without using AC\<close>
 lemma surj_rel_countable_rel:
-  "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> countable_rel(M,X) \<Longrightarrow> f \<in> surj_rel(M,X,Y) \<Longrightarrow> countable_rel(M,Y)"
+  "countable_rel(M,X) \<Longrightarrow> f \<in> surj_rel(M,X,Y) \<Longrightarrow> M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> countable_rel(M,Y)"
   using surj_rel_implies_cardinal_rel_le[of f X Y, THEN le_trans]
     countable_rel_iff_cardinal_rel_le_nat by simp
 
-lemma Finite_imp_countable_rel: "M(X) \<Longrightarrow> Finite_rel(M,X) \<Longrightarrow> countable_rel(M,X)"
+lemma Finite_imp_countable_rel: "Finite_rel(M,X) \<Longrightarrow> M(X) \<Longrightarrow> countable_rel(M,X)"
   unfolding Finite_rel_def
   by (auto intro:InfCard_rel_nat nats_le_InfCard_rel[of _ \<omega>,
         THEN le_imp_lepoll_rel] dest!:eq_lepoll_rel_trans[of X _ \<omega>] )
@@ -723,7 +723,7 @@ lemma uncountable_rel_imp_Infinite: "uncountable_rel(M,X) \<Longrightarrow> M(X)
   by simp
 
 lemma uncountable_rel_not_subset_countable_rel:
-  assumes "M(X)" "M(Y)" "countable_rel(M,X)" "uncountable_rel(M,Y)"
+  assumes "countable_rel(M,X)" "uncountable_rel(M,Y)" "M(X)" "M(Y)"
   shows "\<not> (Y \<subseteq> X)"
   using assms lepoll_rel_trans subset_imp_lepoll_rel[of Y X]
   by blast
@@ -1198,7 +1198,7 @@ next
   show "Infinite(Z)" using lepoll_rel_nat_imp_Infinite by simp
 qed
 
-lemma Infinite_InfCard_rel_cardinal_rel: "M(Z) \<Longrightarrow> Infinite(Z) \<Longrightarrow> InfCard_rel(M,|Z|\<^bsup>M\<^esup>)"
+lemma Infinite_InfCard_rel_cardinal_rel: "Infinite(Z) \<Longrightarrow> M(Z) \<Longrightarrow> InfCard_rel(M,|Z|\<^bsup>M\<^esup>)"
   using lepoll_rel_eq_trans eqpoll_rel_sym lepoll_rel_nat_imp_Infinite
     Infinite_iff_lepoll_rel_nat Inf_Card_rel_is_InfCard_rel cardinal_rel_eqpoll_rel
   by simp
