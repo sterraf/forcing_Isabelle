@@ -1,7 +1,7 @@
 theory Toplevel_Draft
   imports
     Cardinal_Preservation
-    Cardinal_Library_Relative
+    Delta_System_Relative
 
 begin
 
@@ -9,7 +9,7 @@ definition
   Add_subs :: "[i,i] \<Rightarrow> i" where
   "Add_subs(\<kappa>,\<alpha>) \<equiv> Fn(\<omega>,\<kappa>\<times>\<alpha>,2)"
 
-locale M_master = M_cardinal_library +
+locale M_master = M_delta +
   assumes
   domain_separation: "M(x) \<Longrightarrow> separation(M, \<lambda>z. x \<in> domain(z))"
   and
