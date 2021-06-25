@@ -1100,10 +1100,10 @@ proof -
   proof (intro ballI impI)
     fix \<alpha> \<beta>
     assume "\<beta>\<in>\<gamma>"
-    with \<open>Card_rel(M,\<gamma>)\<close> \<open>M(S)\<close>
+    with \<open>Card_rel(M,\<gamma>)\<close> \<open>M(S)\<close> \<open>M(\<gamma>)\<close>
     have "\<beta>\<subseteq>\<gamma>" "M(S``\<beta>)" 
-      using transM[OF \<open>\<beta>\<in>\<gamma>\<close> \<open>M(\<gamma>)\<close>] image_closed 
-      sorry
+      using transM[OF \<open>\<beta>\<in>\<gamma>\<close> \<open>M(\<gamma>)\<close>] image_closed Card_rel_is_Ord OrdmemD
+      by auto
     with \<open>\<beta>\<in>_\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close>
     have "{rec_constr(f \<union> Cb, x) . x\<in>\<beta>} = {S`x . x \<in> \<beta>}"
       using Ord_trans[OF _ _ Card_rel_is_Ord, of _ \<beta> \<gamma>]
@@ -1112,8 +1112,8 @@ proof -
     moreover from \<open>\<beta>\<in>\<gamma>\<close> \<open>S : \<gamma> \<rightarrow> G\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close> \<open>M(S``\<beta>)\<close>
     have "{S`x . x \<in> \<beta>} \<subseteq> G" "M({S`x . x \<in> \<beta>})"
       using Ord_trans[OF _ _ Card_rel_is_Ord, of _ \<beta> \<gamma>]
-        apply_type[of S \<gamma> "\<lambda>_. G"] ble[OF \<open>S\<in>_\<close> \<open>\<beta>\<subseteq>_\<close>]
-      sorry
+        apply_type[of S \<gamma> "\<lambda>_. G"] 
+      by(auto,simp add:ble[OF \<open>S\<in>_\<close> \<open>\<beta>\<subseteq>_\<close>])
     moreover from \<open>Card_rel(M,\<gamma>)\<close> \<open>\<beta>\<in>\<gamma>\<close> \<open>S\<in>_\<close>
     have "|{S`x . x \<in> \<beta>}|\<^bsup>M\<^esup> < \<gamma>"
       using cardinal_rel_RepFun_le[of \<beta>]  Ord_in_Ord Ord_cardinal_rel
