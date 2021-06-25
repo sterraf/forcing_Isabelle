@@ -46,10 +46,10 @@ lemma cardinal_rel_lt_csucc_rel_iff:
 "Card_rel(M,K) \<Longrightarrow> M(K) \<Longrightarrow> M(K') \<Longrightarrow> |K'|\<^bsup>M\<^esup> < (K\<^sup>+)\<^bsup>M\<^esup> \<longleftrightarrow> |K'|\<^bsup>M\<^esup> \<le> K"
   by (simp add: Card_rel_lt_csucc_rel_iff)
 
-lemma fun_rel_is_fun: "f \<in> A\<rightarrow>\<^bsup>M\<^esup>B \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> f \<in> A\<rightarrow>B"
-  using function_space_rel_char by simp
+\<comment> \<open>FIXME: eliminate this alias\<close>
+lemmas fun_rel_is_fun = mem_function_space_rel
 
-lemmas inj_rel_is_fun = inj_is_fun[OF mem_inj_abs[THEN iffD1]]
+lemmas inj_rel_is_fun = inj_is_fun[OF mem_inj_rel]
 
 lemma inj_rel_bij_rel_range: "f \<in> inj\<^bsup>M\<^esup>(A,B) \<Longrightarrow>M(A) \<Longrightarrow> M(B) \<Longrightarrow> f \<in> bij\<^bsup>M\<^esup>(A,range(f))"
   using bij_rel_char inj_rel_char inj_bij_range by force
@@ -120,7 +120,7 @@ proof -
     using inj_rel_char f_inj by simp
   note inM = \<open>M(f)\<close> \<open>M(K)\<close> \<open>M(J)\<close> \<open>\<And>w x. w \<in> X(x) \<Longrightarrow> M(x)\<close>
   have "i\<in>J \<Longrightarrow> f`i \<in> K" for i
-    using inj_rel_is_fun[OF _ _ _ f_inj] apply_type
+    using inj_rel_is_fun[OF f_inj] apply_type
       function_space_rel_char by (auto simp add:inM)
   have "(\<Union>i\<in>J. X(i)) \<subseteq> (\<Union>i\<in>K. Y(i))"
   proof (standard, elim UN_E)
