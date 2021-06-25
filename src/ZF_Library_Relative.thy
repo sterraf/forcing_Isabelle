@@ -446,6 +446,11 @@ qed
 lemma lepoll_rel_imp_lepoll: "A \<lesssim>\<^bsup>M\<^esup> B \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> A \<lesssim> B"
   unfolding lepoll_rel_def by auto
 
+lemma zero_lesspoll_rel: assumes "0<\<kappa>" "M(\<kappa>)" shows "0 \<prec>\<^bsup>M\<^esup> \<kappa>"
+  using assms eqpoll_rel_0_iff[THEN iffD1, of \<kappa>] eqpoll_rel_sym
+  unfolding lesspoll_rel_def lepoll_rel_def
+  by (auto simp add:inj_def)
+
 lemma lepoll_rel_nat_imp_Infinite: "\<omega> \<lesssim>\<^bsup>M\<^esup> X \<Longrightarrow> M(X) \<Longrightarrow> Infinite(X)"
   using  lepoll_nat_imp_Infinite lepoll_rel_imp_lepoll by simp
 
