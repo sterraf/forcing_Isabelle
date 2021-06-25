@@ -295,7 +295,7 @@ proof -
 qed
 
 lemma cardinal_rel_Un_le:
-  assumes "M(A)" "M(B)" "M(\<kappa>)" "InfCard_rel(M,\<kappa>)" "|A|\<^bsup>M\<^esup> \<le> \<kappa>" "|B|\<^bsup>M\<^esup> \<le> \<kappa>"
+  assumes "InfCard_rel(M,\<kappa>)" "|A|\<^bsup>M\<^esup> \<le> \<kappa>" "|B|\<^bsup>M\<^esup> \<le> \<kappa>" "M(\<kappa>)" "M(A)" "M(B)"
   shows "|A \<union> B|\<^bsup>M\<^esup> \<le> \<kappa>"
   using assms lepoll_rel_Un le_Card_rel_iff InfCard_rel_is_Card_rel by auto
 
