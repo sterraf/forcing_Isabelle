@@ -9,6 +9,11 @@ begin
 locale M_add_reals = M_delta + add_reals
 begin
 
+lemma Fnle_nat_closed[intro,simp]:
+  assumes "M(I)" "M(J)"
+  shows "M(Fnle(\<omega>,I,J))"
+  sorry
+
 lemmas zero_lesspoll_rel_kappa = zero_lesspoll_rel[OF zero_lt_kappa]
 
 lemma lesspoll_nat_imp_lesspoll_rel: 
@@ -118,11 +123,9 @@ context M_cardinals
 begin
 
 lemma def_ccc_rel:
-  assumes
-    "M(i)"
   shows
     "ccc\<^bsup>M\<^esup>(P,leq) \<longleftrightarrow> (\<forall>A[M]. antichain\<^bsup>M\<^esup>(P,leq,A) \<longrightarrow> |A|\<^bsup>M\<^esup> \<le> \<omega>)"
-  using assms is_cardinal_iff
+  using is_cardinal_iff
   unfolding ccc_rel_def by (simp add:absolut)
 
 end (* M_cardinals *)
@@ -217,7 +220,7 @@ proof -
     moreover
     define r where "r \<equiv> \<Inter>D"
     moreover from \<open>M(D)\<close>
-    have "M(r)" unfolding r_def by simp
+    have "M(r)" "M(r\<times>2)" unfolding r_def by simp_all
     ultimately
     have "Finite(r)" using subset_Finite[of "r" "domain(p1)"] by auto
     have "countable_rel(M,{restrict(p,r) . p\<in>A})"
@@ -270,31 +273,42 @@ proof -
       {
         fix z
         assume "z \<in> D"
-        with \<open>D \<subseteq> _\<close>
-        obtain p  where "domain(p) = z" "p \<in> A"
-          by auto
-        moreover from \<open>A \<subseteq> Fn(nat, I, 2)\<close> and this
+        with \<open>M(D)\<close>
+        have \<open>M(z)\<close> by (auto dest:transM)
+        from \<open>z\<in>D\<close> \<open>D \<subseteq> _\<close> \<open>M(A)\<close>
+        obtain p  where "domain(p) = z" "p \<in> A" "M(p)"
+          by (auto dest:transM)
+        moreover from \<open>A \<subseteq> Fn(nat, I, 2)\<close> \<open>M(z)\<close> and this
         have "p : z \<rightarrow>\<^bsup>M\<^esup> 2"
-          using domain_of_fun by (auto dest!:FnD)
-        moreover from this
+          using domain_of_fun function_space_rel_char by (auto dest!:FnD)
+        moreover from this \<open>M(z)\<close>
+        have "p : z \<rightarrow> 2"
+          using domain_of_fun function_space_rel_char by (auto)
+        moreover from this \<open>M(r)\<close>
         have "restrict(p,r) \<subseteq> r \<times> 2"
           using function_restrictI[of p r] fun_is_function[of p z "\<lambda>_. 2"]
-            restrict_subset_Sigma[of p z "\<lambda>_. 2" r]
+            restrict_subset_Sigma[of p z "\<lambda>_. 2" r] function_space_rel_char
           by (auto simp:Pi_def)
+        moreover from \<open>M(p)\<close> \<open>M(r)\<close>
+        have "M(restrict(p,r))" by simp
+        moreover
+        note \<open>M(r)\<close>
         ultimately
-        have "\<exists>p\<in>A.  restrict(p,r) \<in> Pow_rel(M,r\<times>2) \<and> domain(p) = z" by auto
+        have "\<exists>p\<in>A.  restrict(p,r) \<in> Pow_rel(M,r\<times>2) \<and> domain(p) = z"
+          using Pow_rel_char by auto
       }
       then
       show ?thesis
         by (intro equalityI) (force)+
     qed
-    obtain f where "uncountable_rel(M,{domain(p) .. p\<in>A, restrict(p,r) = f \<and> domain(p) \<in> D})"
-      (is "uncountable_rel(M,?Y(f))")
+    have "M({domain(p) .. p\<in>A, restrict(p,r) = f \<and> domain(p) \<in> D})" (is "M(?Y(f))")
+      if "M(f)" for f sorry
+    obtain f where "uncountable_rel(M,?Y(f))" "M(f)"
     proof -
-      {thm Finite_Pow
-        from \<open>Finite(r)\<close>
+      {
+        from \<open>Finite(r)\<close> \<open>M(r)\<close>
         have "countable_rel(M,Pow_rel(M,r\<times>2))"
-          using Finite_Sigma[THEN Finite_Pow_rel, THEN Finite_imp_countable_rel]
+          using Finite_Sigma[THEN Finite_Pow_rel] Finite_imp_countable_rel
           by simp
         moreover
         assume "countable_rel(M,?Y(f))" for f
@@ -309,14 +323,17 @@ proof -
       with that
       show ?thesis by auto
     qed
-    then
-    obtain j where "j \<in> inj(nat, ?Y(f))"
+    moreover from this and \<open>M(f) \<Longrightarrow> M(?Y(f))\<close>
+    have "M(?Y(f))" by blast
+    ultimately
+    obtain j where "j \<in> inj_rel(M,nat, ?Y(f))" "M(j)"
       using uncountable_rel_iff_nat_lt_cardinal_rel[THEN iffD1, THEN leI,
           THEN cardinal_rel_le_imp_lepoll_rel, THEN lepoll_relD]
       by auto
-    then
+    with \<open>M(?Y(f))\<close>
     have "j`0 \<noteq> j`1" "j`0 \<in> ?Y(f)" "j`1 \<in> ?Y(f)"
       using inj_is_fun[THEN apply_type, of j nat "?Y(f)"]
+        inj_rel_char
       unfolding inj_def by auto
     then
     obtain p q where "domain(p) \<noteq> domain(q)" "p \<in> A" "q \<in> A"
@@ -334,8 +351,11 @@ proof -
       unfolding compat_in_def
       by (rule_tac bexI[of _ p], rule_tac bexI[of _ q]) blast
   }
-  then
-  show ?thesis unfolding ccc_def antichain_def by auto
+  moreover from assms
+  have "M(Fnle(\<omega>,I,2))" by simp
+  moreover note \<open>M(Fn(\<omega>,I,2))\<close>
+  ultimately
+  show ?thesis using def_ccc_rel by (auto simp:absolut antichain_def) fastforce
 qed
 
 end (* M_add_reals *)
