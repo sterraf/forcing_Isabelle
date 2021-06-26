@@ -78,24 +78,6 @@ proof -
   qed
 qed
 
-notation Leq (infixl "\<preceq>" 50)
-
-lemma restrict_eq_imp_compat:
-  assumes "f \<in> Fn(\<kappa>, I, J)" "g \<in> Fn(\<kappa>, I, J)" "InfCard_rel(M,\<kappa>)"
-    "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
-  shows "f \<union> g \<in> Fn(\<kappa>, I, J)"
-proof -
-  from assms
-  obtain d1 d2 where "f : d1 \<rightarrow>\<^bsup>M\<^esup> J" "d1 \<in> Pow_rel(M,I)" "d1 \<prec>\<^bsup>M\<^esup> \<kappa>"
-    "g : d2 \<rightarrow>\<^bsup>M\<^esup> J" "d2 \<in> Pow_rel(M,I)" "d2 \<prec>\<^bsup>M\<^esup> \<kappa>"
-    by blast
-  with assms
-  show ?thesis
-    using domain_of_fun InfCard_rel_lesspoll_rel_Un[of \<kappa> d1 d2]
-      restrict_eq_imp_Un_into_Pi[of f d1 "\<lambda>_. J" g d2 "\<lambda>_. J"]
-    by auto
-qed
-
 end (* M_add_reals *)
 
 (* FIXME This is old-style discipline *)
@@ -185,7 +167,11 @@ proof -
       with \<open>A \<subseteq> Fn(nat, I, 2)\<close> \<open>M(A)\<close>
       have "{p \<in> A . domain(p) = d} = 0"
         using function_space_rel_char[of _ 2, OF transM, of _ A]
-        by (intro equalityI) (auto dest!: domain_of_fun[ of _ _ "\<lambda>_. 2"])
+        apply (intro equalityI)
+         apply (clarsimp)
+         apply (rule lesspoll_nat_imp_lesspoll_rel[of "domain(_)", THEN [2] swap])
+           apply (auto dest!: domain_of_fun[ of _ _ "\<lambda>_. 2"] dest:transM)
+        done
       then
       show ?thesis using empty_lepoll_relI by auto
     qed
@@ -342,7 +328,7 @@ proof -
     note \<open>A \<subseteq> Fn(nat, I, 2)\<close>
     moreover from calculation
     have "p \<union> q \<in> Fn(nat, I, 2)"
-      using restrict_eq_imp_compat InfCard_rel_nat by blast
+      using restrict_eq_imp_compat InfCard_nat by blast
     ultimately
     have "\<exists>p\<in>A. \<exists>q\<in>A. p \<noteq> q \<and> compat_in(Fn(nat, I, 2), Fnle(nat, I, 2), p, q)"
       unfolding compat_in_def
