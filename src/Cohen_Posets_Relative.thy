@@ -20,14 +20,21 @@ lemma lesspoll_nat_imp_lesspoll_rel:
   assumes "A \<prec> \<omega>" "M(A)"
   shows "A \<prec>\<^bsup>M\<^esup> \<omega>"
 proof -
-  from assms obtain f n where "f\<in>bij\<^bsup>M\<^esup>(A,n)" "n\<in>\<omega>"
+  note assms
+  moreover from this
+  obtain f n where "f\<in>bij\<^bsup>M\<^esup>(A,n)" "n\<in>\<omega>" "A \<approx>\<^bsup>M\<^esup> n"
     using lesspoll_nat_is_Finite using Finite_rel_def[of M A] by auto
-  moreover from this and assms
+  moreover from calculation
+  have "A \<lesssim>\<^bsup>M\<^esup> \<omega>"
+    using lesspoll_nat_is_Finite Infinite_imp_nats_lepoll_rel[of \<omega> n]
+    nat_not_Finite eq_lepoll_rel_trans[of A n \<omega>]
+    by auto
+  moreover from calculation
   have "\<not> g \<in> bij\<^bsup>M\<^esup>(A,\<omega>)" for g 
     using mem_bij_rel unfolding lesspoll_def by auto
   ultimately
   show ?thesis unfolding lesspoll_rel_def eqpoll_rel_def bij_rel_is_inj_rel rex_def
-    sorry
+    by auto
 qed
 
 lemma Finite_imp_lesspoll_rel_nat:
