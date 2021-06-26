@@ -677,7 +677,15 @@ cardinal_lib_assms3:"M(Z) \<Longrightarrow> M(F) \<Longrightarrow> \<forall>x\<i
                             (r, inj\<^bsup>M\<^esup>(if x \<in> range(f)
                                        then if M(converse(f) ` x) then {xa \<in> Z . F ` xa = converse(f) ` x} else 0
                                        else 0,K))\<rangle>)"
-and cardinal_lib_assms4: "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, f -`` {x}\<rangle>)"
+and cardinal_lib_assms4:
+  "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, f -`` {x}\<rangle>)"
+and cardinal_lib_assms5 :
+  "M(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
+and cardinal_lib_assms6:
+ "M(f) \<Longrightarrow> M(G) \<Longrightarrow>
+    strong_replacement(M, \<lambda>x y. y = transrec(x, \<lambda>a g. f ` (g `` a)))"
+ "M(f) \<Longrightarrow> M(G) \<Longrightarrow>
+    strong_replacement(M, \<lambda>x y. y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
 
 begin
 
@@ -987,16 +995,20 @@ text\<open>The function \<^term>\<open>rec_constr\<close> allows to perform \<^e
 lemma rec_constr_unfold: "rec_constr(f,\<alpha>) = f`({rec_constr(f,\<beta>). \<beta>\<in>\<alpha>})"
   using def_transrec[OF rec_constr_def, of f \<alpha>] image_lam by simp
 
-lemma rec_constr_type: assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)" "M(G)" "M(\<alpha>)"
-   shows "rec_constr(f,\<alpha>) \<in> G"
+lemma rec_constr_type: assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)" "M(G)"
+   shows "M(\<alpha>) \<Longrightarrow> rec_constr(f,\<alpha>) \<in> G"
   using assms(2)
 proof(induct rule:trans_induct)
   case (step \<beta>)
-  then
-  have "{rec_constr(f, x) . x \<in> \<beta>} \<in> Pow(G)" (is "?X\<in>_") by auto
-  moreover
+  with assms
+  have "{rec_constr(f, x) . x \<in> \<beta>} \<in> Pow(G)" (is "?X\<in>_") "M(f)"
+    using transM[OF _ \<open>M(\<beta>)\<close>] function_space_rel_char
+    by auto
+  moreover from assms this step
   have "M(?X)"
-    sorry
+    using RepFun_closed[OF cardinal_lib_assms6(1)] transM[OF _ \<open>M(\<beta>)\<close>] transM[OF step(2) \<open>M(G)\<close>]
+    unfolding rec_constr_def
+    by simp
   moreover from calculation \<open>M(G)\<close>
   have "?X\<in>Pow_rel(M,G)"
     using Pow_rel_char by simp
@@ -1019,10 +1031,6 @@ text\<open>The next lemma is an application of recursive constructions.
      subsequence is small enough, another element can be added.\<close>
 
 \<comment>\<open>FIXME: these should be postulated in some locale.\<close>
-lemma aux : "separation(M, \<lambda>Z . cardinal_rel(M,Z)<\<gamma>)"
-  sorry
-lemma aux2 : "f\<in>Pow_rel(M,G) \<rightarrow>\<^bsup>M\<^esup> G \<Longrightarrow> M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, rec_constr(f, x)\<rangle>)"
-  sorry
 
 lemma bounded_cardinal_rel_selection:
   includes Ord_dests
@@ -1034,7 +1042,8 @@ proof -
   let ?cdlt\<gamma>="{Z\<in>Pow_rel(M,G) . |Z|\<^bsup>M\<^esup><\<gamma>}" \<comment> \<open>“cardinal_rel less than \<^term>\<open>\<gamma>\<close>”\<close>
     and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. Q(s,a)}"
   from \<open>M(G)\<close>
-  have "M(?cdlt\<gamma>)" using Pow_rel_closed separation_closed aux by simp
+  have "M(?cdlt\<gamma>)" using Pow_rel_closed separation_closed cardinal_lib_assms5[OF \<open>M(\<gamma>)\<close>]
+    by simp
   from assms
   have H:"\<exists>a. a \<in> ?inQ(Y)" if "Y\<in>?cdlt\<gamma>" for Y
   proof -
@@ -1056,7 +1065,7 @@ proof -
   then
   have "\<exists>f[M]. f \<in> Pi_rel(M,?cdlt\<gamma>,?inQ) \<and> f \<in> Pi(?cdlt\<gamma>,?inQ)"
   proof -
-    interpret M_Pi_assumptions_choice M  ?cdlt\<gamma> ?inQ
+    interpret M_Pi_assumptions_choice M ?cdlt\<gamma> ?inQ
       using \<open>M(?cdlt\<gamma>)\<close>
       apply (unfold_locales,simp_all)
       sorry
@@ -1091,14 +1100,17 @@ proof -
     by auto
   define S where "S\<equiv>\<lambda>\<alpha>\<in>\<gamma>. rec_constr(f \<union> Cb, \<alpha>)"
   from \<open>f \<union> Cb: Pow_rel(M,G) \<rightarrow>\<^bsup>M\<^esup> G\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close> \<open>M(G)\<close>
-  have "S : \<gamma> \<rightarrow> G"
+  have "S : \<gamma> \<rightarrow> G" "M(f \<union> Cb)"
     unfolding S_def
     using Ord_in_Ord[OF Card_rel_is_Ord] rec_constr_type lam_type transM[OF _ \<open>M(\<gamma>)\<close>]
+      function_space_rel_char
     by auto
-  moreover from \<open>f\<union>Cb \<in> _\<rightarrow>\<^bsup>M\<^esup> G\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close> \<open>M(G)\<close>
+  moreover from \<open>f\<union>Cb \<in> _\<rightarrow>\<^bsup>M\<^esup> G\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close> \<open>M(G)\<close> \<open>M(f \<union> Cb)\<close>
   have "M(S)"
     unfolding S_def
-    using lam_closed[OF aux2] rec_constr_closed Ord_in_Ord[OF Card_rel_is_Ord] transM[OF _ \<open>M(\<gamma>)\<close>]
+    using lam_closed[OF cardinal_lib_assms6(2)]
+      rec_constr_closed Ord_in_Ord[OF Card_rel_is_Ord] transM[OF _ \<open>M(\<gamma>)\<close>]
+    unfolding rec_constr_def
     by simp
   moreover
   have "\<forall>\<alpha>\<in>\<gamma>. \<forall>\<beta>\<in>\<gamma>. \<alpha> < \<beta> \<longrightarrow> Q(S ` \<alpha>, S ` \<beta>)"
@@ -1178,7 +1190,23 @@ proof
   }
   moreover from \<open>Infinite(Z)\<close>
   have A: "(\<And>W. M(W) \<Longrightarrow> |W|\<^bsup>M\<^esup> < \<omega> \<Longrightarrow> W \<subseteq> Z \<Longrightarrow> \<exists>a\<in>Z. \<forall>s\<in>W. s \<noteq> a)"
-    sorry
+  proof -
+    fix W
+    assume "M(W)" "|W|\<^bsup>M\<^esup> < \<omega>" "W \<subseteq> Z"
+    moreover from this
+    have "Finite_rel(M,W)"
+      using
+        cardinal_rel_closed[OF \<open>M(W)\<close>] Card_rel_nat
+        lt_Card_rel_imp_lesspoll_rel[of \<omega>,simplified,OF _ \<open>|W|\<^bsup>M\<^esup> < \<omega>\<close>]
+        lesspoll_rel_nat_is_Finite_rel[of W]
+        eqpoll_rel_imp_lepoll_rel eqpoll_rel_sym[OF cardinal_rel_eqpoll_rel,of W]
+        lesspoll_rel_trans1[of W "|W|\<^bsup>M\<^esup>" \<omega>] by auto
+      moreover from calculation
+    have "\<not>Z\<subseteq>W"
+      using equalityI \<open>Infinite(Z)\<close> by auto
+    ultimately
+    show "\<exists>a\<in>Z. \<forall>s\<in>W. s \<noteq> a" by auto
+  qed
   moreover from \<open>b\<in>Z\<close> \<open>M(Z)\<close>
   obtain S where "S : \<omega> \<rightarrow>\<^bsup>M\<^esup> Z" "M(S)" "\<forall>\<alpha>\<in>\<omega>. \<forall>\<beta>\<in>\<omega>. \<alpha> < \<beta> \<longrightarrow> S`\<alpha> \<noteq> S`\<beta>"
     using bounded_cardinal_rel_selection[OF A \<open>b\<in>Z\<close> Card_rel_nat]
