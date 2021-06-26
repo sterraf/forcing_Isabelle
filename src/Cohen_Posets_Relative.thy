@@ -6,7 +6,139 @@ theory Cohen_Posets_Relative
     Delta_System_Relative
 begin
 
-locale M_add_reals = M_delta + add_reals
+definition
+  lepoll_assumptions1 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions1(M,A,F,S,fa,K,x,f,r) \<equiv> \<forall>x\<in>S. strong_replacement(M, \<lambda>y z. y \<in> F(A, x) \<and> z = {\<langle>x, y\<rangle>})"
+
+definition
+  lepoll_assumptions2 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions2(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x z. z = Sigfun(x, F(A)))"
+
+definition
+  lepoll_assumptions3 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions3(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = F(A, x))"
+
+definition
+  lepoll_assumptions4 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions4(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, F(A, x))\<rangle>)"
+
+definition
+  lepoll_assumptions5 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions5(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> F(A, i), f ` (\<mu> i. x \<in> F(A, i)) ` x\<rangle>)"
+
+definition
+  lepoll_assumptions6 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions6(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(F(A, x),S) \<and> z = {\<langle>x, y\<rangle>})"
+
+definition
+  lepoll_assumptions7 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions7(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(F(A, x),S))"
+
+definition
+  lepoll_assumptions8 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions8(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(F(A, i),S)))"
+
+definition
+  lepoll_assumptions9 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions9(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(F(A, x),S))\<rangle>)"
+
+definition
+  lepoll_assumptions10 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions10(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
+           (M, \<lambda>x z. z = Sigfun(x, \<lambda>k. if k \<in> range(f) then F(A, converse(f) ` k) else 0))"
+
+definition
+  lepoll_assumptions11 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions11(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = (if x \<in> range(f) then F(A, converse(f) ` x) else 0))"
+
+definition
+  lepoll_assumptions12 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions12(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>y z. y \<in> F(A, converse(f) ` x) \<and> z = {\<langle>x, y\<rangle>})"
+
+definition
+  lepoll_assumptions13 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions13(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, minimum(r, if x \<in> range(f) then F(A, converse(f) ` x) else 0)\<rangle>)"
+
+definition
+  lepoll_assumptions14 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions14(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> (if i \<in> range(f) then F(A, converse(f) ` i) else 0),
+                        fa ` (\<mu> i. x \<in> (if i \<in> range(f) then F(A, converse(f) ` i) else 0)) ` x\<rangle>)"
+
+definition
+  lepoll_assumptions15 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions15(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
+         (M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if x \<in> range(f) then F(A, converse(f) ` x) else 0,K) \<and> z = {\<langle>x, y\<rangle>})"
+
+definition
+  lepoll_assumptions16 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions16(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if x \<in> range(f) then F(A, converse(f) ` x) else 0,K))"
+
+definition
+  lepoll_assumptions17 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions17(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
+             (M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(if i \<in> range(f) then F(A, converse(f) ` i) else 0,K)))"
+
+definition
+  lepoll_assumptions18 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions18(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(if x \<in> range(f) then F(A, converse(f) ` x) else 0,K))\<rangle>)"
+
+lemmas lepoll_assumptions_defs = lepoll_assumptions1_def
+  lepoll_assumptions2_def lepoll_assumptions3_def lepoll_assumptions4_def
+  lepoll_assumptions5_def lepoll_assumptions6_def lepoll_assumptions7_def
+  lepoll_assumptions8_def lepoll_assumptions9_def lepoll_assumptions10_def
+  lepoll_assumptions11_def lepoll_assumptions12_def lepoll_assumptions13_def
+  lepoll_assumptions14_def lepoll_assumptions15_def lepoll_assumptions16_def
+  lepoll_assumptions17_def lepoll_assumptions18_def
+
+locale M_add_reals = M_delta + add_reals +
+  fixes F Y
+  defines
+    "F(A,d) \<equiv> {p \<in> A. domain(p) = d }" and
+    "Y(r',D,A,x) \<equiv> {domain(p) .. p\<in>A, restrict(p,r') = x \<and> domain(p) \<in> D}"
+  assumes
+    countable_lepoll_assms2:
+    "M(A) \<Longrightarrow> lepoll_assumptions1(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions2(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions3(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions4(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions6(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions7(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions8(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions9(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions10(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions11(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions12(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions18(M,A,F,S,fa,K,x,f,r)"
+    and
+    countable_lepoll_assms3:
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions1(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions2(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions3(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions4(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions5(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions6(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions7(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions8(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions9(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions10(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions11(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions12(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions13(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions14(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions15(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions16(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions17(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions18(M,A,Y(r',D),S,fa,K,x,f,r)"
+
 begin
 
 lemma Fnle_nat_closed[intro,simp]:
@@ -152,6 +284,8 @@ proof -
   {
     fix A
     assume "\<not> |A|\<^bsup>M\<^esup> \<le> nat" "M(A)"
+    then
+    have "M({domain(p) . p \<in> A})" sorry
     assume "A \<subseteq> Fn(nat, I, 2)"
     moreover from this
     have "countable_rel(M,{p\<in>A. domain(p) = d})" if "M(d)" for d
@@ -188,35 +322,46 @@ proof -
     moreover
     have "uncountable_rel(M,{domain(p) . p \<in> A})"
     proof
+      note \<open>M({domain(p). p\<in>A})\<close> \<open>M(A)\<close>
+      moreover from this
+      have "x \<in> A \<Longrightarrow> M({p \<in> A . domain(p) = domain(x)})" for x sorry
+      ultimately
+      interpret M_cardinal_UN_lepoll _ "\<lambda>d. {p \<in> A. domain(p) = d }" "{domain(p). p\<in>A}"
+        using countable_lepoll_assms2
+        unfolding lepoll_assumptions_defs F_def
+        by unfold_locales (auto dest: transM)
       from \<open>A \<subseteq> Fn(nat, I, 2)\<close>
-      have "A = (\<Union>d\<in>{domain(p) . p \<in> A}. {p\<in>A. domain(p) = d})"
+      have x:"(\<Union>d\<in>{domain(p) . p \<in> A}. {p\<in>A. domain(p) = d}) = A"
         by auto
       moreover
       assume "countable_rel(M,{domain(p) . p \<in> A})"
       moreover
       note \<open>\<And>d. M(d) \<Longrightarrow> countable_rel(M,{p\<in>A. domain(p) = d})\<close>
+      moreover from \<open>M(A)\<close>
+      have "p\<in>A \<Longrightarrow> M(domain(p))" for p by (auto dest: transM)
       ultimately
       have "countable_rel(M,A)"
-        using countable_rel_imp_countable_rel_UN[of "{domain(p). p\<in>A}"
-            "\<lambda>d. {p \<in> A. domain(p) = d }"]
-        by simp
-      with \<open>\<not> |A|\<^bsup>M\<^esup> \<le> nat\<close>
+        using countable_rel_imp_countable_rel_UN
+        by auto
+      with \<open>\<not> |A|\<^bsup>M\<^esup> \<le> nat\<close> \<open>M(A)\<close>
       show False
         using countable_rel_iff_cardinal_rel_le_nat by simp
     qed
     moreover from \<open>A \<subseteq> Fn(nat, I, 2)\<close> \<open>M(A)\<close>
     have "p \<in> A \<Longrightarrow> Finite(domain(p))" for p
-        using lesspoll_rel_nat_is_Finite_rel[of "domain(p)"] 
-          lesspoll_nat_imp_lesspoll_rel[of "domain(p)"]
+      using lesspoll_rel_nat_is_Finite_rel[of "domain(p)"]
+        lesspoll_nat_imp_lesspoll_rel[of "domain(p)"]
         domain_of_fun[of p _ "\<lambda>_. 2"] by (auto dest:transM)
+    moreover
+    note \<open>M({domain(p). p\<in>A})\<close>
     ultimately
-    obtain D where "delta_system(D)" "D \<subseteq> {domain(p) . p \<in> A}" "D \<approx> \<aleph>\<^bsub>1\<^esub>" "M(D)"
+    obtain D where "delta_system(D)" "D \<subseteq> {domain(p) . p \<in> A}" "D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "M(D)"
       using delta_system_uncountable_rel[of "{domain(p) . p \<in> A}"] by auto
     then
     have delta:"\<forall>d1\<in>D. \<forall>d2\<in>D. d1 \<noteq> d2 \<longrightarrow> d1 \<inter> d2 = \<Inter>D"
       using delta_system_root_eq_Inter
       by simp
-    moreover from \<open>D \<approx> \<aleph>\<^bsub>1\<^esub>\<close>
+    moreover from \<open>D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> \<open>M(D)\<close>
     have "uncountable_rel(M,D)"
       using uncountable_rel_iff_subset_eqpoll_rel_Aleph_rel1 by auto
     moreover from this and \<open>D \<subseteq> {domain(p) . p \<in> A}\<close>
@@ -312,20 +457,31 @@ proof -
       if "M(f)" for f sorry
     obtain f where "uncountable_rel(M,?Y(f))" "M(f)"
     proof -
+      note \<open>M(r)\<close>
+      moreover from this
+      have "M(Pow\<^bsup>M\<^esup>(r \<times> 2))" by simp
+      moreover
+      note \<open>M(A)\<close> \<open>\<And>f. M(f) \<Longrightarrow> M(?Y(f))\<close> \<open>M(D)\<close>
+      ultimately
+      interpret M_cardinal_UN_lepoll _ ?Y "Pow_rel(M,r\<times>2)"
+        using countable_lepoll_assms3[where S="Pow_rel(M,r\<times>2)" and A=A and D=D and r'=r]
+        unfolding lepoll_assumptions_defs Y_def
+        apply unfold_locales defer defer prefer 6 apply (blast dest: transM)
+        by fast (auto dest:transM)\<comment> \<open>NOTE VERY SLOW: 25s\<close>
       {
         from \<open>Finite(r)\<close> \<open>M(r)\<close>
         have "countable_rel(M,Pow_rel(M,r\<times>2))"
           using Finite_Sigma[THEN Finite_Pow_rel] Finite_imp_countable_rel
           by simp
         moreover
-        assume "countable_rel(M,?Y(f))" for f
+        assume "M(f) \<Longrightarrow> countable_rel(M,?Y(f))" for f
         moreover
-        note \<open>D = (\<Union>f\<in>Pow_rel(M,r\<times>2) .?Y(f))\<close>
+        note \<open>D = (\<Union>f\<in>Pow_rel(M,r\<times>2) .?Y(f))\<close> \<open>M(r)\<close>
         moreover
         note \<open>uncountable_rel(M,D)\<close>
         ultimately
         have "False"
-          using countable_rel_imp_countable_rel_UN[of "Pow_rel(M,r\<times>2)" ?Y] by auto
+          using countable_rel_imp_countable_rel_UN by (auto dest: transM)
       }
       with that
       show ?thesis by auto
@@ -366,20 +522,5 @@ proof -
 qed
 
 end (* M_add_reals *)
-
-
-\<comment> \<open>FIXME: I'm using this notepad to expand locale assumptions\<close>
-notepad
-begin
-  fix M G S
-  have "M(G) \<Longrightarrow> M_cardinal_rel_UN_lepoll_rel(M, \<lambda>a. {A \<in> G . a \<in> A}, S)"
-    unfolding M_cardinal_rel_UN_lepoll_rel_def M_cardinal_rel_UN_lepoll_rel_axioms_def
-      M_cardinal_rel_UN_def M_cardinal_rel_UN_axioms_def
-      M_Pi_assumptions_choice_def M_Pi_assumptions_choice_axioms_def
-      M_Pi_assumptions_def M_Pi_assumptions_axioms_def
-    apply (intro allI conjI impI)
-    defer defer defer defer defer 3 defer 5
-    sorry
-end (* notepad *)
 
 end
