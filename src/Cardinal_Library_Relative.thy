@@ -475,296 +475,65 @@ lemmas lepoll_assumptions_defs = lepoll_assumptions1_def
 
 locale M_cardinal_library = M_library +
   assumes
-    cardinal_lib_assms1:"M(C) \<Longrightarrow> \<forall>x\<in>C. strong_replacement(M, \<lambda>y z. y \<in> (if M(x) then x else 0) \<and> z = {\<langle>x, y\<rangle>})"
-    "M(C) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>n. if M(n) then n else 0))"
-    "M(C) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = (if M(x) then x else 0))"
-    "M(C) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, if M(x) then x else 0)\<rangle>)"
-    "M(C) \<Longrightarrow>
-         M(f) \<Longrightarrow>
-         strong_replacement
-          (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> (if M(i) then i else 0),
-                         f ` (\<mu> i. x \<in> (if M(i) then i else 0)) ` x\<rangle>)"
-    "M(C) \<Longrightarrow>
-         M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if M(x) then x else 0,C) \<and> z = {\<langle>x, y\<rangle>})"
-    "M(C) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if M(x) then x else 0,C))"
-    "M(C) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(if M(i) then i else 0,C)))"
-    "M(C) \<Longrightarrow>
-         M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(if M(x) then x else 0,C))\<rangle>)"
-    "M(C) \<Longrightarrow>
-          M(f) \<Longrightarrow>
-          strong_replacement
-           (M, \<lambda>x z. z = Sigfun
-                           (x, \<lambda>k. if k \<in> range(f)
-                                    then if M(converse(f) ` k) then (converse(f) ` k) else 0 else 0))"
-    "M(C) \<Longrightarrow>
-          M(f) \<Longrightarrow>
-          strong_replacement
-           (M, \<lambda>x y. y = (if x \<in> range(f) then if M(converse(f) ` x) then (converse(f) ` x) else 0
-                           else 0))"
-    "M(C) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        M(fa) \<Longrightarrow>
-        M(x) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>y z. y \<in> (if M(converse(f) ` x) then (converse(f) ` x) else 0) \<and> z = {\<langle>x, y\<rangle>})"
-    "M(C) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>x y. y = \<langle>x, minimum
-                            (r, if x \<in> range(f)
-                                then if M(converse(f) ` x) then (converse(f) ` x) else 0 else 0)\<rangle>)"
-    "M(C) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        M(fa) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in>
-                                (if i \<in> range(f)
-                                 then if M(converse(f) ` i) then (converse(f) ` i) else 0 else 0),
-                        fa `
-                        (\<mu> i. x \<in> (if i \<in> range(f)
-                                    then if M(converse(f) ` i) then (converse(f) ` i) else 0
-                                    else 0)) `
-                        x\<rangle>)"
-    "M(C) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        M(fa) \<Longrightarrow>
-        M(x) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if x \<in> range(f)
-                               then if M(converse(f) ` x) then (converse(f) ` x) else 0 else 0,K) \<and>
-                    z = {\<langle>x, y\<rangle>})"
-    "M(C) \<Longrightarrow>
-            M(f) \<Longrightarrow>
-            M(K) \<Longrightarrow>
-            strong_replacement
-             (M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if x \<in> range(f)
-                                   then if M(converse(f) ` x) then (converse(f) ` x) else 0
-                                   else 0,K))"
-    "M(C) \<Longrightarrow>
-            M(f) \<Longrightarrow>
-            M(K) \<Longrightarrow>
-            strong_replacement
-             (M, \<lambda>x z. z = Sigfun
-                             (x, \<lambda>i. inj\<^bsup>M\<^esup>(if i \<in> range(f)
-                                             then if M(converse(f) ` i) then (converse(f) ` i) else 0
-                                             else 0,K)))"
-    "M(C) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>x y. y = \<langle>x, minimum
-                            (r, inj\<^bsup>M\<^esup>(if x \<in> range(f)
-                                       then if M(converse(f) ` x) then (converse(f) ` x) else 0
-                                       else 0,K))\<rangle>)"
-
-  and
-
+    cardinal_lib_assms1:
+    "M(A) \<Longrightarrow> lepoll_assumptions1(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions3(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions4(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions6(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions7(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions8(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions9(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions11(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions12(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions18(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    and
     cardinal_lib_assms2:
-    "M(G) \<Longrightarrow> \<forall>x\<in>domain(G). strong_replacement(M, \<lambda>y z. y \<in> (if M(x) then G ` x else 0) \<and> z = {\<langle>x, y\<rangle>})"
-    "M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>n. if M(n) then G ` n else 0))"
-    "M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = (if M(x) then G ` x else 0))"
-    "M(G) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, if M(x) then G ` x else 0)\<rangle>)"
-    "M(G) \<Longrightarrow>
-         M(f) \<Longrightarrow>
-         strong_replacement
-          (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> (if M(i) then G ` i else 0),
-                         f ` (\<mu> i. x \<in> (if M(i) then G ` i else 0)) ` x\<rangle>)"
-    "M(G) \<Longrightarrow>
-         M(x) \<Longrightarrow>
-         strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if M(x) then G ` x else 0,domain(G)) \<and> z = {\<langle>x, y\<rangle>})"
-    "M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if M(x) then G ` x else 0,domain(G)))"
-    "M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(if M(i) then G ` i else 0,domain(G))))"
-    "M(G) \<Longrightarrow>
-          M(r) \<Longrightarrow>
-          strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(if M(x) then G ` x else 0,domain(G)))\<rangle>)"
-    "M(G) \<Longrightarrow>
-          M(f) \<Longrightarrow>
-          strong_replacement
-           (M, \<lambda>x z. z = Sigfun
-                           (x, \<lambda>k. if k \<in> range(f)
-                                    then if M(converse(f) ` k) then G ` (converse(f) ` k) else 0 else 0))"
-    "M(G) \<Longrightarrow>
-          M(f) \<Longrightarrow>
-          strong_replacement
-           (M, \<lambda>x y. y = (if x \<in> range(f) then if M(converse(f) ` x) then G ` (converse(f) ` x) else 0
-                           else 0))"
-    "M(G) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        M(fa) \<Longrightarrow>
-        M(x) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>y z. y \<in> (if M(converse(f) ` x) then G ` (converse(f) ` x) else 0) \<and> z = {\<langle>x, y\<rangle>})"
-    "M(G) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>x y. y = \<langle>x, minimum
-                            (r, if x \<in> range(f)
-                                then if M(converse(f) ` x) then G ` (converse(f) ` x) else 0 else 0)\<rangle>)"
-    "M(G) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        M(fa) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in>
-                                (if i \<in> range(f)
-                                 then if M(converse(f) ` i) then G ` (converse(f) ` i) else 0 else 0),
-                        fa `
-                        (\<mu> i. x \<in> (if i \<in> range(f)
-                                    then if M(converse(f) ` i) then G ` (converse(f) ` i) else 0
-                                    else 0)) `
-                        x\<rangle>)"
-    "M(G) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        M(fa) \<Longrightarrow>
-        M(x) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if x \<in> range(f)
-                               then if M(converse(f) ` x) then G ` (converse(f) ` x) else 0 else 0,K) \<and>
-                    z = {\<langle>x, y\<rangle>})"
-    "M(G) \<Longrightarrow>
-            M(f) \<Longrightarrow>
-            M(K) \<Longrightarrow>
-            strong_replacement
-             (M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if x \<in> range(f)
-                                   then if M(converse(f) ` x) then G ` (converse(f) ` x) else 0
-                                   else 0,K))"
-    "M(G) \<Longrightarrow>
-            M(f) \<Longrightarrow>
-            M(K) \<Longrightarrow>
-            strong_replacement
-             (M, \<lambda>x z. z = Sigfun
-                             (x, \<lambda>i. inj\<^bsup>M\<^esup>(if i \<in> range(f)
-                                             then if M(converse(f) ` i) then G ` (converse(f) ` i) else 0
-                                             else 0,K)))"
-    "M(G) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>x y. y = \<langle>x, minimum
-                            (r, inj\<^bsup>M\<^esup>(if x \<in> range(f)
-                                       then if M(converse(f) ` x) then G ` (converse(f) ` x) else 0
-                                       else 0,K))\<rangle>)"
-
-and
-
-cardinal_lib_assms3:"M(Z) \<Longrightarrow> M(F) \<Longrightarrow> \<forall>x\<in>Y. strong_replacement(M, \<lambda>y z. y \<in> (if M(x) then {xa \<in> Z . F ` xa = x} else 0) \<and> z = {\<langle>x, y\<rangle>})"
-"M(Z) \<Longrightarrow> M(F) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>y. if M(y) then {x \<in> Z . F ` x = y} else 0))"
-"M(Z) \<Longrightarrow> M(F) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = (if M(x) then {xa \<in> Z . F ` xa = x} else 0))"
-"M(Z) \<Longrightarrow>
-         M(F) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, if M(x) then {xa \<in> Z . F ` xa = x} else 0)\<rangle>)"
-"M(Z) \<Longrightarrow>
-         M(F) \<Longrightarrow>
-         M(f) \<Longrightarrow>
-         strong_replacement
-          (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> (if M(i) then {x \<in> Z . F ` x = i} else 0),
-                         f ` (\<mu> i. x \<in> (if M(i) then {x \<in> Z . F ` x = i} else 0)) ` x\<rangle>)"
-"M(Z) \<Longrightarrow>
-         M(F) \<Longrightarrow>
-         M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if M(x) then {xa \<in> Z . F ` xa = x} else 0,Y) \<and> z = {\<langle>x, y\<rangle>})"
-"M(Z) \<Longrightarrow> M(F) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if M(x) then {xa \<in> Z . F ` xa = x} else 0,Y))"
-"M(Z) \<Longrightarrow> M(F) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(if M(i) then {x \<in> Z . F ` x = i} else 0,Y)))"
-"M(Z) \<Longrightarrow>
-         M(F) \<Longrightarrow>
-         M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(if M(x) then {xa \<in> Z . F ` xa = x} else 0,Y))\<rangle>)"
-"M(Z) \<Longrightarrow>
-          M(F) \<Longrightarrow>
-          M(f) \<Longrightarrow>
-          strong_replacement
-           (M, \<lambda>x z. z = Sigfun
-                           (x, \<lambda>k. if k \<in> range(f)
-                                    then if M(converse(f) ` k) then {x \<in> Z . F ` x = converse(f) ` k} else 0 else 0))"
-"M(Z) \<Longrightarrow>
-          M(F) \<Longrightarrow>
-          M(f) \<Longrightarrow>
-          strong_replacement
-           (M, \<lambda>x y. y = (if x \<in> range(f) then if M(converse(f) ` x) then {xa \<in> Z . F ` xa = converse(f) ` x} else 0
-                           else 0))"
-"M(Z) \<Longrightarrow>
-        M(F) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        M(fa) \<Longrightarrow>
-        M(x) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>y z. y \<in> (if M(converse(f) ` x) then {xa \<in> Z . F ` xa = converse(f) ` x} else 0) \<and> z = {\<langle>x, y\<rangle>})"
-"M(Z) \<Longrightarrow>
-        M(F) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>x y. y = \<langle>x, minimum
-                            (r, if x \<in> range(f)
-                                then if M(converse(f) ` x) then {xa \<in> Z . F ` xa = converse(f) ` x} else 0 else 0)\<rangle>)"
-"M(Z) \<Longrightarrow>
-        M(F) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        M(fa) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in>
-                                (if i \<in> range(f) then if M(converse(f) ` i) then {x \<in> Z . F ` x = converse(f) ` i} else 0
-                                 else 0),
-                        fa `
-                        (\<mu> i. x \<in> (if i \<in> range(f)
-                                    then if M(converse(f) ` i) then {x \<in> Z . F ` x = converse(f) ` i} else 0 else 0)) `
-                        x\<rangle>)"
-"M(Z) \<Longrightarrow>
-        M(F) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        M(fa) \<Longrightarrow>
-        M(x) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if x \<in> range(f) then if M(converse(f) ` x) then {xa \<in> Z . F ` xa = converse(f) ` x} else 0
-                               else 0,K) \<and>
-                    z = {\<langle>x, y\<rangle>})"
-"M(Z) \<Longrightarrow>
-            M(F) \<Longrightarrow>
-            M(f) \<Longrightarrow>
-            M(K) \<Longrightarrow>
-            strong_replacement
-             (M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if x \<in> range(f)
-                                   then if M(converse(f) ` x) then {xa \<in> Z . F ` xa = converse(f) ` x} else 0 else 0,K))"
-"M(Z) \<Longrightarrow>
-            M(F) \<Longrightarrow>
-            M(f) \<Longrightarrow>
-            M(K) \<Longrightarrow>
-            strong_replacement
-             (M, \<lambda>x z. z = Sigfun
-                             (x, \<lambda>i. inj\<^bsup>M\<^esup>(if i \<in> range(f)
-                                             then if M(converse(f) ` i) then {x \<in> Z . F ` x = converse(f) ` i} else 0
-                                             else 0,K)))"
-"M(Z) \<Longrightarrow>
-        M(F) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>x y. y = \<langle>x, minimum
-                            (r, inj\<^bsup>M\<^esup>(if x \<in> range(f)
-                                       then if M(converse(f) ` x) then {xa \<in> Z . F ` xa = converse(f) ` x} else 0
-                                       else 0,K))\<rangle>)"
+    "M(A) \<Longrightarrow> lepoll_assumptions1(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions3(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions4(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions6(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions7(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions8(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions9(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions11(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions12(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions18(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    and
+    cardinal_lib_assms3:
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions1(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions3(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions4(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions6(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions7(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions8(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions9(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions11(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions12(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions18(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
 and cardinal_lib_assms4:
   "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, f -`` {x}\<rangle>)"
 and cardinal_lib_assms5 :
@@ -788,7 +557,7 @@ proof -
     by (cases "M(x)") auto
   ultimately
   interpret M_cardinal_UN_lepoll _ "\<lambda>c. if M(c) then c else 0" C
-    using cardinal_lib_assms1
+    using cardinal_lib_assms1 unfolding lepoll_assumptions_defs
     by unfold_locales simp_all
   have "(if M(i) then i else 0) = i" if "i\<in>C" for i
     using transM[OF _ \<open>M(C)\<close>] that by simp
@@ -903,7 +672,7 @@ proof -
     by (cases "M(x)") auto
   ultimately
   interpret M_cardinal_UN_lepoll _  "\<lambda>n. if M(n) then G`n else 0" "domain(G)"
-    using cardinal_lib_assms2
+    using cardinal_lib_assms2 unfolding lepoll_assumptions_defs
     by unfold_locales simp_all
   assume "function(G)"
   let ?N="domain(G)" and ?R="\<Union>n\<in>domain(G). G`n"
@@ -1353,7 +1122,7 @@ proof -
     using transM[OF that  \<open>M(Y)\<close>] transM[OF _ \<open>M(Z)\<close>] that by simp
   ultimately
   interpret M_cardinal_UN_lepoll _ "\<lambda>y. if M(y) then {x\<in>Z . F`x = y} else 0" Y
-    using cardinal_lib_assms3
+    using cardinal_lib_assms3 unfolding lepoll_assumptions_defs
     by unfold_locales (auto dest:transM simp del:mem_inj_abs)
   from \<open>F\<in>Z\<rightarrow>Y\<close>
   have "Z = (\<Union>y\<in>Y. {x\<in>Z . F`x = y})"
