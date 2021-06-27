@@ -2,9 +2,8 @@ section\<open>From M to V\<close>
 
 theory Absolute_Versions
   imports
-    ZF_Library_Relative
+    Cohen_Posets_Relative
     ZF.Cardinal_AC
-    "../Delta_System_Lemma/Cardinal_Library"
 begin
 
 subsection\<open>Locales of a class \<^term>\<open>M\<close> hold in \<^term>\<open>\<V>\<close>\<close>
@@ -60,11 +59,7 @@ proof -
     by simp
 qed
 
-interpretation V:M_cardinal_AC \<V>
-  using choice_ax_Universe
-  by unfold_locales (auto intro:separation_absolute replacement_absolute)
-
-interpretation V:M_library \<V>
+interpretation V:M_cohen \<V>
   using choice_ax_Universe
   by unfold_locales (auto intro:separation_absolute replacement_absolute)
 
