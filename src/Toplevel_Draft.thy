@@ -1,7 +1,6 @@
 theory Toplevel_Draft
   imports
     Cardinal_Preservation
-    Delta_System_Relative
 
 begin
 
@@ -9,7 +8,7 @@ definition
   Add_subs :: "[i,i] \<Rightarrow> i" where
   "Add_subs(\<kappa>,\<alpha>) \<equiv> Fn(\<omega>,\<kappa>\<times>\<alpha>,2)"
 
-locale M_master = M_delta +
+locale M_master = M_cohen +
   assumes
   domain_separation: "M(x) \<Longrightarrow> separation(M, \<lambda>z. x \<in> domain(z))"
   and
@@ -111,18 +110,13 @@ locale M_master = M_delta +
 
 begin
 
-lemma Fn_nat_closed:
+lemma (in M_FiniteFun) Fn_nat_closed:
   assumes "M(A)" "M(B)" shows "M(Fn(\<omega>,A,B))"
   using assms Fn_nat_eq_FiniteFun
   by simp
 
 lemma Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
   using  nat_into_M[of 2, THEN Aleph_rel_closed] by simp
-
-lemma Fnle_nat_closed[intro,simp]:
-  assumes "M(I)" "M(J)"
-  shows "M(Fnle(\<omega>,I,J))"
-  sorry
 
 end (* M_master *)
 
@@ -159,7 +153,12 @@ begin
 
 \<comment> \<open>FIXME: using notation as if \<^term>\<open>Add_subs\<close> were used\<close>
 lemma ccc_Add_subs_Aleph_2: "ccc\<^bsup>M\<^esup>(Fn(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2),Fnle(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2))"
-  sorry
+proof -
+  interpret M_add_reals "##M" "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>"
+    by unfold_locales blast
+  show ?thesis
+    using ccc_Fn_nat by fast
+qed
 
 end (* M_ctm *)
 

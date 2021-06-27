@@ -6,6 +6,11 @@ theory Cohen_Posets_Relative
     Delta_System_Relative
 begin
 
+lemma (in M_delta) Fnle_nat_closed[intro,simp]:
+  assumes "M(I)" "M(J)"
+  shows "M(Fnle(\<omega>,I,J))"
+  sorry
+
 definition
   lepoll_assumptions1 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
   "lepoll_assumptions1(M,A,F,S,fa,K,x,f,r) \<equiv> \<forall>x\<in>S. strong_replacement(M, \<lambda>y z. y \<in> F(A, x) \<and> z = {\<langle>x, y\<rangle>})"
@@ -93,60 +98,61 @@ lemmas lepoll_assumptions_defs = lepoll_assumptions1_def
   lepoll_assumptions14_def lepoll_assumptions15_def lepoll_assumptions16_def
   lepoll_assumptions17_def lepoll_assumptions18_def
 
-locale M_add_reals = M_delta + add_reals +
-  fixes F Y
-  defines
-    "F(A,d) \<equiv> {p \<in> A. domain(p) = d }" and
-    "Y(r',D,A,x) \<equiv> {domain(p) .. p\<in>A, restrict(p,r') = x \<and> domain(p) \<in> D}"
+definition
+  \<comment> \<open>"domain collect F"\<close>
+  dC_F :: "i \<Rightarrow> i \<Rightarrow> i" where
+  "dC_F(A,d) \<equiv> {p \<in> A. domain(p) = d }"
+
+definition
+  \<comment> \<open>"domain restrict SepReplace Y\<close>
+  drSR_Y :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
+  "drSR_Y(r',D,A,x) \<equiv> {domain(p) .. p\<in>A, restrict(p,r') = x \<and> domain(p) \<in> D}"
+
+locale M_cohen = M_delta +
   assumes
     countable_lepoll_assms2:
-    "M(A) \<Longrightarrow> lepoll_assumptions1(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> lepoll_assumptions2(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> lepoll_assumptions3(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions4(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions6(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> lepoll_assumptions7(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> lepoll_assumptions8(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions9(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions10(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions11(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions12(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions18(M,A,F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions1(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions2(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions3(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions4(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions6(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions7(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions8(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions9(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions10(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions11(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions12(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions18(M,A,dC_F,S,fa,K,x,f,r)"
     and
     countable_lepoll_assms3:
-    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions1(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions2(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions3(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions4(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions5(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions6(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions7(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions8(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions9(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions10(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions11(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions12(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions13(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions14(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions15(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions16(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions17(M,A,Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions18(M,A,Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions1(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions2(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions3(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions4(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions5(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions6(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions7(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions8(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions9(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions10(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions11(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions12(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions13(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions14(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions15(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions16(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions17(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions18(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
 
+
+context M_cardinal_library
 begin
-
-lemma Fnle_nat_closed[intro,simp]:
-  assumes "M(I)" "M(J)"
-  shows "M(Fnle(\<omega>,I,J))"
-  sorry
-
-lemmas zero_lesspoll_rel_kappa = zero_lesspoll_rel[OF zero_lt_kappa]
 
 lemma lesspoll_nat_imp_lesspoll_rel: 
   assumes "A \<prec> \<omega>" "M(A)"
@@ -221,6 +227,13 @@ proof -
         eqpoll_rel_sym types by simp
   qed
 qed
+
+end (* M_cardinal_library *)
+
+locale M_add_reals = M_cohen + add_reals
+begin
+
+lemmas zero_lesspoll_rel_kappa = zero_lesspoll_rel[OF zero_lt_kappa]
 
 end (* M_add_reals *)
 
@@ -328,7 +341,7 @@ proof -
       ultimately
       interpret M_cardinal_UN_lepoll _ "\<lambda>d. {p \<in> A. domain(p) = d }" "{domain(p). p\<in>A}"
         using countable_lepoll_assms2
-        unfolding lepoll_assumptions_defs F_def
+        unfolding lepoll_assumptions_defs dC_F_def
         by unfold_locales (auto dest: transM)
       from \<open>A \<subseteq> Fn(nat, I, 2)\<close>
       have x:"(\<Union>d\<in>{domain(p) . p \<in> A}. {p\<in>A. domain(p) = d}) = A"
@@ -465,7 +478,7 @@ proof -
       ultimately
       interpret M_cardinal_UN_lepoll _ ?Y "Pow_rel(M,r\<times>2)"
         using countable_lepoll_assms3[where S="Pow_rel(M,r\<times>2)" and A=A and D=D and r'=r]
-        unfolding lepoll_assumptions_defs Y_def
+        unfolding lepoll_assumptions_defs drSR_Y_def
         apply unfold_locales defer defer prefer 6 apply (blast dest: transM)
         by fast (auto dest:transM)\<comment> \<open>NOTE VERY SLOW: 25s\<close>
       {

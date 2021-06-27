@@ -1,30 +1,9 @@
 theory Cardinal_Preservation
   imports
-    Cohen_Posets
+    Cohen_Posets_Relative
     Forcing_Main
 
 begin
-
-(* MOVE THIS to some appropriate place *)
-declare (in M_trivial) compat_in_abs[absolut]
-
-definition
-  antichain_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" (\<open>antichain\<^bsup>_\<^esup>'(_,_,_')\<close>) where
-  "antichain_rel(M,P,leq,A) \<equiv> subset(M,A,P) \<and> (\<forall>p[M]. \<forall>q[M].
-       p\<in>A \<longrightarrow> q\<in>A \<longrightarrow> p \<noteq> q\<longrightarrow> \<not> is_compat_in(M,P,leq,p,q))"
-
-abbreviation
-  antichain_r_set :: "[i,i,i,i] \<Rightarrow> o" (\<open>antichain\<^bsup>_\<^esup>'(_,_,_')\<close>) where
-  "antichain\<^bsup>M\<^esup>(P,leq,A) \<equiv> antichain_rel(##M,P,leq,A)"
-
-context M_trivial
-begin
-
-lemma antichain_abs [absolut]:
-  "\<lbrakk> M(A); M(P); M(leq) \<rbrakk> \<Longrightarrow> antichain\<^bsup>M\<^esup>(P,leq,A) \<longleftrightarrow> antichain(P,leq,A)"
-  unfolding antichain_rel_def antichain_def by (simp add:absolut)
-
-end (* M_trivial *)
 
 context forcing_notion
 begin
@@ -67,33 +46,6 @@ lemma antichain_abs'' [absolut]: "A\<in>M \<Longrightarrow> antichain_r'(A) \<lo
     by (auto simp add:absolut transitivity)
 
 end (* M_trivial_notion *)
-
-(******************************************************)
-subsection\<open>Discipline for \<^term>\<open>ccc\<close>\<close>
-
-definition (* completely relational *)
-  ccc_rel   :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" (\<open>ccc\<^bsup>_\<^esup>'(_,_')\<close>) where
-  "ccc_rel(M,P,leq) \<equiv> \<forall>A[M]. antichain_rel(M,P,leq,A) \<longrightarrow> 
-      (\<forall>\<kappa>[M]. is_cardinal(M,A,\<kappa>) \<longrightarrow> (\<exists>om[M]. omega(M,om) \<and> le_rel(M,\<kappa>,om)))"
-
-abbreviation
-  ccc_r_set :: "[i,i,i]\<Rightarrow>o" (\<open>ccc\<^bsup>_\<^esup>'(_,_')\<close>) where
-  "ccc_r_set(M) \<equiv> ccc_rel(##M)"
-
-context M_cardinals
-begin
-
-lemma def_ccc_rel:
-  assumes
-    "M(i)"
-  shows
-    "ccc\<^bsup>M\<^esup>(P,leq) \<longleftrightarrow> (\<forall>A[M]. antichain\<^bsup>M\<^esup>(P,leq,A) \<longrightarrow> |A|\<^bsup>M\<^esup> \<le> \<omega>)"
-  using assms is_cardinal_iff
-  unfolding ccc_rel_def by (simp add:absolut)
-
-end (* M_cardinals *)
-
-(******************  end Discipline  ******************)
 
 sublocale M_ZF_trans \<subseteq> M_cardinal_AC "##M"
   sorry
