@@ -882,12 +882,12 @@ text\<open>The next lemma is an application of recursive constructions.
 lemma bounded_cardinal_rel_selection:
   includes Ord_dests
   assumes
-    "\<And>Z. |Z|\<^bsup>M\<^esup> < \<gamma> \<Longrightarrow> Z \<subseteq> G \<Longrightarrow> M(Z) \<Longrightarrow> \<exists>a\<in>G. \<forall>s\<in>Z. Q(s,a)" "b\<in>G" "Card_rel(M,\<gamma>)" "M(G)" "M(\<gamma>)"
+    "\<And>Z. |Z|\<^bsup>M\<^esup> < \<gamma> \<Longrightarrow> Z \<subseteq> G \<Longrightarrow> M(Z) \<Longrightarrow> \<exists>a\<in>G. \<forall>s\<in>Z. <s,a>\<in>Q" "b\<in>G" "Card_rel(M,\<gamma>)" "M(G)" "M(\<gamma>)"
   shows
-    "\<exists>S[M]. S : \<gamma> \<rightarrow>\<^bsup>M\<^esup> G \<and> (\<forall>\<alpha> \<in> \<gamma>. \<forall>\<beta> \<in> \<gamma>.  \<alpha><\<beta> \<longrightarrow> Q(S`\<alpha>,S`\<beta>))"
+    "\<exists>S[M]. S : \<gamma> \<rightarrow>\<^bsup>M\<^esup> G \<and> (\<forall>\<alpha> \<in> \<gamma>. \<forall>\<beta> \<in> \<gamma>.  \<alpha><\<beta> \<longrightarrow> <S`\<alpha>,S`\<beta>>\<in>Q)"
 proof -
   let ?cdlt\<gamma>="{Z\<in>Pow_rel(M,G) . |Z|\<^bsup>M\<^esup><\<gamma>}" \<comment> \<open>“cardinal_rel less than \<^term>\<open>\<gamma>\<close>”\<close>
-    and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. Q(s,a)}"
+    and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. <s,a>\<in>Q}"
   from \<open>M(G)\<close>
   have "M(?cdlt\<gamma>)" using Pow_rel_closed separation_closed cardinal_lib_assms5[OF \<open>M(\<gamma>)\<close>]
     by simp
@@ -902,7 +902,7 @@ proof -
       then
       have "Y\<subseteq>G" "M(Y)" using Pow_rel_char[OF \<open>M(G)\<close>] by simp_all
       with A
-      obtain a where "a\<in>G" "\<forall>s\<in>Y. Q(s,a)"
+      obtain a where "a\<in>G" "\<forall>s\<in>Y. <s,a>\<in>Q"
         using assms(1) by force
       with \<open>M(G)\<close>
       have "\<exists>a. a \<in> ?inQ(Y)" by auto
@@ -960,7 +960,7 @@ proof -
     unfolding rec_constr_def
     by simp
   moreover
-  have "\<forall>\<alpha>\<in>\<gamma>. \<forall>\<beta>\<in>\<gamma>. \<alpha> < \<beta> \<longrightarrow> Q(S ` \<alpha>, S ` \<beta>)"
+  have "\<forall>\<alpha>\<in>\<gamma>. \<forall>\<beta>\<in>\<gamma>. \<alpha> < \<beta> \<longrightarrow> <S ` \<alpha>, S ` \<beta>>\<in>Q"
   proof (intro ballI impI)
     fix \<alpha> \<beta>
     assume "\<beta>\<in>\<gamma>"
@@ -990,10 +990,10 @@ proof -
         Card_rel_is_Ord
       by auto
     moreover
-    have "\<forall>x\<in>\<beta>. Q(S`x, f ` {S`x . x \<in> \<beta>})"
+    have "\<forall>x\<in>\<beta>. <S`x, f ` {S`x . x \<in> \<beta>}> \<in> Q"
     proof -
       from calculation and f_type
-      have "f ` {S`x . x \<in> \<beta>} \<in> {a\<in>G. \<forall>x\<in>\<beta>. Q(S`x,a)}"
+      have "f ` {S`x . x \<in> \<beta>} \<in> {a\<in>G. \<forall>x\<in>\<beta>. <S`x,a>\<in>Q}"
         using apply_type[of f ?cdlt\<gamma> ?inQ "{S`x . x \<in> \<beta>}"]
             Pow_rel_char[OF \<open>M(G)\<close>]
         by simp
@@ -1007,7 +1007,7 @@ proof -
     moreover
     note \<open>\<beta>\<in>\<gamma>\<close> \<open>Cb \<in> Pow_rel(M,G)-?cdlt\<gamma> \<rightarrow> G\<close>
     ultimately
-    show "Q(S ` \<alpha>, S ` \<beta>)"
+    show "<S ` \<alpha>, S ` \<beta>>\<in>Q"
       using fun_disjoint_apply1[of "{S`x . x \<in> \<beta>}" Cb f]
         domain_of_fun[of Cb] ltD[of \<alpha> \<beta>]
        by (subst (2) S_def, auto) (subst rec_constr_unfold, auto)
@@ -1018,10 +1018,12 @@ proof -
   show ?thesis using function_space_rel_char by auto
 qed
 
+
 text\<open>The following basic result can, in turn, be proved by a
      bounded-cardinal_rel selection.\<close>
 lemma Infinite_iff_lepoll_rel_nat: "M(Z) \<Longrightarrow> Infinite(Z) \<longleftrightarrow> \<omega> \<lesssim>\<^bsup>M\<^esup> Z"
 proof
+  define Distinct where "Distinct = { <x,y> \<in> Z\<times>Z . x\<noteq>y}"
   assume "Infinite(Z)" "M(Z)"
   then
   obtain b where "b\<in>Z"
@@ -1035,8 +1037,8 @@ proof
     with \<open>Infinite(Z)\<close>
     have "Z \<noteq> Y" by auto
   }
-  moreover from \<open>Infinite(Z)\<close>
-  have A: "(\<And>W. M(W) \<Longrightarrow> |W|\<^bsup>M\<^esup> < \<omega> \<Longrightarrow> W \<subseteq> Z \<Longrightarrow> \<exists>a\<in>Z. \<forall>s\<in>W. s \<noteq> a)"
+  moreover
+  have "(\<And>W. M(W) \<Longrightarrow> |W|\<^bsup>M\<^esup> < \<omega> \<Longrightarrow> W \<subseteq> Z \<Longrightarrow> \<exists>a\<in>Z. \<forall>s\<in>W. <s,a>\<in>Distinct)"
   proof -
     fix W
     assume "M(W)" "|W|\<^bsup>M\<^esup> < \<omega>" "W \<subseteq> Z"
@@ -1051,15 +1053,17 @@ proof
       moreover from calculation
     have "\<not>Z\<subseteq>W"
       using equalityI \<open>Infinite(Z)\<close> by auto
-    ultimately
-    show "\<exists>a\<in>Z. \<forall>s\<in>W. s \<noteq> a" by auto
+    moreover from calculation
+    show "\<exists>a\<in>Z. \<forall>s\<in>W. <s,a>\<in>Distinct"
+      unfolding Distinct_def by auto
   qed
-  moreover from \<open>b\<in>Z\<close> \<open>M(Z)\<close>
-  obtain S where "S : \<omega> \<rightarrow>\<^bsup>M\<^esup> Z" "M(S)" "\<forall>\<alpha>\<in>\<omega>. \<forall>\<beta>\<in>\<omega>. \<alpha> < \<beta> \<longrightarrow> S`\<alpha> \<noteq> S`\<beta>"
-    using bounded_cardinal_rel_selection[OF A \<open>b\<in>Z\<close> Card_rel_nat]
+  moreover from \<open>b\<in>Z\<close> \<open>M(Z)\<close> this
+  obtain S where "S : \<omega> \<rightarrow>\<^bsup>M\<^esup> Z" "M(S)" "\<forall>\<alpha>\<in>\<omega>. \<forall>\<beta>\<in>\<omega>. \<alpha> < \<beta> \<longrightarrow> <S`\<alpha>,S`\<beta>> \<in> Distinct"
+    using bounded_cardinal_rel_selection[OF _ \<open>b\<in>Z\<close> Card_rel_nat,of Distinct]
     by blast
   moreover from this
   have "\<alpha> \<in> \<omega> \<Longrightarrow> \<beta> \<in> \<omega> \<Longrightarrow> \<alpha>\<noteq>\<beta> \<Longrightarrow> S`\<alpha> \<noteq> S`\<beta>" for \<alpha> \<beta>
+    unfolding Distinct_def
     by (rule_tac lt_neq_symmetry[of "\<omega>" "\<lambda>\<alpha> \<beta>. S`\<alpha> \<noteq> S`\<beta>"])
       auto
   moreover from this \<open>S\<in>_\<close> \<open>M(Z)\<close>

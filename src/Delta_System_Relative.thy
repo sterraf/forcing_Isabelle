@@ -230,9 +230,10 @@ proof -
               THEN [4] le_Card_rel_iff[THEN iffD1], of \<omega>] j.UN_closed
           unfolding countable_rel_def by (auto dest: transM)
       qed
+      define Disjoint where "Disjoint = {<A,B> \<in> G\<times>G . B \<inter> A = 0}"
       text\<open>For every countable_rel subfamily of \<^term>\<open>G\<close> there is another some
       element disjoint from all of them:\<close>
-      have "\<exists>A\<in>G. \<forall>S\<in>X. S \<inter> A = 0" if "|X|\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "X \<subseteq> G" "M(X)" for X
+      have "\<exists>A\<in>G. \<forall>S\<in>X. <S,A>\<in>Disjoint" if "|X|\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "X \<subseteq> G" "M(X)" for X
       proof -
         note \<open>n\<in>\<omega>\<close> \<open>M(G)\<close>
         moreover from this and  \<open>\<And>A. A\<in>G \<Longrightarrow> |A|\<^bsup>M\<^esup> = succ(n)\<close>
@@ -266,8 +267,11 @@ proof -
             uncountable_rel_iff_nat_lt_cardinal_rel[of G]
           by force
         then
-        show "\<exists>A\<in>G. \<forall>S\<in>X. S \<inter> A = 0" by auto
-      qed
+        have "\<exists>A\<in>G. \<forall>S\<in>X. A \<inter> S = 0" by auto
+        with \<open>X\<subseteq>G\<close>
+        show "\<exists>A\<in>G. \<forall>S\<in>X. <S,A>\<in>Disjoint" unfolding Disjoint_def 
+          using subsetD by simp
+        qed
       moreover from \<open>G \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> \<open>M(G)\<close>
       obtain b where "b\<in>G"
         using uncountable_rel_iff_subset_eqpoll_rel_Aleph_rel1
@@ -275,15 +279,16 @@ proof -
       ultimately
       text\<open>Hence, the hypotheses to perform a bounded-cardinal selection
       are satisfied,\<close>
-      obtain S where "S:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<^bsup>M\<^esup>G" "\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<beta>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0"
+      obtain S where "S:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<^bsup>M\<^esup>G" "\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<beta>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> <S`\<alpha>, S`\<beta>> \<in>Disjoint"
         for \<alpha> \<beta>
-        using bounded_cardinal_rel_selection[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" G "\<lambda>s a. s \<inter> a = 0" b]
+        using bounded_cardinal_rel_selection[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" G Disjoint]
         by force
       moreover from this \<open>n\<in>\<omega>\<close> \<open>M(G)\<close>
       have inM:"M(S)" "M(n)" "\<And>x. x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> S ` x \<in> G" "\<And>x. x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> M(x)"
         using function_space_rel_char by (auto dest: transM)
       ultimately
       have "\<alpha> \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<beta> \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<alpha>\<noteq>\<beta> \<Longrightarrow> S`\<alpha> \<inter> S`\<beta> = 0" for \<alpha> \<beta>
+        unfolding Disjoint_def
         using lt_neq_symmetry[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<lambda>\<alpha> \<beta>. S`\<alpha> \<inter> S`\<beta> = 0"] Card_rel_is_Ord
         by auto (blast)
       text\<open>and a symmetry argument shows that obtained \<^term>\<open>S\<close> is
