@@ -1,6 +1,6 @@
 theory List_Absoluteness
   imports
-    FrecR
+    "../src/FrecR"
 
 begin
 (* Sólo para referencia *)
