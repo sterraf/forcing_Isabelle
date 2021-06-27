@@ -153,28 +153,106 @@ qed
 
 end (* M_cardinal_UN_inj *)
 
+definition
+  lepoll_assumptions1 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions1(M,A,F,S,fa,K,x,f,r) \<equiv> \<forall>x\<in>S. strong_replacement(M, \<lambda>y z. y \<in> F(A, x) \<and> z = {\<langle>x, y\<rangle>})"
+
+definition
+  lepoll_assumptions2 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions2(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x z. z = Sigfun(x, F(A)))"
+
+definition
+  lepoll_assumptions3 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions3(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = F(A, x))"
+
+definition
+  lepoll_assumptions4 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions4(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, F(A, x))\<rangle>)"
+
+definition
+  lepoll_assumptions5 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions5(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> F(A, i), f ` (\<mu> i. x \<in> F(A, i)) ` x\<rangle>)"
+
+definition
+  lepoll_assumptions6 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions6(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(F(A, x),S) \<and> z = {\<langle>x, y\<rangle>})"
+
+definition
+  lepoll_assumptions7 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions7(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(F(A, x),S))"
+
+definition
+  lepoll_assumptions8 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions8(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(F(A, i),S)))"
+
+definition
+  lepoll_assumptions9 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions9(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(F(A, x),S))\<rangle>)"
+
+definition
+  lepoll_assumptions10 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions10(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
+           (M, \<lambda>x z. z = Sigfun(x, \<lambda>k. if k \<in> range(f) then F(A, converse(f) ` k) else 0))"
+
+definition
+  lepoll_assumptions11 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions11(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = (if x \<in> range(f) then F(A, converse(f) ` x) else 0))"
+
+definition
+  lepoll_assumptions12 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions12(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>y z. y \<in> F(A, converse(f) ` x) \<and> z = {\<langle>x, y\<rangle>})"
+
+definition
+  lepoll_assumptions13 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions13(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, minimum(r, if x \<in> range(f) then F(A, converse(f) ` x) else 0)\<rangle>)"
+
+definition
+  lepoll_assumptions14 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions14(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> (if i \<in> range(f) then F(A, converse(f) ` i) else 0),
+                        fa ` (\<mu> i. x \<in> (if i \<in> range(f) then F(A, converse(f) ` i) else 0)) ` x\<rangle>)"
+
+definition
+  lepoll_assumptions15 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions15(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
+         (M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if x \<in> range(f) then F(A, converse(f) ` x) else 0,K) \<and> z = {\<langle>x, y\<rangle>})"
+
+definition
+  lepoll_assumptions16 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions16(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if x \<in> range(f) then F(A, converse(f) ` x) else 0,K))"
+
+definition
+  lepoll_assumptions17 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions17(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
+             (M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(if i \<in> range(f) then F(A, converse(f) ` i) else 0,K)))"
+
+definition
+  lepoll_assumptions18 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "lepoll_assumptions18(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
+         (M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(if x \<in> range(f) then F(A, converse(f) ` x) else 0,K))\<rangle>)"
+
+lemmas lepoll_assumptions_defs[simp] = lepoll_assumptions1_def
+  lepoll_assumptions2_def lepoll_assumptions3_def lepoll_assumptions4_def
+  lepoll_assumptions5_def lepoll_assumptions6_def lepoll_assumptions7_def
+  lepoll_assumptions8_def lepoll_assumptions9_def lepoll_assumptions10_def
+  lepoll_assumptions11_def lepoll_assumptions12_def lepoll_assumptions13_def
+  lepoll_assumptions14_def lepoll_assumptions15_def lepoll_assumptions16_def
+  lepoll_assumptions17_def lepoll_assumptions18_def
+
 locale M_cardinal_UN_lepoll = M_library +
   j:M_cardinal_UN _ J for J +
 assumes
   lepoll_assumptions:
-  "M(f) \<Longrightarrow> strong_replacement(M,
-    \<lambda>x z. z = Sigfun(x, \<lambda>k. if k \<in> range(f) then X(converse(f) ` k) else 0))"
-  "M(f) \<Longrightarrow> strong_replacement(M,
-    \<lambda>x y. y = (if x \<in> range(f) then X(converse(f) ` x) else 0))"
-  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> X(converse(f) ` x) \<and> z = {\<langle>x, y\<rangle>})"
-  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M,
-    \<lambda>x y. y = \<langle>x, minimum(r, if x \<in> range(f) then X(converse(f) ` x) else 0)\<rangle>)"
-  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> strong_replacement(M,
-    \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> (if i \<in> range(f) then X(converse(f) ` i) else 0),
-		fa ` (\<mu> i. x \<in> (if i \<in> range(f) then X(converse(f) ` i) else 0)) ` x\<rangle>)"
-	"M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M,
-    \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if x \<in> range(f) then X(converse(f) ` x) else 0,K) \<and> z = {\<langle>x, y\<rangle>})"
-  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> strong_replacement(M,
-    \<lambda>x y. y = inj\<^bsup>M\<^esup>(if x \<in> range(f) then X(converse(f) ` x) else 0,K))"
-  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> strong_replacement(M,
-    \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(if i \<in> range(f) then X(converse(f) ` i) else 0,K)))"
-  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M,
-    \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(if x \<in> range(f) then X(converse(f) ` x) else 0,K))\<rangle>)"
+  "M(f) \<Longrightarrow> lepoll_assumptions11(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
+  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions12(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
+  "M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
+  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
+  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
+  "M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
+  "M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
+  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions18(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
+  "M(f) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
 begin
 
 \<comment>\<open>FIXME: this "LEQpoll" should be "LEPOLL"; same correction in Delta System\<close>
@@ -205,7 +283,7 @@ proof -
   qed
   from calculation
   interpret M_cardinal_UN_inj _ _ _ _ f
-    using lepoll_assumptions(5-)[of f K]
+    using lepoll_assumptions(4-)[of f K]
     by unfold_locales auto
   from assms
   show ?thesis using inj_rel_imp_cardinal_rel_UN_le by simp
@@ -385,94 +463,6 @@ lemma (in M_cardinal_UN_lepoll) countable_rel_imp_countable_rel_UN:
     Card_rel_le_imp_lepoll_rel[of J \<omega>] Card_rel_cardinal_rel_eq[of \<omega>]
   by auto
 
-
-definition
-  lepoll_assumptions1 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions1(M,A,F,S,fa,K,x,f,r) \<equiv> \<forall>x\<in>S. strong_replacement(M, \<lambda>y z. y \<in> F(A, x) \<and> z = {\<langle>x, y\<rangle>})"
-
-definition
-  lepoll_assumptions2 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions2(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x z. z = Sigfun(x, F(A)))"
-
-definition
-  lepoll_assumptions3 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions3(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = F(A, x))"
-
-definition
-  lepoll_assumptions4 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions4(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, F(A, x))\<rangle>)"
-
-definition
-  lepoll_assumptions5 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions5(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> F(A, i), f ` (\<mu> i. x \<in> F(A, i)) ` x\<rangle>)"
-
-definition
-  lepoll_assumptions6 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions6(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(F(A, x),S) \<and> z = {\<langle>x, y\<rangle>})"
-
-definition
-  lepoll_assumptions7 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions7(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(F(A, x),S))"
-
-definition
-  lepoll_assumptions8 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions8(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(F(A, i),S)))"
-
-definition
-  lepoll_assumptions9 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions9(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(F(A, x),S))\<rangle>)"
-
-definition
-  lepoll_assumptions10 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions10(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
-           (M, \<lambda>x z. z = Sigfun(x, \<lambda>k. if k \<in> range(f) then F(A, converse(f) ` k) else 0))"
-
-definition
-  lepoll_assumptions11 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions11(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = (if x \<in> range(f) then F(A, converse(f) ` x) else 0))"
-
-definition
-  lepoll_assumptions12 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions12(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>y z. y \<in> F(A, converse(f) ` x) \<and> z = {\<langle>x, y\<rangle>})"
-
-definition
-  lepoll_assumptions13 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions13(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
-         (M, \<lambda>x y. y = \<langle>x, minimum(r, if x \<in> range(f) then F(A, converse(f) ` x) else 0)\<rangle>)"
-
-definition
-  lepoll_assumptions14 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions14(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
-         (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> (if i \<in> range(f) then F(A, converse(f) ` i) else 0),
-                        fa ` (\<mu> i. x \<in> (if i \<in> range(f) then F(A, converse(f) ` i) else 0)) ` x\<rangle>)"
-
-definition
-  lepoll_assumptions15 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions15(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
-         (M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if x \<in> range(f) then F(A, converse(f) ` x) else 0,K) \<and> z = {\<langle>x, y\<rangle>})"
-
-definition
-  lepoll_assumptions16 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions16(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if x \<in> range(f) then F(A, converse(f) ` x) else 0,K))"
-
-definition
-  lepoll_assumptions17 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions17(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
-             (M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(if i \<in> range(f) then F(A, converse(f) ` i) else 0,K)))"
-
-definition
-  lepoll_assumptions18 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions18(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
-         (M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(if x \<in> range(f) then F(A, converse(f) ` x) else 0,K))\<rangle>)"
-
-lemmas lepoll_assumptions_defs = lepoll_assumptions1_def
-  lepoll_assumptions2_def lepoll_assumptions3_def lepoll_assumptions4_def
-  lepoll_assumptions5_def lepoll_assumptions6_def lepoll_assumptions7_def
-  lepoll_assumptions8_def lepoll_assumptions9_def lepoll_assumptions10_def
-  lepoll_assumptions11_def lepoll_assumptions12_def lepoll_assumptions13_def
-  lepoll_assumptions14_def lepoll_assumptions15_def lepoll_assumptions16_def
-  lepoll_assumptions17_def lepoll_assumptions18_def
-
 locale M_cardinal_library = M_library +
   assumes
     cardinal_lib_assms1:
@@ -557,7 +547,7 @@ proof -
     by (cases "M(x)") auto
   ultimately
   interpret M_cardinal_UN_lepoll _ "\<lambda>c. if M(c) then c else 0" C
-    using cardinal_lib_assms1 unfolding lepoll_assumptions_defs
+    using cardinal_lib_assms1
     by unfold_locales simp_all
   have "(if M(i) then i else 0) = i" if "i\<in>C" for i
     using transM[OF _ \<open>M(C)\<close>] that by simp
@@ -672,7 +662,7 @@ proof -
     by (cases "M(x)") auto
   ultimately
   interpret M_cardinal_UN_lepoll _  "\<lambda>n. if M(n) then G`n else 0" "domain(G)"
-    using cardinal_lib_assms2 unfolding lepoll_assumptions_defs
+    using cardinal_lib_assms2
     by unfold_locales simp_all
   assume "function(G)"
   let ?N="domain(G)" and ?R="\<Union>n\<in>domain(G). G`n"
@@ -1122,7 +1112,7 @@ proof -
     using transM[OF that  \<open>M(Y)\<close>] transM[OF _ \<open>M(Z)\<close>] that by simp
   ultimately
   interpret M_cardinal_UN_lepoll _ "\<lambda>y. if M(y) then {x\<in>Z . F`x = y} else 0" Y
-    using cardinal_lib_assms3 unfolding lepoll_assumptions_defs
+    using cardinal_lib_assms3
     by unfold_locales (auto dest:transM simp del:mem_inj_abs)
   from \<open>F\<in>Z\<rightarrow>Y\<close>
   have "Z = (\<Union>y\<in>Y. {x\<in>Z . F`x = y})"

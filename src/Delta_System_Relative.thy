@@ -15,76 +15,25 @@ locale M_delta = M_cardinal_library +
     apply_replacement:"M(S) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = S ` x)"
     and
     countable_lepoll_assms:
-    "M(G) \<Longrightarrow> \<forall>x\<in>S. strong_replacement(M, \<lambda>y z. y \<in> Collect(G, (\<in>)(x)) \<and> z = {\<langle>x, y\<rangle>})"
-    "M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>a. Collect(G, (\<in>)(a))))"
-    "M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = Collect(G, (\<in>)(x)))"
-    "M(G) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, Collect(G, (\<in>)(x)))\<rangle>)"
-    "M(G) \<Longrightarrow>
-         M(f) \<Longrightarrow>
-         strong_replacement
-          (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> Collect(G, (\<in>)(i)), f ` (\<mu> i. x \<in> Collect(G, (\<in>)(i))) ` x\<rangle>)"
-    "M(G) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(Collect(G, (\<in>)(x)),S) \<and> z = {\<langle>x, y\<rangle>})"
-    "M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(Collect(G, (\<in>)(x)),S))"
-    "M(G) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(Collect(G, (\<in>)(i)),S)))"
-    "M(G) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, inj\<^bsup>M\<^esup>(Collect(G, (\<in>)(x)),S))\<rangle>)"
-    "M(G) \<Longrightarrow>
-          M(f) \<Longrightarrow>
-          strong_replacement
-           (M, \<lambda>x z. z = Sigfun(x, \<lambda>k. if k \<in> range(f) then Collect(G, (\<in>)(converse(f) ` k)) else 0))"
-    "M(G) \<Longrightarrow>
-          M(f) \<Longrightarrow>
-          strong_replacement
-           (M, \<lambda>x y. y = (if x \<in> range(f) then Collect(G, (\<in>)(converse(f) ` x)) else 0))"
-    "M(G) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        M(fa) \<Longrightarrow>
-        M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> Collect(G, (\<in>)(converse(f) ` x)) \<and> z = {\<langle>x, y\<rangle>})"
-    "M(G) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>x y. y = \<langle>x, minimum(r, if x \<in> range(f) then Collect(G, (\<in>)(converse(f) ` x)) else 0)\<rangle>)"
-    "M(G) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        M(fa) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> (if i \<in> range(f) then Collect(G, (\<in>)(converse(f) ` i)) else 0),
-                        fa ` (\<mu> i. x \<in> (if i \<in> range(f) then Collect(G, (\<in>)(converse(f) ` i)) else 0)) `
-                        x\<rangle>)"
-    "M(G) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        M(fa) \<Longrightarrow>
-        M(x) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(if x \<in> range(f) then Collect(G, (\<in>)(converse(f) ` x)) else 0,K) \<and>
-                    z = {\<langle>x, y\<rangle>})"
-    "M(G) \<Longrightarrow>
-            M(f) \<Longrightarrow>
-            M(K) \<Longrightarrow>
-            strong_replacement
-             (M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(if x \<in> range(f) then Collect(G, (\<in>)(converse(f) ` x)) else 0,K))"
-    "M(G) \<Longrightarrow>
-            M(f) \<Longrightarrow>
-            M(K) \<Longrightarrow>
-            strong_replacement
-             (M, \<lambda>x z. z = Sigfun
-                             (x, \<lambda>i. inj\<^bsup>M\<^esup>(if i \<in> range(f) then Collect(G, (\<in>)(converse(f) ` i))
-                                             else 0,K)))"
-    "M(G) \<Longrightarrow>
-        M(f) \<Longrightarrow>
-        M(K) \<Longrightarrow>
-        M(r) \<Longrightarrow>
-        strong_replacement
-         (M, \<lambda>x y. y = \<langle>x, minimum
-                            (r, inj\<^bsup>M\<^esup>(if x \<in> range(f) then Collect(G, (\<in>)(converse(f) ` x))
-                                       else 0,K))\<rangle>)"
+    "M(A) \<Longrightarrow> lepoll_assumptions1(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions3(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions4(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions6(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions7(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> lepoll_assumptions8(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions9(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions11(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions12(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions18(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+
 begin
 
 lemma delta_system_Aleph_rel1:
@@ -271,7 +220,8 @@ proof -
         assume "M(S)"
         with \<open>M(G)\<close> \<open>\<And>i. M(S) \<Longrightarrow> i \<in> S \<Longrightarrow> M({x \<in> G . i \<in> x})\<close>
         interpret M_cardinal_UN_lepoll _ ?G S
-          using countable_lepoll_assms by unfold_locales (auto dest:transM)
+          using countable_lepoll_assms
+          by unfold_locales (auto dest:transM)
         assume "countable_rel(M,S)"
         with \<open>M(S)\<close> calculation(6) calculation(7,8)[of S]
         show "countable_rel(M,{A \<in> G . S \<inter> A \<noteq> 0})"

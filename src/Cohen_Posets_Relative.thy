@@ -253,8 +253,7 @@ proof -
       have "x \<in> A \<Longrightarrow> M({p \<in> A . domain(p) = domain(x)})" for x sorry
       ultimately
       interpret M_cardinal_UN_lepoll _ "\<lambda>d. {p \<in> A. domain(p) = d }" "{domain(p). p\<in>A}"
-        using countable_lepoll_assms2
-        unfolding lepoll_assumptions_defs dC_F_def
+        using countable_lepoll_assms2 unfolding dC_F_def
         by unfold_locales (auto dest: transM)
       from \<open>A \<subseteq> Fn(nat, I, 2)\<close>
       have x:"(\<Union>d\<in>{domain(p) . p \<in> A}. {p\<in>A. domain(p) = d}) = A"
@@ -393,7 +392,7 @@ proof -
         using countable_lepoll_assms3[where S="Pow_rel(M,r\<times>2)" and A=A and D=D and r'=r]
         unfolding lepoll_assumptions_defs drSR_Y_def
         apply unfold_locales defer defer prefer 6 apply (blast dest: transM)
-        by fast (auto dest:transM)\<comment> \<open>NOTE VERY SLOW: 25s\<close>
+        by (unfold lepoll_assumptions_defs, fast) (auto dest:transM)\<comment> \<open>NOTE VERY SLOW: 25s\<close>
       {
         from \<open>Finite(r)\<close> \<open>M(r)\<close>
         have "countable_rel(M,Pow_rel(M,r\<times>2))"

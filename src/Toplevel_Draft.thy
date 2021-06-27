@@ -24,21 +24,6 @@ locale M_master = M_cohen +
   lam_apply_replacement: "M(A) \<Longrightarrow> M(f) \<Longrightarrow>
       strong_replacement(M, \<lambda>x y. y = \<langle>x, \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>\<rangle>)"
   and
-  ccc_replacement:
-  "M(F) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> F ` x \<and> z = {\<langle>x, y\<rangle>})"
-  "M(F) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, (`)(F)))"
-  "M(F) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = F ` x)"
-  "M(F) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = inj\<^bsup>M\<^esup>(F ` x,\<alpha>))"
-  "M(F) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>i. inj\<^bsup>M\<^esup>(F ` i,\<alpha>)))"
-  "M(F) \<Longrightarrow> M(f) \<Longrightarrow>
-   strong_replacement(M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> F ` i, f ` (\<mu> i. x \<in> F ` i) ` x\<rangle>)"
-  "M(F) \<Longrightarrow> M(r) \<Longrightarrow>
-   strong_replacement(M, \<lambda>x y. y = \<langle>x, Cardinal_AC_Relative.minimum(r, F ` x)\<rangle>)"
-  "M(F) \<Longrightarrow> M(x) \<Longrightarrow> M(\<alpha>) \<Longrightarrow>
-   strong_replacement(M, \<lambda>y z. y \<in> inj\<^bsup>M\<^esup>(F ` x, \<alpha>) \<and> z = {\<langle>x, y\<rangle>})"
-  "M(F) \<Longrightarrow> M(r) \<Longrightarrow> M(\<alpha>) \<Longrightarrow>
-  strong_replacement(M, \<lambda>x y. y = \<langle>x, Cardinal_AC_Relative.minimum(r, inj\<^bsup>M\<^esup>(F ` x,\<alpha>))\<rangle>)"
-  and
   UN_lepoll_assumptions:
   "M(A) \<Longrightarrow> lepoll_assumptions1(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
@@ -159,8 +144,7 @@ proof (rule ccontr)
     using Aleph_rel_zero by simp
   from \<open>\<alpha> \<in> M\<close> \<open>F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close> \<open>F\<in>M\<close>
   interpret M_cardinal_UN_lepoll "##M" "\<lambda>\<beta>. F`\<beta>" \<alpha>
-    using Aleph_rel_closed[of 0] ccc_replacement UN_lepoll_assumptions
-    unfolding lepoll_assumptions_defs
+    using Aleph_rel_closed[of 0] UN_lepoll_assumptions
   proof (unfold_locales, auto dest:transM)
     show "w \<in> F ` x \<Longrightarrow> x \<in> M" for w x
     proof -
