@@ -9,60 +9,10 @@ theory ZF_Library_Relative
     FiniteFun_Relative
 begin
 
-(*
-lemma Least_antitone:
-  assumes
-    "Ord(j)" "P(j)" "\<And>i. P(i) \<Longrightarrow> Q(i)"
-  shows
-    "(\<mu> i. Q(i)) \<le> (\<mu> i. P(i))"
-  using assms LeastI2[of P j Q] Least_le by simp
-
-lemma Least_set_antitone:
-  "Ord(j) \<Longrightarrow> j\<in>A \<Longrightarrow> A \<subseteq> B \<Longrightarrow> (\<mu> i. i\<in>B) \<le> (\<mu> i. i\<in>A)"
-  using subset_iff by (auto intro:Least_antitone)
-
-lemma le_neq_imp_lt:
-  "x\<le>y \<Longrightarrow> x\<noteq>y \<Longrightarrow> x<y"
-  using ltD ltI[of x y] le_Ord2
-  unfolding succ_def by auto
-
-text\<open>The next two lemmas are handy when one is constructing
-some object recursively. The first handles injectivity (of recursively
-constructed sequences of sets), while the second is helpful for
-establishing a symmetry argument.\<close>
-lemma Int_eq_zero_imp_not_eq:
-  assumes
-    "\<And>x y. x\<in>D \<Longrightarrow> y \<in> D \<Longrightarrow> x \<noteq> y \<Longrightarrow> A(x) \<inter> A(y) = 0"
-    "\<And>x. x\<in>D \<Longrightarrow> A(x) \<noteq> 0" "a\<in>D" "b\<in>D" "a\<noteq>b"
-  shows
-    "A(a) \<noteq> A(b)"
-  using assms by fastforce
-
-lemma lt_neq_symmetry:
-  assumes
-    "\<And>\<alpha> \<beta>. \<alpha> \<in> \<gamma> \<Longrightarrow> \<beta> \<in> \<gamma> \<Longrightarrow> \<alpha> < \<beta> \<Longrightarrow> Q(\<alpha>,\<beta>)"
-    "\<And>\<alpha> \<beta>. Q(\<alpha>,\<beta>) \<Longrightarrow> Q(\<beta>,\<alpha>)"
-    "\<alpha> \<in> \<gamma>" "\<beta> \<in> \<gamma>" "\<alpha> \<noteq> \<beta>"
-    "Ord(\<gamma>)"
-  shows
-    "Q(\<alpha>,\<beta>)"
-proof -
-  from assms
-  consider "\<alpha><\<beta>" | "\<beta><\<alpha>"
-    using Ord_linear_lt[of \<alpha> \<beta> thesis] Ord_in_Ord[of \<gamma>]
-    by auto
-  then
-  show ?thesis by cases (auto simp add:assms)
-qed
-
-*)
-
 lemma (in M_cardinal_AC) cardinal_rel_succ_not_0:   "|A|\<^bsup>M\<^esup> = succ(n) \<Longrightarrow> M(A) \<Longrightarrow> M(n) \<Longrightarrow> A \<noteq> 0"
   by auto
 
-
 (* "Finite_to_one(X,Y) \<equiv> {f:X\<rightarrow>Y. \<forall>y\<in>Y. Finite({x\<in>X . f`x = y})}" *)
-
 reldb_add functional "Finite" "Finite" \<comment> \<open>wrongly done? Finite is absolute\<close>
 relativize functional "Finite_to_one" "Finite_to_one_rel" external
 (* reldb_add relational "Finite" "is_Finite" \<comment> \<open>don't have is_Finite yet\<close>

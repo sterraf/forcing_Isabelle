@@ -1,6 +1,6 @@
 theory Internal_Proofs
   imports
-    Relativization
+    "../src/Relativization"
     "../Tools/Try0"
 begin
 \<comment> \<open>NOTE: This theory is a playground.\<close>
