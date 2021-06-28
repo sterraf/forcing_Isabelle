@@ -40,7 +40,14 @@ lemma delta_system_Aleph_rel1:
   assumes "\<forall>A\<in>F. Finite(A)" "F \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "M(F)"
   shows "\<exists>D[M]. D \<subseteq> F \<and> delta_system(D) \<and> D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
 proof -
-  have "M(G) \<Longrightarrow> M(p) \<Longrightarrow> M({A\<in>G . p \<in> A})" for G p sorry
+  have "M(G) \<Longrightarrow> M(p) \<Longrightarrow> M({A\<in>G . p \<in> A})" for G p
+  proof -
+    assume "M(G)" "M(p)"
+    have "{A\<in>G . p \<in> A} = G \<inter> (Memrel({p} \<union> G) `` {p})"
+      unfolding Memrel_def by auto
+    with \<open>M(G)\<close> \<open>M(p)\<close>
+    show ?thesis by simp
+  qed
   from \<open>M(F)\<close>
   have "M(\<lambda>A\<in>F. |A|\<^bsup>M\<^esup>)"
     using cardinal_replacement
