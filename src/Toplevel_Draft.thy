@@ -78,7 +78,9 @@ lemma Aleph_rel_sub_closed: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longr
   by simp
 
 lemma Card_rel_imp_Card_rel: "M(\<kappa>) \<Longrightarrow> Card\<^bsup>N\<^esup>(\<kappa>) \<Longrightarrow> Card\<^bsup>M\<^esup>(\<kappa>)"
-  sorry
+  using N.Card_rel_is_Ord[of \<kappa>] M_imp_N Ord_cardinal_rel_le[of \<kappa>]
+    cardinal_rel_le_cardinal_rel[of \<kappa>] le_anti_sym
+  unfolding Card_rel_def by auto
 
 lemma Aleph_rel_le_Aleph_rel: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>N\<^esup>"
   sorry
