@@ -284,7 +284,7 @@ lemmas lepoll_rel_refl = subset_refl [THEN subset_imp_lepoll_rel, simp]
 
 lemmas le_imp_lepoll_rel = le_imp_subset [THEN subset_imp_lepoll_rel]
 
-lemma eqpoll_rel_imp_lepoll_rel: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<approx>\<^bsup>M\<^esup> Y ==> X \<lesssim>\<^bsup>M\<^esup> Y"
+lemma eqpoll_rel_imp_lepoll_rel: "X \<approx>\<^bsup>M\<^esup> Y ==> M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<lesssim>\<^bsup>M\<^esup> Y"
   unfolding def_eqpoll_rel bij_def def_lepoll_rel using bij_is_inj
   by (auto)
 

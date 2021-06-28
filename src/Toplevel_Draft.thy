@@ -60,7 +60,22 @@ locale M_master_sub = M_master + N:M_master N for N +
   assumes
     M_imp_N: "M(x) \<Longrightarrow> N(x)" and
     Ord_iff: "Ord(x) \<Longrightarrow> M(x) \<longleftrightarrow> N(x)"
+
+sublocale M_master_sub \<subseteq> M_N_Perm
+  using M_imp_N by unfold_locales
+
+context M_master_sub
 begin
+
+lemma cardinal_rel_le_cardinal_rel: "M(X) \<Longrightarrow> |X|\<^bsup>N\<^esup> \<le> |X|\<^bsup>M\<^esup>"
+  using M_imp_N N.lepoll_rel_cardinal_rel_le[OF lepoll_rel_transfer Card_rel_is_Ord]
+      cardinal_rel_eqpoll_rel[THEN eqpoll_rel_sym, THEN eqpoll_rel_imp_lepoll_rel]
+  by simp
+
+lemma Aleph_rel_sub_closed: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> N(\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)"
+  using Aleph_rel2_closed Ord_iff[THEN iffD1,
+      OF Card_rel_Aleph_rel[THEN Card_rel_is_Ord]]
+  by simp
 
 lemma Card_rel_imp_Card_rel: "M(\<kappa>) \<Longrightarrow> Card\<^bsup>N\<^esup>(\<kappa>) \<Longrightarrow> Card\<^bsup>M\<^esup>(\<kappa>)"
   sorry
@@ -68,18 +83,7 @@ lemma Card_rel_imp_Card_rel: "M(\<kappa>) \<Longrightarrow> Card\<^bsup>N\<^esup
 lemma Aleph_rel_le_Aleph_rel: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>N\<^esup>"
   sorry
 
-lemma cardinal_rel_le_cardinal_rel: "M(X) \<Longrightarrow> |X|\<^bsup>N\<^esup> \<le> |X|\<^bsup>M\<^esup>"
-  sorry
-
-lemma Aleph_rel_sub_closed: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> N(\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)"
-  using Aleph_rel2_closed Ord_iff[THEN iffD1,
-      OF Card_rel_Aleph_rel[THEN Card_rel_is_Ord]]
-  by simp
-
 end (* M_master_sub *)
-
-sublocale M_master_sub \<subseteq> M_N_Perm
-  using M_imp_N by unfold_locales
 
 sublocale M_ZF_trans \<subseteq> M_master "##M"
   sorry
