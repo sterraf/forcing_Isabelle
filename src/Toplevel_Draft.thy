@@ -100,6 +100,11 @@ proof -
     using M_imp_N Least_antitone[of _ ?P ?Q] unfolding csucc_rel_def by blast
 qed
 
+lemma (in M_cardinal_arith_jump) csucc_rel_le_mono:
+  assumes "\<kappa> \<le> \<nu>" "M(\<kappa>)" "M(\<nu>)"
+  shows "(\<kappa>\<^sup>+)\<^bsup>M\<^esup> \<le> (\<nu>\<^sup>+)\<^bsup>M\<^esup>"
+  sorry
+
 lemma Aleph_rel_le_Aleph_rel: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>N\<^esup>"
 proof (induct rule:trans_induct3)
   case 0
@@ -109,12 +114,25 @@ proof (induct rule:trans_induct3)
 next
   case (succ x)
   then
+  have "\<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>x\<^esub>\<^bsup>N\<^esup>" "Ord(x)" "M(x)" by simp_all
+  moreover from this
+  have "(\<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup> \<le> (\<aleph>\<^bsub>x\<^esub>\<^bsup>N\<^esup>\<^sup>+)\<^bsup>M\<^esup>"
+    using M_imp_N Ord_iff[THEN iffD2, OF N.Card_rel_is_Ord]
+    by (intro csucc_rel_le_mono) simp_all
+  moreover from calculation
+  have "(\<aleph>\<^bsub>x\<^esub>\<^bsup>N\<^esup>\<^sup>+)\<^bsup>M\<^esup> \<le> (\<aleph>\<^bsub>x\<^esub>\<^bsup>N\<^esup>\<^sup>+)\<^bsup>N\<^esup>"
+    using M_imp_N N.Card_rel_is_Ord Ord_iff[THEN iffD2, OF N.Card_rel_is_Ord]
+    by (intro csucc_rel_le_csucc_rel) auto
+  ultimately
   show ?case
     using M_imp_N Aleph_rel_succ N.Aleph_rel_succ csucc_rel_le_csucc_rel
-    sorry
+      le_trans by auto
 next
   case (limit x)
-  then show ?case sorry
+  then
+  show ?case
+    using M_imp_N Aleph_rel_limit N.Aleph_rel_limit
+     by simp (blast dest: transM intro!:le_implies_UN_le_UN)
 qed
 
 end (* M_master_sub *)
