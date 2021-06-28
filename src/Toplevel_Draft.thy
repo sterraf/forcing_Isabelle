@@ -100,10 +100,34 @@ proof -
     using M_imp_N Least_antitone[of _ ?P ?Q] unfolding csucc_rel_def by blast
 qed
 
+lemma (in M_cardinal_arith_jump) csucc_rel_def':"csucc_rel(N, K) \<equiv> \<mu> L. N(L) \<and> Card\<^bsup>N\<^esup>(L) \<and> K < L"
+  unfolding csucc_rel_def .
+
 lemma (in M_cardinal_arith_jump) csucc_rel_cardinal_rel:
   assumes "Ord(\<kappa>)" "M(\<kappa>)"
   shows "(|\<kappa>|\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup> = (\<kappa>\<^sup>+)\<^bsup>M\<^esup>"
-  sorry
+proof (intro le_anti_sym)\<comment> \<open>show both inequalities\<close>
+  from assms
+  have hips:"M((\<kappa>\<^sup>+)\<^bsup>M\<^esup>)" "Ord((\<kappa>\<^sup>+)\<^bsup>M\<^esup>)" "\<kappa> < (\<kappa>\<^sup>+)\<^bsup>M\<^esup>"
+    using Card_rel_csucc_rel[THEN Card_rel_is_Ord]
+      csucc_rel_basic by simp_all
+  then
+  show "(|\<kappa>|\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup> \<le> (\<kappa>\<^sup>+)\<^bsup>M\<^esup>"
+    using Ord_cardinal_rel_le[THEN lt_trans1]
+      Card_rel_csucc_rel
+    unfolding csucc_rel_def
+    by (rule_tac Least_antitone) (assumption, simp_all add:assms)
+  from assms
+  have "\<kappa> < L" if "Card\<^bsup>M\<^esup>(L)" "|\<kappa>|\<^bsup>M\<^esup> < L" "M(L)" for L
+    using (* Card_rel_le_iff[THEN iffD1, THEN le_trans, of \<kappa> _ L] *) that
+      Card_rel_is_Ord leI Card_rel_le_iff[of \<kappa> L]
+    by (rule_tac ccontr, auto dest:not_lt_imp_le) (fast dest: le_imp_not_lt)
+  with hips
+  show "(\<kappa>\<^sup>+)\<^bsup>M\<^esup> \<le> (|\<kappa>|\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup>"
+    using Ord_cardinal_rel_le[THEN lt_trans1] Card_rel_csucc_rel
+    unfolding csucc_rel_def
+    by (rule_tac Least_antitone) (assumption, auto simp add:assms)
+qed
 
 lemma (in M_cardinal_arith_jump) csucc_rel_le_mono:
   assumes "\<kappa> \<le> \<nu>" "M(\<kappa>)" "M(\<nu>)"
