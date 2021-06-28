@@ -82,8 +82,40 @@ lemma Card_rel_imp_Card_rel: "M(\<kappa>) \<Longrightarrow> Card\<^bsup>N\<^esup
     cardinal_rel_le_cardinal_rel[of \<kappa>] le_anti_sym
   unfolding Card_rel_def by auto
 
+lemma csucc_rel_le_csucc_rel:
+  assumes "Ord(\<kappa>)" "M(\<kappa>)"
+  shows "(\<kappa>\<^sup>+)\<^bsup>M\<^esup> \<le> (\<kappa>\<^sup>+)\<^bsup>N\<^esup>"
+proof -
+  note assms
+  moreover from this
+  have "N(L) \<and> Card\<^bsup>N\<^esup>(L) \<and> \<kappa> < L \<Longrightarrow> M(L) \<and> Card\<^bsup>M\<^esup>(L) \<and> \<kappa> < L"
+    (is "?P(L) \<Longrightarrow> ?Q(L)") for L
+    using M_imp_N Ord_iff[THEN iffD2, of L] N.Card_rel_is_Ord lt_Ord
+      Card_rel_imp_Card_rel by auto
+  moreover from assms
+  have "N((\<kappa>\<^sup>+)\<^bsup>N\<^esup>)" "Card\<^bsup>N\<^esup>((\<kappa>\<^sup>+)\<^bsup>N\<^esup>)" "\<kappa> < (\<kappa>\<^sup>+)\<^bsup>N\<^esup>"
+    using N.lt_csucc_rel[of \<kappa>] N.Card_rel_csucc_rel[of \<kappa>] M_imp_N by simp_all
+  ultimately
+  show ?thesis
+    using M_imp_N Least_antitone[of _ ?P ?Q] unfolding csucc_rel_def by blast
+qed
+
 lemma Aleph_rel_le_Aleph_rel: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>N\<^esup>"
-  sorry
+proof (induct rule:trans_induct3)
+  case 0
+  then
+  show ?case
+    using Aleph_rel_zero N.Aleph_rel_zero by simp
+next
+  case (succ x)
+  then
+  show ?case
+    using M_imp_N Aleph_rel_succ N.Aleph_rel_succ csucc_rel_le_csucc_rel
+    sorry
+next
+  case (limit x)
+  then show ?case sorry
+qed
 
 end (* M_master_sub *)
 
