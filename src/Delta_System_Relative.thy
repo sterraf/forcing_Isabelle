@@ -36,6 +36,15 @@ locale M_delta = M_cardinal_library +
 
 begin
 
+lemma diff_strong_replacement:
+  "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=<x,x-{p}>)" sorry
+
+lemma diff_strong_replacement_simp:
+  "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=x-{p})" sorry
+
+lemma un_strong_replacement:
+  "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y = x\<union>{p})" sorry
+
 lemma delta_system_Aleph_rel1:
   assumes "\<forall>A\<in>F. Finite(A)" "F \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "M(F)"
   shows "\<exists>D[M]. D \<subseteq> F \<and> delta_system(D) \<and> D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
@@ -115,11 +124,16 @@ proof -
       then
       obtain p where "{A\<in>G . p \<in> A} \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "M(p)" by blast
       moreover
-      note \<open>M(G)\<close> \<open>M(G) \<Longrightarrow> M(p) \<Longrightarrow> M({A\<in>G . p \<in> A})\<close>
-      moreover
-      have "M({x - {p} . x \<in> {x \<in> G . p \<in> x}})" sorry
-      moreover
-      have "M(f) \<Longrightarrow> M(converse(\<lambda>x\<in>{x \<in> G . p \<in> x}. x - {p}))" for f sorry
+      note 1=\<open>M(G)\<close> \<open>M(G) \<Longrightarrow> M(p) \<Longrightarrow> M({A\<in>G . p \<in> A})\<close> singleton_closed[OF \<open>M(p)\<close>]
+      moreover from this
+      have "M({x - {p} . x \<in> {x \<in> G . p \<in> x}})"
+        using RepFun_closed[OF diff_strong_replacement_simp] Diff_closed[OF transM[OF _ 1(2)]]
+        by auto
+      moreover from 1
+      have "M(converse(\<lambda>x\<in>{x \<in> G . p \<in> x}. x - {p}))" (is "M(converse(?h))")
+        using converse_closed[of ?h] lam_closed[OF diff_strong_replacement]
+          Diff_closed[OF transM[OF _ 1(2)]]
+        by auto
       moreover from calculation
       have "{A-{p} . A\<in>{X\<in>G. p\<in>X}} \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" (is "?F \<approx>\<^bsup>M\<^esup> _")
         using Diff_bij_rel[of "{A\<in>G . p \<in> A}" "{p}", THEN
@@ -151,10 +165,13 @@ proof -
       note \<open>(\<And>A. A \<in> ?F \<Longrightarrow> |A|\<^bsup>M\<^esup> = n) \<Longrightarrow> ?F \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> M(?F) \<Longrightarrow>
              \<exists>D[M]. D \<subseteq> ?F \<and> delta_system(D) \<and> D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
       moreover
-      have "M(?F)" sorry
+      note 1=\<open>M(G)\<close> \<open>M(G) \<Longrightarrow> M(p) \<Longrightarrow> M({A\<in>G . p \<in> A})\<close> singleton_closed[OF \<open>M(p)\<close>]
+      moreover from this
+      have "M({x - {p} . x \<in> {x \<in> G . p \<in> x}})"
+        using RepFun_closed[OF diff_strong_replacement_simp] Diff_closed[OF transM[OF _ 1(2)]]
+        by auto
       ultimately
-      obtain D where "D\<subseteq>{A-{p} . A\<in>{X\<in>G. p\<in>X}}" "delta_system(D)" "D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
-             "M(D)"
+      obtain D where "D\<subseteq>{A-{p} . A\<in>{X\<in>G. p\<in>X}}" "delta_system(D)" "D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "M(D)"
         by auto
       moreover from this
       obtain r where "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
@@ -165,8 +182,9 @@ proof -
       ultimately
       have "delta_system({B \<union> {p} . B\<in>D})" (is "delta_system(?D)")
         by fastforce
-      moreover
-      have "M(?D)" sorry
+      moreover from \<open>M(D)\<close> \<open>M(p)\<close>
+      have "M(?D)"
+        using RepFun_closed un_strong_replacement transM[of _ D] by auto
       moreover from \<open>D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> \<open>M(D)\<close>
       have "Infinite(D)" "|D|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
         using uncountable_rel_iff_subset_eqpoll_rel_Aleph_rel1[THEN iffD2,
