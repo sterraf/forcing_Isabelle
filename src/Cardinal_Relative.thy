@@ -1303,12 +1303,9 @@ proof(intro equalityI,auto simp add:Un_Pow_subset)
 qed
 
 lemma Finite_subset_closed:
-  assumes "Finite(A)" "B\<subseteq>A" "M(A)"
+  assumes "Finite(B)" "B\<subseteq>A" "M(A)"
   shows "M(B)"
 proof -
-  from assms
-  have "Finite(B)"
-    using subset_Finite by simp
   from \<open>Finite(B)\<close> \<open>B\<subseteq>A\<close>
   show ?thesis
   proof(induct,simp)
