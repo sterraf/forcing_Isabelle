@@ -1267,29 +1267,73 @@ lemma succ_lepoll_rel_imp_not_empty: "succ(x) \<lesssim>\<^bsup>M\<^esup> y ==> 
 lemma eqpoll_rel_succ_imp_not_empty: "x \<approx>\<^bsup>M\<^esup> succ(n) ==> M(x) \<Longrightarrow> M(n) \<Longrightarrow> x \<noteq> 0"
   by (fast elim!: eqpoll_rel_sym [THEN eqpoll_rel_0_is_0, THEN succ_neq_0])
 
-lemma Pow_rel_0 [simp]: "Pow_rel(M,0) = {0}"
-  using Pow_rel_char by auto
 
-lemma Pow_rel_insert: assumes "M(a)" "M(A)"
-  shows "Pow_rel(M,cons(a,A)) = Pow_rel(M,A) \<union> {cons(a,X) . X: Pow_rel(M,A)}"
-  sorry
-
-\<comment> \<open>NOTE: The following result (and @{thm Pow_rel_0}) is subsumed by
-   \<^term>\<open>Finite(A) \<Longrightarrow> M(A) \<Longrightarrow> Pow(A) = Pow_rel(M,A)\<close>, which
-    would be desirable to have\<close>
-lemma Finite_Pow_rel: assumes "Finite(A)"
-  shows "M(A) ==> Finite(Pow_rel(M,A))"
-  using assms
-proof (induct)
-  case 0
-  then show ?case by simp
-next
-  case (cons x B)
+\<comment> \<open>FIXME: These two lemmas are not used; are they useful?\<close>
+lemma Pow_sing : "Pow({a}) = {0,{a}}"
+proof(intro equalityI,simp_all)
+  have "z \<in> {0,{a}}" if "z \<subseteq> {a}" for z
+    using that by auto
   then
-  have "M(B)" sorry
-  with cons
-  show ?case sorry
+  show " Pow({a}) \<subseteq> {0, {a}}" by auto
 qed
+
+lemma Pow_cons:
+  shows "Pow({a} \<union> A) = Pow(A) \<union> {{a} \<union> X . X: Pow(A)}"
+  using Un_Pow_subset Pow_sing
+proof(intro equalityI,auto simp add:Un_Pow_subset)
+  {
+    fix C D
+    assume "\<And> B . B\<in>Pow(A) \<Longrightarrow> C \<noteq> {a} \<union> B" "C \<subseteq> {a} \<union> A" "D \<in> C"
+    moreover from this
+    have "\<forall>x\<in>C . x=a \<or> x\<in>A" by auto
+    moreover from calculation
+    consider (a) "D=a" | (b) "D\<in>A" by auto
+    from this
+    have "D\<in>A"
+    proof(cases)
+      case a
+      with calculation show ?thesis by auto
+    next
+      case b
+      then show ?thesis by simp
+    qed
+  }
+  then show "\<And>x xa. (\<forall>xa\<in>Pow(A). x \<noteq> {a} \<union> xa) \<Longrightarrow> x \<subseteq> {a} \<union> A \<Longrightarrow> xa \<in> x \<Longrightarrow> xa \<in> A"
+    by auto
+qed
+
+lemma Finite_subset_closed:
+  assumes "Finite(A)" "B\<subseteq>A" "M(A)"
+  shows "M(B)"
+proof -
+  from assms
+  have "Finite(B)"
+    using subset_Finite by simp
+  from \<open>Finite(B)\<close> \<open>B\<subseteq>A\<close>
+  show ?thesis
+  proof(induct,simp)
+    case (cons x D)
+    with assms
+    have "M(D)" "x\<in>A"
+      unfolding cons_def by auto
+    then
+    show ?case using transM[OF _ \<open>M(A)\<close>] by simp
+  qed
+qed
+
+lemma Finite_Pow_abs:
+  assumes "Finite(A)" " M(A)"
+  shows "Pow(A) = Pow_rel(M,A)"
+  using Finite_subset_closed assms Pow_rel_char by auto
+
+lemma Finite_Pow_rel:
+  assumes "Finite(A)" "M(A)"
+  shows "Finite(Pow_rel(M,A))"
+  using Finite_Pow Finite_Pow_abs[symmetric] assms by simp
+
+lemma Pow_rel_0 [simp]: "Pow_rel(M,0) = {0}"
+  using Finite_Pow_abs[of 0] by simp
+
 
 end (* M_cardinals *)
 
