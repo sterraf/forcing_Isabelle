@@ -67,6 +67,25 @@ locale M_cohen = M_delta +
 context M_cardinal_library
 begin
 
+lemma domain_separation:
+  "M(A) \<Longrightarrow> separation(M, \<lambda>x . domain(x)\<in>A)" sorry
+
+lemma domain_eq_separation:
+  "M(p) \<Longrightarrow> separation(M, \<lambda>x . domain(x) = p)" sorry
+
+lemma domain_strong_replacement:
+  "strong_replacement(M, \<lambda>x y . y=<x,domain(x)>)" sorry
+
+lemma domain_strong_replacement_simp:
+  "strong_replacement(M, \<lambda>x y. y=domain(x))" sorry
+
+lemma restrict_eq_separation:
+  "M(r) \<Longrightarrow> M(p) \<Longrightarrow> separation(M, \<lambda>x . restrict(x,r) = p)" sorry
+
+lemma restrict_strong_replacement:
+  "M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=restrict(x,r))" sorry
+
+
 lemma lesspoll_nat_imp_lesspoll_rel: 
   assumes "A \<prec> \<omega>" "M(A)"
   shows "A \<prec>\<^bsup>M\<^esup> \<omega>"
@@ -211,7 +230,9 @@ proof -
     fix A
     assume "\<not> |A|\<^bsup>M\<^esup> \<le> nat" "M(A)"
     then
-    have "M({domain(p) . p \<in> A})" sorry
+    have "M({domain(p) . p \<in> A})"
+      using RepFun_closed domain_strong_replacement_simp transM[OF _ \<open>M(A)\<close>]
+      by auto
     assume "A \<subseteq> Fn(nat, I, 2)"
     moreover from this
     have "countable_rel(M,{p\<in>A. domain(p) = d})" if "M(d)" for d
@@ -227,10 +248,11 @@ proof -
           lesspoll_rel_nat_is_Finite_rel function_space_rel_char[of _ 2] by auto
       moreover from \<open>M(d)\<close>
       have "M(d \<rightarrow>\<^bsup>M\<^esup> 2)" by simp
-      moreover
-      have "M({p \<in> A . domain(p) = d})" sorry
+      moreover from \<open>M(A)\<close>
+      have "M({p \<in> A . domain(p) = d})"
+        using separation_closed domain_eq_separation[OF \<open>M(d)\<close>] by simp
       ultimately
-      show ?thesis using subset_Finite[of _ "d\<rightarrow>\<^bsup>M\<^esup>2" ] 
+      show ?thesis using subset_Finite[of _ "d\<rightarrow>\<^bsup>M\<^esup>2" ]
         by (auto intro!:Finite_imp_countable_rel)
     next
       case False
@@ -250,7 +272,8 @@ proof -
     proof
       note \<open>M({domain(p). p\<in>A})\<close> \<open>M(A)\<close>
       moreover from this
-      have "x \<in> A \<Longrightarrow> M({p \<in> A . domain(p) = domain(x)})" for x sorry
+      have "x \<in> A \<Longrightarrow> M({p \<in> A . domain(p) = domain(x)})" for x
+        using separation_closed domain_eq_separation transM[OF _ \<open>M(A)\<close>] by simp
       ultimately
       interpret M_cardinal_UN_lepoll _ "\<lambda>d. {p \<in> A. domain(p) = d }" "{domain(p). p\<in>A}"
         using countable_lepoll_assms2 unfolding dC_F_def
@@ -304,7 +327,7 @@ proof -
     proof -
       note \<open>M(Fn(nat, I, 2))\<close> \<open>M(r)\<close>
       moreover from this
-      have "f\<in>Fn(nat, I, 2) \<Longrightarrow> M(restrict(f,r))" for f 
+      have "f\<in>Fn(nat, I, 2) \<Longrightarrow> M(restrict(f,r))" for f
         by (blast dest: transM)
       ultimately
       have "f\<in>Fn(nat, I, 2) \<Longrightarrow> restrict(f,r) \<in> Pow_rel(M,r \<times> 2)" for f
@@ -314,7 +337,8 @@ proof -
       have "{restrict(f,r) . f \<in> A } \<subseteq> Pow_rel(M,r \<times> 2)"
         by fast
       moreover from \<open>M(A)\<close> \<open>M(r)\<close>
-      have "M({restrict(f,r) . f \<in> A })" sorry
+      have "M({restrict(f,r) . f \<in> A })"
+        using RepFun_closed restrict_strong_replacement transM[OF _ \<open>M(A)\<close>] by auto
       moreover
       note \<open>Finite(r)\<close> \<open>M(r)\<close>
       ultimately
@@ -323,14 +347,16 @@ proof -
         by (intro Finite_imp_countable_rel) (auto intro:subset_Finite)
     qed
     moreover from \<open>M(A)\<close> \<open>M(D)\<close>
-    have "M({p\<in>A. domain(p) \<in> D})" sorry
+    have "M({p\<in>A. domain(p) \<in> D})"
+      using domain_separation by simp
     have "uncountable_rel(M,{p\<in>A. domain(p) \<in> D})" (is "uncountable_rel(M,?X)")
     proof
       from \<open>D \<subseteq> {domain(p) . p \<in> A}\<close>
       have "(\<lambda>p\<in>?X. domain(p)) \<in> surj(?X, D)"
         using lam_type unfolding surj_def by auto
-      moreover
-      have "M(\<lambda>p\<in>?X. domain(p))" sorry
+      moreover from \<open>M(A)\<close> \<open>M(?X)\<close>
+      have "M(\<lambda>p\<in>?X. domain(p))"
+        using lam_closed[OF domain_strong_replacement \<open>M(?X)\<close>] transM[OF _ \<open>M(?X)\<close>] by simp
       moreover
       note \<open>M(?X)\<close> \<open>M(D)\<close>
       moreover from calculation
@@ -378,8 +404,14 @@ proof -
       show ?thesis
         by (intro equalityI) (force)+
     qed
+    from \<open>M(D)\<close> \<open>M(A)\<close> \<open>M(r)\<close>
     have "M({domain(p) .. p\<in>A, restrict(p,r) = f \<and> domain(p) \<in> D})" (is "M(?Y(f))")
-      if "M(f)" for f sorry
+      if "M(f)" for f
+      using RepFun_closed domain_strong_replacement_simp
+        separation_conj[OF restrict_eq_separation[OF \<open>M(r)\<close> \<open>M(f)\<close>]
+                           domain_separation[OF \<open>M(D)\<close>]]
+        transM[OF _ \<open>M(D)\<close>]
+      by simp
     obtain f where "uncountable_rel(M,?Y(f))" "M(f)"
     proof -
       note \<open>M(r)\<close>
