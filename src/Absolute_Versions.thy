@@ -105,6 +105,16 @@ lemma Ord_cardinal_idem': "Ord(A) \<Longrightarrow> ||A|| = |A|"
 lemma Aleph_succ': "Ord(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>succ(\<alpha>)\<^esub> = \<aleph>\<^bsub>\<alpha>\<^esub>\<^sup>+"
   using V.Aleph_rel_succ by (simp only:V_simps)
 
+txt\<open>These two results are new, first obtained in relative form
+    (not ported).\<close>
+lemma csucc_cardinal:
+  assumes "Ord(\<kappa>)" shows "|\<kappa>|\<^sup>+ = \<kappa>\<^sup>+"
+  using assms V.csucc_rel_cardinal_rel by (simp add:V_simps)
+
+lemma csucc_le_mono:
+  assumes "\<kappa> \<le> \<nu>"  shows "\<kappa>\<^sup>+ \<le> \<nu>\<^sup>+"
+  using assms V.csucc_rel_le_mono by (simp add:V_simps)
+
 txt\<open>Example of a transfer result between a transitive model and $V$\<close>
 lemma (in M_Perm) assumes "M(A)" "M(B)" "A \<approx>\<^bsup>M\<^esup> B"
   shows "A \<approx> B"

@@ -1873,5 +1873,5 @@ qed
 lemma Ord_nat_subset_into_Card_rel: "[| Ord(i); i \<subseteq> nat |] ==> Card\<^bsup>M\<^esup>(i)"
 by (blast dest: Ord_subset_natD intro: Card_rel_nat nat_into_Card_rel)
 
-end (* M_cardinal_arith *)
+end (* M_cardinal_arith_jump *)
 end
