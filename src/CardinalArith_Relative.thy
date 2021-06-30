@@ -933,14 +933,13 @@ relationalize "ordermap_rel" "is_ordermap"
 context M_cardinal_arith
 begin
 
-(*
 (* Closure needs more hypotheses *)
 rel_closed for "ordermap"
   using ordermap_replacement unfolding ordermap_rel_def wfrec_on_def
   apply (rule lam_closed)
      apply auto
   apply (rule trans_wfrec_closed)
-*)
+  sorry
 
 is_iff_rel for "ordermap"
   using bij_rel_iff
@@ -955,13 +954,13 @@ text\<open>Discipline for \<^term>\<open>ordertype\<close>\<close>
 relativize functional "ordertype" "ordertype_rel" external
 relationalize "ordertype_rel" "is_ordertype"
 
-context M_Perm
+context M_cardinal_arith
 begin
 
-(* is_iff_rel for "ordertype"
-  using bij_rel_iff
+is_iff_rel for "ordertype"
+  using bij_rel_iff is_ordermap_iff
   unfolding is_ordertype_def ordertype_rel_def
-  (* by simp *) sorry *)
+   by simp
 end (* M_Perm *)
 
 synthesize "is_ordertype" from_definition assuming "nonempty"
@@ -979,29 +978,49 @@ lemma (in M_cardinal_arith) is_omap_iff_omap:
   sorry
 *)
 
-(*
 relativize functional "jump_cardinal" "jump_cardinal_rel" external
 relationalize "jump_cardinal_rel" "is_jump_cardinal"
 synthesize "is_jump_cardinal" from_definition assuming "nonempty"
 arity_theorem for "is_jump_cardinal_fm"
 
-context M_Perm
+context M_cardinal_arith
 begin
 
 rel_closed for "jump_cardinal"
   unfolding jump_cardinal_rel_def
   apply (intro Union_closed)
-  oops
+  sorry
+
+lemma uni1: "univalent(M,Z,\<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z))" sorry
+
+lemma uni2: "univalent(M,Z,\<lambda>X a. M(a) \<and> M(X) \<and> is_Replace(M, c, \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z), a))" sorry
 
 is_iff_rel for "jump_cardinal"
-  using Pow_rel_iff is_ordertype_iff
-  unfolding is_jump_cardinal_def jump_cardinal_rel_def
-  by simp
+proof -
+  assume types: "M(K)" "M(res)"
+  then
+  have "is_Replace(M, c, \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z),
+   a) \<longleftrightarrow> a = {z . r \<in> c, M(z) \<and> M(r) \<and> is_well_ord(M,X,r) \<and> is_ordertype(M, X, r, z)}"
+    if "M(c)" "M(X)" "M(a)" for c X a
+    using that uni1
+    by (rule_tac Replace_abs) (auto simp:absolut)
+  then
+  have "is_Replace(M, c, \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z),
+   a) \<longleftrightarrow> a = {z . r \<in> c, M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)}"
+    if "M(c)" "M(X)" "M(a)" for c X a
+    using that is_ordertype_iff is_well_ord_iff_wellordered
+    by (simp)
+  with types
+  show ?thesis
+    using Pow_rel_iff is_ordertype_iff uni2
+    unfolding is_jump_cardinal_def jump_cardinal_rel_def
+    apply (simp add:absolut)
+    sorry
+qed
 
 end
 *)
 
-*)
 (******************************************************)
 subsection\<open>Discipline for \<^term>\<open>jcardDom\<close>\<close>
 
