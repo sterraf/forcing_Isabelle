@@ -529,6 +529,7 @@ locale M_cardinal_library = M_library +
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q} \<and> z = {\<langle>x, y\<rangle>})"
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>Y. {a \<in> G . \<forall>s\<in>Y. \<langle>s, a\<rangle> \<in> Q}))"
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})"
+    "M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})\<rangle>)"
 and cardinal_lib_assms4:
   "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, f -`` {x}\<rangle>)"
@@ -539,6 +540,7 @@ and cardinal_lib_assms6:
     strong_replacement(M, \<lambda>x y. y = transrec(x, \<lambda>a g. f ` (g `` a)))"
  "M(f) \<Longrightarrow> M(G) \<Longrightarrow>
     strong_replacement(M, \<lambda>x y. y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
+ "separation(M, \<lambda> x . \<exists>a. \<exists>b . x=\<langle>a,b\<rangle> \<and> a\<noteq>b)"
 
 begin
 
@@ -894,11 +896,13 @@ lemma bounded_cardinal_rel_selection:
     "\<exists>S[M]. S : \<gamma> \<rightarrow>\<^bsup>M\<^esup> G \<and> (\<forall>\<alpha> \<in> \<gamma>. \<forall>\<beta> \<in> \<gamma>.  \<alpha><\<beta> \<longrightarrow> <S`\<alpha>,S`\<beta>>\<in>Q)"
 proof -
   from assms
-  have "M(x) \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})" for x sorry
+  have "M(x) \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})" for x
+    using cdlt_replacement by simp
   let ?cdlt\<gamma>="{Z\<in>Pow_rel(M,G) . |Z|\<^bsup>M\<^esup><\<gamma>}" \<comment> \<open>“cardinal_rel less than \<^term>\<open>\<gamma>\<close>”\<close>
     and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. <s,a>\<in>Q}"
   from \<open>M(G)\<close>
-  have "M(?cdlt\<gamma>)" using Pow_rel_closed separation_closed cardinal_lib_assms5[OF \<open>M(\<gamma>)\<close>]
+  have "M(?cdlt\<gamma>)"
+    using Pow_rel_closed separation_closed cardinal_lib_assms5[OF \<open>M(\<gamma>)\<close>]
     by simp
   from assms
   have H:"\<exists>a. a \<in> ?inQ(Y)" if "Y\<in>?cdlt\<gamma>" for Y
@@ -1030,14 +1034,19 @@ proof -
   show ?thesis using function_space_rel_char by auto
 qed
 
-
 text\<open>The following basic result can, in turn, be proved by a
      bounded-cardinal_rel selection.\<close>
 lemma Infinite_iff_lepoll_rel_nat: "M(Z) \<Longrightarrow> Infinite(Z) \<longleftrightarrow> \<omega> \<lesssim>\<^bsup>M\<^esup> Z"
 proof
-  define Distinct where "Distinct = { <x,y> \<in> Z\<times>Z . x\<noteq>y}"
+  define Distinct where "Distinct = {<x,y> \<in> Z\<times>Z . x\<noteq>y}"
+  have "Distinct = {xy \<in> Z\<times>Z . \<exists>a b. xy = \<langle>a, b\<rangle> \<and> a \<noteq> b}" (is "_=?A")
+    unfolding Distinct_def by auto
+  moreover
   assume "Infinite(Z)" "M(Z)"
-  then
+  moreover from calculation
+  have "M(Distinct)"
+     using cardinal_lib_assms6 by simp
+  from \<open>Infinite(Z)\<close> \<open>M(Z)\<close>
   obtain b where "b\<in>Z"
     using Infinite_not_empty by auto
   {
@@ -1069,10 +1078,10 @@ proof
     show "\<exists>a\<in>Z. \<forall>s\<in>W. <s,a>\<in>Distinct"
       unfolding Distinct_def by auto
   qed
-  moreover from \<open>b\<in>Z\<close> \<open>M(Z)\<close> this
+  moreover from \<open>b\<in>Z\<close> \<open>M(Z)\<close> \<open>M(Distinct)\<close> this
   obtain S where "S : \<omega> \<rightarrow>\<^bsup>M\<^esup> Z" "M(S)" "\<forall>\<alpha>\<in>\<omega>. \<forall>\<beta>\<in>\<omega>. \<alpha> < \<beta> \<longrightarrow> <S`\<alpha>,S`\<beta>> \<in> Distinct"
     using bounded_cardinal_rel_selection[OF _ \<open>b\<in>Z\<close> Card_rel_nat,of Distinct]
-    (* by blast *) sorry
+    by blast
   moreover from this
   have "\<alpha> \<in> \<omega> \<Longrightarrow> \<beta> \<in> \<omega> \<Longrightarrow> \<alpha>\<noteq>\<beta> \<Longrightarrow> S`\<alpha> \<noteq> S`\<beta>" for \<alpha> \<beta>
     unfolding Distinct_def

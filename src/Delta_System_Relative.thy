@@ -34,11 +34,13 @@ locale M_delta = M_cardinal_library +
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions18(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
     and
-    diff_Pair_replacement: "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=<x,x-{p}>)"
+    diff_Pair_replacement: "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=\<langle>x,x-{p}\<rangle>)"
     and
     diff_Pair_replacement_simp: "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=x-{p})"
     and
     un_Pair_replacement: "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y = x\<union>{p})"
+    and
+    disjoint_separation: "separation(M, \<lambda> x. \<exists>a. \<exists>b. x=\<langle>a,b\<rangle> \<and> a \<inter> b = 0)"
 begin
 
 lemma delta_system_Aleph_rel1:
@@ -252,6 +254,11 @@ proof -
           unfolding countable_rel_def by (auto dest: transM)
       qed
       define Disjoint where "Disjoint = {<A,B> \<in> G\<times>G . B \<inter> A = 0}"
+      have "Disjoint = {x \<in> G\<times>G . \<exists> a b. x=<a,b> \<and> a\<inter>b=0}"
+        unfolding Disjoint_def by force
+      with \<open>M(G)\<close>
+      have "M(Disjoint)"
+        using disjoint_separation by simp
       text\<open>For every countable_rel subfamily of \<^term>\<open>G\<close> there is another some
       element disjoint from all of them:\<close>
       have "\<exists>A\<in>G. \<forall>S\<in>X. <S,A>\<in>Disjoint" if "|X|\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "X \<subseteq> G" "M(X)" for X
@@ -302,8 +309,8 @@ proof -
       are satisfied,\<close>
       obtain S where "S:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<^bsup>M\<^esup>G" "\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<beta>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> <S`\<alpha>, S`\<beta>> \<in>Disjoint"
         for \<alpha> \<beta>
-        using bounded_cardinal_rel_selection[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" G Disjoint]
-        (* by force *) sorry
+        using bounded_cardinal_rel_selection[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" G Disjoint] \<open>M(Disjoint)\<close>
+        by force
       moreover from this \<open>n\<in>\<omega>\<close> \<open>M(G)\<close>
       have inM:"M(S)" "M(n)" "\<And>x. x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> S ` x \<in> G" "\<And>x. x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> M(x)"
         using function_space_rel_char by (auto dest: transM)
