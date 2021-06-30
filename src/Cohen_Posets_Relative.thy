@@ -62,29 +62,21 @@ locale M_cohen = M_delta +
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions16(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions17(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions18(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-
+    and
+    domain_mem_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>x . domain(x)\<in>A)"
+    and
+    domain_eq_separation: "M(p) \<Longrightarrow> separation(M, \<lambda>x . domain(x) = p)"
+    and
+    domain_replacement: "strong_replacement(M, \<lambda>x y . y=<x,domain(x)>)"
+    and
+    domain_replacement_simp: "strong_replacement(M, \<lambda>x y. y=domain(x))"
+    and
+    restrict_eq_separation: "M(r) \<Longrightarrow> M(p) \<Longrightarrow> separation(M, \<lambda>x . restrict(x,r) = p)"
+    and
+    restrict_strong_replacement: "M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=restrict(x,r))"
 
 context M_cardinal_library
 begin
-
-lemma domain_separation:
-  "M(A) \<Longrightarrow> separation(M, \<lambda>x . domain(x)\<in>A)" sorry
-
-lemma domain_eq_separation:
-  "M(p) \<Longrightarrow> separation(M, \<lambda>x . domain(x) = p)" sorry
-
-lemma domain_strong_replacement:
-  "strong_replacement(M, \<lambda>x y . y=<x,domain(x)>)" sorry
-
-lemma domain_strong_replacement_simp:
-  "strong_replacement(M, \<lambda>x y. y=domain(x))" sorry
-
-lemma restrict_eq_separation:
-  "M(r) \<Longrightarrow> M(p) \<Longrightarrow> separation(M, \<lambda>x . restrict(x,r) = p)" sorry
-
-lemma restrict_strong_replacement:
-  "M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=restrict(x,r))" sorry
-
 
 lemma lesspoll_nat_imp_lesspoll_rel: 
   assumes "A \<prec> \<omega>" "M(A)"
@@ -231,7 +223,7 @@ proof -
     assume "\<not> |A|\<^bsup>M\<^esup> \<le> nat" "M(A)"
     then
     have "M({domain(p) . p \<in> A})"
-      using RepFun_closed domain_strong_replacement_simp transM[OF _ \<open>M(A)\<close>]
+      using RepFun_closed domain_replacement_simp transM[OF _ \<open>M(A)\<close>]
       by auto
     assume "A \<subseteq> Fn(nat, I, 2)"
     moreover from this
@@ -348,7 +340,7 @@ proof -
     qed
     moreover from \<open>M(A)\<close> \<open>M(D)\<close>
     have "M({p\<in>A. domain(p) \<in> D})"
-      using domain_separation by simp
+      using domain_mem_separation by simp
     have "uncountable_rel(M,{p\<in>A. domain(p) \<in> D})" (is "uncountable_rel(M,?X)")
     proof
       from \<open>D \<subseteq> {domain(p) . p \<in> A}\<close>
@@ -356,7 +348,7 @@ proof -
         using lam_type unfolding surj_def by auto
       moreover from \<open>M(A)\<close> \<open>M(?X)\<close>
       have "M(\<lambda>p\<in>?X. domain(p))"
-        using lam_closed[OF domain_strong_replacement \<open>M(?X)\<close>] transM[OF _ \<open>M(?X)\<close>] by simp
+        using lam_closed[OF domain_replacement \<open>M(?X)\<close>] transM[OF _ \<open>M(?X)\<close>] by simp
       moreover
       note \<open>M(?X)\<close> \<open>M(D)\<close>
       moreover from calculation
@@ -407,9 +399,9 @@ proof -
     from \<open>M(D)\<close> \<open>M(A)\<close> \<open>M(r)\<close>
     have "M({domain(p) .. p\<in>A, restrict(p,r) = f \<and> domain(p) \<in> D})" (is "M(?Y(f))")
       if "M(f)" for f
-      using RepFun_closed domain_strong_replacement_simp
+      using RepFun_closed domain_replacement_simp
         separation_conj[OF restrict_eq_separation[OF \<open>M(r)\<close> \<open>M(f)\<close>]
-                           domain_separation[OF \<open>M(D)\<close>]]
+                           domain_mem_separation[OF \<open>M(D)\<close>]]
         transM[OF _ \<open>M(D)\<close>]
       by simp
     obtain f where "uncountable_rel(M,?Y(f))" "M(f)"

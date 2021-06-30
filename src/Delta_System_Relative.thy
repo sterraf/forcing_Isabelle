@@ -33,17 +33,13 @@ locale M_delta = M_cardinal_library +
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions18(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
-
+    and
+    diff_Pair_replacement: "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=<x,x-{p}>)"
+    and
+    diff_Pair_replacement_simp: "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=x-{p})"
+    and
+    un_Pair_replacement: "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y = x\<union>{p})"
 begin
-
-lemma diff_strong_replacement:
-  "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=<x,x-{p}>)" sorry
-
-lemma diff_strong_replacement_simp:
-  "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=x-{p})" sorry
-
-lemma un_strong_replacement:
-  "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y = x\<union>{p})" sorry
 
 lemma delta_system_Aleph_rel1:
   assumes "\<forall>A\<in>F. Finite(A)" "F \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "M(F)"
@@ -127,11 +123,11 @@ proof -
       note 1=\<open>M(G)\<close> \<open>M(G) \<Longrightarrow> M(p) \<Longrightarrow> M({A\<in>G . p \<in> A})\<close> singleton_closed[OF \<open>M(p)\<close>]
       moreover from this
       have "M({x - {p} . x \<in> {x \<in> G . p \<in> x}})"
-        using RepFun_closed[OF diff_strong_replacement_simp] Diff_closed[OF transM[OF _ 1(2)]]
+        using RepFun_closed[OF diff_Pair_replacement_simp] Diff_closed[OF transM[OF _ 1(2)]]
         by auto
       moreover from 1
       have "M(converse(\<lambda>x\<in>{x \<in> G . p \<in> x}. x - {p}))" (is "M(converse(?h))")
-        using converse_closed[of ?h] lam_closed[OF diff_strong_replacement]
+        using converse_closed[of ?h] lam_closed[OF diff_Pair_replacement]
           Diff_closed[OF transM[OF _ 1(2)]]
         by auto
       moreover from calculation
@@ -168,7 +164,7 @@ proof -
       note 1=\<open>M(G)\<close> \<open>M(G) \<Longrightarrow> M(p) \<Longrightarrow> M({A\<in>G . p \<in> A})\<close> singleton_closed[OF \<open>M(p)\<close>]
       moreover from this
       have "M({x - {p} . x \<in> {x \<in> G . p \<in> x}})"
-        using RepFun_closed[OF diff_strong_replacement_simp] Diff_closed[OF transM[OF _ 1(2)]]
+        using RepFun_closed[OF diff_Pair_replacement_simp] Diff_closed[OF transM[OF _ 1(2)]]
         by auto
       ultimately
       obtain D where "D\<subseteq>{A-{p} . A\<in>{X\<in>G. p\<in>X}}" "delta_system(D)" "D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "M(D)"
@@ -184,7 +180,7 @@ proof -
         by fastforce
       moreover from \<open>M(D)\<close> \<open>M(p)\<close>
       have "M(?D)"
-        using RepFun_closed un_strong_replacement transM[of _ D] by auto
+        using RepFun_closed un_Pair_replacement transM[of _ D] by auto
       moreover from \<open>D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> \<open>M(D)\<close>
       have "Infinite(D)" "|D|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
         using uncountable_rel_iff_subset_eqpoll_rel_Aleph_rel1[THEN iffD2,
