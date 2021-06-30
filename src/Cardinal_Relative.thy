@@ -1321,7 +1321,8 @@ qed
 lemma Finite_Pow_abs:
   assumes "Finite(A)" " M(A)"
   shows "Pow(A) = Pow_rel(M,A)"
-  using Finite_subset_closed assms Pow_rel_char by auto
+  using Finite_subset_closed[OF subset_Finite] assms Pow_rel_char
+  by auto
 
 lemma Finite_Pow_rel:
   assumes "Finite(A)" "M(A)"
