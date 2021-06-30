@@ -524,6 +524,12 @@ locale M_cardinal_library = M_library +
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions18(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    and
+    cdlt_replacement:
+    "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q} \<and> z = {\<langle>x, y\<rangle>})"
+    "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>Y. {a \<in> G . \<forall>s\<in>Y. \<langle>s, a\<rangle> \<in> Q}))"
+    "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})"
+    "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})\<rangle>)"
 and cardinal_lib_assms4:
   "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, f -`` {x}\<rangle>)"
 and cardinal_lib_assms5 :
@@ -882,10 +888,13 @@ text\<open>The next lemma is an application of recursive constructions.
 lemma bounded_cardinal_rel_selection:
   includes Ord_dests
   assumes
-    "\<And>Z. |Z|\<^bsup>M\<^esup> < \<gamma> \<Longrightarrow> Z \<subseteq> G \<Longrightarrow> M(Z) \<Longrightarrow> \<exists>a\<in>G. \<forall>s\<in>Z. <s,a>\<in>Q" "b\<in>G" "Card_rel(M,\<gamma>)" "M(G)" "M(\<gamma>)"
+    "\<And>Z. |Z|\<^bsup>M\<^esup> < \<gamma> \<Longrightarrow> Z \<subseteq> G \<Longrightarrow> M(Z) \<Longrightarrow> \<exists>a\<in>G. \<forall>s\<in>Z. <s,a>\<in>Q" "b\<in>G" "Card_rel(M,\<gamma>)"
+    "M(G)" "M(Q)" "M(\<gamma>)"
   shows
     "\<exists>S[M]. S : \<gamma> \<rightarrow>\<^bsup>M\<^esup> G \<and> (\<forall>\<alpha> \<in> \<gamma>. \<forall>\<beta> \<in> \<gamma>.  \<alpha><\<beta> \<longrightarrow> <S`\<alpha>,S`\<beta>>\<in>Q)"
 proof -
+  from assms
+  have "M(x) \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})" for x sorry
   let ?cdlt\<gamma>="{Z\<in>Pow_rel(M,G) . |Z|\<^bsup>M\<^esup><\<gamma>}" \<comment> \<open>“cardinal_rel less than \<^term>\<open>\<gamma>\<close>”\<close>
     and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. <s,a>\<in>Q}"
   from \<open>M(G)\<close>
@@ -912,10 +921,13 @@ proof -
   then
   have "\<exists>f[M]. f \<in> Pi_rel(M,?cdlt\<gamma>,?inQ) \<and> f \<in> Pi(?cdlt\<gamma>,?inQ)"
   proof -
+    from \<open>\<And>x. M(x) \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})\<close> \<open>M(G)\<close>
+    have "x \<in> {Z \<in> Pow\<^bsup>M\<^esup>(G) . |Z|\<^bsup>M\<^esup> < \<gamma>} \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})" for x
+      by (auto dest:transM)
+    with\<open>M(G)\<close> \<open>\<And>x. M(x) \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})\<close> \<open>M(Q)\<close> \<open>M(?cdlt\<gamma>)\<close>
     interpret M_Pi_assumptions_choice M ?cdlt\<gamma> ?inQ
-      using \<open>M(?cdlt\<gamma>)\<close>
-      apply (unfold_locales,simp_all)
-      sorry
+      using cdlt_replacement[of G Q]
+      by unfold_locales (blast dest: transM, auto dest:transM)
     show ?thesis using AC_Pi_rel Pi_rel_char H by auto
     qed
   then
@@ -1060,7 +1072,7 @@ proof
   moreover from \<open>b\<in>Z\<close> \<open>M(Z)\<close> this
   obtain S where "S : \<omega> \<rightarrow>\<^bsup>M\<^esup> Z" "M(S)" "\<forall>\<alpha>\<in>\<omega>. \<forall>\<beta>\<in>\<omega>. \<alpha> < \<beta> \<longrightarrow> <S`\<alpha>,S`\<beta>> \<in> Distinct"
     using bounded_cardinal_rel_selection[OF _ \<open>b\<in>Z\<close> Card_rel_nat,of Distinct]
-    by blast
+    (* by blast *) sorry
   moreover from this
   have "\<alpha> \<in> \<omega> \<Longrightarrow> \<beta> \<in> \<omega> \<Longrightarrow> \<alpha>\<noteq>\<beta> \<Longrightarrow> S`\<alpha> \<noteq> S`\<beta>" for \<alpha> \<beta>
     unfolding Distinct_def

@@ -303,7 +303,7 @@ proof -
       obtain S where "S:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<^bsup>M\<^esup>G" "\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<beta>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> \<alpha><\<beta> \<Longrightarrow> <S`\<alpha>, S`\<beta>> \<in>Disjoint"
         for \<alpha> \<beta>
         using bounded_cardinal_rel_selection[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" G Disjoint]
-        by force
+        (* by force *) sorry
       moreover from this \<open>n\<in>\<omega>\<close> \<open>M(G)\<close>
       have inM:"M(S)" "M(n)" "\<And>x. x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> S ` x \<in> G" "\<And>x. x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> M(x)"
         using function_space_rel_char by (auto dest: transM)
