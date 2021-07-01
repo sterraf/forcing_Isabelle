@@ -991,9 +991,35 @@ rel_closed for "jump_cardinal"
   apply (intro Union_closed)
   sorry
 
-lemma uni1: "univalent(M,Z,\<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z))" sorry
+lemma (in M_trivial) extensionality_trans:
+  assumes
+    "M(d)" "M(d')"
+    "\<forall>x[M]. x\<in>d  \<longleftrightarrow> P(x)"
+    "\<forall>x[M]. x\<in>d' \<longleftrightarrow> P(x)"
+  shows
+    "d=d'"
+proof -
+  from assms
+  have "\<forall>x. x\<in>d \<longleftrightarrow> P(x) \<and> M(x)"
+    using transM[of _ d, OF _ \<open>M(d)\<close>] by auto
+  moreover from assms
+  have  "\<forall>x. x\<in>d' \<longleftrightarrow> P(x) \<and> M(x)"
+    using transM[of _ d', OF _ \<open>M(d')\<close>] by auto
+  ultimately
+  show ?thesis by auto
+qed
 
-lemma uni2: "univalent(M,Z,\<lambda>X a. M(a) \<and> M(X) \<and> is_Replace(M, c, \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z), a))" sorry
+lemma univalent_aux1: "M(Z) \<Longrightarrow> M(X) \<Longrightarrow> univalent(M,Z,
+  \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z))"
+  using is_well_ord_iff_wellordered is_ordertype_iff unfolding univalent_def by simp
+
+lemma univalent_aux2: "M(Z) \<Longrightarrow> M(c) \<Longrightarrow> univalent(M,Z,
+  \<lambda>X a. M(a) \<and> M(X) \<and> is_Replace(M, c, \<lambda>r z. M(z) \<and> M(r) \<and>
+  is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z), a))"
+  using is_well_ord_iff_wellordered is_ordertype_iff
+  unfolding univalent_def is_Replace_def
+  by (auto intro:extensionality_trans
+      [of _ _ "\<lambda>u. \<exists>xa\<in>c. well_ord(_, xa) \<and> u = ordertype_rel(M, _, xa)"])
 
 is_iff_rel for "jump_cardinal"
 proof -
@@ -1002,7 +1028,7 @@ proof -
   have "is_Replace(M, c, \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z),
    a) \<longleftrightarrow> a = {z . r \<in> c, M(z) \<and> M(r) \<and> is_well_ord(M,X,r) \<and> is_ordertype(M, X, r, z)}"
     if "M(c)" "M(X)" "M(a)" for c X a
-    using that uni1
+    using that univalent_aux1
     by (rule_tac Replace_abs) (auto simp:absolut)
   then
   have "is_Replace(M, c, \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z),
@@ -1012,7 +1038,7 @@ proof -
     by (simp)
   with types
   show ?thesis
-    using Pow_rel_iff is_ordertype_iff uni2
+    using Pow_rel_iff is_ordertype_iff univalent_aux2
     unfolding is_jump_cardinal_def jump_cardinal_rel_def
     apply (simp add:absolut)
     sorry
