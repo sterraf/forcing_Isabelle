@@ -925,7 +925,6 @@ lemma is_wfrec_on_iff_sats[iff_sats]:
     0 \<in> Aa \<Longrightarrow> is_wfrec_on(##Aa, MH, aa,xx, yy, zz) \<longleftrightarrow> Aa, env \<Turnstile> is_wfrec_fm(p,x,y,z)"
   using assms sats_is_wfrec_fm'[OF assms] unfolding is_wfrec_on_def by simp
 
-(*
 text\<open>Discipline for \<^term>\<open>ordermap\<close>\<close>
 relativize functional "ordermap" "ordermap_rel" external
 relationalize "ordermap_rel" "is_ordermap"
@@ -978,36 +977,24 @@ lemma (in M_cardinal_arith) is_omap_iff_omap:
   sorry
 *)
 
-relativize functional "jump_cardinal" "jump_cardinal_rel" external
-relationalize "jump_cardinal_rel" "is_jump_cardinal"
-synthesize "is_jump_cardinal" from_definition assuming "nonempty"
-arity_theorem for "is_jump_cardinal_fm"
+\<comment> \<open>FIXME: same def as \<^term>\<open>jump_cardinal\<close>, only to avoid problems below\<close>
+definition
+  jump_cardinal' :: "i\<Rightarrow>i"  where
+  "jump_cardinal'(K) \<equiv>
+         \<Union>X\<in>Pow(K). {z. r \<in> Pow(K*K), well_ord(X,r) & z = ordertype(X,r)}"
+
+relativize functional "jump_cardinal'" "jump_cardinal'_rel" external
+relationalize "jump_cardinal'_rel" "is_jump_cardinal'"
+synthesize "is_jump_cardinal'" from_definition assuming "nonempty"
+arity_theorem for "is_jump_cardinal'_fm"
 
 context M_cardinal_arith
 begin
 
-rel_closed for "jump_cardinal"
-  unfolding jump_cardinal_rel_def
+rel_closed for "jump_cardinal'"
+  unfolding jump_cardinal'_rel_def
   apply (intro Union_closed)
   sorry
-
-lemma (in M_trivial) extensionality_trans:
-  assumes
-    "M(d)" "M(d')"
-    "\<forall>x[M]. x\<in>d  \<longleftrightarrow> P(x)"
-    "\<forall>x[M]. x\<in>d' \<longleftrightarrow> P(x)"
-  shows
-    "d=d'"
-proof -
-  from assms
-  have "\<forall>x. x\<in>d \<longleftrightarrow> P(x) \<and> M(x)"
-    using transM[of _ d, OF _ \<open>M(d)\<close>] by auto
-  moreover from assms
-  have  "\<forall>x. x\<in>d' \<longleftrightarrow> P(x) \<and> M(x)"
-    using transM[of _ d', OF _ \<open>M(d')\<close>] by auto
-  ultimately
-  show ?thesis by auto
-qed
 
 lemma univalent_aux1: "M(Z) \<Longrightarrow> M(X) \<Longrightarrow> univalent(M,Z,
   \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z))"
@@ -1019,9 +1006,9 @@ lemma univalent_aux2: "M(Z) \<Longrightarrow> M(c) \<Longrightarrow> univalent(M
   using is_well_ord_iff_wellordered is_ordertype_iff
   unfolding univalent_def is_Replace_def
   by (auto intro:extensionality_trans
-      [of _ _ "\<lambda>u. \<exists>xa\<in>c. well_ord(_, xa) \<and> u = ordertype_rel(M, _, xa)"])
+      [of _ "\<lambda>u. \<exists>xa\<in>c. well_ord(_, xa) \<and> u = ordertype_rel(M, _, xa)"])
 
-is_iff_rel for "jump_cardinal"
+is_iff_rel for "jump_cardinal'"
 proof -
   assume types: "M(K)" "M(res)"
   then
@@ -1029,24 +1016,50 @@ proof -
    a) \<longleftrightarrow> a = {z . r \<in> c, M(z) \<and> M(r) \<and> is_well_ord(M,X,r) \<and> is_ordertype(M, X, r, z)}"
     if "M(c)" "M(X)" "M(a)" for c X a
     using that univalent_aux1
-    by (rule_tac Replace_abs) (auto simp:absolut)
+    by (rule_tac Replace_abs) (auto)
   then
   have "is_Replace(M, c, \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z),
    a) \<longleftrightarrow> a = {z . r \<in> c, M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)}"
     if "M(c)" "M(X)" "M(a)" for c X a
     using that is_ordertype_iff is_well_ord_iff_wellordered
     by (simp)
-  with types
+  moreover from types
+  have "M({z . r \<in> c, M(z) \<and> M(r) \<and> is_well_ord(M, x, r) \<and> is_ordertype(M, x, r, z)})"
+    if "M(c)" "M(x)" for c x sorry
+  moreover from types and this
+  have "is_Replace(M, d, \<lambda>X a. a =
+          {z . r \<in> c, M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z)}, e)
+     \<longleftrightarrow> e ={a . X \<in> d, a = {z . r \<in> c, M(z) \<and> M(r) \<and>
+               is_well_ord(M, X, r) \<and> is_ordertype(M, X, r,z)}}"
+    if "M(d)" "M(c)" "M(e)" for d c e
+    using that univalent_aux2 transM[OF _ \<open>M(d)\<close>]
+    by (rule_tac Replace_abs) simp_all
+  moreover
+  have "M({z . r \<in> c, M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z)})"
+    if "M(c)" "M(X)" for c X sorry
+  with calculation
+  have "is_Replace(M, d, \<lambda>X a. a =
+          {z . r \<in> c, M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)}, e)
+     \<longleftrightarrow> e ={a . X \<in> d, M(a) \<and> M(X) \<and>
+             a = {z . r \<in> c, M(z) \<and> M(r) \<and>
+               well_ord(X, r) \<and> z = ordertype_rel(M, X, r)}}"
+    if "M(d)" "M(c)" "M(e)" for d c e
+    using that is_ordertype_iff is_well_ord_iff_wellordered transM[OF _ \<open>M(d)\<close>]
+    by (auto; intro equalityI)+
+  moreover
+  have "M({a . X \<in> Pow\<^bsup>M\<^esup>(K), M(a) \<and> M(X) \<and> a =
+    {z . r \<in> Pow\<^bsup>M\<^esup>(K \<times> K), M(z) \<and> M(r) \<and>
+          well_ord(X, r) \<and> z = ordertype_rel(M, X, r)}})" sorry
+  ultimately
   show ?thesis
     using Pow_rel_iff is_ordertype_iff univalent_aux2
-    unfolding is_jump_cardinal_def jump_cardinal_rel_def
-    apply (simp add:absolut)
-    sorry
+    unfolding is_jump_cardinal'_def jump_cardinal'_rel_def
+    by (simp add: types)
 qed
 
 end
-*)
 
+(*
 (******************************************************)
 subsection\<open>Discipline for \<^term>\<open>jcardDom\<close>\<close>
 
@@ -1486,7 +1499,8 @@ qed
 end (* M_jump_cardinal *)
 
 (***************  end Discipline  *********************)
-
+*)
+locale M_jump_cardinal = M_ordertype
 
 context M_cardinal_arith
 begin
@@ -1744,6 +1758,32 @@ text\<open>This result is Kunen's Theorem 10.16, which would be trivial using AC
 
 locale M_cardinal_arith_jump = M_cardinal_arith + M_jump_cardinal
 begin
+
+lemma ordertype_rel_abs:
+  assumes "wellordered(M,X,r)" "M(X)" "M(r)"
+  shows "ordertype_rel(M,X,r) = ordertype(X,r)"
+  using assms sorry
+
+lemma def_jump_cardinal_rel:
+  assumes "M(K)"
+  shows "jump_cardinal'_rel(M,K) =
+         (\<Union>X\<in>Pow_rel(M,K). {z. r \<in> Pow_rel(M,K*K), well_ord(X,r) & z = ordertype(X,r)})"
+proof -
+  from assms
+  have "M({y . x \<in> Pow\<^bsup>M\<^esup>(K \<times> K), M(y) \<and> well_ord(X, x) \<and> y = ordertype(X, x)})"
+    if "M(X)" for X sorry
+  then
+  show ?thesis
+    using assms is_ordertype_iff is_well_ord_iff_wellordered
+      ordertype_rel_abs transM[of _ "Pow\<^bsup>M\<^esup>(K)"] transM[of _ "Pow\<^bsup>M\<^esup>(K\<times>K)"]
+    unfolding jump_cardinal'_rel_def
+    apply (intro equalityI)
+     apply (auto dest:transM)
+    apply (rule_tac x="{y . xa \<in> Pow\<^bsup>M\<^esup>(K \<times> K), M(y) \<and> M(xa) \<and> well_ord(X, xa) \<and> y = ordertype(X, xa)}" in bexI)
+    by (rule_tac x=r in ReplaceI) auto
+qed
+
+notation jump_cardinal'_rel (\<open>jump'_cardinal'_rel\<close>)
 
 lemma Ord_jump_cardinal_rel: "M(K) \<Longrightarrow> Ord(jump_cardinal_rel(M,K))"
 apply (unfold def_jump_cardinal_rel)
