@@ -3,6 +3,7 @@ theory FiniteFun_Relative
   imports
     Synthetic_Definition
     Discipline_Function
+    Cohen_Posets
 begin
 
 subsection\<open>The set of finite binary sequences\<close>
@@ -89,7 +90,10 @@ locale M_FiniteFun =  M_seqspace +
     and
     to_finiteFun_replacement:
     "strong_replacement(M, \<lambda>x y. x \<in> FiniteFun_Repr(A,B) \<and> y = to_FiniteFun(x))"
+    and
+    supset_separation: "separation(M, \<lambda> x. \<exists>a. \<exists>b. x = \<langle>a,b\<rangle> \<and> b \<subseteq> a)"
 begin
+
 lemma FiniteFun_fst_type:
   assumes "h\<in>A-||>B" "p\<in>h"
   shows  "fst(p)\<in>domain(h)"
@@ -387,6 +391,12 @@ lemma FiniteFun_closed[intro,simp] :
   shows "M(A -||> B)"
   using assms To_FiniteFun_Repr_closed FiniteFun_eq_to_FiniteFun_Repr
   by simp
+
+lemma Fnle_nat_closed[intro,simp]:
+  assumes "M(I)" "M(J)"
+  shows "M(Fnle(\<omega>,I,J))"
+  unfolding Fnle_def Fnlerel_def Rrel_def
+  using supset_separation FiniteFun_closed Fn_nat_eq_FiniteFun assms by simp
 
 end (* M_FiniteFun *)
 

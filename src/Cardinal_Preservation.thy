@@ -283,7 +283,8 @@ proof -
         typed_function_type)
   let ?app_fm="fun_apply_fm(0,1,2)"\<comment> \<open>formula for \<open>f`x=z\<close>\<close>
   define F where "F\<equiv>\<lambda>a\<in>A. {b\<in>B. \<exists>q\<in>P. q \<preceq> p \<and> (q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v])}"
-  have "F \<in> M" sorry
+  have "F \<in> M"
+    sorry
   moreover
   have "f`a \<in> F`a" if "a \<in> A" for a
   proof -

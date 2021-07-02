@@ -40,7 +40,8 @@ locale M_delta = M_cardinal_library +
     and
     un_Pair_replacement: "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y = x\<union>{p})"
     and
-    disjoint_separation: "separation(M, \<lambda> x. \<exists>a. \<exists>b. x=\<langle>a,b\<rangle> \<and> a \<inter> b = 0)"
+    disjoint_separation: "M(c) \<Longrightarrow> separation(M, \<lambda> x. \<exists>a. \<exists>b. x=\<langle>a,b\<rangle> \<and> a \<inter> b = c)"
+
 begin
 
 lemma delta_system_Aleph_rel1:

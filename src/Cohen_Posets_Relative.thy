@@ -6,11 +6,6 @@ theory Cohen_Posets_Relative
     Delta_System_Relative
 begin
 
-lemma (in M_delta) Fnle_nat_closed[intro,simp]:
-  assumes "M(I)" "M(J)"
-  shows "M(Fnle(\<omega>,I,J))"
-  sorry
-
 definition
   \<comment> \<open>"domain collect F"\<close>
   dC_F :: "i \<Rightarrow> i \<Rightarrow> i" where
@@ -67,7 +62,7 @@ locale M_cohen = M_delta +
     and
     domain_eq_separation: "M(p) \<Longrightarrow> separation(M, \<lambda>x . domain(x) = p)"
     and
-    domain_replacement: "strong_replacement(M, \<lambda>x y . y=<x,domain(x)>)"
+    domain_replacement: "strong_replacement(M, \<lambda>x y . y=\<langle>x,domain(x)\<rangle>)"
     and
     domain_replacement_simp: "strong_replacement(M, \<lambda>x y. y=domain(x))"
     and

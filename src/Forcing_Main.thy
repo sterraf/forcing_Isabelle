@@ -88,7 +88,7 @@ proof -
     by simp
   moreover
   have "\<omega> \<lesssim> M[G]"
-    using MG.nat_into_M subset_imp_lepoll by auto
+    using MG.nat_into_M subset_imp_lepoll by (auto del:lepollI)
   ultimately
   show ?thesis using eqpollI
     by simp
