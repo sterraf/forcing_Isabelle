@@ -15,15 +15,6 @@ lemma (in M_trans) If_abs:
      "is_If(M,b,t,f,r) \<longleftrightarrow> r = If(b,t,f)"
 by (simp add: is_If_def)
 
-lemma (in M_trans) If_True_abs:
-     "is_If(M,True,t,f,r) \<longleftrightarrow> r = t"
-by (simp add: is_If_def)
-
-
-lemma (in M_trans) If_False_abs:
-     "is_If(M,False,t,f,r) \<longleftrightarrow> r = f"
-  by (simp add: is_If_def)
-
 definition
   is_The :: "[i\<Rightarrow>o,i\<Rightarrow>o,i] \<Rightarrow> o" where
   "is_The(M,Q,i) \<equiv> (Q(i) \<and> (\<exists>x[M]. Q(x) \<and> (\<forall>y[M]. Q(y) \<longrightarrow> y = x))) \<or>

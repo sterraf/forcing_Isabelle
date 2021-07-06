@@ -116,7 +116,7 @@ proof -
   moreover
   note assms
   moreover
-  have A:"univalent(M, a, \<lambda>j y. y = f ` j)"
+  have 1:"univalent(M, a, \<lambda>j y. y = f ` j)"
     using univalent_triv[of M a "\<lambda>j .f ` j"] by auto
   moreover from calculation
   have "x \<in> a \<Longrightarrow> y = f `x \<Longrightarrow> M(y)" for x y
@@ -125,28 +125,28 @@ proof -
   have "M({f`j . j\<in>a})"
     using RepFun_closed[OF image_replacement] by simp
   ultimately
-  have C:"is_Replace(M, a, \<lambda>j y. y = f ` j, {f`j . j\<in>a})"
-    using Replace_abs[of _ _ "\<lambda>j y. y = f ` j",OF \<open>M(a)\<close> _ A,THEN iffD2, simplified]
+  have 2:"is_Replace(M, a, \<lambda>j y. y = f ` j, {f`j . j\<in>a})"
+    using Replace_abs[of _ _ "\<lambda>j y. y = f ` j",OF \<open>M(a)\<close> _ 1,THEN iffD2, simplified]
       by auto
   with \<open>M({f`j . j\<in>a})\<close>
   show ?thesis
     using
-      is_Replace_cong[of _ _ M "\<lambda>j y. y = f ` j" "\<lambda>j y. f ` j = y", THEN iffD1,OF _ _ _ C]
+      is_Replace_cong[of _ _ M "\<lambda>j y. y = f ` j" "\<lambda>j y. f ` j = y", THEN iffD1,OF _ _ _ 2]
     by auto
 qed
 
 lemma is_HAleph_zero:
   assumes "M(f)"
   shows "is_HAleph(M,0,f,res) \<longleftrightarrow> res = nat"
-  unfolding is_HAleph_def is_If_def using Ord_0
-    is_Limit_iff is_csucc_iff assms aux
+  unfolding is_HAleph_def
+  using Ord_0 If_abs is_Limit_iff is_csucc_iff assms aux
   by auto
 
 lemma is_HAleph_succ:
   assumes "M(f)" "M(x)" "Ord(x)" "M(res)"
   shows "is_HAleph(M,succ(x),f,res) \<longleftrightarrow> res = csucc_rel(M,f`( \<Union> succ(x) ))"
-  unfolding is_HAleph_def is_If_def
-  using assms is_Limit_iff is_csucc_iff aux
+  unfolding is_HAleph_def
+  using assms is_Limit_iff is_csucc_iff aux If_abs
   by simp
 
 lemma is_HAleph_limit:
@@ -161,19 +161,15 @@ proof -
   moreover
   from this
   have A:"univalent(M, x, \<lambda>j y. f ` j = y )"
-    by (rule_tac univalent_cong[of x x M " \<lambda>j y. y = f ` j" " \<lambda>j y. f ` j=y",THEN iffD1],auto)
+    by (rule_tac univalent_cong[of x x M " \<lambda>j y. y = f ` j" " \<lambda>j y. f ` j=y",THEN iffD1], auto)
   moreover
   from this
   have "univalent(M, x, \<lambda>j y. M(j) \<and> M(y) \<and> f ` j = y )" by auto
-  moreover
-  from assms
-  have "x\<noteq>0" by auto
   ultimately
   show ?thesis
     unfolding is_HAleph_def
-    using assms is_Limit_iff Limit_is_Ord zero_not_Limit nonempty
-      If_True_abs If_False_abs Replace_abs[OF \<open>M(x)\<close> _ A] apply_closed[OF \<open>M(f)\<close> transM[OF _ \<open>M(x)\<close>]]
-      is_csucc_iff image_replacement
+    using assms is_Limit_iff Limit_is_Ord zero_not_Limit If_abs is_csucc_iff
+      Replace_abs[OF \<open>M(x)\<close> _ A] image_replacement
     by auto
 qed
 
