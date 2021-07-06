@@ -61,7 +61,10 @@ qed
 
 interpretation V:M_cohen \<V>
   using choice_ax_Universe
-  by unfold_locales (auto intro:separation_absolute replacement_absolute)
+  apply unfold_locales
+  unfolding iterates_replacement_def wfrec_replacement_def
+  apply (auto intro:separation_absolute replacement_absolute)
+  sorry
 
 named_theorems V_simps
 

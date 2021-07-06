@@ -652,7 +652,7 @@ next
         OF eqpoll_rel_sym] by auto
   with \<open>M(X)\<close>
   show "uncountable_rel(M,X)"
-    using Aleph_rel_closed
+    using
       lesspoll_rel_trans1[OF lepoll_rel_trans[OF A _] \<open>\<omega> \<prec>\<^bsup>M\<^esup> (\<omega>\<^sup>+)\<^bsup>M\<^esup>\<close>]
       lesspoll_rel_not_refl
     by auto
@@ -721,7 +721,7 @@ proof -
   then
   have "function(f)" "domain(f) = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "range(f)\<subseteq>\<omega>" "f\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<omega>" "M(f)"
     using mem_function_space_rel[OF \<open>f\<in>_\<close>] domain_of_fun fun_is_function range_fun_subset_codomain
-      Aleph_rel_closed function_space_rel_char
+       function_space_rel_char
     by auto
   let ?G="\<lambda>n\<in>range(f). f-``{n}"
   from \<open>f:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<omega>\<close>
@@ -795,7 +795,7 @@ lemma eqpoll_rel_Aleph_rel1_cardinal_rel_vimage:
 proof -
   have "M(1)" "M(\<omega>)" by simp_all
   then
-  have "M(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)" using Aleph_rel_closed[of 1] by simp
+  have "M(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)" by simp
   with assms \<open>M(1)\<close>
   obtain g where A:"g\<in>bij_rel(M,\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,Z)" "M(g)"
     using eqpoll_rel_sym unfolding eqpoll_rel_def by blast

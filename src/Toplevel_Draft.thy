@@ -52,7 +52,7 @@ lemma (in M_FiniteFun) Fn_nat_closed:
   by simp
 
 lemma Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
-  using  nat_into_M[of 2, THEN Aleph_rel_closed] by simp
+  using nat_into_M[of 2] nat_into_Ord by simp
 
 end (* M_master *)
 
@@ -177,8 +177,8 @@ proof (rule ccontr)
   ultimately
   obtain \<alpha> f where "\<alpha> < \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>" "f \<in> surj\<^bsup>M[G]\<^esup>(\<alpha>, \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
     using ext.lt_surj_rel_empty_imp_Card_rel M_subset_MG[OF one_in_G, OF generic]
-      Aleph_rel_closed[of "succ(z)"] by simp blast
-  moreover from this and \<open>z\<in>M\<close>
+      Aleph_rel_closed[of "succ(z)"] \<open>Ord(z)\<close> by simp blast
+  moreover from this and \<open>z\<in>M\<close> \<open>Ord(z)\<close>
   have "\<alpha> \<in> M" "f \<in> M[G]"
     using Aleph_rel_closed[of "succ(z)"] ext.trans_surj_rel_closed
     by (auto dest:transM ext.transM dest!:ltD)
@@ -188,7 +188,7 @@ proof (rule ccontr)
   obtain F where "F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)" "\<forall>\<beta>\<in>\<alpha>. f`\<beta> \<in> F`\<beta>" "\<forall>\<beta>\<in>\<alpha>. |F`\<beta>|\<^bsup>M\<^esup> \<le> \<omega>"
     "F \<in> M"
     using ccc_fun_approximation_lemma[of \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>" f]
-      ext.mem_surj_abs[of f \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"]
+      ext.mem_surj_abs[of f \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"] \<open>Ord(z)\<close>
       Aleph_rel_closed[of "succ(z)"] surj_is_fun[of f \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"] by auto
   then
   have "\<beta> \<in> \<alpha> \<Longrightarrow> |F`\<beta>|\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>" for \<beta>

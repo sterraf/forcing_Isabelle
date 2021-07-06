@@ -5,9 +5,9 @@ begin
 
 definition
   HAleph :: "[i,i] \<Rightarrow> i" where
-  "HAleph(i,r) \<equiv> if(i=0, nat, if(\<not>Limit(i),
+  "HAleph(i,r) \<equiv> if(\<not>(Ord(i)),i,if(i=0, nat, if(\<not>Limit(i) \<and> i\<noteq>0,
                             csucc(r`( \<Union> i )),
-                                   \<Union>j\<in>i. r`j))"
+                                   \<Union>j\<in>i. r`j)))"
 
 reldb_add functional "Limit" "Limit"
 relationalize "Limit" "is_Limit" external
@@ -25,8 +25,11 @@ relationalize "Aleph_rel" "is_Aleph"
 context M_cardinal_arith_jump
 begin
 
-rel_closed for "Aleph"
-  sorry
+lemma is_Limit_iff:
+  assumes "M(a)"
+  shows "is_Limit(M,a) \<longleftrightarrow> Limit(a)"
+  unfolding is_Limit_def Limit_def using lt_abs transM[OF ltD \<open>M(a)\<close>] assms
+  by auto
 
 end (* M_cardinal_arith_jump *)
 
@@ -71,14 +74,179 @@ lemma Aleph_rel_def': "Aleph_rel(M,a) \<equiv> transrec(a, \<lambda>i r. HAleph_
 lemma succ_mem_Limit: "Limit(j) \<Longrightarrow> i \<in> j \<Longrightarrow> succ(i) \<in> j"
   using Limit_has_succ[THEN ltD] ltI Limit_is_Ord by auto
 
-locale M_aleph =  M_cardinal_arith_jump +
-  assumes 
-  aleph_rel_replacement:  "strong_replacement(M, \<lambda>x y. y = \<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>)" 
-
+locale M_aleph = M_eclose + M_cardinal_arith_jump +
+  assumes
+    aleph_rel_replacement:  "strong_replacement(M, \<lambda>x y. y = \<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>)"
+    and
+    haleph_transrec_replacement: "\<exists>sa[M].
+       \<exists>esa[M].
+          \<exists>mesa[M].
+             upair(M, a, a, sa) \<and>
+             is_eclose(M, sa, esa) \<and>
+             membership(M, esa, mesa) \<and>
+             strong_replacement
+              (M, \<lambda>x z. \<exists>y[M]. pair(M, x, y, z) \<and>
+                                (\<exists>f[M].
+                                    (\<forall>z[M].
+                                        z \<in> f \<longleftrightarrow>
+                                        (\<exists>xa[M].
+                                            \<exists>y[M].
+                                               \<exists>xaa[M].
+                                                  \<exists>sx[M].
+\<exists>r_sx[M].
+   \<exists>f_r_sx[M].
+      pair(M, xa, y, z) \<and>
+      pair(M, xa, x, xaa) \<and>
+      upair(M, xa, xa, sx) \<and>
+      pre_image(M, mesa, sx, r_sx) \<and>
+      restriction(M, f, r_sx, f_r_sx) \<and> xaa \<in> mesa \<and> is_HAleph(M, xa, f_r_sx, y))) \<and>
+                                    is_HAleph(M, x, f, y)))"
+    and
+    image_replacement:
+    "M(f) \<Longrightarrow> M(a) \<Longrightarrow> strong_replacement(M, \<lambda> x y . y = f`x)"
 begin
 
+lemma aux:
+  assumes "M(a)" "M(f)"
+  shows "\<exists>x[M]. is_Replace(M, a, \<lambda>j y. f ` j = y, x)"
+proof -
+  have "{f`j . j\<in>a} = {y . j\<in>a , f ` j=y}"
+    "{y . j\<in>a , f ` j=y} = {y . j\<in>a , y =f ` j}"
+    by auto
+  moreover
+  note assms
+  moreover
+  have A:"univalent(M, a, \<lambda>j y. y = f ` j)"
+    using univalent_triv[of M a "\<lambda>j .f ` j"] by auto
+  moreover from calculation
+  have "x \<in> a \<Longrightarrow> y = f `x \<Longrightarrow> M(y)" for x y
+    using transM[OF _ \<open>M(a)\<close>] by auto
+  moreover from this assms
+  have "M({f`j . j\<in>a})"
+    using RepFun_closed[OF image_replacement] by simp
+  ultimately
+  have C:"is_Replace(M, a, \<lambda>j y. y = f ` j, {f`j . j\<in>a})"
+    using Replace_abs[of _ _ "\<lambda>j y. y = f ` j",OF \<open>M(a)\<close> _ A,THEN iffD2, simplified]
+      by auto
+  with \<open>M({f`j . j\<in>a})\<close>
+  show ?thesis
+    using
+      is_Replace_cong[of _ _ M "\<lambda>j y. y = f ` j" "\<lambda>j y. f ` j = y", THEN iffD1,OF _ _ _ C]
+    by auto
+qed
+
+lemma is_HAleph_zero:
+  assumes "M(f)"
+  shows "is_HAleph(M,0,f,res) \<longleftrightarrow> res = nat"
+  unfolding is_HAleph_def is_If_def using Ord_0
+    is_Limit_iff is_csucc_iff assms aux
+  by auto
+
+lemma is_HAleph_succ:
+  assumes "M(f)" "M(x)" "Ord(x)" "M(res)"
+  shows "is_HAleph(M,succ(x),f,res) \<longleftrightarrow> res = csucc_rel(M,f`( \<Union> succ(x) ))"
+  unfolding is_HAleph_def is_If_def
+  using assms is_Limit_iff is_csucc_iff aux
+  by simp
+
+lemma is_HAleph_limit:
+  assumes "M(f)" "M(x)" "Limit(x)" "M(res)"
+  shows "is_HAleph(M,x,f,res) \<longleftrightarrow> res = (\<Union>{y . i\<in>x ,M(i) \<and> M(y) \<and> y = f`i})"
+proof -
+  from assms
+  have "univalent(M, x, \<lambda>j y. y = f ` j  )"
+    "(\<And>xa y. xa \<in> x \<Longrightarrow> f ` xa = y \<Longrightarrow> M(y))"
+    "{y . x \<in> x, f ` x = y} = {y . i\<in>x ,M(i) \<and> M(y) \<and> y = f`i}"
+    using univalent_triv[of M x "\<lambda>j .f ` j"] transM[OF _ \<open>M(x)\<close>] by auto
+  moreover
+  from this
+  have A:"univalent(M, x, \<lambda>j y. f ` j = y )"
+    by (rule_tac univalent_cong[of x x M " \<lambda>j y. y = f ` j" " \<lambda>j y. f ` j=y",THEN iffD1],auto)
+  moreover
+  from this
+  have "univalent(M, x, \<lambda>j y. M(j) \<and> M(y) \<and> f ` j = y )" by auto
+  moreover
+  from assms
+  have "x\<noteq>0" by auto
+  ultimately
+  show ?thesis
+    unfolding is_HAleph_def
+    using assms is_Limit_iff Limit_is_Ord zero_not_Limit nonempty
+      If_True_abs If_False_abs Replace_abs[OF \<open>M(x)\<close> _ A] apply_closed[OF \<open>M(f)\<close> transM[OF _ \<open>M(x)\<close>]]
+      is_csucc_iff image_replacement
+    by auto
+qed
+
+lemma is_HAleph_iff:
+  assumes "M(a)" "M(f)" "M(res)"
+  shows "is_HAleph(M, a, f, res) \<longleftrightarrow> res = HAleph_rel(M, a, f)"
+proof(cases "Ord(a)")
+  case True
+  note Ord_cases[OF \<open>Ord(a)\<close>]
+  then
+  show ?thesis
+  proof(cases )
+    case 1
+    with True assms
+    show ?thesis
+      using is_HAleph_zero unfolding HAleph_rel_def
+      by simp
+  next
+    case (2 j)
+    with True assms
+    show ?thesis
+      using is_HAleph_succ unfolding HAleph_rel_def
+      by simp
+  next
+    case 3
+    with assms
+    show ?thesis
+      using is_HAleph_limit zero_not_Limit Limit_is_Ord
+      unfolding HAleph_rel_def
+      by auto
+  qed
+next
+  case False
+  then
+  have "\<not>Limit(a)" "a\<noteq>0" "\<And> x . Ord(x) \<Longrightarrow> a\<noteq>succ(x)"
+    using Limit_is_Ord by auto
+  with False
+  show ?thesis
+    unfolding is_HAleph_def HAleph_rel_def
+    using assms is_Limit_iff If_abs is_csucc_iff aux
+    by auto
+qed
+
+lemma HAleph_closed:
+  assumes "function(f)" "M(a)" "M(f)"
+  shows "M(HAleph_rel(M,a,f))"
+  unfolding HAleph_rel_def SepReplace_def
+  using assms image_replacement
+  by simp
+
+lemma Aleph_rel_closed[intro, simp]:
+  assumes "Ord(a)" "M(a)"
+  shows "M(Aleph_rel(M,a))"
+proof -
+  have "transrec_replacement(M, is_HAleph(M), a)"
+    unfolding transrec_replacement_def wfrec_replacement_def is_wfrec_def M_is_recfun_def
+    using assms haleph_transrec_replacement
+    by simp
+  moreover
+  have "relation2(M, is_HAleph(M), HAleph_rel(M))"
+    unfolding relation2_def using is_HAleph_iff assms by simp
+  moreover
+  have "\<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(HAleph_rel(M, x, g))"
+    using HAleph_closed by simp
+  ultimately
+  show ?thesis
+    unfolding Aleph_rel_def
+    using transrec_closed[of "is_HAleph(M)" a "HAleph_rel(M)"] assms
+    by simp
+qed
+
 lemma Aleph_rel_zero: "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup> = nat"
-  using def_transrec [OF Aleph_rel_def',of _ 0] 
+  using def_transrec [OF Aleph_rel_def',of _ 0]
   unfolding HAleph_rel_def by simp
 
 lemma Aleph_rel_succ: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>succ(\<alpha>)\<^esub>\<^bsup>M\<^esup> = csucc_rel(M,\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)"
@@ -97,10 +265,10 @@ proof -
   also
   have "... = \<Union>{a . j \<in> \<alpha>, M(a) \<and> a = \<aleph>\<^bsub>j\<^esub>\<^bsup>M\<^esup>}"
     unfolding HAleph_rel_def
-    using assms zero_not_Limit trans by auto
+    using assms zero_not_Limit Limit_is_Ord trans by auto
   also
   have "... = \<Union>{\<aleph>\<^bsub>j\<^esub>\<^bsup>M\<^esup> . j \<in> \<alpha>}"
-    using Aleph_rel_closed[OF trans] by auto
+    using Aleph_rel_closed[OF _ trans] Ord_in_Ord Limit_is_Ord[OF \<open>Limit(\<alpha>)\<close>] by auto
   finally
   show ?thesis .
 qed
@@ -110,7 +278,7 @@ lemma Aleph_rel_cont: "Limit(l) \<Longrightarrow> M(l) \<Longrightarrow> \<aleph
   by (simp add:OUnion_def)
 
 lemma Ord_Aleph_rel:
-  assumes "Ord(a)" 
+  assumes "Ord(a)"
   shows "M(a) \<Longrightarrow> Ord(\<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup>)"
   using \<open>Ord(a)\<close>
 proof(induct a rule:trans_induct3)
@@ -120,9 +288,9 @@ next
   case (succ x)
   with \<open>Ord(x)\<close>
   have "M(x)" "Ord(\<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>)" by simp_all
-  then
+  with \<open>Ord(x)\<close>
   have "Ord(csucc_rel(M,\<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>))"
-    using Card_rel_is_Ord Card_rel_csucc_rel Aleph_rel_closed
+    using Card_rel_is_Ord Card_rel_csucc_rel
     by simp
   with \<open>Ord(x)\<close> \<open>M(x)\<close>
   show ?case using Aleph_rel_succ by simp
@@ -134,7 +302,7 @@ next
     using Aleph_rel_cont OUnion_def Limit_is_Ord
     by auto
   with limit
-  show ?case using Ord_UN Aleph_rel_closed trans by auto
+  show ?case using Ord_UN trans by auto
 qed
 
 lemma Card_rel_Aleph_rel [simp, intro]:
@@ -149,16 +317,18 @@ next
   case (succ x)
   then
   show ?case
-    using Card_rel_csucc_rel Aleph_rel_succ Ord_Aleph_rel by simp
+    using Card_rel_csucc_rel Ord_Aleph_rel Aleph_rel_succ
+    by simp
 next
   case (limit x)
   moreover
   from this
   have "M({y . z \<in> x, M(y) \<and> M(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>})"
-    using aleph_rel_replacement by simp
+    using aleph_rel_replacement
+    by auto
   ultimately
   show ?case
-    using Ord_Aleph_rel Card_nat
+    using Ord_Aleph_rel Card_nat Limit_is_Ord Card_relI
     by (subst def_transrec [OF Aleph_rel_def'])
       (auto simp add:HAleph_rel_def)
 qed
@@ -193,9 +363,8 @@ proof -
       then
       have "\<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup> < (\<Union>j<l. \<aleph>\<^bsub>j\<^esub>\<^bsup>M\<^esup>)"
         using limit Ord_Aleph_rel Ord_OUN
-          (*            by (blast intro: OUN_upper_lt Card_is_Ord ltD lt_Ord*)
         apply (rule_tac OUN_upper_lt)
-        apply (blast intro: Card_rel_is_Ord ltD lt_Ord)
+          apply (blast intro: Card_rel_is_Ord ltD lt_Ord)
       proof -
         from \<open>x<l\<close> \<open>Limit(l)\<close>
         have "Ord(x)"

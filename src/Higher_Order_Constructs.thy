@@ -9,11 +9,20 @@ begin
 
 definition
   is_If :: "[i\<Rightarrow>o,o,i,i,i] \<Rightarrow> o" where
-  "is_If(M,b,t,f,r) \<equiv> (b \<and> r=t) \<or> (\<not>b \<and> r=f)"
+  "is_If(M,b,t,f,r) \<equiv> (b \<longrightarrow> r=t) \<and> (\<not>b \<longrightarrow> r=f)"
 
 lemma (in M_trans) If_abs:
-     "M(t) \<Longrightarrow> M(f) \<Longrightarrow> M(r) \<Longrightarrow> is_If(M,b,t,f,r) \<longleftrightarrow> r = If(b,t,f)"
+     "is_If(M,b,t,f,r) \<longleftrightarrow> r = If(b,t,f)"
 by (simp add: is_If_def)
+
+lemma (in M_trans) If_True_abs:
+     "is_If(M,True,t,f,r) \<longleftrightarrow> r = t"
+by (simp add: is_If_def)
+
+
+lemma (in M_trans) If_False_abs:
+     "is_If(M,False,t,f,r) \<longleftrightarrow> r = f"
+  by (simp add: is_If_def)
 
 definition
   is_The :: "[i\<Rightarrow>o,i\<Rightarrow>o,i] \<Rightarrow> o" where
