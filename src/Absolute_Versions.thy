@@ -28,6 +28,10 @@ interpretation V:M_basic \<V>
   using power_ax_absolute separation_absolute replacement_absolute
   by unfold_locales auto
 
+interpretation V:M_eclose \<V>
+  by unfold_locales (auto intro:separation_absolute replacement_absolute 
+      simp:iterates_replacement_def wfrec_replacement_def)
+
 lemmas bad_M_basic_rules[simp del, rule del] = 
   V.cartprod_closed V.finite_funspace_closed V.converse_closed
   V.list_case'_closed V.pred_closed
@@ -61,10 +65,7 @@ qed
 
 interpretation V:M_cohen \<V>
   using choice_ax_Universe
-  apply unfold_locales
-  unfolding iterates_replacement_def wfrec_replacement_def
-  apply (auto intro:separation_absolute replacement_absolute)
-  sorry
+  by unfold_locales (auto intro:separation_absolute replacement_absolute)
 
 named_theorems V_simps
 
