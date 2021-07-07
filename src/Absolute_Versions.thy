@@ -44,7 +44,7 @@ lemmas bad_M_cardinals_rules[simp del, rule del] =
   V.iterates_closed V.M_nat V.trancl_closed V.rvimage_closed
 
 interpretation V:M_cardinal_arith_jump \<V>
-  by unfold_locales (auto intro:separation_absolute replacement_absolute)
+  by unfold_locales (auto intro:separation_absolute replacement_absolute simp:wfrec_replacement_def)
 
 lemma choice_ax_Universe: "choice_ax(\<V>)"
 proof -
