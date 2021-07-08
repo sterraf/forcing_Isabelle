@@ -1357,7 +1357,7 @@ lemma ordertype_rel_abs:
   unfolding ordertype_def ordertype_rel_def ordermap_rel_def ordermap_def
   by simp
 
-lemma "well_ord(X, r) \<Longrightarrow> well_ord(X, r \<inter> X\<times>X)"
+lemma well_ord_restr: "well_ord(X, r) \<Longrightarrow> well_ord(X, r \<inter> X\<times>X)"
 proof -
   have "r \<inter> X\<times>X \<inter> X\<times>X = r \<inter> X\<times>X" by auto
   moreover 
@@ -1369,15 +1369,35 @@ proof -
     by simp_all (simp only: trans_on_def, blast)
 qed
 
-lemma "ordertype(X, r) = ordertype(X, r \<inter> X\<times>X)"
-  using ordermap_type unfolding ordertype_def
-  sorry
+lemma ordertype_restr_eq :
+  assumes "well_ord(X,r)"
+  shows "ordertype(X, r) = ordertype(X, r \<inter> X\<times>X)"
+  using ordermap_restr_eq assms unfolding ordertype_def
+  by simp
 
 lemma def_jump_cardinal_rel_aux:
-  "X \<in> Pow\<^bsup>M\<^esup>(K) \<Longrightarrow>  well_ord(X, r) \<Longrightarrow> M(K) \<Longrightarrow>
+  "X \<in> Pow\<^bsup>M\<^esup>(K) \<Longrightarrow> well_ord(X, w) \<Longrightarrow> M(K) \<Longrightarrow>
   {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)} =
   {z . r \<in> Pow\<^bsup>M\<^esup>(K \<times> K), M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)}"
-  sorry
+proof(rule,auto simp:Pow_rel_char dest:transM)
+  let ?L="{z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)}"
+  let ?R="{z . r \<in> Pow\<^bsup>M\<^esup>(K \<times> K), M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)}"
+  show "ordertype(X, r) \<in> {y . x \<in> {x \<in> Pow(X \<times> X) . M(x)}, M(y) \<and> well_ord(X, x) \<and> y = ordertype(X, x)}"
+    if "M(K)" "M(r)" "r\<subseteq>K\<times>K" "X\<subseteq>K" "M(X)" "well_ord(X,r)" for r
+  proof -
+    from that
+    have "ordertype(X,r) = ordertype(X,r\<inter>X\<times>X)" "(r\<inter>X\<times>X)\<subseteq>X\<times>X" "M(r\<inter>X\<times>X)"
+      "well_ord(X,r\<inter>X\<times>X)" "wellordered(M,X,r\<inter>X\<times>X)"
+      using well_ord_restr ordertype_restr_eq by auto
+    moreover from this
+    have "ordertype(X,r\<inter>X\<times>X) \<in> ?L"
+      using that Pow_rel_char
+        ReplaceI[of "\<lambda> z r . M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)" "ordertype(X,r\<inter>X\<times>X)"]
+      by auto
+    ultimately
+    show ?thesis using Pow_rel_char by auto
+  qed
+qed
 
 lemma def_jump_cardinal_rel:
   assumes "M(K)"

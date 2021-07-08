@@ -305,4 +305,53 @@ proof -
 qed
 
 
+lemma ordermap_restr_eq:
+  assumes "well_ord(X,r)"
+  shows "ordermap(X, r) = ordermap(X, r \<inter> X\<times>X)"
+proof -
+  let ?A="\<lambda>x . Order.pred(X, x, r)"
+  let ?B="\<lambda>x . Order.pred(X, x, r \<inter> X \<times> X)"
+  let ?F="\<lambda>x f. f `` ?A(x)"
+  let ?G="\<lambda>x f. f `` ?B(x)"
+  let ?P="\<lambda> z. z\<in>X \<longrightarrow> wfrec(r \<inter> X \<times> X,z,\<lambda>x f. f `` ?A(x)) = wfrec(r \<inter> X \<times> X,z,\<lambda>x f. f `` ?B(x))"
+  have pred_eq:
+    "Order.pred(X, x, r \<inter> X \<times> X) = Order.pred(X, x, r)" if "x\<in>X" for x 
+    unfolding Order.pred_def using that by auto
+  from assms
+  have wf_onX:"wf(r \<inter> X \<times> X)" unfolding well_ord_def wf_on_def by simp
+  {
+    have "?P(z)" for z
+    proof(induct rule:wf_induct[where P="?P",OF wf_onX])
+      case (1 x)
+      {
+        assume "x\<in>X"
+        from 1
+        have lam_eq:
+            "(\<lambda>w\<in>(r \<inter> X \<times> X) -`` {x}. wfrec(r \<inter> X \<times> X, w, ?F)) = 
+             (\<lambda>w\<in>(r \<inter> X \<times> X) -`` {x}. wfrec(r \<inter> X \<times> X, w, ?G))" (is "?L=?R")
+        proof -
+          have "wfrec(r \<inter> X \<times> X, w, ?F) = wfrec(r \<inter> X \<times> X, w, ?G)" if "w\<in>(r\<inter>X\<times>X)-``{x}" for w
+            using 1 that by auto
+          then show ?thesis using lam_cong[OF refl] by simp
+        qed
+        then
+        have "wfrec(r \<inter> X \<times> X, x, ?F) = ?L `` ?A(x)" 
+          using wfrec[OF wf_onX,of x ?F] by simp
+        also have "... =  ?R `` ?B(x)" 
+          using lam_eq pred_eq[OF \<open>x\<in>_\<close>] by simp
+        also
+        have "... = wfrec(r \<inter> X \<times> X, x, ?G)"
+          using wfrec[OF wf_onX,of x ?G] by simp
+        finally
+        have "wfrec(r \<inter> X \<times> X, x, ?F) = wfrec(r \<inter> X \<times> X, x, ?G)" by simp
+      }
+      then
+      show ?case by simp
+    qed
+  }
+  then
+  show ?thesis
+    unfolding ordermap_def wfrec_on_def using Int_ac by simp 
+qed
+
 end
