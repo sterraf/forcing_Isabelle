@@ -269,6 +269,27 @@ proof -
   show ?thesis .
 qed
 
+lemma is_Aleph_rel:
+  assumes "Ord(a)" "M(a)" "M(res)" 
+  shows "is_Aleph(M, a, res) \<longleftrightarrow> res = \<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup>"
+proof -
+  have "transrec_replacement(M, is_HAleph(M), a)"
+    unfolding transrec_replacement_def wfrec_replacement_def is_wfrec_def M_is_recfun_def
+    using assms haleph_transrec_replacement
+    by simp
+  moreover
+  have "relation2(M, is_HAleph(M), HAleph_rel(M))"
+    unfolding relation2_def using is_HAleph_iff assms by simp
+  moreover
+  have "\<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(HAleph_rel(M, x, g))"
+    using HAleph_closed by simp
+  ultimately
+  show ?thesis
+    using assms transrec_abs
+    unfolding is_Aleph_def Aleph_rel_def 
+    by simp
+qed
+
 lemma Aleph_rel_cont: "Limit(l) \<Longrightarrow> M(l) \<Longrightarrow> \<aleph>\<^bsub>l\<^esub>\<^bsup>M\<^esup> = (\<Union>i<l. \<aleph>\<^bsub>i\<^esub>\<^bsup>M\<^esup>)"
   using Limit_is_Ord Aleph_rel_limit
   by (simp add:OUnion_def)
