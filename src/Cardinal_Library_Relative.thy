@@ -4,7 +4,6 @@ theory Cardinal_Library_Relative
   imports
     ZF_Library_Relative
     "../Delta_System_Lemma/Cardinal_Library"
-    "../Tools/Try0"
 begin
 
 context M_library

@@ -1,6 +1,9 @@
 section\<open>Arities of internalized formulas\<close>
 theory Arities
-  imports Internalizations Names Least
+  imports
+    Nat_Miscellanea
+    Internalizations
+    Discipline_Base
 begin
 
 declare arity_And arity_Or arity_Implies arity_Iff arity_Exists [arity]

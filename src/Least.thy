@@ -1,7 +1,6 @@
 section\<open>The binder \<^term>\<open>Least\<close>\<close>
 theory Least
   imports
-    "Forcing_Data" \<comment> \<open>only for a result to be moved below\<close>
     "Internalizations"   
 
 begin
@@ -65,16 +64,33 @@ lemma least_iff_sats [iff_sats]:
 lemma least_conj: "a\<in>M \<Longrightarrow> least(##M, \<lambda>x. x\<in>M \<and> Q(x),a) \<longleftrightarrow> least(##M,Q,a)"
   unfolding least_def by simp
 
-\<comment> \<open>FIXME: Better to have this in \<^term>\<open>M_basic\<close> or similar. And perhaps to
-    have it disciplined\<close>
-lemma (in M_ctm) unique_least: "a\<in>M \<Longrightarrow> b\<in>M \<Longrightarrow> least(##M,Q,a) \<Longrightarrow> least(##M,Q,b) \<Longrightarrow> a=b"
-  unfolding least_def
-  by (auto, erule_tac i=a and j=b in Ord_linear_lt; (drule ltD | simp); auto intro:Ord_in_Ord)
 
 context M_trivial
 begin
 
-subsection\<open>Absoluteness and closure under \<^term>\<open>Least\<close>\<close>
+subsection\<open>Uniqueness, absoluteness and closure under \<^term>\<open>Least\<close>\<close>
+
+lemma unique_least:
+  assumes "M(a)" "M(b)" "least(M,Q,a)" "least(M,Q,b)"
+  shows "a=b"
+proof -
+  from assms
+  have "Ord(a)" "Ord(b)"
+    unfolding least_def
+    by simp_all
+  then
+  consider (le) "a\<in>b" | "a=b" | (ge) "b\<in>a"
+    using Ord_linear[OF \<open>Ord(a)\<close> \<open>Ord(b)\<close>] by auto
+  then
+  show ?thesis
+  proof(cases)
+    case le
+    then show ?thesis using assms unfolding least_def by auto
+  next
+    case ge
+    then show ?thesis using assms unfolding least_def by auto
+  qed
+qed
 
 lemma least_abs:
   assumes "\<And>x. Q(x) \<Longrightarrow> Ord(x) \<Longrightarrow> \<exists>y[M]. Q(y) \<and> Ord(y)" "M(a)"

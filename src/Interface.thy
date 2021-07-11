@@ -1327,7 +1327,33 @@ proof -
   then show ?thesis using
       \<open>A\<in>M\<close> satsQ trans_M
       separation_cong[of "##M" "\<lambda>y. sats(M,\<phi>,[y]@env)" "Q"]
-      separation_closed  by simp
+      separation_closed by simp
+qed
+
+lemma (in M_ZF_trans) separation_in_M :
+  assumes
+    "\<phi> \<in> formula" "env\<in>list(M)"
+    "arity(\<phi>) \<le> 1 #+ length(env)" "A\<in>M" and
+    satsQ: "\<And>x. x\<in>A \<Longrightarrow> sats(M,\<phi>,[x]@env) \<longleftrightarrow> Q(x)"
+  shows
+    "{y\<in>A . Q(y)} \<in> M"
+proof -
+  let ?\<phi>' = "And(\<phi>,Member(0,length(env)#+1))"
+  have "arity(?\<phi>') \<le> 1 #+ length(env@[A])"
+    using assms Un_le
+      le_trans[of "arity(\<phi>)" "succ(length(env))" "succ(succ(length(env)))"]
+    by force
+  moreover from assms
+  have "?\<phi>'\<in>formula"
+    "nth(length(env), env @ [A]) = A" using assms nth_append by auto
+  moreover from calculation
+  have "\<And> x . x \<in> M \<Longrightarrow> sats(M,?\<phi>',[x]@env@[A]) \<longleftrightarrow> Q(x) \<and> x\<in>A"
+    using arity_sats_iff[of _ "[A]" _ "[_]@env"] assms
+    by auto
+  ultimately
+  show ?thesis using assms
+      sep_in_M[of ?\<phi>' "env@[A]" _ "\<lambda>x . Q(x) \<and> x\<in>A", OF _ _ _ \<open>A\<in>M\<close>]
+    by auto
 qed
 
 end

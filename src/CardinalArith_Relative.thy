@@ -3,7 +3,7 @@ section\<open>Relative, Choice-less Cardinal Arithmetic\<close>
 theory CardinalArith_Relative 
   imports
     Cardinal_Relative
-    "../Tools/Try0"
+
 begin
 
 

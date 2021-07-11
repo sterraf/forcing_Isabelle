@@ -619,7 +619,7 @@ next
   have "one \<in> M" using one_in_P P_sub_M subsetD by simp
   with \<open>check(x)\<in>M\<close>
   have "\<langle>check(x),one\<rangle> \<in> M"
-    using tuples_in_M by simp
+    using pair_in_M_iff by simp
   then
   have "{\<langle>check(x),one\<rangle>} \<in> M"
     using singleton_closed by simp
@@ -646,7 +646,7 @@ lemma def_PHcheck:
 proof -
   from assms
   have "\<langle>f`x,one\<rangle> \<in> M" "f`x\<in>M" if "x\<in>z" for x
-    using tuples_in_M one_in_M transitivity that apply_closed by simp_all
+    using pair_in_M_iff one_in_M transitivity that apply_closed by simp_all
   then
   have "{y . x \<in> z, y = \<langle>f ` x, one\<rangle>} =  {y . x \<in> z, y = \<langle>f ` x, one\<rangle> \<and> y\<in>M \<and> f`x\<in>M}"
     by simp
@@ -825,6 +825,7 @@ schematic_goal rcheck_fm_auto:
         trans_closure_iff_sats | simp)+)
 
 synthesize "rcheck" from_schematic rcheck_fm_auto
+arity_theorem for "rcheck_fm"
 
 definition
   is_check :: "[i,i] \<Rightarrow> o" where
@@ -853,6 +854,8 @@ definition
   [fm_definitions] :
   "check_fm(x,o,z) \<equiv> Exists(And(rcheck_fm(1#+x,0),
                       is_wfrec_fm(is_Hcheck_fm(6#+o,2,1,0),0,1#+x,1#+z)))"
+
+arity_theorem for "check_fm"
 
 lemma check_fm_type[TC] :
   "\<lbrakk>x\<in>nat;o\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> check_fm(x,o,z)\<in>formula"
@@ -894,7 +897,7 @@ proof -
 qed
 
 lemma pair_check : "\<lbrakk> p\<in>M ; y\<in>M \<rbrakk>  \<Longrightarrow> (\<exists>c\<in>M. is_check(p,c) \<and> pair(##M,c,p,y)) \<longleftrightarrow> y = \<langle>check(p),p\<rangle>"
-  using check_abs check_in_M tuples_in_M by simp
+  using check_abs check_in_M pair_in_M_iff by simp
 
 
 lemma M_subset_MG :  "one \<in> G \<Longrightarrow> M \<subseteq> M[G]"
@@ -923,7 +926,7 @@ proof -
     unfolding is_eclose_fm_def mem_eclose_fm_def eclose_n_fm_def fm_definitions
     by (simp add:nat_simp_union)
   moreover
-  from P_in_M check_in_M tuples_in_M P_sub_M
+  from P_in_M check_in_M pair_in_M_iff P_sub_M
   have "\<langle>check(p),p\<rangle> \<in> M" if "p\<in>P" for p
     using that by auto
   ultimately

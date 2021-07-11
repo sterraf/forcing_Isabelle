@@ -445,7 +445,7 @@ lemma cond_of_abs:
 lemma tuple_abs:
   "\<lbrakk>z\<in>M;t1\<in>M;t2\<in>M;p\<in>M;t\<in>M\<rbrakk> \<Longrightarrow>
    is_tuple(##M,z,t1,t2,p,t) \<longleftrightarrow> t = \<langle>z,t1,t2,p\<rangle>"
-  unfolding is_tuple_def using tuples_in_M by simp
+  unfolding is_tuple_def using pair_in_M_iff by simp
 
 lemmas components_abs = ftype_abs name1_abs name2_abs cond_of_abs
   tuple_abs
@@ -484,7 +484,7 @@ proof -
       domain_trans[OF trans_M,of t2] by auto
   then show ?thesis
     unfolding eq_case_def is_eq_case_def
-    using assms pair_in_M_iff nat_into_M[of 1] domain_closed tuples_in_M
+    using assms pair_in_M_iff nat_into_M[of 1] domain_closed
       apply_closed leq_in_M nonempty Un_closed
     by (simp add:components_abs)
 qed
@@ -533,7 +533,7 @@ next
     have "\<exists>q\<in>M . \<exists>s\<in>M. \<exists>r\<in>M.
          r \<in> P \<and> q \<in> P \<and> \<langle>q, v\<rangle> \<in> M \<and> \<langle>s, r\<rangle> \<in> M \<and> \<langle>q, r\<rangle> \<in> M \<and> 0 \<in> M \<and>
          \<langle>0, t1, s, q\<rangle> \<in> M \<and> q \<preceq> v \<and> \<langle>s, r\<rangle> \<in> t2 \<and> q \<preceq> r \<and> f ` \<langle>0, t1, s, q\<rangle> = 1"
-      using tuples_in_M zero_in_M by auto
+      using pair_in_M_iff zero_in_M by auto
   }
   then
   show "is_mem_case(##M, t1, t2, p, P, leq, f)" if "mem_case(t1, t2, p, P, leq, f)"
@@ -1134,12 +1134,12 @@ qed
 lemma forces_eq'_abs :
   "\<lbrakk>p\<in>M ; t1\<in>M ; t2\<in>M\<rbrakk> \<Longrightarrow> is_forces_eq'(##M,P,leq,p,t1,t2) \<longleftrightarrow> forces_eq'(P,leq,p,t1,t2)"
   unfolding is_forces_eq'_def forces_eq'_def
-  using frc_at_abs zero_in_M tuples_in_M by (auto simp add:components_abs)
+  using frc_at_abs zero_in_M pair_in_M_iff by (auto simp add:components_abs)
 
 lemma forces_mem'_abs :
   "\<lbrakk>p\<in>M ; t1\<in>M ; t2\<in>M\<rbrakk> \<Longrightarrow> is_forces_mem'(##M,P,leq,p,t1,t2) \<longleftrightarrow> forces_mem'(P,leq,p,t1,t2)"
   unfolding is_forces_mem'_def forces_mem'_def
-  using frc_at_abs zero_in_M tuples_in_M by (auto simp add:components_abs)
+  using frc_at_abs zero_in_M pair_in_M_iff by (auto simp add:components_abs)
 
 lemma forces_neq'_abs :
   assumes

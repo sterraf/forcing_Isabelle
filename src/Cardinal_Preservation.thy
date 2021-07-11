@@ -28,7 +28,7 @@ abbreviation
 lemma antichain_abs' [absolut]:
   "\<lbrakk> M(A); M(P); M(leq) \<rbrakk> \<Longrightarrow> antichain_r'(A) \<longleftrightarrow> antichain(A)"
   unfolding antichain_rel_def antichain_def compat_def
-    by (simp add:absolut)
+  by (simp add:absolut)
 
 end (* M_trivial_notion *)
 
@@ -43,7 +43,7 @@ begin
 lemma antichain_abs'' [absolut]: "A\<in>M \<Longrightarrow> antichain_r'(A) \<longleftrightarrow> antichain(A)"
   using P_in_M leq_in_M
   unfolding antichain_rel_def antichain_def compat_def
-    by (auto simp add:absolut transitivity)
+  by (auto simp add:absolut transitivity)
 
 end (* M_trivial_notion *)
 
@@ -56,7 +56,7 @@ lemma Pi_range_eq: "f \<in> Pi(A,B) \<Longrightarrow> range(f) = {f ` x . x \<in
   by blast
 
 lemma (in forcing_notion) Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
-   using refl_leq by blast
+  using refl_leq by blast
 
 lemma (in forcing_data) inconsistent_imp_incompatible:
   assumes "p \<tturnstile> \<phi> env" "q \<tturnstile> Neg(\<phi>) env" "p\<in>P" "q\<in>P"
@@ -240,7 +240,7 @@ lemmas mg_sharp_simps = ext.Card_rel_Union ext.Card_rel_cardinal_rel
   ext.well_ord_abs ext.mem_formula_abs ext.nth_closed
 
 declare sharp_simps[simp del, simplified setclass_iff, simp]
-\<comment> \<open>The following was motivated by the fact that
+  \<comment> \<open>The following was motivated by the fact that
     @{thm ext.apply_closed} did not simplify appropriately
 
     NOTE: @{thm fst_abs} and @{thm snd_abs} not in mgzf
@@ -265,6 +265,35 @@ proof -
     using strengthening_lemma[of r \<phi> _ env] by blast
 qed
 
+simple_rename "ren_F" src "[x_P, x_leq, x_o, x_f, y_c, x_bc, p, x, b]" 
+  tgt "[x_bc, y_c,b,x, x_P, x_leq, x_o, x_f, p]"
+
+
+arity_theorem for "PHcheck_fm"
+
+lemma arity_Replace_fm [arity] :
+  "\<lbrakk>p\<in>formula ; v\<in>nat ; n\<in>nat; Z\<in>nat ; i\<in>nat\<rbrakk> \<Longrightarrow> arity(p) = i \<Longrightarrow> 
+    arity(Replace_fm(v,p,n)) = succ(n) \<union> (succ(v) \<union> Arith.pred(Arith.pred(i)))"
+  unfolding Replace_fm_def
+  using nat_union_abs2 pred_Un_distrib
+  by simp
+
+lemma arity_is_Hcheck_fm :
+  assumes "m\<in>\<omega>" "n\<in>\<omega>" "p\<in>\<omega>" "o\<in>\<omega>"
+  shows "arity(is_Hcheck_fm(m,n,p,o)) = succ(o) \<union> succ(n) \<union> succ(p) \<union> succ(m) "
+  unfolding is_Hcheck_fm_def
+  using assms arity_Replace_fm[rule_format,OF _ _ _ _ _ arity_PHcheck_fm]
+    pred_Un_distrib Un_assoc 
+  by simp
+
+lemma arity_check_fm :
+  assumes "m\<in>\<omega>" "n\<in>\<omega>" "o\<in>\<omega>"
+  shows "arity(check_fm(m,n,o)) = succ(o) \<union> succ(n) \<union> succ(m) "
+  unfolding check_fm_def
+  using assms arity_is_wfrec_fm[rule_format,OF _ _ _ _ _ arity_is_Hcheck_fm]
+    pred_Un_distrib Un_assoc arity_tran_closure_fm
+  by (auto simp add:arity)
+
 \<comment> \<open>Kunen IV.3.5\<close>
 lemma ccc_fun_approximation_lemma:
   notes le_trans[trans]
@@ -276,119 +305,228 @@ proof -
   from \<open>f\<in>M[G]\<close>
   obtain f_dot where "f = val(P,G,f_dot)" "f_dot\<in>M" using GenExtD by force
   with assms
-  obtain p where "p \<tturnstile> ?\<phi> [f_dot, A\<^sup>v, B\<^sup>v]" "p\<in>G"
-    using generic truth_lemma[of ?\<phi> G "[f_dot, A\<^sup>v, B\<^sup>v]"]
+  obtain p where "p \<tturnstile> ?\<phi> [f_dot, A\<^sup>v, B\<^sup>v]" "p\<in>G" "p\<in>M"
+    using transitivity[OF M_genericD P_in_M]
+      generic truth_lemma[of ?\<phi> G "[f_dot, A\<^sup>v, B\<^sup>v]"] 
     by (auto simp add:nat_simp_union arity_typed_function_fm
         \<comment> \<open>NOTE: type-checking is not performed here by the Simplifier\<close>
         typed_function_type)
   let ?app_fm="fun_apply_fm(0,1,2)"\<comment> \<open>formula for \<open>f`x=z\<close>\<close>
   define F where "F\<equiv>\<lambda>a\<in>A. {b\<in>B. \<exists>q\<in>P. q \<preceq> p \<and> (q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v])}"
   have "F \<in> M"
-    sorry
-  moreover
-  have "f`a \<in> F`a" if "a \<in> A" for a
-  proof -
-    note \<open>f: A \<rightarrow> B\<close> \<open>a \<in> A\<close>
-    moreover from this
-    have "f ` a \<in> B" by simp
+  proof - 
+    let ?G="Exists
+               (And(check_fm(2, 5, 0),
+                    Exists
+                     (And(check_fm(2, 6, 0),
+                           ren(Exists(And(Member(0, 1), And(leq_fm(2, 0, 7), forces(fun_apply_fm(0, 1, 2)))))) ` 9 ` 9 `
+                          ren_F_fn))))"
+    let ?Q="\<lambda> x b . (\<exists>q\<in>P. q \<preceq> p \<and> M, [q, P, leq, one, f_dot, x\<^sup>v, b\<^sup>v] \<Turnstile> forces(fun_apply_fm(0, 1, 2)))"
+    have A: "fun_apply_fm(0, 1, 2)\<in> formula" "arity(fun_apply_fm(0, 1, 2)) = 3" 
+      using arity_fun_apply_fm nat_union_abs1 
+      by simp_all
+    then 
+    have B:"arity(forces(fun_apply_fm(0, 1, 2))) \<le> 7"  "forces(fun_apply_fm(0, 1, 2))\<in>formula"
+      "pred(arity(forces(fun_apply_fm(0, 1, 2)))) \<le> 7"
+      using arity_forces[OF A(1)] pred_le le_trans by simp_all 
+    then 
+    have C:"arity(Exists(And(Member(0, 1), And(leq_fm(2, 0, 7), forces(fun_apply_fm(0, 1, 2)))))) \<le> 9" (is "arity(?\<psi>) \<le> 9")
+      using arity_leq_fm pred_Un_distrib
+        nat_union_abs2 nat_union_abs2[OF _ _ B(3),simplified] nat_union_abs1 le_trans
+      by simp 
+    then have "ren(?\<psi>)`9`9`ren_F_fn \<in> formula" "pred(pred(arity(ren(?\<psi>)`9`9`ren_F_fn))) \<le> 7"
+      using ren_F_thm(2) ren_tc[of ?\<psi> 9 9 ren_F_fn] check_fm_type leq_fm_type ren_F_fn_def
+        arity_ren ren_F_thm pred_le
+      by simp_all
+    with B
+    have D:"arity(?G) \<le>  1 #+ length([x, P, leq, one, f_dot,p])" "?G\<in>formula" for x
+      using check_fm_type arity_check_fm pred_Un_distrib Un_le
+       by (simp_all add:ren_F_fn_def) 
+      {fix x
+        assume "x\<in>A" 
+        moreover
+        note E=\<open>x\<in>A\<close> \<open>f_dot\<in>_\<close> \<open>p\<in>M\<close> P_in_M leq_in_M one_in_M
+        {
+          fix b
+          assume "b\<in>B"
+          moreover
+          note E
+          moreover from calculation
+          have "x\<^sup>v\<in>M" "b\<^sup>v\<in>M" "x\<in>M" "b\<in>M"
+            using transitivity[OF _ \<open>A\<in>_\<close>] transitivity[OF _ \<open>B\<in>_\<close>] check_in_M by simp_all
+          moreover from calculation
+          have 
+            "?Q(x,b) \<longleftrightarrow> 
+            (\<exists>q\<in>P. q \<preceq> p \<and> M, [q, P, leq, one, f_dot, x\<^sup>v, b\<^sup>v,p,x,b] \<Turnstile> forces(fun_apply_fm(0, 1, 2)))" 
+            (is "?PR \<longleftrightarrow> _")
+            using arity_sats_iff[of _ "[p,x,b]" _ "[_, _, _, _, _, _, _]"] \<open>p\<in>M\<close> B 
+              transitivity[OF _ P_in_M] by auto 
+          moreover from calculation 
+          have 
+            "(\<exists>q\<in>P. q \<preceq> p \<and> M, [q, P, leq, one, f_dot, x\<^sup>v, b\<^sup>v,p,x,b] \<Turnstile> forces(fun_apply_fm(0, 1, 2))) \<longleftrightarrow> 
+             (M, [P, leq, one, f_dot, x\<^sup>v, b\<^sup>v,p,x,b] \<Turnstile>  
+                    Exists(And(Member(0,1),And(leq_fm(2,0,7),forces(fun_apply_fm(0, 1, 2))))))" 
+            unfolding leq_fm_def 
+            using leq_in_M P_in_M one_in_M transitivity[OF _ P_in_M] 
+            by auto 
+          moreover from calculation
+          have "(\<exists>q\<in>P. q \<preceq> p \<and> M, [q, P, leq, one, f_dot, x\<^sup>v, b\<^sup>v] \<Turnstile> forces(fun_apply_fm(0, 1, 2))) \<longleftrightarrow> 
+         (M, [P, leq, one, f_dot, x\<^sup>v, b\<^sup>v,p,x,b] \<Turnstile>  
+             Exists(And(Member(0,1),And(leq_fm(2,0,7),forces(fun_apply_fm(0, 1, 2))))))"  
+            (is "?L \<longleftrightarrow> M, ?envp \<Turnstile> ?\<eta>") 
+            by simp 
+          moreover from calculation assms
+          have "M,?envp \<Turnstile> ?\<eta> \<longleftrightarrow>
+              M, [b\<^sup>v, x\<^sup>v, b, x, P, leq, one, f_dot, p] \<Turnstile> ren(?\<eta>)`9`9`ren_F_fn" (is "_ \<longleftrightarrow> _, ?env' \<Turnstile> ?\<eta>'") 
+            using
+              sats_iff_sats_ren[of ?\<eta> 9 9 ?envp M ?env' ren_F_fn,OF _ _ _ _ _  _ C,simplified]
+              ren_F_thm(1)[of P leq one f_dot  "x\<^sup>v" "b\<^sup>v" p x b M]
+              arity_leq_fm A arity_forces[OF A(1),simplified] ren_F_thm(2) nat_union_abs1 nat_union_abs2 
+              pred_Un_distrib C ren_F_fn_def
+            by simp
+          moreover from calculation assms
+          have "M, ?env' \<Turnstile> ?\<eta>' \<longleftrightarrow>
+              M, [b,x,P, leq, one, f_dot,p] \<Turnstile> ?G" (is "_ \<longleftrightarrow> M,?envF\<Turnstile>_")
+            using sats_check_fm[of 5 "[_]@?envF" 2 0] 
+              sats_check_fm[of 6 "[_,_]@?envF" 2 0] check_abs 
+            by simp
+          ultimately 
+          have "?PR \<longleftrightarrow> M,?envF\<Turnstile>?G" by simp
+        }
+        then
+        have J:"M,[b, x, P, leq, one, f_dot,p] \<Turnstile>?G \<longleftrightarrow> ?Q(x,b)" if "b\<in>B" for b using that by simp
+        have H:"[x, P, leq, one, f_dot,p] \<in> list(M)" using assms E transitivity[of x A] by auto
+        from E \<open>B\<in>M\<close>
+        have "{b\<in>B. ?Q(x,b)}\<in>M" 
+          using 
+            separation_in_M[of ?G "[x, P, leq, one, f_dot,p]" B "?Q(x)",OF D(2) H D(1) \<open>B\<in>M\<close>] 
+            J
+          by simp
+      }
+      then 
+      have U:"{b\<in>B.?Q(x,b)} \<in> M" (is "?P(x)\<in>_") if "x\<in>A" for x using that by simp
+      then 
+      have Q:"?P(x) \<in> Pow(B)" if "x\<in>A" for x using that Collect_subset by simp
+      with U \<open>B\<in>M\<close> 
+      have T:"?P(x) \<in> Pow_rel(##M,B)" if "x\<in>A" for x
+        using that Pow_rel_char by simp
+      from assms
+      have "A\<times>Pow_rel(##M,B) \<in> M" (is "?APB \<in> _")by simp
+      then 
+      have "{z \<in> ?APB . snd(z)=?P(fst(z))} \<in> M" (is "?FS\<in>_")
+        using separation_in_M
+        sorry
+      then 
+      have "?FS = F"
+        unfolding F_def lam_def using T by auto
+      with \<open>?FS\<in>_\<close>
+      show ?thesis 
+        by simp
+    qed 
     moreover
-    note \<open>f\<in>M[G]\<close> \<open>A\<in>M\<close>
-    moreover from calculation
-    have "M[G], [f, a, f`a] \<Turnstile> ?app_fm"
-      by (auto dest:transM)
-    moreover
-    note \<open>B\<in>M\<close> \<open>f = val(P,G,f_dot)\<close>
-    moreover from calculation
-    have "a\<in>M" "val(P,G, f_dot)`a\<in>M"
-      by (auto dest:transM)
-    moreover
-    note \<open>f_dot\<in>M\<close> \<open>p\<in>G\<close>
-    ultimately
-    obtain q where "q \<preceq> p" "q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, (f`a)\<^sup>v]" "q\<in>G"
-      using forces_below_filter[of ?app_fm "[f_dot, a\<^sup>v, (f`a)\<^sup>v]" p]
-      by (auto simp add: nat_simp_union arity_fun_apply_fm
-          fun_apply_type)
-    with \<open>f`a \<in> B\<close>
-    have "f`a \<in> {b\<in>B . \<exists>q\<in>P. q \<preceq> p \<and> q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v]}"
-      by blast
-    with \<open>a\<in>A\<close>
-    show ?thesis unfolding F_def by simp
-  qed
-  moreover
-  have "|F`a|\<^bsup>M\<^esup> \<le> \<omega>" if "a \<in> A" for a
-  proof -
-    let ?Q="\<lambda>b. {q\<in>P. q \<preceq> p \<and> (q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v])}"
-    from \<open>F \<in> M\<close> \<open>a\<in>A\<close> \<open>A\<in>M\<close>
-    have "F`a \<in> M" by (auto dest:transM)
-    then
-    interpret M_Pi_assumptions_choice "##M" "F`a" ?Q
-      apply unfold_locales apply simp_all sorry
-    from \<open>F`a \<in> M\<close>
-    interpret M_Pi_assumptions2 "##M" "F`a" ?Q "\<lambda>_ . P"
-      using P_in_M
-      apply unfold_locales apply simp_all sorry
-    from \<open>p \<tturnstile> ?\<phi> [f_dot, A\<^sup>v, B\<^sup>v]\<close> \<open>a\<in>A\<close>
-    have "\<exists>y. y \<in> ?Q(b)" if "b \<in> F`a" for b
-      using that unfolding F_def by auto
-    then
-      \<comment> \<open>FIX THIS: notation for Pi_r_set is forgotten!\<close>
-    obtain q where "q \<in> Pi\<^bsup>M\<^esup>(F`a,?Q)" "q\<in>M" using AC_Pi_rel by auto
-    moreover
-    note \<open>F`a \<in> M\<close>
-    moreover from calculation
-    have "q : F`a \<rightarrow>\<^bsup>M\<^esup> P"
-      using Pi_rel_weaken_type def_function_space_rel by auto
-    moreover from calculation
-    have "q : F`a \<rightarrow> range(q)" "q : F`a \<rightarrow> P" "q : F`a \<rightarrow>\<^bsup>M\<^esup> range(q)"
-      using mem_function_space_rel_abs range_of_fun by simp_all
-    moreover
-    have "q`b \<bottom> q`c" if "b \<in> F`a" "c \<in> F`a" "b \<noteq> c"
-    \<comment> \<open>For the next step, if the premise \<^term>\<open>b \<noteq> c\<close> is first,
-        the proof breaks down badly\<close>
-      for b c
+    have "f`a \<in> F`a" if "a \<in> A" for a
     proof -
-      from \<open>b \<in> F`a\<close> \<open>c \<in> F`a\<close> \<open>q \<in> Pi\<^bsup>M\<^esup>(F`a,?Q)\<close> \<open>q\<in>M\<close>
-      have "q`b \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v]"
-           "q`c \<tturnstile> ?app_fm [f_dot, a\<^sup>v, c\<^sup>v]"
-        using mem_Pi_rel_abs[of q] apply_type[of _ _  ?Q]
-        by simp_all
-      with \<open>b \<noteq> c\<close> \<open>q : F`a \<rightarrow> P\<close> \<open>a\<in>A\<close> \<open>b\<in>_\<close> \<open>c\<in>_\<close>
-        \<open>A\<in>M\<close> \<open>f_dot\<in>M\<close> \<open>F`a\<in>M\<close>
-      show ?thesis
-        using forces_neq_apply_imp_incompatible
-          transitivity[of _ A] transitivity[of _ "F`a"]
-        by auto
+      note \<open>f: A \<rightarrow> B\<close> \<open>a \<in> A\<close>
+      moreover from this
+      have "f ` a \<in> B" by simp
+      moreover
+      note \<open>f\<in>M[G]\<close> \<open>A\<in>M\<close>
+      moreover from calculation
+      have "M[G], [f, a, f`a] \<Turnstile> ?app_fm"
+        by (auto dest:transM)
+      moreover
+      note \<open>B\<in>M\<close> \<open>f = val(P,G,f_dot)\<close>
+      moreover from calculation
+      have "a\<in>M" "val(P,G, f_dot)`a\<in>M"
+        by (auto dest:transM)
+      moreover
+      note \<open>f_dot\<in>M\<close> \<open>p\<in>G\<close>
+      ultimately
+      obtain q where "q \<preceq> p" "q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, (f`a)\<^sup>v]" "q\<in>G"
+        using forces_below_filter[of ?app_fm "[f_dot, a\<^sup>v, (f`a)\<^sup>v]" p]
+        by (auto simp add: nat_simp_union arity_fun_apply_fm
+            fun_apply_type)
+      with \<open>f`a \<in> B\<close>
+      have "f`a \<in> {b\<in>B . \<exists>q\<in>P. q \<preceq> p \<and> q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v]}"
+        by blast
+      with \<open>a\<in>A\<close>
+      show ?thesis unfolding F_def by simp
     qed
-    moreover from calculation
-    have "antichain(range(q))"
-      using Pi_range_eq[of _  _ "\<lambda>_ . P"]
-      unfolding antichain_def by auto
-    moreover from this and \<open>q\<in>M\<close>
-    have "antichain_r'(range(q))"
-      by (simp add:absolut)
-    moreover from calculation
-    have "q`b \<noteq> q`c" if "b \<noteq> c" "b \<in> F`a" "c \<in> F`a" for b c
-      using that Incompatible_imp_not_eq apply_type
-        mem_function_space_rel_abs by simp
+    moreover
+    have "|F`a|\<^bsup>M\<^esup> \<le> \<omega>" if "a \<in> A" for a
+    proof -
+      let ?Q="\<lambda>b. {q\<in>P. q \<preceq> p \<and> (q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v])}"
+      from \<open>F \<in> M\<close> \<open>a\<in>A\<close> \<open>A\<in>M\<close>
+      have "F`a \<in> M" by (auto dest:transM)
+      then
+      interpret M_Pi_assumptions_choice "##M" "F`a" ?Q
+        apply unfold_locales apply simp_all sorry
+      from \<open>F`a \<in> M\<close>
+      interpret M_Pi_assumptions2 "##M" "F`a" ?Q "\<lambda>_ . P"
+        using P_in_M
+        apply unfold_locales apply simp_all sorry
+      from \<open>p \<tturnstile> ?\<phi> [f_dot, A\<^sup>v, B\<^sup>v]\<close> \<open>a\<in>A\<close>
+      have "\<exists>y. y \<in> ?Q(b)" if "b \<in> F`a" for b
+        using that unfolding F_def by auto
+      then
+        \<comment> \<open>FIX THIS: notation for Pi_r_set is forgotten!\<close>
+      obtain q where "q \<in> Pi\<^bsup>M\<^esup>(F`a,?Q)" "q\<in>M" using AC_Pi_rel by auto
+      moreover
+      note \<open>F`a \<in> M\<close>
+      moreover from calculation
+      have "q : F`a \<rightarrow>\<^bsup>M\<^esup> P"
+        using Pi_rel_weaken_type def_function_space_rel by auto
+      moreover from calculation
+      have "q : F`a \<rightarrow> range(q)" "q : F`a \<rightarrow> P" "q : F`a \<rightarrow>\<^bsup>M\<^esup> range(q)"
+        using mem_function_space_rel_abs range_of_fun by simp_all
+      moreover
+      have "q`b \<bottom> q`c" if "b \<in> F`a" "c \<in> F`a" "b \<noteq> c"
+        \<comment> \<open>For the next step, if the premise \<^term>\<open>b \<noteq> c\<close> is first,
+        the proof breaks down badly\<close>
+        for b c
+      proof -
+        from \<open>b \<in> F`a\<close> \<open>c \<in> F`a\<close> \<open>q \<in> Pi\<^bsup>M\<^esup>(F`a,?Q)\<close> \<open>q\<in>M\<close>
+        have "q`b \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v]"
+          "q`c \<tturnstile> ?app_fm [f_dot, a\<^sup>v, c\<^sup>v]"
+          using mem_Pi_rel_abs[of q] apply_type[of _ _  ?Q]
+          by simp_all
+        with \<open>b \<noteq> c\<close> \<open>q : F`a \<rightarrow> P\<close> \<open>a\<in>A\<close> \<open>b\<in>_\<close> \<open>c\<in>_\<close>
+          \<open>A\<in>M\<close> \<open>f_dot\<in>M\<close> \<open>F`a\<in>M\<close>
+        show ?thesis
+          using forces_neq_apply_imp_incompatible
+            transitivity[of _ A] transitivity[of _ "F`a"]
+          by auto
+      qed
+      moreover from calculation
+      have "antichain(range(q))"
+        using Pi_range_eq[of _  _ "\<lambda>_ . P"]
+        unfolding antichain_def by auto
+      moreover from this and \<open>q\<in>M\<close>
+      have "antichain_r'(range(q))"
+        by (simp add:absolut)
+      moreover from calculation
+      have "q`b \<noteq> q`c" if "b \<noteq> c" "b \<in> F`a" "c \<in> F`a" for b c
+        using that Incompatible_imp_not_eq apply_type
+          mem_function_space_rel_abs by simp
+      ultimately
+      have "q \<in> inj\<^bsup>M\<^esup>(F`a,range(q))"
+        using def_inj_rel by auto
+      with \<open>F`a \<in> M\<close> \<open>q\<in>M\<close>
+      have "|F`a|\<^bsup>M\<^esup> \<le> |range(q)|\<^bsup>M\<^esup>"
+        using def_lepoll_rel
+        by (rule_tac lepoll_rel_imp_cardinal_rel_le) auto
+      also from \<open>antichain_r'(range(q))\<close> \<open>ccc\<^bsup>M\<^esup>(P,leq)\<close> \<open>q\<in>M\<close>
+      have "|range(q)|\<^bsup>M\<^esup> \<le> \<omega>"
+        using def_ccc_rel by simp
+      finally
+      show ?thesis .
+    qed
+    moreover
+    have "F : A \<rightarrow> Pow(B)"
+      unfolding F_def by (rule_tac lam_type) blast
     ultimately
-    have "q \<in> inj\<^bsup>M\<^esup>(F`a,range(q))"
-      using def_inj_rel by auto
-    with \<open>F`a \<in> M\<close> \<open>q\<in>M\<close>
-    have "|F`a|\<^bsup>M\<^esup> \<le> |range(q)|\<^bsup>M\<^esup>"
-      using def_lepoll_rel
-      by (rule_tac lepoll_rel_imp_cardinal_rel_le) auto
-    also from \<open>antichain_r'(range(q))\<close> \<open>ccc\<^bsup>M\<^esup>(P,leq)\<close> \<open>q\<in>M\<close>
-    have "|range(q)|\<^bsup>M\<^esup> \<le> \<omega>"
-      using def_ccc_rel by simp
-    finally
-    show ?thesis .
+    show ?thesis by auto
   qed
-  moreover
-  have "F : A \<rightarrow> Pow(B)"
-    unfolding F_def by (rule_tac lam_type) blast
-  ultimately
-  show ?thesis by auto
-qed
 
 end (* includes G_generic_lemmas *)
 

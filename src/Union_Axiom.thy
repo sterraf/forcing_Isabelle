@@ -38,8 +38,8 @@ lemma sats_Union_name_fm :
   "\<lbrakk> env \<in> list(M); P' \<in> M ; p \<in> M ; \<theta> \<in> M ; \<tau> \<in> M ; leq' \<in> M \<rbrakk> \<Longrightarrow>
      sats(M,Union_name_fm,[\<langle>\<theta>,p\<rangle>,\<tau>,leq',P']@env) \<longleftrightarrow>
      Union_name_body(P',leq',\<tau>,\<langle>\<theta>,p\<rangle>)"
-  unfolding Union_name_fm_def Union_name_body_def tuples_in_M
-  by (subgoal_tac "\<langle>\<theta>,p\<rangle> \<in> M", auto simp add : tuples_in_M)
+  unfolding Union_name_fm_def Union_name_body_def
+  by (simp_all add:pair_in_M_iff[simplified])
 
 definition Union_name :: "i \<Rightarrow> i" where
   "Union_name(\<tau>) \<equiv>

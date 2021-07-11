@@ -516,7 +516,6 @@ proof -
 qed
 
 lemma sats_iff_sats_ren :
-  fixes "\<phi>"
   assumes "\<phi> \<in> formula"
   shows  "\<lbrakk>  n \<in> nat ; m \<in> nat ; \<rho> \<in> list(M) ; \<rho>' \<in> list(M) ; f \<in> n \<rightarrow> m ;
             arity(\<phi>) \<le> n ;

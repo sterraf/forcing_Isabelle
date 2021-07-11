@@ -6,22 +6,13 @@ theory Forcing_Data
   imports  
     Forcing_Notions 
     Interface
-
+    Arities
 begin
-
-lemma Transset_M :
-  "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
-  by (simp add: Transset_def,auto)  
-
-
 
 locale M_ctm = M_ZF_trans +
   fixes enum
   assumes M_countable:      "enum\<in>bij(nat,M)"
 begin
-
-lemma tuples_in_M: "A\<in>M \<Longrightarrow> B\<in>M \<Longrightarrow> \<langle>A,B\<rangle>\<in>M" 
-  by (simp flip:setclass_iff)
 
 subsection\<open>\<^term>\<open>Collects\<close> in $M$\<close>
 lemma Collect_in_M_0p :
@@ -132,7 +123,7 @@ proof -
   ultimately show ?thesis by simp
 qed
 
-end (* M_ctm *)      
+end (* M_ctm *)
 
 subsection\<open>A forcing locale and generic filters\<close>
 locale forcing_data = forcing_notion + M_ctm +
