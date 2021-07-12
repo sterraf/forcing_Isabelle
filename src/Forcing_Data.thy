@@ -7,6 +7,7 @@ theory Forcing_Data
     Forcing_Notions 
     Interface
     Arities
+    Renaming_Auto
 begin
 
 locale M_ctm = M_ZF_trans +
@@ -97,6 +98,93 @@ proof -
   show ?thesis using 1 by simp
 qed
 
+lemma Replacement_in_M :
+  assumes
+    f_fm:  "\<phi> \<in> formula" and
+    f_ar:  "arity(\<phi>)\<le> 2 #+ length(env)" and
+    fsats: "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> M,[x,y]@env \<Turnstile> \<phi> \<longleftrightarrow> is_f(x,y)" and
+    fabs:  "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> is_f(x,y) \<longleftrightarrow> y = f(x)" and
+    fclosed: "\<And>x. x\<in>A \<Longrightarrow> f(x) \<in> M"  and
+    "A\<in>M" "env\<in>list(M)" 
+  shows "{f(x) . x\<in>A}\<in>M"
+proof -
+  let ?\<phi>' = "And(\<phi>,Member(0,length(env)#+2))"
+  have "arity(?\<phi>') \<le> 2 #+ length(env@[A])"
+    using assms Un_le
+      le_trans[of "arity(\<phi>)" "succ(succ(length(env)))" "succ(succ(succ(length(env))))"]
+    by force
+  moreover from assms
+  have "?\<phi>'\<in>formula" "nth(length(env), env @ [A]) = A" 
+    using assms nth_append by auto
+  moreover from calculation
+  have "\<And> x y. x \<in> M \<Longrightarrow> y\<in>M \<Longrightarrow> M,[x,y]@env@[A]\<Turnstile>?\<phi>' \<longleftrightarrow> is_f(x,y)\<and>x\<in>A"
+    using arity_sats_iff[of _ "[A]" _ "[_,_]@env"] assms
+    by auto
+  moreover
+  have "\<And> x y. x \<in> M \<Longrightarrow> y\<in>M \<Longrightarrow> is_f(x,y)\<and>x\<in>A \<longleftrightarrow> y=f(x) \<and>x\<in>A"
+    using assms
+    by auto
+  moreover from calculation
+  have "strong_replacement(##M, \<lambda>x y. M,[x,y]@env@[A] \<Turnstile> ?\<phi>')"
+    using replacement_ax \<open>env\<in>list(M)\<close> assms by simp
+  ultimately 
+  have 4:"strong_replacement(##M, \<lambda>x y. y = f(x) \<and> x\<in>A)"
+    using 
+      strong_replacement_cong[of "##M" "\<lambda>x y. M,[x,y]@env@[A]\<Turnstile>?\<phi>'" "\<lambda>x y. y = f(x) \<and> x\<in>A"]
+    by simp
+  then
+  have "{y . x\<in>A , y = f(x)} \<in> M" 
+    using \<open>A\<in>M\<close> strong_replacement_closed[OF 4,of A] fclosed by simp
+  moreover
+  have "{f(x). x\<in>A} = { y . x\<in>A , y = f(x)}"
+    by auto
+  ultimately show ?thesis by simp
+qed
+
+
+\<comment> \<open>FIXME: this lemma should be true; perhaps the new formula is somewhat more complex.\<close>
+rename "sw" src "[x,y]" tgt "[y,x]"
+thm sw_thm
+
+lemma Fun_in_M :
+  assumes
+    f_fm:  "\<phi> \<in> formula" and
+    f_ar:  "arity(\<phi>)\<le> 2 #+ length(env)" and
+    fsats: "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> M,[x,y]@env \<Turnstile> \<phi> \<longleftrightarrow> is_f(x,y)" and
+    fabs:  "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> is_f(x,y) \<longleftrightarrow> y = f(x)" and
+    fclosed: "\<And>x. x\<in>A \<Longrightarrow> f(x) \<in> M"  and
+    "A\<in>M" "env\<in>list(M)" 
+  shows "{<x,f(x)> . x\<in>A}\<in>M"
+proof -
+  let ?ren="Renaming.sum({\<langle>0, 1\<rangle>, \<langle>1, 0\<rangle>}, id(length(env)), 2, 2, length(env))"
+  let ?\<phi>'="Exists(And(pair_fm(1,0,2),ren(\<phi>)`succ(succ(length(env)))`succ(succ(length(env)))`?ren))"
+  let ?p="\<lambda>x y. \<exists>z\<in>M. pair(##M,x,z,y) \<and> is_f(x,z)"
+  note tc=ren_tc[OF f_fm _ _ sw_thm(1),of env M,simplified,OF length_type[OF \<open>env\<in>_\<close>] \<open>env\<in>_\<close>]
+  then
+  have "?\<phi>'\<in>formula"
+    using arity_pair_fm \<open>env\<in>_\<close> length_type[OF \<open>env\<in>_\<close>]
+    by simp
+  moreover
+  have "arity(?\<phi>') \<le> 2#+(length(env))"
+    sorry
+  moreover from this calculation assms
+  have "x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> M,[x,y]@env \<Turnstile> ?\<phi>' \<longleftrightarrow> ?p(x,y)" for x y
+    using transitivity[OF _ \<open>A\<in>M\<close>]
+    apply auto
+    sorry
+  moreover
+  have "x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> ?p(x,y) \<longleftrightarrow> y = <x,f(x)>" for x y
+    using assms transitivity[OF _ \<open>A\<in>_\<close>] fclosed
+    by simp
+  moreover
+  have "\<And> x . x\<in>A \<Longrightarrow> <x,f(x)> \<in> M"
+    using transitivity[OF _ \<open>A\<in>M\<close>] pair_in_M_iff fclosed by simp
+  ultimately
+  show ?thesis
+    using Replacement_in_M \<open>A\<in>M\<close> \<open>env\<in>_\<close>
+    by simp
+qed
+
 lemma Repl_in_M :
   assumes
     f_fm:  "f_fm \<in> formula" and
@@ -106,22 +194,7 @@ lemma Repl_in_M :
     fclosed: "\<And>x. x\<in>A \<Longrightarrow> f(x) \<in> M"  and
     "A\<in>M" "env\<in>list(M)" 
   shows "{f(x). x\<in>A}\<in>M"
-proof -
-  have "strong_replacement(##M, \<lambda>x y. sats(M,f_fm,[x,y]@env))"
-    using replacement_ax f_fm f_ar \<open>env\<in>list(M)\<close> by simp
-  then
-  have "strong_replacement(##M, \<lambda>x y. y = f(x))"
-    using fsats fabs 
-      strong_replacement_cong[of "##M" "\<lambda>x y. sats(M,f_fm,[x,y]@env)" "\<lambda>x y. y = f(x)"]
-    by simp
-  then
-  have "{ y . x\<in>A , y = f(x) } \<in> M" 
-    using \<open>A\<in>M\<close> fclosed strong_replacement_closed by simp
-  moreover
-  have "{f(x). x\<in>A} = { y . x\<in>A , y = f(x) }"
-    by auto
-  ultimately show ?thesis by simp
-qed
+  using assms Replacement_in_M transitivity[OF _ \<open>A\<in>M\<close>] by auto
 
 end (* M_ctm *)
 
