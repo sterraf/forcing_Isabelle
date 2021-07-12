@@ -102,8 +102,7 @@ lemma Replacement_in_M :
   assumes
     f_fm:  "\<phi> \<in> formula" and
     f_ar:  "arity(\<phi>)\<le> 2 #+ length(env)" and
-    fsats: "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> M,[x,y]@env \<Turnstile> \<phi> \<longleftrightarrow> is_f(x,y)" and
-    fabs:  "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> is_f(x,y) \<longleftrightarrow> y = f(x)" and
+    fsats: "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> M,[x,y]@env \<Turnstile> \<phi> \<longleftrightarrow> y = f(x)" and
     fclosed: "\<And>x. x\<in>A \<Longrightarrow> f(x) \<in> M"  and
     "A\<in>M" "env\<in>list(M)" 
   shows "{f(x) . x\<in>A}\<in>M"
@@ -117,12 +116,8 @@ proof -
   have "?\<phi>'\<in>formula" "nth(length(env), env @ [A]) = A" 
     using assms nth_append by auto
   moreover from calculation
-  have "\<And> x y. x \<in> M \<Longrightarrow> y\<in>M \<Longrightarrow> M,[x,y]@env@[A]\<Turnstile>?\<phi>' \<longleftrightarrow> is_f(x,y)\<and>x\<in>A"
+  have "\<And> x y. x \<in> M \<Longrightarrow> y\<in>M \<Longrightarrow> M,[x,y]@env@[A]\<Turnstile>?\<phi>' \<longleftrightarrow> y=f(x) \<and>x\<in>A"
     using arity_sats_iff[of _ "[A]" _ "[_,_]@env"] assms
-    by auto
-  moreover
-  have "\<And> x y. x \<in> M \<Longrightarrow> y\<in>M \<Longrightarrow> is_f(x,y)\<and>x\<in>A \<longleftrightarrow> y=f(x) \<and>x\<in>A"
-    using assms
     by auto
   moreover from calculation
   have "strong_replacement(##M, \<lambda>x y. M,[x,y]@env@[A] \<Turnstile> ?\<phi>')"
@@ -141,10 +136,54 @@ proof -
   ultimately show ?thesis by simp
 qed
 
+lemma Replacement_alt_in_M :
+  assumes
+    f_fm:  "\<phi> \<in> formula" and
+    f_ar:  "arity(\<phi>)\<le> 2 #+ length(env)" and
+    fsats: "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> M,[x,y]@env \<Turnstile> \<phi> \<longleftrightarrow> is_f(x,y)" and
+    fabs:  "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> is_f(x,y) \<longleftrightarrow> y = f(x)" and
+    fclosed: "\<And>x. x\<in>A \<Longrightarrow> f(x) \<in> M"  and
+    "A\<in>M" "env\<in>list(M)"
+  shows "{f(x) . x\<in>A}\<in>M"
+  using assms Replacement_in_M by auto
 
-\<comment> \<open>FIXME: this lemma should be true; perhaps the new formula is somewhat more complex.\<close>
-rename "sw" src "[x,y]" tgt "[y,x]"
-thm sw_thm
+definition \<rho>_repl :: "i\<Rightarrow>i" where
+  "\<rho>_repl(l) \<equiv> rsum({\<langle>0, 1\<rangle>, \<langle>1, 0\<rangle>}, id(l), 2, 3, l)"
+
+lemma f_type : "{\<langle>0, 1\<rangle>, \<langle>1, 0\<rangle>} \<in> 2 \<rightarrow> 3"
+  using Pi_iff unfolding function_def by auto
+
+lemma ren_type :
+  assumes "l\<in>nat"
+  shows "\<rho>_repl(l) : 2#+l \<rightarrow> 3#+l"
+  using sum_type[of 2 3 l l "{\<langle>0, 1\<rangle>, \<langle>1, 0\<rangle>}" "id(l)"] f_type assms id_type
+  unfolding \<rho>_repl_def by auto
+
+lemma ren_action :
+  assumes
+    "env\<in>list(M)" "x\<in>M" "y\<in>M" "z\<in>M"
+  shows "\<forall> i . i < 2#+length(env) \<longrightarrow>
+          nth(i,[x,z]@env) = nth(\<rho>_repl(length(env))`i,[z,x,y]@env)"
+proof -
+  let ?f="{\<langle>0, 1\<rangle>, \<langle>1, 0\<rangle>}"
+  have 1:"(\<And>j. j < length(env) \<Longrightarrow> nth(j, env) = nth(id(length(env)) ` j, env))"
+    using assms ltD by simp
+  have 2:"nth(j, [x,z]) = nth(?f ` j, [z,x,y])" if "j<2" for j
+  proof -
+    consider "j=0" | "j=1" using  ltD[OF \<open>j<2\<close>] by auto
+    then show ?thesis
+    proof(cases)
+      case 1
+      then show ?thesis using apply_equality f_type by simp
+    next
+      case 2
+      then show ?thesis using apply_equality f_type by simp
+    qed
+  qed
+  show ?thesis
+    using sum_action[OF _ _ _ _ f_type id_type _ _ _ _ _ _ _ 2 1,simplified] assms
+    unfolding \<rho>_repl_def by simp
+qed
 
 lemma Fun_in_M :
   assumes
@@ -156,22 +195,27 @@ lemma Fun_in_M :
     "A\<in>M" "env\<in>list(M)" 
   shows "{<x,f(x)> . x\<in>A}\<in>M"
 proof -
-  let ?ren="Renaming.rsum({\<langle>0, 1\<rangle>, \<langle>1, 0\<rangle>}, id(length(env)), 2, 2, length(env))"
-  let ?\<phi>'="Exists(And(pair_fm(1,0,2),ren(\<phi>)`succ(succ(length(env)))`succ(succ(length(env)))`?ren))"
+  let ?ren="\<rho>_repl(length(env))"
+  let ?j="2#+length(env)"
+  let ?k="3#+length(env)"
+  let ?\<psi>="ren(\<phi>)`?j`?k`?ren"
+  let ?\<phi>'="Exists(And(pair_fm(1,0,2),?\<psi>))"
   let ?p="\<lambda>x y. \<exists>z\<in>M. pair(##M,x,z,y) \<and> is_f(x,z)"
-  note tc=ren_tc[OF f_fm _ _ sw_thm(1),of env M,simplified,OF length_type[OF \<open>env\<in>_\<close>] \<open>env\<in>_\<close>]
+  have "?\<phi>'\<in>formula" "?\<psi>\<in>formula"
+    using \<open>env\<in>_\<close> length_type f_fm ren_type ren_tc[of \<phi> "2#+length(env)" "3#+length(env)" ?ren]
+    by simp_all
+  moreover from this
+  have "arity(?\<psi>)\<le>3#+(length(env))" "arity(?\<psi>)\<in>nat"
+    using assms arity_ren[OF f_fm _ _ ren_type,of "length(env)"] by simp_all
   then
-  have "?\<phi>'\<in>formula"
-    using arity_pair_fm \<open>env\<in>_\<close> length_type[OF \<open>env\<in>_\<close>]
-    by simp
-  moreover
   have "arity(?\<phi>') \<le> 2#+(length(env))"
-    sorry
-  moreover from this calculation assms
+    using arity_pair_fm Un_le pred_Un_distrib assms pred_le
+    by simp
+  moreover from this calculation
   have "x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> M,[x,y]@env \<Turnstile> ?\<phi>' \<longleftrightarrow> ?p(x,y)" for x y
-    using transitivity[OF _ \<open>A\<in>M\<close>]
-    apply auto
-    sorry
+    using \<open>env\<in>_\<close> length_type[OF \<open>env\<in>_\<close>] assms transitivity[OF _ \<open>A\<in>M\<close>]
+      sats_iff_sats_ren[OF f_fm _ _ _ _ ren_type f_ar ren_action[rule_format,of _ x y],of _ M ]
+    by auto
   moreover
   have "x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> ?p(x,y) \<longleftrightarrow> y = <x,f(x)>" for x y
     using assms transitivity[OF _ \<open>A\<in>_\<close>] fclosed
@@ -192,7 +236,7 @@ lemma Repl_in_M :
     fsats: "\<And>x y. x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> sats(M,f_fm,[x,y]@env) \<longleftrightarrow> is_f(x,y)" and
     fabs:  "\<And>x y. x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> is_f(x,y) \<longleftrightarrow> y = f(x)" and
     fclosed: "\<And>x. x\<in>A \<Longrightarrow> f(x) \<in> M"  and
-    "A\<in>M" "env\<in>list(M)" 
+    "A\<in>M" "env\<in>list(M)"
   shows "{f(x). x\<in>A}\<in>M"
   using assms Replacement_in_M transitivity[OF _ \<open>A\<in>M\<close>] by auto
 
@@ -205,11 +249,9 @@ locale forcing_data = forcing_notion + M_ctm +
 
 begin
 
-lemma transD : "Transset(M) \<Longrightarrow> y \<in> M \<Longrightarrow> y \<subseteq> M" 
-  by (unfold Transset_def, blast) 
-
 (* P \<subseteq> M *)
-lemmas P_sub_M = transD[OF trans_M P_in_M]
+lemma P_sub_M : "P\<subseteq>M"
+  using transitivity[OF _ P_in_M] by auto
 
 definition
   M_generic :: "i\<Rightarrow>o" where
