@@ -1,7 +1,7 @@
 structure Renaming_ML = struct
 open Utils
 
-fun sum_ f g m n p = @{const Renaming.sum} $ f $ g $ m $ n $ p
+fun sum_ f g m n p = @{const Renaming.rsum} $ f $ g $ m $ n $ p
 
 (*Builds a finite mapping from rho to rho'.*)
 fun mk_ren rho rho' ctxt =

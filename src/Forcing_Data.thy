@@ -156,7 +156,7 @@ lemma Fun_in_M :
     "A\<in>M" "env\<in>list(M)" 
   shows "{<x,f(x)> . x\<in>A}\<in>M"
 proof -
-  let ?ren="Renaming.sum({\<langle>0, 1\<rangle>, \<langle>1, 0\<rangle>}, id(length(env)), 2, 2, length(env))"
+  let ?ren="Renaming.rsum({\<langle>0, 1\<rangle>, \<langle>1, 0\<rangle>}, id(length(env)), 2, 2, length(env))"
   let ?\<phi>'="Exists(And(pair_fm(1,0,2),ren(\<phi>)`succ(succ(length(env)))`succ(succ(length(env)))`?ren))"
   let ?p="\<lambda>x y. \<exists>z\<in>M. pair(##M,x,z,y) \<and> is_f(x,z)"
   note tc=ren_tc[OF f_fm _ _ sw_thm(1),of env M,simplified,OF length_type[OF \<open>env\<in>_\<close>] \<open>env\<in>_\<close>]

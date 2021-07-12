@@ -115,13 +115,13 @@ qed
 
 
 definition
-  sum :: "[i,i,i,i,i] \<Rightarrow> i" where
-  "sum(f,g,m,n,p) \<equiv> \<lambda>j \<in> m#+p  . if j<m then f`j else (g`(j#-m))#+n"
+  rsum :: "[i,i,i,i,i] \<Rightarrow> i" where
+  "rsum(f,g,m,n,p) \<equiv> \<lambda>j \<in> m#+p  . if j<m then f`j else (g`(j#-m))#+n"
 
 lemma sum_inl:
   assumes "m \<in> nat" "n\<in>nat"
     "f \<in> m\<rightarrow>n" "x \<in> m"
-  shows "sum(f,g,m,n,p)`x = f`x"
+  shows "rsum(f,g,m,n,p)`x = f`x"
 proof -
   from \<open>m\<in>nat\<close>
   have "m\<le>m#+p"
@@ -133,13 +133,13 @@ proof -
   have "x<m"
     using ltI by simp
   with \<open>x\<in>m#+p\<close>
-  show ?thesis unfolding sum_def by simp
+  show ?thesis unfolding rsum_def by simp
 qed
 
 lemma sum_inr:
   assumes "m \<in> nat" "n\<in>nat" "p\<in>nat"
     "g\<in>p\<rightarrow>q" "m \<le> x" "x < m#+p"
-  shows "sum(f,g,m,n,p)`x = g`(x#-m)#+n"
+  shows "rsum(f,g,m,n,p)`x = g`(x#-m)#+n"
 proof -
   from assms
   have "x\<in>nat"
@@ -152,7 +152,7 @@ proof -
   have "x\<in>m#+p"
     using ltD by simp
   with \<open>\<not> x<m\<close>
-  show ?thesis unfolding sum_def by simp
+  show ?thesis unfolding rsum_def by simp
 qed
 
 
@@ -169,9 +169,9 @@ lemma sum_action :
     "\<And> i . i < m \<Longrightarrow> nth(i,env) = nth(f`i,env')"
     "\<And> j. j < p \<Longrightarrow> nth(j,env1) = nth(g`j,env2)"
   shows "\<forall> i . i < m#+p \<longrightarrow>
-          nth(i,env@env1) = nth(sum(f,g,m,n,p)`i,env'@env2)"
+          nth(i,env@env1) = nth(rsum(f,g,m,n,p)`i,env'@env2)"
 proof -
-  let ?h = "sum(f,g,m,n,p)"
+  let ?h = "rsum(f,g,m,n,p)"
   from \<open>m\<in>nat\<close> \<open>n\<in>nat\<close> \<open>q\<in>nat\<close>
   have "m\<le>m#+p" "n\<le>n#+q" "q\<le>n#+q"
     using add_le_self[of m]  add_le_self2[of n q] by simp_all
@@ -211,7 +211,7 @@ proof -
       using not_lt_iff_le \<open>m\<in>nat\<close> \<open>\<not>x<m\<close> by simp_all
     with \<open>\<not>x<m\<close> \<open>length(env) = m\<close>
     have 2 : "?h`x= g`(x#-m)#+n"  "\<not> x <length(env)"
-      unfolding sum_def
+      unfolding rsum_def
       using  sum_inr that beta ltD by simp_all
     from assms \<open>x\<in>nat\<close> \<open>p=m#+p#-m\<close>
     have "x#-m < p"
@@ -254,9 +254,9 @@ qed
 lemma sum_type  :
   assumes "m \<in> nat" "n\<in>nat" "p\<in>nat" "q\<in>nat"
     "f \<in> m\<rightarrow>n" "g\<in>p\<rightarrow>q"
-  shows "sum(f,g,m,n,p) \<in> (m#+p) \<rightarrow> (n#+q)"
+  shows "rsum(f,g,m,n,p) \<in> (m#+p) \<rightarrow> (n#+q)"
 proof -
-  let ?h = "sum(f,g,m,n,p)"
+  let ?h = "rsum(f,g,m,n,p)"
   from \<open>m\<in>nat\<close> \<open>n\<in>nat\<close> \<open>q\<in>nat\<close>
   have "m\<le>m#+p" "n\<le>n#+q" "q\<le>n#+q"
     using add_le_self[of m]  add_le_self2[of n q] by simp_all
@@ -304,13 +304,13 @@ proof -
     with \<open>m\<in>nat\<close> have "m\<le>x" using not_lt_iff_le that in_n_in_nat[of "m#+p"] by simp
     then show ?thesis using 2 that by simp
   qed
-  have A:"function(?h)" unfolding sum_def using function_lam by simp
+  have A:"function(?h)" unfolding rsum_def using function_lam by simp
   have " x\<in> (m #+ p) \<times> (n #+ q)" if "x\<in> ?h" for x
-    using that lamE[of x "m#+p" _ "x \<in> (m #+ p) \<times> (n #+ q)"] D unfolding sum_def
+    using that lamE[of x "m#+p" _ "x \<in> (m #+ p) \<times> (n #+ q)"] D unfolding rsum_def
     by auto
   then have B:"?h \<subseteq> (m #+ p) \<times> (n #+ q)" ..
   have "m #+ p \<subseteq> domain(?h)"
-    unfolding sum_def using domain_lam by simp
+    unfolding rsum_def using domain_lam by simp
   with A B
   show ?thesis using  Pi_iff [THEN iffD2] by simp
 qed
@@ -322,7 +322,7 @@ lemma sum_type_id :
     "env' \<in> list(M)"
     "env1 \<in> list(M)"
   shows
-    "sum(f,id(length(env1)),length(env),length(env'),length(env1)) \<in>
+    "rsum(f,id(length(env1)),length(env),length(env'),length(env1)) \<in>
         (length(env)#+length(env1)) \<rightarrow> (length(env')#+length(env1))"
   using assms length_type id_fn_type sum_type
   by simp
@@ -333,7 +333,7 @@ lemma sum_type_id_aux2 :
     "m \<in> nat" "n \<in> nat"
     "env1 \<in> list(M)"
   shows
-    "sum(f,id(length(env1)),m,n,length(env1)) \<in>
+    "rsum(f,id(length(env1)),m,n,length(env1)) \<in>
         (m#+length(env1)) \<rightarrow> (n#+length(env1))"
   using assms id_fn_type sum_type
   by auto
@@ -346,7 +346,7 @@ lemma sum_action_id :
     "env1 \<in> list(M)"
     "\<And> i . i < length(env) \<Longrightarrow> nth(i,env) = nth(f`i,env')"
   shows "\<And> i . i < length(env)#+length(env1) \<Longrightarrow>
-          nth(i,env@env1) = nth(sum(f,id(length(env1)),length(env),length(env'),length(env1))`i,env'@env1)"
+          nth(i,env@env1) = nth(rsum(f,id(length(env1)),length(env),length(env'),length(env1))`i,env'@env1)"
 proof -
   from assms
   have "length(env)\<in>nat" (is "?m \<in> _") by simp
@@ -357,7 +357,7 @@ proof -
   {
     fix i
     assume "i < length(env)#+length(env1)"
-    have "nth(i,env@env1) = nth(sum(f,id(length(env1)),?m,?n,?p)`i,env'@env1)"
+    have "nth(i,env@env1) = nth(rsum(f,id(length(env1)),?m,?n,?p)`i,env'@env1)"
       using sum_action[OF \<open>?m\<in>nat\<close> \<open>?n\<in>nat\<close> \<open>?p\<in>nat\<close> \<open>?p\<in>nat\<close> \<open>f\<in>?m\<rightarrow>?n\<close>
           lenv_ty \<open>env\<in>list(M)\<close> \<open>env'\<in>list(M)\<close>
           \<open>env1\<in>list(M)\<close> \<open>env1\<in>list(M)\<close> _
@@ -365,7 +365,7 @@ proof -
           ] \<open>i<?m#+length(env1)\<close> by simp
   }
   then show "\<And> i . i < ?m#+length(env1) \<Longrightarrow>
-          nth(i,env@env1) = nth(sum(f,id(?p),?m,?n,?p)`i,env'@env1)" by simp
+          nth(i,env@env1) = nth(rsum(f,id(?p),?m,?n,?p)`i,env'@env1)" by simp
 qed
 
 lemma sum_action_id_aux :
@@ -379,14 +379,14 @@ lemma sum_action_id_aux :
     "length(env1) = p"
     "\<And> i . i < m \<Longrightarrow> nth(i,env) = nth(f`i,env')"
   shows "\<And> i . i < m#+length(env1) \<Longrightarrow>
-          nth(i,env@env1) = nth(sum(f,id(length(env1)),m,n,length(env1))`i,env'@env1)"
+          nth(i,env@env1) = nth(rsum(f,id(length(env1)),m,n,length(env1))`i,env'@env1)"
   using assms length_type id_fn_type sum_action_id
   by auto
 
 
 definition
   sum_id :: "[i,i] \<Rightarrow> i" where
-  "sum_id(m,f) \<equiv> sum(\<lambda>x\<in>1.x,f,1,1,m)"
+  "sum_id(m,f) \<equiv> rsum(\<lambda>x\<in>1.x,f,1,1,m)"
 
 lemma sum_id0 : "m\<in>nat\<Longrightarrow>sum_id(m,f)`0 = 0"
   by(unfold sum_id_def,subst sum_inl,auto)
