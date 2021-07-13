@@ -229,6 +229,17 @@ proof -
     by simp
 qed
 
+lemma Lambda_in_M :
+  assumes
+    f_fm:  "\<phi> \<in> formula" and
+    f_ar:  "arity(\<phi>)\<le> 2 #+ length(env)" and
+    fsats: "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> M,[x,y]@env \<Turnstile> \<phi> \<longleftrightarrow> is_f(x,y)" and
+    fabs:  "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> is_f(x,y) \<longleftrightarrow> y = f(x)" and
+    fclosed: "\<And>x. x\<in>A \<Longrightarrow> f(x) \<in> M"  and
+    "A\<in>M" "env\<in>list(M)" 
+  shows "(\<lambda>x\<in>A . f(x)) \<in>M"
+  unfolding lam_def using assms Fun_in_M by simp
+
 lemma Repl_in_M :
   assumes
     f_fm:  "f_fm \<in> formula" and
