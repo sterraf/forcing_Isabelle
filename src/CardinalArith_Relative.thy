@@ -1,6 +1,6 @@
 section\<open>Relative, Choice-less Cardinal Arithmetic\<close>
 
-theory CardinalArith_Relative 
+theory CardinalArith_Relative
   imports
     Cardinal_Relative
 
@@ -87,7 +87,7 @@ lemma csquare_lam_closed[intro,simp]: "M(K) \<Longrightarrow> M(csquare_lam(K))"
 
 end (* M_cardinal_arith *)
 
-relativize_tm "\<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> r \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> s)" 
+relativize_tm "\<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> r \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> s)"
   "is_rmultP"
 
 relativize functional "rmult" "rmult_rel" external
@@ -127,15 +127,15 @@ lemma rmult_abs [absolut]: "\<lbrakk> M(A); M(r); M(B); M(s); M(z) \<rbrakk> \<L
   unfolding is_rmultP_def is_rmult_def rmult_def
   by (auto del: iffI)
 
-lemma csquare_lam_body_abs[absolut]: "M(x) \<Longrightarrow> M(z) \<Longrightarrow> 
+lemma csquare_lam_body_abs[absolut]: "M(x) \<Longrightarrow> M(z) \<Longrightarrow>
   is_csquare_lam_body(M,x,z) \<longleftrightarrow> z = <fst(x) \<union> snd(x), fst(x), snd(x)>"
   unfolding is_csquare_lam_body_def by (simp add:absolut)
 
 lemma csquare_lam_abs[absolut]: "M(K) \<Longrightarrow> M(l) \<Longrightarrow>
   is_csquare_lam(M,K,l) \<longleftrightarrow> l = (\<lambda>x\<in>K\<times>K. \<langle>fst(x) \<union> snd(x), fst(x), snd(x)\<rangle>)"
-  unfolding is_csquare_lam_def 
+  unfolding is_csquare_lam_def
   using lambda_abs2[of "K\<times>K" "is_csquare_lam_body(M)"
-      "\<lambda>x. \<langle>fst(x) \<union> snd(x), fst(x), snd(x)\<rangle>"] 
+      "\<lambda>x. \<langle>fst(x) \<union> snd(x), fst(x), snd(x)\<rangle>"]
   unfolding Relation1_def by (simp add:absolut)
 
 lemma csquare_lam_eq_lam:"csquare_lam(K) = (\<lambda>z\<in>K\<times>K. <fst(z) \<union> snd(z), fst(z), snd(z)>)"
@@ -162,7 +162,7 @@ lemma csquare_rel_closed[intro,simp]: "M(K) \<Longrightarrow> M(csquare_rel(K))"
 lemma csquare_rel_abs[absolut]: "\<lbrakk> M(K); M(cs)\<rbrakk> \<Longrightarrow>
      is_csquare_rel(M,K,cs) \<longleftrightarrow> cs = csquare_rel(K)"
   unfolding is_csquare_rel_def csquare_rel_def
-  using csquare_lam_closed[unfolded csquare_lam_eq_lam] 
+  using csquare_lam_closed[unfolded csquare_lam_eq_lam]
   by (simp add:absolut csquare_lam_eq_lam[unfolded csquare_lam_def])
 
 end (* M_cardinal_arith *)
@@ -288,7 +288,7 @@ lemma sum_assoc_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(C) 
   apply (simp add: def_eqpoll_rel)
   apply (rule rexI)
    apply (rule sum_assoc_bij)
-  using case_replacement2 
+  using case_replacement2
     by (rule_tac lam_closed) (auto dest:transM)
 
 text\<open>Unconditional version requires AC\<close>
@@ -418,11 +418,11 @@ lemma nat_cadd_rel_eq_add:
   assumes m: "m \<in> nat" and [simp]: "n \<in> nat" shows"m \<oplus>\<^bsup>M\<^esup> n = m #+ n"
   using m
 proof (induct m)
-  case 0 thus ?case 
-    using transM[OF _ M_nat] 
+  case 0 thus ?case
+    using transM[OF _ M_nat]
     by (auto simp add: nat_into_Card_rel)
 next
-  case (succ m) thus ?case 
+  case (succ m) thus ?case
     using transM[OF _ M_nat]
     by (simp add: cadd_succ_lemma nat_into_Card_rel Card_rel_cardinal_rel_eq)
 qed
@@ -463,13 +463,13 @@ lemma well_ord_cmult_rel_assoc:
   shows "(i \<otimes>\<^bsup>M\<^esup> j) \<otimes>\<^bsup>M\<^esup> k = i \<otimes>\<^bsup>M\<^esup> (j \<otimes>\<^bsup>M\<^esup> k)"
 proof (simp add: assms cmult_rel_def, rule cardinal_rel_cong)
   have "|i * j|\<^bsup>M\<^esup> * k \<approx>\<^bsup>M\<^esup> (i * j) * k"
-    by (auto intro!: prod_eqpoll_rel_cong 
-        well_ord_cardinal_rel_eqpoll_rel eqpoll_rel_refl 
-        well_ord_rmult i j simp add:types) 
+    by (auto intro!: prod_eqpoll_rel_cong
+        well_ord_cardinal_rel_eqpoll_rel eqpoll_rel_refl
+        well_ord_rmult i j simp add:types)
   also have "...  \<approx>\<^bsup>M\<^esup> i * (j * k)"
     by (rule prod_assoc_eqpoll_rel, simp_all add:types)
   also have "...  \<approx>\<^bsup>M\<^esup> i * |j * k|\<^bsup>M\<^esup>"
-    by (blast intro: prod_eqpoll_rel_cong well_ord_cardinal_rel_eqpoll_rel 
+    by (blast intro: prod_eqpoll_rel_cong well_ord_cardinal_rel_eqpoll_rel
         eqpoll_rel_refl well_ord_rmult j k eqpoll_rel_sym types)
   finally show "|i * j|\<^bsup>M\<^esup> * k \<approx>\<^bsup>M\<^esup> i * |j * k|\<^bsup>M\<^esup>" by (simp add:types)
 qed (simp_all add:types)
@@ -1058,7 +1058,7 @@ lemma univalent_aux1: "M(X) \<Longrightarrow> univalent(M,Pow_rel(M,X\<times>X),
   by (simp)
 
 definition jump_cardinal_body :: "i \<Rightarrow> i" where
-  "jump_cardinal_body(X) \<equiv> 
+  "jump_cardinal_body(X) \<equiv>
     {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)} "
 
 \<comment> \<open>FIXME: do we need this?\<close>
@@ -1081,12 +1081,12 @@ lemma univalent_jc_body: "M(X) \<Longrightarrow> univalent(M,X,\<lambda> x z . M
 
 lemma jump_cardinal_body_closed:
   assumes "M(K)"
-  shows "M({a . X \<in> Pow\<^bsup>M\<^esup>(K), M(a) \<and> M(X) \<and> a = jump_cardinal_body(X)})" 
+  shows "M({a . X \<in> Pow\<^bsup>M\<^esup>(K), M(a) \<and> M(X) \<and> a = jump_cardinal_body(X)})"
   using assms univalent_jc_body jump_cardinal_closed_aux1 strong_replacement_jc_body
   by simp
 
 rel_closed for "jump_cardinal'"
-  using jump_cardinal_body_closed unfolding jump_cardinal_body_def jump_cardinal'_rel_def 
+  using jump_cardinal_body_closed unfolding jump_cardinal_body_def jump_cardinal'_rel_def
   by simp
 
 is_iff_rel for "jump_cardinal'"
@@ -1103,11 +1103,11 @@ proof -
     if "M(X)" "M(a)" for X a
     using that univalent_aux1 is_ordertype_iff' is_well_ord_iff_wellordered well_ord_abs by auto
   moreover
-  have "is_Replace(M, d, \<lambda>X a. M(a) \<and> M(X) \<and> 
+  have "is_Replace(M, d, \<lambda>X a. M(a) \<and> M(X) \<and>
       a = {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)}, e)
     \<longleftrightarrow>
     e ={a . X \<in> d, M(a) \<and> M(X) \<and> a = jump_cardinal_body(X)}"
-    if "M(d)" "M(e)" for d e 
+    if "M(d)" "M(e)" for d e
     using jump_cardinal_closed_aux1 that unfolding jump_cardinal_body_def
     by (rule_tac Replace_abs) simp_all
   ultimately
@@ -1388,7 +1388,7 @@ lemma ordertype_rel_abs:
 lemma well_ord_restr: "well_ord(X, r) \<Longrightarrow> well_ord(X, r \<inter> X\<times>X)"
 proof -
   have "r \<inter> X\<times>X \<inter> X\<times>X = r \<inter> X\<times>X" by auto
-  moreover 
+  moreover
   assume "well_ord(X, r)"
   ultimately
   show ?thesis
@@ -1438,7 +1438,7 @@ proof -
     using that jump_cardinal_closed_aux1[of X] ordertype_rel_abs[of X]
       jump_cardinal_body_def
     by (subst Replace_cong[where P="?P"
-        and Q="\<lambda>r z. M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M,X,r)", 
+        and Q="\<lambda>r z. M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M,X,r)",
         OF refl, of "Pow\<^bsup>M\<^esup>(X \<times> X)"]) (auto dest:transM)
   then
   have "M({z . r \<in> Pow\<^bsup>M\<^esup>(Y \<times> Y), M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)})"
@@ -1452,8 +1452,8 @@ proof -
   show ?thesis
     using assms is_ordertype_iff is_well_ord_iff_wellordered
       ordertype_rel_abs transM[of _ "Pow\<^bsup>M\<^esup>(K)"] transM[of _ "Pow\<^bsup>M\<^esup>(K\<times>K)"]
-      def_jump_cardinal_rel_aux 
-    unfolding jump_cardinal'_rel_def 
+      def_jump_cardinal_rel_aux
+    unfolding jump_cardinal'_rel_def
     apply (intro equalityI)
     apply (auto dest:transM)
     apply (rename_tac X R)
