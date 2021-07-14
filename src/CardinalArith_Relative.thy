@@ -1014,11 +1014,10 @@ end (* M_Perm *)
 
 synthesize "is_ordertype" from_definition assuming "nonempty"
 
-\<comment> \<open>FIXME: same def as \<^term>\<open>jump_cardinal\<close>, only to avoid problems below\<close>
+\<comment> \<open>NOTE: not quite the same as \<^term>\<open>jump_cardinal\<close>,
+    note \<^term>\<open>Pow(X*X)\<close>.\<close>
 definition
   jump_cardinal' :: "i\<Rightarrow>i"  where
-(*   "jump_cardinal'(K) \<equiv>
-         \<Union>X\<in>Pow(K). {z. r \<in> Pow(K*K), well_ord(X,r) & z = ordertype(X,r)}" *)
   "jump_cardinal'(K) \<equiv>
          \<Union>X\<in>Pow(K). {z. r \<in> Pow(X*X), well_ord(X,r) & z = ordertype(X,r)}"
 

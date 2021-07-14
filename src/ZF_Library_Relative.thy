@@ -275,11 +275,11 @@ lemma range_of_subset_eqpoll_rel:
 
 end (* M_library *)
 
+(*************   Discipline for cexp   ****************)
 relativize functional "cexp" "cexp_rel" external
-(*
-relationalize "cexp" "is_cexp"
-\<comment> \<open>fails with "Constant ZF_Base.Pi is not present in the db"\<close>
-*)
+relationalize "cexp_rel" "is_cexp"
+synthesize "is_cexp" from_definition assuming "nonempty"
+arity_theorem for "is_cexp_fm"
 
 abbreviation
   cexp_r :: "[i,i,i\<Rightarrow>o] \<Rightarrow> i"  (\<open>_\<^bsup>\<up>_,_\<^esup>\<close>) where
