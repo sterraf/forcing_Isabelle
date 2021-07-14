@@ -1004,6 +1004,12 @@ lemma is_ordertype_iff:
     ordermap_rel_closed[of A r]
   unfolding is_ordertype_def ordertype_rel_def wf_on_def by simp
 
+lemma is_ordertype_iff':
+  assumes "r \<in> Pow_rel(M,A\<times>A)" "well_ord(A,r)"
+  shows "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(res) \<Longrightarrow> is_ordertype(M, A, r, res) \<longleftrightarrow> res = ordertype_rel(M, A, r)"
+  using assms is_ordertype_iff Pow_rel_char
+  unfolding well_ord_def part_ord_def tot_ord_def by simp
+
 end (* M_Perm *)
 
 synthesize "is_ordertype" from_definition assuming "nonempty"
@@ -1024,11 +1030,40 @@ arity_theorem for "is_jump_cardinal'_fm"
 context M_cardinal_arith
 begin
 
+lemma ordertype_rel_closed':
+  assumes "wf[A](r)" "trans[A](r)" "r \<in> Pow(A\<times>A)" "M(r)" "M(A)"
+  shows "M(ordertype_rel(M,A,r))"
+    unfolding ordertype_rel_def
+  using ordermap_rel_closed image_closed assms by simp
+
+lemma ordertype_rel_closed[intro,simp]:
+  assumes "well_ord(A,r)" "r \<in> Pow_rel(M,A\<times>A)" "M(A)"
+  shows "M(ordertype_rel(M,A,r))"
+    using assms Pow_rel_char ordertype_rel_closed'
+    unfolding well_ord_def tot_ord_def part_ord_def
+    by simp
+
+\<comment> \<open>FIXME: Do we need this?\<close>
+lemma strong_replacement_ordertype :
+  "M(X) \<Longrightarrow> strong_replacement(M,\<lambda> x z . M(z) \<and> M(x) \<and> well_ord(X, x) \<and> z=ordertype_rel(M,X,x))"
+  sorry
+
+lemma univalent_aux1: "M(X) \<Longrightarrow> univalent(M,Pow_rel(M,X\<times>X),
+  \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z))"
+  using is_well_ord_iff_wellordered
+    is_ordertype_iff[of _ X]
+    trans_on_subset[OF well_ord_is_trans_on]
+     well_ord_is_wf[THEN wf_on_subset_A] mem_Pow_rel_abs
+  unfolding univalent_def
+  by (simp)
+
 lemma jump_cardinal_closed_aux1:
   assumes "M(X)"
   shows
-  "M({z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)})"
-  sorry
+    "M({z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)})"
+  using \<open>M(X)\<close>
+    strong_replacement_ordertype[OF \<open>M(X)\<close>] univalent_aux1[OF \<open>M(X)\<close>]
+  by simp
 
 lemma jump_cardinal_body_closed:
   assumes "M(K)"
@@ -1039,15 +1074,6 @@ lemma jump_cardinal_body_closed:
 rel_closed for "jump_cardinal'"
   using jump_cardinal_body_closed unfolding jump_cardinal'_rel_def
   by simp
-
-lemma univalent_aux1: "M(X) \<Longrightarrow> univalent(M,Pow_rel(M,X\<times>X),
-  \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z))"
-  using is_well_ord_iff_wellordered 
-    is_ordertype_iff[of _ X]
-    trans_on_subset[OF well_ord_is_trans_on]
-     well_ord_is_wf[THEN wf_on_subset_A] mem_Pow_rel_abs
-  unfolding univalent_def
-  by (simp)
 
 is_iff_rel for "jump_cardinal'"
 proof -
@@ -1061,18 +1087,7 @@ proof -
   have "is_Replace(M, Pow_rel(M,X\<times>X), \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z),
    a) \<longleftrightarrow> a = {z . r \<in> Pow_rel(M,X\<times>X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)}"
     if "M(X)" "M(a)" for X a
-    using that is_ordertype_iff[of _ X] is_well_ord_iff_wellordered well_ord_is_wf[of X] 
-      well_ord_is_trans_on[of X] mem_Pow_rel_abs
-    apply (auto, intro equalityI, clarsimp)
-      apply (rule_tac x=xa in ReplaceI) apply auto[3]
-    apply (clarsimp)
-      apply (rule_tac x=r in ReplaceI) apply auto[3]
-    apply (rule sym)
-    apply (intro equalityI, clarsimp)
-      apply (rule_tac x=xa in ReplaceI) apply auto[3]
-    apply (clarsimp)
-    apply (rule_tac x=r in ReplaceI) apply auto[3]
-    done
+    using that univalent_aux1 is_ordertype_iff' is_well_ord_iff_wellordered well_ord_abs by auto
   moreover
   have "is_Replace(M, d, \<lambda>X a. M(a) \<and> M(X) \<and> 
       a = {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)}, e)
