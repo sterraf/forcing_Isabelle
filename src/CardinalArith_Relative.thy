@@ -1057,22 +1057,36 @@ lemma univalent_aux1: "M(X) \<Longrightarrow> univalent(M,Pow_rel(M,X\<times>X),
   unfolding univalent_def
   by (simp)
 
+definition jump_cardinal_body :: "i \<Rightarrow> i" where
+  "jump_cardinal_body(X) \<equiv> 
+    {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)} "
+
+\<comment> \<open>FIXME: do we need this?\<close>
+lemma strong_replacement_jc_body :
+  "M(X) \<Longrightarrow> strong_replacement(M,\<lambda> x z . M(z) \<and> M(x) \<and> z = jump_cardinal_body(x))"
+  sorry
+
 lemma jump_cardinal_closed_aux1:
   assumes "M(X)"
   shows
-    "M({z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)})"
+    "M(jump_cardinal_body(X))"
+  unfolding jump_cardinal_body_def
   using \<open>M(X)\<close>
     strong_replacement_ordertype[OF \<open>M(X)\<close>] univalent_aux1[OF \<open>M(X)\<close>]
   by simp
 
+
+lemma univalent_jc_body: "M(X) \<Longrightarrow> univalent(M,X,\<lambda> x z . M(z) \<and> M(x) \<and> z = jump_cardinal_body(x))"
+  using transM[of _ X]  jump_cardinal_closed_aux1 by auto
+
 lemma jump_cardinal_body_closed:
   assumes "M(K)"
-  shows "M({a . X \<in> Pow\<^bsup>M\<^esup>(K), M(a) \<and> M(X) \<and> a =
-     {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)}})" 
-  sorry
+  shows "M({a . X \<in> Pow\<^bsup>M\<^esup>(K), M(a) \<and> M(X) \<and> a = jump_cardinal_body(X)})" 
+  using assms univalent_jc_body jump_cardinal_closed_aux1 strong_replacement_jc_body
+  by simp
 
 rel_closed for "jump_cardinal'"
-  using jump_cardinal_body_closed unfolding jump_cardinal'_rel_def
+  using jump_cardinal_body_closed unfolding jump_cardinal_body_def jump_cardinal'_rel_def 
   by simp
 
 is_iff_rel for "jump_cardinal'"
@@ -1092,15 +1106,14 @@ proof -
   have "is_Replace(M, d, \<lambda>X a. M(a) \<and> M(X) \<and> 
       a = {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)}, e)
     \<longleftrightarrow>
-    e ={a . X \<in> d, M(a) \<and> M(X) \<and> 
-      a = {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)}}"
+    e ={a . X \<in> d, M(a) \<and> M(X) \<and> a = jump_cardinal_body(X)}"
     if "M(d)" "M(e)" for d e 
-    using jump_cardinal_closed_aux1 that
+    using jump_cardinal_closed_aux1 that unfolding jump_cardinal_body_def
     by (rule_tac Replace_abs) simp_all
   ultimately
   show ?thesis
     using Pow_rel_iff jump_cardinal_body_closed[of K]
-    unfolding is_jump_cardinal'_def jump_cardinal'_rel_def
+    unfolding is_jump_cardinal'_def jump_cardinal'_rel_def jump_cardinal_body_def
     by (simp add: types)
 qed
 
@@ -1423,6 +1436,7 @@ proof -
     (is "M(Replace(_,?P))")
     if "M(X)" for X
     using that jump_cardinal_closed_aux1[of X] ordertype_rel_abs[of X]
+      jump_cardinal_body_def
     by (subst Replace_cong[where P="?P"
         and Q="\<lambda>r z. M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M,X,r)", 
         OF refl, of "Pow\<^bsup>M\<^esup>(X \<times> X)"]) (auto dest:transM)
@@ -1438,8 +1452,8 @@ proof -
   show ?thesis
     using assms is_ordertype_iff is_well_ord_iff_wellordered
       ordertype_rel_abs transM[of _ "Pow\<^bsup>M\<^esup>(K)"] transM[of _ "Pow\<^bsup>M\<^esup>(K\<times>K)"]
-      def_jump_cardinal_rel_aux
-    unfolding jump_cardinal'_rel_def
+      def_jump_cardinal_rel_aux 
+    unfolding jump_cardinal'_rel_def 
     apply (intro equalityI)
     apply (auto dest:transM)
     apply (rename_tac X R)
