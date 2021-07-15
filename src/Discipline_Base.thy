@@ -418,9 +418,9 @@ locale M_Pi = M_basic +
     Pi_separation: "M(A) \<Longrightarrow> separation(M, PiP_rel(M,A))"
     and
     Pi_replacement:
-    "M(A) \<Longrightarrow> M(y) \<Longrightarrow>
-      \<forall>x\<in>A. strong_replacement(M, \<lambda>ya z. ya \<in> y \<and> z = {\<langle>x, ya\<rangle>})"
-    "M(A) \<Longrightarrow> M(y) \<Longrightarrow>
+    "M(x) \<Longrightarrow> M(y) \<Longrightarrow>
+      strong_replacement(M, \<lambda>ya z. ya \<in> y \<and> z = {\<langle>x, ya\<rangle>})"
+    "M(y) \<Longrightarrow>
       strong_replacement(M, \<lambda>x z. z = (\<Union>xa\<in>y. {\<langle>x, xa\<rangle>}))"
 
 locale M_Pi_assumptions = M_Pi +

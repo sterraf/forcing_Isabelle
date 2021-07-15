@@ -109,7 +109,7 @@ proof -
   from assms
   interpret M_Pi_assumptions M A "\<lambda>_. B"
     using Pi_replacement Pi_separation
-    by unfold_locales (simp_all add:Sigfun_def)
+    by unfold_locales (auto dest:transM simp add:Sigfun_def)
   have "\<forall>f[M]. f \<in> Pi_rel(M,A, \<lambda>_. B) \<longleftrightarrow> f \<in> A \<rightarrow> B"
     using Pi_rel_char by simp
   with assms
@@ -170,7 +170,7 @@ proof -
   from assms
   interpret M_Pi_assumptions M A "\<lambda>_. y"
     using Pi_replacement Pi_separation
-    by unfold_locales (simp_all add:Sigfun_def)
+    by unfold_locales (auto dest:transM simp add:Sigfun_def)
   from assms
   have "x\<in>function_space_rel(M,A,y) \<longleftrightarrow> x\<in>Pi_rel(M,A,\<lambda>_. y)" if "M(x)" for x
     using that
@@ -190,7 +190,7 @@ proof -
   from assms
   interpret M_Pi_assumptions M A "\<lambda>_. y"
     using Pi_replacement Pi_separation
-    by unfold_locales (simp_all add:Sigfun_def)
+    by unfold_locales (auto dest:transM simp add:Sigfun_def)
   show ?thesis
     using assms def_function_space_rel Pi_rel_char
     by simp
@@ -490,7 +490,7 @@ proof -
   from assms
   interpret M_Pi_assumptions M A "\<lambda>_. B"
     using Pi_replacement Pi_separation
-    by unfold_locales (simp_all add:Sigfun_def)
+    by unfold_locales (auto dest:transM simp add:Sigfun_def)
   from assms
   show ?thesis
     using def_inj_rel[OF assms] def_function_space_rel[OF assms]
@@ -676,7 +676,7 @@ proof -
   from assms
   interpret M_Pi_assumptions M A "\<lambda>_. B"
     using Pi_replacement Pi_separation
-    by unfold_locales (simp_all add:Sigfun_def)
+    by unfold_locales (auto dest:transM simp add:Sigfun_def)
   from assms
   show ?thesis
     using def_surj_rel[OF assms] def_function_space_rel[OF assms]
