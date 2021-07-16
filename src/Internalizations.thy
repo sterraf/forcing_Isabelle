@@ -5,6 +5,32 @@ theory Internalizations
     Synthetic_Definition
 begin
 
+notation Member (\<open>\<cdot>_ \<in>/ _\<cdot>\<close>)
+notation Equal (\<open>\<cdot>_ =/ _\<cdot>\<close>)
+notation Nand (\<open>\<cdot>\<not>'(_ \<and>/ _')\<cdot>\<close>)
+notation And (\<open>\<cdot>_ \<and>/ _\<cdot>\<close>)
+notation Or (\<open>\<cdot>_ \<or>/ _\<cdot>\<close>)
+notation Iff (\<open>\<cdot>_ \<leftrightarrow>/ _\<cdot>\<close>)
+notation Implies (\<open>\<cdot>_ \<rightarrow>/ _\<cdot>\<close>)
+notation Neg (\<open>\<cdot>\<not>_\<cdot>\<close>)
+notation Forall (\<open>'(\<cdot>\<forall>(/_)\<cdot>')\<close>)
+notation Exists (\<open>'(\<cdot>\<exists>(/_)\<cdot>')\<close>)
+
+notation succ_fm (\<open>\<cdot>succ'(_') is _\<cdot>\<close>)
+notation empty_fm (\<open>\<cdot>_ is empty\<cdot>\<close>)
+notation fun_apply_fm (\<open>\<cdot>_`_ is _\<cdot>\<close>)
+notation big_union_fm (\<open>\<cdot>\<Union>_ is _\<cdot>\<close>)
+notation upair_fm (\<open>\<cdot>{_,_} is _ \<cdot>\<close>)
+notation ordinal_fm (\<open>\<cdot>_ is ordinal\<cdot>\<close>)
+
+abbreviation
+  fm_surjection :: "[i,i,i] \<Rightarrow> i" (\<open>\<cdot>_ surjects _ to _\<cdot>\<close>) where
+  "fm_surjection(f,A,B) \<equiv> surjection_fm(A,B,f)"
+
+abbreviation
+  fm_typedfun :: "[i,i,i] \<Rightarrow> i" (\<open>\<cdot>_ : _ \<rightarrow> _\<cdot>\<close>) where
+  "fm_typedfun(f,A,B) \<equiv> typed_function_fm(A,B,f)"
+
 text\<open>We found it useful to have slightly different versions of some 
 results in ZF-Constructible:\<close>
 lemma nth_closed :

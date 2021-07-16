@@ -99,21 +99,27 @@ sublocale G_generic \<subseteq> ext:M_ZF_trans "M[G]"
     strong_replacement_in_MG separation_in_MG infinity_in_MG
   by unfold_locales simp_all
 
+context forcing_data
+begin
+term  "p \<tturnstile> Neg(Equal(0,1)) [b,b']"
+
+end
+
 lemma (in forcing_data) forces_neq_apply_imp_incompatible:
   assumes
-    "p \<tturnstile> fun_apply_fm(0,1,2) [f,a,b\<^sup>v]"
-    "q \<tturnstile> fun_apply_fm(0,1,2) [f,a,b'\<^sup>v]"
+    "p \<tturnstile> \<cdot>0`1 is 2\<cdot> [f,a,b\<^sup>v]"
+    "q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f,a,b'\<^sup>v]"
     "b \<noteq> b'"
     \<comment> \<open>More general version: taking general names
        \<^term>\<open>b\<^sup>v\<close> and \<^term>\<open>b'\<^sup>v\<close>, satisfying
-       \<^term>\<open>p \<tturnstile> Neg(Equal(0,1)) [b,b']\<close> and
-       \<^term>\<open>q \<tturnstile> Neg(Equal(0,1)) [b,b']\<close>.\<close>
+       \<^term>\<open>p \<tturnstile> \<cdot>\<not>\<cdot>0 = 1\<cdot>\<cdot> [b\<^sup>v, b'\<^sup>v]\<close> and
+       \<^term>\<open>q \<tturnstile> \<cdot>\<not>\<cdot>0 = 1\<cdot>\<cdot> [b\<^sup>v, b'\<^sup>v]\<close>.\<close>
     and
     types:"f\<in>M" "a\<in>M" "b\<in>M" "b'\<in>M" "p\<in>P" "q\<in>P"
   shows
     "p \<bottom> q"
 proof -
-  let ?\<phi>="fun_apply_fm(0,1,2)"
+  let ?\<phi>="\<cdot>0`1 is 2\<cdot>"
   {
     fix G
     assume "M_generic(G)"
@@ -133,7 +139,7 @@ proof -
       using GenExtI by auto
   }
   with types
-  have "q \<tturnstile> Neg(?\<phi>) [f,a,b\<^sup>v]"
+  have "q \<tturnstile> \<cdot>\<not>?\<phi>\<cdot> [f,a,b\<^sup>v]"
     using definition_of_forcing check_in_M
     by (auto simp add:nat_simp_union arity_fun_apply_fm)
   with \<open>p \<tturnstile> ?\<phi> [f,a,b\<^sup>v]\<close> and types
@@ -278,7 +284,7 @@ lemma ccc_fun_approximation_lemma:
   shows 
     "\<exists>F\<in>M. F : A \<rightarrow> Pow(B) \<and> (\<forall>a\<in>A. f`a \<in> F`a \<and> |F`a|\<^bsup>M\<^esup> \<le> \<omega>)"
 proof -
-  let ?\<phi>="typed_function_fm(1,2,0)"\<comment> \<open>formula for \<^term>\<open>f : A\<rightarrow> B\<close>\<close>
+  let ?\<phi>="\<cdot>0 : 1 \<rightarrow> 2\<cdot>" \<comment> \<open>formula for \<^term>\<open>f : A\<rightarrow> B\<close>\<close>
   from \<open>f\<in>M[G]\<close>
   obtain f_dot where "f = val(P,G,f_dot)" "f_dot\<in>M" using GenExtD by force
   with assms
@@ -288,7 +294,7 @@ proof -
     by (auto simp add:nat_simp_union arity_typed_function_fm
         \<comment> \<open>NOTE: type-checking is not performed here by the Simplifier\<close>
         typed_function_type)
-  let ?app_fm="fun_apply_fm(0,1,2)"\<comment> \<open>formula for \<open>f`x=z\<close>\<close>
+  let ?app_fm="\<cdot>0`1 is 2\<cdot>"\<comment> \<open>formula for \<open>f`x=z\<close>\<close>
   define F where "F\<equiv>\<lambda>a\<in>A. {b\<in>B. \<exists>q\<in>P. q \<preceq> p \<and> (q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v])}"
   have "F \<in> M"
     \<comment> \<open>FIXME: the proof is ugly!\<close>
@@ -299,6 +305,7 @@ proof -
                      (And(check_fm(2, 6, 0),
                            ren(Exists(And(Member(0, 1), And(leq_fm(2, 0, 7), forces(fun_apply_fm(0, 1, 2)))))) ` 9 ` 9 `
                           ren_F_fn))))"
+    term ?G
     let ?Q="\<lambda> x b . (\<exists>q\<in>P. q \<preceq> p \<and> M, [q, P, leq, one, f_dot, x\<^sup>v, b\<^sup>v] \<Turnstile> forces(fun_apply_fm(0, 1, 2)))"
     have A: "fun_apply_fm(0, 1, 2)\<in> formula" "arity(fun_apply_fm(0, 1, 2)) = 3" 
       using arity_fun_apply_fm nat_union_abs1 

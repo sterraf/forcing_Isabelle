@@ -54,6 +54,8 @@ qed simp_all
 
 synthesize_notc "is_Aleph" from_schematic
 
+notation is_Aleph_fm (\<open>\<cdot>\<aleph>'(_') is _\<cdot>\<close>)
+
 lemma is_Aleph_fm_type [TC]: "a \<in> nat \<Longrightarrow> c \<in> nat \<Longrightarrow> is_Aleph_fm(a, c) \<in> formula"
   unfolding is_Aleph_fm_def by simp
 

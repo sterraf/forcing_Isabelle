@@ -302,6 +302,7 @@ rel_closed for "cexp" unfolding cexp_rel_def by simp
 end (* M_library *)
 
 synthesize "is_cexp" from_definition assuming "nonempty"
+notation is_cexp_fm (\<open>\<cdot>_\<^bsup>\<up>_\<^esup> is _\<cdot>\<close>)
 arity_theorem for "is_cexp_fm"
 
 abbreviation

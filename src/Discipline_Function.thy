@@ -21,7 +21,9 @@ definition
   "is_fst(M,x,t) \<equiv> (\<exists>z[M]. pair(M,t,z,x)) \<or>
                        (\<not>(\<exists>z[M]. \<exists>w[M]. pair(M,w,z,x)) \<and> empty(M,t))"
 synthesize "fst" from_definition "is_fst"
-arity_theorem for "fst_fm" 
+notation fst_fm (\<open>\<cdot>fst'(_') is _\<cdot>\<close>)
+
+arity_theorem for "fst_fm"
 
 definition fst_rel ::  "[i\<Rightarrow>o,i] \<Rightarrow> i"  where
   "fst_rel(M,p) \<equiv> THE d. is_fst(M,p,d)"
@@ -34,6 +36,7 @@ definition
   "is_snd(M,x,t) \<equiv> (\<exists>z[M]. pair(M,z,t,x)) \<or>
                        (\<not>(\<exists>z[M]. \<exists>w[M]. pair(M,z,w,x)) \<and> empty(M,t))"
 synthesize "snd" from_definition "is_snd"
+notation snd_fm (\<open>\<cdot>snd'(_') is _\<cdot>\<close>)
 arity_theorem for "snd_fm" 
 
 reldb_add relational "snd" "is_snd"
@@ -372,14 +375,15 @@ definition (* completely relational *)
 declare typed_function_iff_sats Collect_iff_sats [iff_sats]
 
 synthesize "is_funspace" from_definition assuming "nonempty"
-
 arity_theorem for "is_funspace_fm"
 
 synthesize "is_function_space" from_definition assuming "nonempty"
+notation is_function_space_fm (\<open>\<cdot>_ \<rightarrow> _ is _\<cdot>\<close>)
 
 arity_theorem for "is_function_space_fm"
 
 synthesize "is_inj" from_definition assuming "nonempty"
+notation is_inj_fm (\<open>\<cdot>inj'(_,_') is _\<cdot>\<close>)
 
 arity_theorem intermediate for "is_inj_fm"
 
@@ -573,6 +577,7 @@ definition (* completely relational *)
        is_Collect(M,F,surjP_rel(M,A,B),I))"
 
 synthesize "is_surj" from_definition assuming "nonempty"
+notation is_surj_fm (\<open>\<cdot>surj'(_,_') is _\<cdot>\<close>)
 
 definition
   surj_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" (\<open>surj\<^bsup>_\<^esup>'(_,_')\<close>) where
@@ -710,6 +715,7 @@ reldb_rem relational "inter"
 reldb_add absolute relational "ZF_Base.Int" "is_Int"
 
 synthesize "is_Int" from_definition assuming "nonempty"
+notation is_Int_fm (\<open>_ \<inter> _ is _\<close>)
 
 context M_basic
 begin
@@ -762,6 +768,7 @@ definition
   "bij_rel(M,A,B) \<equiv> THE d. is_bij(M,A,B,d)" *)
 
 synthesize "is_bij" from_definition assuming "nonempty"
+notation is_bij_fm (\<open>\<cdot>bij'(_,_') is _\<cdot>\<close>)
 
 abbreviation
   bij_r_class ::  "[i\<Rightarrow>o,i,i] \<Rightarrow> i" (\<open>bij\<^bsup>_\<^esup>'(_,_')\<close>) where
@@ -886,6 +893,7 @@ relationalize "eqpoll_rel" "is_eqpoll"
 
 synthesize "is_eqpoll" from_definition assuming "nonempty"
 arity_theorem for "is_eqpoll_fm"
+notation is_eqpoll_fm (\<open>\<cdot>_ \<approx> _\<cdot>\<close>)
 
 context M_Perm begin
 
@@ -945,6 +953,7 @@ relativize functional "lepoll" "lepoll_rel" external
 relationalize "lepoll_rel" "is_lepoll"
 
 synthesize "is_lepoll" from_definition assuming "nonempty"
+notation is_lepoll_fm (\<open>\<cdot>_ \<lesssim> _\<cdot>\<close>)
 arity_theorem for "is_lepoll_fm"
 
 context M_inj begin
@@ -1005,6 +1014,7 @@ relativize functional "lesspoll" "lesspoll_rel" external
 relationalize "lesspoll_rel" "is_lesspoll"
 
 synthesize "is_lesspoll" from_definition assuming "nonempty"
+notation is_lesspoll_fm (\<open>\<cdot>_ \<prec> _\<cdot>\<close>)
 arity_theorem for "is_lesspoll_fm"
 
 context M_Perm begin

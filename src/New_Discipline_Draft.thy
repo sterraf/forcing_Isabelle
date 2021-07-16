@@ -97,6 +97,7 @@ relativize functional "cardinal" "cardinal_rel" external
 relationalize "cardinal_rel" "is_cardinal"
 synthesize "is_cardinal" from_definition assuming "nonempty"
 
+notation is_cardinal_fm (\<open>cardinal'(_') is _\<close>)
 
 abbreviation
   cardinal_r :: "[i,i\<Rightarrow>o] \<Rightarrow> i" (\<open>|_|\<^bsup>_\<^esup>\<close>) where
@@ -183,6 +184,7 @@ reldb_add relational "Ord" "ordinal"
 reldb_add functional "lt" "lt"
 reldb_add relational "lt" "lt_rel"
 synthesize "lt_rel" from_definition
+notation lt_rel_fm (\<open>\<cdot>_ < _\<cdot>\<close>)
 arity_theorem intermediate for "lt_rel_fm"
 
 lemma arity_lt_rel_fm[arity]: "a \<in> nat \<Longrightarrow> b \<in> nat \<Longrightarrow> arity(lt_rel_fm(a, b)) = succ(a) \<union> succ(b)"
@@ -192,6 +194,7 @@ lemma arity_lt_rel_fm[arity]: "a \<in> nat \<Longrightarrow> b \<in> nat \<Longr
 relativize functional "Card" "Card_rel" external
 relationalize "Card_rel" "is_Card"
 synthesize "is_Card" from_definition assuming "nonempty"
+notation is_Card_fm (\<open>\<cdot>Card'(_')\<cdot>\<close>)
 arity_theorem for "is_Card_fm"
 
 notation Card_rel (\<open>Card\<^bsup>_\<^esup>'(_')\<close>)
@@ -207,6 +210,7 @@ abbreviation
 relativize functional "InfCard" "InfCard_rel" external
 relationalize "InfCard_rel" "is_InfCard"
 synthesize "is_InfCard" from_definition assuming "nonempty"
+notation is_InfCard_fm (\<open>\<cdot>InfCard'(_')\<cdot>\<close>)
 arity_theorem for "is_InfCard_fm"
 
 notation InfCard_rel (\<open>InfCard\<^bsup>_\<^esup>'(_')\<close>)
