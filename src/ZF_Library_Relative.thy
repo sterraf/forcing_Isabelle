@@ -278,6 +278,29 @@ end (* M_library *)
 (*************   Discipline for cexp   ****************)
 relativize functional "cexp" "cexp_rel" external
 relationalize "cexp_rel" "is_cexp"
+
+context M_library
+begin
+
+\<comment> \<open>MOVE THIS to an appropriate place\<close>
+is_iff_rel for "function_space"
+proof -
+  assume "M(A)" "M(B)" "M(res)"
+  then
+  show ?thesis
+  using function_space_rel_char mem_function_space_rel_abs
+  unfolding is_funspace_def is_function_space_def
+  by (safe, intro equalityI; clarsimp) (auto dest:transM)
+qed
+
+is_iff_rel for "cexp"
+  using is_cardinal_iff is_function_space_iff unfolding cexp_rel_def is_cexp_def
+  by (simp)
+
+rel_closed for "cexp" unfolding cexp_rel_def by simp
+
+end (* M_library *)
+
 synthesize "is_cexp" from_definition assuming "nonempty"
 arity_theorem for "is_cexp_fm"
 

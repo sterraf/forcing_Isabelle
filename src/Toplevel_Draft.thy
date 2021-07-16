@@ -544,6 +544,62 @@ corollary not_CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> \<noteq> 2\<^bs
 
 end (* add_generic *)
 
+abbreviation
+  fmMember :: "[i,i] \<Rightarrow> i" (\<open>\<cdot>_ \<in>/ _\<cdot>\<close>) where
+  "\<cdot>x\<in>y\<cdot> \<equiv> Member(x,y)"
+
+abbreviation
+  fmEqual :: "[i,i] \<Rightarrow> i" (\<open>\<cdot>_ =/ _\<cdot>\<close>) where
+  "\<cdot>x=y\<cdot> \<equiv> Equal(x,y)"
+
+abbreviation
+  fmNand :: "[i,i] \<Rightarrow> i" (\<open>\<cdot>\<not>'(_ \<and>/ _')\<cdot>\<close>) where
+  "\<cdot>\<not>(x \<and> y)\<cdot> \<equiv> Nand(x,y)"
+
+abbreviation
+  fmAnd :: "[i,i] \<Rightarrow> i" (\<open>\<cdot>_ \<and>/ _\<cdot>\<close>) where
+  "\<cdot>x \<and> y\<cdot> \<equiv> And(x,y)"
+
+abbreviation
+  fmOr :: "[i,i] \<Rightarrow> i" (\<open>\<cdot>_ \<or>/ _\<cdot>\<close>) where
+  "\<cdot>x \<or> y\<cdot> \<equiv> Or(x,y)"
+
+abbreviation
+  fmIff :: "[i,i] \<Rightarrow> i" (\<open>\<cdot>_ \<leftrightarrow>/ _\<cdot>\<close>) where
+  "\<cdot>x \<leftrightarrow> y\<cdot> \<equiv> Iff(x,y)"
+
+abbreviation
+  fmImplies :: "[i,i] \<Rightarrow> i" (\<open>\<cdot>_ \<rightarrow>/ _\<cdot>\<close>) where
+  "\<cdot>x \<rightarrow> y\<cdot> \<equiv> Implies(x,y)"
+
+abbreviation
+  fmNeg :: "i \<Rightarrow> i" (\<open>\<cdot>\<not>_\<cdot>\<close>) where
+  "\<cdot>\<not>x\<cdot> \<equiv> Neg(x)"
+
+notation Forall (\<open>'(\<forall>(/_)')\<close>)
+notation Exists (\<open>'(\<exists>(/_)')\<close>)
+
+definition
+  ContHyp :: "o" where
+  "ContHyp \<equiv> \<aleph>\<^bsub>1\<^esub> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^esup>"
+
+relativize functional "ContHyp" "ContHyp_rel"
+relationalize "ContHyp_rel" "is_ContHyp"
+
+context M_master
+begin
+
+is_iff_rel for "ContHyp"
+  using is_cexp_iff is_Aleph_iff unfolding is_ContHyp_def ContHyp_rel_def
+  by (force)
+
+end (* M_master *)
+
+synthesize "is_ContHyp" from_definition assuming "nonempty"
+arity_theorem for "is_ContHyp_fm"
+
+notation is_ContHyp_fm (\<open>CH\<close>)
+
 notepad
 begin
   fix M
@@ -574,11 +630,17 @@ begin
   obtain G where "M_generic(G)"
     using generic_filter_existence[OF one_in_P]
     by auto
-  then
+  moreover from this
   interpret add_generic M enum G by unfold_locales
-  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> \<noteq> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
+  have "\<not> (\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>)"
     using not_CH .
-
+  then
+  have "M[G], [] \<Turnstile> \<cdot>\<not>CH\<cdot>"
+    using ext.is_ContHyp_iff
+    by (simp add:ContHyp_rel_def)
+  then
+  have "M[G] \<Turnstile> ZF \<union> {\<cdot>\<not>CH\<cdot>}"
+    using M_ZF_iff_M_satT[of "M[G]"] ext.M_ZF_axioms by auto
 end (* notepad *)
 
 end

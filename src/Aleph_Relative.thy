@@ -34,10 +34,20 @@ lemma is_If_fm_iff_sats [iff_sats]:
   shows "is_If(##A,Q,ta,fa,ra) \<longleftrightarrow> A, env \<Turnstile> is_If_fm(\<phi>,t,f,r)"
   using assms sats_is_If_fm[of Q A \<phi> env t f r] by simp
 
-arity_theorem for "is_If_fm"
+arity_theorem intermediate for "is_If_fm"
+
+lemma arity_is_If_fm:
+    "\<phi> \<in> nat \<Longrightarrow> t \<in> nat \<Longrightarrow> f \<in> nat \<Longrightarrow> r \<in> nat \<Longrightarrow>
+    arity(is_If_fm(\<phi>, t, f, r)) = arity(\<phi>) \<union> succ(t) \<union> succ(r) \<union> succ(f)"
+  using arity_is_If_fm' by auto
 
 relativize functional "HAleph" "HAleph_rel"
 relationalize "HAleph_rel" "is_HAleph"
+
+is_iff_rel for "HAleph"
+  unfolding is_HAleph_def HAleph_rel_def
+  sorry
+
 synthesize "is_HAleph" from_definition assuming "nonempty"
 arity_theorem for "is_HAleph_fm"
 
@@ -47,6 +57,53 @@ definition
 
 relativize functional "Aleph'" "Aleph_rel"
 relationalize "Aleph_rel" "is_Aleph"
+
+is_iff_rel for "Aleph"
+  unfolding is_Aleph_def Aleph_rel_def sorry
+
+lemma is_transrec_iff_sats':
+  assumes MH_iff_sats:
+    "!!a0 a1 a2 a3 a4 a5 a6 a7.
+        [|a0\<in>A; a1\<in>A; a2\<in>A; a3\<in>A; a4\<in>A; a5\<in>A; a6\<in>A; a7\<in>A|]
+        ==> MH(a2, a1, a0) \<longleftrightarrow>
+            sats(A, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,
+                          Cons(a4,Cons(a5,Cons(a6,Cons(a7,env)))))))))" "0\<in>A"
+  shows
+    "[|nth(i,env) = x; nth(k,env) = z; env \<in> list(A)|]
+   ==> is_transrec(##A, MH, x, z) \<longleftrightarrow> sats(A, is_transrec_fm(p,i,k), env)"
+  using is_transrec_iff_sats
+    \<comment> \<open>cases on whether the assumptions of original theorem are satisfied\<close>
+  sorry
+
+manual_schematic for "is_Aleph" assuming "nonempty"
+  unfolding is_Aleph_def
+  apply (rule is_transrec_iff_sats')
+proof (rule is_HAleph_iff_sats)
+  fix a0 a1 a2 a3 a4 a5 a6 a7
+  show "nth(2, Cons(a0, Cons(a1, Cons(a2, Cons(a3, Cons(a4, Cons(a5, Cons(a6, Cons(a7, env))))))))) = a2"
+    "nth(1, Cons(a0, Cons(a1, Cons(a2, Cons(a3, Cons(a4, Cons(a5, Cons(a6, Cons(a7, env))))))))) = a1"
+    "nth(0, Cons(a0, Cons(a1, Cons(a2, Cons(a3, Cons(a4, Cons(a5, Cons(a6, Cons(a7, env))))))))) = a0"
+    by simp_all
+qed simp_all
+
+synthesize_notc "is_Aleph" from_schematic
+
+lemma is_Aleph_fm_type [TC]: "a \<in> nat \<Longrightarrow> c \<in> nat \<Longrightarrow> is_Aleph_fm(a, c) \<in> formula"
+  unfolding is_Aleph_fm_def by simp
+
+lemma sats_is_Aleph_fm:
+  assumes "f\<in>nat" "r\<in>nat" "env \<in> list(A)" "0\<in>A"
+  shows "is_Aleph(##A, nth(f, env), nth(r, env)) \<longleftrightarrow> A, env \<Turnstile> is_Aleph_fm(f,r)"
+  using assms sats_is_Aleph_fm_auto unfolding is_Aleph_def is_Aleph_fm_def by simp
+
+lemma is_Aleph_iff_sats [iff_sats]:
+  assumes
+    "nth(f, env) = fa" "nth(r, env) = ra"
+    "f \<in> nat" "r \<in> nat" "env \<in> list(A)" "0\<in>A"
+  shows "is_Aleph(##A,fa,ra) \<longleftrightarrow> A, env \<Turnstile> is_Aleph_fm(f,r)"
+  using assms sats_is_Aleph_fm[of f r env A] by simp
+
+arity_theorem for "is_Aleph_fm"
 
 context M_cardinal_arith_jump
 begin
