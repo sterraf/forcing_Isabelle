@@ -8,7 +8,7 @@ lemmas nat_succI =  Ord_succ_mem_iff [THEN iffD2,OF nat_into_Ord]
 lemma nat_succD : "m \<in> nat \<Longrightarrow>  succ(n) \<in> succ(m) \<Longrightarrow> n \<in> m"
   by (drule_tac j="succ(m)" in ltI,auto elim:ltD)
 
-lemmas zero_in =  ltD [OF nat_0_le]
+lemmas zero_in_succ = ltD [OF nat_0_le]
 
 lemma in_n_in_nat :  "m \<in> nat \<Longrightarrow> n \<in> m \<Longrightarrow> n \<in> nat"
   by(drule ltI[of "n"],auto simp add: lt_nat_in_nat)
@@ -36,10 +36,6 @@ lemma succpred_leI : "n \<in> nat \<Longrightarrow>  n \<le> succ(pred(n))"
 lemma succpred_n0 : "succ(n) \<in> p \<Longrightarrow> p\<noteq>0"
   by (auto)
 
-
-lemma funcI : "f \<in> A \<rightarrow> B \<Longrightarrow> a \<in> A \<Longrightarrow> b= f ` a \<Longrightarrow> \<langle>a, b\<rangle> \<in> f"
-  by(simp_all add: apply_Pair)
-
 lemmas natEin = natE [OF lt_nat_in_nat]
 
 lemma succ_in : "succ(x) \<le> y  \<Longrightarrow> x \<in> y"
@@ -47,11 +43,15 @@ lemma succ_in : "succ(x) \<le> y  \<Longrightarrow> x \<in> y"
 
 lemmas Un_least_lt_iffn =  Un_least_lt_iff [OF nat_into_Ord nat_into_Ord]
 
+lemma pred_type : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> n\<in>nat"
+  by (rule leE,auto simp:in_n_in_nat ltD)
+
+lemma pred_le : "m \<in> nat \<Longrightarrow> n \<le> succ(m) \<Longrightarrow> pred(n) \<le> m"
+  by(rule_tac n="n" in natE,auto simp add:pred_type[of "succ(m)"])
+
 lemma pred_le2 : "n\<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> pred(n) \<le> m \<Longrightarrow> n \<le> succ(m)"
   by(subgoal_tac "n\<in>nat",rule_tac n="n" in natE,auto)
 
-lemma pred_le : "n\<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> n \<le> succ(m) \<Longrightarrow> pred(n) \<le> m"
-  by(subgoal_tac "pred(n)\<in>nat",rule_tac n="n" in natE,auto)
 
 lemma Un_leD1 : "Ord(i)\<Longrightarrow> Ord(j)\<Longrightarrow> Ord(k)\<Longrightarrow>  i \<union> j \<le> k \<Longrightarrow> i \<le> k"   
   by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct1]],simp_all)
@@ -67,11 +67,6 @@ lemma pred_mono : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> pre
 
 lemma succ_mono : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> succ(n) \<le> succ(m)"
   by auto
-
-lemma pred2_Un: 
-  assumes "j \<in> nat" "m \<le> j" "n \<le> j" 
-  shows "pred(pred(m \<union> n)) \<le> pred(pred(j))" 
-  using assms pred_mono[of "j"] le_in_nat Un_least_lt pred_mono by simp
 
 lemma nat_union_abs1 : 
   "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> i \<union> j = j"
@@ -95,7 +90,7 @@ lemmas nat_simp_union = nat_un_max nat_max_ty max_def
 
 lemma le_succ : "x\<in>nat \<Longrightarrow> x\<le>succ(x)" by simp
 lemma le_pred : "x\<in>nat \<Longrightarrow> pred(x)\<le>x" 
-  using pred_le[OF _ _ le_succ] pred_succ_eq 
+  using pred_le[OF _ le_succ] pred_succ_eq 
   by simp
 
 lemma Un_le_compat : "o \<le> p \<Longrightarrow> q \<le> r \<Longrightarrow> Ord(o) \<Longrightarrow> Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> o \<union> q \<le> p \<union> r"

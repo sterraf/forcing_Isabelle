@@ -2,6 +2,7 @@ section\<open>Relative, Choice-less Cardinal Numbers\<close>
 
 theory Cardinal_Relative
   imports
+    ZF_Miscellanea
     "New_Discipline_Draft"
 begin
 
@@ -1266,41 +1267,6 @@ lemma succ_lepoll_rel_imp_not_empty: "succ(x) \<lesssim>\<^bsup>M\<^esup> y ==> 
 
 lemma eqpoll_rel_succ_imp_not_empty: "x \<approx>\<^bsup>M\<^esup> succ(n) ==> M(x) \<Longrightarrow> M(n) \<Longrightarrow> x \<noteq> 0"
   by (fast elim!: eqpoll_rel_sym [THEN eqpoll_rel_0_is_0, THEN succ_neq_0])
-
-
-\<comment> \<open>FIXME: These two lemmas are not used; are they useful?\<close>
-lemma Pow_sing : "Pow({a}) = {0,{a}}"
-proof(intro equalityI,simp_all)
-  have "z \<in> {0,{a}}" if "z \<subseteq> {a}" for z
-    using that by auto
-  then
-  show " Pow({a}) \<subseteq> {0, {a}}" by auto
-qed
-
-lemma Pow_cons:
-  shows "Pow({a} \<union> A) = Pow(A) \<union> {{a} \<union> X . X: Pow(A)}"
-  using Un_Pow_subset Pow_sing
-proof(intro equalityI,auto simp add:Un_Pow_subset)
-  {
-    fix C D
-    assume "\<And> B . B\<in>Pow(A) \<Longrightarrow> C \<noteq> {a} \<union> B" "C \<subseteq> {a} \<union> A" "D \<in> C"
-    moreover from this
-    have "\<forall>x\<in>C . x=a \<or> x\<in>A" by auto
-    moreover from calculation
-    consider (a) "D=a" | (b) "D\<in>A" by auto
-    from this
-    have "D\<in>A"
-    proof(cases)
-      case a
-      with calculation show ?thesis by auto
-    next
-      case b
-      then show ?thesis by simp
-    qed
-  }
-  then show "\<And>x xa. (\<forall>xa\<in>Pow(A). x \<noteq> {a} \<union> xa) \<Longrightarrow> x \<subseteq> {a} \<union> A \<Longrightarrow> xa \<in> x \<Longrightarrow> xa \<in> A"
-    by auto
-qed
 
 lemma Finite_subset_closed:
   assumes "Finite(B)" "B\<subseteq>A" "M(A)"

@@ -1,6 +1,7 @@
 section\<open>The main theorem\<close>
 theory Forcing_Main
   imports
+  ZF_Miscellanea
   Internal_ZFC_Axioms
   Choice_Axiom
   Ordinals_In_MG
@@ -9,50 +10,6 @@ theory Forcing_Main
 begin
 
 subsection\<open>The generic extension is countable\<close>
-
-definition
-  minimum :: "i \<Rightarrow> i \<Rightarrow> i" where
-  "minimum(r,B) \<equiv> THE b. first(b,B,r)"
-
-lemma minimum_in: "\<lbrakk> well_ord(A,r); B\<subseteq>A; B\<noteq>0 \<rbrakk> \<Longrightarrow> minimum(r,B) \<in> B"
-  using the_first_in unfolding minimum_def by simp
-
-lemma well_ord_surj_imp_lepoll:
-  assumes "well_ord(A,r)" "h \<in> surj(A,B)"
-  shows "B \<lesssim> A"
-proof -
-  let ?f="\<lambda>b\<in>B. minimum(r, {a\<in>A. h`a=b})"
-  have "minimum(r, {a \<in> A . h ` a = b}) \<in> {a\<in>A. h`a=b}" if "b\<in>B" for b
-  proof -
-    from \<open>h \<in> surj(A,B)\<close> that
-    have "{a\<in>A. h`a=b} \<noteq> 0"
-      unfolding surj_def by blast
-    with \<open>well_ord(A,r)\<close>
-    show "minimum(r,{a\<in>A. h`a=b}) \<in> {a\<in>A. h`a=b}"
-      using minimum_in by blast
-  qed
-  moreover from this
-  have "?f : B \<rightarrow> A"
-      using lam_type[of B _ "\<lambda>_.A"] by simp
-  moreover
-  have "?f ` w = ?f ` x \<Longrightarrow> w = x" if "w\<in>B" "x\<in>B" for w x
-  proof -
-    from calculation that
-    have "w = h ` minimum(r,{a\<in>A. h`a=w})"
-         "x = h ` minimum(r,{a\<in>A. h`a=x})"
-      by simp_all
-    moreover
-    assume "?f ` w = ?f ` x"
-    moreover from this and that
-    have "minimum(r, {a \<in> A . h ` a = w}) = minimum(r, {a \<in> A . h ` a = x})"
-      unfolding minimum_def by simp_all
-    moreover from calculation(1,2,4)
-    show "w=x" by simp
-    qed
-  ultimately
-  show ?thesis
-  unfolding lepoll_def inj_def by blast
-qed
 
 lemma (in forcing_data) surj_nat_MG :
   "\<exists>f. f \<in> surj(\<omega>,M[G])"

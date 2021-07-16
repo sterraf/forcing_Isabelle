@@ -855,11 +855,28 @@ definition
   "check_fm(x,o,z) \<equiv> Exists(And(rcheck_fm(1#+x,0),
                       is_wfrec_fm(is_Hcheck_fm(6#+o,2,1,0),0,1#+x,1#+z)))"
 
-arity_theorem for "check_fm"
-
 lemma check_fm_type[TC] :
   "\<lbrakk>x\<in>nat;o\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> check_fm(x,o,z)\<in>formula"
   unfolding check_fm_def by simp
+
+arity_theorem for "PHcheck_fm"
+
+lemma arity_is_Hcheck_fm :
+  assumes "m\<in>nat" "n\<in>nat" "p\<in>nat" "o\<in>nat"
+  shows "arity(is_Hcheck_fm(m,n,p,o)) = succ(o) \<union> succ(n) \<union> succ(p) \<union> succ(m) "
+  unfolding is_Hcheck_fm_def
+  using assms arity_Replace_fm[rule_format,OF PHcheck_type _ _ _ _ arity_PHcheck_fm]
+    pred_Un_distrib Un_assoc Un_nat_type
+  by simp
+
+lemma arity_check_fm :
+  assumes "m\<in>nat" "n\<in>nat" "o\<in>nat"
+  shows "arity(check_fm(m,n,o)) = succ(o) \<union> succ(n) \<union> succ(m) "
+  unfolding check_fm_def
+  using assms arity_is_wfrec_fm[rule_format,OF _ _ _ _ _ arity_is_Hcheck_fm]
+    pred_Un_distrib Un_assoc arity_tran_closure_fm
+  by (auto simp add:arity)
+
 
 lemma sats_check_fm :
   assumes

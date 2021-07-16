@@ -3,19 +3,9 @@ section\<open>Renaming of variables in internalized formulas\<close>
 theory Renaming
   imports
     Nat_Miscellanea
+    ZF_Miscellanea
     "ZF-Constructible.Formula"
 begin
-
-lemma app_nm :
-  assumes "n\<in>nat" "m\<in>nat" "f\<in>n\<rightarrow>m" "x \<in> nat"
-  shows "f`x \<in> nat"
-proof(cases "x\<in>n")
-  case True
-  then show ?thesis using assms in_n_in_nat apply_type by simp
-next
-  case False
-  then show ?thesis using assms apply_0 domain_of_fun by simp
-qed
 
 subsection\<open>Renaming of free variables\<close>
 

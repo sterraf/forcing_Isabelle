@@ -89,7 +89,7 @@ abbreviation
 
 locale M_library =  M_cardinal_AC + M_aleph + M_FiniteFun +
   assumes
-  Pair_diff_replacement: "M(X) \<Longrightarrow> strong_replacement(M, \<lambda>A y. y = \<langle>A, A - X\<rangle>)"
+  Pair_diff_replacement: "M(X) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, x - X\<rangle>)"
   and
   diff_replacement: "M(X) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = x - X)"
   and

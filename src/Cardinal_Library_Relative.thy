@@ -13,9 +13,6 @@ declare eqpoll_rel_refl [simp]
 
 subsection\<open>Miscellaneous\<close>
 
-lemma image_fun_subset: "S\<in>A\<rightarrow>B \<Longrightarrow> C\<subseteq>A\<Longrightarrow> {S ` x . x\<in> C} = S``C"
-  using image_function[symmetric,of S C] domain_of_fun Pi_iff by auto
-
 lemma cardinal_rel_RepFun_le:
   assumes "S \<in> A\<rightarrow>B" "M(S)" "M(A)" "M(B)"
   shows "|{S`a . a\<in>A}|\<^bsup>M\<^esup> \<le> |A|\<^bsup>M\<^esup>"

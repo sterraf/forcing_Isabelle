@@ -158,13 +158,6 @@ lemma arity_Hfrc_at_fm :
   using assms arity_Hfrc_fm arity_empty_fm arity_number1_fm pred_Un_distrib
   by auto
 
-lemma arity_tran_closure_fm :
-  "\<lbrakk>x\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> arity(trans_closure_fm(x,f)) = succ(x) \<union> succ(f)"
-  unfolding trans_closure_fm_def
-  using arity_omega_fm arity_field_fm arity_typed_function_fm arity_pair_fm arity_empty_fm arity_fun_apply_fm
-    arity_composition_fm arity_succ_fm nat_union_abs2 pred_Un_distrib
-  by auto
-
 subsection\<open>The well-founded relation \<^term>\<open>forcerel\<close>\<close>
 definition
   forcerel :: "i \<Rightarrow> i \<Rightarrow> i" where

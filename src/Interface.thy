@@ -11,12 +11,8 @@ theory Interface
     Nat_Miscellanea
     Relative_Univ
     Synthetic_Definition
+    Arities
 begin
-
-syntax
-  "_sats"  :: "[i, i, i] \<Rightarrow> o"  ("(_, _ \<Turnstile> _)" [36,36,36] 60)
-translations
-  "(M,env \<Turnstile> \<phi>)" \<rightleftharpoons> "CONST sats(M,\<phi>,env)"
 
 abbreviation
   dec10  :: i   ("10") where "10 \<equiv> succ(9)"
@@ -639,6 +635,13 @@ schematic_goal trans_closure_fm_auto:
   by (insert assms ; (rule sep_rules rtran_closure_fm_auto | simp))+
 
 synthesize "trans_closure" from_schematic trans_closure_fm_auto
+
+lemma arity_tran_closure_fm :
+  "\<lbrakk>x\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> arity(trans_closure_fm(x,f)) = succ(x) \<union> succ(f)"
+  unfolding trans_closure_fm_def
+  using arity_omega_fm arity_field_fm arity_typed_function_fm arity_pair_fm arity_empty_fm arity_fun_apply_fm
+    arity_composition_fm arity_succ_fm nat_union_abs2 pred_Un_distrib
+  by auto
 
 schematic_goal wellfounded_trancl_fm_auto:
   assumes

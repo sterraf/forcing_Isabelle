@@ -1,0 +1,20 @@
+1) Parsear el goal para ver si es separación o reemplazo.
+2) Guardar las guardas jeje, las assms del goal.
+3) Hacer relativize_tm de los cuerpos (?) body de las abstracciones en los
+   segundos argumentos (sea de separation o strong_replacement), para obtener body_rel.
+4) Probar que bajo las assms de (2), body es equivalente a body_rel.
+5) Usar la maquinaria para relacionalizar body_rel para obtener is_body.
+6) Usar la maquinaria para sintetizar body_fm a partir de is_body, y
+   probar el lema _sats correspondiente.
+7) Probar con alguno de los esquemas generales que tenemos, 
+    que la instancia de separación/reemplazo con un sats(M,env,body_fm) es satisfecha por M.
+8) Por las equivalencias de (4) y del lema _sats, concluimos que el goal original vale para ##M.
+
+Problema: si hay un concepto ya relatvizado en el cuerpo de reemplazo/separación,
+no se puede relativizar. Ejemplo:
+  "body(M,y,x,ya,z) \<equiv> ya \<in> y \<and> z = {\<langle>x, ya\<rangle>} \<and> is_cardinal(M,x,ya)"
+
+
+Problema: las clausuras (al menos) tienen la forma (##M)(...) y no se simplifican
+si no estamos en el contexto donde eso ya se simplificó a "... \<in> M".
+

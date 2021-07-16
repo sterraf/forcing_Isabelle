@@ -14,33 +14,6 @@ relationalize "Limit" "is_Limit" external
 synthesize "is_Limit" from_definition
 arity_theorem for "is_Limit_fm"
 
-definition
-  is_If_fm :: "[i,i,i,i] \<Rightarrow> i" where
-  "is_If_fm(\<phi>,t,f,r) \<equiv> Or(And(\<phi>,Equal(t,r)),And(Neg(\<phi>),Equal(f,r)))"
-
-lemma is_If_fm_type [TC]: "\<phi> \<in> formula \<Longrightarrow> t \<in> nat \<Longrightarrow> f \<in> nat \<Longrightarrow> r \<in> nat \<Longrightarrow>
-  is_If_fm(\<phi>,t,f,r) \<in> formula"
-  unfolding is_If_fm_def by auto
-
-lemma sats_is_If_fm:
-  assumes Qsats: "Q \<longleftrightarrow> A, env \<Turnstile> \<phi>" "env \<in> list(A)"
-  shows "is_If(##A, Q, nth(t, env), nth(f, env), nth(r, env)) \<longleftrightarrow> A, env \<Turnstile> is_If_fm(\<phi>,t,f,r)"
-  using assms unfolding is_If_def is_If_fm_def by auto
-
-lemma is_If_fm_iff_sats [iff_sats]:
-  assumes Qsats: "Q \<longleftrightarrow> A, env \<Turnstile> \<phi>" and
-    "nth(t, env) = ta" "nth(f, env) = fa" "nth(r, env) = ra"
-    "t \<in> nat" "f \<in> nat" "r \<in> nat" "env \<in> list(A)"
-  shows "is_If(##A,Q,ta,fa,ra) \<longleftrightarrow> A, env \<Turnstile> is_If_fm(\<phi>,t,f,r)"
-  using assms sats_is_If_fm[of Q A \<phi> env t f r] by simp
-
-arity_theorem intermediate for "is_If_fm"
-
-lemma arity_is_If_fm:
-    "\<phi> \<in> nat \<Longrightarrow> t \<in> nat \<Longrightarrow> f \<in> nat \<Longrightarrow> r \<in> nat \<Longrightarrow>
-    arity(is_If_fm(\<phi>, t, f, r)) = arity(\<phi>) \<union> succ(t) \<union> succ(r) \<union> succ(f)"
-  using arity_is_If_fm' by auto
-
 relativize functional "HAleph" "HAleph_rel"
 relationalize "HAleph_rel" "is_HAleph"
 

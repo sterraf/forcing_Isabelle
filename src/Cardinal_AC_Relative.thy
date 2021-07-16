@@ -2,23 +2,14 @@ section\<open>Relative, Cardinal Arithmetic Using AC\<close>
 
 theory Cardinal_AC_Relative
   imports
+    ZF_Miscellanea
     Interface
     CardinalArith_Relative
 
 begin
 
-\<comment> \<open>MOVE THIS to an appropriate place. Now it is repeated in
-   \<^file>\<open>Forcing_Main.thy\<close>. But consider that ported versions follow,
-   and hence perhaps we should only have the relative version.\<close>
-definition
-  minimum :: "i \<Rightarrow> i \<Rightarrow> i" where
-  "minimum(r,B) \<equiv> THE b. first(b,B,r)"
-
-lemma minimum_in: "\<lbrakk> well_ord(A,r); B\<subseteq>A; B\<noteq>0 \<rbrakk> \<Longrightarrow> minimum(r,B) \<in> B"
-  using the_first_in unfolding minimum_def by simp
-
 relativize functional "first" "first_rel" external
-relativize functional "minimum" "minimum_rel"
+relativize functional "minimum" "minimum_rel" external
 context M_trans
 begin
 
@@ -58,64 +49,6 @@ proof -
     by simp
 qed
 end
-
-\<comment> \<open>MOVE THIS to an appropriate place. Now it is repeated in
-   \<^file>\<open>Forcing_Main.thy\<close>. But consider that ported versions follow,
-   and hence perhaps we should only have the relative version.\<close>
-lemma well_ord_surj_imp_inj_inverse:
-  assumes "well_ord(A,r)" "h \<in> surj(A,B)"
-  shows "(\<lambda>b\<in>B. minimum(r, {a\<in>A. h`a=b})) \<in> inj(B,A)"
-proof -
-  let ?f="\<lambda>b\<in>B. minimum(r, {a\<in>A. h`a=b})"
-  have "minimum(r, {a \<in> A . h ` a = b}) \<in> {a\<in>A. h`a=b}" if "b\<in>B" for b
-  proof -
-    from \<open>h \<in> surj(A,B)\<close> that
-    have "{a\<in>A. h`a=b} \<noteq> 0"
-      unfolding surj_def by blast
-    with \<open>well_ord(A,r)\<close>
-    show "minimum(r,{a\<in>A. h`a=b}) \<in> {a\<in>A. h`a=b}"
-      using minimum_in by blast
-  qed
-  moreover from this
-  have "?f : B \<rightarrow> A"
-      using lam_type[of B _ "\<lambda>_.A"] by simp
-  moreover
-  have "?f ` w = ?f ` x \<Longrightarrow> w = x" if "w\<in>B" "x\<in>B" for w x
-  proof -
-    from calculation that
-    have "w = h ` minimum(r,{a\<in>A. h`a=w})"
-         "x = h ` minimum(r,{a\<in>A. h`a=x})"
-      by simp_all
-    moreover
-    assume "?f ` w = ?f ` x"
-    moreover from this and that
-    have "minimum(r, {a \<in> A . h ` a = w}) = minimum(r, {a \<in> A . h ` a = x})"
-      unfolding minimum_def by simp_all
-    moreover from calculation(1,2,4)
-    show "w=x" by simp
-    qed
-  ultimately
-  show ?thesis
-    unfolding inj_def by blast
-qed
-
-lemma well_ord_surj_imp_lepoll:
-  assumes "well_ord(A,r)" "h \<in> surj(A,B)"
-  shows "B\<lesssim>A"
-   unfolding lepoll_def using well_ord_surj_imp_inj_inverse[OF assms]
-   by blast
-
-\<comment> \<open>New result\<close>
-lemma surj_imp_well_ord:
-  assumes "well_ord(A,r)" "h \<in> surj(A,B)"
-  shows "\<exists>s. well_ord(B,s)"
-  using assms lepoll_well_ord[OF well_ord_surj_imp_lepoll]
-  by force
-
-lemma vimage_fun_sing:
-  assumes "f\<in>A\<rightarrow>B" "b\<in>B"
-  shows "{a\<in>A . f`a=b} = f-``{b}"
-using assms vimage_singleton_iff function_apply_equality Pi_iff funcI by auto
 
 locale M_cardinal_AC = M_cardinal_arith +
   assumes

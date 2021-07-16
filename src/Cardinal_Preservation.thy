@@ -46,8 +46,8 @@ lemma antichain_abs'' [absolut]: "A\<in>M \<Longrightarrow> antichain_r'(A) \<lo
   by (auto simp add:absolut transitivity)
 
 end (* M_trivial_notion *)
-
 sublocale M_ZF_trans \<subseteq> M_cardinal_AC "##M"
+  apply (unfold_locales)
   sorry
 
 \<comment> \<open>TODO: already in ZF_Library\<close>
@@ -271,40 +271,6 @@ simple_rename "ren_F" src "[x_P, x_leq, x_o, x_f, y_c, x_bc, p, x, b]"
 simple_rename "ren_G" src "[x,x_P, x_leq, x_one, x_f,x_p,y,x_B]"
   tgt "[x,y,x_P, x_leq, x_one, x_f,x_p,x_B]"
 
-\<comment> \<open>FIXME: move these lemmas to Arities and Names.\<close>
-arity_theorem for "PHcheck_fm"
-
-lemma arity_Replace_fm [arity] :
-  "\<lbrakk>p\<in>formula ; v\<in>nat ; n\<in>nat; Z\<in>nat ; i\<in>nat\<rbrakk> \<Longrightarrow> arity(p) = i \<Longrightarrow> 
-    arity(Replace_fm(v,p,n)) = succ(n) \<union> (succ(v) \<union> Arith.pred(Arith.pred(i)))"
-  unfolding Replace_fm_def
-  using nat_union_abs2 pred_Un_distrib
-  by simp
-
-lemma arity_is_Hcheck_fm :
-  assumes "m\<in>\<omega>" "n\<in>\<omega>" "p\<in>\<omega>" "o\<in>\<omega>"
-  shows "arity(is_Hcheck_fm(m,n,p,o)) = succ(o) \<union> succ(n) \<union> succ(p) \<union> succ(m) "
-  unfolding is_Hcheck_fm_def
-  using assms arity_Replace_fm[rule_format,OF _ _ _ _ _ arity_PHcheck_fm]
-    pred_Un_distrib Un_assoc 
-  by simp
-
-lemma arity_check_fm :
-  assumes "m\<in>\<omega>" "n\<in>\<omega>" "o\<in>\<omega>"
-  shows "arity(check_fm(m,n,o)) = succ(o) \<union> succ(n) \<union> succ(m) "
-  unfolding check_fm_def
-  using assms arity_is_wfrec_fm[rule_format,OF _ _ _ _ _ arity_is_Hcheck_fm]
-    pred_Un_distrib Un_assoc arity_tran_closure_fm
-  by (auto simp add:arity)
-
-\<comment> \<open>FIXME: move these lemmas to Nat-Miscellanea.\<close>
-lemma pred_type2 : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> n\<in>nat"
-  by (rule leE,auto simp:in_n_in_nat ltD)
-
-lemma pred_le3 : "m \<in> nat \<Longrightarrow> n \<le> succ(m) \<Longrightarrow> pred(n) \<le> m"
-  by(rule_tac n="n" in natE,auto simp add:pred_type2[of "succ(m)"])
-
-
 \<comment> \<open>Kunen IV.3.5\<close>
 lemma ccc_fun_approximation_lemma:
   notes le_trans[trans]
@@ -442,7 +408,7 @@ proof -
              transitivity[OF \<open>x\<in>A\<close> \<open>A\<in>M\<close>] that types
           by simp
         have ARP:"pred(arity(?G)) \<le> 8" "pred(arity(?G))\<in>nat"
-          using  pred_le3[OF _ D(1)[simplified]] le_trans pred_type2[OF _ D(1)] by simp_all
+          using  pred_le[OF _ D(1)[simplified]] le_trans pred_type[OF _ D(1)] by simp_all
       have AR: "Collect_fm(7,?G,6) \<in> formula"
         "arity(Collect_fm(7,?G,6)) \<le> 2 #+ length([P, leq, one, f_dot,p,B])" 
         using nat_union_abs2[OF _ _ ARP(1),simplified]
@@ -505,7 +471,7 @@ proof -
       have "F`a \<in> M" by (auto dest:transM)
       then
       interpret M_Pi_assumptions_choice "##M" "F`a" ?Q
-        apply unfold_locales apply simp_all sorry
+        apply unfold_locales apply simp_all  sorry
       from \<open>F`a \<in> M\<close>
       interpret M_Pi_assumptions2 "##M" "F`a" ?Q "\<lambda>_ . P"
         using P_in_M
@@ -514,7 +480,6 @@ proof -
       have "\<exists>y. y \<in> ?Q(b)" if "b \<in> F`a" for b
         using that unfolding F_def by auto
       then
-        \<comment> \<open>FIX THIS: notation for Pi_r_set is forgotten!\<close>
       obtain q where "q \<in> Pi\<^bsup>M\<^esup>(F`a,?Q)" "q\<in>M" using AC_Pi_rel by auto
       moreover
       note \<open>F`a \<in> M\<close>
@@ -576,6 +541,5 @@ proof -
 end (* includes G_generic_lemmas *)
 
 end (* G_generic *)
-
 
 end

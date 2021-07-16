@@ -319,4 +319,11 @@ lemma arity_least_fm [arity] :
   using assms arity_least_fm'
   by auto
 
+lemma arity_Replace_fm [arity] :
+  "\<lbrakk>p\<in>formula ; v\<in>nat ; n\<in>nat; Z\<in>nat ; i\<in>nat\<rbrakk> \<Longrightarrow> arity(p) = i \<Longrightarrow>
+    arity(Replace_fm(v,p,n)) = succ(n) \<union> (succ(v) \<union> Arith.pred(Arith.pred(i)))"
+  unfolding Replace_fm_def
+  using nat_union_abs2 pred_Un_distrib
+  by simp
+
 end

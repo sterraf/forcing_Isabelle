@@ -98,6 +98,7 @@ proof -
   show ?thesis using 1 by simp
 qed
 
+\<comment> \<open>FIXME: rename: Replace_in_M\<close>
 lemma Replacement_in_M :
   assumes
     f_fm:  "\<phi> \<in> formula" and
@@ -185,6 +186,7 @@ proof -
     unfolding \<rho>_repl_def by simp
 qed
 
+\<comment> \<open>FIXME: this should be to Lambda_in_M and remove the next.\<close>
 lemma Fun_in_M :
   assumes
     f_fm:  "\<phi> \<in> formula" and
