@@ -590,8 +590,8 @@ context M_master
 begin
 
 is_iff_rel for "ContHyp"
-  using is_cexp_iff is_Aleph_iff unfolding is_ContHyp_def ContHyp_rel_def
-  by (force)
+  using is_cexp_iff is_Aleph_iff[of 0] is_Aleph_iff[of 1] unfolding is_ContHyp_def ContHyp_rel_def
+  by auto (rule_tac x=0 in rexI, auto)
 
 end (* M_master *)
 

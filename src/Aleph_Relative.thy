@@ -17,10 +17,6 @@ arity_theorem for "is_Limit_fm"
 relativize functional "HAleph" "HAleph_rel"
 relationalize "HAleph_rel" "is_HAleph"
 
-is_iff_rel for "HAleph"
-  unfolding is_HAleph_def HAleph_rel_def
-  sorry
-
 synthesize "is_HAleph" from_definition assuming "nonempty"
 arity_theorem for "is_HAleph_fm"
 
@@ -30,9 +26,6 @@ definition
 
 relativize functional "Aleph'" "Aleph_rel"
 relationalize "Aleph_rel" "is_Aleph"
-
-is_iff_rel for "Aleph"
-  unfolding is_Aleph_def Aleph_rel_def sorry
 
 lemma is_transrec_iff_sats':
   assumes MH_iff_sats:
@@ -269,7 +262,7 @@ next
     by auto
 qed
 
-lemma HAleph_closed:
+lemma HAleph_rel_closed [intro,simp]:
   assumes "function(f)" "M(a)" "M(f)"
   shows "M(HAleph_rel(M,a,f))"
   unfolding HAleph_rel_def SepReplace_def
@@ -289,7 +282,7 @@ proof -
     unfolding relation2_def using is_HAleph_iff assms by simp
   moreover
   have "\<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(HAleph_rel(M, x, g))"
-    using HAleph_closed by simp
+    using HAleph_rel_closed by simp
   ultimately
   show ?thesis
     unfolding Aleph_rel_def
@@ -325,7 +318,7 @@ proof -
   show ?thesis .
 qed
 
-lemma is_Aleph_rel:
+lemma is_Aleph_iff:
   assumes "Ord(a)" "M(a)" "M(res)" 
   shows "is_Aleph(M, a, res) \<longleftrightarrow> res = \<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup>"
 proof -
@@ -338,7 +331,7 @@ proof -
     unfolding relation2_def using is_HAleph_iff assms by simp
   moreover
   have "\<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(HAleph_rel(M, x, g))"
-    using HAleph_closed by simp
+    using HAleph_rel_closed by simp
   ultimately
   show ?thesis
     using assms transrec_abs
