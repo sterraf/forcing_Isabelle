@@ -611,7 +611,7 @@ lemma frecrel_closed:
     "frecrel(x)\<in>M"
 proof -
   have "Collect(x\<times>x,\<lambda>z. (\<exists>x y. z = \<langle>x,y\<rangle> \<and> frecR(x,y)))\<in>M"
-    using Collect_in_M_0p[of "frecrelP_fm(0)"] arity_frecrelP_fm sats_frecrelP_fm
+    using Collect_in_M[of "frecrelP_fm(0)" "[]"] arity_frecrelP_fm sats_frecrelP_fm
       frecrelP_abs \<open>x\<in>M\<close> cartprod_closed by simp
   then show ?thesis
     unfolding frecrel_def Rrel_def frecrelP_def by simp

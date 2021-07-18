@@ -335,7 +335,7 @@ proof -
   have "(\<not> is_compat_in(##M,P,leq,p,q) \<or> q\<in>D) \<longleftrightarrow> p\<bottom>q \<or> q\<in>D" if "q\<in>M" for q
     unfolding compat_def using that compat_in_abs P_in_M leq_in_M 1 by simp
   ultimately
-  have "?D\<in>M" using Collect_in_M_4p[of ?d_fm _ _ _ _ _"\<lambda>x y z w h. w\<bottom>x \<or> x\<in>h"] 
+  have "?D\<in>M" using Collect_in_M[of ?d_fm "[P,leq,p,D]"]
                     P_in_M leq_in_M \<open>D\<in>M\<close> by simp
   note asm = \<open>M_generic(G)\<close> \<open>dense(?D)\<close> \<open>?D\<subseteq>P\<close> \<open>?D\<in>M\<close>
   obtain x where "x\<in>G" "x\<in>?D" using M_generic_denseD[OF asm]
@@ -378,8 +378,7 @@ proof -
   ultimately
   show ?thesis 
     unfolding forces_eq_def using P_in_M leq_in_M assms 
-        Collect_in_M_4p[of ?\<phi> _ _ _ _ _ 
-            "\<lambda>q a1 a2 a3 a4. \<exists>\<sigma>. \<exists>r. r\<in>a1 \<and> \<langle>\<sigma>,r\<rangle> \<in> \<tau> \<and> q\<preceq>r \<and> forces_eq'(a1,a2,q,a3,\<sigma>)"] by simp
+        Collect_in_M[of ?\<phi> "[P,leq,\<pi>,\<tau>]"] by simp
 qed
 
 (* Lemma IV.2.40(a), membership *)
@@ -651,9 +650,7 @@ end (* includes *)
 lemma Collect_forces_eq_in_M:
   assumes "\<tau> \<in> M" "\<theta> \<in> M"
   shows "{p\<in>P. forces_eq(p,\<tau>,\<theta>)} \<in> M"
-  using assms Collect_in_M_4p[of "forces_eq_fm(1,2,0,3,4)" P leq \<tau> \<theta> 
-                                  "\<lambda>A x p l t1 t2. is_forces_eq(x,t1,t2)"
-                                  "\<lambda> x p l t1 t2. forces_eq(x,t1,t2)" P] 
+  using assms Collect_in_M[of "forces_eq_fm(1,2,0,3,4)" "[P,leq,\<tau>,\<theta>]"]
         arity_forces_eq_fm P_in_M leq_in_M sats_forces_eq_fm forces_eq_abs forces_eq_fm_type 
   by (simp add: nat_union_abs1 Un_commute)
 
@@ -699,13 +696,9 @@ proof -
     and "{p \<in> P . \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p, \<sigma>, \<tau>) \<and> forces_mem(p, \<sigma>, \<theta>)} \<in> M"
     unfolding forces_mem_def
     using abs1 fty fsats1 farit P_in_M leq_in_M assms forces_nmem
-          Collect_in_M_4p[of ?\<phi> _ _ _ _ _ 
-          "\<lambda>x p l a1 a2. (\<exists>\<sigma>\<in>domain(a1) \<union> domain(a2). forces_mem'(p,l,x,\<sigma>,a1) \<and> 
-                                                     forces_nmem'(p,l,x,\<sigma>,a2))"]
+          Collect_in_M[of ?\<phi> "[P,leq,\<tau>,\<theta>]"]
     using abs2 fty fsats2 farit P_in_M leq_in_M assms forces_nmem domain_closed Un_closed
-          Collect_in_M_4p[of ?\<phi> P leq \<theta> \<tau> ?rel_pred 
-          "\<lambda>x p l a2 a1. (\<exists>\<sigma>\<in>domain(a1) \<union> domain(a2). forces_nmem'(p,l,x,\<sigma>,a1) \<and> 
-                                                     forces_mem'(p,l,x,\<sigma>,a2))" P]  
+          Collect_in_M[of ?\<phi> "[P,leq,\<theta>,\<tau>]"]
     by simp_all
 qed
 

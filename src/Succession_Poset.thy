@@ -278,8 +278,7 @@ proof -
     by auto
   with assms
   have "Collect(A\<times>A,\<lambda>z. (\<exists>x y. z = \<langle>x,y\<rangle> \<and> rel(x,y))) \<in> M"
-    using Collect_in_M_0p[of "rel_fm(0)" "\<lambda> A z . relP(A,is_rel,z)" "\<lambda> z.\<exists>x y. z = \<langle>x, y\<rangle> \<and> rel(x, y)" ]
-        cartprod_closed
+    using Collect_in_M[OF assms(2),of 0 "[]"] cartprod_closed
     by simp
   then show ?thesis
   unfolding Rrel_def by simp

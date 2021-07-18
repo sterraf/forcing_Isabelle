@@ -382,7 +382,7 @@ proof -
         from E \<open>B\<in>M\<close>
         have HH:"{b\<in>B. ?Q(x,b)}\<in>M" 
           using 
-            sep_in_M[of ?G "[x, P, leq, one, f_dot,p]" B "?Q(x)",OF D(2) H D(1) \<open>B\<in>M\<close>] 
+            Collect_in_M[of ?G "[x, P, leq, one, f_dot,p]" B "?Q(x)",OF D(2) H D(1) \<open>B\<in>M\<close>]
             J
           by simp
         note HH J 
