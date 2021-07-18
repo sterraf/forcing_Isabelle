@@ -122,12 +122,7 @@ locale M_aleph = M_eclose + M_cardinal_arith_jump +
   assumes
     aleph_rel_replacement:  "strong_replacement(M, \<lambda>x y. y = \<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>)"
     and
-    haleph_transrec_replacement: "\<exists>sa[M].
-       \<exists>esa[M].
-          \<exists>mesa[M].
-             upair(M, a, a, sa) \<and>
-             is_eclose(M, sa, esa) \<and>
-             membership(M, esa, mesa) \<and>
+    haleph_transrec_replacement: "M(sa) \<Longrightarrow> M(esa) \<Longrightarrow> M(mesa) \<Longrightarrow>
              strong_replacement
               (M, \<lambda>x z. \<exists>y[M]. pair(M, x, y, z) \<and>
                                 (\<exists>f[M].
@@ -270,7 +265,7 @@ lemma Aleph_rel_closed[intro, simp]:
 proof -
   have "transrec_replacement(M, is_HAleph(M), a)"
     unfolding transrec_replacement_def wfrec_replacement_def is_wfrec_def M_is_recfun_def
-    using assms haleph_transrec_replacement
+    using assms haleph_transrec_replacement[of "{a}" "eclose({a})"]
     by simp
   moreover
   have "relation2(M, is_HAleph(M), HAleph_rel(M))"
@@ -319,7 +314,7 @@ lemma is_Aleph_iff:
 proof -
   have "transrec_replacement(M, is_HAleph(M), a)"
     unfolding transrec_replacement_def wfrec_replacement_def is_wfrec_def M_is_recfun_def
-    using assms haleph_transrec_replacement
+    using assms haleph_transrec_replacement[of "{a}" "eclose({a})"]
     by simp
   moreover
   have "relation2(M, is_HAleph(M), HAleph_rel(M))"
