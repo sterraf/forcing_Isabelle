@@ -46,14 +46,10 @@ lemma antichain_abs'' [absolut]: "A\<in>M \<Longrightarrow> antichain_r'(A) \<lo
   by (auto simp add:absolut transitivity)
 
 end (* M_trivial_notion *)
+
 sublocale M_ZF_trans \<subseteq> M_cardinal_AC "##M"
   apply (unfold_locales)
   sorry
-
-\<comment> \<open>TODO: already in ZF_Library\<close>
-lemma Pi_range_eq: "f \<in> Pi(A,B) \<Longrightarrow> range(f) = {f ` x . x \<in> A}"
-  using Pi_rangeD[of f A B] apply_rangeI[of f A B]
-  by blast
 
 lemma (in forcing_notion) Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
   using refl_leq by blast
@@ -154,7 +150,7 @@ context
   includes G_generic_lemmas
 begin
 
-\<comment> \<open>Simplifying simp rules (because of the occurrence of "##")\<close>
+\<comment> \<open>Simplifying simp rules (because of the occurrence of "\#\#")\<close>
 lemmas sharp_simps = Card_Union Card_rel_cardinal_rel Collect_abs
   Cons_abs Cons_in_M_iff Diff_closed Equal_abs Equal_in_M_iff Finite_abs
   Forall_abs Forall_in_M_iff Inl_abs Inl_in_M_iff Inr_abs Inr_in_M_iff

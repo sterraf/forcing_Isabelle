@@ -1,10 +1,10 @@
-section\<open>Library of basic $\ZF$ results\label{sec:zf-lib}\<close>
+section\<open>Library of basic $\mathit{ZF}$ results\label{sec:zf-lib}\<close>
 
 theory ZF_Library_Relative
   imports
-    "../Delta_System_Lemma/ZF_Library"
+    "Delta_System_Lemma.ZF_Library"
     "ZF-Constructible.Normal"
-    Aleph_Relative\<comment> \<open>must be before Cardinal_AC_Relative!\<close>
+    Aleph_Relative\<comment> \<open>must be before Cardinal\_AC\_Relative!\<close>
     Cardinal_AC_Relative
     FiniteFun_Relative
 begin
@@ -254,7 +254,7 @@ lemma lepoll_relI[intro]: "f \<in> inj\<^bsup>M\<^esup>(A, B) \<Longrightarrow> 
 lemma eqpollD[dest]: "A \<approx>\<^bsup>M\<^esup> B \<Longrightarrow> \<exists>f[M]. f \<in> bij\<^bsup>M\<^esup>(A, B)"
   unfolding eqpoll_rel_def .
 
-\<comment> \<open>Same as @{thm lepoll_relI}}\<close>
+\<comment> \<open>Same as @{thm lepoll_relI}\<close>
 lemma bij_rel_imp_eqpoll_rel[intro]: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(f) \<Longrightarrow> A \<approx>\<^bsup>M\<^esup> B"
   unfolding eqpoll_rel_def by blast
 

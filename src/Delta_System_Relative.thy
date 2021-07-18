@@ -3,7 +3,7 @@ section\<open>The Delta System Lemma, Relativized\label{sec:dsl-rel}\<close>
 theory Delta_System_Relative
   imports 
     Cardinal_Library_Relative
-    "../Delta_System_Lemma/Delta_System"
+    "Delta_System_Lemma.Delta_System"
 begin
 
 relativize functional "delta_system" "delta_system_rel" external
@@ -260,7 +260,7 @@ proof -
       with \<open>M(G)\<close>
       have "M(Disjoint)"
         using disjoint_separation by simp
-      text\<open>For every countable_rel subfamily of \<^term>\<open>G\<close> there is another some
+      text\<open>For every countable\_rel subfamily of \<^term>\<open>G\<close> there is another some
       element disjoint from all of them:\<close>
       have "\<exists>A\<in>G. \<forall>S\<in>X. <S,A>\<in>Disjoint" if "|X|\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "X \<subseteq> G" "M(X)" for X
       proof -

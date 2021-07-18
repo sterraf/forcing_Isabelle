@@ -17,6 +17,42 @@ using assms vimage_singleton_iff function_apply_equality Pi_iff funcI by auto
 lemma image_fun_subset: "S\<in>A\<rightarrow>B \<Longrightarrow> C\<subseteq>A\<Longrightarrow> {S ` x . x\<in> C} = S``C"
   using image_function[symmetric,of S C] domain_of_fun Pi_iff by auto
 
+lemma subset_Diff_Un: "X \<subseteq> A \<Longrightarrow> A = (A - X) \<union> X " by auto
+
+lemma Diff_bij:
+  assumes "\<forall>A\<in>F. X \<subseteq> A" shows "(\<lambda>A\<in>F. A-X) \<in> bij(F, {A-X. A\<in>F})"
+  using assms unfolding bij_def inj_def surj_def
+  by (auto intro:lam_type, subst subset_Diff_Un[of X]) auto
+
+lemma function_space_nonempty:
+  assumes "b\<in>B"
+  shows "(\<lambda>x\<in>A. b) : A \<rightarrow> B"
+  using assms lam_type by force
+
+lemma vimage_lam: "(\<lambda>x\<in>A. f(x)) -`` B = { x\<in>A . f(x) \<in> B }"
+  using lam_funtype[of A f, THEN [2] domain_type]
+    lam_funtype[of A f, THEN [2] apply_equality] lamI[of _ A f]
+  by auto blast
+
+lemma range_fun_subset_codomain:
+  assumes "h:B \<rightarrow> C"
+  shows "range(h) \<subseteq> C"
+  unfolding range_def domain_def converse_def using range_type[OF _ assms]  by auto
+
+lemma Pi_rangeD:
+  assumes "f\<in>Pi(A,B)" "b \<in> range(f)"
+  shows "\<exists>a\<in>A. f`a = b"
+  using assms apply_equality[OF _ assms(1), of _ b]
+    domain_type[OF _ assms(1)] by auto
+
+lemma Pi_range_eq: "f \<in> Pi(A,B) \<Longrightarrow> range(f) = {f ` x . x \<in> A}"
+  using Pi_rangeD[of f A B] apply_rangeI[of f A B]
+  by blast
+
+lemma Pi_vimage_subset : "f \<in> Pi(A,B) \<Longrightarrow> f-``C \<subseteq> A"
+  unfolding Pi_def by auto
+
+
 definition
   minimum :: "i \<Rightarrow> i \<Rightarrow> i" where
   "minimum(r,B) \<equiv> THE b. first(b,B,r)"

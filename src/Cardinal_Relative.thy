@@ -3,7 +3,7 @@ section\<open>Relative, Choice-less Cardinal Numbers\<close>
 theory Cardinal_Relative
   imports
     ZF_Miscellanea
-    "New_Discipline_Draft"
+    Discipline_Cardinal
 begin
 
 hide_const (open) L
@@ -353,7 +353,7 @@ lemma eqpoll_rel_disjoint_Un:
      ==> A \<union> C \<approx>\<^bsup>M\<^esup> B \<union> D"
    by (auto intro: bij_disjoint_Un simp add:def_eqpoll_rel)
 
-subsection\<open>lesspoll_rel: contributions by Krzysztof Grabczewski\<close>
+subsection\<open>lesspoll\_rel: contributions by Krzysztof Grabczewski\<close>
 
 lemma lesspoll_rel_not_refl: "M(i) \<Longrightarrow> ~ (i \<prec>\<^bsup>M\<^esup> i)"
   by (simp add: lesspoll_rel_def eqpoll_rel_refl)

@@ -103,7 +103,7 @@ locale M_Pi_assumptions_choice = M_Pi_assumptions + M_cardinal_AC +
     B_replacement: "strong_replacement(M, \<lambda>x y. y = B(x))"
     and
     \<comment> \<open>The next one should be derivable from (some variant)
-        of B_replacement. Proving both instances each time seems
+        of B\_replacement. Proving both instances each time seems
         inconvenient.\<close>
     minimum_replacement: "M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, B(x))\<rangle>)"
 begin
@@ -283,7 +283,7 @@ proof -
   from f AC_Pi_rel
   obtain z where z: "z \<in> Pi\<^bsup>M\<^esup>(Y, \<lambda>y. f -`` {y})"
     \<comment> \<open>In this and the following ported result, it is not clear how
-        uniformly are "_char" theorems to be used\<close>
+        uniformly are "\_char" theorems to be used\<close>
     using surj_rel_char
     by (auto simp add: surj_def types) (fast dest: apply_Pair)
   show ?thesis

@@ -840,7 +840,7 @@ synthesize "is_well_ord" from_definition assuming "nonempty"
 reldb_add relational "Order.pred" "pred_set"
 
 \<comment> \<open>The following form (twice the same argument) is only correct
-    when an "_abs" theorem is available\<close>
+    when an "\_abs" theorem is available\<close>
 reldb_add functional "Order.pred" "Order.pred"
 reldb_add functional "Ord" "Ord"
 

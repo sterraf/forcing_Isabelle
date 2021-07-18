@@ -5,7 +5,7 @@ theory Cohen_Posets
     Forcing_Notions
     Names \<comment> \<open>only for \<^term>\<open>SepReplace\<close>\<close>
     Recursion_Thms \<comment> \<open>only for the definition of \<^term>\<open>Rrel\<close>\<close>
-    "../Delta_System_Lemma/Delta_System"
+    "Delta_System_Lemma.Delta_System"
 begin
 
 lemmas app_fun = apply_iff[THEN iffD1]

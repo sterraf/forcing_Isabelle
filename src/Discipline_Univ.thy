@@ -4,7 +4,7 @@ theory Discipline_Univ
     "Relativization"
     "Discipline_Base"
     "Recursion_Thms"
-    "../Delta_System_Lemma/Cofinality"
+    "Delta_System_Lemma.Cofinality"
     Least
 begin
 
@@ -463,21 +463,22 @@ lemma factor_body_closed :
 
 lemma factor_body_abs[absolut] :
   assumes "M(\<beta>)" "M(h)"
-  shows "is_factor_body(M,\<beta>,h,x ) \<longleftrightarrow> factor_body(\<beta>,h,x)" 
-proof -
+  shows "is_factor_body(M,\<beta>,h,x ) \<longleftrightarrow> factor_body(\<beta>,h,x)"
+  oops
+(* proof -
   from assms
   have "is_factor_body(M,\<beta>,h,x) \<longleftrightarrow> 
        (x \<in> \<delta> \<and> j ` \<beta> \<le> f ` x \<and> (\<forall>\<alpha>[M]. \<alpha> < \<beta> \<longrightarrow> f ` (h ` \<alpha>) < f ` x) \<or> x = \<delta>)"
     for x
-    using types
-    unfolding is_factor_body_def by (auto dest:transM)
+    using types assms
+    unfolding is_factor_body_def apply (auto dest:transM)
   with assms
   show ?thesis
   using assms factor_body_closed[of \<beta> h] transM[of _ \<beta>]
   unfolding factor_body_def oall_def using types ltD 
   by force
 qed
-
+ *)
 end
 
 (* end Discipline for factor_body *)

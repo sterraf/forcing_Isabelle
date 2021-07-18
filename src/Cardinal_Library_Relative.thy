@@ -3,7 +3,7 @@ section\<open>Cardinal Arithmetic under Choice\label{sec:cardinal-lib-rel}\<clos
 theory Cardinal_Library_Relative
   imports
     ZF_Library_Relative
-    "../Delta_System_Lemma/Cardinal_Library"
+    "Delta_System_Lemma.Cardinal_Library"
 begin
 
 context M_library
@@ -588,7 +588,7 @@ lemma uncountable_rel_not_subset_countable_rel:
   by blast
 
 
-subsection\<open>Results on Aleph_rels\<close>
+subsection\<open>Results on Aleph\_rels\<close>
 
 lemma nat_lt_Aleph_rel1: "\<omega> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
   by (simp add: Aleph_rel_succ Aleph_rel_zero lt_csucc_rel)
@@ -894,7 +894,7 @@ proof -
   from assms
   have "M(x) \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})" for x
     using cdlt_replacement by simp
-  let ?cdlt\<gamma>="{Z\<in>Pow_rel(M,G) . |Z|\<^bsup>M\<^esup><\<gamma>}" \<comment> \<open>“cardinal_rel less than \<^term>\<open>\<gamma>\<close>”\<close>
+  let ?cdlt\<gamma>="{Z\<in>Pow_rel(M,G) . |Z|\<^bsup>M\<^esup><\<gamma>}" \<comment> \<open>“cardinal\_rel less than \<^term>\<open>\<gamma>\<close>”\<close>
     and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. <s,a>\<in>Q}"
   from \<open>M(G)\<close>
   have "M(?cdlt\<gamma>)"
@@ -1031,7 +1031,7 @@ proof -
 qed
 
 text\<open>The following basic result can, in turn, be proved by a
-     bounded-cardinal_rel selection.\<close>
+     bounded-cardinal\_rel selection.\<close>
 lemma Infinite_iff_lepoll_rel_nat: "M(Z) \<Longrightarrow> Infinite(Z) \<longleftrightarrow> \<omega> \<lesssim>\<^bsup>M\<^esup> Z"
 proof
   define Distinct where "Distinct = {<x,y> \<in> Z\<times>Z . x\<noteq>y}"
