@@ -517,4 +517,18 @@ next
     unfolding ZF_def ZF_inf_def by blast
 qed
 
+lemma M_ZFC_iff_M_satT:
+  notes iff_trans[trans]
+  shows "M_ZFC(M) \<longleftrightarrow> (M \<Turnstile> ZFC)"
+proof -
+  have "M_ZFC(M) \<longleftrightarrow> (M \<Turnstile> ZF) \<and> choice_ax(##M)"
+    using M_ZF_iff_M_satT unfolding M_ZFC_def M_ZFC_axioms_def by simp
+  also
+  have " \<dots> \<longleftrightarrow> M \<Turnstile> ZFC"
+    unfolding ZFC_def ZFC_fin_def ZF_def
+    by auto
+  ultimately
+  show ?thesis by simp
+qed
+
 end

@@ -16,6 +16,8 @@ begin
 
 end (* M_ctm *)
 
+locale M_ctm_AC = M_ctm + M_ZFC_trans
+
 subsection\<open>A forcing locale and generic filters\<close>
 locale forcing_data = forcing_notion + M_ctm +
   assumes P_in_M:           "P \<in> M"

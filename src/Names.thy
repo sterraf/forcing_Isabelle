@@ -1012,5 +1012,8 @@ proof -
     using generic unfolding M_generic_def by auto
 qed
 
-end (* context G_generic *)
+end (* G_generic *)
+
+locale G_generic_AC = G_generic + M_ctm_AC
+
 end

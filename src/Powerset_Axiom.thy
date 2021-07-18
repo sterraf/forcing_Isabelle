@@ -255,7 +255,7 @@ proof -
     using Collect_sats_in_MG GenExtI nat_simp_union by simp
   finally show ?thesis .
 qed
-end (* context: G_generic *)
+end (* G_generic *)
 
 
 context G_generic begin
@@ -290,5 +290,5 @@ proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
   show "\<exists>x\<in>M[G] . powerset(##M[G], a, x)"
     by auto
 qed
-end (* context: G_generic *)
+end (* G_generic *)
 end

@@ -47,8 +47,18 @@ lemma antichain_abs'' [absolut]: "A\<in>M \<Longrightarrow> antichain_r'(A) \<lo
 
 end (* M_trivial_notion *)
 
-sublocale M_ZF_trans \<subseteq> M_cardinal_AC "##M"
-  apply (unfold_locales)
+sublocale M_ZF_trans \<subseteq> M_aleph "##M"
+  sorry
+
+sublocale M_ZF_trans \<subseteq> M_FiniteFun "##M"
+  sorry
+
+sublocale M_ZF_trans \<subseteq> M_Pi "##M"
+  sorry
+
+sublocale M_ZFC_trans \<subseteq> M_cardinal_AC "##M"
+  using choice_ax
+  apply (unfold_locales, simp_all)
   sorry
 
 lemma (in forcing_notion) Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
@@ -95,11 +105,9 @@ sublocale G_generic \<subseteq> ext:M_ZF_trans "M[G]"
     strong_replacement_in_MG separation_in_MG infinity_in_MG
   by unfold_locales simp_all
 
-context forcing_data
-begin
-term  "p \<tturnstile> Neg(Equal(0,1)) [b,b']"
-
-end
+sublocale G_generic_AC \<subseteq> ext:M_ZFC_trans "M[G]"
+  using choice_ax choice_in_MG
+  by unfold_locales
 
 lemma (in forcing_data) forces_neq_apply_imp_incompatible:
   assumes
@@ -144,7 +152,7 @@ proof -
     by (simp add:nat_simp_union arity_fun_apply_fm fun_apply_type)
 qed
 
-context G_generic begin
+context G_generic_AC begin
 
 context
   includes G_generic_lemmas

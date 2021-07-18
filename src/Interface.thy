@@ -106,6 +106,12 @@ qed
 
 end (* M_ZF_trans *)
 
+locale M_ZFC = M_ZF +
+  assumes
+    choice_ax:"choice_ax(##M)"
+
+locale M_ZFC_trans = M_ZF_trans + M_ZFC
+
 sublocale M_ZF_trans \<subseteq> M_trans "##M"
   using transitivity zero_in_M exI[of "\<lambda>x. x\<in>M"]
   by unfold_locales simp_all

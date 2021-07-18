@@ -132,10 +132,10 @@ qed
 
 end (* M_master_sub *)
 
-sublocale M_ZF_trans \<subseteq> M_master "##M"
+sublocale M_ZFC_trans \<subseteq> M_master "##M"
   sorry
 
-context M_ctm
+context M_ctm_AC
 begin
 
 \<comment> \<open>FIXME: using notation as if \<^term>\<open>Add_subs\<close> were used\<close>
@@ -149,11 +149,11 @@ qed
 
 end (* M_ctm *)
 
-sublocale G_generic \<subseteq> M_master_sub "##M" "##(M[G])"
+sublocale G_generic_AC \<subseteq> M_master_sub "##M" "##(M[G])"
   using M_subset_MG[OF one_in_G] generic Ord_MG_iff
   by unfold_locales auto
 
-context G_generic begin
+context G_generic_AC begin
 
 context
   includes G_generic_lemmas
@@ -269,7 +269,7 @@ abbreviation
 
 end (* M_ctm *)
 
-locale add_generic = G_generic "Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" "Fnle(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" 0
+locale add_generic = G_generic_AC "Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" "Fnle(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" 0
 
 sublocale add_generic \<subseteq> cohen_data \<omega> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 2 by unfold_locales auto
 
@@ -569,10 +569,10 @@ notepad
 begin
   fix M
   assume
-    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZF"
-  from \<open>M \<Turnstile> ZF\<close>
-  interpret M_ZF M
-    using M_ZF_iff_M_satT
+    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZFC"
+  from \<open>M \<Turnstile> ZFC\<close>
+  interpret M_ZFC M
+    using M_ZFC_iff_M_satT
     by simp
   from \<open>Transset(M)\<close>
   interpret M_ZF_trans M
@@ -582,7 +582,7 @@ begin
   obtain enum where "enum \<in> bij(\<omega>,M)"
     using eqpoll_sym unfolding eqpoll_def by blast
   then
-  interpret M_ctm M enum by unfold_locales
+  interpret M_ctm_AC M enum by unfold_locales
   interpret forcing_data "Fn(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2)" "Fnle(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2)" 0 M enum
   proof -
     interpret cohen_data \<omega> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 2 by unfold_locales auto
@@ -604,8 +604,8 @@ begin
     using ext.is_ContHyp_iff
     by (simp add:ContHyp_rel_def)
   then
-  have "M[G] \<Turnstile> ZF \<union> {\<cdot>\<not>CH\<cdot>}"
-    using M_ZF_iff_M_satT[of "M[G]"] ext.M_ZF_axioms by auto
+  have "M[G] \<Turnstile> ZFC \<union> {\<cdot>\<not>CH\<cdot>}"
+    using M_ZFC_iff_M_satT[of "M[G]"] ext.M_ZFC_axioms by auto
 end (* notepad *)
 
 end

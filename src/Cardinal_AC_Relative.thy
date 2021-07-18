@@ -270,7 +270,7 @@ subsection\<open>Other Applications of AC\<close>
 
 text\<open>We have an example of instantiating a locale involving higher
 order variables inside a proof, by using the assumptions of the
-first orde, active locale.\<close>
+first order, active locale.\<close>
 
 lemma surj_rel_implies_inj_rel:
   assumes f: "f \<in> surj\<^bsup>M\<^esup>(X,Y)" and
