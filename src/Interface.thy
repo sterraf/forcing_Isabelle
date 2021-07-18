@@ -1288,10 +1288,10 @@ sublocale M_ZF_trans \<subseteq> M_eclose_pow "##M"
   using power_ax powapply_repl phrank_repl trans_repl_HVFrom
     wfrec_rank by unfold_locales auto
 
+subsection\<open>Interface for proving Collects and Replace in M.\<close>
 context M_ZF_trans
 begin
 
-(* Proof Scheme for instances of separation *)
 lemma Collect_in_M :
   assumes
     "\<phi> \<in> formula" "env\<in>list(M)"
@@ -1466,18 +1466,6 @@ proof -
     using Replace_in_M \<open>A\<in>M\<close> \<open>env\<in>_\<close>
     by simp
 qed
-
-(* FIXME: remove this lemma *)
-lemma Repl_in_M :
-  assumes
-    f_fm:  "f_fm \<in> formula" and
-    f_ar:  "arity(f_fm)\<le> 2 #+ length(env)" and
-    fsats: "\<And>x y. x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> sats(M,f_fm,[x,y]@env) \<longleftrightarrow> is_f(x,y)" and
-    fabs:  "\<And>x y. x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> is_f(x,y) \<longleftrightarrow> y = f(x)" and
-    fclosed: "\<And>x. x\<in>A \<Longrightarrow> f(x) \<in> M"  and
-    "A\<in>M" "env\<in>list(M)"
-  shows "{f(x). x\<in>A}\<in>M"
-  using assms Replace_in_M transitivity[OF _ \<open>A\<in>M\<close>] by auto
 
 end (* M_ZF_trans *)
 

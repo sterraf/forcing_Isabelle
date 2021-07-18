@@ -277,10 +277,10 @@ proof -
     by simp
   ultimately
   show ?thesis using assms opname_check_abs[of f] sats_opname_check_fm
-        one_in_M
-        Repl_in_M[of "opname_check_fm(3,0,1,2)" "[one,f]" "is_opname_check(f)"
+        one_in_M transitivity
+        Replace_relativized_in_M[of "opname_check_fm(3,0,1,2)" "[one,f]" _ "is_opname_check(f)"
                     "\<lambda>x. opair_name(check(x),f`x)"]
-    by simp
+    by auto
 qed
 
 theorem choice_in_MG:

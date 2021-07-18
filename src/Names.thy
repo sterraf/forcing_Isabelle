@@ -909,8 +909,8 @@ proof -
   have "check(x)\<in>M" if "x\<in>P" for x
     using that transitivity check_in_M P_in_M by simp
   ultimately
-  show ?thesis using sats_check_fm check_abs P_in_M check_in_M one_in_M
-      Repl_in_M[of "check_fm(0,2,1)" "[one]" is_check check] by simp
+  show ?thesis using sats_check_fm check_abs P_in_M check_in_M one_in_M transitivity
+      Replace_relativized_in_M[of "check_fm(0,2,1)" "[one]" _ is_check check] by simp
 qed
 
 lemma pair_check : "\<lbrakk> p\<in>M ; y\<in>M \<rbrakk>  \<Longrightarrow> (\<exists>c\<in>M. is_check(p,c) \<and> pair(##M,c,p,y)) \<longleftrightarrow> y = \<langle>check(p),p\<rangle>"
@@ -949,7 +949,7 @@ proof -
   ultimately
   show ?thesis
     unfolding G_dot_def
-    using one_in_M P_in_M Repl_in_M[of ?pcheck_fm "[one]"]
+    using one_in_M P_in_M transitivity Replace_relativized_in_M[of ?pcheck_fm "[one]"]
     by simp
 qed
 
