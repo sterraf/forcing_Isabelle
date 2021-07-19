@@ -275,6 +275,10 @@ proof -
     using strengthening_lemma[of r \<phi> _ env] by blast
 qed
 
+abbreviation
+  fm_leq :: "[i,i,i] \<Rightarrow> i" (\<open>\<cdot>_\<preceq>\<^bsup>_\<^esup>_\<cdot>\<close>) where
+  "fm_leq(A,l,B) \<equiv> leq_fm(l,A,B)"
+
 simple_rename "ren_F" src "[x_P, x_leq, x_o, x_f, y_c, x_bc, p, x, b]"
   tgt "[x_bc, y_c,b,x, x_P, x_leq, x_o, x_f, p]"
 
@@ -301,150 +305,126 @@ proof -
   let ?app_fm="\<cdot>0`1 is 2\<cdot>"\<comment> \<open>formula for \<open>f`x=z\<close>\<close>
   define F where "F\<equiv>\<lambda>a\<in>A. {b\<in>B. \<exists>q\<in>P. q \<preceq> p \<and> (q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v])}"
   have "F \<in> M"
-    \<comment> \<open>FIXME: the proof is ugly!\<close>
-  proof - 
-    let ?G="Exists
-               (And(check_fm(2, 5, 0),
-                    Exists
-                     (And(check_fm(2, 6, 0),
-                           ren(Exists(And(Member(0, 1), And(leq_fm(2, 0, 7), forces(fun_apply_fm(0, 1, 2)))))) ` 9 ` 9 `
-                          ren_F_fn))))"
-    term ?G
-    let ?Q="\<lambda> x b . (\<exists>q\<in>P. q \<preceq> p \<and> M, [q, P, leq, one, f_dot, x\<^sup>v, b\<^sup>v] \<Turnstile> forces(fun_apply_fm(0, 1, 2)))"
-    have A: "fun_apply_fm(0, 1, 2)\<in> formula" "arity(fun_apply_fm(0, 1, 2)) = 3" 
-      using arity_fun_apply_fm nat_union_abs1 
+    \<comment> \<open>FIXME: the proof is too low-level!\<close>
+  proof -
+    let ?\<psi>="(\<cdot>\<exists>\<cdot>\<cdot>0 \<in> 1\<cdot> \<and> \<cdot> \<cdot>0 \<preceq>\<^bsup>2\<^esup> 7\<cdot> \<and> forces(?app_fm) \<cdot>\<cdot>\<cdot>)"
+    let ?G="(\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v5 is 0\<cdot> \<and> (\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v6 is 0\<cdot> \<and> ren(?\<psi>) ` 9 ` 9 ` ren_F_fn\<cdot>\<cdot>)\<cdot>\<cdot>)"
+    let ?Q="\<lambda> x b . (\<exists>q\<in>P. q \<preceq> p \<and> M, [q, P, leq, one, f_dot, x\<^sup>v, b\<^sup>v] \<Turnstile> forces(?app_fm))"
+    have "?app_fm \<in> formula" "arity(?app_fm) = 3"
+      using arity_fun_apply_fm nat_union_abs1
       by simp_all
-    then 
-    have B:"arity(forces(fun_apply_fm(0, 1, 2))) \<le> 7"  "forces(fun_apply_fm(0, 1, 2))\<in>formula"
-      "pred(arity(forces(fun_apply_fm(0, 1, 2)))) \<le> 7"
-      using arity_forces[OF A(1)] pred_le le_trans by simp_all 
-    then 
-    have C:"arity(Exists(And(Member(0, 1), And(leq_fm(2, 0, 7), forces(fun_apply_fm(0, 1, 2)))))) \<le> 9" (is "arity(?\<psi>) \<le> 9")
-      using arity_leq_fm pred_Un_distrib
-        nat_union_abs2 nat_union_abs2[OF _ _ B(3),simplified] nat_union_abs1 le_trans
-      by simp 
-    then have "ren(?\<psi>)`9`9`ren_F_fn \<in> formula" "pred(pred(arity(ren(?\<psi>)`9`9`ren_F_fn))) \<le> 7"
-      using ren_F_thm(2) ren_tc[of ?\<psi> 9 9 ren_F_fn] check_fm_type leq_fm_type ren_F_fn_def
-        arity_ren ren_F_thm pred_le
+    then
+    have "arity(forces(?app_fm)) \<le> 7"
+      using arity_forces[OF \<open>?app_fm\<in>_\<close>] by simp_all
+    then
+    have "arity(?\<psi>) \<le> 9"
+      using arity_leq_fm nat_union_abs2 nat_union_abs1 le_trans
+      by simp
+    then
+    have "ren(?\<psi>)`9`9`ren_F_fn \<in> formula" "pred(pred(arity(ren(?\<psi>)`9`9`ren_F_fn))) \<le> 7"
+      using arity_ren ren_tc ren_F_thm check_fm_type leq_fm_type ren_F_fn_def pred_le
       by simp_all
-    with B
-    have D:"arity(?G) \<le>  1 #+ length([x, P, leq, one, f_dot,p])" "?G\<in>formula" for x
+    with \<open>arity(forces(_))\<le>7\<close>
+    have "arity(?G) \<le> 1 #+ length([x, P, leq, one, f_dot,p])" "arity(?G) \<le> 7" "?G\<in>formula" for x
       using check_fm_type arity_check_fm pred_Un_distrib Un_le
-      by (simp_all add:ren_F_fn_def)
+      by simp_all
+    have "pred(arity(?G)) \<le> 8" "pred(arity(?G))\<in>nat"
+      using pred_le[OF _ \<open>arity(?G)\<le>7\<close>] le_trans pred_type[OF _ \<open>arity(?G)\<le>7\<close>]
+      by simp_all
     note types=\<open>f_dot\<in>_\<close> \<open>p\<in>M\<close> P_in_M leq_in_M one_in_M \<open>A\<in>M\<close> \<open>B\<in>M\<close>
       {fix x
-        assume "x\<in>A" 
-        moreover
-        note E=\<open>x\<in>A\<close> types
+        assume "x\<in>A"
+        with \<open>A\<in>M\<close>
+        have "x\<in>M" "x\<^sup>v\<in>M"
+          using transitivity[of x A] check_in_M
+          by simp_all
         {
           fix b
           assume "b\<in>M"
           moreover
-          note E
+          note \<open>x\<in>A\<close> \<open>x\<in>M\<close> \<open>x\<^sup>v\<in>M\<close> types
           moreover from calculation
-          have "x\<^sup>v\<in>M" "b\<^sup>v\<in>M" "x\<in>M" "b\<in>M"
-            using transitivity[OF _ \<open>A\<in>_\<close>] transitivity[OF _ \<open>B\<in>_\<close>] check_in_M by simp_all
-          moreover from calculation
-          have 
-            "?Q(x,b) \<longleftrightarrow> 
-            (\<exists>q\<in>P. q \<preceq> p \<and> M, [q, P, leq, one, f_dot, x\<^sup>v, b\<^sup>v,p,x,b] \<Turnstile> forces(fun_apply_fm(0, 1, 2)))" 
-            (is "?PR \<longleftrightarrow> _")
-            using arity_sats_iff[of _ "[p,x,b]" _ "[_, _, _, _, _, _, _]"] \<open>p\<in>M\<close> B 
-              transitivity[OF _ P_in_M] by auto 
-          moreover from calculation 
-          have 
-            "(\<exists>q\<in>P. q \<preceq> p \<and> M, [q, P, leq, one, f_dot, x\<^sup>v, b\<^sup>v,p,x,b] \<Turnstile> forces(fun_apply_fm(0, 1, 2))) \<longleftrightarrow> 
-             (M, [P, leq, one, f_dot, x\<^sup>v, b\<^sup>v,p,x,b] \<Turnstile>  
-                    Exists(And(Member(0,1),And(leq_fm(2,0,7),forces(fun_apply_fm(0, 1, 2))))))" 
-            unfolding leq_fm_def 
-            using leq_in_M P_in_M one_in_M transitivity[OF _ P_in_M] 
-            by auto 
-          moreover from calculation
-          have "(\<exists>q\<in>P. q \<preceq> p \<and> M, [q, P, leq, one, f_dot, x\<^sup>v, b\<^sup>v] \<Turnstile> forces(fun_apply_fm(0, 1, 2))) \<longleftrightarrow> 
-         (M, [P, leq, one, f_dot, x\<^sup>v, b\<^sup>v,p,x,b] \<Turnstile>  
-             Exists(And(Member(0,1),And(leq_fm(2,0,7),forces(fun_apply_fm(0, 1, 2))))))"  
-            (is "?L \<longleftrightarrow> M, ?envp \<Turnstile> ?\<eta>") 
-            by simp 
-          moreover from calculation assms
-          have "M,?envp \<Turnstile> ?\<eta> \<longleftrightarrow>
-              M, [b\<^sup>v, x\<^sup>v, b, x, P, leq, one, f_dot, p] \<Turnstile> ren(?\<eta>)`9`9`ren_F_fn" (is "_ \<longleftrightarrow> _, ?env' \<Turnstile> ?\<eta>'") 
-            using
-              sats_iff_sats_ren[of ?\<eta> 9 9 ?envp M ?env' ren_F_fn,OF _ _ _ _ _  _ C,simplified]
-              ren_F_thm(1)[of P leq one f_dot  "x\<^sup>v" "b\<^sup>v" p x b M]
-              arity_leq_fm A arity_forces[OF A(1),simplified] ren_F_thm(2) nat_union_abs1 nat_union_abs2 
-              pred_Un_distrib C ren_F_fn_def
+          have "b\<^sup>v\<in>M" "b\<in>M"
+            using transitivity[OF _ \<open>B\<in>_\<close>] check_in_M by simp_all
+          moreover from calculation \<open>arity(forces(_))\<le>7\<close>
+          have
+            "?Q(x,b) \<longleftrightarrow>
+            (\<exists>q\<in>P. q \<preceq> p \<and> M, [q, P, leq, one, f_dot, x\<^sup>v, b\<^sup>v,p,x,b] \<Turnstile> forces(?app_fm))"
+            using arity_sats_iff[of _ "[p,x,b]" _ "[_, _, _, _, _, _, _]"] transitivity[of _ P]
             by simp
+          moreover from calculation
+          have
+            "(\<exists>q\<in>P. q \<preceq> p \<and> M, [q, P, leq, one, f_dot, x\<^sup>v, b\<^sup>v,p,x,b] \<Turnstile> forces(?app_fm)) \<longleftrightarrow>
+             (M, [P, leq, one, f_dot, x\<^sup>v, b\<^sup>v,p,x,b] \<Turnstile> ?\<psi>)" (is "_ \<longleftrightarrow> M, ?\<eta> \<Turnstile> _")
+            unfolding leq_fm_def using transitivity[of _ P]
+            by auto
+          moreover from calculation \<open>arity(forces(_))\<le>_\<close> \<open>arity(?\<psi>)\<le> 9\<close> ren_F_fn_def
+          have "M,?\<eta> \<Turnstile> ?\<psi> \<longleftrightarrow>
+                M, [b\<^sup>v, x\<^sup>v, b, x, P, leq, one, f_dot, p] \<Turnstile> ren(?\<psi>)`9`9`ren_F_fn"
+                  (is "_ \<longleftrightarrow> _, ?\<eta>' \<Turnstile> ?\<psi>'")
+            using sats_iff_sats_ren[of ?\<psi> 9 9 ?\<eta> M ?\<eta>']ren_F_thm(1)[where A=M] ren_F_thm
+            by auto
           moreover from calculation assms
-          have "M, ?env' \<Turnstile> ?\<eta>' \<longleftrightarrow>
-              M, [b,x,P, leq, one, f_dot,p] \<Turnstile> ?G" (is "_ \<longleftrightarrow> M,?envF\<Turnstile>_")
-            using sats_check_fm[of 5 "[_]@?envF" 2 0] 
-              sats_check_fm[of 6 "[_,_]@?envF" 2 0] check_abs 
+          have "M, ?\<eta>' \<Turnstile> ?\<psi>' \<longleftrightarrow> M, [b,x,P, leq, one, f_dot,p] \<Turnstile> ?G" (is "_ \<longleftrightarrow> M,?\<eta>''\<Turnstile>_")
+            using sats_check_fm[of 5 "[_]@?\<eta>''"] sats_check_fm[of 6 "[_,_]@?\<eta>''"] check_abs
             by simp
-          ultimately 
-          have "?PR \<longleftrightarrow> M,?envF\<Turnstile>?G" by simp
+          ultimately
+          have "?Q(x,b) \<longleftrightarrow> M,?\<eta>''\<Turnstile>?G" by simp
         }
         then
-        have J:"M,[b, x, P, leq, one, f_dot,p] \<Turnstile>?G \<longleftrightarrow> ?Q(x,b)" if "b\<in>M" for b using that by simp
-        then 
-        have H:"[x, P, leq, one, f_dot,p] \<in> list(M)" using assms E transitivity[of x A] by auto
-        from E \<open>B\<in>M\<close>
-        have HH:"{b\<in>B. ?Q(x,b)}\<in>M" 
-          using 
-            Collect_in_M[of ?G "[x, P, leq, one, f_dot,p]" B "?Q(x)",OF D(2) H D(1) \<open>B\<in>M\<close>]
-            J
+        have sats:"M,[b, x, P, leq, one, f_dot,p] \<Turnstile>?G \<longleftrightarrow> ?Q(x,b)" if "b\<in>M" for b
+          using that by simp
+        from types \<open>x\<in>M\<close> \<open>arity(?G) \<le> 7\<close> \<open>?G\<in>_\<close>
+        have sep:"{b\<in>B. ?Q(x,b)}\<in>M"
+          using sats Collect_in_M[where env="[x, P, leq, one, f_dot,p]"]
           by simp
-        note HH J 
+        note sats sep
       }
       moreover from this
-      have U1:"M,[b, x, P, leq, one, f_dot,p] \<Turnstile>?G \<longleftrightarrow> ?Q(x,b)" if "b\<in>M" "x\<in>A" for b x using that by simp
+      have sats:"M,[b, x, P, leq, one, f_dot,p] \<Turnstile>?G \<longleftrightarrow> ?Q(x,b)" if "b\<in>M" "x\<in>A" for b x
+        using that by simp
       moreover from calculation
-      have U2:"{b\<in>B. ?Q(x,b)}\<in>M" if "x\<in>A" for x using that by simp
-      have W1:"M,[b, x,P, leq, one, f_dot,p,y,B] \<Turnstile>?G \<longleftrightarrow> ?Q(x,b)"
-        if "b\<in>M" "x\<in>A" "y\<in>M" for b x y 
+      have closed:"{b\<in>B. ?Q(x,b)}\<in>M" if "x\<in>A" for x using that by simp
+      have sats':"M,[b, x,P, leq, one, f_dot,p,y,B] \<Turnstile>?G \<longleftrightarrow> ?Q(x,b)"
+        if "b\<in>M" "x\<in>A" "y\<in>M" for b x y
       proof -
-        from that
-        have "M,[b, x,P, leq, one, f_dot,p,y,B] \<Turnstile>?G \<longleftrightarrow> M,[b, x,P, leq, one, f_dot,p] \<Turnstile>?G" 
-        using 
-            arity_sats_iff[OF \<open>?G\<in>_\<close> ,of "[y,B]" M "[b, x,P, leq, one, f_dot,p]",simplified,
-                OF _ _ D(1)[simplified]]
-            that transitivity[OF \<open>x\<in>A\<close> \<open>A\<in>M\<close>] that types
+        from that \<open>?G\<in>_\<close> \<open>arity(?G)\<le>7\<close>[simplified] types
+        have "M,[b, x,P, leq, one, f_dot,p,y,B] \<Turnstile>?G \<longleftrightarrow> M,[b, x,P, leq, one, f_dot,p] \<Turnstile>?G"
+        using transitivity[of x A] arity_sats_iff[of ?G  "[y,B]" M "[b, x,P, leq, one, f_dot,p]"]
         by simp
-      then show ?thesis using U1 that
+      then show ?thesis using sats that
         by simp
     qed
-      have W:"M,[x,P, leq, one, f_dot,p,y,B] \<Turnstile>Collect_fm(7,?G,6) \<longleftrightarrow>
-              is_Collect(##M,B,\<lambda>z.?Q(x,z),y)" if "x\<in>A" "y\<in>M"  for x y
-          using  W1[OF _ \<open>x\<in>A\<close> ,of _ y]
-            sats_Collect_fm[of M  "\<lambda>b.?Q(x,b)" ?G "[x,P, leq, one, f_dot,p,y,B]" 7 6,OF ] 
-             transitivity[OF \<open>x\<in>A\<close> \<open>A\<in>M\<close>] that types
-          by simp
-        have ARP:"pred(arity(?G)) \<le> 8" "pred(arity(?G))\<in>nat"
-          using  pred_le[OF _ D(1)[simplified]] le_trans pred_type[OF _ D(1)] by simp_all
-      have AR: "Collect_fm(7,?G,6) \<in> formula"
-        "arity(Collect_fm(7,?G,6)) \<le> 2 #+ length([P, leq, one, f_dot,p,B])" 
-        using nat_union_abs2[OF _ _ ARP(1),simplified]
-          D(2) arity_Collect_fm nat_union_abs2 ARP(2)
-         by simp_all
-      have ARR:"arity(ren(Collect_fm(7,?G,6))`8`8`ren_G_fn) \<le> 2 #+ length([P, leq, one, f_dot,p,B])"
-               "ren(Collect_fm(7,?G,6))`8`8`ren_G_fn\<in>formula"
-        using ren_tc[of "Collect_fm(7,?G,6)"] AR ren_G_thm(2) ren_G_fn_def 
-         arity_ren
-         by simp_all
-      have r:"M,[x,y,P, leq, one, f_dot,p,B] \<Turnstile>ren(Collect_fm(7,?G,6))`8`8`ren_G_fn \<longleftrightarrow>
-            M,[x,P, leq, one, f_dot,p,y,B] \<Turnstile>Collect_fm(7,?G,6)" if "x\<in>A" "y\<in>M"  for x y
-        using sats_iff_sats_ren[of "Collect_fm(7,?G,6)" 8 8  _  M "[x,y,P, leq, one, f_dot,p,B]" ren_G_fn]
-              ren_G_thm(1)[where A=M] ren_G_thm(2) AR transitivity[OF \<open>x\<in>A\<close> \<open>A\<in>M\<close>] that types ren_G_fn_def
-        by simp
-      have sats:"M,[x,y,P, leq, one, f_dot,p,B] \<Turnstile>ren(Collect_fm(7,?G,6))`8`8`ren_G_fn \<longleftrightarrow> 
-              is_Collect(##M,B,\<lambda>z.?Q(x,z),y)"
-        if "x\<in>A" "y\<in>M" for y x using that iff_trans[OF r W] by simp
-      have abs:"is_Collect(##M,B,\<lambda>z.?Q(x,z),y) \<longleftrightarrow> y = {b\<in>B . ?Q(x,b)}"
-        if "x\<in>A" "y\<in>M" for y x using that \<open>B\<in>M\<close> by simp
-      show ?thesis 
-        unfolding F_def using sats
-          Lambda_in_M[OF ARR(2) ARR(1) _ abs U2 \<open>A\<in>M\<close>] transitivity[OF _ \<open>A\<in>M\<close>] types
-        by simp
-    qed 
+    from types
+    have sats_col:"M,[x,P, leq, one, f_dot,p,y,B] \<Turnstile>Collect_fm(7,?G,6) \<longleftrightarrow>
+              is_Collect(##M,B,\<lambda>z.?Q(x,z),y)" if "x\<in>A" "y\<in>M" for x y
+      using that sats'[of _ x y] sats_Collect_fm[of M "\<lambda>b.?Q(x,b)"] transitivity[of x A]
+      by simp
+    from \<open>pred(arity(?G))\<in>nat\<close> \<open>?G\<in>_\<close>
+    have "Collect_fm(7,?G,6) \<in> formula" "arity(Collect_fm(7,?G,6)) \<le> 8"
+      using nat_union_abs2[OF _ _ \<open>pred(arity(?G)) \<le> 8\<close>] arity_Collect_fm nat_union_abs2
+      by simp_all
+    then
+    have "arity(ren(Collect_fm(7,?G,6))`8`8`ren_G_fn) \<le> 8"
+         "ren(Collect_fm(7,?G,6))`8`8`ren_G_fn \<in> formula" (is "?\<Gamma>\<in>_")
+      using ren_tc[of "Collect_fm(7,?G,6)"] ren_G_thm(2) ren_G_fn_def arity_ren
+      by simp_all
+    from \<open>arity(Collect_fm(7,?G,6))\<le>_\<close> \<open>Collect_fm(7,?G,6)\<in>_\<close> types
+    have "M,[x,y,P, leq, one, f_dot,p,B] \<Turnstile>?\<Gamma> \<longleftrightarrow>
+          M,[x,P, leq, one, f_dot,p,y,B] \<Turnstile>Collect_fm(7,?G,6)" if "x\<in>A" "y\<in>M"  for x y
+      using sats_iff_sats_ren[of "Collect_fm(7,?G,6)" 8 8  _  M "[x,y,P, leq, one, f_dot,p,B]"]
+        ren_G_thm(1)[where A=M] ren_G_thm(2) transitivity[of x A] that ren_G_fn_def
+      by simp
+    then
+    have sats:"M,[x,y,P, leq, one, f_dot,p,B] \<Turnstile>ren(Collect_fm(7,?G,6))`8`8`ren_G_fn \<longleftrightarrow>
+              is_Collect(##M,B,\<lambda>z.?Q(x,z),y)" if "x\<in>A" "y\<in>M" for y x
+      using that iff_trans[OF _ sats_col] by simp
+    with \<open>arity(?\<Gamma>)\<le>_\<close> \<open>?\<Gamma>\<in>_\<close> types
+    show ?thesis
+      unfolding F_def
+      using closed Lambda_in_M[where env="[P, leq, one, f_dot,p,B]"] transitivity[of _ A]
+      by simp
+    qed
     moreover
     have "f`a \<in> F`a" if "a \<in> A" for a
     proof -

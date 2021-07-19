@@ -855,6 +855,8 @@ definition
   "check_fm(x,o,z) \<equiv> Exists(And(rcheck_fm(1#+x,0),
                       is_wfrec_fm(is_Hcheck_fm(6#+o,2,1,0),0,1#+x,1#+z)))"
 
+notation check_fm (\<open>\<cdot>_\<^sup>v_ is _\<cdot>\<close>)
+
 lemma check_fm_type[TC] :
   "\<lbrakk>x\<in>nat;o\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> check_fm(x,o,z)\<in>formula"
   unfolding check_fm_def by simp
