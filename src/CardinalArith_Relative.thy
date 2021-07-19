@@ -1062,7 +1062,7 @@ definition jump_cardinal_body :: "i \<Rightarrow> i" where
 
 \<comment> \<open>FIXME: do we need this?\<close>
 lemma strong_replacement_jc_body :
-  "M(X) \<Longrightarrow> strong_replacement(M,\<lambda> x z . M(z) \<and> M(x) \<and> z = jump_cardinal_body(x))"
+  "strong_replacement(M,\<lambda> x z . M(z) \<and> M(x) \<and> z = jump_cardinal_body(x))"
   sorry
 
 lemma jump_cardinal_closed_aux1:
@@ -1492,9 +1492,6 @@ qed
 
 declare conj_cong [cong del]
 \<comment> \<open>incompatible with some of the proofs of the original theory\<close>
-
-lemma mem_Pow_rel: "M(r) \<Longrightarrow> a \<in> Pow_rel(M,r) \<Longrightarrow> a \<in> Pow(r) \<and> M(a)"
-  using Pow_rel_char by simp
 
 lemma jump_cardinal_rel_iff_old:
      "M(i) \<Longrightarrow> M(K) \<Longrightarrow> i \<in> jump_cardinal_rel(M,K) \<longleftrightarrow>

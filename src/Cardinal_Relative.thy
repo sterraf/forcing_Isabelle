@@ -236,6 +236,9 @@ lemma schroeder_bernstein_closed:
 
 (** Equipollence is an equivalence relation **)
 
+lemma mem_Pow_rel: "M(r) \<Longrightarrow> a \<in> Pow_rel(M,r) \<Longrightarrow> a \<in> Pow(r) \<and> M(a)"
+  using Pow_rel_char by simp
+
 lemma mem_bij_abs[simp]: "\<lbrakk>M(f);M(A);M(B)\<rbrakk> \<Longrightarrow>  f \<in> bij\<^bsup>M\<^esup>(A,B) \<longleftrightarrow> f\<in>bij(A,B)"
   using bij_rel_char by simp
 
