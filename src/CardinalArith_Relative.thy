@@ -24,6 +24,10 @@ definition
   "is_csquare_lam(M,K,l) \<equiv> \<exists>K2[M]. cartprod(M,K,K,K2) \<and>
         is_lambda(M,K2,is_csquare_lam_body(M),l)"
 
+definition jump_cardinal_body :: "[i\<Rightarrow>o,i] \<Rightarrow> i" where
+  "jump_cardinal_body(M,X) \<equiv>
+    {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype(X, r)} "
+
 locale M_cardinal_arith = M_cardinals +
   assumes
     ord_iso_separation: "M(s) \<Longrightarrow>
@@ -79,6 +83,12 @@ locale M_cardinal_arith = M_cardinals +
     \<comment> \<open>FIXME: the same as above modulo \<^term>\<open>wfrec\<close> absoluteness\<close>
     wfrec_pred_replacement:"M(A) \<Longrightarrow> M(r) \<Longrightarrow>
       wfrec_replacement(M, \<lambda>x f z. z = f `` Order.pred(A, x, r), r)"
+    and
+    ordertype_replacement :
+    "M(X) \<Longrightarrow> strong_replacement(M,\<lambda> x z . M(z) \<and> M(x) \<and> well_ord(X, x) \<and> z=ordertype(X,x))"
+    and
+    strong_replacement_jc_body :
+    "strong_replacement(M,\<lambda> x z . M(z) \<and> M(x) \<and> z = jump_cardinal_body(M,x))"
 begin
 
 lemma csquare_lam_closed[intro,simp]: "M(K) \<Longrightarrow> M(csquare_lam(K))"
@@ -1042,10 +1052,12 @@ lemma ordertype_rel_closed[intro,simp]:
     unfolding well_ord_def tot_ord_def part_ord_def
     by simp
 
-\<comment> \<open>FIXME: Do we need this?\<close>
-lemma strong_replacement_ordertype :
-  "M(X) \<Longrightarrow> strong_replacement(M,\<lambda> x z . M(z) \<and> M(x) \<and> well_ord(X, x) \<and> z=ordertype_rel(M,X,x))"
-  sorry
+lemma ordertype_rel_abs:
+  assumes "wellordered(M,X,r)" "M(X)" "M(r)"
+  shows "ordertype_rel(M,X,r) = ordertype(X,r)"
+  using assms ordertypes_are_absolute[of X r]
+  unfolding ordertype_def ordertype_rel_def ordermap_rel_def ordermap_def
+  by simp
 
 lemma univalent_aux1: "M(X) \<Longrightarrow> univalent(M,Pow_rel(M,X\<times>X),
   \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z))"
@@ -1056,36 +1068,27 @@ lemma univalent_aux1: "M(X) \<Longrightarrow> univalent(M,Pow_rel(M,X\<times>X),
   unfolding univalent_def
   by (simp)
 
-definition jump_cardinal_body :: "i \<Rightarrow> i" where
-  "jump_cardinal_body(X) \<equiv>
-    {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)} "
-
-\<comment> \<open>FIXME: do we need this?\<close>
-lemma strong_replacement_jc_body :
-  "strong_replacement(M,\<lambda> x z . M(z) \<and> M(x) \<and> z = jump_cardinal_body(x))"
-  sorry
-
 lemma jump_cardinal_closed_aux1:
   assumes "M(X)"
   shows
-    "M(jump_cardinal_body(X))"
+    "M(jump_cardinal_body(M,X))"
   unfolding jump_cardinal_body_def
-  using \<open>M(X)\<close>
-    strong_replacement_ordertype[OF \<open>M(X)\<close>] univalent_aux1[OF \<open>M(X)\<close>]
+  using \<open>M(X)\<close> ordertype_rel_abs ordertype_replacement[OF \<open>M(X)\<close>] univalent_aux1[OF \<open>M(X)\<close>]
   by simp
 
 
-lemma univalent_jc_body: "M(X) \<Longrightarrow> univalent(M,X,\<lambda> x z . M(z) \<and> M(x) \<and> z = jump_cardinal_body(x))"
+lemma univalent_jc_body: "M(X) \<Longrightarrow> univalent(M,X,\<lambda> x z . M(z) \<and> M(x) \<and> z = jump_cardinal_body(M,x))"
   using transM[of _ X]  jump_cardinal_closed_aux1 by auto
 
 lemma jump_cardinal_body_closed:
   assumes "M(K)"
-  shows "M({a . X \<in> Pow\<^bsup>M\<^esup>(K), M(a) \<and> M(X) \<and> a = jump_cardinal_body(X)})"
+  shows "M({a . X \<in> Pow\<^bsup>M\<^esup>(K), M(a) \<and> M(X) \<and> a = jump_cardinal_body(M,X)})"
   using assms univalent_jc_body jump_cardinal_closed_aux1 strong_replacement_jc_body
   by simp
 
 rel_closed for "jump_cardinal'"
-  using jump_cardinal_body_closed unfolding jump_cardinal_body_def jump_cardinal'_rel_def
+  using jump_cardinal_body_closed ordertype_rel_abs
+  unfolding jump_cardinal_body_def jump_cardinal'_rel_def
   by simp
 
 is_iff_rel for "jump_cardinal'"
@@ -1103,15 +1106,16 @@ proof -
     using that univalent_aux1 is_ordertype_iff' is_well_ord_iff_wellordered well_ord_abs by auto
   moreover
   have "is_Replace(M, d, \<lambda>X a. M(a) \<and> M(X) \<and>
-      a = {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)}, e)
+      a = {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype(X, r)}, e)
     \<longleftrightarrow>
-    e ={a . X \<in> d, M(a) \<and> M(X) \<and> a = jump_cardinal_body(X)}"
+    e ={a . X \<in> d, M(a) \<and> M(X) \<and> a = jump_cardinal_body(M,X)}"
     if "M(d)" "M(e)" for d e
-    using jump_cardinal_closed_aux1 that unfolding jump_cardinal_body_def
+    using jump_cardinal_closed_aux1 that
+    unfolding jump_cardinal_body_def
     by (rule_tac Replace_abs) simp_all
   ultimately
   show ?thesis
-    using Pow_rel_iff jump_cardinal_body_closed[of K]
+    using Pow_rel_iff jump_cardinal_body_closed[of K] ordertype_rel_abs
     unfolding is_jump_cardinal'_def jump_cardinal'_rel_def jump_cardinal_body_def
     by (simp add: types)
 qed
@@ -1376,13 +1380,6 @@ text\<open>This result is Kunen's Theorem 10.16, which would be trivial using AC
 
 locale M_cardinal_arith_jump = M_cardinal_arith + M_jump_cardinal
 begin
-
-lemma ordertype_rel_abs:
-  assumes "wellordered(M,X,r)" "M(X)" "M(r)"
-  shows "ordertype_rel(M,X,r) = ordertype(X,r)"
-  using assms ordertypes_are_absolute[of X r]
-  unfolding ordertype_def ordertype_rel_def ordermap_rel_def ordermap_def
-  by simp
 
 lemma well_ord_restr: "well_ord(X, r) \<Longrightarrow> well_ord(X, r \<inter> X\<times>X)"
 proof -
