@@ -27,7 +27,7 @@ definition
 relativize functional "Aleph'" "Aleph_rel"
 relationalize "Aleph_rel" "is_Aleph"
 
-txt\<open>The extra assumptions \<^term>\<open>a < length(env)\<close> and \<^term>\<open>a < length(env)\<close>
+txt\<open>The extra assumptions \<^term>\<open>a < length(env)\<close> and \<^term>\<open>c < length(env)\<close>
     in this schematic goal (and the following results on synthesis that
     depend on it) are imposed by @{thm is_transrec_iff_sats}.\<close>
 schematic_goal sats_is_Aleph_fm_auto:
@@ -35,8 +35,7 @@ schematic_goal sats_is_Aleph_fm_auto:
   a < length(env) \<Longrightarrow> c < length(env) \<Longrightarrow> 0 \<in> A \<Longrightarrow> 
   is_Aleph(##A, nth(a, env), nth(c, env)) \<longleftrightarrow> A, env \<Turnstile> ?fm(a, c)"
   unfolding is_Aleph_def
-  apply (rule is_transrec_iff_sats)
-proof (rule is_HAleph_iff_sats)
+proof (rule is_transrec_iff_sats, rule_tac [1] is_HAleph_iff_sats)
   fix a0 a1 a2 a3 a4 a5 a6 a7
   show "nth(2, Cons(a0, Cons(a1, Cons(a2, Cons(a3, Cons(a4, Cons(a5, Cons(a6, Cons(a7, env))))))))) = a2"
     "nth(1, Cons(a0, Cons(a1, Cons(a2, Cons(a3, Cons(a4, Cons(a5, Cons(a6, Cons(a7, env))))))))) = a1"

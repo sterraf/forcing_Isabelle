@@ -565,11 +565,14 @@ arity_theorem for "is_ContHyp_fm"
 
 notation is_ContHyp_fm (\<open>CH\<close>)
 
-notepad
-begin
-  fix M
-  assume
+theorem ctm_of_not_CH:
+  assumes
     "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZFC"
+  shows
+    "\<exists>N.
+      M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZFC \<union> {\<cdot>\<not>CH\<cdot>} \<and>
+      (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
+proof -
   from \<open>M \<Turnstile> ZFC\<close>
   interpret M_ZFC M
     using M_ZFC_iff_M_satT
@@ -606,6 +609,14 @@ begin
   then
   have "M[G] \<Turnstile> ZFC \<union> {\<cdot>\<not>CH\<cdot>}"
     using M_ZFC_iff_M_satT[of "M[G]"] ext.M_ZFC_axioms by auto
-end (* notepad *)
+  moreover
+  have "Transset(M[G])" using Transset_MG .
+  moreover
+  have "M \<subseteq> M[G]" using M_subset_MG[OF one_in_G] generic by simp
+  ultimately
+  show ?thesis
+    using Ord_MG_iff MG_eqpoll_nat
+    by (rule_tac x="M[G]" in exI, simp)
+qed
 
 end
