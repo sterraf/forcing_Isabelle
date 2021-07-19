@@ -1,6 +1,7 @@
 theory Draft_Automatic_Satisfaction
   imports
-    Cohen_Posets_Relative
+    Discipline_Function
+    Forcing_Data
 begin
 
 (* Proof of concept of the proposal to automatize *)
@@ -87,11 +88,6 @@ lemma (in M_ZF_trans) proof_of_concept2:
 
 definition is_body_3 :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
   "is_body_3(N,A,f,r,x) \<equiv> x \<in> A \<longrightarrow> (\<exists>y[N]. \<exists>p[N]. is_apply(N, f, x, y) \<and> pair(N, y, x, p) \<and> p \<in> r)"
-
-
-(* Do we have a reasonable order of arguments in is_body_3' ? *)
-(* relativize_tm "x \<in> u \<and> y = {\<langle>w, x\<rangle>}" "is_body_3'"
- *)
 
 synthesize "is_body_3" from_definition
 arity_theorem for "is_body_3_fm"
@@ -205,3 +201,4 @@ lemma (in M_ZF_trans) proof_of_concept5:
                               pred_set(##M, A, a, r, par) \<and> order_isomorphism(##M, par, r, x, mx, g))"
   using proof_of_concept_aux5 is_body_5_def by simp
 
+end
