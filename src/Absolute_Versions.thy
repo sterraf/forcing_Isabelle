@@ -2,8 +2,8 @@ section\<open>From M to V\<close>
 
 theory Absolute_Versions
   imports
-    Cohen_Posets_Relative
     ZF.Cardinal_AC
+    Cohen_Posets_Relative
 begin
 
 subsection\<open>Locales of a class \<^term>\<open>M\<close> hold in \<^term>\<open>\<V>\<close>\<close>
@@ -77,16 +77,16 @@ lemma eqpoll_rel_absolute[V_simps]: "x \<approx>\<^bsup>\<V>\<^esup> y \<longlef
 lemma cardinal_rel_absolute[V_simps]: "|x|\<^bsup>\<V>\<^esup> = |x|"
   unfolding cardinal_def cardinal_rel_def by (simp add:V_simps)
 
-lemma Card_rel_absolute[V_simps]:"Card_rel(\<V>,a) \<longleftrightarrow> Card(a)"
+lemma Card_rel_absolute[V_simps]:"Card\<^bsup>\<V>\<^esup>(a) \<longleftrightarrow> Card(a)"
   unfolding Card_rel_def Card_def by (simp add:V_simps)
 
-lemma csucc_rel_absolute[V_simps]:"csucc_rel(\<V>,a) = csucc(a)"
+lemma csucc_rel_absolute[V_simps]:"(a\<^sup>+)\<^bsup>\<V>\<^esup> = a\<^sup>+"
   unfolding csucc_rel_def csucc_def by (simp add:V_simps)
 
 lemma HAleph_rel_absolute[V_simps]:"HAleph_rel(\<V>,a,b) = HAleph(a,b)"
   unfolding HAleph_rel_def HAleph_def by (auto simp add:V_simps)
 
-lemma Aleph_rel_absolute[V_simps]: "Ord(x) \<Longrightarrow> \<aleph>\<^bsub>x\<^esub>\<^bsup>\<V>\<^esup> = \<aleph>x"
+lemma Aleph_rel_absolute[V_simps]: "Ord(x) \<Longrightarrow> \<aleph>\<^bsub>x\<^esub>\<^bsup>\<V>\<^esup> = \<aleph>\<^bsub>x\<^esub>"
 proof -
   assume "Ord(x)"
   have "\<aleph>\<^bsub>x\<^esub>\<^bsup>\<V>\<^esup> = transrec(x, \<lambda>a b. HAleph_rel(\<V>,a,b))"
@@ -119,7 +119,7 @@ lemma csucc_le_mono:
   assumes "\<kappa> \<le> \<nu>"  shows "\<kappa>\<^sup>+ \<le> \<nu>\<^sup>+"
   using assms V.csucc_rel_le_mono by (simp add:V_simps)
 
-txt\<open>Example of a transfer result between a transitive model and $V$\<close>
+txt\<open>Example of transferring results from a transitive model to \<^term>\<open>\<V>\<close>\<close>
 lemma (in M_Perm) assumes "M(A)" "M(B)" "A \<approx>\<^bsup>M\<^esup> B"
   shows "A \<approx> B"
 proof -

@@ -89,7 +89,7 @@ proof -
     with in_M \<open>?new_form \<in> formula\<close> \<open>?\<psi>\<in>formula\<close> \<open>nenv \<in> _\<close>
     have Eq1: "(M, [u] @ ?Pl1 @ [\<pi>] @ nenv \<Turnstile> ?\<psi>) \<longleftrightarrow> 
                         (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> 
-                          M, [\<theta>,p,u]@?Pl1@[\<pi>] @ nenv \<Turnstile> ?new_form)"
+                          (M, [\<theta>,p,u]@?Pl1@[\<pi>] @ nenv \<Turnstile> ?new_form))"
       by (auto simp add: transitivity)
     have Eq3: "\<theta>\<in>M \<Longrightarrow> p\<in>P \<Longrightarrow>
        (M, [\<theta>,p,u]@?Pl1@[\<pi>]@nenv \<Turnstile> ?new_form) \<longleftrightarrow>
@@ -200,7 +200,7 @@ proof -
   qed
   ultimately 
   have "(\<exists>\<theta>\<in>M. \<exists>p\<in>P. u=\<langle>\<theta>,p\<rangle> \<and> (p\<in>G \<longrightarrow> val(P,G,\<theta>)\<in>nth(1 #+ length(env),[val(P,G, \<theta>)] @ env @ [val(P,G, \<pi>)]) 
-        \<and> M[G],  ?vals(\<theta>) \<Turnstile>  \<phi>))"
+        \<and> (M[G], ?vals(\<theta>) \<Turnstile>  \<phi>)))"
     if "u \<in> domain(\<pi>) \<times> P" "u \<in> M"  "M, [u] @ ?Pl1 @[\<pi>] @ nenv \<Turnstile> ?\<psi>" for u
     using aux[OF that] by simp
   moreover from \<open>env \<in> _\<close> \<open>\<pi>\<in>M\<close>
@@ -208,12 +208,12 @@ proof -
     if "\<theta>\<in>M" for \<theta>
     using nth_concat[of "val(P,G,\<theta>)" "val(P,G,\<pi>)" "M[G]"] using that GenExtI by simp
   ultimately
-  have "(\<exists>\<theta>\<in>M. \<exists>p\<in>P. u=\<langle>\<theta>,p\<rangle> \<and> (p\<in>G \<longrightarrow> val(P,G,\<theta>)\<in>val(P,G,\<pi>) \<and> M[G],  ?vals(\<theta>) \<Turnstile>  \<phi>))"
+  have "(\<exists>\<theta>\<in>M. \<exists>p\<in>P. u=\<langle>\<theta>,p\<rangle> \<and> (p\<in>G \<longrightarrow> val(P,G,\<theta>)\<in>val(P,G,\<pi>) \<and> (M[G],?vals(\<theta>) \<Turnstile>  \<phi>)))"
     if "u \<in> domain(\<pi>) \<times> P" "u \<in> M"  "M, [u] @ ?Pl1 @[\<pi>] @ nenv \<Turnstile> ?\<psi>" for u
     using that \<open>\<pi>\<in>M\<close> \<open>env \<in> _\<close> by simp
   with \<open>domain(\<pi>)\<times>P\<in>M\<close>
   have "\<forall>u\<in>domain(\<pi>)\<times>P . (M, [u] @ ?Pl1 @[\<pi>] @ nenv \<Turnstile> ?\<psi>) \<longrightarrow> (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and>
-        (p \<in> G \<longrightarrow> val(P,G, \<theta>)\<in>val(P,G, \<pi>) \<and> M[G],  ?vals(\<theta>) \<Turnstile>  \<phi>))"
+        (p \<in> G \<longrightarrow> val(P,G, \<theta>)\<in>val(P,G, \<pi>) \<and> (M[G],?vals(\<theta>) \<Turnstile>  \<phi>)))"
     by (simp add:transitivity)
   then 
   have "{u\<in>domain(\<pi>)\<times>P . (M,[u] @ ?Pl1 @[\<pi>] @ nenv \<Turnstile> ?\<psi>) } \<subseteq>

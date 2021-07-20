@@ -1345,7 +1345,7 @@ lemma Replace_in_M :
   assumes
     f_fm:  "\<phi> \<in> formula" and
     f_ar:  "arity(\<phi>)\<le> 2 #+ length(env)" and
-    fsats: "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> M,[x,y]@env \<Turnstile> \<phi> \<longleftrightarrow> y = f(x)" and
+    fsats: "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,y]@env \<Turnstile> \<phi>) \<longleftrightarrow> y = f(x)" and
     fclosed: "\<And>x. x\<in>A \<Longrightarrow> f(x) \<in> M"  and
     "A\<in>M" "env\<in>list(M)"
   shows "{f(x) . x\<in>A}\<in>M"
@@ -1359,7 +1359,7 @@ proof -
   have "?\<phi>'\<in>formula" "nth(length(env), env @ [A]) = A"
     using assms nth_append by auto
   moreover from calculation
-  have "\<And> x y. x \<in> M \<Longrightarrow> y\<in>M \<Longrightarrow> M,[x,y]@env@[A]\<Turnstile>?\<phi>' \<longleftrightarrow> y=f(x) \<and>x\<in>A"
+  have "\<And> x y. x \<in> M \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,y]@env@[A]\<Turnstile>?\<phi>') \<longleftrightarrow> y=f(x) \<and>x\<in>A"
     using arity_sats_iff[of _ "[A]" _ "[_,_]@env"] assms
     by auto
   moreover from calculation
@@ -1383,7 +1383,7 @@ lemma Replace_relativized_in_M :
   assumes
     f_fm:  "\<phi> \<in> formula" and
     f_ar:  "arity(\<phi>)\<le> 2 #+ length(env)" and
-    fsats: "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> M,[x,y]@env \<Turnstile> \<phi> \<longleftrightarrow> is_f(x,y)" and
+    fsats: "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,y]@env \<Turnstile> \<phi>) \<longleftrightarrow> is_f(x,y)" and
     fabs:  "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> is_f(x,y) \<longleftrightarrow> y = f(x)" and
     fclosed: "\<And>x. x\<in>A \<Longrightarrow> f(x) \<in> M"  and
     "A\<in>M" "env\<in>list(M)"
@@ -1432,7 +1432,7 @@ lemma Lambda_in_M :
   assumes
     f_fm:  "\<phi> \<in> formula" and
     f_ar:  "arity(\<phi>)\<le> 2 #+ length(env)" and
-    fsats: "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> M,[x,y]@env \<Turnstile> \<phi> \<longleftrightarrow> is_f(x,y)" and
+    fsats: "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,y]@env \<Turnstile> \<phi>) \<longleftrightarrow> is_f(x,y)" and
     fabs:  "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> is_f(x,y) \<longleftrightarrow> y = f(x)" and
     fclosed: "\<And>x. x\<in>A \<Longrightarrow> f(x) \<in> M" and
     "A\<in>M" "env\<in>list(M)"
@@ -1456,7 +1456,7 @@ proof -
     using arity_pair_fm Un_le pred_Un_distrib assms pred_le
     by simp
   moreover from this calculation
-  have "x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> M,[x,y]@env \<Turnstile> ?\<phi>' \<longleftrightarrow> ?p(x,y)" for x y
+  have "x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,y]@env \<Turnstile> ?\<phi>') \<longleftrightarrow> ?p(x,y)" for x y
     using \<open>env\<in>_\<close> length_type[OF \<open>env\<in>_\<close>] assms transitivity[OF _ \<open>A\<in>M\<close>]
       sats_iff_sats_ren[OF f_fm _ _ _ _ ren_type f_ar ren_action[rule_format,of _ x y],of _ M ]
     by auto

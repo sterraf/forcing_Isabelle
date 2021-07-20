@@ -291,7 +291,7 @@ proof -
   have "\<rho>p\<in>?\<pi> \<Longrightarrow> \<exists>t p. \<rho>p=\<langle>t,p\<rangle>" for \<rho>p
     by auto
   ultimately
-  have body:"M , [\<alpha>,\<rho>p,m,P,leq,one] @ nenv \<Turnstile> body_fm(\<phi>,nenv) \<longleftrightarrow> ?Q(\<rho>p,\<alpha>)"
+  have body:"(M , [\<alpha>,\<rho>p,m,P,leq,one] @ nenv \<Turnstile> body_fm(\<phi>,nenv)) \<longleftrightarrow> ?Q(\<rho>p,\<alpha>)"
     if "\<rho>p\<in>?\<pi>" "\<rho>p\<in>M" "m\<in>M" "\<alpha>\<in>M" for \<alpha> \<rho>p m
     using that P_in_M leq_in_M one_in_M body_lemma[of \<rho>p \<alpha> m nenv \<phi>] by simp
   let ?f_fm="least_fm(body_fm(\<phi>,nenv),1)"
@@ -304,12 +304,12 @@ proof -
           (snd(\<rho>p) \<tturnstile> \<phi> ([fst(\<rho>p),\<tau>] @ nenv))) \<longleftrightarrow>
           M, Cons(\<alpha>, [\<rho>p, m, P, leq, one] @ nenv) \<Turnstile> body_fm(\<phi>,nenv)" by simp
     from inM
-    have "M , [\<rho>p,m,P,leq,one] @ nenv \<Turnstile> ?f_fm \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
+    have "(M , [\<rho>p,m,P,leq,one] @ nenv \<Turnstile> ?f_fm) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
       using sats_least_fm[OF body', of 1] unfolding QQ_def
       by (simp, simp flip: setclass_iff)
   }
   then
-  have "M, [\<rho>p,m,P,leq,one] @ nenv \<Turnstile> ?f_fm \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
+  have "(M, [\<rho>p,m,P,leq,one] @ nenv \<Turnstile> ?f_fm) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
     if "\<rho>p\<in>M" "\<rho>p\<in>?\<pi>" "m\<in>M" for \<rho>p m using that by simp
   then
   have "univalent(##M, ?\<pi>, \<lambda>\<rho>p m. M , [\<rho>p,m] @ ([P,leq,one] @ nenv) \<Turnstile> ?f_fm)"
@@ -329,11 +329,11 @@ proof -
   note inM = P_in_M leq_in_M one_in_M \<open>nenv\<in>list(M)\<close> \<open>?\<pi>\<in>M\<close>
   ultimately
   obtain Y where "Y\<in>M"
-    "\<forall>m\<in>M. m \<in> Y \<longleftrightarrow> (\<exists>\<rho>p\<in>M. \<rho>p \<in> ?\<pi> \<and> M, [\<rho>p,m] @ ([P,leq,one] @ nenv) \<Turnstile> ?f_fm)"
+    "\<forall>m\<in>M. m \<in> Y \<longleftrightarrow> (\<exists>\<rho>p\<in>M. \<rho>p \<in> ?\<pi> \<and> (M, [\<rho>p,m] @ ([P,leq,one] @ nenv) \<Turnstile> ?f_fm))"
     using replacement_ax[of ?f_fm "[P,leq,one] @ nenv"]
     unfolding strong_replacement_def by auto
   with \<open>least(_,QQ(_),f(_))\<close> \<open>f(_) \<in> M\<close> \<open>?\<pi>\<in>M\<close>
-    \<open>_ \<Longrightarrow> _ \<Longrightarrow> _ \<Longrightarrow> M,_ \<Turnstile> ?f_fm \<longleftrightarrow> least(_,_,_)\<close>
+    \<open>_ \<Longrightarrow> _ \<Longrightarrow> _ \<Longrightarrow> (M,_ \<Turnstile> ?f_fm) \<longleftrightarrow> least(_,_,_)\<close>
   have "f(\<rho>p)\<in>Y" if "\<rho>p\<in>?\<pi>" for \<rho>p
     using that transitivity[OF _ \<open>?\<pi>\<in>M\<close>]
     by (clarsimp, rule_tac x="\<langle>x,y\<rangle>" in bexI, auto)

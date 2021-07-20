@@ -186,10 +186,10 @@ lemma sats_forces_Nand':
   assumes
     "p\<in>P" "\<phi>\<in>formula" "\<psi>\<in>formula" "env \<in> list(M)" 
   shows
-    "M, [p,P,leq,one] @ env \<Turnstile> forces(Nand(\<phi>,\<psi>)) \<longleftrightarrow> 
+    "(M, [p,P,leq,one] @ env \<Turnstile> forces(Nand(\<phi>,\<psi>))) \<longleftrightarrow>
      \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and> 
-           M, [q,P,leq,one] @ env \<Turnstile> forces(\<phi>) \<and> 
-           M, [q,P,leq,one] @ env \<Turnstile> forces(\<psi>))"
+           (M, [q,P,leq,one] @ env \<Turnstile> forces(\<phi>)) \<and>
+           (M, [q,P,leq,one] @ env \<Turnstile> forces(\<psi>)))"
   using assms sats_forces_Nand[OF assms(2-4) transitivity[OF \<open>p\<in>P\<close>]]
   P_in_M leq_in_M one_in_M unfolding forces_def
   by simp
@@ -198,9 +198,9 @@ lemma sats_forces_Neg':
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula"
   shows
-    "M, [p,P,leq,one] @ env \<Turnstile> forces(Neg(\<phi>))   \<longleftrightarrow> 
+    "(M, [p,P,leq,one] @ env \<Turnstile> forces(Neg(\<phi>))) \<longleftrightarrow>
      \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and> 
-          M, [q,P,leq,one]@env \<Turnstile> forces(\<phi>))"
+          (M, [q,P,leq,one]@env \<Turnstile> forces(\<phi>)))"
   using assms sats_forces_Neg transitivity 
   P_in_M leq_in_M one_in_M  unfolding forces_def
   by (simp, blast)
@@ -209,7 +209,7 @@ lemma sats_forces_Forall':
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula"
   shows
-    "M,[p,P,leq,one] @ env \<Turnstile> forces(Forall(\<phi>)) \<longleftrightarrow> 
+    "(M,[p,P,leq,one] @ env \<Turnstile> forces(Forall(\<phi>))) \<longleftrightarrow>
      (\<forall>x\<in>M.   M, [p,P,leq,one,x] @ env \<Turnstile> forces(\<phi>))"
   using assms sats_forces_Forall transitivity 
   P_in_M leq_in_M one_in_M sats_ren_forces_forall unfolding forces_def

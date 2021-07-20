@@ -11,6 +11,7 @@ schematic_goal ZF_union_auto:
   by ((rule sep_rules | simp)+)
 
 synthesize "ZF_union" from_schematic ZF_union_auto
+notation ZF_union_fm (\<open>\<cdot>Union Ax\<cdot>\<close>)
 
 schematic_goal ZF_power_auto:
     "power_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ?zfpow)"
@@ -18,6 +19,7 @@ schematic_goal ZF_power_auto:
   by ((rule sep_rules | simp)+)
 
 synthesize "ZF_power" from_schematic ZF_power_auto
+notation ZF_power_fm (\<open>\<cdot>Powerset Ax\<cdot>\<close>)
 
 schematic_goal ZF_pairing_auto:
     "upair_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ?zfpair)"
@@ -25,20 +27,23 @@ schematic_goal ZF_pairing_auto:
   by ((rule sep_rules | simp)+)
 
 synthesize "ZF_pairing" from_schematic ZF_pairing_auto
+notation ZF_pairing_fm (\<open>\<cdot>Pairing\<cdot>\<close>)
 
 schematic_goal ZF_foundation_auto:
-    "foundation_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ?zfpow)"
+    "foundation_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> ?zffound)"
   unfolding foundation_ax_def 
   by ((rule sep_rules | simp)+)
 
 synthesize "ZF_foundation" from_schematic ZF_foundation_auto
+notation ZF_foundation_fm (\<open>\<cdot>Foundation\<cdot>\<close>)
 
 schematic_goal ZF_extensionality_auto:
-    "extensionality(##A) \<longleftrightarrow> (A, [] \<Turnstile> ?zfpow)"
+    "extensionality(##A) \<longleftrightarrow> (A, [] \<Turnstile> ?zfext)"
   unfolding extensionality_def 
   by ((rule sep_rules | simp)+)
 
 synthesize "ZF_extensionality" from_schematic ZF_extensionality_auto
+notation ZF_extensionality_fm (\<open>\<cdot>Extensionality\<cdot>\<close>)
 
 schematic_goal ZF_infinity_auto:
     "infinity_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> (?\<phi>(i,j,h)))"
@@ -46,6 +51,7 @@ schematic_goal ZF_infinity_auto:
   by ((rule sep_rules | simp)+)
 
 synthesize "ZF_infinity" from_schematic ZF_infinity_auto
+notation ZF_infinity_fm (\<open>\<cdot>Infinity\<cdot>\<close>)
 
 schematic_goal ZF_choice_auto:
     "choice_ax(##A) \<longleftrightarrow> (A, [] \<Turnstile> (?\<phi>(i,j,h)))"
@@ -53,8 +59,7 @@ schematic_goal ZF_choice_auto:
   by ((rule sep_rules | simp)+)
 
 synthesize "ZF_choice" from_schematic ZF_choice_auto
-
-notation ZF_choice_fm (\<open>AC\<close>)
+notation ZF_choice_fm (\<open>\<cdot>AC\<cdot>\<close>)
 
 lemmas ZFC_fm_defs = ZF_extensionality_fm_def ZF_foundation_fm_def ZF_pairing_fm_def
               ZF_union_fm_def ZF_infinity_fm_def ZF_power_fm_def ZF_choice_fm_def
@@ -64,12 +69,12 @@ lemmas ZFC_fm_sats = ZF_extensionality_auto ZF_foundation_auto ZF_pairing_auto
 
 definition
   ZF_fin :: "i" where
-  "ZF_fin \<equiv> { ZF_extensionality_fm, ZF_foundation_fm, ZF_pairing_fm,
-              ZF_union_fm, ZF_infinity_fm, ZF_power_fm }"
+  "ZF_fin \<equiv> {\<cdot>Extensionality\<cdot>, \<cdot>Foundation\<cdot>, \<cdot>Pairing\<cdot>,
+              \<cdot>Union Ax\<cdot>, \<cdot>Infinity\<cdot>, \<cdot>Powerset Ax\<cdot>}"
 
 definition
   ZFC_fin :: "i" where
-  "ZFC_fin \<equiv> ZF_fin \<union> {ZF_choice_fm}"
+  "ZFC_fin \<equiv> ZF_fin \<union> {\<cdot>AC\<cdot>}"
 
 lemma ZFC_fin_type : "ZFC_fin \<subseteq> formula"
   unfolding ZFC_fin_def ZF_fin_def ZFC_fm_defs by (auto)
@@ -150,7 +155,7 @@ lemma sats_nForall:
     "\<phi> \<in> formula"
   shows
     "n\<in>nat \<Longrightarrow> ms \<in> list(M) \<Longrightarrow>
-       M, ms \<Turnstile> (Forall^n(\<phi>)) \<longleftrightarrow>
+       (M, ms \<Turnstile> (Forall^n(\<phi>))) \<longleftrightarrow>
        (\<forall>rest \<in> list(M). length(rest) = n \<longrightarrow> M, rest @ ms \<Turnstile> \<phi>)"
 proof (induct n arbitrary:ms set:nat)
   case 0
@@ -174,9 +179,7 @@ qed
 
 definition
   sep_body_fm :: "i \<Rightarrow> i" where
-  "sep_body_fm(p) \<equiv> Forall(Exists(Forall(
-                           Iff(Member(0,1),And(Member(0,2),
-                                    incr_bv1^2(p))))))"
+  "sep_body_fm(p) \<equiv> (\<cdot>\<forall>(\<cdot>\<exists>(\<cdot>\<forall>\<cdot>\<cdot>0 \<in> 1\<cdot> \<leftrightarrow> \<cdot>\<cdot>0 \<in> 2\<cdot> \<and> incr_bv1^2 (p) \<cdot>\<cdot>\<cdot>)\<cdot>)\<cdot>)"
 
 lemma sep_body_fm_type [TC]: "p \<in> formula \<Longrightarrow> sep_body_fm(p) \<in> formula"
   by (simp add: sep_body_fm_def)
@@ -185,13 +188,13 @@ lemma sats_sep_body_fm:
   assumes
     "\<phi> \<in> formula" "ms\<in>list(M)" "rest\<in>list(M)"
   shows
-    "M, rest @ ms \<Turnstile> sep_body_fm(\<phi>) \<longleftrightarrow> 
+    "(M, rest @ ms \<Turnstile> sep_body_fm(\<phi>)) \<longleftrightarrow>
      separation(##M,\<lambda>x. M, [x] @ rest @ ms \<Turnstile> \<phi>)"
   using assms formula_add_params1[of _ 2 _ _ "[_,_]" ]
   unfolding sep_body_fm_def separation_def by simp
 
 definition
-  ZF_separation_fm :: "i \<Rightarrow> i" where
+  ZF_separation_fm :: "i \<Rightarrow> i" (\<open>\<cdot>Separation'(_')\<cdot>\<close>) where
   "ZF_separation_fm(p) \<equiv> Forall^(pred(arity(p)))(sep_body_fm(p))"
 
 lemma ZF_separation_fm_type [TC]: "p \<in> formula \<Longrightarrow> ZF_separation_fm(p) \<in> formula"
@@ -201,7 +204,7 @@ lemma sats_ZF_separation_fm_iff:
   assumes
     "\<phi>\<in>formula"
   shows
-  "(M, [] \<Turnstile> (ZF_separation_fm(\<phi>)))
+  "(M, [] \<Turnstile> \<cdot>Separation(\<phi>)\<cdot>)
    \<longleftrightarrow>
    (\<forall>env\<in>list(M). arity(\<phi>) \<le> 1 #+ length(env) \<longrightarrow> 
       separation(##M,\<lambda>x. M, [x] @ env \<Turnstile> \<phi>))"
@@ -294,7 +297,7 @@ lemma sats_univalent_fm :
     and 
     asms: "nth(i,env) = B" "i \<in> nat" "env \<in> list(A)"
   shows
-    "A,env \<Turnstile> univalent_fm(Q1_fm,Q2_fm,i) \<longleftrightarrow> univalent(##A,B,Q)"
+    "(A,env \<Turnstile> univalent_fm(Q1_fm,Q2_fm,i)) \<longleftrightarrow> univalent(##A,B,Q)"
   unfolding univalent_fm_def using asms sats_univalent_fm_auto[OF Q_iff_sats] by simp
 
 definition
@@ -308,7 +311,7 @@ lemma swap_vars_type[TC] :
 
 lemma sats_swap_vars :
   "[x,y] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow> 
-    M, [x,y] @ env \<Turnstile> swap_vars(\<phi>)\<longleftrightarrow> M,[y,x] @ env \<Turnstile> \<phi>"
+    (M, [x,y] @ env \<Turnstile> swap_vars(\<phi>)) \<longleftrightarrow> M,[y,x] @ env \<Turnstile> \<phi>"
   unfolding swap_vars_def
   using sats_incr_bv_iff [of _ _ M _ "[y,x]"] by simp
 
@@ -357,7 +360,7 @@ lemma sats_rep_body_fm:
   assumes
     "\<phi> \<in> formula" "ms\<in>list(M)" "rest\<in>list(M)"
   shows
-    "M, rest @ ms \<Turnstile> rep_body_fm(\<phi>) \<longleftrightarrow> 
+    "(M, rest @ ms \<Turnstile> rep_body_fm(\<phi>)) \<longleftrightarrow>
      strong_replacement(##M,\<lambda>x y. M, [x,y] @ rest @ ms \<Turnstile> \<phi>)"
   using assms ZF_replacement_simps 
   unfolding rep_body_fm_def strong_replacement_def univalent_def
@@ -365,7 +368,7 @@ lemma sats_rep_body_fm:
   by simp
 
 definition
-  ZF_replacement_fm :: "i \<Rightarrow> i" where
+  ZF_replacement_fm :: "i \<Rightarrow> i" (\<open>\<cdot>Replacement'(_')\<cdot>\<close>) where
   "ZF_replacement_fm(p) \<equiv> Forall^(pred(pred(arity(p))))(rep_body_fm(p))"
 
 lemma ZF_replacement_fm_type [TC]: "p \<in> formula \<Longrightarrow> ZF_replacement_fm(p) \<in> formula"
@@ -375,7 +378,7 @@ lemma sats_ZF_replacement_fm_iff:
   assumes
     "\<phi>\<in>formula"
   shows
-  "(M, [] \<Turnstile> (ZF_replacement_fm(\<phi>)))
+  "(M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>)
    \<longleftrightarrow>
    (\<forall>env\<in>list(M). arity(\<phi>) \<le> 2 #+ length(env) \<longrightarrow> 
       strong_replacement(##M,\<lambda>x y. M,[x,y] @ env \<Turnstile> \<phi>))"
@@ -438,7 +441,7 @@ qed
 
 definition
   ZF_inf :: "i" where
-  "ZF_inf \<equiv> {ZF_separation_fm(p) . p \<in> formula } \<union> {ZF_replacement_fm(p) . p \<in> formula }"
+  "ZF_inf \<equiv> {\<cdot>Separation(p)\<cdot> . p \<in> formula } \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> formula }"
               
 lemma Un_subset_formula: "A\<subseteq>formula \<and> B\<subseteq>formula \<Longrightarrow> A\<union>B \<subseteq> formula"
   by auto
@@ -456,7 +459,7 @@ definition
 
 definition 
   ZF_minus_P :: "i" where
-  "ZF_minus_P \<equiv> ZF - { ZF_power_fm }"
+  "ZF_minus_P \<equiv> ZF - { \<cdot>Powerset Ax\<cdot> }"
 
 lemma ZFC_subset_formula: "ZFC \<subseteq> formula"
   by (simp add:ZFC_def Un_subset_formula ZF_inf_subset_formula ZFC_fin_type)
@@ -475,7 +478,7 @@ lemma satTD [dest] :"A \<Turnstile> \<Phi> \<Longrightarrow>  \<phi>\<in>\<Phi> 
   unfolding satT_def by simp
 
 lemma sats_ZFC_iff_sats_ZF_AC: 
-  "(N \<Turnstile> ZFC) \<longleftrightarrow> (N \<Turnstile> ZF) \<and> (N, [] \<Turnstile> AC)"
+  "(N \<Turnstile> ZFC) \<longleftrightarrow> (N \<Turnstile> ZF) \<and> (N, [] \<Turnstile> \<cdot>AC\<cdot>)"
     unfolding ZFC_def ZFC_fin_def ZF_def by auto
 
 lemma M_ZF_iff_M_satT: "M_ZF(M) \<longleftrightarrow> (M \<Turnstile> ZF)"

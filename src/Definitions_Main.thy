@@ -298,8 +298,8 @@ text\<open>@{thm [display] mem_iff_sats equal_iff_sats sats_Nand_iff sats_Forall
 (*
   nth(i, env) = x \<Longrightarrow> nth(j, env) = y \<Longrightarrow> env \<in> list(A) \<Longrightarrow> x \<in> y \<longleftrightarrow> A, env \<Turnstile> \<cdot>i \<in> j\<cdot>
   nth(i, env) = x \<Longrightarrow> nth(j, env) = y \<Longrightarrow> env \<in> list(A) \<Longrightarrow> x = y \<longleftrightarrow> A, env \<Turnstile> \<cdot>i = j\<cdot>
-  env \<in> list(A) \<Longrightarrow> A, env \<Turnstile> \<cdot>\<not>(p \<and> q)\<cdot> \<longleftrightarrow> \<not> (A, env \<Turnstile> p \<and> A, env \<Turnstile> q)
-  env \<in> list(A) \<Longrightarrow> A, env \<Turnstile> (\<forall>p) \<longleftrightarrow> (\<forall>x\<in>A. A, Cons(x, env) \<Turnstile> p)*)
+  env \<in> list(A) \<Longrightarrow> (A, env \<Turnstile> \<cdot>\<not>(p \<and> q)\<cdot>) \<longleftrightarrow> \<not> ((A, env \<Turnstile> p) \<and> (A, env \<Turnstile> q))
+  env \<in> list(A) \<Longrightarrow> (A, env \<Turnstile> (\<cdot>\<forall>p\<cdot>)) \<longleftrightarrow> (\<forall>x\<in>A. A, Cons(x, env) \<Turnstile> p)*)
 
 subsection\<open>Forcing \label{sec:def-main-forcing}\<close>
 
@@ -326,38 +326,35 @@ text\<open>@{thm [display] ZF_union_iff_sats ZF_power_iff_sats
   ZF_infinity_iff_sats sats_ZF_separation_fm_iff
   sats_ZF_replacement_fm_iff ZF_choice_iff_sats}\<close>
 (*
-  Union_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> ZF_union_fm
-
-  power_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> ZF_power_fm
-
-  upair_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> ZF_pairing_fm
-
-  foundation_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> ZF_foundation_fm
-
-  extensionality(##A) \<longleftrightarrow> A, [] \<Turnstile> ZF_extensionality_fm
-
-  infinity_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> ZF_infinity_fm
+  Union_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> \<cdot>Union Ax\<cdot>
+  power_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> \<cdot>Powerset Ax\<cdot>
+  upair_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> \<cdot>Pairing\<cdot>
+  foundation_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> \<cdot>Foundation\<cdot>
+  extensionality(##A) \<longleftrightarrow> A, [] \<Turnstile> \<cdot>Extensionality\<cdot>
+  infinity_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> \<cdot>Infinity\<cdot>
 
   \<phi> \<in> formula \<Longrightarrow>
-    M, [] \<Turnstile> ZF_separation_fm(\<phi>) \<longleftrightarrow>
-    (\<forall>env\<in>list(M). arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env) \<longrightarrow> separation(##M, \<lambda>x. M, [x] @ env \<Turnstile> \<phi>))
+  (M, [] \<Turnstile> \<cdot>Separation(\<phi>)\<cdot>) \<longleftrightarrow>
+  (\<forall>env\<in>list(M).
+      arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env) \<longrightarrow> separation(##M, \<lambda>x. M, [x] @ env \<Turnstile> \<phi>))
 
   \<phi> \<in> formula \<Longrightarrow>
-    M, [] \<Turnstile> ZF_replacement_fm(\<phi>) \<longleftrightarrow>
-    (\<forall>env\<in>list(M). arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env) \<longrightarrow> strong_replacement(##M, \<lambda>x y. M, [x, y] @ env \<Turnstile> \<phi>))
+  (M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>) \<longleftrightarrow>
+  (\<forall>env\<in>list(M).
+      arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env) \<longrightarrow>
+      strong_replacement(##M, \<lambda>x y. M, [x, y] @ env \<Turnstile> \<phi>))
 
-  choice_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> AC
+  choice_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> \<cdot>AC\<cdot>
 *)
 
 thm ZF_fin_def ZF_inf_def ZF_def ZFC_fin_def ZFC_def
 text\<open>@{thm [display] ZF_fin_def ZF_inf_def ZF_def ZFC_fin_def
   ZFC_def}\<close>
 (*
-  ZF_fin \<equiv> {ZF_extensionality_fm, ZF_foundation_fm, ZF_pairing_fm,
-             ZF_union_fm, ZF_infinity_fm, ZF_power_fm}
-  ZF_inf \<equiv> {ZF_separation_fm(p) . p \<in> formula} \<union> {ZF_replacement_fm(p) . p \<in> formula}
+  ZF_fin \<equiv> {\<cdot>Extensionality\<cdot>, \<cdot>Foundation\<cdot>, \<cdot>Pairing\<cdot>, \<cdot>Union Ax\<cdot>, \<cdot>Infinity\<cdot>, \<cdot>Powerset Ax\<cdot>}
+  ZF_inf \<equiv> {\<cdot>Separation(p)\<cdot> . p \<in> formula} \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> formula}
   ZF \<equiv> ZF_inf \<union> ZF_fin
-  ZFC_fin \<equiv> ZF_fin \<union> {AC}
+  ZFC_fin \<equiv> ZF_fin \<union> {\<cdot>AC\<cdot>}
   ZFC \<equiv> ZF_inf \<union> ZFC_fin
 *)
 
@@ -373,10 +370,19 @@ text\<open>@{thm [display] extensions_of_ctms}\<close>
   M \<approx> \<omega> \<Longrightarrow>
   Transset(M) \<Longrightarrow>
   M \<Turnstile> ZF \<Longrightarrow>
+  \<exists>N. M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZF \<and> M \<noteq> N \<and>
+    (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N) \<and> ((M, [] \<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N \<Turnstile> ZFC)
+*)
+
+thm ctm_of_not_CH
+text\<open>@{thm [display] extensions_of_ctms}\<close>
+(*
+  M \<approx> \<omega> \<Longrightarrow>
+  Transset(M) \<Longrightarrow>
+  M \<Turnstile> ZFC \<Longrightarrow>
   \<exists>N. M \<subseteq> N \<and>
-      N \<approx> \<omega> \<and>
-      Transset(N) \<and> N \<Turnstile> ZF \<and> M \<noteq> N \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
-        \<and> (M, [] \<Turnstile> AC \<longrightarrow> N \<Turnstile> ZFC)
+    N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZFC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<and>
+    (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
 *)
 
 end

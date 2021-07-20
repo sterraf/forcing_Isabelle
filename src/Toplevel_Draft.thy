@@ -563,14 +563,14 @@ end (* M_master *)
 synthesize "is_ContHyp" from_definition assuming "nonempty"
 arity_theorem for "is_ContHyp_fm"
 
-notation is_ContHyp_fm (\<open>CH\<close>)
+notation is_ContHyp_fm (\<open>\<cdot>CH\<cdot>\<close>)
 
 theorem ctm_of_not_CH:
   assumes
     "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZFC"
   shows
     "\<exists>N.
-      M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZFC \<union> {\<cdot>\<not>CH\<cdot>} \<and>
+      M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZFC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<and>
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
 proof -
   from \<open>M \<Turnstile> ZFC\<close>
@@ -603,11 +603,11 @@ proof -
   have "\<not> (\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>)"
     using not_CH .
   then
-  have "M[G], [] \<Turnstile> \<cdot>\<not>CH\<cdot>"
+  have "M[G], [] \<Turnstile> \<cdot>\<not>\<cdot>CH\<cdot>\<cdot>"
     using ext.is_ContHyp_iff
     by (simp add:ContHyp_rel_def)
   then
-  have "M[G] \<Turnstile> ZFC \<union> {\<cdot>\<not>CH\<cdot>}"
+  have "M[G] \<Turnstile> ZFC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>}"
     using M_ZFC_iff_M_satT[of "M[G]"] ext.M_ZFC_axioms by auto
   moreover
   have "Transset(M[G])" using Transset_MG .

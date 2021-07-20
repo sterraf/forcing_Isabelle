@@ -70,7 +70,7 @@ proof -
     note inM = \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>p\<in>M\<close> \<open>l\<in>M\<close> \<open>o\<in>M\<close> \<open>\<chi>\<in>M\<close>
       \<open>sp\<in>M\<close> \<open>fst(sp)\<in>M\<close> \<open>snd(sp)\<in>M\<close>
     with 1 \<open>sp \<in> M\<close> \<open>?\<phi>' \<in> formula\<close>
-    have "M, [sp,p,l,o,\<chi>]@[p] \<Turnstile> ?\<psi> \<longleftrightarrow> M,[sp,p,l,o,\<chi>] \<Turnstile> ?\<psi>" (is "M,?env0@ _\<Turnstile>_ \<longleftrightarrow> _")
+    have "(M, [sp,p,l,o,\<chi>]@[p] \<Turnstile> ?\<psi>) \<longleftrightarrow> M,[sp,p,l,o,\<chi>] \<Turnstile> ?\<psi>" (is "(M,?env0@ _\<Turnstile>_) \<longleftrightarrow> _")
       using arity_sats_iff[of ?\<psi> "[p]" M ?env0] by auto
     also from inM \<open>sp \<in> A\<times>B\<close>
     have "... \<longleftrightarrow> sats(M,?\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>])"

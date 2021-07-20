@@ -60,7 +60,7 @@ theorem extensions_of_ctms:
     "\<exists>N.
       M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZF \<and> M\<noteq>N \<and>
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)) \<and>
-      (M, []\<Turnstile> AC \<longrightarrow> N \<Turnstile> ZFC)"
+      ((M, []\<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N \<Turnstile> ZFC)"
 proof -
   from \<open>M \<Turnstile> ZF\<close>
   interpret M_ZF M
@@ -92,9 +92,9 @@ proof -
   have "?N \<Turnstile> ZF"
     using M_ZF_iff_M_satT[of ?N] MG.M_ZF_axioms by simp
   moreover
-  have "M, []\<Turnstile> AC \<Longrightarrow> ?N \<Turnstile> ZFC"
+  have "M, []\<Turnstile> \<cdot>AC\<cdot> \<Longrightarrow> ?N \<Turnstile> ZFC"
   proof -
-    assume "M, [] \<Turnstile> AC"
+    assume "M, [] \<Turnstile> \<cdot>AC\<cdot>"
     then
     have "choice_ax(##M)"
       unfolding ZF_choice_fm_def using ZF_choice_auto by simp
