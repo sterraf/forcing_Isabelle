@@ -2,6 +2,7 @@ theory Cardinal_Preservation
   imports
     Cohen_Posets_Relative
     Forcing_Main
+    Interface_SepInstances
 begin
 
 context forcing_notion
@@ -46,12 +47,24 @@ lemma antichain_abs'' [absolut]: "A\<in>M \<Longrightarrow> antichain_r'(A) \<lo
 
 end (* M_trivial_notion *)
 
+lemmas (in M_ZF_trans) separation_instances =
+  separation_well_ord
+  separation_obase_equals separation_is_obase
+  separation_PiP_rel separation_surjP_rel
+  separation_id_body separation_rvimage_body
+  separation_radd_body separation_rmult_body
+  separation_ord_iso_body
+
 sublocale M_ZF_trans \<subseteq> M_aleph "##M"
   apply (unfold_locales)
+(*  using separation_instances
+  apply simp_all
+*)
   sorry
 
 sublocale M_ZF_trans \<subseteq> M_FiniteFun "##M"
   apply (unfold_locales)
+  apply (simp_all add: separation_supset_body separation_cons_like_rel)
   sorry
 
 sublocale M_ZFC_trans \<subseteq> M_cardinal_AC "##M"
