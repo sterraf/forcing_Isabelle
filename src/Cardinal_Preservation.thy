@@ -54,13 +54,9 @@ sublocale M_ZF_trans \<subseteq> M_FiniteFun "##M"
   apply (unfold_locales)
   sorry
 
-sublocale M_ZF_trans \<subseteq> M_Pi "##M"
-  apply (unfold_locales, simp_all add:PiP_rel_def)
-  sorry
-
 sublocale M_ZFC_trans \<subseteq> M_cardinal_AC "##M"
   using choice_ax
-  apply (unfold_locales, simp_all)
+  apply (unfold_locales)
   sorry
 
 lemma (in forcing_notion) Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
