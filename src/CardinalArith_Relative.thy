@@ -30,10 +30,10 @@ definition jump_cardinal_body :: "[i\<Rightarrow>o,i] \<Rightarrow> i" where
 
 locale M_cardinal_arith = M_cardinals +
   assumes
-    ord_iso_separation: "M(s) \<Longrightarrow>
+    ord_iso_separation: "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow>
       separation(M, \<lambda>f. \<forall>x\<in>A. \<forall>y\<in>A. \<langle>x, y\<rangle> \<in> r \<longleftrightarrow> \<langle>f ` x, f ` y\<rangle> \<in> s)"
     and
-    csquare_lam_replacement:"M(K) \<Longrightarrow>
+    csquare_lam_replacement:"
       strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>x \<union> y, x, y\<rangle>)(x)\<rangle>)"
     and
     case_replacement1:"strong_replacement(M, \<lambda>z y. y = \<langle>z, case(Inr, Inl, z)\<rangle>)"
@@ -55,7 +55,7 @@ locale M_cardinal_arith = M_cardinals +
     Inl_replacement2:"M(A) \<Longrightarrow> strong_replacement(M,
        \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. if x = A then Inl(y) else Inr(\<langle>x, y\<rangle>))(x)\<rangle>)"
     and
-    if_then_range_replacement:"M(f) \<Longrightarrow> strong_replacement(M,
+    if_then_range_replacement:"M(u) \<Longrightarrow> M(f) \<Longrightarrow> strong_replacement(M,
       \<lambda>z y. y = \<langle>z, if z = u then f ` 0 else
         if z \<in> range(f) then f ` succ(converse(f) ` z) else z\<rangle>)"
     and
