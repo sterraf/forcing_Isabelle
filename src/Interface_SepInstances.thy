@@ -381,4 +381,84 @@ lemma (in M_ZF_trans) separation_supset_body:
   unfolding supset_body_def
   by simp
 
+(* TopLevel *)
+  (* 1. \<And>Q x. Q \<in> M \<Longrightarrow> separation(##M, \<lambda>a. \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)  *)
+definition toplevel1_body :: "[i,i,i] \<Rightarrow> o" where
+  "toplevel1_body(Q,x) \<equiv> \<lambda>a. \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q"
+
+relativize functional "toplevel1_body" "toplevel1_body_rel"
+relationalize "toplevel1_body_rel" "is_toplevel1_body"
+
+synthesize "is_toplevel1_body" from_definition assuming "nonempty"
+arity_theorem for "is_toplevel1_body_fm"
+
+lemma (in M_ZF_trans) separation_is_toplevel1_body:
+ "(##M)(A) \<Longrightarrow> (##M)(B) \<Longrightarrow> separation(##M, is_toplevel1_body(##M,A,B))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,A,B] \<Turnstile> is_toplevel1_body_fm(1,2,0)",THEN iffD1])
+   apply(rule_tac is_toplevel1_body_iff_sats[where env="[_,A,B]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[A,B]",simplified])
+    apply(simp_all add:arity_is_toplevel1_body_fm nat_simp_union is_toplevel1_body_fm_type)
+  done 
+
+lemma (in M_ZF_trans) toplevel1_body_abs:
+  assumes "(##M)(A)" "(##M)(B)"  "(##M)(x)"
+  shows "is_toplevel1_body(##M,A,B,x) \<longleftrightarrow> toplevel1_body(A,B,x)"
+  using assms pair_in_M_iff apply_closed transM
+  unfolding toplevel1_body_def is_toplevel1_body_def 
+  by (auto)
+
+lemma (in M_ZF_trans) separation_toplevel1_body:
+ "(##M)(Q) \<Longrightarrow> (##M)(x) \<Longrightarrow> separation(##M, \<lambda>a. \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
+  using separation_is_toplevel1_body toplevel1_body_abs   
+    separation_cong[where P="is_toplevel1_body(##M,Q,x)" and M="##M",THEN iffD1]
+  unfolding toplevel1_body_def
+  by simp
+
+ (* 2. \<And>\<gamma>. \<gamma> \<in> M \<Longrightarrow> separation(##M, \<lambda>Z. |Z|\<^bsup>M\<^esup> < \<gamma>)
+  FIXME: we should "import" cardinal_rel
+ *)
+
+ (* 3. separation(##M, \<lambda>x. \<exists>a b. x = \<langle>a, b\<rangle> \<and> a \<noteq> b) *)
+definition distinct_body :: "i \<Rightarrow> o" where
+  "distinct_body \<equiv>  \<lambda>x. \<exists>a b. x = \<langle>a, b\<rangle> \<and> a \<noteq> b"
+
+relativize functional "distinct_body" "distinct_body_rel"
+relationalize "distinct_body_rel" "is_distinct_body"
+
+synthesize "is_distinct_body" from_definition
+arity_theorem for "is_distinct_body_fm"
+
+lemma (in M_ZF_trans) separation_is_distinct_body:
+ "separation(##M, is_distinct_body(##M))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x] \<Turnstile> is_distinct_body_fm(0)",THEN iffD1])
+   apply(rule_tac is_distinct_body_iff_sats[where env="[_]",symmetric])
+  apply(simp_all)
+  apply(rule_tac separation_ax[where env="[]",simplified])
+    apply(simp_all add:arity_is_distinct_body_fm nat_simp_union is_distinct_body_fm_type)
+  done 
+
+lemma (in M_ZF_trans) distinct_body_abs:
+  assumes "(##M)(x)"
+  shows "is_distinct_body(##M,x) \<longleftrightarrow> distinct_body(x)"
+  using assms pair_in_M_iff apply_closed
+  unfolding distinct_body_def is_distinct_body_def 
+  by (auto)
+
+lemma (in M_ZF_trans) separation_distinct_body:
+ "separation(##M, \<lambda>x . \<exists>a b. x = \<langle>a, b\<rangle> \<and> a \<noteq> b)"
+  using separation_is_distinct_body distinct_body_abs   
+    separation_cong[where P="is_distinct_body(##M)" and M="##M",THEN iffD1]
+  unfolding distinct_body_def
+  by simp
+
+ (* 4. \<And>c. c \<in> M \<Longrightarrow> separation(##M, \<lambda>x. \<exists>a b. x = \<langle>a, b\<rangle> \<and> a \<inter> b = c) *)
+ (* 5. \<And>A. A \<in> M \<Longrightarrow> separation(##M, \<lambda>x. domain(x) \<in> A) *)
+ (* 6. \<And>p. p \<in> M \<Longrightarrow> separation(##M, \<lambda>x. domain(x) = p) *)
+ (* 7. \<And>r p. r \<in> M \<Longrightarrow> p \<in> M \<Longrightarrow> separation(##M, \<lambda>x. restrict(x, r) = p) *)
+ (* 8. \<And>x. x \<in> M \<Longrightarrow> separation(##M, \<lambda>z. x \<in> domain(z)) *)
+ (* 9. \<And>x w. x \<in> M \<Longrightarrow> w \<in> M \<Longrightarrow> separation(##M, \<lambda>z. \<exists>n\<in>\<omega>. \<langle>\<langle>w, n\<rangle>, 1\<rangle> \<in> z \<and> \<langle>\<langle>x, n\<rangle>, 0\<rangle> \<in> z)  *)
+
 end
