@@ -457,37 +457,37 @@ lemma (in M_ZF_trans) separation_toplevel2_body:
   by simp
 
  (* 3. separation(##M, \<lambda>x. \<exists>a b. x = \<langle>a, b\<rangle> \<and> a \<noteq> b) *)
-definition distinct_body :: "i \<Rightarrow> o" where
-  "distinct_body \<equiv>  \<lambda>x. \<exists>a b. x = \<langle>a, b\<rangle> \<and> a \<noteq> b"
+definition toplevel3_body :: "i \<Rightarrow> o" where
+  "toplevel3_body \<equiv>  \<lambda>x. \<exists>a b. x = \<langle>a, b\<rangle> \<and> a \<noteq> b"
 
-relativize functional "distinct_body" "distinct_body_rel"
-relationalize "distinct_body_rel" "is_distinct_body"
+relativize functional "toplevel3_body" "toplevel3_body_rel"
+relationalize "toplevel3_body_rel" "is_toplevel3_body"
 
-synthesize "is_distinct_body" from_definition
-arity_theorem for "is_distinct_body_fm"
+synthesize "is_toplevel3_body" from_definition
+arity_theorem for "is_toplevel3_body_fm"
 
-lemma (in M_ZF_trans) separation_is_distinct_body:
- "separation(##M, is_distinct_body(##M))"
+lemma (in M_ZF_trans) separation_is_toplevel3_body:
+ "separation(##M, is_toplevel3_body(##M))"
   apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x] \<Turnstile> is_distinct_body_fm(0)",THEN iffD1])
-   apply(rule_tac is_distinct_body_iff_sats[where env="[_]",symmetric])
+        where P="\<lambda> x . M,[x] \<Turnstile> is_toplevel3_body_fm(0)",THEN iffD1])
+   apply(rule_tac is_toplevel3_body_iff_sats[where env="[_]",symmetric])
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[]",simplified])
-    apply(simp_all add:arity_is_distinct_body_fm nat_simp_union is_distinct_body_fm_type)
+    apply(simp_all add:arity_is_toplevel3_body_fm nat_simp_union is_toplevel3_body_fm_type)
   done 
 
-lemma (in M_ZF_trans) distinct_body_abs:
+lemma (in M_ZF_trans) toplevel3_body_abs:
   assumes "(##M)(x)"
-  shows "is_distinct_body(##M,x) \<longleftrightarrow> distinct_body(x)"
+  shows "is_toplevel3_body(##M,x) \<longleftrightarrow> toplevel3_body(x)"
   using assms pair_in_M_iff apply_closed
-  unfolding distinct_body_def is_distinct_body_def 
+  unfolding toplevel3_body_def is_toplevel3_body_def 
   by (auto)
 
-lemma (in M_ZF_trans) separation_distinct_body:
+lemma (in M_ZF_trans) separation_toplevel3_body:
  "separation(##M, \<lambda>x . \<exists>a b. x = \<langle>a, b\<rangle> \<and> a \<noteq> b)"
-  using separation_is_distinct_body distinct_body_abs   
-    separation_cong[where P="is_distinct_body(##M)" and M="##M",THEN iffD1]
-  unfolding distinct_body_def
+  using separation_is_toplevel3_body toplevel3_body_abs   
+    separation_cong[where P="is_toplevel3_body(##M)" and M="##M",THEN iffD1]
+  unfolding toplevel3_body_def
   by simp
 
  (* 4. \<And>c. c \<in> M \<Longrightarrow> separation(##M, \<lambda>x. \<exists>a b. x = \<langle>a, b\<rangle> \<and> a \<inter> b = c) *)
