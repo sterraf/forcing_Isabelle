@@ -525,18 +525,16 @@ locale M_cardinal_library = M_library +
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q} \<and> z = {\<langle>x, y\<rangle>})"
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>Y. {a \<in> G . \<forall>s\<in>Y. \<langle>s, a\<rangle> \<in> Q}))"
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})"
-    "M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
-    "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})\<rangle>)"
-and cardinal_lib_assms4:
-  "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, f -`` {x}\<rangle>)"
-and cardinal_lib_assms5 :
-  "M(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
-and cardinal_lib_assms6:
- "M(f) \<Longrightarrow> M(G) \<Longrightarrow>
-    strong_replacement(M, \<lambda>x y. y = transrec(x, \<lambda>a g. f ` (g `` a)))"
- "M(f) \<Longrightarrow> M(G) \<Longrightarrow>
-    strong_replacement(M, \<lambda>x y. y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
- "separation(M, \<lambda> x . \<exists>a. \<exists>b . x=\<langle>a,b\<rangle> \<and> a\<noteq>b)"
+    "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
+    "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})\<rangle>)"
+    and cardinal_lib_assms4:
+    "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, f -`` {x}\<rangle>)"
+    and cardinal_lib_assms5 :
+    "M(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
+    and cardinal_lib_assms6:
+    "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = transrec(x, \<lambda>a g. f ` (g `` a)))"
+    "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
+    "separation(M, \<lambda> x . \<exists>a. \<exists>b . x=\<langle>a,b\<rangle> \<and> a\<noteq>b)"
 
 begin
 
