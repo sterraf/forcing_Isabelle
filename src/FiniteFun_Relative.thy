@@ -85,10 +85,10 @@ locale M_FiniteFun =  M_seqspace +
     cons_like_separation : "separation(M,\<lambda>f. cons_like_rel(M,f))"
     and
     to_finiteFun_body_replacement:
-    "strong_replacement(M, \<lambda>x y. x \<in> domain(f) \<and> y = f ` x)"
+    "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. x \<in> domain(f) \<and> y = f ` x)"
     and
     to_finiteFun_replacement:
-    "strong_replacement(M, \<lambda>x y. x \<in> FiniteFun_Repr(A,B) \<and> y = to_FiniteFun(x))"
+    "M(A) \<Longrightarrow> M(B) \<Longrightarrow> strong_replacement(M, \<lambda>x y. x \<in> FiniteFun_Repr(A,B) \<and> y = to_FiniteFun(x))"
     and
     supset_separation: "separation(M, \<lambda> x. \<exists>a. \<exists>b. x = \<langle>a,b\<rangle> \<and> b \<subseteq> a)"
 begin
