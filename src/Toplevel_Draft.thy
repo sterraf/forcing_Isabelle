@@ -549,6 +549,7 @@ definition
   "ContHyp \<equiv> \<aleph>\<^bsub>1\<^esub> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^esup>"
 
 relativize functional "ContHyp" "ContHyp_rel"
+notation ContHyp_rel (\<open>CH\<^bsup>_\<^esup>\<close>)
 relationalize "ContHyp_rel" "is_ContHyp"
 
 context M_master

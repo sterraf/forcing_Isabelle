@@ -2,8 +2,7 @@ section\<open>From M to V\<close>
 
 theory Absolute_Versions
   imports
-    ZF.Cardinal_AC
-    Cohen_Posets_Relative
+    Toplevel_Draft
 begin
 
 subsection\<open>Locales of a class \<^term>\<open>M\<close> hold in \<^term>\<open>\<V>\<close>\<close>
@@ -63,7 +62,7 @@ proof -
     by simp
 qed
 
-interpretation V:M_cohen \<V>
+interpretation V:M_master \<V>
   using choice_ax_Universe
   by unfold_locales (auto intro:separation_absolute replacement_absolute)
 
@@ -82,6 +81,12 @@ lemma Card_rel_absolute[V_simps]:"Card\<^bsup>\<V>\<^esup>(a) \<longleftrightarr
 
 lemma csucc_rel_absolute[V_simps]:"(a\<^sup>+)\<^bsup>\<V>\<^esup> = a\<^sup>+"
   unfolding csucc_rel_def csucc_def by (simp add:V_simps)
+
+lemma function_space_rel_absolute[V_simps]:"x \<rightarrow>\<^bsup>\<V>\<^esup> y = x \<rightarrow> y"
+  using V.function_space_rel_char by (simp add:V_simps)
+
+lemma cexp_rel_absolute[V_simps]:"x\<^bsup>\<up>y,\<V>\<^esup> = x\<^bsup>\<up>y\<^esup>"
+  unfolding cexp_rel_def cexp_def by (simp add:V_simps)
 
 lemma HAleph_rel_absolute[V_simps]:"HAleph_rel(\<V>,a,b) = HAleph(a,b)"
   unfolding HAleph_rel_def HAleph_def by (auto simp add:V_simps)
@@ -123,11 +128,17 @@ txt\<open>Example of transferring results from a transitive model to \<^term>\<o
 lemma (in M_Perm) assumes "M(A)" "M(B)" "A \<approx>\<^bsup>M\<^esup> B"
   shows "A \<approx> B"
 proof -
-  interpret M_N_Perm M "\<V>"
+  interpret M_N_Perm M \<V>
     by (unfold_locales, simp only:V_simps)
   from assms
   show ?thesis using eqpoll_rel_transfer 
     by (simp only:V_simps)
 qed
+
+txt\<open>The “relationalized” $\CH$ with respect to \<^term>\<open>\<V>\<close> corresponds
+    to the real $\CH$.\<close>
+lemma is_ContHyp_iff_CH: "is_ContHyp(\<V>) \<longleftrightarrow> ContHyp"
+  using V.is_ContHyp_iff
+  by (auto simp add:ContHyp_rel_def ContHyp_def V_simps)
 
 end

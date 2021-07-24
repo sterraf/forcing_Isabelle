@@ -260,11 +260,19 @@ text\<open>@{thm [display] typed_function_def}\<close>
             (\<forall>u[M]. u \<in> r \<longrightarrow> (\<forall>x[M]. \<forall>y[M]. pair(M, x, y, u) \<longrightarrow> y \<in> B))
 *)
 
-thm surjection_def
-text\<open>@{thm [display] surjection_def}\<close>
+thm is_function_space_def[unfolded is_funspace_def]
+  function_space_rel_def surjection_def
+text\<open>@{thm [display] is_function_space_def[unfolded is_funspace_def]
+  function_space_rel_def surjection_def}\<close>
 (*
-  surjection(M, A, B, f) \<equiv> typed_function(M, A, B, f) \<and> (\<forall>y[M]. y \<in> B \<longrightarrow>
-                              (\<exists>x[M]. x \<in> A \<and> fun_apply(M, f, x, y)))
+  is_function_space(M, A, B, fs) \<equiv>
+  M(fs) \<and> (\<forall>f[M]. f \<in> fs \<longleftrightarrow> typed_function(M, A, B, f))
+
+  A \<rightarrow>\<^bsup>M\<^esup> B \<equiv> THE d. is_function_space(M, A, B, d)
+
+  surjection(M, A, B, f) \<equiv>
+  typed_function(M, A, B, f) \<and>
+  (\<forall>y[M]. y \<in> B \<longrightarrow> (\<exists>x[M]. x \<in> A \<and> is_apply(M, f, x, y)))
 *)
 
 text\<open>Internalized formulas\<close>
@@ -374,8 +382,76 @@ text\<open>@{thm [display] extensions_of_ctms}\<close>
     (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N) \<and> ((M, [] \<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N \<Turnstile> ZFC)
 *)
 
+txt\<open>In order to state the defining property of the relative
+    equipotence relation, we work under the assumptions of the
+    locale \<^term>\<open>M_cardinals\<close>. They comprise a finite set
+    of instances of Separation and Replacement to prove
+    closure properties of the transitive class \<^term>\<open>M\<close>.\<close>
+
+lemma (in M_cardinals) eqpoll_def':
+  assumes "M(A)" "M(B)" shows "A \<approx>\<^bsup>M\<^esup> B \<longleftrightarrow> (\<exists>f[M]. f \<in> bij(A,B))"
+  using assms unfolding eqpoll_rel_def by auto
+
+txt\<open>Below, $\mu$ denotes the minimum operator on the ordinals.\<close>
+lemma cardinalities_defs:
+  fixes M::"i\<Rightarrow>o"
+  shows
+    "|A|\<^bsup>M\<^esup> \<equiv> \<mu> i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> A"
+    "Card\<^bsup>M\<^esup>(\<alpha>) \<equiv> \<alpha> = |\<alpha>|\<^bsup>M\<^esup>"
+    "\<kappa>\<^bsup>\<up>\<nu>,M\<^esup> \<equiv> |\<nu> \<rightarrow>\<^bsup>M\<^esup> \<kappa>|\<^bsup>M\<^esup>"
+    "(\<kappa>\<^sup>+)\<^bsup>M\<^esup> \<equiv> \<mu> x. M(x) \<and> Card\<^bsup>M\<^esup>(x) \<and> \<kappa> < x"
+    "CH\<^bsup>M\<^esup> \<equiv> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>,M\<^esup>"
+  unfolding cardinal_rel_def cexp_rel_def
+    csucc_rel_def Card_rel_def ContHyp_rel_def .
+
+context M_aleph
+begin
+
+txt\<open>As in the previous Lemma @{thm eqpoll_def'}, we are now under
+    the assumptions of the locale \<^term>\<open>M_aleph\<close>. The axiom instances
+    included sufficient are sufficient to state and prove the defining
+    properties of the relativized \<^term>\<open>Aleph\<close> function
+    (in particular, the required ability to perform transfinite recursions).\<close>
+
+thm Aleph_rel_zero Aleph_rel_succ Aleph_rel_limit
+text\<open>@{thm [display] Aleph_rel_zero Aleph_rel_succ Aleph_rel_limit}\<close>
+(*
+  \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup> = \<omega>
+  Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>succ(\<alpha>)\<^esub>\<^bsup>M\<^esup> = (\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup>
+  Limit(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup> = (\<Union>j\<in>\<alpha>. \<aleph>\<^bsub>j\<^esub>\<^bsup>M\<^esup>)
+*)
+
+end (* M_aleph *)
+
+lemma ContHyp_rel_def':
+  fixes N::"i\<Rightarrow>o"
+  shows
+    "CH\<^bsup>N\<^esup> \<equiv> \<aleph>\<^bsub>1\<^esub>\<^bsup>N\<^esup> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>N\<^esup>,N\<^esup>"
+  unfolding ContHyp_rel_def .
+
+txt\<open>Under appropriate hypothesis (this time, from the locale \<^term>\<open>M_master\<close>),
+   \<^term>\<open>CH\<^bsup>M\<^esup>\<close> is equivalent to its fully relational version \<^term>\<open>is_ContHyp\<close>.
+    As a sanity check, we see that if the transitive class is indeed \<^term>\<open>\<V>\<close>,
+    we recover the original $\CH$.\<close>
+
+thm M_master.is_ContHyp_iff is_ContHyp_iff_CH[unfolded ContHyp_def]
+text\<open>@{thm [display] M_master.is_ContHyp_iff
+    is_ContHyp_iff_CH[unfolded ContHyp_def]}\<close>
+(*
+  M_master(M) \<Longrightarrow> is_ContHyp(M) \<longleftrightarrow> CH\<^bsup>M\<^esup>
+  is_ContHyp(\<V>) \<longleftrightarrow> \<aleph>\<^bsub>1\<^esub> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^esup>
+*)
+
+txt\<open>In turn, the fully relational version on a ctm \<^term>\<open>A\<close> is
+    equivalent to the satisfaction of the first-order formula \<^term>\<open>\<cdot>CH\<cdot>\<close>.\<close>
+thm is_ContHyp_iff_sats
+text\<open>@{thm [display] is_ContHyp_iff_sats}\<close>
+(*
+  env \<in> list(A) \<Longrightarrow> 0 \<in> A \<Longrightarrow> is_ContHyp(##A) \<longleftrightarrow> A, env \<Turnstile> \<cdot>CH\<cdot>
+*)
+
 thm ctm_of_not_CH
-text\<open>@{thm [display] extensions_of_ctms}\<close>
+text\<open>@{thm [display] ctm_of_not_CH}\<close>
 (*
   M \<approx> \<omega> \<Longrightarrow>
   Transset(M) \<Longrightarrow>
