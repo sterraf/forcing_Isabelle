@@ -12,13 +12,18 @@ definition
 
 locale M_replacement = M_basic +
   assumes
-    fst_replacement: "strong_replacement(M, \<lambda>x y. y=fst(x))"
+    fst_lam_replacement: "lam_replacement(M,fst)"
     and
-    snd_replacement: "strong_replacement(M, \<lambda>x y. y=snd(x))"
+    snd_lam_replacement: "lam_replacement(M,snd)"
     and
     middle_separation: "separation(M, \<lambda>x. snd(fst(x))=fst(snd(x)))"
     and
     middle_del_replacement: "strong_replacement(M, \<lambda>x y. y=\<langle>fst(fst(x)),snd(snd(x))\<rangle>)"
+    and
+    pullback_separation: "separation(M, \<lambda>x. fst(fst(x))=fst(snd(x)))"
+    and
+    pullback_replacement:
+    "strong_replacement(M, \<lambda>x y. y=\<langle>fst(fst(x)),\<langle>snd(fst(x)),snd(snd(x))\<rangle>\<rangle>)"
 begin
 
 lemma lam_replacement_iff_lam_closed:
@@ -85,6 +90,51 @@ proof -
       using RepFun_middle_del by simp
     then
     have "M(\<lambda>x\<in>A. g(f(x)))"
+      unfolding lam_def .
+    }
+  with assms
+  show ?thesis using lam_replacement_iff_lam_closed by simp
+qed
+
+lemma Collect_pullback: "{p \<in> (\<lambda>x\<in>A. f(x)) \<times> (\<lambda>x\<in>A. g(x)) . fst(fst(p))=fst(snd(p))}
+     = { \<langle>\<langle>x,f(x)\<rangle>,\<langle>x,g(x)\<rangle>\<rangle> . x\<in>A }"
+  by (intro equalityI; auto simp:lam_def)
+
+lemma RepFun_pullback:
+  "{ \<langle>fst(fst(p)),\<langle>snd(fst(p)),snd(snd(p))\<rangle>\<rangle> . p \<in> { \<langle>\<langle>x,f(x)\<rangle>,\<langle>x,g(x)\<rangle>\<rangle> . x\<in>A }}
+    =  { \<langle>x,\<langle>f(x),g(x)\<rangle>\<rangle> . x\<in>A }"
+  by auto
+
+lemma lam_replacement_pullback:
+  assumes "lam_replacement(M,f)" "lam_replacement(M,g)"
+          "\<forall>x. M(f(x))" "\<forall>x. M(g(x))"
+  shows "lam_replacement(M, \<lambda>x. \<langle>f(x),g(x)\<rangle>)"
+proof -
+  {
+    fix A
+    note assms
+    moreover
+    assume "M(A)"
+    moreover from calculation
+    have "M({f(x) . x\<in>A})" "M({g(x) . x\<in>A})"
+      using RepFun_closed lam_replacement_imp_strong_replacement by auto
+    moreover from calculation
+    have "M((\<lambda>x\<in>A. f(x)) \<times> (\<lambda>x\<in>A. g(x)))"
+      using lam_replacement_iff_lam_closed by simp
+    moreover from this
+    have "M({p \<in> (\<lambda>x\<in>A. f(x)) \<times> (\<lambda>x\<in>A. g(x)) . fst(fst(p))=fst(snd(p))})"
+      using pullback_separation by simp
+    then
+    have "M({ \<langle>\<langle>x,f(x)\<rangle>,\<langle>x,g(x)\<rangle>\<rangle> . x\<in>A })"
+      using Collect_pullback by simp
+    ultimately
+    have "M({ \<langle>fst(fst(p)),\<langle>snd(fst(p)),snd(snd(p))\<rangle>\<rangle> . p \<in> { \<langle>\<langle>x,f(x)\<rangle>,\<langle>x,g(x)\<rangle>\<rangle> . x\<in>A }})"
+      using pullback_replacement by (rule_tac RepFun_closed, auto dest:transM)
+    then
+    have "M({ \<langle>x,\<langle>f(x),g(x)\<rangle>\<rangle> . x\<in>A })"
+      using RepFun_pullback by simp
+    then
+    have "M(\<lambda>x\<in>A. \<langle>f(x),g(x)\<rangle>)"
       unfolding lam_def .
     }
   with assms
