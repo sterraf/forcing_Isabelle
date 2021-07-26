@@ -181,6 +181,11 @@ lemma pospend_replacement: "M(b) \<Longrightarrow> strong_replacement(M, \<lambd
     lam_replacement_pullback[of "\<lambda>x. x" "\<lambda>x. b"]
   unfolding lam_replacement_def by simp
 
+lemma prepend_replacement: "M(b) \<Longrightarrow> strong_replacement(M, \<lambda>z y. y = \<langle>z, b, z\<rangle>)"
+  using lam_replacement_identity lam_replacement_constant
+    lam_replacement_pullback[of "\<lambda>x. b" "\<lambda>x. x"]
+  unfolding lam_replacement_def by simp
+
 lemma Inl_replacement1: "strong_replacement(M, \<lambda>x y. y = \<langle>x, Inl(x)\<rangle>)"
   using lam_replacement_identity lam_replacement_constant
     lam_replacement_pullback[of "\<lambda>x. 0" "\<lambda>x. x"]
