@@ -3,7 +3,7 @@ section\<open>Main definitions of the development\<close>
 theory Replacement_Derivations
   imports
     "ZF-Constructible.Relative"
-    CardinalArith_Relative
+    Toplevel_Draft
     "../Tools/Try0"
 begin
 
@@ -172,28 +172,67 @@ lemma lam_replacement_constant: "M(b) \<Longrightarrow> lam_replacement(M,\<lamb
   unfolding lam_replacement_def strong_replacement_def
   by safe (rule_tac x="_\<times>{b}" in rexI; blast)
 
-lemma id_replacement: "strong_replacement(M, \<lambda>x y. y = \<langle>x, x, x\<rangle>)"
+lemmas tag_replacement = lam_replacement_constant[unfolded lam_replacement_def]
+
+lemma lam_replacement_id2: "lam_replacement(M, \<lambda>x. \<langle>x, x\<rangle>)"
   using lam_replacement_identity lam_replacement_pullback[of "\<lambda>x. x" "\<lambda>x. x"]
-  unfolding lam_replacement_def by simp
+  by simp
 
-lemma pospend_replacement: "M(b) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, x, b\<rangle>)"
+lemmas id_replacement = lam_replacement_id2[unfolded lam_replacement_def]
+
+lemma lam_replacement_apply:"M(S) \<Longrightarrow> lam_replacement(M, \<lambda>x.  S ` x)"
+  sorry
+
+lemma apply_replacement:"M(S) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = S ` x)"
+  using lam_replacement_apply lam_replacement_imp_strong_replacement by simp
+
+lemma lam_replacement_id_const: "M(b) \<Longrightarrow> lam_replacement(M, \<lambda>x. \<langle>x, b\<rangle>)"
   using lam_replacement_identity lam_replacement_constant
-    lam_replacement_pullback[of "\<lambda>x. x" "\<lambda>x. b"]
-  unfolding lam_replacement_def by simp
+    lam_replacement_pullback[of "\<lambda>x. x" "\<lambda>x. b"] by simp
 
-lemma prepend_replacement: "M(b) \<Longrightarrow> strong_replacement(M, \<lambda>z y. y = \<langle>z, b, z\<rangle>)"
+lemmas pospend_replacement = lam_replacement_id_const[unfolded lam_replacement_def]
+
+lemma lam_replacement_const_id: "M(b) \<Longrightarrow> lam_replacement(M, \<lambda>z. \<langle>b, z\<rangle>)"
   using lam_replacement_identity lam_replacement_constant
-    lam_replacement_pullback[of "\<lambda>x. b" "\<lambda>x. x"]
-  unfolding lam_replacement_def by simp
+    lam_replacement_pullback[of "\<lambda>x. b" "\<lambda>x. x"] by simp
 
-lemma Inl_replacement1: "strong_replacement(M, \<lambda>x y. y = \<langle>x, Inl(x)\<rangle>)"
+lemmas prepend_replacement = lam_replacement_const_id[unfolded lam_replacement_def]
+
+lemma lam_replacement_apply_const_id: "M(f) \<Longrightarrow> M(z) \<Longrightarrow>
+      lam_replacement(M, \<lambda>x. f ` \<langle>z, x\<rangle>)"
+  using lam_replacement_const_id[of z] lam_replacement_apply[of f]
+    lam_replacement_hcomp[of "\<lambda>x. \<langle>z, x\<rangle>" "\<lambda>x. f`x"] by simp
+
+lemmas apply_replacement2' = lam_replacement_apply_const_id[unfolded lam_replacement_def]
+
+\<comment> \<open>Exactly the same as the one before\<close>
+lemma apply_replacement1: "M(x) \<Longrightarrow> M(f) \<Longrightarrow>
+      strong_replacement(M, \<lambda>z y. y = \<langle>z, f ` \<langle>x,z\<rangle>\<rangle>)"
+  oops
+
+\<comment> \<open>\<^term>\<open>M(x)\<close> redundant\<close>
+lemma apply_replacement2: "M(x) \<Longrightarrow> M(f) \<Longrightarrow> M(z) \<Longrightarrow>
+      strong_replacement(M, \<lambda>x y. y = \<langle>x, f ` \<langle>z, x\<rangle>\<rangle>)"
+  oops
+
+lemma lam_replacement_Inl: "lam_replacement(M, Inl)"
   using lam_replacement_identity lam_replacement_constant
     lam_replacement_pullback[of "\<lambda>x. 0" "\<lambda>x. x"]
-  unfolding lam_replacement_def Inl_def by simp
+  unfolding Inl_def by simp
+
+lemmas Inl_replacement1 = lam_replacement_Inl[unfolded lam_replacement_def]
 
 end (* M_replacement *)
 
-find_theorems "strong_replacement(_,\<lambda>x y. y = <x,_>)" -name: Derivations
--"strong_replacement(_,\<lambda>x y. y = <x,_>) \<Longrightarrow> _" -name:"_def" -name:intro
+find_theorems "strong_replacement(_,\<lambda>x y. y = <x,_>)"
+-"strong_replacement(_,\<lambda>x y. y = <x,_>) \<Longrightarrow> _"
+-name:"_def" -name:intro -name:assumptions -name:closed -name: Derivations
+-name:id_replacement
+-name:tag_replacement
+-name:pospend_replacement
+-name:prepend_replacement
+-name:Inl_replacement1
+-name:apply_replacement1
+-name:apply_replacement2
 
 end
