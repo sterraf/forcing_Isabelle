@@ -352,10 +352,6 @@ lemma surj_imp_inj_replacement3:
   "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = f -`` {x})"
   using lam_replacement_vimage_sing lam_replacement_imp_strong_replacement by simp
 
-lemma minimum_closed'[simp,intro]:
-  assumes "M(A)" shows "M(minimum(r,A))"
-  sorry
-
 lemma lam_replacement_minimum_vimage:
   "M(f) \<Longrightarrow> M(r) \<Longrightarrow> lam_replacement(M, \<lambda>x. minimum(r, f -`` {x}))"
   using lam_replacement_minimum lam_replacement_vimage_sing lam_replacement_constant

@@ -13,15 +13,11 @@ relativize functional "minimum" "minimum_rel" external
 context M_trans
 begin
 
-lemma minimum_closed[simp,intro]:
-  assumes "M(A)" "A\<noteq>0" "well_ord(A,r)"
+lemma min_closed[simp,intro]:
+  assumes "M(A)"
   shows "M(minimum(r,A))"
-proof -
-  from assms
-  have "minimum(r,A) \<in> A" using minimum_in by simp
-  with \<open>M(A)\<close>
-  show ?thesis using transM[OF \<open>_\<in>_\<close>] by simp
-qed
+  using first_is_elem the_equality_if transM[OF _ \<open>M(A)\<close>]
+  by(cases "\<exists>x . first(x,A,r)",auto simp:minimum_def)
 
 lemma first_abs :
   assumes "M(B)"
