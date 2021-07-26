@@ -363,10 +363,11 @@ lemmas surj_imp_inj_replacement4 = lam_replacement_minimum_vimage[unfolded lam_r
 
 end (* M_replacement *)
 
-find_theorems "strong_replacement(_,\<lambda>x y. y = <x,_>)"
--"strong_replacement(_,\<lambda>x y. y = <x,_>) \<Longrightarrow> _"
+find_theorems
+(* "strong_replacement(_,\<lambda>x y. y = <x,_>)" -"strong_replacement(_,\<lambda>x y. y = <x,_>) \<Longrightarrow> _" *)
+"strong_replacement" -"strong_replacement(_,_) \<Longrightarrow> _" -"strong_replacement(_,\<lambda>x y. y = <x,_>)"
 -name:"_def" -name:intro -name:assumptions -name:closed -name: Derivations -name:transrec_equal_on_M
--name:M_cardinal_UN
+-name:M_cardinal_UN -name:"absolute"
 -name:Pair_diff_replacement
 -name:id_replacement -name:tag_replacement -name:pospend_replacement -name:prepend_replacement
 -name:Inl_replacement1 -name:apply_replacement1 -name:apply_replacement2 -name:diff_Pair_replacement

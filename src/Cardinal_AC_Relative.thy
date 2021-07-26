@@ -13,7 +13,7 @@ relativize functional "minimum" "minimum_rel" external
 context M_trans
 begin
 
-lemma min_closed[simp,intro]:
+lemma minimum_closed[simp,intro]:
   assumes "M(A)"
   shows "M(minimum(r,A))"
   using first_is_elem the_equality_if transM[OF _ \<open>M(A)\<close>]
