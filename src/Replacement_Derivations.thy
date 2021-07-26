@@ -13,9 +13,9 @@ definition
 
 locale M_replacement = M_basic +
   assumes
-    fst_lam_replacement: "lam_replacement(M,fst)"
+    lam_replacement_fst: "lam_replacement(M,fst)"
     and
-    snd_lam_replacement: "lam_replacement(M,snd)"
+    lam_replacement_snd: "lam_replacement(M,snd)"
     and
     id_separation:"M(A) \<Longrightarrow> separation(M, \<lambda>z. \<exists>x[M]. z = \<langle>x, x\<rangle>)"
     and
@@ -222,17 +222,29 @@ lemma lam_replacement_Inl: "lam_replacement(M, Inl)"
 
 lemmas Inl_replacement1 = lam_replacement_Inl[unfolded lam_replacement_def]
 
+lemma lam_replacement_Diff: "M(X) \<Longrightarrow> lam_replacement(M, \<lambda>x. x - X)"
+  sorry
+
+lemmas Pair_diff_replacement = lam_replacement_Diff[unfolded lam_replacement_def]
+
+lemma diff_Pair_replacement: "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=\<langle>x,x-{p}\<rangle>)"
+  using Pair_diff_replacement by simp
+
+lemma lam_replacement_swap: "lam_replacement(M, \<lambda>x. \<langle>snd(x),fst(x)\<rangle>)"
+    using lam_replacement_fst lam_replacement_snd
+    lam_replacement_pullback[of "snd" "fst"] by simp
+
+lemma swap_replacement:"strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>y, x\<rangle>)(x)\<rangle>)"
+  using lam_replacement_swap unfolding lam_replacement_def split_def by simp
+
 end (* M_replacement *)
 
 find_theorems "strong_replacement(_,\<lambda>x y. y = <x,_>)"
 -"strong_replacement(_,\<lambda>x y. y = <x,_>) \<Longrightarrow> _"
--name:"_def" -name:intro -name:assumptions -name:closed -name: Derivations
--name:id_replacement
--name:tag_replacement
--name:pospend_replacement
--name:prepend_replacement
--name:Inl_replacement1
--name:apply_replacement1
--name:apply_replacement2
+-name:"_def" -name:intro -name:assumptions -name:closed -name: Derivations -name:transrec_equal_on_M
+-name:Pair_diff_replacement
+-name:id_replacement -name:tag_replacement -name:pospend_replacement -name:prepend_replacement
+-name:Inl_replacement1 -name:apply_replacement1 -name:apply_replacement2 -name:diff_Pair_replacement
+-name:swap_replacement
 
 end
