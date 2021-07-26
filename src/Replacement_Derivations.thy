@@ -147,6 +147,16 @@ proof -
   show ?thesis using lam_replacement_iff_lam_closed by simp
 qed
 
+lemma lam_replacement_hcomp2:
+  assumes "lam_replacement(M,f)" "lam_replacement(M,g)"
+    "\<forall>x[M]. M(f(x))" "\<forall>x[M]. M(g(x))"
+    "lam_replacement(M, \<lambda>p. h(fst(p),snd(p)))"
+    "\<forall>x[M]. \<forall>y[M]. M(h(x,y))"
+  shows "lam_replacement(M, \<lambda>x. h(f(x),g(x)))"
+  using assms lam_replacement_pullback[of f g]
+    lam_replacement_hcomp[of "\<lambda>x. \<langle>f(x), g(x)\<rangle>" "\<lambda>\<langle>x,y\<rangle>. h(x,y)"]
+  unfolding split_def by simp
+
 lemma lam_replacement_identity: "lam_replacement(M,\<lambda>x. x)"
 proof -
   {
@@ -237,6 +247,30 @@ lemma lam_replacement_swap: "lam_replacement(M, \<lambda>x. \<langle>snd(x),fst(
 lemma swap_replacement:"strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>y, x\<rangle>)(x)\<rangle>)"
   using lam_replacement_swap unfolding lam_replacement_def split_def by simp
 
+lemma lam_replacement_Un:"lam_replacement(M, \<lambda>p. fst(p) \<union> snd(p))"
+  unfolding lam_replacement_def strong_replacement_def apply simp
+  sorry
+
+lemma lam_replacement_Un_const:"M(b) \<Longrightarrow> lam_replacement(M, \<lambda>x. x \<union> b)"
+  using lam_replacement_Un lam_replacement_hcomp2[of _ _ "(\<union>)"]
+    lam_replacement_constant[of b] lam_replacement_identity by simp
+
+lemmas tag_union_replacement = lam_replacement_Un_const[unfolded lam_replacement_def]
+
+lemma lam_replacement_csquare: "lam_replacement(M,\<lambda>p. \<langle>fst(p) \<union> snd(p), fst(p), snd(p)\<rangle>)"
+  using lam_replacement_Un lam_replacement_fst lam_replacement_snd
+  by (fast intro: lam_replacement_pullback lam_replacement_hcomp2)
+
+lemma csquare_lam_replacement:"strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>x \<union> y, x, y\<rangle>)(x)\<rangle>)"
+  using lam_replacement_csquare unfolding split_def lam_replacement_def .
+
+lemma lam_replacement_assoc:"lam_replacement(M,\<lambda>x. \<langle>fst(fst(x)), snd(fst(x)), snd(x)\<rangle>)"
+  using lam_replacement_fst lam_replacement_snd
+  by (force intro: lam_replacement_pullback lam_replacement_hcomp)
+
+lemma assoc_replacement:"strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>. \<langle>x, y, z\<rangle>)(x)\<rangle>)"
+  using lam_replacement_assoc unfolding split_def lam_replacement_def .
+
 end (* M_replacement *)
 
 find_theorems "strong_replacement(_,\<lambda>x y. y = <x,_>)"
@@ -245,6 +279,7 @@ find_theorems "strong_replacement(_,\<lambda>x y. y = <x,_>)"
 -name:Pair_diff_replacement
 -name:id_replacement -name:tag_replacement -name:pospend_replacement -name:prepend_replacement
 -name:Inl_replacement1 -name:apply_replacement1 -name:apply_replacement2 -name:diff_Pair_replacement
--name:swap_replacement
+-name:swap_replacement -name:tag_union_replacement -name:csquare_lam_replacement
+-name:assoc_replacement
 
 end
