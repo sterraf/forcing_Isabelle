@@ -13,9 +13,13 @@ definition
 
 locale M_replacement = M_basic +
   assumes
+    lam_replacement_converse: "lam_replacement(M,converse)"
+    and
     lam_replacement_fst: "lam_replacement(M,fst)"
     and
     lam_replacement_snd: "lam_replacement(M,snd)"
+    and
+    lam_replacement_Union: "lam_replacement(M,Union)"
     and
     id_separation:"M(A) \<Longrightarrow> separation(M, \<lambda>z. \<exists>x[M]. z = \<langle>x, x\<rangle>)"
     and
@@ -27,6 +31,20 @@ locale M_replacement = M_basic +
     and
     pullback_replacement:
     "strong_replacement(M, \<lambda>x y. y=\<langle>fst(fst(x)),\<langle>snd(fst(x)),snd(snd(x))\<rangle>\<rangle>)"
+    and
+    lam_replacement_Un:"lam_replacement(M, \<lambda>p. fst(p) \<union> snd(p))"
+    and
+    lam_replacement_cons:"lam_replacement(M, \<lambda>p. cons(fst(p),snd(p)))"
+    and
+    lam_replacement_Diff:"lam_replacement(M, \<lambda>p. fst(p) - snd(p))"
+    and
+    lam_replacement_Image:"lam_replacement(M, \<lambda>p. fst(p) `` snd(p))"
+    and
+    lam_replacement_minimum:"lam_replacement(M, \<lambda>p. minimum(fst(p),snd(p)))"
+    and
+    lam_replacement_RepFun_cons:"lam_replacement(M, \<lambda>p. RepFun(fst(p), \<lambda>x. {\<langle>snd(p),x\<rangle>}))"
+    \<comment> \<open>This one is too particular: It is for \<^term>\<open>Sigfun\<close>.
+        I would like greater modularity here.\<close>
 begin
 
 lemma lam_replacement_iff_lam_closed:
@@ -191,7 +209,11 @@ lemma lam_replacement_id2: "lam_replacement(M, \<lambda>x. \<langle>x, x\<rangle
 lemmas id_replacement = lam_replacement_id2[unfolded lam_replacement_def]
 
 lemma lam_replacement_apply:"M(S) \<Longrightarrow> lam_replacement(M, \<lambda>x.  S ` x)"
-  sorry
+  using lam_replacement_Union lam_replacement_constant lam_replacement_identity
+    lam_replacement_Image lam_replacement_cons
+    lam_replacement_hcomp2[of _ _ Image] lam_replacement_hcomp2[of "\<lambda>x. x" "\<lambda>_. 0" cons]
+  unfolding apply_def
+  by (rule_tac lam_replacement_hcomp[of _ Union]) (force intro:lam_replacement_hcomp)+
 
 lemma apply_replacement:"M(S) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = S ` x)"
   using lam_replacement_apply lam_replacement_imp_strong_replacement by simp
@@ -232,10 +254,12 @@ lemma lam_replacement_Inl: "lam_replacement(M, Inl)"
 
 lemmas Inl_replacement1 = lam_replacement_Inl[unfolded lam_replacement_def]
 
-lemma lam_replacement_Diff: "M(X) \<Longrightarrow> lam_replacement(M, \<lambda>x. x - X)"
-  sorry
+lemma lam_replacement_Diff': "M(X) \<Longrightarrow> lam_replacement(M, \<lambda>x. x - X)"
+  using lam_replacement_Diff
+  by (force intro: lam_replacement_hcomp2 lam_replacement_constant
+      lam_replacement_identity)+
 
-lemmas Pair_diff_replacement = lam_replacement_Diff[unfolded lam_replacement_def]
+lemmas Pair_diff_replacement = lam_replacement_Diff'[unfolded lam_replacement_def]
 
 lemma diff_Pair_replacement: "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=\<langle>x,x-{p}\<rangle>)"
   using Pair_diff_replacement by simp
@@ -246,10 +270,6 @@ lemma lam_replacement_swap: "lam_replacement(M, \<lambda>x. \<langle>snd(x),fst(
 
 lemma swap_replacement:"strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>y, x\<rangle>)(x)\<rangle>)"
   using lam_replacement_swap unfolding lam_replacement_def split_def by simp
-
-lemma lam_replacement_Un:"lam_replacement(M, \<lambda>p. fst(p) \<union> snd(p))"
-  unfolding lam_replacement_def strong_replacement_def apply simp
-  sorry
 
 lemma lam_replacement_Un_const:"M(b) \<Longrightarrow> lam_replacement(M, \<lambda>x. x \<union> b)"
   using lam_replacement_Un lam_replacement_hcomp2[of _ _ "(\<union>)"]
@@ -271,15 +291,91 @@ lemma lam_replacement_assoc:"lam_replacement(M,\<lambda>x. \<langle>fst(fst(x)),
 lemma assoc_replacement:"strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>. \<langle>x, y, z\<rangle>)(x)\<rangle>)"
   using lam_replacement_assoc unfolding split_def lam_replacement_def .
 
+lemma lam_replacement_prod_fun: "M(f) \<Longrightarrow> M(g) \<Longrightarrow> lam_replacement(M,\<lambda>x. \<langle>f ` fst(x), g ` snd(x)\<rangle>)"
+  using lam_replacement_fst lam_replacement_snd
+  by (force intro: lam_replacement_pullback lam_replacement_hcomp lam_replacement_apply)
+
+lemma prod_fun_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow>
+  strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>w,y\<rangle>. \<langle>f ` w, g ` y\<rangle>)(x)\<rangle>)"
+  using lam_replacement_prod_fun unfolding split_def lam_replacement_def .
+
+\<comment> \<open>Exactly the same as the one before\<close>
+lemma prod_bij_rel_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow>
+     strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>f ` x, g ` y\<rangle>)(x)\<rangle>)"
+  oops
+
+lemma lam_replacement_vimage:"lam_replacement(M, \<lambda>p. fst(p) -`` snd(p))"
+  using lam_replacement_Image lam_replacement_converse lam_replacement_fst
+    lam_replacement_snd unfolding vimage_def
+  by (force intro: lam_replacement_pullback lam_replacement_hcomp2 lam_replacement_hcomp)+
+
+lemma lam_replacement_vimage_sing: "M(f) \<Longrightarrow> lam_replacement(M, \<lambda>x. f -`` {x})"
+  using lam_replacement_vimage lam_replacement_constant lam_replacement_cons
+    lam_replacement_hcomp2[of _ _ vimage] lam_replacement_hcomp2[of "\<lambda>x. x" "\<lambda>_. 0" cons]
+  by (force intro: lam_replacement_identity)
+
+lemmas cardinal_lib_assms4 = lam_replacement_vimage_sing[unfolded lam_replacement_def]
+
+lemma lam_replacement_surj_imp_inj1:
+  "M(x) \<Longrightarrow> lam_replacement(M, \<lambda>y. {\<langle>x, y\<rangle>})"
+  using lam_replacement_cons lam_replacement_constant
+  by (rule_tac lam_replacement_hcomp2[of _ _ cons], simp_all)
+    (fast intro: lam_replacement_hcomp lam_replacement_pullback lam_replacement_identity)
+
+\<comment> \<open>The following instance is unnecessarily complicated, since it follows from
+@{thm lam_replacement_surj_imp_inj1}\<close>
+lemma surj_imp_inj_replacement1:
+  "M(f) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> f -`` {x} \<and> z = {\<langle>x, y\<rangle>})"
+  using lam_replacement_surj_imp_inj1[THEN lam_replacement_imp_strong_replacement, of x]
+  unfolding strong_replacement_def
+  by (simp, safe, drule_tac x="A \<inter> f -`` {x}" in rspec,
+      simp, erule_tac rexE, rule_tac x=Y in rexI) auto
+
+lemma lam_replacement_Sigfun: "M(f) \<Longrightarrow> lam_replacement(M, \<lambda>x. \<Union>y\<in>f -`` {x}. {\<langle>x, y\<rangle>})"
+  using lam_replacement_Union lam_replacement_identity lam_replacement_vimage_sing
+    lam_replacement_surj_imp_inj1[THEN lam_replacement_imp_strong_replacement]
+    lam_replacement_hcomp2[of "\<lambda>x. \<langle>_,x\<rangle>" "\<lambda>_. 0" cons,
+      THEN lam_replacement_imp_strong_replacement] unfolding apply_def
+  apply (rule_tac lam_replacement_hcomp[of _ Union])
+     apply (auto intro:RepFun_closed dest:transM)
+  by (rule lam_replacement_RepFun_cons[THEN [5] lam_replacement_hcomp2])
+    (auto intro:RepFun_closed dest:transM)
+
+lemma surj_imp_inj_replacement2:
+  "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>y. f -`` {y}))"
+  using lam_replacement_surj_imp_inj1[THEN lam_replacement_imp_strong_replacement]
+  unfolding Sigfun_def
+  by (rule_tac lam_replacement_Sigfun[THEN lam_replacement_imp_strong_replacement, of f])
+    (auto intro:RepFun_closed dest:transM)
+
+lemma surj_imp_inj_replacement3:
+  "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = f -`` {x})"
+  using lam_replacement_vimage_sing lam_replacement_imp_strong_replacement by simp
+
+lemma minimum_closed'[simp,intro]:
+  assumes "M(A)" shows "M(minimum(r,A))"
+  sorry
+
+lemma lam_replacement_minimum_vimage:
+  "M(f) \<Longrightarrow> M(r) \<Longrightarrow> lam_replacement(M, \<lambda>x. minimum(r, f -`` {x}))"
+  using lam_replacement_minimum lam_replacement_vimage_sing lam_replacement_constant
+    lam_replacement_hcomp2[of _ _ vimage]
+  by (rule_tac lam_replacement_hcomp2[of _ _ minimum])
+    (force intro: lam_replacement_identity)+
+
+lemmas surj_imp_inj_replacement4 = lam_replacement_minimum_vimage[unfolded lam_replacement_def]
+
 end (* M_replacement *)
 
 find_theorems "strong_replacement(_,\<lambda>x y. y = <x,_>)"
 -"strong_replacement(_,\<lambda>x y. y = <x,_>) \<Longrightarrow> _"
 -name:"_def" -name:intro -name:assumptions -name:closed -name: Derivations -name:transrec_equal_on_M
+-name:M_cardinal_UN
 -name:Pair_diff_replacement
 -name:id_replacement -name:tag_replacement -name:pospend_replacement -name:prepend_replacement
 -name:Inl_replacement1 -name:apply_replacement1 -name:apply_replacement2 -name:diff_Pair_replacement
 -name:swap_replacement -name:tag_union_replacement -name:csquare_lam_replacement
--name:assoc_replacement
+-name:assoc_replacement -name:prod_fun_replacement -name:prod_bij_rel_replacement
+-name:cardinal_lib_assms4 -name:surj_imp_inj_replacement
 
 end
