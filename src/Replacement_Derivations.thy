@@ -73,7 +73,7 @@ proof -
       by (auto simp:lam_def)
   }
   then
-  show ?thesis unfolding strong_replacement_def 
+  show ?thesis unfolding strong_replacement_def
     by clarsimp (rule_tac x="(\<lambda>x\<in>A. b(x))``A" in rexI, auto)
 qed
 
@@ -176,6 +176,34 @@ lemma lam_replacement_hcomp2:
   using assms lam_replacement_pullback[of f g]
     lam_replacement_hcomp[of "\<lambda>x. \<langle>f(x), g(x)\<rangle>" "\<lambda>\<langle>x,y\<rangle>. h(x,y)"]
   unfolding split_def by simp
+
+lemma lam_replacement_if:
+  assumes "lam_replacement(M,f)" "lam_replacement(M,g)" "separation(M,b)"
+    "\<forall>x[M]. M(f(x))" "\<forall>x[M]. M(g(x))"
+  shows "lam_replacement(M, \<lambda>x. if b(x) then f(x) else g(x))"
+proof -
+  let ?G="\<lambda>x. if b(x) then f(x) else g(x)"
+  let ?b="\<lambda>A . {x\<in>A. b(x)}" and ?b'="\<lambda>A . {x\<in>A. \<not>b(x)}"
+  have eq:"(\<lambda>x\<in>A . ?G(x)) = (\<lambda>x\<in>?b(A) . f(x)) \<union> (\<lambda>x\<in>?b'(A).g(x))" for A
+    unfolding lam_def by auto
+  have "?b'(A) = A - ?b(A)" for A by auto
+  moreover
+  have "M(?b(A))" if "M(A)" for A using assms that by simp
+  moreover from calculation
+  have "M(?b'(A))" if "M(A)" for A using that by simp
+  moreover from calculation assms
+  have "M(\<lambda>x\<in>?b(A). f(x))" "M(\<lambda>x\<in>?b'(A) . g(x))" if "M(A)" for A
+    using lam_replacement_iff_lam_closed that
+    by simp_all
+  moreover from this
+  have "M((\<lambda>x\<in>?b(A) . f(x)) \<union> (\<lambda>x\<in>?b'(A).g(x)))" if "M(A)" for A
+    using that by simp
+  ultimately
+  have "M(\<lambda>x\<in>A. if b(x) then f(x) else g(x))" if "M(A)" for A
+    using that eq by simp
+  with assms
+  show ?thesis using lam_replacement_iff_lam_closed by simp
+qed
 
 lemma lam_replacement_identity: "lam_replacement(M,\<lambda>x. x)"
 proof -
@@ -418,6 +446,40 @@ proof -
   show ?thesis
     using lam_replacement_Pi[THEN lam_replacement_imp_strong_replacement, of y]
     by blast
+qed
+
+lemma separation_in :
+  assumes "M(a)"
+  shows "separation(M,\<lambda>x . x\<in>a)"
+proof -
+  have "M({x\<in>A . x\<in>a})" if "M(A)" for A
+  proof -
+    have "{x\<in>A . x\<in>a} = A \<inter> a" by auto
+    moreover from assms \<open>M(A)\<close>
+    have "M(A\<inter>a)" by simp
+    ultimately
+    show ?thesis by simp
+  qed
+  then
+  show ?thesis using separation_iff Collect_abs
+    by simp
+qed
+
+lemma separation_equal :
+  assumes "M(a)"
+  shows "separation(M,\<lambda>x . x=a)"
+proof -
+  have "M({x\<in>A . x=a})" if "M(A)" for A
+  proof -
+    have "{x\<in>A . x=a} = (if a\<in>A then {a} else 0)" by auto
+    moreover from assms \<open>M(A)\<close>
+    have "M({a})" by simp
+    ultimately
+    show ?thesis by simp
+  qed
+  then
+  show ?thesis using separation_iff Collect_abs
+    by simp
 qed
 
 end (* M_replacement *)
