@@ -39,6 +39,7 @@ lemma seqspace_closed:
 
 end
 
+(* FIXME: This shouldn't be here. *)
 schematic_goal seqspace_fm_auto:
   assumes
     "i \<in> nat" "j \<in> nat" "h\<in>nat" "env \<in> list(A)"
@@ -84,11 +85,9 @@ locale M_FiniteFun =  M_seqspace +
   assumes
     cons_like_separation : "separation(M,\<lambda>f. cons_like_rel(M,f))"
     and
-    to_finiteFun_body_replacement:
-    "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. x \<in> domain(f) \<and> y = f ` x)"
+    image_replacement': "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = f ` x)"
     and
-    to_finiteFun_replacement:
-    "M(A) \<Longrightarrow> M(B) \<Longrightarrow> strong_replacement(M, \<lambda>x y. x \<in> FiniteFun_Repr(A,B) \<and> y = to_FiniteFun(x))"
+    to_finiteFun_replacement: "strong_replacement(M, \<lambda>x y. y = to_FiniteFun(x))"
     and
     supset_separation: "separation(M, \<lambda> x. \<exists>a. \<exists>b. x = \<langle>a,b\<rangle> \<and> b \<subseteq> a)"
 begin
@@ -372,9 +371,9 @@ proof -
   have "M(f`i)" if "i\<in>domain(f)" for i
     using that apply_closed transM[OF _ \<open>M(domain(f))\<close>] by auto
   with \<open>M(f)\<close> show ?thesis unfolding to_FiniteFun_def
-    using RepFun_closed2
-      to_finiteFun_body_replacement
-      apply_closed[OF \<open>M(f)\<close>] transM[OF _ \<open>M(domain(f))\<close>]
+    using RepFun_closed
+      image_replacement'
+      apply_closed[OF \<open>M(domain(f))\<close>] transM[OF _ \<open>M(domain(f))\<close>]
     by simp
 qed
 
@@ -382,7 +381,7 @@ lemma To_FiniteFun_Repr_closed :
   assumes "M(A)" "M(B)"
   shows "M({to_FiniteFun(h) . h \<in> FiniteFun_Repr(A,B) })"
   using assms FiniteFun_Repr_closed
-    RepFun_closed2  to_finiteFun_replacement
+    RepFun_closed to_finiteFun_replacement
     to_FiniteFun_closed[OF FiniteFun_Repr_closed]
   by simp
 

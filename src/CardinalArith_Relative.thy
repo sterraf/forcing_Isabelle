@@ -41,8 +41,7 @@ locale M_cardinal_arith = M_cardinals +
     case_replacement2:"strong_replacement(M,
       \<lambda>z y. y = \<langle>z, case(case(Inl, \<lambda>y. Inr(Inl(y))), \<lambda>y. Inr(Inr(y)), z)\<rangle>)"
     and
-    case_replacement3:"strong_replacement(M,
-      \<lambda>z y. y = \<langle>z, case(\<lambda>x. x, \<lambda>y. y, z)\<rangle>)"
+    snd_replacement: "strong_replacement(M, \<lambda>x y . y = \<langle>x,snd(x)\<rangle>)"
     and
     case_replacement4:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M,
       \<lambda>z y. y = \<langle>z, case(\<lambda>w. Inl(f ` w), \<lambda>y. Inr(g ` y), z)\<rangle>)"
@@ -330,13 +329,19 @@ qed (simp_all add:types)
 
 subsubsection\<open>0 is the identity for addition\<close>
 
+lemma case_id_eq: "x\<in>sum(A,B) \<Longrightarrow> case(\<lambda>z . z, \<lambda>z. z ,x) = snd(x)"
+  unfolding case_def cond_def by (auto simp:Inl_def Inr_def)
+
+lemma lam_case_id: "(\<lambda>z\<in>0 + A. case(\<lambda>x. x, \<lambda>y. y, z)) = (\<lambda>z\<in>0 + A . snd(z))"
+  using case_id_eq by simp
+
 lemma sum_0_eqpoll_rel: "M(A) \<Longrightarrow> 0+A \<approx>\<^bsup>M\<^esup> A"
   apply (simp add:def_eqpoll_rel)
   apply (rule rexI)
-   apply (rule bij_0_sum)
-  using case_replacement3
+   apply (rule bij_0_sum,subst lam_case_id)
+  using snd_replacement
   by (rule lam_closed)
-    (auto simp add:case_def cond_def Inr_def dest:transM)
+      (auto simp add:case_def cond_def Inr_def dest:transM)
 
 lemma cadd_rel_0 [simp]: "Card\<^bsup>M\<^esup>(K) \<Longrightarrow> M(K) \<Longrightarrow> 0 \<oplus>\<^bsup>M\<^esup> K = K"
 apply (simp add: cadd_rel_def)

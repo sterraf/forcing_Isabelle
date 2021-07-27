@@ -373,14 +373,10 @@ lemma image_replacement:
     "M(f) \<Longrightarrow> M(a) \<Longrightarrow> strong_replacement(M, \<lambda> x y . y = f`x)"
   oops
 
-\<comment> \<open>The following instance is unnecessarily complicated, since it follows from
-@{thm lam_replacement_apply}\<close>
-lemma to_finiteFun_body_replacement:
-    "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. x \<in> domain(f) \<and> y = f ` x)"
-  using lam_replacement_apply[THEN lam_replacement_imp_strong_replacement, of f]
-  unfolding strong_replacement_def
-  by (simp, safe, drule_tac x="A \<inter> domain(f)" in rspec,
-      simp, erule_tac rexE, rule_tac x=Y in rexI) auto
+\<comment> \<open>Redundant, it has another name to avoid a clash in Absolute Versions.\<close>
+lemma image_replacement':
+    "M(f) \<Longrightarrow> strong_replacement(M, \<lambda> x y . y = f`x)"
+  oops
 
 lemma un_Pair_replacement: "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y = x\<union>{p})"
   using lam_replacement_Un_const[THEN lam_replacement_imp_strong_replacement] by simp
@@ -424,7 +420,6 @@ proof -
     by blast
 qed
 
-
 end (* M_replacement *)
 
 find_theorems
@@ -440,8 +435,8 @@ find_theorems
 -name:swap_replacement -name:tag_union_replacement -name:csquare_lam_replacement
 -name:assoc_replacement -name:prod_fun_replacement -name:prod_bij_rel_replacement
 -name:cardinal_lib_assms4 -name:surj_imp_inj_replacement -name:domain_replacement
--name:apply_replacement -name:image_replacement -name:to_finiteFun_body_replacement
+-name:apply_replacement -name:image_replacement
 -name:un_Pair_replacement -name:restrict_strong_replacement -name:diff_replacement
--name:Pi_replacement
+-name:Pi_replacement -name:snd_replacement
 
 end
