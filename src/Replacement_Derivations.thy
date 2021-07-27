@@ -47,6 +47,8 @@ locale M_replacement = M_basic +
     lam_replacement_RepFun_cons:"lam_replacement(M, \<lambda>p. RepFun(fst(p), \<lambda>x. {\<langle>snd(p),x\<rangle>}))"
     \<comment> \<open>This one is too particular: It is for \<^term>\<open>Sigfun\<close>.
         I would like greater modularity here.\<close>
+    and
+    separation_fst_equal : "M(a) \<Longrightarrow> separation(M,\<lambda>x . fst(x)=a)"
 begin
 
 lemma lam_replacement_iff_lam_closed:
@@ -412,11 +414,6 @@ lemma image_replacement':
     "M(f) \<Longrightarrow> strong_replacement(M, \<lambda> x y . y = f`x)"
   oops
 
-lemma apply_comp_replacement:
-    "M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M, \<lambda> x y . y = g`(f`x))"
-  sorry
-
-
 lemma un_Pair_replacement: "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y = x\<union>{p})"
   using lam_replacement_Un_const[THEN lam_replacement_imp_strong_replacement] by simp
 
@@ -488,10 +485,6 @@ proof -
     by simp
 qed
 
-lemma separation_fst_equal :
-  shows "M(a) \<Longrightarrow> separation(M,\<lambda>x . fst(x)=a)"
-  sorry
-
 lemma if_then_Inj_replacement:
   shows "M(A) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, if x \<in> A then Inl(x) else Inr(x)\<rangle>)"
   using lam_replacement_if lam_replacement_Inl lam_replacement_Inr separation_in
@@ -558,6 +551,37 @@ lemma Inl_replacement2:
   unfolding lam_replacement_def
   by simp
 
+lemma case_closed :
+  assumes "\<forall>x[M]. M(f(x))" "\<forall>x[M]. M(g(x))"
+  shows "\<forall>x[M]. M(case(f,g,x))"
+  unfolding case_def split_def cond_def
+  using assms by simp
+
+lemma lam_replacement_case :
+  assumes "lam_replacement(M,f)" "lam_replacement(M,g)"
+    "\<forall>x[M]. M(f(x))" "\<forall>x[M]. M(g(x))"
+  shows "lam_replacement(M, \<lambda>x . case(f,g,x))"
+  unfolding case_def split_def cond_def
+  using lam_replacement_if separation_fst_equal
+        lam_replacement_hcomp[of "snd" g]
+        lam_replacement_hcomp[of "snd" f]
+        lam_replacement_snd assms
+  by simp
+
+lemma case_replacement1:
+    "strong_replacement(M, \<lambda>z y. y = \<langle>z, case(Inr, Inl, z)\<rangle>)"
+  using lam_replacement_case lam_replacement_Inl lam_replacement_Inr
+  unfolding lam_replacement_def
+  by simp
+
+lemma case_replacement2:
+    "strong_replacement(M, \<lambda>z y. y = \<langle>z, case(case(Inl, \<lambda>y. Inr(Inl(y))), \<lambda>y. Inr(Inr(y)), z)\<rangle>)"
+  using lam_replacement_case lam_replacement_hcomp
+        case_closed[of Inl "\<lambda>x. Inr(Inl(x))"]
+       lam_replacement_Inl lam_replacement_Inr
+  unfolding lam_replacement_def
+  by simp
+
 end (* M_replacement *)
 
 find_theorems
@@ -579,5 +603,6 @@ find_theorems
 -name:if_then_Inj_replacement -name:lam_if_then_replacement -name:if_then_replacement
 -name:ifx_replacement -name:if_then_range_replacement2 -name:if_then_range_replacement
 -name:Inl_replacement2
+-name:case_replacement1 -name:case_replacement2
 
 end
