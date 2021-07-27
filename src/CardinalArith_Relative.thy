@@ -52,7 +52,7 @@ locale M_cardinal_arith = M_cardinals +
     Inl_replacement1:"strong_replacement(M, \<lambda>x y. y = \<langle>x, Inl(x)\<rangle>)"
     and
     Inl_replacement2:"M(A) \<Longrightarrow> strong_replacement(M,
-       \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. if x = A then Inl(y) else Inr(\<langle>x, y\<rangle>))(x)\<rangle>)"
+       \<lambda>x y. y = \<langle>x, if fst(x) = A then Inl(snd(x)) else Inr(x)\<rangle>)"
     and
     if_then_range_replacement:"M(u) \<Longrightarrow> M(f) \<Longrightarrow> strong_replacement(M,
       \<lambda>z y. y = \<langle>z, if z = u then f ` 0 else
@@ -608,7 +608,7 @@ subsection\<open>Multiplication of finite cardinals is "ordinary" multiplication
 lemma prod_succ_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> succ(A)*B \<approx>\<^bsup>M\<^esup> B + A*B"
 apply (simp add: def_eqpoll_rel)
 apply (rule rexI)
-apply (rule_tac c = "%<x,y>. if x=A then Inl (y) else Inr (<x,y>)"
+apply (rule_tac c = "\<lambda>p. if fst(p)=A then Inl (snd(p)) else Inr (p)"
             and d = "case (%y. <A,y>, %z. z)" in lam_bijective)
 apply safe
           apply (simp_all add: succI2 if_type mem_imp_not_eq)

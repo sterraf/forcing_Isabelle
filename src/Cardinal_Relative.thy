@@ -38,10 +38,10 @@ locale M_cardinals = M_ordertype + M_trancl + M_Perm +
   rmult_separation: "M(b) \<Longrightarrow> M(d) \<Longrightarrow> separation(M,
     \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> b \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> d))"
   and
-  if_then_replacement: "M(f) \<Longrightarrow> M(g) \<Longrightarrow>
+  if_then_replacement: "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow>
      strong_replacement(M, \<lambda>x y. y = <x,if x \<in> A then f`x else g`x>)"
   and
-  if_then_Inl_replacement: "M(f) \<Longrightarrow> M(g) \<Longrightarrow>
+  if_then_Inj_replacement: "M(A) \<Longrightarrow>
      strong_replacement(M, \<lambda>x y. y = \<langle>x, if x \<in> A then Inl(x) else Inr(x)\<rangle>)"
   and
   lam_if_then_replacement: "M(b) \<Longrightarrow> M(a) \<Longrightarrow> M(f) \<Longrightarrow>
@@ -1151,7 +1151,7 @@ proof -
   assume "M(A)" "M(B)"
   then
   show "M(\<lambda>x\<in>A \<union> B. if x \<in> A then Inl(x) else Inr(x))"
-    using transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>] if_then_Inl_replacement
+    using transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>] if_then_Inj_replacement
     by (rule_tac lam_closed) auto
 qed
 
@@ -1172,7 +1172,7 @@ proof -
   assume "M(A)" "M(B)"
   then
   show "M(\<lambda>x\<in>A \<union> B. if x \<in> A then Inl(x) else Inr(x))"
-    using transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>] if_then_Inl_replacement
+    using transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>] if_then_Inj_replacement
     by (rule_tac lam_closed) auto
 qed
 
