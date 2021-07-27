@@ -13,6 +13,8 @@ definition
 
 locale M_replacement = M_basic +
   assumes
+    lam_replacement_domain: "lam_replacement(M,domain)"
+    and
     lam_replacement_converse: "lam_replacement(M,converse)"
     and
     lam_replacement_fst: "lam_replacement(M,fst)"
@@ -361,18 +363,85 @@ lemma lam_replacement_minimum_vimage:
 
 lemmas surj_imp_inj_replacement4 = lam_replacement_minimum_vimage[unfolded lam_replacement_def]
 
+lemmas domain_replacement =  lam_replacement_domain[unfolded lam_replacement_def]
+
+lemma domain_replacement_simp: "strong_replacement(M, \<lambda>x y. y=domain(x))"
+  using lam_replacement_domain lam_replacement_imp_strong_replacement by simp
+
+\<comment> \<open>Redundant\<close>
+lemma image_replacement:
+    "M(f) \<Longrightarrow> M(a) \<Longrightarrow> strong_replacement(M, \<lambda> x y . y = f`x)"
+  oops
+
+\<comment> \<open>The following instance is unnecessarily complicated, since it follows from
+@{thm lam_replacement_apply}\<close>
+lemma to_finiteFun_body_replacement:
+    "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. x \<in> domain(f) \<and> y = f ` x)"
+  using lam_replacement_apply[THEN lam_replacement_imp_strong_replacement, of f]
+  unfolding strong_replacement_def
+  by (simp, safe, drule_tac x="A \<inter> domain(f)" in rspec,
+      simp, erule_tac rexE, rule_tac x=Y in rexI) auto
+
+lemma un_Pair_replacement: "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y = x\<union>{p})"
+  using lam_replacement_Un_const[THEN lam_replacement_imp_strong_replacement] by simp
+
+lemma restrict_strong_replacement: "M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=restrict(x,r))"
+  sorry
+
+lemma diff_replacement: "M(X) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = x - X)"
+  using lam_replacement_Diff'[THEN lam_replacement_imp_strong_replacement] by simp
+
+\<comment> \<open>The following instance is unnecessarily complicated, since it follows from
+@{thm lam_replacement_surj_imp_inj1}\<close>
+lemma Pi_replacement1: "M(x) \<Longrightarrow> M(y) \<Longrightarrow>  strong_replacement(M, \<lambda>ya z. ya \<in> y \<and> z = {\<langle>x, ya\<rangle>})"
+  using lam_replacement_surj_imp_inj1[THEN lam_replacement_imp_strong_replacement, of x]
+  unfolding strong_replacement_def
+  by (simp, safe, drule_tac x="A \<inter> y" in rspec,
+      simp, erule_tac rexE, rule_tac x=Y in rexI) auto
+
+lemma lam_replacement_Pi: "M(y) \<Longrightarrow> lam_replacement(M, \<lambda>x. \<Union>xa\<in>y. {\<langle>x, xa\<rangle>})"
+  using lam_replacement_Union lam_replacement_identity lam_replacement_constant
+    lam_replacement_surj_imp_inj1[THEN lam_replacement_imp_strong_replacement]
+    lam_replacement_hcomp2[of "\<lambda>x. \<langle>_,x\<rangle>" "\<lambda>_. 0" cons,
+      THEN lam_replacement_imp_strong_replacement] unfolding apply_def
+  apply (rule_tac lam_replacement_hcomp[of _ Union])
+     apply (auto intro:RepFun_closed dest:transM)
+  by (rule lam_replacement_RepFun_cons[THEN [5] lam_replacement_hcomp2])
+    (auto intro:RepFun_closed dest:transM)
+
+lemma Pi_replacement2: "M(y) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = (\<Union>xa\<in>y. {\<langle>x, xa\<rangle>}))"
+  using lam_replacement_Pi[THEN lam_replacement_imp_strong_replacement, of y]
+proof -
+  assume "M(y)"
+  then
+  have "M(x) \<Longrightarrow> M(\<Union>xa\<in>y. {\<langle>x, xa\<rangle>})" for x
+    using lam_replacement_surj_imp_inj1[THEN lam_replacement_imp_strong_replacement]
+    by (rule_tac Union_closed RepFun_closed, simp_all | safe)+
+      (force dest: transM) \<comment> \<open>a bit slow\<close>
+  with \<open>M(y)\<close>
+  show ?thesis
+    using lam_replacement_Pi[THEN lam_replacement_imp_strong_replacement, of y]
+    by blast
+qed
+
+
 end (* M_replacement *)
 
 find_theorems
-(* "strong_replacement(_,\<lambda>x y. y = <x,_>)" -"strong_replacement(_,\<lambda>x y. y = <x,_>) \<Longrightarrow> _" *)
-"strong_replacement" -"strong_replacement(_,_) \<Longrightarrow> _" -"strong_replacement(_,\<lambda>x y. y = <x,_>)"
+"strong_replacement(_,\<lambda>x y. y = <x,_>)" -"strong_replacement(_,\<lambda>x y. y = <x,_>) \<Longrightarrow> _"
+(* "strong_replacement" -"strong_replacement(_,_) \<Longrightarrow> _" -"strong_replacement(_,\<lambda>x y. y = <x,_>)" *)
 -name:"_def" -name:intro -name:assumptions -name:closed -name: Derivations -name:transrec_equal_on_M
--name:M_cardinal_UN -name:"absolute"
+-name:M_cardinal_UN -name:"absolute" -name:Separation -name:"Rank." -name:"Interface."
+-name:"WFrec." -name:"Relative.strong_" -name:"L_axioms" -name:"Names" -name:"Relative.M_b"
+-name:"Relative.M_t" -name:"Internal_ZFC"
 -name:Pair_diff_replacement
 -name:id_replacement -name:tag_replacement -name:pospend_replacement -name:prepend_replacement
 -name:Inl_replacement1 -name:apply_replacement1 -name:apply_replacement2 -name:diff_Pair_replacement
 -name:swap_replacement -name:tag_union_replacement -name:csquare_lam_replacement
 -name:assoc_replacement -name:prod_fun_replacement -name:prod_bij_rel_replacement
--name:cardinal_lib_assms4 -name:surj_imp_inj_replacement
+-name:cardinal_lib_assms4 -name:surj_imp_inj_replacement -name:domain_replacement
+-name:apply_replacement -name:image_replacement -name:to_finiteFun_body_replacement
+-name:un_Pair_replacement -name:restrict_strong_replacement -name:diff_replacement
+-name:Pi_replacement
 
 end
