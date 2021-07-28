@@ -724,10 +724,10 @@ proof -
     by simp_all
   from \<open>f:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<omega>\<close> \<open>M(f)\<close> \<open>range(f) \<subseteq> \<omega>\<close>
   have "M(f-``{n})" if "n \<in> range(f)" for n
-    using vimage_closed that singleton_closed transM[of _ \<omega>] by auto
+    using that transM[of _ \<omega>] by auto
   with \<open>M(f)\<close> \<open>range(f) \<subseteq> \<omega>\<close>
   have "domain(?G) \<lesssim>\<^bsup>M\<^esup> \<omega>" "M(?G)"
-    using subset_imp_lepoll_rel range_closed lam_closed[of "\<lambda>x . f-``{x}"] cardinal_lib_assms4
+    using subset_imp_lepoll_rel lam_closed[of "\<lambda>x . f-``{x}"] cardinal_lib_assms4
     by simp_all
   have "function(?G)" by (simp add:function_lam)
   from \<open>f:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<omega>\<close>
@@ -767,7 +767,7 @@ proof -
   }
   with \<open>range(f)\<subseteq>\<omega>\<close> \<open>M(f)\<close>
   obtain n where "n\<in>\<omega>" "\<not>(|f -`` {n}|\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)" "M(f -`` {n})"
-    using vimage_closed singleton_closed nat_into_M by auto
+    using nat_into_M by auto
   moreover from this
   have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<le> |f-``{n}|\<^bsup>M\<^esup>"
     using not_lt_iff_le Card_rel_is_Ord by simp
@@ -799,8 +799,7 @@ proof -
     by simp_all
   with \<open>g\<in>bij_rel(M,\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,Z)\<close> \<open>M(g)\<close>
   have "f O g : \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightarrow>\<^bsup>M\<^esup> \<omega>" "M(converse(g))"
-    using comp_fun[OF _ \<open>f\<in> Z\<rightarrow>_\<close>,of g] comp_closed function_space_rel_char
-      converse_closed
+    using comp_fun[OF _ \<open>f\<in> Z\<rightarrow>_\<close>,of g] function_space_rel_char
     by simp_all
   then
   obtain n where "n\<in>\<omega>" "|(f O g)-``{n}|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
@@ -810,7 +809,7 @@ proof -
   have "M(converse(g) `` (f -`` {n}))" "f -`` {n} \<subseteq> Z"
     using image_comp converse_comp Pi_iff[THEN iffD1,OF \<open>f\<in>Z\<rightarrow>\<omega>\<close>] vimage_subset
     unfolding vimage_def
-    using image_closed singleton_closed transM[OF \<open>n\<in>\<omega>\<close>]
+    using transM[OF \<open>n\<in>\<omega>\<close>]
     by auto
   from \<open>n\<in>\<omega>\<close> \<open>|(f O g)-``{n}|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
   have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> = |converse(g) `` (f -``{n})|\<^bsup>M\<^esup>"
@@ -896,7 +895,7 @@ proof -
     and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. <s,a>\<in>Q}"
   from \<open>M(G)\<close>
   have "M(?cdlt\<gamma>)"
-    using Pow_rel_closed separation_closed cardinal_lib_assms5[OF \<open>M(\<gamma>)\<close>]
+    using cardinal_lib_assms5[OF \<open>M(\<gamma>)\<close>]
     by simp
   from assms
   have H:"\<exists>a. a \<in> ?inQ(Y)" if "Y\<in>?cdlt\<gamma>" for Y
@@ -937,7 +936,6 @@ proof -
   have "Cb \<in> Pow_rel(M,G)-?cdlt\<gamma> \<rightarrow> G" "M(Cb)"
     using lam_closed[of "\<lambda>_.b" "Pow_rel(M,G)-?cdlt\<gamma>"]
       tag_replacement transM[OF \<open>b\<in>G\<close>]
-      Diff_closed Pow_rel_closed
     unfolding Cb_def by auto
   moreover
   note \<open>Card_rel(M,\<gamma>)\<close>
@@ -1112,7 +1110,7 @@ proof -
     case True
     with \<open>M(Y)\<close> \<open>M(F)\<close>
     show ?thesis
-      using vimage_fun_sing[OF \<open>F\<in>Z\<rightarrow>Y\<close> \<open>y\<in>Y\<close>] vimage_closed transM[OF _ \<open>M(Y)\<close>]
+      using vimage_fun_sing[OF \<open>F\<in>Z\<rightarrow>Y\<close> \<open>y\<in>Y\<close>] transM[OF _ \<open>M(Y)\<close>]
       by auto
   next
     case False
@@ -1128,7 +1126,7 @@ proof -
   moreover from \<open>F\<in>_\<inter>_\<close>
   have 0:"Finite({x \<in> Z . F ` x = y})" if "y\<in>Y" for y
     unfolding Finite_to_one_rel_def
-    using transM[OF that  \<open>M(Y)\<close>] transM[OF _ \<open>M(Z)\<close>] that by simp
+    using transM[OF that \<open>M(Y)\<close>] transM[OF _ \<open>M(Z)\<close>] that by simp
   ultimately
   interpret M_cardinal_UN_lepoll _ "\<lambda>y. if M(y) then {x\<in>Z . F`x = y} else 0" Y
     using cardinal_lib_assms3
@@ -1157,13 +1155,13 @@ proof -
       using transM[OF that  \<open>M(Y)\<close>] transM[OF _ \<open>M(Z)\<close>] that by simp
     moreover from calculation and 1
     have "|{x\<in>Z . F`x = y}|\<^bsup>M\<^esup> \<in> \<omega>" if "y\<in>Y" for y
-      using Finite_cardinal_rel_in_nat that  transM[OF that \<open>M(Y)\<close>]
+      using Finite_cardinal_rel_in_nat that transM[OF that \<open>M(Y)\<close>]
       by simp
     moreover from calculation and 1
     have "|{x\<in>Z . F`x = y}|\<^bsup>M\<^esup> \<le> |Y|\<^bsup>M\<^esup>" if "y\<in>Y" for y
       using Infinite_imp_nats_lepoll_rel[THEN lepoll_rel_imp_cardinal_rel_le,
               of _ "|{x\<in>Z . F`x = y}|\<^bsup>M\<^esup>"]
-         that cardinal_rel_idem cardinal_rel_closed transM[OF that \<open>M(Y)\<close>]
+         that cardinal_rel_idem transM[OF that \<open>M(Y)\<close>]
       by auto
     ultimately
     have "|\<Union>y\<in>Y. {x\<in>Z . F`x = y}|\<^bsup>M\<^esup> \<le> |Y|\<^bsup>M\<^esup>"
