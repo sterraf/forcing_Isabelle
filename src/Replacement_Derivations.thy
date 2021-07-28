@@ -49,6 +49,8 @@ locale M_replacement = M_basic +
         I would like greater modularity here.\<close>
     and
     separation_fst_equal : "M(a) \<Longrightarrow> separation(M,\<lambda>x . fst(x)=a)"
+    and
+    separation_equal_fst2 : "M(a) \<Longrightarrow> separation(M,\<lambda>x . fst(fst(x))=a)"
 begin
 
 lemma lam_replacement_iff_lam_closed:
@@ -594,6 +596,17 @@ lemma sum_bij_rel_replacement:
     "M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, case(\<lambda>u. Inl(f ` u), \<lambda>z. Inr(g ` z), x)\<rangle>)"
   oops
 
+lemma case_replacement5:
+    "strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,z\<rangle>. case(\<lambda>y. Inl(\<langle>y, z\<rangle>), \<lambda>y. Inr(\<langle>y, z\<rangle>), x))(x)\<rangle>)"
+  unfolding split_def case_def cond_def
+  using lam_replacement_if separation_equal_fst2
+     lam_replacement_snd lam_replacement_Inl lam_replacement_Inr
+     lam_replacement_hcomp[OF
+       lam_replacement_pullback[OF
+         lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_snd]]]
+  unfolding lam_replacement_def
+  by simp
+
 end (* M_replacement *)
 
 find_theorems
@@ -615,7 +628,7 @@ find_theorems
 -name:if_then_Inj_replacement -name:lam_if_then_replacement -name:if_then_replacement
 -name:ifx_replacement -name:if_then_range_replacement2 -name:if_then_range_replacement
 -name:Inl_replacement2
--name:case_replacement1 -name:case_replacement2 -name:case_replacement4
+-name:case_replacement1 -name:case_replacement2 -name:case_replacement4 -name:case_replacement5
 -name:sum_bij_rel_replacement
 
 end
