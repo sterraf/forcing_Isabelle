@@ -337,7 +337,7 @@ lemma prod_fun_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow>
   strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>w,y\<rangle>. \<langle>f ` w, g ` y\<rangle>)(x)\<rangle>)"
   using lam_replacement_prod_fun unfolding split_def lam_replacement_def .
 
-\<comment> \<open>Exactly the same as the one before\<close>
+\<comment> \<open>Exactly the same as the previous one.\<close>
 lemma prod_bij_rel_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow>
      strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>f ` x, g ` y\<rangle>)(x)\<rangle>)"
   oops
@@ -582,6 +582,18 @@ lemma case_replacement2:
   unfolding lam_replacement_def
   by simp
 
+lemma case_replacement4:
+    "M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M, \<lambda>z y. y = \<langle>z, case(\<lambda>w. Inl(f ` w), \<lambda>y. Inr(g ` y), z)\<rangle>)"
+  using lam_replacement_case lam_replacement_hcomp
+       lam_replacement_Inl lam_replacement_Inr lam_replacement_apply
+  unfolding lam_replacement_def
+  by simp
+
+\<comment> \<open>Exactly as the previous one.\<close>
+lemma sum_bij_rel_replacement:
+    "M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, case(\<lambda>u. Inl(f ` u), \<lambda>z. Inr(g ` z), x)\<rangle>)"
+  oops
+
 end (* M_replacement *)
 
 find_theorems
@@ -603,6 +615,7 @@ find_theorems
 -name:if_then_Inj_replacement -name:lam_if_then_replacement -name:if_then_replacement
 -name:ifx_replacement -name:if_then_range_replacement2 -name:if_then_range_replacement
 -name:Inl_replacement2
--name:case_replacement1 -name:case_replacement2
+-name:case_replacement1 -name:case_replacement2 -name:case_replacement4
+-name:sum_bij_rel_replacement
 
 end
