@@ -110,8 +110,8 @@ lemma lepoll_assumptions1:
   assumes types[simp]:"M(A)" "M(S)"
   shows "lepoll_assumptions1(M,A,F,S,fa,K,x,f,r)"
   unfolding lepoll_assumptions1_def
-  using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 separation_in]
-    transM[of _ S] 
+  using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 _ separation_in]
+    transM[of _ S]
   by simp
 
 lemma lepoll_assumptions3:
@@ -132,7 +132,7 @@ lemma lepoll_assumptions4:
 lemma lepoll_assumptions6:  
   assumes types[simp]:"M(A)" "M(S)" "M(x)"
   shows "lepoll_assumptions6(M,A,F,S,fa,K,x,f,r)"
-  using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 separation_in]
+  using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 _ separation_in]
     transM[of _ S] lam_replacement_inj_rel
   unfolding lepoll_assumptions6_def
   by simp
@@ -160,7 +160,7 @@ lemma lepoll_assumptions11:
 lemma lepoll_assumptions12:
   assumes types[simp]:"M(A)" "M(x)" "M(f)"
   shows "lepoll_assumptions12(M,A,F,S,fa,K,x,f,r)"
-  using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 separation_in]
+  using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 _ separation_in]
     transM[of _ S] 
   unfolding lepoll_assumptions12_def
   by simp

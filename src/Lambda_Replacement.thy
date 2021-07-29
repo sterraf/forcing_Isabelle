@@ -484,8 +484,8 @@ proof -
     by simp
 qed
 
-lemma strong_replacement_separation :
-  assumes "lam_replacement(M,f)" "separation(M,P)"
+lemma strong_replacement_separation_aux :
+  assumes "strong_replacement(M,\<lambda> x y . y=f(x))" "separation(M,P)"
     "\<forall>x[M]. M(f(x))"
   shows "strong_replacement(M, \<lambda>x y . P(x) \<and> y=f(x))"
 proof -
@@ -512,34 +512,16 @@ proof -
     unfolding strong_replacement_def by simp
 qed
 
-(* FIXME: use proper angle brackets *)
 lemma lam_replacement_separation :
   assumes "lam_replacement(M,f)" "separation(M,P)"
     "\<forall>x[M]. M(f(x))"
-  shows "strong_replacement(M, \<lambda>x y . P(x) \<and> y=<x,f(x)>)"
-proof -
-  { 
-  fix A
-  let ?Q="\<lambda>X. \<forall>b[M]. b \<in> X \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> P(x) \<and> b = <x,f(x)>)"
-  assume "M(A)"
-  moreover from this
-  have "M({x\<in>A . P(x)})" (is "M(?B)") using assms by simp
-  moreover from calculation
-  have "M({<x,f(x)> . x\<in>?B})" (is "M(?F)")
-    using assms lam_replacement_def
-      RepFun_closed[of _ ?B] transM[of _ A]
-    by simp
-  moreover from assms calculation
-  have P:"\<forall>b[M]. b \<in> ?F \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> P(x) \<and> b = <x,f(x)>)"
-    by simp
-  ultimately
-  have "\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> P(x) \<and> b = <x,f(x)>)"
-    using rexI[of ?Q ?F M] by simp
-  }
-  then 
-  show ?thesis
-    unfolding strong_replacement_def by simp
-qed
+  shows "strong_replacement(M, \<lambda>x y . P(x) \<and> y=\<langle>x,f(x)\<rangle>)"
+  using strong_replacement_separation_aux assms
+  unfolding lam_replacement_def
+  by simp
+
+lemmas strong_replacement_separation = 
+  strong_replacement_separation_aux[OF lam_replacement_imp_strong_replacement]
 
 lemma if_then_Inj_replacement:
   shows "M(A) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, if x \<in> A then Inl(x) else Inr(x)\<rangle>)"
