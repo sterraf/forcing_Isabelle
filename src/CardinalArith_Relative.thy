@@ -33,49 +33,6 @@ locale M_cardinal_arith = M_cardinals +
     ord_iso_separation: "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow>
       separation(M, \<lambda>f. \<forall>x\<in>A. \<forall>y\<in>A. \<langle>x, y\<rangle> \<in> r \<longleftrightarrow> \<langle>f ` x, f ` y\<rangle> \<in> s)"
     and
-    csquare_lam_replacement:"
-      strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>x \<union> y, x, y\<rangle>)(x)\<rangle>)"
-    and
-    case_replacement1:"strong_replacement(M, \<lambda>z y. y = \<langle>z, case(Inr, Inl, z)\<rangle>)"
-    and
-    case_replacement2:"strong_replacement(M,
-      \<lambda>z y. y = \<langle>z, case(case(Inl, \<lambda>y. Inr(Inl(y))), \<lambda>y. Inr(Inr(y)), z)\<rangle>)"
-    and
-    snd_replacement: "strong_replacement(M, \<lambda>x y . y = \<langle>x,snd(x)\<rangle>)"
-    and
-    case_replacement4:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M,
-      \<lambda>z y. y = \<langle>z, case(\<lambda>w. Inl(f ` w), \<lambda>y. Inr(g ` y), z)\<rangle>)"
-    and
-    case_replacement5:"strong_replacement(M,
-      \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,z\<rangle>. case(\<lambda>y. Inl(\<langle>y, z\<rangle>), \<lambda>y. Inr(\<langle>y, z\<rangle>), x))(x)\<rangle>)"
-    and
-    Inl_replacement1:"strong_replacement(M, \<lambda>x y. y = \<langle>x, Inl(x)\<rangle>)"
-    and
-    Inl_replacement2:"M(A) \<Longrightarrow> strong_replacement(M,
-       \<lambda>x y. y = \<langle>x, if fst(x) = A then Inl(snd(x)) else Inr(x)\<rangle>)"
-    and
-    if_then_range_replacement:"M(u) \<Longrightarrow> M(f) \<Longrightarrow> strong_replacement(M,
-      \<lambda>z y. y = \<langle>z, if z = u then f ` 0 else
-        if z \<in> range(f) then f ` succ(converse(f) ` z) else z\<rangle>)"
-    and
-    if_then_range_replacement2:"M(A) \<Longrightarrow> M(C)\<Longrightarrow> strong_replacement(M,
-      \<lambda>x y. y = \<langle>x, if x = Inl(A) then C else x\<rangle>)"
-    and
-    swap_replacement:"strong_replacement(M,
-      \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>y, x\<rangle>)(x)\<rangle>)"
-    and
-    assoc_replacement:"strong_replacement(M,
-      \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>. \<langle>x, y, z\<rangle>)(x)\<rangle>)"
-    and
-    prepend_replacement:"M(x) \<Longrightarrow> strong_replacement(M, \<lambda>z y. y = \<langle>z, x, z\<rangle>)"
-    and
-    pospend_replacement:"M(b) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, x, b\<rangle>)"
-    and
-    id_replacement:"strong_replacement(M, \<lambda>x y. y = \<langle>x, x, x\<rangle>)"
-    and
-    prod_fun_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M,
-      \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>w,y\<rangle>. \<langle>f ` w, g ` y\<rangle>)(x)\<rangle>)"
-    and
     ordermap_replacement:"M(A) \<Longrightarrow> M(r) \<Longrightarrow>
       strong_replacement(M, \<lambda>x y. y = \<langle>x, wfrec[A](r,x,\<lambda>x f. f `` Order.pred(A, x, r))\<rangle>)"
     and
@@ -339,7 +296,7 @@ lemma sum_0_eqpoll_rel: "M(A) \<Longrightarrow> 0+A \<approx>\<^bsup>M\<^esup> A
   apply (simp add:def_eqpoll_rel)
   apply (rule rexI)
    apply (rule bij_0_sum,subst lam_case_id)
-  using snd_replacement
+  using lam_replacement_snd[unfolded lam_replacement_def]
   by (rule lam_closed)
       (auto simp add:case_def cond_def Inr_def dest:transM)
 

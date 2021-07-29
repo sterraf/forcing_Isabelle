@@ -62,13 +62,7 @@ locale M_cohen = M_delta +
     and
     domain_eq_separation: "M(p) \<Longrightarrow> separation(M, \<lambda>x . domain(x) = p)"
     and
-    domain_replacement: "strong_replacement(M, \<lambda>x y . y=\<langle>x,domain(x)\<rangle>)"
-    and
-    domain_replacement_simp: "strong_replacement(M, \<lambda>x y. y=domain(x))"
-    and
     restrict_eq_separation: "M(r) \<Longrightarrow> M(p) \<Longrightarrow> separation(M, \<lambda>x . restrict(x,r) = p)"
-    and
-    restrict_strong_replacement: "M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=restrict(x,r))"
 
 context M_cardinal_library
 begin

@@ -37,13 +37,14 @@ lemmas bad_M_basic_rules[simp del, rule del] =
 
 interpretation V:M_cardinal_arith \<V>
   by unfold_locales (auto intro:separation_absolute replacement_absolute
-      simp add:iterates_replacement_def wfrec_replacement_def)
+      simp add:iterates_replacement_def wfrec_replacement_def lam_replacement_def)
 
 lemmas bad_M_cardinals_rules[simp del, rule del] =
   V.iterates_closed V.M_nat V.trancl_closed V.rvimage_closed
 
 interpretation V:M_cardinal_arith_jump \<V>
-  by unfold_locales (auto intro:separation_absolute replacement_absolute simp:wfrec_replacement_def)
+  by unfold_locales (auto intro:separation_absolute replacement_absolute
+      simp:wfrec_replacement_def)
 
 lemma choice_ax_Universe: "choice_ax(\<V>)"
 proof -

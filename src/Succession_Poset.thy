@@ -5,6 +5,11 @@ theory Succession_Poset
     FiniteFun_Relative
 begin
 
+sublocale M_ZF_trans \<subseteq> M_replacement "##M"
+  apply unfold_locales 
+  apply (simp_all add:lam_replacement_def del:setclass_iff)
+  sorry
+
 sublocale M_ctm \<subseteq> M_seqspace "##M"
 proof (unfold_locales, simp)
   fix B

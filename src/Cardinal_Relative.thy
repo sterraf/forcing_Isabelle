@@ -4,6 +4,7 @@ theory Cardinal_Relative
   imports
     ZF_Miscellanea
     Discipline_Cardinal
+    Lambda_Replacement
 begin
 
 hide_const (open) L
@@ -22,7 +23,7 @@ definition
       \<exists>fW[M]. \<exists>YfW[M]. \<exists>gYfW[M]. image(M,f,W,fW) \<and> setdiff(M,Y,fW,YfW) \<and> 
                                  image(M,g,YfW,gYfW) \<and> setdiff(M,X,gYfW,b)"
 
-locale M_cardinals = M_ordertype + M_trancl + M_Perm +
+locale M_cardinals = M_ordertype + M_trancl + M_Perm + M_replacement +
   assumes
   id_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>z. \<exists>x\<in>A. z = \<langle>x, x\<rangle>)"
   and
@@ -38,15 +39,6 @@ locale M_cardinals = M_ordertype + M_trancl + M_Perm +
   rmult_separation: "M(b) \<Longrightarrow> M(d) \<Longrightarrow> separation(M,
     \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> b \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> d))"
   and
-  if_then_replacement: "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow>
-     strong_replacement(M, \<lambda>x y. y = <x,if x \<in> A then f`x else g`x>)"
-  and
-  if_then_Inj_replacement: "M(A) \<Longrightarrow>
-     strong_replacement(M, \<lambda>x y. y = \<langle>x, if x \<in> A then Inl(x) else Inr(x)\<rangle>)"
-  and
-  lam_if_then_replacement: "M(b) \<Longrightarrow> M(a) \<Longrightarrow> M(f) \<Longrightarrow>
-     strong_replacement(M, \<lambda>y ya. ya = \<langle>y, if y = a then b else f ` y\<rangle>)"
-  and
   lam_if_then_apply_replacement: "M(f) \<Longrightarrow> M(v) \<Longrightarrow> M(u) \<Longrightarrow>
      strong_replacement(M, \<lambda>x y. y = \<langle>x,  if f ` x = v then f ` u else f ` x\<rangle>)"
   and
@@ -55,12 +47,6 @@ locale M_cardinals = M_ordertype + M_trancl + M_Perm +
   and
   lam_if_then_replacement2: "M(b) \<Longrightarrow> M(a) \<Longrightarrow> M(f) \<Longrightarrow>
      strong_replacement(M, \<lambda>x y. y = \<langle>x, if x \<in> A then f ` x else x\<rangle>)"
-  and
-  sum_bij_rel_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow>
-     strong_replacement(M, \<lambda>x y. y = \<langle>x, case(\<lambda>u. Inl(f ` u), \<lambda>z. Inr(g ` z), x)\<rangle>)"
-  and
-  prod_bij_rel_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow>
-     strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>f ` x, g ` y\<rangle>)(x)\<rangle>)"
   and
   iterates_banach: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow>
                     iterates_replacement(M,is_banach_functor(M,X,Y,f,g),0)"
@@ -1002,7 +988,7 @@ proof -
   then
   have "M(\<lambda>z\<in>A+B. case(%x. Inl(f`x), %y. Inr(g`y), z))"
     using transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>]
-    by (auto intro:sum_bij_rel_replacement[THEN lam_closed])
+    by (auto intro:case_replacement4[THEN lam_closed])
   with asm
   show ?thesis
     apply simp
@@ -1023,7 +1009,7 @@ proof -
   from assms
   show "M(\<lambda>z\<in>A+B. case(\<lambda>x. Inl(f`x), \<lambda>y. Inr(g`y), z))"
     using transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>]
-    by (auto intro:sum_bij_rel_replacement[THEN lam_closed])
+    by (auto intro:case_replacement4[THEN lam_closed])
   with assms
   show "(\<lambda>z\<in>A+B. case(\<lambda>x. Inl(f`x), \<lambda>y. Inr(g`y), z)) \<in> bij(A+B, C+D)"
     apply simp
@@ -1060,7 +1046,7 @@ proof -
   show "M((\<lambda><x,y>\<in>A*B. <f`x, g`y>))"
     using transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>]
       transM[OF _ cartprod_closed, of _ A B]
-    by (auto intro:prod_bij_rel_replacement[THEN lam_closed, of f g "A\<times>B"])
+    by (auto intro:prod_fun_replacement[THEN lam_closed, of f g "A\<times>B"])
   with assms
   show "(\<lambda><x,y>\<in>A*B. <f`x, g`y>) \<in> bij(A*B, C*D)"
     apply simp

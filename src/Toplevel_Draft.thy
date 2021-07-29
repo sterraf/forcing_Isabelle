@@ -14,12 +14,6 @@ locale M_master = M_cohen +
   inj_dense_separation: "M(x) \<Longrightarrow> M(w) \<Longrightarrow>
     separation(M, \<lambda>z. \<exists>n\<in>\<omega>.    \<langle>\<langle>w, n\<rangle>, 1\<rangle> \<in> z \<and> \<langle>\<langle>x, n\<rangle>, 0\<rangle> \<in> z)"
   and
-  apply_replacement1: "M(x) \<Longrightarrow> M(f) \<Longrightarrow>
-      strong_replacement(M, \<lambda>z y. y = \<langle>z, f ` \<langle>x,z\<rangle>\<rangle>)"
-  and
-  apply_replacement2: "M(x) \<Longrightarrow> M(f) \<Longrightarrow> M(z) \<Longrightarrow>
-      strong_replacement(M, \<lambda>x y. y = \<langle>x, f ` \<langle>z, x\<rangle>\<rangle>)"
-  and
   lam_apply_replacement: "M(A) \<Longrightarrow> M(f) \<Longrightarrow>
       strong_replacement(M, \<lambda>x y. y = \<langle>x, \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>\<rangle>)"
   and
@@ -123,10 +117,6 @@ next
 qed
 
 end (* M_master_sub *)
-
-sublocale M_ZFC_trans \<subseteq> M_replacement "##M"
-  apply unfold_locales
-  sorry
 
 sublocale M_ZFC_trans \<subseteq> M_master "##M"
   apply unfold_locales 
@@ -476,7 +466,7 @@ lemma h_G_in_MG[simp]:
   includes G_generic_lemmas
   shows "h\<^bsub>G\<^esub> \<in> M[G]"
   using Aleph_rel2_closed
-    ext.lam_apply_replacement ext.apply_replacement1
+    ext.lam_apply_replacement ext.apply_replacement2'
     ext.Union_closed[simplified, OF G_in_MG]
     \<comment> \<open>The "simplified" here is because of
         the \<^term>\<open>setclass\<close> ocurrences\<close>
@@ -494,7 +484,7 @@ proof (intro ext.mem_inj_abs[THEN iffD2])
       using f_G_funtype G_in_MG ext.nat_into_M unfolding h_G_def
       apply (intro lam_type ext.mem_function_space_rel_abs[THEN iffD2], simp_all)
       apply (rule_tac ext.lam_closed[simplified], simp_all)
-       apply (rule ext.apply_replacement2)
+       apply (rule ext.apply_replacement2')
          apply (auto dest:ext.transM[OF _ Aleph_rel_sub_closed])
       done
     fix w x

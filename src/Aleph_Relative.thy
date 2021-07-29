@@ -139,9 +139,6 @@ locale M_aleph = M_eclose + M_cardinal_arith_jump +
       pre_image(M, mesa, sx, r_sx) \<and>
       restriction(M, f, r_sx, f_r_sx) \<and> xaa \<in> mesa \<and> is_HAleph(M, xa, f_r_sx, y))) \<and>
                                     is_HAleph(M, x, f, y)))"
-    and
-    image_replacement:
-    "M(f) \<Longrightarrow> M(a) \<Longrightarrow> strong_replacement(M, \<lambda> x y . y = f`x)"
 begin
 
 lemma aux:
@@ -161,7 +158,7 @@ proof -
     using transM[OF _ \<open>M(a)\<close>] by auto
   moreover from this assms
   have "M({f`j . j\<in>a})"
-    using RepFun_closed[OF image_replacement] by simp
+    using RepFun_closed[OF apply_replacement] by simp
   ultimately
   have 2:"is_Replace(M, a, \<lambda>j y. y = f ` j, {f`j . j\<in>a})"
     using Replace_abs[of _ _ "\<lambda>j y. y = f ` j",OF \<open>M(a)\<close> _ 1,THEN iffD2, simplified]
@@ -207,7 +204,7 @@ proof -
   show ?thesis
     unfolding is_HAleph_def
     using assms is_Limit_iff Limit_is_Ord zero_not_Limit If_abs is_csucc_iff
-      Replace_abs[OF \<open>M(x)\<close> _ A] image_replacement
+      Replace_abs[OF \<open>M(x)\<close> _ A] apply_replacement
     by auto
 qed
 
@@ -255,7 +252,7 @@ lemma HAleph_rel_closed [intro,simp]:
   assumes "function(f)" "M(a)" "M(f)"
   shows "M(HAleph_rel(M,a,f))"
   unfolding HAleph_rel_def SepReplace_def
-  using assms image_replacement
+  using assms apply_replacement
   by simp
 
 lemma Aleph_rel_closed[intro, simp]:

@@ -3,6 +3,7 @@ theory FiniteFun_Relative
   imports
     Synthetic_Definition
     Discipline_Function
+    Lambda_Replacement
     Cohen_Posets
 begin
 
@@ -27,7 +28,7 @@ lemma seqspaceD[dest]: "f\<in>B\<^bsup><\<alpha>\<^esup> \<Longrightarrow> \<exi
 \<comment> \<open>FIXME: Now this is too particular (only for \<^term>\<open>\<omega>\<close>-sequences).
   A relative definition for \<^term>\<open>seqspace\<close> would be appropriate.\<close>
 
-locale M_seqspace =  M_trancl +
+locale M_seqspace =  M_trancl + M_replacement +
   assumes
     seqspace_replacement: "M(B) \<Longrightarrow> strong_replacement(M,\<lambda>n z. n\<in>nat \<and> is_funspace(M,n,B,z))"
 begin
@@ -84,8 +85,6 @@ definition FiniteFun_Repr :: "[i,i] \<Rightarrow> i" where
 locale M_FiniteFun =  M_seqspace +
   assumes
     cons_like_separation : "separation(M,\<lambda>f. cons_like_rel(M,f))"
-    and
-    image_replacement': "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = f ` x)"
     and
     to_finiteFun_replacement: "strong_replacement(M, \<lambda>x y. y = to_FiniteFun(x))"
     and
@@ -372,7 +371,7 @@ proof -
     using that apply_closed transM[OF _ \<open>M(domain(f))\<close>] by auto
   with \<open>M(f)\<close> show ?thesis unfolding to_FiniteFun_def
     using RepFun_closed
-      image_replacement'
+      apply_replacement
       apply_closed[OF \<open>M(domain(f))\<close>] transM[OF _ \<open>M(domain(f))\<close>]
     by simp
 qed
