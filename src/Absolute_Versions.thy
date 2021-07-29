@@ -64,7 +64,8 @@ qed
 
 interpretation V:M_master \<V>
   using choice_ax_Universe
-  by unfold_locales (auto intro:separation_absolute replacement_absolute)
+  by unfold_locales (auto intro:separation_absolute replacement_absolute 
+      simp:lam_replacement_def)
 
 named_theorems V_simps
 

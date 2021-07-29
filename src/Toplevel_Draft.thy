@@ -1,7 +1,6 @@
 theory Toplevel_Draft
   imports
     Cardinal_Preservation
-
 begin
 
 definition
@@ -25,18 +24,11 @@ locale M_master = M_cohen +
       strong_replacement(M, \<lambda>x y. y = \<langle>x, \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>\<rangle>)"
   and
   UN_lepoll_assumptions:
-  "M(A) \<Longrightarrow> lepoll_assumptions1(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
-  "M(A) \<Longrightarrow> lepoll_assumptions3(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
-  "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions4(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
-  "M(A) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions6(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> lepoll_assumptions7(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> lepoll_assumptions8(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
-  "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions9(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
-  "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions11(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
-  "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions12(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
@@ -132,7 +124,13 @@ qed
 
 end (* M_master_sub *)
 
+sublocale M_ZFC_trans \<subseteq> M_replacement "##M"
+  apply unfold_locales
+  sorry
+
 sublocale M_ZFC_trans \<subseteq> M_master "##M"
+  apply unfold_locales 
+  apply (simp_all add:replacements del:setclass_iff)
   sorry
 
 context M_ctm_AC
@@ -193,9 +191,12 @@ proof (rule ccontr)
   then
   have "\<beta> \<in> \<alpha> \<Longrightarrow> |F`\<beta>|\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>" for \<beta>
     using Aleph_rel_zero by simp
+  interpret M_replacement_lepoll "##M" "(`)"
+    using UN_lepoll_assumptions lam_replacement_apply
+    apply unfold_locales apply auto sorry
   from \<open>\<alpha> \<in> M\<close> \<open>F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close> \<open>F\<in>M\<close>
   interpret M_cardinal_UN_lepoll "##M" "\<lambda>\<beta>. F`\<beta>" \<alpha>
-    using Aleph_rel_closed[of 0] UN_lepoll_assumptions
+    using Aleph_rel_closed[of 0] UN_lepoll_assumptions lepoll_assumptions
   proof (unfold_locales, auto dest:transM)
     show "w \<in> F ` x \<Longrightarrow> x \<in> M" for w x
     proof -

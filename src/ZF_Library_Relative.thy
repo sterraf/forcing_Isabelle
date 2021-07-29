@@ -5,6 +5,7 @@ theory ZF_Library_Relative
     "Delta_System_Lemma.ZF_Library"
     "ZF-Constructible.Normal"
     Aleph_Relative\<comment> \<open>must be before Cardinal\_AC\_Relative!\<close>
+    Lambda_Replacement
     Cardinal_AC_Relative
     FiniteFun_Relative
 begin
@@ -87,13 +88,11 @@ abbreviation
   Finite_to_one_r_set :: "[i,i,i] \<Rightarrow> i" (\<open>Finite'_to'_one\<^bsup>_\<^esup>'(_,_')\<close>) where
   "Finite_to_one\<^bsup>M\<^esup>(X,Y) \<equiv> Finite_to_one_rel(##M,X,Y)"
 
-locale M_library =  M_cardinal_AC + M_aleph + M_FiniteFun +
+locale M_library =  M_cardinal_AC + M_aleph + M_FiniteFun + M_replacement +
   assumes
   Pair_diff_replacement: "M(X) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, x - X\<rangle>)"
   and
   diff_replacement: "M(X) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = x - X)"
-  and
-  tag_replacement: "M(b) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, b\<rangle>)"
   and
   ifx_replacement: "M(f) \<Longrightarrow> M(b) \<Longrightarrow> 
     strong_replacement(M, \<lambda>x y. y = \<langle>x, if x \<in> range(f) then converse(f) ` x else b\<rangle>)"

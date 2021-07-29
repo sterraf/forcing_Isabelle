@@ -1,10 +1,11 @@
 theory Discipline_Function
   imports
+    ZF_Miscellanea
     "ZF-Constructible.Rank"
-    "Relativization"
-    "Internalizations"
-    "Discipline_Base"
-    "Synthetic_Definition" 
+    Relativization
+    Internalizations
+    Discipline_Base
+    Synthetic_Definition 
     Arities
 begin
 
@@ -69,6 +70,43 @@ lemma snd_abs [absolut]:
 
 end (* M_trans *)
 
+relativize functional "first" "first_rel" external
+relativize functional "minimum" "minimum_rel" external
+context M_trans
+begin
+
+lemma minimum_closed[simp,intro]:
+  assumes "M(A)"
+  shows "M(minimum(r,A))"
+  using first_is_elem the_equality_if transM[OF _ \<open>M(A)\<close>]
+  by(cases "\<exists>x . first(x,A,r)",auto simp:minimum_def)
+
+lemma first_abs :
+  assumes "M(B)"
+  shows "first(z,B,r) \<longleftrightarrow> first_rel(M,z,B,r)"
+  unfolding first_def first_rel_def using assms by auto
+
+\<comment> \<open>FIXME: find a naming convention for absoluteness results like this.\<close>
+lemma minimum_abs:
+  assumes "M(B)"
+  shows "minimum(r,B) = minimum_rel(M,r,B)"
+proof -
+  from assms
+  have "first(b, B, r) \<longleftrightarrow> M(b) \<and> first_rel(M,b,B,r)" for b
+    using first_abs
+  proof (auto)
+    fix b
+    assume "first_rel(M,b,B,r)"
+    with \<open>M(B)\<close>
+    have "b\<in>B" using first_abs first_is_elem by simp
+    with \<open>M(B)\<close>
+    show "M(b)" using transM[OF \<open>b\<in>B\<close>] by simp
+  qed
+  with assms
+  show ?thesis unfolding minimum_rel_def minimum_def
+    by simp
+qed
+end (* M_trans *)
 
 subsection\<open>Discipline for \<^term>\<open>function_space\<close>\<close>
 

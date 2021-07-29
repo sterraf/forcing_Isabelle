@@ -1,9 +1,9 @@
-section\<open>Main definitions of the development\<close>
+section\<open>Replacements using Lambdas\<close>
 
-theory Replacement_Derivations
+theory Lambda_Replacement
   imports
     "ZF-Constructible.Relative"
-    Cardinal_Library_Relative
+    Discipline_Function
     "../Tools/Try0"
 begin
 
@@ -23,7 +23,7 @@ locale M_replacement = M_basic +
     and
     lam_replacement_Union: "lam_replacement(M,Union)"
     and
-    id_separation:"M(A) \<Longrightarrow> separation(M, \<lambda>z. \<exists>x[M]. z = \<langle>x, x\<rangle>)"
+    id_separation2:"separation(M, \<lambda>z. \<exists>x[M]. z = \<langle>x, x\<rangle>)"
     and
     middle_separation: "separation(M, \<lambda>x. snd(fst(x))=fst(snd(x)))"
     and
@@ -214,15 +214,13 @@ lemma lam_replacement_identity: "lam_replacement(M,\<lambda>x. x)"
 proof -
   {
     fix A
-      \<comment> \<open>From here on, modified proof of @{thm M_cardinals.id_closed},
-          the modified locale assumption @{thm id_separation}\<close>
     assume "M(A)"
     moreover from this
     have "id(A) = {z\<in> A\<times>A. \<exists>x[M]. z=<x,x>}"
       unfolding id_def lam_def by (auto dest:transM)
     moreover from calculation
     have "M({z\<in> A\<times>A. \<exists>x[M]. z=<x,x>})"
-      using id_separation by simp
+      using id_separation2 by simp
     ultimately
     have "M(id(A))" by simp
   }
@@ -662,6 +660,20 @@ lemma case_replacement5:
          lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_snd]]]
   unfolding lam_replacement_def
   by simp
+
+lemmas replacements = Pair_diff_replacement id_replacement tag_replacement 
+  pospend_replacement prepend_replacement
+  Inl_replacement1  diff_Pair_replacement
+  swap_replacement tag_union_replacement csquare_lam_replacement
+  assoc_replacement prod_fun_replacement
+  cardinal_lib_assms4  domain_replacement
+  apply_replacement
+  un_Pair_replacement restrict_strong_replacement diff_replacement
+  if_then_Inj_replacement lam_if_then_replacement if_then_replacement
+  ifx_replacement if_then_range_replacement2 if_then_range_replacement
+  Inl_replacement2
+  case_replacement1 case_replacement2 case_replacement4 case_replacement5
+
 
 end (* M_replacement *)
 
