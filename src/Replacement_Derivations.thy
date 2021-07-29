@@ -486,6 +486,63 @@ proof -
     by simp
 qed
 
+lemma strong_replacement_separation :
+  assumes "lam_replacement(M,f)" "separation(M,P)"
+    "\<forall>x[M]. M(f(x))"
+  shows "strong_replacement(M, \<lambda>x y . P(x) \<and> y=f(x))"
+proof -
+  { 
+  fix A
+  let ?Q="\<lambda>X. \<forall>b[M]. b \<in> X \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> P(x) \<and> b = f(x))"
+  assume "M(A)"
+  moreover from this
+  have "M({x\<in>A . P(x)})" (is "M(?B)") using assms by simp
+  moreover from calculation
+  have "M({f(x) . x\<in>?B})" (is "M(?F)")
+    using assms lam_replacement_imp_strong_replacement
+      RepFun_closed[of _ ?B] transM[of _ A]
+    by simp
+  moreover from assms calculation
+  have P:"\<forall>b[M]. b \<in> ?F \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> P(x) \<and> b = f(x))"
+    by simp
+  ultimately
+  have "\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> P(x) \<and> b = f(x))"
+    using rexI[of ?Q ?F M] by simp
+  }
+  then 
+  show ?thesis
+    unfolding strong_replacement_def by simp
+qed
+
+(* FIXME: use proper angle brackets *)
+lemma lam_replacement_separation :
+  assumes "lam_replacement(M,f)" "separation(M,P)"
+    "\<forall>x[M]. M(f(x))"
+  shows "strong_replacement(M, \<lambda>x y . P(x) \<and> y=<x,f(x)>)"
+proof -
+  { 
+  fix A
+  let ?Q="\<lambda>X. \<forall>b[M]. b \<in> X \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> P(x) \<and> b = <x,f(x)>)"
+  assume "M(A)"
+  moreover from this
+  have "M({x\<in>A . P(x)})" (is "M(?B)") using assms by simp
+  moreover from calculation
+  have "M({<x,f(x)> . x\<in>?B})" (is "M(?F)")
+    using assms lam_replacement_def
+      RepFun_closed[of _ ?B] transM[of _ A]
+    by simp
+  moreover from assms calculation
+  have P:"\<forall>b[M]. b \<in> ?F \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> P(x) \<and> b = <x,f(x)>)"
+    by simp
+  ultimately
+  have "\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> P(x) \<and> b = <x,f(x)>)"
+    using rexI[of ?Q ?F M] by simp
+  }
+  then 
+  show ?thesis
+    unfolding strong_replacement_def by simp
+qed
+
 lemma if_then_Inj_replacement:
   shows "M(A) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, if x \<in> A then Inl(x) else Inr(x)\<rangle>)"
   using lam_replacement_if lam_replacement_Inl lam_replacement_Inr separation_in
@@ -620,30 +677,10 @@ begin
 
 lemma lepoll_assumptions1:
   shows "lepoll_assumptions1(M,A,F,S,fa,K,x,f,r)"
-proof -
-  {
-    fix z C
-    assume "z\<in>S" "M(C)"
-    moreover from this
-    have "M(z)" "\<forall>y[M]. M({\<langle>z, y\<rangle>})" by (auto dest:transM)
-    moreover
-    have "\<forall>C[M]. univalent(M, C, \<lambda>t y. y = {\<langle>z, t\<rangle>})" by simp
-    ultimately
-    have "M(Z) \<Longrightarrow> \<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>xa[M]. xa \<in> Z \<and> b = {\<langle>z, xa\<rangle>})" for Z
-      using lam_replacement_surj_imp_inj1[THEN
-          lam_replacement_imp_strong_replacement]
-      unfolding strong_replacement_def by simp
-    moreover from \<open>M(C)\<close> \<open>M(z)\<close>
-    have "M(C \<inter> F(A,z))" by simp
-    ultimately
-    have "\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>xa[M]. xa \<in> C \<inter> F(A, z) \<and> b = {\<langle>z, xa\<rangle>})"
-      by blast
-  }
-  then
-  show ?thesis
-    unfolding strong_replacement_def lepoll_assumptions_defs
-    by (simp)
-qed
+  unfolding lepoll_assumptions1_def
+  using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 separation_in]
+    transM[of _ S] 
+  by simp
 
 lemma lepoll_assumptions3:"lepoll_assumptions3(M,A,F,S,fa,K,x,f,r)"
   using lam_lepoll_assumption_F[THEN lam_replacement_imp_strong_replacement]
@@ -658,30 +695,10 @@ lemma lepoll_assumptions4:"lepoll_assumptions4(M,A,F,S,fa,K,x,f,r)"
 
 lemma lepoll_assumptions6:\<comment> \<open>almost copy-paste\<close>
   shows "lepoll_assumptions6(M,A,F,S,fa,K,x,f,r)"
-proof -
-  {
-    fix C
-    assume "M(C)"
-    moreover from this
-    have "\<forall>y[M]. M({\<langle>x, y\<rangle>})" by (auto dest:transM)
-    moreover
-    have "\<forall>C[M]. univalent(M, C, \<lambda>t y. y = {\<langle>x, t\<rangle>})" by simp
-    ultimately
-    have "M(Z) \<Longrightarrow> \<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>xa[M]. xa \<in> Z \<and> b = {\<langle>x, xa\<rangle>})" for Z
-      using lam_replacement_surj_imp_inj1[THEN
-          lam_replacement_imp_strong_replacement]
-      unfolding strong_replacement_def by simp
-    moreover from \<open>M(C)\<close>
-    have "M(C \<inter> inj\<^bsup>M\<^esup>(F(A, x),S))" by simp
-    ultimately
-    have "\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>xa[M]. xa \<in> C \<inter> inj\<^bsup>M\<^esup>(F(A, x),S) \<and> b = {\<langle>x, xa\<rangle>})"
-      by blast
-  }
-  then
-  show ?thesis
-    unfolding strong_replacement_def lepoll_assumptions_defs
-    by simp
-qed
+  unfolding lepoll_assumptions6_def
+  using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 separation_in]
+    transM[of _ S] lam_replacement_inj_rel
+  by simp
 
 lemma lepoll_assumptions9:"lepoll_assumptions9(M,A,F,S,fa,K,x,f,r)"
   using lam_replacement_minimum lam_replacement_constant lam_lepoll_assumption_F
@@ -690,9 +707,25 @@ lemma lepoll_assumptions9:"lepoll_assumptions9(M,A,F,S,fa,K,x,f,r)"
   by (rule_tac lam_replacement_hcomp2[of _ _ minimum])
     (force intro: lam_replacement_identity)+
 
+lemma lepoll_assumptions11:"lepoll_assumptions11(M, A, F, S, fa, K, x, f, r)"
+  unfolding lepoll_assumptions11_def 
+  using lam_replacement_imp_strong_replacement
+    lam_replacement_if[OF _ _ separation_in[of "range(f)"]]
+    lam_replacement_constant
+    lam_replacement_hcomp lam_replacement_apply
+    lam_lepoll_assumption_F
+  by simp
+
+lemma lepoll_assumptions12:
+  shows "lepoll_assumptions12(M,A,F,S,fa,K,x,f,r)"
+  unfolding lepoll_assumptions12_def
+  using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 separation_in]
+    transM[of _ S] 
+  by simp
+
 find_theorems name:lepoll_assumptions name:def -name:defs
 -name:"assumptions1_" -name:assumptions6 -name:assumptions3 -name:assumptions4 -name:assumptions9
-
+-name:"assumptions11_" -name:"assumptions12_"
 end (* M_replacement_lepoll *)
 
 find_theorems
