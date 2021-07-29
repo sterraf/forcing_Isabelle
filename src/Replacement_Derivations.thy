@@ -395,7 +395,6 @@ lemma surj_imp_inj_replacement3:
 lemma lam_replacement_minimum_vimage:
   "M(f) \<Longrightarrow> M(r) \<Longrightarrow> lam_replacement(M, \<lambda>x. minimum(r, f -`` {x}))"
   using lam_replacement_minimum lam_replacement_vimage_sing lam_replacement_constant
-    lam_replacement_hcomp2[of _ _ vimage]
   by (rule_tac lam_replacement_hcomp2[of _ _ minimum])
     (force intro: lam_replacement_identity)+
 
@@ -608,6 +607,93 @@ lemma case_replacement5:
   by simp
 
 end (* M_replacement *)
+
+locale M_replacement_lepoll = M_replacement + M_inj +
+  fixes A F S fa K x f r
+  assumes
+    types[simp]:"M(A)" "\<forall>x[M]. M(F(A,x))" "M(S)" "M(fa)" "M(K)" "M(x)" "M(f)" "M(r)"
+    and
+    lam_lepoll_assumption_F:"lam_replacement(M,F(A))"
+    and
+    lam_replacement_inj_rel:"lam_replacement(M, \<lambda>p. inj\<^bsup>M\<^esup>(fst(p),snd(p)))"
+begin
+
+lemma lepoll_assumptions1:
+  shows "lepoll_assumptions1(M,A,F,S,fa,K,x,f,r)"
+proof -
+  {
+    fix z C
+    assume "z\<in>S" "M(C)"
+    moreover from this
+    have "M(z)" "\<forall>y[M]. M({\<langle>z, y\<rangle>})" by (auto dest:transM)
+    moreover
+    have "\<forall>C[M]. univalent(M, C, \<lambda>t y. y = {\<langle>z, t\<rangle>})" by simp
+    ultimately
+    have "M(Z) \<Longrightarrow> \<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>xa[M]. xa \<in> Z \<and> b = {\<langle>z, xa\<rangle>})" for Z
+      using lam_replacement_surj_imp_inj1[THEN
+          lam_replacement_imp_strong_replacement]
+      unfolding strong_replacement_def by simp
+    moreover from \<open>M(C)\<close> \<open>M(z)\<close>
+    have "M(C \<inter> F(A,z))" by simp
+    ultimately
+    have "\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>xa[M]. xa \<in> C \<inter> F(A, z) \<and> b = {\<langle>z, xa\<rangle>})"
+      by blast
+  }
+  then
+  show ?thesis
+    unfolding strong_replacement_def lepoll_assumptions_defs
+    by (simp)
+qed
+
+lemma lepoll_assumptions3:"lepoll_assumptions3(M,A,F,S,fa,K,x,f,r)"
+  using lam_lepoll_assumption_F[THEN lam_replacement_imp_strong_replacement]
+  unfolding lepoll_assumptions_defs by simp
+
+lemma lepoll_assumptions4:"lepoll_assumptions4(M,A,F,S,fa,K,x,f,r)"
+  using lam_replacement_minimum lam_replacement_constant lam_lepoll_assumption_F
+  unfolding lepoll_assumptions_defs
+    lam_replacement_def[symmetric]
+  by (rule_tac lam_replacement_hcomp2[of _ _ minimum])
+    (force intro: lam_replacement_identity)+
+
+lemma lepoll_assumptions6:\<comment> \<open>almost copy-paste\<close>
+  shows "lepoll_assumptions6(M,A,F,S,fa,K,x,f,r)"
+proof -
+  {
+    fix C
+    assume "M(C)"
+    moreover from this
+    have "\<forall>y[M]. M({\<langle>x, y\<rangle>})" by (auto dest:transM)
+    moreover
+    have "\<forall>C[M]. univalent(M, C, \<lambda>t y. y = {\<langle>x, t\<rangle>})" by simp
+    ultimately
+    have "M(Z) \<Longrightarrow> \<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>xa[M]. xa \<in> Z \<and> b = {\<langle>x, xa\<rangle>})" for Z
+      using lam_replacement_surj_imp_inj1[THEN
+          lam_replacement_imp_strong_replacement]
+      unfolding strong_replacement_def by simp
+    moreover from \<open>M(C)\<close>
+    have "M(C \<inter> inj\<^bsup>M\<^esup>(F(A, x),S))" by simp
+    ultimately
+    have "\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>xa[M]. xa \<in> C \<inter> inj\<^bsup>M\<^esup>(F(A, x),S) \<and> b = {\<langle>x, xa\<rangle>})"
+      by blast
+  }
+  then
+  show ?thesis
+    unfolding strong_replacement_def lepoll_assumptions_defs
+    by simp
+qed
+
+lemma lepoll_assumptions9:"lepoll_assumptions9(M,A,F,S,fa,K,x,f,r)"
+  using lam_replacement_minimum lam_replacement_constant lam_lepoll_assumption_F
+    lam_replacement_hcomp2[of _ _ "inj_rel(M)"] lam_replacement_inj_rel lepoll_assumptions4
+  unfolding lepoll_assumptions_defs lam_replacement_def[symmetric]
+  by (rule_tac lam_replacement_hcomp2[of _ _ minimum])
+    (force intro: lam_replacement_identity)+
+
+find_theorems name:lepoll_assumptions name:def -name:defs
+-name:"assumptions1_" -name:assumptions6 -name:assumptions3 -name:assumptions4 -name:assumptions9
+
+end (* M_replacement_lepoll *)
 
 find_theorems
 "strong_replacement(_,\<lambda>x y. y = <x,_>)" -"strong_replacement(_,\<lambda>x y. y = <x,_>) \<Longrightarrow> _"
