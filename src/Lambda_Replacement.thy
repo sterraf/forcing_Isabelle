@@ -694,8 +694,8 @@ lemma case_replacement5:
   unfolding lam_replacement_def
   by simp
 
-lemma lam_replacement_Least:
-  assumes "lam_replacement(M, \<lambda>p. g(p))" "lam_replacement(M,\<lambda>x. \<mu> i. i\<in>F(i,x))"
+lemma lam_replacement_hcomp_Least:
+  assumes "lam_replacement(M, g)" "lam_replacement(M,\<lambda>x. \<mu> i. i\<in>F(i,x))"
     "\<forall>x[M]. M(g(x))" "\<And>x i. M(x) \<Longrightarrow> i \<in> F(i, x) \<Longrightarrow> M(i)"
   shows "lam_replacement(M,\<lambda>x. \<mu> i. i\<in>F(i,g(x)))"
   using assms
