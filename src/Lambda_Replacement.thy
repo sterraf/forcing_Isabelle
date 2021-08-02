@@ -340,7 +340,7 @@ lemma lam_replacement_constant: "M(b) \<Longrightarrow> lam_replacement(M,\<lamb
   unfolding lam_replacement_def strong_replacement_def
   by safe (rule_tac x="_\<times>{b}" in rexI; blast)
 
-lemma lam_replacement_sing: "M(f) \<Longrightarrow> lam_replacement(M, \<lambda>x. {x})"
+lemma lam_replacement_sing: "lam_replacement(M, \<lambda>x. {x})"
   using lam_replacement_constant lam_replacement_cons
      lam_replacement_hcomp2[of "\<lambda>x. x" "\<lambda>_. 0" cons]
   by (force intro: lam_replacement_identity)
@@ -693,6 +693,14 @@ lemma case_replacement5:
          lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_snd]]]
   unfolding lam_replacement_def
   by simp
+
+lemma lam_replacement_Least:
+  assumes "lam_replacement(M, \<lambda>p. g(p))" "lam_replacement(M,\<lambda>x. \<mu> i. i\<in>F(i,x))"
+    "\<forall>x[M]. M(g(x))" "\<And>x i. M(x) \<Longrightarrow> i \<in> F(i, x) \<Longrightarrow> M(i)"
+  shows "lam_replacement(M,\<lambda>x. \<mu> i. i\<in>F(i,g(x)))"
+  using assms
+  by (rule_tac lam_replacement_hcomp[of _ "\<lambda>x. \<mu> i. i\<in>F(i,x)"])
+    (auto intro:Least_closed')
 
 lemmas replacements = Pair_diff_replacement id_replacement tag_replacement
   pospend_replacement prepend_replacement
