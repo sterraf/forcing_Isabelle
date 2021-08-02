@@ -380,7 +380,6 @@ locale M_cardinal_library = M_library + M_replacement +
     cardinal_lib_assms1:
     "M(A) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> lepoll_assumptions7(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> lepoll_assumptions8(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
@@ -388,32 +387,21 @@ locale M_cardinal_library = M_library + M_replacement +
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions18(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
     and
     cardinal_lib_assms2:
-    "M(A) \<Longrightarrow> lepoll_assumptions1(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
     "M(A) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> lepoll_assumptions3(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions4(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions6(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> lepoll_assumptions7(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
     "M(A) \<Longrightarrow> lepoll_assumptions8(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions9(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions11(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions12(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions18(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
     and
     cardinal_lib_assms3:
     "M(A) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions7(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions8(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
@@ -421,7 +409,6 @@ locale M_cardinal_library = M_library + M_replacement +
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions18(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
     and
     cdlt_replacement:
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q} \<and> z = {\<langle>x, y\<rangle>})"
@@ -434,7 +421,6 @@ locale M_cardinal_library = M_library + M_replacement +
     "M(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
     and 
     cardinal_lib_assms6:
-    "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = transrec(x, \<lambda>a g. f ` (g `` a)))"
     "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
     "separation(M, \<lambda> x . \<exists>a. \<exists>b . x=\<langle>a,b\<rangle> \<and> a\<noteq>b)"
 
@@ -575,8 +561,8 @@ proof -
     by (cases "M(x)") auto
   ultimately
   interpret M_cardinal_UN_lepoll _  "\<lambda>n. if M(n) then G`n else 0" "domain(G)"
-    using cardinal_lib_assms2
-    by unfold_locales simp_all
+    using cardinal_lib_assms2 lepoll_assumptions
+    apply unfold_locales apply (auto) sorry
   assume "function(G)"
   let ?N="domain(G)" and ?R="\<Union>n\<in>domain(G). G`n"
   assume "?N \<lesssim>\<^bsup>M\<^esup> \<omega>"
@@ -765,7 +751,9 @@ proof(induct rule:trans_induct)
     by auto
   moreover from assms this step
   have "M(?X)"
-    using RepFun_closed[OF cardinal_lib_assms6(1)] transM[OF _ \<open>M(\<beta>)\<close>] transM[OF step(2) \<open>M(G)\<close>]
+    using cardinal_lib_assms6(1)[unfolded lam_replacement_def[symmetric],
+        THEN lam_replacement_imp_strong_replacement, THEN RepFun_closed]
+      transM[OF _ \<open>M(\<beta>)\<close>] transM[OF step(2) \<open>M(G)\<close>]
     unfolding rec_constr_def
     by simp
   moreover from calculation \<open>M(G)\<close>
@@ -874,7 +862,7 @@ proof -
   moreover from \<open>f\<union>Cb \<in> _\<rightarrow>\<^bsup>M\<^esup> G\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close> \<open>M(G)\<close> \<open>M(f \<union> Cb)\<close>
   have "M(S)"
     unfolding S_def
-    using lam_closed[OF cardinal_lib_assms6(2)]
+    using lam_closed[OF cardinal_lib_assms6(1)]
       rec_constr_closed Ord_in_Ord[OF Card_rel_is_Ord] transM[OF _ \<open>M(\<gamma>)\<close>]
     unfolding rec_constr_def
     by simp

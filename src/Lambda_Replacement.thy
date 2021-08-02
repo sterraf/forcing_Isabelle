@@ -480,6 +480,14 @@ lemma lam_replacement_id2: "lam_replacement(M, \<lambda>x. \<langle>x, x\<rangle
 
 lemmas id_replacement = lam_replacement_id2[unfolded lam_replacement_def]
 
+lemma lam_replacement_apply2:"lam_replacement(M, \<lambda>p. fst(p) ` snd(p))"
+  using lam_replacement_sing lam_replacement_fst lam_replacement_snd
+    lam_replacement_Image lam_replacement_Union
+  unfolding apply_def
+  by (rule_tac lam_replacement_hcomp[of _ Union],
+      rule_tac lam_replacement_hcomp2[of _ _ "(``)"])
+         (force intro:lam_replacement_hcomp)+
+
 lemma lam_replacement_apply:"M(S) \<Longrightarrow> lam_replacement(M, \<lambda>x.  S ` x)"
   using lam_replacement_Union lam_replacement_constant lam_replacement_identity
     lam_replacement_Image lam_replacement_cons

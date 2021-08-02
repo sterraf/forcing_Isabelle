@@ -20,7 +20,6 @@ locale M_master = M_cohen +
   UN_lepoll_assumptions:
   "M(A) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
-  "M(A) \<Longrightarrow> lepoll_assumptions7(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> lepoll_assumptions8(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
@@ -28,7 +27,6 @@ locale M_master = M_cohen +
   "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
-  "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions18(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
 
 begin
 

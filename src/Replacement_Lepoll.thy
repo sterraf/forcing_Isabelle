@@ -137,6 +137,14 @@ lemma lepoll_assumptions6:
   unfolding lepoll_assumptions6_def
   by simp
 
+lemma lepoll_assumptions7:
+  assumes types[simp]:"M(A)" "M(S)" "M(x)"
+  shows "lepoll_assumptions7(M,A,F,S,fa,K,x,f,r)"
+  using lam_replacement_constant lam_lepoll_assumption_F lam_replacement_inj_rel
+  unfolding lepoll_assumptions_defs
+  by (rule_tac lam_replacement_imp_strong_replacement)
+    (rule_tac lam_replacement_hcomp2[of _ _ "inj_rel(M)"], simp_all)
+
 lemma lepoll_assumptions9:
   assumes types[simp]:"M(A)" "M(S)" "M(r)"
   shows "lepoll_assumptions9(M,A,F,S,fa,K,x,f,r)"
@@ -164,13 +172,21 @@ lemma lepoll_assumptions12:
   unfolding lepoll_assumptions12_def
   by simp
 
-lemmas lepoll_assumptions = lepoll_assumptions1 lepoll_assumptions3
-  lepoll_assumptions4 lepoll_assumptions6 lepoll_assumptions9 
-  lepoll_assumptions11 lepoll_assumptions12
+lemma lepoll_assumptions18:
+  assumes types[simp]:"M(A)" "M(K)" "M(f)" "M(r)"
+  shows "lepoll_assumptions18(M,A,F,S,fa,K,x,f,r)"
+  using lam_replacement_constant lam_replacement_inj_rel lam_lepoll_assumption_F
+    lam_replacement_minimum lam_replacement_identity lam_replacement_apply2 separation_in
+  unfolding lepoll_assumptions18_def lam_replacement_def[symmetric]
+  apply (rule_tac lam_replacement_hcomp2[of _ _ minimum], simp_all)
+  by (rule_tac lam_replacement_hcomp2[of _ _ "inj_rel(M)"], simp_all)
+    (rule_tac lam_replacement_if, rule_tac lam_replacement_hcomp[of _ "F(A)"],
+      rule_tac lam_replacement_hcomp2[of _ _ "(`)"], simp_all)
 
-find_theorems name:lepoll_assumptions name:def -name:defs
--name:"assumptions1_" -name:assumptions6 -name:assumptions3 -name:assumptions4 -name:assumptions9
--name:"assumptions11_" -name:"assumptions12_"
+lemmas lepoll_assumptions = lepoll_assumptions1 lepoll_assumptions3
+  lepoll_assumptions4 lepoll_assumptions6 lepoll_assumptions7 lepoll_assumptions9
+  lepoll_assumptions11 lepoll_assumptions12 lepoll_assumptions18
+
 end (* M_replacement_lepoll *)
 
 end
