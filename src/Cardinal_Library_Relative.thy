@@ -1001,6 +1001,7 @@ lemma Finite_to_one_rel_surj_rel_imp_cardinal_rel_eq:
   assumes "F \<in> Finite_to_one_rel(M,Z,Y) \<inter> surj_rel(M,Z,Y)" "Infinite(Z)" "M(Z)" "M(Y)"
   shows "|Y|\<^bsup>M\<^esup> = |Z|\<^bsup>M\<^esup>"
 proof -
+  have sep_true: "separation(M, M)" unfolding separation_def by auto
   note \<open>M(Z)\<close> \<open>M(Y)\<close>
   moreover from this assms
   have "M(F)" "F \<in> Z \<rightarrow> Y"
@@ -1022,12 +1023,14 @@ proof -
     then
     show ?thesis by simp
   qed
-  moreover
-  interpret M_replacement_lepoll M "\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0"
-    using cardinal_lib_assms3 lam_replacement_identity lam_replacement_inj_rel
-      lam_replacement_if[OF lam_replacement_apply
-        lam_replacement_constant[OF nonempty], where b=M]
-    apply unfold_locales apply (auto) sorry
+  (* FIXME: move this to Lambda_Replacement. *)
+  have "lam_replacement(M,\<lambda>x . {xa \<in> Z . F ` xa = x})" sorry
+  moreover from this
+  interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then {xa \<in> Z . F ` xa = x} else 0"
+    using cardinal_lib_assms3 lam_replacement_identity lam_replacement_inj_rel 1
+      lam_replacement_if[OF _
+        lam_replacement_constant[OF nonempty],where b=M] sep_true
+    by (unfold_locales, auto)
   have "w \<in> (if M(y) then {x\<in>Z . F`x = y} else 0) \<Longrightarrow> M(y)" for w y
     by (cases "M(y)") auto
   moreover from \<open>F\<in>_\<inter>_\<close>
