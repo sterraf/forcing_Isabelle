@@ -550,19 +550,22 @@ lemma UN_if_zero: "M(K) \<Longrightarrow> (\<Union>x\<in>K. if M(x) then G ` x e
 lemma lt_Aleph_rel_imp_cardinal_rel_UN_le_nat: "function(G) \<Longrightarrow> domain(G) \<lesssim>\<^bsup>M\<^esup> \<omega> \<Longrightarrow>
    \<forall>n\<in>domain(G). |G`n|\<^bsup>M\<^esup><\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> M(G) \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<^bsup>M\<^esup>\<le>\<omega>"
 proof -
+  have "separation(M, M)" unfolding separation_def by auto
+  then
   interpret M_replacement_lepoll M "\<lambda>G x. if M(x) then G`x else 0"
     using cardinal_lib_assms2 lam_replacement_identity lam_replacement_inj_rel
       lam_replacement_if[OF lam_replacement_apply
         lam_replacement_constant[OF nonempty], where b=M]
-    apply unfold_locales apply (auto) sorry
+    by (unfold_locales,auto)
   assume "M(G)"
   moreover
   have  "w \<in> (if M(x) then G ` x else 0) \<Longrightarrow> M(x)" for w x
     by (cases "M(x)") auto
   ultimately
   interpret M_cardinal_UN_lepoll _  "\<lambda>n. if M(n) then G`n else 0" "domain(G)"
-    using cardinal_lib_assms2 lepoll_assumptions
-    apply unfold_locales apply (auto) sorry
+    using lepoll_assumptions1[where S="domain(G)",unfolded lepoll_assumptions1_def]
+      cardinal_lib_assms2 lepoll_assumptions
+    by (unfold_locales, auto)
   assume "function(G)"
   let ?N="domain(G)" and ?R="\<Union>n\<in>domain(G). G`n"
   assume "?N \<lesssim>\<^bsup>M\<^esup> \<omega>"

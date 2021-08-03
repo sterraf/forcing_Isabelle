@@ -109,7 +109,6 @@ begin
 lemma lepoll_assumptions1:
   assumes types[simp]:"M(A)" "M(S)"
   shows "lepoll_assumptions1(M,A,F,S,fa,K,x,f,r)"
-  unfolding lepoll_assumptions1_def
   using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 separation_in]
     transM[of _ S]
   by simp
@@ -117,7 +116,6 @@ lemma lepoll_assumptions1:
 lemma lepoll_assumptions2:
   assumes types[simp]:"M(A)" "M(S)"
   shows "lepoll_assumptions2(M,A,F,S,fa,K,x,f,r)"
-  unfolding lepoll_assumptions2_def
   using lam_replacement_Sigfun lam_replacement_imp_strong_replacement
     assms lam_lepoll_assumption_F
   by simp
@@ -126,7 +124,7 @@ lemma lepoll_assumptions3:
   assumes types[simp]:"M(A)"
   shows "lepoll_assumptions3(M,A,F,S,fa,K,x,f,r)"
   using lam_lepoll_assumption_F[THEN lam_replacement_imp_strong_replacement]
-  unfolding lepoll_assumptions_defs by simp
+  by simp
 
 lemma lepoll_assumptions4:
   assumes types[simp]:"M(A)" "M(r)"
@@ -142,7 +140,6 @@ lemma lepoll_assumptions6:
   shows "lepoll_assumptions6(M,A,F,S,fa,K,x,f,r)"
   using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 separation_in]
      lam_replacement_inj_rel
-  unfolding lepoll_assumptions6_def
   by simp
 
 lemma lepoll_assumptions7:
@@ -189,14 +186,12 @@ lemma lepoll_assumptions11:
     lam_replacement_constant
     lam_replacement_hcomp lam_replacement_apply
     lam_lepoll_assumption_F
-  unfolding lepoll_assumptions11_def
   by simp
 
 lemma lepoll_assumptions12:
   assumes types[simp]:"M(A)" "M(x)" "M(f)"
   shows "lepoll_assumptions12(M,A,F,S,fa,K,x,f,r)"
   using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 separation_in]
-  unfolding lepoll_assumptions12_def
   by simp
 
 lemma lepoll_assumptions15:
@@ -218,11 +213,9 @@ lemma lepoll_assumptions16:
        lam_lepoll_assumption_F[of A]
   by simp
 
-
 lemma lepoll_assumptions17:
   assumes types[simp]:"M(A)" "M(f)" "M(K)"
   shows "lepoll_assumptions17(M,A,F,S,fa,K,x,f,r)"
-  unfolding lepoll_assumptions17_def
   using lam_replacement_Sigfun lam_replacement_imp_strong_replacement
     lam_replacement_inj_rel lam_replacement_constant
     lam_replacement_hcomp2[of _ _ "inj_rel(M)"]
