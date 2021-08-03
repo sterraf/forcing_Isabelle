@@ -1023,12 +1023,10 @@ proof -
     then
     show ?thesis by simp
   qed
-  (* FIXME: move this to Lambda_Replacement. *)
-  have "lam_replacement(M,\<lambda>x . {xa \<in> Z . F ` xa = x})" sorry
   moreover from this
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then {xa \<in> Z . F ` xa = x} else 0"
     using cardinal_lib_assms3 lam_replacement_identity lam_replacement_inj_rel 1
-      lam_replacement_if[OF _
+      lam_replacement_Collect_apply lam_replacement_if[OF _
         lam_replacement_constant[OF nonempty],where b=M] sep_true
     by (unfold_locales, auto)
   have "w \<in> (if M(y) then {x\<in>Z . F`x = y} else 0) \<Longrightarrow> M(y)" for w y
@@ -1039,7 +1037,7 @@ proof -
     using transM[OF that \<open>M(Y)\<close>] transM[OF _ \<open>M(Z)\<close>] that by simp
   ultimately
   interpret M_cardinal_UN_lepoll _ "\<lambda>y. if M(y) then {x\<in>Z . F`x = y} else 0" Y
-    using cardinal_lib_assms3 lepoll_assumptions
+    using cardinal_lib_assms3 lepoll_assumptions 1
     by unfold_locales (auto dest:transM simp del:mem_inj_abs)
   from \<open>F\<in>Z\<rightarrow>Y\<close>
   have "Z = (\<Union>y\<in>Y. {x\<in>Z . F`x = y})"

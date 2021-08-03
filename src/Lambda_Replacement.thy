@@ -3,6 +3,7 @@ section\<open>Replacements using Lambdas\<close>
 theory Lambda_Replacement
   imports
     "ZF-Constructible.Relative"
+    ZF_Miscellanea\<comment> \<open>for \<^term>\<open>SepReplace\<close>\<close>
     Discipline_Function
     "../Tools/Try0"
 begin
@@ -837,6 +838,28 @@ lemma lam_replacement_hcomp_Least:
   by (rule_tac lam_replacement_hcomp[of _ "\<lambda>x. \<mu> i. i\<in>F(i,x)"])
     (auto intro:Least_closed')
 
+end (* M_replacement *)
+
+\<comment> \<open>To be used in the relativized treatment of Cohen posets\<close>
+definition
+  \<comment> \<open>"domain collect F"\<close>
+  dC_F :: "i \<Rightarrow> i \<Rightarrow> i" where
+  "dC_F(A,d) \<equiv> {p \<in> A. domain(p) = d }"
+
+definition
+  \<comment> \<open>"domain restrict SepReplace Y"\<close>
+  drSR_Y :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
+  "drSR_Y(r',D,A,x) \<equiv> {domain(p) .. p\<in>A, restrict(p,r') = x \<and> domain(p) \<in> D}"
+
+context M_replacement
+begin
+
+lemma lam_replacement_Collect_apply: "lam_replacement(M,\<lambda>x . {xa \<in> Z . F ` xa = x})"
+  sorry
+
+lemma lam_replacement_dC_F: "M(A) \<Longrightarrow> lam_replacement(M, dC_F(A))"
+  sorry
+
 lemmas replacements = Pair_diff_replacement id_replacement tag_replacement
   pospend_replacement prepend_replacement
   Inl_replacement1  diff_Pair_replacement
@@ -849,7 +872,6 @@ lemmas replacements = Pair_diff_replacement id_replacement tag_replacement
   ifx_replacement if_then_range_replacement2 if_then_range_replacement
   Inl_replacement2
   case_replacement1 case_replacement2 case_replacement4 case_replacement5
-
 
 end (* M_replacement *)
 
