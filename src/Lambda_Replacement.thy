@@ -854,9 +854,6 @@ definition
 context M_replacement
 begin
 
-lemma lam_replacement_Collect_apply: "lam_replacement(M,\<lambda>x . {xa \<in> Z . F ` xa = x})"
-  sorry
-
 lemma lam_replacement_dC_F: "M(A) \<Longrightarrow> lam_replacement(M, dC_F(A))"
   sorry
 

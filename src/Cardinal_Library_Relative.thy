@@ -400,15 +400,15 @@ locale M_cardinal_library = M_library + M_replacement +
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
     and
     cardinal_lib_assms3:
-    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions8(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>F x. if M(x) then {xa \<in> Z . F ` xa = x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions8(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
     and
     cdlt_replacement:
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q} \<and> z = {\<langle>x, y\<rangle>})"
@@ -1007,38 +1007,23 @@ proof -
   have "M(F)" "F \<in> Z \<rightarrow> Y"
     unfolding Finite_to_one_rel_def
     using function_space_rel_char by simp_all
-  moreover
-  have 1:"M(y) \<Longrightarrow> M({x\<in>Z . F`x = y})" for y
-  proof(cases "y\<in>Y")
-    case True
-    with \<open>M(Y)\<close> \<open>M(F)\<close>
-    show ?thesis
-      using vimage_fun_sing[OF \<open>F\<in>Z\<rightarrow>Y\<close> \<open>y\<in>Y\<close>] transM[OF _ \<open>M(Y)\<close>]
-      by auto
-  next
-    case False
-    then
-    have "{x \<in> Z . F ` x = y} = 0"
-      using apply_type[OF \<open>F\<in>Z\<rightarrow>Y\<close>] by auto
-    then
-    show ?thesis by simp
-  qed
   moreover from this
-  interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then {xa \<in> Z . F ` xa = x} else 0"
-    using cardinal_lib_assms3 lam_replacement_identity lam_replacement_inj_rel 1
-      lam_replacement_Collect_apply lam_replacement_if[OF _
-        lam_replacement_constant[OF nonempty],where b=M] sep_true
+  interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then F-``{x} else 0"
+    using cardinal_lib_assms3 lam_replacement_identity lam_replacement_inj_rel
+      lam_replacement_vimage_sing
+       lam_replacement_if[OF _
+        lam_replacement_constant[OF nonempty],where b=M] sep_true \<open>M(F)\<close>
     by (unfold_locales, auto)
-  have "w \<in> (if M(y) then {x\<in>Z . F`x = y} else 0) \<Longrightarrow> M(y)" for w y
+  have "w \<in> (if M(y) then F-``{y} else 0) \<Longrightarrow> M(y)" for w y
     by (cases "M(y)") auto
   moreover from \<open>F\<in>_\<inter>_\<close>
-  have 0:"Finite({x \<in> Z . F ` x = y})" if "y\<in>Y" for y
+  have 0:"Finite(F-``{y})" if "y\<in>Y" for y
     unfolding Finite_to_one_rel_def
-    using transM[OF that \<open>M(Y)\<close>] transM[OF _ \<open>M(Z)\<close>] that by simp
+    using vimage_fun_sing \<open>F\<in>Z\<rightarrow>Y\<close> transM[OF that \<open>M(Y)\<close>] transM[OF _ \<open>M(Z)\<close>] that by simp
   ultimately
-  interpret M_cardinal_UN_lepoll _ "\<lambda>y. if M(y) then {x\<in>Z . F`x = y} else 0" Y
-    using cardinal_lib_assms3 lepoll_assumptions 1
-    by unfold_locales (auto dest:transM simp del:mem_inj_abs)
+  interpret M_cardinal_UN_lepoll _ "\<lambda>y. if M(y) then F-``{y} else 0" Y
+    using cardinal_lib_assms3 lepoll_assumptions
+    by unfold_locales  (auto dest:transM simp del:mem_inj_abs)
   from \<open>F\<in>Z\<rightarrow>Y\<close>
   have "Z = (\<Union>y\<in>Y. {x\<in>Z . F`x = y})"
     using apply_type by auto
@@ -1048,8 +1033,8 @@ proof -
     case True
     with \<open>Z = (\<Union>y\<in>Y. {x\<in>Z . F`x = y})\<close> and assms and \<open>F\<in>Z\<rightarrow>Y\<close>
     show ?thesis
-      using Finite_RepFun[THEN [2] Finite_Union, of Y "\<lambda>y. {x\<in>Z . F`x = y}"] 0
-        by simp
+      using Finite_RepFun[THEN [2] Finite_Union, of Y "\<lambda>y. F-``{y}"] 0 vimage_fun_sing[OF \<open>F\<in>Z\<rightarrow>Y\<close>]
+      by simp
   next
     case False
     moreover from this \<open>M(Y)\<close>
@@ -1058,23 +1043,24 @@ proof -
     moreover
     note assms
     moreover from \<open>F\<in>_\<inter>_\<close>
-    have "Finite({x \<in> Z . F ` x = y})" if "y\<in>Y" for y
+    have "Finite({x\<in>Z . F`x = y})" "M(F-``{y})" if "y\<in>Y" for y
       unfolding Finite_to_one_rel_def
-      using transM[OF that  \<open>M(Y)\<close>] transM[OF _ \<open>M(Z)\<close>] that by simp
-    moreover from calculation and 1
+      using transM[OF that  \<open>M(Y)\<close>] transM[OF _ \<open>M(Z)\<close>] vimage_fun_sing[OF \<open>F\<in>Z\<rightarrow>Y\<close>] that
+      by simp_all
+    moreover from calculation
     have "|{x\<in>Z . F`x = y}|\<^bsup>M\<^esup> \<in> \<omega>" if "y\<in>Y" for y
-      using Finite_cardinal_rel_in_nat that transM[OF that \<open>M(Y)\<close>]
+      using Finite_cardinal_rel_in_nat that transM[OF that \<open>M(Y)\<close>] vimage_fun_sing[OF \<open>F\<in>Z\<rightarrow>Y\<close>] that
       by simp
-    moreover from calculation and 1
+    moreover from calculation
     have "|{x\<in>Z . F`x = y}|\<^bsup>M\<^esup> \<le> |Y|\<^bsup>M\<^esup>" if "y\<in>Y" for y
       using Infinite_imp_nats_lepoll_rel[THEN lepoll_rel_imp_cardinal_rel_le,
               of _ "|{x\<in>Z . F`x = y}|\<^bsup>M\<^esup>"]
-         that cardinal_rel_idem transM[OF that \<open>M(Y)\<close>]
+         that cardinal_rel_idem transM[OF that \<open>M(Y)\<close>] vimage_fun_sing[OF \<open>F\<in>Z\<rightarrow>Y\<close>]
       by auto
     ultimately
     have "|\<Union>y\<in>Y. {x\<in>Z . F`x = y}|\<^bsup>M\<^esup> \<le> |Y|\<^bsup>M\<^esup>"
       using leqpoll_rel_imp_cardinal_rel_UN_le
-        Infinite_InfCard_rel_cardinal_rel[of Y]
+        Infinite_InfCard_rel_cardinal_rel[of Y] vimage_fun_sing[OF \<open>F\<in>Z\<rightarrow>Y\<close>]
       by(auto simp add:transM[OF _ \<open>M(Y)\<close>])
     moreover from \<open>F \<in> Finite_to_one_rel(M,Z,Y) \<inter> surj_rel(M,Z,Y)\<close> \<open>M(Z)\<close> \<open>M(F)\<close> \<open>M(Y)\<close>
     have "|Y|\<^bsup>M\<^esup> \<le> |Z|\<^bsup>M\<^esup>"
