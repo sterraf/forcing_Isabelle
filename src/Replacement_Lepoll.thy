@@ -113,9 +113,7 @@ locale M_replacement_lepoll = M_replacement + M_inj +
     lam_Least_assumption:"M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> 
         lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i))"
     and
-    (* FIXME: Remove the closure of least. *)
-    lam_Least_closed : "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow>
-        \<forall>x[M]. M(\<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i))"
+    F_args_closed: "x \<in> F(A,i) \<Longrightarrow> M(i)"
     and
     lam_replacement_inj_rel:"lam_replacement(M, \<lambda>p. inj\<^bsup>M\<^esup>(fst(p),snd(p)))"
 begin
@@ -148,6 +146,29 @@ lemma lepoll_assumptions4:
     lam_replacement_def[symmetric]
   by (rule_tac lam_replacement_hcomp2[of _ _ minimum])
     (force intro: lam_replacement_identity)+
+
+lemma lam_Least_closed :
+  assumes "M(A)" "M(b)" "M(f)"
+  shows "\<forall>x[M]. M(\<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i))"
+proof -
+  have "x \<in> (if i \<in> range(f) then F(A, converse(f) ` i) else 0) \<Longrightarrow> M(i)" for x i
+  proof (cases "i\<in>range(f)")
+    case True
+    with \<open>M(f)\<close>
+    show ?thesis by (auto dest:transM)
+  next
+    case False
+    moreover
+    assume "x \<in> (if i \<in> range(f) then F(A, converse(f) ` i) else 0)"
+    ultimately
+    show ?thesis
+       by auto
+  qed
+  then
+    show ?thesis
+  using F_args_closed unfolding if_range_F_else_F_def if_range_F_def
+  by (clarify, rule_tac Least_closed', cases "b=0") (auto)
+qed
 
 lemma lepoll_assumptions5:
    assumes

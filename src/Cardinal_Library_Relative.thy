@@ -380,20 +380,14 @@ locale M_cardinal_library = M_library + M_replacement +
     cardinal_lib_assms1:
     "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> 
         lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(\<lambda>A x. if M(x) then x else 0,b,A,f,i))"
-    "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow>
-        \<forall>x[M]. M(\<mu> i. x \<in> if_range_F_else_F(\<lambda>A x. if M(x) then x else 0,b,A,f,i))"
     and
     cardinal_lib_assms2:
-    "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> 
-        lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(\<lambda>G x. if M(x) then G`x else 0,b,A,f,i))"
-    "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow>
-        \<forall>x[M]. M(\<mu> i. x \<in> if_range_F_else_F(\<lambda>G x. if M(x) then G`x else 0,b,A,f,i))"    
+    "M(G) \<Longrightarrow> M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow>
+        lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(\<lambda>_ x. if M(x) then G`x else 0,b,A,f,i))"
     and
     cardinal_lib_assms3:
     "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(F) \<Longrightarrow>
         lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(\<lambda>_ x. if M(x) then F-``{x} else 0,b,A,f,i))"
-    "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(F) \<Longrightarrow>
-        \<forall>x[M]. M(\<mu> i. x \<in> if_range_F_else_F(\<lambda>_ x. if M(x) then F-``{x} else 0,b,A,f,i))"    
     and
     cdlt_replacement:
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q} \<and> z = {\<langle>x, y\<rangle>})"
@@ -415,6 +409,9 @@ lemma countable_rel_union_countable_rel:
   assumes "\<And>x. x \<in> C \<Longrightarrow> countable_rel(M,x)" "countable_rel(M,C)" "M(C)"
   shows "countable_rel(M,\<Union>C)"
 proof -
+  have "x \<in> (if M(i) then i else 0) \<Longrightarrow> M(i)" for x i
+    by (cases "M(i)") auto
+  then
   \<comment> \<open>These few lines repeat below mutatis mutandis\<close>
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then x else 0"
     using cardinal_lib_assms1 lam_replacement_if[OF lam_replacement_identity
@@ -535,14 +532,19 @@ lemma UN_if_zero: "M(K) \<Longrightarrow> (\<Union>x\<in>K. if M(x) then G ` x e
 lemma lt_Aleph_rel_imp_cardinal_rel_UN_le_nat: "function(G) \<Longrightarrow> domain(G) \<lesssim>\<^bsup>M\<^esup> \<omega> \<Longrightarrow>
    \<forall>n\<in>domain(G). |G`n|\<^bsup>M\<^esup><\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> M(G) \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<^bsup>M\<^esup>\<le>\<omega>"
 proof -
+  assume "M(G)"
+  moreover from this
+  have "x \<in> (if M(i) then G ` i else 0) \<Longrightarrow> M(i)" for x i
+    by (cases "M(i)") auto
+  moreover
   have "separation(M, M)" unfolding separation_def by auto
-  then
-  interpret M_replacement_lepoll M "\<lambda>G x. if M(x) then G`x else 0"
+  ultimately
+  interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then G`x else 0"
     using cardinal_lib_assms2 lam_replacement_identity lam_replacement_inj_rel
       lam_replacement_if[OF lam_replacement_apply
         lam_replacement_constant[OF nonempty], where b=M]
-    by (unfold_locales,auto)
-  assume "M(G)"
+    by unfold_locales auto
+  note \<open>M(G)\<close>
   moreover
   have  "w \<in> (if M(x) then G ` x else 0) \<Longrightarrow> M(x)" for w x
     by (cases "M(x)") auto
@@ -993,6 +995,9 @@ proof -
     unfolding Finite_to_one_rel_def
     using function_space_rel_char by simp_all
   moreover from this
+  have "x \<in> (if M(i) then F -`` {i} else 0) \<Longrightarrow> M(i)" for x i
+    by (cases "M(i)") auto
+  moreover from calculation
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then F-``{x} else 0"
     using cardinal_lib_assms3 lam_replacement_inj_rel
       lam_replacement_vimage_sing
