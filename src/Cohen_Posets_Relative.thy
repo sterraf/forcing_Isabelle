@@ -6,20 +6,8 @@ theory Cohen_Posets_Relative
     Delta_System_Relative
 begin
 
-definition
-  \<comment> \<open>"domain collect F"\<close>
-  dC_F :: "i \<Rightarrow> i \<Rightarrow> i" where
-  "dC_F(A,d) \<equiv> {p \<in> A. domain(p) = d }"
-
-definition
-  \<comment> \<open>"domain restrict SepReplace Y\<close>
-  drSR_Y :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
-  "drSR_Y(r',D,A,x) \<equiv> {domain(p) .. p\<in>A, restrict(p,r') = x \<and> domain(p) \<in> D}"
-
 locale M_cohen = M_delta +
   assumes
-    separation_domain: "\<forall>d[M].separation(M, \<lambda>x . domain(x) = d)"
-    and
     separaton_domain_pair: "separation(M, \<lambda>p. \<forall>x\<in>A. x \<in> snd(p) \<longleftrightarrow> domain(x) = fst(p))"
     and
     countable_lepoll_assms2:
@@ -29,23 +17,10 @@ locale M_cohen = M_delta +
     and
     countable_lepoll_assms3:
     "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions1(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions2(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions3(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions4(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions5(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions6(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions7(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions8(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions9(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions10(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions11(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions12(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions13(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(S) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions6(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions14(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions15(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions16(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions17(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions18(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
     and
     domain_mem_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>x . domain(x)\<in>A)"
     and
@@ -246,19 +221,14 @@ proof -
         using separation_closed domain_eq_separation transM[OF _ \<open>M(A)\<close>] by simp
       moreover from this
       interpret M_replacement_lepoll M dC_F
-        using lam_replacement_dC_F separaton_domain_pair separation_domain
+        using lam_replacement_dC_F separaton_domain_pair domain_eq_separation
           lam_replacement_inj_rel
-        unfolding dC_F_def Lambda_Replacement.dC_F_def
+        unfolding dC_F_def
         by unfold_locales (simp_all)
-      have "\<forall>x\<in>({domain(p) . p \<in> A}). strong_replacement(M, \<lambda>y z. y \<in> A \<and> domain(y) = x \<and> z = {\<langle>x, y\<rangle>})"
-        using lepoll_assumptions1[OF \<open>M(A)\<close> \<open>M({domain(p) . p \<in> A})\<close>]
-        unfolding dC_F_def lepoll_assumptions1_def
-        by simp
-      then have "y\<in>A \<Longrightarrow> strong_replacement(M, \<lambda>ya z. ya \<in> A \<and> domain(ya) = domain(y) \<and> z = {\<langle>domain(y), ya\<rangle>})" for y
-        by simp
-      with calculation
+      from calculation
       interpret M_cardinal_UN_lepoll _ "dC_F(A)" "{domain(p). p\<in>A}"
         using countable_lepoll_assms2 lepoll_assumptions transM[of _ A]
+            lepoll_assumptions1[OF \<open>M(A)\<close> \<open>M({domain(p) . p \<in> A})\<close>]
         unfolding dC_F_def
         by unfold_locales (auto)
       from \<open>A \<subseteq> Fn(nat, I, 2)\<close>
@@ -403,9 +373,16 @@ proof -
       have "M(Pow\<^bsup>M\<^esup>(r \<times> 2))" by simp
       moreover
       note \<open>M(A)\<close> \<open>\<And>f. M(f) \<Longrightarrow> M(?Y(f))\<close> \<open>M(D)\<close>
-      ultimately
+      moreover from calculation
+      interpret M_replacement_lepoll M "drSR_Y(r,D)"
+        using lam_replacement_dC_F separaton_domain_pair domain_eq_separation
+          lam_replacement_inj_rel
+        unfolding drSR_Y_def
+        apply unfold_locales apply(simp_all) sorry
+      from calculation
       interpret M_cardinal_UN_lepoll _ ?Y "Pow_rel(M,r\<times>2)"
         using countable_lepoll_assms3[where S="Pow_rel(M,r\<times>2)" and A=A and D=D and r'=r]
+          lepoll_assumptions
         unfolding lepoll_assumptions_defs drSR_Y_def
         apply unfold_locales defer defer prefer 6 apply (blast dest: transM)
         by (unfold lepoll_assumptions_defs, fast) (auto dest:transM)\<comment> \<open>NOTE VERY SLOW: 25s\<close>
