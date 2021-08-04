@@ -378,16 +378,22 @@ locale M_cardinal_library = M_library + M_replacement +
     lam_replacement_inj_rel:"lam_replacement(M, \<lambda>x. inj\<^bsup>M\<^esup>(fst(x),snd(x)))"
     and
     cardinal_lib_assms1:
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> 
+        lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(\<lambda>A x. if M(x) then x else 0,b,A,f,i))"
+    "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow>
+        \<forall>x[M]. M(\<mu> i. x \<in> if_range_F_else_F(\<lambda>A x. if M(x) then x else 0,b,A,f,i))"
     and
     cardinal_lib_assms2:
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> 
+        lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(\<lambda>G x. if M(x) then G`x else 0,b,A,f,i))"
+    "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow>
+        \<forall>x[M]. M(\<mu> i. x \<in> if_range_F_else_F(\<lambda>G x. if M(x) then G`x else 0,b,A,f,i))"    
     and
     cardinal_lib_assms3:
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(F) \<Longrightarrow>
+        lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(\<lambda>_ x. if M(x) then F-``{x} else 0,b,A,f,i))"
+    "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(F) \<Longrightarrow>
+        \<forall>x[M]. M(\<mu> i. x \<in> if_range_F_else_F(\<lambda>_ x. if M(x) then F-``{x} else 0,b,A,f,i))"    
     and
     cdlt_replacement:
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q} \<and> z = {\<langle>x, y\<rangle>})"
@@ -988,11 +994,11 @@ proof -
     using function_space_rel_char by simp_all
   moreover from this
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then F-``{x} else 0"
-    using cardinal_lib_assms3 lam_replacement_identity lam_replacement_inj_rel
+    using cardinal_lib_assms3 lam_replacement_inj_rel
       lam_replacement_vimage_sing
        lam_replacement_if[OF _
-        lam_replacement_constant[OF nonempty],where b=M] sep_true \<open>M(F)\<close>
-    by (unfold_locales, auto)
+        lam_replacement_constant[OF nonempty],where b=M] sep_true
+    by (unfold_locales, simp_all)
   have "w \<in> (if M(y) then F-``{y} else 0) \<Longrightarrow> M(y)" for w y
     by (cases "M(y)") auto
   moreover from \<open>F\<in>_\<inter>_\<close>

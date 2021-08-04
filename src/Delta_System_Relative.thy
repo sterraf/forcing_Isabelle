@@ -14,7 +14,6 @@ locale M_delta = M_cardinal_library +
     and
     countable_lepoll_assms:
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
     and
     disjoint_separation: "M(c) \<Longrightarrow> separation(M, \<lambda> x. \<exists>a. \<exists>b. x=\<langle>a,b\<rangle> \<and> a \<inter> b = c)"

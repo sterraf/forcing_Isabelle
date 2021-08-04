@@ -25,7 +25,8 @@ definition
 
 definition
   lepoll_assumptions5 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions5(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement(M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> F(A, i), f ` (\<mu> i. x \<in> F(A, i)) ` x\<rangle>)"
+  "lepoll_assumptions5(M,A,F,S,fa,K,x,f,r) \<equiv> 
+strong_replacement(M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> F(A, i), f ` (\<mu> i. x \<in> F(A, i)) ` x\<rangle>)"
 
 definition
   lepoll_assumptions6 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
@@ -94,14 +95,27 @@ lemmas lepoll_assumptions_defs[simp] = lepoll_assumptions1_def
   lepoll_assumptions14_def lepoll_assumptions15_def lepoll_assumptions16_def
   lepoll_assumptions17_def lepoll_assumptions18_def
 
+definition if_range_F where
+ [simp]: "if_range_F(F,A,f,i) \<equiv> 
+  if i \<in> range(f) then F(A, converse(f) ` i) else 0"
+
+definition if_range_F_else_F where
+ [simp]: "if_range_F_else_F(F,b,A,f,i) \<equiv> if b=0 then if_range_F(F,A,f,i) else F(A,i)"
+
 locale M_replacement_lepoll = M_replacement + M_inj +
   fixes F
   assumes
     F_type[simp]: "M(A) \<Longrightarrow> \<forall>x[M]. M(F(A,x))"
-    (* and
-    types[simp]:"M(A)" "M(S)" "M(fa)" "M(K)" "M(x)" "M(f)" "M(r)" *)
     and
     lam_lepoll_assumption_F:"M(A) \<Longrightarrow> lam_replacement(M,F(A))"
+    and
+    \<comment> \<open>Here b is a Boolean.\<close>
+    lam_Least_assumption:"M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> 
+        lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i))"
+    and
+    (* FIXME: Remove the closure of least. *)
+    lam_Least_closed : "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow>
+        \<forall>x[M]. M(\<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i))"
     and
     lam_replacement_inj_rel:"lam_replacement(M, \<lambda>p. inj\<^bsup>M\<^esup>(fst(p),snd(p)))"
 begin
@@ -134,6 +148,20 @@ lemma lepoll_assumptions4:
     lam_replacement_def[symmetric]
   by (rule_tac lam_replacement_hcomp2[of _ _ minimum])
     (force intro: lam_replacement_identity)+
+
+lemma lepoll_assumptions5:
+   assumes
+    types[simp]:"M(A)" "M(f)"
+  shows "lepoll_assumptions5(M,A,F,S,fa,K,x,f,r)"
+  using 
+    lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
+    lam_replacement_hcomp[OF _ lam_replacement_apply[of f]]
+    lam_replacement_identity
+    lam_replacement_pullback lam_Least_closed[where b=1]
+    assms lam_Least_assumption[where b=1,OF \<open>M(A)\<close> _ \<open>M(f)\<close>]
+  unfolding lepoll_assumptions_defs
+    lam_replacement_def[symmetric]
+  by simp
 
 lemma lepoll_assumptions6:
   assumes types[simp]:"M(A)" "M(S)" "M(x)"
@@ -206,6 +234,19 @@ lemma lepoll_assumptions13:
     lam_replacement_def[symmetric]
   by simp
 
+lemma lepoll_assumptions14:
+  assumes types[simp]:"M(A)" "M(f)" "M(fa)"
+  shows "lepoll_assumptions14(M,A,F,S,fa,K,x,f,r)"
+  using 
+    lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
+    lam_replacement_hcomp[OF _ lam_replacement_apply[of fa]]
+    lam_replacement_identity
+    lam_replacement_pullback  lam_Least_closed[where b=0]
+    assms lam_Least_assumption[where b=0,OF \<open>M(A)\<close> _ \<open>M(f)\<close>]
+  unfolding lepoll_assumptions_defs
+    lam_replacement_def[symmetric]
+ by simp
+
 lemma lepoll_assumptions15:
   assumes types[simp]:"M(A)" "M(x)" "M(f)" "M(K)"
   shows "lepoll_assumptions15(M,A,F,S,fa,K,x,f,r)"
@@ -250,12 +291,12 @@ lemma lepoll_assumptions18:
       rule_tac lam_replacement_hcomp2[of _ _ "(`)"], simp_all)
 
 lemmas lepoll_assumptions = lepoll_assumptions1 lepoll_assumptions2
-  lepoll_assumptions3 lepoll_assumptions4
+  lepoll_assumptions3 lepoll_assumptions4 lepoll_assumptions5
   lepoll_assumptions6 lepoll_assumptions7 lepoll_assumptions8
-  lepoll_assumptions9 lepoll_assumptions10
-  lepoll_assumptions11 lepoll_assumptions12 lepoll_assumptions13
-  lepoll_assumptions15
-  lepoll_assumptions16 lepoll_assumptions17 lepoll_assumptions18
+  lepoll_assumptions9 lepoll_assumptions10 lepoll_assumptions11 
+  lepoll_assumptions12 lepoll_assumptions13 lepoll_assumptions14
+  lepoll_assumptions15 lepoll_assumptions16
+  lepoll_assumptions17 lepoll_assumptions18
 
 end (* M_replacement_lepoll *)
 
