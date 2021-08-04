@@ -4,7 +4,7 @@ theory Succession_Poset
     Proper_Extension
     FiniteFun_Relative
 begin
-
+lemma star:"strong_replacement(##M,P)" sorry
 sublocale M_ZF_trans \<subseteq> M_replacement "##M"
   apply unfold_locales 
   apply (simp_all add:lam_replacement_def del:setclass_iff)

@@ -81,7 +81,6 @@ definition to_FiniteFun :: "i \<Rightarrow> i" where
 definition FiniteFun_Repr :: "[i,i] \<Rightarrow> i" where
   "FiniteFun_Repr(A,B) \<equiv> {f \<in> (A\<times>B)\<^bsup><\<omega>\<^esup> . cons_like(f) }"
 
-
 locale M_FiniteFun =  M_seqspace +
   assumes
     cons_like_separation : "separation(M,\<lambda>f. cons_like_rel(M,f))"

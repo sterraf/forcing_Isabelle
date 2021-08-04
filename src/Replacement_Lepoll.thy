@@ -135,7 +135,7 @@ lemma lepoll_assumptions4:
   by (rule_tac lam_replacement_hcomp2[of _ _ minimum])
     (force intro: lam_replacement_identity)+
 
-lemma lepoll_assumptions6:  
+lemma lepoll_assumptions6:
   assumes types[simp]:"M(A)" "M(S)" "M(x)"
   shows "lepoll_assumptions6(M,A,F,S,fa,K,x,f,r)"
   using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 separation_in]
@@ -194,6 +194,18 @@ lemma lepoll_assumptions12:
   using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 separation_in]
   by simp
 
+lemma lepoll_assumptions13:
+  assumes types[simp]:"M(A)" "M(r)" "M(f)"
+  shows "lepoll_assumptions13(M,A,F,S,fa,K,x,f,r)"
+  using  lam_replacement_constant[OF nonempty] lam_lepoll_assumption_F
+    lam_replacement_hcomp lam_replacement_converse lam_replacement_apply
+    lam_replacement_hcomp2[OF lam_replacement_constant[OF \<open>M(r)\<close>]
+        lam_replacement_if[OF _ _ separation_in[of "range(f)"]] _ _
+        lam_replacement_minimum] assms
+  unfolding lepoll_assumptions_defs
+    lam_replacement_def[symmetric]
+  by simp
+
 lemma lepoll_assumptions15:
   assumes types[simp]:"M(A)" "M(x)" "M(f)" "M(K)"
   shows "lepoll_assumptions15(M,A,F,S,fa,K,x,f,r)"
@@ -241,7 +253,7 @@ lemmas lepoll_assumptions = lepoll_assumptions1 lepoll_assumptions2
   lepoll_assumptions3 lepoll_assumptions4
   lepoll_assumptions6 lepoll_assumptions7 lepoll_assumptions8
   lepoll_assumptions9 lepoll_assumptions10
-  lepoll_assumptions11 lepoll_assumptions12
+  lepoll_assumptions11 lepoll_assumptions12 lepoll_assumptions13
   lepoll_assumptions15
   lepoll_assumptions16 lepoll_assumptions17 lepoll_assumptions18
 

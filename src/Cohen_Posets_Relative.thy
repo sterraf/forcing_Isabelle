@@ -18,25 +18,14 @@ definition
 
 locale M_cohen = M_delta +
   assumes
+    separation_domain: "\<forall>d[M].separation(M, \<lambda>x . domain(x) = d)"
+    and
+    separaton_domain_pair: "separation(M, \<lambda>p. \<forall>x\<in>A. x \<in> snd(p) \<longleftrightarrow> domain(x) = fst(p))"
+    and
     countable_lepoll_assms2:
-    "M(A) \<Longrightarrow> lepoll_assumptions1(M,A,dC_F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> lepoll_assumptions2(M,A,dC_F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> lepoll_assumptions3(M,A,dC_F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions4(M,A,dC_F,S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,dC_F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions6(M,A,dC_F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> lepoll_assumptions7(M,A,dC_F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> lepoll_assumptions8(M,A,dC_F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions9(M,A,dC_F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions10(M,A,dC_F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions11(M,A,dC_F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions12(M,A,dC_F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,dC_F,S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,dC_F,S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,dC_F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,dC_F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,dC_F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions18(M,A,dC_F,S,fa,K,x,f,r)"
     and
     countable_lepoll_assms3:
     "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions1(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
@@ -67,7 +56,7 @@ locale M_cohen = M_delta +
 context M_cardinal_library
 begin
 
-lemma lesspoll_nat_imp_lesspoll_rel: 
+lemma lesspoll_nat_imp_lesspoll_rel:
   assumes "A \<prec> \<omega>" "M(A)"
   shows "A \<prec>\<^bsup>M\<^esup> \<omega>"
 proof -
@@ -81,7 +70,7 @@ proof -
     nat_not_Finite eq_lepoll_rel_trans[of A n \<omega>]
     by auto
   moreover from calculation
-  have "\<not> g \<in> bij\<^bsup>M\<^esup>(A,\<omega>)" for g 
+  have "\<not> g \<in> bij\<^bsup>M\<^esup>(A,\<omega>)" for g
     using mem_bij_rel unfolding lesspoll_def by auto
   ultimately
   show ?thesis unfolding lesspoll_rel_def eqpoll_rel_def bij_rel_is_inj_rel rex_def
@@ -177,7 +166,7 @@ end (* M_trivial *)
 
 definition (* completely relational *)
   ccc_rel   :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" (\<open>ccc\<^bsup>_\<^esup>'(_,_')\<close>) where
-  "ccc_rel(M,P,leq) \<equiv> \<forall>A[M]. antichain_rel(M,P,leq,A) \<longrightarrow> 
+  "ccc_rel(M,P,leq) \<equiv> \<forall>A[M]. antichain_rel(M,P,leq,A) \<longrightarrow>
       (\<forall>\<kappa>[M]. is_cardinal(M,A,\<kappa>) \<longrightarrow> (\<exists>om[M]. omega(M,om) \<and> le_rel(M,\<kappa>,om)))"
 
 abbreviation
@@ -255,10 +244,23 @@ proof -
       moreover from this
       have "x \<in> A \<Longrightarrow> M({p \<in> A . domain(p) = domain(x)})" for x
         using separation_closed domain_eq_separation transM[OF _ \<open>M(A)\<close>] by simp
-      ultimately
-      interpret M_cardinal_UN_lepoll _ "\<lambda>d. {p \<in> A. domain(p) = d }" "{domain(p). p\<in>A}"
-        using countable_lepoll_assms2 unfolding dC_F_def
-        by unfold_locales (auto dest: transM)
+      moreover from this
+      interpret M_replacement_lepoll M dC_F
+        using lam_replacement_dC_F separaton_domain_pair separation_domain
+          lam_replacement_inj_rel
+        unfolding dC_F_def Lambda_Replacement.dC_F_def
+        by unfold_locales (simp_all)
+      have "\<forall>x\<in>({domain(p) . p \<in> A}). strong_replacement(M, \<lambda>y z. y \<in> A \<and> domain(y) = x \<and> z = {\<langle>x, y\<rangle>})"
+        using lepoll_assumptions1[OF \<open>M(A)\<close> \<open>M({domain(p) . p \<in> A})\<close>]
+        unfolding dC_F_def lepoll_assumptions1_def
+        by simp
+      then have "y\<in>A \<Longrightarrow> strong_replacement(M, \<lambda>ya z. ya \<in> A \<and> domain(ya) = domain(y) \<and> z = {\<langle>domain(y), ya\<rangle>})" for y
+        by simp
+      with calculation
+      interpret M_cardinal_UN_lepoll _ "dC_F(A)" "{domain(p). p\<in>A}"
+        using countable_lepoll_assms2 lepoll_assumptions transM[of _ A]
+        unfolding dC_F_def
+        by unfold_locales (auto)
       from \<open>A \<subseteq> Fn(nat, I, 2)\<close>
       have x:"(\<Union>d\<in>{domain(p) . p \<in> A}. {p\<in>A. domain(p) = d}) = A"
         by auto
@@ -271,6 +273,7 @@ proof -
       ultimately
       have "countable_rel(M,A)"
         using countable_rel_imp_countable_rel_UN
+        unfolding dC_F_def
         by auto
       with \<open>\<not> |A|\<^bsup>M\<^esup> \<le> nat\<close> \<open>M(A)\<close>
       show False

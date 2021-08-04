@@ -5,7 +5,7 @@ theory Lambda_Replacement
     "ZF-Constructible.Relative"
     ZF_Miscellanea\<comment> \<open>for \<^term>\<open>SepReplace\<close>\<close>
     Discipline_Function
-    "../Tools/Try0"
+    (* "../Tools/Try0" *)
 begin
 
 definition
@@ -24,7 +24,7 @@ locale M_replacement = M_basic +
     and
     lam_replacement_Union: "lam_replacement(M,Union)"
     and
-    id_separation2:"separation(M, \<lambda>z. \<exists>x[M]. z = \<langle>x, x\<rangle>)"
+    id_separation:"separation(M, \<lambda>z. \<exists>x[M]. z = \<langle>x, x\<rangle>)"
     and
     middle_separation: "separation(M, \<lambda>x. snd(fst(x))=fst(snd(x)))"
     and
@@ -52,6 +52,8 @@ locale M_replacement = M_basic +
     separation_fst_equal : "M(a) \<Longrightarrow> separation(M,\<lambda>x . fst(x)=a)"
     and
     separation_equal_fst2 : "M(a) \<Longrightarrow> separation(M,\<lambda>x . fst(fst(x))=a)"
+    and
+    separation_equal_apply: "M(f) \<Longrightarrow> M(a) \<Longrightarrow> separation(M,\<lambda>x. f`x=a)"
 begin
 
 lemma separation_in :
@@ -373,6 +375,39 @@ proof -
   show ?thesis using lam_replacement_def strong_replacement_def by simp
 qed
 
+lemma lam_replacement_collect :
+  assumes "M(A)" "\<forall>x[M]. separation(M,F(x))"
+    "separation(M,\<lambda>p . \<forall>x\<in>A. x\<in>snd(p) \<longleftrightarrow> F(fst(p),x))"
+  shows "lam_replacement(M,\<lambda>x. {y\<in>A . F(x,y)})"
+proof -
+  {
+    fix Z
+    let ?Y="\<lambda>z.{x\<in>A . F(z,x)}"
+    assume "M(Z)"
+    moreover from this
+    have "M(?Y(z))" if "z\<in>Z" for z
+      using assms that transM[of _ Z] by simp
+    moreover from this
+    have "?Y(z)\<in>Pow_rel(M,A)" if "z\<in>Z" for z
+      using Pow_rel_char that assms by auto
+    moreover from calculation \<open>M(A)\<close>
+    have "M(Z\<times>Pow_rel(M,A))" by simp
+    moreover from this
+    have "M({p \<in> Z\<times>Pow_rel(M,A) . \<forall>x\<in>A. x\<in>snd(p) \<longleftrightarrow> F(fst(p),x)})" (is "M(?P)")
+      using assms by simp
+    ultimately
+    have "b \<in> ?P \<longleftrightarrow> (\<exists>z[M]. z\<in>Z \<and> b=<z,?Y(z)>)" if "M(b)" for b
+      using  assms(1) Pow_rel_char[OF \<open>M(A)\<close>] that
+      by(intro iffI,auto,intro equalityI,auto)
+    with \<open>M(?P)\<close>
+    have "\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>z[M]. z \<in> Z \<and> b = <z,?Y(z)>)"
+      by (rule_tac rexI[where x="?P"],simp_all)
+  }
+  then
+  show ?thesis
+    unfolding lam_replacement_def strong_replacement_def
+    by simp
+qed
 
 lemma lam_replacement_hcomp2:
   assumes "lam_replacement(M,f)" "lam_replacement(M,g)"
@@ -455,7 +490,7 @@ proof -
       unfolding id_def lam_def by (auto dest:transM)
     moreover from calculation
     have "M({z\<in> A\<times>A. \<exists>x[M]. z=<x,x>})"
-      using id_separation2 by simp
+      using id_separation by simp
     ultimately
     have "M(id(A))" by simp
   }
@@ -854,8 +889,29 @@ definition
 context M_replacement
 begin
 
-lemma lam_replacement_dC_F: "M(A) \<Longrightarrow> lam_replacement(M, dC_F(A))"
-  sorry
+lemma lam_if_then_apply_replacement: "M(f) \<Longrightarrow> M(v) \<Longrightarrow> M(u) \<Longrightarrow>
+     lam_replacement(M, \<lambda>x. if f ` x = v then f ` u else f ` x)"
+  using lam_replacement_if separation_equal_apply lam_replacement_constant lam_replacement_apply
+  by simp
+
+lemma  lam_if_then_apply_replacement2: "M(f) \<Longrightarrow> M(m) \<Longrightarrow> M(y) \<Longrightarrow>
+     lam_replacement(M, \<lambda>z . if f ` z = m then y else f ` z)"
+  using lam_replacement_if separation_equal_apply lam_replacement_constant lam_replacement_apply
+  by simp
+
+lemma lam_if_then_replacement2: "M(A) \<Longrightarrow> M(f) \<Longrightarrow>
+     lam_replacement(M, \<lambda>x . if x \<in> A then f ` x else x)"
+  using lam_replacement_if separation_in lam_replacement_identity lam_replacement_apply
+  by simp
+
+lemma lam_replacement_dC_F:
+  assumes "M(A)"
+    "\<forall>d[M].separation(M, \<lambda>x . domain(x) = d)"
+    "separation(M, \<lambda>p. \<forall>x\<in>A. x \<in> snd(p) \<longleftrightarrow> domain(x) = fst(p))"
+  shows "lam_replacement(M, dC_F(A))"
+  unfolding dC_F_def
+  using assms  lam_replacement_collect[of A "\<lambda> d x . domain(x) = d"]
+  by simp
 
 lemmas replacements = Pair_diff_replacement id_replacement tag_replacement
   pospend_replacement prepend_replacement
@@ -892,6 +948,6 @@ find_theorems
   -name:ifx_replacement -name:if_then_range_replacement2 -name:if_then_range_replacement
   -name:Inl_replacement2
   -name:case_replacement1 -name:case_replacement2 -name:case_replacement4 -name:case_replacement5
-  -name:sum_bij_rel_replacement
+  -name:sum_bij_rel_replacement -name:replacements
 
 end

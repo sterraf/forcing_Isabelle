@@ -378,37 +378,16 @@ locale M_cardinal_library = M_library + M_replacement +
     lam_replacement_inj_rel:"lam_replacement(M, \<lambda>x. inj\<^bsup>M\<^esup>(fst(x),snd(x)))"
     and
     cardinal_lib_assms1:
-    "M(A) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> lepoll_assumptions8(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>A x. if M(x) then x else 0,A,fa,K,x,f,r)"
     and
     cardinal_lib_assms2:
-    "M(A) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> lepoll_assumptions8(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>G x. if M(x) then G`x else 0,domain(A),fa,K,x,f,r)"
     and
     cardinal_lib_assms3:
-    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions8(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(D) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>F x. if M(x) then F-``{x} else 0,S,fa,K,x,f,r)"
     and
     cdlt_replacement:
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q} \<and> z = {\<langle>x, y\<rangle>})"

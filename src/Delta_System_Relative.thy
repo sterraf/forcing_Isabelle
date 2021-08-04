@@ -13,15 +13,9 @@ locale M_delta = M_cardinal_library +
     cardinal_replacement:"strong_replacement(M, \<lambda>A y. y = \<langle>A, |A|\<^bsup>M\<^esup>\<rangle>)"
     and
     countable_lepoll_assms:
-    "M(A) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> lepoll_assumptions8(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
     and
     disjoint_separation: "M(c) \<Longrightarrow> separation(M, \<lambda> x. \<exists>a. \<exists>b. x=\<langle>a,b\<rangle> \<and> a \<inter> b = c)"
 
@@ -226,7 +220,7 @@ proof -
       have "M(S) \<Longrightarrow> countable_rel(M,S) \<Longrightarrow> countable_rel(M,{A \<in> G . S \<inter> A \<noteq> 0})" for S
       proof -
         interpret M_replacement_lepoll M "\<lambda>A x. Collect(A, (\<in>)(x))"
-          using countable_lepoll_assms lam_replacement_apply
+          using countable_lepoll_assms
           apply unfold_locales apply auto sorry
         fix S
         assume "M(S)"

@@ -24,6 +24,11 @@ arity_theorem for "bijection_fm"
 arity_theorem for "order_isomorphism_fm"
 arity_theorem for "pred_set_fm"
 
+(* FIXME: do we need this? does this exists somewhere? *)
+lemma iff_sym : "P(x,a) \<longleftrightarrow> a = f(x) \<Longrightarrow> P(x,a) \<longleftrightarrow> f(x) = a"
+  by auto
+
+
 lemma subset_iff_sats [iff_sats]:
       "[| nth(i,env) = x; nth(k,env) = z;
           i \<in> nat; k \<in> nat; env \<in> list(A)|]
@@ -51,13 +56,13 @@ lemma (in M_ZF_trans) separation_is_radd_body:
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[A,r]",simplified])
     apply(simp_all add:arity_is_radd_body_fm nat_simp_union is_radd_body_fm_type)
-  done 
+  done
 
 lemma (in M_ZF_trans) radd_body_abs:
   assumes "(##M)(R)" "(##M)(S)" "(##M)(x)"
   shows "is_radd_body(##M,R,S,x) \<longleftrightarrow> radd_body(R,S,x)"
   using assms pair_in_M_iff Inl_in_M_iff Inr_in_M_iff
-  unfolding radd_body_def is_radd_body_def 
+  unfolding radd_body_def is_radd_body_def
   by (auto)
 
 lemma (in M_ZF_trans) separation_radd_body:
@@ -65,7 +70,7 @@ lemma (in M_ZF_trans) separation_radd_body:
         (##M, \<lambda>z. (\<exists>x y. z = \<langle>Inl(x), Inr(y)\<rangle>) \<or>
                   (\<exists>x' x. z = \<langle>Inl(x'), Inl(x)\<rangle> \<and> \<langle>x', x\<rangle> \<in> R) \<or>
                   (\<exists>y' y. z = \<langle>Inr(y'), Inr(y)\<rangle> \<and> \<langle>y', y\<rangle> \<in> S))"
-  using separation_is_radd_body radd_body_abs 
+  using separation_is_radd_body radd_body_abs
   unfolding radd_body_def
   by (rule_tac separation_cong[
         where P="is_radd_body(##M,R,S)",THEN iffD1])
@@ -85,7 +90,7 @@ lemma (in M_ZF_trans) separation_well_ord_body:
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[A,f,r]",simplified])
     apply(simp_all add:arity_well_ord_body_fm nat_simp_union well_ord_body_fm_type)
-  done 
+  done
 
 lemma (in M_ZF_trans) separation_well_ord:
  "(##M)(f) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation
@@ -114,7 +119,7 @@ lemma (in M_ZF_trans) separation_is_obase_body:
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[A,r]",simplified])
     apply(simp_all add:arity_is_obase_body_fm nat_simp_union is_obase_body_fm_type)
-  done 
+  done
 
 lemma (in M_ZF_trans) separation_is_obase:
  "(##M)(f) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation
@@ -149,7 +154,7 @@ lemma (in M_ZF_trans) separation_obase_equals_aux:
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[A,r]",simplified])
     apply(simp_all add:arity_is_obase_equals_fm nat_simp_union is_obase_equals_fm_type)
-  done 
+  done
 
 lemma (in M_ZF_trans) separation_obase_equals:
  "(##M)(f) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation
@@ -177,12 +182,12 @@ lemma (in M_ZF_trans) separation_is_id_body:
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A]",simplified])
     apply(simp_all add:arity_is_id_body_fm nat_simp_union is_id_body_fm_type)
-  done 
+  done
 
 lemma (in M_ZF_trans) id_body_abs:
   assumes "(##M)(A)" "(##M)(x)"
   shows "is_id_body(##M,A,x) \<longleftrightarrow> id_body(A,x)"
-  using assms zero_in_M pair_in_M_iff unfolding id_body_def is_id_body_def 
+  using assms zero_in_M pair_in_M_iff unfolding id_body_def is_id_body_def
   by auto
 
 lemma (in M_ZF_trans) separation_id_body:
@@ -209,19 +214,19 @@ lemma (in M_ZF_trans) separation_is_rvimage_body:
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[f,r]",simplified])
     apply(simp_all add:arity_is_rvimage_body_fm nat_simp_union is_rvimage_body_fm_type)
-  done 
+  done
 
 lemma (in M_ZF_trans) rvimage_body_abs:
   assumes "(##M)(R)" "(##M)(S)" "(##M)(x)"
   shows "is_rvimage_body(##M,R,S,x) \<longleftrightarrow> rvimage_body(R,S,x)"
   using assms pair_in_M_iff apply_closed
-  unfolding rvimage_body_def is_rvimage_body_def 
+  unfolding rvimage_body_def is_rvimage_body_def
   by (auto)
 
 lemma (in M_ZF_trans) separation_rvimage_body:
  "(##M)(f) \<Longrightarrow> (##M)(r) \<Longrightarrow> separation
         (##M, \<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> \<langle>f ` x, f ` y\<rangle> \<in> r)"
-  using separation_is_rvimage_body rvimage_body_abs 
+  using separation_is_rvimage_body rvimage_body_abs
   unfolding rvimage_body_def
   by (rule_tac separation_cong[
         where P="is_rvimage_body(##M,f,r)",THEN iffD1])
@@ -245,19 +250,19 @@ lemma (in M_ZF_trans) separation_is_rmult_body:
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[b,d]",simplified])
     apply(simp_all add:arity_is_rmult_body_fm nat_simp_union is_rmult_body_fm_type)
-  done 
+  done
 
 lemma (in M_ZF_trans) rmult_body_abs:
   assumes "(##M)(b)" "(##M)(d)" "(##M)(x)"
   shows "is_rmult_body(##M,b,d,x) \<longleftrightarrow> rmult_body(b,d,x)"
   using assms pair_in_M_iff apply_closed
-  unfolding rmult_body_def is_rmult_body_def 
+  unfolding rmult_body_def is_rmult_body_def
   by (auto)
 
 lemma (in M_ZF_trans) separation_rmult_body:
  "(##M)(b) \<Longrightarrow> (##M)(d) \<Longrightarrow> separation
         (##M, \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> b \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> d))"
-  using separation_is_rmult_body rmult_body_abs   
+  using separation_is_rmult_body rmult_body_abs
     separation_cong[where P="is_rmult_body(##M,b,d)" and M="##M",THEN iffD1]
   unfolding rmult_body_def
   by simp
@@ -279,19 +284,19 @@ lemma (in M_ZF_trans) separation_is_ord_iso_body:
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A,r,s]",simplified])
     apply(simp_all add:arity_is_ord_iso_body_fm nat_simp_union is_ord_iso_body_fm_type)
-  done 
+  done
 
 lemma (in M_ZF_trans) ord_iso_body_abs:
   assumes "(##M)(A)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
   shows "is_ord_iso_body(##M,A,r,s,x) \<longleftrightarrow> ord_iso_body(A,r,s,x)"
   using assms pair_in_M_iff apply_closed zero_in_M transitivity[of _ A]
-  unfolding ord_iso_body_def is_ord_iso_body_def 
+  unfolding ord_iso_body_def is_ord_iso_body_def
   by auto
 
 lemma (in M_ZF_trans) separation_ord_iso_body:
  "(##M)(A) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation
         (##M, \<lambda>f. \<forall>x\<in>A. \<forall>y\<in>A. \<langle>x, y\<rangle> \<in> r \<longleftrightarrow> \<langle>f ` x, f ` y\<rangle> \<in> s)"
-  using separation_is_ord_iso_body ord_iso_body_abs   
+  using separation_is_ord_iso_body ord_iso_body_abs
     separation_cong[where P="is_ord_iso_body(##M,A,r,s)" and M="##M",THEN iffD1]
   unfolding ord_iso_body_def
   by simp
@@ -308,7 +313,7 @@ lemma (in M_ZF_trans) separation_PiP_rel:
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A]",simplified])
     apply(simp_all add:arity_PiP_rel_fm nat_simp_union PiP_rel_fm_type)
-  done 
+  done
 
 synthesize "injP_rel" from_definition assuming "nonempty"
 arity_theorem for "injP_rel_fm"
@@ -321,7 +326,7 @@ lemma (in M_ZF_trans) separation_injP_rel:
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A]",simplified])
     apply(simp_all add:arity_injP_rel_fm nat_simp_union injP_rel_fm_type)
-  done 
+  done
 
 synthesize "surjP_rel" from_definition assuming "nonempty"
 arity_theorem for "surjP_rel_fm"
@@ -366,18 +371,18 @@ lemma (in M_ZF_trans) separation_is_supset_body:
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[]",simplified])
     apply(simp_all add:arity_is_supset_body_fm nat_simp_union is_supset_body_fm_type)
-  done 
+  done
 
 lemma (in M_ZF_trans) supset_body_abs:
   assumes "(##M)(x)"
   shows "is_supset_body(##M,x) \<longleftrightarrow> supset_body(x)"
   using assms pair_in_M_iff apply_closed
-  unfolding supset_body_def is_supset_body_def 
+  unfolding supset_body_def is_supset_body_def
   by (auto)
 
 lemma (in M_ZF_trans) separation_supset_body:
  "separation(##M, \<lambda> x. \<exists>a. \<exists>b. x = \<langle>a,b\<rangle> \<and> b \<subseteq> a)"
-  using separation_is_supset_body supset_body_abs   
+  using separation_is_supset_body supset_body_abs
     separation_cong[where P="is_supset_body(##M)" and M="##M",THEN iffD1]
   unfolding supset_body_def
   by simp
@@ -405,18 +410,18 @@ lemma (in M_ZF_trans) separation_is_toplevel1_body:
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A,B]",simplified])
     apply(simp_all add:arity_is_toplevel1_body_fm nat_simp_union is_toplevel1_body_fm_type)
-  done 
+  done
 
 lemma (in M_ZF_trans) toplevel1_body_abs:
   assumes "(##M)(A)" "(##M)(B)"  "(##M)(x)"
   shows "is_toplevel1_body(##M,A,B,x) \<longleftrightarrow> toplevel1_body(A,B,x)"
   using assms pair_in_M_iff apply_closed transM
-  unfolding toplevel1_body_def is_toplevel1_body_def 
+  unfolding toplevel1_body_def is_toplevel1_body_def
   by (auto)
 
 lemma (in M_ZF_trans) separation_toplevel1_body:
  "(##M)(Q) \<Longrightarrow> (##M)(x) \<Longrightarrow> separation(##M, \<lambda>a. \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
-  using separation_is_toplevel1_body toplevel1_body_abs   
+  using separation_is_toplevel1_body toplevel1_body_abs
     separation_cong[where P="is_toplevel1_body(##M,Q,x)" and M="##M",THEN iffD1]
   unfolding toplevel1_body_def
   by simp
@@ -474,18 +479,18 @@ lemma (in M_ZF_trans) separation_is_toplevel3_body:
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[]",simplified])
     apply(simp_all add:arity_is_toplevel3_body_fm nat_simp_union is_toplevel3_body_fm_type)
-  done 
+  done
 
 lemma (in M_ZF_trans) toplevel3_body_abs:
   assumes "(##M)(x)"
   shows "is_toplevel3_body(##M,x) \<longleftrightarrow> toplevel3_body(x)"
   using assms pair_in_M_iff apply_closed
-  unfolding toplevel3_body_def is_toplevel3_body_def 
+  unfolding toplevel3_body_def is_toplevel3_body_def
   by (auto)
 
 lemma (in M_ZF_trans) separation_toplevel3_body:
  "separation(##M, \<lambda>x . \<exists>a b. x = \<langle>a, b\<rangle> \<and> a \<noteq> b)"
-  using separation_is_toplevel3_body toplevel3_body_abs   
+  using separation_is_toplevel3_body toplevel3_body_abs
     separation_cong[where P="is_toplevel3_body(##M)" and M="##M",THEN iffD1]
   unfolding toplevel3_body_def
   by simp
@@ -697,5 +702,43 @@ lemma (in M_ZF_trans) separation_toplevel9_body:
     separation_cong[where P="is_toplevel9_body(##M,Q,x)" and M="##M",THEN iffD1]
   unfolding toplevel9_body_def
   by simp
+
+subsection\<open>Replacement instances\<close>
+
+lemma (in M_ZF_trans) separation_is_fst:
+ "(##M)(a) \<Longrightarrow> separation(##M, \<lambda>x . is_fst(##M,x,a))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,a] \<Turnstile> fst_fm(0,1)",THEN iffD1])
+   apply(rule_tac fst_iff_sats[where env="[_,a]",symmetric])
+  apply(simp_all)
+  apply(rule_tac separation_ax[where env="[a]",simplified])
+    apply(simp_all add:arity_fst_fm nat_simp_union fst_fm_type)
+  done
+
+lemma (in M_ZF_trans) separation_fst_equal:
+ "(##M)(a) \<Longrightarrow> separation(##M, \<lambda>x. fst(x) = a)"
+  using separation_cong[THEN iffD1,OF _ separation_is_fst[of a]]
+     iff_sym[of "is_fst(##M)" _ a "fst", OF fst_abs]
+  by auto
+
+lemma (in M_ZF_trans) separation_is_apply:
+ "(##M)(f) \<Longrightarrow> (##M)(a) \<Longrightarrow> separation(##M, \<lambda>x . is_apply(##M,f,x,a))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,f,a] \<Turnstile> fun_apply_fm(1,0,2)",THEN iffD1])
+   apply(rule_tac fun_apply_iff_sats[where env="[_,f,a]",symmetric])
+  apply(simp_all)
+  apply(rule_tac separation_ax[where env="[f,a]",simplified])
+    apply(simp_all add:arity_fun_apply_fm nat_simp_union)
+  done
+
+lemma (in M_ZF_trans) separation_equal_apply:
+ "(##M)(f) \<Longrightarrow> (##M)(a) \<Longrightarrow> separation(##M, \<lambda>x. f`x = a)"
+  using separation_cong[THEN iffD1,OF _ separation_is_apply[of f a]] apply_abs
+  by force
+
+ (* 1. separation(##M, \<lambda>z. \<exists>x\<in>M. z = \<langle>x, x\<rangle>) *)
+ (* 2. separation(##M, \<lambda>x. snd(fst(x)) = fst(snd(x))) *)
+ (* 3. separation(##M, \<lambda>x. fst(fst(x)) = fst(snd(x))) *)
+ (* 5. \<And>a. (##M)(a) \<Longrightarrow> separation(##M, \<lambda>x. fst(fst(x)) = a) *)
 
 end

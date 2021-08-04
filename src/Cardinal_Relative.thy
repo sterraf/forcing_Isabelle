@@ -19,14 +19,12 @@ definition
 
 definition
   is_banach_functor :: "[i\<Rightarrow>o,i,i,i,i,i,i]\<Rightarrow>o"  where
-  "is_banach_functor(M,X,Y,f,g,W,b) \<equiv> 
-      \<exists>fW[M]. \<exists>YfW[M]. \<exists>gYfW[M]. image(M,f,W,fW) \<and> setdiff(M,Y,fW,YfW) \<and> 
+  "is_banach_functor(M,X,Y,f,g,W,b) \<equiv>
+      \<exists>fW[M]. \<exists>YfW[M]. \<exists>gYfW[M]. image(M,f,W,fW) \<and> setdiff(M,Y,fW,YfW) \<and>
                                  image(M,g,YfW,gYfW) \<and> setdiff(M,X,gYfW,b)"
 
 locale M_cardinals = M_ordertype + M_trancl + M_Perm + M_replacement +
   assumes
-  id_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>z. \<exists>x\<in>A. z = \<langle>x, x\<rangle>)"
-  and
   rvimage_separation: "M(f) \<Longrightarrow> M(r) \<Longrightarrow>
     separation(M, \<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> \<langle>f ` x, f ` y\<rangle> \<in> r)"
   and
@@ -39,19 +37,10 @@ locale M_cardinals = M_ordertype + M_trancl + M_Perm + M_replacement +
   rmult_separation: "M(b) \<Longrightarrow> M(d) \<Longrightarrow> separation(M,
     \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> b \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> d))"
   and
-  lam_if_then_apply_replacement: "M(f) \<Longrightarrow> M(v) \<Longrightarrow> M(u) \<Longrightarrow>
-     strong_replacement(M, \<lambda>x y. y = \<langle>x,  if f ` x = v then f ` u else f ` x\<rangle>)"
-  and
-  lam_if_then_apply_replacement2: "M(f) \<Longrightarrow> M(m) \<Longrightarrow> M(y) \<Longrightarrow>
-     strong_replacement(M, \<lambda>z ya. ya = \<langle>z, if f ` z = m then y else f ` z\<rangle>)"
-  and
-  lam_if_then_replacement2: "M(b) \<Longrightarrow> M(a) \<Longrightarrow> M(f) \<Longrightarrow>
-     strong_replacement(M, \<lambda>x y. y = \<langle>x, if x \<in> A then f ` x else x\<rangle>)"
-  and
   iterates_banach: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow>
                     iterates_replacement(M,is_banach_functor(M,X,Y,f,g),0)"
   and
-  banach_repl_iter: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow> 
+  banach_repl_iter: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow>
                strong_replacement(M, \<lambda>x y. y = banach_functor(X, Y, f, g)^x (0))"
 begin
 
@@ -167,11 +156,11 @@ lemma lfp_banach_functor:
   by simp
 
 
-lemma banach_functor_abs : 
+lemma banach_functor_abs :
   assumes "M(X)" "M(Y)" "M(f)" "M(g)"
   shows "relation1(M,is_banach_functor(M,X,Y,f,g),banach_functor(X,Y,f,g))"
-  unfolding relation1_def is_banach_functor_def banach_functor_def 
-  using assms    
+  unfolding relation1_def is_banach_functor_def banach_functor_def
+  using assms
   by simp
 
 lemma banach_functor_closed:
@@ -191,8 +180,8 @@ proof -
           iterates_closed[OF iterates_banach banach_functor_abs]
     by simp
   with assms
-  show ?thesis 
-    using family_union_closed[OF banach_repl_iter M_nat] lfp_banach_functor 
+  show ?thesis
+    using family_union_closed[OF banach_repl_iter M_nat] lfp_banach_functor
     by simp
 qed
 
@@ -240,18 +229,8 @@ lemma bij_imp_eqpoll_rel:
   using assms by (auto simp add:def_eqpoll_rel)
 
 lemma id_closed: "M(A) \<Longrightarrow> M(id(A))"
-proof -
-  assume "M(A)"
-  have "id(A) = {z\<in> A\<times>A. \<exists>x\<in>A. z=<x,x>}"
-    unfolding id_def lam_def by auto
-  moreover
-  assume "M(A)"
-  moreover from this
-  have "M({z\<in> A\<times>A. \<exists>x\<in>A. z=<x,x>})"
-    using id_separation by simp
-  ultimately
-  show ?thesis by simp
-qed
+  using lam_replacement_identity lam_replacement_iff_lam_closed
+  unfolding id_def by simp
 
 lemma eqpoll_rel_refl: "M(A) \<Longrightarrow> A \<approx>\<^bsup>M\<^esup> A"
   using bij_imp_eqpoll_rel[OF id_bij, OF id_closed] .
@@ -393,7 +372,7 @@ proof -
   proof
     from types and \<open>M(y)\<close>
     show "M(\<lambda>z\<in>A. if f ` z = m then y else f ` z)"
-      using transM[OF _ \<open>M(A)\<close>] lam_if_then_apply_replacement2[THEN lam_closed]
+      using transM[OF _ \<open>M(A)\<close>] lam_if_then_apply_replacement2 lam_replacement_iff_lam_closed
       by (auto)
     with types y fi
     have "(\<lambda>z\<in>A. if f`z = m then y else f`z) \<in> A\<rightarrow>\<^bsup>M\<^esup> m"
@@ -744,8 +723,9 @@ apply (rule if_type [THEN lam_type])
 apply (blast dest: apply_funtype)
 apply (blast elim!: mem_irrefl dest: apply_funtype)
 (*Proving it's injective*)
-   apply (auto intro: lam_if_then_apply_replacement[THEN lam_closed] simp add:transM[of _ A])
-  done
+   apply (auto simp add:transM[of _ A])
+  using lam_replacement_iff_lam_closed  lam_if_then_apply_replacement
+  by simp
 
 lemma cons_eqpoll_rel_consD: "[| cons(u,A) \<approx>\<^bsup>M\<^esup> cons(v,B);  u\<notin>A;  v\<notin>B; M(u); M(A); M(v); M(B) |] ==> A \<approx>\<^bsup>M\<^esup> B"
   apply (simp add: eqpoll_rel_iff)
@@ -1088,8 +1068,9 @@ proof -
   assume "f \<in> inj(A, B)" "A \<inter> B = 0" "M(f)" "M(A)" "M(B)"
   then
   show "M(\<lambda>x\<in>A \<union> (B - range(f)). if x \<in> A then f ` x else x)"
-    using  transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>] lam_if_then_replacement2
-    by (rule_tac lam_closed) auto
+    using  transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>]
+      lam_replacement_iff_lam_closed lam_if_then_replacement2
+    by auto
 qed
 
 lemma Diff_sing_lepoll_rel:

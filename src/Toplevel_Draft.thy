@@ -18,15 +18,8 @@ locale M_master = M_cohen +
       strong_replacement(M, \<lambda>x y. y = \<langle>x, \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>\<rangle>)"
   and
   UN_lepoll_assumptions:
-  "M(A) \<Longrightarrow> lepoll_assumptions2(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
-  "M(A) \<Longrightarrow> lepoll_assumptions8(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
-  "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
-  "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
   "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
-  "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
-  "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
-  "M(A) \<Longrightarrow> M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
 
 begin
 
@@ -116,9 +109,14 @@ qed
 
 end (* M_master_sub *)
 
+lemmas (in M_ZFC_trans) sep_instances =
+ separation_toplevel1_body separation_toplevel2_body separation_toplevel3_body
+ separation_toplevel4_body separation_toplevel5_body separation_toplevel6_body
+ separation_toplevel7_body separation_toplevel8_body separation_toplevel9_body
+
 sublocale M_ZFC_trans \<subseteq> M_master "##M"
   apply unfold_locales 
-  apply (simp_all add:replacements del:setclass_iff)
+  apply (simp_all add:replacements sep_instances del:setclass_iff)
   sorry
 
 context M_ctm_AC
