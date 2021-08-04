@@ -224,7 +224,7 @@ proof -
         using lam_replacement_dC_F separaton_domain_pair domain_eq_separation
           lam_replacement_inj_rel
         unfolding dC_F_def
-        apply unfold_locales apply(simp_all) sorry
+        apply unfold_locales apply(auto dest:transM) sorry
       from calculation
       interpret M_cardinal_UN_lepoll _ "dC_F(A)" "{domain(p). p\<in>A}"
         using countable_lepoll_assms2 lepoll_assumptions transM[of _ A]

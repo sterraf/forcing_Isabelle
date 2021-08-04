@@ -13,8 +13,8 @@ locale M_delta = M_cardinal_library +
     cardinal_replacement:"strong_replacement(M, \<lambda>A y. y = \<langle>A, |A|\<^bsup>M\<^esup>\<rangle>)"
     and
     countable_lepoll_assms:
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>A x. Collect(A, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(G) \<Longrightarrow> M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>_ x. Collect(G, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(G) \<Longrightarrow> M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>_ x. Collect(G, (\<in>)(x)),S,fa,K,x,f,r)"
     and
     disjoint_separation: "M(c) \<Longrightarrow> separation(M, \<lambda> x. \<exists>a. \<exists>b. x=\<langle>a,b\<rangle> \<and> a \<inter> b = c)"
 
@@ -218,14 +218,15 @@ proof -
       moreover
       have "M(S) \<Longrightarrow> countable_rel(M,S) \<Longrightarrow> countable_rel(M,{A \<in> G . S \<inter> A \<noteq> 0})" for S
       proof -
-        interpret M_replacement_lepoll M "\<lambda>A x. Collect(A, (\<in>)(x))"
-          using countable_lepoll_assms
-          apply unfold_locales apply auto sorry
+        from \<open>M(G)\<close>
+        interpret M_replacement_lepoll M "\<lambda>_ x. Collect(G, (\<in>)(x))"
+          using countable_lepoll_assms lam_replacement_inj_rel separation_in
+          apply unfold_locales apply (auto dest:transM) sorry
         fix S
         assume "M(S)"
         with \<open>M(G)\<close> \<open>\<And>i. M(S) \<Longrightarrow> i \<in> S \<Longrightarrow> M({x \<in> G . i \<in> x})\<close>
         interpret M_cardinal_UN_lepoll _ ?G S
-          using countable_lepoll_assms lepoll_assumptions
+          using lepoll_assumptions
           by unfold_locales (auto dest:transM)
         assume "countable_rel(M,S)"
         with \<open>M(S)\<close> calculation(6) calculation(7,8)[of S]
