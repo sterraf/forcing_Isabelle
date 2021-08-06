@@ -636,5 +636,30 @@ lemma "Ord(a) \<Longrightarrow> transrec(a,\<lambda>i r. HAleph(i,r)) = Aleph(a)
   using HAleph_eq_Aleph_recursive
   by (intro transrec_equal_on_Ord) auto
   
+lemma zero_in_domain_fst: "0 \<in> domain(x) \<Longrightarrow> domain(x) = {fst(p) . p \<in> x }"
+  apply (intro equalityI)
+   apply auto
+   apply (rule_tac x="<xa,ya>" in bexI, simp_all)
+proof -
+  fix y p
+  assume "\<langle>0, y\<rangle> \<in> x" "p \<in> x"
+  then
+  show "fst(p) \<in> domain(x)"
+    unfolding fst_def
+    by (cases "\<exists>c d. p = <c,d>") auto
+qed
+
+lemma zero_notin_domain_fst: "0 \<notin> domain(x) \<Longrightarrow> domain(x) = {fst(p) . p \<in> x } - {0}"
+  apply (intro equalityI)
+   apply auto
+   apply (rule_tac x="<xa,y>" in bexI, simp_all)
+proof -
+  fix y p
+  assume "fst(p) \<notin> domain(x)" "p \<in> x"
+  then
+  show "fst(p) = 0"
+    unfolding fst_def
+    by (cases "\<exists>c d. p = <c,d>") auto
+qed
 
 end
