@@ -156,7 +156,7 @@ proof -
     by (rule_tac lam_replacement_iff_lam_closed[THEN iffD2]) simp_all
 qed
 
-lemma lam_replacement_domain:
+lemma lam_replacement_domain':
   assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, domain(x)\<rangle>)"
   shows "lam_replacement(M,domain)"
 proof -
@@ -183,7 +183,7 @@ proof -
     using bounded_lam_replacement[of domain "\<lambda>X. Pow\<^bsup>M\<^esup>(\<Union>\<Union>\<Union>X)"] by simp
 qed
 
-lemma lam_replacement_fst:
+lemma lam_replacement_fst':
   assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, fst(x)\<rangle>)"
   shows "lam_replacement(M,fst)"
 proof -
