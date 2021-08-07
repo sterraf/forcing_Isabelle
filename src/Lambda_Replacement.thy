@@ -113,6 +113,76 @@ proof
       image_closed[of "{x}" "(\<lambda>x\<in>{x}. f(x))"] by (auto dest:transM)
 qed
 
+subsection\<open>Replacement instances obtained through Powerset\<close>
+
+txt\<open>The next few lemmas provide bounds for certain constructions.\<close>
+
+lemma not_functional_Replace_0:
+  assumes "\<not>(\<forall>y y'. P(y) \<and> P(y') \<longrightarrow> y=y')"
+  shows "{y . x \<in> A, P(y)} = 0"
+  using assms by (blast elim!: ReplaceE)
+
+lemma Replace_in_Pow_rel:
+  assumes "\<And>x b. x \<in> A \<Longrightarrow> P(x,b) \<Longrightarrow> b \<in> U" "\<forall>x\<in>A. \<forall>y y'. P(x,y) \<and> P(x,y') \<longrightarrow> y=y'"
+    "separation(M, \<lambda>y. \<exists>x[M]. x \<in> A \<and> P(x, y))"
+    "M(U)" "M(A)"
+  shows "{y . x \<in> A, P(x, y)} \<in> Pow\<^bsup>M\<^esup>(U)"
+proof -
+  from assms
+  have "{y . x \<in> A, P(x, y)} \<subseteq> U"
+    "z \<in> {y . x \<in> A, P(x, y)} \<Longrightarrow> M(z)" for z
+    by (auto dest:transM)
+  with assms
+  have "{y . x \<in> A, P(x, y)} = {y\<in>U . \<exists>x[M]. x\<in>A \<and> P(x,y)}"
+    by (intro equalityI) (auto, blast)
+  with assms
+  have "M({y . x \<in> A, P(x, y)})"
+    by simp
+  with assms
+  show ?thesis
+    using mem_Pow_rel_abs by auto
+qed
+
+lemma Replace_sing_0_in_Pow_rel:
+  assumes "\<And>b. P(b) \<Longrightarrow> b \<in> U"
+    "separation(M, \<lambda>y. P(y))" "M(U)"
+  shows "{y . x \<in> {0}, P(y)} \<in> Pow\<^bsup>M\<^esup>(U)"
+proof (cases "\<forall>y y'. P(y) \<and> P(y') \<longrightarrow> y=y'")
+  case True
+  with assms
+  show ?thesis by (rule_tac Replace_in_Pow_rel) auto
+next
+  case False
+  with assms
+  show ?thesis
+    using nonempty not_functional_Replace_0[of P "{0}"] Pow_rel_char by auto
+qed
+
+lemma The_in_Pow_rel_Union:
+  assumes "\<And>b. P(b) \<Longrightarrow> b \<in> U" "separation(M, \<lambda>y. P(y))" "M(U)"
+  shows "(THE i. P(i)) \<in> Pow\<^bsup>M\<^esup>(\<Union>U)"
+proof -
+  note assms
+  moreover from this
+  have "(THE i. P(i)) \<in> Pow(\<Union>U)"
+    unfolding the_def by auto
+  moreover from assms
+  have "M(THE i. P(i))"
+    using Replace_sing_0_in_Pow_rel[of P U] unfolding the_def
+    by (auto dest:transM)
+  ultimately
+  show ?thesis
+    using Pow_rel_char by auto
+qed
+
+\<comment> \<open>There is an unnecessarily unbounded quantification below\<close>
+lemma Least_in_Pow_rel_Union:
+  assumes "\<And>b. P(b) \<Longrightarrow> b \<in> U" "separation(M, \<lambda>y. Ord(y) \<and> P(y) \<and> (\<forall>j. j < y \<longrightarrow> \<not> P(j)))"
+    "M(U)"
+  shows "(\<mu> i. P(i)) \<in> Pow\<^bsup>M\<^esup>(\<Union>U)"
+  using assms unfolding Least_def
+  by (rule_tac The_in_Pow_rel_Union) simp
+
 lemma bounded_lam_replacement:
   fixes U
   assumes "\<forall>X[M]. \<forall>x\<in>X. f(x) \<in> U(X)"
