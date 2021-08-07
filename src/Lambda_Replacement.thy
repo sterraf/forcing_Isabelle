@@ -204,6 +204,29 @@ proof -
     using bounded_lam_replacement[of fst "\<lambda>X. {0} \<union> \<Union>\<Union>X"] by simp
 qed
 
+lemma lam_replacement_restrict:
+assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x,B)\<rangle>)"  "M(B)"
+shows "lam_replacement(M, \<lambda>r . restrict(r,B))"
+proof -
+  have "\<forall>r\<in>R. restrict(r,B)\<in>Pow_rel(M,\<Union>R)" if "M(R)" for R
+  proof -
+    {
+      fix r
+      assume "r\<in>R"
+      with \<open>M(B)\<close>
+      have "restrict(r,B)\<in>Pow(\<Union>R)" "M(restrict(r,B))"
+        using Union_upper subset_Pow_Union subset_trans[OF restrict_subset]
+          transM[OF _ \<open>M(R)\<close>]
+        by simp_all
+    } then show ?thesis
+      using Pow_rel_char that by simp
+  qed
+  with assms
+  show ?thesis
+    using bounded_lam_replacement[of "\<lambda>r . restrict(r,B)" "\<lambda>X. Pow_rel(M,\<Union>X)"]
+    by simp
+qed
+
 end (* M_basic *)
 
 locale M_replacement = M_basic +
@@ -833,7 +856,7 @@ lemma image_replacement':
 lemma un_Pair_replacement: "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y = x\<union>{p})"
   using lam_replacement_Un_const[THEN lam_replacement_imp_strong_replacement] by simp
 
-lemma restrict_strong_replacement: "M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y=restrict(x,r))"
+lemma restrict_strong_replacement: "M(A) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y=restrict(x,A))"
   sorry
 
 lemma diff_replacement: "M(X) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = x - X)"
