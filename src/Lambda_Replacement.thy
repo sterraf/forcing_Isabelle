@@ -175,12 +175,42 @@ proof -
     using Pow_rel_char by auto
 qed
 
-\<comment> \<open>There is an unnecessarily unbounded quantification below\<close>
+lemma separation_least: "separation(M, \<lambda>y. Ord(y) \<and> P(y) \<and> (\<forall>j. j < y \<longrightarrow> \<not> P(j)))"
+  unfolding separation_def
+proof
+  fix z
+  assume "M(z)"
+  have "M({x \<in> z . x \<in> z \<and> Ord(x) \<and> P(x) \<and> (\<forall>j. j < x \<longrightarrow> \<not> P(j))})"
+    (is "M(?y)")
+  proof (cases "\<exists>x\<in>z. Ord(x) \<and> P(x) \<and> (\<forall>j. j < x \<longrightarrow> \<not> P(j))")
+    case True
+    with \<open>M(z)\<close>
+    have "\<exists>x[M]. ?y = {x}"
+      by (safe, rename_tac x, rule_tac x=x in rexI)
+        (auto dest:transM, intro equalityI, auto elim:Ord_linear_lt)
+    then
+    show ?thesis
+      by auto
+  next
+    case False
+    then
+    have "{x \<in> z . x \<in> z \<and> Ord(x) \<and> P(x) \<and> (\<forall>j. j < x \<longrightarrow> \<not> P(j))} = 0"
+      by auto
+    then
+    show ?thesis by auto
+  qed
+  moreover from this
+  have "\<forall>x[M]. x \<in> ?y \<longleftrightarrow> x \<in> z \<and> Ord(x) \<and> P(x) \<and> (\<forall>j. j < x \<longrightarrow> \<not> P(j))" by simp
+  ultimately
+  show "\<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> x \<in> z \<and> Ord(x) \<and> P(x) \<and> (\<forall>j. j < x \<longrightarrow> \<not> P(j))"
+    by blast
+qed
+
 lemma Least_in_Pow_rel_Union:
-  assumes "\<And>b. P(b) \<Longrightarrow> b \<in> U" "separation(M, \<lambda>y. Ord(y) \<and> P(y) \<and> (\<forall>j. j < y \<longrightarrow> \<not> P(j)))"
+  assumes "\<And>b. P(b) \<Longrightarrow> b \<in> U"
     "M(U)"
   shows "(\<mu> i. P(i)) \<in> Pow\<^bsup>M\<^esup>(\<Union>U)"
-  using assms unfolding Least_def
+  using assms separation_least unfolding Least_def
   by (rule_tac The_in_Pow_rel_Union) simp
 
 lemma bounded_lam_replacement:
