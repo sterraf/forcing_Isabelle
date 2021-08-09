@@ -2,9 +2,11 @@ section\<open>Relativization of Finite Functions\<close>
 theory FiniteFun_Relative
   imports
     Synthetic_Definition
+    "Delta_System_Lemma.ZF_Library"
     Discipline_Function
     Lambda_Replacement
     Cohen_Posets
+
 begin
 
 subsection\<open>The set of finite binary sequences\<close>
@@ -75,8 +77,9 @@ definition FiniteFun_iso :: "[i,i,i,i,i] \<Rightarrow> o" where
   "FiniteFun_iso(A,B,n,g,f) \<equiv>  (\<forall> i\<in>n . g`i \<in> f) \<and> (\<forall> ab\<in>f. (\<exists> i\<in>n. g`i=ab))"
 
 text\<open>From a function $g\in n \to A\times B$ we obtain a finite function in \<^term>\<open>A-||>B\<close>.\<close>
+
 definition to_FiniteFun :: "i \<Rightarrow> i" where
-  "to_FiniteFun(f) \<equiv> {f`i . i \<in> domain(f)}"
+  "to_FiniteFun(f) \<equiv> {f`i. i\<in>domain(f)}"
 
 definition FiniteFun_Repr :: "[i,i] \<Rightarrow> i" where
   "FiniteFun_Repr(A,B) \<equiv> {f \<in> (A\<times>B)\<^bsup><\<omega>\<^esup> . cons_like(f) }"
@@ -85,10 +88,14 @@ locale M_FiniteFun =  M_seqspace +
   assumes
     cons_like_separation : "separation(M,\<lambda>f. cons_like_rel(M,f))"
     and
-    to_finiteFun_replacement: "strong_replacement(M, \<lambda>x y. y = to_FiniteFun(x))"
+    to_finiteFun_replacement: "strong_replacement(M, \<lambda>x y. y = range(x))"
     and
     supset_separation: "separation(M, \<lambda> x. \<exists>a. \<exists>b. x = \<langle>a,b\<rangle> \<and> b \<subseteq> a)"
 begin
+
+lemma fun_range_eq: "f\<in>A\<rightarrow>B \<Longrightarrow> {f`i . i\<in>domain(f) }  = range(f)"
+  using range_eq_image[of f] domain_of_fun image_fun func.apply_rangeI
+  by auto
 
 lemma FiniteFun_fst_type:
   assumes "h\<in>A-||>B" "p\<in>h"
@@ -203,26 +210,31 @@ lemma FiniteFun_isoD :
   assumes "n\<in>\<omega>" "g\<in>n\<rightarrow>A\<times>B" "f\<in>A-||>B" "FiniteFun_iso(A,B,n,g,f)"
   shows "to_FiniteFun(g) = f"
 proof
-  {
+  show "to_FiniteFun(g) \<subseteq> f"
+  proof
     fix ab
     assume "ab\<in>to_FiniteFun(g)"
-    with assms
+    moreover
+    note assms
+    moreover from calculation
     obtain i where "i\<in>n" "g`i=ab" "ab\<in>A\<times>B"
       unfolding to_FiniteFun_def using domain_of_fun by auto
-    with assms
-    have "ab\<in>f" unfolding FiniteFun_iso_def by auto
-  }
-  then show "to_FiniteFun(g) \<subseteq> f" by auto
+    ultimately
+    show "ab\<in>f" unfolding FiniteFun_iso_def by auto
+  qed
 next
-  {
+  show "f \<subseteq> to_FiniteFun(g)"
+  proof
     fix ab
     assume "ab\<in>f"
     with assms
     obtain i where "i\<in>n" "g`i=ab" "ab\<in>A\<times>B"
       unfolding FiniteFun_iso_def by auto
-    with assms have "ab \<in> to_FiniteFun(g)" unfolding to_FiniteFun_def using domain_of_fun by auto
-  }
-  then show "f \<subseteq> to_FiniteFun(g)" ..
+    with assms
+    show "ab \<in> to_FiniteFun(g)"
+      unfolding to_FiniteFun_def
+      using domain_of_fun by auto
+  qed
 qed
 
 lemma to_FiniteFun_succ_eq :
@@ -317,6 +329,13 @@ lemma FiniteFun_iso_intro2:
   shows "\<exists> g \<in> (A -||> B) . FiniteFun_iso(A,B,n,f,g)"
   using assms FiniteFun_iso_intro_to by blast
 
+lemma FiniteFun_eq_range_Repr :
+  shows "{range(h) . h \<in> FiniteFun_Repr(A,B) } = {to_FiniteFun(h) . h \<in> FiniteFun_Repr(A,B) }"
+  unfolding FiniteFun_Repr_def to_FiniteFun_def seqspace_def
+  using fun_range_eq
+  by(intro equalityI subsetI,auto)
+
+
 lemma FiniteFun_eq_to_FiniteFun_Repr :
   shows "A-||>B = {to_FiniteFun(h) . h \<in> FiniteFun_Repr(A,B) } "
     (is "?Y=?X")
@@ -329,7 +348,7 @@ proof
       using FiniteFun_iso_intro1 by blast
     with \<open>f\<in>_\<close>
     have "cons_like(g)" "f=to_FiniteFun(g)" "domain(g) = n" "g\<in>FiniteFun_Repr(A,B)"
-      using  FiniteFun_isoD domain_of_fun
+      using FiniteFun_isoD domain_of_fun
       unfolding FiniteFun_Repr_def
       by auto
     with 1 have "f\<in>?X"
@@ -360,26 +379,14 @@ lemma FiniteFun_Repr_closed :
 
 lemma to_FiniteFun_closed:
   assumes "M(A)" "f\<in>A"
-  shows "M(to_FiniteFun(f))"
-proof -
-  from assms
-  have "M(f)" using transM[OF \<open>f\<in>_\<close>] by simp
-  then have "M(domain(f))" using domain_closed by simp
-  with \<open>M(f)\<close>
-  have "M(f`i)" if "i\<in>domain(f)" for i
-    using that apply_closed transM[OF _ \<open>M(domain(f))\<close>] by auto
-  with \<open>M(f)\<close> show ?thesis unfolding to_FiniteFun_def
-    using RepFun_closed
-      apply_replacement
-      apply_closed[OF \<open>M(domain(f))\<close>] transM[OF _ \<open>M(domain(f))\<close>]
-    by simp
-qed
+  shows "M(range(f))"
+  using assms transM[of _ A] by simp
 
 lemma To_FiniteFun_Repr_closed :
   assumes "M(A)" "M(B)"
-  shows "M({to_FiniteFun(h) . h \<in> FiniteFun_Repr(A,B) })"
+  shows "M({range(h) . h \<in> FiniteFun_Repr(A,B) })"
   using assms FiniteFun_Repr_closed
-    RepFun_closed to_finiteFun_replacement
+    RepFun_closed  to_finiteFun_replacement
     to_FiniteFun_closed[OF FiniteFun_Repr_closed]
   by simp
 
@@ -387,6 +394,7 @@ lemma FiniteFun_closed[intro,simp] :
   assumes "M(A)" "M(B)"
   shows "M(A -||> B)"
   using assms To_FiniteFun_Repr_closed FiniteFun_eq_to_FiniteFun_Repr
+    FiniteFun_eq_range_Repr
   by simp
 
 lemma Fnle_nat_closed[intro,simp]:

@@ -3,6 +3,7 @@ theory Cardinal_Preservation
     Cohen_Posets_Relative
     Forcing_Main
     Interface_SepInstances
+    Interface_ReplacementInstances
 begin
 
 context forcing_notion
@@ -64,7 +65,7 @@ sublocale M_ZF_trans \<subseteq> M_aleph "##M"
 
 sublocale M_ZF_trans \<subseteq> M_FiniteFun "##M"
   apply (unfold_locales)
-  apply (simp_all add: separation_supset_body separation_cons_like_rel)
+  apply (simp_all add: separation_supset_body separation_cons_like_rel replacement_range)
   sorry
 
 sublocale M_ZFC_trans \<subseteq> M_cardinal_AC "##M"
