@@ -96,11 +96,10 @@ lemmas lepoll_assumptions_defs[simp] = lepoll_assumptions1_def
   lepoll_assumptions17_def lepoll_assumptions18_def
 
 definition if_range_F where
- [simp]: "if_range_F(F,A,f,i) \<equiv> 
-  if i \<in> range(f) then F(A, converse(f) ` i) else 0"
+ [simp]: "if_range_F(H,f,i) \<equiv> if i \<in> range(f) then H(converse(f) ` i) else 0"
 
 definition if_range_F_else_F where
-  "if_range_F_else_F(F,b,A,f,i) \<equiv> if b=0 then if_range_F(F,A,f,i) else F(A,i)"
+  "if_range_F_else_F(H,b,f,i) \<equiv> if b=0 then if_range_F(H,f,i) else H(i)"
 
 lemma (in M_trans) mem_F_bounds:
   fixes F A
@@ -117,18 +116,18 @@ lemma (in M_trans) mem_F_bounds:
 lemma (in M_basic) lam_Least_assumption_general:
   assumes
     separations:
-    "\<forall>A'[M]. separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i)\<rangle>)"
+    "\<forall>A'[M]. separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i)\<rangle>)"
     and
     mem_F_bound:"\<And>x c. x\<in>F(A,c) \<Longrightarrow> c \<in> range(f) \<union> U(A)"
     and
     types:"M(A)" "M(b)" "M(f)" "M(U(A))"
-  shows "lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i))"
+  shows "lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i))"
 proof -
 (*   from assms
   have [simp]: "M(X) \<Longrightarrow> M({domain(x) . x \<in> A})" for X
     using lam_replacement_domain[THEN lam_replacement_imp_strong_replacement,
         THEN RepFun_closed, of A] by (auto dest:transM) *)
-  have "\<forall>x\<in>X. (\<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i)) \<in>
+  have "\<forall>x\<in>X. (\<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i)) \<in>
     Pow\<^bsup>M\<^esup>(\<Union>(X \<union> range(f) \<union> U(A)))" if "M(X)" for X
   proof
     fix x
@@ -140,19 +139,19 @@ proof -
     moreover
     note assms
     ultimately
-    show "(\<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i)) \<in>
+    show "(\<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i)) \<in>
         Pow\<^bsup>M\<^esup>(\<Union>(X \<union> range(f) \<union> U(A)))"
     proof (rule_tac Least_in_Pow_rel_Union, cases "b=0", simp_all)
       case True
       fix c
-      assume asm:"x \<in> if_range_F_else_F(F, 0, A, f, c)"
+      assume asm:"x \<in> if_range_F_else_F(F(A), 0, f, c)"
       with mem_F_bound
       show "c\<in>X \<or> c \<in> range(f) \<or> c \<in> U(A)"
         unfolding if_range_F_else_F_def if_range_F_def by (cases "c\<in>range(f)") auto
     next
       case False
       fix c
-      assume "x \<in> if_range_F_else_F(F, b, A, f, c)"
+      assume "x \<in> if_range_F_else_F(F(A), b, f, c)"
       with False mem_F_bound[of x c]
       show "c\<in>X \<or> c \<in> range(f) \<or> c\<in>U(A)"
         unfolding if_range_F_else_F_def if_range_F_def by auto
@@ -160,18 +159,18 @@ proof -
   qed
   with assms
   show ?thesis
-    using bounded_lam_replacement[of "\<lambda>x.(\<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i))"
+    using bounded_lam_replacement[of "\<lambda>x.(\<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i))"
         "\<lambda>X. Pow\<^bsup>M\<^esup>(\<Union>(X \<union> range(f) \<union> U(A)))"] by simp
 qed
 
 lemma (in M_replacement) lam_Least_assumption_drSR_Y:
   fixes F r' D
   defines "F \<equiv> drSR_Y(r',D)"
-  assumes "\<forall>A'[M]. separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i)\<rangle>)"
+  assumes "\<forall>A'[M]. separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i)\<rangle>)"
     "M(A)" "M(b)" "M(f)" "M(r')"
     \<comment> \<open>Next assumption shouldn't be necessary in the future\<close>
     "\<forall>A[M]. \<forall>r'[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, r')\<rangle>)"
-  shows "lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i))"
+  shows "lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i))"
 proof -
   from assms(2-)
   have [simp]: "M(X) \<Longrightarrow> M(X \<union> range(f) \<union> {domain(x) . x \<in> A})"
@@ -181,7 +180,7 @@ proof -
         THEN RepFun_closed, of A]
       lam_replacement_restrict[THEN lam_replacement_imp_strong_replacement,
         THEN RepFun_closed, of r' A] by (auto dest:transM)
-  have "\<forall>x\<in>X. (\<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i)) \<in>
+  have "\<forall>x\<in>X. (\<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i)) \<in>
     Pow\<^bsup>M\<^esup>(\<Union>(X \<union> range(f) \<union> {domain(x). x\<in>A} \<union> {restrict(x,r'). x\<in>A} \<union> domain(A) \<union> range(A) \<union> \<Union>A))" if "M(X)" for X
   proof
     fix x
@@ -193,7 +192,7 @@ proof -
     moreover
     note assms(2-)
     ultimately
-    show "(\<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i)) \<in>
+    show "(\<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i)) \<in>
         Pow\<^bsup>M\<^esup>(\<Union>(X \<union> range(f) \<union> {domain(x). x\<in>A} \<union> {restrict(x,r'). x\<in>A} \<union> domain(A) \<union> range(A) \<union> \<Union>A))"
       unfolding if_range_F_else_F_def if_range_F_def
       apply (rule_tac Least_in_Pow_rel_Union, simp_all)
@@ -215,7 +214,7 @@ proof -
   qed
   with assms(2-)
   show ?thesis
-    using bounded_lam_replacement[of "\<lambda>x.(\<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i))"
+    using bounded_lam_replacement[of "\<lambda>x.(\<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i))"
         "\<lambda>X. Pow\<^bsup>M\<^esup>(\<Union>(X \<union> range(f) \<union> {domain(x). x\<in>A} \<union> {restrict(x,r'). x\<in>A} \<union> domain(A) \<union> range(A) \<union> \<Union>A))"] by simp
 qed
 
@@ -228,7 +227,7 @@ locale M_replacement_lepoll = M_replacement + M_inj +
     and
     \<comment> \<open>Here b is a Boolean.\<close>
     lam_Least_assumption:"M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow>
-        lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i))"
+        lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i))"
     and
     F_args_closed: "M(A) \<Longrightarrow> M(x) \<Longrightarrow> x \<in> F(A,i) \<Longrightarrow> M(i)"
     and
@@ -268,7 +267,7 @@ lemma lepoll_assumptions4:
 
 lemma lam_Least_closed :
   assumes "M(A)" "M(b)" "M(f)"
-  shows "\<forall>x[M]. M(\<mu> i. x \<in> if_range_F_else_F(F,b,A,f,i))"
+  shows "\<forall>x[M]. M(\<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i))"
 proof -
   have "x \<in> (if i \<in> range(f) then F(A, converse(f) ` i) else 0) \<Longrightarrow> M(i)" for x i
   proof (cases "i\<in>range(f)")
