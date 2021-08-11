@@ -101,18 +101,6 @@ definition if_range_F where
 definition if_range_F_else_F where
   "if_range_F_else_F(H,b,f,i) \<equiv> if b=0 then if_range_F(H,f,i) else H(i)"
 
-lemma (in M_trans) mem_F_bounds:
-  fixes F A
-  defines "F \<equiv> dC_F"
-  (* defines "F \<equiv> (`)" *)
-  (* defines "F \<equiv> \<lambda>_ x. if M(x) then A`x else 0" *)
-  (* defines "F \<equiv> \<lambda>_ x. if M(x) then x else 0" \<comment> \<open>won't work!\<close> *)
-  (* defines "F \<equiv> \<lambda>_ x. if M(x) then A-``{x} else 0" *)
-  (* defines "F \<equiv> \<lambda>_ x. Collect(A, (\<in>)(x))" *)
-  shows "x\<in>F(A,c) \<Longrightarrow> c \<in> (range(f) \<union> {domain(x). x\<in>A} \<union> domain(A) \<union> range(A) \<union> \<Union>A)"
-  using apply_0 unfolding F_def
-  by (cases "M(c)", auto simp:F_def drSR_Y_def dC_F_def)
-
 lemma (in M_basic) lam_Least_assumption_general:
   assumes
     separations:
@@ -123,10 +111,6 @@ lemma (in M_basic) lam_Least_assumption_general:
     types:"M(A)" "M(b)" "M(f)" "M(U(A))"
   shows "lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i))"
 proof -
-(*   from assms
-  have [simp]: "M(X) \<Longrightarrow> M({domain(x) . x \<in> A})" for X
-    using lam_replacement_domain[THEN lam_replacement_imp_strong_replacement,
-        THEN RepFun_closed, of A] by (auto dest:transM) *)
   have "\<forall>x\<in>X. (\<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i)) \<in>
     Pow\<^bsup>M\<^esup>(\<Union>(X \<union> range(f) \<union> U(A)))" if "M(X)" for X
   proof
