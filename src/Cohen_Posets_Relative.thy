@@ -380,21 +380,21 @@ proof -
       show ?thesis
         by (intro equalityI) (force)+
     qed
-    from \<open>M(D)\<close> \<open>M(A)\<close> \<open>M(r)\<close>
-    have "M({domain(p) .. p\<in>A, restrict(p,r) = f \<and> domain(p) \<in> D})" (is "M(?Y(f))")
-      if "M(f)" for f
-      using RepFun_closed domain_replacement_simp
+    from \<open>M(D)\<close>\<open>M(r)\<close>
+    have "M({domain(p) .. p\<in>A, restrict(p,r) = f \<and> domain(p) \<in> D})" (is "M(?Y(A,f))")
+      if "M(f)" "M(A)" for f A
+      using that RepFun_closed domain_replacement_simp
         separation_conj[OF restrict_eq_separation[OF \<open>M(r)\<close> \<open>M(f)\<close>]
                            domain_mem_separation[OF \<open>M(D)\<close>]]
         transM[OF _ \<open>M(D)\<close>]
       by simp
-    obtain f where "uncountable_rel(M,?Y(f))" "M(f)"
+    obtain f where "uncountable_rel(M,?Y(A,f))" "M(f)"
     proof -
       note \<open>M(r)\<close>
       moreover from this
       have "M(Pow\<^bsup>M\<^esup>(r \<times> 2))" by simp
       moreover
-      note \<open>M(A)\<close> \<open>\<And>f. M(f) \<Longrightarrow> M(?Y(f))\<close> \<open>M(D)\<close>
+      note \<open>M(A)\<close> \<open>\<And>f A. M(f) \<Longrightarrow> M(A) \<Longrightarrow> M(?Y(A,f))\<close> \<open>M(D)\<close>
       moreover from calculation
       interpret M_replacement_lepoll M "drSR_Y(r,D)"
         using countable_lepoll_assms3 lam_replacement_inj_rel
@@ -408,13 +408,12 @@ proof -
         obtain xa where "xa\<in>A" "restrict(xa, r) = i" by blast
         ultimately
         show "M(i)" by (auto dest:transM)
-      next
-        fix A 
-        show "\<forall>x[M]. M({domain(x) . x \<in> {y \<in> A . restrict(y, r) = x \<and> domain(y) \<in> D}})" sorry
       qed
-      have "x \<in> Pow\<^bsup>M\<^esup>(r \<times> 2) \<Longrightarrow> M(drSR_Y(r, D, A, x))" for x sorry
+      from calculation
+      have "x \<in> Pow\<^bsup>M\<^esup>(r \<times> 2) \<Longrightarrow> M(drSR_Y(r, D, A, x))" for x 
+        unfolding drSR_Y_def by (auto dest:transM)
       ultimately 
-      interpret M_cardinal_UN_lepoll _ ?Y "Pow_rel(M,r\<times>2)"
+      interpret M_cardinal_UN_lepoll _ "?Y(A)" "Pow_rel(M,r\<times>2)"
         using countable_lepoll_assms3 lepoll_assumptions[where S="Pow_rel(M,r\<times>2)", unfolded lepoll_assumptions_defs]
         unfolding drSR_Y_def
         apply unfold_locales apply (simp_all add:lam_replacement_inj_rel del:Sep_and_Replace if_range_F_else_F_def)
@@ -428,9 +427,9 @@ proof -
           using Finite_Sigma[THEN Finite_Pow_rel] Finite_imp_countable_rel
           by simp
         moreover
-        assume "M(f) \<Longrightarrow> countable_rel(M,?Y(f))" for f
+        assume "M(f) \<Longrightarrow> countable_rel(M,?Y(A,f))" for f
         moreover
-        note \<open>D = (\<Union>f\<in>Pow_rel(M,r\<times>2) .?Y(f))\<close> \<open>M(r)\<close>
+        note \<open>D = (\<Union>f\<in>Pow_rel(M,r\<times>2) .?Y(A,f))\<close> \<open>M(r)\<close>
         moreover
         note \<open>uncountable_rel(M,D)\<close>
         ultimately
@@ -440,16 +439,16 @@ proof -
       with that
       show ?thesis by auto
     qed
-    moreover from this and \<open>M(f) \<Longrightarrow> M(?Y(f))\<close>
-    have "M(?Y(f))" by blast
+    moreover from this \<open>M(A)\<close> and \<open>M(f) \<Longrightarrow> M(A) \<Longrightarrow> M(?Y(A,f))\<close>
+    have "M(?Y(A,f))" by blast
     ultimately
-    obtain j where "j \<in> inj_rel(M,nat, ?Y(f))" "M(j)"
+    obtain j where "j \<in> inj_rel(M,nat, ?Y(A,f))" "M(j)"
       using uncountable_rel_iff_nat_lt_cardinal_rel[THEN iffD1, THEN leI,
           THEN cardinal_rel_le_imp_lepoll_rel, THEN lepoll_relD]
       by auto
-    with \<open>M(?Y(f))\<close>
-    have "j`0 \<noteq> j`1" "j`0 \<in> ?Y(f)" "j`1 \<in> ?Y(f)"
-      using inj_is_fun[THEN apply_type, of j nat "?Y(f)"]
+    with \<open>M(?Y(A,f))\<close>
+    have "j`0 \<noteq> j`1" "j`0 \<in> ?Y(A,f)" "j`1 \<in> ?Y(A,f)"
+      using inj_is_fun[THEN apply_type, of j nat "?Y(A,f)"]
         inj_rel_char
       unfolding inj_def by auto
     then
