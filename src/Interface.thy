@@ -13,6 +13,7 @@ theory Interface
     Synthetic_Definition
     Arities
     Renaming_Auto
+    Discipline_Function
 begin
 
 abbreviation
@@ -1471,6 +1472,95 @@ proof -
   show "{\<langle>x,f(x)\<rangle> . x\<in>A } \<in> M"
     using Replace_in_M \<open>A\<in>M\<close> \<open>env\<in>_\<close>
     by simp
+qed
+
+definition \<rho>_pair_repl :: "i\<Rightarrow>i" where
+  "\<rho>_pair_repl(l) \<equiv> rsum({\<langle>0, 0\<rangle>, \<langle>1, 1\<rangle>, \<langle>2, 3\<rangle>}, id(l), 3, 4, l)"
+
+lemma f_type' : "{\<langle>0,0 \<rangle>, \<langle>1, 1\<rangle>, \<langle>2, 3\<rangle>} \<in> 3 \<rightarrow> 4"
+  using Pi_iff unfolding function_def by auto
+
+lemma ren_type' :
+  assumes "l\<in>nat"
+  shows "\<rho>_pair_repl(l) : 3#+l \<rightarrow> 4#+l"
+  using sum_type[of 3 4 l l "{\<langle>0, 0\<rangle>, \<langle>1, 1\<rangle>, \<langle>2, 3\<rangle>}" "id(l)"] f_type' assms id_type
+  unfolding \<rho>_pair_repl_def by auto
+
+lemma ren_action' :
+  assumes
+    "env\<in>list(M)" "x\<in>M" "y\<in>M" "z\<in>M" "u\<in>M"
+  shows "\<forall> i . i < 3#+length(env) \<longrightarrow>
+          nth(i,[x,z,u]@env) = nth(\<rho>_pair_repl(length(env))`i,[x,z,y,u]@env)"
+proof -
+  let ?f="{\<langle>0, 0\<rangle>, \<langle>1, 1\<rangle>, \<langle>2,3\<rangle>}"
+  have 1:"(\<And>j. j < length(env) \<Longrightarrow> nth(j, env) = nth(id(length(env)) ` j, env))"
+    using assms ltD by simp
+  have 2:"nth(j, [x,z,u]) = nth(?f ` j, [x,z,y,u])" if "j<3" for j
+  proof -
+    consider "j=0" | "j=1" | "j=2" using  ltD[OF \<open>j<3\<close>] by auto
+    then show ?thesis
+    proof(cases)
+      case 1
+      then show ?thesis using apply_equality f_type' by simp
+    next
+      case 2
+      then show ?thesis using apply_equality f_type' by simp
+    next
+      case 3
+      then show ?thesis using apply_equality f_type' by simp
+    qed
+  qed
+  show ?thesis
+    using sum_action[OF _ _ _ _ f_type' id_type _ _ _ _ _ _ _ 2 1,simplified] assms
+    unfolding \<rho>_pair_repl_def by simp
+qed
+
+lemma LambdaPair_in_M :
+  assumes
+    f_fm:  "\<phi> \<in> formula" and
+    f_ar:  "arity(\<phi>)\<le> 3 #+ length(env)" and
+    fsats: "\<And>x z r. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> r\<in>M \<Longrightarrow> (M,[x,z,r]@env \<Turnstile> \<phi>) \<longleftrightarrow> is_f(x,z,r)" and
+    fabs:  "\<And>x z r. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> r\<in>M \<Longrightarrow> is_f(x,z,r) \<longleftrightarrow> r = f(x,z)" and
+    fclosed: "\<And>x z. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> f(x,z) \<in> M" and
+    "A\<in>M" "env\<in>list(M)"
+  shows "(\<lambda>x\<in>A . f(fst(x),snd(x))) \<in>M"
+proof -
+  let ?ren="\<rho>_pair_repl(length(env))"
+  let ?j="3#+length(env)"
+  let ?k="4#+length(env)"
+  let ?\<psi>="ren(\<phi>)`?j`?k`?ren"
+  let ?\<phi>'="Exists(Exists(And(fst_fm(2,0),(And(snd_fm(2,1),?\<psi>)))))"
+  let ?p="\<lambda>x y. is_f(fst(x),snd(x),y)"
+  have "?\<phi>'\<in>formula" "?\<psi>\<in>formula"
+    using \<open>env\<in>_\<close> length_type f_fm ren_type' ren_tc[of \<phi> ?j ?k ?ren]
+    by simp_all
+  moreover from this
+  have "arity(?\<psi>)\<le>4#+(length(env))" "arity(?\<psi>)\<in>nat"
+    using assms arity_ren[OF f_fm _ _ ren_type',of "length(env)"] by simp_all
+  moreover from calculation
+  have 1:"arity(?\<phi>') \<le> 2#+(length(env))" "?\<phi>'\<in>formula"
+    using arity_fst_fm arity_snd_fm Un_le pred_Un_distrib assms pred_le
+    by simp_all
+  moreover from this calculation
+  have 2:"x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,y]@env \<Turnstile> ?\<phi>') \<longleftrightarrow> ?p(x,y)" for x y
+    using
+      sats_iff_sats_ren[OF f_fm _ _ _ _ ren_type' f_ar
+         ren_action'[rule_format,of _ "fst(x)" x "snd(x)" y],simplified]
+       \<open>env\<in>_\<close> length_type[OF \<open>env\<in>_\<close>] transitivity[OF _ \<open>A\<in>M\<close>]
+      fst_snd_closed pair_in_M_iff fsats[of "fst(x)" "snd(x)" y,symmetric]
+      fst_abs snd_abs
+    by auto
+  moreover from assms
+  have 3:"x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> ?p(x,y) \<longleftrightarrow> y = f(fst(x),snd(x))" for x y
+    using fclosed fst_snd_closed pair_in_M_iff fabs transitivity
+    by auto
+  moreover
+  have 4:"\<And> x . x\<in>A \<Longrightarrow> <x,f(fst(x),snd(x))> \<in> M" "\<And> x . x\<in>A \<Longrightarrow> f(fst(x),snd(x)) \<in> M"
+    using transitivity[OF _ \<open>A\<in>M\<close>] pair_in_M_iff fclosed fst_snd_closed
+    by simp_all
+  ultimately
+  show ?thesis
+    using Lambda_in_M[of ?\<phi>'] \<open>env\<in>_\<close> \<open>A\<in>_\<close> by simp
 qed
 
 end (* M_ZF_trans *)

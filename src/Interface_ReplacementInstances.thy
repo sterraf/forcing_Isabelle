@@ -92,5 +92,45 @@ lemma (in M_ZF_trans) replacement_Union':
   using lam_replacement_imp_strong_replacement_aux lam_replacement_Union Union_closed
   by simp
 
+lemma (in M_ZF_trans) lam_replacement_Un:
+  "lam_replacement(##M, \<lambda>p. fst(p) \<union> snd(p))"
+  using lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. fst(p)\<union>snd(p)"]
+    LambdaPair_in_M[where \<phi>="union_fm(0,1,2)" and is_f="union(##M)" and env="[]",OF
+      union_type _ union_iff_sats[symmetric] union_abs]
+     arity_union_fm[of 0 1 2] nat_simp_union transitivity Un_closed fst_snd_closed
+  by simp
+
+lemma (in M_ZF_trans) lam_replacement_image:
+  "lam_replacement(##M, \<lambda>p. fst(p) `` snd(p))"
+  using lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. fst(p)``snd(p)"]
+    LambdaPair_in_M[where \<phi>="image_fm(0,1,2)" and is_f="image(##M)" and env="[]",OF
+      image_type _ image_iff_sats[symmetric] image_abs]
+     arity_image_fm[of 0 1 2] nat_simp_union transitivity image_closed fst_snd_closed
+  by simp
+
+
+relationalize  "first_rel" "is_first" external
+synthesize "first_fm" from_definition "is_first" assuming "nonempty"
+
+relationalize  "minimum_rel" "is_minimum" external
+
+(*FIXME: we have to synthesize The!
+manual_schematic "minimum_fm" for "is_minimum"assuming "nonempty"
+  unfolding is_minimum_def using is_The_def
+  sorry
+*)
+
+lemma (in M_ZF_trans) lam_replacement_cons:
+  "lam_replacement(##M, \<lambda>p. cons(fst(p), snd(p)))"
+  apply(rule_tac lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. cons(fst(p),snd(p))"])
+  apply (auto) apply(rule cons_closed[simplified],auto simp add:fst_snd_closed[simplified])
+  apply (rule_tac
+    LambdaPair_in_M[where \<phi>="cons_fm(0,1,2)" and is_f="is_cons(##M)" and env="[]",OF
+      cons_type _ cons_iff_sats[symmetric] cons_abs,simplified])
+  apply (auto  simp:     arity_cons_fm[of 0 1 2] nat_simp_union transitivity fst_snd_closed)
+  using cons_closed[simplified]
+  by simp
+
+(*FIXME: we need to synthesize (and relativize?) Diff. *)
 
 end

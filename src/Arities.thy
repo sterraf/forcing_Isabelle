@@ -86,19 +86,23 @@ lemma arity_empty_fm [arity]:
   using nat_union_abs1 nat_union_abs2 pred_Un_distrib
   by simp
 
-lemma arity_succ_fm [arity] :
-  "\<lbrakk>x\<in>nat;y\<in>nat\<rbrakk> \<Longrightarrow> arity(succ_fm(x,y)) = succ(x) \<union> succ(y)"
-  unfolding succ_fm_def cons_fm_def 
+lemma arity_cons_fm [arity] :
+  "\<lbrakk>x\<in>nat;y\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> arity(cons_fm(x,y,z)) = succ(x) \<union> succ(y) \<union> succ(z)"
+  unfolding cons_fm_def
   using arity_upair_fm arity_union_fm nat_union_abs2 pred_Un_distrib
   by auto
 
+lemma arity_succ_fm [arity] :
+  "\<lbrakk>x\<in>nat;y\<in>nat\<rbrakk> \<Longrightarrow> arity(succ_fm(x,y)) = succ(x) \<union> succ(y)"
+  unfolding succ_fm_def
+  using arity_cons_fm
+  by auto
 
 lemma arity_number1_fm [arity] : 
     "\<lbrakk> r\<in>nat \<rbrakk> \<Longrightarrow> arity(number1_fm(r)) = succ(r)"
   unfolding number1_fm_def 
   using arity_empty_fm arity_succ_fm nat_union_abs1 nat_union_abs2 pred_Un_distrib
   by simp
-
 
 lemma arity_function_fm [arity] : 
     "\<lbrakk> r\<in>nat \<rbrakk> \<Longrightarrow> arity(function_fm(r)) = succ(r)"
