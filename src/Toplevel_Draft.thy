@@ -18,8 +18,7 @@ locale M_master = M_cohen +
       strong_replacement(M, \<lambda>x y. y = \<langle>x, \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>\<rangle>)"
   and
   UN_lepoll_assumptions:
-  "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
-  "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>A x. A ` x,S,fa,K,x,f,r)"
+  "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(A') \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x\<in>if_range_F_else_F((`)(A), b, f, i)\<rangle>)"
 
 begin
 
@@ -137,6 +136,20 @@ sublocale G_generic_AC \<subseteq> M_master_sub "##M" "##(M[G])"
   using M_subset_MG[OF one_in_G] generic Ord_MG_iff
   by unfold_locales auto
 
+lemma (in M_trans) mem_F_bound4:
+  fixes F A
+  defines "F \<equiv> (`)"
+  shows "x\<in>F(A,c) \<Longrightarrow> c \<in> (range(f) \<union> domain(A))"
+  using apply_0 unfolding F_def
+  by (cases "M(c)", auto simp:F_def)
+
+lemma (in M_trans) mem_F_bound5:
+  fixes F A
+  defines "F \<equiv> \<lambda>_ x. A`x "
+  shows "x\<in>F(A,c) \<Longrightarrow> c \<in> (range(f) \<union> domain(A))"
+  using apply_0 unfolding F_def
+  by (cases "M(c)", auto simp:F_def drSR_Y_def dC_F_def)
+
 context G_generic_AC begin
 
 context
@@ -178,12 +191,23 @@ proof (rule ccontr)
   have "\<beta> \<in> \<alpha> \<Longrightarrow> |F`\<beta>|\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>" for \<beta>
     using Aleph_rel_zero by simp
   interpret M_replacement_lepoll "##M" "(`)"
-    using UN_lepoll_assumptions lam_replacement_apply
-    apply unfold_locales apply auto sorry
+    using UN_lepoll_assumptions lam_replacement_apply lam_replacement_inj_rel
+      mem_F_bound4 apply_0
+    unfolding lepoll_assumptions_defs
+  proof (unfold_locales, 
+      rule_tac [3] lam_Least_assumption_general[where U=domain, OF _ mem_F_bound4], simp_all) 
+    fix A i x
+    assume "A \<in> M" "x \<in> M" "x \<in> A ` i"
+    then
+    show "i \<in> M"
+      using apply_0[of i A] transM[of _ "domain(A)", simplified]
+      by force
+  qed
   from \<open>\<alpha> \<in> M\<close> \<open>F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close> \<open>F\<in>M\<close>
   interpret M_cardinal_UN_lepoll "##M" "\<lambda>\<beta>. F`\<beta>" \<alpha>
     using Aleph_rel_closed[of 0] UN_lepoll_assumptions lepoll_assumptions
-  proof (unfold_locales, auto dest:transM)
+      lam_replacement_apply lam_replacement_inj_rel
+  proof (unfold_locales, auto dest:transM simp del:if_range_F_else_F_def)
     show "w \<in> F ` x \<Longrightarrow> x \<in> M" for w x
     proof -
       fix w x
@@ -197,6 +221,27 @@ proof (rule ccontr)
       with \<open>\<alpha> \<in> M\<close>
       show "x \<in> M" by (auto dest:transM)
     qed
+   show "w \<in> F ` x \<Longrightarrow> x \<in> M" for w x \<comment> \<open>FIXME: why two times?\<close>
+    proof -
+      fix w x
+      assume "w \<in> F`x"
+      then
+      have "x \<in> domain(F)"
+        using apply_0 by auto
+      with \<open>F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close>
+      have "x \<in> \<alpha>"
+        using domain_of_fun by simp
+      with \<open>\<alpha> \<in> M\<close>
+      show "x \<in> M" by (auto dest:transM)
+    qed
+  next
+    fix f b
+    assume "b\<in>M" "f\<in>M"
+    with \<open>F\<in>M\<close>
+    show "lam_replacement(##M, \<lambda>x. \<mu> i. x \<in> if_range_F_else_F((`)(F), b, f, i))"
+      using UN_lepoll_assumptions mem_F_bound5
+      by (rule_tac lam_Least_assumption_general[where U="domain", OF _ mem_F_bound5])
+        simp_all
   qed
   from \<open>\<alpha> < \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>\<close> \<open>\<alpha> \<in> M\<close> assms
   have "\<alpha> \<lesssim>\<^bsup>M\<^esup> \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"

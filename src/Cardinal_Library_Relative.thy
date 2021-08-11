@@ -150,19 +150,8 @@ qed
 
 end (* M_cardinal_UN_inj *)
 
-locale M_cardinal_UN_lepoll = M_library +
-  j:M_cardinal_UN _ J for J +
-assumes
-  lepoll_assumptions:
-  "M(f) \<Longrightarrow> lepoll_assumptions11(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
-  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions12(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
-  "M(f) \<Longrightarrow>  M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions13(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
-  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
-  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
-  "M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions16(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
-  "M(f) \<Longrightarrow>  M(K) \<Longrightarrow> lepoll_assumptions17(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
-  "M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> lepoll_assumptions18(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
-  "M(f) \<Longrightarrow> lepoll_assumptions10(M,A,\<lambda>_. X,S,fa,K,x,f,r)"
+locale M_cardinal_UN_lepoll = M_library + M_replacement_lepoll _ "\<lambda>_. X" +
+  j:M_cardinal_UN _ J for J
 begin
 
 \<comment>\<open>FIXME: this "LEQpoll" should be "LEPOLL"; same correction in Delta System\<close>
@@ -186,14 +175,14 @@ proof -
     by (cases "x\<in>range(f)") (auto dest:transM)
   moreover from calculation
   interpret M_Pi_assumptions_choice _ K ?Y
-    using j.Pi_assumptions lepoll_assumptions(1-3)[of f] lepoll_assumptions(4-)[of f K]
+    using j.Pi_assumptions lepoll_assumptions
   proof (unfold_locales, auto dest:transM)
     show "strong_replacement(M, \<lambda>y z. False)"
       unfolding strong_replacement_def by auto
   qed
   from calculation
   interpret M_cardinal_UN_inj _ _ _ _ f
-    using lepoll_assumptions(4-)[of f K]
+    using lepoll_assumptions
     by unfold_locales auto
   from assms
   show ?thesis using inj_rel_imp_cardinal_rel_UN_le by simp
@@ -382,12 +371,13 @@ locale M_cardinal_library = M_library + M_replacement +
         lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. if M(x) then x else 0,b,f,i))"
     and
     cardinal_lib_assms2:
-    "M(G) \<Longrightarrow> M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow>
-        lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. if M(x) then G`x else 0,b,f,i))"
+    "M(G) \<Longrightarrow> lam_replacement(M, \<lambda>x. if M(x) then G ` x else 0)"    
+    "M(A') \<Longrightarrow> M(G) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> 
+        separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. if M(a) then G`a else 0,b,f,i)\<rangle>)"
     and
     cardinal_lib_assms3:
-    "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(F) \<Longrightarrow>
-        lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. if M(x) then F-``{x} else 0,b,f,i))"
+    "M(A') \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(F) \<Longrightarrow>
+        separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. if M(a) then F-``{a} else 0,b,f,i)\<rangle>)"
     and
     cdlt_replacement:
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q} \<and> z = {\<langle>x, y\<rangle>})"
@@ -529,6 +519,13 @@ qed
 lemma UN_if_zero: "M(K) \<Longrightarrow> (\<Union>x\<in>K. if M(x) then G ` x else 0) =(\<Union>x\<in>K. G ` x)"
   using transM[of _ K] by auto
 
+lemma mem_F_bound1:
+  fixes F G
+  defines "F \<equiv> \<lambda>_ x. if M(x) then G`x else 0"
+  shows "x\<in>F(A,c) \<Longrightarrow> c \<in> (range(f) \<union> domain(G) )"
+  using apply_0 unfolding F_def
+  by (cases "M(c)", auto simp:F_def drSR_Y_def dC_F_def)
+
 lemma lt_Aleph_rel_imp_cardinal_rel_UN_le_nat: "function(G) \<Longrightarrow> domain(G) \<lesssim>\<^bsup>M\<^esup> \<omega> \<Longrightarrow>
    \<forall>n\<in>domain(G). |G`n|\<^bsup>M\<^esup><\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> M(G) \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<^bsup>M\<^esup>\<le>\<omega>"
 proof -
@@ -540,10 +537,9 @@ proof -
   have "separation(M, M)" unfolding separation_def by auto
   ultimately
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then G`x else 0"
-    using cardinal_lib_assms2 lam_replacement_identity lam_replacement_inj_rel
-      lam_replacement_if[OF lam_replacement_apply
-        lam_replacement_constant[OF nonempty], where b=M]
-    by unfold_locales auto
+    using lam_replacement_inj_rel cardinal_lib_assms2 mem_F_bound1[of _ _ G]
+    by (unfold_locales, simp_all) 
+      (rule lam_Least_assumption_general[where U="\<lambda>_. domain(G)"], auto)
   note \<open>M(G)\<close>
   moreover
   have  "w \<in> (if M(x) then G ` x else 0) \<Longrightarrow> M(x)" for w x
@@ -984,6 +980,13 @@ lemma Infinite_InfCard_rel_cardinal_rel: "Infinite(Z) \<Longrightarrow> M(Z) \<L
     Infinite_iff_lepoll_rel_nat Inf_Card_rel_is_InfCard_rel cardinal_rel_eqpoll_rel
   by simp
 
+lemma (in M_trans) mem_F_bound2:
+  fixes F A
+  defines "F \<equiv> \<lambda>_ x. if M(x) then A-``{x} else 0"
+  shows "x\<in>F(A,c) \<Longrightarrow> c \<in> (range(f) \<union> range(A))"
+  using apply_0 unfolding F_def
+  by (cases "M(c)", auto simp:F_def drSR_Y_def dC_F_def)
+
 lemma Finite_to_one_rel_surj_rel_imp_cardinal_rel_eq:
   assumes "F \<in> Finite_to_one_rel(M,Z,Y) \<inter> surj_rel(M,Z,Y)" "Infinite(Z)" "M(Z)" "M(Y)"
   shows "|Y|\<^bsup>M\<^esup> = |Z|\<^bsup>M\<^esup>"
@@ -999,11 +1002,12 @@ proof -
     by (cases "M(i)") auto
   moreover from calculation
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then F-``{x} else 0"
-    using cardinal_lib_assms3 lam_replacement_inj_rel
+    using lam_replacement_inj_rel mem_F_bound2 cardinal_lib_assms3
       lam_replacement_vimage_sing
-       lam_replacement_if[OF _
+      lam_replacement_if[OF _
         lam_replacement_constant[OF nonempty],where b=M] sep_true
     by (unfold_locales, simp_all)
+      (rule lam_Least_assumption_general[where U="\<lambda>_. range(F)"], auto)
   have "w \<in> (if M(y) then F-``{y} else 0) \<Longrightarrow> M(y)" for w y
     by (cases "M(y)") auto
   moreover from \<open>F\<in>_\<inter>_\<close>

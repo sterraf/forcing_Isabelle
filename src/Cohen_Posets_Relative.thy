@@ -11,16 +11,15 @@ locale M_cohen = M_delta +
     separaton_domain_pair: "separation(M, \<lambda>p. \<forall>x\<in>A. x \<in> snd(p) \<longleftrightarrow> domain(x) = fst(p))"
     and
     countable_lepoll_assms2:
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,dC_F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,dC_F,S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions15(M,A,dC_F,S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. {p \<in> A . domain(p) = a}, b, f, i)\<rangle>)"
+    "M(A) \<Longrightarrow> lam_replacement(M, dC_F(A))"
     and
     countable_lepoll_assms3:
-    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions1(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions5(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(S) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> M(x) \<Longrightarrow> lepoll_assumptions6(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions14(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
-    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> M(x) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lepoll_assumptions15(M,A,drSR_Y(r',D),S,fa,K,x,f,r)"
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lam_replacement(M, drSR_Y(r',D,A))"
+    "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(b) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> M(A')\<Longrightarrow> 
+        separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(drSR_Y(r', D, A), b, f, i)\<rangle>)"
+    "\<forall>A[M]. \<forall>r'[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, r')\<rangle>)"\<comment> \<open>eliminate!\<close>
+    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lam_replacement(M, \<lambda>a. drSR_Y(r', D, A, a))"
     and
     domain_mem_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>x . domain(x)\<in>A)"
     and
@@ -164,6 +163,13 @@ end (* M_cardinals *)
 context M_add_reals
 begin
 
+lemma (in M_trans) mem_F_bound3:
+  fixes F A
+  defines "F \<equiv> dC_F"
+  shows "x\<in>F(A,c) \<Longrightarrow> c \<in> (range(f) \<union> {domain(x). x\<in>A})"
+  using apply_0 unfolding F_def
+  by (cases "M(c)", auto simp:F_def drSR_Y_def dC_F_def)
+
 lemma ccc_Fn_nat:
   notes Sep_and_Replace [simp]\<comment> \<open>FIXME with all \<^term>\<open>SepReplace\<close> instances\<close>
   assumes "M(I)"
@@ -215,22 +221,38 @@ proof -
     moreover
     have "uncountable_rel(M,{domain(p) . p \<in> A})"
     proof
-      note \<open>M({domain(p). p\<in>A})\<close> \<open>M(A)\<close>
-      moreover from this
-      have "x \<in> A \<Longrightarrow> M({p \<in> A . domain(p) = domain(x)})" for x
-        using separation_closed domain_eq_separation transM[OF _ \<open>M(A)\<close>] by simp
-      moreover from this
+      have "M({domain(p) . p \<in> A'})" if "M(A')" for A'\<comment> \<open>Repeated above\<close>
+        using that RepFun_closed domain_replacement_simp transM[OF _ that]
+        by auto
+      moreover
       interpret M_replacement_lepoll M dC_F
         using lam_replacement_dC_F separaton_domain_pair domain_eq_separation
           lam_replacement_inj_rel
         unfolding dC_F_def
-        apply unfold_locales apply(auto dest:transM) sorry
-      from calculation
+        apply unfold_locales apply (auto dest:transM)
+      proof -
+        fix A b f
+        assume "M(A)" "M(b)" "M(f)"
+        with calculation[of A]
+        show "lam_replacement(M, \<lambda>x. \<mu> i. x \<in> if_range_F_else_F(\<lambda>d. {p \<in> A . domain(p) = d}, b, f, i))"
+          using  lam_replacement_dC_F separaton_domain_pair domain_eq_separation
+            mem_F_bound3 countable_lepoll_assms2
+          unfolding dC_F_def
+          by (rule_tac lam_Least_assumption_general[where U="\<lambda>_. {domain(x). x\<in>A}"])
+              auto
+      qed
+      note \<open>M({domain(p). p\<in>A})\<close> \<open>M(A)\<close>
+      moreover from this
+      have "x \<in> A \<Longrightarrow> M({p \<in> A . domain(p) = domain(x)})" for x
+        using separation_closed domain_eq_separation transM[OF _ \<open>M(A)\<close>] by simp
+      ultimately
       interpret M_cardinal_UN_lepoll _ "dC_F(A)" "{domain(p). p\<in>A}"
         using countable_lepoll_assms2 lepoll_assumptions transM[of _ A]
-            lepoll_assumptions1[OF \<open>M(A)\<close> \<open>M({domain(p) . p \<in> A})\<close>]
+          lepoll_assumptions1[OF \<open>M(A)\<close> \<open>M({domain(p) . p \<in> A})\<close>] domain_eq_separation
+          lam_replacement_inj_rel
         unfolding dC_F_def
-        by unfold_locales (auto)
+        by (unfold_locales, auto simp del:if_range_F_else_F_def)
+          (rule_tac lam_Least_assumption_general[where U="\<lambda>_. {domain(x). x\<in>A}"], auto)
       from \<open>A \<subseteq> Fn(nat, I, 2)\<close>
       have x:"(\<Union>d\<in>{domain(p) . p \<in> A}. {p\<in>A. domain(p) = d}) = A"
         by auto
@@ -375,17 +397,31 @@ proof -
       note \<open>M(A)\<close> \<open>\<And>f. M(f) \<Longrightarrow> M(?Y(f))\<close> \<open>M(D)\<close>
       moreover from calculation
       interpret M_replacement_lepoll M "drSR_Y(r,D)"
-        using lam_replacement_dC_F separaton_domain_pair domain_eq_separation
-          lam_replacement_inj_rel
-        unfolding drSR_Y_def
-        apply unfold_locales apply(simp_all) sorry
-      from calculation
+        using countable_lepoll_assms3 lam_replacement_inj_rel
+        apply (unfold_locales, simp_all)
+          apply (rule_tac [2] lam_Least_assumption_drSR_Y)
+               apply(simp_all add:drSR_Y_def)
+      proof -
+        fix i A x
+        assume "\<exists>xa\<in>A. restrict(xa, r) = i \<and> domain(xa) \<in> D \<and> x = domain(xa)" "M(A)" "M(r)"
+        moreover from this
+        obtain xa where "xa\<in>A" "restrict(xa, r) = i" by blast
+        ultimately
+        show "M(i)" by (auto dest:transM)
+      next
+        fix A 
+        show "\<forall>x[M]. M({domain(x) . x \<in> {y \<in> A . restrict(y, r) = x \<and> domain(y) \<in> D}})" sorry
+      qed
+      have "x \<in> Pow\<^bsup>M\<^esup>(r \<times> 2) \<Longrightarrow> M(drSR_Y(r, D, A, x))" for x sorry
+      ultimately 
       interpret M_cardinal_UN_lepoll _ ?Y "Pow_rel(M,r\<times>2)"
-        using countable_lepoll_assms3[where S="Pow_rel(M,r\<times>2)" and A=A and D=D and r'=r]
-          lepoll_assumptions
-        unfolding lepoll_assumptions_defs drSR_Y_def
-        apply unfold_locales defer defer prefer 6 apply (blast dest: transM)
-        by (unfold lepoll_assumptions_defs, fast) (auto dest:transM)\<comment> \<open>NOTE VERY SLOW: 25s\<close>
+        using countable_lepoll_assms3 lepoll_assumptions[where S="Pow_rel(M,r\<times>2)", unfolded lepoll_assumptions_defs]
+        unfolding drSR_Y_def
+        apply unfold_locales apply (simp_all add:lam_replacement_inj_rel del:Sep_and_Replace if_range_F_else_F_def)
+        unfolding drSR_Y_def[symmetric]
+           apply (rule_tac lam_Least_assumption_drSR_Y)
+        by (simp_all add: del:Sep_and_Replace if_range_F_else_F_def)
+          ((fastforce dest:transM[OF _ \<open>M(A)\<close>])+)[2]
       {
         from \<open>Finite(r)\<close> \<open>M(r)\<close>
         have "countable_rel(M,Pow_rel(M,r\<times>2))"
