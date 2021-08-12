@@ -735,10 +735,128 @@ lemma (in M_ZF_trans) separation_equal_apply:
  "(##M)(f) \<Longrightarrow> (##M)(a) \<Longrightarrow> separation(##M, \<lambda>x. f`x = a)"
   using separation_cong[THEN iffD1,OF _ separation_is_apply[of f a]] apply_abs
   by force
+(* *)
+definition id_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> o" where
+  "id_rel(A) \<equiv> \<lambda>z. \<exists>x[A]. z = \<langle>x, x\<rangle>"
+relativize "id_rel" "is_id_rel"
+synthesize "is_id_rel" from_definition assuming "nonempty"
+arity_theorem for "is_id_rel_fm"
 
- (* 1. separation(##M, \<lambda>z. \<exists>x\<in>M. z = \<langle>x, x\<rangle>) *)
+lemma (in M_ZF_trans) separation_is_id_rel:
+ "separation(##M, is_id_rel(##M))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x] \<Turnstile> is_id_rel_fm(0)",THEN iffD1])
+   apply(rule_tac is_id_rel_iff_sats[where env="[_]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[]",simplified])
+    apply(simp_all add:arity_is_id_rel_fm nat_simp_union is_id_rel_fm_type)
+  done
+
+lemma (in M_ZF_trans) id_rel_abs:
+  assumes "(##M)(x)"
+  shows "is_id_rel(##M,x) \<longleftrightarrow> id_rel(##M,x)"
+  using assms zero_in_M pair_in_M_iff unfolding id_rel_def is_id_rel_def
+  by auto
+
+lemma (in M_ZF_trans) separation_id_rel:
+ "separation(##M, \<lambda>z. \<exists>x[##M]. z = \<langle>x, x\<rangle>)"
+  using id_rel_abs separation_is_id_rel
+  unfolding id_rel_def
+  by (rule_tac separation_cong[where P="is_id_rel(##M)",THEN iffD1])
+
+
  (* 2. separation(##M, \<lambda>x. snd(fst(x)) = fst(snd(x))) *)
+definition sndfst_eq_fstsnd :: "[i] \<Rightarrow> o" where
+  "sndfst_eq_fstsnd \<equiv> \<lambda>x. snd(fst(x)) = fst(snd(x))"
+relativize "sndfst_eq_fstsnd" "is_sndfst_eq_fstsnd"
+synthesize "is_sndfst_eq_fstsnd" from_definition assuming "nonempty"
+arity_theorem for "is_sndfst_eq_fstsnd_fm"
+
+lemma (in M_ZF_trans) separation_is_sndfst_eq_fstsnd:
+ "separation(##M, is_sndfst_eq_fstsnd(##M))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x] \<Turnstile> is_sndfst_eq_fstsnd_fm(0)",THEN iffD1])
+   apply(rule_tac is_sndfst_eq_fstsnd_iff_sats[where env="[_]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[]",simplified])
+    apply(simp_all add:arity_is_sndfst_eq_fstsnd_fm nat_simp_union is_sndfst_eq_fstsnd_fm_type)
+  done
+
+lemma (in M_ZF_trans) sndfst_eq_fstsnd_abs:
+  assumes "(##M)(x)"
+  shows "is_sndfst_eq_fstsnd(##M,x) \<longleftrightarrow> sndfst_eq_fstsnd(x)"
+  using assms pair_in_M_iff fst_abs snd_abs fst_snd_closed
+  unfolding sndfst_eq_fstsnd_def is_sndfst_eq_fstsnd_def
+  by auto
+
+lemma (in M_ZF_trans) separation_sndfst_eq_fstsnd:
+ "separation(##M, \<lambda>x. snd(fst(x)) = fst(snd(x)))"
+  using sndfst_eq_fstsnd_abs separation_is_sndfst_eq_fstsnd
+  unfolding sndfst_eq_fstsnd_def
+  by (rule_tac separation_cong[where P="is_sndfst_eq_fstsnd(##M)",THEN iffD1])
+
+
+
  (* 3. separation(##M, \<lambda>x. fst(fst(x)) = fst(snd(x))) *)
+definition fstfst_eq_fstsnd :: "[i] \<Rightarrow> o" where
+  "fstfst_eq_fstsnd \<equiv> \<lambda>x. fst(fst(x)) = fst(snd(x))"
+relativize "fstfst_eq_fstsnd" "is_fstfst_eq_fstsnd"
+synthesize "is_fstfst_eq_fstsnd" from_definition assuming "nonempty"
+arity_theorem for "is_fstfst_eq_fstsnd_fm"
+
+lemma (in M_ZF_trans) separation_is_fstfst_eq_fstsnd:
+ "separation(##M, is_fstfst_eq_fstsnd(##M))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x] \<Turnstile> is_fstfst_eq_fstsnd_fm(0)",THEN iffD1])
+   apply(rule_tac is_fstfst_eq_fstsnd_iff_sats[where env="[_]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[]",simplified])
+    apply(simp_all add:arity_is_fstfst_eq_fstsnd_fm nat_simp_union is_fstfst_eq_fstsnd_fm_type)
+  done
+
+lemma (in M_ZF_trans) fstfst_eq_fstsnd_abs:
+  assumes "(##M)(x)"
+  shows "is_fstfst_eq_fstsnd(##M,x) \<longleftrightarrow> fstfst_eq_fstsnd(x)"
+  using assms pair_in_M_iff fst_abs snd_abs fst_snd_closed
+  unfolding fstfst_eq_fstsnd_def is_fstfst_eq_fstsnd_def
+  by auto
+
+lemma (in M_ZF_trans) separation_fstfst_eq_fstsnd:
+ "separation(##M, \<lambda>x. fst(fst(x)) = fst(snd(x)))"
+  using fstfst_eq_fstsnd_abs separation_is_fstfst_eq_fstsnd
+  unfolding fstfst_eq_fstsnd_def
+  by (rule_tac separation_cong[where P="is_fstfst_eq_fstsnd(##M)",THEN iffD1])
+
+
  (* 5. \<And>a. (##M)(a) \<Longrightarrow> separation(##M, \<lambda>x. fst(fst(x)) = a) *)
+definition fstfst_eq :: "[i,i] \<Rightarrow> o" where
+  "fstfst_eq(a) \<equiv> \<lambda>x. fst(fst(x)) = a"
+
+relativize "fstfst_eq" "is_fstfst_eq"
+synthesize "is_fstfst_eq" from_definition assuming "nonempty"
+arity_theorem for "is_fstfst_eq_fm"
+
+lemma (in M_ZF_trans) separation_is_fstfst_eq:
+ "(##M)(a) \<Longrightarrow> separation(##M, is_fstfst_eq(##M,a))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,a] \<Turnstile> is_fstfst_eq_fm(1,0)",THEN iffD1])
+   apply(rule_tac is_fstfst_eq_iff_sats[where env="[_,a]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[a]",simplified])
+    apply(simp_all add:arity_is_fstfst_eq_fm nat_simp_union is_fstfst_eq_fm_type)
+  done
+
+lemma (in M_ZF_trans) fstfst_eq_abs:
+  assumes "(##M)(a)" "(##M)(x)"
+  shows "is_fstfst_eq(##M,a,x) \<longleftrightarrow> fstfst_eq(a,x)"
+  using assms pair_in_M_iff fst_abs snd_abs fst_snd_closed
+  unfolding fstfst_eq_def is_fstfst_eq_def
+  by auto
+
+lemma (in M_ZF_trans) separation_fstfst_eq:
+ "(##M)(a) \<Longrightarrow> separation(##M, \<lambda>x. fst(fst(x)) = a)"
+  using fstfst_eq_abs separation_is_fstfst_eq
+  unfolding fstfst_eq_def
+  by (rule_tac separation_cong[where P="is_fstfst_eq(##M,a)",THEN iffD1])
 
 end

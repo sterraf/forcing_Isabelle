@@ -54,7 +54,7 @@ lemma (in M_ZF_trans) replacement_domain':
   using lam_replacement_imp_strong_replacement_aux lam_replacement_domain domain_closed
   by simp
 
-(*FIXME: for some reason converse is not synthesized yet. *)
+(*FIXME: for some reason converse is not synthesized yet. Perhaps we might use the other way? *)
 
 lemma (in M_ZF_trans) lam_replacement_fst : "lam_replacement(##M, fst)"
   using lam_replacement_iff_lam_closed[THEN iffD2,of fst]
@@ -108,6 +108,17 @@ lemma (in M_ZF_trans) lam_replacement_image:
      arity_image_fm[of 0 1 2] nat_simp_union transitivity image_closed fst_snd_closed
   by simp
 
+synthesize "setdiff" from_definition "setdiff" assuming "nonempty"
+arity_theorem for "setdiff_fm"
+
+lemma (in M_ZF_trans) lam_replacement_Diff:
+  "lam_replacement(##M, \<lambda>p. fst(p) - snd(p))"
+  using lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. fst(p) - snd(p)"]
+    LambdaPair_in_M[where \<phi>="setdiff_fm(0,1,2)" and is_f="setdiff(##M)" and env="[]",
+      OF setdiff_fm_type _ setdiff_iff_sats[symmetric] setdiff_abs]
+     arity_setdiff_fm[of 0 1 2] nat_simp_union transitivity Diff_closed fst_snd_closed
+     nonempty
+  by simp
 
 relationalize  "first_rel" "is_first" external
 synthesize "first_fm" from_definition "is_first" assuming "nonempty"
@@ -131,6 +142,30 @@ lemma (in M_ZF_trans) lam_replacement_cons:
   using cons_closed[simplified]
   by simp
 
-(*FIXME: we need to synthesize (and relativize?) Diff. *)
+definition is_omega_funspace :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o" where
+  "is_omega_funspace(N,B,n,z) \<equiv>  \<exists>o[N]. omega(N,o) \<and> n\<in>o \<and>is_funspace(N, n, B, z)"
+
+synthesize "omega_funspace" from_definition "is_omega_funspace" assuming "nonempty"
+arity_theorem for "omega_funspace_fm"
+
+lemma (in M_ZF_trans) omega_funspace_abs:
+  "B\<in>M \<Longrightarrow> n\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> is_omega_funspace(##M,B,n,z) \<longleftrightarrow> n\<in>\<omega> \<and> is_funspace(##M,n,B,z)"
+  unfolding is_omega_funspace_def using nat_in_M by simp
+
+lemma (in M_ZF_trans) replacement_is_omega_funspace:
+ "B\<in>M \<Longrightarrow> strong_replacement(##M, is_omega_funspace(##M,B))"
+  apply(rule_tac strong_replacement_cong[
+        where P="\<lambda> x f. M,[x,f,B] \<Turnstile> omega_funspace_fm(2,0,1)",THEN iffD1])
+   apply(rule_tac omega_funspace_iff_sats[where env="[_,_,B]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac replacement_ax[where env="[B]",simplified])
+    apply(simp_all add:arity_omega_funspace_fm nat_simp_union)
+  done
+
+lemma (in M_ZF_trans) replacement_omega_funspace:
+ "b\<in>M\<Longrightarrow>strong_replacement(##M, \<lambda>n z. n\<in>\<omega> \<and> is_funspace(##M,n,b,z))"
+  using strong_replacement_cong[THEN iffD2,OF iff_sym[OF omega_funspace_abs[of  b]]]
+   replacement_is_omega_funspace setclass_iff[THEN iffD1]
+  by (simp del:setclass_iff)
 
 end

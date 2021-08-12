@@ -3,11 +3,21 @@ theory Succession_Poset
   imports
     Proper_Extension
     FiniteFun_Relative
+    Interface_SepInstances
+    Interface_ReplacementInstances
 begin
+
+lemmas (in M_ZF_trans) ZF_replacements = lam_replacement_domain replacement_domain'
+  lam_replacement_fst lam_replacement_snd lam_replacement_Union
+  lam_replacement_Un lam_replacement_cons lam_replacement_image
+  lam_replacement_Diff
+  separation_fst_equal separation_id_rel[simplified]
+  separation_equal_apply separation_sndfst_eq_fstsnd
+  separation_fstfst_eq_fstsnd separation_fstfst_eq
 
 sublocale M_ZF_trans \<subseteq> M_replacement "##M"
   apply unfold_locales 
-  apply (simp_all add:lam_replacement_def del:setclass_iff)
+  apply (simp_all add: ZF_replacements del:setclass_iff)
   sorry
 
 sublocale M_ctm \<subseteq> M_seqspace "##M"

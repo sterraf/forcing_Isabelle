@@ -64,9 +64,9 @@ sublocale M_ZF_trans \<subseteq> M_aleph "##M"
   sorry
 
 sublocale M_ZF_trans \<subseteq> M_FiniteFun "##M"
-  apply (unfold_locales)
-  apply (simp_all add: separation_supset_body separation_cons_like_rel replacement_range)
-  sorry
+  using separation_supset_body separation_cons_like_rel
+    replacement_range replacement_omega_funspace
+  by (unfold_locales,simp_all)
 
 sublocale M_ZFC_trans \<subseteq> M_cardinal_AC "##M"
   using choice_ax
