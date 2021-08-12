@@ -352,9 +352,7 @@ locale M_replacement = M_basic +
     pullback_replacement:
     "strong_replacement(M, \<lambda>x y. y=\<langle>fst(fst(x)),\<langle>snd(fst(x)),snd(snd(x))\<rangle>\<rangle>)"
     and
-    lam_replacement_Un:"lam_replacement(M, \<lambda>p. fst(p) \<union> snd(p))"
-    and
-    lam_replacement_cons:"lam_replacement(M, \<lambda>p. cons(fst(p),snd(p)))"
+    lam_replacement_Upair:"lam_replacement(M, \<lambda>p. Upair(fst(p),snd(p)))"
     and
     lam_replacement_Diff:"lam_replacement(M, \<lambda>p. fst(p) - snd(p))"
     and
@@ -732,6 +730,26 @@ proof -
     unfolding id_def by simp
 qed
 
+(* FIXME: move this to a more appropiate place. *)
+lemma Upair_eq_cons: "Upair(a,b) = {a,b}"
+  unfolding cons_def by auto
+
+lemma Upair_closed[simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> M(Upair(a,b))"
+  using Upair_eq_cons by simp
+
+lemma lam_replacement_Un: "lam_replacement(M, \<lambda>p. fst(p) \<union> snd(p))"
+  using lam_replacement_Upair lam_replacement_Union
+    lam_replacement_hcomp[where g=Union and f="\<lambda>p. Upair(fst(p),snd(p))"]
+  unfolding Un_def by simp
+
+lemma lam_replacement_cons: "lam_replacement(M, \<lambda>p. cons(fst(p),snd(p)))"
+  using  lam_replacement_Upair
+    lam_replacement_hcomp2[of _ _ "(\<union>)"]
+    lam_replacement_hcomp2[of fst fst "Upair"]
+    lam_replacement_Un lam_replacement_fst lam_replacement_snd
+   unfolding cons_def
+  by auto
+
 lemma lam_replacement_constant: "M(b) \<Longrightarrow> lam_replacement(M,\<lambda>_. b)"
   unfolding lam_replacement_def strong_replacement_def
   by safe (rule_tac x="_\<times>{b}" in rexI; blast)
@@ -740,6 +758,47 @@ lemma lam_replacement_sing: "lam_replacement(M, \<lambda>x. {x})"
   using lam_replacement_constant lam_replacement_cons
     lam_replacement_hcomp2[of "\<lambda>x. x" "\<lambda>_. 0" cons]
   by (force intro: lam_replacement_identity)
+
+
+(* FIXME: this is an unfinished attempt of having a general result for RepFun. 
+
+lemma lam_replacement_cartprod: "lam_replacement(M, \<lambda>p. fst(p) \<times> snd(p))"
+  sorry
+
+lemma lam_replacement_RepFun_cons': "lam_replacement(M, \<lambda>p. {{x}. x\<in>{snd(p)} \<times> fst(p)})"
+  using lam_replacement_fst lam_replacement_snd lam_replacement_sing
+lam_replacement_cartprod lam_replacement_hcomp2[of _ _ "(\<times>)"]
+lam_replacement_hcomp[of _ "\<lambda>x.{x}"]
+  apply auto
+  sorry
+
+lemma lam_replacement_RepFun:
+  assumes  "lam_replacement(M, \<lambda>p. f(fst(p),snd(p)))" "\<forall>x[M]. \<forall>y[M]. M(f(x,y))"
+  shows "lam_replacement(M, \<lambda>p. RepFun(fst(p), f(snd(p))))"
+proof -
+  {
+    fix A
+    assume "M(A)"
+    have "M(\<lambda>p\<in>A. {f(snd(p),x) . x\<in>fst(p) })"
+     using assms lam_replacement_hcomp2[of "\<lambda>x . snd(p)" "\<lambda>x. x" f]
+      lam_replacement_snd lam_replacement_identity lam_replacement_constant
+      lam_replacement_imp_strong_replacement[THEN RepFun_closed,of "\<lambda>x. f(snd(p),x)" "fst(p)"]
+      transM[of _ "fst(p)"]
+
+  }
+  moreover 
+  have "M({f(snd(p),x) . x\<in>fst(p) })" if "M(p)" for p
+    using assms lam_replacement_hcomp2[of "\<lambda>x . snd(p)" "\<lambda>x. x" f]
+      lam_replacement_snd lam_replacement_identity lam_replacement_constant
+      lam_replacement_imp_strong_replacement[THEN RepFun_closed,of "\<lambda>x. f(snd(p),x)" "fst(p)"]
+      that transM[of _ "fst(p)"]
+    by simp
+  ultimately 
+  show ?thesis
+    using lam_replacement_iff_lam_closed
+    by simp
+qed
+*)
 
 lemmas tag_replacement = lam_replacement_constant[unfolded lam_replacement_def]
 
