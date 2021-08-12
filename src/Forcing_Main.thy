@@ -1,11 +1,11 @@
 section\<open>The main theorem\<close>
 theory Forcing_Main
   imports
+  Succession_Poset
   ZF_Miscellanea
   Internal_ZFC_Axioms
   Choice_Axiom
   Ordinals_In_MG
-  Succession_Poset
 
 begin
 

@@ -1,10 +1,11 @@
 section\<open>A poset of successions\<close>
 theory Succession_Poset
   imports
+    Interface_ReplacementInstances
     Proper_Extension
     FiniteFun_Relative
     Interface_SepInstances
-    Interface_ReplacementInstances
+    
 begin
 
 lemmas (in M_ZF_trans) ZF_replacements = lam_replacement_domain replacement_domain'

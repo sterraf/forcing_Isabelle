@@ -842,7 +842,7 @@ lemma arity_is_Hcheck_fm :
   assumes "m\<in>nat" "n\<in>nat" "p\<in>nat" "o\<in>nat"
   shows "arity(is_Hcheck_fm(m,n,p,o)) = succ(o) \<union> succ(n) \<union> succ(p) \<union> succ(m) "
   unfolding is_Hcheck_fm_def
-  using assms arity_Replace_fm[rule_format,OF PHcheck_type _ _ _ _ arity_PHcheck_fm]
+  using assms arity_Replace_fm[rule_format,OF PHcheck_type _ _ _ arity_PHcheck_fm]
     pred_Un_distrib Un_assoc Un_nat_type
   by simp
 
