@@ -703,7 +703,75 @@ lemma (in M_ZF_trans) separation_toplevel9_body:
   unfolding toplevel9_body_def
   by simp
 
-subsection\<open>Replacement instances\<close>
+
+(*\<forall>A\<in>M. \<forall>r'\<in>M. separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, r')\<rangle>)*)
+definition toplevel10_body :: "[i,i,i] \<Rightarrow> o" where
+  "toplevel10_body(A,r) \<equiv>  \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, r)\<rangle>"
+
+relativize functional "toplevel10_body" "toplevel10_body_rel"
+relationalize "toplevel10_body_rel" "is_toplevel10_body"
+
+synthesize "is_toplevel10_body" from_definition assuming "nonempty"
+arity_theorem for "is_toplevel10_body_fm"
+
+lemma (in M_ZF_trans) separation_is_toplevel10_body:
+ "(##M)(A) \<Longrightarrow> (##M)(r) \<Longrightarrow> separation(##M, is_toplevel10_body(##M,A,r))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,A,r] \<Turnstile> is_toplevel10_body_fm(1,2,0)",THEN iffD1])
+   apply(rule_tac is_toplevel10_body_iff_sats[where env="[_,A,r]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[A,r]",simplified])
+    apply(simp_all add:arity_is_toplevel10_body_fm nat_simp_union is_toplevel10_body_fm_type)
+  done
+
+lemma (in M_ZF_trans) toplevel10_body_abs:
+  assumes "(##M)(A)" "(##M)(r)" "(##M)(x)"
+  shows "is_toplevel10_body(##M,A,r,x) \<longleftrightarrow> toplevel10_body(A,r,x)"
+  using assms pair_in_M_iff apply_closed transM
+  unfolding toplevel10_body_def is_toplevel10_body_def
+  by auto
+
+lemma (in M_ZF_trans) separation_toplevel10_body:
+ "(##M)(A) \<Longrightarrow> (##M)(r) \<Longrightarrow> separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, r)\<rangle>)"
+  using separation_is_toplevel10_body toplevel10_body_abs
+    separation_cong[where P="is_toplevel10_body(##M,A,r)" and M="##M",THEN iffD1]
+  unfolding toplevel10_body_def
+  by simp
+
+(*separation(##M, \<lambda>p. \<forall>x\<in>A. x \<in> snd(p) \<longleftrightarrow> domain(x) = fst(p))*)
+definition toplevel11_body :: "[i,i] \<Rightarrow> o" where
+  "toplevel11_body(A) \<equiv>  \<lambda>p. (\<forall>x\<in>A. (x \<in> snd(p) \<longleftrightarrow> domain(x) = fst(p)))"
+
+relativize functional "toplevel11_body" "toplevel11_body_rel"
+relationalize "toplevel11_body_rel" "is_toplevel11_body"
+
+synthesize "is_toplevel11_body" from_definition assuming "nonempty"
+arity_theorem for "is_toplevel11_body_fm"
+
+lemma (in M_ZF_trans) separation_is_toplevel11_body:
+ "(##M)(A) \<Longrightarrow> separation(##M, is_toplevel11_body(##M,A))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,A] \<Turnstile> is_toplevel11_body_fm(1,0)",THEN iffD1])
+   apply(rule_tac is_toplevel11_body_iff_sats[where env="[_,A]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[A]",simplified])
+    apply(simp_all add:arity_is_toplevel11_body_fm nat_simp_union is_toplevel11_body_fm_type)
+  done
+
+lemma (in M_ZF_trans) toplevel11_body_abs:
+  assumes "(##M)(A)" "(##M)(x)"
+  shows "is_toplevel11_body(##M,A,x) \<longleftrightarrow> toplevel11_body(A,x)"
+  using assms domain_closed domain_abs zero_in_M transM[of _ A] transitivity
+    fst_snd_closed fst_abs snd_abs
+  unfolding toplevel11_body_def is_toplevel11_body_def
+  by auto
+
+lemma (in M_ZF_trans) separation_toplevel11_body:
+ "(##M)(A) \<Longrightarrow> separation(##M, \<lambda>p. \<forall>x\<in>A. x \<in> snd(p) \<longleftrightarrow> domain(x) = fst(p))"
+  using separation_is_toplevel11_body toplevel11_body_abs
+    separation_cong[where P="is_toplevel11_body(##M,A)" and M="##M",THEN iffD1]
+  unfolding toplevel11_body_def
+  by simp
 
 lemma (in M_ZF_trans) separation_is_fst:
  "(##M)(a) \<Longrightarrow> separation(##M, \<lambda>x . is_fst(##M,x,a))"

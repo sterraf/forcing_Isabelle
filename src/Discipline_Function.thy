@@ -40,8 +40,12 @@ synthesize "snd" from_definition "is_snd"
 notation snd_fm (\<open>\<cdot>snd'(_') is _\<cdot>\<close>)
 arity_theorem for "snd_fm" 
 
+definition snd_rel ::  "[i\<Rightarrow>o,i] \<Rightarrow> i"  where
+  "snd_rel(M,p) \<equiv> THE d. is_snd(M,p,d)"
+
+
 reldb_add relational "snd" "is_snd"
-reldb_add functional "snd" "fst_snd"
+reldb_add functional "snd" "snd_rel"
 
 context M_trans
 begin

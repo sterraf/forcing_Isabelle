@@ -68,6 +68,14 @@ lemma (in M_ZF_trans) replacement_fst':
   using lam_replacement_imp_strong_replacement_aux lam_replacement_fst fst_closed
   by simp
 
+
+lemma (in M_ZF_trans) lam_replacement_domain1 : "lam_replacement(##M, domain)"
+  using lam_replacement_iff_lam_closed[THEN iffD2,of domain]
+    Lambda_in_M[where \<phi>="domain_fm(0,1)" and env="[]",OF
+      _ _  domain_iff_sats[symmetric] domain_abs] domain_type
+     arity_domain_fm[of 0 1] nat_simp_union transitivity domain_closed
+  by simp
+
 lemma (in M_ZF_trans) lam_replacement_snd : "lam_replacement(##M, snd)"
   using lam_replacement_iff_lam_closed[THEN iffD2,of snd]
     Lambda_in_M[where \<phi>="snd_fm(0,1)" and env="[]",OF
@@ -124,6 +132,8 @@ relationalize  "first_rel" "is_first" external
 synthesize "first_fm" from_definition "is_first" assuming "nonempty"
 
 relationalize  "minimum_rel" "is_minimum" external
+manual_schematic "minimum_fm" for "is_minimum"assuming "nonempty"
+  unfolding is_minimum_def using is_The_def
 
 (*FIXME: we have to synthesize The!
 manual_schematic "minimum_fm" for "is_minimum"assuming "nonempty"

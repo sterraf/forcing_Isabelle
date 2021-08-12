@@ -112,10 +112,14 @@ lemmas (in M_ZFC_trans) sep_instances =
  separation_toplevel1_body separation_toplevel2_body separation_toplevel3_body
  separation_toplevel4_body separation_toplevel5_body separation_toplevel6_body
  separation_toplevel7_body separation_toplevel8_body separation_toplevel9_body
-lemma b:"strong_replacement(##M,P)" "separation(##M,Q)" sorry
+ separation_toplevel10_body separation_toplevel11_body
+
+lemma hide_holes:"strong_replacement(##M,P)" "lam_replacement(##M,Q)"
+  sorry
+
 sublocale M_ZFC_trans \<subseteq> M_master "##M"
-  apply unfold_locales 
-  apply (simp_all add:replacements sep_instances b del:setclass_iff)
+  apply unfold_locales
+  apply (simp_all add:replacements hide_holes sep_instances del:setclass_iff)
   sorry
 
 context M_ctm_AC
