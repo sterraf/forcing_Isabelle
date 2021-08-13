@@ -511,7 +511,7 @@ lemma h_G_in_MG[simp]:
   includes G_generic_lemmas
   shows "h\<^bsub>G\<^esub> \<in> M[G]"
   using Aleph_rel2_closed
-    ext.lam_apply_replacement ext.apply_replacement2'
+    ext.lam_apply_replacement ext.apply_replacement2
     ext.Union_closed[simplified, OF G_in_MG]
     \<comment> \<open>The "simplified" here is because of
         the \<^term>\<open>setclass\<close> ocurrences\<close>
@@ -529,7 +529,7 @@ proof (intro ext.mem_inj_abs[THEN iffD2])
       using f_G_funtype G_in_MG ext.nat_into_M unfolding h_G_def
       apply (intro lam_type ext.mem_function_space_rel_abs[THEN iffD2], simp_all)
       apply (rule_tac ext.lam_closed[simplified], simp_all)
-       apply (rule ext.apply_replacement2')
+       apply (rule ext.apply_replacement2)
          apply (auto dest:ext.transM[OF _ Aleph_rel_sub_closed])
       done
     fix w x

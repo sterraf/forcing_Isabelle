@@ -1,6 +1,7 @@
 theory Discipline_Base
   imports
     "ZF-Constructible.Rank"
+    ZF_Miscellanea
     "Relativization"
 (* TODO: check if we need Eisbach. Currently this breaks the build. *)
 (* 
@@ -35,6 +36,9 @@ synthesize "singleton" from_definition "is_singleton"
 lemma (in M_trivial) singleton_closed [simp]:
   "M(x) \<Longrightarrow> M({x})"
   by simp
+
+lemma (in M_trivial) Upair_closed[simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> M(Upair(a,b))"
+  using Upair_eq_cons by simp
 
 lemma (in M_trivial) upair_closed[simp] : "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M({x,y})"
   by simp

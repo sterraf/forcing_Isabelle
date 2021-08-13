@@ -183,4 +183,7 @@ next
   then show ?thesis using assms apply_0 domain_of_fun by simp
 qed
 
+lemma Upair_eq_cons: "Upair(a,b) = {a,b}"
+  unfolding cons_def by auto
+
 end

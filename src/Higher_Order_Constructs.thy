@@ -41,17 +41,43 @@ lemma is_If_fm_iff_sats [iff_sats]:
   shows "is_If(##A,Q,ta,fa,ra) \<longleftrightarrow> A, env \<Turnstile> is_If_fm(\<phi>,t,f,r)"
   using assms sats_is_If_fm[of Q A \<phi> env t f r] by simp
 
-arity_theorem intermediate for "is_If_fm"
-
 lemma arity_is_If_fm:
-    "\<phi> \<in> nat \<Longrightarrow> t \<in> nat \<Longrightarrow> f \<in> nat \<Longrightarrow> r \<in> nat \<Longrightarrow>
+    "\<phi> \<in> formula \<Longrightarrow> t \<in> nat \<Longrightarrow> f \<in> nat \<Longrightarrow> r \<in> nat \<Longrightarrow>
     arity(is_If_fm(\<phi>, t, f, r)) = arity(\<phi>) \<union> succ(t) \<union> succ(r) \<union> succ(f)"
-  using arity_is_If_fm' by auto
+  unfolding is_If_fm_def
+  by auto
 
 definition
   is_The :: "[i\<Rightarrow>o,i\<Rightarrow>o,i] \<Rightarrow> o" where
   "is_The(M,Q,i) \<equiv> (Q(i) \<and> (\<exists>x[M]. Q(x) \<and> (\<forall>y[M]. Q(y) \<longrightarrow> y = x))) \<or>
                    (\<not>(\<exists>x[M]. Q(x) \<and> (\<forall>y[M]. Q(y) \<longrightarrow> y = x))) \<and> empty(M,i) "
+
+definition
+  is_The_fm :: "[i,i] \<Rightarrow> i" where
+  "is_The_fm(q,i) \<equiv> Or(And(Exists(And(Equal(i,0),q)),
+                  Exists(And(q,Forall(Implies(q,Equal(1,0)))))),
+                          And(Neg(Exists(And(q,Forall(Implies(q,Equal(1,0)))))),empty_fm(i)))"
+
+(* FIXME: why doesn't work? *)
+lemma sats_The_fm :
+  assumes p_iff_sats:
+    "\<And>a. a \<in> A \<Longrightarrow> P(a) \<longleftrightarrow> sats(A, p, Cons(a, env))"
+  shows
+    "\<lbrakk>y \<in> nat; env \<in> list(A) ; 0\<in>A\<rbrakk>
+    \<Longrightarrow> sats(A, is_The_fm(p,y), env) \<longleftrightarrow>
+        is_The(##A, P, nth(y,env))"
+  using nth_closed p_iff_sats
+  unfolding is_The_def is_The_fm_def
+    sorry
+
+lemma The_iff_sats [iff_sats]:
+  assumes is_Q_iff_sats:
+      "\<And>a. a \<in> A \<Longrightarrow> is_Q(a) \<longleftrightarrow> sats(A, q, Cons(a,env))"
+  shows
+  "\<lbrakk>nth(j,env) = y; j \<in> nat; env \<in> list(A); 0\<in>A\<rbrakk>
+   \<Longrightarrow> is_The(##A, is_Q, y) \<longleftrightarrow> sats(A, is_The_fm(q,j), env)"
+  using sats_The_fm [OF is_Q_iff_sats, of j , symmetric]
+  by simp
 
 lemma (in M_trans) The_abs:
   assumes "\<And>x. Q(x) \<Longrightarrow> M(x)" "M(a)"

@@ -927,4 +927,40 @@ lemma (in M_ZF_trans) separation_fstfst_eq:
   unfolding fstfst_eq_def
   by (rule_tac separation_cong[where P="is_fstfst_eq(##M,a)",THEN iffD1])
 
+
+(*\<And>B. (##M)(B) \<Longrightarrow> \<forall>A\<in>M. separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)*)
+definition restrict_elem :: "[i,i,i] \<Rightarrow> o" where
+  "restrict_elem(B,A) \<equiv> \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>"
+
+relativize "restrict_elem" "is_restrict_elem"
+synthesize "is_restrict_elem" from_definition assuming "nonempty"
+arity_theorem for "is_restrict_elem_fm"
+
+lemma (in M_ZF_trans) separation_is_restrict_elem:
+ "(##M)(B) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, is_restrict_elem(##M,B,A))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,A,B] \<Turnstile> is_restrict_elem_fm(2,1,0)",THEN iffD1])
+   apply(rule_tac is_restrict_elem_iff_sats[where env="[_,A,B]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[A,B]",simplified])
+    apply(simp_all add:arity_is_restrict_elem_fm nat_simp_union is_restrict_elem_fm_type)
+  done
+
+lemma (in M_ZF_trans) restrict_elem_abs:
+  assumes "(##M)(B)" "(##M)(A)" "(##M)(x)"
+  shows "is_restrict_elem(##M,B,A,x) \<longleftrightarrow> restrict_elem(B,A,x)"
+  using assms pair_in_M_iff fst_abs snd_abs fst_snd_closed
+  unfolding restrict_elem_def is_restrict_elem_def
+  by auto
+
+lemma (in M_ZF_trans) separation_restrict_elem_aux:
+ "(##M)(B) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)"
+  using restrict_elem_abs separation_is_restrict_elem
+  unfolding restrict_elem_def
+  by (rule_tac separation_cong[where P="is_restrict_elem(##M,B,_)",THEN iffD1])
+
+lemma (in M_ZF_trans) separation_restrict_elem:
+ "(##M)(B) \<Longrightarrow> \<forall>A[##M]. separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)"
+  using separation_restrict_elem_aux by simp
+
 end

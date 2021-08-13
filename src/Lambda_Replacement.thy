@@ -369,6 +369,8 @@ locale M_replacement = M_basic +
     separation_equal_fst2 : "M(a) \<Longrightarrow> separation(M,\<lambda>x . fst(fst(x))=a)"
     and
     separation_equal_apply: "M(f) \<Longrightarrow> M(a) \<Longrightarrow> separation(M,\<lambda>x. f`x=a)"
+    and
+    separation_restrict: "M(B) \<Longrightarrow> \<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)"
 begin
 
 lemma lam_replacement_imp_strong_replacement:
@@ -730,13 +732,6 @@ proof -
     unfolding id_def by simp
 qed
 
-(* FIXME: move this to a more appropiate place. *)
-lemma Upair_eq_cons: "Upair(a,b) = {a,b}"
-  unfolding cons_def by auto
-
-lemma Upair_closed[simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> M(Upair(a,b))"
-  using Upair_eq_cons by simp
-
 lemma lam_replacement_Un: "lam_replacement(M, \<lambda>p. fst(p) \<union> snd(p))"
   using lam_replacement_Upair lam_replacement_Union
     lam_replacement_hcomp[where g=Union and f="\<lambda>p. Upair(fst(p),snd(p))"]
@@ -843,17 +838,7 @@ lemma lam_replacement_apply_const_id: "M(f) \<Longrightarrow> M(z) \<Longrightar
   using lam_replacement_const_id[of z] lam_replacement_apply[of f]
     lam_replacement_hcomp[of "\<lambda>x. \<langle>z, x\<rangle>" "\<lambda>x. f`x"] by simp
 
-lemmas apply_replacement2' = lam_replacement_apply_const_id[unfolded lam_replacement_def]
-
-\<comment> \<open>Exactly the same as the one before\<close>
-lemma apply_replacement1: "M(x) \<Longrightarrow> M(f) \<Longrightarrow>
-      strong_replacement(M, \<lambda>z y. y = \<langle>z, f ` \<langle>x,z\<rangle>\<rangle>)"
-  oops
-
-\<comment> \<open>\<^term>\<open>M(x)\<close> redundant\<close>
-lemma apply_replacement2: "M(x) \<Longrightarrow> M(f) \<Longrightarrow> M(z) \<Longrightarrow>
-      strong_replacement(M, \<lambda>x y. y = \<langle>x, f ` \<langle>z, x\<rangle>\<rangle>)"
-  oops
+lemmas apply_replacement2 = lam_replacement_apply_const_id[unfolded lam_replacement_def]
 
 lemma lam_replacement_Inl: "lam_replacement(M, Inl)"
   using lam_replacement_identity lam_replacement_constant
@@ -911,11 +896,6 @@ lemma lam_replacement_prod_fun: "M(f) \<Longrightarrow> M(g) \<Longrightarrow> l
 lemma prod_fun_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow>
   strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>w,y\<rangle>. \<langle>f ` w, g ` y\<rangle>)(x)\<rangle>)"
   using lam_replacement_prod_fun unfolding split_def lam_replacement_def .
-
-\<comment> \<open>Exactly the same as the previous one.\<close>
-lemma prod_bij_rel_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow>
-     strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>f ` x, g ` y\<rangle>)(x)\<rangle>)"
-  oops
 
 lemma lam_replacement_vimage:"lam_replacement(M, \<lambda>p. fst(p) -`` snd(p))"
   using lam_replacement_Image lam_replacement_converse lam_replacement_fst
@@ -1002,21 +982,13 @@ lemmas domain_replacement =  lam_replacement_domain[unfolded lam_replacement_def
 lemma domain_replacement_simp: "strong_replacement(M, \<lambda>x y. y=domain(x))"
   using lam_replacement_domain lam_replacement_imp_strong_replacement by simp
 
-\<comment> \<open>Redundant\<close>
-lemma image_replacement:
-  "M(f) \<Longrightarrow> M(a) \<Longrightarrow> strong_replacement(M, \<lambda> x y . y = f`x)"
-  oops
-
-\<comment> \<open>Redundant, it has another name to avoid a clash in Absolute Versions.\<close>
-lemma image_replacement':
-  "M(f) \<Longrightarrow> strong_replacement(M, \<lambda> x y . y = f`x)"
-  oops
-
 lemma un_Pair_replacement: "M(p) \<Longrightarrow> strong_replacement(M, \<lambda>x y . y = x\<union>{p})"
   using lam_replacement_Un_const[THEN lam_replacement_imp_strong_replacement] by simp
 
 lemma restrict_strong_replacement: "M(A) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y=restrict(x,A))"
-  sorry
+  using lam_replacement_restrict separation_restrict
+    lam_replacement_imp_strong_replacement
+  by simp
 
 lemma diff_replacement: "M(X) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = x - X)"
   using lam_replacement_Diff'[THEN lam_replacement_imp_strong_replacement] by simp
@@ -1141,11 +1113,6 @@ lemma case_replacement4:
   unfolding lam_replacement_def
   by simp
 
-\<comment> \<open>Exactly as the previous one.\<close>
-lemma sum_bij_rel_replacement:
-  "M(f) \<Longrightarrow> M(g) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, case(\<lambda>u. Inl(f ` u), \<lambda>z. Inr(g ` z), x)\<rangle>)"
-  oops
-
 lemma case_replacement5:
   "strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,z\<rangle>. case(\<lambda>y. Inl(\<langle>y, z\<rangle>), \<lambda>y. Inr(\<langle>y, z\<rangle>), x))(x)\<rangle>)"
   unfolding split_def case_def cond_def
@@ -1221,7 +1188,7 @@ lemmas replacements = Pair_diff_replacement id_replacement tag_replacement
 
 end (* M_replacement *)
 
-find_theorems
+(*find_theorems
   "strong_replacement(_,\<lambda>x y. y = <x,_>)" -"strong_replacement(_,\<lambda>x y. y = <x,_>) \<Longrightarrow> _"
   (* "strong_replacement" -"strong_replacement(_,_) \<Longrightarrow> _" -"strong_replacement(_,\<lambda>x y. y = <x,_>)" *)
   -name:"_def" -name:intro -name:assumptions -name:closed -name: Derivations -name:transrec_equal_on_M
@@ -1242,5 +1209,6 @@ find_theorems
   -name:Inl_replacement2
   -name:case_replacement1 -name:case_replacement2 -name:case_replacement4 -name:case_replacement5
   -name:sum_bij_rel_replacement -name:replacements
+*)
 
 end

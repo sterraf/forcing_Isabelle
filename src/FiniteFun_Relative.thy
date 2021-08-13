@@ -93,7 +93,7 @@ locale M_FiniteFun =  M_seqspace +
     supset_separation: "separation(M, \<lambda> x. \<exists>a. \<exists>b. x = \<langle>a,b\<rangle> \<and> b \<subseteq> a)"
 begin
 
-lemma fun_range_eq: "f\<in>A\<rightarrow>B \<Longrightarrow> {f`i . i\<in>domain(f) }  = range(f)"
+lemma fun_range_eq: "f\<in>A\<rightarrow>B \<Longrightarrow> {f`i . i\<in>domain(f) } = range(f)"
   using range_eq_image[of f] domain_of_fun image_fun func.apply_rangeI
   by auto
 

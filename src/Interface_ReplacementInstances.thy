@@ -142,15 +142,15 @@ manual_schematic "minimum_fm" for "is_minimum"assuming "nonempty"
   sorry
 *)
 
-lemma (in M_ZF_trans) lam_replacement_cons:
-  "lam_replacement(##M, \<lambda>p. cons(fst(p), snd(p)))"
-  apply(rule_tac lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. cons(fst(p),snd(p))"])
-  apply (auto) apply(rule cons_closed[simplified],auto simp add:fst_snd_closed[simplified])
+lemma (in M_ZF_trans) lam_replacement_Upair:
+  "lam_replacement(##M, \<lambda>p. Upair(fst(p), snd(p)))"
+  apply(rule_tac lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. Upair(fst(p),snd(p))"])
+  apply (auto) apply(rule Upair_closed[simplified],auto simp add:fst_snd_closed[simplified])
   apply (rule_tac
-    LambdaPair_in_M[where \<phi>="cons_fm(0,1,2)" and is_f="is_cons(##M)" and env="[]",OF
-      cons_type _ cons_iff_sats[symmetric] cons_abs,simplified])
-  apply (auto  simp:     arity_cons_fm[of 0 1 2] nat_simp_union transitivity fst_snd_closed)
-  using cons_closed[simplified]
+    LambdaPair_in_M[where \<phi>="upair_fm(0,1,2)" and is_f="upair(##M)" and env="[]",OF
+      upair_type _ upair_iff_sats[symmetric]])
+  apply (auto  simp: arity_upair_fm[of 0 1 2] nat_simp_union transitivity fst_snd_closed)
+  using Upair_closed[simplified]
   by simp
 
 definition is_omega_funspace :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o" where
@@ -198,8 +198,6 @@ definition HAleph_wfrec_repl_body where
                        is_HAleph(N, x, f, y))"
 
 (* MOVE THIS to an appropriate place *)
-schematic_goal arity_is_If_fm:"\<phi> \<in> formula \<Longrightarrow> t \<in> \<omega> \<Longrightarrow> f \<in> \<omega> \<Longrightarrow> r \<in> \<omega> \<Longrightarrow> arity(is_If_fm(\<phi>, t, f, r)) = ?ar"
-  unfolding is_If_fm_def by (simp)
 arity_theorem for "ordinal_fm"
 arity_theorem for "is_Limit_fm"
 arity_theorem for "empty_fm"
@@ -208,19 +206,10 @@ arity_theorem for "fun_apply_fm"
 synthesize "HAleph_wfrec_repl_body" from_definition assuming "nonempty"
 arity_theorem for "HAleph_wfrec_repl_body_fm"
 
-\<comment> \<open>FIXME: Why should we cite older arity theorems in the next 3 results?\<close>
-schematic_goal arity_Rep_aux1: "arity(Replace_fm(13, \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> \<cdot>10`0 is 1\<cdot>\<cdot>\<cdot>, 3)) = ?n" 
-  by (rule arity_Replace_fm)
-   (auto simp: arity_fun_apply_fm nat_simp_union)
-
-schematic_goal arity_Rep_aux2: "arity(Replace_fm(10, \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> \<cdot>10`0 is 1\<cdot>\<cdot>\<cdot>, 3)) = ?n" 
-  by (rule arity_Replace_fm)
-   (auto simp: arity_fun_apply_fm nat_simp_union)
-
 \<comment> \<open>FIXME: Why @{thm arity_Replace_fm} doesn't work here? Revise the method we're using.\<close>
 lemma arity_HAleph_wfrec_repl_body: "arity(HAleph_wfrec_repl_body_fm(2,0,1)) = 3"
-  by (simp_all add: arity_HAleph_wfrec_repl_body_fm arity_is_If_fm nat_simp_union
-      arity_is_Limit_fm arity_empty_fm arity_Replace_fm arity_Rep_aux1 arity_Rep_aux2)
+  by (simp_all add: arity_HAleph_wfrec_repl_body_fm arity_is_If_fm nat_simp_union arity_fun_apply_fm
+      arity_is_Limit_fm arity_empty_fm arity_Replace_fm[where i=11])
 
 lemma (in M_ZF_trans) replacement_HAleph_wfrec_repl_body:
  "B\<in>M \<Longrightarrow> strong_replacement(##M, HAleph_wfrec_repl_body(##M,B))"
@@ -230,7 +219,7 @@ lemma (in M_ZF_trans) replacement_HAleph_wfrec_repl_body:
   apply(simp_all add:zero_in_M)
   apply(rule_tac replacement_ax[where env="[B]",simplified])
     apply(simp_all add: arity_HAleph_wfrec_repl_body)
-  sorry
+  done
 
 lemma (in M_ZF_trans) HAleph_wfrec_repl:
        "(##M)(sa) \<Longrightarrow>
