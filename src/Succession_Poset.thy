@@ -10,7 +10,7 @@ begin
 
 lemmas (in M_ZF_trans) ZF_replacements = lam_replacement_domain replacement_domain'
   lam_replacement_fst lam_replacement_snd lam_replacement_Union
-  lam_replacement_Upair lam_replacement_image lam_replacement_cartprod
+  lam_replacement_Upair lam_replacement_image
   lam_replacement_Diff lam_replacement_vimage
   separation_fst_equal separation_id_rel[simplified]
   separation_equal_apply separation_sndfst_eq_fstsnd

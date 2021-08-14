@@ -359,8 +359,10 @@ locale M_replacement = M_basic +
     lam_replacement_snd: "lam_replacement(M,snd)"
     and
     lam_replacement_Union: "lam_replacement(M,Union)"
+(* FIXME: we don't need it, but M_ZF_trans already satisfies it.
     and
     lam_replacement_cartprod:"lam_replacement(M, \<lambda>p. fst(p) \<times> snd(p))"
+*)
     and
     id_separation:"separation(M, \<lambda>z. \<exists>x[M]. z = \<langle>x, x\<rangle>)"
     and
@@ -775,11 +777,7 @@ lemma lam_replacement_sing: "lam_replacement(M, \<lambda>x. {x})"
     lam_replacement_hcomp2[of "\<lambda>x. x" "\<lambda>_. 0" cons]
   by (force intro: lam_replacement_identity)
 
-
 (* FIXME: this is an unfinished attempt of having a general result for RepFun. 
-
-lemma lam_replacement_cartprod: "lam_replacement(M, \<lambda>p. fst(p) \<times> snd(p))"
-  sorry
 
 lemma lam_replacement_RepFun_cons': "lam_replacement(M, \<lambda>p. {{x}. x\<in>{snd(p)} \<times> fst(p)})"
   using lam_replacement_fst lam_replacement_snd lam_replacement_sing
