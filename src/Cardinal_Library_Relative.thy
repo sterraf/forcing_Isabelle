@@ -1003,7 +1003,7 @@ proof -
   moreover from calculation
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then F-``{x} else 0"
     using lam_replacement_inj_rel mem_F_bound2 cardinal_lib_assms3
-      lam_replacement_vimage_sing
+      lam_replacement_vimage_sing_fun
       lam_replacement_if[OF _
         lam_replacement_constant[OF nonempty],where b=M] sep_true
     by (unfold_locales, simp_all)
