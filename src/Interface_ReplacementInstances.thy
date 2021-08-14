@@ -153,6 +153,32 @@ lemma (in M_ZF_trans) lam_replacement_Upair:
   using Upair_closed[simplified]
   by simp
 
+lemma (in M_ZF_trans) lam_replacement_cartprod:
+  "lam_replacement(##M, \<lambda>p. fst(p) \<times> snd(p))"
+  apply(rule_tac lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. fst(p)\<times>snd(p)"])
+  apply (auto) apply(rule cartprod_closed[simplified],auto simp add:fst_snd_closed[simplified])
+  apply (rule_tac
+    LambdaPair_in_M[where \<phi>="cartprod_fm(0,1,2)" and is_f="cartprod(##M)" and env="[]",OF
+      cartprod_type _ cartprod_iff_sats[symmetric]])
+  apply (auto  simp: arity_cartprod_fm[of 0 1 2] nat_simp_union transitivity fst_snd_closed)
+  using cartprod_closed[simplified]
+  by simp
+
+synthesize "pre_image" from_definition assuming "nonempty"
+arity_theorem for "pre_image_fm"
+
+lemma (in M_ZF_trans) lam_replacement_vimage:
+  "lam_replacement(##M, \<lambda>p. fst(p) -`` snd(p))"
+  apply(rule_tac lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. fst(p)-``snd(p)"])
+  apply (auto) apply(rule vimage_closed[simplified],auto simp add:fst_snd_closed[simplified])
+  apply (rule_tac
+    LambdaPair_in_M[where \<phi>="pre_image_fm(0,1,2)" and is_f="pre_image(##M)" and env="[]",OF
+      pre_image_fm_type _ pre_image_iff_sats[symmetric]])
+  apply (auto  simp: arity_pre_image_fm[of 0 1 2] nat_simp_union transitivity zero_in_M)
+  using vimage_closed[simplified]
+  by simp
+
+
 definition is_omega_funspace :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o" where
   "is_omega_funspace(N,B,n,z) \<equiv>  \<exists>o[N]. omega(N,o) \<and> n\<in>o \<and>is_funspace(N, n, B, z)"
 
@@ -244,5 +270,69 @@ lemma (in M_ZF_trans) HAleph_wfrec_repl:
                                               pre_image(##M, mesa, sx, r_sx) \<and> restriction(##M, f, r_sx, f_r_sx) \<and> xaa \<in> mesa \<and> is_HAleph(##M, xa, f_r_sx, y))) \<and>
                        is_HAleph(##M, x, f, y)))"
   using replacement_HAleph_wfrec_repl_body unfolding HAleph_wfrec_repl_body_def by simp
+
+definition fst2_snd2
+  where "fst2_snd2(x) \<equiv> \<langle>fst(fst(x)), snd(snd(x))\<rangle>"
+
+relativize functional "fst2_snd2" "fst2_snd2_rel"
+relationalize "fst2_snd2_rel" "is_fst2_snd2"
+
+lemma (in M_trivial) fst2_snd2_abs:
+  assumes "M(x)" "M(res)"
+shows "is_fst2_snd2(M, x, res) \<longleftrightarrow> res = fst2_snd2(x)"
+  unfolding is_fst2_snd2_def fst2_snd2_def
+  using fst_rel_abs[symmetric] snd_rel_abs[symmetric] fst_abs snd_abs assms
+  by simp
+
+synthesize "is_fst2_snd2" from_definition assuming "nonempty"
+arity_theorem for "is_fst2_snd2_fm"
+
+lemma (in M_ZF_trans) replacement_is_fst2_snd2:
+ "strong_replacement(##M, is_fst2_snd2(##M))"
+  apply(rule_tac strong_replacement_cong[
+        where P="\<lambda> x f. M,[x,f] \<Turnstile> is_fst2_snd2_fm(0,1)",THEN iffD1])
+   apply(rule_tac is_fst2_snd2_iff_sats[where env="[_,_]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac replacement_ax[where env="[]",simplified])
+    apply(simp_all add: arity_is_fst2_snd2_fm nat_simp_union)
+  done
+
+lemma (in M_ZF_trans) replacement_fst2_snd2: "strong_replacement(##M, \<lambda>x y. y = \<langle>fst(fst(x)), snd(snd(x))\<rangle>)"
+  using strong_replacement_cong[THEN iffD1,OF fst2_snd2_abs replacement_is_fst2_snd2,simplified]
+  unfolding fst2_snd2_def
+  by simp
+
+
+definition fst2_sndfst_snd2
+  where "fst2_sndfst_snd2(x) \<equiv> \<langle>fst(fst(x)), snd(fst(x)), snd(snd(x))\<rangle>"
+
+relativize functional "fst2_sndfst_snd2" "fst2_sndfst_snd2_rel"
+relationalize "fst2_sndfst_snd2_rel" "is_fst2_sndfst_snd2"
+
+lemma (in M_trivial) fst2_sndfst_snd2_abs:
+  assumes "M(x)" "M(res)"
+shows "is_fst2_sndfst_snd2(M, x, res) \<longleftrightarrow> res = fst2_sndfst_snd2(x)"
+  unfolding is_fst2_sndfst_snd2_def fst2_sndfst_snd2_def
+  using fst_rel_abs[symmetric] snd_rel_abs[symmetric] fst_abs snd_abs assms
+  by simp
+
+synthesize "is_fst2_sndfst_snd2" from_definition assuming "nonempty"
+arity_theorem for "is_fst2_sndfst_snd2_fm"
+
+lemma (in M_ZF_trans) replacement_is_fst2_sndfst_snd2:
+ "strong_replacement(##M, is_fst2_sndfst_snd2(##M))"
+  apply(rule_tac strong_replacement_cong[
+        where P="\<lambda> x f. M,[x,f] \<Turnstile> is_fst2_sndfst_snd2_fm(0,1)",THEN iffD1])
+   apply(rule_tac is_fst2_sndfst_snd2_iff_sats[where env="[_,_]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac replacement_ax[where env="[]",simplified])
+    apply(simp_all add: arity_is_fst2_sndfst_snd2_fm nat_simp_union)
+  done
+
+lemma (in M_ZF_trans) replacement_fst2_sndfst_snd2:
+  "strong_replacement(##M, \<lambda>x y. y = \<langle>fst(fst(x)), snd(fst(x)), snd(snd(x))\<rangle>)"
+  using strong_replacement_cong[THEN iffD1,OF fst2_sndfst_snd2_abs replacement_is_fst2_sndfst_snd2,simplified]
+  unfolding fst2_sndfst_snd2_def
+  by simp
 
 end

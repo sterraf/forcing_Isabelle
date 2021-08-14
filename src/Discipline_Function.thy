@@ -27,7 +27,7 @@ notation fst_fm (\<open>\<cdot>fst'(_') is _\<cdot>\<close>)
 arity_theorem for "fst_fm"
 
 definition fst_rel ::  "[i\<Rightarrow>o,i] \<Rightarrow> i"  where
-  "fst_rel(M,p) \<equiv> THE d. is_fst(M,p,d)"
+  "fst_rel(M,p) \<equiv> THE d. M(d) \<and> is_fst(M,p,d)"
 
 reldb_add relational "fst" "is_fst"
 reldb_add functional "fst" "fst_rel"
@@ -41,7 +41,7 @@ notation snd_fm (\<open>\<cdot>snd'(_') is _\<cdot>\<close>)
 arity_theorem for "snd_fm" 
 
 definition snd_rel ::  "[i\<Rightarrow>o,i] \<Rightarrow> i"  where
-  "snd_rel(M,p) \<equiv> THE d. is_snd(M,p,d)"
+  "snd_rel(M,p) \<equiv> THE d. M(d) \<and> is_snd(M,p,d)"
 
 
 reldb_add relational "snd" "is_snd"
@@ -71,6 +71,29 @@ lemma snd_abs [absolut]:
   "\<lbrakk>M(p); M(y) \<rbrakk> \<Longrightarrow> is_snd(M,p,y) \<longleftrightarrow> y = snd(p)"
   unfolding is_snd_def snd_def 
   by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto)
+
+lemma empty_rel_abs : "M(x) \<Longrightarrow> M(0) \<Longrightarrow> x = 0 \<longleftrightarrow> x = (THE d. M(d) \<and> empty(M, d))"
+  unfolding the_def
+  using transM
+  by auto
+
+lemma fst_rel_abs:
+  "\<lbrakk>M(p) \<rbrakk> \<Longrightarrow> fst(p) = fst_rel(M,p)"
+  unfolding fst_def fst_rel_def
+  using fst_abs
+  apply (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto)
+    apply(rule_tac the_equality[symmetric],simp_all)
+   apply(rule_tac the_equality[symmetric],simp_all add:fst_def)
+  done
+
+lemma snd_rel_abs:
+  "\<lbrakk>M(p) \<rbrakk> \<Longrightarrow> snd(p) = snd_rel(M,p)"
+  unfolding snd_def snd_rel_def
+  using snd_abs
+  apply (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto)
+    apply(rule_tac the_equality[symmetric],simp_all)
+   apply(rule_tac the_equality[symmetric],simp_all add:snd_def)
+  done
 
 end (* M_trans *)
 

@@ -60,7 +60,7 @@ definition
 definition
   lepoll_assumptions13 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
   "lepoll_assumptions13(M,A,F,S,fa,K,x,f,r) \<equiv> strong_replacement
-         (M, \<lambda>x y. y = \<langle>x, minimum(r, if x \<in> range(f) then F(A, converse(f) ` x) else 0)\<rangle>)"
+         (M, \<lambda>x y. y = \<langle>x, minimum(r, if x \<in> range(f) then F(A,converse(f) ` x) else 0)\<rangle>)"
 
 definition
   lepoll_assumptions14 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
@@ -349,7 +349,7 @@ lemma lepoll_assumptions13:
   assumes types[simp]:"M(A)" "M(r)" "M(f)"
   shows "lepoll_assumptions13(M,A,F,S,fa,K,x,f,r)"
   using  lam_replacement_constant[OF nonempty] lam_lepoll_assumption_F
-    lam_replacement_hcomp lam_replacement_converse lam_replacement_apply
+    lam_replacement_hcomp lam_replacement_apply
     lam_replacement_hcomp2[OF lam_replacement_constant[OF \<open>M(r)\<close>]
         lam_replacement_if[OF _ _ separation_in[of "range(f)"]] _ _
         lam_replacement_minimum] assms
@@ -368,7 +368,7 @@ lemma lepoll_assumptions14:
     assms lam_Least_assumption[where b=0,OF \<open>M(A)\<close> _ \<open>M(f)\<close>]
   unfolding lepoll_assumptions_defs
     lam_replacement_def[symmetric]
- by simp
+  by simp
 
 lemma lepoll_assumptions15:
   assumes types[simp]:"M(A)" "M(x)" "M(f)" "M(K)"

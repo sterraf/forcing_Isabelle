@@ -46,6 +46,25 @@ lemma lam_replacement_iff_lam_closed:
   by (auto intro:lamI dest:transM)
     (rule lam_closed, auto simp add:strong_replacement_def dest:transM)
 
+lemma lam_replacement_cong:
+  assumes "lam_replacement(M,f)" "\<forall>x[M]. f(x) = g(x)" "\<forall>x[M]. M(f(x))"
+  shows "lam_replacement(M,g)"
+proof -
+  note assms
+  moreover from this
+  have "\<forall>A[M]. M(\<lambda>x\<in>A. f(x))"
+    using lam_replacement_iff_lam_closed
+    by simp
+  moreover from calculation
+  have "(\<lambda>x\<in>A . f(x)) = (\<lambda>x\<in>A . g(x))" if "M(A)" for A
+    using lam_cong[OF refl,of A f g] transM[OF _ that]
+    by simp
+  ultimately
+  show ?thesis
+        using lam_replacement_iff_lam_closed
+    by simp
+qed
+
 lemma lam_replacement_imp_strong_replacement_aux:
   assumes "lam_replacement(M, b)" "\<forall>x[M]. M(b(x))"
   shows "strong_replacement(M, \<lambda>x y. y = b(x))"
@@ -333,13 +352,15 @@ locale M_replacement = M_basic +
   assumes
     lam_replacement_domain: "lam_replacement(M,domain)"
     and
-    lam_replacement_converse: "lam_replacement(M,converse)"
+    lam_replacement_vimage: "lam_replacement(M, \<lambda>p. fst(p) -`` snd(p))"
     and
     lam_replacement_fst: "lam_replacement(M,fst)"
     and
     lam_replacement_snd: "lam_replacement(M,snd)"
     and
     lam_replacement_Union: "lam_replacement(M,Union)"
+    and
+    lam_replacement_cartprod:"lam_replacement(M, \<lambda>p. fst(p) \<times> snd(p))"
     and
     id_separation:"separation(M, \<lambda>z. \<exists>x[M]. z = \<langle>x, x\<rangle>)"
     and
@@ -897,15 +918,23 @@ lemma prod_fun_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow>
   strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>w,y\<rangle>. \<langle>f ` w, g ` y\<rangle>)(x)\<rangle>)"
   using lam_replacement_prod_fun unfolding split_def lam_replacement_def .
 
-lemma lam_replacement_vimage:"lam_replacement(M, \<lambda>p. fst(p) -`` snd(p))"
-  using lam_replacement_Image lam_replacement_converse lam_replacement_fst
-    lam_replacement_snd unfolding vimage_def
-  by (force intro: lam_replacement_pullback lam_replacement_hcomp2 lam_replacement_hcomp)+
+lemma lam_replacement_vimage_sing: "lam_replacement(M, \<lambda>p. fst(p) -`` {snd(p)})"
+  using lam_replacement_hcomp[OF lam_replacement_snd lam_replacement_sing]
+    lam_replacement_hcomp2[OF lam_replacement_fst  _ _ _ lam_replacement_vimage]
+  by simp
 
-lemma lam_replacement_vimage_sing: "M(f) \<Longrightarrow> lam_replacement(M, \<lambda>x. f -`` {x})"
-  using lam_replacement_vimage lam_replacement_constant lam_replacement_cons
-    lam_replacement_hcomp2[of _ _ vimage] lam_replacement_hcomp2[of "\<lambda>x. x" "\<lambda>_. 0" cons]
-  by (force intro: lam_replacement_identity)
+lemma lam_replacement_vimage_sing_fun: "M(f) \<Longrightarrow> lam_replacement(M, \<lambda>x. f -`` {x})"
+  using lam_replacement_hcomp2[OF lam_replacement_constant[of f]
+          lam_replacement_identity _ _ lam_replacement_vimage_sing]
+  by simp
+
+lemma converse_apply_projs: "\<forall>x[M]. \<Union> (fst(x) -`` {snd(x)}) = converse(fst(x)) ` (snd(x))"
+  using converse_apply_eq by auto
+
+lemma lam_replacement_converse_app: "lam_replacement(M, \<lambda>p. converse(fst(p)) ` snd(p))"
+  using lam_replacement_cong[OF _ converse_apply_projs]
+    lam_replacement_hcomp[OF lam_replacement_vimage_sing lam_replacement_Union]
+  by simp
 
 lemmas cardinal_lib_assms4 = lam_replacement_vimage_sing[unfolded lam_replacement_def]
 
@@ -966,12 +995,12 @@ lemma surj_imp_inj_replacement1:
 lemma surj_imp_inj_replacement2:
   "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>y. f -`` {y}))"
   using lam_replacement_imp_strong_replacement lam_replacement_Sigfun
-    lam_replacement_vimage_sing
+    lam_replacement_vimage_sing_fun
   by simp
 
 lemma lam_replacement_minimum_vimage:
   "M(f) \<Longrightarrow> M(r) \<Longrightarrow> lam_replacement(M, \<lambda>x. minimum(r, f -`` {x}))"
-  using lam_replacement_minimum lam_replacement_vimage_sing lam_replacement_constant
+  using lam_replacement_minimum lam_replacement_vimage_sing_fun lam_replacement_constant
   by (rule_tac lam_replacement_hcomp2[of _ _ minimum])
     (force intro: lam_replacement_identity)+
 

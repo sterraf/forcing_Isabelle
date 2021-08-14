@@ -10,45 +10,21 @@ begin
 
 lemmas (in M_ZF_trans) ZF_replacements = lam_replacement_domain replacement_domain'
   lam_replacement_fst lam_replacement_snd lam_replacement_Union
-  lam_replacement_Upair lam_replacement_image
-  lam_replacement_Diff
+  lam_replacement_Upair lam_replacement_image lam_replacement_cartprod
+  lam_replacement_Diff lam_replacement_vimage
   separation_fst_equal separation_id_rel[simplified]
   separation_equal_apply separation_sndfst_eq_fstsnd
   separation_fstfst_eq_fstsnd separation_fstfst_eq
   separation_restrict_elem
+  replacement_fst2_snd2 replacement_fst2_sndfst_snd2
+
 sublocale M_ZF_trans \<subseteq> M_replacement "##M"
   apply unfold_locales 
   apply (simp_all add: ZF_replacements del:setclass_iff)
   sorry
 
 sublocale M_ctm \<subseteq> M_seqspace "##M"
-proof (unfold_locales, simp)
-  fix B
-  have "arity(seqspace_rel_fm(0,1,2)) \<le> 3" "seqspace_rel_fm(0,1,2)\<in>formula"  
-    using arity_seqspace_rel_fm seqspace_rel_fm_type nat_union_abs1
-    by simp_all
-  moreover
-  assume "B\<in>M"
-  ultimately
-  have "strong_replacement(##M, \<lambda>x y. M, [x, y, B] \<Turnstile> seqspace_rel_fm(0, 1, 2))"
-    using replacement_ax[of "seqspace_rel_fm(0,1,2)"]
-    by simp
-  moreover 
-  note \<open>B\<in>M\<close>
-  moreover from this
-  have "univalent(##M, A, \<lambda>x y. M, [x, y, B] \<Turnstile> seqspace_rel_fm(0, 1, 2))" 
-    if "A\<in>M" for A 
-    using that unfolding univalent_def seqspace_rel_fm_def  
-    by (auto, blast dest:transitivity)
-  ultimately
-  have "strong_replacement(##M, \<lambda>n z. \<exists>om[##M]. omega(##M,om) \<and> n \<in> om \<and> is_funspace(##M, n, B, z))"
-    using seqspace_rel_iff_sats[of 0 "[_,_,B]" _ 1 _ 2 B M] 
-    unfolding seqspace_rel_fm_def strong_replacement_def
-    by simp
-  with \<open>B\<in>M\<close> 
-  show "strong_replacement(##M, \<lambda>n z. n \<in> nat \<and> is_funspace(##M, n, B, z))"
-    using M_nat by simp
-qed
+  by (unfold_locales, simp add:replacement_omega_funspace)
 
 definition seq_upd :: "i \<Rightarrow> i \<Rightarrow> i" where
   "seq_upd(f,a) \<equiv> \<lambda> j \<in> succ(domain(f)) . if j < domain(f) then f`j else a"

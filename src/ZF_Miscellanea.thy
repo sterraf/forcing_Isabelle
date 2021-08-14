@@ -186,4 +186,7 @@ qed
 lemma Upair_eq_cons: "Upair(a,b) = {a,b}"
   unfolding cons_def by auto
 
+lemma converse_apply_eq : "converse(f) ` x = \<Union>(f -`` {x})"
+  unfolding apply_def vimage_def by simp
+
 end
