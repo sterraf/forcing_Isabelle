@@ -335,4 +335,22 @@ lemma (in M_ZF_trans) replacement_fst2_sndfst_snd2:
   unfolding fst2_sndfst_snd2_def
   by simp
 
+(* FIXME: perhaps we should define this by recursion. *)
+lemma banach_replacement: "strong_replacement(##M, \<lambda>x y. y = banach_functor(X, Y, f, g)^x (0))"
+  unfolding banach_functor_def
+  sorry
+
+(* FIXME: perhaps we should interpret the locales in stages. *)
+sublocale M_ZF_trans \<subseteq> M_inj "##M"
+  apply unfold_locales sorry
+
+lemma (in M_ZF_trans) lam_replacement_inj_rel:
+  "lam_replacement(##M, \<lambda>p. inj\<^bsup>##M\<^esup>(fst(p),snd(p)))"
+  using lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. inj\<^bsup>M\<^esup>(fst(p),snd(p))"]
+    LambdaPair_in_M[where \<phi>="is_inj_fm(0,1,2)" and is_f="is_inj(##M)" and env="[]",OF
+      is_inj_fm_type _ is_inj_iff_sats[symmetric] inj_rel_iff,simplified]
+     arity_is_inj_fm[of 0 1 2] nat_simp_union transitivity fst_snd_closed
+     inj_rel_closed zero_in_M
+  by simp
+
 end

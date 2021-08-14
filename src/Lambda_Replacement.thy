@@ -15,6 +15,10 @@ definition
 context M_basic
 begin
 
+lemma separation_univ :
+  shows "separation(M,M)"
+  unfolding separation_def by auto
+
 lemma separation_in :
   assumes "M(a)"
   shows "separation(M,\<lambda>x . x\<in>a)"
@@ -1189,6 +1193,11 @@ lemma  lam_if_then_apply_replacement2: "M(f) \<Longrightarrow> M(m) \<Longrighta
 lemma lam_if_then_replacement2: "M(A) \<Longrightarrow> M(f) \<Longrightarrow>
      lam_replacement(M, \<lambda>x . if x \<in> A then f ` x else x)"
   using lam_replacement_if separation_in lam_replacement_identity lam_replacement_apply
+  by simp
+
+lemma lam_if_then_replacement_apply: "M(G) \<Longrightarrow> lam_replacement(M, \<lambda>x. if M(x) then G ` x else 0)"
+  using lam_replacement_if separation_in lam_replacement_identity lam_replacement_apply
+    lam_replacement_constant[of 0] separation_univ
   by simp
 
 lemma lam_replacement_dC_F:

@@ -59,8 +59,7 @@ lemmas (in M_ZF_trans) separation_instances =
 sublocale M_ZF_trans \<subseteq> M_aleph "##M"
   apply (unfold_locales)
 (*  using separation_instances
-  apply simp_all
-*)
+  apply simp_all*)
   sorry
 
 sublocale M_ZF_trans \<subseteq> M_FiniteFun "##M"

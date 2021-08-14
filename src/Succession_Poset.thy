@@ -8,7 +8,7 @@ theory Succession_Poset
     
 begin
 
-lemmas (in M_ZF_trans) ZF_replacements = lam_replacement_domain replacement_domain'
+lemmas (in M_ZF_trans) ZF_replacements = lam_replacement_domain
   lam_replacement_fst lam_replacement_snd lam_replacement_Union
   lam_replacement_Upair lam_replacement_image
   lam_replacement_Diff lam_replacement_vimage
@@ -19,7 +19,7 @@ lemmas (in M_ZF_trans) ZF_replacements = lam_replacement_domain replacement_doma
   replacement_fst2_snd2 replacement_fst2_sndfst_snd2
 
 sublocale M_ZF_trans \<subseteq> M_replacement "##M"
-  apply unfold_locales 
+  apply unfold_locales
   apply (simp_all add: ZF_replacements del:setclass_iff)
   sorry
 
