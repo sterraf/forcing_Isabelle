@@ -330,4 +330,11 @@ lemma arity_Replace_fm [arity] :
   using nat_union_abs2 pred_Un_distrib
   by simp
 
+lemma arity_transrec_fm [arity] :
+  "\<lbrakk>p\<in>formula ; v\<in>nat ; n\<in>nat; i\<in>nat\<rbrakk> \<Longrightarrow> arity(p) = i \<Longrightarrow>
+     arity(is_transrec_fm(p,v,n)) = succ(v) \<union> succ(n) \<union> (pred^8(i))"
+  unfolding is_transrec_fm_def
+  using arity Un_assoc[symmetric]
+  by simp
+
 end

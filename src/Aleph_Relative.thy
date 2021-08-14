@@ -31,8 +31,8 @@ txt\<open>The extra assumptions \<^term>\<open>a < length(env)\<close> and \<^te
     in this schematic goal (and the following results on synthesis that
     depend on it) are imposed by @{thm is_transrec_iff_sats}.\<close>
 schematic_goal sats_is_Aleph_fm_auto:
-  "a \<in> nat \<Longrightarrow> c \<in> nat \<Longrightarrow> env \<in> list(A) \<Longrightarrow> 
-  a < length(env) \<Longrightarrow> c < length(env) \<Longrightarrow> 0 \<in> A \<Longrightarrow> 
+  "a \<in> nat \<Longrightarrow> c \<in> nat \<Longrightarrow> env \<in> list(A) \<Longrightarrow>
+  a < length(env) \<Longrightarrow> c < length(env) \<Longrightarrow> 0 \<in> A \<Longrightarrow>
   is_Aleph(##A, nth(a, env), nth(c, env)) \<longleftrightarrow> A, env \<Turnstile> ?fm(a, c)"
   unfolding is_Aleph_def
 proof (rule is_transrec_iff_sats, rule_tac [1] is_HAleph_iff_sats)
@@ -117,10 +117,8 @@ lemma Aleph_rel_def': "Aleph_rel(M,a) \<equiv> transrec(a, \<lambda>i r. HAleph_
 lemma succ_mem_Limit: "Limit(j) \<Longrightarrow> i \<in> j \<Longrightarrow> succ(i) \<in> j"
   using Limit_has_succ[THEN ltD] ltI Limit_is_Ord by auto
 
-locale M_aleph = M_eclose + M_cardinal_arith_jump +
+locale M_pre_aleph = M_eclose + M_cardinal_arith_jump +
   assumes
-    aleph_rel_replacement:  "strong_replacement(M, \<lambda>x y. y = \<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>)"
-    and
     haleph_transrec_replacement: "M(sa) \<Longrightarrow> M(esa) \<Longrightarrow> M(mesa) \<Longrightarrow>
              strong_replacement
               (M, \<lambda>x z. \<exists>y[M]. pair(M, x, y, z) \<and>
@@ -139,8 +137,8 @@ locale M_aleph = M_eclose + M_cardinal_arith_jump +
       pre_image(M, mesa, sx, r_sx) \<and>
       restriction(M, f, r_sx, f_r_sx) \<and> xaa \<in> mesa \<and> is_HAleph(M, xa, f_r_sx, y))) \<and>
                                     is_HAleph(M, x, f, y)))"
-begin
 
+begin
 lemma aux:
   assumes "M(a)" "M(f)"
   shows "\<exists>x[M]. is_Replace(M, a, \<lambda>j y. f ` j = y, x)"
@@ -305,7 +303,7 @@ proof -
 qed
 
 lemma is_Aleph_iff:
-  assumes "Ord(a)" "M(a)" "M(res)" 
+  assumes "Ord(a)" "M(a)" "M(res)"
   shows "is_Aleph(M, a, res) \<longleftrightarrow> res = \<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup>"
 proof -
   have "transrec_replacement(M, is_HAleph(M), a)"
@@ -321,9 +319,16 @@ proof -
   ultimately
   show ?thesis
     using assms transrec_abs
-    unfolding is_Aleph_def Aleph_rel_def 
+    unfolding is_Aleph_def Aleph_rel_def
     by simp
 qed
+
+end (* M_pre_Aleph *)
+
+locale M_aleph = M_pre_aleph +
+  assumes
+    aleph_rel_replacement: "strong_replacement(M, \<lambda>x y. Ord(x) \<and> y = \<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>)"
+begin
 
 lemma Aleph_rel_cont: "Limit(l) \<Longrightarrow> M(l) \<Longrightarrow> \<aleph>\<^bsub>l\<^esub>\<^bsup>M\<^esup> = (\<Union>i<l. \<aleph>\<^bsub>i\<^esub>\<^bsup>M\<^esup>)"
   using Limit_is_Ord Aleph_rel_limit
@@ -375,9 +380,12 @@ next
   case (limit x)
   moreover
   from this
-  have "M({y . z \<in> x, M(y) \<and> M(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>})"
+  have "M({y . z \<in> x, M(y) \<and> M(z) \<and> Ord(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>})"
     using aleph_rel_replacement
     by auto
+  moreover
+  have "{y . z \<in> x, M(y) \<and> M(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>} = {y . z \<in> x, M(y) \<and> M(z) \<and> Ord(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>}"
+    using Ord_in_Ord Limit_is_Ord[OF limit(1)] by simp
   ultimately
   show ?case
     using Ord_Aleph_rel Card_nat Limit_is_Ord Card_relI

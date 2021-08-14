@@ -2,8 +2,7 @@ theory Cardinal_Preservation
   imports
     Cohen_Posets_Relative
     Forcing_Main
-    Interface_SepInstances
-    Interface_ReplacementInstances
+    ZF_trans_Interpretations
 begin
 
 context forcing_notion
@@ -47,30 +46,6 @@ lemma antichain_abs'' [absolut]: "A\<in>M \<Longrightarrow> antichain_r'(A) \<lo
   by (auto simp add:absolut transitivity)
 
 end (* M_trivial_notion *)
-
-lemmas (in M_ZF_trans) separation_instances =
-  separation_well_ord
-  separation_obase_equals separation_is_obase
-  separation_PiP_rel separation_surjP_rel
-  separation_id_body separation_rvimage_body
-  separation_radd_body separation_rmult_body
-  separation_ord_iso_body
-
-sublocale M_ZF_trans \<subseteq> M_aleph "##M"
-  apply (unfold_locales)
-(*  using separation_instances
-  apply simp_all*)
-  sorry
-
-sublocale M_ZF_trans \<subseteq> M_FiniteFun "##M"
-  using separation_supset_body separation_cons_like_rel
-    replacement_range replacement_omega_funspace
-  by (unfold_locales,simp_all)
-
-sublocale M_ZFC_trans \<subseteq> M_cardinal_AC "##M"
-  using choice_ax
-  apply (unfold_locales)
-  sorry
 
 lemma (in forcing_notion) Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
   using refl_leq by blast

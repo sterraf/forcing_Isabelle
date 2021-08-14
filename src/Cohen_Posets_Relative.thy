@@ -254,7 +254,7 @@ proof -
           lepoll_assumptions1[OF \<open>M(A)\<close> \<open>M({domain(p) . p \<in> A})\<close>] domain_eq_separation
           lam_replacement_inj_rel
         unfolding dC_F_def
-        apply (unfold_locales,auto simp del:if_range_F_else_F_def)
+        apply (unfold_locales,auto simp del:if_range_F_else_F_def) \<comment> \<open>Very slow!\<close>
         apply (rule_tac lam_Least_assumption_general[where U="\<lambda>_. {domain(x). x\<in>A}"], auto)
         done
       from \<open>A \<subseteq> Fn(nat, I, 2)\<close>
