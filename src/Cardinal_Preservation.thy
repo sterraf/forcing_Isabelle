@@ -2,7 +2,7 @@ theory Cardinal_Preservation
   imports
     Cohen_Posets_Relative
     Forcing_Main
-    ZF_trans_Interpretations
+    ZF_Trans_Interpretations
 begin
 
 context forcing_notion

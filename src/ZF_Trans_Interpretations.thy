@@ -1,4 +1,4 @@
-theory ZF_trans_Interpretations
+theory ZF_Trans_Interpretations
   imports
     Cohen_Posets_Relative
     Forcing_Main
