@@ -8,7 +8,7 @@ begin
 
 locale M_cohen = M_delta +
   assumes
-    separaton_domain_pair: "separation(M, \<lambda>p. \<forall>x\<in>A. x \<in> snd(p) \<longleftrightarrow> domain(x) = fst(p))"
+    separaton_domain_pair: "M(A) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>A. x \<in> snd(p) \<longleftrightarrow> domain(x) = fst(p))"
     and
     countable_lepoll_assms2:
     "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. {p \<in> A . domain(p) = a}, b, f, i)\<rangle>)"
@@ -221,15 +221,18 @@ proof -
     moreover
     have "uncountable_rel(M,{domain(p) . p \<in> A})"
     proof
-      have "M({domain(p) . p \<in> A'})" if "M(A')" for A'\<comment> \<open>Repeated above\<close>
+      have 1:"M({domain(p) . p \<in> A'})" if "M(A')" for A'\<comment> \<open>Repeated above\<close>
         using that RepFun_closed domain_replacement_simp transM[OF _ that]
         by auto
       moreover
+      have " M(x) \<Longrightarrow> x \<in> A \<and> domain(x) = i \<Longrightarrow> M(i)" for A x i
+        by auto
+      moreover from calculation
       interpret M_replacement_lepoll M dC_F
-        using lam_replacement_dC_F separaton_domain_pair domain_eq_separation
+        using lam_replacement_dC_F domain_eq_separation separaton_domain_pair
           lam_replacement_inj_rel
         unfolding dC_F_def
-        apply unfold_locales apply (auto dest:transM)
+        apply unfold_locales apply(simp_all)
       proof -
         fix A b f
         assume "M(A)" "M(b)" "M(f)"
@@ -239,7 +242,7 @@ proof -
             mem_F_bound3 countable_lepoll_assms2
           unfolding dC_F_def
           by (rule_tac lam_Least_assumption_general[where U="\<lambda>_. {domain(x). x\<in>A}"])
-              auto
+            (auto)
       qed
       note \<open>M({domain(p). p\<in>A})\<close> \<open>M(A)\<close>
       moreover from this
@@ -251,8 +254,9 @@ proof -
           lepoll_assumptions1[OF \<open>M(A)\<close> \<open>M({domain(p) . p \<in> A})\<close>] domain_eq_separation
           lam_replacement_inj_rel
         unfolding dC_F_def
-        by (unfold_locales, auto simp del:if_range_F_else_F_def)
-          (rule_tac lam_Least_assumption_general[where U="\<lambda>_. {domain(x). x\<in>A}"], auto)
+        apply (unfold_locales,auto simp del:if_range_F_else_F_def)
+        apply (rule_tac lam_Least_assumption_general[where U="\<lambda>_. {domain(x). x\<in>A}"], auto)
+        done
       from \<open>A \<subseteq> Fn(nat, I, 2)\<close>
       have x:"(\<Union>d\<in>{domain(p) . p \<in> A}. {p\<in>A. domain(p) = d}) = A"
         by auto

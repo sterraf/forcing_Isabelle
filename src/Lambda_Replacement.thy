@@ -934,7 +934,7 @@ lemma lam_replacement_converse_app: "lam_replacement(M, \<lambda>p. converse(fst
     lam_replacement_hcomp[OF lam_replacement_vimage_sing lam_replacement_Union]
   by simp
 
-lemmas cardinal_lib_assms4 = lam_replacement_vimage_sing[unfolded lam_replacement_def]
+lemmas cardinal_lib_assms4 = lam_replacement_vimage_sing_fun[unfolded lam_replacement_def]
 
 lemma lam_replacement_surj_imp_inj1:
   "M(x) \<Longrightarrow> lam_replacement(M, \<lambda>y. {\<langle>x, y\<rangle>})"
@@ -1194,7 +1194,7 @@ lemma lam_if_then_replacement2: "M(A) \<Longrightarrow> M(f) \<Longrightarrow>
 lemma lam_replacement_dC_F:
   assumes "M(A)"
     "\<And>d . M(d) \<Longrightarrow> separation(M, \<lambda>x . domain(x) = d)"
-    "separation(M, \<lambda>p. \<forall>x\<in>A. x \<in> snd(p) \<longleftrightarrow> domain(x) = fst(p))"
+    "\<And> A . M(A) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>A. x \<in> snd(p) \<longleftrightarrow> domain(x) = fst(p))"
   shows "lam_replacement(M, dC_F(A))"
   unfolding dC_F_def
   using assms lam_replacement_Collect[of A "\<lambda> d x . domain(x) = d"]
