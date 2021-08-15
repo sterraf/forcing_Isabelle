@@ -173,15 +173,7 @@ lemma lfp_banach_functor_closed:
 proof -
   from assms
   have "M(banach_functor(X,Y,f,g)^n (0))" if "n\<in>nat" for n
-    using that
-  proof(rule_tac nat_induct[OF that],simp)
-    fix x
-    assume "x\<in>nat" "M((banach_functor(X, Y, f, g))^x (0))"
-    with assms
-    show "M((banach_functor(X, Y, f, g))^(succ(x)) (0))"
-      using banach_functor_closed[where W="(banach_functor(X, Y, f, g))^x (0)"]
-      by simp
-    qed
+    by(rule_tac nat_induct[OF that],simp_all add:banach_functor_closed)
   with assms
   show ?thesis
     using family_union_closed[OF banach_repl_iter M_nat] lfp_banach_functor
