@@ -37,9 +37,6 @@ locale M_cardinals = M_ordertype + M_trancl + M_Perm + M_replacement +
   rmult_separation: "M(b) \<Longrightarrow> M(d) \<Longrightarrow> separation(M,
     \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> b \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> d))"
   and
-  iterates_banach: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow>
-                    iterates_replacement(M,is_banach_functor(M,X,Y,f,g),0)"
-  and
   banach_repl_iter: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow>
                strong_replacement(M, \<lambda>x y. y = banach_functor(X, Y, f, g)^x (0))"
 begin
@@ -176,9 +173,15 @@ lemma lfp_banach_functor_closed:
 proof -
   from assms
   have "M(banach_functor(X,Y,f,g)^n (0))" if "n\<in>nat" for n
-    using that banach_functor_abs nonempty banach_functor_closed
-          iterates_closed[OF iterates_banach banach_functor_abs]
-    by simp
+    using that
+  proof(rule_tac nat_induct[OF that],simp)
+    fix x
+    assume "x\<in>nat" "M((banach_functor(X, Y, f, g))^x (0))"
+    with assms
+    show "M((banach_functor(X, Y, f, g))^(succ(x)) (0))"
+      using banach_functor_closed[where W="(banach_functor(X, Y, f, g))^x (0)"]
+      by simp
+    qed
   with assms
   show ?thesis
     using family_union_closed[OF banach_repl_iter M_nat] lfp_banach_functor
