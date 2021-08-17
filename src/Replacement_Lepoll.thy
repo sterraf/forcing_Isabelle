@@ -147,7 +147,7 @@ proof -
         "\<lambda>X. Pow\<^bsup>M\<^esup>(\<Union>(X \<union> range(f) \<union> U(A)))"] by simp
 qed
 
-lemma (in M_replacement) lam_Least_assumption_drSR_Y:
+lemma (in M_replacement_extra) lam_Least_assumption_drSR_Y:
   fixes F r' D
   defines "F \<equiv> drSR_Y(r',D)"
   assumes "\<forall>A'[M]. separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i)\<rangle>)"
@@ -202,7 +202,7 @@ proof -
         "\<lambda>X. Pow\<^bsup>M\<^esup>(\<Union>(X \<union> range(f) \<union> {domain(x). x\<in>A} \<union> {restrict(x,r'). x\<in>A} \<union> domain(A) \<union> range(A) \<union> \<Union>A))"] by simp
 qed
 
-locale M_replacement_lepoll = M_replacement + M_inj +
+locale M_replacement_lepoll = M_replacement_extra + M_inj +
   fixes F
   assumes
     F_type[simp]: "M(A) \<Longrightarrow> \<forall>x[M]. M(F(A,x))"

@@ -23,7 +23,7 @@ definition
       \<exists>fW[M]. \<exists>YfW[M]. \<exists>gYfW[M]. image(M,f,W,fW) \<and> setdiff(M,Y,fW,YfW) \<and>
                                  image(M,g,YfW,gYfW) \<and> setdiff(M,X,gYfW,b)"
 
-locale M_cardinals = M_ordertype + M_trancl + M_Perm + M_replacement +
+locale M_cardinals = M_ordertype + M_trancl + M_Perm + M_replacement_extra +
   assumes
   rvimage_separation: "M(f) \<Longrightarrow> M(r) \<Longrightarrow>
     separation(M, \<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> \<langle>f ` x, f ` y\<rangle> \<in> r)"

@@ -118,14 +118,15 @@ lemmas (in M_ZFC_trans) sep_instances =
 lemmas (in M_ZF_trans) repl_instances = lam_replacement_inj_rel lam_if_then_replacement_apply
 
 lemma hide_holes: "True"
-(*"strong_replacement(##M,P)"*)
-(*  "lam_replacement(##M,R)"*)
-(*  "separation(##M,Q)"*)
+  (*"strong_replacement(##M,P)"*)
+  (*"lam_replacement(##M,R)"*)
+  (*"separation(##M,Q)"*)
   sorry
 
 sublocale M_ZFC_trans \<subseteq> M_master "##M"
   apply unfold_locales
   apply (simp_all add:replacement repl_instances hide_holes sep_instances del:setclass_iff)
+  unfolding dC_F_def 
   sorry
 
 context M_ctm_AC

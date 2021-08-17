@@ -88,7 +88,7 @@ abbreviation
   Finite_to_one_r_set :: "[i,i,i] \<Rightarrow> i" (\<open>Finite'_to'_one\<^bsup>_\<^esup>'(_,_')\<close>) where
   "Finite_to_one\<^bsup>M\<^esup>(X,Y) \<equiv> Finite_to_one_rel(##M,X,Y)"
 
-locale M_library =  M_cardinal_AC + M_aleph + M_FiniteFun + M_replacement
+locale M_library =  M_cardinal_AC + M_aleph + M_FiniteFun + M_replacement_extra
 begin
 
 lemma Finite_Collect_imp: "Finite({x\<in>X . Q(x)}) \<Longrightarrow> Finite({x\<in>X . M(x) \<and> Q(x)})"

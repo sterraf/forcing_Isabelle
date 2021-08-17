@@ -5,6 +5,7 @@ theory Interface_ReplacementInstances
     Aleph_Relative
     FiniteFun_Relative
     Cardinal_Relative
+    Interface_SepInstances
 begin
 
 subsection\<open>More Instances of Replacement\<close>
@@ -22,7 +23,7 @@ lemma (in M_ZF_trans) replacement_is_range:
 
 lemma (in M_ZF_trans) replacement_range:
  "strong_replacement(##M, \<lambda>f y. y = range(f))"
-  using strong_replacement_cong[THEN iffD2,OF iff_sym[OF range_abs] replacement_is_range]
+  using strong_replacement_cong[THEN iffD2,OF _ replacement_is_range] range_abs
   by simp
 
 lemma (in M_ZF_trans) replacement_is_domain:
@@ -37,7 +38,7 @@ lemma (in M_ZF_trans) replacement_is_domain:
 
 lemma (in M_ZF_trans) replacement_domain:
  "strong_replacement(##M, \<lambda>f y. y = domain(f))"
-  using strong_replacement_cong[THEN iffD2,OF iff_sym[OF domain_abs] replacement_is_domain]
+  using strong_replacement_cong[THEN iffD2,OF _ replacement_is_domain] 
   by simp
 
 text\<open>Alternatively, we can use closure under lambda and get the stronger version.\<close>
@@ -132,15 +133,88 @@ lemma (in M_ZF_trans) lam_replacement_Diff:
 relationalize  "first_rel" "is_first" external
 synthesize "first_fm" from_definition "is_first" assuming "nonempty"
 
-relationalize  "minimum_rel" "is_minimum" external
-manual_schematic "minimum_fm" for "is_minimum"assuming "nonempty"
-  unfolding is_minimum_def using is_The_def oops
+lemma (in M_ZF_trans) minimum_closed:
+  assumes "B\<in>M"
+  shows "minimum(r,B) \<in> M"
+proof(cases "\<exists>!b. first(b,B,r)")
+  case True
+  then
+  obtain b where "b = minimum(r,B)" "first(b,B,r)"
+    using the_equality2
+    unfolding minimum_def
+    by auto
+  then
+  show ?thesis
+    using first_is_elem transitivity[of b B] assms
+    by simp
+next
+  case False
+  then show ?thesis 
+    using zero_in_M the_0
+    unfolding minimum_def 
+    by auto
+qed
 
-(*FIXME: we have to synthesize The!
-manual_schematic "minimum_fm" for "is_minimum"assuming "nonempty"
-  unfolding is_minimum_def using is_The_def
-  sorry
-*)
+relationalize  "minimum_rel" "is_minimum" external
+definition is_minimum' where
+  "is_minimum'(M,R,X,u) \<equiv> (M(u) \<and> u \<in> X \<and> (\<forall>v[M]. \<exists>a[M]. (v \<in> X \<longrightarrow> v \<noteq> u \<longrightarrow> a \<in> R) \<and> pair(M, u, v, a))) \<and>
+    (\<exists>x[M].
+        (M(x) \<and> x \<in> X \<and> (\<forall>v[M]. \<exists>a[M]. (v \<in> X \<longrightarrow> v \<noteq> x \<longrightarrow> a \<in> R) \<and> pair(M, x, v, a))) \<and>
+        (\<forall>y[M]. M(y) \<and> y \<in> X \<and> (\<forall>v[M]. \<exists>a[M]. (v \<in> X \<longrightarrow> v \<noteq> y \<longrightarrow> a \<in> R) \<and> pair(M, y, v, a)) \<longrightarrow> y = x)) \<or>
+    \<not> (\<exists>x[M]. (M(x) \<and> x \<in> X \<and> (\<forall>v[M]. \<exists>a[M]. (v \<in> X \<longrightarrow> v \<noteq> x \<longrightarrow> a \<in> R) \<and> pair(M, x, v, a))) \<and>
+               (\<forall>y[M]. M(y) \<and> y \<in> X \<and> (\<forall>v[M]. \<exists>a[M]. (v \<in> X \<longrightarrow> v \<noteq> y \<longrightarrow> a \<in> R) \<and> pair(M, y, v, a)) \<longrightarrow> y = x)) \<and>
+    empty(M, u)"
+
+synthesize "minimum" from_definition "is_minimum'" assuming "nonempty"
+arity_theorem for "minimum_fm"
+
+lemma is_minimum_eq :
+  "M(R) \<Longrightarrow> M(X) \<Longrightarrow> M(u) \<Longrightarrow> is_minimum(M,R,X,u) \<longleftrightarrow> is_minimum'(M,R,X,u)"
+  unfolding is_minimum_def is_minimum'_def is_The_def is_first_def by simp
+
+context M_trivial
+begin
+
+lemma first_closed: 
+  "M(B) \<Longrightarrow> M(r) \<Longrightarrow> first(u,r,B) \<Longrightarrow> M(u)"
+  using transM[OF first_is_elem] by simp  
+
+is_iff_rel for "first"
+  unfolding is_first_def first_rel_def by auto
+
+is_iff_rel for "minimum"
+  unfolding is_minimum_def minimum_rel_def 
+  using is_first_iff The_abs nonempty
+  by force
+
+lemma first_abs :
+  "M(R) \<Longrightarrow> M(X) \<Longrightarrow> M(u) \<Longrightarrow> first_rel(M,u,R,X) \<longleftrightarrow> first(u,R,X)"
+  unfolding first_def first_rel_def by simp
+
+lemma minimum_abs :
+  assumes "M(R)" "M(X)"
+  shows "minimum_rel(M,R,X) = minimum(R,X)" 
+proof -
+  have "first(b,X,R) \<longleftrightarrow> M(b) \<and> first(b,X,R)" for b
+    using first_closed[of R X] assms by auto
+  then show ?thesis
+    unfolding minimum_def minimum_rel_def
+    using first_abs assms by simp
+qed
+
+end
+
+lemma (in M_ZF_trans) lam_replacement_minimum:
+  "lam_replacement(##M, \<lambda>p. minimum(fst(p), snd(p)))"
+  apply(rule_tac lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. minimum(fst(p),snd(p))"])
+  apply (auto) apply(rule minimum_closed[simplified],auto simp add:fst_snd_closed[simplified])
+  apply (rule_tac
+    LambdaPair_in_M[where \<phi>="minimum_fm(0,1,2)" and is_f="is_minimum'(##M)" and env="[]",OF
+      minimum_fm_type _ minimum_iff_sats[symmetric]])
+  apply (auto  simp: arity_minimum_fm[of 0 1 2] nat_simp_union transitivity fst_snd_closed zero_in_M)
+  using Upair_closed[simplified] minimum_closed is_minimum_eq is_minimum_iff minimum_abs
+  by simp_all
+
 
 lemma (in M_ZF_trans) lam_replacement_Upair:
   "lam_replacement(##M, \<lambda>p. Upair(fst(p), snd(p)))"
@@ -201,8 +275,8 @@ lemma (in M_ZF_trans) replacement_is_omega_funspace:
 
 lemma (in M_ZF_trans) replacement_omega_funspace:
  "b\<in>M\<Longrightarrow>strong_replacement(##M, \<lambda>n z. n\<in>\<omega> \<and> is_funspace(##M,n,b,z))"
-  using strong_replacement_cong[THEN iffD2,OF iff_sym[OF omega_funspace_abs[of  b]]]
-   replacement_is_omega_funspace setclass_iff[THEN iffD1]
+  using strong_replacement_cong[THEN iffD2,OF _ replacement_is_omega_funspace[of b]]
+     omega_funspace_abs[of b] setclass_iff[THEN iffD1]
   by (simp del:setclass_iff)
 
 definition HAleph_wfrec_repl_body where
@@ -334,6 +408,65 @@ lemma (in M_ZF_trans) replacement_fst2_sndfst_snd2:
   using strong_replacement_cong[THEN iffD1,OF fst2_sndfst_snd2_abs replacement_is_fst2_sndfst_snd2,simplified]
   unfolding fst2_sndfst_snd2_def
   by simp
+
+
+lemmas (in M_ZF_trans) ZF_replacements = lam_replacement_domain
+  lam_replacement_fst lam_replacement_snd lam_replacement_Union
+  lam_replacement_Upair lam_replacement_image
+  lam_replacement_Diff lam_replacement_vimage
+  separation_fst_equal separation_id_rel[simplified]
+  separation_equal_apply separation_sndfst_eq_fstsnd
+  separation_fstfst_eq_fstsnd separation_fstfst_eq
+  separation_restrict_elem
+  replacement_fst2_snd2 replacement_fst2_sndfst_snd2
+
+sublocale M_ZF_trans \<subseteq> M_replacement "##M"
+  by unfold_locales (simp_all add: ZF_replacements del:setclass_iff)
+
+definition RepFun_body :: "i \<Rightarrow> i \<Rightarrow> i"where
+  "RepFun_body(u,v) \<equiv> {{\<langle>v, x\<rangle>} . x \<in> u}"
+
+relativize functional "RepFun_body" "RepFun_body_rel"
+relationalize "RepFun_body_rel" "is_RepFun_body"
+
+lemma (in M_trivial) RepFun_body_abs:
+  assumes "M(u)" "M(v)" "M(res)" 
+shows "is_RepFun_body(M, u, v, res) \<longleftrightarrow> res = RepFun_body(u,v)"
+  unfolding is_RepFun_body_def RepFun_body_def
+  using fst_rel_abs[symmetric] snd_rel_abs[symmetric] fst_abs snd_abs assms
+    Replace_abs[where P="\<lambda>xa a. a = {\<langle>v, xa\<rangle>}" and A="u"]
+    univalent_triv transM[of _ u]
+  by auto
+
+synthesize "is_RepFun_body" from_definition assuming "nonempty"
+arity_theorem for "is_RepFun_body_fm"
+lemma aa:
+  "arity( \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> (\<cdot>\<exists>\<cdot>cons_fm(0, 3, 2) \<and> pair_fm(5, 1, 0) \<cdot>\<cdot>)\<cdot>\<cdot> ) = 5"
+  using arity_cons_fm arity_pair_fm pred_Un_distrib nat_union_abs1
+  by auto
+
+lemma arity_RepFun: "arity(is_RepFun_body_fm(0, 1, 2)) = 3"
+  unfolding is_RepFun_body_fm_def
+  using arity_Replace_fm[OF _ _ _ _ aa] arity_fst_fm arity_snd_fm arity_empty_fm
+    pred_Un_distrib nat_union_abs2 nat_union_abs1
+  by simp
+
+lemma (in M_ZF_trans) RepFun_SigFun_closed: "x \<in> M \<Longrightarrow> z \<in> M \<Longrightarrow> {{\<langle>z, x\<rangle>} . x \<in> x} \<in> M"
+  using lam_replacement_surj_imp_inj1 lam_replacement_imp_strong_replacement RepFun_closed
+    transitivity singleton_in_M_iff pair_in_M_iff
+  by simp
+
+lemma (in M_ZF_trans) replacement_RepFun_body:
+  "lam_replacement(##M, \<lambda>p . {{\<langle>snd(p), x\<rangle>} . x \<in> fst(p)})"
+  apply(rule_tac lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. {{\<langle>snd(p), x\<rangle>} . x \<in> fst(p)}"])
+  using  RepFun_SigFun_closed[OF fst_snd_closed[THEN conjunct1,simplified] 
+      fst_snd_closed[THEN conjunct2,simplified]] transitivity
+  apply auto
+  apply (rule_tac
+    LambdaPair_in_M[where \<phi>="is_RepFun_body_fm(0,1,2)" and is_f="is_RepFun_body(##M)" and env="[]",OF
+      is_RepFun_body_fm_type _ is_RepFun_body_iff_sats[symmetric]])
+  apply (auto  simp: arity_RepFun nat_simp_union transitivity zero_in_M RepFun_body_def RepFun_body_abs RepFun_SigFun_closed)
+  done
 
 (* FIXME: perhaps we should define this by recursion. *)
 lemma banach_replacement: "strong_replacement(##M, \<lambda>x y. y = banach_functor(X, Y, f, g)^x (0))"

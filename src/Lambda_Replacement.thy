@@ -363,10 +363,6 @@ locale M_replacement = M_basic +
     lam_replacement_snd: "lam_replacement(M,snd)"
     and
     lam_replacement_Union: "lam_replacement(M,Union)"
-(* FIXME: we don't need it, but M_ZF_trans already satisfies it.
-    and
-    lam_replacement_cartprod:"lam_replacement(M, \<lambda>p. fst(p) \<times> snd(p))"
-*)
     and
     id_separation:"separation(M, \<lambda>z. \<exists>x[M]. z = \<langle>x, x\<rangle>)"
     and
@@ -384,12 +380,6 @@ locale M_replacement = M_basic +
     lam_replacement_Diff:"lam_replacement(M, \<lambda>p. fst(p) - snd(p))"
     and
     lam_replacement_Image:"lam_replacement(M, \<lambda>p. fst(p) `` snd(p))"
-    and
-    lam_replacement_minimum:"lam_replacement(M, \<lambda>p. minimum(fst(p),snd(p)))"
-    and
-    lam_replacement_RepFun_cons:"lam_replacement(M, \<lambda>p. RepFun(fst(p), \<lambda>x. {\<langle>snd(p),x\<rangle>}))"
-    \<comment> \<open>This one is too particular: It is for \<^term>\<open>Sigfun\<close>.
-        I would like greater modularity here.\<close>
     and
     separation_fst_equal : "M(a) \<Longrightarrow> separation(M,\<lambda>x . fst(x)=a)"
     and
@@ -781,43 +771,6 @@ lemma lam_replacement_sing: "lam_replacement(M, \<lambda>x. {x})"
     lam_replacement_hcomp2[of "\<lambda>x. x" "\<lambda>_. 0" cons]
   by (force intro: lam_replacement_identity)
 
-(* FIXME: this is an unfinished attempt of having a general result for RepFun. 
-
-lemma lam_replacement_RepFun_cons': "lam_replacement(M, \<lambda>p. {{x}. x\<in>{snd(p)} \<times> fst(p)})"
-  using lam_replacement_fst lam_replacement_snd lam_replacement_sing
-lam_replacement_cartprod lam_replacement_hcomp2[of _ _ "(\<times>)"]
-lam_replacement_hcomp[of _ "\<lambda>x.{x}"]
-  apply auto
-  sorry
-
-lemma lam_replacement_RepFun:
-  assumes  "lam_replacement(M, \<lambda>p. f(fst(p),snd(p)))" "\<forall>x[M]. \<forall>y[M]. M(f(x,y))"
-  shows "lam_replacement(M, \<lambda>p. RepFun(fst(p), f(snd(p))))"
-proof -
-  {
-    fix A
-    assume "M(A)"
-    have "M(\<lambda>p\<in>A. {f(snd(p),x) . x\<in>fst(p) })"
-     using assms lam_replacement_hcomp2[of "\<lambda>x . snd(p)" "\<lambda>x. x" f]
-      lam_replacement_snd lam_replacement_identity lam_replacement_constant
-      lam_replacement_imp_strong_replacement[THEN RepFun_closed,of "\<lambda>x. f(snd(p),x)" "fst(p)"]
-      transM[of _ "fst(p)"]
-
-  }
-  moreover 
-  have "M({f(snd(p),x) . x\<in>fst(p) })" if "M(p)" for p
-    using assms lam_replacement_hcomp2[of "\<lambda>x . snd(p)" "\<lambda>x. x" f]
-      lam_replacement_snd lam_replacement_identity lam_replacement_constant
-      lam_replacement_imp_strong_replacement[THEN RepFun_closed,of "\<lambda>x. f(snd(p),x)" "fst(p)"]
-      that transM[of _ "fst(p)"]
-    by simp
-  ultimately 
-  show ?thesis
-    using lam_replacement_iff_lam_closed
-    by simp
-qed
-*)
-
 lemmas tag_replacement = lam_replacement_constant[unfolded lam_replacement_def]
 
 lemma lam_replacement_id2: "lam_replacement(M, \<lambda>x. \<langle>x, x\<rangle>)"
@@ -952,7 +905,17 @@ lemma tag_singleton_closed: "M(x) \<Longrightarrow> M(z) \<Longrightarrow> M({{\
     lam_replacement_hcomp[OF lam_replacement_const_id lam_replacement_sing]
     transM[of _ x]
   by simp
+end (* M_replacement *)
 
+locale M_replacement_extra = M_replacement +
+  assumes
+    lam_replacement_minimum:"lam_replacement(M, \<lambda>p. minimum(fst(p),snd(p)))"
+    and
+    lam_replacement_RepFun_cons:"lam_replacement(M, \<lambda>p. RepFun(fst(p), \<lambda>x. {\<langle>snd(p),x\<rangle>}))"
+    \<comment> \<open>This one is too particular: It is for \<^term>\<open>Sigfun\<close>.
+        I would like greater modularity here.\<close>
+
+begin
 lemma lam_replacement_Sigfun:
   assumes "lam_replacement(M,f)" "\<forall>y[M]. M(f(y))"
   shows "lam_replacement(M, \<lambda>x. Sigfun(x,f))"
@@ -1177,7 +1140,7 @@ definition
   "drSR_Y(r',D,A,x) \<equiv> {domain(p) .. p\<in>A, restrict(p,r') = x \<and> domain(p) \<in> D}"
 
 
-context M_replacement
+context M_replacement_extra
 begin
 
 lemma lam_if_then_apply_replacement: "M(f) \<Longrightarrow> M(v) \<Longrightarrow> M(u) \<Longrightarrow>
@@ -1222,7 +1185,7 @@ lemmas replacements = Pair_diff_replacement id_replacement tag_replacement
   Inl_replacement2
   case_replacement1 case_replacement2 case_replacement4 case_replacement5
 
-end (* M_replacement *)
+end (* M_replacement_extra *)
 
 (*find_theorems
   "strong_replacement(_,\<lambda>x y. y = <x,_>)" -"strong_replacement(_,\<lambda>x y. y = <x,_>) \<Longrightarrow> _"
