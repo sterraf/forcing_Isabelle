@@ -506,8 +506,10 @@ proof -
       sorry
     from \<open>F`a \<in> M\<close>
     interpret M_Pi_assumptions2 "##M" "F`a" ?Q "\<lambda>_ . P"
-      using P_in_M
-      apply unfold_locales apply simp_all sorry
+      using P_in_M lam_replacement_imp_strong_replacement[OF
+          lam_replacement_Sigfun[OF lam_replacement_constant]]
+        Pi_replacement1 transM[of _ "F`a"]
+      by unfold_locales simp_all
     from \<open>p \<tturnstile> ?\<phi> [f_dot, A\<^sup>v, B\<^sup>v]\<close> \<open>a\<in>A\<close>
     have "\<exists>y. y \<in> ?Q(b)" if "b \<in> F`a" for b
       using that unfolding F_def by auto

@@ -453,11 +453,21 @@ lemma (in M_ZF_trans) replacement_RepFun_body:
   apply (auto  simp: arity_RepFun nat_simp_union transitivity zero_in_M RepFun_body_def RepFun_body_abs RepFun_SigFun_closed)
   done
 
+sublocale M_ZF_trans \<subseteq> M_replacement_extra "##M"
+  by unfold_locales (simp_all add: replacement_RepFun_body 
+      lam_replacement_minimum del:setclass_iff)
+
+sublocale M_ZF_trans \<subseteq> M_Perm "##M"
+  using separation_PiP_rel separation_injP_rel separation_surjP_rel
+    lam_replacement_imp_strong_replacement[OF 
+      lam_replacement_Sigfun[OF lam_replacement_constant]]
+    Pi_replacement1 unfolding Sigfun_def
+  by unfold_locales simp_all
+
 definition order_eq_map where
   "order_eq_map(M,A,r,a,z) \<equiv> \<exists>x[M]. \<exists>g[M]. \<exists>mx[M]. \<exists>par[M].
              ordinal(M,x) & pair(M,a,x,z) & membership(M,x,mx) &
              pred_set(M,A,a,r,par) & order_isomorphism(M,par,r,x,mx,g)"
-
 
 synthesize "order_eq_map" from_definition assuming "nonempty"
 arity_theorem for "is_ord_iso_fm"
@@ -480,8 +490,6 @@ lemma (in M_ZF_trans) replacement_order_eq_map:
   unfolding order_eq_map_def
   sorry
 
-
-(* FIXME: perhaps we should define this by recursion. *)
 lemma banach_replacement: "strong_replacement(##M, \<lambda>x y. y = banach_functor(X, Y, f, g)^x (0))"
   unfolding banach_functor_def 
   sorry

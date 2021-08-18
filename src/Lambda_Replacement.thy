@@ -390,6 +390,8 @@ locale M_replacement = M_basic +
     separation_restrict: "M(B) \<Longrightarrow> \<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)"
 begin
 
+lemmas lam_replacement_restrict' = lam_replacement_restrict[OF separation_restrict]
+
 lemma lam_replacement_imp_strong_replacement:
   assumes "lam_replacement(M, f)"
   shows "strong_replacement(M, \<lambda>x y. y = f(x))"
@@ -905,6 +907,25 @@ lemma tag_singleton_closed: "M(x) \<Longrightarrow> M(z) \<Longrightarrow> M({{\
     lam_replacement_hcomp[OF lam_replacement_const_id lam_replacement_sing]
     transM[of _ x]
   by simp
+
+lemma separation_in_rev :
+  assumes "M(a)"
+  shows "separation(M,\<lambda>x . a\<in>x)"
+proof -
+  have "{x\<in>A . a\<in>x} = A \<inter> {y . x \<in> A, M(y) \<and> y = {a}\<union>x}" if "M(A)" for A 
+    using that by (auto dest:transM)
+  moreover
+  note \<open>M(a)\<close>
+  moreover from this
+  have "M({y . x \<in> A, M(y) \<and> y = {a}\<union>x})" if "M(A)" for A
+    using that lam_replacement_imp_RepFun[OF lam_replacement_hcomp2[of _ _ "(\<union>)"]]
+      lam_replacement_Un lam_replacement_identity 
+      lam_replacement_constant[of "{a}"] by simp
+  ultimately
+  show ?thesis using separation_iff Collect_abs
+    by simp
+qed
+
 end (* M_replacement *)
 
 locale M_replacement_extra = M_replacement +

@@ -52,13 +52,14 @@ definition
   "is_The(M,Q,i) \<equiv> (Q(i) \<and> (\<exists>x[M]. Q(x) \<and> (\<forall>y[M]. Q(y) \<longrightarrow> y = x))) \<or>
                    (\<not>(\<exists>x[M]. Q(x) \<and> (\<forall>y[M]. Q(y) \<longrightarrow> y = x))) \<and> empty(M,i) "
 
+(* 
 definition
   is_The_fm :: "[i,i] \<Rightarrow> i" where
-  "is_The_fm(q,i) \<equiv> Or(And(Exists(And(Equal(i,0),q)),
+  "is_The_fm(q,i) \<equiv> Or(And(Exists(And(Equal(succ(i),0),q)),
                   Exists(And(q,Forall(Implies(q,Equal(1,0)))))),
                           And(Neg(Exists(And(q,Forall(Implies(q,Equal(1,0)))))),empty_fm(i)))"
 
-(* FIXME: why doesn't work? *)
+(* this doesn't work yet *)
 lemma sats_The_fm :
   assumes p_iff_sats:
     "\<And>a. a \<in> A \<Longrightarrow> P(a) \<longleftrightarrow> sats(A, p, Cons(a, env))"
@@ -68,7 +69,7 @@ lemma sats_The_fm :
         is_The(##A, P, nth(y,env))"
   using nth_closed p_iff_sats
   unfolding is_The_def is_The_fm_def
-    sorry
+  oops
 
 lemma The_iff_sats [iff_sats]:
   assumes is_Q_iff_sats:
@@ -78,6 +79,7 @@ lemma The_iff_sats [iff_sats]:
    \<Longrightarrow> is_The(##A, is_Q, y) \<longleftrightarrow> sats(A, is_The_fm(q,j), env)"
   using sats_The_fm [OF is_Q_iff_sats, of j , symmetric]
   by simp
+*)
 
 lemma (in M_trans) The_abs:
   assumes "\<And>x. Q(x) \<Longrightarrow> M(x)" "M(a)"

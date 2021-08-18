@@ -220,7 +220,7 @@ proof -
       proof -
         from \<open>M(G)\<close>
         interpret M_replacement_lepoll M "\<lambda>_ x. Collect(G, (\<in>)(x))"
-          using countable_lepoll_assms lam_replacement_inj_rel separation_in
+          using countable_lepoll_assms lam_replacement_inj_rel separation_in_rev
           apply unfold_locales apply (auto dest:transM) sorry
         fix S
         assume "M(S)"

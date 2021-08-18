@@ -152,8 +152,6 @@ lemma (in M_replacement_extra) lam_Least_assumption_drSR_Y:
   defines "F \<equiv> drSR_Y(r',D)"
   assumes "\<forall>A'[M]. separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i)\<rangle>)"
     "M(A)" "M(b)" "M(f)" "M(r')"
-    \<comment> \<open>Next assumption shouldn't be necessary in the future\<close>
-    "\<forall>A[M]. \<forall>r'[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, r')\<rangle>)"
   shows "lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i))"
 proof -
   from assms(2-)
@@ -162,7 +160,7 @@ proof -
     for X r'
     using lam_replacement_domain[THEN lam_replacement_imp_strong_replacement,
         THEN RepFun_closed, of A]
-      lam_replacement_restrict[THEN lam_replacement_imp_strong_replacement,
+      lam_replacement_restrict'[THEN lam_replacement_imp_strong_replacement,
         THEN RepFun_closed, of r' A] by (auto dest:transM)
   have "\<forall>x\<in>X. (\<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i)) \<in>
     Pow\<^bsup>M\<^esup>(\<Union>(X \<union> range(f) \<union> {domain(x). x\<in>A} \<union> {restrict(x,r'). x\<in>A} \<union> domain(A) \<union> range(A) \<union> \<Union>A))" if "M(X)" for X

@@ -8,17 +8,15 @@ begin
 
 locale M_cohen = M_delta +
   assumes
-    separaton_domain_pair: "M(A) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>A. x \<in> snd(p) \<longleftrightarrow> domain(x) = fst(p))"
+    separation_domain_pair: "M(A) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>A. x \<in> snd(p) \<longleftrightarrow> domain(x) = fst(p))"
     and
     countable_lepoll_assms2:
     "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. {p \<in> A . domain(p) = a}, b, f, i)\<rangle>)"
-    "M(A) \<Longrightarrow> lam_replacement(M, dC_F(A))"
     and
     countable_lepoll_assms3:
     "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lam_replacement(M, drSR_Y(r',D,A))"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(b) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> M(A')\<Longrightarrow> 
         separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(drSR_Y(r', D, A), b, f, i)\<rangle>)"
-    "\<forall>A[M]. \<forall>r'[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, r')\<rangle>)"\<comment> \<open>eliminate!\<close>
     and
     domain_mem_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>x . domain(x)\<in>A)"
     and
@@ -228,7 +226,7 @@ proof -
         by auto
       moreover from calculation
       interpret M_replacement_lepoll M dC_F
-        using lam_replacement_dC_F domain_eq_separation separaton_domain_pair
+        using lam_replacement_dC_F domain_eq_separation separation_domain_pair
           lam_replacement_inj_rel
         unfolding dC_F_def
         apply unfold_locales apply(simp_all)
@@ -237,7 +235,7 @@ proof -
         assume "M(A)" "M(b)" "M(f)"
         with calculation[of A]
         show "lam_replacement(M, \<lambda>x. \<mu> i. x \<in> if_range_F_else_F(\<lambda>d. {p \<in> A . domain(p) = d}, b, f, i))"
-          using  lam_replacement_dC_F separaton_domain_pair domain_eq_separation
+          using  lam_replacement_dC_F separation_domain_pair domain_eq_separation
             mem_F_bound3 countable_lepoll_assms2
           unfolding dC_F_def
           by (rule_tac lam_Least_assumption_general[where U="\<lambda>_. {domain(x). x\<in>A}"])
@@ -251,9 +249,9 @@ proof -
       interpret M_cardinal_UN_lepoll _ "dC_F(A)" "{domain(p). p\<in>A}"
         using countable_lepoll_assms2 lepoll_assumptions transM[of _ A]
           lepoll_assumptions1[OF \<open>M(A)\<close> \<open>M({domain(p) . p \<in> A})\<close>] domain_eq_separation
-          lam_replacement_inj_rel
+          lam_replacement_inj_rel lam_replacement_dC_F[OF _ _  separation_domain_pair]
         unfolding dC_F_def
-        apply (unfold_locales,auto simp del:if_range_F_else_F_def) \<comment> \<open>Very slow!\<close>
+        apply (unfold_locales,auto simp del:if_range_F_else_F_def) \<comment> \<open>Very slow! 50s\<close>
         apply (rule_tac lam_Least_assumption_general[where U="\<lambda>_. {domain(x). x\<in>A}"], auto)
         done
       from \<open>A \<subseteq> Fn(nat, I, 2)\<close>

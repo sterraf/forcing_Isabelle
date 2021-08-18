@@ -7,10 +7,6 @@ theory Succession_Poset
     
 begin
 
-sublocale M_ZF_trans \<subseteq> M_replacement_extra "##M"
-  by unfold_locales (simp_all add: replacement_RepFun_body 
-      lam_replacement_minimum del:setclass_iff)
-
 sublocale M_ctm \<subseteq> M_seqspace "##M"
   by (unfold_locales, simp add:replacement_omega_funspace)
 
