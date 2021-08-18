@@ -468,6 +468,34 @@ lemma (in M_ZF_trans) replacement_RepFun_body:
   apply (auto  simp: arity_RepFun nat_simp_union transitivity zero_in_M RepFun_body_def RepFun_body_abs RepFun_SigFun_closed)
   done
 
+definition order_eq_map where
+  "order_eq_map(M,A,r,a,z) \<equiv> \<exists>x[M]. \<exists>g[M]. \<exists>mx[M]. \<exists>par[M].
+             ordinal(M,x) & pair(M,a,x,z) & membership(M,x,mx) &
+             pred_set(M,A,a,r,par) & order_isomorphism(M,par,r,x,mx,g)"
+
+
+synthesize "order_eq_map" from_definition assuming "nonempty"
+arity_theorem for "is_ord_iso_fm"
+arity_theorem for "order_eq_map_fm"
+
+
+lemma (in M_ZF_trans) replacement_is_order_eq_map:
+ "A\<in>M \<Longrightarrow> r\<in>M \<Longrightarrow> strong_replacement(##M, order_eq_map(##M,A,r))"
+  apply(rule_tac strong_replacement_cong[
+        where P="\<lambda> x f. M,[x,f,A,r] \<Turnstile> order_eq_map_fm(2,3,0,1)",THEN iffD1])
+   apply(rule_tac order_eq_map_iff_sats[where env="[_,_,A,r]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac replacement_ax[where env="[A,r]",simplified])
+    apply(simp_all add: arity_order_eq_map_fm nat_simp_union)
+  done
+
+lemma (in M_ZF_trans) replacement_order_eq_map:
+  "strong_replacement(##M, \<lambda>x y. y = \<langle>fst(fst(x)), snd(fst(x)), snd(snd(x))\<rangle>)"
+  using strong_replacement_cong[THEN iffD1,OF order_eq_map_abs replacement_is_order_eq_map,simplified]
+  unfolding order_eq_map_def
+  by simp
+
+
 (* FIXME: perhaps we should define this by recursion. *)
 lemma banach_replacement: "strong_replacement(##M, \<lambda>x y. y = banach_functor(X, Y, f, g)^x (0))"
   unfolding banach_functor_def 

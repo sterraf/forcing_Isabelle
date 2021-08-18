@@ -58,7 +58,7 @@ lemma arity_omap_wfrec: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>
     nat_union_abs1 nat_union_abs2 type_omap_wfrec_body_fm
   by auto
 
-lemma arity_ordermap: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>d\<in>nat\<Longrightarrow>
+lemma arity_isordermap: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>d\<in>nat\<Longrightarrow>
    arity(is_ordermap_fm(A,r,d)) = succ(d) \<union> (succ(A) \<union> succ(r))"
   unfolding is_ordermap_fm_def
   using arity_lambda_fm[where i="(4#+A) \<union> (4#+r)",OF _ _ _ _ arity_omap_wfrec,
@@ -66,16 +66,16 @@ lemma arity_ordermap: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>d\
   by auto
 
 
-lemma arity_ordertype: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>d\<in>nat\<Longrightarrow>
+lemma arity_is_ordertype: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>d\<in>nat\<Longrightarrow>
    arity(is_ordertype_fm(A,r,d)) = succ(d) \<union> (succ(A) \<union> succ(r))"
   unfolding is_ordertype_fm_def 
-  using arity_ordermap arity_image_fm pred_Un_distrib
+  using arity_isordermap arity_image_fm pred_Un_distrib
   by auto
 
 arity_theorem for "is_order_body_fm"
 
 lemma arity_is_order_body: "arity(is_order_body_fm(2,0,1)) = 3"
-  using arity_is_order_body_fm arity_ordertype nat_simp_union
+  using arity_is_order_body_fm arity_is_ordertype nat_simp_union
   by simp
   
 lemma (in M_ZF_trans) replacement_is_order_body:
@@ -156,6 +156,7 @@ lemma (in M_ZF_trans) wfrec_replacement_order_pred':
 sublocale M_ZF_trans \<subseteq> M_pre_cardinal_arith "##M"
   apply (unfold_locales)
   using separation_instances wfrec_replacement_order_pred'[unfolded H_order_pred_def]
+    replacement_is_order_eq_map[unfolded order_eq_map_def]
   apply simp_all
   sorry
 
@@ -166,7 +167,10 @@ lemma (in M_ZF_trans) replacement_ordertype:
   by simp
 
 lemma arity_is_jump_cardinal_body: "arity(is_jump_cardinal_body'_fm(0,1)) = 2"
-  sorry
+  unfolding is_jump_cardinal_body'_fm_def
+  using arity_is_ordertype arity_is_well_ord_fm arity_is_Pow_fm arity_cartprod_fm
+    arity_Replace_fm[where i=5] nat_simp_union
+  by simp
 
 lemma (in M_ZF_trans) replacement_is_jump_cardinal_body:
  "strong_replacement(##M, is_jump_cardinal_body'(##M))"
