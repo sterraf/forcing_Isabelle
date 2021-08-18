@@ -187,21 +187,6 @@ is_iff_rel for "minimum"
   using is_first_iff The_abs nonempty
   by force
 
-lemma first_abs :
-  "M(R) \<Longrightarrow> M(X) \<Longrightarrow> M(u) \<Longrightarrow> first_rel(M,u,R,X) \<longleftrightarrow> first(u,R,X)"
-  unfolding first_def first_rel_def by simp
-
-lemma minimum_abs :
-  assumes "M(R)" "M(X)"
-  shows "minimum_rel(M,R,X) = minimum(R,X)" 
-proof -
-  have "first(b,X,R) \<longleftrightarrow> M(b) \<and> first(b,X,R)" for b
-    using first_closed[of R X] assms by auto
-  then show ?thesis
-    unfolding minimum_def minimum_rel_def
-    using first_abs assms by simp
-qed
-
 end
 
 lemma (in M_ZF_trans) lam_replacement_minimum:
@@ -491,9 +476,9 @@ lemma (in M_ZF_trans) replacement_is_order_eq_map:
 
 lemma (in M_ZF_trans) replacement_order_eq_map:
   "strong_replacement(##M, \<lambda>x y. y = \<langle>fst(fst(x)), snd(fst(x)), snd(snd(x))\<rangle>)"
-  using strong_replacement_cong[THEN iffD1,OF order_eq_map_abs replacement_is_order_eq_map,simplified]
+  using strong_replacement_cong[THEN iffD1,OF _ replacement_is_order_eq_map,simplified]
   unfolding order_eq_map_def
-  by simp
+  sorry
 
 
 (* FIXME: perhaps we should define this by recursion. *)

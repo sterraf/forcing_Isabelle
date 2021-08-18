@@ -133,6 +133,7 @@ proof -
   show ?thesis unfolding minimum_rel_def minimum_def
     by simp
 qed
+
 end (* M_trans *)
 
 subsection\<open>Discipline for \<^term>\<open>function_space\<close>\<close>
