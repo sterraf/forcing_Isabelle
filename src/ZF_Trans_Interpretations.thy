@@ -30,16 +30,54 @@ definition is_order_body
 
 
 synthesize "is_order_body" from_definition assuming "nonempty"
+arity_theorem for "is_transitive_fm"
+arity_theorem for "is_linear_fm"
+arity_theorem for "is_wellfounded_on_fm"
+arity_theorem for "is_well_ord_fm"
+
 arity_theorem for "pred_set_fm"
-arity_theorem for "is_ordermap_fm"
 arity_theorem for "image_fm"
-arity_theorem for "lambda_fm"
-arity_theorem for "is_ordertype_fm"
+definition omap_wfrec_body where
+  "omap_wfrec_body(A,r) \<equiv> (\<cdot>\<exists>\<cdot>image_fm(2, 0, 1) \<and>
+               pred_set_fm
+                (succ(succ(succ(succ(succ(succ(succ(succ(succ(A))))))))), 3,
+                 succ(succ(succ(succ(succ(succ(succ(succ(succ(r))))))))), 0) \<cdot>\<cdot>)"
+
+lemma type_omap_wfrec_body_fm :"A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> omap_wfrec_body(A,r)\<in>formula"
+  unfolding omap_wfrec_body_def by simp
+
+lemma arity_aux : "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> arity(omap_wfrec_body(A,r)) = (9#+A) \<union> (9#+r)"
+  unfolding omap_wfrec_body_def
+  using arity_image_fm arity_pred_set_fm pred_Un_distrib nat_union_abs2[of 3] nat_union_abs1
+  by (simp,auto simp add:Un_assoc[symmetric] nat_union_abs1)
+
+lemma arity_omap_wfrec: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> 
+  arity(is_wfrec_fm(omap_wfrec_body(A,r),succ(succ(succ(r))), 1, 0)) = 
+  (4#+A) \<union> (4#+r)"
+  using arity_is_wfrec_fm[OF _ _ _ _ _ arity_aux,of A r "3#+r" 1 0] pred_Un_distrib
+    nat_union_abs1 nat_union_abs2 type_omap_wfrec_body_fm
+  by auto
+
+lemma arity_ordermap: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>d\<in>nat\<Longrightarrow>
+   arity(is_ordermap_fm(A,r,d)) = succ(d) \<union> (succ(A) \<union> succ(r))"
+  unfolding is_ordermap_fm_def
+  using arity_lambda_fm[where i="(4#+A) \<union> (4#+r)",OF _ _ _ _ arity_omap_wfrec,
+      unfolded omap_wfrec_body_def] pred_Un_distrib nat_union_abs1
+  by auto
+
+
+lemma arity_ordertype: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>d\<in>nat\<Longrightarrow>
+   arity(is_ordertype_fm(A,r,d)) = succ(d) \<union> (succ(A) \<union> succ(r))"
+  unfolding is_ordertype_fm_def 
+  using arity_ordermap arity_image_fm pred_Un_distrib
+  by auto
+
 arity_theorem for "is_order_body_fm"
 
 lemma arity_is_order_body: "arity(is_order_body_fm(2,0,1)) = 3"
-  sorry
-
+  using arity_is_order_body_fm arity_ordertype nat_simp_union
+  by simp
+  
 lemma (in M_ZF_trans) replacement_is_order_body:
  "X\<in>M \<Longrightarrow> strong_replacement(##M, is_order_body(##M,X))"
   apply(rule_tac strong_replacement_cong[
@@ -211,9 +249,10 @@ sublocale M_ZF_trans \<subseteq> M_FiniteFun "##M"
   by (unfold_locales,simp_all)
 
 sublocale M_ZFC_trans \<subseteq> M_cardinal_AC "##M"
-  using choice_ax
-  apply (unfold_locales)
-  apply (simp_all add: lam_replacement_vimage_sing_fun lam_replacement_imp_strong_replacement)
-  sorry
+  using choice_ax lam_replacement_min[unfolded lam_replacement_def] 
+    lam_replacement_imp_strong_replacement lam_replacement_vimage_sing_fun
+    lam_replacement_Sigfun[OF lam_replacement_vimage_sing_fun]
+    vimage_closed singleton_closed surj_imp_inj_replacement1
+  by (unfold_locales, simp_all)
 
 end

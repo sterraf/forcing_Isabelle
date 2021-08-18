@@ -470,7 +470,7 @@ lemma (in M_ZF_trans) replacement_RepFun_body:
 
 (* FIXME: perhaps we should define this by recursion. *)
 lemma banach_replacement: "strong_replacement(##M, \<lambda>x y. y = banach_functor(X, Y, f, g)^x (0))"
-  unfolding banach_functor_def
+  unfolding banach_functor_def 
   sorry
 
 end

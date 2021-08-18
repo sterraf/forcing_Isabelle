@@ -330,6 +330,13 @@ lemma arity_Replace_fm [arity] :
   using nat_union_abs2 pred_Un_distrib
   by simp
 
+lemma arity_lambda_fm [arity] :
+  "\<lbrakk>p\<in>formula; v\<in>nat ; n\<in>nat; i\<in>nat\<rbrakk> \<Longrightarrow>  arity(p) = i \<Longrightarrow>
+    arity(lambda_fm(p,v,n)) = succ(n) \<union> (succ(v) \<union> Arith.pred(Arith.pred(Arith.pred(i))))"
+  unfolding lambda_fm_def
+  using arity_pair_fm pred_Un_distrib nat_union_abs1 nat_union_abs2
+  by simp
+
 lemma arity_transrec_fm [arity] :
   "\<lbrakk>p\<in>formula ; v\<in>nat ; n\<in>nat; i\<in>nat\<rbrakk> \<Longrightarrow> arity(p) = i \<Longrightarrow>
      arity(is_transrec_fm(p,v,n)) = succ(v) \<union> succ(n) \<union> (pred^8(i))"

@@ -1172,6 +1172,11 @@ lemma lam_replacement_dC_F:
   using assms lam_replacement_Collect[of A "\<lambda> d x . domain(x) = d"]
   by simp
 
+lemma lam_replacement_min: "M(f) \<Longrightarrow> M(r) \<Longrightarrow> lam_replacement(M, \<lambda>x . minimum(r, f -`` {x}))"
+  using lam_replacement_hcomp2[OF lam_replacement_constant[of r] lam_replacement_vimage_sing_fun]
+    lam_replacement_minimum
+  by simp
+
 lemmas replacements = Pair_diff_replacement id_replacement tag_replacement
   pospend_replacement prepend_replacement
   Inl_replacement1  diff_Pair_replacement
