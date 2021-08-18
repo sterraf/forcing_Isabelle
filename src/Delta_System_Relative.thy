@@ -13,12 +13,20 @@ locale M_delta = M_cardinal_library +
     cardinal_replacement:"strong_replacement(M, \<lambda>A y. y = \<langle>A, |A|\<^bsup>M\<^esup>\<rangle>)"
     and
     countable_lepoll_assms:
-    "M(G) \<Longrightarrow> M(A) \<Longrightarrow> M(f) \<Longrightarrow> lepoll_assumptions5(M,A,\<lambda>_ x. Collect(G, (\<in>)(x)),S,fa,K,x,f,r)"
-    "M(G) \<Longrightarrow> M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(K) \<Longrightarrow> M(r) \<Longrightarrow> M(fa) \<Longrightarrow> lepoll_assumptions14(M,A,\<lambda>_ x. Collect(G, (\<in>)(x)),S,fa,K,x,f,r)"
+    "M(G) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> fst(p) \<in> x)"
+    "M(G) \<Longrightarrow> M(A) \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A.
+                          y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. {xa \<in> G . x \<in> xa}, b, f, i)\<rangle>)"
     and
     disjoint_separation: "M(c) \<Longrightarrow> separation(M, \<lambda> x. \<exists>a. \<exists>b. x=\<langle>a,b\<rangle> \<and> a \<inter> b = c)"
 
 begin
+
+lemma (in M_trans) mem_F_bound6:
+  fixes F G
+  defines "F \<equiv> \<lambda>_ x. Collect(G, (\<in>)(x))"
+  shows "x\<in>F(G,c) \<Longrightarrow> c \<in> (range(f) \<union> \<Union>G)"
+  using apply_0 unfolding F_def
+  by (cases "M(c)", auto simp:F_def)
 
 lemma delta_system_Aleph_rel1:
   assumes "\<forall>A\<in>F. Finite(A)" "F \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "M(F)"
@@ -220,8 +228,10 @@ proof -
       proof -
         from \<open>M(G)\<close>
         interpret M_replacement_lepoll M "\<lambda>_ x. Collect(G, (\<in>)(x))"
-          using countable_lepoll_assms lam_replacement_inj_rel separation_in_rev
-          apply unfold_locales apply (auto dest:transM) sorry
+          using countable_lepoll_assms(2-) lam_replacement_inj_rel separation_in_rev
+            lam_replacement_Collect[OF _ _ countable_lepoll_assms(1)] mem_F_bound6[of _ G]
+          by unfold_locales
+            (auto dest:transM intro:lam_Least_assumption_general[of _  _ _ _ Union])
         fix S
         assume "M(S)"
         with \<open>M(G)\<close> \<open>\<And>i. M(S) \<Longrightarrow> i \<in> S \<Longrightarrow> M({x \<in> G . i \<in> x})\<close>
