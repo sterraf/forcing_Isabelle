@@ -484,12 +484,6 @@ lemma (in M_ZF_trans) replacement_is_order_eq_map:
     apply(simp_all add: arity_order_eq_map_fm nat_simp_union)
   done
 
-lemma (in M_ZF_trans) replacement_order_eq_map:
-  "strong_replacement(##M, \<lambda>x y. y = \<langle>fst(fst(x)), snd(fst(x)), snd(snd(x))\<rangle>)"
-  using strong_replacement_cong[THEN iffD1,OF _ replacement_is_order_eq_map,simplified]
-  unfolding order_eq_map_def
-  sorry
-
 lemma banach_replacement: "strong_replacement(##M, \<lambda>x y. y = banach_functor(X, Y, f, g)^x (0))"
   unfolding banach_functor_def 
   sorry
