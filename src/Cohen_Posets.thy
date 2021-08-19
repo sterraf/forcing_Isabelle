@@ -5,7 +5,7 @@ theory Cohen_Posets
     Forcing_Notions
     Names \<comment> \<open>only for \<^term>\<open>SepReplace\<close>\<close>
     Recursion_Thms \<comment> \<open>only for the definition of \<^term>\<open>Rrel\<close>\<close>
-    "Delta_System_Lemma.Delta_System"
+    "Delta_System_Lemma.ZF_Library"
 begin
 
 lemmas app_fun = apply_iff[THEN iffD1]
@@ -153,6 +153,8 @@ next
     by blast
 qed
 
+(*
+(* The following requires Cardinal_Library, dependent on AC *)
 lemma InfCard_lesspoll_Un:
   includes Ord_dests
   assumes "InfCard(\<kappa>)" "A \<prec> \<kappa>" "B \<prec> \<kappa>"
@@ -199,6 +201,7 @@ proof -
       using  cardinal_eqpoll eq_lesspoll_trans eqpoll_sym by blast
   qed
 qed
+*)
 
 subsection\<open>MOVE THIS to an appropriate place\<close>
 
@@ -215,6 +218,8 @@ subsection\<open>Combinatorial results on Cohen posets\<close>
 context cohen_data
 begin
 
+(*
+(* The following requires Cardinal_Library, dependent on AC *)
 lemma restrict_eq_imp_compat:
   assumes "f \<in> Fn(\<kappa>, I, J)" "g \<in> Fn(\<kappa>, I, J)" "InfCard(\<kappa>)"
     "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
@@ -229,6 +234,23 @@ proof -
     using domain_of_fun InfCard_lesspoll_Un[of \<kappa> d1 d2]
       restrict_eq_imp_Un_into_Pi[of f d1 "\<lambda>_. J" g d2 "\<lambda>_. J"]
     by auto
+qed
+*)
+
+lemma restrict_eq_imp_compat:
+  assumes "f \<in> Fn(nat, I, J)" "g \<in> Fn(nat, I, J)" "InfCard(nat)"
+    "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
+  shows "f \<union> g \<in> Fn(nat, I, J)"
+proof -
+  from assms
+  obtain d1 d2 where "f : d1 \<rightarrow> J" "d1 \<in> Pow(I)" "d1 \<prec> nat"
+    "g : d2 \<rightarrow> J" "d2 \<in> Pow(I)" "d2 \<prec> nat"
+    by blast
+  with assms
+  show ?thesis
+    using domain_of_fun
+      restrict_eq_imp_Un_into_Pi[of f d1 "\<lambda>_. J" g d2 "\<lambda>_. J"]
+    by (auto dest!:lesspoll_nat_is_Finite intro!:Finite_imp_lesspoll_nat)
 qed
 
 lemma compat_imp_Un_is_function:
