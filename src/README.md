@@ -11,7 +11,7 @@ Running the session with jEdit
 The session can be run using the standard Isabelle IDE by
 executing
 ```
-$ isabelle jedit -d . Definitions_Main.thy
+$ isabelle jedit -l ZF-Constructible Definitions_Main.thy
 ```
 in the `src` directory. 
 
