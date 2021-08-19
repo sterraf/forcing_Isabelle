@@ -662,4 +662,41 @@ proof -
     by (cases "\<exists>c d. p = <c,d>") auto
 qed
 
+
+term Uniq
+
+\<comment> \<open>Experiments trying to trick FOL-ness of ZF\<close>
+
+term "RepFun(X,\<lambda>x. f(x))"
+
+thm conjunction_def term_def prop_def
+
+term "Trueprop(False)"
+
+lemma "TERM (A::prop)" .
+
+definition values
+  where "values(PROP P, Q) \<equiv> P = Q"
+
+definition hfunc
+  where "hfunc(P::i\<Rightarrow>o, Q) \<equiv> P = Q"
+
+definition hfunc'
+  where "hfunc'(P::dummy, Q::dummy) \<equiv> P"
+
+find_consts "_\<Rightarrow> o"
+
+term "\<lambda>x . values(x)"
+
+term "{x\<in>A . P(x,y)}"
+term "TERM A"
+
+lemma "PROP A \<Longrightarrow> PROP A" .
+
+\<comment> \<open>Super/subscript test\<close>
+definition supsub (\<open>_\<^bsup>_\<^esup>\<^bsub>_\<^esub>\<close>) where "x\<^bsup>y\<^esup>\<^bsub>yy\<^esub> \<equiv> if x then y else yy"
+definition sup_sup (\<open>_\<^bsup>_\<^bsup>_\<^esup>\<^esup>\<close>) where "x\<^bsup>y\<^bsup>yy\<^esup>\<^esup> \<equiv> if x then y else yy"
+definition sup_sub (\<open>_\<^bsup>_\<^bsub>_\<^esub>\<^esup>\<^esup>\<close>) where "x\<^bsup>y\<^bsub>yy\<^esub>\<^esup>\<^esup> \<equiv> if x then y else yy"
+definition sup_subsup (\<open>_\<^bsup>\<^bsub>_\<^esub>\<^bsup>_\<^esup>\<^esup>\<^esup>\<close>) where "x\<^bsup>\<^bsub>y\<^esub>\<^bsup>yy\<^esup>\<^esup>\<^esup> \<equiv> if x then y else yy"
+
 end
