@@ -115,7 +115,7 @@ lemmas (in M_ZFC_trans) sep_instances =
  separation_toplevel10_body separation_toplevel11_body
 
 (* FIXME: the second instance has been proved in Lambda Replacement, it shouldn't be here. *)
-lemmas (in M_ZF_trans) repl_instances = lam_replacement_inj_rel lam_if_then_replacement_apply
+lemmas (in M_ZF_trans) repl_instances = lam_replacement_inj_rel
 
 lemma hide_holes: "True"
   (*"strong_replacement(##M,P)"*)

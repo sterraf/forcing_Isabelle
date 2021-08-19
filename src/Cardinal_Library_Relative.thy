@@ -375,7 +375,6 @@ locale M_cardinal_library = M_library + M_replacement +
         lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. if M(x) then x else 0,b,f,i))"
     and
     cardinal_lib_assms2:
-    "M(G) \<Longrightarrow> lam_replacement(M, \<lambda>x. if M(x) then G ` x else 0)"    
     "M(A') \<Longrightarrow> M(G) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> 
         separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. if M(a) then G`a else 0,b,f,i)\<rangle>)"
     and
@@ -542,6 +541,7 @@ proof -
   ultimately
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then G`x else 0"
     using lam_replacement_inj_rel cardinal_lib_assms2 mem_F_bound1[of _ _ G]
+      lam_if_then_replacement_apply
     by (unfold_locales, simp_all) 
       (rule lam_Least_assumption_general[where U="\<lambda>_. domain(G)"], auto)
   note \<open>M(G)\<close>
