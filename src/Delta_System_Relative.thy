@@ -3,8 +3,47 @@ section\<open>The Delta System Lemma, Relativized\label{sec:dsl-rel}\<close>
 theory Delta_System_Relative
   imports
     Cardinal_Library_Relative
-    "Delta_System_Lemma.Delta_System"
 begin
+
+(* FIXME: The following code (definition and 3 lemmas) is extracted
+   from Delta_System where it is unnecesarily under the context of AC *)
+definition
+  delta_system :: "i \<Rightarrow> o" where
+  "delta_system(D) \<equiv> \<exists>r. \<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
+
+lemma delta_systemI[intro]:
+  assumes "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
+  shows "delta_system(D)"
+  using assms unfolding delta_system_def by simp
+
+lemma delta_systemD[dest]:
+  "delta_system(D) \<Longrightarrow> \<exists>r. \<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
+  unfolding delta_system_def by simp
+
+lemma delta_system_root_eq_Inter:
+  assumes "delta_system(D)"
+  shows "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = \<Inter>D"
+proof (clarify, intro equalityI, auto)
+  fix A' B' x C
+  assume hyp:"A'\<in>D" "B'\<in> D" "A'\<noteq>B'" "x\<in>A'" "x\<in>B'" "C\<in>D"
+  with assms
+  obtain r where delta:"\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
+    by auto
+  show "x \<in> C"
+  proof (cases "C=A'")
+    case True
+    with hyp and assms
+    show ?thesis by simp
+  next
+    case False
+    moreover
+    note hyp
+    moreover from calculation and delta
+    have "r = C \<inter> A'" "A' \<inter> B' = r" "x\<in>r" by auto
+    ultimately
+    show ?thesis by simp
+  qed
+qed
 
 relativize functional "delta_system" "delta_system_rel" external
 
@@ -81,7 +120,7 @@ proof -
       using cardinal_rel_0_iff_0 by (blast dest:transM)
     with \<open>G \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> \<open>M(G)\<close>
     show ?case
-      using nat_lt_Aleph_rel1 subset_imp_le_cardinal[of G "{0}"]
+      using nat_lt_Aleph_rel1 subset_imp_le_cardinal_rel[of G "{0}"]
         lt_trans2 cardinal_rel_Card_rel_eqpoll_rel_iff by auto
   next
     case (succ n)
@@ -257,14 +296,15 @@ proof -
       have "\<exists>A\<in>G. \<forall>S\<in>X. <S,A>\<in>Disjoint" if "|X|\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "X \<subseteq> G" "M(X)" for X
       proof -
         note \<open>n\<in>\<omega>\<close> \<open>M(G)\<close>
-        moreover from this and  \<open>\<And>A. A\<in>G \<Longrightarrow> |A|\<^bsup>M\<^esup> = succ(n)\<close>
-        have "A\<in>G \<Longrightarrow> |A|= succ(n)" for A
-          using Finite_cardinal_rel_eq_cardinal[of A] Finite_cardinal_rel_iff'[of A]
-            nat_into_Finite transM[of A G] by simp
+        moreover from this and \<open>\<And>A. A\<in>G \<Longrightarrow> |A|\<^bsup>M\<^esup> = succ(n)\<close>
+        have "|A|\<^bsup>M\<^esup>= succ(n)" "M(A)" if "A\<in>G" for A
+          using that Finite_cardinal_rel_eq_cardinal[of A] Finite_cardinal_rel_iff'[of A]
+            nat_into_Finite transM[of A G] by (auto dest:transM)
         ultimately
         have "A\<in>G \<Longrightarrow> Finite(A)" for A
-          using cardinal_Card_eqpoll_iff
-          unfolding Finite_def by fastforce
+          using cardinal_rel_Card_rel_eqpoll_rel_iff[of "succ(n)" A]
+            Finite_cardinal_rel_eq_cardinal[of A] nat_into_Card_rel[of "succ(n)"]
+            nat_into_M[of n] unfolding Finite_def eqpoll_rel_def by (auto)
         with \<open>X\<subseteq>G\<close> \<open>M(X)\<close>
         have "A\<in>X \<Longrightarrow> countable_rel(M,A)" for A
           using Finite_imp_countable_rel by (auto dest: transM)

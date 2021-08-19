@@ -3,7 +3,7 @@ section\<open>Cardinal Arithmetic under Choice\label{sec:cardinal-lib-rel}\<clos
 theory Cardinal_Library_Relative
   imports
     ZF_Library_Relative
-    "Delta_System_Lemma.Cardinal_Library"
+    "Delta_System_Lemma.ZF_Library"
     Replacement_Lepoll
 begin
 
@@ -320,6 +320,10 @@ lemma cardinal_rel_cases:
 end (* M_library *)
 
 subsection\<open>Countable and uncountable sets\<close>
+
+definition (* FIXME: From Cardinal_Library, on the context of AC *)
+  countable :: "i\<Rightarrow>o" where
+  "countable(X) \<equiv> X \<lesssim> \<omega>"
 
 relativize functional "countable" "countable_rel" external
 relationalize "countable_rel" "is_countable"

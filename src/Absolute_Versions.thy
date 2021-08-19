@@ -3,6 +3,7 @@ section\<open>From M to V\<close>
 theory Absolute_Versions
   imports
     Toplevel_Draft
+    ZF.Cardinal_AC
 begin
 
 subsection\<open>Locales of a class \<^term>\<open>M\<close> hold in \<^term>\<open>\<V>\<close>\<close>
