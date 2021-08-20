@@ -1,4 +1,4 @@
-theory Toplevel_Draft
+theory Not_CH
   imports
     Cardinal_Preservation
 begin

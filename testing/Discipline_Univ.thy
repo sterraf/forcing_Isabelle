@@ -1,11 +1,10 @@
 theory Discipline_Univ
   imports
     "ZF-Constructible.Rank"
-    "Relativization"
-    "Discipline_Base"
-    "Recursion_Thms"
+    "../src/Discipline_Base"
+    "../src/Recursion_Thms"
     "Delta_System_Lemma.Cofinality"
-    Least
+    "../src/Least"
 begin
 
 

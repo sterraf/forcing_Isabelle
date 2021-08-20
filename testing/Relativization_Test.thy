@@ -1,6 +1,6 @@
 section\<open>Automatic relativization of terms.\<close>
 theory Relativization_Test
-  imports Relativization
+  imports "../src/Relativization"
 begin
 
 declare [[ML_print_depth = 50]]

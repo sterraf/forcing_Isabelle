@@ -1,7 +1,7 @@
 theory Draft_Automatic_Satisfaction
   imports
-    Discipline_Function
-    Forcing_Data
+    "../src/Discipline_Function"
+    "../src/Forcing_Data"
 begin
 
 (* Proof of concept of the proposal to automatize *)
