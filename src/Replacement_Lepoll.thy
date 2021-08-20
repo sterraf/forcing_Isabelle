@@ -178,12 +178,13 @@ proof -
     by (rule_tac bounded_lam_replacement[of _ "\<lambda>X. range(f) \<union> {0}"]) auto
 qed
 
-lemma (in M_basic) lam_Least_assumption_ifM_bnot0:
+lemma (in M_replacement_extra) lam_Least_assumption_ifM_bnot0:
   fixes F
   defines "F \<equiv> \<lambda>_ x. if M(x) then x else 0"
   assumes
     separations:
     "\<forall>A'[M]. separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i)\<rangle>)"
+    "separation(M,Ord)"
     and
     types:"M(A)" "M(f)"
     and
@@ -196,7 +197,10 @@ proof -
     apply (auto intro:Least_0, rule_tac Least_equality, simp_all)
     by (frule lt_Ord) (auto dest:le_imp_not_lt[of _ x] intro:ltI[of x])
   moreover
-  have "lam_replacement(M, \<lambda>x. if Ord(x) then succ(x) else 0)" sorry
+  have "lam_replacement(M, \<lambda>x. if Ord(x) then succ(x) else 0)"
+    using lam_replacement_if[OF _ _ separations(2)] lam_replacement_identity
+    lam_replacement_constant lam_replacement_hcomp lam_replacement_succ
+    by simp
   moreover
   note types \<open>b\<noteq>0\<close>
   ultimately

@@ -1078,7 +1078,7 @@ lemma if_then_range_replacement2:
   by simp
 
 lemma lam_replacement_succ:
-  "M(f) \<Longrightarrow> lam_replacement(M,\<lambda>z . succ(z))"
+  "lam_replacement(M,\<lambda>z . succ(z))"
   unfolding succ_def
   using lam_replacement_hcomp2[of "\<lambda>x. x" "\<lambda>x. x" cons]
     lam_replacement_cons lam_replacement_identity

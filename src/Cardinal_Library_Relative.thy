@@ -373,6 +373,7 @@ locale M_cardinal_library = M_library + M_replacement +
     cardinal_lib_assms1:
     "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow>
        separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. if M(x) then x else 0,b,f,i)\<rangle>)"
+    "separation(M,Ord)"
     and
     cardinal_lib_assms2:
     "M(A') \<Longrightarrow> M(G) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> 
