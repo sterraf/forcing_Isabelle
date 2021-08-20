@@ -384,7 +384,6 @@ locale M_cardinal_library = M_library + M_replacement +
         separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. if M(a) then F-``{a} else 0,b,f,i)\<rangle>)"
     and
     cdlt_assms:
-    "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q} \<and> z = {\<langle>x, y\<rangle>})"
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))"
     "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
     and 
@@ -829,7 +828,7 @@ proof -
     with\<open>M(G)\<close> \<open>\<And>x. M(x) \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})\<close> \<open>M(Q)\<close> \<open>M(?cdlt\<gamma>)\<close>
     interpret M_Pi_assumptions_choice M ?cdlt\<gamma> ?inQ
       using cdlt_assms[where Q=Q] lam_replacement_Collect_ball_Pair[THEN
-          lam_replacement_imp_strong_replacement]
+          lam_replacement_imp_strong_replacement] surj_imp_inj_replacement3
         lam_replacement_hcomp2[OF lam_replacement_constant 
           lam_replacement_Collect_ball_Pair _ _ lam_replacement_minimum,
           unfolded lam_replacement_def]

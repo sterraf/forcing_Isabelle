@@ -1204,6 +1204,15 @@ lemma lam_replacement_Collect_ball_Pair:
   shows "lam_replacement(M, \<lambda>x . {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})"
   using assms lam_replacement_Collect by simp
 
+lemma surj_imp_inj_replacement3:
+  "(\<And>x. M(x) \<Longrightarrow> separation(M, \<lambda>y. \<forall>s\<in>x. \<langle>s, y\<rangle> \<in> Q)) \<Longrightarrow> M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(x) \<Longrightarrow> 
+  strong_replacement(M, \<lambda>y z. y \<in> {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q} \<and> z = {\<langle>x, y\<rangle>})"
+  using lam_replacement_imp_strong_replacement
+  using lam_replacement_surj_imp_inj1[THEN lam_replacement_imp_strong_replacement, of x]
+  unfolding strong_replacement_def
+  by (simp, safe, drule_tac x="A \<inter> {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q}" in rspec,
+      simp, erule_tac rexE, rule_tac x=Y in rexI) auto
+
 lemmas replacements = Pair_diff_replacement id_replacement tag_replacement
   pospend_replacement prepend_replacement
   Inl_replacement1  diff_Pair_replacement
