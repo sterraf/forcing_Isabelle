@@ -146,6 +146,66 @@ proof -
         "\<lambda>X. Pow\<^bsup>M\<^esup>(\<Union>(X \<union> range(f) \<union> U(A)))"] by simp
 qed
 
+lemma (in M_basic) lam_Least_assumption_ifM_b0:
+  fixes F
+  defines "F \<equiv> \<lambda>_ x. if M(x) then x else 0"
+  assumes
+    separations:
+    "\<forall>A'[M]. separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(F(A),0,f,i)\<rangle>)"
+    and
+    types:"M(A)" "M(f)"
+  shows "lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(F(A),0,f,i))"
+  (is "lam_replacement(M,\<lambda>x . Least(?P(x)))")
+proof -
+  {
+    fix x X
+    assume "M(X)" "x\<in>X" "(\<mu> i. ?P(x,i)) \<noteq> 0"
+    moreover from this
+    obtain m where "Ord(m)" "?P(x,m)"
+      using Least_0[of "?P(_)"] by auto
+    moreover
+    note assms
+    moreover
+    have "?P(x,i) \<longleftrightarrow> (M(converse(f) ` i) \<and> i \<in> range(f) \<and> x \<in> converse(f) ` i)"  for i
+      unfolding F_def if_range_F_else_F_def if_range_F_def by auto
+    ultimately
+    have "(\<mu> i. ?P(x,i)) \<in> range (f)"
+      unfolding F_def if_range_F_else_F_def if_range_F_def
+      by (rule_tac LeastI2) auto
+  }
+  with assms
+  show ?thesis
+    by (rule_tac bounded_lam_replacement[of _ "\<lambda>X. range(f) \<union> {0}"]) auto
+qed
+
+lemma (in M_basic) lam_Least_assumption_ifM_bnot0:
+  fixes F
+  defines "F \<equiv> \<lambda>_ x. if M(x) then x else 0"
+  assumes
+    separations:
+    "\<forall>A'[M]. separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i)\<rangle>)"
+    and
+    types:"M(A)" "M(f)"
+    and
+    "b\<noteq>0"
+  shows "lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i))"
+  (is "lam_replacement(M,\<lambda>x . Least(?P(x)))")
+proof -
+  have "M(x) \<Longrightarrow>(\<mu> i. (M(i) \<longrightarrow> x \<in> i) \<and> M(i)) = (if Ord(x) then succ(x) else 0)" for x
+    using Ord_in_Ord
+    apply (auto intro:Least_0, rule_tac Least_equality, simp_all)
+    by (frule lt_Ord) (auto dest:le_imp_not_lt[of _ x] intro:ltI[of x])
+  moreover
+  have "lam_replacement(M, \<lambda>x. if Ord(x) then succ(x) else 0)" sorry
+  moreover
+  note types \<open>b\<noteq>0\<close>
+  ultimately
+  show ?thesis
+    using lam_replacement_cong
+    unfolding F_def if_range_F_else_F_def if_range_F_def
+    by auto
+qed
+
 lemma (in M_replacement_extra) lam_Least_assumption_drSR_Y:
   fixes F r' D
   defines "F \<equiv> drSR_Y(r',D)"

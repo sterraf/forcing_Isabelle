@@ -371,8 +371,8 @@ locale M_cardinal_library = M_library + M_replacement +
     lam_replacement_inj_rel:"lam_replacement(M, \<lambda>x. inj\<^bsup>M\<^esup>(fst(x),snd(x)))"
     and
     cardinal_lib_assms1:
-    "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> 
-        lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. if M(x) then x else 0,b,f,i))"
+    "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow>
+       separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. if M(x) then x else 0,b,f,i)\<rangle>)"
     and
     cardinal_lib_assms2:
     "M(A') \<Longrightarrow> M(G) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> 
@@ -405,18 +405,35 @@ proof -
   have "x \<in> (if M(i) then i else 0) \<Longrightarrow> M(i)" for x i
     by (cases "M(i)") auto
   then
-  \<comment> \<open>These few lines repeat below mutatis mutandis\<close>
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then x else 0"
-    using cardinal_lib_assms1 lam_replacement_if[OF lam_replacement_identity
+    using  lam_replacement_if[OF lam_replacement_identity
         lam_replacement_constant[OF nonempty], where b=M] lam_replacement_inj_rel
-    by unfold_locales (auto simp add: separation_def)
+    apply unfold_locales apply (auto simp add: separation_def)
+  proof -
+    fix b f
+    assume "M(b)" "M(f)"
+    show "lam_replacement(M, \<lambda>x. \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. if M(x) then x else 0, b, f, i))"
+    proof (cases "b=0")
+      case True
+      with \<open>M(f)\<close>
+      show ?thesis
+        using cardinal_lib_assms1
+        by (simp_all; rule_tac lam_Least_assumption_ifM_b0)+
+    next
+      case False
+      with \<open>M(f)\<close> \<open>M(b)\<close>
+      show ?thesis
+      using cardinal_lib_assms1
+      by (rule_tac lam_Least_assumption_ifM_bnot0)  auto
+    qed
+  qed
   note \<open>M(C)\<close>
   moreover
   have  "w \<in> (if M(x) then x else 0) \<Longrightarrow> M(x)" for w x
     by (cases "M(x)") auto
   ultimately
   interpret M_cardinal_UN_lepoll _ "\<lambda>c. if M(c) then c else 0" C
-    using cardinal_lib_assms1 lepoll_assumptions
+    using lepoll_assumptions
     by unfold_locales simp_all
   have "(if M(i) then i else 0) = i" if "i\<in>C" for i
     using transM[OF _ \<open>M(C)\<close>] that by simp
