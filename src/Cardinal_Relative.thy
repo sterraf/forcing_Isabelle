@@ -23,6 +23,20 @@ definition
       \<exists>fW[M]. \<exists>YfW[M]. \<exists>gYfW[M]. image(M,f,W,fW) \<and> setdiff(M,Y,fW,YfW) \<and>
                                  image(M,g,YfW,gYfW) \<and> setdiff(M,X,gYfW,b)"
 
+
+lemma (in M_basic) banach_functor_abs :
+  assumes "M(X)" "M(Y)" "M(f)" "M(g)"
+  shows "relation1(M,is_banach_functor(M,X,Y,f,g),banach_functor(X,Y,f,g))"
+  unfolding relation1_def is_banach_functor_def banach_functor_def
+  using assms
+  by simp
+
+lemma (in M_basic) banach_functor_closed:
+  assumes "M(X)" "M(Y)" "M(f)" "M(g)"
+  shows "\<forall>W[M]. M(banach_functor(X,Y,f,g,W))"
+  unfolding banach_functor_def using assms image_closed
+  by simp
+
 locale M_cardinals = M_ordertype + M_trancl + M_Perm + M_replacement_extra +
   assumes
   rvimage_separation: "M(f) \<Longrightarrow> M(r) \<Longrightarrow>
@@ -38,7 +52,7 @@ locale M_cardinals = M_ordertype + M_trancl + M_Perm + M_replacement_extra +
     \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> b \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> d))"
   and
   banach_repl_iter: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow>
-               strong_replacement(M, \<lambda>x y. y = banach_functor(X, Y, f, g)^x (0))"
+               strong_replacement(M, \<lambda>x y. x\<in>nat \<and> y = banach_functor(X, Y, f, g)^x (0))"
 begin
 
 lemma radd_closed[intro,simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> M(c) \<Longrightarrow> M(d) \<Longrightarrow> M(radd(a,b,c,d))"
@@ -152,20 +166,6 @@ lemma lfp_banach_functor:
   using assms lfp_eq_Union bnd_mono_banach_functor contin_banach_functor
   by simp
 
-
-lemma banach_functor_abs :
-  assumes "M(X)" "M(Y)" "M(f)" "M(g)"
-  shows "relation1(M,is_banach_functor(M,X,Y,f,g),banach_functor(X,Y,f,g))"
-  unfolding relation1_def is_banach_functor_def banach_functor_def
-  using assms
-  by simp
-
-lemma banach_functor_closed:
-  assumes "M(X)" "M(Y)" "M(f)" "M(g)" "M(W)"
-  shows "M(banach_functor(X,Y,f,g,W))"
-  unfolding banach_functor_def using assms image_closed
-  by simp
-
 (* This is the biggest hole today *)
 lemma lfp_banach_functor_closed:
   assumes "M(g)" "M(X)" "M(Y)" "M(f)" "g\<in>inj(Y,X)"
@@ -176,7 +176,7 @@ proof -
     by(rule_tac nat_induct[OF that],simp_all add:banach_functor_closed)
   with assms
   show ?thesis
-    using family_union_closed[OF banach_repl_iter M_nat] lfp_banach_functor
+    using family_union_closed'[OF banach_repl_iter M_nat] lfp_banach_functor
     by simp
 qed
 

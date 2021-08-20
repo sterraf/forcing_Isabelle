@@ -21,6 +21,11 @@ lemma (in M_trivial) family_union_closed: "\<lbrakk>strong_replacement(M, \<lamb
       \<Longrightarrow> M(\<Union>x\<in>A. f(x))"
   using RepFun_closed ..
 
+lemma (in M_trivial) family_union_closed': "\<lbrakk>strong_replacement(M, \<lambda>x y. x\<in>A \<and> y = f(x)); M(A); \<forall>x\<in>A. M(f(x))\<rbrakk>
+      \<Longrightarrow> M(\<Union>x\<in>A. f(x))"
+  using RepFun_closed2 
+  by simp
+
 (* "Vfrom(A,i) \<equiv> transrec(i, %x f. A \<union> (\<Union>y\<in>x. Pow(f`y)))" *)
 (* HVfrom is *not* the recursive step for Vfrom. It is the
    relativized version *)

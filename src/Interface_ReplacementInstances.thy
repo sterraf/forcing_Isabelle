@@ -484,8 +484,128 @@ lemma (in M_ZF_trans) replacement_is_order_eq_map:
     apply(simp_all add: arity_order_eq_map_fm nat_simp_union)
   done
 
-lemma banach_replacement: "strong_replacement(##M, \<lambda>x y. y = banach_functor(X, Y, f, g)^x (0))"
-  unfolding banach_functor_def 
-  sorry
+(* Banach *)
+synthesize "is_banach_functor" from_definition assuming "nonempty"
+arity_theorem for "is_banach_functor_fm"
+
+definition banach_body_iterates where
+  "banach_body_iterates(M,X,Y,f,g,W,n,x,z) \<equiv> 
+\<exists>y[M].
+                   pair(M, x, y, z) \<and>
+                   (\<exists>fa[M].
+                       (\<forall>z[M].
+                           z \<in> fa \<longleftrightarrow>
+                           (\<exists>xa[M].
+                               \<exists>y[M].
+                                  \<exists>xaa[M].
+                                     \<exists>sx[M].
+                                        \<exists>r_sx[M].
+                                           \<exists>f_r_sx[M]. \<exists>sn[M]. \<exists>msn[M]. successor(M,n,sn) \<and>
+                                              membership(M,sn,msn) \<and>
+                                              pair(M, xa, y, z) \<and>
+                                              pair(M, xa, x, xaa) \<and>
+                                              upair(M, xa, xa, sx) \<and>
+                                              pre_image(M, msn, sx, r_sx) \<and>
+                                              restriction(M, fa, r_sx, f_r_sx) \<and>
+                                              xaa \<in> msn \<and>
+                                              (empty(M, xa) \<longrightarrow> y = W) \<and>
+                                              (\<forall>m[M].
+                                                  successor(M, m, xa) \<longrightarrow>
+                                                  (\<exists>gm[M].
+                                                      is_apply(M, f_r_sx, m, gm) \<and> is_banach_functor(M, X, Y, f, g, gm, y))) \<and>
+                                              (is_quasinat(M, xa) \<or> empty(M, y)))) \<and>
+                       (empty(M, x) \<longrightarrow> y = W) \<and>
+                       (\<forall>m[M].
+                           successor(M, m, x) \<longrightarrow>
+                           (\<exists>gm[M]. is_apply(M, fa, m, gm) \<and> is_banach_functor(M, X, Y, f, g, gm, y))) \<and>
+                       (is_quasinat(M, x) \<or> empty(M, y)))"
+
+synthesize "is_quasinat" from_definition assuming "nonempty"
+arity_theorem for "is_quasinat_fm"
+
+synthesize "banach_body_iterates" from_definition assuming "nonempty"
+arity_theorem for "banach_body_iterates_fm"
+
+lemma (in M_ZF_trans) banach_iterates:
+  assumes "X\<in>M" "Y\<in>M" "f\<in>M" "g\<in>M" "W\<in>M"
+  shows "iterates_replacement(##M, is_banach_functor(##M,X,Y,f,g), W)"
+proof -
+  have "strong_replacement(##M, \<lambda> x z . banach_body_iterates(##M,X,Y,f,g,W,n,x,z))" if "n\<in>\<omega>" for n 
+    apply(rule_tac strong_replacement_cong[
+          where P="\<lambda> x z. M,[x,z,_,W,g,f,Y,X] \<Turnstile> banach_body_iterates_fm(7,6,5,4,3,2,0,1)",THEN iffD1])
+     prefer 2
+     apply(rule_tac replacement_ax[where env="[n,W,g,f,Y,X]",simplified])
+    using assms that
+    by(simp_all add:zero_in_M arity_banach_body_iterates_fm nat_simp_union transitivity[OF _ nat_in_M])
+  then
+  show ?thesis
+    using assms zero_in_M transitivity[OF _ nat_in_M] Memrel_closed
+    unfolding iterates_replacement_def wfrec_replacement_def is_wfrec_def M_is_recfun_def
+      is_nat_case_def iterates_MH_def banach_body_iterates_def
+    by simp
+qed
+
+definition banach_is_iterates_body where
+  "banach_is_iterates_body(M,X,Y,f,g,W,n,y) \<equiv> \<exists>om[M]. omega(M,om) \<and> n \<in> om \<and>
+             (\<exists>sn[M].
+                 \<exists>msn[M].
+                    successor(M, n, sn) \<and>
+                    membership(M, sn, msn) \<and>
+                    (\<exists>fa[M].
+                        (\<forall>z[M].
+                            z \<in> fa \<longleftrightarrow>
+                            (\<exists>x[M].
+                                \<exists>y[M].
+                                   \<exists>xa[M].
+                                      \<exists>sx[M].
+                                         \<exists>r_sx[M].
+                                            \<exists>f_r_sx[M].
+                                               pair(M, x, y, z) \<and>
+                                               pair(M, x, n, xa) \<and>
+                                               upair(M, x, x, sx) \<and>
+                                               pre_image(M, msn, sx, r_sx) \<and>
+                                               restriction(M, fa, r_sx, f_r_sx) \<and>
+                                               xa \<in> msn \<and>
+                                               (empty(M, x) \<longrightarrow> y = W) \<and>
+                                               (\<forall>m[M].
+                                                   successor(M, m, x) \<longrightarrow>
+                                                   (\<exists>gm[M].
+                                                       fun_apply(M, f_r_sx, m, gm) \<and> is_banach_functor(M, X, Y, f, g, gm, y))) \<and>
+                                               (is_quasinat(M, x) \<or> empty(M, y)))) \<and>
+                        (empty(M, n) \<longrightarrow> y = W) \<and>
+                        (\<forall>m[M].
+                            successor(M, m, n) \<longrightarrow>
+                            (\<exists>gm[M]. fun_apply(M, fa, m, gm) \<and> is_banach_functor(M, X, Y, f, g, gm, y))) \<and>
+                        (is_quasinat(M, n) \<or> empty(M, y))))"
+
+synthesize "banach_is_iterates_body" from_definition assuming "nonempty"
+arity_theorem for "banach_is_iterates_body_fm"
+
+lemma (in M_ZF_trans) banach_replacement_iterates: 
+  assumes "X\<in>M" "Y\<in>M" "f\<in>M" "g\<in>M" "W\<in>M"
+  shows "strong_replacement(##M, \<lambda>n y. n\<in>\<omega> \<and> is_iterates(##M,is_banach_functor(##M,X, Y, f, g),W,n,y))"
+proof -
+  have "strong_replacement(##M, \<lambda> n z . banach_is_iterates_body(##M,X,Y,f,g,W,n,z))"  
+    apply(rule_tac strong_replacement_cong[
+          where P="\<lambda> n z. M,[n,z,W,g,f,Y,X] \<Turnstile> banach_is_iterates_body_fm(6,5,4,3,2,0,1)",THEN iffD1])
+     prefer 2
+     apply(rule_tac replacement_ax[where env="[W,g,f,Y,X]",simplified])
+    using assms 
+    by(simp_all add:zero_in_M arity_banach_is_iterates_body_fm nat_simp_union transitivity[OF _ nat_in_M])
+  then
+  show ?thesis
+    using assms nat_in_M
+    unfolding is_iterates_def wfrec_replacement_def is_wfrec_def M_is_recfun_def
+      is_nat_case_def iterates_MH_def banach_is_iterates_body_def
+    by simp
+qed
+
+lemma (in M_ZF_trans) banach_replacement:
+  assumes "(##M)(X)" "(##M)(Y)" "(##M)(f)" "(##M)(g)" 
+  shows "strong_replacement(##M, \<lambda>n y. n\<in>nat \<and> y = banach_functor(X, Y, f, g)^n (0))"
+  using iterates_abs[OF banach_iterates banach_functor_abs,of X Y f g] 
+    assms banach_functor_closed zero_in_M
+  apply (rule_tac strong_replacement_cong[THEN iffD1, OF _ banach_replacement_iterates[of X Y f g 0]])
+  by(rule_tac conj_cong,simp_all)
 
 end

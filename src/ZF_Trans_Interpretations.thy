@@ -156,7 +156,7 @@ lemma (in M_ZF_trans) wfrec_replacement_order_pred':
 sublocale M_ZF_trans \<subseteq> M_pre_cardinal_arith "##M"
   using separation_instances wfrec_replacement_order_pred'[unfolded H_order_pred_def]
     replacement_is_order_eq_map[unfolded order_eq_map_def] banach_replacement
-  by unfold_locales simp_all
+  by unfold_locales simp_all 
 
 lemma (in M_ZF_trans) replacement_ordertype: 
   "X\<in>M \<Longrightarrow> strong_replacement(##M, \<lambda>x z. z \<in> M \<and> x \<in> M \<and> x \<in> Pow\<^bsup>M\<^esup>(X \<times> X) \<and> well_ord(X, x) \<and> z = ordertype(X, x))"
