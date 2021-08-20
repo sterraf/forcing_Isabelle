@@ -1,4 +1,4 @@
-theory Interface_SepInstances
+theory Separation_Instances
   imports
     Discipline_Function
     Forcing_Data

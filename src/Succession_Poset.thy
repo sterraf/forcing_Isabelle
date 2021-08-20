@@ -1,7 +1,7 @@
 section\<open>A poset of successions\<close>
 theory Succession_Poset
   imports
-    Interface_ReplacementInstances
+    Replacement_Instances
     Proper_Extension
     FiniteFun_Relative
     

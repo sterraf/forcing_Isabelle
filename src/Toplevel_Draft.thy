@@ -126,7 +126,7 @@ lemma hide_holes: "True"
 
 sublocale M_ZFC_trans \<subseteq> M_master "##M"
   apply unfold_locales
-  apply (simp_all add:replacement repl_instances hide_holes sep_instances del:setclass_iff)
+  apply (simp_all add:hide_holes repl_instances sep_instances del:setclass_iff)
   unfolding dC_F_def 
   sorry
 

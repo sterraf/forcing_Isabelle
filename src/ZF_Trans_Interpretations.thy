@@ -2,8 +2,8 @@ theory ZF_Trans_Interpretations
   imports
     Cohen_Posets_Relative
     Forcing_Main
-    Interface_SepInstances
-    Interface_ReplacementInstances
+    Separation_Instances
+    Replacement_Instances
 begin
 
 lemmas (in M_ZF_trans) separation_instances =

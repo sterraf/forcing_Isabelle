@@ -1,11 +1,11 @@
-theory Interface_ReplacementInstances
+theory Replacement_Instances
   imports
     Discipline_Function
     Forcing_Data
     Aleph_Relative
     FiniteFun_Relative
     Cardinal_Relative
-    Interface_SepInstances
+    Separation_Instances
 begin
 
 subsection\<open>More Instances of Replacement\<close>
