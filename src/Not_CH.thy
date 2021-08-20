@@ -117,6 +117,7 @@ lemmas (in M_ZFC_trans) sep_instances =
 
 (* FIXME: the second instance has been proved in Lambda Replacement, it shouldn't be here. *)
 lemmas (in M_ZF_trans) repl_instances = lam_replacement_inj_rel
+  lam_replacement_cardinal[unfolded lam_replacement_def]
 
 lemma hide_holes: "True"
   (*"strong_replacement(##M,P)"*)

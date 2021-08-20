@@ -608,4 +608,13 @@ lemma (in M_ZF_trans) banach_replacement:
   apply (rule_tac strong_replacement_cong[THEN iffD1, OF _ banach_replacement_iterates[of X Y f g 0]])
   by(rule_tac conj_cong,simp_all)
 
+
+lemma (in M_ZF_trans) lam_replacement_cardinal : "lam_replacement(##M, cardinal_rel(##M))"
+  using lam_replacement_iff_lam_closed[THEN iffD2,of "cardinal_rel(##M)"]
+   cardinal_rel_closed[of _]
+    Lambda_in_M[where \<phi>="is_cardinal_fm(0,1)" and env="[]",OF
+      is_cardinal_fm_type[of 0 1] _  is_cardinal_iff_sats[symmetric] is_cardinal_iff]
+     arity_is_cardinal_fm[of 0 1] nat_simp_union cardinal_rel_closed transitivity zero_in_M
+  by simp_all
+
 end
