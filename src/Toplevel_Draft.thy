@@ -139,7 +139,7 @@ proof -
   interpret M_add_reals "##M" "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>"
     by unfold_locales blast
   show ?thesis
-    using ccc_Fn_nat by fast
+    using ccc_rel_Fn_nat by fast
 qed
 
 end (* M_ctm *)

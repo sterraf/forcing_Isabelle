@@ -167,7 +167,7 @@ lemma (in M_trans) mem_F_bound3:
   using apply_0 unfolding F_def
   by (cases "M(c)", auto simp:F_def drSR_Y_def dC_F_def)
 
-lemma ccc_Fn_nat:
+lemma ccc_rel_Fn_nat:
   notes Sep_and_Replace [simp]\<comment> \<open>FIXME with all \<^term>\<open>SepReplace\<close> instances\<close>
   assumes "M(I)"
   shows "ccc\<^bsup>M\<^esup>(Fn(nat,I,2), Fnle(nat,I,2))"
