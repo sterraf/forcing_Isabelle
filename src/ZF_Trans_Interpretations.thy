@@ -639,4 +639,39 @@ lemma (in M_ZF_trans) separation_toplevel11_body:
   unfolding toplevel11_body_def
   by simp
 
+definition toplevel12_body
+  where "toplevel12_body(G,p) \<equiv> \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> fst(p) \<in> x"
+
+relativize functional "toplevel12_body" "toplevel12_body_rel"
+relationalize "toplevel12_body_rel" "is_toplevel12_body"
+
+synthesize "is_toplevel12_body" from_definition
+arity_theorem for "is_toplevel12_body_fm"
+
+lemma (in M_ZF_trans) separation_is_toplevel12_body:
+ "(##M)(G) \<Longrightarrow> separation(##M, is_toplevel12_body(##M,G))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,G] \<Turnstile> is_toplevel12_body_fm(1,0)",THEN iffD1])
+   apply(rule_tac is_toplevel12_body_iff_sats[where env="[_,G]",symmetric])
+  apply(simp_all)
+  apply(rule_tac separation_ax[where env="[G]",simplified])
+    apply(simp_all add:arity_is_toplevel12_body_fm nat_simp_union is_toplevel12_body_fm_type)
+  done
+
+lemma (in M_ZF_trans) toplevel12_body_abs:
+  assumes "(##M)(G)" "(##M)(x)"
+  shows "is_toplevel12_body(##M,G,x) \<longleftrightarrow> toplevel12_body(G,x)"
+  using assms pair_in_M_iff fst_abs snd_abs transitivity fst_snd_closed
+  unfolding toplevel12_body_def is_toplevel12_body_def
+  by force
+
+lemma (in M_ZF_trans) separation_toplevel12_body:
+ "(##M)(G) \<Longrightarrow> separation
+        (##M, \<lambda>p.  \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> fst(p) \<in> x)"
+  using toplevel12_body_abs separation_is_toplevel12_body
+  unfolding toplevel12_body_def
+  by (rule_tac separation_cong[
+        where P="is_toplevel12_body(##M,G)",THEN iffD1])
+
+
 end

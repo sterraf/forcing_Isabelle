@@ -577,6 +577,7 @@ lemma (in M_ZF_trans) separation_restrict_elem:
  "(##M)(B) \<Longrightarrow> \<forall>A[##M]. separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)"
   using separation_restrict_elem_aux by simp
 
+
 lemma (in M_ZF_trans) separation_ordinal:
  "separation(##M, ordinal(##M))"
   apply(rule_tac separation_cong[
