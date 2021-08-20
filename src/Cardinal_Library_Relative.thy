@@ -385,10 +385,8 @@ locale M_cardinal_library = M_library + M_replacement +
     and
     cdlt_assms:
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q} \<and> z = {\<langle>x, y\<rangle>})"
-    "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>Y. {a \<in> G . \<forall>s\<in>Y. \<langle>s, a\<rangle> \<in> Q}))"
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))"
     "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
-    "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})\<rangle>)"
     and 
     cardinal_lib_assms5 :
     "M(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
@@ -831,6 +829,12 @@ proof -
     with\<open>M(G)\<close> \<open>\<And>x. M(x) \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})\<close> \<open>M(Q)\<close> \<open>M(?cdlt\<gamma>)\<close>
     interpret M_Pi_assumptions_choice M ?cdlt\<gamma> ?inQ
       using cdlt_assms[where Q=Q] lam_replacement_Collect_ball_Pair[THEN
+          lam_replacement_imp_strong_replacement]
+        lam_replacement_hcomp2[OF lam_replacement_constant 
+          lam_replacement_Collect_ball_Pair _ _ lam_replacement_minimum,
+          unfolded lam_replacement_def]
+        lam_replacement_hcomp lam_replacement_Sigfun[OF
+          lam_replacement_Collect_ball_Pair, of G Q, THEN
           lam_replacement_imp_strong_replacement]
       by unfold_locales (blast dest: transM, auto dest:transM)
     show ?thesis using AC_Pi_rel Pi_rel_char H by auto
