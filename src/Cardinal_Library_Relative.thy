@@ -383,10 +383,10 @@ locale M_cardinal_library = M_library + M_replacement +
     "M(A') \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(F) \<Longrightarrow>
         separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. if M(a) then F-``{a} else 0,b,f,i)\<rangle>)"
     and
-    cdlt_replacement:
+    cdlt_assms:
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q} \<and> z = {\<langle>x, y\<rangle>})"
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>Y. {a \<in> G . \<forall>s\<in>Y. \<langle>s, a\<rangle> \<in> Q}))"
-    "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})"
+    "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))"
     "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
     "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})\<rangle>)"
     and 
@@ -797,7 +797,7 @@ lemma bounded_cardinal_rel_selection:
 proof -
   from assms
   have "M(x) \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})" for x
-    using cdlt_replacement by simp
+    using cdlt_assms by simp
   let ?cdlt\<gamma>="{Z\<in>Pow_rel(M,G) . |Z|\<^bsup>M\<^esup><\<gamma>}" \<comment> \<open>“cardinal\_rel less than \<^term>\<open>\<gamma>\<close>”\<close>
     and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. <s,a>\<in>Q}"
   from \<open>M(G)\<close>
@@ -830,7 +830,8 @@ proof -
       by (auto dest:transM)
     with\<open>M(G)\<close> \<open>\<And>x. M(x) \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})\<close> \<open>M(Q)\<close> \<open>M(?cdlt\<gamma>)\<close>
     interpret M_Pi_assumptions_choice M ?cdlt\<gamma> ?inQ
-      using cdlt_replacement[of G Q]
+      using cdlt_assms[where Q=Q] lam_replacement_Collect_ball_Pair[THEN
+          lam_replacement_imp_strong_replacement]
       by unfold_locales (blast dest: transM, auto dest:transM)
     show ?thesis using AC_Pi_rel Pi_rel_char H by auto
     qed

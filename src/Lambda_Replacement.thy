@@ -1198,6 +1198,12 @@ lemma lam_replacement_min: "M(f) \<Longrightarrow> M(r) \<Longrightarrow> lam_re
     lam_replacement_minimum
   by simp
 
+lemma lam_replacement_Collect_ball_Pair:
+  assumes "separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))"
+    "\<And>x. M(x) \<Longrightarrow> separation(M, \<lambda>y. \<forall>s\<in>x. \<langle>s, y\<rangle> \<in> Q)" "M(G)"
+  shows "lam_replacement(M, \<lambda>x . {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})"
+  using assms lam_replacement_Collect by simp
+
 lemmas replacements = Pair_diff_replacement id_replacement tag_replacement
   pospend_replacement prepend_replacement
   Inl_replacement1  diff_Pair_replacement
@@ -1212,28 +1218,5 @@ lemmas replacements = Pair_diff_replacement id_replacement tag_replacement
   case_replacement1 case_replacement2 case_replacement4 case_replacement5
 
 end (* M_replacement_extra *)
-
-(*find_theorems
-  "strong_replacement(_,\<lambda>x y. y = <x,_>)" -"strong_replacement(_,\<lambda>x y. y = <x,_>) \<Longrightarrow> _"
-  (* "strong_replacement" -"strong_replacement(_,_) \<Longrightarrow> _" -"strong_replacement(_,\<lambda>x y. y = <x,_>)" *)
-  -name:"_def" -name:intro -name:assumptions -name:closed -name: Derivations -name:transrec_equal_on_M
-  -name:M_cardinal_UN -name:"absolute" -name:Separation -name:"Rank." -name:"Interface."
-  -name:"WFrec." -name:"Relative.strong_" -name:"L_axioms" -name:"Names" -name:"Relative.M_b"
-  -name:"Relative.M_t" -name:"Internal_ZFC"
-  -name:Pair_diff_replacement
-  -name:id_replacement -name:tag_replacement -name:pospend_replacement -name:prepend_replacement
-  -name:Inl_replacement1 -name:apply_replacement1 -name:apply_replacement2 -name:diff_Pair_replacement
-  -name:swap_replacement -name:tag_union_replacement -name:csquare_lam_replacement
-  -name:assoc_replacement -name:prod_fun_replacement -name:prod_bij_rel_replacement
-  -name:cardinal_lib_assms4 -name:surj_imp_inj_replacement -name:domain_replacement
-  -name:apply_replacement -name:image_replacement
-  -name:un_Pair_replacement -name:restrict_strong_replacement -name:diff_replacement
-  -name:Pi_replacement -name:snd_replacement
-  -name:if_then_Inj_replacement -name:lam_if_then_replacement -name:if_then_replacement
-  -name:ifx_replacement -name:if_then_range_replacement2 -name:if_then_range_replacement
-  -name:Inl_replacement2
-  -name:case_replacement1 -name:case_replacement2 -name:case_replacement4 -name:case_replacement5
-  -name:sum_bij_rel_replacement -name:replacements
-*)
 
 end

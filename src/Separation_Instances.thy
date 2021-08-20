@@ -577,7 +577,6 @@ lemma (in M_ZF_trans) separation_restrict_elem:
  "(##M)(B) \<Longrightarrow> \<forall>A[##M]. separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)"
   using separation_restrict_elem_aux by simp
 
-
 lemma (in M_ZF_trans) separation_ordinal:
  "separation(##M, ordinal(##M))"
   apply(rule_tac separation_cong[
@@ -594,5 +593,41 @@ lemma (in M_ZF_trans) separation_Ord:
     separation_cong[where P="ordinal(##M)" and M="##M",THEN iffD1]
   unfolding Ord_def
   by simp
+
+(*  "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))" *)
+definition insnd_ballPair :: "[i,i,i] \<Rightarrow> o" where
+  "insnd_ballPair(B,A) \<equiv> \<lambda>p. \<forall>x\<in>B. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> A)"
+
+relativize "insnd_ballPair" "is_insnd_ballPair"
+synthesize "is_insnd_ballPair" from_definition assuming "nonempty"
+arity_theorem for "is_insnd_ballPair_fm"
+
+lemma (in M_ZF_trans) separation_is_insnd_ballPair:
+ "(##M)(B) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, is_insnd_ballPair(##M,B,A))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,A,B] \<Turnstile> is_insnd_ballPair_fm(2,1,0)",THEN iffD1])
+   apply(rule_tac is_insnd_ballPair_iff_sats[where env="[_,A,B]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[A,B]",simplified])
+    apply(simp_all add:arity_is_insnd_ballPair_fm nat_simp_union is_insnd_ballPair_fm_type)
+  done
+
+lemma (in M_ZF_trans) insnd_ballPair_abs:
+  assumes "(##M)(B)" "(##M)(A)" "(##M)(x)"
+  shows "is_insnd_ballPair(##M,B,A,x) \<longleftrightarrow> insnd_ballPair(B,A,x)"
+  using assms pair_in_M_iff fst_abs snd_abs fst_snd_closed
+    transM[of _ B] transM[of _ "snd(x)"] transM[of _ "fst(x)"]
+  unfolding insnd_ballPair_def is_insnd_ballPair_def
+  by (auto)
+
+lemma (in M_ZF_trans) separation_insnd_ballPair_aux:
+ "(##M)(B) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, \<lambda>p. \<forall>x\<in>B. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> A))"
+  using insnd_ballPair_abs separation_is_insnd_ballPair
+  unfolding insnd_ballPair_def
+  by (rule_tac separation_cong[where P="is_insnd_ballPair(##M,B,_)",THEN iffD1])
+
+lemma (in M_ZF_trans) separation_insnd_ballPair:
+ "(##M)(B) \<Longrightarrow> \<forall>A[##M]. separation(##M, \<lambda>p. \<forall>x\<in>B. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> A))"
+  using separation_insnd_ballPair_aux by simp
 
 end
