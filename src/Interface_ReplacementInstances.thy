@@ -395,7 +395,7 @@ lemma (in M_ZF_trans) replacement_fst2_sndfst_snd2:
   by simp
 
 
-lemmas (in M_ZF_trans) ZF_replacements = lam_replacement_domain
+lemmas (in M_ZF_trans) M_replacement_ZF_instances = lam_replacement_domain
   lam_replacement_fst lam_replacement_snd lam_replacement_Union
   lam_replacement_Upair lam_replacement_image
   lam_replacement_Diff lam_replacement_vimage
@@ -406,7 +406,7 @@ lemmas (in M_ZF_trans) ZF_replacements = lam_replacement_domain
   replacement_fst2_snd2 replacement_fst2_sndfst_snd2
 
 sublocale M_ZF_trans \<subseteq> M_replacement "##M"
-  by unfold_locales (simp_all add: ZF_replacements del:setclass_iff)
+  by unfold_locales (simp_all add: M_replacement_ZF_instances del:setclass_iff)
 
 definition RepFun_body :: "i \<Rightarrow> i \<Rightarrow> i"where
   "RepFun_body(u,v) \<equiv> {{\<langle>v, x\<rangle>} . x \<in> u}"
