@@ -53,7 +53,7 @@ locale M_delta = M_cardinal_library +
     and
     countable_lepoll_assms:
     "M(G) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> fst(p) \<in> x)"
-    "M(G) \<Longrightarrow> M(A) \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A.
+    "M(G) \<Longrightarrow> M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A.
                           y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. {xa \<in> G . x \<in> xa}, b, f, i)\<rangle>)"
     and
     disjoint_separation: "M(c) \<Longrightarrow> separation(M, \<lambda> x. \<exists>a. \<exists>b. x=\<langle>a,b\<rangle> \<and> a \<inter> b = c)"
