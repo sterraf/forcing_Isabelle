@@ -41,7 +41,7 @@ lemma is_If_fm_iff_sats [iff_sats]:
   shows "is_If(##A,Q,ta,fa,ra) \<longleftrightarrow> A, env \<Turnstile> is_If_fm(\<phi>,t,f,r)"
   using assms sats_is_If_fm[of Q A \<phi> env t f r] by simp
 
-lemma arity_is_If_fm:
+lemma arity_is_If_fm [arity]:
     "\<phi> \<in> formula \<Longrightarrow> t \<in> nat \<Longrightarrow> f \<in> nat \<Longrightarrow> r \<in> nat \<Longrightarrow>
     arity(is_If_fm(\<phi>, t, f, r)) = arity(\<phi>) \<union> succ(t) \<union> succ(r) \<union> succ(f)"
   unfolding is_If_fm_def

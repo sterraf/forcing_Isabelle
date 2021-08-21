@@ -115,20 +115,15 @@ lemmas (in M_ZFC_trans) sep_instances =
  separation_toplevel10_body separation_toplevel11_body separation_Ord
  separation_toplevel12_body separation_insnd_ballPair
  separation_restrict_eq_dom_eq separation_restrict_eq_dom_eq_pair
+ separation_ifrangeF_body
 
 (* FIXME: the second instance has been proved in Lambda Replacement, it shouldn't be here. *)
 lemmas (in M_ZF_trans) repl_instances = lam_replacement_inj_rel
   lam_replacement_cardinal[unfolded lam_replacement_def]
 
-lemma hide_holes: "True"
-  (*"strong_replacement(##M,P)"*)
-  (*"lam_replacement(##M,R)"*)
-  (*"separation(##M,Q)"*)
-  sorry
-
 sublocale M_ZFC_trans \<subseteq> M_master "##M"
   apply unfold_locales
-  apply (simp_all add:hide_holes repl_instances sep_instances del:setclass_iff)
+  apply (simp_all add:repl_instances sep_instances del:setclass_iff)
   sorry
 
 context M_ctm_AC
