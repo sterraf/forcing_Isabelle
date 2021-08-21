@@ -1158,11 +1158,30 @@ definition
 definition
   \<comment> \<open>"domain restrict SepReplace Y"\<close>
   drSR_Y :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
-  "drSR_Y(r',D,A,x) \<equiv> {domain(p) .. p\<in>A, restrict(p,r') = x \<and> domain(p) \<in> D}"
-
+  "drSR_Y(B,D,A,x) \<equiv> {domain(r) .. r\<in>A, restrict(r,B) = x \<and> domain(r) \<in> D}"
 
 context M_replacement_extra
 begin
+
+lemma lam_drSR_Y_replacement: 
+  assumes 
+    "\<And> A B. M(A) \<Longrightarrow> M(B) \<Longrightarrow> \<forall>x[M]. separation(M, \<lambda>dr. \<exists>r\<in>A . restrict(r,B) = x \<and> dr=domain(r))" 
+    "\<And> A B D . M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(D) \<Longrightarrow>
+      separation(M, \<lambda>p. \<forall>x\<in>D. x \<in> snd(p) \<longleftrightarrow> (\<exists>r\<in>A. restrict(r, B) = fst(p) \<and> x = domain(r)))"
+    "M(B)" "M(D)" "M(A)"
+  shows "lam_replacement(M, drSR_Y(B,D,A))"
+proof -
+  have "\<forall>x[M]. { dr\<in>D . (\<exists>r\<in>A . restrict(r,B) = x \<and> dr=domain(r)) } = drSR_Y(B,D,A,x)"
+    unfolding drSR_Y_def SepReplace_def 
+    by auto
+  moreover from assms
+  have "\<forall>x[M]. M({ dr\<in>D . (\<exists>r\<in>A . restrict(r,B) = x \<and> dr=domain(r)) })"
+    by simp
+  ultimately
+  show ?thesis
+    using lam_replacement_cong lam_replacement_Collect[OF \<open>M(D)\<close> assms(1)[of A B]] assms
+    by simp
+qed
 
 lemma lam_if_then_apply_replacement: "M(f) \<Longrightarrow> M(v) \<Longrightarrow> M(u) \<Longrightarrow>
      lam_replacement(M, \<lambda>x. if f ` x = v then f ` u else f ` x)"

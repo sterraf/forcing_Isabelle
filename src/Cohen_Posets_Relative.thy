@@ -10,11 +10,17 @@ locale M_cohen = M_delta +
   assumes
     separation_domain_pair: "M(A) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>A. x \<in> snd(p) \<longleftrightarrow> domain(x) = fst(p))"
     and
+    separation_restrict_eq_dom_eq: 
+    "M(A) \<Longrightarrow> M(B) \<Longrightarrow> \<forall>x[M]. separation(M, \<lambda>dr. \<exists>r\<in>A . restrict(r,B) = x \<and> dr=domain(r))" 
+    and
+    separation_restrict_eq_dom_eq_pair:
+    "M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(D) \<Longrightarrow>
+      separation(M, \<lambda>p. \<forall>x\<in>D. x \<in> snd(p) \<longleftrightarrow> (\<exists>r\<in>A. restrict(r, B) = fst(p) \<and> x = domain(r)))"
+    and
     countable_lepoll_assms2:
     "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. {p \<in> A . domain(p) = a}, b, f, i)\<rangle>)"
     and
     countable_lepoll_assms3:
-    "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lam_replacement(M, drSR_Y(r',D,A))"
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(b) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> M(A')\<Longrightarrow> 
         separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(drSR_Y(r', D, A), b, f, i)\<rangle>)"
     and
@@ -159,6 +165,10 @@ end (* M_cardinals *)
 
 context M_add_reals
 begin
+
+lemma lam_replacement_drSR_Y: "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lam_replacement(M, drSR_Y(r',D,A))"
+  using lam_drSR_Y_replacement separation_restrict_eq_dom_eq separation_restrict_eq_dom_eq_pair
+  by simp
 
 lemma (in M_trans) mem_F_bound3:
   fixes F A
@@ -398,7 +408,7 @@ proof -
       note \<open>M(A)\<close> \<open>\<And>f A. M(f) \<Longrightarrow> M(A) \<Longrightarrow> M(?Y(A,f))\<close> \<open>M(D)\<close>
       moreover from calculation
       interpret M_replacement_lepoll M "drSR_Y(r,D)"
-        using countable_lepoll_assms3 lam_replacement_inj_rel
+        using countable_lepoll_assms3 lam_replacement_inj_rel lam_replacement_drSR_Y
         apply (unfold_locales, simp_all)
           apply (rule_tac [2] lam_Least_assumption_drSR_Y)
                apply(simp_all add:drSR_Y_def)
@@ -416,6 +426,7 @@ proof -
       ultimately 
       interpret M_cardinal_UN_lepoll _ "?Y(A)" "Pow_rel(M,r\<times>2)"
         using countable_lepoll_assms3 lepoll_assumptions[where S="Pow_rel(M,r\<times>2)", unfolded lepoll_assumptions_defs]
+          lam_replacement_drSR_Y
         unfolding drSR_Y_def
         apply unfold_locales apply (simp_all add:lam_replacement_inj_rel del:Sep_and_Replace if_range_F_else_F_def)
         unfolding drSR_Y_def[symmetric]

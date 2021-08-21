@@ -630,4 +630,81 @@ lemma (in M_ZF_trans) separation_insnd_ballPair:
  "(##M)(B) \<Longrightarrow> \<forall>A[##M]. separation(##M, \<lambda>p. \<forall>x\<in>B. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> A))"
   using separation_insnd_ballPair_aux by simp
 
+(* *)
+definition bex_restrict_eq_dom :: "[i,i,i,i] \<Rightarrow> o" where
+  "bex_restrict_eq_dom(B,A,x) \<equiv> \<lambda>dr. \<exists>r\<in>A . restrict(r,B) = x \<and> dr=domain(r)"
+
+relativize "bex_restrict_eq_dom" "is_bex_restrict_eq_dom"
+synthesize "is_bex_restrict_eq_dom" from_definition assuming "nonempty"
+arity_theorem for "is_bex_restrict_eq_dom_fm"
+
+lemma (in M_ZF_trans) separation_is_bex_restrict_eq_dom:
+ "(##M)(B) \<Longrightarrow> (##M)(A) \<Longrightarrow> (##M)(x) \<Longrightarrow> separation(##M, is_bex_restrict_eq_dom(##M,B,A,x))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> dr . M,[dr,x,A,B] \<Turnstile> is_bex_restrict_eq_dom_fm(3,2,1,0)",THEN iffD1])
+   apply(rule_tac is_bex_restrict_eq_dom_iff_sats[where env="[_,x,A,B]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[x,A,B]",simplified])
+    apply(simp_all add:arity_is_bex_restrict_eq_dom_fm nat_simp_union is_bex_restrict_eq_dom_fm_type)
+  done
+lemma (in M_ZF_trans) bex_restrict_eq_dom_abs:
+  assumes "(##M)(B)" "(##M)(A)" "(##M)(x)" "(##M)(dr)"
+  shows "is_bex_restrict_eq_dom(##M,B,A,x,dr) \<longleftrightarrow> bex_restrict_eq_dom(B,A,x,dr)"
+  using assms transM[of _ B] transM[of _ A]
+  unfolding bex_restrict_eq_dom_def is_bex_restrict_eq_dom_def 
+  by (auto)
+
+lemma (in M_ZF_trans) separation_restrict_eq_dom_eq_aux: 
+    "(##M)(A) \<Longrightarrow> (##M)(B) \<Longrightarrow> (##M)(x) \<Longrightarrow> separation(##M, \<lambda>dr. \<exists>r\<in>A . restrict(r,B) = x \<and> dr=domain(r))" 
+  using bex_restrict_eq_dom_abs separation_is_bex_restrict_eq_dom
+  unfolding bex_restrict_eq_dom_def
+  by (rule_tac separation_cong[where P="is_bex_restrict_eq_dom(##M,B,A,x)",THEN iffD1])
+
+lemma (in M_ZF_trans) separation_restrict_eq_dom_eq: 
+    "(##M)(A) \<Longrightarrow> (##M)(B) \<Longrightarrow> \<forall>x[##M]. separation(##M, \<lambda>dr. \<exists>r\<in>A . restrict(r,B) = x \<and> dr=domain(r))" 
+  using separation_restrict_eq_dom_eq_aux by simp
+
+definition insnd_restrict_eq_dom :: "[i,i,i,i] \<Rightarrow> o" where
+  "insnd_restrict_eq_dom(B,A,D) \<equiv> \<lambda>p. \<forall>x\<in>D. x \<in> snd(p) \<longleftrightarrow> (\<exists>r\<in>A. restrict(r, B) = fst(p) \<and> x = domain(r))"
+
+definition is_insnd_restrict_eq_dom :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
+  "is_insnd_restrict_eq_dom(N,B,A,D,p) \<equiv>
+       \<exists>c[N].
+          \<exists>a[N].
+             (\<forall>x[N]. x \<in> D \<longrightarrow> x \<in> a \<longleftrightarrow> (\<exists>r[N]. \<exists>b[N]. (r \<in> A \<and>restriction(N, r, B, b)) \<and> b=c \<and> is_domain(N, r, x))) \<and>
+             is_snd(N, p, a) \<and> is_fst(N, p, c)"
+
+synthesize "is_insnd_restrict_eq_dom" from_definition assuming "nonempty"
+arity_theorem for "is_insnd_restrict_eq_dom_fm"
+
+lemma (in M_ZF_trans) separation_is_insnd_restrict_eq_dom:
+ "(##M)(B) \<Longrightarrow> (##M)(A) \<Longrightarrow> (##M)(D) \<Longrightarrow> separation(##M, is_insnd_restrict_eq_dom(##M,B,A,D))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,D,A,B] \<Turnstile> is_insnd_restrict_eq_dom_fm(3,2,1,0)",THEN iffD1])
+   apply(rule_tac is_insnd_restrict_eq_dom_iff_sats[where env="[_,D,A,B]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[D,A,B]",simplified])
+    apply(simp_all add:arity_is_insnd_restrict_eq_dom_fm nat_simp_union is_insnd_restrict_eq_dom_fm_type)
+  done
+
+lemma (in M_basic) insnd_restrict_eq_dom_abs:
+  assumes "(M)(B)" "(M)(A)" "(M)(D)" "(M)(x)"
+  shows "is_insnd_restrict_eq_dom(M,B,A,D,x) \<longleftrightarrow> insnd_restrict_eq_dom(B,A,D,x)"
+  using assms pair_in_M_iff fst_abs snd_abs fst_snd_closed domain_closed
+    transM[of _ B] transM[of _ D] transM[of _ A]  transM[of _ "snd(x)"] transM[of _ "fst(x)"]
+  unfolding insnd_restrict_eq_dom_def is_insnd_restrict_eq_dom_def
+  by simp
+
+lemma (in M_ZF_trans) separation_restrict_eq_dom_eq_pair_aux:
+    "(##M)(A) \<Longrightarrow> (##M)(B) \<Longrightarrow> (##M)(D) \<Longrightarrow>
+      separation(##M, \<lambda>p. \<forall>x\<in>D. x \<in> snd(p) \<longleftrightarrow> (\<exists>r\<in>A. restrict(r, B) = fst(p) \<and> x = domain(r)))"
+  using separation_is_insnd_restrict_eq_dom insnd_restrict_eq_dom_abs
+  unfolding insnd_restrict_eq_dom_def
+  by (rule_tac separation_cong[where P="is_insnd_restrict_eq_dom(##M,B,A,D)",THEN iffD1])
+
+lemma (in M_ZF_trans) separation_restrict_eq_dom_eq_pair:
+    "(##M)(A) \<Longrightarrow> (##M)(B) \<Longrightarrow> 
+  \<forall>D[##M]. separation(##M, \<lambda>p. \<forall>x\<in>D. x \<in> snd(p) \<longleftrightarrow> (\<exists>r\<in>A. restrict(r, B) = fst(p) \<and> x = domain(r)))" 
+  using separation_restrict_eq_dom_eq_pair_aux by simp
+
 end
