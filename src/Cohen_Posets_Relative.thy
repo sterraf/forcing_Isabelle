@@ -167,7 +167,7 @@ context M_add_reals
 begin
 
 lemma lam_replacement_drSR_Y: "M(A) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> lam_replacement(M, drSR_Y(r',D,A))"
-  using lam_drSR_Y_replacement separation_restrict_eq_dom_eq separation_restrict_eq_dom_eq_pair
+  using lam_replacement_drSR_Y separation_restrict_eq_dom_eq separation_restrict_eq_dom_eq_pair
   by simp
 
 lemma (in M_trans) mem_F_bound3:
