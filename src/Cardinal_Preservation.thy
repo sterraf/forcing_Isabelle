@@ -499,11 +499,21 @@ proof -
     moreover
     have 2:"\<And>x. x\<in>F`a \<Longrightarrow> x\<in>M"
       using transitivity[OF _ \<open>F`a\<in>M\<close>] by simp
+    moreover
+    have 3:"\<And>x. x\<in>F`a \<Longrightarrow> (##M)(?Q(x))"
+      using ccc_fun_closed_lemma_aux[OF \<open>A\<in>_\<close> \<open>B\<in>M\<close> \<open>f_dot\<in>M\<close> \<open>p\<in>M\<close> \<open>a\<in>M\<close> 2] transitivity[of _ "F`a"]
+      by simp
+    moreover
+    have 4:"lam_replacement(##M,\<lambda>b. {q \<in> P . q \<preceq> p \<and> (M, [q, P, leq, one, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))})"
+      sorry
     ultimately
     interpret M_Pi_assumptions_choice "##M" "F`a" ?Q
-      apply unfold_locales
-      apply (simp_all add:ccc_fun_closed_lemma_aux[OF \<open>A\<in>_\<close> \<open>B\<in>M\<close> \<open>f_dot\<in>M\<close> \<open>p\<in>M\<close>])
-      sorry
+      using Pi_replacement1[OF _ 3] lam_replacement_Sigfun[OF 4]
+        lam_replacement_imp_strong_replacement
+          ccc_fun_closed_lemma_aux[OF \<open>A\<in>_\<close> \<open>B\<in>M\<close> \<open>f_dot\<in>M\<close> \<open>p\<in>M\<close> \<open>a\<in>M\<close>]
+          lam_replacement_pullback
+          lam_replacement_hcomp2[OF lam_replacement_constant 4 _ _ lam_replacement_minimum,unfolded lam_replacement_def]
+        by unfold_locales simp_all
     from \<open>F`a \<in> M\<close>
     interpret M_Pi_assumptions2 "##M" "F`a" ?Q "\<lambda>_ . P"
       using P_in_M lam_replacement_imp_strong_replacement[OF
