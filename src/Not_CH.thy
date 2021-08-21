@@ -121,7 +121,7 @@ lemmas (in M_ZFC_trans) sep_instances =
 
 (* FIXME: the second instance has been proved in Lambda Replacement, it shouldn't be here. *)
 lemmas (in M_ZF_trans) repl_instances = lam_replacement_inj_rel
-  lam_replacement_cardinal[unfolded lam_replacement_def]
+  lam_replacement_cardinal[unfolded lam_replacement_def] replacement_trans_apply_image
 
 sublocale M_ZFC_trans \<subseteq> M_master "##M"
   apply unfold_locales

@@ -54,7 +54,7 @@ lemma arity_aux : "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> arity
 lemma arity_omap_wfrec: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> 
   arity(is_wfrec_fm(omap_wfrec_body(A,r),succ(succ(succ(r))), 1, 0)) = 
   (4#+A) \<union> (4#+r)"
-  using arity_is_wfrec_fm[OF _ _ _ _ _ arity_aux,of A r "3#+r" 1 0] pred_Un_distrib
+  using Arities.arity_is_wfrec_fm[OF _ _ _ _ _ arity_aux,of A r "3#+r" 1 0] pred_Un_distrib
     nat_union_abs1 nat_union_abs2 type_omap_wfrec_body_fm
   by auto
 
