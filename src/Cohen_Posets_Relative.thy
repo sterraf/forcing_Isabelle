@@ -18,7 +18,7 @@ locale M_cohen = M_delta +
       separation(M, \<lambda>p. \<forall>x\<in>D. x \<in> snd(p) \<longleftrightarrow> (\<exists>r\<in>A. restrict(r, B) = fst(p) \<and> x = domain(r)))"
     and
     countable_lepoll_assms2:
-    "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. {p \<in> A . domain(p) = a}, b, f, i)\<rangle>)"
+    "M(A') \<Longrightarrow> M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. {p \<in> A . domain(p) = a}, b, f, i)\<rangle>)"
     and
     countable_lepoll_assms3:
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(b) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> M(A')\<Longrightarrow> 
