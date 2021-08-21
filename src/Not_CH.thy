@@ -115,7 +115,7 @@ lemmas (in M_ZFC_trans) sep_instances =
  separation_toplevel10_body separation_toplevel11_body separation_Ord
  separation_toplevel12_body separation_insnd_ballPair
  separation_restrict_eq_dom_eq separation_restrict_eq_dom_eq_pair
- separation_ifrangeF_body
+ separation_ifrangeF_body separation_ifrangeF_body2
 
 (* FIXME: the second instance has been proved in Lambda Replacement, it shouldn't be here. *)
 lemmas (in M_ZF_trans) repl_instances = lam_replacement_inj_rel
