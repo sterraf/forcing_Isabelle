@@ -391,7 +391,8 @@ locale M_cardinal_library = M_library + M_replacement +
     "M(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
     and 
     cardinal_lib_assms6:
-    "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
+    "M(f) \<Longrightarrow> M(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow> 
+      strong_replacement(M, \<lambda>x y. x\<in>\<beta> \<and> y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
     "separation(M, \<lambda> x . \<exists>a. \<exists>b . x=\<langle>a,b\<rangle> \<and> a\<noteq>b)"
 
 begin
@@ -745,21 +746,48 @@ text\<open>The function \<^term>\<open>rec_constr\<close> allows to perform \<^e
 lemma rec_constr_unfold: "rec_constr(f,\<alpha>) = f`({rec_constr(f,\<beta>). \<beta>\<in>\<alpha>})"
   using def_transrec[OF rec_constr_def, of f \<alpha>] image_lam by simp
 
-lemma rec_constr_type: assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)" "M(G)"
-   shows "M(\<alpha>) \<Longrightarrow> rec_constr(f,\<alpha>) \<in> G"
+lemma rec_constr_type: 
+  assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)" "M(G)"
+  shows "M(\<alpha>) \<Longrightarrow> rec_constr(f,\<alpha>) \<in> G"
   using assms(2)
 proof(induct rule:trans_induct)
   case (step \<beta>)
   with assms
-  have "{rec_constr(f, x) . x \<in> \<beta>} \<in> Pow(G)" (is "?X\<in>_") "M(f)"
+  have "{rec_constr(f, x) . x \<in> \<beta>} = {y . x \<in> \<beta>, y=rec_constr(f, x)}" (is "_ = ?Y")
+       "M(f)"
+    using transM[OF _ \<open>M(\<beta>)\<close>] function_space_rel_char  Ord_in_Ord
+    by auto
+  moreover from assms this step \<open>M(\<beta>)\<close> \<open>Ord(\<beta>)\<close>
+  have "M({y . x \<in> \<beta>, y=<x,rec_constr(f, x)>})" (is "M(?Z)")
+    using strong_replacement_closed[OF cardinal_lib_assms6(1),of f \<beta> \<beta>,OF _ _ _ _ 
+      univalent_conjI2[where P="\<lambda>x _ . x\<in>\<beta>",OF univalent_triv]]
+      transM[OF _ \<open>M(\<beta>)\<close>] transM[OF step(2) \<open>M(G)\<close>] Ord_in_Ord
+    unfolding rec_constr_def
+    by auto
+  moreover from assms this step \<open>M(\<beta>)\<close> \<open>Ord(\<beta>)\<close>
+  have "?Y = {snd(y) . y\<in>?Z}"
+  proof(intro equalityI, auto)
+    fix u
+    assume "u\<in>\<beta>"
+    with assms this step \<open>M(\<beta>)\<close> \<open>Ord(\<beta>)\<close>
+    have "<u,rec_constr(f,u)> \<in> ?Z"  "rec_constr(f, u) = snd(<u,rec_constr(f,u)>)"
+      by auto
+    then
+    show "\<exists>x\<in>{y . x \<in> \<beta>, y = \<langle>x, rec_constr(f, x)\<rangle>}. rec_constr(f, u) = snd(x)"
+      using bexI[of _ u] by force
+  qed
+  moreover from \<open>M(?Z)\<close> \<open>?Y = _\<close>
+  have "M(?Y)"
+    using 
+      RepFun_closed[OF lam_replacement_imp_strong_replacement[OF lam_replacement_snd] \<open>M(?Z)\<close>]
+      fst_snd_closed[THEN conjunct2] transM[OF _ \<open>M(?Z)\<close>]
+    by simp
+  moreover from assms step
+  have "{rec_constr(f, x) . x \<in> \<beta>} \<in> Pow(G)" (is "?X\<in>_")
     using transM[OF _ \<open>M(\<beta>)\<close>] function_space_rel_char
     by auto
-  moreover from assms this step
+  moreover from assms calculation step
   have "M(?X)"
-    using cardinal_lib_assms6(1)[unfolded lam_replacement_def[symmetric],
-        THEN lam_replacement_imp_strong_replacement, THEN RepFun_closed]
-      transM[OF _ \<open>M(\<beta>)\<close>] transM[OF step(2) \<open>M(G)\<close>]
-    unfolding rec_constr_def
     by simp
   moreover from calculation \<open>M(G)\<close>
   have "?X\<in>Pow_rel(M,G)"
@@ -777,6 +805,13 @@ lemma rec_constr_closed :
   assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)" "M(G)" "M(\<alpha>)"
   shows "M(rec_constr(f,\<alpha>))"
   using transM[OF rec_constr_type \<open>M(G)\<close>] assms by auto
+
+lemma lambda_rec_constr_closed :
+  assumes "Ord(\<gamma>)" "M(\<gamma>)" "M(f)" "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "M(G)"
+  shows "M(\<lambda>\<alpha>\<in>\<gamma> . rec_constr(f,\<alpha>))"
+  using lam_closed2[OF cardinal_lib_assms6(1),unfolded rec_constr_def[symmetric],of f \<gamma>] 
+    rec_constr_type[OF \<open>f\<in>_\<close> Ord_in_Ord[of \<gamma>]] transM[OF _ \<open>M(G)\<close>] assms
+  by simp
 
 text\<open>The next lemma is an application of recursive constructions.
      It works under the assumption that whenever the already constructed
@@ -797,10 +832,10 @@ proof -
     using cdlt_assms by simp
   let ?cdlt\<gamma>="{Z\<in>Pow_rel(M,G) . |Z|\<^bsup>M\<^esup><\<gamma>}" \<comment> \<open>“cardinal\_rel less than \<^term>\<open>\<gamma>\<close>”\<close>
     and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. <s,a>\<in>Q}"
-  from \<open>M(G)\<close>
-  have "M(?cdlt\<gamma>)"
-    using cardinal_lib_assms5[OF \<open>M(\<gamma>)\<close>]
-    by simp
+  from \<open>M(G)\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close>
+  have "M(?cdlt\<gamma>)" "Ord(\<gamma>)"
+    using cardinal_lib_assms5[OF \<open>M(\<gamma>)\<close>] Card_rel_is_Ord
+    by simp_all
   from assms
   have H:"\<exists>a. a \<in> ?inQ(Y)" if "Y\<in>?cdlt\<gamma>" for Y
   proof -
@@ -871,12 +906,10 @@ proof -
     using Ord_in_Ord[OF Card_rel_is_Ord] rec_constr_type lam_type transM[OF _ \<open>M(\<gamma>)\<close>]
       function_space_rel_char
     by auto
-  moreover from \<open>f\<union>Cb \<in> _\<rightarrow>\<^bsup>M\<^esup> G\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close> \<open>M(G)\<close> \<open>M(f \<union> Cb)\<close>
+  moreover from \<open>f\<union>Cb \<in> _\<rightarrow>\<^bsup>M\<^esup> G\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close> \<open>M(G)\<close> \<open>M(f \<union> Cb)\<close> \<open>Ord(\<gamma>)\<close>
   have "M(S)"
     unfolding S_def
-    using lam_closed[OF cardinal_lib_assms6(1)]
-      rec_constr_closed Ord_in_Ord[OF Card_rel_is_Ord] transM[OF _ \<open>M(\<gamma>)\<close>]
-    unfolding rec_constr_def
+    using lambda_rec_constr_closed
     by simp
   moreover
   have "\<forall>\<alpha>\<in>\<gamma>. \<forall>\<beta>\<in>\<gamma>. \<alpha> < \<beta> \<longrightarrow> <S ` \<alpha>, S ` \<beta>>\<in>Q"

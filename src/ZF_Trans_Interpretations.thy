@@ -431,41 +431,6 @@ lemma (in M_ZF_trans) separation_toplevel5_body:
   by (rule_tac separation_cong[
         where P="is_toplevel5_body(##M,R)",THEN iffD1])
 
- (* 6. \<And>p. p \<in> M \<Longrightarrow> separation(##M, \<lambda>x. domain(x) = p) *)
-definition toplevel6_body :: "[i,i] \<Rightarrow> o" where
-  "toplevel6_body(R) \<equiv> \<lambda>x. domain(x) = R"
-
-relativize functional "toplevel6_body" "toplevel6_body_rel"
-relationalize "toplevel6_body_rel" "is_toplevel6_body"
-
-synthesize "is_toplevel6_body" from_definition assuming "nonempty"
-arity_theorem for "is_toplevel6_body_fm"
-
-lemma (in M_ZF_trans) separation_is_toplevel6_body:
- "(##M)(A) \<Longrightarrow> separation(##M, is_toplevel6_body(##M,A))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,A] \<Turnstile> is_toplevel6_body_fm(1,0)",THEN iffD1])
-   apply(rule_tac is_toplevel6_body_iff_sats[where env="[_,A]",symmetric])
-  apply(simp_all add:nonempty[simplified])
-  apply(rule_tac separation_ax[where env="[A]",simplified])
-    apply(simp_all add:arity_is_toplevel6_body_fm nat_simp_union is_toplevel6_body_fm_type)
-  done
-
-lemma (in M_ZF_trans) toplevel6_body_abs:
-  assumes "(##M)(R)" "(##M)(x)"
-  shows "is_toplevel6_body(##M,R,x) \<longleftrightarrow> toplevel6_body(R,x)"
-  using assms pair_in_M_iff is_Int_abs
-  unfolding toplevel6_body_def is_toplevel6_body_def
-  by (auto simp:domain_closed[simplified])
-
-lemma (in M_ZF_trans) separation_toplevel6_body:
- "(##M)(R) \<Longrightarrow> separation
-        (##M, \<lambda>x. domain(x) = R)"
-  using separation_is_toplevel6_body toplevel6_body_abs
-  unfolding toplevel6_body_def
-  by (rule_tac separation_cong[
-        where P="is_toplevel6_body(##M,R)",THEN iffD1])
-
  (* 7. \<And>r p. r \<in> M \<Longrightarrow> p \<in> M \<Longrightarrow> separation(##M, \<lambda>x. restrict(x, r) = p) *)
 definition toplevel7_body :: "[i,i,i] \<Rightarrow> o" where
   "toplevel7_body(Q,x) \<equiv> \<lambda>a. restrict(a, Q) = x"

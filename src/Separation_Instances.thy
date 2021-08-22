@@ -1103,11 +1103,73 @@ lemma (in M_basic) is_ifrFb_body5_closed: "M(G) \<Longrightarrow> M(r) \<Longrig
   unfolding ifrangeF_body5_def is_ifrangeF_body5_def is_ifrFb_body5_def fun_apply_def
   by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
 
+ (* 6. \<And>p. p \<in> M \<Longrightarrow> separation(##M, \<lambda>x. domain(x) = p) *)
+definition toplevel6_body :: "[i,i] \<Rightarrow> o" where
+  "toplevel6_body(R) \<equiv> \<lambda>x. domain(x) = R"
+
+relativize functional "toplevel6_body" "toplevel6_body_rel"
+relationalize "toplevel6_body_rel" "is_toplevel6_body"
+
+synthesize "is_toplevel6_body" from_definition assuming "nonempty"
+arity_theorem for "is_toplevel6_body_fm"
+
+lemma (in M_ZF_trans) separation_is_toplevel6_body:
+ "(##M)(A) \<Longrightarrow> separation(##M, is_toplevel6_body(##M,A))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,A] \<Turnstile> is_toplevel6_body_fm(1,0)",THEN iffD1])
+   apply(rule_tac is_toplevel6_body_iff_sats[where env="[_,A]",symmetric])
+  apply(simp_all add:nonempty[simplified])
+  apply(rule_tac separation_ax[where env="[A]",simplified])
+    apply(simp_all add:arity_is_toplevel6_body_fm nat_simp_union is_toplevel6_body_fm_type)
+  done
+
+lemma (in M_ZF_trans) toplevel6_body_abs:
+  assumes "(##M)(R)" "(##M)(x)"
+  shows "is_toplevel6_body(##M,R,x) \<longleftrightarrow> toplevel6_body(R,x)"
+  using assms pair_in_M_iff is_Int_abs
+  unfolding toplevel6_body_def is_toplevel6_body_def
+  by (auto simp:domain_closed[simplified])
+
+lemma (in M_ZF_trans) separation_toplevel6_body:
+ "(##M)(R) \<Longrightarrow> separation
+        (##M, \<lambda>x. domain(x) = R)"
+  using separation_is_toplevel6_body toplevel6_body_abs
+  unfolding toplevel6_body_def
+  by (rule_tac separation_cong[
+        where P="is_toplevel6_body(##M,R)",THEN iffD1])
+
+
 (* Now in locale M_replacement, needed in next lemma *)
+
+lemma eq: "{x\<in>A. a\<in>x} = Memrel(A\<union>{a}) `` {a}"
+  unfolding ZF_Base.image_def
+  by(intro equalityI,auto simp:mem_not_refl)
+
 lemma (in M_basic) separation_in_rev':
-  assumes "M(a)"
+  assumes "(M)(a)"
   shows "separation(M,\<lambda>x . a\<in>x)"
-  sorry
+proof -
+  {
+    fix A
+    assume "M(A)"
+    with assms 
+    have "M(Memrel(A\<union>{a}) `` {a})"
+      by simp
+    then 
+    have "M({x\<in>A. a\<in>x})" (is "M(?R)")
+      using eq by simp
+    moreover
+    have "\<forall>z[M].z\<in>?R \<longleftrightarrow> z\<in>A\<and>a\<in>z"
+      by simp
+    ultimately
+    have "\<exists>y[M].\<forall>z[M].z\<in>y \<longleftrightarrow> z\<in>A\<and>a\<in>z"
+      using rexI[of _ ?R] by simp
+  }
+  then show ?thesis
+    unfolding separation_def
+    by simp
+qed
+    
 
 lemma (in M_ZF_trans) ifrangeF_body5_abs:
   assumes "(##M)(A)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
@@ -1216,6 +1278,9 @@ lemma (in M_basic) separation_M_converse_domain:
   oops
 *)
 
+lemmas (in M_ZF_trans) a = separation_toplevel6_body 
+  separation_cong[OF eq_commute,THEN iffD1,OF separation_toplevel6_body]
+
 lemma (in M_ZF_trans) ifrangeF_body6_abs:
   assumes "(##M)(A)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
   shows "is_ifrangeF_body6(##M,A,G,r,s,x) \<longleftrightarrow> ifrangeF_body6(##M,A,G,r,s,x)"
@@ -1233,9 +1298,11 @@ proof -
       fix y
       from assms \<open>a\<in>M\<close> \<open>z\<in>M\<close>
       show "y\<in>M \<and> is_ifrFb_body6(##M, G, r, s, z, y) \<longleftrightarrow> y\<in>M \<and> ifrFb_body6(G, r, s, z, y)"
-        using If_abs apply_0 separation_in (* separation_M_domain separation_M_converse_domain *)
+        using If_abs apply_0 separation_in transitivity[of _ G]
+          separation_closed converse_closed apply_closed range_closed zero_in_M
+          separation_cong[OF eq_commute,THEN iffD1,OF separation_toplevel6_body]
         unfolding ifrFb_body6_def is_ifrFb_body6_def
-        sorry
+        by auto
     qed
     moreover from \<open>a\<in>M\<close>
     have "least(##M, \<lambda>i. i \<in> M \<and> is_ifrFb_body6(##M, G, r, s, z, i), a)
@@ -1327,8 +1394,11 @@ proof -
       fix y
       from assms \<open>a\<in>M\<close> \<open>z\<in>M\<close>
       show "y\<in>M \<and> is_ifrFb_body7(##M, B,D,G, r, s, z, y) \<longleftrightarrow> y\<in>M \<and> ifrFb_body7(B,D,G, r, s, z, y)"
-        using If_abs apply_0
+        using If_abs apply_0 converse_closed separation_restrict_eq_dom_eq[simplified]
+          separation_closed converse_closed apply_closed range_closed zero_in_M
         unfolding ifrFb_body7_def is_ifrFb_body7_def
+        apply auto 
+        apply(rule_tac separation_closed[simplified],auto simp add: separation_restrict_eq_dom_eq)
         sorry
     qed
     moreover from \<open>a\<in>M\<close>

@@ -425,14 +425,14 @@ shows "is_RepFun_body(M, u, v, res) \<longleftrightarrow> res = RepFun_body(u,v)
 
 synthesize "is_RepFun_body" from_definition assuming "nonempty"
 arity_theorem for "is_RepFun_body_fm"
-lemma aa:
+lemma arity_body_repfun:
   "arity( \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> (\<cdot>\<exists>\<cdot>cons_fm(0, 3, 2) \<and> pair_fm(5, 1, 0) \<cdot>\<cdot>)\<cdot>\<cdot> ) = 5"
   using arity_cons_fm arity_pair_fm pred_Un_distrib nat_union_abs1
   by auto
 
 lemma arity_RepFun: "arity(is_RepFun_body_fm(0, 1, 2)) = 3"
   unfolding is_RepFun_body_fm_def
-  using arity_Replace_fm[OF _ _ _ _ aa] arity_fst_fm arity_snd_fm arity_empty_fm
+  using arity_Replace_fm[OF _ _ _ _ arity_body_repfun] arity_fst_fm arity_snd_fm arity_empty_fm
     pred_Un_distrib nat_union_abs2 nat_union_abs1
   by simp
 
@@ -620,16 +620,16 @@ lemma (in M_ZF_trans) lam_replacement_cardinal : "lam_replacement(##M, cardinal_
 (* (##M)(f) \<Longrightarrow> strong_replacement(##M, \<lambda>x y. y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>) *)
 
 definition trans_apply_image where
-  "trans_apply_image(f) \<equiv> \<lambda>x y. y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>"
+  "trans_apply_image(f) \<equiv> \<lambda>a g. f ` (g `` a)"
 
 relativize functional "trans_apply_image" "trans_apply_image_rel"
-relationalize "trans_apply_image_rel" "is_trans_apply_image"
+relationalize "trans_apply_image" "is_trans_apply_image"
 
 (* MOVE THIS to an appropriate place *)
 schematic_goal arity_is_recfun_fm[arity]:
   "p \<in> formula \<Longrightarrow> a \<in> \<omega> \<Longrightarrow> z \<in> \<omega> \<Longrightarrow> r \<in> \<omega> \<Longrightarrow> arity(is_recfun_fm(p, a, z ,r)) = ?ar"
   unfolding is_recfun_fm_def
-  by (simp add:arity) (* clean simpset from arities, use correct attib *)
+  by (simp add:arity) (* clean simpset from arities, use correct attrib *)
 (* Don't know why it doesn't use the theorem at \<^file>\<open>Arities\<close> *)
 schematic_goal arity_is_wfrec_fm[arity]:
   "p \<in> formula \<Longrightarrow> a \<in> \<omega> \<Longrightarrow> z \<in> \<omega> \<Longrightarrow> r \<in> \<omega> \<Longrightarrow> arity(is_wfrec_fm(p, a, z ,r)) = ?ar"
@@ -640,35 +640,130 @@ schematic_goal arity_is_transrec_fm[arity]:
   unfolding is_transrec_fm_def
   by (simp add:arity)
 
-(* manual_schematic for "is_trans_apply_image" assuming "nonempty" *)
-schematic_goal sats_is_trans_apply_image_fm_auto: "f \<in> \<omega> \<Longrightarrow> x \<in> \<omega> \<Longrightarrow> y \<in> \<omega> \<Longrightarrow> env \<in> list(A) \<Longrightarrow> x < length(env) \<Longrightarrow> 0 \<in> A \<Longrightarrow>
-  is_trans_apply_image(##A, nth(f, env), nth(x, env), nth(y, env)) \<longleftrightarrow> A, env \<Turnstile> ?fm(f, x, y)"
-  unfolding is_trans_apply_image_def
-  by (rule sep_rules is_transrec_iff_sats | simp)+
-
-synthesize "is_trans_apply_image" from_schematic
+synthesize "is_trans_apply_image" from_definition assuming "nonempty"
 arity_theorem for "is_trans_apply_image_fm"
 
-lemma (in M_ZF_trans) replacement_is_trans_apply_image:
-  "A\<in>M \<Longrightarrow> strong_replacement(##M, is_trans_apply_image(##M,A))"
+lemma (in M_basic) rel2_trans_apply: 
+  "M(f) \<Longrightarrow> relation2(M,is_trans_apply_image(M,f),trans_apply_image(f))"
+  unfolding is_trans_apply_image_def trans_apply_image_def relation2_def
+  by auto
+
+lemma (in M_basic) apply_image_closed:
+  shows "M(f) \<Longrightarrow> \<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(trans_apply_image(f, x, g))"
+  unfolding trans_apply_image_def by simp
+
+lemma (in M_basic) apply_image_closed':
+  shows "M(f) \<Longrightarrow> \<forall>x[M]. \<forall>g[M]. M(trans_apply_image(f, x, g))"
+  unfolding trans_apply_image_def by simp
+
+definition transrec_apply_image_body where
+  "transrec_apply_image_body(M,f,mesa,x,z) \<equiv>  \<exists>y[M]. pair(M, x, y, z) \<and>
+                                (\<exists>fa[M].
+                                    (\<forall>z[M].
+                                        z \<in> fa \<longleftrightarrow>
+                                        (\<exists>xa[M].
+                                            \<exists>y[M].
+                                               \<exists>xaa[M].
+                                                  \<exists>sx[M].
+                                                     \<exists>r_sx[M].
+                                                        \<exists>f_r_sx[M].
+                                                           pair(M, xa, y, z) \<and>
+                                                           pair(M, xa, x, xaa) \<and>
+                                                           upair(M, xa, xa, sx) \<and>
+                                                           pre_image(M, mesa, sx, r_sx) \<and>
+                                                           restriction(M, fa, r_sx, f_r_sx) \<and>
+                                                           xaa \<in> mesa \<and> is_trans_apply_image(M, f, xa, f_r_sx, y))) \<and>
+                                    is_trans_apply_image(M, f, x, fa, y))"
+
+synthesize "transrec_apply_image_body" from_definition assuming "nonempty"
+arity_theorem for "transrec_apply_image_body_fm"
+
+lemma (in M_ZF_trans) replacement_transrec_apply_image_body :
+  "(##M)(f) \<Longrightarrow> (##M)(mesa) \<Longrightarrow> strong_replacement(##M,transrec_apply_image_body(##M,f,mesa))"
   apply(rule_tac strong_replacement_cong[
-        where P="\<lambda> x f. M,[x,f,A] \<Turnstile> is_trans_apply_image_fm(2,0,1)",THEN iffD1])
-  apply(rule_tac is_trans_apply_image_iff_sats[where env="[_,_,A]",symmetric])
+        where P="\<lambda> x z. M,[x,z,mesa,f] \<Turnstile> transrec_apply_image_body_fm(3,2,0,1)",THEN iffD1])
+  apply(rule_tac transrec_apply_image_body_iff_sats[where env="[_,_,mesa,f]",symmetric])
   apply(simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax[where env="[A]",simplified])
-  apply(simp_all add: arity_is_trans_apply_image_fm nat_simp_union)
+  apply(rule_tac replacement_ax[where env="[mesa,f]",simplified])
+  apply(simp_all add: arity_transrec_apply_image_body_fm nat_simp_union)
   done
 
-lemma (in M_eclose) trans_apply_image_abs:"M(A) \<Longrightarrow> M(x) \<Longrightarrow> M(y) \<Longrightarrow>
-  is_trans_apply_image(M, A, x, y) \<longleftrightarrow> trans_apply_image(A, x, y)"
-  unfolding trans_apply_image_def is_trans_apply_image_def
-  sorry
+lemma (in M_ZF_trans) transrec_replacement_apply_image: 
+  assumes "(##M)(f)" "(##M)(\<alpha>)"
+  shows "transrec_replacement(##M, is_trans_apply_image(##M, f), \<alpha>)"
+  unfolding transrec_replacement_def wfrec_replacement_def is_wfrec_def M_is_recfun_def
+  using replacement_transrec_apply_image_body[unfolded transrec_apply_image_body_def] assms
+  Memrel_closed singleton_closed eclose_closed
+  by simp
+
+lemma (in M_ZF_trans) rec_trans_apply_image_abs:
+  assumes "(##M)(f)" "(##M)(x)" "(##M)(y)" "Ord(x)"
+  shows "is_transrec(##M,is_trans_apply_image(##M, f),x,y) \<longleftrightarrow> y = transrec(x,trans_apply_image(f))"
+  using transrec_abs[OF transrec_replacement_apply_image rel2_trans_apply] assms apply_image_closed
+  by simp
+
+definition is_trans_apply_image_body where
+  "is_trans_apply_image_body(M,f,\<beta>,a,w) \<equiv> \<exists>z[M]. pair(M,a,z,w) \<and> a\<in>\<beta> \<and> (\<exists>sa[M].
+                \<exists>esa[M].
+                   \<exists>mesa[M].
+                      upair(M, a, a, sa) \<and>
+                      is_eclose(M, sa, esa) \<and>
+                      membership(M, esa, mesa) \<and>
+                      (\<exists>fa[M].
+                          (\<forall>z[M].
+                              z \<in> fa \<longleftrightarrow>
+                              (\<exists>x[M].
+                                  \<exists>y[M].
+                                     \<exists>xa[M].
+                                        \<exists>sx[M].
+                                           \<exists>r_sx[M].
+                                              \<exists>f_r_sx[M].
+                                                 pair(M, x, y, z) \<and>
+                                                 pair(M, x, a, xa) \<and>
+                                                 upair(M, x, x, sx) \<and>
+                                                 pre_image(M, mesa, sx, r_sx) \<and>
+                                                 restriction(M, fa, r_sx, f_r_sx) \<and>
+                                                 xa \<in> mesa \<and> is_trans_apply_image(M, f, x, f_r_sx, y))) \<and>
+                          is_trans_apply_image(M, f, a, fa, z)))"
+
+manual_schematic "is_trans_apply_image_body_schematic" for "is_trans_apply_image_body"assuming "nonempty"
+  unfolding is_trans_apply_image_body_def
+   by (rule sep_rules is_eclose_iff_sats is_trans_apply_image_iff_sats | simp)+
+
+synthesize "is_trans_apply_image_body" from_schematic "is_trans_apply_image_body_schematic"
+arity_theorem for "is_trans_apply_image_body_fm"
+
+lemma (in M_ZF_trans) replacement_is_trans_apply_image:
+  "(##M)(f) \<Longrightarrow> (##M)(\<beta>) \<Longrightarrow> strong_replacement(##M, \<lambda> x z . 
+    \<exists>y[##M]. pair(##M,x,y,z) \<and> x\<in>\<beta> \<and> (is_transrec(##M,is_trans_apply_image(##M, f),x,y)))"
+  unfolding is_transrec_def is_wfrec_def M_is_recfun_def
+  apply(rule_tac strong_replacement_cong[
+        where P="\<lambda> x z. M,[x,z,\<beta>,f] \<Turnstile> is_trans_apply_image_body_fm(3,2,0,1)",THEN iffD1])
+   apply(rule_tac is_trans_apply_image_body_iff_sats[symmetric,unfolded is_trans_apply_image_body_def,where env="[_,_,\<beta>,f]"])
+          apply(simp_all add:zero_in_M)
+  apply(rule_tac replacement_ax[where env="[\<beta>,f]",simplified])
+    apply(simp_all add: arity_is_trans_apply_image_body_fm is_trans_apply_image_body_fm_type nat_simp_union)
+  done
+
+lemma (in M_ZF_trans) trans_apply_abs:
+  "(##M)(f) \<Longrightarrow> (##M)(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow> (##M)(x) \<Longrightarrow> (##M)(z) \<Longrightarrow>
+    (x\<in>\<beta> \<and> z = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a)) \<rangle>) \<longleftrightarrow>  
+    (\<exists>y[##M]. pair(##M,x,y,z) \<and> x\<in>\<beta> \<and> (is_transrec(##M,is_trans_apply_image(##M, f),x,y)))"
+  using rec_trans_apply_image_abs Ord_in_Ord
+    transrec_closed[OF transrec_replacement_apply_image rel2_trans_apply,of f,simplified]
+    apply_image_closed'[of f] 
+  unfolding trans_apply_image_def
+  by auto
 
 lemma (in M_ZF_trans) replacement_trans_apply_image:
-  "(##M)(f) \<Longrightarrow> strong_replacement(##M, \<lambda>x y. y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
-  using strong_replacement_cong[THEN iffD1,OF _ replacement_is_trans_apply_image,simplified]
-    trans_apply_image_abs
-  unfolding trans_apply_image_def
+  "(##M)(f) \<Longrightarrow> (##M)(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow>
+  strong_replacement(##M, \<lambda>x y. x\<in>\<beta> \<and> y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
+  using strong_replacement_cong[THEN iffD1,OF _ replacement_is_trans_apply_image,simplified]  
+    trans_apply_abs Ord_in_Ord 
   by simp
+
+lemma (in M_ZF_trans) replacement_abs_apply_pair: 
+  "(##M)(A) \<Longrightarrow> (##M)(f) \<Longrightarrow> strong_replacement(##M, \<lambda>x y. y = \<langle>x, \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>\<rangle>)"
+  sorry
 
 end
