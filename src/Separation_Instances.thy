@@ -1372,7 +1372,8 @@ lemma (in M_basic) ifrFb_body7_closed: "M(B) \<Longrightarrow> M(D) \<Longrighta
   unfolding ifrangeF_body7_def is_ifrangeF_body7_def ifrFb_body7_def fun_apply_def
   by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
 
-lemma (in M_basic) is_ifrFb_body7_closed: "M(B) \<Longrightarrow> M(D) \<Longrightarrow> M(G) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow> is_ifrFb_body7(M, B,D,G, r, s, x, i) \<Longrightarrow> M(i)"
+lemma (in M_basic) is_ifrFb_body7_closed: "M(B) \<Longrightarrow> M(D) \<Longrightarrow> M(G) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow> 
+  is_ifrFb_body7(M, B,D,G, r, s, x, i) \<Longrightarrow> M(i)"
   using If_abs
   unfolding ifrangeF_body7_def is_ifrangeF_body7_def is_ifrFb_body7_def fun_apply_def
   by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
@@ -1381,6 +1382,19 @@ lemma (in M_ZF_trans) ifrangeF_body7_abs:
   assumes "(##M)(A)"  "(##M)(B)" "(##M)(D)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
   shows "is_ifrangeF_body7(##M,A,B,D,G,r,s,x) \<longleftrightarrow> ifrangeF_body7(##M,A,B,D,G,r,s,x)"
 proof -
+  from assms
+  have sep_dr: "y\<in>M \<Longrightarrow> separation(##M, \<lambda>d . \<exists>r\<in>M . r\<in>G\<and> y = restrict(r, B) \<and> d = domain(r))" for y
+    by(rule_tac separation_cong[where P'="\<lambda>d . \<exists>r\<in> M . r\<in>G \<and> y = restrict(r, B) \<and> d = domain(r)",THEN iffD1,OF _ 
+        separation_restrict_eq_dom_eq[rule_format,of G B y]],auto simp:transitivity[of _ G])
+
+  from assms
+  have sep_dr'': "y\<in>M \<Longrightarrow> separation(##M, \<lambda>d . \<exists>r\<in>M. r \<in> G \<and> d = domain(r) \<and> converse(s) ` y = restrict(r, B))" for y
+    apply(rule_tac separation_cong[where P'="\<lambda>d . \<exists>r\<in> M . r\<in>G \<and> d = domain(r) \<and> converse(s) ` y = restrict(r, B)",THEN iffD1,OF _ separation_restrict_eq_dom_eq[rule_format,of G B "converse(s) ` y "]])
+    by(auto simp:transitivity[of _ G] apply_closed[simplified] converse_closed[simplified])
+  from assms
+  have sep_dr':"separation(##M, \<lambda>x. \<exists>r\<in>M. r \<in> G \<and> x = domain(r) \<and> 0 = restrict(r, B))"
+    apply(rule_tac separation_cong[where P'="\<lambda>d . \<exists>r\<in> M . r\<in>G \<and> d = domain(r) \<and> 0 = restrict(r, B)",THEN iffD1,OF _ separation_restrict_eq_dom_eq[rule_format,of G B 0]])
+    by(auto simp:transitivity[of _ G] zero_in_M)
   {
     fix a
     assume "a\<in>M"
@@ -1388,19 +1402,22 @@ proof -
     have "(\<mu> i. i\<in> M \<and> is_ifrFb_body7(##M, B,D,G, r, s, z, i))= (\<mu> i. is_ifrFb_body7(##M,B,D, G, r, s, z, i))" for z
       using is_ifrFb_body7_closed[of B D G r s z]
       by (rule_tac Least_cong[of "\<lambda>i. i\<in>M \<and> is_ifrFb_body7(##M,B,D,G,r,s,z,i)"]) auto
-    moreover
+    moreover from this
     have "(\<mu> i. i\<in>M \<and> is_ifrFb_body7(##M, B,D,G, r, s, z, i))= (\<mu> i. i\<in>M \<and>  ifrFb_body7(B,D,G, r, s, z, i))" if "z\<in>M" for z
     proof (rule_tac Least_cong[of "\<lambda>i. i\<in>M \<and> is_ifrFb_body7(##M,B,D,G,r,s,z,i)" "\<lambda>i. i\<in>M \<and> ifrFb_body7(B,D,G,r,s,z,i)"])
-      fix y
       from assms \<open>a\<in>M\<close> \<open>z\<in>M\<close>
-      show "y\<in>M \<and> is_ifrFb_body7(##M, B,D,G, r, s, z, y) \<longleftrightarrow> y\<in>M \<and> ifrFb_body7(B,D,G, r, s, z, y)"
-        using If_abs apply_0 converse_closed separation_restrict_eq_dom_eq[simplified]
-          separation_closed converse_closed apply_closed range_closed zero_in_M
-        unfolding ifrFb_body7_def is_ifrFb_body7_def
-        apply auto 
-        apply(rule_tac separation_closed[simplified],auto simp add: separation_restrict_eq_dom_eq)
-        sorry
-    qed
+      have "is_ifrFb_body7(##M, B,D,G, r, s, z, y) \<longleftrightarrow> ifrFb_body7(B,D,G, r, s, z, y)" if "y\<in>M" for y 
+        using If_abs apply_0 
+          separation_closed converse_closed apply_closed range_closed zero_in_M 
+          separation_restrict_eq_dom_eq[of G,rule_format]
+          transitivity[of _ D] transitivity[of _ G]  that sep_dr sep_dr' sep_dr''
+         unfolding ifrFb_body7_def is_ifrFb_body7_def
+         by auto
+       then 
+       show " y \<in> M \<and> is_ifrFb_body7(##M, B, D, G, r, s, z, y) \<longleftrightarrow> y \<in> M \<and> ifrFb_body7(B, D, G, r, s, z, y)" for y
+         using conj_cong 
+         by simp
+       qed
     moreover from \<open>a\<in>M\<close>
     have "least(##M, \<lambda>i. i \<in> M \<and> is_ifrFb_body7(##M, B,D,G, r, s, z, i), a)
       \<longleftrightarrow> a = (\<mu> i.  i\<in> M \<and> is_ifrFb_body7(##M,B,D,G, r, s, z,i))" for z
