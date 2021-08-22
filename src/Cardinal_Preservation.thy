@@ -271,8 +271,33 @@ simple_rename "ren_F" src "[x_P, x_leq, x_o, x_f, y_c, x_bc, p, x, b]"
 simple_rename "ren_G" src "[x,x_P, x_leq, x_one, x_f,x_p,y,x_B]"
   tgt "[x,y,x_P, x_leq, x_one, x_f,x_p,x_B]"
 
+simple_rename "ren_F_aux" src "[q,x_P, x_leq, x_one, f_dot, x_a, x_bc,x_p,x_b]"
+  tgt "[x_bc, q, x_b, x_P, x_leq, x_one, f_dot,x_a,x_p]"
+
+simple_rename "ren_G_aux" src "[ x_b, x_P, x_leq, x_one, f_dot,x_a,x_p,y]"
+  tgt "[ x_b, y, x_P, x_leq, x_one, f_dot,x_a,x_p]"
+
+
+(* FIXME: move this to Interface. *)
+lemma separation_relativized:
+  assumes "\<And>x. x\<in>M \<Longrightarrow> is_p(##M,x) \<longleftrightarrow> p(x)" "\<And> x . x\<in>M \<Longrightarrow> (M,[x]@env \<Turnstile> \<phi>) \<longleftrightarrow> is_p(##M,x)"
+    "arity(\<phi>) \<le> 1#+length(env)" "\<phi>\<in>formula" "env\<in>list(M)"
+  shows "separation(##M,p)"
+proof -
+  have "separation(##M, \<lambda>x. M,[x]@env \<Turnstile>\<phi>)"
+    using separation_ax[OF \<open>\<phi>\<in>_\<close>] assms by simp
+  then
+  have "separation(##M,is_p(##M))"
+    using separation_cong[OF assms(2),THEN iffD1,of "##M"]
+    by simp
+  then
+  show "separation(##M,p)"
+    using separation_cong[OF assms(1),THEN iffD1,of "##M"]
+    by simp
+qed
+
 lemma ccc_fun_closed_lemma_aux:
-  assumes "A\<in>M" "B\<in>M" "f_dot\<in>M" "p\<in>M" "a\<in>M" "b\<in>M"
+  assumes "f_dot\<in>M" "p\<in>M" "a\<in>M" "b\<in>M"
   shows "{q \<in> P . q \<preceq> p \<and> (M, [q, P, leq, one, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))} \<in> M"
 proof -
   let ?app_fm="\<cdot>0`1 is 2\<cdot>"
@@ -291,7 +316,7 @@ proof -
   with \<open>a\<in>M\<close> \<open>b\<in>M\<close>
   have "a\<^sup>v\<in>M" "b\<^sup>v\<in>M"
     by simp_all
-  note types=\<open>f_dot\<in>_\<close> \<open>p\<in>M\<close> P_in_M leq_in_M one_in_M \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>a\<^sup>v\<in>M\<close> \<open>b\<^sup>v\<in>M\<close>
+  note types=\<open>f_dot\<in>_\<close> \<open>p\<in>M\<close> P_in_M leq_in_M one_in_M \<open>a\<^sup>v\<in>M\<close> \<open>b\<^sup>v\<in>M\<close>
   then
   have sats:"(M,[q, P, leq, one, f_dot,a\<^sup>v, b\<^sup>v,p] \<Turnstile>?\<psi>) \<longleftrightarrow> ?Q(q)" if "q\<in>P" for q
   proof -
@@ -315,12 +340,124 @@ proof -
     by simp
 qed
 
+lemma ccc_fun_closed_lemma_aux2:
+  assumes "B\<in>M" "f_dot\<in>M" "p\<in>M" "a\<in>M"
+  shows "(##M)(\<lambda>b\<in>B. {q \<in> P . q \<preceq> p \<and> (M, [q, P, leq, one, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))})"
+proof -
+  let ?app_fm="\<cdot>0`1 is 2\<cdot>"
+  let ?Q="\<lambda> b q .  q \<preceq> p \<and> (M, [q, P, leq, one, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(?app_fm))"
+  from assms
+  have closed:"{q\<in>P . ?Q(b,q)} \<in> M" if "b\<in>B" for b
+    using ccc_fun_closed_lemma_aux transitivity[OF _ \<open>B\<in>_\<close>] that
+    by simp
+  let ?\<psi>="( \<cdot>\<cdot>0 \<preceq>\<^bsup>2\<^esup> 7\<cdot> \<and> forces(?app_fm) \<cdot> )"
+  let ?G="(\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v5 is 0\<cdot> \<and> ren(?\<psi>) ` 9 ` 9 ` ren_F_aux_fn \<cdot>\<cdot>)"
+  have "?app_fm \<in> formula" "arity(?app_fm) = 3"
+    using arity_fun_apply_fm nat_union_abs1
+    by simp_all
+  then
+  have "arity(forces(?app_fm)) \<le> 7"
+    using arity_forces[OF \<open>?app_fm\<in>_\<close>] by simp_all
+  then
+  have "arity(?\<psi>) \<le> 9"
+    using arity_leq_fm nat_union_abs2 nat_union_abs1 le_trans
+    by simp
+  then
+  have "ren(?\<psi>)`9`9`ren_F_aux_fn \<in> formula" "arity(ren(?\<psi>)`9`9`ren_F_aux_fn) \<le> 9"
+    using arity_ren ren_tc ren_F_aux_thm check_fm_type leq_fm_type ren_F_aux_fn_def pred_le
+    by simp_all
+  with \<open>arity(forces(_))\<le>7\<close>
+  have "arity(?G) \<le> 8" "?G\<in>formula"
+    using check_fm_type arity_check_fm pred_Un_distrib pred_le Un_le
+    by simp_all
+  have "pred(arity(?G)) \<le> 9" "pred(arity(?G))\<in>nat"
+    using pred_le[OF _ \<open>arity(?G)\<le>8\<close>] le_trans pred_type[OF _ \<open>arity(?G)\<le>8\<close>]
+    by simp_all
+  have "pred(arity(?G)) \<le> 8"
+    using le_trans pred_le \<open>arity(?G)\<le>8\<close>
+    by simp_all
+  note types=\<open>f_dot\<in>_\<close> \<open>p\<in>M\<close> P_in_M leq_in_M one_in_M \<open>a\<in>M\<close> \<open>B\<in>M\<close>
+  from \<open>a\<in>M\<close>
+  have "a\<^sup>v\<in>M" by simp
+  have sats:"(M, [q,b, P, leq, one, f_dot, a\<^sup>v, p] \<Turnstile> ?G) \<longleftrightarrow> ?Q(b,q)" if "b\<in>B" "q\<in>M" for b q
+  proof -
+    from that
+    have "b\<^sup>v\<in>M" "b\<in>M"
+      using transitivity[OF _ \<open>B\<in>_\<close>] by simp_all
+    note types'=\<open>a\<^sup>v\<in>M\<close> types \<open>b\<in>M\<close> \<open>b\<^sup>v\<in>M\<close> that
+    from types' \<open>arity(forces(_))\<le>7\<close>
+    have"?Q(b,q) \<longleftrightarrow>
+            (q \<preceq> p \<and> (M, [q,P,leq,one,f_dot,a\<^sup>v,b\<^sup>v,p,b] \<Turnstile> forces(?app_fm)))"
+      using arity_sats_iff[of _ "[p,b]" _ "[_, _, _, _, _,_, _]"] transitivity[of _ P]
+      by simp
+    also from types'
+    have "... \<longleftrightarrow> (M, [q,P, leq, one, f_dot, a\<^sup>v, b\<^sup>v,p,b] \<Turnstile> ?\<psi>)"
+      (is "_ \<longleftrightarrow> _, ?\<eta> \<Turnstile> _")
+      using sats_leq_fm[of 2 0 7] leq_abs
+      by simp
+    also from types' \<open>arity(forces(_))\<le>_\<close> \<open>arity(?\<psi>)\<le> 9\<close> ren_F_aux_fn_def
+    have "... \<longleftrightarrow> M, [b\<^sup>v,q,b, P, leq, one, f_dot,a\<^sup>v,p] \<Turnstile> ren(?\<psi>)`9`9`ren_F_aux_fn"
+      (is "_ \<longleftrightarrow> _, ?\<eta>' \<Turnstile> ?\<psi>'")
+      using sats_iff_sats_ren[of ?\<psi> 9 9 ?\<eta> M ?\<eta>']ren_F_aux_thm(1)[where A=M] ren_F_aux_thm
+      by auto
+    also from assms types'
+    have "... \<longleftrightarrow> M, [q,b,P, leq, one, f_dot,a\<^sup>v,p] \<Turnstile> ?G" (is "_ \<longleftrightarrow> M,?\<eta>''\<Turnstile>_")
+      using sats_check_fm[of 5 "[_]@?\<eta>''" 2 0] check_abs
+      by simp
+    ultimately
+    show ?thesis
+      by simp
+  qed
+  then
+  have sats':"(M,[q,b,P, leq, one, f_dot,a\<^sup>v,p,y] \<Turnstile>?G) \<longleftrightarrow> ?Q(b,q)"
+    if "b\<in>B" "q\<in>M" "y\<in>M" for b q y
+  proof -
+    from that \<open>?G\<in>_\<close> \<open>arity(?G)\<le>8\<close> types
+    have "(M,[q,b, P, leq, one, f_dot,a\<^sup>v,p,y] \<Turnstile>?G) \<longleftrightarrow> M,[q,b,P, leq, one, f_dot,a\<^sup>v,p] \<Turnstile>?G"
+      using transitivity[of b B]  transitivity[of q P]
+        arity_sats_iff[of ?G  "[y]" M "[q,b, P, leq, one, f_dot,a\<^sup>v,p]"]
+      by simp
+    then show ?thesis using sats[OF \<open>b\<in>B\<close> \<open>q\<in>M\<close>] that
+      by simp
+  qed
+  from types
+  have sats_col:"(M,[b,P, leq, one, f_dot,a\<^sup>v,p,y] \<Turnstile>Collect_fm(1,?G,7)) \<longleftrightarrow>
+              is_Collect(##M,P,?Q(b),y)" if "b\<in>B" "y\<in>M" for b y
+    using that sats'[OF \<open>b\<in>B\<close>] sats_Collect_fm[of M "?Q(b)"]
+      transitivity[OF \<open>b\<in>B\<close> \<open>B\<in>M\<close>]
+    by simp
+  from \<open>pred(arity(?G))\<in>nat\<close> \<open>?G\<in>_\<close>
+  have "Collect_fm(1,?G,7) \<in> formula" "arity(Collect_fm(1,?G,7)) \<le> 8"
+    using  arity_Collect_fm pred_le nat_union_abs1 Un_le[OF _ \<open>pred(arity(?G))\<le> 8 \<close>,of 8 ]
+    by (simp_all)
+  then
+  have "arity(ren(Collect_fm(1,?G,7))`8`8`ren_G_aux_fn) \<le> 8"
+    "ren(Collect_fm(1,?G,7))`8`8`ren_G_aux_fn \<in> formula" (is "?\<Gamma>\<in>_")
+    using ren_tc[of "Collect_fm(1,?G,7)"] ren_G_aux_thm(2) ren_G_aux_fn_def arity_ren
+    by simp_all
+  from \<open>arity(Collect_fm(1,?G,7))\<le>_\<close> \<open>Collect_fm(1,?G,7)\<in>_\<close> types
+  have "(M,[b,y,P, leq, one, f_dot,a\<^sup>v,p] \<Turnstile>?\<Gamma>) \<longleftrightarrow>
+          M,[b,P, leq, one, f_dot,a\<^sup>v,p,y] \<Turnstile> Collect_fm(1,?G,7)" if "b\<in>B" "y\<in>M"  for b y
+    using sats_iff_sats_ren[of "Collect_fm(1,?G,7)" 8 8  _  M "[b,y,P, leq, one, f_dot,a\<^sup>v,p]"]
+      ren_G_aux_thm(1)[where A=M] ren_G_aux_thm(2) transitivity[of b B] that ren_G_aux_fn_def
+    by simp
+  then
+  have "(M,[b,y,P, leq, one, f_dot,a\<^sup>v,p] \<Turnstile>ren(Collect_fm(1,?G,7))`8`8`ren_G_aux_fn) \<longleftrightarrow>
+              y = {q\<in>P . ?Q(b,q)}" if "b\<in>B" "y\<in>M" for y b
+    using that iff_trans[OF _ sats_col]
+      Collect_abs types
+    by auto
+  with assms types \<open>?\<Gamma>\<in>_\<close> \<open>arity(?\<Gamma>)\<le>_\<close>
+  show ?thesis
+    using closed Lambda_in_M[where env="[P, leq, one, f_dot,a\<^sup>v,p]"]
+    by simp
+qed
+
 lemma ccc_fun_closed_lemma:
   assumes "A\<in>M" "B\<in>M" "f_dot\<in>M" "p\<in>M"
   shows "(\<lambda>a\<in>A. {b\<in>B. \<exists>q\<in>P. q \<preceq> p \<and> (q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v])}) \<in> M"
 proof -
   let ?app_fm="\<cdot>0`1 is 2\<cdot>"
-  let ?\<phi>="\<cdot>0 : 1 \<rightarrow> 2\<cdot>"
   let ?\<psi>="(\<cdot>\<exists>\<cdot>\<cdot>0 \<in> 1\<cdot> \<and> \<cdot> \<cdot>0 \<preceq>\<^bsup>2\<^esup> 7\<cdot> \<and> forces(?app_fm) \<cdot>\<cdot>\<cdot>)"
   let ?G="(\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v5 is 0\<cdot> \<and> (\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v6 is 0\<cdot> \<and> ren(?\<psi>) ` 9 ` 9 ` ren_F_fn\<cdot>\<cdot>)\<cdot>\<cdot>)"
   let ?Q="\<lambda> x b . (\<exists>q\<in>P. q \<preceq> p \<and> (M, [q, P, leq, one, f_dot, x\<^sup>v, b\<^sup>v] \<Turnstile> forces(?app_fm)))"
@@ -350,7 +487,7 @@ proof -
     assume "x\<in>A"
     with \<open>A\<in>M\<close>
     have "x\<in>M" "x\<^sup>v\<in>M"
-      using transitivity[of x A] check_in_M
+      using transitivity[of x A]
       by simp_all
     {
       fix b
@@ -438,6 +575,7 @@ proof -
     by simp
 qed
 
+
 \<comment> \<open>Kunen IV.3.5\<close>
 lemma ccc_fun_approximation_lemma:
   notes le_trans[trans]
@@ -501,16 +639,19 @@ proof -
       using transitivity[OF _ \<open>F`a\<in>M\<close>] by simp
     moreover
     have 3:"\<And>x. x\<in>F`a \<Longrightarrow> (##M)(?Q(x))"
-      using ccc_fun_closed_lemma_aux[OF \<open>A\<in>_\<close> \<open>B\<in>M\<close> \<open>f_dot\<in>M\<close> \<open>p\<in>M\<close> \<open>a\<in>M\<close> 2] transitivity[of _ "F`a"]
+      using ccc_fun_closed_lemma_aux[OF \<open>f_dot\<in>M\<close> \<open>p\<in>M\<close> \<open>a\<in>M\<close> 2] transitivity[of _ "F`a"]
       by simp
     moreover
     have 4:"lam_replacement(##M,\<lambda>b. {q \<in> P . q \<preceq> p \<and> (M, [q, P, leq, one, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))})"
-      sorry
+      using ccc_fun_closed_lemma_aux2[OF _ \<open>f_dot\<in>M\<close> \<open>p\<in>M\<close> \<open>a\<in>M\<close>]
+        lam_replacement_iff_lam_closed[THEN iffD2]
+        ccc_fun_closed_lemma_aux[OF  \<open>f_dot\<in>M\<close> \<open>p\<in>M\<close> \<open>a\<in>M\<close>]
+      by simp
     ultimately
     interpret M_Pi_assumptions_choice "##M" "F`a" ?Q
       using Pi_replacement1[OF _ 3] lam_replacement_Sigfun[OF 4]
         lam_replacement_imp_strong_replacement
-          ccc_fun_closed_lemma_aux[OF \<open>A\<in>_\<close> \<open>B\<in>M\<close> \<open>f_dot\<in>M\<close> \<open>p\<in>M\<close> \<open>a\<in>M\<close>]
+          ccc_fun_closed_lemma_aux[OF \<open>f_dot\<in>M\<close> \<open>p\<in>M\<close> \<open>a\<in>M\<close>]
           lam_replacement_pullback
           lam_replacement_hcomp2[OF lam_replacement_constant 4 _ _ lam_replacement_minimum,unfolded lam_replacement_def]
         by unfold_locales simp_all
