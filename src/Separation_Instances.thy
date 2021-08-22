@@ -1138,17 +1138,14 @@ lemma (in M_ZF_trans) separation_toplevel6_body:
   by (rule_tac separation_cong[
         where P="is_toplevel6_body(##M,R)",THEN iffD1])
 
-
-(* Now in locale M_replacement, needed in next lemma *)
-
-lemma eq: "{x\<in>A. a\<in>x} = Memrel(A\<union>{a}) `` {a}"
-  unfolding ZF_Base.image_def
-  by(intro equalityI,auto simp:mem_not_refl)
-
+(* FIXME: move this to where it belongs. *)
 lemma (in M_basic) separation_in_rev':
   assumes "(M)(a)"
   shows "separation(M,\<lambda>x . a\<in>x)"
 proof -
+  have eq: "{x\<in>A. a\<in>x} = Memrel(A\<union>{a}) `` {a}" for A
+  unfolding ZF_Base.image_def
+  by(intro equalityI,auto simp:mem_not_refl)
   {
     fix A
     assume "M(A)"
@@ -1264,19 +1261,6 @@ lemma (in M_basic) is_ifrFb_body6_closed: "M(G) \<Longrightarrow> M(r) \<Longrig
   using If_abs
   unfolding ifrangeF_body6_def is_ifrangeF_body6_def is_ifrFb_body6_def fun_apply_def
   by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
-
-(*
-(* We might need these separations below *)
-lemma (in M_basic) separation_M_domain:
-  assumes "M(a)"
-  shows "separation(M,\<lambda>x . M(x) \<and> a = domain(x))"
-  oops
-
-lemma (in M_basic) separation_M_converse_domain:
-  assumes "M(a)" "M(y)"
-  shows "separation(M,\<lambda>x . M(x) \<and> converse(a)`y = domain(x))"
-  oops
-*)
 
 lemmas (in M_ZF_trans) a = separation_toplevel6_body 
   separation_cong[OF eq_commute,THEN iffD1,OF separation_toplevel6_body]
