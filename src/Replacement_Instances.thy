@@ -762,8 +762,55 @@ lemma (in M_ZF_trans) replacement_trans_apply_image:
     trans_apply_abs Ord_in_Ord 
   by simp
 
+definition abs_apply_pair where
+  "abs_apply_pair(A,f,x) \<equiv> \<langle>x, \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>\<rangle>"
+
+relativize functional "abs_apply_pair" "abs_apply_pair_rel"
+relationalize "abs_apply_pair_rel" "is_abs_apply_pair"
+
+lemma (in M_basic) abs_apply_pair_rel:
+  assumes "M(A)" "M(f)" "M(x)"
+  shows "Relation1(M,A,\<lambda>n a. \<exists>b[M]. is_apply(M, f, b, a) \<and> pair(M, x, n, b), \<lambda>n. f ` \<langle>x, n\<rangle>)"
+    using fst_rel_abs[symmetric] snd_rel_abs[symmetric] fst_abs snd_abs assms
+    unfolding Relation1_def
+    by auto
+
+lemma (in M_basic) abs_apply_pair_abs:
+  assumes "M(A)" "M(f)" "M(x)" "M(res)"
+shows "is_abs_apply_pair(M,A,f, x, res) \<longleftrightarrow> res = abs_apply_pair(A,f,x)"
+  unfolding is_abs_apply_pair_def abs_apply_pair_def
+  using fst_rel_abs[symmetric] snd_rel_abs[symmetric] fst_abs snd_abs assms
+  pair_abs lambda_abs2[OF abs_apply_pair_rel]
+  by auto
+
+synthesize "is_abs_apply_pair" from_definition assuming "nonempty"
+lemma arity_is_abs_aux: "arity((\<cdot>\<exists>\<cdot>\<cdot>7`0 is 1\<cdot> \<and> pair_fm(5, 2, 0) \<cdot>\<cdot>))  = 7"
+  using arity_fun_apply_fm arity_pair_fm pred_Un_distrib
+    nat_simp_union by simp
+
+lemma arity_is_abs_apply_pair_fm :
+    shows "arity(is_abs_apply_pair_fm(3, 2, 0, 1)) = 4"
+  unfolding is_abs_apply_pair_fm_def
+  using arity_lambda_fm[OF _ _ _ _ arity_is_abs_aux] arity_pair_fm
+    pred_Un_distrib nat_simp_union
+   by simp
+
+lemma (in M_ZF_trans) replacement_is_abs_apply_pair:
+  assumes "A\<in>M" "f\<in>M"
+  shows "strong_replacement(##M, is_abs_apply_pair(##M,A,f))"
+  using assms
+  apply(rule_tac strong_replacement_cong[
+        where P="\<lambda> x z. M,[x,z,f,A] \<Turnstile> is_abs_apply_pair_fm(3,2,0,1)",THEN iffD1])
+   apply(rule_tac is_abs_apply_pair_iff_sats[where env="[_,_,f,A]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac replacement_ax[where env="[f,A]",simplified])
+    apply(simp_all add: arity_is_abs_apply_pair_fm nat_simp_union)
+  done
+
 lemma (in M_ZF_trans) replacement_abs_apply_pair: 
   "(##M)(A) \<Longrightarrow> (##M)(f) \<Longrightarrow> strong_replacement(##M, \<lambda>x y. y = \<langle>x, \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>\<rangle>)"
-  sorry
+  using strong_replacement_cong[THEN iffD1,OF abs_apply_pair_abs replacement_is_abs_apply_pair,simplified]
+  unfolding abs_apply_pair_def
+  by simp
 
 end
