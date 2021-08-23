@@ -24,7 +24,7 @@ function link_item {
 	    ctxt=`echo $z | cut -d"." -f2`
 	    lprime=`echo $ctxt | sed -e "s/&/\\\\\\&/g"`
 	    #echo Item: $t.$l ---\> $t.$lprime ... >> linking_$1_locale.log
-	    sed -i -e "s|\(<span class=\"command\">locale</span></span><span> </span><span\)>$ctxt<|\1 id=\"$t.$lprime\" class=\"pst-lnk\">$lprime</a><|g" $1
+	    sed -i -e "s|\(<span class=\"command\">locale</span></span>[ ]*\)$ctxt\([ ]*<span class=\"main\">=\)|\1 <a id=\"$t.$lprime\" class=\"pst-lnk\">$lprime</a>\2|g" $1
 	    #echo  Done >> linking_$1.log
 	fi
     done

@@ -1,4 +1,4 @@
-OPTION = 
+OPTION  = # -o parallel_proofs=2
 
 CHAPTER = ZF
 
@@ -37,7 +37,6 @@ $(HTML_DIR):	thy_files $(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT \
 	cat $(LINKING_DIR)/links.css >> $(HTML_DIR)/isabelle.css
 	cp locale_assumptions_$(SESSION).txt $(HTML_DIR)
 	cd $(HTML_DIR); \
-		bash $(LINKING_DIR)/link_locales.sh $(SESSION) . . $(PARALLEL); \
 		bash $(LINKING_DIR)/parsing.sh $(SESSION); \
 		bash $(LINKING_DIR)/linking.sh $(SESSION) . . $(PARALLEL)
 

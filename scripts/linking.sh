@@ -29,7 +29,7 @@ function link_item {
 	    link=""
 	fi
 	# echo Item: $t.$l ---\> $t.$lprime ... >> linking_$1.log
-	sed -i -e "s|span>$l$3</span|span><a class=\"pst-lnk\" href=\"$href/$t.html#$t.$ctxt$link\">$lprime$3</a></span|g" $1
+	sed -i -e "s%\(^\|[^_\.[:alnum:]]\)$l$3\([^_\.[:alnum:]]\|$\)%\1<a class=\"pst-lnk\" href=\"$href/$t.html#$t.$ctxt$link\">$lprime$3</a>\2%g" $1
 	# echo  Done >> linking_$1.log
     done
 }
@@ -73,6 +73,9 @@ function full_job {
 
 echolog -n Crosslinking "lemma" items...
 full_job $src_dir/lemas_$session.txt "" ${@:4}
+echolog  Done
+echolog -n Crosslinking locales...
+full_job $src_dir/locales_$session.txt "" ${@:4}
 echolog  Done
 echolog -n Crosslinking locale assumptions...
 full_job $src_dir/locale_assumptions_$session.txt "" ${@:4}
