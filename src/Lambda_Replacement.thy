@@ -370,9 +370,9 @@ locale M_replacement = M_basic +
     and
     middle_del_replacement: "strong_replacement(M, \<lambda>x y. y=\<langle>fst(fst(x)),snd(snd(x))\<rangle>)"
     and
-    pullback_separation: "separation(M, \<lambda>x. fst(fst(x))=fst(snd(x)))"
+    product_separation: "separation(M, \<lambda>x. fst(fst(x))=fst(snd(x)))"
     and
-    pullback_replacement:
+    product_replacement:
     "strong_replacement(M, \<lambda>x y. y=\<langle>fst(fst(x)),\<langle>snd(fst(x)),snd(snd(x))\<rangle>\<rangle>)"
     and
     lam_replacement_Upair:"lam_replacement(M, \<lambda>p. Upair(fst(p),snd(p)))"
@@ -496,7 +496,7 @@ proof -
   show ?thesis by simp
 qed
 
-lemma lam_replacement_pullback:
+lemma lam_replacement_product:
   assumes "lam_replacement(M,f)" "lam_replacement(M,g)"
   shows "lam_replacement(M, \<lambda>x. \<langle>f(x),g(x)\<rangle>)"
 proof -
@@ -523,10 +523,10 @@ proof -
       by simp
     moreover from this
     have "M({p \<in> ?Y'\<times>?Z' . fst(fst(p))=fst(snd(p))})" (is "M(?P)")
-      using pullback_separation by simp
+      using product_separation by simp
     moreover from calculation
     have "M({ \<langle>fst(fst(p)),\<langle>snd(fst(p)),snd(snd(p))\<rangle>\<rangle> . p\<in>?P })" (is "M(?R)")
-      using RepFun_closed[OF pullback_replacement \<open>M(?P)\<close> ] by simp
+      using RepFun_closed[OF product_replacement \<open>M(?P)\<close> ] by simp
     ultimately
     have "b \<in> ?R \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> b = \<langle>x,\<langle>f(x),g(x)\<rangle>\<rangle>)" if "M(b)" for b
       using that
@@ -667,7 +667,7 @@ lemma lam_replacement_hcomp2:
     "lam_replacement(M, \<lambda>p. h(fst(p),snd(p)))"
     "\<forall>x[M]. \<forall>y[M]. M(h(x,y))"
   shows "lam_replacement(M, \<lambda>x. h(f(x),g(x)))"
-  using assms lam_replacement_pullback[of f g]
+  using assms lam_replacement_product[of f g]
     lam_replacement_hcomp[of "\<lambda>x. \<langle>f(x), g(x)\<rangle>" "\<lambda>\<langle>x,y\<rangle>. h(x,y)"]
   unfolding split_def by simp
 
@@ -776,7 +776,7 @@ lemma lam_replacement_sing: "lam_replacement(M, \<lambda>x. {x})"
 lemmas tag_replacement = lam_replacement_constant[unfolded lam_replacement_def]
 
 lemma lam_replacement_id2: "lam_replacement(M, \<lambda>x. \<langle>x, x\<rangle>)"
-  using lam_replacement_identity lam_replacement_pullback[of "\<lambda>x. x" "\<lambda>x. x"]
+  using lam_replacement_identity lam_replacement_product[of "\<lambda>x. x" "\<lambda>x. x"]
   by simp
 
 lemmas id_replacement = lam_replacement_id2[unfolded lam_replacement_def]
@@ -801,13 +801,13 @@ lemma apply_replacement:"M(S) \<Longrightarrow> strong_replacement(M, \<lambda>x
 
 lemma lam_replacement_id_const: "M(b) \<Longrightarrow> lam_replacement(M, \<lambda>x. \<langle>x, b\<rangle>)"
   using lam_replacement_identity lam_replacement_constant
-    lam_replacement_pullback[of "\<lambda>x. x" "\<lambda>x. b"] by simp
+    lam_replacement_product[of "\<lambda>x. x" "\<lambda>x. b"] by simp
 
 lemmas pospend_replacement = lam_replacement_id_const[unfolded lam_replacement_def]
 
 lemma lam_replacement_const_id: "M(b) \<Longrightarrow> lam_replacement(M, \<lambda>z. \<langle>b, z\<rangle>)"
   using lam_replacement_identity lam_replacement_constant
-    lam_replacement_pullback[of "\<lambda>x. b" "\<lambda>x. x"] by simp
+    lam_replacement_product[of "\<lambda>x. b" "\<lambda>x. x"] by simp
 
 lemmas prepend_replacement = lam_replacement_const_id[unfolded lam_replacement_def]
 
@@ -820,12 +820,12 @@ lemmas apply_replacement2 = lam_replacement_apply_const_id[unfolded lam_replacem
 
 lemma lam_replacement_Inl: "lam_replacement(M, Inl)"
   using lam_replacement_identity lam_replacement_constant
-    lam_replacement_pullback[of "\<lambda>x. 0" "\<lambda>x. x"]
+    lam_replacement_product[of "\<lambda>x. 0" "\<lambda>x. x"]
   unfolding Inl_def by simp
 
 lemma lam_replacement_Inr: "lam_replacement(M, Inr)"
   using lam_replacement_identity lam_replacement_constant
-    lam_replacement_pullback[of "\<lambda>x. 1" "\<lambda>x. x"]
+    lam_replacement_product[of "\<lambda>x. 1" "\<lambda>x. x"]
   unfolding Inr_def by simp
 
 lemmas Inl_replacement1 = lam_replacement_Inl[unfolded lam_replacement_def]
@@ -842,7 +842,7 @@ lemma diff_Pair_replacement: "M(p) \<Longrightarrow> strong_replacement(M, \<lam
 
 lemma lam_replacement_swap: "lam_replacement(M, \<lambda>x. \<langle>snd(x),fst(x)\<rangle>)"
   using lam_replacement_fst lam_replacement_snd
-    lam_replacement_pullback[of "snd" "fst"] by simp
+    lam_replacement_product[of "snd" "fst"] by simp
 
 lemma swap_replacement:"strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>y, x\<rangle>)(x)\<rangle>)"
   using lam_replacement_swap unfolding lam_replacement_def split_def by simp
@@ -855,21 +855,21 @@ lemmas tag_union_replacement = lam_replacement_Un_const[unfolded lam_replacement
 
 lemma lam_replacement_csquare: "lam_replacement(M,\<lambda>p. \<langle>fst(p) \<union> snd(p), fst(p), snd(p)\<rangle>)"
   using lam_replacement_Un lam_replacement_fst lam_replacement_snd
-  by (fast intro: lam_replacement_pullback lam_replacement_hcomp2)
+  by (fast intro: lam_replacement_product lam_replacement_hcomp2)
 
 lemma csquare_lam_replacement:"strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>x,y\<rangle>. \<langle>x \<union> y, x, y\<rangle>)(x)\<rangle>)"
   using lam_replacement_csquare unfolding split_def lam_replacement_def .
 
 lemma lam_replacement_assoc:"lam_replacement(M,\<lambda>x. \<langle>fst(fst(x)), snd(fst(x)), snd(x)\<rangle>)"
   using lam_replacement_fst lam_replacement_snd
-  by (force intro: lam_replacement_pullback lam_replacement_hcomp)
+  by (force intro: lam_replacement_product lam_replacement_hcomp)
 
 lemma assoc_replacement:"strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>. \<langle>x, y, z\<rangle>)(x)\<rangle>)"
   using lam_replacement_assoc unfolding split_def lam_replacement_def .
 
 lemma lam_replacement_prod_fun: "M(f) \<Longrightarrow> M(g) \<Longrightarrow> lam_replacement(M,\<lambda>x. \<langle>f ` fst(x), g ` snd(x)\<rangle>)"
   using lam_replacement_fst lam_replacement_snd
-  by (force intro: lam_replacement_pullback lam_replacement_hcomp lam_replacement_apply)
+  by (force intro: lam_replacement_product lam_replacement_hcomp lam_replacement_apply)
 
 lemma prod_fun_replacement:"M(f) \<Longrightarrow> M(g) \<Longrightarrow>
   strong_replacement(M, \<lambda>x y. y = \<langle>x, (\<lambda>\<langle>w,y\<rangle>. \<langle>f ` w, g ` y\<rangle>)(x)\<rangle>)"
@@ -899,7 +899,7 @@ lemma lam_replacement_surj_imp_inj1:
   "M(x) \<Longrightarrow> lam_replacement(M, \<lambda>y. {\<langle>x, y\<rangle>})"
   using lam_replacement_cons lam_replacement_constant
   by (rule_tac lam_replacement_hcomp2[of _ _ cons], simp_all)
-    (fast intro: lam_replacement_hcomp lam_replacement_pullback lam_replacement_identity)
+    (fast intro: lam_replacement_hcomp lam_replacement_product lam_replacement_identity)
 
 lemma tag_singleton_closed: "M(x) \<Longrightarrow> M(z) \<Longrightarrow> M({{\<langle>z, y\<rangle>} . y \<in> x})"
   using RepFun_closed[where A=x and f="\<lambda> u. {\<langle>z,u\<rangle>}"]
@@ -1134,7 +1134,7 @@ lemma case_replacement5:
   using lam_replacement_if separation_equal_fst2
     lam_replacement_snd lam_replacement_Inl lam_replacement_Inr
     lam_replacement_hcomp[OF
-      lam_replacement_pullback[OF
+      lam_replacement_product[OF
         lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_snd]]]
   unfolding lam_replacement_def
   by simp

@@ -341,7 +341,7 @@ lemma lepoll_assumptions5:
     lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
     lam_replacement_hcomp[OF _ lam_replacement_apply[of f]]
     lam_replacement_identity
-    lam_replacement_pullback lam_Least_closed[where b=1]
+    lam_replacement_product lam_Least_closed[where b=1]
     assms lam_Least_assumption[where b=1,OF \<open>M(A)\<close> _ \<open>M(f)\<close>]
   unfolding lepoll_assumptions_defs
     lam_replacement_def[symmetric]
@@ -425,7 +425,7 @@ lemma lepoll_assumptions14:
     lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
     lam_replacement_hcomp[OF _ lam_replacement_apply[of fa]]
     lam_replacement_identity
-    lam_replacement_pullback  lam_Least_closed[where b=0]
+    lam_replacement_product  lam_Least_closed[where b=0]
     assms lam_Least_assumption[where b=0,OF \<open>M(A)\<close> _ \<open>M(f)\<close>]
   unfolding lepoll_assumptions_defs
     lam_replacement_def[symmetric]

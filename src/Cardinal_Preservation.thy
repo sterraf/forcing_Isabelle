@@ -633,7 +633,7 @@ proof -
       using Pi_replacement1[OF _ 3] lam_replacement_Sigfun[OF 4]
         lam_replacement_imp_strong_replacement
           ccc_fun_closed_lemma_aux[OF \<open>f_dot\<in>M\<close> \<open>p\<in>M\<close> \<open>a\<in>M\<close>]
-          lam_replacement_pullback
+          lam_replacement_product
           lam_replacement_hcomp2[OF lam_replacement_constant 4 _ _ lam_replacement_minimum,unfolded lam_replacement_def]
         by unfold_locales simp_all
     from \<open>F`a \<in> M\<close>
