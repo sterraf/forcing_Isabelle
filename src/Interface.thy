@@ -118,8 +118,7 @@ sublocale M_ZF_trans \<subseteq> M_trans "##M"
   by unfold_locales simp_all
 
 sublocale M_ZF_trans \<subseteq> M_trivial "##M"
-  using trans_M M_trivial.intro M_trivial_axioms.intro upair_ax
-    Union_ax by unfold_locales
+  using trans_M upair_ax Union_ax by unfold_locales
 
 subsection\<open>Interface with \<^term>\<open>M_basic\<close>\<close>
 
