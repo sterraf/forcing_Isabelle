@@ -171,7 +171,7 @@ lemma type_seqleR_fm :
 lemma arity_seqleR_fm :
   "fg \<in> nat \<Longrightarrow> arity(seqleR_fm(fg)) = succ(fg)"
   unfolding seqleR_fm_def 
-  using arity_pair_fm arity_subset_fm nat_simp_union by simp
+  using arity_pair_fm arity_subset_fm ord_simp_union by simp
 
 lemma (in M_basic) seqleR_abs: 
   assumes "M(f)" "M(g)"

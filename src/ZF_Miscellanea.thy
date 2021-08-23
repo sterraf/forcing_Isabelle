@@ -86,9 +86,6 @@ definition
 lemma minimum_in: "\<lbrakk> well_ord(A,r); B\<subseteq>A; B\<noteq>0 \<rbrakk> \<Longrightarrow> minimum(r,B) \<in> B"
   using the_first_in unfolding minimum_def by simp
 
-\<comment> \<open>MOVE THIS to an appropriate place. Now it is repeated in
-   \<^file>\<open>Forcing_Main.thy\<close>. But consider that ported versions follow,
-   and hence perhaps we should only have the relative version.\<close>
 lemma well_ord_surj_imp_inj_inverse:
   assumes "well_ord(A,r)" "h \<in> surj(A,B)"
   shows "(\<lambda>b\<in>B. minimum(r, {a\<in>A. h`a=b})) \<in> inj(B,A)"

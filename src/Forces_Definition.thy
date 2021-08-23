@@ -51,7 +51,7 @@ lemma number2_iff :
 lemma arity_number2_fm :
   "a\<in>nat \<Longrightarrow> arity(number2_fm(a)) = succ(a)"
   unfolding number2_fm_def
-  using arity_number1_fm arity_succ_fm nat_union_abs2 pred_Un_distrib
+  using arity_number1_fm arity_succ_fm union_abs2 pred_Un_distrib
   by simp
 
 reldb_add "ecloseN" "is_ecloseN"
@@ -61,7 +61,7 @@ synthesize "is_names_below" from_definition
 lemma arity_is_names_below_fm :
   "\<lbrakk>P\<in>nat;x\<in>nat;nb\<in>nat\<rbrakk> \<Longrightarrow> arity(is_names_below_fm(P,x,nb)) = succ(P) \<union> succ(x) \<union> succ(nb)"
   unfolding is_names_below_fm_def
-  using arity_cartprod_fm arity_succ_fm arity_empty_fm arity_ecloseN_fm nat_union_abs2 pred_Un_distrib
+  using arity_cartprod_fm arity_succ_fm arity_empty_fm arity_ecloseN_fm union_abs2 pred_Un_distrib
   by auto
 
 definition
@@ -74,7 +74,7 @@ synthesize "is_tuple" from_definition
 lemma arity_is_tuple_fm : "\<lbrakk> z\<in>nat ; t1\<in>nat ; t2\<in>nat ; p\<in>nat ; tup\<in>nat \<rbrakk> \<Longrightarrow>
   arity(is_tuple_fm(z,t1,t2,p,tup)) = \<Union> {succ(z),succ(t1),succ(t2),succ(p),succ(tup)}"
   unfolding is_tuple_fm_def
-  using arity_pair_fm nat_union_abs1 nat_union_abs2 pred_Un_distrib
+  using arity_pair_fm union_abs1 union_abs2 pred_Un_distrib
   by auto
 
 subsection\<open>Definition of \<^term>\<open>forces\<close> for equality and membership\<close>
@@ -234,16 +234,16 @@ proof -
   let ?\<phi> = "Hfrc_at_fm(6 #+ p, 6 #+ l, 2, 1, 0)"
   from assms
   have  "arity(?\<phi>) = (7#+p) \<union> (7#+l)" "?\<phi> \<in> formula"
-    using arity_Hfrc_at_fm nat_simp_union
+    using arity_Hfrc_at_fm ord_simp_union
     by auto
   with assms
   have W: "arity(is_wfrec_fm(?\<phi>, 0, succ(x), succ(z))) = 2#+p \<union> (2#+l) \<union> (2#+x) \<union> (2#+z)"
     using arity_is_wfrec_fm[OF \<open>?\<phi>\<in>_\<close> _ _ _ _ \<open>arity(?\<phi>) = _\<close>] pred_Un_distrib pred_succ_eq
-      nat_union_abs1
+      union_abs1
     by auto
   from assms
   have "arity(forcerel_fm(succ(p),succ(x),0)) = succ(succ(p)) \<union> succ(succ(x))"
-    using arity_forcerel_fm nat_simp_union
+    using arity_forcerel_fm ord_simp_union
     by auto
   with W assms
   show ?thesis
@@ -1010,7 +1010,7 @@ proof -
     have "arity(frecrelP_fm(0)) = 1"
       unfolding number1_fm_def frecrelP_fm_def
       by (simp del:FOL_sats_iff pair_abs empty_abs
-          add: fm_definitions components_defs nat_simp_union)
+          add: fm_definitions components_defs ord_simp_union)
     then
     have "separation(##M, \<lambda>z. sats(M,frecrelP_fm(0) , [z]))"
       using separation_ax by simp
@@ -1067,7 +1067,7 @@ proof -
     using that 1 \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M by (simp del:pair_abs)
   have artyf:"arity(?f) = 5"
     unfolding fm_definitions PHcheck_fm_def is_tuple_fm_def
-    by (simp add:nat_simp_union)
+    by (simp add:ord_simp_union)
   moreover
   have "?f\<in>formula"
     unfolding fm_definitions by simp
@@ -1196,7 +1196,7 @@ proof -
     with \<open>\<phi>\<in>_\<close>
     show ?thesis
       unfolding ren_forces_nand_def
-      using lt pred_Un_distrib nat_union_abs1 Un_assoc[symmetric] Un_le_compat
+      using lt pred_Un_distrib union_abs1 Un_assoc[symmetric] Un_le_compat
       by simp
   next
     case ge
@@ -1211,7 +1211,7 @@ proof -
     with \<open>arity(\<phi>) \<le> 1\<close> \<open>\<phi>\<in>_\<close> \<open>pred(_) \<le> 1\<close>
     show ?thesis
       unfolding ren_forces_nand_def
-      using  pred_Un_distrib nat_union_abs1 Un_assoc[symmetric] nat_union_abs2
+      using  pred_Un_distrib union_abs1 Un_assoc[symmetric] union_abs2
       by simp
   qed
 qed
@@ -1251,7 +1251,7 @@ proof -
     with \<open>\<phi>\<in>_\<close>
     show ?thesis
       unfolding ren_forces_forall_def
-      using pred_Un_distrib nat_union_abs1 Un_assoc[symmetric] nat_union_abs2
+      using pred_Un_distrib union_abs1 Un_assoc[symmetric] union_abs2
       by simp
   next
     case ge
@@ -1266,7 +1266,7 @@ proof -
     with \<open>arity(\<phi>) \<le> 5\<close> \<open>\<phi>\<in>_\<close> \<open>pred^5(_) \<le> 5\<close>
     show ?thesis
       unfolding ren_forces_forall_def
-      using  pred_Un_distrib nat_union_abs1 Un_assoc[symmetric] nat_union_abs2
+      using  pred_Un_distrib union_abs1 Un_assoc[symmetric] union_abs2
       by simp
   qed
 qed
@@ -1299,7 +1299,7 @@ definition
 lemma arity_leq_fm :
   "\<lbrakk>leq\<in>nat;q\<in>nat;p\<in>nat\<rbrakk> \<Longrightarrow> arity(leq_fm(leq,q,p)) = succ(q) \<union> succ(p) \<union> succ(leq)"
   unfolding leq_fm_def
-  using arity_pair_fm pred_Un_distrib nat_simp_union
+  using arity_pair_fm pred_Un_distrib ord_simp_union
   by auto
 
 lemma leq_fm_type[TC] :
@@ -1468,7 +1468,7 @@ lemma arity_forces_at:
   shows "arity(forces(Member(x, y))) = (succ(x) \<union> succ(y)) #+ 4"
     "arity(forces(Equal(x, y))) = (succ(x) \<union> succ(y)) #+ 4"
   unfolding forces_def
-  using assms arity_forces_mem_fm arity_forces_eq_fm succ_Un_distrib nat_simp_union
+  using assms arity_forces_mem_fm arity_forces_eq_fm succ_Un_distrib ord_simp_union
   by auto
 
 lemma arity_forces':
@@ -1479,23 +1479,23 @@ proof (induct set:formula)
   case (Member x y)
   then
   show ?case
-    using arity_forces_mem_fm succ_Un_distrib nat_simp_union
+    using arity_forces_mem_fm succ_Un_distrib ord_simp_union
     by simp
 next
   case (Equal x y)
   then
   show ?case
-    using arity_forces_eq_fm succ_Un_distrib nat_simp_union
+    using arity_forces_eq_fm succ_Un_distrib ord_simp_union
     by simp
 next
   case (Nand \<phi> \<psi>)
   let ?\<phi>' = "ren_forces_nand(forces'(\<phi>))"
   let ?\<psi>' = "ren_forces_nand(forces'(\<psi>))"
   have "arity(leq_fm(3, 0, 1)) = 4"
-    using arity_leq_fm succ_Un_distrib nat_simp_union
+    using arity_leq_fm succ_Un_distrib ord_simp_union
     by simp
   have "3 \<le> (4#+arity(\<phi>)) \<union> (4#+arity(\<psi>))" (is "_ \<le> ?rhs")
-    using nat_simp_union by simp
+    using ord_simp_union by simp
   from \<open>\<phi>\<in>_\<close> Nand
   have "pred(arity(?\<phi>')) \<le> ?rhs"  "pred(arity(?\<psi>')) \<le> ?rhs"
   proof -
@@ -1516,7 +1516,7 @@ next
   qed
   with Nand \<open>_=4\<close>
   show ?case
-    using pred_Un_distrib Un_assoc[symmetric] succ_Un_distrib nat_union_abs1 Un_leI3[OF \<open>3 \<le> ?rhs\<close>]
+    using pred_Un_distrib Un_assoc[symmetric] succ_Un_distrib union_abs1 Un_leI3[OF \<open>3 \<le> ?rhs\<close>]
     by simp
 next
   case (Forall \<phi>)
@@ -1532,7 +1532,7 @@ next
         using le_trans[of _ 4 5] by auto
       with \<open>\<phi>\<in>_\<close>
       have "arity(?\<phi>') \<le> 5"
-        using arity_ren_forces_all[OF forces'_type[OF \<open>\<phi>\<in>_\<close>]] nat_union_abs2
+        using arity_ren_forces_all[OF forces'_type[OF \<open>\<phi>\<in>_\<close>]] union_abs2
         by auto
       with Forall True
       show ?thesis
@@ -1553,7 +1553,7 @@ next
         by auto
       with \<open>\<phi>\<in>_\<close>
       have "5 \<union> arity(forces'(\<phi>)) \<le> 5#+arity(\<phi>)"
-        using nat_simp_union by auto
+        using ord_simp_union by auto
       with \<open>\<phi>\<in>_\<close> \<open>arity(?\<phi>') = 5 \<union> _\<close>
       show ?thesis
         using pred_Un_distrib succ_pred_eq[OF _ \<open>arity(\<phi>)\<noteq>0\<close>]
@@ -1567,7 +1567,7 @@ lemma arity_forces :
   assumes "\<phi>\<in>formula"
   shows "arity(forces(\<phi>)) \<le> 4#+arity(\<phi>)"
   unfolding forces_def
-  using assms arity_forces' le_trans nat_simp_union by auto
+  using assms arity_forces' le_trans ord_simp_union by auto
 
 lemma arity_forces_le :
   assumes "\<phi>\<in>formula" "n\<in>nat" "arity(\<phi>) \<le> n"

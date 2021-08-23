@@ -699,7 +699,7 @@ proof -
     using that 1 \<open>X\<in>M\<close> rcheck_in_M one_in_M by (simp del:pair_abs)
   have artyf:"arity(?f) = 4"
     unfolding fm_definitions
-    by (simp add:nat_simp_union)
+    by (simp add:ord_simp_union)
   then
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,one,rcheck(X)]))"
     using replacement_ax 1 artyf \<open>X\<in>M\<close> rcheck_in_M one_in_M by simp
@@ -720,7 +720,7 @@ proof -
   have "arity(PHcheck_fm(2,3,0,1)) = 4"
     unfolding PHcheck_fm_def fun_apply_fm_def big_union_fm_def pair_fm_def image_fm_def
       upair_fm_def
-    by (simp add:nat_simp_union)
+    by (simp add:ord_simp_union)
   with \<open>f\<in>M\<close>
   have "strong_replacement(##M,\<lambda>x y. sats(M,PHcheck_fm(2,3,0,1),[x,y,one,f]))"
     using replacement_ax one_in_M by simp
@@ -881,7 +881,7 @@ lemma check_replacement:
 proof -
   have "arity(check_fm(0,2,1)) = 3"
     unfolding eclose_n_fm_def is_eclose_fm_def mem_eclose_fm_def fm_definitions
-    by (simp add:nat_simp_union)
+    by (simp add:ord_simp_union)
   moreover
   have "check(x)\<in>M" if "x\<in>P" for x
     using that transitivity check_in_M P_in_M by simp
@@ -918,7 +918,7 @@ proof -
   moreover
   have "arity(?pcheck_fm)=3"
     unfolding is_eclose_fm_def mem_eclose_fm_def eclose_n_fm_def fm_definitions
-    by (simp add:nat_simp_union)
+    by (simp add:ord_simp_union)
   moreover
   from P_in_M check_in_M pair_in_M_iff P_sub_M
   have "\<langle>check(p),p\<rangle> \<in> M" if "p\<in>P" for p

@@ -170,7 +170,7 @@ lemma arity_prebody_fm:
   shows
     "arity(prebody_fm(\<phi>,env))\<le>6 #+ length(env)"
   unfolding prebody_fm_def is_HVfrom_fm_def is_powapply_fm_def
-  using assms fm_definitions nat_simp_union
+  using assms fm_definitions ord_simp_union
     arity_renrep[of "forces(\<phi>)"] arity_forces_le[simplified] pred_le by auto
 
 
@@ -188,7 +188,7 @@ lemma arity_body_fm':
   shows
     "arity(body_fm'(\<phi>,env))\<le>5  #+ length(env)"
   unfolding body_fm'_def
-  using assms fm_definitions nat_simp_union arity_prebody_fm pred_le  arity_renpbdy[of "prebody_fm(\<phi>,env)"]
+  using assms fm_definitions ord_simp_union arity_prebody_fm pred_le  arity_renpbdy[of "prebody_fm(\<phi>,env)"]
   by auto
 
 lemma sats_body_fm':
@@ -321,8 +321,8 @@ proof -
   have "arity(?f_fm) \<le> 5 #+ length(env)"
     unfolding body_fm_def fm_definitions least_fm_def
     using arity_forces arity_renrep arity_renbody arity_body_fm' nonempty
-    by (simp add: pred_Un Un_assoc, simp add: Un_assoc[symmetric] nat_union_abs1 pred_Un)
-      (auto simp add: nat_simp_union, rule pred_le, auto intro:leI)
+    by (simp add: pred_Un Un_assoc, simp add: Un_assoc[symmetric] union_abs1 pred_Un)
+      (auto simp add: ord_simp_union, rule pred_le, auto intro:leI)
   moreover from \<open>\<phi>\<in>formula\<close> \<open>nenv\<in>list(M)\<close>
   have "?f_fm\<in>formula" by simp
   moreover
@@ -494,7 +494,7 @@ proof -
     from \<open>env\<in>_\<close> \<open>\<phi>\<in>_\<close>
     show "arity(?\<psi>)\<le>2#+length(env)"
       using pred_mono[OF _ \<open>arity(\<phi>)\<le>2#+length(env)\<close>] lt_trans[OF _ le_refl]
-      by (auto simp add:nat_simp_union)
+      by (auto simp add:ord_simp_union)
   next
     from \<open>\<phi>\<in>_\<close>
     show "?\<psi>\<in>formula" by simp

@@ -122,7 +122,7 @@ proof -
     with assms \<open>M_generic(G)\<close>
     have "M[G], map(val(P,G),[f,a,b'\<^sup>v]) \<Turnstile> ?\<phi>"
       using truth_lemma[of ?\<phi> G "[f,a,b'\<^sup>v]"]
-      by (auto simp add:nat_simp_union arity_fun_apply_fm
+      by (auto simp add:ord_simp_union arity_fun_apply_fm
           fun_apply_type)
     with \<open>b \<noteq> b'\<close> types
     have "M[G], map(val(P,G),[f,a,b\<^sup>v]) \<Turnstile> Neg(?\<phi>)"
@@ -131,11 +131,11 @@ proof -
   with types
   have "q \<tturnstile> \<cdot>\<not>?\<phi>\<cdot> [f,a,b\<^sup>v]"
     using definition_of_forcing check_in_M
-    by (auto simp add:nat_simp_union arity_fun_apply_fm)
+    by (auto simp add:ord_simp_union arity_fun_apply_fm)
   with \<open>p \<tturnstile> ?\<phi> [f,a,b\<^sup>v]\<close> and types
   show "p \<bottom> q"
     using check_in_M inconsistent_imp_incompatible
-    by (simp add:nat_simp_union arity_fun_apply_fm fun_apply_type)
+    by (simp add:ord_simp_union arity_fun_apply_fm fun_apply_type)
 qed
 
 context G_generic_AC begin
@@ -277,25 +277,6 @@ simple_rename "ren_F_aux" src "[q,x_P, x_leq, x_one, f_dot, x_a, x_bc,x_p,x_b]"
 simple_rename "ren_G_aux" src "[ x_b, x_P, x_leq, x_one, f_dot,x_a,x_p,y]"
   tgt "[ x_b, y, x_P, x_leq, x_one, f_dot,x_a,x_p]"
 
-
-(* FIXME: move this to Interface. *)
-lemma separation_relativized:
-  assumes "\<And>x. x\<in>M \<Longrightarrow> is_p(##M,x) \<longleftrightarrow> p(x)" "\<And> x . x\<in>M \<Longrightarrow> (M,[x]@env \<Turnstile> \<phi>) \<longleftrightarrow> is_p(##M,x)"
-    "arity(\<phi>) \<le> 1#+length(env)" "\<phi>\<in>formula" "env\<in>list(M)"
-  shows "separation(##M,p)"
-proof -
-  have "separation(##M, \<lambda>x. M,[x]@env \<Turnstile>\<phi>)"
-    using separation_ax[OF \<open>\<phi>\<in>_\<close>] assms by simp
-  then
-  have "separation(##M,is_p(##M))"
-    using separation_cong[OF assms(2),THEN iffD1,of "##M"]
-    by simp
-  then
-  show "separation(##M,p)"
-    using separation_cong[OF assms(1),THEN iffD1,of "##M"]
-    by simp
-qed
-
 lemma ccc_fun_closed_lemma_aux:
   assumes "f_dot\<in>M" "p\<in>M" "a\<in>M" "b\<in>M"
   shows "{q \<in> P . q \<preceq> p \<and> (M, [q, P, leq, one, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))} \<in> M"
@@ -304,14 +285,14 @@ proof -
   let ?\<psi>="\<cdot>\<cdot>0 \<preceq>\<^bsup>2\<^esup> 7\<cdot> \<and> forces(?app_fm) \<cdot> "
   let ?Q="\<lambda> q . q \<preceq> p \<and> (M, [q, P, leq, one, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(?app_fm))"
   have "?app_fm \<in> formula" "arity(?app_fm) = 3"
-    using arity_fun_apply_fm nat_union_abs1
+    using arity_fun_apply_fm union_abs1
     by simp_all
   then
   have "arity(forces(?app_fm)) \<le> 7"
     using arity_forces[OF \<open>?app_fm\<in>_\<close>] by simp_all
   then
   have "arity(?\<psi>) \<le> 8" "?\<psi>\<in>formula"
-    using arity_leq_fm nat_union_abs2 nat_union_abs1 le_trans
+    using arity_leq_fm union_abs2 union_abs1 le_trans
     by simp_all
   with \<open>a\<in>M\<close> \<open>b\<in>M\<close>
   have "a\<^sup>v\<in>M" "b\<^sup>v\<in>M"
@@ -353,14 +334,14 @@ proof -
   let ?\<psi>="( \<cdot>\<cdot>0 \<preceq>\<^bsup>2\<^esup> 7\<cdot> \<and> forces(?app_fm) \<cdot> )"
   let ?G="(\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v5 is 0\<cdot> \<and> ren(?\<psi>) ` 9 ` 9 ` ren_F_aux_fn \<cdot>\<cdot>)"
   have "?app_fm \<in> formula" "arity(?app_fm) = 3"
-    using arity_fun_apply_fm nat_union_abs1
+    using arity_fun_apply_fm union_abs1
     by simp_all
   then
   have "arity(forces(?app_fm)) \<le> 7"
     using arity_forces[OF \<open>?app_fm\<in>_\<close>] by simp_all
   then
   have "arity(?\<psi>) \<le> 9"
-    using arity_leq_fm nat_union_abs2 nat_union_abs1 le_trans
+    using arity_leq_fm union_abs2 union_abs1 le_trans
     by simp
   then
   have "ren(?\<psi>)`9`9`ren_F_aux_fn \<in> formula" "arity(ren(?\<psi>)`9`9`ren_F_aux_fn) \<le> 9"
@@ -428,7 +409,7 @@ proof -
     by simp
   from \<open>pred(arity(?G))\<in>nat\<close> \<open>?G\<in>_\<close>
   have "Collect_fm(1,?G,7) \<in> formula" "arity(Collect_fm(1,?G,7)) \<le> 8"
-    using  arity_Collect_fm pred_le nat_union_abs1 Un_le[OF _ \<open>pred(arity(?G))\<le> 8 \<close>,of 8 ]
+    using  arity_Collect_fm pred_le union_abs1 Un_le[OF _ \<open>pred(arity(?G))\<le> 8 \<close>,of 8 ]
     by (simp_all)
   then
   have "arity(ren(Collect_fm(1,?G,7))`8`8`ren_G_aux_fn) \<le> 8"
@@ -462,14 +443,14 @@ proof -
   let ?G="(\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v5 is 0\<cdot> \<and> (\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v6 is 0\<cdot> \<and> ren(?\<psi>) ` 9 ` 9 ` ren_F_fn\<cdot>\<cdot>)\<cdot>\<cdot>)"
   let ?Q="\<lambda> x b . (\<exists>q\<in>P. q \<preceq> p \<and> (M, [q, P, leq, one, f_dot, x\<^sup>v, b\<^sup>v] \<Turnstile> forces(?app_fm)))"
   have "?app_fm \<in> formula" "arity(?app_fm) = 3"
-    using arity_fun_apply_fm nat_union_abs1
+    using arity_fun_apply_fm union_abs1
     by simp_all
   then
   have "arity(forces(?app_fm)) \<le> 7"
     using arity_forces[OF \<open>?app_fm\<in>_\<close>] by simp_all
   then
   have "arity(?\<psi>) \<le> 9"
-    using arity_leq_fm nat_union_abs2 nat_union_abs1 le_trans
+    using arity_leq_fm union_abs2 union_abs1 le_trans
     by simp
   then
   have "ren(?\<psi>)`9`9`ren_F_fn \<in> formula" "pred(pred(arity(ren(?\<psi>)`9`9`ren_F_fn))) \<le> 7"
@@ -550,7 +531,7 @@ proof -
     by simp
   from \<open>pred(arity(?G))\<in>nat\<close> \<open>?G\<in>_\<close>
   have "Collect_fm(7,?G,6) \<in> formula" "arity(Collect_fm(7,?G,6)) \<le> 8"
-    using nat_union_abs2[OF _ _ \<open>pred(arity(?G)) \<le> 8\<close>] arity_Collect_fm nat_union_abs2
+    using union_abs2[OF \<open>pred(arity(?G)) \<le> 8\<close>] arity_Collect_fm union_abs2
     by simp_all
   then
   have "arity(ren(Collect_fm(7,?G,6))`8`8`ren_G_fn) \<le> 8"
@@ -590,7 +571,7 @@ proof -
   obtain p where "p \<tturnstile> ?\<phi> [f_dot, A\<^sup>v, B\<^sup>v]" "p\<in>G" "p\<in>M"
     using transitivity[OF M_genericD P_in_M]
       generic truth_lemma[of ?\<phi> G "[f_dot, A\<^sup>v, B\<^sup>v]"]
-    by (auto simp add:nat_simp_union arity_typed_function_fm
+    by (auto simp add:ord_simp_union arity_typed_function_fm
         \<comment> \<open>NOTE: type-checking is not performed here by the Simplifier\<close>
         typed_function_type)
   let ?app_fm="\<cdot>0`1 is 2\<cdot>"\<comment> \<open>formula for \<open>f`x=z\<close>\<close>
@@ -619,7 +600,7 @@ proof -
     ultimately
     obtain q where "q \<preceq> p" "q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, (f`a)\<^sup>v]" "q\<in>G"
       using forces_below_filter[of ?app_fm "[f_dot, a\<^sup>v, (f`a)\<^sup>v]" p]
-      by (auto simp add: nat_simp_union arity_fun_apply_fm
+      by (auto simp add: ord_simp_union arity_fun_apply_fm
           fun_apply_type)
     with \<open>f`a \<in> B\<close>
     have "f`a \<in> {b\<in>B . \<exists>q\<in>P. q \<preceq> p \<and> q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v]}"

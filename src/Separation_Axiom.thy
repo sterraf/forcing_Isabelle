@@ -43,13 +43,13 @@ proof -
   have "?\<chi>\<in>formula" by simp
   with \<open>env\<in>_\<close> phi
   have "arity(?\<chi>) \<le> 2#+length(env) " 
-    using nat_simp_union leI by simp
+    using ord_simp_union leI by simp
   with \<open>env\<in>list(_)\<close> phi
   have "arity(forces(?\<chi>)) \<le> 6 #+ length(env)"
     using  arity_forces_le by simp
   then
   have "arity(forces(?\<chi>)) \<le> 7 #+ length(env)"
-    using nat_simp_union arity_forces leI by simp
+    using ord_simp_union arity_forces leI by simp
   with \<open>arity(forces(?\<chi>)) \<le>7 #+ _\<close> \<open>env \<in> _\<close> \<open>\<phi> \<in> formula\<close>
   have "arity(?new_form) \<le> 7 #+ length(env)" "?new_form \<in> formula"
     using arity_rensep[OF definability[of "?\<chi>"]]  definability[of "?\<chi>"] type_rensep 
@@ -57,13 +57,13 @@ proof -
   then
   have "pred(pred(arity(?new_form))) \<le> 5 #+ length(env)" "?\<psi>\<in>formula"
     unfolding pair_fm_def upair_fm_def 
-    using nat_simp_union length_type[OF \<open>env\<in>list(M[G])\<close>] 
+    using ord_simp_union length_type[OF \<open>env\<in>list(M[G])\<close>] 
         pred_mono[OF _ pred_mono[OF _ \<open>arity(?new_form) \<le> _\<close>]]
     by auto
   with \<open>arity(?new_form) \<le> _\<close> \<open>?new_form \<in> formula\<close>
   have "arity(?\<psi>) \<le> 5 #+ length(env)"
     unfolding pair_fm_def upair_fm_def 
-    using nat_simp_union arity_forces
+    using ord_simp_union arity_forces
     by auto
   from \<open>\<phi>\<in>formula\<close>
   have "forces(?\<chi>) \<in> formula"
@@ -80,7 +80,7 @@ proof -
     by auto
   with \<open>nenv\<in>_\<close> \<open>env\<in>_\<close> \<open>\<pi>\<in>M\<close> \<open>\<phi>\<in>_\<close> \<open>length(nenv) = length(env)\<close>
   have "arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])" for \<theta> 
-    using nat_union_abs2[OF _ _ \<open>arity(\<phi>) \<le> 2#+ _\<close>] nat_simp_union 
+    using union_abs2[OF \<open>arity(\<phi>) \<le> 2#+ _\<close>] ord_simp_union 
     by simp    
   note in_M = \<open>\<pi>\<in>M\<close> \<open>domain(\<pi>) \<times> P \<in> M\<close>  P_in_M one_in_M leq_in_M
   {

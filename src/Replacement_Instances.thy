@@ -18,7 +18,7 @@ lemma (in M_ZF_trans) replacement_is_range:
    apply(rule_tac range_iff_sats[where env="[_,_]",symmetric])
   apply(simp_all)
   apply(rule_tac replacement_ax[where env="[]",simplified])
-    apply(simp_all add:arity_range_fm nat_simp_union range_type)
+    apply(simp_all add:arity_range_fm ord_simp_union range_type)
   done
 
 lemma (in M_ZF_trans) replacement_range:
@@ -33,7 +33,7 @@ lemma (in M_ZF_trans) replacement_is_domain:
    apply(rule_tac domain_iff_sats[where env="[_,_]",symmetric])
   apply(simp_all)
   apply(rule_tac replacement_ax[where env="[]",simplified])
-    apply(simp_all add:arity_domain_fm nat_simp_union domain_type)
+    apply(simp_all add:arity_domain_fm ord_simp_union domain_type)
   done
 
 lemma (in M_ZF_trans) replacement_domain:
@@ -46,7 +46,7 @@ lemma (in M_ZF_trans) lam_replacement_domain : "lam_replacement(##M, domain)"
   using lam_replacement_iff_lam_closed[THEN iffD2,of domain]
     Lambda_in_M[where \<phi>="domain_fm(0,1)" and env="[]",
       OF domain_type _ domain_iff_sats[symmetric] domain_abs,simplified]
-     arity_domain_fm[of 0 1] nat_simp_union transitivity domain_closed
+     arity_domain_fm[of 0 1] ord_simp_union transitivity domain_closed
   by simp
 
 text\<open>Then we recover the original version. Notice that we need closure because we
@@ -62,7 +62,7 @@ lemma (in M_ZF_trans) lam_replacement_fst : "lam_replacement(##M, fst)"
   using lam_replacement_iff_lam_closed[THEN iffD2,of fst]
     Lambda_in_M[where \<phi>="fst_fm(0,1)" and env="[]",OF
       _ _  fst_iff_sats[symmetric] fst_abs] fst_type
-     arity_fst_fm[of 0 1] nat_simp_union transitivity fst_closed
+     arity_fst_fm[of 0 1] ord_simp_union transitivity fst_closed
   by simp
 
 lemma (in M_ZF_trans) replacement_fst':
@@ -75,14 +75,14 @@ lemma (in M_ZF_trans) lam_replacement_domain1 : "lam_replacement(##M, domain)"
   using lam_replacement_iff_lam_closed[THEN iffD2,of domain]
     Lambda_in_M[where \<phi>="domain_fm(0,1)" and env="[]",OF
       _ _  domain_iff_sats[symmetric] domain_abs] domain_type
-     arity_domain_fm[of 0 1] nat_simp_union transitivity domain_closed
+     arity_domain_fm[of 0 1] ord_simp_union transitivity domain_closed
   by simp
 
 lemma (in M_ZF_trans) lam_replacement_snd : "lam_replacement(##M, snd)"
   using lam_replacement_iff_lam_closed[THEN iffD2,of snd]
     Lambda_in_M[where \<phi>="snd_fm(0,1)" and env="[]",OF
       _ _  snd_iff_sats[symmetric] snd_abs] snd_type
-     arity_snd_fm[of 0 1] nat_simp_union transitivity snd_closed
+     arity_snd_fm[of 0 1] ord_simp_union transitivity snd_closed
   by simp
 
 lemma (in M_ZF_trans) replacement_snd':
@@ -94,7 +94,7 @@ lemma (in M_ZF_trans) lam_replacement_Union : "lam_replacement(##M, Union)"
   using lam_replacement_iff_lam_closed[THEN iffD2,of Union]
     Lambda_in_M[where \<phi>="big_union_fm(0,1)" and env="[]",OF
       _ _ _ Union_abs] union_fm_def big_union_iff_sats[symmetric]
-     arity_big_union_fm[of 0 1] nat_simp_union transitivity Union_closed
+     arity_big_union_fm[of 0 1] ord_simp_union transitivity Union_closed
   by simp
 
 lemma (in M_ZF_trans) replacement_Union':
@@ -107,7 +107,7 @@ lemma (in M_ZF_trans) lam_replacement_Un:
   using lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. fst(p)\<union>snd(p)"]
     LambdaPair_in_M[where \<phi>="union_fm(0,1,2)" and is_f="union(##M)" and env="[]",OF
       union_type _ union_iff_sats[symmetric] union_abs]
-     arity_union_fm[of 0 1 2] nat_simp_union transitivity Un_closed fst_snd_closed
+     arity_union_fm[of 0 1 2] ord_simp_union transitivity Un_closed fst_snd_closed
   by simp
 
 lemma (in M_ZF_trans) lam_replacement_image:
@@ -115,7 +115,7 @@ lemma (in M_ZF_trans) lam_replacement_image:
   using lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. fst(p)``snd(p)"]
     LambdaPair_in_M[where \<phi>="image_fm(0,1,2)" and is_f="image(##M)" and env="[]",OF
       image_type _ image_iff_sats[symmetric] image_abs]
-     arity_image_fm[of 0 1 2] nat_simp_union transitivity image_closed fst_snd_closed
+     arity_image_fm[of 0 1 2] ord_simp_union transitivity image_closed fst_snd_closed
   by simp
 
 synthesize "setdiff" from_definition "setdiff" assuming "nonempty"
@@ -126,7 +126,7 @@ lemma (in M_ZF_trans) lam_replacement_Diff:
   using lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. fst(p) - snd(p)"]
     LambdaPair_in_M[where \<phi>="setdiff_fm(0,1,2)" and is_f="setdiff(##M)" and env="[]",
       OF setdiff_fm_type _ setdiff_iff_sats[symmetric] setdiff_abs]
-     arity_setdiff_fm[of 0 1 2] nat_simp_union transitivity Diff_closed fst_snd_closed
+     arity_setdiff_fm[of 0 1 2] ord_simp_union transitivity Diff_closed fst_snd_closed
      nonempty
   by simp
 
@@ -196,7 +196,7 @@ lemma (in M_ZF_trans) lam_replacement_minimum:
   apply (rule_tac
     LambdaPair_in_M[where \<phi>="minimum_fm(0,1,2)" and is_f="is_minimum'(##M)" and env="[]",OF
       minimum_fm_type _ minimum_iff_sats[symmetric]])
-  apply (auto  simp: arity_minimum_fm[of 0 1 2] nat_simp_union transitivity fst_snd_closed zero_in_M)
+  apply (auto  simp: arity_minimum_fm[of 0 1 2] ord_simp_union transitivity fst_snd_closed zero_in_M)
   using Upair_closed[simplified] minimum_closed is_minimum_eq is_minimum_iff minimum_abs
   by simp_all
 
@@ -208,7 +208,7 @@ lemma (in M_ZF_trans) lam_replacement_Upair:
   apply (rule_tac
     LambdaPair_in_M[where \<phi>="upair_fm(0,1,2)" and is_f="upair(##M)" and env="[]",OF
       upair_type _ upair_iff_sats[symmetric]])
-  apply (auto  simp: arity_upair_fm[of 0 1 2] nat_simp_union transitivity fst_snd_closed)
+  apply (auto  simp: arity_upair_fm[of 0 1 2] ord_simp_union transitivity fst_snd_closed)
   using Upair_closed[simplified]
   by simp
 
@@ -219,7 +219,7 @@ lemma (in M_ZF_trans) lam_replacement_cartprod:
   apply (rule_tac
     LambdaPair_in_M[where \<phi>="cartprod_fm(0,1,2)" and is_f="cartprod(##M)" and env="[]",OF
       cartprod_type _ cartprod_iff_sats[symmetric]])
-  apply (auto  simp: arity_cartprod_fm[of 0 1 2] nat_simp_union transitivity fst_snd_closed)
+  apply (auto  simp: arity_cartprod_fm[of 0 1 2] ord_simp_union transitivity fst_snd_closed)
   using cartprod_closed[simplified]
   by simp
 
@@ -233,7 +233,7 @@ lemma (in M_ZF_trans) lam_replacement_vimage:
   apply (rule_tac
     LambdaPair_in_M[where \<phi>="pre_image_fm(0,1,2)" and is_f="pre_image(##M)" and env="[]",OF
       pre_image_fm_type _ pre_image_iff_sats[symmetric]])
-  apply (auto  simp: arity_pre_image_fm[of 0 1 2] nat_simp_union transitivity zero_in_M)
+  apply (auto  simp: arity_pre_image_fm[of 0 1 2] ord_simp_union transitivity zero_in_M)
   using vimage_closed[simplified]
   by simp
 
@@ -255,7 +255,7 @@ lemma (in M_ZF_trans) replacement_is_omega_funspace:
    apply(rule_tac omega_funspace_iff_sats[where env="[_,_,B]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac replacement_ax[where env="[B]",simplified])
-    apply(simp_all add:arity_omega_funspace_fm nat_simp_union)
+    apply(simp_all add:arity_omega_funspace_fm ord_simp_union)
   done
 
 lemma (in M_ZF_trans) replacement_omega_funspace:
@@ -293,7 +293,7 @@ arity_theorem for "HAleph_wfrec_repl_body_fm"
 
 \<comment> \<open>FIXME: Why @{thm arity_Replace_fm} doesn't work here? Revise the method we're using.\<close>
 lemma arity_HAleph_wfrec_repl_body: "arity(HAleph_wfrec_repl_body_fm(2,0,1)) = 3"
-  by (simp_all add: arity_HAleph_wfrec_repl_body_fm arity_is_If_fm nat_simp_union arity_fun_apply_fm
+  by (simp_all add: arity_HAleph_wfrec_repl_body_fm arity_is_If_fm ord_simp_union arity_fun_apply_fm
       arity_is_Limit_fm arity_empty_fm arity_Replace_fm[where i=11])
 
 lemma (in M_ZF_trans) replacement_HAleph_wfrec_repl_body:
@@ -353,7 +353,7 @@ lemma (in M_ZF_trans) replacement_is_fst2_snd2:
    apply(rule_tac is_fst2_snd2_iff_sats[where env="[_,_]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac replacement_ax[where env="[]",simplified])
-    apply(simp_all add: arity_is_fst2_snd2_fm nat_simp_union)
+    apply(simp_all add: arity_is_fst2_snd2_fm ord_simp_union)
   done
 
 lemma (in M_ZF_trans) replacement_fst2_snd2: "strong_replacement(##M, \<lambda>x y. y = \<langle>fst(fst(x)), snd(snd(x))\<rangle>)"
@@ -385,7 +385,7 @@ lemma (in M_ZF_trans) replacement_is_fst2_sndfst_snd2:
    apply(rule_tac is_fst2_sndfst_snd2_iff_sats[where env="[_,_]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac replacement_ax[where env="[]",simplified])
-    apply(simp_all add: arity_is_fst2_sndfst_snd2_fm nat_simp_union)
+    apply(simp_all add: arity_is_fst2_sndfst_snd2_fm ord_simp_union)
   done
 
 lemma (in M_ZF_trans) replacement_fst2_sndfst_snd2:
@@ -427,13 +427,13 @@ synthesize "is_RepFun_body" from_definition assuming "nonempty"
 arity_theorem for "is_RepFun_body_fm"
 lemma arity_body_repfun:
   "arity( \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> (\<cdot>\<exists>\<cdot>cons_fm(0, 3, 2) \<and> pair_fm(5, 1, 0) \<cdot>\<cdot>)\<cdot>\<cdot> ) = 5"
-  using arity_cons_fm arity_pair_fm pred_Un_distrib nat_union_abs1
+  using arity_cons_fm arity_pair_fm pred_Un_distrib union_abs1
   by auto
 
 lemma arity_RepFun: "arity(is_RepFun_body_fm(0, 1, 2)) = 3"
   unfolding is_RepFun_body_fm_def
   using arity_Replace_fm[OF _ _ _ _ arity_body_repfun] arity_fst_fm arity_snd_fm arity_empty_fm
-    pred_Un_distrib nat_union_abs2 nat_union_abs1
+    pred_Un_distrib union_abs2 union_abs1
   by simp
 
 lemma (in M_ZF_trans) RepFun_SigFun_closed: "x \<in> M \<Longrightarrow> z \<in> M \<Longrightarrow> {{\<langle>z, x\<rangle>} . x \<in> x} \<in> M"
@@ -450,7 +450,7 @@ lemma (in M_ZF_trans) replacement_RepFun_body:
   apply (rule_tac
     LambdaPair_in_M[where \<phi>="is_RepFun_body_fm(0,1,2)" and is_f="is_RepFun_body(##M)" and env="[]",OF
       is_RepFun_body_fm_type _ is_RepFun_body_iff_sats[symmetric]])
-  apply (auto  simp: arity_RepFun nat_simp_union transitivity zero_in_M RepFun_body_def RepFun_body_abs RepFun_SigFun_closed)
+  apply (auto  simp: arity_RepFun ord_simp_union transitivity zero_in_M RepFun_body_def RepFun_body_abs RepFun_SigFun_closed)
   done
 
 sublocale M_ZF_trans \<subseteq> M_replacement_extra "##M"
@@ -481,7 +481,7 @@ lemma (in M_ZF_trans) replacement_is_order_eq_map:
    apply(rule_tac order_eq_map_iff_sats[where env="[_,_,A,r]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac replacement_ax[where env="[A,r]",simplified])
-    apply(simp_all add: arity_order_eq_map_fm nat_simp_union)
+    apply(simp_all add: arity_order_eq_map_fm ord_simp_union)
   done
 
 (* Banach *)
@@ -536,7 +536,7 @@ proof -
      prefer 2
      apply(rule_tac replacement_ax[where env="[n,W,g,f,Y,X]",simplified])
     using assms that
-    by(simp_all add:zero_in_M arity_banach_body_iterates_fm nat_simp_union transitivity[OF _ nat_in_M])
+    by(simp_all add:zero_in_M arity_banach_body_iterates_fm ord_simp_union transitivity[OF _ nat_in_M])
   then
   show ?thesis
     using assms zero_in_M transitivity[OF _ nat_in_M] Memrel_closed
@@ -591,7 +591,7 @@ proof -
      prefer 2
      apply(rule_tac replacement_ax[where env="[W,g,f,Y,X]",simplified])
     using assms 
-    by(simp_all add:zero_in_M arity_banach_is_iterates_body_fm nat_simp_union transitivity[OF _ nat_in_M])
+    by(simp_all add:zero_in_M arity_banach_is_iterates_body_fm ord_simp_union transitivity[OF _ nat_in_M])
   then
   show ?thesis
     using assms nat_in_M
@@ -614,7 +614,7 @@ lemma (in M_ZF_trans) lam_replacement_cardinal : "lam_replacement(##M, cardinal_
    cardinal_rel_closed[of _]
     Lambda_in_M[where \<phi>="is_cardinal_fm(0,1)" and env="[]",OF
       is_cardinal_fm_type[of 0 1] _  is_cardinal_iff_sats[symmetric] is_cardinal_iff]
-     arity_is_cardinal_fm[of 0 1] nat_simp_union cardinal_rel_closed transitivity zero_in_M
+     arity_is_cardinal_fm[of 0 1] ord_simp_union cardinal_rel_closed transitivity zero_in_M
   by simp_all
 
 (* (##M)(f) \<Longrightarrow> strong_replacement(##M, \<lambda>x y. y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>) *)
@@ -685,7 +685,7 @@ lemma (in M_ZF_trans) replacement_transrec_apply_image_body :
   apply(rule_tac transrec_apply_image_body_iff_sats[where env="[_,_,mesa,f]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac replacement_ax[where env="[mesa,f]",simplified])
-  apply(simp_all add: arity_transrec_apply_image_body_fm nat_simp_union)
+  apply(simp_all add: arity_transrec_apply_image_body_fm ord_simp_union)
   done
 
 lemma (in M_ZF_trans) transrec_replacement_apply_image: 
@@ -742,7 +742,7 @@ lemma (in M_ZF_trans) replacement_is_trans_apply_image:
    apply(rule_tac is_trans_apply_image_body_iff_sats[symmetric,unfolded is_trans_apply_image_body_def,where env="[_,_,\<beta>,f]"])
           apply(simp_all add:zero_in_M)
   apply(rule_tac replacement_ax[where env="[\<beta>,f]",simplified])
-    apply(simp_all add: arity_is_trans_apply_image_body_fm is_trans_apply_image_body_fm_type nat_simp_union)
+    apply(simp_all add: arity_is_trans_apply_image_body_fm is_trans_apply_image_body_fm_type ord_simp_union)
   done
 
 lemma (in M_ZF_trans) trans_apply_abs:
@@ -786,13 +786,13 @@ shows "is_abs_apply_pair(M,A,f, x, res) \<longleftrightarrow> res = abs_apply_pa
 synthesize "is_abs_apply_pair" from_definition assuming "nonempty"
 lemma arity_is_abs_aux: "arity((\<cdot>\<exists>\<cdot>\<cdot>7`0 is 1\<cdot> \<and> pair_fm(5, 2, 0) \<cdot>\<cdot>))  = 7"
   using arity_fun_apply_fm arity_pair_fm pred_Un_distrib
-    nat_simp_union by simp
+    ord_simp_union by simp
 
 lemma arity_is_abs_apply_pair_fm :
     shows "arity(is_abs_apply_pair_fm(3, 2, 0, 1)) = 4"
   unfolding is_abs_apply_pair_fm_def
   using arity_lambda_fm[OF _ _ _ _ arity_is_abs_aux] arity_pair_fm
-    pred_Un_distrib nat_simp_union
+    pred_Un_distrib ord_simp_union
    by simp
 
 lemma (in M_ZF_trans) replacement_is_abs_apply_pair:
@@ -804,7 +804,7 @@ lemma (in M_ZF_trans) replacement_is_abs_apply_pair:
    apply(rule_tac is_abs_apply_pair_iff_sats[where env="[_,_,f,A]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac replacement_ax[where env="[f,A]",simplified])
-    apply(simp_all add: arity_is_abs_apply_pair_fm nat_simp_union)
+    apply(simp_all add: arity_is_abs_apply_pair_fm ord_simp_union)
   done
 
 lemma (in M_ZF_trans) replacement_abs_apply_pair: 

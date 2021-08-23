@@ -326,7 +326,7 @@ proof -
   have "?d_fm\<in>formula" by simp
   moreover
   have "arity(?d_fm) = 5" unfolding compat_in_fm_def pair_fm_def upair_fm_def
-    by (simp add: nat_union_abs1 Un_commute)
+    by (simp add: union_abs1 Un_commute)
   moreover
   have "(M, [q,P,leq,p,D] \<Turnstile> ?d_fm) \<longleftrightarrow> (\<not> is_compat_in(##M,P,leq,p,q) \<or> q\<in>D)"
     if "q\<in>M" for q
@@ -374,7 +374,7 @@ proof -
   moreover
   have "arity(?\<phi>)=5" 
     unfolding leq_fm_def pair_fm_def upair_fm_def
-    using arity_forces_eq_fm by (simp add:nat_simp_union Un_commute)
+    using arity_forces_eq_fm by (simp add:ord_simp_union Un_commute)
   ultimately
   show ?thesis 
     unfolding forces_eq_def using P_in_M leq_in_M assms 
@@ -652,7 +652,7 @@ lemma Collect_forces_eq_in_M:
   shows "{p\<in>P. forces_eq(p,\<tau>,\<theta>)} \<in> M"
   using assms Collect_in_M[of "forces_eq_fm(1,2,0,3,4)" "[P,leq,\<tau>,\<theta>]"]
         arity_forces_eq_fm P_in_M leq_in_M sats_forces_eq_fm forces_eq_abs forces_eq_fm_type 
-  by (simp add: nat_union_abs1 Un_commute)
+  by (simp add: union_abs1 Un_commute)
 
 lemma IV240b_eq_Collects:
   assumes "\<tau> \<in> M" "\<theta> \<in> M"
@@ -690,7 +690,7 @@ proof -
   have fty:"?\<phi>\<in>formula" by simp
   have farit:"arity(?\<phi>)=5"
     unfolding forces_nmem_fm_def domain_fm_def pair_fm_def upair_fm_def union_fm_def
-    using arity_forces_mem_fm by (simp add:nat_simp_union Un_commute)
+    using arity_forces_mem_fm by (simp add:ord_simp_union Un_commute)
     show 
     "{p \<in> P . \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem(p, \<sigma>, \<tau>) \<and> forces_nmem(p, \<sigma>, \<theta>)} \<in> M"
     and "{p \<in> P . \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_nmem(p, \<sigma>, \<tau>) \<and> forces_mem(p, \<sigma>, \<theta>)} \<in> M"
@@ -1256,7 +1256,7 @@ proof -
       with \<open>\<phi>\<in>_\<close>
       show ?thesis
         unfolding ren_truth_lemma_def
-        using pred_Un_distrib nat_union_abs1 Un_assoc[symmetric] a c nat_union_abs2
+        using pred_Un_distrib union_abs1 Un_assoc[symmetric] a c union_abs2
         by simp
     next
       case b
@@ -1270,7 +1270,7 @@ proof -
       with \<open>\<phi>\<in>_\<close>
       show ?thesis
         unfolding ren_truth_lemma_def
-        using pred_Un_distrib nat_union_abs1 Un_assoc[symmetric]  nat_union_abs2
+        using pred_Un_distrib union_abs1 Un_assoc[symmetric]  union_abs2
         by simp
     qed
   next
@@ -1286,7 +1286,7 @@ proof -
     with \<open>arity(\<phi>) \<le> 5\<close> \<open>\<phi>\<in>_\<close> \<open>pred^5(_) \<le> 5\<close>
     show ?thesis
       unfolding ren_truth_lemma_def
-      using  pred_Un_distrib nat_union_abs1 Un_assoc[symmetric] nat_union_abs2 
+      using  pred_Un_distrib union_abs1 Un_assoc[symmetric] union_abs2 
       by simp
   qed
 qed
@@ -1330,11 +1330,11 @@ proof -
   have "arity(?\<psi>) \<le> 4#+length(env)" 
   proof -
     have eq:"arity(leq_fm(4, 0, 2)) = 5"
-      using arity_leq_fm succ_Un_distrib nat_simp_union
+      using arity_leq_fm succ_Un_distrib ord_simp_union
       by simp
     with \<open>\<phi>\<in>_\<close>
     have "arity(?\<psi>) = 3 \<union> (pred^2(arity(ren_truth_lemma(forces(\<phi>)))))"
-      using nat_union_abs1 pred_Un_distrib by simp
+      using union_abs1 pred_Un_distrib by simp
     moreover
     have "... \<le> 3 \<union> (pred(pred(6 \<union> succ(arity(forces(\<phi>))))))" (is "_ \<le> ?r")
       using  \<open>\<phi>\<in>_\<close> Un_le_compat[OF le_refl[of 3]] 
@@ -1344,14 +1344,14 @@ proof -
     finally
     have "arity(?\<psi>) \<le> ?r" by simp
     have i:"?r \<le> 4 \<union> pred(arity(forces(\<phi>)))" 
-      using pred_Un_distrib pred_succ_eq \<open>\<phi>\<in>_\<close> Un_assoc[symmetric] nat_union_abs1 by simp
+      using pred_Un_distrib pred_succ_eq \<open>\<phi>\<in>_\<close> Un_assoc[symmetric] union_abs1 by simp
     have h:"4 \<union> pred(arity(forces(\<phi>))) \<le> 4 \<union> (4#+length(env))"
       using  \<open>env\<in>_\<close> add_commute \<open>\<phi>\<in>_\<close>
             Un_le_compat[of 4 4,OF _ pred_mono[OF _ arity_forces_le[OF _ _ \<open>arity(\<phi>)\<le>_\<close>]] ]
             \<open>env\<in>_\<close> by auto
     with \<open>\<phi>\<in>_\<close> \<open>env\<in>_\<close>
     show ?thesis
-      using le_trans[OF  \<open>arity(?\<psi>) \<le> ?r\<close>  le_trans[OF i h]] nat_simp_union by simp
+      using le_trans[OF  \<open>arity(?\<psi>) \<le> ?r\<close>  le_trans[OF i h]] ord_simp_union by simp
   qed
   ultimately
   show ?thesis using assms P_in_M leq_in_M one_in_M 

@@ -183,7 +183,7 @@ proof -
     and
     "arity(dfm(0,1)) = 2"
     using \<open>B\<in>M\<close> diff_fm_auto
-    by (simp del:FOL_sats_iff add: nat_simp_union)
+    by (simp del:FOL_sats_iff add: ord_simp_union)
   then
   have "\<forall>b\<in>M. separation(##M, \<lambda>x. sats(M,dfm(0,1) , [x, b]))"
     using separation_ax by simp
@@ -222,7 +222,7 @@ proof -
     "cpfm(0,1,2) \<in> formula"
     and
     "arity(cpfm(0,1,2)) = 3"
-    using cprod_fm_auto by (simp del:FOL_sats_iff add: fm_definitions nat_simp_union)
+    using cprod_fm_auto by (simp del:FOL_sats_iff add: fm_definitions ord_simp_union)
   then
   have "\<forall>a\<in>M. \<forall>b\<in>M. separation(##M, \<lambda>z. sats(M,cpfm(0,1,2) , [z, a, b]))"
     using separation_ax by simp
@@ -260,7 +260,7 @@ proof -
     "imfm(0,1,2) \<in> formula"
     and
     "arity(imfm(0,1,2)) = 3"
-    using im_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
+    using im_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions ord_simp_union)
   then
   have "\<forall>r\<in>M. \<forall>a\<in>M. separation(##M, \<lambda>y. sats(M,imfm(0,1,2) , [y,r,a]))"
     using separation_ax by simp
@@ -298,7 +298,7 @@ proof -
     "cfm(0,1) \<in> formula"
     and
     "arity(cfm(0,1)) = 2"
-    using con_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
+    using con_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions ord_simp_union)
   then
   have "\<forall>r\<in>M. separation(##M, \<lambda>z. sats(M,cfm(0,1) , [z,r]))"
     using separation_ax by simp
@@ -338,7 +338,7 @@ proof -
     "rfm(0,1) \<in> formula"
     and
     "arity(rfm(0,1)) = 2"
-    using rest_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
+    using rest_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions ord_simp_union)
   then
   have "\<forall>a\<in>M. separation(##M, \<lambda>z. sats(M,rfm(0,1) , [z,a]))"
     using separation_ax by simp
@@ -382,7 +382,7 @@ proof -
     "cfm(0,1,2) \<in> formula"
     and
     "arity(cfm(0,1,2)) = 3"
-    using comp_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
+    using comp_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions ord_simp_union)
   then
   have "\<forall>r\<in>M. \<forall>s\<in>M. separation(##M, \<lambda>y. sats(M,cfm(0,1,2) , [y,s,r]))"
     using separation_ax by simp
@@ -424,7 +424,7 @@ proof -
     "pfm(0,1,2) \<in> formula"
     and
     "arity(pfm(0,1,2)) = 3"
-    using pred_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
+    using pred_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions ord_simp_union)
   then
   have "\<forall>x\<in>M. \<forall>r\<in>M. separation(##M, \<lambda>y. sats(M,pfm(0,1,2) , [y,r,x]))"
     using separation_ax by simp
@@ -459,7 +459,7 @@ proof -
     "mfm(0) \<in> formula"
     and
     "arity(mfm(0)) = 1"
-    using mem_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
+    using mem_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions ord_simp_union)
   then
   have "separation(##M, \<lambda>z. sats(M,mfm(0) , [z]))"
     using separation_ax by simp
@@ -503,7 +503,7 @@ proof -
     "rffm(0,1,2,3,4,5) \<in> formula"
     and
     "arity(rffm(0,1,2,3,4,5)) = 6"
-    using recfun_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
+    using recfun_fm_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions ord_simp_union)
   then
   have "\<forall>a1\<in>M. \<forall>a2\<in>M. \<forall>a3\<in>M. \<forall>a4\<in>M. \<forall>a5\<in>M.
         separation(##M, \<lambda>x. sats(M,rffm(0,1,2,3,4,5) , [x,a1,a2,a3,a4,a5]))"
@@ -550,7 +550,7 @@ proof -
       & is_cons(##M,nb,f,cnbf) & upair(##M,cnbf,cnbf,nth(1,env)))
     \<longleftrightarrow> sats(M,fsfm(0,1,2),env)"
     and "fsfm(0,1,2) \<in> formula" and "arity(fsfm(0,1,2)) = 3" for env
-    using funsp_fm_auto[of concl:M] by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
+    using funsp_fm_auto[of concl:M] by (simp del:FOL_sats_iff pair_abs add: fm_definitions ord_simp_union)
   then
   have "\<forall>n0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,fsfm(0,1,2) , [p,z,n0]))"
     using replacement_ax by simp
@@ -610,7 +610,7 @@ proof -
     "rcfm(0,1,2) \<in> formula"
     and
     "arity(rcfm(0,1,2)) = 3"
-    using rtran_closure_mem_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions nat_simp_union)
+    using rtran_closure_mem_auto by (simp del:FOL_sats_iff pair_abs add: fm_definitions ord_simp_union)
   then
   have "\<forall>x\<in>M. \<forall>a\<in>M. separation(##M, \<lambda>y. sats(M,rcfm(0,1,2) , [y,x,a]))"
     using separation_ax by simp
@@ -648,7 +648,7 @@ lemma arity_tran_closure_fm :
   "\<lbrakk>x\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> arity(trans_closure_fm(x,f)) = succ(x) \<union> succ(f)"
   unfolding trans_closure_fm_def
   using arity_omega_fm arity_field_fm arity_typed_function_fm arity_pair_fm arity_empty_fm arity_fun_apply_fm
-    arity_composition_fm arity_succ_fm nat_union_abs2 pred_Un_distrib
+    arity_composition_fm arity_succ_fm union_abs2 pred_Un_distrib
   by auto
 
 schematic_goal wellfounded_trancl_fm_auto:
@@ -677,7 +677,7 @@ proof -
     and
     "arity(rcfm(0,1,2)) = 3"
     using wellfounded_trancl_fm_auto[of concl:M "nth(2,_)"] unfolding fm_definitions
-    by (simp del:FOL_sats_iff pair_abs add: nat_simp_union)
+    by (simp del:FOL_sats_iff pair_abs add: ord_simp_union)
   then
   have "\<forall>x\<in>M. \<forall>z\<in>M. separation(##M, \<lambda>y. sats(M,rcfm(0,1,2) , [y,x,z]))"
     using separation_ax by simp
@@ -699,7 +699,7 @@ proof -
   have "arity(finite_ordinal_fm(0)) = 1 "
     unfolding finite_ordinal_fm_def limit_ordinal_fm_def empty_fm_def succ_fm_def cons_fm_def
       union_fm_def upair_fm_def
-    by (simp add: nat_union_abs1 Un_commute)
+    by (simp add: union_abs1 Un_commute)
   with separation_ax
   have "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,finite_ordinal_fm(0),[x,v])))"
     by simp
@@ -799,7 +799,7 @@ proof -
       using that 2 1 \<open>0\<in>M\<close> \<open>A\<in>M\<close> by (simp del:pair_abs)
     have "arity(?f) = 5"
       unfolding fm_definitions
-      by (simp add:nat_simp_union)
+      by (simp add:ord_simp_union)
     then
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),A,0]))"
       using replacement_ax 1 \<open>A\<in>M\<close> \<open>0\<in>M\<close> by simp
@@ -863,7 +863,7 @@ proof -
       using that 2 1 \<open>v\<in>M\<close> by (simp del:pair_abs)
     have "arity(?f) = 4"
       unfolding fm_definitions
-      using arty by (simp add:nat_simp_union)
+      using arty by (simp add:ord_simp_union)
     then
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),v]))"
       using replacement_ax 1 \<open>v\<in>M\<close> \<open>is_F_fm\<in>formula\<close> by simp
@@ -884,7 +884,7 @@ proof -
     using  nat_0I nat_into_M by simp
   have 1:"arity(formula_functor_fm(1,0)) = 2"
     unfolding fm_definitions
-    by (simp add:nat_simp_union)
+    by (simp add:ord_simp_union)
   have 2:"formula_functor_fm(1,0)\<in>formula" by simp
   have "is_formula_functor(##M,a,b) \<longleftrightarrow>
         sats(M, formula_functor_fm(1,0), [b,a])"
@@ -900,7 +900,7 @@ lemma (in M_ZF_trans) nth_repl_intf:
     "iterates_replacement(##M,\<lambda>l' t. is_tl(##M,l',t),l)"
 proof -
   have 1:"arity(tl_fm(1,0)) = 2"
-    unfolding fm_definitions by (simp add:nat_simp_union)
+    unfolding fm_definitions by (simp add:ord_simp_union)
   have 2:"tl_fm(1,0)\<in>formula" by simp
   have "is_tl(##M,a,b) \<longleftrightarrow> sats(M, tl_fm(1,0), [b,a])"
     if "a\<in>M" "b\<in>M" for a b
@@ -916,7 +916,7 @@ lemma (in M_ZF_trans) eclose_repl1_intf:
     "iterates_replacement(##M, big_union(##M), A)"
 proof -
   have 1:"arity(big_union_fm(1,0)) = 2"
-    unfolding fm_definitions by (simp add:nat_simp_union)
+    unfolding fm_definitions by (simp add:ord_simp_union)
   have 2:"big_union_fm(1,0)\<in>formula" by simp
   have "big_union(##M,a,b) \<longleftrightarrow> sats(M, big_union_fm(1,0), [b,a])"
     if "a\<in>M" "b\<in>M" for a b
@@ -956,7 +956,7 @@ proof -
     using that \<open>0\<in>M\<close> \<open>A\<in>M\<close> nat_in_M 1 by simp
   have "arity(?f) = 5"
     unfolding fm_definitions
-    by (simp add:nat_simp_union)
+    by (simp add:ord_simp_union)
   then
   have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,A,0,nat]))"
     using replacement_ax 1 nat_in_M \<open>A\<in>M\<close> \<open>0\<in>M\<close> by simp
@@ -987,7 +987,7 @@ proof -
     using that \<open>0\<in>M\<close> nat_in_M 1 by simp
   have artyf:"arity(?f) = 4"
     unfolding fm_definitions
-    by (simp add:nat_simp_union)
+    by (simp add:ord_simp_union)
   then
   have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,0,nat]))"
     using replacement_ax 1 artyf \<open>0\<in>M\<close> nat_in_M by simp
@@ -1025,7 +1025,7 @@ proof -
     using that \<open>A\<in>M\<close> nat_in_M 1 by simp
   have artyf:"arity(?f) = 4"
     unfolding fm_definitions
-    by (simp add:nat_simp_union)
+    by (simp add:ord_simp_union)
   then
   have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,A,nat]))"
     using replacement_ax 1 artyf \<open>A\<in>M\<close> nat_in_M by simp
@@ -1084,7 +1084,7 @@ lemma (in M_ZF_trans) powapply_repl :
 proof -
   have "arity(is_powapply_fm(2,0,1)) = 3"
     unfolding is_powapply_fm_def
-    by (simp add: fm_definitions nat_simp_union)
+    by (simp add: fm_definitions ord_simp_union)
   then
   have "\<forall>f0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,is_powapply_fm(2,0,1) , [p,z,f0]))"
     using replacement_ax by simp
@@ -1125,7 +1125,7 @@ lemma (in M_ZF_trans) phrank_repl :
 proof -
   have "arity(PHrank_fm(2,0,1)) = 3"
     unfolding PHrank_fm_def
-    by (simp add: fm_definitions nat_simp_union)
+    by (simp add: fm_definitions ord_simp_union)
   then
   have "\<forall>f0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,PHrank_fm(2,0,1) , [p,z,f0]))"
     using replacement_ax by simp
@@ -1181,7 +1181,7 @@ proof -
     using that 1 \<open>X\<in>M\<close> rrank_in_M by (simp del:pair_abs)
   have "arity(?f) = 3"
     unfolding fm_definitions
-    by (simp add:nat_simp_union)
+    by (simp add:ord_simp_union)
   then
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,rrank(X)]))"
     using replacement_ax 1 \<open>X\<in>M\<close> rrank_in_M by simp
@@ -1275,7 +1275,7 @@ proof -
       using that 1 \<open>A\<in>M\<close> \<open>mesa\<in>M\<close> by (simp del:pair_abs)
     have "arity(?f) = 4"
       unfolding fm_definitions
-      by (simp add:nat_simp_union)
+      by (simp add:ord_simp_union)
     then
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,A,mesa]))"
       using replacement_ax 1 \<open>A\<in>M\<close> \<open>mesa\<in>M\<close> by simp

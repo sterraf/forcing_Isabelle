@@ -68,45 +68,43 @@ lemma pred_mono : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> pre
 lemma succ_mono : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> succ(n) \<le> succ(m)"
   by auto
 
-lemma nat_union_abs1 : 
-  "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> i \<union> j = j"
+lemma union_abs1 : 
+  "\<lbrakk> i \<le> j \<rbrakk> \<Longrightarrow> i \<union> j = j"
   by (rule Un_absorb1,erule le_imp_subset)
 
-lemma nat_union_abs2 : 
-  "\<lbrakk> Ord(i) ; Ord(j) ; i \<le> j \<rbrakk> \<Longrightarrow> j \<union> i = j"
+lemma union_abs2 : 
+  "\<lbrakk> i \<le> j \<rbrakk> \<Longrightarrow> j \<union> i = j"
   by (rule Un_absorb2,erule le_imp_subset)
 
-lemma nat_un_max : "Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> i \<union> j = max(i,j)"
-  using max_def nat_union_abs1 not_lt_iff_le leI nat_union_abs2
+lemma ord_un_max : "Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> i \<union> j = max(i,j)"
+  using max_def union_abs1 not_lt_iff_le leI union_abs2
   by auto
 
-lemma nat_max_ty : "Ord(i) \<Longrightarrow>Ord(j) \<Longrightarrow> Ord(max(i,j))"
+lemma ord_max_ty : "Ord(i) \<Longrightarrow>Ord(j) \<Longrightarrow> Ord(max(i,j))"
   unfolding max_def by simp
 
-lemma le_not_lt_nat : "Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> \<not> p\<le> q \<Longrightarrow> q \<le> p" 
-  by (rule ltE,rule not_le_iff_lt[THEN iffD1],auto,drule ltI[of q p],auto,erule leI)
-
-lemmas nat_simp_union = nat_un_max nat_max_ty max_def 
+lemmas ord_simp_union = ord_un_max ord_max_ty max_def 
 
 lemma le_succ : "x\<in>nat \<Longrightarrow> x\<le>succ(x)" by simp
+
 lemma le_pred : "x\<in>nat \<Longrightarrow> pred(x)\<le>x" 
   using pred_le[OF _ le_succ] pred_succ_eq 
   by simp
 
 lemma Un_le_compat : "o \<le> p \<Longrightarrow> q \<le> r \<Longrightarrow> Ord(o) \<Longrightarrow> Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> o \<union> q \<le> p \<union> r"
   using le_trans[of q r "p\<union>r",OF _ Un_upper2_le] le_trans[of o p "p\<union>r",OF _ Un_upper1_le]
-    nat_simp_union 
+    ord_simp_union 
   by auto
 
 lemma Un_le : "p \<le> r \<Longrightarrow> q \<le> r \<Longrightarrow>
                Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> 
                 p \<union> q \<le> r"
-  using nat_simp_union by auto
+  using ord_simp_union by auto
 
 lemma Un_leI3 : "o \<le> r \<Longrightarrow> p \<le> r \<Longrightarrow> q \<le> r \<Longrightarrow> 
                 Ord(o) \<Longrightarrow> Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> 
                 o \<union> p \<union> q \<le> r"
-  using nat_simp_union by auto
+  using ord_simp_union by auto
 
 lemma diff_mono :
   assumes "m \<in> nat" "n\<in>nat" "p \<in> nat" "m < n" "p\<le>m"
@@ -131,11 +129,6 @@ lemma le_natI : "j \<le> n \<Longrightarrow> n \<in> nat \<Longrightarrow> j\<in
 lemma le_natE : "n\<in>nat \<Longrightarrow> j < n \<Longrightarrow>  j\<in>n"
   by(rule ltE[of j n],simp+)
 
-lemma diff_cancel :
-  assumes "m \<in> nat" "n\<in>nat" "m < n"
-  shows "m#-n = 0"
-  using assms diff_is_0_lemma leI by simp
-
 lemma leD : assumes "n\<in>nat" "j \<le> n"
   shows "j < n | j = n"
   using leE[OF \<open>j\<le>n\<close>,of "j<n | j = n"] by auto
@@ -145,8 +138,8 @@ text\<open>The following results are auxiliary to the proof of
 wellfoundedness of the relation \<^term>\<open>frecR\<close>\<close>
 
 lemma max_cong :
-  assumes "x \<le> y" "Ord(y)" "Ord(z)" shows "max(x,y) \<le> max(y,z)"
-  using assms 
+  assumes "x \<le> y" "Ord(y)" "Ord(z)" 
+  shows "max(x,y) \<le> max(y,z)" 
 proof (cases "y \<le> z")
   case True
   then show ?thesis 
@@ -161,7 +154,7 @@ qed
 lemma max_commutes : 
   assumes "Ord(x)" "Ord(y)"
   shows "max(x,y) = max(y,x)"
-  using assms Un_commute nat_simp_union(1) nat_simp_union(1)[symmetric] by auto
+  using assms Un_commute ord_simp_union(1) ord_simp_union(1)[symmetric] by auto
 
 lemma max_cong2 :
   assumes "x \<le> y" "Ord(y)" "Ord(z)" "Ord(x)" 
@@ -171,7 +164,7 @@ proof -
   have " x \<union> z \<le> y \<union> z"
     using lt_Ord Ord_Un Un_mono[OF  le_imp_subset[OF \<open>x\<le>y\<close>]]  subset_imp_le by auto
   then show ?thesis 
-    using  nat_simp_union \<open>Ord(x)\<close> \<open>Ord(z)\<close> \<open>Ord(y)\<close> by simp
+    using  ord_simp_union \<open>Ord(x)\<close> \<open>Ord(z)\<close> \<open>Ord(y)\<close> by simp
 qed
 
 lemma max_D1 :
@@ -179,11 +172,11 @@ lemma max_D1 :
   shows "z\<le>y"
 proof -
   from assms
-  have "w <  x \<union> w" using Un_upper2_lt[OF \<open>w<z\<close>] assms nat_simp_union by simp
+  have "w <  x \<union> w" using Un_upper2_lt[OF \<open>w<z\<close>] assms ord_simp_union by simp
   then
   have "w < x" using assms lt_Un_iff[of x w w] lt_not_refl by auto
   then 
-  have "y = y \<union> z" using assms max_commutes nat_simp_union assms leI by simp 
+  have "y = y \<union> z" using assms max_commutes ord_simp_union assms leI by simp 
   then 
   show ?thesis using Un_leD2 assms by simp
 qed
@@ -196,7 +189,7 @@ proof -
   have "x < z \<union> y" using Un_upper2_lt[OF \<open>x<y\<close>] by simp
   then
   consider (a) "x < y" | (b) "x < w"
-    using assms nat_simp_union by simp
+    using assms ord_simp_union by simp
   then show ?thesis proof (cases)
     case a
     consider (c) "w = y" | (d) "w = z" 
@@ -219,7 +212,7 @@ proof -
         with \<open>w=z\<close>
         have "max(z,y) = y"  unfolding max_def using assms by simp
         with assms
-        have "... = x \<union> w" using nat_simp_union max_commutes  by simp
+        have "... = x \<union> w" using ord_simp_union max_commutes  by simp
         then show ?thesis using le_Un_iff assms by blast
       qed
     qed

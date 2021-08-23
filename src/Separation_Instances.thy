@@ -56,7 +56,7 @@ lemma (in M_ZF_trans) separation_is_radd_body:
    apply(rule_tac is_radd_body_iff_sats[where env="[_,A,r]",symmetric])
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[A,r]",simplified])
-    apply(simp_all add:arity_is_radd_body_fm nat_simp_union is_radd_body_fm_type)
+    apply(simp_all add:arity_is_radd_body_fm ord_simp_union is_radd_body_fm_type)
   done
 
 lemma (in M_ZF_trans) radd_body_abs:
@@ -90,7 +90,7 @@ lemma (in M_ZF_trans) separation_well_ord_body:
    apply(rule_tac well_ord_body_iff_sats[where env="[_,A,f,r]",symmetric])
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[A,f,r]",simplified])
-    apply(simp_all add:arity_well_ord_body_fm nat_simp_union well_ord_body_fm_type)
+    apply(simp_all add:arity_well_ord_body_fm ord_simp_union well_ord_body_fm_type)
   done
 
 lemma (in M_ZF_trans) separation_well_ord:
@@ -119,7 +119,7 @@ lemma (in M_ZF_trans) separation_is_obase_body:
    apply(rule_tac is_obase_body_iff_sats[where env="[_,A,r]",symmetric])
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[A,r]",simplified])
-    apply(simp_all add:arity_is_obase_body_fm nat_simp_union is_obase_body_fm_type)
+    apply(simp_all add:arity_is_obase_body_fm ord_simp_union is_obase_body_fm_type)
   done
 
 lemma (in M_ZF_trans) separation_is_obase:
@@ -154,7 +154,7 @@ lemma (in M_ZF_trans) separation_obase_equals_aux:
    apply(rule_tac is_obase_equals_iff_sats[where env="[_,A,r]",symmetric])
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[A,r]",simplified])
-    apply(simp_all add:arity_is_obase_equals_fm nat_simp_union is_obase_equals_fm_type)
+    apply(simp_all add:arity_is_obase_equals_fm ord_simp_union is_obase_equals_fm_type)
   done
 
 lemma (in M_ZF_trans) separation_obase_equals:
@@ -182,7 +182,7 @@ lemma (in M_ZF_trans) separation_is_id_body:
    apply(rule_tac is_id_body_iff_sats[where env="[_,A]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A]",simplified])
-    apply(simp_all add:arity_is_id_body_fm nat_simp_union is_id_body_fm_type)
+    apply(simp_all add:arity_is_id_body_fm ord_simp_union is_id_body_fm_type)
   done
 
 lemma (in M_ZF_trans) id_body_abs:
@@ -214,7 +214,7 @@ lemma (in M_ZF_trans) separation_is_rvimage_body:
    apply(rule_tac is_rvimage_body_iff_sats[where env="[_,f,r]",symmetric])
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[f,r]",simplified])
-    apply(simp_all add:arity_is_rvimage_body_fm nat_simp_union is_rvimage_body_fm_type)
+    apply(simp_all add:arity_is_rvimage_body_fm ord_simp_union is_rvimage_body_fm_type)
   done
 
 lemma (in M_ZF_trans) rvimage_body_abs:
@@ -250,7 +250,7 @@ lemma (in M_ZF_trans) separation_is_rmult_body:
    apply(rule_tac is_rmult_body_iff_sats[where env="[_,b,d]",symmetric])
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[b,d]",simplified])
-    apply(simp_all add:arity_is_rmult_body_fm nat_simp_union is_rmult_body_fm_type)
+    apply(simp_all add:arity_is_rmult_body_fm ord_simp_union is_rmult_body_fm_type)
   done
 
 lemma (in M_ZF_trans) rmult_body_abs:
@@ -284,7 +284,7 @@ lemma (in M_ZF_trans) separation_is_ord_iso_body:
    apply(rule_tac is_ord_iso_body_iff_sats[where env="[_,A,r,s]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A,r,s]",simplified])
-    apply(simp_all add:arity_is_ord_iso_body_fm nat_simp_union is_ord_iso_body_fm_type)
+    apply(simp_all add:arity_is_ord_iso_body_fm ord_simp_union is_ord_iso_body_fm_type)
   done
 
 lemma (in M_ZF_trans) ord_iso_body_abs:
@@ -313,7 +313,7 @@ lemma (in M_ZF_trans) separation_PiP_rel:
    apply(rule_tac PiP_rel_iff_sats[where env="[_,A]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A]",simplified])
-    apply(simp_all add:arity_PiP_rel_fm nat_simp_union PiP_rel_fm_type)
+    apply(simp_all add:arity_PiP_rel_fm ord_simp_union PiP_rel_fm_type)
   done
 
 synthesize "injP_rel" from_definition assuming "nonempty"
@@ -326,7 +326,7 @@ lemma (in M_ZF_trans) separation_injP_rel:
    apply(rule_tac injP_rel_iff_sats[where env="[_,A]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A]",simplified])
-    apply(simp_all add:arity_injP_rel_fm nat_simp_union injP_rel_fm_type)
+    apply(simp_all add:arity_injP_rel_fm ord_simp_union injP_rel_fm_type)
   done
 
 synthesize "surjP_rel" from_definition assuming "nonempty"
@@ -339,7 +339,7 @@ lemma (in M_ZF_trans) separation_surjP_rel:
    apply(rule_tac surjP_rel_iff_sats[where env="[_,A,B]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A,B]",simplified])
-    apply(simp_all add:arity_surjP_rel_fm nat_simp_union surjP_rel_fm_type)
+    apply(simp_all add:arity_surjP_rel_fm ord_simp_union surjP_rel_fm_type)
   done
 
 synthesize "cons_like_rel" from_definition assuming "nonempty"
@@ -352,7 +352,7 @@ lemma (in M_ZF_trans) separation_cons_like_rel:
    apply(rule_tac cons_like_rel_iff_sats[where env="[_]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[]",simplified])
-    apply(simp_all add:arity_cons_like_rel_fm nat_simp_union cons_like_rel_fm_type)
+    apply(simp_all add:arity_cons_like_rel_fm ord_simp_union cons_like_rel_fm_type)
   done
 
 definition supset_body :: "[i] \<Rightarrow> o" where
@@ -371,7 +371,7 @@ lemma (in M_ZF_trans) separation_is_supset_body:
    apply(rule_tac is_supset_body_iff_sats[where env="[_]",symmetric])
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[]",simplified])
-    apply(simp_all add:arity_is_supset_body_fm nat_simp_union is_supset_body_fm_type)
+    apply(simp_all add:arity_is_supset_body_fm ord_simp_union is_supset_body_fm_type)
   done
 
 lemma (in M_ZF_trans) supset_body_abs:
@@ -395,7 +395,7 @@ lemma (in M_ZF_trans) separation_is_fst:
    apply(rule_tac fst_iff_sats[where env="[_,a]",symmetric])
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[a]",simplified])
-    apply(simp_all add:arity_fst_fm nat_simp_union fst_fm_type)
+    apply(simp_all add:arity_fst_fm ord_simp_union fst_fm_type)
   done
 
 lemma (in M_ZF_trans) separation_fst_equal:
@@ -411,7 +411,7 @@ lemma (in M_ZF_trans) separation_is_apply:
    apply(rule_tac fun_apply_iff_sats[where env="[_,f,a]",symmetric])
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[f,a]",simplified])
-    apply(simp_all add:arity_fun_apply_fm nat_simp_union)
+    apply(simp_all add:arity_fun_apply_fm ord_simp_union)
   done
 
 lemma (in M_ZF_trans) separation_equal_apply:
@@ -432,7 +432,7 @@ lemma (in M_ZF_trans) separation_is_id_rel:
    apply(rule_tac is_id_rel_iff_sats[where env="[_]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[]",simplified])
-    apply(simp_all add:arity_is_id_rel_fm nat_simp_union is_id_rel_fm_type)
+    apply(simp_all add:arity_is_id_rel_fm ord_simp_union is_id_rel_fm_type)
   done
 
 lemma (in M_ZF_trans) id_rel_abs:
@@ -462,7 +462,7 @@ lemma (in M_ZF_trans) separation_is_sndfst_eq_fstsnd:
    apply(rule_tac is_sndfst_eq_fstsnd_iff_sats[where env="[_]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[]",simplified])
-    apply(simp_all add:arity_is_sndfst_eq_fstsnd_fm nat_simp_union is_sndfst_eq_fstsnd_fm_type)
+    apply(simp_all add:arity_is_sndfst_eq_fstsnd_fm ord_simp_union is_sndfst_eq_fstsnd_fm_type)
   done
 
 lemma (in M_ZF_trans) sndfst_eq_fstsnd_abs:
@@ -494,7 +494,7 @@ lemma (in M_ZF_trans) separation_is_fstfst_eq_fstsnd:
    apply(rule_tac is_fstfst_eq_fstsnd_iff_sats[where env="[_]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[]",simplified])
-    apply(simp_all add:arity_is_fstfst_eq_fstsnd_fm nat_simp_union is_fstfst_eq_fstsnd_fm_type)
+    apply(simp_all add:arity_is_fstfst_eq_fstsnd_fm ord_simp_union is_fstfst_eq_fstsnd_fm_type)
   done
 
 lemma (in M_ZF_trans) fstfst_eq_fstsnd_abs:
@@ -526,7 +526,7 @@ lemma (in M_ZF_trans) separation_is_fstfst_eq:
    apply(rule_tac is_fstfst_eq_iff_sats[where env="[_,a]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[a]",simplified])
-    apply(simp_all add:arity_is_fstfst_eq_fm nat_simp_union is_fstfst_eq_fm_type)
+    apply(simp_all add:arity_is_fstfst_eq_fm ord_simp_union is_fstfst_eq_fm_type)
   done
 
 lemma (in M_ZF_trans) fstfst_eq_abs:
@@ -558,7 +558,7 @@ lemma (in M_ZF_trans) separation_is_restrict_elem:
    apply(rule_tac is_restrict_elem_iff_sats[where env="[_,A,B]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A,B]",simplified])
-    apply(simp_all add:arity_is_restrict_elem_fm nat_simp_union is_restrict_elem_fm_type)
+    apply(simp_all add:arity_is_restrict_elem_fm ord_simp_union is_restrict_elem_fm_type)
   done
 
 lemma (in M_ZF_trans) restrict_elem_abs:
@@ -585,7 +585,7 @@ lemma (in M_ZF_trans) separation_ordinal:
    apply(rule_tac ordinal_iff_sats[where env="[_]",symmetric])
   apply(simp_all)
   apply(rule_tac separation_ax[where env="[]",simplified])
-    apply(simp_all add:nat_simp_union )
+    apply(simp_all add:ord_simp_union )
   done
 
 lemma (in M_ZF_trans) separation_Ord:
@@ -610,7 +610,7 @@ lemma (in M_ZF_trans) separation_is_insnd_ballPair:
    apply(rule_tac is_insnd_ballPair_iff_sats[where env="[_,A,B]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A,B]",simplified])
-    apply(simp_all add:arity_is_insnd_ballPair_fm nat_simp_union is_insnd_ballPair_fm_type)
+    apply(simp_all add:arity_is_insnd_ballPair_fm ord_simp_union is_insnd_ballPair_fm_type)
   done
 
 lemma (in M_ZF_trans) insnd_ballPair_abs:
@@ -646,7 +646,7 @@ lemma (in M_ZF_trans) separation_is_bex_restrict_eq_dom:
    apply(rule_tac is_bex_restrict_eq_dom_iff_sats[where env="[_,x,A,B]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[x,A,B]",simplified])
-    apply(simp_all add:arity_is_bex_restrict_eq_dom_fm nat_simp_union is_bex_restrict_eq_dom_fm_type)
+    apply(simp_all add:arity_is_bex_restrict_eq_dom_fm ord_simp_union is_bex_restrict_eq_dom_fm_type)
   done
 lemma (in M_ZF_trans) bex_restrict_eq_dom_abs:
   assumes "(##M)(B)" "(##M)(A)" "(##M)(x)" "(##M)(dr)"
@@ -685,7 +685,7 @@ lemma (in M_ZF_trans) separation_is_insnd_restrict_eq_dom:
    apply(rule_tac is_insnd_restrict_eq_dom_iff_sats[where env="[_,D,A,B]",symmetric])
   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[D,A,B]",simplified])
-    apply(simp_all add:arity_is_insnd_restrict_eq_dom_fm nat_simp_union is_insnd_restrict_eq_dom_fm_type)
+    apply(simp_all add:arity_is_insnd_restrict_eq_dom_fm ord_simp_union is_insnd_restrict_eq_dom_fm_type)
   done
 
 lemma (in M_basic) insnd_restrict_eq_dom_abs:
@@ -742,7 +742,7 @@ lemma (in M_ZF_trans) separation_is_ifrangeF_body:
    apply(rule_tac is_ifrangeF_body_iff_sats[where env="[_,A,r,s]",symmetric])
             apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A,r,s]",simplified])
-    apply(simp_all add:arity_is_ifrangeF_body_fm nat_simp_union is_ifrangeF_body_fm_type)
+    apply(simp_all add:arity_is_ifrangeF_body_fm ord_simp_union is_ifrangeF_body_fm_type)
   done
 
 lemma (in M_basic) is_ifrFb_body_closed: "M(r) \<Longrightarrow> M(s) \<Longrightarrow> is_ifrFb_body(M, r, s, x, i) \<Longrightarrow> M(i)"
@@ -828,7 +828,7 @@ lemma (in M_ZF_trans) separation_is_ifrangeF_body2:
    apply(rule_tac is_ifrangeF_body2_iff_sats[where env="[_,A,G,r,s]",symmetric])
               apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A,G,r,s]",simplified])
-    apply(simp_all add:arity_is_ifrangeF_body2_fm nat_simp_union is_ifrangeF_body2_fm_type)
+    apply(simp_all add:arity_is_ifrangeF_body2_fm ord_simp_union is_ifrangeF_body2_fm_type)
   done
 
 lemma (in M_basic) is_ifrFb_body2_closed: "M(G) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow> is_ifrFb_body2(M, G, r, s, x, i) \<Longrightarrow> M(i)"
@@ -919,7 +919,7 @@ lemma (in M_ZF_trans) separation_is_ifrangeF_body3:
    apply(rule_tac is_ifrangeF_body3_iff_sats[where env="[_,A,G,r,s]",symmetric])
               apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A,G,r,s]",simplified])
-    apply(simp_all add:arity_is_ifrangeF_body3_fm nat_simp_union is_ifrangeF_body3_fm_type)
+    apply(simp_all add:arity_is_ifrangeF_body3_fm ord_simp_union is_ifrangeF_body3_fm_type)
   done
 
 lemma (in M_basic) is_ifrFb_body3_closed: "M(G) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow> is_ifrFb_body3(M, G, r, s, x, i) \<Longrightarrow> M(i)"
@@ -1008,7 +1008,7 @@ lemma (in M_ZF_trans) separation_is_ifrangeF_body4:
    apply(rule_tac is_ifrangeF_body4_iff_sats[where env="[_,A,G,r,s]",symmetric])
               apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A,G,r,s]",simplified])
-    apply(simp_all add:arity_is_ifrangeF_body4_fm nat_simp_union is_ifrangeF_body4_fm_type)
+    apply(simp_all add:arity_is_ifrangeF_body4_fm ord_simp_union is_ifrangeF_body4_fm_type)
   done
 
 lemma (in M_basic) is_ifrFb_body4_closed: "M(G) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow> is_ifrFb_body4(M, G, r, s, x, i) \<Longrightarrow> M(i)"
@@ -1095,7 +1095,7 @@ lemma (in M_ZF_trans) separation_is_ifrangeF_body5:
    apply(rule_tac is_ifrangeF_body5_iff_sats[where env="[_,A,G,r,s]",symmetric])
               apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A,G,r,s]",simplified])
-    apply(simp_all add:arity_is_ifrangeF_body5_fm nat_simp_union is_ifrangeF_body5_fm_type)
+    apply(simp_all add:arity_is_ifrangeF_body5_fm ord_simp_union is_ifrangeF_body5_fm_type)
   done
 
 lemma (in M_basic) is_ifrFb_body5_closed: "M(G) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow> is_ifrFb_body5(M, G, r, s, x, i) \<Longrightarrow> M(i)"
@@ -1120,7 +1120,7 @@ lemma (in M_ZF_trans) separation_is_toplevel6_body:
    apply(rule_tac is_toplevel6_body_iff_sats[where env="[_,A]",symmetric])
   apply(simp_all add:nonempty[simplified])
   apply(rule_tac separation_ax[where env="[A]",simplified])
-    apply(simp_all add:arity_is_toplevel6_body_fm nat_simp_union is_toplevel6_body_fm_type)
+    apply(simp_all add:arity_is_toplevel6_body_fm ord_simp_union is_toplevel6_body_fm_type)
   done
 
 lemma (in M_ZF_trans) toplevel6_body_abs:
@@ -1249,7 +1249,7 @@ lemma (in M_ZF_trans) separation_is_ifrangeF_body6:
    apply(rule_tac is_ifrangeF_body6_iff_sats[where env="[_,A,G,r,s]",symmetric])
               apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A,G,r,s]",simplified])
-    apply(simp_all add:arity_is_ifrangeF_body6_fm nat_simp_union is_ifrangeF_body6_fm_type)
+    apply(simp_all add:arity_is_ifrangeF_body6_fm ord_simp_union is_ifrangeF_body6_fm_type)
   done
 
 lemma (in M_basic) ifrFb_body6_closed: "M(G) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow> ifrFb_body6(G, r, s, x, i) \<longleftrightarrow>  M(i) \<and> ifrFb_body6(G, r, s, x, i)"
@@ -1347,7 +1347,7 @@ lemma (in M_ZF_trans) separation_is_ifrangeF_body7:
    apply(rule_tac is_ifrangeF_body7_iff_sats[where env="[_,A,B,D,G,r,s]",symmetric])
                   apply(simp_all add:zero_in_M)
   apply(rule_tac separation_ax[where env="[A,B,D,G,r,s]",simplified])
-    apply(simp_all add:arity_is_ifrangeF_body7_fm nat_simp_union is_ifrangeF_body7_fm_type)
+    apply(simp_all add:arity_is_ifrangeF_body7_fm ord_simp_union is_ifrangeF_body7_fm_type)
   done
 
 lemma (in M_basic) ifrFb_body7_closed: "M(B) \<Longrightarrow> M(D) \<Longrightarrow> M(G) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow>

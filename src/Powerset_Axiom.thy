@@ -54,7 +54,7 @@ proof -
   with \<open>?\<phi>' \<in> formula\<close>
   have 1: "arity(Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))))\<le>5"     (is "arity(?\<psi>)\<le>5")
     unfolding pair_fm_def upair_fm_def
-    using nat_simp_union pred_le arity_type by auto
+    using ord_simp_union pred_le arity_type by auto
   {
     fix sp
     note \<open>A\<times>B \<in> M\<close>
@@ -183,7 +183,7 @@ proof -
       note \<open>val(P,G,\<chi>) = c\<close>
       ultimately 
       have "sats(M[G],Member(0,1),[x,c])"
-        using \<open>\<chi> \<in> M\<close> generic definition_of_forcing nat_simp_union
+        using \<open>\<chi> \<in> M\<close> generic definition_of_forcing ord_simp_union
         by auto
       moreover 
       have "x\<in>M[G]"
@@ -222,7 +222,7 @@ proof -
       note \<open>\<chi> \<in> M\<close>
       ultimately 
       obtain p where "p\<in>G" "(p \<tturnstile> Member(0,1) [\<sigma>,\<chi>])"
-        using generic truth_lemma[of "Member(0,1)" "G" "[\<sigma>,\<chi>]" ] nat_simp_union
+        using generic truth_lemma[of "Member(0,1)" "G" "[\<sigma>,\<chi>]" ] ord_simp_union
         by auto
       moreover from \<open>p\<in>G\<close> 
       have "p\<in>P"
@@ -252,7 +252,7 @@ proof -
     by simp
   also from \<open>?b\<in>M[G]\<close> \<open>a\<in>M[G]\<close>
   have " ... \<in> M[G]"
-    using Collect_sats_in_MG GenExtI nat_simp_union by simp
+    using Collect_sats_in_MG GenExtI ord_simp_union by simp
   finally show ?thesis .
 qed
 end (* G_generic *)
