@@ -595,31 +595,6 @@ definition
 
 synthesize "surjP_rel" from_definition assuming "nonempty"
 
-schematic_goal t:
-  assumes
-    "A \<in> nat" "B \<in> nat" "f \<in> nat" "env \<in> list(M)" "0 \<in> M"
-  shows
-    "surjP_rel(##M, nth(A,env), nth(B,env), nth(f,env)) \<longleftrightarrow> sats(M, ?fm(A,B,f), env)"
-  unfolding surjP_rel_def
-  apply (insert assms)
-  apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-   apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-       apply (rule iff_sats | simp)
-  apply (rule iff_sats | simp)
-       apply (rule iff_sats | simp)
-  by (rule iff_sats | simp)+
-
-lemma t':
-  assumes
-    "A \<in> nat" "B \<in> nat" "f \<in> nat" "env \<in> list(M)" "0 \<in> M"
-  shows
-    "\<forall>y\<in>M. \<exists>x\<in>M. Y(y) \<longrightarrow> X(x,y)" (* x \<in> nth(A, env) \<and> is_apply(##M, nth(f, env), x, fx) \<and> fx = y *)
-  using assms [[simp_trace]]
-  apply simp
-  oops
-
 context M_basic
 begin
 
