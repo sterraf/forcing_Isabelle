@@ -5,7 +5,6 @@ theory Relativization
   imports "ZF-Constructible.Formula"
     "ZF-Constructible.Relative"
     "ZF-Constructible.Datatype_absolute"
-    Least
     Higher_Order_Constructs
   keywords
     "relativize" :: thy_decl % "ML"
@@ -35,7 +34,7 @@ theory Relativization
     "for"
 
 begin
-ML_file\<open>Utils.ml\<close>
+
 ML_file\<open>Relativization_Database.ml\<close>
 
 ML\<open>

@@ -9,8 +9,8 @@ session "Forcing" in "." =  "Delta_System_Lemma" +
     transitive model of ZFC, we construct a proper generic extension 
     and show that the latter also satisfies ZFC.    
   "  
-  options [timeout=206, document = pdf, document_output = "output", 
-  	   document_variants = "document:outline=/proof,/ML",quick_and_dirty]
+  options [timeout=300, document = pdf, document_output = "output", 
+  	   document_variants = "document:outline=/proof,/ML"]
   theories
     "Rasiowa_Sikorski"
     "Forcing_Main"

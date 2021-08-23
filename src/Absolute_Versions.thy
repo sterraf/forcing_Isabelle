@@ -128,7 +128,8 @@ lemma csucc_le_mono:
   using assms V.csucc_rel_le_mono by (simp add:V_simps)
 
 txt\<open>Example of transferring results from a transitive model to \<^term>\<open>\<V>\<close>\<close>
-lemma (in M_Perm) assumes "M(A)" "M(B)" "A \<approx>\<^bsup>M\<^esup> B"
+lemma (in M_Perm) eqpoll_rel_transfer_absolute:
+  assumes "M(A)" "M(B)" "A \<approx>\<^bsup>M\<^esup> B"
   shows "A \<approx> B"
 proof -
   interpret M_N_Perm M \<V>

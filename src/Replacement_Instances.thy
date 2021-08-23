@@ -49,8 +49,8 @@ lemma (in M_ZF_trans) lam_replacement_domain : "lam_replacement(##M, domain)"
      arity_domain_fm[of 0 1] nat_simp_union transitivity domain_closed
   by simp
 
-text\<open>Then we recover the original version. Notice that we need closedness because we
-haven't yet interpreted M_replacement.\<close>
+text\<open>Then we recover the original version. Notice that we need closure because we
+haven't yet interpreted \<^term>\<open>M_replacement\<close>.\<close>
 lemma (in M_ZF_trans) replacement_domain':
  "strong_replacement(##M, \<lambda>f y. y = domain(f))"
   using lam_replacement_imp_strong_replacement_aux lam_replacement_domain domain_closed
