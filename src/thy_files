@@ -1,7 +1,19 @@
 # This file is used by various scripts. One can form groups of files using
 # doble quotes for marking the begin and end of each group.
 "Forces_Definition.thy
- Definitions_Main.thy"
+ Definitions_Main.thy
+ Cardinal_AC_Relative.thy
+ Cohen_Posets.thy
+ Discipline_Base.thy
+ Discipline_Cardinal.thy
+ FiniteFun_Relative.thy
+ FrecR_Arities.thy
+ Higher_Order_Constructs.thy
+ Relativization.thy
+ Replacement_Instances.thy
+ Separation_Instances.thy
+ Utils.thy
+ ZF_Trans_Interpretations.thy"
 "Arities.thy
  Forcing_Theorems.thy"
 "Interface.thy

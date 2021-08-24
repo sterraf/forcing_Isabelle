@@ -96,7 +96,7 @@ debug:
 	@echo "================================="
 	@echo "Arguments:"
 	@echo
-	@echo "OPTION  = " $(OPTION)
+	@echo "OPTION  = "$(OPTION)
 	@echo "CHAPTER = "$(CHAPTER)
 	@echo "SESSION = "$(SESSION)
 	@echo "OUT_DIR = "$(OUT_DIR)

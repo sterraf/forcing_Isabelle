@@ -38,7 +38,6 @@ $(HTML_DIR):	thy_files $(THY_FILES) $(ML_FILES) $(LINKING_DIR) ROOT \
 	cat $(LINKING_DIR)/links.css >> $(HTML_DIR)/isabelle.css
 	cp locale_assumptions_$(SESSION).txt $(HTML_DIR)
 	cd $(HTML_DIR); \
-		bash $(LINKING_DIR)/link_locales.sh $(SESSION) . . $(PARALLEL); \
 		bash $(LINKING_DIR)/parsing.sh $(SESSION); \
 		bash $(LINKING_DIR)/linking.sh $(SESSION) . . $(PARALLEL)
 
@@ -98,7 +97,7 @@ debug:
 	@echo "================================="
 	@echo "Arguments:"
 	@echo
-	@echo "OPTION  = " $(OPTION)
+	@echo "OPTION  = "$(OPTION)
 	@echo "CHAPTER = "$(CHAPTER)
 	@echo "SESSION = "$(SESSION)
 	@echo "OUT_DIR = "$(OUT_DIR)
