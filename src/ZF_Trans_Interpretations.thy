@@ -205,9 +205,12 @@ lemma (in M_ZF_trans) replacement_jump_cardinal_body:
   by simp
 
 sublocale M_ZF_trans \<subseteq> M_pre_aleph "##M"
-  apply (unfold_locales)
   using replacement_ordertype replacement_jump_cardinal_body HAleph_wfrec_repl
-  by simp_all
+    lam_replacement_min[unfolded lam_replacement_def]
+    lam_replacement_imp_strong_replacement lam_replacement_vimage_sing_fun
+    lam_replacement_Sigfun[OF lam_replacement_vimage_sing_fun]
+    vimage_closed singleton_closed surj_imp_inj_replacement1
+  by unfold_locales simp_all
 
 arity_theorem intermediate for "is_HAleph_fm" 
 lemma arity_is_HAleph_fm: "arity(is_HAleph_fm(2, 1, 0)) = 3"
@@ -250,12 +253,10 @@ sublocale M_ZF_trans \<subseteq> M_FiniteFun "##M"
     replacement_range replacement_omega_funspace
   by (unfold_locales,simp_all)
 
-sublocale M_ZFC_trans \<subseteq> M_cardinal_AC "##M"
-  using choice_ax lam_replacement_min[unfolded lam_replacement_def] 
-    lam_replacement_imp_strong_replacement lam_replacement_vimage_sing_fun
-    lam_replacement_Sigfun[OF lam_replacement_vimage_sing_fun]
-    vimage_closed singleton_closed surj_imp_inj_replacement1
-  by (unfold_locales, simp_all)
+sublocale M_ZFC_trans \<subseteq> M_AC "##M"
+  using choice_ax by (unfold_locales, simp_all)
+
+sublocale M_ZFC_trans \<subseteq> M_cardinal_AC "##M" ..
 
 (* TopLevel *)
   (* 1. \<And>Q x. Q \<in> M \<Longrightarrow> separation(##M, \<lambda>a. \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)  *)

@@ -7,7 +7,7 @@ theory Succession_Poset
     
 begin
 
-sublocale M_ctm \<subseteq> M_seqspace "##M"
+sublocale M_ZF_trans \<subseteq> M_seqspace "##M"
   by (unfold_locales, simp add:replacement_omega_funspace)
 
 definition seq_upd :: "i \<Rightarrow> i \<Rightarrow> i" where

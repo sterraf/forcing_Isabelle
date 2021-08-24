@@ -8,15 +8,12 @@ theory Cardinal_AC_Relative
 
 begin
 
-locale M_cardinal_AC = M_cardinal_arith +
+locale M_AC =
+  fixes M
   assumes
   choice_ax: "choice_ax(M)"
-  and
-  surj_imp_inj_replacement:
-  "M(f) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> f -`` {x} \<and> z = {\<langle>x, y\<rangle>})"
-  "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>y. f -`` {y}))"
-  "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = f -`` {x})"
-  "M(f) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, f -`` {x})\<rangle>)"
+
+locale M_cardinal_AC = M_cardinal_arith + M_AC
 begin
 
 lemma well_ord_surj_imp_lepoll_rel:
