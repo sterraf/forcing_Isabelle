@@ -88,8 +88,7 @@ Assorted To-Dos
 - Relocate material on antichains (in Forcing_Notions?) and results on
   range (both now in Cardinal_Preservation).
 
-- Check results which results proved for nat can be generalized to
-  Ord.
+- Check which results proved for nat can be generalized to Ord.
   
 
 ;; Local Variables:

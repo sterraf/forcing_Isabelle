@@ -437,7 +437,7 @@ lemma arity_RepFun: "arity(is_RepFun_body_fm(0, 1, 2)) = 3"
   by simp
 
 lemma (in M_ZF_trans) RepFun_SigFun_closed: "x \<in> M \<Longrightarrow> z \<in> M \<Longrightarrow> {{\<langle>z, x\<rangle>} . x \<in> x} \<in> M"
-  using lam_replacement_surj_imp_inj1 lam_replacement_imp_strong_replacement RepFun_closed
+  using lam_replacement_sing_const_id lam_replacement_imp_strong_replacement RepFun_closed
     transitivity singleton_in_M_iff pair_in_M_iff
   by simp
 
@@ -784,6 +784,7 @@ shows "is_abs_apply_pair(M,A,f, x, res) \<longleftrightarrow> res = abs_apply_pa
   by auto
 
 synthesize "is_abs_apply_pair" from_definition assuming "nonempty"
+
 lemma arity_is_abs_aux: "arity((\<cdot>\<exists>\<cdot>\<cdot>7`0 is 1\<cdot> \<and> pair_fm(5, 2, 0) \<cdot>\<cdot>))  = 7"
   using arity_fun_apply_fm arity_pair_fm pred_Un_distrib
     ord_simp_union by simp

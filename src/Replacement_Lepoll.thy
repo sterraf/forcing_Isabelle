@@ -284,7 +284,7 @@ declare if_range_F_else_F_def[simp]
 lemma lepoll_assumptions1:
   assumes types[simp]:"M(A)" "M(S)"
   shows "lepoll_assumptions1(M,A,F,S,fa,K,x,f,r)"
-  using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 separation_in]
+  using strong_replacement_separation[OF lam_replacement_sing_const_id separation_in]
     transM[of _ S]
   by simp
 
@@ -350,7 +350,7 @@ lemma lepoll_assumptions5:
 lemma lepoll_assumptions6:
   assumes types[simp]:"M(A)" "M(S)" "M(x)"
   shows "lepoll_assumptions6(M,A,F,S,fa,K,x,f,r)"
-  using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 separation_in]
+  using strong_replacement_separation[OF lam_replacement_sing_const_id separation_in]
      lam_replacement_inj_rel
   by simp
 
@@ -403,7 +403,7 @@ lemma lepoll_assumptions11:
 lemma lepoll_assumptions12:
   assumes types[simp]:"M(A)" "M(x)" "M(f)"
   shows "lepoll_assumptions12(M,A,F,S,fa,K,x,f,r)"
-  using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 separation_in]
+  using strong_replacement_separation[OF lam_replacement_sing_const_id separation_in]
   by simp
 
 lemma lepoll_assumptions13:
@@ -434,7 +434,7 @@ lemma lepoll_assumptions14:
 lemma lepoll_assumptions15:
   assumes types[simp]:"M(A)" "M(x)" "M(f)" "M(K)"
   shows "lepoll_assumptions15(M,A,F,S,fa,K,x,f,r)"
-  using strong_replacement_separation[OF lam_replacement_surj_imp_inj1 separation_in]
+  using strong_replacement_separation[OF lam_replacement_sing_const_id separation_in]
   by simp
 
 lemma lepoll_assumptions16:

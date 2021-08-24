@@ -1136,37 +1136,7 @@ lemma (in M_ZF_trans) separation_toplevel6_body:
   using separation_is_toplevel6_body toplevel6_body_abs
   unfolding toplevel6_body_def
   by (rule_tac separation_cong[
-        where P="is_toplevel6_body(##M,R)",THEN iffD1])
-
-(* FIXME: move this to where it belongs. *)
-lemma (in M_basic) separation_in_rev':
-  assumes "(M)(a)"
-  shows "separation(M,\<lambda>x . a\<in>x)"
-proof -
-  have eq: "{x\<in>A. a\<in>x} = Memrel(A\<union>{a}) `` {a}" for A
-  unfolding ZF_Base.image_def
-  by(intro equalityI,auto simp:mem_not_refl)
-  {
-    fix A
-    assume "M(A)"
-    with assms 
-    have "M(Memrel(A\<union>{a}) `` {a})"
-      by simp
-    then 
-    have "M({x\<in>A. a\<in>x})" (is "M(?R)")
-      using eq by simp
-    moreover
-    have "\<forall>z[M].z\<in>?R \<longleftrightarrow> z\<in>A\<and>a\<in>z"
-      by simp
-    ultimately
-    have "\<exists>y[M].\<forall>z[M].z\<in>y \<longleftrightarrow> z\<in>A\<and>a\<in>z"
-      using rexI[of _ ?R] by simp
-  }
-  then show ?thesis
-    unfolding separation_def
-    by simp
-qed
-    
+        where P="is_toplevel6_body(##M,R)",THEN iffD1])    
 
 lemma (in M_ZF_trans) ifrangeF_body5_abs:
   assumes "(##M)(A)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
@@ -1185,7 +1155,7 @@ proof -
       fix y
       from assms \<open>a\<in>M\<close> \<open>z\<in>M\<close>
       show "is_ifrFb_body5(##M, G, r, s, z, y) \<longleftrightarrow> ifrFb_body5(G, r, s, z, y)"
-        using If_abs apply_0 separation_in separation_in_rev'
+        using If_abs apply_0 separation_in separation_in_rev
         unfolding ifrFb_body5_def is_ifrFb_body5_def
         apply (cases "y\<in>M"; cases "y\<in>range(s)"; cases "r=0"; cases "y\<in>domain(G)";
             auto dest:transM split del: split_if del:iffI)
