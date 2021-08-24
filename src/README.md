@@ -5,6 +5,8 @@ This is a development version.
 
 The source theory files are located in the `src` directory.
 
+A browseable version can be found at https://cs.famaf.unc.edu.ar/~pedro/forcing/html2/.
+
 Running the session with jEdit
 ==============================
 
