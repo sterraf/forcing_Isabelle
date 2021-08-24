@@ -7,3 +7,7 @@ a.pst-lnk:hover {
     color: blue;
     text-decoration: underline;
 }
+
+.quoted a.pst-lnk{
+    text-decoration: none;
+}
