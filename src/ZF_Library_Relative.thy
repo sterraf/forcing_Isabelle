@@ -88,7 +88,7 @@ abbreviation
   Finite_to_one_r_set :: "[i,i,i] \<Rightarrow> i" (\<open>Finite'_to'_one\<^bsup>_\<^esup>'(_,_')\<close>) where
   "Finite_to_one\<^bsup>M\<^esup>(X,Y) \<equiv> Finite_to_one_rel(##M,X,Y)"
 
-locale M_library =  M_cardinal_AC + M_aleph + M_FiniteFun + M_replacement_extra
+locale M_ZF_library =  M_cardinal_arith + M_aleph + M_FiniteFun + M_replacement_extra
 begin
 
 lemma Finite_Collect_imp: "Finite({x\<in>X . Q(x)}) \<Longrightarrow> Finite({x\<in>X . M(x) \<and> Q(x)})"
@@ -160,7 +160,7 @@ lemma mem_function_space_rel:
 
 lemmas range_fun_rel_subset_codomain = range_fun_subset_codomain[OF mem_function_space_rel]
 
-end (* M_library *)
+end (* M_ZF_library *)
 
 context M_Pi_assumptions
 begin
@@ -181,7 +181,7 @@ lemmas Pi_rel_vimage_subset = Pi_vimage_subset[OF mem_Pi_rel]
 
 end (* M_Pi_assumptions *)
 
-context M_library
+context M_ZF_library
 begin
 
 lemma mem_bij_rel: "\<lbrakk>f \<in> bij\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rbrakk> \<Longrightarrow> f\<in>bij(A,B)"
@@ -263,13 +263,13 @@ lemma range_of_subset_eqpoll_rel:
   unfolding eqpoll_rel_def
   by (rule_tac x="restrict(f,S)" in rexI) auto
 
-end (* M_library *)
+end (* M_ZF_library *)
 
 (*************   Discipline for cexp   ****************)
 relativize functional "cexp" "cexp_rel" external
 relationalize "cexp_rel" "is_cexp"
 
-context M_library
+context M_ZF_library
 begin
 
 \<comment> \<open>MOVE THIS to an appropriate place\<close>
@@ -289,7 +289,7 @@ is_iff_rel for "cexp"
 
 rel_closed for "cexp" unfolding cexp_rel_def by simp
 
-end (* M_library *)
+end (* M_ZF_library *)
 
 synthesize "is_cexp" from_definition assuming "nonempty"
 notation is_cexp_fm (\<open>\<cdot>_\<^bsup>\<up>_\<^esup> is _\<cdot>\<close>)
@@ -303,7 +303,7 @@ abbreviation
   cexp_r_set :: "[i,i,i] \<Rightarrow> i"  (\<open>_\<^bsup>\<up>_,_\<^esup>\<close>) where
   "cexp_r_set(x,y,M) \<equiv> cexp_rel(##M,x,y)"
 
-context M_library
+context M_ZF_library
 begin
 
 lemma Card_cexp: "M(\<kappa>) \<Longrightarrow> M(\<nu>) \<Longrightarrow> Card\<^bsup>M\<^esup>(\<kappa>\<^bsup>\<up>\<nu>,M\<^esup>)"
@@ -343,7 +343,7 @@ proof
     using lesspoll_cardinal_lt_rel by simp
   moreover from calculation
   have "|d|\<^bsup>M\<^esup> \<lesssim>\<^bsup>M\<^esup> |\<kappa>|\<^bsup>M\<^esup>"
-    using lt_csucc_rel_iff le_imp_lepoll_rel by simp
+    using Card_rel_lt_csucc_rel_iff le_imp_lepoll_rel by simp
   moreover from calculation
   have "|d|\<^bsup>M\<^esup> \<lesssim>\<^bsup>M\<^esup> \<kappa>"
     using Ord_cardinal_rel_eqpoll_rel lepoll_rel_eq_trans
@@ -519,7 +519,7 @@ proof -
     unfolding Card_rel_def by auto
 qed
 
-end (* M_library *)
+end (* M_ZF_library *)
 
 relativize functional "mono_map" "mono_map_rel" external
 relationalize "mono_map_rel" "is_mono_map"
@@ -530,7 +530,7 @@ abbreviation
   mono_map_r_set  :: "[i,i,i,i,i]\<Rightarrow>i"  (\<open>mono'_map\<^bsup>_\<^esup>'(_,_,_,_')\<close>) where
   "mono_map\<^bsup>M\<^esup>(a,r,b,s) \<equiv> mono_map_rel(##M,a,r,b,s)"
 
-context M_library
+context M_ZF_library
 begin
 
 lemma mono_map_rel_char:
@@ -671,6 +671,6 @@ bundle Aleph_rel_intros = Aleph_rel_increasing[intro!]
 bundle Aleph_rel_mem_dests = Aleph_rel_increasing[OF ltI, THEN ltD, dest]
 
 
-end (* M_library *)
+end (* M_ZF_library *)
 
 end

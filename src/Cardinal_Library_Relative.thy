@@ -7,7 +7,7 @@ theory Cardinal_Library_Relative
     Replacement_Lepoll
 begin
 
-context M_library
+locale M_library = M_ZF_library + M_cardinal_AC
 begin
 
 declare eqpoll_rel_refl [simp]
