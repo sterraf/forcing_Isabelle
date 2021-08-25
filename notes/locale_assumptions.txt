@@ -1,0 +1,33 @@
+Axiomatic Locale Assumptions
+========= ====== ===========
+
+Interface.thy:sublocale M_ZF_trans ⊆ M_basic "##M"
+Interface.thy:sublocale M_ZF_trans ⊆ M_datatypes "##M"
+Interface.thy:sublocale M_ZF_trans ⊆ M_eclose "##M"
+Interface.thy:sublocale M_ZF_trans ⊆ M_eclose_pow "##M"
+Interface.thy:sublocale M_ZF_trans ⊆ M_trancl "##M"
+Interface.thy:sublocale M_ZF_trans ⊆ M_trans "##M"
+Interface.thy:sublocale M_ZF_trans ⊆ M_trivial "##M"
+Replacement_Instances.thy:sublocale M_ZF_trans ⊆ M_Perm "##M"
+Replacement_Instances.thy:sublocale M_ZF_trans ⊆ M_replacement "##M"
+Replacement_Instances.thy:sublocale M_ZF_trans ⊆ M_replacement_extra "##M"
+Succession_Poset.thy:sublocale M_ZF_trans ⊆ M_seqspace "##M"
+ZF_Trans_Interpretations.thy:sublocale M_ZF_trans ⊆ M_FiniteFun "##M"
+ZF_Trans_Interpretations.thy:sublocale M_ZF_trans ⊆ M_aleph "##M"
+ZF_Trans_Interpretations.thy:sublocale M_ZF_trans ⊆ M_pre_aleph "##M"
+ZF_Trans_Interpretations.thy:sublocale M_ZF_trans ⊆ M_pre_cardinal_arith "##M"
+ZF_Trans_Interpretations.thy:sublocale M_ZFC_trans ⊆ M_AC "##M"
+ZF_Trans_Interpretations.thy:sublocale M_ZFC_trans ⊆ M_cardinal_AC "##M"
+Not_CH.thy:sublocale M_ZFC_trans ⊆ M_master "##M"
+
+
+Other Locale Assumptions
+===== ====== ===========
+
+Not_CH.thy:sublocale M_master_sub ⊆ M_N_Perm
+Not_CH.thy:sublocale G_generic_AC ⊆ M_master_sub "##M" "##(M[G])"
+Not_CH.thy:sublocale add_generic ⊆ cohen_data ω "ℵ⇘2⇙⇗M⇖ × ω" 2
+Cardinal_Preservation.thy:sublocale G_generic ⊆ ext:M_ZF_trans "M[G]"
+Cardinal_Preservation.thy:sublocale G_generic_AC ⊆ ext:M_ZFC_trans "M[G]"
+Cardinal_Preservation.thy:sublocale forcing_data ⊆ M_trivial_notion "##M"
+Cohen_Posets.thy:sublocale cohen_data ⊆ forcing_notion "Fn(κ,I,J)" "Fnle(κ,I,J)" 0
