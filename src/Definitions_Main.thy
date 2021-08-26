@@ -65,9 +65,13 @@ text\<open>@{thm [display] lt_def}\<close>
   i < j \<equiv> i \<in> j \<and> Ord(j)
 *)
 
-text\<open>The set of natural numbers \<^term>\<open>\<omega>\<close> is defined as a
-fixpoint, but here we just write its characterization as the
-first limit ordinal.\<close>
+text\<open>With the concepts of empty set and successor in place,\<close>
+lemma empty_def': "\<forall>x. x \<notin> 0" by simp
+lemma succ_def': "succ(i) = i \<union> {i}" by blast
+
+text\<open>we can define the set of natural numbers \<^term>\<open>\<omega>\<close>. In the
+sources, it is  defined as a fixpoint, but here we just write
+its characterization as the first limit ordinal.\<close>
 thm Limit_nat[unfolded Limit_def] nat_le_Limit[unfolded Limit_def]
 text\<open>@{thm [display] Limit_nat[unfolded Limit_def]
  nat_le_Limit[unfolded Limit_def]}\<close>
@@ -76,6 +80,8 @@ text\<open>@{thm [display] Limit_nat[unfolded Limit_def]
   Ord(i) \<and> 0 < i \<and> (\<forall>y. y < i \<longrightarrow> succ(y) < i) \<Longrightarrow> \<omega> \<le> i
 *)
 
+text\<open>Then, addition and predecessor are inductively characterized
+as follows:\<close>
 thm add_0_right add_succ_right pred_0 pred_succ_eq
 text\<open>@{thm [display] add_succ_right add_0_right pred_0 pred_succ_eq}\<close>
 (*
@@ -86,7 +92,11 @@ text\<open>@{thm [display] add_succ_right add_0_right pred_0 pred_succ_eq}\<clos
   pred(succ(y)) = y
 *)
 
-text\<open>Lists\<close>
+text\<open>Lists on a set \<^term>\<open>A\<close> can be characterized by being
+recursively generated from the empty list \<^term>\<open>[]\<close> and the
+operation \<^term>\<open>Cons\<close> that adds a new element to the left end;
+the induction theorem for them show that the characterization is
+“complete”.\<close>
 
 thm Nil Cons list.induct
 text\<open>@{thm [display] Nil Cons list.induct }\<close>
@@ -95,6 +105,9 @@ text\<open>@{thm [display] Nil Cons list.induct }\<close>
   a \<in> A \<Longrightarrow> l \<in> list(A) \<Longrightarrow> Cons(a, l) \<in> list(A)
   x \<in> list(A) \<Longrightarrow> P([]) \<Longrightarrow> (\<And>a l. a \<in> A \<Longrightarrow> l \<in> list(A) \<Longrightarrow> P(l) \<Longrightarrow> P(Cons(a, l))) \<Longrightarrow> P(x)
 *)
+
+text\<open>Length, concatenation, and \<^term>\<open>n\<close>th element of lists are
+recursively characterized as follows.\<close>
 thm length.simps app.simps nth_0 nth_Cons
 text\<open>@{thm [display] length.simps app.simps nth_0 nth_Cons}\<close>
 (*
@@ -107,13 +120,19 @@ text\<open>@{thm [display] length.simps app.simps nth_0 nth_Cons}\<close>
   nth(0, Cons(a, l)) = a
   n \<in> \<omega> \<Longrightarrow> nth(succ(n), Cons(a, l)) = nth(n, l)
 *)
+txt\<open>We have the usual Haskell-like notation for iterated applications
+of \<^term>\<open>Cons\<close>:\<close>
+lemma Cons_app: "[a,b,c] = Cons(a,Cons(b,Cons(c,[])))" ..
 
-txt\<open>Relative quantifications\<close>
-
+txt\<open>Relative quantifiers restrict the range of the bound variable to a
+class \<^term>\<open>M\<close> of type \<^typ>\<open>i\<Rightarrow>o\<close>; that is, a truth-valued function with
+set arguments.\<close>
 lemma "\<forall>x[M]. P(x) \<equiv> \<forall>x. M(x) \<longrightarrow> P(x)"
       "\<exists>x[M]. P(x) \<equiv> \<exists>x. M(x) \<and> P(x)"
   unfolding rall_def rex_def .
 
+txt\<open>Finally, a set can be viewed (“casted”) as a class using the
+following function of type \<^typ>\<open>i\<Rightarrow>(i\<Rightarrow>o)\<close>.\<close>
 thm setclass_iff
 text\<open>@{thm [display] setclass_iff}\<close>
 (*
@@ -121,13 +140,12 @@ text\<open>@{thm [display] setclass_iff}\<close>
 *)
 
 subsection\<open>ZF-Constructible\label{sec:def-main-constructible}\<close>
-
+text\<open>A list of relative concepts follows next.\<close>
 thm big_union_def
 text\<open>@{thm [display] big_union_def}\<close>
 (*
   big_union(M, A, z) \<equiv> \<forall>x[M]. x \<in> z \<longleftrightarrow> (\<exists>y[M]. y \<in> A \<and> x \<in> y)
 *)
-
 
 thm Union_ax_def
 text\<open>@{thm [display] Union_ax_def}\<close>
@@ -409,7 +427,7 @@ begin
 
 txt\<open>As in the previous Lemma @{thm eqpoll_def'}, we are now under
     the assumptions of the locale \<^term>\<open>M_aleph\<close>. The axiom instances
-    included sufficient are sufficient to state and prove the defining
+    included are sufficient to state and prove the defining
     properties of the relativized \<^term>\<open>Aleph\<close> function
     (in particular, the required ability to perform transfinite recursions).\<close>
 

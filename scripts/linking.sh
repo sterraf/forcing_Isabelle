@@ -71,19 +71,22 @@ function full_job {
 #     exit 1
 # }
 
-echolog -n Crosslinking "lemma" items...
+if [ -f $src_dir/locales_$session.txt ]
+then
+   echolog -n Crosslinking locales...
+   full_job $src_dir/locales_$session.txt "" ${@:4}
+   echolog  Done
+fi
+if [ -f $src_dir/locale_assumptions_$session.txt ]
+then
+    echolog -n Crosslinking locale assumptions...
+    full_job $src_dir/locale_assumptions_$session.txt "" ${@:4}
+    echolog  Done
+fi
+echolog -n Crosslinking \"lemma"(s)"\", \"theorem\", and \"schematic_goal\" items...
 full_job $src_dir/lemas_$session.txt "" ${@:4}
 echolog  Done
-echolog -n Crosslinking locales...
-full_job $src_dir/locales_$session.txt "" ${@:4}
-echolog  Done
-echolog -n Crosslinking locale assumptions...
-full_job $src_dir/locale_assumptions_$session.txt "" ${@:4}
-echolog  Done
-echolog -n Crosslinking "lemmas" items...
-full_job $src_dir/lemaslemmas_$session.txt "" ${@:4}
-echolog  Done
-echolog -n Crosslinking "definition" items...
+echolog -n Crosslinking \"definition\" items...
 full_job $src_dir/definiciones_$session.txt _def ${@:4}
 echolog  Done
 echolog Finished

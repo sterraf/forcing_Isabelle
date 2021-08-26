@@ -1,6 +1,6 @@
 #!/bin/bash
 old_dir=$PWD
-html_dir="$3/$2/$1/"
+html_dir="$1"
 
 cd $html_dir
 sed -i -- 's/a href="..\/ZF\/ZF.html/a href="https:\/\/www.cl.cam.ac.uk\/research\/hvg\/Isabelle\/dist\/library\/ZF\/ZF\/ZF.html/g' *.html
