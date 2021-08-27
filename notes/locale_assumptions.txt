@@ -1,6 +1,8 @@
 Axiomatic Locale Assumptions
 ========= ====== ===========
 
+Note: "true replacement" means "I can't show it's a fake one".
+
 Interface.thy:sublocale M_ZF_trans ⊆ M_basic "##M"
 * Powerset
 * 10 separations
@@ -36,11 +38,11 @@ Interface.thy:sublocale M_ZF_trans ⊆ M_eclose "##M"
 	 
 Interface.thy:sublocale M_ZF_trans ⊆ M_eclose_pow "##M"
 * Powerset (??).
-* 4 replacements:
-  powapply_replacement : "M(f) ⟹ strong_replacement(M,is_powapply(M,f))"
+* 2 true replacements, 2 fake:
+  (fake) powapply_replacement : "M(f) ⟹ strong_replacement(M,is_powapply(M,f))"
   HVfrom_replacement : "⟦ M(i) ; M(A) ⟧ ⟹
                           transrec_replacement(M,is_HVfrom(M,A),i)"
-  PHrank_replacement : "M(f) ⟹ strong_replacement(M,PHrank(M,f))"
+  (fake) PHrank_replacement : "M(f) ⟹ strong_replacement(M,PHrank(M,f))"
   is_Hrank_replacement : "M(x) ⟹ wfrec_replacement(M,is_Hrank(M),rrank(x))"
 
 Interface.thy:sublocale M_ZF_trans ⊆ M_trancl "##M"
@@ -55,7 +57,7 @@ Interface.thy:sublocale M_ZF_trans ⊆ M_trivial "##M"
 
 Replacement_Instances.thy:sublocale M_ZF_trans ⊆ M_Perm "##M"
 * 3 separations
-* 2 replacements:
+* 2 fake replacements:
   Pi_replacement:
   "M(x) ⟹ M(y) ⟹
     strong_replacement(M, λya z. ya ∈ y ∧ z = {⟨x, ya⟩})"
@@ -64,7 +66,7 @@ Replacement_Instances.thy:sublocale M_ZF_trans ⊆ M_Perm "##M"
 
 Replacement_Instances.thy:sublocale M_ZF_trans ⊆ M_replacement "##M"
 * 7 separations
-* 10 replacements:
+* 10 fake replacements:
   lam_replacement_domain: "lam_replacement(M,domain)"
   lam_replacement_vimage: "lam_replacement(M, λp. fst(p) -`` snd(p))"
   lam_replacement_fst: "lam_replacement(M,fst)"
@@ -77,7 +79,7 @@ Replacement_Instances.thy:sublocale M_ZF_trans ⊆ M_replacement "##M"
   lam_replacement_Image:"lam_replacement(M, λp. fst(p) `` snd(p))"
 
 Replacement_Instances.thy:sublocale M_ZF_trans ⊆ M_replacement_extra "##M"
-* 2 replacements:
+* 2 fake replacements:
   lam_replacement_minimum:"lam_replacement(M, λp. minimum(fst(p),snd(p)))"
   lam_replacement_RepFun_cons:"lam_replacement(M, λp. RepFun(fst(p), λx. {⟨snd(p),x⟩}))"
 
@@ -87,16 +89,16 @@ Succession_Poset.thy:sublocale M_ZF_trans ⊆ M_seqspace "##M"
 
 ZF_Trans_Interpretations.thy:sublocale M_ZF_trans ⊆ M_FiniteFun "##M"
 * 2 separations
-* 1 replacement:
+* 1 fake replacement:
   to_finiteFun_replacement: "strong_replacement(M, λx y. y = range(x))"
   
 ZF_Trans_Interpretations.thy:sublocale M_ZF_trans ⊆ M_aleph "##M"
-* 1 replacement:
+* 1 true replacement:
   aleph_rel_replacement: "strong_replacement(M, λx y. Ord(x) ∧ y = ℵ⇘x⇙⇗M⇖)"
   
 ZF_Trans_Interpretations.thy:sublocale M_ZF_trans ⊆ M_pre_aleph "##M"
 * 3 separations.
-* 8 replacements:
+* 4 true replacements, 4 fake:
   omap_replacement:
      "[| M(A); M(r) |]
       ==> strong_replacement(M,
@@ -107,7 +109,7 @@ ZF_Trans_Interpretations.thy:sublocale M_ZF_trans ⊆ M_pre_aleph "##M"
   "M(X) ⟹ strong_replacement(M,λ x z . M(z) ∧ M(x) ∧ x∈Pow_rel(M,X×X) ∧ well_ord(X, x) ∧ z=ordertype(X,x))"
   strong_replacement_jc_body :
     "strong_replacement(M,λ x z . M(z) ∧ M(x) ∧ z = jump_cardinal_body(M,x))"
-  surj_imp_inj_replacement:
+  (fake) surj_imp_inj_replacement:
     "M(f) ⟹ M(x) ⟹ strong_replacement(M, λy z. y ∈ f -`` {x} ∧ z = {⟨x, y⟩})"
     "M(f) ⟹ strong_replacement(M, λx z. z = Sigfun(x, λy. f -`` {y}))"
     "M(f) ⟹ strong_replacement(M, λx y. y = f -`` {x})"
@@ -131,6 +133,10 @@ Not_CH.thy:sublocale M_ZFC_trans ⊆ M_master "##M"
 * 1 replacement:
   lam_apply_replacement: "M(A) ⟹ M(f) ⟹
      strong_replacement(M, λx y. y = ⟨x, λn∈A. f ` ⟨x, n⟩⟩)"
+
+
+COUNT: 31 separation instances, 18 (allegedly) true replacements,
+       21 fake replacements.
 
 
 Other Locale Assumptions
