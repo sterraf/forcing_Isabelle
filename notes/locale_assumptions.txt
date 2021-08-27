@@ -2,23 +2,137 @@ Axiomatic Locale Assumptions
 ========= ====== ===========
 
 Interface.thy:sublocale M_ZF_trans ⊆ M_basic "##M"
+* Powerset
+* 10 separations
+  and
+* 1 replacement:
+  funspace_succ_replacement: "M(n) ==>
+      strong_replacement(M, λp z. ∃f[M]. ∃b[M]. ∃nb[M]. ∃cnbf[M].
+                pair(M,f,b,p) & pair(M,n,b,nb) & is_cons(M,nb,f,cnbf) &
+                upair(M,cnbf,cnbf,z))"
+
 Interface.thy:sublocale M_ZF_trans ⊆ M_datatypes "##M"
+* 5 replacements:
+  list_replacement1:
+   "M(A) ==> iterates_replacement(M, is_list_functor(M,A), 0)"
+  list_replacement2:
+   "M(A) ==> strong_replacement(M,
+         λn y. n∈nat & is_iterates(M, is_list_functor(M,A), 0, n, y))"
+  formula_replacement1:
+   "iterates_replacement(M, is_formula_functor(M), 0)"
+  formula_replacement2:
+   "strong_replacement(M,
+         λn y. n∈nat & is_iterates(M, is_formula_functor(M), 0, n, y))"
+  nth_replacement:
+   "M(l) ==> iterates_replacement(M, %l t. is_tl(M,l,t), l)"
+
 Interface.thy:sublocale M_ZF_trans ⊆ M_eclose "##M"
+* 2 replacements:
+  eclose_replacement1:
+   "M(A) ==> iterates_replacement(M, big_union(M), A)"
+  eclose_replacement2:
+   "M(A) ==> strong_replacement(M,
+         λn y. n∈nat & is_iterates(M, big_union(M), A, n, y))"
+	 
 Interface.thy:sublocale M_ZF_trans ⊆ M_eclose_pow "##M"
+* Powerset (??).
+* 4 replacements:
+  power_ax : "power_ax(M)" and
+  powapply_replacement : "M(f) ⟹ strong_replacement(M,is_powapply(M,f))"
+  HVfrom_replacement : "⟦ M(i) ; M(A) ⟧ ⟹
+                          transrec_replacement(M,is_HVfrom(M,A),i)"
+  PHrank_replacement : "M(f) ⟹ strong_replacement(M,PHrank(M,f))"
+  is_Hrank_replacement : "M(x) ⟹ wfrec_replacement(M,is_Hrank(M),rrank(x))"
+
 Interface.thy:sublocale M_ZF_trans ⊆ M_trancl "##M"
+* Infinity
+* 2 separations
+
 Interface.thy:sublocale M_ZF_trans ⊆ M_trans "##M"
+(no instances of schemes)
+
 Interface.thy:sublocale M_ZF_trans ⊆ M_trivial "##M"
+(no instances of schemes)
+
 Replacement_Instances.thy:sublocale M_ZF_trans ⊆ M_Perm "##M"
+* 3 separations
+* 2 replacements:
+  Pi_replacement:
+  "M(x) ⟹ M(y) ⟹
+    strong_replacement(M, λya z. ya ∈ y ∧ z = {⟨x, ya⟩})"
+  "M(y) ⟹
+    strong_replacement(M, λx z. z = (⋃xa∈y. {⟨x, xa⟩}))"
+
 Replacement_Instances.thy:sublocale M_ZF_trans ⊆ M_replacement "##M"
+* 7 separations
+* 10 replacements:
+  lam_replacement_domain: "lam_replacement(M,domain)"
+  lam_replacement_vimage: "lam_replacement(M, λp. fst(p) -`` snd(p))"
+  lam_replacement_fst: "lam_replacement(M,fst)"
+  lam_replacement_snd: "lam_replacement(M,snd)"
+  lam_replacement_Union: "lam_replacement(M,Union)"
+  middle_del_replacement: "strong_replacement(M, λx y. y=⟨fst(fst(x)),snd(snd(x))⟩)"
+  product_replacement:  "strong_replacement(M, λx y. y=⟨fst(fst(x)),⟨snd(fst(x)),snd(snd(x))⟩⟩)"
+  lam_replacement_Upair:"lam_replacement(M, λp. Upair(fst(p),snd(p)))"
+  lam_replacement_Diff:"lam_replacement(M, λp. fst(p) - snd(p))"
+  lam_replacement_Image:"lam_replacement(M, λp. fst(p) `` snd(p))"
+
 Replacement_Instances.thy:sublocale M_ZF_trans ⊆ M_replacement_extra "##M"
+* 2 replacements:
+  lam_replacement_minimum:"lam_replacement(M, λp. minimum(fst(p),snd(p)))"
+  lam_replacement_RepFun_cons:"lam_replacement(M, λp. RepFun(fst(p), λx. {⟨snd(p),x⟩}))"
+
 Succession_Poset.thy:sublocale M_ZF_trans ⊆ M_seqspace "##M"
+* 1 replacement:
+  seqspace_replacement: "M(B) ⟹ strong_replacement(M,λn z. n∈nat ∧ is_funspace(M,n,B,z))"
+
 ZF_Trans_Interpretations.thy:sublocale M_ZF_trans ⊆ M_FiniteFun "##M"
+* 2 separations
+* 1 replacement:
+  to_finiteFun_replacement: "strong_replacement(M, λx y. y = range(x))"
+  
 ZF_Trans_Interpretations.thy:sublocale M_ZF_trans ⊆ M_aleph "##M"
+* 1 replacement:
+  aleph_rel_replacement: "strong_replacement(M, λx y. Ord(x) ∧ y = ℵ⇘x⇙⇗M⇖)"
+  
 ZF_Trans_Interpretations.thy:sublocale M_ZF_trans ⊆ M_pre_aleph "##M"
+* 3 separations.
+* 8 replacements:
+  omap_replacement:
+     "[| M(A); M(r) |]
+      ==> strong_replacement(M,
+             λa z. ∃x[M]. ∃g[M]. ∃mx[M]. ∃par[M].
+             ordinal(M,x) & pair(M,a,x,z) & membership(M,x,mx) &
+             pred_set(M,A,a,r,par) & order_isomorphism(M,par,r,x,mx,g))"
+  ordertype_replacement :
+  "M(X) ⟹ strong_replacement(M,λ x z . M(z) ∧ M(x) ∧ x∈Pow_rel(M,X×X) ∧ well_ord(X, x) ∧ z=ordertype(X,x))"
+  strong_replacement_jc_body :
+    "strong_replacement(M,λ x z . M(z) ∧ M(x) ∧ z = jump_cardinal_body(M,x))"
+  surj_imp_inj_replacement:
+    "M(f) ⟹ M(x) ⟹ strong_replacement(M, λy z. y ∈ f -`` {x} ∧ z = {⟨x, y⟩})"
+    "M(f) ⟹ strong_replacement(M, λx z. z = Sigfun(x, λy. f -`` {y}))"
+    "M(f) ⟹ strong_replacement(M, λx y. y = f -`` {x})"
+    "M(f) ⟹ M(r) ⟹ strong_replacement(M, λx y. y = ⟨x, minimum(r, f -`` {x})⟩)"
+  haleph_transrec_replacement: "M(sa) ⟹ M(esa) ⟹ M(mesa) ⟹
+             strong_replacement(M, λx z. ... is_HAleph...)"
+	     
 ZF_Trans_Interpretations.thy:sublocale M_ZF_trans ⊆ M_pre_cardinal_arith "##M"
+* 1 separation
+* 1 replacement:
+  wfrec_pred_replacement:"M(A) ⟹ M(r) ⟹
+      wfrec_replacement(M, λx f z. z = f `` Order.pred(A, x, r), r)"
+
 ZF_Trans_Interpretations.thy:sublocale M_ZFC_trans ⊆ M_AC "##M"
+* Choice
+
 ZF_Trans_Interpretations.thy:sublocale M_ZFC_trans ⊆ M_cardinal_AC "##M"
+( = M_cardinal_arith + M_AC)
+
 Not_CH.thy:sublocale M_ZFC_trans ⊆ M_master "##M"
+* 3 separations
+* 1 replacement:
+  lam_apply_replacement: "M(A) ⟹ M(f) ⟹
+     strong_replacement(M, λx y. y = ⟨x, λn∈A. f ` ⟨x, n⟩⟩)"
 
 
 Other Locale Assumptions
