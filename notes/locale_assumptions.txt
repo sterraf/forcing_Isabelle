@@ -37,7 +37,6 @@ Interface.thy:sublocale M_ZF_trans ⊆ M_eclose "##M"
 Interface.thy:sublocale M_ZF_trans ⊆ M_eclose_pow "##M"
 * Powerset (??).
 * 4 replacements:
-  power_ax : "power_ax(M)" and
   powapply_replacement : "M(f) ⟹ strong_replacement(M,is_powapply(M,f))"
   HVfrom_replacement : "⟦ M(i) ; M(A) ⟧ ⟹
                           transrec_replacement(M,is_HVfrom(M,A),i)"
@@ -113,8 +112,7 @@ ZF_Trans_Interpretations.thy:sublocale M_ZF_trans ⊆ M_pre_aleph "##M"
     "M(f) ⟹ strong_replacement(M, λx z. z = Sigfun(x, λy. f -`` {y}))"
     "M(f) ⟹ strong_replacement(M, λx y. y = f -`` {x})"
     "M(f) ⟹ M(r) ⟹ strong_replacement(M, λx y. y = ⟨x, minimum(r, f -`` {x})⟩)"
-  haleph_transrec_replacement: "M(sa) ⟹ M(esa) ⟹ M(mesa) ⟹
-             strong_replacement(M, λx z. ... is_HAleph...)"
+  haleph_transrec_replacement: "M(a) ⟹ transrec_replacement(M,is_HAleph(M),a)"
 	     
 ZF_Trans_Interpretations.thy:sublocale M_ZF_trans ⊆ M_pre_cardinal_arith "##M"
 * 1 separation

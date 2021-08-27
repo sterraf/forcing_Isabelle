@@ -210,7 +210,8 @@ sublocale M_ZF_trans \<subseteq> M_pre_aleph "##M"
     lam_replacement_imp_strong_replacement lam_replacement_vimage_sing_fun
     lam_replacement_Sigfun[OF lam_replacement_vimage_sing_fun]
     vimage_closed singleton_closed surj_imp_inj_replacement1
-  by unfold_locales simp_all
+  by  unfold_locales (simp_all add: transrec_replacement_def
+      wfrec_replacement_def is_wfrec_def M_is_recfun_def flip:setclass_iff)
 
 arity_theorem intermediate for "is_HAleph_fm" 
 lemma arity_is_HAleph_fm: "arity(is_HAleph_fm(2, 1, 0)) = 3"

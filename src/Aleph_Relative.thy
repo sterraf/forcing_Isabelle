@@ -119,24 +119,7 @@ lemma succ_mem_Limit: "Limit(j) \<Longrightarrow> i \<in> j \<Longrightarrow> su
 
 locale M_pre_aleph = M_eclose + M_cardinal_arith_jump +
   assumes
-    haleph_transrec_replacement: "M(sa) \<Longrightarrow> M(esa) \<Longrightarrow> M(mesa) \<Longrightarrow>
-             strong_replacement
-              (M, \<lambda>x z. \<exists>y[M]. pair(M, x, y, z) \<and>
-                                (\<exists>f[M].
-                                    (\<forall>z[M].
-                                        z \<in> f \<longleftrightarrow>
-                                        (\<exists>xa[M].
-                                            \<exists>y[M].
-                                               \<exists>xaa[M].
-                                                  \<exists>sx[M].
-\<exists>r_sx[M].
-   \<exists>f_r_sx[M].
-      pair(M, xa, y, z) \<and>
-      pair(M, xa, x, xaa) \<and>
-      upair(M, xa, xa, sx) \<and>
-      pre_image(M, mesa, sx, r_sx) \<and>
-      restriction(M, f, r_sx, f_r_sx) \<and> xaa \<in> mesa \<and> is_HAleph(M, xa, f_r_sx, y))) \<and>
-                                    is_HAleph(M, x, f, y)))"
+    haleph_transrec_replacement: "M(a) \<Longrightarrow> transrec_replacement(M,is_HAleph(M),a)"
 
 begin
 lemma aux:
@@ -257,21 +240,18 @@ lemma Aleph_rel_closed[intro, simp]:
   assumes "Ord(a)" "M(a)"
   shows "M(Aleph_rel(M,a))"
 proof -
-  have "transrec_replacement(M, is_HAleph(M), a)"
-    unfolding transrec_replacement_def wfrec_replacement_def is_wfrec_def M_is_recfun_def
-    using assms haleph_transrec_replacement[of "{a}" "eclose({a})"]
-    by simp
-  moreover
   have "relation2(M, is_HAleph(M), HAleph_rel(M))"
     unfolding relation2_def using is_HAleph_iff assms by simp
   moreover
   have "\<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(HAleph_rel(M, x, g))"
     using HAleph_rel_closed by simp
+  moreover
+  note assms
   ultimately
   show ?thesis
     unfolding Aleph_rel_def
-    using transrec_closed[of "is_HAleph(M)" a "HAleph_rel(M)"] assms
-    by simp
+    using transrec_closed[of "is_HAleph(M)" a "HAleph_rel(M)"]
+      haleph_transrec_replacement  by simp
 qed
 
 lemma Aleph_rel_zero: "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup> = nat"
@@ -306,11 +286,6 @@ lemma is_Aleph_iff:
   assumes "Ord(a)" "M(a)" "M(res)"
   shows "is_Aleph(M, a, res) \<longleftrightarrow> res = \<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup>"
 proof -
-  have "transrec_replacement(M, is_HAleph(M), a)"
-    unfolding transrec_replacement_def wfrec_replacement_def is_wfrec_def M_is_recfun_def
-    using assms haleph_transrec_replacement[of "{a}" "eclose({a})"]
-    by simp
-  moreover
   have "relation2(M, is_HAleph(M), HAleph_rel(M))"
     unfolding relation2_def using is_HAleph_iff assms by simp
   moreover
@@ -318,7 +293,7 @@ proof -
     using HAleph_rel_closed by simp
   ultimately
   show ?thesis
-    using assms transrec_abs
+    using assms transrec_abs haleph_transrec_replacement
     unfolding is_Aleph_def Aleph_rel_def
     by simp
 qed
