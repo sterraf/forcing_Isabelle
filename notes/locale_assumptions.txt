@@ -149,16 +149,21 @@ G_dot_in_M: "{⟨check(p),p⟩ . p∈P} ∈ M"
 Replace_sats_in_MG
 ccc_fun_closed_lemma_aux2
 ccc_fun_closed_lemma
-strong_replacement_in_MG: INTERPRETATIONS!!!!
+strong_replacement_in_MG: see Intepretations below.
+
 
 General separation lemmas
 ======= ========== ======
 
 Collect_in_M
-sats_fst_snd_in_M
+
 Collect_forces
+
 truth_lemma_Neg x 2
+    truth_lemma
+    
 truth_lemma'
+    truth_lemma
 
 
 Particular separation instances
@@ -168,16 +173,31 @@ forcerel_in_M: "separation(##M,λz. ∃x y. z = ⟨x, y⟩ ∧ frecR(x, y))"
 
 finite_sep_intf: "separation(##M, λx. x∈nat)"
 
-Pow_inter_MG: "{x ∈ A × B . M, [x, p, l, o, χ, p] ⊨
-   (⋅∃(⋅∃⋅pair_fm(0, 1, 2) ∧ ren(φ) ` 6 ` 7 ` perm_pow_fn⋅⋅)⋅)} ∈ M"
-   "{x∈?b . (M[G], [x,a] ⊨ subset_fm(0,1))} ∈ M" (via Collect_sats_in_MG)
+Pow_inter_MG: "{⟨σ,p⟩ ∈ domain(τ) × P . p ⊩ ⋅0 ∈ 1⋅ [σ, χ]} ∈ M"
+    "{x ∈ A × B . M, [x, p, l, o, χ, p] ⊨
+   	      (⋅∃(⋅∃⋅pair_fm(0, 1, 2) ∧ ren(φ) ` 6 ` 7 ` perm_pow_fn⋅⋅)⋅)} ∈ M"
+    "{x∈?b . (M[G], [x,a] ⊨ subset_fm(0,1))} ∈ M" (via Collect_sats_in_MG)
    
 Replace_sats_in_MG: "{y∈Y. Ord(y)} ∈ M"
-   "{v∈?big. M[G] , [v] @ env @ [c] ⊨ ?ψ} ∈ M[G]" (via Collect_sats_in_MG)
+    "{v∈?big. M[G] , [v] @ env @ [c] ⊨ ?ψ} ∈ M[G]" (via Collect_sats_in_MG)
 
 Union_name_M: "separation(##M, λx. M, [x, τ, leq, P] ⊨ Union_name_fm)"
 
-separation_in_MG: INTERPRETATIONS!!!!
+separation_in_MG: see Intepretations below.
+
+
+Instances in Interpretations
+========= == ===============
+
+Forcing_Main
+    MG_eqpoll_nat: requires M_trivial(##(M[G]))
+    extensions_of_ctms: no problem
+
+Choice_Axiom
+    choice_in_MG: requires M_basic(##(M[G]))
+
+Cardinal_Preservation
+    all: requires M_basic(##(M[G]))
 
 
 Other Locale Assumptions
