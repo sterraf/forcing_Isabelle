@@ -1,7 +1,8 @@
 Axiomatic Locale Assumptions
 ========= ====== ===========
 
-Note: "true replacement" means "I can't show it's a fake one".
+Note: "fake replacement" means it can be proved using Powerset & Separation.
+      "true replacement" means "I can't show it's a fake one".
 
 Interface.thy:sublocale M_ZF_trans ⊆ M_basic "##M"
 * Powerset
@@ -148,7 +149,7 @@ G_dot_in_M: "{⟨check(p),p⟩ . p∈P} ∈ M"
 Replace_sats_in_MG
 ccc_fun_closed_lemma_aux2
 ccc_fun_closed_lemma
-
+strong_replacement_in_MG: INTERPRETATIONS!!!!
 
 General separation lemmas
 ======= ========== ======
@@ -163,12 +164,20 @@ truth_lemma'
 Particular separation instances
 ========== ========== =========
 
-forcerel_in_M
+forcerel_in_M: "separation(##M,λz. ∃x y. z = ⟨x, y⟩ ∧ frecR(x, y))"
+
 finite_sep_intf: "separation(##M, λx. x∈nat)"
-Replace_sats_in_MG
-Collect_sats_in_MG
-Pow_inter_MG
-Union_name_M
+
+Pow_inter_MG: "{x ∈ A × B . M, [x, p, l, o, χ, p] ⊨
+   (⋅∃(⋅∃⋅pair_fm(0, 1, 2) ∧ ren(φ) ` 6 ` 7 ` perm_pow_fn⋅⋅)⋅)} ∈ M"
+   "{x∈?b . (M[G], [x,a] ⊨ subset_fm(0,1))} ∈ M" (via Collect_sats_in_MG)
+   
+Replace_sats_in_MG: "{y∈Y. Ord(y)} ∈ M"
+   "{v∈?big. M[G] , [v] @ env @ [c] ⊨ ?ψ} ∈ M[G]" (via Collect_sats_in_MG)
+
+Union_name_M: "separation(##M, λx. M, [x, τ, leq, P] ⊨ Union_name_fm)"
+
+separation_in_MG: INTERPRETATIONS!!!!
 
 
 Other Locale Assumptions

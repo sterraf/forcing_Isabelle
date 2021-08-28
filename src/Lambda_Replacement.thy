@@ -925,13 +925,11 @@ lemma map_snd_closed: "M(x) \<Longrightarrow> M(map_snd(x))"
   RepFun_closed snd_closed[OF transM[of _ x]]
   by simp
 
-lemma lam_replacement_RepFun_snd:
-  "lam_replacement(M,map_snd)"
-  sorry
-
 lemma lam_replacement_imp_lam_replacement_RepFun:
   assumes "lam_replacement(M, f)" "\<forall>x[M]. M(f(x))"
-  "separation(M, \<lambda>x. ((\<forall>y\<in>snd(x). fst(y) \<in> fst(x)) \<and> (\<forall>y\<in>fst(x). \<exists>u\<in>snd(x). y=fst(u))))"
+    "separation(M, \<lambda>x. ((\<forall>y\<in>snd(x). fst(y) \<in> fst(x)) \<and> (\<forall>y\<in>fst(x). \<exists>u\<in>snd(x). y=fst(u))))"
+  and    
+  lam_replacement_RepFun_snd:"lam_replacement(M,map_snd)"
   shows "lam_replacement(M, \<lambda>x. {f(y) . y\<in>x})"
 proof -
   have f_closed:"M(<fst(z),map_snd(snd(z))>)" if "M(z)" for z
