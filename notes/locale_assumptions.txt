@@ -139,17 +139,12 @@ COUNT: 31 separation instances, 18 (allegedly) true replacements,
        21 fake replacements.
 
 
-General (HO) lemmas involving replacement_ax
-======= ==== ====== ========= ==============
-
-iterates_repl_intf
-Replace_in_M
-Replace_relativized_in_M
-
-
 Particular instances to be tracked
 ========== ========= == == =======
 
+repl_opname_check
+check_replacement
+G_dot_in_M
 Replace_sats_in_MG
 ccc_fun_closed_lemma_aux2
 ccc_fun_closed_lemma
