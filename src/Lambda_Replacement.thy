@@ -931,7 +931,7 @@ lemma lam_replacement_RepFun_snd:
 
 lemma lam_replacement_imp_lam_replacement_RepFun:
   assumes "lam_replacement(M, f)" "\<forall>x[M]. M(f(x))"
-  "separation(M, \<lambda>x. \<forall>y\<in>snd(x). fst(y) \<in> fst(x))"
+  "separation(M, \<lambda>x. ((\<forall>y\<in>snd(x). fst(y) \<in> fst(x)) \<and> (\<forall>y\<in>fst(x). \<exists>u\<in>snd(x). y=fst(u))))"
   shows "lam_replacement(M, \<lambda>x. {f(y) . y\<in>x})"
 proof -
   have f_closed:"M(<fst(z),map_snd(snd(z))>)" if "M(z)" for z
@@ -956,9 +956,9 @@ proof -
       unfolding lam_def
       by simp
     with \<open>M(A)\<close>
-    have "M(Pow_rel(M,?fUnA))" by simp (* <x,Y> donde Y\<subseteq>?fUnA. \<forall>z\<in>Y. fst(z)\<in>x *)
+    have "M(Pow_rel(M,?fUnA))" by simp
     with \<open>M(A)\<close>
-    have "M({z\<in>A\<times>Pow_rel(M,?fUnA) . \<forall>x\<in>snd(z). fst(x)\<in>fst(z)})" (is "M(?T)")
+    have "M({z\<in>A\<times>Pow_rel(M,?fUnA) . ((\<forall>y\<in>snd(z). fst(y) \<in> fst(z)) \<and> (\<forall>y\<in>fst(z). \<exists>u\<in>snd(z). y=fst(u)))})" (is "M(?T)")
       using assms(3) by simp
     then
     have 1:"M({<fst(z),map_snd(snd(z))> . z\<in>?T})" (is "M(?Y)")
@@ -986,6 +986,9 @@ proof -
       have "?Ux \<in> Pow_rel(M,?fUnA)"
         using Pow_rel_char[OF \<open>M(?fUnA)\<close>] by simp
       moreover from calculation
+      have "\<forall>u\<in>x. \<exists>w\<in>?Ux. u=fst(w)"
+        by force
+      moreover from calculation
       have "<x,?Ux> \<in> ?T" by auto
       moreover from calculation
       have "{f(y).y\<in>x} = map_snd(?Ux)"
@@ -999,9 +1002,9 @@ proof -
       assume "u\<in>?Y"
       moreover from this
       obtain z where "z\<in>?T" "u=<fst(z),map_snd(snd(z))>" 
-        by force
+        by blast
       moreover from calculation
-      obtain x U where "x\<in>A" "U\<in>Pow_rel(M,?fUnA)" "\<forall>u\<in>U. fst(u) \<in> x" "z=<x,U>"
+      obtain x U where 1:"x\<in>A" "U\<in>Pow_rel(M,?fUnA)" "(\<forall>u\<in>U. fst(u) \<in> x) \<and> (\<forall>w\<in>x. \<exists>v\<in>U. w=fst(v))" "z=<x,U>"
         by force
       moreover from this
       have "fst(u)\<in>\<Union>A" "snd(u) = f(fst(u))" if "u\<in>U" for u
@@ -1009,23 +1012,8 @@ proof -
         by auto
       moreover from calculation
       have "map_snd(U) = {f(y) . y\<in>x}"
-      proof(intro equalityI subsetI)
-        fix w 
-        assume "w\<in>map_snd(U)"
-        from \<open>w\<in>_\<close>
-        obtain k where "k\<in>U" "w=snd(k)"
-          using map_sndE by auto
-        with calculation
-        have "fst(k) \<in> x" "w=f(fst(k))" by simp_all
-        then
-        show "w\<in>{f(y) . y\<in>x }" by auto
-      next
-        fix w
-        assume "w\<in>{f(y) . y\<in>x }"
-        then obtain y where "y\<in>x" "w=f(y)" by auto
-        then show "w\<in>map_snd(U)"
-        sorry
-    qed
+        unfolding map_snd_def 
+      by(intro equalityI subsetI,auto)
     moreover from calculation
     have "u=<x,map_snd(U)>" 
       by simp
