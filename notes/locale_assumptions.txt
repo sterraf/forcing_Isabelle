@@ -139,15 +139,36 @@ COUNT: 31 separation instances, 18 (allegedly) true replacements,
        21 fake replacements.
 
 
-Particular instances to be tracked
-========== ========= == == =======
+Particular replacement instances to be tracked
+========== =========== ========= == == =======
 
-repl_opname_check
-check_replacement
-G_dot_in_M
+repl_opname_check: "A∈M ==> f∈M ==> {opair_name(check(x),f`x). x∈A}∈M"
+check_replacement: "{check(x). x∈P} ∈ M"
+G_dot_in_M: "{⟨check(p),p⟩ . p∈P} ∈ M"
 Replace_sats_in_MG
 ccc_fun_closed_lemma_aux2
 ccc_fun_closed_lemma
+
+
+General separation lemmas
+======= ========== ======
+
+Collect_in_M
+sats_fst_snd_in_M
+Collect_forces
+truth_lemma_Neg x 2
+truth_lemma'
+
+
+Particular separation instances
+========== ========== =========
+
+forcerel_in_M
+finite_sep_intf: "separation(##M, λx. x∈nat)"
+Replace_sats_in_MG
+Collect_sats_in_MG
+Pow_inter_MG
+Union_name_M
 
 
 Other Locale Assumptions
