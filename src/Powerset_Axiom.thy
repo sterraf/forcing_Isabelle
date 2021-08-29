@@ -16,14 +16,14 @@ lemma Collect_inter_Transset:
 context G_generic  begin
 
 lemma name_components_in_M:
-  assumes "<\<sigma>,p>\<in>\<theta>" "\<theta> \<in> M"
+  assumes "\<langle>\<sigma>,p\<rangle>\<in>\<theta>" "\<theta> \<in> M"
   shows   "\<sigma>\<in>M" "p\<in>M"
 proof -
   from assms obtain a where
-    "\<sigma> \<in> a" "p \<in> a" "a\<in><\<sigma>,p>"
+    "\<sigma> \<in> a" "p \<in> a" "a\<in>\<langle>\<sigma>,p\<rangle>"
     unfolding Pair_def by auto
   moreover from assms
-  have "<\<sigma>,p>\<in>M"
+  have "\<langle>\<sigma>,p\<rangle>\<in>M"
     using transitivity by simp
   moreover from calculation
   have "a\<in>M"
@@ -38,7 +38,7 @@ lemma sats_fst_snd_in_M:
     "A\<in>M" "B\<in>M" "\<phi> \<in> formula" "p\<in>M" "l\<in>M" "o\<in>M" "\<chi>\<in>M"
     "arity(\<phi>) \<le> 6"
   shows
-    "{<s,q> \<in>A\<times>B . sats(M,\<phi>,[q,p,l,o,s,\<chi>])} \<in> M"
+    "{\<langle>s,q\<rangle>\<in>A\<times>B . M, [q,p,l,o,s,\<chi>] \<Turnstile> \<phi>} \<in> M"
     (is "?\<theta> \<in> M")
 proof -
   have "6\<in>nat" "7\<in>nat" by simp_all
@@ -76,12 +76,12 @@ proof -
     have "... \<longleftrightarrow> sats(M,?\<phi>',[fst(sp),snd(sp),sp,p,l,o,\<chi>])"
       by auto
     also from inM \<open>\<phi> \<in> formula\<close> \<open>arity(\<phi>) \<le> 6\<close>
-    have "... \<longleftrightarrow> sats(M,\<phi>,[snd(sp),p,l,o,fst(sp),\<chi>])"
+    have "... \<longleftrightarrow> M, [snd(sp),p,l,o,fst(sp),\<chi>] \<Turnstile> \<phi>"
       (is "sats(_,_,?env1) \<longleftrightarrow> sats(_,_,?env2)")
       using sats_iff_sats_ren[of \<phi> 6 7 ?env2 M ?env1 perm_pow_fn] perm_pow_thm
       unfolding perm_pow_fn_def by simp
     finally
-    have "sats(M,?\<psi>,[sp,p,l,o,\<chi>,p]) \<longleftrightarrow> sats(M,\<phi>,[snd(sp),p,l,o,fst(sp),\<chi>])"
+    have "(M,[sp,p,l,o,\<chi>,p] \<Turnstile> ?\<psi>) \<longleftrightarrow> M, [snd(sp),p,l,o,fst(sp),\<chi>] \<Turnstile> \<phi>"
       by simp
   }
   then have
@@ -98,7 +98,7 @@ proof -
       by simp
     moreover note assms \<open>A\<times>B\<in>M\<close>
     ultimately 
-    show "{x \<in> A\<times>B . sats(M, ?\<psi>, [x, p, l, o, \<chi>, p])} \<in> M"
+    show "{x \<in> A\<times>B . M, [x, p, l, o, \<chi>, p] \<Turnstile> ?\<psi>} \<in> M"
       using separation_ax separation_iff
       by simp
   qed
@@ -152,7 +152,7 @@ proof -
     assume "c \<in> Pow(a) \<inter> M[G]"
     then obtain \<chi> where "c\<in>M[G]" "\<chi> \<in> M" "val(P,G,\<chi>) = c"
       using GenExtD by auto
-    let ?\<theta>="{<\<sigma>,p> \<in>domain(\<tau>)\<times>P . p \<tturnstile> (Member(0,1)) [\<sigma>,\<chi>] }"
+    let ?\<theta>="{\<langle>\<sigma>,p\<rangle> \<in>domain(\<tau>)\<times>P . p \<tturnstile> \<cdot>0 \<in> 1\<cdot> [\<sigma>,\<chi>] }"
     have "arity(forces(Member(0,1))) = 6"
       using arity_forces_at by auto
     with \<open>domain(\<tau>) \<in> M\<close> \<open>\<chi> \<in> M\<close> 
@@ -170,19 +170,19 @@ proof -
       fix x
       assume "x \<in> val(P,G,?\<theta>)"
       then obtain \<sigma> p where
-        1: "<\<sigma>,p>\<in>?\<theta>" "p\<in>G" "val(P,G,\<sigma>) =  x"
+        1: "\<langle>\<sigma>,p\<rangle>\<in>?\<theta>" "p\<in>G" "val(P,G,\<sigma>) =  x"
         using elem_of_val_pair
         by blast
-      moreover from \<open><\<sigma>,p>\<in>?\<theta>\<close> \<open>?\<theta> \<in> M\<close>
+      moreover from \<open>\<langle>\<sigma>,p\<rangle>\<in>?\<theta>\<close> \<open>?\<theta> \<in> M\<close>
       have "\<sigma>\<in>M"
         using name_components_in_M[of _ _ ?\<theta>] by auto
       moreover from 1 
-      have "(p \<tturnstile> (Member(0,1)) [\<sigma>,\<chi>])" "p\<in>P"
+      have "p \<tturnstile> \<cdot>0 \<in> 1\<cdot> [\<sigma>,\<chi>]" "p\<in>P"
         by simp_all
       moreover 
       note \<open>val(P,G,\<chi>) = c\<close>
       ultimately 
-      have "sats(M[G],Member(0,1),[x,c])"
+      have "M[G], [x, c] \<Turnstile> \<cdot>0 \<in> 1\<cdot>"
         using \<open>\<chi> \<in> M\<close> generic definition_of_forcing ord_simp_union
         by auto
       moreover 
@@ -206,13 +206,13 @@ proof -
         by simp
       moreover note \<open>c\<in>M[G]\<close> \<open>x\<in>M[G]\<close>
       moreover from calculation 
-      have "sats(M[G],Member(0,1),[x,c])"
+      have "M[G], [x, c] \<Turnstile> \<cdot>0 \<in> 1\<cdot>"
         by simp
       moreover 
       have "\<sigma>\<in>M"
       proof -
         from \<open>\<sigma>\<in>domain(\<tau>)\<close> 
-        obtain p where "<\<sigma>,p> \<in> \<tau>"
+        obtain p where "\<langle>\<sigma>,p\<rangle> \<in> \<tau>"
           by auto
         with \<open>\<tau>\<in>M\<close> 
         show ?thesis
@@ -221,14 +221,14 @@ proof -
       moreover 
       note \<open>\<chi> \<in> M\<close>
       ultimately 
-      obtain p where "p\<in>G" "(p \<tturnstile> Member(0,1) [\<sigma>,\<chi>])"
-        using generic truth_lemma[of "Member(0,1)" "G" "[\<sigma>,\<chi>]" ] ord_simp_union
+      obtain p where "p\<in>G" "p \<tturnstile> \<cdot>0 \<in> 1\<cdot> [\<sigma>,\<chi>]"
+        using generic truth_lemma[of "\<cdot>0 \<in> 1\<cdot>" "G" "[\<sigma>,\<chi>]" ] ord_simp_union
         by auto
       moreover from \<open>p\<in>G\<close> 
       have "p\<in>P"
         using generic by blast
       ultimately
-      have "<\<sigma>,p>\<in>?\<theta>"
+      have "\<langle>\<sigma>,p\<rangle>\<in>?\<theta>"
         using \<open>\<sigma>\<in>domain(\<tau>)\<close> by simp
       with \<open>val(P,G,\<sigma>) =  x\<close> \<open>p\<in>G\<close> 
       show "x\<in>val(P,G,?\<theta>)"
@@ -241,13 +241,13 @@ proof -
   have "Pow(a) \<inter> M[G] = {x\<in>?b . x\<subseteq>a \<and> x\<in>M[G]}"
     by auto
   also from \<open>a\<in>M[G]\<close> 
-  have " ... = {x\<in>?b . (M[G], [x,a] \<Turnstile> subset_fm(0,1)) \<and> x\<in>M[G]}"
+  have " ... = {x\<in>?b . ( M[G], [x,a] \<Turnstile> \<cdot>0 \<subseteq> 1\<cdot> ) \<and> x\<in>M[G]}"
     using Transset_MG by force
   also 
-  have " ... = {x\<in>?b . (M[G], [x,a] \<Turnstile> subset_fm(0,1))} \<inter> M[G]"
+  have " ... = {x\<in>?b . ( M[G], [x,a] \<Turnstile> \<cdot>0 \<subseteq> 1\<cdot> )} \<inter> M[G]"
     by auto
   also from \<open>?b\<in>M[G]\<close> 
-  have " ... = {x\<in>?b . (M[G], [x,a] \<Turnstile> subset_fm(0,1))}"
+  have " ... = {x\<in>?b . ( M[G], [x,a] \<Turnstile> \<cdot>0 \<subseteq> 1\<cdot> )}"
     using Collect_inter_Transset Transset_MG
     by simp
   also from \<open>?b\<in>M[G]\<close> \<open>a\<in>M[G]\<close>
@@ -290,5 +290,7 @@ proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
   show "\<exists>x\<in>M[G] . powerset(##M[G], a, x)"
     by auto
 qed
+
 end (* G_generic *)
+
 end

@@ -16,6 +16,7 @@ notation Neg (\<open>\<cdot>\<not>_\<cdot>\<close>)
 notation Forall (\<open>'(\<cdot>\<forall>(/_)\<cdot>')\<close>)
 notation Exists (\<open>'(\<cdot>\<exists>(/_)\<cdot>')\<close>)
 
+notation subset_fm (\<open>\<cdot>_ \<subseteq>/ _\<cdot>\<close>)
 notation succ_fm (\<open>\<cdot>succ'(_') is _\<cdot>\<close>)
 notation empty_fm (\<open>\<cdot>_ is empty\<cdot>\<close>)
 notation fun_apply_fm (\<open>\<cdot>_`_ is _\<cdot>\<close>)
