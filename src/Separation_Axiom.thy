@@ -24,7 +24,6 @@ lemma map_val :
     then show ?case by force
 qed
 
-
 lemma Collect_sats_in_MG :
   assumes
     "c\<in>M[G]"
@@ -35,7 +34,7 @@ proof -
   from \<open>c\<in>M[G]\<close>
   obtain \<pi> where "\<pi> \<in> M" "val(P,G, \<pi>) = c"
     using GenExt_def by auto
-  let ?\<chi>="And(Member(0,1 #+ length(env)),\<phi>)" and ?Pl1="[P,leq,one]"
+  let ?\<chi>="\<cdot>\<cdot> 0 \<in> (1 #+ length(env)) \<cdot> \<and> \<phi> \<cdot>" and ?Pl1="[P,leq,one]"
   let ?new_form="sep_ren(length(env),forces(?\<chi>))"
   let ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
   note phi = \<open>\<phi>\<in>formula\<close> \<open>arity(\<phi>) \<le> 1 #+ length(env)\<close> 
@@ -135,14 +134,14 @@ proof -
       from \<open>arity(forces(?\<chi>)) \<le> 6 #+ length(env)\<close> \<open>forces(?\<chi>)\<in>formula\<close> in_M' phi 
       have " ... \<longleftrightarrow> (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
                            M[F],  map(val(P,F), [\<theta>] @ nenv @ [\<pi>]) \<Turnstile>  ?\<chi>)"
-        using  definition_of_forcing 
       proof (intro iffI)
         assume a1: "M,  [p,P, leq, one,\<theta>] @ nenv @ [\<pi>] \<Turnstile>  forces(?\<chi>)"
-        note definition_of_forcing \<open>arity(\<phi>)\<le> 1#+_\<close>
+        note \<open>arity(\<phi>)\<le> 1#+_\<close>
         with \<open>nenv\<in>_\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close> \<open>env\<in>_\<close>
         have "p \<in> P \<Longrightarrow> ?\<chi>\<in>formula \<Longrightarrow> [\<theta>,\<pi>] \<in> list(M) \<Longrightarrow>
                   M, [p,P, leq, one] @ [\<theta>]@ nenv@[\<pi>] \<Turnstile> forces(?\<chi>) \<Longrightarrow> 
-              \<forall>G. M_generic(G) \<and> p \<in> G \<longrightarrow> M[G],  map(val(P,G), [\<theta>] @ nenv @[\<pi>]) \<Turnstile>  ?\<chi>"
+              \<forall>G. M_generic(G) \<and> p \<in> G \<longrightarrow> M[G],  map(val(P,G), [\<theta>] @ nenv @[\<pi>]) \<Turnstile> ?\<chi>"
+          using definition_of_forcing[where \<phi>="\<cdot>\<cdot> 0 \<in> (1 #+ length(env)) \<cdot> \<and> \<phi> \<cdot>"]
           by auto
         then
         show "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
@@ -151,10 +150,11 @@ proof -
       next
         assume "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
                    M[F],  map(val(P,F), [\<theta>] @ nenv @[\<pi>]) \<Turnstile>  ?\<chi>"
-        with definition_of_forcing [THEN iffD2] \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
+        with \<open>?\<chi>\<in>formula\<close> \<open>p\<in>P\<close> in_M' 
+          \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
         show "M,  [p, P, leq, one,\<theta>] @ nenv @ [\<pi>] \<Turnstile>  forces(?\<chi>)"
-          using  \<open>?\<chi>\<in>formula\<close> \<open>p\<in>P\<close> in_M' 
-          by auto
+          using definition_of_forcing[where \<phi>="\<cdot>\<cdot> 0 \<in> (1 #+ length(env)) \<cdot> \<and> \<phi> \<cdot>",
+              THEN iffD2] by auto
       qed
       finally 
       show "(M, [\<theta>,p,u]@?Pl1@[\<pi>]@nenv \<Turnstile> ?new_form) \<longleftrightarrow> (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
@@ -307,7 +307,7 @@ proof -
     with \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close>  Eq5 \<open>M_generic(G)\<close> \<open>\<phi>\<in>formula\<close> \<open>nenv \<in> _ \<close> \<open>env = _ \<close> map_nenv 
       \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
     have "(\<exists>r\<in>G. M,  [r,P,leq,one,\<theta>] @ nenv @[\<pi>] \<Turnstile> forces(?\<chi>))"
-      using truth_lemma  
+      using truth_lemma[of "\<cdot>\<cdot> 0 \<in> (1 #+ length(env)) \<cdot> \<and> \<phi> \<cdot>"]
       by auto
     then obtain r where      (* I can't "obtain" this directly *)
       "r\<in>G" "M,  [r,P,leq,one,\<theta>] @ nenv @ [\<pi>] \<Turnstile> forces(?\<chi>)" by auto
@@ -325,7 +325,7 @@ proof -
     with \<open>p\<in>P\<close> \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
     have "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
                  M[F],   map(val(P,F), [\<theta>] @ nenv @[\<pi>]) \<Turnstile>  ?\<chi>"
-      using definition_of_forcing
+      using definition_of_forcing[where \<phi>="\<cdot>\<cdot> 0 \<in> (1 #+ length(env)) \<cdot> \<and> \<phi> \<cdot>"]
       by simp
     with \<open>p\<in>P\<close> \<open>\<theta>\<in>M\<close>  
     have Eq6: "\<exists>\<theta>'\<in>M. \<exists>p'\<in>P.  \<langle>\<theta>,p\<rangle> = <\<theta>',p'> \<and> (\<forall>F. M_generic(F) \<and> p' \<in> F \<longrightarrow> 

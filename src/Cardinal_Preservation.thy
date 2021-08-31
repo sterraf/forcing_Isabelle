@@ -109,7 +109,6 @@ lemma (in forcing_data) forces_neq_apply_imp_incompatible:
   shows
     "p \<bottom> q"
 proof -
-  let ?\<phi>="\<cdot>0`1 is 2\<cdot>"
   {
     fix G
     assume "M_generic(G)"
@@ -120,19 +119,19 @@ proof -
           for \<^term>\<open>M\<close> and one for \<^term>\<open>M[G]\<close>\<close>
     assume "q\<in>G"
     with assms \<open>M_generic(G)\<close>
-    have "M[G], map(val(P,G),[f,a,b'\<^sup>v]) \<Turnstile> ?\<phi>"
-      using truth_lemma[of ?\<phi> G "[f,a,b'\<^sup>v]"]
+    have "M[G], map(val(P,G),[f,a,b'\<^sup>v]) \<Turnstile> \<cdot>0`1 is 2\<cdot>"
+      using truth_lemma[of "\<cdot>0`1 is 2\<cdot>" G "[f,a,b'\<^sup>v]"]
       by (auto simp add:ord_simp_union arity_fun_apply_fm
           fun_apply_type)
     with \<open>b \<noteq> b'\<close> types
-    have "M[G], map(val(P,G),[f,a,b\<^sup>v]) \<Turnstile> Neg(?\<phi>)"
+    have "M[G], map(val(P,G),[f,a,b\<^sup>v]) \<Turnstile> \<cdot>\<not>\<cdot>0`1 is 2\<cdot>\<cdot>"
       using GenExtI by auto
   }
   with types
-  have "q \<tturnstile> \<cdot>\<not>?\<phi>\<cdot> [f,a,b\<^sup>v]"
-    using definition_of_forcing check_in_M
+  have "q \<tturnstile> \<cdot>\<not>\<cdot>0`1 is 2\<cdot>\<cdot> [f,a,b\<^sup>v]"
+    using definition_of_forcing[where \<phi>="\<cdot>\<not>\<cdot>0`1 is 2\<cdot>\<cdot>" ] check_in_M
     by (auto simp add:ord_simp_union arity_fun_apply_fm)
-  with \<open>p \<tturnstile> ?\<phi> [f,a,b\<^sup>v]\<close> and types
+  with \<open>p \<tturnstile> \<cdot>0`1 is 2\<cdot> [f,a,b\<^sup>v]\<close> and types
   show "p \<bottom> q"
     using check_in_M inconsistent_imp_incompatible
     by (simp add:ord_simp_union arity_fun_apply_fm fun_apply_type)
@@ -564,18 +563,16 @@ lemma ccc_fun_approximation_lemma:
   shows
     "\<exists>F\<in>M. F : A \<rightarrow> Pow(B) \<and> (\<forall>a\<in>A. f`a \<in> F`a \<and> |F`a|\<^bsup>M\<^esup> \<le> \<omega>)"
 proof -
-  let ?\<phi>="\<cdot>0 : 1 \<rightarrow> 2\<cdot>" \<comment> \<open>formula for \<^term>\<open>f : A\<rightarrow> B\<close>\<close>
   from \<open>f\<in>M[G]\<close>
   obtain f_dot where "f = val(P,G,f_dot)" "f_dot\<in>M" using GenExtD by force
   with assms
-  obtain p where "p \<tturnstile> ?\<phi> [f_dot, A\<^sup>v, B\<^sup>v]" "p\<in>G" "p\<in>M"
+  obtain p where "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]" "p\<in>G" "p\<in>M"
     using transitivity[OF M_genericD P_in_M]
-      generic truth_lemma[of ?\<phi> G "[f_dot, A\<^sup>v, B\<^sup>v]"]
+      generic truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[f_dot, A\<^sup>v, B\<^sup>v]"]
     by (auto simp add:ord_simp_union arity_typed_function_fm
         \<comment> \<open>NOTE: type-checking is not performed here by the Simplifier\<close>
         typed_function_type)
-  let ?app_fm="\<cdot>0`1 is 2\<cdot>"\<comment> \<open>formula for \<open>f`x=z\<close>\<close>
-  define F where "F\<equiv>\<lambda>a\<in>A. {b\<in>B. \<exists>q\<in>P. q \<preceq> p \<and> (q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v])}"
+  define F where "F\<equiv>\<lambda>a\<in>A. {b\<in>B. \<exists>q\<in>P. q \<preceq> p \<and> (q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v])}"
   from assms \<open>f_dot\<in>_\<close> \<open>p\<in>M\<close>
   have "F \<in> M"
     unfolding F_def using ccc_fun_closed_lemma by simp
@@ -588,7 +585,7 @@ proof -
     moreover
     note \<open>f\<in>M[G]\<close> \<open>A\<in>M\<close>
     moreover from calculation
-    have "M[G], [f, a, f`a] \<Turnstile> ?app_fm"
+    have "M[G], [f, a, f`a] \<Turnstile> \<cdot>0`1 is 2\<cdot>"
       by (auto dest:transM)
     moreover
     note \<open>B\<in>M\<close> \<open>f = val(P,G,f_dot)\<close>
@@ -598,12 +595,12 @@ proof -
     moreover
     note \<open>f_dot\<in>M\<close> \<open>p\<in>G\<close>
     ultimately
-    obtain q where "q \<preceq> p" "q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, (f`a)\<^sup>v]" "q\<in>G"
-      using forces_below_filter[of ?app_fm "[f_dot, a\<^sup>v, (f`a)\<^sup>v]" p]
+    obtain q where "q \<preceq> p" "q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, (f`a)\<^sup>v]" "q\<in>G"
+      using forces_below_filter[of "\<cdot>0`1 is 2\<cdot>" "[f_dot, a\<^sup>v, (f`a)\<^sup>v]" p]
       by (auto simp add: ord_simp_union arity_fun_apply_fm
           fun_apply_type)
     with \<open>f`a \<in> B\<close>
-    have "f`a \<in> {b\<in>B . \<exists>q\<in>P. q \<preceq> p \<and> q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v]}"
+    have "f`a \<in> {b\<in>B . \<exists>q\<in>P. q \<preceq> p \<and> q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]}"
       by blast
     with \<open>a\<in>A\<close>
     show ?thesis unfolding F_def by simp
@@ -611,7 +608,7 @@ proof -
   moreover
   have "|F`a|\<^bsup>M\<^esup> \<le> \<omega>" if "a \<in> A" for a
   proof -
-    let ?Q="\<lambda>b. {q\<in>P. q \<preceq> p \<and> (q \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v])}"
+    let ?Q="\<lambda>b. {q\<in>P. q \<preceq> p \<and> (q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v])}"
     from \<open>F \<in> M\<close> \<open>a\<in>A\<close> \<open>A\<in>M\<close>
     have "F`a \<in> M" "a\<in>M"
       using transitivity[OF _ \<open>A\<in>M\<close>] by simp_all
@@ -642,7 +639,7 @@ proof -
           lam_replacement_Sigfun[OF lam_replacement_constant]]
         Pi_replacement1 transM[of _ "F`a"]
       by unfold_locales simp_all
-    from \<open>p \<tturnstile> ?\<phi> [f_dot, A\<^sup>v, B\<^sup>v]\<close> \<open>a\<in>A\<close>
+    from \<open>p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]\<close> \<open>a\<in>A\<close>
     have "\<exists>y. y \<in> ?Q(b)" if "b \<in> F`a" for b
       using that unfolding F_def by auto
     then
@@ -662,8 +659,8 @@ proof -
       for b c
     proof -
       from \<open>b \<in> F`a\<close> \<open>c \<in> F`a\<close> \<open>q \<in> Pi\<^bsup>M\<^esup>(F`a,?Q)\<close> \<open>q\<in>M\<close>
-      have "q`b \<tturnstile> ?app_fm [f_dot, a\<^sup>v, b\<^sup>v]"
-        "q`c \<tturnstile> ?app_fm [f_dot, a\<^sup>v, c\<^sup>v]"
+      have "q`b \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]"
+        "q`c \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, c\<^sup>v]"
         using mem_Pi_rel_abs[of q] apply_type[of _ _  ?Q]
         by simp_all
       with \<open>b \<noteq> c\<close> \<open>q : F`a \<rightarrow> P\<close> \<open>a\<in>A\<close> \<open>b\<in>_\<close> \<open>c\<in>_\<close>

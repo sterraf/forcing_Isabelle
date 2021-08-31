@@ -146,10 +146,9 @@ Particular replacement instances to be tracked
 repl_opname_check: "A∈M ==> f∈M ==> {opair_name(check(x),f`x). x∈A}∈M"
 check_replacement: "{check(x). x∈P} ∈ M"
 G_dot_in_M: "{⟨check(p),p⟩ . p∈P} ∈ M"
-Replace_sats_in_MG
 ccc_fun_closed_lemma_aux2
 ccc_fun_closed_lemma
-strong_replacement_in_MG: see Intepretations below.
+strong_replacement_in_MG: (via Replace_sats_in_MG) see Intepretations below.
 
 
 General separation lemmas
@@ -159,11 +158,22 @@ Collect_in_M
 
 Collect_forces
 
-truth_lemma_Neg x 2
-    truth_lemma
-    
-truth_lemma'
-    truth_lemma
+truth_lemma_Neg (ALREADY TRACKED)
+    via separation_ax[of "forces(φ)"]
+    via separation_ax[of "forces( ⋅¬φ⋅ )"]
+
+truth_lemma' (ALREADY TRACKED)
+    via separation_ax[of "?ψ"] (?ψ = (⋅∃(⋅∀⋅⋅⋅0 ∈ 3⋅ ∧ leq_fm(4, 0, 2)⋅ → ⋅¬ren_truth_lemma(forces(φ))⋅⋅⋅)⋅))
+
+truth_lemma (ALREADY TRACKED)
+    via truth_lemma_Neg[of "⋅φ ∧ ψ⋅"] (INDUCTION case (Nand φ ψ))
+    via truth_lemma'[of φ]            (INDUCTION case (Forall φ))
+
+forces_below_filter (ALREADY TRACKED)
+    via truth_lemma[of φ]
+
+definition_of_forcing (ALREADY TRACKED)
+    via truth_lemma[of φ]
 
 
 Particular separation instances
@@ -177,13 +187,29 @@ Pow_inter_MG: "{⟨σ,p⟩ ∈ domain(τ) × P . p ⊩ ⋅0 ∈ 1⋅ [σ, χ]} �
     "{x ∈ A × B . M, [x, p, l, o, χ, p] ⊨
    	      (⋅∃(⋅∃⋅pair_fm(0, 1, 2) ∧ ren(φ) ` 6 ` 7 ` perm_pow_fn⋅⋅)⋅)} ∈ M"
     "{x∈?b . (M[G], [x,a] ⊨ subset_fm(0,1))} ∈ M" (via Collect_sats_in_MG)
-   
+    via definition_of_forcing[where φ="⋅0 ∈ 1⋅"]
+    via truth_lemma[of "⋅0 ∈ 1⋅"]
+    
 Replace_sats_in_MG: "{y∈Y. Ord(y)} ∈ M"
     "{v∈?big. M[G] , [v] @ env @ [c] ⊨ ?ψ} ∈ M[G]" (via Collect_sats_in_MG)
+    via truth_lemma[OF ‹φ∈_›]
 
 Union_name_M: "separation(##M, λx. M, [x, τ, leq, P] ⊨ Union_name_fm)"
 
+Collect_sats_in_MG:
+    via definition_of_forcing[where φ="⋅⋅ 0 ∈ (1 #+ length(env)) ⋅ ∧ φ ⋅", THEN iffD2]
+    via truth_lemma[of "⋅⋅ 0 ∈ (1 #+ length(env)) ⋅ ∧ φ ⋅"]
+    
 separation_in_MG: see Intepretations below.
+
+ccc_fun_approximation_lemma
+    via forces_below_filter[of "⋅0`1 is 2⋅"]
+    	via truth_lemma[of "⋅0`1 is 2⋅"]
+    via truth_lemma[of "⋅0 : 1 → 2⋅"]
+
+forces_neq_apply_imp_incompatible
+    via truth_lemma[of "⋅0`1 is 2⋅"]
+    via definition_of_forcing[where φ="⋅¬⋅0`1 is 2⋅⋅" ]
 
 
 Instances in Interpretations

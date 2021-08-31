@@ -183,8 +183,8 @@ proof -
       note \<open>val(P,G,\<chi>) = c\<close>
       ultimately 
       have "M[G], [x, c] \<Turnstile> \<cdot>0 \<in> 1\<cdot>"
-        using \<open>\<chi> \<in> M\<close> generic definition_of_forcing ord_simp_union
-        by auto
+        using \<open>\<chi> \<in> M\<close> generic definition_of_forcing[where \<phi>="\<cdot>0 \<in> 1\<cdot>"]
+          ord_simp_union by auto
       moreover 
       have "x\<in>M[G]"
         using \<open>val(P,G,\<sigma>) =  x\<close> \<open>\<sigma>\<in>M\<close>  \<open>\<chi>\<in>M\<close> GenExtI by blast

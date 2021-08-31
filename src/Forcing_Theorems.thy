@@ -1130,11 +1130,11 @@ next
     using map_val_in_MG by simp
   let ?D="{p\<in>P. (p \<tturnstile> \<phi> env) \<or> (p \<tturnstile> Neg(\<phi>) env)}"
   have "separation(##M,\<lambda>p. (p \<tturnstile> \<phi> env))" 
-      using separation_ax arity_forces assms P_in_M leq_in_M one_in_M arity_forces_le
+      using separation_ax[of "forces(\<phi>)"] arity_forces assms P_in_M leq_in_M one_in_M arity_forces_le
     by simp
   moreover
-  have "separation(##M,\<lambda>p. (p \<tturnstile> Neg(\<phi>) env))"
-      using separation_ax arity_forces assms P_in_M leq_in_M one_in_M arity_forces_le
+  have "separation(##M,\<lambda>p. (p \<tturnstile> \<cdot>\<not>\<phi>\<cdot> env))"
+      using separation_ax[of "forces( \<cdot>\<not>\<phi>\<cdot> )"] arity_forces assms P_in_M leq_in_M one_in_M arity_forces_le
     by simp
   ultimately
   have "separation(##M,\<lambda>p. (p \<tturnstile> \<phi> env) \<or> (p \<tturnstile> Neg(\<phi>) env))" 
@@ -1386,7 +1386,7 @@ next
   note \<open>M_generic(G)\<close>
   ultimately
   show ?case 
-    using truth_lemma_And truth_lemma_Neg Forces_Nand_alt 
+    using truth_lemma_And truth_lemma_Neg[of "\<cdot>\<phi> \<and> \<psi>\<cdot>"] Forces_Nand_alt 
       M_genericD map_val_in_MG arity_Nand_le[of \<phi> \<psi>] by auto
 next
   case (Forall \<phi>)
@@ -1418,9 +1418,9 @@ next
       using pred_le \<open>\<phi>\<in>formula\<close> \<open>env\<in>list(M)\<close> by simp
     then
     have "?D1\<in>M" using Collect_forces ar\<phi> \<open>\<phi>\<in>formula\<close> \<open>env\<in>list(M)\<close> by simp
-    moreover
-    have "?D2\<in>M" using \<open>env\<in>list(M)\<close> \<open>\<phi>\<in>formula\<close>  truth_lemma' separation_closed ar\<phi>
-                        P_in_M
+    moreover from \<open>env\<in>list(M)\<close> \<open>\<phi>\<in>formula\<close>
+    have "?D2\<in>M" 
+      using  truth_lemma'[of \<phi>] separation_closed ar\<phi> P_in_M
       by simp
     ultimately
     have "D\<in>M" unfolding D_def using Un_closed by simp
@@ -1499,7 +1499,7 @@ proof (intro iffI allI impI, elim conjE)
   assume "(p \<tturnstile> \<phi> env)" "M_generic(G)" "p \<in> G"
   with assms 
   show "M[G], map(val(P,G),env) \<Turnstile> \<phi>"
-    using truth_lemma by blast
+    using truth_lemma[of \<phi>] by blast
 next
   assume 1: "\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow> M[G] , map(val(P,G),env) \<Turnstile> \<phi>"
   {
@@ -1517,7 +1517,7 @@ next
       by simp
     with assms \<open>M_generic(G)\<close> 
     obtain s where "s\<in>G" "(s \<tturnstile> \<phi> env)"
-      using truth_lemma by blast
+      using truth_lemma[of \<phi>] by blast
     moreover from this and  \<open>M_generic(G)\<close> \<open>r\<in>G\<close> 
     obtain q where "q\<in>G" "q\<preceq>s" "q\<preceq>r"
       by blast
