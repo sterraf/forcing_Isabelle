@@ -144,10 +144,24 @@ Particular replacement instances to be tracked
 ========== =========== ========= == == =======
 
 repl_opname_check: "A∈M ==> f∈M ==> {opair_name(check(x),f`x). x∈A}∈M"
+
 check_replacement: "{check(x). x∈P} ∈ M"
+
 G_dot_in_M: "{⟨check(p),p⟩ . p∈P} ∈ M"
+
 ccc_fun_closed_lemma_aux2
+
 ccc_fun_closed_lemma
+
+wfrec_Hfrc_at: "wfrec_replacement(##M,is_Hfrc_at(##M,P,leq),forcerel(P,X))"
+    via replacement_ax[of ?f] ( ?f = (⋅∃⋅pair_fm(1, 0, 2) ∧ is_wfrec_fm(Hfrc_at_fm(8, 9, 2, 1, 0), 5, 1, 0)⋅⋅))
+
+wfrec_Hcheck: "wfrec_replacement(##M,is_Hcheck(one),rcheck(X))"
+    via replacement_ax[of ?f] ( ?f = (⋅∃⋅pair_fm(1, 0, 2) ∧ is_wfrec_fm(is_Hcheck_fm(8, 2, 1, 0), 4, 1, 0)⋅⋅))
+
+repl_PHcheck: "strong_replacement(##M,PHcheck(one,f))"
+    via replacement_ax[of "PHcheck_fm(2,3,0,1)"]
+
 strong_replacement_in_MG: (via Replace_sats_in_MG) see Intepretations below.
 
 

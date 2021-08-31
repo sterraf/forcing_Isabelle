@@ -1073,7 +1073,7 @@ proof -
     unfolding fm_definitions by simp
   ultimately
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,P,leq,forcerel(P,X)]))"
-    using replacement_ax 1 artyf \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M by simp
+    using replacement_ax[of ?f] 1 artyf \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M by simp
   then
   have "strong_replacement(##M,\<lambda>x z.
           \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hfrc_at(##M,P,leq),forcerel(P,X), x, y))"
