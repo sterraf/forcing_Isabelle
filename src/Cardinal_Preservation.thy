@@ -429,7 +429,8 @@ proof -
     by auto
   with assms types \<open>?\<Gamma>\<in>_\<close> \<open>arity(?\<Gamma>)\<le>_\<close>
   show ?thesis
-    using closed Lambda_in_M[where env="[P, leq, one, f_dot,a\<^sup>v,p]"]
+    using closed Lambda_in_M[where env="[P, leq, one, f_dot,a\<^sup>v,p]"
+        and \<phi>="ren(Collect_fm(1,?G,7))`8`8`ren_G_aux_fn"]
     by simp
 qed
 
@@ -551,7 +552,7 @@ proof -
     by auto
   with assms types \<open>?\<Gamma>\<in>_\<close> \<open>arity(?\<Gamma>)\<le>_\<close>
   show ?thesis
-    using closed Lambda_in_M[where env="[P, leq, one, f_dot,p,B]"]
+    using closed Lambda_in_M[where env="[P, leq, one, f_dot,p,B]" and \<phi>="?\<Gamma>"]
     by simp
 qed
 

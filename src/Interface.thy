@@ -550,9 +550,10 @@ proof -
     \<longleftrightarrow> sats(M,fsfm(0,1,2),env)"
     and "fsfm(0,1,2) \<in> formula" and "arity(fsfm(0,1,2)) = 3" for env
     using funsp_fm_auto[of concl:M] by (simp del:FOL_sats_iff pair_abs add: fm_definitions ord_simp_union)
+  (* "fsfm(0,1,2)\<equiv>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>\<cdot>pair_fm(3, 2, 4) \<and> \<cdot>pair_fm(6, 2, 1) \<and> \<cdot>cons_fm(1, 3, 0) \<and> \<cdot>{0,0} is 5 \<cdot>\<cdot>\<cdot>\<cdot>\<cdot>)\<cdot>)\<cdot>)\<cdot>)" for i j k *)
   then
   have "\<forall>n0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,fsfm(0,1,2) , [p,z,n0]))"
-    using replacement_ax by simp
+    using replacement_ax[of "fsfm(0,1,2)"] by simp
   moreover
   have "(\<exists>f\<in>M. \<exists>b\<in>M. \<exists>nb\<in>M. \<exists>cnbf\<in>M. pair(##M,f,b,p) & pair(##M,n0,b,nb) &
           is_cons(##M,nb,f,cnbf) & upair(##M,cnbf,cnbf,z))
@@ -801,7 +802,7 @@ proof -
       by (simp add:ord_simp_union)
     then
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),A,0]))"
-      using replacement_ax 1 \<open>A\<in>M\<close> \<open>0\<in>M\<close> by simp
+      using replacement_ax[of ?f] 1 \<open>A\<in>M\<close> \<open>0\<in>M\<close> by simp
     then
     have "strong_replacement(##M,\<lambda>x z.
           \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, iterates_MH(##M,is_list_functor(##M,A),0) ,
@@ -865,7 +866,7 @@ proof -
       using arty by (simp add:ord_simp_union)
     then
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),v]))"
-      using replacement_ax 1 \<open>v\<in>M\<close> \<open>is_F_fm\<in>formula\<close> by simp
+      using replacement_ax[of ?f] 1 \<open>v\<in>M\<close> \<open>is_F_fm\<in>formula\<close> by simp
     then
     have "strong_replacement(##M,\<lambda>x z.
           \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, iterates_MH(##M,is_F,v) ,
@@ -889,7 +890,8 @@ proof -
         sats(M, formula_functor_fm(1,0), [b,a])"
     if "a\<in>M" "b\<in>M"  for a b
     using that by simp
-  then show ?thesis using \<open>0\<in>M\<close> 1 2 iterates_repl_intf by simp
+  then show ?thesis using \<open>0\<in>M\<close> 1 2 
+      iterates_repl_intf[where is_F_fm="formula_functor_fm(1,0)"] by simp
 qed
 
 lemma (in M_ZF_trans) nth_repl_intf:
@@ -904,7 +906,8 @@ proof -
   have "is_tl(##M,a,b) \<longleftrightarrow> sats(M, tl_fm(1,0), [b,a])"
     if "a\<in>M" "b\<in>M" for a b
     using that by simp
-  then show ?thesis using \<open>l\<in>M\<close> 1 2 iterates_repl_intf by simp
+  then show ?thesis using \<open>l\<in>M\<close> 1 2 
+      iterates_repl_intf[where is_F_fm="tl_fm(1,0)"] by simp
 qed
 
 
@@ -920,7 +923,8 @@ proof -
   have "big_union(##M,a,b) \<longleftrightarrow> sats(M, big_union_fm(1,0), [b,a])"
     if "a\<in>M" "b\<in>M" for a b
     using that by simp
-  then show ?thesis using \<open>A\<in>M\<close> 1 2 iterates_repl_intf by simp
+  then show ?thesis using \<open>A\<in>M\<close> 1 2 
+      iterates_repl_intf[where is_F_fm="big_union_fm(1,0)"] by simp
 qed
 
 (*
@@ -958,7 +962,7 @@ proof -
     by (simp add:ord_simp_union)
   then
   have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,A,0,nat]))"
-    using replacement_ax 1 nat_in_M \<open>A\<in>M\<close> \<open>0\<in>M\<close> by simp
+    using replacement_ax[of ?f] 1 nat_in_M \<open>A\<in>M\<close> \<open>0\<in>M\<close> by simp
   then
   show ?thesis using repl_sats[of M ?f "[A,0,nat]"]  satsf  by simp
 qed
@@ -989,7 +993,7 @@ proof -
     by (simp add:ord_simp_union)
   then
   have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,0,nat]))"
-    using replacement_ax 1 artyf \<open>0\<in>M\<close> nat_in_M by simp
+    using replacement_ax[of ?f] 1 artyf \<open>0\<in>M\<close> nat_in_M by simp
   then
   show ?thesis using repl_sats[of M ?f "[0,nat]"]  satsf  by simp
 qed
@@ -1027,7 +1031,7 @@ proof -
     by (simp add:ord_simp_union)
   then
   have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,A,nat]))"
-    using replacement_ax 1 artyf \<open>A\<in>M\<close> nat_in_M by simp
+    using replacement_ax[of ?f] 1 artyf \<open>A\<in>M\<close> nat_in_M by simp
   then
   show ?thesis using repl_sats[of M ?f "[A,nat]"]  satsf  by simp
 qed
@@ -1086,7 +1090,7 @@ proof -
     by (simp add: fm_definitions ord_simp_union)
   then
   have "\<forall>f0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,is_powapply_fm(2,0,1) , [p,z,f0]))"
-    using replacement_ax by simp
+    using replacement_ax[of "is_powapply_fm(2,0,1)"] by simp
   moreover
   have "is_powapply(##M,f0,p,z) \<longleftrightarrow> sats(M,is_powapply_fm(2,0,1) , [p,z,f0])"
     if "p\<in>M" "z\<in>M" "f0\<in>M" for p z f0
@@ -1127,7 +1131,7 @@ proof -
     by (simp add: fm_definitions ord_simp_union)
   then
   have "\<forall>f0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,PHrank_fm(2,0,1) , [p,z,f0]))"
-    using replacement_ax by simp
+    using replacement_ax[of "PHrank_fm(2,0,1)"] by simp
   then
   have "\<forall>f0\<in>M. strong_replacement(##M, PHrank(##M,f0))"
     unfolding strong_replacement_def univalent_def by (simp add:sats_PHrank_fm)
@@ -1183,7 +1187,7 @@ proof -
     by (simp add:ord_simp_union)
   then
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,rrank(X)]))"
-    using replacement_ax 1 \<open>X\<in>M\<close> rrank_in_M by simp
+    using replacement_ax[of ?f] 1 \<open>X\<in>M\<close> rrank_in_M by simp
   then
   have "strong_replacement(##M,\<lambda>x z.
           \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hrank(##M) , rrank(X), x, y))"
@@ -1277,7 +1281,7 @@ proof -
       by (simp add:ord_simp_union)
     then
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,A,mesa]))"
-      using replacement_ax 1 \<open>A\<in>M\<close> \<open>mesa\<in>M\<close> by simp
+      using replacement_ax[of ?f] 1 \<open>A\<in>M\<close> \<open>mesa\<in>M\<close> by simp
     then
     have "strong_replacement(##M,\<lambda>x z.
           \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_HVfrom(##M,A) , mesa, x, y))"
@@ -1364,7 +1368,7 @@ proof -
     by auto
   moreover from calculation
   have "strong_replacement(##M, \<lambda>x y. M,[x,y]@env@[A] \<Turnstile> ?\<phi>')"
-    using replacement_ax \<open>env\<in>list(M)\<close> assms by simp
+    using replacement_ax[of ?\<phi>'] \<open>env\<in>list(M)\<close> assms by simp
   ultimately
   have 4:"strong_replacement(##M, \<lambda>x y. y = f(x) \<and> x\<in>A)"
     using
@@ -1388,7 +1392,7 @@ lemma Replace_relativized_in_M :
     fclosed: "\<And>x. x\<in>A \<Longrightarrow> f(x) \<in> M"  and
     "A\<in>M" "env\<in>list(M)"
   shows "{f(x) . x\<in>A}\<in>M"
-  using assms Replace_in_M by auto
+  using assms Replace_in_M[of \<phi>] by auto
 
 definition \<rho>_repl :: "i\<Rightarrow>i" where
   "\<rho>_repl(l) \<equiv> rsum({\<langle>0, 1\<rangle>, \<langle>1, 0\<rangle>}, id(l), 2, 3, l)"
@@ -1469,7 +1473,7 @@ proof -
     using transitivity[OF _ \<open>A\<in>M\<close>] pair_in_M_iff fclosed by simp
   ultimately
   show "{\<langle>x,f(x)\<rangle> . x\<in>A } \<in> M"
-    using Replace_in_M \<open>A\<in>M\<close> \<open>env\<in>_\<close>
+    using Replace_in_M[of ?\<phi>'] \<open>A\<in>M\<close> \<open>env\<in>_\<close>
     by simp
 qed
 

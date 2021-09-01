@@ -150,8 +150,10 @@ check_replacement: "{check(x). x∈P} ∈ M"
 G_dot_in_M: "{⟨check(p),p⟩ . p∈P} ∈ M"
 
 ccc_fun_closed_lemma_aux2
+    via Lambda_in_M
 
 ccc_fun_closed_lemma
+    via Lambda_in_M
 
 wfrec_Hfrc_at: "wfrec_replacement(##M,is_Hfrc_at(##M,P,leq),forcerel(P,X))"
     via replacement_ax[of ?f] ( ?f = (⋅∃⋅pair_fm(1, 0, 2) ∧ is_wfrec_fm(Hfrc_at_fm(8, 9, 2, 1, 0), 5, 1, 0)⋅⋅))
