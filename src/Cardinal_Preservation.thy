@@ -144,7 +144,7 @@ context
 begin
 
 \<comment> \<open>Simplifying simp rules (because of the occurrence of "\#\#")\<close>
-lemmas sharp_simps = Card_Union Card_rel_cardinal_rel Collect_abs
+lemmas sharp_simps = Card_rel_Union Card_rel_cardinal_rel Collect_abs
   Cons_abs Cons_in_M_iff Diff_closed Equal_abs Equal_in_M_iff Finite_abs
   Forall_abs Forall_in_M_iff Inl_abs Inl_in_M_iff Inr_abs Inr_in_M_iff
   Int_closed Inter_abs Inter_closed M_nat Member_abs Member_in_M_iff

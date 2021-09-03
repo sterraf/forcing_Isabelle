@@ -131,7 +131,7 @@ lemma "\<forall>x[M]. P(x) \<equiv> \<forall>x. M(x) \<longrightarrow> P(x)"
       "\<exists>x[M]. P(x) \<equiv> \<exists>x. M(x) \<and> P(x)"
   unfolding rall_def rex_def .
 
-txt\<open>Finally, a set can be viewed (“casted”) as a class using the
+txt\<open>Finally, a set can be viewed (“cast”) as a class using the
 following function of type \<^typ>\<open>i\<Rightarrow>(i\<Rightarrow>o)\<close>.\<close>
 thm setclass_iff
 text\<open>@{thm [display] setclass_iff}\<close>
@@ -425,7 +425,7 @@ lemma cardinalities_defs:
 context M_aleph
 begin
 
-txt\<open>As in the previous Lemma @{thm eqpoll_def'}, we are now under
+txt\<open>As in the previous Lemma @{thm [source] eqpoll_def'}, we are now under
     the assumptions of the locale \<^term>\<open>M_aleph\<close>. The axiom instances
     included are sufficient to state and prove the defining
     properties of the relativized \<^term>\<open>Aleph\<close> function
