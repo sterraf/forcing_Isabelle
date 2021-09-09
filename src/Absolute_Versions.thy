@@ -104,7 +104,7 @@ proof -
   have "\<dots> = transrec(x, HAleph)"
     by (simp add:V_simps)
   also from \<open>Ord(x)\<close>
-  have "\<dots> = \<aleph>x"
+  have "\<dots> = \<aleph>\<^bsub>x\<^esub>"
     using Aleph'_eq_Aleph unfolding Aleph'_def by simp
   finally
   show ?thesis .

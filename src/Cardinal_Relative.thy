@@ -166,7 +166,6 @@ lemma lfp_banach_functor:
   using assms lfp_eq_Union bnd_mono_banach_functor contin_banach_functor
   by simp
 
-(* This is the biggest hole today *)
 lemma lfp_banach_functor_closed:
   assumes "M(g)" "M(X)" "M(Y)" "M(f)" "g\<in>inj(Y,X)"
   shows "M(lfp(X, banach_functor(X,Y,f,g)))"

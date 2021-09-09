@@ -8,7 +8,7 @@ Interface.thy:sublocale M_ZF_trans ⊆ M_basic "##M"
 * Powerset
 * 10 separations
   and
-* 1 replacement:
+* 1 fake replacement:
   funspace_succ_replacement: "M(n) ==>
       strong_replacement(M, λp z. ∃f[M]. ∃b[M]. ∃nb[M]. ∃cnbf[M].
                 pair(M,f,b,p) & pair(M,n,b,nb) & is_cons(M,nb,f,cnbf) &
@@ -27,7 +27,7 @@ Interface.thy:sublocale M_ZF_trans ⊆ M_datatypes "##M"
    "strong_replacement(M,
          λn y. n∈nat & is_iterates(M, is_formula_functor(M), 0, n, y))"
   nth_replacement:
-   "M(l) ==> iterates_replacement(M, %l t. is_tl(M,l,t), l)"
+   "M(l) ==> iterates_replacement(M, is_tl(M), l)"
 
 Interface.thy:sublocale M_ZF_trans ⊆ M_eclose "##M"
 * 2 replacements:
@@ -82,10 +82,10 @@ Replacement_Instances.thy:sublocale M_ZF_trans ⊆ M_replacement "##M"
 Replacement_Instances.thy:sublocale M_ZF_trans ⊆ M_replacement_extra "##M"
 * 2 fake replacements:
   lam_replacement_minimum:"lam_replacement(M, λp. minimum(fst(p),snd(p)))"
-  lam_replacement_RepFun_cons:"lam_replacement(M, λp. RepFun(fst(p), λx. {⟨snd(p),x⟩}))"
+  lam_replacement_RepFun_cons:"lam_replacement(M, λp. {{⟨snd(p), x⟩} . x ∈ fst(p)})"
 
 Succession_Poset.thy:sublocale M_ZF_trans ⊆ M_seqspace "##M"
-* 1 replacement:
+* 1 fake replacement:
   seqspace_replacement: "M(B) ⟹ strong_replacement(M,λn z. n∈nat ∧ is_funspace(M,n,B,z))"
 
 ZF_Trans_Interpretations.thy:sublocale M_ZF_trans ⊆ M_FiniteFun "##M"
@@ -131,13 +131,60 @@ ZF_Trans_Interpretations.thy:sublocale M_ZFC_trans ⊆ M_cardinal_AC "##M"
 
 Not_CH.thy:sublocale M_ZFC_trans ⊆ M_master "##M"
 * 3 separations
-* 1 replacement:
+* 1 fake replacement:
   lam_apply_replacement: "M(A) ⟹ M(f) ⟹
      strong_replacement(M, λx y. y = ⟨x, λn∈A. f ` ⟨x, n⟩⟩)"
 
+Subsumed by the previous sublocale commands:
 
-COUNT: 31 separation instances, 18 (allegedly) true replacements,
-       21 fake replacements.
+M_cardinals:
+* 3 separations
+* 1 fake replacement:
+  banach_repl_iter: "M(X) ⟹ M(Y) ⟹ M(f) ⟹ M(g) ⟹
+               strong_replacement(M, λx y. x∈nat ∧ y = banach_functor(X, Y, f, g)^x (0))"
+
+M_cardinal_library:
+* 8 separations
+* 1 true replacement, 1 fake:
+  (fake) lam_replacement_inj_rel:"lam_replacement(M, λx. inj⇗M⇖(fst(x),snd(x)))"
+  cardinal_lib_assms6:
+    "M(f) ⟹ M(β) ⟹ Ord(β) ⟹ 
+    strong_replacement(M, λx y. x∈β ∧ y = ⟨x, transrec(x, λa g. f ` (g `` a))⟩)"
+
+M_delta:
+* 3 separations
+* 1 true replacement:
+  cardinal_replacement:"strong_replacement(M, λA y. y = ⟨A, |A|⇗M⇖⟩)"
+
+M_cohen:
+* 8 separations
+
+COUNT: 53 separation instances, 17 (allegedly) true replacements,
+       26 fake replacements.
+
+MISSING FROM M_master: 4 replacements appearing in M_eclose_pow !!
+
+
+Simplified versions of true replacement instances
+========== ======== == ==== =========== =========
+
+list_replacement1: "M(A) ==> iterates_replacement(M, is_list_functor(M,A), 0)"
+list_replacement2: "M(A) ==> strong_replacement(M, λn y. n∈nat & is_iterates(M, is_list_functor(M,A), 0, n, y))"
+formula_replacement1: "iterates_replacement(M, is_formula_functor(M), 0)"
+formula_replacement2: "strong_replacement(M, λn y. n∈nat & is_iterates(M, is_formula_functor(M), 0, n, y))"
+nth_replacement: "M(l) ==> iterates_replacement(M, is_tl(M), l)"
+eclose_replacement1: "M(A) ==> iterates_replacement(M, big_union(M), A)"
+eclose_replacement2: "M(A) ==> strong_replacement(M, λn y. n∈nat & is_iterates(M, big_union(M), A, n, y))"
+HVfrom_replacement: "⟦ M(i) ; M(A) ⟧ ⟹ transrec_replacement(M,is_HVfrom(M,A),i)"
+is_Hrank_replacement : "M(x) ⟹ wfrec_replacement(M,is_Hrank(M),rrank(x))"
+aleph_rel_replacement: "strong_replacement(M, λx y. Ord(x) ∧ y = ℵ⇘x⇙⇗M⇖)"
+ordertype_replacement: "M(X) ⟹ strong_replacement(M,λ x z . M(z) ∧ M(x) ∧ x∈Pow_rel(M,X×X) ∧ well_ord(X, x) ∧ z=ordertype(X,x))"
+strong_replacement_jc_body: "strong_replacement(M,λ x z . M(z) ∧ M(x) ∧ z = jump_cardinal_body(M,x))"
+omap_replacement: "⟦M(A);M(r)⟧ ⟹strong_replacement(M, λa z. ∃x[M]. Ord(x) ∧ z = ⟨a, x⟩ ∧ (∃g[M]. g ∈ ⟨Order.pred(A, a, r), r⟩ ≅ ⟨x, Memrel(x)⟩))"
+haleph_transrec_replacement: "M(a) ⟹ transrec_replacement(M,is_HAleph(M),a)"
+wfrec_pred_replacement:"M(A) ⟹ M(r) ⟹ wfrec_replacement(M, λx f z. z = f `` Order.pred(A, x, r), r)"
+cardinal_lib_assms6: "M(f) ⟹ M(β) ⟹ Ord(β) ⟹ strong_replacement(M, λx y. x∈β ∧ y = ⟨x, transrec(x, λa g. f ` (g `` a))⟩)"
+cardinal_replacement:"strong_replacement(M, λA y. y = ⟨A, |A|⇗M⇖⟩)"
 
 
 Particular replacement instances to be tracked

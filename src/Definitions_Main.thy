@@ -20,7 +20,7 @@ all the libraries in which our development is based, might jump
 directly there. But in case one wants to dive deeper, the following
 sections treat some basic concepts in the ZF logic
 (Section~\ref{sec:def-main-ZF})  and in the
-ZF-Constructible library (Section~\ref{sec:def-main-constructible})
+ZF-Constructible library (Section~\ref{sec:def-main-relative})
 on which our definitions are built.
 \<close>
 
@@ -139,24 +139,14 @@ text\<open>@{thm [display] setclass_iff}\<close>
   (##A)(x) \<longleftrightarrow> x \<in> A
 *)
 
-subsection\<open>ZF-Constructible\label{sec:def-main-constructible}\<close>
-text\<open>A list of relative concepts follows next.\<close>
+subsection\<open>Relative concepts\label{sec:def-main-relative}\<close>
+txt\<open>A list of relative concepts (mostly from the ZF-Constructible
+    library) follows next.\<close>
+
 thm big_union_def
 text\<open>@{thm [display] big_union_def}\<close>
 (*
   big_union(M, A, z) \<equiv> \<forall>x[M]. x \<in> z \<longleftrightarrow> (\<exists>y[M]. y \<in> A \<and> x \<in> y)
-*)
-
-thm Union_ax_def
-text\<open>@{thm [display] Union_ax_def}\<close>
-(*
-  Union_ax(M) \<equiv> \<forall>x[M]. \<exists>z[M]. \<forall>xa[M]. xa \<in> z \<longleftrightarrow> (\<exists>y[M]. y \<in> x \<and> xa \<in> y)
-*)
-
-thm power_ax_def[unfolded powerset_def subset_def]
-text\<open>@{thm [display] power_ax_def[unfolded powerset_def subset_def]}\<close>
-(*
-  power_ax(M) \<equiv> \<forall>x[M]. \<exists>z[M]. \<forall>xa[M]. xa \<in> z \<longleftrightarrow> (\<forall>xb[M]. xb \<in> xa \<longrightarrow> xb \<in> x)
 *)
 
 thm upair_def
@@ -176,44 +166,6 @@ thm successor_def[unfolded is_cons_def union_def]
 text\<open>@{thm [display] successor_def[unfolded is_cons_def union_def]}\<close>
 (*
   successor(M, a, z) \<equiv> \<exists>x[M]. upair(M, a, a, x) \<and> (\<forall>xa[M]. xa \<in> z \<longleftrightarrow> xa \<in> x \<or> xa \<in> a)
-*)
-
-thm upair_ax_def
-text\<open>@{thm [display] upair_ax_def}\<close>
-(*
-  upair_ax(M) \<equiv> \<forall>x[M]. \<forall>y[M]. \<exists>z[M]. upair(M, x, y, z)
-*)
-
-thm foundation_ax_def
-text\<open>@{thm [display] foundation_ax_def}\<close>
-(*
-  foundation_ax(M) \<equiv> \<forall>x[M]. (\<exists>y[M]. y \<in> x) \<longrightarrow> (\<exists>y[M]. y \<in> x \<and> \<not> (\<exists>z[M]. z \<in> x \<and> z \<in> y))
-*)
-
-thm extensionality_def
-text\<open>@{thm [display] extensionality_def}\<close>
-(*
-  extensionality(M) \<equiv> \<forall>x[M]. \<forall>y[M]. (\<forall>z[M]. z \<in> x \<longleftrightarrow> z \<in> y) \<longrightarrow> x = y
-*)
-
-thm separation_def
-text\<open>@{thm [display] separation_def}\<close>
-(*
-  separation(M, P) \<equiv> \<forall>z[M]. \<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> x \<in> z \<and> P(x)
-*)
-
-thm univalent_def
-text\<open>@{thm [display] univalent_def}\<close>
-(*
-  univalent(M, A, P) \<equiv> \<forall>x[M]. x \<in> A \<longrightarrow>
-                          (\<forall>y[M]. \<forall>z[M]. P(x, y) \<and> P(x, z) \<longrightarrow> y = z)
-*)
-
-thm strong_replacement_def
-text\<open>@{thm [display] strong_replacement_def}\<close>
-(*
-  strong_replacement(M, P) \<equiv> \<forall>A[M]. univalent(M, A, P) \<longrightarrow>
-       (\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> P(x, b)))
 *)
 
 thm empty_def
@@ -293,6 +245,71 @@ text\<open>@{thm [display] is_function_space_def[unfolded is_funspace_def]
   (\<forall>y[M]. y \<in> B \<longrightarrow> (\<exists>x[M]. x \<in> A \<and> is_apply(M, f, x, y)))
 *)
 
+
+txt\<open>Relative version of the $\ZFC$ axioms\<close>
+thm extensionality_def
+text\<open>@{thm [display] extensionality_def}\<close>
+(*
+  extensionality(M) \<equiv> \<forall>x[M]. \<forall>y[M]. (\<forall>z[M]. z \<in> x \<longleftrightarrow> z \<in> y) \<longrightarrow> x = y
+*)
+
+thm foundation_ax_def
+text\<open>@{thm [display] foundation_ax_def}\<close>
+(*
+  foundation_ax(M) \<equiv> \<forall>x[M]. (\<exists>y[M]. y \<in> x) \<longrightarrow> (\<exists>y[M]. y \<in> x \<and> \<not> (\<exists>z[M]. z \<in> x \<and> z \<in> y))
+*)
+
+thm upair_ax_def
+text\<open>@{thm [display] upair_ax_def}\<close>
+(*
+  upair_ax(M) \<equiv> \<forall>x[M]. \<forall>y[M]. \<exists>z[M]. upair(M, x, y, z)
+*)
+
+thm Union_ax_def
+text\<open>@{thm [display] Union_ax_def}\<close>
+(*
+  Union_ax(M) \<equiv> \<forall>x[M]. \<exists>z[M]. \<forall>xa[M]. xa \<in> z \<longleftrightarrow> (\<exists>y[M]. y \<in> x \<and> xa \<in> y)
+*)
+
+thm power_ax_def[unfolded powerset_def subset_def]
+text\<open>@{thm [display] power_ax_def[unfolded powerset_def subset_def]}\<close>
+(*
+  power_ax(M) \<equiv> \<forall>x[M]. \<exists>z[M]. \<forall>xa[M]. xa \<in> z \<longleftrightarrow> (\<forall>xb[M]. xb \<in> xa \<longrightarrow> xb \<in> x)
+*)
+
+thm infinity_ax_def
+text\<open>@{thm [display] infinity_ax_def}\<close>
+(*
+  infinity_ax(M) \<equiv> \<exists>I[M]. (\<exists>z[M]. empty(M, z) \<and> z \<in> I) \<and> (\<forall>y[M]. y \<in> I \<longrightarrow>
+                        (\<exists>sy[M]. successor(M, y, sy) \<and> sy \<in> I))
+*)
+
+thm choice_ax_def
+text\<open>@{thm [display] choice_ax_def}\<close>
+(*
+  choice_ax(M) \<equiv> \<forall>x[M]. \<exists>a[M]. \<exists>f[M]. ordinal(M, a) \<and> surjection(M, a, x, f)
+*)
+
+thm separation_def
+text\<open>@{thm [display] separation_def}\<close>
+(*
+  separation(M, P) \<equiv> \<forall>z[M]. \<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> x \<in> z \<and> P(x)
+*)
+
+thm univalent_def
+text\<open>@{thm [display] univalent_def}\<close>
+(*
+  univalent(M, A, P) \<equiv> \<forall>x[M]. x \<in> A \<longrightarrow>
+                          (\<forall>y[M]. \<forall>z[M]. P(x, y) \<and> P(x, z) \<longrightarrow> y = z)
+*)
+
+thm strong_replacement_def
+text\<open>@{thm [display] strong_replacement_def}\<close>
+(*
+  strong_replacement(M, P) \<equiv> \<forall>A[M]. univalent(M, A, P) \<longrightarrow>
+       (\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> P(x, b)))
+*)
+
 text\<open>Internalized formulas\<close>
 
 thm Member Equal Nand Forall formula.induct
@@ -319,6 +336,9 @@ text\<open>@{thm [display] arity.simps}\<close>
   arity((\<forall>p)) = pred(arity(p))
 *)
 
+txt\<open>We have the satisfaction relation between $\in$-models and
+    first order formulas (given a “environment” list representing
+    the assignment of free variables),\<close>
 thm mem_iff_sats equal_iff_sats sats_Nand_iff sats_Forall_iff
 text\<open>@{thm [display] mem_iff_sats equal_iff_sats sats_Nand_iff sats_Forall_iff}\<close>
 (*
@@ -327,20 +347,15 @@ text\<open>@{thm [display] mem_iff_sats equal_iff_sats sats_Nand_iff sats_Forall
   env \<in> list(A) \<Longrightarrow> (A, env \<Turnstile> \<cdot>\<not>(p \<and> q)\<cdot>) \<longleftrightarrow> \<not> ((A, env \<Turnstile> p) \<and> (A, env \<Turnstile> q))
   env \<in> list(A) \<Longrightarrow> (A, env \<Turnstile> (\<cdot>\<forall>p\<cdot>)) \<longleftrightarrow> (\<forall>x\<in>A. A, Cons(x, env) \<Turnstile> p)*)
 
-subsection\<open>Forcing \label{sec:def-main-forcing}\<close>
-
-thm infinity_ax_def
-text\<open>@{thm [display] infinity_ax_def}\<close>
+txt\<open>as well as the satisfaction of an arbitrary set of sentences.\<close>
+thm satT_def
+text\<open>@{thm [display] satT_def}\<close>
 (*
-  infinity_ax(M) \<equiv> \<exists>I[M]. (\<exists>z[M]. empty(M, z) \<and> z \<in> I) \<and> (\<forall>y[M]. y \<in> I \<longrightarrow>
-                        (\<exists>sy[M]. successor(M, y, sy) \<and> sy \<in> I))
+  A \<Turnstile> \<Phi>  \<equiv>  \<forall>\<phi>\<in>\<Phi>. A, [] \<Turnstile> \<phi>
 *)
 
-thm choice_ax_def
-text\<open>@{thm [display] choice_ax_def}\<close>
-(*
-  choice_ax(M) \<equiv> \<forall>x[M]. \<exists>a[M]. \<exists>f[M]. ordinal(M, a) \<and> surjection(M, a, x, f)
-*)
+txt\<open>The internalized (viz. as elements of the set \<^term>\<open>formula\<close>)
+    version of the axioms follow next.\<close>
 
 thm ZF_union_iff_sats ZF_power_iff_sats ZF_pairing_iff_sats
   ZF_foundation_iff_sats ZF_extensionality_iff_sats
@@ -384,11 +399,7 @@ text\<open>@{thm [display] ZF_fin_def ZF_inf_def ZF_def ZFC_fin_def
   ZFC \<equiv> ZF_inf \<union> ZFC_fin
 *)
 
-thm satT_def
-text\<open>@{thm [display] satT_def}\<close>
-(*
-  A \<Turnstile> \<Phi>  \<equiv>  \<forall>\<phi>\<in>\<Phi>. A, [] \<Turnstile> \<phi>
-*)
+subsection\<open>Forcing \label{sec:def-main-forcing}\<close>
 
 thm extensions_of_ctms
 text\<open>@{thm [display] extensions_of_ctms}\<close>
@@ -460,8 +471,9 @@ text\<open>@{thm [display] M_master.is_ContHyp_iff
   is_ContHyp(\<V>) \<longleftrightarrow> \<aleph>\<^bsub>1\<^esub> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^esup>
 *)
 
-txt\<open>In turn, the fully relational version on a ctm \<^term>\<open>A\<close> is
-    equivalent to the satisfaction of the first-order formula \<^term>\<open>\<cdot>CH\<cdot>\<close>.\<close>
+txt\<open>In turn, the fully relational version evaluated on a nonempty
+    transitive \<^term>\<open>A\<close> is equivalent to the satisfaction of the
+    first-order formula \<^term>\<open>\<cdot>CH\<cdot>\<close>.\<close>
 thm is_ContHyp_iff_sats
 text\<open>@{thm [display] is_ContHyp_iff_sats}\<close>
 (*

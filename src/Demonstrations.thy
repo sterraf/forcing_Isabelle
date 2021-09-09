@@ -38,10 +38,33 @@ abbreviation
   dec29  :: i   ("29") where "29 \<equiv> succ(28)"
 
 
-locale Demo = 
+locale Demo = M_trivial + M_AC +
   fixes t\<^sub>1 t\<^sub>2
-  assumes ts_in_nat[simp]: "t\<^sub>1\<in>\<omega>" "t\<^sub>2\<in>\<omega>"
+  assumes 
+    ts_in_nat[simp]: "t\<^sub>1\<in>\<omega>" "t\<^sub>2\<in>\<omega>"
+    and
+    power_infty: "power_ax(M)" "M(\<omega>)"
 begin
+
+lemma 
+  assumes 
+    sorry_replacements:
+    "\<And>P. strong_replacement(M,P)"
+    "\<And>F. lam_replacement(M,F)"
+    "\<And>Q S. iterates_replacement(M,Q,S)"
+    "\<And>Q S. wfrec_replacement(M,Q,S)"
+    "\<And>Q S. transrec_replacement(M,Q,S)"
+    and
+    sorry_separations:
+    "separation(M,Q)"shows "M_master(M)"
+  apply unfold_locales apply 
+    (simp_all add:
+      sorry_replacements(1-2)
+      sorry_separations
+      power_infty)
+  \<comment> \<open>We obtain two goals of the form \<^term>\<open>rall(M,\<V>)\<close> because of 
+  instances of the form \<^term>\<open>\<forall>x[M]. separation(M,P)\<close>\<close> 
+  oops
 
 (* NOTE: Only for pretty-printing purposes, overrides previous
   basic notations  *)
