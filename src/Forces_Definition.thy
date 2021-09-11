@@ -784,7 +784,7 @@ lemma forcerel_mono :
   shows "forcerel(P,x) \<subseteq> forcerel(P,y)"
   using forcerel_mono_aux assms unfolding forcerel_def by simp
 
-lemma aux: "x \<in> names_below(P, w) \<Longrightarrow> \<langle>x,y\<rangle> \<in> forcerel(P,z) \<Longrightarrow>
+lemma forcerel_eq_aux: "x \<in> names_below(P, w) \<Longrightarrow> \<langle>x,y\<rangle> \<in> forcerel(P,z) \<Longrightarrow>
   (y \<in> names_below(P, w) \<longrightarrow> \<langle>x,y\<rangle> \<in> forcerel(P,w))"
   unfolding forcerel_def
 proof(rule_tac a=x and b=y and P="\<lambda> y . y \<in> names_below(P, w) \<longrightarrow> \<langle>x,y\<rangle> \<in> frecrel(names_below(P,w))^+" in trancl_induct,simp)
@@ -832,7 +832,7 @@ qed
 lemma forcerel_eq :
   assumes "\<langle>z,x\<rangle> \<in> forcerel(P,x)"
   shows "forcerel(P,z) = forcerel(P,x) \<inter> names_below(P,z)\<times>names_below(P,z)"
-  using assms aux forcerelD forcerel_mono[of z x x] subsetI
+  using assms forcerel_eq_aux forcerelD forcerel_mono[of z x x] subsetI
   by auto
 
 lemma forcerel_below_aux :
@@ -1339,11 +1339,11 @@ begin
 subsection\<open>Forcing for atomic formulas in context\<close>
 
 definition
-  forces_eq :: "[i,i,i] \<Rightarrow> o" where
+  forces_eq :: "[i,i,i] \<Rightarrow> o" (\<open>_ forces\<^sub>a '(_ = _')\<close> [36,1,1] 60) where
   "forces_eq \<equiv> forces_eq'(P,leq)"
 
 definition
-  forces_mem :: "[i,i,i] \<Rightarrow> o" where
+  forces_mem :: "[i,i,i] \<Rightarrow> o" (\<open>_ forces\<^sub>a '(_ \<in> _')\<close> [36,1,1] 60) where
   "forces_mem \<equiv> forces_mem'(P,leq)"
 
 (* frc_at(P,leq,\<langle>0,t1,t2,p\<rangle>) = 1*)
@@ -1357,27 +1357,27 @@ definition
   "is_forces_mem \<equiv> is_forces_mem'(##M,P,leq)"
 
 
-lemma def_forces_eq: "p\<in>P \<Longrightarrow> forces_eq(p,t1,t2) \<longleftrightarrow>
+lemma def_forces_eq: "p\<in>P \<Longrightarrow> p forces\<^sub>a (t1 = t2) \<longleftrightarrow>
       (\<forall>s\<in>domain(t1) \<union> domain(t2). \<forall>q. q\<in>P \<and> q \<preceq> p \<longrightarrow>
-      (forces_mem(q,s,t1) \<longleftrightarrow> forces_mem(q,s,t2)))"
+      (q forces\<^sub>a (s \<in> t1) \<longleftrightarrow> q forces\<^sub>a (s \<in> t2)))"
   unfolding forces_eq_def forces_mem_def forces_eq'_def forces_mem'_def
   using def_frc_at[of p 0 t1 t2 ]  unfolding bool_of_o_def
   by auto
 
-lemma def_forces_mem: "p\<in>P \<Longrightarrow> forces_mem(p,t1,t2) \<longleftrightarrow>
+lemma def_forces_mem: "p\<in>P \<Longrightarrow> p forces\<^sub>a (t1 \<in> t2) \<longleftrightarrow>
      (\<forall>v\<in>P. v \<preceq> p \<longrightarrow>
-      (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> q \<preceq> v \<and> \<langle>s,r\<rangle> \<in> t2 \<and> q \<preceq> r \<and> forces_eq(q,t1,s)))"
+      (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> q \<preceq> v \<and> \<langle>s,r\<rangle> \<in> t2 \<and> q \<preceq> r \<and> q forces\<^sub>a (t1 = s)))"
   unfolding forces_eq'_def forces_mem'_def forces_eq_def forces_mem_def
   using def_frc_at[of p 1 t1 t2]  unfolding bool_of_o_def
   by auto
 
 lemma forces_eq_abs :
-  "\<lbrakk>p\<in>M ; t1\<in>M ; t2\<in>M\<rbrakk> \<Longrightarrow> is_forces_eq(p,t1,t2) \<longleftrightarrow> forces_eq(p,t1,t2)"
+  "\<lbrakk>p\<in>M ; t1\<in>M ; t2\<in>M\<rbrakk> \<Longrightarrow> is_forces_eq(p,t1,t2) \<longleftrightarrow> p forces\<^sub>a (t1 = t2)"
   unfolding is_forces_eq_def forces_eq_def
   using forces_eq'_abs by simp
 
 lemma forces_mem_abs :
-  "\<lbrakk>p\<in>M ; t1\<in>M ; t2\<in>M\<rbrakk> \<Longrightarrow> is_forces_mem(p,t1,t2) \<longleftrightarrow> forces_mem(p,t1,t2)"
+  "\<lbrakk>p\<in>M ; t1\<in>M ; t2\<in>M\<rbrakk> \<Longrightarrow> is_forces_mem(p,t1,t2) \<longleftrightarrow> p forces\<^sub>a (t1 \<in> t2)"
   unfolding is_forces_mem_def forces_mem_def
   using forces_mem'_abs by simp
 
@@ -1401,28 +1401,28 @@ lemma sats_forces_mem_fm:
 
 
 definition
-  forces_neq :: "[i,i,i] \<Rightarrow> o" where
-  "forces_neq(p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> forces_eq(q,t1,t2))"
+  forces_neq :: "[i,i,i] \<Rightarrow> o" (\<open>_ forces\<^sub>a '(_ \<noteq> _')\<close> [36,1,1] 60) where
+  "p forces\<^sub>a (t1 \<noteq> t2) \<equiv> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> q forces\<^sub>a (t1 = t2))"
 
 definition
-  forces_nmem :: "[i,i,i] \<Rightarrow> o" where
-  "forces_nmem(p,t1,t2) \<equiv> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> forces_mem(q,t1,t2))"
-
+  forces_nmem :: "[i,i,i] \<Rightarrow> o" (\<open>_ forces\<^sub>a '(_ \<notin> _')\<close> [36,1,1] 60) where
+  "p forces\<^sub>a (t1 \<notin> t2) \<equiv> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> q forces\<^sub>a (t1 \<in> t2))"
 
 lemma forces_neq :
-  "forces_neq(p,t1,t2) \<longleftrightarrow> forces_neq'(P,leq,p,t1,t2)"
+  "p forces\<^sub>a (t1 \<noteq> t2) \<longleftrightarrow> forces_neq'(P,leq,p,t1,t2)"
   unfolding forces_neq_def forces_neq'_def forces_eq_def by simp
 
 lemma forces_nmem :
-  "forces_nmem(p,t1,t2) \<longleftrightarrow> forces_nmem'(P,leq,p,t1,t2)"
+  "p forces\<^sub>a (t1 \<notin> t2) \<longleftrightarrow> forces_nmem'(P,leq,p,t1,t2)"
   unfolding forces_nmem_def forces_nmem'_def forces_mem_def by simp
 
+abbreviation Forces :: "[i, i, i] \<Rightarrow> o"  ("_ \<tturnstile> _ _" [36,36,36] 60) where
+  "p \<tturnstile> \<phi> env   \<equiv>   M, ([p,P,leq,one] @ env) \<Turnstile> forces(\<phi>)"
 
 lemma sats_forces_Member :
   assumes  "x\<in>nat" "y\<in>nat" "env\<in>list(M)"
     "nth(x,env)=xx" "nth(y,env)=yy" "q\<in>M"
-  shows "sats(M,forces(Member(x,y)),[q,P,leq,one]@env) \<longleftrightarrow>
-                (q\<in>P \<and> is_forces_mem(q,xx,yy))"
+  shows "q \<tturnstile> \<cdot>x \<in> y\<cdot> env \<longleftrightarrow> q \<in> P \<and> is_forces_mem(q, xx, yy)"
   unfolding forces_def
   using assms sats_forces_mem_fm P_in_M leq_in_M one_in_M
   by simp
@@ -1430,32 +1430,30 @@ lemma sats_forces_Member :
 lemma sats_forces_Equal :
   assumes  "x\<in>nat" "y\<in>nat" "env\<in>list(M)"
     "nth(x,env)=xx" "nth(y,env)=yy" "q\<in>M"
-  shows "sats(M,forces(Equal(x,y)),[q,P,leq,one]@env) \<longleftrightarrow>
-                (q\<in>P \<and> is_forces_eq(q,xx,yy))"
+  shows "q \<tturnstile> \<cdot>x = y\<cdot> env \<longleftrightarrow> q \<in> P \<and> is_forces_eq(q, xx, yy)"
   unfolding forces_def
   using assms sats_forces_eq_fm P_in_M leq_in_M one_in_M
   by simp
 
 lemma sats_forces_Nand :
   assumes  "\<phi>\<in>formula" "\<psi>\<in>formula" "env\<in>list(M)" "p\<in>M"
-  shows "sats(M,forces(Nand(\<phi>,\<psi>)),[p,P,leq,one]@env) \<longleftrightarrow>
-         (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and>
-               (sats(M,forces'(\<phi>),[q,P,leq,one]@env) \<and> sats(M,forces'(\<psi>),[q,P,leq,one]@env))))"
+  shows "p \<tturnstile> \<cdot>\<not>(\<phi> \<and> \<psi>)\<cdot> env \<longleftrightarrow>
+    p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and>
+    (M,[q,P,leq,one]@env \<Turnstile> forces'(\<phi>)) \<and> (M,[q,P,leq,one]@env \<Turnstile> forces'(\<psi>)))"
   unfolding forces_def using sats_leq_fm assms sats_ren_forces_nand P_in_M leq_in_M one_in_M
   by simp
 
 lemma sats_forces_Neg :
   assumes  "\<phi>\<in>formula" "env\<in>list(M)" "p\<in>M"
-  shows "sats(M,forces(Neg(\<phi>)),[p,P,leq,one]@env) \<longleftrightarrow>
+  shows "p \<tturnstile> \<cdot>\<not>\<phi>\<cdot> env \<longleftrightarrow>
          (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and>
-               (sats(M,forces'(\<phi>),[q,P,leq,one]@env))))"
+               (M, [q, P, leq, one] @ env \<Turnstile> forces'(\<phi>))))"
   unfolding Neg_def using assms sats_forces_Nand
   by simp
 
 lemma sats_forces_Forall :
   assumes  "\<phi>\<in>formula" "env\<in>list(M)" "p\<in>M"
-  shows "sats(M,forces(Forall(\<phi>)),[p,P,leq,one]@env) \<longleftrightarrow>
-         p\<in>P \<and> (\<forall>x\<in>M. sats(M,forces'(\<phi>),[p,P,leq,one,x]@env))"
+  shows "p \<tturnstile> (\<cdot>\<forall>\<phi>\<cdot>) env \<longleftrightarrow> p \<in> P \<and> (\<forall>x\<in>M. M,[p,P,leq,one,x] @ env \<Turnstile> forces'(\<phi>))"
   unfolding forces_def using assms sats_ren_forces_forall P_in_M leq_in_M one_in_M
   by simp
 

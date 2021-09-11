@@ -102,7 +102,21 @@ notation Exists (\<open>'(\<exists>_')\<close>)
 lemma "forces(t\<^sub>1\<in>t\<^sub>2) = (0 \<in> 1 \<and> forces_mem_fm(1, 2, 0, t\<^sub>1+\<^sub>\<omega>4, t\<^sub>2+\<^sub>\<omega>4))"
   unfolding forces_def by simp
 
-(* forces_mem_fm(1, 2, 0, t\<^sub>1+\<^sub>\<omega>4, t\<^sub>1+\<^sub>\<omega>4) 
+(*
+\<comment> \<open>Prefix abbreviated notation\<close>
+notation Member (\<open>M\<close>)
+notation Equal (\<open>Eq\<close>)
+notation Nand (\<open>Na\<close>)
+notation And  (\<open>A\<close>)
+notation Or (\<open>O\<close>)
+notation Iff (\<open>If\<close>)
+notation Implies (\<open>Im\<close>)
+notation Neg (\<open>Ne\<close>)
+notation Forall (\<open>Fo\<close>)
+notation Exists (\<open>Ex\<close>)
+*)
+
+(* forces_mem_fm(1, 2, 0, t\<^sub>1+\<^sub>\<omega>4, t\<^sub>1+\<^sub>\<omega>4)
    = forces_mem_fm(1, 2, 0, succ(succ(succ(succ(t\<^sub>1)))), succ(succ(succ(succ(t\<^sub>2))))) 
    = \<dots> *)
 thm forces_mem_fm_def[of 1 2 0 "t\<^sub>1+\<^sub>\<omega>4" "t\<^sub>2+\<^sub>\<omega>4",
@@ -114,7 +128,11 @@ thm forces_mem_fm_def[of 1 2 0 "t\<^sub>1+\<^sub>\<omega>4" "t\<^sub>2+\<^sub>\<
     fm_definitions, simplified]
   (* NOTE: in view of the above, @{thm fm_definitions} might be incomplete *)
 
-(* thm is_ContHyp_fm_def[unfolded is_eclose_fm_def mem_eclose_fm_def eclose_n_fm_def
+
+(*
+declare is_ContHyp_fm_def[fm_definitions del]
+
+thm is_ContHyp_fm_def[unfolded is_eclose_fm_def mem_eclose_fm_def eclose_n_fm_def
    is_If_fm_def least_fm_def Replace_fm_def Collect_fm_def
    fm_definitions, simplified] *)
 
