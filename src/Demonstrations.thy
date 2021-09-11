@@ -56,7 +56,7 @@ lemma
     "\<And>Q S. transrec_replacement(M,Q,S)"
     and
     sorry_separations:
-    "separation(M,Q)"shows "M_master(M)"
+    "\<And>Q. separation(M,Q)"shows "M_master(M)"
   apply unfold_locales apply 
     (simp_all add:
       sorry_replacements(1-2)
@@ -65,7 +65,6 @@ lemma
   \<comment> \<open>We obtain two goals of the form \<^term>\<open>rall(M,\<V>)\<close> because of 
   instances of the form \<^term>\<open>\<forall>x[M]. separation(M,P)\<close>\<close> 
   oops
-
 
 (* NOTE: Only for pretty-printing purposes, overrides previous
   basic notations  *)
