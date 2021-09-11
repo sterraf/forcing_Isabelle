@@ -66,6 +66,7 @@ lemma
   instances of the form \<^term>\<open>\<forall>x[M]. separation(M,P)\<close>\<close> 
   oops
 
+
 (* NOTE: Only for pretty-printing purposes, overrides previous
   basic notations  *)
 no_notation mem (infixl \<open>\<in>\<close> 50)
@@ -128,6 +129,46 @@ thm forces_mem_fm_def[of 1 2 0 "t\<^sub>1+\<^sub>\<omega>4" "t\<^sub>2+\<^sub>\<
     fm_definitions, simplified]
   (* NOTE: in view of the above, @{thm fm_definitions} might be incomplete *)
 
+named_theorems incr_bv_new_simps
+
+schematic_goal incr_bv_Neg(* [incr_bv_new_simps] *):
+  "mem(n,\<omega>) \<Longrightarrow> mem(\<phi>,formula) \<Longrightarrow> incr_bv(Neg(\<phi>))`n = ?x"
+  unfolding Neg_def by simp
+
+schematic_goal incr_bv_Exists [incr_bv_new_simps]:
+  "mem(n,\<omega>) \<Longrightarrow> mem(\<phi>,formula) \<Longrightarrow> incr_bv(Exists(\<phi>))`n = ?x"
+  unfolding Exists_def by (simp add: incr_bv_Neg)
+(*
+schematic_goal incr_bv_And [incr_bv_new_simps]:
+  "mem(n,\<omega>) \<Longrightarrow> mem(\<phi>,formula) \<Longrightarrow>mem(\<psi>,formula)\<Longrightarrow> incr_bv(And(\<phi>,\<psi>))`n = ?x"
+  unfolding And_def by (simp add: incr_bv_Neg)
+
+schematic_goal incr_bv_Or [incr_bv_new_simps]:
+  "mem(n,\<omega>) \<Longrightarrow> mem(\<phi>,formula) \<Longrightarrow>mem(\<psi>,formula)\<Longrightarrow> incr_bv(Or(\<phi>,\<psi>))`n = ?x"
+  unfolding Or_def by (simp add: incr_bv_Neg)
+
+schematic_goal incr_bv_Implies [incr_bv_new_simps]:
+  "mem(n,\<omega>) \<Longrightarrow> mem(\<phi>,formula) \<Longrightarrow>mem(\<psi>,formula)\<Longrightarrow> incr_bv(Implies(\<phi>,\<psi>))`n = ?x"
+  unfolding Implies_def by (simp add: incr_bv_Neg)
+*)
+
+\<comment> \<open>The two renamings involved in the definition of \<^term>\<open>forces\<close> depend on
+the recursive function \<^term>\<open>incr_bv\<close>. Here we have an apparently
+exponential bottleneck, since all the propositional connectives (even \<^term>\<open>Neg\<close>)
+duplicate the appearances of \<^term>\<open>incr_bv\<close>.
+
+Not even the negation of an atomic formula can be managed by the system\<close>
+(* exception Size raised (line 183 of "./basis/LibrarySupport.sml") *)
+schematic_goal "forces(\<not>0\<in>1) = ?x"
+  unfolding forces_def Neg_def
+  (* by (simp add:ren_forces_nand_def ren_forces_forall_def leq_fm_def
+      forces_mem_fm_def frc_at_fm_def forcerel_fm_def ftype_fm_def
+      name1_fm_def name2_fm_def snd_snd_fm_def hcomp_fm_def
+      ecloseN_fm_def eclose_n1_fm_def eclose_n2_fm_def
+      is_eclose_fm_def mem_eclose_fm_def eclose_n_fm_def
+      is_If_fm_def least_fm_def Collect_fm_def
+      fm_definitions incr_bv_Neg incr_bv_Exists) *)
+  oops
 
 (*
 declare is_ContHyp_fm_def[fm_definitions del]
