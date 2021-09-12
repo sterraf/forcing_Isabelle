@@ -1,0 +1,34 @@
+Instances from locales
+======================
+
+Interface.list_repl1_intf: (⋅∃⋅pair_fm(1, 0, 2) ∧ is_wfrec_fm(iterates_MH_fm(list_functor_fm(13, 1, 0), 10, 2, 1, 0), 3, 1, 0)⋅⋅))
+Interface.list_repl2_intf: ⋅⋅0 ∈ 4⋅ ∧ is_iterates_fm(list_functor_fm(13, 1, 0), 3, 0, 1)⋅
+Interface.formula_repl1_intf: iterates_repl_intf[where is_F_fm="formula_functor_fm(1,0)"]
+Interface.formula_repl2_intf: ⋅⋅0 ∈ 3⋅ ∧ is_iterates_fm(formula_functor_fm(1, 0), 2, 0, 1)⋅
+Interface.nth_repl_intf: iterates_repl_intf[where is_F_fm="tl_fm(1,0)"]
+Interface.eclose_repl1_intf: iterates_repl_intf[where is_F_fm="big_union_fm(1,0)"]
+Interface.eclose_repl2_intf: ⋅⋅0 ∈ 3⋅ ∧ is_iterates_fm(⋅⋃1 is 0⋅, 2, 0, 1)⋅
+Interface.wfrec_rank: replacement_ax[of "(⋅∃⋅pair_fm(1, 0, 2) ∧ is_wfrec_fm(is_Hrank_fm(2, 1, 0), 3, 1, 0) ⋅⋅)"]
+Interface.trans_repl_HVFrom: replacement_ax[of "(⋅∃⋅pair_fm(1, 0, 2) ∧ is_wfrec_fm(is_HVfrom_fm(8, 2, 1, 0), 4, 1, 0) ⋅⋅)"]
+
+
+Instances for forcing
+=====================
+
+Names.wfrec_Hcheck: replacement_ax[of "(⋅∃⋅pair_fm(1, 0, 2) ∧ is_wfrec_fm(is_Hcheck_fm(8, 2, 1, 0), 4, 1, 0) ⋅⋅)"] 
+Names.check_replacement: replacement_ax[of "⋅check_fm(0,2,1) ∧ ⋅0 ∈ length(env) #+ 2⋅⋅"]
+Names.G_dot_in_M: replacement_ax[of "⋅(⋅∃⋅⋅1⇧v3 is 0⋅ ∧ pair_fm(0, 1, 2)⋅⋅)) ∧ ⋅0 ∈ length(env) #+ 2⋅⋅"]
+Choice_Axiom.repl_opname_check: replacement_ax[of "⋅opname_check_fm(3,0,1,2) ∧ ⋅0 ∈ length(env) #+ 2⋅⋅"]
+Cardinal_Preservation.ccc_fun_closed_lemma_aux2: Lambda_in_M[where φ="ren(Collect_fm(1,?G,7))`8`8`ren_G_aux_fn" len(env)=6]
+Cardinal_Preservation.ccc_fun_closed_lemma: Lambda_in_M[where φ="ren(Collect_fm(7, (⋅∃⋅⋅2⇧v5 is 0⋅ ∧ (⋅∃⋅⋅2⇧v6 is 0⋅ ∧ ren((⋅∃⋅⋅0 ∈ 1⋅ ∧ ⋅leq_fm(2, 0, 7) ∧ forces(⋅0`1 is 2⋅)⋅⋅⋅)) ` 9 ` 9 ` ren_F_fn⋅⋅)⋅⋅), 6)) ` 8 ` 8 ` ren_G_fn" len(env)=6]
+Forces_Definition.wfrec_Hfrc_at: (⋅∃⋅pair_fm(1, 0, 2) ∧ is_wfrec_fm(Hfrc_at_fm(8, 9, 2, 1, 0), 5, 1, 0)⋅⋅)
+
+
+Fake instances
+==============
+
+(fake) Interface.phrank_repl: replacement_ax[of "PHrank_fm(2,0,1)"]
+(fake) Interface.powapply_repl: replacement_ax[of "(⋅∃⋅⋅3`1 is 0⋅ ∧ (⋅∀⋅⋅0 ∈ 3⋅ ↔ (⋅∀⋅⋅0 ∈ 1⋅ → ⋅0 ∈ 2⋅⋅⋅)⋅⋅)⋅⋅)"] (* replacement_ax[of "is_powapply_fm(2,0,1)"] *)
+(fake) Interface.funspace_succ_rep_intf: (⋅∃(⋅∃(⋅∃(⋅∃⋅pair_fm(3, 2, 4) ∧ ⋅pair_fm(6, 2, 1) ∧ ⋅cons_fm(1, 3, 0) ∧ ⋅{0,0} is 5 ⋅⋅⋅⋅⋅)⋅)⋅)⋅)
+
+(fake) Names.repl_PHcheck: replacement_ax[of "PHcheck_fm(2,3,0,1)"]
