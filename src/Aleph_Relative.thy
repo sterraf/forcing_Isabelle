@@ -258,7 +258,7 @@ lemma Aleph_rel_zero: "\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup> = nat"
   using def_transrec [OF Aleph_rel_def',of _ 0]
   unfolding HAleph_rel_def by simp
 
-lemma Aleph_rel_succ: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>succ(\<alpha>)\<^esub>\<^bsup>M\<^esup> = csucc_rel(M,\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)"
+lemma Aleph_rel_succ: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>succ(\<alpha>)\<^esub>\<^bsup>M\<^esup> = (\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup>"
   using Ord_Union_succ_eq
   by (subst def_transrec [OF Aleph_rel_def'])
     (simp add:HAleph_rel_def)

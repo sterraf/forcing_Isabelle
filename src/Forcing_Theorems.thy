@@ -579,7 +579,7 @@ proof (intro forces_induction[of ?Q ?R] impI)
   fix \<tau> \<theta> 
   assume "\<tau>\<in>M" "\<theta>\<in>M"  "\<sigma>\<in>domain(\<theta>) \<Longrightarrow> ?Q(\<tau>,\<sigma>)" for \<sigma>
   moreover from this
-  have "\<sigma>\<in>domain(\<theta>) \<Longrightarrow> q forces\<^sub>a ( \<tau> =  \<sigma>) \<Longrightarrow> val(P,G, \<tau>) = val(P,G, \<sigma>)" 
+  have "\<sigma>\<in>domain(\<theta>) \<Longrightarrow> q forces\<^sub>a (\<tau> = \<sigma>) \<Longrightarrow> val(P,G, \<tau>) = val(P,G, \<sigma>)" 
     if "q\<in>P" "q\<in>G" for q \<sigma>
     using that domain_closed[of \<theta>] transitivity by auto
   moreover 
@@ -592,8 +592,8 @@ next
   assume "\<tau>\<in>M" "\<theta>\<in>M" "\<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> ?R(\<sigma>,\<tau>) \<and> ?R(\<sigma>,\<theta>)" for \<sigma>
   moreover from this
   have IH':"\<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> q\<in>G \<Longrightarrow>
-            (q forces\<^sub>a ( \<sigma> \<in>  \<tau>) \<longrightarrow> val(P,G, \<sigma>) \<in> val(P,G, \<tau>)) \<and> 
-            (q forces\<^sub>a ( \<sigma> \<in>  \<theta>) \<longrightarrow> val(P,G, \<sigma>) \<in> val(P,G, \<theta>))" for q \<sigma> 
+            (q forces\<^sub>a (\<sigma> \<in> \<tau>) \<longrightarrow> val(P,G, \<sigma>) \<in> val(P,G, \<tau>)) \<and> 
+            (q forces\<^sub>a (\<sigma> \<in> \<theta>) \<longrightarrow> val(P,G, \<sigma>) \<in> val(P,G, \<theta>))" for q \<sigma> 
     by (auto intro:  transitivity[OF _ domain_closed[simplified]])
   ultimately
   show "\<forall>p\<in>G. p forces\<^sub>a (\<tau> = \<theta>) \<longrightarrow> val(P,G,\<tau>) = val(P,G,\<theta>)"
@@ -689,8 +689,8 @@ proof -
     unfolding forces_nmem_fm_def domain_fm_def pair_fm_def upair_fm_def union_fm_def
     using arity_forces_mem_fm by (simp add:ord_simp_union Un_commute)
     show 
-    "{p \<in> P . \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). p forces\<^sub>a ( \<sigma> \<in>  \<tau>) \<and> p forces\<^sub>a ( \<sigma> \<notin>  \<theta>)} \<in> M"
-    and "{p \<in> P . \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). p forces\<^sub>a ( \<sigma> \<notin>  \<tau>) \<and> p forces\<^sub>a ( \<sigma> \<in>  \<theta>)} \<in> M"
+    "{p \<in> P . \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). p forces\<^sub>a (\<sigma> \<in> \<tau>) \<and> p forces\<^sub>a (\<sigma> \<notin> \<theta>)} \<in> M"
+    and "{p \<in> P . \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). p forces\<^sub>a (\<sigma> \<notin> \<tau>) \<and> p forces\<^sub>a (\<sigma> \<in> \<theta>)} \<in> M"
     unfolding forces_mem_def
     using abs1 fty fsats1 farit P_in_M leq_in_M assms forces_nmem
           Collect_in_M[of ?\<phi> "[P,leq,\<tau>,\<theta>]"]
@@ -727,11 +727,11 @@ proof -
   proof
     fix p
     assume "p\<in>P"
-    have "\<exists>d\<in>P. (d forces\<^sub>a ( \<tau> =  \<theta>) \<or>
-            (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). d forces\<^sub>a ( \<sigma> \<in>  \<tau>) \<and> d forces\<^sub>a ( \<sigma> \<notin>  \<theta>)) \<or>
-            (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). d forces\<^sub>a ( \<sigma> \<notin>  \<tau>) \<and> d forces\<^sub>a ( \<sigma> \<in>  \<theta>))) \<and>
+    have "\<exists>d\<in>P. (d forces\<^sub>a (\<tau> = \<theta>) \<or>
+            (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). d forces\<^sub>a (\<sigma> \<in> \<tau>) \<and> d forces\<^sub>a (\<sigma> \<notin> \<theta>)) \<or>
+            (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). d forces\<^sub>a (\<sigma> \<notin> \<tau>) \<and> d forces\<^sub>a (\<sigma> \<in> \<theta>))) \<and>
            d \<preceq> p" 
-    proof (cases "p forces\<^sub>a ( \<tau> =  \<theta>)")
+    proof (cases "p forces\<^sub>a (\<tau> = \<theta>)")
       case True
       with \<open>p\<in>P\<close> 
       show ?thesis using refl_leq by blast
@@ -740,13 +740,13 @@ proof -
       moreover note \<open>p\<in>P\<close>
       moreover from calculation
       obtain \<sigma> q where "\<sigma>\<in>domain(\<tau>)\<union>domain(\<theta>)" "q\<in>P" "q\<preceq>p"
-        "(q forces\<^sub>a ( \<sigma> \<in>  \<tau>) \<and> \<not> q forces\<^sub>a ( \<sigma> \<in>  \<theta>)) \<or>
-         (\<not> q forces\<^sub>a ( \<sigma> \<in>  \<tau>) \<and> q forces\<^sub>a ( \<sigma> \<in>  \<theta>))"
+        "(q forces\<^sub>a (\<sigma> \<in> \<tau>) \<and> \<not> q forces\<^sub>a (\<sigma> \<in> \<theta>)) \<or>
+         (\<not> q forces\<^sub>a (\<sigma> \<in> \<tau>) \<and> q forces\<^sub>a (\<sigma> \<in> \<theta>))"
         using def_forces_eq by blast
       moreover from this
       obtain r where "r\<preceq>q" "r\<in>P"
-        "(r forces\<^sub>a ( \<sigma> \<in>  \<tau>) \<and> r forces\<^sub>a ( \<sigma> \<notin>  \<theta>)) \<or>
-         (r forces\<^sub>a ( \<sigma> \<notin>  \<tau>) \<and> r forces\<^sub>a ( \<sigma> \<in>  \<theta>))"
+        "(r forces\<^sub>a (\<sigma> \<in> \<tau>) \<and> r forces\<^sub>a (\<sigma> \<notin> \<theta>)) \<or>
+         (r forces\<^sub>a (\<sigma> \<notin> \<tau>) \<and> r forces\<^sub>a (\<sigma> \<in> \<theta>))"
         using not_forces_nmem strengthening_mem by blast
       ultimately
       show ?thesis using leq_transD by blast
@@ -784,14 +784,14 @@ proof -
       using IV240a[of G \<sigma> \<tau>] transitivity[OF _ domain_closed[simplified]] by blast
     moreover note IH \<open>val(P,G,\<tau>) = _\<close>
     ultimately
-    obtain q where "q\<in>G" "q forces\<^sub>a ( \<sigma> \<in>  \<theta>)" by auto
+    obtain q where "q\<in>G" "q forces\<^sub>a (\<sigma> \<in> \<theta>)" by auto
     moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
     obtain r where "r\<in>P" "r\<preceq>p" "r\<preceq>q"
       by blast
     moreover
     note \<open>M_generic(G)\<close>
     ultimately
-    have "r forces\<^sub>a ( \<sigma> \<in>  \<theta>)"
+    have "r forces\<^sub>a (\<sigma> \<in> \<theta>)"
       using strengthening_mem by blast
     with \<open>r\<preceq>p\<close> \<open>p forces\<^sub>a (\<sigma> \<notin> \<theta>)\<close> \<open>r\<in>P\<close>
     have "False"
@@ -808,14 +808,14 @@ proof -
       using IV240a[of G \<sigma> \<theta>] transitivity[OF _ domain_closed[simplified]] by blast
     moreover note IH \<open>val(P,G,\<tau>) = _\<close>
     ultimately
-    obtain q where "q\<in>G" "q forces\<^sub>a ( \<sigma> \<in>  \<tau>)" by auto
+    obtain q where "q\<in>G" "q forces\<^sub>a (\<sigma> \<in> \<tau>)" by auto
     moreover from this and \<open>p\<in>G\<close> \<open>M_generic(G)\<close>
     obtain r where "r\<in>P" "r\<preceq>p" "r\<preceq>q"
       by blast
     moreover
     note \<open>M_generic(G)\<close>
     ultimately
-    have "r forces\<^sub>a ( \<sigma> \<in>  \<tau>)"
+    have "r forces\<^sub>a (\<sigma> \<in> \<tau>)"
       using strengthening_mem by blast
     with \<open>r\<preceq>p\<close> \<open>p forces\<^sub>a (\<sigma> \<notin> \<tau>)\<close> \<open>r\<in>P\<close>
     have "False"
@@ -844,8 +844,8 @@ next
   assume "\<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> ?R(\<sigma>,\<tau>) \<and> ?R(\<sigma>,\<theta>)" for \<sigma>
   moreover from this
   have IH':"\<tau>\<in>M \<Longrightarrow> \<theta>\<in>M \<Longrightarrow> \<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow>
-          (val(P,G, \<sigma>) \<in> val(P,G, \<tau>) \<longrightarrow> (\<exists>q\<in>G. q forces\<^sub>a ( \<sigma> \<in>  \<tau>))) \<and>
-          (val(P,G, \<sigma>) \<in> val(P,G, \<theta>) \<longrightarrow> (\<exists>q\<in>G. q forces\<^sub>a ( \<sigma> \<in>  \<theta>)))" for \<sigma> 
+          (val(P,G, \<sigma>) \<in> val(P,G, \<tau>) \<longrightarrow> (\<exists>q\<in>G. q forces\<^sub>a (\<sigma> \<in> \<tau>))) \<and>
+          (val(P,G, \<sigma>) \<in> val(P,G, \<theta>) \<longrightarrow> (\<exists>q\<in>G. q forces\<^sub>a (\<sigma> \<in> \<theta>)))" for \<sigma> 
     by (blast intro:left_in_M) 
   ultimately
   show "?Q(\<tau>,\<theta>)"
@@ -896,10 +896,11 @@ subsection\<open>The Strenghtening Lemma\<close>
 lemma strengthening_lemma:
   assumes 
     "p\<in>P" "\<phi>\<in>formula" "r\<in>P" "r\<preceq>p"
+    "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"
   shows
-    "\<And>env. env\<in>list(M) \<Longrightarrow> arity(\<phi>)\<le>length(env) \<Longrightarrow> p \<tturnstile> \<phi> env \<Longrightarrow> r \<tturnstile> \<phi> env"
-  using assms(2)
-proof (induct)
+    "p \<tturnstile> \<phi> env \<Longrightarrow> r \<tturnstile> \<phi> env"
+  using assms(2-)
+proof (induct arbitrary:env)
   case (Member n m)
   then
   have "n<length(env)" "m<length(env)"
@@ -945,7 +946,8 @@ next
 qed
 
 subsection\<open>The Density Lemma\<close>
-lemma arity_Nand_le: 
+
+lemma arity_Nand_le:
   assumes "\<phi> \<in> formula" "\<psi> \<in> formula" "arity(Nand(\<phi>, \<psi>)) \<le> length(env)" "env\<in>list(A)"
   shows "arity(\<phi>) \<le> length(env)" "arity(\<psi>) \<le> length(env)"
   using assms 
@@ -954,11 +956,11 @@ lemma arity_Nand_le:
 lemma dense_below_imp_forces:
   assumes 
     "p\<in>P" "\<phi>\<in>formula"
+    "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"
   shows
-    "\<And>env. env\<in>list(M) \<Longrightarrow> arity(\<phi>)\<le>length(env) \<Longrightarrow>
-     dense_below({q\<in>P. (q \<tturnstile> \<phi> env)},p) \<Longrightarrow> (p \<tturnstile> \<phi> env)"
-  using assms(2)
-proof (induct)
+    "dense_below({q\<in>P. (q \<tturnstile> \<phi> env)},p) \<Longrightarrow> (p \<tturnstile> \<phi> env)"
+  using assms(2-)
+proof (induct arbitrary:env)
   case (Member n m)
   then
   have "n<length(env)" "m<length(env)"
@@ -1008,7 +1010,7 @@ case (Nand \<phi> \<psi>)
   }
   with \<open>p\<in>P\<close>
   show ?case
-    using Forces_Nand[symmetric, OF _ Nand(5,1,3)] by blast
+    using Forces_Nand[symmetric, OF _ Nand(6,1,3)] by blast
 next
   case (Forall \<phi>)
   have "dense_below({q\<in>P. q \<tturnstile> \<phi> ([a]@env)},p)" if "a\<in>M" for a
@@ -1054,6 +1056,7 @@ next
 qed
 
 subsection\<open>The Truth Lemma\<close>
+
 lemma Forces_And:
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula" 
@@ -1361,11 +1364,11 @@ qed
 lemma truth_lemma:
   assumes 
     "\<phi>\<in>formula" "M_generic(G)"
+    "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"
   shows 
-     "\<And>env. env\<in>list(M) \<Longrightarrow> arity(\<phi>)\<le>length(env) \<Longrightarrow> 
-      (\<exists>p\<in>G. p \<tturnstile> \<phi> env)   \<longleftrightarrow>   M[G], map(val(P,G),env) \<Turnstile> \<phi>"
-  using assms(1)
-proof (induct)
+    "(\<exists>p\<in>G. p \<tturnstile> \<phi> env)   \<longleftrightarrow>   M[G], map(val(P,G),env) \<Turnstile> \<phi>"
+  using assms
+proof (induct arbitrary:env)
   case (Member x y)
   then
   show ?case
@@ -1398,7 +1401,7 @@ next
     have "p \<tturnstile> \<phi> ([x]@env)" if "x\<in>M" for x
       using that Forces_Forall by simp
     with \<open>p\<in>G\<close> \<open>\<phi>\<in>formula\<close> \<open>env\<in>_\<close> \<open>arity(Forall(\<phi>)) \<le> length(env)\<close>
-      Forall(2)[of "Cons(_,env)"] 
+      Forall(2)[of "Cons(_,env)"] \<open>M_generic(G)\<close>
     show "M[G], map(val(P,G),env) \<Turnstile>  Forall(\<phi>)"
       using pred_le2 map_val_in_MG
       by (auto iff:GenExtD)
@@ -1466,7 +1469,7 @@ next
       obtain b where "b\<in>M" "\<forall>q\<in>P. q\<preceq>d \<longrightarrow>\<not>(q \<tturnstile> \<phi> ([b] @ env))"
         by blast
       moreover from this(1) and  \<open>M[G], _ \<Turnstile>  Forall(\<phi>)\<close> and 
-        Forall(2)[of "Cons(b,env)"] Forall(1,3-4) \<open>M_generic(G)\<close>
+        Forall(2)[of "Cons(b,env)"] Forall(1,3-5) \<open>M_generic(G)\<close>
       obtain p where "p\<in>G" "p\<in>P" "p \<tturnstile> \<phi> ([b] @ env)" 
         using pred_le2 using map_val_in_MG by (auto iff:GenExtD)
       moreover
@@ -1484,6 +1487,7 @@ next
     qed
   qed
 qed
+
 subsection\<open>The ``Definition of forcing''\<close>
 lemma definition_of_forcing:
   assumes
@@ -1536,6 +1540,7 @@ next
 qed
 
 lemmas definability = forces_type 
+
 end (* forcing_data *)
 
 end
