@@ -22,7 +22,7 @@ HTML_DIR     = $(OUT_DIR)/$(CHAPTER)/$(SESSION)
 DB           = $(HEAP_LOG_DIR)/$(SESSION).db 
 NEWTEMP      = 0
 
-.PHONY: build html tar clean afp debug
+.PHONY: build html tar clean afp debug linked
 
 $(DB):	thy_files $(THY_FILES) $(ML_FILES) $(DOCU_FILES) ROOT
 	isabelle build $(OPTION) -v -c -d . $(SESSION)
