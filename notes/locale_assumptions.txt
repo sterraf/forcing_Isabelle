@@ -180,7 +180,7 @@ HVfrom_replacement: "⟦ M(i) ; M(A) ⟧ ⟹ transrec_replacement(M,is_HVfrom(M,
 ordertype_replacement: "M(X) ⟹ strong_replacement(M,λ x z . M(z) ∧ M(x) ∧ x∈Pow_rel(M,X×X) ∧ well_ord(X, x) ∧ z=ordertype(X,x))"
 omap_replacement: "⟦M(A);M(r)⟧ ⟹strong_replacement(M, λa z. ∃x[M]. Ord(x) ∧ z = ⟨a, x⟩ ∧ (∃g[M]. g ∈ ⟨Order.pred(A, a, r), r⟩ ≅ ⟨x, Memrel(x)⟩))"
 wfrec_pred_replacement:"M(A) ⟹ M(r) ⟹ wfrec_replacement(M, λx f z. z = f `` Order.pred(A, x, r), r)" (* ordertypes *)
-strong_replacement_jc_body: "strong_replacement(M,λ x z . M(z) ∧ M(x) ∧ z = jump_cardinal_body(M,x))" (* cardina successor *)
+strong_replacement_jc_body: "strong_replacement(M,λ x z . M(z) ∧ M(x) ∧ z = jump_cardinal_body(M,x))" (* cardinal successor *)
 haleph_transrec_replacement: "M(a) ⟹ transrec_replacement(M,is_HAleph(M),a)" (* Aleph *)
 cardinal_lib_assms6: "M(f) ⟹ M(β) ⟹ Ord(β) ⟹ strong_replacement(M, λx y. x∈β ∧ y = ⟨x, transrec(x, λa g. f ` (g `` a))⟩)" (* recursive constructions *)
 aleph_rel_replacement: "strong_replacement(M, λx y. Ord(x) ∧ y = ℵ⇘x⇙⇗M⇖)"
