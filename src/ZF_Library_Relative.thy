@@ -523,6 +523,7 @@ end (* M_ZF_library *)
 
 relativize functional "mono_map" "mono_map_rel" external
 relationalize "mono_map_rel" "is_mono_map"
+synthesize "is_mono_map" from_definition assuming "nonempty"
 
 notation mono_map_rel (\<open>mono'_map\<^bsup>_\<^esup>'(_,_,_,_')\<close>)
 
