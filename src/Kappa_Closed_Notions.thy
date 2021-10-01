@@ -1,7 +1,6 @@
 theory Kappa_Closed_Notions
   imports
-    Cardinal_Preservation
-    ZF_Trans_Interpretations
+    Not_CH
 begin
 
 definition
@@ -92,21 +91,23 @@ abbreviation
 sublocale forcing_data \<subseteq> M_ZF_library "##M"
   \<comment> \<open>Wasn't this already done??\<close>
   by unfold_locales
-  
 
 context forcing_data
 begin
 
 lemma kappa_closed_abs: 
   assumes "\<kappa>\<in>M" 
-  shows "\<kappa>-closed\<^bsup>M\<^esup>(P,leq) \<longleftrightarrow> \<kappa>-closed(P,leq)"
+  shows "(\<omega>\<^sup>+)\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq) \<longleftrightarrow> (\<omega>\<^sup>+)\<^bsup>M\<^esup>-closed(P,leq)"
   using assms P_in_M leq_in_M transM[OF ltD, of _ \<kappa>]
-    mono_seqspace_char[of _ P leq]
+    mono_seqspace_char[of _ P leq] transM[simplified, OF _ P_in_M]
   unfolding kappa_closed_rel_def kappa_closed_def
   apply (auto simp add:absolut)
-  sorry
+  oops
 
 end (* forcing_data *)
+
+\<comment> \<open>Kunen IV.7.14, only for \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>\<close>
+(* lemma (in M_library) kappa_closed_Fn: *)
 
 context G_generic_AC begin
 
@@ -114,15 +115,82 @@ context
   includes G_generic_lemmas
 begin
 
-\<comment> \<open>Kunen IV.7.14, only for \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>\<close>
-(* lemma kappa_closed_Fn: *)
-
 \<comment> \<open>Kunen IV.7.15, only for sequences\<close>
 lemma kappa_closed_imp_no_new_sequences:
   (* notes le_trans[trans] *)
-  assumes "\<kappa>-closed\<^bsup>M\<^esup>(P,leq)" "f : \<delta> \<rightarrow> B" "\<delta><\<kappa>" "\<kappa>\<in>M" "B\<in>M" "f\<in>M[G]"
+  assumes "\<kappa>-closed\<^bsup>M\<^esup>(P,leq)" "f : \<delta> \<rightarrow> B" "\<delta><\<kappa>" "f\<in>M[G]"
+    "\<kappa>\<in>M" "B\<in>M"
   shows "f\<in>M"
   sorry
+
+lemma Aleph_1_closed_imp_no_new_reals:
+  assumes "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)"
+  shows "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2 = \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
+proof -
+  from assms
+  have "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2 \<subseteq> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2"
+    using kappa_closed_imp_no_new_sequences function_space_rel_char
+      ext.function_space_rel_char Aleph_rel_succ Aleph_rel_zero
+      nat_into_M[of 2] lt_csucc_rel[of nat] csucc_rel_closed
+    by auto
+  then
+  show ?thesis
+    using function_space_rel_transfer ext.nat_into_M[of 2] by force
+qed
+
+lemma Aleph_1_closed_imp_Aleph_1_preserved:
+  assumes "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)"
+  shows "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>"
+proof -
+  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> \<le> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+  proof (rule ccontr)
+    assume "\<not> \<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> \<le> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+    then
+    have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>"
+      \<comment> \<open>Ridiculously complicated proof\<close>
+      using Card_rel_Aleph_rel[THEN Card_rel_is_Ord, of 1]
+        ext.Card_rel_Aleph_rel[THEN ext.Card_rel_is_Ord, of 1]
+        Aleph_rel_closed ext.Aleph_rel_closed not_le_iff_lt[THEN iffD1]
+      by auto
+    then
+    have "|\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>|\<^bsup>M[G]\<^esup> \<le> \<omega>"
+      using ext.Card_rel_lt_csucc_rel_iff ext.Aleph_rel_zero ext.Aleph_rel_succ
+        ext.Card_rel_nat Aleph_rel_closed
+      by (auto intro!:ext.lt_csucc_rel_iff[THEN iffD1]
+          intro:Card_rel_Aleph_rel[THEN Card_rel_is_Ord, of 1])
+    then
+    obtain f where "f \<in> inj(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,\<omega>)" "f \<in> M[G]"
+      using ext.countable_rel_iff_cardinal_rel_le_nat[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>", THEN iffD2]
+        Aleph_rel_closed
+      unfolding countable_rel_def lepoll_rel_def
+      by auto
+    then
+    obtain g where "g \<in> surj\<^bsup>M[G]\<^esup>(\<omega>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)"
+      using ext.inj_rel_imp_surj_rel[of f _ \<omega>, OF _ zero_lt_Aleph_rel1[THEN ltD]]
+        Aleph_rel_closed[of 1]
+      by auto
+    moreover from this
+    have "g : \<omega> \<rightarrow> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "g \<in> M[G]"
+      using ext.surj_rel_char Aleph_rel_closed[of 1] surj_is_fun by simp_all
+    moreover note assms
+    ultimately
+    have "g \<in> surj\<^bsup>M\<^esup>(\<omega>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)" "g \<in> M"
+      using kappa_closed_imp_no_new_sequences[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" g \<omega> "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"]
+        nat_lt_Aleph_rel1 Aleph_rel_closed[of 1]
+        mem_surj_abs ext.mem_surj_abs by simp_all
+    then
+    show False
+      using surj_rel_implies_cardinal_rel_le[of g \<omega> "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"]
+        Aleph_rel_closed Card_rel_nat[THEN Card_rel_cardinal_rel_eq]
+        not_le_iff_lt[THEN iffD2, OF _ _ nat_lt_Aleph_rel1]
+        Card_rel_Aleph_rel[THEN Card_rel_is_Ord, of 1]
+      by simp
+  qed
+  then
+  show ?thesis
+    using Aleph_rel_le_Aleph_rel
+    by (rule_tac le_anti_sym) simp
+qed
 
 end (* includes G_generic_lemmas *)
 
