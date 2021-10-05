@@ -71,7 +71,7 @@ lemma mono_map_lt_leI[intro!]:
   using assms
   unfolding mono_map_lt_le_def by auto
 
-\<comment> \<open>Kunen IV.7.13, with “$\kappa$” in place of ”$\lambda$”\<close>
+\<comment> \<open>Kunen IV.7.13, with “$\kappa$” in place of “$\lambda$”\<close>
 definition
   kappa_closed :: "[i,i,i] \<Rightarrow> o" (\<open>_-closed'(_,_')\<close>) where
   "\<kappa>-closed(P,leq) \<equiv> \<forall>\<delta>. \<delta><\<kappa> \<longrightarrow> (\<forall>f\<in>\<delta> \<^sub><\<rightarrow> (P,converse(leq)). \<exists>q\<in>P. \<forall>\<alpha>\<in>\<delta>. \<langle>q,f`\<alpha>\<rangle>\<in>leq)"
@@ -121,6 +121,17 @@ lemma kappa_closed_imp_no_new_sequences:
   assumes "\<kappa>-closed\<^bsup>M\<^esup>(P,leq)" "f : \<delta> \<rightarrow> B" "\<delta><\<kappa>" "f\<in>M[G]"
     "\<kappa>\<in>M" "B\<in>M"
   shows "f\<in>M"
+  oops
+
+\<comment> \<open>Kunen IV.7.15, only for countable sequences\<close>
+lemma kappa_closed_imp_no_new_nat_sequences:
+  (* notes le_trans[trans] *)
+  assumes "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)" "f : \<omega> \<rightarrow> B" "f\<in>M[G]"
+    "B\<in>M"
+  shows "f\<in>M"
+    (* (* Proof using the general lemma: *)
+  using assms nat_lt_Aleph_rel1 kappa_closed_imp_no_new_sequences
+    Aleph_rel_closed[of 1] by simp *)
   sorry
 
 lemma Aleph_1_closed_imp_no_new_reals:
@@ -129,9 +140,9 @@ lemma Aleph_1_closed_imp_no_new_reals:
 proof -
   from assms
   have "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2 \<subseteq> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2"
-    using kappa_closed_imp_no_new_sequences function_space_rel_char
+    using kappa_closed_imp_no_new_nat_sequences function_space_rel_char
       ext.function_space_rel_char Aleph_rel_succ Aleph_rel_zero
-      nat_into_M[of 2] lt_csucc_rel[of nat] csucc_rel_closed
+      nat_into_M[of 2] csucc_rel_closed
     by auto
   then
   show ?thesis
@@ -172,11 +183,12 @@ proof -
     moreover from this
     have "g : \<omega> \<rightarrow> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "g \<in> M[G]"
       using ext.surj_rel_char Aleph_rel_closed[of 1] surj_is_fun by simp_all
-    moreover note assms
+    moreover
+    note \<open>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)\<close>
     ultimately
     have "g \<in> surj\<^bsup>M\<^esup>(\<omega>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)" "g \<in> M"
-      using kappa_closed_imp_no_new_sequences[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" g \<omega> "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"]
-        nat_lt_Aleph_rel1 Aleph_rel_closed[of 1]
+      using kappa_closed_imp_no_new_nat_sequences
+        Aleph_rel_closed[of 1]
         mem_surj_abs ext.mem_surj_abs by simp_all
     then
     show False
