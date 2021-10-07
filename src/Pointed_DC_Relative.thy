@@ -38,6 +38,18 @@ proof -
     unfolding dc_witness_def dc_witness_rel_def by simp
 qed
 
+lemma first_section_closed:
+  assumes
+    "M(A)" "M(a)" "M(R)"
+  shows "M({x \<in> A . \<langle>a, x\<rangle> \<in> R})"
+proof -
+  have "{x \<in> A . \<langle>a, x\<rangle> \<in> R} = range({a} \<times> range(R) \<inter> R) \<inter> A"
+    by (intro equalityI) auto
+  with assms
+  show ?thesis
+    by simp
+qed
+
 lemma witness_into_A [TC]:
   assumes "a\<in>A"
     "\<forall>X[M]. X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X"
@@ -50,12 +62,9 @@ proof(induct n)
   then show ?case using \<open>a\<in>A\<close> by simp
 next
   case (succ x)
-  from \<open>M(A)\<close> \<open>M(R)\<close>
-  have image:"M({x \<in> A . \<langle>y, x\<rangle> \<in> R})" if "M(y)" for y
-    using that sorry
   with succ assms(1,3-)
   show ?case 
-    using nat_into_M
+    using nat_into_M first_section_closed
     by (simp, rule_tac rev_subsetD, rule_tac assms(2)[rule_format]) 
       auto
 qed
@@ -64,15 +73,17 @@ lemma witness_related:
   assumes "a\<in>A"
     "(\<forall>X[M]. X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X)"
     "\<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0" "n\<in>nat"
-    "M(A)" "M(a)" "M(s)" "M(R)"
+    "M(a)" "M(A)" "M(s)" "M(R)" "M(n)"
   shows "\<langle>dc_witness(n, A, a, s, R),dc_witness(succ(n), A, a, s, R)\<rangle>\<in>R"
 proof -
   note assms
   moreover from this
   have "dc_witness(n, A, a, s, R)\<in>A" (is "?x \<in> A")
     using witness_into_A[of _ _ s R n] by simp
-  moreover
-  have "M({x \<in> A . \<langle>dc_witness(n, A, a, s, R), x\<rangle> \<in> R})" sorry
+  moreover from assms
+  have "M({x \<in> A . \<langle>dc_witness(n, A, a, s, R), x\<rangle> \<in> R})"
+    using first_section_closed[of A "dc_witness(n, A, a, s, R)"]
+    by simp
   ultimately
   show ?thesis by auto
 qed
@@ -175,8 +186,15 @@ proof -
   obtain f where
     F:"f\<in>nat\<rightarrow>\<^bsup>M\<^esup> A\<times>\<omega>" "f ` 0 = \<langle>a,0\<rangle>"  "\<forall>n\<in>nat. \<langle>f ` n, f ` succ(n)\<rangle> \<in> ?R'"
     using pointed_DC[of "A\<times>nat" ?R'] by blast
-  let ?f="\<lambda>x\<in>nat. fst(f`x)"
-  have "M(?f)" sorry
+  with \<open>M(A)\<close>
+  have "M(f)" using function_space_rel_char by simp
+  then
+  have "M(\<lambda>x\<in>nat. fst(f`x))" (is "M(?f)")
+    using lam_replacement_fst lam_replacement_hcomp
+      lam_replacement_constant lam_replacement_identity
+      lam_replacement_apply
+    by (rule_tac lam_replacement_iff_lam_closed[THEN iffD1, rule_format])
+      auto
   with F \<open>M(A)\<close>
   have "?f\<in>nat\<rightarrow>\<^bsup>M\<^esup> A" "?f ` 0 = a" using function_space_rel_char by auto
   have 1:"n\<in> nat \<Longrightarrow> f`n= \<langle>?f`n, n\<rangle>" for n
