@@ -4,28 +4,80 @@ theory CH
     Cardinal_Library_Relative2
 begin
 
+(* FIXME: Fake defs *)
+definition
+  Fn_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> i" (\<open>Fn\<^bsup>_\<^esup>'(_,_,_')\<close>) where
+  "Fn_rel(M,\<kappa>,I,J) \<equiv> 0"
+
+abbreviation
+  Fn_r_set ::  "[i,i,i,i] \<Rightarrow> i" (\<open>Fn\<^bsup>_\<^esup>'(_,_,_')\<close>) where
+  "Fn_r_set(M) \<equiv> Fn_rel(##M)"
+
+definition
+  Fnle_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> i" (\<open>Fnle\<^bsup>_\<^esup>'(_,_,_')\<close>) where
+  "Fnle_rel(M,\<kappa>,I,J) \<equiv> Fnlerel(Fn\<^bsup>M\<^esup>(\<kappa>,I,J))"
+
+abbreviation
+  Fnle_r_set ::  "[i,i,i,i] \<Rightarrow> i" (\<open>Fnle\<^bsup>_\<^esup>'(_,_,_')\<close>) where
+  "Fnle_r_set(M) \<equiv> Fnle_rel(##M)"
+
 context M_ctm
 begin
 
-(* FIXME: Fake def *)
 abbreviation
   Coll :: "i" where
-  "Coll \<equiv> Fn(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)"
+  "Coll \<equiv> Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)"
 
 \<comment> \<open>Kunen IV.7.14, only for \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>\<close>
-lemma kappa_closed_Aleph_rel1_Coll: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(Coll,Fnle(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))"
+lemma Aleph_rel1_closed_Coll: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(Coll,Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))"
   sorry
 
 end (* M_ctm *)
 
-(* FIXME: Fake lemmas *)
-lemma (in M_master) Fn_Aleph_rel1_closed[intro,simp]: "M(Fn(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))" sorry
-lemma (in M_master) Fnle_Aleph_rel1_closed[intro,simp]: "M(Fnle(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))" sorry
+context M_master
+begin
+(* FIXME: The results in this context are to be obtain through porting
+  Cohen_Posets.thy *)
 
-locale collapse_generic = G_generic_AC "Fn(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0
+lemma Fn_rel_Aleph_rel1_closed[intro,simp]: "M(Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))" sorry
 
-sublocale collapse_generic \<subseteq> cohen_data "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"
-  using zero_lt_Aleph_rel1 by unfold_locales auto
+lemma Fnle_rel_Aleph_rel1_closed[intro,simp]: "M(Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))" sorry
+
+lemma Fnle_relI[intro]:
+  assumes "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "q \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "p \<supseteq> q"
+  shows "<p,q> \<in> Fnle\<^bsup>M\<^esup>(\<kappa>,I,J)"
+  using assms unfolding Fnlerel_def Fnle_rel_def FnleR_def Rrel_def
+  by auto
+
+lemma FnleD[dest]:
+  assumes "<p,q> \<in> Fnle\<^bsup>M\<^esup>(\<kappa>,I,J)"
+  shows "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "q \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "p \<supseteq> q"
+  using assms unfolding Fnlerel_def Fnle_rel_def FnleR_def Rrel_def
+  by auto
+
+lemma zero_in_Fn_rel: 
+  assumes "M(\<kappa>)" "M(I)" "M(J)"
+  shows "0 \<in> Fn\<^bsup>M\<^esup>(\<kappa>, I, J)"
+  sorry
+
+lemma zero_top_Fn_rel: 
+  assumes "p\<in>Fn\<^bsup>M\<^esup>(\<kappa>, I, J)" "M(\<kappa>)" "M(I)" "M(J)"
+  shows "\<langle>p, 0\<rangle> \<in> Fnle\<^bsup>M\<^esup>(\<kappa>, I, J)"
+  using assms zero_in_Fn_rel unfolding preorder_on_def refl_def trans_on_def
+  by auto
+
+lemma preorder_on_Fnle_rel:
+  assumes "M(\<kappa>)" "M(I)" "M(J)"
+  shows "preorder_on(Fn\<^bsup>M\<^esup>(\<kappa>, I, J), Fnle\<^bsup>M\<^esup>(\<kappa>, I, J))"
+  unfolding preorder_on_def refl_def trans_on_def
+  by blast
+
+end (* M_master *)
+
+locale collapse_generic = G_generic_AC "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0
+
+sublocale collapse_generic \<subseteq> forcing_notion "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0
+  using zero_lt_Aleph_rel1 by unfold_locales
 
 context collapse_generic
 begin
@@ -46,7 +98,12 @@ abbreviation
   dom_dense :: "i\<Rightarrow>i" where
   "dom_dense(x) \<equiv> { p\<in>Coll . x \<in> domain(p) }"
 
-\<comment> \<open>FIXME: Should be more general, cf. @{thm add_generic.dense_dom_dense}\<close> 
+lemma (in M_master) Fn_relD[dest]:
+  assumes "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "M(\<kappa>)" "M(I)" "M(J)"
+  shows "\<exists>d[M]. p : d \<rightarrow>\<^bsup>M\<^esup> J \<and> d \<subseteq> I \<and> d \<prec>\<^bsup>M\<^esup> \<kappa>"
+  sorry
+
+\<comment> \<open>FIXME: Should be more general, cf. @{thm add_generic.dense_dom_dense}\<close>
 lemma dense_dom_dense: "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> dense(dom_dense(x))"
 proof
   fix p
@@ -60,19 +117,21 @@ proof
     case False
     note \<open>p \<in> Coll\<close>
     moreover from this and False and \<open>x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
-    have "cons(\<langle>x,0\<rangle>, p) \<in> Coll"
+    have "cons(\<langle>x,0\<rangle>, p) \<in> Coll" "x\<in>M"
       sorry
     moreover from \<open>p \<in> Coll\<close>
-    have "x\<in>domain(cons(\<langle>x,0\<rangle>, p))" by simp
+    have "x\<in>domain(cons(\<langle>x,0\<rangle>, p))" "p\<in>M" by (auto dest:transM)
     ultimately
     show ?thesis
-      by (fastforce del:FnD)
+      using Fn_relD function_space_rel_char Aleph_rel_closed[of 1]
+      (* by (fastforce del:Fn_relD) *)
+      sorry
   qed
 qed
 
 (* FIXME: should be more general *)
 lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow>  dom_dense(x) \<in> M"
-  using Fn_Aleph_rel1_closed Aleph_rel2_closed domain_separation[of x] nat_into_M
+  using Fn_rel_Aleph_rel1_closed Aleph_rel2_closed domain_separation[of x] nat_into_M
   by (rule_tac separation_closed[simplified], blast dest:transM) simp
 
 lemma domain_f_G: assumes "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
@@ -88,7 +147,11 @@ proof -
   show "x \<in> domain(f\<^bsub>G\<^esub>)" by blast
 qed
 
-lemma Fn_Aleph_rel1_subset_Pow: "Fn(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,I,J) \<subseteq> Pow(I\<times>J)"
+lemma Fn_Aleph_rel1_subset_Pow: "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,I,J) \<subseteq> Pow(I\<times>J)"
+  sorry
+
+(* FIXME: port (see Cohen_Posets.thy) *)
+lemma Un_filter_is_function: "filter(G) \<Longrightarrow> function(\<Union>G)"
   sorry
 
 lemma f_G_funtype:
@@ -100,7 +163,7 @@ proof -
     moreover from this
     have "x \<in> M[G]"
       by (auto dest!:generic_dests ext.transM)
-        (intro generic_simps(2)[of Coll], simp add:Fn_Aleph_rel1_closed[simplified])
+        (intro generic_simps(2)[of Coll], simp add:Fn_rel_Aleph_rel1_closed[simplified])
     moreover from calculation
     have "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<times> (\<omega> \<rightarrow> 2)"
       using Fn_Aleph_rel1_subset_Pow[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
@@ -125,7 +188,7 @@ abbreviation
   surj_dense :: "i\<Rightarrow>i" where
   "surj_dense(x) \<equiv> { p\<in>Coll . x \<in> range(p) }"
 
-\<comment> \<open>FIXME write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close>
+\<comment> \<open>FIXME write general versions of this for \<^term>\<open>Fn\<^bsup>M\<^esup>(\<omega>,I,J)\<close>
     in a context with a generic filter for it\<close>
 lemma dense_surj_dense:
   assumes "x \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2"
@@ -148,10 +211,9 @@ proof -
     by blast
   then
   show ?thesis
-    using apply_rangeI[of "f\<^bsub>G\<^esub>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<lambda>_. \<omega>\<rightarrow>2"]
-      kappa_closed_Aleph_rel1_Coll
-      f_G_funtype Aleph_1_closed_imp_no_new_reals[symmetric] apply auto
-    sorry
+    using Aleph_rel1_closed_Coll f_G_funtype function_apply_equality[of _ x f_G]
+      Aleph_1_closed_imp_no_new_reals[symmetric] 
+     by (auto, rule_tac bexI) (auto simp:Pi_def)
 qed
 
 lemma f_G_surj_Aleph_rel1_reals: "f\<^bsub>G\<^esub> \<in> surj\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2)"
@@ -166,7 +228,7 @@ proof (intro ext.mem_surj_abs[THEN iffD2])
     assume "x \<in> \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
     then
     show "\<exists>\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>. f\<^bsub>G\<^esub> ` \<alpha> = x"
-      using reals_sub_image_f_G kappa_closed_Aleph_rel1_Coll
+      using reals_sub_image_f_G Aleph_rel1_closed_Coll
         f_G_funtype Aleph_1_closed_imp_no_new_reals by simp
   qed
 qed simp_all
@@ -191,7 +253,7 @@ proof -
   have "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup> \<le> |\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>|\<^bsup>M[G]\<^esup>"
     using ext.lepoll_rel_imp_cardinal_rel_le[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2",
         OF _ _ ext.function_space_rel_closed] ext.Aleph_rel_zero
-      kappa_closed_Aleph_rel1_Coll Aleph_1_closed_imp_Aleph_1_preserved
+      Aleph_rel1_closed_Coll Aleph_1_closed_imp_Aleph_1_preserved
     unfolding cexp_rel_def by simp
   then
   show "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup> \<le> \<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>" by simp
@@ -228,13 +290,14 @@ proof -
     using eqpoll_sym unfolding eqpoll_def by blast
   then
   interpret M_ctm_AC M enum by unfold_locales
-  interpret forcing_data "Fn(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0 M enum
+  interpret forcing_data "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0 M enum
   proof -
-    interpret cohen_data "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2" 
-      using zero_lt_Aleph_rel1 by unfold_locales auto
-    show "forcing_data(Fn(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2), Fnle(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2), 0, M, enum)"
-      using Fn_Aleph_rel1_closed Fnle_Aleph_rel1_closed
-      by (unfold_locales, simp_all)
+    show "forcing_data(Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2), Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2), 0, M, enum)"
+      using Fn_rel_Aleph_rel1_closed Fnle_rel_Aleph_rel1_closed
+        zero_in_Fn_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"] zero_top_Fn_rel[of _ "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
+        preorder_on_Fnle_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"] Aleph_rel_closed[of 1] 
+        nat_into_M function_space_rel_closed[of \<omega> 2] M_nat
+      by unfold_locales  simp_all
   qed
   obtain G where "M_generic(G)"
     using generic_filter_existence[OF one_in_P]
