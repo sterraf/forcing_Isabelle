@@ -39,14 +39,23 @@ begin
 (* FIXME: The results in this context are to be obtain through porting
   Cohen_Posets.thy *)
 
-lemma Fn_rel_Aleph_rel1_closed[intro,simp]: "M(Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))" sorry
+lemma Fn_rel_closed[intro,simp]:
+  assumes "M(\<kappa>)" "M(I)" "M(J)"
+  shows "M(Fn\<^bsup>M\<^esup>(\<kappa>,I,J))" sorry
+
+lemma Fn_rel_Aleph_rel1_closed[intro,simp]: "M(Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))" by simp
 
 lemma Fn_Aleph_rel1_subset_Pow:
   assumes "M(\<kappa>)" "M(I)" "M(J)"
   shows "Fn\<^bsup>M\<^esup>(\<kappa>,I,J) \<subseteq> Pow(I\<times>J)"
   sorry
 
-lemma Fnle_rel_Aleph_rel1_closed[intro,simp]: "M(Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))" sorry
+lemma Fnle_rel_closed[intro,simp]:
+  assumes "M(\<kappa>)" "M(I)" "M(J)"
+  shows "M(Fnle\<^bsup>M\<^esup>(\<kappa>,I,J))" sorry
+
+lemma Fnle_rel_Aleph_rel1_closed[intro,simp]: "M(Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))"
+  by simp
 
 lemma Fnle_relI[intro]:
   assumes "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "q \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "p \<supseteq> q"
