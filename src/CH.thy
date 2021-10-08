@@ -41,6 +41,11 @@ begin
 
 lemma Fn_rel_Aleph_rel1_closed[intro,simp]: "M(Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))" sorry
 
+lemma Fn_Aleph_rel1_subset_Pow:
+  assumes "M(\<kappa>)" "M(I)" "M(J)"
+  shows "Fn\<^bsup>M\<^esup>(\<kappa>,I,J) \<subseteq> Pow(I\<times>J)"
+  sorry
+
 lemma Fnle_rel_Aleph_rel1_closed[intro,simp]: "M(Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))" sorry
 
 lemma Fnle_relI[intro]:
@@ -131,7 +136,7 @@ qed
 
 (* FIXME: should be more general *)
 lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow>  dom_dense(x) \<in> M"
-  using Fn_rel_Aleph_rel1_closed Aleph_rel2_closed domain_separation[of x] nat_into_M
+  using Fn_rel_Aleph_rel1_closed domain_separation[of x] nat_into_M
   by (rule_tac separation_closed[simplified], blast dest:transM) simp
 
 lemma domain_f_G: assumes "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
@@ -146,9 +151,6 @@ proof -
   then
   show "x \<in> domain(f\<^bsub>G\<^esub>)" by blast
 qed
-
-lemma Fn_Aleph_rel1_subset_Pow: "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,I,J) \<subseteq> Pow(I\<times>J)"
-  sorry
 
 (* FIXME: port (see Cohen_Posets.thy) *)
 lemma Un_filter_is_function: "filter(G) \<Longrightarrow> function(\<Union>G)"
@@ -166,8 +168,10 @@ proof -
         (intro generic_simps(2)[of Coll], simp add:Fn_rel_Aleph_rel1_closed[simplified])
     moreover from calculation
     have "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<times> (\<omega> \<rightarrow> 2)"
-      using Fn_Aleph_rel1_subset_Pow[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
-        function_space_rel_char by (auto dest!:generic_dests)
+      using Fn_Aleph_rel1_subset_Pow[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2",
+          OF _ _ function_space_rel_closed]
+        function_space_rel_char Aleph_rel_closed[of 1]
+      by (auto dest!:generic_dests)
     moreover from this
     obtain z w where "x=\<langle>z,w\<rangle>" "z\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "w:\<omega> \<rightarrow> 2" by auto
     moreover from calculation
@@ -295,9 +299,9 @@ proof -
     show "forcing_data(Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2), Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2), 0, M, enum)"
       using Fn_rel_Aleph_rel1_closed Fnle_rel_Aleph_rel1_closed
         zero_in_Fn_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"] zero_top_Fn_rel[of _ "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
-        preorder_on_Fnle_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"] Aleph_rel_closed[of 1] 
+        preorder_on_Fnle_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"] Aleph_rel_closed[of 1]
         nat_into_M function_space_rel_closed[of \<omega> 2] M_nat
-      by unfold_locales  simp_all
+      by unfold_locales simp_all
   qed
   obtain G where "M_generic(G)"
     using generic_filter_existence[OF one_in_P]
