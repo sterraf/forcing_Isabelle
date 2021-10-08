@@ -306,7 +306,7 @@ abbreviation
 context M_ZF_library
 begin
 
-lemma Card_cexp: "M(\<kappa>) \<Longrightarrow> M(\<nu>) \<Longrightarrow> Card\<^bsup>M\<^esup>(\<kappa>\<^bsup>\<up>\<nu>,M\<^esup>)"
+lemma Card_rel_cexp_rel: "M(\<kappa>) \<Longrightarrow> M(\<nu>) \<Longrightarrow> Card\<^bsup>M\<^esup>(\<kappa>\<^bsup>\<up>\<nu>,M\<^esup>)"
   unfolding cexp_rel_def by simp
 
 \<comment> \<open>Restoring congruence rule, but NOTE: beware\<close>

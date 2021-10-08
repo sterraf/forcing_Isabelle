@@ -1,6 +1,7 @@
 theory Kappa_Closed_Notions
   imports
     Not_CH
+    Pointed_DC_Relative
 begin
 
 definition
@@ -106,9 +107,6 @@ lemma kappa_closed_abs:
 
 end (* forcing_data *)
 
-\<comment> \<open>Kunen IV.7.14, only for \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>\<close>
-(* lemma (in M_library) kappa_closed_Fn: *)
-
 context G_generic_AC begin
 
 context
@@ -206,6 +204,6 @@ qed
 
 end (* includes G_generic_lemmas *)
 
-end (* G_generic *)
+end (* G_generic_AC *)
 
 end
