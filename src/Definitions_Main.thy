@@ -95,7 +95,7 @@ text\<open>@{thm [display] add_succ_right add_0_right pred_0 pred_succ_eq}\<clos
 text\<open>Lists on a set \<^term>\<open>A\<close> can be characterized by being
 recursively generated from the empty list \<^term>\<open>[]\<close> and the
 operation \<^term>\<open>Cons\<close> that adds a new element to the left end;
-the induction theorem for them show that the characterization is
+the induction theorem for them shows that the characterization is
 “complete”.\<close>
 
 thm Nil Cons list.induct
@@ -312,6 +312,10 @@ text\<open>@{thm [display] strong_replacement_def}\<close>
 
 text\<open>Internalized formulas\<close>
 
+txt\<open>“Codes” for formulas (as sets) are constructed from natural
+numbers using \<^term>\<open>Member\<close>, \<^term>\<open>Equal\<close>, \<^term>\<open>Nand\<close>,
+and \<^term>\<open>Forall\<close>.\<close>
+
 thm Member Equal Nand Forall formula.induct
 text\<open>@{thm [display] Member Equal Nand Forall formula.induct}\<close>
 (*
@@ -326,6 +330,11 @@ text\<open>@{thm [display] Member Equal Nand Forall formula.induct}\<close>
   (\<And>p q. p \<in> formula \<Longrightarrow> P(p) \<Longrightarrow> q \<in> formula \<Longrightarrow> P(q) \<Longrightarrow> P(\<cdot>\<not>(p \<and> q)\<cdot>)) \<Longrightarrow>
   (\<And>p. p \<in> formula \<Longrightarrow> P(p) \<Longrightarrow> P((\<forall>p))) \<Longrightarrow> P(x)
 *)
+
+txt\<open>Definitions for the other connectives and the internal existential
+quantifier are also provided. For instance, negation:\<close>
+thm Neg_def
+text\<open>@{thm [display] Neg_def}\<close>
 
 thm arity.simps
 text\<open>@{thm [display] arity.simps}\<close>
