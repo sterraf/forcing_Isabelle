@@ -231,7 +231,7 @@ proof -
   then
   show ?thesis
     using Aleph_rel1_closed_Coll f_G_funtype function_apply_equality[of _ x f_G]
-      Aleph_1_closed_imp_no_new_reals[symmetric] 
+      Aleph_rel1_closed_imp_no_new_reals[symmetric]
      by (auto, rule_tac bexI) (auto simp:Pi_def)
 qed
 
@@ -248,7 +248,7 @@ proof (intro ext.mem_surj_abs[THEN iffD2])
     then
     show "\<exists>\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>. f\<^bsub>G\<^esub> ` \<alpha> = x"
       using reals_sub_image_f_G Aleph_rel1_closed_Coll
-        f_G_funtype Aleph_1_closed_imp_no_new_reals by simp
+        f_G_funtype Aleph_rel1_closed_imp_no_new_reals by simp
   qed
 qed simp_all
 
@@ -272,7 +272,7 @@ proof -
   have "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup> \<le> |\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>|\<^bsup>M[G]\<^esup>"
     using ext.lepoll_rel_imp_cardinal_rel_le[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2",
         OF _ _ ext.function_space_rel_closed] ext.Aleph_rel_zero
-      Aleph_rel1_closed_Coll Aleph_1_closed_imp_Aleph_1_preserved
+      Aleph_rel1_closed_Coll Aleph_rel1_closed_imp_Aleph_1_preserved
     unfolding cexp_rel_def by simp
   then
   show "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup> \<le> \<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>" by simp

@@ -122,7 +122,7 @@ lemma kappa_closed_imp_no_new_sequences:
   oops
 
 \<comment> \<open>Kunen IV.7.15, only for countable sequences\<close>
-lemma kappa_closed_imp_no_new_nat_sequences:
+lemma Aleph_rel1_closed_imp_no_new_nat_sequences:
   (* notes le_trans[trans] *)
   assumes "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)" "f : \<omega> \<rightarrow> B" "f\<in>M[G]"
     "B\<in>M"
@@ -132,13 +132,13 @@ lemma kappa_closed_imp_no_new_nat_sequences:
     Aleph_rel_closed[of 1] by simp *)
   sorry
 
-lemma Aleph_1_closed_imp_no_new_reals:
+lemma Aleph_rel1_closed_imp_no_new_reals:
   assumes "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)"
   shows "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2 = \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
 proof -
   from assms
   have "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2 \<subseteq> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2"
-    using kappa_closed_imp_no_new_nat_sequences function_space_rel_char
+    using Aleph_rel1_closed_imp_no_new_nat_sequences function_space_rel_char
       ext.function_space_rel_char Aleph_rel_succ Aleph_rel_zero
       nat_into_M[of 2] csucc_rel_closed
     by auto
@@ -147,7 +147,7 @@ proof -
     using function_space_rel_transfer ext.nat_into_M[of 2] by force
 qed
 
-lemma Aleph_1_closed_imp_Aleph_1_preserved:
+lemma Aleph_rel1_closed_imp_Aleph_1_preserved:
   assumes "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)"
   shows "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>"
 proof -
@@ -185,7 +185,7 @@ proof -
     note \<open>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)\<close>
     ultimately
     have "g \<in> surj\<^bsup>M\<^esup>(\<omega>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)" "g \<in> M"
-      using kappa_closed_imp_no_new_nat_sequences
+      using Aleph_rel1_closed_imp_no_new_nat_sequences
         Aleph_rel_closed[of 1]
         mem_surj_abs ext.mem_surj_abs by simp_all
     then
