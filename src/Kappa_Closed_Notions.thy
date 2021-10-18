@@ -22,6 +22,9 @@ relativize functional "mono_seqspace" "mono_seqspace_rel"
 relationalize "mono_seqspace_rel" "is_mono_seqspace"
 synthesize "is_mono_seqspace" from_definition assuming "nonempty"
 
+rel_closed for "mono_seqspace"
+  sorry
+
 abbreviation
   mono_seqspace_r (\<open>_ \<^sub><\<rightarrow>\<^bsup>_\<^esup> '(_,_')\<close> [61] 60) where
   "\<alpha> \<^sub><\<rightarrow>\<^bsup>M\<^esup> (P,leq) \<equiv> mono_seqspace_rel(M,\<alpha>,P,leq)"
@@ -36,6 +39,18 @@ lemma mono_seqspaceI[intro!]:
   shows  "f: A \<^sub><\<rightarrow> (P,leq)"
   using ltI[OF _ Ord_in_Ord[of A], THEN [3] assms(2)] assms(1,3)
   unfolding mono_seqspace_def by auto
+
+lemma (in M_ZF_library) mono_seqspace_relI[intro!]:
+  assumes "f: A\<rightarrow>\<^bsup>M\<^esup> P" "\<And>x y. x\<in>A \<Longrightarrow> y\<in>A \<Longrightarrow> x<y \<Longrightarrow> \<langle>f`x, f`y\<rangle> \<in> leq"
+    "Ord(A)" "M(A)" "M(P)" "M(leq)"
+  shows  "f: A \<^sub><\<rightarrow>\<^bsup>M\<^esup> (P,leq)"
+  sorry
+
+lemma (in M_ZF_library) mono_seqspace_rel_char:
+  assumes "M(A)" "M(P)" "M(leq)"
+  shows "A \<^sub><\<rightarrow>\<^bsup>M\<^esup> (P,leq) = {f\<in>A \<^sub><\<rightarrow> (P,leq). M(f)}"
+  using assms mono_map_rel_char 
+  unfolding mono_seqspace_def mono_seqspace_rel_def by simp
 
 lemma mono_seqspace_is_fun[dest]:
   includes mono_map_rules
@@ -121,16 +136,137 @@ lemma kappa_closed_imp_no_new_sequences:
   shows "f\<in>M"
   oops
 
+(* MOVE THIS to an appropriate place *)
+\<comment> \<open>Kunen IV.6.1\<close>
+lemma local_maximal_principle:
+  assumes "r \<tturnstile> (\<cdot>\<exists>\<cdot>\<cdot>0\<in>1\<cdot> \<and> \<phi>\<cdot>\<cdot>) [\<pi>]" "r\<in>P" "\<phi>\<in>formula" "\<pi> \<in> M"
+  shows "\<exists>q\<in>P. \<exists>\<sigma> \<in> domain(\<pi>).  q \<preceq> r \<and> q \<tturnstile> \<cdot>\<cdot>0\<in>1\<cdot> \<and> \<phi>\<cdot> [\<sigma>,\<pi>]"
+  sorry
+
+lemma forcing_a_value:
+  assumes "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]" "a \<in> A"
+    "p\<in>P" "f_dot \<in> M" "A\<in>M" "B\<in>M"
+  shows "dense_below({q \<in> P. \<exists>b\<in>B. q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]}, p)"
+proof
+  fix q
+  assume "q \<in> P" "q \<preceq> p"
+  with assms
+  have "q \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]"
+    using strengthening_lemma[of p "\<cdot>0:1\<rightarrow>2\<cdot>" q "[f_dot, A\<^sup>v, B\<^sup>v]"]
+     typed_function_type arity_typed_function_fm
+    by (auto simp: union_abs2 union_abs1)
+  obtain d b where "d \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]" "d\<preceq>q" "d\<in>P" "b\<in>B"
+    sorry
+  then
+  show "\<exists>d\<in>{q \<in> P . \<exists>b\<in>B. q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]}. d \<in> P \<and> d \<preceq> q"
+    by auto
+qed
+
 \<comment> \<open>Kunen IV.7.15, only for countable sequences\<close>
 lemma Aleph_rel1_closed_imp_no_new_nat_sequences:
   (* notes le_trans[trans] *)
+  notes monseq_closed =
+    mono_seqspace_rel_closed[of "##M" \<omega> _ "converse(leq)", simplified, OF P_in_M]
   assumes "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)" "f : \<omega> \<rightarrow> B" "f\<in>M[G]"
     "B\<in>M"
   shows "f\<in>M"
     (* (* Proof using the general lemma: *)
   using assms nat_lt_Aleph_rel1 kappa_closed_imp_no_new_sequences
     Aleph_rel_closed[of 1] by simp *)
-  sorry
+proof -
+  from \<open>f\<in>M[G]\<close>
+  obtain f_dot where "f = val(P,G,f_dot)" "f_dot\<in>M" using GenExtD by force
+  with assms
+  obtain p where "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]" "p\<in>G" "p\<in>M"
+    using transitivity[OF M_genericD P_in_M]
+      generic truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[f_dot, \<omega>\<^sup>v, B\<^sup>v]"]
+    by (auto simp add:ord_simp_union arity_typed_function_fm
+        typed_function_type)
+  let ?subp="{q\<in>P. q \<preceq> p}"
+  from \<open>p\<in>G\<close>
+  have "?subp \<in> M"
+    using first_section_closed[of P p "converse(leq)"] leq_in_M
+      G_subset_M[OF generic] by auto
+  define S where "S \<equiv> \<lambda>n\<in>nat.
+    {\<langle>q,r\<rangle> \<in> ?subp\<times>?subp. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])}"
+  have "S \<in> M" sorry
+  have exr:"\<forall>q\<in>P. \<forall>n\<in>\<omega>. \<exists>r\<in>P. q \<preceq> p \<longrightarrow> r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])"
+    sorry
+  have "\<forall>q\<in>?subp. \<forall>n\<in>\<omega>. \<exists>r\<in>?subp. \<langle>q,r\<rangle> \<in> S`n"
+  proof -
+    {
+      fix q n
+      assume "q \<in> ?subp" "n\<in>\<omega>"
+      moreover from this
+      have "q \<preceq> p" "q \<in> P" by simp_all
+      moreover from calculation and exr
+      obtain r where "r \<preceq> q" "\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v]" "r\<in>P"
+        by blast
+      moreover from calculation \<open>q \<preceq> p\<close> \<open>p \<in> G\<close>
+      have "r \<preceq> p"
+        using leq_transD[of r q p] by auto
+      ultimately
+      have "\<exists>r\<in>?subp. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])"
+        by auto
+    }
+    then
+    show ?thesis
+      unfolding S_def by simp
+  qed
+  with \<open>p\<in>G\<close> \<open>?subp \<in> M\<close> \<open>S \<in> M\<close>
+  obtain g where "g \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> ?subp" "g`0 = p" "\<forall>n \<in> nat. \<langle>g`n,g`succ(n)\<rangle>\<in>S`succ(n)"
+    using sequence_DC[simplified] refl_leq[of p] by blast
+  moreover from this and \<open>?subp \<in> M\<close>
+  have "g : \<omega> \<rightarrow> P" "g \<in> M" 
+    using fun_weaken_type[of g \<omega> ?subp P] function_space_rel_char by auto
+  ultimately
+  have "g : \<omega> \<^sub><\<rightarrow>\<^bsup>M\<^esup> (P,converse(leq))"
+    using decr_succ_decr leq_preord mono_seqspace_rel_char
+      function_space_rel_char leq_in_M P_in_M apply auto sorry
+  moreover from \<open>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)\<close> and this
+  have "\<exists>q\<in>M. q \<in> P \<and> (\<forall>\<alpha>\<in>M. \<alpha> \<in> \<omega> \<longrightarrow> q \<preceq> g ` \<alpha>)"
+    using nat_lt_Aleph_rel1 transM[simplified, OF _ monseq_closed, of g] leq_in_M
+    unfolding kappa_closed_rel_def
+    by auto
+  ultimately
+  obtain r where "r\<in>P" "r\<in>M" "\<forall>n\<in>\<omega>. r \<preceq> g`n"
+    using nat_lt_Aleph_rel1 nat_into_M by auto
+  with \<open>g`0 = p\<close>
+  have "r \<preceq> p" by blast
+  let ?h="{\<langle>n,b\<rangle> \<in> \<omega> \<times> B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]}"
+  have "function(?h)"
+  proof (rule_tac functionI, rule_tac ccontr, auto simp del: app_Cons)
+    fix n b b'
+    assume "n \<in> \<omega>" "b \<noteq> b'" "b \<in> B" "b' \<in> B"
+    moreover
+    assume "r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]" "r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b'\<^sup>v]"
+    moreover
+    note \<open>r \<in> P\<close>
+    moreover from this
+    have "\<not> r \<bottom> r" by (auto intro!:refl_leq)
+    moreover
+    note \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
+    ultimately
+    show False
+      using forces_neq_apply_imp_incompatible[of r f_dot "n\<^sup>v" b r b']
+        transM[of _ B] by (auto dest:transM)
+  qed
+  have "?h: \<omega> \<rightarrow>\<^bsup>M\<^esup> B" sorry
+  moreover
+  have "?h`n = f`n" if "n\<in>\<omega>" for n sorry
+  with calculation and \<open>f : \<omega> \<rightarrow> B\<close> \<open>B\<in>M\<close>
+  have "?h = f"
+    using function_space_rel_char
+    by (rule_tac fun_extension[of ?h \<omega> "\<lambda>_.B" f]) auto
+  moreover
+  note \<open>B \<in> M\<close>
+  ultimately
+  show ?thesis using function_space_rel_char by (auto dest:transM)
+qed
+
+
+declare mono_seqspace_rel_closed[rule del]
+  \<comment> \<open>Mysteriously breaks the end of the next proof\<close>
 
 lemma Aleph_rel1_closed_imp_no_new_reals:
   assumes "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)"
