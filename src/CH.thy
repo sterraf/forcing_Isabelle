@@ -123,6 +123,15 @@ lemma (in M_master) Fn_relD[dest]:
   shows "\<exists>d[M]. p : d \<rightarrow>\<^bsup>M\<^esup> J \<and> d \<subseteq> I \<and> d \<prec>\<^bsup>M\<^esup> \<kappa>"
   sorry
 
+lemma (in M_master) cons_in_Fn_rel:
+  assumes "x \<notin> domain(p)" "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "x \<in> \<kappa>" "j \<in> J"
+    "M(x)" "M(\<kappa>)" "M(I)" "M(J)"
+  shows "cons(\<langle>x,j\<rangle>, p) \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
+  sorry
+
+lemma Coll_into_countable: "p \<in> Coll \<Longrightarrow> countable(p)"
+  sorry
+
 \<comment> \<open>FIXME: Should be more general, cf. @{thm add_generic.dense_dom_dense}\<close>
 lemma dense_dom_dense: "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> dense(dom_dense(x))"
 proof
@@ -137,15 +146,14 @@ proof
     case False
     note \<open>p \<in> Coll\<close>
     moreover from this and False and \<open>x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
-    have "cons(\<langle>x,0\<rangle>, p) \<in> Coll" "x\<in>M"
-      sorry
-    moreover from \<open>p \<in> Coll\<close>
-    have "x\<in>domain(cons(\<langle>x,0\<rangle>, p))" "p\<in>M" by (auto dest:transM)
+    have "cons(\<langle>x,\<lambda>n\<in>\<omega>. 0\<rangle>, p) \<in> Coll" "x\<in>M"
+      using Aleph_rel_closed[of 1] function_space_rel_char
+        function_space_rel_closed lam_replacement_constant
+        lam_replacement_iff_lam_closed
+      by (auto intro!: cons_in_Fn_rel dest:transM intro:function_space_nonempty)
     ultimately
     show ?thesis
-      using Fn_relD function_space_rel_char Aleph_rel_closed[of 1]
-      (* by (fastforce del:Fn_relD) *)
-      sorry
+      using Fn_relD by blast
   qed
 qed
 
@@ -212,7 +220,25 @@ abbreviation
 lemma dense_surj_dense:
   assumes "x \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2"
   shows "dense(surj_dense(x))"
-  sorry
+proof
+  fix p
+  assume "p \<in> Coll"
+  then
+  have "countable(p)" using Coll_into_countable by simp
+  show "\<exists>d\<in>surj_dense(x). d \<preceq> p"
+  proof -
+    from \<open>countable(p)\<close>
+    obtain \<alpha> where "\<alpha> \<notin> domain(p)" "\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+      sorry
+    moreover note assms
+    moreover from calculation and \<open>p \<in> Coll\<close>
+    have "cons(\<langle>\<alpha>,x\<rangle>, p) \<in> Coll" "x\<in>M" "cons(\<langle>\<alpha>,x\<rangle>, p) \<preceq> p"
+      using Aleph_rel_closed[of 1]
+      by (auto intro!: cons_in_Fn_rel Fnle_relI dest:transM)
+    ultimately
+    show ?thesis by blast
+  qed
+qed
 
 lemma surj_dense_closed[intro,simp]:
   "x \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2 \<Longrightarrow> surj_dense(x) \<in> M"
