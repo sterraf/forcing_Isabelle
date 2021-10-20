@@ -251,7 +251,42 @@ proof -
       using forces_neq_apply_imp_incompatible[of r f_dot "n\<^sup>v" b r b']
         transM[of _ B] by (auto dest:transM)
   qed
-  have "?h: \<omega> \<rightarrow>\<^bsup>M\<^esup> B" sorry
+  moreover
+  have "range(?h) \<subseteq> B" by auto
+  moreover
+  have "domain(?h) = \<omega>"
+  proof -
+    {
+      fix n
+      assume "n \<in> \<omega>"
+      moreover from this and \<open>\<forall>n \<in> nat. \<langle>g`n,g`succ(n)\<rangle>\<in>S`succ(n)\<close>
+      obtain b where "g`(succ(n)) \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]" "b\<in>B"
+        unfolding S_def by auto
+      moreover from \<open>B\<in>M\<close> and calculation
+      have "b \<in> M" "n \<in> M" by (auto dest:transM)
+      moreover
+      note \<open>g : \<omega> \<rightarrow> P\<close> \<open>\<forall>n\<in>\<omega>. r \<preceq> g`n\<close> \<open>r\<in>P\<close> \<open>f_dot\<in>M\<close>
+      moreover from calculation
+      have "r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]"
+        using fun_apply_type arity_fun_apply_fm
+          strengthening_lemma[of "g`succ(n)" "\<cdot>0`1 is 2\<cdot>" r "[f_dot, n\<^sup>v, b\<^sup>v]"]
+        by (simp add: union_abs2 union_abs1)
+      ultimately
+      have "\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]" by auto
+    }
+    then
+    show ?thesis by force
+  qed
+  moreover
+  have "relation(?h)" unfolding relation_def by simp
+  moreover
+  have "?h \<in> M" sorry
+  moreover
+  note \<open>B \<in> M\<close>
+  ultimately
+  have "?h: \<omega> \<rightarrow>\<^bsup>M\<^esup> B"
+    using function_imp_Pi[THEN fun_weaken_type[of ?h _ "range(?h)" B]]
+    function_space_rel_char by simp
   moreover
   have "?h`n = f`n" if "n\<in>\<omega>" for n sorry
   with calculation and \<open>f : \<omega> \<rightarrow> B\<close> \<open>B\<in>M\<close>
@@ -263,7 +298,6 @@ proof -
   ultimately
   show ?thesis using function_space_rel_char by (auto dest:transM)
 qed
-
 
 declare mono_seqspace_rel_closed[rule del]
   \<comment> \<open>Mysteriously breaks the end of the next proof\<close>
