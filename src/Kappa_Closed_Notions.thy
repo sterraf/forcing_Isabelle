@@ -145,12 +145,13 @@ lemma local_maximal_principle:
 
 lemma forcing_a_value:
   assumes "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]" "a \<in> A"
-    "p\<in>P" "f_dot \<in> M" "A\<in>M" "B\<in>M"
-  shows "dense_below({q \<in> P. \<exists>b\<in>B. q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]}, p)"
-proof
-  fix q
-  assume "q \<in> P" "q \<preceq> p"
-  with assms
+    "q \<preceq> p" "q \<in> P" "p\<in>P" "f_dot \<in> M" "A\<in>M" "B\<in>M"
+  shows "\<exists>d\<in>P. \<exists>b\<in>B. d \<preceq> q \<and> d \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]"
+    \<comment> \<open>Old neater version, but harder to use
+    (without the assumptions on \<^term>\<open>q\<close>):\<close>
+    (* "dense_below({q \<in> P. \<exists>b\<in>B. q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]}, p)" *)
+proof -
+  from assms
   have "q \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]"
     using strengthening_lemma[of p "\<cdot>0:1\<rightarrow>2\<cdot>" q "[f_dot, A\<^sup>v, B\<^sup>v]"]
      typed_function_type arity_typed_function_fm
@@ -158,8 +159,7 @@ proof
   obtain d b where "d \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]" "d\<preceq>q" "d\<in>P" "b\<in>B"
     sorry
   then
-  show "\<exists>d\<in>{q \<in> P . \<exists>b\<in>B. q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]}. d \<in> P \<and> d \<preceq> q"
-    by auto
+  show ?thesis by auto
 qed
 
 \<comment> \<open>Kunen IV.7.15, only for countable sequences\<close>
@@ -190,8 +190,10 @@ proof -
   define S where "S \<equiv> \<lambda>n\<in>nat.
     {\<langle>q,r\<rangle> \<in> ?subp\<times>?subp. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])}"
   have "S \<in> M" sorry
-  have exr:"\<forall>q\<in>P. \<forall>n\<in>\<omega>. \<exists>r\<in>P. q \<preceq> p \<longrightarrow> r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])"
-    sorry
+  from \<open>p\<in>G\<close> \<open>f_dot\<in>M\<close> \<open>p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close> \<open>p\<in>M\<close> \<open>B\<in>M\<close>
+  have exr:"\<exists>r\<in>P. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])"
+    if "q \<preceq> p" "q\<in>P" "n\<in>\<omega>" for q n
+    using that forcing_a_value by (auto dest:transM)
   have "\<forall>q\<in>?subp. \<forall>n\<in>\<omega>. \<exists>r\<in>?subp. \<langle>q,r\<rangle> \<in> S`n"
   proof -
     {
@@ -222,7 +224,7 @@ proof -
   ultimately
   have "g : \<omega> \<^sub><\<rightarrow>\<^bsup>M\<^esup> (P,converse(leq))"
     using decr_succ_decr leq_preord mono_seqspace_rel_char
-      function_space_rel_char leq_in_M P_in_M apply auto sorry
+      function_space_rel_char leq_in_M P_in_M sorry
   moreover from \<open>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)\<close> and this
   have "\<exists>q\<in>M. q \<in> P \<and> (\<forall>\<alpha>\<in>M. \<alpha> \<in> \<omega> \<longrightarrow> q \<preceq> g ` \<alpha>)"
     using nat_lt_Aleph_rel1 transM[simplified, OF _ monseq_closed, of g] leq_in_M
