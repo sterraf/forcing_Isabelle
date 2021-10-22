@@ -30,7 +30,7 @@ lemma Fn_rel_closed[intro,simp]:
   assumes "M(\<kappa>)" "M(I)" "M(J)"
   shows "M(Fn\<^bsup>M\<^esup>(\<kappa>,I,J))" sorry
 
-lemma Fn_Aleph_rel1_subset_Pow:
+lemma Fn_rel_subset_Pow:
   assumes "M(\<kappa>)" "M(I)" "M(J)"
   shows "Fn\<^bsup>M\<^esup>(\<kappa>,I,J) \<subseteq> Pow(I\<times>J)"
   sorry
@@ -124,12 +124,12 @@ lemma (in M_master) Fn_relD[dest]:
   sorry
 
 lemma (in M_master) cons_in_Fn_rel:
-  assumes "x \<notin> domain(p)" "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "x \<in> \<kappa>" "j \<in> J"
+  assumes "x \<notin> domain(p)" "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "x \<in> I" "j \<in> J" "InfCard\<^bsup>M\<^esup>(\<kappa>)"
     "M(x)" "M(\<kappa>)" "M(I)" "M(J)"
   shows "cons(\<langle>x,j\<rangle>, p) \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
   sorry
 
-lemma Coll_into_countable: "p \<in> Coll \<Longrightarrow> countable(p)"
+lemma Coll_into_countable_rel: "p \<in> Coll \<Longrightarrow> countable\<^bsup>M\<^esup>(p)"
   sorry
 
 \<comment> \<open>FIXME: Should be more general, cf. @{thm add_generic.dense_dom_dense}\<close>
@@ -149,7 +149,7 @@ proof
     have "cons(\<langle>x,\<lambda>n\<in>\<omega>. 0\<rangle>, p) \<in> Coll" "x\<in>M"
       using Aleph_rel_closed[of 1] function_space_rel_char
         function_space_rel_closed lam_replacement_constant
-        lam_replacement_iff_lam_closed
+        lam_replacement_iff_lam_closed InfCard_rel_Aleph_rel
       by (auto intro!: cons_in_Fn_rel dest:transM intro:function_space_nonempty)
     ultimately
     show ?thesis
@@ -191,7 +191,7 @@ proof -
         (intro generic_simps(2)[of Coll], simp)
     moreover from calculation
     have "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<times> (\<omega> \<rightarrow> 2)"
-      using Fn_Aleph_rel1_subset_Pow[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2",
+      using Fn_rel_subset_Pow[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2",
           OF _ _ function_space_rel_closed]
         function_space_rel_char Aleph_rel_closed[of 1]
       by (auto dest!:generic_dests)
@@ -224,16 +224,16 @@ proof
   fix p
   assume "p \<in> Coll"
   then
-  have "countable(p)" using Coll_into_countable by simp
+  have "countable\<^bsup>M\<^esup>(p)" using Coll_into_countable_rel by simp
   show "\<exists>d\<in>surj_dense(x). d \<preceq> p"
   proof -
-    from \<open>countable(p)\<close>
+    from \<open>countable\<^bsup>M\<^esup>(p)\<close>
     obtain \<alpha> where "\<alpha> \<notin> domain(p)" "\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
       sorry
     moreover note assms
     moreover from calculation and \<open>p \<in> Coll\<close>
     have "cons(\<langle>\<alpha>,x\<rangle>, p) \<in> Coll" "x\<in>M" "cons(\<langle>\<alpha>,x\<rangle>, p) \<preceq> p"
-      using Aleph_rel_closed[of 1]
+      using Aleph_rel_closed[of 1] InfCard_rel_Aleph_rel
       by (auto intro!: cons_in_Fn_rel Fnle_relI dest:transM)
     ultimately
     show ?thesis by blast

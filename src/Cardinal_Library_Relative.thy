@@ -328,6 +328,12 @@ definition (* FIXME: From Cardinal_Library, on the context of AC *)
 relativize functional "countable" "countable_rel" external
 relationalize "countable_rel" "is_countable"
 
+notation countable_rel (\<open>countable\<^bsup>_\<^esup>'(_')\<close>)
+
+abbreviation
+  countable_r_set  :: "[i,i]\<Rightarrow>o"  (\<open>countable\<^bsup>_\<^esup>'(_')\<close>) where
+  "countable\<^bsup>M\<^esup>(i) \<equiv> countable_rel(##M,i)"
+
 context M_library
 begin
 

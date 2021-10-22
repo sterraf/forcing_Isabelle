@@ -108,16 +108,16 @@ sublocale forcing_data \<subseteq> M_ZF_library "##M"
   \<comment> \<open>Wasn't this already done??\<close>
   by unfold_locales
 
-context forcing_data
+context M_ZF_library
 begin
 
-lemma kappa_closed_abs: 
-  assumes "\<kappa>\<in>M" 
-  shows "(\<omega>\<^sup>+)\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq) \<longleftrightarrow> (\<omega>\<^sup>+)\<^bsup>M\<^esup>-closed(P,leq)"
-  using assms P_in_M leq_in_M transM[OF ltD, of _ \<kappa>]
-    mono_seqspace_char[of _ P leq] transM[simplified, OF _ P_in_M]
+(* Is this true? *)
+lemma kappa_closed_abs:
+  assumes "M(\<kappa>)" "M(P)" "M(leq)"
+  shows "\<kappa>-closed\<^bsup>M\<^esup>(P,leq) \<longleftrightarrow> \<kappa>-closed(P,leq)"
+  using assms transM[OF ltD, of _ \<kappa>]
+    mono_seqspace_char[of _ P leq]
   unfolding kappa_closed_rel_def kappa_closed_def
-  apply (auto simp add:absolut)
   oops
 
 end (* forcing_data *)
@@ -154,8 +154,10 @@ proof -
   from assms
   have "q \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]"
     using strengthening_lemma[of p "\<cdot>0:1\<rightarrow>2\<cdot>" q "[f_dot, A\<^sup>v, B\<^sup>v]"]
-     typed_function_type arity_typed_function_fm
+      typed_function_type arity_typed_function_fm
     by (auto simp: union_abs2 union_abs1)
+  {
+  }
   obtain d b where "d \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]" "d\<preceq>q" "d\<in>P" "b\<in>B"
     sorry
   then
@@ -174,6 +176,24 @@ lemma Aleph_rel1_closed_imp_no_new_nat_sequences:
   using assms nat_lt_Aleph_rel1 kappa_closed_imp_no_new_sequences
     Aleph_rel_closed[of 1] by simp *)
 proof -
+(*
+proof (rule ccontr)
+  note \<open>f\<in>M[G]\<close>
+  with assms
+  obtain f_dot where "f = val(P,G,f_dot)" "f_dot\<in>M" using GenExtD by force
+  moreover
+  note \<open>B \<in> M\<close>
+  moreover
+  assume "f \<notin> M"
+  moreover from calculation
+  have "f \<notin> \<omega> \<rightarrow>\<^bsup>M\<^esup> B" using function_space_rel_char by simp
+  ultimately
+  obtain p where "p \<tturnstile> \<cdot>\<cdot>0:1\<rightarrow>2\<cdot> \<and> \<cdot>\<not>\<cdot>0 \<in> 3\<cdot>\<cdot>\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v, (\<omega> \<rightarrow>\<^bsup>M\<^esup> B)\<^sup>v]" "p\<in>G" "p\<in>M"
+    using transitivity[OF M_genericD P_in_M]
+      generic truth_lemma[of "\<cdot>\<cdot>0:1\<rightarrow>2\<cdot> \<and> \<cdot>\<not>\<cdot>0 \<in> 3\<cdot>\<cdot>\<cdot>" G "[f_dot, \<omega>\<^sup>v, B\<^sup>v, (\<omega> \<rightarrow>\<^bsup>M\<^esup> B)\<^sup>v]"]
+    by (auto simp add:ord_simp_union arity_typed_function_fm
+        typed_function_type And_type)
+ *)
   from \<open>f\<in>M[G]\<close>
   obtain f_dot where "f = val(P,G,f_dot)" "f_dot\<in>M" using GenExtD by force
   with assms
@@ -189,6 +209,17 @@ proof -
       G_subset_M[OF generic] by auto
   define S where "S \<equiv> \<lambda>n\<in>nat.
     {\<langle>q,r\<rangle> \<in> ?subp\<times>?subp. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])}"
+    (is "S \<equiv> \<lambda>n\<in>nat. ?Y(n)")
+  \<comment> \<open>Towards proving \<^term>\<open>S\<in>M\<close>.\<close>
+  have "{r \<in> ?subp. \<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v]} \<in> M" (is "?X(n) \<in> M")
+    if "n\<in>\<omega>" for n sorry
+  moreover
+  have "?Y(n) = (?subp \<times> ?X(n)) \<inter> converse(leq)" for n
+    by (intro equalityI) auto
+  moreover
+  note \<open>?subp \<in> M\<close>
+  ultimately
+  have "n \<in> \<omega> \<Longrightarrow> ?Y(n) \<in> M" for n using nat_into_M leq_in_M by simp
   have "S \<in> M" sorry
   from \<open>p\<in>G\<close> \<open>f_dot\<in>M\<close> \<open>p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close> \<open>p\<in>M\<close> \<open>B\<in>M\<close>
   have exr:"\<exists>r\<in>P. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])"
@@ -299,6 +330,11 @@ proof -
   note \<open>B \<in> M\<close>
   ultimately
   show ?thesis using function_space_rel_char by (auto dest:transM)
+(*
+  note \<open>B \<in> M\<close> \<open>f \<notin> M\<close>
+  ultimately
+  show ?thesis using function_space_rel_char by (auto dest:transM)
+ *)
 qed
 
 declare mono_seqspace_rel_closed[rule del]
