@@ -161,8 +161,9 @@ lemma AC_M_func_Pow_rel:
   apply (rule AC_M_func0 [THEN bexE]) defer 2
     apply (rule_tac [2] bexI)
      prefer 2 apply assumption
-  apply (simp_all add:assms)
-  sorry
+  using assms function_space_rel_char apply_type
+  by (auto dest:transM) (* FIXME: Next one is slow *)
+   (rule Pi_type, assumption, auto dest:transM simp:Pow_rel_char)
 
 theorem pointed_DC:
   assumes "\<forall>x\<in>A. \<exists>y\<in>A. \<langle>x,y\<rangle>\<in> R" "M(A)" "M(R)"
