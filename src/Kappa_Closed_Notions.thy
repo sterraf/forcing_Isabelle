@@ -254,8 +254,8 @@ proof (rule ccontr)
     using fun_weaken_type[of g \<omega> ?subp P] function_space_rel_char by auto
   ultimately
   have "g : \<omega> \<^sub><\<rightarrow>\<^bsup>M\<^esup> (P,converse(leq))"
-    using decr_succ_decr leq_preord mono_seqspace_rel_char
-      function_space_rel_char leq_in_M P_in_M sorry
+    using decr_succ_decr[of g] leq_preord leq_in_M P_in_M
+    unfolding S_def by (auto simp:absolut intro:leI)
   moreover from \<open>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)\<close> and this
   have "\<exists>q\<in>M. q \<in> P \<and> (\<forall>\<alpha>\<in>M. \<alpha> \<in> \<omega> \<longrightarrow> q \<preceq> g ` \<alpha>)"
     using nat_lt_Aleph_rel1 transM[simplified, OF _ monseq_closed, of g] leq_in_M
