@@ -122,7 +122,46 @@ begin
 
 (* Should port the whole AC theory, including the absolute version
   of the following theorem *)
-lemma AC_M_func_Pow_rel: "M(C) \<Longrightarrow> \<exists>f \<in> (Pow\<^bsup>M\<^esup>(C)-{0}) \<rightarrow>\<^bsup>M\<^esup> C. \<forall>x \<in> Pow\<^bsup>M\<^esup>(C)-{0}. f`x \<in> x"
+lemma AC_M_func:
+  assumes "\<And>x. x \<in> A \<Longrightarrow> (\<exists>y. y \<in> x)" "M(A)"
+  shows "\<exists>f \<in> A \<rightarrow>\<^bsup>M\<^esup> \<Union>(A). \<forall>x \<in> A. f`x \<in> x"
+proof -
+  from \<open>M(A)\<close>
+  interpret mpiA:M_Pi_assumptions _ A "\<lambda>x. x"
+    using Pi_replacement Pi_separation
+    apply unfold_locales apply (auto dest:transM simp:Sigfun_def)[3] (* FIXME: Slow *)
+    sorry
+  from \<open>M(A)\<close>
+  interpret mpic_A:M_Pi_assumptions_choice _ A "\<lambda>x. x"
+    apply unfold_locales
+     apply (unfold strong_replacement_def, blast)[1]
+    sorry
+  from \<open>M(A)\<close>
+  interpret mpi2:M_Pi_assumptions2 _ A "\<lambda>_. \<Union>A" "\<lambda>x. x"
+    apply unfold_locales
+       apply (auto dest:transM)
+    sorry
+  from assms
+  show ?thesis
+    using mpi2.Pi_rel_type apply_type mpiA.mem_Pi_rel_abs mpi2.mem_Pi_rel_abs
+      function_space_rel_char
+    by (rule_tac mpic_A.AC_Pi_rel[THEN rexE], simp, rule_tac x=x in bexI)
+      (auto, rule_tac C="\<lambda>x. x" in Pi_type, auto)
+qed
+
+lemma non_empty_family: "[| 0 \<notin> A;  x \<in> A |] ==> \<exists>y. y \<in> x"
+by (subgoal_tac "x \<noteq> 0", blast+)
+
+lemma AC_M_func0: "0 \<notin> A \<Longrightarrow> M(A) \<Longrightarrow> \<exists>f \<in> A \<rightarrow>\<^bsup>M\<^esup> \<Union>(A). \<forall>x \<in> A. f`x \<in> x"
+  by (rule AC_M_func) (simp_all add: non_empty_family)
+
+lemma AC_M_func_Pow_rel:
+  assumes "M(C)"
+  shows "\<exists>f \<in> (Pow\<^bsup>M\<^esup>(C)-{0}) \<rightarrow>\<^bsup>M\<^esup> C. \<forall>x \<in> Pow\<^bsup>M\<^esup>(C)-{0}. f`x \<in> x"
+  apply (rule AC_M_func0 [THEN bexE]) defer 2
+    apply (rule_tac [2] bexI)
+     prefer 2 apply assumption
+  apply (simp_all add:assms)
   sorry
 
 theorem pointed_DC:
