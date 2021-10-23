@@ -165,11 +165,11 @@ proof -
 qed
 
 \<comment> \<open>Kunen IV.7.15, only for countable sequences\<close>
-lemma Aleph_rel1_closed_imp_no_new_nat_sequences:
+lemma succ_omega_closed_imp_no_new_nat_sequences:
   (* notes le_trans[trans] *)
   notes monseq_closed =
     mono_seqspace_rel_closed[of "##M" \<omega> _ "converse(leq)", simplified, OF P_in_M]
-  assumes "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)" "f : \<omega> \<rightarrow> B" "f\<in>M[G]"
+  assumes "succ(\<omega>)-closed\<^bsup>M\<^esup>(P,leq)" "f : \<omega> \<rightarrow> B" "f\<in>M[G]"
     "B\<in>M"
   shows "f\<in>M"
     (* (* Proof using the general lemma: *)
@@ -256,14 +256,14 @@ proof (rule ccontr)
   have "g : \<omega> \<^sub><\<rightarrow>\<^bsup>M\<^esup> (P,converse(leq))"
     using decr_succ_decr[of g] leq_preord leq_in_M P_in_M
     unfolding S_def by (auto simp:absolut intro:leI)
-  moreover from \<open>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)\<close> and this
+  moreover from \<open>succ(\<omega>)-closed\<^bsup>M\<^esup>(P,leq)\<close> and this
   have "\<exists>q\<in>M. q \<in> P \<and> (\<forall>\<alpha>\<in>M. \<alpha> \<in> \<omega> \<longrightarrow> q \<preceq> g ` \<alpha>)"
-    using nat_lt_Aleph_rel1 transM[simplified, OF _ monseq_closed, of g] leq_in_M
+    using transM[simplified, OF _ monseq_closed, of g] leq_in_M
     unfolding kappa_closed_rel_def
     by auto
   ultimately
   obtain r where "r\<in>P" "r\<in>M" "\<forall>n\<in>\<omega>. r \<preceq> g`n"
-    using nat_lt_Aleph_rel1 nat_into_M by auto
+    using nat_into_M by auto
   with \<open>g`0 = p\<close>
   have "r \<preceq> p" by blast
   let ?h="{\<langle>n,b\<rangle> \<in> \<omega> \<times> B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]}"
@@ -340,13 +340,13 @@ qed
 declare mono_seqspace_rel_closed[rule del]
   \<comment> \<open>Mysteriously breaks the end of the next proof\<close>
 
-lemma Aleph_rel1_closed_imp_no_new_reals:
-  assumes "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)"
+lemma succ_omega_closed_imp_no_new_reals:
+  assumes "succ(\<omega>)-closed\<^bsup>M\<^esup>(P,leq)"
   shows "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2 = \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
 proof -
   from assms
   have "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2 \<subseteq> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2"
-    using Aleph_rel1_closed_imp_no_new_nat_sequences function_space_rel_char
+    using succ_omega_closed_imp_no_new_nat_sequences function_space_rel_char
       ext.function_space_rel_char Aleph_rel_succ Aleph_rel_zero
       nat_into_M[of 2] csucc_rel_closed
     by auto
@@ -355,8 +355,8 @@ proof -
     using function_space_rel_transfer ext.nat_into_M[of 2] by force
 qed
 
-lemma Aleph_rel1_closed_imp_Aleph_1_preserved:
-  assumes "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)"
+lemma succ_omega_closed_imp_Aleph_1_preserved:
+  assumes "succ(\<omega>)-closed\<^bsup>M\<^esup>(P,leq)"
   shows "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>"
 proof -
   have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> \<le> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
@@ -390,10 +390,10 @@ proof -
     have "g : \<omega> \<rightarrow> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "g \<in> M[G]"
       using ext.surj_rel_char Aleph_rel_closed[of 1] surj_is_fun by simp_all
     moreover
-    note \<open>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(P,leq)\<close>
+    note \<open>succ(\<omega>)-closed\<^bsup>M\<^esup>(P,leq)\<close>
     ultimately
     have "g \<in> surj\<^bsup>M\<^esup>(\<omega>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)" "g \<in> M"
-      using Aleph_rel1_closed_imp_no_new_nat_sequences
+      using succ_omega_closed_imp_no_new_nat_sequences
         Aleph_rel_closed[of 1]
         mem_surj_abs ext.mem_surj_abs by simp_all
     then

@@ -85,8 +85,42 @@ abbreviation
   "Colleq \<equiv> Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)"
 
 \<comment> \<open>Kunen IV.7.14, only for \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>\<close>
-lemma Aleph_rel1_closed_Coll: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>-closed\<^bsup>M\<^esup>(Coll,Colleq)"
-  sorry
+lemma succ_omega_closed_Coll: "succ(\<omega>)-closed\<^bsup>M\<^esup>(Coll,Colleq)"
+proof -
+  \<comment> \<open>Case for finite sequences\<close>
+  have "n\<in>\<omega> \<Longrightarrow> \<forall>f \<in> n \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq)).
+          \<exists>q\<in>M. q \<in> Coll \<and> (\<forall>\<alpha>\<in>M. \<alpha> \<in> n \<longrightarrow> \<langle>q, f ` \<alpha>\<rangle> \<in> Colleq)" for n
+  proof (induct rule:nat_induct)
+    case 0
+    then
+    show ?case
+      using nat_into_M M_nat[simplified] Aleph_rel_closed[of 1, simplified]
+        Aleph_rel_closed[of 1, simplified] function_space_rel_closed[simplified]
+      by (auto simp del:setclass_iff)
+        (rule_tac x=0 in bexI, rule zero_in_Fn_rel, simp_all)
+  next
+    case (succ x)
+    then
+    have "\<forall>f\<in>succ(x) \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq)). \<forall>\<alpha> \<in> succ(x). \<langle>f`x, f ` \<alpha>\<rangle> \<in> Colleq"
+      sorry
+    moreover
+    note \<open>x\<in>\<omega>\<close>
+    moreover from this
+    have "f`x \<in> Coll" if "f: succ(x) \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq))" for f
+      sorry
+    ultimately
+    show ?case using nat_into_M transM[of _ Coll] apply_closed[simplified]
+      by (auto dest:transM simp del:setclass_iff, rule_tac x="f`x" in bexI)
+        (auto simp del:setclass_iff, simp)
+  qed
+  moreover
+    \<comment> \<open>Interesting case: Countably infinite sequences.\<close>
+  have "\<forall>f\<in>M. f \<in> \<omega> \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq)) \<longrightarrow>
+                  (\<exists>q\<in>M. q \<in> Coll \<and> (\<forall>\<alpha>\<in>M. \<alpha> \<in> \<omega> \<longrightarrow> \<langle>q, f ` \<alpha>\<rangle> \<in> Colleq))"
+    sorry
+  ultimately
+  show ?thesis unfolding kappa_closed_rel_def by (auto elim!:leE dest:ltD)
+qed
 
 lemma Coll_in_M[intro,simp]: "Coll \<in> M"
   using Fn_rel_closed[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"] Aleph_rel_closed[of 1]
@@ -256,8 +290,8 @@ proof -
     by blast
   then
   show ?thesis
-    using Aleph_rel1_closed_Coll f_G_funtype function_apply_equality[of _ x f_G]
-      Aleph_rel1_closed_imp_no_new_reals[symmetric]
+    using succ_omega_closed_Coll f_G_funtype function_apply_equality[of _ x f_G]
+      succ_omega_closed_imp_no_new_reals[symmetric]
      by (auto, rule_tac bexI) (auto simp:Pi_def)
 qed
 
@@ -273,8 +307,8 @@ proof (intro ext.mem_surj_abs[THEN iffD2])
     assume "x \<in> \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
     then
     show "\<exists>\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>. f\<^bsub>G\<^esub> ` \<alpha> = x"
-      using reals_sub_image_f_G Aleph_rel1_closed_Coll
-        f_G_funtype Aleph_rel1_closed_imp_no_new_reals by simp
+      using reals_sub_image_f_G succ_omega_closed_Coll
+        f_G_funtype succ_omega_closed_imp_no_new_reals by simp
   qed
 qed simp_all
 
@@ -298,7 +332,7 @@ proof -
   have "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup> \<le> |\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>|\<^bsup>M[G]\<^esup>"
     using ext.lepoll_rel_imp_cardinal_rel_le[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2",
         OF _ _ ext.function_space_rel_closed] ext.Aleph_rel_zero
-      Aleph_rel1_closed_Coll Aleph_rel1_closed_imp_Aleph_1_preserved
+      succ_omega_closed_Coll succ_omega_closed_imp_Aleph_1_preserved
     unfolding cexp_rel_def by simp
   then
   show "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup> \<le> \<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>" by simp
