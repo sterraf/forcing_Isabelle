@@ -176,24 +176,6 @@ lemma succ_omega_closed_imp_no_new_nat_sequences:
   using assms nat_lt_Aleph_rel1 kappa_closed_imp_no_new_sequences
     Aleph_rel_closed[of 1] by simp *)
 proof -
-(*
-proof (rule ccontr)
-  note \<open>f\<in>M[G]\<close>
-  with assms
-  obtain f_dot where "f = val(P,G,f_dot)" "f_dot\<in>M" using GenExtD by force
-  moreover
-  note \<open>B \<in> M\<close>
-  moreover
-  assume "f \<notin> M"
-  moreover from calculation
-  have "f \<notin> \<omega> \<rightarrow>\<^bsup>M\<^esup> B" using function_space_rel_char by simp
-  ultimately
-  obtain p where "p \<tturnstile> \<cdot>\<cdot>0:1\<rightarrow>2\<cdot> \<and> \<cdot>\<not>\<cdot>0 \<in> 3\<cdot>\<cdot>\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v, (\<omega> \<rightarrow>\<^bsup>M\<^esup> B)\<^sup>v]" "p\<in>G" "p\<in>M"
-    using transitivity[OF M_genericD P_in_M]
-      generic truth_lemma[of "\<cdot>\<cdot>0:1\<rightarrow>2\<cdot> \<and> \<cdot>\<not>\<cdot>0 \<in> 3\<cdot>\<cdot>\<cdot>" G "[f_dot, \<omega>\<^sup>v, B\<^sup>v, (\<omega> \<rightarrow>\<^bsup>M\<^esup> B)\<^sup>v]"]
-    by (auto simp add:ord_simp_union arity_typed_function_fm
-        typed_function_type And_type)
- *)
   from \<open>f\<in>M[G]\<close>
   obtain f_dot where "f = val(P,G,f_dot)" "f_dot\<in>M" using GenExtD by force
   with assms
@@ -320,21 +302,43 @@ proof (rule ccontr)
   have "?h: \<omega> \<rightarrow>\<^bsup>M\<^esup> B"
     using function_imp_Pi[THEN fun_weaken_type[of ?h _ "range(?h)" B]]
     function_space_rel_char by simp
-  moreover
-  have "?h`n = f`n" if "n\<in>\<omega>" for n sorry
-  with calculation and \<open>f : \<omega> \<rightarrow> B\<close> \<open>B\<in>M\<close>
-  have "?h = f"
-    using function_space_rel_char
-    by (rule_tac fun_extension[of ?h \<omega> "\<lambda>_.B" f]) auto
-  moreover
-  note \<open>B \<in> M\<close>
-  ultimately
-  show ?thesis using function_space_rel_char by (auto dest:transM)
-(*
-  note \<open>B \<in> M\<close> \<open>f \<notin> M\<close>
-  ultimately
-  show ?thesis using function_space_rel_char by (auto dest:transM)
- *)
+  from \<open>p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close> \<open>r \<preceq> p\<close> \<open>r\<in>P\<close> \<open>p\<in>G\<close> \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
+  have "r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]"
+    using strengthening_lemma[of p "\<cdot>0:1\<rightarrow>2\<cdot>" r "[f_dot, \<omega>\<^sup>v, B\<^sup>v]"]
+      typed_function_type arity_typed_function_fm
+    by (auto simp: union_abs2 union_abs1)
+  from \<open>r\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
+  have "r \<tturnstile> \<cdot>0 \<in> 1\<cdot> [f_dot, (\<omega> \<rightarrow>\<^bsup>M\<^esup> B)\<^sup>v]"
+  proof (intro definition_of_forcing[THEN iffD2] allI impI,
+      simp_all add:union_abs2 union_abs1)
+    fix G
+    let ?f="val(P,G,f_dot)"
+    assume "M_generic(G) \<and> r \<in> G"
+    moreover from this
+    interpret g:G_generic _ _ _ _ _ G by unfold_locales simp
+    note \<open>r\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
+    moreover from this
+    have "map(val(P, G), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[G])" by simp
+    moreover from calculation and \<open>r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close>
+    have "?f : \<omega> \<rightarrow> B" using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[f_dot, \<omega>\<^sup>v, B\<^sup>v]"]
+        typed_function_type arity_typed_function_fm valcheck[OF one_in_G one_in_P]
+      by (auto simp: union_abs2 union_abs1)
+    moreover
+    have "?h`n = ?f`n" if "n\<in>\<omega>" for n sorry
+    with calculation and \<open>B\<in>M\<close> \<open>?h: \<omega> \<rightarrow>\<^bsup>M\<^esup> B\<close>
+    have "?h = ?f"
+      using function_space_rel_char
+      by (rule_tac fun_extension[of ?h \<omega> "\<lambda>_.B" ?f]) auto
+    moreover
+    note \<open>B \<in> M\<close> \<open>?h \<in> M\<close>
+    moreover from calculation
+    have "?f : \<omega> \<rightarrow>\<^bsup>M\<^esup> B"
+      using function_space_rel_char by (auto dest:transM)
+    ultimately
+    show "?f \<in> val(P, G, (\<omega> \<rightarrow>\<^bsup>M\<^esup> B)\<^sup>v)"
+      using valcheck one_in_G one_in_P generic by simp
+  qed
+  show ?thesis sorry
 qed
 
 declare mono_seqspace_rel_closed[rule del]
