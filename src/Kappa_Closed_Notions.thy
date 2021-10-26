@@ -2,6 +2,7 @@ theory Kappa_Closed_Notions
   imports
     Not_CH
     Pointed_DC_Relative
+    "../Tools/Try0"
 begin
 
 definition
@@ -180,6 +181,7 @@ lemma succ_omega_closed_imp_no_new_nat_sequences:
   using assms nat_lt_Aleph_rel1 kappa_closed_imp_no_new_sequences
     Aleph_rel_closed[of 1] by simp *)
 proof -
+  (* Nice jEdit folding level to read this: 7 *)
   txt\<open>The next long block proves that the assumptions of Lemma
   @{thm [source] kunen_IV_6_9_function_space_rel_eq} are satisfied.\<close>
   {
@@ -330,7 +332,38 @@ proof -
           typed_function_type arity_typed_function_fm valcheck[OF one_in_G one_in_P]
         by (auto simp: union_abs2 union_abs1)
       moreover
-      have "?h`n = ?f`n" if "n\<in>\<omega>" for n sorry
+      have "?h`n = ?f`n" if "n \<in> \<omega>" for n
+      proof -
+        note \<open>n \<in> \<omega>\<close> \<open>domain(?h) = \<omega>\<close>
+        moreover from this
+        have "n\<in>domain(?h)" by simp
+        moreover from this
+        obtain b where "r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]" "b\<in>B" by force
+        moreover
+        note \<open>function(?h)\<close>
+        moreover from calculation
+        have "b = ?h`n"
+          using function_apply_equality by simp
+        moreover
+        define h where "h\<equiv>?h"
+        note h_def[symmetric]
+        moreover
+        note \<open>B \<in> M\<close>
+        moreover from calculation
+        have "?h`n \<in> M" by (auto dest:transM)
+        moreover
+        note \<open>f_dot \<in> M\<close> \<open>r \<in> P\<close> \<open>M_generic(G) \<and> r \<in> G\<close> \<open>map(val(P, G), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[G])\<close>
+        moreover from calculation
+        have "[?f, n, h`n] \<in> list(M[G])"
+          using M_subset_MG nat_into_M[of n] one_in_G by (auto dest:transM)
+        ultimately
+        show ?thesis
+          using definition_of_forcing[of r "\<cdot>0`1 is 2\<cdot>" "[f_dot, n\<^sup>v, b\<^sup>v]",
+              THEN iffD1, rule_format, of G]\<comment> \<open>without this line is slower\<close>
+            valcheck one_in_G one_in_P nat_into_M
+          by (auto dest:transM simp add:fun_apply_type
+              arity_fun_apply_fm union_abs2 union_abs1)
+      qed
       with calculation and \<open>B\<in>M\<close> \<open>?h: \<omega> \<rightarrow>\<^bsup>M\<^esup> B\<close>
       have "?h = ?f"
         using function_space_rel_char
