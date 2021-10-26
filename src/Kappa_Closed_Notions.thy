@@ -130,7 +130,6 @@ begin
 
 \<comment> \<open>Kunen IV.7.15, only for sequences\<close>
 lemma kappa_closed_imp_no_new_sequences:
-  (* notes le_trans[trans] *)
   assumes "\<kappa>-closed\<^bsup>M\<^esup>(P,leq)" "f : \<delta> \<rightarrow> B" "\<delta><\<kappa>" "f\<in>M[G]"
     "\<kappa>\<in>M" "B\<in>M"
   shows "f\<in>M"
@@ -164,11 +163,16 @@ proof -
   show ?thesis by auto
 qed
 
+\<comment> \<open>Kunen IV.6.9 (3)$\Rightarrow$(2)\<close>
+lemma kunen_IV_6_9_function_space_rel_eq:
+  assumes "\<And>p \<tau>. p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [\<tau>, \<omega>\<^sup>v, B\<^sup>v] \<Longrightarrow> p\<in>P \<Longrightarrow> \<tau> \<in> M \<Longrightarrow>
+    \<exists>q\<in>P. \<exists>h\<in>\<omega> \<rightarrow>\<^bsup>M\<^esup> B. q \<preceq> p \<and>  q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]" "A\<in>M" "B\<in>M"
+  shows
+    "\<omega> \<rightarrow>\<^bsup>M\<^esup> B = \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> B"
+  sorry
+
 \<comment> \<open>Kunen IV.7.15, only for countable sequences\<close>
 lemma succ_omega_closed_imp_no_new_nat_sequences:
-  (* notes le_trans[trans] *)
-  notes monseq_closed =
-    mono_seqspace_rel_closed[of "##M" \<omega> _ "converse(leq)", simplified, OF P_in_M]
   assumes "succ(\<omega>)-closed\<^bsup>M\<^esup>(P,leq)" "f : \<omega> \<rightarrow> B" "f\<in>M[G]"
     "B\<in>M"
   shows "f\<in>M"
@@ -176,169 +180,176 @@ lemma succ_omega_closed_imp_no_new_nat_sequences:
   using assms nat_lt_Aleph_rel1 kappa_closed_imp_no_new_sequences
     Aleph_rel_closed[of 1] by simp *)
 proof -
-  from \<open>f\<in>M[G]\<close>
-  obtain f_dot where "f = val(P,G,f_dot)" "f_dot\<in>M" using GenExtD by force
-  with assms
-  obtain p where "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]" "p\<in>G" "p\<in>M"
-    using transitivity[OF M_genericD P_in_M]
-      generic truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[f_dot, \<omega>\<^sup>v, B\<^sup>v]"]
-    by (auto simp add:ord_simp_union arity_typed_function_fm
-        typed_function_type)
-  let ?subp="{q\<in>P. q \<preceq> p}"
-  from \<open>p\<in>G\<close>
-  have "?subp \<in> M"
-    using first_section_closed[of P p "converse(leq)"] leq_in_M
-      G_subset_M[OF generic] by auto
-  define S where "S \<equiv> \<lambda>n\<in>nat.
+  txt\<open>The next long block proves that the assumptions of Lemma
+  @{thm [source] kunen_IV_6_9_function_space_rel_eq} are satisfied.\<close>
+  {
+    fix p f_dot
+    assume "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]" "p\<in>P" "f_dot\<in>M"
+    let ?subp="{q\<in>P. q \<preceq> p}"
+    from \<open>p\<in>P\<close>
+    have "?subp \<in> M"
+      using first_section_closed[of P p "converse(leq)"] leq_in_M
+        P_in_M by (auto dest:transM)
+    define S where "S \<equiv> \<lambda>n\<in>nat.
     {\<langle>q,r\<rangle> \<in> ?subp\<times>?subp. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])}"
-    (is "S \<equiv> \<lambda>n\<in>nat. ?Y(n)")
-  \<comment> \<open>Towards proving \<^term>\<open>S\<in>M\<close>.\<close>
-  have "{r \<in> ?subp. \<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v]} \<in> M" (is "?X(n) \<in> M")
-    if "n\<in>\<omega>" for n sorry
-  moreover
-  have "?Y(n) = (?subp \<times> ?X(n)) \<inter> converse(leq)" for n
-    by (intro equalityI) auto
-  moreover
-  note \<open>?subp \<in> M\<close>
-  ultimately
-  have "n \<in> \<omega> \<Longrightarrow> ?Y(n) \<in> M" for n using nat_into_M leq_in_M by simp
-  have "S \<in> M" sorry
-  from \<open>p\<in>G\<close> \<open>f_dot\<in>M\<close> \<open>p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close> \<open>p\<in>M\<close> \<open>B\<in>M\<close>
-  have exr:"\<exists>r\<in>P. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])"
-    if "q \<preceq> p" "q\<in>P" "n\<in>\<omega>" for q n
-    using that forcing_a_value by (auto dest:transM)
-  have "\<forall>q\<in>?subp. \<forall>n\<in>\<omega>. \<exists>r\<in>?subp. \<langle>q,r\<rangle> \<in> S`n"
-  proof -
-    {
-      fix q n
-      assume "q \<in> ?subp" "n\<in>\<omega>"
-      moreover from this
-      have "q \<preceq> p" "q \<in> P" by simp_all
-      moreover from calculation and exr
-      obtain r where "r \<preceq> q" "\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v]" "r\<in>P"
-        by blast
-      moreover from calculation \<open>q \<preceq> p\<close> \<open>p \<in> G\<close>
-      have "r \<preceq> p"
-        using leq_transD[of r q p] by auto
-      ultimately
-      have "\<exists>r\<in>?subp. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])"
-        by auto
-    }
-    then
-    show ?thesis
-      unfolding S_def by simp
-  qed
-  with \<open>p\<in>G\<close> \<open>?subp \<in> M\<close> \<open>S \<in> M\<close>
-  obtain g where "g \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> ?subp" "g`0 = p" "\<forall>n \<in> nat. \<langle>g`n,g`succ(n)\<rangle>\<in>S`succ(n)"
-    using sequence_DC[simplified] refl_leq[of p] by blast
-  moreover from this and \<open>?subp \<in> M\<close>
-  have "g : \<omega> \<rightarrow> P" "g \<in> M" 
-    using fun_weaken_type[of g \<omega> ?subp P] function_space_rel_char by auto
-  ultimately
-  have "g : \<omega> \<^sub><\<rightarrow>\<^bsup>M\<^esup> (P,converse(leq))"
-    using decr_succ_decr[of g] leq_preord leq_in_M P_in_M
-    unfolding S_def by (auto simp:absolut intro:leI)
-  moreover from \<open>succ(\<omega>)-closed\<^bsup>M\<^esup>(P,leq)\<close> and this
-  have "\<exists>q\<in>M. q \<in> P \<and> (\<forall>\<alpha>\<in>M. \<alpha> \<in> \<omega> \<longrightarrow> q \<preceq> g ` \<alpha>)"
-    using transM[simplified, OF _ monseq_closed, of g] leq_in_M
-    unfolding kappa_closed_rel_def
-    by auto
-  ultimately
-  obtain r where "r\<in>P" "r\<in>M" "\<forall>n\<in>\<omega>. r \<preceq> g`n"
-    using nat_into_M by auto
-  with \<open>g`0 = p\<close>
-  have "r \<preceq> p" by blast
-  let ?h="{\<langle>n,b\<rangle> \<in> \<omega> \<times> B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]}"
-  have "function(?h)"
-  proof (rule_tac functionI, rule_tac ccontr, auto simp del: app_Cons)
-    fix n b b'
-    assume "n \<in> \<omega>" "b \<noteq> b'" "b \<in> B" "b' \<in> B"
+      (is "S \<equiv> \<lambda>n\<in>nat. ?Y(n)")
+      \<comment> \<open>Towards proving \<^term>\<open>S\<in>M\<close>.\<close>
+    have "{r \<in> ?subp. \<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v]} \<in> M" (is "?X(n) \<in> M")
+      if "n\<in>\<omega>" for n sorry
     moreover
-    assume "r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]" "r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b'\<^sup>v]"
+    have "?Y(n) = (?subp \<times> ?X(n)) \<inter> converse(leq)" for n
+      by (intro equalityI) auto
     moreover
-    note \<open>r \<in> P\<close>
-    moreover from this
-    have "\<not> r \<bottom> r" by (auto intro!:refl_leq)
-    moreover
-    note \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
+    note \<open>?subp \<in> M\<close>
     ultimately
-    show False
-      using forces_neq_apply_imp_incompatible[of r f_dot "n\<^sup>v" b r b']
-        transM[of _ B] by (auto dest:transM)
-  qed
-  moreover
-  have "range(?h) \<subseteq> B" by auto
-  moreover
-  have "domain(?h) = \<omega>"
-  proof -
-    {
-      fix n
-      assume "n \<in> \<omega>"
-      moreover from this and \<open>\<forall>n \<in> nat. \<langle>g`n,g`succ(n)\<rangle>\<in>S`succ(n)\<close>
-      obtain b where "g`(succ(n)) \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]" "b\<in>B"
-        unfolding S_def by auto
-      moreover from \<open>B\<in>M\<close> and calculation
-      have "b \<in> M" "n \<in> M" by (auto dest:transM)
+    have "n \<in> \<omega> \<Longrightarrow> ?Y(n) \<in> M" for n using nat_into_M leq_in_M by simp
+    have "S \<in> M" sorry
+    from \<open>p\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close> \<open>B\<in>M\<close>
+    have exr:"\<exists>r\<in>P. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])"
+      if "q \<preceq> p" "q\<in>P" "n\<in>\<omega>" for q n
+      using that forcing_a_value by (auto dest:transM)
+    have "\<forall>q\<in>?subp. \<forall>n\<in>\<omega>. \<exists>r\<in>?subp. \<langle>q,r\<rangle> \<in> S`n"
+    proof -
+      {
+        fix q n
+        assume "q \<in> ?subp" "n\<in>\<omega>"
+        moreover from this
+        have "q \<preceq> p" "q \<in> P" by simp_all
+        moreover from calculation and exr
+        obtain r where "r \<preceq> q" "\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v]" "r\<in>P"
+          by blast
+        moreover from calculation \<open>q \<preceq> p\<close> \<open>p \<in> P\<close>
+        have "r \<preceq> p"
+          using leq_transD[of r q p] by auto
+        ultimately
+        have "\<exists>r\<in>?subp. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])"
+          by auto
+      }
+      then
+      show ?thesis
+        unfolding S_def by simp
+    qed
+    with \<open>p\<in>P\<close> \<open>?subp \<in> M\<close> \<open>S \<in> M\<close>
+    obtain g where "g \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> ?subp" "g`0 = p" "\<forall>n \<in> nat. \<langle>g`n,g`succ(n)\<rangle>\<in>S`succ(n)"
+      using sequence_DC[simplified] refl_leq[of p] by blast
+    moreover from this and \<open>?subp \<in> M\<close>
+    have "g : \<omega> \<rightarrow> P" "g \<in> M"
+      using fun_weaken_type[of g \<omega> ?subp P] function_space_rel_char by auto
+    ultimately
+    have "g : \<omega> \<^sub><\<rightarrow>\<^bsup>M\<^esup> (P,converse(leq))"
+      using decr_succ_decr[of g] leq_preord leq_in_M P_in_M
+      unfolding S_def by (auto simp:absolut intro:leI)
+    moreover from \<open>succ(\<omega>)-closed\<^bsup>M\<^esup>(P,leq)\<close> and this
+    have "\<exists>q\<in>M. q \<in> P \<and> (\<forall>\<alpha>\<in>M. \<alpha> \<in> \<omega> \<longrightarrow> q \<preceq> g ` \<alpha>)"
+      using transM[simplified, of g] leq_in_M
+        mono_seqspace_rel_closed[of "##M" \<omega> _ "converse(leq)"]
+      unfolding kappa_closed_rel_def
+      by auto
+    ultimately
+    obtain r where "r\<in>P" "r\<in>M" "\<forall>n\<in>\<omega>. r \<preceq> g`n"
+      using nat_into_M by auto
+    with \<open>g`0 = p\<close>
+    have "r \<preceq> p" by blast
+    let ?h="{\<langle>n,b\<rangle> \<in> \<omega> \<times> B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]}"
+    have "function(?h)"
+    proof (rule_tac functionI, rule_tac ccontr, auto simp del: app_Cons)
+      fix n b b'
+      assume "n \<in> \<omega>" "b \<noteq> b'" "b \<in> B" "b' \<in> B"
       moreover
-      note \<open>g : \<omega> \<rightarrow> P\<close> \<open>\<forall>n\<in>\<omega>. r \<preceq> g`n\<close> \<open>r\<in>P\<close> \<open>f_dot\<in>M\<close>
-      moreover from calculation
-      have "r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]"
-        using fun_apply_type arity_fun_apply_fm
-          strengthening_lemma[of "g`succ(n)" "\<cdot>0`1 is 2\<cdot>" r "[f_dot, n\<^sup>v, b\<^sup>v]"]
-        by (simp add: union_abs2 union_abs1)
+      assume "r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]" "r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b'\<^sup>v]"
+      moreover
+      note \<open>r \<in> P\<close>
+      moreover from this
+      have "\<not> r \<bottom> r" by (auto intro!:refl_leq)
+      moreover
+      note \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
       ultimately
-      have "\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]" by auto
-    }
-    then
-    show ?thesis by force
-  qed
-  moreover
-  have "relation(?h)" unfolding relation_def by simp
-  moreover
-  have "?h \<in> M" sorry
-  moreover
-  note \<open>B \<in> M\<close>
-  ultimately
-  have "?h: \<omega> \<rightarrow>\<^bsup>M\<^esup> B"
-    using function_imp_Pi[THEN fun_weaken_type[of ?h _ "range(?h)" B]]
-    function_space_rel_char by simp
-  from \<open>p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close> \<open>r \<preceq> p\<close> \<open>r\<in>P\<close> \<open>p\<in>G\<close> \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
-  have "r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]"
-    using strengthening_lemma[of p "\<cdot>0:1\<rightarrow>2\<cdot>" r "[f_dot, \<omega>\<^sup>v, B\<^sup>v]"]
-      typed_function_type arity_typed_function_fm
-    by (auto simp: union_abs2 union_abs1)
-  from \<open>r\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
-  have "r \<tturnstile> \<cdot>0 \<in> 1\<cdot> [f_dot, (\<omega> \<rightarrow>\<^bsup>M\<^esup> B)\<^sup>v]"
-  proof (intro definition_of_forcing[THEN iffD2] allI impI,
-      simp_all add:union_abs2 union_abs1)
-    fix G
-    let ?f="val(P,G,f_dot)"
-    assume "M_generic(G) \<and> r \<in> G"
+      show False
+        using forces_neq_apply_imp_incompatible[of r f_dot "n\<^sup>v" b r b']
+          transM[of _ B] by (auto dest:transM)
+    qed
+    moreover
+    have "range(?h) \<subseteq> B" by auto
+    moreover
+    have "domain(?h) = \<omega>"
+    proof -
+      {
+        fix n
+        assume "n \<in> \<omega>"
+        moreover from this and \<open>\<forall>n \<in> nat. \<langle>g`n,g`succ(n)\<rangle>\<in>S`succ(n)\<close>
+        obtain b where "g`(succ(n)) \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]" "b\<in>B"
+          unfolding S_def by auto
+        moreover from \<open>B\<in>M\<close> and calculation
+        have "b \<in> M" "n \<in> M" by (auto dest:transM)
+        moreover
+        note \<open>g : \<omega> \<rightarrow> P\<close> \<open>\<forall>n\<in>\<omega>. r \<preceq> g`n\<close> \<open>r\<in>P\<close> \<open>f_dot\<in>M\<close>
+        moreover from calculation
+        have "r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]"
+          using fun_apply_type arity_fun_apply_fm
+            strengthening_lemma[of "g`succ(n)" "\<cdot>0`1 is 2\<cdot>" r "[f_dot, n\<^sup>v, b\<^sup>v]"]
+          by (simp add: union_abs2 union_abs1)
+        ultimately
+        have "\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]" by auto
+      }
+      then
+      show ?thesis by force
+    qed
+    moreover
+    have "relation(?h)" unfolding relation_def by simp
+    moreover
+    have "?h \<in> M" sorry
+    moreover
+    note \<open>B \<in> M\<close>
+    ultimately
+    have "?h: \<omega> \<rightarrow>\<^bsup>M\<^esup> B"
+      using function_imp_Pi[THEN fun_weaken_type[of ?h _ "range(?h)" B]]
+        function_space_rel_char by simp
+    moreover
+    note \<open>p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close> \<open>r \<preceq> p\<close> \<open>r\<in>P\<close> \<open>p\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
     moreover from this
-    interpret g:G_generic _ _ _ _ _ G by unfold_locales simp
-    note \<open>r\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
-    moreover from this
-    have "map(val(P, G), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[G])" by simp
-    moreover from calculation and \<open>r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close>
-    have "?f : \<omega> \<rightarrow> B" using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[f_dot, \<omega>\<^sup>v, B\<^sup>v]"]
-        typed_function_type arity_typed_function_fm valcheck[OF one_in_G one_in_P]
+    have "r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]"
+      using strengthening_lemma[of p "\<cdot>0:1\<rightarrow>2\<cdot>" r "[f_dot, \<omega>\<^sup>v, B\<^sup>v]"]
+        typed_function_type arity_typed_function_fm
       by (auto simp: union_abs2 union_abs1)
     moreover
-    have "?h`n = ?f`n" if "n\<in>\<omega>" for n sorry
-    with calculation and \<open>B\<in>M\<close> \<open>?h: \<omega> \<rightarrow>\<^bsup>M\<^esup> B\<close>
-    have "?h = ?f"
-      using function_space_rel_char
-      by (rule_tac fun_extension[of ?h \<omega> "\<lambda>_.B" ?f]) auto
-    moreover
-    note \<open>B \<in> M\<close> \<open>?h \<in> M\<close>
+    note \<open>?h\<in>M\<close>
     moreover from calculation
-    have "?f : \<omega> \<rightarrow>\<^bsup>M\<^esup> B"
-      using function_space_rel_char by (auto dest:transM)
+    have "r \<tturnstile> \<cdot>0 = 1\<cdot> [f_dot, ?h\<^sup>v]"
+    proof (intro definition_of_forcing[THEN iffD2] allI impI,
+        simp_all add:union_abs2 union_abs1 del:app_Cons)
+      fix G
+      let ?f="val(P,G,f_dot)"
+      assume "M_generic(G) \<and> r \<in> G"
+      moreover from this
+      interpret g:G_generic _ _ _ _ _ G by unfold_locales simp
+      note \<open>r\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
+      moreover from this
+      have "map(val(P, G), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[G])" by simp
+      moreover from calculation and \<open>r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close>
+      have "?f : \<omega> \<rightarrow> B" using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[f_dot, \<omega>\<^sup>v, B\<^sup>v]"]
+          typed_function_type arity_typed_function_fm valcheck[OF one_in_G one_in_P]
+        by (auto simp: union_abs2 union_abs1)
+      moreover
+      have "?h`n = ?f`n" if "n\<in>\<omega>" for n sorry
+      with calculation and \<open>B\<in>M\<close> \<open>?h: \<omega> \<rightarrow>\<^bsup>M\<^esup> B\<close>
+      have "?h = ?f"
+        using function_space_rel_char
+        by (rule_tac fun_extension[of ?h \<omega> "\<lambda>_.B" ?f]) auto
+      ultimately
+      show "?f = val(P, G, ?h\<^sup>v)"
+        using valcheck one_in_G one_in_P generic by simp
+    qed
     ultimately
-    show "?f \<in> val(P, G, (\<omega> \<rightarrow>\<^bsup>M\<^esup> B)\<^sup>v)"
-      using valcheck one_in_G one_in_P generic by simp
-  qed
-  show ?thesis sorry
+    have "\<exists>r\<in>P. \<exists>h\<in>\<omega> \<rightarrow>\<^bsup>M\<^esup> B. r \<preceq> p \<and> r \<tturnstile> \<cdot>0 = 1\<cdot> [f_dot, h\<^sup>v]" by blast
+  }
+  moreover
+  note \<open>B \<in> M\<close> assms
+  moreover from calculation
+  have "f : \<omega> \<rightarrow>\<^bsup>M\<^esup> B"
+    using kunen_IV_6_9_function_space_rel_eq function_space_rel_char
+      ext.mem_function_space_rel_abs by auto
+  ultimately
+  show ?thesis by (auto dest:transM)
 qed
 
 declare mono_seqspace_rel_closed[rule del]
