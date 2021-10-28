@@ -55,12 +55,12 @@ lemma FnleD[dest]:
   by auto
 
 lemma zero_in_Fn_rel: 
-  assumes "M(\<kappa>)" "M(I)" "M(J)"
+  assumes "0<\<kappa>" "M(\<kappa>)" "M(I)" "M(J)"
   shows "0 \<in> Fn\<^bsup>M\<^esup>(\<kappa>, I, J)"
   sorry
 
 lemma zero_top_Fn_rel: 
-  assumes "p\<in>Fn\<^bsup>M\<^esup>(\<kappa>, I, J)" "M(\<kappa>)" "M(I)" "M(J)"
+  assumes "p\<in>Fn\<^bsup>M\<^esup>(\<kappa>, I, J)" "0<\<kappa>" "M(\<kappa>)" "M(I)" "M(J)"
   shows "\<langle>p, 0\<rangle> \<in> Fnle\<^bsup>M\<^esup>(\<kappa>, I, J)"
   using assms zero_in_Fn_rel unfolding preorder_on_def refl_def trans_on_def
   by auto
@@ -96,6 +96,7 @@ proof -
     show ?case
       using nat_into_M M_nat[simplified] Aleph_rel_closed[of 1, simplified]
         Aleph_rel_closed[of 1, simplified] function_space_rel_closed[simplified]
+        zero_lt_Aleph_rel1
       by (auto simp del:setclass_iff)
         (rule_tac x=0 in bexI, rule zero_in_Fn_rel, simp_all)
   next
@@ -375,7 +376,7 @@ proof -
       using Coll_in_M Fnle_rel_Aleph_rel1_closed
         zero_in_Fn_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"] zero_top_Fn_rel[of _ "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
         preorder_on_Fnle_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"] Aleph_rel_closed[of 1]
-        nat_into_M function_space_rel_closed[of \<omega> 2] M_nat
+        nat_into_M function_space_rel_closed[of \<omega> 2] M_nat zero_lt_Aleph_rel1
       by unfold_locales simp_all
   qed
   obtain G where "M_generic(G)"
