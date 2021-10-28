@@ -128,19 +128,23 @@ lemma AC_M_func:
 proof -
   from \<open>M(A)\<close>
   interpret mpiA:M_Pi_assumptions _ A "\<lambda>x. x"
-    using Pi_replacement Pi_separation
-    apply unfold_locales apply (auto dest:transM simp:Sigfun_def)[3] (* FIXME: Slow *)
-    sorry
+    using Pi_replacement Pi_separation lam_replacement_identity
+      lam_replacement_Sigfun[THEN lam_replacement_imp_strong_replacement]
+    by unfold_locales (auto dest:transM) (* FIXME: Slow *)
   from \<open>M(A)\<close>
   interpret mpic_A:M_Pi_assumptions_choice _ A "\<lambda>x. x"
     apply unfold_locales
      apply (unfold strong_replacement_def, blast)[1]
-    sorry
+    using lam_replacement_constant lam_replacement_identity
+      lam_replacement_minimum[THEN [5] lam_replacement_hcomp2]
+    unfolding lam_replacement_def[symmetric]
+    by auto
   from \<open>M(A)\<close>
   interpret mpi2:M_Pi_assumptions2 _ A "\<lambda>_. \<Union>A" "\<lambda>x. x"
-    apply unfold_locales
-       apply (auto dest:transM)
-    sorry
+    using Pi_replacement Pi_separation lam_replacement_constant
+      lam_replacement_Sigfun[THEN lam_replacement_imp_strong_replacement,
+        of  "\<lambda>_. \<Union>A"] Pi_replacement1[of _  "\<Union>A"] transM[of _  "A"]
+    by unfold_locales auto
   from assms
   show ?thesis
     using mpi2.Pi_rel_type apply_type mpiA.mem_Pi_rel_abs mpi2.mem_Pi_rel_abs
