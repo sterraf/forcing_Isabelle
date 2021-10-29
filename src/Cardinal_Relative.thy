@@ -1262,6 +1262,26 @@ lemma Finite_Pow_rel:
 lemma Pow_rel_0 [simp]: "Pow_rel(M,0) = {0}"
   using Finite_Pow_abs[of 0] by simp
 
+lemma eqpoll_rel_imp_Finite: "A \<approx>\<^bsup>M\<^esup> B \<Longrightarrow> Finite(A) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> Finite(B)"
+proof -
+  assume "A \<approx>\<^bsup>M\<^esup> B" "Finite(A)" "M(A)" "M(B)"
+  then obtain f n g where "f\<in>bij(A,B)" "n\<in>nat" "g\<in>bij(A,n)"
+    unfolding Finite_def eqpoll_def eqpoll_rel_def
+    using bij_rel_char
+    by auto
+  then
+  have "g O converse(f) \<in> bij(B,n)"
+    using bij_converse_bij comp_bij by simp
+  with \<open>n\<in>_\<close>
+  show"Finite(B)"
+    unfolding Finite_def eqpoll_def by auto
+qed
+
+lemma eqpoll_rel_imp_Finite_iff: "A \<approx>\<^bsup>M\<^esup> B \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> Finite(A) \<longleftrightarrow> Finite(B)"
+  using eqpoll_rel_imp_Finite eqpoll_rel_sym by force
+
+lemma Finite_cardinal_rel_Finite: "M(i) \<Longrightarrow> Finite(|i|\<^bsup>M\<^esup>) \<Longrightarrow> Finite(i)"
+  sorry
 
 end (* M_cardinals *)
 

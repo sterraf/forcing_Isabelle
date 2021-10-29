@@ -2,76 +2,10 @@ theory CH
   imports
     Kappa_Closed_Notions
     Cardinal_Library_Relative2
+    Cohen_Posets_Relative2
 begin
 
 (* FIXME: Fake defs *)
-definition
-  Fn_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> i" (\<open>Fn\<^bsup>_\<^esup>'(_,_,_')\<close>) where
-  "Fn_rel(M,\<kappa>,I,J) \<equiv> 0"
-
-abbreviation
-  Fn_r_set ::  "[i,i,i,i] \<Rightarrow> i" (\<open>Fn\<^bsup>_\<^esup>'(_,_,_')\<close>) where
-  "Fn_r_set(M) \<equiv> Fn_rel(##M)"
-
-definition
-  Fnle_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> i" (\<open>Fnle\<^bsup>_\<^esup>'(_,_,_')\<close>) where
-  "Fnle_rel(M,\<kappa>,I,J) \<equiv> Fnlerel(Fn\<^bsup>M\<^esup>(\<kappa>,I,J))"
-
-abbreviation
-  Fnle_r_set ::  "[i,i,i,i] \<Rightarrow> i" (\<open>Fnle\<^bsup>_\<^esup>'(_,_,_')\<close>) where
-  "Fnle_r_set(M) \<equiv> Fnle_rel(##M)"
-
-context M_master
-begin
-(* FIXME: The results in this context are to be obtain through porting
-  Cohen_Posets.thy *)
-
-lemma Fn_rel_closed[intro,simp]:
-  assumes "M(\<kappa>)" "M(I)" "M(J)"
-  shows "M(Fn\<^bsup>M\<^esup>(\<kappa>,I,J))" sorry
-
-lemma Fn_rel_subset_Pow:
-  assumes "M(\<kappa>)" "M(I)" "M(J)"
-  shows "Fn\<^bsup>M\<^esup>(\<kappa>,I,J) \<subseteq> Pow(I\<times>J)"
-  sorry
-
-lemma Fnle_rel_closed[intro,simp]:
-  assumes "M(\<kappa>)" "M(I)" "M(J)"
-  shows "M(Fnle\<^bsup>M\<^esup>(\<kappa>,I,J))" sorry
-
-lemma Fnle_rel_Aleph_rel1_closed[intro,simp]: "M(Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))"
-  by simp
-
-lemma Fnle_relI[intro]:
-  assumes "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "q \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "p \<supseteq> q"
-  shows "<p,q> \<in> Fnle\<^bsup>M\<^esup>(\<kappa>,I,J)"
-  using assms unfolding Fnlerel_def Fnle_rel_def FnleR_def Rrel_def
-  by auto
-
-lemma FnleD[dest]:
-  assumes "<p,q> \<in> Fnle\<^bsup>M\<^esup>(\<kappa>,I,J)"
-  shows "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "q \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "p \<supseteq> q"
-  using assms unfolding Fnlerel_def Fnle_rel_def FnleR_def Rrel_def
-  by auto
-
-lemma zero_in_Fn_rel: 
-  assumes "0<\<kappa>" "M(\<kappa>)" "M(I)" "M(J)"
-  shows "0 \<in> Fn\<^bsup>M\<^esup>(\<kappa>, I, J)"
-  sorry
-
-lemma zero_top_Fn_rel: 
-  assumes "p\<in>Fn\<^bsup>M\<^esup>(\<kappa>, I, J)" "0<\<kappa>" "M(\<kappa>)" "M(I)" "M(J)"
-  shows "\<langle>p, 0\<rangle> \<in> Fnle\<^bsup>M\<^esup>(\<kappa>, I, J)"
-  using assms zero_in_Fn_rel unfolding preorder_on_def refl_def trans_on_def
-  by auto
-
-lemma preorder_on_Fnle_rel:
-  assumes "M(\<kappa>)" "M(I)" "M(J)"
-  shows "preorder_on(Fn\<^bsup>M\<^esup>(\<kappa>, I, J), Fnle\<^bsup>M\<^esup>(\<kappa>, I, J))"
-  unfolding preorder_on_def refl_def trans_on_def
-  by blast
-
-end (* M_master *)
 
 context M_ctm_AC
 begin
@@ -155,11 +89,6 @@ abbreviation
   dom_dense :: "i\<Rightarrow>i" where
   "dom_dense(x) \<equiv> { p\<in>Coll . x \<in> domain(p) }"
 
-lemma (in M_master) Fn_relD[dest]:
-  assumes "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "M(\<kappa>)" "M(I)" "M(J)"
-  shows "\<exists>d[M]. p : d \<rightarrow>\<^bsup>M\<^esup> J \<and> d \<subseteq> I \<and> d \<prec>\<^bsup>M\<^esup> \<kappa>"
-  sorry
-
 lemma (in M_master) cons_in_Fn_rel:
   assumes "x \<notin> domain(p)" "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "x \<in> I" "j \<in> J" "InfCard\<^bsup>M\<^esup>(\<kappa>)"
     "M(x)" "M(\<kappa>)" "M(I)" "M(J)"
@@ -167,7 +96,21 @@ lemma (in M_master) cons_in_Fn_rel:
   sorry
 
 lemma Coll_into_countable_rel: "p \<in> Coll \<Longrightarrow> countable\<^bsup>M\<^esup>(p)"
-  sorry
+proof -
+  assume "p\<in>Coll"
+  then
+  have "|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "p\<in>M"
+    using Fn_rel_is_function by simp_all
+  moreover from this
+  have "|p|\<^bsup>M\<^esup>  \<lesssim>\<^bsup>M\<^esup> \<omega>"
+    using lesspoll_rel_Aleph_rel_plus_one[of 0] Aleph_rel_zero 
+    by simp
+  ultimately
+  show ?thesis
+    using countableI lepoll_rel_trans[of p "|p|\<^bsup>M\<^esup>" \<omega>]
+      eqpoll_rel_imp_lepoll_rel eqpoll_rel_sym cardinal_rel_eqpoll_rel 
+    by simp
+qed
 
 \<comment> \<open>FIXME: Should be more general, cf. @{thm add_generic.dense_dom_dense}\<close>
 lemma dense_dom_dense: "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> dense(dom_dense(x))"
@@ -213,15 +156,33 @@ proof -
 qed
 
 (* FIXME: port (see Cohen_Posets.thy) *)
-lemma Un_filter_is_function: "filter(G) \<Longrightarrow> function(\<Union>G)"
-  sorry
+lemma Un_filter_is_function: 
+  assumes "filter(G)"
+  shows "function(\<Union>G)"
+  unfolding filter_def function_def compat_in_def 
+proof(auto)  
+  fix B B' x y y'
+  assume "B \<in> G" "\<langle>x, y\<rangle> \<in> B" "B' \<in> G" "\<langle>x, y'\<rangle> \<in> B'" 
+  moreover from \<open>filter(G)\<close> this
+  have "B \<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (\<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "B' \<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (\<omega> \<rightarrow>\<^bsup>M\<^esup> 2)"
+    using Fn_rel_is_function[OF filterD]
+    by auto
+  moreover from calculation
+  obtain d where "d \<supseteq> B"  "d \<supseteq> B'" "d\<in>Coll"
+    using un_compat_pfun filter_imp_compat
+    unfolding compat_def compat_in_def 
+    by auto
+  have "B \<union> B' \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (\<omega> \<rightarrow>\<^bsup>M\<^esup> 2)"
+    using un_compat_pfun filter_imp_compat
+    unfolding compat_def compat_in_def 
+    
 
 lemma f_G_funtype:
   shows "f\<^bsub>G\<^esub> : \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightarrow> \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
 proof -
   have "x \<in> B \<Longrightarrow> B \<in> G \<Longrightarrow> x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<times> (\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2)" for B x
   proof -
-    assume "x\<in>B" "B\<in>G"
+    assume "x\<in>B" "B\<in>G"                                      
     moreover from this
     have "x \<in> M[G]"
       by (auto dest!:generic_dests ext.transM)

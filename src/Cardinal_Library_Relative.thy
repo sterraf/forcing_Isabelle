@@ -275,7 +275,6 @@ lemma cardinal_rel_Un_le:
   assumes "InfCard_rel(M,\<kappa>)" "|A|\<^bsup>M\<^esup> \<le> \<kappa>" "|B|\<^bsup>M\<^esup> \<le> \<kappa>" "M(\<kappa>)" "M(A)" "M(B)"
   shows "|A \<union> B|\<^bsup>M\<^esup> \<le> \<kappa>"
   using assms lepoll_rel_Un le_Card_rel_iff InfCard_rel_is_Card_rel by auto
-
 lemma eqpoll_rel_imp_Finite: "A \<approx>\<^bsup>M\<^esup> B \<Longrightarrow> Finite(A) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> Finite(B)"
 proof -
   assume "A \<approx>\<^bsup>M\<^esup> B" "Finite(A)" "M(A)" "M(B)"
