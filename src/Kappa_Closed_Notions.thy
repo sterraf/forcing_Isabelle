@@ -345,16 +345,13 @@ proof -
         have "b = ?h`n"
           using function_apply_equality by simp
         moreover
-        define h where "h\<equiv>?h"
-        note h_def[symmetric]
-        moreover
         note \<open>B \<in> M\<close>
         moreover from calculation
         have "?h`n \<in> M" by (auto dest:transM)
         moreover
         note \<open>f_dot \<in> M\<close> \<open>r \<in> P\<close> \<open>M_generic(G) \<and> r \<in> G\<close> \<open>map(val(P, G), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[G])\<close>
         moreover from calculation
-        have "[?f, n, h`n] \<in> list(M[G])"
+        have "[?f, n, ?h`n] \<in> list(M[G])"
           using M_subset_MG nat_into_M[of n] one_in_G by (auto dest:transM)
         ultimately
         show ?thesis

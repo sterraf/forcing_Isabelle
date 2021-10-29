@@ -108,7 +108,9 @@ proof -
     note \<open>x\<in>\<omega>\<close>
     moreover from this
     have "f`x \<in> Coll" if "f: succ(x) \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq))" for f
-      sorry
+      using that mono_seqspace_char nat_into_M
+        mono_seqspace_is_fun[of "converse(Colleq)"]
+      by (intro apply_type[of _ "succ(x)"]) (auto simp del:setclass_iff)
     ultimately
     show ?case using nat_into_M transM[of _ Coll] apply_closed[simplified]
       by (auto dest:transM simp del:setclass_iff, rule_tac x="f`x" in bexI)
