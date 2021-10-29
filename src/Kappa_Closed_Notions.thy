@@ -123,6 +123,69 @@ lemma kappa_closed_abs:
 
 end (* forcing_data *)
 
+lemma (in forcing_data) forcing_a_value:
+  assumes "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]" "a \<in> A"
+    "q \<preceq> p" "q \<in> P" "p\<in>P" "f_dot \<in> M" "A\<in>M" "B\<in>M"
+  shows "\<exists>d\<in>P. \<exists>b\<in>B. d \<preceq> q \<and> d \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]"
+    \<comment> \<open>Old neater version, but harder to use
+    (without the assumptions on \<^term>\<open>q\<close>):\<close>
+    (* "dense_below({q \<in> P. \<exists>b\<in>B. q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]}, p)" *)
+proof -
+  from assms
+  have "q \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]"
+    using strengthening_lemma[of p "\<cdot>0:1\<rightarrow>2\<cdot>" q "[f_dot, A\<^sup>v, B\<^sup>v]"]
+      typed_function_type arity_typed_function_fm
+    by (auto simp: union_abs2 union_abs1 check_in_M P_in_M)
+  from \<open>a\<in>A\<close> \<open>A\<in>M\<close>
+  have "a\<in>M" by (auto dest:transM)
+  from \<open>q\<in>P\<close>
+  obtain G where "M_generic(G)" "q\<in>G"
+    using generic_filter_existence by blast
+  then
+  interpret G_generic _ _ _ _ _ G by unfold_locales
+  include G_generic_lemmas
+  note \<open>q\<in>G\<close>
+  moreover
+  note \<open>q \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]\<close> \<open>M_generic(G)\<close>
+  moreover
+  note \<open>q\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close> \<open>A\<in>M\<close>
+  moreover from this
+  have "map(val(P, G), [f_dot, A\<^sup>v, B\<^sup>v]) \<in> list(M[G])" by simp
+  moreover from calculation
+  have "val(P,G,f_dot) : A \<rightarrow>\<^bsup>M[G]\<^esup> B"
+    using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[f_dot, A\<^sup>v, B\<^sup>v]", THEN iffD1]
+      typed_function_type arity_typed_function_fm valcheck[OF one_in_G one_in_P]
+    by (auto simp: union_abs2 union_abs1 ext.mem_function_space_rel_abs)
+  moreover
+  note \<open>a \<in> M\<close>
+  moreover from calculation and \<open>a\<in>A\<close>
+  have "val(P,G,f_dot) ` a \<in> B" (is "?b \<in> B")
+    by (simp add: ext.mem_function_space_rel_abs)
+  moreover from calculation
+  have "?b \<in> M" by (auto dest:transM)
+  moreover from calculation
+  have "M[G], map(val(P,G), [f_dot, a\<^sup>v, ?b\<^sup>v]) \<Turnstile> \<cdot>0`1 is 2\<cdot>"
+    by simp
+  moreover
+  note \<open>M_generic(G)\<close>
+  ultimately
+  obtain r where "r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, ?b\<^sup>v]" "r\<in>G" "r\<in>P"
+    using truth_lemma[of "\<cdot>0`1 is 2\<cdot>" G "[f_dot, a\<^sup>v, ?b\<^sup>v]", THEN iffD2]
+      fun_apply_type arity_fun_apply_fm valcheck[OF one_in_G one_in_P]
+    by (auto simp: union_abs2 union_abs1 ext.mem_function_space_rel_abs)
+  moreover from this and \<open>q\<in>G\<close>
+  obtain d where "d\<preceq>q" "d\<preceq>r" "d\<in>P" by force
+  moreover
+  note \<open>f_dot\<in>M\<close> \<open>a\<in>M\<close> \<open>?b\<in>B\<close> \<open>B\<in>M\<close>
+  moreover from calculation
+  have "d \<preceq> q \<and> d \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, ?b\<^sup>v]"
+    using fun_apply_type arity_fun_apply_fm
+      strengthening_lemma[of r "\<cdot>0`1 is 2\<cdot>" d "[f_dot, a\<^sup>v, ?b\<^sup>v]"]
+    by (auto dest:transM simp add: union_abs2 union_abs1)
+  ultimately
+  show ?thesis by auto
+qed
+
 context G_generic_AC begin
 
 context
@@ -136,33 +199,13 @@ lemma kappa_closed_imp_no_new_sequences:
   shows "f\<in>M"
   oops
 
-(* MOVE THIS to an appropriate place *)
+(* MOVE THIS to an appropriate place. *)
 \<comment> \<open>Kunen IV.6.1\<close>
 lemma local_maximal_principle:
   assumes "r \<tturnstile> (\<cdot>\<exists>\<cdot>\<cdot>0\<in>1\<cdot> \<and> \<phi>\<cdot>\<cdot>) [\<pi>]" "r\<in>P" "\<phi>\<in>formula" "\<pi> \<in> M"
+    (* FIXME: requires assms on \<^term>\<open>arity(\<phi>)\<close> *)
   shows "\<exists>q\<in>P. \<exists>\<sigma> \<in> domain(\<pi>).  q \<preceq> r \<and> q \<tturnstile> \<cdot>\<cdot>0\<in>1\<cdot> \<and> \<phi>\<cdot> [\<sigma>,\<pi>]"
-  sorry
-
-lemma forcing_a_value:
-  assumes "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]" "a \<in> A"
-    "q \<preceq> p" "q \<in> P" "p\<in>P" "f_dot \<in> M" "A\<in>M" "B\<in>M"
-  shows "\<exists>d\<in>P. \<exists>b\<in>B. d \<preceq> q \<and> d \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]"
-    \<comment> \<open>Old neater version, but harder to use
-    (without the assumptions on \<^term>\<open>q\<close>):\<close>
-    (* "dense_below({q \<in> P. \<exists>b\<in>B. q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]}, p)" *)
-proof -
-  from assms
-  have "q \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]"
-    using strengthening_lemma[of p "\<cdot>0:1\<rightarrow>2\<cdot>" q "[f_dot, A\<^sup>v, B\<^sup>v]"]
-      typed_function_type arity_typed_function_fm
-    by (auto simp: union_abs2 union_abs1)
-  {
-  }
-  obtain d b where "d \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]" "d\<preceq>q" "d\<in>P" "b\<in>B"
-    sorry
-  then
-  show ?thesis by auto
-qed
+  oops
 
 \<comment> \<open>Kunen IV.6.9 (3)$\Rightarrow$(2)\<close>
 lemma kunen_IV_6_9_function_space_rel_eq:
