@@ -175,7 +175,9 @@ proof(auto)
   have "B \<union> B' \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (\<omega> \<rightarrow>\<^bsup>M\<^esup> 2)"
     using un_compat_pfun filter_imp_compat
     unfolding compat_def compat_in_def 
-    
+    sorry
+  show "y = y'" sorry
+qed
 
 lemma f_G_funtype:
   shows "f\<^bsub>G\<^esub> : \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightarrow> \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
