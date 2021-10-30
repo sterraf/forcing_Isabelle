@@ -155,28 +155,39 @@ proof -
   show "x \<in> domain(f\<^bsub>G\<^esub>)" by blast
 qed
 
+lemma rex_mono : assumes "\<exists> d \<in> A . P(d)" "A\<subseteq>B"
+  shows "\<exists> d \<in> B. P(d)"
+  using assms by auto
+
 (* FIXME: port (see Cohen_Posets.thy) *)
 lemma Un_filter_is_function: 
   assumes "filter(G)"
   shows "function(\<Union>G)"
-  unfolding filter_def function_def compat_in_def 
-proof(auto)  
-  fix B B' x y y'
-  assume "B \<in> G" "\<langle>x, y\<rangle> \<in> B" "B' \<in> G" "\<langle>x, y'\<rangle> \<in> B'" 
-  moreover from \<open>filter(G)\<close> this
-  have "B \<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (\<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "B' \<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (\<omega> \<rightarrow>\<^bsup>M\<^esup> 2)"
-    using Fn_rel_is_function[OF filterD]
+proof -
+  have "Coll \<subseteq> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (\<omega> \<rightarrow>\<^bsup>M\<^esup> 2)"
+    using Fn_rel_subset_PFun_rel
+    by simp
+  moreover
+  have "\<exists> d \<in> Coll. d \<supseteq> f \<and> d \<supseteq> g" if "f\<in>G" "g\<in>G" for f g
+    using filter_imp_compat[OF assms \<open>f\<in>G\<close> \<open>g\<in>G\<close>] filterD[OF assms]
+    unfolding compat_def compat_in_def
     by auto
-  moreover from calculation
-  obtain d where "d \<supseteq> B"  "d \<supseteq> B'" "d\<in>Coll"
-    using un_compat_pfun filter_imp_compat
-    unfolding compat_def compat_in_def 
+  ultimately
+  have "\<exists>d \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (\<omega> \<rightarrow>\<^bsup>M\<^esup> 2). d \<supseteq> f \<and> d \<supseteq> g" if "f\<in>G" "g\<in>G" for f g
+    using rex_mono[of Coll] that by simp
+  moreover
+  have "G\<subseteq>Coll"
+    using assms
+    unfolding filter_def
+    by simp
+  moreover from this
+  have "G \<subseteq> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (\<omega> \<rightarrow>\<^bsup>M\<^esup> 2)"
+    using assms  unfolding Fn_rel_def
     by auto
-  have "B \<union> B' \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (\<omega> \<rightarrow>\<^bsup>M\<^esup> 2)"
-    using un_compat_pfun filter_imp_compat
-    unfolding compat_def compat_in_def 
-    sorry
-  show "y = y'" sorry
+  ultimately
+  show ?thesis
+    using Un_filter_closed[of G]
+    by simp
 qed
 
 lemma f_G_funtype:
@@ -184,7 +195,7 @@ lemma f_G_funtype:
 proof -
   have "x \<in> B \<Longrightarrow> B \<in> G \<Longrightarrow> x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<times> (\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2)" for B x
   proof -
-    assume "x\<in>B" "B\<in>G"                                      
+    assume "x\<in>B" "B\<in>G"
     moreover from this
     have "x \<in> M[G]"
       by (auto dest!:generic_dests ext.transM)

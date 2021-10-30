@@ -73,16 +73,16 @@ proof -
 qed
 
 lemma Un_filter_closed: 
-  assumes "G \<subseteq>I\<rightharpoonup>\<^bsup>M\<^esup> J" "\<And> f g . f\<in>G \<Longrightarrow> g\<in>G \<Longrightarrow> \<exists>d\<in>G . d\<supseteq>f \<and> d\<supseteq>g" "M(G)"
-  shows "\<Union>G \<in> I\<rightharpoonup>\<^bsup>M\<^esup> J"
+  assumes "G \<subseteq>I\<rightharpoonup>\<^bsup>M\<^esup> J" "\<And> f g . f\<in>G \<Longrightarrow> g\<in>G \<Longrightarrow> \<exists>d\<in>I\<rightharpoonup>\<^bsup>M\<^esup> J . d\<supseteq>f \<and> d\<supseteq>g"
+  shows "\<Union>G \<in> Pow(I\<times>J)" "function(\<Union>G)"
 proof - 
   from assms 
-  have "\<Union>G \<in> Pow(I\<times>J)"
+  show "\<Union>G \<in> Pow(I\<times>J)"
     using Union_Pow_iff
     unfolding PFun_Space_Rel_def 
     by auto
-  moreover
-  have "function(\<Union>G)"
+next
+  show "function(\<Union>G)"
     unfolding function_def
   proof(auto)
     fix B B' x y y'
@@ -105,11 +105,12 @@ proof -
       unfolding function_def
       by force
   qed
-  ultimately
-  show ?thesis
-    unfolding PFun_Space_Rel_def
-    using assms(3) by simp
 qed
+
+lemma pfun_is_function :
+  assumes "f \<in> A\<rightharpoonup>\<^bsup>M\<^esup> B"
+  shows "function(f)"
+  using assms unfolding PFun_Space_Rel_def by simp
 
 lemma pfunD :
   assumes "f \<in> A\<rightharpoonup>\<^bsup>M\<^esup> B"
@@ -216,6 +217,9 @@ definition
 
 context  M_library
 begin
+
+lemma Fn_rel_subset_PFun_rel : "Fn\<^bsup>M\<^esup>(\<kappa>,I,J) \<subseteq>  I\<rightharpoonup>\<^bsup>M\<^esup> J"
+  unfolding Fn_rel_def by auto
 
 lemma Fn_relI[intro]:
   assumes "f : d \<rightarrow> J" "d \<subseteq> I" "|f|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>" "M(d)" "M(J)" "M(f)"
@@ -433,6 +437,7 @@ lemma preorder_on_Fnle_rel:
   shows "preorder_on(Fn\<^bsup>M\<^esup>(\<kappa>, I, J), Fnle\<^bsup>M\<^esup>(\<kappa>, I, J))"
   unfolding preorder_on_def refl_def trans_on_def
   by blast
+
 
 end (* M_master *)
 
