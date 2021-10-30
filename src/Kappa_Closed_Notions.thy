@@ -194,22 +194,7 @@ context
   includes G_generic_lemmas
 begin
 
-\<comment> \<open>Kunen IV.7.15, only for sequences\<close>
-lemma kappa_closed_imp_no_new_sequences:
-  assumes "\<kappa>-closed\<^bsup>M\<^esup>(P,leq)" "f : \<delta> \<rightarrow> B" "\<delta><\<kappa>" "f\<in>M[G]"
-    "\<kappa>\<in>M" "B\<in>M"
-  shows "f\<in>M"
-  oops
-
-(* MOVE THIS to an appropriate place. *)
-\<comment> \<open>Kunen IV.6.1\<close>
-lemma local_maximal_principle:
-  assumes "r \<tturnstile> (\<cdot>\<exists>\<cdot>\<cdot>0\<in>1\<cdot> \<and> \<phi>\<cdot>\<cdot>) [\<pi>]" "r\<in>P" "\<phi>\<in>formula" "\<pi> \<in> M"
-    (* FIXME: requires assms on \<^term>\<open>arity(\<phi>)\<close> *)
-  shows "\<exists>q\<in>P. \<exists>\<sigma> \<in> domain(\<pi>).  q \<preceq> r \<and> q \<tturnstile> \<cdot>\<cdot>0\<in>1\<cdot> \<and> \<phi>\<cdot> [\<sigma>,\<pi>]"
-  oops
-
-\<comment> \<open>Kunen IV.6.9 (3)$\Rightarrow$(2)\<close>
+\<comment> \<open>Kunen IV.6.9 (3)$\Rightarrow$(2), with general domain.\<close>
 lemma kunen_IV_6_9_function_space_rel_eq:
   assumes "\<And>p \<tau>. p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [\<tau>, A\<^sup>v, B\<^sup>v] \<Longrightarrow> p\<in>P \<Longrightarrow> \<tau> \<in> M \<Longrightarrow>
     \<exists>q\<in>P. \<exists>h\<in>A \<rightarrow>\<^bsup>M\<^esup> B. q \<preceq> p \<and>  q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]" "A\<in>M" "B\<in>M"
@@ -226,28 +211,37 @@ proof (intro equalityI; clarsimp simp add:
     using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[\<tau>, A\<^sup>v, B\<^sup>v]"] generic
       typed_function_type arity_typed_function_fm valcheck[OF one_in_G one_in_P]
     by (auto simp: union_abs2 union_abs1)
-  moreover from calculation and assms
-  obtain q h where "q \<preceq> r" "q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]" "q\<in>P" "h\<in>A \<rightarrow>\<^bsup>M\<^esup> B"
-    by blast
-  text\<open>Again, using countability of \<^term>\<open>M\<close> as a shortcut.\<close>
-  then
-  obtain G where "M_generic(G)" "q\<in>G"
-    using generic_filter_existence by blast
-  moreover from this
-  interpret g:G_generic _ _ _ _ _ G by unfold_locales
-  include g.G_generic_lemmas
-  note \<open>q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]\<close> \<open>\<tau>\<in>M\<close> \<open>h\<in>A \<rightarrow>\<^bsup>M\<^esup> B\<close> \<open>A\<in>M\<close> \<open>B\<in>M\<close>
+  moreover from \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>r\<in>G\<close> \<open>\<tau> \<in> M\<close>
+  have "{q\<in>P. \<exists>h\<in>A \<rightarrow>\<^bsup>M\<^esup> B. q \<preceq> r \<and> q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]} \<in> M" (is "?D \<in> M")
+    using G_subset_M (* to obtain \<^term>\<open>r\<in>P\<close> *) sorry
+  moreover from calculation and assms(2-)
+  have "dense_below(?D, r)"
+    using strengthening_lemma[of r "\<cdot>0:1\<rightarrow>2\<cdot>" _ "[\<tau>, A\<^sup>v, B\<^sup>v]", THEN assms(1)[of _ \<tau>]]
+      leq_transD generic_dests(1)[of r]
+    by (auto simp: union_abs2 union_abs1 typed_function_type arity_typed_function_fm) blast
+  moreover from calculation
+  obtain q h where "h\<in>A \<rightarrow>\<^bsup>M\<^esup> B" "q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]" "q \<preceq> r" "q\<in>P" "q\<in>G"
+    using generic_inter_dense_below[of ?D G r, OF _ generic] by blast
+  note \<open>q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]\<close> \<open>\<tau>\<in>M\<close> \<open>h\<in>A \<rightarrow>\<^bsup>M\<^esup> B\<close> \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>q\<in>G\<close>
   moreover from this
   have "map(val(P, G), [\<tau>, h\<^sup>v]) \<in> list(M[G])" "h\<in>M" by (auto dest:transM)
   ultimately
   have "h = val(P,G,\<tau>)"
-    using truth_lemma[of "\<cdot>0=1\<cdot>" G "[\<tau>, h\<^sup>v]", THEN iffD1]
+    using truth_lemma[of "\<cdot>0=1\<cdot>" G "[\<tau>, h\<^sup>v]", THEN iffD1] generic
       Equal arity_typed_function_fm valcheck[OF one_in_G one_in_P]
     by (auto simp: union_abs2 union_abs1)
       \<comment> \<open>FIXME: same problem as before there is no relation
         between \<^term>\<open>f\<close> and \<^term>\<open>val(P,G,\<tau>)\<close>\<close>
-  show "f \<in> M" sorry
+  with \<open> _ = f\<close> \<open>h\<in>M\<close>
+  show "f \<in> M" by simp
 qed
+
+\<comment> \<open>Kunen IV.7.15, only for sequences\<close>
+lemma kappa_closed_imp_no_new_sequences:
+  assumes "\<kappa>-closed\<^bsup>M\<^esup>(P,leq)" "f : \<delta> \<rightarrow> B" "\<delta><\<kappa>" "f\<in>M[G]"
+    "\<kappa>\<in>M" "B\<in>M"
+  shows "f\<in>M"
+  oops
 
 \<comment> \<open>Kunen IV.7.15, only for countable sequences\<close>
 lemma succ_omega_closed_imp_no_new_nat_sequences:
