@@ -139,6 +139,8 @@ proof -
   from \<open>a\<in>A\<close> \<open>A\<in>M\<close>
   have "a\<in>M" by (auto dest:transM)
   from \<open>q\<in>P\<close>
+  text\<open>Here we're using countability (via the existence of generic filters)
+    of \<^term>\<open>M\<close> as a shortcut, to avoid a further density argument.\<close>
   obtain G where "M_generic(G)" "q\<in>G"
     using generic_filter_existence by blast
   then
@@ -209,11 +211,43 @@ lemma local_maximal_principle:
 
 \<comment> \<open>Kunen IV.6.9 (3)$\Rightarrow$(2)\<close>
 lemma kunen_IV_6_9_function_space_rel_eq:
-  assumes "\<And>p \<tau>. p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [\<tau>, \<omega>\<^sup>v, B\<^sup>v] \<Longrightarrow> p\<in>P \<Longrightarrow> \<tau> \<in> M \<Longrightarrow>
-    \<exists>q\<in>P. \<exists>h\<in>\<omega> \<rightarrow>\<^bsup>M\<^esup> B. q \<preceq> p \<and>  q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]" "A\<in>M" "B\<in>M"
+  assumes "\<And>p \<tau>. p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [\<tau>, A\<^sup>v, B\<^sup>v] \<Longrightarrow> p\<in>P \<Longrightarrow> \<tau> \<in> M \<Longrightarrow>
+    \<exists>q\<in>P. \<exists>h\<in>A \<rightarrow>\<^bsup>M\<^esup> B. q \<preceq> p \<and>  q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]" "A\<in>M" "B\<in>M"
   shows
-    "\<omega> \<rightarrow>\<^bsup>M\<^esup> B = \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> B"
-  sorry
+    "A \<rightarrow>\<^bsup>M\<^esup> B = A \<rightarrow>\<^bsup>M[G]\<^esup> B"
+proof (intro equalityI; clarsimp simp add:
+    assms function_space_rel_char ext.function_space_rel_char)
+  fix f
+  assume "f \<in> A \<rightarrow> B" "f \<in> M[G]"
+  moreover from this
+  obtain \<tau> where "val(P,G,\<tau>) = f" "\<tau> \<in> M" using GenExtD by force
+  moreover from calculation and \<open>A\<in>M\<close> \<open>B\<in>M\<close>
+  obtain r where "r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [\<tau>, A\<^sup>v, B\<^sup>v]" "r\<in>G"
+    using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[\<tau>, A\<^sup>v, B\<^sup>v]"] generic
+      typed_function_type arity_typed_function_fm valcheck[OF one_in_G one_in_P]
+    by (auto simp: union_abs2 union_abs1)
+  moreover from calculation and assms
+  obtain q h where "q \<preceq> r" "q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]" "q\<in>P" "h\<in>A \<rightarrow>\<^bsup>M\<^esup> B"
+    by blast
+  text\<open>Again, using countability of \<^term>\<open>M\<close> as a shortcut.\<close>
+  then
+  obtain G where "M_generic(G)" "q\<in>G"
+    using generic_filter_existence by blast
+  moreover from this
+  interpret g:G_generic _ _ _ _ _ G by unfold_locales
+  include g.G_generic_lemmas
+  note \<open>q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]\<close> \<open>\<tau>\<in>M\<close> \<open>h\<in>A \<rightarrow>\<^bsup>M\<^esup> B\<close> \<open>A\<in>M\<close> \<open>B\<in>M\<close>
+  moreover from this
+  have "map(val(P, G), [\<tau>, h\<^sup>v]) \<in> list(M[G])" "h\<in>M" by (auto dest:transM)
+  ultimately
+  have "h = val(P,G,\<tau>)"
+    using truth_lemma[of "\<cdot>0=1\<cdot>" G "[\<tau>, h\<^sup>v]", THEN iffD1]
+      Equal arity_typed_function_fm valcheck[OF one_in_G one_in_P]
+    by (auto simp: union_abs2 union_abs1)
+      \<comment> \<open>FIXME: same problem as before there is no relation
+        between \<^term>\<open>f\<close> and \<^term>\<open>val(P,G,\<tau>)\<close>\<close>
+  show "f \<in> M" sorry
+qed
 
 \<comment> \<open>Kunen IV.7.15, only for countable sequences\<close>
 lemma succ_omega_closed_imp_no_new_nat_sequences:
