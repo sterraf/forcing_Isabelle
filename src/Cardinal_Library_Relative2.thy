@@ -46,13 +46,11 @@ lemma cantor_cexp_rel:
   assumes "Card_rel(M,\<nu>)" "M(\<nu>)"
   shows "\<nu> < 2\<^bsup>\<up>\<nu>,M\<^esup>"
   using assms Card_rel_is_Ord Card_rel_cexp_rel
-  sorry
-(*
 proof (intro not_le_iff_lt[THEN iffD1] notI)
   assume "2\<^bsup>\<up>\<nu>,M\<^esup> \<le> \<nu>"
-  then
-  have "|Pow_rel(M,\<nu>)| \<le> \<nu>"
-    using cardinal_rel_Pow_rel by simp
+  with assms
+  have "|Pow_rel(M,\<nu>)|\<^bsup>M\<^esup> \<le> \<nu>"
+    using cardinal_rel_Pow_rel[of \<nu>] by simp
   with assms
   have "Pow_rel(M,\<nu>) \<lesssim>\<^bsup>M\<^esup> \<nu>"
     using cardinal_rel_eqpoll_rel_iff Card_rel_le_imp_lepoll_rel Card_rel_cardinal_rel_eq
@@ -60,11 +58,14 @@ proof (intro not_le_iff_lt[THEN iffD1] notI)
   then
   obtain g where "g \<in> inj_rel(M,Pow_rel(M,\<nu>), \<nu>)"
     by blast
-  then
+  moreover
+  note \<open>M(\<nu>)\<close>
+  moreover from calculation
+  have "M(g)" by (auto dest:transM)
+  ultimately
   show "False"
     using cantor_inj_rel by simp
 qed simp
-*)
 
 end (* M_cardinal_library *)
 
