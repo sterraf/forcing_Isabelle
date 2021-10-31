@@ -21,24 +21,25 @@ lemma cexp_rel_eqpoll_rel_cong:
 
 lemma cexp_rel_cexp_rel_cmult: 
   assumes "M(\<kappa>)" "M(\<nu>1)" "M(\<nu>2)"
-  shows "(\<kappa>\<^bsup>\<up>\<nu>1,M\<^esup>)\<^bsup>\<up>\<nu>2,M\<^esup> = \<kappa>\<^bsup>\<up>\<nu>2 \<otimes> \<nu>1,M\<^esup>"
+  shows "(\<kappa>\<^bsup>\<up>\<nu>1,M\<^esup>)\<^bsup>\<up>\<nu>2,M\<^esup> = \<kappa>\<^bsup>\<up>\<nu>2 \<otimes>\<^bsup>M\<^esup> \<nu>1,M\<^esup>"
 proof -
-  have "(\<kappa>\<^bsup>\<up>\<nu>1\<^esup>)\<^bsup>\<up>\<nu>2\<^esup> = (\<nu>1 \<rightarrow> \<kappa>)\<^bsup>\<up>\<nu>2\<^esup>"
+  have "(\<kappa>\<^bsup>\<up>\<nu>1,M\<^esup>)\<^bsup>\<up>\<nu>2,M\<^esup> = (\<nu>1 \<rightarrow>\<^bsup>M\<^esup> \<kappa>)\<^bsup>\<up>\<nu>2,M\<^esup>"
     using cardinal_rel_eqpoll_rel
-    by (intro cexp_rel_eqpoll_rel_cong) (simp_all add:cexp_rel_def)
+    by (intro cexp_rel_eqpoll_rel_cong) (simp_all add:assms cexp_rel_def)
+  also from assms
+  have " \<dots> = \<kappa>\<^bsup>\<up>\<nu>2 \<times> \<nu>1,M\<^esup>"
+    unfolding cexp_rel_def using curry_eqpoll_rel[THEN cardinal_rel_cong] by blast
   also
-  have " \<dots> = \<kappa>\<^bsup>\<up>\<nu>2 \<times> \<nu>1\<^esup>"
-    unfolding cexp_rel_def using curry_eqpoll_rel cardinal_rel_cong by blast*
-  also
-  have " \<dots> = \<kappa>\<^bsup>\<up>\<nu>2 \<otimes> \<nu>1\<^esup>"
+  have " \<dots> = \<kappa>\<^bsup>\<up>\<nu>2 \<otimes>\<^bsup>M\<^esup> \<nu>1,M\<^esup>"
     using cardinal_rel_eqpoll_rel[THEN eqpoll_rel_sym]
-    unfolding cmult_def by (intro cexp_rel_eqpoll_rel_cong) (simp)
+    unfolding cmult_rel_def by (intro cexp_rel_eqpoll_rel_cong) (auto simp add:assms)
   finally
-  show ?thesis  .
+  show ?thesis .
 qed
 
 lemma cardinal_rel_Pow_rel: "M(X) \<Longrightarrow> |Pow_rel(M,X)|\<^bsup>M\<^esup> = 2\<^bsup>\<up>X,M\<^esup>" \<comment> \<open>Perhaps it's better with |X|\<close>
-  using cardinal_rel_eqpoll_rel_iff[THEN iffD2, OF Pow_rel_eqpoll_rel_function_space_rel]
+  using cardinal_rel_eqpoll_rel_iff[THEN iffD2,
+      OF _ _ Pow_rel_eqpoll_rel_function_space_rel]
   unfolding cexp_rel_def by simp
 
 lemma cantor_cexp_rel:

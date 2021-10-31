@@ -106,35 +106,118 @@ next \<comment> \<open>one composition is the identity:\<close>
 qed simp \<comment> \<open>the other composition follows automatically\<close>
  *)
 
-lemma Pow_eqpoll_function_space:
+lemma f_imp_injective_rel:
+  assumes "f \<in> A \<rightarrow>\<^bsup>M\<^esup> B" "\<forall>x\<in>A. d(f ` x) = x" "M(A)" "M(B)"
+  shows "f \<in> inj\<^bsup>M\<^esup>(A, B)"
+  using assms
+  apply (simp (no_asm_simp) add: def_inj_rel)
+  apply (auto intro: subst_context [THEN box_equals])
+  done
+
+lemma lam_injective_rel:
+  assumes "\<And>x. x \<in> A \<Longrightarrow> c(x) \<in> B"
+    "\<And>x. x \<in> A \<Longrightarrow> d(c(x)) = x"
+    "M(A)" "M(B)"
+  shows "(\<lambda>x\<in>A. c(x)) \<in> inj\<^bsup>M\<^esup>(A, B)"
+  using assms
+  apply (rule_tac d = d in f_imp_injective_rel)
+     apply (simp_all add: lam_type)
+  sorry
+
+lemma f_imp_surjective_rel:
+  assumes "f \<in> A \<rightarrow>\<^bsup>M\<^esup> B" "\<And>y. y \<in> B \<Longrightarrow> d(y) \<in> A" "\<And>y. y \<in> B \<Longrightarrow> f ` d(y) = y"
+    "M(A)" "M(B)"
+  shows "f \<in> surj\<^bsup>M\<^esup>(A, B)"
+  using assms
+  by (simp add: def_surj_rel, blast)
+
+lemma lam_surjective_rel:
+  assumes "\<And>x. x \<in> A \<Longrightarrow> c(x) \<in> B"
+    "\<And>y. y \<in> B \<Longrightarrow> d(y) \<in> A"
+    "\<And>y. y \<in> B \<Longrightarrow> c(d(y)) = y"
+    "M(A)" "M(B)"
+  shows "(\<lambda>x\<in>A. c(x)) \<in> surj\<^bsup>M\<^esup>(A, B)"
+  using assms
+  apply (rule_tac d = d in f_imp_surjective_rel)
+      apply (simp_all add: lam_type)
+  sorry
+
+lemma lam_bijective_rel:
+  assumes "\<And>x. x \<in> A \<Longrightarrow> c(x) \<in> B"
+    "\<And>y. y \<in> B \<Longrightarrow> d(y) \<in> A"
+    "\<And>x. x \<in> A \<Longrightarrow> d(c(x)) = x"
+    "\<And>y. y \<in> B \<Longrightarrow> c(d(y)) = y"
+    "M(A)" "M(B)"
+  shows "(\<lambda>x\<in>A. c(x)) \<in> bij\<^bsup>M\<^esup>(A, B)"
+  using assms
+  apply (unfold bij_rel_def)
+  apply (blast intro!: lam_injective_rel lam_surjective_rel)
+  done
+
+lemma Pow_rel_eqpoll_rel_function_space_rel:
   fixes d X
   notes bool_of_o_def [simp]
   defines [simp]:"d(A) \<equiv> (\<lambda>x\<in>X. bool_of_o(x\<in>A))"
     \<comment> \<open>the witnessing map for the thesis:\<close>
-  shows "Pow(X) \<approx> X \<rightarrow> 2"
-  unfolding eqpoll_def
-proof (intro exI, rule lam_bijective)
+  assumes "M(X)"
+  shows "Pow\<^bsup>M\<^esup>(X) \<approx>\<^bsup>M\<^esup> X \<rightarrow>\<^bsup>M\<^esup> 2"
+  unfolding eqpoll_rel_def
+proof (intro rexI, rule lam_bijective_rel)
+  from assms
+  interpret M_Pi_assumptions M X "\<lambda>_. 2"
+    using Pi_replacement Pi_separation lam_replacement_identity
+      lam_replacement_Sigfun[THEN lam_replacement_imp_strong_replacement]
+    apply unfold_locales apply auto
+    sorry
   \<comment> \<open>We give explicit mutual inverses\<close>
   fix A
-  assume "A\<in>Pow(X)"
-  then
-  show "d(A) : X \<rightarrow> 2"
-    using lam_type[of _ "\<lambda>x. bool_of_o(x\<in>A)" "\<lambda>_. 2"]
-    by force
-  from \<open>A\<in>Pow(X)\<close>
+  assume "A\<in>Pow\<^bsup>M\<^esup>(X)"
+  moreover
+  note \<open>M(X)\<close>
+  moreover from calculation
+  have "M(A)" by (auto dest:transM)
+  ultimately
+  show "d(A) : X \<rightarrow>\<^bsup>M\<^esup> 2"
+    using lam_type_M[of "\<lambda>x. bool_of_o(x\<in>A)"] function_space_rel_char
+      lam_type[of _ "\<lambda>x. bool_of_o(x\<in>A)" "\<lambda>_. 2"]
+    apply (auto)
+    sorry
+  from \<open>A\<in>Pow\<^bsup>M\<^esup>(X)\<close> \<open>M(X)\<close>
   show "{y\<in>X. d(A)`y = 1} = A"
-    by (auto)
+    using Pow_rel_char by auto
 next
   fix f
-  assume "f: X\<rightarrow>2"
+  assume "f: X\<rightarrow>\<^bsup>M\<^esup> 2"
+  with assms
+  have "f: X\<rightarrow> 2" using function_space_rel_char by simp
   then
   show "d({y \<in> X . f ` y = 1}) = f"
-    using apply_type[OF \<open>f: X\<rightarrow>2\<close>]
-    by (force intro:fun_extension)
-qed blast
+    using apply_type[OF \<open>f: X\<rightarrow>2\<close>] by (force intro:fun_extension)
+  show "{ya \<in> X . f ` ya = 1} \<in> Pow\<^bsup>M\<^esup>(X)"
+    sorry
+next
+  show "M(\<lambda>x\<in>Pow\<^bsup>M\<^esup>(X). d(x))" sorry
+qed (auto simp:\<open>M(X)\<close>)
 
-lemma cantor_inj: "f \<notin> inj(Pow(A),A)"
-  using inj_imp_surj[OF _ Pow_bottom] cantor_surj by blast
+lemma Pow_rel_bottom: "M(B) \<Longrightarrow> 0 \<in> Pow\<^bsup>M\<^esup>(B)"
+  using Pow_rel_char by simp
+
+(* FIXME: missing assms on \<^term>\<open>b\<close> being definable on M *)
+lemma cantor_rel: "M(A) \<Longrightarrow> \<exists>S \<in> Pow\<^bsup>M\<^esup>(A). \<forall>x\<in>A. b(x) \<noteq> S"
+  sorry
+
+lemma cantor_surj_rel: "M(f) \<Longrightarrow> M(A) \<Longrightarrow> f \<notin> surj\<^bsup>M\<^esup>(A,Pow\<^bsup>M\<^esup>(A))"
+  apply (simp add: def_surj_rel, safe)
+  apply (cut_tac cantor_rel)
+  sorry
+
+lemma cantor_inj_rel: "M(f) \<Longrightarrow> M(A) \<Longrightarrow> f \<notin> inj\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(A),A)"
+  using inj_rel_imp_surj_rel[OF _ Pow_rel_bottom, of f A A]
+    cantor_surj_rel[of "\<lambda>x\<in>A. if x \<in> range(f) then converse(f) ` x else 0" A]
+    lam_replacement_if separation_in[of "range(f)"]
+    lam_replacement_converse_app[THEN [5] lam_replacement_hcomp2]
+    lam_replacement_identity lam_replacement_constant
+    lam_replacement_iff_lam_closed by auto
 
 end (* M_ZF_library *)
 
