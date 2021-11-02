@@ -5,8 +5,6 @@ theory CH
     Cohen_Posets_Relative2
 begin
 
-(* FIXME: Fake defs *)
-
 context M_ctm_AC
 begin
 
@@ -17,6 +15,19 @@ abbreviation
 abbreviation
   Colleq :: "i" where
   "Colleq \<equiv> Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)"
+
+
+lemma Coll_in_M[intro,simp]: "Coll \<in> M"
+  using Fn_rel_closed[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"] Aleph_rel_closed[of 1]
+    M_nat nat_into_M function_space_rel_closed by simp
+
+lemma Colleq_refl : "x\<in>Coll \<Longrightarrow> \<langle>x,x\<rangle>\<in>Colleq"
+  unfolding Fnle_rel_def Fnlerel_def
+  using RrelI by simp
+
+lemma converse_Colleq_in_M[intro,simp]: "converse(Colleq) \<in> M"
+  sorry
+
 
 \<comment> \<open>Kunen IV.7.14, only for \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>\<close>
 lemma succ_omega_closed_Coll: "succ(\<omega>)-closed\<^bsup>M\<^esup>(Coll,Colleq)"
@@ -37,12 +48,44 @@ proof -
     case (succ x)
     then
     have "\<forall>f\<in>succ(x) \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq)). \<forall>\<alpha> \<in> succ(x). \<langle>f`x, f ` \<alpha>\<rangle> \<in> Colleq"
-      sorry
+    proof -
+      {
+        fix f \<alpha>
+        assume 3:"f\<in>succ(x) \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq))" "\<alpha>\<in>succ(x)"
+        moreover from \<open>x\<in>\<omega>\<close> this
+        have "f\<in>succ(x) \<^sub><\<rightarrow> (Coll,converse(Colleq))"
+          using mono_seqspace_rel_char nat_into_M
+          by simp
+        moreover from calculation succ
+        consider "\<alpha>\<in>x" | "\<alpha>=x"
+          by auto
+        then
+        have "\<langle>f`x, f ` \<alpha>\<rangle> \<in> Colleq"
+        proof(cases)
+          case 1
+          then
+          have "\<langle>\<alpha>, x\<rangle> \<in> Memrel(succ(x))" "x\<in>succ(x)" "\<alpha>\<in>succ(x)" by auto
+          with \<open>f\<in>succ(x) \<^sub><\<rightarrow> (Coll,converse(Colleq))\<close>
+            show ?thesis
+            using mono_mapD(2)[OF _ \<open>\<alpha>\<in>succ(x)\<close> _ \<open>\<langle>\<alpha>, x\<rangle> \<in> Memrel(succ(x))\<close>]
+            unfolding mono_seqspace_def
+            by auto
+        next
+          case 2
+          with \<open>f\<in>succ(x) \<^sub><\<rightarrow> (Coll,converse(Colleq))\<close>
+          show ?thesis
+            using Colleq_refl mono_seqspace_is_fun[THEN apply_type]
+            by simp
+        qed
+        }
+      then
+      show ?thesis by auto
+    qed
     moreover
     note \<open>x\<in>\<omega>\<close>
     moreover from this
     have "f`x \<in> Coll" if "f: succ(x) \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq))" for f
-      using that mono_seqspace_char nat_into_M
+      using that mono_seqspace_rel_char nat_into_M
         mono_seqspace_is_fun[of "converse(Colleq)"]
       by (intro apply_type[of _ "succ(x)"]) (auto simp del:setclass_iff)
     ultimately
@@ -59,9 +102,6 @@ proof -
   show ?thesis unfolding kappa_closed_rel_def by (auto elim!:leE dest:ltD)
 qed
 
-lemma Coll_in_M[intro,simp]: "Coll \<in> M"
-  using Fn_rel_closed[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"] Aleph_rel_closed[of 1]
-    M_nat nat_into_M function_space_rel_closed by simp
 
 end (* M_ctm_AC *)
 
@@ -251,9 +291,13 @@ proof
   qed
 qed
 
+
+lemma separation_in_range: "z\<in>M \<Longrightarrow> separation(##M,\<lambda>x. z\<in>range(x))"
+  sorry
+
 lemma surj_dense_closed[intro,simp]:
   "x \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2 \<Longrightarrow> surj_dense(x) \<in> M"
-  sorry
+  using separation_in_range transM[of x] by simp
 
 lemma reals_sub_image_f_G:
   assumes "x\<in>\<omega> \<rightarrow>\<^bsup>M\<^esup> 2" 

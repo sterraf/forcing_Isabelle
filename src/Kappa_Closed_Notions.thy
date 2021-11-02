@@ -71,12 +71,6 @@ lemma (in M_ZF_library) mem_mono_seqspace_abs[absolut]:
   using assms mono_map_rel_char unfolding mono_seqspace_def mono_seqspace_rel_def
   by (simp)
 
-lemma (in M_ZF_library) mono_seqspace_char:
-  assumes "M(A)" "M(P)" "M(leq)"
-  shows  "A \<^sub><\<rightarrow>\<^bsup>M\<^esup> (P,leq) = {f: A \<^sub><\<rightarrow> (P,leq) . M(f)}"
-  using assms mono_map_rel_char unfolding mono_seqspace_def mono_seqspace_rel_def
-  by (simp)
-
 definition
   mono_map_lt_le :: "[i,i] \<Rightarrow> i" (infixr \<open>\<^sub><\<rightarrow>\<^sub>\<le>\<close> 60) where
   "\<alpha> \<^sub><\<rightarrow>\<^sub>\<le> \<beta> \<equiv> \<alpha> \<^sub><\<rightarrow> (\<beta>,lerel(\<beta>))"
@@ -117,7 +111,7 @@ lemma kappa_closed_abs:
   assumes "M(\<kappa>)" "M(P)" "M(leq)"
   shows "\<kappa>-closed\<^bsup>M\<^esup>(P,leq) \<longleftrightarrow> \<kappa>-closed(P,leq)"
   using assms transM[OF ltD, of _ \<kappa>]
-    mono_seqspace_char[of _ P leq]
+    mono_seqspace_rel_char[of _ P leq]
   unfolding kappa_closed_rel_def kappa_closed_def
   oops
 
