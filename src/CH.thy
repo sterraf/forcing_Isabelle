@@ -21,13 +21,23 @@ lemma Coll_in_M[intro,simp]: "Coll \<in> M"
   using Fn_rel_closed[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"] Aleph_rel_closed[of 1]
     M_nat nat_into_M function_space_rel_closed by simp
 
-lemma Colleq_refl : "x\<in>Coll \<Longrightarrow> \<langle>x,x\<rangle>\<in>Colleq"
-  unfolding Fnle_rel_def Fnlerel_def
+lemma Colleq_refl : "refl(Coll,Colleq)"
+  unfolding Fnle_rel_def Fnlerel_def refl_def
   using RrelI by simp
+
+(*FIXME: move this to an appropiate place.*)
+lemma converse_refl : "refl(A,r) \<Longrightarrow> refl(A,converse(r))"
+  unfolding refl_def by simp
 
 lemma converse_Colleq_in_M[intro,simp]: "converse(Colleq) \<in> M"
   sorry
 
+(*FIXME: move this to an appropiate place?*)
+lemma Ord_lt_subset : "Ord(b) \<Longrightarrow> a<b \<Longrightarrow> a\<subseteq>b"
+  by(intro subsetI,frule ltD,rule_tac Ord_trans,simp_all)
+
+lemmas nat_subset_Aleph_rel_1 =
+  Ord_lt_subset[OF Ord_Aleph_rel[of 1] Aleph_rel_increasing[of 0 1,simplified],simplified]
 
 \<comment> \<open>Kunen IV.7.14, only for \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>\<close>
 lemma succ_omega_closed_Coll: "succ(\<omega>)-closed\<^bsup>M\<^esup>(Coll,Colleq)"
@@ -48,10 +58,9 @@ proof -
     case (succ x)
     then
     have "\<forall>f\<in>succ(x) \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq)). \<forall>\<alpha> \<in> succ(x). \<langle>f`x, f ` \<alpha>\<rangle> \<in> Colleq"
-    proof -
-      {
+    proof(intro ballI)
         fix f \<alpha>
-        assume 3:"f\<in>succ(x) \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq))" "\<alpha>\<in>succ(x)"
+        assume "f\<in>succ(x) \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq))" "\<alpha>\<in>succ(x)"
         moreover from \<open>x\<in>\<omega>\<close> this
         have "f\<in>succ(x) \<^sub><\<rightarrow> (Coll,converse(Colleq))"
           using mono_seqspace_rel_char nat_into_M
@@ -60,7 +69,7 @@ proof -
         consider "\<alpha>\<in>x" | "\<alpha>=x"
           by auto
         then
-        have "\<langle>f`x, f ` \<alpha>\<rangle> \<in> Colleq"
+        show "\<langle>f`x, f ` \<alpha>\<rangle> \<in> Colleq"
         proof(cases)
           case 1
           then
@@ -75,11 +84,9 @@ proof -
           with \<open>f\<in>succ(x) \<^sub><\<rightarrow> (Coll,converse(Colleq))\<close>
           show ?thesis
             using Colleq_refl mono_seqspace_is_fun[THEN apply_type]
+            unfolding refl_def
             by simp
         qed
-        }
-      then
-      show ?thesis by auto
     qed
     moreover
     note \<open>x\<in>\<omega>\<close>
@@ -97,7 +104,62 @@ proof -
     \<comment> \<open>Interesting case: Countably infinite sequences.\<close>
   have "\<forall>f\<in>M. f \<in> \<omega> \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq)) \<longrightarrow>
                   (\<exists>q\<in>M. q \<in> Coll \<and> (\<forall>\<alpha>\<in>M. \<alpha> \<in> \<omega> \<longrightarrow> \<langle>q, f ` \<alpha>\<rangle> \<in> Colleq))"
-    sorry
+  proof(intro ballI impI)
+    fix f
+    let ?G="f``\<omega>"
+    assume "f\<in>M" "f \<in> \<omega> \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq))"
+    moreover from this
+    have "f\<in>\<omega> \<^sub><\<rightarrow> (Coll,converse(Colleq))" "f\<in>\<omega> \<rightarrow> Coll"
+      using mono_seqspace_rel_char mono_mapD(2) nat_in_M
+      by auto
+    moreover from calculation
+    have "?G \<in> M" " f\<subseteq>\<omega>\<times>Coll"
+      using nat_in_M image_closed Union_closed Pi_iff
+      by simp_all
+    moreover from calculation
+    have 1:"\<exists>d\<in>?G. d \<supseteq> h \<and> d \<supseteq> g" if "h \<in> ?G" "g \<in> ?G" for h g
+    proof -
+      from calculation
+       have  "?G={f`x . x\<in>\<omega>}"
+      using  image_function[of f \<omega>] Pi_iff domain_of_fun
+      by auto
+      from \<open>?G=_\<close> that
+      obtain m n where eq:"h=f`m" "g=f`n" "n\<in>\<omega>" "m\<in>\<omega>"
+        by auto
+      then
+      have "m\<union>n\<in>\<omega>" "m\<le>m\<union>n" "n\<le>m\<union>n"
+        using Un_upper1_le Un_upper2_le nat_into_Ord by simp_all
+      with calculation eq \<open>?G=_\<close>
+      have "f`(m\<union>n)\<in>?G" "f`(m\<union>n) \<supseteq> h" "f`(m\<union>n) \<supseteq> g"
+        using Fnle_relD mono_map_lt_le_is_mono converse_refl[OF Colleq_refl]
+          by auto
+      then
+      show ?thesis by auto
+    qed
+    moreover from calculation
+    have "?G \<subseteq> (\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (nat \<rightarrow>\<^bsup>M\<^esup> 2))"
+      using subset_trans[OF image_subset[OF \<open>f\<subseteq>_\<close>,of \<omega>] Fn_rel_subset_PFun_rel]
+      by simp
+    moreover
+    have "\<Union> ?G \<in> (\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (nat \<rightarrow>\<^bsup>M\<^esup> 2))"
+      using pfun_Un_filter_closed'[OF \<open>?G\<subseteq>_\<close> 1]  \<open>?G\<in>M\<close>
+      by simp
+    moreover from calculation
+    have "|\<Union>?G|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+      sorry
+    moreover from calculation
+    have "\<Union>?G\<in>Coll"
+      unfolding Fn_rel_def
+      by simp
+    moreover from calculation
+    have "\<Union>?G \<supseteq> f ` \<alpha> " if "\<alpha>\<in>\<omega>" for \<alpha>
+      using that image_function[OF fun_is_function] domain_of_fun
+      by auto
+    ultimately
+    show "\<exists>q\<in>M. q \<in> Coll \<and> (\<forall>\<alpha>\<in>M. \<alpha> \<in> \<omega> \<longrightarrow> \<langle>q, f ` \<alpha>\<rangle> \<in> Colleq)"
+      using Fn_rel_is_function Fnle_relI
+      by auto
+  qed
   ultimately
   show ?thesis unfolding kappa_closed_rel_def by (auto elim!:leE dest:ltD)
 qed
@@ -226,7 +288,7 @@ proof -
     by auto
   ultimately
   show ?thesis
-    using Un_filter_closed[of G]
+    using pfun_Un_filter_closed[of G]
     by simp
 qed
 

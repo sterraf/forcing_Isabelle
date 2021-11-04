@@ -11,32 +11,82 @@ begin
 
 lemmas app_fun = apply_iff[THEN iffD1]
 
-(* todo: use the discipline, don't be lazy! *) 
+(* todo: use the discipline, don't be lazy! *)
 definition PFun_Space_Rel :: "[i,i\<Rightarrow>o, i] \<Rightarrow> i"  ("_\<rightharpoonup>\<^bsup>_\<^esup>_")
   where "A \<rightharpoonup>\<^bsup>M\<^esup> B == {f \<in> Pow(A\<times>B) . M(f) \<and> function(f)}"
+
+lemma Un_filter_fun_space_closed:
+  assumes "G \<subseteq> I \<rightarrow> J" "\<And> f g . f\<in>G \<Longrightarrow> g\<in>G \<Longrightarrow> \<exists>d\<in>I\<rightarrow> J . d\<supseteq>f \<and> d\<supseteq>g"
+  shows "\<Union>G \<in> Pow(I\<times>J)" "function(\<Union>G)"
+proof -
+  from assms
+  show "\<Union>G \<in> Pow(I\<times>J)"
+    using Union_Pow_iff
+    unfolding Pi_def
+    by auto
+next
+  show "function(\<Union>G)"
+    unfolding function_def
+  proof(auto)
+    fix B B' x y y'
+    assume "B \<in> G" "\<langle>x, y\<rangle> \<in> B" "B' \<in> G" "\<langle>x, y'\<rangle> \<in> B'"
+    moreover from assms this
+    have "B \<in> I \<rightarrow> J" "B' \<in> I \<rightarrow> J"
+    by auto
+    moreover from calculation assms(2)[of B B']
+    obtain d where "d \<supseteq> B"  "d \<supseteq> B'" "d\<in>I \<rightarrow> J"  "\<langle>x, y\<rangle> \<in> d" "\<langle>x, y'\<rangle> \<in> d"
+      using subsetD[OF \<open>G\<subseteq>_\<close>]
+      by auto
+    then
+    show "y=y'"
+      using fun_is_function[OF \<open>d\<in>_\<close>]
+      unfolding function_def
+      by force
+  qed
+qed
+
+lemma Un_filter_is_fun :
+  assumes "G \<subseteq> I \<rightarrow> J" "\<And> f g . f\<in>G \<Longrightarrow> g\<in>G \<Longrightarrow> \<exists>d\<in>I\<rightarrow> J . d\<supseteq>f \<and> d\<supseteq>g" "G\<noteq>0"
+  shows "\<Union>G \<in> I \<rightarrow> J"
+  using assms Un_filter_fun_space_closed Pi_iff
+proof(simp_all)
+  show "I\<subseteq>domain(\<Union>G)"
+  proof -
+    from \<open>G\<noteq>0\<close>
+    obtain f where "f\<subseteq>\<Union>G" "f\<in>G"
+      by auto
+    with \<open>G\<subseteq>_\<close>
+    have "f\<in>I\<rightarrow>J" by auto
+    then
+    show ?thesis
+      using subset_trans[OF _ domain_mono[OF \<open>f\<subseteq>\<Union>G\<close>],of I]
+      unfolding Pi_def by auto
+  qed
+qed
+
 
 context M_cardinals
 begin
 
 lemma mem_function_space_relD:
-  assumes "f \<in> function_space_rel(M,A,y)" "M(A)" "M(y)" 
+  assumes "f \<in> function_space_rel(M,A,y)" "M(A)" "M(y)"
   shows "f \<in> A \<rightarrow> y" and "M(f)"
   using assms function_space_rel_char by simp_all
 
 
 (*todo*)
-lemma pfunI : 
+lemma pfunI :
   assumes "C\<subseteq>A" "f \<in> C \<rightarrow>\<^bsup>M\<^esup> B" "M(C)" "M(B)"
   shows "f\<in> A \<rightharpoonup>\<^bsup>M\<^esup> B"
 proof -
-  from assms 
+  from assms
   have "f \<in> C\<rightarrow>B" "M(f)"
     using mem_function_space_relD
     by simp_all
   with assms
   show ?thesis
     using Pi_iff
-  unfolding PFun_Space_Rel_def 
+  unfolding PFun_Space_Rel_def
   by auto
 qed
 
@@ -50,67 +100,64 @@ lemma function_subset:
   "function(f) \<Longrightarrow> g\<subseteq>f \<Longrightarrow> function(g)"
   unfolding function_def subset_def by auto
 
-lemma pfun_subsetI : 
+lemma pfun_subsetI :
   assumes "f \<in> A \<rightharpoonup>\<^bsup>M\<^esup> B" "g\<subseteq>f" "M(g)"
   shows "g\<in> A \<rightharpoonup>\<^bsup>M\<^esup> B"
 using assms function_subset
-  unfolding PFun_Space_Rel_def 
+  unfolding PFun_Space_Rel_def
   by auto
 
-lemma un_compat_pfun :
-  assumes "f \<in> I\<rightharpoonup>\<^bsup>M\<^esup> J" "g \<in> I\<rightharpoonup>\<^bsup>M\<^esup> J" "d\<in> I\<rightharpoonup>\<^bsup>M\<^esup> J" "f\<subseteq>d \<and> g\<subseteq>d" 
-  shows "(f\<union>g) \<in> I\<rightharpoonup>\<^bsup>M\<^esup> J"
-proof -
-  from assms
-  have "M(f)" "M(g)" "f\<union>g \<subseteq> d" "M(f\<union>g)"
-    using Un_least
-    unfolding PFun_Space_Rel_def 
-    by simp_all
-  then
-  show ?thesis
-    using pfun_subsetI assms
-    by simp
-qed
+lemma pfun_is_function :
+  "f \<in> A\<rightharpoonup>\<^bsup>M\<^esup> B \<Longrightarrow> function(f)"
+  unfolding PFun_Space_Rel_def by simp
 
-lemma Un_filter_closed: 
+lemma pfun_Un_filter_closed:
   assumes "G \<subseteq>I\<rightharpoonup>\<^bsup>M\<^esup> J" "\<And> f g . f\<in>G \<Longrightarrow> g\<in>G \<Longrightarrow> \<exists>d\<in>I\<rightharpoonup>\<^bsup>M\<^esup> J . d\<supseteq>f \<and> d\<supseteq>g"
   shows "\<Union>G \<in> Pow(I\<times>J)" "function(\<Union>G)"
-proof - 
-  from assms 
+proof -
+  from assms
   show "\<Union>G \<in> Pow(I\<times>J)"
     using Union_Pow_iff
-    unfolding PFun_Space_Rel_def 
+    unfolding PFun_Space_Rel_def
     by auto
 next
   show "function(\<Union>G)"
     unfolding function_def
   proof(auto)
     fix B B' x y y'
-    assume "B \<in> G" "\<langle>x, y\<rangle> \<in> B" "B' \<in> G" "\<langle>x, y'\<rangle> \<in> B'" 
-    moreover from assms this
-    have "B \<in> I \<rightharpoonup>\<^bsup>M\<^esup> J" "B' \<in> I \<rightharpoonup>\<^bsup>M\<^esup> J" "\<langle>x, y'\<rangle> \<in> B\<union> B'"  "\<langle>x, y\<rangle> \<in> B\<union> B'"
-    by auto
-    moreover from calculation assms(2)[of B B']
-    obtain d where "d \<supseteq> B"  "d \<supseteq> B'" "d\<in>I \<rightharpoonup>\<^bsup>M\<^esup> J"
-      using subsetD[OF \<open>G\<subseteq>_\<close>]
-      by auto
-    moreover from calculation
-    have "B \<union> B' \<in> I \<rightharpoonup>\<^bsup>M\<^esup> J"
-      using un_compat_pfun by simp
-    then
-    have "function(B\<union>B')" 
-      unfolding PFun_Space_Rel_def by simp
-    ultimately
-    show "y=y'" 
-      unfolding function_def
+    assume "B \<in> G" "\<langle>x, y\<rangle> \<in> B" "B' \<in> G" "\<langle>x, y'\<rangle> \<in> B'"
+    moreover from calculation assms
+    obtain d where "d \<in> I \<rightharpoonup>\<^bsup>M\<^esup> J" "function(d)" "\<langle>x, y\<rangle> \<in> d"  "\<langle>x, y'\<rangle> \<in> d"
+      using pfun_is_function
       by force
+    ultimately
+    show "y=y'"
+      unfolding function_def
+      by auto
   qed
 qed
 
-lemma pfun_is_function :
-  assumes "f \<in> A\<rightharpoonup>\<^bsup>M\<^esup> B"
-  shows "function(f)"
-  using assms unfolding PFun_Space_Rel_def by simp
+lemma pfun_Un_filter_closed'':
+  assumes "G \<subseteq>I\<rightharpoonup>\<^bsup>M\<^esup> J" "\<And> f g . f\<in>G \<Longrightarrow> g\<in>G \<Longrightarrow> \<exists>d\<in>G . d\<supseteq>f \<and> d\<supseteq>g"
+  shows "\<Union>G \<in> Pow(I\<times>J)" "function(\<Union>G)"
+proof -
+  from assms
+  have "\<And> f g . f\<in>G \<Longrightarrow> g\<in>G \<Longrightarrow> \<exists>d\<in>I\<rightharpoonup>\<^bsup>M\<^esup> J . d\<supseteq>f \<and> d\<supseteq>g"
+    using subsetD[OF assms(1),THEN [2] bexI]
+    by force
+  then
+  show "\<Union>G \<in> Pow(I\<times>J)"  "function(\<Union>G)"
+      using assms pfun_Un_filter_closed
+    unfolding PFun_Space_Rel_def
+    by auto
+qed
+
+lemma pfun_Un_filter_closed':
+  assumes "G \<subseteq>I\<rightharpoonup>\<^bsup>M\<^esup> J" "\<And> f g . f\<in>G \<Longrightarrow> g\<in>G \<Longrightarrow> \<exists>d\<in>G . d\<supseteq>f \<and> d\<supseteq>g" "M(G)"
+  shows "\<Union>G \<in> I\<rightharpoonup>\<^bsup>M\<^esup> J"
+  using assms pfun_Un_filter_closed''
+  unfolding PFun_Space_Rel_def
+  by auto
 
 lemma pfunD :
   assumes "f \<in> A\<rightharpoonup>\<^bsup>M\<^esup> B"
@@ -125,7 +172,7 @@ proof -
   have "domain(f) \<subseteq> A" "f \<in> domain(f) \<rightarrow> B" "M(domain(f))"
     using assms Pow_iff[of f "A\<times>B"] domain_subset Pi_iff
     by auto
-  ultimately 
+  ultimately
   show ?thesis by auto
 qed
 
@@ -141,7 +188,7 @@ lemma FiniteFun_pfunI :
   using assms(1)
 proof(induct)
 case emptyI
-  then 
+  then
   show ?case
     using assms nonempty mem_function_space_rel_abs pfunI[OF empty_subsetI, of 0]
     by simp
@@ -150,10 +197,10 @@ next
   note consI
   moreover from this
   have "M(a)" "M(b)" "M(h)" "domain(h) \<subseteq> A"
-    using transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>] 
+    using transM[OF _ \<open>M(A)\<close>] transM[OF _ \<open>M(B)\<close>]
       FinD
       FiniteFun_domain_Fin
-      pfunD_closed 
+      pfunD_closed
     by simp_all
   moreover from calculation
   have "{a}\<union>domain(h)\<subseteq>A" "M({a}\<union>domain(h))" "M(cons(<a,b>,h))" "domain(cons(<a,b>,h)) = {a}\<union>domain(h)"
@@ -164,8 +211,8 @@ next
     by auto
   ultimately
   show "cons(<a,b>,h) \<in> A \<rightharpoonup>\<^bsup>M\<^esup> B"
-    using assms  mem_function_space_rel_abs pfunI 
-    by simp_all  
+    using assms  mem_function_space_rel_abs pfunI
+    by simp_all
 qed
 
 (* FIXME: move this lemma to FiniteFun. *)
@@ -178,23 +225,23 @@ proof(induct)
   then show ?case using emptyI by simp
 next
   case (cons p f)
-  moreover 
+  moreover
   from assms this
   have "fst(p)\<in>A" "snd(p)\<in>B" "function(f)"
     using snd_type[OF \<open>p\<in>_\<close>] function_subset
     by auto
-  moreover 
+  moreover
   from \<open>function(cons(p,f))\<close> \<open>p\<notin>f\<close> \<open>p\<in>_\<close>
-  have "fst(p)\<notin>domain(f)"  
+  have "fst(p)\<notin>domain(f)"
     unfolding function_def
     by force
-  ultimately 
-  show ?case 
+  ultimately
+  show ?case
     using consI[of "fst(p)" _ "snd(p)"]
     by auto
 qed
 
-lemma PFun_FiniteFunI : 
+lemma PFun_FiniteFunI :
   assumes "f \<in> A \<rightharpoonup>\<^bsup>M\<^esup> B" "Finite(f)"
   shows  "f \<in> A-||> B"
 proof -
@@ -203,7 +250,7 @@ proof -
     using Finite_Fin Pow_iff
     unfolding PFun_Space_Rel_def
     by auto
-  then 
+  then
   show ?thesis
     using FiniteFunI by simp
 qed
@@ -218,57 +265,57 @@ definition
 context  M_library
 begin
 
-lemma Fn_rel_subset_PFun_rel : "Fn\<^bsup>M\<^esup>(\<kappa>,I,J) \<subseteq>  I\<rightharpoonup>\<^bsup>M\<^esup> J"
+lemma Fn_rel_subset_PFun_rel : "Fn\<^bsup>M\<^esup>(\<kappa>,I,J) \<subseteq> I\<rightharpoonup>\<^bsup>M\<^esup> J"
   unfolding Fn_rel_def by auto
 
 lemma Fn_relI[intro]:
   assumes "f : d \<rightarrow> J" "d \<subseteq> I" "|f|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>" "M(d)" "M(J)" "M(f)"
   shows "f \<in> Fn_rel(M,\<kappa>,I,J)"
   using assms pfunI mem_function_space_rel_abs
-  unfolding Fn_rel_def 
+  unfolding Fn_rel_def
   by auto
 
 lemma Fn_relD[dest]:
   assumes "p \<in> Fn_rel(M,\<kappa>,I,J)"
   shows "\<exists>C[M]. C\<subseteq>I \<and> p : C \<rightarrow> J \<and> |p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>"
   using assms pfunD
-  unfolding Fn_rel_def 
+  unfolding Fn_rel_def
   by simp
-  
-lemma Fn_rel_is_function: 
+
+lemma Fn_rel_is_function:
   assumes "p \<in> Fn_rel(M,\<kappa>,I,J)"
   shows "function(p)" "M(p)" "|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>" "p\<in> I\<rightharpoonup>\<^bsup>M\<^esup> J"
   using assms
   unfolding Fn_rel_def PFun_Space_Rel_def by simp_all
 
-lemma Fn_rel_mono: 
+lemma Fn_rel_mono:
   assumes "p \<in> Fn_rel(M,\<kappa>,I,J)" "\<kappa> \<prec>\<^bsup>M\<^esup> \<kappa>'" "M(\<kappa>)" "M(\<kappa>')"
   shows "p \<in> Fn_rel(M,\<kappa>',I,J)"
-  using assms lesspoll_rel_trans[OF _ assms(2)] cardinal_rel_closed 
+  using assms lesspoll_rel_trans[OF _ assms(2)] cardinal_rel_closed
     Fn_rel_is_function(2)[OF assms(1)]
-  unfolding Fn_rel_def 
+  unfolding Fn_rel_def
   by simp
 
-lemma Fn_rel_mono': 
+lemma Fn_rel_mono':
   assumes "p \<in> Fn_rel(M,\<kappa>,I,J)" "\<kappa> \<lesssim>\<^bsup>M\<^esup> \<kappa>'" "M(\<kappa>)" "M(\<kappa>')"
   shows "p \<in> Fn_rel(M,\<kappa>',I,J)"
 proof -
   note assms
   then
-  consider "\<kappa> \<prec>\<^bsup>M\<^esup> \<kappa>'"  | "\<kappa> \<approx>\<^bsup>M\<^esup> \<kappa>'" 
-    using lepoll_rel_iff_leqpoll_rel 
+  consider "\<kappa> \<prec>\<^bsup>M\<^esup> \<kappa>'"  | "\<kappa> \<approx>\<^bsup>M\<^esup> \<kappa>'"
+    using lepoll_rel_iff_leqpoll_rel
     by auto
   then
-  show ?thesis 
+  show ?thesis
   proof(cases)
     case 1
     with assms show ?thesis using Fn_rel_mono by simp
   next
     case 2
-    then show ?thesis 
+    then show ?thesis
       using assms cardinal_rel_closed Fn_rel_is_function[OF assms(1)]
-        lesspoll_rel_eq_trans 
-  unfolding Fn_rel_def 
+        lesspoll_rel_eq_trans
+  unfolding Fn_rel_def
   by simp
   qed
 qed
@@ -276,9 +323,9 @@ qed
 lemma Fn_csucc:
   assumes "Ord(\<kappa>)" "M(\<kappa>)"
   shows "Fn_rel(M,(\<kappa>\<^sup>+)\<^bsup>M\<^esup>,I,J) = {p\<in> I\<rightharpoonup>\<^bsup>M\<^esup> J . |p|\<^bsup>M\<^esup>  \<lesssim>\<^bsup>M\<^esup> \<kappa>}"   (is "?L=?R")
-  using assms 
+  using assms
 proof(intro equalityI)
-  show "?L \<subseteq> ?R" 
+  show "?L \<subseteq> ?R"
   proof(intro subsetI)
     fix p
     assume "p\<in>?L"
@@ -287,7 +334,7 @@ proof(intro equalityI)
       using Fn_rel_is_function by simp_all
     then
     show "p\<in>?R"
-      using  assms lesspoll_rel_csucc_rel by simp 
+      using  assms lesspoll_rel_csucc_rel by simp
   qed
 next
   show "?R\<subseteq>?L"
@@ -300,7 +347,7 @@ next
     then
     show "p\<in>?L"
       using  assms lesspoll_rel_csucc_rel pfunD_closed
-      unfolding Fn_rel_def 
+      unfolding Fn_rel_def
       by simp
   qed
 qed
@@ -316,14 +363,14 @@ lemma Finite_imp_lesspoll_nat:
 lemma FinD_Finite :
   assumes "a\<in>Fin(A)"
   shows "Finite(a)"
-  using assms 
+  using assms
   by(induct,simp_all)
 
-lemma Fn_rel_nat_eq_FiniteFun: 
+lemma Fn_rel_nat_eq_FiniteFun:
   assumes "M(I)" "M(J)"
   shows "I -||> J = Fn_rel(M,\<omega>,I,J)"
 proof(intro equalityI subsetI)
-  fix p 
+  fix p
   assume "p\<in>I -||> J"
   with assms
   have "p\<in> I \<rightharpoonup>\<^bsup>M\<^esup> J" "Finite(p)"
@@ -334,18 +381,18 @@ proof(intro equalityI subsetI)
     using Finite_cardinal_rel_Finite
       Finite_cardinal_rel_in_nat pfunD_closed[of p] n_lesspoll_rel_nat
     by simp
-  ultimately 
+  ultimately
   show "p\<in> Fn_rel(M,\<omega>,I,J)"
     unfolding Fn_rel_def by simp
 next
   fix p
   assume "p\<in> Fn_rel(M,\<omega>,I,J)"
   then
-  have "p\<in> I \<rightharpoonup>\<^bsup>M\<^esup> J"  "|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<omega>" 
+  have "p\<in> I \<rightharpoonup>\<^bsup>M\<^esup> J"  "|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<omega>"
     unfolding Fn_rel_def by simp_all
-  moreover from this 
+  moreover from this
   have "Finite(p)"
-    using Finite_cardinal_rel_Finite lesspoll_rel_nat_is_Finite_rel pfunD_closed 
+    using Finite_cardinal_rel_Finite lesspoll_rel_nat_is_Finite_rel pfunD_closed
       cardinal_rel_closed[of p]  Finite_cardinal_rel_iff'[THEN iffD1]
     by simp
   ultimately
@@ -357,7 +404,7 @@ qed
 lemma Fn_nat_abs:
   assumes "M(I)" "M(J)"
   shows "Fn(nat,I,J) = Fn_rel(M,\<omega>,I,J)"
-  using assms Fn_rel_nat_eq_FiniteFun Fn_nat_eq_FiniteFun 
+  using assms Fn_rel_nat_eq_FiniteFun Fn_nat_eq_FiniteFun
   by simp
 
 end
@@ -400,13 +447,13 @@ begin
 
 lemma Fn_rel_closed[intro,simp]:
   assumes "M(\<kappa>)" "M(I)" "M(J)"
-  shows "M(Fn\<^bsup>M\<^esup>(\<kappa>,I,J))" 
+  shows "M(Fn\<^bsup>M\<^esup>(\<kappa>,I,J))"
   sorry
 
 lemma Fn_rel_subset_Pow:
   assumes "M(\<kappa>)" "M(I)" "M(J)"
   shows "Fn\<^bsup>M\<^esup>(\<kappa>,I,J) \<subseteq> Pow(I\<times>J)"
-  unfolding Fn_rel_def PFun_Space_Rel_def 
+  unfolding Fn_rel_def PFun_Space_Rel_def
   by auto
 
 lemma Fnle_rel_closed[intro,simp]:
@@ -419,14 +466,14 @@ lemma Fnle_rel_closed[intro,simp]:
 lemma Fnle_rel_Aleph_rel1_closed[intro,simp]: "M(Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))"
   by simp
 
-lemma zero_in_Fn_rel: 
+lemma zero_in_Fn_rel:
   assumes "0<\<kappa>" "M(\<kappa>)" "M(I)" "M(J)"
   shows "0 \<in> Fn\<^bsup>M\<^esup>(\<kappa>, I, J)"
-  unfolding Fn_rel_def 
+  unfolding Fn_rel_def
   using zero_in_PFun_rel zero_lesspoll_rel assms
   by simp
 
-lemma zero_top_Fn_rel: 
+lemma zero_top_Fn_rel:
   assumes "p\<in>Fn\<^bsup>M\<^esup>(\<kappa>, I, J)" "0<\<kappa>" "M(\<kappa>)" "M(I)" "M(J)"
   shows "\<langle>p, 0\<rangle> \<in> Fnle\<^bsup>M\<^esup>(\<kappa>, I, J)"
   using assms zero_in_Fn_rel unfolding preorder_on_def refl_def trans_on_def
