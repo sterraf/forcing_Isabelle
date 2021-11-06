@@ -206,12 +206,6 @@ abbreviation
   dom_dense :: "i\<Rightarrow>i" where
   "dom_dense(x) \<equiv> { p\<in>Coll . x \<in> domain(p) }"
 
-lemma (in M_master) cons_in_Fn_rel:
-  assumes "x \<notin> domain(p)" "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "x \<in> I" "j \<in> J" "InfCard\<^bsup>M\<^esup>(\<kappa>)"
-    "M(x)" "M(\<kappa>)" "M(I)" "M(J)"
-  shows "cons(\<langle>x,j\<rangle>, p) \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
-  sorry
-
 lemma Coll_into_countable_rel: "p \<in> Coll \<Longrightarrow> countable\<^bsup>M\<^esup>(p)"
 proof -
   assume "p\<in>Coll"

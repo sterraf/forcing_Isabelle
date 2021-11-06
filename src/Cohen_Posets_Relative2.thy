@@ -7,6 +7,7 @@ theory Cohen_Posets_Relative2
     Recursion_Thms \<comment> \<open>only for the definition of \<^term>\<open>Rrel\<close>\<close>
     Cardinal_Library_Relative
     ZF_Library_Relative2
+    Cardinal_Preservation \<comment> \<open>only for \<^locale>\<open>M_cohen\<close>\<close>
 begin
 
 lemmas app_fun = apply_iff[THEN iffD1]
@@ -181,6 +182,20 @@ lemma pfunD_closed :
   shows "M(f)"
   using assms
   unfolding PFun_Space_Rel_def by simp
+
+lemma pfun_singletonI :
+  assumes "x \<in> A" "b \<in> B" "M(A)" "M(B)"
+  shows "{\<langle>x,b\<rangle>} \<in> A\<rightharpoonup>\<^bsup>M\<^esup> B"
+  using assms transM[of x A] transM[of b B]
+  unfolding PFun_Space_Rel_def function_def
+  by auto
+
+lemma pfun_unionI :
+  assumes "f \<in> A\<rightharpoonup>\<^bsup>M\<^esup> B" "g \<in> A\<rightharpoonup>\<^bsup>M\<^esup> B" "domain(f)\<inter>domain(g)=0"
+  shows "f\<union>g \<in> A\<rightharpoonup>\<^bsup>M\<^esup> B"
+  using assms
+  unfolding PFun_Space_Rel_def function_def
+  by blast
 
 lemma FiniteFun_pfunI :
   assumes "f \<in> A-||> B" "M(A)" "M(B)"
@@ -406,8 +421,49 @@ lemma Fn_nat_abs:
   shows "Fn(nat,I,J) = Fn_rel(M,\<omega>,I,J)"
   using assms Fn_rel_nat_eq_FiniteFun Fn_nat_eq_FiniteFun
   by simp
-
 end
+
+lemma (in M_cohen) Fn_rel_unionI:
+  assumes "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "q\<in>Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"  "InfCard\<^bsup>M\<^esup>(\<kappa>)"
+    "M(\<kappa>)" "M(I)" "M(J)""domain(p) \<inter> domain(q) = 0"
+  shows "p\<union>q \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
+proof -
+  note assms
+  moreover from calculation
+  have "|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>"  "M(p)"
+    "|q|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>" "M(q)"
+    using Fn_rel_is_function by simp_all
+  moreover from calculation
+  have "p\<union>q \<prec>\<^bsup>M\<^esup> \<kappa>"
+    using eqpoll_rel_sym cardinal_rel_eqpoll_rel
+      eq_lesspoll_rel_trans[OF _ \<open>|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> _\<close>]
+      eq_lesspoll_rel_trans[OF _ \<open>|q|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> _\<close>]
+      InfCard_rel_lesspoll_rel_Un
+    by simp_all
+  ultimately
+  show ?thesis
+    unfolding Fn_rel_def
+    using pfun_unionI cardinal_rel_eqpoll_rel
+      eq_lesspoll_rel_trans[OF _ \<open>p\<union>q \<prec>\<^bsup>M\<^esup> _\<close>]
+    by auto
+qed
+
+lemma (in M_library) Fn_rel_singletonI:
+  assumes "x \<in> I" "j \<in> J" "InfCard\<^bsup>M\<^esup>(\<kappa>)" "M(\<kappa>)" "M(I)" "M(J)"
+  shows "{\<langle>x,j\<rangle>} \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
+    using assms pfun_singletonI transM[of x ] transM[of j]
+      cardinal_rel_singleton
+      lt_Card_rel_imp_lesspoll_rel ltI[OF nat_into_InfCard_rel]
+      Card_rel_cardinal_rel Card_rel_is_Ord InfCard_rel_is_Card_rel
+    unfolding Fn_rel_def
+    by auto
+
+lemma (in M_cohen) cons_in_Fn_rel:
+  assumes "x \<notin> domain(p)" "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "x \<in> I" "j \<in> J" "InfCard\<^bsup>M\<^esup>(\<kappa>)"
+    "M(\<kappa>)" "M(I)" "M(J)"
+  shows "cons(\<langle>x,j\<rangle>, p) \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
+    using assms cons_eq Fn_rel_unionI[OF Fn_rel_singletonI[of x I j J] \<open>p\<in>_\<close>]
+  by auto
 
 definition
   Fnle_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> i" (\<open>Fnle\<^bsup>_\<^esup>'(_,_,_')\<close>) where
