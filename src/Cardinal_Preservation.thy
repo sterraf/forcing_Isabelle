@@ -142,7 +142,7 @@ context G_generic_AC begin
 context
   includes G_generic_lemmas
 begin
-
+(*FIXME: this should be in M_ctm_AC. *)
 \<comment> \<open>Simplifying simp rules (because of the occurrence of "\#\#")\<close>
 lemmas sharp_simps = Card_rel_Union Card_rel_cardinal_rel Collect_abs
   Cons_abs Cons_in_M_iff Diff_closed Equal_abs Equal_in_M_iff Finite_abs
@@ -180,6 +180,9 @@ lemmas sharp_simps = Card_rel_Union Card_rel_cardinal_rel Collect_abs
   transitive_rel_abs transitive_set_abs typed_function_abs union_abs
   upair_abs upair_in_M_iff vimage_abs vimage_closed well_ord_abs
   mem_formula_abs fst_abs snd_abs nth_closed
+
+declare sharp_simps[simp del, simplified setclass_iff, simp]
+
 
 \<comment> \<open>NOTE: there is a theorem missing from those above\<close>
 lemmas mg_sharp_simps = ext.Card_rel_Union ext.Card_rel_cardinal_rel
@@ -234,7 +237,6 @@ lemmas mg_sharp_simps = ext.Card_rel_Union ext.Card_rel_cardinal_rel
   ext.upair_abs ext.upair_in_M_iff ext.vimage_abs ext.vimage_closed
   ext.well_ord_abs ext.mem_formula_abs ext.nth_closed
 
-declare sharp_simps[simp del, simplified setclass_iff, simp]
   \<comment> \<open>The following was motivated by the fact that
     @{thm ext.apply_closed} did not simplify appropriately
 
@@ -562,7 +564,7 @@ lemma ccc_fun_approximation_lemma:
   notes le_trans[trans]
   assumes "ccc\<^bsup>M\<^esup>(P,leq)" "A\<in>M" "B\<in>M" "f\<in>M[G]" "f : A \<rightarrow> B"
   shows
-    "\<exists>F\<in>M. F : A \<rightarrow> Pow(B) \<and> (\<forall>a\<in>A. f`a \<in> F`a \<and> |F`a|\<^bsup>M\<^esup> \<le> \<omega>)"
+    "\<exists>F\<in>M. F : A \<rightarrow> Pow\<^bsup>M\<^esup>(B) \<and> (\<forall>a\<in>A. f`a \<in> F`a \<and> |F`a|\<^bsup>M\<^esup> \<le> \<omega>)"
 proof -
   from \<open>f\<in>M[G]\<close>
   obtain f_dot where "f = val(P,G,f_dot)" "f_dot\<in>M" using GenExtD by force
@@ -577,7 +579,8 @@ proof -
   from assms \<open>f_dot\<in>_\<close> \<open>p\<in>M\<close>
   have "F \<in> M"
     unfolding F_def using ccc_fun_closed_lemma by simp
-  moreover
+
+  moreover from calculation
   have "f`a \<in> F`a" if "a \<in> A" for a
   proof -
     note \<open>f: A \<rightarrow> B\<close> \<open>a \<in> A\<close>
@@ -607,7 +610,7 @@ proof -
     show ?thesis unfolding F_def by simp
   qed
   moreover
-  have "|F`a|\<^bsup>M\<^esup> \<le> \<omega>" if "a \<in> A" for a
+  have "|F`a|\<^bsup>M\<^esup> \<le> \<omega> \<and> F`a\<in>M" if "a \<in> A" for a
   proof -
     let ?Q="\<lambda>b. {q\<in>P. q \<preceq> p \<and> (q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v])}"
     from \<open>F \<in> M\<close> \<open>a\<in>A\<close> \<open>A\<in>M\<close>
@@ -693,11 +696,15 @@ proof -
     have "|range(q)|\<^bsup>M\<^esup> \<le> \<omega>"
       using def_ccc_rel by simp
     finally
-    show ?thesis .
+    show ?thesis using \<open>F`a\<in>M\<close> by auto
   qed
-  moreover
-  have "F : A \<rightarrow> Pow(B)"
-    unfolding F_def by (rule_tac lam_type) blast
+  moreover from this
+  have "F`a\<in>M" if "a\<in>A" for a
+    using that by simp
+  moreover from this \<open>B\<in>M\<close>
+  have "F : A \<rightarrow> Pow\<^bsup>M\<^esup>(B)"
+    using Pow_rel_char
+    unfolding F_def by (rule_tac lam_type) auto
   ultimately
   show ?thesis by auto
 qed

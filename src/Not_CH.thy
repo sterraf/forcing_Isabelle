@@ -159,6 +159,20 @@ lemma (in M_trans) mem_F_bound5:
   using apply_0 unfolding F_def
   by (cases "M(c)", auto simp:F_def drSR_Y_def dC_F_def)
 
+sublocale M_ctm_AC \<subseteq> M_replacement_lepoll "##M" "(`)"
+  using UN_lepoll_assumptions lam_replacement_apply lam_replacement_inj_rel
+    mem_F_bound4 apply_0 domain_closed apply_closed
+  unfolding lepoll_assumptions_defs
+proof (unfold_locales,
+    rule_tac [3] lam_Least_assumption_general[where U=domain, OF _ mem_F_bound4], simp_all)
+  fix A i x
+  assume "A \<in> M" "x \<in> M" "x \<in> A ` i"
+  then
+  show "i \<in> M"
+    using apply_0[of i A] transM[of _ "domain(A)", simplified] domain_closed
+    by force
+qed
+
 context G_generic_AC begin
 
 context
@@ -191,7 +205,7 @@ proof (rule ccontr)
   moreover
   note \<open>ccc\<^bsup>M\<^esup>(P,leq)\<close> \<open>z\<in>M\<close>
   ultimately
-  obtain F where "F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)" "\<forall>\<beta>\<in>\<alpha>. f`\<beta> \<in> F`\<beta>" "\<forall>\<beta>\<in>\<alpha>. |F`\<beta>|\<^bsup>M\<^esup> \<le> \<omega>"
+  obtain F where "F:\<alpha>\<rightarrow>Pow\<^bsup>M\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)" "\<forall>\<beta>\<in>\<alpha>. f`\<beta> \<in> F`\<beta>" "\<forall>\<beta>\<in>\<alpha>. |F`\<beta>|\<^bsup>M\<^esup> \<le> \<omega>"
     "F \<in> M"
     using ccc_fun_approximation_lemma[of \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>" f]
       ext.mem_surj_abs[of f \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"] \<open>Ord(z)\<close>
@@ -199,51 +213,24 @@ proof (rule ccontr)
   then
   have "\<beta> \<in> \<alpha> \<Longrightarrow> |F`\<beta>|\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>" for \<beta>
     using Aleph_rel_zero by simp
-  interpret M_replacement_lepoll "##M" "(`)"
-    using UN_lepoll_assumptions lam_replacement_apply lam_replacement_inj_rel
-      mem_F_bound4 apply_0
-    unfolding lepoll_assumptions_defs
-  proof (unfold_locales, 
-      rule_tac [3] lam_Least_assumption_general[where U=domain, OF _ mem_F_bound4], simp_all) 
-    fix A i x
-    assume "A \<in> M" "x \<in> M" "x \<in> A ` i"
-    then
-    show "i \<in> M"
-      using apply_0[of i A] transM[of _ "domain(A)", simplified]
-      by force
-  qed
-  from \<open>\<alpha> \<in> M\<close> \<open>F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close> \<open>F\<in>M\<close>
+  have "w \<in> F ` x \<Longrightarrow> x \<in> M" for w x
+    proof -
+      fix w x
+      assume "w \<in> F`x"
+      then
+      have "x \<in> domain(F)"
+        using apply_0 by auto
+      with \<open>F:\<alpha>\<rightarrow>Pow\<^bsup>M\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close>
+      have "x \<in> \<alpha>"
+        using domain_of_fun by simp
+      with \<open>\<alpha> \<in> M\<close>
+      show "x \<in> M" by (auto dest:transM)
+    qed
+    with \<open>\<alpha> \<in> M\<close> \<open>F:\<alpha>\<rightarrow>Pow\<^bsup>M\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close> \<open>F\<in>M\<close>
   interpret M_cardinal_UN_lepoll "##M" "\<lambda>\<beta>. F`\<beta>" \<alpha>
     using Aleph_rel_closed[of 0] UN_lepoll_assumptions lepoll_assumptions
       lam_replacement_apply lam_replacement_inj_rel
   proof (unfold_locales, auto dest:transM simp del:if_range_F_else_F_def)
-    show "w \<in> F ` x \<Longrightarrow> x \<in> M" for w x
-    proof -
-      fix w x
-      assume "w \<in> F`x"
-      then
-      have "x \<in> domain(F)"
-        using apply_0 by auto
-      with \<open>F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close>
-      have "x \<in> \<alpha>"
-        using domain_of_fun by simp
-      with \<open>\<alpha> \<in> M\<close>
-      show "x \<in> M" by (auto dest:transM)
-    qed
-   show "w \<in> F ` x \<Longrightarrow> x \<in> M" for w x \<comment> \<open>FIXME: why two times?\<close>
-    proof -
-      fix w x
-      assume "w \<in> F`x"
-      then
-      have "x \<in> domain(F)"
-        using apply_0 by auto
-      with \<open>F:\<alpha>\<rightarrow>Pow(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close>
-      have "x \<in> \<alpha>"
-        using domain_of_fun by simp
-      with \<open>\<alpha> \<in> M\<close>
-      show "x \<in> M" by (auto dest:transM)
-    qed
-  next
     fix f b
     assume "b\<in>M" "f\<in>M"
     with \<open>F\<in>M\<close>
