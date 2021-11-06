@@ -67,6 +67,18 @@ proof (intro not_le_iff_lt[THEN iffD1] notI)
     using cantor_inj_rel by simp
 qed simp
 
+(*FIXME: this can be generalized. *)
+lemma countable_fun_imp_countable_image :
+  assumes "f:C \<rightarrow>\<^bsup>M\<^esup> B"
+    "countable\<^bsup>M\<^esup>(C)"
+    "\<And> c . c\<in>C \<Longrightarrow> countable\<^bsup>M\<^esup>(f`c)"
+  shows "countable\<^bsup>M\<^esup>(\<Union>(f``C))"
+  sorry
+
+lemma countable_iff_le_rel_Aleph_rel_one :
+  "countable\<^bsup>M\<^esup>(C) \<longleftrightarrow> |C|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+  sorry
+
 end (* M_cardinal_library *)
 
 end

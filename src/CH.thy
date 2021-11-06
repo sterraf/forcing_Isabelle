@@ -8,6 +8,7 @@ begin
 context M_ctm_AC
 begin
 
+
 abbreviation
   Coll :: "i" where
   "Coll \<equiv> Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)"
@@ -29,8 +30,13 @@ lemma Colleq_refl : "refl(Coll,Colleq)"
 lemma converse_refl : "refl(A,r) \<Longrightarrow> refl(A,converse(r))"
   unfolding refl_def by simp
 
+lemma Colleq_in_M[intro,simp] : "(Colleq) \<in> M"
+  using Fnle_rel_closed Aleph_rel_closed nat_into_Ord nat_into_M
+    nat_in_M Coll_in_M function_space_rel_closed
+  by simp
+
 lemma converse_Colleq_in_M[intro,simp]: "converse(Colleq) \<in> M"
-  sorry
+  using converse_closed by simp
 
 (*FIXME: move this to an appropiate place?*)
 lemma Ord_lt_subset : "Ord(b) \<Longrightarrow> a<b \<Longrightarrow> a\<subseteq>b"
@@ -59,34 +65,34 @@ proof -
     then
     have "\<forall>f\<in>succ(x) \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq)). \<forall>\<alpha> \<in> succ(x). \<langle>f`x, f ` \<alpha>\<rangle> \<in> Colleq"
     proof(intro ballI)
-        fix f \<alpha>
-        assume "f\<in>succ(x) \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq))" "\<alpha>\<in>succ(x)"
-        moreover from \<open>x\<in>\<omega>\<close> this
-        have "f\<in>succ(x) \<^sub><\<rightarrow> (Coll,converse(Colleq))"
-          using mono_seqspace_rel_char nat_into_M
-          by simp
-        moreover from calculation succ
-        consider "\<alpha>\<in>x" | "\<alpha>=x"
-          by auto
+      fix f \<alpha>
+      assume "f\<in>succ(x) \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq))" "\<alpha>\<in>succ(x)"
+      moreover from \<open>x\<in>\<omega>\<close> this
+      have "f\<in>succ(x) \<^sub><\<rightarrow> (Coll,converse(Colleq))"
+        using mono_seqspace_rel_char nat_into_M
+        by simp
+      moreover from calculation succ
+      consider "\<alpha>\<in>x" | "\<alpha>=x"
+        by auto
+      then
+      show "\<langle>f`x, f ` \<alpha>\<rangle> \<in> Colleq"
+      proof(cases)
+        case 1
         then
-        show "\<langle>f`x, f ` \<alpha>\<rangle> \<in> Colleq"
-        proof(cases)
-          case 1
-          then
-          have "\<langle>\<alpha>, x\<rangle> \<in> Memrel(succ(x))" "x\<in>succ(x)" "\<alpha>\<in>succ(x)" by auto
-          with \<open>f\<in>succ(x) \<^sub><\<rightarrow> (Coll,converse(Colleq))\<close>
-            show ?thesis
-            using mono_mapD(2)[OF _ \<open>\<alpha>\<in>succ(x)\<close> _ \<open>\<langle>\<alpha>, x\<rangle> \<in> Memrel(succ(x))\<close>]
-            unfolding mono_seqspace_def
-            by auto
-        next
-          case 2
-          with \<open>f\<in>succ(x) \<^sub><\<rightarrow> (Coll,converse(Colleq))\<close>
-          show ?thesis
-            using Colleq_refl mono_seqspace_is_fun[THEN apply_type]
-            unfolding refl_def
-            by simp
-        qed
+        have "\<langle>\<alpha>, x\<rangle> \<in> Memrel(succ(x))" "x\<in>succ(x)" "\<alpha>\<in>succ(x)" by auto
+        with \<open>f\<in>succ(x) \<^sub><\<rightarrow> (Coll,converse(Colleq))\<close>
+        show ?thesis
+          using mono_mapD(2)[OF _ \<open>\<alpha>\<in>succ(x)\<close> _ \<open>\<langle>\<alpha>, x\<rangle> \<in> Memrel(succ(x))\<close>]
+          unfolding mono_seqspace_def
+          by auto
+      next
+        case 2
+        with \<open>f\<in>succ(x) \<^sub><\<rightarrow> (Coll,converse(Colleq))\<close>
+        show ?thesis
+          using Colleq_refl mono_seqspace_is_fun[THEN apply_type]
+          unfolding refl_def
+          by simp
+      qed
     qed
     moreover
     note \<open>x\<in>\<omega>\<close>
@@ -112,17 +118,21 @@ proof -
     have "f\<in>\<omega> \<^sub><\<rightarrow> (Coll,converse(Colleq))" "f\<in>\<omega> \<rightarrow> Coll"
       using mono_seqspace_rel_char mono_mapD(2) nat_in_M
       by auto
+    moreover from this
+    have "countable\<^bsup>M\<^esup>(f`x)" if "x\<in>\<omega>" for x
+      using that Fn_rel_is_function countable_iff_le_rel_Aleph_rel_one
+      by auto
     moreover from calculation
-    have "?G \<in> M" " f\<subseteq>\<omega>\<times>Coll"
-      using nat_in_M image_closed Union_closed Pi_iff
+    have "?G \<in> M" "f\<subseteq>\<omega>\<times>Coll"
+      using nat_in_M image_closed Pi_iff
       by simp_all
     moreover from calculation
     have 1:"\<exists>d\<in>?G. d \<supseteq> h \<and> d \<supseteq> g" if "h \<in> ?G" "g \<in> ?G" for h g
     proof -
       from calculation
-       have  "?G={f`x . x\<in>\<omega>}"
-      using  image_function[of f \<omega>] Pi_iff domain_of_fun
-      by auto
+      have "?G={f`x . x\<in>\<omega>}"
+        using  image_function[of f \<omega>] Pi_iff domain_of_fun
+        by auto
       from \<open>?G=_\<close> that
       obtain m n where eq:"h=f`m" "g=f`n" "n\<in>\<omega>" "m\<in>\<omega>"
         by auto
@@ -132,7 +142,7 @@ proof -
       with calculation eq \<open>?G=_\<close>
       have "f`(m\<union>n)\<in>?G" "f`(m\<union>n) \<supseteq> h" "f`(m\<union>n) \<supseteq> g"
         using Fnle_relD mono_map_lt_le_is_mono converse_refl[OF Colleq_refl]
-          by auto
+        by auto
       then
       show ?thesis by auto
     qed
@@ -146,7 +156,12 @@ proof -
       by simp
     moreover from calculation
     have "|\<Union>?G|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
-      sorry
+      using countable_fun_imp_countable_image[of f]
+          mem_function_space_rel_abs[simplified,OF nat_in_M Coll_in_M \<open>f\<in>M\<close>]
+        countableI[OF lepoll_rel_refl]
+        countable_iff_le_rel_Aleph_rel_one
+        nat_in_M
+      by auto
     moreover from calculation
     have "\<Union>?G\<in>Coll"
       unfolding Fn_rel_def
@@ -321,7 +336,7 @@ proof -
     unfolding M_generic_def by fast
   ultimately
   show ?thesis
-  using generic domain_f_G unfolding Pi_def by auto
+    using generic domain_f_G unfolding Pi_def by auto
 qed
 
 abbreviation
@@ -375,7 +390,7 @@ proof -
   show ?thesis
     using succ_omega_closed_Coll f_G_funtype function_apply_equality[of _ x f_G]
       succ_omega_closed_imp_no_new_reals[symmetric]
-     by (auto, rule_tac bexI) (auto simp:Pi_def)
+    by (auto, rule_tac bexI) (auto simp:Pi_def)
 qed
 
 lemma f_G_surj_Aleph_rel1_reals: "f\<^bsub>G\<^esub> \<in> surj\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2)"
@@ -423,9 +438,9 @@ qed
 
 theorem CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
   using continuum_rel_le_Aleph1_extension ext.Aleph_rel_succ[of 0]
-  ext.Aleph_rel_zero ext.csucc_rel_le[of "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>" \<omega>]
-  ext.Card_rel_cexp_rel ext.cantor_cexp_rel[of \<omega>] ext.Card_rel_nat 
-  ext.cexp_rel_closed[of 2 \<omega>] le_anti_sym
+    ext.Aleph_rel_zero ext.csucc_rel_le[of "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>" \<omega>]
+    ext.Card_rel_cexp_rel ext.cantor_cexp_rel[of \<omega>] ext.Card_rel_nat
+    ext.cexp_rel_closed[of 2 \<omega>] le_anti_sym
   by auto
 
 end (* collapse_generic *)
