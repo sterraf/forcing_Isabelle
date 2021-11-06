@@ -7,6 +7,56 @@ begin
 context M_ZF_library
 begin
 
+
+lemma f_imp_injective_rel:
+  assumes "f \<in> A \<rightarrow>\<^bsup>M\<^esup> B" "\<forall>x\<in>A. d(f ` x) = x" "M(A)" "M(B)"
+  shows "f \<in> inj\<^bsup>M\<^esup>(A, B)"
+  using assms
+  apply (simp (no_asm_simp) add: def_inj_rel)
+  apply (auto intro: subst_context [THEN box_equals])
+  done
+
+lemma lam_injective_rel:
+  assumes "\<And>x. x \<in> A \<Longrightarrow> c(x) \<in> B"
+    "\<And>x. x \<in> A \<Longrightarrow> d(c(x)) = x"
+    "\<forall>x[M]. M(c(x))" "lam_replacement(M,c)"
+    "M(A)" "M(B)"
+  shows "(\<lambda>x\<in>A. c(x)) \<in> inj\<^bsup>M\<^esup>(A, B)"
+  using assms function_space_rel_char lam_replacement_iff_lam_closed
+  by (rule_tac d = d in f_imp_injective_rel)
+    (auto simp add: lam_type)
+
+lemma f_imp_surjective_rel:
+  assumes "f \<in> A \<rightarrow>\<^bsup>M\<^esup> B" "\<And>y. y \<in> B \<Longrightarrow> d(y) \<in> A" "\<And>y. y \<in> B \<Longrightarrow> f ` d(y) = y"
+    "M(A)" "M(B)"
+  shows "f \<in> surj\<^bsup>M\<^esup>(A, B)"
+  using assms
+  by (simp add: def_surj_rel, blast)
+
+lemma lam_surjective_rel:
+  assumes "\<And>x. x \<in> A \<Longrightarrow> c(x) \<in> B"
+    "\<And>y. y \<in> B \<Longrightarrow> d(y) \<in> A"
+    "\<And>y. y \<in> B \<Longrightarrow> c(d(y)) = y"
+    "\<forall>x[M]. M(c(x))" "lam_replacement(M,c)"
+    "M(A)" "M(B)"
+  shows "(\<lambda>x\<in>A. c(x)) \<in> surj\<^bsup>M\<^esup>(A, B)"
+  using assms function_space_rel_char lam_replacement_iff_lam_closed
+  by (rule_tac d = d in f_imp_surjective_rel)
+    (auto simp add: lam_type)
+
+lemma lam_bijective_rel:
+  assumes "\<And>x. x \<in> A \<Longrightarrow> c(x) \<in> B"
+    "\<And>y. y \<in> B \<Longrightarrow> d(y) \<in> A"
+    "\<And>x. x \<in> A \<Longrightarrow> d(c(x)) = x"
+    "\<And>y. y \<in> B \<Longrightarrow> c(d(y)) = y"
+    "\<forall>x[M]. M(c(x))" "lam_replacement(M,c)"
+    "M(A)" "M(B)"
+  shows "(\<lambda>x\<in>A. c(x)) \<in> bij\<^bsup>M\<^esup>(A, B)"
+  using assms
+  apply (unfold bij_rel_def)
+  apply (blast intro!: lam_injective_rel lam_surjective_rel)
+  done
+
 lemma function_space_rel_eqpoll_rel_cong:
   assumes
     "A \<approx>\<^bsup>M\<^esup> A'" "B \<approx>\<^bsup>M\<^esup> B'" "M(A)" "M(A')" "M(B)" "M(B')"
@@ -78,54 +128,6 @@ lemma function_space_rel_eqpoll_rel_cong:
   qed
 qed
 *)
-
-lemma f_imp_injective_rel:
-  assumes "f \<in> A \<rightarrow>\<^bsup>M\<^esup> B" "\<forall>x\<in>A. d(f ` x) = x" "M(A)" "M(B)"
-  shows "f \<in> inj\<^bsup>M\<^esup>(A, B)"
-  using assms
-  apply (simp (no_asm_simp) add: def_inj_rel)
-  apply (auto intro: subst_context [THEN box_equals])
-  done
-
-lemma lam_injective_rel:
-  assumes "\<And>x. x \<in> A \<Longrightarrow> c(x) \<in> B"
-    "\<And>x. x \<in> A \<Longrightarrow> d(c(x)) = x"
-    "M(A)" "M(B)"
-  shows "(\<lambda>x\<in>A. c(x)) \<in> inj\<^bsup>M\<^esup>(A, B)"
-  using assms
-  apply (rule_tac d = d in f_imp_injective_rel)
-     apply (simp_all add: lam_type)
-  sorry
-
-lemma f_imp_surjective_rel:
-  assumes "f \<in> A \<rightarrow>\<^bsup>M\<^esup> B" "\<And>y. y \<in> B \<Longrightarrow> d(y) \<in> A" "\<And>y. y \<in> B \<Longrightarrow> f ` d(y) = y"
-    "M(A)" "M(B)"
-  shows "f \<in> surj\<^bsup>M\<^esup>(A, B)"
-  using assms
-  by (simp add: def_surj_rel, blast)
-
-lemma lam_surjective_rel:
-  assumes "\<And>x. x \<in> A \<Longrightarrow> c(x) \<in> B"
-    "\<And>y. y \<in> B \<Longrightarrow> d(y) \<in> A"
-    "\<And>y. y \<in> B \<Longrightarrow> c(d(y)) = y"
-    "M(A)" "M(B)"
-  shows "(\<lambda>x\<in>A. c(x)) \<in> surj\<^bsup>M\<^esup>(A, B)"
-  using assms
-  apply (rule_tac d = d in f_imp_surjective_rel)
-      apply (simp_all add: lam_type)
-  sorry
-
-lemma lam_bijective_rel:
-  assumes "\<And>x. x \<in> A \<Longrightarrow> c(x) \<in> B"
-    "\<And>y. y \<in> B \<Longrightarrow> d(y) \<in> A"
-    "\<And>x. x \<in> A \<Longrightarrow> d(c(x)) = x"
-    "\<And>y. y \<in> B \<Longrightarrow> c(d(y)) = y"
-    "M(A)" "M(B)"
-  shows "(\<lambda>x\<in>A. c(x)) \<in> bij\<^bsup>M\<^esup>(A, B)"
-  using assms
-  apply (unfold bij_rel_def)
-  apply (blast intro!: lam_injective_rel lam_surjective_rel)
-  done
 
 lemma curry_eqpoll_rel:
   fixes \<nu>1 \<nu>2  \<kappa>
@@ -210,7 +212,8 @@ proof -
   next
     from assms \<open>lam_replacement(M, \<lambda>x. d(x))\<close>
       \<open>\<And>A. _ \<Longrightarrow> lam_replacement(M, \<lambda>x. bool_of_o(x\<in>A))\<close>
-    show "M(\<lambda>x\<in>Pow\<^bsup>M\<^esup>(X). d(x))"
+    show "M(\<lambda>x\<in>Pow\<^bsup>M\<^esup>(X). d(x))" "lam_replacement(M, \<lambda>x. d(x))"
+      "\<forall>x[M]. M(d(x))"
       using lam_replacement_iff_lam_closed[THEN iffD1] by auto
   qed (auto simp:\<open>M(X)\<close>)
 qed
@@ -218,14 +221,43 @@ qed
 lemma Pow_rel_bottom: "M(B) \<Longrightarrow> 0 \<in> Pow\<^bsup>M\<^esup>(B)"
   using Pow_rel_char by simp
 
-(* FIXME: missing assms on \<^term>\<open>b\<close> being definable on M *)
-lemma cantor_rel: "M(A) \<Longrightarrow> \<exists>S \<in> Pow\<^bsup>M\<^esup>(A). \<forall>x\<in>A. b(x) \<noteq> S"
-  sorry
-
-lemma cantor_surj_rel: "M(f) \<Longrightarrow> M(A) \<Longrightarrow> f \<notin> surj\<^bsup>M\<^esup>(A,Pow\<^bsup>M\<^esup>(A))"
-  apply (simp add: def_surj_rel, safe)
-  apply (cut_tac cantor_rel)
-  sorry
+lemma cantor_surj_rel:
+  assumes "M(f)" "M(A)"
+  shows "f \<notin> surj\<^bsup>M\<^esup>(A,Pow\<^bsup>M\<^esup>(A))"
+proof
+  assume "f \<in> surj\<^bsup>M\<^esup>(A,Pow\<^bsup>M\<^esup>(A))"
+  with assms
+  have "f \<in> surj(A,Pow\<^bsup>M\<^esup>(A))" using surj_rel_char by simp
+  moreover
+  note assms
+  moreover from this
+  have "M({x \<in> A . x \<notin> f ` x})" sorry
+  with \<open>M(A)\<close>
+  have "{x\<in>A . x \<notin> f`x} \<in> Pow\<^bsup>M\<^esup>(A)"
+    by (intro mem_Pow_rel_abs[THEN iffD2]) auto
+  ultimately
+  obtain d where "d\<in>A" "f`d = {x\<in>A . x \<notin> f`x}"
+    unfolding surj_def by blast
+  show False
+  proof (cases "d \<in> f`d")
+    case True
+    note \<open>d \<in> f`d\<close>
+    also
+    note \<open>f`d = {x\<in>A . x \<notin> f`x}\<close>
+    finally
+    have "d \<notin> f`d" using \<open>d\<in>A\<close> by simp
+    then
+    show False using \<open>d \<in> f ` d\<close> by simp
+  next
+    case False
+    with \<open>d\<in>A\<close>
+    have "d \<in> {x\<in>A . x \<notin> f`x}" by simp
+    also from \<open>f`d = \<dots>\<close>
+    have "\<dots> = f`d" by simp
+    finally
+    show False using \<open>d \<notin> f`d\<close> by simp
+  qed
+qed
 
 lemma cantor_inj_rel: "M(f) \<Longrightarrow> M(A) \<Longrightarrow> f \<notin> inj\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(A),A)"
   using inj_rel_imp_surj_rel[OF _ Pow_rel_bottom, of f A A]
