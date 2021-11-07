@@ -134,26 +134,82 @@ lemma curry_eqpoll_rel:
   assumes  "M(\<nu>1)" "M(\<nu>2)" "M(\<kappa>)"
   shows "\<nu>1 \<rightarrow>\<^bsup>M\<^esup> (\<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>) \<approx>\<^bsup>M\<^esup> \<nu>1 \<times> \<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>"
   unfolding eqpoll_rel_def
-  sorry
-(* proof (intro rexI, rule lam_bijective_rel
-    rule_tac [1-2] lam_type, rule_tac [2] lam_type)
+proof (intro rexI, rule lam_bijective_rel,
+    rule_tac [1-2] mem_function_space_rel_abs[THEN iffD2],
+    rule_tac [4] lam_type, rule_tac [8] lam_type,
+    rule_tac [8] mem_function_space_rel_abs[THEN iffD2],
+    rule_tac [11] lam_type, simp_all add:assms)
+  let ?cur="\<lambda>x. \<lambda>w\<in>\<nu>1 \<times> \<nu>2. x ` fst(w) ` snd(w)"
   fix f z
-  assume "f : \<nu>1 \<rightarrow> \<nu>2 \<rightarrow> \<kappa>" "z \<in> \<nu>1 \<times> \<nu>2"
-  then
+  assume "f : \<nu>1 \<rightarrow>\<^bsup>M\<^esup> (\<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>)"
+  moreover
+  note assms
+  moreover from calculation
+  have "M(\<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>)"
+    using function_space_rel_closed by simp
+  moreover from calculation
+  have "M(f)" "f : \<nu>1 \<rightarrow> (\<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>)"
+    using function_space_rel_char by (auto dest:transM)
+  moreover from calculation
+  have "x \<in> \<nu>1 \<Longrightarrow> f`x : \<nu>2 \<rightarrow> \<kappa>" for x
+    by (auto dest:transM intro!:mem_function_space_rel_abs[THEN iffD1])
+  moreover from calculation
+  show "(\<lambda>a\<in>\<nu>1. \<lambda>b\<in>\<nu>2. ?cur(f) ` \<langle>a, b\<rangle>) = f"
+    using mem_function_space_rel_abs sorry
+  moreover
+  assume "z \<in> \<nu>1 \<times> \<nu>2"
+  moreover from calculation
+  have "f`fst(z): \<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>" by simp
+  ultimately
   show "f`fst(z)`snd(z) \<in> \<kappa>"
-    by simp
-next
-  fix f x y
-  assume "f : \<nu>1 \<times> \<nu>2 \<rightarrow> \<kappa>" "x\<in>\<nu>1" "y\<in>\<nu>2"
-  then
-  show "f`\<langle>x,y\<rangle> \<in> \<kappa>" by simp
+    using mem_function_space_rel_abs by (auto dest:transM)
 next \<comment> \<open>one composition is the identity:\<close>
+  let ?cur="\<lambda>x. \<lambda>w\<in>\<nu>1 \<times> \<nu>2. x ` fst(w) ` snd(w)"
   fix f
-  assume "f : \<nu>1 \<times> \<nu>2 \<rightarrow> \<kappa>"
-  then
-  show "(\<lambda>x\<in>\<nu>1 \<times> \<nu>2. (\<lambda>x\<in>\<nu>1. \<lambda>xa\<in>\<nu>2. f ` \<langle>x, xa\<rangle>) ` fst(x) ` snd(x)) = f"
-    by (auto intro:fun_extension)
-qed simp \<comment> \<open>the other composition follows automatically\<close> *)
+  assume "f : \<nu>1 \<times> \<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>"
+  with assms
+  show "?cur(\<lambda>x\<in>\<nu>1. \<lambda>xa\<in>\<nu>2. f ` \<langle>x, xa\<rangle>) = f"
+    using function_space_rel_char mem_function_space_rel_abs
+    by (auto dest:transM intro:fun_extension)
+  fix x y
+  assume "x\<in>\<nu>1" "y\<in>\<nu>2"
+  with assms \<open>f : \<nu>1 \<times> \<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>\<close>
+  show "f`\<langle>x,y\<rangle> \<in> \<kappa>"
+    using function_space_rel_char mem_function_space_rel_abs
+    by (auto dest:transM)
+next
+  let ?cur="\<lambda>x. \<lambda>w\<in>\<nu>1 \<times> \<nu>2. x ` fst(w) ` snd(w)"
+  note assms
+  moreover from this
+  show "\<forall>x[M]. M(?cur(x))"
+    using  lam_replacement_fst lam_replacement_snd
+      lam_replacement_apply2[THEN [5] lam_replacement_hcomp2,
+        THEN [1] lam_replacement_hcomp2, where h="(`)", OF
+        lam_replacement_constant] lam_replacement_apply2
+    by (auto intro: lam_replacement_iff_lam_closed[THEN iffD1, rule_format])
+  moreover from calculation
+  show "x \<in> \<nu>1 \<rightarrow>\<^bsup>M\<^esup> (\<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>) \<Longrightarrow> M(?cur(x))" for x
+    by (auto dest:transM)
+  moreover
+  show "lam_replacement(M, ?cur)" sorry
+  ultimately
+  show "M(\<lambda>x\<in>\<nu>1 \<rightarrow>\<^bsup>M\<^esup> (\<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>). ?cur(x))"
+    using lam_replacement_iff_lam_closed
+    by (auto dest:transM)
+  from assms
+  show "y \<in> \<nu>1 \<times> \<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa> \<Longrightarrow> x \<in> \<nu>1 \<Longrightarrow> M(\<lambda>xa\<in>\<nu>2. y ` \<langle>x, xa\<rangle>)" for x y
+    using lam_replacement_apply_const_id
+    by (rule_tac lam_replacement_iff_lam_closed[THEN iffD1, rule_format])
+      (auto dest:transM)
+  have "M(y) \<Longrightarrow> lam_replacement(M, \<lambda>x. \<lambda>xa\<in>\<nu>2. y ` \<langle>x, xa\<rangle>)" for y
+    sorry
+  with assms
+  show "y \<in> \<nu>1 \<times> \<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa> \<Longrightarrow> M(\<lambda>x\<in>\<nu>1. \<lambda>xa\<in>\<nu>2. y ` \<langle>x, xa\<rangle>)" for y
+    using lam_replacement_apply2[THEN [5] lam_replacement_hcomp2,
+        OF lam_replacement_constant lam_replacement_const_id]
+    by (auto dest:transM
+        intro!: lam_replacement_iff_lam_closed[THEN iffD1, rule_format])
+qed
 
 lemma Pow_rel_eqpoll_rel_function_space_rel:
   fixes d X
