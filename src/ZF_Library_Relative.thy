@@ -263,6 +263,47 @@ lemma range_of_subset_eqpoll_rel:
   unfolding eqpoll_rel_def
   by (rule_tac x="restrict(f,S)" in rexI) auto
 
+lemmas inj_rel_is_fun = inj_is_fun[OF mem_inj_rel]
+
+lemma inj_rel_bij_rel_range: "f \<in> inj\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> f \<in> bij\<^bsup>M\<^esup>(A,range(f))"
+  using bij_rel_char inj_rel_char inj_bij_range by force
+
+lemma bij_rel_is_inj_rel: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> f \<in> inj\<^bsup>M\<^esup>(A,B)"
+  unfolding bij_rel_def by simp
+
+lemma inj_rel_weaken_type: "[| f \<in> inj\<^bsup>M\<^esup>(A,B);  B\<subseteq>D; M(A); M(B); M(D) |] ==> f \<in> inj\<^bsup>M\<^esup>(A,D)"
+  using inj_rel_char inj_rel_is_fun inj_weaken_type by auto
+
+lemma bij_rel_converse_bij_rel [TC]: "f \<in> bij\<^bsup>M\<^esup>(A,B)  \<Longrightarrow> M(A) \<Longrightarrow> M(B) ==> converse(f): bij\<^bsup>M\<^esup>(B,A)"
+  using bij_rel_char by force
+
+lemma bij_rel_is_fun_rel: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow>  f \<in> A\<rightarrow>\<^bsup>M\<^esup>B"
+  using bij_rel_char mem_function_space_rel_abs bij_is_fun by simp
+
+lemmas bij_rel_is_fun = bij_rel_is_fun_rel[THEN mem_function_space_rel]
+
+lemma comp_bij_rel:
+    "g \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> f \<in> bij\<^bsup>M\<^esup>(B,C) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(C) \<Longrightarrow> (f O g) \<in> bij\<^bsup>M\<^esup>(A,C)"
+  using bij_rel_char comp_bij by force
+
+lemma inj_rel_converse_fun: "f \<in> inj\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> converse(f) \<in> range(f)\<rightarrow>\<^bsup>M\<^esup>A"
+proof -
+  assume "f \<in> inj\<^bsup>M\<^esup>(A,B)" "M(A)" "M(B)"
+  then
+  have "M(f)" "M(converse(f))" "M(range(f))" "f\<in>inj(A,B)"
+    using inj_rel_char converse_closed range_closed
+    by auto
+  then
+  show ?thesis
+    using inj_converse_inj function_space_rel_char inj_is_fun \<open>M(A)\<close> by auto
+qed
+
+lemma fg_imp_bijective_rel:
+  assumes "f \<in> A \<rightarrow>\<^bsup>M\<^esup>B"  "g \<in> B\<rightarrow>\<^bsup>M\<^esup>A"  "f O g = id(B)" "g O f = id(A)" "M(A)" "M(B)"
+  shows "f \<in> bij\<^bsup>M\<^esup>(A,B)"
+  using assms mem_bij_abs fg_imp_bijective mem_function_space_rel_abs[THEN iffD2] function_space_rel_char
+  by auto
+
 end (* M_ZF_library *)
 
 (*************   Discipline for cexp   ****************)

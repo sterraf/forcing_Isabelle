@@ -7,6 +7,10 @@ begin
 context M_ZF_library
 begin
 
+(*FIXME: move this to Lambda_Replacement and prove it. *)
+lemma lam_replacement_comp : 
+  "M(f) \<Longrightarrow> M(g) \<Longrightarrow> lam_replacement(M, \<lambda>x . f O x O g)"
+  sorry
 
 lemma f_imp_injective_rel:
   assumes "f \<in> A \<rightarrow>\<^bsup>M\<^esup> B" "\<forall>x\<in>A. d(f ` x) = x" "M(A)" "M(B)"
@@ -62,72 +66,107 @@ lemma function_space_rel_eqpoll_rel_cong:
     "A \<approx>\<^bsup>M\<^esup> A'" "B \<approx>\<^bsup>M\<^esup> B'" "M(A)" "M(A')" "M(B)" "M(B')"
   shows
     "A \<rightarrow>\<^bsup>M\<^esup> B \<approx>\<^bsup>M\<^esup> A' \<rightarrow>\<^bsup>M\<^esup> B'"
-  sorry
-(* proof -
-  from assms(1)[THEN eqpoll_sym] assms(2)
-  obtain f g where "f \<in> bij(A',A)" "g \<in> bij(B,B')"
+proof -
+  from assms(1)[THEN eqpoll_rel_sym] assms(2) assms lam_type
+  obtain f g where "f \<in> bij\<^bsup>M\<^esup>(A',A)" "g \<in> bij\<^bsup>M\<^esup>(B,B')"
     by blast
-  then
-  have "converse(g) : B' \<rightarrow> B" "converse(f): A \<rightarrow> A'"
-    using bij_converse_bij bij_is_fun by auto
+  with assms
+  have "converse(g) : bij\<^bsup>M\<^esup>(B', B)" "converse(f): bij\<^bsup>M\<^esup>(A, A')"
+    using bij_converse_bij by auto
+  let ?H="\<lambda> h \<in> A \<rightarrow>\<^bsup>M\<^esup> B . g O h O f"
+  let ?I="\<lambda> h \<in> A' \<rightarrow>\<^bsup>M\<^esup> B' . converse(g) O h O converse(f)"
+  have go:"g O F O f : A' \<rightarrow>\<^bsup>M\<^esup> B'" if "F: A \<rightarrow>\<^bsup>M\<^esup> B" for F
+    proof -
+    note assms \<open>f\<in>_\<close> \<open>g\<in>_\<close> that
+    moreover from this
+    have "g O F O f : A' \<rightarrow> B'"
+      using bij_rel_is_fun[OF \<open>g\<in>_\<close>] bij_rel_is_fun[OF \<open>f\<in>_\<close>] comp_fun
+        mem_function_space_rel[OF \<open>F\<in>_\<close>]
+      by blast
+    ultimately
+    show "g O F O f : A' \<rightarrow>\<^bsup>M\<^esup> B'"
+      using comp_closed function_space_rel_char bij_rel_char
+      by auto
+  qed
+  have og:"converse(g) O F O converse(f) : A \<rightarrow>\<^bsup>M\<^esup> B" if "F: A' \<rightarrow>\<^bsup>M\<^esup> B'" for F
+  proof -
+    note assms that \<open>converse(f) \<in> _\<close> \<open>converse(g) \<in> _\<close>
+    moreover from this
+    have "converse(g) O F O converse(f) : A \<rightarrow> B"
+      using bij_rel_is_fun[OF \<open>converse(g)\<in>_\<close>] bij_rel_is_fun[OF \<open>converse(f)\<in>_\<close>] comp_fun
+        mem_function_space_rel[OF \<open>F\<in>_\<close>]
+      by blast
+    ultimately
+    show "converse(g) O F O converse(f) : A \<rightarrow>\<^bsup>M\<^esup> B" (is "?G\<in>_") 
+      using comp_closed function_space_rel_char bij_rel_char
+      by auto
+  qed
+  with go
+  have tc:"?H \<in> (A \<rightarrow>\<^bsup>M\<^esup> B) \<rightarrow> (A'\<rightarrow>\<^bsup>M\<^esup> B')" "?I \<in> (A' \<rightarrow>\<^bsup>M\<^esup> B') \<rightarrow> (A\<rightarrow>\<^bsup>M\<^esup> B)"
+    using lam_type by auto
+  with assms \<open>f\<in>_\<close> \<open>g\<in>_\<close>
+  have "M(g O x O f)" and "M(converse(g) O x O converse(f))" if "M(x)" for x 
+    using bij_rel_char comp_closed that by auto
+  with assms \<open>f\<in>_\<close> \<open>g\<in>_\<close>
+  have "M(?H)" "M(?I)" 
+    using lam_replacement_iff_lam_closed[THEN iffD1,OF _ lam_replacement_comp] bij_rel_char
+    by auto
   show ?thesis
-    unfolding eqpoll_def
-  proof (intro exI fg_imp_bijective, rule_tac [1-2] lam_type)
-    fix F
-    assume "F: A \<rightarrow> B"
-    with \<open>f \<in> bij(A',A)\<close> \<open>g \<in> bij(B,B')\<close>
-    show "g O F O f : A' \<rightarrow> B'"
-      using bij_is_fun comp_fun by blast
+    unfolding eqpoll_rel_def
+  proof (intro rexI[of _ ?H] fg_imp_bijective_rel)
+  from og go
+  have "(\<And>x. x \<in> A' \<rightarrow>\<^bsup>M\<^esup> B' \<Longrightarrow> converse(g) O x O converse(f) \<in> A \<rightarrow>\<^bsup>M\<^esup> B)"
+    by simp
   next
-    fix F
-    assume "F: A' \<rightarrow> B'"
-    with \<open>converse(g) : B' \<rightarrow> B\<close> \<open>converse(f): A \<rightarrow> A'\<close>
-    show "converse(g) O F O converse(f) : A \<rightarrow> B"
-      using comp_fun by blast
+    show "M(A \<rightarrow>\<^bsup>M\<^esup> B)" using assms by simp
+  next    
+    show "M(A' \<rightarrow>\<^bsup>M\<^esup> B')" using assms by simp
   next
-    from \<open>f\<in>_\<close> \<open>g\<in>_\<close> \<open>converse(f)\<in>_\<close> \<open>converse(g)\<in>_\<close>
-    have "(\<And>x. x \<in> A' \<rightarrow> B' \<Longrightarrow> converse(g) O x O converse(f) \<in> A \<rightarrow> B)"
-      using bij_is_fun comp_fun by blast
-    then
-    have "(\<lambda>x\<in>A \<rightarrow> B. g O x O f) O (\<lambda>x\<in>A' \<rightarrow> B'. converse(g) O x O converse(f))
-          =  (\<lambda>x\<in>A' \<rightarrow> B' . (g O converse(g)) O x O (converse(f) O f))"
-      using lam_cong comp_assoc comp_lam[of "A' \<rightarrow> B'" ] by auto
-    also
-    have "... = (\<lambda>x\<in>A' \<rightarrow> B' . id(B') O x O (id(A')))"
-      using left_comp_inverse[OF bij_is_inj[OF \<open>f\<in>_\<close>]]
-        right_comp_inverse[OF bij_is_surj[OF \<open>g\<in>_\<close>]]
+    from og assms
+    have "?H O ?I = (\<lambda>x\<in>A' \<rightarrow>\<^bsup>M\<^esup> B' . (g O converse(g)) O x O (converse(f) O f))"
+      using lam_cong[OF refl[of "A' \<rightarrow>\<^bsup>M\<^esup> B'"]] comp_assoc comp_lam
       by auto
     also
-    have "... = (\<lambda>x\<in>A' \<rightarrow> B' . x)"
-      using left_comp_id[OF fun_is_rel] right_comp_id[OF fun_is_rel]  lam_cong by auto
+    have "... = (\<lambda>x\<in>A' \<rightarrow>\<^bsup>M\<^esup> B' . id(B') O x O (id(A')))"
+      using left_comp_inverse[OF mem_inj_rel[OF bij_rel_is_inj_rel]] \<open>f\<in>_\<close>
+        right_comp_inverse[OF bij_is_surj[OF mem_bij_rel]] \<open>g\<in>_\<close> assms
+      by auto
     also
-    have "... = id(A'\<rightarrow>B')" unfolding id_def by simp
+    have "... = (\<lambda>x\<in>A' \<rightarrow>\<^bsup>M\<^esup> B' . x)"
+      using left_comp_id[OF fun_is_rel[OF mem_function_space_rel]] 
+        right_comp_id[OF fun_is_rel[OF mem_function_space_rel]] assms
+      by auto
+    also
+    have "... = id(A'\<rightarrow>\<^bsup>M\<^esup>B')" unfolding id_def by simp
     finally
-    show "(\<lambda>x\<in>A -> B. g O x O f) O (\<lambda>x\<in>A' -> B'. converse(g) O x O converse(f)) = id(A' -> B')" .
+    show "?H O ?I = id(A' \<rightarrow>\<^bsup>M\<^esup> B')" .
   next
-    from \<open>f\<in>_\<close> \<open>g\<in>_\<close>
-    have "(\<And>x. x \<in> A \<rightarrow> B \<Longrightarrow> g O x O f \<in> A' \<rightarrow> B')"
-      using bij_is_fun comp_fun by blast
-    then
-    have "(\<lambda>x\<in>A' -> B'. converse(g) O x O converse(f)) O (\<lambda>x\<in>A -> B. g O x O f)
-          = (\<lambda>x\<in>A \<rightarrow> B . (converse(g) O g) O x O (f O converse(f)))"
-      using comp_lam comp_assoc by auto
+    from go assms
+    have "?I O ?H = (\<lambda>x\<in>A \<rightarrow>\<^bsup>M\<^esup> B . (converse(g) O g) O x O (f O converse(f)))"
+      using lam_cong[OF refl[of "A \<rightarrow>\<^bsup>M\<^esup> B"]] comp_assoc comp_lam by auto
     also
-    have "... = (\<lambda>x\<in>A \<rightarrow> B . id(B) O x O (id(A)))"
+    have "... = (\<lambda>x\<in>A \<rightarrow>\<^bsup>M\<^esup> B . id(B) O x O (id(A)))"
       using
-        right_comp_inverse[OF bij_is_surj[OF \<open>f\<in>_\<close>]]
-        left_comp_inverse[OF bij_is_inj[OF \<open>g\<in>_\<close>]] lam_cong
+        left_comp_inverse[OF mem_inj_rel[OF bij_rel_is_inj_rel[OF \<open>g\<in>_\<close>]]]
+        right_comp_inverse[OF bij_is_surj[OF mem_bij_rel[OF \<open>f\<in>_\<close>]]] assms
       by auto
     also
-    have "... = (\<lambda>x\<in>A \<rightarrow> B . x)"
-      using left_comp_id[OF fun_is_rel] right_comp_id[OF fun_is_rel] lam_cong by auto
+    have "... = (\<lambda>x\<in>A \<rightarrow>\<^bsup>M\<^esup> B . x)"
+      using left_comp_id[OF fun_is_rel[OF mem_function_space_rel]] 
+        right_comp_id[OF fun_is_rel[OF mem_function_space_rel]]
+         assms
+      by auto
     also
-    have "... = id(A\<rightarrow>B)" unfolding id_def by simp
+    have "... = id(A\<rightarrow>\<^bsup>M\<^esup>B)" unfolding id_def by simp
     finally
-    show "(\<lambda>x\<in>A' \<rightarrow> B'. converse(g) O x O converse(f)) O (\<lambda>x\<in>A -> B. g O x O f) = id(A -> B)" .
+    show "?I O ?H = id(A \<rightarrow>\<^bsup>M\<^esup> B)" .
+  next 
+    from assms tc \<open>M(?H)\<close> \<open>M(?I)\<close>
+    show "?H \<in> (A\<rightarrow>\<^bsup>M\<^esup> B) \<rightarrow>\<^bsup>M\<^esup> (A'\<rightarrow>\<^bsup>M\<^esup> B')" "M(?H)"
+       "?I \<in> (A'\<rightarrow>\<^bsup>M\<^esup> B') \<rightarrow>\<^bsup>M\<^esup> (A\<rightarrow>\<^bsup>M\<^esup> B)"
+      using mem_function_space_rel_abs by auto
   qed
 qed
-*)
 
 lemma curry_eqpoll_rel:
   fixes \<nu>1 \<nu>2  \<kappa>
