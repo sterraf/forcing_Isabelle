@@ -137,12 +137,9 @@ proof -
     by (simp add:ord_simp_union arity_fun_apply_fm fun_apply_type)
 qed
 
-context G_generic_AC begin
-
-context
-  includes G_generic_lemmas
+context M_ctm_AC
 begin
-(*FIXME: this should be in M_ctm_AC. *)
+
 \<comment> \<open>Simplifying simp rules (because of the occurrence of "\#\#")\<close>
 lemmas sharp_simps = Card_rel_Union Card_rel_cardinal_rel Collect_abs
   Cons_abs Cons_in_M_iff Diff_closed Equal_abs Equal_in_M_iff Finite_abs
@@ -179,11 +176,22 @@ lemmas sharp_simps = Card_rel_Union Card_rel_cardinal_rel Collect_abs
   surj_rel_closed surjection_abs tl_abs trancl_abs trancl_closed
   transitive_rel_abs transitive_set_abs typed_function_abs union_abs
   upair_abs upair_in_M_iff vimage_abs vimage_closed well_ord_abs
-  mem_formula_abs fst_abs snd_abs nth_closed
+  mem_formula_abs fst_abs snd_abs nth_closed Aleph_rel_closed csucc_rel_closed
+  Card_rel_Aleph_rel
 
 declare sharp_simps[simp del, simplified setclass_iff, simp]
 
+lemmas sharp_intros = nat_into_M Aleph_rel_closed Card_rel_Aleph_rel
 
+declare sharp_intros[rule del, simplified setclass_iff, intro]
+
+end (* M_ctm_AC *)
+
+context G_generic_AC begin
+
+context
+  includes G_generic_lemmas
+begin
 \<comment> \<open>NOTE: there is a theorem missing from those above\<close>
 lemmas mg_sharp_simps = ext.Card_rel_Union ext.Card_rel_cardinal_rel
   ext.Collect_abs ext.Cons_abs ext.Cons_in_M_iff ext.Diff_closed
@@ -235,7 +243,8 @@ lemmas mg_sharp_simps = ext.Card_rel_Union ext.Card_rel_cardinal_rel
   ext.trancl_abs ext.trancl_closed ext.transitive_rel_abs
   ext.transitive_set_abs ext.typed_function_abs ext.union_abs
   ext.upair_abs ext.upair_in_M_iff ext.vimage_abs ext.vimage_closed
-  ext.well_ord_abs ext.mem_formula_abs ext.nth_closed
+  ext.well_ord_abs ext.mem_formula_abs ext.nth_closed ext.Aleph_rel_closed
+  ext.csucc_rel_closed ext.Card_rel_Aleph_rel
 
   \<comment> \<open>The following was motivated by the fact that
     @{thm ext.apply_closed} did not simplify appropriately
@@ -243,6 +252,11 @@ lemmas mg_sharp_simps = ext.Card_rel_Union ext.Card_rel_cardinal_rel
     NOTE: @{thm fst_abs} and @{thm snd_abs} not in mgzf
     interpretation.\<close>
 declare mg_sharp_simps[simp del, simplified setclass_iff, simp]
+
+lemmas mg_sharp_intros = ext.nat_into_M ext.Aleph_rel_closed
+  ext.Card_rel_Aleph_rel
+
+declare mg_sharp_intros[rule del, simplified setclass_iff, intro]
 
 \<comment> \<open>Kunen IV.2.31\<close>
 lemma forces_below_filter:

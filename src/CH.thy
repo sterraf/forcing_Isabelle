@@ -8,6 +8,8 @@ begin
 context M_ctm_AC
 begin
 
+declare Fn_rel_closed[simp del, rule del, simplified setclass_iff, simp, intro]
+declare Fnle_rel_closed[simp del, rule del, simplified setclass_iff, simp, intro]
 
 abbreviation
   Coll :: "i" where
@@ -17,10 +19,7 @@ abbreviation
   Colleq :: "i" where
   "Colleq \<equiv> Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)"
 
-
-lemma Coll_in_M[intro,simp]: "Coll \<in> M"
-  using Fn_rel_closed[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"] Aleph_rel_closed[of 1]
-    M_nat nat_into_M function_space_rel_closed by simp
+lemma Coll_in_M[intro,simp]: "Coll \<in> M" by simp
 
 lemma Colleq_refl : "refl(Coll,Colleq)"
   unfolding Fnle_rel_def Fnlerel_def refl_def
@@ -29,14 +28,6 @@ lemma Colleq_refl : "refl(Coll,Colleq)"
 (*FIXME: move this to an appropiate place.*)
 lemma converse_refl : "refl(A,r) \<Longrightarrow> refl(A,converse(r))"
   unfolding refl_def by simp
-
-lemma Colleq_in_M[intro,simp] : "(Colleq) \<in> M"
-  using Fnle_rel_closed Aleph_rel_closed nat_into_Ord nat_into_M
-    nat_in_M Coll_in_M function_space_rel_closed
-  by simp
-
-lemma converse_Colleq_in_M[intro,simp]: "converse(Colleq) \<in> M"
-  using converse_closed by simp
 
 (*FIXME: move this to an appropiate place?*)
 lemma Ord_lt_subset : "Ord(b) \<Longrightarrow> a<b \<Longrightarrow> a\<subseteq>b"
@@ -55,9 +46,7 @@ proof -
     case 0
     then
     show ?case
-      using nat_into_M M_nat[simplified] Aleph_rel_closed[of 1, simplified]
-        Aleph_rel_closed[of 1, simplified] function_space_rel_closed[simplified]
-        zero_lt_Aleph_rel1
+      using zero_lt_Aleph_rel1
       by (auto simp del:setclass_iff)
         (rule_tac x=0 in bexI, rule zero_in_Fn_rel, simp_all)
   next
@@ -98,11 +87,11 @@ proof -
     note \<open>x\<in>\<omega>\<close>
     moreover from this
     have "f`x \<in> Coll" if "f: succ(x) \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq))" for f
-      using that mono_seqspace_rel_char nat_into_M
-        mono_seqspace_is_fun[of "converse(Colleq)"]
+      using that mono_seqspace_rel_char[simplified, of "succ(x)" Coll "converse(Colleq)"]
+        nat_into_M[simplified] mono_seqspace_is_fun[of "converse(Colleq)"]
       by (intro apply_type[of _ "succ(x)"]) (auto simp del:setclass_iff)
     ultimately
-    show ?case using nat_into_M transM[of _ Coll] apply_closed[simplified]
+    show ?case using transM[of _ Coll]
       by (auto dest:transM simp del:setclass_iff, rule_tac x="f`x" in bexI)
         (auto simp del:setclass_iff, simp)
   qed
@@ -238,7 +227,7 @@ proof
     note \<open>p \<in> Coll\<close>
     moreover from this and False and \<open>x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
     have "cons(\<langle>x,\<lambda>n\<in>\<omega>. 0\<rangle>, p) \<in> Coll" "x\<in>M"
-      using Aleph_rel_closed[of 1] function_space_rel_char
+      using function_space_rel_char
         function_space_rel_closed lam_replacement_constant
         lam_replacement_iff_lam_closed InfCard_rel_Aleph_rel
       by (auto intro!: cons_in_Fn_rel dest:transM intro:function_space_nonempty)
@@ -250,8 +239,8 @@ qed
 
 (* FIXME: should be more general *)
 lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow>  dom_dense(x) \<in> M"
-  using Coll_in_M domain_separation[of x]
-  by (rule_tac separation_closed[simplified], blast dest:transM) simp
+  using domain_separation[of x]
+  by (rule_tac separation_closed[simplified], auto dest:transM)
 
 lemma domain_f_G: assumes "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
   shows "x \<in> domain(f\<^bsub>G\<^esub>)"
@@ -314,8 +303,7 @@ proof -
     moreover from calculation
     have "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<times> (\<omega> \<rightarrow> 2)"
       using Fn_rel_subset_Pow[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2",
-          OF _ _ function_space_rel_closed]
-        function_space_rel_char Aleph_rel_closed[of 1]
+          OF _ _ function_space_rel_closed] function_space_rel_char
       by (auto dest!:generic_dests)
     moreover from this
     obtain z w where "x=\<langle>z,w\<rangle>" "z\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "w:\<omega> \<rightarrow> 2" by auto
@@ -355,7 +343,7 @@ proof
     moreover note assms
     moreover from calculation and \<open>p \<in> Coll\<close>
     have "cons(\<langle>\<alpha>,x\<rangle>, p) \<in> Coll" "x\<in>M" "cons(\<langle>\<alpha>,x\<rangle>, p) \<preceq> p"
-      using Aleph_rel_closed[of 1] InfCard_rel_Aleph_rel
+      using InfCard_rel_Aleph_rel
       by (auto intro!: cons_in_Fn_rel Fnle_relI dest:transM)
     ultimately
     show ?thesis by blast
@@ -409,9 +397,7 @@ lemma continuum_rel_le_Aleph1_extension:
   shows "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup> \<le> \<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>"
 proof -
   have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<in> M[G]" "Ord(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)"
-    using Card_rel_Aleph_rel[THEN Card_rel_is_Ord, of 1]
-      Aleph_rel_closed
-    by auto
+    using Card_rel_is_Ord by auto
   moreover from this
   have "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2 \<lesssim>\<^bsup>M[G]\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
     using ext.surj_rel_implies_inj_rel[OF f_G_surj_Aleph_rel1_reals]
@@ -422,9 +408,9 @@ proof -
     by (rule_tac ext.lepoll_rel_imp_cardinal_rel_le) simp_all
   ultimately
   have "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup> \<le> |\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>|\<^bsup>M[G]\<^esup>"
-    using ext.lepoll_rel_imp_cardinal_rel_le[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2",
-        OF _ _ ext.function_space_rel_closed] ext.Aleph_rel_zero
-      succ_omega_closed_Coll succ_omega_closed_imp_Aleph_1_preserved
+    using ext.lepoll_rel_imp_cardinal_rel_le[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"]
+      ext.Aleph_rel_zero succ_omega_closed_Coll
+      succ_omega_closed_imp_Aleph_1_preserved
     unfolding cexp_rel_def by simp
   then
   show "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup> \<le> \<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>" by simp
@@ -434,7 +420,7 @@ theorem CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> = 2\<^bsup>\<up>\<ale
   using continuum_rel_le_Aleph1_extension ext.Aleph_rel_succ[of 0]
     ext.Aleph_rel_zero ext.csucc_rel_le[of "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>" \<omega>]
     ext.Card_rel_cexp_rel ext.cantor_cexp_rel[of \<omega>] ext.Card_rel_nat
-    ext.cexp_rel_closed[of 2 \<omega>] le_anti_sym
+    le_anti_sym
   by auto
 
 end (* collapse_generic *)
@@ -462,14 +448,11 @@ proof -
   then
   interpret M_ctm_AC M enum by unfold_locales
   interpret forcing_data "Coll" "Colleq" 0 M enum
-  proof -
-    show "forcing_data(Coll, Colleq, 0, M, enum)"
-      using Coll_in_M Fnle_rel_Aleph_rel1_closed
-        zero_in_Fn_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"] zero_top_Fn_rel[of _ "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
-        preorder_on_Fnle_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"] Aleph_rel_closed[of 1]
-        nat_into_M function_space_rel_closed[of \<omega> 2] M_nat zero_lt_Aleph_rel1
-      by unfold_locales simp_all
-  qed
+    using zero_in_Fn_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
+      zero_top_Fn_rel[of _ "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
+      preorder_on_Fnle_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
+      zero_lt_Aleph_rel1
+    by unfold_locales simp_all
   obtain G where "M_generic(G)"
     using generic_filter_existence[OF one_in_P]
     by auto

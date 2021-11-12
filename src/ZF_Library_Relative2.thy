@@ -192,9 +192,9 @@ proof (intro rexI, rule lam_bijective_rel,
   moreover from calculation
   have "x \<in> \<nu>1 \<Longrightarrow> f`x : \<nu>2 \<rightarrow> \<kappa>" for x
     by (auto dest:transM intro!:mem_function_space_rel_abs[THEN iffD1])
-  moreover from calculation
+  moreover from this
   show "(\<lambda>a\<in>\<nu>1. \<lambda>b\<in>\<nu>2. ?cur(f) ` \<langle>a, b\<rangle>) = f"
-    using mem_function_space_rel_abs sorry
+    using Pi_type[OF \<open>f \<in> \<nu>1 \<rightarrow> \<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>\<close>, of "\<lambda>_.\<nu>2 \<rightarrow> \<kappa>"] by simp
   moreover
   assume "z \<in> \<nu>1 \<times> \<nu>2"
   moreover from calculation

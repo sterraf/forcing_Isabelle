@@ -49,8 +49,7 @@ lemma cardinal_rel_le_cardinal_rel: "M(X) \<Longrightarrow> |X|\<^bsup>N\<^esup>
   by simp
 
 lemma Aleph_rel_sub_closed: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> N(\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)"
-  using Aleph_rel2_closed Ord_iff[THEN iffD1,
-      OF Card_rel_Aleph_rel[THEN Card_rel_is_Ord]]
+  using Ord_iff[THEN iffD1, OF Card_rel_Aleph_rel[THEN Card_rel_is_Ord]]
   by simp
 
 lemma Card_rel_imp_Card_rel: "Card\<^bsup>N\<^esup>(\<kappa>) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> Card\<^bsup>M\<^esup>(\<kappa>)"
@@ -161,7 +160,7 @@ lemma (in M_trans) mem_F_bound5:
 
 sublocale M_ctm_AC \<subseteq> M_replacement_lepoll "##M" "(`)"
   using UN_lepoll_assumptions lam_replacement_apply lam_replacement_inj_rel
-    mem_F_bound4 apply_0 domain_closed apply_closed
+    mem_F_bound4 apply_0
   unfolding lepoll_assumptions_defs
 proof (unfold_locales,
     rule_tac [3] lam_Least_assumption_general[where U=domain, OF _ mem_F_bound4], simp_all)
@@ -169,7 +168,7 @@ proof (unfold_locales,
   assume "A \<in> M" "x \<in> M" "x \<in> A ` i"
   then
   show "i \<in> M"
-    using apply_0[of i A] transM[of _ "domain(A)", simplified] domain_closed
+    using apply_0[of i A] transM[of _ "domain(A)", simplified]
     by force
 qed
 
@@ -189,18 +188,17 @@ lemma ccc_preserves_Aleph_succ:
 proof (rule ccontr)
   assume "\<not> Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
   moreover
-  note \<open>z \<in> M\<close>
-  moreover from this and \<open>Ord(z)\<close>
+  note \<open>z \<in> M\<close> \<open>Ord(z)\<close>
+  moreover from this
   have "Ord(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
-    using Card_rel_Aleph_rel[of "succ(z)", THEN Card_rel_is_Ord]
-    by fastforce
+    using Card_rel_is_Ord by fastforce
   ultimately
   obtain \<alpha> f where "\<alpha> < \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>" "f \<in> surj\<^bsup>M[G]\<^esup>(\<alpha>, \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
     using ext.lt_surj_rel_empty_imp_Card_rel M_subset_MG[OF one_in_G, OF generic]
-      Aleph_rel_closed[of "succ(z)"] \<open>Ord(z)\<close> by simp blast
+    by force
   moreover from this and \<open>z\<in>M\<close> \<open>Ord(z)\<close>
   have "\<alpha> \<in> M" "f \<in> M[G]"
-    using Aleph_rel_closed[of "succ(z)"] ext.trans_surj_rel_closed
+    using ext.trans_surj_rel_closed
     by (auto dest:transM ext.transM dest!:ltD)
   moreover
   note \<open>ccc\<^bsup>M\<^esup>(P,leq)\<close> \<open>z\<in>M\<close>
@@ -209,7 +207,7 @@ proof (rule ccontr)
     "F \<in> M"
     using ccc_fun_approximation_lemma[of \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>" f]
       ext.mem_surj_abs[of f \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"] \<open>Ord(z)\<close>
-      Aleph_rel_closed[of "succ(z)"] surj_is_fun[of f \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"] by auto
+      surj_is_fun[of f \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"] by auto
   then
   have "\<beta> \<in> \<alpha> \<Longrightarrow> |F`\<beta>|\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>" for \<beta>
     using Aleph_rel_zero by simp
@@ -228,7 +226,7 @@ proof (rule ccontr)
     qed
     with \<open>\<alpha> \<in> M\<close> \<open>F:\<alpha>\<rightarrow>Pow\<^bsup>M\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close> \<open>F\<in>M\<close>
   interpret M_cardinal_UN_lepoll "##M" "\<lambda>\<beta>. F`\<beta>" \<alpha>
-    using Aleph_rel_closed[of 0] UN_lepoll_assumptions lepoll_assumptions
+    using UN_lepoll_assumptions lepoll_assumptions
       lam_replacement_apply lam_replacement_inj_rel
   proof (unfold_locales, auto dest:transM simp del:if_range_F_else_F_def)
     fix f b
@@ -247,7 +245,7 @@ proof (rule ccontr)
       le_Card_rel_iff[of "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>" \<alpha>]
       Aleph_rel_succ[of z] Card_rel_lt_iff[of \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"]
       lt_Ord[of \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"]
-      csucc_rel_closed[of "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"] Card_rel_csucc_rel[of "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"]
+      Card_rel_csucc_rel[of "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"]
       Aleph_rel_closed[of z]
       Card_rel_Aleph_rel[THEN Card_rel_is_Ord, OF _ _ Aleph_rel_closed]
     by simp
@@ -255,8 +253,7 @@ proof (rule ccontr)
   have "|\<Union>\<beta>\<in>\<alpha>. F`\<beta>|\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"
     using InfCard_rel_Aleph_rel[of z] Aleph_rel_zero
       subset_imp_lepoll_rel[THEN lepoll_rel_imp_cardinal_rel_le,
-        of "\<Union>\<beta>\<in>\<alpha>. F`\<beta>" "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"]
-      Aleph_rel_closed[of z] Aleph_rel_succ
+        of "\<Union>\<beta>\<in>\<alpha>. F`\<beta>" "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"] Aleph_rel_succ
       Aleph_rel_increasing[THEN leI, THEN [2] le_trans, of _ 0 z]
       Ord_0_lt_iff[THEN iffD1, of z]
     by (cases "0<z"; rule_tac leqpoll_rel_imp_cardinal_rel_UN_le) (auto, force)
@@ -265,8 +262,7 @@ proof (rule ccontr)
   moreover from \<open>\<forall>\<beta>\<in>\<alpha>. f`\<beta> \<in> F`\<beta>\<close> \<open>f \<in> surj\<^bsup>M[G]\<^esup>(\<alpha>, \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close>
     \<open>\<alpha> \<in> M\<close> \<open>f \<in> M[G]\<close> and this
   have "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup> \<subseteq> (\<Union>\<beta>\<in>\<alpha>. F`\<beta>)"
-    using Aleph_rel_closed[of "succ(z)"] ext.mem_surj_abs
-    by (force simp add:surj_def)
+    using ext.mem_surj_abs by (force simp add:surj_def)
   moreover from \<open>F \<in> M\<close> \<open>\<alpha> \<in> M\<close>
   have "(\<Union>x\<in>\<alpha>. F ` x) \<in> M"
     using j.B_replacement\<comment> \<open>NOTE: it didn't require @{thm j.UN_closed} before!\<close>
@@ -275,12 +271,11 @@ proof (rule ccontr)
   ultimately
   have "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"
     using subset_imp_le_cardinal_rel[of "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>" "\<Union>\<beta>\<in>\<alpha>. F`\<beta>"]
-      Aleph_rel_closed[of "succ(z)"] le_trans
-    by auto
+      le_trans by auto
   with assms
   show "False"
     using Aleph_rel_increasing not_le_iff_lt[of "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"]
-      Card_rel_Aleph_rel[THEN Card_rel_is_Ord, OF _ _ Aleph_rel_closed]
+      Card_rel_Aleph_rel[THEN Card_rel_is_Ord]
     by auto
 qed
 
@@ -333,7 +328,7 @@ next
     using Aleph_rel_le_Aleph_rel nat_into_M by simp
   moreover from \<open>z \<in> \<omega>\<close>
   have "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup> \<in> M[G]" "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup> \<in> M[G]"
-    using Aleph_rel_closed nat_into_M by simp_all
+    using nat_into_M by simp_all
   moreover from this and \<open>\<aleph>\<^bsub>z\<^esub>\<^bsup>M[G]\<^esup> = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>\<close> \<open>z \<in> \<omega>\<close>
   have "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M[G]\<^esup> \<le> \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"
     using ext.Aleph_rel_succ nat_into_M
@@ -378,11 +373,17 @@ proof
   qed
 qed
 
+declare (in M_ctm_AC) Fn_nat_closed[simplified setclass_iff, simp, intro]
+declare (in M_ctm_AC) Fnle_nat_closed[simp del, rule del,
+    simplified setclass_iff, simp, intro]
+declare (in M_ctm_AC) cexp_rel_closed[simplified setclass_iff, simp, intro]
+declare (in G_generic_AC) ext.cexp_rel_closed[simplified setclass_iff, simp, intro]
+
 (*
 NOTE Class model version?
 lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> M(dom_dense(x))" *)
 lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> dom_dense(x) \<in> M"
-  using Fn_nat_closed Aleph_rel2_closed domain_separation[of x] nat_into_M
+  using domain_separation[of x] nat_into_M
   by (rule_tac separation_closed[simplified], blast dest:transM) simp
 
 lemma domain_f_G: assumes "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "y \<in> \<omega>"
@@ -465,7 +466,7 @@ qed
 
 lemma inj_dense_closed[intro,simp]:
   "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> inj_dense(w,x) \<in> M"
-  using Fn_nat_closed Aleph_rel2_closed domain_separation[of x] nat_into_M
+  using domain_separation[of x] nat_into_M
     inj_dense_separation transM[OF _ Aleph_rel2_closed]
   by (rule_tac separation_closed[simplified]; simp_all)
 
@@ -502,14 +503,14 @@ definition
 lemma h_G_in_MG[simp]:
   includes G_generic_lemmas
   shows "h\<^bsub>G\<^esub> \<in> M[G]"
-  using Aleph_rel2_closed
-    ext.lam_apply_replacement ext.apply_replacement2
+  using ext.lam_apply_replacement ext.apply_replacement2
     ext.Union_closed[simplified, OF G_in_MG]
     \<comment> \<open>The "simplified" here is because of
         the \<^term>\<open>setclass\<close> ocurrences\<close>
-    ext.nat_in_M Aleph_rel2_closed ext.nat_into_M
+    ext.nat_into_M
   unfolding h_G_def
-  by (rule_tac ext.lam_closed[simplified] | auto dest:transM)+
+  by (rule_tac ext.lam_closed[simplified] |
+      auto dest:transM del:ext.cexp_rel_closed[simplified])+
 
 lemma h_G_inj_Aleph_rel2_reals: "h\<^bsub>G\<^esub> \<in> inj\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2)"
   using Aleph_rel_sub_closed
@@ -537,29 +538,24 @@ lemma Aleph2_extension_le_continuum_rel:
   shows "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
 proof -
   have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<in> M[G]" "Ord(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
-    using Card_rel_Aleph_rel[THEN Card_rel_is_Ord, of 2]
-      Aleph_rel2_closed
-    by auto
+    using Card_rel_is_Ord by auto
   moreover from this
   have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<lesssim>\<^bsup>M[G]\<^esup> \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
-    using ext.def_lepoll_rel[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2",
-        OF _ ext.function_space_rel_closed]
-      h_G_inj_Aleph_rel2_reals h_G_in_MG ext.nat_into_M ext.M_nat
-    by auto
+    using ext.def_lepoll_rel[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"]
+      h_G_inj_Aleph_rel2_reals by auto
   moreover from calculation
   have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<lesssim>\<^bsup>M[G]\<^esup> |\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2|\<^bsup>M[G]\<^esup>"
     using ext.lepoll_rel_imp_lepoll_rel_cardinal_rel by simp
   ultimately
   have "|\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>|\<^bsup>M[G]\<^esup> \<le> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
     using ext.lepoll_rel_imp_cardinal_rel_le[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2",
-        OF _ _ ext.function_space_rel_closed] ext.nat_into_M ext.M_nat
+        OF _ _ ext.function_space_rel_closed]
       ext.Aleph_rel_zero Aleph_rel_nats_MG_eq_Aleph_rel_nats_M
     unfolding cexp_rel_def by simp
   then
   show "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
     using Aleph_rel_nats_MG_eq_Aleph_rel_nats_M
       ext.Card_rel_Aleph_rel[of 2, THEN ext.Card_rel_cardinal_rel_eq]
-      ext.Aleph_rel2_closed
     by simp
 qed
 
@@ -584,7 +580,8 @@ context M_master
 begin
 
 is_iff_rel for "ContHyp"
-  using is_cexp_iff is_Aleph_iff[of 0] is_Aleph_iff[of 1] unfolding is_ContHyp_def ContHyp_rel_def
+  using is_cexp_iff is_Aleph_iff[of 0] is_Aleph_iff[of 1]
+  unfolding is_ContHyp_def ContHyp_rel_def
   by auto (rule_tac x=0 in rexI, auto)
 
 end (* M_master *)
@@ -615,15 +612,9 @@ proof -
     using eqpoll_sym unfolding eqpoll_def by blast
   then
   interpret M_ctm_AC M enum by unfold_locales
+  interpret cohen_data \<omega> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 2 by unfold_locales auto
   interpret forcing_data "Fn(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2)" "Fnle(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2)" 0 M enum
-  proof -
-    interpret cohen_data \<omega> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 2 by unfold_locales auto
-    show "forcing_data(Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>, 2), Fnle(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>, 2), 0, M, enum)"
-      using nat_into_M[of 2] M_nat
-        Fn_nat_closed[OF cartprod_closed, OF Aleph_rel_closed, of 2 \<omega> 2]
-        Fnle_nat_closed[OF cartprod_closed, OF Aleph_rel_closed, of 2 \<omega> 2]
-      by (unfold_locales, simp_all)
-  qed
+    by unfold_locales simp_all
   obtain G where "M_generic(G)"
     using generic_filter_existence[OF one_in_P]
     by auto

@@ -458,11 +458,10 @@ proof -
   have "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2 \<subseteq> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2"
     using succ_omega_closed_imp_no_new_nat_sequences function_space_rel_char
       ext.function_space_rel_char Aleph_rel_succ Aleph_rel_zero
-      nat_into_M[of 2] csucc_rel_closed
-    by auto
+      by auto
   then
   show ?thesis
-    using function_space_rel_transfer ext.nat_into_M[of 2] by force
+    using function_space_rel_transfer by (intro equalityI) auto
 qed
 
 lemma succ_omega_closed_imp_Aleph_1_preserved:
@@ -475,43 +474,37 @@ proof -
     then
     have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> < \<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>"
       \<comment> \<open>Ridiculously complicated proof\<close>
-      using Card_rel_Aleph_rel[THEN Card_rel_is_Ord, of 1]
-        ext.Card_rel_Aleph_rel[THEN ext.Card_rel_is_Ord, of 1]
-        Aleph_rel_closed ext.Aleph_rel_closed not_le_iff_lt[THEN iffD1]
-      by auto
+      using Card_rel_is_Ord ext.Card_rel_is_Ord
+        not_le_iff_lt[THEN iffD1] by auto
     then
     have "|\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>|\<^bsup>M[G]\<^esup> \<le> \<omega>"
-      using ext.Card_rel_lt_csucc_rel_iff ext.Aleph_rel_zero ext.Aleph_rel_succ
-        ext.Card_rel_nat Aleph_rel_closed
+      using ext.Card_rel_lt_csucc_rel_iff ext.Aleph_rel_zero
+        ext.Aleph_rel_succ ext.Card_rel_nat
       by (auto intro!:ext.lt_csucc_rel_iff[THEN iffD1]
           intro:Card_rel_Aleph_rel[THEN Card_rel_is_Ord, of 1])
     then
     obtain f where "f \<in> inj(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,\<omega>)" "f \<in> M[G]"
       using ext.countable_rel_iff_cardinal_rel_le_nat[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>", THEN iffD2]
-        Aleph_rel_closed
       unfolding countable_rel_def lepoll_rel_def
       by auto
     then
     obtain g where "g \<in> surj\<^bsup>M[G]\<^esup>(\<omega>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)"
       using ext.inj_rel_imp_surj_rel[of f _ \<omega>, OF _ zero_lt_Aleph_rel1[THEN ltD]]
-        Aleph_rel_closed[of 1]
       by auto
     moreover from this
     have "g : \<omega> \<rightarrow> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "g \<in> M[G]"
-      using ext.surj_rel_char Aleph_rel_closed[of 1] surj_is_fun by simp_all
+      using ext.surj_rel_char surj_is_fun by simp_all
     moreover
     note \<open>succ(\<omega>)-closed\<^bsup>M\<^esup>(P,leq)\<close>
     ultimately
     have "g \<in> surj\<^bsup>M\<^esup>(\<omega>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)" "g \<in> M"
       using succ_omega_closed_imp_no_new_nat_sequences
-        Aleph_rel_closed[of 1]
         mem_surj_abs ext.mem_surj_abs by simp_all
     then
     show False
       using surj_rel_implies_cardinal_rel_le[of g \<omega> "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"]
-        Aleph_rel_closed Card_rel_nat[THEN Card_rel_cardinal_rel_eq]
+        Card_rel_nat[THEN Card_rel_cardinal_rel_eq] Card_rel_is_Ord
         not_le_iff_lt[THEN iffD2, OF _ _ nat_lt_Aleph_rel1]
-        Card_rel_Aleph_rel[THEN Card_rel_is_Ord, of 1]
       by simp
   qed
   then
