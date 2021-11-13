@@ -8,9 +8,27 @@ context M_ZF_library
 begin
 
 (*FIXME: move this to Lambda_Replacement and prove it. *)
-lemma lam_replacement_comp : 
-  "M(f) \<Longrightarrow> M(g) \<Longrightarrow> lam_replacement(M, \<lambda>x . f O x O g)"
+lemma lam_replacement_comp: "lam_replacement(M, \<lambda>x. fst(x) O snd(x))"
   sorry
+lemma lam_replacement_Lambda_apply2:
+  assumes "M(X)"
+  shows "lam_replacement(M, \<lambda>x. \<lambda>w\<in>X. x ` fst(w) ` snd(w))"
+  sorry
+lemma lam_replacement_Lambda_apply_Pair:
+  assumes "M(X)" "M(y)"
+  shows "lam_replacement(M, \<lambda>x. \<lambda>w\<in>X. y ` \<langle>x, w\<rangle>)"
+  sorry
+lemma lam_replacement_Lambda_if_mem:
+  assumes "M(X)"
+  shows "lam_replacement(M, \<lambda>x. \<lambda>xa\<in>X. if xa \<in> x then 1 else 0)"
+  sorry
+
+lemma lam_replacement_comp':
+  "M(f) \<Longrightarrow> M(g) \<Longrightarrow> lam_replacement(M, \<lambda>x . f O x O g)"
+  using lam_replacement_comp[THEN [5] lam_replacement_hcomp2,
+      OF lam_replacement_constant lam_replacement_comp,
+      THEN [5] lam_replacement_hcomp2] lam_replacement_constant
+    lam_replacement_identity by simp
 
 lemma f_imp_injective_rel:
   assumes "f \<in> A \<rightarrow>\<^bsup>M\<^esup> B" "\<forall>x\<in>A. d(f ` x) = x" "M(A)" "M(B)"
@@ -109,8 +127,8 @@ proof -
     using bij_rel_char comp_closed that by auto
   with assms \<open>f\<in>_\<close> \<open>g\<in>_\<close>
   have "M(?H)" "M(?I)" 
-    using lam_replacement_iff_lam_closed[THEN iffD1,OF _ lam_replacement_comp] bij_rel_char
-    by auto
+    using lam_replacement_iff_lam_closed[THEN iffD1,OF _ lam_replacement_comp']
+      bij_rel_char by auto
   show ?thesis
     unfolding eqpoll_rel_def
   proof (intro rexI[of _ ?H] fg_imp_bijective_rel)
@@ -215,7 +233,7 @@ next \<comment> \<open>one composition is the identity:\<close>
   with assms \<open>f : \<nu>1 \<times> \<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>\<close>
   show "f`\<langle>x,y\<rangle> \<in> \<kappa>"
     using function_space_rel_char mem_function_space_rel_abs
-    by (auto dest:transM)
+    by (auto dest:transM) \<comment> \<open>slow\<close>
 next
   let ?cur="\<lambda>x. \<lambda>w\<in>\<nu>1 \<times> \<nu>2. x ` fst(w) ` snd(w)"
   note assms
@@ -229,8 +247,9 @@ next
   moreover from calculation
   show "x \<in> \<nu>1 \<rightarrow>\<^bsup>M\<^esup> (\<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>) \<Longrightarrow> M(?cur(x))" for x
     by (auto dest:transM)
-  moreover
-  show "lam_replacement(M, ?cur)" sorry
+  moreover from assms
+  show "lam_replacement(M, ?cur)"
+    using lam_replacement_Lambda_apply2 by simp
   ultimately
   show "M(\<lambda>x\<in>\<nu>1 \<rightarrow>\<^bsup>M\<^esup> (\<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>). ?cur(x))"
     using lam_replacement_iff_lam_closed
@@ -240,12 +259,11 @@ next
     using lam_replacement_apply_const_id
     by (rule_tac lam_replacement_iff_lam_closed[THEN iffD1, rule_format])
       (auto dest:transM)
-  have "M(y) \<Longrightarrow> lam_replacement(M, \<lambda>x. \<lambda>xa\<in>\<nu>2. y ` \<langle>x, xa\<rangle>)" for y
-    sorry
-  with assms
+  from assms
   show "y \<in> \<nu>1 \<times> \<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa> \<Longrightarrow> M(\<lambda>x\<in>\<nu>1. \<lambda>xa\<in>\<nu>2. y ` \<langle>x, xa\<rangle>)" for y
     using lam_replacement_apply2[THEN [5] lam_replacement_hcomp2,
         OF lam_replacement_constant lam_replacement_const_id]
+      lam_replacement_Lambda_apply_Pair[of \<nu>2]
     by (auto dest:transM
         intro!: lam_replacement_iff_lam_closed[THEN iffD1, rule_format])
 qed
@@ -270,9 +288,8 @@ proof -
   with assms
   have "lam_replacement(M, \<lambda>x. d(x))"
     using separation_in[THEN [3] lam_replacement_if, of "\<lambda>_.1" "\<lambda>_.0"]
-        lam_replacement_identity lam_replacement_constant
-    apply auto
-    sorry
+        lam_replacement_identity lam_replacement_constant lam_replacement_Lambda_if_mem
+    by simp
   show ?thesis
     unfolding eqpoll_rel_def
   proof (intro rexI, rule lam_bijective_rel)
