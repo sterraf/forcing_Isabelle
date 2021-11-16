@@ -51,6 +51,24 @@ lemma choice_ax_well_ord: "M(S) \<Longrightarrow> \<exists>r[M]. well_ord(S,r)"
   using choice_ax well_ord_Memrel[THEN surj_imp_well_ord_M]
   unfolding choice_ax_def by auto
 
+lemma Finite_cardinal_rel_Finite:
+  assumes "Finite(|i|\<^bsup>M\<^esup>)" "M(i)"
+  shows "Finite(i)"
+proof -
+  note assms
+  moreover from this
+  obtain r where "M(r)" "well_ord(i,r)"
+    using choice_ax_well_ord by auto
+  moreover from calculation
+  have "|i|\<^bsup>M\<^esup> \<approx>\<^bsup>M\<^esup> i"
+    using well_ord_cardinal_rel_eqpoll_rel
+    by auto
+  ultimately
+  show ?thesis
+    using eqpoll_rel_imp_Finite
+    by auto
+qed
+
 end (* M_cardinal_AC *)
 
 locale M_Pi_assumptions_choice = M_Pi_assumptions + M_cardinal_AC +

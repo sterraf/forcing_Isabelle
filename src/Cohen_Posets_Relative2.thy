@@ -393,8 +393,7 @@ proof(intro equalityI subsetI)
     by auto
   moreover from this
   have "|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<omega>"
-    using Finite_cardinal_rel_Finite
-      Finite_cardinal_rel_in_nat pfunD_closed[of p] n_lesspoll_rel_nat
+    using Finite_cardinal_rel_in_nat pfunD_closed[of p] n_lesspoll_rel_nat
     by simp
   ultimately
   show "p\<in> Fn_rel(M,\<omega>,I,J)"

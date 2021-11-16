@@ -1280,9 +1280,6 @@ qed
 lemma eqpoll_rel_imp_Finite_iff: "A \<approx>\<^bsup>M\<^esup> B \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> Finite(A) \<longleftrightarrow> Finite(B)"
   using eqpoll_rel_imp_Finite eqpoll_rel_sym by force
 
-lemma Finite_cardinal_rel_Finite: "M(i) \<Longrightarrow> Finite(|i|\<^bsup>M\<^esup>) \<Longrightarrow> Finite(i)"
-  sorry
-
 end (* M_cardinals *)
 
 end
