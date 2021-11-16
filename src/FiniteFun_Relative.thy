@@ -91,6 +91,8 @@ locale M_FiniteFun =  M_seqspace +
     to_finiteFun_replacement: "strong_replacement(M, \<lambda>x y. y = range(x))"
     and
     supset_separation: "separation(M, \<lambda> x. \<exists>a. \<exists>b. x = \<langle>a,b\<rangle> \<and> b \<subseteq> a)"
+    and
+    separation_is_function : "separation(M, is_function(M))"
 begin
 
 lemma fun_range_eq: "f\<in>A\<rightarrow>B \<Longrightarrow> {f`i . i\<in>domain(f) } = range(f)"

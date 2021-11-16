@@ -16,6 +16,19 @@ lemmas app_fun = apply_iff[THEN iffD1]
 definition PFun_Space_Rel :: "[i,i\<Rightarrow>o, i] \<Rightarrow> i"  ("_\<rightharpoonup>\<^bsup>_\<^esup>_")
   where "A \<rightharpoonup>\<^bsup>M\<^esup> B == {f \<in> Pow(A\<times>B) . M(f) \<and> function(f)}"
 
+lemma (in M_library) PFun_Space_subset_Powrel :
+  assumes "M(A)" "M(B)"
+  shows "A \<rightharpoonup>\<^bsup>M\<^esup> B = {f \<in> Pow\<^bsup>M\<^esup>(A\<times>B) . function(f)}"
+  using Pow_rel_char assms
+  unfolding PFun_Space_Rel_def
+  by auto
+
+lemma (in M_library) PFun_Space_closed :
+  assumes "M(A)" "M(B)"
+  shows "M(A \<rightharpoonup>\<^bsup>M\<^esup> B)"
+  using assms PFun_Space_subset_Powrel separation_is_function
+  by auto
+
 lemma Un_filter_fun_space_closed:
   assumes "G \<subseteq> I \<rightarrow> J" "\<And> f g . f\<in>G \<Longrightarrow> g\<in>G \<Longrightarrow> \<exists>d\<in>I\<rightarrow> J . d\<supseteq>f \<and> d\<supseteq>g"
   shows "\<Union>G \<in> Pow(I\<times>J)" "function(\<Union>G)"
@@ -500,10 +513,16 @@ begin
 (* FIXME: The results in this context are to be obtain through porting
   Cohen_Posets.thy *)
 
+lemma separation_lesspol_rel :
+  "M(\<kappa>) \<Longrightarrow> separation(M, \<lambda>x . |x|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>)"
+  sorry
+
 lemma Fn_rel_closed[intro,simp]:
   assumes "M(\<kappa>)" "M(I)" "M(J)"
   shows "M(Fn\<^bsup>M\<^esup>(\<kappa>,I,J))"
-  sorry
+  using assms separation_lesspol_rel PFun_Space_closed
+  unfolding Fn_rel_def
+  by auto
 
 lemma Fn_rel_subset_Pow:
   assumes "M(\<kappa>)" "M(I)" "M(J)"
@@ -539,7 +558,6 @@ lemma preorder_on_Fnle_rel:
   shows "preorder_on(Fn\<^bsup>M\<^esup>(\<kappa>, I, J), Fnle\<^bsup>M\<^esup>(\<kappa>, I, J))"
   unfolding preorder_on_def refl_def trans_on_def
   by blast
-
 
 end (* M_master *)
 

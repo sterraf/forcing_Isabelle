@@ -388,6 +388,17 @@ lemma (in M_ZF_trans) separation_supset_body:
   unfolding supset_body_def
   by simp
 
+
+lemma (in M_ZF_trans) separation_is_function:
+ "separation(##M, is_function(##M))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x] \<Turnstile> function_fm(0)",THEN iffD1])
+   apply(rule_tac function_iff_sats[where env="[_]",symmetric])
+  apply(simp_all)
+  apply(rule_tac separation_ax[where env="[]",simplified])
+    apply(simp_all add:arity_function_fm ord_simp_union)
+  done
+
 lemma (in M_ZF_trans) separation_is_fst:
  "(##M)(a) \<Longrightarrow> separation(##M, \<lambda>x . is_fst(##M,x,a))"
   apply(rule_tac separation_cong[
