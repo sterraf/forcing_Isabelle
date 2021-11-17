@@ -513,14 +513,10 @@ begin
 (* FIXME: The results in this context are to be obtain through porting
   Cohen_Posets.thy *)
 
-lemma separation_lesspol_rel :
-  "M(\<kappa>) \<Longrightarrow> separation(M, \<lambda>x . |x|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>)"
-  sorry
-
 lemma Fn_rel_closed[intro,simp]:
   assumes "M(\<kappa>)" "M(I)" "M(J)"
   shows "M(Fn\<^bsup>M\<^esup>(\<kappa>,I,J))"
-  using assms separation_lesspol_rel PFun_Space_closed
+  using assms separation_cardinal_rel_lesspoll_rel PFun_Space_closed
   unfolding Fn_rel_def
   by auto
 

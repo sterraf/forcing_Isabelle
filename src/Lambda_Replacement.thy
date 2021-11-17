@@ -541,6 +541,10 @@ locale M_replacement = M_basic +
     separation_equal_apply: "M(f) \<Longrightarrow> M(a) \<Longrightarrow> separation(M,\<lambda>x. f`x=a)"
     and
     separation_restrict: "M(B) \<Longrightarrow> \<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)"
+    and
+    separation_in_snd: "M(a) \<Longrightarrow> separation(M, \<lambda>y. a\<in>snd(y))"
+    and
+    lam_replacement_range : "lam_replacement(M,range)"
 begin
 
 lemmas lam_replacement_restrict' = lam_replacement_restrict[OF separation_restrict]
@@ -846,6 +850,41 @@ proof -
   show ?thesis
     unfolding strong_replacement_def by simp
 qed
+
+lemma separation_in_f:
+  assumes "(M)(a)" "\<forall>x[M]. M(f(x))" "lam_replacement(M,f)"
+  shows "separation(M,\<lambda>x . a\<in>f(x))"
+proof -
+  let ?Z="\<lambda>A. {<x,f(x)>. x\<in>A}"
+  have "M(?Z(A))" if "M(A)" for A
+    using assms lam_replacement_iff_lam_closed that
+    unfolding lam_def
+    by auto
+  then
+  have "M({u\<in>?Z(A) . a\<in>snd(u)})" (is "M(?W(A))") if "M(A)" for A
+    using that separation_in_snd assms
+    by auto
+  then
+  have "M({fst(u) . u \<in> ?W(A)})" if "M(A)" for A
+    using that lam_replacement_imp_strong_replacement[OF lam_replacement_fst,THEN
+        RepFun_closed] fst_closed[OF transM]
+    by auto
+  moreover
+  have "{x\<in>A. a\<in>f(x)} = {fst(u) . u\<in>?W(A)}" for A
+  by auto
+  ultimately
+  show ?thesis
+    using separation_iff
+    by auto
+qed
+
+lemma separation_in_range : "M(a) \<Longrightarrow> separation(M, \<lambda>x. a\<in>range(x))"
+  using lam_replacement_range separation_in_f
+  by auto
+
+lemma separation_in_domain : "M(a) \<Longrightarrow> separation(M, \<lambda>x. a\<in>domain(x))"
+  using lam_replacement_domain separation_in_f
+  by auto
 
 lemma lam_replacement_separation :
   assumes "lam_replacement(M,f)" "separation(M,P)"

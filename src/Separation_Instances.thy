@@ -13,6 +13,17 @@ copied and pasted, tweaking some lemmas if needed (for example, we might have
 needed to use some closedness results).
 \<close>
 
+lemma (in M_ZF_trans) separation_in_snd:
+ "(##M)(a) \<Longrightarrow> separation(##M, \<lambda>x. a\<in>snd(x))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,a] \<Turnstile> (\<cdot>\<exists>\<cdot>\<cdot>2 \<in> 0\<cdot> \<and> \<cdot>snd(1) is 0\<cdot>\<cdot>\<cdot>) ",THEN iffD1])
+  using snd_iff_sats nonempty snd_abs snd_closed
+  apply(simp_all add:nonempty[simplified])
+  apply(rule_tac separation_ax[where env="[a]",simplified])
+    apply(simp_all add:arity_snd_fm ord_simp_union)
+  done
+
+
 (* FIXME: move these declarations and lemmas where they belong.*)
 declare Inl_iff_sats [iff_sats]
 declare Inr_iff_sats [iff_sats]

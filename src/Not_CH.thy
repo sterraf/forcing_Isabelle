@@ -9,8 +9,6 @@ definition
 
 locale M_master = M_cohen +
   assumes
-  domain_separation: "M(x) \<Longrightarrow> separation(M, \<lambda>z. x \<in> domain(z))"
-  and
   inj_dense_separation: "M(x) \<Longrightarrow> M(w) \<Longrightarrow>
     separation(M, \<lambda>z. \<exists>n\<in>\<omega>.    \<langle>\<langle>w, n\<rangle>, 1\<rangle> \<in> z \<and> \<langle>\<langle>x, n\<rangle>, 0\<rangle> \<in> z)"
   and
@@ -110,13 +108,13 @@ end (* M_master_sub *)
 lemmas (in M_ZFC_trans) sep_instances =
  separation_toplevel1_body separation_toplevel2_body separation_toplevel3_body
  separation_toplevel4_body separation_toplevel5_body separation_toplevel6_body
- separation_toplevel7_body separation_toplevel8_body separation_toplevel9_body
+ separation_toplevel7_body separation_toplevel9_body
  separation_toplevel10_body separation_toplevel11_body separation_Ord
  separation_toplevel12_body separation_insnd_ballPair
  separation_restrict_eq_dom_eq separation_restrict_eq_dom_eq_pair
  separation_ifrangeF_body separation_ifrangeF_body2 separation_ifrangeF_body3
  separation_ifrangeF_body4 separation_ifrangeF_body5 separation_ifrangeF_body6
- separation_ifrangeF_body7
+ separation_ifrangeF_body7 separation_cardinal_rel_lesspoll_rel
 
 (* FIXME: the second instance has been proved in Lambda Replacement, it shouldn't be here. *)
 lemmas (in M_ZF_trans) repl_instances = lam_replacement_inj_rel
@@ -383,7 +381,7 @@ declare (in G_generic_AC) ext.cexp_rel_closed[simplified setclass_iff, simp, int
 NOTE Class model version?
 lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> M(dom_dense(x))" *)
 lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> dom_dense(x) \<in> M"
-  using domain_separation[of x] nat_into_M
+  using separation_in_domain[of x] nat_into_M
   by (rule_tac separation_closed[simplified], blast dest:transM) simp
 
 lemma domain_f_G: assumes "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "y \<in> \<omega>"
@@ -466,7 +464,7 @@ qed
 
 lemma inj_dense_closed[intro,simp]:
   "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> inj_dense(w,x) \<in> M"
-  using domain_separation[of x] nat_into_M
+  using separation_in_domain[of x] nat_into_M
     inj_dense_separation transM[OF _ Aleph_rel2_closed]
   by (rule_tac separation_closed[simplified]; simp_all)
 

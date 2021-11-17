@@ -7,7 +7,9 @@ theory Cardinal_Library_Relative
     Replacement_Lepoll
 begin
 
-locale M_library = M_ZF_library + M_cardinal_AC
+locale M_library = M_ZF_library + M_cardinal_AC +
+  assumes
+  separation_cardinal_rel_lesspoll_rel: "M(\<kappa>) \<Longrightarrow> separation(M, \<lambda>x . |x|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>)"
 begin
 
 declare eqpoll_rel_refl [simp]

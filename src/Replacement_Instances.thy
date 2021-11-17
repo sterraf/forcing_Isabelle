@@ -26,6 +26,13 @@ lemma (in M_ZF_trans) replacement_range:
   using strong_replacement_cong[THEN iffD2,OF _ replacement_is_range] range_abs
   by simp
 
+lemma (in M_ZF_trans) lam_replacement_range : "lam_replacement(##M, range)"
+  using lam_replacement_iff_lam_closed[THEN iffD2,of range]
+    Lambda_in_M[where \<phi>="range_fm(0,1)" and env="[]",
+      OF range_type _ range_iff_sats[symmetric] range_abs,simplified]
+     arity_range_fm[of 0 1] ord_simp_union transitivity range_closed
+  by simp
+
 lemma (in M_ZF_trans) replacement_is_domain:
  "strong_replacement(##M, \<lambda>f y. is_domain(##M,f,y))"
   apply(rule_tac strong_replacement_cong[
@@ -402,8 +409,9 @@ lemmas (in M_ZF_trans) M_replacement_ZF_instances = lam_replacement_domain
   separation_fst_equal separation_id_rel[simplified]
   separation_equal_apply separation_sndfst_eq_fstsnd
   separation_fstfst_eq_fstsnd separation_fstfst_eq
-  separation_restrict_elem
+  separation_restrict_elem separation_in_snd
   replacement_fst2_snd2 replacement_fst2_sndfst_snd2
+  lam_replacement_range
 
 sublocale M_ZF_trans \<subseteq> M_replacement "##M"
   by unfold_locales (simp_all add: M_replacement_ZF_instances del:setclass_iff)

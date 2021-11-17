@@ -239,7 +239,7 @@ qed
 
 (* FIXME: should be more general *)
 lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow>  dom_dense(x) \<in> M"
-  using domain_separation[of x]
+  using separation_in_domain[of x]
   by (rule_tac separation_closed[simplified], auto dest:transM)
 
 lemma domain_f_G: assumes "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
@@ -350,10 +350,6 @@ proof
   qed
 qed
 
-
-lemma separation_in_range: "z\<in>M \<Longrightarrow> separation(##M,\<lambda>x. z\<in>range(x))"
-  sorry
-
 lemma surj_dense_closed[intro,simp]:
   "x \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2 \<Longrightarrow> surj_dense(x) \<in> M"
   using separation_in_range transM[of x] by simp
@@ -424,7 +420,6 @@ theorem CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> = 2\<^bsup>\<up>\<ale
   by auto
 
 end (* collapse_generic *)
-
 
 theorem ctm_of_CH:
   assumes
