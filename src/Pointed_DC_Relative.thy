@@ -18,13 +18,38 @@ relationalize "dc_witness_rel" "is_dc_witness"
 manual_schematic for "is_dc_witness" assuming "nonempty"
   oops
 
-context M_basic
+context M_replacement
 begin
 
 lemma dc_witness_closed[intro,simp]:
-  assumes "M(n)" "M(A)" "M(a)" "M(s)" "M(R)"
+  assumes "M(n)" "M(A)" "M(a)" "M(s)" "M(R)" "n\<in>nat"
   shows "M(dc_witness(n,A,a,s,R))"
-  sorry
+  using \<open>n\<in>nat\<close>
+proof(induct)
+  case 0
+  with \<open>M(a)\<close>
+  show ?case
+    unfolding dc_witness_def by simp
+next
+  case (succ x)
+  with assms
+  have "M(dc_witness(x,A,a,s,R))" (is "M(?b)")
+    by simp
+  moreover from this assms
+  have "M(({?b}\<times>A)\<inter>R)" (is "M(?X)") by auto
+  moreover
+  have "{x\<in>A. \<langle>?b,x\<rangle>\<in>R} = {snd(y) . y\<in>?X}" (is "_ = ?Y")
+    by(intro equalityI subsetI,force,auto)
+  moreover from calculation
+  have "M(?Y)"
+    using lam_replacement_snd lam_replacement_imp_strong_replacement RepFun_closed
+      snd_closed[OF transM]
+    by auto
+  ultimately
+  show ?case
+    using \<open>M(s)\<close> apply_closed
+    unfolding dc_witness_def by simp
+qed
 
 lemma dc_witness_char:
   assumes "M(A)"
