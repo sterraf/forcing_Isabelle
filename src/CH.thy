@@ -337,9 +337,32 @@ proof
   have "countable\<^bsup>M\<^esup>(p)" using Coll_into_countable_rel by simp
   show "\<exists>d\<in>surj_dense(x). d \<preceq> p"
   proof -
-    from \<open>countable\<^bsup>M\<^esup>(p)\<close>
+    from \<open>p \<in> Coll\<close>
+    have "domain(p) \<subseteq> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "p\<in>M"
+      using transM[of _ Coll] domain_of_fun by (auto dest!:Fn_relD del:domainE)
+    moreover from \<open>countable\<^bsup>M\<^esup>(p)\<close>
+    have "domain(p) \<subseteq> {fst(x) . x \<in> p }" by (auto intro!: rev_bexI)
+    moreover from calculation
+    have "{ fst(x) . x \<in> p } \<in> M"
+      using lam_replacement_fst[THEN lam_replacement_imp_strong_replacement]
+      by (auto simp flip:setclass_iff intro!:RepFun_closed dest:transM)
+    moreover from calculation and \<open>countable\<^bsup>M\<^esup>(p)\<close>
+    have "countable\<^bsup>M\<^esup>({fst(x) . x \<in> p })"
+      using cardinal_rel_RepFun_le[OF lam_funtype, of p fst, OF
+          lam_replacement_fst[THEN [2]
+            lam_replacement_iff_lam_closed[THEN iffD1, THEN rspec]], simplified]
+        countable_rel_iff_cardinal_rel_le_nat[THEN iffD1, THEN [2] le_trans, of _ p]
+      by (rule_tac countable_rel_iff_cardinal_rel_le_nat[THEN iffD2]) simp_all
+    moreover from calculation
+    have "countable\<^bsup>M\<^esup>(domain(p))"
+      using uncountable_rel_not_subset_countable_rel[of "{fst(x) . x \<in> p }" "domain(p)"]
+      by auto
+    ultimately
     obtain \<alpha> where "\<alpha> \<notin> domain(p)" "\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
-      sorry
+      using lt_cardinal_rel_imp_not_subset[of "domain(p)" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"]
+        Ord_Aleph_rel countable_iff_le_rel_Aleph_rel_one[THEN iffD1,
+          THEN lesspoll_cardinal_lt_rel, of "domain(p)"]
+        cardinal_rel_idem by auto
     moreover note assms
     moreover from calculation and \<open>p \<in> Coll\<close>
     have "cons(\<langle>\<alpha>,x\<rangle>, p) \<in> Coll" "x\<in>M" "cons(\<langle>\<alpha>,x\<rangle>, p) \<preceq> p"
