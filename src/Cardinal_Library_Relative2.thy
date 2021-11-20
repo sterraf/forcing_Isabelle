@@ -67,13 +67,6 @@ proof (intro not_le_iff_lt[THEN iffD1] notI)
     using cantor_inj_rel by simp
 qed simp
 
-(*FIXME: this can be generalized. *)
-lemma countable_fun_imp_countable_image:
-  assumes "f:C \<rightarrow>\<^bsup>M\<^esup> B" "countable\<^bsup>M\<^esup>(C)" "\<And>c. c\<in>C \<Longrightarrow> countable\<^bsup>M\<^esup>(f`c)"
-    "M(C)" "M(B)"
-  shows "countable\<^bsup>M\<^esup>(\<Union>(f``C))"
-  sorry
-
 lemma countable_iff_le_rel_Aleph_rel_one:
   notes iff_trans[trans]
   assumes "M(C)"
@@ -90,6 +83,18 @@ proof -
   show ?thesis .
 qed
 
-end (* M_cardinal_library *)
+end (* M_library *)
+
+(* FIXME: This can be generalized. *)
+lemma (in M_cardinal_library) countable_fun_imp_countable_image:
+  assumes "f:C \<rightarrow>\<^bsup>M\<^esup> B" "countable\<^bsup>M\<^esup>(C)" "\<And>c. c\<in>C \<Longrightarrow> countable\<^bsup>M\<^esup>(f`c)"
+    "M(C)" "M(B)"
+  shows "countable\<^bsup>M\<^esup>(\<Union>(f``C))"
+  using assms function_space_rel_char image_fun[of f]
+    cardinal_rel_RepFun_apply_le[of f C B]
+    countable_rel_iff_cardinal_rel_le_nat[THEN iffD1, THEN [2] le_trans, of _ ]
+    countable_rel_iff_cardinal_rel_le_nat
+  by (rule_tac countable_rel_union_countable_rel)
+    (auto dest:transM del:imageE)
 
 end
