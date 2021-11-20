@@ -75,9 +75,21 @@ lemma countable_fun_imp_countable_image :
   shows "countable\<^bsup>M\<^esup>(\<Union>(f``C))"
   sorry
 
-lemma countable_iff_le_rel_Aleph_rel_one :
-  "countable\<^bsup>M\<^esup>(C) \<longleftrightarrow> |C|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
-  sorry
+lemma countable_iff_le_rel_Aleph_rel_one:
+  notes iff_trans[trans]
+  assumes "M(C)"
+  shows "countable\<^bsup>M\<^esup>(C) \<longleftrightarrow> |C|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+proof -
+  have "countable\<^bsup>M\<^esup>(C) \<longleftrightarrow> C \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+    using assms lesspoll_rel_csucc_rel[of \<omega> C] Aleph_rel_succ Aleph_rel_zero
+    unfolding countable_rel_def by simp
+  also from assms
+  have "\<dots> \<longleftrightarrow> |C|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+    using cardinal_rel_eqpoll_rel[THEN eqpoll_rel_sym, THEN eq_lesspoll_rel_trans]
+    by (auto intro:cardinal_rel_eqpoll_rel[THEN eq_lesspoll_rel_trans])
+  finally
+  show ?thesis .
+qed
 
 end (* M_cardinal_library *)
 
