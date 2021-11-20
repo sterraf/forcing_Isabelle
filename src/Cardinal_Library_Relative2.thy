@@ -68,10 +68,9 @@ proof (intro not_le_iff_lt[THEN iffD1] notI)
 qed simp
 
 (*FIXME: this can be generalized. *)
-lemma countable_fun_imp_countable_image :
-  assumes "f:C \<rightarrow>\<^bsup>M\<^esup> B"
-    "countable\<^bsup>M\<^esup>(C)"
-    "\<And> c . c\<in>C \<Longrightarrow> countable\<^bsup>M\<^esup>(f`c)"
+lemma countable_fun_imp_countable_image:
+  assumes "f:C \<rightarrow>\<^bsup>M\<^esup> B" "countable\<^bsup>M\<^esup>(C)" "\<And>c. c\<in>C \<Longrightarrow> countable\<^bsup>M\<^esup>(f`c)"
+    "M(C)" "M(B)"
   shows "countable\<^bsup>M\<^esup>(\<Union>(f``C))"
   sorry
 

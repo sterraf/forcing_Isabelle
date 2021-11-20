@@ -48,19 +48,19 @@ begin
 
 lemma 
   assumes 
-    sorry_replacements:
+    sorried_replacements:
     "\<And>P. strong_replacement(M,P)"
     "\<And>F. lam_replacement(M,F)"
     "\<And>Q S. iterates_replacement(M,Q,S)"
     "\<And>Q S. wfrec_replacement(M,Q,S)"
     "\<And>Q S. transrec_replacement(M,Q,S)"
     and
-    sorry_separations:
+    sorried_separations:
     "\<And>Q. separation(M,Q)"shows "M_master(M)"
   apply unfold_locales apply 
     (simp_all add:
-      sorry_replacements(1-2)
-      sorry_separations
+      sorried_replacements(1-2)
+      sorried_separations
       power_infty)
   \<comment> \<open>We obtain two goals of the form \<^term>\<open>rall(M,\<V>)\<close> because of 
   instances of the form \<^term>\<open>\<forall>x[M]. separation(M,P)\<close>\<close> 

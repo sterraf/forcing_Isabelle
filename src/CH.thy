@@ -146,10 +146,9 @@ proof -
     moreover from calculation
     have "|\<Union>?G|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
       using countable_fun_imp_countable_image[of f]
-          mem_function_space_rel_abs[simplified,OF nat_in_M Coll_in_M \<open>f\<in>M\<close>]
+        mem_function_space_rel_abs[simplified,OF nat_in_M Coll_in_M \<open>f\<in>M\<close>]
         countableI[OF lepoll_rel_refl]
-        countable_iff_le_rel_Aleph_rel_one
-        nat_in_M
+        countable_iff_le_rel_Aleph_rel_one[of "\<Union>?G"]
       by auto
     moreover from calculation
     have "\<Union>?G\<in>Coll"
