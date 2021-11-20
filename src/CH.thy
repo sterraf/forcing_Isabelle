@@ -348,9 +348,7 @@ proof
       by (auto simp flip:setclass_iff intro!:RepFun_closed dest:transM)
     moreover from calculation and \<open>countable\<^bsup>M\<^esup>(p)\<close>
     have "countable\<^bsup>M\<^esup>({fst(x) . x \<in> p })"
-      using cardinal_rel_RepFun_le[OF lam_funtype, of p fst, OF
-          lam_replacement_fst[THEN [2]
-            lam_replacement_iff_lam_closed[THEN iffD1, THEN rspec]], simplified]
+      using cardinal_rel_RepFun_le lam_replacement_fst
         countable_rel_iff_cardinal_rel_le_nat[THEN iffD1, THEN [2] le_trans, of _ p]
       by (rule_tac countable_rel_iff_cardinal_rel_le_nat[THEN iffD2]) simp_all
     moreover from calculation

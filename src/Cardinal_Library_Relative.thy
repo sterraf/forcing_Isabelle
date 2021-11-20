@@ -16,7 +16,7 @@ declare eqpoll_rel_refl [simp]
 
 subsection\<open>Miscellaneous\<close>
 
-lemma cardinal_rel_RepFun_le:
+lemma cardinal_rel_RepFun_apply_le:
   assumes "S \<in> A\<rightarrow>B" "M(S)" "M(A)" "M(B)"
   shows "|{S`a . a\<in>A}|\<^bsup>M\<^esup> \<le> |A|\<^bsup>M\<^esup>"
 proof -
@@ -37,6 +37,16 @@ proof -
   show ?thesis
     using surj_rel_char surj_rel_implies_cardinal_rel_le by simp
 qed
+
+(* TODO: Check if we can use this lemma to prove the previous one and
+    not the other way around *)
+lemma cardinal_rel_RepFun_le:
+  assumes lrf:"lam_replacement(M,f)" and f_closed:"\<forall>x[M]. M(f(x))" and "M(X)"
+  shows "|{f(x) . x \<in> X}|\<^bsup>M\<^esup> \<le> |X|\<^bsup>M\<^esup>"
+  using \<open>M(X)\<close> f_closed cardinal_rel_RepFun_apply_le[OF lam_funtype, of X _, OF
+      lrf[THEN [2] lam_replacement_iff_lam_closed[THEN iffD1, THEN rspec]]]
+    lrf[THEN lam_replacement_imp_strong_replacement]
+  by simp (auto simp flip:setclass_iff intro!:RepFun_closed dest:transM)
 
 lemma subset_imp_le_cardinal_rel: "A \<subseteq> B \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> |A|\<^bsup>M\<^esup> \<le> |B|\<^bsup>M\<^esup>"
   using subset_imp_lepoll_rel[THEN lepoll_rel_imp_cardinal_rel_le] .
@@ -907,7 +917,7 @@ proof -
     have "|{S`x . x \<in> \<beta>}|\<^bsup>M\<^esup> < \<gamma>"
       using
         \<open>{S`x . x\<in>\<beta>} = {restrict(S,\<beta>)`x . x\<in>\<beta>}\<close>[symmetric]
-        cardinal_rel_RepFun_le[of "restrict(S,\<beta>)" \<beta> G,
+        cardinal_rel_RepFun_apply_le[of "restrict(S,\<beta>)" \<beta> G,
             OF restrict_type2[of S \<gamma> "\<lambda>_.G" \<beta>] restrict_closed]
         Ord_in_Ord Ord_cardinal_rel
         lt_trans1[of "|{S`x . x \<in> \<beta>}|\<^bsup>M\<^esup>" "|\<beta>|\<^bsup>M\<^esup>" \<gamma>]
