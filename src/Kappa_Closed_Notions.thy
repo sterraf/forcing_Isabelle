@@ -41,17 +41,17 @@ lemma mono_seqspaceI[intro!]:
   using ltI[OF _ Ord_in_Ord[of A], THEN [3] assms(2)] assms(1,3)
   unfolding mono_seqspace_def by auto
 
-lemma (in M_ZF_library) mono_seqspace_relI[intro!]:
-  assumes "f: A\<rightarrow>\<^bsup>M\<^esup> P" "\<And>x y. x\<in>A \<Longrightarrow> y\<in>A \<Longrightarrow> x<y \<Longrightarrow> \<langle>f`x, f`y\<rangle> \<in> leq"
-    "Ord(A)" "M(A)" "M(P)" "M(leq)"
-  shows  "f: A \<^sub><\<rightarrow>\<^bsup>M\<^esup> (P,leq)"
-  sorry
-
 lemma (in M_ZF_library) mono_seqspace_rel_char:
   assumes "M(A)" "M(P)" "M(leq)"
   shows "A \<^sub><\<rightarrow>\<^bsup>M\<^esup> (P,leq) = {f\<in>A \<^sub><\<rightarrow> (P,leq). M(f)}"
   using assms mono_map_rel_char 
   unfolding mono_seqspace_def mono_seqspace_rel_def by simp
+
+lemma (in M_ZF_library) mono_seqspace_relI[intro!]:
+  assumes "f: A\<rightarrow>\<^bsup>M\<^esup> P" "\<And>x y. x\<in>A \<Longrightarrow> y\<in>A \<Longrightarrow> x<y \<Longrightarrow> \<langle>f`x, f`y\<rangle> \<in> leq"
+    "Ord(A)" "M(A)" "M(P)" "M(leq)"
+  shows  "f: A \<^sub><\<rightarrow>\<^bsup>M\<^esup> (P,leq)"
+  using mono_seqspace_rel_char function_space_rel_char assms by auto
 
 lemma mono_seqspace_is_fun[dest]:
   includes mono_map_rules
