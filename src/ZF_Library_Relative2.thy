@@ -7,21 +7,127 @@ begin
 context M_ZF_library
 begin
 
+lemma relation_separation: "separation(M, \<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle>)"
+  unfolding separation_def
+proof (clarify)
+  fix A
+  assume "M(A)"
+  moreover from this
+  have "{z\<in>A. \<exists>x y. z = \<langle>x, y\<rangle>} = {z\<in>A. \<exists>x\<in>domain(A). \<exists>y\<in>range(A). pair(M, x, y, z)}"
+    (is "?rel = _")
+    by (intro equalityI, auto dest:transM)
+      (intro bexI, auto dest:transM simp:Pair_def)
+  moreover from calculation
+  have "M(?rel)"
+    using cartprod_separation[THEN separation_closed, of "domain(A)" "range(A)" A]
+    by simp
+  ultimately
+  show "\<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> x \<in> A \<and> (\<exists>w y. x = \<langle>w, y\<rangle>)"
+    by (rule_tac x="{z\<in>A. \<exists>x y. z = \<langle>x, y\<rangle>}" in rexI) auto
+qed
+
+lemma lam_replacement_Pair:
+  shows "lam_replacement(M, \<lambda>x. \<langle>fst(x), snd(x)\<rangle>)"
+  unfolding lam_replacement_def strong_replacement_def
+proof (clarsimp)
+  fix A
+  assume "M(A)"
+  then
+  show "\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>A. b = \<langle>x, fst(x), snd(x)\<rangle>)"
+    unfolding lam_replacement_def strong_replacement_def
+  proof (cases "relation(A)")
+    case True
+    with \<open>M(A)\<close>
+    show ?thesis
+      using id_closed unfolding relation_def
+      by (rule_tac x="id(A)" in rexI) auto
+  next
+    case False
+    moreover
+    note \<open>M(A)\<close>
+    moreover from this
+    have "M({z\<in>A. \<exists>x y. z = \<langle>x, y\<rangle>})" (is "M(?rel)")
+      using relation_separation by auto
+    moreover
+    have "fst(z) \<noteq> 0 \<or> snd(z) \<noteq> 0 \<Longrightarrow> z = \<langle>fst(z), snd(z)\<rangle>" for z sorry
+    ultimately
+    show ?thesis
+      using id_closed unfolding relation_def
+      by (rule_tac x="id(?rel) \<union> (A-?rel)\<times>{0}\<times>{0}" in rexI)
+        (force simp:fst_def snd_def)+
+  qed
+qed
+
+lemma lam_replacement_Lambda:
+  assumes "lam_replacement(M, \<lambda>y. b(fst(y), snd(y)))"
+    "\<forall>w[M]. \<forall>y[M]. M(b(w, y))" "M(W)"
+  shows "lam_replacement(M, \<lambda>x. \<lambda>w\<in>W. b(x, w))"
+proof (intro lam_replacement_iff_lam_closed[THEN iffD2]; clarify)
+  fix x
+  assume "M(x)"
+  with assms
+  show "M(\<lambda>w\<in>W. b(x, w))"
+    using lam_replacement_constant lam_replacement_identity
+      lam_replacement_hcomp2[where h=b]
+    by (intro lam_replacement_iff_lam_closed[THEN iffD1, rule_format])
+      simp_all
+next
+  fix A
+  assume "M(A)"
+  moreover from this assms
+  have "M({b(fst(x),snd(x)). x \<in> A})" (is "M(?B)")
+    using lam_replacement_imp_strong_replacement transM[of _ A]
+    by (rule_tac RepFun_closed) auto
+  have "{\<langle>\<langle>x,y\<rangle>,z\<rangle> \<in> (domain(A)\<times>range(A))\<times>?B. z = b(x,y) \<and> (\<exists>a\<in>A. a=\<langle>x,y\<rangle>)}
+        = (\<lambda>x\<in>A. b(fst(x),snd(x))) \<inter> (domain(A)\<times>range(A))\<times>?B"
+    unfolding lam_def by auto
+  show "M(\<lambda>x\<in>A. \<lambda>w\<in>W. b(x, w))"
+    unfolding lam_def
+    sorry
+qed
+
+lemma lam_replacement_apply_Pair:
+  assumes "M(y)"
+  shows "lam_replacement(M, \<lambda>x. y ` \<langle>fst(x), snd(x)\<rangle>)"
+  using assms lam_replacement_constant lam_replacement_Pair
+    lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
+  by auto
+
+lemma lam_replacement_apply_fst_snd:
+  shows "lam_replacement(M, \<lambda>w. fst(w) ` fst(snd(w)) ` snd(snd(w)))"
+  using lam_replacement_fst lam_replacement_snd lam_replacement_hcomp
+    lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
+  by auto
+
+lemma separation_snd_in_fst: "separation(M, \<lambda>x. snd(x) \<in> fst(x))" sorry
+
+lemma lam_replacement_if_mem:
+  "lam_replacement(M, \<lambda>x. if snd(x) \<in> fst(x) then 1 else 0)"
+  using separation_snd_in_fst
+    lam_replacement_constant lam_replacement_if
+  by auto
+
 (*FIXME: move this to Lambda_Replacement and prove it. *)
 lemma lam_replacement_comp: "lam_replacement(M, \<lambda>x. fst(x) O snd(x))"
   sorry
-lemma lam_replacement_Lambda_apply2:
+
+lemma lam_replacement_Lambda_apply_fst_snd:
   assumes "M(X)"
   shows "lam_replacement(M, \<lambda>x. \<lambda>w\<in>X. x ` fst(w) ` snd(w))"
-  sorry
+  using assms lam_replacement_apply_fst_snd lam_replacement_Lambda
+  by simp
+
 lemma lam_replacement_Lambda_apply_Pair:
   assumes "M(X)" "M(y)"
   shows "lam_replacement(M, \<lambda>x. \<lambda>w\<in>X. y ` \<langle>x, w\<rangle>)"
-  sorry
+  using assms lam_replacement_apply_Pair lam_replacement_Lambda
+  by simp
+
 lemma lam_replacement_Lambda_if_mem:
   assumes "M(X)"
   shows "lam_replacement(M, \<lambda>x. \<lambda>xa\<in>X. if xa \<in> x then 1 else 0)"
-  sorry
+  using assms lam_replacement_if_mem lam_replacement_Lambda
+  by simp
 
 lemma lam_replacement_comp':
   "M(f) \<Longrightarrow> M(g) \<Longrightarrow> lam_replacement(M, \<lambda>x . f O x O g)"
@@ -249,7 +355,7 @@ next
     by (auto dest:transM)
   moreover from assms
   show "lam_replacement(M, ?cur)"
-    using lam_replacement_Lambda_apply2 by simp
+    using lam_replacement_Lambda_apply_fst_snd by simp
   ultimately
   show "M(\<lambda>x\<in>\<nu>1 \<rightarrow>\<^bsup>M\<^esup> (\<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>). ?cur(x))"
     using lam_replacement_iff_lam_closed
