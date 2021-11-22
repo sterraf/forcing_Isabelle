@@ -250,7 +250,16 @@ proof -
   moreover from this
   have "M(A \<times> \<omega>)" by simp
   moreover
-  have "M(?R')" sorry
+  have "?R' = {x \<in> R . snd(snd(x)) = succ(snd(fst(x)))}" unfolding split_def ..
+  have "lam_replacement(M, \<lambda>x. succ(snd(fst(x))))"
+    using lam_replacement_fst lam_replacement_snd lam_replacement_hcomp
+      lam_replacement_hcomp[of _ "\<lambda>x. succ(snd(x))"]
+      lam_replacement_succ by simp
+  with \<open>M(R)\<close>
+  have "M(?R')"
+    using separation_eq lam_replacement_fst lam_replacement_snd
+      lam_replacement_succ lam_replacement_hcomp lam_replacement_identity
+    unfolding split_def by simp
   ultimately
   obtain f where
     F:"f\<in>nat\<rightarrow>\<^bsup>M\<^esup> A\<times>\<omega>" "f ` 0 = \<langle>a,0\<rangle>"  "\<forall>n\<in>nat. \<langle>f ` n, f ` succ(n)\<rangle> \<in> ?R'"

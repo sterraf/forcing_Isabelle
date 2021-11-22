@@ -400,7 +400,9 @@ proof
   moreover
   note assms
   moreover from this
-  have "M({x \<in> A . x \<notin> f ` x})" sorry
+  have "M({x \<in> A . x \<in> f ` x})" "{x \<in> A . x \<notin> f ` x} = A - {x \<in> A . x \<in> f ` x}"
+    using lam_replacement_apply[THEN [4] separation_in, of  "\<lambda>x. x"]
+      lam_replacement_identity lam_replacement_constant by auto
   with \<open>M(A)\<close>
   have "{x\<in>A . x \<notin> f`x} \<in> Pow\<^bsup>M\<^esup>(A)"
     by (intro mem_Pow_rel_abs[THEN iffD2]) auto
