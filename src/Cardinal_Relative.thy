@@ -222,10 +222,6 @@ lemma bij_imp_eqpoll_rel:
   shows "A \<approx>\<^bsup>M\<^esup> B"
   using assms by (auto simp add:def_eqpoll_rel)
 
-lemma id_closed: "M(A) \<Longrightarrow> M(id(A))"
-  using lam_replacement_identity lam_replacement_iff_lam_closed
-  unfolding id_def by simp
-
 lemma eqpoll_rel_refl: "M(A) \<Longrightarrow> A \<approx>\<^bsup>M\<^esup> A"
   using bij_imp_eqpoll_rel[OF id_bij, OF id_closed] .
 

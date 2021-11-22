@@ -7,59 +7,6 @@ begin
 context M_ZF_library
 begin
 
-lemma relation_separation: "separation(M, \<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle>)"
-  unfolding separation_def
-proof (clarify)
-  fix A
-  assume "M(A)"
-  moreover from this
-  have "{z\<in>A. \<exists>x y. z = \<langle>x, y\<rangle>} = {z\<in>A. \<exists>x\<in>domain(A). \<exists>y\<in>range(A). pair(M, x, y, z)}"
-    (is "?rel = _")
-    by (intro equalityI, auto dest:transM)
-      (intro bexI, auto dest:transM simp:Pair_def)
-  moreover from calculation
-  have "M(?rel)"
-    using cartprod_separation[THEN separation_closed, of "domain(A)" "range(A)" A]
-    by simp
-  ultimately
-  show "\<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> x \<in> A \<and> (\<exists>w y. x = \<langle>w, y\<rangle>)"
-    by (rule_tac x="{z\<in>A. \<exists>x y. z = \<langle>x, y\<rangle>}" in rexI) auto
-qed
-
-lemma lam_replacement_Pair:
-  shows "lam_replacement(M, \<lambda>x. \<langle>fst(x), snd(x)\<rangle>)"
-  unfolding lam_replacement_def strong_replacement_def
-proof (clarsimp)
-  fix A
-  assume "M(A)"
-  then
-  show "\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>x\<in>A. b = \<langle>x, fst(x), snd(x)\<rangle>)"
-    unfolding lam_replacement_def strong_replacement_def
-  proof (cases "relation(A)")
-    case True
-    with \<open>M(A)\<close>
-    show ?thesis
-      using id_closed unfolding relation_def
-      by (rule_tac x="id(A)" in rexI) auto
-  next
-    case False
-    moreover
-    note \<open>M(A)\<close>
-    moreover from this
-    have "M({z\<in>A. \<exists>x y. z = \<langle>x, y\<rangle>})" (is "M(?rel)")
-      using relation_separation by auto
-    moreover
-    have "z = \<langle>fst(z), snd(z)\<rangle>" if "fst(z) \<noteq> 0 \<or> snd(z) \<noteq> 0" for z
-      using that
-      by(cases "\<exists>a b. z=<a,b>",auto simp add: the_0 fst_def snd_def)
-    ultimately
-    show ?thesis
-      using id_closed unfolding relation_def
-      by (rule_tac x="id(?rel) \<union> (A-?rel)\<times>{0}\<times>{0}" in rexI)
-        (force simp:fst_def snd_def)+
-  qed
-qed
-
 lemma lam_replacement_Lambda:
   assumes "lam_replacement(M, \<lambda>y. b(fst(y), snd(y)))"
     "\<forall>w[M]. \<forall>y[M]. M(b(w, y))" "M(W)"
