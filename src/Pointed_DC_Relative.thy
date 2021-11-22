@@ -249,8 +249,6 @@ proof -
   note \<open>a\<in>_\<close> \<open>M(A)\<close>
   moreover from this
   have "M(A \<times> \<omega>)" by simp
-  moreover
-  have "?R' = {x \<in> R . snd(snd(x)) = succ(snd(fst(x)))}" unfolding split_def ..
   have "lam_replacement(M, \<lambda>x. succ(snd(fst(x))))"
     using lam_replacement_fst lam_replacement_snd lam_replacement_hcomp
       lam_replacement_hcomp[of _ "\<lambda>x. succ(snd(x))"]
@@ -310,8 +308,17 @@ lemma sequence_DC:
   assumes "\<forall>x\<in>A. \<forall>n\<in>nat. \<exists>y\<in>A. \<langle>x,y\<rangle> \<in> S`n" "M(A)" "M(S)"
   shows "\<forall>a\<in>A. (\<exists>f \<in> nat\<rightarrow>\<^bsup>M\<^esup> A. f`0 = a \<and> (\<forall>n \<in> nat. \<langle>f`n,f`succ(n)\<rangle>\<in>S`succ(n)))"
 proof -
-  from assms
-  have "M({x \<in> (A \<times> \<omega>) \<times> A \<times> \<omega> . (\<lambda>\<langle>\<langle>x,n\<rangle>,y,m\<rangle>. \<langle>x, y\<rangle> \<in> S ` m)(x)})" sorry
+  from \<open>M(S)\<close>
+  have "lam_replacement(M, \<lambda>x. S ` snd(snd(x)))"
+    using lam_replacement_snd lam_replacement_hcomp
+      lam_replacement_hcomp[of _ "\<lambda>x. S`snd(x)"] lam_replacement_apply by simp
+  with assms
+  have "M({x \<in> (A \<times> \<omega>) \<times> A \<times> \<omega> . (\<lambda>\<langle>\<langle>x,n\<rangle>,y,m\<rangle>. \<langle>x, y\<rangle> \<in> S ` m)(x)})"
+    using lam_replacement_fst lam_replacement_snd
+      lam_replacement_Pair[THEN [5] lam_replacement_hcomp2,
+        of "\<lambda>x. fst(fst(x))" "\<lambda>x. fst(snd(x))", THEN [2] separation_in,
+        of "\<lambda>x. S ` snd(snd(x))"] lam_replacement_apply[of S] 
+      lam_replacement_hcomp unfolding split_def by simp
   with assms
   show ?thesis
     by (rule_tac ballI) (drule aux_sequence_DC2, drule DC_on_A_x_nat, auto)
