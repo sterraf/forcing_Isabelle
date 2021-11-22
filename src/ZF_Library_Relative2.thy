@@ -58,16 +58,21 @@ proof (intro lam_replacement_iff_lam_closed[THEN iffD2]; clarify)
   have "M(?H)"
     using lam_replacement_iff_lam_closed[THEN iffD1, rule_format, OF _ lam_replacement_twist]
     by simp
-  with \<open>M(A)\<close>
+  moreover from this and \<open>M(A)\<close>
   have "(\<lambda>x\<in>A. \<lambda>w\<in>W. b(x, w)) =
     {\<langle>x,Z\<rangle> \<in> A \<times> Pow\<^bsup>M\<^esup>(range(?H)). Z = {y \<in> W\<times>?RFb . \<langle>x, y\<rangle> \<in> ?H}}"
     unfolding lam_def
     by (intro equalityI; subst Pow_rel_char[of "range(?H)"])
       (auto dest:transM simp: lbc[unfolded lam_def], force+)
-  ultimately
-  show "M(\<lambda>x\<in>A. \<lambda>w\<in>W. b(x, w))"
-    unfolding lam_def
+  moreover
+  note \<open>M(W)\<close>
+  moreover from calculation
+  have "M({\<langle>x,Z\<rangle> \<in> A \<times> Pow\<^bsup>M\<^esup>(range(?H)). Z = {y \<in> W\<times>?RFb . \<langle>x, y\<rangle> \<in> ?H}})"
+    using lam_replacement_snd unfolding split_def
+    apply (rule_tac separation_closed, simp_all)
     sorry
+  ultimately
+  show "M(\<lambda>x\<in>A. \<lambda>w\<in>W. b(x, w))" by simp
 qed
 
 lemma lam_replacement_apply_Pair:
