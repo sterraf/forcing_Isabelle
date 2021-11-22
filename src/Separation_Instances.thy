@@ -13,17 +13,6 @@ copied and pasted, tweaking some lemmas if needed (for example, we might have
 needed to use some closedness results).
 \<close>
 
-lemma (in M_ZF_trans) separation_in_snd:
- "(##M)(a) \<Longrightarrow> separation(##M, \<lambda>x. a\<in>snd(x))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,a] \<Turnstile> (\<cdot>\<exists>\<cdot>\<cdot>2 \<in> 0\<cdot> \<and> \<cdot>snd(1) is 0\<cdot>\<cdot>\<cdot>) ",THEN iffD1])
-  using snd_iff_sats nonempty snd_abs snd_closed
-  apply(simp_all add:nonempty[simplified])
-  apply(rule_tac separation_ax[where env="[a]",simplified])
-    apply(simp_all add:arity_snd_fm ord_simp_union)
-  done
-
-
 (* FIXME: move these declarations and lemmas where they belong.*)
 declare Inl_iff_sats [iff_sats]
 declare Inr_iff_sats [iff_sats]
@@ -410,36 +399,8 @@ lemma (in M_ZF_trans) separation_is_function:
     apply(simp_all add:arity_function_fm ord_simp_union)
   done
 
-lemma (in M_ZF_trans) separation_is_fst:
- "(##M)(a) \<Longrightarrow> separation(##M, \<lambda>x . is_fst(##M,x,a))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,a] \<Turnstile> fst_fm(0,1)",THEN iffD1])
-   apply(rule_tac fst_iff_sats[where env="[_,a]",symmetric])
-  apply(simp_all)
-  apply(rule_tac separation_ax[where env="[a]",simplified])
-    apply(simp_all add:arity_fst_fm ord_simp_union fst_fm_type)
-  done
+(* Instances in M_replacement*)
 
-lemma (in M_ZF_trans) separation_fst_equal:
- "(##M)(a) \<Longrightarrow> separation(##M, \<lambda>x. fst(x) = a)"
-  using separation_cong[THEN iffD1,OF _ separation_is_fst[of a]]
-     iff_sym[of "is_fst(##M)" _ a "fst", OF fst_abs]
-  by auto
-
-lemma (in M_ZF_trans) separation_is_apply:
- "(##M)(f) \<Longrightarrow> (##M)(a) \<Longrightarrow> separation(##M, \<lambda>x . is_apply(##M,f,x,a))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,f,a] \<Turnstile> fun_apply_fm(1,0,2)",THEN iffD1])
-   apply(rule_tac fun_apply_iff_sats[where env="[_,f,a]",symmetric])
-  apply(simp_all)
-  apply(rule_tac separation_ax[where env="[f,a]",simplified])
-    apply(simp_all add:arity_fun_apply_fm ord_simp_union)
-  done
-
-lemma (in M_ZF_trans) separation_equal_apply:
- "(##M)(f) \<Longrightarrow> (##M)(a) \<Longrightarrow> separation(##M, \<lambda>x. f`x = a)"
-  using separation_cong[THEN iffD1,OF _ separation_is_apply[of f a]] apply_abs
-  by force
 (* *)
 definition id_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> o" where
   "id_rel(A) \<equiv> \<lambda>z. \<exists>x[A]. z = \<langle>x, x\<rangle>"
@@ -469,8 +430,35 @@ lemma (in M_ZF_trans) separation_id_rel:
   unfolding id_rel_def
   by (rule_tac separation_cong[where P="is_id_rel(##M)",THEN iffD1])
 
+definition fstsnd_in_sndsnd :: "[i] \<Rightarrow> o" where
+  "fstsnd_in_sndsnd \<equiv> \<lambda>x. fst(snd(x)) \<in> snd(snd(x))"
+relativize "fstsnd_in_sndsnd" "is_fstsnd_in_sndsnd"
+synthesize "is_fstsnd_in_sndsnd" from_definition assuming "nonempty"
+arity_theorem for "is_fstsnd_in_sndsnd_fm"
 
- (* 2. separation(##M, \<lambda>x. snd(fst(x)) = fst(snd(x))) *)
+lemma (in M_ZF_trans) separation_is_fstsnd_in_sndsnd:
+ "separation(##M, is_fstsnd_in_sndsnd(##M))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x] \<Turnstile> is_fstsnd_in_sndsnd_fm(0)",THEN iffD1])
+   apply(rule_tac is_fstsnd_in_sndsnd_iff_sats[where env="[_]",symmetric])
+  apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[]",simplified])
+    apply(simp_all add:arity_is_fstsnd_in_sndsnd_fm ord_simp_union is_fstsnd_in_sndsnd_fm_type)
+  done
+
+lemma (in M_ZF_trans) fstsnd_in_sndsnd_abs:
+  assumes "(##M)(x)"
+  shows "is_fstsnd_in_sndsnd(##M,x) \<longleftrightarrow> fstsnd_in_sndsnd(x)"
+  using assms pair_in_M_iff fst_abs snd_abs fst_snd_closed
+  unfolding fstsnd_in_sndsnd_def is_fstsnd_in_sndsnd_def
+  by auto
+
+lemma (in M_ZF_trans) separation_fstsnd_in_sndsnd:
+ "separation(##M, \<lambda>x. fst(snd(x)) \<in> snd(snd(x)))"
+  using fstsnd_in_sndsnd_abs separation_is_fstsnd_in_sndsnd
+  unfolding fstsnd_in_sndsnd_def
+  by (rule_tac separation_cong[where P="is_fstsnd_in_sndsnd(##M)",THEN iffD1])
+
 definition sndfst_eq_fstsnd :: "[i] \<Rightarrow> o" where
   "sndfst_eq_fstsnd \<equiv> \<lambda>x. snd(fst(x)) = fst(snd(x))"
 relativize "sndfst_eq_fstsnd" "is_sndfst_eq_fstsnd"
@@ -531,38 +519,6 @@ lemma (in M_ZF_trans) separation_fstfst_eq_fstsnd:
   using fstfst_eq_fstsnd_abs separation_is_fstfst_eq_fstsnd
   unfolding fstfst_eq_fstsnd_def
   by (rule_tac separation_cong[where P="is_fstfst_eq_fstsnd(##M)",THEN iffD1])
-
-
- (* 5. \<And>a. (##M)(a) \<Longrightarrow> separation(##M, \<lambda>x. fst(fst(x)) = a) *)
-definition fstfst_eq :: "[i,i] \<Rightarrow> o" where
-  "fstfst_eq(a) \<equiv> \<lambda>x. fst(fst(x)) = a"
-
-relativize "fstfst_eq" "is_fstfst_eq"
-synthesize "is_fstfst_eq" from_definition assuming "nonempty"
-arity_theorem for "is_fstfst_eq_fm"
-
-lemma (in M_ZF_trans) separation_is_fstfst_eq:
- "(##M)(a) \<Longrightarrow> separation(##M, is_fstfst_eq(##M,a))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,a] \<Turnstile> is_fstfst_eq_fm(1,0)",THEN iffD1])
-   apply(rule_tac is_fstfst_eq_iff_sats[where env="[_,a]",symmetric])
-  apply(simp_all add:zero_in_M)
-  apply(rule_tac separation_ax[where env="[a]",simplified])
-    apply(simp_all add:arity_is_fstfst_eq_fm ord_simp_union is_fstfst_eq_fm_type)
-  done
-
-lemma (in M_ZF_trans) fstfst_eq_abs:
-  assumes "(##M)(a)" "(##M)(x)"
-  shows "is_fstfst_eq(##M,a,x) \<longleftrightarrow> fstfst_eq(a,x)"
-  using assms pair_in_M_iff fst_abs snd_abs fst_snd_closed
-  unfolding fstfst_eq_def is_fstfst_eq_def
-  by auto
-
-lemma (in M_ZF_trans) separation_fstfst_eq:
- "(##M)(a) \<Longrightarrow> separation(##M, \<lambda>x. fst(fst(x)) = a)"
-  using fstfst_eq_abs separation_is_fstfst_eq
-  unfolding fstfst_eq_def
-  by (rule_tac separation_cong[where P="is_fstfst_eq(##M,a)",THEN iffD1])
 
 
 (*\<And>B. (##M)(B) \<Longrightarrow> \<forall>A\<in>M. separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)*)
@@ -1125,40 +1081,41 @@ lemma (in M_basic) is_ifrFb_body5_closed: "M(G) \<Longrightarrow> M(r) \<Longrig
   unfolding ifrangeF_body5_def is_ifrangeF_body5_def is_ifrFb_body5_def fun_apply_def
   by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
 
- (* 6. \<And>p. p \<in> M \<Longrightarrow> separation(##M, \<lambda>x. domain(x) = p) *)
-definition toplevel6_body :: "[i,i] \<Rightarrow> o" where
-  "toplevel6_body(R) \<equiv> \<lambda>x. domain(x) = R"
+(* FIXME: this has been proved in M_replacement, we should move the next instances after
+making the instance of M_replacement.
+*)
+definition separation_domain_eq :: "[i,i] \<Rightarrow> o" where
+  "separation_domain_eq(R) \<equiv> \<lambda>x. domain(x) = R"
 
-relativize functional "toplevel6_body" "toplevel6_body_rel"
-relationalize "toplevel6_body_rel" "is_toplevel6_body"
+relativize functional "separation_domain_eq" "separation_domain_eq_rel"
+relationalize "separation_domain_eq_rel" "is_separation_domain_eq"
 
-synthesize "is_toplevel6_body" from_definition assuming "nonempty"
-arity_theorem for "is_toplevel6_body_fm"
+synthesize "is_separation_domain_eq" from_definition assuming "nonempty"
+arity_theorem for "is_separation_domain_eq_fm"
 
-lemma (in M_ZF_trans) separation_is_toplevel6_body:
- "(##M)(A) \<Longrightarrow> separation(##M, is_toplevel6_body(##M,A))"
+lemma (in M_ZF_trans) separation_is_separation_domain_eq:
+ "(##M)(A) \<Longrightarrow> separation(##M, is_separation_domain_eq(##M,A))"
   apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,A] \<Turnstile> is_toplevel6_body_fm(1,0)",THEN iffD1])
-   apply(rule_tac is_toplevel6_body_iff_sats[where env="[_,A]",symmetric])
+        where P="\<lambda> x . M,[x,A] \<Turnstile> is_separation_domain_eq_fm(1,0)",THEN iffD1])
+   apply(rule_tac is_separation_domain_eq_iff_sats[where env="[_,A]",symmetric])
   apply(simp_all add:nonempty[simplified])
   apply(rule_tac separation_ax[where env="[A]",simplified])
-    apply(simp_all add:arity_is_toplevel6_body_fm ord_simp_union is_toplevel6_body_fm_type)
+    apply(simp_all add:arity_is_separation_domain_eq_fm ord_simp_union is_separation_domain_eq_fm_type)
   done
 
-lemma (in M_ZF_trans) toplevel6_body_abs:
+lemma (in M_ZF_trans) separation_domain_eq_abs:
   assumes "(##M)(R)" "(##M)(x)"
-  shows "is_toplevel6_body(##M,R,x) \<longleftrightarrow> toplevel6_body(R,x)"
+  shows "is_separation_domain_eq(##M,R,x) \<longleftrightarrow> separation_domain_eq(R,x)"
   using assms pair_in_M_iff is_Int_abs
-  unfolding toplevel6_body_def is_toplevel6_body_def
+  unfolding separation_domain_eq_def is_separation_domain_eq_def
   by (auto simp:domain_closed[simplified])
 
-lemma (in M_ZF_trans) separation_toplevel6_body:
+lemma (in M_ZF_trans) separation_separation_domain_eq:
  "(##M)(R) \<Longrightarrow> separation
         (##M, \<lambda>x. domain(x) = R)"
-  using separation_is_toplevel6_body toplevel6_body_abs
-  unfolding toplevel6_body_def
-  by (rule_tac separation_cong[
-        where P="is_toplevel6_body(##M,R)",THEN iffD1])    
+  using separation_is_separation_domain_eq separation_domain_eq_abs
+  unfolding separation_domain_eq_def
+  by (rule_tac separation_cong[where P="is_separation_domain_eq(##M,R)",THEN iffD1])
 
 lemma (in M_ZF_trans) ifrangeF_body5_abs:
   assumes "(##M)(A)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
@@ -1177,7 +1134,7 @@ proof -
       fix y
       from assms \<open>a\<in>M\<close> \<open>z\<in>M\<close>
       show "is_ifrFb_body5(##M, G, r, s, z, y) \<longleftrightarrow> ifrFb_body5(G, r, s, z, y)"
-        using If_abs apply_0 separation_in separation_in_rev
+        using If_abs apply_0 separation_in_constant separation_in_rev
         unfolding ifrFb_body5_def is_ifrFb_body5_def
         apply (cases "y\<in>M"; cases "y\<in>range(s)"; cases "r=0"; cases "y\<in>domain(G)";
             auto dest:transM split del: split_if del:iffI)
@@ -1254,9 +1211,6 @@ lemma (in M_basic) is_ifrFb_body6_closed: "M(G) \<Longrightarrow> M(r) \<Longrig
   unfolding ifrangeF_body6_def is_ifrangeF_body6_def is_ifrFb_body6_def fun_apply_def
   by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
 
-lemmas (in M_ZF_trans) a = separation_toplevel6_body 
-  separation_cong[OF eq_commute,THEN iffD1,OF separation_toplevel6_body]
-
 lemma (in M_ZF_trans) ifrangeF_body6_abs:
   assumes "(##M)(A)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
   shows "is_ifrangeF_body6(##M,A,G,r,s,x) \<longleftrightarrow> ifrangeF_body6(##M,A,G,r,s,x)"
@@ -1274,9 +1228,9 @@ proof -
       fix y
       from assms \<open>a\<in>M\<close> \<open>z\<in>M\<close>
       show "y\<in>M \<and> is_ifrFb_body6(##M, G, r, s, z, y) \<longleftrightarrow> y\<in>M \<and> ifrFb_body6(G, r, s, z, y)"
-        using If_abs apply_0 separation_in transitivity[of _ G]
+        using If_abs apply_0 separation_in_constant transitivity[of _ G]
           separation_closed converse_closed apply_closed range_closed zero_in_M
-          separation_cong[OF eq_commute,THEN iffD1,OF separation_toplevel6_body]
+          separation_cong[OF eq_commute,THEN iffD1,OF separation_separation_domain_eq]
         unfolding ifrFb_body6_def is_ifrFb_body6_def
         by auto
     qed

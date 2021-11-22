@@ -284,7 +284,7 @@ declare if_range_F_else_F_def[simp]
 lemma lepoll_assumptions1:
   assumes types[simp]:"M(A)" "M(S)"
   shows "lepoll_assumptions1(M,A,F,S,fa,K,x,f,r)"
-  using strong_replacement_separation[OF lam_replacement_sing_const_id separation_in]
+  using strong_replacement_separation[OF lam_replacement_sing_const_id separation_in_constant]
     transM[of _ S]
   by simp
 
@@ -350,7 +350,7 @@ lemma lepoll_assumptions5:
 lemma lepoll_assumptions6:
   assumes types[simp]:"M(A)" "M(S)" "M(x)"
   shows "lepoll_assumptions6(M,A,F,S,fa,K,x,f,r)"
-  using strong_replacement_separation[OF lam_replacement_sing_const_id separation_in]
+  using strong_replacement_separation[OF lam_replacement_sing_const_id separation_in_constant]
      lam_replacement_inj_rel
   by simp
 
@@ -384,7 +384,7 @@ lemma lepoll_assumptions10:
   shows "lepoll_assumptions10(M,A,F,S,fa,K,x,f,r)"
   using lam_replacement_Sigfun lam_replacement_imp_strong_replacement
     lam_replacement_constant[OF nonempty]
-    lam_replacement_if[OF _ _ separation_in]
+    lam_replacement_if[OF _ _ separation_in_constant]
     lam_replacement_hcomp
        lam_replacement_apply[OF converse_closed[OF \<open>M(f)\<close>]]
        lam_lepoll_assumption_F[of A]
@@ -394,7 +394,7 @@ lemma lepoll_assumptions11:
   assumes types[simp]:"M(A)" "M(f)"
   shows "lepoll_assumptions11(M, A, F, S, fa, K, x, f, r)"
   using lam_replacement_imp_strong_replacement
-    lam_replacement_if[OF _ _ separation_in[of "range(f)"]]
+    lam_replacement_if[OF _ _ separation_in_constant[of "range(f)"]]
     lam_replacement_constant
     lam_replacement_hcomp lam_replacement_apply
     lam_lepoll_assumption_F
@@ -403,7 +403,7 @@ lemma lepoll_assumptions11:
 lemma lepoll_assumptions12:
   assumes types[simp]:"M(A)" "M(x)" "M(f)"
   shows "lepoll_assumptions12(M,A,F,S,fa,K,x,f,r)"
-  using strong_replacement_separation[OF lam_replacement_sing_const_id separation_in]
+  using strong_replacement_separation[OF lam_replacement_sing_const_id separation_in_constant]
   by simp
 
 lemma lepoll_assumptions13:
@@ -412,7 +412,7 @@ lemma lepoll_assumptions13:
   using  lam_replacement_constant[OF nonempty] lam_lepoll_assumption_F
     lam_replacement_hcomp lam_replacement_apply
     lam_replacement_hcomp2[OF lam_replacement_constant[OF \<open>M(r)\<close>]
-        lam_replacement_if[OF _ _ separation_in[of "range(f)"]] _ _
+        lam_replacement_if[OF _ _ separation_in_constant[of "range(f)"]] _ _
         lam_replacement_minimum] assms
   unfolding lepoll_assumptions_defs
     lam_replacement_def[symmetric]
@@ -434,7 +434,7 @@ lemma lepoll_assumptions14:
 lemma lepoll_assumptions15:
   assumes types[simp]:"M(A)" "M(x)" "M(f)" "M(K)"
   shows "lepoll_assumptions15(M,A,F,S,fa,K,x,f,r)"
-  using strong_replacement_separation[OF lam_replacement_sing_const_id separation_in]
+  using strong_replacement_separation[OF lam_replacement_sing_const_id separation_in_constant]
   by simp
 
 lemma lepoll_assumptions16:
@@ -444,7 +444,7 @@ lemma lepoll_assumptions16:
     lam_replacement_inj_rel lam_replacement_constant
     lam_replacement_hcomp2[of _ _ "inj_rel(M)"]
     lam_replacement_constant[OF nonempty]
-    lam_replacement_if[OF _ _ separation_in]
+    lam_replacement_if[OF _ _ separation_in_constant]
     lam_replacement_hcomp
        lam_replacement_apply[OF converse_closed[OF \<open>M(f)\<close>]]
        lam_lepoll_assumption_F[of A]
@@ -457,7 +457,7 @@ lemma lepoll_assumptions17:
     lam_replacement_inj_rel lam_replacement_constant
     lam_replacement_hcomp2[of _ _ "inj_rel(M)"]
     lam_replacement_constant[OF nonempty]
-    lam_replacement_if[OF _ _ separation_in]
+    lam_replacement_if[OF _ _ separation_in_constant]
     lam_replacement_hcomp
        lam_replacement_apply[OF converse_closed[OF \<open>M(f)\<close>]]
        lam_lepoll_assumption_F[of A]
@@ -467,7 +467,7 @@ lemma lepoll_assumptions18:
   assumes types[simp]:"M(A)" "M(K)" "M(f)" "M(r)"
   shows "lepoll_assumptions18(M,A,F,S,fa,K,x,f,r)"
   using lam_replacement_constant lam_replacement_inj_rel lam_lepoll_assumption_F
-    lam_replacement_minimum lam_replacement_identity lam_replacement_apply2 separation_in
+    lam_replacement_minimum lam_replacement_identity lam_replacement_apply2 separation_in_constant
   unfolding lepoll_assumptions18_def lam_replacement_def[symmetric]
   apply (rule_tac lam_replacement_hcomp2[of _ _ minimum], simp_all)
   by (rule_tac lam_replacement_hcomp2[of _ _ "inj_rel(M)"], simp_all)

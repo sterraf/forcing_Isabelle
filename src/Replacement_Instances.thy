@@ -406,10 +406,10 @@ lemmas (in M_ZF_trans) M_replacement_ZF_instances = lam_replacement_domain
   lam_replacement_fst lam_replacement_snd lam_replacement_Union
   lam_replacement_Upair lam_replacement_image
   lam_replacement_Diff lam_replacement_vimage
-  separation_fst_equal separation_id_rel[simplified]
-  separation_equal_apply separation_sndfst_eq_fstsnd
-  separation_fstfst_eq_fstsnd separation_fstfst_eq
-  separation_restrict_elem separation_in_snd
+  separation_fstsnd_in_sndsnd separation_id_rel[simplified]
+  separation_sndfst_eq_fstsnd
+  separation_fstfst_eq_fstsnd
+  separation_restrict_elem
   replacement_fst2_snd2 replacement_fst2_sndfst_snd2
   lam_replacement_range
 

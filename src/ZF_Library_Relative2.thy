@@ -99,7 +99,9 @@ lemma lam_replacement_apply_fst_snd:
     lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
   by auto
 
-lemma separation_snd_in_fst: "separation(M, \<lambda>x. snd(x) \<in> fst(x))" sorry
+lemma separation_snd_in_fst: "separation(M, \<lambda>x. snd(x) \<in> fst(x))"
+  using separation_in lam_replacement_fst lam_replacement_snd
+  by auto
 
 lemma lam_replacement_if_mem:
   "lam_replacement(M, \<lambda>x. if snd(x) \<in> fst(x) then 1 else 0)"
@@ -390,10 +392,10 @@ proof -
     by unfold_locales auto
   have "lam_replacement(M, \<lambda>x. bool_of_o(x\<in>A))" if "M(A)" for A
     using that lam_replacement_if lam_replacement_constant
-      separation_in by simp
+      separation_in_constant by simp
   with assms
   have "lam_replacement(M, \<lambda>x. d(x))"
-    using separation_in[THEN [3] lam_replacement_if, of "\<lambda>_.1" "\<lambda>_.0"]
+    using separation_in_constant[THEN [3] lam_replacement_if, of "\<lambda>_.1" "\<lambda>_.0"]
         lam_replacement_identity lam_replacement_constant lam_replacement_Lambda_if_mem
     by simp
   show ?thesis
@@ -480,7 +482,7 @@ qed
 lemma cantor_inj_rel: "M(f) \<Longrightarrow> M(A) \<Longrightarrow> f \<notin> inj\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(A),A)"
   using inj_rel_imp_surj_rel[OF _ Pow_rel_bottom, of f A A]
     cantor_surj_rel[of "\<lambda>x\<in>A. if x \<in> range(f) then converse(f) ` x else 0" A]
-    lam_replacement_if separation_in[of "range(f)"]
+    lam_replacement_if separation_in_constant[of "range(f)"]
     lam_replacement_converse_app[THEN [5] lam_replacement_hcomp2]
     lam_replacement_identity lam_replacement_constant
     lam_replacement_iff_lam_closed by auto
