@@ -49,7 +49,9 @@ proof (clarsimp)
     have "M({z\<in>A. \<exists>x y. z = \<langle>x, y\<rangle>})" (is "M(?rel)")
       using relation_separation by auto
     moreover
-    have "fst(z) \<noteq> 0 \<or> snd(z) \<noteq> 0 \<Longrightarrow> z = \<langle>fst(z), snd(z)\<rangle>" for z sorry
+    have "z = \<langle>fst(z), snd(z)\<rangle>" if "fst(z) \<noteq> 0 \<or> snd(z) \<noteq> 0" for z
+      using that
+      by(cases "\<exists>a b. z=<a,b>",auto simp add: the_0 fst_def snd_def)
     ultimately
     show ?thesis
       using id_closed unfolding relation_def
