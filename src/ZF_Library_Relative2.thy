@@ -17,6 +17,23 @@ lemma lam_replacement_twist: "lam_replacement(M,\<lambda>\<langle>\<langle>x,y\<
 lemma twist_closed[intro,simp]: "M(x) \<Longrightarrow> M((\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>. \<langle>x,y,z\<rangle>)(x))"
   unfolding split_def by simp
 
+lemma lam_replacement_separation': 
+  assumes "M(X)" "M(A)"
+  shows "lam_replacement(M,\<lambda>p . {y \<in> X . \<langle>fst(p), y\<rangle> \<in> A})"
+  sorry
+
+(*FIXME: move this inside the proof. *)
+lemma aux_lemma: 
+  assumes
+       "M(X)" "M(A)"
+  shows "\<forall>x[M]. M({y \<in> X . \<langle>fst(x), y\<rangle> \<in> A})"
+  using separation_in 
+       lam_replacement_hcomp2[OF lam_replacement_hcomp[OF  lam_replacement_constant lam_replacement_fst] 
+         lam_replacement_identity _ _ lam_replacement_Pair] 
+       lam_replacement_constant[of A]
+       assms
+  by simp
+
 lemma lam_replacement_Lambda:
   assumes "lam_replacement(M, \<lambda>y. b(fst(y), snd(y)))"
     "\<forall>w[M]. \<forall>y[M]. M(b(w, y))" "M(W)"
@@ -55,7 +72,7 @@ proof (intro lam_replacement_iff_lam_closed[THEN iffD2]; clarify)
         (\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>\<in>(A\<times>W)\<times>?RFb. \<langle>x,y,z\<rangle>) `` ?lam" (is "?H = ?G ")
     by simp
   with \<open>M(A)\<close> \<open>M(W)\<close> \<open>M(?lam)\<close> \<open>M(?RFb)\<close>
-  have "M(?H)"
+  have "M(?H)" 
     using lam_replacement_iff_lam_closed[THEN iffD1, rule_format, OF _ lam_replacement_twist]
     by simp
   moreover from this and \<open>M(A)\<close>
@@ -64,13 +81,20 @@ proof (intro lam_replacement_iff_lam_closed[THEN iffD2]; clarify)
     unfolding lam_def
     by (intro equalityI; subst Pow_rel_char[of "range(?H)"])
       (auto dest:transM simp: lbc[unfolded lam_def], force+)
+  moreover from calculation and \<open>M(A)\<close> and \<open>M(W)\<close>
+  have "M(A\<times>Pow\<^bsup>M\<^esup>(range(?H)))" "M(W\<times>?RFb)"
+    by auto
   moreover
   note \<open>M(W)\<close>
   moreover from calculation
   have "M({\<langle>x,Z\<rangle> \<in> A \<times> Pow\<^bsup>M\<^esup>(range(?H)). Z = {y \<in> W\<times>?RFb . \<langle>x, y\<rangle> \<in> ?H}})"
-    using lam_replacement_snd unfolding split_def
-    apply (rule_tac separation_closed, simp_all)
-    sorry
+    using   
+      separation_eq[OF _ lam_replacement_snd
+        aux_lemma[OF  \<open>M(W\<times>?RFb)\<close> \<open>M(?H)\<close>]
+        lam_replacement_separation'[OF \<open>M(W\<times>?RFb)\<close> \<open>M(?H)\<close>]]
+      \<open>M(A\<times>Pow\<^bsup>M\<^esup>(_))\<close> assms 
+    unfolding split_def
+    by auto
   ultimately
   show "M(\<lambda>x\<in>A. \<lambda>w\<in>W. b(x, w))" by simp
 qed
