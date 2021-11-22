@@ -317,7 +317,7 @@ proof -
     using lam_replacement_fst lam_replacement_snd
       lam_replacement_Pair[THEN [5] lam_replacement_hcomp2,
         of "\<lambda>x. fst(fst(x))" "\<lambda>x. fst(snd(x))", THEN [2] separation_in,
-        of "\<lambda>x. S ` snd(snd(x))"] lam_replacement_apply[of S] 
+        of "\<lambda>x. S ` snd(snd(x))"] lam_replacement_apply[of S]
       lam_replacement_hcomp unfolding split_def by simp
   with assms
   show ?thesis

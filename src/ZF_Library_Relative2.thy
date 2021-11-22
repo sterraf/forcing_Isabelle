@@ -7,29 +7,64 @@ begin
 context M_ZF_library
 begin
 
+lemma lam_replacement_twist: "lam_replacement(M,\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>. \<langle>x,y,z\<rangle>)"
+    using lam_replacement_fst lam_replacement_snd
+      lam_replacement_Pair[THEN [5] lam_replacement_hcomp2,
+        of "\<lambda>x. snd(fst(x))" "\<lambda>x. snd(x)", THEN [2] lam_replacement_Pair[
+          THEN [5] lam_replacement_hcomp2, of "\<lambda>x. fst(fst(x))"]]
+      lam_replacement_hcomp unfolding split_def by simp
+
+lemma twist_closed[intro,simp]: "M(x) \<Longrightarrow> M((\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>. \<langle>x,y,z\<rangle>)(x))"
+  unfolding split_def by simp
+
 lemma lam_replacement_Lambda:
   assumes "lam_replacement(M, \<lambda>y. b(fst(y), snd(y)))"
     "\<forall>w[M]. \<forall>y[M]. M(b(w, y))" "M(W)"
   shows "lam_replacement(M, \<lambda>x. \<lambda>w\<in>W. b(x, w))"
 proof (intro lam_replacement_iff_lam_closed[THEN iffD2]; clarify)
-  fix x
-  assume "M(x)"
-  with assms
-  show "M(\<lambda>w\<in>W. b(x, w))"
+  from assms
+  show lbc:"M(x) \<Longrightarrow> M(\<lambda>w\<in>W. b(x, w))" for x
     using lam_replacement_constant lam_replacement_identity
       lam_replacement_hcomp2[where h=b]
     by (intro lam_replacement_iff_lam_closed[THEN iffD1, rule_format])
       simp_all
-next
   fix A
   assume "M(A)"
   moreover from this assms
-  have "M({b(fst(x),snd(x)). x \<in> A})" (is "M(?B)")
-    using lam_replacement_imp_strong_replacement transM[of _ A]
+  have "M({b(fst(x),snd(x)). x \<in> A\<times>W})" (is "M(?RFb)")\<comment> \<open>\<^term>\<open>RepFun\<close> \<^term>\<open>b\<close>\<close>
+    using lam_replacement_imp_strong_replacement transM[of _ "A\<times>W"]
     by (rule_tac RepFun_closed) auto
-  have "{\<langle>\<langle>x,y\<rangle>,z\<rangle> \<in> (domain(A)\<times>range(A))\<times>?B. z = b(x,y) \<and> (\<exists>a\<in>A. a=\<langle>x,y\<rangle>)}
-        = (\<lambda>x\<in>A. b(fst(x),snd(x))) \<inter> (domain(A)\<times>range(A))\<times>?B"
+  moreover
+  have "{\<langle>\<langle>x,y\<rangle>,z\<rangle> \<in> (A\<times>W)\<times>?RFb. z = b(x,y)} = (\<lambda>\<langle>x,y\<rangle>\<in>A\<times>W. b(x,y)) \<inter> (A\<times>W)\<times>?RFb"
+    (is "{\<langle>\<langle>x,y\<rangle>,z\<rangle> \<in> (A\<times>W)\<times>?B. _ } = ?lam")
     unfolding lam_def by auto
+  moreover from calculation and assms
+  have "M(?lam)"
+    using lam_replacement_iff_lam_closed unfolding split_def by simp
+  moreover
+  have "{\<langle>\<langle>x,y\<rangle>,z\<rangle> \<in> (X \<times> Y) \<times> Z . P(x, y, z)} \<subseteq> (X \<times> Y) \<times> Z" for X Y Z P
+    by auto
+  then
+  have "{\<langle>x,y,z\<rangle> \<in> X\<times>Y\<times>Z. P(x,y,z) }= (\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>\<in>(X\<times>Y)\<times>Z. \<langle>x,y,z\<rangle>) ``
+        {\<langle>\<langle>x,y\<rangle>,z\<rangle> \<in> (X\<times>Y)\<times>Z. P(x,y,z) }" (is "?C' = Lambda(?A,?f) `` ?C")
+      for X Y Z P
+    using image_lam[of ?C ?A ?f]
+    by (intro equalityI) (auto)
+  with calculation
+  have "{\<langle>x,y,z\<rangle> \<in> A\<times>W\<times>?RFb. z = b(x,y) } =
+        (\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>\<in>(A\<times>W)\<times>?RFb. \<langle>x,y,z\<rangle>) `` ?lam" (is "?H = ?G ")
+    by simp
+  with \<open>M(A)\<close> \<open>M(W)\<close> \<open>M(?lam)\<close> \<open>M(?RFb)\<close>
+  have "M(?H)"
+    using lam_replacement_iff_lam_closed[THEN iffD1, rule_format, OF _ lam_replacement_twist]
+    by simp
+  with \<open>M(A)\<close>
+  have "(\<lambda>x\<in>A. \<lambda>w\<in>W. b(x, w)) =
+    {\<langle>x,Z\<rangle> \<in> A \<times> Pow\<^bsup>M\<^esup>(range(?H)). Z = {y \<in> W\<times>?RFb . \<langle>x, y\<rangle> \<in> ?H}}"
+    unfolding lam_def
+    by (intro equalityI; subst Pow_rel_char[of "range(?H)"])
+      (auto dest:transM simp: lbc[unfolded lam_def], force+)
+  ultimately
   show "M(\<lambda>x\<in>A. \<lambda>w\<in>W. b(x, w))"
     unfolding lam_def
     sorry
