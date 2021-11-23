@@ -70,6 +70,12 @@ lemma lam_replacement_iff_lam_closed:
   by (auto intro:lamI dest:transM)
     (rule lam_closed, auto simp add:strong_replacement_def dest:transM)
 
+lemma lam_replacement_imp_lam_closed:
+  assumes "lam_replacement(M, b)" "M(A)" "\<forall>x\<in>A. M(b(x))"
+  shows "M(\<lambda>x\<in>A. b(x))"
+  using assms unfolding lam_replacement_def
+  by (rule_tac lam_closed, auto simp add:strong_replacement_def dest:transM)
+
 lemma lam_replacement_cong:
   assumes "lam_replacement(M,f)" "\<forall>x[M]. f(x) = g(x)" "\<forall>x[M]. M(f(x))"
   shows "lam_replacement(M,g)"

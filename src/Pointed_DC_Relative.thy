@@ -63,6 +63,11 @@ proof -
     unfolding dc_witness_def dc_witness_rel_def by simp
 qed
 
+lemma lam_replacement_dc_witness:
+  assumes "M(a)" "M(g)" "M(A)" "M(R)"
+  shows "lam_replacement(M, \<lambda>x. dc_witness(x, A, a, g, R))"
+  sorry
+
 lemma first_section_closed:
   assumes
     "M(A)" "M(a)" "M(R)"
@@ -219,7 +224,10 @@ proof -
       using witness_related[OF \<open>a\<in>A\<close> _ 0, of g n] 1 that
       by (auto dest:transM)
     moreover from calculation
-    have "M(?f)" sorry
+    have "M(?f)"
+      using lam_replacement_dc_witness
+      by (rule_tac lam_replacement_imp_lam_closed)
+        (auto dest:transM)
     ultimately
     have "\<exists>f[M]. f\<in>nat \<rightarrow> A \<and> f ` 0 = a \<and> (\<forall>n\<in>nat. \<langle>f ` n, f ` succ(n)\<rangle> \<in> R)"
       using 0 1 \<open>a\<in>_\<close>
