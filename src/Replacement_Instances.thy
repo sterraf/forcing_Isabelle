@@ -219,6 +219,23 @@ lemma (in M_ZF_trans) lam_replacement_Upair:
   using Upair_closed[simplified]
   by simp
 
+lemma composition_fm_type[TC]: "a0 \<in> \<omega> \<Longrightarrow> a1 \<in> \<omega> \<Longrightarrow> a2 \<in> \<omega> \<Longrightarrow>
+   composition_fm(a0,a1,a2) \<in> formula"
+  unfolding composition_fm_def by simp
+
+arity_theorem for "composition_fm"
+
+lemma (in M_ZF_trans) lam_replacement_comp:
+  "lam_replacement(##M, \<lambda>p. comp(fst(p), snd(p)))"
+  apply(rule_tac lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. comp(fst(p),snd(p))"])
+  apply (auto) apply(rule comp_closed[simplified],auto simp add:fst_snd_closed[simplified])
+  apply (rule_tac
+    LambdaPair_in_M[where \<phi>="composition_fm(0,1,2)" and is_f="composition(##M)" and env="[]",OF
+      composition_fm_type _ composition_iff_sats[symmetric]])
+  apply (auto  simp: arity_composition_fm[of 0 1 2] ord_simp_union transitivity fst_snd_closed)
+  using comp_closed[simplified]
+  by simp
+
 lemma (in M_ZF_trans) lam_replacement_cartprod:
   "lam_replacement(##M, \<lambda>p. fst(p) \<times> snd(p))"
   apply(rule_tac lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. fst(p)\<times>snd(p)"])
@@ -411,7 +428,7 @@ lemmas (in M_ZF_trans) M_replacement_ZF_instances = lam_replacement_domain
   separation_fstfst_eq_fstsnd
   separation_restrict_elem
   replacement_fst2_snd2 replacement_fst2_sndfst_snd2
-  lam_replacement_range
+  lam_replacement_range lam_replacement_comp
 
 sublocale M_ZF_trans \<subseteq> M_replacement "##M"
   by unfold_locales (simp_all add: M_replacement_ZF_instances del:setclass_iff)

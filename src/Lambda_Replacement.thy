@@ -539,6 +539,8 @@ locale M_replacement = M_basic +
     separation_fst_in_snd: "separation(M, \<lambda>y. fst(snd(y)) \<in> snd(snd(y)))"
     and
     lam_replacement_range : "lam_replacement(M,range)"
+    and
+    lam_replacement_comp: "lam_replacement(M, \<lambda>x. fst(x) O snd(x))"
 begin
 
 lemmas lam_replacement_restrict' = lam_replacement_restrict[OF separation_restrict]

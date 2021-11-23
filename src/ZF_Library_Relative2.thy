@@ -147,10 +147,6 @@ lemma lam_replacement_if_mem:
     lam_replacement_constant lam_replacement_if
   by auto
 
-(*FIXME: move this to Lambda_Replacement and prove it. *)
-lemma lam_replacement_comp: "lam_replacement(M, \<lambda>x. fst(x) O snd(x))"
-  sorry
-
 lemma lam_replacement_Lambda_apply_fst_snd:
   assumes "M(X)"
   shows "lam_replacement(M, \<lambda>x. \<lambda>w\<in>X. x ` fst(w) ` snd(w))"
