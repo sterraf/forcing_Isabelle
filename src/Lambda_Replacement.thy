@@ -58,7 +58,7 @@ proof -
     using that by simp
   ultimately
   show ?thesis
-    using separation_iff Collect_abs 
+    using separation_iff Collect_abs
     by simp
 qed
 
@@ -1220,6 +1220,12 @@ lemma lam_replacement_vimage_sing_fun: "M(f) \<Longrightarrow> lam_replacement(M
   using lam_replacement_hcomp2[OF lam_replacement_constant[of f]
           lam_replacement_identity _ _ lam_replacement_vimage_sing]
   by simp
+lemma lam_replacement_image_sing_fun: "M(f) \<Longrightarrow> lam_replacement(M, \<lambda>x. f `` {x})"
+  using lam_replacement_hcomp2[OF lam_replacement_constant[of f]
+          lam_replacement_hcomp[OF lam_replacement_identity lam_replacement_sing]
+          _ _ lam_replacement_Image]
+  by simp
+
 
 lemma converse_apply_projs: "\<forall>x[M]. \<Union> (fst(x) -`` {snd(x)}) = converse(fst(x)) ` (snd(x))"
   using converse_apply_eq by auto
@@ -1291,6 +1297,47 @@ proof -
   ultimately
   show ?thesis
     using separation_iff by auto
+qed
+
+lemma separation_ball:
+  assumes "separation(M, \<lambda>y. f(fst(y),snd(y)))" "M(X)"
+  shows "separation(M, \<lambda>y. \<forall>u\<in>X. f(y,u))"
+  unfolding separation_def
+proof(clarify)
+  fix A
+  assume "M(A)"
+  moreover
+  note \<open>M(X)\<close>
+  moreover from calculation
+  have "M(A\<times>X)"
+    by simp
+  then
+  have "M({p \<in> A\<times>X . f(fst(p),snd(p))})" (is "M(?P)")
+    using assms(1)
+    by auto
+  moreover from calculation
+  have "M({a\<in>A . ?P``{a} = X})" (is "M(?A')")
+    using separation_eq lam_replacement_image_sing_fun[of "?P"] lam_replacement_constant
+    by simp
+  moreover
+  have "f(a,x)" if "a\<in>?A'" and "x\<in>X" for a x
+  proof -
+    from that
+    have "a\<in>A" "?P``{a}=X"
+      by auto
+    then
+    have "x\<in>?P``{a}"
+      using that by simp
+    then
+    show ?thesis using image_singleton_iff by simp
+  qed
+  moreover from this
+  have "\<forall>a[M]. a \<in> ?A' \<longleftrightarrow> a \<in> A \<and> (\<forall>x\<in>X. f(a, x))"
+    using image_singleton_iff
+     by auto
+   with \<open>M(?A')\<close>
+   show "\<exists>y[M]. \<forall>a[M]. a \<in> y \<longleftrightarrow> a \<in> A \<and> (\<forall>x\<in>X. f(a, x))"
+     by (rule_tac x="?A'" in rexI,simp_all)
 qed
 
 lemma case_closed :

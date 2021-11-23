@@ -17,19 +17,45 @@ lemma lam_replacement_twist: "lam_replacement(M,\<lambda>\<langle>\<langle>x,y\<
 lemma twist_closed[intro,simp]: "M(x) \<Longrightarrow> M((\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>. \<langle>x,y,z\<rangle>)(x))"
   unfolding split_def by simp
 
+(* FIXME: this can be combined with separation_ball to remove the need of the
+extra assumption in lam_replacement_Collect. *)
+lemma separation_iff':
+  assumes "separation(M,\<lambda>x . P(x))" "separation(M,\<lambda>x . Q(x))"
+  shows "separation(M,\<lambda>x . P(x) \<longleftrightarrow> Q(x))"
+  using assms separation_conj separation_imp iff_def
+  by auto
+
+(* FIXME: this could go inside the proof. *)
 lemma lam_replacement_separation': 
   assumes "M(X)" "M(A)"
   shows "lam_replacement(M,\<lambda>p . {y \<in> X . \<langle>fst(p), y\<rangle> \<in> A})"
-  sorry
+proof -
+  note lr = lam_replacement_Collect[OF \<open>M(X)\<close>]
+  note fst3 = lam_replacement_hcomp[OF lam_replacement_fst
+                lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_fst]]
+  have 1: "\<forall>x[M]. separation(M,\<lambda>y. \<langle>fst(x), y\<rangle> \<in> A)"
+    using separation_in lam_replacement_hcomp2[OF lam_replacement_hcomp[OF  lam_replacement_constant lam_replacement_fst]
+         lam_replacement_identity _ _ lam_replacement_Pair]
+       lam_replacement_constant[of A]
+       assms
+    by simp
+  then show ?thesis
+    using lam_replacement_Collect[OF \<open>M(X)\<close> 1 separation_ball[OF separation_iff']]
+      separation_in[OF _ lam_replacement_snd _ lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_snd]]
+      separation_in[OF _ lam_replacement_hcomp2[OF fst3 lam_replacement_snd _ _  lam_replacement_Pair] _
+        lam_replacement_constant[of A]] assms
+    by auto
+qed
+
 
 (*FIXME: move this inside the proof. *)
-lemma aux_lemma: 
+lemma aux_lemma:
   assumes
        "M(X)" "M(A)"
   shows "\<forall>x[M]. M({y \<in> X . \<langle>fst(x), y\<rangle> \<in> A})"
-  using separation_in 
-       lam_replacement_hcomp2[OF lam_replacement_hcomp[OF  lam_replacement_constant lam_replacement_fst] 
-         lam_replacement_identity _ _ lam_replacement_Pair] 
+  using separation_in
+       lam_replacement_hcomp2[OF lam_replacement_hcomp[OF  lam_replacement_constant lam_replacement_fst]
+         lam_replacement_identity _ _ lam_replacement_Pair]
        lam_replacement_constant[of A]
        assms
   by simp
@@ -72,7 +98,7 @@ proof (intro lam_replacement_iff_lam_closed[THEN iffD2]; clarify)
         (\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>\<in>(A\<times>W)\<times>?RFb. \<langle>x,y,z\<rangle>) `` ?lam" (is "?H = ?G ")
     by simp
   with \<open>M(A)\<close> \<open>M(W)\<close> \<open>M(?lam)\<close> \<open>M(?RFb)\<close>
-  have "M(?H)" 
+  have "M(?H)"
     using lam_replacement_iff_lam_closed[THEN iffD1, rule_format, OF _ lam_replacement_twist]
     by simp
   moreover from this and \<open>M(A)\<close>
@@ -88,11 +114,10 @@ proof (intro lam_replacement_iff_lam_closed[THEN iffD2]; clarify)
   note \<open>M(W)\<close>
   moreover from calculation
   have "M({\<langle>x,Z\<rangle> \<in> A \<times> Pow\<^bsup>M\<^esup>(range(?H)). Z = {y \<in> W\<times>?RFb . \<langle>x, y\<rangle> \<in> ?H}})"
-    using   
-      separation_eq[OF _ lam_replacement_snd
+    using separation_eq[OF _ lam_replacement_snd
         aux_lemma[OF  \<open>M(W\<times>?RFb)\<close> \<open>M(?H)\<close>]
         lam_replacement_separation'[OF \<open>M(W\<times>?RFb)\<close> \<open>M(?H)\<close>]]
-      \<open>M(A\<times>Pow\<^bsup>M\<^esup>(_))\<close> assms 
+      \<open>M(A\<times>Pow\<^bsup>M\<^esup>(_))\<close> assms
     unfolding split_def
     by auto
   ultimately
