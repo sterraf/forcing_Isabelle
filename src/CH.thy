@@ -1,7 +1,6 @@
 theory CH
   imports
     Kappa_Closed_Notions
-    Cardinal_Library_Relative2
     Cohen_Posets_Relative2
 begin
 

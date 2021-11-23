@@ -1342,6 +1342,170 @@ proof(clarify)
      by (rule_tac x="?A'" in rexI,simp_all)
 qed
 
+lemma lam_replacement_twist: "lam_replacement(M,\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>. \<langle>x,y,z\<rangle>)"
+  using lam_replacement_fst lam_replacement_snd
+    lam_replacement_Pair[THEN [5] lam_replacement_hcomp2,
+      of "\<lambda>x. snd(fst(x))" "\<lambda>x. snd(x)", THEN [2] lam_replacement_Pair[
+        THEN [5] lam_replacement_hcomp2, of "\<lambda>x. fst(fst(x))"]]
+    lam_replacement_hcomp unfolding split_def by simp
+
+lemma twist_closed[intro,simp]: "M(x) \<Longrightarrow> M((\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>. \<langle>x,y,z\<rangle>)(x))"
+  unfolding split_def by simp
+
+(* FIXME: this can be combined with separation_ball to remove the need of the
+extra assumption in lam_replacement_Collect. *)
+lemma separation_iff':
+  assumes "separation(M,\<lambda>x . P(x))" "separation(M,\<lambda>x . Q(x))"
+  shows "separation(M,\<lambda>x . P(x) \<longleftrightarrow> Q(x))"
+  using assms separation_conj separation_imp iff_def
+  by auto
+
+(* FIXME: this could go inside the proof. *)
+lemma lam_replacement_:
+  assumes "M(X)" "M(A)"
+  shows "lam_replacement(M,\<lambda>p . {y \<in> X . \<langle>fst(p), y\<rangle> \<in> A})"
+proof -
+  note lr = lam_replacement_Collect[OF \<open>M(X)\<close>]
+  note fst3 = lam_replacement_hcomp[OF lam_replacement_fst
+      lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_fst]]
+  have 1: "\<forall>x[M]. separation(M,\<lambda>y. \<langle>fst(x), y\<rangle> \<in> A)"
+    using separation_in lam_replacement_hcomp2[OF lam_replacement_hcomp[OF  lam_replacement_constant lam_replacement_fst]
+        lam_replacement_identity _ _ lam_replacement_Pair]
+      lam_replacement_constant[of A]
+      assms
+    by simp
+  then show ?thesis
+    using lam_replacement_Collect[OF \<open>M(X)\<close> 1 separation_ball[OF separation_iff']]
+      separation_in[OF _ lam_replacement_snd _ lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_snd]]
+      separation_in[OF _ lam_replacement_hcomp2[OF fst3 lam_replacement_snd _ _  lam_replacement_Pair] _
+        lam_replacement_constant[of A]] assms
+    by auto
+qed
+
+(*FIXME: move this inside the proof. *)
+lemma aux_lemma:
+  assumes
+    "M(X)" "M(A)"
+  shows "\<forall>x[M]. M({y \<in> X . \<langle>fst(x), y\<rangle> \<in> A})"
+  using separation_in
+    lam_replacement_hcomp2[OF lam_replacement_hcomp[OF  lam_replacement_constant lam_replacement_fst]
+      lam_replacement_identity _ _ lam_replacement_Pair]
+    lam_replacement_constant[of A]
+    assms
+  by simp
+
+lemma lam_replacement_Lambda:
+  assumes "lam_replacement(M, \<lambda>y. b(fst(y), snd(y)))"
+    "\<forall>w[M]. \<forall>y[M]. M(b(w, y))" "M(W)"
+  shows "lam_replacement(M, \<lambda>x. \<lambda>w\<in>W. b(x, w))"
+proof (intro lam_replacement_iff_lam_closed[THEN iffD2]; clarify)
+  from assms
+  show lbc:"M(x) \<Longrightarrow> M(\<lambda>w\<in>W. b(x, w))" for x
+    using lam_replacement_constant lam_replacement_identity
+      lam_replacement_hcomp2[where h=b]
+    by (intro lam_replacement_iff_lam_closed[THEN iffD1, rule_format])
+      simp_all
+  fix A
+  assume "M(A)"
+  moreover from this assms
+  have "M({b(fst(x),snd(x)). x \<in> A\<times>W})" (is "M(?RFb)")\<comment> \<open>\<^term>\<open>RepFun\<close> \<^term>\<open>b\<close>\<close>
+    using lam_replacement_imp_strong_replacement transM[of _ "A\<times>W"]
+    by (rule_tac RepFun_closed) auto
+  moreover
+  have "{\<langle>\<langle>x,y\<rangle>,z\<rangle> \<in> (A\<times>W)\<times>?RFb. z = b(x,y)} = (\<lambda>\<langle>x,y\<rangle>\<in>A\<times>W. b(x,y)) \<inter> (A\<times>W)\<times>?RFb"
+    (is "{\<langle>\<langle>x,y\<rangle>,z\<rangle> \<in> (A\<times>W)\<times>?B. _ } = ?lam")
+    unfolding lam_def by auto
+  moreover from calculation and assms
+  have "M(?lam)"
+    using lam_replacement_iff_lam_closed unfolding split_def by simp
+  moreover
+  have "{\<langle>\<langle>x,y\<rangle>,z\<rangle> \<in> (X \<times> Y) \<times> Z . P(x, y, z)} \<subseteq> (X \<times> Y) \<times> Z" for X Y Z P
+    by auto
+  then
+  have "{\<langle>x,y,z\<rangle> \<in> X\<times>Y\<times>Z. P(x,y,z) }= (\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>\<in>(X\<times>Y)\<times>Z. \<langle>x,y,z\<rangle>) ``
+        {\<langle>\<langle>x,y\<rangle>,z\<rangle> \<in> (X\<times>Y)\<times>Z. P(x,y,z) }" (is "?C' = Lambda(?A,?f) `` ?C")
+    for X Y Z P
+    using image_lam[of ?C ?A ?f]
+    by (intro equalityI) (auto)
+  with calculation
+  have "{\<langle>x,y,z\<rangle> \<in> A\<times>W\<times>?RFb. z = b(x,y) } =
+        (\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>\<in>(A\<times>W)\<times>?RFb. \<langle>x,y,z\<rangle>) `` ?lam" (is "?H = ?G ")
+    by simp
+  with \<open>M(A)\<close> \<open>M(W)\<close> \<open>M(?lam)\<close> \<open>M(?RFb)\<close>
+  have "M(?H)"
+    using lam_replacement_iff_lam_closed[THEN iffD1, rule_format, OF _ lam_replacement_twist]
+    by simp
+  moreover from this and \<open>M(A)\<close>
+  have "(\<lambda>x\<in>A. \<lambda>w\<in>W. b(x, w)) =
+    {\<langle>x,Z\<rangle> \<in> A \<times> Pow\<^bsup>M\<^esup>(range(?H)). Z = {y \<in> W\<times>?RFb . \<langle>x, y\<rangle> \<in> ?H}}"
+    unfolding lam_def
+    by (intro equalityI; subst Pow_rel_char[of "range(?H)"])
+      (auto dest:transM simp: lbc[unfolded lam_def], force+)
+  moreover from calculation and \<open>M(A)\<close> and \<open>M(W)\<close>
+  have "M(A\<times>Pow\<^bsup>M\<^esup>(range(?H)))" "M(W\<times>?RFb)"
+    by auto
+  moreover
+  note \<open>M(W)\<close>
+  moreover from calculation
+  have "M({\<langle>x,Z\<rangle> \<in> A \<times> Pow\<^bsup>M\<^esup>(range(?H)). Z = {y \<in> W\<times>?RFb . \<langle>x, y\<rangle> \<in> ?H}})"
+    using separation_eq[OF _ lam_replacement_snd
+        aux_lemma[OF  \<open>M(W\<times>?RFb)\<close> \<open>M(?H)\<close>]
+        lam_replacement_[OF \<open>M(W\<times>?RFb)\<close> \<open>M(?H)\<close>]]
+      \<open>M(A\<times>Pow\<^bsup>M\<^esup>(_))\<close> assms
+    unfolding split_def
+    by auto
+  ultimately
+  show "M(\<lambda>x\<in>A. \<lambda>w\<in>W. b(x, w))" by simp
+qed
+
+lemma lam_replacement_apply_Pair:
+  assumes "M(y)"
+  shows "lam_replacement(M, \<lambda>x. y ` \<langle>fst(x), snd(x)\<rangle>)"
+  using assms lam_replacement_constant lam_replacement_Pair
+    lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
+  by auto
+
+lemma lam_replacement_apply_fst_snd:
+  shows "lam_replacement(M, \<lambda>w. fst(w) ` fst(snd(w)) ` snd(snd(w)))"
+  using lam_replacement_fst lam_replacement_snd lam_replacement_hcomp
+    lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
+  by auto
+
+lemma separation_snd_in_fst: "separation(M, \<lambda>x. snd(x) \<in> fst(x))"
+  using separation_in lam_replacement_fst lam_replacement_snd
+  by auto
+
+lemma lam_replacement_if_mem:
+  "lam_replacement(M, \<lambda>x. if snd(x) \<in> fst(x) then 1 else 0)"
+  using separation_snd_in_fst
+    lam_replacement_constant lam_replacement_if
+  by auto
+
+lemma lam_replacement_Lambda_apply_fst_snd:
+  assumes "M(X)"
+  shows "lam_replacement(M, \<lambda>x. \<lambda>w\<in>X. x ` fst(w) ` snd(w))"
+  using assms lam_replacement_apply_fst_snd lam_replacement_Lambda
+  by simp
+
+lemma lam_replacement_Lambda_apply_Pair:
+  assumes "M(X)" "M(y)"
+  shows "lam_replacement(M, \<lambda>x. \<lambda>w\<in>X. y ` \<langle>x, w\<rangle>)"
+  using assms lam_replacement_apply_Pair lam_replacement_Lambda
+  by simp
+
+lemma lam_replacement_Lambda_if_mem:
+  assumes "M(X)"
+  shows "lam_replacement(M, \<lambda>x. \<lambda>xa\<in>X. if xa \<in> x then 1 else 0)"
+  using assms lam_replacement_if_mem lam_replacement_Lambda
+  by simp
+
+lemma lam_replacement_comp':
+  "M(f) \<Longrightarrow> M(g) \<Longrightarrow> lam_replacement(M, \<lambda>x . f O x O g)"
+  using lam_replacement_comp[THEN [5] lam_replacement_hcomp2,
+      OF lam_replacement_constant lam_replacement_comp,
+      THEN [5] lam_replacement_hcomp2] lam_replacement_constant
+    lam_replacement_identity by simp
+
 lemma case_closed :
   assumes "\<forall>x[M]. M(f(x))" "\<forall>x[M]. M(g(x))"
   shows "\<forall>x[M]. M(case(f,g,x))"
