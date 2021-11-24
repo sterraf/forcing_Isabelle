@@ -251,7 +251,7 @@ sublocale M_ZF_trans \<subseteq> M_aleph "##M"
 
 sublocale M_ZF_trans \<subseteq> M_FiniteFun "##M"
   using separation_supset_body separation_cons_like_rel
-    replacement_range replacement_omega_funspace
+    replacement_omega_funspace
     separation_is_function
   by (unfold_locales,simp_all)
 

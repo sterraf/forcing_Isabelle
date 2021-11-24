@@ -10,45 +10,6 @@ begin
 
 subsection\<open>More Instances of Replacement\<close>
 
-text\<open>This is the same way that we used for instances of separation.\<close>
-lemma (in M_ZF_trans) replacement_is_range:
- "strong_replacement(##M, \<lambda>f y. is_range(##M,f,y))"
-  apply(rule_tac strong_replacement_cong[
-        where P="\<lambda> x f. M,[x,f] \<Turnstile> range_fm(0,1)",THEN iffD1])
-   apply(rule_tac range_iff_sats[where env="[_,_]",symmetric])
-  apply(simp_all)
-  apply(rule_tac replacement_ax[where env="[]",simplified])
-    apply(simp_all add:arity_range_fm ord_simp_union range_type)
-  done
-
-lemma (in M_ZF_trans) replacement_range:
- "strong_replacement(##M, \<lambda>f y. y = range(f))"
-  using strong_replacement_cong[THEN iffD2,OF _ replacement_is_range] range_abs
-  by simp
-
-lemma (in M_ZF_trans) lam_replacement_range : "lam_replacement(##M, range)"
-  using lam_replacement_iff_lam_closed[THEN iffD2,of range]
-    Lambda_in_M[where \<phi>="range_fm(0,1)" and env="[]",
-      OF range_type _ range_iff_sats[symmetric] range_abs,simplified]
-     arity_range_fm[of 0 1] ord_simp_union transitivity range_closed
-  by simp
-
-lemma (in M_ZF_trans) replacement_is_domain:
- "strong_replacement(##M, \<lambda>f y. is_domain(##M,f,y))"
-  apply(rule_tac strong_replacement_cong[
-        where P="\<lambda> x f. M,[x,f] \<Turnstile> domain_fm(0,1)",THEN iffD1])
-   apply(rule_tac domain_iff_sats[where env="[_,_]",symmetric])
-  apply(simp_all)
-  apply(rule_tac replacement_ax[where env="[]",simplified])
-    apply(simp_all add:arity_domain_fm ord_simp_union domain_type)
-  done
-
-lemma (in M_ZF_trans) replacement_domain:
- "strong_replacement(##M, \<lambda>f y. y = domain(f))"
-  using strong_replacement_cong[THEN iffD2,OF _ replacement_is_domain] 
-  by simp
-
-text\<open>Alternatively, we can use closure under lambda and get the stronger version.\<close>
 lemma (in M_ZF_trans) lam_replacement_domain : "lam_replacement(##M, domain)"
   using lam_replacement_iff_lam_closed[THEN iffD2,of domain]
     Lambda_in_M[where \<phi>="domain_fm(0,1)" and env="[]",
@@ -56,15 +17,17 @@ lemma (in M_ZF_trans) lam_replacement_domain : "lam_replacement(##M, domain)"
      arity_domain_fm[of 0 1] ord_simp_union transitivity domain_closed
   by simp
 
-text\<open>Then we recover the original version. Notice that we need closure because we
-haven't yet interpreted \<^term>\<open>M_replacement\<close>.\<close>
-lemma (in M_ZF_trans) replacement_domain':
- "strong_replacement(##M, \<lambda>f y. y = domain(f))"
-  using lam_replacement_imp_strong_replacement_aux lam_replacement_domain domain_closed
+synthesize "is_converse" from_definition assuming "nonempty"
+arity_theorem for "is_converse_fm"
+
+lemma (in M_ZF_trans) lam_replacement_converse : "lam_replacement(##M, converse)"
+  using lam_replacement_iff_lam_closed[THEN iffD2,of converse] nonempty
+    Lambda_in_M[where \<phi>="is_converse_fm(0,1)" and env="[]",
+      OF is_converse_fm_type _ is_converse_iff_sats[symmetric] converse_abs,simplified]
+     arity_is_converse_fm[of 0 1] ord_simp_union transitivity converse_closed
   by simp
 
 (*FIXME: for some reason converse is not synthesized yet. Perhaps we might use the other way? *)
-
 lemma (in M_ZF_trans) lam_replacement_fst : "lam_replacement(##M, fst)"
   using lam_replacement_iff_lam_closed[THEN iffD2,of fst]
     Lambda_in_M[where \<phi>="fst_fm(0,1)" and env="[]",OF
@@ -247,21 +210,6 @@ lemma (in M_ZF_trans) lam_replacement_cartprod:
   using cartprod_closed[simplified]
   by simp
 
-synthesize "pre_image" from_definition assuming "nonempty"
-arity_theorem for "pre_image_fm"
-
-lemma (in M_ZF_trans) lam_replacement_vimage:
-  "lam_replacement(##M, \<lambda>p. fst(p) -`` snd(p))"
-  apply(rule_tac lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. fst(p)-``snd(p)"])
-  apply (auto) apply(rule vimage_closed[simplified],auto simp add:fst_snd_closed[simplified])
-  apply (rule_tac
-    LambdaPair_in_M[where \<phi>="pre_image_fm(0,1,2)" and is_f="pre_image(##M)" and env="[]",OF
-      pre_image_fm_type _ pre_image_iff_sats[symmetric]])
-  apply (auto  simp: arity_pre_image_fm[of 0 1 2] ord_simp_union transitivity zero_in_M)
-  using vimage_closed[simplified]
-  by simp
-
-
 definition is_omega_funspace :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o" where
   "is_omega_funspace(N,B,n,z) \<equiv>  \<exists>o[N]. omega(N,o) \<and> n\<in>o \<and>is_funspace(N, n, B, z)"
 
@@ -385,7 +333,6 @@ lemma (in M_ZF_trans) replacement_fst2_snd2: "strong_replacement(##M, \<lambda>x
   unfolding fst2_snd2_def
   by simp
 
-
 definition fst2_sndfst_snd2
   where "fst2_sndfst_snd2(x) \<equiv> \<langle>fst(fst(x)), snd(fst(x)), snd(snd(x))\<rangle>"
 
@@ -418,17 +365,16 @@ lemma (in M_ZF_trans) replacement_fst2_sndfst_snd2:
   unfolding fst2_sndfst_snd2_def
   by simp
 
-
 lemmas (in M_ZF_trans) M_replacement_ZF_instances = lam_replacement_domain
   lam_replacement_fst lam_replacement_snd lam_replacement_Union
   lam_replacement_Upair lam_replacement_image
-  lam_replacement_Diff lam_replacement_vimage
+  lam_replacement_Diff lam_replacement_converse
   separation_fstsnd_in_sndsnd separation_id_rel[simplified]
   separation_sndfst_eq_fstsnd
   separation_fstfst_eq_fstsnd
   separation_restrict_elem
   replacement_fst2_snd2 replacement_fst2_sndfst_snd2
-  lam_replacement_range lam_replacement_comp
+  lam_replacement_comp
 
 sublocale M_ZF_trans \<subseteq> M_replacement "##M"
   by unfold_locales (simp_all add: M_replacement_ZF_instances del:setclass_iff)

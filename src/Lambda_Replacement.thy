@@ -523,8 +523,6 @@ locale M_replacement = M_basic +
   assumes
     lam_replacement_domain: "lam_replacement(M,domain)"
     and
-    lam_replacement_vimage: "lam_replacement(M, \<lambda>p. fst(p) -`` snd(p))"
-    and
     lam_replacement_fst: "lam_replacement(M,fst)"
     and
     lam_replacement_snd: "lam_replacement(M,snd)"
@@ -552,7 +550,7 @@ locale M_replacement = M_basic +
     and
     separation_fst_in_snd: "separation(M, \<lambda>y. fst(snd(y)) \<in> snd(snd(y)))"
     and
-    lam_replacement_range : "lam_replacement(M,range)"
+    lam_replacement_converse : "lam_replacement(M,converse)"
     and
     lam_replacement_comp: "lam_replacement(M, \<lambda>x. fst(x) O snd(x))"
 begin
@@ -838,6 +836,32 @@ lemma lam_replacement_hcomp2:
     lam_replacement_hcomp[of "\<lambda>x. \<langle>f(x), g(x)\<rangle>" "\<lambda>\<langle>x,y\<rangle>. h(x,y)"]
   unfolding split_def by simp
 
+lemma lam_replacement_identity: "lam_replacement(M,\<lambda>x. x)"
+proof -
+  {
+    fix A
+    assume "M(A)"
+    moreover from this
+    have "id(A) = {z\<in> A\<times>A. \<exists>x[M]. z=\<langle>x,x\<rangle>}"
+      unfolding id_def lam_def by (auto dest:transM)
+    moreover from calculation
+    have "M({z\<in> A\<times>A. \<exists>x[M]. z=\<langle>x,x\<rangle>})"
+      using id_separation by simp
+    ultimately
+    have "M(id(A))" by simp
+  }
+  then
+  show ?thesis using lam_replacement_iff_lam_closed
+    unfolding id_def by simp
+qed
+
+lemma lam_replacement_vimage :
+  shows "lam_replacement(M, \<lambda>x. fst(x)-``snd(x))"
+  unfolding vimage_def using
+    lam_replacement_hcomp2[OF
+    lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_converse] lam_replacement_snd
+  _ _ lam_replacement_Image]
+  by auto
 
 lemma strong_replacement_separation_aux :
   assumes "strong_replacement(M,\<lambda> x y . y=f(x))" "separation(M,P)"
@@ -894,6 +918,11 @@ lemma lam_replacement_swap: "lam_replacement(M, \<lambda>x. \<langle>snd(x),fst(
   using lam_replacement_fst lam_replacement_snd
     lam_replacement_product[of "snd" "fst"] by simp
 
+lemma lam_replacement_range : "lam_replacement(M,range)"
+  unfolding range_def
+  using lam_replacement_hcomp[OF lam_replacement_converse lam_replacement_domain]
+  by auto
+
 lemma separation_in_range : "M(a) \<Longrightarrow> separation(M, \<lambda>x. a\<in>range(x))"
   using lam_replacement_range lam_replacement_constant separation_in
   by auto
@@ -911,25 +940,6 @@ lemma lam_replacement_separation :
 
 lemmas strong_replacement_separation =
   strong_replacement_separation_aux[OF lam_replacement_imp_strong_replacement]
-
-lemma lam_replacement_identity: "lam_replacement(M,\<lambda>x. x)"
-proof -
-  {
-    fix A
-    assume "M(A)"
-    moreover from this
-    have "id(A) = {z\<in> A\<times>A. \<exists>x[M]. z=\<langle>x,x\<rangle>}"
-      unfolding id_def lam_def by (auto dest:transM)
-    moreover from calculation
-    have "M({z\<in> A\<times>A. \<exists>x[M]. z=\<langle>x,x\<rangle>})"
-      using id_separation by simp
-    ultimately
-    have "M(id(A))" by simp
-  }
-  then
-  show ?thesis using lam_replacement_iff_lam_closed
-    unfolding id_def by simp
-qed
 
 lemma id_closed: "M(A) \<Longrightarrow> M(id(A))"
   using lam_replacement_identity lam_replacement_iff_lam_closed
@@ -1241,7 +1251,6 @@ lemma lam_replacement_image_sing_fun: "M(f) \<Longrightarrow> lam_replacement(M,
           lam_replacement_hcomp[OF lam_replacement_identity lam_replacement_sing]
           _ _ lam_replacement_Image]
   by simp
-
 
 lemma converse_apply_projs: "\<forall>x[M]. \<Union> (fst(x) -`` {snd(x)}) = converse(fst(x)) ` (snd(x))"
   using converse_apply_eq by auto
