@@ -23,6 +23,14 @@ lemma separation_univ :
 context M_basic
 begin
 
+(* FIXME: this can be combined with separation_ball to remove the need of the
+extra assumption in lam_replacement_Collect. *)
+lemma separation_iff':
+  assumes "separation(M,\<lambda>x . P(x))" "separation(M,\<lambda>x . Q(x))"
+  shows "separation(M,\<lambda>x . P(x) \<longleftrightarrow> Q(x))"
+  using assms separation_conj separation_imp iff_def
+  by auto
+
 lemma separation_in_constant :
   assumes "M(a)"
   shows "separation(M,\<lambda>x . x\<in>a)"
@@ -1512,6 +1520,36 @@ lemma lam_replacement_comp':
       THEN [5] lam_replacement_hcomp2] lam_replacement_constant
     lam_replacement_identity by simp
 
+lemma separation_bex:
+  assumes "separation(M, \<lambda>y. f(fst(y),snd(y)))" "M(X)"
+  shows "separation(M, \<lambda>y. \<exists>u\<in>X. f(y,u))"
+  unfolding separation_def
+proof(clarify)
+  fix A
+  assume "M(A)"
+  moreover
+  note \<open>M(X)\<close>
+  moreover from calculation
+  have "M(A\<times>X)"
+    by simp
+  then
+  have "M({p \<in> A\<times>X . f(fst(p),snd(p))})" (is "M(?P)")
+    using assms(1)
+    by auto
+  moreover from calculation
+  have "M({a\<in>A . ?P``{a} \<noteq> 0})" (is "M(?A')")
+    using separation_eq lam_replacement_image_sing_fun[of "?P"] lam_replacement_constant
+      separation_neg
+    by simp
+  moreover from this
+  have "\<forall>a[M]. a \<in> ?A' \<longleftrightarrow> a \<in> A \<and> (\<exists>x\<in>X. f(a, x))"
+    using image_singleton_iff
+     by auto
+   with \<open>M(?A')\<close>
+   show "\<exists>y[M]. \<forall>a[M]. a \<in> y \<longleftrightarrow> a \<in> A \<and> (\<exists>x\<in>X. f(a, x))"
+     by (rule_tac x="?A'" in rexI,simp_all)
+qed
+
 lemma case_closed :
   assumes "\<forall>x[M]. M(f(x))" "\<forall>x[M]. M(g(x))"
   shows "\<forall>x[M]. M(case(f,g,x))"
@@ -1774,13 +1812,39 @@ begin
 
 lemma lam_replacement_drSR_Y: 
   assumes 
-    "\<And> A B. M(A) \<Longrightarrow> M(B) \<Longrightarrow> \<forall>x[M]. separation(M, \<lambda>dr. \<exists>r\<in>A . restrict(r,B) = x \<and> dr=domain(r))" 
-    "\<And> A B D . M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(D) \<Longrightarrow>
-      separation(M, \<lambda>p. \<forall>x\<in>D. x \<in> snd(p) \<longleftrightarrow> (\<exists>r\<in>A. restrict(r, B) = fst(p) \<and> x = domain(r)))"
     "M(B)" "M(D)" "M(A)"
   shows "lam_replacement(M, drSR_Y(B,D,A))"
-  using lam_replacement_cong lam_replacement_Collect[OF \<open>M(D)\<close> assms(1)[of A B]]
+proof -
+  note fst3 = lam_replacement_hcomp[OF lam_replacement_fst
+                lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_fst]]
+  note assms
+  moreover
+  have 1:"\<forall>x[M].separation(M, \<lambda>dr. \<exists>r\<in>A . restrict(r,B) = x \<and> dr=domain(r))"
+    if "M(A)" and "M(B)" for A B
+    using that
+      separation_eq[OF _
+          lam_replacement_fst _
+          lam_replacement_hcomp[OF lam_replacement_snd lam_replacement_domain ]]
+       separation_eq[OF _
+        lam_replacement_hcomp[OF lam_replacement_snd lam_replacement_restrict'] _
+        lam_replacement_constant]
+    by(clarify,rule_tac separation_bex[OF _ \<open>M(A)\<close>],rule_tac separation_conj,simp_all)
+  moreover
+  have "separation(M, \<lambda>p. \<forall>x\<in>D. x \<in> snd(p) \<longleftrightarrow> (\<exists>r\<in>A. restrict(r, B) = fst(p) \<and> x = domain(r)))"
+    if "M(B)" "M(D)" "M(A)" for A B D
+    using that lam_replacement_fst lam_replacement_hcomp lam_replacement_snd separation_in
+      separation_eq[OF _
+          lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_snd] _
+          lam_replacement_hcomp[OF lam_replacement_snd lam_replacement_domain]]
+       separation_eq
+        lam_replacement_hcomp[OF lam_replacement_snd lam_replacement_restrict'] fst3
+    by(rule_tac separation_ball,rule_tac separation_iff',simp_all,
+        rule_tac separation_bex[OF _ \<open>M(A)\<close>],rule_tac separation_conj,simp_all)
+  ultimately
+  show ?thesis
+  using lam_replacement_cong lam_replacement_Collect[OF \<open>M(D)\<close> 1[of A B]]
     assms drSR_Y_equality by simp
+qed
 
 lemma lam_if_then_apply_replacement: "M(f) \<Longrightarrow> M(v) \<Longrightarrow> M(u) \<Longrightarrow>
      lam_replacement(M, \<lambda>x. if f ` x = v then f ` u else f ` x)"
@@ -1804,12 +1868,20 @@ lemma lam_if_then_replacement_apply: "M(G) \<Longrightarrow> lam_replacement(M, 
 
 lemma lam_replacement_dC_F:
   assumes "M(A)"
-    "\<And>d . M(d) \<Longrightarrow> separation(M, \<lambda>x . domain(x) = d)"
-    "\<And> A . M(A) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>A. x \<in> snd(p) \<longleftrightarrow> domain(x) = fst(p))"
   shows "lam_replacement(M, dC_F(A))"
-  unfolding dC_F_def
-  using assms lam_replacement_Collect[of A "\<lambda> d x . domain(x) = d"]
-  by simp
+proof -
+  have "separation(M, \<lambda>p. \<forall>x\<in>A. x \<in> snd(p) \<longleftrightarrow> domain(x) = fst(p))" if "M(A)" for A
+    using separation_ball separation_iff'
+      lam_replacement_hcomp lam_replacement_fst lam_replacement_snd lam_replacement_domain
+      separation_in separation_eq that
+    by simp_all
+  then
+  show ?thesis
+    unfolding dC_F_def
+    using assms lam_replacement_Collect[of A "\<lambda> d x . domain(x) = d"]
+      separation_eq[OF _ lam_replacement_domain _ lam_replacement_constant]
+    by simp
+qed
 
 lemma lam_replacement_min: "M(f) \<Longrightarrow> M(r) \<Longrightarrow> lam_replacement(M, \<lambda>x . minimum(r, f -`` {x}))"
   using lam_replacement_hcomp2[OF lam_replacement_constant[of r] lam_replacement_vimage_sing_fun]
@@ -1817,10 +1889,19 @@ lemma lam_replacement_min: "M(f) \<Longrightarrow> M(r) \<Longrightarrow> lam_re
   by simp
 
 lemma lam_replacement_Collect_ball_Pair:
-  assumes "separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))"
-    "\<And>x. M(x) \<Longrightarrow> separation(M, \<lambda>y. \<forall>s\<in>x. \<langle>s, y\<rangle> \<in> Q)" "M(G)"
+  assumes "separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))" "M(G)" "M(Q)"
   shows "lam_replacement(M, \<lambda>x . {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})"
-  using assms lam_replacement_Collect by simp
+proof -
+  have 1:"\<forall>x[M]. separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)" if "M(Q)" for Q
+  using separation_in lam_replacement_hcomp2[OF _ _ _ _ lam_replacement_Pair]
+      lam_replacement_constant separation_ball
+    lam_replacement_hcomp lam_replacement_fst lam_replacement_snd that
+  by simp
+  then
+  show ?thesis
+    using assms lam_replacement_Collect
+    by simp_all
+qed
 
 lemma surj_imp_inj_replacement3:
   "(\<And>x. M(x) \<Longrightarrow> separation(M, \<lambda>y. \<forall>s\<in>x. \<langle>s, y\<rangle> \<in> Q)) \<Longrightarrow> M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(x) \<Longrightarrow> 
