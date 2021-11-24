@@ -63,11 +63,6 @@ proof -
     unfolding dc_witness_def dc_witness_rel_def by simp
 qed
 
-lemma lam_replacement_dc_witness:
-  assumes "M(a)" "M(g)" "M(A)" "M(R)"
-  shows "lam_replacement(M, \<lambda>x. dc_witness(x, A, a, g, R))"
-  sorry
-
 lemma first_section_closed:
   assumes
     "M(A)" "M(a)" "M(R)"
@@ -82,7 +77,7 @@ qed
 
 lemma witness_into_A [TC]:
   assumes "a\<in>A"
-    "\<forall>X[M]. X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X"
+    "\<forall>X[M]. X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>A"
     "\<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0" "n\<in>nat"
     "M(A)" "M(a)" "M(s)" "M(R)"
   shows "dc_witness(n, A, a, s, R)\<in>A"
@@ -99,15 +94,42 @@ next
       auto
 qed
 
+lemma separation_eq_dc_witness:"separation(M,\<lambda>p. snd(p) = dc_witness(fst(p), A, a, g, R))"
+  sorry
+
+end (* M_replacement *)
+
+context M_cardinals
+(* NOTE: It actually only requires \<^term>\<open>M_trancl\<close> plus \<^term>\<open>M_replacement\<close>. *)
+begin
+
+lemma Lambda_dc_witness_closed:
+  assumes "g \<in> Pow\<^bsup>M\<^esup>(A)-{0} \<rightarrow> A" "a\<in>A" "\<forall>y\<in>A. {x \<in> A . \<langle>y, x\<rangle> \<in> R} \<noteq> 0"
+    "M(g)" "M(A)" "M(a)" "M(R)"
+  shows "M(\<lambda>n\<in>nat. dc_witness(n,A,a,g,R))"
+proof -
+  from assms
+  have "(\<lambda>n\<in>nat. dc_witness(n,A,a,g,R)) = {\<langle>n, y\<rangle> \<in> \<omega> \<times> A . y = dc_witness(n,A,a,g,R)}"
+    using witness_into_A[of a A g R]
+      Pow_rel_char apply_type[of g "{x \<in> Pow(A) . M(x)}-{0}" "\<lambda>_.A"]
+    unfolding lam_def split_def
+    by (auto)
+  with assms
+  show ?thesis
+    using separation_eq_dc_witness unfolding split_def by simp
+qed
+
 lemma witness_related:
   assumes "a\<in>A"
-    "(\<forall>X[M]. X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X)"
+    "\<forall>X[M]. X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X"
     "\<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0" "n\<in>nat"
     "M(a)" "M(A)" "M(s)" "M(R)" "M(n)"
   shows "\<langle>dc_witness(n, A, a, s, R),dc_witness(succ(n), A, a, s, R)\<rangle>\<in>R"
 proof -
   note assms
   moreover from this
+  have "(\<forall>X[M]. X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>A)" by auto
+  moreover from calculation
   have "dc_witness(n, A, a, s, R)\<in>A" (is "?x \<in> A")
     using witness_into_A[of _ _ s R n] by simp
   moreover from assms
@@ -120,7 +142,7 @@ qed
 
 lemma witness_funtype:
   assumes "a\<in>A"
-    "\<forall>X[M]. X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X \<in> X"
+    "\<forall>X[M]. X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X \<in> A"
     "\<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R} \<noteq> 0"
     "M(A)" "M(a)" "M(s)" "M(R)"
   shows "(\<lambda>n\<in>nat. dc_witness(n, A, a, s, R)) \<in> nat \<rightarrow> A" (is "?f \<in> _ \<rightarrow> _")
@@ -138,14 +160,14 @@ qed
 
 lemma witness_to_fun:   
   assumes "a\<in>A"
-    "\<forall>X[M]. X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>X"
+    "\<forall>X[M]. X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>A"
     "\<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0"
     "M(A)" "M(a)" "M(s)" "M(R)"
   shows "\<exists>f \<in> nat\<rightarrow>A. \<forall>n\<in>nat. f`n =dc_witness(n,A,a,s,R)"
   using assms bexI[of _ "\<lambda>n\<in>nat. dc_witness(n,A,a,s,R)"] witness_funtype
   by simp
 
-end (* M_basic *)
+end (* M_cardinals *)
 
 context M_library
 begin
@@ -210,6 +232,8 @@ proof -
       "M(g)"
     using AC_M_func_Pow_rel[of A] mem_Pow_rel_abs
       function_space_rel_char[of "Pow\<^bsup>M\<^esup>(A)-{0}" A] by auto
+  then
+  have 2:"\<forall>X[M]. X \<noteq> 0 \<and> X \<subseteq> A \<longrightarrow> g ` X \<in> A" by auto
   {
     fix a
     assume "a\<in>A"
@@ -223,16 +247,12 @@ proof -
     have "\<langle>?f ` n, ?f ` succ(n)\<rangle> \<in> R" if "n\<in>nat" for n
       using witness_related[OF \<open>a\<in>A\<close> _ 0, of g n] 1 that
       by (auto dest:transM)
-    moreover from calculation
-    have "M(?f)"
-      using lam_replacement_dc_witness
-      by (rule_tac lam_replacement_imp_lam_closed)
-        (auto dest:transM)
     ultimately
     have "\<exists>f[M]. f\<in>nat \<rightarrow> A \<and> f ` 0 = a \<and> (\<forall>n\<in>nat. \<langle>f ` n, f ` succ(n)\<rangle> \<in> R)"
       using 0 1 \<open>a\<in>_\<close>
       by (rule_tac x="(\<lambda>n\<in>\<omega>. dc_witness(n, A, a, g, R))" in rexI)
-        (simp_all, rule_tac witness_funtype, auto dest:transM)
+        (simp_all, rule_tac witness_funtype,
+          auto intro!: Lambda_dc_witness_closed dest:transM)
   }
   with \<open>M(A)\<close>
   show ?thesis using function_space_rel_char by auto
