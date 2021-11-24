@@ -335,6 +335,8 @@ locale M_cardinal_library = M_library + M_replacement +
   assumes
     lam_replacement_inj_rel:"lam_replacement(M, \<lambda>x. inj\<^bsup>M\<^esup>(fst(x),snd(x)))"
     and
+    cdlt_assms: "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))"
+    and
     cardinal_lib_assms1:
     "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow>
        separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. if M(x) then x else 0,b,f,i)\<rangle>)"
@@ -348,10 +350,6 @@ locale M_cardinal_library = M_library + M_replacement +
     "M(A') \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(F) \<Longrightarrow>
         separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. if M(a) then F-``{a} else 0,b,f,i)\<rangle>)"
     and
-    cdlt_assms:
-    "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))"
-    "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
-    and 
     cardinal_lib_assms5 :
     "M(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
     and 
@@ -361,6 +359,13 @@ locale M_cardinal_library = M_library + M_replacement +
     "separation(M, \<lambda> x . \<exists>a. \<exists>b . x=\<langle>a,b\<rangle> \<and> a\<noteq>b)"
 
 begin
+
+lemma cdlt_assms': "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
+  using separation_in[OF _
+      lam_replacement_hcomp2[OF _ _ _ _ lam_replacement_Pair] _
+      lam_replacement_constant]
+    separation_ball lam_replacement_hcomp lam_replacement_fst lam_replacement_snd
+  by simp_all
 
 lemma countable_rel_union_countable_rel:
   assumes "\<And>x. x \<in> C \<Longrightarrow> countable_rel(M,x)" "countable_rel(M,C)" "M(C)"
@@ -794,7 +799,7 @@ lemma bounded_cardinal_rel_selection:
 proof -
   from assms
   have "M(x) \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})" for x
-    using cdlt_assms by simp
+    using cdlt_assms' by simp
   let ?cdlt\<gamma>="{Z\<in>Pow_rel(M,G) . |Z|\<^bsup>M\<^esup><\<gamma>}" \<comment> \<open>“cardinal\_rel less than \<^term>\<open>\<gamma>\<close>”\<close>
     and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. <s,a>\<in>Q}"
   from \<open>M(G)\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close>
@@ -834,7 +839,7 @@ proof -
           unfolded lam_replacement_def]
         lam_replacement_hcomp lam_replacement_Sigfun[OF
           lam_replacement_Collect_ball_Pair, of G Q, THEN
-          lam_replacement_imp_strong_replacement]
+          lam_replacement_imp_strong_replacement] cdlt_assms'
       by unfold_locales (blast dest: transM, auto dest:transM)
     show ?thesis using AC_Pi_rel Pi_rel_char H by auto
     qed

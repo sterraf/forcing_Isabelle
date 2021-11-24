@@ -17,14 +17,6 @@ lemma lam_replacement_twist: "lam_replacement(M,\<lambda>\<langle>\<langle>x,y\<
 lemma twist_closed[intro,simp]: "M(x) \<Longrightarrow> M((\<lambda>\<langle>\<langle>x,y\<rangle>,z\<rangle>. \<langle>x,y,z\<rangle>)(x))"
   unfolding split_def by simp
 
-(* FIXME: this can be combined with separation_ball to remove the need of the
-extra assumption in lam_replacement_Collect. *)
-lemma separation_iff':
-  assumes "separation(M,\<lambda>x . P(x))" "separation(M,\<lambda>x . Q(x))"
-  shows "separation(M,\<lambda>x . P(x) \<longleftrightarrow> Q(x))"
-  using assms separation_conj separation_imp iff_def
-  by auto
-
 (* FIXME: this could go inside the proof. *)
 lemma lam_replacement_separation': 
   assumes "M(X)" "M(A)"

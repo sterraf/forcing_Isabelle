@@ -52,13 +52,17 @@ locale M_delta = M_cardinal_library +
     cardinal_replacement:"strong_replacement(M, \<lambda>A y. y = \<langle>A, |A|\<^bsup>M\<^esup>\<rangle>)"
     and
     countable_lepoll_assms:
-    "M(G) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> fst(p) \<in> x)"
     "M(G) \<Longrightarrow> M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A.
                           y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. {xa \<in> G . x \<in> xa}, b, f, i)\<rangle>)"
     and
     disjoint_separation: "M(c) \<Longrightarrow> separation(M, \<lambda> x. \<exists>a. \<exists>b. x=\<langle>a,b\<rangle> \<and> a \<inter> b = c)"
 
 begin
+
+lemma insnd_ball: "M(G) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> fst(p) \<in> x)"
+  using separation_ball separation_iff' lam_replacement_fst lam_replacement_snd
+  separation_in lam_replacement_hcomp
+  by simp
 
 lemma (in M_trans) mem_F_bound6:
   fixes F G
@@ -267,8 +271,8 @@ proof -
       proof -
         from \<open>M(G)\<close>
         interpret M_replacement_lepoll M "\<lambda>_ x. Collect(G, (\<in>)(x))"
-          using countable_lepoll_assms(2-) lam_replacement_inj_rel separation_in_rev
-            lam_replacement_Collect[OF _ _ countable_lepoll_assms(1)] mem_F_bound6[of _ G]
+          using countable_lepoll_assms lam_replacement_inj_rel separation_in_rev
+            lam_replacement_Collect[OF _ _ insnd_ball] mem_F_bound6[of _ G]
           by unfold_locales
             (auto dest:transM intro:lam_Least_assumption_general[of _  _ _ _ Union])
         fix S

@@ -106,11 +106,10 @@ qed
 end (* M_master_sub *)
 
 lemmas (in M_ZFC_trans) sep_instances =
- separation_toplevel1_body separation_toplevel2_body separation_toplevel3_body
+ separation_toplevel2_body separation_toplevel3_body
  separation_toplevel4_body
  separation_toplevel9_body
- separation_toplevel10_body separation_toplevel11_body separation_Ord
- separation_toplevel12_body separation_insnd_ballPair
+ separation_Ord separation_insnd_ballPair
  separation_restrict_eq_dom_eq separation_restrict_eq_dom_eq_pair
  separation_ifrangeF_body separation_ifrangeF_body2 separation_ifrangeF_body3
  separation_ifrangeF_body4 separation_ifrangeF_body5 separation_ifrangeF_body6
