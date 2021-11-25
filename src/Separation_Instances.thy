@@ -284,7 +284,7 @@ lemma (in M_ZF_trans) ord_iso_body_abs:
   unfolding ord_iso_body_def is_ord_iso_body_def
   by auto
 
-lemma (in M_ZF_trans) separation_is_ord_iso_body:
+lemma (in M_ZF_trans) separation_ord_iso_body:
  "(##M)(A) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation(##M, \<lambda>f. \<forall>x\<in>A. \<forall>y\<in>A. \<langle>x, y\<rangle> \<in> r \<longleftrightarrow> \<langle>f ` x, f ` y\<rangle> \<in> s)"
   using separation_in_ctm[where env="[A,r,s]" and \<phi>="is_ord_iso_body_fm(1,2,3,0)",
       OF _ _ _ iff_trans[OF is_ord_iso_body_iff_sats[symmetric] ord_iso_body_abs]]
