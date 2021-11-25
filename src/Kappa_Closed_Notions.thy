@@ -52,7 +52,7 @@ lemma mono_seqspaceI[intro!]:
 lemma (in M_ZF_library) mono_seqspace_rel_char:
   assumes "M(A)" "M(P)" "M(leq)"
   shows "A \<^sub><\<rightarrow>\<^bsup>M\<^esup> (P,leq) = {f\<in>A \<^sub><\<rightarrow> (P,leq). M(f)}"
-  using assms mono_map_rel_char 
+  using assms mono_map_rel_char
   unfolding mono_seqspace_def mono_seqspace_rel_def by simp
 
 lemma (in M_ZF_library) mono_seqspace_relI[intro!]:
@@ -196,11 +196,57 @@ context
   includes G_generic_lemmas
 begin
 
-
 lemma separation_forces' :
   assumes "\<tau>\<in>M"
   shows "separation(##M, \<lambda>z. M, [fst(z), P, leq, one, \<tau>, snd(z)\<^sup>v] \<Turnstile> forces(\<cdot>0 = 1\<cdot> ))"
   sorry
+
+lemma aux3:
+  assumes "f_dot\<in>M" "n\<in>M"
+  shows  "separation(##M, \<lambda>r. M, [fst(r), P, leq, one, f_dot, Arith.pred(n)\<^sup>v, snd(r)\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
+  sorry
+
+lemma aux5:
+  shows "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, one, f_dot, Arith.pred(fst(fst(fst(fst(z)))))\<^sup>v, snd(z)\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
+  sorry
+
+lemma aux7:
+  shows "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, one, f_dot, Arith.pred(n)\<^sup>v, snd(z)\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
+  sorry
+
+lemma aux8 :
+  shows "separation(##M, \<lambda>p. M, [r, P, leq, one, f_dot, fst(p)\<^sup>v, snd(p)\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
+  sorry
+
+lemma aux6:
+  assumes "f_dot\<in>M" "B\<in>M"
+  shows "\<forall>n\<in>M. separation(##M, \<lambda>x. snd(x) \<preceq> fst(x) \<and> (\<exists>b\<in>B. M, [snd(x), P, leq, one, f_dot, Arith.pred(n)\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> )))"
+  using P_in_M assms
+    separation_in lam_replacement_constant lam_replacement_snd lam_replacement_fst
+    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M aux7
+  by(clarify, rule_tac separation_conj,simp_all,rule_tac separation_bex,simp_all)
+
+lemma aux4:
+  assumes "p\<in>M" "B\<in>M"
+  shows "separation
+     (##M,
+      \<lambda>pa. \<forall>x\<in>P. x \<preceq> p \<longrightarrow>
+                  (\<forall>y\<in>P. y \<preceq> p \<longrightarrow>
+                          \<langle>x, y\<rangle> \<in> snd(pa) \<longleftrightarrow>
+                          y \<preceq> x \<and> (\<exists>b\<in>B. M, [y, P, leq, one, f_dot, Arith.pred(fst(pa))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))))"
+  using P_in_M assms
+    separation_in lam_replacement_constant lam_replacement_snd
+    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M separation_forces'
+  apply( rule_tac separation_ball,simp_all,rule_tac separation_imp,simp_all)+
+  apply(rule_tac separation_iff')
+  using
+    lam_replacement_constant lam_replacement_fst lam_replacement_snd
+    leq_in_M assms lam_replacement_hcomp[OF
+      lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_fst]  lam_replacement_snd ]
+    lam_replacement_hcomp lam_replacement_identity aux5
+   apply (rule_tac separation_in[OF _ lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]],simp_all)
+  apply(rule_tac separation_conj,simp)
+  by(rule_tac separation_bex,simp_all)
 
 lemma aux :
   assumes "A\<in>M" "r\<in>G" "\<tau> \<in> M"
@@ -213,10 +259,9 @@ lemma aux :
 lemma aux2:
   assumes "B\<in>M" "f_dot\<in>M" "r\<in>M"
   shows "(##M)({\<langle>n,b\<rangle> \<in> \<omega> \<times> B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]})"
-  using nat_in_M assms
+  using nat_in_M assms check_in_M transitivity[OF _ \<open>B\<in>M\<close>] nat_into_M aux8
   unfolding split_def
-  apply(rule_tac separation_closed,simp_all)
-  sorry
+  by(rule_tac separation_closed,simp_all)
 
 \<comment> \<open>Kunen IV.6.9 (3)$\Rightarrow$(2), with general domain.\<close>
 lemma kunen_IV_6_9_function_space_rel_eq:
@@ -291,16 +336,23 @@ proof -
     {\<langle>q,r\<rangle> \<in> ?subp\<times>?subp. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])}"
       (is "S \<equiv> \<lambda>n\<in>nat. ?Y(n)")
       \<comment> \<open>Towards proving \<^term>\<open>S\<in>M\<close>.\<close>
+    with \<open>B\<in>M\<close> \<open>?subp\<in>M\<close> \<open>f_dot\<in>M\<close>
     have "{r \<in> ?subp. \<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v]} \<in> M" (is "?X(n) \<in> M")
-      if "n\<in>\<omega>" for n sorry
+      if "n\<in>\<omega>" for n
+      using that aux3 nat_into_M
+      by(rule_tac separation_closed[OF separation_bex,simplified], simp_all)
     moreover
     have "?Y(n) = (?subp \<times> ?X(n)) \<inter> converse(leq)" for n
       by (intro equalityI) auto
     moreover
-    note \<open>?subp \<in> M\<close>
-    ultimately
+    note \<open>?subp \<in> M\<close> \<open>B\<in>M\<close> \<open>p\<in>P\<close> \<open>f_dot\<in>M\<close>
+    moreover from calculation
     have "n \<in> \<omega> \<Longrightarrow> ?Y(n) \<in> M" for n using nat_into_M leq_in_M by simp
-    have "S \<in> M" sorry
+    ultimately
+    have "S \<in> M"
+      using aux4 aux6 transitivity[OF \<open>p\<in>P\<close> P_in_M]
+      unfolding S_def split_def
+      by(rule_tac lam_replacement_Collect[THEN lam_replacement_imp_lam_closed,simplified], simp_all)
     from \<open>p\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close> \<open>B\<in>M\<close>
     have exr:"\<exists>r\<in>P. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])"
       if "q \<preceq> p" "q\<in>P" "n\<in>\<omega>" for q n
