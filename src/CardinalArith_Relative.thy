@@ -47,12 +47,10 @@ locale M_cardinal_arith = M_pre_cardinal_arith +
     and
     strong_replacement_jc_body :
     "strong_replacement(M,\<lambda> x z . M(z) \<and> M(x) \<and> z = jump_cardinal_body(M,x))"
-    and
-    surj_imp_inj_replacement:
-    "M(f) \<Longrightarrow> M(x) \<Longrightarrow> strong_replacement(M, \<lambda>y z. y \<in> f -`` {x} \<and> z = {\<langle>x, y\<rangle>})"
-    "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = Sigfun(x, \<lambda>y. f -`` {y}))"
-    "M(f) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = f -`` {x})"
-    "M(f) \<Longrightarrow> M(r) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = \<langle>x, minimum(r, f -`` {x})\<rangle>)"
+
+lemmas (in M_cardinal_arith) surj_imp_inj_replacement =
+  surj_imp_inj_replacement1 surj_imp_inj_replacement2 surj_imp_inj_replacement4
+  lam_replacement_vimage_sing_fun[THEN lam_replacement_imp_strong_replacement]
 
 relativize_tm "\<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> r \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> s)"
   "is_rmultP"

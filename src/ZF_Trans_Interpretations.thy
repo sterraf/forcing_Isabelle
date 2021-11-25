@@ -206,11 +206,7 @@ lemma (in M_ZF_trans) replacement_jump_cardinal_body:
 
 sublocale M_ZF_trans \<subseteq> M_pre_aleph "##M"
   using replacement_ordertype replacement_jump_cardinal_body HAleph_wfrec_repl
-    lam_replacement_min[unfolded lam_replacement_def]
-    lam_replacement_imp_strong_replacement lam_replacement_vimage_sing_fun
-    lam_replacement_Sigfun[OF lam_replacement_vimage_sing_fun]
-    vimage_closed singleton_closed surj_imp_inj_replacement1
-  by  unfold_locales (simp_all add: transrec_replacement_def
+  by unfold_locales (simp_all add: transrec_replacement_def
       wfrec_replacement_def is_wfrec_def M_is_recfun_def flip:setclass_iff)
 
 arity_theorem intermediate for "is_HAleph_fm" 
@@ -251,8 +247,7 @@ sublocale M_ZF_trans \<subseteq> M_aleph "##M"
 
 sublocale M_ZF_trans \<subseteq> M_FiniteFun "##M"
   using separation_supset_body separation_cons_like_rel
-    replacement_omega_funspace
-    separation_is_function
+    replacement_omega_funspace separation_is_function
   by (unfold_locales,simp_all)
 
 sublocale M_ZFC_trans \<subseteq> M_AC "##M"
@@ -364,40 +359,6 @@ lemma (in M_ZF_trans) separation_toplevel4_body:
   unfolding toplevel4_body_def
   by (rule_tac separation_cong[
         where P="is_toplevel4_body(##M,R)",THEN iffD1])
-
- (* 9. \<And>x w. x \<in> M \<Longrightarrow> w \<in> M \<Longrightarrow> separation(##M, \<lambda>z. \<exists>n\<in>\<omega>. \<langle>\<langle>w, n\<rangle>, 1\<rangle> \<in> z \<and> \<langle>\<langle>x, n\<rangle>, 0\<rangle> \<in> z)  *)
-definition toplevel9_body :: "[i,i,i] \<Rightarrow> o" where
-  "toplevel9_body(Q,x) \<equiv> \<lambda>z. \<exists>n\<in>\<omega>. \<langle>\<langle>Q, n\<rangle>, 1\<rangle> \<in> z \<and> \<langle>\<langle>x, n\<rangle>, 0\<rangle> \<in> z"
-
-relativize functional "toplevel9_body" "toplevel9_body_rel"
-relationalize "toplevel9_body_rel" "is_toplevel9_body"
-
-synthesize "is_toplevel9_body" from_definition assuming "nonempty"
-arity_theorem for "is_toplevel9_body_fm"
-
-lemma (in M_ZF_trans) separation_is_toplevel9_body:
- "(##M)(A) \<Longrightarrow> (##M)(B) \<Longrightarrow> separation(##M, is_toplevel9_body(##M,A,B))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,A,B] \<Turnstile> is_toplevel9_body_fm(1,2,0)",THEN iffD1])
-   apply(rule_tac is_toplevel9_body_iff_sats[where env="[_,A,B]",symmetric])
-  apply(simp_all add:zero_in_M)
-  apply(rule_tac separation_ax[where env="[A,B]",simplified])
-    apply(simp_all add:arity_is_toplevel9_body_fm ord_simp_union is_toplevel9_body_fm_type)
-  done
-
-lemma (in M_ZF_trans) toplevel9_body_abs:
-  assumes "(##M)(A)" "(##M)(B)"  "(##M)(x)"
-  shows "is_toplevel9_body(##M,A,B,x) \<longleftrightarrow> toplevel9_body(A,B,x)"
-  using assms pair_in_M_iff apply_closed transM
-  unfolding toplevel9_body_def is_toplevel9_body_def
-  by (auto simp:nat_into_M[simplified] M_nat[simplified])
-
-lemma (in M_ZF_trans) separation_toplevel9_body:
- "(##M)(Q) \<Longrightarrow> (##M)(x) \<Longrightarrow> separation(##M, \<lambda>z. \<exists>n\<in>\<omega>. \<langle>\<langle>Q, n\<rangle>, 1\<rangle> \<in> z \<and> \<langle>\<langle>x, n\<rangle>, 0\<rangle> \<in> z)"
-  using separation_is_toplevel9_body toplevel9_body_abs
-    separation_cong[where P="is_toplevel9_body(##M,Q,x)" and M="##M",THEN iffD1]
-  unfolding toplevel9_body_def
-  by simp
 
 lemma (in M_ZF_trans) cardinal_rel_lepoll_rel_abs:
  "(##M)(\<kappa>) \<Longrightarrow> (##M)(x) \<Longrightarrow> (|x|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>) \<longleftrightarrow> M,[x,\<kappa>] \<Turnstile> (\<cdot>\<exists>\<cdot>cardinal(1) is 0 \<and> \<cdot>0 \<prec> 2\<cdot>\<cdot>\<cdot>)"

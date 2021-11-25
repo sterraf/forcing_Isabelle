@@ -30,7 +30,7 @@ proof -
     using apply_type[OF inj_is_fun[OF \<open>?f\<in>_\<close>]] that transM[OF _ \<open>M(A)\<close>] by simp
   with assms
   have "M(?f)"
-    using lam_closed surj_imp_inj_replacement(4) eq by auto
+    using lam_closed surj_imp_inj_replacement4 eq by auto
   with \<open>?f\<in>_\<close> assms
   have "?f \<in> inj\<^bsup>M\<^esup>(B,A)"
     using mem_inj_abs by simp

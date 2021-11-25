@@ -1634,7 +1634,6 @@ lemma restrict_eq_separation: "M(r) \<Longrightarrow> M(p) \<Longrightarrow> sep
   using separation_eq lam_replacement_restrict' lam_replacement_constant
   by auto
 
-
 lemma separation_equal_fst2 : "M(a) \<Longrightarrow> separation(M,\<lambda>x . fst(fst(x))=a)"
   using separation_eq lam_replacement_hcomp lam_replacement_fst lam_replacement_constant
   by auto

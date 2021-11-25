@@ -9,9 +9,6 @@ definition
 
 locale M_master = M_cohen +
   assumes
-  inj_dense_separation: "M(x) \<Longrightarrow> M(w) \<Longrightarrow>
-    separation(M, \<lambda>z. \<exists>n\<in>\<omega>.    \<langle>\<langle>w, n\<rangle>, 1\<rangle> \<in> z \<and> \<langle>\<langle>x, n\<rangle>, 0\<rangle> \<in> z)"
-  and
   lam_apply_replacement: "M(A) \<Longrightarrow> M(f) \<Longrightarrow>
       strong_replacement(M, \<lambda>x y. y = \<langle>x, \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>\<rangle>)"
   and
@@ -108,7 +105,6 @@ end (* M_master_sub *)
 lemmas (in M_ZFC_trans) sep_instances =
  separation_toplevel2_body separation_toplevel3_body
  separation_toplevel4_body
- separation_toplevel9_body
  separation_Ord separation_insnd_ballPair
  separation_restrict_eq_dom_eq separation_restrict_eq_dom_eq_pair
  separation_ifrangeF_body separation_ifrangeF_body2 separation_ifrangeF_body3
@@ -463,9 +459,12 @@ qed
 
 lemma inj_dense_closed[intro,simp]:
   "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> inj_dense(w,x) \<in> M"
-  using separation_in_domain[of x] nat_into_M
-    inj_dense_separation transM[OF _ Aleph_rel2_closed]
-  by (rule_tac separation_closed[simplified]; simp_all)
+  using transM[OF _ Aleph_rel2_closed] separation_conj separation_bex
+    lam_replacement_hcomp2[OF _ _  _ _ lam_replacement_Pair]
+    separation_in lam_replacement_fst lam_replacement_snd lam_replacement_constant
+    lam_replacement_hcomp[OF lam_replacement_snd lam_replacement_restrict']
+    separation_bex separation_conj
+  by simp
 
 lemma Aleph_rel2_new_reals:
   assumes "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "w \<noteq> x"

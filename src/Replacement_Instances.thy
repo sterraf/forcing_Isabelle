@@ -27,7 +27,6 @@ lemma (in M_ZF_trans) lam_replacement_converse : "lam_replacement(##M, converse)
      arity_is_converse_fm[of 0 1] ord_simp_union transitivity converse_closed
   by simp
 
-(*FIXME: for some reason converse is not synthesized yet. Perhaps we might use the other way? *)
 lemma (in M_ZF_trans) lam_replacement_fst : "lam_replacement(##M, fst)"
   using lam_replacement_iff_lam_closed[THEN iffD2,of fst]
     Lambda_in_M[where \<phi>="fst_fm(0,1)" and env="[]",OF
