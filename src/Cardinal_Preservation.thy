@@ -296,44 +296,19 @@ lemma ccc_fun_closed_lemma_aux:
   assumes "f_dot\<in>M" "p\<in>M" "a\<in>M" "b\<in>M"
   shows "{q \<in> P . q \<preceq> p \<and> (M, [q, P, leq, one, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))} \<in> M"
 proof -
-  let ?app_fm="\<cdot>0`1 is 2\<cdot>"
-  let ?\<psi>="\<cdot>\<cdot>0 \<preceq>\<^bsup>2\<^esup> 7\<cdot> \<and> forces(?app_fm) \<cdot> "
-  let ?Q="\<lambda> q . q \<preceq> p \<and> (M, [q, P, leq, one, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(?app_fm))"
-  have "?app_fm \<in> formula" "arity(?app_fm) = 3"
+  have "\<cdot>0`1 is 2\<cdot> \<in> formula" "arity(\<cdot>0`1 is 2\<cdot> ) = 3"
     using arity_fun_apply_fm union_abs1
     by simp_all
   then
-  have "arity(forces(?app_fm)) \<le> 7"
-    using arity_forces[OF \<open>?app_fm\<in>_\<close>] by simp_all
+  have "arity(forces(\<cdot>0`1 is 2\<cdot> )) \<le> 7"
+    using arity_forces[of "\<cdot>0`1 is 2\<cdot> "] by simp
   then
-  have "arity(?\<psi>) \<le> 8" "?\<psi>\<in>formula"
-    using arity_leq_fm union_abs2 union_abs1 le_trans
-    by simp_all
-  with \<open>a\<in>M\<close> \<open>b\<in>M\<close>
-  have "a\<^sup>v\<in>M" "b\<^sup>v\<in>M"
-    by simp_all
-  note types=\<open>f_dot\<in>_\<close> \<open>p\<in>M\<close> P_in_M leq_in_M one_in_M \<open>a\<^sup>v\<in>M\<close> \<open>b\<^sup>v\<in>M\<close>
-  then
-  have sats:"(M,[q, P, leq, one, f_dot,a\<^sup>v, b\<^sup>v,p] \<Turnstile>?\<psi>) \<longleftrightarrow> ?Q(q)" if "q\<in>P" for q
-  proof -
-    note types'= types transitivity[OF \<open>q\<in>_\<close> \<open>P\<in>_\<close>]
-    with types' \<open>arity(forces(_))\<le>_\<close>
-    have
-      "?Q(q) \<longleftrightarrow> q \<preceq> p \<and> (M, [q, P, leq, one, f_dot, a\<^sup>v, b\<^sup>v,p] \<Turnstile> forces(?app_fm))"
-      using arity_sats_iff[of _ "[p]" _ "[_, _, _, _, _, _, _]"]
-      by simp
-    also from types'
-    have "... \<longleftrightarrow> (M, [q,P, leq, one, f_dot, a\<^sup>v, b\<^sup>v,p] \<Turnstile> ?\<psi>)"
-      (is "_ \<longleftrightarrow> _, ?\<eta> \<Turnstile> _")
-      unfolding leq_fm_def using transitivity[of _ P]
-      by auto
-    ultimately
-    show ?thesis by simp
-  qed
-  with types \<open>?\<psi>\<in>_\<close> \<open>arity(?\<psi>) \<le> 8\<close>
-  show "{q\<in>P. ?Q(q)}\<in>M"
-    using separation_in_M[where Q="?Q" and env="[P, leq, one, f_dot,a\<^sup>v, b\<^sup>v,p]"]
-    by simp
+  show ?thesis
+  using assms separation_bex G_subset_M[THEN subsetD] generic one_in_M P_in_M
+    separation_in lam_replacement_constant lam_replacement_identity
+    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M check_in_M
+    separation_conj separation_ax[simplified]
+  by simp_all
 qed
 
 lemma ccc_fun_closed_lemma_aux2:

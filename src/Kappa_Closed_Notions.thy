@@ -196,6 +196,28 @@ context
   includes G_generic_lemmas
 begin
 
+
+lemma separation_forces' :
+  assumes "\<tau>\<in>M"
+  shows "separation(##M, \<lambda>z. M, [fst(z), P, leq, one, \<tau>, snd(z)\<^sup>v] \<Turnstile> forces(\<cdot>0 = 1\<cdot> ))"
+  sorry
+
+lemma aux :
+  assumes "A\<in>M" "r\<in>G" "\<tau> \<in> M"
+  shows "(##M)({q\<in>P. \<exists>h\<in>A. q \<preceq> r \<and> q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]})"
+  using assms separation_bex G_subset_M[THEN subsetD] generic
+    separation_in lam_replacement_constant lam_replacement_fst
+    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M separation_forces'
+  by(rule_tac separation_closed,rule_tac separation_bex, rule_tac separation_conj,simp_all)
+
+lemma aux2:
+  assumes "B\<in>M" "f_dot\<in>M" "r\<in>M"
+  shows "(##M)({\<langle>n,b\<rangle> \<in> \<omega> \<times> B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]})"
+  using nat_in_M assms
+  unfolding split_def
+  apply(rule_tac separation_closed,simp_all)
+  sorry
+
 \<comment> \<open>Kunen IV.6.9 (3)$\Rightarrow$(2), with general domain.\<close>
 lemma kunen_IV_6_9_function_space_rel_eq:
   assumes "\<And>p \<tau>. p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [\<tau>, A\<^sup>v, B\<^sup>v] \<Longrightarrow> p\<in>P \<Longrightarrow> \<tau> \<in> M \<Longrightarrow>
@@ -215,7 +237,7 @@ proof (intro equalityI; clarsimp simp add:
     by (auto simp: union_abs2 union_abs1)
   moreover from \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>r\<in>G\<close> \<open>\<tau> \<in> M\<close>
   have "{q\<in>P. \<exists>h\<in>A \<rightarrow>\<^bsup>M\<^esup> B. q \<preceq> r \<and> q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]} \<in> M" (is "?D \<in> M")
-    using G_subset_M (* to obtain \<^term>\<open>r\<in>P\<close> *) sorry
+    using aux by auto
   moreover from calculation and assms(2-)
   have "dense_below(?D, r)"
     using strengthening_lemma[of r "\<cdot>0:1\<rightarrow>2\<cdot>" _ "[\<tau>, A\<^sup>v, B\<^sup>v]", THEN assms(1)[of _ \<tau>]]
@@ -371,8 +393,9 @@ proof -
     qed
     moreover
     have "relation(?h)" unfolding relation_def by simp
-    moreover
-    have "?h \<in> M" sorry
+    moreover from \<open>f_dot\<in>M\<close> \<open>r\<in>M\<close> \<open>B\<in>M\<close>
+    have "?h \<in> M"
+      using aux2 by simp
     moreover
     note \<open>B \<in> M\<close>
     ultimately
