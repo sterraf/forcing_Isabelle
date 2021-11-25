@@ -15,8 +15,51 @@ lemmas dc_witness_def = dc_witness_nat_def
 
 relativize functional "dc_witness" "dc_witness_rel"
 relationalize "dc_witness_rel" "is_dc_witness"
-manual_schematic for "is_dc_witness" assuming "nonempty"
-  oops
+  (* definition
+  is_dc_witness_fm where
+  "is_dc_witness_fm(na, A, a, s, R, e) \<equiv> is_transrec_fm
+                  (is_nat_case_fm
+                    (a #+ 8, (\<cdot>\<exists>\<cdot>\<cdot>4`2 is 0\<cdot> \<and> (\<cdot>\<exists>\<cdot>\<cdot>s #+ 12`0 is 2\<cdot> \<and> Collect_fm(A #+ 12, \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> (\<cdot>\<exists>\<cdot>\<cdot>0 \<in> R #+ 14\<cdot> \<and> pair_fm(3, 1, 0) \<cdot>\<cdot>)\<cdot>, 0) \<cdot>\<cdot>)\<cdot>\<cdot>), 2,
+                     0), na, e)"
+ *)
+schematic_goal sats_is_dc_witness_fm_auto:
+  assumes "na < length(env)" "e < length(env)"
+  shows
+    "   na \<in> \<omega> \<Longrightarrow>
+    A \<in> \<omega> \<Longrightarrow>
+    a \<in> \<omega> \<Longrightarrow>
+    s \<in> \<omega> \<Longrightarrow>
+    R \<in> \<omega> \<Longrightarrow>
+    e \<in> \<omega> \<Longrightarrow>
+    env \<in> list(Aa) \<Longrightarrow>
+    0 \<in> Aa \<Longrightarrow>
+    is_dc_witness(##Aa, nth(na, env), nth(A, env), nth(a, env), nth(s, env), nth(R, env), nth(e, env)) \<longleftrightarrow>
+    Aa, env \<Turnstile> ?fm(nat, A, a, s, R, e)"
+  unfolding is_dc_witness_def is_recursor_def
+  apply (rule sep_rules is_transrec_iff_sats iff_sats| simp_all)
+       apply (rule is_nat_case_iff_sats[where i="a #+ 8" and j=2 and k=0])
+              apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
+    apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
+     apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
+  apply (rule fun_apply_iff_sats[where i=4 and j=2 and k=0] | simp_all) apply simp+
+  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
+  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
+  apply (rule fun_apply_iff_sats[where i="s #+ 12" and j=0 and k=2] | simp_all)
+  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
+  apply (rule Collect_iff_sats[where i="A #+ 12" and j=0] | simp_all)
+  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
+  apply (rule mem_model_iff_sats)
+  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
+  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
+  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
+  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
+  apply (rule mem_iff_sats[where j="R #+ 14"])
+  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
+  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
+  apply (rule pair_iff_sats[where i=3 and j=1 and k=0])
+  by (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all add: assms)+
+
+synthesize "is_dc_witness" from_schematic
 
 context M_replacement
 begin
@@ -94,7 +137,7 @@ next
       auto
 qed
 
-lemma separation_eq_dc_witness:"separation(M,\<lambda>p. snd(p) = dc_witness(fst(p), A, a, g, R))"
+lemma separation_eq_dc_witness:"separation(M,\<lambda>p. snd(p) = dc_witness_rel(M,fst(p), A, a, g, R))"
   sorry
 
 end (* M_replacement *)
@@ -116,7 +159,7 @@ proof -
     by (auto)
   with assms
   show ?thesis
-    using separation_eq_dc_witness unfolding split_def by simp
+    using separation_eq_dc_witness dc_witness_char unfolding split_def by simp
 qed
 
 lemma witness_related:
