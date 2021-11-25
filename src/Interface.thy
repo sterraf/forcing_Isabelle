@@ -1345,6 +1345,24 @@ proof -
     by auto
 qed
 
+(* We use this pattern several times *)
+lemma separation_in_ctm :
+  assumes
+    "\<phi> \<in> formula" "env\<in>list(M)"
+    "arity(\<phi>) \<le> 1 #+ length(env)" and
+    satsQ: "\<And>x. x\<in>M \<Longrightarrow> sats(M,\<phi>,[x]@env) \<longleftrightarrow> Q(x)"
+  shows
+    "separation(##M,Q)"
+proof -
+  have "separation(##M,\<lambda>x. sats(M,\<phi>,[x] @ env))"
+    using assms separation_ax by simp
+  then show ?thesis using
+      satsQ trans_M
+      separation_cong[of "##M" "\<lambda>y. sats(M,\<phi>,[y]@env)" "Q"]
+      by simp
+qed
+
+
 lemma Replace_in_M :
   assumes
     f_fm:  "\<phi> \<in> formula" and
