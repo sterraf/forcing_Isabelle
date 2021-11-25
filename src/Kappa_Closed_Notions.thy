@@ -23,8 +23,16 @@ relativize functional "mono_seqspace" "mono_seqspace_rel"
 relationalize "mono_seqspace_rel" "is_mono_seqspace"
 synthesize "is_mono_seqspace" from_definition assuming "nonempty"
 
+context M_ZF_library
+begin
 rel_closed for "mono_seqspace"
-  sorry
+  unfolding mono_seqspace_rel_def mono_map_rel_def
+  using separation_closed separation_ball separation_imp separation_in
+    lam_replacement_fst lam_replacement_snd lam_replacement_hcomp lam_replacement_constant
+    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
+    lam_replacement_apply2[THEN[5] lam_replacement_hcomp2]
+  by simp_all
+end
 
 abbreviation
   mono_seqspace_r (\<open>_ \<^sub><\<rightarrow>\<^bsup>_\<^esup> '(_,_')\<close> [61] 60) where
@@ -309,7 +317,7 @@ proof -
     moreover from \<open>succ(\<omega>)-closed\<^bsup>M\<^esup>(P,leq)\<close> and this
     have "\<exists>q\<in>M. q \<in> P \<and> (\<forall>\<alpha>\<in>M. \<alpha> \<in> \<omega> \<longrightarrow> q \<preceq> g ` \<alpha>)"
       using transM[simplified, of g] leq_in_M
-        mono_seqspace_rel_closed[of "##M" \<omega> _ "converse(leq)"]
+        mono_seqspace_rel_closed[of \<omega> _ "converse(leq)"]
       unfolding kappa_closed_rel_def
       by auto
     ultimately
