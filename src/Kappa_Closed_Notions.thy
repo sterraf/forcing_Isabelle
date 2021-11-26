@@ -196,10 +196,32 @@ context
   includes G_generic_lemmas
 begin
 
+(* FIXME: This is a fake proof but it shows the essence of the proofs:
+- find an appropriate environment where the first element is the "parameter" to be separated,
+- find an appropriate formula whose satisfaction in that environment is equivalent with
+the satisfaction of the original formula in the original environment.
+*)
 lemma separation_forces' :
   assumes "\<tau>\<in>M"
   shows "separation(##M, \<lambda>z. M, [fst(z), P, leq, one, \<tau>, snd(z)\<^sup>v] \<Turnstile> forces(\<cdot>0 = 1\<cdot> ))"
-  sorry
+proof -
+  let ?\<phi>="forces(\<cdot>0 = 1\<cdot> )"
+  let ?\<rho>="\<lambda>z.[fst(z), P, leq, one, \<tau>, snd(z)\<^sup>v]"
+  let ?\<rho>'="\<lambda>z.[z,fst(z), P, leq, one, \<tau>, snd(z)\<^sup>v]"
+  let ?\<rho>''="[P, leq, one, \<tau>, \<tau>]"
+  have "?\<phi>\<in>formula" by simp
+  have "arity(?\<phi>) \<le> 6" using ord_simp_union arity_forces[of "\<cdot>0 = 1\<cdot> "] by simp
+  moreover
+  have "(M, ?\<rho>(z) \<Turnstile> ?\<phi>) \<longleftrightarrow> (M,[z]@?\<rho>''\<Turnstile> ?\<phi>)" if "z\<in>M" for z
+    sorry
+  moreover from calculation
+  have "separation(##M, \<lambda>z. (M,[z]@?\<rho>'' \<Turnstile> ?\<phi>))"
+    using leq_in_M P_in_M one_in_M assms separation_ax
+    by(simp_all)
+  ultimately
+  show ?thesis
+    by(rule_tac separation_cong[THEN iffD1],simp_all)
+qed
 
 lemma aux3:
   assumes "f_dot\<in>M" "n\<in>M"
