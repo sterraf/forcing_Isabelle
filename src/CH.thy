@@ -337,7 +337,8 @@ proof
   proof -
     from \<open>p \<in> Coll\<close>
     have "domain(p) \<subseteq> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "p\<in>M"
-      using transM[of _ Coll] domain_of_fun by (auto dest!:Fn_relD del:domainE)
+      using transM[of _ Coll] domain_of_fun
+      by (auto del:Fn_relD dest!:Fn_relD del:domainE)
     moreover from \<open>countable\<^bsup>M\<^esup>(p)\<close>
     have "domain(p) \<subseteq> {fst(x) . x \<in> p }" by (auto intro!: rev_bexI)
     moreover from calculation
@@ -363,7 +364,7 @@ proof
     moreover from calculation and \<open>p \<in> Coll\<close>
     have "cons(\<langle>\<alpha>,x\<rangle>, p) \<in> Coll" "x\<in>M" "cons(\<langle>\<alpha>,x\<rangle>, p) \<preceq> p"
       using InfCard_rel_Aleph_rel
-      by (auto intro!: cons_in_Fn_rel Fnle_relI dest:transM)
+      by (auto del:Fnle_relI intro!: cons_in_Fn_rel Fnle_relI dest:transM)
     ultimately
     show ?thesis by blast
   qed

@@ -307,7 +307,7 @@ proof -
       ultimately
       have "f\<in>Fn(nat, I, 2) \<Longrightarrow> restrict(f,r) \<in> Pow_rel(M,r \<times> 2)" for f
         using restrict_subset_Sigma[of f _ "\<lambda>_. 2" r] Pow_rel_char
-        by (auto dest!:FnD simp: Pi_def) (auto dest:transM)
+        by (auto del:FnD dest!:FnD simp: Pi_def) (auto dest:transM)
       with \<open>A \<subseteq> Fn(nat, I, 2)\<close>
       have "{restrict(f,r) . f \<in> A } \<subseteq> Pow_rel(M,r \<times> 2)"
         by fast
@@ -358,7 +358,7 @@ proof -
           by (auto dest:transM)
         moreover from \<open>A \<subseteq> Fn(nat, I, 2)\<close> \<open>M(z)\<close> and this
         have "p : z \<rightarrow>\<^bsup>M\<^esup> 2"
-          using domain_of_fun function_space_rel_char by (auto dest!:FnD)
+          using domain_of_fun function_space_rel_char by (auto del:FnD dest!:FnD)
         moreover from this \<open>M(z)\<close>
         have "p : z \<rightarrow> 2"
           using domain_of_fun function_space_rel_char by (auto)
