@@ -61,6 +61,62 @@ schematic_goal sats_is_dc_witness_fm_auto:
 
 synthesize "is_dc_witness" from_schematic
 
+manual_arity for "is_dc_witness_fm"
+  unfolding is_dc_witness_fm_def apply (subst arity_transrec_fm)
+       apply (simp add:arity) defer 3
+      apply (simp add:arity) defer
+     apply (subst arity_is_nat_case_fm)
+           apply (simp add:arity del:arity_transrec_fm) prefer 5
+  by (simp add:arity del:arity_transrec_fm)+
+
+context M_eclose
+begin
+
+lemma (in M_basic) first_section_closed:
+  assumes
+    "M(A)" "M(a)" "M(R)"
+  shows "M({x \<in> A . \<langle>a, x\<rangle> \<in> R})"
+proof -
+  have "{x \<in> A . \<langle>a, x\<rangle> \<in> R} = range({a} \<times> range(R) \<inter> R) \<inter> A"
+    by (intro equalityI) auto
+  with assms
+  show ?thesis
+    by simp
+qed
+
+lemma dcwit_replacement:"Ord(na) \<Longrightarrow>
+    M(na) \<Longrightarrow>
+    M(A) \<Longrightarrow>
+    M(a) \<Longrightarrow>
+    M(s) \<Longrightarrow>
+    M(R) \<Longrightarrow>
+    transrec_replacement
+     (M, \<lambda>n f ntc.
+            is_nat_case
+             (M, a,
+              \<lambda>m bmfm.
+                 \<exists>fm[M].
+                    is_apply(M, f, m, fm) \<and>
+                    M({x \<in> A . M(x) \<and> \<langle>fm, x\<rangle> \<in> R}) \<and>
+                    is_apply(M, s, {x \<in> A . M(x) \<and> \<langle>fm, x\<rangle> \<in> R}, bmfm),
+              n, ntc),na)"
+  sorry
+
+lemma is_dc_witness_iff:
+  "Ord(na) \<Longrightarrow> M(na) \<Longrightarrow> M(A) \<Longrightarrow> M(a) \<Longrightarrow> M(s) \<Longrightarrow> M(R) \<Longrightarrow> M(res) \<Longrightarrow>
+   is_dc_witness(M, na, A, a, s, R, res) \<longleftrightarrow> res = dc_witness_rel(M, na, A, a, s, R)"
+  using first_section_closed dcwit_replacement
+  unfolding is_dc_witness_def dc_witness_rel_def
+  apply (rule_tac recursor_abs)
+        apply (simp_all add:absolut)
+    apply (subgoal_tac "M(f) \<Longrightarrow> M({x \<in> A . M(x) \<and> \<langle>f, x\<rangle> \<in> R})";
+      subgoal_tac "{x \<in> A . M(x) \<and> \<langle>f, x\<rangle> \<in> R} = {x \<in> A . \<langle>f, x\<rangle> \<in> R}")
+       apply (auto dest:transM)
+   apply (subgoal_tac "{x \<in> A . M(x) \<and> \<langle>f, x\<rangle> \<in> R} = {x \<in> A . \<langle>f, x\<rangle> \<in> R}")
+  by (auto dest:transM)
+
+end (* M_eclose *)
+
 context M_replacement
 begin
 
@@ -94,9 +150,9 @@ next
     unfolding dc_witness_def by simp
 qed
 
-lemma dc_witness_char:
+lemma dc_witness_rel_char:
   assumes "M(A)"
-  shows "dc_witness(n,A,a,s,R) = dc_witness_rel(M,n,A,a,s,R)"
+  shows "dc_witness_rel(M,n,A,a,s,R) = dc_witness(n,A,a,s,R)"
 proof -
   from assms
   have "{x \<in> A . \<langle>rec, x\<rangle> \<in> R} =  {x \<in> A . M(x) \<and> \<langle>rec, x\<rangle> \<in> R}" for rec
@@ -104,18 +160,6 @@ proof -
   then
   show ?thesis
     unfolding dc_witness_def dc_witness_rel_def by simp
-qed
-
-lemma first_section_closed:
-  assumes
-    "M(A)" "M(a)" "M(R)"
-  shows "M({x \<in> A . \<langle>a, x\<rangle> \<in> R})"
-proof -
-  have "{x \<in> A . \<langle>a, x\<rangle> \<in> R} = range({a} \<times> range(R) \<inter> R) \<inter> A"
-    by (intro equalityI) auto
-  with assms
-  show ?thesis
-    by simp
 qed
 
 lemma witness_into_A [TC]:
@@ -137,7 +181,11 @@ next
       auto
 qed
 
-lemma separation_eq_dc_witness:"separation(M,\<lambda>p. snd(p) = dc_witness_rel(M,fst(p), A, a, g, R))"
+lemma separation_eq_dc_witness:
+"M(A) \<Longrightarrow>
+    M(a) \<Longrightarrow>
+    M(g) \<Longrightarrow>
+    M(R) \<Longrightarrow>  separation(M,\<lambda>p. fst(p)\<in>\<omega> \<longrightarrow> snd(p) = dc_witness(fst(p), A, a, g, R))"
   sorry
 
 end (* M_replacement *)
@@ -152,14 +200,14 @@ lemma Lambda_dc_witness_closed:
   shows "M(\<lambda>n\<in>nat. dc_witness(n,A,a,g,R))"
 proof -
   from assms
-  have "(\<lambda>n\<in>nat. dc_witness(n,A,a,g,R)) = {\<langle>n, y\<rangle> \<in> \<omega> \<times> A . y = dc_witness(n,A,a,g,R)}"
+  have "(\<lambda>n\<in>nat. dc_witness(n,A,a,g,R)) = {\<langle>n, y\<rangle> \<in> \<omega> \<times> A . n \<in> \<omega> \<longrightarrow> y = dc_witness(n,A,a,g,R)}"
     using witness_into_A[of a A g R]
       Pow_rel_char apply_type[of g "{x \<in> Pow(A) . M(x)}-{0}" "\<lambda>_.A"]
     unfolding lam_def split_def
     by (auto)
   with assms
   show ?thesis
-    using separation_eq_dc_witness dc_witness_char unfolding split_def by simp
+    using separation_eq_dc_witness dc_witness_rel_char unfolding split_def by simp
 qed
 
 lemma witness_related:
