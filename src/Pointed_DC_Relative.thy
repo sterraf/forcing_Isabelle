@@ -181,12 +181,35 @@ next
       auto
 qed
 
-lemma separation_eq_dc_witness:
-"M(A) \<Longrightarrow>
+definition dc_witness' where
+  "dc_witness'(p,A,a,g,R) \<equiv> if p\<in>nat then dc_witness(p, A, a, g, R) else 0"
+
+lemma dc_wit_closed :
+  assumes "M(n)" "M(A)" "M(a)" "M(s)" "M(R)"
+  shows "M(dc_witness'(n,A,a,s,R))"
+  unfolding dc_witness'_def using assms by simp
+
+(*NOTE: This can be assumed; the same methodology used to discharge the assumption
+of Aleph_rel should be enough for this (using Lambda_in_M and then 
+lam_replacement_iff_lambda_closed). *)
+lemma (in M_cardinals) lam_replacement_dc_witness' :
+  shows "M(A) \<Longrightarrow>
     M(a) \<Longrightarrow>
     M(g) \<Longrightarrow>
-    M(R) \<Longrightarrow>  separation(M,\<lambda>p. fst(p)\<in>\<omega> \<longrightarrow> snd(p) = dc_witness(fst(p), A, a, g, R))"
+    M(R) \<Longrightarrow>lam_replacement(M, \<lambda>x. dc_witness'(x, A, a, g, R))"
   sorry
+
+lemma (in M_cardinals) separation_eq_dc_witness:
+  shows "M(A) \<Longrightarrow>
+    M(a) \<Longrightarrow>
+    M(g) \<Longrightarrow>
+    M(R) \<Longrightarrow>  separation(M,\<lambda>p. fst(p)\<in>\<omega> \<longrightarrow> snd(p) = dc_witness'(fst(p), A, a, g, R))"
+(*FIXME: if I add "using fact" the apply fails. *)
+  apply(rule separation_imp,rule separation_in,
+      simp_all add: lam_replacement_fst lam_replacement_constant,
+      rule_tac separation_eq,simp_all add: lam_replacement_snd, auto)
+  using dc_wit_closed lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_dc_witness']
+  by simp_all
 
 end (* M_replacement *)
 
@@ -200,10 +223,10 @@ lemma Lambda_dc_witness_closed:
   shows "M(\<lambda>n\<in>nat. dc_witness(n,A,a,g,R))"
 proof -
   from assms
-  have "(\<lambda>n\<in>nat. dc_witness(n,A,a,g,R)) = {\<langle>n, y\<rangle> \<in> \<omega> \<times> A . n \<in> \<omega> \<longrightarrow> y = dc_witness(n,A,a,g,R)}"
+  have "(\<lambda>n\<in>nat. dc_witness(n,A,a,g,R)) = {\<langle>n, y\<rangle> \<in> \<omega> \<times> A . n \<in> \<omega> \<longrightarrow> y = dc_witness'(n,A,a,g,R)}"
     using witness_into_A[of a A g R]
       Pow_rel_char apply_type[of g "{x \<in> Pow(A) . M(x)}-{0}" "\<lambda>_.A"]
-    unfolding lam_def split_def
+    unfolding lam_def split_def dc_witness'_def
     by (auto)
   with assms
   show ?thesis
