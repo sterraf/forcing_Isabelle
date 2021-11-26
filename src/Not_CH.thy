@@ -7,7 +7,7 @@ definition
   Add_subs :: "[i,i] \<Rightarrow> i" where
   "Add_subs(\<kappa>,\<alpha>) \<equiv> Fn(\<omega>,\<kappa>\<times>\<alpha>,2)"
 
-locale M_master = M_cohen +
+locale M_master = M_cohen + M_library_DC +
   assumes
   lam_apply_replacement: "M(A) \<Longrightarrow> M(f) \<Longrightarrow>
       strong_replacement(M, \<lambda>x y. y = \<langle>x, \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>\<rangle>)"
@@ -110,6 +110,7 @@ lemmas (in M_ZFC_trans) sep_instances =
  separation_ifrangeF_body separation_ifrangeF_body2 separation_ifrangeF_body3
  separation_ifrangeF_body4 separation_ifrangeF_body5 separation_ifrangeF_body6
  separation_ifrangeF_body7 separation_cardinal_rel_lesspoll_rel
+ separation_is_dcwit_body
 
 (* FIXME: the second instance has been proved in Lambda Replacement, it shouldn't be here. *)
 lemmas (in M_ZF_trans) repl_instances = lam_replacement_inj_rel
