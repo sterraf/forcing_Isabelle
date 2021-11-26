@@ -6,6 +6,7 @@ theory Replacement_Instances
     FiniteFun_Relative
     Cardinal_Relative
     Separation_Instances
+    Pointed_DC_Relative
 begin
 
 subsection\<open>More Instances of Replacement\<close>
@@ -377,6 +378,40 @@ lemmas (in M_ZF_trans) M_replacement_ZF_instances = lam_replacement_domain
 
 sublocale M_ZF_trans \<subseteq> M_replacement "##M"
   by unfold_locales (simp_all add: M_replacement_ZF_instances del:setclass_iff)
+
+definition dcwit_body :: "[i,i,i,i,i] \<Rightarrow> o" where
+  "dcwit_body(A,a,g,R) \<equiv> \<lambda>p. fst(p) \<in> \<omega> \<longrightarrow> snd(p) = dc_witness(fst(p), A, a, g, R)"
+
+relativize functional "dcwit_body" "dcwit_body_rel"
+relationalize "dcwit_body_rel" "is_dcwit_body"
+
+synthesize "is_dcwit_body" from_definition assuming "nonempty"
+arity_theorem for "is_dcwit_body_fm"
+
+lemma (in M_ZF_trans) dcwit_body_abs:
+  "fst(x)\<in>\<omega> \<Longrightarrow> (##M)(A) \<Longrightarrow> (##M)(a) \<Longrightarrow> (##M)(g) \<Longrightarrow> (##M)(R) \<Longrightarrow> (##M)(x) \<Longrightarrow>
+   is_dcwit_body(##M,A,a,g,R,x) \<longleftrightarrow> dcwit_body(A,a,g,R,x)"
+  using pair_in_M_iff apply_closed zero_in_M transitivity[of _ A]
+    is_dc_witness_iff[of "fst(x)" "A" "a" "g" "R" "snd(x)"]
+    fst_snd_closed[simplified] dc_witness_closed[simplified] nat_in_M
+  unfolding dcwit_body_def is_dcwit_body_def
+  by (auto dest:transM simp:absolut dc_witness_rel_char intro!:bexI)
+
+lemma (in M_ZF_trans) separation_dcwit_body:
+  assumes "(##M)(A)" "(##M)(a)" "(##M)(g)" "(##M)(R)"
+  shows "separation(##M,\<lambda>p. fst(p) \<in> \<omega> \<longrightarrow> snd(p) = dc_witness(fst(p), A, a, g, R))"
+proof -
+  have "1 \<union> (3 \<union> (4 \<union> (2 \<union> 5)) \<union> 1) \<le> 5"
+   by (simp add:ord_simp_union)
+  with assms
+  show ?thesis
+  using separation_in_ctm[where env="[A,a,g,R]" and \<phi>="is_dcwit_body_fm(1,2,3,4,0)",
+      OF _ _ _ iff_trans[OF is_dcwit_body_iff_sats[symmetric] dcwit_body_abs],
+      of "\<lambda>_.A" "\<lambda>_.a" "\<lambda>_.g" "\<lambda>_.R" "\<lambda>x. x"]
+    nonempty arity_is_dcwit_body_fm is_dcwit_body_fm_type
+  unfolding dcwit_body_def
+  sorry (* FAKE *)
+qed
 
 definition RepFun_body :: "i \<Rightarrow> i \<Rightarrow> i"where
   "RepFun_body(u,v) \<equiv> {{\<langle>v, x\<rangle>} . x \<in> u}"
