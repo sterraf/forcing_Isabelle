@@ -304,7 +304,7 @@ proof -
     using arity_forces[of "\<cdot>0`1 is 2\<cdot> "] by simp
   then
   show ?thesis
-  using assms separation_bex G_subset_M[THEN subsetD] generic one_in_M P_in_M
+  using assms G_subset_M[THEN subsetD] generic one_in_M P_in_M
     separation_in lam_replacement_constant lam_replacement_identity
     lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M check_in_M
     separation_conj separation_ax[simplified]
