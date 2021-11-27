@@ -389,13 +389,42 @@ manual_schematic for "dcwit_repl_body" assuming "nonempty"
           apply simp+
   done
 
+definition dcwit_aux_fm where
+"dcwit_aux_fm(A,s,R) \<equiv> (\<cdot>\<exists>\<cdot>\<cdot>4`2 is 0\<cdot> \<and>
+               (\<cdot>\<exists>\<cdot>Collect_fm
+                   (succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(A)))))))))), \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and>
+                    (\<cdot>\<exists>\<cdot>\<cdot>0 \<in>
+                       succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(R)))))))))))) \<cdot> \<and>
+                       pair_fm(3, 1, 0) \<cdot>\<cdot>)\<cdot>,
+                    0) \<and>
+                  \<cdot> succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(s))))))))))`0 is 2\<cdot>\<cdot>\<cdot>)\<cdot>\<cdot>)"
+
+arity_theorem for "dcwit_aux_fm"
+
+lemma dcwit_aux_fm_type[TC]: "A \<in> \<omega> \<Longrightarrow> s \<in> \<omega> \<Longrightarrow> R \<in> \<omega> \<Longrightarrow> dcwit_aux_fm(A,s,R) \<in> formula"
+  by (simp_all add: dcwit_aux_fm_def)
+
+definition is_nat_case_dcwit_aux_fm where
+"is_nat_case_dcwit_aux_fm(A,a,s,R) \<equiv> is_nat_case_fm
+           (succ(succ(succ(succ(succ(succ(a)))))),dcwit_aux_fm(A,s,R),
+            2, 0)"
+
+lemma is_nat_case_dcwit_aux_fm_type[TC]: "A \<in> \<omega> \<Longrightarrow> a \<in> \<omega> \<Longrightarrow> s \<in> \<omega> \<Longrightarrow> R \<in> \<omega> \<Longrightarrow> is_nat_case_dcwit_aux_fm(A,a,s,R) \<in> formula"
+  by (simp_all add: is_nat_case_dcwit_aux_fm_def)
+
+manual_arity for "is_nat_case_dcwit_aux_fm"
+  unfolding is_nat_case_dcwit_aux_fm_def
+  by (rule arity_dcwit_aux_fm[THEN [6] arity_is_nat_case_fm]) simp_all
+
 synthesize "dcwit_repl_body" from_schematic
-(* arity_theorem for "dcwit_repl_body_fm" *)
+
+manual_arity for "dcwit_repl_body_fm"
+  using arity_is_nat_case_dcwit_aux_fm[THEN [6] arity_is_wfrec_fm]
+  unfolding dcwit_repl_body_fm_def  is_nat_case_dcwit_aux_fm_def dcwit_aux_fm_def
+  by (auto simp add: arity(3-5))
 
 lemma arity_dcwit_repl_body: "arity(dcwit_repl_body_fm(6,5,4,3,2,0,1)) = 7"
-  (* by (simp_all add: arity_dcwit_repl_body_fm arity_is_If_fm ord_simp_union arity_fun_apply_fm
-      arity_is_Limit_fm arity_empty_fm arity_Replace_fm[where i=11]) *)
-  sorry
+   by (simp_all add: arity_dcwit_repl_body_fm ord_simp_union)
 
 lemma (in M_ZF_trans) replacement_dcwit_repl_body:
   "(##M)(mesa) \<Longrightarrow> (##M)(A) \<Longrightarrow> (##M)(a) \<Longrightarrow> (##M)(s) \<Longrightarrow> (##M)(R) \<Longrightarrow>
