@@ -81,48 +81,6 @@ arity_theorem for "is_dcwit_body_fm"
 context M_eclose
 begin
 
-lemma (in M_basic) first_section_closed:
-  assumes
-    "M(A)" "M(a)" "M(R)"
-  shows "M({x \<in> A . \<langle>a, x\<rangle> \<in> R})"
-proof -
-  have "{x \<in> A . \<langle>a, x\<rangle> \<in> R} = range({a} \<times> range(R) \<inter> R) \<inter> A"
-    by (intro equalityI) auto
-  with assms
-  show ?thesis
-    by simp
-qed
-
-lemma dcwit_replacement:"Ord(na) \<Longrightarrow>
-    M(na) \<Longrightarrow>
-    M(A) \<Longrightarrow>
-    M(a) \<Longrightarrow>
-    M(s) \<Longrightarrow>
-    M(R) \<Longrightarrow>
-    transrec_replacement
-     (M, \<lambda>n f ntc.
-            is_nat_case
-             (M, a,
-              \<lambda>m bmfm.
-                 \<exists>fm[M].
-                    is_apply(M, f, m, fm) \<and>
-                    M({x \<in> A . M(x) \<and> \<langle>fm, x\<rangle> \<in> R}) \<and>
-                    is_apply(M, s, {x \<in> A . M(x) \<and> \<langle>fm, x\<rangle> \<in> R}, bmfm),
-              n, ntc),na)"
-  sorry
-
-lemma is_dc_witness_iff:
-  "Ord(na) \<Longrightarrow> M(na) \<Longrightarrow> M(A) \<Longrightarrow> M(a) \<Longrightarrow> M(s) \<Longrightarrow> M(R) \<Longrightarrow> M(res) \<Longrightarrow>
-   is_dc_witness(M, na, A, a, s, R, res) \<longleftrightarrow> res = dc_witness_rel(M, na, A, a, s, R)"
-  using first_section_closed dcwit_replacement
-  unfolding is_dc_witness_def dc_witness_rel_def
-  apply (rule_tac recursor_abs)
-        apply (simp_all add:absolut)
-    apply (subgoal_tac "M(f) \<Longrightarrow> M({x \<in> A . M(x) \<and> \<langle>f, x\<rangle> \<in> R})";
-      subgoal_tac "{x \<in> A . M(x) \<and> \<langle>f, x\<rangle> \<in> R} = {x \<in> A . \<langle>f, x\<rangle> \<in> R}")
-       apply (auto dest:transM)
-   apply (subgoal_tac "{x \<in> A . M(x) \<and> \<langle>f, x\<rangle> \<in> R} = {x \<in> A . \<langle>f, x\<rangle> \<in> R}")
-  by (auto dest:transM)
 
 end (* M_eclose *)
 
@@ -171,6 +129,18 @@ proof -
     unfolding dc_witness_def dc_witness_rel_def by simp
 qed
 
+lemma (in M_basic) first_section_closed:
+  assumes
+    "M(A)" "M(a)" "M(R)"
+  shows "M({x \<in> A . \<langle>a, x\<rangle> \<in> R})"
+proof -
+  have "{x \<in> A . \<langle>a, x\<rangle> \<in> R} = range({a} \<times> range(R) \<inter> R) \<inter> A"
+    by (intro equalityI) auto
+  with assms
+  show ?thesis
+    by simp
+qed
+
 lemma witness_into_A [TC]:
   assumes "a\<in>A"
     "\<forall>X[M]. X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>A"
@@ -193,9 +163,57 @@ qed
 end (* M_replacement *)
 
 locale M_DC = M_trancl + M_replacement + M_eclose +
-  assumes separation_is_dcwit_body:
-  "M(A) \<Longrightarrow> M(a) \<Longrightarrow> M(g) \<Longrightarrow> M(R) \<Longrightarrow> separation(M,is_dcwit_body(M, A, a, g, R))"
+  assumes
+    separation_is_dcwit_body:
+    "M(A) \<Longrightarrow> M(a) \<Longrightarrow> M(g) \<Longrightarrow> M(R) \<Longrightarrow> separation(M,is_dcwit_body(M, A, a, g, R))"
+    and
+    dcwit_replacement:"Ord(na) \<Longrightarrow>
+    M(na) \<Longrightarrow>
+    M(A) \<Longrightarrow>
+    M(a) \<Longrightarrow>
+    M(s) \<Longrightarrow>
+    M(R) \<Longrightarrow>
+    transrec_replacement
+     (M, \<lambda>n f ntc.
+            is_nat_case
+             (M, a,
+              \<lambda>m bmfm.
+                 \<exists>fm[M]. \<exists>cp[M].
+                    is_apply(M, f, m, fm) \<and>
+                    is_Collect(M, A, \<lambda>x. \<exists>fmx[M]. (M(x) \<and> fmx \<in> R) \<and> pair(M, fm, x, fmx), cp) \<and>
+                    is_apply(M, s, cp, bmfm),
+              n, ntc),na)"
 begin
+
+lemma is_dc_witness_iff:
+  assumes "Ord(na)" "M(na)" "M(A)" "M(a)" "M(s)" "M(R)" "M(res)"
+  shows "is_dc_witness(M, na, A, a, s, R, res) \<longleftrightarrow> res = dc_witness_rel(M, na, A, a, s, R)"
+proof -
+  note assms
+  moreover from this
+  have "{x \<in> A . M(x) \<and> \<langle>f, x\<rangle> \<in> R} = {x \<in> A . \<langle>f, x\<rangle> \<in> R}" for f
+    by (auto dest:transM)
+  moreover from calculation
+  have "M(fm) \<Longrightarrow> M({x \<in> A . M(x) \<and> \<langle>fm, x\<rangle> \<in> R})" for fm
+    using first_section_closed by (auto dest:transM)
+  moreover from calculation
+  have "M(x) \<Longrightarrow> M(z) \<Longrightarrow> M(mesa) \<Longrightarrow>
+    (\<exists>ya[M]. pair(M, x, ya, z) \<and>
+      is_wfrec(M, \<lambda>n f. is_nat_case(M, a, \<lambda>m bmfm. \<exists>fm[M]. is_apply(M, f, m, fm) \<and>
+        is_apply(M, s, {x \<in> A . \<langle>fm, x\<rangle> \<in> R}, bmfm), n), mesa, x, ya))
+    \<longleftrightarrow>
+    (\<exists>y[M]. pair(M, x, y, z) \<and>
+      is_wfrec(M, \<lambda>n f. is_nat_case(M, a,
+        \<lambda>m bmfm.
+          \<exists>fm[M]. \<exists>cp[M]. is_apply(M, f, m, fm) \<and>
+            is_Collect(M, A, \<lambda>x. M(x) \<and> \<langle>fm, x\<rangle> \<in> R, cp) \<and>  is_apply(M, s, cp, bmfm),n),
+        mesa, x, y))" for x z mesa by simp
+  moreover from calculation
+  show ?thesis
+    using assms dcwit_replacement[of na A a s R]
+    unfolding is_dc_witness_def dc_witness_rel_def
+    by (rule_tac recursor_abs) (auto dest:transM)
+qed
 
 lemma dcwit_body_abs:
   "fst(x) \<in> \<omega> \<Longrightarrow> M(A) \<Longrightarrow> M(a) \<Longrightarrow> M(g) \<Longrightarrow> M(R) \<Longrightarrow> M(x) \<Longrightarrow>
@@ -204,7 +222,7 @@ lemma dcwit_body_abs:
     is_dc_witness_iff[of "fst(x)" "A" "a" "g" "R" "snd(x)"]
     fst_snd_closed dc_witness_closed
   unfolding dcwit_body_def is_dcwit_body_def
-  by (auto dest:transM simp:absolut dc_witness_rel_char intro!:bexI)
+  by (auto dest:transM simp:absolut dc_witness_rel_char del:bexI intro!:bexI)
 
 lemma separation_eq_dc_witness:
 "M(A) \<Longrightarrow>

@@ -302,6 +302,131 @@ lemma (in M_ZF_trans) HAleph_wfrec_repl:
                        is_HAleph(##M, x, f, y)))"
   using replacement_HAleph_wfrec_repl_body unfolding HAleph_wfrec_repl_body_def by simp
 
+lemma    dcwit_replacement:"Ord(na) \<Longrightarrow>
+    N(na) \<Longrightarrow>
+    N(A) \<Longrightarrow>
+    N(a) \<Longrightarrow>
+    N(s) \<Longrightarrow>
+    N(R) \<Longrightarrow>
+    transrec_replacement
+     (N, \<lambda>n f ntc.
+            is_nat_case
+             (N, a,
+              \<lambda>m bmfm.
+                 \<exists>fm[N]. \<exists>cp[N].
+                    is_apply(N, f, m, fm) \<and>
+                    is_Collect(N, A, \<lambda>x. \<exists>fmx[N]. (N(x) \<and> fmx \<in> R) \<and> pair(N, fm, x, fmx), cp) \<and>
+                    is_apply(N, s, cp, bmfm),
+              n, ntc),na)"
+  unfolding transrec_replacement_def wfrec_replacement_def oops
+
+definition dcwit_repl_body where
+  "dcwit_repl_body(N,mesa,A,a,s,R) \<equiv> \<lambda>x z. \<exists>y[N]. pair(N, x, y, z) \<and>
+                                is_wfrec
+                                 (N, \<lambda>n f. is_nat_case
+                                             (N, a,
+                                              \<lambda>m bmfm.
+                                                 \<exists>fm[N].
+                                                    \<exists>cp[N].
+                                                       is_apply(N, f, m, fm) \<and>
+                                                       is_Collect(N, A, \<lambda>x. \<exists>fmx[N]. (N(x) \<and> fmx \<in> R) \<and> pair(N, fm, x, fmx), cp) \<and>
+                                                       is_apply(N, s, cp, bmfm),
+                                              n),
+                                  mesa, x, y)"
+
+manual_schematic for "dcwit_repl_body" assuming "nonempty"
+  unfolding dcwit_repl_body_def
+  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats | simp_all)
+  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats | simp_all)
+   apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats | simp_all)
+     apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats | simp_all)
+           prefer 8
+           apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
+                      apply simp+
+                      apply (subgoal_tac "nth(2, Cons(fm, Cons(a0, Cons(aa, Cons(a0, Cons(a1, Cons(a2, Cons(a3, Cons(a4, Cons(y, env)))))))))) = aa", assumption,simp)
+                      apply (subgoal_tac "nth(0, Cons(fm, Cons(a0, Cons(aa, Cons(a0, Cons(a1, Cons(a2, Cons(a3, Cons(a4, Cons(y, env)))))))))) = fm", assumption,simp)
+                      apply simp+
+                      apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
+                      apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
+                      apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
+                      apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
+                      apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
+                      apply simp+
+                      apply (subgoal_tac "nth(0,Cons(aaa, Cons(cp, Cons(fm, Cons(a0, Cons(aa, Cons(a0, Cons(a1, Cons(a2, Cons(a3, Cons(a4, Cons(y, env)))))))))))) = aaa", assumption,simp)
+                      apply simp+
+                      apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
+                      apply simp+
+                      apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
+                      apply simp+
+                      apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
+                      apply simp+
+                      apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
+                      apply simp+
+                      apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
+                      apply simp+
+                      apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
+                      apply simp+
+                      apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
+                      apply simp+
+                      apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
+                      apply simp+
+                      apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
+                      apply simp+
+                      apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
+                      apply simp+
+                      apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
+                      apply simp
+                     apply simp
+                    apply simp
+                   apply simp
+                  defer defer defer apply simp+
+                apply (subgoal_tac "nth(succ(mesa), Cons(y, env)) = nth(mesa, env)", assumption,simp)
+               apply (subgoal_tac "nth(succ(x), Cons(y, env)) = nth(x, env)", assumption,simp)
+              apply (subgoal_tac "nth(0, Cons(y, env)) = y", assumption,simp)
+             apply (subgoal_tac "nth(succ(x), Cons(y, env)) = nth(x, env)", assumption,simp)
+            apply (subgoal_tac "nth(0, Cons(y, env)) = y", assumption,simp)
+           apply (subgoal_tac "nth(succ(z), Cons(y, env)) = nth(z, env)", assumption,simp)
+          apply simp+
+  done
+
+synthesize "dcwit_repl_body" from_schematic
+(* arity_theorem for "dcwit_repl_body_fm" *)
+
+lemma arity_dcwit_repl_body: "arity(dcwit_repl_body_fm(6,5,4,3,2,0,1)) = 7"
+  (* by (simp_all add: arity_dcwit_repl_body_fm arity_is_If_fm ord_simp_union arity_fun_apply_fm
+      arity_is_Limit_fm arity_empty_fm arity_Replace_fm[where i=11]) *)
+  sorry
+
+lemma (in M_ZF_trans) replacement_dcwit_repl_body:
+  "(##M)(mesa) \<Longrightarrow> (##M)(A) \<Longrightarrow> (##M)(a) \<Longrightarrow> (##M)(s) \<Longrightarrow> (##M)(R) \<Longrightarrow>
+   strong_replacement(##M, dcwit_repl_body(##M,mesa,A,a,s,R))"
+  apply(rule_tac strong_replacement_cong[
+        where P="\<lambda> x f. M,[x,f,R,s,a,A,mesa] \<Turnstile> dcwit_repl_body_fm(6,5,4,3,2,0,1)",THEN iffD1])
+   apply(rule_tac dcwit_repl_body_iff_sats[where env="[_,_,R,s,a,A,mesa]",symmetric])
+              apply(simp_all add:zero_in_M)
+  apply(rule_tac replacement_ax[where env="[R, s, a, A, mesa]",simplified])
+    apply(simp_all add: arity_dcwit_repl_body)
+  done
+
+lemma (in M_ZF_trans) dcwit_repl:
+       "(##M)(sa) \<Longrightarrow>
+        (##M)(esa) \<Longrightarrow>
+        (##M)(mesa) \<Longrightarrow> (##M)(A) \<Longrightarrow> (##M)(a) \<Longrightarrow> (##M)(s) \<Longrightarrow> (##M)(R) \<Longrightarrow>
+        strong_replacement
+              ((##M), \<lambda>x z. \<exists>y[(##M)]. pair((##M), x, y, z) \<and>
+                                is_wfrec
+                                 ((##M), \<lambda>n f. is_nat_case
+                                             ((##M), a,
+                                              \<lambda>m bmfm.
+                                                 \<exists>fm[(##M)].
+                                                    \<exists>cp[(##M)].
+                                                       is_apply((##M), f, m, fm) \<and>
+                                                       is_Collect((##M), A, \<lambda>x. \<exists>fmx[(##M)]. ((##M)(x) \<and> fmx \<in> R) \<and> pair((##M), fm, x, fmx), cp) \<and>
+                                                       is_apply((##M), s, cp, bmfm),
+                                              n),
+                                  mesa, x, y))"
+  using replacement_dcwit_repl_body unfolding dcwit_repl_body_def by simp
+
 definition fst2_snd2
   where "fst2_snd2(x) \<equiv> \<langle>fst(fst(x)), snd(snd(x))\<rangle>"
 
