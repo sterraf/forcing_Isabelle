@@ -2,7 +2,6 @@ theory Kappa_Closed_Notions
   imports
     Not_CH
     Pointed_DC_Relative
-    "../Tools/Try0"
 begin
 
 definition

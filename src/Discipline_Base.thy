@@ -8,13 +8,6 @@ theory Discipline_Base
    "HOL-Eisbach.Eisbach_Old_Appl_Syntax"\<comment> \<open>if put before, it breaks some simps\<close>
 *)
 
-(* FIXME: It's nice to have try0; if you need it, uncomment the next line and
-   comment it back before commiting. 
-*)
-(*
-    "../Tools/Try0"
-*)
-
 begin
 
 declare [[syntax_ambiguity_warning = false]]
