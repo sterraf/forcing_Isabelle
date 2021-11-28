@@ -517,7 +517,8 @@ lemma aux8 :
 proof -
   let ?\<rho>="\<lambda>z. [r, P, leq, one, f_dot, fst(z)\<^sup>v, snd(z)\<^sup>v]"
   let ?\<rho>'="\<lambda>z. [fst(z)\<^sup>v, P, leq, one, f_dot, r, snd(z)\<^sup>v]"
-  let ?\<phi>="Exists(Exists(And(Equal(0,7),And(Equal(5,2),iterates(\<lambda> p. incr_bv(p)`2,2,\<chi>)))))"
+  let ?\<phi>=" (\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>\<cdot>\<cdot>0 = 11\<cdot> \<and> \<cdot>\<cdot>1 = 7\<cdot> \<and> \<cdot>\<cdot>2 = 8\<cdot> \<and> \<cdot>\<cdot>3 = 9\<cdot> \<and> \<cdot>\<cdot>4 = 10\<cdot> \<and> \<cdot>\<cdot>5 = 6\<cdot> \<and>
+    (\<lambda>p. incr_bv(p)`6)^6 (\<chi>) \<cdot>\<cdot>\<cdot>\<cdot>\<cdot>\<cdot>\<cdot>)\<cdot>)\<cdot>)\<cdot>)\<cdot>)\<cdot>)"
   note types = assms leq_in_M P_in_M one_in_M
   let ?f_fm="hcomp_fm(check_fm'(5),fst_fm,1,0)"
   let ?g_fm="hcomp_fm(check_fm'(6),snd_fm,2,0)"
@@ -544,17 +545,24 @@ proof -
     by simp_all
   moreover from assms
   have fm:"?\<phi>\<in>formula" by simp
-  moreover from calculation
+  moreover from \<open>\<chi> \<in> formula\<close> \<open>arity(\<chi>) \<le> 7\<close>
+  have "arity(\<chi>) = 0 \<or> arity(\<chi>) = 1 \<or> arity(\<chi>) = 2 \<or> arity(\<chi>) = 3
+    \<or> arity(\<chi>) = 4 \<or> arity(\<chi>) = 5 \<or> arity(\<chi>) = 6 \<or> arity(\<chi>) = 7"
+    unfolding lt_def by auto
+  with calculation and \<open>\<chi> \<in> formula\<close>
   have ar:"arity(?\<phi>) \<le> 7"
-    sorry
+    using arity_incr_bv_lemma by safe (simp_all add:ord_simp_union)
   moreover from calculation
   have sep:"separation(##M,\<lambda>z. M,?\<rho>'(z)\<Turnstile>?\<phi>)"
     using separation_sat_after_function[OF assms(1-2) fm ar]
     by simp
-  moreover from calculation
+  moreover
+  have "?\<rho>(z) \<in> list(M)" if "(##M)(z)" for z
+    using that leq_in_M one_in_M assms by simp
+  moreover from calculation and \<open>r \<in> M\<close> \<open>\<chi> \<in> formula\<close>
   have "(M,?\<rho>(z) \<Turnstile> \<chi>) \<longleftrightarrow> (M,?\<rho>'(z)\<Turnstile>?\<phi>)" if "(##M)(z)" for z
-    using  sats_incr_bv_iff
-    sorry
+    using that leq_in_M one_in_M sats_incr_bv_iff[of _ _ M _ "[_,_,_,_,_,_]"]
+    by simp
   ultimately
   show ?thesis using separation_cong[THEN iffD1,OF _ sep]
     by simp
