@@ -2,7 +2,6 @@ section\<open>Main definitions of the development\<close>
 
 theory Definitions_Main
   imports
-    Not_CH
     Absolute_Versions
 begin
 
@@ -497,6 +496,17 @@ text\<open>@{thm [display] ctm_of_not_CH}\<close>
   M \<Turnstile> ZFC \<Longrightarrow>
   \<exists>N. M \<subseteq> N \<and>
     N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZFC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<and>
+    (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
+*)
+
+thm ctm_of_CH
+text\<open>@{thm [display] ctm_of_CH}\<close>
+(*
+  M \<approx> \<omega> \<Longrightarrow>
+  Transset(M) \<Longrightarrow>
+  M \<Turnstile> ZFC \<Longrightarrow>
+  \<exists>N. M \<subseteq> N \<and>
+    N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZFC \<union> {\<cdot>CH\<cdot>} \<and>
     (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
 *)
 

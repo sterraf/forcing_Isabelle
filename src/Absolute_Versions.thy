@@ -2,7 +2,7 @@ section\<open>From M to V\<close>
 
 theory Absolute_Versions
   imports
-    Not_CH
+    CH
     ZF.Cardinal_AC
 begin
 
