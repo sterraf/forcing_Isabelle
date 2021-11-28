@@ -256,6 +256,100 @@ lemma pred_nat_closed : "a\<in>M \<Longrightarrow> pred(a)\<in>M"
     unfolding pred_def
     by auto
 
+simple_rename "ren_V3" src "[fz,x_P, x_leq, x_o,x_f, gz, hz]"
+  tgt "[hz,gz,fz,z,x_P, x_leq, x_o,x_f]"
+
+
+lemma separation_sat_after_function3:
+  assumes "f_dot\<in>M" and  "\<chi>\<in>formula" and "arity(\<chi>) \<le> 7"
+  and
+    f_fm:  "f_fm \<in> formula" and
+    f_ar:  "arity(f_fm) \<le> 6" and
+    fsats: "\<And> fx x. fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[fx,x]@[P, leq, one,f_dot] \<Turnstile> f_fm) \<longleftrightarrow> fx=f(x)" and
+    fclosed: "\<And>x . x\<in>M \<Longrightarrow> f(x) \<in> M" and
+    g_fm:  "g_fm \<in> formula" and
+    g_ar:  "arity(g_fm) \<le> 7" and
+    gsats: "\<And> gx fx x. gx\<in>M \<Longrightarrow>  fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[gx,fx,x]@[P, leq, one,f_dot] \<Turnstile> g_fm) \<longleftrightarrow> gx=g(x)" and
+    gclosed: "\<And>x . x\<in>M \<Longrightarrow> g(x) \<in> M" and
+    h_fm:  "h_fm \<in> formula" and
+    h_ar:  "arity(h_fm) \<le> 8" and
+    hsats: "\<And> hx gx fx x. hx\<in>M \<Longrightarrow> gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[hx,gx,fx,x]@[P, leq, one,f_dot] \<Turnstile> h_fm) \<longleftrightarrow> hx=h(x)" and
+    hclosed: "\<And>x . x\<in>M \<Longrightarrow> h(x) \<in> M"
+shows  "separation(##M, \<lambda>r. M, [f(r), P, leq, one, f_dot, g(r), h(r)] \<Turnstile> \<chi>)"
+proof -
+  note types = assms(1-4) leq_in_M P_in_M one_in_M
+  let ?\<phi>="\<chi>"
+  let ?\<psi>="ren(?\<phi>)`7`8`ren_V3_fn"
+  let ?\<psi>'="Exists(And(f_fm,Exists(And(g_fm,Exists(And(h_fm,?\<psi>))))))"
+  let ?\<rho>="\<lambda>z.[f(z), P, leq, one,f_dot,g(z), h(z)]"
+  let ?env="[P, leq, one,f_dot]"
+  let ?\<eta>="\<lambda>z.[h(z),g(z),f(z),z]@?env"
+  note types
+  moreover from this
+  have "?\<phi>\<in>formula" by simp
+  moreover from calculation
+  have "arity(?\<phi>) \<le> 9" "?\<psi>\<in>formula"
+    using ord_simp_union ren_tc ren_V3_thm(2)[folded ren_V3_fn_def] le_trans[of "arity(\<chi>)" 7]
+      by simp_all
+  moreover from calculation
+  have "arity(?\<psi>) \<le> 8" "?\<psi>'\<in>formula"
+    using arity_ren ren_V3_thm(2)[folded ren_V3_fn_def] f_fm g_fm h_fm
+    by (simp_all)
+  moreover from this f_ar g_ar f_fm g_fm h_fm h_ar \<open>?\<psi>'\<in>_\<close>
+  have "arity(?\<psi>') \<le> 5"
+    using arity_fst_fm arity_snd_fm arity_check_fm  ord_simp_union arity_type nat_into_Ord
+    by (simp,(rule_tac pred_le,simp,rule_tac Un_le,simp)+,simp_all add: \<open>?\<psi>\<in>_\<close>)
+  moreover from calculation fclosed gclosed hclosed
+  have 0:"(M, ?\<rho>(z) \<Turnstile> ?\<phi>) \<longleftrightarrow> (M,?\<eta>(z)\<Turnstile> ?\<psi>)" if "(##M)(z)" for z
+    using sats_iff_sats_ren[of ?\<phi> 7 8 "?\<rho>(z)" M "?\<eta>(z)"]
+      ren_V3_thm(1)[where A=M,folded ren_V3_fn_def,simplified] ren_V3_thm(2)[folded ren_V3_fn_def] that
+    by simp
+  moreover from calculation
+  have 1:"(M,?\<eta>(z)\<Turnstile> ?\<psi>) \<longleftrightarrow> M,[z]@?env\<Turnstile>?\<psi>'" if "(##M)(z)" for z
+    using that fsats[OF fclosed[of z],of z] gsats[of "g(z)" "f(z)" z]
+      hsats[of "h(z)" "g(z)" "f(z)" z]
+      fclosed gclosed hclosed f_fm g_fm h_fm
+    apply(rule_tac iffI,simp,rule_tac rev_bexI[where x="f(z)"],simp)
+     apply(rule_tac conjI,simp,rule_tac rev_bexI[where x="g(z)"],simp)
+    apply(rule_tac conjI,simp,rule_tac rev_bexI[where x="h(z)"],simp,rule_tac conjI,simp,simp)
+  proof -
+    assume "M, [z] @ [P, leq, one, f_dot] \<Turnstile> (\<cdot>\<exists>\<cdot>f_fm \<and> (\<cdot>\<exists>\<cdot>g_fm \<and> (\<cdot>\<exists>\<cdot>h_fm \<and> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn\<cdot>\<cdot>)\<cdot>\<cdot>)\<cdot>\<cdot>)"
+    with calculation that
+    have "\<exists>x\<in>M. (M, [x, z, P, leq, one, f_dot] \<Turnstile> f_fm) \<and>
+           (\<exists>xa\<in>M. (M, [xa, x, z, P, leq, one, f_dot] \<Turnstile> g_fm) \<and> (\<exists>xb\<in>M. (M, [xb, xa, x, z, P, leq, one, f_dot] \<Turnstile> h_fm) \<and> (M, [xb, xa, x, z, P, leq, one, f_dot] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn)))"
+      by auto
+    with calculation
+    obtain x where "x\<in>M" "(M, [x, z, P, leq, one, f_dot] \<Turnstile> f_fm)"
+        "(\<exists>xa\<in>M. (M, [xa, x, z, P, leq, one, f_dot] \<Turnstile> g_fm) \<and> (\<exists>xb\<in>M. (M, [xb, xa, x, z, P, leq, one, f_dot] \<Turnstile> h_fm) \<and> (M, [xb, xa, x, z, P, leq, one, f_dot] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn)))"
+      by force
+    moreover from this
+    have "x=f(z)" using fsats[of x] that by simp
+    moreover from calculation
+    obtain xa where "xa\<in>M" "(M, [xa, x, z, P, leq, one, f_dot] \<Turnstile> g_fm)"
+      "(\<exists>xb\<in>M. (M, [xb, xa, x, z, P, leq, one, f_dot] \<Turnstile> h_fm) \<and> (M, [xb, xa, x, z, P, leq, one, f_dot] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn))"
+      by auto
+    moreover from calculation
+    have "xa=g(z)" using gsats[of xa x] that by simp
+    moreover from calculation
+    obtain xb where "xb\<in>M" "(M, [xb, xa, x, z, P, leq, one, f_dot] \<Turnstile> h_fm)"
+      "(M, [xb, xa, x, z, P, leq, one, f_dot] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn)"
+      by auto
+    moreover from calculation
+    have "xb=h(z)" using hsats[of xb xa x] that by simp
+    ultimately
+    show "M, [h(z), g(z), f(z), z] @ [P, leq, one, f_dot] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn"
+      by auto
+  qed
+  moreover from calculation \<open>?\<psi>'\<in>_\<close>
+  have 2:"separation(##M, \<lambda>z. (M,[z]@?env \<Turnstile> ?\<psi>'))"
+    using separation_ax
+    by simp
+  ultimately
+  show ?thesis
+    by(rule_tac separation_cong[THEN iffD2,OF iff_trans[OF 0 1]],clarify,force)
+qed
+
+
 lemma separation_sat_after_function:
   assumes "f_dot\<in>M"and "\<tau>\<in>M" and  "\<chi>\<in>formula" and "arity(\<chi>) \<le> 7"
   and
@@ -360,12 +454,117 @@ proof -
 qed
 
 lemma aux5:
-  shows "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, one, f_dot, Arith.pred(fst(fst(fst(fst(z)))))\<^sup>v, snd(z)\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
-  sorry
+  assumes "f_dot\<in>M" "\<chi>\<in>formula" "arity(\<chi>) \<le> 7"
+  shows "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, one, f_dot, Arith.pred(fst(fst(fst(fst(z)))))\<^sup>v, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
+proof -
+  note types = assms leq_in_M P_in_M one_in_M
+  let ?f_fm="hcomp_fm(snd_fm,fst_fm,1,0)"
+  let ?g="\<lambda>z . fst(fst(fst(fst(fst(z)))))\<^sup>v"
+  let ?g_fm="hcomp_fm(check_fm'(6),hcomp_fm(fst_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)))),2,0)"
+  let ?h_fm="hcomp_fm(check_fm'(7),snd_fm,3,0)"
+  have 0:"?f_fm \<in> formula" "arity(?f_fm) \<le> 6"
+    using arity_fst_fm[of 2 0] arity_snd_fm[of 0 1] ord_simp_union
+    unfolding hcomp_fm_def
+    by simp_all
+  moreover from types
+  have 1:"\<And> fx x. fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[fx,x]@[P, leq, one,f_dot] \<Turnstile> ?f_fm) \<longleftrightarrow> fx=snd(fst(x))"
+    unfolding hcomp_fm_def
+    by simp
+  have 2:"?g_fm \<in> formula" "arity(?g_fm) \<le> 7"
+    using arity_fst_fm ord_simp_union arity_check_fm[of 0 6 1]
+    unfolding hcomp_fm_def check_fm'_def
+    by simp_all
+  moreover from types
+  have 3:"\<And> gx fx x. gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[gx,fx,x]@[P, leq, one,f_dot] \<Turnstile> ?g_fm) \<longleftrightarrow> gx=?g(x)"
+         "\<And>x . x\<in>M \<Longrightarrow> ?g(x)\<in>M"
+    using types sats_check_fm check_abs check_in_M
+    unfolding hcomp_fm_def check_fm'_def
+    by auto
+  moreover
+  have 4:"?h_fm \<in> formula" "arity(?h_fm) \<le> 8"
+    using arity_snd_fm[of 4 0] ord_simp_union arity_check_fm[of 0 7 1]
+    unfolding hcomp_fm_def check_fm'_def
+    by simp_all
+  moreover
+  have 5:"\<And> hx gx fx x. hx\<in>M \<Longrightarrow> gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[hx,gx,fx,x]@[P, leq, one,f_dot] \<Turnstile> ?h_fm) \<longleftrightarrow> hx=snd(x)\<^sup>v"
+        "\<And>x . x\<in>M \<Longrightarrow> snd(x)\<^sup>v\<in>M"
+    using snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
+    unfolding hcomp_fm_def check_fm'_def
+    by simp_all
+  ultimately
+  have "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, one, f_dot, fst(fst(fst(fst(fst(z)))))\<^sup>v, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
+    using separation_sat_after_function3[OF assms 0 1 _ 2 3 4 5]
+    by simp
+  then
+  show ?thesis
+    sorry
+qed
 
+(* We don't have a formula for pred but we can cheat it; we should do this
+inside the proof and not in the separation instance because we lost the
+hypothesis about n\<in>nat. I tried but failed. *)
+lemma pred_nat_eq :
+  assumes "n\<in>nat"
+  shows "Arith.pred(n) = \<Union> n"
+  using assms
+proof(induct)
+  case 0
+  then show ?case by simp
+next
+  case (succ x)
+  then show ?case using Arith.pred_succ_eq Ord_Union_succ_eq
+    by simp
+qed
+
+(* FIXME: analogous to aux3 after renaming with the permutation [(0,5)]*)
 lemma aux8 :
-  shows "separation(##M, \<lambda>p. M, [r, P, leq, one, f_dot, fst(p)\<^sup>v, snd(p)\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
-  sorry
+  assumes "f_dot\<in>M" "r\<in>M" "\<chi>\<in>formula" "arity(\<chi>) \<le> 7"
+  shows "separation(##M, \<lambda>p. M, [r, P, leq, one, f_dot, fst(p)\<^sup>v, snd(p)\<^sup>v] \<Turnstile> \<chi>)"
+proof -
+  let ?\<rho>="\<lambda>z. [r, P, leq, one, f_dot, fst(z)\<^sup>v, snd(z)\<^sup>v]"
+  let ?\<rho>'="\<lambda>z. [fst(z)\<^sup>v, P, leq, one, f_dot, r, snd(z)\<^sup>v]"
+  let ?\<phi>="Exists(Exists(And(Equal(0,7),And(Equal(5,2),iterates(\<lambda> p. incr_bv(p)`2,2,\<chi>)))))"
+  note types = assms leq_in_M P_in_M one_in_M
+  let ?f_fm="hcomp_fm(check_fm'(5),fst_fm,1,0)"
+  let ?g_fm="hcomp_fm(check_fm'(6),snd_fm,2,0)"
+  have 0:"?f_fm \<in> formula" "arity(?f_fm) \<le> 7"
+    using arity_fst_fm[of 2 0] ord_simp_union arity_check_fm[of 0 5 1]
+    unfolding hcomp_fm_def check_fm'_def
+    by simp_all
+  moreover
+  have 1:"\<And> fx x. fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[fx,x]@[P, leq, one,f_dot, r] \<Turnstile> ?f_fm) \<longleftrightarrow> fx=fst(x)\<^sup>v"
+    "\<And> x . x\<in>M \<Longrightarrow>fst(x)\<^sup>v\<in>M"
+    using fst_abs types sats_fst_fm sats_check_fm check_abs check_in_M
+    unfolding hcomp_fm_def check_fm'_def
+    by simp_all
+  moreover
+  have 2:"?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
+    using arity_snd_fm[of 3 0] ord_simp_union arity_check_fm[of 0 6 1]
+    unfolding hcomp_fm_def check_fm'_def
+    by simp_all
+  moreover
+  have 3:"\<And> gx fx x. gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[gx,fx,x]@[P, leq, one,f_dot, r] \<Turnstile> ?g_fm) \<longleftrightarrow> gx=snd(x)\<^sup>v"
+    "\<And> x . x\<in>M \<Longrightarrow>snd(x)\<^sup>v\<in>M"
+    using snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
+    unfolding hcomp_fm_def check_fm'_def
+    by simp_all
+  moreover from assms
+  have fm:"?\<phi>\<in>formula" by simp
+  moreover from calculation
+  have ar:"arity(?\<phi>) \<le> 7"
+    sorry
+  moreover from calculation
+  have sep:"separation(##M,\<lambda>z. M,?\<rho>'(z)\<Turnstile>?\<phi>)"
+    using separation_sat_after_function[OF assms(1-2) fm ar]
+    by simp
+  moreover from calculation
+  have "(M,?\<rho>(z) \<Turnstile> \<chi>) \<longleftrightarrow> (M,?\<rho>'(z)\<Turnstile>?\<phi>)" if "(##M)(z)" for z
+    using  sats_incr_bv_iff
+    sorry
+  ultimately
+  show ?thesis using separation_cong[THEN iffD1,OF _ sep]
+    by simp
+qed
 
 lemma aux7:
   assumes "\<tau>\<in>M" "f_dot\<in>M" "\<chi>\<in>formula" "arity(\<chi>) \<le> 7"
@@ -402,21 +601,21 @@ qed
 
 lemma aux6:
   assumes "f_dot\<in>M" "B\<in>M"
-  shows "\<forall>n\<in>M. separation(##M, \<lambda>x. snd(x) \<preceq> fst(x) \<and> (\<exists>b\<in>B. M, [snd(x), P, leq, one, f_dot, Arith.pred(n)\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> )))"
+  shows "\<forall>n\<in>M. separation(##M, \<lambda>x. snd(x) \<preceq> fst(x) \<and> (\<exists>b\<in>B. M, [snd(x), P, leq, one, f_dot, pred(n)\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> )))"
   using P_in_M assms
     separation_in lam_replacement_constant lam_replacement_snd lam_replacement_fst
-    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M aux7  check_in_M pred_nat_closed
+    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M aux7 check_in_M pred_nat_closed
     arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm[of 0 1 2] ord_simp_union
   by(clarify, rule_tac separation_conj,simp_all,rule_tac separation_bex,simp_all)
 
 lemma aux4:
-  assumes "p\<in>M" "B\<in>M"
+  assumes "f_dot\<in>M" "p\<in>M" "B\<in>M"
   shows "separation
      (##M,
       \<lambda>pa. \<forall>x\<in>P. x \<preceq> p \<longrightarrow>
                   (\<forall>y\<in>P. y \<preceq> p \<longrightarrow>
                           \<langle>x, y\<rangle> \<in> snd(pa) \<longleftrightarrow>
-                          y \<preceq> x \<and> (\<exists>b\<in>B. M, [y, P, leq, one, f_dot, Arith.pred(fst(pa))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))))"
+                          y \<preceq> x \<and> (\<exists>b\<in>B. M, [y, P, leq, one, f_dot, pred(fst(pa))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))))"
   using P_in_M assms
     separation_in lam_replacement_constant lam_replacement_snd
     lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M separation_forces'
@@ -426,7 +625,8 @@ lemma aux4:
     lam_replacement_constant lam_replacement_fst lam_replacement_snd
     leq_in_M assms lam_replacement_hcomp[OF
       lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_fst]  lam_replacement_snd ]
-    lam_replacement_hcomp lam_replacement_identity aux5
+    lam_replacement_hcomp lam_replacement_identity
+    aux5 arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm[of 0 1 2] ord_simp_union
    apply (rule_tac separation_in[OF _ lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]],simp_all)
   apply(rule_tac separation_conj,simp)
   by(rule_tac separation_bex,simp_all)
@@ -444,6 +644,7 @@ lemma aux2:
   assumes "B\<in>M" "f_dot\<in>M" "r\<in>M"
   shows "(##M)({\<langle>n,b\<rangle> \<in> \<omega> \<times> B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]})"
   using nat_in_M assms check_in_M transitivity[OF _ \<open>B\<in>M\<close>] nat_into_M aux8
+    arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm[of 0 1 2] ord_simp_union
   unfolding split_def
   by(rule_tac separation_closed,simp_all)
 
@@ -501,9 +702,6 @@ lemma succ_omega_closed_imp_no_new_nat_sequences:
   assumes "succ(\<omega>)-closed\<^bsup>M\<^esup>(P,leq)" "f : \<omega> \<rightarrow> B" "f\<in>M[G]"
     "B\<in>M"
   shows "f\<in>M"
-    (* (* Proof using the general lemma: *)
-  using assms nat_lt_Aleph_rel1 kappa_closed_imp_no_new_sequences
-    Aleph_rel_closed[of 1] by simp *)
 proof -
   (* Nice jEdit folding level to read this: 7 *)
   txt\<open>The next long block proves that the assumptions of Lemma
