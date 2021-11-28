@@ -455,12 +455,12 @@ qed
 
 lemma aux5:
   assumes "f_dot\<in>M" "\<chi>\<in>formula" "arity(\<chi>) \<le> 7"
-  shows "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, one, f_dot, Arith.pred(fst(fst(fst(fst(z)))))\<^sup>v, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
+  shows "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, one, f_dot, (\<Union>(fst(fst(fst(fst(z))))))\<^sup>v, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
 proof -
   note types = assms leq_in_M P_in_M one_in_M
   let ?f_fm="hcomp_fm(snd_fm,fst_fm,1,0)"
-  let ?g="\<lambda>z . fst(fst(fst(fst(fst(z)))))\<^sup>v"
-  let ?g_fm="hcomp_fm(check_fm'(6),hcomp_fm(fst_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)))),2,0)"
+  let ?g="\<lambda>z . (\<Union>(fst(fst(fst(fst(z))))))\<^sup>v"
+  let ?g_fm="hcomp_fm(check_fm'(6),hcomp_fm(big_union_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)))),2,0)"
   let ?h_fm="hcomp_fm(check_fm'(7),snd_fm,3,0)"
   have 0:"?f_fm \<in> formula" "arity(?f_fm) \<le> 6"
     using arity_fst_fm[of 2 0] arity_snd_fm[of 0 1] ord_simp_union
@@ -471,7 +471,7 @@ proof -
     unfolding hcomp_fm_def
     by simp
   have 2:"?g_fm \<in> formula" "arity(?g_fm) \<le> 7"
-    using arity_fst_fm ord_simp_union arity_check_fm[of 0 6 1]
+    using arity_fst_fm arity_big_union_fm ord_simp_union arity_check_fm[of 0 6 1]
     unfolding hcomp_fm_def check_fm'_def
     by simp_all
   moreover from types
@@ -492,17 +492,11 @@ proof -
     unfolding hcomp_fm_def check_fm'_def
     by simp_all
   ultimately
-  have "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, one, f_dot, fst(fst(fst(fst(fst(z)))))\<^sup>v, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
+  show ?thesis
     using separation_sat_after_function3[OF assms 0 1 _ 2 3 4 5]
     by simp
-  then
-  show ?thesis
-    sorry
 qed
 
-(* We don't have a formula for pred but we can cheat it; we should do this
-inside the proof and not in the separation instance because we lost the
-hypothesis about n\<in>nat. I tried but failed. *)
 lemma pred_nat_eq :
   assumes "n\<in>nat"
   shows "Arith.pred(n) = \<Union> n"
@@ -601,7 +595,7 @@ qed
 
 lemma aux6:
   assumes "f_dot\<in>M" "B\<in>M"
-  shows "\<forall>n\<in>M. separation(##M, \<lambda>x. snd(x) \<preceq> fst(x) \<and> (\<exists>b\<in>B. M, [snd(x), P, leq, one, f_dot, pred(n)\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> )))"
+  shows "\<forall>n\<in>M. separation(##M, \<lambda>x. snd(x) \<preceq> fst(x) \<and> (\<exists>b\<in>B. M, [snd(x), P, leq, one, f_dot, (\<Union>(n))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> )))"
   using P_in_M assms
     separation_in lam_replacement_constant lam_replacement_snd lam_replacement_fst
     lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M aux7 check_in_M pred_nat_closed
@@ -615,7 +609,7 @@ lemma aux4:
       \<lambda>pa. \<forall>x\<in>P. x \<preceq> p \<longrightarrow>
                   (\<forall>y\<in>P. y \<preceq> p \<longrightarrow>
                           \<langle>x, y\<rangle> \<in> snd(pa) \<longleftrightarrow>
-                          y \<preceq> x \<and> (\<exists>b\<in>B. M, [y, P, leq, one, f_dot, pred(fst(pa))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))))"
+                          y \<preceq> x \<and> (\<exists>b\<in>B. M, [y, P, leq, one, f_dot, (\<Union>(fst(pa)))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))))"
   using P_in_M assms
     separation_in lam_replacement_constant lam_replacement_snd
     lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M separation_forces'
@@ -715,11 +709,15 @@ proof -
       using first_section_closed[of P p "converse(leq)"] leq_in_M
         P_in_M by (auto dest:transM)
     define S where "S \<equiv> \<lambda>n\<in>nat.
-    {\<langle>q,r\<rangle> \<in> ?subp\<times>?subp. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])}"
+    {\<langle>q,r\<rangle> \<in> ?subp\<times>?subp. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, (\<Union>(n))\<^sup>v, b\<^sup>v])}"
       (is "S \<equiv> \<lambda>n\<in>nat. ?Y(n)")
+    define S' where "S' \<equiv> \<lambda>n\<in>nat.
+    {\<langle>q,r\<rangle> \<in> ?subp\<times>?subp. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, (pred(n))\<^sup>v, b\<^sup>v])}"
       \<comment> \<open>Towards proving \<^term>\<open>S\<in>M\<close>.\<close>
-    with \<open>B\<in>M\<close> \<open>?subp\<in>M\<close> \<open>f_dot\<in>M\<close>
-    have "{r \<in> ?subp. \<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v]} \<in> M" (is "?X(n) \<in> M")
+    moreover
+    have "S = S'" unfolding S_def S'_def using pred_nat_eq lam_cong by auto
+    moreover from \<open>B\<in>M\<close> \<open>?subp\<in>M\<close> \<open>f_dot\<in>M\<close>
+    have "{r \<in> ?subp. \<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, (\<Union>(n))\<^sup>v, b\<^sup>v]} \<in> M" (is "?X(n) \<in> M")
       if "n\<in>\<omega>" for n
       using that aux3 nat_into_M ord_simp_union arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm
       by(rule_tac separation_closed[OF separation_bex,simplified], simp_all)
@@ -730,38 +728,41 @@ proof -
     note \<open>?subp \<in> M\<close> \<open>B\<in>M\<close> \<open>p\<in>P\<close> \<open>f_dot\<in>M\<close>
     moreover from calculation
     have "n \<in> \<omega> \<Longrightarrow> ?Y(n) \<in> M" for n using nat_into_M leq_in_M by simp
-    ultimately
+    moreover from calculation
     have "S \<in> M"
       using aux4 aux6 transitivity[OF \<open>p\<in>P\<close> P_in_M]
       unfolding S_def split_def
       by(rule_tac lam_replacement_Collect[THEN lam_replacement_imp_lam_closed,simplified], simp_all)
+    ultimately
+    have "S' \<in> M" by simp
     from \<open>p\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close> \<open>B\<in>M\<close>
     have exr:"\<exists>r\<in>P. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])"
       if "q \<preceq> p" "q\<in>P" "n\<in>\<omega>" for q n
       using that forcing_a_value by (auto dest:transM)
-    have "\<forall>q\<in>?subp. \<forall>n\<in>\<omega>. \<exists>r\<in>?subp. \<langle>q,r\<rangle> \<in> S`n"
+    have "\<forall>q\<in>?subp. \<forall>n\<in>\<omega>. \<exists>r\<in>?subp. \<langle>q,r\<rangle> \<in> S'`n"
     proof -
       {
         fix q n
         assume "q \<in> ?subp" "n\<in>\<omega>"
         moreover from this
-        have "q \<preceq> p" "q \<in> P" by simp_all
+        have "q \<preceq> p" "q \<in> P" "pred(n) = \<Union>n"
+          using pred_nat_eq by simp_all
         moreover from calculation and exr
-        obtain r where "r \<preceq> q" "\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v]" "r\<in>P"
+        obtain r where MM:"r \<preceq> q" "\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v]" "r\<in>P"
           by blast
         moreover from calculation \<open>q \<preceq> p\<close> \<open>p \<in> P\<close>
         have "r \<preceq> p"
           using leq_transD[of r q p] by auto
         ultimately
-        have "\<exists>r\<in>?subp. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])"
+        have "\<exists>r\<in>?subp. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, (pred(n))\<^sup>v, b\<^sup>v])"
           by auto
       }
       then
       show ?thesis
-        unfolding S_def by simp
+        unfolding S'_def by simp
     qed
-    with \<open>p\<in>P\<close> \<open>?subp \<in> M\<close> \<open>S \<in> M\<close>
-    obtain g where "g \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> ?subp" "g`0 = p" "\<forall>n \<in> nat. \<langle>g`n,g`succ(n)\<rangle>\<in>S`succ(n)"
+    with \<open>p\<in>P\<close> \<open>?subp \<in> M\<close> \<open>S' \<in> M\<close>
+    obtain g where "g \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> ?subp" "g`0 = p" "\<forall>n \<in> nat. \<langle>g`n,g`succ(n)\<rangle>\<in>S'`succ(n)"
       using sequence_DC[simplified] refl_leq[of p] by blast
     moreover from this and \<open>?subp \<in> M\<close>
     have "g : \<omega> \<rightarrow> P" "g \<in> M"
@@ -769,7 +770,7 @@ proof -
     ultimately
     have "g : \<omega> \<^sub><\<rightarrow>\<^bsup>M\<^esup> (P,converse(leq))"
       using decr_succ_decr[of g] leq_preord leq_in_M P_in_M
-      unfolding S_def by (auto simp:absolut intro:leI)
+      unfolding S'_def by (auto simp:absolut intro:leI)
     moreover from \<open>succ(\<omega>)-closed\<^bsup>M\<^esup>(P,leq)\<close> and this
     have "\<exists>q\<in>M. q \<in> P \<and> (\<forall>\<alpha>\<in>M. \<alpha> \<in> \<omega> \<longrightarrow> q \<preceq> g ` \<alpha>)"
       using transM[simplified, of g] leq_in_M
@@ -807,9 +808,11 @@ proof -
       {
         fix n
         assume "n \<in> \<omega>"
-        moreover from this and \<open>\<forall>n \<in> nat. \<langle>g`n,g`succ(n)\<rangle>\<in>S`succ(n)\<close>
+        moreover from this
+        have 1:"(\<Union>(n)) = pred(n)" using pred_nat_eq by simp
+        moreover from calculation and \<open>\<forall>n \<in> nat. \<langle>g`n,g`succ(n)\<rangle>\<in>S'`succ(n)\<close>
         obtain b where "g`(succ(n)) \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]" "b\<in>B"
-          unfolding S_def by auto
+          unfolding S'_def by auto
         moreover from \<open>B\<in>M\<close> and calculation
         have "b \<in> M" "n \<in> M" by (auto dest:transM)
         moreover
