@@ -17,11 +17,6 @@ locale M_master = M_cohen + M_library_DC +
 
 begin
 
-lemma (in M_FiniteFun) Fn_nat_closed:
-  assumes "M(A)" "M(B)" shows "M(Fn(\<omega>,A,B))"
-  using assms Fn_nat_eq_FiniteFun
-  by simp
-
 lemma Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
   using nat_into_M[of 2] nat_into_Ord by simp
 
@@ -105,7 +100,6 @@ end (* M_master_sub *)
 lemmas (in M_ZFC_trans) sep_instances =
  separation_toplevel2_body
  separation_Ord separation_insnd_ballPair
- separation_restrict_eq_dom_eq separation_restrict_eq_dom_eq_pair
  separation_ifrangeF_body separation_ifrangeF_body2 separation_ifrangeF_body3
  separation_ifrangeF_body4 separation_ifrangeF_body5 separation_ifrangeF_body6
  separation_ifrangeF_body7 separation_cardinal_rel_lesspoll_rel

@@ -289,7 +289,6 @@ lemma (in M_ZF_trans) separation_toplevel2_body:
   unfolding toplevel2_body_rel_def
   by simp
 
-
 lemma (in M_ZF_trans) cardinal_rel_lepoll_rel_abs:
  "(##M)(\<kappa>) \<Longrightarrow> (##M)(x) \<Longrightarrow> (|x|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>) \<longleftrightarrow> M,[x,\<kappa>] \<Turnstile> (\<cdot>\<exists>\<cdot>cardinal(1) is 0 \<and> \<cdot>0 \<prec> 2\<cdot>\<cdot>\<cdot>)"
   using is_lesspoll_iff is_cardinal_iff cardinal_rel_closed nonempty 

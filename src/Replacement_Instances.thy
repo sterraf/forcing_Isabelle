@@ -119,9 +119,9 @@ proof(cases "\<exists>!b. first(b,B,r)")
     by simp
 next
   case False
-  then show ?thesis 
+  then show ?thesis
     using zero_in_M the_0
-    unfolding minimum_def 
+    unfolding minimum_def
     by auto
 qed
 
@@ -145,15 +145,15 @@ lemma is_minimum_eq :
 context M_trivial
 begin
 
-lemma first_closed: 
+lemma first_closed:
   "M(B) \<Longrightarrow> M(r) \<Longrightarrow> first(u,r,B) \<Longrightarrow> M(u)"
-  using transM[OF first_is_elem] by simp  
+  using transM[OF first_is_elem] by simp
 
 is_iff_rel for "first"
   unfolding is_first_def first_rel_def by auto
 
 is_iff_rel for "minimum"
-  unfolding is_minimum_def minimum_rel_def 
+  unfolding is_minimum_def minimum_rel_def
   using is_first_iff The_abs nonempty
   by force
 
@@ -549,7 +549,7 @@ relativize functional "RepFun_body" "RepFun_body_rel"
 relationalize "RepFun_body_rel" "is_RepFun_body"
 
 lemma (in M_trivial) RepFun_body_abs:
-  assumes "M(u)" "M(v)" "M(res)" 
+  assumes "M(u)" "M(v)" "M(res)"
 shows "is_RepFun_body(M, u, v, res) \<longleftrightarrow> res = RepFun_body(u,v)"
   unfolding is_RepFun_body_def RepFun_body_def
   using fst_rel_abs[symmetric] snd_rel_abs[symmetric] fst_abs snd_abs assms
@@ -578,7 +578,7 @@ lemma (in M_ZF_trans) RepFun_SigFun_closed: "x \<in> M \<Longrightarrow> z \<in>
 lemma (in M_ZF_trans) replacement_RepFun_body:
   "lam_replacement(##M, \<lambda>p . {{\<langle>snd(p), x\<rangle>} . x \<in> fst(p)})"
   apply(rule_tac lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. {{\<langle>snd(p), x\<rangle>} . x \<in> fst(p)}"])
-  using  RepFun_SigFun_closed[OF fst_snd_closed[THEN conjunct1,simplified] 
+  using  RepFun_SigFun_closed[OF fst_snd_closed[THEN conjunct1,simplified]
       fst_snd_closed[THEN conjunct2,simplified]] transitivity
   apply auto
   apply (rule_tac
@@ -588,12 +588,12 @@ lemma (in M_ZF_trans) replacement_RepFun_body:
   done
 
 sublocale M_ZF_trans \<subseteq> M_replacement_extra "##M"
-  by unfold_locales (simp_all add: replacement_RepFun_body 
+  by unfold_locales (simp_all add: replacement_RepFun_body
       lam_replacement_minimum del:setclass_iff)
 
 sublocale M_ZF_trans \<subseteq> M_Perm "##M"
   using separation_PiP_rel separation_injP_rel separation_surjP_rel
-    lam_replacement_imp_strong_replacement[OF 
+    lam_replacement_imp_strong_replacement[OF
       lam_replacement_Sigfun[OF lam_replacement_constant]]
     Pi_replacement1 unfolding Sigfun_def
   by unfold_locales simp_all
@@ -623,7 +623,7 @@ synthesize "is_banach_functor" from_definition assuming "nonempty"
 arity_theorem for "is_banach_functor_fm"
 
 definition banach_body_iterates where
-  "banach_body_iterates(M,X,Y,f,g,W,n,x,z) \<equiv> 
+  "banach_body_iterates(M,X,Y,f,g,W,n,x,z) \<equiv>
 \<exists>y[M].
                    pair(M, x, y, z) \<and>
                    (\<exists>fa[M].
@@ -664,7 +664,7 @@ lemma (in M_ZF_trans) banach_iterates:
   assumes "X\<in>M" "Y\<in>M" "f\<in>M" "g\<in>M" "W\<in>M"
   shows "iterates_replacement(##M, is_banach_functor(##M,X,Y,f,g), W)"
 proof -
-  have "strong_replacement(##M, \<lambda> x z . banach_body_iterates(##M,X,Y,f,g,W,n,x,z))" if "n\<in>\<omega>" for n 
+  have "strong_replacement(##M, \<lambda> x z . banach_body_iterates(##M,X,Y,f,g,W,n,x,z))" if "n\<in>\<omega>" for n
     apply(rule_tac strong_replacement_cong[
           where P="\<lambda> x z. M,[x,z,_,W,g,f,Y,X] \<Turnstile> banach_body_iterates_fm(7,6,5,4,3,2,0,1)",THEN iffD1])
      prefer 2
@@ -715,16 +715,16 @@ definition banach_is_iterates_body where
 synthesize "banach_is_iterates_body" from_definition assuming "nonempty"
 arity_theorem for "banach_is_iterates_body_fm"
 
-lemma (in M_ZF_trans) banach_replacement_iterates: 
+lemma (in M_ZF_trans) banach_replacement_iterates:
   assumes "X\<in>M" "Y\<in>M" "f\<in>M" "g\<in>M" "W\<in>M"
   shows "strong_replacement(##M, \<lambda>n y. n\<in>\<omega> \<and> is_iterates(##M,is_banach_functor(##M,X, Y, f, g),W,n,y))"
 proof -
-  have "strong_replacement(##M, \<lambda> n z . banach_is_iterates_body(##M,X,Y,f,g,W,n,z))"  
+  have "strong_replacement(##M, \<lambda> n z . banach_is_iterates_body(##M,X,Y,f,g,W,n,z))"
     apply(rule_tac strong_replacement_cong[
           where P="\<lambda> n z. M,[n,z,W,g,f,Y,X] \<Turnstile> banach_is_iterates_body_fm(6,5,4,3,2,0,1)",THEN iffD1])
      prefer 2
      apply(rule_tac replacement_ax[where env="[W,g,f,Y,X]",simplified])
-    using assms 
+    using assms
     by(simp_all add:zero_in_M arity_banach_is_iterates_body_fm ord_simp_union transitivity[OF _ nat_in_M])
   then
   show ?thesis
@@ -735,9 +735,9 @@ proof -
 qed
 
 lemma (in M_ZF_trans) banach_replacement:
-  assumes "(##M)(X)" "(##M)(Y)" "(##M)(f)" "(##M)(g)" 
+  assumes "(##M)(X)" "(##M)(Y)" "(##M)(f)" "(##M)(g)"
   shows "strong_replacement(##M, \<lambda>n y. n\<in>nat \<and> y = banach_functor(X, Y, f, g)^n (0))"
-  using iterates_abs[OF banach_iterates banach_functor_abs,of X Y f g] 
+  using iterates_abs[OF banach_iterates banach_functor_abs,of X Y f g]
     assms banach_functor_closed zero_in_M
   apply (rule_tac strong_replacement_cong[THEN iffD1, OF _ banach_replacement_iterates[of X Y f g 0]])
   by(rule_tac conj_cong,simp_all)
@@ -777,7 +777,7 @@ schematic_goal arity_is_transrec_fm[arity]:
 synthesize "is_trans_apply_image" from_definition assuming "nonempty"
 arity_theorem for "is_trans_apply_image_fm"
 
-lemma (in M_basic) rel2_trans_apply: 
+lemma (in M_basic) rel2_trans_apply:
   "M(f) \<Longrightarrow> relation2(M,is_trans_apply_image(M,f),trans_apply_image(f))"
   unfolding is_trans_apply_image_def trans_apply_image_def relation2_def
   by auto
@@ -822,7 +822,7 @@ lemma (in M_ZF_trans) replacement_transrec_apply_image_body :
   apply(simp_all add: arity_transrec_apply_image_body_fm ord_simp_union)
   done
 
-lemma (in M_ZF_trans) transrec_replacement_apply_image: 
+lemma (in M_ZF_trans) transrec_replacement_apply_image:
   assumes "(##M)(f)" "(##M)(\<alpha>)"
   shows "transrec_replacement(##M, is_trans_apply_image(##M, f), \<alpha>)"
   unfolding transrec_replacement_def wfrec_replacement_def is_wfrec_def M_is_recfun_def
@@ -868,7 +868,7 @@ synthesize "is_trans_apply_image_body" from_schematic "is_trans_apply_image_body
 arity_theorem for "is_trans_apply_image_body_fm"
 
 lemma (in M_ZF_trans) replacement_is_trans_apply_image:
-  "(##M)(f) \<Longrightarrow> (##M)(\<beta>) \<Longrightarrow> strong_replacement(##M, \<lambda> x z . 
+  "(##M)(f) \<Longrightarrow> (##M)(\<beta>) \<Longrightarrow> strong_replacement(##M, \<lambda> x z .
     \<exists>y[##M]. pair(##M,x,y,z) \<and> x\<in>\<beta> \<and> (is_transrec(##M,is_trans_apply_image(##M, f),x,y)))"
   unfolding is_transrec_def is_wfrec_def M_is_recfun_def
   apply(rule_tac strong_replacement_cong[
@@ -881,19 +881,19 @@ lemma (in M_ZF_trans) replacement_is_trans_apply_image:
 
 lemma (in M_ZF_trans) trans_apply_abs:
   "(##M)(f) \<Longrightarrow> (##M)(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow> (##M)(x) \<Longrightarrow> (##M)(z) \<Longrightarrow>
-    (x\<in>\<beta> \<and> z = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a)) \<rangle>) \<longleftrightarrow>  
+    (x\<in>\<beta> \<and> z = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a)) \<rangle>) \<longleftrightarrow>
     (\<exists>y[##M]. pair(##M,x,y,z) \<and> x\<in>\<beta> \<and> (is_transrec(##M,is_trans_apply_image(##M, f),x,y)))"
   using rec_trans_apply_image_abs Ord_in_Ord
     transrec_closed[OF transrec_replacement_apply_image rel2_trans_apply,of f,simplified]
-    apply_image_closed'[of f] 
+    apply_image_closed'[of f]
   unfolding trans_apply_image_def
   by auto
 
 lemma (in M_ZF_trans) replacement_trans_apply_image:
   "(##M)(f) \<Longrightarrow> (##M)(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow>
   strong_replacement(##M, \<lambda>x y. x\<in>\<beta> \<and> y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
-  using strong_replacement_cong[THEN iffD1,OF _ replacement_is_trans_apply_image,simplified]  
-    trans_apply_abs Ord_in_Ord 
+  using strong_replacement_cong[THEN iffD1,OF _ replacement_is_trans_apply_image,simplified]
+    trans_apply_abs Ord_in_Ord
   by simp
 
 definition abs_apply_pair where
@@ -942,10 +942,658 @@ lemma (in M_ZF_trans) replacement_is_abs_apply_pair:
     apply(simp_all add: arity_is_abs_apply_pair_fm ord_simp_union)
   done
 
-lemma (in M_ZF_trans) replacement_abs_apply_pair: 
+lemma (in M_ZF_trans) replacement_abs_apply_pair:
   "(##M)(A) \<Longrightarrow> (##M)(f) \<Longrightarrow> strong_replacement(##M, \<lambda>x y. y = \<langle>x, \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>\<rangle>)"
   using strong_replacement_cong[THEN iffD1,OF abs_apply_pair_abs replacement_is_abs_apply_pair,simplified]
   unfolding abs_apply_pair_def
+  by simp
+
+definition ifrFb_body where
+  "ifrFb_body(M,b,f,x,i) \<equiv> x \<in>
+  (if b = 0 then if i \<in> range(f) then
+  if M(converse(f) ` i) then converse(f) ` i else 0 else 0 else if M(i) then i else 0)"
+
+relativize functional "ifrFb_body" "ifrFb_body_rel"
+relationalize "ifrFb_body_rel" "is_ifrFb_body"
+
+synthesize "is_ifrFb_body" from_definition assuming "nonempty"
+arity_theorem for "is_ifrFb_body_fm"
+
+definition ifrangeF_body :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
+  "ifrangeF_body(M,A,b,f) \<equiv> \<lambda>y. \<exists>x\<in>A. y = \<langle>x,\<mu> i. ifrFb_body(M,b,f,x,i)\<rangle>"
+
+relativize functional "ifrangeF_body" "ifrangeF_body_rel"
+relationalize "ifrangeF_body_rel" "is_ifrangeF_body"
+
+synthesize "is_ifrangeF_body" from_definition assuming "nonempty"
+arity_theorem for "is_ifrangeF_body_fm"
+
+lemma (in M_ZF_trans) separation_is_ifrangeF_body:
+  "(##M)(A) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation(##M, is_ifrangeF_body(##M,A,r,s))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,A,r,s] \<Turnstile> is_ifrangeF_body_fm(1,2,3,0)",THEN iffD1])
+   apply(rule_tac is_ifrangeF_body_iff_sats[where env="[_,A,r,s]",symmetric])
+            apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[A,r,s]",simplified])
+    apply(simp_all add:arity_is_ifrangeF_body_fm ord_simp_union is_ifrangeF_body_fm_type)
+  done
+
+lemma (in M_basic) is_ifrFb_body_closed: "M(r) \<Longrightarrow> M(s) \<Longrightarrow> is_ifrFb_body(M, r, s, x, i) \<Longrightarrow> M(i)"
+  unfolding ifrangeF_body_def is_ifrangeF_body_def is_ifrFb_body_def If_abs
+  by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
+
+lemma (in M_ZF_trans) ifrangeF_body_abs:
+  assumes "(##M)(A)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
+  shows "is_ifrangeF_body(##M,A,r,s,x) \<longleftrightarrow> ifrangeF_body(##M,A,r,s,x)"
+proof -
+  {
+    fix a
+    assume "a\<in>M"
+    with assms
+    have "(\<mu> i. i\<in> M \<and> is_ifrFb_body(##M, r, s, z, i))= (\<mu> i. is_ifrFb_body(##M, r, s, z, i))" for z
+      using is_ifrFb_body_closed[of r s z]
+      by (rule_tac Least_cong[of "\<lambda>i. i\<in>M \<and> is_ifrFb_body(##M,r,s,z,i)"]) auto
+    moreover
+    have "(\<mu> i. is_ifrFb_body(##M, r, s, z, i))= (\<mu> i. ifrFb_body(##M, r, s, z, i))" for z
+    proof (rule_tac Least_cong[of "\<lambda>i. is_ifrFb_body(##M,r,s,z,i)" "\<lambda>i. ifrFb_body(##M,r,s,z,i)"])
+      fix y
+      from assms \<open>a\<in>M\<close>
+      show "is_ifrFb_body(##M, r, s, z, y) \<longleftrightarrow> ifrFb_body(##M, r, s, z, y)"
+        using If_abs apply_0
+        unfolding ifrFb_body_def is_ifrFb_body_def
+        by (cases "y\<in>M"; cases "y\<in>range(s)"; cases "converse(s)`y \<in> M";
+            auto dest:transM split del: split_if del:iffI)
+          (auto simp flip:setclass_iff; (force simp only:setclass_iff))+
+    qed
+    moreover from \<open>a\<in>M\<close>
+    have "least(##M, \<lambda>i. i \<in> M \<and> is_ifrFb_body(##M, r, s, z, i), a)
+      \<longleftrightarrow> a = (\<mu> i.  i\<in> M \<and> is_ifrFb_body(##M, r, s, z,i))" for z
+      using If_abs least_abs'[of "\<lambda>i. (##M)(i) \<and> is_ifrFb_body(##M,r,s,z,i)" a]
+      by simp
+    ultimately
+    have "least(##M, \<lambda>i. i \<in> M \<and> is_ifrFb_body(##M, r, s, z, i), a)
+      \<longleftrightarrow> a = (\<mu> i. ifrFb_body(##M, r, s, z,i))" for z
+      by simp
+  }
+  with assms
+  show ?thesis
+    using  pair_in_M_iff apply_closed zero_in_M transitivity[of _ A]
+    unfolding ifrangeF_body_def is_ifrangeF_body_def
+    by (auto dest:transM)
+qed
+
+lemma (in M_ZF_trans) separation_ifrangeF_body:
+  "(##M)(A) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow> separation
+        (##M, \<lambda>y.  \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. if (##M)(x) then x else 0, b, f, i)\<rangle>)"
+  using separation_is_ifrangeF_body ifrangeF_body_abs
+    separation_cong[where P="is_ifrangeF_body(##M,A,b,f)" and M="##M",THEN iffD1]
+  unfolding ifrangeF_body_def if_range_F_def if_range_F_else_F_def ifrFb_body_def
+  by simp
+
+(* (##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
+    separation(##M,
+      \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. if (##M)(a) then G`a else 0, b, f, i)\<rangle>) *)
+
+definition ifrFb_body2 where
+  "ifrFb_body2(M,G,b,f,x,i) \<equiv> x \<in>
+  (if b = 0 then if i \<in> range(f) then
+  if M(converse(f) ` i) then G`(converse(f) ` i) else 0 else 0 else if M(i) then G`i else 0)"
+
+relativize functional "ifrFb_body2" "ifrFb_body2_rel"
+relationalize "ifrFb_body2_rel" "is_ifrFb_body2"
+
+synthesize "is_ifrFb_body2" from_definition assuming "nonempty"
+arity_theorem for "is_ifrFb_body2_fm"
+
+definition ifrangeF_body2 :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
+  "ifrangeF_body2(M,A,G,b,f) \<equiv> \<lambda>y. \<exists>x\<in>A. y = \<langle>x,\<mu> i. ifrFb_body2(M,G,b,f,x,i)\<rangle>"
+
+relativize functional "ifrangeF_body2" "ifrangeF_body2_rel"
+relationalize "ifrangeF_body2_rel" "is_ifrangeF_body2"
+
+synthesize "is_ifrangeF_body2" from_definition assuming "nonempty"
+arity_theorem for "is_ifrangeF_body2_fm"
+
+lemma (in M_ZF_trans) separation_is_ifrangeF_body2:
+  "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation(##M, is_ifrangeF_body2(##M,A,G,r,s))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,A,G,r,s] \<Turnstile> is_ifrangeF_body2_fm(1,2,3,4,0)",THEN iffD1])
+   apply(rule_tac is_ifrangeF_body2_iff_sats[where env="[_,A,G,r,s]",symmetric])
+              apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[A,G,r,s]",simplified])
+    apply(simp_all add:arity_is_ifrangeF_body2_fm ord_simp_union is_ifrangeF_body2_fm_type)
+  done
+
+lemma (in M_basic) is_ifrFb_body2_closed: "M(G) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow> is_ifrFb_body2(M, G, r, s, x, i) \<Longrightarrow> M(i)"
+  unfolding ifrangeF_body2_def is_ifrangeF_body2_def is_ifrFb_body2_def If_abs
+  by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
+
+lemma (in M_ZF_trans) ifrangeF_body2_abs:
+  assumes "(##M)(A)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
+  shows "is_ifrangeF_body2(##M,A,G,r,s,x) \<longleftrightarrow> ifrangeF_body2(##M,A,G,r,s,x)"
+proof -
+  {
+    fix a
+    assume "a\<in>M"
+    with assms
+    have "(\<mu> i. i\<in> M \<and> is_ifrFb_body2(##M, G, r, s, z, i))= (\<mu> i. is_ifrFb_body2(##M, G, r, s, z, i))" for z
+      using is_ifrFb_body2_closed[of G r s z]
+      by (rule_tac Least_cong[of "\<lambda>i. i\<in>M \<and> is_ifrFb_body2(##M,G,r,s,z,i)"]) auto
+    moreover
+    have "(\<mu> i. is_ifrFb_body2(##M, G, r, s, z, i))= (\<mu> i. ifrFb_body2(##M, G, r, s, z, i))" for z
+    proof (rule_tac Least_cong[of "\<lambda>i. is_ifrFb_body2(##M,G,r,s,z,i)" "\<lambda>i. ifrFb_body2(##M,G,r,s,z,i)"])
+      fix y
+      from assms \<open>a\<in>M\<close>
+      show "is_ifrFb_body2(##M, G, r, s, z, y) \<longleftrightarrow> ifrFb_body2(##M, G, r, s, z, y)"
+        using If_abs apply_0
+        unfolding ifrFb_body2_def is_ifrFb_body2_def
+        by (cases "y\<in>M"; cases "y\<in>range(s)"; cases "converse(s)`y \<in> M";
+            auto dest:transM split del: split_if del:iffI)
+          (auto simp flip:setclass_iff; (force simp only:setclass_iff))+
+    qed
+    moreover from \<open>a\<in>M\<close>
+    have "least(##M, \<lambda>i. i \<in> M \<and> is_ifrFb_body2(##M, G, r, s, z, i), a)
+      \<longleftrightarrow> a = (\<mu> i.  i\<in> M \<and> is_ifrFb_body2(##M, G, r, s, z,i))" for z
+      using If_abs least_abs'[of "\<lambda>i. (##M)(i) \<and> is_ifrFb_body2(##M,G,r,s,z,i)" a]
+      by simp
+    ultimately
+    have "least(##M, \<lambda>i. i \<in> M \<and> is_ifrFb_body2(##M, G, r, s, z, i), a)
+      \<longleftrightarrow> a = (\<mu> i. ifrFb_body2(##M, G, r, s, z,i))" for z
+      by simp
+  }
+  with assms
+  show ?thesis
+    using  pair_in_M_iff apply_closed zero_in_M transitivity[of _ A]
+    unfolding ifrangeF_body2_def is_ifrangeF_body2_def
+    by (auto dest:transM)
+qed
+
+lemma (in M_ZF_trans) separation_ifrangeF_body2:
+  "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
+       separation
+        (##M,
+         \<lambda>y. \<exists>x\<in>A.
+                y =
+                \<langle>x, \<mu> i. x \<in>
+                         if_range_F_else_F(\<lambda>a. if (##M)(a) then G ` a else 0, b, f, i)\<rangle>)"
+  using separation_is_ifrangeF_body2 ifrangeF_body2_abs
+    separation_cong[where P="is_ifrangeF_body2(##M,A,G,b,f)" and M="##M",THEN iffD1]
+  unfolding ifrangeF_body2_def if_range_F_def if_range_F_else_F_def ifrFb_body2_def
+  by simp
+
+(* (##M)(A) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow> (##M)(F) \<Longrightarrow>
+  separation(##M,
+    \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. if (##M)(a) then F -`` {a} else 0, b, f, i)\<rangle>) *)
+
+definition ifrFb_body3 where
+  "ifrFb_body3(M,G,b,f,x,i) \<equiv> x \<in>
+  (if b = 0 then if i \<in> range(f) then
+  if M(converse(f) ` i) then G-``{converse(f) ` i} else 0 else 0 else if M(i) then G-``{i} else 0)"
+
+relativize functional "ifrFb_body3" "ifrFb_body3_rel"
+relationalize "ifrFb_body3_rel" "is_ifrFb_body3"
+
+synthesize "is_ifrFb_body3" from_definition assuming "nonempty"
+arity_theorem for "is_ifrFb_body3_fm"
+
+definition ifrangeF_body3 :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
+  "ifrangeF_body3(M,A,G,b,f) \<equiv> \<lambda>y. \<exists>x\<in>A. y = \<langle>x,\<mu> i. ifrFb_body3(M,G,b,f,x,i)\<rangle>"
+
+relativize functional "ifrangeF_body3" "ifrangeF_body3_rel"
+relationalize "ifrangeF_body3_rel" "is_ifrangeF_body3"
+
+synthesize "is_ifrangeF_body3" from_definition assuming "nonempty"
+arity_theorem for "is_ifrangeF_body3_fm"
+
+lemma (in M_ZF_trans) separation_is_ifrangeF_body3:
+  "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation(##M, is_ifrangeF_body3(##M,A,G,r,s))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,A,G,r,s] \<Turnstile> is_ifrangeF_body3_fm(1,2,3,4,0)",THEN iffD1])
+   apply(rule_tac is_ifrangeF_body3_iff_sats[where env="[_,A,G,r,s]",symmetric])
+              apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[A,G,r,s]",simplified])
+    apply(simp_all add:arity_is_ifrangeF_body3_fm ord_simp_union is_ifrangeF_body3_fm_type)
+  done
+
+lemma (in M_basic) is_ifrFb_body3_closed: "M(G) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow> is_ifrFb_body3(M, G, r, s, x, i) \<Longrightarrow> M(i)"
+  unfolding ifrangeF_body3_def is_ifrangeF_body3_def is_ifrFb_body3_def If_abs
+  by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
+
+lemma (in M_ZF_trans) ifrangeF_body3_abs:
+  assumes "(##M)(A)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
+  shows "is_ifrangeF_body3(##M,A,G,r,s,x) \<longleftrightarrow> ifrangeF_body3(##M,A,G,r,s,x)"
+proof -
+  {
+    fix a
+    assume "a\<in>M"
+    with assms
+    have "(\<mu> i. i\<in> M \<and> is_ifrFb_body3(##M, G, r, s, z, i))= (\<mu> i. is_ifrFb_body3(##M, G, r, s, z, i))" for z
+      using is_ifrFb_body3_closed[of G r s z]
+      by (rule_tac Least_cong[of "\<lambda>i. i\<in>M \<and> is_ifrFb_body3(##M,G,r,s,z,i)"]) auto
+    moreover
+    have "(\<mu> i. is_ifrFb_body3(##M, G, r, s, z, i))= (\<mu> i. ifrFb_body3(##M, G, r, s, z, i))" for z
+    proof (rule_tac Least_cong[of "\<lambda>i. is_ifrFb_body3(##M,G,r,s,z,i)" "\<lambda>i. ifrFb_body3(##M,G,r,s,z,i)"])
+      fix y
+      from assms \<open>a\<in>M\<close>
+      show "is_ifrFb_body3(##M, G, r, s, z, y) \<longleftrightarrow> ifrFb_body3(##M, G, r, s, z, y)"
+        using If_abs apply_0
+        unfolding ifrFb_body3_def is_ifrFb_body3_def
+        by (cases "y\<in>M"; cases "y\<in>range(s)"; cases "converse(s)`y \<in> M";
+            auto dest:transM split del: split_if del:iffI)
+          (auto simp flip:setclass_iff; (force simp only:setclass_iff))+
+    qed
+    moreover from \<open>a\<in>M\<close>
+    have "least(##M, \<lambda>i. i \<in> M \<and> is_ifrFb_body3(##M, G, r, s, z, i), a)
+      \<longleftrightarrow> a = (\<mu> i.  i\<in> M \<and> is_ifrFb_body3(##M, G, r, s, z,i))" for z
+      using If_abs least_abs'[of "\<lambda>i. (##M)(i) \<and> is_ifrFb_body3(##M,G,r,s,z,i)" a]
+      by simp
+    ultimately
+    have "least(##M, \<lambda>i. i \<in> M \<and> is_ifrFb_body3(##M, G, r, s, z, i), a)
+      \<longleftrightarrow> a = (\<mu> i. ifrFb_body3(##M, G, r, s, z,i))" for z
+      by simp
+  }
+  with assms
+  show ?thesis
+    using  pair_in_M_iff apply_closed zero_in_M transitivity[of _ A]
+    unfolding ifrangeF_body3_def is_ifrangeF_body3_def
+    by (auto dest:transM)
+qed
+
+lemma (in M_ZF_trans) separation_ifrangeF_body3:
+  "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
+       separation
+        (##M,
+         \<lambda>y. \<exists>x\<in>A.
+                y =
+                \<langle>x, \<mu> i. x \<in>
+                         if_range_F_else_F(\<lambda>a. if (##M)(a) then G-``{a} else 0, b, f, i)\<rangle>)"
+  using separation_is_ifrangeF_body3 ifrangeF_body3_abs
+    separation_cong[where P="is_ifrangeF_body3(##M,A,G,b,f)" and M="##M",THEN iffD1]
+  unfolding ifrangeF_body3_def if_range_F_def if_range_F_else_F_def ifrFb_body3_def
+  by simp
+
+(* (##M)(A) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow> (##M)(A') \<Longrightarrow>
+    separation(##M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F((`)(A), b, f, i)\<rangle>) *)
+
+definition ifrFb_body4 where
+  "ifrFb_body4(G,b,f,x,i) \<equiv> x \<in>
+  (if b = 0 then if i \<in> range(f) then G`(converse(f) ` i) else 0 else G`i)"
+
+relativize functional "ifrFb_body4" "ifrFb_body4_rel"
+relationalize "ifrFb_body4_rel" "is_ifrFb_body4"
+
+synthesize "is_ifrFb_body4" from_definition assuming "nonempty"
+arity_theorem for "is_ifrFb_body4_fm"
+
+definition ifrangeF_body4 :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
+  "ifrangeF_body4(M,A,G,b,f) \<equiv> \<lambda>y. \<exists>x\<in>A. y = \<langle>x,\<mu> i. ifrFb_body4(G,b,f,x,i)\<rangle>"
+
+relativize functional "ifrangeF_body4" "ifrangeF_body4_rel"
+relationalize "ifrangeF_body4_rel" "is_ifrangeF_body4"
+
+synthesize "is_ifrangeF_body4" from_definition assuming "nonempty"
+arity_theorem for "is_ifrangeF_body4_fm"
+
+lemma (in M_ZF_trans) separation_is_ifrangeF_body4:
+  "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation(##M, is_ifrangeF_body4(##M,A,G,r,s))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,A,G,r,s] \<Turnstile> is_ifrangeF_body4_fm(1,2,3,4,0)",THEN iffD1])
+   apply(rule_tac is_ifrangeF_body4_iff_sats[where env="[_,A,G,r,s]",symmetric])
+              apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[A,G,r,s]",simplified])
+    apply(simp_all add:arity_is_ifrangeF_body4_fm ord_simp_union is_ifrangeF_body4_fm_type)
+  done
+
+lemma (in M_basic) is_ifrFb_body4_closed: "M(G) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow> is_ifrFb_body4(M, G, r, s, x, i) \<Longrightarrow> M(i)"
+  using If_abs
+  unfolding ifrangeF_body4_def is_ifrangeF_body4_def is_ifrFb_body4_def fun_apply_def
+  by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
+
+lemma (in M_ZF_trans) ifrangeF_body4_abs:
+  assumes "(##M)(A)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
+  shows "is_ifrangeF_body4(##M,A,G,r,s,x) \<longleftrightarrow> ifrangeF_body4(##M,A,G,r,s,x)"
+proof -
+  {
+    fix a
+    assume "a\<in>M"
+    with assms
+    have "(\<mu> i. i\<in> M \<and> is_ifrFb_body4(##M, G, r, s, z, i))= (\<mu> i. is_ifrFb_body4(##M, G, r, s, z, i))" for z
+      using is_ifrFb_body4_closed[of G r s z]
+      by (rule_tac Least_cong[of "\<lambda>i. i\<in>M \<and> is_ifrFb_body4(##M,G,r,s,z,i)"]) auto
+    moreover
+    have "(\<mu> i. is_ifrFb_body4(##M, G, r, s, z, i))= (\<mu> i. ifrFb_body4(G, r, s, z, i))" if "z\<in>M" for z
+    proof (rule_tac Least_cong[of "\<lambda>i. is_ifrFb_body4(##M,G,r,s,z,i)" "\<lambda>i. ifrFb_body4(G,r,s,z,i)"])
+      fix y
+      from assms \<open>a\<in>M\<close> \<open>z\<in>M\<close>
+      show "is_ifrFb_body4(##M, G, r, s, z, y) \<longleftrightarrow> ifrFb_body4(G, r, s, z, y)"
+        using If_abs apply_0
+        unfolding ifrFb_body4_def is_ifrFb_body4_def
+        apply (cases "y\<in>M"; cases "y\<in>range(s)"; cases "r=0"; cases "y\<in>domain(G)";
+            auto dest:transM split del: split_if del:iffI)
+        by (auto simp flip:setclass_iff; (force simp only: fun_apply_def setclass_iff))
+          (auto simp flip:setclass_iff simp: fun_apply_def )
+    qed
+    moreover from \<open>a\<in>M\<close>
+    have "least(##M, \<lambda>i. i \<in> M \<and> is_ifrFb_body4(##M, G, r, s, z, i), a)
+      \<longleftrightarrow> a = (\<mu> i.  i\<in> M \<and> is_ifrFb_body4(##M, G, r, s, z,i))" for z
+      using If_abs least_abs'[of "\<lambda>i. (##M)(i) \<and> is_ifrFb_body4(##M,G,r,s,z,i)" a]
+      by simp
+    ultimately
+    have "z\<in>M \<Longrightarrow> least(##M, \<lambda>i. i \<in> M \<and> is_ifrFb_body4(##M, G, r, s, z, i), a)
+      \<longleftrightarrow> a = (\<mu> i. ifrFb_body4(G, r, s, z,i))" for z
+      by simp
+  }
+  with assms
+  show ?thesis
+    using  pair_in_M_iff apply_closed zero_in_M transitivity[of _ A]
+    unfolding ifrangeF_body4_def is_ifrangeF_body4_def
+    by (auto dest:transM)
+qed
+
+lemma (in M_ZF_trans) separation_ifrangeF_body4:
+  "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
+       separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F((`)(G), b, f, i)\<rangle>)"
+  using separation_is_ifrangeF_body4 ifrangeF_body4_abs
+    separation_cong[where P="is_ifrangeF_body4(##M,A,G,b,f)" and M="##M",THEN iffD1]
+  unfolding ifrangeF_body4_def if_range_F_def if_range_F_else_F_def ifrFb_body4_def
+  by simp
+
+(* (##M)(G) \<Longrightarrow> (##M)(A) \<Longrightarrow>
+    separation(##M,
+      \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. {xa \<in> G . x \<in> xa}, b, f, i)\<rangle>) *)
+
+definition ifrFb_body5 where
+  "ifrFb_body5(G,b,f,x,i) \<equiv> x \<in>
+  (if b = 0 then if i \<in> range(f) then {xa \<in> G . converse(f) ` i \<in> xa} else 0 else {xa \<in> G . i \<in> xa})"
+
+relativize functional "ifrFb_body5" "ifrFb_body5_rel"
+relationalize "ifrFb_body5_rel" "is_ifrFb_body5"
+
+synthesize "is_ifrFb_body5" from_definition assuming "nonempty"
+arity_theorem for "is_ifrFb_body5_fm"
+
+definition ifrangeF_body5 :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
+  "ifrangeF_body5(M,A,G,b,f) \<equiv> \<lambda>y. \<exists>x\<in>A. y = \<langle>x,\<mu> i. ifrFb_body5(G,b,f,x,i)\<rangle>"
+
+relativize functional "ifrangeF_body5" "ifrangeF_body5_rel"
+relationalize "ifrangeF_body5_rel" "is_ifrangeF_body5"
+
+synthesize "is_ifrangeF_body5" from_definition assuming "nonempty"
+arity_theorem for "is_ifrangeF_body5_fm"
+
+lemma (in M_ZF_trans) separation_is_ifrangeF_body5:
+  "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation(##M, is_ifrangeF_body5(##M,A,G,r,s))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,A,G,r,s] \<Turnstile> is_ifrangeF_body5_fm(1,2,3,4,0)",THEN iffD1])
+   apply(rule_tac is_ifrangeF_body5_iff_sats[where env="[_,A,G,r,s]",symmetric])
+              apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[A,G,r,s]",simplified])
+    apply(simp_all add:arity_is_ifrangeF_body5_fm ord_simp_union is_ifrangeF_body5_fm_type)
+  done
+
+lemma (in M_basic) is_ifrFb_body5_closed: "M(G) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow> is_ifrFb_body5(M, G, r, s, x, i) \<Longrightarrow> M(i)"
+  using If_abs
+  unfolding ifrangeF_body5_def is_ifrangeF_body5_def is_ifrFb_body5_def fun_apply_def
+  by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
+
+lemma (in M_ZF_trans) ifrangeF_body5_abs:
+  assumes "(##M)(A)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
+  shows "is_ifrangeF_body5(##M,A,G,r,s,x) \<longleftrightarrow> ifrangeF_body5(##M,A,G,r,s,x)"
+proof -
+  {
+    fix a
+    assume "a\<in>M"
+    with assms
+    have "(\<mu> i. i\<in> M \<and> is_ifrFb_body5(##M, G, r, s, z, i))= (\<mu> i. is_ifrFb_body5(##M, G, r, s, z, i))" for z
+      using is_ifrFb_body5_closed[of G r s z]
+      by (rule_tac Least_cong[of "\<lambda>i. i\<in>M \<and> is_ifrFb_body5(##M,G,r,s,z,i)"]) auto
+    moreover
+    have "(\<mu> i. is_ifrFb_body5(##M, G, r, s, z, i))= (\<mu> i. ifrFb_body5(G, r, s, z, i))" if "z\<in>M" for z
+    proof (rule_tac Least_cong[of "\<lambda>i. is_ifrFb_body5(##M,G,r,s,z,i)" "\<lambda>i. ifrFb_body5(G,r,s,z,i)"])
+      fix y
+      from assms \<open>a\<in>M\<close> \<open>z\<in>M\<close>
+      show "is_ifrFb_body5(##M, G, r, s, z, y) \<longleftrightarrow> ifrFb_body5(G, r, s, z, y)"
+        using If_abs apply_0 separation_in_constant separation_in_rev
+        unfolding ifrFb_body5_def is_ifrFb_body5_def
+        apply (cases "y\<in>M"; cases "y\<in>range(s)"; cases "r=0"; cases "y\<in>domain(G)";
+            auto dest:transM split del: split_if del:iffI)
+        apply (auto simp flip:setclass_iff; (force simp only: fun_apply_def setclass_iff))
+        apply (auto simp flip:setclass_iff simp: fun_apply_def)
+        apply (auto dest:transM)
+        done
+    qed
+    moreover from \<open>a\<in>M\<close>
+    have "least(##M, \<lambda>i. i \<in> M \<and> is_ifrFb_body5(##M, G, r, s, z, i), a)
+      \<longleftrightarrow> a = (\<mu> i.  i\<in> M \<and> is_ifrFb_body5(##M, G, r, s, z,i))" for z
+      using If_abs least_abs'[of "\<lambda>i. (##M)(i) \<and> is_ifrFb_body5(##M,G,r,s,z,i)" a]
+      by simp
+    ultimately
+    have "z\<in>M \<Longrightarrow> least(##M, \<lambda>i. i \<in> M \<and> is_ifrFb_body5(##M, G, r, s, z, i), a)
+      \<longleftrightarrow> a = (\<mu> i. ifrFb_body5(G, r, s, z,i))" for z
+      by simp
+  }
+  with assms
+  show ?thesis
+    using  pair_in_M_iff apply_closed zero_in_M transitivity[of _ A]
+    unfolding ifrangeF_body5_def is_ifrangeF_body5_def
+    by (auto dest:transM)
+qed
+
+lemma (in M_ZF_trans) separation_ifrangeF_body5:
+  "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
+       separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. {xa \<in> G . x \<in> xa}, b, f, i)\<rangle>)"
+  using separation_is_ifrangeF_body5 ifrangeF_body5_abs
+    separation_cong[where P="is_ifrangeF_body5(##M,A,G,b,f)" and M="##M",THEN iffD1]
+  unfolding ifrangeF_body5_def if_range_F_def if_range_F_else_F_def ifrFb_body5_def
+  by simp
+
+(* (##M)(A) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
+    separation(##M,
+      \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. {p \<in> A . domain(p) = a}, b, f, i)\<rangle>) *)
+
+definition ifrFb_body6 where
+  "ifrFb_body6(G,b,f,x,i) \<equiv> x \<in>
+  (if b = 0 then if i \<in> range(f) then {p\<in>G . domain(p) = converse(f) ` i} else 0 else {p\<in>G . domain(p) = i})"
+
+relativize functional "ifrFb_body6" "ifrFb_body6_rel"
+relationalize "ifrFb_body6_rel" "is_ifrFb_body6"
+
+synthesize "is_ifrFb_body6" from_definition assuming "nonempty"
+arity_theorem for "is_ifrFb_body6_fm"
+
+definition ifrangeF_body6 :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
+  "ifrangeF_body6(M,A,G,b,f) \<equiv> \<lambda>y. \<exists>x\<in>A. y = \<langle>x,\<mu> i. ifrFb_body6(G,b,f,x,i)\<rangle>"
+
+relativize functional "ifrangeF_body6" "ifrangeF_body6_rel"
+relationalize "ifrangeF_body6_rel" "is_ifrangeF_body6"
+
+synthesize "is_ifrangeF_body6" from_definition assuming "nonempty"
+arity_theorem for "is_ifrangeF_body6_fm"
+
+lemma (in M_ZF_trans) separation_is_ifrangeF_body6:
+  "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation(##M, is_ifrangeF_body6(##M,A,G,r,s))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,A,G,r,s] \<Turnstile> is_ifrangeF_body6_fm(1,2,3,4,0)",THEN iffD1])
+   apply(rule_tac is_ifrangeF_body6_iff_sats[where env="[_,A,G,r,s]",symmetric])
+              apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[A,G,r,s]",simplified])
+    apply(simp_all add:arity_is_ifrangeF_body6_fm ord_simp_union is_ifrangeF_body6_fm_type)
+  done
+
+lemma (in M_basic) ifrFb_body6_closed: "M(G) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow> ifrFb_body6(G, r, s, x, i) \<longleftrightarrow>  M(i) \<and> ifrFb_body6(G, r, s, x, i)"
+  using If_abs
+  unfolding ifrangeF_body6_def is_ifrangeF_body6_def ifrFb_body6_def fun_apply_def
+  by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
+
+lemma (in M_basic) is_ifrFb_body6_closed: "M(G) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow> is_ifrFb_body6(M, G, r, s, x, i) \<Longrightarrow> M(i)"
+  using If_abs
+  unfolding ifrangeF_body6_def is_ifrangeF_body6_def is_ifrFb_body6_def fun_apply_def
+  by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
+
+lemma (in M_ZF_trans) ifrangeF_body6_abs:
+  assumes "(##M)(A)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
+  shows "is_ifrangeF_body6(##M,A,G,r,s,x) \<longleftrightarrow> ifrangeF_body6(##M,A,G,r,s,x)"
+proof -
+  {
+    fix a
+    assume "a\<in>M"
+    with assms
+    have "(\<mu> i. i\<in> M \<and> is_ifrFb_body6(##M, G, r, s, z, i))= (\<mu> i. is_ifrFb_body6(##M, G, r, s, z, i))" for z
+      using is_ifrFb_body6_closed[of G r s z]
+      by (rule_tac Least_cong[of "\<lambda>i. i\<in>M \<and> is_ifrFb_body6(##M,G,r,s,z,i)"]) auto
+    moreover
+    have "(\<mu> i. i\<in>M \<and> is_ifrFb_body6(##M, G, r, s, z, i))= (\<mu> i. i\<in>M \<and>  ifrFb_body6(G, r, s, z, i))" if "z\<in>M" for z
+    proof (rule_tac Least_cong[of "\<lambda>i. i\<in>M \<and> is_ifrFb_body6(##M,G,r,s,z,i)" "\<lambda>i. i\<in>M \<and> ifrFb_body6(G,r,s,z,i)"])
+      fix y
+      from assms \<open>a\<in>M\<close> \<open>z\<in>M\<close>
+      show "y\<in>M \<and> is_ifrFb_body6(##M, G, r, s, z, y) \<longleftrightarrow> y\<in>M \<and> ifrFb_body6(G, r, s, z, y)"
+        using If_abs apply_0 separation_in_constant transitivity[of _ G]
+          separation_closed converse_closed apply_closed range_closed zero_in_M
+          separation_cong[OF eq_commute,THEN iffD1,OF domain_eq_separation]
+        unfolding ifrFb_body6_def is_ifrFb_body6_def
+        by auto
+    qed
+    moreover from \<open>a\<in>M\<close>
+    have "least(##M, \<lambda>i. i \<in> M \<and> is_ifrFb_body6(##M, G, r, s, z, i), a)
+      \<longleftrightarrow> a = (\<mu> i.  i\<in> M \<and> is_ifrFb_body6(##M, G, r, s, z,i))" for z
+      using If_abs least_abs'[of "\<lambda>i. (##M)(i) \<and> is_ifrFb_body6(##M,G,r,s,z,i)" a]
+      by simp
+    ultimately
+    have "z\<in>M \<Longrightarrow> least(##M, \<lambda>i. i \<in> M \<and> is_ifrFb_body6(##M, G, r, s, z, i), a)
+      \<longleftrightarrow> a = (\<mu> i. ifrFb_body6(G, r, s, z,i))" for z
+      using Least_cong[OF ifrFb_body6_closed[of G r s]] assms
+      by simp
+  }
+  with assms
+  show ?thesis
+    using  pair_in_M_iff apply_closed zero_in_M transitivity[of _ A]
+    unfolding ifrangeF_body6_def is_ifrangeF_body6_def
+    by (auto dest:transM)
+qed
+
+lemma (in M_ZF_trans) separation_ifrangeF_body6:
+  "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
+       separation(##M,
+      \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. {p \<in> G . domain(p) = a}, b, f, i)\<rangle>)"
+  using separation_is_ifrangeF_body6 ifrangeF_body6_abs
+    separation_cong[where P="is_ifrangeF_body6(##M,A,G,b,f)" and M="##M",THEN iffD1]
+  unfolding ifrangeF_body6_def if_range_F_def if_range_F_else_F_def ifrFb_body6_def
+  by simp
+
+
+
+(* (##M)(A) \<Longrightarrow> (##M)(f) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(D) \<Longrightarrow> (##M)(r') \<Longrightarrow> (##M)(A') \<Longrightarrow>
+    separation(##M,
+      \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(drSR_Y(r', D, A), b, f, i)\<rangle>) *)
+
+definition ifrFb_body7 where
+  "ifrFb_body7(B,D,A,b,f,x,i) \<equiv> x \<in>
+    (if b = 0 then if i \<in> range(f) then
+        {d \<in> D . \<exists>r\<in>A. restrict(r, B) = converse(f) ` i \<and> d = domain(r)} else 0
+       else {d \<in> D . \<exists>r\<in>A. restrict(r, B) = i \<and> d = domain(r)})"
+
+relativize functional "ifrFb_body7" "ifrFb_body7_rel"
+relationalize "ifrFb_body7_rel" "is_ifrFb_body7"
+
+synthesize "is_ifrFb_body7" from_definition assuming "nonempty"
+arity_theorem for "is_ifrFb_body7_fm"
+
+definition ifrangeF_body7 :: "[i\<Rightarrow>o,i,i,i,i,i,i,i] \<Rightarrow> o" where
+  "ifrangeF_body7(M,A,B,D,G,b,f) \<equiv> \<lambda>y. \<exists>x\<in>A. y = \<langle>x,\<mu> i. ifrFb_body7(B,D,G,b,f,x,i)\<rangle>"
+
+relativize functional "ifrangeF_body7" "ifrangeF_body7_rel"
+relationalize "ifrangeF_body7_rel" "is_ifrangeF_body7"
+
+synthesize "is_ifrangeF_body7" from_definition assuming "nonempty"
+arity_theorem for "is_ifrangeF_body7_fm"
+
+lemma (in M_ZF_trans) separation_is_ifrangeF_body7:
+  "(##M)(A) \<Longrightarrow> (##M)(B) \<Longrightarrow> (##M)(D) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation(##M, is_ifrangeF_body7(##M,A,B,D,G,r,s))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,A,B,D,G,r,s] \<Turnstile> is_ifrangeF_body7_fm(1,2,3,4,5,6,0)",THEN iffD1])
+   apply(rule_tac is_ifrangeF_body7_iff_sats[where env="[_,A,B,D,G,r,s]",symmetric])
+                  apply(simp_all add:zero_in_M)
+  apply(rule_tac separation_ax[where env="[A,B,D,G,r,s]",simplified])
+    apply(simp_all add:arity_is_ifrangeF_body7_fm ord_simp_union is_ifrangeF_body7_fm_type)
+  done
+
+lemma (in M_basic) ifrFb_body7_closed: "M(B) \<Longrightarrow> M(D) \<Longrightarrow> M(G) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow>
+  ifrFb_body7(B,D,G, r, s, x, i) \<longleftrightarrow>  M(i) \<and> ifrFb_body7(B,D,G, r, s, x, i)"
+  using If_abs
+  unfolding ifrangeF_body7_def is_ifrangeF_body7_def ifrFb_body7_def fun_apply_def
+  by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
+
+lemma (in M_basic) is_ifrFb_body7_closed: "M(B) \<Longrightarrow> M(D) \<Longrightarrow> M(G) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow>
+  is_ifrFb_body7(M, B,D,G, r, s, x, i) \<Longrightarrow> M(i)"
+  using If_abs
+  unfolding ifrangeF_body7_def is_ifrangeF_body7_def is_ifrFb_body7_def fun_apply_def
+  by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
+
+lemma (in M_ZF_trans) ifrangeF_body7_abs:
+  assumes "(##M)(A)"  "(##M)(B)" "(##M)(D)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
+  shows "is_ifrangeF_body7(##M,A,B,D,G,r,s,x) \<longleftrightarrow> ifrangeF_body7(##M,A,B,D,G,r,s,x)"
+proof -
+  from assms
+  have sep_dr: "y\<in>M \<Longrightarrow> separation(##M, \<lambda>d . \<exists>r\<in>M . r\<in>G\<and> y = restrict(r, B) \<and> d = domain(r))" for y
+    by(rule_tac separation_cong[where P'="\<lambda>d . \<exists>r\<in> M . r\<in>G \<and> y = restrict(r, B) \<and> d = domain(r)",THEN iffD1,OF _
+        separation_restrict_eq_dom_eq[rule_format,of G B y]],auto simp:transitivity[of _ G])
+
+  from assms
+  have sep_dr'': "y\<in>M \<Longrightarrow> separation(##M, \<lambda>d . \<exists>r\<in>M. r \<in> G \<and> d = domain(r) \<and> converse(s) ` y = restrict(r, B))" for y
+    apply(rule_tac separation_cong[where P'="\<lambda>d . \<exists>r\<in> M . r\<in>G \<and> d = domain(r) \<and> converse(s) ` y = restrict(r, B)",THEN iffD1,OF _ separation_restrict_eq_dom_eq[rule_format,of G B "converse(s) ` y "]])
+    by(auto simp:transitivity[of _ G] apply_closed[simplified] converse_closed[simplified])
+  from assms
+  have sep_dr':"separation(##M, \<lambda>x. \<exists>r\<in>M. r \<in> G \<and> x = domain(r) \<and> 0 = restrict(r, B))"
+    apply(rule_tac separation_cong[where P'="\<lambda>d . \<exists>r\<in> M . r\<in>G \<and> d = domain(r) \<and> 0 = restrict(r, B)",THEN iffD1,OF _ separation_restrict_eq_dom_eq[rule_format,of G B 0]])
+    by(auto simp:transitivity[of _ G] zero_in_M)
+  {
+    fix a
+    assume "a\<in>M"
+    with assms
+    have "(\<mu> i. i\<in> M \<and> is_ifrFb_body7(##M, B,D,G, r, s, z, i))= (\<mu> i. is_ifrFb_body7(##M,B,D, G, r, s, z, i))" for z
+      using is_ifrFb_body7_closed[of B D G r s z]
+      by (rule_tac Least_cong[of "\<lambda>i. i\<in>M \<and> is_ifrFb_body7(##M,B,D,G,r,s,z,i)"]) auto
+    moreover from this
+    have "(\<mu> i. i\<in>M \<and> is_ifrFb_body7(##M, B,D,G, r, s, z, i))= (\<mu> i. i\<in>M \<and>  ifrFb_body7(B,D,G, r, s, z, i))" if "z\<in>M" for z
+    proof (rule_tac Least_cong[of "\<lambda>i. i\<in>M \<and> is_ifrFb_body7(##M,B,D,G,r,s,z,i)" "\<lambda>i. i\<in>M \<and> ifrFb_body7(B,D,G,r,s,z,i)"])
+      from assms \<open>a\<in>M\<close> \<open>z\<in>M\<close>
+      have "is_ifrFb_body7(##M, B,D,G, r, s, z, y) \<longleftrightarrow> ifrFb_body7(B,D,G, r, s, z, y)" if "y\<in>M" for y
+        using If_abs apply_0
+          separation_closed converse_closed apply_closed range_closed zero_in_M
+          separation_restrict_eq_dom_eq
+          transitivity[of _ D] transitivity[of _ G]  that sep_dr sep_dr' sep_dr''
+         unfolding ifrFb_body7_def is_ifrFb_body7_def
+         by auto
+       then
+       show " y \<in> M \<and> is_ifrFb_body7(##M, B, D, G, r, s, z, y) \<longleftrightarrow> y \<in> M \<and> ifrFb_body7(B, D, G, r, s, z, y)" for y
+         using conj_cong
+         by simp
+       qed
+    moreover from \<open>a\<in>M\<close>
+    have "least(##M, \<lambda>i. i \<in> M \<and> is_ifrFb_body7(##M, B,D,G, r, s, z, i), a)
+      \<longleftrightarrow> a = (\<mu> i.  i\<in> M \<and> is_ifrFb_body7(##M,B,D,G, r, s, z,i))" for z
+      using If_abs least_abs'[of "\<lambda>i. (##M)(i) \<and> is_ifrFb_body7(##M,B,D,G,r,s,z,i)" a]
+      by simp
+    ultimately
+    have "z\<in>M \<Longrightarrow> least(##M, \<lambda>i. i \<in> M \<and> is_ifrFb_body7(##M,B,D,G, r, s, z, i), a)
+      \<longleftrightarrow> a = (\<mu> i. ifrFb_body7(B,D,G, r, s, z,i))" for z
+      using Least_cong[OF ifrFb_body7_closed[of B D G r s]] assms
+      by simp
+  }
+  with assms
+  show ?thesis
+    using  pair_in_M_iff apply_closed zero_in_M transitivity[of _ A]
+    unfolding ifrangeF_body7_def is_ifrangeF_body7_def
+    by (auto dest:transM)
+qed
+
+lemma (in M_ZF_trans) separation_ifrangeF_body7:
+  "(##M)(A) \<Longrightarrow> (##M)(B) \<Longrightarrow> (##M)(D) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
+    separation(##M,
+      \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(drSR_Y(B, D, G), b, f, i)\<rangle>)"
+  using separation_is_ifrangeF_body7 ifrangeF_body7_abs drSR_Y_equality
+    separation_cong[where P="is_ifrangeF_body7(##M,A,B,D,G,b,f)" and M="##M",THEN iffD1]
+  unfolding ifrangeF_body7_def if_range_F_def if_range_F_else_F_def ifrFb_body7_def
   by simp
 
 end

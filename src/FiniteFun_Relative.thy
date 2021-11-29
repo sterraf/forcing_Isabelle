@@ -409,6 +409,11 @@ lemma Fnle_nat_closed[intro,simp]:
   unfolding Fnle_def Fnlerel_def Rrel_def
   using supset_separation FiniteFun_closed Fn_nat_eq_FiniteFun assms by simp
 
+lemma Fn_nat_closed:
+  assumes "M(A)" "M(B)" shows "M(Fn(\<omega>,A,B))"
+  using assms Fn_nat_eq_FiniteFun
+  by simp
+
 end (* M_FiniteFun *)
 
 end

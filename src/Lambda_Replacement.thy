@@ -1864,16 +1864,7 @@ lemma drSR_Y_equality: "drSR_Y(B,D,A,x) = { dr\<in>D . (\<exists>r\<in>A . restr
 context M_replacement_extra
 begin
 
-lemma lam_replacement_drSR_Y:
-  assumes
-    "M(B)" "M(D)" "M(A)"
-  shows "lam_replacement(M, drSR_Y(B,D,A))"
-proof -
-  note fst3 = lam_replacement_hcomp[OF lam_replacement_fst
-                lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_fst]]
-  note assms
-  moreover
-  have 1:"\<forall>x[M].separation(M, \<lambda>dr. \<exists>r\<in>A . restrict(r,B) = x \<and> dr=domain(r))"
+lemma separation_restrict_eq_dom_eq:"\<forall>x[M].separation(M, \<lambda>dr. \<exists>r\<in>A . restrict(r,B) = x \<and> dr=domain(r))"
     if "M(A)" and "M(B)" for A B
     using that
       separation_eq[OF _
@@ -1883,22 +1874,28 @@ proof -
         lam_replacement_hcomp[OF lam_replacement_snd lam_replacement_restrict'] _
         lam_replacement_constant]
     by(clarify,rule_tac separation_bex[OF _ \<open>M(A)\<close>],rule_tac separation_conj,simp_all)
-  moreover
-  have "separation(M, \<lambda>p. \<forall>x\<in>D. x \<in> snd(p) \<longleftrightarrow> (\<exists>r\<in>A. restrict(r, B) = fst(p) \<and> x = domain(r)))"
-    if "M(B)" "M(D)" "M(A)" for A B D
+
+
+lemma separation_is_insnd_restrict_eq_dom : "separation(M, \<lambda>p. \<forall>x\<in>D. x \<in> snd(p) \<longleftrightarrow> (\<exists>r\<in>A. restrict(r, B) = fst(p) \<and> x = domain(r)))"
+  if "M(B)" "M(D)" "M(A)" for A B D
     using that lam_replacement_fst lam_replacement_hcomp lam_replacement_snd separation_in
       separation_eq[OF _
           lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_snd] _
           lam_replacement_hcomp[OF lam_replacement_snd lam_replacement_domain]]
-       separation_eq
-        lam_replacement_hcomp[OF lam_replacement_snd lam_replacement_restrict'] fst3
+       separation_eq separation_restrict_eq_dom_eq
+        lam_replacement_hcomp[OF lam_replacement_snd lam_replacement_restrict']
+lam_replacement_hcomp[OF lam_replacement_fst
+                lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_fst]]
     by(rule_tac separation_ball,rule_tac separation_iff',simp_all,
         rule_tac separation_bex[OF _ \<open>M(A)\<close>],rule_tac separation_conj,simp_all)
-  ultimately
-  show ?thesis
-  using lam_replacement_cong lam_replacement_Collect[OF \<open>M(D)\<close> 1[of A B]]
-    assms drSR_Y_equality by simp
-qed
+
+lemma lam_replacement_drSR_Y:
+  assumes
+    "M(B)" "M(D)" "M(A)"
+  shows "lam_replacement(M, drSR_Y(B,D,A))"
+  using lam_replacement_cong lam_replacement_Collect[OF \<open>M(D)\<close> separation_restrict_eq_dom_eq[of A B]]
+    assms drSR_Y_equality separation_is_insnd_restrict_eq_dom separation_restrict_eq_dom_eq
+  by simp
 
 lemma lam_if_then_apply_replacement: "M(f) \<Longrightarrow> M(v) \<Longrightarrow> M(u) \<Longrightarrow>
      lam_replacement(M, \<lambda>x. if f ` x = v then f ` u else f ` x)"
