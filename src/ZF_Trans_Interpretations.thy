@@ -13,7 +13,7 @@ lemmas (in M_ZF_trans) separation_instances =
   separation_radd_body separation_rmult_body
 
 lemma (in M_ZF_trans) lam_replacement_inj_rel:
-  shows 
+  shows
   "lam_replacement(##M, \<lambda>p. inj\<^bsup>##M\<^esup>(fst(p),snd(p)))"
   using lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. inj\<^bsup>M\<^esup>(fst(p),snd(p))"]
     LambdaPair_in_M[where \<phi>="is_inj_fm(0,1,2)" and is_f="is_inj(##M)" and env="[]",OF
@@ -49,8 +49,8 @@ lemma arity_aux : "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> arity
   using arity_image_fm arity_pred_set_fm pred_Un_distrib union_abs2[of 3] union_abs1
   by (simp,auto simp add:Un_assoc[symmetric] union_abs1)
 
-lemma arity_omap_wfrec: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> 
-  arity(is_wfrec_fm(omap_wfrec_body(A,r),succ(succ(succ(r))), 1, 0)) = 
+lemma arity_omap_wfrec: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>
+  arity(is_wfrec_fm(omap_wfrec_body(A,r),succ(succ(succ(r))), 1, 0)) =
   (4#+A) \<union> (4#+r)"
   using Arities.arity_is_wfrec_fm[OF _ _ _ _ _ arity_aux,of A r "3#+r" 1 0] pred_Un_distrib
     union_abs1 union_abs2 type_omap_wfrec_body_fm
@@ -66,7 +66,7 @@ lemma arity_isordermap: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>
 
 lemma arity_is_ordertype: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>d\<in>nat\<Longrightarrow>
    arity(is_ordertype_fm(A,r,d)) = succ(d) \<union> (succ(A) \<union> succ(r))"
-  unfolding is_ordertype_fm_def 
+  unfolding is_ordertype_fm_def
   using arity_isordermap arity_image_fm pred_Un_distrib
   by auto
 
@@ -75,7 +75,7 @@ arity_theorem for "is_order_body_fm"
 lemma arity_is_order_body: "arity(is_order_body_fm(2,0,1)) = 3"
   using arity_is_order_body_fm arity_is_ordertype ord_simp_union
   by simp
-  
+
 lemma (in M_ZF_trans) replacement_is_order_body:
  "X\<in>M \<Longrightarrow> strong_replacement(##M, is_order_body(##M,X))"
   apply(rule_tac strong_replacement_cong[
@@ -92,7 +92,7 @@ lemma (in M_pre_cardinal_arith) is_order_body_abs :
    M(z) \<and> M(x) \<and> x\<in>Pow_rel(M,X\<times>X) \<and> well_ord(X, x) \<and> z = ordertype(X, x)"
   using well_ord_abs is_well_ord_iff_wellordered is_ordertype_iff' ordertype_rel_abs
   well_ord_is_linear subset_abs Pow_rel_char
-  unfolding is_order_body_def 
+  unfolding is_order_body_def
   by simp
 
 
@@ -133,7 +133,7 @@ definition order_pred_wfrec_body where
 synthesize "order_pred_wfrec_body" from_definition
 arity_theorem for "order_pred_wfrec_body_fm"
 
-lemma (in M_ZF_trans) wfrec_replacement_order_pred: 
+lemma (in M_ZF_trans) wfrec_replacement_order_pred:
   "A\<in>M \<Longrightarrow> r\<in>M \<Longrightarrow> wfrec_replacement(##M, \<lambda>x g z. is_H_order_pred(##M,A,r,x,g,z) , r)"
   unfolding wfrec_replacement_def is_wfrec_def M_is_recfun_def is_H_order_pred_def
   apply(rule_tac strong_replacement_cong[
@@ -154,9 +154,9 @@ lemma (in M_ZF_trans) wfrec_replacement_order_pred':
 sublocale M_ZF_trans \<subseteq> M_pre_cardinal_arith "##M"
   using separation_instances wfrec_replacement_order_pred'[unfolded H_order_pred_def]
     replacement_is_order_eq_map[unfolded order_eq_map_def] banach_replacement
-  by unfold_locales simp_all 
+  by unfold_locales simp_all
 
-lemma (in M_ZF_trans) replacement_ordertype: 
+lemma (in M_ZF_trans) replacement_ordertype:
   "X\<in>M \<Longrightarrow> strong_replacement(##M, \<lambda>x z. z \<in> M \<and> x \<in> M \<and> x \<in> Pow\<^bsup>M\<^esup>(X \<times> X) \<and> well_ord(X, x) \<and> z = ordertype(X, x))"
   using strong_replacement_cong[THEN iffD1,OF _ replacement_is_order_body,simplified] is_order_body_abs
   unfolding is_order_body_def
@@ -191,14 +191,14 @@ lemma (in M_pre_cardinal_arith) univalent_aux2: "M(X) \<Longrightarrow> univalen
 lemma (in M_pre_cardinal_arith) is_jump_cardinal_body_abs :
   "M(X) \<Longrightarrow> M(c) \<Longrightarrow> is_jump_cardinal_body'(M, X, c) \<longleftrightarrow> c = jump_cardinal_body'_rel(M,X)"
   using well_ord_abs is_well_ord_iff_wellordered is_ordertype_iff' ordertype_rel_abs
-  well_ord_is_linear subset_abs Pow_rel_iff Replace_abs[of "Pow_rel(M,X\<times>X)",OF _ _ 
+  well_ord_is_linear subset_abs Pow_rel_iff Replace_abs[of "Pow_rel(M,X\<times>X)",OF _ _
     univalent_aux2]
   unfolding is_jump_cardinal_body'_def jump_cardinal_body'_rel_def
   by simp
 
-lemma (in M_ZF_trans) replacement_jump_cardinal_body: 
+lemma (in M_ZF_trans) replacement_jump_cardinal_body:
   "strong_replacement(##M, \<lambda>x z. z \<in> M \<and> x \<in> M \<and> z = jump_cardinal_body(##M, x))"
-  using strong_replacement_cong[THEN iffD1,OF _ replacement_is_jump_cardinal_body,simplified] 
+  using strong_replacement_cong[THEN iffD1,OF _ replacement_is_jump_cardinal_body,simplified]
     jump_cardinal_body_eq is_jump_cardinal_body_abs
   by simp
 
@@ -207,19 +207,19 @@ sublocale M_ZF_trans \<subseteq> M_pre_aleph "##M"
   by unfold_locales (simp_all add: transrec_replacement_def
       wfrec_replacement_def is_wfrec_def M_is_recfun_def flip:setclass_iff)
 
-arity_theorem intermediate for "is_HAleph_fm" 
+arity_theorem intermediate for "is_HAleph_fm"
 lemma arity_is_HAleph_fm: "arity(is_HAleph_fm(2, 1, 0)) = 3"
   using arity_fun_apply_fm[of "11" 0 1,simplified]
     arity_is_HAleph_fm' arity_ordinal_fm arity_is_If_fm
     arity_empty_fm arity_is_Limit_fm
-    arity_is_If_fm 
-    arity_is_Limit_fm arity_empty_fm 
+    arity_is_If_fm
+    arity_is_Limit_fm arity_empty_fm
     arity_Replace_fm[where i="12" and v=10 and n=3]
     pred_Un_distrib ord_simp_union
   by simp
-  
+
 lemma arity_is_Aleph: "arity(is_Aleph_fm(0, 1)) = 2"
-  unfolding is_Aleph_fm_def 
+  unfolding is_Aleph_fm_def
   using arity_transrec_fm[OF _ _ _ _ arity_is_HAleph_fm] ord_simp_union
   by simp
 
@@ -234,7 +234,7 @@ lemma (in M_ZF_trans) replacement_is_aleph:
     apply(simp_all add:arity_is_Aleph  ord_simp_union is_Aleph_fm_type)
   done
 
-lemma (in M_ZF_trans) replacement_aleph_rel: 
+lemma (in M_ZF_trans) replacement_aleph_rel:
   shows  "strong_replacement(##M, \<lambda>x y. Ord(x) \<and> y = \<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>)"
   using strong_replacement_cong[THEN iffD2,OF _ replacement_is_aleph,where P1="\<lambda>x y . Ord(x) \<and> y=Aleph_rel(##M,x)"]
      is_Aleph_iff
@@ -253,54 +253,17 @@ sublocale M_ZFC_trans \<subseteq> M_AC "##M"
 sublocale M_ZFC_trans \<subseteq> M_cardinal_AC "##M" ..
 
 (* TopLevel *)
-(* 2. \<And>\<gamma>. \<gamma> \<in> M \<Longrightarrow> separation(##M, \<lambda>Z. |Z|\<^bsup>M\<^esup> < \<gamma>) *)
-definition toplevel2_body :: "[i,i] \<Rightarrow> o" where
-  "toplevel2_body(x) \<equiv> \<lambda>a. |a| < x"
-
-relativize functional "toplevel2_body" "toplevel2_body_rel"
-relationalize "toplevel2_body_rel" "is_toplevel2_body"
-
-synthesize "is_toplevel2_body" from_definition assuming "nonempty"
-arity_theorem for "is_toplevel2_body_fm"
-
-lemma (in M_ZF_trans) separation_is_toplevel2_body:
- "(##M)(A) \<Longrightarrow> separation(##M, is_toplevel2_body(##M,A))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,A] \<Turnstile> is_toplevel2_body_fm(1,0)",THEN iffD1])
-   apply(rule_tac is_toplevel2_body_iff_sats[where env="[_,A]",symmetric])
-  apply(simp_all add:zero_in_M)
-  apply(rule_tac separation_ax[where env="[A]",simplified])
-    apply(simp_all add:arity_is_toplevel2_body_fm ord_simp_union is_toplevel2_body_fm_type)
-  done
-
-lemma (in M_ZF_trans) toplevel2_body_abs:
-  assumes "(##M)(A)" "(##M)(x)"
-  shows "is_toplevel2_body(##M,A,x) \<longleftrightarrow> toplevel2_body_rel(##M,A,x)"
-  using assms pair_in_M_iff apply_closed transM is_cardinal_iff
-    cardinal_rel_closed
-  unfolding toplevel2_body_rel_def is_toplevel2_body_def
-  by (auto simp:absolut)
-
-lemma (in M_ZF_trans) separation_toplevel2_body:
- "(##M)(x) \<Longrightarrow> separation(##M, \<lambda>a. |a|\<^bsup>M\<^esup> < x)"
-  using separation_is_toplevel2_body toplevel2_body_abs
-    separation_cong[where P="is_toplevel2_body(##M,x)" and M="##M",THEN iffD1]
-  unfolding toplevel2_body_rel_def
-  by simp
 
 lemma (in M_ZF_trans) cardinal_rel_lepoll_rel_abs:
  "(##M)(\<kappa>) \<Longrightarrow> (##M)(x) \<Longrightarrow> (|x|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>) \<longleftrightarrow> M,[x,\<kappa>] \<Turnstile> (\<cdot>\<exists>\<cdot>cardinal(1) is 0 \<and> \<cdot>0 \<prec> 2\<cdot>\<cdot>\<cdot>)"
-  using is_lesspoll_iff is_cardinal_iff cardinal_rel_closed nonempty 
+  using is_lesspoll_iff is_cardinal_iff cardinal_rel_closed nonempty
   by auto
 
 lemma (in M_ZF_trans) separation_cardinal_rel_lesspoll_rel:
  "(##M)(\<kappa>) \<Longrightarrow> separation(##M, \<lambda>x. |x|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>)"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,\<kappa>] \<Turnstile>  (\<cdot>\<exists>\<cdot>cardinal(1) is 0 \<and> \<cdot>0 \<prec> 2\<cdot>\<cdot>\<cdot>)",THEN iffD1])
-   apply(rule_tac cardinal_rel_lepoll_rel_abs[symmetric])
-  apply(simp_all)
-  apply(rule_tac separation_ax[where env="[\<kappa>]",simplified])
-    apply(simp_all add:arity_is_cardinal_fm arity_is_lesspoll_fm arity_is_bij_fm ord_simp_union )
-  done
+  using separation_in_ctm[where \<phi>="(\<cdot>\<exists>\<cdot>cardinal(1) is 0 \<and> \<cdot>0 \<prec> 2\<cdot>\<cdot>\<cdot>)" and env="[\<kappa>]"]
+    cardinal_rel_lepoll_rel_abs[symmetric]
+    arity_is_cardinal_fm arity_is_lesspoll_fm arity_is_bij_fm ord_simp_union
+  by simp
 
 end

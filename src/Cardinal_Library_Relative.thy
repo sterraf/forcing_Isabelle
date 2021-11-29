@@ -343,21 +343,27 @@ locale M_cardinal_library = M_library + M_replacement +
     "separation(M,Ord)"
     and
     cardinal_lib_assms2:
-    "M(A') \<Longrightarrow> M(G) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> 
+    "M(A') \<Longrightarrow> M(G) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow>
         separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. if M(a) then G`a else 0,b,f,i)\<rangle>)"
     and
     cardinal_lib_assms3:
     "M(A') \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(F) \<Longrightarrow>
         separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. if M(a) then F-``{a} else 0,b,f,i)\<rangle>)"
     and
-    cardinal_lib_assms5 :
-    "M(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
-    and 
+    lam_replacement_cardinal_rel : "lam_replacement(M, cardinal_rel(M))"
+    and
     cardinal_lib_assms6:
-    "M(f) \<Longrightarrow> M(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow> 
+    "M(f) \<Longrightarrow> M(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow>
       strong_replacement(M, \<lambda>x y. x\<in>\<beta> \<and> y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
 
 begin
+
+lemma cardinal_lib_assms5 :
+    "M(\<gamma>) \<Longrightarrow> Ord(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
+  unfolding lt_def
+  using separation_in lam_replacement_constant[of \<gamma>] separation_univ lam_replacement_cardinal_rel
+  unfolding lt_def
+  by simp_all
 
 lemma separation_dist: "separation(M, \<lambda> x . \<exists>a. \<exists>b . x=\<langle>a,b\<rangle> \<and> a\<noteq>b)"
   using separation_pair separation_neg separation_eq lam_replacement_fst lam_replacement_snd
@@ -531,7 +537,7 @@ proof -
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then G`x else 0"
     using lam_replacement_inj_rel cardinal_lib_assms2 mem_F_bound1[of _ _ G]
       lam_if_then_replacement_apply
-    by (unfold_locales, simp_all) 
+    by (unfold_locales, simp_all)
       (rule lam_Least_assumption_general[where U="\<lambda>_. domain(G)"], auto)
   note \<open>M(G)\<close>
   moreover
@@ -719,7 +725,7 @@ text\<open>The function \<^term>\<open>rec_constr\<close> allows to perform \<^e
 lemma rec_constr_unfold: "rec_constr(f,\<alpha>) = f`({rec_constr(f,\<beta>). \<beta>\<in>\<alpha>})"
   using def_transrec[OF rec_constr_def, of f \<alpha>] image_lam by simp
 
-lemma rec_constr_type: 
+lemma rec_constr_type:
   assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)" "M(G)"
   shows "M(\<alpha>) \<Longrightarrow> rec_constr(f,\<alpha>) \<in> G"
   using assms(2)
@@ -732,7 +738,7 @@ proof(induct rule:trans_induct)
     by auto
   moreover from assms this step \<open>M(\<beta>)\<close> \<open>Ord(\<beta>)\<close>
   have "M({y . x \<in> \<beta>, y=<x,rec_constr(f, x)>})" (is "M(?Z)")
-    using strong_replacement_closed[OF cardinal_lib_assms6(1),of f \<beta> \<beta>,OF _ _ _ _ 
+    using strong_replacement_closed[OF cardinal_lib_assms6(1),of f \<beta> \<beta>,OF _ _ _ _
       univalent_conjI2[where P="\<lambda>x _ . x\<in>\<beta>",OF univalent_triv]]
       transM[OF _ \<open>M(\<beta>)\<close>] transM[OF step(2) \<open>M(G)\<close>] Ord_in_Ord
     unfolding rec_constr_def
@@ -751,7 +757,7 @@ proof(induct rule:trans_induct)
   qed
   moreover from \<open>M(?Z)\<close> \<open>?Y = _\<close>
   have "M(?Y)"
-    using 
+    using
       RepFun_closed[OF lam_replacement_imp_strong_replacement[OF lam_replacement_snd] \<open>M(?Z)\<close>]
       fst_snd_closed[THEN conjunct2] transM[OF _ \<open>M(?Z)\<close>]
     by simp
@@ -782,7 +788,7 @@ lemma rec_constr_closed :
 lemma lambda_rec_constr_closed :
   assumes "Ord(\<gamma>)" "M(\<gamma>)" "M(f)" "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "M(G)"
   shows "M(\<lambda>\<alpha>\<in>\<gamma> . rec_constr(f,\<alpha>))"
-  using lam_closed2[OF cardinal_lib_assms6(1),unfolded rec_constr_def[symmetric],of f \<gamma>] 
+  using lam_closed2[OF cardinal_lib_assms6(1),unfolded rec_constr_def[symmetric],of f \<gamma>]
     rec_constr_type[OF \<open>f\<in>_\<close> Ord_in_Ord[of \<gamma>]] transM[OF _ \<open>M(G)\<close>] assms
   by simp
 
@@ -837,7 +843,7 @@ proof -
     interpret M_Pi_assumptions_choice M ?cdlt\<gamma> ?inQ
       using cdlt_assms[where Q=Q] lam_replacement_Collect_ball_Pair[THEN
           lam_replacement_imp_strong_replacement] surj_imp_inj_replacement3
-        lam_replacement_hcomp2[OF lam_replacement_constant 
+        lam_replacement_hcomp2[OF lam_replacement_constant
           lam_replacement_Collect_ball_Pair _ _ lam_replacement_minimum,
           unfolded lam_replacement_def]
         lam_replacement_hcomp lam_replacement_Sigfun[OF

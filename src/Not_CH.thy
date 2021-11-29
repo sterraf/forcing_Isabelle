@@ -9,9 +9,6 @@ definition
 
 locale M_master = M_cohen + M_library_DC +
   assumes
-  lam_apply_replacement: "M(A) \<Longrightarrow> M(f) \<Longrightarrow>
-      strong_replacement(M, \<lambda>x y. y = \<langle>x, \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>\<rangle>)"
-  and
   UN_lepoll_assumptions:
   "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(A') \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x\<in>if_range_F_else_F((`)(A), b, f, i)\<rangle>)"
 
@@ -98,7 +95,6 @@ qed
 end (* M_master_sub *)
 
 lemmas (in M_ZFC_trans) sep_instances =
- separation_toplevel2_body
  separation_Ord separation_insnd_ballPair
  separation_ifrangeF_body separation_ifrangeF_body2 separation_ifrangeF_body3
  separation_ifrangeF_body4 separation_ifrangeF_body5 separation_ifrangeF_body6
@@ -108,7 +104,6 @@ lemmas (in M_ZFC_trans) sep_instances =
 (* FIXME: the second instance has been proved in Lambda Replacement, it shouldn't be here. *)
 lemmas (in M_ZF_trans) repl_instances = lam_replacement_inj_rel
   lam_replacement_cardinal[unfolded lam_replacement_def] replacement_trans_apply_image
-  replacement_abs_apply_pair
 
 sublocale M_ZFC_trans \<subseteq> M_master "##M"
   using replacement_dcwit_repl_body\<comment> \<open>this is another replacement instance\<close>

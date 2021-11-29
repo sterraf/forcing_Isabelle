@@ -49,12 +49,12 @@ relativize functional "delta_system" "delta_system_rel" external
 
 locale M_delta = M_cardinal_library +
   assumes
-    cardinal_replacement:"strong_replacement(M, \<lambda>A y. y = \<langle>A, |A|\<^bsup>M\<^esup>\<rangle>)"
-    and
     countable_lepoll_assms:
     "M(G) \<Longrightarrow> M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A.
                           y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. {xa \<in> G . x \<in> xa}, b, f, i)\<rangle>)"
 begin
+
+lemmas cardinal_replacement = lam_replacement_cardinal_rel[unfolded lam_replacement_def]
 
 lemma disjoint_separation: "M(c) \<Longrightarrow> separation(M, \<lambda> x. \<exists>a. \<exists>b. x=\<langle>a,b\<rangle> \<and> a \<inter> b = c)"
   using separation_pair separation_eq lam_replacement_constant lam_replacement_Int

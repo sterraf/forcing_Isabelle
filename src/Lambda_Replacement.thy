@@ -1364,7 +1364,6 @@ proof -
     using separation_cong[THEN iffD1] by auto
 qed
 
-
 lemma separation_ball:
   assumes "separation(M, \<lambda>y. f(fst(y),snd(y)))" "M(X)"
   shows "separation(M, \<lambda>y. \<forall>u\<in>X. f(y,u))"
@@ -1688,6 +1687,10 @@ proof -
       lam_replacement_fst lam_replacement_snd
     by simp
 qed
+
+lemma lam_apply_replacement: "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lam_replacement(M, \<lambda>x . \<lambda>n\<in>A. f ` \<langle>x, n\<rangle>)"
+  using lam_replacement_Lambda lam_replacement_hcomp[OF _ lam_replacement_apply[of f]] lam_replacement_Pair
+  by simp
 
 end (* M_replacement *)
 
