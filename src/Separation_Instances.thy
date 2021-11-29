@@ -40,16 +40,6 @@ relationalize "radd_body_rel" "is_radd_body"
 synthesize "is_radd_body" from_definition
 arity_theorem for "is_radd_body_fm"
 
-lemma (in M_ZF_trans) separation_is_radd_body:
- "(##M)(r) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, is_radd_body(##M,A,r))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,A,r] \<Turnstile> is_radd_body_fm(1,2,0)",THEN iffD1])
-   apply(rule_tac is_radd_body_iff_sats[where env="[_,A,r]",symmetric])
-  apply(simp_all)
-  apply(rule_tac separation_ax[where env="[A,r]",simplified])
-    apply(simp_all add:arity_is_radd_body_fm ord_simp_union is_radd_body_fm_type)
-  done
-
 lemma (in M_ZF_trans) radd_body_abs:
   assumes "(##M)(R)" "(##M)(S)" "(##M)(x)"
   shows "is_radd_body(##M,R,S,x) \<longleftrightarrow> radd_body(R,S,x)"
@@ -62,10 +52,10 @@ lemma (in M_ZF_trans) separation_radd_body:
         (##M, \<lambda>z. (\<exists>x y. z = \<langle>Inl(x), Inr(y)\<rangle>) \<or>
                   (\<exists>x' x. z = \<langle>Inl(x'), Inl(x)\<rangle> \<and> \<langle>x', x\<rangle> \<in> R) \<or>
                   (\<exists>y' y. z = \<langle>Inr(y'), Inr(y)\<rangle> \<and> \<langle>y', y\<rangle> \<in> S))"
-  using separation_is_radd_body radd_body_abs
+  using separation_in_ctm[where \<phi>="is_radd_body_fm(1,2,0)" and env="[R,S]"]
+    is_radd_body_def arity_is_radd_body_fm ord_simp_union is_radd_body_fm_type radd_body_abs
   unfolding radd_body_def
-  by (rule_tac separation_cong[
-        where P="is_radd_body(##M,R,S)",THEN iffD1])
+  by simp
 
 definition rmult_body :: "[i,i,i] \<Rightarrow> o" where
   "rmult_body(b,d) \<equiv> \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in>
@@ -77,16 +67,6 @@ relationalize "rmult_body_rel" "is_rmult_body"
 synthesize "is_rmult_body" from_definition
 arity_theorem for "is_rmult_body_fm"
 
-lemma (in M_ZF_trans) separation_is_rmult_body:
- "(##M)(b) \<Longrightarrow> (##M)(d) \<Longrightarrow> separation(##M, is_rmult_body(##M,b,d))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,b,d] \<Turnstile> is_rmult_body_fm(1,2,0)",THEN iffD1])
-   apply(rule_tac is_rmult_body_iff_sats[where env="[_,b,d]",symmetric])
-  apply(simp_all)
-  apply(rule_tac separation_ax[where env="[b,d]",simplified])
-    apply(simp_all add:arity_is_rmult_body_fm ord_simp_union is_rmult_body_fm_type)
-  done
-
 lemma (in M_ZF_trans) rmult_body_abs:
   assumes "(##M)(b)" "(##M)(d)" "(##M)(x)"
   shows "is_rmult_body(##M,b,d,x) \<longleftrightarrow> rmult_body(b,d,x)"
@@ -97,8 +77,8 @@ lemma (in M_ZF_trans) rmult_body_abs:
 lemma (in M_ZF_trans) separation_rmult_body:
  "(##M)(b) \<Longrightarrow> (##M)(d) \<Longrightarrow> separation
         (##M, \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> b \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> d))"
-  using separation_is_rmult_body rmult_body_abs
-    separation_cong[where P="is_rmult_body(##M,b,d)" and M="##M",THEN iffD1]
+  using separation_in_ctm[where \<phi>="is_rmult_body_fm(1,2,0)" and env="[b,d]"]
+    is_rmult_body_def arity_is_rmult_body_fm ord_simp_union is_rmult_body_fm_type rmult_body_abs
   unfolding rmult_body_def
   by simp
 
@@ -108,20 +88,13 @@ definition well_ord_body :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
 synthesize "well_ord_body" from_definition
 arity_theorem for "well_ord_body_fm"
 
-lemma (in M_ZF_trans) separation_well_ord_body:
- "(##M)(f) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, well_ord_body(##M,A,f,r))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,A,f,r] \<Turnstile> well_ord_body_fm(1,2,3,0)",THEN iffD1])
-   apply(rule_tac well_ord_body_iff_sats[where env="[_,A,f,r]",symmetric])
-  apply(simp_all)
-  apply(rule_tac separation_ax[where env="[A,f,r]",simplified])
-    apply(simp_all add:arity_well_ord_body_fm ord_simp_union well_ord_body_fm_type)
-  done
-
 lemma (in M_ZF_trans) separation_well_ord:
  "(##M)(f) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation
         (##M, \<lambda>x. x \<in> A \<longrightarrow> (\<exists>y[##M]. \<exists>p[##M]. is_apply(##M, f, x, y) \<and> pair(##M, y, x, p) \<and> p \<in> r))"
-  using separation_well_ord_body well_ord_body_def by simp
+  using separation_in_ctm[where \<phi>="well_ord_body_fm(1,2,3,0)" and env="[A,f,r]"]
+    well_ord_body_def arity_well_ord_body_fm ord_simp_union well_ord_body_fm_type rmult_body_abs
+  using well_ord_body_def
+  by simp
 
 definition is_obase_body :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
   "is_obase_body(N,A,r,x) \<equiv> x \<in> A \<longrightarrow>
@@ -137,16 +110,6 @@ definition is_obase_body :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
 synthesize "is_obase_body" from_definition
 arity_theorem for "is_obase_body_fm"
 
-lemma (in M_ZF_trans) separation_is_obase_body:
- "(##M)(r) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, is_obase_body(##M,A,r))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,A,r] \<Turnstile> is_obase_body_fm(1,2,0)",THEN iffD1])
-   apply(rule_tac is_obase_body_iff_sats[where env="[_,A,r]",symmetric])
-  apply(simp_all)
-  apply(rule_tac separation_ax[where env="[A,r]",simplified])
-    apply(simp_all add:arity_is_obase_body_fm ord_simp_union is_obase_body_fm_type)
-  done
-
 lemma (in M_ZF_trans) separation_is_obase:
  "(##M)(f) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation
         (##M, \<lambda>x. x \<in> A \<longrightarrow>
@@ -158,7 +121,9 @@ lemma (in M_ZF_trans) separation_is_obase:
                                    membership(##M, y, my) \<and>
                                    pred_set(##M, A, x, r, pxr) \<and>
                                    order_isomorphism(##M, pxr, r, y, my, g))))"
-  using separation_is_obase_body is_obase_body_def by simp
+  using separation_in_ctm[where \<phi>="is_obase_body_fm(1,2,0)" and env="[A,r]"]
+    is_obase_body_def arity_is_obase_body_fm ord_simp_union is_obase_body_fm_type
+  by simp
 
 definition is_obase_equals :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
   "is_obase_equals(N,A,r,a) \<equiv> \<exists>x[N].
@@ -172,16 +137,6 @@ definition is_obase_equals :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
 synthesize "is_obase_equals" from_definition
 arity_theorem for "is_obase_equals_fm"
 
-lemma (in M_ZF_trans) separation_obase_equals_aux:
- "(##M)(r) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, is_obase_equals(##M,A,r))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,A,r] \<Turnstile> is_obase_equals_fm(1,2,0)",THEN iffD1])
-   apply(rule_tac is_obase_equals_iff_sats[where env="[_,A,r]",symmetric])
-  apply(simp_all)
-  apply(rule_tac separation_ax[where env="[A,r]",simplified])
-    apply(simp_all add:arity_is_obase_equals_fm ord_simp_union is_obase_equals_fm_type)
-  done
-
 lemma (in M_ZF_trans) separation_obase_equals:
  "(##M)(f) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation
         (##M, \<lambda>a. \<exists>x[##M].
@@ -191,37 +146,9 @@ lemma (in M_ZF_trans) separation_obase_equals:
                               ordinal(##M, x) \<and>
                               membership(##M, x, mx) \<and>
                               pred_set(##M, A, a, r, par) \<and> order_isomorphism(##M, par, r, x, mx, g))"
-  using separation_obase_equals_aux is_obase_equals_def by (simp)
-
-
-definition id_body :: "[i,i] \<Rightarrow> o" where
-  "id_body(A) \<equiv> \<lambda>z. \<exists>x\<in>A. z = \<langle>x, x\<rangle>"
-relativize "id_body" "is_id_body"
-synthesize "is_id_body" from_definition assuming "nonempty"
-arity_theorem for "is_id_body_fm"
-
-lemma (in M_ZF_trans) separation_is_id_body:
- "(##M)(A) \<Longrightarrow> separation(##M, is_id_body(##M,A))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,A] \<Turnstile> is_id_body_fm(1,0)",THEN iffD1])
-   apply(rule_tac is_id_body_iff_sats[where env="[_,A]",symmetric])
-  apply(simp_all add:zero_in_M)
-  apply(rule_tac separation_ax[where env="[A]",simplified])
-    apply(simp_all add:arity_is_id_body_fm ord_simp_union is_id_body_fm_type)
-  done
-
-lemma (in M_ZF_trans) id_body_abs:
-  assumes "(##M)(A)" "(##M)(x)"
-  shows "is_id_body(##M,A,x) \<longleftrightarrow> id_body(A,x)"
-  using assms zero_in_M pair_in_M_iff unfolding id_body_def is_id_body_def
-  by auto
-
-lemma (in M_ZF_trans) separation_id_body:
- "(##M)(A) \<Longrightarrow> separation
-        (##M, \<lambda>z. \<exists>x\<in>A. z = \<langle>x, x\<rangle>)"
-  using id_body_abs separation_is_id_body
-  unfolding id_body_def
-  by (rule_tac separation_cong[where P="is_id_body(##M,A)",THEN iffD1])
+  using separation_in_ctm[where \<phi>="is_obase_equals_fm(1,2,0)" and env="[A,r]"]
+    is_obase_equals_def arity_is_obase_equals_fm ord_simp_union is_obase_equals_fm_type
+  by simp
 
 synthesize "PiP_rel" from_definition assuming "nonempty"
 arity_theorem for "PiP_rel_fm"
@@ -273,16 +200,6 @@ relativize "id_rel" "is_id_rel"
 synthesize "is_id_rel" from_definition assuming "nonempty"
 arity_theorem for "is_id_rel_fm"
 
-lemma (in M_ZF_trans) separation_is_id_rel:
- "separation(##M, is_id_rel(##M))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x] \<Turnstile> is_id_rel_fm(0)",THEN iffD1])
-   apply(rule_tac is_id_rel_iff_sats[where env="[_]",symmetric])
-  apply(simp_all add:zero_in_M)
-  apply(rule_tac separation_ax[where env="[]",simplified])
-    apply(simp_all add:arity_is_id_rel_fm ord_simp_union is_id_rel_fm_type)
-  done
-
 lemma (in M_ZF_trans) id_rel_abs:
   assumes "(##M)(x)"
   shows "is_id_rel(##M,x) \<longleftrightarrow> id_rel(##M,x)"
@@ -291,25 +208,16 @@ lemma (in M_ZF_trans) id_rel_abs:
 
 lemma (in M_ZF_trans) separation_id_rel:
  "separation(##M, \<lambda>z. \<exists>x[##M]. z = \<langle>x, x\<rangle>)"
-  using id_rel_abs separation_is_id_rel
+  using separation_in_ctm[where env="[]" and \<phi>="is_id_rel_fm(0)" and Q="\<lambda>z . \<exists>x[##M]. z = \<langle>x, x\<rangle>"]
+    arity_is_id_rel_fm nonempty id_rel_abs
   unfolding id_rel_def
-  by (rule_tac separation_cong[where P="is_id_rel(##M)",THEN iffD1])
+  by simp
 
 definition fstsnd_in_sndsnd :: "[i] \<Rightarrow> o" where
   "fstsnd_in_sndsnd \<equiv> \<lambda>x. fst(snd(x)) \<in> snd(snd(x))"
 relativize "fstsnd_in_sndsnd" "is_fstsnd_in_sndsnd"
 synthesize "is_fstsnd_in_sndsnd" from_definition assuming "nonempty"
 arity_theorem for "is_fstsnd_in_sndsnd_fm"
-
-lemma (in M_ZF_trans) separation_is_fstsnd_in_sndsnd:
- "separation(##M, is_fstsnd_in_sndsnd(##M))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x] \<Turnstile> is_fstsnd_in_sndsnd_fm(0)",THEN iffD1])
-   apply(rule_tac is_fstsnd_in_sndsnd_iff_sats[where env="[_]",symmetric])
-  apply(simp_all add:zero_in_M)
-  apply(rule_tac separation_ax[where env="[]",simplified])
-    apply(simp_all add:arity_is_fstsnd_in_sndsnd_fm ord_simp_union is_fstsnd_in_sndsnd_fm_type)
-  done
 
 lemma (in M_ZF_trans) fstsnd_in_sndsnd_abs:
   assumes "(##M)(x)"
@@ -320,25 +228,16 @@ lemma (in M_ZF_trans) fstsnd_in_sndsnd_abs:
 
 lemma (in M_ZF_trans) separation_fstsnd_in_sndsnd:
  "separation(##M, \<lambda>x. fst(snd(x)) \<in> snd(snd(x)))"
-  using fstsnd_in_sndsnd_abs separation_is_fstsnd_in_sndsnd
+  using separation_in_ctm[where env="[]" and \<phi>="is_fstsnd_in_sndsnd_fm(0)" and Q=fstsnd_in_sndsnd]
+    nonempty fstsnd_in_sndsnd_abs arity_is_fstsnd_in_sndsnd_fm
   unfolding fstsnd_in_sndsnd_def
-  by (rule_tac separation_cong[where P="is_fstsnd_in_sndsnd(##M)",THEN iffD1])
+  by simp
 
 definition sndfst_eq_fstsnd :: "[i] \<Rightarrow> o" where
   "sndfst_eq_fstsnd \<equiv> \<lambda>x. snd(fst(x)) = fst(snd(x))"
 relativize "sndfst_eq_fstsnd" "is_sndfst_eq_fstsnd"
 synthesize "is_sndfst_eq_fstsnd" from_definition assuming "nonempty"
 arity_theorem for "is_sndfst_eq_fstsnd_fm"
-
-lemma (in M_ZF_trans) separation_is_sndfst_eq_fstsnd:
- "separation(##M, is_sndfst_eq_fstsnd(##M))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x] \<Turnstile> is_sndfst_eq_fstsnd_fm(0)",THEN iffD1])
-   apply(rule_tac is_sndfst_eq_fstsnd_iff_sats[where env="[_]",symmetric])
-  apply(simp_all add:zero_in_M)
-  apply(rule_tac separation_ax[where env="[]",simplified])
-    apply(simp_all add:arity_is_sndfst_eq_fstsnd_fm ord_simp_union is_sndfst_eq_fstsnd_fm_type)
-  done
 
 lemma (in M_ZF_trans) sndfst_eq_fstsnd_abs:
   assumes "(##M)(x)"
@@ -349,11 +248,10 @@ lemma (in M_ZF_trans) sndfst_eq_fstsnd_abs:
 
 lemma (in M_ZF_trans) separation_sndfst_eq_fstsnd:
  "separation(##M, \<lambda>x. snd(fst(x)) = fst(snd(x)))"
-  using sndfst_eq_fstsnd_abs separation_is_sndfst_eq_fstsnd
+  using separation_in_ctm[where env="[]" and \<phi>="is_sndfst_eq_fstsnd_fm(0)" and Q=sndfst_eq_fstsnd]
+    nonempty sndfst_eq_fstsnd_abs arity_is_sndfst_eq_fstsnd_fm
   unfolding sndfst_eq_fstsnd_def
-  by (rule_tac separation_cong[where P="is_sndfst_eq_fstsnd(##M)",THEN iffD1])
-
-
+  by simp
 
  (* 3. separation(##M, \<lambda>x. fst(fst(x)) = fst(snd(x))) *)
 definition fstfst_eq_fstsnd :: "[i] \<Rightarrow> o" where
@@ -361,16 +259,6 @@ definition fstfst_eq_fstsnd :: "[i] \<Rightarrow> o" where
 relativize "fstfst_eq_fstsnd" "is_fstfst_eq_fstsnd"
 synthesize "is_fstfst_eq_fstsnd" from_definition assuming "nonempty"
 arity_theorem for "is_fstfst_eq_fstsnd_fm"
-
-lemma (in M_ZF_trans) separation_is_fstfst_eq_fstsnd:
- "separation(##M, is_fstfst_eq_fstsnd(##M))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x] \<Turnstile> is_fstfst_eq_fstsnd_fm(0)",THEN iffD1])
-   apply(rule_tac is_fstfst_eq_fstsnd_iff_sats[where env="[_]",symmetric])
-  apply(simp_all add:zero_in_M)
-  apply(rule_tac separation_ax[where env="[]",simplified])
-    apply(simp_all add:arity_is_fstfst_eq_fstsnd_fm ord_simp_union is_fstfst_eq_fstsnd_fm_type)
-  done
 
 lemma (in M_ZF_trans) fstfst_eq_fstsnd_abs:
   assumes "(##M)(x)"
@@ -381,10 +269,10 @@ lemma (in M_ZF_trans) fstfst_eq_fstsnd_abs:
 
 lemma (in M_ZF_trans) separation_fstfst_eq_fstsnd:
  "separation(##M, \<lambda>x. fst(fst(x)) = fst(snd(x)))"
-  using fstfst_eq_fstsnd_abs separation_is_fstfst_eq_fstsnd
+  using separation_in_ctm[where env="[]" and \<phi>="is_fstfst_eq_fstsnd_fm(0)" and Q=fstfst_eq_fstsnd]
+    nonempty fstfst_eq_fstsnd_abs arity_is_fstfst_eq_fstsnd_fm
   unfolding fstfst_eq_fstsnd_def
-  by (rule_tac separation_cong[where P="is_fstfst_eq_fstsnd(##M)",THEN iffD1])
-
+  by simp
 
 (*\<And>B. (##M)(B) \<Longrightarrow> \<forall>A\<in>M. separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)*)
 definition restrict_elem :: "[i,i,i] \<Rightarrow> o" where
@@ -394,16 +282,6 @@ relativize "restrict_elem" "is_restrict_elem"
 synthesize "is_restrict_elem" from_definition assuming "nonempty"
 arity_theorem for "is_restrict_elem_fm"
 
-lemma (in M_ZF_trans) separation_is_restrict_elem:
- "(##M)(B) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, is_restrict_elem(##M,B,A))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,A,B] \<Turnstile> is_restrict_elem_fm(2,1,0)",THEN iffD1])
-   apply(rule_tac is_restrict_elem_iff_sats[where env="[_,A,B]",symmetric])
-  apply(simp_all add:zero_in_M)
-  apply(rule_tac separation_ax[where env="[A,B]",simplified])
-    apply(simp_all add:arity_is_restrict_elem_fm ord_simp_union is_restrict_elem_fm_type)
-  done
-
 lemma (in M_ZF_trans) restrict_elem_abs:
   assumes "(##M)(B)" "(##M)(A)" "(##M)(x)"
   shows "is_restrict_elem(##M,B,A,x) \<longleftrightarrow> restrict_elem(B,A,x)"
@@ -411,31 +289,16 @@ lemma (in M_ZF_trans) restrict_elem_abs:
   unfolding restrict_elem_def is_restrict_elem_def
   by auto
 
-lemma (in M_ZF_trans) separation_restrict_elem_aux:
- "(##M)(B) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)"
-  using restrict_elem_abs separation_is_restrict_elem
-  unfolding restrict_elem_def
-  by (rule_tac separation_cong[where P="is_restrict_elem(##M,B,_)",THEN iffD1])
-
 lemma (in M_ZF_trans) separation_restrict_elem:
- "(##M)(B) \<Longrightarrow> \<forall>A[##M]. separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)"
-  using separation_restrict_elem_aux by simp
-
-lemma (in M_ZF_trans) separation_ordinal:
- "separation(##M, ordinal(##M))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x] \<Turnstile> ordinal_fm(0)",THEN iffD1])
-   apply(rule_tac ordinal_iff_sats[where env="[_]",symmetric])
-  apply(simp_all)
-  apply(rule_tac separation_ax[where env="[]",simplified])
-    apply(simp_all add:ord_simp_union )
-  done
+ "(##M)(B) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)"
+  using nonempty restrict_elem_abs arity_is_restrict_elem_fm ord_simp_union
+  unfolding restrict_elem_def
+  by(rule_tac separation_in_ctm[where env="[A,B]" and \<phi>="is_restrict_elem_fm(2,1,0)"],simp_all)
 
 lemma (in M_ZF_trans) separation_Ord:
  "separation(##M, Ord)"
-  using separation_ordinal ordinal_abs
-    separation_cong[where P="ordinal(##M)" and M="##M",THEN iffD1]
-  unfolding Ord_def
+  using separation_in_ctm[where \<phi>="ordinal_fm(0)" and env="[]"] ordinal_abs
+    ord_simp_union ordinal_iff_sats[where env="[_]",symmetric]
   by simp
 
 (*  "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))" *)
@@ -446,16 +309,6 @@ relativize "insnd_ballPair" "is_insnd_ballPair"
 synthesize "is_insnd_ballPair" from_definition assuming "nonempty"
 arity_theorem for "is_insnd_ballPair_fm"
 
-lemma (in M_ZF_trans) separation_is_insnd_ballPair:
- "(##M)(B) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, is_insnd_ballPair(##M,B,A))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,A,B] \<Turnstile> is_insnd_ballPair_fm(2,1,0)",THEN iffD1])
-   apply(rule_tac is_insnd_ballPair_iff_sats[where env="[_,A,B]",symmetric])
-  apply(simp_all add:zero_in_M)
-  apply(rule_tac separation_ax[where env="[A,B]",simplified])
-    apply(simp_all add:arity_is_insnd_ballPair_fm ord_simp_union is_insnd_ballPair_fm_type)
-  done
-
 lemma (in M_ZF_trans) insnd_ballPair_abs:
   assumes "(##M)(B)" "(##M)(A)" "(##M)(x)"
   shows "is_insnd_ballPair(##M,B,A,x) \<longleftrightarrow> insnd_ballPair(B,A,x)"
@@ -464,14 +317,11 @@ lemma (in M_ZF_trans) insnd_ballPair_abs:
   unfolding insnd_ballPair_def is_insnd_ballPair_def
   by (auto)
 
-lemma (in M_ZF_trans) separation_insnd_ballPair_aux:
- "(##M)(B) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, \<lambda>p. \<forall>x\<in>B. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> A))"
-  using insnd_ballPair_abs separation_is_insnd_ballPair
-  unfolding insnd_ballPair_def
-  by (rule_tac separation_cong[where P="is_insnd_ballPair(##M,B,_)",THEN iffD1])
-
 lemma (in M_ZF_trans) separation_insnd_ballPair:
- "(##M)(B) \<Longrightarrow> \<forall>A[##M]. separation(##M, \<lambda>p. \<forall>x\<in>B. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> A))"
-  using separation_insnd_ballPair_aux by simp
-
+ "(##M)(B) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, \<lambda>p. \<forall>x\<in>B. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> A))"
+  using insnd_ballPair_abs nonempty
+    separation_in_ctm[where \<phi>="is_insnd_ballPair_fm(2,1,0)" and env="[A,B]"]
+    arity_is_insnd_ballPair_fm ord_simp_union is_insnd_ballPair_fm_type
+  unfolding insnd_ballPair_def
+  by simp
 end

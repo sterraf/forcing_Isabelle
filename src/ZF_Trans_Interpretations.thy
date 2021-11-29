@@ -10,7 +10,6 @@ lemmas (in M_ZF_trans) separation_instances =
   separation_well_ord
   separation_obase_equals separation_is_obase
   separation_PiP_rel separation_surjP_rel
-  separation_id_body
   separation_radd_body separation_rmult_body
 
 lemma (in M_ZF_trans) lam_replacement_inj_rel:
