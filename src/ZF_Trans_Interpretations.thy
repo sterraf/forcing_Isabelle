@@ -10,9 +10,8 @@ lemmas (in M_ZF_trans) separation_instances =
   separation_well_ord
   separation_obase_equals separation_is_obase
   separation_PiP_rel separation_surjP_rel
-  separation_id_body separation_rvimage_body
+  separation_id_body
   separation_radd_body separation_rmult_body
-  separation_ord_iso_body
 
 lemma (in M_ZF_trans) lam_replacement_inj_rel:
   shows 
@@ -246,8 +245,7 @@ sublocale M_ZF_trans \<subseteq> M_aleph "##M"
   by (unfold_locales,simp add: replacement_aleph_rel)
 
 sublocale M_ZF_trans \<subseteq> M_FiniteFun "##M"
-  using separation_supset_body separation_cons_like_rel
-    replacement_omega_funspace separation_is_function
+  using separation_cons_like_rel replacement_omega_funspace separation_is_function
   by (unfold_locales,simp_all)
 
 sublocale M_ZFC_trans \<subseteq> M_AC "##M"
@@ -291,74 +289,6 @@ lemma (in M_ZF_trans) separation_toplevel2_body:
   unfolding toplevel2_body_rel_def
   by simp
 
- (* 3. separation(##M, \<lambda>x. \<exists>a b. x = \<langle>a, b\<rangle> \<and> a \<noteq> b) *)
-definition toplevel3_body :: "i \<Rightarrow> o" where
-  "toplevel3_body \<equiv>  \<lambda>x. \<exists>a b. x = \<langle>a, b\<rangle> \<and> a \<noteq> b"
-
-relativize functional "toplevel3_body" "toplevel3_body_rel"
-relationalize "toplevel3_body_rel" "is_toplevel3_body"
-
-synthesize "is_toplevel3_body" from_definition
-arity_theorem for "is_toplevel3_body_fm"
-
-lemma (in M_ZF_trans) separation_is_toplevel3_body:
- "separation(##M, is_toplevel3_body(##M))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x] \<Turnstile> is_toplevel3_body_fm(0)",THEN iffD1])
-   apply(rule_tac is_toplevel3_body_iff_sats[where env="[_]",symmetric])
-  apply(simp_all)
-  apply(rule_tac separation_ax[where env="[]",simplified])
-    apply(simp_all add:arity_is_toplevel3_body_fm ord_simp_union is_toplevel3_body_fm_type)
-  done
-
-lemma (in M_ZF_trans) toplevel3_body_abs:
-  assumes "(##M)(x)"
-  shows "is_toplevel3_body(##M,x) \<longleftrightarrow> toplevel3_body(x)"
-  using assms pair_in_M_iff apply_closed
-  unfolding toplevel3_body_def is_toplevel3_body_def
-  by (auto)
-
-lemma (in M_ZF_trans) separation_toplevel3_body:
- "separation(##M, \<lambda>x . \<exists>a b. x = \<langle>a, b\<rangle> \<and> a \<noteq> b)"
-  using separation_is_toplevel3_body toplevel3_body_abs
-    separation_cong[where P="is_toplevel3_body(##M)" and M="##M",THEN iffD1]
-  unfolding toplevel3_body_def
-  by simp
-
- (* 4. \<And>c. c \<in> M \<Longrightarrow> separation(##M, \<lambda>x. \<exists>a b. x = \<langle>a, b\<rangle> \<and> a \<inter> b = c) *)
-definition toplevel4_body :: "[i,i] \<Rightarrow> o" where
-  "toplevel4_body(R) \<equiv> \<lambda>z. \<exists>a b. z = \<langle>a, b\<rangle> \<and> a \<inter> b = R"
-
-relativize functional "toplevel4_body" "toplevel4_body_rel"
-relationalize "toplevel4_body_rel" "is_toplevel4_body"
-
-synthesize "is_toplevel4_body" from_definition assuming "nonempty"
-arity_theorem for "is_toplevel4_body_fm"
-
-lemma (in M_ZF_trans) separation_is_toplevel4_body:
- "(##M)(A) \<Longrightarrow> separation(##M, is_toplevel4_body(##M,A))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,A] \<Turnstile> is_toplevel4_body_fm(1,0)",THEN iffD1])
-   apply(rule_tac is_toplevel4_body_iff_sats[where env="[_,A]",symmetric])
-  apply(simp_all add:nonempty[simplified])
-  apply(rule_tac separation_ax[where env="[A]",simplified])
-    apply(simp_all add:arity_is_toplevel4_body_fm ord_simp_union is_toplevel4_body_fm_type)
-  done
-
-lemma (in M_ZF_trans) toplevel4_body_abs:
-  assumes "(##M)(R)" "(##M)(x)"
-  shows "is_toplevel4_body(##M,R,x) \<longleftrightarrow> toplevel4_body(R,x)"
-  using assms pair_in_M_iff is_Int_abs
-  unfolding toplevel4_body_def is_toplevel4_body_def
-  by (auto)
-
-lemma (in M_ZF_trans) separation_toplevel4_body:
- "(##M)(R) \<Longrightarrow> separation
-        (##M, \<lambda>x. \<exists>a b. x = \<langle>a, b\<rangle> \<and> a \<inter> b = R)"
-  using separation_is_toplevel4_body toplevel4_body_abs
-  unfolding toplevel4_body_def
-  by (rule_tac separation_cong[
-        where P="is_toplevel4_body(##M,R)",THEN iffD1])
 
 lemma (in M_ZF_trans) cardinal_rel_lepoll_rel_abs:
  "(##M)(\<kappa>) \<Longrightarrow> (##M)(x) \<Longrightarrow> (|x|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>) \<longleftrightarrow> M,[x,\<kappa>] \<Turnstile> (\<cdot>\<exists>\<cdot>cardinal(1) is 0 \<and> \<cdot>0 \<prec> 2\<cdot>\<cdot>\<cdot>)"

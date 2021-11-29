@@ -356,9 +356,12 @@ locale M_cardinal_library = M_library + M_replacement +
     cardinal_lib_assms6:
     "M(f) \<Longrightarrow> M(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow> 
       strong_replacement(M, \<lambda>x y. x\<in>\<beta> \<and> y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
-    "separation(M, \<lambda> x . \<exists>a. \<exists>b . x=\<langle>a,b\<rangle> \<and> a\<noteq>b)"
 
 begin
+
+lemma separation_dist: "separation(M, \<lambda> x . \<exists>a. \<exists>b . x=\<langle>a,b\<rangle> \<and> a\<noteq>b)"
+  using separation_pair separation_neg separation_eq lam_replacement_fst lam_replacement_snd
+  by simp
 
 lemma cdlt_assms': "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
   using separation_in[OF _
@@ -951,7 +954,7 @@ proof
   assume "Infinite(Z)" "M(Z)"
   moreover from calculation
   have "M(Distinct)"
-     using cardinal_lib_assms6 by simp
+     using cardinal_lib_assms6 separation_dist by simp
   from \<open>Infinite(Z)\<close> \<open>M(Z)\<close>
   obtain b where "b\<in>Z"
     using Infinite_not_empty by auto

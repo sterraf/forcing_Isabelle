@@ -88,10 +88,12 @@ locale M_FiniteFun =  M_seqspace +
   assumes
     cons_like_separation : "separation(M,\<lambda>f. cons_like_rel(M,f))"
     and
-    supset_separation: "separation(M, \<lambda> x. \<exists>a. \<exists>b. x = \<langle>a,b\<rangle> \<and> b \<subseteq> a)"
-    and
     separation_is_function : "separation(M, is_function(M))"
 begin
+
+lemma supset_separation: "separation(M, \<lambda> x. \<exists>a. \<exists>b. x = \<langle>a,b\<rangle> \<and> b \<subseteq> a)"
+  using separation_pair separation_subset lam_replacement_fst lam_replacement_snd
+  by simp
 
 lemma to_finiteFun_replacement: "strong_replacement(M, \<lambda>x y. y = range(x))"
   using lam_replacement_range lam_replacement_imp_strong_replacement

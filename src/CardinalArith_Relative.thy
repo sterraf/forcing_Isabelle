@@ -34,11 +34,20 @@ lemma (in M_cardinals) csquare_lam_closed[intro,simp]: "M(K) \<Longrightarrow> M
 
 locale M_pre_cardinal_arith = M_cardinals +
   assumes
-    ord_iso_separation: "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow>
-      separation(M, \<lambda>f. \<forall>x\<in>A. \<forall>y\<in>A. \<langle>x, y\<rangle> \<in> r \<longleftrightarrow> \<langle>f ` x, f ` y\<rangle> \<in> s)"
-    and
     wfrec_pred_replacement:"M(A) \<Longrightarrow> M(r) \<Longrightarrow>
       wfrec_replacement(M, \<lambda>x f z. z = f `` Order.pred(A, x, r), r)"
+begin
+
+lemma ord_iso_separation: "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow>
+      separation(M, \<lambda>f. \<forall>x\<in>A. \<forall>y\<in>A. \<langle>x, y\<rangle> \<in> r \<longleftrightarrow> \<langle>f ` x, f ` y\<rangle> \<in> s)"
+  using
+    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
+        lam_replacement_hcomp lam_replacement_fst  lam_replacement_snd
+       separation_in lam_replacement_fst lam_replacement_apply2[THEN[5] lam_replacement_hcomp2]
+     lam_replacement_identity  lam_replacement_constant
+  by(rule_tac separation_ball,rule_tac separation_ball,simp_all,rule_tac separation_iff',simp_all)
+
+end
 
 locale M_cardinal_arith = M_pre_cardinal_arith +
   assumes
@@ -942,21 +951,21 @@ lemma wfrec_on_pred_closed':
 
 lemma ordermap_rel_closed':
   assumes "wf[A](r)" "trans[A](r)" "r \<in> Pow(A\<times>A)" "M(A)" "M(r)"
-  shows "M(ordermap_rel(M, A, r))" 
+  shows "M(ordermap_rel(M, A, r))"
 proof -
-  from assms 
+  from assms
   have "r \<inter> A\<times>A = r" by auto
   with assms have "wf(r)" "trans(r)" "relation(r)"
     unfolding wf_on_def using trans_on_iff_trans relation_def by auto
   then
-  have 1:"\<And> x z . M(x) \<Longrightarrow> M(z) \<Longrightarrow> 
-    (\<exists>y[M]. pair(M, x, y, z) \<and> is_wfrec(M, \<lambda>x f z. z = f `` Order.pred(A, x, r), r, x, y)) 
+  have 1:"\<And> x z . M(x) \<Longrightarrow> M(z) \<Longrightarrow>
+    (\<exists>y[M]. pair(M, x, y, z) \<and> is_wfrec(M, \<lambda>x f z. z = f `` Order.pred(A, x, r), r, x, y))
       \<longleftrightarrow>
     z = <x,wfrec(r,x,\<lambda>x f. f `` Order.pred(A, x, r))>"
     using trans_wfrec_abs[of r,where
         H="\<lambda>x f. f `` Order.pred(A, x, r)" and
         MH="\<lambda>x f z . z= f `` Order.pred(A, x, r)",simplified] assms
-      wfrec_pred_replacement unfolding relation2_def 
+      wfrec_pred_replacement unfolding relation2_def
     by auto
   then
   have "strong_replacement(M,\<lambda>x z. z = <x,wfrec(r,x,\<lambda>x f. f `` Order.pred(A, x, r))>)"
@@ -964,7 +973,7 @@ proof -
       wfrec_pred_replacement[unfolded wfrec_replacement_def]] assms by simp
   then show ?thesis
     using Pow_iff assms
-    unfolding ordermap_rel_def 
+    unfolding ordermap_rel_def
     apply(subst lam_cong[OF refl wfrec_on_pred_eq],simp_all)
     using wfrec_on_pred_closed lam_closed
     by simp
@@ -972,7 +981,7 @@ qed
 
 lemma ordermap_rel_closed[intro,simp]:
   assumes "wf[A](r)" "trans[A](r)" "r \<in> Pow(A\<times>A)"
-  shows "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(ordermap_rel(M, A, r))" 
+  shows "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(ordermap_rel(M, A, r))"
   using ordermap_rel_closed' assms by simp
 
 lemma is_ordermap_iff:
@@ -1083,7 +1092,7 @@ lemma univalent_aux1: "M(X) \<Longrightarrow> univalent(M,Pow_rel(M,X\<times>X),
   unfolding univalent_def
   by (simp)
 
-lemma jump_cardinal_body_eq : 
+lemma jump_cardinal_body_eq :
   "M(X) \<Longrightarrow> jump_cardinal_body(M,X) = jump_cardinal_body'_rel(M,X)"
   unfolding jump_cardinal_body_def jump_cardinal_body'_rel_def
   using ordertype_rel_abs
@@ -1098,7 +1107,7 @@ lemma jump_cardinal_closed_aux1:
   shows
     "M(jump_cardinal_body(M,X))"
   unfolding jump_cardinal_body_def
-  using \<open>M(X)\<close> ordertype_rel_abs 
+  using \<open>M(X)\<close> ordertype_rel_abs
     ordertype_replacement[OF \<open>M(X)\<close>] univalent_aux1[OF \<open>M(X)\<close>]
     strong_replacement_closed[where A="Pow\<^bsup>M\<^esup>(X \<times> X)" and
       P="\<lambda> r z . M(z) \<and> M(r) \<and>  r \<in> Pow\<^bsup>M\<^esup>(X \<times> X) \<and> well_ord(X, r) \<and> z = ordertype(X, r)"]

@@ -7,7 +7,7 @@ theory Lambda_Replacement
     Discipline_Function
 begin
 
-text\<open>In this theory we prove several instances of separation and replacement 
+text\<open>In this theory we prove several instances of separation and replacement
 in @{locale M_basic}. Moreover by assuming a seven instances of separation and
 ten instances of "lambda" replacements we prove a bunch of other instances. \<close>
 
@@ -115,7 +115,7 @@ proof(intro  subsetI, auto)
     using rexI[where x="<u,v>"] by force
 qed
 
-lemma converse_eq_aux : 
+lemma converse_eq_aux :
   assumes "<0,0>\<in>r"
   shows "converse(r) = {<snd(x),fst(x)> . x\<in>r}"
   using converse_subset
@@ -125,26 +125,26 @@ proof(intro equalityI subsetI,auto)
   then show "<fst(z),snd(z)> \<in> r"
   proof(cases "\<exists> a b . z =<a,b>")
     case True
-    with \<open>z\<in>r\<close> 
+    with \<open>z\<in>r\<close>
     show ?thesis by auto
   next
     case False
-    then 
-    have "fst(z) = 0" "snd(z)=0" 
+    then
+    have "fst(z) = 0" "snd(z)=0"
       unfolding fst_def snd_def by auto
     with \<open>z\<in>r\<close> assms
      show ?thesis by auto
-  qed 
+  qed
 qed
 
-lemma converse_eq_aux' : 
+lemma converse_eq_aux' :
   assumes "<0,0>\<notin>r"
   shows "converse(r) = {<snd(x),fst(x)> . x\<in>r} - {<0,0>}"
   using converse_subset assms
 proof(intro equalityI subsetI,auto)
   fix z
   assume "z\<in>r" "snd(z)\<noteq>0"
-  then 
+  then
   obtain a b where "z = <a,b>" unfolding snd_def by force
   with \<open>z\<in>r\<close>
   show "<fst(z),snd(z)> \<in> r"
@@ -152,7 +152,7 @@ proof(intro equalityI subsetI,auto)
 next
   fix z
   assume "z\<in>r" "fst(z)\<noteq>0"
-  then 
+  then
   obtain a b where "z = <a,b>" unfolding fst_def by force
   with \<open>z\<in>r\<close>
   show "<fst(z),snd(z)> \<in> r"
@@ -161,8 +161,8 @@ qed
 
 lemma diff_un : "b\<subseteq>a \<Longrightarrow> (a-b) \<union> b = a"
   by auto
-  
-lemma converse_eq: "converse(r) = ({<snd(x),fst(x)> . x\<in>r} - {<0,0>}) \<union> (r\<inter>{<0,0>})" 
+
+lemma converse_eq: "converse(r) = ({<snd(x),fst(x)> . x\<in>r} - {<0,0>}) \<union> (r\<inter>{<0,0>})"
 proof(cases "<0,0>\<in>r")
   case True
   then
@@ -170,23 +170,23 @@ proof(cases "<0,0>\<in>r")
     using converse_eq_aux  by auto
   moreover
   from True
-  have "r\<inter>{<0,0>} = {<0,0>}" "{<0,0>}\<subseteq>{<snd(x),fst(x)> . x\<in>r}" 
+  have "r\<inter>{<0,0>} = {<0,0>}" "{<0,0>}\<subseteq>{<snd(x),fst(x)> . x\<in>r}"
     using converse_subset by auto
   moreover from this True
   have "{<snd(x),fst(x)> . x\<in>r} = ({<snd(x),fst(x)> . x\<in>r} - {<0,0>}) \<union> ({<0,0>})"
     using diff_un[of "{<0,0>}",symmetric] converse_eq_aux  by auto
   ultimately
-  show ?thesis 
-    by simp 
+  show ?thesis
+    by simp
 next
   case False
-  then 
+  then
   have "r\<inter>{<0,0>} = 0" by auto
   then
   have "({<snd(x),fst(x)> . x\<in>r} - {<0,0>}) \<union> (r\<inter>{<0,0>}) = ({<snd(x),fst(x)> . x\<in>r} - {<0,0>})"
     by simp
   with False
-  show ?thesis 
+  show ?thesis
     using converse_eq_aux' by auto
 qed
 
@@ -964,6 +964,30 @@ proof (clarify)
     by (rule_tac x="{z\<in>A. \<exists>x y. z = \<langle>x, y\<rangle>}" in rexI) auto
 qed
 
+lemma separation_pair:
+  assumes "separation(M, \<lambda>y . P(fst(y), snd(y)))"
+  shows "separation(M, \<lambda>y. \<exists> u v . y=\<langle>u,v\<rangle> \<and> P(u,v))"
+  unfolding separation_def
+proof(clarify)
+  fix A
+  assume "M(A)"
+  moreover from this
+  have "M({z\<in>A. \<exists>x y. z = \<langle>x, y\<rangle>})" (is "M(?P)")
+    using relation_separation by simp
+  moreover from this assms
+  have "M({z\<in>?P . P(fst(z),snd(z))})"
+    by(rule_tac separation_closed,simp_all)
+  moreover
+  have "{y\<in>A . \<exists> u v . y=\<langle>u,v\<rangle> \<and> P(u,v) } = {z\<in>?P . P(fst(z),snd(z))}"
+    by(rule equalityI subsetI,auto)
+  moreover from calculation
+  have "M({y\<in>A . \<exists> u v . y=\<langle>u,v\<rangle> \<and> P(u,v) })"
+    by simp
+  ultimately
+  show "\<exists>y[M]. \<forall>x[M]. x \<in> y \<longleftrightarrow> x \<in> A \<and> (\<exists>w y. x = \<langle>w, y\<rangle> \<and> P(w,y))"
+    by (rule_tac x="{z\<in>A. \<exists>x y. z = \<langle>x, y\<rangle> \<and> P(x,y)}" in rexI) auto
+qed
+
 lemma lam_replacement_Pair:
   shows "lam_replacement(M, \<lambda>x. \<langle>fst(x), snd(x)\<rangle>)"
   unfolding lam_replacement_def strong_replacement_def
@@ -1033,7 +1057,7 @@ lemma lam_replacement_apply2:"lam_replacement(M, \<lambda>p. fst(p) ` snd(p))"
          (force intro:lam_replacement_hcomp)+
 
 definition map_snd where
-  "map_snd(X) = {snd(z) . z\<in>X}" 
+  "map_snd(X) = {snd(z) . z\<in>X}"
 
 lemma map_sndE: "y\<in>map_snd(X) \<Longrightarrow> \<exists>p\<in>X. y=snd(p)"
   unfolding map_snd_def by auto
@@ -1050,7 +1074,7 @@ lemma map_snd_closed: "M(x) \<Longrightarrow> M(map_snd(x))"
 lemma lam_replacement_imp_lam_replacement_RepFun:
   assumes "lam_replacement(M, f)" "\<forall>x[M]. M(f(x))"
     "separation(M, \<lambda>x. ((\<forall>y\<in>snd(x). fst(y) \<in> fst(x)) \<and> (\<forall>y\<in>fst(x). \<exists>u\<in>snd(x). y=fst(u))))"
-  and    
+  and
   lam_replacement_RepFun_snd:"lam_replacement(M,map_snd)"
   shows "lam_replacement(M, \<lambda>x. {f(y) . y\<in>x})"
 proof -
@@ -1068,7 +1092,7 @@ proof -
       using lam_replacement_iff_lam_closed assms that transM[of _ A]
       unfolding lam_def by simp
     from assms \<open>M(A)\<close>
-    have "\<forall>x\<in>\<Union>A. M(f(x))" 
+    have "\<forall>x\<in>\<Union>A. M(f(x))"
       using transM[of _ "\<Union>A"] by auto
     with assms \<open>M(A)\<close>
     have "M({<y,f(y)> . y \<in> \<Union>A})" (is "M(?fUnA)")
@@ -1091,13 +1115,13 @@ proof -
     proof(intro equalityI subsetI)
       fix p
       assume "p\<in>?R"
-      with \<open>M(A)\<close> 
+      with \<open>M(A)\<close>
       obtain x where "x\<in>A" "p=<x,{f(y) . y \<in> x}>" "M(x)"
         using transM[OF _ \<open>M(A)\<close>]
         by auto
       moreover from calculation
       have "M({<y,f(y)> . y\<in>x})" (is "M(?Ux)")
-        using lam_replacement_iff_lam_closed assms 
+        using lam_replacement_iff_lam_closed assms
         unfolding lam_def by auto
       moreover from calculation
       have "?Ux \<subseteq> ?fUnA"
@@ -1112,7 +1136,7 @@ proof -
       have "<x,?Ux> \<in> ?T" by auto
       moreover from calculation
       have "{f(y).y\<in>x} = map_snd(?Ux)"
-        unfolding map_snd_def 
+        unfolding map_snd_def
         by(intro equalityI,auto)
       ultimately
       show "p\<in>?Y"
@@ -1121,7 +1145,7 @@ proof -
       fix u
       assume "u\<in>?Y"
       moreover from this
-      obtain z where "z\<in>?T" "u=<fst(z),map_snd(snd(z))>" 
+      obtain z where "z\<in>?T" "u=<fst(z),map_snd(snd(z))>"
         by blast
       moreover from calculation
       obtain x U where 1:"x\<in>A" "U\<in>Pow_rel(M,?fUnA)" "(\<forall>u\<in>U. fst(u) \<in> x) \<and> (\<forall>w\<in>x. \<exists>v\<in>U. w=fst(v))" "z=<x,U>"
@@ -1132,17 +1156,17 @@ proof -
         by auto
       moreover from calculation
       have "map_snd(U) = {f(y) . y\<in>x}"
-        unfolding map_snd_def 
+        unfolding map_snd_def
       by(intro equalityI subsetI,auto)
     moreover from calculation
-    have "u=<x,map_snd(U)>" 
+    have "u=<x,map_snd(U)>"
       by simp
     ultimately
-    show "u\<in>?R" 
+    show "u\<in>?R"
         by (auto)
     qed
     from 1 2
-    have "M({<x,{f(y) . y\<in>x}> . x\<in>A})" 
+    have "M({<x,{f(y) . y\<in>x}> . x\<in>A})"
       by simp
   }
   then
@@ -1264,10 +1288,10 @@ lemmas cardinal_lib_assms4 = lam_replacement_vimage_sing_fun[unfolded lam_replac
 
 lemma lam_replacement_sing_const_id:
   "M(x) \<Longrightarrow> lam_replacement(M, \<lambda>y. {\<langle>x, y\<rangle>})"
-  using lam_replacement_hcomp[OF lam_replacement_const_id[of x]] 
-    lam_replacement_sing pair_in_M_iff 
+  using lam_replacement_hcomp[OF lam_replacement_const_id[of x]]
+    lam_replacement_sing pair_in_M_iff
   by simp
-  
+
 lemma tag_singleton_closed: "M(x) \<Longrightarrow> M(z) \<Longrightarrow> M({{\<langle>z, y\<rangle>} . y \<in> x})"
   using RepFun_closed[where A=x and f="\<lambda> u. {\<langle>z,u\<rangle>}"]
     lam_replacement_imp_strong_replacement lam_replacement_sing_const_id
@@ -1323,6 +1347,23 @@ proof -
   show ?thesis
     using separation_iff by auto
 qed
+
+lemma separation_subset:
+  assumes "\<forall>x[M]. M(f(x))" "lam_replacement(M,f)"
+    "\<forall>x[M]. M(g(x))" "lam_replacement(M,g)"
+  shows "separation(M,\<lambda>x . f(x) \<subseteq> g(x))"
+proof -
+  have "f(x) \<subseteq> g(x) \<longleftrightarrow> f(x)\<union>g(x) = g(x)" for x
+    using subset_Un_iff by simp
+  moreover from assms
+  have "separation(M,\<lambda>x . f(x)\<union>g(x) = g(x))"
+    using separation_eq lam_replacement_Un lam_replacement_hcomp2
+    by simp
+  ultimately
+  show ?thesis
+    using separation_cong[THEN iffD1] by auto
+qed
+
 
 lemma separation_ball:
   assumes "separation(M, \<lambda>y. f(fst(y),snd(y)))" "M(X)"
@@ -1634,6 +1675,19 @@ lemma separation_equal_apply: "M(f) \<Longrightarrow> M(a) \<Longrightarrow> sep
   using separation_eq lam_replacement_apply[of f] lam_replacement_constant
   by auto
 
+lemma lam_replacement_Int:
+  shows "lam_replacement(M, \<lambda>x. fst(x) \<inter> snd(x))"
+proof -
+  have "A\<inter>B = (A\<union>B) - ((A- B) \<union> (B-A))" (is "_=?f(A,B)")for A B
+    by auto
+  then
+  show ?thesis
+    using lam_replacement_cong
+      lam_replacement_Diff[THEN[5] lam_replacement_hcomp2]
+      lam_replacement_Un[THEN[5] lam_replacement_hcomp2]
+      lam_replacement_fst lam_replacement_snd
+    by simp
+qed
 
 end (* M_replacement *)
 
@@ -1810,8 +1864,8 @@ lemma drSR_Y_equality: "drSR_Y(B,D,A,x) = { dr\<in>D . (\<exists>r\<in>A . restr
 context M_replacement_extra
 begin
 
-lemma lam_replacement_drSR_Y: 
-  assumes 
+lemma lam_replacement_drSR_Y:
+  assumes
     "M(B)" "M(D)" "M(A)"
   shows "lam_replacement(M, drSR_Y(B,D,A))"
 proof -
@@ -1904,7 +1958,7 @@ proof -
 qed
 
 lemma surj_imp_inj_replacement3:
-  "(\<And>x. M(x) \<Longrightarrow> separation(M, \<lambda>y. \<forall>s\<in>x. \<langle>s, y\<rangle> \<in> Q)) \<Longrightarrow> M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(x) \<Longrightarrow> 
+  "(\<And>x. M(x) \<Longrightarrow> separation(M, \<lambda>y. \<forall>s\<in>x. \<langle>s, y\<rangle> \<in> Q)) \<Longrightarrow> M(G) \<Longrightarrow> M(Q) \<Longrightarrow> M(x) \<Longrightarrow>
   strong_replacement(M, \<lambda>y z. y \<in> {a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q} \<and> z = {\<langle>x, y\<rangle>})"
   using lam_replacement_imp_strong_replacement
   using lam_replacement_sing_const_id[THEN lam_replacement_imp_strong_replacement, of x]

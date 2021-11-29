@@ -29,15 +29,6 @@ arity_theorem for "pred_set_fm"
 lemma iff_sym : "P(x,a) \<longleftrightarrow> a = f(x) \<Longrightarrow> P(x,a) \<longleftrightarrow> f(x) = a"
   by auto
 
-
-lemma subset_iff_sats [iff_sats]:
-      "[| nth(i,env) = x; nth(k,env) = z;
-          i \<in> nat; k \<in> nat; env \<in> list(A)|]
-       ==> subset(##A, x, z) \<longleftrightarrow> sats(A, subset_fm(i,k), env)"
-  unfolding subset_def subset_fm_def
-  by simp
-
-
 definition radd_body :: "[i,i,i] \<Rightarrow> o" where
   "radd_body(R,S) \<equiv> \<lambda>z. (\<exists>x y. z = \<langle>Inl(x), Inr(y)\<rangle>) \<or>
                   (\<exists>x' x. z = \<langle>Inl(x'), Inl(x)\<rangle> \<and> \<langle>x', x\<rangle> \<in> R) \<or>
@@ -76,6 +67,40 @@ lemma (in M_ZF_trans) separation_radd_body:
   by (rule_tac separation_cong[
         where P="is_radd_body(##M,R,S)",THEN iffD1])
 
+definition rmult_body :: "[i,i,i] \<Rightarrow> o" where
+  "rmult_body(b,d) \<equiv> \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in>
+b \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> d)"
+
+relativize functional "rmult_body" "rmult_body_rel"
+relationalize "rmult_body_rel" "is_rmult_body"
+
+synthesize "is_rmult_body" from_definition
+arity_theorem for "is_rmult_body_fm"
+
+lemma (in M_ZF_trans) separation_is_rmult_body:
+ "(##M)(b) \<Longrightarrow> (##M)(d) \<Longrightarrow> separation(##M, is_rmult_body(##M,b,d))"
+  apply(rule_tac separation_cong[
+        where P="\<lambda> x . M,[x,b,d] \<Turnstile> is_rmult_body_fm(1,2,0)",THEN iffD1])
+   apply(rule_tac is_rmult_body_iff_sats[where env="[_,b,d]",symmetric])
+  apply(simp_all)
+  apply(rule_tac separation_ax[where env="[b,d]",simplified])
+    apply(simp_all add:arity_is_rmult_body_fm ord_simp_union is_rmult_body_fm_type)
+  done
+
+lemma (in M_ZF_trans) rmult_body_abs:
+  assumes "(##M)(b)" "(##M)(d)" "(##M)(x)"
+  shows "is_rmult_body(##M,b,d,x) \<longleftrightarrow> rmult_body(b,d,x)"
+  using assms pair_in_M_iff apply_closed
+  unfolding rmult_body_def is_rmult_body_def
+  by (auto)
+
+lemma (in M_ZF_trans) separation_rmult_body:
+ "(##M)(b) \<Longrightarrow> (##M)(d) \<Longrightarrow> separation
+        (##M, \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> b \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> d))"
+  using separation_is_rmult_body rmult_body_abs
+    separation_cong[where P="is_rmult_body(##M,b,d)" and M="##M",THEN iffD1]
+  unfolding rmult_body_def
+  by simp
 
 definition well_ord_body :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
   "well_ord_body(N,A,f,r,x) \<equiv> x \<in> A \<longrightarrow> (\<exists>y[N]. \<exists>p[N]. is_apply(N, f, x, y) \<and> pair(N, y, x, p) \<and> p \<in> r)"
@@ -198,100 +223,6 @@ lemma (in M_ZF_trans) separation_id_body:
   unfolding id_body_def
   by (rule_tac separation_cong[where P="is_id_body(##M,A)",THEN iffD1])
 
-definition rvimage_body :: "[i,i,i] \<Rightarrow> o" where
-  "rvimage_body(f,r) \<equiv> \<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> \<langle>f ` x, f ` y\<rangle> \<in> r"
-
-relativize functional "rvimage_body" "rvimage_body_rel"
-relationalize "rvimage_body_rel" "is_rvimage_body"
-
-synthesize "is_rvimage_body" from_definition
-arity_theorem for "is_rvimage_body_fm"
-
-lemma (in M_ZF_trans) separation_is_rvimage_body:
- "(##M)(f) \<Longrightarrow> (##M)(r) \<Longrightarrow> separation(##M, is_rvimage_body(##M,f,r))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,f,r] \<Turnstile> is_rvimage_body_fm(1,2,0)",THEN iffD1])
-   apply(rule_tac is_rvimage_body_iff_sats[where env="[_,f,r]",symmetric])
-  apply(simp_all)
-  apply(rule_tac separation_ax[where env="[f,r]",simplified])
-    apply(simp_all add:arity_is_rvimage_body_fm ord_simp_union is_rvimage_body_fm_type)
-  done
-
-lemma (in M_ZF_trans) rvimage_body_abs:
-  assumes "(##M)(R)" "(##M)(S)" "(##M)(x)"
-  shows "is_rvimage_body(##M,R,S,x) \<longleftrightarrow> rvimage_body(R,S,x)"
-  using assms pair_in_M_iff apply_closed
-  unfolding rvimage_body_def is_rvimage_body_def
-  by (auto)
-
-lemma (in M_ZF_trans) separation_rvimage_body:
- "(##M)(f) \<Longrightarrow> (##M)(r) \<Longrightarrow> separation
-        (##M, \<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> \<langle>f ` x, f ` y\<rangle> \<in> r)"
-  using separation_is_rvimage_body rvimage_body_abs
-  unfolding rvimage_body_def
-  by (rule_tac separation_cong[
-        where P="is_rvimage_body(##M,f,r)",THEN iffD1])
-
-(* rmult_separation *)
-
-definition rmult_body :: "[i,i,i] \<Rightarrow> o" where
-  "rmult_body(b,d) \<equiv> \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> b \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> d)"
-
-relativize functional "rmult_body" "rmult_body_rel"
-relationalize "rmult_body_rel" "is_rmult_body"
-
-synthesize "is_rmult_body" from_definition
-arity_theorem for "is_rmult_body_fm"
-
-lemma (in M_ZF_trans) separation_is_rmult_body:
- "(##M)(b) \<Longrightarrow> (##M)(d) \<Longrightarrow> separation(##M, is_rmult_body(##M,b,d))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x,b,d] \<Turnstile> is_rmult_body_fm(1,2,0)",THEN iffD1])
-   apply(rule_tac is_rmult_body_iff_sats[where env="[_,b,d]",symmetric])
-  apply(simp_all)
-  apply(rule_tac separation_ax[where env="[b,d]",simplified])
-    apply(simp_all add:arity_is_rmult_body_fm ord_simp_union is_rmult_body_fm_type)
-  done
-
-lemma (in M_ZF_trans) rmult_body_abs:
-  assumes "(##M)(b)" "(##M)(d)" "(##M)(x)"
-  shows "is_rmult_body(##M,b,d,x) \<longleftrightarrow> rmult_body(b,d,x)"
-  using assms pair_in_M_iff apply_closed
-  unfolding rmult_body_def is_rmult_body_def
-  by (auto)
-
-lemma (in M_ZF_trans) separation_rmult_body:
- "(##M)(b) \<Longrightarrow> (##M)(d) \<Longrightarrow> separation
-        (##M, \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> b \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> d))"
-  using separation_is_rmult_body rmult_body_abs
-    separation_cong[where P="is_rmult_body(##M,b,d)" and M="##M",THEN iffD1]
-  unfolding rmult_body_def
-  by simp
-
-definition ord_iso_body :: "[i,i,i,i] \<Rightarrow> o" where
-  "ord_iso_body(A,r,s) \<equiv> \<lambda>f. \<forall>x\<in>A. \<forall>y\<in>A. \<langle>x, y\<rangle> \<in> r \<longleftrightarrow> \<langle>f ` x, f ` y\<rangle> \<in> s"
-
-relativize functional "ord_iso_body" "ord_iso_body_rel"
-relationalize "ord_iso_body_rel" "is_ord_iso_body"
-
-synthesize "is_ord_iso_body" from_definition assuming "nonempty"
-arity_theorem for "is_ord_iso_body_fm"
-
-lemma (in M_ZF_trans) ord_iso_body_abs:
-  assumes "(##M)(A)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
-  shows "is_ord_iso_body(##M,A,r,s,x) \<longleftrightarrow> ord_iso_body(A,r,s,x)"
-  using assms pair_in_M_iff apply_closed zero_in_M transitivity[of _ A]
-  unfolding ord_iso_body_def is_ord_iso_body_def
-  by auto
-
-lemma (in M_ZF_trans) separation_ord_iso_body:
- "(##M)(A) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation(##M, \<lambda>f. \<forall>x\<in>A. \<forall>y\<in>A. \<langle>x, y\<rangle> \<in> r \<longleftrightarrow> \<langle>f ` x, f ` y\<rangle> \<in> s)"
-  using separation_in_ctm[where env="[A,r,s]" and \<phi>="is_ord_iso_body_fm(1,2,3,0)",
-      OF _ _ _ iff_trans[OF is_ord_iso_body_iff_sats[symmetric] ord_iso_body_abs]]
-    nonempty arity_is_ord_iso_body_fm is_ord_iso_body_fm_type
-  unfolding ord_iso_body_def
-  by(simp_all add: ord_simp_union)
-
 synthesize "PiP_rel" from_definition assuming "nonempty"
 arity_theorem for "PiP_rel_fm"
 
@@ -327,40 +258,6 @@ lemma (in M_ZF_trans) separation_cons_like_rel:
   using separation_in_ctm[where env="[]" and \<phi>="cons_like_rel_fm(0)"]
     nonempty cons_like_rel_iff_sats[symmetric] arity_cons_like_rel_fm cons_like_rel_fm_type
   by simp
-
-definition supset_body :: "[i] \<Rightarrow> o" where
-  "supset_body \<equiv> \<lambda> x. \<exists>a. \<exists>b. x = \<langle>a,b\<rangle> \<and> b \<subseteq> a"
-
-relativize functional "supset_body" "supset_body_rel"
-relationalize "supset_body_rel" "is_supset_body"
-
-synthesize "is_supset_body" from_definition
-arity_theorem for "is_supset_body_fm"
-
-lemma (in M_ZF_trans) separation_is_supset_body:
- "separation(##M, is_supset_body(##M))"
-  apply(rule_tac separation_cong[
-        where P="\<lambda> x . M,[x] \<Turnstile> is_supset_body_fm(0)",THEN iffD1])
-   apply(rule_tac is_supset_body_iff_sats[where env="[_]",symmetric])
-  apply(simp_all)
-  apply(rule_tac separation_ax[where env="[]",simplified])
-    apply(simp_all add:arity_is_supset_body_fm ord_simp_union is_supset_body_fm_type)
-  done
-
-lemma (in M_ZF_trans) supset_body_abs:
-  assumes "(##M)(x)"
-  shows "is_supset_body(##M,x) \<longleftrightarrow> supset_body(x)"
-  using assms pair_in_M_iff apply_closed
-  unfolding supset_body_def is_supset_body_def
-  by (auto)
-
-lemma (in M_ZF_trans) separation_supset_body:
- "separation(##M, \<lambda> x. \<exists>a. \<exists>b. x = \<langle>a,b\<rangle> \<and> b \<subseteq> a)"
-  using separation_is_supset_body supset_body_abs
-    separation_cong[where P="is_supset_body(##M)" and M="##M",THEN iffD1]
-  unfolding supset_body_def
-  by simp
-
 
 lemma (in M_ZF_trans) separation_is_function:
  "separation(##M, is_function(##M))"
@@ -653,9 +550,6 @@ lemma (in M_ZF_trans) separation_restrict_eq_dom_eq_pair:
     "(##M)(A) \<Longrightarrow> (##M)(B) \<Longrightarrow> 
   \<forall>D[##M]. separation(##M, \<lambda>p. \<forall>x\<in>D. x \<in> snd(p) \<longleftrightarrow> (\<exists>r\<in>A. restrict(r, B) = fst(p) \<and> x = domain(r)))" 
   using separation_restrict_eq_dom_eq_pair_aux by simp
-
-(* (##M)(A) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
-separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. if (##M)(x) then x else 0, b, f, i)\<rangle>) *)
 
 (* MOVE THIS to an appropriate place *)
 synthesize "is_converse" from_definition assuming "nonempty"

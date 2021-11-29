@@ -39,9 +39,6 @@ lemma (in M_basic) banach_functor_closed:
 
 locale M_cardinals = M_ordertype + M_trancl + M_Perm + M_replacement_extra +
   assumes
-  rvimage_separation: "M(f) \<Longrightarrow> M(r) \<Longrightarrow>
-    separation(M, \<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> \<langle>f ` x, f ` y\<rangle> \<in> r)"
-  and
   radd_separation: "M(R) \<Longrightarrow> M(S) \<Longrightarrow>
     separation(M, \<lambda>z.
       (\<exists>x y. z = \<langle>Inl(x), Inr(y)\<rangle>) \<or>
@@ -54,6 +51,15 @@ locale M_cardinals = M_ordertype + M_trancl + M_Perm + M_replacement_extra +
   banach_repl_iter: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow>
                strong_replacement(M, \<lambda>x y. x\<in>nat \<and> y = banach_functor(X, Y, f, g)^x (0))"
 begin
+
+lemma rvimage_separation: "M(f) \<Longrightarrow> M(r) \<Longrightarrow>
+    separation(M, \<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> \<langle>f ` x, f ` y\<rangle> \<in> r)"
+  using separation_pair separation_in
+    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
+    lam_replacement_constant lam_replacement_apply2[THEN[5] lam_replacement_hcomp2,OF lam_replacement_constant[of f]]
+    lam_replacement_fst lam_replacement_snd
+     lam_replacement_identity lam_replacement_hcomp
+  by(simp_all)
 
 lemma radd_closed[intro,simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> M(c) \<Longrightarrow> M(d) \<Longrightarrow> M(radd(a,b,c,d))"
   using radd_separation by (auto simp add: radd_def)
