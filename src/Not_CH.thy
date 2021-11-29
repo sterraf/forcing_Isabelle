@@ -103,7 +103,7 @@ lemmas (in M_ZFC_trans) sep_instances =
 
 (* FIXME: the second instance has been proved in Lambda Replacement, it shouldn't be here. *)
 lemmas (in M_ZF_trans) repl_instances = lam_replacement_inj_rel
-  lam_replacement_cardinal[unfolded lam_replacement_def] replacement_trans_apply_image
+  lam_replacement_cardinal replacement_trans_apply_image
 
 sublocale M_ZFC_trans \<subseteq> M_master "##M"
   using replacement_dcwit_repl_body\<comment> \<open>this is another replacement instance\<close>
@@ -491,6 +491,7 @@ lemma h_G_in_MG[simp]:
   includes G_generic_lemmas
   shows "h\<^bsub>G\<^esub> \<in> M[G]"
   using ext.lam_apply_replacement ext.apply_replacement2
+    ext.lam_apply_replacement[unfolded lam_replacement_def]
     ext.Union_closed[simplified, OF G_in_MG]
     \<comment> \<open>The "simplified" here is because of
         the \<^term>\<open>setclass\<close> ocurrences\<close>
