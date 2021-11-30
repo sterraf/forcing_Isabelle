@@ -2,7 +2,7 @@ OPTION  = -o parallel_proofs=2
 
 CHAPTER = ZF
 
-SESSION = Forcing
+SESSION = Independence_of_CH
 
 OUT_DIR = output/html
 

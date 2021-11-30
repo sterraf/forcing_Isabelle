@@ -1,6 +1,6 @@
 chapter "ZF"
 
-session "Forcing" in "." =  "Delta_System_Lemma" +
+session "Independence_of_CH" in "." =  "Delta_System_Lemma" +
   description "
     Formalization of Forcing in Isabelle/ZF
 

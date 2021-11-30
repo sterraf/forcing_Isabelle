@@ -92,7 +92,7 @@ subsection\<open>Interface with \<^term>\<open>M_trivial\<close>\<close>
 
 lemma zero_in_M:  "0 \<in> M"
 proof -
-  from infinity_ax 
+  from infinity_ax
   have "(\<exists>z[##M]. empty(##M,z))"
     by (rule empty_intf)
   then obtain z where
@@ -101,7 +101,7 @@ proof -
   then
   have "z=0"
     using transitivity empty_def by auto
-  with zm show ?thesis 
+  with zm show ?thesis
     by simp
 qed
 
@@ -127,10 +127,10 @@ definition Intersection where
  "Intersection(N,B,x) \<equiv> (\<forall>y[N]. y\<in>B \<longrightarrow> x\<in>y)"
 
 manual_schematic "Inter_fm" for "Intersection"
-  unfolding Intersection_def 
+  unfolding Intersection_def
   by (rule sep_rules | simp)+
 synthesize "Intersection" from_schematic Inter_fm
-arity_theorem for "Intersection_fm" 
+arity_theorem for "Intersection_fm"
 
 context M_ZF_trans
 begin
@@ -141,7 +141,7 @@ lemma inter_sep_intf :
   shows
     "separation(##M,\<lambda>x . \<forall>y\<in>M . y\<in>A \<longrightarrow> x\<in>y)"
 proof -
-  have "arity(Intersection_fm(1,0)) = 2" "0\<in>nat" "1\<in>nat" 
+  have "arity(Intersection_fm(1,0)) = 2" "0\<in>nat" "1\<in>nat"
     using arity_Intersection_fm pred_Un_distrib by auto
   then
     have "\<forall>a\<in>M. separation(##M, \<lambda>x. sats(M,Intersection_fm(1,0) , [x, a]))"
@@ -150,7 +150,7 @@ proof -
   moreover
   have "(\<forall>y\<in>M . y\<in>a \<longrightarrow> x\<in>y) \<longleftrightarrow> sats(M,Intersection_fm(1,0),[x,a])"
     if "a\<in>M" "x\<in>M" for a x
-    using that Intersection_iff_sats[of 1 "[x,a]" a 0 x M] 
+    using that Intersection_iff_sats[of 1 "[x,a]" a 0 x M]
     unfolding Intersection_def by simp
   ultimately
   have "\<forall>a\<in>M. separation(##M, \<lambda>x . \<forall>y\<in>M . y\<in>a \<longrightarrow> x\<in>y)"
@@ -890,7 +890,7 @@ proof -
         sats(M, formula_functor_fm(1,0), [b,a])"
     if "a\<in>M" "b\<in>M"  for a b
     using that by simp
-  then show ?thesis using \<open>0\<in>M\<close> 1 2 
+  then show ?thesis using \<open>0\<in>M\<close> 1 2
       iterates_repl_intf[where is_F_fm="formula_functor_fm(1,0)"] by simp
 qed
 
@@ -906,7 +906,7 @@ proof -
   have "is_tl(##M,a,b) \<longleftrightarrow> sats(M, tl_fm(1,0), [b,a])"
     if "a\<in>M" "b\<in>M" for a b
     using that by simp
-  then show ?thesis using \<open>l\<in>M\<close> 1 2 
+  then show ?thesis using \<open>l\<in>M\<close> 1 2
       iterates_repl_intf[where is_F_fm="tl_fm(1,0)"] by simp
 qed
 
@@ -923,7 +923,7 @@ proof -
   have "big_union(##M,a,b) \<longleftrightarrow> sats(M, big_union_fm(1,0), [b,a])"
     if "a\<in>M" "b\<in>M" for a b
     using that by simp
-  then show ?thesis using \<open>A\<in>M\<close> 1 2 
+  then show ?thesis using \<open>A\<in>M\<close> 1 2
       iterates_repl_intf[where is_F_fm="big_union_fm(1,0)"] by simp
 qed
 
@@ -1114,7 +1114,7 @@ lemma PHrank_type [TC]:
 
 
 lemma (in M_ZF_trans) sats_PHrank_fm:
-  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat;  env \<in> list(M) \<rbrakk> 
+  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat;  env \<in> list(M) \<rbrakk>
     \<Longrightarrow> sats(M,PHrank_fm(x,y,z),env) \<longleftrightarrow>
         PHrank(##M,nth(x,env),nth(y,env),nth(z,env))"
   using zero_in_M Internalizations.nth_closed by (simp add: PHrank_def PHrank_fm_def)
@@ -1198,7 +1198,7 @@ qed
 
 (*"is_HVfrom(M,A,x,f,h) \<equiv> \<exists>U[M]. \<exists>R[M].  union(M,A,U,h)
         \<and> big_union(M,R,U) \<and> is_Replace(M,x,is_powapply(M,f),R)"*)
-definition 
+definition
   is_HVfrom_fm :: "[i,i,i,i] \<Rightarrow> i" where
   "is_HVfrom_fm(A,x,f,h) \<equiv> Exists(Exists(And(union_fm(A #+ 2,1,h #+ 2),
                             And(big_union_fm(0,1),
@@ -1353,15 +1353,34 @@ lemma separation_in_ctm :
     satsQ: "\<And>x. x\<in>M \<Longrightarrow> sats(M,\<phi>,[x]@env) \<longleftrightarrow> Q(x)"
   shows
     "separation(##M,Q)"
-proof -
-  have "separation(##M,\<lambda>x. sats(M,\<phi>,[x] @ env))"
-    using assms separation_ax by simp
-  then show ?thesis using
-      satsQ trans_M
-      separation_cong[of "##M" "\<lambda>y. sats(M,\<phi>,[y]@env)" "Q"]
-      by simp
-qed
+  using assms separation_ax
+    satsQ trans_M
+    separation_cong[of "##M" "\<lambda>y. sats(M,\<phi>,[y]@env)" "Q"]
+  by simp
 
+lemma strong_replacement_in_ctm :
+  assumes
+    f_fm:  "\<phi> \<in> formula" and
+    f_ar:  "arity(\<phi>)\<le> 2 #+ length(env)" and
+    fsats: "\<And>x y. x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,y]@env \<Turnstile> \<phi>) \<longleftrightarrow> y = f(x)" and
+    fclosed: "\<And>x. x\<in>M \<Longrightarrow> f(x) \<in> M" and "env\<in>list(M)"
+  shows "strong_replacement(##M, \<lambda>x y . y = f(x))"
+    using assms
+      strong_replacement_cong[of "##M" "\<lambda>x y. M,[x,y]@env\<Turnstile>\<phi>" "\<lambda>x y. y = f(x)"]
+      replacement_ax[of \<phi>]
+    by auto
+
+lemma strong_replacement_rel_in_ctm :
+  assumes
+    f_fm:  "\<phi> \<in> formula" and
+    f_ar:  "arity(\<phi>)\<le> 2 #+ length(env)" and
+    fsats: "\<And>x y. x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,y]@env \<Turnstile> \<phi>) \<longleftrightarrow> f(x,y)" and
+     "env\<in>list(M)"
+  shows "strong_replacement(##M, f)"
+    using assms
+      strong_replacement_cong[of "##M" "\<lambda>x y. M,[x,y]@env\<Turnstile>\<phi>" "f"]
+      replacement_ax[of \<phi>]
+    by auto
 
 lemma Replace_in_M :
   assumes
