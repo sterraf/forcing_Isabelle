@@ -876,11 +876,11 @@ lemma is_wfrec_iff_sats'[iff_sats]:
     "!!a0 a1 a2 a3 a4.
         [|a0\<in>Aa; a1\<in>Aa; a2\<in>Aa; a3\<in>Aa; a4\<in>Aa|]
         ==> MH(a2, a1, a0) \<longleftrightarrow> sats(Aa, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
-    "x \<in> nat" "y \<in> nat" "z \<in> nat" "env \<in> list(Aa)" "0 \<in> Aa"
     "nth(x, env) = xx" "nth(y, env) = yy" "nth(z, env) = zz"
+    "x \<in> nat" "y \<in> nat" "z \<in> nat" "env \<in> list(Aa)" "0 \<in> Aa"
   shows
     "is_wfrec(##Aa, MH, xx, yy, zz) \<longleftrightarrow> Aa, env \<Turnstile> is_wfrec_fm(p,x,y,z)"
-  using assms(7-9) sats_is_wfrec_fm'[OF assms(1-6)] by simp
+  using assms(2-4) sats_is_wfrec_fm'[OF assms(1,5-9)] by simp
 
 lemma is_wfrec_on_iff_sats[iff_sats]:
   assumes MH_iff_sats:

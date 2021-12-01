@@ -36,28 +36,8 @@ schematic_goal sats_is_dc_witness_fm_auto:
     is_dc_witness(##Aa, nth(na, env), nth(A, env), nth(a, env), nth(s, env), nth(R, env), nth(e, env)) \<longleftrightarrow>
     Aa, env \<Turnstile> ?fm(nat, A, a, s, R, e)"
   unfolding is_dc_witness_def is_recursor_def
-  apply (rule sep_rules is_transrec_iff_sats iff_sats| simp_all)
-       apply (rule is_nat_case_iff_sats[where i="a #+ 8" and j=2 and k=0])
-              apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
-    apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
-     apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
-  apply (rule fun_apply_iff_sats[where i=4 and j=2 and k=0] | simp_all) apply simp+
-  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
-  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
-  apply (rule fun_apply_iff_sats[where i="s #+ 12" and j=0 and k=2] | simp_all)
-  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
-  apply (rule Collect_iff_sats[where i="A #+ 12" and j=0] | simp_all)
-  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
-  apply (rule mem_model_iff_sats)
-  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
-  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
-  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
-  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
-  apply (rule mem_iff_sats[where j="R #+ 14"])
-  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
-  apply (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all)
-  apply (rule pair_iff_sats[where i=3 and j=1 and k=0])
-  by (rule sep_rules is_transrec_iff_sats is_nat_case_iff_sats iff_sats| simp_all add: assms)+
+  by (rule is_transrec_iff_sats | simp_all)
+    (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats sep_rules | simp add:assms)+
 
 synthesize "is_dc_witness" from_schematic
 

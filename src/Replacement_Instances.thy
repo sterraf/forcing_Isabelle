@@ -294,61 +294,9 @@ definition dcwit_repl_body where
 
 manual_schematic for "dcwit_repl_body" assuming "nonempty"
   unfolding dcwit_repl_body_def
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats | simp_all)
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats | simp_all)
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats | simp_all)
-  apply (rule pair_iff_sats)
-  apply (rule nth_Cons)
-  apply simp+
-  apply (rule sep_rules nth_Cons | simp)+
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
-  apply (rule fun_apply_iff_sats[where j=2 and k=0])
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
-  apply simp+
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
-  apply (rule mem_model_iff_sats[where i=0])
-  apply simp+
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
-  apply simp+
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
-  apply simp+
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
-  apply simp+
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
-  apply simp+
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
-  apply simp+
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
-  apply simp+
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
-  apply simp+
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
-  apply simp+
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
-  apply simp+
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
-  apply simp+
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
-  apply simp
-  apply simp
-  apply simp
-  apply simp
-  defer defer defer apply simp+
-  apply (subgoal_tac "nth(succ(mesa), Cons(y, env)) = nth(mesa, env)", assumption,simp)
-  apply (subgoal_tac "nth(succ(x), Cons(y, env)) = nth(x, env)", assumption,simp)
-  apply (subgoal_tac "nth(0, Cons(y, env)) = y", assumption,simp)
-  apply simp+
-  done
+  by (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats sep_rules | simp)+
+
+synthesize "dcwit_repl_body" from_schematic
 
 definition dcwit_aux_fm where
   "dcwit_aux_fm(A,s,R) \<equiv> (\<cdot>\<exists>\<cdot>\<cdot>4`2 is 0\<cdot> \<and>
@@ -376,8 +324,6 @@ lemma is_nat_case_dcwit_aux_fm_type[TC]: "A \<in> \<omega> \<Longrightarrow> a \
 manual_arity for "is_nat_case_dcwit_aux_fm"
   unfolding is_nat_case_dcwit_aux_fm_def
   by (rule arity_dcwit_aux_fm[THEN [6] arity_is_nat_case_fm]) simp_all
-
-synthesize "dcwit_repl_body" from_schematic
 
 manual_arity for "dcwit_repl_body_fm"
   using arity_is_nat_case_dcwit_aux_fm[THEN [6] arity_is_wfrec_fm]
