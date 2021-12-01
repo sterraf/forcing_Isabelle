@@ -7,6 +7,7 @@ theory Replacement_Instances
     Cardinal_Relative
     Separation_Instances
     Pointed_DC_Relative
+  "../Tools/Try0"
 begin
 
 subsection\<open>More Instances of Replacement\<close>
@@ -297,20 +298,26 @@ manual_schematic for "dcwit_repl_body" assuming "nonempty"
   apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats | simp_all)
   apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats | simp_all)
   apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats | simp_all)
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats | simp_all)
-  prefer 8
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
+  apply (rule pair_iff_sats)
+  apply (rule nth_Cons)
   apply simp+
-  apply (subgoal_tac "nth(2, Cons(fm, Cons(a0, Cons(aa, Cons(a0, Cons(a1, Cons(a2, Cons(a3, Cons(a4, Cons(y, env)))))))))) = aa", assumption,simp)
-  apply (subgoal_tac "nth(0, Cons(fm, Cons(a0, Cons(aa, Cons(a0, Cons(a1, Cons(a2, Cons(a3, Cons(a4, Cons(y, env)))))))))) = fm", assumption,simp)
-  apply simp+
+  apply (rule sep_rules nth_Cons | simp)+
+  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
+  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
+  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
+  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
+  apply (rule fun_apply_iff_sats[where j=2 and k=0])
   apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
   apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
   apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
   apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
   apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
   apply simp+
-  apply (subgoal_tac "nth(0,Cons(aaa, Cons(cp, Cons(fm, Cons(a0, Cons(aa, Cons(a0, Cons(a1, Cons(a2, Cons(a3, Cons(a4, Cons(y, env)))))))))))) = aaa", assumption,simp)
+  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
+  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
+  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
+  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
+  apply (rule mem_model_iff_sats[where i=0])
   apply simp+
   apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
   apply simp+
@@ -332,7 +339,7 @@ manual_schematic for "dcwit_repl_body" assuming "nonempty"
   apply simp+
   apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
   apply simp+
-  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)+
+  apply (rule iff_sats is_nat_case_iff_sats is_eclose_iff_sats)
   apply simp
   apply simp
   apply simp
@@ -341,9 +348,6 @@ manual_schematic for "dcwit_repl_body" assuming "nonempty"
   apply (subgoal_tac "nth(succ(mesa), Cons(y, env)) = nth(mesa, env)", assumption,simp)
   apply (subgoal_tac "nth(succ(x), Cons(y, env)) = nth(x, env)", assumption,simp)
   apply (subgoal_tac "nth(0, Cons(y, env)) = y", assumption,simp)
-  apply (subgoal_tac "nth(succ(x), Cons(y, env)) = nth(x, env)", assumption,simp)
-  apply (subgoal_tac "nth(0, Cons(y, env)) = y", assumption,simp)
-  apply (subgoal_tac "nth(succ(z), Cons(y, env)) = nth(z, env)", assumption,simp)
   apply simp+
   done
 
