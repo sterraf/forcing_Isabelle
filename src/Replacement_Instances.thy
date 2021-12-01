@@ -7,7 +7,6 @@ theory Replacement_Instances
     Cardinal_Relative
     Separation_Instances
     Pointed_DC_Relative
-  "../Tools/Try0"
 begin
 
 subsection\<open>More Instances of Replacement\<close>
