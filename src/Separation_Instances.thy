@@ -193,26 +193,6 @@ lemma (in M_ZF_trans) separation_is_function:
 
 (* Instances in M_replacement*)
 
-(* *)
-definition id_rel :: "[i\<Rightarrow>o,i] \<Rightarrow> o" where
-  "id_rel(A) \<equiv> \<lambda>z. \<exists>x[A]. z = \<langle>x, x\<rangle>"
-relativize "id_rel" "is_id_rel"
-synthesize "is_id_rel" from_definition assuming "nonempty"
-arity_theorem for "is_id_rel_fm"
-
-lemma (in M_ZF_trans) id_rel_abs:
-  assumes "(##M)(x)"
-  shows "is_id_rel(##M,x) \<longleftrightarrow> id_rel(##M,x)"
-  using assms zero_in_M pair_in_M_iff unfolding id_rel_def is_id_rel_def
-  by auto
-
-lemma (in M_ZF_trans) separation_id_rel:
- "separation(##M, \<lambda>z. \<exists>x[##M]. z = \<langle>x, x\<rangle>)"
-  using separation_in_ctm[where env="[]" and \<phi>="is_id_rel_fm(0)" and Q="\<lambda>z . \<exists>x[##M]. z = \<langle>x, x\<rangle>"]
-    arity_is_id_rel_fm nonempty id_rel_abs
-  unfolding id_rel_def
-  by simp
-
 definition fstsnd_in_sndsnd :: "[i] \<Rightarrow> o" where
   "fstsnd_in_sndsnd \<equiv> \<lambda>x. fst(snd(x)) \<in> snd(snd(x))"
 relativize "fstsnd_in_sndsnd" "is_fstsnd_in_sndsnd"

@@ -411,7 +411,7 @@ lemmas (in M_ZF_trans) M_replacement_ZF_instances = lam_replacement_domain
   lam_replacement_fst lam_replacement_snd lam_replacement_Union
   lam_replacement_Upair lam_replacement_image
   lam_replacement_Diff lam_replacement_converse
-  separation_fstsnd_in_sndsnd separation_id_rel[simplified]
+  separation_fstsnd_in_sndsnd
   separation_sndfst_eq_fstsnd
   separation_fstfst_eq_fstsnd
   separation_restrict_elem

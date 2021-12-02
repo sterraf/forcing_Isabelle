@@ -529,8 +529,6 @@ locale M_replacement = M_basic +
     and
     lam_replacement_Union: "lam_replacement(M,Union)"
     and
-    id_separation:"separation(M, \<lambda>z. \<exists>x[M]. z = \<langle>x, x\<rangle>)"
-    and
     middle_separation: "separation(M, \<lambda>x. snd(fst(x))=fst(snd(x)))"
     and
     middle_del_replacement: "strong_replacement(M, \<lambda>x y. y=\<langle>fst(fst(x)),snd(snd(x))\<rangle>)"
@@ -842,11 +840,18 @@ proof -
     fix A
     assume "M(A)"
     moreover from this
-    have "id(A) = {z\<in> A\<times>A. \<exists>x[M]. z=\<langle>x,x\<rangle>}"
-      unfolding id_def lam_def by (auto dest:transM)
+    have "id(A) = {<snd(fst(z)),fst(snd(z))> . z\<in> {z\<in> (A\<times>A)\<times>(A\<times>A). snd(fst(z)) = fst(snd(z))}}"
+      unfolding id_def lam_def 
+      by(intro equalityI subsetI,simp_all,auto)
     moreover from calculation
-    have "M({z\<in> A\<times>A. \<exists>x[M]. z=\<langle>x,x\<rangle>})"
-      using id_separation by simp
+    have "M({z\<in> (A\<times>A)\<times>(A\<times>A). snd(fst(z)) = fst(snd(z))})" (is "M(?A')")
+      using middle_separation by simp
+    moreover from calculation
+    have "M({<snd(fst(z)),fst(snd(z))> . z\<in> ?A'})"
+      using transM[of _ A]
+      lam_replacement_product lam_replacement_hcomp lam_replacement_fst lam_replacement_snd
+      lam_replacement_imp_strong_replacement[THEN RepFun_closed] 
+      by simp_all
     ultimately
     have "M(id(A))" by simp
   }
