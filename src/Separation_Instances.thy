@@ -254,27 +254,6 @@ lemma (in M_ZF_trans) separation_fstfst_eq_fstsnd:
   unfolding fstfst_eq_fstsnd_def
   by simp
 
-(*\<And>B. (##M)(B) \<Longrightarrow> \<forall>A\<in>M. separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)*)
-definition restrict_elem :: "[i,i,i] \<Rightarrow> o" where
-  "restrict_elem(B,A) \<equiv> \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>"
-
-relativize "restrict_elem" "is_restrict_elem"
-synthesize "is_restrict_elem" from_definition assuming "nonempty"
-arity_theorem for "is_restrict_elem_fm"
-
-lemma (in M_ZF_trans) restrict_elem_abs:
-  assumes "(##M)(B)" "(##M)(A)" "(##M)(x)"
-  shows "is_restrict_elem(##M,B,A,x) \<longleftrightarrow> restrict_elem(B,A,x)"
-  using assms pair_in_M_iff fst_abs snd_abs fst_snd_closed
-  unfolding restrict_elem_def is_restrict_elem_def
-  by auto
-
-lemma (in M_ZF_trans) separation_restrict_elem:
- "(##M)(B) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)"
-  using nonempty restrict_elem_abs arity_is_restrict_elem_fm ord_simp_union
-  unfolding restrict_elem_def
-  by(rule_tac separation_in_ctm[where env="[A,B]" and \<phi>="is_restrict_elem_fm(2,1,0)"],simp_all)
-
 lemma (in M_ZF_trans) separation_Ord:
  "separation(##M, Ord)"
   using separation_in_ctm[where \<phi>="ordinal_fm(0)" and env="[]"] ordinal_abs
@@ -304,4 +283,5 @@ lemma (in M_ZF_trans) separation_insnd_ballPair:
     arity_is_insnd_ballPair_fm ord_simp_union is_insnd_ballPair_fm_type
   unfolding insnd_ballPair_def
   by simp
+
 end
