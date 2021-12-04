@@ -61,14 +61,16 @@
   Pedro S\'anchez Terraf\footnotemark[1] \thanks{Centro de Investigaci\'on y Estudios de Matem\'atica
     (CIEM-FaMAF), Conicet. C\'ordoba. Argentina.
     Supported by Secyt-UNC project 33620180100465CB.}
+  \and
+  Mat\'{\i}as Steinberg\footnotemark[1]
 }
 \maketitle
 
 \begin{abstract}
-  We formalize the theory of forcing in the set theory framework of
+  We redeveloped our formalization of forcing in the set theory framework of
   Isabelle/ZF. Under the assumption of the existence of a countable
-  transitive model of $\ZFC$, we construct a proper generic extension and show
-  that the latter also satisfies $\ZFC$.
+  transitive model of ZFC, we construct proper generic extensions 
+  that satisfy the Continuum Hypothesis and its negation.
 \end{abstract}
 
 
@@ -87,20 +89,7 @@ and \cite{2020arXiv200109715G} (IJCAR 2020).
 \subsection*{Release notes}
 \label{sec:release-notes}
 
-We have improved several aspects of our development before submitting
-it to the AFP:
-\begin{enumerate}
-\item Our session \isatt{Forcing} depends on the new release of
-  \isatt{ZF-Constructible}.
-\item We streamlined the commands for synthesizing renames and formulas.
-\item The command that synthesizes formulas produces the lemmas for
-  them (the synthesized term is a formula and the equivalence between
-  the satisfaction of the synthesized term and the relativized term).
-\item Consistently use of structured proofs using Isar (except for one
-  coming from a schematic goal command).
-\end{enumerate}
-
-A cross-linked HTML version of the development can be found at
+Previous versions of this development can be found at
 \url{https://cs.famaf.unc.edu.ar/~pedro/forcing/}.
 
 % generated text of all theories

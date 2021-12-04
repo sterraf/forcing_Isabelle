@@ -488,6 +488,9 @@ text\<open>@{thm [display] is_ContHyp_iff_sats}\<close>
   env \<in> list(A) \<Longrightarrow> 0 \<in> A \<Longrightarrow> is_ContHyp(##A) \<longleftrightarrow> A, env \<Turnstile> \<cdot>CH\<cdot>
 *)
 
+txt\<open>We can finally state our main results, namely, the existence of models
+for $\ZFC + \CH$ and $\ZFC + \neg\CH$ under the assumption of a ctm of $\ZFC$.\<close>
+
 thm ctm_of_not_CH
 text\<open>@{thm [display] ctm_of_not_CH}\<close>
 (*

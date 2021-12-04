@@ -691,8 +691,8 @@ end (* M_cardinal_arith *)
 
 (*** An infinite cardinal equals its square (Kunen, Thm 10.12, page 29) ***)
 
-\<comment> \<open>FIXME: Awful proof, it essentially repeats the same
-    argument twice\<close>
+(* FIXME: Awful proof, it essentially repeats the same
+    argument twice *)
 lemma (in M_ordertype) ordertype_abs[absolut]:
       "[| wellordered(M,A,r); M(A); M(r); M(i)|] ==>
       otype(M,A,r,i) \<longleftrightarrow> i = ordertype(A,r)"

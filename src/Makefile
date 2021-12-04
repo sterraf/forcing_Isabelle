@@ -2,11 +2,11 @@ OPTION  = -o parallel_proofs=2
 
 CHAPTER = ZF
 
-SESSION = Independence_of_CH
+SESSION = Independence_CH
 
 OUT_DIR = output/html
 
-ML_FILES = Renaming_ML.ml Utils.ml 
+ML_FILES = Renaming_ML.ml Utils.ml Relativization_Database.ml
 
 DOC_FILES = root.tex root.bib root.bst
 

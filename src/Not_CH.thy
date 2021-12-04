@@ -113,7 +113,7 @@ sublocale M_ZFC_trans \<subseteq> M_master "##M"
 context M_ctm_AC
 begin
 
-\<comment> \<open>FIXME: using notation as if \<^term>\<open>Add_subs\<close> were used\<close>
+(* FIXME: using notation as if \<^term>\<open>Add_subs\<close> were used *)
 lemma ccc_Add_subs_Aleph_2: "ccc\<^bsup>M\<^esup>(Fn(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2),Fnle(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2))"
 proof -
   interpret M_add_reals "##M" "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>"
@@ -331,8 +331,8 @@ abbreviation
   dom_dense :: "i\<Rightarrow>i" where
   "dom_dense(x) \<equiv> { p\<in>Add . x \<in> domain(p) }"
 
-\<comment> \<open>FIXME write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close>
-    in a context with a generic filter for it\<close>
+(* FIXME write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close>
+    in a context with a generic filter for it *)
 lemma dense_dom_dense: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> dense(dom_dense(x))"
 proof
   fix p
@@ -406,8 +406,8 @@ abbreviation
   "inj_dense(w,x) \<equiv>
     { p\<in>Add . (\<exists>n\<in>\<omega>. <<w,n>,1> \<in> p \<and> <<x,n>,0> \<in> p) }"
 
-\<comment> \<open>FIXME write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close>
-    in a context with a generic filter for it\<close>
+(* FIXME write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close>
+    in a context with a generic filter for it *)
 lemma dense_inj_dense:
   assumes "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "w \<noteq> x"
   shows "dense(inj_dense(w,x))"

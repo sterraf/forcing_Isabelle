@@ -1,19 +1,18 @@
 chapter "ZF"
 
-session "Independence_of_CH" in "." =  "Delta_System_Lemma" +
+session "Independence_CH" in "." =  "Delta_System_Lemma" +
   description "
-    Formalization of Forcing in Isabelle/ZF
+    The Independence of the Continuum Hypothesis
 
-    We formalize the theory of forcing in the set theory framework of 
+    We redeveloped our formalization of forcing in the set theory framework of
     Isabelle/ZF. Under the assumption of the existence of a countable 
-    transitive model of ZFC, we construct a proper generic extension 
-    and show that the latter also satisfies ZFC.    
+    transitive model of ZFC, we construct proper generic extensions 
+    that satisfy the Continuum Hypothesis and its negation.
   "  
   options [timeout=500, document = pdf, document_output = "output",
   	   document_variants = "document:outline=/proof,/ML"]
   theories
     "Rasiowa_Sikorski"
-    "Forcing_Main"
     "Definitions_Main"
   document_files
     "root.tex"

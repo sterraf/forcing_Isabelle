@@ -11,7 +11,7 @@ begin
 
 subsection\<open>The set of finite binary sequences\<close>
 
-notation nat (\<open>\<omega>\<close>) \<comment> \<open>TODO: already in ZF Library\<close>
+notation nat (\<open>\<omega>\<close>) (* TODO: already in ZF Library *)
 
 text\<open>We implement the poset for adding one Cohen real, the set
 $2^{<\omega}$ of finite binary sequences.\<close>
@@ -27,8 +27,8 @@ lemma seqspaceD[dest]: "f\<in>B\<^bsup><\<alpha>\<^esup> \<Longrightarrow> \<exi
   unfolding seqspace_def by blast
 
 
-\<comment> \<open>FIXME: Now this is too particular (only for \<^term>\<open>\<omega>\<close>-sequences).
-  A relative definition for \<^term>\<open>seqspace\<close> would be appropriate.\<close>
+(* FIXME: Now this is too particular (only for \<^term>\<open>\<omega>\<close>-sequences).
+  A relative definition for \<^term>\<open>seqspace\<close> would be appropriate.*)
 
 locale M_seqspace =  M_trancl + M_replacement +
   assumes

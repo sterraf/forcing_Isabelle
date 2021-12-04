@@ -685,8 +685,8 @@ proof (intro equalityI; clarsimp simp add:
     using truth_lemma[of "\<cdot>0=1\<cdot>" G "[\<tau>, h\<^sup>v]", THEN iffD1] generic
       Equal arity_typed_function_fm valcheck[OF one_in_G one_in_P]
     by (auto simp: union_abs2 union_abs1)
-      \<comment> \<open>FIXME: same problem as before there is no relation
-        between \<^term>\<open>f\<close> and \<^term>\<open>val(P,G,\<tau>)\<close>\<close>
+      (* FIXME: same problem as before there is no relation
+        between \<^term>\<open>f\<close> and \<^term>\<open>val(P,G,\<tau>)\<close> *)
   with \<open> _ = f\<close> \<open>h\<in>M\<close>
   show "f \<in> M" by simp
 qed

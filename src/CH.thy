@@ -210,7 +210,7 @@ proof -
     by simp
 qed
 
-\<comment> \<open>FIXME: Should be more general, cf. @{thm add_generic.dense_dom_dense}\<close>
+(* FIXME: Should be more general, cf. @{thm add_generic.dense_dom_dense} *)
 lemma dense_dom_dense: "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> dense(dom_dense(x))"
 proof
   fix p
@@ -323,8 +323,8 @@ abbreviation
   surj_dense :: "i\<Rightarrow>i" where
   "surj_dense(x) \<equiv> { p\<in>Coll . x \<in> range(p) }"
 
-\<comment> \<open>FIXME write general versions of this for \<^term>\<open>Fn\<^bsup>M\<^esup>(\<kappa>,I,J)\<close>
-    in a context with a generic filter for it\<close>
+(* FIXME write general versions of this for \<^term>\<open>Fn\<^bsup>M\<^esup>(\<kappa>,I,J)\<close>
+    in a context with a generic filter for it *)
 lemma dense_surj_dense:
   assumes "x \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2"
   shows "dense(surj_dense(x))"

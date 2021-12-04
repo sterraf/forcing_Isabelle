@@ -2,7 +2,7 @@ section\<open>Cohen forcing notions\<close>
 
 theory Cohen_Posets_Relative
   imports
-    Cohen_Posets\<comment> \<open>FIXME: This theory is going obsolete\<close>
+    Cohen_Posets(* FIXME: This theory is going obsolete*)
     Delta_System_Relative
 begin
 
@@ -163,7 +163,7 @@ lemma (in M_trans) mem_F_bound3:
   by (cases "M(c)", auto simp:F_def drSR_Y_def dC_F_def)
 
 lemma ccc_rel_Fn_nat:
-  notes Sep_and_Replace [simp]\<comment> \<open>FIXME with all \<^term>\<open>SepReplace\<close> instances\<close>
+  notes Sep_and_Replace [simp](* FIXME with all \<^term>\<open>SepReplace\<close> instances *)
   assumes "M(I)"
   shows "ccc\<^bsup>M\<^esup>(Fn(nat,I,2), Fnle(nat,I,2))"
 proof -
