@@ -1,6 +1,14 @@
 theory FrecR_Arities
-  imports Arities FrecR
+  imports
+    Arities
+    FrecR
+
 begin
+
+context
+  notes arity_Exists[simp]
+begin
+
 lemma arity_fst_fm [arity] :
   "\<lbrakk>x\<in>nat ; t\<in>nat\<rbrakk> \<Longrightarrow> arity(fst_fm(x,t)) = succ(x) \<union> succ(t)"
   unfolding fst_fm_def
@@ -67,4 +75,7 @@ lemma arity_frecR_fm [arity]:
   using arity_ftype_fm arity_name1_fm arity_name2_fm arity_domain_fm 
       arity_empty_fm arity_union_fm pred_Un_distrib arity_succ_fm
   by auto
+
+end (* context *)
+
 end

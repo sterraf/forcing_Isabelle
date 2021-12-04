@@ -1,6 +1,9 @@
 General Tasks
 =============
 
+- Streamline the use of arity, especially for higher order constructs
+  (is_wfrec_fm and the like). Minimize use of fm_definitions.
+
 - Search sources for "FIXME", "FIX ME", "NOTE", "MOVE (THIS)", "TODO",
   "TO DO", and do that.
 

@@ -15,7 +15,7 @@ lemma arity_frecrelP_fm :
   "a\<in>nat \<Longrightarrow> arity(frecrelP_fm(a)) = succ(a)"
   unfolding frecrelP_fm_def
   using arity_frecR_fm arity_pair_fm pred_Un_distrib
-  by simp
+  by (simp add:arity_Exists)
 
 definition
   is_frecrel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
@@ -30,7 +30,7 @@ lemma arity_frecrel_fm :
   shows "arity(frecrel_fm(a,b)) = succ(a) \<union> succ(b)"
   unfolding frecrel_fm_def
   using assms arity_Collect_fm arity_cartprod_fm arity_frecrelP_fm pred_Un_distrib
-  by auto
+  by (auto simp:arity_Exists)
 
 definition
   names_below :: "i \<Rightarrow> i \<Rightarrow> i" where
@@ -52,7 +52,7 @@ lemma arity_number2_fm :
   "a\<in>nat \<Longrightarrow> arity(number2_fm(a)) = succ(a)"
   unfolding number2_fm_def
   using arity_number1_fm arity_succ_fm union_abs2 pred_Un_distrib
-  by simp
+  by (simp add:arity_Exists)
 
 reldb_add "ecloseN" "is_ecloseN"
 relativize "names_below" "is_names_below"
@@ -62,7 +62,7 @@ lemma arity_is_names_below_fm :
   "\<lbrakk>P\<in>nat;x\<in>nat;nb\<in>nat\<rbrakk> \<Longrightarrow> arity(is_names_below_fm(P,x,nb)) = succ(P) \<union> succ(x) \<union> succ(nb)"
   unfolding is_names_below_fm_def
   using arity_cartprod_fm arity_succ_fm arity_empty_fm arity_ecloseN_fm union_abs2 pred_Un_distrib
-  by auto
+  by (auto simp:arity_Exists)
 
 definition
   is_tuple :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
@@ -75,7 +75,7 @@ lemma arity_is_tuple_fm : "\<lbrakk> z\<in>nat ; t1\<in>nat ; t2\<in>nat ; p\<in
   arity(is_tuple_fm(z,t1,t2,p,tup)) = \<Union> {succ(z),succ(t1),succ(t2),succ(p),succ(tup)}"
   unfolding is_tuple_fm_def
   using arity_pair_fm union_abs1 union_abs2 pred_Un_distrib
-  by auto
+  by (auto simp:arity_Exists)
 
 subsection\<open>Definition of \<^term>\<open>forces\<close> for equality and membership\<close>
 
@@ -98,7 +98,7 @@ lemma arity_eq_case_fm :
   unfolding eq_case_fm_def
   using assms arity_pair_fm arity_is_tuple_fm arity_succ_fm arity_fun_apply_fm arity_empty_fm
     arity_domain_fm pred_Un_distrib arity_union_fm
-  by auto
+  by (auto simp:arity_Exists)
 
 (* p ||-
    \<pi> \<in> \<tau> \<equiv> \<forall>v\<in>P. \<langle>v,p\<rangle>\<in>leq \<longrightarrow> (\<exists>q\<in>P. \<langle>q,v\<rangle>\<in>leq \<and> (\<exists>\<sigma>. \<exists>r\<in>P. \<langle>\<sigma>,r\<rangle>\<in>\<tau> \<and> \<langle>q,r\<rangle>\<in>leq \<and>  q ||- \<pi> = \<sigma>)) *)
@@ -119,7 +119,7 @@ lemma arity_mem_case_fm :
   unfolding mem_case_fm_def
   using assms arity_pair_fm arity_is_tuple_fm arity_succ_fm arity_fun_apply_fm arity_empty_fm
     pred_Un_distrib
-  by auto
+  by (auto simp:arity_Exists)
 
 definition
   Hfrc :: "[i,i,i,i] \<Rightarrow> o" where
@@ -139,7 +139,7 @@ lemma arity_Hfrc_fm :
   unfolding Hfrc_fm_def
   using assms arity_pair_fm arity_mem_case_fm arity_eq_case_fm
     arity_empty_fm arity_succ_fm pred_Un_distrib
-  by auto
+  by (auto simp:arity_Exists)
 
 definition
   is_Hfrc_at :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
@@ -177,7 +177,7 @@ lemma arity_forcerel_fm:
   "\<lbrakk>p\<in>nat;x\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> arity(forcerel_fm(p,x,z)) = succ(p) \<union> succ(x) \<union> succ(z)"
   unfolding forcerel_fm_def
   using arity_frecrel_fm arity_tran_closure_fm arity_is_names_below_fm pred_Un_distrib
-  by auto
+  by (auto simp:arity_Exists)
 
 lemma forcerel_fm_type[TC]:
   "\<lbrakk>p\<in>nat;x\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> forcerel_fm(p,x,z)\<in>formula"
@@ -249,7 +249,7 @@ proof -
   show ?thesis
     unfolding frc_at_fm_def
     using arity_forcerel_fm pred_Un_distrib
-    by auto
+    by (auto simp:arity_Exists)
 qed
 
 lemma sats_frc_at_fm :
@@ -366,7 +366,7 @@ lemma arity_forces_eq_fm :
   unfolding forces_eq_fm_def
   using arity_number1_fm arity_empty_fm arity_is_tuple_fm arity_frc_at_fm
     pred_Un_distrib
-  by auto
+  by (auto simp:arity_Exists)
 
 lemma arity_forces_mem_fm :
   "p\<in>nat \<Longrightarrow> l\<in>nat \<Longrightarrow> q\<in>nat \<Longrightarrow> t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow>
@@ -374,7 +374,7 @@ lemma arity_forces_mem_fm :
   unfolding forces_mem_fm_def
   using arity_number1_fm arity_empty_fm arity_is_tuple_fm arity_frc_at_fm
     pred_Un_distrib
-  by auto
+  by (auto simp:arity_Exists)
 
 lemma sats_forces_eq'_fm:
   assumes  "p\<in>nat" "l\<in>nat" "q\<in>nat" "t1\<in>nat" "t2\<in>nat"  "env\<in>list(M)"
@@ -1197,7 +1197,7 @@ proof -
     show ?thesis
       unfolding ren_forces_nand_def
       using lt pred_Un_distrib union_abs1 Un_assoc[symmetric] Un_le_compat
-      by simp
+      by (simp add:arity_Exists)
   next
     case ge
     with \<open>\<phi>\<in>_\<close>
@@ -1212,7 +1212,7 @@ proof -
     show ?thesis
       unfolding ren_forces_nand_def
       using  pred_Un_distrib union_abs1 Un_assoc[symmetric] union_abs2
-      by simp
+      by (simp add:arity_Exists)
   qed
 qed
 
@@ -1252,7 +1252,7 @@ proof -
     show ?thesis
       unfolding ren_forces_forall_def
       using pred_Un_distrib union_abs1 Un_assoc[symmetric] union_abs2
-      by simp
+      by (simp add:arity_Exists)
   next
     case ge
     with \<open>\<phi>\<in>_\<close>
@@ -1267,7 +1267,7 @@ proof -
     show ?thesis
       unfolding ren_forces_forall_def
       using  pred_Un_distrib union_abs1 Un_assoc[symmetric] union_abs2
-      by simp
+      by (simp add:arity_Exists)
   qed
 qed
 
@@ -1300,7 +1300,7 @@ lemma arity_leq_fm[arity]:
   "\<lbrakk>leq\<in>nat;q\<in>nat;p\<in>nat\<rbrakk> \<Longrightarrow> arity(leq_fm(leq,q,p)) = succ(q) \<union> succ(p) \<union> succ(leq)"
   unfolding leq_fm_def
   using arity_pair_fm pred_Un_distrib ord_simp_union
-  by auto
+  by (auto simp:arity_Exists)
 
 lemma leq_fm_type[TC] :
   "\<lbrakk>leq\<in>nat;q\<in>nat;p\<in>nat\<rbrakk> \<Longrightarrow> leq_fm(leq,q,p)\<in>formula"
@@ -1515,7 +1515,7 @@ next
   with Nand \<open>_=4\<close>
   show ?case
     using pred_Un_distrib Un_assoc[symmetric] succ_Un_distrib union_abs1 Un_leI3[OF \<open>3 \<le> ?rhs\<close>]
-    by simp
+    by (simp add:arity_Exists)
 next
   case (Forall \<phi>)
   let ?\<phi>' = "ren_forces_forall(forces'(\<phi>))"

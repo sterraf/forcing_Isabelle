@@ -646,6 +646,8 @@ lemma PHcheck_type [TC]:
   "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat \<rbrakk> \<Longrightarrow> PHcheck_fm(x,y,z,u) \<in> formula"
   by (simp add:PHcheck_fm_def)
 
+arity_theorem for "PHcheck_fm"
+
 lemma sats_PHcheck_fm [simp]:
   "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat ; env \<in> list(M)\<rbrakk>
     \<Longrightarrow> sats(M,PHcheck_fm(x,y,z,u),env) \<longleftrightarrow>
@@ -699,7 +701,7 @@ proof -
     using that 1 \<open>X\<in>M\<close> rcheck_in_M one_in_M by (simp del:pair_abs)
   have artyf:"arity(?f) = 4"
     unfolding fm_definitions
-    by (simp add:ord_simp_union)
+    by (simp add:arity ord_simp_union)
   then
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,one,rcheck(X)]))"
     using replacement_ax[of ?f] 1 artyf \<open>X\<in>M\<close> rcheck_in_M one_in_M by simp
@@ -717,13 +719,10 @@ lemma repl_PHcheck :
   shows
     "strong_replacement(##M,PHcheck(one,f))"
 proof -
-  have "arity(PHcheck_fm(2,3,0,1)) = 4"
-    unfolding PHcheck_fm_def fun_apply_fm_def big_union_fm_def pair_fm_def image_fm_def
-      upair_fm_def
-    by (simp add:ord_simp_union)
-  with \<open>f\<in>M\<close>
+  from \<open>f\<in>M\<close>
   have "strong_replacement(##M,\<lambda>x y. sats(M,PHcheck_fm(2,3,0,1),[x,y,one,f]))"
-    using replacement_ax[of "PHcheck_fm(2,3,0,1)"] one_in_M by simp
+    using replacement_ax[of "PHcheck_fm(2,3,0,1)"] one_in_M 
+    by (simp add:arity ord_simp_union)
   with \<open>f\<in>M\<close>
   show ?thesis using one_in_M unfolding strong_replacement_def univalent_def by simp
 qed
@@ -835,11 +834,6 @@ notation check_fm (\<open>\<cdot>_\<^sup>v_ is _\<cdot>\<close>)
 lemma check_fm_type[TC] :
   "\<lbrakk>x\<in>nat;o\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> check_fm(x,o,z)\<in>formula"
   unfolding check_fm_def by simp
-
-arity_theorem for "PHcheck_fm"
-
-declare arity_Exists[simp del] arity_subset_fm [simp del]
-  arity_ordinal_fm[simp del] arity_transset_fm[simp del]
 
 lemma arity_is_Hcheck_fm:
   assumes "m\<in>nat" "n\<in>nat" "p\<in>nat" "o\<in>nat"
