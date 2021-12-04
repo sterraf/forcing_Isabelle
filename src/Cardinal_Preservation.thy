@@ -16,7 +16,7 @@ definition
   ccc :: "o" where
   "ccc \<equiv> \<forall>A. antichain(A) \<longrightarrow> |A| \<le> \<omega>"
 
-end (* forcing_notion *)
+end \<comment> \<open>\<^term>\<open>forcing_notion\<close>\<close>
 
 locale M_trivial_notion = M_trivial + forcing_notion
 begin
@@ -30,7 +30,7 @@ lemma antichain_abs' [absolut]:
   unfolding antichain_rel_def antichain_def compat_def
   by (simp add:absolut)
 
-end (* M_trivial_notion *)
+end \<comment> \<open>\<^term>\<open>M_trivial_notion\<close>\<close>
 
 \<comment> \<open>MOVE THIS to an appropriate place\<close>
 text\<open>The following interpretation makes the simplifications from the
@@ -45,7 +45,7 @@ lemma antichain_abs'' [absolut]: "A\<in>M \<Longrightarrow> antichain_r'(A) \<lo
   unfolding antichain_rel_def antichain_def compat_def
   by (auto simp add:absolut transitivity)
 
-end (* M_trivial_notion *)
+end \<comment> \<open>\<^term>\<open>M_trivial_notion\<close>\<close>
 
 lemma (in forcing_notion) Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
   using refl_leq by blast
@@ -83,7 +83,7 @@ lemmas generic_dests = M_genericD[OF generic] M_generic_compatD[OF generic]
 
 bundle G_generic_lemmas = generic_simps[simp] generic_dests[dest]
 
-end (* G_generic *)
+end \<comment> \<open>\<^term>\<open>G_generic\<close>\<close>
 
 sublocale G_generic \<subseteq> ext:M_ZF_trans "M[G]"
   using Transset_MG generic pairing_in_MG Union_MG
@@ -185,7 +185,7 @@ lemmas sharp_intros = nat_into_M Aleph_rel_closed Card_rel_Aleph_rel
 
 declare sharp_intros[rule del, simplified setclass_iff, intro]
 
-end (* M_ctm_AC *)
+end \<comment> \<open>\<^term>\<open>M_ctm_AC\<close>\<close>
 
 context G_generic_AC begin
 
@@ -700,6 +700,6 @@ qed
 
 end (* includes G_generic_lemmas *)
 
-end (* G_generic *)
+end \<comment> \<open>\<^term>\<open>G_generic\<close>\<close>
 
 end

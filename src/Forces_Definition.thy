@@ -1167,7 +1167,7 @@ proof -
     by (auto simp add:components_abs,blast)
 qed
 
-end (* forcing_data *)
+end \<comment> \<open>\<^term>\<open>forcing_data\<close>\<close>
 
 subsection\<open>Forcing for general formulas\<close>
 
@@ -1461,7 +1461,7 @@ lemma sats_forces_Forall :
   unfolding forces_def using assms sats_ren_forces_forall P_in_M leq_in_M one_in_M
   by simp
 
-end (* forcing_data *)
+end \<comment> \<open>\<^term>\<open>forcing_data\<close>\<close>
 
 subsection\<open>The arity of \<^term>\<open>forces\<close>\<close>
 

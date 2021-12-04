@@ -362,6 +362,6 @@ proof -
   by simp
 qed
 
-end (* M_Vfrom *)
+end \<comment> \<open>\<^term>\<open>M_Vfrom\<close>\<close>
 
 end

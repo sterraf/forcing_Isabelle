@@ -554,6 +554,6 @@ lemma preorder_on_Fnle_rel:
   unfolding preorder_on_def refl_def trans_on_def
   by blast
 
-end (* M_master *)
+end \<comment> \<open>\<^term>\<open>M_master\<close>\<close>
 
 end

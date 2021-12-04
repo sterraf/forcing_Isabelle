@@ -395,6 +395,6 @@ proof -
     using separation_iff rev_bexI unfolding is_Collect_def by force
 qed
 
-end (* G_generic *)
+end \<comment> \<open>\<^term>\<open>G_generic\<close>\<close>
 
 end

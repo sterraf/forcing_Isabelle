@@ -415,6 +415,6 @@ proof -
     by (auto dest:transM)
 qed
 
-end (* M_delta *)
+end \<comment> \<open>\<^term>\<open>M_delta\<close>\<close>
 
 end

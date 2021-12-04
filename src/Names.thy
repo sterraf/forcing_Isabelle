@@ -773,11 +773,11 @@ lemma check_in_M : "x\<in>M \<Longrightarrow> check(x) \<in> M"
     Hcheck_closed relation2_Hcheck trans_wfrec_closed[of "rcheck(x)" x "is_Hcheck(one)" Hcheck]
   by (simp flip: setclass_iff)
 
-end (* forcing_data *)
+end \<comment> \<open>\<^term>\<open>forcing_data\<close>\<close>
 
 context forcing_data begin
 
-(* Internalization and absoluteness of rcheck *)
+(* Internalization and absoluteness of rcheck\<close> *)
 
 definition
   is_rcheck :: "[i,i] \<Rightarrow> o" where
@@ -960,7 +960,7 @@ lemma G_in_Gen_Ext :
   using assms val_G_dot GenExtI[of _ G] G_dot_in_M
   by force
 
-end (* forcing_data *)
+end \<comment> \<open>\<^term>\<open>forcing_data\<close>\<close>
 
 locale G_generic = forcing_data +
   fixes G :: "i"
@@ -986,7 +986,7 @@ proof -
     using generic unfolding M_generic_def by auto
 qed
 
-end (* G_generic *)
+end \<comment> \<open>\<^term>\<open>G_generic\<close>\<close>
 
 locale G_generic_AC = G_generic + M_ctm_AC
 

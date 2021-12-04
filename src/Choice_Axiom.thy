@@ -378,6 +378,6 @@ proof -
   show ?thesis using mgzf.choice_ax_abs by simp
 qed
 
-end (* G_generic *)
+end \<comment> \<open>\<^term>\<open>G_generic\<close>\<close>
 
 end

@@ -67,7 +67,7 @@ lemma radd_closed[intro,simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> M(
 lemma rmult_closed[intro,simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> M(c) \<Longrightarrow> M(d) \<Longrightarrow> M(rmult(a,b,c,d))"
   using rmult_separation by (auto simp add: rmult_def)
 
-end (* M_cardinals *)
+end \<comment> \<open>\<^term>\<open>M_cardinals\<close>\<close>
 
 lemma (in M_cardinals) is_cardinal_iff_Least:
   assumes "M(A)" "M(\<kappa>)"
@@ -343,7 +343,7 @@ lemma lepoll_rel_iff_leqpoll_rel: "\<lbrakk>M(A); M(B)\<rbrakk> \<Longrightarrow
   apply (blast intro: eqpoll_relI elim: eqpoll_relE)
   done
 
-end (* M_cardinals *)
+end \<comment> \<open>\<^term>\<open>M_cardinals\<close>\<close>
 
 context M_cardinals
 begin
@@ -1282,6 +1282,6 @@ qed
 lemma eqpoll_rel_imp_Finite_iff: "A \<approx>\<^bsup>M\<^esup> B \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> Finite(A) \<longleftrightarrow> Finite(B)"
   using eqpoll_rel_imp_Finite eqpoll_rel_sym by force
 
-end (* M_cardinals *)
+end \<comment> \<open>\<^term>\<open>M_cardinals\<close>\<close>
 
 end

@@ -348,6 +348,6 @@ lemma arity_transrec_fm [arity] :
   using arity Un_assoc[symmetric] pred_Un_distrib
   by simp
 
-end (* context FOL_arities *)
+end \<comment> \<open>\<^term>\<open>FOL_arities\<close>\<close>
 
 end

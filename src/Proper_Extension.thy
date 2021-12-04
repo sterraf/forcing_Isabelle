@@ -41,7 +41,7 @@ proof
   qed
 qed
 
-end (* separative_notion *)
+end \<comment> \<open>\<^term>\<open>separative_notion\<close>\<close>
 
 locale ctm_separative = forcing_data + separative_notion
 begin
@@ -67,6 +67,6 @@ theorem proper_extension: assumes "M_generic(G)" shows "M \<noteq> M[G]"
   using assms G_in_Gen_Ext[of G] one_in_G[of G] generic_not_in_M
   by force
 
-end (* ctm_separative *)
+end \<comment> \<open>\<^term>\<open>ctm_separative\<close>\<close>
 
 end

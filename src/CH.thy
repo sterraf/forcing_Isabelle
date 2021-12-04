@@ -167,7 +167,7 @@ proof -
 qed
 
 
-end (* M_ctm_AC *)
+end \<comment> \<open>\<^term>\<open>M_ctm_AC\<close>\<close>
 
 locale collapse_generic = G_generic_AC "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0
 
@@ -439,7 +439,7 @@ theorem CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> = 2\<^bsup>\<up>\<ale
     le_anti_sym
   by auto
 
-end (* collapse_generic *)
+end \<comment> \<open>\<^term>\<open>collapse_generic\<close>\<close>
 
 theorem ctm_of_CH:
   assumes

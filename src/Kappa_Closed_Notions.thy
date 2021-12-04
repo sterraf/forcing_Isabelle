@@ -123,7 +123,7 @@ lemma kappa_closed_abs:
   unfolding kappa_closed_rel_def kappa_closed_def
   oops
 
-end (* forcing_data *)
+end \<comment> \<open>\<^term>\<open>forcing_data\<close>\<close>
 
 lemma (in forcing_data) forcing_a_value:
   assumes "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]" "a \<in> A"
@@ -990,6 +990,6 @@ qed
 
 end (* includes G_generic_lemmas *)
 
-end (* G_generic_AC *)
+end \<comment> \<open>\<^term>\<open>G_generic_AC\<close>\<close>
 
 end

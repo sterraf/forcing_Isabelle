@@ -491,6 +491,6 @@ proof -
     by auto
 qed
 
-end (* context G_generic *)
+end \<comment> \<open>\<^term>\<open>G_generic\<close>\<close>
 
 end

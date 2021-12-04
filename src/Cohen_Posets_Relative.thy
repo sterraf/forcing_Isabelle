@@ -92,17 +92,17 @@ proof -
   qed
 qed
 
-end (* M_cardinal_library *)
+end \<comment> \<open>\<^term>\<open>M_cardinal_library\<close>\<close>
 
 locale M_add_reals = M_cohen + add_reals
 begin
 
 lemmas zero_lesspoll_rel_kappa = zero_lesspoll_rel[OF zero_lt_kappa]
 
-end (* M_add_reals *)
+end \<comment> \<open>\<^term>\<open>M_add_reals\<close>\<close>
 
 (* FIXME This is old-style discipline *)
-(* MOVE THIS to some appropriate place *)
+(* MOVE THIS to some appropriate place\<close> *)
 declare (in M_trivial) compat_in_abs[absolut]
 
 definition
@@ -121,12 +121,12 @@ lemma antichain_abs [absolut]:
   "\<lbrakk> M(A); M(P); M(leq) \<rbrakk> \<Longrightarrow> antichain\<^bsup>M\<^esup>(P,leq,A) \<longleftrightarrow> antichain(P,leq,A)"
   unfolding antichain_rel_def antichain_def by (simp add:absolut)
 
-end (* M_trivial *)
+end \<comment> \<open>\<^term>\<open>M_trivial\<close>\<close>
 
 (******************************************************)
 (* FIXME This is old-style discipline *)
 
-definition (* completely relational *)
+definition (* completely relational\<close> *)
   ccc_rel   :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" (\<open>ccc\<^bsup>_\<^esup>'(_,_')\<close>) where
   "ccc_rel(M,P,leq) \<equiv> \<forall>A[M]. antichain_rel(M,P,leq,A) \<longrightarrow>
       (\<forall>\<kappa>[M]. is_cardinal(M,A,\<kappa>) \<longrightarrow> (\<exists>om[M]. omega(M,om) \<and> le_rel(M,\<kappa>,om)))"
@@ -144,7 +144,7 @@ lemma def_ccc_rel:
   using is_cardinal_iff
   unfolding ccc_rel_def by (simp add:absolut)
 
-end (* M_cardinals *)
+end \<comment> \<open>\<^term>\<open>M_cardinals\<close>\<close>
 
 (******************  end Discipline  ******************)
 
@@ -474,6 +474,6 @@ proof -
   show ?thesis using def_ccc_rel by (auto simp:absolut antichain_def) fastforce
 qed
 
-end (* M_add_reals *)
+end \<comment> \<open>\<^term>\<open>M_add_reals\<close>\<close>
 
 end
