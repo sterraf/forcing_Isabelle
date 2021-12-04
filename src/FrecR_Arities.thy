@@ -2,11 +2,10 @@ theory FrecR_Arities
   imports
     Arities
     FrecR
-
 begin
 
 context
-  notes arity_Exists[simp]
+  notes FOL_arities[simp]
 begin
 
 lemma arity_fst_fm [arity] :

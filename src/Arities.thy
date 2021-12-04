@@ -6,11 +6,15 @@ theory Arities
     Discipline_Base
 begin
 
-declare arity_And arity_Or arity_Implies arity_Iff arity_Exists [arity]
+lemmas FOL_arities [simp del, arity] = arity_And arity_Or arity_Implies arity_Iff arity_Exists
 
-declare pred_Un_distrib [arity]
+declare pred_Un_distrib[arity_aux]
 
-lemma arity_upair_fm [arity] : "\<lbrakk>  t1\<in>nat ; t2\<in>nat ; up\<in>nat  \<rbrakk> \<Longrightarrow> 
+context
+  notes FOL_arities[simp]
+begin
+
+lemma arity_upair_fm [arity] : "\<lbrakk>  t1\<in>nat ; t2\<in>nat ; up\<in>nat  \<rbrakk> \<Longrightarrow>
   arity(upair_fm(t1,t2,up)) = \<Union> {succ(t1),succ(t2),succ(up)}"
   unfolding  upair_fm_def
   using union_abs1 union_abs2 pred_Un   
@@ -233,7 +237,7 @@ proof -
   then
   show ?thesis
     unfolding iterates_MH_fm_def
-    using arity_is_nat_case_fm[OF \<open>?\<phi>\<in>_\<close> _ _ _ _ \<open>arity(?\<phi>) = _\<close>] assms pred_succ_eq pred_Un_distrib
+    using arity_is_nat_case_fm[OF \<open>?\<phi>\<in>_\<close> _ _ _ _ \<open>arity(?\<phi>) = ?ar\<close>] assms pred_succ_eq pred_Un_distrib
     by auto
 qed
 
@@ -341,7 +345,9 @@ lemma arity_transrec_fm [arity] :
   "\<lbrakk>p\<in>formula ; v\<in>nat ; n\<in>nat; i\<in>nat\<rbrakk> \<Longrightarrow> arity(p) = i \<Longrightarrow>
      arity(is_transrec_fm(p,v,n)) = succ(v) \<union> succ(n) \<union> (pred^8(i))"
   unfolding is_transrec_fm_def
-  using arity Un_assoc[symmetric]
+  using arity Un_assoc[symmetric] pred_Un_distrib
   by simp
+
+end (* context FOL_arities *)
 
 end

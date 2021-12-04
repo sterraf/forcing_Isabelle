@@ -42,7 +42,7 @@ proof -
   have "?\<chi>\<in>formula" by simp
   with \<open>env\<in>_\<close> phi
   have "arity(?\<chi>) \<le> 2#+length(env) " 
-    using ord_simp_union leI by simp
+    using ord_simp_union leI FOL_arities by simp
   with \<open>env\<in>list(_)\<close> phi
   have "arity(forces(?\<chi>)) \<le> 6 #+ length(env)"
     using  arity_forces_le by simp
@@ -79,7 +79,7 @@ proof -
     by auto
   with \<open>nenv\<in>_\<close> \<open>env\<in>_\<close> \<open>\<pi>\<in>M\<close> \<open>\<phi>\<in>_\<close> \<open>length(nenv) = length(env)\<close>
   have "arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])" for \<theta> 
-    using union_abs2[OF \<open>arity(\<phi>) \<le> 2#+ _\<close>] ord_simp_union 
+    using union_abs2[OF \<open>arity(\<phi>) \<le> 2#+ _\<close>] ord_simp_union FOL_arities
     by simp    
   note in_M = \<open>\<pi>\<in>M\<close> \<open>domain(\<pi>) \<times> P \<in> M\<close>  P_in_M one_in_M leq_in_M
   {

@@ -32,6 +32,8 @@ named_theorems iff_sats "Theorems for synthetising formulas."
 
 named_theorems arity "Theorems for arity of formulas."
 
+named_theorems arity_aux "Auxiliary theorems for calculating arities."
+
 ML\<open>
 val $` = curry ((op $) o swap)
 infix $`
@@ -74,7 +76,8 @@ fun manual_arity intermediate def_name pos lthy =
 
 fun prove_arity thms goal ctxt =
   let
-    val rules = Named_Theorems.get ctxt \<^named_theorems>\<open>arity\<close>
+    val rules = (Named_Theorems.get ctxt \<^named_theorems>\<open>arity\<close>) @
+      (Named_Theorems.get ctxt \<^named_theorems>\<open>arity_aux\<close>)
   in
     Goal.prove ctxt [] [] goal
     (K (rewrite_goal_tac ctxt thms 1 THEN Method.insert_tac ctxt rules 1 THEN asm_simp_tac ctxt 1))

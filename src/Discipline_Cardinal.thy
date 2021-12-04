@@ -33,8 +33,8 @@ end
 
 manual_arity intermediate for "is_Int_fm"
   unfolding is_Int_fm_def
-  using arity
-  by simp
+  using arity pred_Un_distrib
+  by (simp)
 
 arity_theorem for "is_Int_fm"
 
@@ -48,7 +48,7 @@ arity_theorem intermediate for "is_surj_fm"
 
 lemma arity_is_surj_fm [arity] :
   "A \<in> nat \<Longrightarrow> B \<in> nat \<Longrightarrow> I \<in> nat \<Longrightarrow> arity(is_surj_fm(A, B, I)) = succ(A) \<union> succ(B) \<union> succ(I)"
-  using arity_is_surj_fm'
+  using arity_is_surj_fm' pred_Un_distrib
   by auto
 
 arity_theorem for "injP_rel_fm"
@@ -57,7 +57,7 @@ arity_theorem intermediate for "is_inj_fm"
 
 lemma arity_is_inj_fm [arity]:
   "A \<in> nat \<Longrightarrow> B \<in> nat \<Longrightarrow> I \<in> nat \<Longrightarrow> arity(is_inj_fm(A, B, I)) = succ(A) \<union> succ(B) \<union> succ(I)"
-  using arity_is_inj_fm'
+  using arity_is_inj_fm' pred_Un_distrib
   by auto
 
 arity_theorem for "is_bij_fm"

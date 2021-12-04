@@ -11,10 +11,12 @@ theory Interface
     Nat_Miscellanea
     Relative_Univ
     Synthetic_Definition
-    Arities
     Renaming_Auto
     Discipline_Function
 begin
+
+declare arity_subset_fm [simp del] arity_ordinal_fm[simp del, arity] arity_transset_fm[simp del]
+  FOL_arities[simp del]
 
 abbreviation
   dec10  :: i   ("10") where "10 \<equiv> succ(9)"
@@ -64,9 +66,6 @@ lemma empty_intf :
 lemma Transset_intf :
   "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
   by (simp add: Transset_def,auto)
-
-declare arity_Exists[simp del] arity_subset_fm [simp del]
-  arity_ordinal_fm[simp del] arity_transset_fm[simp del]
 
 locale M_ZF =
   fixes M
@@ -654,7 +653,7 @@ lemma arity_tran_closure_fm :
   unfolding trans_closure_fm_def
   using arity_omega_fm arity_field_fm arity_typed_function_fm arity_pair_fm arity_empty_fm arity_fun_apply_fm
     arity_composition_fm arity_succ_fm union_abs2 pred_Un_distrib
-  by (auto simp:arity_Exists)
+  by (auto simp:FOL_arities)
 
 schematic_goal wellfounded_trancl_fm_auto:
   assumes
@@ -1327,7 +1326,7 @@ proof -
   have "arity(?\<phi>') \<le> 1 #+ length(env@[A])"
     using assms Un_le
       le_trans[of "arity(\<phi>)" "1#+length(env)" "2#+length(env)"]
-    by force
+    by (force simp:FOL_arities)
   moreover from assms
   have "?\<phi>'\<in>formula"
     "nth(length(env), env @ [A]) = A" using assms nth_append by auto
@@ -1391,7 +1390,7 @@ proof -
   have "arity(?\<phi>') \<le> 2 #+ length(env@[A])"
     using assms Un_le
       le_trans[of "arity(\<phi>)" "2#+(length(env))" "3#+length(env)"]
-    by force
+    by (force simp:FOL_arities)
   moreover from assms
   have "?\<phi>'\<in>formula" "nth(length(env), env @ [A]) = A"
     using assms nth_append by auto

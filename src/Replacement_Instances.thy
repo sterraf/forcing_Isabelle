@@ -228,7 +228,7 @@ arity_theorem for "HAleph_wfrec_repl_body_fm"
 \<comment> \<open>FIXME: Why @{thm arity_Replace_fm} doesn't work here? Revise the method we're using.\<close>
 lemma arity_HAleph_wfrec_repl_body: "arity(HAleph_wfrec_repl_body_fm(2,0,1)) = 3"
   by (simp_all add: arity_HAleph_wfrec_repl_body_fm arity_is_If_fm ord_simp_union arity_fun_apply_fm
-      arity_is_Limit_fm arity_empty_fm arity_Replace_fm[where i=11])
+      arity_is_Limit_fm arity_empty_fm arity_Replace_fm[where i=11] FOL_arities)
 
 lemma (in M_ZF_trans) replacement_HAleph_wfrec_repl_body:
   "B\<in>M \<Longrightarrow> strong_replacement(##M, HAleph_wfrec_repl_body(##M,B))"
@@ -328,10 +328,10 @@ manual_arity for "is_nat_case_dcwit_aux_fm"
 manual_arity for "dcwit_repl_body_fm"
   using arity_is_nat_case_dcwit_aux_fm[THEN [6] arity_is_wfrec_fm]
   unfolding dcwit_repl_body_fm_def  is_nat_case_dcwit_aux_fm_def dcwit_aux_fm_def
-  by (auto simp add: arity(3-5))
+  by (auto simp add: arity(1-35))
 
 lemma arity_dcwit_repl_body: "arity(dcwit_repl_body_fm(6,5,4,3,2,0,1)) = 7"
-  by (simp_all add: arity_dcwit_repl_body_fm ord_simp_union)
+  by (simp_all add: FOL_arities arity_dcwit_repl_body_fm ord_simp_union)
 
 lemma (in M_ZF_trans) replacement_dcwit_repl_body:
   "(##M)(mesa) \<Longrightarrow> (##M)(A) \<Longrightarrow> (##M)(a) \<Longrightarrow> (##M)(s) \<Longrightarrow> (##M)(R) \<Longrightarrow>
@@ -448,13 +448,13 @@ synthesize "is_RepFun_body" from_definition assuming "nonempty"
 arity_theorem for "is_RepFun_body_fm"
 lemma arity_body_repfun:
   "arity( \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> (\<cdot>\<exists>\<cdot>cons_fm(0, 3, 2) \<and> pair_fm(5, 1, 0) \<cdot>\<cdot>)\<cdot>\<cdot> ) = 5"
-  using arity_cons_fm arity_pair_fm pred_Un_distrib union_abs1
+  using arity_cons_fm arity_pair_fm pred_Un_distrib union_abs1 FOL_arities
   by auto
 
 lemma arity_RepFun: "arity(is_RepFun_body_fm(0, 1, 2)) = 3"
   unfolding is_RepFun_body_fm_def
   using arity_Replace_fm[OF _ _ _ _ arity_body_repfun] arity_fst_fm arity_snd_fm arity_empty_fm
-    pred_Un_distrib union_abs2 union_abs1
+    pred_Un_distrib union_abs2 union_abs1 FOL_arities
   by simp
 
 lemma (in M_ZF_trans) RepFun_SigFun_closed: "x \<in> M \<Longrightarrow> z \<in> M \<Longrightarrow> {{\<langle>z, x\<rangle>} . x \<in> x} \<in> M"

@@ -47,7 +47,7 @@ lemma type_omap_wfrec_body_fm :"A\<in>nat \<Longrightarrow> r\<in>nat \<Longrigh
 lemma arity_aux : "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> arity(omap_wfrec_body(A,r)) = (9#+A) \<union> (9#+r)"
   unfolding omap_wfrec_body_def
   using arity_image_fm arity_pred_set_fm pred_Un_distrib union_abs2[of 3] union_abs1
-  by (simp,auto simp add:Un_assoc[symmetric] union_abs1)
+  by (simp add:FOL_arities, auto simp add:Un_assoc[symmetric] union_abs1)
 
 lemma arity_omap_wfrec: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>
   arity(is_wfrec_fm(omap_wfrec_body(A,r),succ(succ(succ(r))), 1, 0)) =
@@ -66,15 +66,15 @@ lemma arity_isordermap: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>
 
 lemma arity_is_ordertype: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>d\<in>nat\<Longrightarrow>
    arity(is_ordertype_fm(A,r,d)) = succ(d) \<union> (succ(A) \<union> succ(r))"
-  unfolding is_ordertype_fm_def
-  using arity_isordermap arity_image_fm pred_Un_distrib
+  unfolding is_ordertype_fm_def 
+  using arity_isordermap arity_image_fm pred_Un_distrib FOL_arities
   by auto
 
 arity_theorem for "is_order_body_fm"
 
 lemma arity_is_order_body: "arity(is_order_body_fm(2,0,1)) = 3"
   using arity_is_order_body_fm arity_is_ordertype ord_simp_union
-  by simp
+  by (simp add:FOL_arities)
 
 lemma (in M_ZF_trans) replacement_is_order_body:
  "X\<in>M \<Longrightarrow> strong_replacement(##M, is_order_body(##M,X))"
@@ -165,7 +165,7 @@ lemma (in M_ZF_trans) replacement_ordertype:
 lemma arity_is_jump_cardinal_body: "arity(is_jump_cardinal_body'_fm(0,1)) = 2"
   unfolding is_jump_cardinal_body'_fm_def
   using arity_is_ordertype arity_is_well_ord_fm arity_is_Pow_fm arity_cartprod_fm
-    arity_Replace_fm[where i=5] ord_simp_union
+    arity_Replace_fm[where i=5] ord_simp_union FOL_arities
   by simp
 
 lemma (in M_ZF_trans) replacement_is_jump_cardinal_body:
@@ -216,8 +216,8 @@ lemma arity_is_HAleph_fm: "arity(is_HAleph_fm(2, 1, 0)) = 3"
     arity_is_Limit_fm arity_empty_fm
     arity_Replace_fm[where i="12" and v=10 and n=3]
     pred_Un_distrib ord_simp_union
-  by simp
-
+  by (simp add:FOL_arities)
+  
 lemma arity_is_Aleph: "arity(is_Aleph_fm(0, 1)) = 2"
   unfolding is_Aleph_fm_def
   using arity_transrec_fm[OF _ _ _ _ arity_is_HAleph_fm] ord_simp_union
@@ -231,7 +231,7 @@ lemma (in M_ZF_trans) replacement_is_aleph:
    apply(rule_tac is_Aleph_iff_sats[where env="[_,_]",THEN iffD2],simp_all add:zero_in_M)
    apply(rule_tac is_Aleph_iff_sats[where env="[_,_]",THEN iffD1],simp_all add:zero_in_M)
   apply(rule_tac replacement_ax[where env="[]",simplified])
-    apply(simp_all add:arity_is_Aleph  ord_simp_union is_Aleph_fm_type)
+    apply(simp_all add:arity_is_Aleph FOL_arities arity_ordinal_fm ord_simp_union is_Aleph_fm_type)
   done
 
 lemma (in M_ZF_trans) replacement_aleph_rel:
@@ -264,6 +264,6 @@ lemma (in M_ZF_trans) separation_cardinal_rel_lesspoll_rel:
   using separation_in_ctm[where \<phi>="(\<cdot>\<exists>\<cdot>cardinal(1) is 0 \<and> \<cdot>0 \<prec> 2\<cdot>\<cdot>\<cdot>)" and env="[\<kappa>]"]
     cardinal_rel_lepoll_rel_abs[symmetric]
     arity_is_cardinal_fm arity_is_lesspoll_fm arity_is_bij_fm ord_simp_union
-  by simp
+    by (simp_all add: FOL_arities)
 
 end

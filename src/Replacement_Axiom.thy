@@ -102,7 +102,7 @@ proof -
     using \<open>\<phi>\<in>formula\<close> unfolding body_ground_repl_fm_def
     by (simp add:arity pred_Un_distrib, subst arity_transrec_fm[of "is_HVfrom_fm(8,2,1,0)" 3 1])
       (simp_all add: arity,
-        subst arity_Replace_fm[of "is_powapply_fm(5, 0, 1)" 4 0], auto simp add:arity)
+        subst arity_Replace_fm[of "is_powapply_fm(5, 0, 1)" 4 0], auto simp add:arity ord_simp_union)
 qed
 
 lemma sats_body_ground_repl_fm:

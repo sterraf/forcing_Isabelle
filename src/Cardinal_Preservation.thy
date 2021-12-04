@@ -325,14 +325,14 @@ proof -
   let ?G="(\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v5 is 0\<cdot> \<and> ren(?\<psi>) ` 9 ` 9 ` ren_F_aux_fn \<cdot>\<cdot>)"
   have "?app_fm \<in> formula" "arity(?app_fm) = 3"
     using arity_fun_apply_fm union_abs1
-    by simp_all
+    by (simp_all add:arity)
   then
   have "arity(forces(?app_fm)) \<le> 7"
     using arity_forces[OF \<open>?app_fm\<in>_\<close>] by simp_all
   then
   have "arity(?\<psi>) \<le> 9"
-    using arity_leq_fm union_abs2 union_abs1 le_trans
-    by simp
+    using union_abs2 union_abs1 le_trans
+    by (simp add:arity)
   then
   have "ren(?\<psi>)`9`9`ren_F_aux_fn \<in> formula" "arity(ren(?\<psi>)`9`9`ren_F_aux_fn) \<le> 9"
     using arity_ren ren_tc ren_F_aux_thm check_fm_type leq_fm_type ren_F_aux_fn_def pred_le
@@ -435,7 +435,7 @@ proof -
   let ?Q="\<lambda> x b . (\<exists>q\<in>P. q \<preceq> p \<and> (M, [q, P, leq, one, f_dot, x\<^sup>v, b\<^sup>v] \<Turnstile> forces(?app_fm)))"
   have "?app_fm \<in> formula" "arity(?app_fm) = 3"
     using arity_fun_apply_fm union_abs1
-    by simp_all
+    by (simp_all add:arity) 
   then
   have "arity(forces(?app_fm)) \<le> 7"
     using arity_forces[OF \<open>?app_fm\<in>_\<close>] by simp_all

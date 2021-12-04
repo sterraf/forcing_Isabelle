@@ -453,10 +453,13 @@ notation is_inj_fm (\<open>\<cdot>inj'(_,_') is _\<cdot>\<close>)
 
 arity_theorem intermediate for "is_inj_fm"
 
+declare arity_subset_fm [simp del]
+  arity_ordinal_fm[simp del] arity_transset_fm[simp del]
+
 lemma arity_is_inj_fm[arity]:
     "A \<in> nat \<Longrightarrow>
     B \<in> nat \<Longrightarrow> I \<in> nat \<Longrightarrow> arity(is_inj_fm(A, B, I)) = succ(A) \<union> succ(B) \<union> succ(I)"
-  using arity_is_inj_fm' by auto
+  using arity_is_inj_fm' by (auto simp:pred_Un_distrib arity)
 
 definition
   inj_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" (\<open>inj\<^bsup>_\<^esup>'(_,_')\<close>) where

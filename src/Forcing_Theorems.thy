@@ -1387,7 +1387,7 @@ next
   ultimately
   show ?case 
     using truth_lemma_And truth_lemma_Neg[of "\<cdot>\<phi> \<and> \<psi>\<cdot>"] Forces_Nand_alt 
-      M_genericD map_val_in_MG arity_Nand_le[of \<phi> \<psi>] by auto
+      M_genericD map_val_in_MG arity_Nand_le[of \<phi> \<psi>] FOL_arities by auto
 next
   case (Forall \<phi>)
   with \<open>M_generic(G)\<close>
