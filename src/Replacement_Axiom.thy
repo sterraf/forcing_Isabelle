@@ -4,247 +4,173 @@ theory Replacement_Axiom
     Least Relative_Univ Separation_Axiom Renaming_Auto
 begin
 
-rename "renrep1" src "[p,P,leq,o,\<rho>,\<tau>]" tgt "[V,\<tau>,\<rho>,p,\<alpha>,P,leq,o]"
-
-definition renrep_fn :: "i \<Rightarrow> i" where
-  "renrep_fn(env) \<equiv> rsum(renrep1_fn,id(length(env)),6,8,length(env))"
-
-definition
-  renrep :: "[i,i] \<Rightarrow> i" where
-  "renrep(\<phi>,env) = ren(\<phi>)`(6#+length(env))`(8#+length(env))`renrep_fn(env)"
-
-lemma renrep_type [TC]:
-  assumes "\<phi>\<in>formula" "env \<in> list(M)"
-  shows "renrep(\<phi>,env) \<in> formula"
-  unfolding renrep_def renrep_fn_def renrep1_fn_def
-  using assms renrep1_thm(1) ren_tc
-  by simp
-
-lemma arity_renrep:
-  assumes  "\<phi>\<in>formula" "arity(\<phi>)\<le> 6#+length(env)" "env \<in> list(M)"
-  shows "arity(renrep(\<phi>,env)) \<le> 8#+length(env)"
-  unfolding  renrep_def renrep_fn_def renrep1_fn_def
-  using assms renrep1_thm(1) arity_ren
-  by simp
-
-lemma renrep_sats :
-  assumes  "arity(\<phi>) \<le> 6 #+ length(env)"
-          "[P,leq,o,p,\<rho>,\<tau>] @ env \<in> list(M)"
-    "V \<in> M" "\<alpha> \<in> M"
-    "\<phi>\<in>formula"
-  shows "sats(M, \<phi>, [p,P,leq,o,\<rho>,\<tau>] @ env) \<longleftrightarrow> sats(M, renrep(\<phi>,env), [V,\<tau>,\<rho>,p,\<alpha>,P,leq,o] @ env)"
-  unfolding  renrep_def renrep_fn_def renrep1_fn_def
-  by (rule sats_iff_sats_ren,insert assms, auto simp add:renrep1_thm(1)[of _ M,simplified]
-        renrep1_thm(2)[simplified,where p=p and \<alpha>=\<alpha>])
-
-rename "renpbdy1" src "[\<rho>,p,\<alpha>,P,leq,o]" tgt "[\<rho>,p,x,\<alpha>,P,leq,o]"
-
-definition renpbdy_fn :: "i \<Rightarrow> i" where
-  "renpbdy_fn(env) \<equiv> rsum(renpbdy1_fn,id(length(env)),6,7,length(env))"
-
-definition
-  renpbdy :: "[i,i] \<Rightarrow> i" where
-  "renpbdy(\<phi>,env) = ren(\<phi>)`(6#+length(env))`(7#+length(env))`renpbdy_fn(env)"
-
-
-lemma
-  renpbdy_type [TC]: "\<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow> renpbdy(\<phi>,env) \<in> formula"
-  unfolding renpbdy_def renpbdy_fn_def renpbdy1_fn_def
-  using  renpbdy1_thm(1) ren_tc
-  by simp
-
-lemma  arity_renpbdy: "\<phi>\<in>formula \<Longrightarrow> arity(\<phi>) \<le> 6 #+ length(env) \<Longrightarrow> env\<in>list(M) \<Longrightarrow> arity(renpbdy(\<phi>,env)) \<le> 7 #+ length(env)"
-  unfolding renpbdy_def renpbdy_fn_def renpbdy1_fn_def
-  using  renpbdy1_thm(1) arity_ren
-  by simp
-
-lemma
-  sats_renpbdy: "arity(\<phi>) \<le> 6 #+ length(nenv) \<Longrightarrow> [\<rho>,p,x,\<alpha>,P,leq,o,\<pi>] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow>
-       sats(M, \<phi>, [\<rho>,p,\<alpha>,P,leq,o] @ nenv) \<longleftrightarrow> sats(M, renpbdy(\<phi>,nenv), [\<rho>,p,x,\<alpha>,P,leq,o] @ nenv)"
-  unfolding renpbdy_def renpbdy_fn_def renpbdy1_fn_def
-  by (rule sats_iff_sats_ren,auto simp add: renpbdy1_thm(1)[of _ M,simplified]
-                                            renpbdy1_thm(2)[simplified,where \<alpha>=\<alpha> and x=x])
-
-
-rename "renbody1" src "[x,\<alpha>,P,leq,o]" tgt "[\<alpha>,x,m,P,leq,o]"
-
-definition renbody_fn :: "i \<Rightarrow> i" where
-  "renbody_fn(env) \<equiv> rsum(renbody1_fn,id(length(env)),5,6,length(env))"
-
-definition
-  renbody :: "[i,i] \<Rightarrow> i" where
-  "renbody(\<phi>,env) = ren(\<phi>)`(5#+length(env))`(6#+length(env))`renbody_fn(env)"
-
-lemma
-  renbody_type [TC]: "\<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow> renbody(\<phi>,env) \<in> formula"
-  unfolding renbody_def renbody_fn_def renbody1_fn_def
-  using  renbody1_thm(1) ren_tc
-  by simp
-
-lemma  arity_renbody: "\<phi>\<in>formula \<Longrightarrow> arity(\<phi>) \<le> 5 #+ length(env) \<Longrightarrow> env\<in>list(M) \<Longrightarrow>
-  arity(renbody(\<phi>,env)) \<le> 6 #+ length(env)"
-  unfolding renbody_def renbody_fn_def renbody1_fn_def
-  using  renbody1_thm(1) arity_ren
-  by simp
-
-lemma
-  sats_renbody: "arity(\<phi>) \<le> 5 #+ length(nenv) \<Longrightarrow> [\<alpha>,x,m,P,leq,o] @ nenv \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow>
-       sats(M, \<phi>, [x,\<alpha>,P,leq,o] @ nenv) \<longleftrightarrow> sats(M, renbody(\<phi>,nenv), [\<alpha>,x,m,P,leq,o] @ nenv)"
-  unfolding renbody_def renbody_fn_def renbody1_fn_def
-  by (rule sats_iff_sats_ren, auto simp add:renbody1_thm(1)[of _ M,simplified]
-                                            renbody1_thm(2)[where \<alpha>=\<alpha> and m=m,simplified])
-
 context G_generic
 begin
 
-lemma pow_inter_M:
-  assumes
-    "x\<in>M" "y\<in>M"
-  shows
-    "powerset(##M,x,y) \<longleftrightarrow> y = Pow(x) \<inter> M"
-  using assms by auto
+definition rename_split_fm where 
+  "rename_split_fm(\<phi>) \<equiv> (\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>\<cdot>\<cdot>snd(9) is 0\<cdot> \<and> \<cdot>\<cdot>fst(9) is 4\<cdot> \<and> \<cdot>\<cdot>1=11\<cdot> \<and>
+    \<cdot>\<cdot>2=12\<cdot> \<and> \<cdot>\<cdot>3=13\<cdot> \<and> \<cdot>\<cdot>5=7\<cdot> \<and>
+    (\<lambda>p. incr_bv(p)`6)^8(forces(\<phi>)) \<cdot>\<cdot>\<cdot>\<cdot>\<cdot>\<cdot>\<cdot>)\<cdot>)\<cdot>)\<cdot>)\<cdot>)\<cdot>)"
 
+lemma rename_split_fm_type[TC]: "\<phi>\<in>formula \<Longrightarrow> rename_split_fm(\<phi>)\<in>formula"
+  unfolding rename_split_fm_def by simp
 
-schematic_goal sats_prebody_fm_auto:
-  assumes
-    "\<phi>\<in>formula" "[P,leq,one,p,\<rho>,\<pi>] @ nenv \<in>list(M)"  "\<alpha>\<in>M" "arity(\<phi>) \<le> 2 #+ length(nenv)"
-  shows
-    "(\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> sats(M,forces(\<phi>),[p,P,leq,one,\<rho>,\<tau>] @ nenv))
-   \<longleftrightarrow> sats(M,?prebody_fm,[\<rho>,p,\<alpha>,P,leq,one] @ nenv)"
-  apply (insert assms; (rule sep_rules is_Vset_iff_sats[OF _ _ _ _ _ nonempty[simplified]] | simp))
-   apply (rule sep_rules is_Vset_iff_sats is_Vset_iff_sats[OF _ _ _ _ _ nonempty[simplified]] | simp)+
-        apply (rule nonempty[simplified])
-       apply (simp_all)
-    apply (rule length_type[THEN nat_into_Ord], blast)+
-  apply ((rule sep_rules | simp))
-    apply ((rule sep_rules | simp))
-      apply ((rule sep_rules | simp))
-       apply ((rule sep_rules | simp))
-      apply ((rule sep_rules | simp))
-     apply ((rule sep_rules | simp))
-    apply ((rule sep_rules | simp))
-   apply (rule renrep_sats[simplified])
-       apply (insert assms)
-       apply(auto simp add: renrep_type definability)
+schematic_goal arity_rename_split_fm: "\<phi>\<in>formula \<Longrightarrow> arity(rename_split_fm(\<phi>)) = ?m"
+  using arity_forces[of \<phi>] forces_type unfolding rename_split_fm_def
+  by (simp add:arity Un_assoc[symmetric] union_abs1)
+
+lemma arity_rename_split_fm_le: 
+  assumes "\<phi>\<in>formula"
+  shows "arity(rename_split_fm(\<phi>)) \<le> 8 \<union> (arity(\<phi>) #+ 6)"
 proof -
   from assms
-  have "nenv\<in>list(M)" by simp
-  with \<open>arity(\<phi>)\<le>_\<close> \<open>\<phi>\<in>_\<close>
-  show "arity(forces(\<phi>)) \<le> succ(succ(succ(succ(succ(succ(length(nenv)))))))"
-    using arity_forces_le by simp
+  have arity_forces_6: "\<not> 1 < arity(\<phi>) \<Longrightarrow> 6 \<le> n \<Longrightarrow> arity(forces(\<phi>)) \<le> n" for n
+    using le_trans lt_trans[of _ 5 n] not_lt_iff_le[of 1 "arity(\<phi>)"]
+    by (auto intro!:le_trans[OF arity_forces])
+  have pred1_arity_forces: "\<not> 1 < arity(\<phi>) \<Longrightarrow> Arith.pred^n(arity(forces(\<phi>))) \<le> 8" if "n\<in>nat" for n
+    using that pred_le[of 7] le_succ[THEN [2] le_trans] arity_forces_6
+    by (induct rule:nat_induct) auto
+  have arity_forces_le_succ6: "Arith.pred^n(arity(forces(\<phi>))) \<le> succ(succ(succ(succ(succ(succ(arity(\<phi>)))))))"
+    if "n\<in>nat" for n
+    using that assms arity_forces[of \<phi>, THEN le_trans,
+        OF _ le_succ, THEN le_trans, OF _ _ le_succ] le_trans[OF pred_le[OF _ le_succ]]
+    by (induct rule:nat_induct) auto
+  note trivial_arities = arity_forces_6
+    arity_forces_le_succ6[of 1, simplified] arity_forces_le_succ6[of 2, simplified]
+    arity_forces_le_succ6[of 3, simplified] arity_forces_le_succ6[of 4, simplified]
+    arity_forces_le_succ6[of 5, simplified] arity_forces_le_succ6[of 6, simplified]
+    pred1_arity_forces[of 1, simplified] pred1_arity_forces[of 2, simplified]
+    pred1_arity_forces[of 3, simplified] pred1_arity_forces[of 4, simplified]
+    pred1_arity_forces[of 5, simplified] pred1_arity_forces[of 6, simplified]
+  show ?thesis
+    using assms arity_forces[of \<phi>] arity_forces[of \<phi>, THEN le_trans, OF _ le_succ]
+      arity_forces[of \<phi>, THEN le_trans, OF _ le_succ, THEN le_trans, OF _ _ le_succ]
+    unfolding rename_split_fm_def
+    by (simp add:arity Un_assoc[symmetric] union_abs1 arity_forces[of \<phi>] forces_type)
+      (subst arity_incr_bv_lemma; auto simp: arity ord_simp_union forces_type trivial_arities)+
 qed
 
-(* The formula synthesized above *)
-synthesize_notc "prebody" from_schematic sats_prebody_fm_auto
+bundle sharp_simps1 = snd_abs[simp] fst_abs[simp] fst_closed[simp del, simplified, simp]
+    snd_closed[simp del, simplified, simp] M_inhabited[simplified, simp]
+    pair_in_M_iff[simp del, simplified, simp]
 
-lemma prebody_fm_type [TC]:
+lemma sats_forces_iff_sats_rename_split_fm:
+  includes sharp_simps1
+  assumes
+    "[\<alpha>,m,p,P,leq,one,t,\<tau>] @ nenv \<in>list(M)" "V \<in> M"
+    "\<phi>\<in>formula"
+  shows
+    "(M, [p, P, leq, one, t, \<tau>] @ nenv \<Turnstile> forces(\<phi>)) \<longleftrightarrow>
+      M, [V, \<tau>, \<alpha>, \<langle>t,p\<rangle>, m, P, leq, one] @ nenv \<Turnstile> rename_split_fm(\<phi>)"
+  using assms unfolding rename_split_fm_def
+  by (simp add:sats_incr_bv_iff[where bvs="[_,_,_,_,_,_]", simplified])
+
+definition body_ground_repl_fm where 
+  "body_ground_repl_fm(\<phi>) \<equiv> (\<cdot>\<exists>(\<cdot>\<exists>\<cdot>is_Vset_fm(2, 0) \<and> \<cdot>\<cdot>1 \<in> 0\<cdot> \<and> rename_split_fm(\<phi>) \<cdot>\<cdot>\<cdot>)\<cdot>)"
+
+lemma body_ground_repl_fm_type[TC]: "\<phi>\<in>formula \<Longrightarrow> body_ground_repl_fm(\<phi>)\<in>formula"
+  unfolding body_ground_repl_fm_def by simp
+
+arity_theorem for "is_powapply_fm"
+
+lemma arity_body_ground_repl_fm_le: 
+  notes le_trans[trans]
   assumes "\<phi>\<in>formula"
-    "env \<in> list(M)"
-  shows "prebody_fm(\<phi>,env)\<in>formula"
+  shows "arity(body_ground_repl_fm(\<phi>)) \<le> 6 \<union> (arity(\<phi>) #+ 4)"
 proof -
   from \<open>\<phi>\<in>formula\<close>
-  have "forces(\<phi>)\<in>formula" by simp
-  then
-  have "renrep(forces(\<phi>),env)\<in>formula"
-    using \<open>env\<in>list(M)\<close> by simp
-  then show ?thesis unfolding prebody_fm_def by simp
+  have ineq: "n \<union> Arith.pred(Arith.pred(arity(rename_split_fm(\<phi>)))) 
+    \<le> m \<union> Arith.pred(Arith.pred(8 \<union> (arity(\<phi>) #+6 )))" if "n \<le> m" "n\<in>nat" "m\<in>nat" for n m
+  using that arity_rename_split_fm_le[of \<phi>, THEN [2] pred_mono, THEN [2] pred_mono,
+      THEN [2] Un_mono[THEN subset_imp_le, OF _ le_imp_subset]] le_imp_subset 
+    by auto
+  moreover
+  have "Arith.pred(Arith.pred(Arith.pred(4 \<union> 2 \<union> Arith.pred(Arith.pred(Arith.pred(
+    Arith.pred(Arith.pred(Arith.pred(Arith.pred(Arith.pred(9 \<union> 1 \<union> 3 \<union> 2))))))))))) = 1"
+    by (auto simp:pred_Un_distrib)
+  ultimately
+  have "Arith.pred(Arith.pred(Arith.pred(4 \<union> 2 \<union> Arith.pred(Arith.pred(Arith.pred(
+    Arith.pred(Arith.pred(Arith.pred(Arith.pred(Arith.pred(9 \<union> 1 \<union> 3 \<union> 2))))))))))) \<union>
+    Arith.pred(Arith.pred(arity(rename_split_fm(\<phi>)))) \<le>
+    1 \<union> Arith.pred(Arith.pred(8 \<union> (arity(\<phi>) #+6 )))"
+    by auto
+  also from \<open>\<phi>\<in>formula\<close>
+  have "1 \<union> Arith.pred(Arith.pred(8 \<union> (arity(\<phi>) #+6 ))) \<le> 6 \<union> (succ(succ(succ(succ(arity(\<phi>))))))"
+    by (auto simp:pred_Un_distrib Un_assoc[symmetric] ord_simp_union)
+  finally
+  show ?thesis
+    using \<open>\<phi>\<in>formula\<close> unfolding body_ground_repl_fm_def
+    by (simp add:arity pred_Un_distrib, subst arity_transrec_fm[of "is_HVfrom_fm(8,2,1,0)" 3 1])
+      (simp_all add: arity,
+        subst arity_Replace_fm[of "is_powapply_fm(5, 0, 1)" 4 0], auto simp add:arity)
 qed
 
-declare is_eclose_fm_def[fm_definitions]
-        is_eclose_fm_def[fm_definitions] 
-        mem_eclose_fm_def[fm_definitions]
-        eclose_n_fm_def[fm_definitions]
-
-lemma sats_prebody_fm:
+lemma sats_body_ground_repl_fm:
+  includes sharp_simps1
   assumes
-    "[P,leq,one,p,\<rho>] @ nenv \<in>list(M)" "\<phi>\<in>formula" "\<alpha>\<in>M" "arity(\<phi>) \<le> 2 #+ length(nenv)"
+    "\<exists>t p. x=\<langle>t,p\<rangle>" "[x,\<alpha>,m,P,leq,one] @ nenv \<in>list(M)"
+    "\<phi>\<in>formula"
   shows
-    "sats(M,prebody_fm(\<phi>,nenv),[\<rho>,p,\<alpha>,P,leq,one] @ nenv) \<longleftrightarrow>
-     (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and> sats(M,forces(\<phi>),[p,P,leq,one,\<rho>,\<tau>] @ nenv))"
-  unfolding prebody_fm_def using assms sats_prebody_fm_auto by force
+    "(\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a),\<alpha>,V) \<and> \<tau> \<in> V \<and> (snd(x) \<tturnstile> \<phi> ([fst(x),\<tau>]@nenv)))
+    \<longleftrightarrow> M, [\<alpha>, x, m, P, leq, one] @ nenv \<Turnstile> body_ground_repl_fm(\<phi>)"
+proof -
+  {
+    fix \<tau> V t p 
+    assume "\<tau> \<in> M" "V \<in> M" "x = \<langle>t, p\<rangle>" "t \<in> M" "p \<in> M"
+    with assms
+    have "\<tau> \<in> V \<and> (M, [p,P,leq,one,t,\<tau>] @ nenv \<Turnstile> forces(\<phi>)) \<longleftrightarrow>
+      \<tau> \<in> V \<and> (M, [V,\<tau>,\<alpha>,\<langle>t, p\<rangle>,m,P, leq, one] @ nenv \<Turnstile> rename_split_fm(\<phi>))"
+      using sats_forces_iff_sats_rename_split_fm[of \<alpha> m p t \<tau>, where nenv=nenv and \<phi>=\<phi>]
+      by auto
+  }
+  note eq = this
+  then
+  show ?thesis
+    unfolding body_ground_repl_fm_def
+    apply (insert assms)
+    apply (rule iff_sats | simp add:nonempty[simplified])+
+    using eq
+    by (auto del: iffI)
+qed 
 
+definition ground_repl_fm where
+  "ground_repl_fm(\<phi>) \<equiv> least_fm(body_ground_repl_fm(\<phi>), 1)"
 
-lemma arity_prebody_fm:
-  assumes
-    "\<phi>\<in>formula" "\<alpha>\<in>M" "env \<in> list(M)" "arity(\<phi>) \<le> 2 #+ length(env)"
-  shows
-    "arity(prebody_fm(\<phi>,env))\<le>6 #+ length(env)"
-  unfolding prebody_fm_def is_HVfrom_fm_def is_powapply_fm_def
-  using assms fm_definitions ord_simp_union
-    arity_renrep[of "forces(\<phi>)"] arity_forces_le[simplified] pred_le by auto
+lemma ground_repl_fm_type[TC]:
+  "\<phi>\<in>formula \<Longrightarrow> ground_repl_fm(\<phi>) \<in> formula"
+  unfolding ground_repl_fm_def by simp
 
-
-definition
-  body_fm' :: "[i,i]\<Rightarrow>i" where
-  "body_fm'(\<phi>,env) \<equiv> Exists(Exists(And(pair_fm(0,1,2),renpbdy(prebody_fm(\<phi>,env),env))))"
-
-lemma body_fm'_type[TC]: "\<phi>\<in>formula \<Longrightarrow> env\<in>list(M) \<Longrightarrow> body_fm'(\<phi>,env)\<in>formula"
-  unfolding body_fm'_def using prebody_fm_type
-  by simp
-
-lemma arity_body_fm':
-  assumes
-    "\<phi>\<in>formula" "\<alpha>\<in>M" "env\<in>list(M)" "arity(\<phi>) \<le> 2 #+ length(env)"
-  shows
-    "arity(body_fm'(\<phi>,env))\<le>5  #+ length(env)"
-  unfolding body_fm'_def
-  using assms fm_definitions ord_simp_union arity_prebody_fm pred_le  arity_renpbdy[of "prebody_fm(\<phi>,env)"]
-  by auto
-
-lemma sats_body_fm':
-  assumes
-    "\<exists>t p. x=\<langle>t,p\<rangle>" "x\<in>M" "[\<alpha>,P,leq,one,p,\<rho>] @ nenv \<in>list(M)" "\<phi>\<in>formula" "arity(\<phi>) \<le> 2 #+ length(nenv)"
-  shows
-    "sats(M,body_fm'(\<phi>,nenv),[x,\<alpha>,P,leq,one] @ nenv) \<longleftrightarrow>
-     sats(M,renpbdy(prebody_fm(\<phi>,nenv),nenv),[fst(x),snd(x),x,\<alpha>,P,leq,one] @ nenv)"
-  using assms fst_snd_closed[simplified,OF \<open>x\<in>M\<close>] unfolding body_fm'_def
-  by (auto)
-
-definition
-  body_fm :: "[i,i]\<Rightarrow>i" where
-  "body_fm(\<phi>,env) \<equiv> renbody(body_fm'(\<phi>,env),env)"
-
-lemma body_fm_type [TC]: "env\<in>list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow>  body_fm(\<phi>,env)\<in>formula"
-  unfolding body_fm_def by simp
-
-lemma sats_body_fm:
-  assumes
-    "\<exists>t p. x=\<langle>t,p\<rangle>" "[\<alpha>,x,m,P,leq,one] @ nenv \<in>list(M)"
-    "\<phi>\<in>formula" "arity(\<phi>) \<le> 2 #+ length(nenv)"
-  shows
-    "sats(M,body_fm(\<phi>,nenv),[\<alpha>,x,m,P,leq,one] @ nenv) \<longleftrightarrow>
-     sats(M,renpbdy(prebody_fm(\<phi>,nenv),nenv),[fst(x),snd(x),x,\<alpha>,P,leq,one] @ nenv)"
-  using assms sats_body_fm' sats_renbody[OF _ assms(2), symmetric] arity_body_fm'
-  unfolding body_fm_def
-  by auto
-
-lemma sats_renpbdy_prebody_fm:
-  assumes
-    "\<exists>t p. x=\<langle>t,p\<rangle>" "x\<in>M" "[\<alpha>,m,P,leq,one] @ nenv \<in>list(M)"
-    "\<phi>\<in>formula" "arity(\<phi>) \<le> 2 #+ length(nenv)"
-  shows
-    "sats(M,renpbdy(prebody_fm(\<phi>,nenv),nenv),[fst(x),snd(x),x,\<alpha>,P,leq,one] @ nenv) \<longleftrightarrow>
-     sats(M,prebody_fm(\<phi>,nenv),[fst(x),snd(x),\<alpha>,P,leq,one] @ nenv)"
-  using assms fst_snd_closed[simplified,OF \<open>x\<in>M\<close>]
-    sats_renpbdy[OF arity_prebody_fm _ prebody_fm_type, of concl:M, symmetric]
-  by force
-
-lemma body_lemma:
-  assumes
-    "\<exists>t p. x=\<langle>t,p\<rangle>" "x\<in>M" "[x,\<alpha>,m,P,leq,one] @ nenv \<in>list(M)"
-    "\<phi>\<in>formula" "arity(\<phi>) \<le> 2 #+ length(nenv)"
-  shows
-    "sats(M,body_fm(\<phi>,nenv),[\<alpha>,x,m,P,leq,one] @ nenv) \<longleftrightarrow>
-  (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a),\<alpha>,V) \<and> \<tau> \<in> V \<and> (snd(x) \<tturnstile> \<phi> ([fst(x),\<tau>]@nenv)))"
-  using assms sats_body_fm[of x \<alpha> m nenv] sats_renpbdy_prebody_fm[of x \<alpha>]
-    sats_prebody_fm[of "snd(x)" "fst(x)"] fst_snd_closed[simplified,OF \<open>x\<in>M\<close>]
-  by (simp, simp flip: setclass_iff,simp)
+lemma arity_ground_repl_fm:
+  assumes "\<phi>\<in>formula"
+  shows "arity(ground_repl_fm(\<phi>)) \<le> 5 \<union> (3 #+ arity(\<phi>))"
+proof -
+  from assms
+  have "Arith.pred(arity(body_ground_repl_fm(\<phi>))) \<le> 5 \<union> (3 #+ arity(\<phi>))"
+    using arity_body_ground_repl_fm_le pred_mono succ_Un_distrib
+    by (rule_tac pred_le) auto
+  with assms
+  have "2 \<union> Arith.pred(arity(body_ground_repl_fm(\<phi>))) \<le> 5 \<union> (3 #+ arity(\<phi>))"
+    using Un_le le_Un_iff by auto
+  then
+  show ?thesis
+    using assms arity_forces arity_body_ground_repl_fm_le
+    unfolding least_fm_def ground_repl_fm_def
+    apply (auto simp add:arity Un_assoc[symmetric])
+    apply (simp add: pred_Un Un_assoc, simp add: Un_assoc[symmetric] union_abs1 pred_Un)
+    by (simp only: Un_commute, subst Un_commute, simp only: Un_assoc[symmetric])
+      (auto simp add: ord_simp_union) (* FIXME: slow *)
+qed
 
 lemma Replace_sats_in_MG:
   assumes
     "c\<in>M[G]" "env \<in> list(M[G])"
     "\<phi> \<in> formula" "arity(\<phi>) \<le> 2 #+ length(env)"
     "univalent(##M[G], c, \<lambda>x v. (M[G] , [x,v]@env \<Turnstile> \<phi>) )"
+    and
+    ground_replacement:
+    "\<And>nenv. nenv\<in>list(M) \<Longrightarrow> ground_repl_fm(\<phi>) \<in> formula \<Longrightarrow> [P,leq,one] @ nenv \<in> list(M) \<Longrightarrow>
+      arity(ground_repl_fm(\<phi>)) \<le> 2 #+ length([P,leq,one] @ nenv) \<Longrightarrow>
+      strong_replacement(##M,\<lambda>x y. sats(M,ground_repl_fm(\<phi>),[x,y] @ [P,leq,one] @ nenv))"
   shows
     "{v. x\<in>c, v\<in>M[G] \<and> (M[G] , [x,v]@env \<Turnstile> \<phi>)} \<in> M[G]"
 proof -
@@ -291,10 +217,9 @@ proof -
   have "\<rho>p\<in>?\<pi> \<Longrightarrow> \<exists>t p. \<rho>p=\<langle>t,p\<rangle>" for \<rho>p
     by auto
   ultimately
-  have body:"(M , [\<alpha>,\<rho>p,m,P,leq,one] @ nenv \<Turnstile> body_fm(\<phi>,nenv)) \<longleftrightarrow> ?Q(\<rho>p,\<alpha>)"
+  have body:"(M , [\<alpha>,\<rho>p,m,P,leq,one] @ nenv \<Turnstile> body_ground_repl_fm(\<phi>)) \<longleftrightarrow> ?Q(\<rho>p,\<alpha>)"
     if "\<rho>p\<in>?\<pi>" "\<rho>p\<in>M" "m\<in>M" "\<alpha>\<in>M" for \<alpha> \<rho>p m
-    using that P_in_M leq_in_M one_in_M body_lemma[of \<rho>p \<alpha> m nenv \<phi>] by simp
-  let ?f_fm="least_fm(body_fm(\<phi>,nenv),1)"
+    using that P_in_M leq_in_M one_in_M sats_body_ground_repl_fm[of \<rho>p \<alpha> m nenv \<phi>] by simp
   {
     fix \<rho>p m
     assume asm: "\<rho>p\<in>M" "\<rho>p\<in>?\<pi>" "m\<in>M"
@@ -302,38 +227,37 @@ proof -
     with body
     have body':"\<And>\<alpha>. \<alpha> \<in> M \<Longrightarrow> (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a), \<alpha>, V) \<and> \<tau> \<in> V \<and>
           (snd(\<rho>p) \<tturnstile> \<phi> ([fst(\<rho>p),\<tau>] @ nenv))) \<longleftrightarrow>
-          M, Cons(\<alpha>, [\<rho>p, m, P, leq, one] @ nenv) \<Turnstile> body_fm(\<phi>,nenv)" by simp
+          M, Cons(\<alpha>, [\<rho>p, m, P, leq, one] @ nenv) \<Turnstile> body_ground_repl_fm(\<phi>)" by simp
     from inM
-    have "(M , [\<rho>p,m,P,leq,one] @ nenv \<Turnstile> ?f_fm) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
-      using sats_least_fm[OF body', of 1] unfolding QQ_def
+    have "(M , [\<rho>p,m,P,leq,one] @ nenv \<Turnstile> ground_repl_fm(\<phi>)) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
+      using sats_least_fm[OF body', of 1] unfolding QQ_def ground_repl_fm_def
       by (simp, simp flip: setclass_iff)
   }
   then
-  have "(M, [\<rho>p,m,P,leq,one] @ nenv \<Turnstile> ?f_fm) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
+  have "(M, [\<rho>p,m,P,leq,one] @ nenv \<Turnstile> ground_repl_fm(\<phi>)) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
     if "\<rho>p\<in>M" "\<rho>p\<in>?\<pi>" "m\<in>M" for \<rho>p m using that by simp
   then
-  have "univalent(##M, ?\<pi>, \<lambda>\<rho>p m. M , [\<rho>p,m] @ ([P,leq,one] @ nenv) \<Turnstile> ?f_fm)"
+  have "univalent(##M, ?\<pi>, \<lambda>\<rho>p m. M , [\<rho>p,m] @ ([P,leq,one] @ nenv) \<Turnstile> ground_repl_fm(\<phi>))"
     unfolding univalent_def by (auto intro:unique_least)
   moreover from \<open>length(_) = _\<close> \<open>env \<in> _\<close>
   have "length([P,leq,one] @ nenv) = 3 #+ length(env)" by simp
-  moreover from \<open>arity(_) \<le> 2 #+ length(nenv)\<close>
+  moreover from \<open>arity(\<phi>) \<le> 2 #+ length(nenv)\<close>
     \<open>length(_) = length(_)\<close>[symmetric] \<open>nenv\<in>_\<close> \<open>\<phi>\<in>_\<close>
-  have "arity(?f_fm) \<le> 5 #+ length(env)"
-    unfolding body_fm_def fm_definitions least_fm_def
-    using arity_forces arity_renrep arity_renbody arity_body_fm' nonempty
-    by (simp add: pred_Un Un_assoc, simp add: Un_assoc[symmetric] union_abs1 pred_Un)
-      (auto simp add: ord_simp_union, rule pred_le, auto intro:leI)
-  moreover from \<open>\<phi>\<in>formula\<close> \<open>nenv\<in>list(M)\<close>
-  have "?f_fm\<in>formula" by simp
+  have "arity(ground_repl_fm(\<phi>)) \<le> 5 #+ length(env)"
+    using arity_ground_repl_fm[of \<phi>] le_trans Un_le by auto
+  moreover from \<open>\<phi>\<in>formula\<close>
+  have "ground_repl_fm(\<phi>)\<in>formula" by simp
   moreover
   note inM = P_in_M leq_in_M one_in_M \<open>nenv\<in>list(M)\<close> \<open>?\<pi>\<in>M\<close>
+  moreover
+  note \<open>length(nenv) = length(env)\<close>
   ultimately
   obtain Y where "Y\<in>M"
-    "\<forall>m\<in>M. m \<in> Y \<longleftrightarrow> (\<exists>\<rho>p\<in>M. \<rho>p \<in> ?\<pi> \<and> (M, [\<rho>p,m] @ ([P,leq,one] @ nenv) \<Turnstile> ?f_fm))"
-    using replacement_ax[of ?f_fm "[P,leq,one] @ nenv"]
+    "\<forall>m\<in>M. m \<in> Y \<longleftrightarrow> (\<exists>\<rho>p\<in>M. \<rho>p \<in> ?\<pi> \<and> (M, [\<rho>p,m] @ ([P,leq,one] @ nenv) \<Turnstile> ground_repl_fm(\<phi>)))"
+    using ground_replacement[of nenv]
     unfolding strong_replacement_def by auto
   with \<open>least(_,QQ(_),f(_))\<close> \<open>f(_) \<in> M\<close> \<open>?\<pi>\<in>M\<close>
-    \<open>_ \<Longrightarrow> _ \<Longrightarrow> _ \<Longrightarrow> (M,_ \<Turnstile> ?f_fm) \<longleftrightarrow> least(_,_,_)\<close>
+    \<open>_ \<Longrightarrow> _ \<Longrightarrow> _ \<Longrightarrow> (M,_ \<Turnstile> ground_repl_fm(\<phi>)) \<longleftrightarrow> least(_,_,_)\<close>
   have "f(\<rho>p)\<in>Y" if "\<rho>p\<in>?\<pi>" for \<rho>p
     using that transitivity[OF _ \<open>?\<pi>\<in>M\<close>]
     by (clarsimp, rule_tac x="\<langle>x,y\<rangle>" in bexI, auto)
@@ -341,7 +265,7 @@ proof -
   have "{y\<in>Y. Ord(y)} \<in> M"
     using \<open>Y\<in>M\<close> separation_ax sats_ordinal_fm trans_M
       separation_cong[of "##M" "\<lambda>y. sats(M,ordinal_fm(0),[y])" "Ord"]
-      separation_closed by simp
+      separation_closed by (simp add:arity)
   then
   have "\<Union> {y\<in>Y. Ord(y)} \<in> M" (is "?sup \<in> M")
     using Union_closed by simp
@@ -494,7 +418,7 @@ proof -
     from \<open>env\<in>_\<close> \<open>\<phi>\<in>_\<close>
     show "arity(?\<psi>)\<le>2#+length(env)"
       using pred_mono[OF _ \<open>arity(\<phi>)\<le>2#+length(env)\<close>] lt_trans[OF _ le_refl]
-      by (auto simp add:ord_simp_union)
+      by (auto simp add:ord_simp_union arity)
   next
     from \<open>\<phi>\<in>_\<close>
     show "?\<psi>\<in>formula" by simp
@@ -513,6 +437,13 @@ qed
 theorem strong_replacement_in_MG:
   assumes
     "\<phi>\<in>formula" and "arity(\<phi>) \<le> 2 #+ length(env)" "env \<in> list(M[G])"
+    (*
+    and
+    ground_replacement:
+    "\<And>nenv. nenv\<in>list(M) \<Longrightarrow> ground_repl_fm(\<phi>) \<in> formula \<Longrightarrow> [P,leq,one] @ nenv \<in> list(M) \<Longrightarrow>
+      arity(ground_repl_fm(\<phi>)) \<le> 2 #+ length([P,leq,one] @ nenv) \<Longrightarrow>
+      strong_replacement(##M,\<lambda>x y. sats(M,ground_repl_fm(\<phi>),[x,y] @ [P,leq,one] @ nenv))"
+  *)
   shows
     "strong_replacement(##M[G],\<lambda>x v. sats(M[G],\<phi>,[x,v] @ env))"
 proof -
@@ -527,7 +458,7 @@ proof -
       unfolding univalent_def by simp_all
     with assms \<open>A\<in>_\<close>
     have "(##M[G])(?Y)"
-      using Replace_sats_in_MG by auto
+      using Replace_sats_in_MG replacement_ax (* only ground_replacement here *) by auto
     have "b \<in> ?Y \<longleftrightarrow> (\<exists>x[##M[G]]. x \<in> A \<and> ?R(x,b))" if "(##M[G])(b)" for b
     proof(rule)
       from \<open>A\<in>_\<close>

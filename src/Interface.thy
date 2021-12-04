@@ -1205,6 +1205,8 @@ definition
                             Replace_fm(x #+ 2,is_powapply_fm(f #+ 4,0,1),0)))))"
 declare is_HVfrom_fm_def[fm_definitions add]
 
+arity_theorem for "is_HVfrom_fm"
+
 lemma is_HVfrom_type [TC]:
   "\<lbrakk> A\<in>nat; x \<in> nat; f \<in> nat; h \<in> nat \<rbrakk> \<Longrightarrow> is_HVfrom_fm(A,x,f,h) \<in> formula"
   by (simp add:is_HVfrom_fm_def)
@@ -1235,15 +1237,9 @@ schematic_goal sats_is_Vset_fm_auto:
   unfolding is_Vset_def is_Vfrom_def
   by (insert assms; (rule sep_rules is_HVfrom_iff_sats is_transrec_iff_sats | simp)+)
 
-schematic_goal is_Vset_iff_sats:
-  assumes
-    "nth(i,env) = ii" "nth(v,env) = vv"
-    "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
-    "i < length(env)" "v < length(env)"
-  shows
-    "is_Vset(##A,ii,vv) \<longleftrightarrow> sats(A, ?ivs_fm(i,v), env)"
-  unfolding \<open>nth(i,env) = ii\<close>[symmetric] \<open>nth(v,env) = vv\<close>[symmetric]
-  by (rule sats_is_Vset_fm_auto(1); simp add:assms)
+synthesize "is_Vset" from_schematic "sats_is_Vset_fm_auto"
+
+arity_theorem for "is_Vset_fm"
 
 lemma (in M_ZF_trans) memrel_eclose_sing :
   "a\<in>M \<Longrightarrow> \<exists>sa\<in>M. \<exists>esa\<in>M. \<exists>mesa\<in>M.

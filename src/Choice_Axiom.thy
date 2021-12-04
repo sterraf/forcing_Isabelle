@@ -270,7 +270,7 @@ lemma repl_opname_check :
 proof -
   have "arity(opname_check_fm(3,0,1,2))= 4"
     unfolding fm_definitions opname_check_fm_def opair_name_fm_def upair_name_fm_def
-    by (simp add:ord_simp_union)
+    by (simp add:ord_simp_union arity)
   moreover
   have "x\<in>A \<Longrightarrow> opair_name(check(x), f ` x)\<in>M" for x
     using assms opair_name_closed apply_closed transitivity check_in_M
