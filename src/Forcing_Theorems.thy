@@ -323,7 +323,7 @@ proof -
   have "?d_fm\<in>formula" by simp
   moreover
   have "arity(?d_fm) = 5" unfolding compat_in_fm_def pair_fm_def upair_fm_def
-    by (simp add: union_abs1 Un_commute)
+    by (simp add: union_abs1 Un_commute arity)
   moreover
   have "(M, [q,P,leq,p,D] \<Turnstile> ?d_fm) \<longleftrightarrow> (\<not> is_compat_in(##M,P,leq,p,q) \<or> q\<in>D)"
     if "q\<in>M" for q
@@ -371,7 +371,7 @@ proof -
   moreover
   have "arity(?\<phi>)=5" 
     unfolding leq_fm_def pair_fm_def upair_fm_def
-    using arity_forces_eq_fm by (simp add:ord_simp_union Un_commute)
+    using arity_forces_eq_fm by (simp add:ord_simp_union Un_commute arity)
   ultimately
   show ?thesis 
     unfolding forces_eq_def using P_in_M leq_in_M assms 
@@ -687,7 +687,7 @@ proof -
   have fty:"?\<phi>\<in>formula" by simp
   have farit:"arity(?\<phi>)=5"
     unfolding forces_nmem_fm_def domain_fm_def pair_fm_def upair_fm_def union_fm_def
-    using arity_forces_mem_fm by (simp add:ord_simp_union Un_commute)
+    using arity_forces_mem_fm by (simp add:ord_simp_union Un_commute arity)
     show 
     "{p \<in> P . \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). p forces\<^sub>a (\<sigma> \<in> \<tau>) \<and> p forces\<^sub>a (\<sigma> \<notin> \<theta>)} \<in> M"
     and "{p \<in> P . \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). p forces\<^sub>a (\<sigma> \<notin> \<tau>) \<and> p forces\<^sub>a (\<sigma> \<in> \<theta>)} \<in> M"
@@ -1257,7 +1257,7 @@ proof -
       show ?thesis
         unfolding ren_truth_lemma_def
         using pred_Un_distrib union_abs1 Un_assoc[symmetric] a c union_abs2
-        by simp
+        by (simp add:arity)
     next
       case b
       with \<open>\<phi>\<in>_\<close> lt
@@ -1271,7 +1271,7 @@ proof -
       show ?thesis
         unfolding ren_truth_lemma_def
         using pred_Un_distrib union_abs1 Un_assoc[symmetric]  union_abs2
-        by simp
+        by (simp add:arity)
     qed
   next
     case ge
@@ -1287,7 +1287,7 @@ proof -
     show ?thesis
       unfolding ren_truth_lemma_def
       using  pred_Un_distrib union_abs1 Un_assoc[symmetric] union_abs2 
-      by simp
+      by (simp add:arity)
   qed
 qed
 
@@ -1334,7 +1334,7 @@ proof -
       by simp
     with \<open>\<phi>\<in>_\<close>
     have "arity(?\<psi>) = 3 \<union> (pred^2(arity(ren_truth_lemma(forces(\<phi>)))))"
-      using union_abs1 pred_Un_distrib by simp
+      using union_abs1 pred_Un_distrib by (simp add:arity)
     moreover
     have "... \<le> 3 \<union> (pred(pred(6 \<union> succ(arity(forces(\<phi>))))))" (is "_ \<le> ?r")
       using  \<open>\<phi>\<in>_\<close> Un_le_compat[OF le_refl[of 3]] 

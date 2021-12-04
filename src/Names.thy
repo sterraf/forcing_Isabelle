@@ -838,7 +838,10 @@ lemma check_fm_type[TC] :
 
 arity_theorem for "PHcheck_fm"
 
-lemma arity_is_Hcheck_fm :
+declare arity_Exists[simp del] arity_subset_fm [simp del]
+  arity_ordinal_fm[simp del] arity_transset_fm[simp del]
+
+lemma arity_is_Hcheck_fm:
   assumes "m\<in>nat" "n\<in>nat" "p\<in>nat" "o\<in>nat"
   shows "arity(is_Hcheck_fm(m,n,p,o)) = succ(o) \<union> succ(n) \<union> succ(p) \<union> succ(m) "
   unfolding is_Hcheck_fm_def
@@ -846,7 +849,7 @@ lemma arity_is_Hcheck_fm :
     pred_Un_distrib Un_assoc Un_nat_type
   by simp
 
-lemma arity_check_fm :
+lemma arity_check_fm[arity]:
   assumes "m\<in>nat" "n\<in>nat" "o\<in>nat"
   shows "arity(check_fm(m,n,o)) = succ(o) \<union> succ(n) \<union> succ(m) "
   unfolding check_fm_def
@@ -881,7 +884,7 @@ lemma check_replacement:
 proof -
   have "arity(check_fm(0,2,1)) = 3"
     unfolding eclose_n_fm_def is_eclose_fm_def mem_eclose_fm_def fm_definitions
-    by (simp add:ord_simp_union)
+    by (simp add:ord_simp_union arity)
   moreover
   have "check(x)\<in>M" if "x\<in>P" for x
     using that transitivity check_in_M P_in_M by simp
@@ -918,7 +921,7 @@ proof -
   moreover
   have "arity(?pcheck_fm)=3"
     unfolding is_eclose_fm_def mem_eclose_fm_def eclose_n_fm_def fm_definitions
-    by (simp add:ord_simp_union)
+    by (simp add:ord_simp_union arity)
   moreover
   from P_in_M check_in_M pair_in_M_iff P_sub_M
   have "\<langle>check(p),p\<rangle> \<in> M" if "p\<in>P" for p

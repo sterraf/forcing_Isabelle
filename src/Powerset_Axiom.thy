@@ -54,7 +54,7 @@ proof -
   with \<open>?\<phi>' \<in> formula\<close>
   have 1: "arity(Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))))\<le>5"     (is "arity(?\<psi>)\<le>5")
     unfolding pair_fm_def upair_fm_def
-    using ord_simp_union pred_le arity_type by auto
+    using ord_simp_union pred_le arity_type by (auto simp:arity)
   {
     fix sp
     note \<open>A\<times>B \<in> M\<close>
@@ -252,7 +252,7 @@ proof -
     by simp
   also from \<open>?b\<in>M[G]\<close> \<open>a\<in>M[G]\<close>
   have " ... \<in> M[G]"
-    using Collect_sats_in_MG GenExtI ord_simp_union by simp
+    using Collect_sats_in_MG GenExtI ord_simp_union by (simp add:arity)
   finally show ?thesis .
 qed
 end (* G_generic *)

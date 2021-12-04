@@ -63,7 +63,7 @@ proof -
   have "arity(?\<psi>) \<le> 5 #+ length(env)"
     unfolding pair_fm_def upair_fm_def 
     using ord_simp_union arity_forces
-    by auto
+    by (auto simp:arity)
   from \<open>\<phi>\<in>formula\<close>
   have "forces(?\<chi>) \<in> formula"
     using definability by simp

@@ -227,7 +227,7 @@ proof -
   moreover from calculation
   have "arity(?\<psi>'') \<le> 5"
     using arity_fst_fm arity_snd_fm arity_check_fm ord_simp_union pred_le arity_type
-    unfolding check_fm'_def hcomp_fm_def by simp
+    unfolding check_fm'_def hcomp_fm_def by (simp add:arity)
   moreover from assms calculation
   have 0:"(M, ?\<rho>(z) \<Turnstile> ?\<phi>) \<longleftrightarrow> (M,?\<eta>(z)\<Turnstile> ?\<psi>)" if "(##M)(z)" for z
     using sats_iff_sats_ren[of ?\<phi> 6 7 "?\<rho>(z)" _ "?\<eta>(z)"]
@@ -296,8 +296,8 @@ proof -
     by (simp_all)
   moreover from this f_ar g_ar f_fm g_fm h_fm h_ar \<open>?\<psi>'\<in>_\<close>
   have "arity(?\<psi>') \<le> 5"
-    using arity_fst_fm arity_snd_fm arity_check_fm  ord_simp_union arity_type nat_into_Ord
-    by (simp,(rule_tac pred_le,simp,rule_tac Un_le,simp)+,simp_all add: \<open>?\<psi>\<in>_\<close>)
+    using ord_simp_union arity_type nat_into_Ord
+    by (simp add:arity,(rule_tac pred_le,simp,rule_tac Un_le,simp)+,simp_all add: \<open>?\<psi>\<in>_\<close>)
   moreover from calculation fclosed gclosed hclosed
   have 0:"(M, ?\<rho>(z) \<Turnstile> ?\<phi>) \<longleftrightarrow> (M,?\<eta>(z)\<Turnstile> ?\<psi>)" if "(##M)(z)" for z
     using sats_iff_sats_ren[of ?\<phi> 7 8 "?\<rho>(z)" M "?\<eta>(z)"]
@@ -382,8 +382,8 @@ proof -
      by (simp_all)
   moreover from calculation f_ar g_ar f_fm g_fm
   have "arity(?\<psi>') \<le> 6"
-    using arity_fst_fm arity_snd_fm arity_check_fm ord_simp_union pred_le arity_type arity_type
-    by simp
+    using ord_simp_union pred_le arity_type
+    by (simp add:arity)
   moreover from calculation fclosed gclosed
   have 0:"(M, ?\<rho>(z) \<Turnstile> ?\<phi>) \<longleftrightarrow> (M,?\<eta>(z)\<Turnstile> ?\<psi>)" if "(##M)(z)" for z
     using sats_iff_sats_ren[of ?\<phi> 7 8 "?\<rho>(z)" _ "?\<eta>(z)"]
@@ -438,9 +438,9 @@ proof -
     using fst_abs types sats_fst_fm by simp
   moreover
   have "?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
-    using arity_snd_fm[of 3 0] ord_simp_union arity_check_fm[of 0 6 1]
+    using ord_simp_union
     unfolding hcomp_fm_def check_fm'_def
-    by simp_all
+    by (simp_all add:arity)
   moreover
   have "\<And> gx fx x. gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[gx,fx,x]@[P, leq, one,f_dot, \<tau>] \<Turnstile> ?g_fm) \<longleftrightarrow> gx=snd(x)\<^sup>v"
     using snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
@@ -462,17 +462,17 @@ proof -
   let ?g_fm="hcomp_fm(check_fm'(6),hcomp_fm(big_union_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)))),2,0)"
   let ?h_fm="hcomp_fm(check_fm'(7),snd_fm,3,0)"
   have 0:"?f_fm \<in> formula" "arity(?f_fm) \<le> 6"
-    using arity_fst_fm[of 2 0] arity_snd_fm[of 0 1] ord_simp_union
+    using ord_simp_union
     unfolding hcomp_fm_def
-    by simp_all
+    by (simp_all add:arity)
   moreover from types
   have 1:"\<And> fx x. fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[fx,x]@[P, leq, one,f_dot] \<Turnstile> ?f_fm) \<longleftrightarrow> fx=snd(fst(x))"
     unfolding hcomp_fm_def
     by simp
   have 2:"?g_fm \<in> formula" "arity(?g_fm) \<le> 7"
-    using arity_fst_fm arity_big_union_fm ord_simp_union arity_check_fm[of 0 6 1]
+    using ord_simp_union
     unfolding hcomp_fm_def check_fm'_def
-    by simp_all
+    by (simp_all add:arity)
   moreover from types
   have 3:"\<And> gx fx x. gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[gx,fx,x]@[P, leq, one,f_dot] \<Turnstile> ?g_fm) \<longleftrightarrow> gx=?g(x)"
          "\<And>x . x\<in>M \<Longrightarrow> ?g(x)\<in>M"
@@ -481,9 +481,9 @@ proof -
     by auto
   moreover
   have 4:"?h_fm \<in> formula" "arity(?h_fm) \<le> 8"
-    using arity_snd_fm[of 4 0] ord_simp_union arity_check_fm[of 0 7 1]
+    using ord_simp_union
     unfolding hcomp_fm_def check_fm'_def
-    by simp_all
+    by (simp_all add:arity)
   moreover
   have 5:"\<And> hx gx fx x. hx\<in>M \<Longrightarrow> gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[hx,gx,fx,x]@[P, leq, one,f_dot] \<Turnstile> ?h_fm) \<longleftrightarrow> hx=snd(x)\<^sup>v"
         "\<And>x . x\<in>M \<Longrightarrow> snd(x)\<^sup>v\<in>M"
@@ -522,9 +522,9 @@ proof -
   let ?f_fm="hcomp_fm(check_fm'(5),fst_fm,1,0)"
   let ?g_fm="hcomp_fm(check_fm'(6),snd_fm,2,0)"
   have 0:"?f_fm \<in> formula" "arity(?f_fm) \<le> 7"
-    using arity_fst_fm[of 2 0] ord_simp_union arity_check_fm[of 0 5 1]
+    using ord_simp_union
     unfolding hcomp_fm_def check_fm'_def
-    by simp_all
+    by (simp_all add:arity)
   moreover
   have 1:"\<And> fx x. fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[fx,x]@[P, leq, one,f_dot, r] \<Turnstile> ?f_fm) \<longleftrightarrow> fx=fst(x)\<^sup>v"
     "\<And> x . x\<in>M \<Longrightarrow>fst(x)\<^sup>v\<in>M"
@@ -533,9 +533,9 @@ proof -
     by simp_all
   moreover
   have 2:"?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
-    using arity_snd_fm[of 3 0] ord_simp_union arity_check_fm[of 0 6 1]
+    using ord_simp_union
     unfolding hcomp_fm_def check_fm'_def
-    by simp_all
+    by (simp_all add:arity)
   moreover
   have 3:"\<And> gx fx x. gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[gx,fx,x]@[P, leq, one,f_dot, r] \<Turnstile> ?g_fm) \<longleftrightarrow> gx=snd(x)\<^sup>v"
     "\<And> x . x\<in>M \<Longrightarrow>snd(x)\<^sup>v\<in>M"
@@ -550,7 +550,7 @@ proof -
     unfolding lt_def by auto
   with calculation and \<open>\<chi> \<in> formula\<close>
   have ar:"arity(?\<phi>) \<le> 7"
-    using arity_incr_bv_lemma by safe (simp_all add:ord_simp_union)
+    using arity_incr_bv_lemma by safe (simp_all add: arity ord_simp_union)
   moreover from calculation
   have sep:"separation(##M,\<lambda>z. M,?\<rho>'(z)\<Turnstile>?\<phi>)"
     using separation_sat_after_function[OF assms(1-2) fm ar]
@@ -575,9 +575,9 @@ proof -
   let ?f_fm="hcomp_fm(snd_fm,fst_fm,1,0)"
   let ?g_fm="hcomp_fm(check_fm'(6),snd_fm,2,0)"
   have 1: "?f_fm \<in> formula" "arity(?f_fm) \<le> 7"
-    using arity_snd_fm[of 0 1] ord_simp_union arity_fst_fm[of 2 0]
+    using ord_simp_union
     unfolding hcomp_fm_def
-    by simp_all
+    by (simp_all add:arity)
   moreover
   have 2:"\<And> fx x. fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[fx,x]@[P, leq, one,f_dot, \<tau>] \<Turnstile> ?f_fm) \<longleftrightarrow> fx=snd(fst(x))"
     using types sats_fst_fm sats_snd_fm
@@ -585,9 +585,9 @@ proof -
     by simp
   moreover
   have 3:"?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
-    using arity_snd_fm[of 3 0] ord_simp_union arity_check_fm[of 0 6 1]
+    using ord_simp_union
     unfolding hcomp_fm_def check_fm'_def
-    by simp_all
+    by (simp_all add:arity)
   moreover
   have 4:"\<And> gx fx x. gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[gx,fx,x]@[P, leq, one,f_dot, \<tau>] \<Turnstile> ?g_fm) \<longleftrightarrow> gx=snd(x)\<^sup>v"
     using snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M

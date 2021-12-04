@@ -339,8 +339,8 @@ proof -
     by simp_all
   with \<open>arity(forces(_))\<le>7\<close>
   have "arity(?G) \<le> 8" "?G\<in>formula"
-    using check_fm_type arity_check_fm pred_Un_distrib pred_le Un_le
-    by simp_all
+    using check_fm_type pred_Un_distrib pred_le Un_le
+    by (simp_all add:arity)
   have "pred(arity(?G)) \<le> 9" "pred(arity(?G))\<in>nat"
     using pred_le[OF _ \<open>arity(?G)\<le>8\<close>] le_trans pred_type[OF _ \<open>arity(?G)\<le>8\<close>]
     by simp_all
@@ -441,16 +441,16 @@ proof -
     using arity_forces[OF \<open>?app_fm\<in>_\<close>] by simp_all
   then
   have "arity(?\<psi>) \<le> 9"
-    using arity_leq_fm union_abs2 union_abs1 le_trans
-    by simp
+    using union_abs2 union_abs1 le_trans
+    by (simp add:arity)
   then
   have "ren(?\<psi>)`9`9`ren_F_fn \<in> formula" "pred(pred(arity(ren(?\<psi>)`9`9`ren_F_fn))) \<le> 7"
     using arity_ren ren_tc ren_F_thm check_fm_type leq_fm_type ren_F_fn_def pred_le
     by simp_all
   with \<open>arity(forces(_))\<le>7\<close>
   have "arity(?G) \<le> 7" "?G\<in>formula"
-    using check_fm_type arity_check_fm pred_Un_distrib Un_le
-    by simp_all
+    using check_fm_type pred_Un_distrib Un_le
+    by (simp_all add:arity)
   have "pred(arity(?G)) \<le> 8" "pred(arity(?G))\<in>nat"
     using pred_le[OF _ \<open>arity(?G)\<le>7\<close>] le_trans pred_type[OF _ \<open>arity(?G)\<le>7\<close>]
     by simp_all
