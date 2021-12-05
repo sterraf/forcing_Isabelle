@@ -24,7 +24,8 @@ at the `src` directory.
 System requirements
 ===================
 
-The session requires Isabelle2021 https://isabelle.in.tum.de/
+The session requires Isabelle2021
+https://isabelle.in.tum.de/
 to be installed with the AFP component loaded (by downloading from
 https://www.isa-afp.org/download.html and following the instructions at https://www.isa-afp.org/using.html).
 
