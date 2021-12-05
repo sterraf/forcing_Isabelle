@@ -5,9 +5,8 @@ This is a development version.
 
 The source theory files are located in the `src` directory.
 
-A stable, browseable version (up to the unprovability of the Continuum
-Hypothesis) can be found at
-https://cs.famaf.unc.edu.ar/~pedro/forcing/html_linked/.
+An HMTL version can be found at
+https://cs.famaf.unc.edu.ar/~pedro/forcing/Independence_CH/
 
 
 Running the session with jEdit
