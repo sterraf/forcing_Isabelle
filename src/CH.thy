@@ -166,8 +166,7 @@ proof -
   show ?thesis unfolding kappa_closed_rel_def by (auto elim!:leE dest:ltD)
 qed
 
-
-end \<comment> \<open>\<^term>\<open>M_ctm_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ctm_AC\<close>\<close>
 
 locale collapse_generic = G_generic_AC "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0
 

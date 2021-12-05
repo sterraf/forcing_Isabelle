@@ -326,7 +326,7 @@ qed
 lemma mem_Pow_rel_abs: "M(a) \<Longrightarrow> M(r) \<Longrightarrow> a \<in> Pow_rel(M,r) \<longleftrightarrow> a \<in> Pow(r)"
   using Pow_rel_char by simp
 
-end \<comment> \<open>\<^term>\<open>M_basic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
 (******************  end Discipline  **********************)
 
@@ -349,7 +349,7 @@ lemma def_PiP_rel:
     "PiP_rel(M,A,f) \<longleftrightarrow> A \<subseteq> domain(f) \<and> function(f)"
   using assms unfolding PiP_rel_def by simp
 
-end \<comment> \<open>\<^term>\<open>M_basic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
 (******************  end Discipline  **********************)
 
@@ -403,7 +403,7 @@ lemma Sigfun_closed:
 
 lemmas trans_Sigfun_closed[trans_closed] = transM[OF _ Sigfun_closed]
 
-end \<comment> \<open>\<^term>\<open>M_trivial\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_trivial\<close>\<close>
 
 definition
   is_Sigma :: "[i\<Rightarrow>o,i,i\<Rightarrow>i,i]\<Rightarrow>o"  where
@@ -459,7 +459,7 @@ qed
 
 lemmas trans_Sigma_closed[trans_closed] = transM[OF _ Sigma_closed]
 
-end \<comment> \<open>\<^term>\<open>M_Pi_assumptions\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_Pi_assumptions\<close>\<close>
 
 (**********************************************************)
 subsection\<open>Discipline for \<^term>\<open>Pi\<close>\<close>
@@ -570,7 +570,7 @@ lemma mem_Pi_rel_abs:
   shows  "f \<in> Pi_rel(M,A,B) \<longleftrightarrow> f \<in> Pi(A,B)"
   using assms Pi_rel_char by simp
 
-end \<comment> \<open>\<^term>\<open>M_Pi_assumptions\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_Pi_assumptions\<close>\<close>
 
 text\<open>The next locale (and similar ones below) are used to
 show the relationship between versions of simple (i.e. 
@@ -625,7 +625,7 @@ proof (auto simp add: lam_def def_Pi_rel function_def)
     using Pow_rel_char by auto
 qed
 
-end \<comment> \<open>\<^term>\<open>M_Pi\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_Pi_assumptions\<close>\<close>
 
 locale M_Pi_assumptions2 = M_Pi_assumptions +
   PiC: M_Pi_assumptions _ _ C for C
@@ -647,7 +647,7 @@ lemma Pi_rel_weaken_type:
   by (simp only: Pi_rel_iff' PiC.Pi_rel_iff')
     (blast intro: Pi_rel_type  dest: apply_type)
 
-end \<comment> \<open>\<^term>\<open>M_Pi_assumptions2\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_Pi_assumptions2\<close>\<close>
 
 
 end

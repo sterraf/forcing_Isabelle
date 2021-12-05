@@ -123,7 +123,7 @@ lemma kappa_closed_abs:
   unfolding kappa_closed_rel_def kappa_closed_def
   oops
 
-end \<comment> \<open>\<^term>\<open>forcing_data\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ZF_library\<close>\<close>
 
 lemma (in forcing_data) forcing_a_value:
   assumes "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]" "a \<in> A"
@@ -988,7 +988,7 @@ proof -
     by (rule_tac le_anti_sym) simp
 qed
 
-end (* includes G_generic_lemmas *)
+end \<comment> \<open>bundle G\_generic\_lemmas\<close>
 
 end \<comment> \<open>\<^term>\<open>G_generic_AC\<close>\<close>
 

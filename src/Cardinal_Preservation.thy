@@ -30,12 +30,15 @@ lemma antichain_abs' [absolut]:
   unfolding antichain_rel_def antichain_def compat_def
   by (simp add:absolut)
 
-end \<comment> \<open>\<^term>\<open>M_trivial_notion\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_trivial_notion\<close>\<close>
 
 \<comment> \<open>MOVE THIS to an appropriate place\<close>
 text\<open>The following interpretation makes the simplifications from the
 locales \<open>M_trans\<close>, \<open>M_trivial\<close>, etc., available for \<open>M[G]\<close>\<close>
 sublocale forcing_data \<subseteq> M_trivial_notion "##M" ..
+
+lemma (in forcing_notion) Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
+  using refl_leq by blast
 
 context forcing_data
 begin
@@ -45,12 +48,7 @@ lemma antichain_abs'' [absolut]: "A\<in>M \<Longrightarrow> antichain_r'(A) \<lo
   unfolding antichain_rel_def antichain_def compat_def
   by (auto simp add:absolut transitivity)
 
-end \<comment> \<open>\<^term>\<open>M_trivial_notion\<close>\<close>
-
-lemma (in forcing_notion) Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
-  using refl_leq by blast
-
-lemma (in forcing_data) inconsistent_imp_incompatible:
+lemma inconsistent_imp_incompatible:
   assumes "p \<tturnstile> \<phi> env" "q \<tturnstile> Neg(\<phi>) env" "p\<in>P" "q\<in>P"
     "arity(\<phi>) \<le> length(env)" "\<phi> \<in> formula" "env \<in> list(M)"
   shows "p \<bottom> q"
@@ -69,7 +67,9 @@ proof
     by (auto dest:transM; drule_tac bspec; auto dest:transM)
 qed
 
-notation (in forcing_data) check (\<open>_\<^sup>v\<close> [101] 100)
+notation check (\<open>_\<^sup>v\<close> [101] 100)
+
+end \<comment> \<open>\<^term>\<open>forcing_data\<close>\<close>
 
 context G_generic begin
 
@@ -185,13 +185,14 @@ lemmas sharp_intros = nat_into_M Aleph_rel_closed Card_rel_Aleph_rel
 
 declare sharp_intros[rule del, simplified setclass_iff, intro]
 
-end \<comment> \<open>\<^term>\<open>M_ctm_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ctm_AC\<close>\<close>
 
 context G_generic_AC begin
 
 context
   includes G_generic_lemmas
 begin
+
 \<comment> \<open>NOTE: there is a theorem missing from those above\<close>
 lemmas mg_sharp_simps = ext.Card_rel_Union ext.Card_rel_cardinal_rel
   ext.Collect_abs ext.Cons_abs ext.Cons_in_M_iff ext.Diff_closed
@@ -698,7 +699,7 @@ proof -
   show ?thesis by auto
 qed
 
-end (* includes G_generic_lemmas *)
+end \<comment> \<open>G\_generic\_lemmas bundle\<close>
 
 end \<comment> \<open>\<^term>\<open>G_generic\<close>\<close>
 

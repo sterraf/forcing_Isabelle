@@ -17,7 +17,7 @@ begin
 lemma Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
   using nat_into_M[of 2] nat_into_Ord by simp
 
-end \<comment> \<open>\<^term>\<open>M_master\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_master\<close>\<close>
 
 locale M_master_sub = M_master + N:M_master N for N +
   assumes
@@ -92,7 +92,7 @@ next
      by simp (blast dest: transM intro!:le_implies_UN_le_UN)
 qed
 
-end \<comment> \<open>\<^term>\<open>M_master_sub\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_master_sub\<close>\<close>
 
 lemmas (in M_ZFC_trans) sep_instances =
  separation_Ord separation_insnd_ballPair
@@ -122,7 +122,7 @@ proof -
     using ccc_rel_Fn_nat by fast
 qed
 
-end \<comment> \<open>\<^term>\<open>M_ctm\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ctm_AC\<close>\<close>
 
 sublocale G_generic_AC \<subseteq> M_master_sub "##M" "##(M[G])"
   using M_subset_MG[OF one_in_G] generic Ord_MG_iff
@@ -263,9 +263,9 @@ proof (rule ccontr)
     by auto
 qed
 
-end \<comment> \<open>\<^term>\<open>G_generic_lemmas\<close>\<close>
+end \<comment> \<open>bundle G\_generic\_lemmas\<close>
 
-end \<comment> \<open>\<^term>\<open>G_generic\<close>\<close>
+end \<comment> \<open>\<^term>\<open>G_generic_AC\<close>\<close>
 
 context M_ctm
 begin
@@ -274,7 +274,7 @@ abbreviation
   Add :: "i" where
   "Add \<equiv> Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>, 2)"
 
-end \<comment> \<open>\<^term>\<open>M_ctm\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ctm\<close>\<close>
 
 locale add_generic = G_generic_AC "Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" "Fnle(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" 0
 
@@ -572,7 +572,7 @@ is_iff_rel for "ContHyp"
   unfolding is_ContHyp_def ContHyp_rel_def
   by auto (rule_tac x=0 in rexI, auto)
 
-end \<comment> \<open>\<^term>\<open>M_master\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_master\<close>\<close>
 
 synthesize "is_ContHyp" from_definition assuming "nonempty"
 arity_theorem for "is_ContHyp_fm"

@@ -117,7 +117,7 @@ proof -
     by simp
 qed
 
-end \<comment> \<open>\<^term>\<open>M_basic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
 context M_pre_cardinal_arith
 begin
@@ -133,7 +133,7 @@ lemma csquare_rel_abs[absolut]: "\<lbrakk> M(K); M(cs)\<rbrakk> \<Longrightarrow
   using csquare_lam_closed[unfolded csquare_lam_eq_lam]
   by (simp add:absolut csquare_lam_eq_lam[unfolded csquare_lam_def])
 
-end \<comment> \<open>\<^term>\<open>M_cardinal_arith\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 
 (*************   Discipline for csucc  ****************)
 relativize functional "csucc" "csucc_rel" external
@@ -163,7 +163,7 @@ is_iff_rel for "csucc"
   unfolding is_csucc_def csucc_rel_def
   by (simp add:absolut)
 
-end \<comment> \<open>\<^term>\<open>M_Perm\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
 
 notation csucc_rel (\<open>csucc\<^bsup>_\<^esup>'(_')\<close>)
 
@@ -609,7 +609,7 @@ qed
 lemma lepoll_imp_sum_lepoll_prod: "[| A \<lesssim>\<^bsup>M\<^esup> B; 2 \<lesssim>\<^bsup>M\<^esup> A; M(A) ;M(B) |] ==> A+B \<lesssim>\<^bsup>M\<^esup> A*B"
 by (blast intro: sum_lepoll_rel_mono sum_lepoll_rel_prod lepoll_rel_trans lepoll_rel_refl)
 
-end \<comment> \<open>\<^term>\<open>M_cardinals\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_cardinals\<close>\<close>
 
 subsection\<open>Infinite Cardinals are Limit Ordinals\<close>
 
@@ -687,7 +687,7 @@ apply (rule le_eqI) prefer 2
 apply (rule Ord_cardinal_rel, assumption+)
 done
 
-end \<comment> \<open>\<^term>\<open>M_cardinal_arith\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 
 (*** An infinite cardinal equals its square (Kunen, Thm 10.12, page 29) ***)
 
@@ -1408,7 +1408,7 @@ done
   might be  InfCard(K) ==> |list(K)| = K.
 *)
 
-end \<comment> \<open>\<^term>\<open>M_cardinal_arith\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_cardinal_arith\<close>\<close>
 
 subsection\<open>For Every Cardinal Number There Exists A Greater One\<close>
 

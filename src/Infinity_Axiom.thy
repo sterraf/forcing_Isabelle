@@ -33,5 +33,6 @@ proof -
     unfolding infinity_ax_def by auto
 qed
 
-end \<comment> \<open>\<^term>\<open>G_generic'\<close>\<close>
+end \<comment> \<open>\<^term>\<open>G_generic\<close>\<close>
+
 end

@@ -414,6 +414,6 @@ lemma Fn_nat_closed:
   using assms Fn_nat_eq_FiniteFun
   by simp
 
-end \<comment> \<open>\<^term>\<open>M_FiniteFun\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_FiniteFun\<close>\<close>
 
 end

@@ -302,7 +302,7 @@ proof -
     by simp    
 qed
 
-end (*  M_HVfrom *)
+end \<comment> \<open>\<^locale>\<open>M_HVfrom\<close>\<close>
 
 (*
 relativize functional "Vfrom" "Vfrom_rel" external
@@ -362,6 +362,6 @@ proof -
   by simp
 qed
 
-end \<comment> \<open>\<^term>\<open>M_Vfrom\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_Vfrom\<close>\<close>
 
 end

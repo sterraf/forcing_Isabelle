@@ -58,12 +58,6 @@ relationalize "dcwit_body_rel" "is_dcwit_body"
 synthesize "is_dcwit_body" from_definition assuming "nonempty"
 arity_theorem for "is_dcwit_body_fm"
 
-context M_eclose
-begin
-
-
-end \<comment> \<open>\<^term>\<open>M_eclose\<close>\<close>
-
 context M_replacement
 begin
 
@@ -140,7 +134,7 @@ next
       auto
 qed
 
-end \<comment> \<open>\<^term>\<open>M_replacement\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_replacement\<close>\<close>
 
 locale M_DC = M_trancl + M_replacement + M_eclose +
   assumes
@@ -282,7 +276,7 @@ lemma witness_to_fun:
   using assms bexI[of _ "\<lambda>n\<in>nat. dc_witness(n,A,a,s,R)"] witness_funtype
   by simp
 
-end \<comment> \<open>\<^term>\<open>M_DC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_DC\<close>\<close>
 
 locale M_library_DC = M_library + M_DC
 begin
@@ -467,6 +461,6 @@ proof -
     by (rule_tac ballI) (drule aux_sequence_DC2, drule DC_on_A_x_nat, auto)
 qed 
 
-end \<comment> \<open>\<^term>\<open>M_library_DC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_library_DC\<close>\<close>
 
 end

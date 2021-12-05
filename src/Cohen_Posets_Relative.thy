@@ -92,14 +92,14 @@ proof -
   qed
 qed
 
-end \<comment> \<open>\<^term>\<open>M_cardinal_library\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>
 
 locale M_add_reals = M_cohen + add_reals
 begin
 
 lemmas zero_lesspoll_rel_kappa = zero_lesspoll_rel[OF zero_lt_kappa]
 
-end \<comment> \<open>\<^term>\<open>M_add_reals\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_add_reals\<close>\<close>
 
 (* FIXME This is old-style discipline *)
 (* MOVE THIS to some appropriate place\<close> *)
@@ -121,7 +121,7 @@ lemma antichain_abs [absolut]:
   "\<lbrakk> M(A); M(P); M(leq) \<rbrakk> \<Longrightarrow> antichain\<^bsup>M\<^esup>(P,leq,A) \<longleftrightarrow> antichain(P,leq,A)"
   unfolding antichain_rel_def antichain_def by (simp add:absolut)
 
-end \<comment> \<open>\<^term>\<open>M_trivial\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_trivial\<close>\<close>
 
 (******************************************************)
 (* FIXME This is old-style discipline *)
@@ -144,7 +144,7 @@ lemma def_ccc_rel:
   using is_cardinal_iff
   unfolding ccc_rel_def by (simp add:absolut)
 
-end \<comment> \<open>\<^term>\<open>M_cardinals\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_cardinals\<close>\<close>
 
 (******************  end Discipline  ******************)
 
@@ -474,6 +474,6 @@ proof -
   show ?thesis using def_ccc_rel by (auto simp:absolut antichain_def) fastforce
 qed
 
-end \<comment> \<open>\<^term>\<open>M_add_reals\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_add_reals\<close>\<close>
 
 end

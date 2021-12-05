@@ -482,6 +482,6 @@ lemmas lepoll_assumptions = lepoll_assumptions1 lepoll_assumptions2
   lepoll_assumptions15 lepoll_assumptions16
   lepoll_assumptions17 lepoll_assumptions18
 
-end \<comment> \<open>\<^term>\<open>M_replacement_lepoll\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_replacement_lepoll\<close>\<close>
 
 end

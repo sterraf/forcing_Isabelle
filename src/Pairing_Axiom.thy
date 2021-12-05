@@ -40,5 +40,6 @@ proof -
   then show ?thesis unfolding upair_ax_def upair_def by auto
 qed
 
-end  (* context forcing_data *)
+end \<comment> \<open>\<^term>\<open>forcing_data\<close>\<close>
+
 end

@@ -293,6 +293,6 @@ lemma cohen_extension_is_proper: "\<exists>G. M_generic(G) \<and> M \<noteq> M\<
   using proper_extension generic_filter_existence zero_in_seqspace
   by force
 
-end \<comment> \<open>\<^term>\<open>M_ctm\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ctm\<close>\<close>
 
 end

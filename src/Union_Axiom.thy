@@ -6,7 +6,6 @@ begin
 context forcing_data
 begin
 
-
 definition Union_name_body :: "[i,i,i,i] \<Rightarrow> o" where
   "Union_name_body(P',leq',\<tau>,\<theta>p) \<equiv> (\<exists> \<sigma>[##M].
            \<exists> q[##M]. (q\<in> P' \<and> (\<langle>\<sigma>,q\<rangle> \<in> \<tau> \<and>
@@ -164,4 +163,5 @@ theorem Union_MG : "M_generic(G) \<Longrightarrow> Union_ax(##M[G])"
   by (simp add:M_generic_def union_in_MG)
 
 end \<comment> \<open>\<^term>\<open>forcing_data\<close>\<close>
+
 end

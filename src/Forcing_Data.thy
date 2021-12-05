@@ -11,10 +11,6 @@ begin
 locale M_ctm = M_ZF_trans +
   fixes enum
   assumes M_countable:      "enum\<in>bij(nat,M)"
-begin
-
-
-end \<comment> \<open>\<^term>\<open>M_ctm\<close>\<close>
 
 locale M_ctm_AC = M_ctm + M_ZFC_trans
 

@@ -50,7 +50,7 @@ lemma choice_ax_abs :
   unfolding choice_ax_def
   by (simp)
 
-end \<comment> \<open>\<^term>\<open>M_basic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
 definition
   wellfounded_trancl :: "[i=>o,i,i,i] => o" where
@@ -107,7 +107,7 @@ proof -
     by simp
 qed
 
-end \<comment> \<open>\<^term>\<open>M_ZF_trans\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ZF_trans\<close>\<close>
 
 locale M_ZFC = M_ZF +
   assumes
@@ -578,7 +578,7 @@ lemmas M_basic_sep_instances =
   image_sep_intf converse_sep_intf restrict_sep_intf
   pred_sep_intf memrel_sep_intf comp_sep_intf is_recfun_sep_intf
 
-end \<comment> \<open>\<^term>\<open>M_ZF_trans\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ZF_trans\<close>\<close>
 
 sublocale M_ZF_trans \<subseteq> M_basic "##M"
   using trans_M zero_in_M power_ax M_basic_sep_instances funspace_succ_rep_intf
@@ -740,7 +740,7 @@ proof -
     using \<open>nat\<subseteq>I\<close> 1 by simp
 qed
 
-end \<comment> \<open>\<^term>\<open>M_ZF_trans\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ZF_trans\<close>\<close>
 
 sublocale M_ZF_trans \<subseteq> M_trancl "##M"
   using rtrancl_separation_intf wftrancl_separation_intf nat_in_M
@@ -1598,6 +1598,6 @@ proof -
     using Lambda_in_M[of ?\<phi>'] \<open>env\<in>_\<close> \<open>A\<in>_\<close> by simp
 qed
 
-end \<comment> \<open>\<^term>\<open>M_ZF_trans\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ZF_trans\<close>\<close>
 
 end

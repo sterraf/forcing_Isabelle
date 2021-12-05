@@ -415,6 +415,6 @@ proof -
     by (auto dest:transM)
 qed
 
-end \<comment> \<open>\<^term>\<open>M_delta\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_delta\<close>\<close>
 
 end

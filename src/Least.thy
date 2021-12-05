@@ -159,6 +159,6 @@ lemma Least_closed':
   shows "M(\<mu> x. Q(x))"
   using assms Least_closed[of Q] by auto
 
-end \<comment> \<open>\<^term>\<open>M_trivial\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_trivial\<close>\<close>
 
 end

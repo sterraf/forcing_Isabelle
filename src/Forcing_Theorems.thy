@@ -642,7 +642,7 @@ proof -
   show ?thesis by blast
 qed
 
-end \<comment> \<open>\<^term>\<open>includes\<close>\<close>
+end \<comment> \<open>includes some\_rules\<close>
 
 lemma Collect_forces_eq_in_M:
   assumes "\<tau> \<in> M" "\<theta> \<in> M"

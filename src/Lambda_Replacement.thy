@@ -517,7 +517,7 @@ proof -
     by simp
 qed
 
-end \<comment> \<open>\<^term>\<open>M_basic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
 locale M_replacement = M_basic +
   assumes
@@ -1771,7 +1771,7 @@ lemma lam_apply_replacement: "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lam_
   using lam_replacement_Lambda lam_replacement_hcomp[OF _ lam_replacement_apply[of f]] lam_replacement_Pair
   by simp
 
-end \<comment> \<open>\<^term>\<open>M_replacement\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_replacement\<close>\<close>
 
 locale M_replacement_extra = M_replacement +
   assumes
@@ -1927,7 +1927,7 @@ lemma case_replacement5:
   unfolding lam_replacement_def
   by simp
 
-end \<comment> \<open>\<^term>\<open>M_replacement_extra\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_replacement_extra\<close>\<close>
 
 \<comment> \<open>To be used in the relativized treatment of Cohen posets\<close>
 definition
@@ -2058,6 +2058,6 @@ lemmas replacements = Pair_diff_replacement id_replacement tag_replacement
   Inl_replacement2
   case_replacement1 case_replacement2 case_replacement4 case_replacement5
 
-end \<comment> \<open>\<^term>\<open>M_replacement_extra\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_replacement_extra\<close>\<close>
 
 end

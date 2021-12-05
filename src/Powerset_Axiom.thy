@@ -255,6 +255,7 @@ proof -
     using Collect_sats_in_MG GenExtI ord_simp_union by (simp add:arity)
   finally show ?thesis .
 qed
+
 end \<comment> \<open>\<^term>\<open>G_generic\<close>\<close>
 
 

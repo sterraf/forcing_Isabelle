@@ -58,7 +58,7 @@ lemma cardinal_rel_lt_csucc_rel_iff:
 "Card_rel(M,K) \<Longrightarrow> M(K) \<Longrightarrow> M(K') \<Longrightarrow> |K'|\<^bsup>M\<^esup> < (K\<^sup>+)\<^bsup>M\<^esup> \<longleftrightarrow> |K'|\<^bsup>M\<^esup> \<le> K"
   by (simp add: Card_rel_lt_csucc_rel_iff)
 
-end \<comment> \<open>\<^term>\<open>M_library\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
 
 locale M_cardinal_UN_nat = M_cardinal_UN _ \<omega> X for X
 begin
@@ -276,7 +276,7 @@ lemma cardinal_rel_cases:
   using assms not_le_iff_lt Card_rel_is_Ord Ord_cardinal_rel
   by auto
 
-end \<comment> \<open>\<^term>\<open>M_library\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
 
 subsection\<open>Countable and uncountable sets\<close>
 
@@ -320,7 +320,7 @@ lemma Finite_imp_countable_rel: "Finite_rel(M,X) \<Longrightarrow> M(X) \<Longri
   by (auto intro:InfCard_rel_nat nats_le_InfCard_rel[of _ \<omega>,
         THEN le_imp_lepoll_rel] dest!:eq_lepoll_rel_trans[of X _ \<omega>] )
 
-end \<comment> \<open>\<^term>\<open>M_library\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
 
 lemma (in M_cardinal_UN_lepoll) countable_rel_imp_countable_rel_UN:
   assumes "countable_rel(M,J)" "\<And>i. i\<in>J \<Longrightarrow> countable_rel(M,X(i))"
@@ -420,7 +420,7 @@ proof -
     using assms countable_rel_imp_countable_rel_UN by simp
 qed
 
-end \<comment> \<open>\<^term>\<open>M_library\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>
 
 abbreviation
   uncountable_rel :: "[i\<Rightarrow>o,i]\<Rightarrow>o" where
@@ -1240,7 +1240,7 @@ proof -
   show ?thesis .
 qed
 
-end \<comment> \<open>\<^term>\<open>M_library\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>
 
 (* FIXME: This can be generalized.\<close> *)
 lemma (in M_cardinal_library) countable_fun_imp_countable_image:
