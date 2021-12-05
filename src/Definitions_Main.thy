@@ -458,7 +458,7 @@ text\<open>@{thm [display] Aleph_rel_zero Aleph_rel_succ Aleph_rel_limit}\<close
   Limit(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup> = (\<Union>j\<in>\<alpha>. \<aleph>\<^bsub>j\<^esub>\<^bsup>M\<^esup>)
 *)
 
-end \<comment> \<open>\<^term>\<open>M_aleph\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_aleph\<close>\<close>
 
 lemma ContHyp_rel_def':
   fixes N::"i\<Rightarrow>o"

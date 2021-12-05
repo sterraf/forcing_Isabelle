@@ -47,6 +47,6 @@ theorem rasiowa_sikorski:
   "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> D_generic(G)"
   using RS_sequence_imp_rasiowa_sikorski by (auto dest:DC_imp_RS_sequence)
 
-end \<comment> \<open>\<^term>\<open>countable_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>countable_generic\<close>\<close>
 
 end

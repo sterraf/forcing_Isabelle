@@ -438,7 +438,7 @@ theorem CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> = 2\<^bsup>\<up>\<ale
     le_anti_sym
   by auto
 
-end \<comment> \<open>\<^term>\<open>collapse_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>collapse_generic\<close>\<close>
 
 theorem ctm_of_CH:
   assumes

@@ -28,6 +28,6 @@ proof -
   then show ?thesis unfolding extensionality_def by simp
 qed
  
-end \<comment> \<open>\<^term>\<open>forcing_data\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
 
 end

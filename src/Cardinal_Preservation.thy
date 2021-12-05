@@ -16,7 +16,7 @@ definition
   ccc :: "o" where
   "ccc \<equiv> \<forall>A. antichain(A) \<longrightarrow> |A| \<le> \<omega>"
 
-end \<comment> \<open>\<^term>\<open>forcing_notion\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>forcing_notion\<close>\<close>
 
 locale M_trivial_notion = M_trivial + forcing_notion
 begin
@@ -69,7 +69,7 @@ qed
 
 notation check (\<open>_\<^sup>v\<close> [101] 100)
 
-end \<comment> \<open>\<^term>\<open>forcing_data\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
 
 context G_generic begin
 
@@ -83,7 +83,7 @@ lemmas generic_dests = M_genericD[OF generic] M_generic_compatD[OF generic]
 
 bundle G_generic_lemmas = generic_simps[simp] generic_dests[dest]
 
-end \<comment> \<open>\<^term>\<open>G_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
 
 sublocale G_generic \<subseteq> ext:M_ZF_trans "M[G]"
   using Transset_MG generic pairing_in_MG Union_MG
@@ -701,6 +701,6 @@ qed
 
 end \<comment> \<open>G\_generic\_lemmas bundle\<close>
 
-end \<comment> \<open>\<^term>\<open>G_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic_AC\<close>\<close>
 
 end

@@ -990,6 +990,6 @@ qed
 
 end \<comment> \<open>bundle G\_generic\_lemmas\<close>
 
-end \<comment> \<open>\<^term>\<open>G_generic_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic_AC\<close>\<close>
 
 end

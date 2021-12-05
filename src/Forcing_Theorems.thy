@@ -1541,6 +1541,6 @@ qed
 
 lemmas definability = forces_type 
 
-end \<comment> \<open>\<^term>\<open>forcing_data\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
 
 end

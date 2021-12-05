@@ -162,6 +162,6 @@ qed
 theorem Union_MG : "M_generic(G) \<Longrightarrow> Union_ax(##M[G])"
   by (simp add:M_generic_def union_in_MG)
 
-end \<comment> \<open>\<^term>\<open>forcing_data\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
 
 end

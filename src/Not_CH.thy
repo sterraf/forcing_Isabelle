@@ -265,7 +265,7 @@ qed
 
 end \<comment> \<open>bundle G\_generic\_lemmas\<close>
 
-end \<comment> \<open>\<^term>\<open>G_generic_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic_AC\<close>\<close>
 
 context M_ctm
 begin
@@ -554,7 +554,7 @@ lemma Aleph_rel_lt_continuum_rel: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>
 corollary not_CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> \<noteq> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
   using Aleph_rel_lt_continuum_rel by auto
 
-end \<comment> \<open>\<^term>\<open>add_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>add_generic\<close>\<close>
 
 definition
   ContHyp :: "o" where

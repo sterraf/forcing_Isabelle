@@ -491,6 +491,6 @@ proof -
     by auto
 qed
 
-end \<comment> \<open>\<^term>\<open>G_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
 
 end

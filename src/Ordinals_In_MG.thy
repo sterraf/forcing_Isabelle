@@ -50,6 +50,6 @@ next
       rank_closed unfolding succ_def by simp  
 qed
   
-end \<comment> \<open>\<^term>\<open>G_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
 
 end

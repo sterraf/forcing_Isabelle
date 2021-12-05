@@ -123,7 +123,7 @@ qed
 lemma one_in_M: "one \<in> M"
   by (insert one_in_P P_in_M, simp add: transitivity)
 
-end \<comment> \<open>\<^term>\<open>forcing_data\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
 
 (* Compatibility lemmas\<close> *)
 lemma (in M_trivial) compat_in_abs :
@@ -154,6 +154,6 @@ lemma sats_compat_in_fm:
             is_compat_in(##M,nth(A, env),nth(r, env),nth(p, env),nth(q, env))"
   unfolding compat_in_fm_def is_compat_in_def using assms by simp
 
-end \<comment> \<open>\<^term>\<open>forcing_data\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
 
 end

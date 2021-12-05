@@ -256,7 +256,7 @@ proof -
   finally show ?thesis .
 qed
 
-end \<comment> \<open>\<^term>\<open>G_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
 
 
 context G_generic begin
@@ -292,6 +292,6 @@ proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
     by auto
 qed
 
-end \<comment> \<open>\<^term>\<open>G_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
 
 end
