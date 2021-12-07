@@ -3,7 +3,7 @@ section\<open>Cohen forcing notions\<close>
 theory Cohen_Posets
   imports
     Forcing_Notions
-    Names \<comment> \<open>only for \<^term>\<open>SepReplace\<close>\<close>
+    ZF_Miscellanea \<comment> \<open>only for \<^term>\<open>SepReplace\<close>\<close>
     Recursion_Thms \<comment> \<open>only for the definition of \<^term>\<open>Rrel\<close>\<close>
     "Delta_System_Lemma.ZF_Library"
 begin
