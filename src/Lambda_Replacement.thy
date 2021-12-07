@@ -533,10 +533,8 @@ locale M_replacement = M_basic +
     and
     middle_del_replacement: "strong_replacement(M, \<lambda>x y. y=\<langle>fst(fst(x)),snd(snd(x))\<rangle>)"
     and
-    product_separation: "separation(M, \<lambda>x. fst(fst(x))=fst(snd(x)))"
-    and
     product_replacement:
-    "strong_replacement(M, \<lambda>x y. y=\<langle>fst(fst(x)),\<langle>snd(fst(x)),snd(snd(x))\<rangle>\<rangle>)"
+    "strong_replacement(M, \<lambda>x y. y=\<langle>snd(fst(x)),\<langle>fst(fst(x)),snd(snd(x))\<rangle>\<rangle>)"
     and
     lam_replacement_Upair:"lam_replacement(M, \<lambda>p. Upair(fst(p),snd(p)))"
     and
@@ -672,19 +670,19 @@ proof -
     moreover
     assume "M(A)"
     moreover from \<open>M(A)\<close> assms(1)
-    have "M(?Y')" "M(?Y)"
+    have "M(converse(?Y'))" "M(?Y)"
       using lam_replacement_imp_RepFun_Lam lam_replacement_imp_RepFun by auto
     moreover from calculation
     have "M(?Z)" "M(?Z')"
       using lam_replacement_imp_RepFun_Lam lam_replacement_imp_RepFun by auto
     moreover from calculation
-    have "M(?Y'\<times>?Z')"
+    have "M(converse(?Y')\<times>?Z')"
       by simp
     moreover from this
-    have "M({p \<in> ?Y'\<times>?Z' . fst(fst(p))=fst(snd(p))})" (is "M(?P)")
-      using product_separation by simp
+    have "M({p \<in> converse(?Y')\<times>?Z' . snd(fst(p))=fst(snd(p))})" (is "M(?P)")
+      using middle_separation by simp
     moreover from calculation
-    have "M({ \<langle>fst(fst(p)),\<langle>snd(fst(p)),snd(snd(p))\<rangle>\<rangle> . p\<in>?P })" (is "M(?R)")
+    have "M({ \<langle>snd(fst(p)),\<langle>fst(fst(p)),snd(snd(p))\<rangle>\<rangle> . p\<in>?P })" (is "M(?R)")
       using RepFun_closed[OF product_replacement \<open>M(?P)\<close> ] by simp
     ultimately
     have "b \<in> ?R \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> b = \<langle>x,\<langle>f(x),g(x)\<rangle>\<rangle>)" if "M(b)" for b
@@ -698,17 +696,17 @@ proof -
       moreover from calculation that
       have "M(\<langle>x,f(x)\<rangle>)" "M(\<langle>x,g(x)\<rangle>)" by auto
       moreover from calculation
-      have "\<langle>x,f(x)\<rangle> \<in> ?Y'" "\<langle>x,g(x)\<rangle> \<in> ?Z'" by auto
+      have "\<langle>f(x),x\<rangle> \<in> converse(?Y')" "\<langle>x,g(x)\<rangle> \<in> ?Z'" by auto
       moreover from calculation
-      have "\<langle>\<langle>x,f(x)\<rangle>,\<langle>x,g(x)\<rangle>\<rangle>\<in>?Y'\<times>?Z'" by auto
+      have "\<langle>\<langle>f(x),x\<rangle>,\<langle>x,g(x)\<rangle>\<rangle>\<in>converse(?Y')\<times>?Z'" by auto
       moreover from calculation
-      have "\<langle>\<langle>x,f(x)\<rangle>,\<langle>x,g(x)\<rangle>\<rangle> \<in> ?P"
+      have "\<langle>\<langle>f(x),x\<rangle>,\<langle>x,g(x)\<rangle>\<rangle> \<in> ?P"
         (is "?p\<in>?P")
         by auto
       moreover from calculation
-      have "b = \<langle>fst(fst(?p)),\<langle>snd(fst(?p)),snd(snd(?p))\<rangle>\<rangle>" by auto
+      have "b = \<langle>snd(fst(?p)),\<langle>fst(fst(?p)),snd(snd(?p))\<rangle>\<rangle>" by auto
       moreover from calculation
-      have "\<langle>fst(fst(?p)),\<langle>snd(fst(?p)),snd(snd(?p))\<rangle>\<rangle>\<in>?R"
+      have "\<langle>snd(fst(?p)),\<langle>fst(fst(?p)),snd(snd(?p))\<rangle>\<rangle>\<in>?R"
         by(rule_tac RepFunI[of ?p ?P], simp)
       ultimately show "b\<in>?R" by simp
     qed

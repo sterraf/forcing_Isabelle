@@ -383,28 +383,28 @@ lemma (in M_ZF_trans) replacement_fst2_snd2: "strong_replacement(##M, \<lambda>x
   unfolding fst2_snd2_def
   by simp
 
-definition fst2_sndfst_snd2
-  where "fst2_sndfst_snd2(x) \<equiv> \<langle>fst(fst(x)), snd(fst(x)), snd(snd(x))\<rangle>"
+definition sndfst_fst2_snd2
+  where "sndfst_fst2_snd2(x) \<equiv> \<langle>snd(fst(x)), fst(fst(x)), snd(snd(x))\<rangle>"
 
-relativize functional "fst2_sndfst_snd2" "fst2_sndfst_snd2_rel"
-relationalize "fst2_sndfst_snd2_rel" "is_fst2_sndfst_snd2"
+relativize functional "sndfst_fst2_snd2" "sndfst_fst2_snd2_rel"
+relationalize "sndfst_fst2_snd2_rel" "is_sndfst_fst2_snd2"
 
-lemma (in M_trivial) fst2_sndfst_snd2_abs:
+lemma (in M_trivial) sndfst_fst2_snd2_abs:
   assumes "M(x)" "M(res)"
-  shows "is_fst2_sndfst_snd2(M, x, res) \<longleftrightarrow> res = fst2_sndfst_snd2(x)"
-  unfolding is_fst2_sndfst_snd2_def fst2_sndfst_snd2_def
+  shows "is_sndfst_fst2_snd2(M, x, res) \<longleftrightarrow> res = sndfst_fst2_snd2(x)"
+  unfolding is_sndfst_fst2_snd2_def sndfst_fst2_snd2_def
   using fst_rel_abs[symmetric] snd_rel_abs[symmetric] fst_abs snd_abs assms
   by simp
 
-synthesize "is_fst2_sndfst_snd2" from_definition assuming "nonempty"
-arity_theorem for "is_fst2_sndfst_snd2_fm"
+synthesize "is_sndfst_fst2_snd2" from_definition assuming "nonempty"
+arity_theorem for "is_sndfst_fst2_snd2_fm"
 
-lemma (in M_ZF_trans) replacement_fst2_sndfst_snd2:
-  "strong_replacement(##M, \<lambda>x y. y = \<langle>fst(fst(x)), snd(fst(x)), snd(snd(x))\<rangle>)"
-  using strong_replacement_in_ctm[where \<phi>="is_fst2_sndfst_snd2_fm(0,1)" and env="[]"]
+lemma (in M_ZF_trans) replacement_sndfst_fst2_snd2:
+  "strong_replacement(##M, \<lambda>x y. y = \<langle>snd(fst(x)), fst(fst(x)), snd(snd(x))\<rangle>)"
+  using strong_replacement_in_ctm[where \<phi>="is_sndfst_fst2_snd2_fm(0,1)" and env="[]"]
     zero_in_M fst_snd_closed pair_in_M_iff
-    arity_is_fst2_sndfst_snd2_fm ord_simp_union fst2_sndfst_snd2_abs
-  unfolding fst2_sndfst_snd2_def
+    arity_is_sndfst_fst2_snd2_fm ord_simp_union sndfst_fst2_snd2_abs
+  unfolding sndfst_fst2_snd2_def
   by simp
 
 lemmas (in M_ZF_trans) M_replacement_ZF_instances = lam_replacement_domain
@@ -413,8 +413,7 @@ lemmas (in M_ZF_trans) M_replacement_ZF_instances = lam_replacement_domain
   lam_replacement_Diff lam_replacement_converse
   separation_fstsnd_in_sndsnd
   separation_sndfst_eq_fstsnd
-  separation_fstfst_eq_fstsnd
-  replacement_fst2_snd2 replacement_fst2_sndfst_snd2
+  replacement_fst2_snd2 replacement_sndfst_fst2_snd2
   lam_replacement_comp
 
 sublocale M_ZF_trans \<subseteq> M_replacement "##M"

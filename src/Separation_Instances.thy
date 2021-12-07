@@ -233,27 +233,6 @@ lemma (in M_ZF_trans) separation_sndfst_eq_fstsnd:
   unfolding sndfst_eq_fstsnd_def
   by simp
 
- (* 3. separation(##M, \<lambda>x. fst(fst(x)) = fst(snd(x))) *)
-definition fstfst_eq_fstsnd :: "[i] \<Rightarrow> o" where
-  "fstfst_eq_fstsnd \<equiv> \<lambda>x. fst(fst(x)) = fst(snd(x))"
-relativize "fstfst_eq_fstsnd" "is_fstfst_eq_fstsnd"
-synthesize "is_fstfst_eq_fstsnd" from_definition assuming "nonempty"
-arity_theorem for "is_fstfst_eq_fstsnd_fm"
-
-lemma (in M_ZF_trans) fstfst_eq_fstsnd_abs:
-  assumes "(##M)(x)"
-  shows "is_fstfst_eq_fstsnd(##M,x) \<longleftrightarrow> fstfst_eq_fstsnd(x)"
-  using assms pair_in_M_iff fst_abs snd_abs fst_snd_closed
-  unfolding fstfst_eq_fstsnd_def is_fstfst_eq_fstsnd_def
-  by auto
-
-lemma (in M_ZF_trans) separation_fstfst_eq_fstsnd:
- "separation(##M, \<lambda>x. fst(fst(x)) = fst(snd(x)))"
-  using separation_in_ctm[where env="[]" and \<phi>="is_fstfst_eq_fstsnd_fm(0)" and Q=fstfst_eq_fstsnd]
-    nonempty fstfst_eq_fstsnd_abs arity_is_fstfst_eq_fstsnd_fm
-  unfolding fstfst_eq_fstsnd_def
-  by simp
-
 lemma (in M_ZF_trans) separation_Ord:
  "separation(##M, Ord)"
   using separation_in_ctm[where \<phi>="ordinal_fm(0)" and env="[]"] ordinal_abs
