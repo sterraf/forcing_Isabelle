@@ -169,15 +169,8 @@ lemma (in M_ZF_trans) lam_replacement_comp:
     arity_composition_fm[of 0 1 2] ord_simp_union
   by simp
 
-lemma (in M_ZF_trans) lam_replacement_cartprod:
-  "lam_replacement(##M, \<lambda>p. fst(p) \<times> snd(p))"
-  using lam_replacement2_in_ctm[where \<phi>="cartprod_fm(0,1,2)" and env="[]" and f="(\<times>)"]
-    cartprod_closed cartprod_type arity_cartprod_fm[of 0 1 2]
-    ord_simp_union
-  by simp
-
 definition is_omega_funspace :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o" where
-  "is_omega_funspace(N,B,n,z) \<equiv>  \<exists>o[N]. omega(N,o) \<and> n\<in>o \<and>is_funspace(N, n, B, z)"
+  "is_omega_funspace(N,B,n,z) \<equiv>  \<exists>o[N]. omega(N,o) \<and> n\<in>o \<and> is_funspace(N, n, B, z)"
 
 synthesize "omega_funspace" from_definition "is_omega_funspace" assuming "nonempty"
 arity_theorem for "omega_funspace_fm"
