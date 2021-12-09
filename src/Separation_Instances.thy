@@ -25,10 +25,6 @@ arity_theorem for "bijection_fm"
 arity_theorem for "order_isomorphism_fm"
 arity_theorem for "pred_set_fm"
 
-(* FIXME: do we need this? does this exists somewhere? *)
-lemma iff_sym : "P(x,a) \<longleftrightarrow> a = f(x) \<Longrightarrow> P(x,a) \<longleftrightarrow> f(x) = a"
-  by auto
-
 definition radd_body :: "[i,i,i] \<Rightarrow> o" where
   "radd_body(R,S) \<equiv> \<lambda>z. (\<exists>x y. z = \<langle>Inl(x), Inr(y)\<rangle>) \<or>
                   (\<exists>x' x. z = \<langle>Inl(x'), Inl(x)\<rangle> \<and> \<langle>x', x\<rangle> \<in> R) \<or>
@@ -82,18 +78,11 @@ lemma (in M_ZF_trans) separation_rmult_body:
   unfolding rmult_body_def
   by simp
 
-definition well_ord_body :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
-  "well_ord_body(N,A,f,r,x) \<equiv> x \<in> A \<longrightarrow> (\<exists>y[N]. \<exists>p[N]. is_apply(N, f, x, y) \<and> pair(N, y, x, p) \<and> p \<in> r)"
-
-synthesize "well_ord_body" from_definition
-arity_theorem for "well_ord_body_fm"
-
-lemma (in M_ZF_trans) separation_well_ord:
- "(##M)(f) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation
-        (##M, \<lambda>x. x \<in> A \<longrightarrow> (\<exists>y[##M]. \<exists>p[##M]. is_apply(##M, f, x, y) \<and> pair(##M, y, x, p) \<and> p \<in> r))"
-  using separation_in_ctm[where \<phi>="well_ord_body_fm(1,2,3,0)" and env="[A,f,r]"]
-    well_ord_body_def arity_well_ord_body_fm ord_simp_union well_ord_body_fm_type rmult_body_abs
-  using well_ord_body_def
+lemma (in M_replacement) separation_well_ord:
+  "(M)(f) \<Longrightarrow> (M)(r) \<Longrightarrow> (M)(A) \<Longrightarrow> separation
+        (M, \<lambda>x. x \<in> A \<longrightarrow> (\<exists>y[M]. \<exists>p[M]. is_apply(M, f, x, y) \<and> pair(M, y, x, p) \<and> p \<in> r))"
+  using separation_imp  separation_in lam_replacement_identity lam_replacement_constant
+    lam_replacement_apply[of f] lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
   by simp
 
 definition is_obase_body :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
