@@ -7,6 +7,8 @@ theory Relative_Univ
 
 begin
 
+declare arity_subset_fm [simp del] arity_ordinal_fm[simp del, arity] arity_transset_fm[simp del]
+
 declare (in M_trivial) powerset_abs[simp]
 
 lemma Collect_inter_Transset:

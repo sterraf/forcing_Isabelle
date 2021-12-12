@@ -3,7 +3,6 @@ section\<open>Cardinal Arithmetic under Choice\label{sec:cardinal-lib-rel}\<clos
 theory Cardinal_Library_Relative
   imports
     ZF_Library_Relative
-    "Delta_System_Lemma.ZF_Library"
     Replacement_Lepoll
 begin
 

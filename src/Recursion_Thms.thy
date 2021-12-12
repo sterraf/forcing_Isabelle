@@ -5,6 +5,11 @@ theory Recursion_Thms
 
 begin
 
+\<comment> \<open>Removing arities from inherited simpset\<close>
+declare arity_And [simp del] arity_Or[simp del] arity_Implies[simp del]
+  arity_Exists[simp del] arity_Iff[simp del]
+  arity_subset_fm [simp del] arity_ordinal_fm[simp del] arity_transset_fm[simp del]
+
 text\<open>We prove results concerning definitions by well-founded
 recursion on some relation \<^term>\<open>R\<close> and its transitive closure
 \<^term>\<open>R^*\<close>\<close>

@@ -3,7 +3,6 @@ theory FiniteFun_Relative
   imports
     Synthetic_Definition
     "Delta_System_Lemma.ZF_Library"
-    Discipline_Function
     Lambda_Replacement
     Cohen_Posets
 

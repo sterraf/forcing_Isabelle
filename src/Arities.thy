@@ -350,4 +350,6 @@ lemma arity_transrec_fm [arity] :
 
 end (* context FOL_arities *)
 
+declare arity_subset_fm [simp del] arity_ordinal_fm[simp del, arity] arity_transset_fm[simp del]
+
 end
