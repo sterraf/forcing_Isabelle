@@ -11,25 +11,26 @@ begin
 
 subsection\<open>The forcing relation in context\<close>
 
-lemma Collect_forces :
+lemma separation_forces :
   assumes 
     fty: "\<phi>\<in>formula" and
     far: "arity(\<phi>)\<le>length(env)" and
     envty: "env\<in>list(M)"
   shows
+    "separation(##M,\<lambda>p. (p \<tturnstile> \<phi> env))"
+  using separation_ax arity_forces far fty P_in_M leq_in_M one_in_M envty arity_forces_le
+    transitivity[of _ P]
+  by simp
+
+lemma Collect_forces :
+  assumes 
+    "\<phi>\<in>formula" and
+    "arity(\<phi>)\<le>length(env)" and
+    "env\<in>list(M)"
+  shows
     "{p\<in>P . p \<tturnstile> \<phi> env} \<in> M"
-proof -
-  have "z\<in>P \<Longrightarrow> z\<in>M" for z
-    using P_in_M transitivity[of z P] by simp
-  moreover
-  have "separation(##M,\<lambda>p. (p \<tturnstile> \<phi> env))"
-        using separation_ax arity_forces far fty P_in_M leq_in_M one_in_M envty arity_forces_le
-    by simp
-  then 
-  have "Collect(P,\<lambda>p. (p \<tturnstile> \<phi> env))\<in>M"
-    using separation_closed P_in_M by simp
-  then show ?thesis by simp
-qed
+  using assms separation_forces separation_closed P_in_M 
+  by simp
 
 lemma forces_mem_iff_dense_below:  "p\<in>P \<Longrightarrow> p forces\<^sub>a (t1 \<in> t2) \<longleftrightarrow> dense_below(
     {q\<in>P. \<exists>s. \<exists>r. r\<in>P \<and> \<langle>s,r\<rangle> \<in> t2 \<and> q\<preceq>r \<and> q forces\<^sub>a (t1 = s)}

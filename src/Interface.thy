@@ -1598,6 +1598,247 @@ proof -
     using Lambda_in_M[of ?\<phi>'] \<open>env\<in>_\<close> \<open>A\<in>_\<close> by simp
 qed
 
+
+simple_rename "ren_U" src "[z1,x_P, x_leq, x_o, x_t, z2_c]"
+  tgt "[z2_c,z1,z,x_P, x_leq, x_o, x_t]"
+
+simple_rename "ren_V" src "[fz,x_P, x_leq, x_o,x_f, x_t, gz]"
+  tgt "[gz,fz,z,x_P, x_leq, x_o,x_f, x_t]"
+
+simple_rename "ren_V3" src "[fz,x_P, x_leq, x_o,x_f, gz, hz]"
+  tgt "[hz,gz,fz,z,x_P, x_leq, x_o,x_f]"
+
+lemma separation_sat_after_function_1:
+  assumes "[a,b,c,d]\<in>list(M)" and  "\<chi>\<in>formula" and "arity(\<chi>) \<le> 6"
+  and
+    f_fm:  "f_fm \<in> formula" and
+    f_ar:  "arity(f_fm) \<le> 6" and
+    fsats: "\<And> fx x. fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[fx,x]@[a, b, c, d] \<Turnstile> f_fm) \<longleftrightarrow> fx=f(x)" and
+    fclosed: "\<And>x . x\<in>M \<Longrightarrow> f(x) \<in> M" and
+    g_fm:  "g_fm \<in> formula" and
+    g_ar:  "arity(g_fm) \<le> 7" and
+    gsats: "\<And> gx fx x. gx\<in>M \<Longrightarrow>  fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[gx,fx,x]@[a, b, c, d] \<Turnstile> g_fm) \<longleftrightarrow> gx=g(x)" and
+    gclosed: "\<And>x . x\<in>M \<Longrightarrow> g(x) \<in> M"
+  shows  "separation(##M, \<lambda>r. M, [f(r), a, b, c, d, g(r)] \<Turnstile> \<chi>)"
+proof -
+  note types = assms(1-4)
+  let ?\<psi>="ren(\<chi>)`6`7`ren_U_fn"
+  let  ?\<psi>'="Exists(And(f_fm,Exists(And(g_fm,?\<psi>))))"
+  let ?\<rho>="\<lambda>z.[f(z), a, b, c, d, g(z)]"
+  let ?env="[a, b, c, d]"
+  let ?\<eta>="\<lambda>z.[g(z),f(z),z]@?env"
+  note types
+  moreover from this
+  have "arity(\<chi>) \<le> 7" "?\<psi>\<in>formula"
+    using ord_simp_union ren_tc ren_U_thm(2)[folded ren_U_fn_def] le_trans[of "arity(\<chi>)" 6]
+      by simp_all
+  moreover from calculation
+  have "arity(?\<psi>) \<le> 7" "?\<psi>'\<in>formula"
+    using arity_ren ren_U_thm(2)[folded ren_U_fn_def] f_fm g_fm
+     by simp_all
+  moreover from calculation f_ar g_ar f_fm g_fm
+  have "arity(?\<psi>') \<le> 5"
+    using ord_simp_union pred_le arity_type
+    by (simp add:arity)
+  moreover from calculation fclosed gclosed
+  have 0:"(M, [f(z), a, b, c, d,  g(z)] \<Turnstile> \<chi>) \<longleftrightarrow> (M,?\<eta>(z)\<Turnstile> ?\<psi>)" if "(##M)(z)" for z
+    using sats_iff_sats_ren[of \<chi> 6 7 _ _ "?\<eta>(z)"]
+      ren_U_thm(1)[where A=M,folded ren_U_fn_def] ren_U_thm(2)[folded ren_U_fn_def] that
+    by simp
+  moreover from calculation
+  have 1:"(M,?\<eta>(z)\<Turnstile> ?\<psi>) \<longleftrightarrow> M,[z]@?env\<Turnstile>?\<psi>'" if "(##M)(z)" for z
+    using that fsats[OF fclosed[of z],of z]  gsats[of "g(z)" "f(z)" z] fclosed gclosed f_fm g_fm
+  proof(rule_tac iffI,simp,rule_tac rev_bexI[where x="f(z)"],simp,(auto)[1])
+    assume "M, [z] @ [a, b, c, d] \<Turnstile> (\<cdot>\<exists>\<cdot>f_fm \<and> (\<cdot>\<exists>\<cdot>g_fm \<and> ren(\<chi>) ` 6 ` 7 ` ren_U_fn\<cdot>\<cdot>)\<cdot>\<cdot>)"
+    then
+    have "\<exists>xa\<in>M. (M, [xa, z, a, b, c, d] \<Turnstile> f_fm) \<and>
+          (\<exists>x\<in>M. (M, [x, xa, z, a, b, c, d] \<Turnstile> g_fm) \<and>
+            (M, [x, xa, z, a, b, c, d] \<Turnstile> ren(\<chi>) ` 6 ` 7 ` ren_U_fn))"
+      using that calculation by auto
+    then
+    obtain xa x where "x\<in>M" "xa\<in>M" "M, [xa, z, a, b, c, d] \<Turnstile> f_fm"
+        "(M, [x, xa, z, a, b, c, d] \<Turnstile> g_fm)"
+        "(M, [x, xa, z, a, b, c, d] \<Turnstile> ren(\<chi>) ` 6 ` 7 ` ren_U_fn)"
+      using that calculation by auto
+    moreover from this
+    have "xa=f(z)" "x=g(z)" using fsats[of xa]  gsats[of x xa] that by simp_all
+    ultimately
+    show "M, [g(z), f(z), z] @ [a, b, c, d] \<Turnstile> ren(\<chi>) ` 6 ` 7 ` ren_U_fn"
+      by auto
+  qed
+  moreover from calculation
+  have "separation(##M, \<lambda>z. (M,[z]@?env \<Turnstile> ?\<psi>'))"
+    using separation_ax
+      by simp_all
+  ultimately
+  show ?thesis
+    by(rule_tac separation_cong[THEN iffD2,OF iff_trans[OF 0 1]],clarify,force)
+qed
+
+lemma separation_sat_after_function3:
+  assumes "[a, b, c, d]\<in>list(M)" and  "\<chi>\<in>formula" and "arity(\<chi>) \<le> 7"
+  and
+    f_fm:  "f_fm \<in> formula" and
+    f_ar:  "arity(f_fm) \<le> 6" and
+    fsats: "\<And> fx x. fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[fx,x]@[a, b, c, d] \<Turnstile> f_fm) \<longleftrightarrow> fx=f(x)" and
+    fclosed: "\<And>x . x\<in>M \<Longrightarrow> f(x) \<in> M" and
+    g_fm:  "g_fm \<in> formula" and
+    g_ar:  "arity(g_fm) \<le> 7" and
+    gsats: "\<And> gx fx x. gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[gx,fx,x]@[a, b, c, d] \<Turnstile> g_fm) \<longleftrightarrow> gx=g(x)" and
+    gclosed: "\<And>x . x\<in>M \<Longrightarrow> g(x) \<in> M" and
+    h_fm:  "h_fm \<in> formula" and
+    h_ar:  "arity(h_fm) \<le> 8" and
+    hsats: "\<And> hx gx fx x. hx\<in>M \<Longrightarrow> gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[hx,gx,fx,x]@[a, b, c, d] \<Turnstile> h_fm) \<longleftrightarrow> hx=h(x)" and
+    hclosed: "\<And>x . x\<in>M \<Longrightarrow> h(x) \<in> M"
+shows  "separation(##M, \<lambda>r. M, [f(r), a, b, c, d, g(r), h(r)] \<Turnstile> \<chi>)"
+proof -
+  note types = assms(1-3)
+  let ?\<phi>="\<chi>"
+  let ?\<psi>="ren(?\<phi>)`7`8`ren_V3_fn"
+  let ?\<psi>'="Exists(And(f_fm,Exists(And(g_fm,Exists(And(h_fm,?\<psi>))))))"
+  let ?\<rho>="\<lambda>z.[f(z), a, b, c, d,g(z), h(z)]"
+  let ?env="[a, b, c, d]"
+  let ?\<eta>="\<lambda>z.[h(z),g(z),f(z),z]@?env"
+  note types
+  moreover from this
+  have "?\<phi>\<in>formula" by simp
+  moreover from calculation
+  have "arity(?\<phi>) \<le> 9" "?\<psi>\<in>formula"
+    using ord_simp_union ren_tc ren_V3_thm(2)[folded ren_V3_fn_def] le_trans[of "arity(\<chi>)" 7]
+      by simp_all
+  moreover from calculation
+  have "arity(?\<psi>) \<le> 8" "?\<psi>'\<in>formula"
+    using arity_ren ren_V3_thm(2)[folded ren_V3_fn_def] f_fm g_fm h_fm
+    by (simp_all)
+  moreover from this f_ar g_ar f_fm g_fm h_fm h_ar \<open>?\<psi>'\<in>_\<close>
+  have "arity(?\<psi>') \<le> 5"
+    using ord_simp_union arity_type nat_into_Ord
+    by (simp add:arity,(rule_tac pred_le,simp,rule_tac Un_le,simp)+,simp_all add: \<open>?\<psi>\<in>_\<close>)
+  moreover from calculation fclosed gclosed hclosed
+  have 0:"(M, ?\<rho>(z) \<Turnstile> ?\<phi>) \<longleftrightarrow> (M,?\<eta>(z)\<Turnstile> ?\<psi>)" if "(##M)(z)" for z
+    using sats_iff_sats_ren[of ?\<phi> 7 8 "?\<rho>(z)" M "?\<eta>(z)"]
+      ren_V3_thm(1)[where A=M,folded ren_V3_fn_def,simplified] ren_V3_thm(2)[folded ren_V3_fn_def] that
+    by simp
+  moreover from calculation
+  have 1:"(M,?\<eta>(z)\<Turnstile> ?\<psi>) \<longleftrightarrow> M,[z]@?env\<Turnstile>?\<psi>'" if "(##M)(z)" for z
+    using that fsats[OF fclosed[of z],of z] gsats[of "g(z)" "f(z)" z]
+      hsats[of "h(z)" "g(z)" "f(z)" z]
+      fclosed gclosed hclosed f_fm g_fm h_fm
+    apply(rule_tac iffI,simp,rule_tac rev_bexI[where x="f(z)"],simp)
+     apply(rule_tac conjI,simp,rule_tac rev_bexI[where x="g(z)"],simp)
+    apply(rule_tac conjI,simp,rule_tac rev_bexI[where x="h(z)"],simp,rule_tac conjI,simp,simp)
+  proof -
+    assume "M, [z] @ [a, b, c, d] \<Turnstile> (\<cdot>\<exists>\<cdot>f_fm \<and> (\<cdot>\<exists>\<cdot>g_fm \<and> (\<cdot>\<exists>\<cdot>h_fm \<and> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn\<cdot>\<cdot>)\<cdot>\<cdot>)\<cdot>\<cdot>)"
+    with calculation that
+    have "\<exists>x\<in>M. (M, [x, z, a, b, c, d] \<Turnstile> f_fm) \<and>
+           (\<exists>xa\<in>M. (M, [xa, x, z, a, b, c, d] \<Turnstile> g_fm) \<and> (\<exists>xb\<in>M. (M, [xb, xa, x, z, a, b, c, d] \<Turnstile> h_fm) \<and> (M, [xb, xa, x, z, a, b, c, d] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn)))"
+      by auto
+    with calculation
+    obtain x where "x\<in>M" "(M, [x, z, a, b, c, d] \<Turnstile> f_fm)"
+        "(\<exists>xa\<in>M. (M, [xa, x, z, a, b, c, d] \<Turnstile> g_fm) \<and> (\<exists>xb\<in>M. (M, [xb, xa, x, z, a, b, c, d] \<Turnstile> h_fm) \<and> (M, [xb, xa, x, z, a, b, c, d] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn)))"
+      by force
+    moreover from this
+    have "x=f(z)" using fsats[of x] that by simp
+    moreover from calculation
+    obtain xa where "xa\<in>M" "(M, [xa, x, z, a, b, c, d] \<Turnstile> g_fm)"
+      "(\<exists>xb\<in>M. (M, [xb, xa, x, z, a, b, c, d] \<Turnstile> h_fm) \<and> (M, [xb, xa, x, z, a, b, c, d] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn))"
+      by auto
+    moreover from calculation
+    have "xa=g(z)" using gsats[of xa x] that by simp
+    moreover from calculation
+    obtain xb where "xb\<in>M" "(M, [xb, xa, x, z, a, b, c, d] \<Turnstile> h_fm)"
+      "(M, [xb, xa, x, z, a, b, c, d] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn)"
+      by auto
+    moreover from calculation
+    have "xb=h(z)" using hsats[of xb xa x] that by simp
+    ultimately
+    show "M, [h(z), g(z), f(z), z] @ [a, b, c, d] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn"
+      by auto
+  qed
+  moreover from calculation \<open>?\<psi>'\<in>_\<close>
+  have 2:"separation(##M, \<lambda>z. (M,[z]@?env \<Turnstile> ?\<psi>'))"
+    using separation_ax
+    by simp
+  ultimately
+  show ?thesis
+    by(rule_tac separation_cong[THEN iffD2,OF iff_trans[OF 0 1]],clarify,force)
+qed
+
+lemma separation_sat_after_function:
+  assumes "[a, b, c, d, \<tau>]\<in>list(M)" and  "\<chi>\<in>formula" and "arity(\<chi>) \<le> 7"
+  and
+    f_fm:  "f_fm \<in> formula" and
+    f_ar:  "arity(f_fm) \<le> 7" and
+    fsats: "\<And> fx x. fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[fx,x]@[a, b, c, d, \<tau>] \<Turnstile> f_fm) \<longleftrightarrow> fx=f(x)" and
+    fclosed: "\<And>x . x\<in>M \<Longrightarrow> f(x) \<in> M" and
+    g_fm:  "g_fm \<in> formula" and
+    g_ar:  "arity(g_fm) \<le> 8" and
+    gsats: "\<And> gx fx x. gx\<in>M \<Longrightarrow>  fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[gx,fx,x]@[a, b, c, d, \<tau>] \<Turnstile> g_fm) \<longleftrightarrow> gx=g(x)" and
+    gclosed: "\<And>x . x\<in>M \<Longrightarrow> g(x) \<in> M"
+  shows  "separation(##M, \<lambda>r. M, [f(r), a, b, c, d, \<tau>, g(r)] \<Turnstile> \<chi>)"
+proof -
+  note types = assms(1-3)
+  let ?\<phi>="\<chi>"
+  let ?\<psi>="ren(?\<phi>)`7`8`ren_V_fn"
+  let  ?\<psi>'="Exists(And(f_fm,Exists(And(g_fm,?\<psi>))))"
+  let ?\<rho>="\<lambda>z.[f(z), a, b, c, d, \<tau>, g(z)]"
+  let ?env="[a, b, c, d, \<tau>]"
+  let ?\<eta>="\<lambda>z.[g(z),f(z),z]@?env"
+  note types
+  moreover from this
+  have "?\<phi>\<in>formula" by simp
+  moreover from calculation
+  have "arity(?\<phi>) \<le> 8" "?\<psi>\<in>formula"
+    using ord_simp_union ren_tc ren_V_thm(2)[folded ren_V_fn_def] le_trans[of "arity(\<chi>)" 7]
+      by simp_all
+  moreover from calculation
+  have "arity(?\<psi>) \<le> 8" "?\<psi>'\<in>formula"
+    using arity_ren ren_V_thm(2)[folded ren_V_fn_def] f_fm g_fm
+     by (simp_all)
+  moreover from calculation f_ar g_ar f_fm g_fm
+  have "arity(?\<psi>') \<le> 6"
+    using ord_simp_union pred_le arity_type
+    by (simp add:arity)
+  moreover from calculation fclosed gclosed
+  have 0:"(M, ?\<rho>(z) \<Turnstile> ?\<phi>) \<longleftrightarrow> (M,?\<eta>(z)\<Turnstile> ?\<psi>)" if "(##M)(z)" for z
+    using sats_iff_sats_ren[of ?\<phi> 7 8 "?\<rho>(z)" _ "?\<eta>(z)"]
+      ren_V_thm(1)[where A=M,folded ren_V_fn_def] ren_V_thm(2)[folded ren_V_fn_def] that
+    by simp
+  moreover from calculation
+  have 1:"(M,?\<eta>(z)\<Turnstile> ?\<psi>) \<longleftrightarrow> M,[z]@?env\<Turnstile>?\<psi>'" if "(##M)(z)" for z
+    using that fsats[OF fclosed[of z],of z]  gsats[of "g(z)" "f(z)" z]
+      fclosed gclosed f_fm g_fm
+    apply(rule_tac iffI,simp,rule_tac rev_bexI[where x="f(z)"],simp)
+    apply(auto)[1]
+  proof -
+    assume "M, [z] @ [a, b, c, d, \<tau>] \<Turnstile> (\<cdot>\<exists>\<cdot>f_fm \<and> (\<cdot>\<exists>\<cdot>g_fm \<and> ren(\<chi>) ` 7 ` 8 ` ren_V_fn\<cdot>\<cdot>)\<cdot>\<cdot>)"
+    then have "\<exists>xa\<in>M. (M, [xa, z, a, b, c, d, \<tau>] \<Turnstile> f_fm) \<and>
+       (\<exists>x\<in>M. (M, [x, xa, z, a, b, c, d, \<tau>] \<Turnstile> g_fm) \<and> (M, [x, xa, z, a, b, c, d, \<tau>] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V_fn))"
+      using that calculation by auto
+    then
+    obtain xa where "xa\<in>M" "M, [xa, z, a, b, c, d, \<tau>] \<Turnstile> f_fm"
+        "(\<exists>x\<in>M. (M, [x, xa, z, a, b, c, d, \<tau>] \<Turnstile> g_fm) \<and> (M, [x, xa, z, a, b, c, d, \<tau>] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V_fn))"
+      by auto
+    moreover from this
+    have "xa=f(z)" using fsats[of xa] that by simp
+    moreover from calculation
+    obtain x where "x\<in>M" "M, [x, xa, z, a, b, c, d, \<tau>] \<Turnstile> g_fm" "M, [x, xa, z, a, b, c, d, \<tau>] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V_fn"
+      by auto
+    moreover from calculation
+    have "x=g(z)" using gsats[of x xa] that by simp
+    ultimately
+    show "M, [g(z), f(z), z] @ [a, b, c, d, \<tau>] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V_fn"
+      by auto
+  qed
+  moreover from calculation
+  have 2:"separation(##M, \<lambda>z. (M,[z]@?env \<Turnstile> ?\<psi>'))"
+    using separation_ax
+      by simp_all
+  ultimately
+  show ?thesis
+    by(rule_tac separation_cong[THEN iffD2,OF iff_trans[OF 0 1]],clarify,force)
+qed
+
 end (* M_ZF_trans *)
 
 end

@@ -196,88 +196,23 @@ context
   includes G_generic_lemmas
 begin
 
+(*FIXME: pick better names for this lemmas. *)
 lemma aux3:
   assumes "f_dot\<in>M" "\<tau>\<in>M" "\<chi>\<in>formula" "arity(\<chi>) \<le> 7"
-  shows  "separation(##M, \<lambda>r. M, [fst(r), P, leq, one, f_dot, \<tau>, snd(r)\<^sup>v] \<Turnstile> \<chi>)"
+  shows "separation(##M, \<lambda>r. M, [fst(r), P, leq, one, f_dot, \<tau>, snd(r)\<^sup>v] \<Turnstile> \<chi>)"
 proof -
   note types = assms leq_in_M P_in_M one_in_M
   let ?f_fm="fst_fm(1,0)"
   let ?g_fm="hcomp_fm(check_fm'(6),snd_fm,2,0)"
-  have "?f_fm \<in> formula" "arity(?f_fm) \<le> 7"
-    using arity_fst_fm[of 1 0] ord_simp_union by simp_all
-  moreover
-  have "\<And> fx x. fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[fx,x]@[P, leq, one,f_dot, \<tau>] \<Turnstile> ?f_fm) \<longleftrightarrow> fx=fst(x)"
-    using fst_abs types sats_fst_fm by simp
-  moreover
-  have "?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
+  have "?f_fm \<in> formula" "arity(?f_fm) \<le> 7" "?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
     using ord_simp_union
     unfolding hcomp_fm_def check_fm'_def
     by (simp_all add:arity)
-  moreover
-  have "\<And> gx fx x. gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[gx,fx,x]@[P, leq, one,f_dot, \<tau>] \<Turnstile> ?g_fm) \<longleftrightarrow> gx=snd(x)\<^sup>v"
+  then
+  show ?thesis
+    using separation_sat_after_function assms types
     using snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
     unfolding hcomp_fm_def check_fm'_def
-    by simp
-  ultimately
-  show ?thesis
-    using separation_sat_after_function assms
-    by simp
-qed
-
-lemma aux5:
-  assumes "f_dot\<in>M" "\<chi>\<in>formula" "arity(\<chi>) \<le> 7"
-  shows "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, one, f_dot, (\<Union>(fst(fst(fst(fst(z))))))\<^sup>v, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
-proof -
-  note types = assms leq_in_M P_in_M one_in_M
-  let ?f_fm="hcomp_fm(snd_fm,fst_fm,1,0)"
-  let ?g="\<lambda>z . (\<Union>(fst(fst(fst(fst(z))))))\<^sup>v"
-  let ?g_fm="hcomp_fm(check_fm'(6),hcomp_fm(big_union_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)))),2,0)"
-  let ?h_fm="hcomp_fm(check_fm'(7),snd_fm,3,0)"
-  have 0:"?f_fm \<in> formula" "arity(?f_fm) \<le> 6"
-    using ord_simp_union
-    unfolding hcomp_fm_def
-    by (simp_all add:arity)
-  moreover from types
-  have 1:"\<And> fx x. fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[fx,x]@[P, leq, one,f_dot] \<Turnstile> ?f_fm) \<longleftrightarrow> fx=snd(fst(x))"
-    unfolding hcomp_fm_def
-    by simp
-  have 2:"?g_fm \<in> formula" "arity(?g_fm) \<le> 7"
-    using ord_simp_union
-    unfolding hcomp_fm_def check_fm'_def
-    by (simp_all add:arity)
-  moreover from types
-  have 3:"\<And> gx fx x. gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[gx,fx,x]@[P, leq, one,f_dot] \<Turnstile> ?g_fm) \<longleftrightarrow> gx=?g(x)"
-         "\<And>x . x\<in>M \<Longrightarrow> ?g(x)\<in>M"
-    using types sats_check_fm check_abs check_in_M
-    unfolding hcomp_fm_def check_fm'_def
-    by auto
-  moreover
-  have 4:"?h_fm \<in> formula" "arity(?h_fm) \<le> 8"
-    using ord_simp_union
-    unfolding hcomp_fm_def check_fm'_def
-    by (simp_all add:arity)
-  moreover
-  have 5:"\<And> hx gx fx x. hx\<in>M \<Longrightarrow> gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[hx,gx,fx,x]@[P, leq, one,f_dot] \<Turnstile> ?h_fm) \<longleftrightarrow> hx=snd(x)\<^sup>v"
-        "\<And>x . x\<in>M \<Longrightarrow> snd(x)\<^sup>v\<in>M"
-    using snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
-    unfolding hcomp_fm_def check_fm'_def
-    by simp_all
-  ultimately
-  show ?thesis
-    using separation_sat_after_function3[OF assms 0 1 _ 2 3 4 5]
-    by simp
-qed
-
-lemma pred_nat_eq :
-  assumes "n\<in>nat"
-  shows "Arith.pred(n) = \<Union> n"
-  using assms
-proof(induct)
-  case 0
-  then show ?case by simp
-next
-  case (succ x)
-  then show ?case using Arith.pred_succ_eq Ord_Union_succ_eq
     by simp
 qed
 
@@ -293,27 +228,10 @@ proof -
   note types = assms leq_in_M P_in_M one_in_M
   let ?f_fm="hcomp_fm(check_fm'(5),fst_fm,1,0)"
   let ?g_fm="hcomp_fm(check_fm'(6),snd_fm,2,0)"
-  have 0:"?f_fm \<in> formula" "arity(?f_fm) \<le> 7"
+  have "?f_fm \<in> formula" "arity(?f_fm) \<le> 7" "?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
     using ord_simp_union
     unfolding hcomp_fm_def check_fm'_def
     by (simp_all add:arity)
-  moreover
-  have 1:"\<And> fx x. fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[fx,x]@[P, leq, one,f_dot, r] \<Turnstile> ?f_fm) \<longleftrightarrow> fx=fst(x)\<^sup>v"
-    "\<And> x . x\<in>M \<Longrightarrow>fst(x)\<^sup>v\<in>M"
-    using fst_abs types sats_fst_fm sats_check_fm check_abs check_in_M
-    unfolding hcomp_fm_def check_fm'_def
-    by simp_all
-  moreover
-  have 2:"?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
-    using ord_simp_union
-    unfolding hcomp_fm_def check_fm'_def
-    by (simp_all add:arity)
-  moreover
-  have 3:"\<And> gx fx x. gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[gx,fx,x]@[P, leq, one,f_dot, r] \<Turnstile> ?g_fm) \<longleftrightarrow> gx=snd(x)\<^sup>v"
-    "\<And> x . x\<in>M \<Longrightarrow>snd(x)\<^sup>v\<in>M"
-    using snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
-    unfolding hcomp_fm_def check_fm'_def
-    by simp_all
   moreover from assms
   have fm:"?\<phi>\<in>formula" by simp
   moreover from \<open>\<chi> \<in> formula\<close> \<open>arity(\<chi>) \<le> 7\<close>
@@ -325,93 +243,130 @@ proof -
     using arity_incr_bv_lemma by safe (simp_all add: arity ord_simp_union)
   moreover from calculation
   have sep:"separation(##M,\<lambda>z. M,?\<rho>'(z)\<Turnstile>?\<phi>)"
-    using separation_sat_after_function[OF assms(1-2) fm ar]
+    using separation_sat_after_function assms types sats_check_fm check_abs check_in_M
+    unfolding hcomp_fm_def check_fm'_def
     by simp
   moreover
   have "?\<rho>(z) \<in> list(M)" if "(##M)(z)" for z
-    using that leq_in_M one_in_M assms by simp
+    using types that by simp
   moreover from calculation and \<open>r \<in> M\<close> \<open>\<chi> \<in> formula\<close>
   have "(M,?\<rho>(z) \<Turnstile> \<chi>) \<longleftrightarrow> (M,?\<rho>'(z)\<Turnstile>?\<phi>)" if "(##M)(z)" for z
-    using that leq_in_M one_in_M sats_incr_bv_iff[of _ _ M _ "[_,_,_,_,_,_]"]
+    using that types sats_incr_bv_iff[of _ _ M _ "[_,_,_,_,_,_]"]
     by simp
   ultimately
   show ?thesis using separation_cong[THEN iffD1,OF _ sep]
     by simp
 qed
 
-lemma aux7:
-  assumes "\<tau>\<in>M" "f_dot\<in>M" "\<chi>\<in>formula" "arity(\<chi>) \<le> 7"
-  shows "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, one, f_dot, \<tau>, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
-proof -
-  note types = assms leq_in_M P_in_M one_in_M
-  let ?f_fm="hcomp_fm(snd_fm,fst_fm,1,0)"
-  let ?g_fm="hcomp_fm(check_fm'(6),snd_fm,2,0)"
-  have 1: "?f_fm \<in> formula" "arity(?f_fm) \<le> 7"
-    using ord_simp_union
-    unfolding hcomp_fm_def
-    by (simp_all add:arity)
-  moreover
-  have 2:"\<And> fx x. fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[fx,x]@[P, leq, one,f_dot, \<tau>] \<Turnstile> ?f_fm) \<longleftrightarrow> fx=snd(fst(x))"
-    using types sats_fst_fm sats_snd_fm
-    unfolding hcomp_fm_def
-    by simp
-  moreover
-  have 3:"?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
-    using ord_simp_union
-    unfolding hcomp_fm_def check_fm'_def
-    by (simp_all add:arity)
-  moreover
-  have 4:"\<And> gx fx x. gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[gx,fx,x]@[P, leq, one,f_dot, \<tau>] \<Turnstile> ?g_fm) \<longleftrightarrow> gx=snd(x)\<^sup>v"
-    using snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
-    unfolding hcomp_fm_def check_fm'_def
-    by simp
-  ultimately
-  show ?thesis
-    using separation_sat_after_function assms
-    by simp
-qed
-
-
 lemma aux6:
   assumes "f_dot\<in>M" "B\<in>M"
-  shows "\<forall>n\<in>M. separation(##M, \<lambda>x. snd(x) \<preceq> fst(x) \<and> (\<exists>b\<in>B. M, [snd(x), P, leq, one, f_dot, (\<Union>(n))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> )))"
-  using P_in_M assms
-    separation_in lam_replacement_constant lam_replacement_snd lam_replacement_fst
-    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M aux7 check_in_M pred_nat_closed
-    arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm[of 0 1 2] ord_simp_union
-  by(clarify, rule_tac separation_conj,simp_all,rule_tac separation_bex,simp_all)
+  shows "\<forall>n\<in>M. separation(##M, \<lambda>x. snd(x) \<preceq> fst(x) \<and>
+          (\<exists>b\<in>B. M, [snd(x), P, leq, one, f_dot, (\<Union>(n))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> )))"
+proof -
+  have "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, one, f_dot, \<tau>, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
+    if "\<chi>\<in>formula" "arity(\<chi>) \<le> 7" "\<tau>\<in>M" for \<chi> \<tau>
+  proof -
+    note types = assms leq_in_M P_in_M one_in_M
+    let ?f_fm="hcomp_fm(snd_fm,fst_fm,1,0)"
+    let ?g_fm="hcomp_fm(check_fm'(6),snd_fm,2,0)"
+    have "?f_fm \<in> formula" "arity(?f_fm) \<le> 7" "?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
+      using ord_simp_union
+      unfolding hcomp_fm_def check_fm'_def
+      by (simp_all add:arity)
+    then
+    show ?thesis
+      using separation_sat_after_function assms types sats_check_fm check_abs that
+      unfolding hcomp_fm_def check_fm'_def
+      by simp
+  qed
+  then
+  show ?thesis
+    using P_in_M assms
+      separation_in lam_replacement_constant lam_replacement_snd lam_replacement_fst
+      lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M  check_in_M pred_nat_closed
+      arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm[of 0 1 2] ord_simp_union
+    by(clarify, rule_tac separation_conj,simp_all,rule_tac separation_bex,simp_all)
+qed
 
 lemma aux4:
   assumes "f_dot\<in>M" "p\<in>M" "B\<in>M"
   shows "separation
      (##M,
       \<lambda>pa. \<forall>x\<in>P. x \<preceq> p \<longrightarrow>
-                  (\<forall>y\<in>P. y \<preceq> p \<longrightarrow>
-                          \<langle>x, y\<rangle> \<in> snd(pa) \<longleftrightarrow>
-                          y \<preceq> x \<and> (\<exists>b\<in>B. M, [y, P, leq, one, f_dot, (\<Union>(fst(pa)))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))))"
-  using P_in_M assms
-    separation_in lam_replacement_constant lam_replacement_snd
-    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M separation_forces'
-  apply( rule_tac separation_ball,simp_all,rule_tac separation_imp,simp_all)+
-  apply(rule_tac separation_iff')
-  using
-    lam_replacement_constant lam_replacement_fst lam_replacement_snd
-    leq_in_M assms lam_replacement_hcomp[OF
-      lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_fst]  lam_replacement_snd ]
-    lam_replacement_hcomp lam_replacement_identity
-    aux5 arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm[of 0 1 2] ord_simp_union
-   apply (rule_tac separation_in[OF _ lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]],simp_all)
-  apply(rule_tac separation_conj,simp)
-  by(rule_tac separation_bex,simp_all)
+            (\<forall>y\<in>P. y \<preceq> p \<longrightarrow>
+              \<langle>x, y\<rangle> \<in> snd(pa) \<longleftrightarrow>
+                y \<preceq> x \<and> (\<exists>b\<in>B. M, [y, P, leq, one, f_dot, (\<Union>(fst(pa)))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))))"
+proof -
+  have "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, one, f_dot, (\<Union>(fst(fst(fst(fst(z))))))\<^sup>v, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
+    if "\<chi>\<in>formula" "arity(\<chi>) \<le> 7" for \<chi>
+  proof -
+    note types = assms leq_in_M P_in_M one_in_M
+    let ?f_fm="hcomp_fm(snd_fm,fst_fm,1,0)"
+    let ?g="\<lambda>z . (\<Union>(fst(fst(fst(fst(z))))))\<^sup>v"
+    let ?g_fm="hcomp_fm(check_fm'(6),hcomp_fm(big_union_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)))),2,0)"
+    let ?h_fm="hcomp_fm(check_fm'(7),snd_fm,3,0)"
+    have f_fm_facts:"?f_fm \<in> formula" "arity(?f_fm) \<le> 6"
+      using ord_simp_union
+      unfolding hcomp_fm_def
+      by (simp_all add:arity)
+    moreover from types
+    have "?g_fm \<in> formula" "arity(?g_fm) \<le> 7" "?h_fm \<in> formula" "arity(?h_fm) \<le> 8"
+      using ord_simp_union
+      unfolding hcomp_fm_def check_fm'_def
+      by (simp_all add:arity)
+    ultimately
+    show ?thesis
+      using separation_sat_after_function3[OF _ _ _ f_fm_facts] check_abs
+        types assms sats_check_fm that
+      unfolding hcomp_fm_def check_fm'_def
+      by simp
+  qed
+  then
+  show ?thesis
+    using P_in_M leq_in_M assms
+      separation_ball separation_imp separation_conj separation_bex separation_in separation_iff'
+      lam_replacement_constant lam_replacement_identity lam_replacement_hcomp
+      lam_replacement_fst lam_replacement_snd
+      lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
+      lam_replacement_hcomp[OF
+        lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_fst]
+        lam_replacement_snd]
+      arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm[of 0 1 2] ord_simp_union
+      separation_in[OF _ lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]]
+    by simp
+qed
 
 lemma aux :
   assumes "A\<in>M" "r\<in>G" "\<tau> \<in> M"
   shows "(##M)({q\<in>P. \<exists>h\<in>A. q \<preceq> r \<and> q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]})"
-  using assms separation_bex G_subset_M[THEN subsetD] generic
-    separation_in lam_replacement_constant lam_replacement_fst arity_forces[of "\<cdot>0 = 1\<cdot>",simplified]
-    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M separation_forces'
-  ord_simp_union
-  by(rule_tac separation_closed,rule_tac separation_bex, rule_tac separation_conj,simp_all)
+proof -
+  have "separation(##M, \<lambda>z. M, [fst(z), P, leq, one, \<tau>, snd(z)\<^sup>v] \<Turnstile> \<chi>)" if
+    "\<chi>\<in>formula" "arity(\<chi>) \<le> 6" for \<chi>
+  proof -
+    let ?f_fm="fst_fm(1,0)"
+    let ?g_fm="hcomp_fm(check_fm'(6),snd_fm,2,0)"
+    note types = assms leq_in_M P_in_M one_in_M
+    moreover
+    have "?f_fm \<in> formula" "arity(?f_fm) \<le> 6" "?g_fm \<in> formula" "arity(?g_fm) \<le> 7"
+      using ord_simp_union
+      unfolding hcomp_fm_def check_fm'_def
+      by (simp_all add:arity)
+    ultimately
+    show ?thesis
+      using separation_sat_after_function_1 assms sats_fst_fm that
+        snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
+      unfolding hcomp_fm_def check_fm'_def
+      by simp
+  qed
+  then
+  show ?thesis
+    using separation_conj separation_in
+      lam_replacement_constant lam_replacement_fst
+      lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
+      assms leq_in_M G_subset_M[THEN subsetD] generic
+      arity_forces[of "\<cdot>0 = 1\<cdot>",simplified] ord_simp_union
+    by(rule_tac separation_closed[OF separation_bex],simp_all)
+qed
 
 lemma aux2:
   assumes "B\<in>M" "f_dot\<in>M" "r\<in>M"
@@ -419,7 +374,7 @@ lemma aux2:
   using nat_in_M assms check_in_M transitivity[OF _ \<open>B\<in>M\<close>] nat_into_M aux8
     arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm[of 0 1 2] ord_simp_union
   unfolding split_def
-  by(rule_tac separation_closed,simp_all)
+  by simp_all
 
 \<comment> \<open>Kunen IV.6.9 (3)$\Rightarrow$(2), with general domain.\<close>
 lemma kunen_IV_6_9_function_space_rel_eq:
@@ -705,7 +660,7 @@ proof -
   have "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2 \<subseteq> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2"
     using succ_omega_closed_imp_no_new_nat_sequences function_space_rel_char
       ext.function_space_rel_char Aleph_rel_succ Aleph_rel_zero
-      by auto
+    by auto
   then
   show ?thesis
     using function_space_rel_transfer by (intro equalityI) auto

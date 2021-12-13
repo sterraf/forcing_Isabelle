@@ -133,6 +133,19 @@ lemma leD : assumes "n\<in>nat" "j \<le> n"
   shows "j < n | j = n"
   using leE[OF \<open>j\<le>n\<close>,of "j<n | j = n"] by auto
 
+lemma pred_nat_eq :
+  assumes "n\<in>nat"
+  shows "Arith.pred(n) = \<Union> n"
+  using assms
+proof(induct)
+  case 0
+  then show ?case by simp
+next
+  case (succ x)
+  then show ?case using Arith.pred_succ_eq Ord_Union_succ_eq
+    by simp
+qed
+
 subsection\<open>Some results in ordinal arithmetic\<close>
 text\<open>The following results are auxiliary to the proof of 
 wellfoundedness of the relation \<^term>\<open>frecR\<close>\<close>
