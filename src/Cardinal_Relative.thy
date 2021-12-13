@@ -5,7 +5,10 @@ theory Cardinal_Relative
     ZF_Miscellanea
     Discipline_Cardinal
     Lambda_Replacement
+    Relative_Univ
 begin
+
+declare FOL_arities [simp del]
 
 hide_const (open) L
 

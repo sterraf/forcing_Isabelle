@@ -4,6 +4,7 @@ theory Cohen_Posets_Relative
   imports
     Cohen_Posets\<comment> \<open>FIXME: This theory is going obsolete\<close>
     Delta_System_Relative
+    (* Forcing_Data *)
 begin
 
 locale M_cohen = M_delta +
@@ -103,7 +104,20 @@ end (* M_add_reals *)
 
 (* FIXME This is old-style discipline *)
 (* MOVE THIS to some appropriate place *)
-declare (in M_trivial) compat_in_abs[absolut]
+lemma (in M_trivial) compat_in_abs[absolut]:
+  assumes
+    "M(A)" "M(r)" "M(p)" "M(q)"
+  shows
+    "is_compat_in(M,A,r,p,q) \<longleftrightarrow> compat_in(A,r,p,q)"
+  using assms unfolding is_compat_in_def compat_in_def by simp
+
+definition
+  antichain :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
+  "antichain(P,leq,A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A. \<forall>q\<in>A.
+                p\<noteq>q \<longrightarrow> \<not>compat_in(P,leq,p,q))"
+definition
+  ccc :: "i \<Rightarrow> i \<Rightarrow> o" where
+  "ccc(P,leq) \<equiv> \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
 
 definition
   antichain_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" (\<open>antichain\<^bsup>_\<^esup>'(_,_,_')\<close>) where

@@ -130,13 +130,6 @@ lemma one_in_M: "one \<in> M"
 end (* forcing_data *)
 
 (* Compatibility lemmas *)
-lemma (in M_trivial) compat_in_abs :
-  assumes
-    "M(A)" "M(r)" "M(p)" "M(q)" 
-  shows
-    "is_compat_in(M,A,r,p,q) \<longleftrightarrow> compat_in(A,r,p,q)"
-  using assms unfolding is_compat_in_def compat_in_def by simp
-
 context forcing_data begin
 
 definition

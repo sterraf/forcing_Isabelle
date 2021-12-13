@@ -3,9 +3,7 @@ theory Discipline_Cardinal
     Discipline_Base
     Discipline_Function
     Least
-    FrecR
     Arities
-    FrecR_Arities
 begin
 
 declare [[syntax_ambiguity_warning = false]]

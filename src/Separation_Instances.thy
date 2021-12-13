@@ -5,6 +5,7 @@ theory Separation_Instances
     FiniteFun_Relative
     Cardinal_Relative
     Replacement_Lepoll
+    FrecR_Arities
 begin
 
 subsection\<open>More Instances of Separation\<close>
