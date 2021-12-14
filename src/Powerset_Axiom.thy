@@ -255,7 +255,8 @@ proof -
     using Collect_sats_in_MG GenExtI ord_simp_union by (simp add:arity)
   finally show ?thesis .
 qed
-end (* G_generic *)
+
+end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
 
 
 context G_generic begin
@@ -291,6 +292,6 @@ proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
     by auto
 qed
 
-end (* G_generic *)
+end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
 
 end

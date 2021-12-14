@@ -218,7 +218,7 @@ arity_theorem for "fun_apply_fm"
 synthesize "HAleph_wfrec_repl_body" from_definition assuming "nonempty"
 arity_theorem for "HAleph_wfrec_repl_body_fm"
 
-\<comment> \<open>FIXME: Why @{thm arity_Replace_fm} doesn't work here? Revise the method we're using.\<close>
+(* FIXME: Why @{thm arity_Replace_fm} doesn't work here? Revise the method we're using. *)
 lemma arity_HAleph_wfrec_repl_body: "arity(HAleph_wfrec_repl_body_fm(2,0,1)) = 3"
   by (simp_all add: arity_HAleph_wfrec_repl_body_fm arity_is_If_fm ord_simp_union arity_fun_apply_fm
       arity_is_Limit_fm arity_empty_fm arity_Replace_fm[where i=11] FOL_arities)

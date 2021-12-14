@@ -166,8 +166,7 @@ proof -
   show ?thesis unfolding kappa_closed_rel_def by (auto elim!:leE dest:ltD)
 qed
 
-
-end (* M_ctm_AC *)
+end \<comment> \<open>\<^locale>\<open>M_ctm_AC\<close>\<close>
 
 locale collapse_generic = G_generic_AC "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0
 
@@ -210,7 +209,7 @@ proof -
     by simp
 qed
 
-\<comment> \<open>FIXME: Should be more general, cf. @{thm add_generic.dense_dom_dense}\<close>
+(* FIXME: Should be more general, cf. @{thm add_generic.dense_dom_dense} *)
 lemma dense_dom_dense: "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> dense(dom_dense(x))"
 proof
   fix p
@@ -323,8 +322,8 @@ abbreviation
   surj_dense :: "i\<Rightarrow>i" where
   "surj_dense(x) \<equiv> { p\<in>Coll . x \<in> range(p) }"
 
-\<comment> \<open>FIXME write general versions of this for \<^term>\<open>Fn\<^bsup>M\<^esup>(\<kappa>,I,J)\<close>
-    in a context with a generic filter for it\<close>
+(* FIXME write general versions of this for \<^term>\<open>Fn\<^bsup>M\<^esup>(\<kappa>,I,J)\<close>
+    in a context with a generic filter for it *)
 lemma dense_surj_dense:
   assumes "x \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2"
   shows "dense(surj_dense(x))"
@@ -439,7 +438,7 @@ theorem CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> = 2\<^bsup>\<up>\<ale
     le_anti_sym
   by auto
 
-end (* collapse_generic *)
+end \<comment> \<open>\<^locale>\<open>collapse_generic\<close>\<close>
 
 theorem ctm_of_CH:
   assumes

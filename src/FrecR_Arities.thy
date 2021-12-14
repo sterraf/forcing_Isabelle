@@ -75,6 +75,6 @@ lemma arity_frecR_fm [arity]:
       arity_empty_fm arity_union_fm pred_Un_distrib arity_succ_fm
   by auto
 
-end (* context *)
+end \<comment> \<open>@{thm [source] FOL_arities}\<close>
 
 end

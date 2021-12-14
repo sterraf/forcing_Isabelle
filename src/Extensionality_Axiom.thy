@@ -28,5 +28,6 @@ proof -
   then show ?thesis unfolding extensionality_def by simp
 qed
  
-end  (* context forcing_data *)
+end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
+
 end

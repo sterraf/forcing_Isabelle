@@ -348,7 +348,7 @@ lemma arity_transrec_fm [arity] :
   using arity Un_assoc[symmetric] pred_Un_distrib
   by simp
 
-end (* context FOL_arities *)
+end \<comment> \<open>@{thm [source] FOL_arities}\<close>
 
 declare arity_subset_fm [simp del] arity_ordinal_fm[simp del, arity] arity_transset_fm[simp del]
 

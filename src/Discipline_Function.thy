@@ -95,7 +95,7 @@ lemma snd_rel_abs:
    apply(rule_tac the_equality[symmetric],simp_all add:snd_def)
   done
 
-end (* M_trans *)
+end \<comment> \<open>\<^locale>\<open>M_trans\<close>\<close>
 
 relativize functional "first" "first_rel" external
 relativize functional "minimum" "minimum_rel" external
@@ -113,7 +113,7 @@ lemma first_abs :
   shows "first(z,B,r) \<longleftrightarrow> first_rel(M,z,B,r)"
   unfolding first_def first_rel_def using assms by auto
 
-\<comment> \<open>FIXME: find a naming convention for absoluteness results like this.\<close>
+(* FIXME: find a naming convention for absoluteness results like this.*)
 lemma minimum_abs:
   assumes "M(B)"
   shows "minimum(r,B) = minimum_rel(M,r,B)"
@@ -134,7 +134,7 @@ proof -
     by simp
 qed
 
-end (* M_trans *)
+end \<comment> \<open>\<^locale>\<open>M_trans\<close>\<close>
 
 subsection\<open>Discipline for \<^term>\<open>function_space\<close>\<close>
 
@@ -270,7 +270,7 @@ lemma mem_function_space_rel_abs:
   shows "f \<in> function_space_rel(M,A,y) \<longleftrightarrow>  f \<in> A \<rightarrow> y"
   using assms function_space_rel_char by simp
 
-end (* M_Pi_assumptions *)
+end \<comment> \<open>\<^locale>\<open>M_Pi\<close>\<close>
 
 
 
@@ -364,7 +364,7 @@ lemma mem_function_space_rel_abs:
   shows "f \<in> A \<rightarrow>\<^bsup>M\<^esup> y  \<longleftrightarrow>  f \<in> A \<rightarrow> y"
   using assms function_space_rel_char by simp
 
-end (* M_Pi *)
+end \<comment> \<open>\<^locale>\<open>M_Pi\<close>\<close>
 *)
 
 locale M_N_Pi = M:M_Pi + N:M_Pi N for N +
@@ -377,7 +377,7 @@ lemma function_space_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow
   using M.function_space_rel_char N.function_space_rel_char 
   by (auto dest!:M_imp_N)
 
-end (* M_N_Pi *)
+end \<comment> \<open>\<^locale>\<open>M_N_Pi\<close>\<close>
 
 (*****************  end Discipline  ***********************)
 
@@ -419,7 +419,7 @@ lemma def_injP_rel:
     "injP_rel(M,A,f) \<longleftrightarrow> (\<forall>w[M]. \<forall>x[M]. w\<in>A \<and> x\<in>A \<and> f`w=f`x \<longrightarrow> w=x)"
   using assms unfolding injP_rel_def by simp
 
-end (* M_basic *)
+end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
 (******************  end Discipline  **********************)
 
@@ -570,7 +570,7 @@ proof -
 qed
 
 
-end (* M_inj *)
+end \<comment> \<open>\<^locale>\<open>M_inj\<close>\<close>
 
 locale M_N_inj = M:M_inj + N:M_inj N for N +
   assumes
@@ -581,7 +581,7 @@ lemma inj_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> inj_rel(M
   using M.inj_rel_char N.inj_rel_char 
   by (auto dest!:M_imp_N)
 
-end (* M_N_inj *)
+end \<comment> \<open>\<^locale>\<open>M_N_inj\<close>\<close>
 
 
 (***************  end Discipline  *********************)
@@ -605,14 +605,14 @@ lemma def_surjP_rel:
     "surjP_rel(M,A,B,f) \<longleftrightarrow> (\<forall>y[M]. \<exists>x[M]. y\<in>B \<longrightarrow> x\<in>A \<and> f`x=y)"
   using assms unfolding surjP_rel_def by auto
 
-end (* M_basic *)
+end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
 (******************  end Discipline  **********************)
 
 (**********************************************************)
 subsection\<open>Discipline for \<^term>\<open>surj\<close>\<close>
 
-definition (* completely relational *)
+definition (* completely relational\<close> *)
   is_surj   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
   "is_surj(M,A,B,I) \<equiv> M(I) \<and> (\<exists>F[M]. is_function_space(M,A,B,F) \<and>
        is_Collect(M,F,surjP_rel(M,A,B),I))"
@@ -731,9 +731,7 @@ proof -
     by auto
 qed
 
-
-
-end (* M_surj *)
+end \<comment> \<open>\<^locale>\<open>M_surj\<close>\<close>
 
 locale M_N_surj = M:M_surj + N:M_surj N for N +
   assumes
@@ -744,7 +742,7 @@ lemma surj_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> surj_rel
   using M.surj_rel_char N.surj_rel_char 
   by (auto dest!:M_imp_N)
 
-end (* M_N_surj *)
+end \<comment> \<open>\<^locale>\<open>M_N_surj\<close>\<close>
 
 (***************  end Discipline  *********************)
 
@@ -788,7 +786,7 @@ qed
 
 text\<open>Note: @{thm Int_closed} already in \<^theory>\<open>ZF-Constructible.Relative\<close>.\<close>
 
-end (* M_trivial *)
+end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
 (**********************************************************)
 subsection\<open>Discipline for \<^term>\<open>bij\<close>\<close>
@@ -912,7 +910,7 @@ lemma bij_rel_char:
   unfolding bij_def\<comment> \<open>Unfolding this might be a pattern already\<close>
   by auto
 
-end (* M_Perm *)
+end \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
 
 locale M_N_Perm = M_N_Pi + M_N_inj + M_N_surj + M:M_Perm + N:M_Perm N
 
@@ -922,7 +920,7 @@ lemma bij_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> bij_rel(M
   using M.bij_rel_char N.bij_rel_char 
   by (auto dest!:M_imp_N)
 
-end (* M_N_Perm *)
+end \<comment> \<open>\<^locale>\<open>M_N_Perm\<close>\<close>
 
 (***************  end Discipline  *********************)
 
@@ -941,7 +939,7 @@ context M_Perm begin
 is_iff_rel for "eqpoll"
   using bij_rel_iff unfolding is_eqpoll_def eqpoll_rel_def by simp
 
-end (* M_Perm *)
+end \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
 
 abbreviation
   eqpoll_r :: "[i,i\<Rightarrow>o,i] => o" (\<open>_ \<approx>\<^bsup>_\<^esup> _\<close> [51,1,51] 50) where
@@ -962,7 +960,7 @@ lemma def_eqpoll_rel:
   using assms bij_rel_iff
   unfolding eqpoll_rel_def by simp
 
-end (* M_Perm *)
+end \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
 
 context M_N_Perm
 begin
@@ -983,7 +981,7 @@ proof -
     using N.def_eqpoll_rel by (blast dest!:M_imp_N)
 qed
 
-end (* M_N_Perm *)
+end \<comment> \<open>\<^locale>\<open>M_N_Perm\<close>\<close>
 
 (******************  end Discipline  ******************)
 
@@ -1002,7 +1000,7 @@ context M_inj begin
 is_iff_rel for "lepoll"
   using inj_rel_iff unfolding is_lepoll_def lepoll_rel_def by simp
 
-end (* M_inj *)
+end \<comment> \<open>\<^locale>\<open>M_inj\<close>\<close>
 
 abbreviation
   lepoll_r :: "[i,i\<Rightarrow>o,i] => o" (\<open>_ \<lesssim>\<^bsup>_\<^esup> _\<close> [51,1,51] 50) where
@@ -1023,7 +1021,7 @@ lemma def_lepoll_rel:
   using assms inj_rel_iff
   unfolding lepoll_rel_def by simp
 
-end (* M_Perm *)
+end \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
 
 context M_N_Perm
 begin
@@ -1044,7 +1042,7 @@ proof -
     using N.def_lepoll_rel by (blast dest!:M_imp_N)
 qed
 
-end (* M_N_Perm *)
+end \<comment> \<open>\<^locale>\<open>M_N_Perm\<close>\<close>
 
 (******************  end Discipline  ******************)
 
@@ -1064,7 +1062,7 @@ is_iff_rel for "lesspoll"
   using is_lepoll_iff is_eqpoll_iff
   unfolding is_lesspoll_def lesspoll_rel_def by simp
 
-end (* M_Perm *)
+end \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
 
 abbreviation
   lesspoll_r :: "[i,i\<Rightarrow>o,i] => o" (\<open>_ \<prec>\<^bsup>_\<^esup> _\<close> [51,1,51] 50) where

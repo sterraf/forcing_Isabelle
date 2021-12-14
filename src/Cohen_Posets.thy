@@ -135,7 +135,7 @@ begin
 
 lemmas zero_lesspoll_kappa = zero_lesspoll[OF zero_lt_kappa]
 
-end (* cohen_data *)
+end \<comment> \<open>\<^locale>\<open>cohen_data\<close>\<close>
 
 sublocale cohen_data \<subseteq> forcing_notion "Fn(\<kappa>,I,J)" "Fnle(\<kappa>,I,J)" 0
 proof
@@ -272,7 +272,7 @@ lemma Un_filter_is_function: "filter(G) \<Longrightarrow> function(\<Union>G)"
   using compat_imp_Un_is_function filter_imp_compat[of G]
     filter_subset_notion by simp
 
-end (* cohen_data *)
+end \<comment> \<open>\<^locale>\<open>cohen_data\<close>\<close>
 
 locale add_reals = cohen_data nat _ 2
 

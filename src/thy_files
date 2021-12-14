@@ -13,7 +13,11 @@
  Replacement_Instances.thy
  Separation_Instances.thy
  Utils.thy
- ZF_Trans_Interpretations.thy"
+ ZF_Trans_Interpretations.thy
+ CH.thy
+ Cohen_Posets_Relative2.thy
+ Kappa_Closed_Notions.thy
+ Pointed_DC_Relative.thy"
 "Arities.thy
  Forcing_Theorems.thy"
 "Interface.thy

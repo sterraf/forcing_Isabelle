@@ -13,7 +13,7 @@ lemmas app_fun = apply_iff[THEN iffD1]
 
 (* todo: use the discipline, don't be lazy! *)
 definition PFun_Space_Rel :: "[i,i\<Rightarrow>o, i] \<Rightarrow> i"  ("_\<rightharpoonup>\<^bsup>_\<^esup>_")
-  where "A \<rightharpoonup>\<^bsup>M\<^esup> B == {f \<in> Pow(A\<times>B) . M(f) \<and> function(f)}"
+  where "A \<rightharpoonup>\<^bsup>M\<^esup> B \<equiv> {f \<in> Pow(A\<times>B) . M(f) \<and> function(f)}"
 
 lemma (in M_library) PFun_Space_subset_Powrel :
   assumes "M(A)" "M(B)"
@@ -554,6 +554,6 @@ lemma preorder_on_Fnle_rel:
   unfolding preorder_on_def refl_def trans_on_def
   by blast
 
-end (* M_master *)
+end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
 
 end

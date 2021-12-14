@@ -298,7 +298,7 @@ proof -
     by simp
 qed
 
-end (* M_pre_Aleph *)
+end \<comment> \<open>\<^locale>\<open>M_pre_aleph\<close>\<close>
 
 locale M_aleph = M_pre_aleph +
   assumes
@@ -427,6 +427,6 @@ proof -
 qed
 
 
-end (* M_aleph *)
+end \<comment> \<open>\<^locale>\<open>M_aleph\<close>\<close>
 
 end

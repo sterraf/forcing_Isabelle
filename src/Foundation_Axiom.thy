@@ -31,5 +31,6 @@ proof -
     unfolding foundation_ax_def by auto
 qed
     
-end  (* context forcing_data *)
+end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
+
 end

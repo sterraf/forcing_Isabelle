@@ -2,7 +2,7 @@ section\<open>Cohen forcing notions\<close>
 
 theory Cohen_Posets_Relative
   imports
-    Cohen_Posets\<comment> \<open>FIXME: This theory is going obsolete\<close>
+    Cohen_Posets(* FIXME: This theory is going obsolete*)
     Delta_System_Relative
     (* Forcing_Data *)
 begin
@@ -93,14 +93,14 @@ proof -
   qed
 qed
 
-end (* M_cardinal_library *)
+end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>
 
 locale M_add_reals = M_cohen + add_reals
 begin
 
 lemmas zero_lesspoll_rel_kappa = zero_lesspoll_rel[OF zero_lt_kappa]
 
-end (* M_add_reals *)
+end \<comment> \<open>\<^locale>\<open>M_add_reals\<close>\<close>
 
 (* FIXME This is old-style discipline *)
 (* MOVE THIS to some appropriate place *)
@@ -135,12 +135,12 @@ lemma antichain_abs [absolut]:
   "\<lbrakk> M(A); M(P); M(leq) \<rbrakk> \<Longrightarrow> antichain\<^bsup>M\<^esup>(P,leq,A) \<longleftrightarrow> antichain(P,leq,A)"
   unfolding antichain_rel_def antichain_def by (simp add:absolut)
 
-end (* M_trivial *)
+end \<comment> \<open>\<^locale>\<open>M_trivial\<close>\<close>
 
 (******************************************************)
 (* FIXME This is old-style discipline *)
 
-definition (* completely relational *)
+definition (* completely relational\<close> *)
   ccc_rel   :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" (\<open>ccc\<^bsup>_\<^esup>'(_,_')\<close>) where
   "ccc_rel(M,P,leq) \<equiv> \<forall>A[M]. antichain_rel(M,P,leq,A) \<longrightarrow>
       (\<forall>\<kappa>[M]. is_cardinal(M,A,\<kappa>) \<longrightarrow> (\<exists>om[M]. omega(M,om) \<and> le_rel(M,\<kappa>,om)))"
@@ -158,7 +158,7 @@ lemma def_ccc_rel:
   using is_cardinal_iff
   unfolding ccc_rel_def by (simp add:absolut)
 
-end (* M_cardinals *)
+end \<comment> \<open>\<^locale>\<open>M_cardinals\<close>\<close>
 
 (******************  end Discipline  ******************)
 
@@ -177,7 +177,7 @@ lemma (in M_trans) mem_F_bound3:
   by (cases "M(c)", auto simp:F_def drSR_Y_def dC_F_def)
 
 lemma ccc_rel_Fn_nat:
-  notes Sep_and_Replace [simp]\<comment> \<open>FIXME with all \<^term>\<open>SepReplace\<close> instances\<close>
+  notes Sep_and_Replace [simp](* FIXME with all \<^term>\<open>SepReplace\<close> instances *)
   assumes "M(I)"
   shows "ccc\<^bsup>M\<^esup>(Fn(nat,I,2), Fnle(nat,I,2))"
 proof -
@@ -488,6 +488,6 @@ proof -
   show ?thesis using def_ccc_rel by (auto simp:absolut antichain_def) fastforce
 qed
 
-end (* M_add_reals *)
+end \<comment> \<open>\<^locale>\<open>M_add_reals\<close>\<close>
 
 end

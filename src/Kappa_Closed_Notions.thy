@@ -123,7 +123,7 @@ lemma kappa_closed_abs:
   unfolding kappa_closed_rel_def kappa_closed_def
   oops
 
-end (* forcing_data *)
+end \<comment> \<open>\<^locale>\<open>M_ZF_library\<close>\<close>
 
 lemma (in forcing_data) forcing_a_value:
   assumes "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]" "a \<in> A"
@@ -412,8 +412,8 @@ proof (intro equalityI; clarsimp simp add:
     using truth_lemma[of "\<cdot>0=1\<cdot>" G "[\<tau>, h\<^sup>v]", THEN iffD1] generic
       Equal arity_typed_function_fm valcheck[OF one_in_G one_in_P]
     by (auto simp: union_abs2 union_abs1)
-      \<comment> \<open>FIXME: same problem as before there is no relation
-        between \<^term>\<open>f\<close> and \<^term>\<open>val(P,G,\<tau>)\<close>\<close>
+      (* FIXME: same problem as before there is no relation
+        between \<^term>\<open>f\<close> and \<^term>\<open>val(P,G,\<tau>)\<close> *)
   with \<open> _ = f\<close> \<open>h\<in>M\<close>
   show "f \<in> M" by simp
 qed
@@ -715,8 +715,8 @@ proof -
     by (rule_tac le_anti_sym) simp
 qed
 
-end (* includes G_generic_lemmas *)
+end \<comment> \<open>bundle G\_generic\_lemmas\<close>
 
-end (* G_generic_AC *)
+end \<comment> \<open>\<^locale>\<open>G_generic_AC\<close>\<close>
 
 end

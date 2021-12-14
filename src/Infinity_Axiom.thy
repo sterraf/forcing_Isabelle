@@ -33,5 +33,6 @@ proof -
     unfolding infinity_ax_def by auto
 qed
 
-end (* G_generic' *)
+end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
+
 end

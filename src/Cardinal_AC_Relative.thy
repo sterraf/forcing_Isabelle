@@ -69,7 +69,7 @@ proof -
     by auto
 qed
 
-end (* M_cardinal_AC *)
+end \<comment> \<open>\<^locale>\<open>M_cardinal_AC\<close>\<close>
 
 locale M_Pi_assumptions_choice = M_Pi_assumptions + M_cardinal_AC +
   assumes
@@ -285,7 +285,7 @@ proof (rule lepoll_rel_imp_cardinal_rel_le)
     by (auto simp add: def_lepoll_rel types)
 qed (simp_all add:types)
 
-end (* M_cardinal_AC *)
+end \<comment> \<open>\<^locale>\<open>M_cardinal_AC\<close>\<close>
 
 text\<open>The set-theoretic universe.\<close>
 
@@ -490,6 +490,6 @@ proof -
 qed
 *)
 
-end (* M_cardinal_UN *)
+end \<comment> \<open>\<^locale>\<open>M_cardinal_UN\<close>\<close>
 
 end

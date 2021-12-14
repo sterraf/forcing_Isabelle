@@ -160,7 +160,7 @@ lemma mem_function_space_rel:
 
 lemmas range_fun_rel_subset_codomain = range_fun_subset_codomain[OF mem_function_space_rel]
 
-end (* M_ZF_library *)
+end \<comment> \<open>\<^locale>\<open>M_ZF_library\<close>\<close>
 
 context M_Pi_assumptions
 begin
@@ -179,7 +179,7 @@ lemmas Pi_rel_range_eq = Pi_range_eq[OF mem_Pi_rel]
 
 lemmas Pi_rel_vimage_subset = Pi_vimage_subset[OF mem_Pi_rel]
 
-end (* M_Pi_assumptions *)
+end \<comment> \<open>\<^locale>\<open>M_Pi_assumptions\<close>\<close>
 
 context M_ZF_library
 begin
@@ -304,7 +304,7 @@ lemma fg_imp_bijective_rel:
   using assms mem_bij_abs fg_imp_bijective mem_function_space_rel_abs[THEN iffD2] function_space_rel_char
   by auto
 
-end (* M_ZF_library *)
+end \<comment> \<open>\<^locale>\<open>M_ZF_library\<close>\<close>
 
 (*************   Discipline for cexp   ****************)
 relativize functional "cexp" "cexp_rel" external
@@ -330,7 +330,7 @@ is_iff_rel for "cexp"
 
 rel_closed for "cexp" unfolding cexp_rel_def by simp
 
-end (* M_ZF_library *)
+end \<comment> \<open>\<^locale>\<open>M_ZF_library\<close>\<close>
 
 synthesize "is_cexp" from_definition assuming "nonempty"
 notation is_cexp_fm (\<open>\<cdot>_\<^bsup>\<up>_\<^esup> is _\<cdot>\<close>)
@@ -560,7 +560,7 @@ proof -
     unfolding Card_rel_def by auto
 qed
 
-end (* M_ZF_library *)
+end \<comment> \<open>\<^locale>\<open>M_ZF_library\<close>\<close>
 
 relativize functional "mono_map" "mono_map_rel" external
 relationalize "mono_map_rel" "is_mono_map"
@@ -1063,6 +1063,6 @@ lemma cantor_inj_rel: "M(f) \<Longrightarrow> M(A) \<Longrightarrow> f \<notin> 
     lam_replacement_identity lam_replacement_constant
     lam_replacement_iff_lam_closed by auto
 
-end (* M_ZF_library *)
+end \<comment> \<open>\<^locale>\<open>M_ZF_library\<close>\<close>
 
 end

@@ -644,7 +644,7 @@ proof -
   show ?thesis by blast
 qed
 
-end (* includes *)
+end \<comment> \<open>includes some\_rules\<close>
 
 lemma Collect_forces_eq_in_M:
   assumes "\<tau> \<in> M" "\<theta> \<in> M"
@@ -1543,6 +1543,6 @@ qed
 
 lemmas definability = forces_type 
 
-end (* forcing_data *)
+end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
 
 end

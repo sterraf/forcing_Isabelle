@@ -271,7 +271,7 @@ proof -
     unfolding linear_def using ball_image_simp assms by auto
 qed
 
-end (* forcing_notion *)
+end \<comment> \<open>\<^locale>\<open>forcing_notion\<close>\<close>
 
 subsection\<open>Towards Rasiowa-Sikorski Lemma (RSL)\<close>
 locale countable_generic = forcing_notion +
@@ -330,9 +330,9 @@ proof -
   show ?thesis unfolding D_generic_def by auto
 qed
 
-end (* countable_generic *)
+end \<comment> \<open>\<^locale>\<open>countable_generic\<close>\<close>
 
-\<comment> \<open>TODO: already in ZF Library\<close>
+(* TODO: already in ZF Library *)
 lemma Pi_rangeD:
   assumes "f\<in>Pi(A,B)" "b \<in> range(f)"
   shows "\<exists>a\<in>A. f`a = b"
@@ -426,6 +426,6 @@ lemma RS_seq_funtype:
 lemmas countable_rasiowa_sikorski = 
   RS_sequence_imp_rasiowa_sikorski[OF _ RS_seq_funtype countable_RS_sequence(1,2)]
 
-end (* countable_generic *)
+end \<comment> \<open>\<^locale>\<open>countable_generic\<close>\<close>
 
 end

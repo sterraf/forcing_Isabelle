@@ -458,7 +458,7 @@ text\<open>@{thm [display] Aleph_rel_zero Aleph_rel_succ Aleph_rel_limit}\<close
   Limit(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup> = (\<Union>j\<in>\<alpha>. \<aleph>\<^bsub>j\<^esub>\<^bsup>M\<^esup>)
 *)
 
-end (* M_aleph *)
+end \<comment> \<open>\<^locale>\<open>M_aleph\<close>\<close>
 
 lemma ContHyp_rel_def':
   fixes N::"i\<Rightarrow>o"
@@ -487,6 +487,9 @@ text\<open>@{thm [display] is_ContHyp_iff_sats}\<close>
 (*
   env \<in> list(A) \<Longrightarrow> 0 \<in> A \<Longrightarrow> is_ContHyp(##A) \<longleftrightarrow> A, env \<Turnstile> \<cdot>CH\<cdot>
 *)
+
+txt\<open>We can finally state our main results, namely, the existence of models
+for $\ZFC + \CH$ and $\ZFC + \neg\CH$ under the assumption of a ctm of $\ZFC$.\<close>
 
 thm ctm_of_not_CH
 text\<open>@{thm [display] ctm_of_not_CH}\<close>

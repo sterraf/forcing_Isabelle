@@ -176,7 +176,7 @@ thm is_ContHyp_fm_def[unfolded is_eclose_fm_def mem_eclose_fm_def eclose_n_fm_de
    is_If_fm_def least_fm_def Replace_fm_def Collect_fm_def
    fm_definitions, simplified] *)
 
-end (* Demo *)
+end \<comment> \<open>\<^locale>\<open>Demo\<close>\<close>
 
 
 end
