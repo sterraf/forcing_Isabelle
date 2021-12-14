@@ -186,4 +186,6 @@ lemma Upair_eq_cons: "Upair(a,b) = {a,b}"
 lemma converse_apply_eq : "converse(f) ` x = \<Union>(f -`` {x})"
   unfolding apply_def vimage_def by simp
 
+lemmas app_fun = apply_iff[THEN iffD1]
+
 end

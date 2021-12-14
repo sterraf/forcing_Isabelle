@@ -4,8 +4,6 @@ theory FiniteFun_Relative
     Synthetic_Definition
     "Delta_System_Lemma.ZF_Library"
     Lambda_Replacement
-    Cohen_Posets
-
 begin
 
 subsection\<open>The set of finite binary sequences\<close>
@@ -99,8 +97,8 @@ lemma to_finiteFun_replacement: "strong_replacement(M, \<lambda>x y. y = range(x
   by simp
 
 lemma fun_range_eq: "f\<in>A\<rightarrow>B \<Longrightarrow> {f`i . i\<in>domain(f) } = range(f)"
-  using range_eq_image[of f] domain_of_fun image_fun func.apply_rangeI
-  by auto
+  using ZF_Library.range_eq_image[of f] domain_of_fun image_fun func.apply_rangeI
+  by simp
 
 lemma FiniteFun_fst_type:
   assumes "h\<in>A-||>B" "p\<in>h"
@@ -400,17 +398,6 @@ lemma FiniteFun_closed[intro,simp] :
   shows "M(A -||> B)"
   using assms To_FiniteFun_Repr_closed FiniteFun_eq_to_FiniteFun_Repr
     FiniteFun_eq_range_Repr
-  by simp
-
-lemma Fnle_nat_closed[intro,simp]:
-  assumes "M(I)" "M(J)"
-  shows "M(Fnle(\<omega>,I,J))"
-  unfolding Fnle_def Fnlerel_def Rrel_def
-  using supset_separation FiniteFun_closed Fn_nat_eq_FiniteFun assms by simp
-
-lemma Fn_nat_closed:
-  assumes "M(A)" "M(B)" shows "M(Fn(\<omega>,A,B))"
-  using assms Fn_nat_eq_FiniteFun
   by simp
 
 end \<comment> \<open>\<^locale>\<open>M_FiniteFun\<close>\<close>

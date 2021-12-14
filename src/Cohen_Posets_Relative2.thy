@@ -9,8 +9,6 @@ theory Cohen_Posets_Relative2
     Cardinal_Preservation \<comment> \<open>only for \<^locale>\<open>M_cohen\<close>\<close>
 begin
 
-lemmas app_fun = apply_iff[THEN iffD1]
-
 (* todo: use the discipline, don't be lazy! *)
 definition PFun_Space_Rel :: "[i,i\<Rightarrow>o, i] \<Rightarrow> i"  ("_\<rightharpoonup>\<^bsup>_\<^esup>_")
   where "A \<rightharpoonup>\<^bsup>M\<^esup> B \<equiv> {f \<in> Pow(A\<times>B) . M(f) \<and> function(f)}"

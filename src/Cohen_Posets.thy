@@ -8,8 +8,6 @@ theory Cohen_Posets
     "Delta_System_Lemma.ZF_Library"
 begin
 
-lemmas app_fun = apply_iff[THEN iffD1]
-
 definition
   Fn :: "[i,i,i] \<Rightarrow> i" where
   "Fn(\<kappa>,I,J) \<equiv> \<Union>{(d\<rightarrow>J) .. d \<in> Pow(I),  d\<prec>\<kappa>}"

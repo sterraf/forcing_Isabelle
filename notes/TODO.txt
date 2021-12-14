@@ -40,7 +40,7 @@ Tidying up sources for release
 - Remove auxiliary commands (find_theorems, try, try0).
 - Remove diagnostic commands (term, thm --- keep this last one in
   Definitions_Main.thy!)
-
+- Clean up warnings (today: Card_Pres & Kappa_Closed)
 
 Porting
 =======
@@ -92,7 +92,7 @@ Assorted To-Dos
   range (both now in Cardinal_Preservation).
 
 - Check which results proved for nat can be generalized to Ord.
-  
+
 
 ;; Local Variables:
 ;; ispell-dictionary: american

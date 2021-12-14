@@ -4,7 +4,6 @@ theory Cohen_Posets_Relative
   imports
     Cohen_Posets(* FIXME: This theory is going obsolete*)
     Delta_System_Relative
-    (* Forcing_Data *)
 begin
 
 locale M_cohen = M_delta +
@@ -159,6 +158,22 @@ lemma def_ccc_rel:
   unfolding ccc_rel_def by (simp add:absolut)
 
 end \<comment> \<open>\<^locale>\<open>M_cardinals\<close>\<close>
+
+context M_FiniteFun
+begin
+
+lemma Fnle_nat_closed[intro,simp]:
+  assumes "M(I)" "M(J)"
+  shows "M(Fnle(\<omega>,I,J))"
+  unfolding Fnle_def Fnlerel_def Rrel_def
+  using supset_separation FiniteFun_closed Fn_nat_eq_FiniteFun assms by simp
+
+lemma Fn_nat_closed:
+  assumes "M(A)" "M(B)" shows "M(Fn(\<omega>,A,B))"
+  using assms Fn_nat_eq_FiniteFun
+  by simp
+
+end \<comment> \<open>\<^locale>\<open>M_FiniteFun\<close>\<close>
 
 (******************  end Discipline  ******************)
 
