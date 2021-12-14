@@ -1,6 +1,7 @@
 section\<open>Auxiliary renamings for Separation\<close>
 theory Separation_Rename
-  imports Interface Renaming
+  imports 
+    Interface
 begin
 
 lemmas apply_fun = apply_iff[THEN iffD1]

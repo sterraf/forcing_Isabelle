@@ -188,4 +188,11 @@ lemma converse_apply_eq : "converse(f) ` x = \<Union>(f -`` {x})"
 
 lemmas app_fun = apply_iff[THEN iffD1]
 
+lemma Finite_imp_lesspoll_nat:
+  assumes "Finite(A)"
+  shows "A \<prec> nat"
+  using assms subset_imp_lepoll[OF naturals_subset_nat] eq_lepoll_trans
+    n_lesspoll_nat eq_lesspoll_trans
+  unfolding Finite_def lesspoll_def by auto
+
 end

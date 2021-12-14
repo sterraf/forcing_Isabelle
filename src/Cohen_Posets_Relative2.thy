@@ -2,10 +2,6 @@ section\<open>Cohen forcing notions\<close>
 
 theory Cohen_Posets_Relative2
   imports
-    Forcing_Notions
-    ZF_Miscellanea \<comment> \<open>only for \<^term>\<open>SepReplace\<close>\<close>
-    Recursion_Thms \<comment> \<open>only for the definition of \<^term>\<open>Rrel\<close>\<close>
-    Cardinal_Library_Relative
     Cardinal_Preservation \<comment> \<open>only for \<^locale>\<open>M_cohen\<close>\<close>
 begin
 

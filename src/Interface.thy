@@ -8,9 +8,7 @@ a sublocale of all relevant locales in ZF-Constructibility
 
 theory Interface
   imports
-    Nat_Miscellanea
     Relative_Univ
-    Synthetic_Definition
     Renaming_Auto
     Discipline_Function
 begin
@@ -32,25 +30,6 @@ abbreviation
 
 abbreviation
   dec14  :: i   ("14") where "14 \<equiv> succ(13)"
-
-
-definition
-  infinity_ax :: "(i \<Rightarrow> o) \<Rightarrow> o" where
-  "infinity_ax(M) \<equiv>
-      (\<exists>I[M]. (\<exists>z[M]. empty(M,z) \<and> z\<in>I) \<and> (\<forall>y[M]. y\<in>I \<longrightarrow> (\<exists>sy[M]. successor(M,y,sy) \<and> sy\<in>I)))"
-
-definition
-  choice_ax :: "(i\<Rightarrow>o) \<Rightarrow> o" where
-  "choice_ax(M) \<equiv> \<forall>x[M]. \<exists>a[M]. \<exists>f[M]. ordinal(M,a) \<and> surjection(M,a,x,f)"
-
-context M_basic begin
-
-lemma choice_ax_abs :
-  "choice_ax(M) \<longleftrightarrow> (\<forall>x[M]. \<exists>a[M]. \<exists>f[M]. Ord(a) \<and> f \<in> surj(a,x))"
-  unfolding choice_ax_def
-  by (simp)
-
-end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
 definition
   wellfounded_trancl :: "[i=>o,i,i,i] => o" where

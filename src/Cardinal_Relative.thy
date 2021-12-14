@@ -2,7 +2,6 @@ section\<open>Relative, Choice-less Cardinal Numbers\<close>
 
 theory Cardinal_Relative
   imports
-    ZF_Miscellanea
     Discipline_Cardinal
     Lambda_Replacement
     Relative_Univ

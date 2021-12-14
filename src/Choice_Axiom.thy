@@ -1,8 +1,12 @@
 section\<open>The Axiom of Choice in $M[G]$\<close>
+
 theory Choice_Axiom
-  imports Powerset_Axiom Pairing_Axiom Union_Axiom Extensionality_Axiom
-          Foundation_Axiom Powerset_Axiom Separation_Axiom
-          Replacement_Axiom Interface Infinity_Axiom Relativization
+  imports
+    Powerset_Axiom
+    Extensionality_Axiom
+    Foundation_Axiom
+    Replacement_Axiom
+    Infinity_Axiom
 begin
 
 definition

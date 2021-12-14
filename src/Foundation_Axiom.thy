@@ -1,7 +1,8 @@
 section\<open>The Axiom of Foundation in $M[G]$\<close>
+
 theory Foundation_Axiom
-imports
-  Names
+  imports
+    Names
 begin
 
 context forcing_data

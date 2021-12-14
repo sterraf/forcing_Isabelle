@@ -2,7 +2,6 @@ section\<open>Cardinal Arithmetic under Choice\label{sec:cardinal-lib-rel}\<clos
 
 theory Cardinal_Library_Relative
   imports
-    ZF_Library_Relative
     Replacement_Lepoll
 begin
 

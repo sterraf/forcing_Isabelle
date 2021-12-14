@@ -1,11 +1,11 @@
 section\<open>The main theorem\<close>
+
 theory Forcing_Main
   imports
-  Succession_Poset
-  ZF_Miscellanea
-  Internal_ZFC_Axioms
-  Choice_Axiom
-  Ordinals_In_MG
+    Succession_Poset
+    Internal_ZFC_Axioms
+    Choice_Axiom
+    Ordinals_In_MG
 
 begin
 
@@ -33,7 +33,7 @@ lemma (in G_generic) MG_eqpoll_nat: "M[G] \<approx> \<omega>"
 proof -
   interpret MG: M_ZF_trans "M[G]"
     using Transset_MG generic pairing_in_MG
-      Union_MG  extensionality_in_MG power_in_MG
+      Union_MG extensionality_in_MG power_in_MG
       foundation_in_MG  strong_replacement_in_MG[simplified]
       separation_in_MG[simplified] infinity_in_MG
     by unfold_locales simp_all

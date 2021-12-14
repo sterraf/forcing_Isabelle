@@ -1,7 +1,7 @@
 section\<open>The ZFC axioms, internalized\<close>
 theory Internal_ZFC_Axioms
   imports 
-  Forcing_Data
+    Forcing_Data
 
 begin
 

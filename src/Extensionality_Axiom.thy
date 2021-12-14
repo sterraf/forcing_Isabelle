@@ -1,7 +1,8 @@
 section\<open>The Axiom of Extensionality in $M[G]$\<close>
+
 theory Extensionality_Axiom
-imports
-  Names
+  imports
+    Names
 begin
 
 context forcing_data

@@ -118,4 +118,19 @@ lemmas formulas_def [fm_definitions] = fm_defs
 lemmas sep_rules' [iff_sats]  = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
   fun_plus_iff_sats omega_iff_sats FOL_sats_iff (* NOTE: why FOL_sats_iff? *)
 
+(* MOVE THIS to an appropriate place *)
+definition
+  infinity_ax :: "(i \<Rightarrow> o) \<Rightarrow> o" where
+  "infinity_ax(M) \<equiv>
+      (\<exists>I[M]. (\<exists>z[M]. empty(M,z) \<and> z\<in>I) \<and> (\<forall>y[M]. y\<in>I \<longrightarrow> (\<exists>sy[M]. successor(M,y,sy) \<and> sy\<in>I)))"
+
+definition
+  choice_ax :: "(i\<Rightarrow>o) \<Rightarrow> o" where
+  "choice_ax(M) \<equiv> \<forall>x[M]. \<exists>a[M]. \<exists>f[M]. ordinal(M,a) \<and> surjection(M,a,x,f)"
+
+lemma (in M_basic) choice_ax_abs :
+  "choice_ax(M) \<longleftrightarrow> (\<forall>x[M]. \<exists>a[M]. \<exists>f[M]. Ord(a) \<and> f \<in> surj(a,x))"
+  unfolding choice_ax_def
+  by (simp)
+
 end

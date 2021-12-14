@@ -3,7 +3,6 @@ section\<open>Cardinal Arithmetic under Choice\label{sec:cardinal-lib-rel}\<clos
 theory Replacement_Lepoll
   imports
     ZF_Library_Relative
-    Lambda_Replacement
 begin
 
 definition

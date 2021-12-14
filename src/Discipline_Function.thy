@@ -1,11 +1,5 @@
 theory Discipline_Function
   imports
-    ZF_Miscellanea
-    "ZF-Constructible.Rank"
-    Relativization
-    Internalizations
-    Discipline_Base
-    Synthetic_Definition 
     Arities
 begin
 

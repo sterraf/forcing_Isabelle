@@ -2,10 +2,7 @@ section\<open>Library of basic $\mathit{ZF}$ results\label{sec:zf-lib}\<close>
 
 theory ZF_Library_Relative
   imports
-    "Delta_System_Lemma.ZF_Library"
-    "ZF-Constructible.Normal"
     Aleph_Relative\<comment> \<open>must be before Cardinal\_AC\_Relative!\<close>
-    Lambda_Replacement
     Cardinal_AC_Relative
     FiniteFun_Relative
 begin

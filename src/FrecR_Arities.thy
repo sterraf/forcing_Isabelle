@@ -1,6 +1,5 @@
 theory FrecR_Arities
   imports
-    Arities
     FrecR
 begin
 

@@ -1,8 +1,6 @@
 section\<open>Fully relational versions of higher order construct \<close>
 theory Higher_Order_Constructs
   imports 
-    "ZF-Constructible.Relative"
-    "ZF-Constructible.Datatype_absolute"
     Recursion_Thms
     Least
 begin

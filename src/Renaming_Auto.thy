@@ -1,8 +1,6 @@
 theory Renaming_Auto
   imports
     Renaming
-    ZF.Finite
-    ZF.List
     Utils
 keywords
   "rename" :: thy_decl % "ML"

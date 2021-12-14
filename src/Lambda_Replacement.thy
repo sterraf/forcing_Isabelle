@@ -2,8 +2,6 @@ section\<open>Replacements using Lambdas\<close>
 
 theory Lambda_Replacement
   imports
-    "ZF-Constructible.Relative"
-    ZF_Miscellanea\<comment> \<open>for \<^term>\<open>SepReplace\<close>\<close>
     Discipline_Function
 begin
 

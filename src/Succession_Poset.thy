@@ -1,10 +1,9 @@
 section\<open>A poset of successions\<close>
+
 theory Succession_Poset
   imports
     Replacement_Instances
     Proper_Extension
-    FiniteFun_Relative
-    
 begin
 
 sublocale M_ZF_trans \<subseteq> M_seqspace "##M"

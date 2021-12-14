@@ -1,9 +1,5 @@
 theory Separation_Instances
   imports
-    Discipline_Function
-    Forcing_Data
-    FiniteFun_Relative
-    Cardinal_Relative
     Replacement_Lepoll
     FrecR_Arities
 begin

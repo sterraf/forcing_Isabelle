@@ -2,8 +2,6 @@ section\<open>Relative, Cardinal Arithmetic Using AC\<close>
 
 theory Cardinal_AC_Relative
   imports
-    ZF_Miscellanea
-    Interface
     CardinalArith_Relative
 
 begin

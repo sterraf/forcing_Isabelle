@@ -3,12 +3,6 @@ section\<open>Names and generic extensions\<close>
 theory Names
   imports
     Forcing_Data
-    Interface
-    Recursion_Thms
-    Relativization
-    "Discipline_Base"
-    Synthetic_Definition
-    ZF_Miscellanea
 begin
 
 subsection\<open>The well-founded relation \<^term>\<open>ed\<close>\<close>

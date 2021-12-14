@@ -1,7 +1,7 @@
 section\<open>Ordinals in generic extensions\<close>
 theory Ordinals_In_MG
   imports
-    Forcing_Theorems Relative_Univ
+    Forcing_Theorems
 begin
 
 context G_generic

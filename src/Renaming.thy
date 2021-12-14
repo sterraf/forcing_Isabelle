@@ -2,7 +2,6 @@ section\<open>Renaming of variables in internalized formulas\<close>
 
 theory Renaming
   imports
-    Nat_Miscellanea
     ZF_Miscellanea
     "ZF-Constructible.Formula"
 begin

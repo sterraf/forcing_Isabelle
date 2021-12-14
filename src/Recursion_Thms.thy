@@ -1,7 +1,7 @@
 section\<open>Some enhanced theorems on recursion\<close>
 
 theory Recursion_Thms 
-  imports ZF.Epsilon "ZF-Constructible.Datatype_absolute"
+  imports "ZF-Constructible.Datatype_absolute"
 
 begin
 

@@ -1,10 +1,5 @@
 theory Replacement_Instances
   imports
-    Discipline_Function
-    Forcing_Data
-    Aleph_Relative
-    FiniteFun_Relative
-    Cardinal_Relative
     Separation_Instances
     Pointed_DC_Relative
 begin

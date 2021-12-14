@@ -2,9 +2,6 @@ section\<open>Well-founded relation on names\<close>
 theory FrecR 
   imports 
     Names 
-    "Synthetic_Definition" 
-    Internalizations 
-    Discipline_Function
 begin
 
 text\<open>\<^term>\<open>frecR\<close> is the well-founded relation on names that allows

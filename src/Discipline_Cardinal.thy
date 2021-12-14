@@ -1,9 +1,6 @@
 theory Discipline_Cardinal
   imports
-    Discipline_Base
     Discipline_Function
-    Least
-    Arities
 begin
 
 declare [[syntax_ambiguity_warning = false]]

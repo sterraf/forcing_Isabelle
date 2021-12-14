@@ -1,7 +1,7 @@
 section\<open>The Axiom of Replacement in $M[G]$\<close>
 theory Replacement_Axiom
   imports
-    Least Relative_Univ Separation_Axiom Renaming_Auto
+    Separation_Axiom
 begin
 
 context G_generic
