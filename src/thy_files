@@ -33,7 +33,6 @@
  Renaming.thy"
 "Choice_Axiom.thy
  Least.thy
- Pointed_DC.thy
  Recursion_Thms.thy
  Renaming_Auto.thy
  Replacement_Axiom.thy
@@ -47,7 +46,6 @@
  Pairing_Axiom.thy
  Powerset_Axiom.thy
  Proper_Extension.thy
- Rasiowa_Sikorski.thy
  Separation_Axiom.thy
  Synthetic_Definition.thy"
 "Cohen_Posets_Relative.thy
