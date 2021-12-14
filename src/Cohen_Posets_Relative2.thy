@@ -457,6 +457,25 @@ proof -
     by auto
 qed
 
+(*
+(* TODO: Port this (the version for nat is done in Cohen_Posets.thy) *)
+lemma restrict_eq_imp_compat:
+  assumes "f \<in> Fn(\<kappa>, I, J)" "g \<in> Fn(\<kappa>, I, J)" "InfCard(\<kappa>)"
+    "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
+  shows "f \<union> g \<in> Fn(\<kappa>, I, J)"
+proof -
+  from assms
+  obtain d1 d2 where "f : d1 \<rightarrow> J" "d1 \<in> Pow(I)" "d1 \<prec> \<kappa>"
+    "g : d2 \<rightarrow> J" "d2 \<in> Pow(I)" "d2 \<prec> \<kappa>"
+    by blast
+  with assms
+  show ?thesis
+    using domain_of_fun InfCard_lesspoll_Un[of \<kappa> d1 d2]
+      restrict_eq_imp_Un_into_Pi[of f d1 "\<lambda>_. J" g d2 "\<lambda>_. J"]
+    by auto
+qed
+*)
+
 lemma (in M_library) Fn_rel_singletonI:
   assumes "x \<in> I" "j \<in> J" "InfCard\<^bsup>M\<^esup>(\<kappa>)" "M(\<kappa>)" "M(I)" "M(J)"
   shows "{\<langle>x,j\<rangle>} \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
