@@ -323,12 +323,23 @@ lemma AC_M_func0: "0 \<notin> A \<Longrightarrow> M(A) \<Longrightarrow> \<exist
 lemma AC_M_func_Pow_rel:
   assumes "M(C)"
   shows "\<exists>f \<in> (Pow\<^bsup>M\<^esup>(C)-{0}) \<rightarrow>\<^bsup>M\<^esup> C. \<forall>x \<in> Pow\<^bsup>M\<^esup>(C)-{0}. f`x \<in> x"
-  apply (rule AC_M_func0 [THEN bexE]) defer 2
-    apply (rule_tac [2] bexI)
-     prefer 2 apply assumption
-  using assms function_space_rel_char apply_type
-  by (auto dest:transM) (* FIXME: Next one is slow *)
-   (rule Pi_type, assumption, auto dest:transM simp:Pow_rel_char)
+proof -
+  have "0\<notin>Pow\<^bsup>M\<^esup>(C)-{0}" by simp
+  with assms
+  obtain f where "f \<in> (Pow\<^bsup>M\<^esup>(C)-{0}) \<rightarrow>\<^bsup>M\<^esup> \<Union>(Pow\<^bsup>M\<^esup>(C)-{0})" "\<forall>x \<in> Pow\<^bsup>M\<^esup>(C)-{0}. f`x \<in> x"
+    using AC_M_func0[OF \<open>0\<notin>_\<close>] by auto
+  moreover
+  have "x\<subseteq>C" if "x \<in> Pow\<^bsup>M\<^esup>(C) - {0}" for x
+    using that Pow_rel_char assms
+    by auto
+  moreover
+  have "\<Union>(Pow\<^bsup>M\<^esup>(C) - {0}) \<subseteq> C"
+    using assms Pow_rel_char by auto
+  ultimately
+  show ?thesis
+    using assms function_space_rel_char
+    by (rule_tac bexI,auto,rule_tac Pi_weaken_type,simp_all)
+qed
 
 theorem pointed_DC:
   assumes "\<forall>x\<in>A. \<exists>y\<in>A. \<langle>x,y\<rangle>\<in> R" "M(A)" "M(R)"
