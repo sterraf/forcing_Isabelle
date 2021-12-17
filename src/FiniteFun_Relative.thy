@@ -5,6 +5,35 @@ theory FiniteFun_Relative
     Lambda_Replacement
 begin
 
+lemma function_subset:
+  "function(f) \<Longrightarrow> g\<subseteq>f \<Longrightarrow> function(g)"
+  unfolding function_def subset_def by auto
+
+lemma FiniteFunI :
+  assumes  "f\<in>Fin(A\<times>B)" "function(f)"
+  shows "f \<in> A -||> B"
+  using assms
+proof(induct)
+  case 0
+  then show ?case using emptyI by simp
+next
+  case (cons p f)
+  moreover
+  from assms this
+  have "fst(p)\<in>A" "snd(p)\<in>B" "function(f)"
+    using snd_type[OF \<open>p\<in>_\<close>] function_subset
+    by auto
+  moreover
+  from \<open>function(cons(p,f))\<close> \<open>p\<notin>f\<close> \<open>p\<in>_\<close>
+  have "fst(p)\<notin>domain(f)"
+    unfolding function_def
+    by force
+  ultimately
+  show ?case
+    using consI[of "fst(p)" _ "snd(p)"]
+    by auto
+qed
+
 subsection\<open>The set of finite binary sequences\<close>
 
 notation nat (\<open>\<omega>\<close>) (* TODO: already in ZF Library *)

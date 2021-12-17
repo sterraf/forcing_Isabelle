@@ -318,7 +318,7 @@ proof -
   show ?thesis
   using function_space_rel_char mem_function_space_rel_abs
   unfolding is_funspace_def is_function_space_def
-  by (safe, intro equalityI; clarsimp) (auto dest:transM)
+  by (safe, intro equalityI; clarsimp) (auto dest:transM[of _ res])
 qed
 
 is_iff_rel for "cexp"
@@ -912,7 +912,7 @@ next \<comment> \<open>one composition is the identity:\<close>
   with assms \<open>f : \<nu>1 \<times> \<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>\<close>
   show "f`\<langle>x,y\<rangle> \<in> \<kappa>"
     using function_space_rel_char mem_function_space_rel_abs
-    by (auto dest:transM) \<comment> \<open>slow\<close>
+    by (auto dest:transM[of _ "\<nu>1 \<times> \<nu>2 \<rightarrow>\<^bsup>M\<^esup> \<kappa>"])
 next
   let ?cur="\<lambda>x. \<lambda>w\<in>\<nu>1 \<times> \<nu>2. x ` fst(w) ` snd(w)"
   note assms

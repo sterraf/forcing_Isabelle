@@ -1,11 +1,12 @@
 section\<open>Cohen forcing notions\<close>
 
-theory Cohen_Posets_Relative2
+theory Partial_Functions_Relative
   imports
-    Cardinal_Preservation \<comment> \<open>only for \<^locale>\<open>M_cohen\<close>\<close>
+    FiniteFun_Relative
+    Cohen_Posets
+    Cardinal_Library_Relative
 begin
 
-(* todo: use the discipline, don't be lazy! *)
 definition PFun_Space_Rel :: "[i,i\<Rightarrow>o, i] \<Rightarrow> i"  ("_\<rightharpoonup>\<^bsup>_\<^esup>_")
   where "A \<rightharpoonup>\<^bsup>M\<^esup> B \<equiv> {f \<in> Pow(A\<times>B) . M(f) \<and> function(f)}"
 
@@ -23,7 +24,7 @@ lemma (in M_library) PFun_Space_closed :
   by auto
 
 lemma Un_filter_fun_space_closed:
-  assumes "G \<subseteq> I \<rightarrow> J" "\<And> f g . f\<in>G \<Longrightarrow> g\<in>G \<Longrightarrow> \<exists>d\<in>I\<rightarrow> J . d\<supseteq>f \<and> d\<supseteq>g"
+  assumes "G \<subseteq> I \<rightarrow> J" "\<And> f g . f\<in>G \<Longrightarrow> g\<in>G \<Longrightarrow> \<exists>d\<in>I\<rightarrow> J . d \<supseteq> f \<and> d \<supseteq> g"
   shows "\<Union>G \<in> Pow(I\<times>J)" "function(\<Union>G)"
 proof -
   from assms
@@ -80,8 +81,6 @@ lemma mem_function_space_relD:
   shows "f \<in> A \<rightarrow> y" and "M(f)"
   using assms function_space_rel_char by simp_all
 
-
-(*todo*)
 lemma pfunI :
   assumes "C\<subseteq>A" "f \<in> C \<rightarrow>\<^bsup>M\<^esup> B" "M(C)" "M(B)"
   shows "f\<in> A \<rightharpoonup>\<^bsup>M\<^esup> B"
@@ -102,10 +101,6 @@ lemma zero_in_PFun_rel:
   shows "0 \<in> I \<rightharpoonup>\<^bsup>M\<^esup> J"
   using pfunI[of 0] nonempty mem_function_space_rel_abs assms
   by simp
-
-lemma function_subset:
-  "function(f) \<Longrightarrow> g\<subseteq>f \<Longrightarrow> function(g)"
-  unfolding function_def subset_def by auto
 
 lemma pfun_subsetI :
   assumes "f \<in> A \<rightharpoonup>\<^bsup>M\<^esup> B" "g\<subseteq>f" "M(g)"
@@ -203,6 +198,25 @@ lemma pfun_unionI :
   unfolding PFun_Space_Rel_def function_def
   by blast
 
+lemma (in M_library) pfun_restrict_eq_imp_compat:
+  assumes "f \<in> I\<rightharpoonup>\<^bsup>M\<^esup> J" "g \<in> I\<rightharpoonup>\<^bsup>M\<^esup> J" "M(J)" 
+    "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
+  shows "f \<union> g \<in> I\<rightharpoonup>\<^bsup>M\<^esup> J"
+proof -
+  note assms
+  moreover from this
+  obtain C D where "f : C \<rightarrow> J" "C \<subseteq> I" "D \<subseteq> I" "M(C)" "M(D)" "g : D \<rightarrow> J"
+    using pfunD[of f] pfunD[of g] by force
+  moreover from calculation
+  have "f\<union>g \<in> C\<union>D \<rightarrow> J" 
+    using restrict_eq_imp_Un_into_Pi'[OF \<open>f\<in>C\<rightarrow>_\<close> \<open>g\<in>D\<rightarrow>_\<close>] 
+    by auto
+  ultimately
+  show ?thesis
+    using pfunI[of "C\<union>D" _ "f\<union>g"] Un_subset_iff pfunD_closed function_space_rel_char 
+    by auto
+qed
+
 lemma FiniteFun_pfunI :
   assumes "f \<in> A-||> B" "M(A)" "M(B)"
   shows "f \<in> A \<rightharpoonup>\<^bsup>M\<^esup> B"
@@ -234,32 +248,6 @@ next
   show "cons(<a,b>,h) \<in> A \<rightharpoonup>\<^bsup>M\<^esup> B"
     using assms  mem_function_space_rel_abs pfunI
     by simp_all
-qed
-
-(* FIXME: move this lemma to FiniteFun. *)
-lemma FiniteFunI :
-  assumes  "f\<in>Fin(A\<times>B)" "function(f)"
-  shows "f \<in> A -||> B"
-  using assms
-proof(induct)
-  case 0
-  then show ?case using emptyI by simp
-next
-  case (cons p f)
-  moreover
-  from assms this
-  have "fst(p)\<in>A" "snd(p)\<in>B" "function(f)"
-    using snd_type[OF \<open>p\<in>_\<close>] function_subset
-    by auto
-  moreover
-  from \<open>function(cons(p,f))\<close> \<open>p\<notin>f\<close> \<open>p\<in>_\<close>
-  have "fst(p)\<notin>domain(f)"
-    unfolding function_def
-    by force
-  ultimately
-  show ?case
-    using consI[of "fst(p)" _ "snd(p)"]
-    by auto
 qed
 
 lemma PFun_FiniteFunI :
@@ -428,50 +416,6 @@ lemma Fn_nat_abs:
   by simp
 end
 
-lemma (in M_cohen) Fn_rel_unionI:
-  assumes "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "q\<in>Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"  "InfCard\<^bsup>M\<^esup>(\<kappa>)"
-    "M(\<kappa>)" "M(I)" "M(J)""domain(p) \<inter> domain(q) = 0"
-  shows "p\<union>q \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
-proof -
-  note assms
-  moreover from calculation
-  have "|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>"  "M(p)"
-    "|q|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>" "M(q)"
-    using Fn_rel_is_function by simp_all
-  moreover from calculation
-  have "p\<union>q \<prec>\<^bsup>M\<^esup> \<kappa>"
-    using eqpoll_rel_sym cardinal_rel_eqpoll_rel
-      eq_lesspoll_rel_trans[OF _ \<open>|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> _\<close>]
-      eq_lesspoll_rel_trans[OF _ \<open>|q|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> _\<close>]
-      InfCard_rel_lesspoll_rel_Un
-    by simp_all
-  ultimately
-  show ?thesis
-    unfolding Fn_rel_def
-    using pfun_unionI cardinal_rel_eqpoll_rel
-      eq_lesspoll_rel_trans[OF _ \<open>p\<union>q \<prec>\<^bsup>M\<^esup> _\<close>]
-    by auto
-qed
-
-(*
-(* TODO: Port this (the version for nat is done in Cohen_Posets.thy) *)
-lemma restrict_eq_imp_compat:
-  assumes "f \<in> Fn(\<kappa>, I, J)" "g \<in> Fn(\<kappa>, I, J)" "InfCard(\<kappa>)"
-    "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
-  shows "f \<union> g \<in> Fn(\<kappa>, I, J)"
-proof -
-  from assms
-  obtain d1 d2 where "f : d1 \<rightarrow> J" "d1 \<in> Pow(I)" "d1 \<prec> \<kappa>"
-    "g : d2 \<rightarrow> J" "d2 \<in> Pow(I)" "d2 \<prec> \<kappa>"
-    by blast
-  with assms
-  show ?thesis
-    using domain_of_fun InfCard_lesspoll_Un[of \<kappa> d1 d2]
-      restrict_eq_imp_Un_into_Pi[of f d1 "\<lambda>_. J" g d2 "\<lambda>_. J"]
-    by auto
-qed
-*)
-
 lemma (in M_library) Fn_rel_singletonI:
   assumes "x \<in> I" "j \<in> J" "InfCard\<^bsup>M\<^esup>(\<kappa>)" "M(\<kappa>)" "M(I)" "M(J)"
   shows "{\<langle>x,j\<rangle>} \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
@@ -481,13 +425,6 @@ lemma (in M_library) Fn_rel_singletonI:
       Card_rel_cardinal_rel Card_rel_is_Ord InfCard_rel_is_Card_rel
     unfolding Fn_rel_def
     by auto
-
-lemma (in M_cohen) cons_in_Fn_rel:
-  assumes "x \<notin> domain(p)" "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "x \<in> I" "j \<in> J" "InfCard\<^bsup>M\<^esup>(\<kappa>)"
-    "M(\<kappa>)" "M(I)" "M(J)"
-  shows "cons(\<langle>x,j\<rangle>, p) \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
-    using assms cons_eq Fn_rel_unionI[OF Fn_rel_singletonI[of x I j J] \<open>p\<in>_\<close>]
-  by auto
 
 definition
   Fnle_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> i" (\<open>Fnle\<^bsup>_\<^esup>'(_,_,_')\<close>) where
@@ -544,9 +481,6 @@ lemma Fnle_rel_closed[intro,simp]:
   unfolding Fnle_rel_def Fnlerel_def Rrel_def FnleR_def
   using assms supset_separation Fn_rel_closed
   by auto
-
-lemma Fnle_rel_Aleph_rel1_closed[intro,simp]: "M(Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))"
-  by simp
 
 lemma zero_in_Fn_rel:
   assumes "0<\<kappa>" "M(\<kappa>)" "M(I)" "M(J)"

@@ -5,6 +5,7 @@ theory Cohen_Posets_Relative
     Forcing_Notions
     Cohen_Posets
     Delta_System_Relative
+    Partial_Functions_Relative
 begin
 
 locale cohen_data =
@@ -158,6 +159,64 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>
 
+lemma (in M_cohen) Fn_rel_unionI:
+  assumes "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "q\<in>Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "InfCard\<^bsup>M\<^esup>(\<kappa>)"
+    "M(\<kappa>)" "M(I)" "M(J)" "domain(p) \<inter> domain(q) = 0"
+  shows "p\<union>q \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
+proof -
+  note assms
+  moreover from calculation
+  have "|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>"  "M(p)"
+    "|q|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>" "M(q)"
+    using Fn_rel_is_function by simp_all
+  moreover from calculation
+  have "p\<union>q \<prec>\<^bsup>M\<^esup> \<kappa>"
+    using eqpoll_rel_sym cardinal_rel_eqpoll_rel
+      eq_lesspoll_rel_trans[OF _ \<open>|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> _\<close>]
+      eq_lesspoll_rel_trans[OF _ \<open>|q|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> _\<close>]
+      InfCard_rel_lesspoll_rel_Un
+    by simp_all
+  ultimately
+  show ?thesis
+    unfolding Fn_rel_def
+    using pfun_unionI cardinal_rel_eqpoll_rel
+      eq_lesspoll_rel_trans[OF _ \<open>p\<union>q \<prec>\<^bsup>M\<^esup> _\<close>]
+    by auto
+qed
+
+lemma (in M_cohen) restrict_eq_imp_compat_rel:
+  assumes "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>, I, J)" "q \<in> Fn\<^bsup>M\<^esup>(\<kappa>, I, J)" "InfCard\<^bsup>M\<^esup>(\<kappa>)" "M(J)" "M(\<kappa>)"
+    "restrict(p, domain(p) \<inter> domain(q)) = restrict(q, domain(p) \<inter> domain(q))"
+  shows "p \<union> q \<in> Fn\<^bsup>M\<^esup>(\<kappa>, I, J)"
+proof -
+  note assms
+  moreover from calculation
+  have "|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>"  "M(p)"
+       "|q|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>" "M(q)"
+    using Fn_rel_is_function by simp_all
+  moreover from calculation
+  have "p\<union>q \<prec>\<^bsup>M\<^esup> \<kappa>"
+    using InfCard_rel_lesspoll_rel_Un cardinal_rel_eqpoll_rel[THEN eqpoll_rel_sym]
+      eq_lesspoll_rel_trans[OF _ \<open>|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> _\<close>] eq_lesspoll_rel_trans[OF _ \<open>|q|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> _\<close>]
+    by auto
+  ultimately
+  show ?thesis
+    unfolding Fn_rel_def
+    using pfun_restrict_eq_imp_compat cardinal_rel_eqpoll_rel
+      eq_lesspoll_rel_trans[OF _ \<open>p\<union>q \<prec>\<^bsup>M\<^esup> _\<close>]
+    by auto
+qed
+
+lemma (in M_cohen) cons_in_Fn_rel:
+  assumes "x \<notin> domain(p)" "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "x \<in> I" "j \<in> J" "InfCard\<^bsup>M\<^esup>(\<kappa>)"
+    "M(\<kappa>)" "M(I)" "M(J)"
+  shows "cons(\<langle>x,j\<rangle>, p) \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
+    using assms cons_eq Fn_rel_unionI[OF Fn_rel_singletonI[of x I j J] \<open>p\<in>_\<close>]
+  by auto
+
+lemma (in M_library) Fnle_rel_Aleph_rel1_closed[intro,simp]: "M(Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))"
+  by simp
+
 locale M_add_reals = M_cohen + add_reals
 begin
 
@@ -277,7 +336,7 @@ proof -
       with \<open>A \<subseteq> Fn(nat, I, 2)\<close> \<open>M(A)\<close>
       have "{p \<in> A . domain(p) = d} \<subseteq> d \<rightarrow>\<^bsup>M\<^esup> 2"
         using domain_of_fun function_space_rel_char[of _ 2]
-        by (auto,subgoal_tac "M(domain(x))") (force dest: transM)+\<comment> \<open>slow\<close>
+        by (auto,subgoal_tac "M(domain(x))",simp_all add:transM[of _ A],force)
       moreover from True \<open>M(d)\<close>
       have "Finite(d \<rightarrow>\<^bsup>M\<^esup> 2)"
         using Finite_Pi[THEN [2] subset_Finite, of _ d "\<lambda>_. 2"]
@@ -317,8 +376,7 @@ proof -
         using lam_replacement_dC_F domain_eq_separation
           lam_replacement_inj_rel
         unfolding dC_F_def
-        apply unfold_locales apply(simp_all)
-      proof -
+      proof(unfold_locales,simp_all)
         fix A b f
         assume "M(A)" "M(b)" "M(f)"
         with calculation[of A]

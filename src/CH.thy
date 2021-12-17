@@ -1,7 +1,7 @@
 theory CH
   imports
     Kappa_Closed_Notions
-    Cohen_Posets_Relative2
+    Cohen_Posets_Relative
 begin
 
 context M_ctm_AC

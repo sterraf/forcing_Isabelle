@@ -291,12 +291,12 @@ proof -
   interpret mpiA:M_Pi_assumptions _ A "\<lambda>x. x"
     using Pi_replacement Pi_separation lam_replacement_identity
       lam_replacement_Sigfun[THEN lam_replacement_imp_strong_replacement]
-    by unfold_locales (auto dest:transM) (* FIXME: Slow *)
+    by unfold_locales (simp_all add:transM[of _ A])
   from \<open>M(A)\<close>
   interpret mpic_A:M_Pi_assumptions_choice _ A "\<lambda>x. x"
     apply unfold_locales
-     apply (unfold strong_replacement_def, blast)[1]
     using lam_replacement_constant lam_replacement_identity
+      lam_replacement_identity[THEN lam_replacement_imp_strong_replacement]
       lam_replacement_minimum[THEN [5] lam_replacement_hcomp2]
     unfolding lam_replacement_def[symmetric]
     by auto
