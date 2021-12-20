@@ -383,11 +383,6 @@ proof -
   show "\<langle>x, y\<rangle> \<in> domain(f\<^bsub>G\<^esub>)" by blast
 qed
 
-\<comment> \<open>MOVE THIS to \<^file>\<open>Cohen_Posets.thy\<close>\<close>
-lemma Fn_nat_subset_Pow: "Fn(\<omega>,I,J) \<subseteq> Pow(I\<times>J)"
-  using subset_trans[OF FiniteFun.dom_subset Fin.dom_subset]
-    Fn_nat_eq_FiniteFun by simp
-
 lemma f_G_funtype:
   includes G_generic_lemmas
   shows "f\<^bsub>G\<^esub> : \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<rightarrow> 2"

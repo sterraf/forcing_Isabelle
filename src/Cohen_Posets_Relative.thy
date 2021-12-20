@@ -3,7 +3,6 @@ section\<open>Cohen forcing notions\<close>
 theory Cohen_Posets_Relative
   imports
     Forcing_Notions
-    Cohen_Posets
     Delta_System_Relative
     Partial_Functions_Relative
 begin

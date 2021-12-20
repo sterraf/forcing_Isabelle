@@ -2,10 +2,223 @@ section\<open>Cohen forcing notions\<close>
 
 theory Partial_Functions_Relative
   imports
+    ZF.AC
     FiniteFun_Relative
-    Cohen_Posets
     Cardinal_Library_Relative
 begin
+
+definition
+  Fn :: "[i,i,i] \<Rightarrow> i" where
+  "Fn(\<kappa>,I,J) \<equiv> \<Union>{(d\<rightarrow>J) .. d \<in> Pow(I),  d\<prec>\<kappa>}"
+
+lemma domain_function_lepoll :
+  assumes "function(r)"
+  shows "domain(r) \<lesssim> r"
+proof -
+  let ?f="\<lambda>x\<in>domain(r) . <x,THE y . <x,y> \<in> r>"
+  have 1:"\<And>x. x \<in> domain(r) \<Longrightarrow> \<exists>!y. <x,y> \<in> r"
+    using assms unfolding domain_def function_def by auto
+  then
+  have "?f \<in> inj(domain(r), r)"
+    using theI[OF 1]
+    by(rule_tac lam_injective,auto)
+  then
+  show ?thesis unfolding lepoll_def
+    by force
+qed
+
+lemma function_lepoll:
+  assumes "r:d\<rightarrow>J"
+  shows "r \<lesssim> d"
+proof -
+  let ?f="\<lambda>x\<in>r . fst(x)"
+  note assms
+  moreover from this
+  have 1:"\<And>x. x \<in> domain(r) \<Longrightarrow> \<exists>!y. <x,y> \<in> r"
+    using Pi_iff[THEN iffD1,OF assms(1)]
+    unfolding function_def by auto
+  moreover from this
+  have "(THE u . <fst(x),u> \<in> r) = snd(x)" if "x\<in>r" for x
+    using Pi_iff[THEN iffD1,OF assms(1)] that
+     subsetD[of r "d\<times>J" x] theI[OF 1]
+    by(auto,rule_tac the_equality2[OF 1],auto)
+  moreover from this
+  have "\<And>x. x \<in>r \<Longrightarrow> <fst(x),THE y . <fst(x),y> \<in> r> = x"
+    using Pi_iff[THEN iffD1,OF assms(1)]
+    by auto
+  then
+  have "?f\<in>inj(r,d)"
+    using Pi_iff[THEN iffD1,OF assms(1)]
+    by(rule_tac d= "\<lambda>u . <u,THE y . <u,y> \<in> r>" in lam_injective,force,simp)
+  then
+  show ?thesis
+    unfolding lepoll_def
+    by auto
+qed
+
+(*FIXME: is this useful? *)
+lemma function_eqpoll :
+  assumes "r:d\<rightarrow>J"
+  shows "r \<approx> d"
+  using assms domain_of_fun domain_function_lepoll Pi_iff[THEN iffD1,OF assms]
+  eqpollI[OF function_lepoll[OF assms]] subset_imp_lepoll
+  by force
+
+lemma Fn_char : "Fn(\<kappa>,I,J) = {f \<in> Pow(I\<times>J) . function(f) \<and> f \<prec> \<kappa>}" (is "?L=?R")
+proof (intro equalityI subsetI)
+  fix x
+  assume "x \<in> ?R"
+  moreover from this
+  have "domain(x) \<in> Pow(I)" "domain(x) \<lesssim> x" "x\<prec> \<kappa>"
+    using domain_function_lepoll
+    by auto
+  ultimately
+  show "x \<in> ?L"
+    unfolding Fn_def
+    using SepReplace_iff lesspoll_trans1 Pi_iff
+    by (auto,rule_tac rev_bexI[of "domain(x) \<rightarrow> J"],auto)
+next
+  fix x
+  assume "x \<in> ?L"
+  then
+  obtain d where "x:d\<rightarrow>J" "d \<in> Pow(I)" "d\<prec>\<kappa>"
+    unfolding Fn_def
+    by auto
+  moreover from this
+  have "x\<prec>\<kappa>"
+    using function_lepoll[THEN lesspoll_trans1] by auto
+  moreover from calculation
+  have "x \<in> Pow(I\<times>J)" "function(x)"
+    using Pi_iff by auto
+  ultimately
+  show "x \<in> ?R" by simp
+qed
+
+lemma Fn_nat_eq_FiniteFun: "Fn(nat,I,J) = I -||> J"
+  unfolding Fn_def
+proof (intro equalityI subsetI)
+  fix x
+  assume "x \<in> I -||> J"
+  then
+  show "x \<in> \<Union>{(d\<rightarrow>J) .. d \<in> Pow(I), d\<prec>nat}"
+  proof (induct)
+    case emptyI
+    have "0: 0\<rightarrow>J" by simp
+    moreover
+    have "|0|<nat" using ltI by simp
+    ultimately
+    show ?case using lt_Card_imp_lesspoll Card_nat
+      by (simp,rule_tac x="0\<rightarrow>J" in bexI)
+        (auto | rule_tac x="0" in bexI)+
+  next
+    case (consI a b h)
+    then
+    obtain d where "h:d\<rightarrow>J" "d\<prec>nat" "d\<subseteq>I" by auto
+    moreover from this
+    have "Finite(d)"
+      using lesspoll_nat_is_Finite by simp
+    ultimately
+    have "h : d -||> J"
+      using fun_FiniteFunI Finite_into_Fin by blast
+    note \<open>h:d\<rightarrow>J\<close>
+    moreover from this
+    have "domain(cons(\<langle>a, b\<rangle>, h)) = cons(a,d)" (is "domain(?h) = ?d")
+      and "domain(h) = d"
+      using domain_of_fun by simp_all
+    moreover
+    note consI
+    moreover from calculation
+    have "cons(\<langle>a, b\<rangle>, h) \<in> cons(a,d) \<rightarrow> J"
+      using fun_extend3 by simp
+    moreover from \<open>Finite(d)\<close>
+    have "Finite(cons(a,d))" by simp
+    moreover from this
+    have "cons(a,d) \<prec> nat" using Finite_imp_lesspoll_nat by simp
+    ultimately
+    show ?case by (simp,rule_tac x="?d\<rightarrow>J" in bexI)
+        (force dest:app_fun)+
+  qed
+next
+  fix x
+  assume "x \<in> \<Union>{(d\<rightarrow>J) .. d \<in> Pow(I),  d\<prec>nat}"
+  then
+  obtain d where "x:d\<rightarrow>J" "d \<in> Pow(I)" "d\<prec>nat" by auto
+  moreover from this
+  have "Finite(d)"
+    using lesspoll_nat_is_Finite by simp
+  moreover from calculation
+  have "d \<in> Fin(I)"
+    using Finite_into_Fin[of d] Fin_mono by auto
+  ultimately
+  show "x \<in> I -||> J" using fun_FiniteFunI FiniteFun_mono by blast
+qed
+
+lemma Fn_nat_subset_Pow: "Fn(\<kappa>,I,J) \<subseteq> Pow(I\<times>J)"
+  using Fn_char by auto
+
+lemma FnI[intro]:
+  assumes "p : d \<rightarrow> J" "d \<subseteq> I" "d \<prec> \<kappa>"
+  shows "p \<in> Fn(\<kappa>,I,J)"
+  using assms Sep_and_Replace
+  unfolding Fn_def by auto
+
+lemma FnD[dest]:
+  assumes "p \<in> Fn(\<kappa>,I,J)"
+  shows "\<exists>d. p : d \<rightarrow> J \<and> d \<subseteq> I \<and> d \<prec> \<kappa>"
+  using assms Sep_and_Replace
+  unfolding Fn_def by auto
+
+lemma Fn_is_function: "p \<in> Fn(\<kappa>,I,J) \<Longrightarrow> function(p)"
+  unfolding Fn_def using Sep_and_Replace fun_is_function by auto
+
+lemma Fn_csucc:
+  assumes "Ord(\<kappa>)"
+  shows "Fn(csucc(\<kappa>),I,J) = \<Union>{(d\<rightarrow>J) .. d \<in> Pow(I), d\<lesssim>\<kappa>}"
+  using assms
+  unfolding Fn_def using lesspoll_csucc by (simp)
+
+definition
+  FnleR :: "i \<Rightarrow> i \<Rightarrow> o" (infixl \<open>\<supseteq>\<close> 50) where
+  "f \<supseteq> g \<equiv> g \<subseteq> f"
+
+lemma FnleR_iff_subset [iff]: "f \<supseteq> g \<longleftrightarrow> g \<subseteq> f"
+  unfolding FnleR_def ..
+
+definition
+  Fnlerel :: "i \<Rightarrow> i" where
+  "Fnlerel(A) \<equiv> Rrel(\<lambda>x y. x \<supseteq> y,A)"
+
+definition
+  Fnle :: "[i,i,i] \<Rightarrow> i" where
+  "Fnle(\<kappa>,I,J) \<equiv> Fnlerel(Fn(\<kappa>,I,J))"
+
+lemma FnleI[intro]:
+  assumes "p \<in> Fn(\<kappa>,I,J)" "q \<in> Fn(\<kappa>,I,J)" "p \<supseteq> q"
+  shows "<p,q> \<in> Fnle(\<kappa>,I,J)"
+  using assms unfolding Fnlerel_def Fnle_def FnleR_def Rrel_def
+  by auto
+
+lemma FnleD[dest]:
+  assumes "<p,q> \<in> Fnle(\<kappa>,I,J)"
+  shows "p \<in> Fn(\<kappa>,I,J)" "q \<in> Fn(\<kappa>,I,J)" "p \<supseteq> q"
+  using assms unfolding Fnlerel_def Fnle_def FnleR_def Rrel_def
+  by auto
+
+lemma restrict_eq_imp_compat:
+  assumes "f \<in> Fn(nat, I, J)" "g \<in> Fn(nat, I, J)" "InfCard(nat)"
+    "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
+  shows "f \<union> g \<in> Fn(nat, I, J)"
+proof -
+  from assms
+  obtain d1 d2 where "f : d1 \<rightarrow> J" "d1 \<in> Pow(I)" "d1 \<prec> nat"
+    "g : d2 \<rightarrow> J" "d2 \<in> Pow(I)" "d2 \<prec> nat"
+    by blast
+  with assms
+  show ?thesis
+    using domain_of_fun
+      restrict_eq_imp_Un_into_Pi[of f d1 "\<lambda>_. J" g d2 "\<lambda>_. J"]
+    by (auto dest!:lesspoll_nat_is_Finite intro!:Finite_imp_lesspoll_nat)
+qed
 
 definition PFun_Space_Rel :: "[i,i\<Rightarrow>o, i] \<Rightarrow> i"  ("_\<rightharpoonup>\<^bsup>_\<^esup>_")
   where "A \<rightharpoonup>\<^bsup>M\<^esup> B \<equiv> {f \<in> Pow(A\<times>B) . M(f) \<and> function(f)}"
@@ -199,7 +412,7 @@ lemma pfun_unionI :
   by blast
 
 lemma (in M_library) pfun_restrict_eq_imp_compat:
-  assumes "f \<in> I\<rightharpoonup>\<^bsup>M\<^esup> J" "g \<in> I\<rightharpoonup>\<^bsup>M\<^esup> J" "M(J)" 
+  assumes "f \<in> I\<rightharpoonup>\<^bsup>M\<^esup> J" "g \<in> I\<rightharpoonup>\<^bsup>M\<^esup> J" "M(J)"
     "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
   shows "f \<union> g \<in> I\<rightharpoonup>\<^bsup>M\<^esup> J"
 proof -
@@ -208,12 +421,12 @@ proof -
   obtain C D where "f : C \<rightarrow> J" "C \<subseteq> I" "D \<subseteq> I" "M(C)" "M(D)" "g : D \<rightarrow> J"
     using pfunD[of f] pfunD[of g] by force
   moreover from calculation
-  have "f\<union>g \<in> C\<union>D \<rightarrow> J" 
-    using restrict_eq_imp_Un_into_Pi'[OF \<open>f\<in>C\<rightarrow>_\<close> \<open>g\<in>D\<rightarrow>_\<close>] 
+  have "f\<union>g \<in> C\<union>D \<rightarrow> J"
+    using restrict_eq_imp_Un_into_Pi'[OF \<open>f\<in>C\<rightarrow>_\<close> \<open>g\<in>D\<rightarrow>_\<close>]
     by auto
   ultimately
   show ?thesis
-    using pfunI[of "C\<union>D" _ "f\<union>g"] Un_subset_iff pfunD_closed function_space_rel_char 
+    using pfunI[of "C\<union>D" _ "f\<union>g"] Un_subset_iff pfunD_closed function_space_rel_char
     by auto
 qed
 
@@ -456,11 +669,8 @@ lemma Fnle_relD[dest]:
 
 end
 
-
 context M_library
 begin
-(* FIXME: The results in this context are to be obtain through porting
-  Cohen_Posets.thy *)
 
 lemma Fn_rel_closed[intro,simp]:
   assumes "M(\<kappa>)" "M(I)" "M(J)"
