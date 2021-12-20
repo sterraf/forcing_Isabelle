@@ -32,23 +32,19 @@ lemma function_lepoll:
   shows "r \<lesssim> d"
 proof -
   let ?f="\<lambda>x\<in>r . fst(x)"
-  note assms
+  note assms Pi_iff[THEN iffD1,OF assms]
   moreover from this
   have 1:"\<And>x. x \<in> domain(r) \<Longrightarrow> \<exists>!y. <x,y> \<in> r"
-    using Pi_iff[THEN iffD1,OF assms(1)]
     unfolding function_def by auto
-  moreover from this
+  moreover from calculation
   have "(THE u . <fst(x),u> \<in> r) = snd(x)" if "x\<in>r" for x
-    using Pi_iff[THEN iffD1,OF assms(1)] that
-     subsetD[of r "d\<times>J" x] theI[OF 1]
+    using that subsetD[of r "d\<times>J" x] theI[OF 1]
     by(auto,rule_tac the_equality2[OF 1],auto)
-  moreover from this
+  moreover from calculation
   have "\<And>x. x \<in>r \<Longrightarrow> <fst(x),THE y . <fst(x),y> \<in> r> = x"
-    using Pi_iff[THEN iffD1,OF assms(1)]
     by auto
-  then
+  ultimately
   have "?f\<in>inj(r,d)"
-    using Pi_iff[THEN iffD1,OF assms(1)]
     by(rule_tac d= "\<lambda>u . <u,THE y . <u,y> \<in> r>" in lam_injective,force,simp)
   then
   show ?thesis
