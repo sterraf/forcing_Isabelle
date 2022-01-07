@@ -55,7 +55,7 @@ line. For contexts, the syntax is similar:
 
   [contents]
 
-  end (* M_trivial *)
+  end ― ‹\<^locale>‹M_trivial››
 
 A closing `end` must be followed by a comment stating which context is
 being closed. (This is not needed for the `end` closing a theory.)
@@ -86,7 +86,7 @@ in the name, and are separated from the conclusion using `_imp_` (for
     assumes "well_ord(A,r)" "h ∈ surj(A,B)"
     shows "B ≲ A"
 
-- Absolutness theorems: foo_abs, where foo is the absolute term.
+- Absoluteness theorems: foo_abs, where foo is the absolute term.
 - Closure theorems: foo_closed, where foo is the absolute term.
 
 All results must have a name.
