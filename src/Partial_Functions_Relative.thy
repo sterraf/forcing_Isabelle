@@ -2,7 +2,6 @@ section\<open>Cohen forcing notions\<close>
 
 theory Partial_Functions_Relative
   imports
-    ZF.AC
     FiniteFun_Relative
     Cardinal_Library_Relative
 begin
@@ -152,7 +151,7 @@ qed
 lemma Fn_nat_subset_Pow: "Fn(\<kappa>,I,J) \<subseteq> Pow(I\<times>J)"
   using Fn_char by auto
 
-lemma FnI[intro]:
+lemma FnI:
   assumes "p : d \<rightarrow> J" "d \<subseteq> I" "d \<prec> \<kappa>"
   shows "p \<in> Fn(\<kappa>,I,J)"
   using assms Sep_and_Replace
@@ -199,22 +198,6 @@ lemma FnleD[dest]:
   shows "p \<in> Fn(\<kappa>,I,J)" "q \<in> Fn(\<kappa>,I,J)" "p \<supseteq> q"
   using assms unfolding Fnlerel_def Fnle_def FnleR_def Rrel_def
   by auto
-
-lemma restrict_eq_imp_compat:
-  assumes "f \<in> Fn(nat, I, J)" "g \<in> Fn(nat, I, J)" "InfCard(nat)"
-    "restrict(f, domain(f) \<inter> domain(g)) = restrict(g, domain(f) \<inter> domain(g))"
-  shows "f \<union> g \<in> Fn(nat, I, J)"
-proof -
-  from assms
-  obtain d1 d2 where "f : d1 \<rightarrow> J" "d1 \<in> Pow(I)" "d1 \<prec> nat"
-    "g : d2 \<rightarrow> J" "d2 \<in> Pow(I)" "d2 \<prec> nat"
-    by blast
-  with assms
-  show ?thesis
-    using domain_of_fun
-      restrict_eq_imp_Un_into_Pi[of f d1 "\<lambda>_. J" g d2 "\<lambda>_. J"]
-    by (auto dest!:lesspoll_nat_is_Finite intro!:Finite_imp_lesspoll_nat)
-qed
 
 definition PFun_Space_Rel :: "[i,i\<Rightarrow>o, i] \<Rightarrow> i"  ("_\<rightharpoonup>\<^bsup>_\<^esup>_")
   where "A \<rightharpoonup>\<^bsup>M\<^esup> B \<equiv> {f \<in> Pow(A\<times>B) . M(f) \<and> function(f)}"
@@ -280,7 +263,6 @@ proof(simp_all)
       unfolding Pi_def by auto
   qed
 qed
-
 
 context M_cardinals
 begin

@@ -608,10 +608,14 @@ proof -
     moreover from this and delta
     have "domain(p) \<inter> domain(q) = r" unfolding r_def by simp
     moreover
-    note \<open>A \<subseteq> Fn(nat, I, 2)\<close>
+    note \<open>A \<subseteq> Fn(nat, I, 2)\<close> Fn_nat_abs[OF \<open>M(I)\<close> nat_into_M[of 2],simplified]
+    moreover from calculation
+    have "p \<in> Fn\<^bsup>M\<^esup>(nat, I, 2)" "q \<in> Fn\<^bsup>M\<^esup>(nat, I, 2)"
+      by auto
     moreover from calculation
     have "p \<union> q \<in> Fn(nat, I, 2)"
-      using restrict_eq_imp_compat InfCard_nat by blast
+      using restrict_eq_imp_compat_rel InfCard_rel_nat
+      by simp
     ultimately
     have "\<exists>p\<in>A. \<exists>q\<in>A. p \<noteq> q \<and> compat_in(Fn(nat, I, 2), Fnle(nat, I, 2), p, q)"
       unfolding compat_in_def
