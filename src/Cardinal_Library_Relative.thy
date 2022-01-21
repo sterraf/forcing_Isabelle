@@ -69,7 +69,7 @@ proof -
   by (simp add: cardinal_rel_UN_le InfCard_rel_nat)
 qed
 
-end (* M_cardinal_UN_nat *)
+end \<comment> \<open>\<^locale>\<open>M_cardinal_UN_nat\<close>\<close>
 
 locale M_cardinal_UN_inj = M_library +
   j:M_cardinal_UN _ J +
@@ -123,7 +123,7 @@ proof -
       (auto intro:Ord_0_le simp:Y_def)+
 qed
 
-end (* M_cardinal_UN_inj *)
+end \<comment> \<open>\<^locale>\<open>M_cardinal_UN_inj\<close>\<close>
 
 locale M_cardinal_UN_lepoll = M_library + M_replacement_lepoll _ "\<lambda>_. X" +
   j:M_cardinal_UN _ J for J
@@ -163,7 +163,7 @@ proof -
   show ?thesis using inj_rel_imp_cardinal_rel_UN_le by simp
 qed
 
-end (* M_cardinal_UN_lepoll *)
+end \<comment> \<open>\<^locale>\<open>M_cardinal_UN_lepoll\<close>\<close>
 
 context M_library
 begin

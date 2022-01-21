@@ -584,7 +584,7 @@ begin
 lemma Pi_rel_transfer: "Pi\<^bsup>M\<^esup>(A,B) \<subseteq> Pi\<^bsup>N\<^esup>(A,B)"
   using  M.Pi_rel_char N.Pi_rel_char M_imp_N by auto
 
-end (* M_N_Pi_assumptions *)
+end \<comment> \<open>\<^locale>\<open>M_N_Pi_assumptions\<close>\<close>
 
 
 (******************  end Discipline  **********************)
@@ -597,7 +597,7 @@ lemma Pi_rel_empty1[simp]: "Pi\<^bsup>M\<^esup>(0,B) = {0}"
   using Pi_assumptions Pow_rel_char
   by (unfold def_Pi_rel function_def) (auto)
 
-end (* M_Pi_assumptions_0 *)
+end \<comment> \<open>\<^locale>\<open>M_Pi_assumptions_0\<close>\<close>
 
 context M_Pi_assumptions
 begin

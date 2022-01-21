@@ -65,16 +65,11 @@ lemma is_Aleph_iff_sats [iff_sats]:
 
 arity_theorem for "is_Aleph_fm"
 
-context M_cardinal_arith_jump
-begin
-
-lemma is_Limit_iff:
+lemma (in M_cardinal_arith_jump) is_Limit_iff:
   assumes "M(a)"
   shows "is_Limit(M,a) \<longleftrightarrow> Limit(a)"
   unfolding is_Limit_def Limit_def using lt_abs transM[OF ltD \<open>M(a)\<close>] assms
   by auto
-
-end (* M_cardinal_arith_jump *)
 
 lemma HAleph_eq_Aleph_recursive:
   "Ord(i) \<Longrightarrow> HAleph(i,r) = (if i = 0 then nat

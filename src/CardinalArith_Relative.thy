@@ -839,7 +839,7 @@ rel_closed for "ord_iso"
   using ord_iso_separation unfolding ord_iso_rel_def
   by simp
 
-end (* M_pre_cardinal_arith *)
+end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 
 synthesize "is_ord_iso" from_definition assuming "nonempty"
 
@@ -1007,7 +1007,7 @@ proof -
   by(rule_tac wfrec_on_pred_closed'[of A r],auto)
 qed
 
-end (* M_pre_cardinal_arith *)
+end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 
 synthesize "is_ordermap" from_definition assuming "nonempty"
 
@@ -1037,7 +1037,7 @@ lemma is_ordertype_iff'':
   using assms is_ordertype_iff
   unfolding well_ord_def part_ord_def tot_ord_def by simp
 
-end (* M_pre_cardinal_arith *)
+end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 
 synthesize "is_ordertype" from_definition assuming "nonempty"
 
@@ -1098,7 +1098,7 @@ lemma jump_cardinal_body_eq :
   using ordertype_rel_abs
   by auto
 
-end (* M_pre_cardinal_arith *)
+end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 
 context M_cardinal_arith
 begin
@@ -1640,5 +1640,5 @@ qed
 lemma Ord_nat_subset_into_Card_rel: "[| Ord(i); i \<subseteq> nat |] ==> Card\<^bsup>M\<^esup>(i)"
 by (blast dest: Ord_subset_natD intro: Card_rel_nat nat_into_Card_rel)
 
-end (* M_cardinal_arith_jump *)
+end \<comment> \<open>\<^locale>\<open>M_cardinal_arith_jump\<close>\<close>
 end

@@ -125,7 +125,7 @@ next
   show ?thesis by (blast intro!: AC_M)
 qed
 
-end (* M_Pi_assumptions_choice *)
+end \<comment> \<open>\<^locale>\<open>M_Pi_assumptions_choice\<close>\<close>
 
 
 context M_cardinal_AC
