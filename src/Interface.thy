@@ -86,6 +86,18 @@ proof -
     by simp
 qed
 
+lemma separation_in_ctm :
+  assumes
+    "\<phi> \<in> formula" "env\<in>list(M)"
+    "arity(\<phi>) \<le> 1 #+ length(env)" and
+    satsQ: "\<And>x. x\<in>M \<Longrightarrow> sats(M,\<phi>,[x]@env) \<longleftrightarrow> Q(x)"
+  shows
+    "separation(##M,Q)"
+  using assms separation_ax
+    satsQ trans_M
+    separation_cong[of "##M" "\<lambda>y. sats(M,\<phi>,[y]@env)" "Q"]
+  by simp
+
 end \<comment> \<open>\<^locale>\<open>M_ZF_trans\<close>\<close>
 
 locale M_ZFC = M_ZF +
@@ -103,355 +115,136 @@ sublocale M_ZF_trans \<subseteq> M_trivial "##M"
 
 subsection\<open>Interface with \<^term>\<open>M_basic\<close>\<close>
 
-(* Inter_separation: "M(A) \<Longrightarrow> separation(M, \<lambda>x. \<forall> y[M]. y\<in>A \<Longrightarrow> x\<in>y)" *)
 definition Intersection where
  "Intersection(N,B,x) \<equiv> (\<forall>y[N]. y\<in>B \<longrightarrow> x\<in>y)"
 
-manual_schematic "Inter_fm" for "Intersection"
-  unfolding Intersection_def
-  by (rule sep_rules | simp)+
-synthesize "Intersection" from_schematic Inter_fm
+synthesize "Intersection" from_definition "Intersection" assuming "nonempty"
 arity_theorem for "Intersection_fm"
+
+definition CartProd where
+ "CartProd(N,B,C,z) \<equiv> (\<exists>x[N]. x\<in>B \<and> (\<exists>y[N]. y\<in>C \<and> pair(N,x,y,z)))"
+
+synthesize "CartProd" from_definition "CartProd" assuming "nonempty"
+arity_theorem for "CartProd_fm"
+
+definition Image where
+ "Image(N,B,r,y) \<equiv> (\<exists>p[N]. p\<in>r & (\<exists>x[N]. x\<in>B & pair(N,x,y,p)))"
+
+synthesize "Image" from_definition "Image" assuming "nonempty"
+arity_theorem for "Image_fm"
+
+definition Converse where
+ "Converse(N,R,z) \<equiv> \<exists>p[N]. p\<in>R & (\<exists>x[N].\<exists>y[N]. pair(N,x,y,p) & pair(N,y,x,z))"
+
+synthesize "Converse" from_definition "Converse" assuming "nonempty"
+arity_theorem for "Converse_fm"
+
+definition Restrict where
+ "Restrict(N,A,z) \<equiv> \<exists>x[N]. x\<in>A & (\<exists>y[N]. pair(N,x,y,z))"
+
+synthesize "Restrict" from_definition "Restrict" assuming "nonempty"
+arity_theorem for "Restrict_fm"
+
+definition Comp where
+ "Comp(N,R,S,xz) \<equiv> \<exists>x[N]. \<exists>y[N]. \<exists>z[N]. \<exists>xy[N]. \<exists>yz[N].
+              pair(N,x,z,xz) & pair(N,x,y,xy) & pair(N,y,z,yz) & xy\<in>S & yz\<in>R"
+
+synthesize "Comp" from_definition "Comp" assuming "nonempty"
+arity_theorem for "Comp_fm"
+
+definition Pred where
+ "Pred(N,R,X,y) \<equiv> \<exists>p[N]. p\<in>R & pair(N,y,X,p)"
+
+synthesize "Pred" from_definition "Pred" assuming "nonempty"
+arity_theorem for "Pred_fm"
+
+
+definition is_Memrel where
+ "is_Memrel(N,z) \<equiv> \<exists>x[N]. \<exists>y[N]. pair(N,x,y,z) & x \<in> y"
+
+synthesize "is_Memrel" from_definition "is_Memrel" assuming "nonempty"
+arity_theorem for "is_Memrel_fm"
 
 context M_ZF_trans
 begin
 
 lemma inter_sep_intf :
-  assumes
-    "A\<in>M"
-  shows
-    "separation(##M,\<lambda>x . \<forall>y\<in>M . y\<in>A \<longrightarrow> x\<in>y)"
-proof -
-  have "arity(Intersection_fm(1,0)) = 2" "0\<in>nat" "1\<in>nat"
-    using arity_Intersection_fm pred_Un_distrib by auto
-  then
-    have "\<forall>a\<in>M. separation(##M, \<lambda>x. sats(M,Intersection_fm(1,0) , [x, a]))"
-      using separation_ax Intersection_fm_type
-      by simp
-  moreover
-  have "(\<forall>y\<in>M . y\<in>a \<longrightarrow> x\<in>y) \<longleftrightarrow> sats(M,Intersection_fm(1,0),[x,a])"
-    if "a\<in>M" "x\<in>M" for a x
-    using that Intersection_iff_sats[of 1 "[x,a]" a 0 x M]
-    unfolding Intersection_def by simp
-  ultimately
-  have "\<forall>a\<in>M. separation(##M, \<lambda>x . \<forall>y\<in>M . y\<in>a \<longrightarrow> x\<in>y)"
-    unfolding separation_def by simp
-  with \<open>A\<in>M\<close> show ?thesis by simp
-qed
-
-
-(* Diff_separation: "M(B) \<Longrightarrow> separation(M, \<lambda>x. x \<notin> B)" *)
-schematic_goal diff_fm_auto:
-  assumes
-    "nth(i,env) = x" "nth(j,env) = B"
-    "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
-  shows
-    "x\<notin>B \<longleftrightarrow> sats(A,?dfm(i,j),env)"
-  by (insert assms ; (rule sep_rules | simp)+)
+  assumes "A\<in>M"
+  shows "separation(##M,\<lambda>x . \<forall>y\<in>M . y\<in>A \<longrightarrow> x\<in>y)"
+  using assms separation_in_ctm[of "Intersection_fm(1,0)" "[A]" "Intersection(##M,A)"]
+   Intersection_iff_sats[of 1 "[_,A]" A 0 _ M] arity_Intersection_fm Intersection_fm_type 
+   ord_simp_union nonempty
+  unfolding Intersection_def
+  by simp
 
 lemma diff_sep_intf :
-  assumes
-    "B\<in>M"
-  shows
-    "separation(##M,\<lambda>x . x\<notin>B)"
-proof -
-  obtain dfm where
-    fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow> nth(0,env)\<notin>nth(1,env)
-    \<longleftrightarrow> sats(M,dfm(0,1),env)"
-    and
-    "dfm(0,1) \<in> formula"
-    and
-    "arity(dfm(0,1)) = 2"
-    using \<open>B\<in>M\<close> diff_fm_auto
-    by (simp del:FOL_sats_iff add: ord_simp_union)
-  then
-  have "\<forall>b\<in>M. separation(##M, \<lambda>x. sats(M,dfm(0,1) , [x, b]))"
-    using separation_ax by simp
-  moreover
-  have "x\<notin>b \<longleftrightarrow> sats(M,dfm(0,1),[x,b])"
-    if "b\<in>M" "x\<in>M" for b x
-    using that fmsats[of "[x,b]"] by simp
-  ultimately
-  have "\<forall>b\<in>M. separation(##M, \<lambda>x . x\<notin>b)"
-    unfolding separation_def by simp
-  with \<open>B\<in>M\<close> show ?thesis by simp
-qed
-
-schematic_goal cprod_fm_auto:
-  assumes
-    "nth(i,env) = z" "nth(j,env) = B" "nth(h,env) = C"
-    "i \<in> nat" "j \<in> nat" "h \<in> nat" "env \<in> list(A)"
-  shows
-    "(\<exists>x\<in>A. x\<in>B \<and> (\<exists>y\<in>A. y\<in>C \<and> pair(##A,x,y,z))) \<longleftrightarrow> sats(A,?cpfm(i,j,h),env)"
-  by (insert assms ; (rule sep_rules | simp)+)
-
+  assumes "B\<in>M"
+  shows "separation(##M,\<lambda>x . x\<notin>B)"
+  using assms separation_in_ctm[of "Neg(Member(0,1))" "[B]" "\<lambda>x . x\<notin>B"] ord_simp_union
+  by simp
 
 lemma cartprod_sep_intf :
-  assumes
-    "A\<in>M"
-    and
-    "B\<in>M"
-  shows
-    "separation(##M,\<lambda>z. \<exists>x\<in>M. x\<in>A \<and> (\<exists>y\<in>M. y\<in>B \<and> pair(##M,x,y,z)))"
-proof -
-  obtain cpfm where
-    fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow>
-    (\<exists>x\<in>M. x\<in>nth(1,env) \<and> (\<exists>y\<in>M. y\<in>nth(2,env) \<and> pair(##M,x,y,nth(0,env))))
-    \<longleftrightarrow> sats(M,cpfm(0,1,2),env)"
-    and
-    "cpfm(0,1,2) \<in> formula"
-    and
-    "arity(cpfm(0,1,2)) = 3"
-    using cprod_fm_auto by (simp del:FOL_sats_iff add:arity ord_simp_union)
-  then
-  have "\<forall>a\<in>M. \<forall>b\<in>M. separation(##M, \<lambda>z. sats(M,cpfm(0,1,2) , [z, a, b]))"
-    using separation_ax by simp
-  moreover
-  have "(\<exists>x\<in>M. x\<in>a \<and> (\<exists>y\<in>M. y\<in>b \<and> pair(##M,x,y,z))) \<longleftrightarrow> sats(M,cpfm(0,1,2),[z,a,b])"
-    if "a\<in>M" "b\<in>M" "z\<in>M" for a b z
-    using that fmsats[of "[z,a,b]"] by simp
-  ultimately
-  have "\<forall>a\<in>M. \<forall>b\<in>M. separation(##M, \<lambda>z . (\<exists>x\<in>M. x\<in>a \<and> (\<exists>y\<in>M. y\<in>b \<and> pair(##M,x,y,z))))"
-    unfolding separation_def by simp
-  with \<open>A\<in>M\<close> \<open>B\<in>M\<close> show ?thesis by simp
-qed
-
-schematic_goal im_fm_auto:
-  assumes
-    "nth(i,env) = y" "nth(j,env) = r" "nth(h,env) = B"
-    "i \<in> nat" "j \<in> nat" "h \<in> nat" "env \<in> list(A)"
-  shows
-    "(\<exists>p\<in>A. p\<in>r & (\<exists>x\<in>A. x\<in>B & pair(##A,x,y,p))) \<longleftrightarrow> sats(A,?imfm(i,j,h),env)"
-  by (insert assms ; (rule sep_rules | simp)+)
+  assumes "A\<in>M" and "B\<in>M"
+  shows "separation(##M,\<lambda>z. \<exists>x\<in>M. x\<in>A \<and> (\<exists>y\<in>M. y\<in>B \<and> pair(##M,x,y,z)))"
+  using assms separation_in_ctm[of "CartProd_fm(1,2,0)" "[A,B]" "CartProd(##M,A,B)"]
+   CartProd_iff_sats[of 1 "[_,A,B]" A 2 B 0 _ M] arity_CartProd_fm  CartProd_fm_type
+   ord_simp_union nonempty
+  unfolding CartProd_def
+  by simp
 
 lemma image_sep_intf :
-  assumes
-    "A\<in>M"
-    and
-    "r\<in>M"
-  shows
-    "separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>r & (\<exists>x\<in>M. x\<in>A & pair(##M,x,y,p)))"
-proof -
-  obtain imfm where
-    fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow>
-    (\<exists>p\<in>M. p\<in>nth(1,env) & (\<exists>x\<in>M. x\<in>nth(2,env) & pair(##M,x,nth(0,env),p)))
-    \<longleftrightarrow> sats(M,imfm(0,1,2),env)"
-    and
-    "imfm(0,1,2) \<in> formula"
-    and
-    "arity(imfm(0,1,2)) = 3"
-    using im_fm_auto by (simp del:FOL_sats_iff pair_abs add:arity ord_simp_union)
-  then
-  have "\<forall>r\<in>M. \<forall>a\<in>M. separation(##M, \<lambda>y. sats(M,imfm(0,1,2) , [y,r,a]))"
-    using separation_ax by simp
-  moreover
-  have "(\<exists>p\<in>M. p\<in>k & (\<exists>x\<in>M. x\<in>a & pair(##M,x,y,p))) \<longleftrightarrow> sats(M,imfm(0,1,2),[y,k,a])"
-    if "k\<in>M" "a\<in>M" "y\<in>M" for k a y
-    using that fmsats[of "[y,k,a]"] by simp
-  ultimately
-  have "\<forall>k\<in>M. \<forall>a\<in>M. separation(##M, \<lambda>y . \<exists>p\<in>M. p\<in>k & (\<exists>x\<in>M. x\<in>a & pair(##M,x,y,p)))"
-    unfolding separation_def by simp
-  with \<open>r\<in>M\<close> \<open>A\<in>M\<close> show ?thesis by simp
-qed
-
-schematic_goal con_fm_auto:
-  assumes
-    "nth(i,env) = z" "nth(j,env) = R"
-    "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
-  shows
-    "(\<exists>p\<in>A. p\<in>R & (\<exists>x\<in>A.\<exists>y\<in>A. pair(##A,x,y,p) & pair(##A,y,x,z)))
-  \<longleftrightarrow> sats(A,?cfm(i,j),env)"
-  by (insert assms ; (rule sep_rules | simp)+)
-
+  assumes "A\<in>M" and "B\<in>M"
+  shows "separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>B & (\<exists>x\<in>M. x\<in>A & pair(##M,x,y,p)))"
+  using assms separation_in_ctm[of "Image_fm(1,2,0)" "[A,B]" "Image(##M,A,B)"]
+   Image_iff_sats[of 1 "[_,A,B]" _ 2 _ 0 _ M] arity_Image_fm Image_fm_type
+   ord_simp_union nonempty
+  unfolding Image_def
+  by simp
 
 lemma converse_sep_intf :
-  assumes
-    "R\<in>M"
-  shows
-    "separation(##M,\<lambda>z. \<exists>p\<in>M. p\<in>R & (\<exists>x\<in>M.\<exists>y\<in>M. pair(##M,x,y,p) & pair(##M,y,x,z)))"
-proof -
-  obtain cfm where
-    fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow>
-    (\<exists>p\<in>M. p\<in>nth(1,env) & (\<exists>x\<in>M.\<exists>y\<in>M. pair(##M,x,y,p) & pair(##M,y,x,nth(0,env))))
-    \<longleftrightarrow> sats(M,cfm(0,1),env)"
-    and
-    "cfm(0,1) \<in> formula"
-    and
-    "arity(cfm(0,1)) = 2"
-    using con_fm_auto by (simp del:FOL_sats_iff pair_abs add:arity ord_simp_union)
-  then
-  have "\<forall>r\<in>M. separation(##M, \<lambda>z. sats(M,cfm(0,1) , [z,r]))"
-    using separation_ax by simp
-  moreover
-  have "(\<exists>p\<in>M. p\<in>r & (\<exists>x\<in>M.\<exists>y\<in>M. pair(##M,x,y,p) & pair(##M,y,x,z))) \<longleftrightarrow>
-          sats(M,cfm(0,1),[z,r])"
-    if "z\<in>M" "r\<in>M" for z r
-    using that fmsats[of "[z,r]"] by simp
-  ultimately
-  have "\<forall>r\<in>M. separation(##M, \<lambda>z . \<exists>p\<in>M. p\<in>r & (\<exists>x\<in>M.\<exists>y\<in>M. pair(##M,x,y,p) & pair(##M,y,x,z)))"
-    unfolding separation_def by simp
-  with \<open>R\<in>M\<close> show ?thesis by simp
-qed
-
-
-schematic_goal rest_fm_auto:
-  assumes
-    "nth(i,env) = z" "nth(j,env) = C"
-    "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
-  shows
-    "(\<exists>x\<in>A. x\<in>C & (\<exists>y\<in>A. pair(##A,x,y,z)))
-  \<longleftrightarrow> sats(A,?rfm(i,j),env)"
-  by (insert assms ; (rule sep_rules | simp)+)
-
+  assumes "R\<in>M"
+  shows "separation(##M,\<lambda>z. \<exists>p\<in>M. p\<in>R & (\<exists>x\<in>M.\<exists>y\<in>M. pair(##M,x,y,p) & pair(##M,y,x,z)))"
+  using assms separation_in_ctm[of "Converse_fm(1,0)" "[R]" "Converse(##M,R)"]
+   Converse_iff_sats[of 1 "[_,R]" _ 0 _ M] arity_Converse_fm Converse_fm_type
+   ord_simp_union nonempty
+  unfolding Converse_def
+  by simp
 
 lemma restrict_sep_intf :
-  assumes
-    "A\<in>M"
-  shows
-    "separation(##M,\<lambda>z. \<exists>x\<in>M. x\<in>A & (\<exists>y\<in>M. pair(##M,x,y,z)))"
-proof -
-  obtain rfm where
-    fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow>
-    (\<exists>x\<in>M. x\<in>nth(1,env) & (\<exists>y\<in>M. pair(##M,x,y,nth(0,env))))
-    \<longleftrightarrow> sats(M,rfm(0,1),env)"
-    and
-    "rfm(0,1) \<in> formula"
-    and
-    "arity(rfm(0,1)) = 2"
-    using rest_fm_auto by (simp del:FOL_sats_iff pair_abs add:arity ord_simp_union)
-  then
-  have "\<forall>a\<in>M. separation(##M, \<lambda>z. sats(M,rfm(0,1) , [z,a]))"
-    using separation_ax by simp
-  moreover
-  have "(\<exists>x\<in>M. x\<in>a & (\<exists>y\<in>M. pair(##M,x,y,z))) \<longleftrightarrow>
-          sats(M,rfm(0,1),[z,a])"
-    if "z\<in>M" "a\<in>M" for z a
-    using that fmsats[of "[z,a]"] by simp
-  ultimately
-  have "\<forall>a\<in>M. separation(##M, \<lambda>z . \<exists>x\<in>M. x\<in>a & (\<exists>y\<in>M. pair(##M,x,y,z)))"
-    unfolding separation_def by simp
-  with \<open>A\<in>M\<close> show ?thesis by simp
-qed
-
-schematic_goal comp_fm_auto:
-  assumes
-    "nth(i,env) = xz" "nth(j,env) = S" "nth(h,env) = R"
-    "i \<in> nat" "j \<in> nat" "h \<in> nat" "env \<in> list(A)"
-  shows
-    "(\<exists>x\<in>A. \<exists>y\<in>A. \<exists>z\<in>A. \<exists>xy\<in>A. \<exists>yz\<in>A.
-              pair(##A,x,z,xz) & pair(##A,x,y,xy) & pair(##A,y,z,yz) & xy\<in>S & yz\<in>R)
-  \<longleftrightarrow> sats(A,?cfm(i,j,h),env)"
-  by (insert assms ; (rule sep_rules | simp)+)
-
+  assumes "A\<in>M"
+  shows "separation(##M,\<lambda>z. \<exists>x\<in>M. x\<in>A & (\<exists>y\<in>M. pair(##M,x,y,z)))"
+  using assms separation_in_ctm[of "Restrict_fm(1,0)" "[A]" "Restrict(##M,A)"]
+   Restrict_iff_sats[of 1 "[_,A]" _ 0 _ M] arity_Restrict_fm Restrict_fm_type
+   ord_simp_union nonempty
+  unfolding Restrict_def
+  by simp
 
 lemma comp_sep_intf :
-  assumes
-    "R\<in>M"
-    and
-    "S\<in>M"
-  shows
-    "separation(##M,\<lambda>xz. \<exists>x\<in>M. \<exists>y\<in>M. \<exists>z\<in>M. \<exists>xy\<in>M. \<exists>yz\<in>M.
-              pair(##M,x,z,xz) & pair(##M,x,y,xy) & pair(##M,y,z,yz) & xy\<in>S & yz\<in>R)"
-proof -
-  obtain cfm where
-    fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow>
-    (\<exists>x\<in>M. \<exists>y\<in>M. \<exists>z\<in>M. \<exists>xy\<in>M. \<exists>yz\<in>M. pair(##M,x,z,nth(0,env)) &
-            pair(##M,x,y,xy) & pair(##M,y,z,yz) & xy\<in>nth(1,env) & yz\<in>nth(2,env))
-    \<longleftrightarrow> sats(M,cfm(0,1,2),env)"
-    and
-    "cfm(0,1,2) \<in> formula"
-    and
-    "arity(cfm(0,1,2)) = 3"
-    using comp_fm_auto by (simp del:FOL_sats_iff pair_abs add:arity ord_simp_union)
-  then
-  have "\<forall>r\<in>M. \<forall>s\<in>M. separation(##M, \<lambda>y. sats(M,cfm(0,1,2) , [y,s,r]))"
-    using separation_ax by simp
-  moreover
-  have "(\<exists>x\<in>M. \<exists>y\<in>M. \<exists>z\<in>M. \<exists>xy\<in>M. \<exists>yz\<in>M.
-              pair(##M,x,z,xz) & pair(##M,x,y,xy) & pair(##M,y,z,yz) & xy\<in>s & yz\<in>r)
-          \<longleftrightarrow> sats(M,cfm(0,1,2) , [xz,s,r])"
-    if "xz\<in>M" "s\<in>M" "r\<in>M" for xz s r
-    using that fmsats[of "[xz,s,r]"] by simp
-  ultimately
-  have "\<forall>s\<in>M. \<forall>r\<in>M. separation(##M, \<lambda>xz . \<exists>x\<in>M. \<exists>y\<in>M. \<exists>z\<in>M. \<exists>xy\<in>M. \<exists>yz\<in>M.
-              pair(##M,x,z,xz) & pair(##M,x,y,xy) & pair(##M,y,z,yz) & xy\<in>s & yz\<in>r)"
-    unfolding separation_def by simp
-  with \<open>S\<in>M\<close> \<open>R\<in>M\<close> show ?thesis by simp
-qed
-
-
-schematic_goal pred_fm_auto:
-  assumes
-    "nth(i,env) = y" "nth(j,env) = R" "nth(h,env) = X"
-    "i \<in> nat" "j \<in> nat" "h \<in> nat" "env \<in> list(A)"
-  shows
-    "(\<exists>p\<in>A. p\<in>R & pair(##A,y,X,p)) \<longleftrightarrow> sats(A,?pfm(i,j,h),env)"
-  by (insert assms ; (rule sep_rules | simp)+)
-
+  assumes "R\<in>M" and "S\<in>M"
+  shows "separation(##M,\<lambda>xz. \<exists>x\<in>M. \<exists>y\<in>M. \<exists>z\<in>M. \<exists>xy\<in>M. \<exists>yz\<in>M.
+           pair(##M,x,z,xz) & pair(##M,x,y,xy) & pair(##M,y,z,yz) & xy\<in>S & yz\<in>R)"
+  using assms separation_in_ctm[of "Comp_fm(1,2,0)" "[R,S]" "Comp(##M,R,S)"]
+    Comp_iff_sats[of 1 "[_,R,S]" _ 2 _ 0 _ M] arity_Comp_fm Comp_fm_type
+    ord_simp_union nonempty
+  unfolding Comp_def
+  by simp
 
 lemma pred_sep_intf:
-  assumes
-    "R\<in>M"
-    and
-    "X\<in>M"
-  shows
-    "separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>R & pair(##M,y,X,p))"
-proof -
-  obtain pfm where
-    fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow>
-    (\<exists>p\<in>M. p\<in>nth(1,env) & pair(##M,nth(0,env),nth(2,env),p)) \<longleftrightarrow> sats(M,pfm(0,1,2),env)"
-    and
-    "pfm(0,1,2) \<in> formula"
-    and
-    "arity(pfm(0,1,2)) = 3"
-    using pred_fm_auto by (simp del:FOL_sats_iff pair_abs add:arity ord_simp_union)
-  then
-  have "\<forall>x\<in>M. \<forall>r\<in>M. separation(##M, \<lambda>y. sats(M,pfm(0,1,2) , [y,r,x]))"
-    using separation_ax by simp
-  moreover
-  have "(\<exists>p\<in>M. p\<in>r & pair(##M,y,x,p))
-          \<longleftrightarrow> sats(M,pfm(0,1,2) , [y,r,x])"
-    if "y\<in>M" "r\<in>M" "x\<in>M" for y x r
-    using that fmsats[of "[y,r,x]"] by simp
-  ultimately
-  have "\<forall>x\<in>M. \<forall>r\<in>M. separation(##M, \<lambda> y . \<exists>p\<in>M. p\<in>r & pair(##M,y,x,p))"
-    unfolding separation_def by simp
-  with \<open>X\<in>M\<close> \<open>R\<in>M\<close> show ?thesis by simp
-qed
-
-(* Memrel_separation:
-     "separation(M, \<lambda>z. \<exists>x[M]. \<exists>y[M]. pair(M,x,y,z) & x \<in> y)"
-*)
-schematic_goal mem_fm_auto:
-  assumes
-    "nth(i,env) = z" "i \<in> nat" "env \<in> list(A)"
-  shows
-    "(\<exists>x\<in>A. \<exists>y\<in>A. pair(##A,x,y,z) & x \<in> y) \<longleftrightarrow> sats(A,?mfm(i),env)"
-  by (insert assms ; (rule sep_rules | simp)+)
+  assumes "R\<in>M" and "X\<in>M"
+  shows "separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>R & pair(##M,y,X,p))"
+  using assms separation_in_ctm[of "Pred_fm(1,2,0)" "[R,X]" "Pred(##M,R,X)"]
+    Pred_iff_sats[of 1 "[_,R,X]" _ 2 _ 0 _ M] arity_Pred_fm Pred_fm_type
+    ord_simp_union nonempty
+  unfolding Pred_def
+  by simp
 
 lemma memrel_sep_intf:
   "separation(##M, \<lambda>z. \<exists>x\<in>M. \<exists>y\<in>M. pair(##M,x,y,z) & x \<in> y)"
-proof -
-  obtain mfm where
-    fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow>
-    (\<exists>x\<in>M. \<exists>y\<in>M. pair(##M,x,y,nth(0,env)) & x \<in> y) \<longleftrightarrow> sats(M,mfm(0),env)"
-    and
-    "mfm(0) \<in> formula"
-    and
-    "arity(mfm(0)) = 1"
-    using mem_fm_auto by (simp del:FOL_sats_iff pair_abs add:arity ord_simp_union)
-  then
-  have "separation(##M, \<lambda>z. sats(M,mfm(0) , [z]))"
-    using separation_ax by simp
-  moreover
-  have "(\<exists>x\<in>M. \<exists>y\<in>M. pair(##M,x,y,z) & x \<in> y) \<longleftrightarrow> sats(M,mfm(0),[z])"
-    if "z\<in>M" for z
-    using that fmsats[of "[z]"] by simp
-  ultimately
-  have "separation(##M, \<lambda>z . \<exists>x\<in>M. \<exists>y\<in>M. pair(##M,x,y,z) & x \<in> y)"
-    unfolding separation_def by simp
-  then show ?thesis by simp
-qed
+  using separation_in_ctm[of "is_Memrel_fm(0)" "[]" "is_Memrel(##M)"]
+    is_Memrel_iff_sats[of 0 "[_]" _ M] arity_is_Memrel_fm is_Memrel_fm_type
+    ord_simp_union nonempty
+  unfolding is_Memrel_def
+  by simp
 
 schematic_goal recfun_fm_auto:
   assumes
@@ -1318,19 +1111,6 @@ proof -
       Collect_in_M[of ?\<phi>' "env@[A]" _ "\<lambda>x . Q(x) \<and> x\<in>A", OF _ _ _ \<open>A\<in>M\<close>]
     by auto
 qed
-
-(* We use this pattern several times *)
-lemma separation_in_ctm :
-  assumes
-    "\<phi> \<in> formula" "env\<in>list(M)"
-    "arity(\<phi>) \<le> 1 #+ length(env)" and
-    satsQ: "\<And>x. x\<in>M \<Longrightarrow> sats(M,\<phi>,[x]@env) \<longleftrightarrow> Q(x)"
-  shows
-    "separation(##M,Q)"
-  using assms separation_ax
-    satsQ trans_M
-    separation_cong[of "##M" "\<lambda>y. sats(M,\<phi>,[y]@env)" "Q"]
-  by simp
 
 lemma strong_replacement_in_ctm :
   assumes
