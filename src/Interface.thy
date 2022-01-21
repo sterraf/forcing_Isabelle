@@ -158,12 +158,22 @@ definition Pred where
 synthesize "Pred" from_definition "Pred" assuming "nonempty"
 arity_theorem for "Pred_fm"
 
-
 definition is_Memrel where
  "is_Memrel(N,z) \<equiv> \<exists>x[N]. \<exists>y[N]. pair(N,x,y,z) & x \<in> y"
 
 synthesize "is_Memrel" from_definition "is_Memrel" assuming "nonempty"
 arity_theorem for "is_Memrel_fm"
+
+definition RecFun where
+ "RecFun(N,r,f,g,a,b,x) \<equiv> \<exists>xa[N]. \<exists>xb[N].
+                    pair(N,x,a,xa) & xa \<in> r & pair(N,x,b,xb) & xb \<in> r &
+                    (\<exists>fx[N]. \<exists>gx[N]. fun_apply(N,f,x,fx) & fun_apply(N,g,x,gx) &
+                                     fx \<noteq> gx)"
+
+synthesize "RecFun" from_definition "RecFun" assuming "nonempty"
+arity_theorem for "RecFun_fm"
+
+arity_theorem for "rtran_closure_mem_fm"
 
 context M_ZF_trans
 begin
@@ -246,55 +256,17 @@ lemma memrel_sep_intf:
   unfolding is_Memrel_def
   by simp
 
-schematic_goal recfun_fm_auto:
-  assumes
-    "nth(i1,env) = x" "nth(i2,env) = r" "nth(i3,env) = f" "nth(i4,env) = g" "nth(i5,env) = a"
-    "nth(i6,env) = b" "i1\<in>nat" "i2\<in>nat" "i3\<in>nat" "i4\<in>nat" "i5\<in>nat" "i6\<in>nat" "env \<in> list(A)"
-  shows
-    "(\<exists>xa\<in>A. \<exists>xb\<in>A. pair(##A,x,a,xa) & xa \<in> r & pair(##A,x,b,xb) & xb \<in> r &
-                  (\<exists>fx\<in>A. \<exists>gx\<in>A. fun_apply(##A,f,x,fx) & fun_apply(##A,g,x,gx) & fx \<noteq> gx))
-    \<longleftrightarrow> sats(A,?rffm(i1,i2,i3,i4,i5,i6),env)"
-  by (insert assms ; (rule sep_rules | simp)+)
-
-
 lemma is_recfun_sep_intf :
-  assumes
-    "r\<in>M" "f\<in>M" "g\<in>M" "a\<in>M" "b\<in>M"
-  shows
-    "separation(##M,\<lambda>x. \<exists>xa\<in>M. \<exists>xb\<in>M.
+  assumes "r\<in>M" "f\<in>M" "g\<in>M" "a\<in>M" "b\<in>M"
+  shows "separation(##M,\<lambda>x. \<exists>xa\<in>M. \<exists>xb\<in>M.
                     pair(##M,x,a,xa) & xa \<in> r & pair(##M,x,b,xb) & xb \<in> r &
                     (\<exists>fx\<in>M. \<exists>gx\<in>M. fun_apply(##M,f,x,fx) & fun_apply(##M,g,x,gx) &
                                      fx \<noteq> gx))"
-proof -
-  obtain rffm where
-    fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow>
-    (\<exists>xa\<in>M. \<exists>xb\<in>M. pair(##M,nth(0,env),nth(4,env),xa) & xa \<in> nth(1,env) &
-    pair(##M,nth(0,env),nth(5,env),xb) & xb \<in> nth(1,env) & (\<exists>fx\<in>M. \<exists>gx\<in>M.
-    fun_apply(##M,nth(2,env),nth(0,env),fx) & fun_apply(##M,nth(3,env),nth(0,env),gx) & fx \<noteq> gx))
-    \<longleftrightarrow> sats(M,rffm(0,1,2,3,4,5),env)"
-    and
-    "rffm(0,1,2,3,4,5) \<in> formula"
-    and
-    "arity(rffm(0,1,2,3,4,5)) = 6"
-    using recfun_fm_auto by (simp del:FOL_sats_iff pair_abs add:arity ord_simp_union)
-  then
-  have "\<forall>a1\<in>M. \<forall>a2\<in>M. \<forall>a3\<in>M. \<forall>a4\<in>M. \<forall>a5\<in>M.
-        separation(##M, \<lambda>x. sats(M,rffm(0,1,2,3,4,5) , [x,a1,a2,a3,a4,a5]))"
-    using separation_ax by simp
-  moreover
-  have "(\<exists>xa\<in>M. \<exists>xb\<in>M. pair(##M,x,a4,xa) & xa \<in> a1 & pair(##M,x,a5,xb) & xb \<in> a1 &
-          (\<exists>fx\<in>M. \<exists>gx\<in>M. fun_apply(##M,a2,x,fx) & fun_apply(##M,a3,x,gx) & fx \<noteq> gx))
-          \<longleftrightarrow> sats(M,rffm(0,1,2,3,4,5) , [x,a1,a2,a3,a4,a5])"
-    if "x\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "a5\<in>M"  for x a1 a2 a3 a4 a5
-    using that fmsats[of "[x,a1,a2,a3,a4,a5]"] by simp
-  ultimately
-  have "\<forall>a1\<in>M. \<forall>a2\<in>M. \<forall>a3\<in>M. \<forall>a4\<in>M. \<forall>a5\<in>M. separation(##M, \<lambda> x .
-          \<exists>xa\<in>M. \<exists>xb\<in>M. pair(##M,x,a4,xa) & xa \<in> a1 & pair(##M,x,a5,xb) & xb \<in> a1 &
-          (\<exists>fx\<in>M. \<exists>gx\<in>M. fun_apply(##M,a2,x,fx) & fun_apply(##M,a3,x,gx) & fx \<noteq> gx))"
-    unfolding separation_def by simp
-  with \<open>r\<in>M\<close> \<open>f\<in>M\<close> \<open>g\<in>M\<close> \<open>a\<in>M\<close> \<open>b\<in>M\<close> show ?thesis by simp
-qed
-
+  using assms separation_in_ctm[of "RecFun_fm(1,2,3,4,5,0)" "[r,f,g,a,b]" "RecFun(##M,r,f,g,a,b)"]
+    RecFun_iff_sats[of 1 "[_,r,f,g,a,b]" _ 2 _ 3 _ 4 _ 5 _ 0 _ M] arity_RecFun_fm RecFun_fm_type
+    ord_simp_union nonempty
+  unfolding RecFun_def
+  by simp
 
 (* Instance of Replacement for M_basic *)
 
@@ -306,7 +278,6 @@ schematic_goal funsp_fm_auto:
     "(\<exists>f\<in>A. \<exists>b\<in>A. \<exists>nb\<in>A. \<exists>cnbf\<in>A. pair(##A,f,b,p) & pair(##A,n,b,nb) & is_cons(##A,nb,f,cnbf) &
     upair(##A,cnbf,cnbf,z)) \<longleftrightarrow> sats(A,?fsfm(i,j,h),env)"
   by (insert assms ; (rule sep_rules | simp)+)
-
 
 lemma funspace_succ_rep_intf :
   assumes
@@ -358,83 +329,25 @@ sublocale M_ZF_trans \<subseteq> M_basic "##M"
 
 subsection\<open>Interface with \<^term>\<open>M_trancl\<close>\<close>
 
-(* rtran_closure_mem *)
-schematic_goal rtran_closure_mem_auto:
-  assumes
-    "nth(i,env) = p" "nth(j,env) = r"  "nth(k,env) = B"
-    "i \<in> nat" "j \<in> nat" "k \<in> nat" "env \<in> list(A)"
-  shows
-    "rtran_closure_mem(##A,B,r,p) \<longleftrightarrow> sats(A,?rcfm(i,j,k),env)"
-  unfolding rtran_closure_mem_def
-  by (insert assms ; (rule sep_rules | simp)+)
-
-
 lemma (in M_ZF_trans) rtrancl_separation_intf:
-  assumes
-    "r\<in>M"
-    and
-    "A\<in>M"
-  shows
-    "separation (##M, rtran_closure_mem(##M,A,r))"
-proof -
-  obtain rcfm where
-    fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow>
-    (rtran_closure_mem(##M,nth(2,env),nth(1,env),nth(0,env))) \<longleftrightarrow> sats(M,rcfm(0,1,2),env)"
-    and
-    "rcfm(0,1,2) \<in> formula"
-    and
-    "arity(rcfm(0,1,2)) = 3"
-    using rtran_closure_mem_auto by (simp del:FOL_sats_iff pair_abs add:arity ord_simp_union)
-  then
-  have "\<forall>x\<in>M. \<forall>a\<in>M. separation(##M, \<lambda>y. sats(M,rcfm(0,1,2) , [y,x,a]))"
-    using separation_ax by simp
-  moreover
-  have "(rtran_closure_mem(##M,a,x,y))
-          \<longleftrightarrow> sats(M,rcfm(0,1,2) , [y,x,a])"
-    if "y\<in>M" "x\<in>M" "a\<in>M" for y x a
-    using that fmsats[of "[y,x,a]"] by simp
-  ultimately
-  have "\<forall>x\<in>M. \<forall>a\<in>M. separation(##M, rtran_closure_mem(##M,a,x))"
-    unfolding separation_def by simp
-  with \<open>r\<in>M\<close> \<open>A\<in>M\<close> show ?thesis by simp
-qed
+  assumes "r\<in>M" "A\<in>M"
+  shows "separation (##M, rtran_closure_mem(##M,A,r))"
+  using assms separation_in_ctm[of "rtran_closure_mem_fm(1,2,0)" "[A,r]" "rtran_closure_mem(##M,A,r)"]
+    arity_rtran_closure_mem_fm
+    ord_simp_union nonempty
+  by simp
 
-schematic_goal rtran_closure_fm_auto:
-  assumes
-    "nth(i,env) = r" "nth(j,env) = rp"
-    "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
-  shows
-    "rtran_closure(##A,r,rp) \<longleftrightarrow> sats(A,?rtc(i,j),env)"
-  unfolding rtran_closure_def
-  by (insert assms ; (rule sep_rules rtran_closure_mem_auto| simp)+)
-
-schematic_goal trans_closure_fm_auto:
-  assumes
-    "i \<in> nat" "j \<in> nat" "env \<in> list(A)"
-  shows
-    "tran_closure(##A,nth(i,env),nth(j,env)) \<longleftrightarrow> sats(A,?tc(i,j),env)"
-  unfolding tran_closure_def
-  by (insert assms ; (rule sep_rules rtran_closure_fm_auto | simp))+
-
-synthesize "trans_closure" from_schematic trans_closure_fm_auto
-
-arity_theorem for "trans_closure_fm"
-
-lemma arity_tran_closure_fm :
-  "\<lbrakk>x\<in>nat;f\<in>nat\<rbrakk> \<Longrightarrow> arity(trans_closure_fm(x,f)) = succ(x) \<union> succ(f)"
-  unfolding trans_closure_fm_def
-  using arity_omega_fm arity_field_fm arity_typed_function_fm arity_pair_fm arity_empty_fm arity_fun_apply_fm
-    arity_composition_fm arity_succ_fm union_abs2 pred_Un_distrib
-  by (auto simp:FOL_arities)
-
-schematic_goal wellfounded_trancl_fm_auto:
+schematic_goal sats_wellfounded_trancl_fm_auto:
   assumes
     "nth(i,env) = p" "nth(j,env) = r"  "nth(k,env) = B"
     "i \<in> nat" "j \<in> nat" "k \<in> nat" "env \<in> list(A)"
   shows
     "wellfounded_trancl(##A,B,r,p) \<longleftrightarrow> sats(A,?wtf(i,j,k),env)"
   unfolding  wellfounded_trancl_def
-  by (insert assms ; (rule sep_rules trans_closure_iff_sats | simp)+)
+  by (insert assms ; (rule sep_rules tran_closure_iff_sats | simp)+)
+
+arity_theorem for "rtran_closure_fm"
+arity_theorem for "tran_closure_fm"
 
 context M_ZF_trans
 begin
@@ -452,20 +365,13 @@ proof -
     "rcfm(0,1,2) \<in> formula"
     and
     "arity(rcfm(0,1,2)) = 3"
-    using wellfounded_trancl_fm_auto[of concl:M "nth(2,_)"]
+    using sats_wellfounded_trancl_fm_auto[of concl:M "nth(2,_)"]
     by (simp del:FOL_sats_iff pair_abs add: arity ord_simp_union)
   then
-  have "\<forall>x\<in>M. \<forall>z\<in>M. separation(##M, \<lambda>y. sats(M,rcfm(0,1,2) , [y,x,z]))"
-    using separation_ax by simp
-  moreover
-  have "(wellfounded_trancl(##M,z,x,y))
-          \<longleftrightarrow> sats(M,rcfm(0,1,2) , [y,x,z])"
-    if "y\<in>M" "x\<in>M" "z\<in>M" for y x z
-    using that fmsats[of "[y,x,z]"] by simp
-  ultimately
-  have "\<forall>x\<in>M. \<forall>z\<in>M. separation(##M, wellfounded_trancl(##M,z,x))"
-    unfolding separation_def by simp
-  with \<open>r\<in>M\<close> \<open>Z\<in>M\<close> show ?thesis by simp
+  show ?thesis
+  using assms separation_in_ctm[of "rcfm(0,1,2)" "[r,Z]" "wellfounded_trancl(##M,Z,r)"]
+    ord_simp_union nonempty fmsats[of "[_,r,Z]"]
+  by simp
 qed
 
 text\<open>Proof that \<^term>\<open>nat \<in> M\<close>\<close>
@@ -474,11 +380,15 @@ lemma finite_sep_intf: "separation(##M, \<lambda>x. x\<in>nat)"
 proof -
   have "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,finite_ordinal_fm(0),[x,v])))"
     using separation_ax by (simp add:arity)
-  then have "(\<forall>v\<in>M. separation(##M,finite_ordinal(##M)))"
+  then 
+  have "(\<forall>v\<in>M. separation(##M,finite_ordinal(##M)))"
     unfolding separation_def by simp
-  then have "separation(##M,finite_ordinal(##M))"
-    using zero_in_M by auto
-  then show ?thesis unfolding separation_def by simp
+  then 
+  have "separation(##M,finite_ordinal(##M))"
+    using separation_in_ctm 
+      zero_in_M by auto
+  then
+  show ?thesis unfolding separation_def by simp
 qed
 
 lemma nat_subset_I':
@@ -488,15 +398,20 @@ lemma nat_subset_I':
 lemma nat_subset_I: "\<exists>I\<in>M. nat \<subseteq> I"
 proof -
   have "\<exists>I\<in>M. 0\<in>I \<and> (\<forall>x\<in>M. x\<in>I \<longrightarrow> succ(x)\<in>I)"
-    using infinity_ax unfolding infinity_ax_def by auto
-  then obtain I where
+    using infinity_ax 
+    unfolding infinity_ax_def by auto
+  then 
+  obtain I where
     "I\<in>M" "0\<in>I" "(\<forall>x\<in>M. x\<in>I \<longrightarrow> succ(x)\<in>I)"
     by auto
-  then have "\<And>x. x\<in>I \<Longrightarrow> succ(x)\<in>I"
+  then 
+  have "\<And>x. x\<in>I \<Longrightarrow> succ(x)\<in>I"
     using transitivity by simp
-  then have "nat\<subseteq>I"
+  then 
+  have "nat\<subseteq>I"
     using  \<open>I\<in>M\<close> \<open>0\<in>I\<close> nat_subset_I' by simp
-  then show ?thesis using \<open>I\<in>M\<close> by auto
+  then 
+  show ?thesis using \<open>I\<in>M\<close> by auto
 qed
 
 lemma nat_in_M: "nat \<in> M"
@@ -506,9 +421,11 @@ proof -
   obtain I where
     "I\<in>M" "nat\<subseteq>I"
     using nat_subset_I by auto
-  then have "{x\<in>I . x\<in>nat} \<in> M"
+  then 
+  have "{x\<in>I . x\<in>nat} \<in> M"
     using finite_sep_intf separation_closed[of "\<lambda>x . x\<in>nat"] by simp
-  then show ?thesis
+  then 
+  show ?thesis
     using \<open>nat\<subseteq>I\<close> 1 by simp
 qed
 
