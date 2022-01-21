@@ -36,8 +36,6 @@ qed
 
 subsection\<open>The set of finite binary sequences\<close>
 
-notation nat (\<open>\<omega>\<close>) (* TODO: already in ZF Library *)
-
 text\<open>We implement the poset for adding one Cohen real, the set
 $2^{<\omega}$ of finite binary sequences.\<close>
 
