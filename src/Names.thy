@@ -790,7 +790,7 @@ schematic_goal rcheck_fm_auto:
     "is_rcheck(nth(i,env),nth(j,env)) \<longleftrightarrow> sats(M,?rch(i,j),env)"
   unfolding is_rcheck_def
   by (insert assms ; (rule sep_rules singleton_iff_sats is_eclose_iff_sats
-        trans_closure_iff_sats | simp)+)
+        tran_closure_iff_sats | simp)+)
 
 synthesize "rcheck" from_schematic rcheck_fm_auto
 arity_theorem for "rcheck_fm"

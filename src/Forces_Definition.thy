@@ -174,7 +174,7 @@ definition
 
 definition
   forcerel_fm :: "i\<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
-  "forcerel_fm(p,x,z) \<equiv> Exists(Exists(And(trans_closure_fm(1, z#+2),
+  "forcerel_fm(p,x,z) \<equiv> Exists(Exists(And(tran_closure_fm(1, z#+2),
                                         And(is_names_below_fm(p#+2,x#+2,0),frecrel_fm(0,1)))))"
 
 lemma arity_forcerel_fm:
@@ -194,9 +194,9 @@ lemma sats_forcerel_fm:
   shows
     "sats(A,forcerel_fm(p,x,z),env) \<longleftrightarrow> is_forcerel(##A,nth(p,env),nth(x, env),nth(z, env))"
 proof -
-  have "sats(A,trans_closure_fm(1,z #+ 2),Cons(nb,Cons(r,env))) \<longleftrightarrow>
+  have "sats(A,tran_closure_fm(1,z #+ 2),Cons(nb,Cons(r,env))) \<longleftrightarrow>
         tran_closure(##A, r, nth(z, env))" if "r\<in>A" "nb\<in>A" for r nb
-    using that assms trans_closure_iff_sats[of 1 "[nb,r]@env" _ "z#+2",symmetric] by simp
+    using that assms tran_closure_iff_sats[of 1 "[nb,r]@env" _ "z#+2",symmetric] by simp
   moreover
   have "sats(A, is_names_below_fm(succ(succ(p)), succ(succ(x)), 0), Cons(nb, Cons(r, env))) \<longleftrightarrow>
         is_names_below(##A, nth(p,env), nth(x, env), nb)"
