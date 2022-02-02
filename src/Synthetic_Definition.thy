@@ -52,8 +52,8 @@ fun arity_goal intermediate def_name lthy =
     val (def, tm) = tm |> Utils.dest_eq_tms'
     fun first_lambdas (Abs (body as (_, ty, _))) =
         if ty = @{typ "i"}
-          then (op ::) (Term.dest_abs body |>> Utils.var_i ||> first_lambdas)
-          else Term.dest_abs body |> first_lambdas o #2
+          then (op ::) (Utils.dest_abs body |>> Utils.var_i ||> first_lambdas)
+          else Utils.dest_abs body |> first_lambdas o #2
       | first_lambdas _ = []
     val (def, vars) = Term.strip_comb def
     val vs = vars @ first_lambdas tm
@@ -246,8 +246,8 @@ let
              |> List.map (Utils.var_i o #1 o #1 o #1)
     fun first_lambdas (Abs (body as (_, ty, _))) =
         if ty = @{typ "i"}
-          then (op ::) (Term.dest_abs body |>> Utils.var_i ||> first_lambdas)
-          else Term.dest_abs body |> first_lambdas o #2
+          then (op ::) (Utils.dest_abs body |>> Utils.var_i ||> first_lambdas)
+          else Utils.dest_abs body |> first_lambdas o #2
       | first_lambdas _ = []
     val vs = vs @ (first_lambdas tm)
     val ctxt1' = fold Utils.add_to_context (map Utils.freeName vs) ctxt1

@@ -10,6 +10,7 @@ signature Utils =
     val app_: term -> term -> term
     val concat_: term -> term -> term
     val dest_apply: term -> term * term
+    val dest_abs : string * typ * term -> string * term
     val dest_iff_lhs: term -> term
     val dest_iff_rhs: term -> term
     val dest_iff_tms: term -> term * term
@@ -44,7 +45,7 @@ signature Utils =
     val reachable : (''a -> ''a -> bool) -> ''a list -> ''a list -> ''a list
     val subset_: term -> term -> term
     val thm_concl_tm :  Proof.context -> xstring ->
-        ((indexname * typ) * cterm) list * term * Proof.context
+        cterm Vars.table * term * Proof.context
     val to_ML_list: term -> term list
     val tp: term -> term
     val var_i : string -> term
@@ -185,5 +186,7 @@ fun var_i s = Free (s, @{typ "i"})
 
 fun map_option f (SOME a) = SOME (f a)
   | map_option _ NONE = NONE
+
+fun dest_abs (v, _, t) = Term.dest_abs_fresh v t |>> #1
 
 end
