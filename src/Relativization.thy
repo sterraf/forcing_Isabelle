@@ -196,7 +196,6 @@ structure Data = Generic_Data
 (
   type T = Database.db
   val empty = Database.empty (* Should we initialize this outside this file? *)
-  val extend = I
   val merge = Database.merge
 );
 

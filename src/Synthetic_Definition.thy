@@ -52,11 +52,12 @@ fun arity_goal intermediate def_name lthy =
     val (def, tm) = tm |> Utils.dest_eq_tms'
     fun first_lambdas (Abs (body as (_, ty, _))) =
         if ty = @{typ "i"}
-          then (op ::) (Utils.dest_abs body |>> Utils.var_i ||> first_lambdas)
-          else Utils.dest_abs body |> first_lambdas o #2
+          then (warning (@{make_string} (Utils.dest_abs body |> #1, "i")); (op ::) (Utils.dest_abs body |>> Utils.var_i ||> first_lambdas))
+          else (warning (@{make_string} (Utils.dest_abs body |> #1, ty)); Utils.dest_abs body |> first_lambdas o #2)
       | first_lambdas _ = []
     val (def, vars) = Term.strip_comb def
     val vs = vars @ first_lambdas tm
+    val _ = warning (@{make_string} vs)
     val def = fold (op $`) vs def
     val hyps = map (fn v => Utils.mem_ v Utils.nat_ |> Utils.tp) vs
     val concl = @{const IFOL.eq(i)} $ (@{const arity} $ def) $ Var (("ar", 0), @{typ "i"})
@@ -198,6 +199,23 @@ fun synth_thm_tc def_name term hyps vars pos lthy =
 
 fun synthetic_def def_name thm_ref pos tc auto thy =
   let
+    val thm = Proof_Context.get_thm thy thm_ref
+    val thm_vars = rev (Term.add_vars (Thm.full_prop_of thm) [])
+    val (((_,inst),thm_tms),_) = Variable.import true [thm] thy
+    val vars = map (fn v => (v, the (Vars.lookup inst v))) thm_vars
+    val (tm,hyps) = thm_tms |> hd |> Thm.concl_of &&& Thm.prems_of
+    val (lhs,rhs) = tm |> Utils.dest_iff_tms o Utils.dest_trueprop
+    val ((set,t),env) = rhs |> Utils.dest_sats_frm
+    fun relevant ts (@{const mem} $ t $ _) =
+          (not (t = @{term "0"})) andalso
+          (not (Term.is_Free t) orelse member (op =) ts (t |> Term.dest_Free |> #1))
+      | relevant _ _ = false
+    val t_vars = sort_strings (Term.add_free_names t [])
+    val vs = filter (member (op =) t_vars o #1 o #1 o #1) vars
+    val at = fold_rev (lambda o Thm.term_of o #2) vs t
+    val hyps' = filter (relevant t_vars o Utils.dest_trueprop) hyps
+    val def_attrs = @{attributes [fm_definitions]}
+    (*
     val (((_,vars),thm_tms),_) = Variable.import true [Proof_Context.get_thm thy thm_ref] thy
     val (tm,hyps) = thm_tms |> hd |> Thm.concl_of &&& Thm.prems_of
     val (lhs,rhs) = tm |> Utils.dest_iff_tms o Utils.dest_trueprop
@@ -211,6 +229,7 @@ fun synthetic_def def_name thm_ref pos tc auto thy =
     val at = List.foldr (fn ((_,var),t') => lambda (Thm.term_of var) t') t vs
     val hyps' = List.filter (relevant t_vars o Utils.dest_trueprop) hyps
     val def_attrs = @{attributes [fm_definitions]}
+    *)
   in
     Local_Theory.define ((Binding.name (def_name ^ "_fm"), NoSyn),
                         ((Binding.name (def_name ^ "_fm_def"), def_attrs), at)) thy

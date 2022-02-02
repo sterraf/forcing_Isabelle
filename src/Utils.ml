@@ -44,8 +44,7 @@ signature Utils =
     val nth_: term -> term -> term
     val reachable : (''a -> ''a -> bool) -> ''a list -> ''a list -> ''a list
     val subset_: term -> term -> term
-    val thm_concl_tm :  Proof.context -> xstring ->
-        cterm Vars.table * term * Proof.context
+    val thm_concl_tm :  Proof.context -> xstring -> (Vars.key * cterm) list  * term * Proof.context
     val to_ML_list: term -> term list
     val tp: term -> term
     val var_i : string -> term
@@ -129,8 +128,13 @@ val dest_iff_lhs = #1 o dest_iff_tms
 val dest_iff_rhs = #2 o dest_iff_tms
 
 fun thm_concl_tm ctxt thm_ref =
-  let val (((_,vars),thm_tms),ctxt1) = Variable.import true [Proof_Context.get_thm ctxt thm_ref] ctxt
-  in (vars, thm_tms |> hd |> Thm.concl_of, ctxt1)
+  let
+    val thm = Proof_Context.get_thm ctxt thm_ref
+    val thm_vars = rev (Term.add_vars (Thm.full_prop_of thm) [])
+    val (((_,inst),thm_tms),ctxt1) = Variable.import true [thm] ctxt
+    val vars = map (fn v => (v, the (Vars.lookup inst v))) thm_vars
+  in
+    (vars, thm_tms |> hd |> Thm.concl_of, ctxt1)
 end
 
 fun fix_vars thm vars ctxt = let
