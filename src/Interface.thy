@@ -8,7 +8,7 @@ a sublocale of all relevant locales in ZF-Constructibility
 
 theory Interface
   imports
-    Relative_Univ
+    Univ_Relative
     Renaming_Auto
     Discipline_Function
 begin
@@ -735,118 +735,59 @@ sublocale M_ZF_trans \<subseteq> M_eclose "##M"
 
 (* Interface with locale M_eclose_pow *)
 
-(* "powerset(M,A,z) \<equiv> \<forall>x[M]. x \<in> z \<longleftrightarrow> subset(M,x,A)" *)
-definition
-  powerset_fm :: "[i,i] \<Rightarrow> i" where
-  "powerset_fm(A,z) \<equiv> Forall(Iff(Member(0,succ(z)),subset_fm(0,succ(A))))"
-
-lemma powerset_type [TC]:
-  "\<lbrakk> x \<in> nat; y \<in> nat \<rbrakk> \<Longrightarrow> powerset_fm(x,y) \<in> formula"
-  by (simp add:powerset_fm_def)
-
-definition
-  is_powapply_fm :: "[i,i,i] \<Rightarrow> i" where
-  "is_powapply_fm(f,y,z) \<equiv>
-      Exists(And(fun_apply_fm(succ(f), succ(y), 0),
-            Forall(Iff(Member(0, succ(succ(z))),
-            Forall(Implies(Member(0, 1), Member(0, 2)))))))"
-
-lemma is_powapply_type [TC] :
-  "\<lbrakk>f\<in>nat ; y\<in>nat; z\<in>nat\<rbrakk> \<Longrightarrow> is_powapply_fm(f,y,z)\<in>formula"
-  unfolding is_powapply_fm_def by simp
-
-declare is_powapply_fm_def[fm_definitions add]
-
-lemma sats_is_powapply_fm :
-  assumes
-    "f\<in>nat" "y\<in>nat" "z\<in>nat" "env\<in>list(A)" "0\<in>A"
-  shows
-    "is_powapply(##A,nth(f, env),nth(y, env),nth(z, env))
-    \<longleftrightarrow> sats(A,is_powapply_fm(f,y,z),env)"
-  unfolding is_powapply_def is_powapply_fm_def powerset_def subset_def
-  using nth_closed assms by simp
-
-
-lemma (in M_ZF_trans) powapply_repl :
-  assumes
-    "f\<in>M"
-  shows
-    "strong_replacement(##M,is_powapply(##M,f))"
+lemma (in M_ZF_trans) Powapply_repl :
+  assumes "f\<in>M"
+  shows "strong_replacement(##M,\<lambda>x y. y=Powapply_rel(##M,f,x))"
 proof -
-  have "arity(is_powapply_fm(2,0,1)) = 3"
-    unfolding is_powapply_fm_def
-    by (simp add:arity ord_simp_union)
-  then
-  have "\<forall>f0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,is_powapply_fm(2,0,1) , [p,z,f0]))"
-    using replacement_ax[of "is_powapply_fm(2,0,1)"] by simp
+  note assms
   moreover
-  have "is_powapply(##M,f0,p,z) \<longleftrightarrow> sats(M,is_powapply_fm(2,0,1) , [p,z,f0])"
-    if "p\<in>M" "z\<in>M" "f0\<in>M" for p z f0
-    using that zero_in_M sats_is_powapply_fm[of 2 0 1 "[p,z,f0]" M] by simp
+  have "arity(is_Powapply_fm(2,0,1)) = 3"
+    unfolding is_Powapply_fm_def
+    by (simp add:arity ord_simp_union)
+  moreover from calculation
+  have iff:"z=Powapply_rel(##M,f,p) \<longleftrightarrow> sats(M,is_Powapply_fm(2,0,1) , [p,z,f])"
+    if "p\<in>M" "z\<in>M" for p z
+    using that zero_in_M sats_is_Powapply_fm[of 2 0 1 "[p,z,f]" M] is_Powapply_iff
+      replacement_ax[of "is_Powapply_fm(2,0,1)"] 
+    by simp
   ultimately
-  have "\<forall>f0\<in>M. strong_replacement(##M, is_powapply(##M,f0))"
-    unfolding strong_replacement_def univalent_def by simp
-  with \<open>f\<in>M\<close> show ?thesis by simp
+  show ?thesis
+    using replacement_ax[of "is_Powapply_fm(2,0,1)"]
+    by (rule_tac strong_replacement_cong[THEN iffD2,OF iff],simp_all)
 qed
 
-
-(*"PHrank(M,f,y,z) \<equiv> M(z) \<and> (\<exists>fy[M]. fun_apply(M,f,y,fy) \<and> successor(M,fy,z))"*)
 definition
-  PHrank_fm :: "[i,i,i] \<Rightarrow> i" where
-  "PHrank_fm(f,y,z) \<equiv> Exists(And(fun_apply_fm(succ(f),succ(y),0)
-                                 ,succ_fm(0,succ(z))))"
+  PHrank :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
+  "PHrank(M,f,y,z) \<equiv> (\<exists>fy[M]. fun_apply(M,f,y,fy) \<and> successor(M,fy,z))"
 
-lemma PHrank_type [TC]:
-  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat \<rbrakk> \<Longrightarrow> PHrank_fm(x,y,z) \<in> formula"
-  by (simp add:PHrank_fm_def)
-
-
-lemma (in M_ZF_trans) sats_PHrank_fm:
-  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat;  env \<in> list(M) \<rbrakk>
-    \<Longrightarrow> sats(M,PHrank_fm(x,y,z),env) \<longleftrightarrow>
-        PHrank(##M,nth(x,env),nth(y,env),nth(z,env))"
-  using zero_in_M Internalizations.nth_closed by (simp add: PHrank_def PHrank_fm_def)
-
-
+synthesize "PHrank" from_definition assuming "nonempty"
 lemma (in M_ZF_trans) phrank_repl :
   assumes
     "f\<in>M"
   shows
-    "strong_replacement(##M,PHrank(##M,f))"
+    "strong_replacement(##M, \<lambda>x y. y = succ(f`x))"
 proof -
+  note assms
+  moreover from this
+  have iff:"y = succ(f ` x) \<longleftrightarrow> M, [x, y, f] \<Turnstile> PHrank_fm(2, 0, 1)" if "x\<in>M" "y\<in>M" for x y
+    using PHrank_iff_sats[of 2 "[x,y,f]" f 0 _ 1 _ M] zero_in_M that
+    apply_closed 
+    unfolding PHrank_def
+    by simp
+  moreover
   have "arity(PHrank_fm(2,0,1)) = 3"
     unfolding PHrank_fm_def
     by (simp add:arity ord_simp_union)
-  then
-  have "\<forall>f0\<in>M. strong_replacement(##M, \<lambda>p z. sats(M,PHrank_fm(2,0,1) , [p,z,f0]))"
-    using replacement_ax[of "PHrank_fm(2,0,1)"] by simp
-  then
-  have "\<forall>f0\<in>M. strong_replacement(##M, PHrank(##M,f0))"
-    unfolding strong_replacement_def univalent_def by (simp add:sats_PHrank_fm)
-  with \<open>f\<in>M\<close> show ?thesis by simp
+  ultimately
+  show ?thesis 
+    using replacement_ax[of "PHrank_fm(2,0,1)"] 
+    unfolding PHrank_def
+    by(rule_tac strong_replacement_cong[THEN iffD2,OF iff],simp_all)
 qed
-
-
-(*"is_Hrank(M,x,f,hc) \<equiv> (\<exists>R[M]. big_union(M,R,hc) \<and>is_Replace(M,x,PHrank(M,f),R)) "*)
-definition
-  is_Hrank_fm :: "[i,i,i] \<Rightarrow> i" where
-  "is_Hrank_fm(x,f,hc) \<equiv> Exists(And(big_union_fm(0,succ(hc)),
-                                Replace_fm(succ(x),PHrank_fm(succ(succ(succ(f))),0,1),0)))"
-
-lemma is_Hrank_type [TC]:
-  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat \<rbrakk> \<Longrightarrow> is_Hrank_fm(x,y,z) \<in> formula"
-  by (simp add:is_Hrank_fm_def)
-
-lemma (in M_ZF_trans) sats_is_Hrank_fm:
-  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat; env \<in> list(M)\<rbrakk>
-    \<Longrightarrow> sats(M,is_Hrank_fm(x,y,z),env) \<longleftrightarrow>
-        is_Hrank(##M,nth(x,env),nth(y,env),nth(z,env))"
-  using zero_in_M is_Hrank_def is_Hrank_fm_def sats_Replace_fm
-  by (simp add:sats_PHrank_fm)
 
 declare is_Hrank_fm_def[fm_definitions add]
 declare PHrank_fm_def[fm_definitions add]
-(* M(x) \<Longrightarrow> wfrec_replacement(M,is_Hrank(M),rrank(x)) *)
+
 lemma (in M_ZF_trans) wfrec_rank :
   assumes
     "X\<in>M"
@@ -857,13 +798,15 @@ proof -
     "is_Hrank(##M,a2, a1, a0) \<longleftrightarrow>
              sats(M, is_Hrank_fm(2,1,0), [a0,a1,a2,a3,a4,y,x,z,rrank(X)])"
     if "a4\<in>M" "a3\<in>M" "a2\<in>M" "a1\<in>M" "a0\<in>M" "y\<in>M" "x\<in>M" "z\<in>M" for a4 a3 a2 a1 a0 y x z
-    using that rrank_in_M \<open>X\<in>M\<close> by (simp add:sats_is_Hrank_fm)
+    using that rrank_in_M \<open>X\<in>M\<close> zero_in_M is_Hrank_iff_sats
+    by simp
   then
   have
     1:"sats(M, is_wfrec_fm(is_Hrank_fm(2,1,0),3,1,0),[y,x,z,rrank(X)])
   \<longleftrightarrow> is_wfrec(##M, is_Hrank(##M) ,rrank(X), x, y)"
     if "y\<in>M" "x\<in>M" "z\<in>M" for y x z
-    using that \<open>X\<in>M\<close> rrank_in_M sats_is_wfrec_fm by (simp add:sats_is_Hrank_fm)
+    using that \<open>X\<in>M\<close> rrank_in_M sats_is_wfrec_fm zero_in_M 
+    by simp
   let
     ?f="Exists(And(pair_fm(1,0,2),is_wfrec_fm(is_Hrank_fm(2,1,0),3,1,0)))"
   have satsf:"sats(M, ?f, [x,z,rrank(X)])
@@ -875,44 +818,18 @@ proof -
     by (simp add:arity ord_simp_union)
   then
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,rrank(X)]))"
-    using replacement_ax[of ?f] 1 \<open>X\<in>M\<close> rrank_in_M by simp
+    using replacement_ax[of ?f] 1 \<open>X\<in>M\<close> rrank_in_M 
+    by simp
   then
   have "strong_replacement(##M,\<lambda>x z.
           \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hrank(##M) , rrank(X), x, y))"
-    using repl_sats[of M ?f "[rrank(X)]"]  satsf by (simp del:pair_abs)
+    using repl_sats[of M ?f "[rrank(X)]"]  satsf 
+    by (simp del:pair_abs)
   then
-  show ?thesis unfolding wfrec_replacement_def  by simp
+  show ?thesis 
+    unfolding wfrec_replacement_def  
+    by simp
 qed
-
-(*"is_HVfrom(M,A,x,f,h) \<equiv> \<exists>U[M]. \<exists>R[M].  union(M,A,U,h)
-        \<and> big_union(M,R,U) \<and> is_Replace(M,x,is_powapply(M,f),R)"*)
-definition
-  is_HVfrom_fm :: "[i,i,i,i] \<Rightarrow> i" where
-  "is_HVfrom_fm(A,x,f,h) \<equiv> Exists(Exists(And(union_fm(A #+ 2,1,h #+ 2),
-                            And(big_union_fm(0,1),
-                            Replace_fm(x #+ 2,is_powapply_fm(f #+ 4,0,1),0)))))"
-declare is_HVfrom_fm_def[fm_definitions add]
-
-arity_theorem for "is_HVfrom_fm"
-
-lemma is_HVfrom_type [TC]:
-  "\<lbrakk> A\<in>nat; x \<in> nat; f \<in> nat; h \<in> nat \<rbrakk> \<Longrightarrow> is_HVfrom_fm(A,x,f,h) \<in> formula"
-  by (simp add:is_HVfrom_fm_def)
-
-lemma sats_is_HVfrom_fm :
-  "\<lbrakk> a\<in>nat; x \<in> nat; f \<in> nat; h \<in> nat; env \<in> list(A); 0\<in>A\<rbrakk>
-    \<Longrightarrow> sats(A,is_HVfrom_fm(a,x,f,h),env) \<longleftrightarrow>
-        is_HVfrom(##A,nth(a,env),nth(x,env),nth(f,env),nth(h,env))"
-  using is_HVfrom_def is_HVfrom_fm_def sats_Replace_fm[OF sats_is_powapply_fm]
-  by simp
-
-lemma is_HVfrom_iff_sats:
-  assumes
-    "nth(a,env) = aa" "nth(x,env) = xx" "nth(f,env) = ff" "nth(h,env) = hh"
-    "a\<in>nat" "x\<in>nat" "f\<in>nat" "h\<in>nat" "env\<in>list(A)" "0\<in>A"
-  shows
-    "is_HVfrom(##A,aa,xx,ff,hh) \<longleftrightarrow> sats(A, is_HVfrom_fm(a,x,f,h), env)"
-  using assms sats_is_HVfrom_fm by simp
 
 (* FIX US *)
 schematic_goal sats_is_Vset_fm_auto:
@@ -978,9 +895,10 @@ proof -
     using \<open>i\<in>M\<close> memrel_eclose_sing by simp
 qed
 
-sublocale M_ZF_trans \<subseteq> M_eclose_pow "##M"
-  using power_ax powapply_repl phrank_repl trans_repl_HVFrom
-    wfrec_rank by unfold_locales auto
+sublocale M_ZF_trans \<subseteq> M_Vfrom "##M"
+  using power_ax Powapply_repl phrank_repl trans_repl_HVFrom wfrec_rank
+  by unfold_locales auto
+
 
 subsection\<open>Interface for proving Collects and Replace in M.\<close>
 context M_ZF_trans

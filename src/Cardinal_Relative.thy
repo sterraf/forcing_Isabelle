@@ -4,7 +4,7 @@ theory Cardinal_Relative
   imports
     Discipline_Cardinal
     Lambda_Replacement
-    Relative_Univ
+    Univ_Relative
 begin
 
 declare FOL_arities [simp del]

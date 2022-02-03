@@ -1,6 +1,8 @@
 theory Aleph_Relative
   imports
+    Univ_Relative
     CardinalArith_Relative
+    Cardinal_Relative
 begin
 
 definition

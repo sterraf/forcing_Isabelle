@@ -71,7 +71,7 @@ definition body_ground_repl_fm where
 lemma body_ground_repl_fm_type[TC]: "\<phi>\<in>formula \<Longrightarrow> body_ground_repl_fm(\<phi>)\<in>formula"
   unfolding body_ground_repl_fm_def by simp
 
-arity_theorem for "is_powapply_fm"
+arity_theorem for "is_Powapply_fm"
 
 lemma arity_body_ground_repl_fm_le: 
   notes le_trans[trans]
@@ -101,8 +101,7 @@ proof -
   show ?thesis
     using \<open>\<phi>\<in>formula\<close> unfolding body_ground_repl_fm_def
     by (simp add:arity pred_Un_distrib, subst arity_transrec_fm[of "is_HVfrom_fm(8,2,1,0)" 3 1])
-      (simp_all add: arity,
-        subst arity_Replace_fm[of "is_powapply_fm(5, 0, 1)" 4 0], auto simp add:arity ord_simp_union)
+      (simp_all add:  arity_is_HVfrom_fm,simp_all add: arity ord_simp_union arity_is_HVfrom_fm)
 qed
 
 lemma sats_body_ground_repl_fm:
@@ -115,7 +114,7 @@ lemma sats_body_ground_repl_fm:
     \<longleftrightarrow> M, [\<alpha>, x, m, P, leq, one] @ nenv \<Turnstile> body_ground_repl_fm(\<phi>)"
 proof -
   {
-    fix \<tau> V t p 
+    fix \<tau> V t p                                                            
     assume "\<tau> \<in> M" "V \<in> M" "x = \<langle>t, p\<rangle>" "t \<in> M" "p \<in> M"
     with assms
     have "\<tau> \<in> V \<and> (M, [p,P,leq,one,t,\<tau>] @ nenv \<Turnstile> forces(\<phi>)) \<longleftrightarrow>
