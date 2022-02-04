@@ -9,18 +9,22 @@ theory Univ_Relative
 
 begin
 
-declare arity_subset_fm [simp del] arity_ordinal_fm[simp del, arity] arity_transset_fm[simp del]
+declare arity_ordinal_fm[arity]
 
-declare (in M_trivial) powerset_abs[simp]
+context M_trivial
+begin
+declare powerset_abs[simp]
 
-lemma (in M_trivial) family_union_closed: "\<lbrakk>strong_replacement(M, \<lambda>x y. y = f(x)); M(A); \<forall>x\<in>A. M(f(x))\<rbrakk>
+lemma family_union_closed: "\<lbrakk>strong_replacement(M, \<lambda>x y. y = f(x)); M(A); \<forall>x\<in>A. M(f(x))\<rbrakk>
       \<Longrightarrow> M(\<Union>x\<in>A. f(x))"
   using RepFun_closed ..
 
-lemma (in M_trivial) family_union_closed': "\<lbrakk>strong_replacement(M, \<lambda>x y. x\<in>A \<and> y = f(x)); M(A); \<forall>x\<in>A. M(f(x))\<rbrakk>
+lemma family_union_closed': "\<lbrakk>strong_replacement(M, \<lambda>x y. x\<in>A \<and> y = f(x)); M(A); \<forall>x\<in>A. M(f(x))\<rbrakk>
       \<Longrightarrow> M(\<Union>x\<in>A. f(x))"
   using RepFun_closed2 
   by simp
+
+end \<comment> \<open>\<^locale>\<open>M_trivial\<close>\<close>
 
 definition
   Powapply :: "[i,i] \<Rightarrow> i"  where
@@ -82,7 +86,7 @@ lemma arity_is_HVfrom_fm:
     arity(is_HVfrom_fm(A, x, f, d)) = succ(A) \<union> succ(d) \<union> (succ(x) \<union> succ(f))"
   using arity_is_HVfrom_fm' arity_is_Powapply_fm
   by(simp,subst arity_Replace_fm[of " \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> is_Powapply_fm(succ(succ(succ(succ(f)))), 0, 1) \<cdot>\<cdot>" "succ(succ(x))" 1])
-     (simp_all,simp add:arity pred_Un_distrib )
+    (simp_all,simp add:arity pred_Un_distrib )
 
 notation HVfrom_rel (\<open>HVfrom\<^bsup>_\<^esup>'(_,_,_')\<close>)
 

@@ -210,7 +210,7 @@ proof -
   then
   show ?thesis
     using separation_sat_after_function assms types
-    using snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
+    using fst_abs snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
     unfolding hcomp_fm_def check_fm'_def
     by simp
 qed
@@ -243,6 +243,7 @@ proof -
   moreover from calculation
   have sep:"separation(##M,\<lambda>z. M,?\<rho>'(z)\<Turnstile>?\<phi>)"
     using separation_sat_after_function assms types sats_check_fm check_abs check_in_M
+      fst_abs snd_abs
     unfolding hcomp_fm_def check_fm'_def
     by simp
   moreover
@@ -274,7 +275,7 @@ proof -
       by (simp_all add:arity)
     then
     show ?thesis
-      using separation_sat_after_function assms types sats_check_fm check_abs that
+      using separation_sat_after_function assms types sats_check_fm check_abs fst_abs snd_abs that
       unfolding hcomp_fm_def check_fm'_def
       by simp
   qed
@@ -316,7 +317,7 @@ proof -
     ultimately
     show ?thesis
       using separation_sat_after_function3[OF _ _ _ f_fm_facts] check_abs
-        types assms sats_check_fm that
+        types assms sats_check_fm that fst_abs snd_abs
       unfolding hcomp_fm_def check_fm'_def
       by simp
   qed
@@ -353,7 +354,7 @@ proof -
     ultimately
     show ?thesis
       using separation_sat_after_function_1 assms sats_fst_fm that
-        snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
+        fst_abs snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
       unfolding hcomp_fm_def check_fm'_def
       by simp
   qed
@@ -589,7 +590,8 @@ proof -
       let ?f="val(P,G,f_dot)"
       assume "M_generic(G) \<and> r \<in> G"
       moreover from this
-      interpret g:G_generic _ _ _ _ _ G by unfold_locales simp
+      interpret g:G_generic _ _ _ _ _ G 
+        by unfold_locales simp
       note \<open>r\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
       moreover from this
       have "map(val(P, G), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[G])" by simp

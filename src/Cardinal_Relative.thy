@@ -7,8 +7,6 @@ theory Cardinal_Relative
     Univ_Relative
 begin
 
-declare FOL_arities [simp del]
-
 hide_const (open) L
 
 definition

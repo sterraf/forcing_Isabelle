@@ -162,11 +162,11 @@ lemmas sharp_simps = Card_rel_Union Card_rel_cardinal_rel Collect_abs
   formula_functor_abs fst_closed function_abs function_space_rel_closed
   hd_abs image_abs image_closed inj_rel_closed injection_abs inter_abs
   irreflexive_abs is_depth_apply_abs is_eclose_n_abs is_funspace_abs
-  iterates_closed le_abs length_abs length_closed lepoll_rel_refl
+  iterates_closed length_abs length_closed lepoll_rel_refl
   limit_ordinal_abs linear_rel_abs list_N_abs list_N_closed list_abs
-  list_case'_closed list_case_abs list_closed list_functor_abs lt_abs
+  list_case'_closed list_case_abs list_closed list_functor_abs
   mem_bij_abs mem_eclose_abs mem_inj_abs mem_list_abs membership_abs
-  minimum_closed nat_case_abs nat_case_closed nonempty not_abs
+  nat_case_abs nat_case_closed nonempty not_abs
   not_closed nth_abs number1_abs number2_abs number3_abs omega_abs
   or_abs or_closed order_isomorphism_abs ordermap_closed
   ordertype_closed ordinal_abs pair_abs pair_in_M_iff powerset_abs
@@ -179,7 +179,7 @@ lemmas sharp_simps = Card_rel_Union Card_rel_cardinal_rel Collect_abs
   surj_rel_closed surjection_abs tl_abs trancl_abs trancl_closed
   transitive_rel_abs transitive_set_abs typed_function_abs union_abs
   upair_abs upair_in_M_iff vimage_abs vimage_closed well_ord_abs
-  mem_formula_abs fst_abs snd_abs nth_closed Aleph_rel_closed csucc_rel_closed
+  mem_formula_abs nth_closed Aleph_rel_closed csucc_rel_closed
   Card_rel_Aleph_rel
 
 declare sharp_simps[simp del, simplified setclass_iff, simp]
@@ -223,13 +223,13 @@ lemmas mg_sharp_simps = ext.Card_rel_Union ext.Card_rel_cardinal_rel
   ext.hd_abs ext.image_abs ext.image_closed ext.inj_rel_closed
   ext.injection_abs ext.inter_abs ext.irreflexive_abs
   ext.is_depth_apply_abs ext.is_eclose_n_abs ext.is_funspace_abs
-  ext.iterates_closed ext.le_abs ext.length_abs ext.length_closed
+  ext.iterates_closed ext.length_abs ext.length_closed
   ext.lepoll_rel_refl ext.limit_ordinal_abs ext.linear_rel_abs
   ext.list_N_abs ext.list_N_closed ext.list_abs
   ext.list_case'_closed ext.list_case_abs ext.list_closed
-  ext.list_functor_abs ext.lt_abs ext.mem_bij_abs ext.mem_eclose_abs
+  ext.list_functor_abs ext.mem_bij_abs ext.mem_eclose_abs
   ext.mem_inj_abs ext.mem_list_abs ext.membership_abs
-  ext.minimum_closed ext.nat_case_abs ext.nat_case_closed
+  ext.nat_case_abs ext.nat_case_closed
   ext.nonempty ext.not_abs ext.not_closed ext.nth_abs
   ext.number1_abs ext.number2_abs ext.number3_abs ext.omega_abs
   ext.or_abs ext.or_closed ext.order_isomorphism_abs
@@ -325,7 +325,7 @@ proof -
     ultimately
     show ?thesis
       using separation_sat_after_function types that sats_fst_fm
-        snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
+        snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M fst_abs
       unfolding hcomp_fm_def check_fm'_def
       by simp
   qed
@@ -363,6 +363,7 @@ proof -
     ultimately
     show ?thesis
       using separation_sat_after_function3 assms types sats_check_fm check_abs check_in_M
+        fst_abs snd_abs
       unfolding hcomp_fm_def check_fm'_def
       by simp
   qed
@@ -383,8 +384,8 @@ proof -
       by (simp_all add:arity)
     ultimately
     show ?thesis
-      using separation_sat_after_function assms types that
-        snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
+      using separation_sat_after_function assms types that fst_abs
+        snd_abs types sats_check_fm check_abs check_in_M
       unfolding hcomp_fm_def check_fm'_def
       by simp
   qed
@@ -472,7 +473,7 @@ proof -
       using Pi_replacement1[OF _ 3] lam_replacement_Sigfun[OF 4]
         lam_replacement_imp_strong_replacement
         ccc_fun_closed_lemma_aux[OF \<open>f_dot\<in>M\<close> \<open>p\<in>M\<close> \<open>a\<in>M\<close>]
-        lam_replacement_product
+        lam_replacement_product minimum_closed
         lam_replacement_hcomp2[OF lam_replacement_constant 4 _ _ lam_replacement_minimum,unfolded lam_replacement_def]
       by unfold_locales simp_all
     from \<open>F`a \<in> M\<close>
