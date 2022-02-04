@@ -93,6 +93,18 @@ Assorted To-Dos
 
 - Check which results proved for nat can be generalized to Ord.
 
+- Once changes from finite_repl_rebased are applied to master, move
+  earlier the sublocale interpretation of M_trans from Choice_Axiom to
+  Union_Axiom.
+
+- Discuss the need to have internalized formulas in *_Relative
+  theories (meant for the Transitive_Models session). At least two
+  approaches: Discipline fully applied to each new concept vs having
+  all fms in one place.
+
+- fst_abs, snd_abs, minimum_closed, and others out of sharp_simps to
+  avoid warnings in the previous commit b3551d9; but now we have to
+  cite them. Find out why the warnings were triggered in first place.
 
 ;; Local Variables:
 ;; ispell-dictionary: american
