@@ -450,7 +450,6 @@ proof (subst is_cardinal_iff_Least[THEN iffD1, of A \<kappa>])
     bij_converse_bij[THEN bij_imp_eqpoll_rel, of f] by simp
 qed
 
-(* @{term"Ord(A) \<Longrightarrow> M(A) \<Longrightarrow> M(\<kappa>) \<Longrightarrow> is_cardinal(M,A,\<kappa>) \<Longrightarrow> \<kappa> \<approx>\<^bsup>M\<^esup> A *)
 lemmas Ord_is_cardinal_eqpoll_rel = well_ord_Memrel[THEN well_ord_is_cardinal_eqpoll_rel]
 
 

@@ -420,12 +420,6 @@ end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 (**********************************************************)
 subsection\<open>Discipline for \<^term>\<open>inj\<close>\<close>
 
-term function_space_rel
-
-ML\<open>
-@{term "is_function_space"}
-\<close>
-
 definition (* completely relational *)
   is_inj   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
   "is_inj(M,A,B,I) \<equiv> M(I) \<and> (\<exists>F[M]. is_function_space(M,A,B,F) \<and>

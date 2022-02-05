@@ -387,7 +387,6 @@ proof -
         by (fastforce dest: transM)
       moreover
       note \<open>M(S)\<close>
-      find_theorems "M(?S) \<Longrightarrow> strong_replacement(M, \<lambda>x y. y = ?S ` x)"
       ultimately
       show "\<exists>D[M]. D \<subseteq> G \<and> delta_system(D) \<and> D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
         using inj_rel_is_fun ZF_Library.range_eq_image[of S "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" G]
