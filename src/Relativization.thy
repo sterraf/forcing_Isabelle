@@ -498,7 +498,7 @@ and
         val news = filter (not o (fn x => is_Free x orelse is_Bound x) o #1) rs_ts
         val (vars, tms) = split_list (map #2 news)
         (* val vars = filter (fn v => not (v = tm)) vars *) (* Verify if this line is necessary *)
-       in (tm, (rs_ts, vars, tms, ctxt')) 
+       in (tm, (rs_ts, vars, tms, ctxt'))
        end
    | NONE   => raise TERM ("Constant " ^ const_name c ^ " is not present in the db." , nil)
 
@@ -515,7 +515,7 @@ and
         | chained_frees t _ = raise TERM ("Malformed term", [t])
 
       val tms_to_close = filter contains_b0_extra tms |> Utils.reachable chained_frees tms
-      val tms_to_keep = map (incr_boundvars ~1) (tms --- tms_to_close)          
+      val tms_to_keep = map (incr_boundvars ~1) (tms --- tms_to_close)
       val vars_to_close = inter (op =) (map (List.last o #2 o strip_comb) tms_to_close) vars
       val vars_to_keep = vars --- vars_to_close
       val new_rs =
@@ -653,7 +653,7 @@ fun relativize_def is_external is_functional relationalising def_name thm_ref po
     val at = List.foldr (uncurry lambda) t vs
     val abs_const = read_const lthy (if is_external then thm_ref else lname lthy thm_ref)
     fun new_const ctxt' = read_new_const ctxt' def_name
-    fun db_map ctxt' = 
+    fun db_map ctxt' =
        Data.map (add_rel_const (get_mode is_functional relationalising) abs_const (new_const ctxt'))
     fun add_to_context ctxt' = Context.proof_map (db_map ctxt') ctxt'
     fun add_to_theory ctxt' = Local_Theory.raw_theory (Context.theory_map (db_map ctxt')) ctxt'
@@ -754,7 +754,7 @@ fun univalent_goal target pos lthy =
           else Term.dest_abs body |> first_lambdas o #2
       | first_lambdas _ = []
     val (def, vars) = Term.strip_comb def ||> filter is_free_i
-    val vs = vars @ first_lambdas tm 
+    val vs = vars @ first_lambdas tm
     val n = length vs
     val vs = List.take (vs, n - 2)
     val class = Free ("M", @{typ "i \<Rightarrow> o"})

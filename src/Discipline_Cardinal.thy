@@ -166,7 +166,7 @@ rel_closed for "cmult"
   by simp
 
 is_iff_rel for "cmult"
-  using is_cardinal_iff 
+  using is_cardinal_iff
   unfolding is_cmult_def cmult_rel_def
   by simp
 

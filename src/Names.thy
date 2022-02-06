@@ -714,7 +714,7 @@ lemma repl_PHcheck :
 proof -
   from \<open>f\<in>M\<close>
   have "strong_replacement(##M,\<lambda>x y. sats(M,PHcheck_fm(2,3,0,1),[x,y,\<one>,f]))"
-    using replacement_ax[of "PHcheck_fm(2,3,0,1)"] one_in_M 
+    using replacement_ax[of "PHcheck_fm(2,3,0,1)"] one_in_M
     by (simp add:arity ord_simp_union)
   with \<open>f\<in>M\<close>
   show ?thesis using one_in_M unfolding strong_replacement_def univalent_def by simp

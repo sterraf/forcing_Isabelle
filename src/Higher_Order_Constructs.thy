@@ -1,6 +1,6 @@
 section\<open>Fully relational versions of higher order construct \<close>
 theory Higher_Order_Constructs
-  imports 
+  imports
     Recursion_Thms
     Least
 begin
@@ -50,7 +50,7 @@ definition
   "is_The(M,Q,i) \<equiv> (Q(i) \<and> (\<exists>x[M]. Q(x) \<and> (\<forall>y[M]. Q(y) \<longrightarrow> y = x))) \<or>
                    (\<not>(\<exists>x[M]. Q(x) \<and> (\<forall>y[M]. Q(y) \<longrightarrow> y = x))) \<and> empty(M,i) "
 
-(* 
+(*
 definition
   is_The_fm :: "[i,i] \<Rightarrow> i" where
   "is_The_fm(q,i) \<equiv> Or(And(Exists(And(Equal(succ(i),0),q)),
@@ -85,9 +85,9 @@ lemma (in M_trans) The_abs:
 proof (cases "\<exists>x[M]. Q(x) \<and> (\<forall>y[M]. Q(y) \<longrightarrow> y = x)")
   case True
   with assms
-  show ?thesis 
-    unfolding is_The_def 
-    by (intro iffI the_equality[symmetric]) 
+  show ?thesis
+    unfolding is_The_def
+    by (intro iffI the_equality[symmetric])
       (auto, blast intro:theI)
 next
   case False
@@ -96,10 +96,10 @@ next
     by auto
   then
   have "The(Q) = 0"
-    by (intro the_0) auto 
+    by (intro the_0) auto
   with assms and False
   show ?thesis
-    unfolding is_The_def 
+    unfolding is_The_def
      by auto
 qed
 

@@ -154,8 +154,8 @@ proof -
       note 1=\<open>M(G)\<close> \<open>M(G) \<Longrightarrow> M(p) \<Longrightarrow> M({A\<in>G . p \<in> A})\<close> singleton_closed[OF \<open>M(p)\<close>]
       moreover from this
       have "M({x - {p} . x \<in> {x \<in> G . p \<in> x}})"
-        using RepFun_closed[OF lam_replacement_Diff'[THEN 
-              lam_replacement_imp_strong_replacement]] 
+        using RepFun_closed[OF lam_replacement_Diff'[THEN
+              lam_replacement_imp_strong_replacement]]
           Diff_closed[OF transM[OF _ 1(2)]] by auto
       moreover from 1
       have "M(converse(\<lambda>x\<in>{x \<in> G . p \<in> x}. x - {p}))" (is "M(converse(?h))")
@@ -196,8 +196,8 @@ proof -
       note 1=\<open>M(G)\<close> \<open>M(G) \<Longrightarrow> M(p) \<Longrightarrow> M({A\<in>G . p \<in> A})\<close> singleton_closed[OF \<open>M(p)\<close>]
       moreover from this
       have "M({x - {p} . x \<in> {x \<in> G . p \<in> x}})"
-        using RepFun_closed[OF lam_replacement_Diff'[THEN 
-              lam_replacement_imp_strong_replacement]] 
+        using RepFun_closed[OF lam_replacement_Diff'[THEN
+              lam_replacement_imp_strong_replacement]]
           Diff_closed[OF transM[OF _ 1(2)]] by auto
       ultimately
       obtain D where "D\<subseteq>{A-{p} . A\<in>{X\<in>G. p\<in>X}}" "delta_system(D)" "D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "M(D)"
@@ -326,7 +326,7 @@ proof -
         with \<open>M(\<Union>X)\<close> \<open>M(_) \<Longrightarrow> countable_rel(M,_) \<Longrightarrow> countable_rel(M,{A \<in> G . _  \<inter> A \<noteq> 0})\<close>
         have "countable_rel(M,{A \<in> G . (\<Union>X) \<inter> A \<noteq> 0})" by simp
         with \<open>G \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> \<open>M(G)\<close>
-        obtain B where "B\<in>G" "B \<notin> {A \<in> G . (\<Union>X) \<inter> A \<noteq> 0}" 
+        obtain B where "B\<in>G" "B \<notin> {A \<in> G . (\<Union>X) \<inter> A \<noteq> 0}"
           using nat_lt_Aleph_rel1 cardinal_rel_Card_rel_eqpoll_rel_iff[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" G]
             uncountable_rel_not_subset_countable_rel
             [of "{A \<in> G . (\<Union>X) \<inter> A \<noteq> 0}" G]
@@ -335,7 +335,7 @@ proof -
         then
         have "\<exists>A\<in>G. \<forall>S\<in>X. A \<inter> S = 0" by auto
         with \<open>X\<subseteq>G\<close>
-        show "\<exists>A\<in>G. \<forall>S\<in>X. <S,A>\<in>Disjoint" unfolding Disjoint_def 
+        show "\<exists>A\<in>G. \<forall>S\<in>X. <S,A>\<in>Disjoint" unfolding Disjoint_def
           using subsetD by simp
         qed
       moreover from \<open>G \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> \<open>M(G)\<close>

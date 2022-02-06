@@ -43,7 +43,7 @@ signature Utils =
     val nth_: term -> term -> term
     val reachable : (''a -> ''a -> bool) -> ''a list -> ''a list -> ''a list
     val subset_: term -> term -> term
-    val thm_concl_tm :  Proof.context -> xstring -> 
+    val thm_concl_tm :  Proof.context -> xstring ->
         ((indexname * typ) * cterm) list * term * Proof.context
     val to_ML_list: term -> term list
     val tp: term -> term
@@ -52,7 +52,7 @@ signature Utils =
   end
 
 structure Utils : Utils =
-struct 
+struct
 (* Smart constructors for ZF-terms *)
 
 fun inList vars a = exists (fn b => a = b) vars

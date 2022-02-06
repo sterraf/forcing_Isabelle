@@ -1,7 +1,7 @@
 section\<open>Well-founded relation on names\<close>
-theory FrecR 
-  imports 
-    Names 
+theory FrecR
+  imports
+    Names
 begin
 
 text\<open>\<^term>\<open>frecR\<close> is the well-founded relation on names that allows

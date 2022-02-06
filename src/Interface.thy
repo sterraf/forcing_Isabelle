@@ -182,7 +182,7 @@ lemma inter_sep_intf :
   assumes "A\<in>M"
   shows "separation(##M,\<lambda>x . \<forall>y\<in>M . y\<in>A \<longrightarrow> x\<in>y)"
   using assms separation_in_ctm[of "Intersection_fm(1,0)" "[A]" "Intersection(##M,A)"]
-   Intersection_iff_sats[of 1 "[_,A]" A 0 _ M] arity_Intersection_fm Intersection_fm_type 
+   Intersection_iff_sats[of 1 "[_,A]" A 0 _ M] arity_Intersection_fm Intersection_fm_type
    ord_simp_union nonempty
   unfolding Intersection_def
   by simp
@@ -380,12 +380,12 @@ lemma finite_sep_intf: "separation(##M, \<lambda>x. x\<in>nat)"
 proof -
   have "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,finite_ordinal_fm(0),[x,v])))"
     using separation_ax by (simp add:arity)
-  then 
+  then
   have "(\<forall>v\<in>M. separation(##M,finite_ordinal(##M)))"
     unfolding separation_def by simp
-  then 
+  then
   have "separation(##M,finite_ordinal(##M))"
-    using separation_in_ctm 
+    using separation_in_ctm
       zero_in_M by auto
   then
   show ?thesis unfolding separation_def by simp
@@ -398,19 +398,19 @@ lemma nat_subset_I':
 lemma nat_subset_I: "\<exists>I\<in>M. nat \<subseteq> I"
 proof -
   have "\<exists>I\<in>M. 0\<in>I \<and> (\<forall>x\<in>M. x\<in>I \<longrightarrow> succ(x)\<in>I)"
-    using infinity_ax 
+    using infinity_ax
     unfolding infinity_ax_def by auto
-  then 
+  then
   obtain I where
     "I\<in>M" "0\<in>I" "(\<forall>x\<in>M. x\<in>I \<longrightarrow> succ(x)\<in>I)"
     by auto
-  then 
+  then
   have "\<And>x. x\<in>I \<Longrightarrow> succ(x)\<in>I"
     using transitivity by simp
-  then 
+  then
   have "nat\<subseteq>I"
     using  \<open>I\<in>M\<close> \<open>0\<in>I\<close> nat_subset_I' by simp
-  then 
+  then
   show ?thesis using \<open>I\<in>M\<close> by auto
 qed
 
@@ -421,10 +421,10 @@ proof -
   obtain I where
     "I\<in>M" "nat\<subseteq>I"
     using nat_subset_I by auto
-  then 
+  then
   have "{x\<in>I . x\<in>nat} \<in> M"
     using finite_sep_intf separation_closed[of "\<lambda>x . x\<in>nat"] by simp
-  then 
+  then
   show ?thesis
     using \<open>nat\<subseteq>I\<close> 1 by simp
 qed
@@ -748,7 +748,7 @@ proof -
   have iff:"z=Powapply_rel(##M,f,p) \<longleftrightarrow> sats(M,is_Powapply_fm(2,0,1) , [p,z,f])"
     if "p\<in>M" "z\<in>M" for p z
     using that zero_in_M sats_is_Powapply_fm[of 2 0 1 "[p,z,f]" M] is_Powapply_iff
-      replacement_ax[of "is_Powapply_fm(2,0,1)"] 
+      replacement_ax[of "is_Powapply_fm(2,0,1)"]
     by simp
   ultimately
   show ?thesis
@@ -771,7 +771,7 @@ proof -
   moreover from this
   have iff:"y = succ(f ` x) \<longleftrightarrow> M, [x, y, f] \<Turnstile> PHrank_fm(2, 0, 1)" if "x\<in>M" "y\<in>M" for x y
     using PHrank_iff_sats[of 2 "[x,y,f]" f 0 _ 1 _ M] zero_in_M that
-    apply_closed 
+    apply_closed
     unfolding PHrank_def
     by simp
   moreover
@@ -779,8 +779,8 @@ proof -
     unfolding PHrank_fm_def
     by (simp add:arity ord_simp_union)
   ultimately
-  show ?thesis 
-    using replacement_ax[of "PHrank_fm(2,0,1)"] 
+  show ?thesis
+    using replacement_ax[of "PHrank_fm(2,0,1)"]
     unfolding PHrank_def
     by(rule_tac strong_replacement_cong[THEN iffD2,OF iff],simp_all)
 qed
@@ -805,7 +805,7 @@ proof -
     1:"sats(M, is_wfrec_fm(is_Hrank_fm(2,1,0),3,1,0),[y,x,z,rrank(X)])
   \<longleftrightarrow> is_wfrec(##M, is_Hrank(##M) ,rrank(X), x, y)"
     if "y\<in>M" "x\<in>M" "z\<in>M" for y x z
-    using that \<open>X\<in>M\<close> rrank_in_M sats_is_wfrec_fm zero_in_M 
+    using that \<open>X\<in>M\<close> rrank_in_M sats_is_wfrec_fm zero_in_M
     by simp
   let
     ?f="Exists(And(pair_fm(1,0,2),is_wfrec_fm(is_Hrank_fm(2,1,0),3,1,0)))"
@@ -818,16 +818,16 @@ proof -
     by (simp add:arity ord_simp_union)
   then
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,rrank(X)]))"
-    using replacement_ax[of ?f] 1 \<open>X\<in>M\<close> rrank_in_M 
+    using replacement_ax[of ?f] 1 \<open>X\<in>M\<close> rrank_in_M
     by simp
   then
   have "strong_replacement(##M,\<lambda>x z.
           \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hrank(##M) , rrank(X), x, y))"
-    using repl_sats[of M ?f "[rrank(X)]"]  satsf 
+    using repl_sats[of M ?f "[rrank(X)]"]  satsf
     by (simp del:pair_abs)
   then
-  show ?thesis 
-    unfolding wfrec_replacement_def  
+  show ?thesis
+    unfolding wfrec_replacement_def
     by simp
 qed
 

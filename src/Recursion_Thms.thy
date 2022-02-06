@@ -1,6 +1,6 @@
 section\<open>Some enhanced theorems on recursion\<close>
 
-theory Recursion_Thms 
+theory Recursion_Thms
   imports "ZF-Constructible.Datatype_absolute"
 
 begin
@@ -232,10 +232,10 @@ proof -
 qed
 
 lemma transrec_equal_on_Ord:
-assumes 
+assumes
    "\<And>x f . Ord(x) \<Longrightarrow> foo(x,f) = bar(x,f)"
-   "Ord(\<alpha>)" 
-shows 
+   "Ord(\<alpha>)"
+shows
   "transrec(\<alpha>, foo) = transrec(\<alpha>, bar)"
 proof -
   have "transrec(\<beta>,foo) = transrec(\<beta>,bar)" if "Ord(\<beta>)" for \<beta>
@@ -263,13 +263,13 @@ qed
 
 \<comment> \<open>Next theorem is very similar to @{thm transrec_equal_on_Ord}\<close>
 lemma (in M_eclose) transrec_equal_on_M:
-assumes 
+assumes
    "\<And>x f . M(x) \<Longrightarrow> M(f) \<Longrightarrow> foo(x,f) = bar(x,f)"
    "\<And>\<beta>. M(\<beta>) \<Longrightarrow> transrec_replacement(M,is_foo,\<beta>)" "relation2(M,is_foo,foo)"
    "strong_replacement(M, \<lambda>x y. y = \<langle>x, transrec(x, foo)\<rangle>)"
-   "\<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(foo(x,g))"  
-   "M(\<alpha>)" "Ord(\<alpha>)" 
-shows 
+   "\<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(foo(x,g))"
+   "M(\<alpha>)" "Ord(\<alpha>)"
+shows
   "transrec(\<alpha>, foo) = transrec(\<alpha>, bar)"
 proof -
   have "M(transrec(x, foo))" if "Ord(x)" and "M(x)" for x
@@ -284,7 +284,7 @@ proof -
     moreover
     note \<open>Ord(\<beta>)\<Longrightarrow> M(\<beta>) \<Longrightarrow> M(transrec(\<beta>, foo))\<close>
     ultimately
-    show "M(transrec(\<beta>, foo))" by blast 
+    show "M(transrec(\<beta>, foo))" by blast
     with step \<open>M(\<beta>)\<close> \<open>\<And>x. Ord(x)\<Longrightarrow> M(x) \<Longrightarrow> M(transrec(x, foo))\<close>
       \<open>strong_replacement(M, \<lambda>x y. y = \<langle>x, transrec(x, foo)\<rangle>)\<close>
     have "M(\<lambda>x\<in>\<beta>. transrec(x, foo))"
@@ -320,7 +320,7 @@ proof -
   let ?G="\<lambda>x f. f `` ?B(x)"
   let ?P="\<lambda> z. z\<in>X \<longrightarrow> wfrec(r \<inter> X \<times> X,z,\<lambda>x f. f `` ?A(x)) = wfrec(r \<inter> X \<times> X,z,\<lambda>x f. f `` ?B(x))"
   have pred_eq:
-    "Order.pred(X, x, r \<inter> X \<times> X) = Order.pred(X, x, r)" if "x\<in>X" for x 
+    "Order.pred(X, x, r \<inter> X \<times> X) = Order.pred(X, x, r)" if "x\<in>X" for x
     unfolding Order.pred_def using that by auto
   from assms
   have wf_onX:"wf(r \<inter> X \<times> X)" unfolding well_ord_def wf_on_def by simp
@@ -332,7 +332,7 @@ proof -
         assume "x\<in>X"
         from 1
         have lam_eq:
-            "(\<lambda>w\<in>(r \<inter> X \<times> X) -`` {x}. wfrec(r \<inter> X \<times> X, w, ?F)) = 
+            "(\<lambda>w\<in>(r \<inter> X \<times> X) -`` {x}. wfrec(r \<inter> X \<times> X, w, ?F)) =
              (\<lambda>w\<in>(r \<inter> X \<times> X) -`` {x}. wfrec(r \<inter> X \<times> X, w, ?G))" (is "?L=?R")
         proof -
           have "wfrec(r \<inter> X \<times> X, w, ?F) = wfrec(r \<inter> X \<times> X, w, ?G)" if "w\<in>(r\<inter>X\<times>X)-``{x}" for w
@@ -340,9 +340,9 @@ proof -
           then show ?thesis using lam_cong[OF refl] by simp
         qed
         then
-        have "wfrec(r \<inter> X \<times> X, x, ?F) = ?L `` ?A(x)" 
+        have "wfrec(r \<inter> X \<times> X, x, ?F) = ?L `` ?A(x)"
           using wfrec[OF wf_onX,of x ?F] by simp
-        also have "... =  ?R `` ?B(x)" 
+        also have "... =  ?R `` ?B(x)"
           using lam_eq pred_eq[OF \<open>x\<in>_\<close>] by simp
         also
         have "... = wfrec(r \<inter> X \<times> X, x, ?G)"
@@ -356,7 +356,7 @@ proof -
   }
   then
   show ?thesis
-    unfolding ordermap_def wfrec_on_def using Int_ac by simp 
+    unfolding ordermap_def wfrec_on_def using Int_ac by simp
 qed
 
 end

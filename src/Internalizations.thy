@@ -1,6 +1,6 @@
 section\<open>Aids to internalize formulas\<close>
 theory Internalizations
-  imports 
+  imports
     "ZF-Constructible.DPow_absolute"
     Synthetic_Definition
 begin
@@ -32,11 +32,11 @@ abbreviation
   fm_typedfun :: "[i,i,i] \<Rightarrow> i" (\<open>\<cdot>_ : _ \<rightarrow> _\<cdot>\<close>) where
   "fm_typedfun(f,A,B) \<equiv> typed_function_fm(A,B,f)"
 
-text\<open>We found it useful to have slightly different versions of some 
+text\<open>We found it useful to have slightly different versions of some
 results in ZF-Constructible:\<close>
 lemma nth_closed :
   assumes "env\<in>list(A)" "0\<in>A"
-  shows "nth(n,env)\<in>A" 
+  shows "nth(n,env)\<in>A"
   using assms unfolding nth_def by (induct env; simp)
 
 lemma mem_model_iff_sats [iff_sats]:
@@ -88,7 +88,7 @@ lemma prefix3_iff_sats[iff_sats]:
   by simp_all
 
 lemmas FOL_sats_iff = sats_Nand_iff sats_Forall_iff sats_Neg_iff sats_And_iff
-  sats_Or_iff sats_Implies_iff sats_Iff_iff sats_Exists_iff 
+  sats_Or_iff sats_Implies_iff sats_Iff_iff sats_Exists_iff
 
 lemma nth_ConsI: "\<lbrakk>nth(n,l) = x; n \<in> nat\<rbrakk> \<Longrightarrow> nth(succ(n), Cons(a,l)) = x"
 by simp
@@ -100,7 +100,7 @@ lemmas sep_rules = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
 
 text\<open>Also a different compilation of lemmas (term\<open>sep_rules\<close>) used in formula
  synthesis\<close>
-lemmas fm_defs = 
+lemmas fm_defs =
   omega_fm_def limit_ordinal_fm_def empty_fm_def typed_function_fm_def
   pair_fm_def upair_fm_def domain_fm_def function_fm_def succ_fm_def
   cons_fm_def fun_apply_fm_def image_fm_def big_union_fm_def union_fm_def
@@ -111,7 +111,7 @@ lemmas formulas_def [fm_definitions] = fm_defs
   is_iterates_fm_def iterates_MH_fm_def is_wfrec_fm_def is_recfun_fm_def is_transrec_fm_def
   is_nat_case_fm_def quasinat_fm_def number1_fm_def ordinal_fm_def finite_ordinal_fm_def
   cartprod_fm_def sum_fm_def Inr_fm_def Inl_fm_def
-  formula_functor_fm_def 
+  formula_functor_fm_def
   Memrel_fm_def transset_fm_def subset_fm_def pre_image_fm_def restriction_fm_def
   list_functor_fm_def tl_fm_def quasilist_fm_def Cons_fm_def Nil_fm_def
 

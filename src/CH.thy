@@ -200,12 +200,12 @@ proof -
     using Fn_rel_is_function by simp_all
   moreover from this
   have "|p|\<^bsup>M\<^esup>  \<lesssim>\<^bsup>M\<^esup> \<omega>"
-    using lesspoll_rel_Aleph_rel_plus_one[of 0] Aleph_rel_zero 
+    using lesspoll_rel_Aleph_rel_plus_one[of 0] Aleph_rel_zero
     by simp
   ultimately
   show ?thesis
     using countableI lepoll_rel_trans[of p "|p|\<^bsup>M\<^esup>" \<omega>]
-      eqpoll_rel_imp_lepoll_rel eqpoll_rel_sym cardinal_rel_eqpoll_rel 
+      eqpoll_rel_imp_lepoll_rel eqpoll_rel_sym cardinal_rel_eqpoll_rel
     by simp
 qed
 
@@ -256,7 +256,7 @@ lemma rex_mono : assumes "\<exists> d \<in> A . P(d)" "A\<subseteq>B"
   shows "\<exists> d \<in> B. P(d)"
   using assms by auto
 
-lemma Un_filter_is_function: 
+lemma Un_filter_is_function:
   assumes "filter(G)"
   shows "function(\<Union>G)"
 proof -
@@ -373,7 +373,7 @@ lemma surj_dense_closed[intro,simp]:
   using separation_in_range transM[of x] by simp
 
 lemma reals_sub_image_f_G:
-  assumes "x\<in>\<omega> \<rightarrow>\<^bsup>M\<^esup> 2" 
+  assumes "x\<in>\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"
   shows "\<exists>\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>. f\<^bsub>G\<^esub> ` \<alpha> = x"
 proof -
   from assms
@@ -418,7 +418,7 @@ proof -
       f_G_in_MG unfolding lepoll_rel_def by auto
   with \<open>Ord(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)\<close>
   have "|\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2|\<^bsup>M[G]\<^esup> \<le> |\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>|\<^bsup>M[G]\<^esup>"
-    using  M_subset_MG[OF one_in_G, OF generic] Aleph_rel_closed[of 1] 
+    using  M_subset_MG[OF one_in_G, OF generic] Aleph_rel_closed[of 1]
     by (rule_tac ext.lepoll_rel_imp_cardinal_rel_le) simp_all
   ultimately
   have "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup> \<le> |\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>|\<^bsup>M[G]\<^esup>"

@@ -1,7 +1,7 @@
 section\<open>The binder \<^term>\<open>Least\<close>\<close>
 theory Least
   imports
-    "Internalizations"   
+    "Internalizations"
 
 begin
 
@@ -11,13 +11,13 @@ a predicate.\<close>
 lemma Least_Ord: "(\<mu> \<alpha>. R(\<alpha>)) = (\<mu> \<alpha>. Ord(\<alpha>) \<and> R(\<alpha>))"
   unfolding Least_def by (simp add:lt_Ord)
 
-lemma Ord_Least_cong: 
+lemma Ord_Least_cong:
   assumes "\<And>y. Ord(y) \<Longrightarrow> R(y) \<longleftrightarrow> Q(y)"
   shows "(\<mu> \<alpha>. R(\<alpha>)) = (\<mu> \<alpha>. Q(\<alpha>))"
 proof -
   from assms
   have "(\<mu> \<alpha>. Ord(\<alpha>) \<and> R(\<alpha>)) = (\<mu> \<alpha>. Ord(\<alpha>) \<and> Q(\<alpha>))"
-    by simp 
+    by simp
   then
   show ?thesis using Least_Ord by simp
 qed
@@ -31,7 +31,7 @@ definition
 definition
   least_fm :: "[i,i] \<Rightarrow> i" where
   "least_fm(q,i) \<equiv> And(ordinal_fm(i),
-   Or(And(empty_fm(i),Forall(Implies(ordinal_fm(0),Neg(q)))), 
+   Or(And(empty_fm(i),Forall(Implies(ordinal_fm(0),Neg(q)))),
       And(Exists(And(q,Equal(0,succ(i)))),
           Forall(Implies(And(ordinal_fm(0),Member(0,succ(i))),Neg(q))))))"
 
@@ -43,7 +43,7 @@ lemma least_fm_type[TC] :"i \<in> nat \<Longrightarrow> q\<in>formula \<Longrigh
 lemmas basic_fm_simps = sats_subset_fm' sats_transset_fm' sats_ordinal_fm'
 
 lemma sats_least_fm :
-  assumes p_iff_sats: 
+  assumes p_iff_sats:
     "\<And>a. a \<in> A \<Longrightarrow> P(a) \<longleftrightarrow> sats(A, p, Cons(a, env))"
   shows
     "\<lbrakk>y \<in> nat; env \<in> list(A) ; 0\<in>A\<rbrakk>
@@ -53,9 +53,9 @@ lemma sats_least_fm :
   by (simp add:basic_fm_simps)
 
 lemma least_iff_sats [iff_sats]:
-  assumes is_Q_iff_sats: 
+  assumes is_Q_iff_sats:
       "\<And>a. a \<in> A \<Longrightarrow> is_Q(a) \<longleftrightarrow> sats(A, q, Cons(a,env))"
-  shows 
+  shows
   "\<lbrakk>nth(j,env) = y; j \<in> nat; env \<in> list(A); 0\<in>A\<rbrakk>
    \<Longrightarrow> least(##A, is_Q, y) \<longleftrightarrow> sats(A, least_fm(q,j), env)"
   using sats_least_fm [OF is_Q_iff_sats, of j , symmetric]
@@ -104,10 +104,10 @@ proof (cases "\<forall>b[M]. Ord(b) \<longrightarrow> \<not> Q(b)"; intro iffI; 
   show "0 =(\<mu> x. Q(x))" using Least_0 by simp
   then
   show "ordinal(M, \<mu> x. Q(x)) \<and> (empty(M, Least(Q)) \<or> Q(Least(Q)))"
-    by simp 
+    by simp
 next
   assume "\<exists>b[M]. Ord(b) \<and> Q(b)"
-  then 
+  then
   obtain i where "M(i)" "Ord(i)" "Q(i)" by blast
   assume "a = (\<mu> x. Q(x))"
   moreover
@@ -124,7 +124,7 @@ next
     by simp
 next
   assume 1:"\<exists>b[M]. Ord(b) \<and> Q(b)"
-  then 
+  then
   obtain i where "M(i)" "Ord(i)" "Q(i)" by blast
   assume "Ord(a) \<and> (a = 0 \<and> (\<forall>b[M]. Ord(b) \<longrightarrow> \<not> Q(b)) \<or> Q(a) \<and> (\<forall>b[M]. Ord(b) \<and> b \<in> a \<longrightarrow> \<not> Q(b)))"
   with 1

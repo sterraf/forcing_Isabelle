@@ -40,14 +40,14 @@ abbreviation
 
 locale Demo = M_trivial + M_AC +
   fixes t\<^sub>1 t\<^sub>2
-  assumes 
+  assumes
     ts_in_nat[simp]: "t\<^sub>1\<in>\<omega>" "t\<^sub>2\<in>\<omega>"
     and
     power_infty: "power_ax(M)" "M(\<omega>)"
 begin
 
-lemma 
-  assumes 
+lemma
+  assumes
     sorried_replacements:
     "\<And>P. strong_replacement(M,P)"
     "\<And>F. lam_replacement(M,F)"
@@ -57,13 +57,13 @@ lemma
     and
     sorried_separations:
     "\<And>Q. separation(M,Q)"shows "M_master(M)"
-  apply unfold_locales apply 
+  apply unfold_locales apply
     (simp_all add:
       sorried_replacements(1-2)
       sorried_separations
       power_infty)
-  \<comment> \<open>We obtain two goals of the form \<^term>\<open>rall(M,\<V>)\<close> because of 
-  instances of the form \<^term>\<open>\<forall>x[M]. separation(M,P)\<close>\<close> 
+  \<comment> \<open>We obtain two goals of the form \<^term>\<open>rall(M,\<V>)\<close> because of
+  instances of the form \<^term>\<open>\<forall>x[M]. separation(M,P)\<close>\<close>
   oops
 
 (* NOTE: Only for pretty-printing purposes, overrides previous
@@ -117,7 +117,7 @@ notation Exists (\<open>Ex\<close>)
 *)
 
 (* forces_mem_fm(1, 2, 0, t\<^sub>1+\<^sub>\<omega>4, t\<^sub>1+\<^sub>\<omega>4)
-   = forces_mem_fm(1, 2, 0, succ(succ(succ(succ(t\<^sub>1)))), succ(succ(succ(succ(t\<^sub>2))))) 
+   = forces_mem_fm(1, 2, 0, succ(succ(succ(succ(t\<^sub>1)))), succ(succ(succ(succ(t\<^sub>2)))))
    = \<dots> *)
 thm forces_mem_fm_def[of 1 2 0 "t\<^sub>1+\<^sub>\<omega>4" "t\<^sub>2+\<^sub>\<omega>4",
     unfolded frc_at_fm_def forcerel_fm_def ftype_fm_def

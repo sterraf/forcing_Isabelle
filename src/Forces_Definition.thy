@@ -1,8 +1,8 @@
 section\<open>The definition of \<^term>\<open>forces\<close>\<close>
 
-theory Forces_Definition 
-  imports 
-    FrecR_Arities 
+theory Forces_Definition
+  imports
+    FrecR_Arities
 begin
 
 text\<open>This is the core of our development.\<close>
@@ -51,13 +51,13 @@ definition
 synthesize "is_tuple" from_definition
 arity_theorem intermediate for "is_tuple_fm"
 lemma arity_is_tuple_fm[arity]:
-    "a \<in> nat \<Longrightarrow>
+  "a \<in> nat \<Longrightarrow>
     b \<in> nat \<Longrightarrow>
     c \<in> nat \<Longrightarrow>
     d \<in> nat \<Longrightarrow>
     t \<in> nat \<Longrightarrow>
     arity(is_tuple_fm(a, b, c, d, t)) = succ(a) \<union> succ(b) \<union> succ(c) \<union> succ(d) \<union> succ(t)"
-  using arity_is_tuple_fm' Un_assoc 
+  using arity_is_tuple_fm' Un_assoc
   by auto
 
 subsection\<open>Definition of \<^term>\<open>forces\<close> for equality and membership\<close>
@@ -259,7 +259,7 @@ synthesize "forces_nmem" from_definition "is_forces_nmem'" assuming "nonempty"
 
 arity_theorem intermediate for "forces_eq_fm"
 lemma arity_forces_eq_fm:
-    "P \<in> nat \<Longrightarrow>
+  "P \<in> nat \<Longrightarrow>
     l \<in> nat \<Longrightarrow>
     p \<in> nat \<Longrightarrow>
     t1 \<in> nat \<Longrightarrow>
@@ -271,7 +271,7 @@ lemma arity_forces_eq_fm:
 
 arity_theorem intermediate for "forces_mem_fm"
 lemma arity_forces_mem_fm[arity]:
-    "P \<in> nat \<Longrightarrow>
+  "P \<in> nat \<Longrightarrow>
     l \<in> nat \<Longrightarrow>
     p \<in> nat \<Longrightarrow>
     t1 \<in> nat \<Longrightarrow>
@@ -286,7 +286,7 @@ begin
 
 (* Absoluteness of components *)
 lemma ftype_abs:
-  "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_ftype(##M,x,y) \<longleftrightarrow> y = ftype(x)" 
+  "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_ftype(##M,x,y) \<longleftrightarrow> y = ftype(x)"
   unfolding ftype_def  is_ftype_def by (simp add:absolut)
 
 lemma name1_abs:
@@ -410,7 +410,6 @@ next
     using assms that nonempty pair_in_M_iff apply_closed
     by (auto simp add:components_abs)
 qed
-
 
 lemma Hfrc_abs:
   "\<lbrakk>fnnc\<in>M; f\<in>M\<rbrakk> \<Longrightarrow>
@@ -1206,7 +1205,7 @@ definition
   "forces_mem \<equiv> forces_mem'(P,leq)"
 
 (* frc_at(P,leq,\<langle>0,t1,t2,p\<rangle>) = 1*)
-abbreviation is_forces_eq 
+abbreviation is_forces_eq
   where "is_forces_eq \<equiv> is_forces_eq'(##M,P,leq)"
 
 (* frc_at(P,leq,\<langle>1,t1,t2,p\<rangle>) = 1*)
@@ -1236,7 +1235,7 @@ lemma forces_eq_abs :
 lemma forces_mem_abs :
   "\<lbrakk>p\<in>M ; t1\<in>M ; t2\<in>M\<rbrakk> \<Longrightarrow> is_forces_mem(p,t1,t2) \<longleftrightarrow> p forces\<^sub>a (t1 \<in> t2)"
   unfolding forces_mem_def
-  using forces_mem'_abs 
+  using forces_mem'_abs
   by simp
 
 definition
@@ -1259,7 +1258,7 @@ abbreviation Forces :: "[i, i, i] \<Rightarrow> o"  ("_ \<tturnstile> _ _" [36,3
   "p \<tturnstile> \<phi> env   \<equiv>   M, ([p,P,leq,\<one>] @ env) \<Turnstile> forces(\<phi>)"
 
 lemma sats_forces_Member :
-  assumes  "x\<in>nat" "y\<in>nat" "env\<in>list(M)" 
+  assumes  "x\<in>nat" "y\<in>nat" "env\<in>list(M)"
     "nth(x,env)=xx" "nth(y,env)=yy" "q\<in>M"
   shows "q \<tturnstile> \<cdot>x \<in> y\<cdot> env \<longleftrightarrow> q \<in> P \<and> is_forces_mem(q, xx, yy)"
   unfolding forces_def
@@ -1279,7 +1278,7 @@ lemma sats_forces_Nand :
   shows "p \<tturnstile> \<cdot>\<not>(\<phi> \<and> \<psi>)\<cdot> env \<longleftrightarrow>
     p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and>
     (M,[q,P,leq,\<one>]@env \<Turnstile> forces'(\<phi>)) \<and> (M,[q,P,leq,\<one>]@env \<Turnstile> forces'(\<psi>)))"
-  unfolding forces_def 
+  unfolding forces_def
   using sats_leq_fm_auto assms sats_ren_forces_nand P_in_M leq_in_M one_in_M zero_in_M
   by simp
 
@@ -1306,8 +1305,8 @@ lemma arity_forces_at:
   shows "arity(forces(Member(x, y))) = (succ(x) \<union> succ(y)) #+ 4"
     "arity(forces(Equal(x, y))) = (succ(x) \<union> succ(y)) #+ 4"
   unfolding forces_def
-  using assms arity_forces_mem_fm arity_forces_eq_fm succ_Un_distrib ord_simp_union 
-   by (auto simp:FOL_arities,(rule_tac le_anti_sym,simp_all,(rule_tac not_le_anti_sym,simp_all))+)
+  using assms arity_forces_mem_fm arity_forces_eq_fm succ_Un_distrib ord_simp_union
+  by (auto simp:FOL_arities,(rule_tac le_anti_sym,simp_all,(rule_tac not_le_anti_sym,simp_all))+)
 
 lemma arity_forces':
   assumes "\<phi>\<in>formula"
@@ -1317,7 +1316,7 @@ proof (induct set:formula)
   case (Member x y)
   then
   show ?case
-    using arity_forces_mem_fm succ_Un_distrib ord_simp_union 
+    using arity_forces_mem_fm succ_Un_distrib ord_simp_union
       not_le_iff_lt[THEN iffD1,THEN leI,of x y]
     by simp
 next

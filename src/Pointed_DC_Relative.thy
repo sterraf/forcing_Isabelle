@@ -1,6 +1,6 @@
 section\<open>Relative DC\<close>
 
-theory Pointed_DC_Relative 
+theory Pointed_DC_Relative
   imports
     Cardinal_Library_Relative
 
@@ -128,9 +128,9 @@ proof(induct n)
 next
   case (succ x)
   with succ assms(1,3-)
-  show ?case 
+  show ?case
     using nat_into_M first_section_closed
-    by (simp, rule_tac rev_subsetD, rule_tac assms(2)[rule_format]) 
+    by (simp, rule_tac rev_subsetD, rule_tac assms(2)[rule_format])
       auto
 qed
 
@@ -267,7 +267,7 @@ proof -
     by simp
 qed
 
-lemma witness_to_fun:   
+lemma witness_to_fun:
   assumes "a\<in>A"
     "\<forall>X[M]. X\<noteq>0 \<and> X\<subseteq>A \<longrightarrow> s`X\<in>A"
     "\<forall>y\<in>A. {x\<in>A. \<langle>y,x\<rangle>\<in>R } \<noteq> 0"
@@ -470,7 +470,7 @@ proof -
   with assms
   show ?thesis
     by (rule_tac ballI) (drule aux_sequence_DC2, drule DC_on_A_x_nat, auto)
-qed 
+qed
 
 end \<comment> \<open>\<^locale>\<open>M_library_DC\<close>\<close>
 

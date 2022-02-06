@@ -590,7 +590,7 @@ proof -
       let ?f="val(P,G,f_dot)"
       assume "M_generic(G) \<and> r \<in> G"
       moreover from this
-      interpret g:G_generic _ _ _ _ _ G 
+      interpret g:G_generic _ _ _ _ _ G
         by unfold_locales simp
       note \<open>r\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
       moreover from this

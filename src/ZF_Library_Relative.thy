@@ -90,7 +90,7 @@ begin
 
 lemma Finite_Collect_imp: "Finite({x\<in>X . Q(x)}) \<Longrightarrow> Finite({x\<in>X . M(x) \<and> Q(x)})"
   (is "Finite(?A) \<Longrightarrow> Finite(?B)")
-  using subset_Finite[of ?B ?A] by auto 
+  using subset_Finite[of ?B ?A] by auto
 
 lemma Finite_to_one_relI[intro]:
   assumes "f:X\<rightarrow>\<^bsup>M\<^esup>Y" "\<And>y. y\<in>Y \<Longrightarrow> Finite({x\<in>X . f`x = y})"
@@ -112,7 +112,7 @@ lemma Finite_to_one_relD[dest]:
   unfolding Finite_to_one_rel_def by simp_all
 
 lemma Diff_bij_rel:
-  assumes "\<forall>A\<in>F. X \<subseteq> A" 
+  assumes "\<forall>A\<in>F. X \<subseteq> A"
     and types: "M(F)" "M(X)" shows "(\<lambda>A\<in>F. A-X) \<in> bij\<^bsup>M\<^esup>(F, {A-X. A\<in>F})"
   using assms  def_inj_rel def_surj_rel unfolding bij_rel_def
   apply (auto)
@@ -127,7 +127,7 @@ lemma Diff_bij_rel:
     apply (subst subset_Diff_Un[of X])
      apply auto
 proof -
-  from types 
+  from types
   show "M({A - X . A \<in> F})"
     using diff_replacement
     by (rule_tac RepFun_closed) (auto dest:transM[of _ F])
@@ -143,7 +143,7 @@ lemma function_space_rel_nonempty:
 proof -
   note assms
   moreover from this
-  have "M(\<lambda>x\<in>A. b)" 
+  have "M(\<lambda>x\<in>A. b)"
     using tag_replacement by (rule_tac lam_closed, auto dest:transM)
   ultimately
   show ?thesis
@@ -534,7 +534,7 @@ proof -
     note \<open>Ord(\<kappa>)\<close> \<open>M(\<kappa>)\<close>
     moreover
     assume "|\<kappa>|\<^bsup>M\<^esup> < \<kappa>"
-    moreover from calculation 
+    moreover from calculation
     have "\<exists>f. f \<in> bij\<^bsup>M\<^esup>(min,\<kappa>)"
       using LeastI[of "\<lambda>i. i \<approx>\<^bsup>M\<^esup> \<kappa>" \<kappa>, OF eqpoll_rel_refl]
       unfolding Card_rel_def cardinal_rel_def eqpoll_rel_def

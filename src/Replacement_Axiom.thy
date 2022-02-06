@@ -7,7 +7,7 @@ begin
 context G_generic
 begin
 
-definition rename_split_fm where 
+definition rename_split_fm where
   "rename_split_fm(\<phi>) \<equiv> (\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>\<cdot>\<cdot>snd(9) is 0\<cdot> \<and> \<cdot>\<cdot>fst(9) is 4\<cdot> \<and> \<cdot>\<cdot>1=11\<cdot> \<and>
     \<cdot>\<cdot>2=12\<cdot> \<and> \<cdot>\<cdot>3=13\<cdot> \<and> \<cdot>\<cdot>5=7\<cdot> \<and>
     (\<lambda>p. incr_bv(p)`6)^8(forces(\<phi>)) \<cdot>\<cdot>\<cdot>\<cdot>\<cdot>\<cdot>\<cdot>)\<cdot>)\<cdot>)\<cdot>)\<cdot>)\<cdot>)"
@@ -19,7 +19,7 @@ schematic_goal arity_rename_split_fm: "\<phi>\<in>formula \<Longrightarrow> arit
   using arity_forces[of \<phi>] forces_type unfolding rename_split_fm_def
   by (simp add:arity Un_assoc[symmetric] union_abs1)
 
-lemma arity_rename_split_fm_le: 
+lemma arity_rename_split_fm_le:
   assumes "\<phi>\<in>formula"
   shows "arity(rename_split_fm(\<phi>)) \<le> 8 \<union> (arity(\<phi>) #+ 6)"
 proof -
@@ -65,7 +65,7 @@ lemma sats_forces_iff_sats_rename_split_fm:
   using assms unfolding rename_split_fm_def
   by (simp add:sats_incr_bv_iff[where bvs="[_,_,_,_,_,_]", simplified])
 
-definition body_ground_repl_fm where 
+definition body_ground_repl_fm where
   "body_ground_repl_fm(\<phi>) \<equiv> (\<cdot>\<exists>(\<cdot>\<exists>\<cdot>is_Vset_fm(2, 0) \<and> \<cdot>\<cdot>1 \<in> 0\<cdot> \<and> rename_split_fm(\<phi>) \<cdot>\<cdot>\<cdot>)\<cdot>)"
 
 lemma body_ground_repl_fm_type[TC]: "\<phi>\<in>formula \<Longrightarrow> body_ground_repl_fm(\<phi>)\<in>formula"
@@ -73,16 +73,16 @@ lemma body_ground_repl_fm_type[TC]: "\<phi>\<in>formula \<Longrightarrow> body_g
 
 arity_theorem for "is_Powapply_fm"
 
-lemma arity_body_ground_repl_fm_le: 
+lemma arity_body_ground_repl_fm_le:
   notes le_trans[trans]
   assumes "\<phi>\<in>formula"
   shows "arity(body_ground_repl_fm(\<phi>)) \<le> 6 \<union> (arity(\<phi>) #+ 4)"
 proof -
   from \<open>\<phi>\<in>formula\<close>
-  have ineq: "n \<union> Arith.pred(Arith.pred(arity(rename_split_fm(\<phi>)))) 
+  have ineq: "n \<union> Arith.pred(Arith.pred(arity(rename_split_fm(\<phi>))))
     \<le> m \<union> Arith.pred(Arith.pred(8 \<union> (arity(\<phi>) #+6 )))" if "n \<le> m" "n\<in>nat" "m\<in>nat" for n m
   using that arity_rename_split_fm_le[of \<phi>, THEN [2] pred_mono, THEN [2] pred_mono,
-      THEN [2] Un_mono[THEN subset_imp_le, OF _ le_imp_subset]] le_imp_subset 
+      THEN [2] Un_mono[THEN subset_imp_le, OF _ le_imp_subset]] le_imp_subset
     by auto
   moreover
   have "Arith.pred(Arith.pred(Arith.pred(4 \<union> 2 \<union> Arith.pred(Arith.pred(Arith.pred(
@@ -114,7 +114,7 @@ lemma sats_body_ground_repl_fm:
     \<longleftrightarrow> M, [\<alpha>, x, m, P, leq, \<one>] @ nenv \<Turnstile> body_ground_repl_fm(\<phi>)"
 proof -
   {
-    fix \<tau> V t p                                                            
+    fix \<tau> V t p
     assume "\<tau> \<in> M" "V \<in> M" "x = \<langle>t, p\<rangle>" "t \<in> M" "p \<in> M"
     with assms
     have "\<tau> \<in> V \<and> (M, [p,P,leq,\<one>,t,\<tau>] @ nenv \<Turnstile> forces(\<phi>)) \<longleftrightarrow>
@@ -130,7 +130,7 @@ proof -
     apply (rule iff_sats | simp add:nonempty[simplified])+
     using eq
     by (auto del: iffI)
-qed 
+qed
 
 definition ground_repl_fm where
   "ground_repl_fm(\<phi>) \<equiv> least_fm(body_ground_repl_fm(\<phi>), 1)"

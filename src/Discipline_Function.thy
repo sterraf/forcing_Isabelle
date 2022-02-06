@@ -32,7 +32,7 @@ definition
                        (\<not>(\<exists>z[M]. \<exists>w[M]. pair(M,z,w,x)) \<and> empty(M,t))"
 synthesize "snd" from_definition "is_snd"
 notation snd_fm (\<open>\<cdot>snd'(_') is _\<cdot>\<close>)
-arity_theorem for "snd_fm" 
+arity_theorem for "snd_fm"
 
 definition snd_rel ::  "[i\<Rightarrow>o,i] \<Rightarrow> i"  where
   "snd_rel(M,p) \<equiv> THE d. M(d) \<and> is_snd(M,p,d)"
@@ -58,12 +58,12 @@ lemma snd_closed[intro,simp]: "M(x) \<Longrightarrow> M(snd(x))"
 
 lemma fst_abs [absolut]:
   "\<lbrakk>M(p); M(x) \<rbrakk> \<Longrightarrow> is_fst(M,p,x) \<longleftrightarrow> x = fst(p)"
-  unfolding is_fst_def fst_def 
+  unfolding is_fst_def fst_def
   by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto)
 
 lemma snd_abs [absolut]:
   "\<lbrakk>M(p); M(y) \<rbrakk> \<Longrightarrow> is_snd(M,p,y) \<longleftrightarrow> y = snd(p)"
-  unfolding is_snd_def snd_def 
+  unfolding is_snd_def snd_def
   by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto)
 
 lemma empty_rel_abs : "M(x) \<Longrightarrow> M(0) \<Longrightarrow> x = 0 \<longleftrightarrow> x = (THE d. M(d) \<and> empty(M, d))"
@@ -133,8 +133,8 @@ end \<comment> \<open>\<^locale>\<open>M_trans\<close>\<close>
 subsection\<open>Discipline for \<^term>\<open>function_space\<close>\<close>
 
 definition
-  is_function_space :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o"  where 
-  "is_function_space(M,A,B,fs) \<equiv> M(fs) \<and> is_funspace(M,A,B,fs)" 
+  is_function_space :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o"  where
+  "is_function_space(M,A,B,fs) \<equiv> M(fs) \<and> is_funspace(M,A,B,fs)"
 
 definition
   function_space_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i"  where
@@ -184,16 +184,16 @@ lemma is_function_space_closed :
   unfolding is_function_space_def by simp
 
 \<comment> \<open>adding closure to simpset and claset\<close>
-lemma function_space_rel_closed[intro,simp]: 
+lemma function_space_rel_closed[intro,simp]:
   assumes    "M(x)" "M(y)"
   shows "M(function_space_rel(M,x,y))"
 proof -
-  have "is_function_space(M, x, y, THE xa. is_function_space(M, x, y, xa))" 
-    using assms 
+  have "is_function_space(M, x, y, THE xa. is_function_space(M, x, y, xa))"
+    using assms
           theI[OF ex1I[of "is_function_space(M,x,y)"], OF _ is_function_space_uniqueness[of x y]]
           is_function_space_witness
     by auto
-  then show ?thesis 
+  then show ?thesis
     using assms is_function_space_closed
     unfolding function_space_rel_def
     by blast
@@ -272,7 +272,7 @@ end \<comment> \<open>\<^locale>\<open>M_Pi\<close>\<close>
 definition
   is_function_space :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o"  where
   "is_function_space(M,A,B,fs) \<equiv> is_Pi(M,A,\<lambda>_. B,fs)"
-  
+
 definition
   function_space_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i"  where
   "function_space_rel(M,A,B) \<equiv> Pi_rel(M,A,\<lambda>_. B)"
@@ -306,7 +306,7 @@ lemma is_function_space_witness:
   by simp
 
 \<comment> \<open>adding closure to simpset and claset\<close>
-lemma function_space_rel_closed[intro,simp]: 
+lemma function_space_rel_closed[intro,simp]:
   "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(function_space_rel(M,x,y))"
   unfolding function_space_rel_def
   by simp
@@ -366,9 +366,9 @@ locale M_N_Pi = M:M_Pi + N:M_Pi N for N +
     M_imp_N:"M(x) \<Longrightarrow> N(x)"
 begin
 
-lemma function_space_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> 
+lemma function_space_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow>
                           function_space_rel(M,A,B) \<subseteq> function_space_rel(N,A,B)"
-  using M.function_space_rel_char N.function_space_rel_char 
+  using M.function_space_rel_char N.function_space_rel_char
   by (auto dest!:M_imp_N)
 
 end \<comment> \<open>\<^locale>\<open>M_N_Pi\<close>\<close>
@@ -476,16 +476,16 @@ lemma is_inj_closed :
  "is_inj(M,x,y,d) \<Longrightarrow> M(d)"
   unfolding is_inj_def by simp
 
-lemma inj_rel_closed[intro,simp]: 
+lemma inj_rel_closed[intro,simp]:
   assumes "M(x)" "M(y)"
   shows "M(inj_rel(M,x,y))"
 proof -
-  have "is_inj(M, x, y, THE xa. is_inj(M, x, y, xa))" 
-    using assms 
+  have "is_inj(M, x, y, THE xa. is_inj(M, x, y, xa))"
+    using assms
           theI[OF ex1I[of "is_inj(M,x,y)"], OF _ is_inj_uniqueness[of x y]]
           is_inj_witness
     by auto
-  then show ?thesis 
+  then show ?thesis
     using assms is_inj_closed
     unfolding inj_rel_def
     by blast
@@ -566,7 +566,7 @@ locale M_N_inj = M:M_inj + N:M_inj N for N +
 begin
 
 lemma inj_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> inj_rel(M,A,B) \<subseteq> inj_rel(N,A,B)"
-  using M.inj_rel_char N.inj_rel_char 
+  using M.inj_rel_char N.inj_rel_char
   by (auto dest!:M_imp_N)
 
 end \<comment> \<open>\<^locale>\<open>M_N_inj\<close>\<close>
@@ -578,7 +578,7 @@ end \<comment> \<open>\<^locale>\<open>M_N_inj\<close>\<close>
 
 definition
   surjP_rel:: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o" where
-  "surjP_rel(M,A,B,f) \<equiv> 
+  "surjP_rel(M,A,B,f) \<equiv>
     \<forall>y[M]. \<exists>x[M]. \<exists>fx[M]. y\<in>B \<longrightarrow> x\<in>A \<and> is_apply(M,f,x,fx) \<and> fx=y"
 
 synthesize "surjP_rel" from_definition assuming "nonempty"
@@ -638,16 +638,16 @@ lemma is_surj_closed :
  "is_surj(M,x,y,d) \<Longrightarrow> M(d)"
   unfolding is_surj_def by simp
 
-lemma surj_rel_closed[intro,simp]: 
+lemma surj_rel_closed[intro,simp]:
   assumes "M(x)" "M(y)"
   shows "M(surj_rel(M,x,y))"
 proof -
-  have "is_surj(M, x, y, THE xa. is_surj(M, x, y, xa))" 
-    using assms 
+  have "is_surj(M, x, y, THE xa. is_surj(M, x, y, xa))"
+    using assms
           theI[OF ex1I[of "is_surj(M,x,y)"], OF _ is_surj_uniqueness[of x y]]
           is_surj_witness
     by auto
-  then show ?thesis 
+  then show ?thesis
     using assms is_surj_closed
     unfolding surj_rel_def
     by blast
@@ -727,7 +727,7 @@ locale M_N_surj = M:M_surj + N:M_surj N for N +
 begin
 
 lemma surj_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> surj_rel(M,A,B) \<subseteq> surj_rel(N,A,B)"
-  using M.surj_rel_char N.surj_rel_char 
+  using M.surj_rel_char N.surj_rel_char
   by (auto dest!:M_imp_N)
 
 end \<comment> \<open>\<^locale>\<open>M_N_surj\<close>\<close>
@@ -766,7 +766,7 @@ lemma is_Int_uniqueness:
   shows
     "d=d'"
 proof -
-  have "M(d)" and "M(d')" 
+  have "M(d)" and "M(d')"
     using assms is_Int_closed by simp+
   then show ?thesis
     using assms is_Int_abs by simp
@@ -825,7 +825,7 @@ lemma is_bij_witness: "M(A) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M
     is_inj_witness is_surj_witness is_Int_abs
   unfolding is_bij_def by simp
 
-lemma is_bij_closed : "is_bij(M,f,y,d) \<Longrightarrow> M(d)" 
+lemma is_bij_closed : "is_bij(M,f,y,d) \<Longrightarrow> M(d)"
   unfolding is_bij_def by simp *)
 
 lemma is_bij_closed : "is_bij(M,f,y,d) \<Longrightarrow> M(d)"
@@ -838,16 +838,16 @@ lemma bij_rel_closed[intro,simp]:
   using assms Int_closed surj_rel_closed inj_rel_closed
   by auto
 
-(* lemma bij_rel_closed[intro,simp]: 
+(* lemma bij_rel_closed[intro,simp]:
   assumes "M(x)" "M(y)"
   shows "M(bij_rel(M,x,y))"
 proof -
-  have "is_bij(M, x, y, THE xa. is_bij(M, x, y, xa))" 
-    using assms 
+  have "is_bij(M, x, y, THE xa. is_bij(M, x, y, xa))"
+    using assms
           theI[OF ex1I[of "\<lambda>d. is_bij(M,x,y,d)"], OF _ is_bij_uniqueness[of x y]]
           is_bij_witness
     by auto
-  then show ?thesis 
+  then show ?thesis
     using assms is_bij_closed
     unfolding bij_rel_def
     by blast
@@ -905,7 +905,7 @@ locale M_N_Perm = M_N_Pi + M_N_inj + M_N_surj + M:M_Perm + N:M_Perm N
 begin
 
 lemma bij_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> bij_rel(M,A,B) \<subseteq> bij_rel(N,A,B)"
-  using M.bij_rel_char N.bij_rel_char 
+  using M.bij_rel_char N.bij_rel_char
   by (auto dest!:M_imp_N)
 
 end \<comment> \<open>\<^locale>\<open>M_N_Perm\<close>\<close>

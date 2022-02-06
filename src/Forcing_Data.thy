@@ -3,11 +3,11 @@ text\<open>This theory defines the locale \<^term>\<open>M_ZF_trans\<close> for
 transitive models of ZF, and the associated \<^term>\<open>forcing_data\<close>
  that adds a forcing notion\<close>
 theory Forcing_Data
-  imports  
-    Forcing_Notions 
-    Cohen_Posets_Relative    
+  imports
+    Forcing_Notions
+    Cohen_Posets_Relative
     Interface
-    
+
 begin
 
 locale M_ctm = M_ZF_trans +
@@ -53,17 +53,17 @@ proof -
     unfolding M_generic_def by auto
 qed
 
-lemma one_in_G : 
+lemma one_in_G :
   assumes "M_generic(G)"
-  shows  "\<one> \<in> G" 
+  shows  "\<one> \<in> G"
 proof -
-  from assms have "G\<subseteq>P" 
+  from assms have "G\<subseteq>P"
     unfolding M_generic_def and filter_def by simp
-  from \<open>M_generic(G)\<close> have "increasing(G)" 
+  from \<open>M_generic(G)\<close> have "increasing(G)"
     unfolding M_generic_def and filter_def by simp
-  with \<open>G\<subseteq>P\<close> and \<open>M_generic(G)\<close> 
-  show ?thesis 
-    using G_nonempty and one_in_P and one_max 
+  with \<open>G\<subseteq>P\<close> and \<open>M_generic(G)\<close>
+  show ?thesis
+    using G_nonempty and one_in_P and one_max
     unfolding increasing_def by blast
 qed
 
@@ -72,14 +72,14 @@ lemma G_subset_M: "M_generic(G) \<Longrightarrow> G \<subseteq> M"
 
 declare iff_trans [trans]
 
-lemma generic_filter_existence: 
+lemma generic_filter_existence:
   "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> M_generic(G)"
 proof -
   assume "p\<in>P"
   let ?D="\<lambda>n\<in>nat. (if (enum`n\<subseteq>P \<and> dense(enum`n))  then enum`n else P)"
   have "\<forall>n\<in>nat. ?D`n \<in> Pow(P)"
     by auto
-  then 
+  then
   have "?D:nat\<rightarrow>Pow(P)"
     using lam_type by auto
   have Eq4: "\<forall>n\<in>nat. dense(?D`n)"
@@ -89,36 +89,36 @@ proof -
     then
     have "dense(?D`n) \<longleftrightarrow> dense(if enum`n \<subseteq> P \<and> dense(enum`n) then enum`n else P)"
       by simp
-    also 
+    also
     have "... \<longleftrightarrow>  (\<not>(enum`n \<subseteq> P \<and> dense(enum`n)) \<longrightarrow> dense(P)) "
       using split_if by simp
     finally
     show "dense(?D`n)"
       using P_dense \<open>n\<in>nat\<close> by auto
   qed
-  from \<open>?D\<in>_\<close> and Eq4 
-  interpret cg: countable_generic P leq \<one> ?D 
+  from \<open>?D\<in>_\<close> and Eq4
+  interpret cg: countable_generic P leq \<one> ?D
     by (unfold_locales, auto)
-  from \<open>p\<in>P\<close> 
+  from \<open>p\<in>P\<close>
   obtain G where Eq6: "p\<in>G \<and> filter(G) \<and> (\<forall>n\<in>nat.(?D`n)\<inter>G\<noteq>0)"
     using cg.countable_rasiowa_sikorski[where M="\<lambda>_. M"]  P_sub_M
-      M_countable[THEN bij_is_fun] M_countable[THEN bij_is_surj, THEN surj_range] 
+      M_countable[THEN bij_is_fun] M_countable[THEN bij_is_surj, THEN surj_range]
     unfolding cg.D_generic_def by blast
-  then 
+  then
   have Eq7: "(\<forall>D\<in>M. D\<subseteq>P \<and> dense(D)\<longrightarrow>D\<inter>G\<noteq>0)"
   proof (intro ballI impI)
     fix D
-    assume "D\<in>M" and Eq9: "D \<subseteq> P \<and> dense(D) " 
+    assume "D\<in>M" and Eq9: "D \<subseteq> P \<and> dense(D) "
     have "\<forall>y\<in>M. \<exists>x\<in>nat. enum`x= y"
       using M_countable and  bij_is_surj unfolding surj_def by (simp)
-    with \<open>D\<in>M\<close> obtain n where Eq10: "n\<in>nat \<and> enum`n = D" 
+    with \<open>D\<in>M\<close> obtain n where Eq10: "n\<in>nat \<and> enum`n = D"
       by auto
     with Eq9 and if_P
     have "?D`n = D" by (simp)
-    with Eq6 and Eq10 
+    with Eq6 and Eq10
     show "D\<inter>G\<noteq>0" by auto
   qed
-  with Eq6 
+  with Eq6
   show ?thesis unfolding M_generic_def by auto
 qed
 

@@ -63,7 +63,7 @@ lemma arity_isordermap: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>
 
 lemma arity_is_ordertype: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>d\<in>nat\<Longrightarrow>
    arity(is_ordertype_fm(A,r,d)) = succ(d) \<union> (succ(A) \<union> succ(r))"
-  unfolding is_ordertype_fm_def 
+  unfolding is_ordertype_fm_def
   using arity_isordermap arity_image_fm pred_Un_distrib FOL_arities
   by auto
 
@@ -214,7 +214,7 @@ lemma arity_is_HAleph_fm: "arity(is_HAleph_fm(2, 1, 0)) = 3"
     arity_Replace_fm[where i="12" and v=10 and n=3]
     pred_Un_distrib ord_simp_union
   by (simp add:FOL_arities)
-  
+
 lemma arity_is_Aleph: "arity(is_Aleph_fm(0, 1)) = 2"
   unfolding is_Aleph_fm_def
   using arity_transrec_fm[OF _ _ _ _ arity_is_HAleph_fm] ord_simp_union

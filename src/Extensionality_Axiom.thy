@@ -7,12 +7,12 @@ begin
 
 context forcing_data
 begin
-  
+
 lemma extensionality_in_MG : "extensionality(##(M[G]))"
 proof -
   {
     fix x y z
-    assume 
+    assume
       asms: "x\<in>M[G]" "y\<in>M[G]" "(\<forall>w\<in>M[G] . w \<in> x \<longleftrightarrow> w \<in> y)"
     from \<open>x\<in>M[G]\<close> have
       "z\<in>x \<longleftrightarrow> z\<in>M[G] \<and> z\<in>x"
@@ -28,7 +28,7 @@ proof -
     by blast
   then show ?thesis unfolding extensionality_def by simp
 qed
- 
+
 end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
 
 end

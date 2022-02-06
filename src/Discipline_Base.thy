@@ -4,7 +4,7 @@ theory Discipline_Base
     ZF_Miscellanea
     "Relativization"
 (* TODO: check if we need Eisbach. Currently this breaks the build. *)
-(* 
+(*
    "HOL-Eisbach.Eisbach_Old_Appl_Syntax"\<comment> \<open>if put before, it breaks some simps\<close>
 *)
 
@@ -18,7 +18,7 @@ definition
   is_singleton :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "is_singleton(A,x,z) \<equiv> \<exists>c[A]. empty(A,c) \<and> is_cons(A,x,c,z)"
 
-lemma (in M_trivial) singleton_abs[simp] : 
+lemma (in M_trivial) singleton_abs[simp] :
   "\<lbrakk> M(x) ; M(s) \<rbrakk> \<Longrightarrow> is_singleton(M,x,s) \<longleftrightarrow> s = {x}"
   unfolding is_singleton_def using nonempty by simp
 
@@ -268,24 +268,24 @@ lemma is_Pow_uniqueness:
   using assms extensionality_trans
   unfolding is_Pow_def
   by simp
-  
+
 lemma is_Pow_witness: "M(r) \<Longrightarrow> \<exists>d[M]. is_Pow(M,r,d)"
   using power_ax unfolding power_ax_def powerset_def is_Pow_def
   by simp \<comment> \<open>We have to do this by hand, using axioms\<close>
 
-lemma is_Pow_closed : "\<lbrakk> M(r);is_Pow(M,r,d) \<rbrakk> \<Longrightarrow> M(d)" 
+lemma is_Pow_closed : "\<lbrakk> M(r);is_Pow(M,r,d) \<rbrakk> \<Longrightarrow> M(d)"
   unfolding is_Pow_def by simp
 
 lemma Pow_rel_closed[intro,simp]: "M(r) \<Longrightarrow> M(Pow_rel(M,r))"
   unfolding Pow_rel_def
   using is_Pow_closed theI[OF ex1I[of "\<lambda>d. is_Pow(M,r,d)"], OF _ is_Pow_uniqueness[of r]]
-    is_Pow_witness 
+    is_Pow_witness
   by fastforce
 
 
 lemmas trans_Pow_rel_closed[trans_closed] = transM[OF _ Pow_rel_closed]
 
-text\<open>The proof of \<^term>\<open>f_rel_iff\<close> lemma is schematic and it can reused by copy-paste 
+text\<open>The proof of \<^term>\<open>f_rel_iff\<close> lemma is schematic and it can reused by copy-paste
      replacing appropriately.\<close>
 
 lemma Pow_rel_iff:
@@ -432,7 +432,7 @@ begin
 
 lemma Sigma_abs[simp]:
   assumes
-    "M(S)" 
+    "M(S)"
   shows
     "is_Sigma(M,A,B,S) \<longleftrightarrow> S = Sigma(A,B)"
 proof -
@@ -453,7 +453,7 @@ proof -
   then
   show ?thesis
     using Sigma_Sigfun[of A B] transM[of _ A]
-      Sigfun_closed Pi_assumptions 
+      Sigfun_closed Pi_assumptions
     by simp
 qed
 
@@ -496,17 +496,17 @@ lemma is_Pi_witness: "\<exists>d[M]. is_Pi(M,A,B,d)"
   using  Pow_rel_iff Pi_separation Pi_assumptions
   unfolding is_Pi_def by simp
 
-lemma is_Pi_closed : "is_Pi(M,A,B,d) \<Longrightarrow> M(d)" 
+lemma is_Pi_closed : "is_Pi(M,A,B,d) \<Longrightarrow> M(d)"
   unfolding is_Pi_def by simp
 
 lemma Pi_rel_closed[intro,simp]:  "M(Pi_rel(M,A,B))"
 proof -
-  have "is_Pi(M, A, B, THE xa. is_Pi(M, A, B, xa))" 
+  have "is_Pi(M, A, B, THE xa. is_Pi(M, A, B, xa))"
     using Pi_assumptions
           theI[OF ex1I[of "is_Pi(M,A,B)"], OF _ is_Pi_uniqueness]
-          is_Pi_witness is_Pi_closed 
+          is_Pi_witness is_Pi_closed
     by auto
-  then show ?thesis 
+  then show ?thesis
     using is_Pi_closed
     unfolding Pi_rel_def
     by simp
@@ -565,7 +565,7 @@ lemma Pi_rel_char: "Pi_rel(M,A,B) = {f\<in>Pi(A,B). M(f)}"
   using Pi_assumptions def_Pi_rel Pow_rel_char[OF Sigma_closed] unfolding Pi_def
   by fastforce
 
-lemma mem_Pi_rel_abs: 
+lemma mem_Pi_rel_abs:
   assumes "M(f)"
   shows  "f \<in> Pi_rel(M,A,B) \<longleftrightarrow> f \<in> Pi(A,B)"
   using assms Pi_rel_char by simp
@@ -573,7 +573,7 @@ lemma mem_Pi_rel_abs:
 end \<comment> \<open>\<^locale>\<open>M_Pi_assumptions\<close>\<close>
 
 text\<open>The next locale (and similar ones below) are used to
-show the relationship between versions of simple (i.e. 
+show the relationship between versions of simple (i.e.
 $\Sigma_1^{\mathit{ZF}}$, $\Pi_1^{\mathit{ZF}}$) concepts in two
 different transitive models.\<close>
 locale M_N_Pi_assumptions = M:M_Pi_assumptions + N:M_Pi_assumptions N for N +
@@ -604,7 +604,7 @@ begin
 
 subsection\<open>Auxiliary ported results on \<^term>\<open>Pi_rel\<close>, now unused\<close>
 lemma Pi_rel_iff':
-  assumes types:"M(f)" 
+  assumes types:"M(f)"
   shows
     "f \<in> Pi_rel(M,A,B) \<longleftrightarrow> function(f) \<and> f \<subseteq> Sigma(A,B) \<and> A \<subseteq> domain(f)"
   using assms Pow_rel_char
@@ -612,7 +612,7 @@ lemma Pi_rel_iff':
 
 
 lemma lam_type_M:
-  assumes "M(A)" "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))" 
+  assumes "M(A)" "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))"
           "\<And>x. x \<in> A \<Longrightarrow> b(x)\<in>B(x)" "strong_replacement(M,\<lambda>x y. y=\<langle>x, b(x)\<rangle>) "
   shows "(\<lambda>x\<in>A. b(x)) \<in> Pi_rel(M,A,B)"
 proof (auto simp add: lam_def def_Pi_rel function_def)

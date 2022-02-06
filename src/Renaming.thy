@@ -516,7 +516,7 @@ proof(induct \<phi> arbitrary:n m \<rho> \<rho>' f)
   have "ren(Member(x,y))`n`m`f = Member(f`x,f`y)" using Member assms arity_type by force
   moreover
   have "x \<in> n" using Member arity_meml by simp
-  moreover 
+  moreover
   have "y \<in> n" using Member arity_memr by simp
   ultimately
   show ?case using Member ltI by simp

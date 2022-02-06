@@ -30,7 +30,7 @@ ML\<open>
         val ren_thm = Binding.name (name ^ "_thm")
     in
       Local_Theory.note   ((ren_thm, []), [tc_lemma,action_lemma]) ctxt |> snd |>
-      Local_Theory.define ((ren_fun_name, NoSyn), ((ren_fun_def, []), r)) |> snd      
+      Local_Theory.define ((ren_fun_name, NoSyn), ((ren_fun_def, []), r)) |> snd
   end;
 \<close>
 

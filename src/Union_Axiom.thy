@@ -143,7 +143,7 @@ proof (intro equalityI subsetI)
 next
   fix x
   assume "x \<in> (val(P,G,Union_name(P,leq,\<tau>)))"
-  moreover 
+  moreover
   note \<open>filter(G)\<close> \<open>a=val(P,G,\<tau>)\<close>
   moreover from calculation
   obtain \<theta> p where "p \<in> G" "\<langle>\<theta>,p\<rangle> \<in> Union_name(P,leq,\<tau>)" "val(P,G,\<theta>) = x"
@@ -151,7 +151,7 @@ next
   moreover from calculation
   have "p\<in>P"
     using filterD by simp
-  moreover from calculation 
+  moreover from calculation
   obtain \<sigma> q r where
     "\<sigma> \<in> domain(\<tau>)"  "\<langle>\<sigma>,q\<rangle> \<in> \<tau> " "\<langle>\<theta>,r\<rangle> \<in> \<sigma>" "r\<in>P" "q\<in>P" "\<langle>p,r\<rangle> \<in> leq" "\<langle>p,q\<rangle> \<in> leq"
     unfolding Union_name_def Union_name_body_def
@@ -169,7 +169,7 @@ next
   show "x \<in> \<Union> a" by simp
 qed
 
-lemma union_in_MG : 
+lemma union_in_MG :
   assumes "filter(G)"
   shows "Union_ax(##M[G])"
   unfolding Union_ax_def

@@ -25,7 +25,7 @@ proof
     case True
     note \<open>p\<in>P\<close> assms
     moreover
-    obtain q r where "q \<preceq> p" "r \<preceq> p" "q \<bottom> r" "q\<in>P" "r\<in>P" 
+    obtain q r where "q \<preceq> p" "r \<preceq> p" "q \<bottom> r" "q\<in>P" "r\<in>P"
       using separative[OF \<open>p\<in>P\<close>]
       by force
     with \<open>filter(G)\<close>
@@ -36,7 +36,7 @@ proof
     show ?thesis by blast
   next
     case False
-    with \<open>p\<in>P\<close> 
+    with \<open>p\<in>P\<close>
     show ?thesis using refl_leq unfolding Diff_def by auto
   qed
 qed
@@ -50,7 +50,7 @@ lemma generic_not_in_M: assumes "M_generic(G)"  shows "G \<notin> M"
 proof
   assume "G\<in>M"
   then
-  have "P - G \<in> M" 
+  have "P - G \<in> M"
     using P_in_M Diff_closed by simp
   moreover
   have "\<not>(\<exists>q\<in>G. q \<in> P - G)" "(P - G) \<subseteq> P"
@@ -59,7 +59,7 @@ proof
   note assms
   ultimately
   show "False"
-    using filter_complement_dense[of G] M_generic_denseD[of G "P-G"] 
+    using filter_complement_dense[of G] M_generic_denseD[of G "P-G"]
       M_generic_def by simp \<comment> \<open>need to put generic ==> filter in claset\<close>
 qed
 

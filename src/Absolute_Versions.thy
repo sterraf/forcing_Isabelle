@@ -29,10 +29,10 @@ interpretation V:M_basic \<V>
   by unfold_locales auto
 
 interpretation V:M_eclose \<V>
-  by unfold_locales (auto intro:separation_absolute replacement_absolute 
+  by unfold_locales (auto intro:separation_absolute replacement_absolute
       simp:iterates_replacement_def wfrec_replacement_def)
 
-lemmas bad_M_basic_rules[simp del, rule del] = 
+lemmas bad_M_basic_rules[simp del, rule del] =
   V.cartprod_closed V.finite_funspace_closed V.converse_closed
   V.list_case'_closed V.pred_closed
 
@@ -66,7 +66,7 @@ qed
 
 interpretation V:M_master \<V>
   using choice_ax_Universe
-  by unfold_locales (auto intro:separation_absolute replacement_absolute 
+  by unfold_locales (auto intro:separation_absolute replacement_absolute
       simp:lam_replacement_def transrec_replacement_def wfrec_replacement_def
       is_wfrec_def M_is_recfun_def)
 
@@ -110,7 +110,7 @@ proof -
   show ?thesis .
 qed
 
-txt\<open>Example of absolute lemmas obtained from the relative versions. 
+txt\<open>Example of absolute lemmas obtained from the relative versions.
     Note the \<^emph>\<open>only\<close> declarations\<close>
 lemma Ord_cardinal_idem': "Ord(A) \<Longrightarrow> ||A|| = |A|"
   using V.Ord_cardinal_rel_idem by (simp only:V_simps)
@@ -136,7 +136,7 @@ proof -
   interpret M_N_Perm M \<V>
     by (unfold_locales, simp only:V_simps)
   from assms
-  show ?thesis using eqpoll_rel_transfer 
+  show ?thesis using eqpoll_rel_transfer
     by (simp only:V_simps)
 qed
 

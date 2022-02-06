@@ -53,10 +53,10 @@ lemma pred_le2 : "n\<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> pre
   by(subgoal_tac "n\<in>nat",rule_tac n="n" in natE,auto)
 
 
-lemma Un_leD1 : "Ord(i)\<Longrightarrow> Ord(j)\<Longrightarrow> Ord(k)\<Longrightarrow>  i \<union> j \<le> k \<Longrightarrow> i \<le> k"   
+lemma Un_leD1 : "Ord(i)\<Longrightarrow> Ord(j)\<Longrightarrow> Ord(k)\<Longrightarrow>  i \<union> j \<le> k \<Longrightarrow> i \<le> k"
   by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct1]],simp_all)
 
-lemma Un_leD2 : "Ord(i)\<Longrightarrow> Ord(j)\<Longrightarrow> Ord(k)\<Longrightarrow>  i \<union> j \<le>k \<Longrightarrow> j \<le> k"   
+lemma Un_leD2 : "Ord(i)\<Longrightarrow> Ord(j)\<Longrightarrow> Ord(k)\<Longrightarrow>  i \<union> j \<le>k \<Longrightarrow> j \<le> k"
   by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct2]],simp_all)
 
 lemma gt1 : "n \<in> nat \<Longrightarrow> i \<in> n \<Longrightarrow> i \<noteq> 0 \<Longrightarrow> i \<noteq> 1 \<Longrightarrow> 1<i"
@@ -68,11 +68,11 @@ lemma pred_mono : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> pre
 lemma succ_mono : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> succ(n) \<le> succ(m)"
   by auto
 
-lemma union_abs1 : 
+lemma union_abs1 :
   "\<lbrakk> i \<le> j \<rbrakk> \<Longrightarrow> i \<union> j = j"
   by (rule Un_absorb1,erule le_imp_subset)
 
-lemma union_abs2 : 
+lemma union_abs2 :
   "\<lbrakk> i \<le> j \<rbrakk> \<Longrightarrow> j \<union> i = j"
   by (rule Un_absorb2,erule le_imp_subset)
 
@@ -83,12 +83,12 @@ lemma ord_un_max : "Ord(i) \<Longrightarrow> Ord(j) \<Longrightarrow> i \<union>
 lemma ord_max_ty : "Ord(i) \<Longrightarrow>Ord(j) \<Longrightarrow> Ord(max(i,j))"
   unfolding max_def by simp
 
-lemmas ord_simp_union = ord_un_max ord_max_ty max_def 
+lemmas ord_simp_union = ord_un_max ord_max_ty max_def
 
 lemma le_succ : "x\<in>nat \<Longrightarrow> x\<le>succ(x)" by simp
 
-lemma le_pred : "x\<in>nat \<Longrightarrow> pred(x)\<le>x" 
-  using pred_le[OF _ le_succ] pred_succ_eq 
+lemma le_pred : "x\<in>nat \<Longrightarrow> pred(x)\<le>x"
+  using pred_le[OF _ le_succ] pred_succ_eq
   by simp
 
 lemma not_le_anti_sym : "x\<in>nat \<Longrightarrow> y \<in> nat \<Longrightarrow> \<not> x\<le>y \<Longrightarrow> \<not>y\<le>x \<Longrightarrow> y=x"
@@ -97,16 +97,16 @@ lemma not_le_anti_sym : "x\<in>nat \<Longrightarrow> y \<in> nat \<Longrightarro
 
 lemma Un_le_compat : "o \<le> p \<Longrightarrow> q \<le> r \<Longrightarrow> Ord(o) \<Longrightarrow> Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> o \<union> q \<le> p \<union> r"
   using le_trans[of q r "p\<union>r",OF _ Un_upper2_le] le_trans[of o p "p\<union>r",OF _ Un_upper1_le]
-    ord_simp_union 
+    ord_simp_union
   by auto
 
 lemma Un_le : "p \<le> r \<Longrightarrow> q \<le> r \<Longrightarrow>
-               Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> 
+               Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow>
                 p \<union> q \<le> r"
   using ord_simp_union by auto
 
-lemma Un_leI3 : "o \<le> r \<Longrightarrow> p \<le> r \<Longrightarrow> q \<le> r \<Longrightarrow> 
-                Ord(o) \<Longrightarrow> Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> 
+lemma Un_leI3 : "o \<le> r \<Longrightarrow> p \<le> r \<Longrightarrow> q \<le> r \<Longrightarrow>
+                Ord(o) \<Longrightarrow> Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow>
                 o \<union> p \<union> q \<le> r"
   using ord_simp_union by auto
 
@@ -151,36 +151,36 @@ next
 qed
 
 subsection\<open>Some results in ordinal arithmetic\<close>
-text\<open>The following results are auxiliary to the proof of 
+text\<open>The following results are auxiliary to the proof of
 wellfoundedness of the relation \<^term>\<open>frecR\<close>\<close>
 
 lemma max_cong :
-  assumes "x \<le> y" "Ord(y)" "Ord(z)" 
-  shows "max(x,y) \<le> max(y,z)" 
+  assumes "x \<le> y" "Ord(y)" "Ord(z)"
+  shows "max(x,y) \<le> max(y,z)"
 proof (cases "y \<le> z")
   case True
-  then show ?thesis 
+  then show ?thesis
     unfolding max_def using assms by simp
 next
   case False
   then have "z \<le> y"  using assms not_le_iff_lt leI by simp
-  then show ?thesis 
-    unfolding max_def using assms by simp 
+  then show ?thesis
+    unfolding max_def using assms by simp
 qed
 
-lemma max_commutes : 
+lemma max_commutes :
   assumes "Ord(x)" "Ord(y)"
   shows "max(x,y) = max(y,x)"
   using assms Un_commute ord_simp_union(1) ord_simp_union(1)[symmetric] by auto
 
 lemma max_cong2 :
-  assumes "x \<le> y" "Ord(y)" "Ord(z)" "Ord(x)" 
+  assumes "x \<le> y" "Ord(y)" "Ord(z)" "Ord(x)"
   shows "max(x,z) \<le> max(y,z)"
 proof -
-  from assms 
+  from assms
   have " x \<union> z \<le> y \<union> z"
     using lt_Ord Ord_Un Un_mono[OF  le_imp_subset[OF \<open>x\<le>y\<close>]]  subset_imp_le by auto
-  then show ?thesis 
+  then show ?thesis
     using  ord_simp_union \<open>Ord(x)\<close> \<open>Ord(z)\<close> \<open>Ord(y)\<close> by simp
 qed
 
@@ -192,9 +192,9 @@ proof -
   have "w <  x \<union> w" using Un_upper2_lt[OF \<open>w<z\<close>] assms ord_simp_union by simp
   then
   have "w < x" using assms lt_Un_iff[of x w w] lt_not_refl by auto
-  then 
-  have "y = y \<union> z" using assms max_commutes ord_simp_union assms leI by simp 
-  then 
+  then
+  have "y = y \<union> z" using assms max_commutes ord_simp_union assms leI by simp
+  then
   show ?thesis using Un_leD2 assms by simp
 qed
 
@@ -209,7 +209,7 @@ proof -
     using assms ord_simp_union by simp
   then show ?thesis proof (cases)
     case a
-    consider (c) "w = y" | (d) "w = z" 
+    consider (c) "w = y" | (d) "w = z"
       using assms by auto
     then show ?thesis proof (cases)
       case c
@@ -217,14 +217,14 @@ proof -
     next
       case d
       with a
-      show ?thesis 
+      show ?thesis
       proof (cases "y <w")
-        case True       
+        case True
         then show ?thesis using lt_trans[OF \<open>x<y\<close>] by simp
       next
         case False
         then
-        have "w \<le> y" 
+        have "w \<le> y"
           using not_lt_iff_le[OF assms(5) assms(4)] by simp
         with \<open>w=z\<close>
         have "max(z,y) = y"  unfolding max_def using assms by simp
@@ -245,7 +245,7 @@ lemma oadd_lt_mono2 :
 proof -
   consider (0) "\<beta>=0" | (s) \<gamma> where  "Ord(\<gamma>)" "\<beta> = succ(\<gamma>)" | (l) "Limit(\<beta>)"
     using Ord_cases[OF \<open>Ord(\<beta>)\<close>,of ?thesis] by force
-  then show ?thesis 
+  then show ?thesis
   proof cases
     case 0
     then show ?thesis using \<open>\<alpha><\<beta>\<close> by auto
@@ -268,14 +268,14 @@ proof -
     have "Ord(x)" using \<open>x<n\<close> lt_Ord by simp
     with l
     have "succ(\<alpha>) < \<beta>" using Limit_has_succ \<open>\<alpha><\<beta>\<close> by simp
-    have "n ** \<alpha> ++ x < n ** \<alpha> ++ n" 
+    have "n ** \<alpha> ++ x < n ** \<alpha> ++ n"
       using oadd_lt_mono[OF le_refl[OF Ord_omult[OF _ \<open>Ord(\<alpha>)\<close>]] \<open>x<n\<close>] \<open>Ord(n)\<close> by simp
     also
     have "... = n ** succ(\<alpha>)" using omult_succ \<open>Ord(\<alpha>)\<close> \<open>Ord(n)\<close> by simp
     finally
-    have "n ** \<alpha> ++ x < n ** succ(\<alpha>)" by simp 
+    have "n ** \<alpha> ++ x < n ** succ(\<alpha>)" by simp
     with \<open>succ(\<alpha>) < \<beta>\<close>
-    have "n ** \<alpha> ++ x < n ** \<beta>" using lt_trans omult_lt_mono \<open>Ord(n)\<close> \<open>0<n\<close>  by auto      
+    have "n ** \<alpha> ++ x < n ** \<beta>" using lt_trans omult_lt_mono \<open>Ord(n)\<close> \<open>0<n\<close>  by auto
     then show ?thesis using oadd_le_self \<open>Ord(\<beta>)\<close> lt_trans2 \<open>Ord(n)\<close> by auto
   qed
 qed

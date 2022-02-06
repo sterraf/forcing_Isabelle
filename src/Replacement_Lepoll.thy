@@ -23,7 +23,7 @@ definition
 
 definition
   lepoll_assumptions5 :: "[i\<Rightarrow>o,i,[i,i]\<Rightarrow>i,i,i,i,i,i,i] \<Rightarrow> o" where
-  "lepoll_assumptions5(M,A,F,S,fa,K,x,f,r) \<equiv> 
+  "lepoll_assumptions5(M,A,F,S,fa,K,x,f,r) \<equiv>
 strong_replacement(M, \<lambda>x y. y = \<langle>x, \<mu> i. x \<in> F(A, i), f ` (\<mu> i. x \<in> F(A, i)) ` x\<rangle>)"
 
 definition
@@ -336,7 +336,7 @@ lemma lepoll_assumptions5:
    assumes
     types[simp]:"M(A)" "M(f)"
   shows "lepoll_assumptions5(M,A,F,S,fa,K,x,f,r)"
-  using 
+  using
     lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
     lam_replacement_hcomp[OF _ lam_replacement_apply[of f]]
     lam_replacement_identity
@@ -420,7 +420,7 @@ lemma lepoll_assumptions13:
 lemma lepoll_assumptions14:
   assumes types[simp]:"M(A)" "M(f)" "M(fa)"
   shows "lepoll_assumptions14(M,A,F,S,fa,K,x,f,r)"
-  using 
+  using
     lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
     lam_replacement_hcomp[OF _ lam_replacement_apply[of fa]]
     lam_replacement_identity
@@ -476,7 +476,7 @@ lemma lepoll_assumptions18:
 lemmas lepoll_assumptions = lepoll_assumptions1 lepoll_assumptions2
   lepoll_assumptions3 lepoll_assumptions4 lepoll_assumptions5
   lepoll_assumptions6 lepoll_assumptions7 lepoll_assumptions8
-  lepoll_assumptions9 lepoll_assumptions10 lepoll_assumptions11 
+  lepoll_assumptions9 lepoll_assumptions10 lepoll_assumptions11
   lepoll_assumptions12 lepoll_assumptions13 lepoll_assumptions14
   lepoll_assumptions15 lepoll_assumptions16
   lepoll_assumptions17 lepoll_assumptions18

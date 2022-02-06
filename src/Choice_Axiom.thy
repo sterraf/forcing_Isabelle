@@ -130,7 +130,7 @@ definition
   "upair_name'(\<tau>,\<rho>,on) \<equiv> Upair(\<langle>\<tau>,on\<rangle>,\<langle>\<rho>,on\<rangle>)"
 
 relativize "upair_name'" "is_upair_name"
-synthesize "upair_name" from_definition "is_upair_name" 
+synthesize "upair_name" from_definition "is_upair_name"
 definition
   opair_name' :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
   "opair_name'(\<tau>,\<rho>,on) \<equiv> upair_name'(upair_name'(\<tau>,\<tau>,on),upair_name'(\<tau>,\<rho>,on),on)"
@@ -174,12 +174,12 @@ lemma sats_upair_name_fm' :
 lemma opair_name_abs :
   assumes "x\<in>M" "y\<in>M" "z\<in>M"
   shows "is_opair_name(##M,x,y,\<one>,z) \<longleftrightarrow> z = opair_name(x,y)"
-  unfolding is_opair_name_def opair_name'_def 
+  unfolding is_opair_name_def opair_name'_def
   using assms upair_name_abs upair_name_closed by simp
 
 lemma opair_name_closed :
   "\<lbrakk> x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> opair_name(x,y)\<in>M"
-  unfolding opair_name'_def 
+  unfolding opair_name'_def
   using upair_name_closed by simp
 
 lemma sats_opair_name_fm :
@@ -225,7 +225,7 @@ interpretation mgzf: M_ZF_trans "M[G]"
     strong_replacement_in_MG separation_in_MG infinity_in_MG
   by unfold_locales simp_all
 
-(* FIXME: we could have this synthesized if is_check were parameterised by the class. 
+(* FIXME: we could have this synthesized if is_check were parameterised by the class.
 *)
 definition
   is_opname_check :: "[i,i,i] \<Rightarrow> o" where
@@ -247,7 +247,7 @@ lemma sats_opname_check_fm:
   shows
     "sats(M,opname_check_fm(o,x,y,z),env) \<longleftrightarrow> is_opname_check(nth(x,env),nth(y,env),nth(z,env))"
   unfolding opname_check_fm_def is_opname_check_def
-  using assms sats_check_fm sats_opair_name_fm one_in_M 
+  using assms sats_check_fm sats_opair_name_fm one_in_M
   by simp
 
 lemma opname_check_abs :
@@ -270,7 +270,7 @@ proof -
     using assms opair_name_closed apply_closed transitivity check_in_M
     by simp
   ultimately
-  show ?thesis 
+  show ?thesis
     using assms opname_check_abs[of f] sats_opname_check_fm
         one_in_M transitivity
     Replace_relativized_in_M[of "opname_check_fm(3,2,0,1)" "[f,\<one>]" A "is_opname_check(f)"
