@@ -1263,7 +1263,7 @@ lemma sats_forces_Member :
     "nth(x,env)=xx" "nth(y,env)=yy" "q\<in>M"
   shows "q \<tturnstile> \<cdot>x \<in> y\<cdot> env \<longleftrightarrow> q \<in> P \<and> is_forces_mem(q, xx, yy)"
   unfolding forces_def
-  using assms sats_forces_eq_fm P_in_M leq_in_M one_in_M 
+  using assms sats_forces_mem_fm P_in_M leq_in_M one_in_M
   by simp
 
 lemma sats_forces_Equal :
