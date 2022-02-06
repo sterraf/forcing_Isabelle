@@ -809,7 +809,7 @@ reldb_add relational "well_ord" "is_well_ord"
 reldb_add functional "well_ord" "well_ord"
 synthesize "is_well_ord" from_definition assuming "nonempty"
 
-\<comment> \<open>One keyword (functional or relational) means going
+\<comment> \<open>one keyword (functional or relational) means going
     from an absolute term to that kind of term\<close>
 reldb_add relational "Order.pred" "pred_set"
 
@@ -1409,7 +1409,7 @@ done
 
 end \<comment> \<open>\<^locale>\<open>M_cardinal_arith\<close>\<close>
 
-subsection\<open>For Every Cardinal Number There Exists A Greater One\<close>
+subsection\<open>For Every Cardinal Number There Exists A Greater one\<close>
 
 text\<open>This result is Kunen's Theorem 10.16, which would be trivial using AC\<close>
 

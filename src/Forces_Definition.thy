@@ -14,12 +14,7 @@ definition
   "frecrelP(M,xy) \<equiv> (\<exists>x[M]. \<exists>y[M]. pair(M,x,y,xy) \<and> is_frecR(M,x,y))"
 
 synthesize "frecrelP" from_definition
-
-lemma arity_frecrelP_fm :
-  "a\<in>nat \<Longrightarrow> arity(frecrelP_fm(a)) = succ(a)"
-  unfolding frecrelP_fm_def
-  using arity_frecR_fm arity_pair_fm pred_Un_distrib
-  by (simp add:FOL_arities)
+arity_theorem for "frecrelP_fm"
 
 definition
   is_frecrel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
@@ -27,14 +22,9 @@ definition
 
 declare cartprod_iff_sats [iff_sats]
 declare Collect_iff_sats [iff_sats]
-synthesize "frecrel" from_definition "is_frecrel"
 
-lemma arity_frecrel_fm :
-  assumes "a\<in>nat"  "b\<in>nat"
-  shows "arity(frecrel_fm(a,b)) = succ(a) \<union> succ(b)"
-  unfolding frecrel_fm_def
-  using assms arity_Collect_fm arity_cartprod_fm arity_frecrelP_fm pred_Un_distrib
-  by (auto simp:FOL_arities)
+synthesize "frecrel" from_definition "is_frecrel"
+arity_theorem for "frecrel_fm"
 
 definition
   names_below :: "i \<Rightarrow> i \<Rightarrow> i" where
@@ -47,39 +37,28 @@ lemma names_belowsD:
   using assms unfolding names_below_def by auto
 
 synthesize "number2" from_definition
-
-lemma number2_iff :
-  "(A)(c) \<Longrightarrow> number2(A,c) \<longleftrightarrow> (\<exists>b[A]. \<exists>a[A]. successor(A, b, c) \<and> successor(A, a, b) \<and> empty(A, a))"
-  unfolding number2_def number1_def by auto
-
-lemma arity_number2_fm :
-  "a\<in>nat \<Longrightarrow> arity(number2_fm(a)) = succ(a)"
-  unfolding number2_fm_def
-  using arity_number1_fm arity_succ_fm union_abs2 pred_Un_distrib
-  by (simp add:FOL_arities)
+arity_theorem for "number2_fm"
 
 reldb_add "ecloseN" "is_ecloseN"
 relativize "names_below" "is_names_below"
 synthesize "is_names_below" from_definition
-
-lemma arity_is_names_below_fm :
-  "\<lbrakk>P\<in>nat;x\<in>nat;nb\<in>nat\<rbrakk> \<Longrightarrow> arity(is_names_below_fm(P,x,nb)) = succ(P) \<union> succ(x) \<union> succ(nb)"
-  unfolding is_names_below_fm_def
-  using arity_cartprod_fm arity_succ_fm arity_empty_fm arity_ecloseN_fm union_abs2 pred_Un_distrib
-  by (auto simp:FOL_arities)
+arity_theorem for "is_names_below_fm"
 
 definition
   is_tuple :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
-  "is_tuple(M,z,t1,t2,p,t) \<equiv> \<exists>t1t2p[M]. \<exists>t2p[M]. pair(M,t2,p,t2p) \<and> pair(M,t1,t2p,t1t2p) \<and>
-                                                  pair(M,z,t1t2p,t)"
+  "is_tuple(M,a,b,c,d,t) \<equiv> \<exists>y[M]. \<exists>x[M]. pair(M,c,d,x) \<and> pair(M,b,x,y) \<and> pair(M,a,y,t)"
 
 synthesize "is_tuple" from_definition
-
-lemma arity_is_tuple_fm : "\<lbrakk> z\<in>nat ; t1\<in>nat ; t2\<in>nat ; p\<in>nat ; tup\<in>nat \<rbrakk> \<Longrightarrow>
-  arity(is_tuple_fm(z,t1,t2,p,tup)) = \<Union> {succ(z),succ(t1),succ(t2),succ(p),succ(tup)}"
-  unfolding is_tuple_fm_def
-  using arity_pair_fm union_abs1 union_abs2 pred_Un_distrib
-  by (auto simp:FOL_arities)
+arity_theorem intermediate for "is_tuple_fm"
+lemma arity_is_tuple_fm[arity]:
+    "a \<in> nat \<Longrightarrow>
+    b \<in> nat \<Longrightarrow>
+    c \<in> nat \<Longrightarrow>
+    d \<in> nat \<Longrightarrow>
+    t \<in> nat \<Longrightarrow>
+    arity(is_tuple_fm(a, b, c, d, t)) = succ(a) \<union> succ(b) \<union> succ(c) \<union> succ(d) \<union> succ(t)"
+  using arity_is_tuple_fm' Un_assoc 
+  by auto
 
 subsection\<open>Definition of \<^term>\<open>forces\<close> for equality and membership\<close>
 
@@ -92,17 +71,7 @@ definition
 
 relativize "eq_case" "is_eq_case"
 synthesize "eq_case" from_definition "is_eq_case"
-
-lemma arity_eq_case_fm :
-  assumes
-    "n1\<in>nat" "n2\<in>nat" "p\<in>nat" "P\<in>nat" "leq\<in>nat" "f\<in>nat"
-  shows
-    "arity(eq_case_fm(n1,n2,p,P,leq,f)) =
-    succ(n1) \<union> succ(n2) \<union> succ(p) \<union> succ(P) \<union> succ(leq) \<union> succ(f)"
-  unfolding eq_case_fm_def
-  using assms arity_pair_fm arity_is_tuple_fm arity_succ_fm arity_fun_apply_fm arity_empty_fm
-    arity_domain_fm pred_Un_distrib arity_union_fm
-  by (auto simp:FOL_arities)
+arity_theorem for "eq_case_fm"
 
 (* p ||-
    \<pi> \<in> \<tau> \<equiv> \<forall>v\<in>P. \<langle>v,p\<rangle>\<in>leq \<longrightarrow> (\<exists>q\<in>P. \<langle>q,v\<rangle>\<in>leq \<and> (\<exists>\<sigma>. \<exists>r\<in>P. \<langle>\<sigma>,r\<rangle>\<in>\<tau> \<and> \<langle>q,r\<rangle>\<in>leq \<and>  q ||- \<pi> = \<sigma>)) *)
@@ -113,17 +82,7 @@ definition
 
 relativize "mem_case" "is_mem_case"
 synthesize "mem_case" from_definition "is_mem_case"
-
-lemma arity_mem_case_fm :
-  assumes
-    "n1\<in>nat" "n2\<in>nat" "p\<in>nat" "P\<in>nat" "leq\<in>nat" "f\<in>nat"
-  shows
-    "arity(mem_case_fm(n1,n2,p,P,leq,f)) =
-    succ(n1) \<union> succ(n2) \<union> succ(p) \<union> succ(P) \<union> succ(leq) \<union> succ(f)"
-  unfolding mem_case_fm_def
-  using assms arity_pair_fm arity_is_tuple_fm arity_succ_fm arity_fun_apply_fm arity_empty_fm
-    pred_Un_distrib
-  by (auto simp:FOL_arities)
+arity_theorem for "mem_case_fm"
 
 definition
   Hfrc :: "[i,i,i,i] \<Rightarrow> o" where
@@ -134,16 +93,7 @@ definition
 relativize "Hfrc" "is_Hfrc"
 
 synthesize "Hfrc" from_definition "is_Hfrc"
-
-lemma arity_Hfrc_fm :
-  assumes
-    "P\<in>nat" "leq\<in>nat" "fnnc\<in>nat" "f\<in>nat"
-  shows
-    "arity(Hfrc_fm(P,leq,fnnc,f)) = succ(P) \<union> succ(leq) \<union> succ(fnnc) \<union> succ(f)"
-  unfolding Hfrc_fm_def
-  using assms arity_pair_fm arity_mem_case_fm arity_eq_case_fm
-    arity_empty_fm arity_succ_fm pred_Un_distrib
-  by (auto simp:FOL_arities)
+arity_theorem for "Hfrc_fm"
 
 definition
   is_Hfrc_at :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
@@ -152,15 +102,19 @@ definition
           \<or> (number1(M,z) \<and> is_Hfrc(M,P,leq,fnnc,f))"
 
 synthesize "Hfrc_at" from_definition "is_Hfrc_at"
-
-lemma arity_Hfrc_at_fm :
-  assumes
-    "P\<in>nat" "leq\<in>nat" "fnnc\<in>nat" "f\<in>nat" "z\<in>nat"
-  shows
-    "arity(Hfrc_at_fm(P,leq,fnnc,f,z)) = succ(P) \<union> succ(leq) \<union> succ(fnnc) \<union> succ(f) \<union> succ(z)"
-  unfolding Hfrc_at_fm_def
-  using assms arity_Hfrc_fm arity_empty_fm arity_number1_fm pred_Un_distrib
-  by (auto simp:FOL_arities)
+arity_theorem intermediate for "Hfrc_at_fm"
+lemma arity_Hfrc_at_fm:
+  "P \<in> nat \<Longrightarrow>
+    leq \<in> nat \<Longrightarrow>
+    fnnc \<in> nat \<Longrightarrow>
+    f \<in> nat \<Longrightarrow>
+    z \<in> nat \<Longrightarrow>
+    arity(Hfrc_at_fm(P, leq, fnnc, f, z)) =
+    succ(z) \<union>
+    succ(P) \<union>
+    succ(fnnc) \<union>
+    succ(leq) \<union> succ(f)"
+  using arity_Hfrc_at_fm' by auto
 
 subsection\<open>The well-founded relation \<^term>\<open>forcerel\<close>\<close>
 definition
@@ -172,44 +126,9 @@ definition
   "is_forcerel(M,P,x,z) \<equiv> \<exists>r[M]. \<exists>nb[M]. tran_closure(M,r,z) \<and>
                         (is_names_below(M,P,x,nb) \<and> is_frecrel(M,nb,r))"
 
-definition
-  forcerel_fm :: "i\<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
-  "forcerel_fm(p,x,z) \<equiv> Exists(Exists(And(tran_closure_fm(1, z#+2),
-                                        And(is_names_below_fm(p#+2,x#+2,0),frecrel_fm(0,1)))))"
-
-lemma arity_forcerel_fm:
-  "\<lbrakk>p\<in>nat;x\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> arity(forcerel_fm(p,x,z)) = succ(p) \<union> succ(x) \<union> succ(z)"
-  unfolding forcerel_fm_def
-  using arity_frecrel_fm arity_tran_closure_fm arity_is_names_below_fm pred_Un_distrib
-  by (auto simp:FOL_arities)
-
-lemma forcerel_fm_type[TC]:
-  "\<lbrakk>p\<in>nat;x\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> forcerel_fm(p,x,z)\<in>formula"
-  unfolding forcerel_fm_def by simp
-
-
-lemma sats_forcerel_fm:
-  assumes
-    "p\<in>nat" "x\<in>nat"  "z\<in>nat" "env\<in>list(A)"
-  shows
-    "sats(A,forcerel_fm(p,x,z),env) \<longleftrightarrow> is_forcerel(##A,nth(p,env),nth(x, env),nth(z, env))"
-proof -
-  have "sats(A,tran_closure_fm(1,z #+ 2),Cons(nb,Cons(r,env))) \<longleftrightarrow>
-        tran_closure(##A, r, nth(z, env))" if "r\<in>A" "nb\<in>A" for r nb
-    using that assms tran_closure_iff_sats[of 1 "[nb,r]@env" _ "z#+2",symmetric] by simp
-  moreover
-  have "sats(A, is_names_below_fm(succ(succ(p)), succ(succ(x)), 0), Cons(nb, Cons(r, env))) \<longleftrightarrow>
-        is_names_below(##A, nth(p,env), nth(x, env), nb)"
-    if "r\<in>A" "nb\<in>A" for nb r
-    using assms that sats_is_names_below_fm[of "p #+ 2" "x #+ 2" 0 "[nb,r]@env"] by simp
-  moreover
-  have "sats(A, frecrel_fm(0, 1), Cons(nb, Cons(r, env))) \<longleftrightarrow>
-        is_frecrel(##A, nb, r)"
-    if "r\<in>A" "nb\<in>A" for r nb
-    using assms that sats_frecrel_fm[of 0 1 "[nb,r]@env"] by simp
-  ultimately
-  show ?thesis using assms unfolding is_forcerel_def forcerel_fm_def by simp
-qed
+declare tran_closure_iff_sats [iff_sats]
+synthesize "forcerel" from_definition "is_forcerel"
+arity_theorem for "forcerel_fm"
 
 subsection\<open>\<^term>\<open>frc_at\<close>, forcing for atomic formulas\<close>
 definition
@@ -222,6 +141,8 @@ definition
   "is_frc_at(M,P,leq,x,z) \<equiv> \<exists>r[M]. is_forcerel(M,P,x,r) \<and>
                                     is_wfrec(M,is_Hfrc_at(M,P,leq),r,x,z)"
 
+reldb_add relational "frc_at" "is_frc_at"
+
 definition
   frc_at_fm :: "[i,i,i,i] \<Rightarrow> i" where
   "frc_at_fm(p,l,x,z) \<equiv> Exists(And(forcerel_fm(succ(p),succ(x),0),
@@ -231,7 +152,7 @@ lemma frc_at_fm_type [TC] :
   "\<lbrakk>p\<in>nat;l\<in>nat;x\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> frc_at_fm(p,l,x,z)\<in>formula"
   unfolding frc_at_fm_def by simp
 
-lemma arity_frc_at_fm :
+lemma arity_frc_at_fm [arity]:
   assumes "p\<in>nat" "l\<in>nat" "x\<in>nat" "z\<in>nat"
   shows "arity(frc_at_fm(p,l,x,z)) = succ(p) \<union> succ(l) \<union> succ(x) \<union> succ(z)"
 proof -
@@ -286,6 +207,15 @@ proof -
     using assms by simp
 qed
 
+lemma frc_at_fm_iff_sats:
+  assumes "nth(i,env) = w" "nth(j,env) = x" "nth(k,env) = y" "nth(l,env) = z"
+    "i \<in> nat" "j \<in> nat" "k \<in> nat" "l\<in>nat" "env \<in> list(A)" "k<length(env)" "l<length(env)"
+  shows "is_frc_at(##A, w, x, y,z) \<longleftrightarrow> sats(A, frc_at_fm(i,j,k,l), env)"
+  using assms sats_frc_at_fm
+  by simp
+
+declare frc_at_fm_iff_sats [iff_sats]
+
 definition
   forces_eq' :: "[i,i,i,i,i] \<Rightarrow> o" where
   "forces_eq'(P,l,p,t1,t2) \<equiv> frc_at(P,l,\<langle>0,t1,t2,p\<rangle>) = 1"
@@ -322,92 +252,33 @@ definition
   "is_forces_nmem'(M,P,l,p,t1,t2) \<equiv>
       \<not> (\<exists>q[M]. \<exists>qp[M]. q\<in>P \<and> pair(M,q,p,qp) \<and> qp\<in>l \<and> is_forces_mem'(M,P,l,q,t1,t2))"
 
-definition
-  forces_eq_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
-  "forces_eq_fm(p,l,q,t1,t2) \<equiv>
-     Exists(Exists(Exists(And(number1_fm(2),And(empty_fm(1),
-              And(is_tuple_fm(1,t1#+3,t2#+3,q#+3,0),frc_at_fm(p#+3,l#+3,0,2) ))))))"
+synthesize "forces_eq" from_definition "is_forces_eq'"
+synthesize "forces_mem" from_definition "is_forces_mem'"
+synthesize "forces_neq" from_definition "is_forces_neq'" assuming "nonempty"
+synthesize "forces_nmem" from_definition "is_forces_nmem'" assuming "nonempty"
 
-definition
-  forces_mem_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
-  "forces_mem_fm(p,l,q,t1,t2) \<equiv> Exists(Exists(And(number1_fm(1),
-                          And(is_tuple_fm(1,t1#+2,t2#+2,q#+2,0),frc_at_fm(p#+2,l#+2,0,1)))))"
-
-definition
-  forces_neq_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
-  "forces_neq_fm(p,l,q,t1,t2) \<equiv> Neg(Exists(Exists(And(Member(1,p#+2),
-     And(pair_fm(1,q#+2,0),And(Member(0,l#+2),forces_eq_fm(p#+2,l#+2,1,t1#+2,t2#+2)))))))"
-
-definition
-  forces_nmem_fm :: "[i,i,i,i,i] \<Rightarrow> i" where
-  "forces_nmem_fm(p,l,q,t1,t2) \<equiv> Neg(Exists(Exists(And(Member(1,p#+2),
-     And(pair_fm(1,q#+2,0),And(Member(0,l#+2),forces_mem_fm(p#+2,l#+2,1,t1#+2,t2#+2)))))))"
-
-
-lemma forces_eq_fm_type [TC]:
-  "\<lbrakk> p\<in>nat;l\<in>nat;q\<in>nat;t1\<in>nat;t2\<in>nat\<rbrakk> \<Longrightarrow> forces_eq_fm(p,l,q,t1,t2) \<in> formula"
-  unfolding forces_eq_fm_def
+arity_theorem intermediate for "forces_eq_fm"
+lemma arity_forces_eq_fm:
+    "P \<in> nat \<Longrightarrow>
+    l \<in> nat \<Longrightarrow>
+    p \<in> nat \<Longrightarrow>
+    t1 \<in> nat \<Longrightarrow>
+    t2 \<in> nat \<Longrightarrow>
+    arity(forces_eq_fm(P, l, p, t1, t2)) =
+    succ(t2) \<union> succ(p) \<union> succ(t1) \<union> succ(P) \<union> succ(l)"
+  using arity_forces_eq_fm' Un_commute Un_assoc
   by simp
 
-lemma forces_mem_fm_type [TC]:
-  "\<lbrakk> p\<in>nat;l\<in>nat;q\<in>nat;t1\<in>nat;t2\<in>nat\<rbrakk> \<Longrightarrow> forces_mem_fm(p,l,q,t1,t2) \<in> formula"
-  unfolding forces_mem_fm_def
-  by simp
-
-lemma forces_neq_fm_type [TC]:
-  "\<lbrakk> p\<in>nat;l\<in>nat;q\<in>nat;t1\<in>nat;t2\<in>nat\<rbrakk> \<Longrightarrow> forces_neq_fm(p,l,q,t1,t2) \<in> formula"
-  unfolding forces_neq_fm_def
-  by simp
-
-lemma forces_nmem_fm_type [TC]:
-  "\<lbrakk> p\<in>nat;l\<in>nat;q\<in>nat;t1\<in>nat;t2\<in>nat\<rbrakk> \<Longrightarrow> forces_nmem_fm(p,l,q,t1,t2) \<in> formula"
-  unfolding forces_nmem_fm_def
-  by simp
-
-lemma arity_forces_eq_fm :
-  "p\<in>nat \<Longrightarrow> l\<in>nat \<Longrightarrow> q\<in>nat \<Longrightarrow> t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow>
-   arity(forces_eq_fm(p,l,q,t1,t2)) = succ(t1) \<union> succ(t2) \<union> succ(q) \<union> succ(p) \<union> succ(l)"
-  unfolding forces_eq_fm_def
-  using arity_number1_fm arity_empty_fm arity_is_tuple_fm arity_frc_at_fm
-    pred_Un_distrib
-  by (auto simp:FOL_arities)
-
-lemma arity_forces_mem_fm :
-  "p\<in>nat \<Longrightarrow> l\<in>nat \<Longrightarrow> q\<in>nat \<Longrightarrow> t1 \<in> nat \<Longrightarrow> t2 \<in> nat \<Longrightarrow>
-   arity(forces_mem_fm(p,l,q,t1,t2)) = succ(t1) \<union> succ(t2) \<union> succ(q) \<union> succ(p) \<union> succ(l)"
-  unfolding forces_mem_fm_def
-  using arity_number1_fm arity_empty_fm arity_is_tuple_fm arity_frc_at_fm
-    pred_Un_distrib
-  by (auto simp:FOL_arities)
-
-lemma sats_forces_eq'_fm:
-  assumes  "p\<in>nat" "l\<in>nat" "q\<in>nat" "t1\<in>nat" "t2\<in>nat"  "env\<in>list(M)"
-  shows "sats(M,forces_eq_fm(p,l,q,t1,t2),env) \<longleftrightarrow>
-         is_forces_eq'(##M,nth(p,env),nth(l,env),nth(q,env),nth(t1,env),nth(t2,env))"
-  unfolding forces_eq_fm_def is_forces_eq'_def using assms sats_is_tuple_fm  sats_frc_at_fm
-  by simp
-
-lemma sats_forces_mem'_fm:
-  assumes  "p\<in>nat" "l\<in>nat" "q\<in>nat" "t1\<in>nat" "t2\<in>nat"  "env\<in>list(M)"
-  shows "sats(M,forces_mem_fm(p,l,q,t1,t2),env) \<longleftrightarrow>
-             is_forces_mem'(##M,nth(p,env),nth(l,env),nth(q,env),nth(t1,env),nth(t2,env))"
-  unfolding forces_mem_fm_def is_forces_mem'_def using assms sats_is_tuple_fm sats_frc_at_fm
-  by simp
-
-lemma sats_forces_neq'_fm:
-  assumes  "p\<in>nat" "l\<in>nat" "q\<in>nat" "t1\<in>nat" "t2\<in>nat"  "env\<in>list(M)"
-  shows "sats(M,forces_neq_fm(p,l,q,t1,t2),env) \<longleftrightarrow>
-             is_forces_neq'(##M,nth(p,env),nth(l,env),nth(q,env),nth(t1,env),nth(t2,env))"
-  unfolding forces_neq_fm_def is_forces_neq'_def
-  using assms sats_forces_eq'_fm sats_is_tuple_fm sats_frc_at_fm
-  by simp
-
-lemma sats_forces_nmem'_fm:
-  assumes  "p\<in>nat" "l\<in>nat" "q\<in>nat" "t1\<in>nat" "t2\<in>nat"  "env\<in>list(M)"
-  shows "sats(M,forces_nmem_fm(p,l,q,t1,t2),env) \<longleftrightarrow>
-             is_forces_nmem'(##M,nth(p,env),nth(l,env),nth(q,env),nth(t1,env),nth(t2,env))"
-  unfolding forces_nmem_fm_def is_forces_nmem'_def
-  using assms sats_forces_mem'_fm sats_is_tuple_fm sats_frc_at_fm
+arity_theorem intermediate for "forces_mem_fm"
+lemma arity_forces_mem_fm[arity]:
+    "P \<in> nat \<Longrightarrow>
+    l \<in> nat \<Longrightarrow>
+    p \<in> nat \<Longrightarrow>
+    t1 \<in> nat \<Longrightarrow>
+    t2 \<in> nat \<Longrightarrow>
+    arity(forces_mem_fm(P, l, p, t1, t2)) =
+    succ(t2) \<union> succ(p) \<union> succ(t1) \<union> succ(P) \<union> succ(l)"
+  using arity_forces_mem_fm' Un_assoc Un_commute
   by simp
 
 context forcing_data
@@ -422,7 +293,7 @@ lemma name1_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_name1(##M,x,y) \<longleftrightarrow> y = name1(x)"
   unfolding name1_def is_name1_def
   by (rule is_hcomp_abs[OF fst_abs],simp_all add: fst_snd_closed[simplified] absolut)
-  
+
 lemma snd_snd_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_snd_snd(##M,x,y) \<longleftrightarrow> y = snd(snd(x))"
   unfolding is_snd_snd_def
@@ -523,7 +394,8 @@ next
     moreover
     from this \<open>t2\<in>M\<close>
     have "r\<in>M" "q\<in>M" "s\<in>M" "r \<in> P \<and> q \<in> P \<and> q \<preceq> v \<and> \<langle>s, r\<rangle> \<in> t2 \<and> q \<preceq> r \<and> f ` \<langle>0, t1, s, q\<rangle> = 1"
-      using transitivity P_in_M domain_closed[of t2] by auto
+      using transitivity domainI[of s r] P_in_M domain_closed
+      by auto
     moreover
     note \<open>t1\<in>M\<close>
     ultimately
@@ -1295,25 +1167,8 @@ lemma (in forcing_data) leq_abs:
   "\<lbrakk> l\<in>M ; q\<in>M ; p\<in>M \<rbrakk> \<Longrightarrow> is_leq(##M,l,q,p) \<longleftrightarrow> \<langle>q,p\<rangle>\<in>l"
   unfolding is_leq_def using pair_in_M_iff by simp
 
-
-definition
-  leq_fm :: "[i,i,i] \<Rightarrow> i" where
-  "leq_fm(leq,q,p) \<equiv> Exists(And(pair_fm(q#+1,p#+1,0),Member(0,leq#+1)))"
-
-lemma arity_leq_fm[arity]:
-  "\<lbrakk>leq\<in>nat;q\<in>nat;p\<in>nat\<rbrakk> \<Longrightarrow> arity(leq_fm(leq,q,p)) = succ(q) \<union> succ(p) \<union> succ(leq)"
-  unfolding leq_fm_def
-  using arity_pair_fm pred_Un_distrib ord_simp_union
-  by (auto simp:FOL_arities)
-
-lemma leq_fm_type[TC] :
-  "\<lbrakk>leq\<in>nat;q\<in>nat;p\<in>nat\<rbrakk> \<Longrightarrow> leq_fm(leq,q,p)\<in>formula"
-  unfolding leq_fm_def by simp
-
-lemma sats_leq_fm :
-  "\<lbrakk> leq\<in>nat;q\<in>nat;p\<in>nat;env\<in>list(A) \<rbrakk> \<Longrightarrow>
-     sats(A,leq_fm(leq,q,p),env) \<longleftrightarrow> is_leq(##A,nth(leq,env),nth(q,env),nth(p,env))"
-  unfolding leq_fm_def is_leq_def by simp
+synthesize "leq" from_definition "is_leq" assuming "nonempty"
+arity_theorem for "leq_fm"
 
 subsubsection\<open>The primitive recursion\<close>
 
@@ -1351,15 +1206,13 @@ definition
   "forces_mem \<equiv> forces_mem'(P,leq)"
 
 (* frc_at(P,leq,\<langle>0,t1,t2,p\<rangle>) = 1*)
-definition
-  is_forces_eq :: "[i,i,i] \<Rightarrow> o" where
-  "is_forces_eq \<equiv> is_forces_eq'(##M,P,leq)"
+abbreviation is_forces_eq 
+  where "is_forces_eq \<equiv> is_forces_eq'(##M,P,leq)"
 
 (* frc_at(P,leq,\<langle>1,t1,t2,p\<rangle>) = 1*)
-definition
+abbreviation
   is_forces_mem :: "[i,i,i] \<Rightarrow> o" where
   "is_forces_mem \<equiv> is_forces_mem'(##M,P,leq)"
-
 
 lemma def_forces_eq: "p\<in>P \<Longrightarrow> p forces\<^sub>a (t1 = t2) \<longleftrightarrow>
       (\<forall>s\<in>domain(t1) \<union> domain(t2). \<forall>q. q\<in>P \<and> q \<preceq> p \<longrightarrow>
@@ -1377,32 +1230,14 @@ lemma def_forces_mem: "p\<in>P \<Longrightarrow> p forces\<^sub>a (t1 \<in> t2) 
 
 lemma forces_eq_abs :
   "\<lbrakk>p\<in>M ; t1\<in>M ; t2\<in>M\<rbrakk> \<Longrightarrow> is_forces_eq(p,t1,t2) \<longleftrightarrow> p forces\<^sub>a (t1 = t2)"
-  unfolding is_forces_eq_def forces_eq_def
+  unfolding forces_eq_def
   using forces_eq'_abs by simp
 
 lemma forces_mem_abs :
   "\<lbrakk>p\<in>M ; t1\<in>M ; t2\<in>M\<rbrakk> \<Longrightarrow> is_forces_mem(p,t1,t2) \<longleftrightarrow> p forces\<^sub>a (t1 \<in> t2)"
-  unfolding is_forces_mem_def forces_mem_def
-  using forces_mem'_abs by simp
-
-lemma sats_forces_eq_fm:
-  assumes  "p\<in>nat" "l\<in>nat" "q\<in>nat" "t1\<in>nat" "t2\<in>nat"  "env\<in>list(M)"
-    "nth(p,env)=P" "nth(l,env)=leq"
-  shows "sats(M,forces_eq_fm(p,l,q,t1,t2),env) \<longleftrightarrow>
-         is_forces_eq(nth(q,env),nth(t1,env),nth(t2,env))"
-  unfolding forces_eq_fm_def is_forces_eq_def is_forces_eq'_def
-  using assms sats_is_tuple_fm  sats_frc_at_fm
+  unfolding forces_mem_def
+  using forces_mem'_abs 
   by simp
-
-lemma sats_forces_mem_fm:
-  assumes  "p\<in>nat" "l\<in>nat" "q\<in>nat" "t1\<in>nat" "t2\<in>nat"  "env\<in>list(M)"
-    "nth(p,env)=P" "nth(l,env)=leq"
-  shows "sats(M,forces_mem_fm(p,l,q,t1,t2),env) \<longleftrightarrow>
-             is_forces_mem(nth(q,env),nth(t1,env),nth(t2,env))"
-  unfolding forces_mem_fm_def is_forces_mem_def is_forces_mem'_def
-  using assms sats_is_tuple_fm sats_frc_at_fm
-  by simp
-
 
 definition
   forces_neq :: "[i,i,i] \<Rightarrow> o" (\<open>_ forces\<^sub>a '(_ \<noteq> _')\<close> [36,1,1] 60) where
@@ -1421,14 +1256,14 @@ lemma forces_nmem :
   unfolding forces_nmem_def forces_nmem'_def forces_mem_def by simp
 
 abbreviation Forces :: "[i, i, i] \<Rightarrow> o"  ("_ \<tturnstile> _ _" [36,36,36] 60) where
-  "p \<tturnstile> \<phi> env   \<equiv>   M, ([p,P,leq,one] @ env) \<Turnstile> forces(\<phi>)"
+  "p \<tturnstile> \<phi> env   \<equiv>   M, ([p,P,leq,\<one>] @ env) \<Turnstile> forces(\<phi>)"
 
 lemma sats_forces_Member :
-  assumes  "x\<in>nat" "y\<in>nat" "env\<in>list(M)"
+  assumes  "x\<in>nat" "y\<in>nat" "env\<in>list(M)" 
     "nth(x,env)=xx" "nth(y,env)=yy" "q\<in>M"
   shows "q \<tturnstile> \<cdot>x \<in> y\<cdot> env \<longleftrightarrow> q \<in> P \<and> is_forces_mem(q, xx, yy)"
   unfolding forces_def
-  using assms sats_forces_mem_fm P_in_M leq_in_M one_in_M
+  using assms sats_forces_eq_fm P_in_M leq_in_M one_in_M 
   by simp
 
 lemma sats_forces_Equal :
@@ -1443,21 +1278,22 @@ lemma sats_forces_Nand :
   assumes  "\<phi>\<in>formula" "\<psi>\<in>formula" "env\<in>list(M)" "p\<in>M"
   shows "p \<tturnstile> \<cdot>\<not>(\<phi> \<and> \<psi>)\<cdot> env \<longleftrightarrow>
     p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and>
-    (M,[q,P,leq,one]@env \<Turnstile> forces'(\<phi>)) \<and> (M,[q,P,leq,one]@env \<Turnstile> forces'(\<psi>)))"
-  unfolding forces_def using sats_leq_fm assms sats_ren_forces_nand P_in_M leq_in_M one_in_M
+    (M,[q,P,leq,\<one>]@env \<Turnstile> forces'(\<phi>)) \<and> (M,[q,P,leq,\<one>]@env \<Turnstile> forces'(\<psi>)))"
+  unfolding forces_def 
+  using sats_leq_fm_auto assms sats_ren_forces_nand P_in_M leq_in_M one_in_M zero_in_M
   by simp
 
 lemma sats_forces_Neg :
   assumes  "\<phi>\<in>formula" "env\<in>list(M)" "p\<in>M"
   shows "p \<tturnstile> \<cdot>\<not>\<phi>\<cdot> env \<longleftrightarrow>
          (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and>
-               (M, [q, P, leq, one] @ env \<Turnstile> forces'(\<phi>))))"
+               (M, [q, P, leq, \<one>] @ env \<Turnstile> forces'(\<phi>))))"
   unfolding Neg_def using assms sats_forces_Nand
   by simp
 
 lemma sats_forces_Forall :
   assumes  "\<phi>\<in>formula" "env\<in>list(M)" "p\<in>M"
-  shows "p \<tturnstile> (\<cdot>\<forall>\<phi>\<cdot>) env \<longleftrightarrow> p \<in> P \<and> (\<forall>x\<in>M. M,[p,P,leq,one,x] @ env \<Turnstile> forces'(\<phi>))"
+  shows "p \<tturnstile> (\<cdot>\<forall>\<phi>\<cdot>) env \<longleftrightarrow> p \<in> P \<and> (\<forall>x\<in>M. M,[p,P,leq,\<one>,x] @ env \<Turnstile> forces'(\<phi>))"
   unfolding forces_def using assms sats_ren_forces_forall P_in_M leq_in_M one_in_M
   by simp
 
@@ -1471,7 +1307,7 @@ lemma arity_forces_at:
     "arity(forces(Equal(x, y))) = (succ(x) \<union> succ(y)) #+ 4"
   unfolding forces_def
   using assms arity_forces_mem_fm arity_forces_eq_fm succ_Un_distrib ord_simp_union 
-  by (auto simp:FOL_arities)
+   by (auto simp:FOL_arities,(rule_tac le_anti_sym,simp_all,(rule_tac not_le_anti_sym,simp_all))+)
 
 lemma arity_forces':
   assumes "\<phi>\<in>formula"
@@ -1481,13 +1317,15 @@ proof (induct set:formula)
   case (Member x y)
   then
   show ?case
-    using arity_forces_mem_fm succ_Un_distrib ord_simp_union
+    using arity_forces_mem_fm succ_Un_distrib ord_simp_union 
+      not_le_iff_lt[THEN iffD1,THEN leI,of x y]
     by simp
 next
   case (Equal x y)
   then
   show ?case
     using arity_forces_eq_fm succ_Un_distrib ord_simp_union
+      not_le_iff_lt[THEN iffD1,THEN leI,of x y]
     by simp
 next
   case (Nand \<phi> \<psi>)

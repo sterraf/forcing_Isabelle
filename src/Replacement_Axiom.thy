@@ -57,11 +57,11 @@ bundle sharp_simps1 = snd_abs[simp] fst_abs[simp] fst_closed[simp del, simplifie
 lemma sats_forces_iff_sats_rename_split_fm:
   includes sharp_simps1
   assumes
-    "[\<alpha>,m,p,P,leq,one,t,\<tau>] @ nenv \<in>list(M)" "V \<in> M"
+    "[\<alpha>,m,p,P,leq,\<one>,t,\<tau>] @ nenv \<in>list(M)" "V \<in> M"
     "\<phi>\<in>formula"
   shows
-    "(M, [p, P, leq, one, t, \<tau>] @ nenv \<Turnstile> forces(\<phi>)) \<longleftrightarrow>
-      M, [V, \<tau>, \<alpha>, \<langle>t,p\<rangle>, m, P, leq, one] @ nenv \<Turnstile> rename_split_fm(\<phi>)"
+    "(M, [p, P, leq, \<one>, t, \<tau>] @ nenv \<Turnstile> forces(\<phi>)) \<longleftrightarrow>
+      M, [V, \<tau>, \<alpha>, \<langle>t,p\<rangle>, m, P, leq, \<one>] @ nenv \<Turnstile> rename_split_fm(\<phi>)"
   using assms unfolding rename_split_fm_def
   by (simp add:sats_incr_bv_iff[where bvs="[_,_,_,_,_,_]", simplified])
 
@@ -107,18 +107,18 @@ qed
 lemma sats_body_ground_repl_fm:
   includes sharp_simps1
   assumes
-    "\<exists>t p. x=\<langle>t,p\<rangle>" "[x,\<alpha>,m,P,leq,one] @ nenv \<in>list(M)"
+    "\<exists>t p. x=\<langle>t,p\<rangle>" "[x,\<alpha>,m,P,leq,\<one>] @ nenv \<in>list(M)"
     "\<phi>\<in>formula"
   shows
     "(\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a),\<alpha>,V) \<and> \<tau> \<in> V \<and> (snd(x) \<tturnstile> \<phi> ([fst(x),\<tau>]@nenv)))
-    \<longleftrightarrow> M, [\<alpha>, x, m, P, leq, one] @ nenv \<Turnstile> body_ground_repl_fm(\<phi>)"
+    \<longleftrightarrow> M, [\<alpha>, x, m, P, leq, \<one>] @ nenv \<Turnstile> body_ground_repl_fm(\<phi>)"
 proof -
   {
     fix \<tau> V t p                                                            
     assume "\<tau> \<in> M" "V \<in> M" "x = \<langle>t, p\<rangle>" "t \<in> M" "p \<in> M"
     with assms
-    have "\<tau> \<in> V \<and> (M, [p,P,leq,one,t,\<tau>] @ nenv \<Turnstile> forces(\<phi>)) \<longleftrightarrow>
-      \<tau> \<in> V \<and> (M, [V,\<tau>,\<alpha>,\<langle>t, p\<rangle>,m,P, leq, one] @ nenv \<Turnstile> rename_split_fm(\<phi>))"
+    have "\<tau> \<in> V \<and> (M, [p,P,leq,\<one>,t,\<tau>] @ nenv \<Turnstile> forces(\<phi>)) \<longleftrightarrow>
+      \<tau> \<in> V \<and> (M, [V,\<tau>,\<alpha>,\<langle>t, p\<rangle>,m,P, leq, \<one>] @ nenv \<Turnstile> rename_split_fm(\<phi>))"
       using sats_forces_iff_sats_rename_split_fm[of \<alpha> m p t \<tau>, where nenv=nenv and \<phi>=\<phi>]
       by auto
   }
@@ -167,9 +167,9 @@ lemma Replace_sats_in_MG:
     "univalent(##M[G], c, \<lambda>x v. (M[G] , [x,v]@env \<Turnstile> \<phi>) )"
     and
     ground_replacement:
-    "\<And>nenv. nenv\<in>list(M) \<Longrightarrow> ground_repl_fm(\<phi>) \<in> formula \<Longrightarrow> [P,leq,one] @ nenv \<in> list(M) \<Longrightarrow>
-      arity(ground_repl_fm(\<phi>)) \<le> 2 #+ length([P,leq,one] @ nenv) \<Longrightarrow>
-      strong_replacement(##M,\<lambda>x y. sats(M,ground_repl_fm(\<phi>),[x,y] @ [P,leq,one] @ nenv))"
+    "\<And>nenv. nenv\<in>list(M) \<Longrightarrow> ground_repl_fm(\<phi>) \<in> formula \<Longrightarrow> [P,leq,\<one>] @ nenv \<in> list(M) \<Longrightarrow>
+      arity(ground_repl_fm(\<phi>)) \<le> 2 #+ length([P,leq,\<one>] @ nenv) \<Longrightarrow>
+      strong_replacement(##M,\<lambda>x y. sats(M,ground_repl_fm(\<phi>),[x,y] @ [P,leq,\<one>] @ nenv))"
   shows
     "{v. x\<in>c, v\<in>M[G] \<and> (M[G] , [x,v]@env \<Turnstile> \<phi>)} \<in> M[G]"
 proof -
@@ -216,7 +216,7 @@ proof -
   have "\<rho>p\<in>?\<pi> \<Longrightarrow> \<exists>t p. \<rho>p=\<langle>t,p\<rangle>" for \<rho>p
     by auto
   ultimately
-  have body:"(M , [\<alpha>,\<rho>p,m,P,leq,one] @ nenv \<Turnstile> body_ground_repl_fm(\<phi>)) \<longleftrightarrow> ?Q(\<rho>p,\<alpha>)"
+  have body:"(M , [\<alpha>,\<rho>p,m,P,leq,\<one>] @ nenv \<Turnstile> body_ground_repl_fm(\<phi>)) \<longleftrightarrow> ?Q(\<rho>p,\<alpha>)"
     if "\<rho>p\<in>?\<pi>" "\<rho>p\<in>M" "m\<in>M" "\<alpha>\<in>M" for \<alpha> \<rho>p m
     using that P_in_M leq_in_M one_in_M sats_body_ground_repl_fm[of \<rho>p \<alpha> m nenv \<phi>] by simp
   {
@@ -226,20 +226,20 @@ proof -
     with body
     have body':"\<And>\<alpha>. \<alpha> \<in> M \<Longrightarrow> (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a), \<alpha>, V) \<and> \<tau> \<in> V \<and>
           (snd(\<rho>p) \<tturnstile> \<phi> ([fst(\<rho>p),\<tau>] @ nenv))) \<longleftrightarrow>
-          M, Cons(\<alpha>, [\<rho>p, m, P, leq, one] @ nenv) \<Turnstile> body_ground_repl_fm(\<phi>)" by simp
+          M, Cons(\<alpha>, [\<rho>p, m, P, leq, \<one>] @ nenv) \<Turnstile> body_ground_repl_fm(\<phi>)" by simp
     from inM
-    have "(M , [\<rho>p,m,P,leq,one] @ nenv \<Turnstile> ground_repl_fm(\<phi>)) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
+    have "(M , [\<rho>p,m,P,leq,\<one>] @ nenv \<Turnstile> ground_repl_fm(\<phi>)) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
       using sats_least_fm[OF body', of 1] unfolding QQ_def ground_repl_fm_def
       by (simp, simp flip: setclass_iff)
   }
   then
-  have "(M, [\<rho>p,m,P,leq,one] @ nenv \<Turnstile> ground_repl_fm(\<phi>)) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
+  have "(M, [\<rho>p,m,P,leq,\<one>] @ nenv \<Turnstile> ground_repl_fm(\<phi>)) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
     if "\<rho>p\<in>M" "\<rho>p\<in>?\<pi>" "m\<in>M" for \<rho>p m using that by simp
   then
-  have "univalent(##M, ?\<pi>, \<lambda>\<rho>p m. M , [\<rho>p,m] @ ([P,leq,one] @ nenv) \<Turnstile> ground_repl_fm(\<phi>))"
+  have "univalent(##M, ?\<pi>, \<lambda>\<rho>p m. M , [\<rho>p,m] @ ([P,leq,\<one>] @ nenv) \<Turnstile> ground_repl_fm(\<phi>))"
     unfolding univalent_def by (auto intro:unique_least)
   moreover from \<open>length(_) = _\<close> \<open>env \<in> _\<close>
-  have "length([P,leq,one] @ nenv) = 3 #+ length(env)" by simp
+  have "length([P,leq,\<one>] @ nenv) = 3 #+ length(env)" by simp
   moreover from \<open>arity(\<phi>) \<le> 2 #+ length(nenv)\<close>
     \<open>length(_) = length(_)\<close>[symmetric] \<open>nenv\<in>_\<close> \<open>\<phi>\<in>_\<close>
   have "arity(ground_repl_fm(\<phi>)) \<le> 5 #+ length(env)"
@@ -252,7 +252,7 @@ proof -
   note \<open>length(nenv) = length(env)\<close>
   ultimately
   obtain Y where "Y\<in>M"
-    "\<forall>m\<in>M. m \<in> Y \<longleftrightarrow> (\<exists>\<rho>p\<in>M. \<rho>p \<in> ?\<pi> \<and> (M, [\<rho>p,m] @ ([P,leq,one] @ nenv) \<Turnstile> ground_repl_fm(\<phi>)))"
+    "\<forall>m\<in>M. m \<in> Y \<longleftrightarrow> (\<exists>\<rho>p\<in>M. \<rho>p \<in> ?\<pi> \<and> (M, [\<rho>p,m] @ ([P,leq,\<one>] @ nenv) \<Turnstile> ground_repl_fm(\<phi>)))"
     using ground_replacement[of nenv]
     unfolding strong_replacement_def by auto
   with \<open>least(_,QQ(_),f(_))\<close> \<open>f(_) \<in> M\<close> \<open>?\<pi>\<in>M\<close>
@@ -272,10 +272,10 @@ proof -
   have "{x\<in>Vset(?sup). x \<in> M} \<in> M"
     using Vset_closed by simp
   moreover
-  have "{one} \<in> M"
+  have "{\<one>} \<in> M"
     using one_in_M singleton_closed by simp
   ultimately
-  have "{x\<in>Vset(?sup). x \<in> M} \<times> {one} \<in> M" (is "?big_name \<in> M")
+  have "{x\<in>Vset(?sup). x \<in> M} \<times> {\<one>} \<in> M" (is "?big_name \<in> M")
     using cartprod_closed by simp
   then
   have "val(P,G,?big_name) \<in> M[G]"
@@ -339,10 +339,10 @@ proof -
       using Vset_Ord_rank_iff lt_Union_iff[of _ "rank(\<tau>)"] by auto
     with \<open>\<tau>\<in>M\<close>
     have "val(P,G,\<tau>) \<in> val(P,G,?big_name)"
-      using domain_of_prod[of one "{one}" "{x\<in>Vset(?sup). x \<in> M}" ] def_val[of G ?big_name]
+      using domain_of_prod[of \<one> "{\<one>}" "{x\<in>Vset(?sup). x \<in> M}" ] def_val[of G ?big_name]
         one_in_G[OF generic] one_in_P  by (auto simp del: Vset_rank_iff)
     with \<open>v=val(P,G,\<tau>)\<close>
-    have "v \<in> val(P,G,{x\<in>Vset(?sup). x \<in> M} \<times> {one})"
+    have "v \<in> val(P,G,{x\<in>Vset(?sup). x \<in> M} \<times> {\<one>})"
       by simp
   }
   then
@@ -439,9 +439,9 @@ theorem strong_replacement_in_MG:
     (*
     and
     ground_replacement:
-    "\<And>nenv. nenv\<in>list(M) \<Longrightarrow> ground_repl_fm(\<phi>) \<in> formula \<Longrightarrow> [P,leq,one] @ nenv \<in> list(M) \<Longrightarrow>
-      arity(ground_repl_fm(\<phi>)) \<le> 2 #+ length([P,leq,one] @ nenv) \<Longrightarrow>
-      strong_replacement(##M,\<lambda>x y. sats(M,ground_repl_fm(\<phi>),[x,y] @ [P,leq,one] @ nenv))"
+    "\<And>nenv. nenv\<in>list(M) \<Longrightarrow> ground_repl_fm(\<phi>) \<in> formula \<Longrightarrow> [P,leq,\<one>] @ nenv \<in> list(M) \<Longrightarrow>
+      arity(ground_repl_fm(\<phi>)) \<le> 2 #+ length([P,leq,\<one>] @ nenv) \<Longrightarrow>
+      strong_replacement(##M,\<lambda>x y. sats(M,ground_repl_fm(\<phi>),[x,y] @ [P,leq,\<one>] @ nenv))"
   *)
   shows
     "strong_replacement(##M[G],\<lambda>x v. sats(M[G],\<phi>,[x,v] @ env))"

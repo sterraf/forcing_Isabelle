@@ -178,17 +178,17 @@ lemma not_forces_nmem:
   using assms density_mem unfolding forces_nmem_def by blast
 
 
-(* Use the newer versions in Forces_Definition! *)
+(* FIXME: Use the newer versions in Forces_Definition! *)
 (* (and adequate the rest of the code to them)  *)
 
 lemma sats_forces_Nand':
   assumes
     "p\<in>P" "\<phi>\<in>formula" "\<psi>\<in>formula" "env \<in> list(M)" 
   shows
-    "(M, [p,P,leq,one] @ env \<Turnstile> forces(Nand(\<phi>,\<psi>))) \<longleftrightarrow>
+    "(M, [p,P,leq,\<one>] @ env \<Turnstile> forces(Nand(\<phi>,\<psi>))) \<longleftrightarrow>
      \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and> 
-           (M, [q,P,leq,one] @ env \<Turnstile> forces(\<phi>)) \<and>
-           (M, [q,P,leq,one] @ env \<Turnstile> forces(\<psi>)))"
+           (M, [q,P,leq,\<one>] @ env \<Turnstile> forces(\<phi>)) \<and>
+           (M, [q,P,leq,\<one>] @ env \<Turnstile> forces(\<psi>)))"
   using assms sats_forces_Nand[OF assms(2-4) transitivity[OF \<open>p\<in>P\<close>]]
   P_in_M leq_in_M one_in_M unfolding forces_def
   by simp
@@ -197,9 +197,9 @@ lemma sats_forces_Neg':
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula"
   shows
-    "(M, [p,P,leq,one] @ env \<Turnstile> forces(Neg(\<phi>))) \<longleftrightarrow>
+    "(M, [p,P,leq,\<one>] @ env \<Turnstile> forces(Neg(\<phi>))) \<longleftrightarrow>
      \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and> 
-          (M, [q,P,leq,one]@env \<Turnstile> forces(\<phi>)))"
+          (M, [q,P,leq,\<one>]@env \<Turnstile> forces(\<phi>)))"
   using assms sats_forces_Neg transitivity 
   P_in_M leq_in_M one_in_M  unfolding forces_def
   by (simp, blast)
@@ -208,8 +208,8 @@ lemma sats_forces_Forall':
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula"
   shows
-    "(M,[p,P,leq,one] @ env \<Turnstile> forces(Forall(\<phi>))) \<longleftrightarrow>
-     (\<forall>x\<in>M.   M, [p,P,leq,one,x] @ env \<Turnstile> forces(\<phi>))"
+    "(M,[p,P,leq,\<one>] @ env \<Turnstile> forces(Forall(\<phi>))) \<longleftrightarrow>
+     (\<forall>x\<in>M.   M, [p,P,leq,\<one>,x] @ env \<Turnstile> forces(\<phi>))"
   using assms sats_forces_Forall transitivity 
   P_in_M leq_in_M one_in_M sats_ren_forces_forall unfolding forces_def
   by simp
@@ -282,7 +282,7 @@ begin
 lemma elem_of_valI: "\<exists>\<theta>. \<exists>p\<in>P. p\<in>G \<and> \<langle>\<theta>,p\<rangle>\<in>\<pi> \<and> val(P,G,\<theta>) = x \<Longrightarrow> x\<in>val(P,G,\<pi>)"
   by (subst def_val, auto)
 
-lemma GenExtD: "x\<in>M[G] \<longleftrightarrow> (\<exists>\<tau>\<in>M. x = val(P,G,\<tau>))"
+lemma GenExt_iff: "x\<in>M[G] \<longleftrightarrow> (\<exists>\<tau>\<in>M. x = val(P,G,\<tau>))"
   unfolding GenExt_def by simp
 
 lemma left_in_M : "tau\<in>M \<Longrightarrow> \<langle>a,b\<rangle>\<in>tau \<Longrightarrow> a\<in>M"
@@ -329,7 +329,7 @@ proof -
   moreover
   have "(M, [q,P,leq,p,D] \<Turnstile> ?d_fm) \<longleftrightarrow> (\<not> is_compat_in(##M,P,leq,p,q) \<or> q\<in>D)"
     if "q\<in>M" for q
-    using that sats_compat_in_fm P_in_M leq_in_M 1 \<open>D\<in>M\<close> by simp
+    using that sats_compat_in_fm P_in_M leq_in_M 1 \<open>D\<in>M\<close> zero_in_M by simp
   moreover
   have "(\<not> is_compat_in(##M,P,leq,p,q) \<or> q\<in>D) \<longleftrightarrow> p\<bottom>q \<or> q\<in>D" if "q\<in>M" for q
     unfolding compat_def using that compat_in_abs P_in_M leq_in_M 1 by simp
@@ -367,7 +367,7 @@ proof -
     by auto
   moreover
   have "(M, [q,P,leq,\<pi>,\<tau>] \<Turnstile> ?\<phi>) \<longleftrightarrow> ?rel_pred(##M,q,P,leq,\<pi>,\<tau>)" if "q\<in>M" for q
-    using assms that sats_forces_eq'_fm sats_leq_fm P_in_M leq_in_M by simp
+    using assms that sats_forces_eq_fm sats_leq_fm P_in_M leq_in_M zero_in_M by simp
   moreover
   have "?\<phi>\<in>formula" by simp
   moreover
@@ -681,10 +681,10 @@ proof -
       domain_closed Un_closed 
     by (auto simp add:1[of _ _ \<tau>] 1[of _ _ \<theta>])
   have fsats1:"(M,[p,P,leq,\<tau>,\<theta>] \<Turnstile> ?\<phi>) \<longleftrightarrow> ?rel_pred(##M,p,P,leq,\<tau>,\<theta>)" if "p\<in>M" for p
-    using that assms sats_forces_mem'_fm sats_forces_nmem'_fm P_in_M leq_in_M
+    using that assms sats_forces_mem_fm sats_forces_nmem_fm P_in_M leq_in_M zero_in_M
       domain_closed Un_closed by simp
   have fsats2:"(M,[p,P,leq,\<theta>,\<tau>] \<Turnstile> ?\<phi>) \<longleftrightarrow> ?rel_pred(##M,p,P,leq,\<theta>,\<tau>)" if "p\<in>M" for p
-    using that assms sats_forces_mem'_fm sats_forces_nmem'_fm P_in_M leq_in_M
+    using that assms sats_forces_mem_fm sats_forces_nmem_fm P_in_M leq_in_M zero_in_M
       domain_closed Un_closed by simp
   have fty:"?\<phi>\<in>formula" by simp
   have farit:"arity(?\<phi>)=5"
@@ -1319,14 +1319,14 @@ proof -
          \<exists>c\<in>M. \<forall>q\<in>P. q \<preceq> d \<longrightarrow> \<not>(q \<tturnstile> \<phi> ([c]@env))" for b d
     by (rule bexI,simp_all)
   then
-  have "?rel_pred(M,d,P,leq,one) \<longleftrightarrow> (\<exists>b\<in>M. \<forall>q\<in>P. q\<preceq>d \<longrightarrow> \<not>(q \<tturnstile> \<phi> ([b]@env)))" if "d\<in>M" for d
+  have "?rel_pred(M,d,P,leq,\<one>) \<longleftrightarrow> (\<exists>b\<in>M. \<forall>q\<in>P. q\<preceq>d \<longrightarrow> \<not>(q \<tturnstile> \<phi> ([b]@env)))" if "d\<in>M" for d
     using that leq_abs leq_in_M P_in_M one_in_M assms
     by auto
   moreover
   have "?\<psi>\<in>formula" using assms by simp
   moreover
-  have "(M, [d,P,leq,one]@env \<Turnstile> ?\<psi>) \<longleftrightarrow> ?rel_pred(M,d,P,leq,one)" if "d\<in>M" for d
-    using assms that P_in_M leq_in_M one_in_M sats_leq_fm sats_ren_truth_lemma
+  have "(M, [d,P,leq,\<one>]@env \<Turnstile> ?\<psi>) \<longleftrightarrow> ?rel_pred(M,d,P,leq,\<one>)" if "d\<in>M" for d
+    using assms that P_in_M leq_in_M one_in_M sats_leq_fm sats_ren_truth_lemma zero_in_M
     by simp
   moreover
   have "arity(?\<psi>) \<le> 4#+length(env)" 
@@ -1357,8 +1357,8 @@ proof -
   qed
   ultimately
   show ?thesis using assms P_in_M leq_in_M one_in_M 
-       separation_ax[of "?\<psi>" "[P,leq,one]@env"] 
-       separation_cong[of "##M" "\<lambda>y. (M, [y,P,leq,one]@env \<Turnstile>?\<psi>)"]
+       separation_ax[of "?\<psi>" "[P,leq,\<one>]@env"] 
+       separation_cong[of "##M" "\<lambda>y. (M, [y,P,leq,\<one>]@env \<Turnstile>?\<psi>)"]
     by simp
 qed
 
@@ -1406,7 +1406,7 @@ next
       Forall(2)[of "Cons(_,env)"] \<open>M_generic(G)\<close>
     show "M[G], map(val(P,G),env) \<Turnstile>  Forall(\<phi>)"
       using pred_le2 map_val_in_MG
-      by (auto iff:GenExtD)
+      by (auto iff:GenExt_iff)
   next
     assume "M[G], map(val(P,G),env) \<Turnstile> Forall(\<phi>)"
     let ?D1="{d\<in>P. (d \<tturnstile> Forall(\<phi>) env)}"
@@ -1473,7 +1473,7 @@ next
       moreover from this(1) and  \<open>M[G], _ \<Turnstile>  Forall(\<phi>)\<close> and 
         Forall(2)[of "Cons(b,env)"] Forall(1,3-5) \<open>M_generic(G)\<close>
       obtain p where "p\<in>G" "p\<in>P" "p \<tturnstile> \<phi> ([b] @ env)" 
-        using pred_le2 using map_val_in_MG by (auto iff:GenExtD)
+        using pred_le2 using map_val_in_MG by (auto iff:GenExt_iff)
       moreover
       note \<open>d\<in>G\<close> \<open>M_generic(G)\<close>
       ultimately

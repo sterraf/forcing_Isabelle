@@ -34,7 +34,7 @@ proof -
   from \<open>c\<in>M[G]\<close>
   obtain \<pi> where "\<pi> \<in> M" "val(P,G, \<pi>) = c"
     using GenExt_def by auto
-  let ?\<chi>="\<cdot>\<cdot> 0 \<in> (1 #+ length(env)) \<cdot> \<and> \<phi> \<cdot>" and ?Pl1="[P,leq,one]"
+  let ?\<chi>="\<cdot>\<cdot> 0 \<in> (1 #+ length(env)) \<cdot> \<and> \<phi> \<cdot>" and ?Pl1="[P,leq,\<one>]"
   let ?new_form="sep_ren(length(env),forces(?\<chi>))"
   let ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
   note phi = \<open>\<phi>\<in>formula\<close> \<open>arity(\<phi>) \<le> 1 #+ length(env)\<close> 
@@ -103,9 +103,9 @@ proof -
       then 
       have "[\<theta>,u] \<in> list(M)" by simp
       let ?env="[p]@?Pl1@[\<theta>] @ nenv @ [\<pi>,u]"
-      let ?new_env=" [\<theta>,p,u,P,leq,one,\<pi>] @ nenv"
+      let ?new_env=" [\<theta>,p,u,P,leq,\<one>,\<pi>] @ nenv"
       let ?\<psi>="Exists(Exists(And(pair_fm(0,1,2),?new_form)))"
-      have "[\<theta>, p, u, \<pi>, leq, one, \<pi>] \<in> list(M)" 
+      have "[\<theta>, p, u, \<pi>, leq, \<one>, \<pi>] \<in> list(M)" 
         using in_M' by simp
       have "?\<chi> \<in> formula" "forces(?\<chi>)\<in> formula"  
         using phi by simp_all
@@ -118,28 +118,28 @@ proof -
         by simp
       from in_M' \<open>env \<in> _\<close> Eq1' \<open>length(nenv) = length(env)\<close> 
         \<open>arity(forces(?\<chi>)) \<le> 7 #+ length(env)\<close> \<open>forces(?\<chi>)\<in> formula\<close>
-        \<open>[\<theta>, p, u, \<pi>, leq, one, \<pi>] \<in> list(M)\<close> 
+        \<open>[\<theta>, p, u, \<pi>, leq, \<one>, \<pi>] \<in> list(M)\<close> 
       have "... \<longleftrightarrow> M, ?env \<Turnstile> forces(?\<chi>)"
         using sepren_action[of "forces(?\<chi>)"  "nenv",OF _ _ \<open>nenv\<in>list(M)\<close>] 
         by simp
       also from in_M'
-      have "... \<longleftrightarrow> M,  ([p,P, leq, one,\<theta>]@nenv@ [\<pi>])@[u] \<Turnstile> forces(?\<chi>)" 
+      have "... \<longleftrightarrow> M,  ([p,P, leq, \<one>,\<theta>]@nenv@ [\<pi>])@[u] \<Turnstile> forces(?\<chi>)" 
         using app_assoc by simp
       also 
       from in_M' \<open>env\<in>_\<close> phi \<open>length(nenv) = length(env)\<close>
         \<open>arity(forces(?\<chi>)) \<le> 6 #+ length(env)\<close> \<open>forces(?\<chi>)\<in>formula\<close>
-      have "... \<longleftrightarrow> M,  [p,P, leq, one,\<theta>]@ nenv @ [\<pi>] \<Turnstile> forces(?\<chi>)"        
+      have "... \<longleftrightarrow> M,  [p,P, leq, \<one>,\<theta>]@ nenv @ [\<pi>] \<Turnstile> forces(?\<chi>)"        
         by (rule_tac arity_sats_iff,auto)
       also 
       from \<open>arity(forces(?\<chi>)) \<le> 6 #+ length(env)\<close> \<open>forces(?\<chi>)\<in>formula\<close> in_M' phi 
       have " ... \<longleftrightarrow> (\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow> 
                            M[F],  map(val(P,F), [\<theta>] @ nenv @ [\<pi>]) \<Turnstile>  ?\<chi>)"
       proof (intro iffI)
-        assume a1: "M,  [p,P, leq, one,\<theta>] @ nenv @ [\<pi>] \<Turnstile>  forces(?\<chi>)"
+        assume a1: "M,  [p,P, leq, \<one>,\<theta>] @ nenv @ [\<pi>] \<Turnstile>  forces(?\<chi>)"
         note \<open>arity(\<phi>)\<le> 1#+_\<close>
         with \<open>nenv\<in>_\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close> \<open>env\<in>_\<close>
         have "p \<in> P \<Longrightarrow> ?\<chi>\<in>formula \<Longrightarrow> [\<theta>,\<pi>] \<in> list(M) \<Longrightarrow>
-                  M, [p,P, leq, one] @ [\<theta>]@ nenv@[\<pi>] \<Turnstile> forces(?\<chi>) \<Longrightarrow> 
+                  M, [p,P, leq, \<one>] @ [\<theta>]@ nenv@[\<pi>] \<Turnstile> forces(?\<chi>) \<Longrightarrow> 
               \<forall>G. M_generic(G) \<and> p \<in> G \<longrightarrow> M[G],  map(val(P,G), [\<theta>] @ nenv @[\<pi>]) \<Turnstile> ?\<chi>"
           using definition_of_forcing[where \<phi>="\<cdot>\<cdot> 0 \<in> (1 #+ length(env)) \<cdot> \<and> \<phi> \<cdot>"]
           by auto
@@ -152,7 +152,7 @@ proof -
                    M[F],  map(val(P,F), [\<theta>] @ nenv @[\<pi>]) \<Turnstile>  ?\<chi>"
         with \<open>?\<chi>\<in>formula\<close> \<open>p\<in>P\<close> in_M' 
           \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
-        show "M,  [p, P, leq, one,\<theta>] @ nenv @ [\<pi>] \<Turnstile>  forces(?\<chi>)"
+        show "M,  [p, P, leq, \<one>,\<theta>] @ nenv @ [\<pi>] \<Turnstile>  forces(?\<chi>)"
           using definition_of_forcing[where \<phi>="\<cdot>\<cdot> 0 \<in> (1 #+ length(env)) \<cdot> \<and> \<phi> \<cdot>",
               THEN iffD2] by auto
       qed
@@ -306,11 +306,11 @@ proof -
         (* Recall ?\<chi> = And(Member(0,1 #+ length(env)),\<phi>) *)
     with \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close>  Eq5 \<open>M_generic(G)\<close> \<open>\<phi>\<in>formula\<close> \<open>nenv \<in> _ \<close> \<open>env = _ \<close> map_nenv 
       \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
-    have "(\<exists>r\<in>G. M,  [r,P,leq,one,\<theta>] @ nenv @[\<pi>] \<Turnstile> forces(?\<chi>))"
+    have "(\<exists>r\<in>G. M,  [r,P,leq,\<one>,\<theta>] @ nenv @[\<pi>] \<Turnstile> forces(?\<chi>))"
       using truth_lemma[of "\<cdot>\<cdot> 0 \<in> (1 #+ length(env)) \<cdot> \<and> \<phi> \<cdot>"]
       by auto
     then obtain r where      (* I can't "obtain" this directly *)
-      "r\<in>G" "M,  [r,P,leq,one,\<theta>] @ nenv @ [\<pi>] \<Turnstile> forces(?\<chi>)" by auto
+      "r\<in>G" "M,  [r,P,leq,\<one>,\<theta>] @ nenv @ [\<pi>] \<Turnstile> forces(?\<chi>)" by auto
     with \<open>filter(G)\<close> and \<open>q\<in>G\<close> obtain p where
       "p\<in>G" "p\<preceq>q" "p\<preceq>r" 
       unfolding filter_def compat_in_def by force
@@ -318,8 +318,8 @@ proof -
     have "p\<in>P" "r\<in>P" "q\<in>P" "p\<in>M"
       using  P_in_M  by (auto simp add:transitivity)
     with \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close>  \<open>p\<preceq>r\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
-      \<open>M, [r,P,leq,one,\<theta>] @ nenv @ [\<pi>] \<Turnstile> forces(?\<chi>)\<close> \<open>env\<in>_\<close>
-    have "M,  [p,P,leq,one,\<theta>] @ nenv @ [\<pi>] \<Turnstile> forces(?\<chi>)"
+      \<open>M, [r,P,leq,\<one>,\<theta>] @ nenv @ [\<pi>] \<Turnstile> forces(?\<chi>)\<close> \<open>env\<in>_\<close>
+    have "M,  [p,P,leq,\<one>,\<theta>] @ nenv @ [\<pi>] \<Turnstile> forces(?\<chi>)"
       using strengthening_lemma 
       by simp
     with \<open>p\<in>P\<close> \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>

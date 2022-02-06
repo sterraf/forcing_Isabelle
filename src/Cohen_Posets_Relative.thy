@@ -225,6 +225,8 @@ end \<comment> \<open>\<^locale>\<open>M_add_reals\<close>\<close>
 
 (* FIXME This is old-style discipline *)
 (* MOVE THIS to some appropriate place *)
+relativize "compat_in" "is_compat_in" external
+
 lemma (in M_trivial) compat_in_abs[absolut]:
   assumes
     "M(A)" "M(r)" "M(p)" "M(q)"

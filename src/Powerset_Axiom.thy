@@ -137,7 +137,7 @@ proof -
     finally 
     show ?thesis using \<open>Q\<in>M\<close> by simp
   qed
-  let ?\<pi>="?Q\<times>{one}"
+  let ?\<pi>="?Q\<times>{\<one>}"
   let ?b="val(P,G,?\<pi>)"
   from \<open>?Q\<in>M\<close> 
   have "?\<pi>\<in>M"
@@ -151,7 +151,7 @@ proof -
     fix c
     assume "c \<in> Pow(a) \<inter> M[G]"
     then obtain \<chi> where "c\<in>M[G]" "\<chi> \<in> M" "val(P,G,\<chi>) = c"
-      using GenExtD by auto
+      using GenExt_iff by auto
     let ?\<theta>="{\<langle>\<sigma>,p\<rangle> \<in>domain(\<tau>)\<times>P . p \<tturnstile> \<cdot>0 \<in> 1\<cdot> [\<sigma>,\<chi>] }"
     have "arity(forces(Member(0,1))) = 6"
       using arity_forces_at by auto
@@ -163,7 +163,7 @@ proof -
     have "?\<theta> \<in> ?Q" by auto
     then 
     have "val(P,G,?\<theta>) \<in> ?b"
-      using one_in_G one_in_P generic val_of_elem [of ?\<theta> one ?\<pi> G]
+      using one_in_G one_in_P generic val_of_elem [of ?\<theta> \<one> ?\<pi> G]
       by auto
     have "val(P,G,?\<theta>) = c"
     proof(intro equalityI subsetI)

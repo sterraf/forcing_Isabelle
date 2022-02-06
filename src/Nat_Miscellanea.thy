@@ -91,6 +91,10 @@ lemma le_pred : "x\<in>nat \<Longrightarrow> pred(x)\<le>x"
   using pred_le[OF _ le_succ] pred_succ_eq 
   by simp
 
+lemma not_le_anti_sym : "x\<in>nat \<Longrightarrow> y \<in> nat \<Longrightarrow> \<not> x\<le>y \<Longrightarrow> \<not>y\<le>x \<Longrightarrow> y=x"
+  using Ord_linear not_le_iff_lt ltD lt_trans
+  by auto
+
 lemma Un_le_compat : "o \<le> p \<Longrightarrow> q \<le> r \<Longrightarrow> Ord(o) \<Longrightarrow> Ord(p) \<Longrightarrow> Ord(q) \<Longrightarrow> Ord(r) \<Longrightarrow> o \<union> q \<le> p \<union> r"
   using le_trans[of q r "p\<union>r",OF _ Un_upper2_le] le_trans[of o p "p\<union>r",OF _ Un_upper1_le]
     ord_simp_union 

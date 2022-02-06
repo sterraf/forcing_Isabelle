@@ -4,6 +4,7 @@ text\<open>This theory defines a locale for forcing notions, that is,
 
 theory Forcing_Notions
   imports "ZF-Constructible.Relative"
+    
 begin
 
 subsection\<open>Basic concepts\<close>
@@ -11,11 +12,6 @@ text\<open>We say that two elements $p,q$ are
   \<^emph>\<open>compatible\<close> if they have a lower bound in $P$\<close>
 definition compat_in :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
   "compat_in(A,r,p,q) \<equiv> \<exists>d\<in>A . \<langle>d,p\<rangle>\<in>r \<and> \<langle>d,q\<rangle>\<in>r"
-
-definition
-  is_compat_in :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
-  "is_compat_in(M,A,r,p,q) \<equiv> \<exists>d[M]. d\<in>A \<and> (\<exists>dp[M]. pair(M,d,p,dp) \<and> dp\<in>r \<and> 
-                                   (\<exists>dq[M]. pair(M,d,q,dq) \<and> dq\<in>r))"
 
 lemma compat_inI : 
   "\<lbrakk> d\<in>A ; \<langle>d,p\<rangle>\<in>r ; \<langle>d,g\<rangle>\<in>r \<rbrakk> \<Longrightarrow> compat_in(A,r,p,g)"
@@ -37,10 +33,14 @@ lemma refl_monot_domain: "refl(B,r) \<Longrightarrow> A\<subseteq>B \<Longrighta
 
 locale forcing_notion =
   fixes P leq one
-  assumes one_in_P:         "one \<in> P"
+  assumes one_in_P:       "one \<in> P"
     and leq_preord:       "preorder_on(P,leq)"
     and one_max:          "\<forall>p\<in>P. \<langle>p,one\<rangle>\<in>leq"
 begin
+
+abbreviation
+  one_abbr :: "i" ("\<one>") 
+  where "\<one> \<equiv> one"
 
 abbreviation Leq :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>" 50)
   where "x \<preceq> y \<equiv> \<langle>x,y\<rangle>\<in>leq"
@@ -331,12 +331,12 @@ proof -
 qed
 
 end \<comment> \<open>\<^locale>\<open>countable_generic\<close>\<close>
-
 (* TODO: already in ZF Library *)
 lemma Pi_rangeD:
   assumes "f\<in>Pi(A,B)" "b \<in> range(f)"
   shows "\<exists>a\<in>A. f`a = b"
-  using assms apply_equality[OF _ assms(1), of _ b] domain_type[OF _ assms(1)] by auto
+  using assms Pi_memberD[OF assms(1)] func.domain_type[OF _ assms(1)] 
+  by auto
 
 text\<open>Now, the following recursive definition will fulfill the 
 requirements of lemma \<^term>\<open>RS_sequence_imp_rasiowa_sikorski\<close> \<close>

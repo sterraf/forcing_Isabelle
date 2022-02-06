@@ -16,13 +16,13 @@ lemma (in forcing_data) surj_nat_MG :
 proof -
   let ?f="\<lambda>n\<in>\<omega>. val(P,G,enum`n)"
   have "x \<in> \<omega> \<Longrightarrow> val(P,G, enum ` x)\<in> M[G]" for x
-    using GenExtD[THEN iffD2, of _ G] bij_is_fun[OF M_countable] by force
+    using GenExt_iff[THEN iffD2, of _ G] bij_is_fun[OF M_countable] by force
   then
   have "?f: \<omega> \<rightarrow> M[G]"
     using lam_type[of \<omega> "\<lambda>n. val(P,G,enum`n)" "\<lambda>_.M[G]"] by simp
   moreover
   have "\<exists>n\<in>\<omega>. ?f`n = x" if "x\<in>M[G]" for x
-    using that GenExtD[of _ G] bij_is_surj[OF M_countable]
+    using that GenExt_iff[of _ G] bij_is_surj[OF M_countable]
     unfolding surj_def by auto
   ultimately
   show ?thesis

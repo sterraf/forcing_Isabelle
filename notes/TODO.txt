@@ -16,10 +16,7 @@ General Tasks
   for a general class M in the appropriate locales (and not only for
   ##M).
 
-- Check for duplicate names of results, for example:
-    Forcing_Theorems.forcing_data.GenExtD
-  vs
-    Names.forcing_data.GenExtD.
+- Check for duplicate names of results
 
 - Revise naming conventions of results (esp. for the next section;
   check style_guide.txt).
@@ -27,16 +24,11 @@ General Tasks
 - Move general results proved in some context to the definition
   of the context.
 
-  For instance:
-  * upairM singletonM Rep_simp from Names.thy to Forcing_Data.thy
-
-
-
 Tidying up sources for release
 ==============================
 
 - Put all the development according to the style guides.
-- Clean up warnings (today: Card_Pres & Kappa_Closed)
+- Clean up warnings (today: Kappa_Closed)
 
 Porting
 =======

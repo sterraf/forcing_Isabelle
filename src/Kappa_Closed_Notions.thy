@@ -198,7 +198,7 @@ begin
 (*FIXME: pick better names for this lemmas. *)
 lemma aux3:
   assumes "f_dot\<in>M" "\<tau>\<in>M" "\<chi>\<in>formula" "arity(\<chi>) \<le> 7"
-  shows "separation(##M, \<lambda>r. M, [fst(r), P, leq, one, f_dot, \<tau>, snd(r)\<^sup>v] \<Turnstile> \<chi>)"
+  shows "separation(##M, \<lambda>r. M, [fst(r), P, leq, \<one>, f_dot, \<tau>, snd(r)\<^sup>v] \<Turnstile> \<chi>)"
 proof -
   note types = assms leq_in_M P_in_M one_in_M
   let ?f_fm="fst_fm(1,0)"
@@ -218,10 +218,10 @@ qed
 (* FIXME: analogous to aux3 after renaming with the permutation [(0,5)]*)
 lemma aux8 :
   assumes "f_dot\<in>M" "r\<in>M" "\<chi>\<in>formula" "arity(\<chi>) \<le> 7"
-  shows "separation(##M, \<lambda>p. M, [r, P, leq, one, f_dot, fst(p)\<^sup>v, snd(p)\<^sup>v] \<Turnstile> \<chi>)"
+  shows "separation(##M, \<lambda>p. M, [r, P, leq, \<one>, f_dot, fst(p)\<^sup>v, snd(p)\<^sup>v] \<Turnstile> \<chi>)"
 proof -
-  let ?\<rho>="\<lambda>z. [r, P, leq, one, f_dot, fst(z)\<^sup>v, snd(z)\<^sup>v]"
-  let ?\<rho>'="\<lambda>z. [fst(z)\<^sup>v, P, leq, one, f_dot, r, snd(z)\<^sup>v]"
+  let ?\<rho>="\<lambda>z. [r, P, leq, \<one>, f_dot, fst(z)\<^sup>v, snd(z)\<^sup>v]"
+  let ?\<rho>'="\<lambda>z. [fst(z)\<^sup>v, P, leq, \<one>, f_dot, r, snd(z)\<^sup>v]"
   let ?\<phi>=" (\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>\<cdot>\<cdot>0 = 11\<cdot> \<and> \<cdot>\<cdot>1 = 7\<cdot> \<and> \<cdot>\<cdot>2 = 8\<cdot> \<and> \<cdot>\<cdot>3 = 9\<cdot> \<and> \<cdot>\<cdot>4 = 10\<cdot> \<and> \<cdot>\<cdot>5 = 6\<cdot> \<and>
     (\<lambda>p. incr_bv(p)`6)^6 (\<chi>) \<cdot>\<cdot>\<cdot>\<cdot>\<cdot>\<cdot>\<cdot>)\<cdot>)\<cdot>)\<cdot>)\<cdot>)\<cdot>)"
   note types = assms leq_in_M P_in_M one_in_M
@@ -261,9 +261,9 @@ qed
 lemma aux6:
   assumes "f_dot\<in>M" "B\<in>M"
   shows "\<forall>n\<in>M. separation(##M, \<lambda>x. snd(x) \<preceq> fst(x) \<and>
-          (\<exists>b\<in>B. M, [snd(x), P, leq, one, f_dot, (\<Union>(n))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> )))"
+          (\<exists>b\<in>B. M, [snd(x), P, leq, \<one>, f_dot, (\<Union>(n))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> )))"
 proof -
-  have "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, one, f_dot, \<tau>, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
+  have "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, \<one>, f_dot, \<tau>, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
     if "\<chi>\<in>formula" "arity(\<chi>) \<le> 7" "\<tau>\<in>M" for \<chi> \<tau>
   proof -
     note types = assms leq_in_M P_in_M one_in_M
@@ -295,9 +295,9 @@ lemma aux4:
       \<lambda>pa. \<forall>x\<in>P. x \<preceq> p \<longrightarrow>
             (\<forall>y\<in>P. y \<preceq> p \<longrightarrow>
               \<langle>x, y\<rangle> \<in> snd(pa) \<longleftrightarrow>
-                y \<preceq> x \<and> (\<exists>b\<in>B. M, [y, P, leq, one, f_dot, (\<Union>(fst(pa)))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))))"
+                y \<preceq> x \<and> (\<exists>b\<in>B. M, [y, P, leq, \<one>, f_dot, (\<Union>(fst(pa)))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))))"
 proof -
-  have "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, one, f_dot, (\<Union>(fst(fst(fst(fst(z))))))\<^sup>v, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
+  have "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, \<one>, f_dot, (\<Union>(fst(fst(fst(fst(z))))))\<^sup>v, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
     if "\<chi>\<in>formula" "arity(\<chi>) \<le> 7" for \<chi>
   proof -
     note types = assms leq_in_M P_in_M one_in_M
@@ -340,7 +340,7 @@ lemma aux :
   assumes "A\<in>M" "r\<in>G" "\<tau> \<in> M"
   shows "(##M)({q\<in>P. \<exists>h\<in>A. q \<preceq> r \<and> q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]})"
 proof -
-  have "separation(##M, \<lambda>z. M, [fst(z), P, leq, one, \<tau>, snd(z)\<^sup>v] \<Turnstile> \<chi>)" if
+  have "separation(##M, \<lambda>z. M, [fst(z), P, leq, \<one>, \<tau>, snd(z)\<^sup>v] \<Turnstile> \<chi>)" if
     "\<chi>\<in>formula" "arity(\<chi>) \<le> 6" for \<chi>
   proof -
     let ?f_fm="fst_fm(1,0)"

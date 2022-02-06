@@ -150,7 +150,7 @@ lemma sats_name2_fm :
   unfolding name2_fm_def is_name2_def using sats_fst_fm sats_snd2_fm
     sats_hcomp_fm[of A "is_fst(##A)" _ fst_fm "is_snd_snd(##A)"] by simp
 
-lemma is_name2_iff_sats:
+lemma is_name2_iff_sats [iff_sats]:
   assumes
     "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
   shows
@@ -173,7 +173,7 @@ lemma sats_cond_of_fm :
   unfolding cond_of_fm_def is_cond_of_def using sats_snd_fm sats_snd2_fm
     sats_hcomp_fm[of A "is_snd(##A)" _ snd_fm "is_snd_snd(##A)"] by simp
 
-lemma is_cond_of_iff_sats:
+lemma is_cond_of_iff_sats [iff_sats]:
   assumes
     "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
   shows

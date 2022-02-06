@@ -5,7 +5,9 @@ transitive models of ZF, and the associated \<^term>\<open>forcing_data\<close>
 theory Forcing_Data
   imports  
     Forcing_Notions 
+    Cohen_Posets_Relative    
     Interface
+    
 begin
 
 locale M_ctm = M_ZF_trans +
@@ -53,7 +55,7 @@ qed
 
 lemma one_in_G : 
   assumes "M_generic(G)"
-  shows  "one \<in> G" 
+  shows  "\<one> \<in> G" 
 proof -
   from assms have "G\<subseteq>P" 
     unfolding M_generic_def and filter_def by simp
@@ -95,7 +97,7 @@ proof -
       using P_dense \<open>n\<in>nat\<close> by auto
   qed
   from \<open>?D\<in>_\<close> and Eq4 
-  interpret cg: countable_generic P leq one ?D 
+  interpret cg: countable_generic P leq \<one> ?D 
     by (unfold_locales, auto)
   from \<open>p\<in>P\<close> 
   obtain G where Eq6: "p\<in>G \<and> filter(G) \<and> (\<forall>n\<in>nat.(?D`n)\<inter>G\<noteq>0)"
@@ -120,33 +122,11 @@ proof -
   show ?thesis unfolding M_generic_def by auto
 qed
 
-lemma one_in_M: "one \<in> M"
+lemma one_in_M: "\<one> \<in> M"
   by (insert one_in_P P_in_M, simp add: transitivity)
 
 end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
 
-(* Compatibility lemmas *)
-context forcing_data begin
-
-definition
-  compat_in_fm :: "[i,i,i,i] \<Rightarrow> i" where
-  "compat_in_fm(A,r,p,q) \<equiv> 
-    Exists(And(Member(0,succ(A)),Exists(And(pair_fm(1,p#+2,0),
-                                        And(Member(0,r#+2),
-                                 Exists(And(pair_fm(2,q#+3,0),Member(0,r#+3))))))))" 
-
-lemma compat_in_fm_type[TC] : 
-  "\<lbrakk> A\<in>nat;r\<in>nat;p\<in>nat;q\<in>nat\<rbrakk> \<Longrightarrow> compat_in_fm(A,r,p,q)\<in>formula" 
-  unfolding compat_in_fm_def by simp
-
-lemma sats_compat_in_fm:
-  assumes
-    "A\<in>nat" "r\<in>nat"  "p\<in>nat" "q\<in>nat" "env\<in>list(M)"  
-  shows
-    "sats(M,compat_in_fm(A,r,p,q),env) \<longleftrightarrow> 
-            is_compat_in(##M,nth(A, env),nth(r, env),nth(p, env),nth(q, env))"
-  unfolding compat_in_fm_def is_compat_in_def using assms by simp
-
-end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
+synthesize "compat_in" from_definition "is_compat_in" assuming "nonempty"
 
 end
