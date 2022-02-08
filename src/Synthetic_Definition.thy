@@ -52,8 +52,8 @@ fun arity_goal intermediate def_name lthy =
     val (def, tm) = tm |> Utils.dest_eq_tms'
     fun first_lambdas (Abs (body as (_, ty, _))) =
         if ty = @{typ "i"}
-          then (warning (@{make_string} (Utils.dest_abs body |> #1, "i")); (op ::) (Utils.dest_abs body |>> Utils.var_i ||> first_lambdas))
-          else (warning (@{make_string} (Utils.dest_abs body |> #1, ty)); Utils.dest_abs body |> first_lambdas o #2)
+          then (op ::) (Utils.dest_abs body |>> Utils.var_i ||> first_lambdas)
+          else Utils.dest_abs body |> first_lambdas o #2
       | first_lambdas _ = []
     val (def, vars) = Term.strip_comb def
     val vs = vars @ first_lambdas tm

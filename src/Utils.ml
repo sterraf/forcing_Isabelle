@@ -191,6 +191,6 @@ fun var_i s = Free (s, @{typ "i"})
 fun map_option f (SOME a) = SOME (f a)
   | map_option _ NONE = NONE
 
-fun dest_abs (v, _, t) = Term.dest_abs_fresh v t |>> #1
+fun dest_abs (v, ty, t) = (v, Term.subst_bound ((Free (v, ty)), t))
 
 end
