@@ -196,7 +196,6 @@ structure Data = Generic_Data
 (
   type T = Database.db
   val empty = Database.empty (* Should we initialize this outside this file? *)
-  val extend = I
   val merge = Database.merge
 );
 
@@ -310,7 +309,7 @@ and
         case Database.lookup (get_mode is_functional relationalising) c rel_db of
           SOME p =>
             let
-              val args' = List.filter (not o Utils.inList (Utils.frees p)) args
+              val args' = List.filter (not o member (op =) (Utils.frees p)) args
               val (v, ctxt1) =
                 the_default
                   (Variable.variant_fixes [""] ctxt |>> var_i o hd)
@@ -360,7 +359,7 @@ and
 
       fun relativ_replace mv t body after ctxt' =
         let
-          val (v, b) = Term.dest_abs body |>> var_i ||> after
+          val (v, b) = Utils.dest_abs body |>> var_i ||> after
           val (b', (rs', ctxt'')) =
             relativ_fm is_functional relationalising pred rel_db (rs, ctxt', single v, false) b |>> incr_boundvars 1 ||> #1 &&& #4
         in
@@ -395,11 +394,11 @@ and
         | go mv (@{const transrec} $ t $ Abs body) =
             let
               val (res, ctxt') = Variable.variant_fixes [if is_functional then "_aux" else ""] ctxt |>> var_i o hd
-              val (x, b') = Term.dest_abs body |>> var_i
-              val (y, b) = get_abs_body b' |> Term.dest_abs |>> var_i
+              val (x, b') = Utils.dest_abs body |>> var_i
+              val (y, b) = get_abs_body b' |> Utils.dest_abs |>> var_i
               val p = Utils.eq_ res b |> lambda res
               val (p', (rs', ctxt'')) = relativ_fm is_functional relationalising pred rel_db (rs, ctxt', [x, y], true) p |>> incr_boundvars 3 ||> #1 &&& #4
-              val p' = if is_functional then p' |> #2 o Utils.dest_eq_tms o #2 o Term.dest_abs o get_abs_body else p'
+              val p' = if is_functional then p' |> #2 o Utils.dest_eq_tms o #2 o Utils.dest_abs o get_abs_body else p'
             in
               relativ_app mv (SOME ctxt'') tm [p' |> lambda x o lambda y] @{const transrec} ([t], not is_functional) rs'
             end
@@ -428,11 +427,11 @@ and
         | go mv (@{const recursor} $ t $ Abs body $ t') =
             let
               val (res, ctxt') = Variable.variant_fixes [if is_functional then "_aux" else ""] ctxt |>> var_i o hd
-              val (x, b') = Term.dest_abs body |>> var_i
-              val (y, b) = get_abs_body b' |> Term.dest_abs |>> var_i
+              val (x, b') = Utils.dest_abs body |>> var_i
+              val (y, b) = get_abs_body b' |> Utils.dest_abs |>> var_i
               val p = Utils.eq_ res b |> lambda res
               val (p', (rs', ctxt'')) = relativ_fm is_functional relationalising pred rel_db (rs, ctxt', [x, y], true) p |>> incr_boundvars 3 ||> #1 &&& #4
-              val p' = if is_functional then p' |> #2 o Utils.dest_eq_tms o #2 o Term.dest_abs o get_abs_body else p'
+              val p' = if is_functional then p' |> #2 o Utils.dest_eq_tms o #2 o Utils.dest_abs o get_abs_body else p'
               val (tr, rs'', ctxt''') = relativ_tm is_functional relationalising NONE pred rel_db (rs', ctxt'') t
             in
               relativ_app mv (SOME ctxt''') tm [tr, p' |> lambda x o lambda y] @{const recursor} ([t'], true) rs''
@@ -440,32 +439,32 @@ and
         | go mv (@{const wfrec} $ t1 $ t2 $ Abs body) =
             let
               val (res, ctxt') = Variable.variant_fixes [if is_functional then "_aux" else ""] ctxt |>> var_i o hd
-              val (x, b') = Term.dest_abs body |>> var_i
-              val (y, b) = get_abs_body b' |> Term.dest_abs |>> var_i
+              val (x, b') = Utils.dest_abs body |>> var_i
+              val (y, b) = get_abs_body b' |> Utils.dest_abs |>> var_i
               val p = Utils.eq_ res b |> lambda res
               val (p', (rs', ctxt'')) = relativ_fm is_functional relationalising pred rel_db (rs, ctxt', [x, y], true) p |>> incr_boundvars 3 ||> #1 &&& #4
-              val p' = if is_functional then p' |> #2 o Utils.dest_eq_tms o #2 o Term.dest_abs o get_abs_body else p'
+              val p' = if is_functional then p' |> #2 o Utils.dest_eq_tms o #2 o Utils.dest_abs o get_abs_body else p'
             in
               relativ_app mv (SOME ctxt'') tm [p' |> lambda x o lambda y] @{const wfrec} ([t1,t2], not is_functional) rs'
             end
         | go mv (@{const wfrec_on} $ t1 $ t2 $ t3 $ Abs body) =
             let
               val (res, ctxt') = Variable.variant_fixes [if is_functional then "_aux" else ""] ctxt |>> var_i o hd
-              val (x, b') = Term.dest_abs body |>> var_i
-              val (y, b) = get_abs_body b' |> Term.dest_abs |>> var_i
+              val (x, b') = Utils.dest_abs body |>> var_i
+              val (y, b) = get_abs_body b' |> Utils.dest_abs |>> var_i
               val p = Utils.eq_ res b |> lambda res
               val (p', (rs', ctxt'')) = relativ_fm is_functional relationalising pred rel_db (rs, ctxt', [x, y], true) p |>> incr_boundvars 3 ||> #1 &&& #4
-              val p' = if is_functional then p' |> #2 o Utils.dest_eq_tms o #2 o Term.dest_abs o get_abs_body else p'
+              val p' = if is_functional then p' |> #2 o Utils.dest_eq_tms o #2 o Utils.dest_abs o get_abs_body else p'
             in
               relativ_app mv (SOME ctxt'') tm [p' |> lambda x o lambda y] @{const wfrec_on} ([t1,t2,t3], not is_functional) rs'
             end
         | go mv (@{const Lambda} $ t $ Abs body) =
             let
               val (res, ctxt') = Variable.variant_fixes [if is_functional then "_aux" else ""] ctxt |>> var_i o hd
-              val (x, b) = Term.dest_abs body |>> var_i
+              val (x, b) = Utils.dest_abs body |>> var_i
               val p = Utils.eq_ res b |> lambda res
               val (p', (rs', ctxt'')) = relativ_fm is_functional relationalising pred rel_db (rs, ctxt', [x], true) p |>> incr_boundvars 2 ||> #1 &&& #4
-              val p' = if is_functional then p' |> #2 o Utils.dest_eq_tms o #2 o Term.dest_abs o get_abs_body else p'
+              val p' = if is_functional then p' |> #2 o Utils.dest_eq_tms o #2 o Utils.dest_abs o get_abs_body else p'
               val (tr, rs'', ctxt''') = relativ_tm is_functional relationalising NONE pred rel_db (rs', ctxt'') t
             in
               relativ_app mv (SOME ctxt''') tm [tr, p' |> lambda x] @{const Lambda} ([], true) rs''
@@ -491,7 +490,7 @@ and
         val flag = not (exists (curry op aconv c) absolute_rels orelse c = p)
         val (args, rs_ts, ctxt') = relativ_tms is_functional relationalising pred rel_db rs ctxt args
         (* TODO: Verify if next line takes care of locales' definitions *)
-        val args' = List.filter (not o Utils.inList (Utils.frees p)) args
+        val args' = List.filter (not o member (op =) (Utils.frees p)) args
         val args'' = if not (null args') andalso hd args' = pred then args' else pred :: args'
         val tm = list_comb (p, if flag then args'' else args')
         (* TODO: Verify if next line is necessary *)
@@ -511,7 +510,7 @@ and
       fun contains_b0_extra t = contains_b0 t orelse contains_extra_var t
 
       (* t1 $ v \<hookrightarrow> t2 iff v \<in> FV(t2) *)
-      fun chained_frees (_ $ v) t2 = Utils.inList (Utils.frees t2) v
+      fun chained_frees (_ $ v) t2 = member (op =) (Utils.frees t2) v
         | chained_frees t _ = raise TERM ("Malformed term", [t])
 
       val tms_to_close = filter contains_b0_extra tms |> Utils.reachable chained_frees tms
@@ -534,7 +533,7 @@ and
 
   (* Handling of bounded quantifiers. *)
   fun bquant (ctxt, rs) quant conn dom pred =
-    let val (v,pred') = Term.dest_abs pred |>> var_i
+    let val (v,pred') = Utils.dest_abs pred |>> var_i
     in
       go (ctxt, rs, false) (quant $ (lambda v o incr_boundvars 1) (conn $ (@{const mem} $ v $ dom) $ pred'))
     end
@@ -625,7 +624,7 @@ fun relativ_tm_frm' is_functional relationalising cls_pred db ctxt tm =
 fun lname ctxt = Local_Theory.full_name ctxt o Binding.name
 
 fun destroy_first_lambdas (Abs (body as (_, ty, _))) =
-     Term.dest_abs body ||> destroy_first_lambdas |> (#1 o #2) &&& ((fn v => Free (v, ty)) *** #2) ||> op ::
+     Utils.dest_abs body ||> destroy_first_lambdas |> (#1 o #2) &&& ((fn v => Free (v, ty)) *** #2) ||> op ::
   | destroy_first_lambdas t = (t, [])
 
 fun freeType (Free (_, ty)) = ty
@@ -647,8 +646,8 @@ fun relativize_def is_external is_functional relationalising def_name thm_ref po
     val db' = db' |> Database.insert Database.abs2rel (cls_pred, cls_pred)
                      o Database.insert Database.rel2is (cls_pred, cls_pred)
     val (v,t) = relativ_tm_frm' is_functional relationalising cls_pred db' ctxt1 tm
-    val t_vars = Term.add_free_names tm []
-    val vs' = List.filter (#1 #> #1 #> #1 #> Utils.inList t_vars) vars
+    val t_vars = sort_strings (Term.add_free_names tm [])
+    val vs' = List.filter (#1 #> #1 #> #1 #> Ord_List.member String.compare t_vars) vars
     val vs = cls_pred :: map (Thm.term_of o #2) vs' @ lambdavars @ the_list v
     val at = List.foldr (uncurry lambda) t vs
     val abs_const = read_const lthy (if is_external then thm_ref else lname lthy thm_ref)
@@ -697,8 +696,8 @@ fun rel_closed_goal target pos lthy =
     val (def, tm) = tm |> Utils.dest_eq_tms'
     fun first_lambdas (Abs (body as (_, ty, _))) =
         if ty = @{typ "i"}
-          then (op ::) (Term.dest_abs body |>> Utils.var_i ||> first_lambdas)
-          else Term.dest_abs body |> first_lambdas o #2
+          then (op ::) (Utils.dest_abs body |>> Utils.var_i ||> first_lambdas)
+          else Utils.dest_abs body |> first_lambdas o #2
       | first_lambdas _ = []
     val (def, vars) = Term.strip_comb def ||> filter is_free_i
     val vs = vars @ first_lambdas tm
@@ -722,8 +721,8 @@ fun iff_goal target pos lthy =
     val (def, tm) = tm |> Utils.dest_eq_tms'
     fun first_lambdas (Abs (body as (_, ty, _))) =
         if ty = @{typ "i"}
-          then (op ::) (Term.dest_abs body |>> Utils.var_i ||> first_lambdas)
-          else Term.dest_abs body |> first_lambdas o #2
+          then (op ::) (Utils.dest_abs body |>> Utils.var_i ||> first_lambdas)
+          else Utils.dest_abs body |> first_lambdas o #2
       | first_lambdas _ = []
     val (def, vars) = Term.strip_comb def ||> filter is_free_i
     val vs = vars @ first_lambdas tm
@@ -750,8 +749,8 @@ fun univalent_goal target pos lthy =
     val (def, tm) = tm |> Utils.dest_eq_tms'
     fun first_lambdas (Abs (body as (_, ty, _))) =
         if ty = @{typ "i"}
-          then (op ::) (Term.dest_abs body |>> Utils.var_i ||> first_lambdas)
-          else Term.dest_abs body |> first_lambdas o #2
+          then (op ::) (Utils.dest_abs body |>> Utils.var_i ||> first_lambdas)
+          else Utils.dest_abs body |> first_lambdas o #2
       | first_lambdas _ = []
     val (def, vars) = Term.strip_comb def ||> filter is_free_i
     val vs = vars @ first_lambdas tm
