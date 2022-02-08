@@ -30,7 +30,6 @@ signature Utils =
     val formula_: term
     val freeName: term -> string
     val frees : term -> term list
-    val inList: ''a list -> ''a -> bool
     val length_: term -> term
     val list_: term -> term
     val lt_: term -> term -> term
@@ -54,8 +53,6 @@ signature Utils =
 structure Utils : Utils =
 struct
 (* Smart constructors for ZF-terms *)
-
-fun inList vars a = exists (fn b => a = b) vars
 
 fun binop h t u = h $ t $ u
 

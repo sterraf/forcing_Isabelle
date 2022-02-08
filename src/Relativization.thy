@@ -309,7 +309,7 @@ and
         case Database.lookup (get_mode is_functional relationalising) c rel_db of
           SOME p =>
             let
-              val args' = List.filter (not o Utils.inList (Utils.frees p)) args
+              val args' = List.filter (not o member (op =) (Utils.frees p)) args
               val (v, ctxt1) =
                 the_default
                   (Variable.variant_fixes [""] ctxt |>> var_i o hd)
@@ -490,7 +490,7 @@ and
         val flag = not (exists (curry op aconv c) absolute_rels orelse c = p)
         val (args, rs_ts, ctxt') = relativ_tms is_functional relationalising pred rel_db rs ctxt args
         (* TODO: Verify if next line takes care of locales' definitions *)
-        val args' = List.filter (not o Utils.inList (Utils.frees p)) args
+        val args' = List.filter (not o member (op =) (Utils.frees p)) args
         val args'' = if not (null args') andalso hd args' = pred then args' else pred :: args'
         val tm = list_comb (p, if flag then args'' else args')
         (* TODO: Verify if next line is necessary *)
@@ -510,7 +510,7 @@ and
       fun contains_b0_extra t = contains_b0 t orelse contains_extra_var t
 
       (* t1 $ v \<hookrightarrow> t2 iff v \<in> FV(t2) *)
-      fun chained_frees (_ $ v) t2 = Utils.inList (Utils.frees t2) v
+      fun chained_frees (_ $ v) t2 = member (op =) (Utils.frees t2) v
         | chained_frees t _ = raise TERM ("Malformed term", [t])
 
       val tms_to_close = filter contains_b0_extra tms |> Utils.reachable chained_frees tms
@@ -646,8 +646,8 @@ fun relativize_def is_external is_functional relationalising def_name thm_ref po
     val db' = db' |> Database.insert Database.abs2rel (cls_pred, cls_pred)
                      o Database.insert Database.rel2is (cls_pred, cls_pred)
     val (v,t) = relativ_tm_frm' is_functional relationalising cls_pred db' ctxt1 tm
-    val t_vars = Term.add_free_names tm []
-    val vs' = List.filter (#1 #> #1 #> #1 #> Utils.inList t_vars) vars
+    val t_vars = sort_strings (Term.add_free_names tm [])
+    val vs' = List.filter (#1 #> #1 #> #1 #> Ord_List.member String.compare t_vars) vars
     val vs = cls_pred :: map (Thm.term_of o #2) vs' @ lambdavars @ the_list v
     val at = List.foldr (uncurry lambda) t vs
     val abs_const = read_const lthy (if is_external then thm_ref else lname lthy thm_ref)

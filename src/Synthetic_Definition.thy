@@ -57,7 +57,6 @@ fun arity_goal intermediate def_name lthy =
       | first_lambdas _ = []
     val (def, vars) = Term.strip_comb def
     val vs = vars @ first_lambdas tm
-    val _ = warning (@{make_string} vs)
     val def = fold (op $`) vs def
     val hyps = map (fn v => Utils.mem_ v Utils.nat_ |> Utils.tp) vs
     val concl = @{const IFOL.eq(i)} $ (@{const arity} $ def) $ Var (("ar", 0), @{typ "i"})
@@ -211,25 +210,10 @@ fun synthetic_def def_name thm_ref pos tc auto thy =
           (not (Term.is_Free t) orelse member (op =) ts (t |> Term.dest_Free |> #1))
       | relevant _ _ = false
     val t_vars = sort_strings (Term.add_free_names t [])
-    val vs = filter (member (op =) t_vars o #1 o #1 o #1) vars
+    val vs = filter (Ord_List.member String.compare t_vars o #1 o #1 o #1) vars
     val at = fold_rev (lambda o Thm.term_of o #2) vs t
     val hyps' = filter (relevant t_vars o Utils.dest_trueprop) hyps
     val def_attrs = @{attributes [fm_definitions]}
-    (*
-    val (((_,vars),thm_tms),_) = Variable.import true [Proof_Context.get_thm thy thm_ref] thy
-    val (tm,hyps) = thm_tms |> hd |> Thm.concl_of &&& Thm.prems_of
-    val (lhs,rhs) = tm |> Utils.dest_iff_tms o Utils.dest_trueprop
-    val ((set,t),env) = rhs |> Utils.dest_sats_frm
-    fun olist t = Ord_List.make String.compare (Term.add_free_names t [])
-    fun relevant ts (@{const mem} $ t $ _) = (not (t = @{term "0"})) andalso (not (Term.is_Free t) orelse
-        Ord_List.member String.compare ts (t |> Term.dest_Free |> #1))
-      | relevant _ _ = false
-    val t_vars = olist t
-    val vs = List.filter (Utils.inList t_vars o #1 o #1 o #1) vars
-    val at = List.foldr (fn ((_,var),t') => lambda (Thm.term_of var) t') t vs
-    val hyps' = List.filter (relevant t_vars o Utils.dest_trueprop) hyps
-    val def_attrs = @{attributes [fm_definitions]}
-    *)
   in
     Local_Theory.define ((Binding.name (def_name ^ "_fm"), NoSyn),
                         ((Binding.name (def_name ^ "_fm_def"), def_attrs), at)) thy
@@ -259,8 +243,8 @@ let
     val thm = Proof_Context.get_thm lthy (target ^ "_def")
     val (vars, tm, ctxt1) = Utils.thm_concl_tm lthy (target ^ "_def")
     val (const, tm) = tm |> Utils.dest_eq_tms' o Utils.dest_trueprop |>> #1 o strip_comb
-    val t_vars = Term.add_free_names tm []
-    val vs = List.filter (#1 #> #1 #> #1 #> Utils.inList t_vars) vars
+    val t_vars = sort_strings (Term.add_free_names tm [])
+    val vs = List.filter (#1 #> #1 #> #1 #> Ord_List.member String.compare t_vars) vars
              |> List.filter ((curry op = @{typ "i"}) o #2 o #1)
              |> List.map (Utils.var_i o #1 o #1 o #1)
     fun first_lambdas (Abs (body as (_, ty, _))) =
@@ -273,7 +257,7 @@ let
     val (set, ctxt2) = Variable.variant_fixes ["A"] ctxt1' |>> Utils.var_i o hd
     val class = @{const "setclass"} $ set
     val (env, ctxt3) = Variable.variant_fixes ["env"] ctxt2 |>> Utils.var_i o hd
-    val assumptions = filter (Utils.inList assuming o #1) valid_assumptions |> map #2
+    val assumptions = filter (member (op =) assuming o #1) valid_assumptions |> map #2
     val hyps = (List.map (fn v => Utils.tp (Utils.mem_ v Utils.nat_)) vs)
                @ [Utils.tp (Utils.mem_ env (Utils.list_ set))]
                @ Utils.zip_with (fn (f,x) => Utils.tp (f x)) assumptions (replicate (length assumptions) set)
