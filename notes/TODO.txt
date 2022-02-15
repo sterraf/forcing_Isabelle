@@ -28,6 +28,10 @@ Tidying up sources for release
 ==============================
 
 - Put all the development according to the style guides.
+- Remove "Try0" imports.
+- Remove auxiliary commands (find_theorems, try, try0).
+- Remove diagnostic commands (term, thm --- keep this last one in
+  Definitions_Main.thy!)
 - Clean up warnings (today: Kappa_Closed)
 
 Porting
