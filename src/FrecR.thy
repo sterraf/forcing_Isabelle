@@ -1,7 +1,8 @@
 section\<open>Well-founded relation on names\<close>
 theory FrecR
   imports
-    Names
+    Discipline_Function
+    Edrel
 begin
 
 text\<open>\<^term>\<open>frecR\<close> is the well-founded relation on names that allows

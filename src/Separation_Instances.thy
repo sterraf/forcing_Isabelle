@@ -1,7 +1,6 @@
 theory Separation_Instances
   imports
-    Replacement_Lepoll
-    FrecR_Arities
+    Names
 begin
 
 subsection\<open>More Instances of Separation\<close>
