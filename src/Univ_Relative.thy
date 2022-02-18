@@ -45,8 +45,6 @@ arity_theorem for "is_Pow_fm"
 
 relativize functional "Powapply" "Powapply_rel"
 relationalize "Powapply_rel" "is_Powapply"
-synthesize "is_Powapply" from_definition assuming "nonempty"
-arity_theorem for "is_Powapply_fm"
 
 notation Powapply_rel (\<open>Powapply\<^bsup>_\<^esup>'(_,_')\<close>)
 
@@ -75,18 +73,6 @@ definition
 
 relativize functional "HVfrom" "HVfrom_rel"
 relationalize "HVfrom_rel" "is_HVfrom"
-synthesize "is_HVfrom" from_definition assuming "nonempty"
-arity_theorem intermediate for "is_HVfrom_fm"
-
-lemma arity_is_HVfrom_fm:
-    "A \<in> nat \<Longrightarrow>
-    x \<in> nat \<Longrightarrow>
-    f \<in> nat \<Longrightarrow>
-    d \<in> nat \<Longrightarrow>
-    arity(is_HVfrom_fm(A, x, f, d)) = succ(A) \<union> succ(d) \<union> (succ(x) \<union> succ(f))"
-  using arity_is_HVfrom_fm' arity_is_Powapply_fm
-  by(simp,subst arity_Replace_fm[of " \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> is_Powapply_fm(succ(succ(succ(succ(f)))), 0, 1) \<cdot>\<cdot>" "succ(succ(x))" 1])
-    (simp_all,simp add:arity pred_Un_distrib )
 
 notation HVfrom_rel (\<open>HVfrom\<^bsup>_\<^esup>'(_,_,_')\<close>)
 
