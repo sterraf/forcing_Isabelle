@@ -23,7 +23,6 @@ lemmas bad_M_trivial_rules[rule del] =  V.pair_in_MI V.singleton_in_MI V.pair_in
   V.depth_closed V.length_closed V.nat_case_closed V.separation_closed
   V.Un_closed V.strong_replacement_closed V.nonempty
 
-
 interpretation V:M_basic \<V>
   using power_ax_absolute separation_absolute replacement_absolute
   by unfold_locales auto

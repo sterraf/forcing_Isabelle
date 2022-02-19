@@ -126,7 +126,6 @@ definition
   "is_forcerel(M,P,x,z) \<equiv> \<exists>r[M]. \<exists>nb[M]. tran_closure(M,r,z) \<and>
                         (is_names_below(M,P,x,nb) \<and> is_frecrel(M,nb,r))"
 
-declare tran_closure_iff_sats [iff_sats]
 synthesize "forcerel" from_definition "is_forcerel"
 arity_theorem for "forcerel_fm"
 

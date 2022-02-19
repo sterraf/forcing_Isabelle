@@ -8,43 +8,10 @@ a sublocale of all relevant locales in ZF-Constructibility
 
 theory Interface
   imports
-    Univ_Relative
+    Fm_Definitions
     Renaming_Auto
     Discipline_Function
 begin
-
-declare arity_subset_fm [simp del] arity_ordinal_fm[simp del, arity] arity_transset_fm[simp del]
-  FOL_arities[simp del]
-
-abbreviation
-  dec10  :: i   ("10") where "10 \<equiv> succ(9)"
-
-abbreviation
-  dec11  :: i   ("11") where "11 \<equiv> succ(10)"
-
-abbreviation
-  dec12  :: i   ("12") where "12 \<equiv> succ(11)"
-
-abbreviation
-  dec13  :: i   ("13") where "13 \<equiv> succ(12)"
-
-abbreviation
-  dec14  :: i   ("14") where "14 \<equiv> succ(13)"
-
-definition
-  wellfounded_trancl :: "[i=>o,i,i,i] => o" where
-  "wellfounded_trancl(M,Z,r,p) \<equiv>
-      \<exists>w[M]. \<exists>wx[M]. \<exists>rp[M].
-               w \<in> Z & pair(M,w,p,wx) & tran_closure(M,r,rp) & wx \<in> rp"
-
-lemma empty_intf :
-  "infinity_ax(M) \<Longrightarrow>
-  (\<exists>z[M]. empty(M,z))"
-  by (auto simp add: empty_def infinity_ax_def)
-
-lemma Transset_intf :
-  "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
-  by (simp add: Transset_def,auto)
 
 locale M_ZF =
   fixes M

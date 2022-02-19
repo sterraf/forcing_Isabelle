@@ -201,7 +201,7 @@ lemma (in M_ZF_trans) replacement_jump_cardinal_body:
 
 sublocale M_ZF_trans \<subseteq> M_pre_aleph "##M"
   using replacement_ordertype replacement_jump_cardinal_body HAleph_wfrec_repl
-  by unfold_locales (simp_all add: transrec_replacement_def
+   by unfold_locales (simp_all add: transrec_replacement_def
       wfrec_replacement_def is_wfrec_def M_is_recfun_def flip:setclass_iff)
 
 arity_theorem intermediate for "is_HAleph_fm"
