@@ -357,7 +357,7 @@ proof -
   let ?rel_pred= "\<lambda>M x a1 a2 a3 a4. \<exists>\<sigma>[M]. \<exists>r[M]. \<exists>\<sigma>r[M].
                 r\<in>a1 \<and> pair(M,\<sigma>,r,\<sigma>r) \<and> \<sigma>r\<in>a4 \<and> is_leq(M,a2,x,r) \<and> is_forces_eq'(M,a1,a2,x,a3,\<sigma>)"
   let ?\<phi>="Exists(Exists(Exists(And(Member(1,4),And(pair_fm(2,1,0),
-          And(Member(0,7),And(leq_fm(5,3,1),forces_eq_fm(4,5,3,6,2))))))))"
+          And(Member(0,7),And(is_leq_fm(5,3,1),forces_eq_fm(4,5,3,6,2))))))))"
   have "\<sigma>\<in>M \<and> r\<in>M" if "\<langle>\<sigma>, r\<rangle> \<in> \<tau>"  for \<sigma> r
     using that \<open>\<tau>\<in>M\<close> pair_in_M_iff transitivity[of "\<langle>\<sigma>,r\<rangle>" \<tau>] by simp
   then
@@ -367,12 +367,12 @@ proof -
     by auto
   moreover
   have "(M, [q,P,leq,\<pi>,\<tau>] \<Turnstile> ?\<phi>) \<longleftrightarrow> ?rel_pred(##M,q,P,leq,\<pi>,\<tau>)" if "q\<in>M" for q
-    using assms that sats_forces_eq_fm sats_leq_fm P_in_M leq_in_M zero_in_M by simp
+    using assms that sats_forces_eq_fm sats_is_leq_fm P_in_M leq_in_M zero_in_M by simp
   moreover
   have "?\<phi>\<in>formula" by simp
   moreover
   have "arity(?\<phi>)=5"
-    unfolding leq_fm_def pair_fm_def upair_fm_def
+    unfolding is_leq_fm_def pair_fm_def upair_fm_def
     using arity_forces_eq_fm by (simp add:ord_simp_union Un_commute arity)
   ultimately
   show ?thesis
@@ -1308,7 +1308,7 @@ lemma truth_lemma' :
 proof -
   let ?rel_pred="\<lambda>M x a1 a2 a3. \<exists>b\<in>M. \<forall>q\<in>M. q\<in>a1 \<and> is_leq(##M,a2,q,x) \<longrightarrow>
                   \<not>(M, [q,a1,a2,a3,b] @ env \<Turnstile> forces(\<phi>))"
-  let ?\<psi>="Exists(Forall(Implies(And(Member(0,3),leq_fm(4,0,2)),
+  let ?\<psi>="Exists(Forall(Implies(And(Member(0,3),is_leq_fm(4,0,2)),
           Neg(ren_truth_lemma(forces(\<phi>))))))"
   have "q\<in>M" if "q\<in>P" for q using that transitivity[OF _ P_in_M] by simp
   then
@@ -1326,13 +1326,13 @@ proof -
   have "?\<psi>\<in>formula" using assms by simp
   moreover
   have "(M, [d,P,leq,\<one>]@env \<Turnstile> ?\<psi>) \<longleftrightarrow> ?rel_pred(M,d,P,leq,\<one>)" if "d\<in>M" for d
-    using assms that P_in_M leq_in_M one_in_M sats_leq_fm sats_ren_truth_lemma zero_in_M
+    using assms that P_in_M leq_in_M one_in_M sats_is_leq_fm sats_ren_truth_lemma zero_in_M
     by simp
   moreover
   have "arity(?\<psi>) \<le> 4#+length(env)"
   proof -
-    have eq:"arity(leq_fm(4, 0, 2)) = 5"
-      using arity_leq_fm succ_Un_distrib ord_simp_union
+    have eq:"arity(is_leq_fm(4, 0, 2)) = 5"
+      using arity_is_leq_fm succ_Un_distrib ord_simp_union
       by simp
     with \<open>\<phi>\<in>_\<close>
     have "arity(?\<psi>) = 3 \<union> (pred^2(arity(ren_truth_lemma(forces(\<phi>)))))"

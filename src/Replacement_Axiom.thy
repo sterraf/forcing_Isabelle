@@ -7,49 +7,6 @@ begin
 context G_generic
 begin
 
-definition rename_split_fm where
-  "rename_split_fm(\<phi>) \<equiv> (\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>\<cdot>\<cdot>snd(9) is 0\<cdot> \<and> \<cdot>\<cdot>fst(9) is 4\<cdot> \<and> \<cdot>\<cdot>1=11\<cdot> \<and>
-    \<cdot>\<cdot>2=12\<cdot> \<and> \<cdot>\<cdot>3=13\<cdot> \<and> \<cdot>\<cdot>5=7\<cdot> \<and>
-    (\<lambda>p. incr_bv(p)`6)^8(forces(\<phi>)) \<cdot>\<cdot>\<cdot>\<cdot>\<cdot>\<cdot>\<cdot>)\<cdot>)\<cdot>)\<cdot>)\<cdot>)\<cdot>)"
-
-lemma rename_split_fm_type[TC]: "\<phi>\<in>formula \<Longrightarrow> rename_split_fm(\<phi>)\<in>formula"
-  unfolding rename_split_fm_def by simp
-
-schematic_goal arity_rename_split_fm: "\<phi>\<in>formula \<Longrightarrow> arity(rename_split_fm(\<phi>)) = ?m"
-  using arity_forces[of \<phi>] forces_type unfolding rename_split_fm_def
-  by (simp add:arity Un_assoc[symmetric] union_abs1)
-
-lemma arity_rename_split_fm_le:
-  assumes "\<phi>\<in>formula"
-  shows "arity(rename_split_fm(\<phi>)) \<le> 8 \<union> (arity(\<phi>) #+ 6)"
-proof -
-  from assms
-  have arity_forces_6: "\<not> 1 < arity(\<phi>) \<Longrightarrow> 6 \<le> n \<Longrightarrow> arity(forces(\<phi>)) \<le> n" for n
-    using le_trans lt_trans[of _ 5 n] not_lt_iff_le[of 1 "arity(\<phi>)"]
-    by (auto intro!:le_trans[OF arity_forces])
-  have pred1_arity_forces: "\<not> 1 < arity(\<phi>) \<Longrightarrow> Arith.pred^n(arity(forces(\<phi>))) \<le> 8" if "n\<in>nat" for n
-    using that pred_le[of 7] le_succ[THEN [2] le_trans] arity_forces_6
-    by (induct rule:nat_induct) auto
-  have arity_forces_le_succ6: "Arith.pred^n(arity(forces(\<phi>))) \<le> succ(succ(succ(succ(succ(succ(arity(\<phi>)))))))"
-    if "n\<in>nat" for n
-    using that assms arity_forces[of \<phi>, THEN le_trans,
-        OF _ le_succ, THEN le_trans, OF _ _ le_succ] le_trans[OF pred_le[OF _ le_succ]]
-    by (induct rule:nat_induct) auto
-  note trivial_arities = arity_forces_6
-    arity_forces_le_succ6[of 1, simplified] arity_forces_le_succ6[of 2, simplified]
-    arity_forces_le_succ6[of 3, simplified] arity_forces_le_succ6[of 4, simplified]
-    arity_forces_le_succ6[of 5, simplified] arity_forces_le_succ6[of 6, simplified]
-    pred1_arity_forces[of 1, simplified] pred1_arity_forces[of 2, simplified]
-    pred1_arity_forces[of 3, simplified] pred1_arity_forces[of 4, simplified]
-    pred1_arity_forces[of 5, simplified] pred1_arity_forces[of 6, simplified]
-  show ?thesis
-    using assms arity_forces[of \<phi>] arity_forces[of \<phi>, THEN le_trans, OF _ le_succ]
-      arity_forces[of \<phi>, THEN le_trans, OF _ le_succ, THEN le_trans, OF _ _ le_succ]
-    unfolding rename_split_fm_def
-    by (simp add:arity Un_assoc[symmetric] union_abs1 arity_forces[of \<phi>] forces_type)
-      (subst arity_incr_bv_lemma; auto simp: arity ord_simp_union forces_type trivial_arities)+
-qed
-
 bundle sharp_simps1 = snd_abs[simp] fst_abs[simp] fst_closed[simp del, simplified, simp]
     snd_closed[simp del, simplified, simp] M_inhabited[simplified, simp]
     pair_in_M_iff[simp del, simplified, simp]
@@ -64,45 +21,6 @@ lemma sats_forces_iff_sats_rename_split_fm:
       M, [V, \<tau>, \<alpha>, \<langle>t,p\<rangle>, m, P, leq, \<one>] @ nenv \<Turnstile> rename_split_fm(\<phi>)"
   using assms unfolding rename_split_fm_def
   by (simp add:sats_incr_bv_iff[where bvs="[_,_,_,_,_,_]", simplified])
-
-definition body_ground_repl_fm where
-  "body_ground_repl_fm(\<phi>) \<equiv> (\<cdot>\<exists>(\<cdot>\<exists>\<cdot>is_Vset_fm(2, 0) \<and> \<cdot>\<cdot>1 \<in> 0\<cdot> \<and> rename_split_fm(\<phi>) \<cdot>\<cdot>\<cdot>)\<cdot>)"
-
-lemma body_ground_repl_fm_type[TC]: "\<phi>\<in>formula \<Longrightarrow> body_ground_repl_fm(\<phi>)\<in>formula"
-  unfolding body_ground_repl_fm_def by simp
-
-arity_theorem for "is_Powapply_fm"
-
-lemma arity_body_ground_repl_fm_le:
-  notes le_trans[trans]
-  assumes "\<phi>\<in>formula"
-  shows "arity(body_ground_repl_fm(\<phi>)) \<le> 6 \<union> (arity(\<phi>) #+ 4)"
-proof -
-  from \<open>\<phi>\<in>formula\<close>
-  have ineq: "n \<union> Arith.pred(Arith.pred(arity(rename_split_fm(\<phi>))))
-    \<le> m \<union> Arith.pred(Arith.pred(8 \<union> (arity(\<phi>) #+6 )))" if "n \<le> m" "n\<in>nat" "m\<in>nat" for n m
-  using that arity_rename_split_fm_le[of \<phi>, THEN [2] pred_mono, THEN [2] pred_mono,
-      THEN [2] Un_mono[THEN subset_imp_le, OF _ le_imp_subset]] le_imp_subset
-    by auto
-  moreover
-  have "Arith.pred(Arith.pred(Arith.pred(4 \<union> 2 \<union> Arith.pred(Arith.pred(Arith.pred(
-    Arith.pred(Arith.pred(Arith.pred(Arith.pred(Arith.pred(9 \<union> 1 \<union> 3 \<union> 2))))))))))) = 1"
-    by (auto simp:pred_Un_distrib)
-  ultimately
-  have "Arith.pred(Arith.pred(Arith.pred(4 \<union> 2 \<union> Arith.pred(Arith.pred(Arith.pred(
-    Arith.pred(Arith.pred(Arith.pred(Arith.pred(Arith.pred(9 \<union> 1 \<union> 3 \<union> 2))))))))))) \<union>
-    Arith.pred(Arith.pred(arity(rename_split_fm(\<phi>)))) \<le>
-    1 \<union> Arith.pred(Arith.pred(8 \<union> (arity(\<phi>) #+6 )))"
-    by auto
-  also from \<open>\<phi>\<in>formula\<close>
-  have "1 \<union> Arith.pred(Arith.pred(8 \<union> (arity(\<phi>) #+6 ))) \<le> 6 \<union> (succ(succ(succ(succ(arity(\<phi>))))))"
-    by (auto simp:pred_Un_distrib Un_assoc[symmetric] ord_simp_union)
-  finally
-  show ?thesis
-    using \<open>\<phi>\<in>formula\<close> unfolding body_ground_repl_fm_def
-    by (simp add:arity pred_Un_distrib, subst arity_transrec_fm[of "is_HVfrom_fm(8,2,1,0)" 3 1])
-      (simp_all add:  arity_is_HVfrom_fm,simp_all add: arity ord_simp_union arity_is_HVfrom_fm)
-qed
 
 lemma sats_body_ground_repl_fm:
   includes sharp_simps1
@@ -123,41 +41,12 @@ proof -
       by auto
   }
   note eq = this
-  then
   show ?thesis
     unfolding body_ground_repl_fm_def
     apply (insert assms)
     apply (rule iff_sats | simp add:nonempty[simplified])+
     using eq
     by (auto del: iffI)
-qed
-
-definition ground_repl_fm where
-  "ground_repl_fm(\<phi>) \<equiv> least_fm(body_ground_repl_fm(\<phi>), 1)"
-
-lemma ground_repl_fm_type[TC]:
-  "\<phi>\<in>formula \<Longrightarrow> ground_repl_fm(\<phi>) \<in> formula"
-  unfolding ground_repl_fm_def by simp
-
-lemma arity_ground_repl_fm:
-  assumes "\<phi>\<in>formula"
-  shows "arity(ground_repl_fm(\<phi>)) \<le> 5 \<union> (3 #+ arity(\<phi>))"
-proof -
-  from assms
-  have "Arith.pred(arity(body_ground_repl_fm(\<phi>))) \<le> 5 \<union> (3 #+ arity(\<phi>))"
-    using arity_body_ground_repl_fm_le pred_mono succ_Un_distrib
-    by (rule_tac pred_le) auto
-  with assms
-  have "2 \<union> Arith.pred(arity(body_ground_repl_fm(\<phi>))) \<le> 5 \<union> (3 #+ arity(\<phi>))"
-    using Un_le le_Un_iff by auto
-  then
-  show ?thesis
-    using assms arity_forces arity_body_ground_repl_fm_le
-    unfolding least_fm_def ground_repl_fm_def
-    apply (auto simp add:arity Un_assoc[symmetric])
-    apply (simp add: pred_Un Un_assoc, simp add: Un_assoc[symmetric] union_abs1 pred_Un)
-    by (simp only: Un_commute, subst Un_commute, simp only: Un_assoc[symmetric])
-      (auto simp add: ord_simp_union) (* FIXME: slow *)
 qed
 
 lemma Replace_sats_in_MG:

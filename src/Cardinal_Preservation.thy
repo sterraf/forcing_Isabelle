@@ -280,10 +280,6 @@ proof -
     using strengthening_lemma[of r \<phi> _ env] by blast
 qed
 
-abbreviation
-  fm_leq :: "[i,i,i] \<Rightarrow> i" (\<open>\<cdot>_\<preceq>\<^bsup>_\<^esup>_\<cdot>\<close>) where
-  "fm_leq(A,l,B) \<equiv> leq_fm(l,A,B)"
-
 definition check_fm' where
   "check_fm'(ofm,arg,res) \<equiv> check_fm(arg,ofm,res)"
 
