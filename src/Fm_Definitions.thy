@@ -308,7 +308,7 @@ subsection\<open>Definition of \<^term>\<open>forces\<close> for equality and me
 subsection\<open>Definition of Forces\<close>
 
 text\<open>$p\forces \tau = \theta$ if every $q\leqslant p$ both $q\forces \sigma \in \tau$ 
-and $q\forces \sigma \in \theta$ for every $\sigma \in \dom(\tau)\cup \dom(\theta).\<close>
+and $q\forces \sigma \in \theta$ for every $\sigma \in \dom(\tau)\cup \dom(\theta)$.\<close>
 definition
   eq_case :: "[i,i,i,i,i,i] \<Rightarrow> o" where
   "eq_case(t1,t2,p,P,leq,f) \<equiv> \<forall>s. s\<in>domain(t1) \<union> domain(t2) \<longrightarrow>
