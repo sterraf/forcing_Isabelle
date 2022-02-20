@@ -42,10 +42,6 @@ lemma checkD:
   "check(x) =  wfrec(Memrel(eclose({x})), x, Hcheck)"
   unfolding check_def transrec_def ..
 
-definition
-  rcheck :: "i \<Rightarrow> i" where
-  "rcheck(x) \<equiv> Memrel(eclose({x}))^+"
-
 lemma Hcheck_trancl:"Hcheck(y, restrict(f,Memrel(eclose({x}))-``{y}))
                    = Hcheck(y, restrict(f,(Memrel(eclose({x}))^+)-``{y}))"
   unfolding Hcheck_def
@@ -365,20 +361,11 @@ next
   then show ?case using \<open>x\<in>nat\<close> def_checkS by simp
 qed
 
-
-definition
-  PHcheck :: "[i,i,i,i] \<Rightarrow> o" where
-  "PHcheck(o,f,y,p) \<equiv> p\<in>M \<and> (\<exists>fy[##M]. fun_apply(##M,f,y,fy) \<and> pair(##M,fy,o,p))"
-
-definition
-  is_Hcheck :: "[i,i,i,i] \<Rightarrow> o" where
-  "is_Hcheck(o,z,f,hc)  \<equiv> is_Replace(##M,z,PHcheck(o,f),hc)"
-
 lemma def_PHcheck:
   assumes
     "z\<in>M" "f\<in>M"
   shows
-    "Hcheck(z,f) = Replace(z,PHcheck(\<one>,f))"
+    "Hcheck(z,f) = Replace(z,PHcheck(##M,\<one>,f))"
 proof -
   from assms
   have "\<langle>f`x,\<one>\<rangle> \<in> M" "f`x\<in>M" if "x\<in>z" for x
@@ -393,73 +380,35 @@ proof -
     by auto
 qed
 
-(*
-  "PHcheck(o,f,y,p) \<equiv> \<exists>fy[##M]. fun_apply(##M,f,y,fy) \<and> pair(##M,fy,o,p)"
-*)
-definition
-  PHcheck_fm :: "[i,i,i,i] \<Rightarrow> i" where
-  "PHcheck_fm(o,f,y,p) \<equiv> Exists(And(fun_apply_fm(succ(f),succ(y),0)
-                                 ,pair_fm(0,succ(o),succ(p))))"
-
-declare PHcheck_fm_def[fm_definitions]
-
-lemma PHcheck_type [TC]:
-  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat \<rbrakk> \<Longrightarrow> PHcheck_fm(x,y,z,u) \<in> formula"
-  by (simp add:PHcheck_fm_def)
-
-arity_theorem for "PHcheck_fm"
-
-lemma sats_PHcheck_fm [simp]:
-  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat ; env \<in> list(M)\<rbrakk>
-    \<Longrightarrow> sats(M,PHcheck_fm(x,y,z,u),env) \<longleftrightarrow>
-        PHcheck(nth(x,env),nth(y,env),nth(z,env),nth(u,env))"
-  using zero_in_M Internalizations.nth_closed by (simp add: PHcheck_def PHcheck_fm_def)
-
-(*
-  "is_Hcheck(o,z,f,hc)  \<equiv> is_Replace(##M,z,PHcheck(o,f),hc)"
-*)
-definition
-  is_Hcheck_fm :: "[i,i,i,i] \<Rightarrow> i" where
-  "is_Hcheck_fm(o,z,f,hc) \<equiv> Replace_fm(z,PHcheck_fm(succ(succ(o)),succ(succ(f)),0,1),hc)"
-
-declare is_Hcheck_fm_def [fm_definitions]
-
-lemma is_Hcheck_type [TC]:
-  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat \<rbrakk> \<Longrightarrow> is_Hcheck_fm(x,y,z,u) \<in> formula"
-  by (simp add:is_Hcheck_fm_def)
-
-lemma sats_is_Hcheck_fm [simp]:
-  "\<lbrakk> x \<in> nat; y \<in> nat; z \<in> nat; u \<in> nat ; env \<in> list(M)\<rbrakk>
-    \<Longrightarrow> sats(M,is_Hcheck_fm(x,y,z,u),env) \<longleftrightarrow>
-        is_Hcheck(nth(x,env),nth(y,env),nth(z,env),nth(u,env))"
-  using sats_Replace_fm unfolding is_Hcheck_def is_Hcheck_fm_def
-  by simp
-
 
 (* instance of replacement for hcheck *)
 lemma wfrec_Hcheck :
   assumes
     "X\<in>M"
   shows
-    "wfrec_replacement(##M,is_Hcheck(\<one>),rcheck(X))"
+    "wfrec_replacement(##M,is_Hcheck(##M,\<one>),rcheck(X))"
 proof -
-  have "is_Hcheck(\<one>,a,b,c) \<longleftrightarrow>
+  have "is_Hcheck(##M,\<one>,a,b,c) \<longleftrightarrow>
         sats(M,is_Hcheck_fm(8,2,1,0),[c,b,a,d,e,y,x,z,\<one>,rcheck(x)])"
     if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "e\<in>M" "y\<in>M" "x\<in>M" "z\<in>M"
     for a b c d e y x z
-    using that one_in_M \<open>X\<in>M\<close> rcheck_in_M by simp
-  then have 1:"sats(M,is_wfrec_fm(is_Hcheck_fm(8,2,1,0),4,1,0),
+    using that one_in_M \<open>X\<in>M\<close> rcheck_in_M is_Hcheck_iff_sats zero_in_M
+    by simp
+  then
+  have 1:"sats(M,is_wfrec_fm(is_Hcheck_fm(8,2,1,0),4,1,0),
                     [y,x,z,\<one>,rcheck(X)]) \<longleftrightarrow>
-            is_wfrec(##M, is_Hcheck(\<one>),rcheck(X), x, y)"
+            is_wfrec(##M, is_Hcheck(##M,\<one>),rcheck(X), x, y)"
     if "x\<in>M" "y\<in>M" "z\<in>M" for x y z
-    using  that sats_is_wfrec_fm \<open>X\<in>M\<close> rcheck_in_M one_in_M by simp
+    using  that sats_is_wfrec_fm \<open>X\<in>M\<close> rcheck_in_M one_in_M zero_in_M
+    by simp
   let
     ?f="Exists(And(pair_fm(1,0,2),
                is_wfrec_fm(is_Hcheck_fm(8,2,1,0),4,1,0)))"
   have satsf:"sats(M, ?f, [x,z,\<one>,rcheck(X)]) \<longleftrightarrow>
-              (\<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hcheck(\<one>),rcheck(X), x, y))"
+              (\<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hcheck(##M,\<one>),rcheck(X), x, y))"
     if "x\<in>M" "z\<in>M" for x z
-    using that 1 \<open>X\<in>M\<close> rcheck_in_M one_in_M by (simp del:pair_abs)
+    using that 1 \<open>X\<in>M\<close> rcheck_in_M one_in_M
+    by (simp del:pair_abs)
   have artyf:"arity(?f) = 4"
     unfolding fm_definitions
     by (simp add:arity ord_simp_union)
@@ -468,7 +417,7 @@ proof -
     using replacement_ax[of ?f] 1 artyf \<open>X\<in>M\<close> rcheck_in_M one_in_M by simp
   then
   have "strong_replacement(##M,\<lambda>x z.
-          \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hcheck(\<one>),rcheck(X), x, y))"
+          \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hcheck(##M,\<one>),rcheck(X), x, y))"
     using repl_sats[of M ?f "[\<one>,rcheck(X)]"] satsf by (simp del:pair_abs)
   then
   show ?thesis unfolding wfrec_replacement_def by simp
@@ -478,41 +427,44 @@ lemma repl_PHcheck :
   assumes
     "f\<in>M"
   shows
-    "strong_replacement(##M,PHcheck(\<one>,f))"
+    "strong_replacement(##M,PHcheck(##M,\<one>,f))"
 proof -
   from \<open>f\<in>M\<close>
   have "strong_replacement(##M,\<lambda>x y. sats(M,PHcheck_fm(2,3,0,1),[x,y,\<one>,f]))"
     using replacement_ax[of "PHcheck_fm(2,3,0,1)"] one_in_M
     by (simp add:arity ord_simp_union)
   with \<open>f\<in>M\<close>
-  show ?thesis using one_in_M unfolding strong_replacement_def univalent_def by simp
-qed
-
-lemma univ_PHcheck : "\<lbrakk> z\<in>M ; f\<in>M \<rbrakk> \<Longrightarrow> univalent(##M,z,PHcheck(\<one>,f))"
-  unfolding univalent_def PHcheck_def by simp
-
-lemma relation2_Hcheck :
-  "relation2(##M,is_Hcheck(\<one>),Hcheck)"
-proof -
-  have 1:"\<lbrakk>x\<in>z; PHcheck(\<one>,f,x,y) \<rbrakk> \<Longrightarrow> (##M)(y)"
-    if "z\<in>M" "f\<in>M" for z f x y
-    using that unfolding PHcheck_def by simp
-  have "is_Replace(##M,z,PHcheck(\<one>,f),hc) \<longleftrightarrow> hc = Replace(z,PHcheck(\<one>,f))"
-    if "z\<in>M" "f\<in>M" "hc\<in>M" for z f hc
-    using that Replace_abs[OF _ _ univ_PHcheck 1] by simp
-  with def_PHcheck
   show ?thesis
-    unfolding relation2_def is_Hcheck_def Hcheck_def by simp
+    using one_in_M zero_in_M
+    unfolding strong_replacement_def univalent_def
+    by simp
 qed
+
+lemma univ_PHcheck : "\<lbrakk> z\<in>M ; f\<in>M \<rbrakk> \<Longrightarrow> univalent(##M,z,PHcheck(##M,\<one>,f))"
+  unfolding univalent_def PHcheck_def
+  by simp
 
 lemma PHcheck_closed :
-  "\<lbrakk>z\<in>M ; f\<in>M ; x\<in>z; PHcheck(\<one>,f,x,y) \<rbrakk> \<Longrightarrow> (##M)(y)"
+  "\<lbrakk>z\<in>M ; f\<in>M ; x\<in>z; PHcheck(##M,\<one>,f,x,y) \<rbrakk> \<Longrightarrow> (##M)(y)"
   unfolding PHcheck_def by simp
+
+lemma relation2_Hcheck :
+  "relation2(##M,is_Hcheck(##M,\<one>),Hcheck)"
+proof -
+  have "is_Replace(##M,z,PHcheck(##M,\<one>,f),hc) \<longleftrightarrow> hc = Replace(z,PHcheck(##M,\<one>,f))"
+    if "z\<in>M" "f\<in>M" "hc\<in>M" for z f hc
+    using that Replace_abs[OF _ _ univ_PHcheck] PHcheck_closed[of z f]
+    by simp
+  with def_PHcheck
+  show ?thesis
+    unfolding relation2_def is_Hcheck_def Hcheck_def
+    by simp
+qed
 
 lemma Hcheck_closed :
   "\<forall>y\<in>M. \<forall>g\<in>M. function(g) \<longrightarrow> Hcheck(y,g)\<in>M"
 proof -
-  have "Replace(y,PHcheck(\<one>,f))\<in>M" if "f\<in>M" "y\<in>M" for f y
+  have "Replace(y,PHcheck(##M,\<one>,f))\<in>M" if "f\<in>M" "y\<in>M" for f y
     using that repl_PHcheck  PHcheck_closed[of y f] univ_PHcheck
       strong_replacement_closed
     by (simp flip: setclass_iff)
@@ -531,7 +483,7 @@ lemma relation_rcheck : "x\<in>M \<Longrightarrow> relation(rcheck(x))"
 lemma check_in_M : "x\<in>M \<Longrightarrow> check(x) \<in> M"
   unfolding transrec_def
   using wfrec_Hcheck[of x] check_trancl wf_rcheck trans_rcheck relation_rcheck rcheck_in_M
-    Hcheck_closed relation2_Hcheck trans_wfrec_closed[of "rcheck(x)" x "is_Hcheck(\<one>)" Hcheck]
+    Hcheck_closed relation2_Hcheck trans_wfrec_closed[of "rcheck(x)" x "is_Hcheck(##M,\<one>)" Hcheck]
   by (simp flip: setclass_iff)
 
 end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
@@ -540,99 +492,56 @@ context forcing_data begin
 
 (* Internalization and absoluteness of rcheck\<close> *)
 
-definition
-  is_rcheck :: "[i,i] \<Rightarrow> o" where
-  "is_rcheck(x,z) \<equiv> \<exists>r\<in>M. tran_closure(##M,r,z) \<and> (\<exists>ec\<in>M. membership(##M,ec,r) \<and>
-                           (\<exists>s\<in>M. is_singleton(##M,x,s) \<and>  is_eclose(##M,s,ec)))"
-
 lemma rcheck_abs[Rel] :
-  "\<lbrakk> x\<in>M ; r\<in>M \<rbrakk> \<Longrightarrow> is_rcheck(x,r) \<longleftrightarrow> r = rcheck(x)"
+  "\<lbrakk> x\<in>M ; r\<in>M \<rbrakk> \<Longrightarrow> is_rcheck(##M,x,r) \<longleftrightarrow> r = rcheck(x)"
   unfolding rcheck_def is_rcheck_def
-  using singleton_closed trancl_closed Memrel_closed eclose_closed by simp
-
-schematic_goal rcheck_fm_auto:
-  assumes
-    "i \<in> nat" "j \<in> nat" "env \<in> list(M)"
-  shows
-    "is_rcheck(nth(i,env),nth(j,env)) \<longleftrightarrow> sats(M,?rch(i,j),env)"
-  unfolding is_rcheck_def
-  by (insert assms ; (rule sep_rules singleton_iff_sats is_eclose_iff_sats
-        tran_closure_iff_sats | simp)+)
-
-synthesize "rcheck" from_schematic rcheck_fm_auto
-arity_theorem for "rcheck_fm"
-
-definition
-  is_check :: "[i,i] \<Rightarrow> o" where
-  "is_check(x,z) \<equiv> \<exists>rch\<in>M. is_rcheck(x,rch) \<and> is_wfrec(##M,is_Hcheck(\<one>),rch,x,z)"
+  using singleton_closed trancl_closed Memrel_closed eclose_closed zero_in_M
+  by simp
 
 lemma check_abs[Rel] :
   assumes
     "x\<in>M" "z\<in>M"
   shows
-    "is_check(x,z) \<longleftrightarrow> z = check(x)"
+    "is_check(##M,\<one>,x,z) \<longleftrightarrow> z = check(x)"
 proof -
   have
-    "is_check(x,z) \<longleftrightarrow> is_wfrec(##M,is_Hcheck(\<one>),rcheck(x),x,z)"
-    unfolding is_check_def using assms rcheck_abs rcheck_in_M
-    unfolding check_trancl is_check_def by simp
-  then show ?thesis
+    "is_check(##M,\<one>,x,z) \<longleftrightarrow> is_wfrec(##M,is_Hcheck(##M,\<one>),rcheck(x),x,z)"
+    unfolding is_check_def
+    using assms rcheck_abs rcheck_in_M zero_in_M
+    unfolding check_trancl is_check_def
+    by simp
+  then
+  show ?thesis
     unfolding check_trancl
     using assms wfrec_Hcheck[of x] wf_rcheck trans_rcheck relation_rcheck rcheck_in_M
-      Hcheck_closed relation2_Hcheck trans_wfrec_abs[of "rcheck(x)" x z "is_Hcheck(\<one>)" Hcheck]
+      Hcheck_closed relation2_Hcheck trans_wfrec_abs[of "rcheck(x)" x z "is_Hcheck(##M,\<one>)" Hcheck]
     by (simp flip: setclass_iff)
 qed
 
-(* \<exists>rch\<in>M. is_rcheck(x,rch) \<and> is_wfrec(##M,is_Hcheck(\<one>),rch,x,z) *)
-definition
-  check_fm :: "[i,i,i] \<Rightarrow> i" where
-  [fm_definitions] :
-  "check_fm(x,o,z) \<equiv> Exists(And(rcheck_fm(1#+x,0),
-                      is_wfrec_fm(is_Hcheck_fm(6#+o,2,1,0),0,1#+x,1#+z)))"
-
-notation check_fm (\<open>\<cdot>_\<^sup>v_ is _\<cdot>\<close>)
-
-lemma check_fm_type[TC] :
-  "\<lbrakk>x\<in>nat;o\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> check_fm(x,o,z)\<in>formula"
-  unfolding check_fm_def by simp
-
-lemma arity_is_Hcheck_fm:
-  assumes "m\<in>nat" "n\<in>nat" "p\<in>nat" "o\<in>nat"
-  shows "arity(is_Hcheck_fm(m,n,p,o)) = succ(o) \<union> succ(n) \<union> succ(p) \<union> succ(m) "
-  unfolding is_Hcheck_fm_def
-  using assms arity_Replace_fm[rule_format,OF PHcheck_type _ _ _ arity_PHcheck_fm]
-    pred_Un_distrib Un_assoc Un_nat_type
-  by simp
-
-lemma arity_check_fm[arity]:
-  assumes "m\<in>nat" "n\<in>nat" "o\<in>nat"
-  shows "arity(check_fm(m,n,o)) = succ(o) \<union> succ(n) \<union> succ(m) "
-  unfolding check_fm_def
-  using assms arity_is_wfrec_fm[rule_format,OF _ _ _ _ _ arity_is_Hcheck_fm]
-    pred_Un_distrib Un_assoc arity_tran_closure_fm
-  by (auto simp add:arity)
-
-
-lemma sats_check_fm :
+lemma sats_check_fm[iff_sats] :
   assumes
-    "nth(o,env) = \<one>" "x\<in>nat" "z\<in>nat" "o\<in>nat" "env\<in>list(M)" "x < length(env)" "z < length(env)"
+    "o\<in>nat" "x\<in>nat" "z\<in>nat" "env\<in>list(M)"
   shows
-    "sats(M, check_fm(x,o,z), env) \<longleftrightarrow> is_check(nth(x,env),nth(z,env))"
+    "sats(M, check_fm(x,o,z), env) \<longleftrightarrow> is_check(##M,nth(o,env),nth(x,env),nth(z,env))"
 proof -
   have sats_is_Hcheck_fm:
-    "\<And>a0 a1 a2 a3 a4. \<lbrakk> a0\<in>M; a1\<in>M; a2\<in>M; a3\<in>M; a4\<in>M \<rbrakk> \<Longrightarrow>
-         is_Hcheck(\<one>,a2, a1, a0) \<longleftrightarrow>
-         sats(M, is_Hcheck_fm(6#+o,2,1,0), [a0,a1,a2,a3,a4,r]@env)" if "r\<in>M" for r
-    using that one_in_M assms  by simp
+    "\<And>a0 a1 a2 a3 a4 a6. \<lbrakk> a0\<in>M; a1\<in>M; a2\<in>M; a3\<in>M; a4\<in>M;a6 \<in>M\<rbrakk> \<Longrightarrow>
+         is_Hcheck(##M,a6,a2, a1, a0) \<longleftrightarrow>
+         sats(M, is_Hcheck_fm(6,2,1,0), [a0,a1,a2,a3,a4,r,a6]@env)" if "r\<in>M" for r
+    using that assms zero_in_M
+    by simp
   then
   have "sats(M, is_wfrec_fm(is_Hcheck_fm(6#+o,2,1,0),0,1#+x,1#+z),Cons(r,env))
-        \<longleftrightarrow> is_wfrec(##M,is_Hcheck(\<one>),r,nth(x,env),nth(z,env))" if "r\<in>M" for r
-    using that assms one_in_M sats_is_wfrec_fm by simp
+        \<longleftrightarrow> is_wfrec(##M,is_Hcheck(##M,nth(o,env)),r,nth(x,env),nth(z,env))"
+    if "r\<in>M" for r
+    using that assms zero_in_M is_wfrec_iff_sats'[symmetric]
+    by simp
   then
-  show ?thesis unfolding is_check_def check_fm_def
-    using assms rcheck_in_M one_in_M rcheck_iff_sats[symmetric] by simp
+  show ?thesis
+    unfolding is_check_def check_fm_def
+    using assms rcheck_in_M is_rcheck_iff_sats[symmetric] zero_in_M
+    by simp
 qed
-
 
 lemma check_replacement:
   "{check(x). x\<in>P} \<in> M"
@@ -644,13 +553,15 @@ proof -
   have "check(x)\<in>M" if "x\<in>P" for x
     using that transitivity check_in_M P_in_M by simp
   ultimately
-  show ?thesis using sats_check_fm check_abs P_in_M check_in_M one_in_M transitivity
-      Replace_relativized_in_M[of "check_fm(0,2,1)" "[\<one>]" _ is_check check] by simp
+  show ?thesis
+  using sats_check_fm check_abs P_in_M check_in_M one_in_M transitivity zero_in_M
+      Replace_relativized_in_M[of "check_fm(0,2,1)" "[\<one>]" _ "is_check(##M,\<one>)" check]
+  by simp
 qed
 
-lemma pair_check : "\<lbrakk> p\<in>M ; y\<in>M \<rbrakk>  \<Longrightarrow> (\<exists>c\<in>M. is_check(p,c) \<and> pair(##M,c,p,y)) \<longleftrightarrow> y = \<langle>check(p),p\<rangle>"
+lemma pair_check : "\<lbrakk> p\<in>M ; y\<in>M \<rbrakk>  \<Longrightarrow>
+  (\<exists>c\<in>M. is_check(##M,\<one>,p,c) \<and> pair(##M,c,p,y)) \<longleftrightarrow> y = \<langle>check(p),p\<rangle>"
   using check_abs check_in_M pair_in_M_iff by simp
-
 
 lemma M_subset_MG :  "\<one> \<in> G \<Longrightarrow> M \<subseteq> M[G]"
   using check_in_M one_in_P GenExtI
@@ -664,7 +575,7 @@ definition
 lemma G_dot_in_M :
   "G_dot \<in> M"
 proof -
-  let ?is_pcheck = "\<lambda>x y. \<exists>ch\<in>M. is_check(x,ch) \<and> pair(##M,ch,x,y)"
+  let ?is_pcheck = "\<lambda>x y. \<exists>ch\<in>M. is_check(##M,\<one>,x,ch) \<and> pair(##M,ch,x,y)"
   let ?pcheck_fm = "Exists(And(check_fm(1,3,0),pair_fm(0,1,2)))"
   have "sats(M,?pcheck_fm,[x,y,\<one>]) \<longleftrightarrow> ?is_pcheck(x,y)" if "x\<in>M" "y\<in>M" for x y
     using sats_check_fm that one_in_M by simp
