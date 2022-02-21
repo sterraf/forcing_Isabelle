@@ -16,15 +16,9 @@ lemma (in M_ZF_trans) lam_replacement_inj_rel:
     LambdaPair_in_M[where \<phi>="is_inj_fm(0,1,2)" and is_f="is_inj(##M)" and env="[]",OF
       is_inj_fm_type _ is_inj_iff_sats[symmetric] inj_rel_iff,simplified]
      arity_is_inj_fm[of 0 1 2] ord_simp_union transitivity fst_snd_closed
-     inj_rel_closed zero_in_M
+     inj_rel_closed zero_in_M replacement_ax
   by simp
 
-definition is_order_body
-  where "is_order_body(M,X,x,z) \<equiv> \<exists>A[M]. cartprod(M,X,X,A) \<and> subset(M,x,A) \<and> M(z) \<and> M(x) \<and>
-           is_well_ord(M,X, x) \<and> is_ordertype(M,X, x,z)"
-
-
-synthesize "is_order_body" from_definition assuming "nonempty"
 arity_theorem for "is_transitive_fm"
 arity_theorem for "is_linear_fm"
 arity_theorem for "is_wellfounded_on_fm"
@@ -78,8 +72,8 @@ lemma (in M_ZF_trans) replacement_is_order_body:
   apply(rule_tac strong_replacement_cong[
         where P="\<lambda> x f. M,[x,f,X] \<Turnstile> is_order_body_fm(2,0,1)",THEN iffD1])
    apply(rule_tac is_order_body_iff_sats[where env="[_,_,X]",symmetric])
-  apply(simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax[where env="[X]",simplified])
+          apply(simp_all add:zero_in_M)
+  apply(rule_tac replacement_ax[unfolded replacement_assm_def, rule_format, where env="[X]",simplified])
     apply(simp_all add: arity_is_order_body )
   done
 
@@ -138,7 +132,7 @@ lemma (in M_ZF_trans) wfrec_replacement_order_pred:
    apply(subst order_pred_wfrec_body_def[symmetric])
    apply(rule_tac order_pred_wfrec_body_iff_sats[where env="[_,_,r,A]",symmetric])
   apply(simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax[where env="[r,A]",simplified])
+  apply(rule_tac replacement_ax[unfolded replacement_assm_def, rule_format, where env="[r,A]",simplified])
     apply(simp_all add: arity_order_pred_wfrec_body_fm ord_simp_union)
   done
 
@@ -171,7 +165,7 @@ lemma (in M_ZF_trans) replacement_is_jump_cardinal_body:
         where P="\<lambda> x f. M,[x,f] \<Turnstile> is_jump_cardinal_body'_fm(0,1)",THEN iffD1])
    apply(rule_tac is_jump_cardinal_body'_iff_sats[where env="[_,_]",symmetric])
   apply(simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax[where env="[]",simplified])
+  apply(rule_tac replacement_ax[unfolded replacement_assm_def, rule_format, where env="[]",simplified])
     apply(simp_all add: arity_is_jump_cardinal_body )
   done
 
@@ -227,7 +221,7 @@ lemma (in M_ZF_trans) replacement_is_aleph:
    apply (auto simp add: ordinal_iff_sats[where env="[_,_]",symmetric])
    apply(rule_tac is_Aleph_iff_sats[where env="[_,_]",THEN iffD2],simp_all add:zero_in_M)
    apply(rule_tac is_Aleph_iff_sats[where env="[_,_]",THEN iffD1],simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax[where env="[]",simplified])
+  apply(rule_tac replacement_ax[unfolded replacement_assm_def, rule_format, where env="[]",simplified])
     apply(simp_all add:arity_is_Aleph FOL_arities arity_ordinal_fm ord_simp_union is_Aleph_fm_type)
   done
 

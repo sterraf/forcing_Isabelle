@@ -200,7 +200,7 @@ interpretation mgzf: M_ZF_trans "M[G]"
   using Transset_MG generic pairing_in_MG Union_MG
     extensionality_in_MG power_in_MG foundation_in_MG
     strong_replacement_in_MG separation_in_MG infinity_in_MG
-  by unfold_locales simp_all
+  by unfold_locales (simp_all add:replacement_assm_def)
 
 lemma opname_check_abs :
   assumes "s\<in>M" "x\<in>M" "y\<in>M"
@@ -227,7 +227,7 @@ proof -
     using assms opname_check_abs[of f] is_opname_check_iff_sats
       one_in_M zero_in_M transitivity
       Replace_relativized_in_M[of "is_opname_check_fm(3,2,0,1)"
-        "[f,\<one>]" _ "is_opname_check(##M,\<one>,f)"]
+        "[f,\<one>]" _ "is_opname_check(##M,\<one>,f)"] replacement_ax
     by simp
 qed
 

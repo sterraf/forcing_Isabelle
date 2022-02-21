@@ -503,18 +503,18 @@ proof
   }
   with fin
   show "M_ZF(M)"
-    unfolding M_ZF_def by simp
+    unfolding M_ZF_def M_Z_basic_def M_ZF_axioms_def replacement_assm_def by simp
 next
   assume \<open>M_ZF(M)\<close>
   then
   have "M \<Turnstile> ZF_fin"
-    unfolding M_ZF_def ZF_fin_def ZFC_fm_defs satT_def
+    unfolding M_ZF_def ZF_fin_def ZFC_fm_defs M_Z_basic_def M_ZF_axioms_def replacement_assm_def satT_def
     using ZFC_fm_sats[of M] by blast
   moreover from \<open>M_ZF(M)\<close>
   have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
        "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
-    unfolding M_ZF_def using sats_ZF_separation_fm_iff
-      sats_ZF_replacement_fm_iff by simp_all
+    unfolding M_ZF_def M_ZF_axioms_def M_Z_basic_def replacement_assm_def
+    using sats_ZF_separation_fm_iff sats_ZF_replacement_fm_iff by simp_all
   ultimately
   show "M \<Turnstile> ZF"
     unfolding ZF_def ZF_inf_def by blast
@@ -525,7 +525,8 @@ lemma M_ZFC_iff_M_satT:
   shows "M_ZFC(M) \<longleftrightarrow> (M \<Turnstile> ZFC)"
 proof -
   have "M_ZFC(M) \<longleftrightarrow> (M \<Turnstile> ZF) \<and> choice_ax(##M)"
-    using M_ZF_iff_M_satT unfolding M_ZFC_def M_ZFC_axioms_def by simp
+    using M_ZF_iff_M_satT
+    unfolding M_ZFC_def M_ZC_basic_def M_AC_def M_ZF_def by auto
   also
   have " \<dots> \<longleftrightarrow> M \<Turnstile> ZFC"
     unfolding ZFC_def ZFC_fin_def ZF_def

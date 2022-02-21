@@ -234,7 +234,7 @@ lemma Lambda_in_M_fm_type[TC]: "\<phi>\<in>formula \<Longrightarrow> len\<in>nat
 definition \<rho>_pair_repl :: "i\<Rightarrow>i" where
   "\<rho>_pair_repl(l) \<equiv> rsum({\<langle>0, 0\<rangle>, \<langle>1, 1\<rangle>, \<langle>2, 3\<rangle>}, id(l), 3, 4, l)"
 
-definition LambdaPair_in_M_fm where [simp]:"LambdaPair_in_M_fm(\<phi>,len) \<equiv>
+definition LambdaPair_in_M_fm where "LambdaPair_in_M_fm(\<phi>,len) \<equiv>
   \<cdot>(\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and>
              ren((\<cdot>\<exists>(\<cdot>\<exists>\<cdot>\<cdot>fst(2) is 0\<cdot> \<and> \<cdot>\<cdot>snd(2) is 1\<cdot> \<and> ren(\<phi>) ` (3 #+ len) ` (4 #+ len) ` \<rho>_pair_repl(len) \<cdot>\<cdot>\<cdot>)\<cdot>)) ` (2 #+ len) `
              (3 #+ len) `
@@ -1108,15 +1108,19 @@ synthesize "is_funspace_succ_rep_intf" from_definition
 
 arity_theorem for "is_funspace_succ_rep_intf_fm"
 
+definition
+  PHrank :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
+  "PHrank(M,f,y,z) \<equiv> (\<exists>fy[M]. fun_apply(M,f,y,fy) \<and> successor(M,fy,z))"
+
+synthesize "PHrank" from_definition assuming "nonempty"
+
 (*  1 *) definition wfrec_Hfrc_at_fm where "wfrec_Hfrc_at_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(Hfrc_at_fm(8, 9, 2, 1, 0), 5, 1, 0) \<cdot>\<cdot>)"
 (*  3 *) definition list_repl1_intf_fm where "list_repl1_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(list_functor_fm(13, 1, 0), 10, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
 (*  4 *) definition list_repl2_intf_fm where "list_repl2_intf_fm \<equiv> \<cdot>\<cdot>0 \<in> 4\<cdot> \<and> is_iterates_fm(list_functor_fm(13, 1, 0), 3, 0, 1) \<cdot>"
 (*  5 *) definition formula_repl2_intf_fm where "formula_repl2_intf_fm \<equiv> \<cdot>\<cdot>0 \<in> 3\<cdot> \<and> is_iterates_fm(formula_functor_fm(1, 0), 2, 0, 1) \<cdot>"
 (*  6 *) definition eclose_repl2_intf_fm where "eclose_repl2_intf_fm \<equiv> \<cdot>\<cdot>0 \<in> 3\<cdot> \<and> is_iterates_fm(\<cdot>\<Union>1 is 0\<cdot>, 2, 0, 1) \<cdot>"
 (*  7 *) definition powapply_repl_fm where "powapply_repl_fm \<equiv> is_Powapply_fm(2,0,1)"
-(* FIXME: Do we need this?
 (*  8 *) definition phrank_repl_fm where "phrank_repl_fm \<equiv> PHrank_fm(2,0,1)"
-*)
 (*  9 *) definition wfrec_rank_fm where "wfrec_rank_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(is_Hrank_fm(2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
 (* 10 *) definition trans_repl_HVFrom_fm where "trans_repl_HVFrom_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(is_HVfrom_fm(8, 2, 1, 0), 4, 1, 0) \<cdot>\<cdot>)"
 (* 11 *) definition wfrec_Hcheck_fm where "wfrec_Hcheck_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(is_Hcheck_fm(8, 2, 1, 0), 4, 1, 0) \<cdot>\<cdot>) "

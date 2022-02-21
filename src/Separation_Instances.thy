@@ -32,14 +32,14 @@ relationalize "radd_body_rel" "is_radd_body"
 synthesize "is_radd_body" from_definition
 arity_theorem for "is_radd_body_fm"
 
-lemma (in M_ZF_trans) radd_body_abs:
+lemma (in M_ZF1_trans) radd_body_abs:
   assumes "(##M)(R)" "(##M)(S)" "(##M)(x)"
   shows "is_radd_body(##M,R,S,x) \<longleftrightarrow> radd_body(R,S,x)"
   using assms pair_in_M_iff Inl_in_M_iff Inr_in_M_iff
   unfolding radd_body_def is_radd_body_def
   by (auto)
 
-lemma (in M_ZF_trans) separation_radd_body:
+lemma (in M_ZF1_trans) separation_radd_body:
  "(##M)(R) \<Longrightarrow> (##M)(S) \<Longrightarrow> separation
         (##M, \<lambda>z. (\<exists>x y. z = \<langle>Inl(x), Inr(y)\<rangle>) \<or>
                   (\<exists>x' x. z = \<langle>Inl(x'), Inl(x)\<rangle> \<and> \<langle>x', x\<rangle> \<in> R) \<or>
@@ -59,14 +59,14 @@ relationalize "rmult_body_rel" "is_rmult_body"
 synthesize "is_rmult_body" from_definition
 arity_theorem for "is_rmult_body_fm"
 
-lemma (in M_ZF_trans) rmult_body_abs:
+lemma (in M_ZF1_trans) rmult_body_abs:
   assumes "(##M)(b)" "(##M)(d)" "(##M)(x)"
   shows "is_rmult_body(##M,b,d,x) \<longleftrightarrow> rmult_body(b,d,x)"
   using assms pair_in_M_iff apply_closed
   unfolding rmult_body_def is_rmult_body_def
   by (auto)
 
-lemma (in M_ZF_trans) separation_rmult_body:
+lemma (in M_ZF1_trans) separation_rmult_body:
  "(##M)(b) \<Longrightarrow> (##M)(d) \<Longrightarrow> separation
         (##M, \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> b \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> d))"
   using separation_in_ctm[where \<phi>="is_rmult_body_fm(1,2,0)" and env="[b,d]"]
@@ -95,7 +95,7 @@ definition is_obase_body :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
 synthesize "is_obase_body" from_definition
 arity_theorem for "is_obase_body_fm"
 
-lemma (in M_ZF_trans) separation_is_obase:
+lemma (in M_ZF1_trans) separation_is_obase:
  "(##M)(f) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation
         (##M, \<lambda>x. x \<in> A \<longrightarrow>
                   \<not> (\<exists>y[##M].
@@ -122,7 +122,7 @@ definition is_obase_equals :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
 synthesize "is_obase_equals" from_definition
 arity_theorem for "is_obase_equals_fm"
 
-lemma (in M_ZF_trans) separation_obase_equals:
+lemma (in M_ZF1_trans) separation_obase_equals:
  "(##M)(f) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation
         (##M, \<lambda>a. \<exists>x[##M].
                      \<exists>g[##M].
@@ -138,7 +138,7 @@ lemma (in M_ZF_trans) separation_obase_equals:
 synthesize "PiP_rel" from_definition assuming "nonempty"
 arity_theorem for "PiP_rel_fm"
 
-lemma (in M_ZF_trans) separation_PiP_rel:
+lemma (in M_ZF1_trans) separation_PiP_rel:
  "(##M)(A) \<Longrightarrow> separation(##M, PiP_rel(##M,A))"
   using separation_in_ctm[where env="[A]" and \<phi>="PiP_rel_fm(1,0)"]
     nonempty PiP_rel_iff_sats[symmetric] arity_PiP_rel_fm PiP_rel_fm_type
@@ -147,7 +147,7 @@ lemma (in M_ZF_trans) separation_PiP_rel:
 synthesize "injP_rel" from_definition assuming "nonempty"
 arity_theorem for "injP_rel_fm"
 
-lemma (in M_ZF_trans) separation_injP_rel:
+lemma (in M_ZF1_trans) separation_injP_rel:
  "(##M)(A) \<Longrightarrow> separation(##M, injP_rel(##M,A))"
   using separation_in_ctm[where env="[A]" and \<phi>="injP_rel_fm(1,0)"]
     nonempty injP_rel_iff_sats[symmetric] arity_injP_rel_fm injP_rel_fm_type
@@ -156,7 +156,7 @@ lemma (in M_ZF_trans) separation_injP_rel:
 synthesize "surjP_rel" from_definition assuming "nonempty"
 arity_theorem for "surjP_rel_fm"
 
-lemma (in M_ZF_trans) separation_surjP_rel:
+lemma (in M_ZF1_trans) separation_surjP_rel:
  "(##M)(A) \<Longrightarrow> (##M)(B) \<Longrightarrow> separation(##M, surjP_rel(##M,A,B))"
   using separation_in_ctm[where env="[A,B]" and \<phi>="surjP_rel_fm(1,2,0)"]
     nonempty surjP_rel_iff_sats[symmetric] arity_surjP_rel_fm surjP_rel_fm_type
@@ -165,13 +165,13 @@ lemma (in M_ZF_trans) separation_surjP_rel:
 synthesize "cons_like_rel" from_definition assuming "nonempty"
 arity_theorem for "cons_like_rel_fm"
 
-lemma (in M_ZF_trans) separation_cons_like_rel:
+lemma (in M_ZF1_trans) separation_cons_like_rel:
  "separation(##M, cons_like_rel(##M))"
   using separation_in_ctm[where env="[]" and \<phi>="cons_like_rel_fm(0)"]
     nonempty cons_like_rel_iff_sats[symmetric] arity_cons_like_rel_fm cons_like_rel_fm_type
   by simp
 
-lemma (in M_ZF_trans) separation_is_function:
+lemma (in M_ZF1_trans) separation_is_function:
  "separation(##M, is_function(##M))"
   using separation_in_ctm[where env="[]" and \<phi>="function_fm(0)"] arity_function_fm
   by simp
@@ -184,14 +184,14 @@ relativize "fstsnd_in_sndsnd" "is_fstsnd_in_sndsnd"
 synthesize "is_fstsnd_in_sndsnd" from_definition assuming "nonempty"
 arity_theorem for "is_fstsnd_in_sndsnd_fm"
 
-lemma (in M_ZF_trans) fstsnd_in_sndsnd_abs:
+lemma (in M_ZF1_trans) fstsnd_in_sndsnd_abs:
   assumes "(##M)(x)"
   shows "is_fstsnd_in_sndsnd(##M,x) \<longleftrightarrow> fstsnd_in_sndsnd(x)"
   using assms pair_in_M_iff fst_abs snd_abs fst_snd_closed
   unfolding fstsnd_in_sndsnd_def is_fstsnd_in_sndsnd_def
   by auto
 
-lemma (in M_ZF_trans) separation_fstsnd_in_sndsnd:
+lemma (in M_ZF1_trans) separation_fstsnd_in_sndsnd:
  "separation(##M, \<lambda>x. fst(snd(x)) \<in> snd(snd(x)))"
   using separation_in_ctm[where env="[]" and \<phi>="is_fstsnd_in_sndsnd_fm(0)" and Q=fstsnd_in_sndsnd]
     nonempty fstsnd_in_sndsnd_abs arity_is_fstsnd_in_sndsnd_fm
@@ -204,21 +204,21 @@ relativize "sndfst_eq_fstsnd" "is_sndfst_eq_fstsnd"
 synthesize "is_sndfst_eq_fstsnd" from_definition assuming "nonempty"
 arity_theorem for "is_sndfst_eq_fstsnd_fm"
 
-lemma (in M_ZF_trans) sndfst_eq_fstsnd_abs:
+lemma (in M_ZF1_trans) sndfst_eq_fstsnd_abs:
   assumes "(##M)(x)"
   shows "is_sndfst_eq_fstsnd(##M,x) \<longleftrightarrow> sndfst_eq_fstsnd(x)"
   using assms pair_in_M_iff fst_abs snd_abs fst_snd_closed
   unfolding sndfst_eq_fstsnd_def is_sndfst_eq_fstsnd_def
   by auto
 
-lemma (in M_ZF_trans) separation_sndfst_eq_fstsnd:
+lemma (in M_ZF1_trans) separation_sndfst_eq_fstsnd:
  "separation(##M, \<lambda>x. snd(fst(x)) = fst(snd(x)))"
   using separation_in_ctm[where env="[]" and \<phi>="is_sndfst_eq_fstsnd_fm(0)" and Q=sndfst_eq_fstsnd]
     nonempty sndfst_eq_fstsnd_abs arity_is_sndfst_eq_fstsnd_fm
   unfolding sndfst_eq_fstsnd_def
   by simp
 
-lemma (in M_ZF_trans) separation_Ord:
+lemma (in M_ZF1_trans) separation_Ord:
  "separation(##M, Ord)"
   using separation_in_ctm[where \<phi>="ordinal_fm(0)" and env="[]"] ordinal_abs
     ord_simp_union ordinal_iff_sats[where env="[_]",symmetric]
@@ -232,7 +232,7 @@ relativize "insnd_ballPair" "is_insnd_ballPair"
 synthesize "is_insnd_ballPair" from_definition assuming "nonempty"
 arity_theorem for "is_insnd_ballPair_fm"
 
-lemma (in M_ZF_trans) insnd_ballPair_abs:
+lemma (in M_ZF1_trans) insnd_ballPair_abs:
   assumes "(##M)(B)" "(##M)(A)" "(##M)(x)"
   shows "is_insnd_ballPair(##M,B,A,x) \<longleftrightarrow> insnd_ballPair(B,A,x)"
   using assms pair_in_M_iff fst_abs snd_abs fst_snd_closed
@@ -240,7 +240,7 @@ lemma (in M_ZF_trans) insnd_ballPair_abs:
   unfolding insnd_ballPair_def is_insnd_ballPair_def
   by (auto)
 
-lemma (in M_ZF_trans) separation_insnd_ballPair:
+lemma (in M_ZF1_trans) separation_insnd_ballPair:
  "(##M)(B) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, \<lambda>p. \<forall>x\<in>B. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> A))"
   using insnd_ballPair_abs nonempty
     separation_in_ctm[where \<phi>="is_insnd_ballPair_fm(2,1,0)" and env="[A,B]"]

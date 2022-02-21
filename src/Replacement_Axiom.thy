@@ -56,9 +56,7 @@ lemma Replace_sats_in_MG:
     "univalent(##M[G], c, \<lambda>x v. (M[G] , [x,v]@env \<Turnstile> \<phi>) )"
     and
     ground_replacement:
-    "\<And>nenv. nenv\<in>list(M) \<Longrightarrow> ground_repl_fm(\<phi>) \<in> formula \<Longrightarrow> [P,leq,\<one>] @ nenv \<in> list(M) \<Longrightarrow>
-      arity(ground_repl_fm(\<phi>)) \<le> 2 #+ length([P,leq,\<one>] @ nenv) \<Longrightarrow>
-      strong_replacement(##M,\<lambda>x y. sats(M,ground_repl_fm(\<phi>),[x,y] @ [P,leq,\<one>] @ nenv))"
+    "\<And>nenv. ground_replacement_assm(M,[P,leq,\<one>] @ nenv, \<phi>)"
   shows
     "{v. x\<in>c, v\<in>M[G] \<and> (M[G] , [x,v]@env \<Turnstile> \<phi>)} \<in> M[G]"
 proof -
@@ -143,7 +141,7 @@ proof -
   obtain Y where "Y\<in>M"
     "\<forall>m\<in>M. m \<in> Y \<longleftrightarrow> (\<exists>\<rho>p\<in>M. \<rho>p \<in> ?\<pi> \<and> (M, [\<rho>p,m] @ ([P,leq,\<one>] @ nenv) \<Turnstile> ground_repl_fm(\<phi>)))"
     using ground_replacement[of nenv]
-    unfolding strong_replacement_def by auto
+    unfolding strong_replacement_def ground_replacement_assm_def replacement_assm_def by auto
   with \<open>least(_,QQ(_),f(_))\<close> \<open>f(_) \<in> M\<close> \<open>?\<pi>\<in>M\<close>
     \<open>_ \<Longrightarrow> _ \<Longrightarrow> _ \<Longrightarrow> (M,_ \<Turnstile> ground_repl_fm(\<phi>)) \<longleftrightarrow> least(_,_,_)\<close>
   have "f(\<rho>p)\<in>Y" if "\<rho>p\<in>?\<pi>" for \<rho>p
@@ -325,13 +323,9 @@ qed
 theorem strong_replacement_in_MG:
   assumes
     "\<phi>\<in>formula" and "arity(\<phi>) \<le> 2 #+ length(env)" "env \<in> list(M[G])"
-    (*
-    and
+    (* and
     ground_replacement:
-    "\<And>nenv. nenv\<in>list(M) \<Longrightarrow> ground_repl_fm(\<phi>) \<in> formula \<Longrightarrow> [P,leq,\<one>] @ nenv \<in> list(M) \<Longrightarrow>
-      arity(ground_repl_fm(\<phi>)) \<le> 2 #+ length([P,leq,\<one>] @ nenv) \<Longrightarrow>
-      strong_replacement(##M,\<lambda>x y. sats(M,ground_repl_fm(\<phi>),[x,y] @ [P,leq,\<one>] @ nenv))"
-  *)
+    "\<And>nenv. ground_replacement_assm(M,[P,leq,\<one>] @ nenv, \<phi>)" *)
   shows
     "strong_replacement(##M[G],\<lambda>x v. sats(M[G],\<phi>,[x,v] @ env))"
 proof -
@@ -346,7 +340,8 @@ proof -
       unfolding univalent_def by simp_all
     with assms \<open>A\<in>_\<close>
     have "(##M[G])(?Y)"
-      using Replace_sats_in_MG replacement_ax (* only ground_replacement here *) by auto
+      using Replace_sats_in_MG (* ground_replacement *) replacement_ax
+      unfolding ground_replacement_assm_def by (auto)
     have "b \<in> ?Y \<longleftrightarrow> (\<exists>x[##M[G]]. x \<in> A \<and> ?R(x,b))" if "(##M[G])(b)" for b
     proof(rule)
       from \<open>A\<in>_\<close>
