@@ -2,7 +2,7 @@ section\<open>The definition of \<^term>\<open>forces\<close>\<close>
 
 theory Forces_Definition
   imports
-    Names
+    Forcing_Data
 begin
 
 text\<open>This is the core of our development.\<close>

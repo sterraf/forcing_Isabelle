@@ -4,6 +4,7 @@ theory Forcing_Theorems
   imports
     Cohen_Posets_Relative
     Forces_Definition
+    Names
 
 begin
 
