@@ -752,7 +752,7 @@ lemma (in M_ZF2_trans) replacement_is_order_eq_map:
     arity_order_eq_map_fm ord_simp_union replacement_ax2(5)
   by simp
 
-lemma (in M_ZF_trans) banach_iterates:
+lemma (in M_ZF2_trans) banach_iterates:
   assumes "X\<in>M" "Y\<in>M" "f\<in>M" "g\<in>M" "W\<in>M"
   shows "iterates_replacement(##M, is_banach_functor(##M,X,Y,f,g), W)"
 proof -
@@ -769,7 +769,7 @@ proof -
     by simp
 qed
 
-lemma (in M_ZF_trans) banach_replacement_iterates:
+lemma (in M_ZF2_trans) banach_replacement_iterates:
   assumes "X\<in>M" "Y\<in>M" "f\<in>M" "g\<in>M" "W\<in>M"
   shows "strong_replacement(##M, \<lambda>n y. n\<in>\<omega> \<and> is_iterates(##M,is_banach_functor(##M,X, Y, f, g),W,n,y))"
 proof -
@@ -786,7 +786,7 @@ proof -
     by simp
 qed
 
-lemma (in M_ZF_trans) banach_replacement:
+lemma (in M_ZF2_trans) banach_replacement:
   assumes "(##M)(X)" "(##M)(Y)" "(##M)(f)" "(##M)(g)"
   shows "strong_replacement(##M, \<lambda>n y. n\<in>nat \<and> y = banach_functor(X, Y, f, g)^n (0))"
   using iterates_abs[OF banach_iterates banach_functor_abs,of X Y f g]
@@ -794,7 +794,7 @@ lemma (in M_ZF_trans) banach_replacement:
     strong_replacement_cong[THEN iffD1,OF _ banach_replacement_iterates[of X Y f g 0]]
   by simp
 
-lemma (in M_ZF_trans) lam_replacement_cardinal : "lam_replacement(##M, cardinal_rel(##M))"
+lemma (in M_ZF2_trans) lam_replacement_cardinal : "lam_replacement(##M, cardinal_rel(##M))"
   using lam_replacement_iff_lam_closed[THEN iffD2,of "cardinal_rel(##M)"]
     cardinal_rel_closed is_cardinal_iff
     Lambda_in_M[where \<phi>="is_cardinal_fm(0,1)" and env="[]",OF is_cardinal_fm_type[of 0 1]]
@@ -815,14 +815,14 @@ lemma (in M_basic) apply_image_closed':
   shows "M(f) \<Longrightarrow> \<forall>x[M]. \<forall>g[M]. M(trans_apply_image(f, x, g))"
   unfolding trans_apply_image_def by simp
 
-lemma (in M_ZF_trans) replacement_transrec_apply_image_body :
+lemma (in M_ZF2_trans) replacement_transrec_apply_image_body :
   "(##M)(f) \<Longrightarrow> (##M)(mesa) \<Longrightarrow> strong_replacement(##M,transrec_apply_image_body(##M,f,mesa))"
   using strong_replacement_rel_in_ctm[where \<phi>="transrec_apply_image_body_fm(3,2,0,1)" and env="[mesa,f]"]
     zero_in_M arity_transrec_apply_image_body_fm ord_simp_union
     replacement_ax2(6)
   by simp
 
-lemma (in M_ZF_trans) transrec_replacement_apply_image:
+lemma (in M_ZF2_trans) transrec_replacement_apply_image:
   assumes "(##M)(f)" "(##M)(\<alpha>)"
   shows "transrec_replacement(##M, is_trans_apply_image(##M, f), \<alpha>)"
   unfolding transrec_replacement_def wfrec_replacement_def is_wfrec_def M_is_recfun_def
@@ -830,13 +830,13 @@ lemma (in M_ZF_trans) transrec_replacement_apply_image:
     Memrel_closed singleton_closed eclose_closed
   by simp
 
-lemma (in M_ZF_trans) rec_trans_apply_image_abs:
+lemma (in M_ZF2_trans) rec_trans_apply_image_abs:
   assumes "(##M)(f)" "(##M)(x)" "(##M)(y)" "Ord(x)"
   shows "is_transrec(##M,is_trans_apply_image(##M, f),x,y) \<longleftrightarrow> y = transrec(x,trans_apply_image(f))"
   using transrec_abs[OF transrec_replacement_apply_image rel2_trans_apply] assms apply_image_closed
   by simp
 
-lemma (in M_ZF_trans) replacement_is_trans_apply_image:
+lemma (in M_ZF2_trans) replacement_is_trans_apply_image:
   "(##M)(f) \<Longrightarrow> (##M)(\<beta>) \<Longrightarrow> strong_replacement(##M, \<lambda> x z .
     \<exists>y[##M]. pair(##M,x,y,z) \<and> x\<in>\<beta> \<and> (is_transrec(##M,is_trans_apply_image(##M, f),x,y)))"
   unfolding is_transrec_def is_wfrec_def M_is_recfun_def
@@ -848,7 +848,7 @@ lemma (in M_ZF_trans) replacement_is_trans_apply_image:
   apply(simp_all add: arity_is_trans_apply_image_body_fm is_trans_apply_image_body_fm_type ord_simp_union)
   done
 
-lemma (in M_ZF_trans) trans_apply_abs:
+lemma (in M_ZF2_trans) trans_apply_abs:
   "(##M)(f) \<Longrightarrow> (##M)(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow> (##M)(x) \<Longrightarrow> (##M)(z) \<Longrightarrow>
     (x\<in>\<beta> \<and> z = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a)) \<rangle>) \<longleftrightarrow>
     (\<exists>y[##M]. pair(##M,x,y,z) \<and> x\<in>\<beta> \<and> (is_transrec(##M,is_trans_apply_image(##M, f),x,y)))"
@@ -858,7 +858,7 @@ lemma (in M_ZF_trans) trans_apply_abs:
   unfolding trans_apply_image_def
   by auto
 
-lemma (in M_ZF_trans) replacement_trans_apply_image:
+lemma (in M_ZF2_trans) replacement_trans_apply_image:
   "(##M)(f) \<Longrightarrow> (##M)(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow>
   strong_replacement(##M, \<lambda>x y. x\<in>\<beta> \<and> y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
   using strong_replacement_cong[THEN iffD1,OF _ replacement_is_trans_apply_image,simplified]
@@ -885,7 +885,7 @@ relationalize "ifrangeF_body_rel" "is_ifrangeF_body"
 synthesize "is_ifrangeF_body" from_definition assuming "nonempty"
 arity_theorem for "is_ifrangeF_body_fm"
 
-lemma (in M_ZF_trans) separation_is_ifrangeF_body:
+lemma (in M_Z_trans) separation_is_ifrangeF_body:
   "(##M)(A) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation(##M, is_ifrangeF_body(##M,A,r,s))"
   using separation_in_ctm[where \<phi>="is_ifrangeF_body_fm(1,2,3,0)" and env="[A,r,s]"]
     zero_in_M arity_is_ifrangeF_body_fm ord_simp_union is_ifrangeF_body_fm_type
@@ -895,7 +895,7 @@ lemma (in M_basic) is_ifrFb_body_closed: "M(r) \<Longrightarrow> M(s) \<Longrigh
   unfolding ifrangeF_body_def is_ifrangeF_body_def is_ifrFb_body_def If_abs
   by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
 
-lemma (in M_ZF_trans) ifrangeF_body_abs:
+lemma (in M_ZF1_trans) ifrangeF_body_abs:
   assumes "(##M)(A)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
   shows "is_ifrangeF_body(##M,A,r,s,x) \<longleftrightarrow> ifrangeF_body(##M,A,r,s,x)"
 proof -
@@ -935,7 +935,7 @@ proof -
     by (auto dest:transM)
 qed
 
-lemma (in M_ZF_trans) separation_ifrangeF_body:
+lemma (in M_ZF1_trans) separation_ifrangeF_body:
   "(##M)(A) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow> separation
         (##M, \<lambda>y.  \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. if (##M)(x) then x else 0, b, f, i)\<rangle>)"
   using separation_is_ifrangeF_body ifrangeF_body_abs
@@ -967,7 +967,7 @@ relationalize "ifrangeF_body2_rel" "is_ifrangeF_body2"
 synthesize "is_ifrangeF_body2" from_definition assuming "nonempty"
 arity_theorem for "is_ifrangeF_body2_fm"
 
-lemma (in M_ZF_trans) separation_is_ifrangeF_body2:
+lemma (in M_Z_trans) separation_is_ifrangeF_body2:
   "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation(##M, is_ifrangeF_body2(##M,A,G,r,s))"
   using separation_in_ctm[where \<phi>="is_ifrangeF_body2_fm(1,2,3,4,0)" and env="[A,G,r,s]"]
     zero_in_M arity_is_ifrangeF_body2_fm ord_simp_union is_ifrangeF_body2_fm_type
@@ -977,7 +977,7 @@ lemma (in M_basic) is_ifrFb_body2_closed: "M(G) \<Longrightarrow> M(r) \<Longrig
   unfolding ifrangeF_body2_def is_ifrangeF_body2_def is_ifrFb_body2_def If_abs
   by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
 
-lemma (in M_ZF_trans) ifrangeF_body2_abs:
+lemma (in M_ZF1_trans) ifrangeF_body2_abs:
   assumes "(##M)(A)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
   shows "is_ifrangeF_body2(##M,A,G,r,s,x) \<longleftrightarrow> ifrangeF_body2(##M,A,G,r,s,x)"
 proof -
@@ -1054,7 +1054,7 @@ relationalize "ifrangeF_body3_rel" "is_ifrangeF_body3"
 synthesize "is_ifrangeF_body3" from_definition assuming "nonempty"
 arity_theorem for "is_ifrangeF_body3_fm"
 
-lemma (in M_ZF_trans) separation_is_ifrangeF_body3:
+lemma (in M_Z_trans) separation_is_ifrangeF_body3:
   "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation(##M, is_ifrangeF_body3(##M,A,G,r,s))"
   using separation_in_ctm[where \<phi>="is_ifrangeF_body3_fm(1,2,3,4,0)" and env="[A,G,r,s]"]
     zero_in_M arity_is_ifrangeF_body3_fm ord_simp_union is_ifrangeF_body3_fm_type
@@ -1064,7 +1064,7 @@ lemma (in M_basic) is_ifrFb_body3_closed: "M(G) \<Longrightarrow> M(r) \<Longrig
   unfolding ifrangeF_body3_def is_ifrangeF_body3_def is_ifrFb_body3_def If_abs
   by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
 
-lemma (in M_ZF_trans) ifrangeF_body3_abs:
+lemma (in M_ZF1_trans) ifrangeF_body3_abs:
   assumes "(##M)(A)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
   shows "is_ifrangeF_body3(##M,A,G,r,s,x) \<longleftrightarrow> ifrangeF_body3(##M,A,G,r,s,x)"
 proof -
@@ -1104,7 +1104,7 @@ proof -
     by (auto dest:transM)
 qed
 
-lemma (in M_ZF_trans) separation_ifrangeF_body3:
+lemma (in M_ZF1_trans) separation_ifrangeF_body3:
   "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
        separation
         (##M,
@@ -1139,7 +1139,7 @@ relationalize "ifrangeF_body4_rel" "is_ifrangeF_body4"
 synthesize "is_ifrangeF_body4" from_definition assuming "nonempty"
 arity_theorem for "is_ifrangeF_body4_fm"
 
-lemma (in M_ZF_trans) separation_is_ifrangeF_body4:
+lemma (in M_Z_trans) separation_is_ifrangeF_body4:
   "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation(##M, is_ifrangeF_body4(##M,A,G,r,s))"
   using separation_in_ctm[where \<phi>="is_ifrangeF_body4_fm(1,2,3,4,0)" and env="[A,G,r,s]"]
     zero_in_M arity_is_ifrangeF_body4_fm ord_simp_union is_ifrangeF_body4_fm_type
@@ -1150,7 +1150,7 @@ lemma (in M_basic) is_ifrFb_body4_closed: "M(G) \<Longrightarrow> M(r) \<Longrig
   unfolding ifrangeF_body4_def is_ifrangeF_body4_def is_ifrFb_body4_def fun_apply_def
   by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
 
-lemma (in M_ZF_trans) ifrangeF_body4_abs:
+lemma (in M_ZF1_trans) ifrangeF_body4_abs:
   assumes "(##M)(A)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
   shows "is_ifrangeF_body4(##M,A,G,r,s,x) \<longleftrightarrow> ifrangeF_body4(##M,A,G,r,s,x)"
 proof -
@@ -1191,7 +1191,7 @@ proof -
     by (auto dest:transM)
 qed
 
-lemma (in M_ZF_trans) separation_ifrangeF_body4:
+lemma (in M_ZF1_trans) separation_ifrangeF_body4:
   "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
        separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F((`)(G), b, f, i)\<rangle>)"
   using separation_is_ifrangeF_body4 ifrangeF_body4_abs
@@ -1222,7 +1222,7 @@ relationalize "ifrangeF_body5_rel" "is_ifrangeF_body5"
 synthesize "is_ifrangeF_body5" from_definition assuming "nonempty"
 arity_theorem for "is_ifrangeF_body5_fm"
 
-lemma (in M_ZF_trans) separation_is_ifrangeF_body5:
+lemma (in M_Z_trans) separation_is_ifrangeF_body5:
   "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation(##M, is_ifrangeF_body5(##M,A,G,r,s))"
   using separation_in_ctm[where \<phi>="is_ifrangeF_body5_fm(1,2,3,4,0)" and env="[A,G,r,s]"]
     zero_in_M arity_is_ifrangeF_body5_fm ord_simp_union is_ifrangeF_body5_fm_type
@@ -1233,7 +1233,7 @@ lemma (in M_basic) is_ifrFb_body5_closed: "M(G) \<Longrightarrow> M(r) \<Longrig
   unfolding ifrangeF_body5_def is_ifrangeF_body5_def is_ifrFb_body5_def fun_apply_def
   by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
 
-lemma (in M_ZF_trans) ifrangeF_body5_abs:
+lemma (in M_ZF1_trans) ifrangeF_body5_abs:
   assumes "(##M)(A)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
   shows "is_ifrangeF_body5(##M,A,G,r,s,x) \<longleftrightarrow> ifrangeF_body5(##M,A,G,r,s,x)"
 proof -
@@ -1276,7 +1276,7 @@ proof -
     by (auto dest:transM)
 qed
 
-lemma (in M_ZF_trans) separation_ifrangeF_body5:
+lemma (in M_ZF1_trans) separation_ifrangeF_body5:
   "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
        separation(##M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. {xa \<in> G . x \<in> xa}, b, f, i)\<rangle>)"
   using separation_is_ifrangeF_body5 ifrangeF_body5_abs
@@ -1307,7 +1307,7 @@ relationalize "ifrangeF_body6_rel" "is_ifrangeF_body6"
 synthesize "is_ifrangeF_body6" from_definition assuming "nonempty"
 arity_theorem for "is_ifrangeF_body6_fm"
 
-lemma (in M_ZF_trans) separation_is_ifrangeF_body6:
+lemma (in M_Z_trans) separation_is_ifrangeF_body6:
   "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation(##M, is_ifrangeF_body6(##M,A,G,r,s))"
   using separation_in_ctm[where \<phi>="is_ifrangeF_body6_fm(1,2,3,4,0)" and env="[A,G,r,s]"]
     zero_in_M arity_is_ifrangeF_body6_fm ord_simp_union is_ifrangeF_body6_fm_type
@@ -1323,7 +1323,7 @@ lemma (in M_basic) is_ifrFb_body6_closed: "M(G) \<Longrightarrow> M(r) \<Longrig
   unfolding ifrangeF_body6_def is_ifrangeF_body6_def is_ifrFb_body6_def fun_apply_def
   by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
 
-lemma (in M_ZF_trans) ifrangeF_body6_abs:
+lemma (in M_ZF2_trans) ifrangeF_body6_abs:
   assumes "(##M)(A)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
   shows "is_ifrangeF_body6(##M,A,G,r,s,x) \<longleftrightarrow> ifrangeF_body6(##M,A,G,r,s,x)"
 proof -
@@ -1364,7 +1364,7 @@ proof -
     by (auto dest:transM)
 qed
 
-lemma (in M_ZF_trans) separation_ifrangeF_body6:
+lemma (in M_ZF2_trans) separation_ifrangeF_body6:
   "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
        separation(##M,
       \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. {p \<in> G . domain(p) = a}, b, f, i)\<rangle>)"
@@ -1400,7 +1400,7 @@ relationalize "ifrangeF_body7_rel" "is_ifrangeF_body7"
 synthesize "is_ifrangeF_body7" from_definition assuming "nonempty"
 arity_theorem for "is_ifrangeF_body7_fm"
 
-lemma (in M_ZF_trans) separation_is_ifrangeF_body7:
+lemma (in M_Z_trans) separation_is_ifrangeF_body7:
   "(##M)(A) \<Longrightarrow> (##M)(B) \<Longrightarrow> (##M)(D) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(r) \<Longrightarrow> (##M)(s) \<Longrightarrow> separation(##M, is_ifrangeF_body7(##M,A,B,D,G,r,s))"
   using separation_in_ctm[where \<phi>="is_ifrangeF_body7_fm(1,2,3,4,5,6,0)" and env="[A,B,D,G,r,s]"]
     zero_in_M arity_is_ifrangeF_body7_fm ord_simp_union is_ifrangeF_body7_fm_type
@@ -1418,7 +1418,7 @@ lemma (in M_basic) is_ifrFb_body7_closed: "M(B) \<Longrightarrow> M(D) \<Longrig
   unfolding ifrangeF_body7_def is_ifrangeF_body7_def is_ifrFb_body7_def fun_apply_def
   by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
 
-lemma (in M_ZF_trans) ifrangeF_body7_abs:
+lemma (in M_ZF2_trans) ifrangeF_body7_abs:
   assumes "(##M)(A)"  "(##M)(B)" "(##M)(D)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
   shows "is_ifrangeF_body7(##M,A,B,D,G,r,s,x) \<longleftrightarrow> ifrangeF_body7(##M,A,B,D,G,r,s,x)"
 proof -
@@ -1476,7 +1476,7 @@ proof -
     by (auto dest:transM)
 qed
 
-lemma (in M_ZF_trans) separation_ifrangeF_body7:
+lemma (in M_ZF2_trans) separation_ifrangeF_body7:
   "(##M)(A) \<Longrightarrow> (##M)(B) \<Longrightarrow> (##M)(D) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
     separation(##M,
       \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(drSR_Y(B, D, G), b, f, i)\<rangle>)"
