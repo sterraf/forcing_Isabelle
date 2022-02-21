@@ -15,7 +15,7 @@ lemma names_belowsD:
     "x = \<langle>f,n1,n2,p\<rangle>" "f\<in>2" "n1\<in>ecloseN(z)" "n2\<in>ecloseN(z)" "p\<in>P"
   using assms unfolding names_below_def by auto
 
-context forcing_data
+context forcing_data1
 begin
 
 (* Absoluteness of components *)
@@ -676,8 +676,8 @@ proof -
     unfolding fm_definitions by simp
   ultimately
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,P,leq,forcerel(P,X)]))"
-    using replacement_ax[of _ ?f] 1 artyf \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M
-    unfolding replacement_assm_def by auto
+    using replacement_ax1 1 artyf \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M
+    unfolding replacement_assm_def by simp
   then
   have "strong_replacement(##M,\<lambda>x z.
           \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hfrc_at(##M,P,leq),forcerel(P,X), x, y))"
@@ -767,18 +767,13 @@ proof -
     by (auto simp add:components_abs,blast)
 qed
 
-end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
-
 subsection\<open>Forcing for general formulas\<close>
 
-lemma (in forcing_data) leq_abs:
+lemma leq_abs:
   "\<lbrakk> l\<in>M ; q\<in>M ; p\<in>M \<rbrakk> \<Longrightarrow> is_leq(##M,l,q,p) \<longleftrightarrow> \<langle>q,p\<rangle>\<in>l"
   unfolding is_leq_def using pair_in_M_iff by simp
 
-subsubsection\<open>The primitive recursion\<close>
-
-context forcing_data
-begin
+(* MOVE THIS to an appropriate place: subsubsection\<open>The primitive recursion\<close> *)
 
 subsection\<open>Forcing for atomic formulas in context\<close>
 
@@ -882,6 +877,6 @@ lemma sats_forces_Forall :
   unfolding forces_def using assms sats_ren_forces_forall P_in_M leq_in_M one_in_M
   by simp
 
-end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
 end
