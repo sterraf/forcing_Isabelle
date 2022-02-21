@@ -33,11 +33,6 @@ definition
 reldb_add functional "Pow" "Pow_rel"
 reldb_add relational "Pow" "is_Pow"
 
-lemma subset_iff_sats[iff_sats]:
-  "nth(i, env) = x \<Longrightarrow> nth(j, env) = y \<Longrightarrow> i\<in>nat \<Longrightarrow> j\<in>nat \<Longrightarrow>
-   env \<in> list(A) \<Longrightarrow> subset(##A, x, y) \<longleftrightarrow> A, env \<Turnstile> subset_fm(i, j)"
-  using sats_subset_fm' by simp
-
 declare Replace_iff_sats[iff_sats]
 synthesize "is_Pow" from_definition assuming "nonempty"
 arity_theorem for "is_Pow_fm"

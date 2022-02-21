@@ -202,16 +202,6 @@ interpretation mgzf: M_ZF_trans "M[G]"
     strong_replacement_in_MG separation_in_MG infinity_in_MG
   by unfold_locales simp_all
 
-lemma sats_opname_check_fm:
-  assumes "x\<in>nat" "y\<in>nat" "z\<in>nat" "o\<in>nat" "env\<in>list(M)" "nth(o,env)=\<one>"
-          "y<length(env)"
-  shows
-    "sats(M,opname_check_fm(x,y,z,o),env) \<longleftrightarrow>
-      is_opname_check(##M,\<one>,nth(x,env),nth(y,env),nth(z,env))"
-  unfolding opname_check_fm_def is_opname_check_def
-  using assms sats_check_fm sats_opair_name_fm one_in_M
-  by simp
-
 lemma opname_check_abs :
   assumes "s\<in>M" "x\<in>M" "y\<in>M"
   shows "is_opname_check(##M,\<one>,s,x,y) \<longleftrightarrow> y = opair_name(check(x),s`x,\<one>)"
@@ -225,8 +215,8 @@ lemma repl_opname_check :
   shows
    "{opair_name(check(x),f`x,\<one>). x\<in>A}\<in>M"
 proof -
-  have "arity(opname_check_fm(2,0,1,3))= 4"
-    unfolding fm_definitions opname_check_fm_def
+  have "arity(is_opname_check_fm(3,2,0,1))= 4"
+    using arity_is_opname_check_fm
     by (simp add:ord_simp_union arity)
   moreover
   have "x\<in>A \<Longrightarrow> opair_name(check(x), f ` x,\<one>)\<in>M" for x
@@ -234,9 +224,10 @@ proof -
     by simp
   ultimately
   show ?thesis
-    using assms opname_check_abs[of f] sats_opname_check_fm one_in_M transitivity
-     Replace_relativized_in_M[of "opname_check_fm(2,0,1,3)"
-       "[f,\<one>]" _ "is_opname_check(##M,\<one>,f)"]
+    using assms opname_check_abs[of f] is_opname_check_iff_sats
+      one_in_M zero_in_M transitivity
+      Replace_relativized_in_M[of "is_opname_check_fm(3,2,0,1)"
+        "[f,\<one>]" _ "is_opname_check(##M,\<one>,f)"]
     by simp
 qed
 

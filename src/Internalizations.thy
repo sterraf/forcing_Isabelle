@@ -5,6 +5,35 @@ theory Internalizations
     Synthetic_Definition
 begin
 
+definition
+  infinity_ax :: "(i \<Rightarrow> o) \<Rightarrow> o" where
+  "infinity_ax(M) \<equiv>
+      (\<exists>I[M]. (\<exists>z[M]. empty(M,z) \<and> z\<in>I) \<and> (\<forall>y[M]. y\<in>I \<longrightarrow> (\<exists>sy[M]. successor(M,y,sy) \<and> sy\<in>I)))"
+
+definition
+  wellfounded_trancl :: "[i=>o,i,i,i] => o" where
+  "wellfounded_trancl(M,Z,r,p) \<equiv>
+      \<exists>w[M]. \<exists>wx[M]. \<exists>rp[M].
+               w \<in> Z & pair(M,w,p,wx) & tran_closure(M,r,rp) & wx \<in> rp"
+
+lemma empty_intf :
+  "infinity_ax(M) \<Longrightarrow>
+  (\<exists>z[M]. empty(M,z))"
+  by (auto simp add: empty_def infinity_ax_def)
+
+lemma Transset_intf :
+  "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
+  by (simp add: Transset_def,auto)
+
+definition
+  choice_ax :: "(i\<Rightarrow>o) \<Rightarrow> o" where
+  "choice_ax(M) \<equiv> \<forall>x[M]. \<exists>a[M]. \<exists>f[M]. ordinal(M,a) \<and> surjection(M,a,x,f)"
+
+lemma (in M_basic) choice_ax_abs :
+  "choice_ax(M) \<longleftrightarrow> (\<forall>x[M]. \<exists>a[M]. \<exists>f[M]. Ord(a) \<and> f \<in> surj(a,x))"
+  unfolding choice_ax_def
+  by simp
+
 notation Member (\<open>\<cdot>_ \<in>/ _\<cdot>\<close>)
 notation Equal (\<open>\<cdot>_ =/ _\<cdot>\<close>)
 notation Nand (\<open>\<cdot>\<not>'(_ \<and>/ _')\<cdot>\<close>)
@@ -44,6 +73,11 @@ lemma mem_model_iff_sats [iff_sats]:
        ==> (x\<in>A) \<longleftrightarrow> sats(A, Exists(Equal(0,0)), env)"
   using nth_closed[of env A i]
   by auto
+
+lemma subset_iff_sats[iff_sats]:
+  "nth(i, env) = x \<Longrightarrow> nth(j, env) = y \<Longrightarrow> i\<in>nat \<Longrightarrow> j\<in>nat \<Longrightarrow>
+   env \<in> list(A) \<Longrightarrow> subset(##A, x, y) \<longleftrightarrow> sats(A, subset_fm(i, j), env)"
+  using sats_subset_fm' by simp
 
 lemma not_mem_model_iff_sats [iff_sats]:
       "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A)|]
@@ -118,19 +152,10 @@ lemmas formulas_def [fm_definitions] = fm_defs
 lemmas sep_rules' [iff_sats]  = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
   fun_plus_iff_sats omega_iff_sats FOL_sats_iff (* NOTE: why FOL_sats_iff? *)
 
-(* MOVE THIS to an appropriate place *)
-definition
-  infinity_ax :: "(i \<Rightarrow> o) \<Rightarrow> o" where
-  "infinity_ax(M) \<equiv>
-      (\<exists>I[M]. (\<exists>z[M]. empty(M,z) \<and> z\<in>I) \<and> (\<forall>y[M]. y\<in>I \<longrightarrow> (\<exists>sy[M]. successor(M,y,sy) \<and> sy\<in>I)))"
-
-definition
-  choice_ax :: "(i\<Rightarrow>o) \<Rightarrow> o" where
-  "choice_ax(M) \<equiv> \<forall>x[M]. \<exists>a[M]. \<exists>f[M]. ordinal(M,a) \<and> surjection(M,a,x,f)"
-
-lemma (in M_basic) choice_ax_abs :
-  "choice_ax(M) \<longleftrightarrow> (\<forall>x[M]. \<exists>a[M]. \<exists>f[M]. Ord(a) \<and> f \<in> surj(a,x))"
-  unfolding choice_ax_def
-  by (simp)
+declare rtran_closure_iff_sats [iff_sats] tran_closure_iff_sats [iff_sats]
+  is_eclose_iff_sats [iff_sats]
+arity_theorem for "rtran_closure_fm"
+arity_theorem for "tran_closure_fm"
+arity_theorem for "rtran_closure_mem_fm"
 
 end

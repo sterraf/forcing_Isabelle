@@ -518,31 +518,6 @@ proof -
     by (simp flip: setclass_iff)
 qed
 
-lemma sats_check_fm[iff_sats] :
-  assumes
-    "o\<in>nat" "x\<in>nat" "z\<in>nat" "env\<in>list(M)"
-  shows
-    "sats(M, check_fm(x,o,z), env) \<longleftrightarrow> is_check(##M,nth(o,env),nth(x,env),nth(z,env))"
-proof -
-  have sats_is_Hcheck_fm:
-    "\<And>a0 a1 a2 a3 a4 a6. \<lbrakk> a0\<in>M; a1\<in>M; a2\<in>M; a3\<in>M; a4\<in>M;a6 \<in>M\<rbrakk> \<Longrightarrow>
-         is_Hcheck(##M,a6,a2, a1, a0) \<longleftrightarrow>
-         sats(M, is_Hcheck_fm(6,2,1,0), [a0,a1,a2,a3,a4,r,a6]@env)" if "r\<in>M" for r
-    using that assms zero_in_M
-    by simp
-  then
-  have "sats(M, is_wfrec_fm(is_Hcheck_fm(6#+o,2,1,0),0,1#+x,1#+z),Cons(r,env))
-        \<longleftrightarrow> is_wfrec(##M,is_Hcheck(##M,nth(o,env)),r,nth(x,env),nth(z,env))"
-    if "r\<in>M" for r
-    using that assms zero_in_M is_wfrec_iff_sats'[symmetric]
-    by simp
-  then
-  show ?thesis
-    unfolding is_check_def check_fm_def
-    using assms rcheck_in_M is_rcheck_iff_sats[symmetric] zero_in_M
-    by simp
-qed
-
 lemma check_replacement:
   "{check(x). x\<in>P} \<in> M"
 proof -
@@ -578,7 +553,7 @@ proof -
   let ?is_pcheck = "\<lambda>x y. \<exists>ch\<in>M. is_check(##M,\<one>,x,ch) \<and> pair(##M,ch,x,y)"
   let ?pcheck_fm = "Exists(And(check_fm(1,3,0),pair_fm(0,1,2)))"
   have "sats(M,?pcheck_fm,[x,y,\<one>]) \<longleftrightarrow> ?is_pcheck(x,y)" if "x\<in>M" "y\<in>M" for x y
-    using sats_check_fm that one_in_M by simp
+    using sats_check_fm that one_in_M zero_in_M by simp
   moreover
   have "?is_pcheck(x,y) \<longleftrightarrow> y = \<langle>check(x),x\<rangle>" if "x\<in>M" "y\<in>M" for x y
     using that check_abs check_in_M by simp

@@ -1,3 +1,4 @@
+section\<open>Concepts involved in instances of Replacement\<close>
 theory Fm_Definitions
   imports
     Nat_Miscellanea
@@ -17,11 +18,6 @@ define /foo/ is already synthesized. We try to use our meta-programs to synthesi
 concepts: given the absolute concept /foo/ we relativize in relational form
 obtaining /is\_foo/ and the we synthesize the formula /is\_foo\_fm/.
 The meta-program that synthesizes formulas also produce satisfactions lemmas.
-
-The term /check/ (defined in the theory Names) is the only concept whose
-satisfaction lemma requires that the (Set) model already interpret
-\<^locale>\<open>M_eclose\<close>, therefore we cannot synthesize automatically
-the concepts that depends on it.
 
 Having one file to collect every formula needed for replacements breaks
 the reading flow: we need to introduce the concept in this theory in order
@@ -74,35 +70,7 @@ abbreviation
 abbreviation
   dec29  :: i   ("29") where "29 \<equiv> succ(28)"
 
-(* FIXME: why are these three things here? *)
-definition
-  infinity_ax :: "(i \<Rightarrow> o) \<Rightarrow> o" where
-  "infinity_ax(M) \<equiv>
-      (\<exists>I[M]. (\<exists>z[M]. empty(M,z) \<and> z\<in>I) \<and> (\<forall>y[M]. y\<in>I \<longrightarrow> (\<exists>sy[M]. successor(M,y,sy) \<and> sy\<in>I)))"
-
-definition
-  wellfounded_trancl :: "[i=>o,i,i,i] => o" where
-  "wellfounded_trancl(M,Z,r,p) \<equiv>
-      \<exists>w[M]. \<exists>wx[M]. \<exists>rp[M].
-               w \<in> Z & pair(M,w,p,wx) & tran_closure(M,r,rp) & wx \<in> rp"
-
-lemma empty_intf :
-  "infinity_ax(M) \<Longrightarrow>
-  (\<exists>z[M]. empty(M,z))"
-  by (auto simp add: empty_def infinity_ax_def)
-
-lemma Transset_intf :
-  "Transset(M) \<Longrightarrow>  y\<in>x \<Longrightarrow> x \<in> M \<Longrightarrow> y \<in> M"
-  by (simp add: Transset_def,auto)
-(* end FIXME *)
-
 txt\<open>Formulas for particular replacement instances\<close>
-
-declare rtran_closure_iff_sats [iff_sats] tran_closure_iff_sats [iff_sats]
-  is_eclose_iff_sats [iff_sats]
-arity_theorem for "rtran_closure_fm"
-arity_theorem for "tran_closure_fm"
-arity_theorem for "rtran_closure_mem_fm"
 
 text\<open>Now we introduce some definitions used in the definition of check; which
 is defined by well-founded recursion using replacement in the recursive call.\<close>
@@ -156,6 +124,38 @@ definition
 lemma check_fm_type[TC]: "x\<in>nat \<Longrightarrow> o\<in>nat \<Longrightarrow> z\<in>nat \<Longrightarrow> check_fm(x,o,z) \<in> formula"
   by (simp add:check_fm_def)
 
+lemma sats_check_fm :
+  assumes
+     "o\<in>nat" "x\<in>nat" "z\<in>nat" "env\<in>list(M)" "0\<in>M"
+  shows
+    "sats(M, check_fm(x,o,z), env) \<longleftrightarrow> is_check(##M,nth(o,env),nth(x,env),nth(z,env))"
+proof -
+  have sats_is_Hcheck_fm:
+    "\<And>a0 a1 a2 a3 a4 a6. \<lbrakk> a0\<in>M; a1\<in>M; a2\<in>M; a3\<in>M; a4\<in>M;a6 \<in>M\<rbrakk> \<Longrightarrow>
+         is_Hcheck(##M,a6,a2, a1, a0) \<longleftrightarrow>
+         sats(M, is_Hcheck_fm(6,2,1,0), [a0,a1,a2,a3,a4,r,a6]@env)" if "r\<in>M" for r
+    using that assms
+    by simp
+  then
+  have "sats(M, is_wfrec_fm(is_Hcheck_fm(6#+o,2,1,0),0,1#+x,1#+z),Cons(r,env))
+        \<longleftrightarrow> is_wfrec(##M,is_Hcheck(##M,nth(o,env)),r,nth(x,env),nth(z,env))"
+    if "r\<in>M" for r
+    using that assms is_wfrec_iff_sats'[symmetric]
+    by simp
+  then
+  show ?thesis
+    unfolding is_check_def check_fm_def
+    using assms is_rcheck_iff_sats[symmetric]
+    by simp
+qed
+
+lemma iff_sats_check_fm[iff_sats] :
+  assumes
+    "nth(o, env) = oa" "nth(x, env) = xa" "nth(z, env) = za" "o \<in> nat" "x \<in> nat" "z \<in> nat" "env \<in> list(A)" "0 \<in> A"
+  shows "is_check(##A, oa,xa, za) \<longleftrightarrow> A, env \<Turnstile> check_fm(x,o, z)"
+  using assms sats_check_fm[symmetric]
+  by auto
+
 lemma arity_check_fm[arity]:
   assumes "m\<in>nat" "n\<in>nat" "o\<in>nat"
   shows "arity(check_fm(m,n,o)) = succ(o) \<union> succ(n) \<union> succ(m) "
@@ -173,25 +173,25 @@ definition
 
 relativize "upair_name" "is_upair_name"
 synthesize "upair_name" from_definition "is_upair_name"
+arity_theorem for "upair_name_fm"
+
 definition
   opair_name :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
   "opair_name(\<tau>,\<rho>,on) \<equiv> upair_name(upair_name(\<tau>,\<tau>,on),upair_name(\<tau>,\<rho>,on),on)"
 
 relativize "opair_name" "is_opair_name"
 synthesize "opair_name" from_definition "is_opair_name"
+arity_theorem for "opair_name_fm"
 
 definition
   is_opname_check :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
   "is_opname_check(M,on,s,x,y) \<equiv> \<exists>chx[M]. \<exists>sx[M]. is_check(M,on,x,chx) \<and>
         fun_apply(M,s,x,sx) \<and> is_opair_name(M,chx,sx,on,y)"
 
-definition
-  opname_check_fm :: "[i,i,i,i] \<Rightarrow> i" where
-  "opname_check_fm(s,x,y,o) \<equiv> Exists(Exists(And(check_fm(2#+x,2#+o,1),
-                              And(fun_apply_fm(2#+s,2#+x,0),opair_name_fm(1,0,2#+o,2#+y)))))"
+declare fun_apply_iff_sats[iff_sats]
 
-lemma opname_check_fm_type[TC]: "s\<in>nat \<Longrightarrow> x\<in>nat \<Longrightarrow> y\<in>nat \<Longrightarrow> o\<in>nat \<Longrightarrow> opname_check_fm(s,x,y,o) \<in> formula"
-  by (simp add:opname_check_fm_def)
+synthesize "is_opname_check" from_definition assuming "nonempty"
+arity_theorem for "is_opname_check_fm"
 
 \<comment> \<open>The pair of elements belongs to some set. The intended set is the preorder.\<close>
 definition
@@ -1123,7 +1123,7 @@ arity_theorem for "is_funspace_succ_rep_intf_fm"
 (* 12 *) definition repl_PHcheck_fm where "repl_PHcheck_fm \<equiv> PHcheck_fm(2,3,0,1)"
 (* 13 *) definition check_replacement_fm where "check_replacement_fm \<equiv> \<cdot>check_fm(0,2,1) \<and> \<cdot>0 \<in> 3\<cdot>\<cdot>"
 (* 14 *) definition G_dot_in_M_fm where "G_dot_in_M_fm \<equiv>  \<cdot>(\<cdot>\<exists>\<cdot>\<cdot>1\<^sup>v3 is 0\<cdot> \<and> pair_fm(0, 1, 2) \<cdot>\<cdot>) \<and> \<cdot>0 \<in> 3\<cdot>\<cdot>"
-(* 15 *) definition repl_opname_check_fm where "repl_opname_check_fm \<equiv> \<cdot>opname_check_fm(3,0,1,2) \<and> \<cdot>0 \<in> 4\<cdot>\<cdot>"
+(* 15 *) definition repl_opname_check_fm where "repl_opname_check_fm \<equiv> \<cdot>is_opname_check_fm(3,0,1,2) \<and> \<cdot>0 \<in> 4\<cdot>\<cdot>"
 (* 16 *) definition nth_repl_intf_fm where "nth_repl_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(tl_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
 (* 17 *) definition formula_repl1_intf_fm where "formula_repl1_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(formula_functor_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
 (* 18 *) definition eclose_repl1_intf_fm where "eclose_repl1_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(big_union_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
