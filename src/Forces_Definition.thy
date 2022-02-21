@@ -52,12 +52,6 @@ lemma tuple_abs:
 lemmas components_abs = ftype_abs name1_abs name2_abs cond_of_abs
   tuple_abs
 
-lemma oneN_in_M[simp]: "1\<in>M"
-  by (simp flip: setclass_iff)
-
-lemma twoN_in_M : "2\<in>M"
-  by (simp flip: setclass_iff)
-
 lemma comp_in_M:
   "p \<preceq> q \<Longrightarrow> p\<in>M"
   "p \<preceq> q \<Longrightarrow> q\<in>M"
@@ -141,7 +135,7 @@ next
   then
   show "is_mem_case(##M, t1, t2, p, P, leq, f)" if "mem_case(t1, t2, p, P, leq, f)"
     unfolding is_mem_case_def
-    using assms that nonempty pair_in_M_iff apply_closed
+    using assms that nonempty pair_in_M_iff apply_closed nat_into_M
     by (auto simp add:components_abs)
 qed
 
@@ -612,7 +606,7 @@ lemma forcerel_in_M :
 proof -
   let ?Q = "2 \<times> ecloseN(x) \<times> ecloseN(x) \<times> P"
   have "?Q \<times> ?Q \<in> M"
-    using \<open>x\<in>M\<close> P_in_M twoN_in_M ecloseN_closed cartprod_closed by simp
+    using \<open>x\<in>M\<close> P_in_M nat_into_M ecloseN_closed cartprod_closed by simp
   moreover
   have "separation(##M,\<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> frecR(x, y))"
   proof -
