@@ -183,7 +183,7 @@ lemma ecloseN_abs :
 lemma frecR_abs :
   "x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> frecR(x,y) \<longleftrightarrow> is_frecR(##M,x,y)"
   unfolding frecR_def is_frecR_def
-  using nonempty domain_closed Un_closed components_closed
+  using nonempty domain_closed Un_closed components_closed nat_into_M
   by (auto simp add: components_abs)
 
 lemma frecrelP_abs :
@@ -702,12 +702,12 @@ lemma "names_below_productE" :
   assumes "Q \<in> M" "x \<in> M"
     "\<And>A1 A2 A3 A4. A1 \<in> M \<Longrightarrow> A2 \<in> M \<Longrightarrow> A3 \<in> M \<Longrightarrow> A4 \<in> M \<Longrightarrow> R(A1 \<times> A2 \<times> A3 \<times> A4)"
   shows "R(names_below(Q,x))"
-  unfolding names_below_def using assms zero_in_M ecloseN_closed[of x] twoN_in_M by auto
+  unfolding names_below_def using assms nat_into_M ecloseN_closed[of x] by auto
 
 lemma forcerel_abs :
   "\<lbrakk>x\<in>M;z\<in>M\<rbrakk> \<Longrightarrow> is_forcerel(##M,P,x,z) \<longleftrightarrow> z = forcerel(P,x)"
   unfolding is_forcerel_def forcerel_def
-  using frecrel_abs names_below_abs trancl_abs P_in_M twoN_in_M ecloseN_closed names_below_closed
+  using frecrel_abs names_below_abs trancl_abs P_in_M ecloseN_closed names_below_closed
     names_below_productE[of concl:"\<lambda>p. is_frecrel(##M,p,_) \<longleftrightarrow>  _ = frecrel(p)"] frecrel_closed
   by simp
 
@@ -731,12 +731,12 @@ qed
 lemma forces_eq'_abs :
   "\<lbrakk>p\<in>M ; t1\<in>M ; t2\<in>M\<rbrakk> \<Longrightarrow> is_forces_eq'(##M,P,leq,p,t1,t2) \<longleftrightarrow> forces_eq'(P,leq,p,t1,t2)"
   unfolding is_forces_eq'_def forces_eq'_def
-  using frc_at_abs zero_in_M pair_in_M_iff by (auto simp add:components_abs)
+  using frc_at_abs nat_into_M pair_in_M_iff by (auto simp add:components_abs)
 
 lemma forces_mem'_abs :
   "\<lbrakk>p\<in>M ; t1\<in>M ; t2\<in>M\<rbrakk> \<Longrightarrow> is_forces_mem'(##M,P,leq,p,t1,t2) \<longleftrightarrow> forces_mem'(P,leq,p,t1,t2)"
   unfolding is_forces_mem'_def forces_mem'_def
-  using frc_at_abs zero_in_M pair_in_M_iff by (auto simp add:components_abs)
+  using frc_at_abs nat_into_M pair_in_M_iff by (auto simp add:components_abs)
 
 lemma forces_neq'_abs :
   assumes
