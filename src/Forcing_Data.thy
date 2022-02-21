@@ -1,26 +1,46 @@
 section\<open>Transitive set models of ZF\<close>
-text\<open>This theory defines the locale \<^term>\<open>M_ZF_trans\<close> for
-transitive models of ZF, and the associated \<^term>\<open>forcing_data\<close>
- that adds a forcing notion\<close>
+text\<open>This theory defines locales for countable transitive models of $\ZF$,
+and on top of that, one that includes a forcing notion. Weakened versions
+of both locales are included, that only assume finitely many replacement
+instances.\<close>
+
 theory Forcing_Data
   imports
     Forcing_Notions
     Cohen_Posets_Relative
     Interface
-
 begin
 
+locale M_ctm1 = M_ZF1_trans +
+  fixes enum
+  assumes M_countable:      "enum\<in>bij(nat,M)"
+
+locale M_ctm1_AC = M_ctm1 + M_ZFC1_trans
+
+subsection\<open>A forcing locale and generic filters\<close>
+
+(* FIXME: separate the countability assumption from this locale *)
+(* TODO: new M_notion locale assuming a forcing notion in plain M? *)
+locale forcing_data1 = forcing_notion + M_ctm1 +
+  assumes P_in_M:           "P \<in> M"
+    and leq_in_M:         "leq \<in> M"
+
+(* TODO: find a common root to avoid repetitions, as it was done with M_ZFC_trans and the like *)
 locale M_ctm = M_ZF_trans +
   fixes enum
   assumes M_countable:      "enum\<in>bij(nat,M)"
 
 locale M_ctm_AC = M_ctm + M_ZFC_trans
 
-subsection\<open>A forcing locale and generic filters\<close>
 locale forcing_data = forcing_notion + M_ctm +
   assumes P_in_M:           "P \<in> M"
     and leq_in_M:         "leq \<in> M"
 
+sublocale M_ctm \<subseteq> M_ctm1 using M_countable by unfold_locales
+sublocale M_ctm_AC \<subseteq> M_ctm1_AC ..
+sublocale forcing_data \<subseteq> forcing_data1 using P_in_M leq_in_M  by unfold_locales
+
+context forcing_data1
 begin
 
 (* P \<subseteq> M *)
@@ -125,8 +145,9 @@ qed
 lemma one_in_M: "\<one> \<in> M"
   by (insert one_in_P P_in_M, simp add: transitivity)
 
-end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
+(* MOVE THIS to an appropriate place *)
 synthesize "compat_in" from_definition "is_compat_in" assuming "nonempty"
 
 end

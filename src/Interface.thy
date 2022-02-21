@@ -3,8 +3,15 @@ section\<open>Interface between set models and Constructibility\<close>
 text\<open>This theory provides an interface between Paulson's
 relativization results and set models of ZFC. In particular,
 it is used to prove that the locale \<^term>\<open>forcing_data\<close> is
-a sublocale of all relevant locales in ZF-Constructibility
-(\<^term>\<open>M_trivial\<close>, \<^term>\<open>M_basic\<close>, \<^term>\<open>M_eclose\<close>, etc).\<close>
+a sublocale of all relevant locales in \<^session>\<open>ZF-Constructible\<close>
+(\<^term>\<open>M_trivial\<close>, \<^term>\<open>M_basic\<close>, \<^term>\<open>M_eclose\<close>, etc).
+
+In order to interpret the locales in \<^session>\<open>ZF-Constructible\<close> we
+introduce new locales, each stronger than the previous one, assuming
+only the instances of Replacement needed to interpret the subsequent
+locales of that session. From the start we assume Separation for
+every internalized formula (with one parameter, but this is not a
+problem since we can use pairing).\<close>
 
 theory Interface
   imports
@@ -148,13 +155,6 @@ sublocale M_Z_trans \<subseteq> M_trivial "##M"
   using trans_M upair_ax Union_ax by unfold_locales
 
 locale M_ZFC_trans = M_ZF_trans + M_ZFC
-
-sublocale M_ZF_trans \<subseteq> M_trans "##M"
-  using transitivity zero_in_M exI[of "\<lambda>x. x\<in>M"]
-  by unfold_locales simp_all
-
-sublocale M_ZF_trans \<subseteq> M_trivial "##M"
-  using trans_M upair_ax Union_ax by unfold_locales
 
 subsection\<open>Interface with \<^term>\<open>M_basic\<close>\<close>
 

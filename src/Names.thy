@@ -27,7 +27,7 @@ abbreviation (in forcing_notion)
   where "M[G] \<equiv> M\<^bsup>P\<^esup>[G]"
 
 subsection\<open>Values and check-names\<close>
-context forcing_data
+context forcing_data1
 begin
 
 definition
@@ -487,10 +487,6 @@ lemma check_in_M : "x\<in>M \<Longrightarrow> check(x) \<in> M"
     Hcheck_closed relation2_Hcheck trans_wfrec_closed[of "rcheck(x)" x "is_Hcheck(##M,\<one>)" Hcheck]
   by (simp flip: setclass_iff)
 
-end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
-
-context forcing_data begin
-
 (* Internalization and absoluteness of rcheck\<close> *)
 
 lemma rcheck_abs[Rel] :
@@ -610,9 +606,13 @@ lemma G_in_Gen_Ext :
   using assms val_G_dot GenExtI[of _ G] G_dot_in_M
   by force
 
-end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
 locale G_generic = forcing_data +
+  fixes G :: "i"
+  assumes generic : "M_generic(G)"
+
+locale G_generic1 = forcing_data1 +
   fixes G :: "i"
   assumes generic : "M_generic(G)"
 begin
@@ -639,5 +639,9 @@ qed
 end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
 
 locale G_generic_AC = G_generic + M_ctm_AC
+locale G_generic1_AC = G_generic1 + M_ctm1_AC
+
+sublocale G_generic \<subseteq> G_generic1 using generic by unfold_locales
+sublocale G_generic_AC \<subseteq> G_generic1_AC ..
 
 end
