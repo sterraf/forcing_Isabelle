@@ -11,7 +11,7 @@ begin
 
 subsection\<open>The generic extension is countable\<close>
 
-lemma (in forcing_data) surj_nat_MG :
+lemma (in forcing_data1) surj_nat_MG :
   "\<exists>f. f \<in> surj(\<omega>,M[G])"
 proof -
   let ?f="\<lambda>n\<in>\<omega>. val(P,G,enum`n)"
@@ -29,14 +29,8 @@ proof -
     unfolding surj_def by blast
 qed
 
-lemma (in G_generic) MG_eqpoll_nat: "M[G] \<approx> \<omega>"
+lemma (in G_generic1) MG_eqpoll_nat: "M[G] \<approx> \<omega>"
 proof -
-  interpret MG: M_ZF_trans "M[G]"
-    using Transset_MG generic pairing_in_MG
-      Union_MG extensionality_in_MG power_in_MG
-      foundation_in_MG strong_replacement_in_MG[simplified]
-      separation_in_MG[simplified] infinity_in_MG
-    by unfold_locales (simp_all add:replacement_assm_def)
   obtain f where "f \<in> surj(\<omega>,M[G])"
     using surj_nat_MG by blast
   then
@@ -45,7 +39,7 @@ proof -
     by simp
   moreover
   have "\<omega> \<lesssim> M[G]"
-    using MG.nat_into_M subset_imp_lepoll by (auto del:lepollI)
+    using ext.nat_into_M subset_imp_lepoll by (auto del:lepollI)
   ultimately
   show ?thesis using eqpollI
     by simp
@@ -85,9 +79,9 @@ proof -
   interpret G_generic "2\<^bsup><\<omega>\<^esup>" seqle 0 _ enum G by unfold_locales
   interpret MG: M_ZF "?N"
     using generic pairing_in_MG
-      Union_MG  extensionality_in_MG power_in_MG
-      foundation_in_MG  strong_replacement_in_MG[simplified]
-      separation_in_MG[simplified] infinity_in_MG
+      Union_MG  extensionality_in_MG power_in_MG foundation_in_MG
+      strong_replacement_in_MG[unfolded ground_replacement_assm_def, OF _ _ _ replacement_ax]
+      separation_in_MG infinity_in_MG
     by unfold_locales (simp_all add:replacement_assm_def)
   have "?N \<Turnstile> ZF"
     using M_ZF_iff_M_satT[of ?N] MG.M_ZF_axioms by simp

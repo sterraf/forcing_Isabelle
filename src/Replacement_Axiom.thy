@@ -4,7 +4,7 @@ theory Replacement_Axiom
     Separation_Axiom
 begin
 
-context G_generic
+context G_generic1
 begin
 
 bundle sharp_simps1 = snd_abs[simp] fst_abs[simp] fst_closed[simp del, simplified, simp]
@@ -323,9 +323,9 @@ qed
 theorem strong_replacement_in_MG:
   assumes
     "\<phi>\<in>formula" and "arity(\<phi>) \<le> 2 #+ length(env)" "env \<in> list(M[G])"
-    (* and
+    and
     ground_replacement:
-    "\<And>nenv. ground_replacement_assm(M,[P,leq,\<one>] @ nenv, \<phi>)" *)
+    "\<And>nenv. ground_replacement_assm(M,[P,leq,\<one>] @ nenv, \<phi>)"
   shows
     "strong_replacement(##M[G],\<lambda>x v. sats(M[G],\<phi>,[x,v] @ env))"
 proof -
@@ -340,7 +340,7 @@ proof -
       unfolding univalent_def by simp_all
     with assms \<open>A\<in>_\<close>
     have "(##M[G])(?Y)"
-      using Replace_sats_in_MG (* ground_replacement *) replacement_ax
+      using Replace_sats_in_MG ground_replacement
       unfolding ground_replacement_assm_def by (auto)
     have "b \<in> ?Y \<longleftrightarrow> (\<exists>x[##M[G]]. x \<in> A \<and> ?R(x,b))" if "(##M[G])(b)" for b
     proof(rule)
@@ -374,6 +374,6 @@ proof -
     by auto
 qed
 
-end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 end

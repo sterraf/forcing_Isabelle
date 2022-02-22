@@ -8,7 +8,7 @@ theory Forcing_Theorems
 
 begin
 
-context forcing_data
+context forcing_data1
 begin
 
 subsection\<open>The forcing relation in context\<close>
@@ -1544,6 +1544,6 @@ qed
 
 lemmas definability = forces_type
 
-end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
 end

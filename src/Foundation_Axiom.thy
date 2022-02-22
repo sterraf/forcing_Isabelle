@@ -5,7 +5,7 @@ theory Foundation_Axiom
     Names
 begin
 
-context forcing_data
+context forcing_data1
 begin
 
 (* Slick proof essentially by Paulson (adapted from L) *)
@@ -32,6 +32,6 @@ proof -
     unfolding foundation_ax_def by auto
 qed
 
-end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
 end

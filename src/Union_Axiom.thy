@@ -53,7 +53,7 @@ lemma Union_name_abs :
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
-context forcing_data
+context forcing_data1
 begin
 
 lemma Union_name_closed :
@@ -195,6 +195,6 @@ qed
 theorem Union_MG : "M_generic(G) \<Longrightarrow> Union_ax(##M[G])"
   by (simp add:M_generic_def union_in_MG)
 
-end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
 end

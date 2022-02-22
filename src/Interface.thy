@@ -505,7 +505,7 @@ lemma funspace_succ_rep_intf:
 
 end \<comment> \<open>\<^locale>\<open>M_Z_trans\<close>\<close>
 
-sublocale M_ZF1_trans \<subseteq> M_basic "##M"
+sublocale M_Z_trans \<subseteq> M_basic "##M"
   using trans_M zero_in_M power_ax M_basic_sep_instances funspace_succ_rep_intf
   by unfold_locales auto
 

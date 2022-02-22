@@ -13,7 +13,8 @@ lemma Collect_inter_Transset:
   using assms unfolding Transset_def
   by (auto)
 
-context G_generic  begin
+context G_generic1
+begin
 
 lemma name_components_in_M:
   assumes "\<langle>\<sigma>,p\<rangle>\<in>\<theta>" "\<theta> \<in> M"
@@ -256,15 +257,13 @@ proof -
   finally show ?thesis .
 qed
 
-end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
-
-context G_generic begin
-
-interpretation mgtriv: M_trivial "##M[G]"
+sublocale G_generic1 \<subseteq> ext: M_trivial "##M[G]"
   using generic Union_MG pairing_in_MG zero_in_MG transitivity_MG
   unfolding M_trivial_def M_trans_def M_trivial_axioms_def by (simp; blast)
 
+context G_generic1 begin
 
 theorem power_in_MG : "power_ax(##(M[G]))"
   unfolding power_ax_def
@@ -285,13 +284,13 @@ proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
   have "{x\<in>Pow(a) . x \<in> M[G]} \<in> M[G]" .
   moreover from \<open>a\<in>M[G]\<close> \<open>{x\<in>Pow(a) . x \<in> M[G]} \<in> _\<close>
   have "powerset(##M[G], a, {x\<in>Pow(a) . x \<in> M[G]})"
-    using mgtriv.powerset_abs[OF \<open>(##M[G])(a)\<close>]
+    using ext.powerset_abs[OF \<open>(##M[G])(a)\<close>]
     by simp
   ultimately
   show "\<exists>x\<in>M[G] . powerset(##M[G], a, x)"
     by auto
 qed
 
-end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 end

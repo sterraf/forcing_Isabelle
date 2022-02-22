@@ -4,7 +4,7 @@ theory Ordinals_In_MG
     Forcing_Theorems
 begin
 
-context G_generic
+context G_generic1
 begin
 
 lemma rank_val: "rank(val(P,G,x)) \<le> rank(x)" (is "?Q(x)")
@@ -50,6 +50,6 @@ next
       rank_closed unfolding succ_def by simp
 qed
 
-end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 end

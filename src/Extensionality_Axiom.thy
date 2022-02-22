@@ -5,7 +5,7 @@ theory Extensionality_Axiom
     Names
 begin
 
-context forcing_data
+context forcing_data1
 begin
 
 lemma extensionality_in_MG : "extensionality(##(M[G]))"
@@ -29,6 +29,6 @@ proof -
   then show ?thesis unfolding extensionality_def by simp
 qed
 
-end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
 end

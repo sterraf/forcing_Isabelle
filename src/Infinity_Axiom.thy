@@ -3,7 +3,7 @@ theory Infinity_Axiom
   imports Separation_Axiom Union_Axiom Pairing_Axiom
 begin
 
-context G_generic begin
+context G_generic1 begin
 
 interpretation mg_triv: M_trivial"##M[G]"
   using transitivity_MG zero_in_MG generic Union_MG pairing_in_MG
@@ -33,6 +33,6 @@ proof -
     unfolding infinity_ax_def by auto
 qed
 
-end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 end

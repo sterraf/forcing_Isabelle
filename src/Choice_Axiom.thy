@@ -125,7 +125,7 @@ proof (intro CollectI ballI)
     "\<exists>x\<in>\<alpha>. induced_surj(f, a, e) ` x = y" by auto
 qed
 
-context G_generic
+context G_generic1
 begin
 
 lemma Upair_simp : "Upair(a,b) = {a,b}"
@@ -194,13 +194,19 @@ proof -
   finally show ?thesis by simp
 qed
 
+end\<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
+
 subsection\<open>$M[G]$ is a transitive model of ZF\<close>
 
-interpretation mgzf: M_ZF_trans "M[G]"
+sublocale G_generic1 \<subseteq> ext:M_Z_trans "M[G]"
   using Transset_MG generic pairing_in_MG Union_MG
     extensionality_in_MG power_in_MG foundation_in_MG
     strong_replacement_in_MG separation_in_MG infinity_in_MG
-  by unfold_locales (simp_all add:replacement_assm_def)
+    replacement_ax1
+  by unfold_locales (simp_all add:replacement_assm_def ground_replacement_assm_def)
+
+context G_generic1
+begin
 
 lemma opname_check_abs :
   assumes "s\<in>M" "x\<in>M" "y\<in>M"
@@ -227,7 +233,7 @@ proof -
     using assms opname_check_abs[of f] is_opname_check_iff_sats
       one_in_M zero_in_M transitivity
       Replace_relativized_in_M[of "is_opname_check_fm(3,2,0,1)"
-        "[f,\<one>]" _ "is_opname_check(##M,\<one>,f)"] replacement_ax
+        "[f,\<one>]" _ "is_opname_check(##M,\<one>,f)"] replacement_ax1(14)
     by simp
 qed
 
@@ -339,10 +345,10 @@ proof -
   }
   then
   show ?thesis
-    using mgzf.choice_ax_abs
+    using ext.choice_ax_abs
     by simp
 qed
 
-end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 end

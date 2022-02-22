@@ -1,7 +1,7 @@
 section\<open>The Axiom of Pairing in $M[G]$\<close>
 theory Pairing_Axiom imports Names begin
 
-context forcing_data
+context forcing_data1
 begin
 
 lemma val_Upair :
@@ -40,6 +40,6 @@ proof -
   then show ?thesis unfolding upair_ax_def upair_def by auto
 qed
 
-end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
 end

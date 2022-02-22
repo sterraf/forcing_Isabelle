@@ -3,7 +3,7 @@ theory Separation_Axiom
   imports Forcing_Theorems Separation_Rename
 begin
 
-context G_generic
+context G_generic1
 begin
 
 lemma map_val :
@@ -395,6 +395,6 @@ proof -
     using separation_iff rev_bexI unfolding is_Collect_def by force
 qed
 
-end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 end
