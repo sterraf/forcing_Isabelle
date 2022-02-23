@@ -416,9 +416,9 @@ axiomatization
 
 schematic_goal
   "card(instances1_fms) = ?n" (* 17 *)
-  "card(instances2_fms) = ?m" (* 26 *)
+  "card(instances2_fms) = ?m" (* 25 *)
   "card(instances3_fms) = ?o" (*  7 *)
-  "card(instances4_fms) = ?p" (* 50 *)
+  "card(instances4_fms) = ?p" (* 49 *)
   unfolding instances1_fms_def instances2_fms_def instances3_fms_def instances4_fms_def
   by simp_all
 *)
