@@ -94,7 +94,7 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_master_sub\<close>\<close>
 
-lemmas (in M_ZFC_trans) sep_instances =
+lemmas (in M_ZF3_trans) sep_instances =
  separation_Ord separation_insnd_ballPair
  separation_ifrangeF_body separation_ifrangeF_body2 separation_ifrangeF_body3
  separation_ifrangeF_body4 separation_ifrangeF_body5 separation_ifrangeF_body6
@@ -102,15 +102,15 @@ lemmas (in M_ZFC_trans) sep_instances =
  separation_is_dcwit_body
 
 (* FIXME: the second instance has been proved in Lambda Replacement, it shouldn't be here. *)
-lemmas (in M_ZF_trans) repl_instances = lam_replacement_inj_rel
+lemmas (in M_ZF3_trans) repl_instances = lam_replacement_inj_rel
   lam_replacement_cardinal replacement_trans_apply_image
 
-sublocale M_ZFC_trans \<subseteq> M_master "##M"
+sublocale M_ZFC3_trans \<subseteq> M_master "##M"
   using replacement_dcwit_repl_body\<comment> \<open>this is another replacement instance\<close>
   by unfold_locales (simp_all add:repl_instances sep_instances del:setclass_iff
       add: transrec_replacement_def wfrec_replacement_def dcwit_repl_body_def)
 
-context M_ctm_AC
+context M_ctm3_AC
 begin
 
 (* FIXME: using notation as if \<^term>\<open>Add_subs\<close> were used *)
@@ -122,7 +122,7 @@ proof -
     using ccc_rel_Fn_nat by fast
 qed
 
-end \<comment> \<open>\<^locale>\<open>M_ctm_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ctm3_AC\<close>\<close>
 
 sublocale G_generic_AC \<subseteq> M_master_sub "##M" "##(M[G])"
   using M_subset_MG[OF one_in_G] generic Ord_MG_iff
@@ -159,7 +159,7 @@ qed
 context G_generic_AC begin
 
 context
-  includes G_generic_lemmas
+  includes G_generic1_lemmas
 begin
 
 lemma G_in_MG: "G \<in> M[G]"
@@ -292,7 +292,7 @@ lemma Add_subs_preserves_Aleph_succ: "Ord(z) \<Longrightarrow> z\<in>M \<Longrig
   by auto
 
 lemma Aleph_rel_nats_MG_eq_Aleph_rel_nats_M:
-  includes G_generic_lemmas
+  includes G_generic1_lemmas
   assumes "z \<in> \<omega>"
   shows "\<aleph>\<^bsub>z\<^esub>\<^bsup>M[G]\<^esup> = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"
   using assms
@@ -357,11 +357,11 @@ proof
   qed
 qed
 
-declare (in M_ctm_AC) Fn_nat_closed[simplified setclass_iff, simp, intro]
-declare (in M_ctm_AC) Fnle_nat_closed[simp del, rule del,
+declare (in M_ctm3_AC) Fn_nat_closed[simplified setclass_iff, simp, intro]
+declare (in M_ctm3_AC) Fnle_nat_closed[simp del, rule del,
     simplified setclass_iff, simp, intro]
-declare (in M_ctm_AC) cexp_rel_closed[simplified setclass_iff, simp, intro]
-declare (in G_generic_AC) ext.cexp_rel_closed[simplified setclass_iff, simp, intro]
+declare (in M_ctm3_AC) cexp_rel_closed[simplified setclass_iff, simp, intro]
+declare (in G_generic4_AC) ext.cexp_rel_closed[simplified setclass_iff, simp, intro]
 
 (*
 NOTE Class model version?
@@ -384,7 +384,7 @@ proof -
 qed
 
 lemma f_G_funtype:
-  includes G_generic_lemmas
+  includes G_generic1_lemmas
   shows "f\<^bsub>G\<^esub> : \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<rightarrow> 2"
   using generic domain_f_G
   unfolding Pi_def
@@ -483,7 +483,7 @@ definition
   "h\<^bsub>G\<^esub> \<equiv> \<lambda>\<alpha>\<in>\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>. \<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub>`<\<alpha>,n>"
 
 lemma h_G_in_MG[simp]:
-  includes G_generic_lemmas
+  includes G_generic1_lemmas
   shows "h\<^bsub>G\<^esub> \<in> M[G]"
   using ext.lam_apply_replacement ext.apply_replacement2
     ext.lam_apply_replacement[unfolded lam_replacement_def]
@@ -517,7 +517,7 @@ proof (intro ext.mem_inj_abs[THEN iffD2])
 qed simp_all
 
 lemma Aleph2_extension_le_continuum_rel:
-  includes G_generic_lemmas
+  includes G_generic1_lemmas
   shows "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
 proof -
   have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<in> M[G]" "Ord(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"

@@ -3,6 +3,7 @@ theory Cardinal_Preservation
     ZF_Trans_Interpretations
 begin
 
+(* MOVE THIS to an appropriate place *)
 lemma (in M_basic) pred_nat_closed: "(M)(a) \<Longrightarrow> (M)(pred(a))"
   using nat_case_closed
   unfolding pred_def
@@ -35,21 +36,21 @@ lemma antichain_abs' [absolut]:
 
 end \<comment> \<open>\<^locale>\<open>M_trivial_notion\<close>\<close>
 
-\<comment> \<open>MOVE THIS to an appropriate place\<close>
+(* MOVE THIS to an appropriate place *)
 text\<open>The following interpretation makes the simplifications from the
 locales \<open>M_trans\<close>, \<open>M_trivial\<close>, etc., available for \<open>M[G]\<close>\<close>
-sublocale forcing_data \<subseteq> M_trivial_notion "##M" ..
+sublocale forcing_data1 \<subseteq> M_trivial_notion "##M" ..
 
-lemma (in forcing_notion) Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
-  using refl_leq by blast
-
-context forcing_data
+context forcing_data1
 begin
 
 lemma antichain_abs'' [absolut]: "A\<in>M \<Longrightarrow> antichain_r'(A) \<longleftrightarrow> antichain(A)"
   using P_in_M leq_in_M
   unfolding antichain_rel_def antichain_def compat_def
   by (auto simp add:absolut transitivity)
+
+lemma (in forcing_notion) Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
+  using refl_leq by blast
 
 lemma inconsistent_imp_incompatible:
   assumes "p \<tturnstile> \<phi> env" "q \<tturnstile> Neg(\<phi>) env" "p\<in>P" "q\<in>P"
@@ -72,21 +73,22 @@ qed
 
 notation check (\<open>_\<^sup>v\<close> [101] 100)
 
-end \<comment> \<open>\<^locale>\<open>forcing_data\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
-context G_generic begin
+locale G_generic2 = G_generic1 + forcing_data2
+locale G_generic2_AC = G_generic1_AC + G_generic2 + M_ctm2_AC
 
-\<comment> \<open>NOTE: The following bundled additions to the simpset might be of
-    use later on, perhaps add them globally to some appropriate
-    locale.\<close>
-lemmas generic_simps = generic[THEN one_in_G, THEN valcheck, OF one_in_P]
-  generic[THEN one_in_G, THEN M_subset_MG, THEN subsetD]
-  check_in_M GenExtI P_in_M
-lemmas generic_dests = M_genericD[OF generic] M_generic_compatD[OF generic]
+locale G_generic3 = G_generic2 + forcing_data3
+locale G_generic3_AC = G_generic2_AC + G_generic3
 
-bundle G_generic_lemmas = generic_simps[simp] generic_dests[dest]
+locale G_generic4 = G_generic3 + forcing_data4
+locale G_generic4_AC = G_generic3_AC + G_generic4
 
-end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
+sublocale G_generic4_AC \<subseteq> ext:M_ZFC3_trans "M[G]"
+  using ground_replacements4 replacement_assm_MG choice_ax choice_in_MG
+  by unfold_locales (simp_all del: replacement_instances1_defs)
+
+sublocale G_generic_AC \<subseteq> G_generic4_AC ..
 
 sublocale G_generic \<subseteq> ext:M_ZF_trans "M[G]"
   using Transset_MG generic pairing_in_MG Union_MG
@@ -100,7 +102,7 @@ sublocale G_generic_AC \<subseteq> ext:M_ZFC_trans "M[G]"
   using choice_ax choice_in_MG
   by unfold_locales
 
-lemma (in forcing_data) forces_neq_apply_imp_incompatible:
+lemma (in forcing_data1) forces_neq_apply_imp_incompatible:
   assumes
     "p \<tturnstile> \<cdot>0`1 is 2\<cdot> [f,a,b\<^sup>v]"
     "q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f,a,b'\<^sup>v]"
@@ -118,9 +120,9 @@ proof -
     fix G
     assume "M_generic(G)"
     then
-    interpret G_generic _ _ _ _ _ G by unfold_locales
-    include G_generic_lemmas
-      (* FIXME: make a locale containg two \<open>M_ZF_trans\<close> instances, one
+    interpret G_generic1 _ _ _ _ _ G by unfold_locales
+    include G_generic1_lemmas
+      (* FIXME: make a locale containg two \<open>M_ZF1_trans\<close> instances, one
           for \<^term>\<open>M\<close> and one for \<^term>\<open>M[G]\<close> *)
     assume "q\<in>G"
     with assms \<open>M_generic(G)\<close>
@@ -142,7 +144,7 @@ proof -
     by (simp add:ord_simp_union arity_fun_apply_fm fun_apply_type)
 qed
 
-context M_ctm_AC
+context M_ctm3_AC
 begin
 
 \<comment> \<open>Simplifying simp rules (because of the occurrence of "\#\#")\<close>
@@ -168,7 +170,7 @@ lemmas sharp_simps = Card_rel_Union Card_rel_cardinal_rel Collect_abs
   limit_ordinal_abs linear_rel_abs list_N_abs list_N_closed list_abs
   list_case'_closed list_case_abs list_closed list_functor_abs
   mem_bij_abs mem_eclose_abs mem_inj_abs mem_list_abs membership_abs
-  nat_case_abs nat_case_closed nonempty not_abs
+  minimum_closed nat_case_abs nat_case_closed nonempty not_abs
   not_closed nth_abs number1_abs number2_abs number3_abs omega_abs
   or_abs or_closed order_isomorphism_abs ordermap_closed
   ordertype_closed ordinal_abs pair_abs pair_in_M_iff powerset_abs
@@ -190,12 +192,12 @@ lemmas sharp_intros = nat_into_M Aleph_rel_closed Card_rel_Aleph_rel
 
 declare sharp_intros[rule del, simplified setclass_iff, intro]
 
-end \<comment> \<open>\<^locale>\<open>M_ctm_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ctm3_AC\<close>\<close>
 
-context G_generic_AC begin
+context G_generic4_AC begin
 
 context
-  includes G_generic_lemmas
+  includes G_generic1_lemmas
 begin
 
 \<comment> \<open>NOTE: there is a theorem missing from those above\<close>
@@ -471,7 +473,7 @@ proof -
       using Pi_replacement1[OF _ 3] lam_replacement_Sigfun[OF 4]
         lam_replacement_imp_strong_replacement
         ccc_fun_closed_lemma_aux[OF \<open>f_dot\<in>M\<close> \<open>p\<in>M\<close> \<open>a\<in>M\<close>]
-        lam_replacement_product minimum_closed
+        lam_replacement_product
         lam_replacement_hcomp2[OF lam_replacement_constant 4 _ _ lam_replacement_minimum,unfolded lam_replacement_def]
       by unfold_locales simp_all
     from \<open>F`a \<in> M\<close>
@@ -546,8 +548,8 @@ proof -
   show ?thesis by auto
 qed
 
-end \<comment> \<open>G\_generic\_lemmas bundle\<close>
+end \<comment> \<open>G\_generic1\_lemmas bundle\<close>
 
-end \<comment> \<open>\<^locale>\<open>G_generic_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic4_AC\<close>\<close>
 
 end

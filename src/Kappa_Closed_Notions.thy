@@ -146,7 +146,7 @@ proof -
     using generic_filter_existence by blast
   then
   interpret G_generic _ _ _ _ _ G by unfold_locales
-  include G_generic_lemmas
+  include G_generic1_lemmas
   note \<open>q\<in>G\<close>
   moreover
   note \<open>q \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]\<close> \<open>M_generic(G)\<close>
@@ -192,7 +192,7 @@ qed
 context G_generic_AC begin
 
 context
-  includes G_generic_lemmas
+  includes G_generic1_lemmas
 begin
 
 (*FIXME: pick better names for this lemmas. *)

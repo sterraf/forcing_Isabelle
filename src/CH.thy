@@ -4,7 +4,7 @@ theory CH
     Cohen_Posets_Relative
 begin
 
-context M_ctm_AC
+context M_ctm3_AC
 begin
 
 declare Fn_rel_closed[simp del, rule del, simplified setclass_iff, simp, intro]
@@ -34,6 +34,11 @@ lemma Ord_lt_subset : "Ord(b) \<Longrightarrow> a<b \<Longrightarrow> a\<subsete
 
 lemmas nat_subset_Aleph_rel_1 =
   Ord_lt_subset[OF Ord_Aleph_rel[of 1] Aleph_rel_increasing[of 0 1,simplified],simplified]
+
+end \<comment> \<open>\<^locale>\<open>M_ctm3_AC\<close>\<close>
+
+context M_ctm_AC
+begin
 
 \<comment> \<open>Kunen IV.7.14, only for \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>\<close>
 lemma succ_omega_closed_Coll: "succ(\<omega>)-closed\<^bsup>M\<^esup>(Coll,Colleq)"
@@ -407,7 +412,7 @@ proof (intro ext.mem_surj_abs[THEN iffD2])
 qed simp_all
 
 lemma continuum_rel_le_Aleph1_extension:
-  includes G_generic_lemmas
+  includes G_generic1_lemmas
   shows "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup> \<le> \<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>"
 proof -
   have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<in> M[G]" "Ord(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)"

@@ -194,6 +194,16 @@ proof -
   finally show ?thesis by simp
 qed
 
+\<comment> \<open>NOTE: The following bundled additions to the simpset might be of
+    use later on, perhaps add them globally to some appropriate
+    locale.\<close>
+lemmas generic_simps = generic[THEN one_in_G, THEN valcheck, OF one_in_P]
+  generic[THEN one_in_G, THEN M_subset_MG, THEN subsetD]
+  check_in_M GenExtI P_in_M
+lemmas generic_dests = M_genericD[OF generic] M_generic_compatD[OF generic]
+
+bundle G_generic1_lemmas = generic_simps[simp] generic_dests[dest]
+
 end\<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 subsection\<open>$M[G]$ is a transitive model of ZF\<close>

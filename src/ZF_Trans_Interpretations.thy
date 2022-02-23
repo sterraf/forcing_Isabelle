@@ -40,7 +40,7 @@ locale M_ZFC3 = M_ZFC2 + M_ZF3
 
 locale M_ZFC3_trans = M_ZFC2_trans + M_ZF3_trans
 
-locale M_ctm3 = M_ctm2 + M_ZF3_trans + M_ZFC2_trans
+locale M_ctm3 = M_ctm2 + M_ZF3_trans + M_ZF2_trans
 
 locale M_ctm3_AC = M_ctm3 + M_ctm1_AC + M_ZFC3_trans
 
@@ -285,8 +285,7 @@ sublocale M_ZFC3_trans \<subseteq> M_library "##M"
 
 locale M_ZF4 = M_ZF3 +
   assumes
-    ground_replacements4[unfolded replacement_assm_def ground_replacement_assm_def,
-      rule_format]:
+    ground_replacements4:
     "ground_replacement_assm(M,env,replacement_is_order_body_fm)"
     "ground_replacement_assm(M,env,wfrec_replacement_order_pred_fm)"
     "ground_replacement_assm(M,env,replacement_is_jump_cardinal_body_fm)"
@@ -308,13 +307,13 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,check_replacement_fm)"
     "ground_replacement_assm(M,env,G_dot_in_M_fm)"
     "ground_replacement_assm(M,env,repl_opname_check_fm)"
-    (* "ground_replacement_assm(M,env,nth_repl_intf_fm)" *)
+    "ground_replacement_assm(M,env,tl_repl_intf_fm)"
     "ground_replacement_assm(M,env,formula_repl1_intf_fm)"
     "ground_replacement_assm(M,env,eclose_repl1_intf_fm)"
     "ground_replacement_assm(M,env,replacement_is_omega_funspace_fm)"
     "ground_replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
     "ground_replacement_assm(M,env,replacement_is_fst2_snd2_fm)"
-    (* "ground_replacement_assm(M,env,replacement_is_fst2_sndfst_snd2_fm)" *)
+    "ground_replacement_assm(M,env,replacement_is_sndfst_fst2_snd2_fm)"
     "ground_replacement_assm(M,env,replacement_is_order_eq_map_fm)"
     "ground_replacement_assm(M,env,replacement_transrec_apply_image_body_fm)"
     "ground_replacement_assm(M,env,banach_replacement_iterates_fm)"
@@ -360,11 +359,13 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(check_replacement_fm),
     ground_repl_fm(G_dot_in_M_fm),
     ground_repl_fm(repl_opname_check_fm),
+    ground_repl_fm(tl_repl_intf_fm),
     ground_repl_fm(formula_repl1_intf_fm),
     ground_repl_fm(eclose_repl1_intf_fm),
     ground_repl_fm(replacement_is_omega_funspace_fm),
     ground_repl_fm(replacement_HAleph_wfrec_repl_body_fm),
     ground_repl_fm(replacement_is_fst2_snd2_fm),
+    ground_repl_fm(replacement_is_sndfst_fst2_snd2_fm),
     ground_repl_fm(replacement_is_order_eq_map_fm),
     ground_repl_fm(replacement_transrec_apply_image_body_fm),
     ground_repl_fm(banach_replacement_iterates_fm),
@@ -387,8 +388,6 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(Lambda_in_M_fm(is_converse_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)) }"
 (* {
-    ground_repl_fm(nth_repl_intf_fm),
-    ground_repl_fm(replacement_is_fst2_sndfst_snd2_fm),
     ground_repl_fm(replacement_is_abs_apply_pair_fm), *)
 
 definition overhead where
@@ -435,6 +434,19 @@ locale M_ctm4 = M_ctm3 + M_ZF4_trans
 locale M_ctm4_AC = M_ctm4 + M_ctm1_AC + M_ZFC4_trans
 
 locale forcing_data4 = forcing_data3 + M_ctm4_AC
+
+(* FIXME: perhaps later obsolete *)
+sublocale M_ZF \<subseteq> M_ZF4 using replacement_ax
+  by unfold_locales (simp_all add:ground_replacement_assm_def)
+sublocale M_ZF_trans \<subseteq> M_ZF4_trans ..
+sublocale M_ZFC \<subseteq> M_ZFC4 ..
+sublocale M_ZFC_trans \<subseteq> M_ZFC4_trans ..
+sublocale M_ctm \<subseteq> M_ctm4 ..
+sublocale M_ctm_AC \<subseteq> M_ctm4_AC ..
+sublocale M_ctm_AC \<subseteq> M_ctm3_AC ..
+sublocale M_ctm_AC \<subseteq> M_ctm2_AC ..
+(* Next one is a problem, since forcing_data does not include Choice! *)
+(* sublocale forcing_data \<subseteq> forcing_data4 *)
 
 lemma M_satT_imp_M_ZF2: "(M \<Turnstile> ZF) \<Longrightarrow> M_ZF2(M)"
 proof -

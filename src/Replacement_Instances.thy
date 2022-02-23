@@ -507,28 +507,6 @@ lemma (in M_ZF2_trans) lam_replacement_Diff:
     nonempty LambdaPair_in_M_replacement2(3)
   by simp
 
-lemma (in M_ZF2_trans) minimum_closed:
-  assumes "B\<in>M"
-  shows "minimum(r,B) \<in> M"
-proof(cases "\<exists>!b. first(b,B,r)")
-  case True
-  then
-  obtain b where "b = minimum(r,B)" "first(b,B,r)"
-    using the_equality2
-    unfolding minimum_def
-    by auto
-  then
-  show ?thesis
-    using first_is_elem transitivity[of b B] assms
-    by simp
-next
-  case False
-  then show ?thesis
-    using zero_in_M the_0
-    unfolding minimum_def
-    by auto
-qed
-
 lemma is_minimum_eq :
   "M(R) \<Longrightarrow> M(X) \<Longrightarrow> M(u) \<Longrightarrow> is_minimum(M,R,X,u) \<longleftrightarrow> is_minimum'(M,R,X,u)"
   unfolding is_minimum_def is_minimum'_def is_The_def is_first_def by simp
