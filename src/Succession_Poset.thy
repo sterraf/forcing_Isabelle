@@ -6,7 +6,7 @@ theory Succession_Poset
     Proper_Extension
 begin
 
-sublocale M_ZF_trans \<subseteq> M_seqspace "##M"
+sublocale M_ZF2_trans \<subseteq> M_seqspace "##M"
   by (unfold_locales, simp add:replacement_omega_funspace)
 
 definition seq_upd :: "i \<Rightarrow> i \<Rightarrow> i" where
@@ -183,7 +183,7 @@ definition
   relP :: "[i\<Rightarrow>o,[i\<Rightarrow>o,i,i]\<Rightarrow>o,i] \<Rightarrow> o" where
   "relP(M,r,xy) \<equiv> (\<exists>x[M]. \<exists>y[M]. pair(M,x,y,xy) \<and> r(M,x,y))"
 
-lemma (in M_ctm) seqleR_fm_sats :
+lemma (in M_ctm1) seqleR_fm_sats :
   assumes "fg\<in>nat" "env\<in>list(M)"
   shows "sats(M,seqleR_fm(fg),env) \<longleftrightarrow> relP(##M,is_seqleR,nth(fg, env))"
   unfolding seqleR_fm_def is_seqleR_def relP_def
@@ -237,7 +237,18 @@ definition RrelP :: "[i\<Rightarrow>i\<Rightarrow>o,i] \<Rightarrow> i" where
 lemma Rrel_eq : "RrelP(R,A) = Rrel(R,A)"
   unfolding Rrel_def RrelP_def by auto
 
-context M_ctm
+locale M_ctm2 = M_ctm1 + M_ZF2_trans
+
+locale M_ctm2_AC = M_ctm2 + M_ZFC2_trans
+
+locale forcing_data2 = forcing_data1 + M_ctm2
+
+(* FIXME: perhaps then obsolete *)
+sublocale M_ctm \<subseteq> M_ctm2 ..
+sublocale M_ctm_AC \<subseteq> M_ctm2_AC ..
+sublocale forcing_data \<subseteq> forcing_data2 ..
+
+context M_ctm2
 begin
 
 lemma Rrel_closed:
@@ -292,6 +303,6 @@ lemma cohen_extension_is_proper: "\<exists>G. M_generic(G) \<and> M \<noteq> M\<
   using proper_extension generic_filter_existence zero_in_seqspace
   by force
 
-end \<comment> \<open>\<^locale>\<open>M_ctm\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ctm2\<close>\<close>
 
 end

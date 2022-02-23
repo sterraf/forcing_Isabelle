@@ -1017,7 +1017,7 @@ proof -
     by (auto dest:transM)
 qed
 
-lemma (in M_ZF_trans) separation_ifrangeF_body2:
+lemma (in M_ZF1_trans) separation_ifrangeF_body2:
   "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
        separation
         (##M,
