@@ -256,11 +256,11 @@ lemma (in M_ZF3_trans) replacement_aleph_rel:
 sublocale M_ZF3_trans \<subseteq> M_aleph "##M"
   by (unfold_locales,simp add: replacement_aleph_rel)
 
-sublocale M_ZF3_trans \<subseteq> M_FiniteFun "##M"
-  using separation_cons_like_rel replacement_omega_funspace separation_is_function
-  by (unfold_locales,simp_all)
+sublocale M_ZF2_trans \<subseteq> M_FiniteFun "##M"
+  using separation_cons_like_rel separation_is_function
+  by unfold_locales simp
 
-sublocale M_ZFC3_trans \<subseteq> M_AC "##M"
+sublocale M_ZFC1_trans \<subseteq> M_AC "##M"
   using choice_ax by (unfold_locales, simp_all)
 
 sublocale M_ZFC3_trans \<subseteq> M_cardinal_AC "##M" ..
@@ -277,6 +277,382 @@ lemma (in M_ZF2_trans) separation_cardinal_rel_lesspoll_rel:
   using separation_in_ctm[where \<phi>="(\<cdot>\<exists>\<cdot>cardinal(1) is 0 \<and> \<cdot>0 \<prec> 2\<cdot>\<cdot>\<cdot>)" and env="[\<kappa>]"]
     cardinal_rel_lepoll_rel_abs[symmetric]
     arity_is_cardinal_fm arity_is_lesspoll_fm arity_is_bij_fm ord_simp_union
-    by (simp_all add: FOL_arities)
+  by (simp add:FOL_arities)
+
+sublocale M_ZFC3_trans \<subseteq> M_library "##M"
+  using separation_cardinal_rel_lesspoll_rel
+  by unfold_locales simp
+
+locale M_ZF4 = M_ZF3 +
+  assumes
+    ground_replacements4[unfolded replacement_assm_def ground_replacement_assm_def,
+      rule_format]:
+    "ground_replacement_assm(M,env,replacement_is_order_body_fm)"
+    "ground_replacement_assm(M,env,wfrec_replacement_order_pred_fm)"
+    "ground_replacement_assm(M,env,replacement_is_jump_cardinal_body_fm)"
+    "ground_replacement_assm(M,env,replacement_is_aleph_fm)"
+    "ground_replacement_assm(M,env,Lambda_in_M_fm(ccc_fun_closed_lemma_aux2_fm,6))"
+    "ground_replacement_assm(M,env,Lambda_in_M_fm(ccc_fun_closed_lemma_fm,6))"
+    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(is_inj_fm(0,1,2),0))"
+    "ground_replacement_assm(M,env,wfrec_Hfrc_at_fm)"
+    "ground_replacement_assm(M,env,list_repl1_intf_fm)"
+    "ground_replacement_assm(M,env,list_repl2_intf_fm)"
+    "ground_replacement_assm(M,env,formula_repl2_intf_fm)"
+    "ground_replacement_assm(M,env,eclose_repl2_intf_fm)"
+    "ground_replacement_assm(M,env,powapply_repl_fm)"
+    "ground_replacement_assm(M,env,phrank_repl_fm)"
+    "ground_replacement_assm(M,env,wfrec_rank_fm)"
+    "ground_replacement_assm(M,env,trans_repl_HVFrom_fm)"
+    "ground_replacement_assm(M,env,wfrec_Hcheck_fm)"
+    "ground_replacement_assm(M,env,repl_PHcheck_fm)"
+    "ground_replacement_assm(M,env,check_replacement_fm)"
+    "ground_replacement_assm(M,env,G_dot_in_M_fm)"
+    "ground_replacement_assm(M,env,repl_opname_check_fm)"
+    (* "ground_replacement_assm(M,env,nth_repl_intf_fm)" *)
+    "ground_replacement_assm(M,env,formula_repl1_intf_fm)"
+    "ground_replacement_assm(M,env,eclose_repl1_intf_fm)"
+    "ground_replacement_assm(M,env,replacement_is_omega_funspace_fm)"
+    "ground_replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
+    "ground_replacement_assm(M,env,replacement_is_fst2_snd2_fm)"
+    (* "ground_replacement_assm(M,env,replacement_is_fst2_sndfst_snd2_fm)" *)
+    "ground_replacement_assm(M,env,replacement_is_order_eq_map_fm)"
+    "ground_replacement_assm(M,env,replacement_transrec_apply_image_body_fm)"
+    "ground_replacement_assm(M,env,banach_replacement_iterates_fm)"
+    "ground_replacement_assm(M,env,replacement_is_trans_apply_image_fm)"
+    "ground_replacement_assm(M,env,banach_iterates_fm)"
+    (* "ground_replacement_assm(M,env,replacement_is_abs_apply_pair_fm)" *)
+    "ground_replacement_assm(M,env,dcwit_repl_body_fm(6,5,4,3,2,0,1))"
+    "ground_replacement_assm(M,env,Lambda_in_M_fm(fst_fm(0,1),0))"
+    "ground_replacement_assm(M,env,Lambda_in_M_fm(big_union_fm(0,1),0))"
+    "ground_replacement_assm(M,env,Lambda_in_M_fm(is_cardinal_fm(0,1),0))"
+    "ground_replacement_assm(M,env,Lambda_in_M_fm(snd_fm(0,1),0))"
+    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(union_fm(0,1,2),0))"
+    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(image_fm(0,1,2),0))"
+    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(setdiff_fm(0,1,2),0))"
+    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(minimum_fm(0,1,2),0))"
+    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(upair_fm(0,1,2),0))"
+    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(cartprod_fm(0,1,2),0))"
+    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(pre_image_fm(0,1,2),0))"
+    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0))"
+    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(composition_fm(0,1,2),0))"
+    "ground_replacement_assm(M,env,Lambda_in_M_fm(is_converse_fm(0,1),0))"
+    "ground_replacement_assm(M,env,Lambda_in_M_fm(domain_fm(0,1),0))"
+
+definition instances4_fms where "instances4_fms \<equiv>
+  { ground_repl_fm(replacement_is_order_body_fm),
+    ground_repl_fm(wfrec_replacement_order_pred_fm),
+    ground_repl_fm(replacement_is_jump_cardinal_body_fm),
+    ground_repl_fm(replacement_is_aleph_fm),
+    ground_repl_fm(Lambda_in_M_fm(ccc_fun_closed_lemma_aux2_fm,6)),
+    ground_repl_fm(Lambda_in_M_fm(ccc_fun_closed_lemma_fm,6)),
+    ground_repl_fm(LambdaPair_in_M_fm(is_inj_fm(0,1,2),0)),
+    ground_repl_fm(wfrec_Hfrc_at_fm),
+    ground_repl_fm(list_repl1_intf_fm),
+    ground_repl_fm(list_repl2_intf_fm),
+    ground_repl_fm(formula_repl2_intf_fm),
+    ground_repl_fm(eclose_repl2_intf_fm),
+    ground_repl_fm(powapply_repl_fm),
+    ground_repl_fm(phrank_repl_fm),
+    ground_repl_fm(wfrec_rank_fm),
+    ground_repl_fm(trans_repl_HVFrom_fm),
+    ground_repl_fm(wfrec_Hcheck_fm),
+    ground_repl_fm(repl_PHcheck_fm),
+    ground_repl_fm(check_replacement_fm),
+    ground_repl_fm(G_dot_in_M_fm),
+    ground_repl_fm(repl_opname_check_fm),
+    ground_repl_fm(formula_repl1_intf_fm),
+    ground_repl_fm(eclose_repl1_intf_fm),
+    ground_repl_fm(replacement_is_omega_funspace_fm),
+    ground_repl_fm(replacement_HAleph_wfrec_repl_body_fm),
+    ground_repl_fm(replacement_is_fst2_snd2_fm),
+    ground_repl_fm(replacement_is_order_eq_map_fm),
+    ground_repl_fm(replacement_transrec_apply_image_body_fm),
+    ground_repl_fm(banach_replacement_iterates_fm),
+    ground_repl_fm(replacement_is_trans_apply_image_fm),
+    ground_repl_fm(banach_iterates_fm),
+    ground_repl_fm(dcwit_repl_body_fm(6,5,4,3,2,0,1)),
+    ground_repl_fm(Lambda_in_M_fm(fst_fm(0,1),0)),
+    ground_repl_fm(Lambda_in_M_fm(big_union_fm(0,1),0)),
+    ground_repl_fm(Lambda_in_M_fm(is_cardinal_fm(0,1),0)),
+    ground_repl_fm(Lambda_in_M_fm(snd_fm(0,1),0)),
+    ground_repl_fm(LambdaPair_in_M_fm(union_fm(0,1,2),0)),
+    ground_repl_fm(LambdaPair_in_M_fm(image_fm(0,1,2),0)),
+    ground_repl_fm(LambdaPair_in_M_fm(setdiff_fm(0,1,2),0)),
+    ground_repl_fm(LambdaPair_in_M_fm(minimum_fm(0,1,2),0)),
+    ground_repl_fm(LambdaPair_in_M_fm(upair_fm(0,1,2),0)),
+    ground_repl_fm(LambdaPair_in_M_fm(cartprod_fm(0,1,2),0)),
+    ground_repl_fm(LambdaPair_in_M_fm(pre_image_fm(0,1,2),0)),
+    ground_repl_fm(LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0)),
+    ground_repl_fm(LambdaPair_in_M_fm(composition_fm(0,1,2),0)),
+    ground_repl_fm(Lambda_in_M_fm(is_converse_fm(0,1),0)),
+    ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)) }"
+(* {
+    ground_repl_fm(nth_repl_intf_fm),
+    ground_repl_fm(replacement_is_fst2_sndfst_snd2_fm),
+    ground_repl_fm(replacement_is_abs_apply_pair_fm), *)
+
+definition overhead where
+  "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union> instances4_fms"
+
+lemma instances3_fms_type[TC] : "instances3_fms \<subseteq> formula"
+  unfolding instances3_fms_def replacement_is_order_body_fm_def
+    wfrec_replacement_order_pred_fm_def replacement_is_jump_cardinal_body_fm_def
+    replacement_is_aleph_fm_def
+  by (auto simp del: Lambda_in_M_fm_def
+      ccc_fun_closed_lemma_aux2_fm_def ccc_fun_closed_lemma_fm_def)
+
+lemma overhead_type: "overhead \<subseteq> formula"
+  using instances1_fms_type instances2_fms_type
+  unfolding overhead_def instances3_fms_def instances4_fms_def
+    replacement_instances1_defs replacement_instances2_defs replacement_instances3_defs
+  using ground_repl_fm_type Lambda_in_M_fm_type
+  by (auto simp del: Lambda_in_M_fm_def
+      ccc_fun_closed_lemma_aux2_fm_def ccc_fun_closed_lemma_fm_def)
+
+(*
+axiomatization
+  card :: "i\<Rightarrow>i" where
+  card_0 [simp]: "card(0) = 0" and
+  card_cons [simp]: "card(cons(x,y)) = succ(card(y))"
+
+schematic_goal
+  "card(instances1_fms) = ?n" (* 17 *)
+  "card(instances2_fms) = ?m" (* 26 *)
+  "card(instances3_fms) = ?o" (*  7 *)
+  "card(instances4_fms) = ?p" (* 50 *)
+  unfolding instances1_fms_def instances2_fms_def instances3_fms_def instances4_fms_def
+  by simp_all
+*)
+
+locale M_ZF4_trans = M_ZF3_trans + M_ZF4
+
+locale M_ZFC4 = M_ZFC3 + M_ZF4
+
+locale M_ZFC4_trans = M_ZFC3_trans + M_ZF4_trans
+
+locale M_ctm4 = M_ctm3 + M_ZF4_trans
+
+locale M_ctm4_AC = M_ctm4 + M_ctm1_AC + M_ZFC4_trans
+
+locale forcing_data4 = forcing_data3 + M_ctm4_AC
+
+lemma M_satT_imp_M_ZF2: "(M \<Turnstile> ZF) \<Longrightarrow> M_ZF2(M)"
+proof -
+  assume "M \<Turnstile> ZF"
+  then
+  have fin: "upair_ax(##M)" "Union_ax(##M)" "power_ax(##M)"
+    "extensionality(##M)" "foundation_ax(##M)" "infinity_ax(##M)"
+    unfolding ZF_def ZF_fin_def ZFC_fm_defs satT_def
+    using ZFC_fm_sats[of M] by simp_all
+  {
+    fix \<phi> env
+    assume "\<phi> \<in> formula" "env\<in>list(M)"
+    moreover from \<open>M \<Turnstile> ZF\<close>
+    have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
+         "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
+      unfolding ZF_def ZF_inf_def by auto
+    moreover from calculation
+    have "arity(\<phi>) \<le> succ(length(env)) \<Longrightarrow> separation(##M, \<lambda>x. (M, Cons(x, env) \<Turnstile> \<phi>))"
+      "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
+      using sats_ZF_separation_fm_iff sats_ZF_replacement_fm_iff by simp_all
+  }
+  with fin
+  show "M_ZF2(M)"
+    by unfold_locales (simp_all add:replacement_assm_def ground_replacement_assm_def)
+qed
+
+lemma M_satT_imp_M_ZFC2:
+  shows "(M \<Turnstile> ZFC) \<longrightarrow> M_ZFC2(M)"
+proof -
+  have "(M \<Turnstile> ZF) \<and> choice_ax(##M) \<longrightarrow> M_ZFC2(M)"
+    using M_satT_imp_M_ZF2[of M] unfolding M_ZF2_def M_ZFC1_def M_ZFC2_def
+      M_ZC_basic_def M_ZF1_def M_AC_def by auto
+  then
+  show ?thesis
+    unfolding ZFC_def ZFC_fin_def ZF_def
+    by auto
+qed
+
+lemma M_satT_instances12_imp_M_ZF2:
+  assumes "(M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms})"
+  shows "M_ZF2(M)"
+proof -
+  from assms
+  have fin: "upair_ax(##M)" "Union_ax(##M)" "power_ax(##M)"
+    "extensionality(##M)" "foundation_ax(##M)" "infinity_ax(##M)"
+    unfolding ZF_fin_def Zermelo_fms_def ZFC_fm_defs satT_def
+    using ZFC_fm_sats[of M] by simp_all
+  moreover
+  {
+    fix \<phi> env
+    from \<open>M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms}\<close>
+    have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
+      unfolding Zermelo_fms_def ZF_def instances1_fms_def
+      instances2_fms_def by auto
+    moreover
+    assume "\<phi> \<in> formula" "env\<in>list(M)"
+    ultimately
+    have "arity(\<phi>) \<le> succ(length(env)) \<Longrightarrow> separation(##M, \<lambda>x. (M, Cons(x, env) \<Turnstile> \<phi>))"
+      using sats_ZF_separation_fm_iff by simp_all
+  }
+  moreover
+  {
+    fix \<phi> env
+    assume "\<phi> \<in> instances1_fms \<union> instances2_fms" "env\<in>list(M)"
+    moreover from this and \<open>M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms}\<close>
+    have "M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>" by auto
+    ultimately
+    have "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
+      using sats_ZF_replacement_fm_iff[of \<phi>] instances1_fms_type instances2_fms_type by auto 
+  }
+  ultimately
+  show ?thesis
+    unfolding instances1_fms_def instances2_fms_def
+    by unfold_locales (simp_all add:replacement_assm_def ground_replacement_assm_def)
+qed
+
+(* NOTE: Correct way of proving this kind of theorems *)
+lemma (in M_Z_basic) M_satT_Zermelo_fms: "M \<Turnstile> \<cdot>Z\<cdot>"
+  using upair_ax Union_ax power_ax extensionality foundation_ax
+    infinity_ax separation_ax sats_ZF_separation_fm_iff
+  unfolding Zermelo_fms_def ZF_fin_def
+  by auto
+
+lemma (in M_ZFC1) M_satT_ZC: "M \<Turnstile> ZC"
+  using upair_ax Union_ax power_ax extensionality foundation_ax
+    infinity_ax separation_ax sats_ZF_separation_fm_iff choice_ax
+  unfolding ZC_def Zermelo_fms_def ZF_fin_def
+  by auto
+
+lemma M_ZF_iff_M_satT: "M_ZF(M) \<longleftrightarrow> (M \<Turnstile> ZF)"
+proof
+  assume "M \<Turnstile> ZF"
+  then
+  have fin: "upair_ax(##M)" "Union_ax(##M)" "power_ax(##M)"
+    "extensionality(##M)" "foundation_ax(##M)" "infinity_ax(##M)"
+    unfolding ZF_def ZF_fin_def ZFC_fm_defs satT_def
+    using ZFC_fm_sats[of M] by simp_all
+  {
+    fix \<phi> env
+    assume "\<phi> \<in> formula" "env\<in>list(M)"
+    moreover from \<open>M \<Turnstile> ZF\<close>
+    have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
+         "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
+      unfolding ZF_def ZF_inf_def by auto
+    moreover from calculation
+    have "arity(\<phi>) \<le> succ(length(env)) \<Longrightarrow> separation(##M, \<lambda>x. (M, Cons(x, env) \<Turnstile> \<phi>))"
+      "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
+      using sats_ZF_separation_fm_iff sats_ZF_replacement_fm_iff by simp_all
+  }
+  with fin
+  show "M_ZF(M)"
+    unfolding M_ZF_def M_Z_basic_def M_ZF_axioms_def replacement_assm_def by simp
+next
+  assume \<open>M_ZF(M)\<close>
+  then
+  have "M \<Turnstile> ZF_fin"
+    unfolding M_ZF_def ZF_fin_def ZFC_fm_defs M_Z_basic_def M_ZF_axioms_def replacement_assm_def satT_def
+    using ZFC_fm_sats[of M] by blast
+  moreover from \<open>M_ZF(M)\<close>
+  have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
+       "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
+    unfolding M_ZF_def M_ZF_axioms_def M_Z_basic_def replacement_assm_def
+    using sats_ZF_separation_fm_iff sats_ZF_replacement_fm_iff by simp_all
+  ultimately
+  show "M \<Turnstile> ZF"
+    unfolding ZF_def ZF_inf_def by blast
+qed
+
+lemma M_ZFC_iff_M_satT:
+  notes iff_trans[trans]
+  shows "M_ZFC(M) \<longleftrightarrow> (M \<Turnstile> ZFC)"
+proof -
+  have "M_ZFC(M) \<longleftrightarrow> (M \<Turnstile> ZF) \<and> choice_ax(##M)"
+    using M_ZF_iff_M_satT
+    unfolding M_ZFC_def M_ZC_basic_def M_AC_def M_ZF_def by auto
+  also
+  have " \<dots> \<longleftrightarrow> M \<Turnstile> ZFC"
+    unfolding ZFC_def ZFC_fin_def ZF_def
+    by auto
+  ultimately
+  show ?thesis by simp
+qed
+
+lemma M_satT_imp_M_ZF4: "(M \<Turnstile> ZF) \<longrightarrow> M_ZF4(M)"
+proof
+  assume "M \<Turnstile> ZF"
+  then
+  have fin: "upair_ax(##M)" "Union_ax(##M)" "power_ax(##M)"
+    "extensionality(##M)" "foundation_ax(##M)" "infinity_ax(##M)"
+    unfolding ZF_def ZF_fin_def ZFC_fm_defs satT_def
+    using ZFC_fm_sats[of M] by simp_all
+  {
+    fix \<phi> env
+    assume "\<phi> \<in> formula" "env\<in>list(M)"
+    moreover from \<open>M \<Turnstile> ZF\<close>
+    have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
+      "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
+      unfolding ZF_def ZF_inf_def by auto
+    moreover from calculation
+    have "arity(\<phi>) \<le> succ(length(env)) \<Longrightarrow> separation(##M, \<lambda>x. (M, Cons(x, env) \<Turnstile> \<phi>))"
+      "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
+      using sats_ZF_separation_fm_iff sats_ZF_replacement_fm_iff by simp_all
+  }
+  with fin
+  show "M_ZF4(M)"
+    by unfold_locales (simp_all add:replacement_assm_def ground_replacement_assm_def)
+qed
+
+lemma M_satT_imp_M_ZFC4:
+  shows "(M \<Turnstile> ZFC) \<longrightarrow> M_ZFC4(M)"
+proof -
+  have "(M \<Turnstile> ZF) \<and> choice_ax(##M) \<longrightarrow> M_ZFC4(M)"
+    using M_satT_imp_M_ZF4[of M] unfolding M_ZF4_def M_ZFC1_def M_ZFC4_def
+      M_ZF3_def M_ZFC3_def M_ZF2_def M_ZFC2_def
+      M_ZC_basic_def M_ZF1_def M_AC_def by auto
+  then
+  show ?thesis
+    unfolding ZFC_def ZFC_fin_def ZF_def
+    by auto
+qed
+
+lemma M_satT_overhead_imp_M_ZF4:
+  "(M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}) \<longrightarrow> M_ZFC4(M)"
+proof
+  assume "M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}"
+  then
+  have fin: "upair_ax(##M)" "Union_ax(##M)" "power_ax(##M)" "choice_ax(##M)"
+    "extensionality(##M)" "foundation_ax(##M)" "infinity_ax(##M)"
+    unfolding ZC_def ZF_fin_def Zermelo_fms_def ZFC_fm_defs satT_def
+    using ZFC_fm_sats[of M] by simp_all
+  moreover
+  {
+    fix \<phi> env
+    from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
+    have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
+      unfolding ZC_def Zermelo_fms_def ZF_def overhead_def instances1_fms_def
+        instances2_fms_def instances3_fms_def instances4_fms_def by auto
+    moreover
+    assume "\<phi> \<in> formula" "env\<in>list(M)"
+    ultimately
+    have "arity(\<phi>) \<le> succ(length(env)) \<Longrightarrow> separation(##M, \<lambda>x. (M, Cons(x, env) \<Turnstile> \<phi>))"
+      using sats_ZF_separation_fm_iff by simp_all
+  }
+  moreover
+  {
+    fix \<phi> env
+    assume "\<phi> \<in> overhead" "env\<in>list(M)"
+    moreover from this and \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
+    have "M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>" by auto
+    ultimately
+    have "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
+      using sats_ZF_replacement_fm_iff[of \<phi>] overhead_type by auto
+  }
+  ultimately
+  show "M_ZFC4(M)"
+    unfolding overhead_def instances1_fms_def
+      instances2_fms_def instances3_fms_def instances4_fms_def
+    by unfold_locales (simp_all add:replacement_assm_def ground_replacement_assm_def)
+qed
 
 end

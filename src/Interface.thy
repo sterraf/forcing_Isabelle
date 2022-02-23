@@ -1001,7 +1001,6 @@ proof -
     by (simp del:pair_abs)
 qed
 
-(* FIX US: what is wrong with this? *)
 schematic_goal sats_is_Vset_fm_auto:
   assumes
     "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"

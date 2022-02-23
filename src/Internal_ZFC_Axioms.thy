@@ -461,6 +461,14 @@ definition
   ZF_minus_P :: "i" where
   "ZF_minus_P \<equiv> ZF - { \<cdot>Powerset Ax\<cdot> }"
 
+definition
+  Zermelo_fms :: "i" (\<open>\<cdot>Z\<cdot>\<close>) where
+  "Zermelo_fms \<equiv> ZF_fin \<union> {\<cdot>Separation(p)\<cdot> . p \<in> formula }"
+
+definition
+  ZC :: "i" where
+  "ZC \<equiv> Zermelo_fms \<union> {\<cdot>AC\<cdot>}"
+
 lemma ZFC_subset_formula: "ZFC \<subseteq> formula"
   by (simp add:ZFC_def Un_subset_formula ZF_inf_subset_formula ZFC_fin_type)
 
@@ -474,13 +482,25 @@ lemma satTI [intro!]:
   shows "A \<Turnstile> \<Phi>"
   using assms unfolding satT_def by simp
 
-lemma satTD [dest] :"A \<Turnstile> \<Phi> \<Longrightarrow>  \<phi>\<in>\<Phi> \<Longrightarrow> A,[] \<Turnstile> \<phi>"
+lemma satTD [dest] :"A \<Turnstile> \<Phi> \<Longrightarrow> \<phi>\<in>\<Phi> \<Longrightarrow> A,[] \<Turnstile> \<phi>"
   unfolding satT_def by simp
+
+lemma satT_mono: "A \<Turnstile> \<Phi> \<Longrightarrow> \<Psi> \<subseteq> \<Phi> \<Longrightarrow> A \<Turnstile> \<Psi>"
+  by blast
+
+lemma satT_Un_iff: "M \<Turnstile> \<Phi> \<union> \<Psi> \<longleftrightarrow> M \<Turnstile> \<Phi> \<and> M \<Turnstile> \<Psi>" by auto
 
 lemma sats_ZFC_iff_sats_ZF_AC:
   "(N \<Turnstile> ZFC) \<longleftrightarrow> (N \<Turnstile> ZF) \<and> (N, [] \<Turnstile> \<cdot>AC\<cdot>)"
     unfolding ZFC_def ZFC_fin_def ZF_def by auto
 
+lemma satT_ZFC_imp_satT_ZC: "M \<Turnstile> ZFC \<Longrightarrow> M \<Turnstile> ZC"
+  unfolding ZFC_def ZF_inf_def ZC_def Zermelo_fms_def ZFC_fin_def by auto
+
+lemma satT_ZC_ZF_replacement_imp_satT_ZFC: "N \<Turnstile> ZC \<Longrightarrow> N \<Turnstile> {\<cdot>Replacement(x)\<cdot> . x \<in> formula} \<Longrightarrow> N \<Turnstile> ZFC"
+  unfolding ZFC_def ZF_inf_def ZC_def Zermelo_fms_def ZFC_fin_def by auto
+
+(* FIXME: use the style in ZF_Trans_Interp *)
 lemma M_ZF_iff_M_satT: "M_ZF(M) \<longleftrightarrow> (M \<Turnstile> ZF)"
 proof
   assume "M \<Turnstile> ZF"
