@@ -124,7 +124,7 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_ctm3_AC\<close>\<close>
 
-sublocale G_generic_AC \<subseteq> M_master_sub "##M" "##(M[G])"
+sublocale G_generic4_AC \<subseteq> M_master_sub "##M" "##(M[G])"
   using M_subset_MG[OF one_in_G] generic Ord_MG_iff
   by unfold_locales auto
 
@@ -142,7 +142,7 @@ lemma (in M_trans) mem_F_bound5:
   using apply_0 unfolding F_def
   by (cases "M(c)", auto simp:F_def drSR_Y_def dC_F_def)
 
-sublocale M_ctm_AC \<subseteq> M_replacement_lepoll "##M" "(`)"
+sublocale M_ctm3_AC \<subseteq> M_replacement_lepoll "##M" "(`)"
   using UN_lepoll_assumptions lam_replacement_apply lam_replacement_inj_rel
     mem_F_bound4 apply_0
   unfolding lepoll_assumptions_defs
@@ -156,7 +156,7 @@ proof (unfold_locales,
     by force
 qed
 
-context G_generic_AC begin
+context G_generic4_AC begin
 
 context
   includes G_generic1_lemmas
@@ -263,24 +263,27 @@ proof (rule ccontr)
     by auto
 qed
 
-end \<comment> \<open>bundle G\_generic\_lemmas\<close>
+end \<comment> \<open>bundle G\_generic1\_lemmas\<close>
 
-end \<comment> \<open>\<^locale>\<open>G_generic_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic4_AC\<close>\<close>
 
-context M_ctm
+context M_ctm1
 begin
 
 abbreviation
   Add :: "i" where
   "Add \<equiv> Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>, 2)"
 
-end \<comment> \<open>\<^locale>\<open>M_ctm\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ctm1\<close>\<close>
 
+locale add_generic4 = G_generic4_AC "Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" "Fnle(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" 0
 locale add_generic = G_generic_AC "Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" "Fnle(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" 0
+(* FIXME: perhaps going obsolete *)
+sublocale add_generic \<subseteq> add_generic4 ..
 
-sublocale add_generic \<subseteq> cohen_data \<omega> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 2 by unfold_locales auto
+sublocale add_generic4 \<subseteq> cohen_data \<omega> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 2 by unfold_locales auto
 
-context add_generic
+context add_generic4
 begin
 
 notation Leq (infixl "\<preceq>" 50)
@@ -549,7 +552,7 @@ lemma Aleph_rel_lt_continuum_rel: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>
 corollary not_CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> \<noteq> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
   using Aleph_rel_lt_continuum_rel by auto
 
-end \<comment> \<open>\<^locale>\<open>add_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>add_generic4\<close>\<close>
 
 definition
   ContHyp :: "o" where
