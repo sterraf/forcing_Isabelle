@@ -374,6 +374,15 @@ proof -
     by auto
 qed
 
+lemma replacement_assm_MG:
+  assumes
+    ground_replacement:
+    "\<And>nenv. ground_replacement_assm(M,[P,leq,\<one>] @ nenv, \<phi>)"
+  shows
+    "replacement_assm(M[G],env,\<phi>)"
+  using assms strong_replacement_in_MG
+  unfolding replacement_assm_def by simp
+
 end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 end

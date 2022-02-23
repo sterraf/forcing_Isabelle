@@ -80,9 +80,9 @@ proof -
   interpret MG: M_ZF "?N"
     using generic pairing_in_MG
       Union_MG  extensionality_in_MG power_in_MG foundation_in_MG
-      strong_replacement_in_MG[unfolded ground_replacement_assm_def, OF _ _ _ replacement_ax]
-      separation_in_MG infinity_in_MG
-    by unfold_locales (simp_all add:replacement_assm_def)
+      replacement_assm_MG replacement_ax separation_in_MG infinity_in_MG
+    unfolding ground_replacement_assm_def
+    by unfold_locales simp
   have "?N \<Turnstile> ZF"
     using M_ZF_iff_M_satT[of ?N] MG.M_ZF_axioms by simp
   moreover

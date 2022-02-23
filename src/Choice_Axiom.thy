@@ -201,9 +201,8 @@ subsection\<open>$M[G]$ is a transitive model of ZF\<close>
 sublocale G_generic1 \<subseteq> ext:M_Z_trans "M[G]"
   using Transset_MG generic pairing_in_MG Union_MG
     extensionality_in_MG power_in_MG foundation_in_MG
-    strong_replacement_in_MG separation_in_MG infinity_in_MG
-    replacement_ax1
-  by unfold_locales (simp_all add:replacement_assm_def ground_replacement_assm_def)
+    replacement_assm_MG separation_in_MG infinity_in_MG
+    replacement_ax1 by unfold_locales
 
 context G_generic1
 begin

@@ -92,8 +92,9 @@ sublocale G_generic \<subseteq> ext:M_ZF_trans "M[G]"
   using Transset_MG generic pairing_in_MG Union_MG
     extensionality_in_MG power_in_MG foundation_in_MG
     separation_in_MG infinity_in_MG
-    strong_replacement_in_MG[unfolded ground_replacement_assm_def, OF _ _ _ replacement_ax]
-  by unfold_locales (simp_all add:replacement_assm_def)
+    replacement_assm_MG replacement_ax
+  unfolding ground_replacement_assm_def
+  by unfold_locales simp
 
 sublocale G_generic_AC \<subseteq> ext:M_ZFC_trans "M[G]"
   using choice_ax choice_in_MG
