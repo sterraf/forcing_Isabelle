@@ -216,6 +216,9 @@ arity_theorem for "RecFun_fm"
 
 arity_theorem for "rtran_closure_mem_fm"
 
+synthesize "wellfounded_trancl" from_definition assuming "nonempty"
+arity_theorem for "wellfounded_trancl_fm"
+
 context M_Z_trans
 begin
 
@@ -512,37 +515,15 @@ lemma (in M_ZF1_trans) rtrancl_separation_intf:
     arity_rtran_closure_mem_fm ord_simp_union zero_in_M
   by simp
 
-schematic_goal sats_wellfounded_trancl_fm_auto:
-  assumes
-    "nth(i,env) = p" "nth(j,env) = r"  "nth(k,env) = B"
-    "i \<in> nat" "j \<in> nat" "k \<in> nat" "env \<in> list(A)"
-  shows
-    "wellfounded_trancl(##A,B,r,p) \<longleftrightarrow> sats(A,?wtf(i,j,k),env)"
-  unfolding  wellfounded_trancl_def
-  by (insert assms ; (rule sep_rules tran_closure_iff_sats | simp)+)
-
 context M_ZF1_trans
 begin
 
 lemma wftrancl_separation_intf:
   assumes "r\<in>M" and "Z\<in>M"
   shows "separation (##M, wellfounded_trancl(##M,Z,r))"
-proof -
-  obtain rcfm where
-    fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow>
-    (wellfounded_trancl(##M,nth(2,env),nth(1,env),nth(0,env))) \<longleftrightarrow> sats(M,rcfm(0,1,2),env)"
-    and
-    "rcfm(0,1,2) \<in> formula"
-    and
-    "arity(rcfm(0,1,2)) = 3"
-    using sats_wellfounded_trancl_fm_auto[of concl:M "nth(2,_)"]
-    by (simp del:FOL_sats_iff pair_abs add: arity ord_simp_union)
-  then
-  show ?thesis
-    using assms separation_in_ctm[of "rcfm(0,1,2)" "[r,Z]" "wellfounded_trancl(##M,Z,r)"]
-      ord_simp_union zero_in_M fmsats[of "[_,r,Z]"]
-    by simp
-qed
+  using assms separation_in_ctm[of "wellfounded_trancl_fm(1,2,0)" "[Z,r]" "wellfounded_trancl(##M,Z,r)"]
+    arity_wellfounded_trancl_fm ord_simp_union zero_in_M
+  by simp
 
 text\<open>To prove \<^term>\<open>nat \<in> M\<close> we get an infinite set \<^term>\<open>I\<close> from \<^term>\<open>infinity_ax\<close>
 closed under \<^term>\<open>0\<close> and \<^term>\<open>succ\<close>; that shows \<^term>\<open>nat\<subseteq>I\<close>. Then we
