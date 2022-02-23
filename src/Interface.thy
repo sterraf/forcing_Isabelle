@@ -43,23 +43,23 @@ locale M_Z_trans = M_Z_basic + M_transset
 locale M_ZF1 = M_Z_basic +
   assumes
     replacement_ax1:
-      "replacement_assm(M,env,wfrec_Hfrc_at_fm)"
-      "replacement_assm(M,env,list_repl1_intf_fm)"
-      "replacement_assm(M,env,list_repl2_intf_fm)"
-      "replacement_assm(M,env,formula_repl2_intf_fm)"
-      "replacement_assm(M,env,eclose_repl2_intf_fm)"
-      "replacement_assm(M,env,powapply_repl_fm)"
-      "replacement_assm(M,env,phrank_repl_fm)"
-      "replacement_assm(M,env,wfrec_rank_fm)"
-      "replacement_assm(M,env,trans_repl_HVFrom_fm)"
-      "replacement_assm(M,env,wfrec_Hcheck_fm)"
-      "replacement_assm(M,env,repl_PHcheck_fm)"
-      "replacement_assm(M,env,check_replacement_fm)"
-      "replacement_assm(M,env,G_dot_in_M_fm)"
-      "replacement_assm(M,env,repl_opname_check_fm)"
-      "replacement_assm(M,env,nth_repl_intf_fm)"
-      "replacement_assm(M,env,formula_repl1_intf_fm)"
-      "replacement_assm(M,env,eclose_repl1_intf_fm)"
+    "replacement_assm(M,env,wfrec_Hfrc_at_fm)"
+    "replacement_assm(M,env,list_repl1_intf_fm)"
+    "replacement_assm(M,env,list_repl2_intf_fm)"
+    "replacement_assm(M,env,formula_repl2_intf_fm)"
+    "replacement_assm(M,env,eclose_repl2_intf_fm)"
+    "replacement_assm(M,env,powapply_repl_fm)"
+    "replacement_assm(M,env,phrank_repl_fm)"
+    "replacement_assm(M,env,wfrec_rank_fm)"
+    "replacement_assm(M,env,trans_repl_HVFrom_fm)"
+    "replacement_assm(M,env,wfrec_Hcheck_fm)"
+    "replacement_assm(M,env,repl_PHcheck_fm)"
+    "replacement_assm(M,env,check_replacement_fm)"
+    "replacement_assm(M,env,G_dot_in_M_fm)"
+    "replacement_assm(M,env,repl_opname_check_fm)"
+    "replacement_assm(M,env,tl_repl_intf_fm)"
+    "replacement_assm(M,env,formula_repl1_intf_fm)"
+    "replacement_assm(M,env,eclose_repl1_intf_fm)"
 
 definition instances1_fms where "instances1_fms \<equiv>
   { wfrec_Hfrc_at_fm,
@@ -76,16 +76,16 @@ definition instances1_fms where "instances1_fms \<equiv>
     check_replacement_fm,
     G_dot_in_M_fm,
     repl_opname_check_fm,
-    nth_repl_intf_fm,
+    tl_repl_intf_fm,
     formula_repl1_intf_fm,
     eclose_repl1_intf_fm }"
 
-lemmas replacement_instances1_defs = nth_repl_intf_fm_def formula_repl1_intf_fm_def
- eclose_repl1_intf_fm_def wfrec_Hfrc_at_fm_def
- list_repl1_intf_fm_def list_repl2_intf_fm_def formula_repl2_intf_fm_def
- eclose_repl2_intf_fm_def powapply_repl_fm_def phrank_repl_fm_def wfrec_rank_fm_def
- trans_repl_HVFrom_fm_def wfrec_Hcheck_fm_def repl_PHcheck_fm_def check_replacement_fm_def
- G_dot_in_M_fm_def repl_opname_check_fm_def
+lemmas replacement_instances1_defs = tl_repl_intf_fm_def formula_repl1_intf_fm_def
+  eclose_repl1_intf_fm_def wfrec_Hfrc_at_fm_def
+  list_repl1_intf_fm_def list_repl2_intf_fm_def formula_repl2_intf_fm_def
+  eclose_repl2_intf_fm_def powapply_repl_fm_def phrank_repl_fm_def wfrec_rank_fm_def
+  trans_repl_HVFrom_fm_def wfrec_Hcheck_fm_def repl_PHcheck_fm_def check_replacement_fm_def
+  G_dot_in_M_fm_def repl_opname_check_fm_def
 
 lemma instances1_fms_type[TC]: "instances1_fms \<subseteq> formula"
   unfolding replacement_instances1_defs instances1_fms_def by simp
@@ -112,16 +112,15 @@ subsection\<open>Interface with \<^term>\<open>M_trivial\<close>\<close>
 
 lemma zero_in_M:  "0 \<in> M"
 proof -
-  from infinity_ax
-  have "(\<exists>z[##M]. empty(##M,z))"
-    by (rule empty_intf)
-  then obtain z where
-    zm: "empty(##M,z)"  "z\<in>M"
+  obtain z where "empty(##M,z)"  "z\<in>M"
+    using empty_intf[OF infinity_ax]
     by auto
-  then
+  moreover from this
   have "z=0"
-    using transitivity empty_def by auto
-  with zm show ?thesis
+    using transitivity empty_def
+    by auto
+  ultimately
+  show ?thesis
     by simp
 qed
 
@@ -132,8 +131,7 @@ lemma separation_in_ctm :
     satsQ: "\<And>x. x\<in>M \<Longrightarrow> sats(M,\<phi>,[x]@env) \<longleftrightarrow> Q(x)"
   shows
     "separation(##M,Q)"
-  using assms separation_ax
-    satsQ trans_M
+  using assms separation_ax satsQ transitivity
     separation_cong[of "##M" "\<lambda>y. sats(M,\<phi>,[y]@env)" "Q"]
   by simp
 
@@ -152,65 +150,65 @@ sublocale M_Z_trans \<subseteq> M_trans "##M"
   by unfold_locales simp_all
 
 sublocale M_Z_trans \<subseteq> M_trivial "##M"
-  using trans_M upair_ax Union_ax by unfold_locales
+  using upair_ax Union_ax by unfold_locales
 
 locale M_ZFC_trans = M_ZF_trans + M_ZFC
 
 subsection\<open>Interface with \<^term>\<open>M_basic\<close>\<close>
 
 definition Intersection where
- "Intersection(N,B,x) \<equiv> (\<forall>y[N]. y\<in>B \<longrightarrow> x\<in>y)"
+  "Intersection(N,B,x) \<equiv> (\<forall>y[N]. y\<in>B \<longrightarrow> x\<in>y)"
 
 synthesize "Intersection" from_definition "Intersection" assuming "nonempty"
 arity_theorem for "Intersection_fm"
 
 definition CartProd where
- "CartProd(N,B,C,z) \<equiv> (\<exists>x[N]. x\<in>B \<and> (\<exists>y[N]. y\<in>C \<and> pair(N,x,y,z)))"
+  "CartProd(N,B,C,z) \<equiv> (\<exists>x[N]. x\<in>B \<and> (\<exists>y[N]. y\<in>C \<and> pair(N,x,y,z)))"
 
 synthesize "CartProd" from_definition "CartProd" assuming "nonempty"
 arity_theorem for "CartProd_fm"
 
 definition Image where
- "Image(N,B,r,y) \<equiv> (\<exists>p[N]. p\<in>r & (\<exists>x[N]. x\<in>B & pair(N,x,y,p)))"
+  "Image(N,B,r,y) \<equiv> (\<exists>p[N]. p\<in>r \<and> (\<exists>x[N]. x\<in>B \<and> pair(N,x,y,p)))"
 
 synthesize "Image" from_definition "Image" assuming "nonempty"
 arity_theorem for "Image_fm"
 
 definition Converse where
- "Converse(N,R,z) \<equiv> \<exists>p[N]. p\<in>R & (\<exists>x[N].\<exists>y[N]. pair(N,x,y,p) & pair(N,y,x,z))"
+  "Converse(N,R,z) \<equiv> \<exists>p[N]. p\<in>R \<and> (\<exists>x[N].\<exists>y[N]. pair(N,x,y,p) \<and> pair(N,y,x,z))"
 
 synthesize "Converse" from_definition "Converse" assuming "nonempty"
 arity_theorem for "Converse_fm"
 
 definition Restrict where
- "Restrict(N,A,z) \<equiv> \<exists>x[N]. x\<in>A & (\<exists>y[N]. pair(N,x,y,z))"
+  "Restrict(N,A,z) \<equiv> \<exists>x[N]. x\<in>A \<and> (\<exists>y[N]. pair(N,x,y,z))"
 
 synthesize "Restrict" from_definition "Restrict" assuming "nonempty"
 arity_theorem for "Restrict_fm"
 
 definition Comp where
- "Comp(N,R,S,xz) \<equiv> \<exists>x[N]. \<exists>y[N]. \<exists>z[N]. \<exists>xy[N]. \<exists>yz[N].
-              pair(N,x,z,xz) & pair(N,x,y,xy) & pair(N,y,z,yz) & xy\<in>S & yz\<in>R"
+  "Comp(N,R,S,xz) \<equiv> \<exists>x[N]. \<exists>y[N]. \<exists>z[N]. \<exists>xy[N]. \<exists>yz[N].
+              pair(N,x,z,xz) \<and> pair(N,x,y,xy) \<and> pair(N,y,z,yz) \<and> xy\<in>S \<and> yz\<in>R"
 
 synthesize "Comp" from_definition "Comp" assuming "nonempty"
 arity_theorem for "Comp_fm"
 
 definition Pred where
- "Pred(N,R,X,y) \<equiv> \<exists>p[N]. p\<in>R & pair(N,y,X,p)"
+  "Pred(N,R,X,y) \<equiv> \<exists>p[N]. p\<in>R \<and> pair(N,y,X,p)"
 
 synthesize "Pred" from_definition "Pred" assuming "nonempty"
 arity_theorem for "Pred_fm"
 
 definition is_Memrel where
- "is_Memrel(N,z) \<equiv> \<exists>x[N]. \<exists>y[N]. pair(N,x,y,z) & x \<in> y"
+  "is_Memrel(N,z) \<equiv> \<exists>x[N]. \<exists>y[N]. pair(N,x,y,z) \<and> x \<in> y"
 
 synthesize "is_Memrel" from_definition "is_Memrel" assuming "nonempty"
 arity_theorem for "is_Memrel_fm"
 
 definition RecFun where
- "RecFun(N,r,f,g,a,b,x) \<equiv> \<exists>xa[N]. \<exists>xb[N].
-                    pair(N,x,a,xa) & xa \<in> r & pair(N,x,b,xb) & xb \<in> r &
-                    (\<exists>fx[N]. \<exists>gx[N]. fun_apply(N,f,x,fx) & fun_apply(N,g,x,gx) &
+  "RecFun(N,r,f,g,a,b,x) \<equiv> \<exists>xa[N]. \<exists>xb[N].
+                    pair(N,x,a,xa) \<and> xa \<in> r \<and> pair(N,x,b,xb) \<and> xb \<in> r \<and>
+                    (\<exists>fx[N]. \<exists>gx[N]. fun_apply(N,f,x,fx) \<and> fun_apply(N,g,x,gx) \<and>
                                      fx \<noteq> gx)"
 
 synthesize "RecFun" from_definition "RecFun" assuming "nonempty"
@@ -225,8 +223,8 @@ lemma inter_sep_intf :
   assumes "A\<in>M"
   shows "separation(##M,\<lambda>x . \<forall>y\<in>M . y\<in>A \<longrightarrow> x\<in>y)"
   using assms separation_in_ctm[of "Intersection_fm(1,0)" "[A]" "Intersection(##M,A)"]
-   Intersection_iff_sats[of 1 "[_,A]" A 0 _ M] arity_Intersection_fm Intersection_fm_type
-   ord_simp_union nonempty
+    Intersection_iff_sats[of 1 "[_,A]" A 0 _ M] arity_Intersection_fm Intersection_fm_type
+    ord_simp_union zero_in_M
   unfolding Intersection_def
   by simp
 
@@ -240,74 +238,74 @@ lemma cartprod_sep_intf :
   assumes "A\<in>M" and "B\<in>M"
   shows "separation(##M,\<lambda>z. \<exists>x\<in>M. x\<in>A \<and> (\<exists>y\<in>M. y\<in>B \<and> pair(##M,x,y,z)))"
   using assms separation_in_ctm[of "CartProd_fm(1,2,0)" "[A,B]" "CartProd(##M,A,B)"]
-   CartProd_iff_sats[of 1 "[_,A,B]" A 2 B 0 _ M] arity_CartProd_fm  CartProd_fm_type
-   ord_simp_union nonempty
+    CartProd_iff_sats[of 1 "[_,A,B]" A 2 B 0 _ M] arity_CartProd_fm  CartProd_fm_type
+    ord_simp_union zero_in_M
   unfolding CartProd_def
   by simp
 
 lemma image_sep_intf :
   assumes "A\<in>M" and "B\<in>M"
-  shows "separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>B & (\<exists>x\<in>M. x\<in>A & pair(##M,x,y,p)))"
+  shows "separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>B \<and> (\<exists>x\<in>M. x\<in>A \<and> pair(##M,x,y,p)))"
   using assms separation_in_ctm[of "Image_fm(1,2,0)" "[A,B]" "Image(##M,A,B)"]
-   Image_iff_sats[of 1 "[_,A,B]" _ 2 _ 0 _ M] arity_Image_fm Image_fm_type
-   ord_simp_union nonempty
+    Image_iff_sats[of 1 "[_,A,B]" _ 2 _ 0 _ M] arity_Image_fm Image_fm_type
+    ord_simp_union zero_in_M
   unfolding Image_def
   by simp
 
 lemma converse_sep_intf :
   assumes "R\<in>M"
-  shows "separation(##M,\<lambda>z. \<exists>p\<in>M. p\<in>R & (\<exists>x\<in>M.\<exists>y\<in>M. pair(##M,x,y,p) & pair(##M,y,x,z)))"
+  shows "separation(##M,\<lambda>z. \<exists>p\<in>M. p\<in>R \<and> (\<exists>x\<in>M.\<exists>y\<in>M. pair(##M,x,y,p) \<and> pair(##M,y,x,z)))"
   using assms separation_in_ctm[of "Converse_fm(1,0)" "[R]" "Converse(##M,R)"]
-   Converse_iff_sats[of 1 "[_,R]" _ 0 _ M] arity_Converse_fm Converse_fm_type
-   ord_simp_union nonempty
+    Converse_iff_sats[of 1 "[_,R]" _ 0 _ M] arity_Converse_fm Converse_fm_type
+    ord_simp_union zero_in_M
   unfolding Converse_def
   by simp
 
 lemma restrict_sep_intf :
   assumes "A\<in>M"
-  shows "separation(##M,\<lambda>z. \<exists>x\<in>M. x\<in>A & (\<exists>y\<in>M. pair(##M,x,y,z)))"
+  shows "separation(##M,\<lambda>z. \<exists>x\<in>M. x\<in>A \<and> (\<exists>y\<in>M. pair(##M,x,y,z)))"
   using assms separation_in_ctm[of "Restrict_fm(1,0)" "[A]" "Restrict(##M,A)"]
-   Restrict_iff_sats[of 1 "[_,A]" _ 0 _ M] arity_Restrict_fm Restrict_fm_type
-   ord_simp_union nonempty
+    Restrict_iff_sats[of 1 "[_,A]" _ 0 _ M] arity_Restrict_fm Restrict_fm_type
+    ord_simp_union zero_in_M
   unfolding Restrict_def
   by simp
 
 lemma comp_sep_intf :
   assumes "R\<in>M" and "S\<in>M"
   shows "separation(##M,\<lambda>xz. \<exists>x\<in>M. \<exists>y\<in>M. \<exists>z\<in>M. \<exists>xy\<in>M. \<exists>yz\<in>M.
-           pair(##M,x,z,xz) & pair(##M,x,y,xy) & pair(##M,y,z,yz) & xy\<in>S & yz\<in>R)"
+           pair(##M,x,z,xz) \<and> pair(##M,x,y,xy) \<and> pair(##M,y,z,yz) \<and> xy\<in>S \<and> yz\<in>R)"
   using assms separation_in_ctm[of "Comp_fm(1,2,0)" "[R,S]" "Comp(##M,R,S)"]
     Comp_iff_sats[of 1 "[_,R,S]" _ 2 _ 0 _ M] arity_Comp_fm Comp_fm_type
-    ord_simp_union nonempty
+    ord_simp_union zero_in_M
   unfolding Comp_def
   by simp
 
 lemma pred_sep_intf:
   assumes "R\<in>M" and "X\<in>M"
-  shows "separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>R & pair(##M,y,X,p))"
+  shows "separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>R \<and> pair(##M,y,X,p))"
   using assms separation_in_ctm[of "Pred_fm(1,2,0)" "[R,X]" "Pred(##M,R,X)"]
     Pred_iff_sats[of 1 "[_,R,X]" _ 2 _ 0 _ M] arity_Pred_fm Pred_fm_type
-    ord_simp_union nonempty
+    ord_simp_union zero_in_M
   unfolding Pred_def
   by simp
 
 lemma memrel_sep_intf:
-  "separation(##M, \<lambda>z. \<exists>x\<in>M. \<exists>y\<in>M. pair(##M,x,y,z) & x \<in> y)"
+  "separation(##M, \<lambda>z. \<exists>x\<in>M. \<exists>y\<in>M. pair(##M,x,y,z) \<and> x \<in> y)"
   using separation_in_ctm[of "is_Memrel_fm(0)" "[]" "is_Memrel(##M)"]
     is_Memrel_iff_sats[of 0 "[_]" _ M] arity_is_Memrel_fm is_Memrel_fm_type
-    ord_simp_union nonempty
+    ord_simp_union zero_in_M
   unfolding is_Memrel_def
   by simp
 
 lemma is_recfun_sep_intf :
   assumes "r\<in>M" "f\<in>M" "g\<in>M" "a\<in>M" "b\<in>M"
   shows "separation(##M,\<lambda>x. \<exists>xa\<in>M. \<exists>xb\<in>M.
-                    pair(##M,x,a,xa) & xa \<in> r & pair(##M,x,b,xb) & xb \<in> r &
-                    (\<exists>fx\<in>M. \<exists>gx\<in>M. fun_apply(##M,f,x,fx) & fun_apply(##M,g,x,gx) &
+                    pair(##M,x,a,xa) \<and> xa \<in> r \<and> pair(##M,x,b,xb) \<and> xb \<in> r \<and>
+                    (\<exists>fx\<in>M. \<exists>gx\<in>M. fun_apply(##M,f,x,fx) \<and> fun_apply(##M,g,x,gx) \<and>
                                      fx \<noteq> gx))"
   using assms separation_in_ctm[of "RecFun_fm(1,2,3,4,5,0)" "[r,f,g,a,b]" "RecFun(##M,r,f,g,a,b)"]
     RecFun_iff_sats[of 1 "[_,r,f,g,a,b]" _ 2 _ 3 _ 4 _ 5 _ 0 _ M] arity_RecFun_fm RecFun_fm_type
-    ord_simp_union nonempty
+    ord_simp_union zero_in_M
   unfolding RecFun_def
   by simp
 
@@ -315,13 +313,10 @@ lemmas M_basic_sep_instances =
   inter_sep_intf diff_sep_intf cartprod_sep_intf
   image_sep_intf converse_sep_intf restrict_sep_intf
   pred_sep_intf memrel_sep_intf comp_sep_intf is_recfun_sep_intf
-
-(* Interface with M_basic *)
-
 end \<comment> \<open>\<^locale>\<open>M_Z_trans\<close>\<close>
 
 sublocale M_Z_trans \<subseteq> M_basic_no_repl "##M"
-  using trans_M zero_in_M power_ax M_basic_sep_instances
+  using power_ax M_basic_sep_instances
   by unfold_locales simp_all
 
 lemma Replace_eq_Collect:
@@ -457,14 +452,14 @@ context M_Z_trans
 begin
 
 lemma separation_fsri:
- "(##M)(A) \<Longrightarrow> (##M)(B) \<Longrightarrow> separation(##M, is_fsri(##M,A,B))"
+  "(##M)(A) \<Longrightarrow> (##M)(B) \<Longrightarrow> separation(##M, is_fsri(##M,A,B))"
   using separation_in_ctm[where env="[A,B]" and \<phi>="is_fsri_fm(1,2,0)"]
-    nonempty is_fsri_iff_sats[symmetric] arity_is_fsri_fm is_fsri_fm_type
+    zero_in_M is_fsri_iff_sats[symmetric] arity_is_fsri_fm is_fsri_fm_type
   by (simp_all add: ord_simp_union)
 
 lemma separation_funspace_succ_rep_intf_rel:
   "(##M)(A) \<Longrightarrow> (##M)(B) \<Longrightarrow> separation(##M, \<lambda>z. \<exists>p\<in>A. funspace_succ_rep_intf_rel(##M,p,z,B))"
-  using separation_fsri nonempty
+  using separation_fsri zero_in_M
   by (rule_tac separation_cong[THEN iffD1, of _ "is_fsri(##M,A,B)"])
     (auto simp flip:setclass_iff dest:transM
       simp:is_fsri_def funspace_succ_rep_intf_rel_def, force)
@@ -485,12 +480,11 @@ proof -
 qed
 
 lemma funspace_succ_rep_intf:
-  assumes
-    "n\<in>M"
+  assumes "n\<in>M"
   shows
     "strong_replacement(##M,
           \<lambda>p z. \<exists>f\<in>M. \<exists>b\<in>M. \<exists>nb\<in>M. \<exists>cnbf\<in>M.
-                pair(##M,f,b,p) & pair(##M,n,b,nb) & is_cons(##M,nb,f,cnbf) &
+                pair(##M,f,b,p) \<and> pair(##M,n,b,nb) \<and> is_cons(##M,nb,f,cnbf) \<and>
                 upair(##M,cnbf,cnbf,z))"
   using assms
   unfolding strong_replacement_def univalent_def
@@ -506,7 +500,7 @@ lemma funspace_succ_rep_intf:
 end \<comment> \<open>\<^locale>\<open>M_Z_trans\<close>\<close>
 
 sublocale M_Z_trans \<subseteq> M_basic "##M"
-  using trans_M zero_in_M power_ax M_basic_sep_instances funspace_succ_rep_intf
+  using power_ax M_basic_sep_instances funspace_succ_rep_intf
   by unfold_locales auto
 
 subsection\<open>Interface with \<^term>\<open>M_trancl\<close>\<close>
@@ -515,8 +509,7 @@ lemma (in M_ZF1_trans) rtrancl_separation_intf:
   assumes "r\<in>M" "A\<in>M"
   shows "separation (##M, rtran_closure_mem(##M,A,r))"
   using assms separation_in_ctm[of "rtran_closure_mem_fm(1,2,0)" "[A,r]" "rtran_closure_mem(##M,A,r)"]
-    arity_rtran_closure_mem_fm
-    ord_simp_union nonempty
+    arity_rtran_closure_mem_fm ord_simp_union zero_in_M
   by simp
 
 schematic_goal sats_wellfounded_trancl_fm_auto:
@@ -528,17 +521,12 @@ schematic_goal sats_wellfounded_trancl_fm_auto:
   unfolding  wellfounded_trancl_def
   by (insert assms ; (rule sep_rules tran_closure_iff_sats | simp)+)
 
-arity_theorem for "rtran_closure_fm"
-arity_theorem for "tran_closure_fm"
-
 context M_ZF1_trans
 begin
 
 lemma wftrancl_separation_intf:
-  assumes
-    "r\<in>M" and "Z\<in>M"
-  shows
-    "separation (##M, wellfounded_trancl(##M,Z,r))"
+  assumes "r\<in>M" and "Z\<in>M"
+  shows "separation (##M, wellfounded_trancl(##M,Z,r))"
 proof -
   obtain rcfm where
     fmsats:"\<And>env. env\<in>list(M) \<Longrightarrow>
@@ -551,71 +539,73 @@ proof -
     by (simp del:FOL_sats_iff pair_abs add: arity ord_simp_union)
   then
   show ?thesis
-  using assms separation_in_ctm[of "rcfm(0,1,2)" "[r,Z]" "wellfounded_trancl(##M,Z,r)"]
-    ord_simp_union nonempty fmsats[of "[_,r,Z]"]
-  by simp
+    using assms separation_in_ctm[of "rcfm(0,1,2)" "[r,Z]" "wellfounded_trancl(##M,Z,r)"]
+      ord_simp_union zero_in_M fmsats[of "[_,r,Z]"]
+    by simp
 qed
 
-text\<open>Proof that \<^term>\<open>nat \<in> M\<close>\<close>
-
+text\<open>To prove \<^term>\<open>nat \<in> M\<close> we get an infinite set \<^term>\<open>I\<close> from \<^term>\<open>infinity_ax\<close>
+closed under \<^term>\<open>0\<close> and \<^term>\<open>succ\<close>; that shows \<^term>\<open>nat\<subseteq>I\<close>. Then we
+can separate \<^term>\<open>I\<close> with the predicate \<^term>\<open>\<lambda>x. x\<in>nat\<close>.\<close>
 lemma finite_sep_intf: "separation(##M, \<lambda>x. x\<in>nat)"
 proof -
   have "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,finite_ordinal_fm(0),[x,v])))"
-    using separation_ax by (simp add:arity)
+    using separation_ax arity_finite_ordinal_fm
+    by simp
   then
   have "(\<forall>v\<in>M. separation(##M,finite_ordinal(##M)))"
-    unfolding separation_def by simp
+    unfolding separation_def
+    by simp
   then
   have "separation(##M,finite_ordinal(##M))"
-    using separation_in_ctm
-      zero_in_M by auto
+    using separation_in_ctm zero_in_M
+    by auto
   then
-  show ?thesis unfolding separation_def by simp
+  show ?thesis
+    unfolding separation_def
+    by simp
 qed
-
-lemma nat_subset_I':
-  "\<lbrakk> I\<in>M ; 0\<in>I ; \<And>x. x\<in>I \<Longrightarrow> succ(x)\<in>I \<rbrakk> \<Longrightarrow> nat \<subseteq> I"
-  by (rule subsetI,induct_tac x,simp+)
 
 lemma nat_subset_I: "\<exists>I\<in>M. nat \<subseteq> I"
 proof -
-  have "\<exists>I\<in>M. 0\<in>I \<and> (\<forall>x\<in>M. x\<in>I \<longrightarrow> succ(x)\<in>I)"
-    using infinity_ax
-    unfolding infinity_ax_def by auto
-  then
+  have "nat \<subseteq> I"
+    if "I\<in>M" and "0\<in>I" and "\<And>x. x\<in>I \<Longrightarrow> succ(x)\<in>I" for I
+    using that
+    by (rule_tac subsetI,induct_tac x,simp_all)
+  moreover
   obtain I where
-    "I\<in>M" "0\<in>I" "(\<forall>x\<in>M. x\<in>I \<longrightarrow> succ(x)\<in>I)"
+    "I\<in>M" "0\<in>I" "\<And>x. x\<in>I \<Longrightarrow> succ(x)\<in>I"
+    using infinity_ax transitivity
+    unfolding infinity_ax_def
     by auto
-  then
-  have "\<And>x. x\<in>I \<Longrightarrow> succ(x)\<in>I"
-    using transitivity by simp
-  then
-  have "nat\<subseteq>I"
-    using  \<open>I\<in>M\<close> \<open>0\<in>I\<close> nat_subset_I' by simp
-  then
-  show ?thesis using \<open>I\<in>M\<close> by auto
+  ultimately
+  show ?thesis
+    by auto
 qed
 
 lemma nat_in_M: "nat \<in> M"
 proof -
-  have 1:"{x\<in>B . x\<in>A}=A" if "A\<subseteq>B" for A B
+  have "{x\<in>B . x\<in>A}=A" if "A\<subseteq>B" for A B
     using that by auto
+  moreover
   obtain I where
     "I\<in>M" "nat\<subseteq>I"
     using nat_subset_I by auto
-  then
+  moreover from this
   have "{x\<in>I . x\<in>nat} \<in> M"
-    using finite_sep_intf separation_closed[of "\<lambda>x . x\<in>nat"] by simp
-  then
+    using finite_sep_intf separation_closed[of "\<lambda>x . x\<in>nat"]
+    by simp
+  ultimately
   show ?thesis
-    using \<open>nat\<subseteq>I\<close> 1 by simp
+    by simp
 qed
 
 end \<comment> \<open>\<^locale>\<open>M_ZF1_trans\<close>\<close>
 
 sublocale M_ZF1_trans \<subseteq> M_trancl "##M"
   using rtrancl_separation_intf wftrancl_separation_intf nat_in_M
-    wellfounded_trancl_def by unfold_locales auto
+    wellfounded_trancl_def
+  by unfold_locales auto
 
 subsection\<open>Interface with \<^term>\<open>M_eclose\<close>\<close>
 
@@ -628,64 +618,73 @@ lemma repl_sats:
   by (rule strong_replacement_cong,simp add:sat)
 
 lemma (in M_ZF1_trans) list_repl1_intf:
-  assumes
-    "A\<in>M"
-  shows
-    "iterates_replacement(##M, is_list_functor(##M,A), 0)"
+  assumes "A\<in>M"
+  shows "iterates_replacement(##M, is_list_functor(##M,A), 0)"
 proof -
+  let ?f="Exists(And(pair_fm(1,0,2),
+               is_wfrec_fm(iterates_MH_fm(list_functor_fm(13,1,0),10,2,1,0),3,1,0)))"
   {
     fix n
     assume "n\<in>nat"
-    have "succ(n)\<in>M"
-      using \<open>n\<in>nat\<close> nat_into_M by simp
-    then have 1:"Memrel(succ(n))\<in>M"
-      using \<open>n\<in>nat\<close> Memrel_closed by simp
-    have "0\<in>M"
-      using  nat_0I nat_into_M by simp
-    then have "is_list_functor(##M, A, a, b)
+    then
+    have "Memrel(succ(n))\<in>M"
+      using nat_into_M Memrel_closed
+      by simp
+    moreover
+    note assms zero_in_M
+    moreover from calculation
+    have "is_list_functor(##M, A, a, b)
        \<longleftrightarrow> sats(M, list_functor_fm(13,1,0), [b,a,c,d,a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),A,0])"
       if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "a0\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "y\<in>M" "x\<in>M" "z\<in>M"
       for a b c d a0 a1 a2 a3 a4 y x z
-      using that 1 \<open>A\<in>M\<close> list_functor_iff_sats by simp
-    then have "sats(M, iterates_MH_fm(list_functor_fm(13,1,0),10,2,1,0), [a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),A,0])
+      using that
+      by simp
+    moreover from calculation
+    have "sats(M, iterates_MH_fm(list_functor_fm(13,1,0),10,2,1,0), [a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),A,0])
         \<longleftrightarrow> iterates_MH(##M,is_list_functor(##M,A),0,a2, a1, a0)"
       if "a0\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "y\<in>M" "x\<in>M" "z\<in>M"
       for a0 a1 a2 a3 a4 y x z
-      using that sats_iterates_MH_fm[of M "is_list_functor(##M,A)" _] 1 \<open>0\<in>M\<close> \<open>A\<in>M\<close>  by simp
-    then have 2:"sats(M, is_wfrec_fm(iterates_MH_fm(list_functor_fm(13,1,0),10,2,1,0),3,1,0),
+      using that sats_iterates_MH_fm[of M "is_list_functor(##M,A)" _]
+      by simp
+    moreover from calculation
+    have "sats(M, is_wfrec_fm(iterates_MH_fm(list_functor_fm(13,1,0),10,2,1,0),3,1,0),
                             [y,x,z,Memrel(succ(n)),A,0])
         \<longleftrightarrow>
         is_wfrec(##M, iterates_MH(##M,is_list_functor(##M,A),0) , Memrel(succ(n)), x, y)"
       if "y\<in>M" "x\<in>M" "z\<in>M" for y x z
-      using  that sats_is_wfrec_fm 1 \<open>0\<in>M\<close> \<open>A\<in>M\<close> by simp
-    let
-      ?f="Exists(And(pair_fm(1,0,2),
-               is_wfrec_fm(iterates_MH_fm(list_functor_fm(13,1,0),10,2,1,0),3,1,0)))"
-    have satsf:"sats(M, ?f, [x,z,Memrel(succ(n)),A,0])
+      using that sats_is_wfrec_fm
+      by simp
+    moreover from calculation
+    have "sats(M, ?f, [x,z,Memrel(succ(n)),A,0])
         \<longleftrightarrow>
-        (\<exists>y\<in>M. pair(##M,x,y,z) &
+        (\<exists>y\<in>M. pair(##M,x,y,z) \<and>
         is_wfrec(##M, iterates_MH(##M,is_list_functor(##M,A),0) , Memrel(succ(n)), x, y))"
       if "x\<in>M" "z\<in>M" for x z
-      using that 2 1 \<open>0\<in>M\<close> \<open>A\<in>M\<close> by (simp del:pair_abs)
+      using that
+      by (simp del:pair_abs)
+    moreover
     have "arity(?f) = 5"
       unfolding fm_definitions
       by (simp add:arity ord_simp_union)
-    then
+    moreover from calculation
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),A,0]))"
-      using replacement_ax1[unfolded replacement_assm_def] 1 \<open>A\<in>M\<close> \<open>0\<in>M\<close> by simp
-    then
+      using replacement_ax1[unfolded replacement_assm_def]
+      by simp
+    moreover from calculation
     have "strong_replacement(##M,\<lambda>x z.
-          \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, iterates_MH(##M,is_list_functor(##M,A),0) ,
+          \<exists>y\<in>M. pair(##M,x,y,z) \<and> is_wfrec(##M, iterates_MH(##M,is_list_functor(##M,A),0) ,
                 Memrel(succ(n)), x, y))"
-      using repl_sats[of M ?f "[Memrel(succ(n)),A,0]"]  satsf by (simp del:pair_abs)
+      using repl_sats[of M ?f "[Memrel(succ(n)),A,0]"]
+      by (simp del:pair_abs)
   }
   then
-  show ?thesis unfolding iterates_replacement_def wfrec_replacement_def by simp
+  show ?thesis
+    unfolding iterates_replacement_def wfrec_replacement_def
+    by simp
 qed
 
-
-
-(* Iterates_replacement para predicados sin parámetros *)
+text\<open>This lemma obtains \<^term>\<open>iterates_replacement\<close> for predicates
+without parameters.\<close>
 lemma (in M_ZF1_trans) iterates_repl_intf :
   assumes
     "v\<in>M" and
@@ -693,232 +692,226 @@ lemma (in M_ZF1_trans) iterates_repl_intf :
     arty:"arity(is_F_fm)=2" and
     satsf: "\<And>a b env'. \<lbrakk> a\<in>M ; b\<in>M ; env'\<in>list(M) \<rbrakk>
               \<Longrightarrow> is_F(a,b) \<longleftrightarrow> sats(M, is_F_fm, [b,a]@env')"
-    and is_F_fm_replacement:"\<And>env. Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0))) \<in> formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow>
+    and is_F_fm_replacement:
+    "\<And>env. Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0))) \<in> formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow>
       arity(Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0)))) \<le> 2 #+ length(env) \<Longrightarrow>
       strong_replacement(##M,\<lambda>x y. sats(M,Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0))),[x,y] @ env))"
   shows
     "iterates_replacement(##M,is_F,v)"
 proof -
+  let ?f="Exists(And(pair_fm(1,0,2),
+               is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0)))"
   {
     fix n
     assume "n\<in>nat"
-    have "succ(n)\<in>M"
-      using \<open>n\<in>nat\<close> nat_into_M by simp
-    then have 1:"Memrel(succ(n))\<in>M"
-      using \<open>n\<in>nat\<close> Memrel_closed by simp
+    then
+    have "Memrel(succ(n))\<in>M"
+      using nat_into_M Memrel_closed
+      by simp
+    moreover
     {
       fix a0 a1 a2 a3 a4 y x z
-      assume as:"a0\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "y\<in>M" "x\<in>M" "z\<in>M"
-      have "sats(M, is_F_fm, Cons(b,Cons(a,Cons(c,Cons(d,[a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),v])))))
+      assume "[a0,a1,a2,a3,a4,y,x,z]\<in>list(M)"
+      moreover
+      note \<open>v\<in>M\<close> \<open>Memrel(succ(n))\<in>M\<close>
+      moreover from calculation
+      have "sats(M, is_F_fm, [b,a,c,d,a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),v])
           \<longleftrightarrow> is_F(a,b)"
         if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" for a b c d
-        using as that 1 satsf[of a b "[c,d,a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),v]"] \<open>v\<in>M\<close> by simp
-      then
+        using that satsf[of a b "[c,d,a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),v]"]
+        by simp
+      moreover from calculation
       have "sats(M, iterates_MH_fm(is_F_fm,9,2,1,0), [a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),v])
           \<longleftrightarrow> iterates_MH(##M,is_F,v,a2, a1, a0)"
-        using as
-          sats_iterates_MH_fm[of M "is_F" "is_F_fm"] 1 \<open>v\<in>M\<close> by simp
+        using sats_iterates_MH_fm[of M "is_F" "is_F_fm"]
+        by simp
     }
-    then have 2:"sats(M, is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0),
+    moreover from calculation
+    have "sats(M, is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0),
                             [y,x,z,Memrel(succ(n)),v])
         \<longleftrightarrow>
         is_wfrec(##M, iterates_MH(##M,is_F,v),Memrel(succ(n)), x, y)"
       if "y\<in>M" "x\<in>M" "z\<in>M" for y x z
-      using  that sats_is_wfrec_fm 1 \<open>v\<in>M\<close> by simp
-    let
-      ?f="Exists(And(pair_fm(1,0,2),
-               is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0)))"
-    have satsf:"sats(M, ?f, [x,z,Memrel(succ(n)),v])
+      using that sats_is_wfrec_fm \<open>v\<in>M\<close> by simp
+    moreover from calculation
+    have "sats(M, ?f, [x,z,Memrel(succ(n)),v])
         \<longleftrightarrow>
-        (\<exists>y\<in>M. pair(##M,x,y,z) &
+        (\<exists>y\<in>M. pair(##M,x,y,z) \<and>
         is_wfrec(##M, iterates_MH(##M,is_F,v) , Memrel(succ(n)), x, y))"
       if "x\<in>M" "z\<in>M" for x z
-      using that 2 1 \<open>v\<in>M\<close> by (simp del:pair_abs)
-    have "arity(?f) = 4"
+      using that \<open>v\<in>M\<close>
+      by (simp del:pair_abs)
+    moreover
+    have "arity(?f) = 4" "?f\<in>formula"
       unfolding fm_definitions
-      using arty by (simp add:arity ord_simp_union)
-    then
+      using arty assms
+      by (simp_all add:arity ord_simp_union)
+    moreover from calculation \<open>v\<in>_\<close>
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),v]))"
-      using is_F_fm_replacement 1 \<open>v\<in>M\<close> \<open>is_F_fm\<in>formula\<close> by simp
-    then
+      using is_F_fm_replacement
+      by simp
+    ultimately
     have "strong_replacement(##M,\<lambda>x z.
-          \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, iterates_MH(##M,is_F,v) ,
+          \<exists>y\<in>M. pair(##M,x,y,z) \<and> is_wfrec(##M, iterates_MH(##M,is_F,v) ,
                 Memrel(succ(n)), x, y))"
-      using repl_sats[of M ?f "[Memrel(succ(n)),v]"]  satsf by (simp del:pair_abs)
+      using repl_sats[of M ?f "[Memrel(succ(n)),v]"]
+      by (simp del:pair_abs)
   }
   then
-  show ?thesis unfolding iterates_replacement_def wfrec_replacement_def by simp
+  show ?thesis
+    unfolding iterates_replacement_def wfrec_replacement_def
+    by simp
 qed
 
+arity_theorem for "formula_functor_fm"
 lemma (in M_ZF1_trans) formula_repl1_intf :
   "iterates_replacement(##M, is_formula_functor(##M), 0)"
-proof -
-  have "0\<in>M"
-    using  nat_0I nat_into_M by simp
-  have 1:"arity(formula_functor_fm(1,0)) = 2"
-    unfolding fm_definitions
-    by (simp add:arity ord_simp_union)
-  have 2:"formula_functor_fm(1,0)\<in>formula" by simp
-  have "is_formula_functor(##M,a,b) \<longleftrightarrow>
-        sats(M, formula_functor_fm(1,0), [b,a])"
-    if "a\<in>M" "b\<in>M"  for a b
-    using that by simp
-  then show ?thesis using \<open>0\<in>M\<close> 1 2
-      iterates_repl_intf[where is_F_fm="formula_functor_fm(1,0)"] replacement_ax1[unfolded replacement_assm_def] by simp
-qed
+  using arity_formula_functor_fm zero_in_M ord_simp_union
+      iterates_repl_intf[where is_F_fm="formula_functor_fm(1,0)"]
+      replacement_ax1[unfolded replacement_assm_def]
+  by simp
 
-lemma (in M_ZF1_trans) nth_repl_intf:
-  assumes
-    "l \<in> M"
-  shows
-    "iterates_replacement(##M,\<lambda>l' t. is_tl(##M,l',t),l)"
-proof -
-  have 1:"arity(tl_fm(1,0)) = 2"
-    unfolding fm_definitions by (simp add:arity ord_simp_union)
-  have 2:"tl_fm(1,0)\<in>formula" by simp
-  have "is_tl(##M,a,b) \<longleftrightarrow> sats(M, tl_fm(1,0), [b,a])"
-    if "a\<in>M" "b\<in>M" for a b
-    using that by simp
-  then show ?thesis using \<open>l\<in>M\<close> 1 2
-      iterates_repl_intf[where is_F_fm="tl_fm(1,0)"] replacement_ax1[unfolded replacement_assm_def] by simp
-qed
+arity_theorem for "Inl_fm"
+arity_theorem for "Inr_fm"
+arity_theorem for "Nil_fm"
+arity_theorem for "Cons_fm"
+arity_theorem for "quasilist_fm"
+arity_theorem for "tl_fm"
 
+lemma (in M_ZF1_trans) tl_repl_intf:
+  assumes "l \<in> M"
+  shows "iterates_replacement(##M,\<lambda>l' t. is_tl(##M,l',t),l)"
+  using assms arity_tl_fm ord_simp_union
+    iterates_repl_intf[where is_F_fm="tl_fm(1,0)"]
+    replacement_ax1[unfolded replacement_assm_def]
+    by simp
+
+arity_theorem for "big_union_fm"
 
 lemma (in M_ZF1_trans) eclose_repl1_intf:
-  assumes
-    "A\<in>M"
-  shows
-    "iterates_replacement(##M, big_union(##M), A)"
-proof -
-  have 1:"arity(big_union_fm(1,0)) = 2"
-    unfolding fm_definitions by (simp add:arity ord_simp_union)
-  have 2:"big_union_fm(1,0)\<in>formula" by simp
-  have "big_union(##M,a,b) \<longleftrightarrow> sats(M, big_union_fm(1,0), [b,a])"
-    if "a\<in>M" "b\<in>M" for a b
-    using that by simp
-  then show ?thesis using \<open>A\<in>M\<close> 1 2
-      iterates_repl_intf[where is_F_fm="big_union_fm(1,0)"] replacement_ax1[unfolded replacement_assm_def] by simp
-qed
+  assumes "A\<in>M"
+  shows "iterates_replacement(##M, big_union(##M), A)"
+  using assms arity_big_union_fm
+    iterates_repl_intf[where is_F_fm="big_union_fm(1,0)"]
+    replacement_ax1[unfolded replacement_assm_def]
+    ord_simp_union
+  by simp
 
-(*
-    and list_replacement2:
-   "M(A) \<Longrightarrow> strong_replacement(M,
-         \<lambda>n y. n\<in>nat & is_iterates(M, is_list_functor(M,A), 0, n, y))"
-
-*)
 lemma (in M_ZF1_trans) list_repl2_intf:
-  assumes
-    "A\<in>M"
-  shows
-    "strong_replacement(##M,\<lambda>n y. n\<in>nat & is_iterates(##M, is_list_functor(##M,A), 0, n, y))"
+  assumes "A\<in>M"
+  shows "strong_replacement(##M,\<lambda>n y. n\<in>nat \<and>
+            is_iterates(##M, is_list_functor(##M,A), 0, n, y))"
 proof -
-  have "0\<in>M"
-    using  nat_0I nat_into_M by simp
+  let ?f = "And(Member(0,4),is_iterates_fm(list_functor_fm(13,1,0),3,0,1))"
+  note zero_in_M nat_in_M \<open>A\<in>M\<close>
+  moreover from this
   have "is_list_functor(##M,A,a,b) \<longleftrightarrow>
         sats(M,list_functor_fm(13,1,0),[b,a,c,d,e,f,g,h,i,j,k,n,y,A,0,nat])"
     if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "e\<in>M" "f\<in>M""g\<in>M""h\<in>M""i\<in>M""j\<in>M" "k\<in>M" "n\<in>M" "y\<in>M"
     for a b c d e f g h i j k n y
-    using that \<open>0\<in>M\<close> nat_in_M \<open>A\<in>M\<close> by simp
-  then
-  have 1:"sats(M, is_iterates_fm(list_functor_fm(13,1,0),3,0,1),[n,y,A,0,nat] ) \<longleftrightarrow>
+    using that
+    by simp
+  moreover from calculation
+  have "sats(M, is_iterates_fm(list_functor_fm(13,1,0),3,0,1),[n,y,A,0,nat] ) \<longleftrightarrow>
            is_iterates(##M, is_list_functor(##M,A), 0, n , y)"
     if "n\<in>M" "y\<in>M" for n y
-    using that \<open>0\<in>M\<close> \<open>A\<in>M\<close> nat_in_M
-      sats_is_iterates_fm[of M "is_list_functor(##M,A)"] by simp
-  let ?f = "And(Member(0,4),is_iterates_fm(list_functor_fm(13,1,0),3,0,1))"
-  have satsf:"sats(M, ?f,[n,y,A,0,nat] ) \<longleftrightarrow>
-        n\<in>nat & is_iterates(##M, is_list_functor(##M,A), 0, n, y)"
+    using that sats_is_iterates_fm[of M "is_list_functor(##M,A)"]
+    by simp
+  moreover from calculation
+  have "sats(M, ?f,[n,y,A,0,nat] ) \<longleftrightarrow>
+        n\<in>nat \<and> is_iterates(##M, is_list_functor(##M,A), 0, n, y)"
     if "n\<in>M" "y\<in>M" for n y
-    using that \<open>0\<in>M\<close> \<open>A\<in>M\<close> nat_in_M 1 by simp
+    using that
+    by simp
+  moreover
   have "arity(?f) = 5"
     unfolding fm_definitions
     by (simp add:arity ord_simp_union)
-  then
-  have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,A,0,nat]))"
-    using replacement_ax1[unfolded replacement_assm_def] 1 nat_in_M \<open>A\<in>M\<close> \<open>0\<in>M\<close> by simp
-  then
-  show ?thesis using repl_sats[of M ?f "[A,0,nat]"]  satsf  by simp
+  ultimately
+  show ?thesis
+    using replacement_ax1[unfolded replacement_assm_def] repl_sats[of M ?f "[A,0,nat]"]
+    by simp
 qed
 
 lemma (in M_ZF1_trans) formula_repl2_intf:
-  "strong_replacement(##M,\<lambda>n y. n\<in>nat & is_iterates(##M, is_formula_functor(##M), 0, n, y))"
+  "strong_replacement(##M,\<lambda>n y. n\<in>nat \<and> is_iterates(##M, is_formula_functor(##M), 0, n, y))"
 proof -
-  have "0\<in>M"
-    using  nat_0I nat_into_M by simp
+  let ?f = "And(Member(0,3),is_iterates_fm(formula_functor_fm(1,0),2,0,1))"
+  note zero_in_M nat_in_M
+  moreover from this
   have "is_formula_functor(##M,a,b) \<longleftrightarrow>
         sats(M,formula_functor_fm(1,0),[b,a,c,d,e,f,g,h,i,j,k,n,y,0,nat])"
     if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "e\<in>M" "f\<in>M""g\<in>M""h\<in>M""i\<in>M""j\<in>M" "k\<in>M" "n\<in>M" "y\<in>M"
     for a b c d e f g h i j k n y
-    using that \<open>0\<in>M\<close> nat_in_M by simp
-  then
-  have 1:"sats(M, is_iterates_fm(formula_functor_fm(1,0),2,0,1),[n,y,0,nat] ) \<longleftrightarrow>
+    using that
+    by simp
+  moreover from calculation
+  have "sats(M, is_iterates_fm(formula_functor_fm(1,0),2,0,1),[n,y,0,nat] ) \<longleftrightarrow>
            is_iterates(##M, is_formula_functor(##M), 0, n , y)"
     if "n\<in>M" "y\<in>M" for n y
-    using that \<open>0\<in>M\<close> nat_in_M
-      sats_is_iterates_fm[of M "is_formula_functor(##M)"] by simp
-  let ?f = "And(Member(0,3),is_iterates_fm(formula_functor_fm(1,0),2,0,1))"
-  have satsf:"sats(M, ?f,[n,y,0,nat] ) \<longleftrightarrow>
-        n\<in>nat & is_iterates(##M, is_formula_functor(##M), 0, n, y)"
+    using that sats_is_iterates_fm[of M "is_formula_functor(##M)"]
+    by simp
+  moreover from calculation
+  have "sats(M, ?f,[n,y,0,nat] ) \<longleftrightarrow>
+        n\<in>nat \<and> is_iterates(##M, is_formula_functor(##M), 0, n, y)"
     if "n\<in>M" "y\<in>M" for n y
-    using that \<open>0\<in>M\<close> nat_in_M 1 by simp
-  have artyf:"arity(?f) = 4"
+    using that
+    by simp
+  moreover
+  have "arity(?f) = 4"
     unfolding fm_definitions
     by (simp add:arity ord_simp_union)
-  then
-  have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,0,nat]))"
-    using replacement_ax1[unfolded replacement_assm_def] 1 artyf \<open>0\<in>M\<close> nat_in_M by simp
-  then
-  show ?thesis using repl_sats[of M ?f "[0,nat]"]  satsf  by simp
+  ultimately
+  show ?thesis
+    using replacement_ax1[unfolded replacement_assm_def] repl_sats[of M ?f "[0,nat]"]
+    by simp
 qed
 
 
-(*
-   "M(A) \<Longrightarrow> strong_replacement(M,
-         \<lambda>n y. n\<in>nat & is_iterates(M, big_union(M), A, n, y))"
-*)
-
 lemma (in M_ZF1_trans) eclose_repl2_intf:
-  assumes
-    "A\<in>M"
-  shows
-    "strong_replacement(##M,\<lambda>n y. n\<in>nat & is_iterates(##M, big_union(##M), A, n, y))"
+  assumes "A\<in>M"
+  shows "strong_replacement(##M,\<lambda>n y. n\<in>nat \<and> is_iterates(##M, big_union(##M), A, n, y))"
 proof -
+  let ?f = "And(Member(0,3),is_iterates_fm(big_union_fm(1,0),2,0,1))"
+  note nat_in_M \<open>A\<in>M\<close>
+  moreover from this
   have "big_union(##M,a,b) \<longleftrightarrow>
         sats(M,big_union_fm(1,0),[b,a,c,d,e,f,g,h,i,j,k,n,y,A,nat])"
     if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "e\<in>M" "f\<in>M""g\<in>M""h\<in>M""i\<in>M""j\<in>M" "k\<in>M" "n\<in>M" "y\<in>M"
     for a b c d e f g h i j k n y
-    using that \<open>A\<in>M\<close> nat_in_M by simp
-  then
-  have 1:"sats(M, is_iterates_fm(big_union_fm(1,0),2,0,1),[n,y,A,nat] ) \<longleftrightarrow>
+    using that by simp
+  moreover from calculation
+  have "sats(M, is_iterates_fm(big_union_fm(1,0),2,0,1),[n,y,A,nat] ) \<longleftrightarrow>
            is_iterates(##M, big_union(##M), A, n , y)"
     if "n\<in>M" "y\<in>M" for n y
-    using that \<open>A\<in>M\<close> nat_in_M
-      sats_is_iterates_fm[of M "big_union(##M)"] by simp
-  let ?f = "And(Member(0,3),is_iterates_fm(big_union_fm(1,0),2,0,1))"
-  have satsf:"sats(M, ?f,[n,y,A,nat] ) \<longleftrightarrow>
-        n\<in>nat & is_iterates(##M, big_union(##M), A, n, y)"
+    using that sats_is_iterates_fm[of M "big_union(##M)"]
+    by simp
+  moreover from calculation
+  have "sats(M, ?f,[n,y,A,nat] ) \<longleftrightarrow>
+        n\<in>nat \<and> is_iterates(##M, big_union(##M), A, n, y)"
     if "n\<in>M" "y\<in>M" for n y
-    using that \<open>A\<in>M\<close> nat_in_M 1 by simp
-  have artyf:"arity(?f) = 4"
+    using that
+    by simp
+  moreover
+  have "arity(?f) = 4"
     unfolding fm_definitions
     by (simp add:arity ord_simp_union)
-  then
-  have "strong_replacement(##M,\<lambda>n y. sats(M,?f,[n,y,A,nat]))"
-    using replacement_ax1[unfolded replacement_assm_def] 1 artyf \<open>A\<in>M\<close> nat_in_M by simp
-  then
-  show ?thesis using repl_sats[of M ?f "[A,nat]"]  satsf  by simp
+  ultimately
+  show ?thesis
+    using repl_sats[of M ?f "[A,nat]"] replacement_ax1[unfolded replacement_assm_def]
+    by simp
 qed
 
 sublocale M_ZF1_trans \<subseteq> M_datatypes "##M"
   using list_repl1_intf list_repl2_intf formula_repl1_intf
-    formula_repl2_intf nth_repl_intf
+    formula_repl2_intf tl_repl_intf
   by unfold_locales auto
 
 sublocale M_ZF1_trans \<subseteq> M_eclose "##M"
   using eclose_repl1_intf eclose_repl2_intf
   by unfold_locales auto
 
-(* Interface with locale M_eclose_pow *)
+text\<open>Interface with \<^locale>\<open>M_eclose\<close>.\<close>
 
 lemma (in M_ZF1_trans) Powapply_repl :
   assumes "f\<in>M"
@@ -951,7 +944,7 @@ proof -
   moreover from this
   have iff:"y = succ(f ` x) \<longleftrightarrow> M, [x, y, f] \<Turnstile> PHrank_fm(2, 0, 1)" if "x\<in>M" "y\<in>M" for x y
     using PHrank_iff_sats[of 2 "[x,y,f]" f 0 _ 1 _ M] zero_in_M that
-    apply_closed
+      apply_closed
     unfolding PHrank_def
     by simp
   moreover
@@ -969,49 +962,46 @@ declare is_Hrank_fm_def[fm_definitions add]
 declare PHrank_fm_def[fm_definitions add]
 
 lemma (in M_ZF1_trans) wfrec_rank :
-  assumes
-    "X\<in>M"
-  shows
-    "wfrec_replacement(##M,is_Hrank(##M),rrank(X))"
+  assumes "X\<in>M"
+  shows "wfrec_replacement(##M,is_Hrank(##M),rrank(X))"
 proof -
+  let ?f="Exists(And(pair_fm(1,0,2),is_wfrec_fm(is_Hrank_fm(2,1,0),3,1,0)))"
+  note assms zero_in_M
+  moreover from this
   have
     "is_Hrank(##M,a2, a1, a0) \<longleftrightarrow>
              sats(M, is_Hrank_fm(2,1,0), [a0,a1,a2,a3,a4,y,x,z,rrank(X)])"
     if "a4\<in>M" "a3\<in>M" "a2\<in>M" "a1\<in>M" "a0\<in>M" "y\<in>M" "x\<in>M" "z\<in>M" for a4 a3 a2 a1 a0 y x z
-    using that rrank_in_M \<open>X\<in>M\<close> zero_in_M is_Hrank_iff_sats
+    using that rrank_in_M is_Hrank_iff_sats
     by simp
-  then
-  have
-    1:"sats(M, is_wfrec_fm(is_Hrank_fm(2,1,0),3,1,0),[y,x,z,rrank(X)])
+  moreover from calculation
+  have "sats(M, is_wfrec_fm(is_Hrank_fm(2,1,0),3,1,0),[y,x,z,rrank(X)])
   \<longleftrightarrow> is_wfrec(##M, is_Hrank(##M) ,rrank(X), x, y)"
     if "y\<in>M" "x\<in>M" "z\<in>M" for y x z
-    using that \<open>X\<in>M\<close> rrank_in_M sats_is_wfrec_fm zero_in_M
+    using that rrank_in_M sats_is_wfrec_fm
     by simp
-  let
-    ?f="Exists(And(pair_fm(1,0,2),is_wfrec_fm(is_Hrank_fm(2,1,0),3,1,0)))"
-  have satsf:"sats(M, ?f, [x,z,rrank(X)])
-              \<longleftrightarrow> (\<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hrank(##M) , rrank(X), x, y))"
+  moreover from calculation
+  have "sats(M, ?f, [x,z,rrank(X)])
+              \<longleftrightarrow> (\<exists>y\<in>M. pair(##M,x,y,z) \<and> is_wfrec(##M, is_Hrank(##M) , rrank(X), x, y))"
     if "x\<in>M" "z\<in>M" for x z
-    using that 1 \<open>X\<in>M\<close> rrank_in_M by (simp del:pair_abs)
+    using that rrank_in_M
+    by (simp del:pair_abs)
+  moreover
   have "arity(?f) = 3"
     unfolding fm_definitions
     by (simp add:arity ord_simp_union)
-  then
+  moreover from calculation
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,rrank(X)]))"
-    using replacement_ax1[unfolded replacement_assm_def] 1 \<open>X\<in>M\<close> rrank_in_M
+    using replacement_ax1[unfolded replacement_assm_def] rrank_in_M
     by simp
-  then
-  have "strong_replacement(##M,\<lambda>x z.
-          \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hrank(##M) , rrank(X), x, y))"
-    using repl_sats[of M ?f "[rrank(X)]"]  satsf
-    by (simp del:pair_abs)
-  then
+  ultimately
   show ?thesis
+    using repl_sats[of M ?f "[rrank(X)]"]
     unfolding wfrec_replacement_def
-    by simp
+    by (simp del:pair_abs)
 qed
 
-(* FIX US *)
+(* FIX US: what is wrong with this? *)
 schematic_goal sats_is_Vset_fm_auto:
   assumes
     "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
@@ -1023,56 +1013,63 @@ schematic_goal sats_is_Vset_fm_auto:
   by (insert assms; (rule sep_rules is_HVfrom_iff_sats is_transrec_iff_sats | simp)+)
 
 synthesize "is_Vset" from_schematic "sats_is_Vset_fm_auto"
-
 arity_theorem for "is_Vset_fm"
 
-lemma (in M_ZF1_trans) memrel_eclose_sing :
-  "a\<in>M \<Longrightarrow> \<exists>sa\<in>M. \<exists>esa\<in>M. \<exists>mesa\<in>M.
-       upair(##M,a,a,sa) & is_eclose(##M,sa,esa) & membership(##M,esa,mesa)"
-  using upair_ax eclose_closed Memrel_closed unfolding upair_ax_def
-  by (simp del:upair_abs)
-
-
 lemma (in M_ZF1_trans) trans_repl_HVFrom :
-  assumes
-    "A\<in>M" "i\<in>M"
-  shows
-    "transrec_replacement(##M,is_HVfrom(##M,A),i)"
+  assumes "A\<in>M" "i\<in>M"
+  shows "transrec_replacement(##M,is_HVfrom(##M,A),i)"
 proof -
-  { fix mesa
+  let ?f="Exists(And(pair_fm(1,0,2),is_wfrec_fm(is_HVfrom_fm(8,2,1,0),4,1,0)))"
+  note facts = assms zero_in_M
+  moreover
+  have "\<exists>sa\<in>M. \<exists>esa\<in>M. \<exists>mesa\<in>M.
+       upair(##M,a,a,sa) \<and> is_eclose(##M,sa,esa) \<and> membership(##M,esa,mesa)"
+     if "a\<in>M" for a
+    using that upair_ax eclose_closed Memrel_closed
+    unfolding upair_ax_def
+    by (simp del:upair_abs)
+  moreover
+  {
+    fix mesa
     assume "mesa\<in>M"
-    have
-      0:"is_HVfrom(##M,A,a2, a1, a0) \<longleftrightarrow>
+    moreover
+    note facts
+    moreover from calculation
+    have "is_HVfrom(##M,A,a2, a1, a0) \<longleftrightarrow>
       sats(M, is_HVfrom_fm(8,2,1,0), [a0,a1,a2,a3,a4,y,x,z,A,mesa])"
       if "a4\<in>M" "a3\<in>M" "a2\<in>M" "a1\<in>M" "a0\<in>M" "y\<in>M" "x\<in>M" "z\<in>M" for a4 a3 a2 a1 a0 y x z
-      using that zero_in_M sats_is_HVfrom_fm \<open>mesa\<in>M\<close> \<open>A\<in>M\<close> by simp
-    have
-      1:"sats(M, is_wfrec_fm(is_HVfrom_fm(8,2,1,0),4,1,0),[y,x,z,A,mesa])
+      using that sats_is_HVfrom_fm
+      by simp
+    moreover from calculation
+    have "sats(M, is_wfrec_fm(is_HVfrom_fm(8,2,1,0),4,1,0),[y,x,z,A,mesa])
         \<longleftrightarrow> is_wfrec(##M, is_HVfrom(##M,A),mesa, x, y)"
       if "y\<in>M" "x\<in>M" "z\<in>M" for y x z
-      using that \<open>A\<in>M\<close> \<open>mesa\<in>M\<close> sats_is_wfrec_fm[OF 0] by simp
-    let
-      ?f="Exists(And(pair_fm(1,0,2),is_wfrec_fm(is_HVfrom_fm(8,2,1,0),4,1,0)))"
-    have satsf:"sats(M, ?f, [x,z,A,mesa])
-              \<longleftrightarrow> (\<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_HVfrom(##M,A) , mesa, x, y))"
+      using that sats_is_wfrec_fm
+      by simp
+    moreover from calculation
+    have "sats(M, ?f, [x,z,A,mesa])
+              \<longleftrightarrow> (\<exists>y\<in>M. pair(##M,x,y,z) \<and> is_wfrec(##M, is_HVfrom(##M,A) , mesa, x, y))"
       if "x\<in>M" "z\<in>M" for x z
-      using that 1 \<open>A\<in>M\<close> \<open>mesa\<in>M\<close> by (simp del:pair_abs)
+      using that
+      by (simp del:pair_abs)
+    moreover
     have "arity(?f) = 4"
       unfolding fm_definitions
       by (simp add:arity ord_simp_union)
-    then
+    moreover from calculation
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,A,mesa]))"
-      using replacement_ax1[unfolded replacement_assm_def] 1 \<open>A\<in>M\<close> \<open>mesa\<in>M\<close> by simp
-    then
-    have "strong_replacement(##M,\<lambda>x z.
-          \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_HVfrom(##M,A) , mesa, x, y))"
-      using repl_sats[of M ?f "[A,mesa]"]  satsf by (simp del:pair_abs)
-    then
+      using replacement_ax1[unfolded replacement_assm_def]
+      by simp
+    ultimately
     have "wfrec_replacement(##M,is_HVfrom(##M,A),mesa)"
-      unfolding wfrec_replacement_def  by simp
+      using repl_sats[of M ?f "[A,mesa]"]
+      unfolding wfrec_replacement_def
+      by (simp del:pair_abs)
   }
-  then show ?thesis unfolding transrec_replacement_def
-    using \<open>i\<in>M\<close> memrel_eclose_sing by simp
+  ultimately
+  show ?thesis
+    unfolding transrec_replacement_def
+    by simp
 qed
 
 sublocale M_ZF1_trans \<subseteq> M_Vfrom "##M"
@@ -1094,10 +1091,11 @@ lemma Collect_in_M :
 proof -
   have "separation(##M,\<lambda>x. sats(M,\<phi>,[x] @ env))"
     using assms separation_ax by simp
-  then show ?thesis using
-      \<open>A\<in>M\<close> satsQ trans_M
+  then
+  show ?thesis
+    using \<open>A\<in>M\<close> satsQ transitivity separation_closed
       separation_cong[of "##M" "\<lambda>y. sats(M,\<phi>,[y]@env)" "Q"]
-      separation_closed by simp
+    by simp
 qed
 
 \<comment> \<open>This version has a weaker assumption.\<close>
@@ -1110,20 +1108,22 @@ lemma separation_in_M :
     "{y\<in>A . Q(y)} \<in> M"
 proof -
   let ?\<phi>' = "And(\<phi>,Member(0,length(env)#+1))"
+  note assms
+  moreover
   have "arity(?\<phi>') \<le> 1 #+ length(env@[A])"
-    using assms Un_le
-      le_trans[of "arity(\<phi>)" "1#+length(env)" "2#+length(env)"]
+    using assms Un_le le_trans[of "arity(\<phi>)" "1#+length(env)" "2#+length(env)"]
     by (force simp:FOL_arities)
-  moreover from assms
-  have "?\<phi>'\<in>formula"
-    "nth(length(env), env @ [A]) = A" using assms nth_append by auto
+  moreover from calculation
+  have "?\<phi>'\<in>formula" "nth(length(env), env @ [A]) = A"
+    using nth_append
+    by auto
   moreover from calculation
   have "\<And> x . x \<in> M \<Longrightarrow> sats(M,?\<phi>',[x]@env@[A]) \<longleftrightarrow> Q(x) \<and> x\<in>A"
-    using arity_sats_iff[of _ "[A]" _ "[_]@env"] assms
+    using arity_sats_iff[of _ "[A]" _ "[_]@env"]
     by auto
   ultimately
-  show ?thesis using assms
-      Collect_in_M[of ?\<phi>' "env@[A]" _ "\<lambda>x . Q(x) \<and> x\<in>A", OF _ _ _ \<open>A\<in>M\<close>]
+  show ?thesis
+    using Collect_in_M[of ?\<phi>' "env@[A]" _ "\<lambda>x . Q(x) \<and> x\<in>A", OF _ _ _ \<open>A\<in>M\<close>]
     by auto
 qed
 
@@ -1141,10 +1141,10 @@ lemma strong_replacement_in_ctm:
     phi_replacement:"replacement_assm(M,env,\<phi>)" and
     "env\<in>list(M)"
   shows "strong_replacement(##M, \<lambda>x y . y = f(x))"
-    using assms
-      strong_replacement_cong[of "##M" "\<lambda>x y. M,[x,y]@env\<Turnstile>\<phi>" "\<lambda>x y. y = f(x)"]
-    unfolding replacement_assm_def
-    by auto
+  using assms
+    strong_replacement_cong[of "##M" "\<lambda>x y. M,[x,y]@env\<Turnstile>\<phi>" "\<lambda>x y. y = f(x)"]
+  unfolding replacement_assm_def
+  by auto
 
 lemma strong_replacement_rel_in_ctm :
   assumes
@@ -1154,10 +1154,10 @@ lemma strong_replacement_rel_in_ctm :
     phi_replacement:"replacement_assm(M,env,\<phi>)" and
     "env\<in>list(M)"
   shows "strong_replacement(##M, f)"
-    using assms
-      strong_replacement_cong[of "##M" "\<lambda>x y. M,[x,y]@env\<Turnstile>\<phi>" "f"]
-    unfolding replacement_assm_def
-    by auto
+  using assms
+    strong_replacement_cong[of "##M" "\<lambda>x y. M,[x,y]@env\<Turnstile>\<phi>" "f"]
+  unfolding replacement_assm_def
+  by auto
 
 lemma Replace_in_M :
   assumes
@@ -1170,16 +1170,17 @@ lemma Replace_in_M :
   shows "{f(x) . x\<in>A}\<in>M"
 proof -
   let ?\<phi>' = "And(\<phi>,Member(0,length(env)#+2))"
+  note assms
+  moreover from this
   have "arity(?\<phi>') \<le> 2 #+ length(env@[A])"
-    using assms Un_le
-      le_trans[of "arity(\<phi>)" "2#+(length(env))" "3#+length(env)"]
+    using Un_le le_trans[of "arity(\<phi>)" "2#+(length(env))" "3#+length(env)"]
     by (force simp:FOL_arities)
-  moreover from assms
+  moreover from calculation
   have "?\<phi>'\<in>formula" "nth(length(env), env @ [A]) = A"
-    using assms nth_append by auto
+    using nth_append by auto
   moreover from calculation
   have "\<And> x y. x \<in> M \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,y]@env@[A]\<Turnstile>?\<phi>') \<longleftrightarrow> y=f(x) \<and>x\<in>A"
-    using arity_sats_iff[of _ "[A]" _ "[_,_]@env"] assms
+    using arity_sats_iff[of _ "[A]" _ "[_,_]@env"]
     by auto
   moreover from calculation
   have "strong_replacement(##M, \<lambda>x y. M,[x,y]@env@[A] \<Turnstile> ?\<phi>')"
@@ -1195,7 +1196,8 @@ proof -
   moreover
   have "{f(x). x\<in>A} = { y . x\<in>A , y = f(x)}"
     by auto
-  ultimately show ?thesis by simp
+  ultimately
+  show ?thesis by simp
 qed
 
 lemma Replace_relativized_in_M :
@@ -1342,8 +1344,8 @@ proof -
   have 2:"x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,y]@env \<Turnstile> ?\<phi>') \<longleftrightarrow> ?p(x,y)" for x y
     using
       sats_iff_sats_ren[OF f_fm _ _ _ _ ren_type' f_ar
-         ren_action'[rule_format,of _ "fst(x)" x "snd(x)" y],simplified]
-       \<open>env\<in>_\<close> length_type[OF \<open>env\<in>_\<close>] transitivity[OF _ \<open>A\<in>M\<close>]
+        ren_action'[rule_format,of _ "fst(x)" x "snd(x)" y],simplified]
+      \<open>env\<in>_\<close> length_type[OF \<open>env\<in>_\<close>] transitivity[OF _ \<open>A\<in>M\<close>]
       fst_snd_closed pair_in_M_iff fsats[of "fst(x)" "snd(x)" y,symmetric]
       fst_abs snd_abs
     by auto
@@ -1374,7 +1376,7 @@ simple_rename "ren_V3" src "[fz,x_P, x_leq, x_o,x_f, gz, hz]"
 
 lemma separation_sat_after_function_1:
   assumes "[a,b,c,d]\<in>list(M)" and  "\<chi>\<in>formula" and "arity(\<chi>) \<le> 6"
-  and
+    and
     f_fm:  "f_fm \<in> formula" and
     f_ar:  "arity(f_fm) \<le> 6" and
     fsats: "\<And> fx x. fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[fx,x]@[a, b, c, d] \<Turnstile> f_fm) \<longleftrightarrow> fx=f(x)" and
@@ -1395,11 +1397,11 @@ proof -
   moreover from this
   have "arity(\<chi>) \<le> 7" "?\<psi>\<in>formula"
     using ord_simp_union ren_tc ren_U_thm(2)[folded ren_U_fn_def] le_trans[of "arity(\<chi>)" 6]
-      by simp_all
+    by simp_all
   moreover from calculation
   have "arity(?\<psi>) \<le> 7" "?\<psi>'\<in>formula"
     using arity_ren ren_U_thm(2)[folded ren_U_fn_def] f_fm g_fm
-     by simp_all
+    by simp_all
   moreover from calculation f_ar g_ar f_fm g_fm
   have "arity(?\<psi>') \<le> 5"
     using ord_simp_union pred_le arity_type
@@ -1421,8 +1423,8 @@ proof -
       using that calculation by auto
     then
     obtain xa x where "x\<in>M" "xa\<in>M" "M, [xa, z, a, b, c, d] \<Turnstile> f_fm"
-        "(M, [x, xa, z, a, b, c, d] \<Turnstile> g_fm)"
-        "(M, [x, xa, z, a, b, c, d] \<Turnstile> ren(\<chi>) ` 6 ` 7 ` ren_U_fn)"
+      "(M, [x, xa, z, a, b, c, d] \<Turnstile> g_fm)"
+      "(M, [x, xa, z, a, b, c, d] \<Turnstile> ren(\<chi>) ` 6 ` 7 ` ren_U_fn)"
       using that calculation by auto
     moreover from this
     have "xa=f(z)" "x=g(z)" using fsats[of xa]  gsats[of x xa] that by simp_all
@@ -1433,7 +1435,7 @@ proof -
   moreover from calculation
   have "separation(##M, \<lambda>z. (M,[z]@?env \<Turnstile> ?\<psi>'))"
     using separation_ax
-      by simp_all
+    by simp_all
   ultimately
   show ?thesis
     by(rule_tac separation_cong[THEN iffD2,OF iff_trans[OF 0 1]],clarify,force)
@@ -1441,7 +1443,7 @@ qed
 
 lemma separation_sat_after_function3:
   assumes "[a, b, c, d]\<in>list(M)" and  "\<chi>\<in>formula" and "arity(\<chi>) \<le> 7"
-  and
+    and
     f_fm:  "f_fm \<in> formula" and
     f_ar:  "arity(f_fm) \<le> 6" and
     fsats: "\<And> fx x. fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[fx,x]@[a, b, c, d] \<Turnstile> f_fm) \<longleftrightarrow> fx=f(x)" and
@@ -1454,7 +1456,7 @@ lemma separation_sat_after_function3:
     h_ar:  "arity(h_fm) \<le> 8" and
     hsats: "\<And> hx gx fx x. hx\<in>M \<Longrightarrow> gx\<in>M \<Longrightarrow> fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[hx,gx,fx,x]@[a, b, c, d] \<Turnstile> h_fm) \<longleftrightarrow> hx=h(x)" and
     hclosed: "\<And>x . x\<in>M \<Longrightarrow> h(x) \<in> M"
-shows  "separation(##M, \<lambda>r. M, [f(r), a, b, c, d, g(r), h(r)] \<Turnstile> \<chi>)"
+  shows  "separation(##M, \<lambda>r. M, [f(r), a, b, c, d, g(r), h(r)] \<Turnstile> \<chi>)"
 proof -
   note types = assms(1-3)
   let ?\<phi>="\<chi>"
@@ -1469,7 +1471,7 @@ proof -
   moreover from calculation
   have "arity(?\<phi>) \<le> 9" "?\<psi>\<in>formula"
     using ord_simp_union ren_tc ren_V3_thm(2)[folded ren_V3_fn_def] le_trans[of "arity(\<chi>)" 7]
-      by simp_all
+    by simp_all
   moreover from calculation
   have "arity(?\<psi>) \<le> 8" "?\<psi>'\<in>formula"
     using arity_ren ren_V3_thm(2)[folded ren_V3_fn_def] f_fm g_fm h_fm
@@ -1490,7 +1492,7 @@ proof -
       fclosed gclosed hclosed f_fm g_fm h_fm
     apply(rule_tac iffI,simp,rule_tac rev_bexI[where x="f(z)"],simp)
      apply(rule_tac conjI,simp,rule_tac rev_bexI[where x="g(z)"],simp)
-    apply(rule_tac conjI,simp,rule_tac rev_bexI[where x="h(z)"],simp,rule_tac conjI,simp,simp)
+     apply(rule_tac conjI,simp,rule_tac rev_bexI[where x="h(z)"],simp,rule_tac conjI,simp,simp)
   proof -
     assume "M, [z] @ [a, b, c, d] \<Turnstile> (\<cdot>\<exists>\<cdot>f_fm \<and> (\<cdot>\<exists>\<cdot>g_fm \<and> (\<cdot>\<exists>\<cdot>h_fm \<and> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn\<cdot>\<cdot>)\<cdot>\<cdot>)\<cdot>\<cdot>)"
     with calculation that
@@ -1499,7 +1501,7 @@ proof -
       by auto
     with calculation
     obtain x where "x\<in>M" "(M, [x, z, a, b, c, d] \<Turnstile> f_fm)"
-        "(\<exists>xa\<in>M. (M, [xa, x, z, a, b, c, d] \<Turnstile> g_fm) \<and> (\<exists>xb\<in>M. (M, [xb, xa, x, z, a, b, c, d] \<Turnstile> h_fm) \<and> (M, [xb, xa, x, z, a, b, c, d] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn)))"
+      "(\<exists>xa\<in>M. (M, [xa, x, z, a, b, c, d] \<Turnstile> g_fm) \<and> (\<exists>xb\<in>M. (M, [xb, xa, x, z, a, b, c, d] \<Turnstile> h_fm) \<and> (M, [xb, xa, x, z, a, b, c, d] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn)))"
       by force
     moreover from this
     have "x=f(z)" using fsats[of x] that by simp
@@ -1520,7 +1522,7 @@ proof -
       by auto
   qed
   moreover from calculation \<open>?\<psi>'\<in>_\<close>
-  have 2:"separation(##M, \<lambda>z. (M,[z]@?env \<Turnstile> ?\<psi>'))"
+  have "separation(##M, \<lambda>z. (M,[z]@?env \<Turnstile> ?\<psi>'))"
     using separation_ax
     by simp
   ultimately
@@ -1530,7 +1532,7 @@ qed
 
 lemma separation_sat_after_function:
   assumes "[a, b, c, d, \<tau>]\<in>list(M)" and  "\<chi>\<in>formula" and "arity(\<chi>) \<le> 7"
-  and
+    and
     f_fm:  "f_fm \<in> formula" and
     f_ar:  "arity(f_fm) \<le> 7" and
     fsats: "\<And> fx x. fx\<in>M \<Longrightarrow> x\<in>M \<Longrightarrow> (M,[fx,x]@[a, b, c, d, \<tau>] \<Turnstile> f_fm) \<longleftrightarrow> fx=f(x)" and
@@ -1554,11 +1556,11 @@ proof -
   moreover from calculation
   have "arity(?\<phi>) \<le> 8" "?\<psi>\<in>formula"
     using ord_simp_union ren_tc ren_V_thm(2)[folded ren_V_fn_def] le_trans[of "arity(\<chi>)" 7]
-      by simp_all
+    by simp_all
   moreover from calculation
   have "arity(?\<psi>) \<le> 8" "?\<psi>'\<in>formula"
     using arity_ren ren_V_thm(2)[folded ren_V_fn_def] f_fm g_fm
-     by (simp_all)
+    by (simp_all)
   moreover from calculation f_ar g_ar f_fm g_fm
   have "arity(?\<psi>') \<le> 6"
     using ord_simp_union pred_le arity_type
@@ -1573,7 +1575,7 @@ proof -
     using that fsats[OF fclosed[of z],of z]  gsats[of "g(z)" "f(z)" z]
       fclosed gclosed f_fm g_fm
     apply(rule_tac iffI,simp,rule_tac rev_bexI[where x="f(z)"],simp)
-    apply(auto)[1]
+     apply(auto)[1]
   proof -
     assume "M, [z] @ [a, b, c, d, \<tau>] \<Turnstile> (\<cdot>\<exists>\<cdot>f_fm \<and> (\<cdot>\<exists>\<cdot>g_fm \<and> ren(\<chi>) ` 7 ` 8 ` ren_V_fn\<cdot>\<cdot>)\<cdot>\<cdot>)"
     then have "\<exists>xa\<in>M. (M, [xa, z, a, b, c, d, \<tau>] \<Turnstile> f_fm) \<and>
@@ -1581,7 +1583,7 @@ proof -
       using that calculation by auto
     then
     obtain xa where "xa\<in>M" "M, [xa, z, a, b, c, d, \<tau>] \<Turnstile> f_fm"
-        "(\<exists>x\<in>M. (M, [x, xa, z, a, b, c, d, \<tau>] \<Turnstile> g_fm) \<and> (M, [x, xa, z, a, b, c, d, \<tau>] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V_fn))"
+      "(\<exists>x\<in>M. (M, [x, xa, z, a, b, c, d, \<tau>] \<Turnstile> g_fm) \<and> (M, [x, xa, z, a, b, c, d, \<tau>] \<Turnstile> ren(\<chi>) ` 7 ` 8 ` ren_V_fn))"
       by auto
     moreover from this
     have "xa=f(z)" using fsats[of xa] that by simp
@@ -1595,9 +1597,9 @@ proof -
       by auto
   qed
   moreover from calculation
-  have 2:"separation(##M, \<lambda>z. (M,[z]@?env \<Turnstile> ?\<psi>'))"
+  have "separation(##M, \<lambda>z. (M,[z]@?env \<Turnstile> ?\<psi>'))"
     using separation_ax
-      by simp_all
+    by simp_all
   ultimately
   show ?thesis
     by(rule_tac separation_cong[THEN iffD2,OF iff_trans[OF 0 1]],clarify,force)
