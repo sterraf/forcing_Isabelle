@@ -38,9 +38,7 @@ locale forcing_notion =
     and one_max:          "\<forall>p\<in>P. \<langle>p,one\<rangle>\<in>leq"
 begin
 
-abbreviation
-  one_abbr :: "i" ("\<one>")
-  where "\<one> \<equiv> one"
+notation one (\<open>\<one>\<close>)
 
 abbreviation Leq :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>" 50)
   where "x \<preceq> y \<equiv> \<langle>x,y\<rangle>\<in>leq"

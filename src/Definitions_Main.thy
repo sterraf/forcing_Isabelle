@@ -545,9 +545,8 @@ M \<Turnstile> {\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in>
 \<exists>N. M \<subseteq> N \<and>
     N \<approx> \<omega> \<and>
     Transset(N) \<and>
-    N \<Turnstile> ZC \<union> cons(\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>, sp.one_abbr) \<union> {\<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>} \<and>
-    (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
-*)
+    N \<Turnstile> ZC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<union> {\<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>} \<and>
+    (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)*)
 
 thm ctm_of_CH
 text\<open>@{thm [display] ctm_of_CH}\<close>
@@ -560,7 +559,7 @@ M \<Turnstile> {\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in>
 \<exists>N. M \<subseteq> N \<and>
     N \<approx> \<omega> \<and>
     Transset(N) \<and>
-    N \<Turnstile> ZC \<union> cons(\<cdot>CH\<cdot>, sp.one_abbr) \<union> {\<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>} \<and>
+    N \<Turnstile> ZC \<union> {\<cdot>CH\<cdot>} \<union> {\<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>} \<and>
     (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
 *)
 
