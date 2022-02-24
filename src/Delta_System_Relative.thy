@@ -218,9 +218,8 @@ proof -
       have "Infinite(D)" "|D|\<^bsup>M\<^esup> = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
         using uncountable_rel_iff_subset_eqpoll_rel_Aleph_rel1[THEN iffD2,
             THEN uncountable_rel_imp_Infinite, of D]
-         apply auto[1]
-        using cardinal_rel_eqpoll_rel_iff[of D "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"] \<open>M(D)\<close> \<open>D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
-        by simp
+          cardinal_rel_eqpoll_rel_iff[of D "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"] \<open>M(D)\<close> \<open>D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
+        by auto
       moreover from this \<open>M(?D)\<close> \<open>M(D)\<close> \<open>M(p)\<close>
       have "?D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
         using cardinal_rel_map_Un[of D "{p}"] naturals_lt_nat

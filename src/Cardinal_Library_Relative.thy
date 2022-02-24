@@ -384,8 +384,7 @@ proof -
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then x else 0"
     using  lam_replacement_if[OF lam_replacement_identity
         lam_replacement_constant[OF nonempty], where b=M] lam_replacement_inj_rel
-    apply unfold_locales apply (auto simp add: separation_def)
-  proof -
+  proof(unfold_locales,auto simp add: separation_def)
     fix b f
     assume "M(b)" "M(f)"
     show "lam_replacement(M, \<lambda>x. \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. if M(x) then x else 0, b, f, i))"
