@@ -31,7 +31,8 @@ rel_closed for "mono_seqspace"
     lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
     lam_replacement_apply2[THEN[5] lam_replacement_hcomp2]
   by simp_all
-end
+
+end \<comment> \<open>\<^locale>\<open>M_ZF_library\<close>\<close>
 
 abbreviation
   mono_seqspace_r (\<open>_ \<^sub><\<rightarrow>\<^bsup>_\<^esup> '(_,_')\<close> [61] 60) where
@@ -124,7 +125,7 @@ lemma kappa_closed_abs:
 
 end \<comment> \<open>\<^locale>\<open>M_ZF_library\<close>\<close>
 
-lemma (in forcing_data) forcing_a_value:
+lemma (in forcing_data4) forcing_a_value:
   assumes "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]" "a \<in> A"
     "q \<preceq> p" "q \<in> P" "p\<in>P" "f_dot \<in> M" "A\<in>M" "B\<in>M"
   shows "\<exists>d\<in>P. \<exists>b\<in>B. d \<preceq> q \<and> d \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]"
@@ -145,7 +146,7 @@ proof -
   obtain G where "M_generic(G)" "q\<in>G"
     using generic_filter_existence by blast
   then
-  interpret G_generic _ _ _ _ _ G by unfold_locales
+  interpret G_generic4_AC _ _ _ _ _ G by unfold_locales
   include G_generic1_lemmas
   note \<open>q\<in>G\<close>
   moreover
@@ -189,7 +190,7 @@ proof -
   show ?thesis by auto
 qed
 
-context G_generic_AC begin
+context G_generic4_AC begin
 
 context
   includes G_generic1_lemmas
@@ -590,7 +591,7 @@ proof -
       let ?f="val(P,G,f_dot)"
       assume "M_generic(G) \<and> r \<in> G"
       moreover from this
-      interpret g:G_generic _ _ _ _ _ G
+      interpret g:G_generic1 _ _ _ _ _ G
         by unfold_locales simp
       note \<open>r\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
       moreover from this
@@ -716,8 +717,8 @@ proof -
     by (rule_tac le_anti_sym) simp
 qed
 
-end \<comment> \<open>bundle G\_generic\_lemmas\<close>
+end \<comment> \<open>bundle G\_generic1\_lemmas\<close>
 
-end \<comment> \<open>\<^locale>\<open>G_generic_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic4_AC\<close>\<close>
 
 end

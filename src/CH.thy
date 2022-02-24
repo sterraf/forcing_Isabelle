@@ -37,7 +37,7 @@ lemmas nat_subset_Aleph_rel_1 =
 
 end \<comment> \<open>\<^locale>\<open>M_ctm3_AC\<close>\<close>
 
-context M_ctm_AC
+context M_ctm3_AC
 begin
 
 \<comment> \<open>Kunen IV.7.14, only for \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>\<close>
@@ -171,14 +171,18 @@ proof -
   show ?thesis unfolding kappa_closed_rel_def by (auto elim!:leE dest:ltD)
 qed
 
-end \<comment> \<open>\<^locale>\<open>M_ctm_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ctm3_AC\<close>\<close>
 
-locale collapse_generic = G_generic_AC "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0
+locale collapse_generic4 = G_generic4_AC "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0
 
-sublocale collapse_generic \<subseteq> forcing_notion "Coll" "Colleq" 0
+sublocale collapse_generic4 \<subseteq> forcing_notion "Coll" "Colleq" 0
   using zero_lt_Aleph_rel1 by unfold_locales
 
-context collapse_generic
+(* FIXME: perhaps obsolete *)
+locale collapse_generic = G_generic_AC "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0
+sublocale collapse_generic \<subseteq> collapse_generic4 ..
+
+context collapse_generic4
 begin
 
 notation Leq (infixl "\<preceq>" 50)
@@ -442,7 +446,7 @@ theorem CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> = 2\<^bsup>\<up>\<ale
     le_anti_sym
   by auto
 
-end \<comment> \<open>\<^locale>\<open>collapse_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>collapse_generic4\<close>\<close>
 
 theorem ctm_of_CH:
   assumes
