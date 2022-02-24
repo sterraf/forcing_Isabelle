@@ -450,6 +450,59 @@ end \<comment> \<open>\<^locale>\<open>collapse_generic4\<close>\<close>
 
 theorem ctm_of_CH:
   assumes
+    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}"
+    "\<Phi> \<subseteq> formula" "M \<Turnstile> { \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>}"
+  shows
+    "\<exists>N.
+      M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZC \<union> {\<cdot>CH\<cdot>} \<union> { \<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>} \<and>
+      (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
+proof -
+  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
+  interpret M_ZFC4 M
+    using M_satT_overhead_imp_M_ZF4 by simp
+  from \<open>Transset(M)\<close>
+  interpret M_ZFC4_trans M
+    using M_satT_imp_M_ZF4
+    by unfold_locales
+  from \<open>M \<approx> \<omega>\<close>
+  obtain enum where "enum \<in> bij(\<omega>,M)"
+    using eqpoll_sym unfolding eqpoll_def by blast
+  then
+  interpret M_ctm3_AC M enum by unfold_locales
+  interpret forcing_data1 "Coll" "Colleq" 0 M enum
+    using zero_in_Fn_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
+      zero_top_Fn_rel[of _ "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
+      preorder_on_Fnle_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
+      zero_lt_Aleph_rel1
+    by unfold_locales simp_all
+  obtain G where "M_generic(G)"
+    using generic_filter_existence[OF one_in_P]
+    by auto
+  moreover from this
+  interpret collapse_generic4 M enum G by unfold_locales
+  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
+    using CH .
+  then
+  have "M[G], [] \<Turnstile> \<cdot>CH\<cdot>"
+    using ext.is_ContHyp_iff
+    by (simp add:ContHyp_rel_def)
+  then
+  have "M[G] \<Turnstile> ZC \<union> {\<cdot>CH\<cdot>}"
+    using ext.M_satT_ZC by auto
+  moreover
+  have "Transset(M[G])" using Transset_MG .
+  moreover
+  have "M \<subseteq> M[G]" using M_subset_MG[OF one_in_G] generic by simp
+  moreover
+  note \<open>M \<Turnstile> { \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>}\<close> \<open>\<Phi> \<subseteq> formula\<close>
+  ultimately
+  show ?thesis
+    using Ord_MG_iff MG_eqpoll_nat satT_ground_repl_fm_imp_satT_ZF_replacement_fm[of \<Phi>]
+    by (rule_tac x="M[G]" in exI, auto)
+qed
+
+theorem ctm_ZFC_imp_ctm_of_CH:
+  assumes
     "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZFC"
   shows
     "\<exists>N.

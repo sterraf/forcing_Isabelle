@@ -491,8 +491,8 @@ text\<open>@{thm [display] is_ContHyp_iff_sats}\<close>
 txt\<open>We can finally state our main results, namely, the existence of models
 for $\ZFC + \CH$ and $\ZFC + \neg\CH$ under the assumption of a ctm of $\ZFC$.\<close>
 
-thm ctm_of_not_CH
-text\<open>@{thm [display] ctm_of_not_CH}\<close>
+thm ctm_ZFC_imp_ctm_not_CH
+text\<open>@{thm [display] ctm_ZFC_imp_ctm_not_CH}\<close>
 (*
   M \<approx> \<omega> \<Longrightarrow>
   Transset(M) \<Longrightarrow>
@@ -502,14 +502,65 @@ text\<open>@{thm [display] ctm_of_not_CH}\<close>
     (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
 *)
 
-thm ctm_of_CH
-text\<open>@{thm [display] ctm_of_CH}\<close>
+thm ctm_ZFC_imp_ctm_not_CH
+text\<open>@{thm [display] ctm_ZFC_imp_ctm_not_CH}\<close>
 (*
   M \<approx> \<omega> \<Longrightarrow>
   Transset(M) \<Longrightarrow>
   M \<Turnstile> ZFC \<Longrightarrow>
   \<exists>N. M \<subseteq> N \<and>
     N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZFC \<union> {\<cdot>CH\<cdot>} \<and>
+    (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
+*)
+
+txt\<open>These results can be strengthened by enumerating a finite number of
+replacement instances which are sufficient to develop forcing and for
+the construction of the aforementioned models:\<close>
+
+thm extensions_of_ctms
+text\<open>@{thm [display] extensions_of_ctms}\<close>
+(*
+M \<approx> \<omega> \<Longrightarrow>
+Transset(M) \<Longrightarrow>
+M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms} \<Longrightarrow>
+\<Phi> \<subseteq> formula \<Longrightarrow>
+M \<Turnstile> {\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>} \<Longrightarrow>
+\<exists>N. M \<subseteq> N \<and>
+    N \<approx> \<omega> \<and>
+    Transset(N) \<and>
+    M \<noteq> N \<and>
+    (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N) \<and>
+    ((M, [] \<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N, [] \<Turnstile> \<cdot>AC\<cdot>) \<and>
+    N \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>}
+*)
+
+thm ctm_of_not_CH
+text\<open>@{thm [display] ctm_of_not_CH}\<close>
+(*
+M \<approx> \<omega> \<Longrightarrow>
+Transset(M) \<Longrightarrow>
+M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead} \<Longrightarrow>
+\<Phi> \<subseteq> formula \<Longrightarrow>
+M \<Turnstile> {\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>} \<Longrightarrow>
+\<exists>N. M \<subseteq> N \<and>
+    N \<approx> \<omega> \<and>
+    Transset(N) \<and>
+    N \<Turnstile> ZC \<union> cons(\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>, sp.one_abbr) \<union> {\<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>} \<and>
+    (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
+*)
+
+thm ctm_of_CH
+text\<open>@{thm [display] ctm_of_CH}\<close>
+(*
+M \<approx> \<omega> \<Longrightarrow>
+Transset(M) \<Longrightarrow>
+M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead} \<Longrightarrow>
+\<Phi> \<subseteq> formula \<Longrightarrow>
+M \<Turnstile> {\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>} \<Longrightarrow>
+\<exists>N. M \<subseteq> N \<and>
+    N \<approx> \<omega> \<and>
+    Transset(N) \<and>
+    N \<Turnstile> ZC \<union> cons(\<cdot>CH\<cdot>, sp.one_abbr) \<union> {\<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>} \<and>
     (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
 *)
 

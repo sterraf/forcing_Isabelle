@@ -579,33 +579,38 @@ notation is_ContHyp_fm (\<open>\<cdot>CH\<cdot>\<close>)
 
 theorem ctm_of_not_CH:
   assumes
-    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZFC"
+    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}"
+    "\<Phi> \<subseteq> formula" "M \<Turnstile> { \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>}"
   shows
     "\<exists>N.
-      M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZFC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<and>
+      M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<union> { \<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>} \<and>
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
 proof -
-  from \<open>M \<Turnstile> ZFC\<close>
-  interpret M_ZFC M
-    using M_ZFC_iff_M_satT
-    by simp
+  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
+  interpret M_ZFC4 M
+    using M_satT_overhead_imp_M_ZF4 by simp
   from \<open>Transset(M)\<close>
-  interpret M_ZF_trans M
-    using M_ZF_iff_M_satT
+  interpret M_ZFC4_trans M
+    using M_satT_imp_M_ZF4
     by unfold_locales
   from \<open>M \<approx> \<omega>\<close>
   obtain enum where "enum \<in> bij(\<omega>,M)"
     using eqpoll_sym unfolding eqpoll_def by blast
   then
-  interpret M_ctm_AC M enum by unfold_locales
+  interpret M_ctm4_AC M enum by unfold_locales
   interpret cohen_data \<omega> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 2 by unfold_locales auto
-  interpret forcing_data "Fn(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2)" "Fnle(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2)" 0 M enum
+  have "Fn(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2) \<in> M" "Fnle(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2) \<in> M"
+    using nat_into_M Aleph_rel_closed M_nat cartprod_closed
+      (* FIXME: why such ugly proof? Compare "ctm_of_CH" *)
+    by (intro Fn_nat_closed[simplified] Fnle_nat_closed[simplified]; simp_all)+
+  then
+  interpret forcing_data1 "Fn(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2)" "Fnle(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2)" 0 M enum
     by unfold_locales simp_all
   obtain G where "M_generic(G)"
     using generic_filter_existence[OF one_in_P]
     by auto
   moreover from this
-  interpret add_generic M enum G by unfold_locales
+  interpret add_generic4 M enum G by unfold_locales
   have "\<not> (\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>)"
     using not_CH .
   then
@@ -613,16 +618,43 @@ proof -
     using ext.is_ContHyp_iff
     by (simp add:ContHyp_rel_def)
   then
-  have "M[G] \<Turnstile> ZFC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>}"
-    using M_ZFC_iff_M_satT[of "M[G]"] ext.M_ZFC_axioms by auto
+  have "M[G] \<Turnstile> ZC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>}"
+    using ext.M_satT_ZC by auto
   moreover
   have "Transset(M[G])" using Transset_MG .
   moreover
   have "M \<subseteq> M[G]" using M_subset_MG[OF one_in_G] generic by simp
+  moreover
+  note \<open>M \<Turnstile> { \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>}\<close> \<open>\<Phi> \<subseteq> formula\<close>
   ultimately
   show ?thesis
-    using Ord_MG_iff MG_eqpoll_nat
-    by (rule_tac x="M[G]" in exI, simp)
+    using Ord_MG_iff MG_eqpoll_nat satT_ground_repl_fm_imp_satT_ZF_replacement_fm[of \<Phi>]
+    by (rule_tac x="M[G]" in exI, auto)
 qed
+
+lemma ZF_replacement_overhead_sub_ZFC: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead} \<subseteq> ZFC"
+  using overhead_type unfolding ZFC_def ZF_inf_def by auto
+
+lemma ground_repl_fm_sub_ZFC: "{\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> formula} \<subseteq> ZFC"
+  using overhead_type unfolding ZFC_def ZF_inf_def by auto
+
+lemma ZF_replacement_ground_repl_fm_type: "{\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> formula} \<subseteq> formula"
+  by auto
+
+corollary ctm_ZFC_imp_ctm_not_CH:
+  assumes
+    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZFC"
+  shows
+    "\<exists>N.
+      M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZFC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<and>
+      (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
+  using assms ZF_replacement_ground_repl_fm_type satT_ZFC_imp_satT_ZC[of M]
+    satT_mono[OF _ ground_repl_fm_sub_ZFC, of M]
+    satT_mono[OF _ ZF_replacement_overhead_sub_ZFC, of M]
+    ctm_of_not_CH[of M formula] satT_ZC_ZF_replacement_imp_satT_ZFC
+  apply (auto simp: satT_Un_iff)
+  apply (rule_tac x=N in exI)
+  apply (force)
+  done
 
 end
