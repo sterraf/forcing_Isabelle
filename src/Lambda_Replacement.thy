@@ -456,13 +456,7 @@ proof -
     have "M(x)" by (auto dest:transM)
     ultimately
     show "domain(x) \<in> Pow\<^bsup>M\<^esup>(\<Union>\<Union>\<Union>X)"
-      using mem_Pow_rel_abs[of "domain(x)" "\<Union>\<Union>\<Union>X"]
-        (* FIXME: bad taste procedural proof ahead *)
-      apply (auto simp:Pair_def)
-      apply (rule_tac x=x in bexI)
-       apply (rule_tac x="{{xaa}, {xaa, ya}}" in bexI)
-        apply (rule_tac x="{xaa}" in bexI)
-      by simp_all
+      by(rule_tac mem_Pow_rel_abs[of "domain(x)" "\<Union>\<Union>\<Union>X",THEN iffD2],auto simp:Pair_def,force)
   qed
   with assms
   show ?thesis
