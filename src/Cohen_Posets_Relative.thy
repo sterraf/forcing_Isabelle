@@ -350,13 +350,22 @@ proof -
     next
       case False
       with \<open>A \<subseteq> Fn(nat, I, 2)\<close> \<open>M(A)\<close>
-      have "{p \<in> A . domain(p) = d} = 0"
-        using function_space_rel_char[of _ 2, OF transM, of _ A]
-        apply (intro equalityI)
-         apply (clarsimp)
-         apply (rule lesspoll_nat_imp_lesspoll_rel[of "domain(_)", THEN [2] swap])
-           apply (auto dest!: domain_of_fun[ of _ _ "\<lambda>_. 2"] dest:transM)
-        done
+      have "domain(p) \<noteq> d" if "p\<in>A" for p
+      proof -
+        note False that \<open>M(A)\<close>
+        moreover from this
+        obtain d' where "d' \<subseteq> I" "p\<in>d' \<rightarrow> 2" "d' \<prec> \<omega>"
+          using FnD[OF subsetD[OF \<open>A\<subseteq>_\<close> \<open>p\<in>A\<close>]]
+          by auto
+        moreover from this
+        have "p \<approx> d'"  "domain(p) = d'"
+          using function_eqpoll Pi_iff
+          by auto
+        ultimately
+        show ?thesis
+          using lesspoll_nat_imp_lesspoll_rel transM[of p]
+          by auto
+      qed
       then
       show ?thesis using empty_lepoll_relI by auto
     qed
@@ -371,8 +380,7 @@ proof -
         by auto
       moreover from calculation
       interpret M_replacement_lepoll M dC_F
-        using lam_replacement_dC_F domain_eq_separation
-          lam_replacement_inj_rel
+        using lam_replacement_dC_F domain_eq_separation lam_replacement_inj_rel
         unfolding dC_F_def
       proof(unfold_locales,simp_all)
         fix A b f
