@@ -23,9 +23,7 @@ subsection\<open>Combinatorial results on Cohen posets\<close>
 sublocale cohen_data \<subseteq> forcing_notion "Fn(\<kappa>,I,J)" "Fnle(\<kappa>,I,J)" 0
 proof
   show "0 \<in> Fn(\<kappa>, I, J)"
-    unfolding Fn_def
-    by (simp,rule_tac x="0 \<rightarrow> J" in bexI, auto)
-      (rule_tac x=0 in bexI, auto intro:zero_lesspoll_kappa)
+    using zero_lt_kappa zero_in_Fn by simp
   then
   show "\<forall>p\<in>Fn(\<kappa>, I, J). \<langle>p, 0\<rangle> \<in> Fnle(\<kappa>, I, J)"
     unfolding preorder_on_def refl_def trans_on_def
@@ -316,7 +314,6 @@ lemma (in M_trans) mem_F_bound3:
   by (cases "M(c)", auto simp:F_def drSR_Y_def dC_F_def)
 
 lemma ccc_rel_Fn_nat:
-  notes Sep_and_Replace [simp](* FIXME with all \<^term>\<open>SepReplace\<close> instances *)
   assumes "M(I)"
   shows "ccc\<^bsup>M\<^esup>(Fn(nat,I,2), Fnle(nat,I,2))"
 proof -
@@ -402,7 +399,7 @@ proof -
         unfolding dC_F_def
         apply (unfold_locales)
           apply(simp del:if_range_F_else_F_def,simp)
-        apply (rule_tac lam_Least_assumption_general[where U="\<lambda>_. {domain(x). x\<in>A}"], auto)
+        apply (rule_tac lam_Least_assumption_general[where U="\<lambda>_. {domain(x). x\<in>A}"], auto) \<comment> \<open>slow!\<close>
         done
       from \<open>A \<subseteq> Fn(nat, I, 2)\<close>
       have x:"(\<Union>d\<in>{domain(p) . p \<in> A}. {p\<in>A. domain(p) = d}) = A"
@@ -498,7 +495,7 @@ proof -
         using surj_rel_countable_rel[OF _ surjection] by auto
     qed
     moreover
-    have "D = (\<Union>f\<in>Pow_rel(M,r\<times>2) . {domain(p) .. p\<in>A, restrict(p,r) = f \<and> domain(p) \<in> D})"
+    have "D = (\<Union>f\<in>Pow_rel(M,r\<times>2) . {y . p\<in>A, restrict(p,r) = f \<and> y=domain(p) \<and> domain(p) \<in> D})"
     proof -
       {
         fix z
@@ -532,15 +529,19 @@ proof -
         by (intro equalityI) (force)+
     qed
     from \<open>M(D)\<close>\<open>M(r)\<close>
-    have "M({domain(p) .. p\<in>A, restrict(p,r) = f \<and> domain(p) \<in> D})" (is "M(?Y(A,f))")
+    have "M({y . p\<in>A, restrict(p,r) = f \<and> y=domain(p) \<and> domain(p) \<in> D})" (is "M(?Y(A,f))")
       if "M(f)" "M(A)" for f A
-      using that RepFun_closed domain_replacement_simp
-        separation_conj[OF restrict_eq_separation[OF \<open>M(r)\<close> \<open>M(f)\<close>]
-                           domain_mem_separation[OF \<open>M(D)\<close>]]
-        transM[OF _ \<open>M(D)\<close>]
+      using drSR_Y_closed[unfolded drSR_Y_def] that  
       by simp
+    then
     obtain f where "uncountable_rel(M,?Y(A,f))" "M(f)"
     proof -
+      have 1:"M(i)"
+        if "M(B)" "M(x)" 
+          "x \<in> {y . x \<in> B, restrict(x, r) = i \<and> y = domain(x) \<and> domain(x) \<in> D}"
+        for B x i
+        using that \<open>M(r)\<close> 
+        by (auto dest:transM)
       note \<open>M(r)\<close>
       moreover from this
       have "M(Pow\<^bsup>M\<^esup>(r \<times> 2))" by simp
@@ -549,30 +550,19 @@ proof -
       moreover from calculation
       interpret M_replacement_lepoll M "drSR_Y(r,D)"
         using countable_lepoll_assms3 lam_replacement_inj_rel lam_replacement_drSR_Y
-        apply (unfold_locales, simp_all)
-          apply (rule_tac [2] lam_Least_assumption_drSR_Y)
-               apply(simp_all add:drSR_Y_def)
-      proof -
-        fix i A x
-        assume "\<exists>xa\<in>A. restrict(xa, r) = i \<and> domain(xa) \<in> D \<and> x = domain(xa)" "M(A)" "M(r)"
-        moreover from this
-        obtain xa where "xa\<in>A" "restrict(xa, r) = i" by blast
-        ultimately
-        show "M(i)" by (auto dest:transM)
-      qed
+          drSR_Y_closed lam_Least_assumption_drSR_Y
+        by (unfold_locales,simp_all add:drSR_Y_def,rule_tac 1,simp_all)
       from calculation
       have "x \<in> Pow\<^bsup>M\<^esup>(r \<times> 2) \<Longrightarrow> M(drSR_Y(r, D, A, x))" for x
         unfolding drSR_Y_def by (auto dest:transM)
       ultimately
       interpret M_cardinal_UN_lepoll _ "?Y(A)" "Pow_rel(M,r\<times>2)"
         using countable_lepoll_assms3 lepoll_assumptions[where S="Pow_rel(M,r\<times>2)", unfolded lepoll_assumptions_defs]
-          lam_replacement_drSR_Y
+          lam_replacement_drSR_Y lam_Least_assumption_drSR_Y[unfolded drSR_Y_def]
         unfolding drSR_Y_def
-        apply unfold_locales apply (simp_all add:lam_replacement_inj_rel del:Sep_and_Replace if_range_F_else_F_def)
-        unfolding drSR_Y_def[symmetric]
-           apply (rule_tac lam_Least_assumption_drSR_Y)
-        by (simp_all add: del:Sep_and_Replace if_range_F_else_F_def)
-          ((fastforce dest:transM[OF _ \<open>M(A)\<close>])+)[2]
+        apply unfold_locales
+        apply (simp_all add:lam_replacement_inj_rel del: if_range_F_else_F_def,rule_tac 1,simp_all)
+        by ((fastforce dest:transM[OF _ \<open>M(A)\<close>])+)
       {
         from \<open>Finite(r)\<close> \<open>M(r)\<close>
         have "countable_rel(M,Pow_rel(M,r\<times>2))"

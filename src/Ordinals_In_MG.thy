@@ -11,7 +11,7 @@ lemma rank_val: "rank(val(P,G,x)) \<le> rank(x)" (is "?Q(x)")
 proof (induct rule:ed_induction[of ?Q])
   case (1 x)
   have "val(P,G,x) = {val(P,G,u). u\<in>{t\<in>domain(x). \<exists>p\<in>P .  \<langle>t,p\<rangle>\<in>x \<and> p \<in> G }}"
-    using def_val unfolding Sep_and_Replace by blast
+    using def_val[of G x] by auto
   then
   have "rank(val(P,G,x)) = (\<Union>u\<in>{t\<in>domain(x). \<exists>p\<in>P .  \<langle>t,p\<rangle>\<in>x \<and> p \<in> G }. succ(rank(val(P,G,u))))"
     using rank[of "val(P,G,x)"] by simp

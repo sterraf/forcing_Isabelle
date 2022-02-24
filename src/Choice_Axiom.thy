@@ -183,7 +183,7 @@ proof -
   have "val(P,G,{\<langle>f(x),\<one>\<rangle>  . x \<in> a}) = val(P,G,{t \<in> ?A \<times> P . ?Q(t)})"
     by simp
   also
-  have "... = {val(P,G,t) .. t \<in> ?A , \<exists>p\<in>P\<inter>G . ?Q(\<langle>t,p\<rangle>)}"
+  have "... = {z . t \<in> ?A , (\<exists>p\<in>P\<inter>G . ?Q(\<langle>t,p\<rangle>)) \<and> z= val(P,G,t)}"
     using val_of_name_alt by simp
   also
   have "... = {val(P,G,t) . t \<in> ?A }"

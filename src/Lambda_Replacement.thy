@@ -1934,10 +1934,10 @@ definition
 definition
   \<comment> \<open>"domain restrict SepReplace Y"\<close>
   drSR_Y :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
-  "drSR_Y(B,D,A,x) \<equiv> {domain(r) .. r\<in>A, restrict(r,B) = x \<and> domain(r) \<in> D}"
+  "drSR_Y(B,D,A,x) \<equiv> {y . r\<in>A , restrict(r,B) = x \<and> y = domain(r) \<and> domain(r) \<in> D}"
 
 lemma drSR_Y_equality: "drSR_Y(B,D,A,x) = { dr\<in>D . (\<exists>r\<in>A . restrict(r,B) = x \<and> dr=domain(r)) }"
-  unfolding drSR_Y_def SepReplace_def by auto
+  unfolding drSR_Y_def by auto
 
 context M_replacement_extra
 begin
@@ -1972,6 +1972,14 @@ lemma lam_replacement_drSR_Y:
     "M(B)" "M(D)" "M(A)"
   shows "lam_replacement(M, drSR_Y(B,D,A))"
   using lam_replacement_cong lam_replacement_Collect[OF \<open>M(D)\<close> separation_restrict_eq_dom_eq[of A B]]
+    assms drSR_Y_equality separation_is_insnd_restrict_eq_dom separation_restrict_eq_dom_eq
+  by simp
+
+lemma drSR_Y_closed:
+  assumes
+    "M(B)" "M(D)" "M(A)" "M(f)"
+  shows "M(drSR_Y(B,D,A,f))"
+  using assms drSR_Y_equality lam_replacement_Collect[OF \<open>M(D)\<close> separation_restrict_eq_dom_eq[of A B]]
     assms drSR_Y_equality separation_is_insnd_restrict_eq_dom separation_restrict_eq_dom_eq
   by simp
 

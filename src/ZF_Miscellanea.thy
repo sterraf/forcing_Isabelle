@@ -6,32 +6,6 @@ theory ZF_Miscellanea
     Nat_Miscellanea
 begin
 
-definition
-  SepReplace :: "[i, i\<Rightarrow>i, i\<Rightarrow> o] \<Rightarrow> i" where
-  "SepReplace(A,b,Q) \<equiv> {y . x\<in>A, y=b(x) \<and> Q(x)}"
-
-syntax
-  "_SepReplace"  :: "[i, pttrn, i, o] \<Rightarrow> i"  ("(1{_ ../ _ \<in> _, _})")
-translations
-  "{b .. x\<in>A, Q}" => "CONST SepReplace(A, \<lambda>x. b, \<lambda>x. Q)"
-
-lemma Sep_and_Replace: "{b(x) .. x\<in>A, P(x) } = {b(x) . x\<in>{y\<in>A. P(y)}}"
-  by (auto simp add:SepReplace_def)
-
-lemma SepReplace_subset : "A\<subseteq>A'\<Longrightarrow> {b .. x\<in>A, Q}\<subseteq>{b .. x\<in>A', Q}"
-  by (auto simp add:SepReplace_def)
-
-lemma SepReplace_iff [simp]: "y\<in>{b(x) .. x\<in>A, P(x)} \<longleftrightarrow> (\<exists>x\<in>A. y=b(x) & P(x))"
-  by (auto simp add:SepReplace_def)
-
-lemma SepReplace_dom_implies :
-  "(\<And> x . x \<in>A \<Longrightarrow> b(x) = b'(x))\<Longrightarrow> {b(x) .. x\<in>A, Q(x)}={b'(x) .. x\<in>A, Q(x)}"
-  by  (simp add:SepReplace_def)
-
-lemma SepReplace_pred_implies :
-  "\<forall>x. Q(x)\<longrightarrow> b(x) = b'(x)\<Longrightarrow> {b(x) .. x\<in>A, Q(x)}={b'(x) .. x\<in>A, Q(x)}"
-  by  (force simp add:SepReplace_def)
-
 lemma funcI : "f \<in> A \<rightarrow> B \<Longrightarrow> a \<in> A \<Longrightarrow> b= f ` a \<Longrightarrow> \<langle>a, b\<rangle> \<in> f"
   by(simp_all add: apply_Pair)
 

@@ -6,7 +6,7 @@ begin
 
 lemma val_Upair :
   "\<one> \<in> G \<Longrightarrow> val(P,G,{\<langle>\<tau>,\<one>\<rangle>,\<langle>\<rho>,\<one>\<rangle>}) = {val(P,G,\<tau>),val(P,G,\<rho>)}"
-  by (insert one_in_P, rule trans, subst def_val,auto simp add: Sep_and_Replace)
+  by (insert one_in_P, rule trans, subst def_val,auto)
 
 lemma pairing_in_MG :
   assumes "M_generic(G)"

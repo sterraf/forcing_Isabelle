@@ -233,15 +233,15 @@ proof -
     unfolding M_generic_def filter_def by simp_all
   from \<open>val(P,G,\<pi>) = c\<close>
   have "val(P,G,?m) =
-               {val(P,G,t) .. t\<in>domain(\<pi>) , \<exists>q\<in>P .
+               {z . t\<in>domain(\<pi>) , (\<exists>q\<in>P .
                     (\<exists>\<theta>\<in>M. \<exists>p\<in>P. \<langle>t,q\<rangle> = \<langle>\<theta>, p\<rangle> \<and>
-            (p \<in> G \<longrightarrow> val(P,G, \<theta>) \<in> c \<and> (M[G],  [val(P,G, \<theta>)] @ env @ [c] \<Turnstile>  \<phi>)) \<and> q \<in> G)}"
+            (p \<in> G \<longrightarrow> val(P,G, \<theta>) \<in> c \<and> (M[G],  [val(P,G, \<theta>)] @ env @ [c] \<Turnstile>  \<phi>)) \<and> q \<in> G)) \<and>
+           z=val(P,G,t)}"
     using val_of_name by auto
   also
-  have "... =  {val(P,G,t) .. t\<in>domain(\<pi>) , \<exists>q\<in>P.
-                   val(P,G, t) \<in> c \<and> (M[G],  [val(P,G, t)] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G}"
+  have "... =  {z . t\<in>domain(\<pi>) , (\<exists>q\<in>P.
+                   val(P,G, t) \<in> c \<and> (M[G],  [val(P,G, t)] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G) \<and> z=val(P,G,t)}"
   proof -
-
     have "t\<in>M \<Longrightarrow>
       (\<exists>q\<in>P. (\<exists>\<theta>\<in>M. \<exists>p\<in>P. \<langle>t,q\<rangle> = \<langle>\<theta>, p\<rangle> \<and>
               (p \<in> G \<longrightarrow> val(P,G, \<theta>) \<in> c \<and> (M[G],  [val(P,G, \<theta>)] @ env @ [c] \<Turnstile>  \<phi>)) \<and> q \<in> G))
@@ -251,10 +251,9 @@ proof -
     then show ?thesis using \<open>domain(\<pi>)\<in>M\<close> by (auto simp add:transitivity)
   qed
   also
-  have "... =  {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> (M[G],  [x] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G}"
+  have "... =  {x\<in>c . \<exists>q\<in>P. x \<in> c \<and> (M[G],  [x] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G}"
   proof
-
-    show "... \<subseteq> {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> (M[G],  [x] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G}"
+    show "... \<subseteq> {x\<in>c . \<exists>q\<in>P. x \<in> c \<and> (M[G],  [x] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G}"
       by auto
   next
     (* Now we show the other inclusion:
@@ -264,17 +263,17 @@ proof -
     *)
     {
       fix x
-      assume "x\<in>{x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> (M[G],  [x] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G}"
+      assume "x\<in>{x\<in>c . \<exists>q\<in>P. x \<in> c \<and> (M[G],  [x] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G}"
       then
       have "\<exists>q\<in>P. x \<in> c \<and> (M[G],  [x] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G"
         by simp
       with \<open>val(P,G,\<pi>) = c\<close>
       have "\<exists>q\<in>P. \<exists>t\<in>domain(\<pi>). val(P,G,t) =x \<and> (M[G],  [val(P,G,t)] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G"
-        using Sep_and_Replace elem_of_val by auto
+        using elem_of_val by auto
     }
     then
-    show " {x .. x\<in>c , \<exists>q\<in>P. x \<in> c \<and> (M[G],  [x] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G} \<subseteq> ..."
-      using SepReplace_iff by force
+    show " {x\<in>c . \<exists>q\<in>P. x \<in> c \<and> (M[G],  [x] @ env @ [c] \<Turnstile>  \<phi>) \<and> q \<in> G} \<subseteq> ..."
+      by force
   qed
   also
   have " ... = {x\<in>c. (M[G], [x] @ env @ [c] \<Turnstile> \<phi>)}"

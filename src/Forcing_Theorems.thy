@@ -274,7 +274,7 @@ lemma Forces_Forall:
    using sats_forces_Forall' assms by simp
 
 (* "x\<in>val(P,G,\<pi>) \<Longrightarrow> \<exists>\<theta>. \<exists>p\<in>G.  \<langle>\<theta>,p\<rangle>\<in>\<pi> \<and> val(P,G,\<theta>) = x" *)
-bundle some_rules =  elem_of_val_pair [dest] SepReplace_iff [simp del] SepReplace_iff[iff]
+bundle some_rules =  elem_of_val_pair [dest]
 
 context
   includes some_rules

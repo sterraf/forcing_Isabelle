@@ -8,7 +8,7 @@ begin
 
 definition
   Fn :: "[i,i,i] \<Rightarrow> i" where
-  "Fn(\<kappa>,I,J) \<equiv> \<Union>{(d\<rightarrow>J) .. d \<in> Pow(I),  d\<prec>\<kappa>}"
+  "Fn(\<kappa>,I,J) \<equiv> \<Union>{y . d \<in> Pow(I), y=(d\<rightarrow>J) \<and> d\<prec>\<kappa>}"
 
 lemma domain_function_lepoll :
   assumes "function(r)"
@@ -70,7 +70,7 @@ proof (intro equalityI subsetI)
   ultimately
   show "x \<in> ?L"
     unfolding Fn_def
-    using SepReplace_iff lesspoll_trans1 Pi_iff
+    using lesspoll_trans1 Pi_iff
     by (auto,rule_tac rev_bexI[of "domain(x) \<rightarrow> J"],auto)
 next
   fix x
@@ -89,26 +89,31 @@ next
   show "x \<in> ?R" by simp
 qed
 
-lemma Fn_nat_eq_FiniteFun: "Fn(nat,I,J) = I -||> J"
+lemma zero_in_Fn: 
+  assumes "0 < \<kappa>" 
+  shows "0 \<in> Fn(\<kappa>, I, J)"
+  using lt_Card_imp_lesspoll assms zero_lesspoll
   unfolding Fn_def
+  by (simp,rule_tac x="0\<rightarrow>J" in bexI,simp)
+    (rule ReplaceI[of _ 0],simp_all)
+
+lemma Fn_nat_eq_FiniteFun: "Fn(nat,I,J) = I -||> J"
 proof (intro equalityI subsetI)
   fix x
   assume "x \<in> I -||> J"
   then
-  show "x \<in> \<Union>{(d\<rightarrow>J) .. d \<in> Pow(I), d\<prec>nat}"
+  show "x \<in> Fn(nat,I,J)"
   proof (induct)
     case emptyI
-    have "0: 0\<rightarrow>J" by simp
-    moreover
-    have "|0|<nat" using ltI by simp
-    ultimately
-    show ?case using lt_Card_imp_lesspoll Card_nat
-      by (simp,rule_tac x="0\<rightarrow>J" in bexI)
-        (auto | rule_tac x="0" in bexI)+
+    then
+    show ?case 
+      using zero_in_Fn ltI
+      by simp
   next
     case (consI a b h)
     then
-    obtain d where "h:d\<rightarrow>J" "d\<prec>nat" "d\<subseteq>I" by auto
+    obtain d where "h:d\<rightarrow>J" "d\<prec>nat" "d\<subseteq>I" 
+      unfolding Fn_def by auto
     moreover from this
     have "Finite(d)"
       using lesspoll_nat_is_Finite by simp
@@ -130,14 +135,18 @@ proof (intro equalityI subsetI)
     moreover from this
     have "cons(a,d) \<prec> nat" using Finite_imp_lesspoll_nat by simp
     ultimately
-    show ?case by (simp,rule_tac x="?d\<rightarrow>J" in bexI)
+    show ?case 
+      unfolding Fn_def
+      by (simp,rule_tac x="?d\<rightarrow>J" in bexI)
         (force dest:app_fun)+
   qed
 next
   fix x
-  assume "x \<in> \<Union>{(d\<rightarrow>J) .. d \<in> Pow(I),  d\<prec>nat}"
+  assume "x \<in> Fn(nat,I,J)"
   then
-  obtain d where "x:d\<rightarrow>J" "d \<in> Pow(I)" "d\<prec>nat" by auto
+  obtain d where "x:d\<rightarrow>J" "d \<in> Pow(I)" "d\<prec>nat"
+    unfolding Fn_def
+    by auto
   moreover from this
   have "Finite(d)"
     using lesspoll_nat_is_Finite by simp
@@ -154,21 +163,21 @@ lemma Fn_nat_subset_Pow: "Fn(\<kappa>,I,J) \<subseteq> Pow(I\<times>J)"
 lemma FnI:
   assumes "p : d \<rightarrow> J" "d \<subseteq> I" "d \<prec> \<kappa>"
   shows "p \<in> Fn(\<kappa>,I,J)"
-  using assms Sep_and_Replace
+  using assms
   unfolding Fn_def by auto
 
 lemma FnD[dest]:
   assumes "p \<in> Fn(\<kappa>,I,J)"
   shows "\<exists>d. p : d \<rightarrow> J \<and> d \<subseteq> I \<and> d \<prec> \<kappa>"
-  using assms Sep_and_Replace
+  using assms
   unfolding Fn_def by auto
 
 lemma Fn_is_function: "p \<in> Fn(\<kappa>,I,J) \<Longrightarrow> function(p)"
-  unfolding Fn_def using Sep_and_Replace fun_is_function by auto
+  unfolding Fn_def using fun_is_function by auto
 
 lemma Fn_csucc:
   assumes "Ord(\<kappa>)"
-  shows "Fn(csucc(\<kappa>),I,J) = \<Union>{(d\<rightarrow>J) .. d \<in> Pow(I), d\<lesssim>\<kappa>}"
+  shows "Fn(csucc(\<kappa>),I,J) = \<Union>{y . d \<in> Pow(I), y=(d\<rightarrow>J) \<and> d\<lesssim>\<kappa>}"
   using assms
   unfolding Fn_def using lesspoll_csucc by (simp)
 
@@ -189,12 +198,12 @@ definition
 
 lemma FnleI[intro]:
   assumes "p \<in> Fn(\<kappa>,I,J)" "q \<in> Fn(\<kappa>,I,J)" "p \<supseteq> q"
-  shows "<p,q> \<in> Fnle(\<kappa>,I,J)"
+  shows "\<langle>p,q\<rangle> \<in> Fnle(\<kappa>,I,J)"
   using assms unfolding Fnlerel_def Fnle_def FnleR_def Rrel_def
   by auto
 
 lemma FnleD[dest]:
-  assumes "<p,q> \<in> Fnle(\<kappa>,I,J)"
+  assumes "\<langle>p,q\<rangle> \<in> Fnle(\<kappa>,I,J)"
   shows "p \<in> Fn(\<kappa>,I,J)" "q \<in> Fn(\<kappa>,I,J)" "p \<supseteq> q"
   using assms unfolding Fnlerel_def Fnle_def FnleR_def Rrel_def
   by auto

@@ -229,7 +229,7 @@ qed
 lemma HAleph_rel_closed [intro,simp]:
   assumes "function(f)" "M(a)" "M(f)"
   shows "M(HAleph_rel(M,a,f))"
-  unfolding HAleph_rel_def SepReplace_def
+  unfolding HAleph_rel_def
   using assms apply_replacement
   by simp
 

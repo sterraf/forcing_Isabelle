@@ -8,7 +8,7 @@ begin
 
 definition
   Hv :: "[i,i,i,i]\<Rightarrow>i" where
-  "Hv(P,G,x,f) \<equiv> { f`y .. y\<in> domain(x), \<exists>p\<in>P. \<langle>y,p\<rangle> \<in> x \<and> p \<in> G }"
+  "Hv(P,G,x,f) \<equiv> { z . y\<in> domain(x), (\<exists>p\<in>P. \<langle>y,p\<rangle> \<in> x \<and> p \<in> G) \<and> z=f`y}"
 
 text\<open>The funcion \<^term>\<open>val\<close> interprets a name in \<^term>\<open>M\<close>
 according to a (generic) filter \<^term>\<open>G\<close>. Note the definition
@@ -125,7 +125,7 @@ qed
 
 text\<open>The next lemma provides the usual recursive expresion for the definition of term\<open>val\<close>.\<close>
 
-lemma def_val:  "val(P,G,x) = {val(P,G,t) .. t\<in>domain(x) , \<exists>p\<in>P .  \<langle>t,p\<rangle>\<in>x \<and> p \<in> G }"
+lemma def_val:  "val(P,G,x) = {z . t\<in>domain(x) , (\<exists>p\<in>P .  \<langle>t,p\<rangle>\<in>x \<and> p \<in> G) \<and> z=val(P,G,t)}"
 proof -
   let
     ?r="\<lambda>\<tau> . edrel(eclose({\<tau>}))"
@@ -141,7 +141,7 @@ proof -
   have " ... = Hv(P,G,x,\<lambda>z\<in>domain(x). val(P,G,z))"
     using aux_def_val val_def by simp
   finally
-  show ?thesis using Hv_def SepReplace_def by simp
+  show ?thesis using Hv_def by simp
 qed
 
 lemma val_mono : "x\<subseteq>y \<Longrightarrow> val(P,G,x) \<subseteq> val(P,G,y)"
@@ -161,10 +161,10 @@ proof (induct rule:eps_induct)
     have "val(P,G,check(y)) = val(P,G, {\<langle>check(w), \<one>\<rangle> . w \<in> y})"
       by simp
     also
-    have " ...  = {val(P,G,t) .. t\<in>domain(?C) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>?C \<and> p \<in> G }"
+    have " ...  = {z . t\<in>domain(?C) , (\<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>?C \<and> p \<in> G) \<and> z=val(P,G,t) }"
       using def_val by blast
     also
-    have " ... =  {val(P,G,t) .. t\<in>domain(?C) , \<exists>w\<in>y. t=check(w) }"
+    have " ... =  {z . t\<in>domain(?C) , (\<exists>w\<in>y. t=check(w)) \<and> z=val(P,G,t) }"
       using 1 by simp
     also
     have " ... = {val(P,G,check(w)) . w\<in>y }"
@@ -176,7 +176,7 @@ proof (induct rule:eps_induct)
 qed
 
 lemma val_of_name :
-  "val(P,G,{x\<in>A\<times>P. Q(x)}) = {val(P,G,t) .. t\<in>A , \<exists>p\<in>P .  Q(\<langle>t,p\<rangle>) \<and> p \<in> G }"
+  "val(P,G,{x\<in>A\<times>P. Q(x)}) = {z . t\<in>A , (\<exists>p\<in>P .  Q(\<langle>t,p\<rangle>) \<and> p \<in> G) \<and> z=val(P,G,t)}"
 proof -
   let
     ?n="{x\<in>A\<times>P. Q(x)}" and
@@ -197,17 +197,17 @@ proof -
   then
   have Eq1: "t \<in> domain({x \<in> A \<times> P . Q(x)}) \<Longrightarrow> val(P,G,t) = ?f` t"  for t
     by simp
-  have "val(P,G,?n) = {val(P,G,t) .. t\<in>domain(?n), \<exists>p \<in> P . \<langle>t,p\<rangle> \<in> ?n \<and> p \<in> G}"
+  have "val(P,G,?n) = {z . t\<in>domain(?n), (\<exists>p \<in> P . \<langle>t,p\<rangle> \<in> ?n \<and> p \<in> G) \<and> z=val(P,G,t)}"
     by (subst def_val,simp)
   also
-  have "... = {?f`t .. t\<in>domain(?n), \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G}"
+  have "... = {z . t\<in>domain(?n), (\<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=?f`t}"
     unfolding Hv_def
-    by (subst SepReplace_dom_implies,auto simp add:Eq1)
+    by (auto simp add:Eq1)
   also
-  have  "... = { (if t\<in>?r(?n)-``{?n} then val(P,G,t) else 0) .. t\<in>domain(?n), \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G}"
+  have  "... = {z . t\<in>domain(?n), (\<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=(if t\<in>?r(?n)-``{?n} then val(P,G,t) else 0)}"
     by (simp)
   also
-  have Eq2:  "... = { val(P,G,t) .. t\<in>domain(?n), \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G}"
+  have Eq2:  "... = { z . t\<in>domain(?n), (\<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=val(P,G,t)}"
   proof -
     have "domain(?n) \<subseteq> ?r(?n)-``{?n}"
       using dom_under_edrel_eclose by simp
@@ -215,36 +215,33 @@ proof -
     have "\<forall>t\<in>domain(?n). (if t\<in>?r(?n)-``{?n} then val(P,G,t) else 0) = val(P,G,t)"
       by auto
     then
-    show "{ (if t\<in>?r(?n)-``{?n} then val(P,G,t) else 0) .. t\<in>domain(?n), \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G} =
-          { val(P,G,t) .. t\<in>domain(?n), \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G}"
+    show "{ z . t\<in>domain(?n), (\<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=(if t\<in>?r(?n)-``{?n} then val(P,G,t) else 0)} =
+          { z . t\<in>domain(?n), (\<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=val(P,G,t)}"
       by auto
   qed
   also
-  have " ... = { val(P,G,t) .. t\<in>A, \<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G}"
+  have " ... = { z . t\<in>A, (\<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=val(P,G,t)}"
     by force
   finally
-  show " val(P,G,?n)  = { val(P,G,t) .. t\<in>A, \<exists>p\<in>P . Q(\<langle>t,p\<rangle>) \<and> p\<in>G}"
+  show " val(P,G,?n)  = { z . t\<in>A, (\<exists>p\<in>P . Q(\<langle>t,p\<rangle>) \<and> p\<in>G) \<and> z=val(P,G,t)}"
     by auto
 qed
 
 lemma val_of_name_alt :
-  "val(P,G,{x\<in>A\<times>P. Q(x)}) = {val(P,G,t) .. t\<in>A , \<exists>p\<in>P\<inter>G .  Q(\<langle>t,p\<rangle>) }"
+  "val(P,G,{x\<in>A\<times>P. Q(x)}) = {z . t\<in>A , (\<exists>p\<in>P\<inter>G .  Q(\<langle>t,p\<rangle>)) \<and> z=val(P,G,t) }"
   using val_of_name by force
 
 lemma val_only_names: "val(P,F,\<tau>) = val(P,F,{x\<in>\<tau>. \<exists>t\<in>domain(\<tau>). \<exists>p\<in>P. x=\<langle>t,p\<rangle>})"
   (is "_ = val(P,F,?name)")
 proof -
-  have "val(P,F,?name) = {val(P,F, t).. t\<in>domain(?name), \<exists>p\<in>P. \<langle>t, p\<rangle> \<in> ?name \<and> p \<in> F}"
+  have "val(P,F,?name) = {z . t\<in>domain(?name), (\<exists>p\<in>P. \<langle>t, p\<rangle> \<in> ?name \<and> p \<in> F) \<and> z=val(P,F, t)}"
     using def_val by blast
-  also
-  have " ... = {val(P,F, t). t\<in>{y\<in>domain(?name). \<exists>p\<in>P. \<langle>y, p\<rangle> \<in> ?name \<and> p \<in> F}}"
-    using Sep_and_Replace by simp
   also
   have " ... = {val(P,F, t). t\<in>{y\<in>domain(\<tau>). \<exists>p\<in>P. \<langle>y, p\<rangle> \<in> \<tau> \<and> p \<in> F}}"
     by blast
   also
-  have " ... = {val(P,F, t).. t\<in>domain(\<tau>), \<exists>p\<in>P. \<langle>t, p\<rangle> \<in> \<tau> \<and> p \<in> F}"
-    using Sep_and_Replace by simp
+  have " ... = {z . t\<in>domain(\<tau>), (\<exists>p\<in>P. \<langle>t, p\<rangle> \<in> \<tau> \<and> p \<in> F) \<and> z=val(P,F, t)}"
+    by blast
   also
   have " ... = val(P,F, \<tau>)"
     using def_val[symmetric] by blast
@@ -283,7 +280,7 @@ proof -
   have "\<theta>\<in>domain(\<pi>)" by auto
   assume "p\<in>G" "p\<in>P"
   with \<open>\<theta>\<in>domain(\<pi>)\<close> \<open>\<langle>\<theta>,p\<rangle> \<in> \<pi>\<close>
-  have "val(P,G,\<theta>) \<in> {val(P,G,t) .. t\<in>domain(\<pi>) , \<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>\<pi> \<and> p \<in> G }"
+  have "val(P,G,\<theta>) \<in> {z . t\<in>domain(\<pi>) , (\<exists>p\<in>P .  \<langle>t, p\<rangle>\<in>\<pi> \<and> p \<in> G) \<and> z=val(P,G,t) }"
     by auto
   then
   show ?thesis by (subst def_val)
