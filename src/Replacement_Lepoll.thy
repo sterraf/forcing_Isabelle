@@ -239,8 +239,7 @@ proof -
     show "(\<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i)) \<in>
         Pow\<^bsup>M\<^esup>(\<Union>(X \<union> range(f) \<union> {domain(x). x\<in>A} \<union> {restrict(x,r'). x\<in>A} \<union> domain(A) \<union> range(A) \<union> \<Union>A))"
       unfolding if_range_F_else_F_def if_range_F_def
-      apply (rule_tac Least_in_Pow_rel_Union, simp_all)
-    proof (cases "b=0", simp_all)
+    proof (rule_tac Least_in_Pow_rel_Union, simp_all,cases "b=0", simp_all)
       case True
       fix c
       assume asm:"x \<in> (if c \<in> range(f) then F(A, converse(f) ` c) else 0)"
@@ -468,8 +467,8 @@ lemma lepoll_assumptions18:
   using lam_replacement_constant lam_replacement_inj_rel lam_lepoll_assumption_F
     lam_replacement_minimum lam_replacement_identity lam_replacement_apply2 separation_in_constant
   unfolding lepoll_assumptions18_def lam_replacement_def[symmetric]
-  apply (rule_tac lam_replacement_hcomp2[of _ _ minimum], simp_all)
-  by (rule_tac lam_replacement_hcomp2[of _ _ "inj_rel(M)"], simp_all)
+  by (rule_tac lam_replacement_hcomp2[of _ _ minimum], simp_all,
+      rule_tac lam_replacement_hcomp2[of _ _ "inj_rel(M)"], simp_all)
     (rule_tac lam_replacement_if, rule_tac lam_replacement_hcomp[of _ "F(A)"],
       rule_tac lam_replacement_hcomp2[of _ _ "(`)"], simp_all)
 
