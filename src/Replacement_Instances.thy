@@ -373,7 +373,6 @@ locale M_ZF2 = M_ZF1 +
     "replacement_assm(M,env,banach_replacement_iterates_fm)"
     "replacement_assm(M,env,replacement_is_trans_apply_image_fm)"
     "replacement_assm(M,env,banach_iterates_fm)"
-    (* "replacement_assm(M,env,replacement_is_abs_apply_pair_fm)" *)
     "replacement_assm(M,env,replacement_dcwit_repl_body_fm)"
     and
     Lambda_in_M_replacement2:
@@ -421,7 +420,6 @@ definition instances2_fms where "instances2_fms \<equiv>
     LambdaPair_in_M_fm(pre_image_fm(0,1,2),0),
     LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0),
     LambdaPair_in_M_fm(composition_fm(0,1,2),0) }"
-(* replacement_is_fst2_sndfst_snd2_fm,    replacement_is_abs_apply_pair_fm, *)
 
 lemmas replacement_instances2_defs =
  replacement_is_omega_funspace_fm_def
@@ -433,7 +431,6 @@ lemmas replacement_instances2_defs =
  banach_replacement_iterates_fm_def
  replacement_is_trans_apply_image_fm_def
  banach_iterates_fm_def
- (* replacement_is_abs_apply_pair_fm_def *)
  replacement_dcwit_repl_body_fm_def
 
 declare (in M_ZF2) replacement_instances2_defs [simp]
@@ -526,7 +523,7 @@ is_iff_rel for "minimum"
   using is_first_iff The_abs nonempty
   by force
 
-end
+end \<comment> \<open>\<^locale>\<open>M_trivial\<close>\<close>
 
 lemma (in M_ZF2_trans) lam_replacement_minimum:
   "lam_replacement(##M, \<lambda>p. minimum(fst(p), snd(p)))"

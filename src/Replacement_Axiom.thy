@@ -4,7 +4,7 @@ theory Replacement_Axiom
     Separation_Axiom
 begin
 
-context G_generic1
+context forcing_data1
 begin
 
 bundle sharp_simps1 = snd_abs[simp] fst_abs[simp] fst_closed[simp del, simplified, simp]
@@ -48,6 +48,11 @@ proof -
     using eq
     by (auto del: iffI)
 qed
+
+end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
+
+context G_generic1
+begin
 
 lemma Replace_sats_in_MG:
   assumes

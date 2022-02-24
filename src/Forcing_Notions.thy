@@ -3,8 +3,9 @@ text\<open>This theory defines a locale for forcing notions, that is,
  preorders with a distinguished maximum element.\<close>
 
 theory Forcing_Notions
-  imports "ZF-Constructible.Relative"
-
+  imports
+    "ZF-Constructible.Relative"
+    "Delta_System_Lemma.ZF_Library"
 begin
 
 subsection\<open>Basic concepts\<close>
@@ -329,12 +330,6 @@ proof -
 qed
 
 end \<comment> \<open>\<^locale>\<open>countable_generic\<close>\<close>
-(* TODO: already in ZF Library *)
-lemma Pi_rangeD:
-  assumes "f\<in>Pi(A,B)" "b \<in> range(f)"
-  shows "\<exists>a\<in>A. f`a = b"
-  using assms Pi_memberD[OF assms(1)] func.domain_type[OF _ assms(1)]
-  by auto
 
 text\<open>Now, the following recursive definition will fulfill the
 requirements of lemma \<^term>\<open>RS_sequence_imp_rasiowa_sikorski\<close> \<close>

@@ -5,6 +5,7 @@ theory FiniteFun_Relative
     Lambda_Replacement
 begin
 
+(* MOVE THIS to an appropriate place*)
 lemma function_subset:
   "function(f) \<Longrightarrow> g\<subseteq>f \<Longrightarrow> function(g)"
   unfolding function_def subset_def by auto

@@ -464,7 +464,7 @@ end \<comment> \<open>\<^locale>\<open>M_Pi_assumptions\<close>\<close>
 (**********************************************************)
 subsection\<open>Discipline for \<^term>\<open>Pi\<close>\<close>
 
-definition (* completely relational\<close> *)
+definition (* completely relational *)
   is_Pi :: "[i\<Rightarrow>o,i,i\<Rightarrow>i,i]\<Rightarrow>o"  where
   "is_Pi(M,A,B,I) \<equiv> M(I) \<and> (\<exists>S[M]. \<exists>PS[M]. is_Sigma(M,A,B,S) \<and>
        is_Pow(M,S,PS) \<and>

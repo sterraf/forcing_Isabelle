@@ -5,10 +5,6 @@ theory Edrel
 
 begin
 
-(* declare arity_subset_fm [simp del] arity_ordinal_fm[simp del] arity_transset_fm[simp del]
-declare arity_And [simp del] arity_Or[simp del] arity_Implies[simp del]
-  arity_Exists[simp del] arity_Iff[simp del] *)
-
 subsection\<open>The well-founded relation \<^term>\<open>ed\<close>\<close>
 
 lemma eclose_sing : "x \<in> eclose(a) \<Longrightarrow> x \<in> eclose({a})"

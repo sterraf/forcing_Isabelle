@@ -85,7 +85,7 @@ locale G_generic4 = G_generic3 + forcing_data4
 locale G_generic4_AC = G_generic3_AC + G_generic4
 
 sublocale G_generic4_AC \<subseteq> ext:M_ZFC3_trans "M[G]"
-  using ground_replacements4 replacement_assm_MG choice_ax choice_in_MG
+  using ground_replacements4 replacement_assm_MG
   by unfold_locales (simp_all del: replacement_instances1_defs)
 
 sublocale G_generic_AC \<subseteq> G_generic4_AC ..

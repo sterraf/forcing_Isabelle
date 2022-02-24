@@ -107,24 +107,6 @@ abbreviation
   kappa_closed_r_set (\<open>_-closed\<^bsup>_\<^esup>'(_,_')\<close> [61] 60) where
   "\<kappa>-closed\<^bsup>M\<^esup>(P,leq) \<equiv> kappa_closed_rel(##M,\<kappa>,P,leq)"
 
-sublocale forcing_data \<subseteq> M_ZF_library "##M"
-  \<comment> \<open>Wasn't this already done??\<close>
-  by unfold_locales
-
-context M_ZF_library
-begin
-
-(* Is this true? *)
-lemma kappa_closed_abs:
-  assumes "M(\<kappa>)" "M(P)" "M(leq)"
-  shows "\<kappa>-closed\<^bsup>M\<^esup>(P,leq) \<longleftrightarrow> \<kappa>-closed(P,leq)"
-  using assms transM[OF ltD, of _ \<kappa>]
-    mono_seqspace_rel_char[of _ P leq]
-  unfolding kappa_closed_rel_def kappa_closed_def
-  oops
-
-end \<comment> \<open>\<^locale>\<open>M_ZF_library\<close>\<close>
-
 lemma (in forcing_data4) forcing_a_value:
   assumes "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]" "a \<in> A"
     "q \<preceq> p" "q \<in> P" "p\<in>P" "f_dot \<in> M" "A\<in>M" "B\<in>M"
@@ -196,7 +178,7 @@ context
   includes G_generic1_lemmas
 begin
 
-(*FIXME: pick better names for this lemmas. *)
+(* FIXME: Pick better names for these lemmas. *)
 lemma aux3:
   assumes "f_dot\<in>M" "\<tau>\<in>M" "\<chi>\<in>formula" "arity(\<chi>) \<le> 7"
   shows "separation(##M, \<lambda>r. M, [fst(r), P, leq, \<one>, f_dot, \<tau>, snd(r)\<^sup>v] \<Turnstile> \<chi>)"

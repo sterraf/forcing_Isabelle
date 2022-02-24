@@ -261,7 +261,7 @@ end \<comment> \<open>\<^locale>\<open>M_trivial\<close>\<close>
 (******************************************************)
 (* FIXME This is old-style discipline *)
 
-definition (* completely relational\<close> *)
+definition (* completely relational *)
   ccc_rel   :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" (\<open>ccc\<^bsup>_\<^esup>'(_,_')\<close>) where
   "ccc_rel(M,P,leq) \<equiv> \<forall>A[M]. antichain_rel(M,P,leq,A) \<longrightarrow>
       (\<forall>\<kappa>[M]. is_cardinal(M,A,\<kappa>) \<longrightarrow> (\<exists>om[M]. omega(M,om) \<and> le_rel(M,\<kappa>,om)))"

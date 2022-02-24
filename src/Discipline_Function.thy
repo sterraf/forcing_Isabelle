@@ -596,7 +596,7 @@ end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 (**********************************************************)
 subsection\<open>Discipline for \<^term>\<open>surj\<close>\<close>
 
-definition (* completely relational\<close> *)
+definition (* completely relational *)
   is_surj   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
   "is_surj(M,A,B,I) \<equiv> M(I) \<and> (\<exists>F[M]. is_function_space(M,A,B,F) \<and>
        is_Collect(M,F,surjP_rel(M,A,B),I))"

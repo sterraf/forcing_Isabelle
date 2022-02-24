@@ -320,7 +320,6 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,banach_replacement_iterates_fm)"
     "ground_replacement_assm(M,env,replacement_is_trans_apply_image_fm)"
     "ground_replacement_assm(M,env,banach_iterates_fm)"
-    (* "ground_replacement_assm(M,env,replacement_is_abs_apply_pair_fm)" *)
     "ground_replacement_assm(M,env,dcwit_repl_body_fm(6,5,4,3,2,0,1))"
     "ground_replacement_assm(M,env,Lambda_in_M_fm(fst_fm(0,1),0))"
     "ground_replacement_assm(M,env,Lambda_in_M_fm(big_union_fm(0,1),0))"
@@ -388,8 +387,6 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(LambdaPair_in_M_fm(composition_fm(0,1,2),0)),
     ground_repl_fm(Lambda_in_M_fm(is_converse_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)) }"
-(* {
-    ground_repl_fm(replacement_is_abs_apply_pair_fm), *)
 
 definition overhead where
   "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union> instances4_fms"
@@ -446,8 +443,6 @@ sublocale M_ctm \<subseteq> M_ctm4 ..
 sublocale M_ctm_AC \<subseteq> M_ctm4_AC ..
 sublocale M_ctm_AC \<subseteq> M_ctm3_AC ..
 sublocale M_ctm_AC \<subseteq> M_ctm2_AC ..
-(* Next one is a problem, since forcing_data does not include Choice! *)
-(* sublocale forcing_data \<subseteq> forcing_data4 *)
 
 lemma M_satT_imp_M_ZF2: "(M \<Turnstile> ZF) \<Longrightarrow> M_ZF2(M)"
 proof -

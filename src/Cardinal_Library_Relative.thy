@@ -278,7 +278,7 @@ end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
 
 subsection\<open>Countable and uncountable sets\<close>
 
-definition (* FIXME: From Cardinal_Library, on the context of AC\<close> *)
+definition (* FIXME: From Cardinal_Library, on the context of AC *)
   countable :: "i\<Rightarrow>o" where
   "countable(X) \<equiv> X \<lesssim> \<omega>"
 
@@ -1239,7 +1239,7 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>
 
-(* FIXME: This can be generalized.\<close> *)
+(* FIXME: This can be generalized. *)
 lemma (in M_cardinal_library) countable_fun_imp_countable_image:
   assumes "f:C \<rightarrow>\<^bsup>M\<^esup> B" "countable\<^bsup>M\<^esup>(C)" "\<And>c. c\<in>C \<Longrightarrow> countable\<^bsup>M\<^esup>(f`c)"
     "M(C)" "M(B)"

@@ -5,39 +5,6 @@ theory Demonstrations
     Definitions_Main
 begin
 
-(* MOVE THIS to an appropriate place, if it is to stay *)
-abbreviation
-  dec15  :: i   ("15") where "15 \<equiv> succ(14)"
-abbreviation
-  dec16  :: i   ("16") where "16 \<equiv> succ(15)"
-abbreviation
-  dec17  :: i   ("17") where "17 \<equiv> succ(16)"
-abbreviation
-  dec18  :: i   ("18") where "18 \<equiv> succ(17)"
-abbreviation
-  dec19  :: i   ("19") where "19 \<equiv> succ(18)"
-abbreviation
-  dec20  :: i   ("20") where "20 \<equiv> succ(19)"
-abbreviation
-  dec21  :: i   ("21") where "21 \<equiv> succ(20)"
-abbreviation
-  dec22  :: i   ("22") where "22 \<equiv> succ(21)"
-abbreviation
-  dec23  :: i   ("23") where "23 \<equiv> succ(22)"
-abbreviation
-  dec24  :: i   ("24") where "24 \<equiv> succ(23)"
-abbreviation
-  dec25  :: i   ("25") where "25 \<equiv> succ(24)"
-abbreviation
-  dec26  :: i   ("26") where "26 \<equiv> succ(25)"
-abbreviation
-  dec27  :: i   ("27") where "27 \<equiv> succ(26)"
-abbreviation
-  dec28  :: i   ("28") where "28 \<equiv> succ(27)"
-abbreviation
-  dec29  :: i   ("29") where "29 \<equiv> succ(28)"
-
-
 locale Demo = M_trivial + M_AC +
   fixes t\<^sub>1 t\<^sub>2
   assumes

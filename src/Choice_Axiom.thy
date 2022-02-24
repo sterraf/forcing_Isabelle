@@ -360,4 +360,8 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
+sublocale G_generic1_AC \<subseteq> ext:M_ZC_basic "M[G]"
+  using choice_ax choice_in_MG
+  by unfold_locales
+
 end
