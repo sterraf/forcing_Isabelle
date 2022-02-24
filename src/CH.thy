@@ -35,11 +35,6 @@ lemma Ord_lt_subset : "Ord(b) \<Longrightarrow> a<b \<Longrightarrow> a\<subsete
 lemmas nat_subset_Aleph_rel_1 =
   Ord_lt_subset[OF Ord_Aleph_rel[of 1] Aleph_rel_increasing[of 0 1,simplified],simplified]
 
-end \<comment> \<open>\<^locale>\<open>M_ctm3_AC\<close>\<close>
-
-context M_ctm3_AC
-begin
-
 \<comment> \<open>Kunen IV.7.14, only for \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>\<close>
 lemma succ_omega_closed_Coll: "succ(\<omega>)-closed\<^bsup>M\<^esup>(Coll,Colleq)"
 proof -
