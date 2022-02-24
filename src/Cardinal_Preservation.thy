@@ -1,6 +1,6 @@
 theory Cardinal_Preservation
   imports
-    ZF_Trans_Interpretations
+    Forcing_Main
 begin
 
 (* MOVE THIS to an appropriate place *)

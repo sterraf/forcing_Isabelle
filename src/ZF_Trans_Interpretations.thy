@@ -1,6 +1,7 @@
 theory ZF_Trans_Interpretations
   imports
-    Forcing_Main
+    Internal_ZFC_Axioms
+    Succession_Poset
 begin
 
 locale M_ZF3 = M_ZF2 +

@@ -513,9 +513,22 @@ text\<open>@{thm [display] ctm_ZFC_imp_ctm_not_CH}\<close>
     (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
 *)
 
-txt\<open>These results can be strengthened by enumerating a finite number of
+txt\<open>These results can be strengthened by enumerating three finite sets of
 replacement instances which are sufficient to develop forcing and for
-the construction of the aforementioned models:\<close>
+the construction of the aforementioned models: \<^term>\<open>instances1_fms\<close>
+through \<^term>\<open>instances4_fms\<close>, which are then collected into
+\<^term>\<open>overhead\<close>. For example, we have:\<close>
+
+thm instances1_fms_def
+text\<open>@{thm [display] instances1_fms_def}\<close>
+(*
+instances1_fms \<equiv>
+{ wfrec_Hfrc_at_fm, list_repl1_intf_fm, list_repl2_intf_fm,
+ formula_repl2_intf_fm, eclose_repl2_intf_fm, powapply_repl_fm,
+ phrank_repl_fm, wfrec_rank_fm, trans_repl_HVFrom_fm, wfrec_Hcheck_fm,
+ repl_PHcheck_fm, check_replacement_fm, G_dot_in_M_fm, repl_opname_check_fm,
+ tl_repl_intf_fm, formula_repl1_intf_fm, eclose_repl1_intf_fm }
+*)
 
 thm extensions_of_ctms
 text\<open>@{thm [display] extensions_of_ctms}\<close>
@@ -562,5 +575,23 @@ M \<Turnstile> {\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in>
     N \<Turnstile> ZC \<union> {\<cdot>CH\<cdot>} \<union> {\<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>} \<and>
     (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
 *)
+
+txt\<open>In the above three statements, the function \<^term>\<open>ground_repl_fm\<close>
+takes an element \<^term>\<open>\<phi>\<close>of \<^term>\<open>formula\<close> and returns the
+replacement instance in the ground model that produces
+\<^term>\<open>\<phi>\<close>-replacement instance in the generic extension. The next
+result is stated in the context \<^locale>\<open>G_generic1\<close>, which assumes
+the existence of a generic filter.\<close>
+
+context G_generic1
+begin
+
+thm sats_ground_repl_fm_imp_sats_ZF_replacement_fm
+text\<open>@{thm [display] ctm_of_CH}\<close>
+(*
+\<phi> \<in> formula \<Longrightarrow> M, [] \<Turnstile> \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> \<Longrightarrow> M[G], [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>
+*)
+
+end
 
 end
