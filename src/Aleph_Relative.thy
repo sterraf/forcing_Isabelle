@@ -395,9 +395,7 @@ proof -
       then
       have "\<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup> < (\<Union>j<l. \<aleph>\<^bsub>j\<^esub>\<^bsup>M\<^esup>)"
         using limit Ord_Aleph_rel Ord_OUN
-        apply (rule_tac OUN_upper_lt)
-          apply (blast intro: Card_rel_is_Ord ltD lt_Ord)
-      proof -
+      proof(rule_tac OUN_upper_lt,blast intro: Card_rel_is_Ord ltD lt_Ord)
         from \<open>x<l\<close> \<open>Limit(l)\<close>
         have "Ord(x)"
           using Limit_is_Ord Ord_in_Ord
