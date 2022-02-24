@@ -72,22 +72,18 @@ lemma empty_rel_abs : "M(x) \<Longrightarrow> M(0) \<Longrightarrow> x = 0 \<lon
   by auto
 
 lemma fst_rel_abs:
-  "\<lbrakk>M(p) \<rbrakk> \<Longrightarrow> fst(p) = fst_rel(M,p)"
+  assumes "M(p)"
+  shows "fst(p) = fst_rel(M,p)"
+  using fst_abs assms 
   unfolding fst_def fst_rel_def
-  using fst_abs
-  apply (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto)
-    apply(rule_tac the_equality[symmetric],simp_all)
-   apply(rule_tac the_equality[symmetric],simp_all add:fst_def)
-  done
+  by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto;rule_tac the_equality[symmetric],simp_all)
 
 lemma snd_rel_abs:
-  "\<lbrakk>M(p) \<rbrakk> \<Longrightarrow> snd(p) = snd_rel(M,p)"
+  assumes "M(p)"
+  shows "snd(p) = snd_rel(M,p)"
+  using snd_abs assms 
   unfolding snd_def snd_rel_def
-  using snd_abs
-  apply (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto)
-    apply(rule_tac the_equality[symmetric],simp_all)
-   apply(rule_tac the_equality[symmetric],simp_all add:snd_def)
-  done
+  by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto;rule_tac the_equality[symmetric],simp_all)
 
 end \<comment> \<open>\<^locale>\<open>M_trans\<close>\<close>
 
