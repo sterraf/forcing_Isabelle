@@ -492,7 +492,7 @@ proof -
     by (rule_tac x="M[G]" in exI, auto)
 qed
 
-corollary ctm_ZFC_imp_ctm_of_CH:
+corollary ctm_ZFC_imp_ctm_CH:
   assumes
     "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZFC"
   shows

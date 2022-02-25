@@ -502,15 +502,15 @@ text\<open>@{thm [display] ctm_ZFC_imp_ctm_not_CH}\<close>
     (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
 *)
 
-thm ctm_ZFC_imp_ctm_not_CH
-text\<open>@{thm [display] ctm_ZFC_imp_ctm_not_CH}\<close>
+thm ctm_ZFC_imp_ctm_CH
+text\<open>@{thm [display] ctm_ZFC_imp_ctm_CH}\<close>
 (*
   M \<approx> \<omega> \<Longrightarrow>
   Transset(M) \<Longrightarrow>
   M \<Turnstile> ZFC \<Longrightarrow>
   \<exists>N. M \<subseteq> N \<and>
-    N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZFC \<union> {\<cdot>CH\<cdot>} \<and>
-    (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
+      N \<approx> \<omega> \<and>
+      Transset(N) \<and> N \<Turnstile> ZFC \<union> {\<cdot>CH\<cdot>} \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
 *)
 
 txt\<open>These results can be strengthened by enumerating three finite sets of
@@ -528,6 +528,12 @@ instances1_fms \<equiv>
  phrank_repl_fm, wfrec_rank_fm, trans_repl_HVFrom_fm, wfrec_Hcheck_fm,
  repl_PHcheck_fm, check_replacement_fm, G_dot_in_M_fm, repl_opname_check_fm,
  tl_repl_intf_fm, formula_repl1_intf_fm, eclose_repl1_intf_fm }
+*)
+
+thm overhead_def
+text\<open>@{thm [display] overhead_def}\<close>
+(*
+overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union> instances4_fms
 *)
 
 thm extensions_of_ctms
@@ -578,7 +584,7 @@ M \<Turnstile> {\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in>
 
 txt\<open>In the above three statements, the function \<^term>\<open>ground_repl_fm\<close>
 takes an element \<^term>\<open>\<phi>\<close>of \<^term>\<open>formula\<close> and returns the
-replacement instance in the ground model that produces
+replacement instance in the ground model that produces the
 \<^term>\<open>\<phi>\<close>-replacement instance in the generic extension. The next
 result is stated in the context \<^locale>\<open>G_generic1\<close>, which assumes
 the existence of a generic filter.\<close>
@@ -587,11 +593,11 @@ context G_generic1
 begin
 
 thm sats_ground_repl_fm_imp_sats_ZF_replacement_fm
-text\<open>@{thm [display] ctm_of_CH}\<close>
+text\<open>@{thm [display] sats_ground_repl_fm_imp_sats_ZF_replacement_fm}\<close>
 (*
 \<phi> \<in> formula \<Longrightarrow> M, [] \<Turnstile> \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> \<Longrightarrow> M[G], [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>
 *)
 
-end
+end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 end
