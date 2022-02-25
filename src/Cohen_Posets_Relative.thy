@@ -317,16 +317,14 @@ lemma ccc_rel_Fn_nat:
   assumes "M(I)"
   shows "ccc\<^bsup>M\<^esup>(Fn(nat,I,2), Fnle(nat,I,2))"
 proof -
+  have repFun_dom_closed:"M({domain(p) . p \<in> A})" if "M(A)" for A
+    using RepFun_closed domain_replacement_simp transM[OF _ \<open>M(A)\<close>] that
+    by auto
   from assms
   have "M(Fn(nat,I,2))" using Fn_nat_eq_FiniteFun by simp
   {
     fix A
-    assume "\<not> |A|\<^bsup>M\<^esup> \<le> nat" "M(A)"
-    then
-    have "M({domain(p) . p \<in> A})"
-      using RepFun_closed domain_replacement_simp transM[OF _ \<open>M(A)\<close>]
-      by auto
-    assume "A \<subseteq> Fn(nat, I, 2)"
+    assume "\<not> |A|\<^bsup>M\<^esup> \<le> nat" "M(A)" "A \<subseteq> Fn(nat, I, 2)"
     moreover from this
     have "countable_rel(M,{p\<in>A. domain(p) = d})" if "M(d)" for d
     proof (cases "d\<prec>\<^bsup>M\<^esup>nat \<and> d \<subseteq> I")
@@ -358,7 +356,7 @@ proof -
           using FnD[OF subsetD[OF \<open>A\<subseteq>_\<close> \<open>p\<in>A\<close>]]
           by auto
         moreover from this
-        have "p \<approx> d'"  "domain(p) = d'"
+        have "p \<approx> d'" "domain(p) = d'"
           using function_eqpoll Pi_iff
           by auto
         ultimately
@@ -369,46 +367,39 @@ proof -
       then
       show ?thesis using empty_lepoll_relI by auto
     qed
-    moreover
-    have "uncountable_rel(M,{domain(p) . p \<in> A})"
-    proof
-      have 1:"M({domain(p) . p \<in> A'})" if "M(A')" for A'\<comment> \<open>Repeated above\<close>
-        using that RepFun_closed domain_replacement_simp transM[OF _ that]
+    have 2:"M(x) \<Longrightarrow> x \<in> dC_F(X, i) \<Longrightarrow> M(i)" for x X i
+        unfolding dC_F_def
         by auto
       moreover
-      have " M(x) \<Longrightarrow> x \<in> A \<and> domain(x) = i \<Longrightarrow> M(i)" for A x i
-        by auto
-      moreover from calculation
+    have "uncountable_rel(M,{domain(p) . p \<in> A})"
+    proof
       interpret M_replacement_lepoll M dC_F
         using lam_replacement_dC_F domain_eq_separation lam_replacement_inj_rel
         unfolding dC_F_def
       proof(unfold_locales,simp_all)
-        fix A b f
-        assume "M(A)" "M(b)" "M(f)"
-        with calculation[of A]
-        show "lam_replacement(M, \<lambda>x. \<mu> i. x \<in> if_range_F_else_F(\<lambda>d. {p \<in> A . domain(p) = d}, b, f, i))"
+        fix X b f
+        assume "M(X)" "M(b)" "M(f)"
+        with 2[of X]
+        show "lam_replacement(M, \<lambda>x. \<mu> i. x \<in> if_range_F_else_F(\<lambda>d. {p \<in> X . domain(p) = d}, b, f, i))"
           using lam_replacement_dC_F domain_eq_separation
-            mem_F_bound3 countable_lepoll_assms2
-          unfolding dC_F_def
-          by (rule_tac lam_Least_assumption_general[where U="\<lambda>_. {domain(x). x\<in>A}"])
-            (auto)
-      qed
-      note \<open>M({domain(p). p\<in>A})\<close> \<open>M(A)\<close>
-      moreover from this
-      have "x \<in> A \<Longrightarrow> M({p \<in> A . domain(p) = domain(x)})" for x
-        using separation_closed domain_eq_separation transM[OF _ \<open>M(A)\<close>] by simp
+            mem_F_bound3 countable_lepoll_assms2 repFun_dom_closed
+          by (rule_tac lam_Least_assumption_general[where U="\<lambda>_. {domain(x). x\<in>X}"],auto)
+      qed (auto)
+      have "\<exists>a\<in>A. x = domain(a) \<Longrightarrow> M(dC_F(A,x))" for x
+        using \<open>M(A)\<close> transM[OF _ \<open>M(A)\<close>] by (auto)
+      moreover
+      have "w \<in> A \<and> domain(w) = x \<Longrightarrow> M(x)" for w x
+        using transM[OF _ \<open>M(A)\<close>] by auto
       ultimately
       interpret M_cardinal_UN_lepoll _ "dC_F(A)" "{domain(p). p\<in>A}"
-        using countable_lepoll_assms2
-          lepoll_assumptions transM[of _ A]
-          lepoll_assumptions1[OF \<open>M(A)\<close> \<open>M({domain(p) . p \<in> A})\<close>]
-          domain_eq_separation
-          lam_replacement_inj_rel lam_replacement_dC_F
-        unfolding dC_F_def
-        apply (unfold_locales)
-          apply(simp del:if_range_F_else_F_def,simp)
-        apply (rule_tac lam_Least_assumption_general[where U="\<lambda>_. {domain(x). x\<in>A}"], auto) \<comment> \<open>slow!\<close>
-        done
+        using lam_replacement_dC_F lam_replacement_inj_rel \<open>M(A)\<close>
+          lepoll_assumptions domain_eq_separation
+          countable_lepoll_assms2 repFun_dom_closed
+          lepoll_assumptions1[OF \<open>M(A)\<close> repFun_dom_closed[OF \<open>M(A)\<close>]]
+        apply(unfold_locales)
+        by(simp_all del:if_range_F_else_F_def,
+          rule_tac lam_Least_assumption_general[where U="\<lambda>_. {domain(x). x\<in>A}"])
+        (auto simp del:if_range_F_else_F_def simp add:dC_F_def)
       from \<open>A \<subseteq> Fn(nat, I, 2)\<close>
       have x:"(\<Union>d\<in>{domain(p) . p \<in> A}. {p\<in>A. domain(p) = d}) = A"
         by auto
@@ -433,7 +424,7 @@ proof -
         lesspoll_nat_imp_lesspoll_rel[of "domain(p)"]
         domain_of_fun[of p _ "\<lambda>_. 2"] by (auto dest:transM)
     moreover
-    note \<open>M({domain(p). p\<in>A})\<close>
+    note repFun_dom_closed[OF \<open>M(A)\<close>]
     ultimately
     obtain D where "delta_system(D)" "D \<subseteq> {domain(p) . p \<in> A}" "D \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "M(D)"
       using delta_system_uncountable_rel[of "{domain(p) . p \<in> A}"] by auto
@@ -539,16 +530,16 @@ proof -
     from \<open>M(D)\<close>\<open>M(r)\<close>
     have "M({y . p\<in>A, restrict(p,r) = f \<and> y=domain(p) \<and> domain(p) \<in> D})" (is "M(?Y(A,f))")
       if "M(f)" "M(A)" for f A
-      using drSR_Y_closed[unfolded drSR_Y_def] that  
+      using drSR_Y_closed[unfolded drSR_Y_def] that
       by simp
     then
     obtain f where "uncountable_rel(M,?Y(A,f))" "M(f)"
     proof -
       have 1:"M(i)"
-        if "M(B)" "M(x)" 
+        if "M(B)" "M(x)"
           "x \<in> {y . x \<in> B, restrict(x, r) = i \<and> y = domain(x) \<and> domain(x) \<in> D}"
         for B x i
-        using that \<open>M(r)\<close> 
+        using that \<open>M(r)\<close>
         by (auto dest:transM)
       note \<open>M(r)\<close>
       moreover from this
