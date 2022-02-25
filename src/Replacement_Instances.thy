@@ -441,10 +441,6 @@ lemma instances2_fms_type[TC]: "instances2_fms \<subseteq> formula"
 
 locale M_ZF2_trans = M_ZF1_trans + M_ZF2
 
-(* FIXME: Move to an appropriate place, or obsolete *)
-sublocale M_ZF_trans \<subseteq> M_ZF2_trans
-  using replacement_ax by unfold_locales
-
 locale M_ZFC2 = M_ZFC1 + M_ZF2
 
 locale M_ZFC2_trans = M_ZFC1_trans + M_ZF2_trans + M_ZFC2

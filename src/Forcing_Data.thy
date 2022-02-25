@@ -25,21 +25,6 @@ locale forcing_data1 = forcing_notion + M_ctm1 +
   assumes P_in_M:           "P \<in> M"
     and leq_in_M:         "leq \<in> M"
 
-(* TODO: find a common root to avoid repetitions, as it was done with M_ZFC_trans and the like *)
-locale M_ctm = M_ZF_trans +
-  fixes enum
-  assumes M_countable:      "enum\<in>bij(nat,M)"
-
-locale M_ctm_AC = M_ctm + M_ZFC_trans
-
-locale forcing_data = forcing_notion + M_ctm +
-  assumes P_in_M:           "P \<in> M"
-    and leq_in_M:         "leq \<in> M"
-
-sublocale M_ctm \<subseteq> M_ctm1 using M_countable by unfold_locales
-sublocale M_ctm_AC \<subseteq> M_ctm1_AC ..
-sublocale forcing_data \<subseteq> forcing_data1 using P_in_M leq_in_M  by unfold_locales
-
 context forcing_data1
 begin
 

@@ -94,15 +94,6 @@ declare (in M_ZF1) replacement_instances1_defs[simp]
 
 locale M_ZF1_trans = M_ZF1 + M_Z_trans
 
-locale M_ZF = M_Z_basic +
-  assumes
-    replacement_ax:"replacement_assm(M,env,\<phi>)"
-
-locale M_ZF_trans = M_ZF + M_Z_trans
-
-sublocale M_ZF_trans \<subseteq> M_ZF1_trans
-  using replacement_ax by unfold_locales
-
 context M_Z_trans
 begin
 
@@ -143,16 +134,12 @@ locale M_ZFC1 = M_ZF1 + M_ZC_basic
 
 locale M_ZFC1_trans = M_ZF1_trans + M_ZFC1
 
-locale M_ZFC = M_ZF + M_ZC_basic
-
 sublocale M_Z_trans \<subseteq> M_trans "##M"
   using transitivity zero_in_M exI[of "\<lambda>x. x\<in>M"]
   by unfold_locales simp_all
 
 sublocale M_Z_trans \<subseteq> M_trivial "##M"
   using upair_ax Union_ax by unfold_locales
-
-locale M_ZFC_trans = M_ZF_trans + M_ZFC
 
 subsection\<open>Interface with \<^term>\<open>M_basic\<close>\<close>
 

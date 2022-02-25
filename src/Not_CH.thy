@@ -632,12 +632,6 @@ qed
 lemma ZF_replacement_overhead_sub_ZFC: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead} \<subseteq> ZFC"
   using overhead_type unfolding ZFC_def ZF_inf_def by auto
 
-lemma ground_repl_fm_sub_ZFC: "{\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> formula} \<subseteq> ZFC"
-  using overhead_type unfolding ZFC_def ZF_inf_def by auto
-
-lemma ZF_replacement_ground_repl_fm_type: "{\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> formula} \<subseteq> formula"
-  by auto
-
 corollary ctm_ZFC_imp_ctm_not_CH:
   assumes
     "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZFC"
@@ -649,9 +643,6 @@ corollary ctm_ZFC_imp_ctm_not_CH:
     satT_mono[OF _ ground_repl_fm_sub_ZFC, of M]
     satT_mono[OF _ ZF_replacement_overhead_sub_ZFC, of M]
     ctm_of_not_CH[of M formula] satT_ZC_ZF_replacement_imp_satT_ZFC
-  apply (auto simp: satT_Un_iff)
-  apply (rule_tac x=N in exI)
-  apply (force)
-  done
+  by (auto simp: satT_Un_iff, rule_tac x=N in exI) force
 
 end

@@ -1157,8 +1157,6 @@ qed
 
 end
 
-locale M_jump_cardinal = M_ordertype
-
 context M_cardinal_arith
 begin
 
@@ -1413,7 +1411,7 @@ subsection\<open>For Every Cardinal Number There Exists A Greater One\<close>
 
 text\<open>This result is Kunen's Theorem 10.16, which would be trivial using AC\<close>
 
-locale M_cardinal_arith_jump = M_cardinal_arith + M_jump_cardinal
+locale M_cardinal_arith_jump = M_cardinal_arith + M_ordertype
 begin
 
 lemma well_ord_restr: "well_ord(X, r) \<Longrightarrow> well_ord(X, r \<inter> X\<times>X)"

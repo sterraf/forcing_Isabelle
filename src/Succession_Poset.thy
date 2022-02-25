@@ -243,11 +243,6 @@ locale M_ctm2_AC = M_ctm2 + M_ZFC2_trans
 
 locale forcing_data2 = forcing_data1 + M_ctm2
 
-(* FIXME: perhaps then obsolete *)
-sublocale M_ctm \<subseteq> M_ctm2 ..
-sublocale M_ctm_AC \<subseteq> M_ctm2_AC ..
-sublocale forcing_data \<subseteq> forcing_data2 ..
-
 context M_ctm2
 begin
 

@@ -494,10 +494,25 @@ lemma sats_ZFC_iff_sats_ZF_AC:
   "(N \<Turnstile> ZFC) \<longleftrightarrow> (N \<Turnstile> ZF) \<and> (N, [] \<Turnstile> \<cdot>AC\<cdot>)"
     unfolding ZFC_def ZFC_fin_def ZF_def by auto
 
+lemma satT_ZF_imp_satT_Z: "M \<Turnstile> ZF \<Longrightarrow> M \<Turnstile> \<cdot>Z\<cdot>"
+  unfolding ZF_def ZF_inf_def Zermelo_fms_def ZF_fin_def by auto
+
 lemma satT_ZFC_imp_satT_ZC: "M \<Turnstile> ZFC \<Longrightarrow> M \<Turnstile> ZC"
   unfolding ZFC_def ZF_inf_def ZC_def Zermelo_fms_def ZFC_fin_def by auto
 
+lemma satT_Z_ZF_replacement_imp_satT_ZF: "N \<Turnstile> \<cdot>Z\<cdot> \<Longrightarrow> N \<Turnstile> {\<cdot>Replacement(x)\<cdot> . x \<in> formula} \<Longrightarrow> N \<Turnstile> ZF"
+  unfolding ZF_def ZF_inf_def Zermelo_fms_def ZF_fin_def by auto
+
 lemma satT_ZC_ZF_replacement_imp_satT_ZFC: "N \<Turnstile> ZC \<Longrightarrow> N \<Turnstile> {\<cdot>Replacement(x)\<cdot> . x \<in> formula} \<Longrightarrow> N \<Turnstile> ZFC"
   unfolding ZFC_def ZF_inf_def ZC_def Zermelo_fms_def ZFC_fin_def by auto
+
+lemma ground_repl_fm_sub_ZF: "{\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> formula} \<subseteq> ZF"
+   unfolding ZF_def ZF_inf_def by auto
+
+lemma ground_repl_fm_sub_ZFC: "{\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> formula} \<subseteq> ZFC"
+   unfolding ZFC_def ZF_inf_def by auto
+
+lemma ZF_replacement_ground_repl_fm_type: "{\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> formula} \<subseteq> formula"
+  by auto
 
 end

@@ -218,6 +218,9 @@ proof -
     by (rule_tac x="?N" in exI, auto)
 qed
 
+lemma ZF_replacement_instances12_sub_ZF: "{\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms} \<subseteq> ZF"
+  using instances1_fms_type instances2_fms_type unfolding ZF_def ZF_inf_def by auto
+
 theorem extensions_of_ctms_ZF:
   assumes
     "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZF"
@@ -227,59 +230,28 @@ theorem extensions_of_ctms_ZF:
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)) \<and>
       ((M, []\<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N \<Turnstile> ZFC)"
 proof -
-  from \<open>M \<Turnstile> ZF\<close>
-  interpret M_ZF M
-    using M_ZF_iff_M_satT
-    by simp
-  from \<open>Transset(M)\<close>
-  interpret M_ZF_trans M
-    using M_ZF_iff_M_satT
-    by unfold_locales
-  from \<open>M \<approx> \<omega>\<close>
-  obtain enum where "enum \<in> bij(\<omega>,M)"
-    using eqpoll_sym unfolding eqpoll_def by blast
+  from assms
+  have "\<exists>N.
+      M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> M\<noteq>N \<and>
+      (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)) \<and>
+      ((M, []\<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N, [] \<Turnstile> \<cdot>AC\<cdot>) \<and> N \<Turnstile> \<cdot>Z\<cdot> \<union> { \<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> formula}"
+    using extensions_of_ctms[of M formula] satT_ZF_imp_satT_Z[of M]
+      satT_mono[OF _ ground_repl_fm_sub_ZF, of M]
+      satT_mono[OF _ ZF_replacement_instances12_sub_ZF, of M]
+    by (auto simp: satT_Un_iff)
   then
-  interpret M_ctm M enum by unfold_locales
-  interpret forcing_data "2\<^bsup><\<omega>\<^esup>" seqle 0 M enum
-    using nat_into_M seqspace_closed seqle_in_M
-    by unfold_locales simp
-  obtain G where "M_generic(G)" "M \<noteq> M\<^bsup>2\<^bsup><\<omega>\<^esup>\<^esup>[G]" (is "M\<noteq>?N")
-    using cohen_extension_is_proper
+  obtain N where "N \<Turnstile> \<cdot>Z\<cdot> \<union> { \<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> formula}" "M \<subseteq> N" "N \<approx> \<omega>" "Transset(N)"
+    "M \<noteq> N" "(\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)"
+    "(M, []\<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N, [] \<Turnstile> \<cdot>AC\<cdot>"
     by blast
-  then
-  interpret G_generic1 "2\<^bsup><\<omega>\<^esup>" seqle 0 _ enum G by unfold_locales
-  interpret MG: M_ZF "?N"
-    using generic pairing_in_MG
-      Union_MG  extensionality_in_MG power_in_MG foundation_in_MG
-      replacement_assm_MG replacement_ax separation_in_MG infinity_in_MG
-    unfolding ground_replacement_assm_def
-    by unfold_locales simp
-  have "?N \<Turnstile> ZF"
-    using M_ZF_iff_M_satT[of ?N] MG.M_ZF_axioms by simp
-  moreover
-  have "M, []\<Turnstile> \<cdot>AC\<cdot> \<Longrightarrow> ?N \<Turnstile> ZFC"
-  proof -
-    assume "M, [] \<Turnstile> \<cdot>AC\<cdot>"
-    then
-    have "choice_ax(##M)"
-      unfolding ZF_choice_fm_def using ZF_choice_auto by simp
-    then
-    have "choice_ax(##?N)" using choice_in_MG by simp
-    with \<open>?N \<Turnstile> ZF\<close>
-    show "?N \<Turnstile> ZFC"
-      using ZF_choice_auto sats_ZFC_iff_sats_ZF_AC
-      unfolding ZF_choice_fm_def by simp
-  qed
-  moreover
-  note \<open>M \<noteq> ?N\<close>
-  moreover
-  have "Transset(?N)" using Transset_MG .
-  moreover
-  have "M \<subseteq> ?N" using M_subset_MG[OF one_in_G] generic by simp
+  moreover from \<open>N \<Turnstile> \<cdot>Z\<cdot> \<union> { \<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> formula}\<close>
+  have "N \<Turnstile> ZF"
+    using satT_Z_ZF_replacement_imp_satT_ZF by auto
+  moreover from this and \<open>(M, []\<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N, [] \<Turnstile> \<cdot>AC\<cdot>\<close>
+  have "(M, []\<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N \<Turnstile> ZFC"
+    using sats_ZFC_iff_sats_ZF_AC by simp
   ultimately
-  show ?thesis
-    using Ord_MG_iff MG_eqpoll_nat
-    by (rule_tac x="?N" in exI, simp)
+  show ?thesis by auto
 qed
 
 end

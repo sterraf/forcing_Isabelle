@@ -47,10 +47,6 @@ locale M_ctm3_AC = M_ctm3 + M_ctm1_AC + M_ZFC3_trans
 
 locale forcing_data3 = forcing_data2 + M_ctm3_AC
 
-(* FIXME: perhaps then obsolete *)
-sublocale M_ZF_trans \<subseteq> M_ZF3_trans using replacement_ax by unfold_locales
-sublocale M_ZFC_trans \<subseteq> M_ZFC3_trans ..
-
 lemmas (in M_ZF2_trans) separation_instances =
   separation_well_ord
   separation_obase_equals separation_is_obase
@@ -433,17 +429,6 @@ locale M_ctm4_AC = M_ctm4 + M_ctm1_AC + M_ZFC4_trans
 
 locale forcing_data4 = forcing_data3 + M_ctm4_AC
 
-(* FIXME: perhaps later obsolete *)
-sublocale M_ZF \<subseteq> M_ZF4 using replacement_ax
-  by unfold_locales (simp_all add:ground_replacement_assm_def)
-sublocale M_ZF_trans \<subseteq> M_ZF4_trans ..
-sublocale M_ZFC \<subseteq> M_ZFC4 ..
-sublocale M_ZFC_trans \<subseteq> M_ZFC4_trans ..
-sublocale M_ctm \<subseteq> M_ctm4 ..
-sublocale M_ctm_AC \<subseteq> M_ctm4_AC ..
-sublocale M_ctm_AC \<subseteq> M_ctm3_AC ..
-sublocale M_ctm_AC \<subseteq> M_ctm2_AC ..
-
 lemma M_satT_imp_M_ZF2: "(M \<Turnstile> ZF) \<Longrightarrow> M_ZF2(M)"
 proof -
   assume "M \<Turnstile> ZF"
@@ -532,6 +517,10 @@ lemma (in M_ZFC1) M_satT_ZC: "M \<Turnstile> ZC"
   unfolding ZC_def Zermelo_fms_def ZF_fin_def
   by auto
 
+locale M_ZF = M_Z_basic +
+  assumes
+    replacement_ax:"replacement_assm(M,env,\<phi>)"
+
 lemma M_ZF_iff_M_satT: "M_ZF(M) \<longleftrightarrow> (M \<Turnstile> ZF)"
 proof
   assume "M \<Turnstile> ZF"
@@ -570,6 +559,8 @@ next
   show "M \<Turnstile> ZF"
     unfolding ZF_def ZF_inf_def by blast
 qed
+
+locale M_ZFC = M_ZF + M_ZC_basic
 
 lemma M_ZFC_iff_M_satT:
   notes iff_trans[trans]

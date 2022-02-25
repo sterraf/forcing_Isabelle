@@ -503,9 +503,6 @@ corollary ctm_ZFC_imp_ctm_of_CH:
     satT_mono[OF _ ground_repl_fm_sub_ZFC, of M]
     satT_mono[OF _ ZF_replacement_overhead_sub_ZFC, of M]
     ctm_of_CH[of M formula] satT_ZC_ZF_replacement_imp_satT_ZFC
-  apply (auto simp: satT_Un_iff)
-  apply (rule_tac x=N in exI)
-  apply (force)
-  done
+  by (auto simp: satT_Un_iff, rule_tac x=N in exI) force
 
 end
