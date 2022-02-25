@@ -25,7 +25,7 @@ The session can be run using the standard Isabelle IDE by
 executing
 ```
 $ cd $FORCING_HOME/src
-$ isabelle jedit Definitions_Main.thy
+$ isabelle jedit -l ZF-Constructible Definitions_Main.thy
 ```
 
 Building the session
@@ -46,4 +46,4 @@ https://www.isa-afp.org/download.html and following the instructions at https://
 The tool wrapper 'isabelle' should be on the `PATH` env var.
 
 
-E. Gunther, M. Pagano, P. Sánchez Terraf, M. Steinberg (2021)
+E. Gunther, M. Pagano, P. Sánchez Terraf, M. Steinberg (2022)
