@@ -632,7 +632,9 @@ proof -
       by (simp del:pair_abs)
     moreover
     have "arity(?f) = 5"
-      unfolding fm_definitions
+      (* FIXME: Symptoms of missing arity theorems *)
+      unfolding iterates_MH_fm_def list_functor_fm_def
+        is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def
       by (simp add:arity ord_simp_union)
     moreover from calculation
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),A,0]))"
@@ -711,7 +713,9 @@ proof -
       by (simp del:pair_abs)
     moreover
     have "arity(?f) = 4" "?f\<in>formula"
-      unfolding fm_definitions
+      (* FIXME: Symptoms of missing arity theorems *)
+      unfolding iterates_MH_fm_def list_functor_fm_def
+        is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def
       using arty assms
       by (simp_all add:arity ord_simp_union)
     moreover from calculation \<open>v\<in>_\<close>
@@ -793,7 +797,9 @@ proof -
     by simp
   moreover
   have "arity(?f) = 5"
-    unfolding fm_definitions
+    (* FIXME: Symptoms of missing arity theorems *)
+    unfolding iterates_MH_fm_def is_iterates_fm_def list_functor_fm_def
+      is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def
     by (simp add:arity ord_simp_union)
   ultimately
   show ?thesis
@@ -827,7 +833,9 @@ proof -
     by simp
   moreover
   have "arity(?f) = 4"
-    unfolding fm_definitions
+    (* FIXME: Symptoms of missing arity theorems *)
+    unfolding iterates_MH_fm_def is_iterates_fm_def list_functor_fm_def
+      is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def
     by (simp add:arity ord_simp_union)
   ultimately
   show ?thesis
@@ -862,7 +870,9 @@ proof -
     by simp
   moreover
   have "arity(?f) = 4"
-    unfolding fm_definitions
+    (* FIXME: Symptoms of missing arity theorems *)
+    unfolding iterates_MH_fm_def is_iterates_fm_def list_functor_fm_def
+      is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def
     by (simp add:arity ord_simp_union)
   ultimately
   show ?thesis
@@ -956,7 +966,8 @@ proof -
     by (simp del:pair_abs)
   moreover
   have "arity(?f) = 3"
-    unfolding fm_definitions
+    (* FIXME: Symptoms of missing arity theorems *)
+    unfolding is_wfrec_fm_def is_recfun_fm_def is_Hrank_fm_def Replace_fm_def
     by (simp add:arity ord_simp_union)
   moreover from calculation
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,rrank(X)]))"
@@ -1021,7 +1032,8 @@ proof -
       by (simp del:pair_abs)
     moreover
     have "arity(?f) = 4"
-      unfolding fm_definitions
+      (* FIXME: Symptoms of missing arity theorems *)
+      unfolding is_wfrec_fm_def is_recfun_fm_def is_HVfrom_fm_def Replace_fm_def
       by (simp add:arity ord_simp_union)
     moreover from calculation
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,A,mesa]))"

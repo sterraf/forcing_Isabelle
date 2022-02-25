@@ -669,11 +669,10 @@ proof -
     if "x\<in>M" "z\<in>M" for x z
     using that 1 \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M by (simp del:pair_abs)
   have artyf:"arity(?f) = 5"
-    unfolding fm_definitions PHcheck_fm_def is_tuple_fm_def
+    unfolding PHcheck_fm_def is_tuple_fm_def
     by (simp add:ord_simp_union arity)
   moreover
-  have "?f\<in>formula"
-    unfolding fm_definitions by simp
+  have "?f\<in>formula" by simp
   ultimately
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,P,leq,forcerel(P,X)]))"
     using replacement_ax1 1 artyf \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M

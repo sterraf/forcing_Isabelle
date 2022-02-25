@@ -407,7 +407,8 @@ proof -
     using that 1 \<open>X\<in>M\<close> rcheck_in_M one_in_M
     by (simp del:pair_abs)
   have artyf:"arity(?f) = 4"
-    unfolding fm_definitions
+    (* FIXME: Symptoms of missing arity theorems *)
+    unfolding is_wfrec_fm_def is_recfun_fm_def is_Hcheck_fm_def Replace_fm_def
     by (simp add:arity ord_simp_union)
   then
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,\<one>,rcheck(X)]))"
@@ -516,7 +517,8 @@ lemma check_replacement:
   "{check(x). x\<in>P} \<in> M"
 proof -
   have "arity(check_fm(0,2,1)) = 3"
-    unfolding eclose_n_fm_def is_eclose_fm_def mem_eclose_fm_def fm_definitions
+    (* FIXME: Symptoms of missing arity theorems *)
+    unfolding eclose_n_fm_def is_eclose_fm_def mem_eclose_fm_def
     by (simp add:ord_simp_union arity)
   moreover
   have "check(x)\<in>M" if "x\<in>P" for x
@@ -556,7 +558,8 @@ proof -
   have "?pcheck_fm\<in>formula" by simp
   moreover
   have "arity(?pcheck_fm)=3"
-    unfolding is_eclose_fm_def mem_eclose_fm_def eclose_n_fm_def fm_definitions
+    (* FIXME: Symptoms of missing arity theorems *)
+    unfolding is_eclose_fm_def mem_eclose_fm_def eclose_n_fm_def
     by (simp add:ord_simp_union arity)
   moreover
   from P_in_M check_in_M pair_in_M_iff P_sub_M
