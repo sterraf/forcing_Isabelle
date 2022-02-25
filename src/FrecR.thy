@@ -1,7 +1,7 @@
 section\<open>Well-founded relation on names\<close>
 theory FrecR
   imports
-    Discipline_Function
+    Transitive_Models.Discipline_Function
     Edrel
 begin
 

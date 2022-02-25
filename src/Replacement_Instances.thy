@@ -1,7 +1,7 @@
 theory Replacement_Instances
   imports
     Separation_Instances
-    Pointed_DC_Relative
+    Transitive_Models.Pointed_DC_Relative
 begin
 
 subsection\<open>More Instances of Replacement\<close>

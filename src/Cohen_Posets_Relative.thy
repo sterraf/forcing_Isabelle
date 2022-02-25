@@ -3,8 +3,8 @@ section\<open>Cohen forcing notions\<close>
 theory Cohen_Posets_Relative
   imports
     Forcing_Notions
-    Delta_System_Relative
-    Partial_Functions_Relative
+    Transitive_Models.Delta_System_Relative
+    Transitive_Models.Partial_Functions_Relative
 begin
 
 locale cohen_data =

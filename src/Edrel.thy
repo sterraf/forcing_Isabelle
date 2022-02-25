@@ -1,7 +1,7 @@
 theory Edrel
   imports
-    ZF_Miscellanea
-    Recursion_Thms
+    Transitive_Models.ZF_Miscellanea
+    Transitive_Models.Recursion_Thms
 
 begin
 

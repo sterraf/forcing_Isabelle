@@ -1,6 +1,6 @@
 chapter "ZF"
 
-session "Independence_CH" in "." =  "Delta_System_Lemma" +
+session "Independence_CH" in "." =  "Transitive_Models" +
   description "
     The Independence of the Continuum Hypothesis
 

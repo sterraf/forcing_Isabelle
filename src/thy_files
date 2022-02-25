@@ -1,62 +1,9 @@
 # This file is used by various scripts. One can form groups of files using
 # doble quotes for marking the begin and end of each group.
-"Forces_Definition.thy
- Definitions_Main.thy
- Cardinal_AC_Relative.thy
- Discipline_Base.thy
- Discipline_Cardinal.thy
- FiniteFun_Relative.thy
+"Definitions_Main.thy
  FrecR_Arities.thy
- Higher_Order_Constructs.thy
- Relativization.thy
  Replacement_Instances.thy
  Separation_Instances.thy
- Utils.thy
  ZF_Trans_Interpretations.thy
  CH.thy
- Kappa_Closed_Notions.thy
- Pointed_DC_Relative.thy"
-"Arities.thy
- Forcing_Theorems.thy"
-"Interface.thy
- Names.thy"
-"Forcing_Main.thy
- FrecR.thy
- Internal_ZFC_Axioms.thy
- Nat_Miscellanea.thy"
-"Forcing_Data.thy
- Forcing_Notions.thy
- Internalizations.thy
- Univ_Relative.thy
- Renaming.thy"
-"Choice_Axiom.thy
- Least.thy
- Recursion_Thms.thy
- Renaming_Auto.thy
- Replacement_Axiom.thy
- Separation_Rename.thy
- Succession_Poset.thy
- Union_Axiom.thy"
-"Extensionality_Axiom.thy
- Foundation_Axiom.thy
- Infinity_Axiom.thy
- Ordinals_In_MG.thy
- Pairing_Axiom.thy
- Powerset_Axiom.thy
- Proper_Extension.thy
- Separation_Axiom.thy
- Synthetic_Definition.thy"
-"Cohen_Posets_Relative.thy
- Cardinal_Preservation.thy
- Not_CH.thy
- Absolute_Versions.thy
- ZF_Miscellanea.thy
- Cardinal_Relative.thy
- CardinalArith_Relative.thy
- Aleph_Relative.thy
- ZF_Library_Relative.thy
- Cardinal_Library_Relative.thy
- Delta_System_Relative.thy
- Replacement_Lepoll.thy
- Lambda_Replacement.thy
- Discipline_Function.thy"
+ Kappa_Closed_Notions.thy"

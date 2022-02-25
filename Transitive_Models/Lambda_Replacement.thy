@@ -1994,6 +1994,14 @@ proof -
     by simp
 qed
 
+lemma dCF_closed:
+  assumes "M(A)" "M(f)"
+  shows "M(dC_F(A,f))"
+  unfolding dC_F_def
+  using assms lam_replacement_Collect[of A "\<lambda> d x . domain(x) = d"]
+    separation_eq[OF _ lam_replacement_domain _ lam_replacement_constant]
+  by simp
+
 lemma lam_replacement_min: "M(f) \<Longrightarrow> M(r) \<Longrightarrow> lam_replacement(M, \<lambda>x . minimum(r, f -`` {x}))"
   using lam_replacement_hcomp2[OF lam_replacement_constant[of r] lam_replacement_vimage_sing_fun]
     lam_replacement_minimum

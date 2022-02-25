@@ -6,7 +6,7 @@ SESSION = Independence_CH
 
 OUT_DIR = output/html
 
-ML_FILES = Renaming_ML.ml Utils.ml Relativization_Database.ml
+ML_FILES = 
 
 DOC_FILES = root.tex root.bib root.bst
 
