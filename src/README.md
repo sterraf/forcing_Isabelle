@@ -2,8 +2,9 @@ The Independence of the CH in Isabelle/ZF
 =========================================
 
 This is a development version. It is organized in two sessions:
- - `Transitive_Models` where we extend Paulson's `ZF-Constructible` library
- - `Independence_CH` (in the directory `src`) where we develop the theory of forcing.
+
+  * `Transitive_Models` where we extend Paulson's `ZF-Constructible` library, and
+  * `Independence_CH` (in the directory `src`) where we develop the theory of forcing.
 
 An HMTL version can be found at
 https://cs.famaf.unc.edu.ar/~pedro/forcing/Independence_CH/
@@ -45,4 +46,4 @@ https://www.isa-afp.org/download.html and following the instructions at https://
 The tool wrapper 'isabelle' should be on the `PATH` env var.
 
 
-E. Gunther, M. Pagano, P. SÃ¡nchez Terraf, M. Steinberg (2021)
+E. Gunther, M. Pagano, P. S nchez Terraf, M. Steinberg (2021)
