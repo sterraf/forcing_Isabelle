@@ -521,8 +521,8 @@ locale M_ZF = M_Z_basic +
   assumes
     replacement_ax:"replacement_assm(M,env,\<phi>)"
 
-lemma M_ZF_iff_M_satT: "M_ZF(M) \<longleftrightarrow> (M \<Turnstile> ZF)"
-proof
+lemma M_satT_imp_M_ZF: " M \<Turnstile> ZF \<Longrightarrow> M_ZF(M)"
+proof -
   assume "M \<Turnstile> ZF"
   then
   have fin: "upair_ax(##M)" "Union_ax(##M)" "power_ax(##M)"
@@ -544,21 +544,18 @@ proof
   with fin
   show "M_ZF(M)"
     unfolding M_ZF_def M_Z_basic_def M_ZF_axioms_def replacement_assm_def by simp
-next
-  assume \<open>M_ZF(M)\<close>
-  then
-  have "M \<Turnstile> ZF_fin"
-    unfolding M_ZF_def ZF_fin_def ZFC_fm_defs M_Z_basic_def M_ZF_axioms_def replacement_assm_def satT_def
-    using ZFC_fm_sats[of M] by blast
-  moreover from \<open>M_ZF(M)\<close>
-  have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
-       "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
-    unfolding M_ZF_def M_ZF_axioms_def M_Z_basic_def replacement_assm_def
-    using sats_ZF_separation_fm_iff sats_ZF_replacement_fm_iff by simp_all
-  ultimately
-  show "M \<Turnstile> ZF"
-    unfolding ZF_def ZF_inf_def by blast
 qed
+
+lemma (in M_ZF) M_satT_ZF: "M \<Turnstile> ZF"
+  using upair_ax Union_ax power_ax extensionality foundation_ax
+    infinity_ax separation_ax sats_ZF_separation_fm_iff
+    replacement_ax sats_ZF_replacement_fm_iff
+  unfolding ZF_def ZF_inf_def ZF_fin_def replacement_assm_def
+  by auto
+
+lemma M_ZF_iff_M_satT: "M_ZF(M) \<longleftrightarrow> (M \<Turnstile> ZF)"
+  using M_ZF.M_satT_ZF M_satT_imp_M_ZF
+  by auto
 
 locale M_ZFC = M_ZF + M_ZC_basic
 

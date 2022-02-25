@@ -669,7 +669,8 @@ proof -
     if "x\<in>M" "z\<in>M" for x z
     using that 1 \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M by (simp del:pair_abs)
   have artyf:"arity(?f) = 5"
-    unfolding PHcheck_fm_def is_tuple_fm_def
+    (* FIXME: Symptoms of missing arity theorems *)
+    unfolding PHcheck_fm_def is_tuple_fm_def is_wfrec_fm_def is_recfun_fm_def
     by (simp add:ord_simp_union arity)
   moreover
   have "?f\<in>formula" by simp
