@@ -46,4 +46,4 @@ https://www.isa-afp.org/download.html and following the instructions at https://
 The tool wrapper 'isabelle' should be on the `PATH` env var.
 
 
-E. Gunther, M. Pagano, P. S nchez Terraf, M. Steinberg (2021)
+E. Gunther, M. Pagano, P. Sánchez Terraf, M. Steinberg (2021)
