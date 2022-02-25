@@ -247,7 +247,7 @@ proof -
     using cohen_extension_is_proper
     by blast
   then
-  interpret G_generic "2\<^bsup><\<omega>\<^esup>" seqle 0 _ enum G by unfold_locales
+  interpret G_generic1 "2\<^bsup><\<omega>\<^esup>" seqle 0 _ enum G by unfold_locales
   interpret MG: M_ZF "?N"
     using generic pairing_in_MG
       Union_MG  extensionality_in_MG power_in_MG foundation_in_MG

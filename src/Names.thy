@@ -605,10 +605,6 @@ lemma G_in_Gen_Ext :
 
 end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
-locale G_generic = forcing_data +
-  fixes G :: "i"
-  assumes generic : "M_generic(G)"
-
 locale G_generic1 = forcing_data1 +
   fixes G :: "i"
   assumes generic : "M_generic(G)"
@@ -633,12 +629,8 @@ proof -
     using generic unfolding M_generic_def by auto
 qed
 
-end \<comment> \<open>\<^locale>\<open>G_generic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
-locale G_generic_AC = G_generic + M_ctm_AC
 locale G_generic1_AC = G_generic1 + M_ctm1_AC
-
-sublocale G_generic \<subseteq> G_generic1 using generic by unfold_locales
-sublocale G_generic_AC \<subseteq> G_generic1_AC ..
 
 end

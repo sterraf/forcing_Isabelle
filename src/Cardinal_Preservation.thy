@@ -88,20 +88,6 @@ sublocale G_generic4_AC \<subseteq> ext:M_ZFC3_trans "M[G]"
   using ground_replacements4 replacement_assm_MG
   by unfold_locales (simp_all del: replacement_instances1_defs)
 
-sublocale G_generic_AC \<subseteq> G_generic4_AC ..
-
-sublocale G_generic \<subseteq> ext:M_ZF_trans "M[G]"
-  using Transset_MG generic pairing_in_MG Union_MG
-    extensionality_in_MG power_in_MG foundation_in_MG
-    separation_in_MG infinity_in_MG
-    replacement_assm_MG replacement_ax
-  unfolding ground_replacement_assm_def
-  by unfold_locales simp
-
-sublocale G_generic_AC \<subseteq> ext:M_ZFC_trans "M[G]"
-  using choice_ax choice_in_MG
-  by unfold_locales
-
 lemma (in forcing_data1) forces_neq_apply_imp_incompatible:
   assumes
     "p \<tturnstile> \<cdot>0`1 is 2\<cdot> [f,a,b\<^sup>v]"

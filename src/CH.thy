@@ -173,10 +173,6 @@ locale collapse_generic4 = G_generic4_AC "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\
 sublocale collapse_generic4 \<subseteq> forcing_notion "Coll" "Colleq" 0
   using zero_lt_Aleph_rel1 by unfold_locales
 
-(* FIXME: perhaps obsolete *)
-locale collapse_generic = G_generic_AC "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0
-sublocale collapse_generic \<subseteq> collapse_generic4 ..
-
 context collapse_generic4
 begin
 
@@ -496,55 +492,20 @@ proof -
     by (rule_tac x="M[G]" in exI, auto)
 qed
 
-theorem ctm_ZFC_imp_ctm_of_CH:
+corollary ctm_ZFC_imp_ctm_of_CH:
   assumes
     "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZFC"
   shows
     "\<exists>N.
       M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZFC \<union> {\<cdot>CH\<cdot>} \<and>
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
-proof -
-  from \<open>M \<Turnstile> ZFC\<close>
-  interpret M_ZFC M
-    using M_ZFC_iff_M_satT
-    by simp
-  from \<open>Transset(M)\<close>
-  interpret M_ZF_trans M
-    using M_ZF_iff_M_satT
-    by unfold_locales
-  from \<open>M \<approx> \<omega>\<close>
-  obtain enum where "enum \<in> bij(\<omega>,M)"
-    using eqpoll_sym unfolding eqpoll_def by blast
-  then
-  interpret M_ctm_AC M enum by unfold_locales
-  interpret forcing_data "Coll" "Colleq" 0 M enum
-    using zero_in_Fn_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
-      zero_top_Fn_rel[of _ "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
-      preorder_on_Fnle_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
-      zero_lt_Aleph_rel1
-    by unfold_locales simp_all
-  obtain G where "M_generic(G)"
-    using generic_filter_existence[OF one_in_P]
-    by auto
-  moreover from this
-  interpret collapse_generic M enum G by unfold_locales
-  have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
-    using CH .
-  then
-  have "M[G], [] \<Turnstile> \<cdot>CH\<cdot>"
-    using ext.is_ContHyp_iff
-    by (simp add:ContHyp_rel_def)
-  then
-  have "M[G] \<Turnstile> ZFC \<union> {\<cdot>CH\<cdot>}"
-    using M_ZFC_iff_M_satT[of "M[G]"] ext.M_ZFC_axioms by auto
-  moreover
-  have "Transset(M[G])" using Transset_MG .
-  moreover
-  have "M \<subseteq> M[G]" using M_subset_MG[OF one_in_G] generic by simp
-  ultimately
-  show ?thesis
-    using Ord_MG_iff MG_eqpoll_nat
-    by (rule_tac x="M[G]" in exI, simp)
-qed
+  using assms ZF_replacement_ground_repl_fm_type satT_ZFC_imp_satT_ZC[of M]
+    satT_mono[OF _ ground_repl_fm_sub_ZFC, of M]
+    satT_mono[OF _ ZF_replacement_overhead_sub_ZFC, of M]
+    ctm_of_CH[of M formula] satT_ZC_ZF_replacement_imp_satT_ZFC
+  apply (auto simp: satT_Un_iff)
+  apply (rule_tac x=N in exI)
+  apply (force)
+  done
 
 end
