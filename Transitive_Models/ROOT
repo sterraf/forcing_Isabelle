@@ -4,8 +4,10 @@ session "Transitive_Models" =  "Delta_System_Lemma" +
   description "
     Transitive Models of Fragments of ZFC
 
-    We extend the ZF-Constructibility session, by relativizing several
-    theories of Isabelle/ZF to a transitive class. This work is a
+    We extend the ZF-Constructibility library by relativizing theories
+    of the Isabelle/ZF and Delta System Lemma sessions to a transitive
+    class. We also relativize Paulson's work on Aleph and our former
+    treatment of the Axiom of Dependent Choices. This work is a
     prerrequisite to our formalization of the independence of the
     Continuum Hypothesis.
   "
@@ -18,3 +20,5 @@ session "Transitive_Models" =  "Delta_System_Lemma" +
     "M_Basic_No_Repl"
   document_files
     "root.tex"
+    "root.bib"
+    "root.bst"
