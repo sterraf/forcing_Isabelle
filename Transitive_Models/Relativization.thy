@@ -1,6 +1,8 @@
-section\<open>Automatic relativization of terms and formulas.\<close>
+section\<open>Automatic relativization of terms and formulas\<close>
+
 text\<open>Relativization of terms and formulas. Relativization of formulas shares relativized terms as
 far as possible; assuming that the witnesses for the relativized terms are always unique.\<close>
+
 theory Relativization
   imports
     "ZF-Constructible.Datatype_absolute"

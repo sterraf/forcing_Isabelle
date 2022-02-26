@@ -1,4 +1,4 @@
-section\<open>Cardinal Arithmetic under Choice\label{sec:cardinal-lib-rel}\<close>
+section\<open>Lambda-replacements required for cardinal inequalities\<close>
 
 theory Replacement_Lepoll
   imports

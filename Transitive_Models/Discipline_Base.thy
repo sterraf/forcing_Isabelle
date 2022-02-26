@@ -12,7 +12,7 @@ begin
 
 declare [[syntax_ambiguity_warning = false]]
 
-text\<open>Discipline of Relativization of basic concepts.\<close>
+subsection\<open>Discipline of relativization of basic concepts\<close>
 
 definition
   is_singleton :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where

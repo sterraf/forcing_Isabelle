@@ -1,4 +1,5 @@
 section\<open>Aids to internalize formulas\<close>
+
 theory Internalizations
   imports
     "ZF-Constructible.DPow_absolute"
