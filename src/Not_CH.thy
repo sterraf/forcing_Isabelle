@@ -9,17 +9,13 @@ definition
   Add_subs :: "[i,i] \<Rightarrow> i" where
   "Add_subs(\<kappa>,\<alpha>) \<equiv> Fn(\<omega>,\<kappa>\<times>\<alpha>,2)"
 
+lemma (in M_aleph) Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
+  using nat_into_Ord by simp
+
 locale M_master = M_cohen + M_library_DC +
   assumes
   UN_lepoll_assumptions:
   "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(A') \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x\<in>if_range_F_else_F((`)(A), b, f, i)\<rangle>)"
-
-begin
-
-lemma Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
-  using nat_into_M[of 2] nat_into_Ord by simp
-
-end \<comment> \<open>\<^locale>\<open>M_master\<close>\<close>
 
 subsection\<open>Non-absolute concepts between extensions\<close>
 
