@@ -396,15 +396,16 @@ text\<open>@{thm [display] ZF_union_iff_sats ZF_power_iff_sats
   choice_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> \<cdot>AC\<cdot>
 *)
 
-thm ZF_fin_def ZF_inf_def ZF_def ZFC_fin_def ZFC_def
-text\<open>@{thm [display] ZF_fin_def ZF_inf_def ZF_def ZFC_fin_def
+thm ZF_fin_def ZF_schemes_def Zermelo_fms_def ZC_def ZF_def ZFC_def
+text\<open>@{thm [display] ZF_fin_def ZF_schemes_def Zermelo_fms_def ZC_def ZF_def ZFC_def
   ZFC_def}\<close>
 (*
   ZF_fin \<equiv> {\<cdot>Extensionality\<cdot>, \<cdot>Foundation\<cdot>, \<cdot>Pairing\<cdot>, \<cdot>Union Ax\<cdot>, \<cdot>Infinity\<cdot>, \<cdot>Powerset Ax\<cdot>}
-  ZF_inf \<equiv> {\<cdot>Separation(p)\<cdot> . p \<in> formula} \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> formula}
-  ZF \<equiv> ZF_inf \<union> ZF_fin
-  ZFC_fin \<equiv> ZF_fin \<union> {\<cdot>AC\<cdot>}
-  ZFC \<equiv> ZF_inf \<union> ZFC_fin
+  ZF_schemes \<equiv> {\<cdot>Separation(p)\<cdot> . p \<in> formula} \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> formula}
+  \<cdot>Z\<cdot> \<equiv> ZF_fin \<union> {\<cdot>Separation(p)\<cdot> . p \<in> formula}
+  ZC \<equiv> \<cdot>Z\<cdot> \<union> {\<cdot>AC\<cdot>}
+  ZF \<equiv> ZF_schemes \<union> ZF_fin
+  ZFC \<equiv> ZF \<union> {\<cdot>AC\<cdot>}
 *)
 
 subsection\<open>Forcing \label{sec:def-main-forcing}\<close>
@@ -437,9 +438,8 @@ lemma cardinalities_defs:
     "Card\<^bsup>M\<^esup>(\<alpha>) \<equiv> \<alpha> = |\<alpha>|\<^bsup>M\<^esup>"
     "\<kappa>\<^bsup>\<up>\<nu>,M\<^esup> \<equiv> |\<nu> \<rightarrow>\<^bsup>M\<^esup> \<kappa>|\<^bsup>M\<^esup>"
     "(\<kappa>\<^sup>+)\<^bsup>M\<^esup> \<equiv> \<mu> x. M(x) \<and> Card\<^bsup>M\<^esup>(x) \<and> \<kappa> < x"
-    "CH\<^bsup>M\<^esup> \<equiv> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>,M\<^esup>"
   unfolding cardinal_rel_def cexp_rel_def
-    csucc_rel_def Card_rel_def ContHyp_rel_def .
+    csucc_rel_def Card_rel_def .
 
 context M_aleph
 begin

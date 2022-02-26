@@ -443,7 +443,7 @@ proof -
     moreover from \<open>M \<Turnstile> ZF\<close>
     have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
          "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
-      unfolding ZF_def ZF_inf_def by auto
+      unfolding ZF_def ZF_schemes_def by auto
     moreover from calculation
     have "arity(\<phi>) \<le> succ(length(env)) \<Longrightarrow> separation(##M, \<lambda>x. (M, Cons(x, env) \<Turnstile> \<phi>))"
       "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
@@ -462,8 +462,7 @@ proof -
       M_ZC_basic_def M_ZF1_def M_AC_def by auto
   then
   show ?thesis
-    unfolding ZFC_def ZFC_fin_def ZF_def
-    by auto
+    unfolding ZFC_def by auto
 qed
 
 lemma M_satT_instances12_imp_M_ZF2:
@@ -535,7 +534,7 @@ proof -
     moreover from \<open>M \<Turnstile> ZF\<close>
     have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
          "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
-      unfolding ZF_def ZF_inf_def by auto
+      unfolding ZF_def ZF_schemes_def by auto
     moreover from calculation
     have "arity(\<phi>) \<le> succ(length(env)) \<Longrightarrow> separation(##M, \<lambda>x. (M, Cons(x, env) \<Turnstile> \<phi>))"
       "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
@@ -550,7 +549,7 @@ lemma (in M_ZF) M_satT_ZF: "M \<Turnstile> ZF"
   using upair_ax Union_ax power_ax extensionality foundation_ax
     infinity_ax separation_ax sats_ZF_separation_fm_iff
     replacement_ax sats_ZF_replacement_fm_iff
-  unfolding ZF_def ZF_inf_def ZF_fin_def replacement_assm_def
+  unfolding ZF_def ZF_schemes_def ZF_fin_def replacement_assm_def
   by auto
 
 lemma M_ZF_iff_M_satT: "M_ZF(M) \<longleftrightarrow> (M \<Turnstile> ZF)"
@@ -568,8 +567,7 @@ proof -
     unfolding M_ZFC_def M_ZC_basic_def M_AC_def M_ZF_def by auto
   also
   have " \<dots> \<longleftrightarrow> M \<Turnstile> ZFC"
-    unfolding ZFC_def ZFC_fin_def ZF_def
-    by auto
+    unfolding ZFC_def by auto
   ultimately
   show ?thesis by simp
 qed
@@ -588,7 +586,7 @@ proof
     moreover from \<open>M \<Turnstile> ZF\<close>
     have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
       "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
-      unfolding ZF_def ZF_inf_def by auto
+      unfolding ZF_def ZF_schemes_def by auto
     moreover from calculation
     have "arity(\<phi>) \<le> succ(length(env)) \<Longrightarrow> separation(##M, \<lambda>x. (M, Cons(x, env) \<Turnstile> \<phi>))"
       "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
@@ -608,8 +606,7 @@ proof -
       M_ZC_basic_def M_ZF1_def M_AC_def by auto
   then
   show ?thesis
-    unfolding ZFC_def ZFC_fin_def ZF_def
-    by auto
+    unfolding ZFC_def by auto
 qed
 
 lemma M_satT_overhead_imp_M_ZF4:

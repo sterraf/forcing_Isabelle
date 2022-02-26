@@ -72,13 +72,6 @@ definition
   "ZF_fin \<equiv> {\<cdot>Extensionality\<cdot>, \<cdot>Foundation\<cdot>, \<cdot>Pairing\<cdot>,
               \<cdot>Union Ax\<cdot>, \<cdot>Infinity\<cdot>, \<cdot>Powerset Ax\<cdot>}"
 
-definition
-  ZFC_fin :: "i" where
-  "ZFC_fin \<equiv> ZF_fin \<union> {\<cdot>AC\<cdot>}"
-
-lemma ZFC_fin_type : "ZFC_fin \<subseteq> formula"
-  unfolding ZFC_fin_def ZF_fin_def ZFC_fm_defs by (auto)
-
 subsection\<open>The Axiom of Separation, internalized\<close>
 lemma iterates_Forall_type [TC]:
       "\<lbrakk> n \<in> nat; p \<in> formula \<rbrakk> \<Longrightarrow> Forall^n(p) \<in> formula"
@@ -440,22 +433,28 @@ next \<comment> \<open>almost equal to the previous implication\<close>
 qed
 
 definition
-  ZF_inf :: "i" where
-  "ZF_inf \<equiv> {\<cdot>Separation(p)\<cdot> . p \<in> formula } \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> formula }"
+  ZF_schemes :: "i" where
+  "ZF_schemes \<equiv> {\<cdot>Separation(p)\<cdot> . p \<in> formula } \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> formula }"
 
-lemma Un_subset_formula: "A\<subseteq>formula \<and> B\<subseteq>formula \<Longrightarrow> A\<union>B \<subseteq> formula"
+lemma Un_subset_formula [TC]: "A\<subseteq>formula \<and> B\<subseteq>formula \<Longrightarrow> A\<union>B \<subseteq> formula"
   by auto
 
-lemma ZF_inf_subset_formula : "ZF_inf \<subseteq> formula"
-  unfolding ZF_inf_def by auto
+lemma ZF_schemes_subset_formula [TC]: "ZF_schemes \<subseteq> formula"
+  unfolding ZF_schemes_def by auto
 
-definition
-  ZFC :: "i" where
-  "ZFC \<equiv> ZF_inf \<union> ZFC_fin"
+lemma ZF_fin_subset_formula [TC]: "ZF_fin \<subseteq> formula"
+  unfolding ZF_fin_def by simp
 
 definition
   ZF :: "i" where
-  "ZF \<equiv> ZF_inf \<union> ZF_fin"
+  "ZF \<equiv> ZF_schemes \<union> ZF_fin"
+
+lemma ZF_subset_formula [TC]: "ZF \<subseteq> formula"
+  unfolding ZF_def by auto
+
+definition
+  ZFC :: "i" where
+  "ZFC \<equiv> ZF \<union> {\<cdot>AC\<cdot>}"
 
 definition
   ZF_minus_P :: "i" where
@@ -470,7 +469,7 @@ definition
   "ZC \<equiv> Zermelo_fms \<union> {\<cdot>AC\<cdot>}"
 
 lemma ZFC_subset_formula: "ZFC \<subseteq> formula"
-  by (simp add:ZFC_def Un_subset_formula ZF_inf_subset_formula ZFC_fin_type)
+  by (simp add:ZFC_def Un_subset_formula)
 
 txt\<open>Satisfaction of a set of sentences\<close>
 definition
@@ -492,25 +491,25 @@ lemma satT_Un_iff: "M \<Turnstile> \<Phi> \<union> \<Psi> \<longleftrightarrow> 
 
 lemma sats_ZFC_iff_sats_ZF_AC:
   "(N \<Turnstile> ZFC) \<longleftrightarrow> (N \<Turnstile> ZF) \<and> (N, [] \<Turnstile> \<cdot>AC\<cdot>)"
-    unfolding ZFC_def ZFC_fin_def ZF_def by auto
+    unfolding ZFC_def ZF_def by auto
 
 lemma satT_ZF_imp_satT_Z: "M \<Turnstile> ZF \<Longrightarrow> M \<Turnstile> \<cdot>Z\<cdot>"
-  unfolding ZF_def ZF_inf_def Zermelo_fms_def ZF_fin_def by auto
+  unfolding ZF_def ZF_schemes_def Zermelo_fms_def ZF_fin_def by auto
 
 lemma satT_ZFC_imp_satT_ZC: "M \<Turnstile> ZFC \<Longrightarrow> M \<Turnstile> ZC"
-  unfolding ZFC_def ZF_inf_def ZC_def Zermelo_fms_def ZFC_fin_def by auto
+  unfolding ZFC_def ZF_def ZF_schemes_def ZC_def Zermelo_fms_def by auto
 
 lemma satT_Z_ZF_replacement_imp_satT_ZF: "N \<Turnstile> \<cdot>Z\<cdot> \<Longrightarrow> N \<Turnstile> {\<cdot>Replacement(x)\<cdot> . x \<in> formula} \<Longrightarrow> N \<Turnstile> ZF"
-  unfolding ZF_def ZF_inf_def Zermelo_fms_def ZF_fin_def by auto
+  unfolding ZF_def ZF_schemes_def Zermelo_fms_def ZF_fin_def by auto
 
 lemma satT_ZC_ZF_replacement_imp_satT_ZFC: "N \<Turnstile> ZC \<Longrightarrow> N \<Turnstile> {\<cdot>Replacement(x)\<cdot> . x \<in> formula} \<Longrightarrow> N \<Turnstile> ZFC"
-  unfolding ZFC_def ZF_inf_def ZC_def Zermelo_fms_def ZFC_fin_def by auto
+  unfolding ZFC_def ZF_def ZF_schemes_def ZC_def Zermelo_fms_def  by auto
 
 lemma ground_repl_fm_sub_ZF: "{\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> formula} \<subseteq> ZF"
-   unfolding ZF_def ZF_inf_def by auto
+   unfolding ZF_def ZF_schemes_def by auto
 
 lemma ground_repl_fm_sub_ZFC: "{\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> formula} \<subseteq> ZFC"
-   unfolding ZFC_def ZF_inf_def by auto
+   unfolding ZFC_def ZF_def ZF_schemes_def by auto
 
 lemma ZF_replacement_ground_repl_fm_type: "{\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> formula} \<subseteq> formula"
   by auto

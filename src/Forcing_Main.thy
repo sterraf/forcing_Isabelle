@@ -60,7 +60,7 @@ proof -
     moreover from \<open>M \<Turnstile> ZF\<close>
     have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
          "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
-      unfolding ZF_def ZF_inf_def by auto
+      unfolding ZF_def ZF_schemes_def by auto
     moreover from calculation
     have "arity(\<phi>) \<le> succ(length(env)) \<Longrightarrow> separation(##M, \<lambda>x. (M, Cons(x, env) \<Turnstile> \<phi>))"
       "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
@@ -79,8 +79,7 @@ proof -
       M_ZC_basic_def M_ZF1_def M_AC_def by auto
   then
   show ?thesis
-    unfolding ZFC_def ZFC_fin_def ZF_def
-    by auto
+    unfolding ZFC_def by auto
 qed
 
 lemma M_satT_instances12_imp_M_ZF2:
@@ -219,7 +218,7 @@ proof -
 qed
 
 lemma ZF_replacement_instances12_sub_ZF: "{\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms} \<subseteq> ZF"
-  using instances1_fms_type instances2_fms_type unfolding ZF_def ZF_inf_def by auto
+  using instances1_fms_type instances2_fms_type unfolding ZF_def ZF_schemes_def by auto
 
 theorem extensions_of_ctms_ZF:
   assumes

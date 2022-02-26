@@ -630,7 +630,7 @@ proof -
 qed
 
 lemma ZF_replacement_overhead_sub_ZFC: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead} \<subseteq> ZFC"
-  using overhead_type unfolding ZFC_def ZF_inf_def by auto
+  using overhead_type unfolding ZFC_def ZF_def ZF_schemes_def by auto
 
 corollary ctm_ZFC_imp_ctm_not_CH:
   assumes
