@@ -1,3 +1,5 @@
+section\<open>Preservation results for $\kappa$-closed forcing notions\<close>
+
 theory Kappa_Closed_Notions
   imports
     Not_CH
@@ -401,12 +403,7 @@ proof (intro equalityI; clarsimp simp add:
   show "f \<in> M" by simp
 qed
 
-\<comment> \<open>Kunen IV.7.15, only for sequences\<close>
-lemma kappa_closed_imp_no_new_sequences:
-  assumes "\<kappa>-closed\<^bsup>M\<^esup>(P,leq)" "f : \<delta> \<rightarrow> B" "\<delta><\<kappa>" "f\<in>M[G]"
-    "\<kappa>\<in>M" "B\<in>M"
-  shows "f\<in>M"
-  oops
+subsection\<open>$(\omega+1)$-Closed notions preserve countable sequences\<close>
 
 \<comment> \<open>Kunen IV.7.15, only for countable sequences\<close>
 lemma succ_omega_closed_imp_no_new_nat_sequences:

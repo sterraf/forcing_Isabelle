@@ -1,3 +1,5 @@
+section\<open>Forcing extension satisfying the Continuum Hypothesis\<close>
+
 theory CH
   imports
     Kappa_Closed_Notions
@@ -34,6 +36,8 @@ lemma Ord_lt_subset : "Ord(b) \<Longrightarrow> a<b \<Longrightarrow> a\<subsete
 
 lemmas nat_subset_Aleph_rel_1 =
   Ord_lt_subset[OF Ord_Aleph_rel[of 1] Aleph_rel_increasing[of 0 1,simplified],simplified]
+
+subsection\<open>Collapse forcing is sufficiently closed\<close>
 
 \<comment> \<open>Kunen IV.7.14, only for \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>\<close>
 lemma succ_omega_closed_Coll: "succ(\<omega>)-closed\<^bsup>M\<^esup>(Coll,Colleq)"
@@ -438,6 +442,8 @@ theorem CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> = 2\<^bsup>\<up>\<ale
   by auto
 
 end \<comment> \<open>\<^locale>\<open>collapse_generic4\<close>\<close>
+
+subsection\<open>Models of fragments of $\ZFC + \CH$\<close>
 
 theorem ctm_of_CH:
   assumes

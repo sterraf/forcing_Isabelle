@@ -44,7 +44,7 @@ proof -
     by simp
 qed
 
-subsection\<open>The main result\<close>
+subsection\<open>Extensions of ctms of fragments of $\ZFC$\<close>
 
 lemma M_satT_imp_M_ZF2: "(M \<Turnstile> ZF) \<Longrightarrow> M_ZF2(M)"
 proof -

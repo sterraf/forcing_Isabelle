@@ -1,3 +1,5 @@
+section\<open>Further instances of axiom-schemes\<close>
+
 theory ZF_Trans_Interpretations
   imports
     Internal_ZFC_Axioms

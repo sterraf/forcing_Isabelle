@@ -1,9 +1,10 @@
+subsection\<open>More Instances of Separation\<close>
+
 theory Separation_Instances
   imports
     Names
 begin
 
-subsection\<open>More Instances of Separation\<close>
 text\<open>The following instances are mostly the same repetitive task; and we just
 copied and pasted, tweaking some lemmas if needed (for example, we might have
 needed to use some closedness results).

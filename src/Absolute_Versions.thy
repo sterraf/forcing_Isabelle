@@ -1,4 +1,4 @@
-section\<open>From M to V\<close>
+section\<open>From $M$ to $\calV$\<close>
 
 theory Absolute_Versions
   imports

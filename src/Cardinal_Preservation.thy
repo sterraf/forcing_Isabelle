@@ -1,3 +1,5 @@
+section\<open>Preservation of cardinals in generic extensions\<close>
+
 theory Cardinal_Preservation
   imports
     Forcing_Main
@@ -269,6 +271,8 @@ proof -
   show ?thesis
     using strengthening_lemma[of r \<phi> _ env] by blast
 qed
+
+subsection\<open>Preservation by ccc forcing notions\<close>
 
 definition check_fm' where
   "check_fm'(ofm,arg,res) \<equiv> check_fm(arg,ofm,res)"

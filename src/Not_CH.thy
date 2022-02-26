@@ -1,3 +1,5 @@
+section\<open>Model of the negation of the Continuum Hypothesis\<close>
+
 theory Not_CH
   imports
     Cardinal_Preservation
@@ -18,6 +20,8 @@ lemma Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esu
   using nat_into_M[of 2] nat_into_Ord by simp
 
 end \<comment> \<open>\<^locale>\<open>M_master\<close>\<close>
+
+subsection\<open>Non-absolute concepts between extensions\<close>
 
 locale M_master_sub = M_master + N:M_master N for N +
   assumes
@@ -109,6 +113,8 @@ sublocale M_ZFC3_trans \<subseteq> M_master "##M"
   using replacement_dcwit_repl_body\<comment> \<open>this is another replacement instance\<close>
   by unfold_locales (simp_all add:repl_instances sep_instances del:setclass_iff
       add: transrec_replacement_def wfrec_replacement_def dcwit_repl_body_def)
+
+subsection\<open>Cohen forcing is ccc\<close>
 
 context M_ctm3_AC
 begin
@@ -550,6 +556,8 @@ corollary not_CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> \<noteq> 2\<^bs
   using Aleph_rel_lt_continuum_rel by auto
 
 end \<comment> \<open>\<^locale>\<open>add_generic4\<close>\<close>
+
+subsection\<open>Models of fragments of $\ZFC + \neg \CH$\<close>
 
 definition
   ContHyp :: "o" where

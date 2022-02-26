@@ -1,10 +1,10 @@
+section\<open>More Instances of Replacement\<close>
+
 theory Replacement_Instances
   imports
     Separation_Instances
     Transitive_Models.Pointed_DC_Relative
 begin
-
-subsection\<open>More Instances of Replacement\<close>
 
 (*FIXME: this could go in \<^theory>\<open>Interface\<close> after moving the definition of lam_replacement there.*)
 lemma (in M_ZF1_trans) lam_replacement2_in_ctm :
