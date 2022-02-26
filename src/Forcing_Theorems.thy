@@ -1511,6 +1511,8 @@ next
     assume 2: "r\<in>P" "r\<preceq>p"
     then
     obtain G where "r\<in>G" "M_generic(G)"
+      text\<open>Here we're using countability (via the existence of
+        generic filters) of \<^term>\<open>M\<close> as a shortcut.\<close>
       using generic_filter_existence by auto
     moreover from calculation 2 \<open>p\<in>P\<close>
     have "p\<in>G"

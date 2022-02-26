@@ -2,7 +2,7 @@ chapter "ZF"
 
 session "Independence_CH" in "." =  "Transitive_Models" +
   description "
-    The Independence of the Continuum Hypothesis
+    The Independence of the Continuum Hypothesis in Isabelle/ZF
 
     We redeveloped our formalization of forcing in the set theory framework of
     Isabelle/ZF. Under the assumption of the existence of a countable 
