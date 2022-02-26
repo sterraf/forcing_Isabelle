@@ -259,7 +259,7 @@ proof -
         unfolding lesspoll_rel_def by simp
       moreover from calculation
       have "M(p) \<Longrightarrow> ?G(p) \<lesssim>\<^bsup>M\<^esup> \<omega>" for p
-        using lesspoll_rel_Aleph_rel_plus_one[of 0] Aleph_rel_zero by auto
+        using lesspoll_rel_Aleph_rel_succ[of 0] Aleph_rel_zero by auto
       moreover
       have "{A \<in> G . S \<inter> A \<noteq> 0} = (\<Union>p\<in>S. ?G(p))" for S
         by auto

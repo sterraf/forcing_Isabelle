@@ -204,7 +204,7 @@ proof -
     using Fn_rel_is_function by simp_all
   moreover from this
   have "|p|\<^bsup>M\<^esup>  \<lesssim>\<^bsup>M\<^esup> \<omega>"
-    using lesspoll_rel_Aleph_rel_plus_one[of 0] Aleph_rel_zero
+    using lesspoll_rel_Aleph_rel_succ[of 0] Aleph_rel_zero
     by simp
   ultimately
   show ?thesis
