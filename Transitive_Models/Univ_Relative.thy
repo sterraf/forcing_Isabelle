@@ -56,11 +56,6 @@ is_iff_rel for "Powapply"
   unfolding is_Powapply_def Powapply_rel_def
   by simp
 
-univalent for "Powapply"
-  using is_Powapply_iff
-  unfolding univalent_def
-  by simp
-
 end \<comment>\<open>\<^locale>\<open>M_basic\<close>\<close>
 
 definition
@@ -124,11 +119,6 @@ proof -
   unfolding is_HVfrom_def HVfrom_rel_def
     by (auto dest:transM)
 qed
-
-univalent for "HVfrom"
-  using is_HVfrom_iff
-  unfolding univalent_def
-  by simp
 
 rel_closed for "HVfrom"
 proof -
@@ -306,11 +296,6 @@ proof -
     using Replace_abs transM[of _ x] Hrank_replacement
     by auto
 qed
-
-univalent for "Hrank"
-  using is_Hrank_iff
-  unfolding univalent_def
-  by simp
 
 lemma relation2_Hrank :
   "relation2(M,is_Hrank(M),Hrank)"
