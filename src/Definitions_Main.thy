@@ -397,7 +397,7 @@ text\<open>@{thm [display] ZF_union_iff_sats ZF_power_iff_sats
 *)
 
 thm ZF_fin_def ZF_schemes_def Zermelo_fms_def ZC_def ZF_def ZFC_def
-text\<open>@{thm [display] ZF_fin_def ZF_schemes_def Zermelo_fms_def ZC_def ZF_def ZFC_def
+text\<open>@{thm [display] ZF_fin_def ZF_schemes_def Zermelo_fms_def ZC_def ZF_def
   ZFC_def}\<close>
 (*
   ZF_fin \<equiv> {\<cdot>Extensionality\<cdot>, \<cdot>Foundation\<cdot>, \<cdot>Pairing\<cdot>, \<cdot>Union Ax\<cdot>, \<cdot>Infinity\<cdot>, \<cdot>Powerset Ax\<cdot>}
@@ -408,17 +408,7 @@ text\<open>@{thm [display] ZF_fin_def ZF_schemes_def Zermelo_fms_def ZC_def ZF_d
   ZFC \<equiv> ZF \<union> {\<cdot>AC\<cdot>}
 *)
 
-subsection\<open>Forcing \label{sec:def-main-forcing}\<close>
-
-thm extensions_of_ctms
-text\<open>@{thm [display] extensions_of_ctms}\<close>
-(*
-  M \<approx> \<omega> \<Longrightarrow>
-  Transset(M) \<Longrightarrow>
-  M \<Turnstile> ZF \<Longrightarrow>
-  \<exists>N. M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZF \<and> M \<noteq> N \<and>
-    (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N) \<and> ((M, [] \<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N \<Turnstile> ZFC)
-*)
+subsection\<open>Relativization of infinitary arithmetic\<close>
 
 txt\<open>In order to state the defining property of the relative
     equipotence relation, we work under the assumptions of the
@@ -486,6 +476,24 @@ thm is_ContHyp_iff_sats
 text\<open>@{thm [display] is_ContHyp_iff_sats}\<close>
 (*
   env \<in> list(A) \<Longrightarrow> 0 \<in> A \<Longrightarrow> is_ContHyp(##A) \<longleftrightarrow> A, env \<Turnstile> \<cdot>CH\<cdot>
+*)
+
+
+subsection\<open>Forcing \label{sec:def-main-forcing}\<close>
+
+txt\<open>Our first milestone was to obtain a proper extension using forcing.
+It's original proof didn't required the previous developments involving
+the relativization of material on cardinal arithmetic. Now it is
+derived from a stronger result, namely @{thm [source] extensions_of_ctms_ZF}\<close>
+
+thm extensions_of_ctms_ZF
+text\<open>@{thm [display] extensions_of_ctms_ZF}\<close>
+(*
+  M \<approx> \<omega> \<Longrightarrow>
+  Transset(M) \<Longrightarrow>
+  M \<Turnstile> ZF \<Longrightarrow>
+  \<exists>N. M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZF \<and> M \<noteq> N \<and>
+    (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N) \<and> ((M, [] \<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N \<Turnstile> ZFC)
 *)
 
 txt\<open>We can finally state our main results, namely, the existence of models
