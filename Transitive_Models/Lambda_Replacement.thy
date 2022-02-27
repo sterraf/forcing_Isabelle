@@ -548,9 +548,6 @@ proof -
   {
     fix A
     assume "M(A)"
-    moreover
-    from assms
-    have "univalent(M,A,\<lambda>x y. y=\<langle>x,f(x)\<rangle>)" by simp
     moreover from calculation assms
     obtain Y where 1:"M(Y)" "\<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> b = \<langle>x,f(x)\<rangle>)"
       unfolding lam_replacement_def strong_replacement_def
@@ -606,8 +603,6 @@ lemma lam_replacement_imp_RepFun:
   shows "M({y . x\<in>A , M(y) \<and> y=f(x)})"
 proof -
   from assms
-  have "univalent(M,A,\<lambda>x y. y=\<langle>x,f(x)\<rangle>)" by simp
-  moreover from calculation assms
   obtain Y where 1:"M(Y)" "\<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> b = \<langle>x,f(x)\<rangle>)"
     unfolding lam_replacement_def strong_replacement_def
     by auto
