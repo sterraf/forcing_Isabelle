@@ -484,7 +484,8 @@ subsection\<open>Forcing \label{sec:def-main-forcing}\<close>
 txt\<open>Our first milestone was to obtain a proper extension using forcing.
 It's original proof didn't required the previous developments involving
 the relativization of material on cardinal arithmetic. Now it is
-derived from a stronger result, namely @{thm [source] extensions_of_ctms_ZF}\<close>
+derived from a stronger result, namely @{thm [source] extensions_of_ctms}
+below.\<close>
 
 thm extensions_of_ctms_ZF
 text\<open>@{thm [display] extensions_of_ctms_ZF}\<close>

@@ -17,6 +17,7 @@ session "Transitive_Models" =  "Delta_System_Lemma" +
     "Renaming_Auto"
     "Delta_System_Relative"
     "Pointed_DC_Relative"
+    "Partial_Functions_Relative"
     "M_Basic_No_Repl"
   document_files
     "root.tex"
