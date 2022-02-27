@@ -39,9 +39,10 @@ schematic_goal sats_is_Aleph_fm_auto:
   unfolding is_Aleph_def
 proof (rule is_transrec_iff_sats, rule_tac [1] is_HAleph_iff_sats)
   fix a0 a1 a2 a3 a4 a5 a6 a7
-  show "nth(2, Cons(a0, Cons(a1, Cons(a2, Cons(a3, Cons(a4, Cons(a5, Cons(a6, Cons(a7, env))))))))) = a2"
-    "nth(1, Cons(a0, Cons(a1, Cons(a2, Cons(a3, Cons(a4, Cons(a5, Cons(a6, Cons(a7, env))))))))) = a1"
-    "nth(0, Cons(a0, Cons(a1, Cons(a2, Cons(a3, Cons(a4, Cons(a5, Cons(a6, Cons(a7, env))))))))) = a0"
+  let ?env' = "Cons(a0, Cons(a1, Cons(a2, Cons(a3, Cons(a4, Cons(a5, Cons(a6, Cons(a7, env))))))))"
+  show "nth(2, ?env') = a2"
+    "nth(1, ?env') = a1"
+    "nth(0, ?env') = a0"
     "nth(c, env) = nth(c, env)"
     by simp_all
 qed simp_all
@@ -119,7 +120,8 @@ locale M_pre_aleph = M_eclose + M_cardinal_arith_jump +
     haleph_transrec_replacement: "M(a) \<Longrightarrow> transrec_replacement(M,is_HAleph(M),a)"
 
 begin
-lemma aux:
+
+lemma aux_ex_Replace_funapply:
   assumes "M(a)" "M(f)"
   shows "\<exists>x[M]. is_Replace(M, a, \<lambda>j y. f ` j = y, x)"
 proof -
@@ -128,19 +130,16 @@ proof -
     by auto
   moreover
   note assms
-  moreover
-  have 1:"univalent(M, a, \<lambda>j y. y = f ` j)"
-    using univalent_triv[of M a "\<lambda>j .f ` j"] by auto
   moreover from calculation
   have "x \<in> a \<Longrightarrow> y = f `x \<Longrightarrow> M(y)" for x y
     using transM[OF _ \<open>M(a)\<close>] by auto
-  moreover from this assms
+  moreover from assms
   have "M({f`j . j\<in>a})"
-    using RepFun_closed[OF apply_replacement] by simp
+    using transM[OF _ \<open>M(a)\<close>] RepFun_closed[OF apply_replacement] by simp
   ultimately
   have 2:"is_Replace(M, a, \<lambda>j y. y = f ` j, {f`j . j\<in>a})"
-    using Replace_abs[of _ _ "\<lambda>j y. y = f ` j",OF \<open>M(a)\<close> _ 1,THEN iffD2, simplified]
-      by auto
+    using Replace_abs[of _ _ "\<lambda>j y. y = f ` j",OF \<open>M(a)\<close>,THEN iffD2]
+    by auto
   with \<open>M({f`j . j\<in>a})\<close>
   show ?thesis
     using
@@ -152,14 +151,14 @@ lemma is_HAleph_zero:
   assumes "M(f)"
   shows "is_HAleph(M,0,f,res) \<longleftrightarrow> res = nat"
   unfolding is_HAleph_def
-  using Ord_0 If_abs is_Limit_iff is_csucc_iff assms aux
+  using Ord_0 If_abs is_Limit_iff is_csucc_iff assms aux_ex_Replace_funapply
   by auto
 
 lemma is_HAleph_succ:
   assumes "M(f)" "M(x)" "Ord(x)" "M(res)"
-  shows "is_HAleph(M,succ(x),f,res) \<longleftrightarrow> res = csucc_rel(M,f`( \<Union> succ(x) ))"
+  shows "is_HAleph(M,succ(x),f,res) \<longleftrightarrow> res = csucc_rel(M,f`x)"
   unfolding is_HAleph_def
-  using assms is_Limit_iff is_csucc_iff aux If_abs
+  using assms is_Limit_iff is_csucc_iff aux_ex_Replace_funapply If_abs Ord_Union_succ_eq
   by simp
 
 lemma is_HAleph_limit:
@@ -170,19 +169,21 @@ proof -
   have "univalent(M, x, \<lambda>j y. y = f ` j  )"
     "(\<And>xa y. xa \<in> x \<Longrightarrow> f ` xa = y \<Longrightarrow> M(y))"
     "{y . x \<in> x, f ` x = y} = {y . i\<in>x ,M(i) \<and> M(y) \<and> y = f`i}"
-    using univalent_triv[of M x "\<lambda>j .f ` j"] transM[OF _ \<open>M(x)\<close>] by auto
+    using univalent_triv[of M x "\<lambda>j .f ` j"] transM[OF _ \<open>M(x)\<close>]
+    by auto
   moreover
   from this
-  have A:"univalent(M, x, \<lambda>j y. f ` j = y )"
+  have "univalent(M, x, \<lambda>j y. f ` j = y )"
     by (rule_tac univalent_cong[of x x M " \<lambda>j y. y = f ` j" " \<lambda>j y. f ` j=y",THEN iffD1], auto)
   moreover
   from this
-  have "univalent(M, x, \<lambda>j y. M(j) \<and> M(y) \<and> f ` j = y )" by auto
+  have "univalent(M, x, \<lambda>j y. M(j) \<and> M(y) \<and> f ` j = y )"
+    by auto
   ultimately
   show ?thesis
     unfolding is_HAleph_def
     using assms is_Limit_iff Limit_is_Ord zero_not_Limit If_abs is_csucc_iff
-      Replace_abs[OF \<open>M(x)\<close> _ A] apply_replacement
+      Replace_abs apply_replacement
     by auto
 qed
 
@@ -204,7 +205,8 @@ proof(cases "Ord(a)")
     case (2 j)
     with True assms
     show ?thesis
-      using is_HAleph_succ unfolding HAleph_rel_def
+      using is_HAleph_succ Ord_Union_succ_eq
+      unfolding HAleph_rel_def
       by simp
   next
     case 3
@@ -222,7 +224,7 @@ next
   with False
   show ?thesis
     unfolding is_HAleph_def HAleph_rel_def
-    using assms is_Limit_iff If_abs is_csucc_iff aux
+    using assms is_Limit_iff If_abs is_csucc_iff aux_ex_Replace_funapply
     by auto
 qed
 
@@ -366,11 +368,13 @@ next
 qed
 
 lemma Aleph_rel_increasing:
-  assumes ab: "a < b" and types: "M(a)" "M(b)"
+  assumes "a < b" and types: "M(a)" "M(b)"
   shows "\<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup> < \<aleph>\<^bsub>b\<^esub>\<^bsup>M\<^esup>"
 proof -
   { fix x
-    have "Ord(b)" using ab by (blast intro: lt_Ord2)
+    from assms
+    have "Ord(b)"
+      by (blast intro: lt_Ord2)
     moreover
     assume "M(x)"
     moreover
@@ -417,8 +421,8 @@ proof -
       show ?case using limit Aleph_rel_cont by simp
     qed
   }
-  with types
-  show ?thesis using ab by simp
+  with types assms
+  show ?thesis by simp
 qed
 
 
