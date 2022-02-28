@@ -6,6 +6,12 @@ theory ZF_Miscellanea
     Nat_Miscellanea
 begin
 
+lemma converse_refl : "refl(A,r) \<Longrightarrow> refl(A,converse(r))"
+  unfolding refl_def by simp
+
+lemma Ord_lt_subset : "Ord(b) \<Longrightarrow> a<b \<Longrightarrow> a\<subseteq>b"
+  by(intro subsetI,frule ltD,rule_tac Ord_trans,simp_all)
+
 lemma funcI : "f \<in> A \<rightarrow> B \<Longrightarrow> a \<in> A \<Longrightarrow> b= f ` a \<Longrightarrow> \<langle>a, b\<rangle> \<in> f"
   by(simp_all add: apply_Pair)
 

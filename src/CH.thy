@@ -26,17 +26,6 @@ lemma Colleq_refl : "refl(Coll,Colleq)"
   unfolding Fnle_rel_def Fnlerel_def refl_def
   using RrelI by simp
 
-(*FIXME: move this to an appropiate place.*)
-lemma converse_refl : "refl(A,r) \<Longrightarrow> refl(A,converse(r))"
-  unfolding refl_def by simp
-
-(*FIXME: move this to an appropiate place?*)
-lemma Ord_lt_subset : "Ord(b) \<Longrightarrow> a<b \<Longrightarrow> a\<subseteq>b"
-  by(intro subsetI,frule ltD,rule_tac Ord_trans,simp_all)
-
-lemmas nat_subset_Aleph_rel_1 =
-  Ord_lt_subset[OF Ord_Aleph_rel[of 1] Aleph_rel_increasing[of 0 1,simplified],simplified]
-
 subsection\<open>Collapse forcing is sufficiently closed\<close>
 
 \<comment> \<open>Kunen IV.7.14, only for \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>\<close>

@@ -425,6 +425,8 @@ proof -
   show ?thesis by simp
 qed
 
+lemmas nat_subset_Aleph_rel_1 =
+  Ord_lt_subset[OF Ord_Aleph_rel[of 1] Aleph_rel_increasing[of 0 1,simplified],simplified]
 
 end \<comment> \<open>\<^locale>\<open>M_aleph\<close>\<close>
 

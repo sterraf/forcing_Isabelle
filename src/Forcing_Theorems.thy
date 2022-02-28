@@ -286,9 +286,9 @@ lemma elem_of_valI: "\<exists>\<theta>. \<exists>p\<in>P. p\<in>G \<and> \<langl
 lemma GenExt_iff: "x\<in>M[G] \<longleftrightarrow> (\<exists>\<tau>\<in>M. x = val(P,G,\<tau>))"
   unfolding GenExt_def by simp
 
+(* FIXME: doesn't make sense to have this! *)
 lemma left_in_M : "tau\<in>M \<Longrightarrow> \<langle>a,b\<rangle>\<in>tau \<Longrightarrow> a\<in>M"
-  using fst_snd_closed[of "\<langle>a,b\<rangle>"] transitivity by auto
-
+  using pair_in_M_iff transitivity by auto
 
 subsection\<open>Kunen 2013, Lemma IV.2.29\<close>
 lemma generic_inter_dense_below:
