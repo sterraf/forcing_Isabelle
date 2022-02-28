@@ -163,7 +163,19 @@ definition
 relativize functional "Hrank" "Hrank_rel"
 relationalize "Hrank_rel" "is_Hrank"
 synthesize "is_Hrank" from_definition assuming "nonempty"
-arity_theorem for "is_Hrank_fm"
+
+lemma arity_is_Hrank_fm : "x \<in> nat \<Longrightarrow>
+    f \<in> nat \<Longrightarrow>
+    d \<in> nat \<Longrightarrow>
+    arity(is_Hrank_fm(x, f, d)) =
+    succ(d) \<union> succ(x) \<union> succ(f)"
+  unfolding is_Hrank_fm_def
+  using  arity_fun_apply_fm arity_big_union_fm
+    arity_fun_apply_fm arity_succ_fm arity_And arity_Exists
+   arity_Replace_fm[of
+      "\<cdot> (\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> (\<cdot>\<exists>\<cdot>\<cdot>succ(0) is 2\<cdot> \<and> \<cdot> succ(succ(succ(succ(f))))`1 is 0\<cdot>\<cdot>\<cdot>)\<cdot>\<cdot>"
+  "succ(x)" 0 "4#+f"]
+  by(simp_all add:Un_assoc pred_Un,simp add:ord_simp_union)
 
 locale M_Vfrom = M_HVfrom +
   assumes

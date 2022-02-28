@@ -1134,7 +1134,7 @@ synthesize "PHrank" from_definition assuming "nonempty"
 
 definition replacement_assm where
   "replacement_assm(M,env,\<phi>) \<equiv> \<phi> \<in> formula \<longrightarrow> env \<in> list(M) \<longrightarrow>
-    arity(\<phi>) \<le> 2 #+ length(env) \<longrightarrow>
+  arity(\<phi>) \<le> 2 #+ length(env) \<longrightarrow>
     strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y] @ env))"
 
 definition ground_replacement_assm where

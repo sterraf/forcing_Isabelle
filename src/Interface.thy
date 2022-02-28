@@ -585,12 +585,18 @@ lemma repl_sats:
    strong_replacement(##M,P)"
   by (rule strong_replacement_cong,simp add:sat)
 
+arity_theorem for "list_functor_fm"
+
 lemma (in M_ZF1_trans) list_repl1_intf:
   assumes "A\<in>M"
   shows "iterates_replacement(##M, is_list_functor(##M,A), 0)"
 proof -
   let ?f="Exists(And(pair_fm(1,0,2),
                is_wfrec_fm(iterates_MH_fm(list_functor_fm(13,1,0),10,2,1,0),3,1,0)))"
+  have "arity(?f) = 5"
+    using arity_iterates_MH_fm[where isF="list_functor_fm(13,1,0)" and i=14]
+      arity_wfrec_replacement_fm[where i=11] arity_list_functor_fm ord_simp_union
+    by simp
   {
     fix n
     assume "n\<in>nat"
@@ -631,11 +637,7 @@ proof -
       using that
       by (simp del:pair_abs)
     moreover
-    have "arity(?f) = 5"
-      (* FIXME: Symptoms of missing arity theorems *)
-      unfolding iterates_MH_fm_def list_functor_fm_def
-        is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def
-      by (simp add:arity ord_simp_union)
+    note \<open>arity(?f) = 5\<close>
     moreover from calculation
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),A,0]))"
       using replacement_ax1[unfolded replacement_assm_def]
@@ -665,12 +667,15 @@ lemma (in M_ZF1_trans) iterates_repl_intf :
     and is_F_fm_replacement:
     "\<And>env. Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0))) \<in> formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow>
       arity(Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0)))) \<le> 2 #+ length(env) \<Longrightarrow>
-      strong_replacement(##M,\<lambda>x y. sats(M,Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0))),[x,y] @ env))"
+     strong_replacement(##M,\<lambda>x y. sats(M,Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0))),[x,y] @ env))"
   shows
     "iterates_replacement(##M,is_F,v)"
 proof -
-  let ?f="Exists(And(pair_fm(1,0,2),
-               is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0)))"
+  let ?f="Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0)))"
+  have "arity(?f) = 4" "?f\<in>formula"
+    using arity_iterates_MH_fm[where isF=is_F_fm and i=2]
+      arity_wfrec_replacement_fm[where i=10] isfm arty ord_simp_union
+    by simp_all
   {
     fix n
     assume "n\<in>nat"
@@ -712,12 +717,7 @@ proof -
       using that \<open>v\<in>M\<close>
       by (simp del:pair_abs)
     moreover
-    have "arity(?f) = 4" "?f\<in>formula"
-      (* FIXME: Symptoms of missing arity theorems *)
-      unfolding iterates_MH_fm_def list_functor_fm_def
-        is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def
-      using arty assms
-      by (simp_all add:arity ord_simp_union)
+    note \<open>arity(?f) = 4\<close> \<open>?f\<in>formula\<close>
     moreover from calculation \<open>v\<in>_\<close>
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),v]))"
       using is_F_fm_replacement
@@ -739,8 +739,8 @@ arity_theorem for "formula_functor_fm"
 lemma (in M_ZF1_trans) formula_repl1_intf :
   "iterates_replacement(##M, is_formula_functor(##M), 0)"
   using arity_formula_functor_fm zero_in_M ord_simp_union
-      iterates_repl_intf[where is_F_fm="formula_functor_fm(1,0)"]
-      replacement_ax1[unfolded replacement_assm_def]
+    iterates_repl_intf[where is_F_fm="formula_functor_fm(1,0)"]
+    replacement_ax1[unfolded replacement_assm_def]
   by simp
 
 arity_theorem for "Inl_fm"
@@ -756,7 +756,7 @@ lemma (in M_ZF1_trans) tl_repl_intf:
   using assms arity_tl_fm ord_simp_union
     iterates_repl_intf[where is_F_fm="tl_fm(1,0)"]
     replacement_ax1[unfolded replacement_assm_def]
-    by simp
+  by simp
 
 arity_theorem for "big_union_fm"
 
@@ -797,10 +797,9 @@ proof -
     by simp
   moreover
   have "arity(?f) = 5"
-    (* FIXME: Symptoms of missing arity theorems *)
-    unfolding iterates_MH_fm_def is_iterates_fm_def list_functor_fm_def
-      is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def
-    by (simp add:arity ord_simp_union)
+    using arity_is_iterates_fm[where p="list_functor_fm(13,1,0)" and i=14]
+      arity_list_functor_fm arity_And ord_simp_union
+    by simp
   ultimately
   show ?thesis
     using replacement_ax1[unfolded replacement_assm_def] repl_sats[of M ?f "[A,0,nat]"]
@@ -833,10 +832,9 @@ proof -
     by simp
   moreover
   have "arity(?f) = 4"
-    (* FIXME: Symptoms of missing arity theorems *)
-    unfolding iterates_MH_fm_def is_iterates_fm_def list_functor_fm_def
-      is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def
-    by (simp add:arity ord_simp_union)
+    using arity_is_iterates_fm[where p="formula_functor_fm(1,0)" and i=2]
+      arity_formula_functor_fm arity_And ord_simp_union
+    by simp
   ultimately
   show ?thesis
     using replacement_ax1[unfolded replacement_assm_def] repl_sats[of M ?f "[0,nat]"]
@@ -870,10 +868,9 @@ proof -
     by simp
   moreover
   have "arity(?f) = 4"
-    (* FIXME: Symptoms of missing arity theorems *)
-    unfolding iterates_MH_fm_def is_iterates_fm_def list_functor_fm_def
-      is_wfrec_fm_def is_recfun_fm_def is_nat_case_fm_def
-    by (simp add:arity ord_simp_union)
+    using arity_is_iterates_fm[where p="big_union_fm(1,0)" and i=2]
+      arity_big_union_fm arity_And ord_simp_union
+    by simp
   ultimately
   show ?thesis
     using repl_sats[of M ?f "[A,nat]"] replacement_ax1[unfolded replacement_assm_def]
@@ -966,9 +963,9 @@ proof -
     by (simp del:pair_abs)
   moreover
   have "arity(?f) = 3"
-    (* FIXME: Symptoms of missing arity theorems *)
-    unfolding is_wfrec_fm_def is_recfun_fm_def is_Hrank_fm_def Replace_fm_def
-    by (simp add:arity ord_simp_union)
+    using arity_wfrec_replacement_fm[where p="is_Hrank_fm(2,1,0)" and i=3,simplified]
+      arity_is_Hrank_fm[of 2 1 0,simplified] ord_simp_union
+    by simp
   moreover from calculation
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,rrank(X)]))"
     using replacement_ax1[unfolded replacement_assm_def] rrank_in_M
@@ -1002,7 +999,7 @@ proof -
   moreover
   have "\<exists>sa\<in>M. \<exists>esa\<in>M. \<exists>mesa\<in>M.
        upair(##M,a,a,sa) \<and> is_eclose(##M,sa,esa) \<and> membership(##M,esa,mesa)"
-     if "a\<in>M" for a
+    if "a\<in>M" for a
     using that upair_ax eclose_closed Memrel_closed
     unfolding upair_ax_def
     by (simp del:upair_abs)
@@ -1032,9 +1029,9 @@ proof -
       by (simp del:pair_abs)
     moreover
     have "arity(?f) = 4"
-      (* FIXME: Symptoms of missing arity theorems *)
-      unfolding is_wfrec_fm_def is_recfun_fm_def is_HVfrom_fm_def Replace_fm_def
-      by (simp add:arity ord_simp_union)
+      using arity_wfrec_replacement_fm[where p="is_HVfrom_fm(8,2,1,0)" and i=9]
+        arity_is_HVfrom_fm ord_simp_union
+      by simp
     moreover from calculation
     have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,A,mesa]))"
       using replacement_ax1[unfolded replacement_assm_def]
@@ -1470,8 +1467,8 @@ proof -
       hsats[of "h(z)" "g(z)" "f(z)" z]
       fclosed gclosed hclosed f_fm g_fm h_fm
     apply(rule_tac iffI,simp,rule_tac rev_bexI[where x="f(z)"],simp)
-     apply(rule_tac conjI,simp,rule_tac rev_bexI[where x="g(z)"],simp)
-     apply(rule_tac conjI,simp,rule_tac rev_bexI[where x="h(z)"],simp,rule_tac conjI,simp,simp)
+    apply(rule_tac conjI,simp,rule_tac rev_bexI[where x="g(z)"],simp)
+    apply(rule_tac conjI,simp,rule_tac rev_bexI[where x="h(z)"],simp,rule_tac conjI,simp,simp)
   proof -
     assume "M, [z] @ [a, b, c, d] \<Turnstile> (\<cdot>\<exists>\<cdot>f_fm \<and> (\<cdot>\<exists>\<cdot>g_fm \<and> (\<cdot>\<exists>\<cdot>h_fm \<and> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn\<cdot>\<cdot>)\<cdot>\<cdot>)\<cdot>\<cdot>)"
     with calculation that
@@ -1554,7 +1551,7 @@ proof -
     using that fsats[OF fclosed[of z],of z]  gsats[of "g(z)" "f(z)" z]
       fclosed gclosed f_fm g_fm
     apply(rule_tac iffI,simp,rule_tac rev_bexI[where x="f(z)"],simp)
-     apply(auto)[1]
+    apply(auto)[1]
   proof -
     assume "M, [z] @ [a, b, c, d, \<tau>] \<Turnstile> (\<cdot>\<exists>\<cdot>f_fm \<and> (\<cdot>\<exists>\<cdot>g_fm \<and> ren(\<chi>) ` 7 ` 8 ` ren_V_fn\<cdot>\<cdot>)\<cdot>\<cdot>)"
     then have "\<exists>xa\<in>M. (M, [xa, z, a, b, c, d, \<tau>] \<Turnstile> f_fm) \<and>

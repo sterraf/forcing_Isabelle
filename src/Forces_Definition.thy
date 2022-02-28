@@ -669,9 +669,9 @@ proof -
     if "x\<in>M" "z\<in>M" for x z
     using that 1 \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M by (simp del:pair_abs)
   have artyf:"arity(?f) = 5"
-    (* FIXME: Symptoms of missing arity theorems *)
-    unfolding is_wfrec_fm_def is_recfun_fm_def
-    by (simp add:ord_simp_union arity)
+    using arity_wfrec_replacement_fm[where p="Hfrc_at_fm(8,9,2,1,0)" and i=10]
+      arity_Hfrc_at_fm ord_simp_union
+    by simp
   moreover
   have "?f\<in>formula" by simp
   ultimately

@@ -347,6 +347,15 @@ lemma arity_transrec_fm [arity] :
   using arity Un_assoc[symmetric] pred_Un_distrib
   by simp
 
+lemma arity_wfrec_replacement_fm :
+  "\<lbrakk>p\<in>formula ; v\<in>nat ; n\<in>nat; Z\<in>nat ; i\<in>nat\<rbrakk> \<Longrightarrow> arity(p) = i \<Longrightarrow>
+    arity(Exists(And(pair_fm(1,0,2),is_wfrec_fm(p,v,n,Z))))
+   = 2 \<union> v \<union> n \<union> Z \<union> pred(pred(pred(pred(pred(pred(i))))))"
+  unfolding is_wfrec_fm_def
+  using arity_succ_fm  arity_is_recfun_fm union_abs2 pred_Un_distrib arity_pair_fm
+  by auto
+
+
 end \<comment> \<open>@{thm [source] FOL_arities}\<close>
 
 declare arity_subset_fm [simp del] arity_ordinal_fm[simp del, arity] arity_transset_fm[simp del]

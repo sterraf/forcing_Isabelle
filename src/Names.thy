@@ -407,9 +407,9 @@ proof -
     using that 1 \<open>X\<in>M\<close> rcheck_in_M one_in_M
     by (simp del:pair_abs)
   have artyf:"arity(?f) = 4"
-    (* FIXME: Symptoms of missing arity theorems *)
-    unfolding is_wfrec_fm_def is_recfun_fm_def is_Hcheck_fm_def Replace_fm_def
-    by (simp add:arity ord_simp_union)
+    using arity_wfrec_replacement_fm[where p="is_Hcheck_fm(8, 2, 1, 0)" and i=9]
+      arity_is_Hcheck_fm ord_simp_union
+    by simp
   then
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,\<one>,rcheck(X)]))"
     using replacement_ax1 1 artyf \<open>X\<in>M\<close> rcheck_in_M one_in_M
