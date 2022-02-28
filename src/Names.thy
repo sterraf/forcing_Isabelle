@@ -517,23 +517,14 @@ lemma check_replacement:
   "{check(x). x\<in>P} \<in> M"
 proof -
   have "arity(check_fm(0,2,1)) = 3"
-    (* FIXME: Symptoms of missing arity theorems *)
-    unfolding eclose_n_fm_def is_eclose_fm_def mem_eclose_fm_def
     by (simp add:ord_simp_union arity)
-  moreover
-  have "check(x)\<in>M" if "x\<in>P" for x
-    using that transitivity check_in_M P_in_M by simp
-  ultimately
+  then
   show ?thesis
-  using sats_check_fm check_abs P_in_M check_in_M one_in_M transitivity zero_in_M
-    Replace_relativized_in_M[of "check_fm(0,2,1)" "[\<one>]" _ "is_check(##M,\<one>)" check]
-    check_fm_type replacement_ax1
-  by simp
+    using sats_check_fm check_abs P_in_M check_in_M one_in_M transitivity zero_in_M
+      Replace_relativized_in_M[of "check_fm(0,2,1)" "[\<one>]" _ "is_check(##M,\<one>)" check]
+      check_fm_type replacement_ax1
+    by simp
 qed
-
-lemma pair_check : "\<lbrakk> p\<in>M ; y\<in>M \<rbrakk>  \<Longrightarrow>
-  (\<exists>c\<in>M. is_check(##M,\<one>,p,c) \<and> pair(##M,c,p,y)) \<longleftrightarrow> y = \<langle>check(p),p\<rangle>"
-  using check_abs check_in_M pair_in_M_iff by simp
 
 lemma M_subset_MG :  "\<one> \<in> G \<Longrightarrow> M \<subseteq> M[G]"
   using check_in_M one_in_P GenExtI
@@ -558,8 +549,6 @@ proof -
   have "?pcheck_fm\<in>formula" by simp
   moreover
   have "arity(?pcheck_fm)=3"
-    (* FIXME: Symptoms of missing arity theorems *)
-    unfolding is_eclose_fm_def mem_eclose_fm_def eclose_n_fm_def
     by (simp add:ord_simp_union arity)
   moreover
   from P_in_M check_in_M pair_in_M_iff P_sub_M
@@ -574,8 +563,7 @@ proof -
 qed
 
 lemma val_G_dot :
-  assumes "G \<subseteq> P"
-    "\<one> \<in> G"
+  assumes "G \<subseteq> P" "\<one> \<in> G"
   shows "val(P,G,G_dot) = G"
 proof (intro equalityI subsetI)
   fix x
@@ -621,16 +609,14 @@ proof -
   also
   have "... \<in> M[G]"
     using GenExtI zero_in_M by simp
-  finally show ?thesis .
+  finally
+  show ?thesis .
 qed
 
 lemma G_nonempty: "G\<noteq>0"
-proof -
-  have "P\<subseteq>P" ..
-  with P_in_M P_dense \<open>P\<subseteq>P\<close>
-  show "G \<noteq> 0"
-    using generic unfolding M_generic_def by auto
-qed
+  using generic subset_refl[of P] P_in_M P_dense
+  unfolding M_generic_def
+  by auto
 
 end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
