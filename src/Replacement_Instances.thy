@@ -104,10 +104,10 @@ synthesize "dcwit_repl_body" from_schematic
 definition dcwit_aux_fm where
   "dcwit_aux_fm(A,s,R) \<equiv> (\<cdot>\<exists>\<cdot>\<cdot>4`2 is 0\<cdot> \<and>
                (\<cdot>\<exists>\<cdot>Collect_fm
-                   (succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(A)))))))))), \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and>
+                   (succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(A)))))))))),
                     (\<cdot>\<exists>\<cdot>\<cdot>0 \<in>
                        succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(R)))))))))))) \<cdot> \<and>
-                       pair_fm(3, 1, 0) \<cdot>\<cdot>)\<cdot>,
+                       pair_fm(3, 1, 0) \<cdot>\<cdot>),
                     0) \<and>
                   \<cdot> succ(succ(succ(succ(succ(succ(succ(succ(succ(succ(s))))))))))`0 is 2\<cdot>\<cdot>\<cdot>)\<cdot>\<cdot>)"
 
@@ -169,7 +169,7 @@ synthesize "is_RepFun_body" from_definition assuming "nonempty"
 arity_theorem for "is_RepFun_body_fm"
 
 lemma arity_body_repfun:
-  "arity( \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> (\<cdot>\<exists>\<cdot>cons_fm(0, 3, 2) \<and> pair_fm(5, 1, 0) \<cdot>\<cdot>)\<cdot>\<cdot> ) = 5"
+  "arity((\<cdot>\<exists>\<cdot>cons_fm(0, 3, 2) \<and> pair_fm(5, 1, 0) \<cdot>\<cdot>)) = 5"
   using arity_cons_fm arity_pair_fm pred_Un_distrib union_abs1 FOL_arities
   by auto
 

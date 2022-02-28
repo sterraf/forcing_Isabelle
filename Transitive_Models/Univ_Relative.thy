@@ -74,7 +74,7 @@ lemma arity_is_HVfrom_fm:
     d \<in> nat \<Longrightarrow>
     arity(is_HVfrom_fm(A, x, f, d)) = succ(A) \<union> succ(d) \<union> (succ(x) \<union> succ(f))"
   using arity_is_HVfrom_fm' arity_is_Powapply_fm
-  by(simp,subst arity_Replace_fm[of " \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> is_Powapply_fm(succ(succ(succ(succ(f)))), 0, 1) \<cdot>\<cdot>" "succ(succ(x))" 1])
+  by(simp,subst arity_Replace_fm[of "is_Powapply_fm(succ(succ(succ(succ(f)))), 0, 1)" "succ(succ(x))" 1])
     (simp_all,simp add:arity pred_Un_distrib )
 
 notation HVfrom_rel (\<open>HVfrom\<^bsup>_\<^esup>'(_,_,_')\<close>)
@@ -173,7 +173,7 @@ lemma arity_is_Hrank_fm : "x \<in> nat \<Longrightarrow>
   using  arity_fun_apply_fm arity_big_union_fm
     arity_fun_apply_fm arity_succ_fm arity_And arity_Exists
    arity_Replace_fm[of
-      "\<cdot> (\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> (\<cdot>\<exists>\<cdot>\<cdot>succ(0) is 2\<cdot> \<and> \<cdot> succ(succ(succ(succ(f))))`1 is 0\<cdot>\<cdot>\<cdot>)\<cdot>\<cdot>"
+      "(\<cdot>\<exists>\<cdot>\<cdot>succ(0) is 2\<cdot> \<and> \<cdot> succ(succ(succ(succ(f))))`1 is 0\<cdot>\<cdot>\<cdot>)"
   "succ(x)" 0 "4#+f"]
   by(simp_all add:Un_assoc pred_Un,simp add:ord_simp_union)
 

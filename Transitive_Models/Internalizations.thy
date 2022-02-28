@@ -69,6 +69,41 @@ lemma nth_closed :
   shows "nth(n,env)\<in>A"
   using assms unfolding nth_def by (induct env; simp)
 
+lemma conj_setclass_model_iff_sats [iff_sats]:
+      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A);
+       P \<longleftrightarrow> sats(A,p,env); env \<in> list(A) |]
+       ==> (P \<and> (##A)(x)) \<longleftrightarrow> sats(A, p, env)"
+      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A);
+       P \<longleftrightarrow> sats(A,p,env); env \<in> list(A) |]
+       ==> ((##A)(x) \<and> P) \<longleftrightarrow> sats(A, p, env)"
+  using nth_closed[of env A i]
+  by auto
+
+lemma conj_mem_model_iff_sats [iff_sats]:
+      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A);
+       P \<longleftrightarrow> sats(A,p,env); env \<in> list(A) |]
+       ==> (P \<and> x \<in> A) \<longleftrightarrow> sats(A, p, env)"
+      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A);
+       P \<longleftrightarrow> sats(A,p,env); env \<in> list(A) |]
+       ==> (x \<in> A \<and> P) \<longleftrightarrow> sats(A, p, env)"
+  using nth_closed[of env A i]
+  by auto
+
+(* lemma [iff_sats]:
+      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A);
+       P \<longleftrightarrow> sats(A,p,env); env \<in> list(A) |]
+       ==> (x \<in> A \<longleftrightarrow> P) \<longleftrightarrow> sats(A, p, env)"
+      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A);
+       P \<longleftrightarrow> sats(A,p,env); env \<in> list(A) |]
+       ==> (P \<longleftrightarrow> x \<in> A) \<longleftrightarrow> sats(A, p, env)"
+
+      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A);
+       P \<longleftrightarrow> sats(A,p,env); env \<in> list(A) |]
+       ==> (x \<in> A \<longrightarrow> P) \<longleftrightarrow> sats(A, p, env)"
+
+  using nth_closed[of env A i]
+  by auto *)
+
 lemma mem_model_iff_sats [iff_sats]:
       "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A)|]
        ==> (x\<in>A) \<longleftrightarrow> sats(A, Exists(Equal(0,0)), env)"

@@ -98,7 +98,7 @@ fun auto_arity intermediate def_name pos lthy =
   end
 
 fun prove_tc_form goal thms ctxt =
-  Goal.prove ctxt [] [] goal (K (rewrite_goal_tac ctxt thms 1 THEN TypeCheck.typecheck_tac ctxt))
+  Goal.prove ctxt [] [] goal (K (rewrite_goal_tac ctxt thms 1 THEN auto_tac ctxt))
 
 fun prove_sats_tm thm_auto thms goal ctxt =
   let
