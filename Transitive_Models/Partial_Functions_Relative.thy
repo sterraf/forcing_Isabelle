@@ -51,7 +51,6 @@ proof -
     by auto
 qed
 
-(*FIXME: is this useful? *)
 lemma function_eqpoll :
   assumes "r:d\<rightarrow>J"
   shows "r \<approx> d"
