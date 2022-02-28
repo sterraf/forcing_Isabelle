@@ -151,7 +151,7 @@ lemmas formulas_def [fm_definitions] = fm_defs
   list_functor_fm_def tl_fm_def quasilist_fm_def Cons_fm_def Nil_fm_def
 
 lemmas sep_rules' [iff_sats]  = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
-  fun_plus_iff_sats omega_iff_sats FOL_sats_iff (* NOTE: why FOL_sats_iff? *)
+  fun_plus_iff_sats omega_iff_sats
 
 declare rtran_closure_iff_sats [iff_sats] tran_closure_iff_sats [iff_sats]
   is_eclose_iff_sats [iff_sats]
