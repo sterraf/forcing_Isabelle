@@ -4,8 +4,8 @@ theory My_Playground
     "ZF-Constructible.MetaExists"
     "ZF-Constructible.Formula"
     "ZF-Constructible.Normal"
-    "../src/Recursion_Thms"
-    "../Tools/Try0"
+    "../Transitive_Models/Recursion_Thms"
+    (* "../Tools/Try0" *)
 begin
 
 (* Clone of "forcing_posets.thy" to try understand Isabelle/ML *)
