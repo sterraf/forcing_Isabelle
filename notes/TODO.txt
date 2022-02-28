@@ -1,5 +1,21 @@
+FIXMEs
+======
+
+- L. 26 of `Lambda_Replacement`:
+This can be combined with separation_ball to remove the need of the
+extra assumption in lam_replacement_Collect.
+
+Miguel, 2022-02-28: I think I've tried and I couldn't.
+
+
 General Tasks
 =============
+
+- Rename absoluteness results (subject to change):
+
+* foo_rel_abs : foo(x) = foo_rel(M,x)
+* is_foo_iff: foo_rel(M,x) = y ↔ is_foo(M,x,y)
+* foo_abs : foo(x)=y ↔ is_foo(M,x,y)
 
 - Streamline the use of arity, especially for higher order constructs
   (is_wfrec_fm and the like). Minimize use of fm_definitions.

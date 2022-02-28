@@ -21,8 +21,6 @@ lemma separation_univ :
 context M_basic
 begin
 
-(* FIXME: this can be combined with separation_ball to remove the need of the
-extra assumption in lam_replacement_Collect. *)
 lemma separation_iff':
   assumes "separation(M,\<lambda>x . P(x))" "separation(M,\<lambda>x . Q(x))"
   shows "separation(M,\<lambda>x . P(x) \<longleftrightarrow> Q(x))"
