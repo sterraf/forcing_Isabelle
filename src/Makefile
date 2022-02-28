@@ -18,7 +18,6 @@ ML_ID        = $(shell isabelle getenv -b ML_IDENTIFIER)
 HEAP_LOG_DIR = $(USR_HEAPS)/$(ML_ID)/log
 HTML_DIR     = $(OUT_DIR)/$(CHAPTER)/$(SESSION)
 DB           = $(HEAP_LOG_DIR)/$(SESSION).db 
-NEWTEMP      = 0
 
 .PHONY: build html tar clean afp debug linked
 
@@ -40,8 +39,11 @@ html_linked:	$(HTML_DIR)  $(LINKING_DIR)
 	if [ ! -d tmphtml ]; then mkdir tmphtml; else rm -rf tmphtml/html_linked; fi
 	/bin/cp -fr $(HTML_DIR) tmphtml/html_linked
 	sh $(LINKING_DIR)/fix_links.sh  tmphtml/html_linked
+	rsync -ah --exclude 'sed*' tmphtml/html_linked .
 
-$(SESSION).tar.gz:	$(HTML_DIR) Makefile_distro ROOT README.md
+linked: html_linked
+
+$(SESSION).tar.gz:	html_linked Makefile_distro ROOT README.md
 	rm -rf tmptar
 	mkdir tmptar
 	mkdir tmptar/src
@@ -51,7 +53,7 @@ $(SESSION).tar.gz:	$(HTML_DIR) Makefile_distro ROOT README.md
 	 ROOT document/ tmptar/src
 	cp Makefile_distro tmptar/src/Makefile
 	 ## Avoid temporary sed files from linking:
-	rsync -ah --exclude 'sed*' $(HTML_DIR)/ tmptar/html
+	rsync -ah --exclude 'sed*' html_linked/ tmptar/html
 	tar --transform "s/tmptar/$(SESSION)/g" --show-transformed-names\
 	 -cvzf $(SESSION).tar.gz tmptar
 	rm -rf tmptar

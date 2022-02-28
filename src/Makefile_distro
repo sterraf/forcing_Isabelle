@@ -18,7 +18,6 @@ ML_ID        = $(shell isabelle getenv -b ML_IDENTIFIER)
 HEAP_LOG_DIR = $(USR_HEAPS)/$(ML_ID)/log
 HTML_DIR     = $(OUT_DIR)/$(CHAPTER)/$(SESSION)
 DB           = $(HEAP_LOG_DIR)/$(SESSION).db 
-NEWTEMP      = 0
 
 .PHONY: build html tar clean
 
