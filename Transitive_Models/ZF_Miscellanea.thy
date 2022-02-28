@@ -6,6 +6,10 @@ theory ZF_Miscellanea
     Nat_Miscellanea
 begin
 
+lemma function_subset:
+  "function(f) \<Longrightarrow> g\<subseteq>f \<Longrightarrow> function(g)"
+  unfolding function_def subset_def by auto
+
 lemma converse_refl : "refl(A,r) \<Longrightarrow> refl(A,converse(r))"
   unfolding refl_def by simp
 

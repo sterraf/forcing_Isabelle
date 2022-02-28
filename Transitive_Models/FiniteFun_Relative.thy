@@ -5,11 +5,6 @@ theory FiniteFun_Relative
     Lambda_Replacement
 begin
 
-(* MOVE THIS to an appropriate place*)
-lemma function_subset:
-  "function(f) \<Longrightarrow> g\<subseteq>f \<Longrightarrow> function(g)"
-  unfolding function_def subset_def by auto
-
 lemma FiniteFunI :
   assumes  "f\<in>Fin(A\<times>B)" "function(f)"
   shows "f \<in> A -||> B"
@@ -44,6 +39,17 @@ definition
   seqspace :: "[i,i] \<Rightarrow> i" (\<open>_\<^bsup><_\<^esup>\<close> [100,1]100) where
   "B\<^bsup><\<alpha>\<^esup> \<equiv> \<Union>n\<in>\<alpha>. (n\<rightarrow>B)"
 
+schematic_goal seqspace_fm_auto:
+  assumes
+    "i \<in> nat" "j \<in> nat" "h\<in>nat" "env \<in> list(A)"
+  shows
+    "(\<exists>om\<in>A. omega(##A,om) \<and> nth(i,env) \<in> om \<and> is_funspace(##A, nth(i,env), nth(h,env), nth(j,env))) \<longleftrightarrow> (A, env \<Turnstile> (?sqsprp(i,j,h)))"
+  unfolding is_funspace_def
+ by (insert assms ; (rule iff_sats | simp)+)
+
+synthesize "seqspace_rel" from_schematic "seqspace_fm_auto"
+arity_theorem for "seqspace_rel_fm"
+
 lemma seqspaceI[intro]: "n\<in>\<alpha> \<Longrightarrow> f:n\<rightarrow>B \<Longrightarrow> f\<in>B\<^bsup><\<alpha>\<^esup>"
   unfolding seqspace_def by blast
 
@@ -53,7 +59,6 @@ lemma seqspaceD[dest]: "f\<in>B\<^bsup><\<alpha>\<^esup> \<Longrightarrow> \<exi
 
 (* FIXME: Now this is too particular (only for \<^term>\<open>\<omega>\<close>-sequences).
   A relative definition for \<^term>\<open>seqspace\<close> would be appropriate.*)
-
 locale M_seqspace =  M_trancl + M_replacement +
   assumes
     seqspace_replacement: "M(B) \<Longrightarrow> strong_replacement(M,\<lambda>n z. n\<in>nat \<and> is_funspace(M,n,B,z))"
@@ -63,19 +68,7 @@ lemma seqspace_closed:
   "M(B) \<Longrightarrow> M(B\<^bsup><\<omega>\<^esup>)"
   unfolding seqspace_def using seqspace_replacement[of B] RepFun_closed2
   by simp
-
 end
-
-(* FIXME: This shouldn't be here. *)
-schematic_goal seqspace_fm_auto:
-  assumes
-    "i \<in> nat" "j \<in> nat" "h\<in>nat" "env \<in> list(A)"
-  shows
-    "(\<exists>om\<in>A. omega(##A,om) \<and> nth(i,env) \<in> om \<and> is_funspace(##A, nth(i,env), nth(h,env), nth(j,env))) \<longleftrightarrow> (A, env \<Turnstile> (?sqsprp(i,j,h)))"
-  unfolding is_funspace_def
- by (insert assms ; (rule iff_sats | simp)+)
-synthesize "seqspace_rel" from_schematic "seqspace_fm_auto"
-arity_theorem for "seqspace_rel_fm"
 
 subsection\<open>Representation of finite functions\<close>
 
