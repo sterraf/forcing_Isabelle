@@ -1,0 +1,38 @@
+OPTION  = # -o parallel_proofs=2
+
+CHAPTER = ZF
+
+SESSION = Transitive_Models
+
+OUT_DIR = output/html
+
+DOC_FILES = root.tex root.bib root.bst
+
+LINKING_DIR  = $(PWD)/../scripts
+FULL_DEPS    = $(shell isabelle build -l -n -d . $(SESSION) | grep "^  ")
+LOCAL_FILES  = $(shell isabelle build -l -n -d . $(SESSION) | grep $(PWD))
+DOCU_FILES   = $(shell echo $(DOC_FILES) | sed "s_ _ document/_g" | \
+	 sed "s_^_document/_g")
+USR_HEAPS    = $(shell isabelle getenv -b ISABELLE_HEAPS)
+ML_ID        = $(shell isabelle getenv -b ML_IDENTIFIER)
+HEAP_LOG_DIR = $(USR_HEAPS)/$(ML_ID)/log
+HTML_DIR     = $(OUT_DIR)/$(CHAPTER)/$(SESSION)
+DB           = $(HEAP_LOG_DIR)/$(SESSION).db 
+
+.PHONY: build html tar clean
+
+$(DB):	$(FULL_DEPS) $(DOCU_FILES) ROOT
+	isabelle build $(OPTION) -v -c -d . $(SESSION)
+
+build: 	$(DB)
+
+$(HTML_DIR):	$(LOCAL_FILES)  ROOT \
+		$(DOCU_FILES)
+	isabelle env \
+	   ISABELLE_BROWSER_INFO=$(OUT_DIR)\
+	   isabelle build $(OPTION) -d . -c -o browser_info -v $(SESSION)
+
+html:	$(HTML_DIR)
+
+clean:
+	rm -rf output/ tmptar
