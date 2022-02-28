@@ -560,15 +560,10 @@ lemma (in M_ZF2_trans) replacement_omega_funspace:
     omega_funspace_abs[of b] setclass_iff[THEN iffD1]
   by (simp del:setclass_iff)
 
-(* FIXME: Why @{thm arity_Replace_fm} doesn't work here? Revise the method we're using. *)
-lemma arity_HAleph_wfrec_repl_body: "arity(HAleph_wfrec_repl_body_fm(2,0,1)) = 3"
-  by (simp_all add: arity_HAleph_wfrec_repl_body_fm arity_is_If_fm ord_simp_union arity_fun_apply_fm
-      arity_is_Limit_fm arity_empty_fm arity_Replace_fm[where i=11] FOL_arities)
-
 lemma (in M_ZF2_trans) replacement_HAleph_wfrec_repl_body:
   "B\<in>M \<Longrightarrow> strong_replacement(##M, HAleph_wfrec_repl_body(##M,B))"
   using strong_replacement_rel_in_ctm[where \<phi>="HAleph_wfrec_repl_body_fm(2,0,1)" and env="[B]"]
-    zero_in_M arity_HAleph_wfrec_repl_body replacement_ax2(2)
+    zero_in_M arity_HAleph_wfrec_repl_body_fm replacement_ax2(2) ord_simp_union
   by simp
 
 lemma (in M_ZF2_trans) HAleph_wfrec_repl:

@@ -228,15 +228,18 @@ proof
 qed
 
 (* FIXME: should be more general *)
-lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow>  dom_dense(x) \<in> M"
+lemma dom_dense_closed[intro,simp]: "x\<in>M \<Longrightarrow>  dom_dense(x) \<in> M"
   using separation_in_domain[of x]
-  by (rule_tac separation_closed[simplified], auto dest:transM)
+  by auto
 
 lemma domain_f_G: assumes "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
   shows "x \<in> domain(f\<^bsub>G\<^esub>)"
 proof -
   from assms
-  have "dense(dom_dense(x))" using dense_dom_dense by simp
+  have "dense(dom_dense(x))"  "x\<in>M"
+    using dense_dom_dense transitivity Aleph_rel_closed[of 1]
+       transitivity[OF _ nat_in_M,of 1]
+    sorry
   with assms
   obtain p where "p\<in>dom_dense(x)" "p\<in>G"
     using generic[THEN M_generic_denseD, of "dom_dense(x)"]

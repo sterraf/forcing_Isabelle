@@ -20,7 +20,16 @@ relativize functional "HAleph" "HAleph_rel"
 relationalize "HAleph_rel" "is_HAleph"
 
 synthesize "is_HAleph" from_definition assuming "nonempty"
-arity_theorem for "is_HAleph_fm"
+arity_theorem intermediate for "is_HAleph_fm"
+
+lemma arity_is_HAleph_fm[arity]:
+  assumes 
+    "i \<in> nat" "r \<in> nat" "l \<in> nat"
+  shows
+    "arity(is_HAleph_fm(i, r, l)) =  succ(i) \<union> succ(l) \<union> succ(r)"
+  using assms arity_fun_apply_fm[of 0 1 "succ(9#+r)"] arity_is_HAleph_fm'
+    arity_Replace_fm[of "\<cdot> succ(9#+r)`0 is 1\<cdot>" "8#+i" 3 "succ(succ(9#+r)) \<union> 1 \<union> 2"] pred_Un 
+  by auto
 
 definition
   Aleph' :: "i => i"  where
