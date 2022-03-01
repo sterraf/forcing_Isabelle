@@ -62,7 +62,6 @@ lemma Pi_range_eq: "f \<in> Pi(A,B) \<Longrightarrow> range(f) = {f ` x . x \<in
 lemma Pi_vimage_subset : "f \<in> Pi(A,B) \<Longrightarrow> f-``C \<subseteq> A"
   unfolding Pi_def by auto
 
-
 definition
   minimum :: "i \<Rightarrow> i \<Rightarrow> i" where
   "minimum(r,B) \<equiv> THE b. first(b,B,r)"

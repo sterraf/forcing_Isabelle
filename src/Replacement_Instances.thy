@@ -6,23 +6,6 @@ theory Replacement_Instances
     Transitive_Models.Pointed_DC_Relative
 begin
 
-(*FIXME: this could go in \<^theory>\<open>Interface\<close> after moving the definition of lam_replacement there.*)
-lemma (in M_ZF1_trans) lam_replacement2_in_ctm :
-  assumes
-    f_fm:  "\<phi> \<in> formula" and
-    f_ar:  "arity(\<phi>)\<le> 3 #+ length(env)" and
-    fsats: "\<And>x z r. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> r\<in>M \<Longrightarrow> (M,[x,z,r]@env \<Turnstile> \<phi>) \<longleftrightarrow> is_f(x,z,r)" and
-    fabs:  "\<And>x z r. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> r\<in>M \<Longrightarrow> is_f(x,z,r) \<longleftrightarrow> r = f(x,z)" and
-    fclosed: "\<And>x z. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> f(x,z) \<in> M" and
-    "env\<in>list(M)" and
-    phi'_replacement3: "\<And>A. A\<in>M \<Longrightarrow> replacement_assm(M,env@[A],LambdaPair_in_M_fm(\<phi>,length(env)))"
-  shows "lam_replacement(##M , \<lambda>x . f(fst(x),snd(x)))"
-  using
-    LambdaPair_in_M fabs
-    f_ar ord_simp_union transitivity assms fst_snd_closed
-  by (rule_tac lam_replacement_iff_lam_closed[THEN iffD2],simp_all)
-
-
 synthesize "setdiff" from_definition "setdiff" assuming "nonempty"
 arity_theorem for "setdiff_fm"
 
@@ -358,7 +341,6 @@ definition replacement_transrec_apply_image_body_fm where "replacement_transrec_
 definition banach_replacement_iterates_fm where "banach_replacement_iterates_fm \<equiv> banach_is_iterates_body_fm(6,5,4,3,2,0,1)"
 definition replacement_is_trans_apply_image_fm where "replacement_is_trans_apply_image_fm \<equiv> is_trans_apply_image_body_fm(3,2,0,1)"
 definition banach_iterates_fm where "banach_iterates_fm \<equiv> banach_body_iterates_fm(7,6,5,4,3,2,0,1)"
-(* definition replacement_is_abs_apply_pair_fm where "replacement_is_abs_apply_pair_fm \<equiv> is_abs_apply_pair_fm(3,2,0,1)" *)
 definition replacement_dcwit_repl_body_fm where "replacement_dcwit_repl_body_fm \<equiv> dcwit_repl_body_fm(6,5,4,3,2,0,1)"
 
 locale M_ZF2 = M_ZF1 +
@@ -529,11 +511,9 @@ lemma (in M_ZF2_trans) lam_replacement_minimum:
     minimum_closed zero_in_M LambdaPair_in_M_replacement2(4)
   by simp
 
-lemma Upair_eq: "Upair(a,b) = {a,b}" using Upair_iff by auto
-
 lemma (in M_ZF2_trans) lam_replacement_Upair: "lam_replacement(##M, \<lambda>p. Upair(fst(p), snd(p)))"
   using lam_replacement2_in_ctm[where \<phi>="upair_fm(0,1,2)" and env="[]" and f="Upair"]
-    Upair_closed upair_type upair_iff_sats Upair_eq
+    Upair_closed upair_type upair_iff_sats Upair_eq_cons
     arity_upair_fm[of 0 1 2,simplified] ord_simp_union LambdaPair_in_M_replacement2(5)
   by simp
 

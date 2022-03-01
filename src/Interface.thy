@@ -1341,6 +1341,21 @@ proof -
 
 qed
 
+lemma (in M_ZF1_trans) lam_replacement2_in_ctm :
+  assumes
+    f_fm:  "\<phi> \<in> formula" and
+    f_ar:  "arity(\<phi>)\<le> 3 #+ length(env)" and
+    fsats: "\<And>x z r. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> r\<in>M \<Longrightarrow> (M,[x,z,r]@env \<Turnstile> \<phi>) \<longleftrightarrow> is_f(x,z,r)" and
+    fabs:  "\<And>x z r. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> r\<in>M \<Longrightarrow> is_f(x,z,r) \<longleftrightarrow> r = f(x,z)" and
+    fclosed: "\<And>x z. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> f(x,z) \<in> M" and
+    "env\<in>list(M)" and
+    phi'_replacement3: "\<And>A. A\<in>M \<Longrightarrow> replacement_assm(M,env@[A],LambdaPair_in_M_fm(\<phi>,length(env)))"
+  shows "lam_replacement(##M , \<lambda>x . f(fst(x),snd(x)))"
+  using
+    LambdaPair_in_M fabs
+    f_ar ord_simp_union transitivity assms fst_snd_closed
+  by (rule_tac lam_replacement_iff_lam_closed[THEN iffD2],simp_all)
+
 simple_rename "ren_U" src "[z1,x_P, x_leq, x_o, x_t, z2_c]"
   tgt "[z2_c,z1,z,x_P, x_leq, x_o, x_t]"
 
