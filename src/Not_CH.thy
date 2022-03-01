@@ -101,7 +101,6 @@ lemmas (in M_ZF3_trans) sep_instances =
  separation_ifrangeF_body7 separation_cardinal_rel_lesspoll_rel
  separation_is_dcwit_body
 
-(* FIXME: the second instance has been proved in Lambda Replacement, it shouldn't be here. *)
 lemmas (in M_ZF3_trans) repl_instances = lam_replacement_inj_rel
   lam_replacement_cardinal replacement_trans_apply_image
 
@@ -504,7 +503,8 @@ proof (intro ext.mem_inj_abs[THEN iffD2])
     unfolding inj_def
   proof (intro ballI CollectI impI)
     show "h\<^bsub>G\<^esub> \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<rightarrow> \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
-      using f_G_funtype G_in_MG ext.nat_into_M unfolding h_G_def
+      using f_G_funtype G_in_MG ext.nat_into_M
+      unfolding h_G_def
       apply (intro lam_type ext.mem_function_space_rel_abs[THEN iffD2], simp_all)
       apply (rule_tac ext.lam_closed[simplified], simp_all)
        apply (rule ext.apply_replacement2)
@@ -601,9 +601,8 @@ proof -
   interpret M_ctm4_AC M enum by unfold_locales
   interpret cohen_data \<omega> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 2 by unfold_locales auto
   have "Fn(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2) \<in> M" "Fnle(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2) \<in> M"
-    using nat_into_M Aleph_rel_closed M_nat cartprod_closed
-      (* FIXME: why such ugly proof? Compare "ctm_of_CH" *)
-    by (intro Fn_nat_closed[simplified] Fnle_nat_closed[simplified]; simp_all)+
+    using nat_into_M Aleph_rel_closed M_nat cartprod_closed Fn_nat_closed Fnle_nat_closed
+    by simp_all
   then
   interpret forcing_data1 "Fn(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2)" "Fnle(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2)" 0 M enum
     by unfold_locales simp_all
