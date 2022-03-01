@@ -180,8 +180,7 @@ context
   includes G_generic1_lemmas
 begin
 
-(* FIXME: Pick better names for these lemmas. *)
-lemma aux3:
+lemma separation_check_snd_aux:
   assumes "f_dot\<in>M" "\<tau>\<in>M" "\<chi>\<in>formula" "arity(\<chi>) \<le> 7"
   shows "separation(##M, \<lambda>r. M, [fst(r), P, leq, \<one>, f_dot, \<tau>, snd(r)\<^sup>v] \<Turnstile> \<chi>)"
 proof -
@@ -200,8 +199,7 @@ proof -
     by simp
 qed
 
-(* FIXME: analogous to aux3 after renaming with the permutation [(0,5)]*)
-lemma aux8 :
+lemma separation_check_fst_snd_aux :
   assumes "f_dot\<in>M" "r\<in>M" "\<chi>\<in>formula" "arity(\<chi>) \<le> 7"
   shows "separation(##M, \<lambda>p. M, [r, P, leq, \<one>, f_dot, fst(p)\<^sup>v, snd(p)\<^sup>v] \<Turnstile> \<chi>)"
 proof -
@@ -243,7 +241,7 @@ proof -
     by simp
 qed
 
-lemma aux6:
+lemma separation_leq_and_forces_apply_aux:
   assumes "f_dot\<in>M" "B\<in>M"
   shows "\<forall>n\<in>M. separation(##M, \<lambda>x. snd(x) \<preceq> fst(x) \<and>
           (\<exists>b\<in>B. M, [snd(x), P, leq, \<one>, f_dot, (\<Union>(n))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> )))"
@@ -273,7 +271,7 @@ proof -
     by(clarify, rule_tac separation_conj,simp_all,rule_tac separation_bex,simp_all)
 qed
 
-lemma aux4:
+lemma separation_ball_leq_and_forces_apply_aux:
   assumes "f_dot\<in>M" "p\<in>M" "B\<in>M"
   shows "separation
      (##M,
@@ -321,7 +319,7 @@ proof -
     by simp
 qed
 
-lemma aux :
+lemma separation_closed_leq_and_forces_eq_check_aux :
   assumes "A\<in>M" "r\<in>G" "\<tau> \<in> M"
   shows "(##M)({q\<in>P. \<exists>h\<in>A. q \<preceq> r \<and> q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]})"
 proof -
@@ -353,10 +351,10 @@ proof -
     by(rule_tac separation_closed[OF separation_bex],simp_all)
 qed
 
-lemma aux2:
+lemma separation_closed_forces_apply_aux:
   assumes "B\<in>M" "f_dot\<in>M" "r\<in>M"
   shows "(##M)({\<langle>n,b\<rangle> \<in> \<omega> \<times> B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]})"
-  using nat_in_M assms check_in_M transitivity[OF _ \<open>B\<in>M\<close>] nat_into_M aux8
+  using nat_in_M assms check_in_M transitivity[OF _ \<open>B\<in>M\<close>] nat_into_M separation_check_fst_snd_aux
     arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm[of 0 1 2] ord_simp_union
   unfolding split_def
   by simp_all
@@ -380,7 +378,7 @@ proof (intro equalityI; clarsimp simp add:
     by (auto simp: union_abs2 union_abs1)
   moreover from \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>r\<in>G\<close> \<open>\<tau> \<in> M\<close>
   have "{q\<in>P. \<exists>h\<in>A \<rightarrow>\<^bsup>M\<^esup> B. q \<preceq> r \<and> q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]} \<in> M" (is "?D \<in> M")
-    using aux by auto
+    using separation_closed_leq_and_forces_eq_check_aux by auto
   moreover from calculation and assms(2-)
   have "dense_below(?D, r)"
     using strengthening_lemma[of r "\<cdot>0:1\<rightarrow>2\<cdot>" _ "[\<tau>, A\<^sup>v, B\<^sup>v]", THEN assms(1)[of _ \<tau>]]
@@ -433,7 +431,7 @@ proof -
     moreover from \<open>B\<in>M\<close> \<open>?subp\<in>M\<close> \<open>f_dot\<in>M\<close>
     have "{r \<in> ?subp. \<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, (\<Union>(n))\<^sup>v, b\<^sup>v]} \<in> M" (is "?X(n) \<in> M")
       if "n\<in>\<omega>" for n
-      using that aux3 nat_into_M ord_simp_union arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm
+      using that separation_check_snd_aux nat_into_M ord_simp_union arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm
       by(rule_tac separation_closed[OF separation_bex,simplified], simp_all)
     moreover
     have "?Y(n) = (?subp \<times> ?X(n)) \<inter> converse(leq)" for n
@@ -444,7 +442,8 @@ proof -
     have "n \<in> \<omega> \<Longrightarrow> ?Y(n) \<in> M" for n using nat_into_M leq_in_M by simp
     moreover from calculation
     have "S \<in> M"
-      using aux4 aux6 transitivity[OF \<open>p\<in>P\<close> P_in_M]
+      using separation_ball_leq_and_forces_apply_aux separation_leq_and_forces_apply_aux
+        transitivity[OF \<open>p\<in>P\<close> P_in_M]
       unfolding S_def split_def
       by(rule_tac lam_replacement_Collect[THEN lam_replacement_imp_lam_closed,simplified], simp_all)
     ultimately
@@ -546,7 +545,7 @@ proof -
     have "relation(?h)" unfolding relation_def by simp
     moreover from \<open>f_dot\<in>M\<close> \<open>r\<in>M\<close> \<open>B\<in>M\<close>
     have "?h \<in> M"
-      using aux2 by simp
+      using separation_closed_forces_apply_aux by simp
     moreover
     note \<open>B \<in> M\<close>
     ultimately
