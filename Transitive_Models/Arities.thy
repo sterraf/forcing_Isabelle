@@ -246,14 +246,14 @@ lemma arity_is_iterates_fm [arity] :
   shows "arity(is_iterates_fm(p,v,n,Z)) = succ(v) \<union> succ(n) \<union> succ(Z) \<union>
           pred(pred(pred(pred(pred(pred(pred(pred(pred(pred(pred(i)))))))))))"
 proof -
-  let ?\<phi> = "iterates_MH_fm(p, 7#+v, 2, 1, 0)"
+  let ?\<phi> = "iterates_MH_fm(p, 7+\<^sub>\<omega>v, 2, 1, 0)"
   let ?\<psi> = "is_wfrec_fm(?\<phi>, 0, succ(succ(n)),succ(succ(Z)))"
   from \<open>v\<in>_\<close>
-  have "arity(?\<phi>) = (8#+v) \<union> pred(pred(pred(pred(i))))" "?\<phi>\<in>formula"
+  have "arity(?\<phi>) = (8+\<^sub>\<omega>v) \<union> pred(pred(pred(pred(i))))" "?\<phi>\<in>formula"
     using assms arity_iterates_MH_fm union_abs2
     by simp_all
   then
-  have "arity(?\<psi>) = succ(succ(succ(n))) \<union> succ(succ(succ(Z))) \<union> (3#+v) \<union>
+  have "arity(?\<psi>) = succ(succ(succ(n))) \<union> succ(succ(succ(Z))) \<union> (3+\<^sub>\<omega>v) \<union>
       pred(pred(pred(pred(pred(pred(pred(pred(pred(i)))))))))"
     using assms arity_is_wfrec_fm[OF \<open>?\<phi>\<in>_\<close> _ _ _ _ \<open>arity(?\<phi>) = _\<close>] union_abs1 pred_Un_distrib
     by auto
@@ -283,9 +283,9 @@ lemma arity_mem_eclose_fm [arity] :
   assumes "x\<in>nat" "t\<in>nat"
   shows "arity(mem_eclose_fm(x,t)) = succ(x) \<union> succ(t)"
 proof -
-  let ?\<phi>="eclose_n_fm(x #+ 2, 1, 0)"
+  let ?\<phi>="eclose_n_fm(x +\<^sub>\<omega> 2, 1, 0)"
   from \<open>x\<in>nat\<close>
-  have "arity(?\<phi>) = x#+3"
+  have "arity(?\<phi>) = x+\<^sub>\<omega>3"
     using arity_eclose_n_fm union_abs2
     by simp
   with assms
@@ -328,14 +328,14 @@ lemma arity_least_fm [arity] :
 
 lemma arity_Replace_fm [arity] :
   "\<lbrakk>p\<in>formula ; v\<in>nat ; n\<in>nat; i\<in>nat\<rbrakk> \<Longrightarrow> arity(p) = i \<Longrightarrow>
-    arity(Replace_fm(v,p,n)) = succ(n) \<union> (succ(v) \<union> Arith.pred(Arith.pred(i)))"
+    arity(Replace_fm(v,p,n)) = succ(n) \<union> (succ(v) \<union> pred(pred(i)))"
   unfolding Replace_fm_def
   using union_abs2 pred_Un_distrib
   by simp
 
 lemma arity_lambda_fm [arity] :
   "\<lbrakk>p\<in>formula; v\<in>nat ; n\<in>nat; i\<in>nat\<rbrakk> \<Longrightarrow>  arity(p) = i \<Longrightarrow>
-    arity(lambda_fm(p,v,n)) = succ(n) \<union> (succ(v) \<union> Arith.pred(Arith.pred(Arith.pred(i))))"
+    arity(lambda_fm(p,v,n)) = succ(n) \<union> (succ(v) \<union> pred(pred(pred(i))))"
   unfolding lambda_fm_def
   using arity_pair_fm pred_Un_distrib union_abs1 union_abs2
   by simp

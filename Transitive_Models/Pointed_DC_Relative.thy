@@ -19,7 +19,7 @@ relationalize "dc_witness_rel" "is_dc_witness"
   is_dc_witness_fm where
   "is_dc_witness_fm(na, A, a, s, R, e) \<equiv> is_transrec_fm
                   (is_nat_case_fm
-                    (a #+ 8, (\<cdot>\<exists>\<cdot>\<cdot>4`2 is 0\<cdot> \<and> (\<cdot>\<exists>\<cdot>\<cdot>s #+ 12`0 is 2\<cdot> \<and> Collect_fm(A #+ 12, \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> (\<cdot>\<exists>\<cdot>\<cdot>0 \<in> R #+ 14\<cdot> \<and> pair_fm(3, 1, 0) \<cdot>\<cdot>)\<cdot>, 0) \<cdot>\<cdot>)\<cdot>\<cdot>), 2,
+                    (a +\<^sub>\<omega> 8, (\<cdot>\<exists>\<cdot>\<cdot>4`2 is 0\<cdot> \<and> (\<cdot>\<exists>\<cdot>\<cdot>s +\<^sub>\<omega> 12`0 is 2\<cdot> \<and> Collect_fm(A +\<^sub>\<omega> 12, \<cdot>(\<cdot>\<exists>\<cdot>0 = 0\<cdot>\<cdot>) \<and> (\<cdot>\<exists>\<cdot>\<cdot>0 \<in> R +\<^sub>\<omega> 14\<cdot> \<and> pair_fm(3, 1, 0) \<cdot>\<cdot>)\<cdot>, 0) \<cdot>\<cdot>)\<cdot>\<cdot>), 2,
                      0), na, e)"
  *)
 schematic_goal sats_is_dc_witness_fm_auto:

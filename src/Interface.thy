@@ -30,7 +30,7 @@ locale M_Z_basic =
     foundation_ax: "foundation_ax(##M)" and
     infinity_ax:   "infinity_ax(##M)" and
     separation_ax: "\<phi> \<in> formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow>
-                    arity(\<phi>) \<le> 1 #+ length(env) \<Longrightarrow>
+                    arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env) \<Longrightarrow>
                     separation(##M,\<lambda>x. sats(M,\<phi>,[x] @ env))"
 
 locale M_transset =
@@ -118,7 +118,7 @@ qed
 lemma separation_in_ctm :
   assumes
     "\<phi> \<in> formula" "env\<in>list(M)"
-    "arity(\<phi>) \<le> 1 #+ length(env)" and
+    "arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env)" and
     satsQ: "\<And>x. x\<in>M \<Longrightarrow> sats(M,\<phi>,[x]@env) \<longleftrightarrow> Q(x)"
   shows
     "separation(##M,Q)"
@@ -666,7 +666,7 @@ lemma (in M_ZF1_trans) iterates_repl_intf :
               \<Longrightarrow> is_F(a,b) \<longleftrightarrow> sats(M, is_F_fm, [b,a]@env')"
     and is_F_fm_replacement:
     "\<And>env. Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0))) \<in> formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow>
-      arity(Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0)))) \<le> 2 #+ length(env) \<Longrightarrow>
+      arity(Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0)))) \<le> 2 +\<^sub>\<omega> length(env) \<Longrightarrow>
      strong_replacement(##M,\<lambda>x y. sats(M,Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0))),[x,y] @ env))"
   shows
     "iterates_replacement(##M,is_F,v)"
@@ -1060,7 +1060,7 @@ begin
 lemma Collect_in_M :
   assumes
     "\<phi> \<in> formula" "env\<in>list(M)"
-    "arity(\<phi>) \<le> 1 #+ length(env)" "A\<in>M" and
+    "arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env)" "A\<in>M" and
     satsQ: "\<And>x. x\<in>M \<Longrightarrow> sats(M,\<phi>,[x]@env) \<longleftrightarrow> Q(x)"
   shows
     "{y\<in>A . Q(y)}\<in>M"
@@ -1078,16 +1078,16 @@ qed
 lemma separation_in_M :
   assumes
     "\<phi> \<in> formula" "env\<in>list(M)"
-    "arity(\<phi>) \<le> 1 #+ length(env)" "A\<in>M" and
+    "arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env)" "A\<in>M" and
     satsQ: "\<And>x. x\<in>A \<Longrightarrow> sats(M,\<phi>,[x]@env) \<longleftrightarrow> Q(x)"
   shows
     "{y\<in>A . Q(y)} \<in> M"
 proof -
-  let ?\<phi>' = "And(\<phi>,Member(0,length(env)#+1))"
+  let ?\<phi>' = "And(\<phi>,Member(0,length(env)+\<^sub>\<omega>1))"
   note assms
   moreover
-  have "arity(?\<phi>') \<le> 1 #+ length(env@[A])"
-    using assms Un_le le_trans[of "arity(\<phi>)" "1#+length(env)" "2#+length(env)"]
+  have "arity(?\<phi>') \<le> 1 +\<^sub>\<omega> length(env@[A])"
+    using assms Un_le le_trans[of "arity(\<phi>)" "1+\<^sub>\<omega>length(env)" "2+\<^sub>\<omega>length(env)"]
     by (force simp:FOL_arities)
   moreover from calculation
   have "?\<phi>'\<in>formula" "nth(length(env), env @ [A]) = A"
@@ -1111,7 +1111,7 @@ begin
 lemma strong_replacement_in_ctm:
   assumes
     f_fm:  "\<phi> \<in> formula" and
-    f_ar:  "arity(\<phi>)\<le> 2 #+ length(env)" and
+    f_ar:  "arity(\<phi>)\<le> 2 +\<^sub>\<omega> length(env)" and
     fsats: "\<And>x y. x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,y]@env \<Turnstile> \<phi>) \<longleftrightarrow> y = f(x)" and
     fclosed: "\<And>x. x\<in>M \<Longrightarrow> f(x) \<in> M" and
     phi_replacement:"replacement_assm(M,env,\<phi>)" and
@@ -1125,7 +1125,7 @@ lemma strong_replacement_in_ctm:
 lemma strong_replacement_rel_in_ctm :
   assumes
     f_fm:  "\<phi> \<in> formula" and
-    f_ar:  "arity(\<phi>)\<le> 2 #+ length(env)" and
+    f_ar:  "arity(\<phi>)\<le> 2 +\<^sub>\<omega> length(env)" and
     fsats: "\<And>x y. x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,y]@env \<Turnstile> \<phi>) \<longleftrightarrow> f(x,y)"  and
     phi_replacement:"replacement_assm(M,env,\<phi>)" and
     "env\<in>list(M)"
@@ -1138,18 +1138,18 @@ lemma strong_replacement_rel_in_ctm :
 lemma Replace_in_M :
   assumes
     f_fm:  "\<phi> \<in> formula" and
-    f_ar:  "arity(\<phi>)\<le> 2 #+ length(env)" and
+    f_ar:  "arity(\<phi>)\<le> 2 +\<^sub>\<omega> length(env)" and
     fsats: "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,y]@env \<Turnstile> \<phi>) \<longleftrightarrow> y = f(x)" and
     fclosed: "\<And>x. x\<in>A \<Longrightarrow> f(x) \<in> M"  and
     "A\<in>M" "env\<in>list(M)" and
-    phi'_replacement:"replacement_assm(M,env@[A], \<cdot>\<phi> \<and> \<cdot>0 \<in> length(env) #+ 2\<cdot>\<cdot> )"
+    phi'_replacement:"replacement_assm(M,env@[A], \<cdot>\<phi> \<and> \<cdot>0 \<in> length(env) +\<^sub>\<omega> 2\<cdot>\<cdot> )"
   shows "{f(x) . x\<in>A}\<in>M"
 proof -
-  let ?\<phi>' = "And(\<phi>,Member(0,length(env)#+2))"
+  let ?\<phi>' = "And(\<phi>,Member(0,length(env)+\<^sub>\<omega>2))"
   note assms
   moreover from this
-  have "arity(?\<phi>') \<le> 2 #+ length(env@[A])"
-    using Un_le le_trans[of "arity(\<phi>)" "2#+(length(env))" "3#+length(env)"]
+  have "arity(?\<phi>') \<le> 2 +\<^sub>\<omega> length(env@[A])"
+    using Un_le le_trans[of "arity(\<phi>)" "2+\<^sub>\<omega>(length(env))" "3+\<^sub>\<omega>length(env)"]
     by (force simp:FOL_arities)
   moreover from calculation
   have "?\<phi>'\<in>formula" "nth(length(env), env @ [A]) = A"
@@ -1179,19 +1179,19 @@ qed
 lemma Replace_relativized_in_M :
   assumes
     f_fm:  "\<phi> \<in> formula" and
-    f_ar:  "arity(\<phi>)\<le> 2 #+ length(env)" and
+    f_ar:  "arity(\<phi>)\<le> 2 +\<^sub>\<omega> length(env)" and
     fsats: "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,y]@env \<Turnstile> \<phi>) \<longleftrightarrow> is_f(x,y)" and
     fabs:  "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> is_f(x,y) \<longleftrightarrow> y = f(x)" and
     fclosed: "\<And>x. x\<in>A \<Longrightarrow> f(x) \<in> M"  and
     "A\<in>M" "env\<in>list(M)" and
-    phi'_replacement:"replacement_assm(M,env@[A], \<cdot>\<phi> \<and> \<cdot>0 \<in> length(env) #+ 2\<cdot>\<cdot> )"
+    phi'_replacement:"replacement_assm(M,env@[A], \<cdot>\<phi> \<and> \<cdot>0 \<in> length(env) +\<^sub>\<omega> 2\<cdot>\<cdot> )"
   shows "{f(x) . x\<in>A}\<in>M"
   using assms Replace_in_M[of \<phi>] by auto
 
 lemma ren_action :
   assumes
     "env\<in>list(M)" "x\<in>M" "y\<in>M" "z\<in>M"
-  shows "\<forall> i . i < 2#+length(env) \<longrightarrow>
+  shows "\<forall> i . i < 2+\<^sub>\<omega>length(env) \<longrightarrow>
           nth(i,[x,z]@env) = nth(\<rho>_repl(length(env))`i,[z,x,y]@env)"
 proof -
   let ?f="{\<langle>0, 1\<rangle>, \<langle>1, 0\<rangle>}"
@@ -1217,7 +1217,7 @@ qed
 lemma Lambda_in_M :
   assumes
     f_fm:  "\<phi> \<in> formula" and
-    f_ar:  "arity(\<phi>)\<le> 2 #+ length(env)" and
+    f_ar:  "arity(\<phi>)\<le> 2 +\<^sub>\<omega> length(env)" and
     fsats: "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,y]@env \<Turnstile> \<phi>) \<longleftrightarrow> is_f(x,y)" and
     fabs:  "\<And>x y. x\<in>A \<Longrightarrow> y\<in>M \<Longrightarrow> is_f(x,y) \<longleftrightarrow> y = f(x)" and
     fclosed: "\<And>x. x\<in>A \<Longrightarrow> f(x) \<in> M" and
@@ -1227,19 +1227,19 @@ lemma Lambda_in_M :
   unfolding lam_def
 proof -
   let ?ren="\<rho>_repl(length(env))"
-  let ?j="2#+length(env)"
-  let ?k="3#+length(env)"
+  let ?j="2+\<^sub>\<omega>length(env)"
+  let ?k="3+\<^sub>\<omega>length(env)"
   let ?\<psi>="ren(\<phi>)`?j`?k`?ren"
   let ?\<phi>'="Exists(And(pair_fm(1,0,2),?\<psi>))"
   let ?p="\<lambda>x y. \<exists>z\<in>M. pair(##M,x,z,y) \<and> is_f(x,z)"
   have "?\<phi>'\<in>formula" "?\<psi>\<in>formula"
-    using \<open>env\<in>_\<close> length_type f_fm ren_type ren_tc[of \<phi> "2#+length(env)" "3#+length(env)" ?ren]
+    using \<open>env\<in>_\<close> length_type f_fm ren_type ren_tc[of \<phi> "2+\<^sub>\<omega>length(env)" "3+\<^sub>\<omega>length(env)" ?ren]
     by simp_all
   moreover from this
-  have "arity(?\<psi>)\<le>3#+(length(env))" "arity(?\<psi>)\<in>nat"
+  have "arity(?\<psi>)\<le>3+\<^sub>\<omega>(length(env))" "arity(?\<psi>)\<in>nat"
     using assms arity_ren[OF f_fm _ _ ren_type,of "length(env)"] by simp_all
   then
-  have "arity(?\<phi>') \<le> 2#+(length(env))"
+  have "arity(?\<phi>') \<le> 2+\<^sub>\<omega>(length(env))"
     using Un_le pred_Un_distrib assms pred_le
     by (simp add:arity)
   moreover from this calculation
@@ -1263,7 +1263,7 @@ qed
 lemma ren_action' :
   assumes
     "env\<in>list(M)" "x\<in>M" "y\<in>M" "z\<in>M" "u\<in>M"
-  shows "\<forall> i . i < 3#+length(env) \<longrightarrow>
+  shows "\<forall> i . i < 3+\<^sub>\<omega>length(env) \<longrightarrow>
           nth(i,[x,z,u]@env) = nth(\<rho>_pair_repl(length(env))`i,[x,z,y,u]@env)"
 proof -
   let ?f="{\<langle>0, 0\<rangle>, \<langle>1, 1\<rangle>, \<langle>2,3\<rangle>}"
@@ -1292,7 +1292,7 @@ qed
 lemma LambdaPair_in_M :
   assumes
     f_fm:  "\<phi> \<in> formula" and
-    f_ar:  "arity(\<phi>)\<le> 3 #+ length(env)" and
+    f_ar:  "arity(\<phi>)\<le> 3 +\<^sub>\<omega> length(env)" and
     fsats: "\<And>x z r. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> r\<in>M \<Longrightarrow> (M,[x,z,r]@env \<Turnstile> \<phi>) \<longleftrightarrow> is_f(x,z,r)" and
     fabs:  "\<And>x z r. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> r\<in>M \<Longrightarrow> is_f(x,z,r) \<longleftrightarrow> r = f(x,z)" and
     fclosed: "\<And>x z. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> f(x,z) \<in> M" and
@@ -1301,8 +1301,8 @@ lemma LambdaPair_in_M :
   shows "(\<lambda>x\<in>A . f(fst(x),snd(x))) \<in>M"
 proof -
   let ?ren="\<rho>_pair_repl(length(env))"
-  let ?j="3#+length(env)"
-  let ?k="4#+length(env)"
+  let ?j="3+\<^sub>\<omega>length(env)"
+  let ?k="4+\<^sub>\<omega>length(env)"
   let ?\<psi>="ren(\<phi>)`?j`?k`?ren"
   let ?\<phi>'="Exists(Exists(And(fst_fm(2,0),(And(snd_fm(2,1),?\<psi>)))))"
   let ?p="\<lambda>x y. is_f(fst(x),snd(x),y)"
@@ -1310,10 +1310,10 @@ proof -
     using \<open>env\<in>_\<close> length_type f_fm ren_type' ren_tc[of \<phi> ?j ?k ?ren]
     by simp_all
   moreover from this
-  have "arity(?\<psi>)\<le>4#+(length(env))" "arity(?\<psi>)\<in>nat"
+  have "arity(?\<psi>)\<le>4+\<^sub>\<omega>(length(env))" "arity(?\<psi>)\<in>nat"
     using assms arity_ren[OF f_fm _ _ ren_type',of "length(env)"] by simp_all
   moreover from calculation
-  have 1:"arity(?\<phi>') \<le> 2#+(length(env))" "?\<phi>'\<in>formula"
+  have 1:"arity(?\<phi>') \<le> 2+\<^sub>\<omega>(length(env))" "?\<phi>'\<in>formula"
     using Un_le pred_Un_distrib assms pred_le
     by (simp_all add:arity)
   moreover from this calculation
@@ -1344,7 +1344,7 @@ qed
 lemma (in M_ZF1_trans) lam_replacement2_in_ctm :
   assumes
     f_fm:  "\<phi> \<in> formula" and
-    f_ar:  "arity(\<phi>)\<le> 3 #+ length(env)" and
+    f_ar:  "arity(\<phi>)\<le> 3 +\<^sub>\<omega> length(env)" and
     fsats: "\<And>x z r. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> r\<in>M \<Longrightarrow> (M,[x,z,r]@env \<Turnstile> \<phi>) \<longleftrightarrow> is_f(x,z,r)" and
     fabs:  "\<And>x z r. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> r\<in>M \<Longrightarrow> is_f(x,z,r) \<longleftrightarrow> r = f(x,z)" and
     fclosed: "\<And>x z. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> f(x,z) \<in> M" and

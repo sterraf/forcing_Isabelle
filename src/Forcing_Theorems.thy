@@ -1235,21 +1235,21 @@ proof -
   show ?thesis
   proof cases
     case lt
-    consider (a) "5<arity(\<phi>)#+5"  | (b) "arity(\<phi>)#+5 \<le> 5"
+    consider (a) "5<arity(\<phi>)+\<^sub>\<omega>5"  | (b) "arity(\<phi>)+\<^sub>\<omega>5 \<le> 5"
       using not_lt_iff_le \<open>\<phi>\<in>_\<close> by force
     then
     show ?thesis
     proof cases
       case a
       with \<open>\<phi>\<in>_\<close> lt
-      have "5 < succ(arity(\<phi>))" "5<arity(\<phi>)#+2"  "5<arity(\<phi>)#+3"  "5<arity(\<phi>)#+4"
+      have "5 < succ(arity(\<phi>))" "5<arity(\<phi>)+\<^sub>\<omega>2"  "5<arity(\<phi>)+\<^sub>\<omega>3"  "5<arity(\<phi>)+\<^sub>\<omega>4"
         using succ_ltI by auto
        with \<open>\<phi>\<in>_\<close>
-      have c:"arity(iterates(\<lambda>p. incr_bv(p)`5,5,\<phi>)) = 5#+arity(\<phi>)" (is "arity(?\<phi>') = _")
+      have c:"arity(iterates(\<lambda>p. incr_bv(p)`5,5,\<phi>)) = 5+\<^sub>\<omega>arity(\<phi>)" (is "arity(?\<phi>') = _")
         using arity_incr_bv_lemma lt a
         by simp
       with \<open>\<phi>\<in>_\<close>
-      have "arity(incr_bv(?\<phi>')`5) = 6#+arity(\<phi>)"
+      have "arity(incr_bv(?\<phi>')`5) = 6+\<^sub>\<omega>arity(\<phi>)"
         using arity_incr_bv_lemma[of ?\<phi>' 5] a by auto
       with \<open>\<phi>\<in>_\<close>
       show ?thesis
@@ -1259,10 +1259,10 @@ proof -
     next
       case b
       with \<open>\<phi>\<in>_\<close> lt
-      have "5 < succ(arity(\<phi>))" "5<arity(\<phi>)#+2"  "5<arity(\<phi>)#+3"  "5<arity(\<phi>)#+4" "5<arity(\<phi>)#+5"
+      have "5 < succ(arity(\<phi>))" "5<arity(\<phi>)+\<^sub>\<omega>2"  "5<arity(\<phi>)+\<^sub>\<omega>3"  "5<arity(\<phi>)+\<^sub>\<omega>4" "5<arity(\<phi>)+\<^sub>\<omega>5"
         using succ_ltI by auto
       with \<open>\<phi>\<in>_\<close>
-      have "arity(iterates(\<lambda>p. incr_bv(p)`5,6,\<phi>)) = 6#+arity(\<phi>)" (is "arity(?\<phi>') = _")
+      have "arity(iterates(\<lambda>p. incr_bv(p)`5,6,\<phi>)) = 6+\<^sub>\<omega>arity(\<phi>)" (is "arity(?\<phi>') = _")
         using arity_incr_bv_lemma lt
         by simp
       with \<open>\<phi>\<in>_\<close>
@@ -1325,7 +1325,7 @@ proof -
     using assms that P_in_M leq_in_M one_in_M sats_is_leq_fm sats_ren_truth_lemma zero_in_M
     by simp
   moreover
-  have "arity(?\<psi>) \<le> 4#+length(env)"
+  have "arity(?\<psi>) \<le> 4+\<^sub>\<omega>length(env)"
   proof -
     have eq:"arity(is_leq_fm(4, 0, 2)) = 5"
       using arity_is_leq_fm succ_Un_distrib ord_simp_union
@@ -1343,7 +1343,7 @@ proof -
     have "arity(?\<psi>) \<le> ?r" by simp
     have i:"?r \<le> 4 \<union> pred(arity(forces(\<phi>)))"
       using pred_Un_distrib pred_succ_eq \<open>\<phi>\<in>_\<close> Un_assoc[symmetric] union_abs1 by simp
-    have h:"4 \<union> pred(arity(forces(\<phi>))) \<le> 4 \<union> (4#+length(env))"
+    have h:"4 \<union> pred(arity(forces(\<phi>))) \<le> 4 \<union> (4+\<^sub>\<omega>length(env))"
       using  \<open>env\<in>_\<close> add_commute \<open>\<phi>\<in>_\<close>
             Un_le_compat[of 4 4,OF _ pred_mono[OF _ arity_forces_le[OF _ _ \<open>arity(\<phi>)\<le>_\<close>]] ]
             \<open>env\<in>_\<close> by auto

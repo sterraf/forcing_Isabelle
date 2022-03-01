@@ -4,6 +4,7 @@ theory Internalizations
   imports
     "ZF-Constructible.DPow_absolute"
     Synthetic_Definition
+    Nat_Miscellanea
 begin
 
 definition
@@ -128,10 +129,10 @@ lemma prefix1_iff_sats[iff_sats]:
   assumes
     "x \<in> nat" "env \<in> list(A)" "0 \<in> A" "a \<in> A"
   shows
-    "a = nth(x,env) \<longleftrightarrow> sats(A, Equal(0,x#+1), Cons(a,env))"
-    "nth(x,env) = a \<longleftrightarrow> sats(A, Equal(x#+1,0), Cons(a,env))"
-    "a \<in> nth(x,env) \<longleftrightarrow> sats(A, Member(0,x#+1), Cons(a,env))"
-    "nth(x,env) \<in> a \<longleftrightarrow> sats(A, Member(x#+1,0), Cons(a,env))"
+    "a = nth(x,env) \<longleftrightarrow> sats(A, Equal(0,x+\<^sub>\<omega>1), Cons(a,env))"
+    "nth(x,env) = a \<longleftrightarrow> sats(A, Equal(x+\<^sub>\<omega>1,0), Cons(a,env))"
+    "a \<in> nth(x,env) \<longleftrightarrow> sats(A, Member(0,x+\<^sub>\<omega>1), Cons(a,env))"
+    "nth(x,env) \<in> a \<longleftrightarrow> sats(A, Member(x+\<^sub>\<omega>1,0), Cons(a,env))"
   using assms nth_closed
   by simp_all
 
@@ -139,10 +140,10 @@ lemma prefix2_iff_sats[iff_sats]:
   assumes
     "x \<in> nat" "env \<in> list(A)" "0 \<in> A" "a \<in> A" "b \<in> A"
   shows
-    "b = nth(x,env) \<longleftrightarrow> sats(A, Equal(1,x#+2), Cons(a,Cons(b,env)))"
-    "nth(x,env) = b \<longleftrightarrow> sats(A, Equal(x#+2,1), Cons(a,Cons(b,env)))"
-    "b \<in> nth(x,env) \<longleftrightarrow> sats(A, Member(1,x#+2), Cons(a,Cons(b,env)))"
-    "nth(x,env) \<in> b \<longleftrightarrow> sats(A, Member(x#+2,1), Cons(a,Cons(b,env)))"
+    "b = nth(x,env) \<longleftrightarrow> sats(A, Equal(1,x+\<^sub>\<omega>2), Cons(a,Cons(b,env)))"
+    "nth(x,env) = b \<longleftrightarrow> sats(A, Equal(x+\<^sub>\<omega>2,1), Cons(a,Cons(b,env)))"
+    "b \<in> nth(x,env) \<longleftrightarrow> sats(A, Member(1,x+\<^sub>\<omega>2), Cons(a,Cons(b,env)))"
+    "nth(x,env) \<in> b \<longleftrightarrow> sats(A, Member(x+\<^sub>\<omega>2,1), Cons(a,Cons(b,env)))"
   using assms nth_closed
   by simp_all
 
@@ -150,10 +151,10 @@ lemma prefix3_iff_sats[iff_sats]:
   assumes
     "x \<in> nat" "env \<in> list(A)" "0 \<in> A" "a \<in> A" "b \<in> A" "c \<in> A"
   shows
-    "c = nth(x,env) \<longleftrightarrow> sats(A, Equal(2,x#+3), Cons(a,Cons(b,Cons(c,env))))"
-    "nth(x,env) = c \<longleftrightarrow> sats(A, Equal(x#+3,2), Cons(a,Cons(b,Cons(c,env))))"
-    "c \<in> nth(x,env) \<longleftrightarrow> sats(A, Member(2,x#+3), Cons(a,Cons(b,Cons(c,env))))"
-    "nth(x,env) \<in> c \<longleftrightarrow> sats(A, Member(x#+3,2), Cons(a,Cons(b,Cons(c,env))))"
+    "c = nth(x,env) \<longleftrightarrow> sats(A, Equal(2,x+\<^sub>\<omega>3), Cons(a,Cons(b,Cons(c,env))))"
+    "nth(x,env) = c \<longleftrightarrow> sats(A, Equal(x+\<^sub>\<omega>3,2), Cons(a,Cons(b,Cons(c,env))))"
+    "c \<in> nth(x,env) \<longleftrightarrow> sats(A, Member(2,x+\<^sub>\<omega>3), Cons(a,Cons(b,Cons(c,env))))"
+    "nth(x,env) \<in> c \<longleftrightarrow> sats(A, Member(x+\<^sub>\<omega>3,2), Cons(a,Cons(b,Cons(c,env))))"
   using assms nth_closed
   by simp_all
 

@@ -118,8 +118,8 @@ definition
 \<comment> \<open>Finally, we internalize the formula.\<close>
 definition
   check_fm :: "[i,i,i] \<Rightarrow> i" where
-  "check_fm(x,o,z) \<equiv> Exists(And(is_rcheck_fm(1#+x,0),
-                      is_wfrec_fm(is_Hcheck_fm(6#+o,2,1,0),0,1#+x,1#+z)))"
+  "check_fm(x,o,z) \<equiv> Exists(And(is_rcheck_fm(1+\<^sub>\<omega>x,0),
+                      is_wfrec_fm(is_Hcheck_fm(6+\<^sub>\<omega>o,2,1,0),0,1+\<^sub>\<omega>x,1+\<^sub>\<omega>z)))"
 
 lemma check_fm_type[TC]: "x\<in>nat \<Longrightarrow> o\<in>nat \<Longrightarrow> z\<in>nat \<Longrightarrow> check_fm(x,o,z) \<in> formula"
   by (simp add:check_fm_def)
@@ -137,7 +137,7 @@ proof -
     using that assms
     by simp
   then
-  have "sats(M, is_wfrec_fm(is_Hcheck_fm(6#+o,2,1,0),0,1#+x,1#+z),Cons(r,env))
+  have "sats(M, is_wfrec_fm(is_Hcheck_fm(6+\<^sub>\<omega>o,2,1,0),0,1+\<^sub>\<omega>x,1+\<^sub>\<omega>z),Cons(r,env))
         \<longleftrightarrow> is_wfrec(##M,is_Hcheck(##M,nth(o,env)),r,nth(x,env),nth(z,env))"
     if "r\<in>M" for r
     using that assms is_wfrec_iff_sats'[symmetric]
@@ -218,16 +218,16 @@ hide_fact Internalize.sum_type
 
 lemma ren_type :
   assumes "l\<in>nat"
-  shows "\<rho>_repl(l) : 2#+l \<rightarrow> 3#+l"
+  shows "\<rho>_repl(l) : 2+\<^sub>\<omega>l \<rightarrow> 3+\<^sub>\<omega>l"
   using sum_type[of 2 3 l l "{\<langle>0, 1\<rangle>, \<langle>1, 0\<rangle>}" "id(l)"] f_type assms id_type
   unfolding \<rho>_repl_def by auto
 
 definition Lambda_in_M_fm where [simp]:"Lambda_in_M_fm(\<phi>,len) \<equiv>
   \<cdot>(\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and>
-   ren(\<phi>) ` (2 #+ len) ` (3 #+ len) ` \<rho>_repl(len) \<cdot>\<cdot>) \<and> \<cdot>0 \<in> len #+ 2\<cdot>\<cdot>"
+   ren(\<phi>) ` (2 +\<^sub>\<omega> len) ` (3 +\<^sub>\<omega> len) ` \<rho>_repl(len) \<cdot>\<cdot>) \<and> \<cdot>0 \<in> len +\<^sub>\<omega> 2\<cdot>\<cdot>"
 
 lemma Lambda_in_M_fm_type[TC]: "\<phi>\<in>formula \<Longrightarrow> len\<in>nat \<Longrightarrow> Lambda_in_M_fm(\<phi>,len) \<in>formula"
-  using ren_tc[of \<phi> "2#+len" "3#+len" "\<rho>_repl(len)"] ren_type
+  using ren_tc[of \<phi> "2+\<^sub>\<omega>len" "3+\<^sub>\<omega>len" "\<rho>_repl(len)"] ren_type
   unfolding Lambda_in_M_fm_def
   by simp
 
@@ -236,17 +236,17 @@ definition \<rho>_pair_repl :: "i\<Rightarrow>i" where
 
 definition LambdaPair_in_M_fm where "LambdaPair_in_M_fm(\<phi>,len) \<equiv>
   \<cdot>(\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and>
-             ren((\<cdot>\<exists>(\<cdot>\<exists>\<cdot>\<cdot>fst(2) is 0\<cdot> \<and> \<cdot>\<cdot>snd(2) is 1\<cdot> \<and> ren(\<phi>) ` (3 #+ len) ` (4 #+ len) ` \<rho>_pair_repl(len) \<cdot>\<cdot>\<cdot>)\<cdot>)) ` (2 #+ len) `
-             (3 #+ len) `
+             ren((\<cdot>\<exists>(\<cdot>\<exists>\<cdot>\<cdot>fst(2) is 0\<cdot> \<and> \<cdot>\<cdot>snd(2) is 1\<cdot> \<and> ren(\<phi>) ` (3 +\<^sub>\<omega> len) ` (4 +\<^sub>\<omega> len) ` \<rho>_pair_repl(len) \<cdot>\<cdot>\<cdot>)\<cdot>)) ` (2 +\<^sub>\<omega> len) `
+             (3 +\<^sub>\<omega> len) `
              \<rho>_repl(len) \<cdot>\<cdot>) \<and>
-          \<cdot>0 \<in> len #+ 2\<cdot>\<cdot> "
+          \<cdot>0 \<in> len +\<^sub>\<omega> 2\<cdot>\<cdot> "
 
 lemma f_type' : "{\<langle>0,0 \<rangle>, \<langle>1, 1\<rangle>, \<langle>2, 3\<rangle>} \<in> 3 \<rightarrow> 4"
   using Pi_iff unfolding function_def by auto
 
 lemma ren_type' :
   assumes "l\<in>nat"
-  shows "\<rho>_pair_repl(l) : 3#+l \<rightarrow> 4#+l"
+  shows "\<rho>_pair_repl(l) : 3+\<^sub>\<omega>l \<rightarrow> 4+\<^sub>\<omega>l"
   using sum_type[of 3 4 l l "{\<langle>0, 0\<rangle>, \<langle>1, 1\<rangle>, \<langle>2, 3\<rangle>}" "id(l)"] f_type' assms id_type
   unfolding \<rho>_pair_repl_def by auto
 
@@ -403,7 +403,7 @@ definition
 definition
   frc_at_fm :: "[i,i,i,i] \<Rightarrow> i" where
   "frc_at_fm(p,l,x,z) \<equiv> Exists(And(is_forcerel_fm(succ(p),succ(x),0),
-          is_wfrec_fm(Hfrc_at_fm(6#+p,6#+l,2,1,0),0,succ(x),succ(z))))"
+          is_wfrec_fm(Hfrc_at_fm(6+\<^sub>\<omega>p,6+\<^sub>\<omega>l,2,1,0),0,succ(x),succ(z))))"
 
 lemma frc_at_fm_type [TC] :
   "\<lbrakk>p\<in>nat;l\<in>nat;x\<in>nat;z\<in>nat\<rbrakk> \<Longrightarrow> frc_at_fm(p,l,x,z)\<in>formula"
@@ -413,13 +413,13 @@ lemma arity_frc_at_fm[arity] :
   assumes "p\<in>nat" "l\<in>nat" "x\<in>nat" "z\<in>nat"
   shows "arity(frc_at_fm(p,l,x,z)) = succ(p) \<union> succ(l) \<union> succ(x) \<union> succ(z)"
 proof -
-  let ?\<phi> = "Hfrc_at_fm(6 #+ p, 6 #+ l, 2, 1, 0)"
+  let ?\<phi> = "Hfrc_at_fm(6 +\<^sub>\<omega> p, 6 +\<^sub>\<omega> l, 2, 1, 0)"
   from assms
-  have  "arity(?\<phi>) = (7#+p) \<union> (7#+l)" "?\<phi> \<in> formula"
+  have  "arity(?\<phi>) = (7+\<^sub>\<omega>p) \<union> (7+\<^sub>\<omega>l)" "?\<phi> \<in> formula"
     using arity_Hfrc_at_fm ord_simp_union
     by auto
   with assms
-  have W: "arity(is_wfrec_fm(?\<phi>, 0, succ(x), succ(z))) = 2#+p \<union> (2#+l) \<union> (2#+x) \<union> (2#+z)"
+  have W: "arity(is_wfrec_fm(?\<phi>, 0, succ(x), succ(z))) = 2+\<^sub>\<omega>p \<union> (2+\<^sub>\<omega>l) \<union> (2+\<^sub>\<omega>x) \<union> (2+\<^sub>\<omega>z)"
     using arity_is_wfrec_fm[OF \<open>?\<phi>\<in>_\<close> _ _ _ _ \<open>arity(?\<phi>) = _\<close>] pred_Un_distrib pred_succ_eq
       union_abs1
     by auto
@@ -445,11 +445,11 @@ proof -
     fix r pp ll
     assume "r\<in>A"
     have 0:"is_Hfrc_at(##A,nth(p,env),nth(l,env),a2, a1, a0) \<longleftrightarrow>
-         sats(A, Hfrc_at_fm(6#+p,6#+l,2,1,0), [a0,a1,a2,a3,a4,r]@env)"
+         sats(A, Hfrc_at_fm(6+\<^sub>\<omega>p,6+\<^sub>\<omega>l,2,1,0), [a0,a1,a2,a3,a4,r]@env)"
       if "a0\<in>A" "a1\<in>A" "a2\<in>A" "a3\<in>A" "a4\<in>A" for a0 a1 a2 a3 a4
       using  that assms \<open>r\<in>A\<close>
-        Hfrc_at_iff_sats[of "6#+p" "6#+l" 2 1 0 "[a0,a1,a2,a3,a4,r]@env" A]  by simp
-    have "sats(A,is_wfrec_fm(Hfrc_at_fm(6 #+ p, 6 #+ l, 2, 1, 0), 0, succ(i), succ(j)),[r]@env) \<longleftrightarrow>
+        Hfrc_at_iff_sats[of "6+\<^sub>\<omega>p" "6+\<^sub>\<omega>l" 2 1 0 "[a0,a1,a2,a3,a4,r]@env" A]  by simp
+    have "sats(A,is_wfrec_fm(Hfrc_at_fm(6 +\<^sub>\<omega> p, 6 +\<^sub>\<omega> l, 2, 1, 0), 0, succ(i), succ(j)),[r]@env) \<longleftrightarrow>
          is_wfrec(##A, is_Hfrc_at(##A, nth(p,env), nth(l,env)), r,nth(i, env), nth(j, env))"
       using assms \<open>r\<in>A\<close>
         sats_is_wfrec_fm[OF 0[simplified]]
@@ -562,10 +562,10 @@ proof -
   proof cases
     case lt
     with \<open>\<phi>\<in>_\<close>
-    have "2 < succ(arity(\<phi>))" "2<arity(\<phi>)#+2"
+    have "2 < succ(arity(\<phi>))" "2<arity(\<phi>)+\<^sub>\<omega>2"
       using succ_ltI by auto
     with \<open>\<phi>\<in>_\<close>
-    have "arity(iterates(\<lambda>p. incr_bv(p)`1,2,\<phi>)) = 2#+arity(\<phi>)"
+    have "arity(iterates(\<lambda>p. incr_bv(p)`1,2,\<phi>)) = 2+\<^sub>\<omega>arity(\<phi>)"
       using arity_incr_bv_lemma lt
       by auto
     with \<open>\<phi>\<in>_\<close>
@@ -617,10 +617,10 @@ proof -
   proof cases
     case lt
     with \<open>\<phi>\<in>_\<close>
-    have "5 < succ(arity(\<phi>))" "5<arity(\<phi>)#+2"  "5<arity(\<phi>)#+3"  "5<arity(\<phi>)#+4"
+    have "5 < succ(arity(\<phi>))" "5<arity(\<phi>)+\<^sub>\<omega>2"  "5<arity(\<phi>)+\<^sub>\<omega>3"  "5<arity(\<phi>)+\<^sub>\<omega>4"
       using succ_ltI by auto
     with \<open>\<phi>\<in>_\<close>
-    have "arity(iterates(\<lambda>p. incr_bv(p)`5,5,\<phi>)) = 5#+arity(\<phi>)"
+    have "arity(iterates(\<lambda>p. incr_bv(p)`5,5,\<phi>)) = 5+\<^sub>\<omega>arity(\<phi>)"
       using arity_incr_bv_lemma lt
       by simp
     with \<open>\<phi>\<in>_\<close>
@@ -661,8 +661,8 @@ subsubsection\<open>The primitive recursion\<close>
 
 consts forces' :: "i\<Rightarrow>i"
 primrec
-  "forces'(Member(x,y)) = forces_mem_fm(1,2,0,x#+4,y#+4)"
-  "forces'(Equal(x,y))  = forces_eq_fm(1,2,0,x#+4,y#+4)"
+  "forces'(Member(x,y)) = forces_mem_fm(1,2,0,x+\<^sub>\<omega>4,y+\<^sub>\<omega>4)"
+  "forces'(Equal(x,y))  = forces_eq_fm(1,2,0,x+\<^sub>\<omega>4,y+\<^sub>\<omega>4)"
   "forces'(Nand(p,q))   =
         Neg(Exists(And(Member(0,2),And(is_leq_fm(3,0,1),And(ren_forces_nand(forces'(p)),
                                          ren_forces_nand(forces'(q)))))))"
@@ -683,15 +683,15 @@ subsection\<open>The arity of \<^term>\<open>forces\<close>\<close>
 
 lemma arity_forces_at:
   assumes  "x \<in> nat" "y \<in> nat"
-  shows "arity(forces(Member(x, y))) = (succ(x) \<union> succ(y)) #+ 4"
-    "arity(forces(Equal(x, y))) = (succ(x) \<union> succ(y)) #+ 4"
+  shows "arity(forces(Member(x, y))) = (succ(x) \<union> succ(y)) +\<^sub>\<omega> 4"
+    "arity(forces(Equal(x, y))) = (succ(x) \<union> succ(y)) +\<^sub>\<omega> 4"
   unfolding forces_def
   using assms arity_forces_mem_fm arity_forces_eq_fm succ_Un_distrib ord_simp_union
   by (auto simp:FOL_arities,(rule_tac le_anti_sym,simp_all,(rule_tac not_le_anti_sym,simp_all))+)
 
 lemma arity_forces':
   assumes "\<phi>\<in>formula"
-  shows "arity(forces'(\<phi>)) \<le> arity(\<phi>) #+ 4"
+  shows "arity(forces'(\<phi>)) \<le> arity(\<phi>) +\<^sub>\<omega> 4"
   using assms
 proof (induct set:formula)
   case (Member x y)
@@ -712,7 +712,7 @@ next
   have "arity(is_leq_fm(3, 0, 1)) = 4"
     using arity_is_leq_fm succ_Un_distrib ord_simp_union
     by simp
-  have "3 \<le> (4#+arity(\<phi>)) \<union> (4#+arity(\<psi>))" (is "_ \<le> ?rhs")
+  have "3 \<le> (4+\<^sub>\<omega>arity(\<phi>)) \<union> (4+\<^sub>\<omega>arity(\<psi>))" (is "_ \<le> ?rhs")
     using ord_simp_union by simp
   from \<open>\<phi>\<in>_\<close> Nand
   have "pred(arity(?\<phi>')) \<le> ?rhs"  "pred(arity(?\<psi>')) \<le> ?rhs"
@@ -723,8 +723,8 @@ next
       using pred_mono[OF _  arity_ren_forces_nand] pred_succ_eq
       by simp_all
     from Nand
-    have "3 \<union> arity(forces'(\<phi>)) \<le> arity(\<phi>) #+ 4"
-      "3 \<union> arity(forces'(\<psi>)) \<le> arity(\<psi>) #+ 4"
+    have "3 \<union> arity(forces'(\<phi>)) \<le> arity(\<phi>) +\<^sub>\<omega> 4"
+      "3 \<union> arity(forces'(\<psi>)) \<le> arity(\<psi>) +\<^sub>\<omega> 4"
       using Un_le by simp_all
     with Nand
     show "pred(arity(?\<phi>')) \<le> ?rhs"
@@ -764,13 +764,13 @@ next
     proof -
       from Forall False
       have "arity(?\<phi>') = 5 \<union> arity(forces'(\<phi>))"
-        "arity(forces'(\<phi>)) \<le> 5 #+ arity(\<phi>)"
+        "arity(forces'(\<phi>)) \<le> 5 +\<^sub>\<omega> arity(\<phi>)"
         "4 \<le> succ(succ(succ(arity(\<phi>))))"
         using Ord_0_lt arity_ren_forces_all
           le_trans[OF _ add_le_mono[of 4 5, OF _ le_refl]]
         by auto
       with \<open>\<phi>\<in>_\<close>
-      have "5 \<union> arity(forces'(\<phi>)) \<le> 5#+arity(\<phi>)"
+      have "5 \<union> arity(forces'(\<phi>)) \<le> 5+\<^sub>\<omega>arity(\<phi>)"
         using ord_simp_union by auto
       with \<open>\<phi>\<in>_\<close> \<open>arity(?\<phi>') = 5 \<union> _\<close>
       show ?thesis
@@ -783,13 +783,13 @@ qed
 
 lemma arity_forces :
   assumes "\<phi>\<in>formula"
-  shows "arity(forces(\<phi>)) \<le> 4#+arity(\<phi>)"
+  shows "arity(forces(\<phi>)) \<le> 4+\<^sub>\<omega>arity(\<phi>)"
   unfolding forces_def
   using assms arity_forces' le_trans ord_simp_union FOL_arities by auto
 
 lemma arity_forces_le :
   assumes "\<phi>\<in>formula" "n\<in>nat" "arity(\<phi>) \<le> n"
-  shows "arity(forces(\<phi>)) \<le> 4#+n"
+  shows "arity(forces(\<phi>)) \<le> 4+\<^sub>\<omega>n"
   using assms le_trans[OF _ add_le_mono[OF le_refl[of 5] \<open>arity(\<phi>)\<le>_\<close>]] arity_forces
   by auto
 
@@ -807,16 +807,16 @@ schematic_goal arity_rename_split_fm: "\<phi>\<in>formula \<Longrightarrow> arit
 
 lemma arity_rename_split_fm_le:
   assumes "\<phi>\<in>formula"
-  shows "arity(rename_split_fm(\<phi>)) \<le> 8 \<union> (arity(\<phi>) #+ 6)"
+  shows "arity(rename_split_fm(\<phi>)) \<le> 8 \<union> (arity(\<phi>) +\<^sub>\<omega> 6)"
 proof -
   from assms
   have arity_forces_6: "\<not> 1 < arity(\<phi>) \<Longrightarrow> 6 \<le> n \<Longrightarrow> arity(forces(\<phi>)) \<le> n" for n
     using le_trans lt_trans[of _ 5 n] not_lt_iff_le[of 1 "arity(\<phi>)"]
     by (auto intro!:le_trans[OF arity_forces])
-  have pred1_arity_forces: "\<not> 1 < arity(\<phi>) \<Longrightarrow> Arith.pred^n(arity(forces(\<phi>))) \<le> 8" if "n\<in>nat" for n
+  have pred1_arity_forces: "\<not> 1 < arity(\<phi>) \<Longrightarrow> pred^n(arity(forces(\<phi>))) \<le> 8" if "n\<in>nat" for n
     using that pred_le[of 7] le_succ[THEN [2] le_trans] arity_forces_6
     by (induct rule:nat_induct) auto
-  have arity_forces_le_succ6: "Arith.pred^n(arity(forces(\<phi>))) \<le> succ(succ(succ(succ(succ(succ(arity(\<phi>)))))))"
+  have arity_forces_le_succ6: "pred^n(arity(forces(\<phi>))) \<le> succ(succ(succ(succ(succ(succ(arity(\<phi>)))))))"
     if "n\<in>nat" for n
     using that assms arity_forces[of \<phi>, THEN le_trans,
         OF _ le_succ, THEN le_trans, OF _ _ le_succ] le_trans[OF pred_le[OF _ le_succ]]
@@ -845,26 +845,26 @@ lemma body_ground_repl_fm_type[TC]: "\<phi>\<in>formula \<Longrightarrow> body_g
 lemma arity_body_ground_repl_fm_le:
   notes le_trans[trans]
   assumes "\<phi>\<in>formula"
-  shows "arity(body_ground_repl_fm(\<phi>)) \<le> 6 \<union> (arity(\<phi>) #+ 4)"
+  shows "arity(body_ground_repl_fm(\<phi>)) \<le> 6 \<union> (arity(\<phi>) +\<^sub>\<omega> 4)"
 proof -
   from \<open>\<phi>\<in>formula\<close>
-  have ineq: "n \<union> Arith.pred(Arith.pred(arity(rename_split_fm(\<phi>))))
-    \<le> m \<union> Arith.pred(Arith.pred(8 \<union> (arity(\<phi>) #+6 )))" if "n \<le> m" "n\<in>nat" "m\<in>nat" for n m
+  have ineq: "n \<union> pred(pred(arity(rename_split_fm(\<phi>))))
+    \<le> m \<union> pred(pred(8 \<union> (arity(\<phi>) +\<^sub>\<omega>6 )))" if "n \<le> m" "n\<in>nat" "m\<in>nat" for n m
   using that arity_rename_split_fm_le[of \<phi>, THEN [2] pred_mono, THEN [2] pred_mono,
       THEN [2] Un_mono[THEN subset_imp_le, OF _ le_imp_subset]] le_imp_subset
     by auto
   moreover
-  have eq1: "Arith.pred(Arith.pred(Arith.pred(4 \<union> 2 \<union> Arith.pred(Arith.pred(Arith.pred(
-    Arith.pred(Arith.pred(Arith.pred(Arith.pred(Arith.pred(9 \<union> 1 \<union> 3 \<union> 2))))))))))) = 1"
+  have eq1: "pred(pred(pred(4 \<union> 2 \<union> pred(pred(pred(
+    pred(pred(pred(pred(pred(9 \<union> 1 \<union> 3 \<union> 2))))))))))) = 1"
     by (auto simp:pred_Un_distrib)
   ultimately
-  have "Arith.pred(Arith.pred(Arith.pred(4 \<union> 2 \<union> Arith.pred(Arith.pred(Arith.pred(
-    Arith.pred(Arith.pred(Arith.pred(Arith.pred(Arith.pred(9 \<union> 1 \<union> 3 \<union> 2))))))))))) \<union>
-    Arith.pred(Arith.pred(arity(rename_split_fm(\<phi>)))) \<le>
-    1 \<union> Arith.pred(Arith.pred(8 \<union> (arity(\<phi>) #+6 )))"
+  have "pred(pred(pred(4 \<union> 2 \<union> pred(pred(pred(
+    pred(pred(pred(pred(pred(9 \<union> 1 \<union> 3 \<union> 2))))))))))) \<union>
+    pred(pred(arity(rename_split_fm(\<phi>)))) \<le>
+    1 \<union> pred(pred(8 \<union> (arity(\<phi>) +\<^sub>\<omega>6 )))"
     by auto
   also from \<open>\<phi>\<in>formula\<close>
-  have "1 \<union> Arith.pred(Arith.pred(8 \<union> (arity(\<phi>) #+6 ))) \<le> 6 \<union> (succ(succ(succ(succ(arity(\<phi>))))))"
+  have "1 \<union> pred(pred(8 \<union> (arity(\<phi>) +\<^sub>\<omega>6 ))) \<le> 6 \<union> (succ(succ(succ(succ(arity(\<phi>))))))"
     by (auto simp:pred_Un_distrib Un_assoc[symmetric] ord_simp_union)
   finally
   show ?thesis
@@ -883,14 +883,14 @@ lemma ground_repl_fm_type[TC]:
 
 lemma arity_ground_repl_fm:
   assumes "\<phi>\<in>formula"
-  shows "arity(ground_repl_fm(\<phi>)) \<le> 5 \<union> (3 #+ arity(\<phi>))"
+  shows "arity(ground_repl_fm(\<phi>)) \<le> 5 \<union> (3 +\<^sub>\<omega> arity(\<phi>))"
 proof -
   from assms
-  have "Arith.pred(arity(body_ground_repl_fm(\<phi>))) \<le> 5 \<union> (3 #+ arity(\<phi>))"
+  have "pred(arity(body_ground_repl_fm(\<phi>))) \<le> 5 \<union> (3 +\<^sub>\<omega> arity(\<phi>))"
     using arity_body_ground_repl_fm_le pred_mono succ_Un_distrib
     by (rule_tac pred_le) auto
   with assms
-  have "2 \<union> Arith.pred(arity(body_ground_repl_fm(\<phi>))) \<le> 5 \<union> (3 #+ arity(\<phi>))"
+  have "2 \<union> pred(arity(body_ground_repl_fm(\<phi>))) \<le> 5 \<union> (3 +\<^sub>\<omega> arity(\<phi>))"
     using Un_le le_Un_iff by auto
   then
   show ?thesis
@@ -1026,22 +1026,22 @@ definition omap_wfrec_body where
 lemma type_omap_wfrec_body_fm :"A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> omap_wfrec_body(A,r)\<in>formula"
   unfolding omap_wfrec_body_def by simp
 
-lemma arity_aux : "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> arity(omap_wfrec_body(A,r)) = (9#+A) \<union> (9#+r)"
+lemma arity_aux : "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> arity(omap_wfrec_body(A,r)) = (9+\<^sub>\<omega>A) \<union> (9+\<^sub>\<omega>r)"
   unfolding omap_wfrec_body_def
   using arity_image_fm arity_pred_set_fm pred_Un_distrib union_abs2[of 3] union_abs1
   by (simp add:FOL_arities, auto simp add:Un_assoc[symmetric] union_abs1)
 
 lemma arity_omap_wfrec: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>
   arity(is_wfrec_fm(omap_wfrec_body(A,r),succ(succ(succ(r))), 1, 0)) =
-  (4#+A) \<union> (4#+r)"
-  using Arities.arity_is_wfrec_fm[OF _ _ _ _ _ arity_aux,of A r "3#+r" 1 0] pred_Un_distrib
+  (4+\<^sub>\<omega>A) \<union> (4+\<^sub>\<omega>r)"
+  using Arities.arity_is_wfrec_fm[OF _ _ _ _ _ arity_aux,of A r "3+\<^sub>\<omega>r" 1 0] pred_Un_distrib
     union_abs1 union_abs2 type_omap_wfrec_body_fm
   by auto
 
 lemma arity_isordermap: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>d\<in>nat\<Longrightarrow>
    arity(is_ordermap_fm(A,r,d)) = succ(d) \<union> (succ(A) \<union> succ(r))"
   unfolding is_ordermap_fm_def
-  using arity_lambda_fm[where i="(4#+A) \<union> (4#+r)",OF _ _ _ _ arity_omap_wfrec,
+  using arity_lambda_fm[where i="(4+\<^sub>\<omega>A) \<union> (4+\<^sub>\<omega>r)",OF _ _ _ _ arity_omap_wfrec,
       unfolded omap_wfrec_body_def] pred_Un_distrib union_abs1
   by auto
 
@@ -1134,7 +1134,7 @@ synthesize "PHrank" from_definition assuming "nonempty"
 
 definition replacement_assm where
   "replacement_assm(M,env,\<phi>) \<equiv> \<phi> \<in> formula \<longrightarrow> env \<in> list(M) \<longrightarrow>
-  arity(\<phi>) \<le> 2 #+ length(env) \<longrightarrow>
+  arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env) \<longrightarrow>
     strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y] @ env))"
 
 definition ground_replacement_assm where

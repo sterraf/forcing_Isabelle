@@ -11,18 +11,18 @@ proof -
   from seq_of_denses \<open>n\<in>nat\<close>
   have "dense(\<D> ` pred(n))" by simp
   with \<open>p\<in>P\<close>
-  have "\<exists>d\<in>\<D> ` Arith.pred(n). d\<preceq> p"
+  have "\<exists>d\<in>\<D> ` pred(n). d\<preceq> p"
     unfolding dense_def by simp
-  then obtain d where 3: "d \<in> \<D> ` Arith.pred(n) \<and> d\<preceq> p"
+  then obtain d where 3: "d \<in> \<D> ` pred(n) \<and> d\<preceq> p"
     by blast
   from countable_subs_of_P \<open>n\<in>nat\<close>
-  have "\<D> ` Arith.pred(n) \<in> Pow(P)"
+  have "\<D> ` pred(n) \<in> Pow(P)"
     by (blast dest:apply_funtype intro:pred_type)
   then
-  have "\<D> ` Arith.pred(n) \<subseteq> P"
+  have "\<D> ` pred(n) \<subseteq> P"
     by (rule PowD)
   with 3
-  have "d \<in> P \<and> d\<preceq> p \<and> d \<in> \<D> ` Arith.pred(n)"
+  have "d \<in> P \<and> d\<preceq> p \<and> d \<in> \<D> ` pred(n)"
     by auto
   with \<open>p\<in>P\<close> \<open>n\<in>nat\<close>
   show ?thesis by auto

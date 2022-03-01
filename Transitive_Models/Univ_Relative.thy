@@ -174,7 +174,7 @@ lemma arity_is_Hrank_fm : "x \<in> nat \<Longrightarrow>
     arity_fun_apply_fm arity_succ_fm arity_And arity_Exists
    arity_Replace_fm[of
       "(\<cdot>\<exists>\<cdot>\<cdot>succ(0) is 2\<cdot> \<and> \<cdot> succ(succ(succ(succ(f))))`1 is 0\<cdot>\<cdot>\<cdot>)"
-  "succ(x)" 0 "4#+f"]
+  "succ(x)" 0 "4+\<^sub>\<omega>f"]
   by(simp_all add:Un_assoc pred_Un,simp add:ord_simp_union)
 
 locale M_Vfrom = M_HVfrom +

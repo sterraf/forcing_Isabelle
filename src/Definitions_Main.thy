@@ -24,9 +24,6 @@ on which our definitions are built.
 \<close>
 
 declare [[show_question_marks=false]]
-no_notation add (infixl \<open>#+\<close> 65)
-notation add (infixl \<open>+\<^sub>\<omega>\<close> 65)
-hide_const (open) Order.pred
 
 subsection\<open>ZF\label{sec:def-main-ZF}\<close>
 

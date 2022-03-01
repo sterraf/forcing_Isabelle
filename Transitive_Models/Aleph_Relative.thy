@@ -27,8 +27,8 @@ lemma arity_is_HAleph_fm[arity]:
     "i \<in> nat" "r \<in> nat" "l \<in> nat"
   shows
     "arity(is_HAleph_fm(i, r, l)) =  succ(i) \<union> succ(l) \<union> succ(r)"
-  using assms arity_fun_apply_fm[of 0 1 "succ(9#+r)"] arity_is_HAleph_fm'
-    arity_Replace_fm[of "\<cdot> succ(9#+r)`0 is 1\<cdot>" "8#+i" 3 "succ(succ(9#+r)) \<union> 1 \<union> 2"] pred_Un 
+  using assms arity_fun_apply_fm[of 0 1 "succ(9+\<^sub>\<omega>r)"] arity_is_HAleph_fm'
+    arity_Replace_fm[of "\<cdot> succ(9+\<^sub>\<omega>r)`0 is 1\<cdot>" "8+\<^sub>\<omega>i" 3 "succ(succ(9+\<^sub>\<omega>r)) \<union> 1 \<union> 2"] pred_Un 
   by auto
 
 definition

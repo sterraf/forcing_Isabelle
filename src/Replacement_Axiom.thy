@@ -57,7 +57,7 @@ begin
 lemma Replace_sats_in_MG:
   assumes
     "c\<in>M[G]" "env \<in> list(M[G])"
-    "\<phi> \<in> formula" "arity(\<phi>) \<le> 2 #+ length(env)"
+    "\<phi> \<in> formula" "arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env)"
     "univalent(##M[G], c, \<lambda>x v. (M[G] , [x,v]@env \<Turnstile> \<phi>) )"
     and
     ground_replacement:
@@ -100,7 +100,7 @@ proof -
   have "least(##M,\<lambda>\<alpha>. QQ(\<rho>p,\<alpha>),f(\<rho>p))" for \<rho>p
     unfolding QQ_def .
   from \<open>arity(\<phi>) \<le> _\<close> \<open>length(nenv) = _\<close>
-  have "arity(\<phi>) \<le> 2 #+ length(nenv)"
+  have "arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(nenv)"
     by simp
   moreover
   note assms \<open>nenv\<in>list(M)\<close> \<open>?\<pi>\<in>M\<close>
@@ -131,10 +131,10 @@ proof -
   have "univalent(##M, ?\<pi>, \<lambda>\<rho>p m. M , [\<rho>p,m] @ ([P,leq,\<one>] @ nenv) \<Turnstile> ground_repl_fm(\<phi>))"
     unfolding univalent_def by (auto intro:unique_least)
   moreover from \<open>length(_) = _\<close> \<open>env \<in> _\<close>
-  have "length([P,leq,\<one>] @ nenv) = 3 #+ length(env)" by simp
-  moreover from \<open>arity(\<phi>) \<le> 2 #+ length(nenv)\<close>
+  have "length([P,leq,\<one>] @ nenv) = 3 +\<^sub>\<omega> length(env)" by simp
+  moreover from \<open>arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(nenv)\<close>
     \<open>length(_) = length(_)\<close>[symmetric] \<open>nenv\<in>_\<close> \<open>\<phi>\<in>_\<close>
-  have "arity(ground_repl_fm(\<phi>)) \<le> 5 #+ length(env)"
+  have "arity(ground_repl_fm(\<phi>)) \<le> 5 +\<^sub>\<omega> length(env)"
     using arity_ground_repl_fm[of \<phi>] le_trans Un_le by auto
   moreover from \<open>\<phi>\<in>formula\<close>
   have "ground_repl_fm(\<phi>)\<in>formula" by simp
@@ -189,7 +189,7 @@ proof -
     moreover
     assume "sats(M[G], \<phi>, [x,v] @ env)"
     moreover
-    note \<open>\<phi>\<in>_\<close> \<open>nenv\<in>_\<close> \<open>env = _\<close> \<open>arity(\<phi>)\<le> 2 #+ length(env)\<close>
+    note \<open>\<phi>\<in>_\<close> \<open>nenv\<in>_\<close> \<open>env = _\<close> \<open>arity(\<phi>)\<le> 2 +\<^sub>\<omega> length(env)\<close>
     ultimately
     obtain q where "q\<in>G" "q \<tturnstile> \<phi> ([\<rho>,\<sigma>]@nenv)"
       using truth_lemma[OF \<open>\<phi>\<in>_\<close> generic, symmetric, of "[\<rho>,\<sigma>] @ nenv"]
@@ -215,7 +215,7 @@ proof -
     ultimately
     obtain \<tau> where "\<tau>\<in>M" "\<tau> \<in> Vset(f(\<langle>\<rho>,q\<rangle>))" "q \<tturnstile> \<phi> ([\<rho>,\<tau>] @ nenv)"
       using LeastI[of "\<lambda> \<alpha>. ?P(\<langle>\<rho>,q\<rangle>,\<alpha>)" ?\<alpha>] by auto
-    with \<open>q\<in>G\<close> \<open>\<rho>\<in>M\<close> \<open>nenv\<in>_\<close> \<open>arity(\<phi>)\<le> 2 #+ length(nenv)\<close>
+    with \<open>q\<in>G\<close> \<open>\<rho>\<in>M\<close> \<open>nenv\<in>_\<close> \<open>arity(\<phi>)\<le> 2 +\<^sub>\<omega> length(nenv)\<close>
     have "M[G], map(val(P,G),[\<rho>,\<tau>] @ nenv) \<Turnstile> \<phi>"
       using truth_lemma[OF \<open>\<phi>\<in>_\<close> generic, of "[\<rho>,\<tau>] @ nenv"] by auto
     moreover from \<open>x\<in>c\<close> \<open>c\<in>M[G]\<close>
@@ -271,18 +271,18 @@ proof -
       by blast
   qed
   moreover
-  let ?\<psi> = "Exists(And(Member(0,2#+length(env)),\<phi>))"
+  let ?\<psi> = "Exists(And(Member(0,2+\<^sub>\<omega>length(env)),\<phi>))"
   have "v\<in>M[G] \<Longrightarrow> (\<exists>x\<in>c. M[G], [x,v] @ env \<Turnstile> \<phi>) \<longleftrightarrow> M[G], [v] @ env @ [c] \<Turnstile> ?\<psi>"
-    "arity(?\<psi>) \<le> 2 #+ length(env)" "?\<psi>\<in>formula"
+    "arity(?\<psi>) \<le> 2 +\<^sub>\<omega> length(env)" "?\<psi>\<in>formula"
     for v
   proof -
     fix v
     assume "v\<in>M[G]"
     with \<open>c\<in>M[G]\<close>
-    have "nth(length(env)#+1,[v]@env@[c]) = c"
+    have "nth(length(env)+\<^sub>\<omega>1,[v]@env@[c]) = c"
       using  \<open>env\<in>_\<close>nth_concat[of v c "M[G]" env]
       by auto
-    note inMG= \<open>nth(length(env)#+1,[v]@env@[c]) = c\<close> \<open>c\<in>M[G]\<close> \<open>v\<in>M[G]\<close> \<open>env\<in>_\<close>
+    note inMG= \<open>nth(length(env)+\<^sub>\<omega>1,[v]@env@[c]) = c\<close> \<open>c\<in>M[G]\<close> \<open>v\<in>M[G]\<close> \<open>env\<in>_\<close>
     show "(\<exists>x\<in>c. M[G], [x,v] @ env \<Turnstile> \<phi>) \<longleftrightarrow> M[G], [v] @ env @ [c] \<Turnstile> ?\<psi>"
     proof
       assume "\<exists>x\<in>c. M[G], [x, v] @ env \<Turnstile> \<phi>"
@@ -290,25 +290,25 @@ proof -
         "x\<in>c" "M[G], [x, v] @ env \<Turnstile> \<phi>" "x\<in>M[G]"
         using transitivity_MG[OF _ \<open>c\<in>M[G]\<close>]
         by auto
-      with \<open>\<phi>\<in>_\<close> \<open>arity(\<phi>)\<le>2#+length(env)\<close> inMG
-      show "M[G], [v] @ env @ [c] \<Turnstile> Exists(And(Member(0, 2 #+ length(env)), \<phi>))"
+      with \<open>\<phi>\<in>_\<close> \<open>arity(\<phi>)\<le>2+\<^sub>\<omega>length(env)\<close> inMG
+      show "M[G], [v] @ env @ [c] \<Turnstile> Exists(And(Member(0, 2 +\<^sub>\<omega> length(env)), \<phi>))"
         using arity_sats_iff[of \<phi> "[c]" _ "[x,v]@env"]
         by auto
     next
-      assume "M[G], [v] @ env @ [c] \<Turnstile> Exists(And(Member(0, 2 #+ length(env)), \<phi>))"
+      assume "M[G], [v] @ env @ [c] \<Turnstile> Exists(And(Member(0, 2 +\<^sub>\<omega> length(env)), \<phi>))"
       with inMG
       obtain x where
         "x\<in>M[G]" "x\<in>c" "M[G], [x,v]@env@[c] \<Turnstile> \<phi>"
         by auto
-      with \<open>\<phi>\<in>_\<close> \<open>arity(\<phi>)\<le>2#+length(env)\<close> inMG
+      with \<open>\<phi>\<in>_\<close> \<open>arity(\<phi>)\<le>2+\<^sub>\<omega>length(env)\<close> inMG
       show "\<exists>x\<in>c. M[G], [x, v] @ env\<Turnstile> \<phi>"
         using arity_sats_iff[of \<phi> "[c]" _ "[x,v]@env"]
         by auto
     qed
   next
     from \<open>env\<in>_\<close> \<open>\<phi>\<in>_\<close>
-    show "arity(?\<psi>)\<le>2#+length(env)"
-      using pred_mono[OF _ \<open>arity(\<phi>)\<le>2#+length(env)\<close>] lt_trans[OF _ le_refl]
+    show "arity(?\<psi>)\<le>2+\<^sub>\<omega>length(env)"
+      using pred_mono[OF _ \<open>arity(\<phi>)\<le>2+\<^sub>\<omega>length(env)\<close>] lt_trans[OF _ le_refl]
       by (auto simp add:ord_simp_union arity)
   next
     from \<open>\<phi>\<in>_\<close>
@@ -327,7 +327,7 @@ qed
 
 theorem strong_replacement_in_MG:
   assumes
-    "\<phi>\<in>formula" and "arity(\<phi>) \<le> 2 #+ length(env)" "env \<in> list(M[G])"
+    "\<phi>\<in>formula" and "arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env)" "env \<in> list(M[G])"
     and
     ground_replacement:
     "\<And>nenv. ground_replacement_assm(M,[P,leq,\<one>] @ nenv, \<phi>)"

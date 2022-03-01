@@ -160,7 +160,7 @@ definition is_seqleR :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "is_seqleR(Q,f,g) \<equiv> g \<subseteq> f"
 
 definition seqleR_fm :: "i \<Rightarrow> i" where
-  "seqleR_fm(fg) \<equiv> Exists(Exists(And(pair_fm(0,1,fg#+2),subset_fm(1,0))))"
+  "seqleR_fm(fg) \<equiv> Exists(Exists(And(pair_fm(0,1,fg+\<^sub>\<omega>2),subset_fm(1,0))))"
 
 lemma type_seqleR_fm :
   "fg \<in> nat \<Longrightarrow> seqleR_fm(fg) \<in> formula"

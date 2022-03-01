@@ -199,21 +199,21 @@ lemma sats_ZF_separation_fm_iff:
   shows
   "(M, [] \<Turnstile> \<cdot>Separation(\<phi>)\<cdot>)
    \<longleftrightarrow>
-   (\<forall>env\<in>list(M). arity(\<phi>) \<le> 1 #+ length(env) \<longrightarrow>
+   (\<forall>env\<in>list(M). arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env) \<longrightarrow>
       separation(##M,\<lambda>x. M, [x] @ env \<Turnstile> \<phi>))"
 proof (intro iffI ballI impI)
-  let ?n="Arith.pred(arity(\<phi>))"
+  let ?n="pred(arity(\<phi>))"
   fix env
   assume "M, [] \<Turnstile> ZF_separation_fm(\<phi>)"
-  assume "arity(\<phi>) \<le> 1 #+ length(env)" "env\<in>list(M)"
+  assume "arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env)" "env\<in>list(M)"
   moreover from this
   have "arity(\<phi>) \<le> succ(length(env))" by simp
   then
   obtain some rest where "some\<in>list(M)" "rest\<in>list(M)"
-    "env = some @ rest" "length(some) = Arith.pred(arity(\<phi>))"
+    "env = some @ rest" "length(some) = pred(arity(\<phi>))"
     using list_split[OF \<open>arity(\<phi>) \<le> succ(_)\<close> \<open>env\<in>_\<close>] by force
   moreover from \<open>\<phi>\<in>_\<close>
-  have "arity(\<phi>) \<le> succ(Arith.pred(arity(\<phi>)))"
+  have "arity(\<phi>) \<le> succ(pred(arity(\<phi>)))"
    using succpred_leI by simp
   moreover
   note assms
@@ -231,16 +231,16 @@ proof (intro iffI ballI impI)
       separation_cong[of "##M" "\<lambda>x. M, Cons(x, some @ rest) \<Turnstile> \<phi>" _ ]
     by simp
 next \<comment> \<open>almost equal to the previous implication\<close>
-  let ?n="Arith.pred(arity(\<phi>))"
-  assume asm:"\<forall>env\<in>list(M). arity(\<phi>) \<le> 1 #+ length(env) \<longrightarrow>
+  let ?n="pred(arity(\<phi>))"
+  assume asm:"\<forall>env\<in>list(M). arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env) \<longrightarrow>
     separation(##M, \<lambda>x. M, [x] @ env \<Turnstile> \<phi>)"
   {
     fix some
-    assume "some\<in>list(M)" "length(some) = Arith.pred(arity(\<phi>))"
+    assume "some\<in>list(M)" "length(some) = pred(arity(\<phi>))"
     moreover
     note \<open>\<phi>\<in>_\<close>
     moreover from calculation
-    have "arity(\<phi>) \<le> 1 #+ length(some)"
+    have "arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(some)"
       using le_trans[OF succpred_leI] succpred_leI by simp
     moreover from calculation and asm
     have "separation(##M, \<lambda>x. M, [x] @ some \<Turnstile> \<phi>)" by blast
@@ -373,12 +373,12 @@ lemma sats_ZF_replacement_fm_iff:
   shows
   "(M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>)
    \<longleftrightarrow>
-   (\<forall>env\<in>list(M). arity(\<phi>) \<le> 2 #+ length(env) \<longrightarrow>
+   (\<forall>env\<in>list(M). arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env) \<longrightarrow>
       strong_replacement(##M,\<lambda>x y. M,[x,y] @ env \<Turnstile> \<phi>))"
 proof (intro iffI ballI impI)
-  let ?n="Arith.pred(Arith.pred(arity(\<phi>)))"
+  let ?n="pred(pred(arity(\<phi>)))"
   fix env
-  assume "M, [] \<Turnstile> ZF_replacement_fm(\<phi>)" "arity(\<phi>) \<le> 2 #+ length(env)" "env\<in>list(M)"
+  assume "M, [] \<Turnstile> ZF_replacement_fm(\<phi>)" "arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env)" "env\<in>list(M)"
   moreover from this
   have "arity(\<phi>) \<le> succ(succ(length(env)))" by (simp)
   moreover from calculation
@@ -386,12 +386,12 @@ proof (intro iffI ballI impI)
     using pred_mono[OF _ \<open>arity(\<phi>)\<le>succ(_)\<close>] pred_succ_eq by simp
   moreover from calculation
   obtain some rest where "some\<in>list(M)" "rest\<in>list(M)"
-    "env = some @ rest" "length(some) = Arith.pred(Arith.pred(arity(\<phi>)))"
+    "env = some @ rest" "length(some) = pred(pred(arity(\<phi>)))"
     using list_split[OF \<open>pred(_) \<le> _\<close> \<open>env\<in>_\<close>] by auto
   moreover
   note \<open>\<phi>\<in>_\<close>
   moreover from this
-  have "arity(\<phi>) \<le> succ(succ(Arith.pred(Arith.pred(arity(\<phi>)))))"
+  have "arity(\<phi>) \<le> succ(succ(pred(pred(arity(\<phi>)))))"
     using le_trans[OF succpred_leI] succpred_leI by simp
   moreover from calculation
   have "M, some \<Turnstile> rep_body_fm(\<phi>)"
@@ -405,16 +405,16 @@ proof (intro iffI ballI impI)
       strong_replacement_cong[of "##M" "\<lambda>x y. M, Cons(x, Cons(y, some @ rest)) \<Turnstile> \<phi>" _ ]
     by simp
 next \<comment> \<open>almost equal to the previous implication\<close>
-  let ?n="Arith.pred(Arith.pred(arity(\<phi>)))"
-  assume asm:"\<forall>env\<in>list(M). arity(\<phi>) \<le> 2 #+ length(env) \<longrightarrow>
+  let ?n="pred(pred(arity(\<phi>)))"
+  assume asm:"\<forall>env\<in>list(M). arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env) \<longrightarrow>
     strong_replacement(##M, \<lambda>x y. M, [x, y] @ env \<Turnstile> \<phi>)"
   {
     fix some
-    assume "some\<in>list(M)" "length(some) = Arith.pred(Arith.pred(arity(\<phi>)))"
+    assume "some\<in>list(M)" "length(some) = pred(pred(arity(\<phi>)))"
     moreover
     note \<open>\<phi>\<in>_\<close>
     moreover from calculation
-    have "arity(\<phi>) \<le> 2 #+ length(some)"
+    have "arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(some)"
       using le_trans[OF succpred_leI] succpred_leI by simp
     moreover from calculation and asm
     have "strong_replacement(##M, \<lambda>x y. M, [x, y] @ some \<Turnstile> \<phi>)" by blast

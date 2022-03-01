@@ -105,7 +105,7 @@ qed
 
 definition
   rsum :: "[i,i,i,i,i] \<Rightarrow> i" where
-  "rsum(f,g,m,n,p) \<equiv> \<lambda>j \<in> m#+p  . if j<m then f`j else (g`(j#-m))#+n"
+  "rsum(f,g,m,n,p) \<equiv> \<lambda>j \<in> m+\<^sub>\<omega>p  . if j<m then f`j else (g`(j#-m))+\<^sub>\<omega>n"
 
 lemma sum_inl:
   assumes "m \<in> nat" "n\<in>nat"
@@ -113,32 +113,32 @@ lemma sum_inl:
   shows "rsum(f,g,m,n,p)`x = f`x"
 proof -
   from \<open>m\<in>nat\<close>
-  have "m\<le>m#+p"
+  have "m\<le>m+\<^sub>\<omega>p"
     using add_le_self[of m] by simp
   with assms
-  have "x\<in>m#+p"
-    using ltI[of x m] lt_trans2[of x m "m#+p"] ltD by simp
+  have "x\<in>m+\<^sub>\<omega>p"
+    using ltI[of x m] lt_trans2[of x m "m+\<^sub>\<omega>p"] ltD by simp
   from assms
   have "x<m"
     using ltI by simp
-  with \<open>x\<in>m#+p\<close>
+  with \<open>x\<in>m+\<^sub>\<omega>p\<close>
   show ?thesis unfolding rsum_def by simp
 qed
 
 lemma sum_inr:
   assumes "m \<in> nat" "n\<in>nat" "p\<in>nat"
-    "g\<in>p\<rightarrow>q" "m \<le> x" "x < m#+p"
-  shows "rsum(f,g,m,n,p)`x = g`(x#-m)#+n"
+    "g\<in>p\<rightarrow>q" "m \<le> x" "x < m+\<^sub>\<omega>p"
+  shows "rsum(f,g,m,n,p)`x = g`(x#-m)+\<^sub>\<omega>n"
 proof -
   from assms
   have "x\<in>nat"
-    using in_n_in_nat[of "m#+p"] ltD
+    using in_n_in_nat[of "m+\<^sub>\<omega>p"] ltD
     by simp
   with assms
   have "\<not> x<m"
     using not_lt_iff_le[THEN iffD2] by simp
   from assms
-  have "x\<in>m#+p"
+  have "x\<in>m+\<^sub>\<omega>p"
     using ltD by simp
   with \<open>\<not> x<m\<close>
   show ?thesis unfolding rsum_def by simp
@@ -157,16 +157,16 @@ lemma sum_action :
     "length(env') = n"
     "\<And> i . i < m \<Longrightarrow> nth(i,env) = nth(f`i,env')"
     "\<And> j. j < p \<Longrightarrow> nth(j,env1) = nth(g`j,env2)"
-  shows "\<forall> i . i < m#+p \<longrightarrow>
+  shows "\<forall> i . i < m+\<^sub>\<omega>p \<longrightarrow>
           nth(i,env@env1) = nth(rsum(f,g,m,n,p)`i,env'@env2)"
 proof -
   let ?h = "rsum(f,g,m,n,p)"
   from \<open>m\<in>nat\<close> \<open>n\<in>nat\<close> \<open>q\<in>nat\<close>
-  have "m\<le>m#+p" "n\<le>n#+q" "q\<le>n#+q"
+  have "m\<le>m+\<^sub>\<omega>p" "n\<le>n+\<^sub>\<omega>q" "q\<le>n+\<^sub>\<omega>q"
     using add_le_self[of m]  add_le_self2[of n q] by simp_all
   from \<open>p\<in>nat\<close>
-  have "p = (m#+p)#-m" using diff_add_inverse2 by simp
-  have "nth(x, env @ env1) = nth(?h`x,env'@env2)" if "x<m#+p" for x
+  have "p = (m+\<^sub>\<omega>p)#-m" using diff_add_inverse2 by simp
+  have "nth(x, env @ env1) = nth(?h`x,env'@env2)" if "x<m+\<^sub>\<omega>p" for x
   proof (cases "x<m")
     case True
     then
@@ -194,24 +194,24 @@ proof -
   next
     case False
     have "x\<in>nat"
-      using that in_n_in_nat[of "m#+p" x] ltD \<open>p\<in>nat\<close> \<open>m\<in>nat\<close> by simp
+      using that in_n_in_nat[of "m+\<^sub>\<omega>p" x] ltD \<open>p\<in>nat\<close> \<open>m\<in>nat\<close> by simp
     with \<open>length(env) = m\<close>
     have "m\<le>x" "length(env) \<le> x"
       using not_lt_iff_le \<open>m\<in>nat\<close> \<open>\<not>x<m\<close> by simp_all
     with \<open>\<not>x<m\<close> \<open>length(env) = m\<close>
-    have 2 : "?h`x= g`(x#-m)#+n"  "\<not> x <length(env)"
+    have 2 : "?h`x= g`(x#-m)+\<^sub>\<omega>n"  "\<not> x <length(env)"
       unfolding rsum_def
       using  sum_inr that beta ltD by simp_all
-    from assms \<open>x\<in>nat\<close> \<open>p=m#+p#-m\<close>
+    from assms \<open>x\<in>nat\<close> \<open>p=m+\<^sub>\<omega>p#-m\<close>
     have "x#-m < p"
-      using diff_mono[OF _ _ _ \<open>x<m#+p\<close> \<open>m\<le>x\<close>] by simp
+      using diff_mono[OF _ _ _ \<open>x<m+\<^sub>\<omega>p\<close> \<open>m\<le>x\<close>] by simp
     then have "x#-m\<in>p" using ltD by simp
     with \<open>g\<in>p\<rightarrow>q\<close>
     have "g`(x#-m) \<in> q"  by simp
     with \<open>q\<in>nat\<close> \<open>length(env') = n\<close>
     have "g`(x#-m) < q" "g`(x#-m)\<in>nat" using ltI in_n_in_nat by simp_all
     with \<open>q\<in>nat\<close> \<open>n\<in>nat\<close>
-    have "(g`(x#-m))#+n <n#+q" "n \<le> g`(x#-m)#+n" "\<not> g`(x#-m)#+n < length(env')"
+    have "(g`(x#-m))+\<^sub>\<omega>n <n+\<^sub>\<omega>q" "n \<le> g`(x#-m)+\<^sub>\<omega>n" "\<not> g`(x#-m)+\<^sub>\<omega>n < length(env')"
       using add_lt_mono1[of "g`(x#-m)" _ n,OF _ \<open>q\<in>nat\<close>]
         add_le_self2[of n] \<open>length(env') = n\<close>
       by simp_all
@@ -222,13 +222,13 @@ proof -
     have "... = nth(g`(x#-m),env2)"
       using assms \<open>x#-m < p\<close> by simp
     also
-    have "... = nth((g`(x#-m)#+n)#-length(env'),env2)"
+    have "... = nth((g`(x#-m)+\<^sub>\<omega>n)#-length(env'),env2)"
       using  \<open>length(env') = n\<close>
         diff_add_inverse2 \<open>g`(x#-m)\<in>nat\<close>
       by simp
     also
-    have "... = nth((g`(x#-m)#+n),env'@env2)"
-      using  nth_append[OF \<open>env'\<in>list(M)\<close>] \<open>n\<in>nat\<close> \<open>\<not> g`(x#-m)#+n < length(env')\<close>
+    have "... = nth((g`(x#-m)+\<^sub>\<omega>n),env'@env2)"
+      using  nth_append[OF \<open>env'\<in>list(M)\<close>] \<open>n\<in>nat\<close> \<open>\<not> g`(x#-m)+\<^sub>\<omega>n < length(env')\<close>
       by simp
     also
     have "... = nth(?h`x,env'@env2)"
@@ -243,62 +243,62 @@ qed
 lemma sum_type  :
   assumes "m \<in> nat" "n\<in>nat" "p\<in>nat" "q\<in>nat"
     "f \<in> m\<rightarrow>n" "g\<in>p\<rightarrow>q"
-  shows "rsum(f,g,m,n,p) \<in> (m#+p) \<rightarrow> (n#+q)"
+  shows "rsum(f,g,m,n,p) \<in> (m+\<^sub>\<omega>p) \<rightarrow> (n+\<^sub>\<omega>q)"
 proof -
   let ?h = "rsum(f,g,m,n,p)"
   from \<open>m\<in>nat\<close> \<open>n\<in>nat\<close> \<open>q\<in>nat\<close>
-  have "m\<le>m#+p" "n\<le>n#+q" "q\<le>n#+q"
+  have "m\<le>m+\<^sub>\<omega>p" "n\<le>n+\<^sub>\<omega>q" "q\<le>n+\<^sub>\<omega>q"
     using add_le_self[of m]  add_le_self2[of n q] by simp_all
   from \<open>p\<in>nat\<close>
-  have "p = (m#+p)#-m" using diff_add_inverse2 by simp
+  have "p = (m+\<^sub>\<omega>p)#-m" using diff_add_inverse2 by simp
   {fix x
-    assume 1: "x\<in>m#+p" "x<m"
+    assume 1: "x\<in>m+\<^sub>\<omega>p" "x<m"
     with 1 have "?h`x= f`x" "x\<in>m"
       using assms sum_inl ltD by simp_all
     with \<open>f\<in>m\<rightarrow>n\<close>
     have "?h`x \<in> n" by simp
     with \<open>n\<in>nat\<close> have "?h`x < n" using ltI by simp
-    with \<open>n\<le>n#+q\<close>
-    have "?h`x < n#+q" using lt_trans2 by simp
+    with \<open>n\<le>n+\<^sub>\<omega>q\<close>
+    have "?h`x < n+\<^sub>\<omega>q" using lt_trans2 by simp
     then
-    have "?h`x \<in> n#+q"  using ltD by simp
+    have "?h`x \<in> n+\<^sub>\<omega>q"  using ltD by simp
   }
-  then have 1:"?h`x \<in> n#+q" if "x\<in>m#+p" "x<m" for x using that .
+  then have 1:"?h`x \<in> n+\<^sub>\<omega>q" if "x\<in>m+\<^sub>\<omega>p" "x<m" for x using that .
   {fix x
-    assume 1: "x\<in>m#+p" "m\<le>x"
-    then have "x<m#+p" "x\<in>nat" using ltI in_n_in_nat[of "m#+p"] ltD by simp_all
+    assume 1: "x\<in>m+\<^sub>\<omega>p" "m\<le>x"
+    then have "x<m+\<^sub>\<omega>p" "x\<in>nat" using ltI in_n_in_nat[of "m+\<^sub>\<omega>p"] ltD by simp_all
     with 1
-    have 2 : "?h`x= g`(x#-m)#+n"
+    have 2 : "?h`x= g`(x#-m)+\<^sub>\<omega>n"
       using assms sum_inr ltD by simp_all
-    from assms \<open>x\<in>nat\<close> \<open>p=m#+p#-m\<close>
-    have "x#-m < p" using diff_mono[OF _ _ _ \<open>x<m#+p\<close> \<open>m\<le>x\<close>] by simp
+    from assms \<open>x\<in>nat\<close> \<open>p=m+\<^sub>\<omega>p#-m\<close>
+    have "x#-m < p" using diff_mono[OF _ _ _ \<open>x<m+\<^sub>\<omega>p\<close> \<open>m\<le>x\<close>] by simp
     then have "x#-m\<in>p" using ltD by simp
     with \<open>g\<in>p\<rightarrow>q\<close>
     have "g`(x#-m) \<in> q"  by simp
     with \<open>q\<in>nat\<close> have "g`(x#-m) < q" using ltI by simp
     with \<open>q\<in>nat\<close>
-    have "(g`(x#-m))#+n <n#+q" using add_lt_mono1[of "g`(x#-m)" _ n,OF _ \<open>q\<in>nat\<close>] by simp
+    have "(g`(x#-m))+\<^sub>\<omega>n <n+\<^sub>\<omega>q" using add_lt_mono1[of "g`(x#-m)" _ n,OF _ \<open>q\<in>nat\<close>] by simp
     with 2
-    have "?h`x \<in> n#+q"  using ltD by simp
+    have "?h`x \<in> n+\<^sub>\<omega>q"  using ltD by simp
   }
-  then have 2:"?h`x \<in> n#+q" if "x\<in>m#+p" "m\<le>x" for x using that .
+  then have 2:"?h`x \<in> n+\<^sub>\<omega>q" if "x\<in>m+\<^sub>\<omega>p" "m\<le>x" for x using that .
   have
-    D: "?h`x \<in> n#+q" if "x\<in>m#+p" for x
+    D: "?h`x \<in> n+\<^sub>\<omega>q" if "x\<in>m+\<^sub>\<omega>p" for x
     using that
   proof (cases "x<m")
     case True
     then show ?thesis using 1 that by simp
   next
     case False
-    with \<open>m\<in>nat\<close> have "m\<le>x" using not_lt_iff_le that in_n_in_nat[of "m#+p"] by simp
+    with \<open>m\<in>nat\<close> have "m\<le>x" using not_lt_iff_le that in_n_in_nat[of "m+\<^sub>\<omega>p"] by simp
     then show ?thesis using 2 that by simp
   qed
   have A:"function(?h)" unfolding rsum_def using function_lam by simp
-  have " x\<in> (m #+ p) \<times> (n #+ q)" if "x\<in> ?h" for x
-    using that lamE[of x "m#+p" _ "x \<in> (m #+ p) \<times> (n #+ q)"] D unfolding rsum_def
+  have " x\<in> (m +\<^sub>\<omega> p) \<times> (n +\<^sub>\<omega> q)" if "x\<in> ?h" for x
+    using that lamE[of x "m+\<^sub>\<omega>p" _ "x \<in> (m +\<^sub>\<omega> p) \<times> (n +\<^sub>\<omega> q)"] D unfolding rsum_def
     by auto
-  then have B:"?h \<subseteq> (m #+ p) \<times> (n #+ q)" ..
-  have "m #+ p \<subseteq> domain(?h)"
+  then have B:"?h \<subseteq> (m +\<^sub>\<omega> p) \<times> (n +\<^sub>\<omega> q)" ..
+  have "m +\<^sub>\<omega> p \<subseteq> domain(?h)"
     unfolding rsum_def using domain_lam by simp
   with A B
   show ?thesis using  Pi_iff [THEN iffD2] by simp
@@ -312,7 +312,7 @@ lemma sum_type_id :
     "env1 \<in> list(M)"
   shows
     "rsum(f,id(length(env1)),length(env),length(env'),length(env1)) \<in>
-        (length(env)#+length(env1)) \<rightarrow> (length(env')#+length(env1))"
+        (length(env)+\<^sub>\<omega>length(env1)) \<rightarrow> (length(env')+\<^sub>\<omega>length(env1))"
   using assms length_type id_fn_type sum_type
   by simp
 
@@ -323,7 +323,7 @@ lemma sum_type_id_aux2 :
     "env1 \<in> list(M)"
   shows
     "rsum(f,id(length(env1)),m,n,length(env1)) \<in>
-        (m#+length(env1)) \<rightarrow> (n#+length(env1))"
+        (m+\<^sub>\<omega>length(env1)) \<rightarrow> (n+\<^sub>\<omega>length(env1))"
   using assms id_fn_type sum_type
   by auto
 
@@ -334,7 +334,7 @@ lemma sum_action_id :
     "f \<in> length(env)\<rightarrow>length(env')"
     "env1 \<in> list(M)"
     "\<And> i . i < length(env) \<Longrightarrow> nth(i,env) = nth(f`i,env')"
-  shows "\<And> i . i < length(env)#+length(env1) \<Longrightarrow>
+  shows "\<And> i . i < length(env)+\<^sub>\<omega>length(env1) \<Longrightarrow>
           nth(i,env@env1) = nth(rsum(f,id(length(env1)),length(env),length(env'),length(env1))`i,env'@env1)"
 proof -
   from assms
@@ -345,15 +345,15 @@ proof -
   note lenv_ty = id_fn_type[OF \<open>?p\<in>nat\<close>]
   {
     fix i
-    assume "i < length(env)#+length(env1)"
+    assume "i < length(env)+\<^sub>\<omega>length(env1)"
     have "nth(i,env@env1) = nth(rsum(f,id(length(env1)),?m,?n,?p)`i,env'@env1)"
       using sum_action[OF \<open>?m\<in>nat\<close> \<open>?n\<in>nat\<close> \<open>?p\<in>nat\<close> \<open>?p\<in>nat\<close> \<open>f\<in>?m\<rightarrow>?n\<close>
           lenv_ty \<open>env\<in>list(M)\<close> \<open>env'\<in>list(M)\<close>
           \<open>env1\<in>list(M)\<close> \<open>env1\<in>list(M)\<close> _
           _ _  assms(5) lenv
-          ] \<open>i<?m#+length(env1)\<close> by simp
+          ] \<open>i<?m+\<^sub>\<omega>length(env1)\<close> by simp
   }
-  then show "\<And> i . i < ?m#+length(env1) \<Longrightarrow>
+  then show "\<And> i . i < ?m+\<^sub>\<omega>length(env1) \<Longrightarrow>
           nth(i,env@env1) = nth(rsum(f,id(?p),?m,?n,?p)`i,env'@env1)" by simp
 qed
 
@@ -367,7 +367,7 @@ lemma sum_action_id_aux :
     "length(env') = n"
     "length(env1) = p"
     "\<And> i . i < m \<Longrightarrow> nth(i,env) = nth(f`i,env')"
-  shows "\<And> i . i < m#+length(env1) \<Longrightarrow>
+  shows "\<And> i . i < m+\<^sub>\<omega>length(env1) \<Longrightarrow>
           nth(i,env@env1) = nth(rsum(f,id(length(env1)),m,n,length(env1))`i,env'@env1)"
   using assms length_type id_fn_type sum_action_id
   by auto
@@ -385,12 +385,12 @@ lemma sum_idS : "p\<in>nat \<Longrightarrow> q\<in>nat \<Longrightarrow> f\<in>p
       simp_all add:ltI,simp_all add: app_nm in_n_in_nat)
 
 lemma sum_id_tc_aux :
-  "p \<in> nat \<Longrightarrow>  q \<in> nat \<Longrightarrow> f \<in> p \<rightarrow> q \<Longrightarrow> sum_id(p,f) \<in> 1#+p \<rightarrow> 1#+q"
+  "p \<in> nat \<Longrightarrow>  q \<in> nat \<Longrightarrow> f \<in> p \<rightarrow> q \<Longrightarrow> sum_id(p,f) \<in> 1+\<^sub>\<omega>p \<rightarrow> 1+\<^sub>\<omega>q"
   by (unfold sum_id_def,rule sum_type,simp_all)
 
 lemma sum_id_tc :
   "n \<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> f \<in> n \<rightarrow> m \<Longrightarrow> sum_id(n,f) \<in> succ(n) \<rightarrow> succ(m)"
-  by(rule ssubst[of  "succ(n) \<rightarrow> succ(m)" "1#+n \<rightarrow> 1#+m"],
+  by(rule ssubst[of  "succ(n) \<rightarrow> succ(m)" "1+\<^sub>\<omega>n \<rightarrow> 1+\<^sub>\<omega>m"],
       simp,rule sum_id_tc_aux,simp_all)
 
 subsection\<open>Renaming of formulas\<close>

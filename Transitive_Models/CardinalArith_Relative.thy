@@ -389,7 +389,7 @@ proof (simp add: cadd_rel_def)
 qed
 
 lemma nat_cadd_rel_eq_add:
-  assumes m: "m \<in> nat" and [simp]: "n \<in> nat" shows"m \<oplus>\<^bsup>M\<^esup> n = m #+ n"
+  assumes m: "m \<in> nat" and [simp]: "n \<in> nat" shows"m \<oplus>\<^bsup>M\<^esup> n = m +\<^sub>\<omega> n"
   using m
 proof (induct m)
   case 0 thus ?case
@@ -1625,11 +1625,11 @@ by (simp add: InfCard_rel_def Card_rel_csucc_rel Card_rel_is_Ord
 subsubsection\<open>Theorems by Krzysztof Grabczewski, proofs by lcp\<close>
 
 lemma nat_sum_eqpoll_rel_sum:
-  assumes m: "m \<in> nat" and n: "n \<in> nat" shows "m + n \<approx>\<^bsup>M\<^esup> m #+ n"
+  assumes m: "m \<in> nat" and n: "n \<in> nat" shows "m + n \<approx>\<^bsup>M\<^esup> m +\<^sub>\<omega> n"
 proof -
   have "m + n \<approx>\<^bsup>M\<^esup> |m+n|\<^bsup>M\<^esup>" using m n
     by (blast intro: nat_implies_well_ord well_ord_radd well_ord_cardinal_rel_eqpoll_rel eqpoll_rel_sym)
-  also have "... = m #+ n" using m n
+  also have "... = m +\<^sub>\<omega> n" using m n
     by (simp add: nat_cadd_rel_eq_add [symmetric] cadd_rel_def transM[OF _ M_nat])
   finally show ?thesis .
 qed

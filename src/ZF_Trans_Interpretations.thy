@@ -81,22 +81,22 @@ definition omap_wfrec_body where
 lemma type_omap_wfrec_body_fm :"A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> omap_wfrec_body(A,r)\<in>formula"
   unfolding omap_wfrec_body_def by simp
 
-lemma arity_aux : "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> arity(omap_wfrec_body(A,r)) = (9#+A) \<union> (9#+r)"
+lemma arity_aux : "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> arity(omap_wfrec_body(A,r)) = (9+\<^sub>\<omega>A) \<union> (9+\<^sub>\<omega>r)"
   unfolding omap_wfrec_body_def
   using arity_image_fm arity_pred_set_fm pred_Un_distrib union_abs2[of 3] union_abs1
   by (simp add:FOL_arities, auto simp add:Un_assoc[symmetric] union_abs1)
 
 lemma arity_omap_wfrec: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>
   arity(is_wfrec_fm(omap_wfrec_body(A,r),succ(succ(succ(r))), 1, 0)) =
-  (4#+A) \<union> (4#+r)"
-  using Arities.arity_is_wfrec_fm[OF _ _ _ _ _ arity_aux,of A r "3#+r" 1 0] pred_Un_distrib
+  (4+\<^sub>\<omega>A) \<union> (4+\<^sub>\<omega>r)"
+  using Arities.arity_is_wfrec_fm[OF _ _ _ _ _ arity_aux,of A r "3+\<^sub>\<omega>r" 1 0] pred_Un_distrib
     union_abs1 union_abs2 type_omap_wfrec_body_fm
   by auto
 
 lemma arity_isordermap: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>d\<in>nat\<Longrightarrow>
    arity(is_ordermap_fm(A,r,d)) = succ(d) \<union> (succ(A) \<union> succ(r))"
   unfolding is_ordermap_fm_def
-  using arity_lambda_fm[where i="(4#+A) \<union> (4#+r)",OF _ _ _ _ arity_omap_wfrec,
+  using arity_lambda_fm[where i="(4+\<^sub>\<omega>A) \<union> (4+\<^sub>\<omega>r)",OF _ _ _ _ arity_omap_wfrec,
       unfolded omap_wfrec_body_def] pred_Un_distrib union_abs1
   by auto
 

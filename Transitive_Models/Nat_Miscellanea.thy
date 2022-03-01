@@ -1,8 +1,15 @@
 section\<open>Auxiliary results on arithmetic\<close>
+
 theory Nat_Miscellanea imports ZF begin
+
+(* no_notation add (infixl \<open>+\<^sub>\<omega>\<close> 65)
+no_notation diff (infixl \<open>-\<^sub>\<omega>\<close> 65) *)
+notation add (infixl \<open>+\<^sub>\<omega>\<close> 65)
+notation diff (infixl \<open>-\<^sub>\<omega>\<close> 65)
 
 text\<open>Most of these results will get used at some point for the
 calculation of arities.\<close>
+
 lemmas nat_succI =  Ord_succ_mem_iff [THEN iffD2,OF nat_into_Ord]
 
 lemma nat_succD : "m \<in> nat \<Longrightarrow>  succ(n) \<in> succ(m) \<Longrightarrow> n \<in> m"
@@ -13,9 +20,6 @@ lemmas zero_in_succ = ltD [OF nat_0_le]
 lemma in_n_in_nat :  "m \<in> nat \<Longrightarrow> n \<in> m \<Longrightarrow> n \<in> nat"
   by(drule ltI[of "n"],auto simp add: lt_nat_in_nat)
 
-lemma in_succ_in_nat : "m \<in> nat \<Longrightarrow> n \<in> succ(m) \<Longrightarrow> n \<in> nat"
-  by(auto simp add:in_n_in_nat)
-
 lemma ltI_neg : "x \<in> nat \<Longrightarrow> j \<le> x \<Longrightarrow> j \<noteq> x \<Longrightarrow> j < x"
   by (simp add: le_iff)
 
@@ -24,9 +28,6 @@ lemma succ_pred_eq  :  "m \<in> nat \<Longrightarrow> m \<noteq> 0  \<Longrighta
 
 lemma succ_ltI : "succ(j) < n \<Longrightarrow> j < n"
   by (simp add: succ_leE[OF leI])
-
-lemma succ_In : "n \<in> nat \<Longrightarrow> succ(j) \<in> n \<Longrightarrow> j \<in> n"
-  by (rule succ_ltI[THEN ltD], auto intro: ltI)
 
 lemmas succ_leD = succ_leE[OF leI]
 
@@ -38,9 +39,6 @@ lemma succpred_n0 : "succ(n) \<in> p \<Longrightarrow> p\<noteq>0"
 
 lemmas natEin = natE [OF lt_nat_in_nat]
 
-lemma succ_in : "succ(x) \<le> y  \<Longrightarrow> x \<in> y"
-  by (auto dest:ltD)
-
 lemmas Un_least_lt_iffn =  Un_least_lt_iff [OF nat_into_Ord nat_into_Ord]
 
 lemma pred_type : "m \<in> nat \<Longrightarrow> n \<le> m \<Longrightarrow> n\<in>nat"
@@ -51,7 +49,6 @@ lemma pred_le : "m \<in> nat \<Longrightarrow> n \<le> succ(m) \<Longrightarrow>
 
 lemma pred_le2 : "n\<in> nat \<Longrightarrow> m \<in> nat \<Longrightarrow> pred(n) \<le> m \<Longrightarrow> n \<le> succ(m)"
   by(subgoal_tac "n\<in>nat",rule_tac n="n" in natE,auto)
-
 
 lemma Un_leD1 : "Ord(i)\<Longrightarrow> Ord(j)\<Longrightarrow> Ord(k)\<Longrightarrow>  i \<union> j \<le> k \<Longrightarrow> i \<le> k"
   by (rule Un_least_lt_iff[THEN iffD1[THEN conjunct1]],simp_all)
@@ -115,7 +112,7 @@ lemma diff_mono :
   shows "m#-p < n#-p"
 proof -
   from assms
-  have "m#-p \<in> nat" "m#-p #+p = m"
+  have "m#-p \<in> nat" "m#-p +\<^sub>\<omega>p = m"
     using add_diff_inverse2 by simp_all
   with assms
   show ?thesis
@@ -123,8 +120,8 @@ proof -
 qed
 
 lemma pred_Un:
-  "x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> Arith.pred(succ(x) \<union> y) = x \<union> Arith.pred(y)"
-  "x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> Arith.pred(x \<union> succ(y)) = Arith.pred(x) \<union> y"
+  "x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> pred(succ(x) \<union> y) = x \<union> pred(y)"
+  "x \<in> nat \<Longrightarrow> y \<in> nat \<Longrightarrow> pred(x \<union> succ(y)) = pred(x) \<union> y"
   using pred_Un_distrib pred_succ_eq by simp_all
 
 lemma le_natI : "j \<le> n \<Longrightarrow> n \<in> nat \<Longrightarrow> j\<in>nat"
@@ -139,14 +136,14 @@ lemma leD : assumes "n\<in>nat" "j \<le> n"
 
 lemma pred_nat_eq :
   assumes "n\<in>nat"
-  shows "Arith.pred(n) = \<Union> n"
+  shows "pred(n) = \<Union> n"
   using assms
 proof(induct)
   case 0
   then show ?case by simp
 next
   case (succ x)
-  then show ?case using Arith.pred_succ_eq Ord_Union_succ_eq
+  then show ?case using pred_succ_eq Ord_Union_succ_eq
     by simp
 qed
 

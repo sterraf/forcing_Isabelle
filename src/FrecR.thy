@@ -207,13 +207,13 @@ definition
 
 definition
   eclose_n1_fm :: "[i,i] \<Rightarrow> i" where
-  "eclose_n1_fm(m,t) \<equiv> Exists(Exists(And(And(name1_fm(t#+2,0),singleton_fm(0,1)),
-                                       is_eclose_fm(1,m#+2))))"
+  "eclose_n1_fm(m,t) \<equiv> Exists(Exists(And(And(name1_fm(t+\<^sub>\<omega>2,0),singleton_fm(0,1)),
+                                       is_eclose_fm(1,m+\<^sub>\<omega>2))))"
 
 definition
   eclose_n2_fm :: "[i,i] \<Rightarrow> i" where
-  "eclose_n2_fm(m,t) \<equiv> Exists(Exists(And(And(name2_fm(t#+2,0),singleton_fm(0,1)),
-                                       is_eclose_fm(1,m#+2))))"
+  "eclose_n2_fm(m,t) \<equiv> Exists(Exists(And(And(name2_fm(t+\<^sub>\<omega>2,0),singleton_fm(0,1)),
+                                       is_eclose_fm(1,m+\<^sub>\<omega>2))))"
 
 definition
   is_ecloseN :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
@@ -223,8 +223,8 @@ definition
 
 definition
   ecloseN_fm :: "[i,i] \<Rightarrow> i" where
-  "ecloseN_fm(en,t) \<equiv> Exists(Exists(And(eclose_n1_fm(1,t#+2),
-                            And(eclose_n2_fm(0,t#+2),union_fm(1,0,en#+2)))))"
+  "ecloseN_fm(en,t) \<equiv> Exists(Exists(And(eclose_n1_fm(1,t+\<^sub>\<omega>2),
+                            And(eclose_n2_fm(0,t+\<^sub>\<omega>2),union_fm(1,0,en+\<^sub>\<omega>2)))))"
 lemma ecloseN_fm_type [TC] :
   "\<lbrakk> en \<in> nat ; t \<in> nat \<rbrakk> \<Longrightarrow> ecloseN_fm(en,t) \<in> formula"
   unfolding ecloseN_fm_def eclose_n1_fm_def eclose_n2_fm_def by simp
