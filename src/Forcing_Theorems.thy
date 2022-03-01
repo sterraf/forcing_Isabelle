@@ -172,7 +172,6 @@ lemma not_forces_neq:
   shows "p forces\<^sub>a (t1 = t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> q forces\<^sub>a (t1 \<noteq> t2))"
   using assms density_eq unfolding forces_neq_def by blast
 
-
 lemma not_forces_nmem:
   assumes "p\<in>P"
   shows "p forces\<^sub>a (t1 \<in> t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> q forces\<^sub>a (t1 \<notin> t2))"
@@ -181,7 +180,6 @@ lemma not_forces_nmem:
 
 (* FIXME: Use the newer versions in Forces_Definition! *)
 (* (and adequate the rest of the code to them)  *)
-
 lemma sats_forces_Nand':
   assumes
     "p\<in>P" "\<phi>\<in>formula" "\<psi>\<in>formula" "env \<in> list(M)"
@@ -285,10 +283,6 @@ lemma elem_of_valI: "\<exists>\<theta>. \<exists>p\<in>P. p\<in>G \<and> \<langl
 
 lemma GenExt_iff: "x\<in>M[G] \<longleftrightarrow> (\<exists>\<tau>\<in>M. x = val(P,G,\<tau>))"
   unfolding GenExt_def by simp
-
-(* FIXME: doesn't make sense to have this! *)
-lemma left_in_M : "tau\<in>M \<Longrightarrow> \<langle>a,b\<rangle>\<in>tau \<Longrightarrow> a\<in>M"
-  using pair_in_M_iff transitivity by auto
 
 subsection\<open>Kunen 2013, Lemma IV.2.29\<close>
 lemma generic_inter_dense_below:
@@ -849,7 +843,8 @@ next
   have IH':"\<tau>\<in>M \<Longrightarrow> \<theta>\<in>M \<Longrightarrow> \<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow>
           (val(P,G, \<sigma>) \<in> val(P,G, \<tau>) \<longrightarrow> (\<exists>q\<in>G. q forces\<^sub>a (\<sigma> \<in> \<tau>))) \<and>
           (val(P,G, \<sigma>) \<in> val(P,G, \<theta>) \<longrightarrow> (\<exists>q\<in>G. q forces\<^sub>a (\<sigma> \<in> \<theta>)))" for \<sigma>
-    by (blast intro:left_in_M)
+    using domain_trans[OF trans_M]
+    by (blast)
   ultimately
   show "?Q(\<tau>,\<theta>)"
     using IV240b_eq[OF assms(1)] by (auto)
