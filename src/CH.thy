@@ -101,7 +101,7 @@ proof -
       by auto
     moreover from this
     have "countable\<^bsup>M\<^esup>(f`x)" if "x\<in>\<omega>" for x
-      using that Fn_rel_is_function countable_iff_le_rel_Aleph_rel_one
+      using that Fn_rel_is_function countable_iff_lesspoll_rel_Aleph_rel_one
       by auto
     moreover from calculation
     have "?G \<in> M" "f\<subseteq>\<omega>\<times>Coll"
@@ -136,11 +136,11 @@ proof -
       using pfun_Un_filter_closed'[OF \<open>?G\<subseteq>_\<close> 1]  \<open>?G\<in>M\<close>
       by simp
     moreover from calculation
-    have "|\<Union>?G|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+    have "\<Union>?G \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
       using countable_fun_imp_countable_image[of f]
         mem_function_space_rel_abs[simplified,OF nat_in_M Coll_in_M \<open>f\<in>M\<close>]
         countableI[OF lepoll_rel_refl]
-        countable_iff_le_rel_Aleph_rel_one[of "\<Union>?G"]
+        countable_iff_lesspoll_rel_Aleph_rel_one[of "\<Union>?G"]
       by auto
     moreover from calculation
     have "\<Union>?G\<in>Coll"
@@ -189,16 +189,15 @@ lemma Coll_into_countable_rel: "p \<in> Coll \<Longrightarrow> countable\<^bsup>
 proof -
   assume "p\<in>Coll"
   then
-  have "|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "p\<in>M"
+  have "p \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "p\<in>M"
     using Fn_rel_is_function by simp_all
   moreover from this
-  have "|p|\<^bsup>M\<^esup>  \<lesssim>\<^bsup>M\<^esup> \<omega>"
+  have "p \<lesssim>\<^bsup>M\<^esup> \<omega>"
     using lesspoll_rel_Aleph_rel_succ[of 0] Aleph_rel_zero
     by simp
   ultimately
   show ?thesis
-    using countableI lepoll_rel_trans[of p "|p|\<^bsup>M\<^esup>" \<omega>]
-      eqpoll_rel_imp_lepoll_rel eqpoll_rel_sym cardinal_rel_eqpoll_rel
+    using countableI eqpoll_rel_imp_lepoll_rel eqpoll_rel_sym cardinal_rel_eqpoll_rel
     by simp
 qed
 

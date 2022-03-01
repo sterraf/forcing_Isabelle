@@ -7,7 +7,7 @@ begin
 
 locale M_library = M_ZF_library + M_cardinal_AC +
   assumes
-  separation_cardinal_rel_lesspoll_rel: "M(\<kappa>) \<Longrightarrow> separation(M, \<lambda>x . |x|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>)"
+  separation_cardinal_rel_lesspoll_rel: "M(\<kappa>) \<Longrightarrow> separation(M, \<lambda>x . x \<prec>\<^bsup>M\<^esup> \<kappa>)"
 begin
 
 declare eqpoll_rel_refl [simp]
@@ -1221,14 +1221,23 @@ proof (intro not_le_iff_lt[THEN iffD1] notI)
     using cantor_inj_rel by simp
 qed simp
 
+lemma countable_iff_lesspoll_rel_Aleph_rel_one:
+  notes iff_trans[trans]
+  assumes "M(C)"
+  shows "countable\<^bsup>M\<^esup>(C) \<longleftrightarrow> C \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+  using assms lesspoll_rel_csucc_rel[of \<omega> C] Aleph_rel_succ Aleph_rel_zero
+  unfolding countable_rel_def by simp
+
+
 lemma countable_iff_le_rel_Aleph_rel_one:
   notes iff_trans[trans]
   assumes "M(C)"
   shows "countable\<^bsup>M\<^esup>(C) \<longleftrightarrow> |C|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
 proof -
+  from assms
   have "countable\<^bsup>M\<^esup>(C) \<longleftrightarrow> C \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
-    using assms lesspoll_rel_csucc_rel[of \<omega> C] Aleph_rel_succ Aleph_rel_zero
-    unfolding countable_rel_def by simp
+    using countable_iff_lesspoll_rel_Aleph_rel_one
+     by simp
   also from assms
   have "\<dots> \<longleftrightarrow> |C|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
     using cardinal_rel_eqpoll_rel[THEN eqpoll_rel_sym, THEN eq_lesspoll_rel_trans]

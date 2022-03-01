@@ -600,6 +600,30 @@ lemma nat_into_InfCard_rel:
   using assms  le_imp_subset[of \<omega> \<kappa>]
   unfolding InfCard_rel_def by auto
 
+lemma Finite_lesspoll_rel_nat:
+  assumes "Finite(x)" "M(x)"
+  shows "x \<prec>\<^bsup>M\<^esup> nat"
+proof -
+  note assms
+  moreover from this
+  obtain n where "n \<in> \<omega>" "M(n)" "x \<approx> n"
+    unfolding Finite_def by auto
+  moreover from calculation
+  obtain f where "f \<in> bij(x,n)" "f: x-||>n"
+    using Finite_Fin[THEN fun_FiniteFunI, OF _ subset_refl] bij_is_fun
+    unfolding eqpoll_def by auto
+  ultimately
+  have "x\<approx>\<^bsup>M\<^esup> n" unfolding eqpoll_rel_def by (auto dest:transM)
+  with assms and \<open>M(n)\<close>
+  have "n \<approx>\<^bsup>M\<^esup> x" using eqpoll_rel_sym by simp
+  moreover
+  note \<open>n\<in>\<omega>\<close> \<open>M(n)\<close>
+  ultimately
+  show ?thesis
+    using assms eq_lesspoll_rel_trans[OF \<open>x\<approx>\<^bsup>M\<^esup> n\<close> n_lesspoll_rel_nat]
+    by simp
+qed
+
 lemma Finite_cardinal_rel_in_nat [simp]:
   assumes "Finite(A)" "M(A)" shows "|A|\<^bsup>M\<^esup> \<in> \<omega>"
 proof -

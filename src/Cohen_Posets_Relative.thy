@@ -164,14 +164,12 @@ lemma (in M_cohen) Fn_rel_unionI:
 proof -
   note assms
   moreover from calculation
-  have "|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>"  "M(p)"
-    "|q|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>" "M(q)"
+  have "p \<prec>\<^bsup>M\<^esup> \<kappa>"  "M(p)"
+    "q \<prec>\<^bsup>M\<^esup> \<kappa>" "M(q)"
     using Fn_rel_is_function by simp_all
   moreover from calculation
   have "p\<union>q \<prec>\<^bsup>M\<^esup> \<kappa>"
     using eqpoll_rel_sym cardinal_rel_eqpoll_rel
-      eq_lesspoll_rel_trans[OF _ \<open>|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> _\<close>]
-      eq_lesspoll_rel_trans[OF _ \<open>|q|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> _\<close>]
       InfCard_rel_lesspoll_rel_Un
     by simp_all
   ultimately
@@ -189,13 +187,12 @@ lemma (in M_cohen) restrict_eq_imp_compat_rel:
 proof -
   note assms
   moreover from calculation
-  have "|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>"  "M(p)"
-       "|q|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>" "M(q)"
+  have "p \<prec>\<^bsup>M\<^esup> \<kappa>"  "M(p)"
+       "q \<prec>\<^bsup>M\<^esup> \<kappa>" "M(q)"
     using Fn_rel_is_function by simp_all
   moreover from calculation
   have "p\<union>q \<prec>\<^bsup>M\<^esup> \<kappa>"
     using InfCard_rel_lesspoll_rel_Un cardinal_rel_eqpoll_rel[THEN eqpoll_rel_sym]
-      eq_lesspoll_rel_trans[OF _ \<open>|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> _\<close>] eq_lesspoll_rel_trans[OF _ \<open>|q|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> _\<close>]
     by auto
   ultimately
   show ?thesis
@@ -205,12 +202,28 @@ proof -
     by auto
 qed
 
+lemma (in M_cohen) InfCard_rel_imp_n_lesspoll_rel :
+  assumes "InfCard\<^bsup>M\<^esup>(\<kappa>)" "M(\<kappa>)" "n\<in>\<omega>"
+  shows "n \<prec>\<^bsup>M\<^esup> \<kappa>"
+proof -
+  note assms
+  moreover from this
+  have "n \<prec>\<^bsup>M\<^esup> \<omega>"
+    using n_lesspoll_rel_nat  by simp
+  ultimately
+  show ?thesis
+    using lesspoll_rel_trans2 Infinite_iff_lepoll_rel_nat
+      InfCard_rel_imp_Infinite nat_into_M M_nat
+    by simp
+qed
+
 lemma (in M_cohen) cons_in_Fn_rel:
   assumes "x \<notin> domain(p)" "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "x \<in> I" "j \<in> J" "InfCard\<^bsup>M\<^esup>(\<kappa>)"
     "M(\<kappa>)" "M(I)" "M(J)"
   shows "cons(\<langle>x,j\<rangle>, p) \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
     using assms cons_eq Fn_rel_unionI[OF Fn_rel_singletonI[of x I j J] \<open>p\<in>_\<close>]
-  by auto
+      InfCard_rel_imp_n_lesspoll_rel
+    by auto
 
 lemma (in M_library) Fnle_rel_Aleph_rel1_closed[intro,simp]: "M(Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))"
   by simp

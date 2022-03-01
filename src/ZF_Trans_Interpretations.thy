@@ -266,21 +266,16 @@ sublocale M_ZFC3_trans \<subseteq> M_cardinal_AC "##M" ..
 
 (* TopLevel *)
 
-lemma (in M_ZF2_trans) cardinal_rel_lepoll_rel_abs:
- "(##M)(\<kappa>) \<Longrightarrow> (##M)(x) \<Longrightarrow> (|x|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>) \<longleftrightarrow> M,[x,\<kappa>] \<Turnstile> (\<cdot>\<exists>\<cdot>cardinal(1) is 0 \<and> \<cdot>0 \<prec> 2\<cdot>\<cdot>\<cdot>)"
-  using is_lesspoll_iff is_cardinal_iff cardinal_rel_closed nonempty
-  by auto
-
 lemma (in M_ZF2_trans) separation_cardinal_rel_lesspoll_rel:
- "(##M)(\<kappa>) \<Longrightarrow> separation(##M, \<lambda>x. |x|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>)"
-  using separation_in_ctm[where \<phi>="(\<cdot>\<exists>\<cdot>cardinal(1) is 0 \<and> \<cdot>0 \<prec> 2\<cdot>\<cdot>\<cdot>)" and env="[\<kappa>]"]
-    cardinal_rel_lepoll_rel_abs[symmetric]
+ "(##M)(\<kappa>) \<Longrightarrow> separation(##M, \<lambda>x. x \<prec>\<^bsup>M\<^esup> \<kappa>)"
+  using separation_in_ctm[where \<phi>="( \<cdot>0 \<prec> 1\<cdot> )" and env="[\<kappa>]"]
+    is_lesspoll_iff nonempty
     arity_is_cardinal_fm arity_is_lesspoll_fm arity_is_bij_fm ord_simp_union
   by (simp add:FOL_arities)
 
 sublocale M_ZFC3_trans \<subseteq> M_library "##M"
   using separation_cardinal_rel_lesspoll_rel
-  by unfold_locales simp
+  by unfold_locales simp_all
 
 locale M_ZF4 = M_ZF3 +
   assumes

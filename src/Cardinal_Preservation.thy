@@ -88,7 +88,7 @@ locale G_generic4_AC = G_generic3_AC + G_generic4
 
 sublocale G_generic4_AC \<subseteq> ext:M_ZFC3_trans "M[G]"
   using ground_replacements4 replacement_assm_MG
-  by unfold_locales (simp_all del: replacement_instances1_defs)
+  by unfold_locales simp_all
 
 lemma (in forcing_data1) forces_neq_apply_imp_incompatible:
   assumes

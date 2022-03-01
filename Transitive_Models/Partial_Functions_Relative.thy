@@ -5,6 +5,13 @@ theory Partial_Functions_Relative
     FiniteFun_Relative
     Cardinal_Library_Relative
 begin
+text\<open>In this theory we introduce bounded partial functions and its relative
+version; for historical reasons the relative version is based on a proper
+definition of partial functions.
+
+We note that finite partial functions are easier and are used to prove
+some lemmas about finite sets in the theory ZF_Library_Relative.
+\<close>
 
 definition
   Fn :: "[i,i,i] \<Rightarrow> i" where
@@ -88,8 +95,8 @@ next
   show "x \<in> ?R" by simp
 qed
 
-lemma zero_in_Fn: 
-  assumes "0 < \<kappa>" 
+lemma zero_in_Fn:
+  assumes "0 < \<kappa>"
   shows "0 \<in> Fn(\<kappa>, I, J)"
   using lt_Card_imp_lesspoll assms zero_lesspoll
   unfolding Fn_def
@@ -105,13 +112,13 @@ proof (intro equalityI subsetI)
   proof (induct)
     case emptyI
     then
-    show ?case 
+    show ?case
       using zero_in_Fn ltI
       by simp
   next
     case (consI a b h)
     then
-    obtain d where "h:d\<rightarrow>J" "d\<prec>nat" "d\<subseteq>I" 
+    obtain d where "h:d\<rightarrow>J" "d\<prec>nat" "d\<subseteq>I"
       unfolding Fn_def by auto
     moreover from this
     have "Finite(d)"
@@ -134,7 +141,7 @@ proof (intro equalityI subsetI)
     moreover from this
     have "cons(a,d) \<prec> nat" using Finite_imp_lesspoll_nat by simp
     ultimately
-    show ?case 
+    show ?case
       unfolding Fn_def
       by (simp,rule_tac x="?d\<rightarrow>J" in bexI)
         (force dest:app_fun)+
@@ -463,12 +470,12 @@ proof -
     using FiniteFunI by simp
 qed
 
-end
+end \<comment> \<open>\<^locale>\<open>M_cardinals\<close>\<close>
 
 (* Fn_rel should be the relativization *)
 definition
   Fn_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> i" (\<open>Fn\<^bsup>_\<^esup>'(_,_,_')\<close>) where
-  "Fn_rel(M,\<kappa>,I,J) \<equiv> {f \<in> I\<rightharpoonup>\<^bsup>M\<^esup> J . |f|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>}"
+  "Fn_rel(M,\<kappa>,I,J) \<equiv> {f \<in> I\<rightharpoonup>\<^bsup>M\<^esup> J . f \<prec>\<^bsup>M\<^esup> \<kappa>}"
 
 context  M_library
 begin
@@ -477,7 +484,7 @@ lemma Fn_rel_subset_PFun_rel : "Fn\<^bsup>M\<^esup>(\<kappa>,I,J) \<subseteq> I\
   unfolding Fn_rel_def by auto
 
 lemma Fn_relI[intro]:
-  assumes "f : d \<rightarrow> J" "d \<subseteq> I" "|f|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>" "M(d)" "M(J)" "M(f)"
+  assumes "f : d \<rightarrow> J" "d \<subseteq> I" "f \<prec>\<^bsup>M\<^esup> \<kappa>" "M(d)" "M(J)" "M(f)"
   shows "f \<in> Fn_rel(M,\<kappa>,I,J)"
   using assms pfunI mem_function_space_rel_abs
   unfolding Fn_rel_def
@@ -485,14 +492,14 @@ lemma Fn_relI[intro]:
 
 lemma Fn_relD[dest]:
   assumes "p \<in> Fn_rel(M,\<kappa>,I,J)"
-  shows "\<exists>C[M]. C\<subseteq>I \<and> p : C \<rightarrow> J \<and> |p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>"
+  shows "\<exists>C[M]. C\<subseteq>I \<and> p : C \<rightarrow> J \<and> p \<prec>\<^bsup>M\<^esup> \<kappa>"
   using assms pfunD
   unfolding Fn_rel_def
   by simp
 
 lemma Fn_rel_is_function:
   assumes "p \<in> Fn_rel(M,\<kappa>,I,J)"
-  shows "function(p)" "M(p)" "|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>" "p\<in> I\<rightharpoonup>\<^bsup>M\<^esup> J"
+  shows "function(p)" "M(p)" "p \<prec>\<^bsup>M\<^esup> \<kappa>" "p\<in> I\<rightharpoonup>\<^bsup>M\<^esup> J"
   using assms
   unfolding Fn_rel_def PFun_Space_Rel_def by simp_all
 
@@ -530,7 +537,7 @@ qed
 
 lemma Fn_csucc:
   assumes "Ord(\<kappa>)" "M(\<kappa>)"
-  shows "Fn_rel(M,(\<kappa>\<^sup>+)\<^bsup>M\<^esup>,I,J) = {p\<in> I\<rightharpoonup>\<^bsup>M\<^esup> J . |p|\<^bsup>M\<^esup>  \<lesssim>\<^bsup>M\<^esup> \<kappa>}"   (is "?L=?R")
+  shows "Fn_rel(M,(\<kappa>\<^sup>+)\<^bsup>M\<^esup>,I,J) = {p\<in> I\<rightharpoonup>\<^bsup>M\<^esup> J . p  \<lesssim>\<^bsup>M\<^esup> \<kappa>}"   (is "?L=?R")
   using assms
 proof(intro equalityI)
   show "?L \<subseteq> ?R"
@@ -538,7 +545,7 @@ proof(intro equalityI)
     fix p
     assume "p\<in>?L"
     then
-    have "|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> csucc_rel(M,\<kappa>)" "M(p)" "p\<in> I\<rightharpoonup>\<^bsup>M\<^esup> J"
+    have "p \<prec>\<^bsup>M\<^esup> csucc_rel(M,\<kappa>)" "M(p)" "p\<in> I\<rightharpoonup>\<^bsup>M\<^esup> J"
       using Fn_rel_is_function by simp_all
     then
     show "p\<in>?R"
@@ -550,7 +557,7 @@ next
     fix p
     assume "p\<in>?R"
     then
-    have  "p\<in> I\<rightharpoonup>\<^bsup>M\<^esup> J" " |p|\<^bsup>M\<^esup>  \<lesssim>\<^bsup>M\<^esup> \<kappa>"
+    have  "p\<in> I\<rightharpoonup>\<^bsup>M\<^esup> J" "p \<lesssim>\<^bsup>M\<^esup> \<kappa>"
       using assms lesspoll_rel_csucc_rel by simp_all
     then
     show "p\<in>?L"
@@ -559,7 +566,6 @@ next
       by simp
   qed
 qed
-
 
 lemma Finite_imp_lesspoll_nat:
   assumes "Finite(A)"
@@ -585,8 +591,8 @@ proof(intro equalityI subsetI)
     using FiniteFun_pfunI FinD_Finite[OF subsetD[OF FiniteFun.dom_subset,OF \<open>p\<in>_\<close>]]
     by auto
   moreover from this
-  have "|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<omega>"
-    using Finite_cardinal_rel_in_nat pfunD_closed[of p] n_lesspoll_rel_nat
+  have "p \<prec>\<^bsup>M\<^esup> \<omega>"
+    using Finite_lesspoll_rel_nat pfunD_closed[of p] n_lesspoll_rel_nat
     by simp
   ultimately
   show "p\<in> Fn_rel(M,\<omega>,I,J)"
@@ -595,7 +601,7 @@ next
   fix p
   assume "p\<in> Fn_rel(M,\<omega>,I,J)"
   then
-  have "p\<in> I \<rightharpoonup>\<^bsup>M\<^esup> J"  "|p|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<omega>"
+  have "p\<in> I \<rightharpoonup>\<^bsup>M\<^esup> J"  "p \<prec>\<^bsup>M\<^esup> \<omega>"
     unfolding Fn_rel_def by simp_all
   moreover from this
   have "Finite(p)"
@@ -613,17 +619,16 @@ lemma Fn_nat_abs:
   shows "Fn(nat,I,J) = Fn_rel(M,\<omega>,I,J)"
   using assms Fn_rel_nat_eq_FiniteFun Fn_nat_eq_FiniteFun
   by simp
-end
 
-lemma (in M_library) Fn_rel_singletonI:
-  assumes "x \<in> I" "j \<in> J" "InfCard\<^bsup>M\<^esup>(\<kappa>)" "M(\<kappa>)" "M(I)" "M(J)"
+lemma Fn_rel_singletonI:
+  assumes "x \<in> I" "j \<in> J" "1 \<prec>\<^bsup>M\<^esup> \<kappa>" "M(\<kappa>)" "M(I)" "M(J)"
   shows "{\<langle>x,j\<rangle>} \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
-    using assms pfun_singletonI transM[of x ] transM[of j]
-      cardinal_rel_singleton
-      lt_Card_rel_imp_lesspoll_rel ltI[OF nat_into_InfCard_rel]
-      Card_rel_cardinal_rel Card_rel_is_Ord InfCard_rel_is_Card_rel
+  using pfun_singletonI transM[of x] transM[of j] assms
+    eq_lesspoll_rel_trans[OF singleton_eqpoll_rel_1]
     unfolding Fn_rel_def
     by auto
+
+end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
 
 definition
   Fnle_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> i" (\<open>Fnle\<^bsup>_\<^esup>'(_,_,_')\<close>) where
@@ -652,11 +657,6 @@ lemma Fnle_relD[dest]:
   shows "p \<in> Fn_rel(M,\<kappa>,I,J)" "q \<in> Fn_rel(M,\<kappa>,I,J)" "p \<supseteq> q"
   using assms unfolding Fnlerel_def Fnle_rel_def FnleR_def Rrel_def
   by auto
-
-end
-
-context M_library
-begin
 
 lemma Fn_rel_closed[intro,simp]:
   assumes "M(\<kappa>)" "M(I)" "M(J)"
