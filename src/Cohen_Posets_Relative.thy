@@ -64,7 +64,8 @@ lemma filter_subset_notion: "filter(G) \<Longrightarrow> G \<subseteq> Fn(\<kapp
 
 lemma Un_filter_is_function: "filter(G) \<Longrightarrow> function(\<Union>G)"
   using compat_imp_Un_is_function filter_imp_compat[of G]
-    filter_subset_notion by simp
+    filter_subset_notion
+  by simp
 
 end \<comment> \<open>\<^locale>\<open>cohen_data\<close>\<close>
 
@@ -221,9 +222,9 @@ lemmas zero_lesspoll_rel_kappa = zero_lesspoll_rel[OF zero_lt_kappa]
 
 end \<comment> \<open>\<^locale>\<open>M_add_reals\<close>\<close>
 
-(* FIXME This is old-style discipline *)
-(* MOVE THIS to some appropriate place *)
-relativize "compat_in" "is_compat_in" external
+(* MOVE THIS to some appropriate place. Notice that in Forcing_Notions
+we don't import anything relative. *)
+relativize relational "compat_in" "is_compat_in" external
 
 lemma (in M_trivial) compat_in_abs[absolut]:
   assumes
@@ -236,14 +237,15 @@ definition
   antichain :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
   "antichain(P,leq,A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A. \<forall>q\<in>A.
                 p\<noteq>q \<longrightarrow> \<not>compat_in(P,leq,p,q))"
+
+relativize relational  "antichain" "antichain_rel"
 definition
   ccc :: "i \<Rightarrow> i \<Rightarrow> o" where
   "ccc(P,leq) \<equiv> \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
 
-definition
-  antichain_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" (\<open>antichain\<^bsup>_\<^esup>'(_,_,_')\<close>) where
-  "antichain_rel(M,P,leq,A) \<equiv> subset(M,A,P) \<and> (\<forall>p[M]. \<forall>q[M].
-       p\<in>A \<longrightarrow> q\<in>A \<longrightarrow> p \<noteq> q\<longrightarrow> \<not> is_compat_in(M,P,leq,p,q))"
+abbreviation
+  antichain_rel_abbr :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" (\<open>antichain\<^bsup>_\<^esup>'(_,_,_')\<close>) where
+  "antichain\<^bsup>M\<^esup>(P,leq,A) \<equiv> antichain_rel(M,P,leq,A)"
 
 abbreviation
   antichain_r_set :: "[i,i,i,i] \<Rightarrow> o" (\<open>antichain\<^bsup>_\<^esup>'(_,_,_')\<close>) where
@@ -258,13 +260,11 @@ lemma antichain_abs [absolut]:
 
 end \<comment> \<open>\<^locale>\<open>M_trivial\<close>\<close>
 
-(******************************************************)
-(* FIXME This is old-style discipline *)
+relativize relational "ccc" "ccc_rel"
 
-definition (* completely relational *)
-  ccc_rel   :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" (\<open>ccc\<^bsup>_\<^esup>'(_,_')\<close>) where
-  "ccc_rel(M,P,leq) \<equiv> \<forall>A[M]. antichain_rel(M,P,leq,A) \<longrightarrow>
-      (\<forall>\<kappa>[M]. is_cardinal(M,A,\<kappa>) \<longrightarrow> (\<exists>om[M]. omega(M,om) \<and> le_rel(M,\<kappa>,om)))"
+abbreviation
+  ccc_rel_abbr :: "[i\<Rightarrow>o,i,i]\<Rightarrow>o" (\<open>ccc\<^bsup>_\<^esup>'(_,_')\<close>) where
+  "ccc_rel_abbr(M) \<equiv> ccc_rel(M)"
 
 abbreviation
   ccc_r_set :: "[i,i,i]\<Rightarrow>o" (\<open>ccc\<^bsup>_\<^esup>'(_,_')\<close>) where
@@ -296,8 +296,6 @@ lemma Fn_nat_closed:
   by simp
 
 end \<comment> \<open>\<^locale>\<open>M_FiniteFun\<close>\<close>
-
-(******************  end Discipline  ******************)
 
 context M_add_reals
 begin
