@@ -58,10 +58,11 @@ text\<open>@{thm [display] Ord_def}\<close>
   Ord(i) \<equiv> Transset(i) \<and> (\<forall>x\<in>i. Transset(x))
 *)
 
-thm lt_def
-text\<open>@{thm [display] lt_def}\<close>
+thm lt_def le_iff
+text\<open>@{thm [display] lt_def le_iff}\<close>
 (*
   i < j \<equiv> i \<in> j \<and> Ord(j)
+  i \<le> j \<longleftrightarrow> i < j \<or> i = j \<and> Ord(j)
 *)
 
 text\<open>With the concepts of empty set and successor in place,\<close>
