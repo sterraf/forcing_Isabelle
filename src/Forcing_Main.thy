@@ -188,9 +188,9 @@ proof -
   interpret MG: M_Z_basic "?N"
     using generic pairing_in_MG
       Union_MG  extensionality_in_MG power_in_MG
-      foundation_in_MG  strong_replacement_in_MG
+      foundation_in_MG replacement_assm_MG
       separation_in_MG infinity_in_MG replacement_ax1
-    by unfold_locales (simp_all add:replacement_assm_def ground_replacement_assm_def)
+    by unfold_locales simp
   have "M, []\<Turnstile> \<cdot>AC\<cdot> \<Longrightarrow> ?N, [] \<Turnstile> \<cdot>AC\<cdot>"
   proof -
     assume "M, [] \<Turnstile> \<cdot>AC\<cdot>"
