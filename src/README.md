@@ -9,8 +9,8 @@ This is a development version. It is organized in two sessions:
 An HMTL version can be found at
 https://cs.famaf.unc.edu.ar/~pedro/forcing/Independence_CH/
 
-Pre-requisite
-==============
+Prerequisite
+============
 In order to edit/browse the session `Independence_CH` in jEdit you need 
 to add the directory of `Transitive_Models` as a component (let us suppose
 that $FORCING_HOME is the directory with `Transitive_Models` and `src`):
@@ -31,7 +31,7 @@ $ isabelle jedit -l ZF-Constructible Definitions_Main.thy
 Building the session
 ====================
 
-To build (check) the session execute
+To build (check) the session, execute
 ```
 $ cd $FORCING_HOME/src
 $ make build
