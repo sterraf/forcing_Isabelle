@@ -1,12 +1,8 @@
 section\<open>Concepts involved in instances of Replacement\<close>
 theory Fm_Definitions
   imports
-    Transitive_Models.Nat_Miscellanea
     Transitive_Models.Renaming_Auto
-    Transitive_Models.Discipline_Cardinal
-    Transitive_Models.CardinalArith_Relative
     Transitive_Models.Aleph_Relative
-    Transitive_Models.Univ_Relative
     FrecR_Arities
 begin
 
