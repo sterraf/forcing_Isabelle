@@ -1,9 +1,12 @@
 section\<open>Auxiliary results on arithmetic\<close>
 
-theory Nat_Miscellanea imports ZF begin
+theory Nat_Miscellanea
+  imports
+    Delta_System_Lemma.ZF_Library
+begin
 
-(* no_notation add (infixl \<open>+\<^sub>\<omega>\<close> 65)
-no_notation diff (infixl \<open>-\<^sub>\<omega>\<close> 65) *)
+(* no_notation add (infixl \<open>#+\<close> 65)
+no_notation diff (infixl \<open>#-\<close> 65) *)
 notation add (infixl \<open>+\<^sub>\<omega>\<close> 65)
 notation diff (infixl \<open>-\<^sub>\<omega>\<close> 65)
 
@@ -238,7 +241,7 @@ qed
 
 lemma oadd_lt_mono2 :
   assumes  "Ord(n)" "Ord(\<alpha>)" "Ord(\<beta>)" "\<alpha> < \<beta>" "x < n" "y < n" "0 <n"
-  shows "n ** \<alpha> ++ x < n **\<beta> ++ y"
+  shows "n ** \<alpha> + x < n **\<beta> + y"
 proof -
   consider (0) "\<beta>=0" | (s) \<gamma> where  "Ord(\<gamma>)" "\<beta> = succ(\<gamma>)" | (l) "Limit(\<beta>)"
     using Ord_cases[OF \<open>Ord(\<beta>)\<close>,of ?thesis] by force
@@ -253,11 +256,11 @@ proof -
     then
     have "n ** \<alpha> \<le> n ** \<gamma>" using omult_le_mono[OF _ \<open>\<alpha>\<le>\<gamma>\<close>] \<open>Ord(n)\<close> by simp
     then
-    have "n ** \<alpha> ++ x < n ** \<gamma> ++ n" using oadd_lt_mono[OF _ \<open>x<n\<close>] by simp
+    have "n ** \<alpha> + x < n ** \<gamma> + n" using oadd_lt_mono[OF _ \<open>x<n\<close>] by simp
     also
     have "... = n ** \<beta>" using \<open>\<beta>=succ(_)\<close> omult_succ \<open>Ord(\<beta>)\<close> \<open>Ord(n)\<close> by simp
     finally
-    have "n ** \<alpha> ++ x < n ** \<beta>" by auto
+    have "n ** \<alpha> + x < n ** \<beta>" by auto
     then
     show ?thesis using oadd_le_self \<open>Ord(\<beta>)\<close> lt_trans2 \<open>Ord(n)\<close> by auto
   next
@@ -265,14 +268,14 @@ proof -
     have "Ord(x)" using \<open>x<n\<close> lt_Ord by simp
     with l
     have "succ(\<alpha>) < \<beta>" using Limit_has_succ \<open>\<alpha><\<beta>\<close> by simp
-    have "n ** \<alpha> ++ x < n ** \<alpha> ++ n"
+    have "n ** \<alpha> + x < n ** \<alpha> + n"
       using oadd_lt_mono[OF le_refl[OF Ord_omult[OF _ \<open>Ord(\<alpha>)\<close>]] \<open>x<n\<close>] \<open>Ord(n)\<close> by simp
     also
     have "... = n ** succ(\<alpha>)" using omult_succ \<open>Ord(\<alpha>)\<close> \<open>Ord(n)\<close> by simp
     finally
-    have "n ** \<alpha> ++ x < n ** succ(\<alpha>)" by simp
+    have "n ** \<alpha> + x < n ** succ(\<alpha>)" by simp
     with \<open>succ(\<alpha>) < \<beta>\<close>
-    have "n ** \<alpha> ++ x < n ** \<beta>" using lt_trans omult_lt_mono \<open>Ord(n)\<close> \<open>0<n\<close>  by auto
+    have "n ** \<alpha> + x < n ** \<beta>" using lt_trans omult_lt_mono \<open>Ord(n)\<close> \<open>0<n\<close>  by auto
     then show ?thesis using oadd_le_self \<open>Ord(\<beta>)\<close> lt_trans2 \<open>Ord(n)\<close> by auto
   qed
 qed

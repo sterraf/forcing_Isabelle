@@ -7,7 +7,14 @@ theory Cardinal_Relative
     Univ_Relative
 begin
 
+txt\<open>The following command avoids that a commonly used one-letter variable be
+captured by the definition of the constructible universe \<^term>\<open>L\<close>.\<close>
 hide_const (open) L
+
+txt\<open>We also return to the old notation for \<^term>\<open>sum\<close> to preserve the old
+Constructibility code.\<close>
+no_notation oadd (infixl \<open>+\<close> 65)
+notation sum (infixr \<open>+\<close> 65)
 
 definition
   Finite_rel   :: "[i\<Rightarrow>o,i]=>o"  where

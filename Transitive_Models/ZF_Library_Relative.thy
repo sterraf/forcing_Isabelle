@@ -7,6 +7,9 @@ theory ZF_Library_Relative
     FiniteFun_Relative
 begin
 
+no_notation sum (infixr \<open>+\<close> 65)
+notation oadd (infixl \<open>+\<close> 65)
+
 lemma (in M_cardinal_arith_jump) csucc_rel_cardinal_rel:
   assumes "Ord(\<kappa>)" "M(\<kappa>)"
   shows "(|\<kappa>|\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup> = (\<kappa>\<^sup>+)\<^bsup>M\<^esup>"

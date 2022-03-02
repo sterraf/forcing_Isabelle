@@ -1,7 +1,6 @@
 section\<open>Relativization of Finite Functions\<close>
 theory FiniteFun_Relative
   imports
-    "Delta_System_Lemma.ZF_Library"
     Lambda_Replacement
 begin
 
