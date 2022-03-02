@@ -1743,6 +1743,62 @@ lemma lam_apply_replacement: "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lam_
   using lam_replacement_Lambda lam_replacement_hcomp[OF _ lam_replacement_apply[of f]] lam_replacement_Pair
   by simp
 
+lemma separation_all:
+  assumes "separation(M, \<lambda>x  .P(fst(x),snd(x)))"
+  shows "separation(M, \<lambda>z. \<forall>x\<in>z. P(z,x))"
+  unfolding separation_def
+proof(clarify)
+  fix A
+  assume "M(A)"
+  let ?B="\<Union>A"
+  let ?C="A\<times>?B"
+  note \<open>M(A)\<close>
+  moreover from this
+  have "M(?B)"
+    by simp
+  moreover from calculation
+  have "M(?C)"
+    by simp
+  moreover from calculation
+  have "M({p\<in>?C . P(fst(p),snd(p)) \<and> snd(p)\<in>fst(p)})" (is "M(?Prod)")
+    using assms separation_conj separation_in lam_replacement_fst lam_replacement_snd
+    by simp
+  moreover from calculation
+  have "M({z\<in>A . z=?Prod``{z}})" (is "M(?L)")
+     using separation_eq lam_replacement_identity
+      lam_replacement_constant[of ?Prod]
+      lam_replacement_image_sing_fun
+     by simp
+   moreover
+  have "?L = {z\<in>A . \<forall>x\<in>z. P(z,x)}"
+  proof -
+    have "P(z,x)" if "z\<in>A" "x\<in>z" "z =?Prod``{z}" for z x
+    proof -
+      from that
+      have "x\<in>?Prod``{z}"
+        by simp
+      then
+      show ?thesis
+        by auto
+    qed
+    moreover
+    have "z \<in> A \<Longrightarrow>
+         \<forall>x\<in>z. P(z, x) \<Longrightarrow> z = {p \<in> A \<times> \<Union>A . P(fst(p), snd(p)) \<and> snd(p) \<in> fst(p)} `` {z}" for z
+      by(intro equalityI subsetI,auto)
+    ultimately
+    show ?thesis
+      by(intro equalityI subsetI,auto)
+  qed
+  ultimately
+  show " \<exists>y[M]. \<forall>z[M]. z \<in> y \<longleftrightarrow> z \<in> A \<and> (\<forall>x\<in>z . P(z,x))"
+    by (rule_tac x="?L" in rexI,simp_all)
+qed
+
+lemma separation_Transset: "separation(M,Transset)"
+  unfolding Transset_def
+  using separation_all separation_subset lam_replacement_fst lam_replacement_snd
+  by auto
+
 end \<comment> \<open>\<^locale>\<open>M_replacement\<close>\<close>
 
 locale M_replacement_extra = M_replacement +
