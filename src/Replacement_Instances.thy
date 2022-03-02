@@ -641,13 +641,15 @@ lemmas (in M_ZF2_trans) M_replacement_ZF_instances = lam_replacement_domain
   lam_replacement_fst lam_replacement_snd lam_replacement_Union
   lam_replacement_Upair lam_replacement_image
   lam_replacement_Diff lam_replacement_converse
-  separation_fstsnd_in_sndsnd (* FIXME: Separation instances here! *)
-  separation_sndfst_eq_fstsnd
   replacement_fst2_snd2 replacement_sndfst_fst2_snd2
   lam_replacement_comp
 
+lemmas (in M_ZF2_trans) M_separation_ZF_instances =  separation_fstsnd_in_sndsnd
+  separation_sndfst_eq_fstsnd
+
 sublocale M_ZF2_trans \<subseteq> M_replacement "##M"
-  by unfold_locales (simp_all add: M_replacement_ZF_instances del:setclass_iff)
+  using M_replacement_ZF_instances M_separation_ZF_instances
+  by unfold_locales simp
 
 lemma (in M_ZF1_trans) separation_is_dcwit_body:
   assumes "(##M)(A)" "(##M)(a)" "(##M)(g)" "(##M)(R)"
