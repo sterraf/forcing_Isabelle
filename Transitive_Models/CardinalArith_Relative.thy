@@ -774,6 +774,7 @@ definition
 
 relationalize "transitive_rel" "is_transitive" external
 synthesize "is_transitive" from_definition assuming "nonempty"
+arity_theorem for "is_transitive_fm"
 
 lemma (in M_trivial) is_transitive_iff_transitive_rel:
   "M(A)\<Longrightarrow> M(r) \<Longrightarrow> transitive_rel(M, A, r) \<longleftrightarrow> is_transitive(M,A, r)"
@@ -781,6 +782,7 @@ lemma (in M_trivial) is_transitive_iff_transitive_rel:
 
 relationalize "linear_rel" "is_linear" external
 synthesize "is_linear" from_definition assuming "nonempty"
+arity_theorem for "is_linear_fm"
 
 lemma (in M_trivial) is_linear_iff_linear_rel:
   "M(A)\<Longrightarrow> M(r) \<Longrightarrow> is_linear(M,A, r) \<longleftrightarrow> linear_rel(M, A, r)"
@@ -788,6 +790,7 @@ lemma (in M_trivial) is_linear_iff_linear_rel:
 
 relationalize "wellfounded_on" "is_wellfounded_on" external
 synthesize "is_wellfounded_on" from_definition assuming "nonempty"
+arity_theorem for "is_wellfounded_on_fm"
 
 lemma (in M_trivial) is_wellfounded_on_iff_wellfounded_on:
   "M(A)\<Longrightarrow> M(r) \<Longrightarrow> is_wellfounded_on(M,A, r) \<longleftrightarrow> wellfounded_on(M, A, r)"
@@ -808,6 +811,7 @@ lemma (in M_trivial) is_well_ord_iff_wellordered:
 reldb_add relational "well_ord" "is_well_ord"
 reldb_add functional "well_ord" "well_ord"
 synthesize "is_well_ord" from_definition assuming "nonempty"
+arity_theorem for "is_well_ord_fm"
 
 \<comment> \<open>One keyword (functional or relational) means going
     from an absolute term to that kind of term\<close>

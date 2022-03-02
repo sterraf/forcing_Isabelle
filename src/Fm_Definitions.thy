@@ -188,8 +188,6 @@ definition
   "is_opname_check(M,on,s,x,y) \<equiv> \<exists>chx[M]. \<exists>sx[M]. is_check(M,on,x,chx) \<and>
         fun_apply(M,s,x,sx) \<and> is_opair_name(M,chx,sx,on,y)"
 
-declare fun_apply_iff_sats[iff_sats]
-
 synthesize "is_opname_check" from_definition assuming "nonempty"
 arity_theorem for "is_opname_check_fm"
 
@@ -267,9 +265,6 @@ arity_theorem for "frecrelP_fm"
 definition
   is_frecrel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
   "is_frecrel(M,A,r) \<equiv> \<exists>A2[M]. cartprod(M,A,A,A2) \<and> is_Collect(M,A2, frecrelP(M) ,r)"
-
-declare cartprod_iff_sats [iff_sats]
-declare Collect_iff_sats [iff_sats]
 
 synthesize "frecrel" from_definition "is_frecrel"
 arity_theorem for "frecrel_fm"
@@ -366,6 +361,7 @@ definition
 
 synthesize "Hfrc_at" from_definition "is_Hfrc_at"
 arity_theorem intermediate for "Hfrc_fm"
+
 lemma arity_Hfrc_fm[arity] :
   assumes
     "P\<in>nat" "leq\<in>nat" "fnnc\<in>nat" "f\<in>nat"
@@ -901,61 +897,6 @@ proof -
     by(simp only: Un_commute, subst Un_commute, simp add:ord_simp_union,force)
 qed
 
-lemma is_lambda_iff_sats[iff_sats]:
-  assumes is_F_iff_sats:
-    "!!a0 a1 a2.
-        [|a0\<in>Aa; a1\<in>Aa; a2\<in>Aa|]
-        ==> is_F(a1, a0) \<longleftrightarrow> sats(Aa, is_F_fm, Cons(a0,Cons(a1,Cons(a2,env))))"
-  shows
-    "nth(A, env) = Ab \<Longrightarrow>
-    nth(r, env) = ra \<Longrightarrow>
-    A \<in> nat \<Longrightarrow>
-    r \<in> nat \<Longrightarrow>
-    env \<in> list(Aa) \<Longrightarrow>
-    is_lambda(##Aa, Ab, is_F, ra) \<longleftrightarrow> Aa, env \<Turnstile> lambda_fm(is_F_fm,A, r)"
-  using sats_lambda_fm[OF assms, of A r] by simp
-
-\<comment> \<open>same as @{thm sats_is_wfrec_fm}, but changing length assumptions to
-    \<^term>\<open>0\<close> being in the model\<close>
-lemma sats_is_wfrec_fm':
-  assumes MH_iff_sats:
-    "!!a0 a1 a2 a3 a4.
-        [|a0\<in>A; a1\<in>A; a2\<in>A; a3\<in>A; a4\<in>A|]
-        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(A, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
-  shows
-    "[|x \<in> nat; y \<in> nat; z \<in> nat; env \<in> list(A); 0 \<in> A|]
-       ==> sats(A, is_wfrec_fm(p,x,y,z), env) \<longleftrightarrow>
-           is_wfrec(##A, MH, nth(x,env), nth(y,env), nth(z,env))"
-  using MH_iff_sats [THEN iff_sym] nth_closed sats_is_recfun_fm
-  by (simp add: is_wfrec_fm_def is_wfrec_def) blast
-
-lemma is_wfrec_iff_sats'[iff_sats]:
-  assumes MH_iff_sats:
-    "!!a0 a1 a2 a3 a4.
-        [|a0\<in>Aa; a1\<in>Aa; a2\<in>Aa; a3\<in>Aa; a4\<in>Aa|]
-        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(Aa, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
-    "nth(x, env) = xx" "nth(y, env) = yy" "nth(z, env) = zz"
-    "x \<in> nat" "y \<in> nat" "z \<in> nat" "env \<in> list(Aa)" "0 \<in> Aa"
-  shows
-    "is_wfrec(##Aa, MH, xx, yy, zz) \<longleftrightarrow> Aa, env \<Turnstile> is_wfrec_fm(p,x,y,z)"
-  using assms(2-4) sats_is_wfrec_fm'[OF assms(1,5-9)] by simp
-
-lemma is_wfrec_on_iff_sats[iff_sats]:
-  assumes MH_iff_sats:
-    "!!a0 a1 a2 a3 a4.
-        [|a0\<in>Aa; a1\<in>Aa; a2\<in>Aa; a3\<in>Aa; a4\<in>Aa|]
-        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(Aa, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
-  shows
-    "nth(x, env) = xx \<Longrightarrow>
-    nth(y, env) = yy \<Longrightarrow>
-    nth(z, env) = zz \<Longrightarrow>
-    x \<in> nat \<Longrightarrow>
-    y \<in> nat \<Longrightarrow>
-    z \<in> nat \<Longrightarrow>
-    env \<in> list(Aa) \<Longrightarrow>
-    0 \<in> Aa \<Longrightarrow> is_wfrec_on(##Aa, MH, aa,xx, yy, zz) \<longleftrightarrow> Aa, env \<Turnstile> is_wfrec_fm(p,x,y,z)"
-  using assms sats_is_wfrec_fm'[OF assms] unfolding is_wfrec_on_def by simp
-
 simple_rename "ren_F" src "[x_P, x_leq, x_o, x_f, y_c, x_bc, p, x, b]"
   tgt "[x_bc, y_c,b,x, x_P, x_leq, x_o, x_f, p]"
 
@@ -1010,13 +951,7 @@ definition is_order_body
            is_well_ord(M,X, x) \<and> is_ordertype(M,X, x,z)"
 
 synthesize "is_order_body" from_definition assuming "nonempty"
-arity_theorem for "is_transitive_fm"
-arity_theorem for "is_linear_fm"
-arity_theorem for "is_wellfounded_on_fm"
-arity_theorem for "is_well_ord_fm"
 
-arity_theorem for "pred_set_fm"
-arity_theorem for "image_fm"
 definition omap_wfrec_body where
   "omap_wfrec_body(A,r) \<equiv> (\<cdot>\<exists>\<cdot>image_fm(2, 0, 1) \<and>
                pred_set_fm
@@ -1026,7 +961,7 @@ definition omap_wfrec_body where
 lemma type_omap_wfrec_body_fm :"A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> omap_wfrec_body(A,r)\<in>formula"
   unfolding omap_wfrec_body_def by simp
 
-lemma arity_aux : "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> arity(omap_wfrec_body(A,r)) = (9+\<^sub>\<omega>A) \<union> (9+\<^sub>\<omega>r)"
+lemma arity_omap_wfrec_aux : "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> arity(omap_wfrec_body(A,r)) = (9+\<^sub>\<omega>A) \<union> (9+\<^sub>\<omega>r)"
   unfolding omap_wfrec_body_def
   using arity_image_fm arity_pred_set_fm pred_Un_distrib union_abs2[of 3] union_abs1
   by (simp add:FOL_arities, auto simp add:Un_assoc[symmetric] union_abs1)
@@ -1034,8 +969,8 @@ lemma arity_aux : "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> arity
 lemma arity_omap_wfrec: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>
   arity(is_wfrec_fm(omap_wfrec_body(A,r),succ(succ(succ(r))), 1, 0)) =
   (4+\<^sub>\<omega>A) \<union> (4+\<^sub>\<omega>r)"
-  using Arities.arity_is_wfrec_fm[OF _ _ _ _ _ arity_aux,of A r "3+\<^sub>\<omega>r" 1 0] pred_Un_distrib
-    union_abs1 union_abs2 type_omap_wfrec_body_fm
+  using Arities.arity_is_wfrec_fm[OF _ _ _ _ _ arity_omap_wfrec_aux,of A r "3+\<^sub>\<omega>r" 1 0]
+    pred_Un_distrib union_abs1 union_abs2 type_omap_wfrec_body_fm
   by auto
 
 lemma arity_isordermap: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>d\<in>nat\<Longrightarrow>
@@ -1139,7 +1074,5 @@ definition replacement_assm where
 
 definition ground_replacement_assm where
   "ground_replacement_assm(M,env,\<phi>) \<equiv> replacement_assm(M,env,ground_repl_fm(\<phi>))"
-
-hide_const (open) L
 
 end

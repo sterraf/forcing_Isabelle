@@ -189,10 +189,12 @@ lemmas formulas_def [fm_definitions] = fm_defs
 lemmas sep_rules' [iff_sats]  = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
   fun_plus_iff_sats omega_iff_sats
 
-declare rtran_closure_iff_sats [iff_sats] tran_closure_iff_sats [iff_sats]
-  is_eclose_iff_sats [iff_sats]
-arity_theorem for "rtran_closure_fm"
-arity_theorem for "tran_closure_fm"
-arity_theorem for "rtran_closure_mem_fm"
+lemmas  more_iff_sats [iff_sats] = rtran_closure_iff_sats tran_closure_iff_sats
+  is_eclose_iff_sats Inl_iff_sats Inr_iff_sats fun_apply_iff_sats cartprod_iff_sats
+  Collect_iff_sats
+
+txt\<open>The following command avoids that a commonly used one-letter variable be
+captured by the definition of the constructible universe \<^term>\<open>L\<close>\<close>
+hide_const (open) L
 
 end

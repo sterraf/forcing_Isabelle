@@ -10,18 +10,6 @@ copied and pasted, tweaking some lemmas if needed (for example, we might have
 needed to use some closedness results).
 \<close>
 
-(* FIXME: move these declarations and lemmas where they belong.*)
-declare Inl_iff_sats [iff_sats]
-declare Inr_iff_sats [iff_sats]
-arity_theorem for "Inl_fm"
-arity_theorem for "Inr_fm"
-
-arity_theorem for "injection_fm"
-arity_theorem for "surjection_fm"
-arity_theorem for "bijection_fm"
-arity_theorem for "order_isomorphism_fm"
-arity_theorem for "pred_set_fm"
-
 definition radd_body :: "[i,i,i] \<Rightarrow> o" where
   "radd_body(R,S) \<equiv> \<lambda>z. (\<exists>x y. z = \<langle>Inl(x), Inr(y)\<rangle>) \<or>
                   (\<exists>x' x. z = \<langle>Inl(x'), Inl(x)\<rangle> \<and> \<langle>x', x\<rangle> \<in> R) \<or>

@@ -19,7 +19,6 @@ lemma arity_upair_fm [arity] : "\<lbrakk>  t1\<in>nat ; t2\<in>nat ; up\<in>nat 
   using union_abs1 union_abs2 pred_Un
   by auto
 
-
 lemma arity_pair_fm [arity] : "\<lbrakk>  t1\<in>nat ; t2\<in>nat ; p\<in>nat  \<rbrakk> \<Longrightarrow>
   arity(pair_fm(t1,t2,p)) = \<Union> {succ(t1),succ(t2),succ(p)}"
   unfolding pair_fm_def
@@ -51,7 +50,7 @@ lemma arity_union_fm [arity] :
   by auto
 
 lemma arity_image_fm [arity] :
-  "\<lbrakk> x\<in>nat ; y\<in>nat ; z\<in>nat \<rbrakk> \<Longrightarrow> arity(image_fm(x,y,z)) = \<Union> {succ(x), succ(y), succ(z)}"
+  "\<lbrakk> x\<in>nat ; y\<in>nat ; z\<in>nat \<rbrakk> \<Longrightarrow> arity(image_fm(x,y,z)) = succ(z) \<union> (succ(x) \<union> succ(y))"
   unfolding image_fm_def
   using arity_pair_fm  union_abs1 union_abs2 pred_Un_distrib
   by auto
@@ -335,7 +334,7 @@ lemma arity_Replace_fm [arity] :
 
 lemma arity_lambda_fm [arity] :
   "\<lbrakk>p\<in>formula; v\<in>nat ; n\<in>nat; i\<in>nat\<rbrakk> \<Longrightarrow>  arity(p) = i \<Longrightarrow>
-    arity(lambda_fm(p,v,n)) = succ(n) \<union> (succ(v) \<union> pred(pred(pred(i))))"
+    arity(lambda_fm(p,v,n)) = succ(n) \<union> (succ(v) \<union> (pred^3(i)))"
   unfolding lambda_fm_def
   using arity_pair_fm pred_Un_distrib union_abs1 union_abs2
   by simp
@@ -350,14 +349,42 @@ lemma arity_transrec_fm [arity] :
 lemma arity_wfrec_replacement_fm :
   "\<lbrakk>p\<in>formula ; v\<in>nat ; n\<in>nat; Z\<in>nat ; i\<in>nat\<rbrakk> \<Longrightarrow> arity(p) = i \<Longrightarrow>
     arity(Exists(And(pair_fm(1,0,2),is_wfrec_fm(p,v,n,Z))))
-   = 2 \<union> v \<union> n \<union> Z \<union> pred(pred(pred(pred(pred(pred(i))))))"
+   = 2 \<union> v \<union> n \<union> Z \<union> (pred^6(i))"
   unfolding is_wfrec_fm_def
   using arity_succ_fm  arity_is_recfun_fm union_abs2 pred_Un_distrib arity_pair_fm
   by auto
 
-
 end \<comment> \<open>@{thm [source] FOL_arities}\<close>
 
 declare arity_subset_fm [simp del] arity_ordinal_fm[simp del, arity] arity_transset_fm[simp del]
+
+lemma Un_trasposition_aux1: "r \<union> s \<union> r = r \<union> s" by auto
+
+lemma Un_trasposition_aux2:
+  "r \<union> (s \<union> (r \<union> u))= r \<union> (s \<union> u)"
+  "r \<union> (s \<union> (t \<union> (r \<union> u)))= r \<union> (s \<union> (t \<union> u))" by auto
+
+txt\<open>Using the previous lemmas to guide the automatic arity calculation.\<close>
+
+context
+  notes Un_assoc[symmetric,simp] Un_trasposition_aux1[simp]
+begin
+arity_theorem for "rtran_closure_mem_fm"
+arity_theorem for "rtran_closure_fm"
+arity_theorem for "tran_closure_fm"
+end
+
+context
+  notes Un_assoc[simp] Un_trasposition_aux2[simp]
+begin
+arity_theorem for "injection_fm"
+arity_theorem for "surjection_fm"
+arity_theorem for "bijection_fm"
+arity_theorem for "order_isomorphism_fm"
+end
+
+arity_theorem for "Inl_fm"
+arity_theorem for "Inr_fm"
+arity_theorem for "pred_set_fm"
 
 end
