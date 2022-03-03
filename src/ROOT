@@ -17,3 +17,5 @@ session "Independence_CH" in "." =  "Transitive_Models" +
     "root.tex"
     "root.bib"
     "root.bst"
+
+(* Emmanuel Gunther <mailto:gunther@famaf.unc.edu.ar>, Miguel Pagano <https://cs.famaf.unc.edu.ar/~mpagano/>, Pedro Sánchez Terraf <https://cs.famaf.unc.edu.ar/~pedro>, and Matías Steinberg <mailto:matias.steinberg@mi.unc.edu.ar> *)

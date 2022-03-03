@@ -1,9 +1,0 @@
-# This file is used by various scripts. One can form groups of files using
-# doble quotes for marking the begin and end of each group.
-"Definitions_Main.thy
- FrecR_Arities.thy
- Replacement_Instances.thy
- Separation_Instances.thy
- ZF_Trans_Interpretations.thy
- CH.thy
- Kappa_Closed_Notions.thy"
