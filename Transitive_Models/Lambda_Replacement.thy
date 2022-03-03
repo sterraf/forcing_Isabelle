@@ -6,8 +6,10 @@ theory Lambda_Replacement
 begin
 
 text\<open>In this theory we prove several instances of separation and replacement
-in @{locale M_basic}. Moreover by assuming a seven instances of separation and
-ten instances of "lambda" replacements we prove a bunch of other instances. \<close>
+in @{locale M_basic}. Moreover we introduce a new locale assuming two instances
+of separation and twelve instances of lambda replacements (ie, replacement of
+the form $\lambda x y. y=\langle x, f(x) \rangle$) we prove a bunch of other
+instances.\<close>
 
 
 definition
@@ -519,8 +521,6 @@ locale M_replacement = M_basic +
     and
     lam_replacement_Union: "lam_replacement(M,Union)"
     and
-    middle_separation: "separation(M, \<lambda>x. snd(fst(x))=fst(snd(x)))"
-    and
     middle_del_replacement: "strong_replacement(M, \<lambda>x y. y=\<langle>fst(fst(x)),snd(snd(x))\<rangle>)"
     and
     product_replacement:
@@ -531,6 +531,8 @@ locale M_replacement = M_basic +
     lam_replacement_Diff:"lam_replacement(M, \<lambda>p. fst(p) - snd(p))"
     and
     lam_replacement_Image:"lam_replacement(M, \<lambda>p. fst(p) `` snd(p))"
+    and
+    middle_separation: "separation(M, \<lambda>x. snd(fst(x))=fst(snd(x)))"
     and
     separation_fst_in_snd: "separation(M, \<lambda>y. fst(snd(y)) \<in> snd(snd(y)))"
     and

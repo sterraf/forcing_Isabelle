@@ -56,7 +56,7 @@
 \begin{document}
 
 \title{Transitive Models of Fragments of ZF}
-\author{Emmanuel Gunther\thanks{Universidad Nacional de C\'ordoba. 
+\author{Emmanuel Gunther\thanks{Universidad Nacional de C\'ordoba.
     Facultad de Matem\'atica, Astronom\'{\i}a,  F\'{\i}sica y
     Computaci\'on.}
   \and
@@ -87,15 +87,16 @@
 
 \section{Introduction}
 
-As it was explained in \cite[Sect.~3]{2020arXiv200109715G} and elsewhere,
-relativization of concepts is a key tool to obtain results in forcing.
+Relativization of concepts is a key tool to obtain results in forcing,
+as it is explained in \cite[Sect.~3]{2020arXiv200109715G} and elsewhere.
 
 In this session, we cast some theories in relative form, in a
 way that they now refer to a fixed class $M$ as the universe of
 discourse. Whenever it was possible, we tried to minimize the changes
-to the structure and proof scripts. For this reason, some
-comments of the original text as well as outdated \textbf{apply}
-commands appear profusely in the following theories.
+to the structure and proof scripts of the absolute concepts. For
+this reason, some comments of the original text as well as
+outdated \textbf{apply} commands appear profusely in the following
+theories.
 
 A repeated pattern that appears is that the relativized result can be
 proved \emph{mutatis mutandis}, with remaining proof obligations that
@@ -103,7 +104,13 @@ the objects constructed actually belong to the model $M$. Another
 aspect was that the management of higher order constructs always posed
 some extra problems, already noted by Paulson \cite[Sect.~7.3]{MR2051585}.
 
-We proceed to enumerate the theories that were “ported” to relative
+In the theory \theory{Lambda\_Replacement} we introduce a new locale assuming
+two instances of separation and twelve instances of ``lambda replacements''
+(ie, replacement of the form $\lambda x y. y=\langle x, f(x) \rangle$)
+that allow for having some form of compositionality of further instances
+of separations and replacements.
+
+We proceed to enumerate the theories that were ``ported'' to relative
 form, briefly commenting on each of them. Below, we refer to the
 original theories as the \emph{source} and, correspondingly, call
 \emph{target} the relativized version. We omit the \theory{.thy}
@@ -141,7 +148,7 @@ suffixes.
   \begin{enumerate}
   \item \theory{ZF\_Library}. The target includes a big section of
     auxiliary lemmas and commands that aid the relativization. We
-    needed to make explicit the witnesses (mainly functions) in some of the 
+    needed to make explicit the witnesses (mainly functions) in some of the
     existential results proved in the source, since only in that way
     we would be able to show that they belonged to the model.
   \item \theory{Cardinal\_Library}. Porting was relatively
@@ -162,6 +169,7 @@ suffixes.
   \end{enumerate}
 \end{enumerate}
 % generated text of all theories
+
 \input{session}
 
 \bibliographystyle{root}
