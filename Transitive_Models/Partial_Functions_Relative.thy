@@ -2,16 +2,16 @@ section\<open>Cohen forcing notions\<close>
 
 theory Partial_Functions_Relative
   imports
-    FiniteFun_Relative
     Cardinal_Library_Relative
 begin
+
 text\<open>In this theory we introduce bounded partial functions and its relative
 version; for historical reasons the relative version is based on a proper
 definition of partial functions.
 
 We note that finite partial functions are easier and are used to prove
-some lemmas about finite sets in the theory ZF_Library_Relative.
-\<close>
+some lemmas about finite sets in the theory
+\<^theory>\<open>Transitive_Models.ZF_Library_Relative\<close>.\<close>
 
 definition
   Fn :: "[i,i,i] \<Rightarrow> i" where

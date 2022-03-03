@@ -2,7 +2,7 @@ theory Discipline_Base
   imports
     "ZF-Constructible.Rank"
     ZF_Miscellanea
-    "Relativization"
+    Relativization
 
 begin
 

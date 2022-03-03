@@ -1,7 +1,6 @@
 section\<open>Arities of internalized formulas\<close>
 theory Arities
   imports
-    Internalizations
     Discipline_Base
 begin
 

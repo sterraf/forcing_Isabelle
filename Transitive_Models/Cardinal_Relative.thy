@@ -2,7 +2,6 @@ section\<open>Relative, Choice-less Cardinal Numbers\<close>
 
 theory Cardinal_Relative
   imports
-    Discipline_Cardinal
     Lambda_Replacement
     Univ_Relative
 begin

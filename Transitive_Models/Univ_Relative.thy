@@ -3,8 +3,6 @@ theory Univ_Relative
   imports
     "ZF-Constructible.Rank"
     "ZF.Univ"
-    Internalizations
-    Recursion_Thms
     Discipline_Cardinal
 
 begin

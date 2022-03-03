@@ -11,7 +11,7 @@ session "Transitive_Models" =  "Delta_System_Lemma" +
     prerrequisite to our formalization of the independence of the
     Continuum Hypothesis.
   "
-  options [timeout=500, document = pdf, document_output = "output",
+  options [timeout=180, document = pdf, document_output = "output",
 	   document_variants = "document:outline=/proof,/ML"]
  theories
     "Renaming_Auto"
