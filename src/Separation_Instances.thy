@@ -207,12 +207,6 @@ lemma (in M_ZF1_trans) separation_sndfst_eq_fstsnd:
   unfolding sndfst_eq_fstsnd_def
   by simp
 
-lemma (in M_ZF1_trans) separation_Ord:
- "separation(##M, Ord)"
-  using separation_in_ctm[where \<phi>="ordinal_fm(0)" and env="[]"] ordinal_abs
-    ord_simp_union ordinal_iff_sats[where env="[_]",symmetric]
-  by (simp add:arity)
-
 (*  "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))" *)
 definition insnd_ballPair :: "[i,i,i] \<Rightarrow> o" where
   "insnd_ballPair(B,A) \<equiv> \<lambda>p. \<forall>x\<in>B. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> A)"

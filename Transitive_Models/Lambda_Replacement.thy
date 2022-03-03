@@ -1753,9 +1753,6 @@ proof(clarify)
   let ?B="\<Union>A"
   let ?C="A\<times>?B"
   note \<open>M(A)\<close>
-  moreover from this
-  have "M(?B)"
-    by simp
   moreover from calculation
   have "M(?C)"
     by simp
@@ -1766,27 +1763,20 @@ proof(clarify)
   moreover from calculation
   have "M({z\<in>A . z=?Prod``{z}})" (is "M(?L)")
      using separation_eq lam_replacement_identity
-      lam_replacement_constant[of ?Prod]
-      lam_replacement_image_sing_fun
+      lam_replacement_constant[of ?Prod] lam_replacement_image_sing_fun
      by simp
    moreover
   have "?L = {z\<in>A . \<forall>x\<in>z. P(z,x)}"
   proof -
-    have "P(z,x)" if "z\<in>A" "x\<in>z" "z =?Prod``{z}" for z x
-    proof -
-      from that
-      have "x\<in>?Prod``{z}"
-        by simp
-      then
-      show ?thesis
+    have "P(z,x)" if "z\<in>A" "x\<in>z" "x\<in>?Prod``{z}" for z x
+      using that
         by auto
-    qed
     moreover
-    have "z \<in> A \<Longrightarrow>
-         \<forall>x\<in>z. P(z, x) \<Longrightarrow> z = {p \<in> A \<times> \<Union>A . P(fst(p), snd(p)) \<and> snd(p) \<in> fst(p)} `` {z}" for z
+    have "z = ?Prod `` {z}" if "z\<in>A" "\<forall>x\<in>z. P(z, x)" for z
+      using that
       by(intro equalityI subsetI,auto)
     ultimately
-    show ?thesis
+    show ?thesis 
       by(intro equalityI subsetI,auto)
   qed
   ultimately
@@ -1797,6 +1787,44 @@ qed
 lemma separation_Transset: "separation(M,Transset)"
   unfolding Transset_def
   using separation_all separation_subset lam_replacement_fst lam_replacement_snd
+  by auto
+
+lemma separation_comp : 
+  assumes "separation(M,P)" "lam_replacement(M,f)" "\<forall>x[M]. M(f(x))"
+  shows "separation(M,\<lambda>x. P(f(x)))"
+  unfolding separation_def
+proof(clarify)
+  fix A
+  assume "M(A)"
+  let ?B="{f(a) . a \<in> A}"
+  let ?C="A\<times>{b\<in>?B . P(b)}"
+  note \<open>M(A)\<close>
+  moreover from calculation
+  have "M(?C)"
+    using lam_replacement_imp_strong_replacement assms RepFun_closed transM[of _ A]
+    by simp
+  moreover from calculation
+  have "M({p\<in>?C . f(fst(p)) = snd(p)})" (is "M(?Prod)")
+    using assms separation_eq lam_replacement_fst lam_replacement_snd
+      lam_replacement_hcomp
+    by simp
+  moreover from calculation
+  have "M({fst(p) . p\<in>?Prod})" (is "M(?L)")
+    using lam_replacement_imp_strong_replacement lam_replacement_fst RepFun_closed 
+      transM[of _ ?Prod]
+     by simp
+   moreover
+  have "?L = {z\<in>A . P(f(z))}"
+      by(intro equalityI subsetI,auto)
+  ultimately
+  show " \<exists>y[M]. \<forall>z[M]. z \<in> y \<longleftrightarrow> z \<in> A \<and> P(f(z))"
+    by (rule_tac x="?L" in rexI,simp_all)
+qed
+
+lemma separation_Ord: "separation(M,Ord)"
+  unfolding Ord_def
+  using separation_conj separation_Transset separation_all
+    separation_comp separation_Transset lam_replacement_snd
   by auto
 
 end \<comment> \<open>\<^locale>\<open>M_replacement\<close>\<close>
