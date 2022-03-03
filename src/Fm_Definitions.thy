@@ -25,47 +25,6 @@ on its theory.
 declare arity_subset_fm [simp del] arity_ordinal_fm[simp del, arity] arity_transset_fm[simp del]
   FOL_arities[simp del]
 
-abbreviation
-  dec10  :: i   ("10") where "10 \<equiv> succ(9)"
-abbreviation
-  dec11  :: i   ("11") where "11 \<equiv> succ(10)"
-abbreviation
-  dec12  :: i   ("12") where "12 \<equiv> succ(11)"
-abbreviation
-  dec13  :: i   ("13") where "13 \<equiv> succ(12)"
-abbreviation
-  dec14  :: i   ("14") where "14 \<equiv> succ(13)"
-abbreviation
-  dec15  :: i   ("15") where "15 \<equiv> succ(14)"
-abbreviation
-  dec16  :: i   ("16") where "16 \<equiv> succ(15)"
-abbreviation
-  dec17  :: i   ("17") where "17 \<equiv> succ(16)"
-abbreviation
-  dec18  :: i   ("18") where "18 \<equiv> succ(17)"
-abbreviation
-  dec19  :: i   ("19") where "19 \<equiv> succ(18)"
-abbreviation
-  dec20  :: i   ("20") where "20 \<equiv> succ(19)"
-abbreviation
-  dec21  :: i   ("21") where "21 \<equiv> succ(20)"
-abbreviation
-  dec22  :: i   ("22") where "22 \<equiv> succ(21)"
-abbreviation
-  dec23  :: i   ("23") where "23 \<equiv> succ(22)"
-abbreviation
-  dec24  :: i   ("24") where "24 \<equiv> succ(23)"
-abbreviation
-  dec25  :: i   ("25") where "25 \<equiv> succ(24)"
-abbreviation
-  dec26  :: i   ("26") where "26 \<equiv> succ(25)"
-abbreviation
-  dec27  :: i   ("27") where "27 \<equiv> succ(26)"
-abbreviation
-  dec28  :: i   ("28") where "28 \<equiv> succ(27)"
-abbreviation
-  dec29  :: i   ("29") where "29 \<equiv> succ(28)"
-
 txt\<open>Formulas for particular replacement instances\<close>
 
 text\<open>Now we introduce some definitions used in the definition of check; which
@@ -1045,23 +1004,23 @@ definition
 
 synthesize "PHrank" from_definition assuming "nonempty"
 
-(*  1 *) definition wfrec_Hfrc_at_fm where "wfrec_Hfrc_at_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(Hfrc_at_fm(8, 9, 2, 1, 0), 5, 1, 0) \<cdot>\<cdot>)"
-(*  3 *) definition list_repl1_intf_fm where "list_repl1_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(list_functor_fm(13, 1, 0), 10, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
-(*  4 *) definition list_repl2_intf_fm where "list_repl2_intf_fm \<equiv> \<cdot>\<cdot>0 \<in> 4\<cdot> \<and> is_iterates_fm(list_functor_fm(13, 1, 0), 3, 0, 1) \<cdot>"
-(*  5 *) definition formula_repl2_intf_fm where "formula_repl2_intf_fm \<equiv> \<cdot>\<cdot>0 \<in> 3\<cdot> \<and> is_iterates_fm(formula_functor_fm(1, 0), 2, 0, 1) \<cdot>"
-(*  6 *) definition eclose_repl2_intf_fm where "eclose_repl2_intf_fm \<equiv> \<cdot>\<cdot>0 \<in> 3\<cdot> \<and> is_iterates_fm(\<cdot>\<Union>1 is 0\<cdot>, 2, 0, 1) \<cdot>"
-(*  7 *) definition powapply_repl_fm where "powapply_repl_fm \<equiv> is_Powapply_fm(2,0,1)"
-(*  8 *) definition phrank_repl_fm where "phrank_repl_fm \<equiv> PHrank_fm(2,0,1)"
-(*  9 *) definition wfrec_rank_fm where "wfrec_rank_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(is_Hrank_fm(2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
-(* 10 *) definition trans_repl_HVFrom_fm where "trans_repl_HVFrom_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(is_HVfrom_fm(8, 2, 1, 0), 4, 1, 0) \<cdot>\<cdot>)"
-(* 11 *) definition wfrec_Hcheck_fm where "wfrec_Hcheck_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(is_Hcheck_fm(8, 2, 1, 0), 4, 1, 0) \<cdot>\<cdot>) "
-(* 12 *) definition repl_PHcheck_fm where "repl_PHcheck_fm \<equiv> PHcheck_fm(2,3,0,1)"
-(* 13 *) definition check_replacement_fm where "check_replacement_fm \<equiv> \<cdot>check_fm(0,2,1) \<and> \<cdot>0 \<in> 3\<cdot>\<cdot>"
-(* 14 *) definition G_dot_in_M_fm where "G_dot_in_M_fm \<equiv>  \<cdot>(\<cdot>\<exists>\<cdot>\<cdot>1\<^sup>v3 is 0\<cdot> \<and> pair_fm(0, 1, 2) \<cdot>\<cdot>) \<and> \<cdot>0 \<in> 3\<cdot>\<cdot>"
-(* 15 *) definition repl_opname_check_fm where "repl_opname_check_fm \<equiv> \<cdot>is_opname_check_fm(3,2,0,1) \<and> \<cdot>0 \<in> 4\<cdot>\<cdot>"
-(* 16 *) definition tl_repl_intf_fm where "tl_repl_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(tl_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
-(* 17 *) definition formula_repl1_intf_fm where "formula_repl1_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(formula_functor_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
-(* 18 *) definition eclose_repl1_intf_fm where "eclose_repl1_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(big_union_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
+definition wfrec_Hfrc_at_fm where "wfrec_Hfrc_at_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(Hfrc_at_fm(8, 9, 2, 1, 0), 5, 1, 0) \<cdot>\<cdot>)"
+definition list_repl1_intf_fm where "list_repl1_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(list_functor_fm(13, 1, 0), 10, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
+definition list_repl2_intf_fm where "list_repl2_intf_fm \<equiv> \<cdot>\<cdot>0 \<in> 4\<cdot> \<and> is_iterates_fm(list_functor_fm(13, 1, 0), 3, 0, 1) \<cdot>"
+definition formula_repl2_intf_fm where "formula_repl2_intf_fm \<equiv> \<cdot>\<cdot>0 \<in> 3\<cdot> \<and> is_iterates_fm(formula_functor_fm(1, 0), 2, 0, 1) \<cdot>"
+definition eclose_repl2_intf_fm where "eclose_repl2_intf_fm \<equiv> \<cdot>\<cdot>0 \<in> 3\<cdot> \<and> is_iterates_fm(\<cdot>\<Union>1 is 0\<cdot>, 2, 0, 1) \<cdot>"
+definition powapply_repl_fm where "powapply_repl_fm \<equiv> is_Powapply_fm(2,0,1)"
+definition phrank_repl_fm where "phrank_repl_fm \<equiv> PHrank_fm(2,0,1)"
+definition wfrec_rank_fm where "wfrec_rank_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(is_Hrank_fm(2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
+definition trans_repl_HVFrom_fm where "trans_repl_HVFrom_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(is_HVfrom_fm(8, 2, 1, 0), 4, 1, 0) \<cdot>\<cdot>)"
+definition wfrec_Hcheck_fm where "wfrec_Hcheck_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(is_Hcheck_fm(8, 2, 1, 0), 4, 1, 0) \<cdot>\<cdot>) "
+definition repl_PHcheck_fm where "repl_PHcheck_fm \<equiv> PHcheck_fm(2,3,0,1)"
+definition check_replacement_fm where "check_replacement_fm \<equiv> \<cdot>check_fm(0,2,1) \<and> \<cdot>0 \<in> 3\<cdot>\<cdot>"
+definition G_dot_in_M_fm where "G_dot_in_M_fm \<equiv>  \<cdot>(\<cdot>\<exists>\<cdot>\<cdot>1\<^sup>v3 is 0\<cdot> \<and> pair_fm(0, 1, 2) \<cdot>\<cdot>) \<and> \<cdot>0 \<in> 3\<cdot>\<cdot>"
+definition repl_opname_check_fm where "repl_opname_check_fm \<equiv> \<cdot>is_opname_check_fm(3,2,0,1) \<and> \<cdot>0 \<in> 4\<cdot>\<cdot>"
+definition tl_repl_intf_fm where "tl_repl_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(tl_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
+definition formula_repl1_intf_fm where "formula_repl1_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(formula_functor_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
+definition eclose_repl1_intf_fm where "eclose_repl1_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(big_union_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
 
 definition replacement_assm where
   "replacement_assm(M,env,\<phi>) \<equiv> \<phi> \<in> formula \<longrightarrow> env \<in> list(M) \<longrightarrow>

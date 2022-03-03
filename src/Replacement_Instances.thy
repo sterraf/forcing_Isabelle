@@ -114,7 +114,7 @@ manual_arity for "is_nat_case_dcwit_aux_fm"
 manual_arity for "dcwit_repl_body_fm"
   using arity_is_nat_case_dcwit_aux_fm[THEN [6] arity_is_wfrec_fm]
   unfolding dcwit_repl_body_fm_def  is_nat_case_dcwit_aux_fm_def dcwit_aux_fm_def
-  by (auto simp add: arity(1-35))
+  by (auto simp add: arity(1-33))
 
 lemma arity_dcwit_repl_body: "arity(dcwit_repl_body_fm(6,5,4,3,2,0,1)) = 7"
   by (simp_all add: FOL_arities arity_dcwit_repl_body_fm ord_simp_union)

@@ -18,8 +18,8 @@ lemma (in M_trivial) singleton_abs[simp] :
   "\<lbrakk> M(x) ; M(s) \<rbrakk> \<Longrightarrow> is_singleton(M,x,s) \<longleftrightarrow> s = {x}"
   unfolding is_singleton_def using nonempty by simp
 
-
 synthesize "singleton" from_definition "is_singleton"
+notation singleton_fm (\<open>\<cdot>{_} is _\<cdot>\<close>)
 
 (* TODO: check if the following lemmas should be here or not? *)
 lemma (in M_trivial) singleton_closed [simp]:

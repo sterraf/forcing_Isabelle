@@ -22,13 +22,22 @@ relationalize "HAleph_rel" "is_HAleph"
 synthesize "is_HAleph" from_definition assuming "nonempty"
 arity_theorem intermediate for "is_HAleph_fm"
 
+lemma arity_is_HAleph_fm_aux:
+  assumes
+    "i \<in> nat" "r \<in> nat"
+    \<comment> \<open>NOTE: assumptions are \<^bold>\<open>not\<close> used, but if omitted, next lemma fails!\<close>
+  shows
+    "arity(Replace_fm(8 +\<^sub>\<omega> i, \<cdot>10 +\<^sub>\<omega> r`0 is 1\<cdot>, 3)) = 9 +\<^sub>\<omega> i \<union> pred(pred(11 +\<^sub>\<omega> r))"
+  using arity_Replace_fm[of "\<cdot> (10+\<^sub>\<omega>r)`0 is 1\<cdot>" "8+\<^sub>\<omega>i" 3 "(11+\<^sub>\<omega>r) \<union> 1 \<union> 2"]
+    ord_simp_union
+  by (auto simp:arity)
+
 lemma arity_is_HAleph_fm[arity]:
-  assumes 
+  assumes
     "i \<in> nat" "r \<in> nat" "l \<in> nat"
   shows
     "arity(is_HAleph_fm(i, r, l)) =  succ(i) \<union> succ(l) \<union> succ(r)"
-  using assms arity_fun_apply_fm[of 0 1 "succ(9+\<^sub>\<omega>r)"] arity_is_HAleph_fm'
-    arity_Replace_fm[of "\<cdot> succ(9+\<^sub>\<omega>r)`0 is 1\<cdot>" "8+\<^sub>\<omega>i" 3 "succ(succ(9+\<^sub>\<omega>r)) \<union> 1 \<union> 2"] pred_Un 
+  using assms pred_Un arity_is_HAleph_fm_aux arity_is_HAleph_fm'
   by auto
 
 definition

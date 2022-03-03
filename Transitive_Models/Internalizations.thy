@@ -36,6 +36,49 @@ lemma (in M_basic) choice_ax_abs :
   unfolding choice_ax_def
   by simp
 
+txt\<open>Setting up notation for internalized formulas\<close>
+
+abbreviation
+  dec10  :: i   ("10") where "10 \<equiv> succ(9)"
+abbreviation
+  dec11  :: i   ("11") where "11 \<equiv> succ(10)"
+abbreviation
+  dec12  :: i   ("12") where "12 \<equiv> succ(11)"
+abbreviation
+  dec13  :: i   ("13") where "13 \<equiv> succ(12)"
+abbreviation
+  dec14  :: i   ("14") where "14 \<equiv> succ(13)"
+abbreviation
+  dec15  :: i   ("15") where "15 \<equiv> succ(14)"
+abbreviation
+  dec16  :: i   ("16") where "16 \<equiv> succ(15)"
+abbreviation
+  dec17  :: i   ("17") where "17 \<equiv> succ(16)"
+abbreviation
+  dec18  :: i   ("18") where "18 \<equiv> succ(17)"
+abbreviation
+  dec19  :: i   ("19") where "19 \<equiv> succ(18)"
+abbreviation
+  dec20  :: i   ("20") where "20 \<equiv> succ(19)"
+abbreviation
+  dec21  :: i   ("21") where "21 \<equiv> succ(20)"
+abbreviation
+  dec22  :: i   ("22") where "22 \<equiv> succ(21)"
+abbreviation
+  dec23  :: i   ("23") where "23 \<equiv> succ(22)"
+abbreviation
+  dec24  :: i   ("24") where "24 \<equiv> succ(23)"
+abbreviation
+  dec25  :: i   ("25") where "25 \<equiv> succ(24)"
+abbreviation
+  dec26  :: i   ("26") where "26 \<equiv> succ(25)"
+abbreviation
+  dec27  :: i   ("27") where "27 \<equiv> succ(26)"
+abbreviation
+  dec28  :: i   ("28") where "28 \<equiv> succ(27)"
+abbreviation
+  dec29  :: i   ("29") where "29 \<equiv> succ(28)"
+
 notation Member (\<open>\<cdot>_ \<in>/ _\<cdot>\<close>)
 notation Equal (\<open>\<cdot>_ =/ _\<cdot>\<close>)
 notation Nand (\<open>\<cdot>\<not>'(_ \<and>/ _')\<cdot>\<close>)
@@ -55,13 +98,51 @@ notation big_union_fm (\<open>\<cdot>\<Union>_ is _\<cdot>\<close>)
 notation upair_fm (\<open>\<cdot>{_,_} is _ \<cdot>\<close>)
 notation ordinal_fm (\<open>\<cdot>_ is ordinal\<cdot>\<close>)
 
+
+notation pair_fm (\<open>\<cdot>\<langle>_,_\<rangle> is _ \<cdot>\<close>)
+notation composition_fm (\<open>\<cdot>_ \<circ> _ is _ \<cdot>\<close>)
+notation domain_fm (\<open>\<cdot>dom'(_') is _ \<cdot>\<close>)
+notation range_fm (\<open>\<cdot>ran'(_') is _ \<cdot>\<close>)
+notation union_fm (\<open>\<cdot>_ \<union> _ is _ \<cdot>\<close>)
+notation image_fm (\<open>\<cdot>_ `` _ is _ \<cdot>\<close>)
+notation pre_image_fm (\<open>\<cdot>_ -`` _ is _ \<cdot>\<close>)
+notation field_fm (\<open>\<cdot>fld'(_') is _ \<cdot>\<close>)
+notation cons_fm (\<open>\<cdot>cons'(_,_') is _ \<cdot>\<close>)
+notation number1_fm (\<open>\<cdot>_ is the number one\<cdot>\<close>)
+notation function_fm (\<open>\<cdot>_ is funct\<cdot>\<close>)
+notation relation_fm (\<open>\<cdot>_ is relat\<cdot>\<close>)
+notation restriction_fm (\<open>\<cdot>_ \<restriction> _ is _ \<cdot>\<close>)
+notation transset_fm (\<open>\<cdot>_ is transitive\<cdot>\<close>)
+notation limit_ordinal_fm (\<open>\<cdot>_ is limit\<cdot>\<close>)
+notation finite_ordinal_fm (\<open>\<cdot>_ is finite ord\<cdot>\<close>)
+notation omega_fm (\<open>\<cdot>_ is \<omega>\<cdot>\<close>)
+notation cartprod_fm (\<open>\<cdot>_ \<times> _ is _\<cdot>\<close>)
+notation Memrel_fm (\<open>\<cdot>Memrel'(_') is _\<cdot>\<close>)
+notation quasinat_fm (\<open>\<cdot>_ is qnat\<cdot>\<close>)
+(* notation rtran_closure_mem_fm (\<open>\<cdot>{_,_} is _ \<cdot>\<close>)
+notation rtran_closure_fm (\<open>\<cdot>{_,_} is _ \<cdot>\<close>)
+notation tran_closure_fm (\<open>\<cdot>_ is  \<cdot>\<close>)
+notation order_isomorphism_fm (\<open>\<cdot>{_,_} is _ \<cdot>\<close>) *)
+notation Inl_fm (\<open>\<cdot>Inl'(_') is _ \<cdot>\<close>)
+notation Inr_fm (\<open>\<cdot>Inr'(_') is _ \<cdot>\<close>)
+notation pred_set_fm (\<open>\<cdot>_-predecessors of _ are _\<cdot>\<close>)
+
+
+abbreviation
+  fm_typedfun :: "[i,i,i] \<Rightarrow> i" (\<open>\<cdot>_ : _ \<rightarrow> _\<cdot>\<close>) where
+  "fm_typedfun(f,A,B) \<equiv> typed_function_fm(A,B,f)"
+
 abbreviation
   fm_surjection :: "[i,i,i] \<Rightarrow> i" (\<open>\<cdot>_ surjects _ to _\<cdot>\<close>) where
   "fm_surjection(f,A,B) \<equiv> surjection_fm(A,B,f)"
 
 abbreviation
-  fm_typedfun :: "[i,i,i] \<Rightarrow> i" (\<open>\<cdot>_ : _ \<rightarrow> _\<cdot>\<close>) where
-  "fm_typedfun(f,A,B) \<equiv> typed_function_fm(A,B,f)"
+  fm_injection :: "[i,i,i] \<Rightarrow> i" (\<open>\<cdot>_ injects _ to _\<cdot>\<close>) where
+  "fm_injection(f,A,B) \<equiv> injection_fm(A,B,f)"
+
+abbreviation
+  fm_bijection :: "[i,i,i] \<Rightarrow> i" (\<open>\<cdot>_ bijects _ to _\<cdot>\<close>) where
+  "fm_bijection(f,A,B) \<equiv> bijection_fm(A,B,f)"
 
 text\<open>We found it useful to have slightly different versions of some
 results in ZF-Constructible:\<close>
