@@ -691,14 +691,16 @@ end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 
 (*** An infinite cardinal equals its square (Kunen, Thm 10.12, page 29) ***)
 
-(* FIXME: Awful proof, it essentially repeats the same
-    argument twice\<close> *)
+
 lemma (in M_ordertype) ordertype_abs[absolut]:
-      "[| wellordered(M,A,r); M(A); M(r); M(i)|] ==>
-      otype(M,A,r,i) \<longleftrightarrow> i = ordertype(A,r)"
+  assumes "wellordered(M,A,r)" "M(A)" "M(r)" "M(i)"
+  shows "otype(M,A,r,i) \<longleftrightarrow> i = ordertype(A,r)"
+    \<comment> \<open>Awful proof, it essentially repeats the same argument twice\<close>
 proof (intro iffI)
-  assume "wellordered(M, A, r)" "M(A)" "M(r)" "M(i)" "otype(M, A, r, i)"
-  moreover from this
+  note assms
+  moreover
+  assume "otype(M, A, r, i)"
+  moreover from calculation
   obtain f j where "M(f)"  "M(j)"  "Ord(j)" "f \<in> \<langle>A, r\<rangle> \<cong> \<langle>j, Memrel(j)\<rangle>"
     using ordertype_exists[of A r] by auto
   moreover from calculation
@@ -728,9 +730,10 @@ proof (intro iffI)
     by (force intro:ordertypes_are_absolute[of A r _ i]
         simp add:Ord_otype[OF _ well_ord_is_trans_on])
 next
-  assume "wellordered(M,A, r)" "i = ordertype(A, r)"
-    "M(i)" "M(A)" "M(r)"
-  moreover from this
+  note assms
+  moreover
+  assume "i = ordertype(A, r)"
+  moreover from calculation
   obtain h where "omap(M, A, r, h)" "M(h)"
     using omap_exists by auto
   moreover from calculation
