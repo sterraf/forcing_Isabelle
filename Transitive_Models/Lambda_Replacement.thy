@@ -1409,11 +1409,11 @@ lemma lam_replacement_Lambda:
 proof (intro lam_replacement_iff_lam_closed[THEN iffD2]; clarify)
   have aux_sep: "\<forall>x[M]. separation(M,\<lambda>y. \<langle>fst(x), y\<rangle> \<in> A)"
     if "M(X)" "M(A)" for X A
-      using separation_in lam_replacement_hcomp2[OF lam_replacement_hcomp[OF  lam_replacement_constant lam_replacement_fst]
-          lam_replacement_identity _ _ lam_replacement_Pair]
-        lam_replacement_constant[of A]
-        that
-      by simp
+    using separation_in lam_replacement_hcomp2[OF lam_replacement_hcomp[OF  lam_replacement_constant lam_replacement_fst]
+        lam_replacement_identity _ _ lam_replacement_Pair]
+      lam_replacement_constant[of A]
+      that
+    by simp
   have aux_closed: "\<forall>x[M]. M({y \<in> X . \<langle>fst(x), y\<rangle> \<in> A})" if "M(X)" "M(A)" for X A
     using aux_sep that by simp
   have aux_lemma: "lam_replacement(M,\<lambda>p . {y \<in> X . \<langle>fst(p), y\<rangle> \<in> A})"
@@ -1764,21 +1764,21 @@ proof(clarify)
     by simp
   moreover from calculation
   have "M({z\<in>A . z=?Prod``{z}})" (is "M(?L)")
-     using separation_eq lam_replacement_identity
+    using separation_eq lam_replacement_identity
       lam_replacement_constant[of ?Prod] lam_replacement_image_sing_fun
-     by simp
-   moreover
+    by simp
+  moreover
   have "?L = {z\<in>A . \<forall>x\<in>z. P(z,x)}"
   proof -
     have "P(z,x)" if "z\<in>A" "x\<in>z" "x\<in>?Prod``{z}" for z x
       using that
-        by auto
+      by auto
     moreover
     have "z = ?Prod `` {z}" if "z\<in>A" "\<forall>x\<in>z. P(z, x)" for z
       using that
       by(intro equalityI subsetI,auto)
     ultimately
-    show ?thesis 
+    show ?thesis
       by(intro equalityI subsetI,auto)
   qed
   ultimately
@@ -1791,7 +1791,7 @@ lemma separation_Transset: "separation(M,Transset)"
   using separation_all separation_subset lam_replacement_fst lam_replacement_snd
   by auto
 
-lemma separation_comp : 
+lemma separation_comp :
   assumes "separation(M,P)" "lam_replacement(M,f)" "\<forall>x[M]. M(f(x))"
   shows "separation(M,\<lambda>x. P(f(x)))"
   unfolding separation_def
@@ -1812,12 +1812,12 @@ proof(clarify)
     by simp
   moreover from calculation
   have "M({fst(p) . p\<in>?Prod})" (is "M(?L)")
-    using lam_replacement_imp_strong_replacement lam_replacement_fst RepFun_closed 
+    using lam_replacement_imp_strong_replacement lam_replacement_fst RepFun_closed
       transM[of _ ?Prod]
-     by simp
-   moreover
+    by simp
+  moreover
   have "?L = {z\<in>A . P(f(z))}"
-      by(intro equalityI subsetI,auto)
+    by(intro equalityI subsetI,auto)
   ultimately
   show " \<exists>y[M]. \<forall>z[M]. z \<in> y \<longleftrightarrow> z \<in> A \<and> P(f(z))"
     by (rule_tac x="?L" in rexI,simp_all)
@@ -1868,7 +1868,7 @@ lemmas surj_imp_inj_replacement4 = lam_replacement_minimum_vimage[unfolded lam_r
 
 lemma lam_replacement_Pi: "M(y) \<Longrightarrow> lam_replacement(M, \<lambda>x. \<Union>xa\<in>y. {\<langle>x, xa\<rangle>})"
   using lam_replacement_Union lam_replacement_identity lam_replacement_constant
-      lam_replacement_RepFun_cons[THEN [5] lam_replacement_hcomp2] tag_singleton_closed
+    lam_replacement_RepFun_cons[THEN [5] lam_replacement_hcomp2] tag_singleton_closed
   by (rule_tac lam_replacement_hcomp[of _ Union],simp_all)
 
 lemma Pi_replacement2: "M(y) \<Longrightarrow> strong_replacement(M, \<lambda>x z. z = (\<Union>xa\<in>y. {\<langle>x, xa\<rangle>}))"

@@ -22,7 +22,7 @@ lemma funcI : "f \<in> A \<rightarrow> B \<Longrightarrow> a \<in> A \<Longright
 lemma vimage_fun_sing:
   assumes "f\<in>A\<rightarrow>B" "b\<in>B"
   shows "{a\<in>A . f`a=b} = f-``{b}"
-using assms vimage_singleton_iff function_apply_equality Pi_iff funcI by auto
+  using assms vimage_singleton_iff function_apply_equality Pi_iff funcI by auto
 
 lemma image_fun_subset: "S\<in>A\<rightarrow>B \<Longrightarrow> C\<subseteq>A\<Longrightarrow> {S ` x . x\<in> C} = S``C"
   using image_function[symmetric,of S C] domain_of_fun Pi_iff by auto
@@ -85,13 +85,13 @@ proof -
   qed
   moreover from this
   have "?f : B \<rightarrow> A"
-      using lam_type[of B _ "\<lambda>_.A"] by simp
+    using lam_type[of B _ "\<lambda>_.A"] by simp
   moreover
   have "?f ` w = ?f ` x \<Longrightarrow> w = x" if "w\<in>B" "x\<in>B" for w x
   proof -
     from calculation that
     have "w = h ` minimum(r,{a\<in>A. h`a=w})"
-         "x = h ` minimum(r,{a\<in>A. h`a=x})"
+      "x = h ` minimum(r,{a\<in>A. h`a=x})"
       by simp_all
     moreover
     assume "?f ` w = ?f ` x"
@@ -100,7 +100,7 @@ proof -
       unfolding minimum_def by simp_all
     moreover from calculation(1,2,4)
     show "w=x" by simp
-    qed
+  qed
   ultimately
   show ?thesis
     unfolding inj_def by blast
@@ -109,8 +109,8 @@ qed
 lemma well_ord_surj_imp_lepoll:
   assumes "well_ord(A,r)" "h \<in> surj(A,B)"
   shows "B\<lesssim>A"
-   unfolding lepoll_def using well_ord_surj_imp_inj_inverse[OF assms]
-   by blast
+  unfolding lepoll_def using well_ord_surj_imp_inj_inverse[OF assms]
+  by blast
 
 \<comment> \<open>New result\<close>
 lemma surj_imp_well_ord:

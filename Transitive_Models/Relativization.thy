@@ -60,9 +60,9 @@ lemmas relative_abs =
   M_trans.Replace_abs
   M_trivial.lambda_abs2
   M_trans.image_abs
-(*M_trans.powerset_abs*)
+  (*M_trans.powerset_abs*)
   M_trivial.nat_case_abs
-(*
+  (*
   M_trans.transitive_set_abs
   M_trans.ordinal_abs
   M_trivial.limit_ordinal_abs
@@ -846,7 +846,7 @@ end
 setup\<open>Relativization.init_db Relativization.db \<close>
 
 declare relative_abs[Rel]
-(*todo: check all the duplicate cases here.*)
+  (*todo: check all the duplicate cases here.*)
 declare datatype_abs[Rel]
 
 ML\<open>

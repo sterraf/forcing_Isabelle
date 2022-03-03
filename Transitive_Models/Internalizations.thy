@@ -119,7 +119,7 @@ notation omega_fm (\<open>\<cdot>_ is \<omega>\<cdot>\<close>)
 notation cartprod_fm (\<open>\<cdot>_ \<times> _ is _\<cdot>\<close>)
 notation Memrel_fm (\<open>\<cdot>Memrel'(_') is _\<cdot>\<close>)
 notation quasinat_fm (\<open>\<cdot>_ is qnat\<cdot>\<close>)
-(* notation rtran_closure_mem_fm (\<open>\<cdot>{_,_} is _ \<cdot>\<close>)
+  (* notation rtran_closure_mem_fm (\<open>\<cdot>{_,_} is _ \<cdot>\<close>)
 notation rtran_closure_fm (\<open>\<cdot>{_,_} is _ \<cdot>\<close>)
 notation tran_closure_fm (\<open>\<cdot>_ is  \<cdot>\<close>)
 notation order_isomorphism_fm (\<open>\<cdot>{_,_} is _ \<cdot>\<close>) *)
@@ -152,20 +152,20 @@ lemma nth_closed :
   using assms unfolding nth_def by (induct env; simp)
 
 lemma conj_setclass_model_iff_sats [iff_sats]:
-      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A);
+  "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A);
        P \<longleftrightarrow> sats(A,p,env); env \<in> list(A) |]
        ==> (P \<and> (##A)(x)) \<longleftrightarrow> sats(A, p, env)"
-      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A);
+  "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A);
        P \<longleftrightarrow> sats(A,p,env); env \<in> list(A) |]
        ==> ((##A)(x) \<and> P) \<longleftrightarrow> sats(A, p, env)"
   using nth_closed[of env A i]
   by auto
 
 lemma conj_mem_model_iff_sats [iff_sats]:
-      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A);
+  "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A);
        P \<longleftrightarrow> sats(A,p,env); env \<in> list(A) |]
        ==> (P \<and> x \<in> A) \<longleftrightarrow> sats(A, p, env)"
-      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A);
+  "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A);
        P \<longleftrightarrow> sats(A,p,env); env \<in> list(A) |]
        ==> (x \<in> A \<and> P) \<longleftrightarrow> sats(A, p, env)"
   using nth_closed[of env A i]
@@ -187,7 +187,7 @@ lemma conj_mem_model_iff_sats [iff_sats]:
   by auto *)
 
 lemma mem_model_iff_sats [iff_sats]:
-      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A)|]
+  "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A)|]
        ==> (x\<in>A) \<longleftrightarrow> sats(A, Exists(Equal(0,0)), env)"
   using nth_closed[of env A i]
   by auto
@@ -198,7 +198,7 @@ lemma subset_iff_sats[iff_sats]:
   using sats_subset_fm' by simp
 
 lemma not_mem_model_iff_sats [iff_sats]:
-      "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A)|]
+  "[| 0 \<in> A; nth(i,env) = x; env \<in> list(A)|]
        ==> (\<forall> x . x \<notin> A) \<longleftrightarrow> sats(A, Neg(Exists(Equal(0,0))), env)"
   by auto
 
@@ -243,12 +243,12 @@ lemmas FOL_sats_iff = sats_Nand_iff sats_Forall_iff sats_Neg_iff sats_And_iff
   sats_Or_iff sats_Implies_iff sats_Iff_iff sats_Exists_iff
 
 lemma nth_ConsI: "\<lbrakk>nth(n,l) = x; n \<in> nat\<rbrakk> \<Longrightarrow> nth(succ(n), Cons(a,l)) = x"
-by simp
+  by simp
 
 lemmas nth_rules = nth_0 nth_ConsI nat_0I nat_succI
 lemmas sep_rules = nth_0 nth_ConsI FOL_iff_sats function_iff_sats
-                   fun_plus_iff_sats successor_iff_sats
-                    omega_iff_sats FOL_sats_iff Replace_iff_sats
+  fun_plus_iff_sats successor_iff_sats
+  omega_iff_sats FOL_sats_iff Replace_iff_sats
 
 text\<open>Also a different compilation of lemmas (term\<open>sep_rules\<close>) used in formula
  synthesis\<close>

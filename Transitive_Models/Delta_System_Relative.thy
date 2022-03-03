@@ -62,7 +62,7 @@ lemma disjoint_separation: "M(c) \<Longrightarrow> separation(M, \<lambda> x. \<
 
 lemma insnd_ball: "M(G) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> fst(p) \<in> x)"
   using separation_ball separation_iff' lam_replacement_fst lam_replacement_snd
-  separation_in lam_replacement_hcomp
+    separation_in lam_replacement_hcomp
   by simp
 
 lemma (in M_trans) mem_F_bound6:
@@ -165,8 +165,8 @@ proof -
       moreover from calculation
       have "{A-{p} . A\<in>{X\<in>G. p\<in>X}} \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" (is "?F \<approx>\<^bsup>M\<^esup> _")
         using Diff_bij_rel[of "{A\<in>G . p \<in> A}" "{p}", THEN
-          comp_bij_rel[OF bij_rel_converse_bij_rel, where C="\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>",
-            THEN bij_rel_imp_eqpoll_rel, of _ _ ?F]]
+            comp_bij_rel[OF bij_rel_converse_bij_rel, where C="\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>",
+              THEN bij_rel_imp_eqpoll_rel, of _ _ ?F]]
         unfolding eqpoll_rel_def
         by (auto simp del:mem_bij_abs)
       text\<open>Now using the hypothesis of the successor case,\<close>
@@ -336,7 +336,7 @@ proof -
         with \<open>X\<subseteq>G\<close>
         show "\<exists>A\<in>G. \<forall>S\<in>X. <S,A>\<in>Disjoint" unfolding Disjoint_def
           using subsetD by simp
-        qed
+      qed
       moreover from \<open>G \<approx>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> \<open>M(G)\<close>
       obtain b where "b\<in>G"
         using uncountable_rel_iff_subset_eqpoll_rel_Aleph_rel1

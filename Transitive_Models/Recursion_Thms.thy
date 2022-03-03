@@ -232,11 +232,11 @@ proof -
 qed
 
 lemma transrec_equal_on_Ord:
-assumes
-   "\<And>x f . Ord(x) \<Longrightarrow> foo(x,f) = bar(x,f)"
-   "Ord(\<alpha>)"
-shows
-  "transrec(\<alpha>, foo) = transrec(\<alpha>, bar)"
+  assumes
+    "\<And>x f . Ord(x) \<Longrightarrow> foo(x,f) = bar(x,f)"
+    "Ord(\<alpha>)"
+  shows
+    "transrec(\<alpha>, foo) = transrec(\<alpha>, bar)"
 proof -
   have "transrec(\<beta>,foo) = transrec(\<beta>,bar)" if "Ord(\<beta>)" for \<beta>
     using that
@@ -263,14 +263,14 @@ qed
 
 \<comment> \<open>Next theorem is very similar to @{thm transrec_equal_on_Ord}\<close>
 lemma (in M_eclose) transrec_equal_on_M:
-assumes
-   "\<And>x f . M(x) \<Longrightarrow> M(f) \<Longrightarrow> foo(x,f) = bar(x,f)"
-   "\<And>\<beta>. M(\<beta>) \<Longrightarrow> transrec_replacement(M,is_foo,\<beta>)" "relation2(M,is_foo,foo)"
-   "strong_replacement(M, \<lambda>x y. y = \<langle>x, transrec(x, foo)\<rangle>)"
-   "\<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(foo(x,g))"
-   "M(\<alpha>)" "Ord(\<alpha>)"
-shows
-  "transrec(\<alpha>, foo) = transrec(\<alpha>, bar)"
+  assumes
+    "\<And>x f . M(x) \<Longrightarrow> M(f) \<Longrightarrow> foo(x,f) = bar(x,f)"
+    "\<And>\<beta>. M(\<beta>) \<Longrightarrow> transrec_replacement(M,is_foo,\<beta>)" "relation2(M,is_foo,foo)"
+    "strong_replacement(M, \<lambda>x y. y = \<langle>x, transrec(x, foo)\<rangle>)"
+    "\<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(foo(x,g))"
+    "M(\<alpha>)" "Ord(\<alpha>)"
+  shows
+    "transrec(\<alpha>, foo) = transrec(\<alpha>, bar)"
 proof -
   have "M(transrec(x, foo))" if "Ord(x)" and "M(x)" for x
     using that assms transrec_closed[of is_foo]
@@ -332,7 +332,7 @@ proof -
         assume "x\<in>X"
         from 1
         have lam_eq:
-            "(\<lambda>w\<in>(r \<inter> X \<times> X) -`` {x}. wfrec(r \<inter> X \<times> X, w, ?F)) =
+          "(\<lambda>w\<in>(r \<inter> X \<times> X) -`` {x}. wfrec(r \<inter> X \<times> X, w, ?F)) =
              (\<lambda>w\<in>(r \<inter> X \<times> X) -`` {x}. wfrec(r \<inter> X \<times> X, w, ?G))" (is "?L=?R")
         proof -
           have "wfrec(r \<inter> X \<times> X, w, ?F) = wfrec(r \<inter> X \<times> X, w, ?G)" if "w\<in>(r\<inter>X\<times>X)-``{x}" for w

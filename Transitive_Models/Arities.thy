@@ -80,7 +80,7 @@ lemma arity_is_wfrec_fm [arity]:
     arity(is_wfrec_fm(p,v,n,Z)) = succ(v) \<union> succ(n) \<union> succ(Z) \<union> pred(pred(pred(pred(pred(i)))))"
   unfolding is_wfrec_fm_def
   using arity_succ_fm  arity_is_recfun_fm
-     union_abs2 pred_Un_distrib
+    union_abs2 pred_Un_distrib
   by auto
 
 lemma arity_is_nat_case_fm [arity]:
@@ -93,8 +93,8 @@ lemma arity_is_nat_case_fm [arity]:
 
 lemma arity_iterates_MH_fm [arity]:
   assumes "isF\<in>formula" "v\<in>nat" "n\<in>nat" "g\<in>nat" "z\<in>nat" "i\<in>nat"
-      "arity(isF) = i"
-    shows "arity(iterates_MH_fm(isF,v,n,g,z)) =
+    "arity(isF) = i"
+  shows "arity(iterates_MH_fm(isF,v,n,g,z)) =
            succ(v) \<union> succ(n) \<union> succ(g) \<union> succ(z) \<union> pred(pred(pred(pred(i))))"
 proof -
   let ?\<phi> = "Exists(And(fun_apply_fm(succ(succ(succ(g))), 2, 0), Forall(Implies(Equal(0, 2), isF))))"
@@ -102,7 +102,7 @@ proof -
   from assms
   have "arity(?\<phi>) =?ar" "?\<phi>\<in>formula"
     using arity_fun_apply_fm
-    union_abs1 union_abs2 pred_Un_distrib succ_Un_distrib Un_assoc[symmetric]
+      union_abs1 union_abs2 pred_Un_distrib succ_Un_distrib Un_assoc[symmetric]
     by simp_all
   then
   show ?thesis
@@ -186,7 +186,7 @@ schematic_goal arity_least_fm':
     "arity(least_fm(q,i)) \<equiv> ?ar"
   unfolding least_fm_def
   using assms pred_Un_distrib arity_And arity_Or arity_Neg arity_Implies arity_ordinal_fm
-        arity_empty_fm Un_assoc[symmetric] Un_commute
+    arity_empty_fm Un_assoc[symmetric] Un_commute
   by auto
 
 lemma arity_least_fm [arity]:

@@ -9,7 +9,7 @@ begin
 locale M_AC =
   fixes M
   assumes
-  choice_ax: "choice_ax(M)"
+    choice_ax: "choice_ax(M)"
 
 locale M_cardinal_AC = M_cardinal_arith + M_AC
 begin
@@ -102,7 +102,7 @@ proof -
   moreover from assms and calculation
   have "?f \<in> Pi\<^bsup>M\<^esup>(A,B)"
     using lam_type[OF minimum_in, OF \<open>well_ord(\<Union>x\<in>A. B(x),r)\<close>, of A B]
-     Pi_rel_char by auto
+      Pi_rel_char by auto
   ultimately
   show ?thesis by blast
 qed
@@ -119,7 +119,7 @@ next
   case False
   then
   obtain a where "a \<in> A" by auto
-    \<comment> \<open>It is noteworthy that without obtaining an element of
+      \<comment> \<open>It is noteworthy that without obtaining an element of
         \<^term>\<open>A\<close>, the final step won't work\<close>
   with assms
   show ?thesis by (blast intro!: AC_M)
@@ -134,25 +134,25 @@ begin
 subsection\<open>Strengthened Forms of Existing Theorems on Cardinals\<close>
 
 lemma cardinal_rel_eqpoll_rel: "M(A) \<Longrightarrow> |A|\<^bsup>M\<^esup> \<approx>\<^bsup>M\<^esup> A"
-apply (rule choice_ax_well_ord [THEN rexE])
-apply (auto intro:well_ord_cardinal_rel_eqpoll_rel)
-done
+  apply (rule choice_ax_well_ord [THEN rexE])
+   apply (auto intro:well_ord_cardinal_rel_eqpoll_rel)
+  done
 
 lemmas cardinal_rel_idem = cardinal_rel_eqpoll_rel [THEN cardinal_rel_cong, simp]
 
 lemma cardinal_rel_eqE: "|X|\<^bsup>M\<^esup> = |Y|\<^bsup>M\<^esup> ==> M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<approx>\<^bsup>M\<^esup> Y"
-apply (rule choice_ax_well_ord [THEN rexE], assumption)
-   apply (rule choice_ax_well_ord [THEN rexE, of Y], assumption)
-    apply (rule well_ord_cardinal_rel_eqE, assumption+)
-done
+  apply (rule choice_ax_well_ord [THEN rexE], assumption)
+  apply (rule choice_ax_well_ord [THEN rexE, of Y], assumption)
+  apply (rule well_ord_cardinal_rel_eqE, assumption+)
+  done
 
 lemma cardinal_rel_eqpoll_rel_iff: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> |X|\<^bsup>M\<^esup> = |Y|\<^bsup>M\<^esup> \<longleftrightarrow> X \<approx>\<^bsup>M\<^esup> Y"
-by (blast intro: cardinal_rel_cong cardinal_rel_eqE)
+  by (blast intro: cardinal_rel_cong cardinal_rel_eqE)
 
 lemma cardinal_rel_disjoint_Un:
-     "[| |A|\<^bsup>M\<^esup>=|B|\<^bsup>M\<^esup>;  |C|\<^bsup>M\<^esup>=|D|\<^bsup>M\<^esup>;  A \<inter> C = 0;  B \<inter> D = 0; M(A); M(B); M(C); M(D)|]
+  "[| |A|\<^bsup>M\<^esup>=|B|\<^bsup>M\<^esup>;  |C|\<^bsup>M\<^esup>=|D|\<^bsup>M\<^esup>;  A \<inter> C = 0;  B \<inter> D = 0; M(A); M(B); M(C); M(D)|]
       ==> |A \<union> C|\<^bsup>M\<^esup> = |B \<union> D|\<^bsup>M\<^esup>"
-by (simp add: cardinal_rel_eqpoll_rel_iff eqpoll_rel_disjoint_Un)
+  by (simp add: cardinal_rel_eqpoll_rel_iff eqpoll_rel_disjoint_Un)
 
 lemma lepoll_rel_imp_cardinal_rel_le: "A \<lesssim>\<^bsup>M\<^esup> B ==> M(A) \<Longrightarrow> M(B) \<Longrightarrow> |A|\<^bsup>M\<^esup> \<le> |B|\<^bsup>M\<^esup>"
   apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
@@ -164,7 +164,7 @@ lemma cadd_rel_assoc: "\<lbrakk>M(i); M(j); M(k)\<rbrakk> \<Longrightarrow> (i \
    apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
     apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
      apply (rule well_ord_cadd_rel_assoc, assumption+)
-done
+  done
 
 lemma cmult_rel_assoc: "\<lbrakk>M(i); M(j); M(k)\<rbrakk> \<Longrightarrow> (i \<otimes>\<^bsup>M\<^esup> j) \<otimes>\<^bsup>M\<^esup> k = i \<otimes>\<^bsup>M\<^esup> (j \<otimes>\<^bsup>M\<^esup> k)"
   apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
@@ -182,9 +182,9 @@ lemma cadd_cmult_distrib: "\<lbrakk>M(i); M(j); M(k)\<rbrakk> \<Longrightarrow> 
 
 
 lemma InfCard_rel_square_eq: "InfCard\<^bsup>M\<^esup>(|A|\<^bsup>M\<^esup>) \<Longrightarrow> M(A) \<Longrightarrow> A\<times>A \<approx>\<^bsup>M\<^esup> A"
-apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
+  apply (rule choice_ax_well_ord [THEN rexE]) prefer 2
    apply (erule well_ord_InfCard_rel_square_eq, assumption, simp_all)
-done
+  done
 
 subsection \<open>The relationship between cardinality and le-pollence\<close>
 
@@ -203,10 +203,10 @@ proof -
 qed
 
 lemma le_Card_rel_iff: "Card\<^bsup>M\<^esup>(K) ==> M(K) \<Longrightarrow> M(A) \<Longrightarrow> |A|\<^bsup>M\<^esup> \<le> K \<longleftrightarrow> A \<lesssim>\<^bsup>M\<^esup> K"
-apply (erule Card_rel_cardinal_rel_eq [THEN subst], assumption, rule iffI,
-       erule Card_rel_le_imp_lepoll_rel, assumption+)
-apply (erule lepoll_rel_imp_cardinal_rel_le, assumption+)
-done
+  apply (erule Card_rel_cardinal_rel_eq [THEN subst], assumption, rule iffI,
+      erule Card_rel_le_imp_lepoll_rel, assumption+)
+  apply (erule lepoll_rel_imp_cardinal_rel_le, assumption+)
+  done
 
 lemma cardinal_rel_0_iff_0 [simp]: "M(A) \<Longrightarrow> |A|\<^bsup>M\<^esup> = 0 \<longleftrightarrow> A = 0"
   using cardinal_rel_0 eqpoll_rel_0_iff [THEN iffD1]
@@ -313,12 +313,12 @@ proof (intro rallI impI)
 qed
 
 lemma Union_ax_absolute: "Union_ax(\<V>)"
-    unfolding Union_ax_def big_union_def
-    by (auto intro:rexI[of _ "\<Union>_"])
+  unfolding Union_ax_def big_union_def
+  by (auto intro:rexI[of _ "\<Union>_"])
 
 lemma upair_ax_absolute: "upair_ax(\<V>)"
   unfolding upair_ax_def upair_def rall_def rex_def
-    by (auto)
+  by (auto)
 
 lemma power_ax_absolute:"power_ax(\<V>)"
 proof -
@@ -399,16 +399,16 @@ proof (simp add: K InfCard_rel_is_Card_rel le_Card_rel_iff Pi_assumptions)
       by (auto intro: LeastI ltD i)
   } note mems = this
   have "(\<Union>i\<in>K. X(i)) \<lesssim>\<^bsup>M\<^esup> K \<times> K"
-    proof (simp add:types def_lepoll_rel)
-      show "\<exists>f[M]. f \<in> inj(\<Union>x\<in>K. X(x), K \<times> K)"
-        apply (rule rexI)
-        apply (rule_tac c = "\<lambda>z. \<langle>\<mu> i. z \<in> X(i), f ` (\<mu> i. z \<in> X(i)) ` z\<rangle>"
-                    and d = "\<lambda>\<langle>i,j\<rangle>. converse (f`i) ` j" in lam_injective)
-          apply (force intro: f inj_is_fun mems apply_type Perm.left_inverse)+
-        apply (simp add:types \<open>M(f)\<close>)
-        done
-    qed
-    also have "... \<approx>\<^bsup>M\<^esup> K"
+  proof (simp add:types def_lepoll_rel)
+    show "\<exists>f[M]. f \<in> inj(\<Union>x\<in>K. X(x), K \<times> K)"
+      apply (rule rexI)
+       apply (rule_tac c = "\<lambda>z. \<langle>\<mu> i. z \<in> X(i), f ` (\<mu> i. z \<in> X(i)) ` z\<rangle>"
+          and d = "\<lambda>\<langle>i,j\<rangle>. converse (f`i) ` j" in lam_injective)
+        apply (force intro: f inj_is_fun mems apply_type Perm.left_inverse)+
+      apply (simp add:types \<open>M(f)\<close>)
+      done
+  qed
+  also have "... \<approx>\<^bsup>M\<^esup> K"
     by (simp add: K InfCard_rel_square_eq InfCard_rel_is_Card_rel
         Card_rel_cardinal_rel_eq types)
   finally have "(\<Union>i\<in>K. X(i)) \<lesssim>\<^bsup>M\<^esup> K" by (simp_all add:types)

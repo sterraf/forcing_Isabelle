@@ -199,7 +199,7 @@ lemma dcwit_body_abs:
   by (auto dest:transM simp:absolut dc_witness_rel_char del:bexI intro!:bexI)
 
 lemma separation_eq_dc_witness:
-"M(A) \<Longrightarrow>
+  "M(A) \<Longrightarrow>
     M(a) \<Longrightarrow>
     M(g) \<Longrightarrow>
     M(R) \<Longrightarrow>  separation(M,\<lambda>p. fst(p)\<in>\<omega> \<longrightarrow> snd(p) = dc_witness(fst(p), A, a, g, R))"
@@ -315,7 +315,7 @@ proof -
 qed
 
 lemma non_empty_family: "[| 0 \<notin> A;  x \<in> A |] ==> \<exists>y. y \<in> x"
-by (subgoal_tac "x \<noteq> 0", blast+)
+  by (subgoal_tac "x \<noteq> 0", blast+)
 
 lemma AC_M_func0: "0 \<notin> A \<Longrightarrow> M(A) \<Longrightarrow> \<exists>f \<in> A \<rightarrow>\<^bsup>M\<^esup> \<Union>(A). \<forall>x \<in> A. f`x \<in> x"
   by (rule AC_M_func) (simp_all add: non_empty_family)
@@ -349,7 +349,7 @@ proof -
     using assms by auto
   from \<open>M(A)\<close>
   obtain g where 1: "g \<in> Pow\<^bsup>M\<^esup>(A)-{0} \<rightarrow> A" "\<forall>X[M]. X \<noteq> 0 \<and> X \<subseteq> A \<longrightarrow> g ` X \<in> X"
-      "M(g)"
+    "M(g)"
     using AC_M_func_Pow_rel[of A] mem_Pow_rel_abs
       function_space_rel_char[of "Pow\<^bsup>M\<^esup>(A)-{0}" A] by auto
   then

@@ -66,7 +66,7 @@ synthesize "is_HVfrom" from_definition assuming "nonempty"
 arity_theorem intermediate for "is_HVfrom_fm"
 
 lemma arity_is_HVfrom_fm:
-    "A \<in> nat \<Longrightarrow>
+  "A \<in> nat \<Longrightarrow>
     x \<in> nat \<Longrightarrow>
     f \<in> nat \<Longrightarrow>
     d \<in> nat \<Longrightarrow>
@@ -80,7 +80,7 @@ notation HVfrom_rel (\<open>HVfrom\<^bsup>_\<^esup>'(_,_,_')\<close>)
 locale M_HVfrom = M_eclose +
   assumes
     Powapply_replacement:
-      "M(f) \<Longrightarrow> strong_replacement(M,\<lambda>y z. z = Powapply\<^bsup>M\<^esup>(f,y))"
+    "M(f) \<Longrightarrow> strong_replacement(M,\<lambda>y z. z = Powapply\<^bsup>M\<^esup>(f,y))"
 begin
 
 is_iff_rel for "HVfrom"
@@ -90,7 +90,7 @@ proof -
   have "is_Replace(M,x,\<lambda>y z. z = Powapply\<^bsup>M\<^esup>(f,y),r) \<longleftrightarrow> r = {z . y\<in>x, z = Powapply\<^bsup>M\<^esup>(f,y)}"
     if "M(r)" for r
     using that Powapply_rel_closed
-          Replace_abs[of x r "\<lambda>y z. z = Powapply\<^bsup>M\<^esup>(f,y)"] transM[of _ x]
+      Replace_abs[of x r "\<lambda>y z. z = Powapply\<^bsup>M\<^esup>(f,y)"] transM[of _ x]
     by simp
   moreover
   have "is_Replace(M,x,is_Powapply(M,f),r) \<longleftrightarrow>
@@ -105,16 +105,16 @@ proof -
   moreover
   have "M({z . y \<in> x, z = Powapply\<^bsup>M\<^esup>(f,y)})"
     using assms strong_replacement_closed[OF Powapply_replacement]
-          Powapply_rel_closed transM[of _ x]
+      Powapply_rel_closed transM[of _ x]
     by simp
   moreover from assms
-  \<comment> \<open>intermediate step for body of Replace\<close>
+    \<comment> \<open>intermediate step for body of Replace\<close>
   have "{z . y \<in> x, z = Powapply\<^bsup>M\<^esup>(f,y)} = {y . w \<in> x, M(y) \<and> M(w) \<and> y = Powapply\<^bsup>M\<^esup>(f,w)}"
     by (auto dest:transM)
   ultimately
   show ?thesis
     using assms
-  unfolding is_HVfrom_def HVfrom_rel_def
+    unfolding is_HVfrom_def HVfrom_rel_def
     by (auto dest:transM)
 qed
 
@@ -123,14 +123,14 @@ proof -
   assume assms:"M(A)" "M(x)" "M(f)"
   have "M({z . y \<in> x, z = Powapply\<^bsup>M\<^esup>(f,y)})"
     using assms strong_replacement_closed[OF Powapply_replacement]
-          Powapply_rel_closed transM[of _ x]
+      Powapply_rel_closed transM[of _ x]
     by simp
   then
   have "M(A \<union> \<Union>({z . y\<in>x, z = Powapply\<^bsup>M\<^esup>(f,y)}))"
     using assms
     by simp
   moreover from assms
-  \<comment> \<open>intermediate step for body of Replace\<close>
+    \<comment> \<open>intermediate step for body of Replace\<close>
   have "{z . y \<in> x, z = Powapply\<^bsup>M\<^esup>(f,y)} = {y . w \<in> x, M(y) \<and> M(w) \<and> y = Powapply\<^bsup>M\<^esup>(f,w)}"
     by (auto dest:transM)
   ultimately
@@ -170,9 +170,9 @@ lemma arity_is_Hrank_fm : "x \<in> nat \<Longrightarrow>
   unfolding is_Hrank_fm_def
   using  arity_fun_apply_fm arity_big_union_fm
     arity_fun_apply_fm arity_succ_fm arity_And arity_Exists
-   arity_Replace_fm[of
+    arity_Replace_fm[of
       "(\<cdot>\<exists>\<cdot>\<cdot>succ(0) is 2\<cdot> \<and> \<cdot> succ(succ(succ(succ(f))))`1 is 0\<cdot>\<cdot>\<cdot>)"
-  "succ(x)" 0 "4+\<^sub>\<omega>f"]
+      "succ(x)" 0 "4+\<^sub>\<omega>f"]
   by(simp_all add:Un_assoc pred_Un,simp add:ord_simp_union)
 
 locale M_Vfrom = M_HVfrom +
@@ -198,27 +198,27 @@ proof -
     by simp
   then
   show ?thesis
-  using assms HVfrom_rel_closed trepl_HVfrom
-              transrec_abs[of "is_HVfrom(M,A)" i "HVfrom_rel(M,A)" z]
-  unfolding is_Vfrom_def Vfrom_rel_def
-  by simp
+    using assms HVfrom_rel_closed trepl_HVfrom
+      transrec_abs[of "is_HVfrom(M,A)" i "HVfrom_rel(M,A)" z]
+    unfolding is_Vfrom_def Vfrom_rel_def
+    by simp
 qed
 
 lemma relation2_HVfrom: "M(A) \<Longrightarrow> relation2(M,is_HVfrom(M,A),HVfrom_rel(M,A))"
   using is_HVfrom_iff
   unfolding relation2_def
-    by auto
+  by auto
 
 lemma HVfrom_closed :
   "M(A) \<Longrightarrow> \<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(HVfrom_rel(M,A,x,g))"
-   using HVfrom_rel_closed by simp
+  using HVfrom_rel_closed by simp
 
 lemma Vfrom_rel_closed:
   assumes "M(A)" "M(i)" "Ord(i)"
   shows "M(transrec(i, HVfrom_rel(M, A)))"
-    using is_HVfrom_iff HVfrom_closed HVfrom_replacement assms trepl_HVfrom relation2_HVfrom
+  using is_HVfrom_iff HVfrom_closed HVfrom_replacement assms trepl_HVfrom relation2_HVfrom
     transrec_closed[of "is_HVfrom(M,A)" i "HVfrom_rel(M,A)"]
-    by simp
+  by simp
 
 lemma transrec_HVfrom:
   assumes "M(A)"
@@ -309,7 +309,7 @@ qed
 
 lemma relation2_Hrank :
   "relation2(M,is_Hrank(M),Hrank)"
-unfolding  relation2_def
+  unfolding  relation2_def
 proof(clarify)
   fix x f res
   assume "M(x)" "M(f)" "M(res)"
@@ -320,8 +320,8 @@ proof(clarify)
   ultimately
   show "is_Hrank(M, x, f, res) \<longleftrightarrow> res = Hrank(x, f)"
     unfolding  Hrank_def relation2_def
-  using is_Hrank_iff[unfolded Hrank_rel_def]
-  by auto
+    using is_Hrank_iff[unfolded Hrank_rel_def]
+    by auto
 qed
 
 lemma Hrank_closed :
@@ -414,9 +414,9 @@ lemma Vset_closed: "\<lbrakk> M(i); Ord(i) \<rbrakk> \<Longrightarrow> M({x\<in>
 lemma rank_closed: "M(a) \<Longrightarrow> M(rank(a))"
   unfolding rank_trancl
   using Hrank_closed is_Hrank_replacement relation2_Hrank
-        wf_rrank relation_rrank trans_rrank rrank_in_M
-         trans_wfrec_closed[of "rrank(a)" a "is_Hrank(M)"]
-         transM[of _ a]
+    wf_rrank relation_rrank trans_rrank rrank_in_M
+    trans_wfrec_closed[of "rrank(a)" a "is_Hrank(M)"]
+    transM[of _ a]
   by auto
 
 lemma M_into_Vset:

@@ -74,14 +74,14 @@ lemma empty_rel_abs : "M(x) \<Longrightarrow> M(0) \<Longrightarrow> x = 0 \<lon
 lemma fst_rel_abs:
   assumes "M(p)"
   shows "fst(p) = fst_rel(M,p)"
-  using fst_abs assms 
+  using fst_abs assms
   unfolding fst_def fst_rel_def
   by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto;rule_tac the_equality[symmetric],simp_all)
 
 lemma snd_rel_abs:
   assumes "M(p)"
   shows "snd(p) = snd_rel(M,p)"
-  using snd_abs assms 
+  using snd_abs assms
   unfolding snd_def snd_rel_def
   by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto;rule_tac the_equality[symmetric],simp_all)
 
@@ -178,7 +178,7 @@ proof -
 qed
 
 lemma is_function_space_closed :
- "is_function_space(M,A,B,d) \<Longrightarrow> M(d)"
+  "is_function_space(M,A,B,d) \<Longrightarrow> M(d)"
   unfolding is_function_space_def by simp
 
 \<comment> \<open>adding closure to simpset and claset\<close>
@@ -188,8 +188,8 @@ lemma function_space_rel_closed[intro,simp]:
 proof -
   have "is_function_space(M, x, y, THE xa. is_function_space(M, x, y, xa))"
     using assms
-          theI[OF ex1I[of "is_function_space(M,x,y)"], OF _ is_function_space_uniqueness[of x y]]
-          is_function_space_witness
+      theI[OF ex1I[of "is_function_space(M,x,y)"], OF _ is_function_space_uniqueness[of x y]]
+      is_function_space_witness
     by auto
   then show ?thesis
     using assms is_function_space_closed
@@ -440,7 +440,7 @@ notation is_inj_fm (\<open>\<cdot>inj'(_,_') is _\<cdot>\<close>)
 arity_theorem intermediate for "is_inj_fm"
 
 lemma arity_is_inj_fm[arity]:
-    "A \<in> nat \<Longrightarrow>
+  "A \<in> nat \<Longrightarrow>
     B \<in> nat \<Longrightarrow> I \<in> nat \<Longrightarrow> arity(is_inj_fm(A, B, I)) = succ(A) \<union> succ(B) \<union> succ(I)"
   using arity_is_inj_fm' by (auto simp:pred_Un_distrib arity)
 
@@ -471,7 +471,7 @@ lemma is_inj_witness: "M(r) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M
   unfolding is_inj_def by simp
 
 lemma is_inj_closed :
- "is_inj(M,x,y,d) \<Longrightarrow> M(d)"
+  "is_inj(M,x,y,d) \<Longrightarrow> M(d)"
   unfolding is_inj_def by simp
 
 lemma inj_rel_closed[intro,simp]:
@@ -480,8 +480,8 @@ lemma inj_rel_closed[intro,simp]:
 proof -
   have "is_inj(M, x, y, THE xa. is_inj(M, x, y, xa))"
     using assms
-          theI[OF ex1I[of "is_inj(M,x,y)"], OF _ is_inj_uniqueness[of x y]]
-          is_inj_witness
+      theI[OF ex1I[of "is_inj(M,x,y)"], OF _ is_inj_uniqueness[of x y]]
+      is_inj_witness
     by auto
   then show ?thesis
     using assms is_inj_closed
@@ -633,7 +633,7 @@ lemma is_surj_witness: "M(r) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[
   unfolding is_surj_def by simp
 
 lemma is_surj_closed :
- "is_surj(M,x,y,d) \<Longrightarrow> M(d)"
+  "is_surj(M,x,y,d) \<Longrightarrow> M(d)"
   unfolding is_surj_def by simp
 
 lemma surj_rel_closed[intro,simp]:
@@ -642,8 +642,8 @@ lemma surj_rel_closed[intro,simp]:
 proof -
   have "is_surj(M, x, y, THE xa. is_surj(M, x, y, xa))"
     using assms
-          theI[OF ex1I[of "is_surj(M,x,y)"], OF _ is_surj_uniqueness[of x y]]
-          is_surj_witness
+      theI[OF ex1I[of "is_surj(M,x,y)"], OF _ is_surj_uniqueness[of x y]]
+      is_surj_witness
     by auto
   then show ?thesis
     using assms is_surj_closed
@@ -746,7 +746,7 @@ context M_basic
 begin
 
 lemma is_Int_closed :
- "is_Int(M,A,B,I) \<Longrightarrow> M(I)"
+  "is_Int(M,A,B,I) \<Longrightarrow> M(I)"
   unfolding is_Int_def by simp
 
 lemma is_Int_abs:

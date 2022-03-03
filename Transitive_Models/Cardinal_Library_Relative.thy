@@ -7,7 +7,7 @@ begin
 
 locale M_library = M_ZF_library + M_cardinal_AC +
   assumes
-  separation_cardinal_rel_lesspoll_rel: "M(\<kappa>) \<Longrightarrow> separation(M, \<lambda>x . x \<prec>\<^bsup>M\<^esup> \<kappa>)"
+    separation_cardinal_rel_lesspoll_rel: "M(\<kappa>) \<Longrightarrow> separation(M, \<lambda>x . x \<prec>\<^bsup>M\<^esup> \<kappa>)"
 begin
 
 declare eqpoll_rel_refl [simp]
@@ -26,7 +26,7 @@ proof -
   have "M(\<lambda>x\<in>A. S ` x)" "M({S ` a . a \<in> A})"
     using lam_closed[of "\<lambda> x. S`x"] apply_type[OF \<open>S\<in>_\<close>]
       transM[OF _ \<open>M(B)\<close>] image_closed
-     by auto
+    by auto
   moreover from assms this
   have "(\<lambda>x\<in>A. S`x) \<in> surj_rel(M,A, {S`a . a\<in>A})"
     using mem_surj_abs lam_funtype[of A "\<lambda>x . S`x"]
@@ -53,7 +53,7 @@ lemma lt_cardinal_rel_imp_not_subset: "|A|\<^bsup>M\<^esup> < |B|\<^bsup>M\<^esu
   using subset_imp_le_cardinal_rel le_imp_not_lt  by blast
 
 lemma cardinal_rel_lt_csucc_rel_iff:
-"Card_rel(M,K) \<Longrightarrow> M(K) \<Longrightarrow> M(K') \<Longrightarrow> |K'|\<^bsup>M\<^esup> < (K\<^sup>+)\<^bsup>M\<^esup> \<longleftrightarrow> |K'|\<^bsup>M\<^esup> \<le> K"
+  "Card_rel(M,K) \<Longrightarrow> M(K) \<Longrightarrow> M(K') \<Longrightarrow> |K'|\<^bsup>M\<^esup> < (K\<^sup>+)\<^bsup>M\<^esup> \<longleftrightarrow> |K'|\<^bsup>M\<^esup> \<le> K"
   by (simp add: Card_rel_lt_csucc_rel_iff)
 
 end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
@@ -66,7 +66,7 @@ lemma cardinal_rel_UN_le_nat:
 proof -
   from assms
   show ?thesis
-  by (simp add: cardinal_rel_UN_le InfCard_rel_nat)
+    by (simp add: cardinal_rel_UN_le InfCard_rel_nat)
 qed
 
 end \<comment> \<open>\<^locale>\<open>M_cardinal_UN_nat\<close>\<close>
@@ -222,7 +222,7 @@ lemma lepoll_rel_imp_lepoll_rel_cardinal_rel:
   assumes"X \<lesssim>\<^bsup>M\<^esup> Y"  "M(X)" "M(Y)"
   shows "X \<lesssim>\<^bsup>M\<^esup> |Y|\<^bsup>M\<^esup>"
   using assms cardinal_rel_Card_rel_eqpoll_rel_iff[of "|Y|\<^bsup>M\<^esup>" Y]
-  Card_rel_cardinal_rel
+    Card_rel_cardinal_rel
     lepoll_rel_eq_trans[of _ _ "|Y|\<^bsup>M\<^esup>"] by simp
 
 lemma lepoll_rel_Un:
@@ -356,7 +356,7 @@ locale M_cardinal_library = M_library + M_replacement +
 begin
 
 lemma cardinal_lib_assms5 :
-    "M(\<gamma>) \<Longrightarrow> Ord(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
+  "M(\<gamma>) \<Longrightarrow> Ord(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
   unfolding lt_def
   using separation_in lam_replacement_constant[of \<gamma>] separation_univ lam_replacement_cardinal_rel
   unfolding lt_def
@@ -397,8 +397,8 @@ proof -
       case False
       with \<open>M(f)\<close> \<open>M(b)\<close>
       show ?thesis
-      using cardinal_lib_assms1 separation_Ord
-      by (rule_tac lam_Least_assumption_ifM_bnot0) auto
+        using cardinal_lib_assms1 separation_Ord
+        by (rule_tac lam_Least_assumption_ifM_bnot0) auto
     qed
   qed
   note \<open>M(C)\<close>
@@ -593,7 +593,7 @@ proof -
   then
   have "function(f)" "domain(f) = \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "range(f)\<subseteq>\<omega>" "f\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<omega>" "M(f)"
     using mem_function_space_rel[OF \<open>f\<in>_\<close>] domain_of_fun fun_is_function range_fun_subset_codomain
-       function_space_rel_char
+      function_space_rel_char
     by auto
   let ?G="\<lambda>n\<in>range(f). f-``{n}"
   from \<open>f:\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<rightarrow>\<omega>\<close>
@@ -729,13 +729,13 @@ proof(induct rule:trans_induct)
   case (step \<beta>)
   with assms
   have "{rec_constr(f, x) . x \<in> \<beta>} = {y . x \<in> \<beta>, y=rec_constr(f, x)}" (is "_ = ?Y")
-       "M(f)"
+    "M(f)"
     using transM[OF _ \<open>M(\<beta>)\<close>] function_space_rel_char  Ord_in_Ord
     by auto
   moreover from assms this step \<open>M(\<beta>)\<close> \<open>Ord(\<beta>)\<close>
   have "M({y . x \<in> \<beta>, y=<x,rec_constr(f, x)>})" (is "M(?Z)")
     using strong_replacement_closed[OF cardinal_lib_assms6(1),of f \<beta> \<beta>,OF _ _ _ _
-      univalent_conjI2[where P="\<lambda>x _ . x\<in>\<beta>",OF univalent_triv]]
+        univalent_conjI2[where P="\<lambda>x _ . x\<in>\<beta>",OF univalent_triv]]
       transM[OF _ \<open>M(\<beta>)\<close>] transM[OF step(2) \<open>M(G)\<close>] Ord_in_Ord
     unfolding rec_constr_def
     by auto
@@ -845,7 +845,7 @@ proof -
           lam_replacement_imp_strong_replacement] cdlt_assms'
       by unfold_locales (blast dest: transM, auto dest:transM)
     show ?thesis using AC_Pi_rel Pi_rel_char H by auto
-    qed
+  qed
   then
   obtain f where f_type:"f \<in> Pi_rel(M,?cdlt\<gamma>,?inQ)" "f \<in> Pi(?cdlt\<gamma>,?inQ)" and "M(f)"
     by auto
@@ -908,7 +908,7 @@ proof -
       using
         \<open>{S`x . x\<in>\<beta>} = {restrict(S,\<beta>)`x . x\<in>\<beta>}\<close>[symmetric]
         cardinal_rel_RepFun_apply_le[of "restrict(S,\<beta>)" \<beta> G,
-            OF restrict_type2[of S \<gamma> "\<lambda>_.G" \<beta>] restrict_closed]
+          OF restrict_type2[of S \<gamma> "\<lambda>_.G" \<beta>] restrict_closed]
         Ord_in_Ord Ord_cardinal_rel
         lt_trans1[of "|{S`x . x \<in> \<beta>}|\<^bsup>M\<^esup>" "|\<beta>|\<^bsup>M\<^esup>" \<gamma>]
         Card_rel_lt_iff[THEN iffD2, of \<beta> \<gamma>, OF _ _ _ _ ltI]
@@ -920,7 +920,7 @@ proof -
       from calculation and f_type
       have "f ` {S`x . x \<in> \<beta>} \<in> {a\<in>G. \<forall>x\<in>\<beta>. <S`x,a>\<in>Q}"
         using apply_type[of f ?cdlt\<gamma> ?inQ "{S`x . x \<in> \<beta>}"]
-            Pow_rel_char[OF \<open>M(G)\<close>]
+          Pow_rel_char[OF \<open>M(G)\<close>]
         by simp
       then
       show ?thesis by simp
@@ -935,11 +935,11 @@ proof -
     show "<S ` \<alpha>, S ` \<beta>>\<in>Q"
       using fun_disjoint_apply1[of "{S`x . x \<in> \<beta>}" Cb f]
         domain_of_fun[of Cb] ltD[of \<alpha> \<beta>]
-       by (subst (2) S_def, auto) (subst rec_constr_unfold, auto)
-   qed
-   moreover
-   note \<open>M(G)\<close> \<open>M(\<gamma>)\<close>
-   ultimately
+      by (subst (2) S_def, auto) (subst rec_constr_unfold, auto)
+  qed
+  moreover
+  note \<open>M(G)\<close> \<open>M(\<gamma>)\<close>
+  ultimately
   show ?thesis using function_space_rel_char by auto
 qed
 
@@ -954,7 +954,7 @@ proof
   assume "Infinite(Z)" "M(Z)"
   moreover from calculation
   have "M(Distinct)"
-     using cardinal_lib_assms6 separation_dist by simp
+    using cardinal_lib_assms6 separation_dist by simp
   from \<open>Infinite(Z)\<close> \<open>M(Z)\<close>
   obtain b where "b\<in>Z"
     using Infinite_not_empty by auto
@@ -980,7 +980,7 @@ proof
         lesspoll_rel_nat_is_Finite_rel[of W]
         eqpoll_rel_imp_lepoll_rel eqpoll_rel_sym[OF cardinal_rel_eqpoll_rel,of W]
         lesspoll_rel_trans1[of W "|W|\<^bsup>M\<^esup>" \<omega>] by auto
-      moreover from calculation
+    moreover from calculation
     have "\<not>Z\<subseteq>W"
       using equalityI \<open>Infinite(Z)\<close> by auto
     moreover from calculation
@@ -1080,8 +1080,8 @@ proof -
     moreover from calculation
     have "|{x\<in>Z . F`x = y}|\<^bsup>M\<^esup> \<le> |Y|\<^bsup>M\<^esup>" if "y\<in>Y" for y
       using Infinite_imp_nats_lepoll_rel[THEN lepoll_rel_imp_cardinal_rel_le,
-              of _ "|{x\<in>Z . F`x = y}|\<^bsup>M\<^esup>"]
-         that cardinal_rel_idem transM[OF that \<open>M(Y)\<close>] vimage_fun_sing[OF \<open>F\<in>Z\<rightarrow>Y\<close>]
+          of _ "|{x\<in>Z . F`x = y}|\<^bsup>M\<^esup>"]
+        that cardinal_rel_idem transM[OF that \<open>M(Y)\<close>] vimage_fun_sing[OF \<open>F\<in>Z\<rightarrow>Y\<close>]
       by auto
     ultimately
     have "|\<Union>y\<in>Y. {x\<in>Z . F`x = y}|\<^bsup>M\<^esup> \<le> |Y|\<^bsup>M\<^esup>"
@@ -1234,7 +1234,7 @@ proof -
   from assms
   have "countable\<^bsup>M\<^esup>(C) \<longleftrightarrow> C \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
     using countable_iff_lesspoll_rel_Aleph_rel_one
-     by simp
+    by simp
   also from assms
   have "\<dots> \<longleftrightarrow> |C|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
     using cardinal_rel_eqpoll_rel[THEN eqpoll_rel_sym, THEN eq_lesspoll_rel_trans]

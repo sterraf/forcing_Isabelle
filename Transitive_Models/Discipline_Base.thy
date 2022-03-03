@@ -347,7 +347,7 @@ end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
 (******************  end Discipline  **********************)
 
-  (*
+(*
 Sigma(A,B) == \<Union>x\<in>A. \<Union>y\<in>B(x). {\<langle>x,y\<rangle>}
            == \<Union> {  (\<Union>y\<in>B(x). {\<langle>x,y\<rangle>})  . x\<in>A}
            == \<Union> {  (\<Union>y\<in>B(x). {\<langle>x,y\<rangle>})  . x\<in>A}
@@ -497,8 +497,8 @@ lemma Pi_rel_closed[intro,simp]:  "M(Pi_rel(M,A,B))"
 proof -
   have "is_Pi(M, A, B, THE xa. is_Pi(M, A, B, xa))"
     using Pi_assumptions
-          theI[OF ex1I[of "is_Pi(M,A,B)"], OF _ is_Pi_uniqueness]
-          is_Pi_witness is_Pi_closed
+      theI[OF ex1I[of "is_Pi(M,A,B)"], OF _ is_Pi_uniqueness]
+      is_Pi_witness is_Pi_closed
     by auto
   then show ?thesis
     using is_Pi_closed
@@ -506,7 +506,7 @@ proof -
     by simp
 qed
 
-  \<comment> \<open>From this point on, the higher order variable \<^term>\<open>y\<close> must be
+\<comment> \<open>From this point on, the higher order variable \<^term>\<open>y\<close> must be
 explicitly instantiated, and proof methods are slower\<close>
 
 lemmas trans_Pi_rel_closed[trans_closed] = transM[OF _ Pi_rel_closed]
@@ -536,7 +536,7 @@ next
 qed
 
 lemma def_Pi_rel:
-    "Pi_rel(M,A,B) = {f\<in>Pow_rel(M,Sigma(A,B)). A\<subseteq>domain(f) \<and> function(f)}"
+  "Pi_rel(M,A,B) = {f\<in>Pow_rel(M,Sigma(A,B)). A\<subseteq>domain(f) \<and> function(f)}"
 proof -
   have "Pi_rel(M,A, B) \<subseteq> Pow_rel(M,Sigma(A,B))"
     using Pi_assumptions Pi_rel_iff[of "Pi_rel(M,A,B)"]  Pow_rel_iff
@@ -544,12 +544,12 @@ proof -
   moreover
   have "f \<in> Pi_rel(M,A, B) \<Longrightarrow> A\<subseteq>domain(f) \<and> function(f)" for f
     using Pi_assumptions Pi_rel_iff[of "Pi_rel(M,A,B)"]
-          def_PiP_rel[of A f] trans_closed Pow_rel_iff
+      def_PiP_rel[of A f] trans_closed Pow_rel_iff
     unfolding is_Pi_def by simp
   moreover
   have "f \<in> Pow_rel(M,Sigma(A,B)) \<Longrightarrow> A\<subseteq>domain(f) \<and> function(f) \<Longrightarrow> f \<in> Pi_rel(M,A, B)" for f
     using Pi_rel_iff[of "Pi_rel(M,A,B)"] Pi_assumptions
-          def_PiP_rel[of A f] trans_closed Pow_rel_iff
+      def_PiP_rel[of A f] trans_closed Pow_rel_iff
     unfolding is_Pi_def by simp
   ultimately
   show ?thesis by force
@@ -607,7 +607,7 @@ lemma Pi_rel_iff':
 
 lemma lam_type_M:
   assumes "M(A)" "\<And>x. x\<in>A \<Longrightarrow>  M(B(x))"
-          "\<And>x. x \<in> A \<Longrightarrow> b(x)\<in>B(x)" "strong_replacement(M,\<lambda>x y. y=\<langle>x, b(x)\<rangle>) "
+    "\<And>x. x \<in> A \<Longrightarrow> b(x)\<in>B(x)" "strong_replacement(M,\<lambda>x y. y=\<langle>x, b(x)\<rangle>) "
   shows "(\<lambda>x\<in>A. b(x)) \<in> Pi_rel(M,A,B)"
 proof (auto simp add: lam_def def_Pi_rel function_def)
   from assms

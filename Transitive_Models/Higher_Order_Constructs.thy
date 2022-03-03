@@ -15,8 +15,8 @@ definition
   "is_If(M,b,t,f,r) \<equiv> (b \<longrightarrow> r=t) \<and> (\<not>b \<longrightarrow> r=f)"
 
 lemma (in M_trans) If_abs:
-     "is_If(M,b,t,f,r) \<longleftrightarrow> r = If(b,t,f)"
-by (simp add: is_If_def)
+  "is_If(M,b,t,f,r) \<longleftrightarrow> r = If(b,t,f)"
+  by (simp add: is_If_def)
 
 
 definition
@@ -40,7 +40,7 @@ lemma is_If_fm_iff_sats [iff_sats]:
   using assms sats_is_If_fm[of Q A \<phi> env t f r] by simp
 
 lemma arity_is_If_fm [arity]:
-    "\<phi> \<in> formula \<Longrightarrow> t \<in> nat \<Longrightarrow> f \<in> nat \<Longrightarrow> r \<in> nat \<Longrightarrow>
+  "\<phi> \<in> formula \<Longrightarrow> t \<in> nat \<Longrightarrow> f \<in> nat \<Longrightarrow> r \<in> nat \<Longrightarrow>
     arity(is_If_fm(\<phi>, t, f, r)) = arity(\<phi>) \<union> succ(t) \<union> succ(r) \<union> succ(f)"
   unfolding is_If_fm_def
   by auto
@@ -100,7 +100,7 @@ next
   with assms and False
   show ?thesis
     unfolding is_The_def
-     by auto
+    by auto
 qed
 
 (*
@@ -127,13 +127,13 @@ lemma (in M_eclose) recursor_abs:
   unfolding is_recursor_def recursor_def
   using assms
   apply (rule_tac transrec_abs)
-  apply (auto simp:relation2_def)
-  apply (rule nat_case_abs[THEN iffD1, where is_b1="\<lambda>m bmfm.
+       apply (auto simp:relation2_def)
+   apply (rule nat_case_abs[THEN iffD1, where is_b1="\<lambda>m bmfm.
       \<exists>fm[M]. fun_apply(M,_,m,fm) \<and> is_b(m,fm,bmfm)"])
-  apply (auto simp:relation1_def)
+      apply (auto simp:relation1_def)
   apply (rule nat_case_abs[THEN iffD2, where is_b1="\<lambda>m bmfm.
       \<exists>fm[M]. fun_apply(M,_,m,fm) \<and> is_b(m,fm,bmfm)"])
-  apply (auto simp:relation1_def)
+     apply (auto simp:relation1_def)
   done
 
 definition

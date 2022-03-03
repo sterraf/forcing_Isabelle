@@ -79,7 +79,7 @@ lemma (in M_cardinal_AC) cardinal_rel_succ_not_0:   "|A|\<^bsup>M\<^esup> = succ
 (* "Finite_to_one(X,Y) \<equiv> {f:X\<rightarrow>Y. \<forall>y\<in>Y. Finite({x\<in>X . f`x = y})}" *)
 reldb_add functional "Finite" "Finite" \<comment> \<open>wrongly done? Finite is absolute\<close>
 relativize functional "Finite_to_one" "Finite_to_one_rel" external
-(* reldb_add relational "Finite" "is_Finite" \<comment> \<open>don't have is_Finite yet\<close>
+  (* reldb_add relational "Finite" "is_Finite" \<comment> \<open>don't have is_Finite yet\<close>
 relationalize "Finite_to_one_rel" "is_Finite_to_one" *)
 
 notation Finite_to_one_rel (\<open>Finite'_to'_one\<^bsup>_\<^esup>'(_,_')\<close>)
@@ -283,7 +283,7 @@ lemma bij_rel_is_fun_rel: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M
 lemmas bij_rel_is_fun = bij_rel_is_fun_rel[THEN mem_function_space_rel]
 
 lemma comp_bij_rel:
-    "g \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> f \<in> bij\<^bsup>M\<^esup>(B,C) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(C) \<Longrightarrow> (f O g) \<in> bij\<^bsup>M\<^esup>(A,C)"
+  "g \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> f \<in> bij\<^bsup>M\<^esup>(B,C) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> M(C) \<Longrightarrow> (f O g) \<in> bij\<^bsup>M\<^esup>(A,C)"
   using bij_rel_char comp_bij by force
 
 lemma inj_rel_converse_fun: "f \<in> inj\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(A) \<Longrightarrow> M(B) \<Longrightarrow> converse(f) \<in> range(f)\<rightarrow>\<^bsup>M\<^esup>A"
@@ -388,7 +388,7 @@ next
     by simp_all
   then
   have "\<kappa> \<prec>\<^bsup>M\<^esup> (\<kappa>\<^sup>+)\<^bsup>M\<^esup>"
-  using lt_Card_rel_imp_lesspoll_rel[OF _ \<open>\<kappa> <_\<close>] types by simp
+    using lt_Card_rel_imp_lesspoll_rel[OF _ \<open>\<kappa> <_\<close>] types by simp
   moreover
   assume "d \<lesssim>\<^bsup>M\<^esup> \<kappa>"
   ultimately
@@ -534,7 +534,7 @@ proof -
     moreover from calculation
     have "min < \<kappa>"
       using lt_trans1[of min "\<mu> i. M(i) \<and> (\<exists>f[M]. f \<in> bij\<^bsup>M\<^esup>(i, \<kappa>))" \<kappa>]
-       Least_le[of "\<lambda>i. i \<approx>\<^bsup>M\<^esup> \<kappa>" "|\<kappa>|\<^bsup>M\<^esup>", OF Ord_cardinal_rel_eqpoll_rel]
+        Least_le[of "\<lambda>i. i \<approx>\<^bsup>M\<^esup> \<kappa>" "|\<kappa>|\<^bsup>M\<^esup>", OF Ord_cardinal_rel_eqpoll_rel]
       unfolding Card_rel_def cardinal_rel_def eqpoll_rel_def
       by (simp)
     moreover

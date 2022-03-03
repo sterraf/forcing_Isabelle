@@ -62,7 +62,7 @@ lemma function_eqpoll :
   assumes "r:d\<rightarrow>J"
   shows "r \<approx> d"
   using assms domain_of_fun domain_function_lepoll Pi_iff[THEN iffD1,OF assms]
-  eqpollI[OF function_lepoll[OF assms]] subset_imp_lepoll
+    eqpollI[OF function_lepoll[OF assms]] subset_imp_lepoll
   by force
 
 lemma Fn_char : "Fn(\<kappa>,I,J) = {f \<in> Pow(I\<times>J) . function(f) \<and> f \<prec> \<kappa>}" (is "?L=?R")
@@ -247,7 +247,7 @@ next
     assume "B \<in> G" "\<langle>x, y\<rangle> \<in> B" "B' \<in> G" "\<langle>x, y'\<rangle> \<in> B'"
     moreover from assms this
     have "B \<in> I \<rightarrow> J" "B' \<in> I \<rightarrow> J"
-    by auto
+      by auto
     moreover from calculation assms(2)[of B B']
     obtain d where "d \<supseteq> B"  "d \<supseteq> B'" "d\<in>I \<rightarrow> J"  "\<langle>x, y\<rangle> \<in> d" "\<langle>x, y'\<rangle> \<in> d"
       using subsetD[OF \<open>G\<subseteq>_\<close>]
@@ -298,8 +298,8 @@ proof -
   with assms
   show ?thesis
     using Pi_iff
-  unfolding PFun_Space_Rel_def
-  by auto
+    unfolding PFun_Space_Rel_def
+    by auto
 qed
 
 lemma zero_in_PFun_rel:
@@ -311,7 +311,7 @@ lemma zero_in_PFun_rel:
 lemma pfun_subsetI :
   assumes "f \<in> A \<rightharpoonup>\<^bsup>M\<^esup> B" "g\<subseteq>f" "M(g)"
   shows "g\<in> A \<rightharpoonup>\<^bsup>M\<^esup> B"
-using assms function_subset
+  using assms function_subset
   unfolding PFun_Space_Rel_def
   by auto
 
@@ -355,7 +355,7 @@ proof -
     by force
   then
   show "\<Union>G \<in> Pow(I\<times>J)"  "function(\<Union>G)"
-      using assms pfun_Un_filter_closed
+    using assms pfun_Un_filter_closed
     unfolding PFun_Space_Rel_def
     by auto
 qed
@@ -374,8 +374,8 @@ proof -
   note assms
   moreover from this
   have "f\<in>Pow(A\<times>B)" "function(f)" "M(f)"
-  unfolding PFun_Space_Rel_def
-  by simp_all
+    unfolding PFun_Space_Rel_def
+    by simp_all
   moreover from this
   have "domain(f) \<subseteq> A" "f \<in> domain(f) \<rightarrow> B" "M(domain(f))"
     using assms Pow_iff[of f "A\<times>B"] domain_subset Pi_iff
@@ -428,7 +428,7 @@ lemma FiniteFun_pfunI :
   shows "f \<in> A \<rightharpoonup>\<^bsup>M\<^esup> B"
   using assms(1)
 proof(induct)
-case emptyI
+  case emptyI
   then
   show ?case
     using assms nonempty mem_function_space_rel_abs pfunI[OF empty_subsetI, of 0]
@@ -530,8 +530,8 @@ proof -
     then show ?thesis
       using assms cardinal_rel_closed Fn_rel_is_function[OF assms(1)]
         lesspoll_rel_eq_trans
-  unfolding Fn_rel_def
-  by simp
+      unfolding Fn_rel_def
+      by simp
   qed
 qed
 
@@ -625,8 +625,8 @@ lemma Fn_rel_singletonI:
   shows "{\<langle>x,j\<rangle>} \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
   using pfun_singletonI transM[of x] transM[of j] assms
     eq_lesspoll_rel_trans[OF singleton_eqpoll_rel_1]
-    unfolding Fn_rel_def
-    by auto
+  unfolding Fn_rel_def
+  by auto
 
 end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
 

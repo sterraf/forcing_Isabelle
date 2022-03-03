@@ -44,7 +44,7 @@ schematic_goal seqspace_fm_auto:
   shows
     "(\<exists>om\<in>A. omega(##A,om) \<and> nth(i,env) \<in> om \<and> is_funspace(##A, nth(i,env), nth(h,env), nth(j,env))) \<longleftrightarrow> (A, env \<Turnstile> (?sqsprp(i,j,h)))"
   unfolding is_funspace_def
- by (insert assms ; (rule iff_sats | simp)+)
+  by (insert assms ; (rule iff_sats | simp)+)
 
 synthesize "seqspace_rel" from_schematic "seqspace_fm_auto"
 arity_theorem for "seqspace_rel_fm"

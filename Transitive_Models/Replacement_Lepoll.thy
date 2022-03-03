@@ -94,7 +94,7 @@ lemmas lepoll_assumptions_defs[simp] = lepoll_assumptions1_def
   lepoll_assumptions17_def lepoll_assumptions18_def
 
 definition if_range_F where
- [simp]: "if_range_F(H,f,i) \<equiv> if i \<in> range(f) then H(converse(f) ` i) else 0"
+  [simp]: "if_range_F(H,f,i) \<equiv> if i \<in> range(f) then H(converse(f) ` i) else 0"
 
 definition if_range_F_else_F where
   "if_range_F_else_F(H,b,f,i) \<equiv> if b=0 then if_range_F(H,f,i) else H(i)"
@@ -154,7 +154,7 @@ lemma (in M_basic) lam_Least_assumption_ifM_b0:
     and
     types:"M(A)" "M(f)"
   shows "lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(F(A),0,f,i))"
-  (is "lam_replacement(M,\<lambda>x . Least(?P(x)))")
+    (is "lam_replacement(M,\<lambda>x . Least(?P(x)))")
 proof -
   {
     fix x X
@@ -189,7 +189,7 @@ lemma (in M_replacement_extra) lam_Least_assumption_ifM_bnot0:
     and
     "b\<noteq>0"
   shows "lam_replacement(M,\<lambda>x . \<mu> i. x \<in> if_range_F_else_F(F(A),b,f,i))"
-  (is "lam_replacement(M,\<lambda>x . Least(?P(x)))")
+    (is "lam_replacement(M,\<lambda>x . Least(?P(x)))")
 proof -
   have "M(x) \<Longrightarrow>(\<mu> i. (M(i) \<longrightarrow> x \<in> i) \<and> M(i)) = (if Ord(x) then succ(x) else 0)" for x
     using Ord_in_Ord
@@ -198,7 +198,7 @@ proof -
   moreover
   have "lam_replacement(M, \<lambda>x. if Ord(x) then succ(x) else 0)"
     using lam_replacement_if[OF _ _ separations(2)] lam_replacement_identity
-    lam_replacement_constant lam_replacement_hcomp lam_replacement_succ
+      lam_replacement_constant lam_replacement_hcomp lam_replacement_succ
     by simp
   moreover
   note types \<open>b\<noteq>0\<close>
@@ -323,7 +323,7 @@ proof -
     assume "x \<in> (if i \<in> range(f) then F(A, converse(f) ` i) else 0)"
     ultimately
     show ?thesis
-       by auto
+      by auto
   qed
   with assms
   show ?thesis
@@ -332,7 +332,7 @@ proof -
 qed
 
 lemma lepoll_assumptions5:
-   assumes
+  assumes
     types[simp]:"M(A)" "M(f)"
   shows "lepoll_assumptions5(M,A,F,S,fa,K,x,f,r)"
   using
@@ -349,7 +349,7 @@ lemma lepoll_assumptions6:
   assumes types[simp]:"M(A)" "M(S)" "M(x)"
   shows "lepoll_assumptions6(M,A,F,S,fa,K,x,f,r)"
   using strong_replacement_separation[OF lam_replacement_sing_const_id separation_in_constant]
-     lam_replacement_inj_rel
+    lam_replacement_inj_rel
   by simp
 
 lemma lepoll_assumptions7:
@@ -384,8 +384,8 @@ lemma lepoll_assumptions10:
     lam_replacement_constant[OF nonempty]
     lam_replacement_if[OF _ _ separation_in_constant]
     lam_replacement_hcomp
-       lam_replacement_apply[OF converse_closed[OF \<open>M(f)\<close>]]
-       lam_lepoll_assumption_F[of A]
+    lam_replacement_apply[OF converse_closed[OF \<open>M(f)\<close>]]
+    lam_lepoll_assumption_F[of A]
   by simp
 
 lemma lepoll_assumptions11:
@@ -410,8 +410,8 @@ lemma lepoll_assumptions13:
   using  lam_replacement_constant[OF nonempty] lam_lepoll_assumption_F
     lam_replacement_hcomp lam_replacement_apply
     lam_replacement_hcomp2[OF lam_replacement_constant[OF \<open>M(r)\<close>]
-        lam_replacement_if[OF _ _ separation_in_constant[of "range(f)"]] _ _
-        lam_replacement_minimum] assms
+      lam_replacement_if[OF _ _ separation_in_constant[of "range(f)"]] _ _
+      lam_replacement_minimum] assms
   unfolding lepoll_assumptions_defs
     lam_replacement_def[symmetric]
   by simp
@@ -444,8 +444,8 @@ lemma lepoll_assumptions16:
     lam_replacement_constant[OF nonempty]
     lam_replacement_if[OF _ _ separation_in_constant]
     lam_replacement_hcomp
-       lam_replacement_apply[OF converse_closed[OF \<open>M(f)\<close>]]
-       lam_lepoll_assumption_F[of A]
+    lam_replacement_apply[OF converse_closed[OF \<open>M(f)\<close>]]
+    lam_lepoll_assumption_F[of A]
   by simp
 
 lemma lepoll_assumptions17:
@@ -457,8 +457,8 @@ lemma lepoll_assumptions17:
     lam_replacement_constant[OF nonempty]
     lam_replacement_if[OF _ _ separation_in_constant]
     lam_replacement_hcomp
-       lam_replacement_apply[OF converse_closed[OF \<open>M(f)\<close>]]
-       lam_lepoll_assumption_F[of A]
+    lam_replacement_apply[OF converse_closed[OF \<open>M(f)\<close>]]
+    lam_lepoll_assumption_F[of A]
   by simp
 
 lemma lepoll_assumptions18:
