@@ -9,7 +9,7 @@ session "Independence_CH" in "." =  "Transitive_Models" +
     transitive model of ZFC, we construct proper generic extensions 
     that satisfy the Continuum Hypothesis and its negation.
   "  
-  options [timeout=500, document = pdf, document_output = "output",
+  options [timeout=300, document = pdf, document_output = "output",
   	   document_variants = "document:outline=/proof,/ML"]
   theories
     "Definitions_Main"

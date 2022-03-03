@@ -10,7 +10,7 @@ treatment of the Axiom of Dependent Choices. This work is a
 prerequisite to our formalization of the independence of the
 Continuum Hypothesis.
 
-The source theory files are located in the `Transitive_Models` directory.
+The source theory files are located in the `src` directory.
 
 An HMTL version can be found at
 https://cs.famaf.unc.edu.ar/~pedro/forcing/Transitive_Models/
@@ -24,7 +24,7 @@ executing
 $ isabelle jedit -l ZF-Constructible Delta_System_Relative.thy
 ```
 
-at the `Transitive_Models` directory. There are 3 other “leaves” of
+at the `src` directory. There are 3 other “leaves” of
 the dependency graph (`M_Basic_No_Repl.thy`,
 `Partial_Functions_Relative.thy`, and `Pointed_DC_Relative.thy`) which
 will not be checked unless they're opened explicitly, or the session

@@ -10,7 +10,7 @@ DOC_FILES = root.tex root.bib root.bst
 
 LINKING_DIR  = $(PWD)/../scripts
 FULL_DEPS    = $(shell isabelle build -l -n -d . $(SESSION) | grep "^  ")
-LOCAL_FILES  = $(shell isabelle build -l -n -d . $(SESSION) | grep $(PWD))
+LOCAL_FILES  = $(shell isabelle build -l -n -d . $(SESSION) | grep $(PWD) | grep -v "document/")
 DOCU_FILES   = $(shell echo $(DOC_FILES) | sed "s_ _ document/_g" | \
 	 sed "s_^_document/_g")
 USR_HEAPS    = $(shell isabelle getenv -b ISABELLE_HEAPS)
@@ -48,10 +48,12 @@ $(SESSION).tar.gz:	html_linked Makefile_distro ROOT README.md
 	mkdir tmptar
 	mkdir tmptar/src
 	cp README.md tmptar
-	cp -r $(LINKING_DIR) tmptar/
-	cp -r README.md thy_files $(LOCAL_FILES) \
-	 ROOT document/ tmptar/src
+	# cp -r $(LINKING_DIR) tmptar/
+	cp -r README.md $(LOCAL_FILES) \
+	 ROOT tmptar/src
 	cp Makefile_distro tmptar/src/Makefile
+	mkdir tmptar/src/document
+	cp -r $(DOCU_FILES) tmptar/src/document
 	 ## Avoid temporary sed files from linking:
 	rsync -ah --exclude 'sed*' html_linked/ tmptar/html
 	tar --transform "s/tmptar/$(SESSION)/g" --show-transformed-names\
@@ -63,9 +65,10 @@ tar:    $(SESSION).tar.gz
 $(SESSION)-AFP.tar.gz:    thy_files $(LOCAL_FILES)  ROOT_AFP $(DOCU_FILES)
 	rm -rf tmpafp
 	mkdir tmpafp
-	cp $(LOCAL_FILES)  tmpafp
+	cp $(LOCAL_FILES) tmpafp
 	cp ROOT_AFP tmpafp/ROOT
-	cp -r document/ tmpafp
+	mkdir tmpafp/document
+	cp -r $(DOCU_FILES) tmpafp/document
 	tar --transform "s/tmpafp/$(SESSION)/g" --show-transformed-names\
 	 -cvzf $(SESSION)-AFP.tar.gz tmpafp
 
