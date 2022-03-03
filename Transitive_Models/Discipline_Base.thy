@@ -3,10 +3,6 @@ theory Discipline_Base
     "ZF-Constructible.Rank"
     ZF_Miscellanea
     "Relativization"
-(* TODO: check if we need Eisbach. Currently this breaks the build. *)
-(*
-   "HOL-Eisbach.Eisbach_Old_Appl_Syntax"\<comment> \<open>if put before, it breaks some simps\<close>
-*)
 
 begin
 
@@ -33,8 +29,6 @@ lemma (in M_trivial) singleton_closed [simp]:
 lemma (in M_trivial) Upair_closed[simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> M(Upair(a,b))"
   using Upair_eq_cons by simp
 
-lemma (in M_trivial) upair_closed[simp] : "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M({x,y})"
-  by simp
 
 text\<open>The following named theorems gather instances of transitivity
 that arise from closure theorems\<close>

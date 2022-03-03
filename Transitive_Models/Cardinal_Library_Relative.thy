@@ -129,7 +129,7 @@ locale M_cardinal_UN_lepoll = M_library + M_replacement_lepoll _ "\<lambda>_. X"
   j:M_cardinal_UN _ J for J
 begin
 
-\<comment>\<open>FIXME: this "LEQpoll" should be "LEPOLL"; same correction in Delta System\<close>
+(* FIXME: this "LEQpoll" should be "LEPOLL"; same correction in Delta System *)
 lemma leqpoll_rel_imp_cardinal_rel_UN_le:
   notes [dest] = InfCard_is_Card Card_is_Ord
   assumes "InfCard\<^bsup>M\<^esup>(K)" "J \<lesssim>\<^bsup>M\<^esup> K" "\<And>i. i\<in>J \<Longrightarrow> |X(i)|\<^bsup>M\<^esup> \<le> K"
@@ -792,8 +792,6 @@ text\<open>The next lemma is an application of recursive constructions.
      It works under the assumption that whenever the already constructed
      subsequence is small enough, another element can be added.\<close>
 
-\<comment>\<open>FIXME: these should be postulated in some locale.\<close>
-
 lemma bounded_cardinal_rel_selection:
   includes Ord_dests
   assumes
@@ -1247,7 +1245,7 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>
 
-(* FIXME: This can be generalized. *)
+(* TODO: This can be generalized. *)
 lemma (in M_cardinal_library) countable_fun_imp_countable_image:
   assumes "f:C \<rightarrow>\<^bsup>M\<^esup> B" "countable\<^bsup>M\<^esup>(C)" "\<And>c. c\<in>C \<Longrightarrow> countable\<^bsup>M\<^esup>(f`c)"
     "M(C)" "M(B)"

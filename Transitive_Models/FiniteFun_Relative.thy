@@ -55,9 +55,6 @@ lemma seqspaceI[intro]: "n\<in>\<alpha> \<Longrightarrow> f:n\<rightarrow>B \<Lo
 lemma seqspaceD[dest]: "f\<in>B\<^bsup><\<alpha>\<^esup> \<Longrightarrow> \<exists>n\<in>\<alpha>. f:n\<rightarrow>B"
   unfolding seqspace_def by blast
 
-
-(* FIXME: Now this is too particular (only for \<^term>\<open>\<omega>\<close>-sequences).
-  A relative definition for \<^term>\<open>seqspace\<close> would be appropriate.*)
 locale M_seqspace =  M_trancl + M_replacement +
   assumes
     seqspace_replacement: "M(B) \<Longrightarrow> strong_replacement(M,\<lambda>n z. n\<in>nat \<and> is_funspace(M,n,B,z))"

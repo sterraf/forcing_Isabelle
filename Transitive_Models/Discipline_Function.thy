@@ -103,7 +103,7 @@ lemma first_abs :
   shows "first(z,B,r) \<longleftrightarrow> first_rel(M,z,B,r)"
   unfolding first_def first_rel_def using assms by auto
 
-(* FIXME: find a naming convention for absoluteness results like this.
+(* TODO: find a naming convention for absoluteness results like this.
 See notes/TODO.txt
 *)
 lemma minimum_abs:
@@ -199,7 +199,7 @@ qed
 
 lemmas trans_function_space_rel_closed[trans_closed] = transM[OF _ function_space_rel_closed]
 
-lemma function_space_rel_iff:
+lemma is_function_space_iff:
   assumes "M(x)" "M(y)" "M(d)"
   shows "is_function_space(M,x,y,d) \<longleftrightarrow> d = function_space_rel(M,x,y)"
 proof (intro iffI)
@@ -235,7 +235,7 @@ proof -
   from assms
   have "x\<in>function_space_rel(M,A,y) \<longleftrightarrow> x\<in>Pi_rel(M,A,\<lambda>_. y)" if "M(x)" for x
     using that
-      function_space_rel_iff[of A y, OF _ _ function_space_rel_closed, of A y]
+      is_function_space_iff[of A y, OF _ _ function_space_rel_closed, of A y]
       def_Pi_rel Pi_rel_char Pow_rel_char
     unfolding is_function_space_def is_funspace_def by (simp add:Pi_def)
   with assms
@@ -311,7 +311,7 @@ lemma function_space_rel_closed[intro,simp]:
 
 lemmas trans_function_space_rel_closed[trans_closed] = transM[OF _ function_space_rel_closed]
 
-lemma function_space_rel_iff:
+lemma is_function_space_iff:
   assumes "M(x)" "M(y)" "M(d)"
   shows "is_function_space(M,x,y,d) \<longleftrightarrow> d = function_space_rel(M,x,y)"
   using Pi_rel_iff[of x "\<lambda>_. y"] assms
@@ -329,7 +329,7 @@ proof -
   from assms
   have "x\<in>A \<rightarrow>\<^bsup>M\<^esup> y \<longleftrightarrow> x\<in>Pi\<^bsup>M\<^esup>(A,\<lambda>_. y)" if "M(x)" for x
     using that
-      function_space_rel_iff[of A y, OF _ _ function_space_rel_closed, of A y]
+      is_function_space_iff[of A y, OF _ _ function_space_rel_closed, of A y]
       def_Pi_rel Pi_rel_char Pow_rel_char
     unfolding is_funspace_def by (simp add:Pi_def)
   with assms
@@ -463,11 +463,11 @@ lemma is_inj_uniqueness:
     "is_inj(M,r,B,d)" "is_inj(M,r,B,d')"
   shows
     "d=d'"
-  using assms function_space_rel_iff extensionality_trans
+  using assms is_function_space_iff extensionality_trans
   unfolding is_inj_def by simp
 
 lemma is_inj_witness: "M(r) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M]. is_inj(M,r,B,d)"
-  using injP_separation function_space_rel_iff
+  using injP_separation is_function_space_iff
   unfolding is_inj_def by simp
 
 lemma is_inj_closed :
@@ -523,16 +523,16 @@ lemma def_inj_rel:
 proof -
   from assms
   have "inj_rel(M,A,B) \<subseteq> function_space_rel(M,A,B)"
-    using inj_rel_iff[of A B "inj_rel(M,A,B)"] function_space_rel_iff
+    using inj_rel_iff[of A B "inj_rel(M,A,B)"] is_function_space_iff
     unfolding is_inj_def by auto
   moreover from assms
   have "f \<in> inj_rel(M,A,B) \<Longrightarrow> ?P(f)" for f
-    using inj_rel_iff[of A B "inj_rel(M,A,B)"] function_space_rel_iff
+    using inj_rel_iff[of A B "inj_rel(M,A,B)"] is_function_space_iff
       def_injP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
     unfolding is_inj_def by auto
   moreover from assms
   have "f \<in> function_space_rel(M,A,B) \<Longrightarrow> ?P(f) \<Longrightarrow> f \<in> inj_rel(M,A,B)" for f
-    using inj_rel_iff[of A B "inj_rel(M,A,B)"] function_space_rel_iff
+    using inj_rel_iff[of A B "inj_rel(M,A,B)"] is_function_space_iff
       def_injP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
     unfolding is_inj_def by auto
   ultimately
@@ -625,11 +625,11 @@ lemma is_surj_uniqueness:
     "is_surj(M,r,B,d)" "is_surj(M,r,B,d')"
   shows
     "d=d'"
-  using assms function_space_rel_iff extensionality_trans
+  using assms is_function_space_iff extensionality_trans
   unfolding is_surj_def by simp
 
 lemma is_surj_witness: "M(r) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M]. is_surj(M,r,B,d)"
-  using surjP_separation function_space_rel_iff
+  using surjP_separation is_function_space_iff
   unfolding is_surj_def by simp
 
 lemma is_surj_closed :
@@ -685,16 +685,16 @@ lemma def_surj_rel:
 proof -
   from assms
   have "surj_rel(M,A,B) \<subseteq> function_space_rel(M,A,B)"
-    using surj_rel_iff[of A B "surj_rel(M,A,B)"] function_space_rel_iff
+    using surj_rel_iff[of A B "surj_rel(M,A,B)"] is_function_space_iff
     unfolding is_surj_def by auto
   moreover from assms
   have "f \<in> surj_rel(M,A,B) \<Longrightarrow> ?P(f)" for f
-    using surj_rel_iff[of A B "surj_rel(M,A,B)"] function_space_rel_iff
+    using surj_rel_iff[of A B "surj_rel(M,A,B)"] is_function_space_iff
       def_surjP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
     unfolding is_surj_def by auto
   moreover from assms
   have "f \<in> function_space_rel(M,A,B) \<Longrightarrow> ?P(f) \<Longrightarrow> f \<in> surj_rel(M,A,B)" for f
-    using surj_rel_iff[of A B "surj_rel(M,A,B)"] function_space_rel_iff
+    using surj_rel_iff[of A B "surj_rel(M,A,B)"] is_function_space_iff
       def_surjP_rel transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(B)\<close>]
     unfolding is_surj_def by auto
   ultimately
