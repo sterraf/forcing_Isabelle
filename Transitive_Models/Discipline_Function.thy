@@ -183,7 +183,7 @@ lemma is_function_space_closed :
 
 \<comment> \<open>adding closure to simpset and claset\<close>
 lemma function_space_rel_closed[intro,simp]:
-  assumes    "M(x)" "M(y)"
+  assumes "M(x)" "M(y)"
   shows "M(function_space_rel(M,x,y))"
 proof -
   have "is_function_space(M, x, y, THE xa. is_function_space(M, x, y, xa))"
@@ -236,7 +236,7 @@ proof -
   have "x\<in>function_space_rel(M,A,y) \<longleftrightarrow> x\<in>Pi_rel(M,A,\<lambda>_. y)" if "M(x)" for x
     using that
       is_function_space_iff[of A y, OF _ _ function_space_rel_closed, of A y]
-      def_Pi_rel Pi_rel_char Pow_rel_char
+      def_Pi_rel Pi_rel_char mbnr.Pow_rel_char
     unfolding is_function_space_def is_funspace_def by (simp add:Pi_def)
   with assms
   show ?thesis \<comment> \<open>At this point, quoting "trans\_rules" doesn't work\<close>
@@ -263,101 +263,6 @@ lemma mem_function_space_rel_abs:
   using assms function_space_rel_char by simp
 
 end \<comment> \<open>\<^locale>\<open>M_Pi\<close>\<close>
-
-
-
-(*
-definition
-  is_function_space :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o"  where
-  "is_function_space(M,A,B,fs) \<equiv> is_Pi(M,A,\<lambda>_. B,fs)"
-
-definition
-  function_space_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i"  where
-  "function_space_rel(M,A,B) \<equiv> Pi_rel(M,A,\<lambda>_. B)"
-
-abbreviation
-  function_space_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<rightarrow>\<^bsup>_\<^esup> _\<close> [61,1,61] 60) where
-  "A \<rightarrow>\<^bsup>M\<^esup> B \<equiv> function_space_rel(M,A,B)"
-
-abbreviation
-  function_space_r_set ::  "[i,i,i] \<Rightarrow> i" (\<open>_ \<rightarrow>\<^bsup>_\<^esup> _\<close> [61,1,61] 60) where
-  "function_space_r_set(A,M) \<equiv> function_space_rel(##M,A)"
-
-context M_Pi
-begin
-
-lemma is_function_space_uniqueness:
-  assumes
-    "M(r)" "M(B)"
-    "is_function_space(M,r,B,d)" "is_function_space(M,r,B,d')"
-  shows
-    "d=d'"
-  using is_Pi_uniqueness[of r "\<lambda>_. B"] assms
-  unfolding is_function_space_def
-  by blast
-
-lemma is_function_space_witness:
-  assumes "M(A)" "M(B)"
-  shows "\<exists>d[M]. is_function_space(M,A,B,d)"
-  using is_Pi_witness[of A "\<lambda>_. B"] assms
-  unfolding is_function_space_def
-  by simp
-
-\<comment> \<open>adding closure to simpset and claset\<close>
-lemma function_space_rel_closed[intro,simp]:
-  "M(x) \<Longrightarrow> M(y) \<Longrightarrow> M(function_space_rel(M,x,y))"
-  unfolding function_space_rel_def
-  by simp
-
-lemmas trans_function_space_rel_closed[trans_closed] = transM[OF _ function_space_rel_closed]
-
-lemma is_function_space_iff:
-  assumes "M(x)" "M(y)" "M(d)"
-  shows "is_function_space(M,x,y,d) \<longleftrightarrow> d = function_space_rel(M,x,y)"
-  using Pi_rel_iff[of x "\<lambda>_. y"] assms
-  unfolding is_function_space_def function_space_rel_def
-  by simp
-
-lemma def_function_space_rel:
-  assumes "M(A)" "M(y)"
-  shows "A \<rightarrow>\<^bsup>M\<^esup> y = Pi\<^bsup>M\<^esup>(A,\<lambda>_. y)"
-proof -
-  from assms
-  interpret M_Pi_assumptions M A "\<lambda>_. y"
-    using Pi_replacement Pi_separation
-    by unfold_locales (simp_all add:Sigfun_def)
-  from assms
-  have "x\<in>A \<rightarrow>\<^bsup>M\<^esup> y \<longleftrightarrow> x\<in>Pi\<^bsup>M\<^esup>(A,\<lambda>_. y)" if "M(x)" for x
-    using that
-      is_function_space_iff[of A y, OF _ _ function_space_rel_closed, of A y]
-      def_Pi_rel Pi_rel_char Pow_rel_char
-    unfolding is_funspace_def by (simp add:Pi_def)
-  with assms
-  show ?thesis \<comment> \<open>At this point, quoting "trans_rules" doesn't work\<close>
-    using transM[OF _ function_space_rel_closed, OF _ \<open>M(A)\<close> \<open>M(y)\<close>]
-      transM[OF _ Pi_rel_closed] by blast
-qed
-
-lemma function_space_rel_char:
-  assumes "M(A)" "M(y)"
-  shows "A \<rightarrow>\<^bsup>M\<^esup> y = {f \<in> A \<rightarrow> y. M(f)}"
-proof -
-  from assms
-  interpret M_Pi_assumptions M A "\<lambda>_. y"
-    using Pi_replacement Pi_separation
-    by unfold_locales (simp_all add:Sigfun_def)
-  show ?thesis
-    using assms def_function_space_rel Pi_rel_char
-    by simp
-qed
-
-lemma mem_function_space_rel_abs:
-  assumes "M(A)" "M(y)" "M(f)"
-  shows "f \<in> A \<rightarrow>\<^bsup>M\<^esup> y  \<longleftrightarrow>  f \<in> A \<rightarrow> y"
-  using assms function_space_rel_char by simp
-
-end \<comment> \<open>\<^locale>\<open>M_Pi\<close>\<close>
-*)
 
 locale M_N_Pi = M:M_Pi + N:M_Pi N for N +
   assumes
@@ -806,26 +711,6 @@ abbreviation
 locale M_Perm = M_Pi + M_inj + M_surj
 begin
 
-(* lemma is_bij_uniqueness:
-  assumes
-    "M(A)" "M(B)"
-    "is_bij(M,A,B,d)" "is_bij(M,A,B,d')"
-  shows
-    "d=d'"
-  using assms hcomp2_2_uniqueness[of M is_Int is_inj is_surj A B d d']
-    is_Int_uniqueness is_inj_uniqueness is_surj_uniqueness
-    is_Int_closed is_inj_closed is_surj_closed
-  unfolding is_bij_def
-  by auto
-
-lemma is_bij_witness: "M(A) \<Longrightarrow> M(B)\<Longrightarrow> \<exists>d[M]. is_bij(M,A,B,d)"
-  using hcomp2_2_witness[of M is_Int is_inj is_surj A B]
-    is_inj_witness is_surj_witness is_Int_abs
-  unfolding is_bij_def by simp
-
-lemma is_bij_closed : "is_bij(M,f,y,d) \<Longrightarrow> M(d)"
-  unfolding is_bij_def by simp *)
-
 lemma is_bij_closed : "is_bij(M,f,y,d) \<Longrightarrow> M(d)"
   unfolding is_bij_def using is_Int_closed is_inj_witness is_surj_witness by auto
 
@@ -836,21 +721,6 @@ lemma bij_rel_closed[intro,simp]:
   using assms Int_closed surj_rel_closed inj_rel_closed
   by auto
 
-(* lemma bij_rel_closed[intro,simp]:
-  assumes "M(x)" "M(y)"
-  shows "M(bij_rel(M,x,y))"
-proof -
-  have "is_bij(M, x, y, THE xa. is_bij(M, x, y, xa))"
-    using assms
-          theI[OF ex1I[of "\<lambda>d. is_bij(M,x,y,d)"], OF _ is_bij_uniqueness[of x y]]
-          is_bij_witness
-    by auto
-  then show ?thesis
-    using assms is_bij_closed
-    unfolding bij_rel_def
-    by blast
-qed *)
-
 lemmas trans_bij_rel_closed[trans_closed] = transM[OF _ bij_rel_closed]
 
 lemma bij_rel_iff:
@@ -859,27 +729,6 @@ lemma bij_rel_iff:
   unfolding is_bij_def bij_rel_def
   using assms surj_rel_iff inj_rel_iff is_Int_abs
   by auto
-
-(*proof (intro iffI)
-  assume "d = bij_rel(M,x,y)"
-  moreover
-  note assms
-  moreover from this
-  obtain e where "M(e)" "is_bij(M,x,y,e)"
-    using is_bij_witness by blast)
-  ultimately
-  show "is_bij(M, x, y, d)"
-    using is_bij_uniqueness[of x y] is_bij_witness
-      theI[OF ex1I[of "is_bij(M,x,y)"], OF _ is_bij_uniqueness[of x y], of e]
-    unfolding bij_rel_def
-    by auto)
-next
-  assume "is_bij(M, x, y, d)"
-  with assms
-  show "d = bij_rel(M,x,y)"
-    using is_bij_uniqueness unfolding bij_rel_def
-    by (blast del:the_equality intro:the_equality[symmetric]))
-qed*)
 
 lemma def_bij_rel:
   assumes "M(A)" "M(B)"
@@ -1064,7 +913,5 @@ theorem for it.\<close>
 
 text\<open>Note that \<^term>\<open>lesspoll_rel\<close> is neither $\Sigma_1^{\mathit{ZF}}$ nor
  $\Pi_1^{\mathit{ZF}}$, so there is no ``transfer'' theorem for it.\<close>
-
-
 
 end

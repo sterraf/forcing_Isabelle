@@ -13,12 +13,11 @@ session "Transitive_Models" =  "Delta_System_Lemma" +
   "
   options [timeout=180, document = pdf, document_output = "output",
 	   document_variants = "document:outline=/proof,/ML"]
- theories
+  theories
     "Renaming_Auto"
     "Delta_System_Relative"
     "Pointed_DC_Relative"
     "Partial_Functions_Relative"
-    "M_Basic_No_Repl"
   document_files
     "root.tex"
     "root.bib"

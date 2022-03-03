@@ -312,5 +312,9 @@ lemma (in M_basic_no_repl) tl'_closed: "M(x) ==> M(tl'(x))"
   apply (force simp add: quasilist_def)
   done
 
+sublocale M_basic \<subseteq> mbnr:M_basic_no_repl
+  using Inter_separation Diff_separation cartprod_separation image_separation
+    converse_separation restrict_separation comp_separation pred_separation
+    Memrel_separation is_recfun_separation power_ax by unfold_locales
 
 end

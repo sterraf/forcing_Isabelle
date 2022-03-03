@@ -18,7 +18,6 @@ session "Transitive_Models" (AFP) =  "Delta_System_Lemma" +
     "Delta_System_Relative"
     "Pointed_DC_Relative"
     "Partial_Functions_Relative"
-    "M_Basic_No_Repl"
   document_files
     "root.tex"
     "root.bib"

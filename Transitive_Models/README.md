@@ -25,7 +25,7 @@ $ isabelle jedit -l ZF-Constructible Delta_System_Relative.thy
 ```
 
 at the `src` directory. There are 3 other “leaves” of
-the dependency graph (`M_Basic_No_Repl.thy`,
+the dependency graph (`Renaming_Auto.thy`,
 `Partial_Functions_Relative.thy`, and `Pointed_DC_Relative.thy`) which
 will not be checked unless they're opened explicitly, or the session
 is built according to the following instructions.

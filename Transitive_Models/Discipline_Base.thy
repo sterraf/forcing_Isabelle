@@ -2,6 +2,7 @@ theory Discipline_Base
   imports
     "ZF-Constructible.Rank"
     ZF_Miscellanea
+    M_Basic_No_Repl
     Relativization
 
 begin
@@ -249,8 +250,7 @@ abbreviation
   Pow_r_set ::  "[i,i] \<Rightarrow> i" (\<open>Pow\<^bsup>_\<^esup>'(_')\<close>) where
   "Pow_r_set(M) \<equiv> Pow_rel(##M)"
 
-
-context M_basic
+context M_basic_no_repl
 begin
 
 lemma is_Pow_uniqueness:
@@ -275,7 +275,6 @@ lemma Pow_rel_closed[intro,simp]: "M(r) \<Longrightarrow> M(Pow_rel(M,r))"
   using is_Pow_closed theI[OF ex1I[of "\<lambda>d. is_Pow(M,r,d)"], OF _ is_Pow_uniqueness[of r]]
     is_Pow_witness
   by fastforce
-
 
 lemmas trans_Pow_rel_closed[trans_closed] = transM[OF _ Pow_rel_closed]
 
@@ -311,16 +310,16 @@ proof -
   assume "M(r)"
   moreover from this
   have "x \<in> Pow_rel(M,r) \<Longrightarrow> x\<subseteq>r" "M(x) \<Longrightarrow> x \<subseteq> r \<Longrightarrow> x \<in> Pow_rel(M,r)" for x
-    using def_Pow_rel by (auto intro!:trans_closed)
+    using def_Pow_rel by (auto intro!:trans_Pow_rel_closed)
   ultimately
   show ?thesis
-    using trans_closed by blast
+    using trans_Pow_rel_closed by blast
 qed
 
 lemma mem_Pow_rel_abs: "M(a) \<Longrightarrow> M(r) \<Longrightarrow> a \<in> Pow_rel(M,r) \<longleftrightarrow> a \<in> Pow(r)"
   using Pow_rel_char by simp
 
-end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_basic_no_repl\<close>\<close>
 
 (******************  end Discipline  **********************)
 
@@ -473,6 +472,18 @@ abbreviation
   "Pi_r_set(M,A,B) \<equiv> Pi_rel(##M,A,B)"
 
 
+context M_basic
+begin
+
+lemmas Pow_rel_iff = mbnr.Pow_rel_iff
+lemmas Pow_rel_char = mbnr.Pow_rel_char
+lemmas mem_Pow_rel_abs = mbnr.mem_Pow_rel_abs
+lemmas Pow_rel_closed = mbnr.Pow_rel_closed
+lemmas def_Pow_rel = mbnr.def_Pow_rel
+lemmas trans_Pow_rel_closed = mbnr.trans_Pow_rel_closed
+
+end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
+
 context M_Pi_assumptions
 begin
 
@@ -487,7 +498,7 @@ lemma is_Pi_uniqueness:
 
 
 lemma is_Pi_witness: "\<exists>d[M]. is_Pi(M,A,B,d)"
-  using  Pow_rel_iff Pi_separation Pi_assumptions
+  using Pow_rel_iff Pi_separation Pi_assumptions
   unfolding is_Pi_def by simp
 
 lemma is_Pi_closed : "is_Pi(M,A,B,d) \<Longrightarrow> M(d)"
@@ -539,7 +550,7 @@ lemma def_Pi_rel:
   "Pi_rel(M,A,B) = {f\<in>Pow_rel(M,Sigma(A,B)). A\<subseteq>domain(f) \<and> function(f)}"
 proof -
   have "Pi_rel(M,A, B) \<subseteq> Pow_rel(M,Sigma(A,B))"
-    using Pi_assumptions Pi_rel_iff[of "Pi_rel(M,A,B)"]  Pow_rel_iff
+    using Pi_assumptions Pi_rel_iff[of "Pi_rel(M,A,B)"] Pow_rel_iff
     unfolding is_Pi_def by auto
   moreover
   have "f \<in> Pi_rel(M,A, B) \<Longrightarrow> A\<subseteq>domain(f) \<and> function(f)" for f
