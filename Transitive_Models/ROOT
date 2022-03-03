@@ -8,7 +8,7 @@ session "Transitive_Models" =  "Delta_System_Lemma" +
     of the Isabelle/ZF and Delta System Lemma sessions to a transitive
     class. We also relativize Paulson's work on Aleph and our former
     treatment of the Axiom of Dependent Choices. This work is a
-    prerrequisite to our formalization of the independence of the
+    prerequisite to our formalization of the independence of the
     Continuum Hypothesis.
   "
   options [timeout=180, document = pdf, document_output = "output",
