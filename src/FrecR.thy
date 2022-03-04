@@ -8,7 +8,6 @@ begin
 text\<open>\<^term>\<open>frecR\<close> is the well-founded relation on names that allows
 us to define forcing for atomic formulas.\<close>
 
-(* Preliminary *)
 definition
   ftype :: "i\<Rightarrow>i" where
   "ftype \<equiv> fst"
@@ -91,9 +90,9 @@ definition
 
 lemma is_ftype_iff_sats [iff_sats]:
   assumes
-    "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
+    "nth(a,env) = x" "nth(b,env) = y" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
   shows
-    "is_ftype(##A,aa,bb)  \<longleftrightarrow> sats(A,ftype_fm(a,b), env)"
+    "is_ftype(##A,x,y)  \<longleftrightarrow> sats(A,ftype_fm(a,b), env)"
   unfolding ftype_fm_def is_ftype_def
   using assms sats_fst_fm
   by simp
@@ -107,17 +106,17 @@ definition
   "name1_fm(x,t) \<equiv> hcomp_fm(fst_fm,snd_fm,x,t)"
 
 lemma sats_name1_fm [simp]:
-  "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk>
-    \<Longrightarrow> sats(A, name1_fm(x,y), env) \<longleftrightarrow>
-        is_name1(##A, nth(x,env), nth(y,env))"
-  unfolding name1_fm_def is_name1_def using sats_fst_fm sats_snd_fm
-    sats_hcomp_fm[of A "is_fst(##A)" _ fst_fm "is_snd(##A)"] by simp
+  "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk> \<Longrightarrow>
+    (A, env \<Turnstile> name1_fm(x,y)) \<longleftrightarrow> is_name1(##A, nth(x,env), nth(y,env))"
+  unfolding name1_fm_def is_name1_def
+  using sats_fst_fm sats_snd_fm sats_hcomp_fm[of A "is_fst(##A)" _ fst_fm "is_snd(##A)"]
+  by simp
 
 lemma is_name1_iff_sats [iff_sats]:
   assumes
-    "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
+    "nth(a,env) = x" "nth(b,env) = y" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
   shows
-    "is_name1(##A,aa,bb)  \<longleftrightarrow> sats(A,name1_fm(a,b), env)"
+    "is_name1(##A,x,y)  \<longleftrightarrow> A , env \<Turnstile> name1_fm(a,b)"
   using assms sats_name1_fm
   by simp
 
@@ -130,11 +129,11 @@ definition
   "snd_snd_fm(x,t) \<equiv> hcomp_fm(snd_fm,snd_fm,x,t)"
 
 lemma sats_snd2_fm [simp]:
-  "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk>
-    \<Longrightarrow> sats(A,snd_snd_fm(x,y), env) \<longleftrightarrow>
-        is_snd_snd(##A, nth(x,env), nth(y,env))"
-  unfolding snd_snd_fm_def is_snd_snd_def using sats_snd_fm
-    sats_hcomp_fm[of A "is_snd(##A)" _ snd_fm "is_snd(##A)"] by simp
+  "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk> \<Longrightarrow>
+    (A, env  \<Turnstile> snd_snd_fm(x,y)) \<longleftrightarrow> is_snd_snd(##A, nth(x,env), nth(y,env))"
+  unfolding snd_snd_fm_def is_snd_snd_def
+  using sats_snd_fm sats_hcomp_fm[of A "is_snd(##A)" _ snd_fm "is_snd(##A)"]
+  by simp
 
 definition
   is_name2 :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
@@ -146,18 +145,18 @@ definition
 
 lemma sats_name2_fm :
   "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk>
-    \<Longrightarrow> sats(A,name2_fm(x,y), env) \<longleftrightarrow>
-        is_name2(##A, nth(x,env), nth(y,env))"
-  unfolding name2_fm_def is_name2_def using sats_fst_fm sats_snd2_fm
-    sats_hcomp_fm[of A "is_fst(##A)" _ fst_fm "is_snd_snd(##A)"] by simp
+    \<Longrightarrow> (A , env \<Turnstile> name2_fm(x,y)) \<longleftrightarrow> is_name2(##A, nth(x,env), nth(y,env))"
+  unfolding name2_fm_def is_name2_def
+  using sats_fst_fm sats_snd2_fm sats_hcomp_fm[of A "is_fst(##A)" _ fst_fm "is_snd_snd(##A)"]
+  by simp
 
 lemma is_name2_iff_sats [iff_sats]:
   assumes
-    "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
+    "nth(a,env) = x" "nth(b,env) = y" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
   shows
-    "is_name2(##A,aa,bb)  \<longleftrightarrow> sats(A,name2_fm(a,b), env)"
-  using assms
-  by (simp add:sats_name2_fm)
+    "is_name2(##A,x,y)  \<longleftrightarrow> A, env \<Turnstile> name2_fm(a,b)"
+  using assms sats_name2_fm
+  by simp
 
 definition
   is_cond_of :: "(i\<Rightarrow>o)\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
@@ -168,19 +167,19 @@ definition
   "cond_of_fm(x,t4) \<equiv> hcomp_fm(snd_fm,snd_snd_fm,x,t4)"
 
 lemma sats_cond_of_fm :
-  "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk>
-    \<Longrightarrow> sats(A,cond_of_fm(x,y), env) \<longleftrightarrow>
-        is_cond_of(##A, nth(x,env), nth(y,env))"
-  unfolding cond_of_fm_def is_cond_of_def using sats_snd_fm sats_snd2_fm
-    sats_hcomp_fm[of A "is_snd(##A)" _ snd_fm "is_snd_snd(##A)"] by simp
+  "\<lbrakk> x \<in> nat; y \<in> nat;env \<in> list(A) \<rbrakk> \<Longrightarrow>
+    (A, env \<Turnstile> cond_of_fm(x,y)) \<longleftrightarrow> is_cond_of(##A, nth(x,env), nth(y,env))"
+  unfolding cond_of_fm_def is_cond_of_def
+  using sats_snd_fm sats_snd2_fm sats_hcomp_fm[of A "is_snd(##A)" _ snd_fm "is_snd_snd(##A)"]
+  by simp
 
 lemma is_cond_of_iff_sats [iff_sats]:
   assumes
-    "nth(a,env) = aa" "nth(b,env) = bb" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
+    "nth(a,env) = x" "nth(b,env) = y" "a\<in>nat" "b\<in>nat" "env \<in> list(A)"
   shows
-    "is_cond_of(##A,aa,bb)  \<longleftrightarrow> sats(A,cond_of_fm(a,b), env)"
-  using assms
-  by (simp add:sats_cond_of_fm)
+    "is_cond_of(##A,x,y) \<longleftrightarrow> A, env \<Turnstile> cond_of_fm(a,b)"
+  using assms sats_cond_of_fm
+  by simp
 
 lemma components_type[TC] :
   assumes "a\<in>nat" "b\<in>nat"
@@ -225,21 +224,21 @@ definition
   ecloseN_fm :: "[i,i] \<Rightarrow> i" where
   "ecloseN_fm(en,t) \<equiv> Exists(Exists(And(eclose_n1_fm(1,t+\<^sub>\<omega>2),
                             And(eclose_n2_fm(0,t+\<^sub>\<omega>2),union_fm(1,0,en+\<^sub>\<omega>2)))))"
+
 lemma ecloseN_fm_type [TC] :
   "\<lbrakk> en \<in> nat ; t \<in> nat \<rbrakk> \<Longrightarrow> ecloseN_fm(en,t) \<in> formula"
   unfolding ecloseN_fm_def eclose_n1_fm_def eclose_n2_fm_def by simp
 
 lemma sats_ecloseN_fm [simp]:
   "\<lbrakk> en \<in> nat; t \<in> nat ; env \<in> list(A) \<rbrakk>
-    \<Longrightarrow> sats(A, ecloseN_fm(en,t), env) \<longleftrightarrow> is_ecloseN(##A,nth(t,env),nth(en,env))"
+    \<Longrightarrow> (A, env \<Turnstile> ecloseN_fm(en,t)) \<longleftrightarrow> is_ecloseN(##A,nth(t,env),nth(en,env))"
   unfolding ecloseN_fm_def is_ecloseN_def eclose_n1_fm_def eclose_n2_fm_def is_eclose_n_def
-  using  nth_0 nth_ConsI sats_name1_fm sats_name2_fm
-    singleton_iff_sats[symmetric]
+  using nth_0 nth_ConsI sats_name1_fm sats_name2_fm singleton_iff_sats[symmetric]
   by auto
 
 lemma is_ecloseN_iff_sats [iff_sats]:
   "\<lbrakk> nth(en, env) = ena; nth(t, env) = ta; en \<in> nat; t \<in> nat ; env \<in> list(A) \<rbrakk>
-    \<Longrightarrow> is_ecloseN(##A,ta,ena) \<longleftrightarrow> sats(A, ecloseN_fm(en,t), env)"
+    \<Longrightarrow> is_ecloseN(##A,ta,ena) \<longleftrightarrow> A, env \<Turnstile> ecloseN_fm(en,t)"
   by simp
 
 (* Relation of forces *)
@@ -249,7 +248,6 @@ definition
     (ftype(x) = 1 \<and> ftype(y) = 0
       \<and> (name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> (name2(x) = name1(y) \<or> name2(x) = name2(y))))
    \<or> (ftype(x) = 0 \<and> ftype(y) =  1 \<and> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y)))"
-
 
 lemma frecR_ftypeD :
   assumes "frecR(x,y)"
@@ -268,36 +266,30 @@ lemma frecRI2: "s \<in> domain(n1) \<or> s \<in> domain(n2) \<Longrightarrow> fr
 lemma frecRI2': "s \<in> domain(n1) \<union> domain(n2) \<Longrightarrow> frecR(\<langle>1, s, n2, q\<rangle>, \<langle>0, n1, n2, q'\<rangle>)"
   unfolding frecR_def by (simp add:components_simp)
 
-
 lemma frecRI3: "\<langle>s, r\<rangle> \<in> n2 \<Longrightarrow> frecR(\<langle>0, n1, s, q\<rangle>, \<langle>1, n1, n2, q'\<rangle>)"
   unfolding frecR_def by (auto simp add:components_simp)
 
 lemma frecRI3': "s \<in> domain(n2) \<Longrightarrow> frecR(\<langle>0, n1, s, q\<rangle>, \<langle>1, n1, n2, q'\<rangle>)"
   unfolding frecR_def by (auto simp add:components_simp)
 
-lemma frecR_iff :
-  "frecR(x,y) \<longleftrightarrow>
-    (ftype(x) = 1 \<and> ftype(y) = 0
-      \<and> (name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> (name2(x) = name1(y) \<or> name2(x) = name2(y))))
-   \<or> (ftype(x) = 0 \<and> ftype(y) =  1 \<and> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y)))"
-  unfolding frecR_def ..
-
 lemma frecR_D1 :
   "frecR(x,y) \<Longrightarrow> ftype(y) = 0 \<Longrightarrow> ftype(x) = 1 \<and>
       (name1(x) \<in> domain(name1(y)) \<union> domain(name2(y)) \<and> (name2(x) = name1(y) \<or> name2(x) = name2(y)))"
-  using frecR_iff
+  unfolding frecR_def
   by auto
 
 lemma frecR_D2 :
   "frecR(x,y) \<Longrightarrow> ftype(y) = 1 \<Longrightarrow> ftype(x) = 0 \<and>
       ftype(x) = 0 \<and> ftype(y) =  1 \<and> name1(x) = name1(y) \<and> name2(x) \<in> domain(name2(y))"
-  using frecR_iff
+  unfolding frecR_def
   by auto
 
 lemma frecR_DI :
   assumes "frecR(\<langle>a,b,c,d\<rangle>,\<langle>ftype(y),name1(y),name2(y),cond_of(y)\<rangle>)"
   shows "frecR(\<langle>a,b,c,d\<rangle>,y)"
-  using assms unfolding frecR_def by (force simp add:components_simp)
+  using assms
+  unfolding frecR_def
+  by (force simp add:components_simp)
 
 reldb_add "ftype" "is_ftype"
 reldb_add "name1" "is_name1"
@@ -309,19 +301,18 @@ schematic_goal sats_frecR_fm_auto:
   assumes
     "i\<in>nat" "j\<in>nat" "env\<in>list(A)"
   shows
-    "is_frecR(##A,nth(i,env),nth(j,env)) \<longleftrightarrow> sats(A,?fr_fm(i,j),env)"
-  unfolding  is_frecR_def
+    "is_frecR(##A,nth(i,env),nth(j,env)) \<longleftrightarrow> A, env \<Turnstile> ?fr_fm(i,j)"
+  unfolding is_frecR_def
   by (insert assms ; (rule sep_rules' cartprod_iff_sats components_iff_sats
         | simp del:sats_cartprod_fm)+)
 
 synthesize "frecR" from_schematic sats_frecR_fm_auto
 
-(* Third item of Kunen observations about the trcl relation in p. 257. *)
+text\<open>Third item of Kunen's observations (p. 257) about the trcl relation.\<close>
 lemma eq_ftypep_not_frecrR:
   assumes "ftype(x) = ftype(y)"
   shows "\<not> frecR(x,y)"
   using assms frecR_ftypeD by force
-
 
 definition
   rank_names :: "i \<Rightarrow> i" where
@@ -347,43 +338,56 @@ lemma frecR_le_rnk_names :
   assumes  "frecR(x,y)"
   shows "rank_names(x)\<le>rank_names(y)"
 proof -
-  obtain a b c d  where
+  obtain a b c d where
     H: "a = name1(x)" "b = name2(x)"
     "c = name1(y)" "d = name2(y)"
     "(a \<in> domain(c)\<union>domain(d) \<and> (b=c \<or> b = d)) \<or> (a = c \<and> b \<in> domain(d))"
-    using assms unfolding frecR_def by force
+    using assms
+    unfolding frecR_def
+    by force
   then
   consider
     (m) "a \<in> domain(c) \<and> (b = c \<or> b = d) "
     | (n) "a \<in> domain(d) \<and> (b = c \<or> b = d)"
     | (o) "b \<in> domain(d) \<and> a = c"
     by auto
-  then show ?thesis proof(cases)
+  then
+  show ?thesis
+  proof(cases)
     case m
     then
     have "rank(a) < rank(c)"
-      using eclose_rank_lt  in_dom_in_eclose  by simp
+      using eclose_rank_lt  in_dom_in_eclose
+      by simp
     with \<open>rank(a) < rank(c)\<close> H m
-    show ?thesis unfolding rank_names_def using Ord_rank max_cong max_cong2 leI by auto
+    show ?thesis
+      unfolding rank_names_def
+      using Ord_rank max_cong max_cong2 leI
+      by auto
   next
     case n
     then
     have "rank(a) < rank(d)"
-      using eclose_rank_lt in_dom_in_eclose  by simp
+      using eclose_rank_lt in_dom_in_eclose
+      by simp
     with \<open>rank(a) < rank(d)\<close> H n
-    show ?thesis unfolding rank_names_def
-      using Ord_rank max_cong2 max_cong max_commutes[of "rank(c)" "rank(d)"] leI by auto
+    show ?thesis
+      unfolding rank_names_def
+      using Ord_rank max_cong2 max_cong max_commutes[of "rank(c)" "rank(d)"] leI
+      by auto
   next
     case o
     then
     have "rank(b) < rank(d)" (is "?b < ?d") "rank(a) = rank(c)" (is "?a = _")
-      using eclose_rank_lt in_dom_in_eclose  by simp_all
+      using eclose_rank_lt in_dom_in_eclose
+      by simp_all
     with H
-    show ?thesis unfolding rank_names_def
-      using Ord_rank max_commutes max_cong2[OF leI[OF \<open>?b < ?d\<close>], of ?a] by simp
+    show ?thesis
+      unfolding rank_names_def
+      using Ord_rank max_commutes max_cong2[OF leI[OF \<open>?b < ?d\<close>], of ?a]
+      by simp
   qed
 qed
-
 
 definition
   \<Gamma> :: "i \<Rightarrow> i" where
@@ -393,55 +397,68 @@ lemma \<Gamma>_type [TC]:
   shows "Ord(\<Gamma>(x))"
   unfolding \<Gamma>_def by simp
 
-
 lemma \<Gamma>_mono :
   assumes "frecR(x,y)"
   shows "\<Gamma>(x) < \<Gamma>(y)"
 proof -
   have F: "type_form(x) < 3" "type_form(y) < 3"
-    using ltI by simp_all
+    using ltI
+    by simp_all
   from assms
   have A: "rank_names(x) \<le> rank_names(y)" (is "?x \<le> ?y")
-    using frecR_le_rnk_names by simp
+    using frecR_le_rnk_names
+    by simp
   then
-  have "Ord(?y)" unfolding rank_names_def using Ord_rank max_def by simp
+  have "Ord(?y)"
+    unfolding rank_names_def
+    using Ord_rank max_def
+    by simp
   note leE[OF \<open>?x\<le>?y\<close>]
   then
   show ?thesis
   proof(cases)
     case 1
     then
-    show ?thesis unfolding \<Gamma>_def using oadd_lt_mono2 \<open>?x < ?y\<close> F by auto
+    show ?thesis
+      unfolding \<Gamma>_def
+      using oadd_lt_mono2 \<open>?x < ?y\<close> F
+      by auto
   next
     case 2
     consider (a) "ftype(x) = 0 \<and> ftype(y) = 1" | (b) "ftype(x) = 1 \<and> ftype(y) = 0"
-      using  frecR_ftypeD[OF \<open>frecR(x,y)\<close>] by auto
-    then show ?thesis proof(cases)
+      using frecR_ftypeD[OF \<open>frecR(x,y)\<close>]
+      by auto
+    then show ?thesis
+    proof(cases)
       case b
-      then
+      moreover from this
       have "type_form(y) = 1"
         using type_form_def by simp
-      from b
-      have H: "name2(x) = name1(y) \<or> name2(x) = name2(y) " (is "?\<tau> = ?\<sigma>' \<or> ?\<tau> = ?\<tau>'")
-        "name1(x) \<in> domain(name1(y)) \<union> domain(name2(y))"
-        (is "?\<sigma> \<in> domain(?\<sigma>') \<union> domain(?\<tau>')")
+      moreover from calculation
+      have "name2(x) = name1(y) \<or> name2(x) = name2(y) "  (is "?\<tau> = ?\<sigma>' \<or> ?\<tau> = ?\<tau>'")
+        "name1(x) \<in> domain(name1(y)) \<union> domain(name2(y))" (is "?\<sigma> \<in> domain(?\<sigma>') \<union> domain(?\<tau>')")
         using assms unfolding type_form_def frecR_def by auto
-      then
+      moreover from calculation
       have E: "rank(?\<tau>) = rank(?\<sigma>') \<or> rank(?\<tau>) = rank(?\<tau>')" by auto
-      from H
-      consider (a) "rank(?\<sigma>) < rank(?\<sigma>')" |  (b) "rank(?\<sigma>) < rank(?\<tau>')"
+      from calculation
+      consider (c) "rank(?\<sigma>) < rank(?\<sigma>')" |  (d) "rank(?\<sigma>) < rank(?\<tau>')"
         using eclose_rank_lt in_dom_in_eclose by force
       then
-      have "rank(?\<sigma>) < rank(?\<tau>)" proof (cases)
-        case a
+      have "rank(?\<sigma>) < rank(?\<tau>)"
+      proof (cases)
+        case c
         with \<open>rank_names(x) = rank_names(y) \<close>
-        show ?thesis unfolding rank_names_def mtype_form_def type_form_def using max_D2[OF E a]
-            E assms Ord_rank by simp
+        show ?thesis
+          unfolding rank_names_def mtype_form_def type_form_def
+          using max_D2[OF E c] E assms Ord_rank
+          by simp
       next
-        case b
+        case d
         with \<open>rank_names(x) = rank_names(y) \<close>
-        show ?thesis unfolding rank_names_def mtype_form_def type_form_def
-          using max_D2[OF _ b] max_commutes E assms Ord_rank disj_commute by auto
+        show ?thesis
+          unfolding rank_names_def mtype_form_def type_form_def
+          using max_D2[OF _ d] max_commutes E assms Ord_rank disj_commute
+          by simp
       qed
       with b
       have "type_form(x) = 0" unfolding type_form_def mtype_form_def by simp
@@ -454,16 +471,23 @@ proof -
       have "name1(x) = name1(y)" (is "?\<sigma> = ?\<sigma>'")
         "name2(x) \<in> domain(name2(y))" (is "?\<tau> \<in> domain(?\<tau>')")
         "type_form(x) = 1"
-        using assms unfolding type_form_def frecR_def by auto
+        using assms
+        unfolding type_form_def frecR_def
+        by auto
       then
       have "rank(?\<sigma>) = rank(?\<sigma>')" "rank(?\<tau>) < rank(?\<tau>')"
-        using  eclose_rank_lt in_dom_in_eclose by simp_all
+        using  eclose_rank_lt in_dom_in_eclose
+        by simp_all
       with \<open>rank_names(x) = rank_names(y) \<close>
       have "rank(?\<tau>') \<le> rank(?\<sigma>')"
-        unfolding rank_names_def using Ord_rank max_D1 by simp
+        using Ord_rank max_D1
+        unfolding rank_names_def
+        by simp
       with a
       have "type_form(y) = 2"
-        unfolding type_form_def mtype_form_def using not_lt_iff_le assms by simp
+        unfolding type_form_def mtype_form_def
+        using not_lt_iff_le assms
+        by simp
       with \<open>rank_names(x) = rank_names(y) \<close> \<open>type_form(y) = 2\<close> \<open>type_form(x) = 1\<close>
       show ?thesis
         unfolding \<Gamma>_def by auto
@@ -482,19 +506,25 @@ lemma frecrelI :
 
 lemma frecrelD :
   assumes "\<langle>x,y\<rangle> \<in> frecrel(A1\<times>A2\<times>A3\<times>A4)"
-  shows "ftype(x) \<in> A1" "ftype(x) \<in> A1"
-    "name1(x) \<in> A2" "name1(y) \<in> A2" "name2(x) \<in> A3" "name2(x) \<in> A3"
+  shows
+    "ftype(x) \<in> A1" "ftype(x) \<in> A1"
+    "name1(x) \<in> A2" "name1(y) \<in> A2"
+    "name2(x) \<in> A3" "name2(x) \<in> A3"
     "cond_of(x) \<in> A4" "cond_of(y) \<in> A4"
     "frecR(x,y)"
-  using assms unfolding frecrel_def Rrel_def ftype_def by (auto simp add:components_simp)
+  using assms
+  unfolding frecrel_def Rrel_def ftype_def by (auto simp add:components_simp)
 
 lemma wf_frecrel :
   shows "wf(frecrel(A))"
 proof -
   have "frecrel(A) \<subseteq> measure(A,\<Gamma>)"
     unfolding frecrel_def Rrel_def measure_def
-    using \<Gamma>_mono by force
-  then show ?thesis using wf_subset wf_measure by auto
+    using \<Gamma>_mono
+    by force
+  then
+  show ?thesis
+    using wf_subset wf_measure by auto
 qed
 
 lemma core_induction_aux:
@@ -524,11 +554,13 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
     have "Q(1, \<sigma>, ?\<tau>, q) \<and> Q(1, \<sigma>, ?\<theta>, q)" if "\<sigma> \<in> domain(?\<tau>) \<union> domain(?\<theta>)" and "q\<in>A2" for q \<sigma>
     proof -
       from 1
-      have A: "?\<tau>\<in>A1" "?\<theta>\<in>A1" "?\<tau>\<in>eclose(A1)" "?\<theta>\<in>eclose(A1)"
-        using  arg_into_eclose by (auto simp add:components_simp)
-      with  \<open>Transset(A1)\<close> that(1)
+      have "?\<tau>\<in>A1" "?\<theta>\<in>A1" "?\<tau>\<in>eclose(A1)" "?\<theta>\<in>eclose(A1)"
+        using  arg_into_eclose
+        by (auto simp add:components_simp)
+      moreover from \<open>Transset(A1)\<close> that(1)
       have "\<sigma>\<in>eclose(?\<tau>) \<union> eclose(?\<theta>)"
-        using in_dom_in_eclose  by auto
+        using in_dom_in_eclose
+        by auto
       then
       have "\<sigma>\<in>A1"
         using mem_eclose_subset[OF \<open>?\<tau>\<in>A1\<close>] mem_eclose_subset[OF \<open>?\<theta>\<in>A1\<close>]
@@ -536,46 +568,59 @@ proof (induct a rule:wf_induct[OF wf_frecrel[of "2\<times>A1\<times>A1\<times>A2
         by auto
       with \<open>q\<in>A2\<close> \<open>?\<theta> \<in> A1\<close> \<open>cond_of(x)\<in>A2\<close> \<open>?\<tau>\<in>A1\<close>
       have "frecR(\<langle>1, \<sigma>, ?\<tau>, q\<rangle>, x)" (is "frecR(?T,_)")
-        "frecR(\<langle>1, \<sigma>, ?\<theta>, q\<rangle>, x)" (is "frecR(?U,_)")
-        using  frecRI1'[OF that(1)] frecR_DI  \<open>ftype(x) = 0\<close>
+           "frecR(\<langle>1, \<sigma>, ?\<theta>, q\<rangle>, x)" (is "frecR(?U,_)")
+        using frecRI1'[OF that(1)] frecR_DI  \<open>ftype(x) = 0\<close>
           frecRI2'[OF that(1)]
         by (auto simp add:components_simp)
       with \<open>x\<in>?D\<close> \<open>\<sigma>\<in>A1\<close> \<open>q\<in>A2\<close>
       have "\<langle>?T,x\<rangle>\<in> frecrel(?D)" "\<langle>?U,x\<rangle>\<in> frecrel(?D)"
-        using frecrelI[of ?T ?D x]  frecrelI[of ?U ?D x] by (auto simp add:components_simp)
+        using frecrelI[of ?T ?D x]  frecrelI[of ?U ?D x]
+        by (auto simp add:components_simp)
       with \<open>q\<in>A2\<close> \<open>\<sigma>\<in>A1\<close> \<open>?\<tau>\<in>A1\<close> \<open>?\<theta>\<in>A1\<close>
-      have "Q(1, \<sigma>, ?\<tau>, q)" using 1 by (force simp add:components_simp)
+      have "Q(1, \<sigma>, ?\<tau>, q)"
+        using 1
+        by (force simp add:components_simp)
       moreover from \<open>q\<in>A2\<close> \<open>\<sigma>\<in>A1\<close> \<open>?\<tau>\<in>A1\<close> \<open>?\<theta>\<in>A1\<close> \<open>\<langle>?U,x\<rangle>\<in> frecrel(?D)\<close>
-      have "Q(1, \<sigma>, ?\<theta>, q)" using 1 by (force simp add:components_simp)
+      have "Q(1, \<sigma>, ?\<theta>, q)"
+        using 1 by (force simp add:components_simp)
       ultimately
-      show ?thesis using A by simp
+      show ?thesis
+        by simp
     qed
-    then show ?thesis using assms(3) \<open>ftype(x) = 0\<close> \<open>cond_of(x)\<in>A2\<close> by auto
+    with assms(3) \<open>ftype(x) = 0\<close> \<open>cond_of(x)\<in>A2\<close>
+    show ?thesis
+      by auto
   next
     case mem
     have "Q(0, ?\<tau>,  \<sigma>, q)" if "\<sigma> \<in> domain(?\<theta>)" and "q\<in>A2" for q \<sigma>
     proof -
       from 1 assms
       have "?\<tau>\<in>A1" "?\<theta>\<in>A1" "cond_of(x)\<in>A2" "?\<tau>\<in>eclose(A1)" "?\<theta>\<in>eclose(A1)"
-        using  arg_into_eclose by (auto simp add:components_simp)
+        using arg_into_eclose
+        by (auto simp add:components_simp)
       with  \<open>Transset(A1)\<close> that(1)
       have "\<sigma>\<in> eclose(?\<theta>)"
-        using in_dom_in_eclose  by auto
+        using in_dom_in_eclose
+        by auto
       then
       have "\<sigma>\<in>A1"
         using mem_eclose_subset[OF \<open>?\<theta>\<in>A1\<close>] Transset_eclose_eq_arg[OF \<open>Transset(A1)\<close>]
         by auto
-      with \<open>q\<in>A2\<close> \<open>?\<theta> \<in> A1\<close> \<open>cond_of(x)\<in>A2\<close> \<open>?\<tau>\<in>A1\<close>
+      with \<open>q\<in>A2\<close> \<open>?\<theta> \<in> A1\<close> \<open>cond_of(x)\<in>A2\<close> \<open>?\<tau>\<in>A1\<close> \<open>ftype(x) = 1\<close>
       have "frecR(\<langle>0, ?\<tau>, \<sigma>, q\<rangle>, x)" (is "frecR(?T,_)")
-        using  frecRI3'[OF that(1)] frecR_DI  \<open>ftype(x) = 1\<close>
+        using frecRI3'[OF that(1)] frecR_DI
         by (auto simp add:components_simp)
       with \<open>x\<in>?D\<close> \<open>\<sigma>\<in>A1\<close> \<open>q\<in>A2\<close> \<open>?\<tau>\<in>A1\<close>
       have "\<langle>?T,x\<rangle>\<in> frecrel(?D)" "?T\<in>?D"
-        using frecrelI[of ?T ?D x] by (auto simp add:components_simp)
+        using frecrelI[of ?T ?D x]
+        by (auto simp add:components_simp)
       with \<open>q\<in>A2\<close> \<open>\<sigma>\<in>A1\<close> \<open>?\<tau>\<in>A1\<close> \<open>?\<theta>\<in>A1\<close> 1
-      show ?thesis by (force simp add:components_simp)
+      show ?thesis
+        by (force simp add:components_simp)
     qed
-    then show ?thesis using assms(2) \<open>ftype(x) = 1\<close> \<open>cond_of(x)\<in>A2\<close>  by auto
+    with assms(2) \<open>ftype(x) = 1\<close> \<open>cond_of(x)\<in>A2\<close>
+    show ?thesis
+      by auto
   qed
 qed
 
