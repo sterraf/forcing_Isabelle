@@ -645,10 +645,31 @@ corollary ctm_ZFC_imp_ctm_not_CH:
     "\<exists>N.
       M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZFC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<and>
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
-  using assms ZF_replacement_ground_repl_fm_type satT_ZFC_imp_satT_ZC[of M]
-    satT_mono[OF _ ground_repl_fm_sub_ZFC, of M]
-    satT_mono[OF _ ZF_replacement_overhead_sub_ZFC, of M]
-    ctm_of_not_CH[of M formula] satT_ZC_ZF_replacement_imp_satT_ZFC
-  by (auto simp: satT_Un_iff, rule_tac x=N in exI) force
+proof-
+  from assms
+  have "\<exists>N.
+      M \<subseteq> N \<and>
+        N \<approx> \<omega> \<and>
+        Transset(N) \<and>
+        N \<Turnstile> ZC \<and> N \<Turnstile> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<and> N \<Turnstile> {\<cdot>Replacement(x)\<cdot> . x \<in> formula} \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)"
+    using ctm_of_not_CH[of M formula] satT_ZFC_imp_satT_ZC[of M]
+      satT_mono[OF _ ground_repl_fm_sub_ZFC, of M]
+      satT_mono[OF _ ZF_replacement_overhead_sub_ZFC, of M]
+      satT_mono[OF _ ZF_replacement_fms_sub_ZFC, of M]
+    by (simp add: satT_Un_iff)
+  then
+  obtain N where "N \<Turnstile> ZC" "N \<Turnstile> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>}" "N \<Turnstile> {\<cdot>Replacement(x)\<cdot> . x \<in> formula}"
+    "M \<subseteq> N" "N \<approx> \<omega>" "Transset(N)" "(\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)"
+    by auto
+  moreover from this
+  have "N \<Turnstile> ZFC"
+    using satT_ZC_ZF_replacement_imp_satT_ZFC
+    by auto
+  moreover from this and \<open>N \<Turnstile> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>}\<close>
+  have "N \<Turnstile> ZFC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>}"
+    by auto
+  ultimately
+  show ?thesis by auto
+qed
 
 end

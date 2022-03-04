@@ -508,6 +508,9 @@ lemma satT_ZC_ZF_replacement_imp_satT_ZFC: "N \<Turnstile> ZC \<Longrightarrow> 
 lemma ground_repl_fm_sub_ZF: "{\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> formula} \<subseteq> ZF"
    unfolding ZF_def ZF_schemes_def by auto
 
+lemma ZF_replacement_fms_sub_ZFC: "{\<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> formula} \<subseteq> ZFC"
+   unfolding ZFC_def ZF_def ZF_schemes_def by auto
+
 lemma ground_repl_fm_sub_ZFC: "{\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> formula} \<subseteq> ZFC"
    unfolding ZFC_def ZF_def ZF_schemes_def by auto
 
