@@ -404,21 +404,21 @@ definition instances2_fms where "instances2_fms \<equiv>
     LambdaPair_in_M_fm(composition_fm(0,1,2),0) }"
 
 lemmas replacement_instances2_defs =
- replacement_is_omega_funspace_fm_def
- replacement_HAleph_wfrec_repl_body_fm_def
- replacement_is_fst2_snd2_fm_def
- replacement_is_sndfst_fst2_snd2_fm_def
- replacement_is_order_eq_map_fm_def
- replacement_transrec_apply_image_body_fm_def
- banach_replacement_iterates_fm_def
- replacement_is_trans_apply_image_fm_def
- banach_iterates_fm_def
- replacement_dcwit_repl_body_fm_def
+  replacement_is_omega_funspace_fm_def
+  replacement_HAleph_wfrec_repl_body_fm_def
+  replacement_is_fst2_snd2_fm_def
+  replacement_is_sndfst_fst2_snd2_fm_def
+  replacement_is_order_eq_map_fm_def
+  replacement_transrec_apply_image_body_fm_def
+  banach_replacement_iterates_fm_def
+  replacement_is_trans_apply_image_fm_def
+  banach_iterates_fm_def
+  replacement_dcwit_repl_body_fm_def
 
 declare (in M_ZF2) replacement_instances2_defs [simp]
 
 lemma instances2_fms_type[TC]: "instances2_fms \<subseteq> formula"
-  unfolding replacement_instances2_defs instances2_fms_def 
+  unfolding replacement_instances2_defs instances2_fms_def
   by (simp del:Lambda_in_M_fm_def)
 
 locale M_ZF2_trans = M_ZF1_trans + M_ZF2
@@ -593,7 +593,7 @@ lemma (in M_ZF2_trans) replacement_dcwit_repl_body:
    strong_replacement(##M, dcwit_repl_body(##M,mesa,A,a,s,R))"
   using strong_replacement_rel_in_ctm[where \<phi>="dcwit_repl_body_fm(6,5,4,3,2,0,1)"
       and env="[R,s,a,A,mesa]" and f="dcwit_repl_body(##M,mesa,A,a,s,R)"]
-  zero_in_M arity_dcwit_repl_body replacement_ax2(10)
+    zero_in_M arity_dcwit_repl_body replacement_ax2(10)
   by simp
 
 lemma (in M_ZF2_trans) dcwit_repl:
@@ -790,10 +790,10 @@ lemma (in M_ZF2_trans) replacement_is_trans_apply_image:
   unfolding is_transrec_def is_wfrec_def M_is_recfun_def
   apply(rule_tac strong_replacement_cong[
         where P="\<lambda> x z. M,[x,z,\<beta>,f] \<Turnstile> is_trans_apply_image_body_fm(3,2,0,1)",THEN iffD1])
-  apply(rule_tac is_trans_apply_image_body_iff_sats[symmetric,unfolded is_trans_apply_image_body_def,where env="[_,_,\<beta>,f]"])
-  apply(simp_all add:zero_in_M)
+   apply(rule_tac is_trans_apply_image_body_iff_sats[symmetric,unfolded is_trans_apply_image_body_def,where env="[_,_,\<beta>,f]"])
+            apply(simp_all add:zero_in_M)
   apply(rule_tac replacement_ax2[unfolded replacement_assm_def, rule_format, where env="[\<beta>,f]",simplified])
-  apply(simp_all add: arity_is_trans_apply_image_body_fm is_trans_apply_image_body_fm_type ord_simp_union)
+    apply(simp_all add: arity_is_trans_apply_image_body_fm is_trans_apply_image_body_fm_type ord_simp_union)
   done
 
 lemma (in M_ZF2_trans) trans_apply_abs:
@@ -1202,8 +1202,8 @@ proof -
         unfolding ifrFb_body5_def is_ifrFb_body5_def
         apply (cases "y\<in>M"; cases "y\<in>range(s)"; cases "r=0"; cases "y\<in>domain(G)";
             auto dest:transM split del: split_if del:iffI)
-        apply (auto simp flip:setclass_iff; (force simp only: fun_apply_def setclass_iff))
-        apply (auto simp flip:setclass_iff simp: fun_apply_def)
+              apply (auto simp flip:setclass_iff; (force simp only: fun_apply_def setclass_iff))
+             apply (auto simp flip:setclass_iff simp: fun_apply_def)
         apply (auto dest:transM)
         done
     qed

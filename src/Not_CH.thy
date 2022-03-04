@@ -511,7 +511,7 @@ proof (intro ext.mem_inj_abs[THEN iffD2])
       apply (intro lam_type ext.mem_function_space_rel_abs[THEN iffD2], simp_all)
       apply (rule_tac ext.lam_closed[simplified], simp_all)
        apply (rule ext.apply_replacement2)
-         apply (auto dest:ext.transM[OF _ Aleph_rel_sub_closed])
+        apply (auto dest:ext.transM[OF _ Aleph_rel_sub_closed])
       done
     fix w x
     assume "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "h\<^bsub>G\<^esub> ` w = h\<^bsub>G\<^esub> ` x"

@@ -63,7 +63,7 @@ lemma arity_is_Hcheck_fm:
     pred_Un_distrib Un_assoc Un_nat_type
   by simp
 
-\<comment> \<open>The relational version of check is hand-made because our automatic tool 
+\<comment> \<open>The relational version of check is hand-made because our automatic tool
 does not handle \<^term>\<open>wfrec\<close>.\<close>
 definition
   is_check :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
@@ -81,7 +81,7 @@ lemma check_fm_type[TC]: "x\<in>nat \<Longrightarrow> o\<in>nat \<Longrightarrow
 
 lemma sats_check_fm :
   assumes
-     "o\<in>nat" "x\<in>nat" "z\<in>nat" "env\<in>list(M)" "0\<in>M"
+    "o\<in>nat" "x\<in>nat" "z\<in>nat" "env\<in>list(M)" "0\<in>M"
   shows
     "sats(M, check_fm(x,o,z), env) \<longleftrightarrow> is_check(##M,nth(o,env),nth(x,env),nth(z,env))"
 proof -
@@ -257,7 +257,7 @@ arity_theorem for "is_tuple_fm"
 subsection\<open>Definition of \<^term>\<open>forces\<close> for equality and membership\<close>
 subsection\<open>Definition of Forces\<close>
 
-text\<open>$p\forces \tau = \theta$ if every $q\leqslant p$ both $q\forces \sigma \in \tau$ 
+text\<open>$p\forces \tau = \theta$ if every $q\leqslant p$ both $q\forces \sigma \in \tau$
 and $q\forces \sigma \in \theta$ for every $\sigma \in \dom(\tau)\cup \dom(\theta)$.\<close>
 definition
   eq_case :: "[i,i,i,i,i,i] \<Rightarrow> o" where
@@ -267,8 +267,8 @@ definition
 relativize "eq_case" "is_eq_case"
 synthesize "eq_case" from_definition "is_eq_case"
 
-text\<open>$p\forces \tau \in \theta$ if for every $v\leqslant p$ 
-  there exists $q$, $r$, and $\sigma$ such that 
+text\<open>$p\forces \tau \in \theta$ if for every $v\leqslant p$
+  there exists $q$, $r$, and $\sigma$ such that
   $v\leqslant q$, $q\leqslant r$, $\langle \sigma,r\rangle \in \tau$, and
   $q\forces \pi = \sigma$.\<close>
 definition
@@ -786,8 +786,8 @@ proof -
   from \<open>\<phi>\<in>formula\<close>
   have ineq: "n \<union> pred(pred(arity(rename_split_fm(\<phi>))))
     \<le> m \<union> pred(pred(8 \<union> (arity(\<phi>) +\<^sub>\<omega>6 )))" if "n \<le> m" "n\<in>nat" "m\<in>nat" for n m
-  using that arity_rename_split_fm_le[of \<phi>, THEN [2] pred_mono, THEN [2] pred_mono,
-      THEN [2] Un_mono[THEN subset_imp_le, OF _ le_imp_subset]] le_imp_subset
+    using that arity_rename_split_fm_le[of \<phi>, THEN [2] pred_mono, THEN [2] pred_mono,
+        THEN [2] Un_mono[THEN subset_imp_le, OF _ le_imp_subset]] le_imp_subset
     by auto
   moreover
   have eq1: "pred(pred(pred(4 \<union> 2 \<union> pred(pred(pred(
@@ -806,7 +806,7 @@ proof -
   show ?thesis
     using  \<open>\<phi>\<in>formula\<close> unfolding body_ground_repl_fm_def
     apply (simp add:arity pred_Un_distrib, subst arity_transrec_fm[of "is_HVfrom_fm(8,2,1,0)" 3 1])
-    apply  (simp add:arity pred_Un_distrib,simp_all)
+         apply  (simp add:arity pred_Un_distrib,simp_all)
     by (auto simp add:eq1 arity_is_HVfrom_fm[of 8 2 1 0])
 qed
 
@@ -941,7 +941,7 @@ relationalize "H_order_pred" "is_H_order_pred"
 synthesize "is_H_order_pred" from_definition assuming "nonempty"
 
 definition order_pred_wfrec_body where
- "order_pred_wfrec_body(M,A,r,z,x) \<equiv> \<exists>y[M].
+  "order_pred_wfrec_body(M,A,r,z,x) \<equiv> \<exists>y[M].
                 pair(M, x, y, z) \<and>
                 (\<exists>f[M].
                     (\<forall>z[M].

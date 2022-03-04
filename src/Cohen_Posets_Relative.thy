@@ -92,7 +92,7 @@ proof -
   moreover from calculation
   have "A \<lesssim>\<^bsup>M\<^esup> \<omega>"
     using lesspoll_nat_is_Finite Infinite_imp_nats_lepoll_rel[of \<omega> n]
-    nat_not_Finite eq_lepoll_rel_trans[of A n \<omega>]
+      nat_not_Finite eq_lepoll_rel_trans[of A n \<omega>]
     by auto
   moreover from calculation
   have "\<not> g \<in> bij\<^bsup>M\<^esup>(A,\<omega>)" for g
@@ -188,7 +188,7 @@ proof -
   note assms
   moreover from calculation
   have "p \<prec>\<^bsup>M\<^esup> \<kappa>"  "M(p)"
-       "q \<prec>\<^bsup>M\<^esup> \<kappa>" "M(q)"
+    "q \<prec>\<^bsup>M\<^esup> \<kappa>" "M(q)"
     using Fn_rel_is_function by simp_all
   moreover from calculation
   have "p\<union>q \<prec>\<^bsup>M\<^esup> \<kappa>"
@@ -221,9 +221,9 @@ lemma (in M_cohen) cons_in_Fn_rel:
   assumes "x \<notin> domain(p)" "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "x \<in> I" "j \<in> J" "InfCard\<^bsup>M\<^esup>(\<kappa>)"
     "M(\<kappa>)" "M(I)" "M(J)"
   shows "cons(\<langle>x,j\<rangle>, p) \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
-    using assms cons_eq Fn_rel_unionI[OF Fn_rel_singletonI[of x I j J] \<open>p\<in>_\<close>]
-      InfCard_rel_imp_n_lesspoll_rel
-    by auto
+  using assms cons_eq Fn_rel_unionI[OF Fn_rel_singletonI[of x I j J] \<open>p\<in>_\<close>]
+    InfCard_rel_imp_n_lesspoll_rel
+  by auto
 
 lemma (in M_library) Fnle_rel_Aleph_rel1_closed[intro,simp]: "M(Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))"
   by simp
@@ -385,9 +385,9 @@ proof -
       show ?thesis using empty_lepoll_relI by auto
     qed
     have 2:"M(x) \<Longrightarrow> x \<in> dC_F(X, i) \<Longrightarrow> M(i)" for x X i
-        unfolding dC_F_def
-        by auto
-      moreover
+      unfolding dC_F_def
+      by auto
+    moreover
     have "uncountable_rel(M,{domain(p) . p \<in> A})"
     proof
       interpret M_replacement_lepoll M dC_F
@@ -415,8 +415,8 @@ proof -
           lepoll_assumptions1[OF \<open>M(A)\<close> repFun_dom_closed[OF \<open>M(A)\<close>]]
         apply(unfold_locales)
         by(simp_all del:if_range_F_else_F_def,
-          rule_tac lam_Least_assumption_general[where U="\<lambda>_. {domain(x). x\<in>A}"])
-        (auto simp del:if_range_F_else_F_def simp add:dC_F_def)
+            rule_tac lam_Least_assumption_general[where U="\<lambda>_. {domain(x). x\<in>A}"])
+          (auto simp del:if_range_F_else_F_def simp add:dC_F_def)
       from \<open>A \<subseteq> Fn(nat, I, 2)\<close>
       have x:"(\<Union>d\<in>{domain(p) . p \<in> A}. {p\<in>A. domain(p) = d}) = A"
         by auto
@@ -577,7 +577,7 @@ proof -
           lam_replacement_drSR_Y lam_Least_assumption_drSR_Y[unfolded drSR_Y_def]
         unfolding drSR_Y_def
         apply unfold_locales
-        apply (simp_all add:lam_replacement_inj_rel del: if_range_F_else_F_def,rule_tac 1,simp_all)
+                        apply (simp_all add:lam_replacement_inj_rel del: if_range_F_else_F_def,rule_tac 1,simp_all)
         by ((fastforce dest:transM[OF _ \<open>M(A)\<close>])+)
       {
         from \<open>Finite(r)\<close> \<open>M(r)\<close>

@@ -37,7 +37,8 @@ lemma
     and
     sorried_separations:
     "\<And>Q. separation(M,Q)"shows "M_master(M)"
-  apply unfold_locales apply
+  apply unfold_locales
+                      apply
     (simp_all add:
       sorried_replacements(1-2)
       sorried_separations

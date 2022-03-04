@@ -57,12 +57,12 @@ lemmas (in M_ZF2_trans) separation_instances =
 
 lemma (in M_ZF3_trans) lam_replacement_inj_rel:
   shows
-  "lam_replacement(##M, \<lambda>p. inj\<^bsup>##M\<^esup>(fst(p),snd(p)))"
+    "lam_replacement(##M, \<lambda>p. inj\<^bsup>##M\<^esup>(fst(p),snd(p)))"
   using lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. inj\<^bsup>M\<^esup>(fst(p),snd(p))"]
     LambdaPair_in_M[where \<phi>="is_inj_fm(0,1,2)" and is_f="is_inj(##M)" and env="[]",OF
       is_inj_fm_type _ is_inj_iff_sats[symmetric] inj_rel_iff,simplified]
-     arity_is_inj_fm[of 0 1 2] ord_simp_union transitivity fst_snd_closed
-     inj_rel_closed zero_in_M LambdaPair_in_M_replacement3(1)
+    arity_is_inj_fm[of 0 1 2] ord_simp_union transitivity fst_snd_closed
+    inj_rel_closed zero_in_M LambdaPair_in_M_replacement3(1)
   by simp
 
 arity_theorem for "is_transitive_fm"
@@ -113,7 +113,7 @@ lemma arity_is_order_body: "arity(is_order_body_fm(2,0,1)) = 3"
   by (simp add:FOL_arities)
 
 lemma (in M_ZF3_trans) replacement_is_order_body:
- "X\<in>M \<Longrightarrow> strong_replacement(##M, is_order_body(##M,X))"
+  "X\<in>M \<Longrightarrow> strong_replacement(##M, is_order_body(##M,X))"
   apply(rule_tac strong_replacement_cong[
         where P="\<lambda> x f. M,[x,f,X] \<Turnstile> is_order_body_fm(2,0,1)",THEN iffD1])
    apply(rule_tac is_order_body_iff_sats[where env="[_,_,X]",symmetric])
@@ -126,7 +126,7 @@ lemma (in M_pre_cardinal_arith) is_order_body_abs :
   "M(X) \<Longrightarrow> M(x) \<Longrightarrow> M(z) \<Longrightarrow> is_order_body(M, X, x, z) \<longleftrightarrow>
    M(z) \<and> M(x) \<and> x\<in>Pow_rel(M,X\<times>X) \<and> well_ord(X, x) \<and> z = ordertype(X, x)"
   using well_ord_abs is_well_ord_iff_wellordered is_ordertype_iff' ordertype_rel_abs
-  well_ord_is_linear subset_abs Pow_rel_char
+    well_ord_is_linear subset_abs Pow_rel_char
   unfolding is_order_body_def
   by simp
 
@@ -151,7 +151,7 @@ lemma (in M_ZF3_trans) wfrec_replacement_order_pred:
         where P="\<lambda> x f. M,[x,f,r,A] \<Turnstile> order_pred_wfrec_body_fm(3,2,1,0)",THEN iffD1])
    apply(subst order_pred_wfrec_body_def[symmetric])
    apply(rule_tac order_pred_wfrec_body_iff_sats[where env="[_,_,r,A]",symmetric])
-  apply(simp_all add:zero_in_M)
+           apply(simp_all add:zero_in_M)
   apply(rule_tac replacement_ax3[unfolded replacement_assm_def, rule_format, where env="[r,A]",simplified])
     apply(simp_all add: arity_order_pred_wfrec_body_fm ord_simp_union)
   done
@@ -180,13 +180,13 @@ lemma arity_is_jump_cardinal_body: "arity(is_jump_cardinal_body'_fm(0,1)) = 2"
   by simp
 
 lemma (in M_ZF3_trans) replacement_is_jump_cardinal_body:
- "strong_replacement(##M, is_jump_cardinal_body'(##M))"
+  "strong_replacement(##M, is_jump_cardinal_body'(##M))"
   apply(rule_tac strong_replacement_cong[
         where P="\<lambda> x f. M,[x,f] \<Turnstile> is_jump_cardinal_body'_fm(0,1)",THEN iffD1])
    apply(rule_tac is_jump_cardinal_body'_iff_sats[where env="[_,_]",symmetric])
-  apply(simp_all add:zero_in_M)
+        apply(simp_all add:zero_in_M)
   apply(rule_tac replacement_ax3[unfolded replacement_assm_def, rule_format, where env="[]",simplified])
-    apply(simp_all add: arity_is_jump_cardinal_body )
+   apply(simp_all add: arity_is_jump_cardinal_body )
   done
 
 lemma (in M_pre_cardinal_arith) univalent_aux2: "M(X) \<Longrightarrow> univalent(M,Pow_rel(M,X\<times>X),
@@ -194,15 +194,15 @@ lemma (in M_pre_cardinal_arith) univalent_aux2: "M(X) \<Longrightarrow> univalen
   using is_well_ord_iff_wellordered
     is_ordertype_iff[of _ X]
     trans_on_subset[OF well_ord_is_trans_on]
-     well_ord_is_wf[THEN wf_on_subset_A] mem_Pow_rel_abs
+    well_ord_is_wf[THEN wf_on_subset_A] mem_Pow_rel_abs
   unfolding univalent_def
   by (simp)
 
 lemma (in M_pre_cardinal_arith) is_jump_cardinal_body_abs :
   "M(X) \<Longrightarrow> M(c) \<Longrightarrow> is_jump_cardinal_body'(M, X, c) \<longleftrightarrow> c = jump_cardinal_body'_rel(M,X)"
   using well_ord_abs is_well_ord_iff_wellordered is_ordertype_iff' ordertype_rel_abs
-  well_ord_is_linear subset_abs Pow_rel_iff Replace_abs[of "Pow_rel(M,X\<times>X)",OF _ _
-    univalent_aux2]
+    well_ord_is_linear subset_abs Pow_rel_iff Replace_abs[of "Pow_rel(M,X\<times>X)",OF _ _
+      univalent_aux2]
   unfolding is_jump_cardinal_body'_def jump_cardinal_body'_rel_def
   by simp
 
@@ -214,7 +214,7 @@ lemma (in M_ZF3_trans) replacement_jump_cardinal_body:
 
 sublocale M_ZF3_trans \<subseteq> M_pre_aleph "##M"
   using replacement_ordertype replacement_jump_cardinal_body HAleph_wfrec_repl
-   by unfold_locales (simp_all add: transrec_replacement_def
+  by unfold_locales (simp_all add: transrec_replacement_def
       wfrec_replacement_def is_wfrec_def M_is_recfun_def flip:setclass_iff)
 
 arity_theorem intermediate for "is_HAleph_fm"
@@ -234,20 +234,20 @@ lemma arity_is_Aleph: "arity(is_Aleph_fm(0, 1)) = 2"
   by simp
 
 lemma (in M_ZF3_trans) replacement_is_aleph:
- "strong_replacement(##M, \<lambda>x y. Ord(x) \<and> is_Aleph(##M,x,y))"
+  "strong_replacement(##M, \<lambda>x y. Ord(x) \<and> is_Aleph(##M,x,y))"
   apply(rule_tac strong_replacement_cong[
         where P="\<lambda> x y. M,[x,y] \<Turnstile> And(ordinal_fm(0),is_Aleph_fm(0,1))",THEN iffD1])
    apply (auto simp add: ordinal_iff_sats[where env="[_,_]",symmetric])
-   apply(rule_tac is_Aleph_iff_sats[where env="[_,_]",THEN iffD2],simp_all add:zero_in_M)
+    apply(rule_tac is_Aleph_iff_sats[where env="[_,_]",THEN iffD2],simp_all add:zero_in_M)
    apply(rule_tac is_Aleph_iff_sats[where env="[_,_]",THEN iffD1],simp_all add:zero_in_M)
   apply(rule_tac replacement_ax3[unfolded replacement_assm_def, rule_format, where env="[]",simplified])
-    apply(simp_all add:arity_is_Aleph FOL_arities arity_ordinal_fm ord_simp_union is_Aleph_fm_type)
+   apply(simp_all add:arity_is_Aleph FOL_arities arity_ordinal_fm ord_simp_union is_Aleph_fm_type)
   done
 
 lemma (in M_ZF3_trans) replacement_aleph_rel:
   shows  "strong_replacement(##M, \<lambda>x y. Ord(x) \<and> y = \<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>)"
   using strong_replacement_cong[THEN iffD2,OF _ replacement_is_aleph,where P1="\<lambda>x y . Ord(x) \<and> y=Aleph_rel(##M,x)"]
-     is_Aleph_iff
+    is_Aleph_iff
   by auto
 
 sublocale M_ZF3_trans \<subseteq> M_aleph "##M"
@@ -265,7 +265,7 @@ sublocale M_ZFC3_trans \<subseteq> M_cardinal_AC "##M" ..
 (* TopLevel *)
 
 lemma (in M_ZF2_trans) separation_cardinal_rel_lesspoll_rel:
- "(##M)(\<kappa>) \<Longrightarrow> separation(##M, \<lambda>x. x \<prec>\<^bsup>M\<^esup> \<kappa>)"
+  "(##M)(\<kappa>) \<Longrightarrow> separation(##M, \<lambda>x. x \<prec>\<^bsup>M\<^esup> \<kappa>)"
   using separation_in_ctm[where \<phi>="( \<cdot>0 \<prec> 1\<cdot> )" and env="[\<kappa>]"]
     is_lesspoll_iff nonempty
     arity_is_cardinal_fm arity_is_lesspoll_fm arity_is_bij_fm ord_simp_union
@@ -437,7 +437,7 @@ proof -
     assume "\<phi> \<in> formula" "env\<in>list(M)"
     moreover from \<open>M \<Turnstile> ZF\<close>
     have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
-         "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
+      "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
       unfolding ZF_def ZF_schemes_def by auto
     moreover from calculation
     have "arity(\<phi>) \<le> succ(length(env)) \<Longrightarrow> separation(##M, \<lambda>x. (M, Cons(x, env) \<Turnstile> \<phi>))"
@@ -475,7 +475,7 @@ proof -
     from \<open>M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms}\<close>
     have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
       unfolding Zermelo_fms_def ZF_def instances1_fms_def
-      instances2_fms_def by auto
+        instances2_fms_def by auto
     moreover
     assume "\<phi> \<in> formula" "env\<in>list(M)"
     ultimately
@@ -490,7 +490,7 @@ proof -
     have "M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>" by auto
     ultimately
     have "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
-      using sats_ZF_replacement_fm_iff[of \<phi>] instances1_fms_type instances2_fms_type by auto 
+      using sats_ZF_replacement_fm_iff[of \<phi>] instances1_fms_type instances2_fms_type by auto
   }
   ultimately
   show ?thesis
@@ -527,7 +527,7 @@ proof -
     assume "\<phi> \<in> formula" "env\<in>list(M)"
     moreover from \<open>M \<Turnstile> ZF\<close>
     have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
-         "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
+      "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
       unfolding ZF_def ZF_schemes_def by auto
     moreover from calculation
     have "arity(\<phi>) \<le> succ(length(env)) \<Longrightarrow> separation(##M, \<lambda>x. (M, Cons(x, env) \<Turnstile> \<phi>))"

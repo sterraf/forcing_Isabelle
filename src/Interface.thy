@@ -1416,8 +1416,8 @@ proof -
       hsats[of "h(z)" "g(z)" "f(z)" z]
       fclosed gclosed hclosed f_fm g_fm h_fm
     apply(rule_tac iffI,simp,rule_tac rev_bexI[where x="f(z)"],simp)
-    apply(rule_tac conjI,simp,rule_tac rev_bexI[where x="g(z)"],simp)
-    apply(rule_tac conjI,simp,rule_tac rev_bexI[where x="h(z)"],simp,rule_tac conjI,simp,simp)
+     apply(rule_tac conjI,simp,rule_tac rev_bexI[where x="g(z)"],simp)
+     apply(rule_tac conjI,simp,rule_tac rev_bexI[where x="h(z)"],simp,rule_tac conjI,simp,simp)
   proof -
     assume "M, [z] @ [a, b, c, d] \<Turnstile> (\<cdot>\<exists>\<cdot>f_fm \<and> (\<cdot>\<exists>\<cdot>g_fm \<and> (\<cdot>\<exists>\<cdot>h_fm \<and> ren(\<chi>) ` 7 ` 8 ` ren_V3_fn\<cdot>\<cdot>)\<cdot>\<cdot>)\<cdot>\<cdot>)"
     with calculation that
@@ -1500,7 +1500,7 @@ proof -
     using that fsats[OF fclosed[of z],of z]  gsats[of "g(z)" "f(z)" z]
       fclosed gclosed f_fm g_fm
     apply(rule_tac iffI,simp,rule_tac rev_bexI[where x="f(z)"],simp)
-    apply(auto)[1]
+     apply(auto)[1]
   proof -
     assume "M, [z] @ [a, b, c, d, \<tau>] \<Turnstile> (\<cdot>\<exists>\<cdot>f_fm \<and> (\<cdot>\<exists>\<cdot>g_fm \<and> ren(\<chi>) ` 7 ` 8 ` ren_V_fn\<cdot>\<cdot>)\<cdot>\<cdot>)"
     then have "\<exists>xa\<in>M. (M, [xa, z, a, b, c, d, \<tau>] \<Turnstile> f_fm) \<and>
