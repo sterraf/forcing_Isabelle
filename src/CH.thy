@@ -485,7 +485,7 @@ proof -
   ultimately
   show ?thesis
     using Ord_MG_iff MG_eqpoll_nat satT_ground_repl_fm_imp_satT_ZF_replacement_fm[of \<Phi>]
-    by (rule_tac x="M[G]" in exI, auto)
+    by (rule_tac x="M[G]" in exI,blast)
 qed
 
 corollary ctm_ZFC_imp_ctm_CH:

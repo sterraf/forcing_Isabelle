@@ -132,7 +132,12 @@ lemma one_in_M: "\<one> \<in> M"
 
 end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
-(* MOVE THIS to an appropriate place *)
+(* FIXME: MOVE THIS to an appropriate place *)
 synthesize "compat_in" from_definition "is_compat_in" assuming "nonempty"
+context
+  notes Un_assoc[simp] Un_trasposition_aux2[simp]
+begin
+arity_theorem for "compat_in_fm"
+end
 
 end

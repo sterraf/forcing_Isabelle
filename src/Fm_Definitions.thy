@@ -467,29 +467,14 @@ synthesize "forces_mem" from_definition "is_forces_mem'"
 synthesize "forces_neq" from_definition "is_forces_neq'" assuming "nonempty"
 synthesize "forces_nmem" from_definition "is_forces_nmem'" assuming "nonempty"
 
-arity_theorem intermediate for "forces_eq_fm"
-lemma arity_forces_eq_fm:
-  "P \<in> nat \<Longrightarrow>
-    l \<in> nat \<Longrightarrow>
-    p \<in> nat \<Longrightarrow>
-    t1 \<in> nat \<Longrightarrow>
-    t2 \<in> nat \<Longrightarrow>
-    arity(forces_eq_fm(P, l, p, t1, t2)) =
-    succ(t2) \<union> succ(p) \<union> succ(t1) \<union> succ(P) \<union> succ(l)"
-  using arity_forces_eq_fm' Un_commute Un_assoc
-  by simp
-
-arity_theorem intermediate for "forces_mem_fm"
-lemma arity_forces_mem_fm[arity]:
-  "P \<in> nat \<Longrightarrow>
-    l \<in> nat \<Longrightarrow>
-    p \<in> nat \<Longrightarrow>
-    t1 \<in> nat \<Longrightarrow>
-    t2 \<in> nat \<Longrightarrow>
-    arity(forces_mem_fm(P, l, p, t1, t2)) =
-    succ(t2) \<union> succ(p) \<union> succ(t1) \<union> succ(P) \<union> succ(l)"
-  using arity_forces_mem_fm' Un_assoc Un_commute
-  by simp
+context
+  notes Un_assoc[simp] Un_trasposition_aux2[simp]
+begin
+arity_theorem for "forces_eq_fm"
+arity_theorem for "forces_mem_fm"
+arity_theorem for "forces_neq_fm"
+arity_theorem for "forces_nmem_fm"
+end
 
 subsection\<open>Forcing for general formulas\<close>
 

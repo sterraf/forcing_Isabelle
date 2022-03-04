@@ -45,8 +45,8 @@ lemma strengthening_eq:
   assumes "p\<in>P" "r\<in>P" "r\<preceq>p" "p forces\<^sub>a (t1 = t2)"
   shows "r forces\<^sub>a (t1 = t2)"
   using assms def_forces_eq[of _ t1 t2] leq_transD by blast
-(* Long proof *)
-(*
+    (* Long proof *)
+    (*
 proof -
   {
     fix s q
@@ -156,7 +156,7 @@ next
     note \<open>p\<in>P\<close>
     ultimately (*We can omit the next step but it is slower *)
     have "q forces\<^sub>a (s \<in> t1) \<Longrightarrow> dense_below({r\<in>P. r forces\<^sub>a (s \<in> t2)},q)"
-         "q forces\<^sub>a (s \<in> t2) \<Longrightarrow> dense_below({r\<in>P. r forces\<^sub>a (s \<in> t1)},q)"
+      "q forces\<^sub>a (s \<in> t2) \<Longrightarrow> dense_below({r\<in>P. r forces\<^sub>a (s \<in> t1)},q)"
       using aux_density_eq by simp_all
     then
     have "q forces\<^sub>a ( s \<in>  t1) \<longleftrightarrow> q forces\<^sub>a ( s \<in>  t2)"
@@ -177,49 +177,13 @@ lemma not_forces_nmem:
   shows "p forces\<^sub>a (t1 \<in> t2) \<longleftrightarrow> \<not> (\<exists>q\<in>P. q\<preceq>p \<and> q forces\<^sub>a (t1 \<notin> t2))"
   using assms density_mem unfolding forces_nmem_def by blast
 
-
-(* FIXME: Use the newer versions in Forces_Definition! *)
-(* (and adequate the rest of the code to them)  *)
-lemma sats_forces_Nand':
-  assumes
-    "p\<in>P" "\<phi>\<in>formula" "\<psi>\<in>formula" "env \<in> list(M)"
-  shows
-    "(M, [p,P,leq,\<one>] @ env \<Turnstile> forces(Nand(\<phi>,\<psi>))) \<longleftrightarrow>
-     \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and>
-           (M, [q,P,leq,\<one>] @ env \<Turnstile> forces(\<phi>)) \<and>
-           (M, [q,P,leq,\<one>] @ env \<Turnstile> forces(\<psi>)))"
-  using assms sats_forces_Nand[OF assms(2-4) transitivity[OF \<open>p\<in>P\<close>]]
-  P_in_M leq_in_M one_in_M unfolding forces_def
-  by simp
-
-lemma sats_forces_Neg':
-  assumes
-    "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula"
-  shows
-    "(M, [p,P,leq,\<one>] @ env \<Turnstile> forces(Neg(\<phi>))) \<longleftrightarrow>
-     \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and>
-          (M, [q,P,leq,\<one>]@env \<Turnstile> forces(\<phi>)))"
-  using assms sats_forces_Neg transitivity
-  P_in_M leq_in_M one_in_M  unfolding forces_def
-  by (simp, blast)
-
-lemma sats_forces_Forall':
-  assumes
-    "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula"
-  shows
-    "(M,[p,P,leq,\<one>] @ env \<Turnstile> forces(Forall(\<phi>))) \<longleftrightarrow>
-     (\<forall>x\<in>M.   M, [p,P,leq,\<one>,x] @ env \<Turnstile> forces(\<phi>))"
-  using assms sats_forces_Forall transitivity
-  P_in_M leq_in_M one_in_M sats_ren_forces_forall unfolding forces_def
-  by simp
-
 subsection\<open>The relation of forcing and atomic formulas\<close>
 lemma Forces_Equal:
   assumes
     "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" "n\<in>nat" "m\<in>nat"
   shows
     "(p \<tturnstile> Equal(n,m) env) \<longleftrightarrow> p forces\<^sub>a (t1 = t2)"
-   using assms sats_forces_Equal forces_eq_abs transitivity P_in_M
+  using assms sats_forces_Equal forces_eq_abs transitivity P_in_M
   by simp
 
 lemma Forces_Member:
@@ -227,7 +191,7 @@ lemma Forces_Member:
     "p\<in>P" "t1\<in>M" "t2\<in>M" "env\<in>list(M)" "nth(n,env) = t1" "nth(m,env) = t2" "n\<in>nat" "m\<in>nat"
   shows
     "(p \<tturnstile> Member(n,m) env) \<longleftrightarrow> p forces\<^sub>a (t1 \<in> t2)"
-   using assms sats_forces_Member forces_mem_abs transitivity P_in_M
+  using assms sats_forces_Member forces_mem_abs transitivity P_in_M
   by simp
 
 lemma Forces_Neg:
@@ -235,8 +199,8 @@ lemma Forces_Neg:
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula"
   shows
     "(p \<tturnstile> Neg(\<phi>) env) \<longleftrightarrow> \<not>(\<exists>q\<in>M. q\<in>P \<and> q\<preceq>p \<and> (q \<tturnstile> \<phi> env))"
-    using assms sats_forces_Neg' transitivity
-  P_in_M pair_in_M_iff leq_in_M leq_abs by simp
+  using assms sats_forces_Neg transitivity P_in_M pair_in_M_iff leq_in_M leq_abs
+  by simp
 
 subsection\<open>The relation of forcing and connectives\<close>
 
@@ -245,8 +209,8 @@ lemma Forces_Nand:
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula" "\<psi>\<in>formula"
   shows
     "(p \<tturnstile> Nand(\<phi>,\<psi>) env) \<longleftrightarrow> \<not>(\<exists>q\<in>M. q\<in>P \<and> q\<preceq>p \<and> (q \<tturnstile> \<phi> env) \<and> (q \<tturnstile> \<psi> env))"
-   using assms sats_forces_Nand' transitivity
-  P_in_M pair_in_M_iff leq_in_M leq_abs by simp
+  using assms sats_forces_Nand transitivity
+    P_in_M pair_in_M_iff leq_in_M leq_abs by simp
 
 lemma Forces_And_aux:
   assumes
@@ -262,14 +226,15 @@ lemma Forces_And_iff_dense_below:
   shows
     "(p \<tturnstile> And(\<phi>,\<psi>) env) \<longleftrightarrow> dense_below({r\<in>P. (r \<tturnstile> \<phi> env) \<and> (r \<tturnstile> \<psi> env) },p)"
   unfolding dense_below_def using Forces_And_aux assms
-    by (auto dest:transitivity[OF _ P_in_M]; rename_tac q; drule_tac x=q in bspec)+
+  by (auto dest:transitivity[OF _ P_in_M]; rename_tac q; drule_tac x=q in bspec)+
 
 lemma Forces_Forall:
   assumes
     "p\<in>P" "env \<in> list(M)" "\<phi>\<in>formula"
   shows
     "(p \<tturnstile> Forall(\<phi>) env) \<longleftrightarrow> (\<forall>x\<in>M. (p \<tturnstile> \<phi> ([x] @ env)))"
-   using sats_forces_Forall' assms by simp
+  using sats_forces_Forall assms transitivity[OF _ P_in_M]
+  by simp
 
 (* "x\<in>val(P,G,\<pi>) \<Longrightarrow> \<exists>\<theta>. \<exists>p\<in>G.  \<langle>\<theta>,p\<rangle>\<in>\<pi> \<and> val(P,G,\<theta>) = x" *)
 bundle some_rules =  elem_of_val_pair [dest]
@@ -311,33 +276,37 @@ proof -
     qed
   qed
   have "?D\<subseteq>P" by auto
-  (* D\<in>M *)
-  let ?d_fm="Or(Neg(compat_in_fm(1,2,3,0)),Member(0,4))"
+      (* D\<in>M *)
+  let ?d_fm="\<cdot>\<cdot>\<not>compat_in_fm(1, 2, 3, 0) \<cdot> \<or> \<cdot>0 \<in> 4\<cdot>\<cdot>"
   have 1:"p\<in>M"
     using \<open>M_generic(G)\<close> M_genericD transitivity[OF _ P_in_M]
-          \<open>p\<in>G\<close> by simp
+      \<open>p\<in>G\<close> by simp
   moreover
   have "?d_fm\<in>formula" by simp
   moreover
-  have "arity(?d_fm) = 5" unfolding compat_in_fm_def pair_fm_def upair_fm_def
-    by (simp add: union_abs1 Un_commute arity)
+  have "arity(?d_fm) = 5"
+    by (auto simp add: arity)
   moreover
   have "(M, [q,P,leq,p,D] \<Turnstile> ?d_fm) \<longleftrightarrow> (\<not> is_compat_in(##M,P,leq,p,q) \<or> q\<in>D)"
     if "q\<in>M" for q
-    using that sats_compat_in_fm P_in_M leq_in_M 1 \<open>D\<in>M\<close> zero_in_M by simp
+    using that sats_compat_in_fm P_in_M leq_in_M 1 \<open>D\<in>M\<close> zero_in_M
+    by simp
   moreover
   have "(\<not> is_compat_in(##M,P,leq,p,q) \<or> q\<in>D) \<longleftrightarrow> p\<bottom>q \<or> q\<in>D" if "q\<in>M" for q
-    unfolding compat_def using that compat_in_abs P_in_M leq_in_M 1 by simp
+    unfolding compat_def
+    using that compat_in_abs P_in_M leq_in_M 1
+    by simp
   ultimately
-  have "?D\<in>M" using Collect_in_M[of ?d_fm "[P,leq,p,D]"]
-                    P_in_M leq_in_M \<open>D\<in>M\<close> by simp
+  have "?D\<in>M"
+    using Collect_in_M[of ?d_fm "[P,leq,p,D]"] P_in_M leq_in_M \<open>D\<in>M\<close>
+    by simp
   note asm = \<open>M_generic(G)\<close> \<open>dense(?D)\<close> \<open>?D\<subseteq>P\<close> \<open>?D\<in>M\<close>
   obtain x where "x\<in>G" "x\<in>?D" using M_generic_denseD[OF asm]
     by force (* by (erule bexE) does it, but the other automatic tools don't *)
   moreover from this and \<open>M_generic(G)\<close>
   have "x\<in>D"
-    using M_generic_compatD[OF _ \<open>p\<in>G\<close>, of x]
-      refl_leq compatI[of _ p x] by force
+    using M_generic_compatD[OF _ \<open>p\<in>G\<close>, of x] refl_leq compatI[of _ p x]
+    by force
   ultimately
   show ?thesis by auto
 qed
@@ -358,21 +327,23 @@ proof -
   then
   have "?rel_pred(##M,q,P,leq,\<pi>,\<tau>) \<longleftrightarrow> (\<exists>\<sigma>. \<exists>r. r\<in>P \<and> \<langle>\<sigma>,r\<rangle> \<in> \<tau> \<and> q\<preceq>r \<and> q forces\<^sub>a (\<pi> = \<sigma>))"
     if "q\<in>M" for q
-    unfolding forces_eq_def using assms that P_in_M leq_in_M leq_abs forces_eq'_abs pair_in_M_iff
+    unfolding forces_eq_def
+    using assms that P_in_M leq_in_M leq_abs forces_eq'_abs pair_in_M_iff
     by auto
   moreover
   have "(M, [q,P,leq,\<pi>,\<tau>] \<Turnstile> ?\<phi>) \<longleftrightarrow> ?rel_pred(##M,q,P,leq,\<pi>,\<tau>)" if "q\<in>M" for q
-    using assms that sats_forces_eq_fm sats_is_leq_fm P_in_M leq_in_M zero_in_M by simp
+    using assms that sats_forces_eq_fm sats_is_leq_fm P_in_M leq_in_M zero_in_M
+    by simp
   moreover
   have "?\<phi>\<in>formula" by simp
   moreover
   have "arity(?\<phi>)=5"
-    unfolding is_leq_fm_def pair_fm_def upair_fm_def
-    using arity_forces_eq_fm by (simp add:ord_simp_union Un_commute arity)
+    using arity_forces_eq_fm
+    by (simp add:ord_simp_union arity)
   ultimately
   show ?thesis
-    unfolding forces_eq_def using P_in_M leq_in_M assms
-        Collect_in_M[of ?\<phi> "[P,leq,\<pi>,\<tau>]"] by simp
+    unfolding forces_eq_def using P_in_M leq_in_M assms Collect_in_M[of ?\<phi> "[P,leq,\<pi>,\<tau>]"]
+    by simp
 qed
 
 (* Lemma IV.2.40(a), membership *)
@@ -422,8 +393,8 @@ lemma IV240a_eq_1st_incl:
     IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> q\<in>G \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow>
         (q forces\<^sub>a (\<sigma> \<in> \<tau>) \<longrightarrow> val(P,G,\<sigma>) \<in> val(P,G,\<tau>)) \<and>
         (q forces\<^sub>a (\<sigma> \<in> \<theta>) \<longrightarrow> val(P,G,\<sigma>) \<in> val(P,G,\<theta>))"
-(* Strong enough for this case: *)
-(*  IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> q forces\<^sub>a (\<sigma> \<in> \<theta>) \<Longrightarrow>
+    (* Strong enough for this case: *)
+    (*  IH:"\<And>q \<sigma>. q\<in>P \<Longrightarrow> \<sigma>\<in>domain(\<tau>) \<Longrightarrow> q forces\<^sub>a (\<sigma> \<in> \<theta>) \<Longrightarrow>
       val(P,G,\<sigma>) \<in> val(P,G,\<theta>)" *)
   shows
     "val(P,G,\<tau>) \<subseteq> val(P,G,\<theta>)"
@@ -558,10 +529,10 @@ proof (intro forces_induction_with_conds[OF _ _ one_in_P ])
     using one_in_P by simp
 next
   fix \<tau> \<theta> p
-    assume "q \<in> P \<Longrightarrow> \<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> R(\<sigma>,\<tau>) \<and> R(\<sigma>,\<theta>)" for q \<sigma>
-    with assms(2)
-    show "Q(\<tau>,\<theta>)"
-      using one_in_P by simp
+  assume "q \<in> P \<Longrightarrow> \<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<Longrightarrow> R(\<sigma>,\<tau>) \<and> R(\<sigma>,\<theta>)" for q \<sigma>
+  with assms(2)
+  show "Q(\<tau>,\<theta>)"
+    using one_in_P by simp
 qed
 
 subsection\<open>Lemma IV.2.40(a), in full\<close>
@@ -598,7 +569,7 @@ next
 qed
 
 subsection\<open>Lemma IV.2.40(b)\<close>
-(* Lemma IV.2.40(b), membership *)
+  (* Lemma IV.2.40(b), membership *)
 lemma IV240b_mem:
   assumes
     "M_generic(G)" "val(P,G,\<pi>)\<in>val(P,G,\<tau>)" "\<pi>\<in>M" "\<tau>\<in>M"
@@ -645,13 +616,13 @@ lemma Collect_forces_eq_in_M:
   assumes "\<tau> \<in> M" "\<theta> \<in> M"
   shows "{p\<in>P. p forces\<^sub>a (\<tau> = \<theta>)} \<in> M"
   using assms Collect_in_M[of "forces_eq_fm(1,2,0,3,4)" "[P,leq,\<tau>,\<theta>]"]
-        arity_forces_eq_fm P_in_M leq_in_M sats_forces_eq_fm forces_eq_abs forces_eq_fm_type
+    arity_forces_eq_fm P_in_M leq_in_M sats_forces_eq_fm forces_eq_abs forces_eq_fm_type
   by (simp add: union_abs1 Un_commute)
 
 lemma IV240b_eq_Collects:
   assumes "\<tau> \<in> M" "\<theta> \<in> M"
   shows "{p\<in>P. \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). p forces\<^sub>a (\<sigma> \<in> \<tau>) \<and> p forces\<^sub>a (\<sigma> \<notin> \<theta>)}\<in>M" and
-        "{p\<in>P. \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). p forces\<^sub>a (\<sigma> \<notin> \<tau>) \<and> p forces\<^sub>a (\<sigma> \<in> \<theta>)}\<in>M"
+    "{p\<in>P. \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). p forces\<^sub>a (\<sigma> \<notin> \<tau>) \<and> p forces\<^sub>a (\<sigma> \<in> \<theta>)}\<in>M"
 proof -
   let ?rel_pred="\<lambda>M x a1 a2 a3 a4.
         \<exists>\<sigma>[M]. \<exists>u[M]. \<exists>da3[M]. \<exists>da4[M]. is_domain(M,a3,da3) \<and> is_domain(M,a4,da4) \<and>
@@ -664,7 +635,7 @@ proof -
     using that pair_in_M_iff transitivity[of "\<langle>\<sigma>,y\<rangle>" \<delta>] by simp
   have abs1:"?rel_pred(##M,p,P,leq,\<tau>,\<theta>) \<longleftrightarrow>
         (\<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). forces_mem'(P,leq,p,\<sigma>,\<tau>) \<and> forces_nmem'(P,leq,p,\<sigma>,\<theta>))"
-        if "p\<in>M" for p
+    if "p\<in>M" for p
     unfolding forces_mem_def forces_nmem_def
     using assms that forces_mem'_abs forces_nmem'_abs P_in_M leq_in_M
       domain_closed Un_closed
@@ -683,16 +654,15 @@ proof -
       domain_closed Un_closed by simp
   have fty:"?\<phi>\<in>formula" by simp
   have farit:"arity(?\<phi>)=5"
-    unfolding forces_nmem_fm_def domain_fm_def pair_fm_def upair_fm_def union_fm_def
-    using arity_forces_mem_fm by (simp add:ord_simp_union Un_commute arity)
-    show
+    by (simp add:ord_simp_union arity)
+  show
     "{p \<in> P . \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). p forces\<^sub>a (\<sigma> \<in> \<tau>) \<and> p forces\<^sub>a (\<sigma> \<notin> \<theta>)} \<in> M"
     and "{p \<in> P . \<exists>\<sigma>\<in>domain(\<tau>) \<union> domain(\<theta>). p forces\<^sub>a (\<sigma> \<notin> \<tau>) \<and> p forces\<^sub>a (\<sigma> \<in> \<theta>)} \<in> M"
     unfolding forces_mem_def
     using abs1 fty fsats1 farit P_in_M leq_in_M assms forces_nmem
-          Collect_in_M[of ?\<phi> "[P,leq,\<tau>,\<theta>]"]
+      Collect_in_M[of ?\<phi> "[P,leq,\<tau>,\<theta>]"]
     using abs2 fty fsats2 farit P_in_M leq_in_M assms forces_nmem domain_closed Un_closed
-          Collect_in_M[of ?\<phi> "[P,leq,\<theta>,\<tau>]"]
+      Collect_in_M[of ?\<phi> "[P,leq,\<theta>,\<tau>]"]
     by simp_all
 qed
 
@@ -887,7 +857,7 @@ lemma arities_at_aux:
   shows
     "n < length(env)" "m < length(env)"
   using assms succ_leE[OF Un_leD1, of n "succ(m)" "length(env)"]
-   succ_leE[OF Un_leD2, of "succ(n)" m "length(env)"] by auto
+    succ_leE[OF Un_leD2, of "succ(n)" m "length(env)"] by auto
 
 subsection\<open>The Strenghtening Lemma\<close>
 
@@ -985,7 +955,7 @@ next
     using Forces_Equal[of _ "nth(n,env)" "nth(m,env)" env n m]
       density_eq[of p "nth(n,env)" "nth(m,env)"] by simp
 next
-case (Nand \<phi> \<psi>)
+  case (Nand \<phi> \<psi>)
   {
     fix q
     assume "q\<in>M" "q\<in>P" "q\<preceq> p" "q \<tturnstile> \<phi> env"
@@ -1001,7 +971,7 @@ case (Nand \<phi> \<psi>)
     note arity_Nand_le[of \<phi> \<psi>]
     moreover from calculation
     have "d \<tturnstile> \<phi> env"
-       using strengthening_lemma[of q \<phi> d env] Un_leD1 by auto
+      using strengthening_lemma[of q \<phi> d env] Un_leD1 by auto
     ultimately
     have "\<not> (q \<tturnstile> \<psi> env)"
       using strengthening_lemma[of q \<psi> d env] by auto
@@ -1128,11 +1098,11 @@ next
     using map_val_in_MG by simp
   let ?D="{p\<in>P. (p \<tturnstile> \<phi> env) \<or> (p \<tturnstile> Neg(\<phi>) env)}"
   have "separation(##M,\<lambda>p. (p \<tturnstile> \<phi> env))"
-      using separation_ax[of "forces(\<phi>)"] arity_forces assms P_in_M leq_in_M one_in_M arity_forces_le
+    using separation_ax[of "forces(\<phi>)"] arity_forces assms P_in_M leq_in_M one_in_M arity_forces_le
     by simp
   moreover
   have "separation(##M,\<lambda>p. (p \<tturnstile> \<cdot>\<not>\<phi>\<cdot> env))"
-      using separation_ax[of "forces( \<cdot>\<not>\<phi>\<cdot> )"] arity_forces assms P_in_M leq_in_M one_in_M arity_forces_le
+    using separation_ax[of "forces( \<cdot>\<not>\<phi>\<cdot> )"] arity_forces assms P_in_M leq_in_M one_in_M arity_forces_le
     by simp
   ultimately
   have "separation(##M,\<lambda>p. (p \<tturnstile> \<phi> env) \<or> (p \<tturnstile> Neg(\<phi>) env))"
@@ -1185,7 +1155,7 @@ lemma truth_lemma_And:
     "arity(\<phi>)\<le>length(env)" "arity(\<psi>) \<le> length(env)" "M_generic(G)"
     and
     IH: "(\<exists>p\<in>G. p \<tturnstile> \<phi> env)  \<longleftrightarrow>   M[G], map(val(P,G),env) \<Turnstile> \<phi>"
-        "(\<exists>p\<in>G. p \<tturnstile> \<psi> env)  \<longleftrightarrow>   M[G], map(val(P,G),env) \<Turnstile> \<psi>"
+    "(\<exists>p\<in>G. p \<tturnstile> \<psi> env)  \<longleftrightarrow>   M[G], map(val(P,G),env) \<Turnstile> \<psi>"
   shows
     "(\<exists>p\<in>G. (p \<tturnstile> And(\<phi>,\<psi>) env)) \<longleftrightarrow> M[G] , map(val(P,G),env) \<Turnstile> And(\<phi>,\<psi>)"
   using assms map_val_in_MG Forces_And[OF M_genericD assms(1-5)]
@@ -1244,7 +1214,7 @@ proof -
       with \<open>\<phi>\<in>_\<close> lt
       have "5 < succ(arity(\<phi>))" "5<arity(\<phi>)+\<^sub>\<omega>2"  "5<arity(\<phi>)+\<^sub>\<omega>3"  "5<arity(\<phi>)+\<^sub>\<omega>4"
         using succ_ltI by auto
-       with \<open>\<phi>\<in>_\<close>
+      with \<open>\<phi>\<in>_\<close>
       have c:"arity(iterates(\<lambda>p. incr_bv(p)`5,5,\<phi>)) = 5+\<^sub>\<omega>arity(\<phi>)" (is "arity(?\<phi>') = _")
         using arity_incr_bv_lemma lt a
         by simp
@@ -1336,8 +1306,8 @@ proof -
     moreover
     have "... \<le> 3 \<union> (pred(pred(6 \<union> succ(arity(forces(\<phi>))))))" (is "_ \<le> ?r")
       using  \<open>\<phi>\<in>_\<close> Un_le_compat[OF le_refl[of 3]]
-                  le_imp_subset arity_ren_truth[of "forces(\<phi>)"]
-                  pred_mono
+        le_imp_subset arity_ren_truth[of "forces(\<phi>)"]
+        pred_mono
       by auto
     finally
     have "arity(?\<psi>) \<le> ?r" by simp
@@ -1345,16 +1315,16 @@ proof -
       using pred_Un_distrib pred_succ_eq \<open>\<phi>\<in>_\<close> Un_assoc[symmetric] union_abs1 by simp
     have h:"4 \<union> pred(arity(forces(\<phi>))) \<le> 4 \<union> (4+\<^sub>\<omega>length(env))"
       using  \<open>env\<in>_\<close> add_commute \<open>\<phi>\<in>_\<close>
-            Un_le_compat[of 4 4,OF _ pred_mono[OF _ arity_forces_le[OF _ _ \<open>arity(\<phi>)\<le>_\<close>]] ]
-            \<open>env\<in>_\<close> by auto
+        Un_le_compat[of 4 4,OF _ pred_mono[OF _ arity_forces_le[OF _ _ \<open>arity(\<phi>)\<le>_\<close>]] ]
+        \<open>env\<in>_\<close> by auto
     with \<open>\<phi>\<in>_\<close> \<open>env\<in>_\<close>
     show ?thesis
       using le_trans[OF  \<open>arity(?\<psi>) \<le> ?r\<close>  le_trans[OF i h]] ord_simp_union by simp
   qed
   ultimately
   show ?thesis using assms P_in_M leq_in_M one_in_M
-       separation_ax[of "?\<psi>" "[P,leq,\<one>]@env"]
-       separation_cong[of "##M" "\<lambda>y. (M, [y,P,leq,\<one>]@env \<Turnstile>?\<psi>)"]
+      separation_ax[of "?\<psi>" "[P,leq,\<one>]@env"]
+      separation_cong[of "##M" "\<lambda>y. (M, [y,P,leq,\<one>]@env \<Turnstile>?\<psi>)"]
     by simp
 qed
 
