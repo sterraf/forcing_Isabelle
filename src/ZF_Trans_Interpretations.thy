@@ -122,7 +122,6 @@ lemma (in M_ZF3_trans) replacement_is_order_body:
     apply(simp_all add: arity_is_order_body )
   done
 
-(*FIXME: move this to CardinalArith_Relative *)
 lemma (in M_pre_cardinal_arith) is_order_body_abs :
   "M(X) \<Longrightarrow> M(x) \<Longrightarrow> M(z) \<Longrightarrow> is_order_body(M, X, x, z) \<longleftrightarrow>
    M(z) \<and> M(x) \<and> x\<in>Pow_rel(M,X\<times>X) \<and> well_ord(X, x) \<and> z = ordertype(X, x)"
@@ -190,7 +189,6 @@ lemma (in M_ZF3_trans) replacement_is_jump_cardinal_body:
     apply(simp_all add: arity_is_jump_cardinal_body )
   done
 
-(*FIXME: move this to CardinalArith_Relative *)
 lemma (in M_pre_cardinal_arith) univalent_aux2: "M(X) \<Longrightarrow> univalent(M,Pow_rel(M,X\<times>X),
   \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z))"
   using is_well_ord_iff_wellordered
