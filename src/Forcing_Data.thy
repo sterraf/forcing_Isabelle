@@ -19,8 +19,11 @@ locale M_ctm1_AC = M_ctm1 + M_ZFC1_trans
 
 subsection\<open>A forcing locale and generic filters\<close>
 
-(* FIXME: separate the countability assumption from this locale *)
-(* TODO: new M_notion locale assuming a forcing notion in plain M? *)
+txt\<open>Ideally, countability should be separated from the assumption of this locale.
+The fact is that our present proofs of the "definition of forces" (and many
+consequences) and of the lemma for “forcing a value” of function
+unnecessarily depend on the countability of the ground model. \<close>
+
 locale forcing_data1 = forcing_notion + M_ctm1 +
   assumes P_in_M:           "P \<in> M"
     and leq_in_M:         "leq \<in> M"

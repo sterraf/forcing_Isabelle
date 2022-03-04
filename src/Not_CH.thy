@@ -332,8 +332,7 @@ abbreviation
   dom_dense :: "i\<Rightarrow>i" where
   "dom_dense(x) \<equiv> { p\<in>Add . x \<in> domain(p) }"
 
-(* FIXME write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close>
-    in a context with a generic filter for it *)
+(* TODO: write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close> *)
 lemma dense_dom_dense: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> dense(dom_dense(x))"
 proof
   fix p
@@ -364,9 +363,6 @@ declare (in M_ctm3_AC) Fnle_nat_closed[simp del, rule del,
 declare (in M_ctm3_AC) cexp_rel_closed[simplified setclass_iff, simp, intro]
 declare (in G_generic4_AC) ext.cexp_rel_closed[simplified setclass_iff, simp, intro]
 
-(*
-NOTE Class model version?
-lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> M(dom_dense(x))" *)
 lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> dom_dense(x) \<in> M"
   using separation_in_domain[of x] nat_into_M
   by (rule_tac separation_closed[simplified], blast dest:transM) simp
@@ -400,10 +396,9 @@ qed
 abbreviation
   inj_dense :: "i\<Rightarrow>i\<Rightarrow>i" where
   "inj_dense(w,x) \<equiv>
-    { p\<in>Add . (\<exists>n\<in>\<omega>. <<w,n>,1> \<in> p \<and> <<x,n>,0> \<in> p) }"
+    { p\<in>Add . (\<exists>n\<in>\<omega>. \<langle>\<langle>w,n\<rangle>,1\<rangle> \<in> p \<and> \<langle>\<langle>x,n\<rangle>,0\<rangle> \<in> p) }"
 
-(* FIXME write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close>
-    in a context with a generic filter for it *)
+(* TODO write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close> *)
 lemma dense_inj_dense:
   assumes "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "w \<noteq> x"
   shows "dense(inj_dense(w,x))"

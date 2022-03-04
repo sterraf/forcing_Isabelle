@@ -498,7 +498,6 @@ proof -
     by unfold_locales (simp_all add:replacement_assm_def ground_replacement_assm_def)
 qed
 
-(* NOTE: Correct way of proving this kind of theorems *)
 lemma (in M_Z_basic) M_satT_Zermelo_fms: "M \<Turnstile> \<cdot>Z\<cdot>"
   using upair_ax Union_ax power_ax extensionality foundation_ax
     infinity_ax separation_ax sats_ZF_separation_fm_iff

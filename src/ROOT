@@ -13,6 +13,7 @@ session "Independence_CH" in "." =  "Transitive_Models" +
   	   document_variants = "document:outline=/proof,/ML"]
   theories
     "Definitions_Main"
+    "Demonstrations"
   document_files
     "root.tex"
     "root.bib"

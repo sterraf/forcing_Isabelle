@@ -45,6 +45,8 @@
 \renewcommand{\isacharunderscore}{\mbox{\_}}
 \renewcommand{\isasymtturnstile}{\isamath{\Vdash}}
 \renewcommand{\isacharminus}{-}
+\newcommand{\session}[1]{\textit{#1}}
+\newcommand{\theory}[1]{\texttt{#1}}
 \newcommand{\axiomas}[1]{\mathit{#1}}
 \newcommand{\ZFC}{\axiomas{ZFC}}
 \newcommand{\ZF}{\axiomas{ZF}}
@@ -88,6 +90,17 @@ framework developed by \citet{DBLP:journals/jar/PaulsonG96}. Our
 mechanization is described in more detail in our papers
 \cite{2018arXiv180705174G} (LSFA 2018), \cite{2019arXiv190103313G},
 and \cite{2020arXiv200109715G} (IJCAR 2020).
+
+The main entry point of the present session is the theory
+\theory{Defitions\_Main.thy}, in which a path from fundamental set
+theoretic concepts formalized in Isabelle reaching our main theorems
+is expounded. Cross-references to major milestones are provided there.
+
+In order to provide evidence for the correctness of several of our relativized
+definitions, we needed to assume the Axiom of Choice ($\AC$) during the
+aforementioned theory. Nevertheless, the whole of our development is
+independent of $\AC$, and the theory \theory{CH.thy} already provides
+all of our results and does not import that axiom.
 
 \subsection*{Release notes}
 \label{sec:release-notes}

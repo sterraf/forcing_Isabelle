@@ -110,8 +110,8 @@ proof -
     then
     interpret G_generic1 _ _ _ _ _ G by unfold_locales
     include G_generic1_lemmas
-      (* FIXME: make a locale containg two \<open>M_ZF1_trans\<close> instances, one
-          for \<^term>\<open>M\<close> and one for \<^term>\<open>M[G]\<close> *)
+      (* NOTE: might be useful to have a locale containg two \<open>M_ZF1_trans\<close> 
+         instances, one for \<^term>\<open>M\<close> and one for \<^term>\<open>M[G]\<close> *)
     assume "q\<in>G"
     with assms \<open>M_generic(G)\<close>
     have "M[G], map(val(P,G),[f,a,b'\<^sup>v]) \<Turnstile> \<cdot>0`1 is 2\<cdot>"
@@ -188,7 +188,6 @@ context
   includes G_generic1_lemmas
 begin
 
-\<comment> \<open>NOTE: there is a theorem missing from those above\<close>
 lemmas mg_sharp_simps = ext.Card_rel_Union ext.Card_rel_cardinal_rel
   ext.Collect_abs ext.Cons_abs ext.Cons_in_M_iff ext.Diff_closed
   ext.Equal_abs ext.Equal_in_M_iff ext.Finite_abs ext.Forall_abs
@@ -243,10 +242,7 @@ lemmas mg_sharp_simps = ext.Card_rel_Union ext.Card_rel_cardinal_rel
   ext.csucc_rel_closed ext.Card_rel_Aleph_rel
 
 \<comment> \<open>The following was motivated by the fact that
-    @{thm ext.apply_closed} did not simplify appropriately
-
-    NOTE: @{thm fst_abs} and @{thm snd_abs} not in mgzf
-    interpretation.\<close>
+    @{thm ext.apply_closed} did not simplify appropriately.\<close>
 declare mg_sharp_simps[simp del, simplified setclass_iff, simp]
 
 lemmas mg_sharp_intros = ext.nat_into_M ext.Aleph_rel_closed

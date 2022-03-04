@@ -120,19 +120,6 @@ proof -
     by unfold_locales (simp_all add:replacement_assm_def ground_replacement_assm_def)
 qed
 
-(* NOTE: Correct way of proving this kind of theorems *)
-lemma (in M_Z_basic) M_satT_Zermelo_fms: "M \<Turnstile> \<cdot>Z\<cdot>"
-  using upair_ax Union_ax power_ax extensionality foundation_ax
-    infinity_ax separation_ax sats_ZF_separation_fm_iff
-  unfolding Zermelo_fms_def ZF_fin_def
-  by auto
-
-lemma (in M_ZFC1) M_satT_ZC: "M \<Turnstile> ZC"
-  using upair_ax Union_ax power_ax extensionality foundation_ax
-    infinity_ax separation_ax sats_ZF_separation_fm_iff choice_ax
-  unfolding ZC_def Zermelo_fms_def ZF_fin_def
-  by auto
-
 context G_generic1
 begin
 

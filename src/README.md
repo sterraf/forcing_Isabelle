@@ -25,7 +25,7 @@ The session can be run using the standard Isabelle IDE by
 executing
 ```
 $ cd $FORCING_HOME/src
-$ isabelle jedit -l ZF-Constructible Definitions_Main.thy
+$ isabelle jedit -d . -l ZF-Constructible Definitions_Main.thy
 ```
 
 Building the session

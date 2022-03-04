@@ -1,9 +1,14 @@
-section\<open>Main definitions of the development\<close>
+section\<open>Some demonstrations\<close>
 
 theory Demonstrations
   imports
     Definitions_Main
 begin
+
+txt\<open>The following theory is only intended to explore some details of the
+formalization and to show the appearance of relevant internalized formulas.
+It is \<^bold>\<open>not\<close> intended as the entry point of the session. For that purpose,
+consult \<^theory>\<open>Independence_CH.Definitions_Main\<close>\<close>
 
 locale Demo = M_trivial + M_AC +
   fixes t\<^sub>1 t\<^sub>2
@@ -12,6 +17,14 @@ locale Demo = M_trivial + M_AC +
     and
     power_infty: "power_ax(M)" "M(\<omega>)"
 begin
+
+txt\<open>The next fake lemma is intended to explore the instances of the axiom
+schemes that are needed to build our forcing models. They are categorized as
+plain replacements (using \<^term>\<open>strong_replacement\<close>), “lambda-replacements” with
+using a higher order function, replacements  to perform
+transfinite and general well-founded recursion (using \<^term>\<open>transrec_replacement\<close> and
+\<^term>\<open>wfrec_replacement\<close> respectively) and for the construction of fixpoints
+(using \<^term>\<open>iterates_replacement\<close>). Lastly, separations instances.\<close>
 
 lemma
   assumes
@@ -33,8 +46,8 @@ lemma
   instances of the form \<^term>\<open>\<forall>x[M]. separation(M,P)\<close>\<close>
   oops
 
-(* NOTE: Only for pretty-printing purposes, overrides previous
-  basic notations  *)
+\<comment> \<open>NOTE: Only for pretty-printing purposes, overrides previous
+  fundamental notations\<close>
 no_notation mem (infixl \<open>\<in>\<close> 50)
 no_notation conj  (infixr \<open>\<and>\<close> 35)
 no_notation disj (infixr \<open>\<or>\<close> 30)
@@ -125,11 +138,10 @@ the recursive function \<^term>\<open>incr_bv\<close>. Here we have an apparentl
 exponential bottleneck, since all the propositional connectives (even \<^term>\<open>Neg\<close>)
 duplicate the appearances of \<^term>\<open>incr_bv\<close>.
 
-Not even the negation of an atomic formula can be managed by the system
+Not even the double negation of an atomic formula can be managed by the system.\<close>
+(* 
 
-EDIT: Now (2022) it can!\<close>
-(* exception Size raised (line 183 of "./basis/LibrarySupport.sml") *)
-schematic_goal "forces(\<not>0\<in>1) = ?x"
+schematic_goal "forces(\<not>\<not>0\<in>1) = ?x"
   unfolding forces_def Neg_def
    by (simp add:ren_forces_nand_def ren_forces_forall_def 
       frc_at_fm_def ftype_fm_def
@@ -138,6 +150,9 @@ schematic_goal "forces(\<not>0\<in>1) = ?x"
       is_eclose_fm_def mem_eclose_fm_def eclose_n_fm_def
       is_If_fm_def least_fm_def Collect_fm_def
       fm_definitions incr_bv_Neg incr_bv_Exists)
+(* exception Size raised (line 183 of "./basis/LibrarySupport.sml") *)
+
+*)
 
 (*
 declare is_ContHyp_fm_def[fm_definitions del]

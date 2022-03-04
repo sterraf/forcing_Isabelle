@@ -21,7 +21,7 @@ Running the session with jEdit
 The session can be run using the standard Isabelle IDE by
 executing
 ```
-$ isabelle jedit -l ZF-Constructible Delta_System_Relative.thy
+$ isabelle jedit -d . -l ZF-Constructible Delta_System_Relative.thy
 ```
 
 at the `src` directory. There are 3 other “leaves” of
