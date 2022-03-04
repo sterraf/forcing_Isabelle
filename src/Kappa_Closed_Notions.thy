@@ -391,13 +391,10 @@ proof (intro equalityI; clarsimp simp add:
   moreover from this
   have "map(val(P, G), [\<tau>, h\<^sup>v]) \<in> list(M[G])" "h\<in>M" by (auto dest:transM)
   ultimately
-  have "h = val(P,G,\<tau>)"
-    using truth_lemma[of "\<cdot>0=1\<cdot>" G "[\<tau>, h\<^sup>v]", THEN iffD1] generic
-      Equal arity_typed_function_fm valcheck[OF one_in_G one_in_P]
-    by (auto simp: union_abs2 union_abs1)
-      (* FIXME: same problem as before there is no relation
-        between \<^term>\<open>f\<close> and \<^term>\<open>val(P,G,\<tau>)\<close> *)
-  with \<open> _ = f\<close> \<open>h\<in>M\<close>
+  have "h = f"
+    using truth_lemma[of "\<cdot>0=1\<cdot>" G "[\<tau>, h\<^sup>v]"] generic valcheck[OF one_in_G one_in_P]
+    by (auto simp: ord_simp_union)
+  with \<open>h\<in>M\<close>
   show "f \<in> M" by simp
 qed
 
