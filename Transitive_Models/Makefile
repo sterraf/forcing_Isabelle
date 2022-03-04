@@ -62,7 +62,7 @@ $(SESSION).tar.gz:	html_linked Makefile_distro ROOT README.md
 
 tar:    $(SESSION).tar.gz
 
-$(SESSION)-AFP.tar.gz:    thy_files $(LOCAL_FILES)  ROOT_AFP $(DOCU_FILES)
+$(SESSION)-AFP.tar.gz:    $(LOCAL_FILES)  ROOT_AFP $(DOCU_FILES)
 	rm -rf tmpafp
 	mkdir tmpafp
 	cp $(LOCAL_FILES) tmpafp
