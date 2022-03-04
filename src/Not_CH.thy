@@ -5,9 +5,18 @@ theory Not_CH
     Cardinal_Preservation
 begin
 
-definition
-  Add_subs :: "[i,i] \<Rightarrow> i" where
-  "Add_subs(\<kappa>,\<alpha>) \<equiv> Fn(\<omega>,\<kappa>\<times>\<alpha>,2)"
+txt\<open>We are taking advantage that the poset of finite functions is absolute,
+and thus we work with the unrelativized \<^term>\<open>Fn\<close>. But it would have been more
+appropriate to do the following using the relative \<^term>\<open>Fn_rel\<close>. As it turns
+out, the present theory was developed prior to having \<^term>\<open>Fn\<close> relativized!\<close>
+
+abbreviation
+  Add_subs :: "i \<Rightarrow> i" where
+  "Add_subs(\<kappa>) \<equiv> Fn(\<omega>,\<kappa>\<times>\<omega>,2)"
+
+abbreviation
+  Add_le :: "i \<Rightarrow> i" where
+  "Add_le(\<kappa>) \<equiv> Fnle(\<omega>,\<kappa> \<times> \<omega>,2)"
 
 lemma (in M_aleph) Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
   using nat_into_Ord by simp
@@ -114,8 +123,7 @@ subsection\<open>Cohen forcing is ccc\<close>
 context M_ctm3_AC
 begin
 
-(* FIXME: using notation as if \<^term>\<open>Add_subs\<close> were used *)
-lemma ccc_Add_subs_Aleph_2: "ccc\<^bsup>M\<^esup>(Fn(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2),Fnle(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2))"
+lemma ccc_Add_subs_Aleph_2: "ccc\<^bsup>M\<^esup>(Add_subs(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>),Add_le(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>))"
 proof -
   interpret M_add_reals "##M" "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>"
     by unfold_locales blast
@@ -595,11 +603,11 @@ proof -
   then
   interpret M_ctm4_AC M enum by unfold_locales
   interpret cohen_data \<omega> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 2 by unfold_locales auto
-  have "Fn(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2) \<in> M" "Fnle(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2) \<in> M"
+  have "Add \<in> M" "Add_le(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>) \<in> M"
     using nat_into_M Aleph_rel_closed M_nat cartprod_closed Fn_nat_closed Fnle_nat_closed
     by simp_all
   then
-  interpret forcing_data1 "Fn(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2)" "Fnle(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>,2)" 0 M enum
+  interpret forcing_data1 "Add" "Add_le(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)" 0 M enum
     by unfold_locales simp_all
   obtain G where "M_generic(G)"
     using generic_filter_existence[OF one_in_P]

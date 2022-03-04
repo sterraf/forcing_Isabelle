@@ -1,22 +1,18 @@
 The Independence of the CH in Isabelle/ZF
 =========================================
 
-This is a development version. It is organized in two sessions:
+This is a development version.
 
-  * `Transitive_Models` where we extend Paulson's `ZF-Constructible` library, and
-  * `Independence_CH` (in the directory `src`) where we develop the theory of forcing.
+We redeveloped our formalization of forcing in the set theory framework of
+Isabelle/ZF. Under the assumption of the existence of a countable
+transitive model of ZFC, we construct proper generic extensions
+that satisfy the Continuum Hypothesis and its negation.
+
+The source theory files are located in the `src` directory.
 
 An HMTL version can be found at
 https://cs.famaf.unc.edu.ar/~pedro/forcing/Independence_CH/
 
-Prerequisite
-============
-In order to edit/browse the session `Independence_CH` in jEdit you need 
-to add the directory of `Transitive_Models` as a component (let us suppose
-that $FORCING_HOME is the directory with `Transitive_Models` and `src`):
-```
-$ isabelle components -u $FORCING_HOME/Transitive_Models
-```
 
 Running the session with jEdit
 ==============================
@@ -24,9 +20,9 @@ Running the session with jEdit
 The session can be run using the standard Isabelle IDE by
 executing
 ```
-$ cd $FORCING_HOME/src
 $ isabelle jedit -d . -l ZF-Constructible Definitions_Main.thy
 ```
+at the `src` directory.
 
 Building the session
 ====================
