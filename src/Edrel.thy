@@ -8,7 +8,8 @@ begin
 subsection\<open>The well-founded relation \<^term>\<open>ed\<close>\<close>
 
 lemma eclose_sing : "x \<in> eclose(a) \<Longrightarrow> x \<in> eclose({a})"
-  by(rule subsetD[OF mem_eclose_subset],simp+)
+  using subsetD[OF mem_eclose_subset]
+  by simp
 
 lemma ecloseE :
   assumes  "x \<in> eclose(A)"
@@ -46,7 +47,7 @@ lemma in_eclose_sing :
   shows "x \<in> eclose({z})"
 proof -
   from \<open>x\<in>eclose({a})\<close>
-  consider (eq) "x=a" | (lt) "x\<in>eclose(a)"
+  consider "x=a" | "x\<in>eclose(a)"
     using eclose_singE by auto
   then
   show ?thesis
@@ -77,13 +78,11 @@ definition
   edrel :: "i \<Rightarrow> i" where
   "edrel(A) \<equiv> Rrel(ed,A)"
 
-
 lemma edI[intro!]: "t\<in>domain(x) \<Longrightarrow> ed(t,x)"
   unfolding ed_def .
 
 lemma edD[dest!]: "ed(t,x) \<Longrightarrow> t\<in>domain(x)"
   unfolding ed_def .
-
 
 lemma rank_ed:
   assumes "ed(y,x)"
@@ -124,28 +123,38 @@ lemma field_edrel : "field(edrel(A))\<subseteq>A"
 
 lemma edrel_sub_memrel: "edrel(A) \<subseteq> trancl(Memrel(eclose(A)))"
 proof
-  fix z
-  assume
-    "z\<in>edrel(A)"
-  then obtain x y where
-    Eq1:   "x\<in>A" "y\<in>A" "z=\<langle>x,y\<rangle>" "x\<in>domain(y)"
-    using edrelD
-    by blast
-  then obtain u v where
-    Eq2:   "x\<in>u" "u\<in>v" "v\<in>y"
-    unfolding domain_def Pair_def by auto
-  with Eq1 have
-    Eq3:   "x\<in>eclose(A)" "y\<in>eclose(A)" "u\<in>eclose(A)" "v\<in>eclose(A)"
-    by (auto, rule_tac [3-4] ecloseD, rule_tac [3] ecloseD, simp_all add:arg_into_eclose)
   let
     ?r="trancl(Memrel(eclose(A)))"
-  from Eq2 and Eq3 have
-    "\<langle>x,u\<rangle>\<in>?r" "\<langle>u,v\<rangle>\<in>?r" "\<langle>v,y\<rangle>\<in>?r"
+  fix z
+  assume "z\<in>edrel(A)"
+  then
+  obtain x y where "x\<in>A" "y\<in>A" "z=\<langle>x,y\<rangle>" "x\<in>domain(y)"
+    using edrelD
+    by blast
+  moreover from this
+  obtain u v where "x\<in>u" "u\<in>v" "v\<in>y"
+    unfolding domain_def Pair_def by auto
+  moreover from calculation
+  have "x\<in>eclose(A)" "y\<in>eclose(A)" "y\<subseteq>eclose(A)"
+    using arg_into_eclose Transset_eclose[unfolded Transset_def]
+    by simp_all
+  moreover from calculation
+  have "v\<in>eclose(A)"
+    by auto
+  moreover from calculation
+  have "u\<in>eclose(A)"
+    using Transset_eclose[unfolded Transset_def]
+    by auto
+  moreover from calculation
+  have"\<langle>x,u\<rangle>\<in>?r" "\<langle>u,v\<rangle>\<in>?r" "\<langle>v,y\<rangle>\<in>?r"
     by (auto simp add: r_into_trancl)
-  then  have
-    "\<langle>x,y\<rangle>\<in>?r"
-    by (rule_tac trancl_trans, rule_tac [2] trancl_trans, simp)
-  with Eq1 show "z\<in>?r" by simp
+  moreover from this
+  have "\<langle>x,y\<rangle>\<in>?r"
+    using trancl_trans[OF _ trancl_trans[of _ v _ y]]
+    by simp
+  ultimately
+  show "z\<in>?r"
+    by simp
 qed
 
 lemma wf_edrel : "wf(edrel(A))"
@@ -170,7 +179,7 @@ next
 qed
 
 lemma dom_under_edrel_eclose: "edrel(eclose({x})) -`` {x} = domain(x)"
-proof
+proof(intro equalityI)
   show "edrel(eclose({x})) -`` {x} \<subseteq> domain(x)"
     unfolding edrel_def Rrel_def ed_def
     by auto
@@ -187,7 +196,6 @@ lemma ed_eclose : "\<langle>y,z\<rangle> \<in> edrel(A) \<Longrightarrow> y \<in
 lemma tr_edrel_eclose : "\<langle>y,z\<rangle> \<in> edrel(eclose({x}))^+ \<Longrightarrow> y \<in> eclose(z)"
   by(rule trancl_induct,(simp add: ed_eclose mem_eclose_trans)+)
 
-
 lemma restrict_edrel_eq :
   assumes "z \<in> domain(x)"
   shows "edrel(eclose({x})) \<inter> eclose({z})\<times>eclose({z}) = edrel(eclose({z}))"
@@ -196,33 +204,39 @@ proof(intro equalityI subsetI)
   let ?ez="eclose({z})"
   let ?rr="?ec(x) \<inter> ?ez \<times> ?ez"
   fix y
-  assume yr:"y \<in> ?rr"
-  with yr obtain a b where 1:"\<langle>a,b\<rangle> \<in> ?rr" "a \<in> ?ez" "b \<in> ?ez" "\<langle>a,b\<rangle> \<in> ?ec(x)" "y=\<langle>a,b\<rangle>"
+  assume "y \<in> ?rr"
+  then
+  obtain a b where "\<langle>a,b\<rangle> \<in> ?rr" "a \<in> ?ez" "b \<in> ?ez" "\<langle>a,b\<rangle> \<in> ?ec(x)" "y=\<langle>a,b\<rangle>"
     by blast
-  moreover
-  from this
-  have "a \<in> domain(b)" using edrelD by blast
+  moreover from this
+  have "a \<in> domain(b)"
+    using edrelD by blast
   ultimately
-  show "y \<in> edrel(eclose({z}))" by blast
+  show "y \<in> edrel(eclose({z}))"
+    by blast
 next
   let ?ec="\<lambda> y . edrel(eclose({y}))"
   let ?ez="eclose({z})"
   let ?rr="?ec(x) \<inter> ?ez \<times> ?ez"
   fix y
-  assume yr:"y \<in> edrel(?ez)"
-  then obtain a b where "a \<in> ?ez" "b \<in> ?ez" "y=\<langle>a,b\<rangle>" "a \<in> domain(b)"
+  assume "y \<in> edrel(?ez)"
+  then
+  obtain a b where "a \<in> ?ez" "b \<in> ?ez" "y=\<langle>a,b\<rangle>" "a \<in> domain(b)"
     using edrelD by blast
   moreover
   from this assms
-  have "z \<in> eclose(x)" using in_dom_in_eclose by simp
+  have "z \<in> eclose(x)"
+    using in_dom_in_eclose by simp
   moreover
   from assms calculation
-  have "a \<in> eclose({x})" "b \<in> eclose({x})" using in_eclose_sing by simp_all
-  moreover
-  from this \<open>a\<in>domain(b)\<close>
-  have "\<langle>a,b\<rangle> \<in> edrel(eclose({x}))" by blast
+  have "a \<in> eclose({x})" "b \<in> eclose({x})"
+    using in_eclose_sing by simp_all
+  moreover from calculation
+  have "\<langle>a,b\<rangle> \<in> edrel(eclose({x}))"
+    by blast
   ultimately
-  show "y \<in> ?rr" by simp
+  show "y \<in> ?rr"
+    by simp
 qed
 
 lemma tr_edrel_subset :
@@ -231,11 +245,13 @@ lemma tr_edrel_subset :
 proof(intro subsetI)
   let ?r="\<lambda> x . edrel(eclose({x}))"
   fix y
-  assume  "y \<in> tr_down(?r(x),z)"
+  assume "y \<in> tr_down(?r(x),z)"
   then
-  have "\<langle>y,z\<rangle> \<in> ?r(x)^+" using tr_downD by simp
+  have "\<langle>y,z\<rangle> \<in> ?r(x)^+"
+    using tr_downD by simp
   with assms
-  show "y \<in> eclose({z})" using tr_edrel_eclose eclose_sing by simp
+  show "y \<in> eclose({z})"
+    using tr_edrel_eclose eclose_sing by simp
 qed
 
 end
