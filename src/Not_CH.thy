@@ -629,7 +629,7 @@ proof -
   ultimately
   show ?thesis
     using Ord_MG_iff MG_eqpoll_nat satT_ground_repl_fm_imp_satT_ZF_replacement_fm[of \<Phi>]
-    by (rule_tac x="M[G]" in exI, auto)
+    by (rule_tac x="M[G]" in exI, blast)
 qed
 
 lemma ZF_replacement_overhead_sub_ZFC: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead} \<subseteq> ZFC"

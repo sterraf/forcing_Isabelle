@@ -238,6 +238,12 @@ end \<comment> \<open>\<^locale>\<open>M_add_reals\<close>\<close>
 (* MOVE THIS to some appropriate place. Notice that in Forcing_Notions
 we don't import anything relative. *)
 relativize relational "compat_in" "is_compat_in" external
+synthesize "compat_in" from_definition "is_compat_in" assuming "nonempty"
+context
+  notes Un_assoc[simp] Un_trasposition_aux2[simp]
+begin
+arity_theorem for "compat_in_fm"
+end
 
 lemma (in M_trivial) compat_in_abs[absolut]:
   assumes
