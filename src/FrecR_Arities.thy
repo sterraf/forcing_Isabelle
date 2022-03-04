@@ -7,16 +7,16 @@ context
   notes FOL_arities[simp]
 begin
 
+arity_theorem intermediate for "fst_fm"
 lemma arity_fst_fm [arity] :
   "\<lbrakk>x\<in>nat ; t\<in>nat\<rbrakk> \<Longrightarrow> arity(fst_fm(x,t)) = succ(x) \<union> succ(t)"
-  unfolding fst_fm_def
-  using arity_pair_fm arity_empty_fm union_abs2 pred_Un_distrib
+  using arity_fst_fm'
   by auto
 
+arity_theorem intermediate for "snd_fm"
 lemma arity_snd_fm [arity] :
   "\<lbrakk>x\<in>nat ; t\<in>nat\<rbrakk> \<Longrightarrow> arity(snd_fm(x,t)) = succ(x) \<union> succ(t)"
-  unfolding snd_fm_def
-  using arity_pair_fm arity_empty_fm union_abs2 pred_Un_distrib
+  using arity_snd_fm'
   by auto
 
 lemma arity_snd_snd_fm [arity] :
