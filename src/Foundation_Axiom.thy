@@ -21,14 +21,17 @@ proof -
     fix x
     assume "x\<in>M[G]" "\<exists>y\<in>M[G] . y\<in>x"
     then
-    have "\<exists>y\<in>M[G] . y\<in>x\<inter>M[G]" by simp
+    have "\<exists>y\<in>M[G] . y\<in>x\<inter>M[G]"
+      by simp
     then
     obtain y where "y\<in>x\<inter>M[G]" "\<forall>z\<in>y. z \<notin> x\<inter>M[G]"
       using foundation[of "x\<inter>M[G]"]  by blast
     then
-    have "\<exists>y\<in>M[G] . y \<in> x \<and> (\<forall>z\<in>M[G] . z \<notin> x \<or> z \<notin> y)"by auto
+    have "\<exists>y\<in>M[G] . y \<in> x \<and> (\<forall>z\<in>M[G] . z \<notin> x \<or> z \<notin> y)"
+      by auto
   }
-  then show ?thesis
+  then
+  show ?thesis
     unfolding foundation_ax_def by auto
 qed
 
