@@ -1,8 +1,6 @@
 The Independence of the CH in Isabelle/ZF
 =========================================
 
-This is a development version.
-
 We redeveloped our formalization of forcing in the set theory framework of
 Isabelle/ZF. Under the assumption of the existence of a countable
 transitive model of ZFC, we construct proper generic extensions
