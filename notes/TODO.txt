@@ -8,6 +8,16 @@ extra assumption in lam_replacement_Collect.
 Miguel, 2022-02-28: I think I've tried and I couldn't.
 
 
+Unaddressed issues in Transitive_Models
+=======================================
+
+- Duplication of
+    declare [[syntax_ambiguity_warning = false]]
+  in Discipline_Base and Discipline_Cardinal.
+
+- Enable more "mem_model" patterns for iff_sats.
+
+
 General Tasks
 =============
 
