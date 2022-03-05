@@ -20,7 +20,7 @@ Running the session with jEdit
 The session can be run using the standard Isabelle IDE by
 executing
 ```
-$ isabelle jedit -d . -l ZF-Constructible Definitions_Main.thy
+$ isabelle jedit -l Transitive_Models -d . Definitions_Main.thy
 ```
 at the `src` directory.
 
