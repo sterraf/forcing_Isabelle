@@ -83,16 +83,16 @@ lemma sats_check_fm :
   assumes
     "o\<in>nat" "x\<in>nat" "z\<in>nat" "env\<in>list(M)" "0\<in>M"
   shows
-    "sats(M, check_fm(x,o,z), env) \<longleftrightarrow> is_check(##M,nth(o,env),nth(x,env),nth(z,env))"
+    "(M , env \<Turnstile> check_fm(x,o,z)) \<longleftrightarrow> is_check(##M,nth(o,env),nth(x,env),nth(z,env))"
 proof -
   have sats_is_Hcheck_fm:
     "\<And>a0 a1 a2 a3 a4 a6. \<lbrakk> a0\<in>M; a1\<in>M; a2\<in>M; a3\<in>M; a4\<in>M;a6 \<in>M\<rbrakk> \<Longrightarrow>
          is_Hcheck(##M,a6,a2, a1, a0) \<longleftrightarrow>
-         sats(M, is_Hcheck_fm(6,2,1,0), [a0,a1,a2,a3,a4,r,a6]@env)" if "r\<in>M" for r
+         (M , [a0,a1,a2,a3,a4,r,a6]@env \<Turnstile> is_Hcheck_fm(6,2,1,0))" if "r\<in>M" for r
     using that assms
     by simp
   then
-  have "sats(M, is_wfrec_fm(is_Hcheck_fm(6+\<^sub>\<omega>o,2,1,0),0,1+\<^sub>\<omega>x,1+\<^sub>\<omega>z),Cons(r,env))
+  have "(M , [r]@env \<Turnstile> is_wfrec_fm(is_Hcheck_fm(6+\<^sub>\<omega>o,2,1,0),0,1+\<^sub>\<omega>x,1+\<^sub>\<omega>z))
         \<longleftrightarrow> is_wfrec(##M,is_Hcheck(##M,nth(o,env)),r,nth(x,env),nth(z,env))"
     if "r\<in>M" for r
     using that assms is_wfrec_iff_sats'[symmetric]
@@ -254,15 +254,15 @@ definition
 synthesize "is_tuple" from_definition
 arity_theorem for "is_tuple_fm"
 
-subsection\<open>Definition of \<^term>\<open>forces\<close> for equality and membership\<close>
 subsection\<open>Definition of Forces\<close>
 
+subsubsection\<open>Definition of \<^term>\<open>forces\<close> for equality and membership\<close>
 text\<open>$p\forces \tau = \theta$ if every $q\leqslant p$ both $q\forces \sigma \in \tau$
 and $q\forces \sigma \in \theta$ for every $\sigma \in \dom(\tau)\cup \dom(\theta)$.\<close>
 definition
   eq_case :: "[i,i,i,i,i,i] \<Rightarrow> o" where
-  "eq_case(t1,t2,p,P,leq,f) \<equiv> \<forall>s. s\<in>domain(t1) \<union> domain(t2) \<longrightarrow>
-      (\<forall>q. q\<in>P \<and> \<langle>q,p\<rangle>\<in>leq \<longrightarrow> (f`\<langle>1,s,t1,q\<rangle>=1  \<longleftrightarrow> f`\<langle>1,s,t2,q\<rangle> =1))"
+  "eq_case(\<tau>,\<theta>,p,P,leq,f) \<equiv> \<forall>\<sigma>. \<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<longrightarrow>
+      (\<forall>q. q\<in>P \<and> \<langle>q,p\<rangle>\<in>leq \<longrightarrow> (f`\<langle>1,\<sigma>,\<tau>,q\<rangle>=1  \<longleftrightarrow> f`\<langle>1,\<sigma>,\<theta>,q\<rangle> =1))"
 
 relativize "eq_case" "is_eq_case"
 synthesize "eq_case" from_definition "is_eq_case"
@@ -273,8 +273,8 @@ text\<open>$p\forces \tau \in \theta$ if for every $v\leqslant p$
   $q\forces \pi = \sigma$.\<close>
 definition
   mem_case :: "[i,i,i,i,i,i] \<Rightarrow> o" where
-  "mem_case(t1,t2,p,P,leq,f) \<equiv> \<forall>v\<in>P. \<langle>v,p\<rangle>\<in>leq \<longrightarrow>
-    (\<exists>q. \<exists>s. \<exists>r. r\<in>P \<and> q\<in>P \<and> \<langle>q,v\<rangle>\<in>leq \<and> \<langle>s,r\<rangle> \<in> t2 \<and> \<langle>q,r\<rangle>\<in>leq \<and>  f`\<langle>0,t1,s,q\<rangle> = 1)"
+  "mem_case(\<tau>,\<theta>,p,P,leq,f) \<equiv> \<forall>v\<in>P. \<langle>v,p\<rangle>\<in>leq \<longrightarrow>
+    (\<exists>q. \<exists>\<sigma>. \<exists>r. r\<in>P \<and> q\<in>P \<and> \<langle>q,v\<rangle>\<in>leq \<and> \<langle>\<sigma>,r\<rangle> \<in> \<theta> \<and> \<langle>q,r\<rangle>\<in>leq \<and>  f`\<langle>0,\<tau>,\<sigma>,q\<rangle> = 1)"
 
 relativize "mem_case" "is_mem_case"
 synthesize "mem_case" from_definition "is_mem_case"
@@ -298,21 +298,20 @@ lemma arity_mem_case_fm[arity] :
   using assms arity_mem_case_fm'
   by auto
 
-
 definition
   Hfrc :: "[i,i,i,i] \<Rightarrow> o" where
-  "Hfrc(P,leq,fnnc,f) \<equiv> \<exists>ft. \<exists>n1. \<exists>n2. \<exists>c. c\<in>P \<and> fnnc = \<langle>ft,n1,n2,c\<rangle> \<and>
-     (  ft = 0 \<and>  eq_case(n1,n2,c,P,leq,f)
-      \<or> ft = 1 \<and> mem_case(n1,n2,c,P,leq,f))"
+  "Hfrc(P,leq,fnnc,f) \<equiv> \<exists>ft. \<exists>\<tau>. \<exists>\<theta>. \<exists>p. p\<in>P \<and> fnnc = \<langle>ft,\<tau>,\<theta>,p\<rangle> \<and>
+     (  ft = 0 \<and>  eq_case(\<tau>,\<theta>,p,P,leq,f)
+      \<or> ft = 1 \<and> mem_case(\<tau>,\<theta>,p,P,leq,f))"
 
 relativize "Hfrc" "is_Hfrc"
 synthesize "Hfrc" from_definition "is_Hfrc"
 
 definition
   is_Hfrc_at :: "[i\<Rightarrow>o,i,i,i,i,i] \<Rightarrow> o" where
-  "is_Hfrc_at(M,P,leq,fnnc,f,z) \<equiv>
-            (empty(M,z) \<and> \<not> is_Hfrc(M,P,leq,fnnc,f))
-          \<or> (number1(M,z) \<and> is_Hfrc(M,P,leq,fnnc,f))"
+  "is_Hfrc_at(M,P,leq,fnnc,f,b) \<equiv>
+            (empty(M,b) \<and> \<not> is_Hfrc(M,P,leq,fnnc,f))
+          \<or> (number1(M,b) \<and> is_Hfrc(M,P,leq,fnnc,f))"
 
 synthesize "Hfrc_at" from_definition "is_Hfrc_at"
 arity_theorem intermediate for "Hfrc_fm"
@@ -327,7 +326,7 @@ lemma arity_Hfrc_fm[arity] :
 
 arity_theorem for "Hfrc_at_fm"
 
-subsection\<open>The well-founded relation \<^term>\<open>forcerel\<close>\<close>
+subsubsection\<open>The well-founded relation \<^term>\<open>forcerel\<close>\<close>
 definition
   forcerel :: "i \<Rightarrow> i \<Rightarrow> i" where
   "forcerel(P,x) \<equiv> frecrel(names_below(P,x))^+"
@@ -365,20 +364,21 @@ lemma arity_frc_at_fm[arity] :
   shows "arity(frc_at_fm(p,l,x,z)) = succ(p) \<union> succ(l) \<union> succ(x) \<union> succ(z)"
 proof -
   let ?\<phi> = "Hfrc_at_fm(6 +\<^sub>\<omega> p, 6 +\<^sub>\<omega> l, 2, 1, 0)"
-  from assms
+  note assms
+  moreover from this
   have  "arity(?\<phi>) = (7+\<^sub>\<omega>p) \<union> (7+\<^sub>\<omega>l)" "?\<phi> \<in> formula"
     using arity_Hfrc_at_fm ord_simp_union
     by auto
-  with assms
-  have W: "arity(is_wfrec_fm(?\<phi>, 0, succ(x), succ(z))) = 2+\<^sub>\<omega>p \<union> (2+\<^sub>\<omega>l) \<union> (2+\<^sub>\<omega>x) \<union> (2+\<^sub>\<omega>z)"
+  moreover from calculation
+  have "arity(is_wfrec_fm(?\<phi>, 0, succ(x), succ(z))) = 2+\<^sub>\<omega>p \<union> (2+\<^sub>\<omega>l) \<union> (2+\<^sub>\<omega>x) \<union> (2+\<^sub>\<omega>z)"
     using arity_is_wfrec_fm[OF \<open>?\<phi>\<in>_\<close> _ _ _ _ \<open>arity(?\<phi>) = _\<close>] pred_Un_distrib pred_succ_eq
       union_abs1
     by auto
-  from assms
-  have "arity(is_forcerel_fm(succ(p),succ(x),0)) = succ(succ(p)) \<union> succ(succ(x))"
+  moreover from assms
+  have "arity(is_forcerel_fm(succ(p),succ(x),0)) = 2+\<^sub>\<omega>p \<union> (2+\<^sub>\<omega>x)"
     using arity_is_forcerel_fm ord_simp_union
     by auto
-  with W assms
+  ultimately
   show ?thesis
     unfolding frc_at_fm_def
     using arity_is_forcerel_fm pred_Un_distrib
@@ -389,36 +389,39 @@ lemma sats_frc_at_fm :
   assumes
     "p\<in>nat" "l\<in>nat" "i\<in>nat" "j\<in>nat" "env\<in>list(A)" "i < length(env)" "j < length(env)"
   shows
-    "sats(A,frc_at_fm(p,l,i,j),env) \<longleftrightarrow>
+    "(A , env \<Turnstile> frc_at_fm(p,l,i,j)) \<longleftrightarrow>
      is_frc_at(##A,nth(p,env),nth(l,env),nth(i,env),nth(j,env))"
 proof -
   {
     fix r pp ll
     assume "r\<in>A"
-    have 0:"is_Hfrc_at(##A,nth(p,env),nth(l,env),a2, a1, a0) \<longleftrightarrow>
-         sats(A, Hfrc_at_fm(6+\<^sub>\<omega>p,6+\<^sub>\<omega>l,2,1,0), [a0,a1,a2,a3,a4,r]@env)"
+    have "is_Hfrc_at(##A,nth(p,env),nth(l,env),a2, a1, a0) \<longleftrightarrow>
+         (A, [a0,a1,a2,a3,a4,r]@env \<Turnstile> Hfrc_at_fm(6+\<^sub>\<omega>p,6+\<^sub>\<omega>l,2,1,0))"
       if "a0\<in>A" "a1\<in>A" "a2\<in>A" "a3\<in>A" "a4\<in>A" for a0 a1 a2 a3 a4
       using  that assms \<open>r\<in>A\<close>
         Hfrc_at_iff_sats[of "6+\<^sub>\<omega>p" "6+\<^sub>\<omega>l" 2 1 0 "[a0,a1,a2,a3,a4,r]@env" A]  by simp
-    have "sats(A,is_wfrec_fm(Hfrc_at_fm(6 +\<^sub>\<omega> p, 6 +\<^sub>\<omega> l, 2, 1, 0), 0, succ(i), succ(j)),[r]@env) \<longleftrightarrow>
+    with \<open>r\<in>A\<close>
+    have "(A,[r]@env \<Turnstile> is_wfrec_fm(Hfrc_at_fm(6+\<^sub>\<omega>p, 6+\<^sub>\<omega>l,2,1,0),0, i+\<^sub>\<omega>1, j+\<^sub>\<omega>1)) \<longleftrightarrow>
          is_wfrec(##A, is_Hfrc_at(##A, nth(p,env), nth(l,env)), r,nth(i, env), nth(j, env))"
-      using assms \<open>r\<in>A\<close>
-        sats_is_wfrec_fm[OF 0[simplified]]
+      using assms sats_is_wfrec_fm
       by simp
   }
   moreover
-  have "sats(A, is_forcerel_fm(succ(p), succ(i), 0), Cons(r, env)) \<longleftrightarrow>
+  have "(A, Cons(r, env) \<Turnstile> is_forcerel_fm(succ(p), succ(i), 0)) \<longleftrightarrow>
         is_forcerel(##A,nth(p,env),nth(i,env),r)" if "r\<in>A" for r
-    using assms sats_is_forcerel_fm that by simp
+    using assms sats_is_forcerel_fm that
+    by simp
   ultimately
-  show ?thesis unfolding is_frc_at_def frc_at_fm_def
-    using assms by simp
+  show ?thesis
+    unfolding is_frc_at_def frc_at_fm_def
+    using assms
+    by simp
 qed
 
 lemma frc_at_fm_iff_sats:
   assumes "nth(i,env) = w" "nth(j,env) = x" "nth(k,env) = y" "nth(l,env) = z"
     "i \<in> nat" "j \<in> nat" "k \<in> nat" "l\<in>nat" "env \<in> list(A)" "k<length(env)" "l<length(env)"
-  shows "is_frc_at(##A, w, x, y,z) \<longleftrightarrow> sats(A, frc_at_fm(i,j,k,l), env)"
+  shows "is_frc_at(##A, w, x, y,z) \<longleftrightarrow> (A , env \<Turnstile> frc_at_fm(i,j,k,l))"
   using assms sats_frc_at_fm
   by simp
 
@@ -529,7 +532,7 @@ qed
 
 lemma sats_ren_forces_nand:
   "[q,P,leq,o,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow>
-   sats(M, ren_forces_nand(\<phi>),[q,p,P,leq,o] @ env) \<longleftrightarrow> sats(M, \<phi>,[q,P,leq,o] @ env)"
+   (M, [q,p,P,leq,o] @ env \<Turnstile> ren_forces_nand(\<phi>)) \<longleftrightarrow> (M, [q,P,leq,o] @ env \<Turnstile> \<phi>)"
   unfolding ren_forces_nand_def
   using sats_incr_bv_iff [of _ _ M _ "[q]"]
   by simp
@@ -588,7 +591,7 @@ lemma ren_forces_forall_type[TC] :
 
 lemma sats_ren_forces_forall :
   "[x,P,leq,o,p] @ env \<in> list(M) \<Longrightarrow> \<phi>\<in>formula \<Longrightarrow>
-    sats(M, ren_forces_forall(\<phi>),[x,p,P,leq,o] @ env) \<longleftrightarrow> sats(M, \<phi>,[p,P,leq,o,x] @ env)"
+    (M, [x,p,P,leq,o] @ env \<Turnstile> ren_forces_forall(\<phi>)) \<longleftrightarrow> (M, [p,P,leq,o,x] @ env \<Turnstile> \<phi>)"
   unfolding ren_forces_forall_def
   using sats_incr_bv_iff [of _ _ M _ "[p,P,leq,o,x]"]
   by simp
@@ -701,7 +704,7 @@ next
       from Forall False
       have "arity(?\<phi>') = 5 \<union> arity(forces'(\<phi>))"
         "arity(forces'(\<phi>)) \<le> 5 +\<^sub>\<omega> arity(\<phi>)"
-        "4 \<le> succ(succ(succ(arity(\<phi>))))"
+        "4 \<le> 3+\<^sub>\<omega>arity(\<phi>)"
         using Ord_0_lt arity_ren_forces_all
           le_trans[OF _ add_le_mono[of 4 5, OF _ le_refl]]
         by auto
@@ -711,7 +714,7 @@ next
       with \<open>\<phi>\<in>_\<close> \<open>arity(?\<phi>') = 5 \<union> _\<close>
       show ?thesis
         using pred_Un_distrib succ_pred_eq[OF _ \<open>arity(\<phi>)\<noteq>0\<close>]
-          pred_mono[OF _ Forall(2)] Un_le[OF \<open>4\<le>succ(_)\<close>]
+          pred_mono[OF _ Forall(2)] Un_le[OF \<open>4\<le>3+\<^sub>\<omega>arity(\<phi>)\<close>]
         by simp
     qed
   qed
@@ -743,7 +746,7 @@ schematic_goal arity_rename_split_fm: "\<phi>\<in>formula \<Longrightarrow> arit
 
 lemma arity_rename_split_fm_le:
   assumes "\<phi>\<in>formula"
-  shows "arity(rename_split_fm(\<phi>)) \<le> 8 \<union> (arity(\<phi>) +\<^sub>\<omega> 6)"
+  shows "arity(rename_split_fm(\<phi>)) \<le> 8 \<union> (6 +\<^sub>\<omega> arity(\<phi>))"
 proof -
   from assms
   have arity_forces_6: "\<not> 1 < arity(\<phi>) \<Longrightarrow> 6 \<le> n \<Longrightarrow> arity(forces(\<phi>)) \<le> n" for n
@@ -769,7 +772,7 @@ proof -
       arity_forces[of \<phi>, THEN le_trans, OF _ le_succ, THEN le_trans, OF _ _ le_succ]
     unfolding rename_split_fm_def
     by (simp add:arity Un_assoc[symmetric] union_abs1 arity_forces[of \<phi>] forces_type)
-      (subst arity_incr_bv_lemma; auto simp: arity ord_simp_union forces_type trivial_arities)+
+      ((subst arity_incr_bv_lemma; auto simp: arity ord_simp_union forces_type trivial_arities)+)
 qed
 
 definition body_ground_repl_fm where
@@ -800,14 +803,14 @@ proof -
     1 \<union> pred(pred(8 \<union> (arity(\<phi>) +\<^sub>\<omega>6 )))"
     by auto
   also from \<open>\<phi>\<in>formula\<close>
-  have "1 \<union> pred(pred(8 \<union> (arity(\<phi>) +\<^sub>\<omega>6 ))) \<le> 6 \<union> (succ(succ(succ(succ(arity(\<phi>))))))"
+  have "1 \<union> pred(pred(8 \<union> (arity(\<phi>) +\<^sub>\<omega>6 ))) \<le> 6 \<union> (4+\<^sub>\<omega>arity(\<phi>))"
     by (auto simp:pred_Un_distrib Un_assoc[symmetric] ord_simp_union)
   finally
   show ?thesis
     using  \<open>\<phi>\<in>formula\<close> unfolding body_ground_repl_fm_def
-    apply (simp add:arity pred_Un_distrib, subst arity_transrec_fm[of "is_HVfrom_fm(8,2,1,0)" 3 1])
-         apply  (simp add:arity pred_Un_distrib,simp_all)
-    by (auto simp add:eq1 arity_is_HVfrom_fm[of 8 2 1 0])
+    by (simp add:arity pred_Un_distrib, subst arity_transrec_fm[of "is_HVfrom_fm(8,2,1,0)" 3 1])
+      (simp add:arity pred_Un_distrib,simp_all,
+        auto simp add:eq1 arity_is_HVfrom_fm[of 8 2 1 0])
 qed
 
 definition ground_repl_fm where
@@ -893,10 +896,7 @@ definition is_order_body
 synthesize "is_order_body" from_definition assuming "nonempty"
 
 definition omap_wfrec_body where
-  "omap_wfrec_body(A,r) \<equiv> (\<cdot>\<exists>\<cdot>image_fm(2, 0, 1) \<and>
-               pred_set_fm
-                (succ(succ(succ(succ(succ(succ(succ(succ(succ(A))))))))), 3,
-                 succ(succ(succ(succ(succ(succ(succ(succ(succ(r))))))))), 0) \<cdot>\<cdot>)"
+  "omap_wfrec_body(A,r) \<equiv> (\<cdot>\<exists>\<cdot>image_fm(2, 0, 1) \<and> pred_set_fm(9+\<^sub>\<omega>A, 3,9+\<^sub>\<omega>r, 0) \<cdot>\<cdot>)"
 
 lemma type_omap_wfrec_body_fm :"A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> omap_wfrec_body(A,r)\<in>formula"
   unfolding omap_wfrec_body_def by simp
@@ -907,8 +907,7 @@ lemma arity_omap_wfrec_aux : "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrighta
   by (simp add:FOL_arities, auto simp add:Un_assoc[symmetric] union_abs1)
 
 lemma arity_omap_wfrec: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>
-  arity(is_wfrec_fm(omap_wfrec_body(A,r),succ(succ(succ(r))), 1, 0)) =
-  (4+\<^sub>\<omega>A) \<union> (4+\<^sub>\<omega>r)"
+  arity(is_wfrec_fm(omap_wfrec_body(A,r),r+\<^sub>\<omega>3, 1, 0)) = (4+\<^sub>\<omega>A) \<union> (4+\<^sub>\<omega>r)"
   using Arities.arity_is_wfrec_fm[OF _ _ _ _ _ arity_omap_wfrec_aux,of A r "3+\<^sub>\<omega>r" 1 0]
     pred_Un_distrib union_abs1 union_abs2 type_omap_wfrec_body_fm
   by auto
@@ -1010,7 +1009,7 @@ definition eclose_repl1_intf_fm where "eclose_repl1_intf_fm \<equiv> (\<cdot>\<e
 definition replacement_assm where
   "replacement_assm(M,env,\<phi>) \<equiv> \<phi> \<in> formula \<longrightarrow> env \<in> list(M) \<longrightarrow>
   arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env) \<longrightarrow>
-    strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,[x,y] @ env))"
+    strong_replacement(##M,\<lambda>x y. (M , [x,y]@env \<Turnstile> \<phi>))"
 
 definition ground_replacement_assm where
   "ground_replacement_assm(M,env,\<phi>) \<equiv> replacement_assm(M,env,ground_repl_fm(\<phi>))"

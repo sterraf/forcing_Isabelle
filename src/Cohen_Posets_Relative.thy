@@ -88,7 +88,8 @@ proof -
   note assms
   moreover from this
   obtain f n where "f\<in>bij\<^bsup>M\<^esup>(A,n)" "n\<in>\<omega>" "A \<approx>\<^bsup>M\<^esup> n"
-    using lesspoll_nat_is_Finite using Finite_rel_def[of M A] by auto
+    using lesspoll_nat_is_Finite Finite_rel_def[of M A]
+    by auto
   moreover from calculation
   have "A \<lesssim>\<^bsup>M\<^esup> \<omega>"
     using lesspoll_nat_is_Finite Infinite_imp_nats_lepoll_rel[of \<omega> n]
@@ -98,14 +99,16 @@ proof -
   have "\<not> g \<in> bij\<^bsup>M\<^esup>(A,\<omega>)" for g
     using mem_bij_rel unfolding lesspoll_def by auto
   ultimately
-  show ?thesis unfolding lesspoll_rel_def eqpoll_rel_def bij_rel_is_inj_rel rex_def
+  show ?thesis
+    unfolding lesspoll_rel_def
     by auto
 qed
 
 lemma Finite_imp_lesspoll_rel_nat:
   assumes "Finite(A)" "M(A)"
   shows "A \<prec>\<^bsup>M\<^esup> \<omega>"
-  using Finite_imp_lesspoll_nat assms lesspoll_nat_imp_lesspoll_rel by auto
+  using Finite_imp_lesspoll_nat assms lesspoll_nat_imp_lesspoll_rel
+  by auto
 
 lemma InfCard_rel_lesspoll_rel_Un:
   includes Ord_dests
@@ -115,7 +118,8 @@ lemma InfCard_rel_lesspoll_rel_Un:
 proof -
   from assms
   have "|A|\<^bsup>M\<^esup> < \<kappa>" "|B|\<^bsup>M\<^esup> < \<kappa>"
-    using lesspoll_rel_cardinal_rel_lt InfCard_rel_is_Card_rel by auto
+    using lesspoll_rel_cardinal_rel_lt InfCard_rel_is_Card_rel
+    by auto
   show ?thesis
   proof (cases "Finite(A) \<and> Finite(B)")
     case True
@@ -123,7 +127,8 @@ proof -
     show ?thesis
       using lesspoll_rel_trans2[OF _ le_imp_lepoll_rel, of _ nat \<kappa>]
         Finite_imp_lesspoll_rel_nat[OF Finite_Un]
-      unfolding InfCard_rel_def by simp
+      unfolding InfCard_rel_def
+      by simp
   next
     case False
     with types
@@ -131,27 +136,32 @@ proof -
       using Infinite_InfCard_rel_cardinal_rel InfCard_rel_is_Card_rel
         le_trans[of nat] not_le_iff_lt[THEN iffD1, THEN leI, of "|A|\<^bsup>M\<^esup>" "|B|\<^bsup>M\<^esup>"]
       unfolding max_def InfCard_rel_def
-      by (auto)
+      by auto
     with \<open>M(A)\<close> \<open>M(B)\<close>
     have "|A \<union> B|\<^bsup>M\<^esup> \<le> max(|A|\<^bsup>M\<^esup>,|B|\<^bsup>M\<^esup>)"
       using cardinal_rel_Un_le[of "max(|A|\<^bsup>M\<^esup>,|B|\<^bsup>M\<^esup>)" A B]
         not_le_iff_lt[THEN iffD1, THEN leI, of "|A|\<^bsup>M\<^esup>" "|B|\<^bsup>M\<^esup>" ]
-      unfolding max_def by simp
+      unfolding max_def
+      by simp
     moreover from \<open>|A|\<^bsup>M\<^esup> < \<kappa>\<close> \<open>|B|\<^bsup>M\<^esup> < \<kappa>\<close>
     have "max(|A|\<^bsup>M\<^esup>,|B|\<^bsup>M\<^esup>) < \<kappa>"
-      unfolding max_def by simp
+      unfolding max_def
+      by simp
     ultimately
     have "|A \<union> B|\<^bsup>M\<^esup> <  \<kappa>"
-      using lt_trans1 by blast
+      using lt_trans1
+      by blast
     moreover
     note \<open>InfCard_rel(M,\<kappa>)\<close>
     moreover from calculation types
     have "|A \<union> B|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>"
-      using lt_Card_rel_imp_lesspoll_rel InfCard_rel_is_Card_rel by simp
+      using lt_Card_rel_imp_lesspoll_rel InfCard_rel_is_Card_rel
+      by simp
     ultimately
     show ?thesis
       using cardinal_rel_eqpoll_rel eq_lesspoll_rel_trans[of "A \<union> B" "|A \<union> B|\<^bsup>M\<^esup>" \<kappa>]
-        eqpoll_rel_sym types by simp
+        eqpoll_rel_sym types
+      by simp
   qed
 qed
 
@@ -164,19 +174,16 @@ lemma (in M_cohen) Fn_rel_unionI:
 proof -
   note assms
   moreover from calculation
-  have "p \<prec>\<^bsup>M\<^esup> \<kappa>"  "M(p)"
-    "q \<prec>\<^bsup>M\<^esup> \<kappa>" "M(q)"
+  have "p \<prec>\<^bsup>M\<^esup> \<kappa>" "q \<prec>\<^bsup>M\<^esup> \<kappa>" "M(p)" "M(q)"
     using Fn_rel_is_function by simp_all
   moreover from calculation
   have "p\<union>q \<prec>\<^bsup>M\<^esup> \<kappa>"
-    using eqpoll_rel_sym cardinal_rel_eqpoll_rel
-      InfCard_rel_lesspoll_rel_Un
+    using eqpoll_rel_sym cardinal_rel_eqpoll_rel InfCard_rel_lesspoll_rel_Un
     by simp_all
   ultimately
   show ?thesis
     unfolding Fn_rel_def
-    using pfun_unionI cardinal_rel_eqpoll_rel
-      eq_lesspoll_rel_trans[OF _ \<open>p\<union>q \<prec>\<^bsup>M\<^esup> _\<close>]
+    using pfun_unionI cardinal_rel_eqpoll_rel eq_lesspoll_rel_trans[OF _ \<open>p\<union>q \<prec>\<^bsup>M\<^esup> _\<close>]
     by auto
 qed
 
@@ -187,8 +194,7 @@ lemma (in M_cohen) restrict_eq_imp_compat_rel:
 proof -
   note assms
   moreover from calculation
-  have "p \<prec>\<^bsup>M\<^esup> \<kappa>"  "M(p)"
-    "q \<prec>\<^bsup>M\<^esup> \<kappa>" "M(q)"
+  have "p \<prec>\<^bsup>M\<^esup> \<kappa>" "q \<prec>\<^bsup>M\<^esup> \<kappa>" "M(p)" "M(q)"
     using Fn_rel_is_function by simp_all
   moreover from calculation
   have "p\<union>q \<prec>\<^bsup>M\<^esup> \<kappa>"
@@ -209,11 +215,10 @@ proof -
   note assms
   moreover from this
   have "n \<prec>\<^bsup>M\<^esup> \<omega>"
-    using n_lesspoll_rel_nat  by simp
+    using n_lesspoll_rel_nat by simp
   ultimately
   show ?thesis
-    using lesspoll_rel_trans2 Infinite_iff_lepoll_rel_nat
-      InfCard_rel_imp_Infinite nat_into_M M_nat
+    using lesspoll_rel_trans2 Infinite_iff_lepoll_rel_nat InfCard_rel_imp_Infinite nat_into_M
     by simp
 qed
 
@@ -225,7 +230,8 @@ lemma (in M_cohen) cons_in_Fn_rel:
     InfCard_rel_imp_n_lesspoll_rel
   by auto
 
-lemma (in M_library) Fnle_rel_Aleph_rel1_closed[intro,simp]: "M(Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))"
+lemma (in M_library) Fnle_rel_Aleph_rel1_closed[intro,simp]:
+  "M(Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))"
   by simp
 
 locale M_add_reals = M_cohen + add_reals
@@ -254,8 +260,7 @@ lemma (in M_trivial) compat_in_abs[absolut]:
 
 definition
   antichain :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>o" where
-  "antichain(P,leq,A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A. \<forall>q\<in>A.
-                p\<noteq>q \<longrightarrow> \<not>compat_in(P,leq,p,q))"
+  "antichain(P,leq,A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A. \<forall>q\<in>A. p\<noteq>q \<longrightarrow> \<not>compat_in(P,leq,p,q))"
 
 relativize relational  "antichain" "antichain_rel"
 definition
@@ -353,9 +358,11 @@ proof -
       moreover from True \<open>M(d)\<close>
       have "Finite(d \<rightarrow>\<^bsup>M\<^esup> 2)"
         using Finite_Pi[THEN [2] subset_Finite, of _ d "\<lambda>_. 2"]
-          lesspoll_rel_nat_is_Finite_rel function_space_rel_char[of _ 2] by auto
+          lesspoll_rel_nat_is_Finite_rel function_space_rel_char[of _ 2]
+        by auto
       moreover from \<open>M(d)\<close>
-      have "M(d \<rightarrow>\<^bsup>M\<^esup> 2)" by simp
+      have "M(d \<rightarrow>\<^bsup>M\<^esup> 2)"
+        by simp
       moreover from \<open>M(A)\<close>
       have "M({p \<in> A . domain(p) = d})"
         using separation_closed domain_eq_separation[OF \<open>M(d)\<close>] by simp
@@ -382,7 +389,8 @@ proof -
           by auto
       qed
       then
-      show ?thesis using empty_lepoll_relI by auto
+      show ?thesis
+        using empty_lepoll_relI by auto
     qed
     have 2:"M(x) \<Longrightarrow> x \<in> dC_F(X, i) \<Longrightarrow> M(i)" for x X i
       unfolding dC_F_def
@@ -425,7 +433,8 @@ proof -
       moreover
       note \<open>\<And>d. M(d) \<Longrightarrow> countable_rel(M,{p\<in>A. domain(p) = d})\<close>
       moreover from \<open>M(A)\<close>
-      have "p\<in>A \<Longrightarrow> M(domain(p))" for p by (auto dest: transM)
+      have "p\<in>A \<Longrightarrow> M(domain(p))" for p
+        by (auto dest: transM)
       ultimately
       have "countable_rel(M,A)"
         using countable_rel_imp_countable_rel_UN
@@ -456,13 +465,16 @@ proof -
     obtain p1 where "p1 \<in> A" "domain(p1) \<in> D"
       using uncountable_rel_not_empty[of D] by blast
     moreover from this and \<open>p1 \<in> A \<Longrightarrow> Finite(domain(p1))\<close>
-    have "Finite(domain(p1))" using Finite_domain by simp
+    have "Finite(domain(p1))"
+      using Finite_domain by simp
     moreover
     define r where "r \<equiv> \<Inter>D"
     moreover from \<open>M(D)\<close>
-    have "M(r)" "M(r\<times>2)" unfolding r_def by simp_all
+    have "M(r)" "M(r\<times>2)"
+      unfolding r_def by simp_all
     ultimately
-    have "Finite(r)" using subset_Finite[of "r" "domain(p1)"] by auto
+    have "Finite(r)" using subset_Finite[of "r" "domain(p1)"]
+      by auto
     have "countable_rel(M,{restrict(p,r) . p\<in>A})"
     proof -
       note \<open>M(Fn(nat, I, 2))\<close> \<open>M(r)\<close>
@@ -522,10 +534,10 @@ proof -
         obtain p  where "domain(p) = z" "p \<in> A" "M(p)"
           by (auto dest:transM)
         moreover from \<open>A \<subseteq> Fn(nat, I, 2)\<close> \<open>M(z)\<close> and this
-        have "p : z \<rightarrow>\<^bsup>M\<^esup> 2"
+        have "p \<in> z \<rightarrow>\<^bsup>M\<^esup> 2"
           using domain_of_fun function_space_rel_char by (auto del:FnD dest!:FnD)
         moreover from this \<open>M(z)\<close>
-        have "p : z \<rightarrow> 2"
+        have "p \<in> z \<rightarrow> 2"
           using domain_of_fun function_space_rel_char by (auto)
         moreover from this \<open>M(r)\<close>
         have "restrict(p,r) \<subseteq> r \<times> 2"
@@ -573,8 +585,9 @@ proof -
         unfolding drSR_Y_def by (auto dest:transM)
       ultimately
       interpret M_cardinal_UN_lepoll _ "?Y(A)" "Pow_rel(M,r\<times>2)"
-        using countable_lepoll_assms3 lepoll_assumptions[where S="Pow_rel(M,r\<times>2)", unfolded lepoll_assumptions_defs]
-          lam_replacement_drSR_Y lam_Least_assumption_drSR_Y[unfolded drSR_Y_def]
+        using countable_lepoll_assms3 lam_replacement_drSR_Y
+          lepoll_assumptions[where S="Pow_rel(M,r\<times>2)", unfolded lepoll_assumptions_defs]
+          lam_Least_assumption_drSR_Y[unfolded drSR_Y_def]
         unfolding drSR_Y_def
         apply unfold_locales
                         apply (simp_all add:lam_replacement_inj_rel del: if_range_F_else_F_def,rule_tac 1,simp_all)
@@ -595,10 +608,12 @@ proof -
           using countable_rel_imp_countable_rel_UN by (auto dest: transM)
       }
       with that
-      show ?thesis by auto
+      show ?thesis
+        by auto
     qed
     moreover from this \<open>M(A)\<close> and \<open>M(f) \<Longrightarrow> M(A) \<Longrightarrow> M(?Y(A,f))\<close>
-    have "M(?Y(A,f))" by blast
+    have "M(?Y(A,f))"
+      by blast
     ultimately
     obtain j where "j \<in> inj_rel(M,nat, ?Y(A,f))" "M(j)"
       using uncountable_rel_iff_nat_lt_cardinal_rel[THEN iffD1, THEN leI,
@@ -614,7 +629,8 @@ proof -
       "domain(p) \<in> D" "domain(q) \<in> D"
       "restrict(p,r) = restrict(q,r)" by auto
     moreover from this and delta
-    have "domain(p) \<inter> domain(q) = r" unfolding r_def by simp
+    have "domain(p) \<inter> domain(q) = r"
+      unfolding r_def by simp
     moreover
     note \<open>A \<subseteq> Fn(nat, I, 2)\<close> Fn_nat_abs[OF \<open>M(I)\<close> nat_into_M[of 2],simplified]
     moreover from calculation
@@ -630,7 +646,8 @@ proof -
       by (rule_tac bexI[of _ p], rule_tac bexI[of _ q]) blast
   }
   moreover from assms
-  have "M(Fnle(\<omega>,I,2))" by simp
+  have "M(Fnle(\<omega>,I,2))"
+    by simp
   moreover note \<open>M(Fn(\<omega>,I,2))\<close>
   ultimately
   show ?thesis using def_ccc_rel by (auto simp:absolut antichain_def) fastforce

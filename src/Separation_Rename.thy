@@ -406,10 +406,10 @@ proof (subst sep_var_domain[OF length_type[OF \<open>env\<in>list(M)\<close>],sy
                Cons(t, Cons(p, Cons(u, Cons(P, Cons(leq, Cons(o, Cons(pi, env)))))))) =
            nth(i, Cons(p, Cons(P, Cons(leq, Cons(o, Cons(t, env @ [pi, u]))))))"
     using apply_fun[OF sep_var_type] assms
-      unfolding sep_var_def
-      using nth_concat2[OF \<open>env\<in>list(M)\<close>]  nth_concat3[OF \<open>env\<in>list(M)\<close>,symmetric]
-      by force
-  qed
+    unfolding sep_var_def
+    using nth_concat2[OF \<open>env\<in>list(M)\<close>]  nth_concat3[OF \<open>env\<in>list(M)\<close>,symmetric]
+    by force
+qed
 
 definition
   rensep :: "i \<Rightarrow> i" where
@@ -499,21 +499,20 @@ lemma sepren_action:
   shows "sats(M, sep_ren(length(env),\<phi>),[t,p,u,P,leq,o,pi] @ env) \<longleftrightarrow> sats(M, \<phi>,[p,P,leq,o,t] @ env @ [pi,u])"
 proof -
   from assms
-  have 1: " [t, p, u, P, leq, o, pi] @ env \<in> list(M)"
-    "[P,leq,o,p,t] \<in> list(M)"
-    "[pi,u] \<in> list(M)"
+  have 1: "[t, p, u, P, leq, o, pi] @ env \<in> list(M)"
     by simp_all
   then
-  have 2: "[p,P,leq,o,t] @ env @ [pi,u] \<in> list(M)" using app_type by simp
+  have 2: "[p,P,leq,o,t] @ env @ [pi,u] \<in> list(M)"
+    using app_type by simp
   show ?thesis
     unfolding sep_ren_def
     using sats_iff_sats_ren[OF \<open>\<phi>\<in>formula\<close>
         add_type[of 7 "length(env)"]
         add_type[of 7 "length(env)"]
-        2 1(1)
+        2 1
         rensep_type[OF length_type[OF \<open>env\<in>list(M)\<close>]]
         \<open>arity(\<phi>) \<le> 7 +\<^sub>\<omega> length(env)\<close>]
-      rensep_action[OF 1(1),rule_format,symmetric]
+      rensep_action[OF 1,rule_format,symmetric]
     by simp
 qed
 
