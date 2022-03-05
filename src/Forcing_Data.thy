@@ -33,7 +33,7 @@ begin
 
 (* P \<subseteq> M *)
 lemma P_sub_M : "P\<subseteq>M"
-  using transitivity[OF _ P_in_M] by auto
+  using transitivity P_in_M by auto
 
 definition
   M_generic :: "i\<Rightarrow>o" where
@@ -52,26 +52,23 @@ lemma M_generic_denseD [dest]: "M_generic(G) \<Longrightarrow> dense(D) \<Longri
   unfolding M_generic_def by blast
 
 lemma G_nonempty: "M_generic(G) \<Longrightarrow> G\<noteq>0"
-proof -
-  have "P\<subseteq>P" ..
-  assume
-    "M_generic(G)"
-  with P_in_M P_dense \<open>P\<subseteq>P\<close> show
-    "G \<noteq> 0"
-    unfolding M_generic_def by auto
-qed
+  using P_in_M P_dense subset_refl[of P]
+  unfolding M_generic_def
+  by auto
 
 lemma one_in_G :
   assumes "M_generic(G)"
   shows  "\<one> \<in> G"
 proof -
-  from assms have "G\<subseteq>P"
-    unfolding M_generic_def and filter_def by simp
-  from \<open>M_generic(G)\<close> have "increasing(G)"
-    unfolding M_generic_def and filter_def by simp
-  with \<open>G\<subseteq>P\<close> and \<open>M_generic(G)\<close>
+  from assms
+  have "G\<subseteq>P"
+    unfolding M_generic_def filter_def by simp
+  from \<open>M_generic(G)\<close>
+  have "increasing(G)"
+    unfolding M_generic_def filter_def by simp
+  with \<open>G\<subseteq>P\<close> \<open>M_generic(G)\<close>
   show ?thesis
-    using G_nonempty and one_in_P and one_max
+    using G_nonempty one_in_P one_max
     unfolding increasing_def by blast
 qed
 
@@ -90,7 +87,7 @@ proof -
   then
   have "?D:nat\<rightarrow>Pow(P)"
     using lam_type by auto
-  have Eq4: "\<forall>n\<in>nat. dense(?D`n)"
+  have "\<forall>n\<in>nat. dense(?D`n)"
   proof(intro ballI)
     fix n
     assume "n\<in>nat"
@@ -104,34 +101,42 @@ proof -
     show "dense(?D`n)"
       using P_dense \<open>n\<in>nat\<close> by auto
   qed
-  from \<open>?D\<in>_\<close> and Eq4
+  with \<open>?D\<in>_\<close>
   interpret cg: countable_generic P leq \<one> ?D
     by (unfold_locales, auto)
   from \<open>p\<in>P\<close>
-  obtain G where Eq6: "p\<in>G \<and> filter(G) \<and> (\<forall>n\<in>nat.(?D`n)\<inter>G\<noteq>0)"
+  obtain G where 1: "p\<in>G \<and> filter(G) \<and> (\<forall>n\<in>nat.(?D`n)\<inter>G\<noteq>0)"
     using cg.countable_rasiowa_sikorski[where M="\<lambda>_. M"]  P_sub_M
       M_countable[THEN bij_is_fun] M_countable[THEN bij_is_surj, THEN surj_range]
     unfolding cg.D_generic_def by blast
   then
-  have Eq7: "(\<forall>D\<in>M. D\<subseteq>P \<and> dense(D)\<longrightarrow>D\<inter>G\<noteq>0)"
+  have "(\<forall>D\<in>M. D\<subseteq>P \<and> dense(D)\<longrightarrow>D\<inter>G\<noteq>0)"
   proof (intro ballI impI)
     fix D
-    assume "D\<in>M" and Eq9: "D \<subseteq> P \<and> dense(D) "
+    assume "D\<in>M" and 2: "D \<subseteq> P \<and> dense(D) "
+    moreover
     have "\<forall>y\<in>M. \<exists>x\<in>nat. enum`x= y"
       using M_countable and  bij_is_surj unfolding surj_def by (simp)
-    with \<open>D\<in>M\<close> obtain n where Eq10: "n\<in>nat \<and> enum`n = D"
+    moreover from calculation
+    obtain n where Eq10: "n\<in>nat \<and> enum`n = D"
       by auto
-    with Eq9 and if_P
-    have "?D`n = D" by (simp)
-    with Eq6 and Eq10
-    show "D\<inter>G\<noteq>0" by auto
+    moreover from calculation if_P
+    have "?D`n = D"
+      by simp
+    moreover
+    note 1
+    ultimately
+    show "D\<inter>G\<noteq>0"
+      by auto
   qed
-  with Eq6
-  show ?thesis unfolding M_generic_def by auto
+  with 1
+  show ?thesis
+    unfolding M_generic_def by auto
 qed
 
 lemma one_in_M: "\<one> \<in> M"
-  by (insert one_in_P P_in_M, simp add: transitivity)
+  using one_in_P P_in_M transitivity
+  by simp
 
 end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
