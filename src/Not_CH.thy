@@ -572,7 +572,7 @@ begin
 is_iff_rel for "ContHyp"
   using is_cexp_iff is_Aleph_iff[of 0] is_Aleph_iff[of 1]
   unfolding is_ContHyp_def ContHyp_rel_def
-  by auto (rule_tac x=0 in rexI, auto)
+  by (auto simp del:setclass_iff) (rule rexI[of _ _ M, OF _ nonempty], auto)
 
 end \<comment> \<open>\<^locale>\<open>M_master\<close>\<close>
 

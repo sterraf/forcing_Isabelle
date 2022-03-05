@@ -38,9 +38,8 @@ proof -
     case 0
     then
     show ?case
-      using zero_lt_Aleph_rel1
-      by (auto simp del:setclass_iff)
-        (rule_tac x=0 in bexI, rule zero_in_Fn_rel, simp_all)
+      using zero_lt_Aleph_rel1 zero_in_Fn_rel
+      by (auto simp del:setclass_iff) (rule bexI[OF _ zero_in_M], auto)
   next
     case (succ x)
     then
