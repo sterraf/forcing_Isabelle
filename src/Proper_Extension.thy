@@ -13,10 +13,11 @@ locale separative_notion = forcing_notion +
 begin
 
 text\<open>For separative preorders, the complement of every filter is
-dense. Hence an $M$-generic filter can't belong to the ground model.\<close>
+dense. Hence an $M$-generic filter cannot belong to the ground model.\<close>
 
 lemma filter_complement_dense:
-  assumes "filter(G)" shows "dense(P - G)"
+  assumes "filter(G)"
+  shows "dense(P - G)"
 proof
   fix p
   assume "p\<in>P"
@@ -33,11 +34,13 @@ proof
       using filter_imp_compat[of G q r]
       by auto
     then
-    show ?thesis by blast
+    show ?thesis
+      by blast
   next
     case False
     with \<open>p\<in>P\<close>
-    show ?thesis using refl_leq unfolding Diff_def by auto
+    show ?thesis
+      using refl_leq unfolding Diff_def by auto
   qed
 qed
 
@@ -46,7 +49,9 @@ end \<comment> \<open>\<^locale>\<open>separative_notion\<close>\<close>
 locale ctm_separative = forcing_data1 + separative_notion
 begin
 
-lemma generic_not_in_M: assumes "M_generic(G)"  shows "G \<notin> M"
+lemma generic_not_in_M:
+  assumes "M_generic(G)"
+  shows "G \<notin> M"
 proof
   assume "G\<in>M"
   then
@@ -63,7 +68,9 @@ proof
       M_generic_def by simp \<comment> \<open>need to put generic ==> filter in claset\<close>
 qed
 
-theorem proper_extension: assumes "M_generic(G)" shows "M \<noteq> M[G]"
+theorem proper_extension:
+  assumes "M_generic(G)"
+  shows "M \<noteq> M[G]"
   using assms G_in_Gen_Ext[of G] one_in_G[of G] generic_not_in_M
   by force
 
