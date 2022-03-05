@@ -31,7 +31,7 @@ locale M_Z_basic =
     infinity_ax:   "infinity_ax(##M)" and
     separation_ax: "\<phi> \<in> formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow>
                     arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env) \<Longrightarrow>
-                    separation(##M,\<lambda>x. sats(M,\<phi>,[x] @ env))"
+                    separation(##M,\<lambda>x. (M, [x] @ env \<Turnstile> \<phi>))"
 
 locale M_transset =
   fixes M
@@ -119,11 +119,11 @@ lemma separation_in_ctm :
   assumes
     "\<phi> \<in> formula" "env\<in>list(M)"
     "arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env)" and
-    satsQ: "\<And>x. x\<in>M \<Longrightarrow> sats(M,\<phi>,[x]@env) \<longleftrightarrow> Q(x)"
+    satsQ: "\<And>x. x\<in>M \<Longrightarrow> (M, [x]@env \<Turnstile> \<phi>) \<longleftrightarrow> Q(x)"
   shows
     "separation(##M,Q)"
   using assms separation_ax satsQ transitivity
-    separation_cong[of "##M" "\<lambda>y. sats(M,\<phi>,[y]@env)" "Q"]
+    separation_cong[of "##M" "\<lambda>y. (M, [y]@env \<Turnstile> \<phi>)" "Q"]
   by simp
 
 end \<comment> \<open>\<^locale>\<open>M_Z_trans\<close>\<close>
@@ -451,7 +451,7 @@ closed under \<^term>\<open>0\<close> and \<^term>\<open>succ\<close>; that show
 can separate \<^term>\<open>I\<close> with the predicate \<^term>\<open>\<lambda>x. x\<in>nat\<close>.\<close>
 lemma finite_sep_intf: "separation(##M, \<lambda>x. x\<in>nat)"
 proof -
-  have "(\<forall>v\<in>M. separation(##M,\<lambda>x. sats(M,finite_ordinal_fm(0),[x,v])))"
+  have "(\<forall>v\<in>M. separation(##M,\<lambda>x. (M, [x,v] \<Turnstile> finite_ordinal_fm(0))))"
     using separation_ax arity_finite_ordinal_fm
     by simp
   then
@@ -513,9 +513,9 @@ subsection\<open>Interface with \<^term>\<open>M_eclose\<close>\<close>
 
 lemma repl_sats:
   assumes
-    sat:"\<And>x z. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> sats(M,\<phi>,Cons(x,Cons(z,env))) \<longleftrightarrow> P(x,z)"
+    sat:"\<And>x z. x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> (M, Cons(x,Cons(z,env)) \<Turnstile> \<phi>) \<longleftrightarrow> P(x,z)"
   shows
-    "strong_replacement(##M,\<lambda>x z. sats(M,\<phi>,Cons(x,Cons(z,env)))) \<longleftrightarrow>
+    "strong_replacement(##M,\<lambda>x z. (M, Cons(x,Cons(z,env)) \<Turnstile> \<phi>)) \<longleftrightarrow>
    strong_replacement(##M,P)"
   by (rule strong_replacement_cong,simp add:sat)
 
@@ -542,29 +542,29 @@ proof -
     note assms zero_in_M
     moreover from calculation
     have "is_list_functor(##M, A, a, b)
-       \<longleftrightarrow> sats(M, list_functor_fm(13,1,0), [b,a,c,d,a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),A,0])"
+       \<longleftrightarrow> (M, [b,a,c,d,a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),A,0] \<Turnstile> list_functor_fm(13,1,0))"
       if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "a0\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "y\<in>M" "x\<in>M" "z\<in>M"
       for a b c d a0 a1 a2 a3 a4 y x z
       using that
       by simp
     moreover from calculation
-    have "sats(M, iterates_MH_fm(list_functor_fm(13,1,0),10,2,1,0), [a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),A,0])
-        \<longleftrightarrow> iterates_MH(##M,is_list_functor(##M,A),0,a2, a1, a0)"
+    have "(M, [a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),A,0] \<Turnstile> 
+            iterates_MH_fm(list_functor_fm(13,1,0),10,2,1,0)) \<longleftrightarrow>
+          iterates_MH(##M,is_list_functor(##M,A),0,a2, a1, a0)"
       if "a0\<in>M" "a1\<in>M" "a2\<in>M" "a3\<in>M" "a4\<in>M" "y\<in>M" "x\<in>M" "z\<in>M"
       for a0 a1 a2 a3 a4 y x z
       using that sats_iterates_MH_fm[of M "is_list_functor(##M,A)" _]
       by simp
     moreover from calculation
-    have "sats(M, is_wfrec_fm(iterates_MH_fm(list_functor_fm(13,1,0),10,2,1,0),3,1,0),
-                            [y,x,z,Memrel(succ(n)),A,0])
-        \<longleftrightarrow>
-        is_wfrec(##M, iterates_MH(##M,is_list_functor(##M,A),0) , Memrel(succ(n)), x, y)"
+    have "(M, [y,x,z,Memrel(succ(n)),A,0] \<Turnstile>
+              is_wfrec_fm(iterates_MH_fm(list_functor_fm(13,1,0),10,2,1,0),3,1,0)) \<longleftrightarrow>
+          is_wfrec(##M, iterates_MH(##M,is_list_functor(##M,A),0) , Memrel(succ(n)), x, y)"
       if "y\<in>M" "x\<in>M" "z\<in>M" for y x z
       using that sats_is_wfrec_fm
       by simp
     moreover from calculation
-    have "sats(M, ?f, [x,z,Memrel(succ(n)),A,0])
-        \<longleftrightarrow>
+    have "(M, [x,z,Memrel(succ(n)),A,0] \<Turnstile> ?f) \<longleftrightarrow>
+        
         (\<exists>y\<in>M. pair(##M,x,y,z) \<and>
         is_wfrec(##M, iterates_MH(##M,is_list_functor(##M,A),0) , Memrel(succ(n)), x, y))"
       if "x\<in>M" "z\<in>M" for x z
@@ -573,7 +573,7 @@ proof -
     moreover
     note \<open>arity(?f) = 5\<close>
     moreover from calculation
-    have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),A,0]))"
+    have "strong_replacement(##M,\<lambda>x z. (M, [x,z,Memrel(succ(n)),A,0] \<Turnstile> ?f))"
       using replacement_ax1[unfolded replacement_assm_def]
       by simp
     moreover from calculation
@@ -597,15 +597,16 @@ lemma (in M_ZF1_trans) iterates_repl_intf :
     isfm:"is_F_fm \<in> formula" and
     arty:"arity(is_F_fm)=2" and
     satsf: "\<And>a b env'. \<lbrakk> a\<in>M ; b\<in>M ; env'\<in>list(M) \<rbrakk>
-              \<Longrightarrow> is_F(a,b) \<longleftrightarrow> sats(M, is_F_fm, [b,a]@env')"
+              \<Longrightarrow> is_F(a,b) \<longleftrightarrow> (M,  [b,a]@env' \<Turnstile>  is_F_fm)"
     and is_F_fm_replacement:
-    "\<And>env. Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0))) \<in> formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow>
-      arity(Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0)))) \<le> 2 +\<^sub>\<omega> length(env) \<Longrightarrow>
-     strong_replacement(##M,\<lambda>x y. sats(M,Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0))),[x,y] @ env))"
+    "\<And>env. (\<cdot>\<exists>\<cdot>\<cdot>\<langle>1,0\<rangle> is 2\<cdot> \<and> is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0) \<cdot>\<cdot>) \<in> formula \<Longrightarrow> env \<in> list(M) \<Longrightarrow>
+      arity((\<cdot>\<exists>\<cdot>\<cdot>\<langle>1,0\<rangle> is 2\<cdot> \<and> is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0) \<cdot>\<cdot>)) \<le> 2 +\<^sub>\<omega> length(env) \<Longrightarrow>
+     strong_replacement(##M,\<lambda>x y. 
+         M, [x,y] @ env \<Turnstile> (\<cdot>\<exists>\<cdot>\<cdot>\<langle>1,0\<rangle> is 2\<cdot> \<and> is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0) \<cdot>\<cdot>))"
   shows
     "iterates_replacement(##M,is_F,v)"
 proof -
-  let ?f="Exists(And(pair_fm(1,0,2),is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0)))"
+  let ?f="(\<cdot>\<exists>\<cdot>\<cdot>\<langle>1,0\<rangle> is 2\<cdot> \<and> is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0) \<cdot>\<cdot>)"
   have "arity(?f) = 4" "?f\<in>formula"
     using arity_iterates_MH_fm[where isF=is_F_fm and i=2]
       arity_wfrec_replacement_fm[where i=10] isfm arty ord_simp_union
@@ -624,27 +625,25 @@ proof -
       moreover
       note \<open>v\<in>M\<close> \<open>Memrel(succ(n))\<in>M\<close>
       moreover from calculation
-      have "sats(M, is_F_fm, [b,a,c,d,a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),v])
-          \<longleftrightarrow> is_F(a,b)"
+      have "(M, [b,a,c,d,a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),v] \<Turnstile> is_F_fm) \<longleftrightarrow>
+           is_F(a,b)"
         if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" for a b c d
         using that satsf[of a b "[c,d,a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),v]"]
         by simp
       moreover from calculation
-      have "sats(M, iterates_MH_fm(is_F_fm,9,2,1,0), [a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),v])
-          \<longleftrightarrow> iterates_MH(##M,is_F,v,a2, a1, a0)"
+      have "(M, [a0,a1,a2,a3,a4,y,x,z,Memrel(succ(n)),v] \<Turnstile> iterates_MH_fm(is_F_fm,9,2,1,0)) \<longleftrightarrow>
+           iterates_MH(##M,is_F,v,a2, a1, a0)"
         using sats_iterates_MH_fm[of M "is_F" "is_F_fm"]
         by simp
     }
     moreover from calculation
-    have "sats(M, is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0),
-                            [y,x,z,Memrel(succ(n)),v])
-        \<longleftrightarrow>
-        is_wfrec(##M, iterates_MH(##M,is_F,v),Memrel(succ(n)), x, y)"
+    have "(M, [y,x,z,Memrel(succ(n)),v] \<Turnstile> is_wfrec_fm(iterates_MH_fm(is_F_fm,9,2,1,0),3,1,0)) \<longleftrightarrow>
+          is_wfrec(##M, iterates_MH(##M,is_F,v),Memrel(succ(n)), x, y)"
       if "y\<in>M" "x\<in>M" "z\<in>M" for y x z
       using that sats_is_wfrec_fm \<open>v\<in>M\<close> by simp
     moreover from calculation
-    have "sats(M, ?f, [x,z,Memrel(succ(n)),v])
-        \<longleftrightarrow>
+    have "(M, [x,z,Memrel(succ(n)),v] \<Turnstile> ?f) \<longleftrightarrow>
+        
         (\<exists>y\<in>M. pair(##M,x,y,z) \<and>
         is_wfrec(##M, iterates_MH(##M,is_F,v) , Memrel(succ(n)), x, y))"
       if "x\<in>M" "z\<in>M" for x z
@@ -653,7 +652,7 @@ proof -
     moreover
     note \<open>arity(?f) = 4\<close> \<open>?f\<in>formula\<close>
     moreover from calculation \<open>v\<in>_\<close>
-    have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,Memrel(succ(n)),v]))"
+    have "strong_replacement(##M,\<lambda>x z. (M, [x,z,Memrel(succ(n)),v] \<Turnstile> ?f))"
       using is_F_fm_replacement
       by simp
     ultimately
@@ -712,19 +711,19 @@ proof -
   note zero_in_M nat_in_M \<open>A\<in>M\<close>
   moreover from this
   have "is_list_functor(##M,A,a,b) \<longleftrightarrow>
-        sats(M,list_functor_fm(13,1,0),[b,a,c,d,e,f,g,h,i,j,k,n,y,A,0,nat])"
+        (M, [b,a,c,d,e,f,g,h,i,j,k,n,y,A,0,nat] \<Turnstile> list_functor_fm(13,1,0))"
     if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "e\<in>M" "f\<in>M""g\<in>M""h\<in>M""i\<in>M""j\<in>M" "k\<in>M" "n\<in>M" "y\<in>M"
     for a b c d e f g h i j k n y
     using that
     by simp
   moreover from calculation
-  have "sats(M, is_iterates_fm(list_functor_fm(13,1,0),3,0,1),[n,y,A,0,nat] ) \<longleftrightarrow>
+  have "(M, [n,y,A,0,nat] \<Turnstile> is_iterates_fm(list_functor_fm(13,1,0),3,0,1)) \<longleftrightarrow>
            is_iterates(##M, is_list_functor(##M,A), 0, n , y)"
     if "n\<in>M" "y\<in>M" for n y
     using that sats_is_iterates_fm[of M "is_list_functor(##M,A)"]
     by simp
   moreover from calculation
-  have "sats(M, ?f,[n,y,A,0,nat] ) \<longleftrightarrow>
+  have "(M, [n,y,A,0,nat] \<Turnstile> ?f) \<longleftrightarrow>
         n\<in>nat \<and> is_iterates(##M, is_list_functor(##M,A), 0, n, y)"
     if "n\<in>M" "y\<in>M" for n y
     using that
@@ -747,19 +746,19 @@ proof -
   note zero_in_M nat_in_M
   moreover from this
   have "is_formula_functor(##M,a,b) \<longleftrightarrow>
-        sats(M,formula_functor_fm(1,0),[b,a,c,d,e,f,g,h,i,j,k,n,y,0,nat])"
+        (M, [b,a,c,d,e,f,g,h,i,j,k,n,y,0,nat] \<Turnstile> formula_functor_fm(1,0))"
     if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "e\<in>M" "f\<in>M""g\<in>M""h\<in>M""i\<in>M""j\<in>M" "k\<in>M" "n\<in>M" "y\<in>M"
     for a b c d e f g h i j k n y
     using that
     by simp
   moreover from calculation
-  have "sats(M, is_iterates_fm(formula_functor_fm(1,0),2,0,1),[n,y,0,nat] ) \<longleftrightarrow>
+  have "(M, [n,y,0,nat] \<Turnstile> is_iterates_fm(formula_functor_fm(1,0),2,0,1)) \<longleftrightarrow>
            is_iterates(##M, is_formula_functor(##M), 0, n , y)"
     if "n\<in>M" "y\<in>M" for n y
     using that sats_is_iterates_fm[of M "is_formula_functor(##M)"]
     by simp
   moreover from calculation
-  have "sats(M, ?f,[n,y,0,nat] ) \<longleftrightarrow>
+  have "(M, [n,y,0,nat] \<Turnstile> ?f) \<longleftrightarrow>
         n\<in>nat \<and> is_iterates(##M, is_formula_functor(##M), 0, n, y)"
     if "n\<in>M" "y\<in>M" for n y
     using that
@@ -784,18 +783,18 @@ proof -
   note nat_in_M \<open>A\<in>M\<close>
   moreover from this
   have "big_union(##M,a,b) \<longleftrightarrow>
-        sats(M,big_union_fm(1,0),[b,a,c,d,e,f,g,h,i,j,k,n,y,A,nat])"
+        (M, [b,a,c,d,e,f,g,h,i,j,k,n,y,A,nat] \<Turnstile> big_union_fm(1,0))"
     if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "e\<in>M" "f\<in>M""g\<in>M""h\<in>M""i\<in>M""j\<in>M" "k\<in>M" "n\<in>M" "y\<in>M"
     for a b c d e f g h i j k n y
     using that by simp
   moreover from calculation
-  have "sats(M, is_iterates_fm(big_union_fm(1,0),2,0,1),[n,y,A,nat] ) \<longleftrightarrow>
+  have "(M, [n,y,A,nat] \<Turnstile> is_iterates_fm(big_union_fm(1,0),2,0,1)) \<longleftrightarrow>
            is_iterates(##M, big_union(##M), A, n , y)"
     if "n\<in>M" "y\<in>M" for n y
     using that sats_is_iterates_fm[of M "big_union(##M)"]
     by simp
   moreover from calculation
-  have "sats(M, ?f,[n,y,A,nat] ) \<longleftrightarrow>
+  have "(M, [n,y,A,nat] \<Turnstile> ?f) \<longleftrightarrow>
         n\<in>nat \<and> is_iterates(##M, big_union(##M), A, n, y)"
     if "n\<in>M" "y\<in>M" for n y
     using that
@@ -832,7 +831,7 @@ proof -
     unfolding is_Powapply_fm_def
     by (simp add:arity ord_simp_union)
   moreover from calculation
-  have iff:"z=Powapply_rel(##M,f,p) \<longleftrightarrow> sats(M,is_Powapply_fm(2,0,1) , [p,z,f])"
+  have iff:"z=Powapply_rel(##M,f,p) \<longleftrightarrow> (M, [p,z,f] \<Turnstile> is_Powapply_fm(2,0,1) )"
     if "p\<in>M" "z\<in>M" for p z
     using that zero_in_M sats_is_Powapply_fm[of 2 0 1 "[p,z,f]" M] is_Powapply_iff
       replacement_ax1[unfolded replacement_assm_def]
@@ -879,19 +878,19 @@ proof -
   moreover from this
   have
     "is_Hrank(##M,a2, a1, a0) \<longleftrightarrow>
-             sats(M, is_Hrank_fm(2,1,0), [a0,a1,a2,a3,a4,y,x,z,rrank(X)])"
+             (M, [a0,a1,a2,a3,a4,y,x,z,rrank(X)] \<Turnstile> is_Hrank_fm(2,1,0))"
     if "a4\<in>M" "a3\<in>M" "a2\<in>M" "a1\<in>M" "a0\<in>M" "y\<in>M" "x\<in>M" "z\<in>M" for a4 a3 a2 a1 a0 y x z
     using that rrank_in_M is_Hrank_iff_sats
     by simp
   moreover from calculation
-  have "sats(M, is_wfrec_fm(is_Hrank_fm(2,1,0),3,1,0),[y,x,z,rrank(X)])
-  \<longleftrightarrow> is_wfrec(##M, is_Hrank(##M) ,rrank(X), x, y)"
+  have "(M, [y,x,z,rrank(X)] \<Turnstile> is_wfrec_fm(is_Hrank_fm(2,1,0),3,1,0)) \<longleftrightarrow>
+   is_wfrec(##M, is_Hrank(##M) ,rrank(X), x, y)"
     if "y\<in>M" "x\<in>M" "z\<in>M" for y x z
     using that rrank_in_M sats_is_wfrec_fm
     by simp
   moreover from calculation
-  have "sats(M, ?f, [x,z,rrank(X)])
-              \<longleftrightarrow> (\<exists>y\<in>M. pair(##M,x,y,z) \<and> is_wfrec(##M, is_Hrank(##M) , rrank(X), x, y))"
+  have "(M, [x,z,rrank(X)] \<Turnstile> ?f) \<longleftrightarrow>
+               (\<exists>y\<in>M. pair(##M,x,y,z) \<and> is_wfrec(##M, is_Hrank(##M) , rrank(X), x, y))"
     if "x\<in>M" "z\<in>M" for x z
     using that rrank_in_M
     by (simp del:pair_abs)
@@ -901,7 +900,7 @@ proof -
       arity_is_Hrank_fm[of 2 1 0,simplified] ord_simp_union
     by simp
   moreover from calculation
-  have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,rrank(X)]))"
+  have "strong_replacement(##M,\<lambda>x z. (M, [x,z,rrank(X)] \<Turnstile> ?f))"
     using replacement_ax1[unfolded replacement_assm_def] rrank_in_M
     by simp
   ultimately
@@ -916,8 +915,7 @@ schematic_goal sats_is_Vset_fm_auto:
     "i\<in>nat" "v\<in>nat" "env\<in>list(A)" "0\<in>A"
     "i < length(env)" "v < length(env)"
   shows
-    "is_Vset(##A,nth(i, env),nth(v, env))
-    \<longleftrightarrow> sats(A,?ivs_fm(i,v),env)"
+    "is_Vset(##A,nth(i, env),nth(v, env)) \<longleftrightarrow> (A, env \<Turnstile> ?ivs_fm(i,v))"
   unfolding is_Vset_def is_Vfrom_def
   by (insert assms; (rule sep_rules is_HVfrom_iff_sats is_transrec_iff_sats | simp)+)
 
@@ -945,19 +943,19 @@ proof -
     note facts
     moreover from calculation
     have "is_HVfrom(##M,A,a2, a1, a0) \<longleftrightarrow>
-      sats(M, is_HVfrom_fm(8,2,1,0), [a0,a1,a2,a3,a4,y,x,z,A,mesa])"
+      (M, [a0,a1,a2,a3,a4,y,x,z,A,mesa] \<Turnstile> is_HVfrom_fm(8,2,1,0))"
       if "a4\<in>M" "a3\<in>M" "a2\<in>M" "a1\<in>M" "a0\<in>M" "y\<in>M" "x\<in>M" "z\<in>M" for a4 a3 a2 a1 a0 y x z
       using that sats_is_HVfrom_fm
       by simp
     moreover from calculation
-    have "sats(M, is_wfrec_fm(is_HVfrom_fm(8,2,1,0),4,1,0),[y,x,z,A,mesa])
-        \<longleftrightarrow> is_wfrec(##M, is_HVfrom(##M,A),mesa, x, y)"
+    have "(M, [y,x,z,A,mesa] \<Turnstile> is_wfrec_fm(is_HVfrom_fm(8,2,1,0),4,1,0)) \<longleftrightarrow>
+         is_wfrec(##M, is_HVfrom(##M,A),mesa, x, y)"
       if "y\<in>M" "x\<in>M" "z\<in>M" for y x z
       using that sats_is_wfrec_fm
       by simp
     moreover from calculation
-    have "sats(M, ?f, [x,z,A,mesa])
-              \<longleftrightarrow> (\<exists>y\<in>M. pair(##M,x,y,z) \<and> is_wfrec(##M, is_HVfrom(##M,A) , mesa, x, y))"
+    have "(M, [x,z,A,mesa] \<Turnstile> ?f) \<longleftrightarrow>
+               (\<exists>y\<in>M. pair(##M,x,y,z) \<and> is_wfrec(##M, is_HVfrom(##M,A) , mesa, x, y))"
       if "x\<in>M" "z\<in>M" for x z
       using that
       by (simp del:pair_abs)
@@ -967,7 +965,7 @@ proof -
         arity_is_HVfrom_fm ord_simp_union
       by simp
     moreover from calculation
-    have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,A,mesa]))"
+    have "strong_replacement(##M,\<lambda>x z. (M, [x,z,A,mesa] \<Turnstile> ?f))"
       using replacement_ax1[unfolded replacement_assm_def]
       by simp
     ultimately
@@ -995,16 +993,16 @@ lemma Collect_in_M :
   assumes
     "\<phi> \<in> formula" "env\<in>list(M)"
     "arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env)" "A\<in>M" and
-    satsQ: "\<And>x. x\<in>M \<Longrightarrow> sats(M,\<phi>,[x]@env) \<longleftrightarrow> Q(x)"
+    satsQ: "\<And>x. x\<in>M \<Longrightarrow> (M, [x]@env \<Turnstile> \<phi>) \<longleftrightarrow> Q(x)"
   shows
     "{y\<in>A . Q(y)}\<in>M"
 proof -
-  have "separation(##M,\<lambda>x. sats(M,\<phi>,[x] @ env))"
+  have "separation(##M,\<lambda>x. (M, [x] @ env \<Turnstile> \<phi>))"
     using assms separation_ax by simp
   then
   show ?thesis
     using \<open>A\<in>M\<close> satsQ transitivity separation_closed
-      separation_cong[of "##M" "\<lambda>y. sats(M,\<phi>,[y]@env)" "Q"]
+      separation_cong[of "##M" "\<lambda>y. (M, [y]@env \<Turnstile> \<phi>)" "Q"]
     by simp
 qed
 
@@ -1013,7 +1011,7 @@ lemma separation_in_M :
   assumes
     "\<phi> \<in> formula" "env\<in>list(M)"
     "arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env)" "A\<in>M" and
-    satsQ: "\<And>x. x\<in>A \<Longrightarrow> sats(M,\<phi>,[x]@env) \<longleftrightarrow> Q(x)"
+    satsQ: "\<And>x. x\<in>A \<Longrightarrow> (M, [x]@env \<Turnstile> \<phi>) \<longleftrightarrow> Q(x)"
   shows
     "{y\<in>A . Q(y)} \<in> M"
 proof -
@@ -1028,7 +1026,7 @@ proof -
     using nth_append
     by auto
   moreover from calculation
-  have "\<And> x . x \<in> M \<Longrightarrow> sats(M,?\<phi>',[x]@env@[A]) \<longleftrightarrow> Q(x) \<and> x\<in>A"
+  have "\<And> x . x \<in> M \<Longrightarrow> (M, [x]@env@[A] \<Turnstile> ?\<phi>') \<longleftrightarrow> Q(x) \<and> x\<in>A"
     using arity_sats_iff[of _ "[A]" _ "[_]@env"]
     by auto
   ultimately
