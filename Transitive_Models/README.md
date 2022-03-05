@@ -1,8 +1,6 @@
 Transitive Models of Fragments of ZFC
 =====================================
 
-This is a development version.
-
 We extend the Paulson's `ZF-Constructibility` by relativizing theories
 of the Isabelle/ZF and Delta System Lemma (AFP) sessions to a transitive
 class. We also relativize Paulson's work on Aleph and our former

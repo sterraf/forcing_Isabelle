@@ -1,8 +1,6 @@
 The Independence of the CH in Isabelle/ZF
 =========================================
 
-This is a development version.
-
 We redeveloped our formalization of forcing in the set theory framework of
 Isabelle/ZF. Under the assumption of the existence of a countable
 transitive model of ZFC, we construct proper generic extensions
@@ -20,7 +18,7 @@ Running the session with jEdit
 The session can be run using the standard Isabelle IDE by
 executing
 ```
-$ isabelle jedit -d . -l ZF-Constructible Definitions_Main.thy
+$ isabelle jedit -l Transitive_Models -d . Definitions_Main.thy
 ```
 at the `src` directory.
 
