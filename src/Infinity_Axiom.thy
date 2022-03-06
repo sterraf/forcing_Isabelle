@@ -11,8 +11,8 @@ interpretation mg_triv: M_trivial"##M[G]"
 
 lemma infinity_in_MG : "infinity_ax(##M[G])"
 proof -
-  from infinity_ax obtain I where
-    Eq1: "I\<in>M" "0 \<in> I" "\<forall>y\<in>M. y \<in> I \<longrightarrow> succ(y) \<in> I"
+  from infinity_ax
+  obtain I where "I\<in>M" "0 \<in> I" "\<forall>y\<in>M. y \<in> I \<longrightarrow> succ(y) \<in> I"
     unfolding infinity_ax_def  by auto
   then
   have "check(I) \<in> M"
@@ -20,17 +20,16 @@ proof -
   then
   have "I\<in> M[G]"
     using valcheck generic one_in_G one_in_P GenExtI[of "check(I)" G] by simp
-  with \<open>0\<in>I\<close>
-  have "0\<in>M[G]" using transitivity_MG by simp
-  with \<open>I\<in>M\<close>
-  have "y \<in> M" if "y \<in> I" for y
-    using  transitivity[OF _ \<open>I\<in>M\<close>] that by simp
-  with \<open>I\<in>M[G]\<close>
+  moreover from this \<open>I\<in>M[G]\<close> \<open>\<forall>y\<in>M. y \<in> I \<longrightarrow> succ(y) \<in> I\<close>
   have "succ(y) \<in> I \<inter> M[G]" if "y \<in> I" for y
-    using that Eq1 transitivity_MG by blast
-  with Eq1 \<open>I\<in>M[G]\<close> \<open>0\<in>M[G]\<close>
+    using that transitivity_MG transitivity[OF _ \<open>I\<in>M\<close>] by blast
+  moreover
+  note \<open>0\<in>I\<close>
+  ultimately
   show ?thesis
-    unfolding infinity_ax_def by auto
+    using transitivity_MG[of _ I]
+    unfolding infinity_ax_def
+    by auto
 qed
 
 end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
