@@ -520,7 +520,7 @@ text\<open>@{thm [display] ctm_ZFC_imp_ctm_CH}\<close>
       Transset(N) \<and> N \<Turnstile> ZFC \<union> {\<cdot>CH\<cdot>} \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
 *)
 
-txt\<open>These results can be strengthened by enumerating three finite sets of
+txt\<open>These results can be strengthened by enumerating four finite sets of
 replacement instances which are sufficient to develop forcing and for
 the construction of the aforementioned models: \<^term>\<open>instances1_fms\<close>
 through \<^term>\<open>instances4_fms\<close>, which are then collected into
