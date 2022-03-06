@@ -37,7 +37,7 @@ proof
   have "restrict(f,f-``a)`x = f`x"
     by simp
   finally
-  have "y=f`x" .
+  have "y = f`x" .
   moreover from assms \<open>x\<in>domain(f)\<close>
   have "\<langle>x,f`x\<rangle> \<in> f"
     using function_apply_Pair by auto
@@ -49,8 +49,7 @@ proof
 qed
 
 lemma induced_surj_type:
-  assumes
-    "function(f)" (* "relation(f)" (* a function can contain nonpairs *) *)
+  assumes "function(f)" (* "relation(f)" (* a function can contain non-pairs *) *)
   shows
     "induced_surj(f,a,e): domain(f) \<rightarrow> {e} \<union> a"
     and
@@ -60,7 +59,7 @@ proof -
   have "domain(?f2) = domain(f) \<inter> f-``a"
     using domain_restrict by simp
   moreover from assms
-  have 1: "domain(?f1) = f-``(range(f))-f-``a"
+  have "domain(?f1) = f-``(range(f))-f-``a"
     using domain_of_prod function_vimage_Diff by simp
   ultimately
   have "domain(?f1) \<inter> domain(?f2) = 0"
@@ -90,7 +89,7 @@ proof -
   then
   have "?f2`x = f`x"
     using restrict by simp
-  moreover from \<open>x \<in> f-``a\<close> and 1
+  moreover from \<open>x \<in> f-``a\<close> \<open>domain(?f1) = _\<close>
   have "x \<notin> domain(?f1)"
     by simp
   ultimately
@@ -101,8 +100,7 @@ qed
 lemma induced_surj_is_surj :
   assumes
     "e\<in>a" "function(f)" "domain(f) = \<alpha>" "\<And>y. y \<in> a \<Longrightarrow> \<exists>x\<in>\<alpha>. f ` x = y"
-  shows
-    "induced_surj(f,a,e) \<in> surj(\<alpha>,a)"
+  shows "induced_surj(f,a,e) \<in> surj(\<alpha>,a)"
   unfolding surj_def
 proof (intro CollectI ballI)
   from assms
@@ -128,20 +126,17 @@ qed
 context G_generic1
 begin
 
-lemma Upair_simp : "Upair(a,b) = {a,b}"
-  by auto
-
 lemma upair_name_abs :
   assumes "x\<in>M" "y\<in>M" "z\<in>M" "o\<in>M"
   shows "is_upair_name(##M,x,y,o,z) \<longleftrightarrow> z = upair_name(x,y,o)"
   unfolding is_upair_name_def upair_name_def
-  using assms zero_in_M pair_in_M_iff Upair_simp
+  using assms zero_in_M pair_in_M_iff Upair_eq_cons
   by simp
 
 lemma upair_name_closed :
   "\<lbrakk> x\<in>M; y\<in>M ; o\<in>M\<rbrakk> \<Longrightarrow> upair_name(x,y,o)\<in>M"
   unfolding upair_name_def
-  using upair_in_M_iff pair_in_M_iff Upair_simp
+  using upair_in_M_iff pair_in_M_iff Upair_eq_cons
   by simp
 
 lemma opair_name_abs :
@@ -156,16 +151,9 @@ lemma opair_name_closed :
   unfolding opair_name_def
   using upair_name_closed by simp
 
-lemma sats_opair_name_fm :
-  assumes "x\<in>nat" "y\<in>nat" "z\<in>nat" "o\<in>nat" "env\<in>list(M)" "nth(o,env)=\<one>"
-  shows
-    "sats(M,opair_name_fm(x,y,o,z),env) \<longleftrightarrow> is_opair_name(##M,nth(x,env),nth(y,env),nth(o,env),nth(z,env))"
-  using assms sats_opair_name_fm
-  by auto
-
 lemma val_upair_name : "val(P,G,upair_name(\<tau>,\<rho>,\<one>)) = {val(P,G,\<tau>),val(P,G,\<rho>)}"
   unfolding upair_name_def
-  using val_Upair Upair_simp generic one_in_G one_in_P
+  using val_Upair Upair_eq_cons generic one_in_G one_in_P
   by simp
 
 lemma val_opair_name : "val(P,G,opair_name(\<tau>,\<rho>,\<one>)) = \<langle>val(P,G,\<tau>),val(P,G,\<rho>)\<rangle>"
@@ -191,7 +179,9 @@ proof -
   also
   have "... = {val(P,G,f(x)) . x \<in> a}"
     by auto
-  finally show ?thesis by simp
+  finally
+  show ?thesis
+    by simp
 qed
 
 \<comment> \<open>NOTE: The following bundled additions to the simpset might be of
@@ -225,17 +215,15 @@ lemma opname_check_abs :
   by simp
 
 lemma repl_opname_check :
-  assumes
-    "A\<in>M" "f\<in>M"
-  shows
-   "{opair_name(check(x),f`x,\<one>). x\<in>A}\<in>M"
+  assumes "A\<in>M" "f\<in>M"
+  shows "{opair_name(check(x),f`x,\<one>). x\<in>A}\<in>M"
 proof -
   have "arity(is_opname_check_fm(3,2,0,1))= 4"
     using arity_is_opname_check_fm
     by (simp add:ord_simp_union arity)
   moreover
-  have "x\<in>A \<Longrightarrow> opair_name(check(x), f ` x,\<one>)\<in>M" for x
-    using assms opair_name_closed apply_closed transitivity check_in_M one_in_M
+  have "opair_name(check(x), f ` x,\<one>)\<in>M" if "x\<in>A" for x
+    using assms opair_name_closed apply_closed transitivity check_in_M one_in_M that
     by simp
   ultimately
   show ?thesis
@@ -345,8 +333,8 @@ proof -
       have "induced_surj(f,a,e) \<in> M[G]"
         unfolding induced_surj_def
         by (simp flip: setclass_iff)
-      moreover note
-        \<open>\<alpha>\<in>M[G]\<close> \<open>Ord(\<alpha>)\<close>
+      moreover
+      note \<open>\<alpha>\<in>M[G]\<close> \<open>Ord(\<alpha>)\<close>
       ultimately
       show ?thesis
         by auto
