@@ -1,4 +1,4 @@
-section\<open>Main definitions of the development\<close>
+section\<open>Main definitions of the development\label{sec:main-definitions}\<close>
 
 theory Definitions_Main
   imports
