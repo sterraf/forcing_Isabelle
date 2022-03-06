@@ -366,13 +366,10 @@ locale M_ZF2 = M_ZF1 +
     "replacement_assm(M,env,Lambda_in_M_fm(is_converse_fm(0,1),0))"
     and
     LambdaPair_in_M_replacement2:
-    "replacement_assm(M,env,LambdaPair_in_M_fm(union_fm(0,1,2),0))"
     "replacement_assm(M,env,LambdaPair_in_M_fm(image_fm(0,1,2),0))"
     "replacement_assm(M,env,LambdaPair_in_M_fm(setdiff_fm(0,1,2),0))"
     "replacement_assm(M,env,LambdaPair_in_M_fm(minimum_fm(0,1,2),0))"
     "replacement_assm(M,env,LambdaPair_in_M_fm(upair_fm(0,1,2),0))"
-    "replacement_assm(M,env,LambdaPair_in_M_fm(cartprod_fm(0,1,2),0))"
-    "replacement_assm(M,env,LambdaPair_in_M_fm(pre_image_fm(0,1,2),0))"
     "replacement_assm(M,env,LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0))"
     "replacement_assm(M,env,LambdaPair_in_M_fm(composition_fm(0,1,2),0))"
 
@@ -393,17 +390,14 @@ definition instances2_fms where "instances2_fms \<equiv>
     Lambda_in_M_fm(big_union_fm(0,1),0),
     Lambda_in_M_fm(is_cardinal_fm(0,1),0),
     Lambda_in_M_fm(is_converse_fm(0,1),0),
-    LambdaPair_in_M_fm(union_fm(0,1,2),0),
     LambdaPair_in_M_fm(image_fm(0,1,2),0),
     LambdaPair_in_M_fm(setdiff_fm(0,1,2),0),
     LambdaPair_in_M_fm(minimum_fm(0,1,2),0),
     LambdaPair_in_M_fm(upair_fm(0,1,2),0),
-    LambdaPair_in_M_fm(cartprod_fm(0,1,2),0),
-    LambdaPair_in_M_fm(pre_image_fm(0,1,2),0),
     LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0),
     LambdaPair_in_M_fm(composition_fm(0,1,2),0) }"
 
-txt\<open>This set has 25 internalized formulas.\<close>
+txt\<open>This set has 22 internalized formulas.\<close>
 
 lemmas replacement_instances2_defs =
   replacement_is_omega_funspace_fm_def
@@ -473,7 +467,7 @@ lemma (in M_ZF2_trans) lam_replacement_image:
   using lam_replacement2_in_ctm[where \<phi>="image_fm(0,1,2)" and env="[]"]
     image_type image_iff_sats image_abs
     arity_image_fm[of 0 1 2] ord_simp_union transitivity image_closed fst_snd_closed
-    LambdaPair_in_M_replacement2(2)
+    LambdaPair_in_M_replacement2(1)
   by simp
 
 lemma (in M_ZF2_trans) lam_replacement_Diff:
@@ -481,7 +475,7 @@ lemma (in M_ZF2_trans) lam_replacement_Diff:
   using lam_replacement2_in_ctm[where \<phi>="setdiff_fm(0,1,2)" and env="[]"]
     setdiff_fm_type setdiff_iff_sats setdiff_abs
     arity_setdiff_fm[of 0 1 2] ord_simp_union transitivity Diff_closed fst_snd_closed
-    nonempty LambdaPair_in_M_replacement2(3)
+    nonempty LambdaPair_in_M_replacement2(2)
   by simp
 
 lemma is_minimum_eq :
@@ -510,20 +504,20 @@ lemma (in M_ZF2_trans) lam_replacement_minimum:
   using lam_replacement2_in_ctm[where \<phi>="minimum_fm(0,1,2)" and env="[]"]
     minimum_iff_sats[symmetric] is_minimum_iff minimum_abs is_minimum_eq
     arity_minimum_fm[of 0 1 2] ord_simp_union minimum_fm_type
-    minimum_closed zero_in_M LambdaPair_in_M_replacement2(4)
+    minimum_closed zero_in_M LambdaPair_in_M_replacement2(3)
   by simp
 
 lemma (in M_ZF2_trans) lam_replacement_Upair: "lam_replacement(##M, \<lambda>p. Upair(fst(p), snd(p)))"
   using lam_replacement2_in_ctm[where \<phi>="upair_fm(0,1,2)" and env="[]" and f="Upair"]
     Upair_closed upair_type upair_iff_sats Upair_eq_cons
-    arity_upair_fm[of 0 1 2,simplified] ord_simp_union LambdaPair_in_M_replacement2(5)
+    arity_upair_fm[of 0 1 2,simplified] ord_simp_union LambdaPair_in_M_replacement2(4)
   by simp
 
 lemma (in M_ZF2_trans) lam_replacement_comp:
   "lam_replacement(##M, \<lambda>p. comp(fst(p), snd(p)))"
   using lam_replacement2_in_ctm[where \<phi>="composition_fm(0,1,2)" and env="[]" and f="comp"]
     comp_closed composition_fm_type composition_iff_sats
-    arity_composition_fm[of 0 1 2] ord_simp_union LambdaPair_in_M_replacement2(9)
+    arity_composition_fm[of 0 1 2] ord_simp_union LambdaPair_in_M_replacement2(6)
   by simp
 
 lemma (in M_ZF2_trans) omega_funspace_abs:
@@ -681,7 +675,7 @@ lemma (in M_ZF2_trans) replacement_RepFun_body:
   using lam_replacement2_in_ctm[where \<phi>="is_RepFun_body_fm(0,1,2)" and env="[]" and f="\<lambda>p q . {{\<langle>q, x\<rangle>} . x \<in> p}"]
     RepFun_SigFun_closed[OF fst_snd_closed[THEN conjunct1,simplified] fst_snd_closed[THEN conjunct2,simplified]]
     arity_RepFun ord_simp_union transitivity zero_in_M RepFun_body_def RepFun_body_abs RepFun_SigFun_closed
-    LambdaPair_in_M_replacement2(8)
+    LambdaPair_in_M_replacement2(5)
   by simp
 
 sublocale M_ZF2_trans \<subseteq> M_replacement_extra "##M"
@@ -794,7 +788,7 @@ lemma (in M_ZF2_trans) replacement_is_trans_apply_image:
         where P="\<lambda> x z. M,[x,z,\<beta>,f] \<Turnstile> is_trans_apply_image_body_fm(3,2,0,1)",THEN iffD1])
    apply(rule_tac is_trans_apply_image_body_iff_sats[symmetric,unfolded is_trans_apply_image_body_def,where env="[_,_,\<beta>,f]"])
             apply(simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax2[unfolded replacement_assm_def, rule_format, where env="[\<beta>,f]",simplified])
+  apply(rule_tac replacement_ax2(8)[unfolded replacement_assm_def, rule_format, where env="[\<beta>,f]",simplified])
     apply(simp_all add: arity_is_trans_apply_image_body_fm is_trans_apply_image_body_fm_type ord_simp_union)
   done
 

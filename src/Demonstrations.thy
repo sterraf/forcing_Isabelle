@@ -43,8 +43,6 @@ lemma
       sorried_replacements(1-2)
       sorried_separations
       power_infty)
-  \<comment> \<open>We obtain two goals of the form \<^term>\<open>rall(M,\<V>)\<close> because of
-  instances of the form \<^term>\<open>\<forall>x[M]. separation(M,P)\<close>\<close>
   oops
 
 \<comment> \<open>NOTE: Only for pretty-printing purposes, overrides previous

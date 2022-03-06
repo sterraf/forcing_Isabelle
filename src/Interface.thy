@@ -576,7 +576,7 @@ proof -
     note \<open>arity(?f) = 5\<close>
     moreover from calculation
     have "strong_replacement(##M,\<lambda>x z. (M, [x,z,Memrel(succ(n)),A,0] \<Turnstile> ?f))"
-      using replacement_ax1[unfolded replacement_assm_def]
+      using replacement_ax1(2)[unfolded replacement_assm_def]
       by simp
     moreover from calculation
     have "strong_replacement(##M,\<lambda>x z.
@@ -675,7 +675,7 @@ lemma (in M_ZF1_trans) formula_repl1_intf :
   "iterates_replacement(##M, is_formula_functor(##M), 0)"
   using arity_formula_functor_fm zero_in_M ord_simp_union
     iterates_repl_intf[where is_F_fm="formula_functor_fm(1,0)"]
-    replacement_ax1[unfolded replacement_assm_def]
+    replacement_ax1(16)[unfolded replacement_assm_def]
   by simp
 
 arity_theorem for "Inl_fm"
@@ -690,7 +690,7 @@ lemma (in M_ZF1_trans) tl_repl_intf:
   shows "iterates_replacement(##M,\<lambda>l' t. is_tl(##M,l',t),l)"
   using assms arity_tl_fm ord_simp_union
     iterates_repl_intf[where is_F_fm="tl_fm(1,0)"]
-    replacement_ax1[unfolded replacement_assm_def]
+    replacement_ax1(15)[unfolded replacement_assm_def]
   by simp
 
 arity_theorem for "big_union_fm"
@@ -700,7 +700,7 @@ lemma (in M_ZF1_trans) eclose_repl1_intf:
   shows "iterates_replacement(##M, big_union(##M), A)"
   using assms arity_big_union_fm
     iterates_repl_intf[where is_F_fm="big_union_fm(1,0)"]
-    replacement_ax1[unfolded replacement_assm_def]
+    replacement_ax1(17)[unfolded replacement_assm_def]
     ord_simp_union
   by simp
 
@@ -737,7 +737,7 @@ proof -
     by simp
   ultimately
   show ?thesis
-    using replacement_ax1[unfolded replacement_assm_def] repl_sats[of M ?f "[A,0,nat]"]
+    using replacement_ax1(3)[unfolded replacement_assm_def] repl_sats[of M ?f "[A,0,nat]"]
     by simp
 qed
 
@@ -772,7 +772,7 @@ proof -
     by simp
   ultimately
   show ?thesis
-    using replacement_ax1[unfolded replacement_assm_def] repl_sats[of M ?f "[0,nat]"]
+    using replacement_ax1(4)[unfolded replacement_assm_def] repl_sats[of M ?f "[0,nat]"]
     by simp
 qed
 
@@ -808,7 +808,7 @@ proof -
     by simp
   ultimately
   show ?thesis
-    using repl_sats[of M ?f "[A,nat]"] replacement_ax1[unfolded replacement_assm_def]
+    using repl_sats[of M ?f "[A,nat]"] replacement_ax1(5)[unfolded replacement_assm_def]
     by simp
 qed
 
@@ -840,7 +840,7 @@ proof -
     by simp
   ultimately
   show ?thesis
-    using replacement_ax1[unfolded replacement_assm_def]
+    using replacement_ax1(6)[unfolded replacement_assm_def]
     by (rule_tac strong_replacement_cong[THEN iffD2,OF iff],simp_all)
 qed
 
@@ -863,7 +863,7 @@ proof -
     by (simp add:arity ord_simp_union)
   ultimately
   show ?thesis
-    using replacement_ax1[unfolded replacement_assm_def]
+    using replacement_ax1(7)[unfolded replacement_assm_def]
     unfolding PHrank_def
     by(rule_tac strong_replacement_cong[THEN iffD2,OF iff],simp_all)
 qed
@@ -903,7 +903,7 @@ proof -
     by simp
   moreover from calculation
   have "strong_replacement(##M,\<lambda>x z. (M, [x,z,rrank(X)] \<Turnstile> ?f))"
-    using replacement_ax1[unfolded replacement_assm_def] rrank_in_M
+    using replacement_ax1(8)[unfolded replacement_assm_def] rrank_in_M
     by simp
   ultimately
   show ?thesis
@@ -968,7 +968,7 @@ proof -
       by simp
     moreover from calculation
     have "strong_replacement(##M,\<lambda>x z. (M, [x,z,A,mesa] \<Turnstile> ?f))"
-      using replacement_ax1[unfolded replacement_assm_def]
+      using replacement_ax1(9)[unfolded replacement_assm_def]
       by simp
     ultimately
     have "wfrec_replacement(##M,is_HVfrom(##M,A),mesa)"

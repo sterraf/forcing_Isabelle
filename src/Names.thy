@@ -429,7 +429,7 @@ proof -
     by simp
   ultimately
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,\<one>,rcheck(X)]))"
-    using replacement_ax1 artyf \<open>X\<in>M\<close> rcheck_in_M one_in_M
+    using replacement_ax1(10) artyf \<open>X\<in>M\<close> rcheck_in_M one_in_M
     unfolding replacement_assm_def by simp
   then
   have "strong_replacement(##M,\<lambda>x z.
@@ -446,7 +446,7 @@ lemma repl_PHcheck :
 proof -
   from \<open>f\<in>M\<close>
   have "strong_replacement(##M,\<lambda>x y. sats(M,PHcheck_fm(2,3,0,1),[x,y,\<one>,f]))"
-    using replacement_ax1 one_in_M unfolding replacement_assm_def
+    using replacement_ax1(11) one_in_M unfolding replacement_assm_def
     by (simp add:arity ord_simp_union)
   with \<open>f\<in>M\<close>
   show ?thesis
@@ -532,7 +532,7 @@ proof -
   show ?thesis
     using sats_check_fm check_abs P_in_M check_in_M one_in_M transitivity zero_in_M
       Replace_relativized_in_M[of "check_fm(0,2,1)" "[\<one>]" _ "is_check(##M,\<one>)" check]
-      check_fm_type replacement_ax1
+      check_fm_type replacement_ax1(12)
     by simp
 qed
 
@@ -568,7 +568,7 @@ proof -
   show ?thesis
     unfolding G_dot_def
     using one_in_M P_in_M transitivity Replace_relativized_in_M[of ?pcheck_fm "[\<one>]"]
-      replacement_ax1
+      replacement_ax1(13)
     by simp
 qed
 

@@ -14,10 +14,6 @@ locale M_ZF3 = M_ZF2 +
     "replacement_assm(M,env,replacement_is_jump_cardinal_body_fm)"
     "replacement_assm(M,env,replacement_is_aleph_fm)"
     and
-    Lambda_in_M_replacement3:
-    "replacement_assm(M,env,Lambda_in_M_fm(ccc_fun_closed_lemma_aux2_fm,6))"
-    "replacement_assm(M,env,Lambda_in_M_fm(ccc_fun_closed_lemma_fm,6))"
-    and
     LambdaPair_in_M_replacement3:
     "replacement_assm(M,env,LambdaPair_in_M_fm(is_inj_fm(0,1,2),0))"
 
@@ -26,11 +22,9 @@ definition instances3_fms where "instances3_fms \<equiv>
     wfrec_replacement_order_pred_fm,
     replacement_is_jump_cardinal_body_fm,
     replacement_is_aleph_fm,
-    Lambda_in_M_fm(ccc_fun_closed_lemma_aux2_fm,6),
-    Lambda_in_M_fm(ccc_fun_closed_lemma_fm,6),
     LambdaPair_in_M_fm(is_inj_fm(0,1,2),0) }"
 
-txt\<open>This set has 7 internalized formulas.\<close>
+txt\<open>This set has 5 internalized formulas.\<close>
 
 lemmas replacement_instances3_defs =
   replacement_is_order_body_fm_def wfrec_replacement_order_pred_fm_def
@@ -64,7 +58,7 @@ lemma (in M_ZF3_trans) lam_replacement_inj_rel:
     LambdaPair_in_M[where \<phi>="is_inj_fm(0,1,2)" and is_f="is_inj(##M)" and env="[]",OF
       is_inj_fm_type _ is_inj_iff_sats[symmetric] inj_rel_iff,simplified]
     arity_is_inj_fm[of 0 1 2] ord_simp_union transitivity fst_snd_closed
-    inj_rel_closed zero_in_M LambdaPair_in_M_replacement3(1)
+    inj_rel_closed zero_in_M LambdaPair_in_M_replacement3
   by simp
 
 arity_theorem for "is_transitive_fm"
@@ -120,7 +114,7 @@ lemma (in M_ZF3_trans) replacement_is_order_body:
         where P="\<lambda> x f. M,[x,f,X] \<Turnstile> is_order_body_fm(2,0,1)",THEN iffD1])
    apply(rule_tac is_order_body_iff_sats[where env="[_,_,X]",symmetric])
           apply(simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax3[unfolded replacement_assm_def, rule_format, where env="[X]",simplified])
+  apply(rule_tac replacement_ax3(1)[unfolded replacement_assm_def, rule_format, where env="[X]",simplified])
     apply(simp_all add: arity_is_order_body )
   done
 
@@ -154,7 +148,7 @@ lemma (in M_ZF3_trans) wfrec_replacement_order_pred:
    apply(subst order_pred_wfrec_body_def[symmetric])
    apply(rule_tac order_pred_wfrec_body_iff_sats[where env="[_,_,r,A]",symmetric])
            apply(simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax3[unfolded replacement_assm_def, rule_format, where env="[r,A]",simplified])
+  apply(rule_tac replacement_ax3(2)[unfolded replacement_assm_def, rule_format, where env="[r,A]",simplified])
     apply(simp_all add: arity_order_pred_wfrec_body_fm ord_simp_union)
   done
 
@@ -187,7 +181,7 @@ lemma (in M_ZF3_trans) replacement_is_jump_cardinal_body:
         where P="\<lambda> x f. M,[x,f] \<Turnstile> is_jump_cardinal_body'_fm(0,1)",THEN iffD1])
    apply(rule_tac is_jump_cardinal_body'_iff_sats[where env="[_,_]",symmetric])
         apply(simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax3[unfolded replacement_assm_def, rule_format, where env="[]",simplified])
+  apply(rule_tac replacement_ax3(3)[unfolded replacement_assm_def, rule_format, where env="[]",simplified])
    apply(simp_all add: arity_is_jump_cardinal_body )
   done
 
@@ -242,7 +236,7 @@ lemma (in M_ZF3_trans) replacement_is_aleph:
    apply (auto simp add: ordinal_iff_sats[where env="[_,_]",symmetric])
     apply(rule_tac is_Aleph_iff_sats[where env="[_,_]",THEN iffD2],simp_all add:zero_in_M)
    apply(rule_tac is_Aleph_iff_sats[where env="[_,_]",THEN iffD1],simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax3[unfolded replacement_assm_def, rule_format, where env="[]",simplified])
+  apply(rule_tac replacement_ax3(4)[unfolded replacement_assm_def, rule_format, where env="[]",simplified])
    apply(simp_all add:arity_is_Aleph FOL_arities arity_ordinal_fm ord_simp_union is_Aleph_fm_type)
   done
 
@@ -284,8 +278,6 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,wfrec_replacement_order_pred_fm)"
     "ground_replacement_assm(M,env,replacement_is_jump_cardinal_body_fm)"
     "ground_replacement_assm(M,env,replacement_is_aleph_fm)"
-    "ground_replacement_assm(M,env,Lambda_in_M_fm(ccc_fun_closed_lemma_aux2_fm,6))"
-    "ground_replacement_assm(M,env,Lambda_in_M_fm(ccc_fun_closed_lemma_fm,6))"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(is_inj_fm(0,1,2),0))"
     "ground_replacement_assm(M,env,wfrec_Hfrc_at_fm)"
     "ground_replacement_assm(M,env,list_repl1_intf_fm)"
@@ -318,13 +310,10 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,Lambda_in_M_fm(big_union_fm(0,1),0))"
     "ground_replacement_assm(M,env,Lambda_in_M_fm(is_cardinal_fm(0,1),0))"
     "ground_replacement_assm(M,env,Lambda_in_M_fm(snd_fm(0,1),0))"
-    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(union_fm(0,1,2),0))"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(image_fm(0,1,2),0))"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(setdiff_fm(0,1,2),0))"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(minimum_fm(0,1,2),0))"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(upair_fm(0,1,2),0))"
-    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(cartprod_fm(0,1,2),0))"
-    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(pre_image_fm(0,1,2),0))"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0))"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(composition_fm(0,1,2),0))"
     "ground_replacement_assm(M,env,Lambda_in_M_fm(is_converse_fm(0,1),0))"
@@ -335,8 +324,6 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(wfrec_replacement_order_pred_fm),
     ground_repl_fm(replacement_is_jump_cardinal_body_fm),
     ground_repl_fm(replacement_is_aleph_fm),
-    ground_repl_fm(Lambda_in_M_fm(ccc_fun_closed_lemma_aux2_fm,6)),
-    ground_repl_fm(Lambda_in_M_fm(ccc_fun_closed_lemma_fm,6)),
     ground_repl_fm(LambdaPair_in_M_fm(is_inj_fm(0,1,2),0)),
     ground_repl_fm(wfrec_Hfrc_at_fm),
     ground_repl_fm(list_repl1_intf_fm),
@@ -369,26 +356,23 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(Lambda_in_M_fm(big_union_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(is_cardinal_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(snd_fm(0,1),0)),
-    ground_repl_fm(LambdaPair_in_M_fm(union_fm(0,1,2),0)),
     ground_repl_fm(LambdaPair_in_M_fm(image_fm(0,1,2),0)),
     ground_repl_fm(LambdaPair_in_M_fm(setdiff_fm(0,1,2),0)),
     ground_repl_fm(LambdaPair_in_M_fm(minimum_fm(0,1,2),0)),
     ground_repl_fm(LambdaPair_in_M_fm(upair_fm(0,1,2),0)),
-    ground_repl_fm(LambdaPair_in_M_fm(cartprod_fm(0,1,2),0)),
-    ground_repl_fm(LambdaPair_in_M_fm(pre_image_fm(0,1,2),0)),
     ground_repl_fm(LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0)),
     ground_repl_fm(LambdaPair_in_M_fm(composition_fm(0,1,2),0)),
     ground_repl_fm(Lambda_in_M_fm(is_converse_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)) }"
 
-txt\<open>This set has 49 internalized formulas, corresponding to the total count
+txt\<open>This set has 44 internalized formulas, corresponding to the total count
 of previous replacement instances.\<close>
 
 definition overhead where
   "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union> instances4_fms"
 
 txt\<open>Hence, the “overhead” to force $\CH$ and its negation consists
-of 98 replacement instances.\<close>
+of 88 replacement instances.\<close>
 
 lemma instances3_fms_type[TC] : "instances3_fms \<subseteq> formula"
   unfolding instances3_fms_def replacement_is_order_body_fm_def

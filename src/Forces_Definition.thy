@@ -654,7 +654,7 @@ proof -
   have "?f\<in>formula" by simp
   ultimately
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,P,leq,forcerel(P,X)]))"
-    using replacement_ax1 1 artyf \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M
+    using replacement_ax1(1) 1 artyf \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M
     unfolding replacement_assm_def by simp
   then
   have "strong_replacement(##M,\<lambda>x z.
