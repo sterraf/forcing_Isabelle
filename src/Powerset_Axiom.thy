@@ -20,8 +20,8 @@ lemma name_components_in_M:
   assumes "\<langle>\<sigma>,p\<rangle>\<in>\<theta>" "\<theta> \<in> M"
   shows   "\<sigma>\<in>M" "p\<in>M"
 proof -
-  from assms obtain a where
-    "\<sigma> \<in> a" "p \<in> a" "a\<in>\<langle>\<sigma>,p\<rangle>"
+  from assms
+  obtain a where "\<sigma> \<in> a" "p \<in> a" "a\<in>\<langle>\<sigma>,p\<rangle>"
     unfolding Pair_def by auto
   moreover from assms
   have "\<langle>\<sigma>,p\<rangle>\<in>M"
@@ -36,29 +36,25 @@ qed
 
 lemma sats_fst_snd_in_M:
   assumes
-    "A\<in>M" "B\<in>M" "\<phi> \<in> formula" "p\<in>M" "l\<in>M" "o\<in>M" "\<chi>\<in>M"
-    "arity(\<phi>) \<le> 6"
-  shows
-    "{\<langle>s,q\<rangle>\<in>A\<times>B . M, [q,p,l,o,s,\<chi>] \<Turnstile> \<phi>} \<in> M"
-    (is "?\<theta> \<in> M")
+    "A\<in>M" "B\<in>M" "\<phi> \<in> formula" "p\<in>M" "l\<in>M" "o\<in>M" "\<chi>\<in>M" "arity(\<phi>) \<le> 6"
+  shows "{\<langle>s,q\<rangle>\<in>A\<times>B . M, [q,p,l,o,s,\<chi>] \<Turnstile> \<phi>} \<in> M" (is "?\<theta> \<in> M")
 proof -
-  have "6\<in>nat" "7\<in>nat" by simp_all
   let ?\<phi>' = "ren(\<phi>)`6`7`perm_pow_fn"
-  from \<open>A\<in>M\<close> \<open>B\<in>M\<close> have
-    "A\<times>B \<in> M"
+  from \<open>A\<in>M\<close> \<open>B\<in>M\<close>
+  have "A\<times>B \<in> M"
     using cartprod_closed by simp
-  from \<open>arity(\<phi>) \<le> 6\<close> \<open>\<phi>\<in> formula\<close> \<open>6\<in>_\<close> \<open>7\<in>_\<close>
+  from \<open>arity(\<phi>) \<le> 6\<close> \<open>\<phi>\<in> formula\<close>
   have "?\<phi>' \<in> formula" "arity(?\<phi>')\<le>7"
     unfolding perm_pow_fn_def
-    using  perm_pow_thm  arity_ren ren_tc Nil_type
+    using perm_pow_thm  arity_ren ren_tc Nil_type
     by auto
   with \<open>?\<phi>' \<in> formula\<close>
-  have 1: "arity(Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))))\<le>5"     (is "arity(?\<psi>)\<le>5")
-    unfolding pair_fm_def upair_fm_def
-    using ord_simp_union pred_le arity_type by (auto simp:arity)
+  have arty: "arity(Exists(Exists(And(pair_fm(0,1,2),?\<phi>'))))\<le>5" (is "arity(?\<psi>)\<le>5")
+    using ord_simp_union pred_le
+    by (auto simp:arity)
   {
     fix sp
-    note \<open>A\<times>B \<in> M\<close>
+    note \<open>A\<times>B \<in> M\<close> \<open>A\<in>M\<close> \<open>B\<in>M\<close>
     moreover
     assume "sp \<in> A\<times>B"
     moreover from calculation
@@ -66,11 +62,11 @@ proof -
       using fst_type snd_type by simp_all
     ultimately
     have "sp \<in> M" "fst(sp) \<in> M" "snd(sp) \<in> M"
-      using  \<open>A\<in>M\<close> \<open>B\<in>M\<close> transitivity
+      using transitivity
       by simp_all
     note inM = \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>p\<in>M\<close> \<open>l\<in>M\<close> \<open>o\<in>M\<close> \<open>\<chi>\<in>M\<close>
       \<open>sp\<in>M\<close> \<open>fst(sp)\<in>M\<close> \<open>snd(sp)\<in>M\<close>
-    with 1 \<open>sp \<in> M\<close> \<open>?\<phi>' \<in> formula\<close>
+    with arty \<open>sp \<in> M\<close> \<open>?\<phi>' \<in> formula\<close>
     have "(M, [sp,p,l,o,\<chi>]@[p] \<Turnstile> ?\<psi>) \<longleftrightarrow> M,[sp,p,l,o,\<chi>] \<Turnstile> ?\<psi>" (is "(M,?env0@ _\<Turnstile>_) \<longleftrightarrow> _")
       using arity_sats_iff[of ?\<psi> "[p]" M ?env0] by auto
     also from inM \<open>sp \<in> A\<times>B\<close>
@@ -85,19 +81,20 @@ proof -
     have "(M,[sp,p,l,o,\<chi>,p] \<Turnstile> ?\<psi>) \<longleftrightarrow> M, [snd(sp),p,l,o,fst(sp),\<chi>] \<Turnstile> \<phi>"
       by simp
   }
-  then have
-    "?\<theta> = {sp\<in>A\<times>B . sats(M,?\<psi>,[sp,p,l,o,\<chi>,p])}"
+  then
+  have "?\<theta> = {sp\<in>A\<times>B . sats(M,?\<psi>,[sp,p,l,o,\<chi>,p])}"
     by auto
-  also from assms \<open>A\<times>B\<in>M\<close> have
-    " ... \<in> M"
+  also from assms \<open>A\<times>B\<in>M\<close>
+  have " ... \<in> M"
   proof -
-    from 1
+    from arty
     have "arity(?\<psi>) \<le> 6"
       using leI by simp
     moreover from \<open>?\<phi>' \<in> formula\<close>
     have "?\<psi> \<in> formula"
       by simp
-    moreover note assms \<open>A\<times>B\<in>M\<close>
+    moreover
+    note assms \<open>A\<times>B\<in>M\<close>
     ultimately
     show "{x \<in> A\<times>B . M, [x, p, l, o, \<chi>, p] \<Turnstile> ?\<psi>} \<in> M"
       using separation_ax separation_iff
@@ -107,12 +104,11 @@ proof -
 qed
 
 lemma Pow_inter_MG:
-  assumes
-    "a\<in>M[G]"
-  shows
-    "Pow(a) \<inter> M[G] \<in> M[G]"
+  assumes "a\<in>M[G]"
+  shows "Pow(a) \<inter> M[G] \<in> M[G]"
 proof -
-  from assms obtain \<tau> where "\<tau> \<in> M" "val(P,G, \<tau>) = a"
+  from assms
+  obtain \<tau> where "\<tau> \<in> M" "val(P,G, \<tau>) = a"
     using GenExtD by auto
   let ?Q="Pow(domain(\<tau>)\<times>P) \<inter> M"
   from \<open>\<tau>\<in>M\<close>
@@ -122,8 +118,8 @@ proof -
   then
   have "?Q \<in> M"
   proof -
-    from power_ax \<open>domain(\<tau>)\<times>P \<in> M\<close> obtain Q where
-      "powerset(##M,domain(\<tau>)\<times>P,Q)" "Q \<in> M"
+    from power_ax \<open>domain(\<tau>)\<times>P \<in> M\<close>
+    obtain Q where "powerset(##M,domain(\<tau>)\<times>P,Q)" "Q \<in> M"
       unfolding power_ax_def by auto
     moreover from calculation
     have "z\<in>Q \<Longrightarrow> z\<in>M" for z
@@ -136,7 +132,8 @@ proof -
     have " ... = ?Q"
       by auto
     finally
-    show ?thesis using \<open>Q\<in>M\<close> by simp
+    show ?thesis
+      using \<open>Q\<in>M\<close> by simp
   qed
   let ?\<pi>="?Q\<times>{\<one>}"
   let ?b="val(P,G,?\<pi>)"
@@ -151,7 +148,8 @@ proof -
   proof
     fix c
     assume "c \<in> Pow(a) \<inter> M[G]"
-    then obtain \<chi> where "c\<in>M[G]" "\<chi> \<in> M" "val(P,G,\<chi>) = c"
+    then
+    obtain \<chi> where "c\<in>M[G]" "\<chi> \<in> M" "val(P,G,\<chi>) = c"
       using GenExt_iff by auto
     let ?\<theta>="{\<langle>\<sigma>,p\<rangle> \<in>domain(\<tau>)\<times>P . p \<tturnstile> \<cdot>0 \<in> 1\<cdot> [\<sigma>,\<chi>] }"
     have "arity(forces(Member(0,1))) = 6"
@@ -170,8 +168,8 @@ proof -
     proof(intro equalityI subsetI)
       fix x
       assume "x \<in> val(P,G,?\<theta>)"
-      then obtain \<sigma> p where
-        1: "\<langle>\<sigma>,p\<rangle>\<in>?\<theta>" "p\<in>G" "val(P,G,\<sigma>) =  x"
+      then
+      obtain \<sigma> p where 1: "\<langle>\<sigma>,p\<rangle>\<in>?\<theta>" "p\<in>G" "val(P,G,\<sigma>) =  x"
         using elem_of_val_pair
         by blast
       moreover from \<open>\<langle>\<sigma>,p\<rangle>\<in>?\<theta>\<close> \<open>?\<theta> \<in> M\<close>
@@ -181,14 +179,14 @@ proof -
       have "p \<tturnstile> \<cdot>0 \<in> 1\<cdot> [\<sigma>,\<chi>]" "p\<in>P"
         by simp_all
       moreover
-      note \<open>val(P,G,\<chi>) = c\<close>
+      note \<open>val(P,G,\<chi>) = c\<close> \<open>\<chi> \<in> M\<close>
       ultimately
       have "M[G], [x, c] \<Turnstile> \<cdot>0 \<in> 1\<cdot>"
-        using \<open>\<chi> \<in> M\<close> generic definition_of_forcing[where \<phi>="\<cdot>0 \<in> 1\<cdot>"]
-          ord_simp_union by auto
-      moreover
+        using generic definition_of_forcing[where \<phi>="\<cdot>0 \<in> 1\<cdot>"] ord_simp_union
+        by auto
+      moreover from \<open>\<sigma>\<in>M\<close> \<open>\<chi>\<in>M\<close>
       have "x\<in>M[G]"
-        using \<open>val(P,G,\<sigma>) =  x\<close> \<open>\<sigma>\<in>M\<close>  \<open>\<chi>\<in>M\<close> GenExtI by blast
+        using \<open>val(P,G,\<sigma>) = x\<close> GenExtI by blast
       ultimately
       show "x\<in>c"
         using \<open>c\<in>M[G]\<close> by simp
@@ -201,11 +199,11 @@ proof -
       with \<open>val(P,G, \<tau>) = a\<close>
       obtain \<sigma> where "\<sigma>\<in>domain(\<tau>)" "val(P,G,\<sigma>) = x"
         using elem_of_val by blast
-      moreover note \<open>x\<in>c\<close> \<open>val(P,G,\<chi>) = c\<close>
+      moreover
+      note \<open>x\<in>c\<close> \<open>val(P,G,\<chi>) = c\<close> \<open>c\<in>M[G]\<close> \<open>x\<in>M[G]\<close>
       moreover from calculation
       have "val(P,G,\<sigma>) \<in> val(P,G,\<chi>)"
         by simp
-      moreover note \<open>c\<in>M[G]\<close> \<open>x\<in>M[G]\<close>
       moreover from calculation
       have "M[G], [x, c] \<Turnstile> \<cdot>0 \<in> 1\<cdot>"
         by simp
@@ -236,7 +234,8 @@ proof -
         using val_of_elem [of _ _ "?\<theta>"] by auto
     qed
     with \<open>val(P,G,?\<theta>) \<in> ?b\<close>
-    show "c\<in>?b" by simp
+    show "c\<in>?b"
+      by simp
   qed
   then
   have "Pow(a) \<inter> M[G] = {x\<in>?b . x\<subseteq>a \<and> x\<in>M[G]}"
@@ -254,14 +253,16 @@ proof -
   also from \<open>?b\<in>M[G]\<close> \<open>a\<in>M[G]\<close>
   have " ... \<in> M[G]"
     using Collect_sats_in_MG GenExtI ord_simp_union by (simp add:arity)
-  finally show ?thesis .
+  finally
+  show ?thesis .
 qed
 
 end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 sublocale G_generic1 \<subseteq> ext: M_trivial "##M[G]"
   using generic Union_MG pairing_in_MG zero_in_MG transitivity_MG
-  unfolding M_trivial_def M_trans_def M_trivial_axioms_def by (simp; blast)
+  unfolding M_trivial_def M_trans_def M_trivial_axioms_def
+  by (simp; blast)
 
 context G_generic1 begin
 
@@ -274,7 +275,8 @@ proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
   fix a
   assume "a \<in> M[G]"
   then
-  have "(##M[G])(a)" by simp
+  have "(##M[G])(a)"
+    by simp
   have "{x\<in>Pow(a) . x \<in> M[G]} = Pow(a) \<inter> M[G]"
     by auto
   also from \<open>a\<in>M[G]\<close>
