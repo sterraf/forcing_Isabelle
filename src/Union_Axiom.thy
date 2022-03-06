@@ -112,10 +112,11 @@ proof (intro equalityI subsetI)
   with \<open>a=_\<close>
   have "x\<in> \<Union> (val(P,G,\<tau>))"
     by simp
-  then obtain i where "i \<in> val(P,G,\<tau>)" "x \<in> i"
+  then
+  obtain i where "i \<in> val(P,G,\<tau>)" "x \<in> i"
     by blast
-  with \<open>\<tau> \<in> M\<close> obtain \<sigma> q where
-    "q \<in> G" "\<langle>\<sigma>,q\<rangle> \<in> \<tau>" "val(P,G,\<sigma>) = i" "\<sigma> \<in> M"
+  with \<open>\<tau> \<in> M\<close>
+  obtain \<sigma> q where "q \<in> G" "\<langle>\<sigma>,q\<rangle> \<in> \<tau>" "val(P,G,\<sigma>) = i" "\<sigma> \<in> M"
     using elem_of_val_pair domain_trans[OF trans_M]
     by blast
   moreover from this \<open>x \<in> i\<close>
@@ -152,8 +153,7 @@ next
   have "p\<in>P"
     using filterD by simp
   moreover from calculation
-  obtain \<sigma> q r where
-    "\<sigma> \<in> domain(\<tau>)"  "\<langle>\<sigma>,q\<rangle> \<in> \<tau> " "\<langle>\<theta>,r\<rangle> \<in> \<sigma>" "r\<in>P" "q\<in>P" "\<langle>p,r\<rangle> \<in> leq" "\<langle>p,q\<rangle> \<in> leq"
+  obtain \<sigma> q r where "\<langle>\<sigma>,q\<rangle> \<in> \<tau>" "\<langle>\<theta>,r\<rangle> \<in> \<sigma>" "\<langle>p,r\<rangle> \<in> leq" "\<langle>p,q\<rangle> \<in> leq" "r\<in>P" "q\<in>P"
     unfolding Union_name_def Union_name_body_def
     by force
   moreover from calculation
@@ -166,7 +166,8 @@ next
   have "val(P,G,\<theta>) \<in> \<Union> val(P,G,\<tau>)"
     by blast
   ultimately
-  show "x \<in> \<Union> a" by simp
+  show "x \<in> \<Union> a"
+    by simp
 qed
 
 lemma union_in_MG :
