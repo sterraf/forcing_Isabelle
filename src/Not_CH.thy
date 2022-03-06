@@ -414,10 +414,10 @@ proof
   fix p
   assume "p \<in> Add"
   then
-  obtain n where "<w,n> \<notin> domain(p)" "<x,n> \<notin> domain(p)" "n \<in> \<omega>"
+  obtain n where "\<langle>w,n\<rangle> \<notin> domain(p)" "\<langle>x,n\<rangle> \<notin> domain(p)" "n \<in> \<omega>"
   proof -
     {
-      assume "<w,n> \<in> domain(p) \<or> <x,n> \<in> domain(p)" if "n \<in> \<omega>" for n
+      assume "\<langle>w,n\<rangle> \<in> domain(p) \<or> \<langle>x,n\<rangle> \<in> domain(p)" if "n \<in> \<omega>" for n
       then
       have "\<omega> \<subseteq> range(domain(p))" by blast
       then
@@ -484,7 +484,7 @@ qed
 
 definition
   h_G :: "i" (\<open>h\<^bsub>G\<^esub>\<close>) where
-  "h\<^bsub>G\<^esub> \<equiv> \<lambda>\<alpha>\<in>\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>. \<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub>`<\<alpha>,n>"
+  "h\<^bsub>G\<^esub> \<equiv> \<lambda>\<alpha>\<in>\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>. \<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub>`\<langle>\<alpha>,n\<rangle>"
 
 lemma h_G_in_MG[simp]:
   includes G_generic1_lemmas
