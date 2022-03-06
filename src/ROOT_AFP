@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Independence_CH" in "." =  "Transitive_Models" +
+session "Independence_CH" (AFP) =  "Transitive_Models" +
   description "
     The Independence of the Continuum Hypothesis in Isabelle/ZF
 
@@ -12,9 +12,8 @@ session "Independence_CH" in "." =  "Transitive_Models" +
   options [timeout=300, document = pdf, document_output = "output",
   	   document_variants = "document:outline=/proof,/ML"]
   theories
-    "Rasiowa_Sikorski"
-    "Forcing_Main"
     "Definitions_Main"
+    "Demonstrations"
   document_files
     "root.tex"
     "root.bib"
