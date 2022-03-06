@@ -59,7 +59,8 @@ proof -
       proof(cases)
         case 1
         then
-        have "\<langle>\<alpha>, x\<rangle> \<in> Memrel(succ(x))" "x\<in>succ(x)" "\<alpha>\<in>succ(x)" by auto
+        have "\<langle>\<alpha>, x\<rangle> \<in> Memrel(succ(x))" "x\<in>succ(x)" "\<alpha>\<in>succ(x)"
+          by auto
         with \<open>f\<in>succ(x) \<^sub><\<rightarrow> (Coll,converse(Colleq))\<close>
         show ?thesis
           using mono_mapD(2)[OF _ \<open>\<alpha>\<in>succ(x)\<close> _ \<open>\<langle>\<alpha>, x\<rangle> \<in> Memrel(succ(x))\<close>]
@@ -82,7 +83,8 @@ proof -
         nat_into_M[simplified] mono_seqspace_is_fun[of "converse(Colleq)"]
       by (intro apply_type[of _ "succ(x)"]) (auto simp del:setclass_iff)
     ultimately
-    show ?case using transM[of _ Coll]
+    show ?case
+      using transM[of _ Coll]
       by (auto dest:transM simp del:setclass_iff, rule_tac x="f`x" in bexI)
         (auto simp del:setclass_iff, simp)
   qed
@@ -124,7 +126,8 @@ proof -
         using Fnle_relD mono_map_lt_le_is_mono converse_refl[OF Colleq_refl]
         by auto
       then
-      show ?thesis by auto
+      show ?thesis
+        by auto
     qed
     moreover from calculation
     have "?G \<subseteq> (\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (nat \<rightarrow>\<^bsup>M\<^esup> 2))"
@@ -155,7 +158,8 @@ proof -
       by auto
   qed
   ultimately
-  show ?thesis unfolding kappa_closed_rel_def by (auto elim!:leE dest:ltD)
+  show ?thesis
+    unfolding kappa_closed_rel_def by (auto elim!:leE dest:ltD)
 qed
 
 end \<comment> \<open>\<^locale>\<open>M_ctm3_AC\<close>\<close>
@@ -235,7 +239,7 @@ proof -
   from assms
   have "dense(dom_dense(x))" "x\<in>M"
     using dense_dom_dense transitivity[OF _
-      Aleph_rel_closed[of 1,THEN setclass_iff[THEN iffD1]]]
+        Aleph_rel_closed[of 1,THEN setclass_iff[THEN iffD1]]]
     by simp_all
   with assms
   obtain p where "p\<in>dom_dense(x)" "p\<in>G"
@@ -518,7 +522,8 @@ proof -
     using satT_ZC_ZF_replacement_imp_satT_ZFC
     by auto
   ultimately
-  show ?thesis by auto
+  show ?thesis
+    by auto
 qed
 
 end

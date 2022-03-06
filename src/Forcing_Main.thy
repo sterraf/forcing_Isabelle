@@ -10,8 +10,7 @@ begin
 
 subsection\<open>The generic extension is countable\<close>
 
-lemma (in forcing_data1) surj_nat_MG :
-  "\<exists>f. f \<in> surj(\<omega>,M[G])"
+lemma (in forcing_data1) surj_nat_MG : "\<exists>f. f \<in> surj(\<omega>,M[G])"
 proof -
   let ?f="\<lambda>n\<in>\<omega>. val(P,G,enum`n)"
   have "x \<in> \<omega> \<Longrightarrow> val(P,G, enum ` x)\<in> M[G]" for x
@@ -34,14 +33,13 @@ proof -
     using surj_nat_MG by blast
   then
   have "M[G] \<lesssim> \<omega>"
-    using well_ord_surj_imp_lepoll well_ord_Memrel[of \<omega>]
-    by simp
+    using well_ord_surj_imp_lepoll well_ord_Memrel[of \<omega>] by simp
   moreover
   have "\<omega> \<lesssim> M[G]"
     using ext.nat_into_M subset_imp_lepoll by (auto del:lepollI)
   ultimately
-  show ?thesis using eqpollI
-    by simp
+  show ?thesis
+    using eqpollI by simp
 qed
 
 subsection\<open>Extensions of ctms of fragments of $\ZFC$\<close>
@@ -59,7 +57,7 @@ proof -
     assume "\<phi> \<in> formula" "env\<in>list(M)"
     moreover from \<open>M \<Turnstile> ZF\<close>
     have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
-         "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
+      "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
       unfolding ZF_def ZF_schemes_def by auto
     moreover from calculation
     have "arity(\<phi>) \<le> succ(length(env)) \<Longrightarrow> separation(##M, \<lambda>x. (M, Cons(x, env) \<Turnstile> \<phi>))"
@@ -97,7 +95,7 @@ proof -
     from \<open>M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms}\<close>
     have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
       unfolding Zermelo_fms_def ZF_def instances1_fms_def
-      instances2_fms_def by auto
+        instances2_fms_def by auto
     moreover
     assume "\<phi> \<in> formula" "env\<in>list(M)"
     ultimately
@@ -237,7 +235,8 @@ proof -
   have "(M, []\<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N \<Turnstile> ZFC"
     using sats_ZFC_iff_sats_ZF_AC by simp
   ultimately
-  show ?thesis by auto
+  show ?thesis
+    by auto
 qed
 
 end
