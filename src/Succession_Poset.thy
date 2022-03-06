@@ -6,16 +6,17 @@ theory Succession_Poset
     Proper_Extension
 begin
 
-text\<open>In this theory we define a separative posets, its underlying set is the
-set of finite succesions of \<^term>\<open>2\<close>; of course, one can see that set as
+text\<open>In this theory we define a separative poset. Its underlying set is the
+set of finite binary sequences (that is, with codomain $2={0,1}$);
+of course, one can see that set as
 the set \<^term>\<open>\<omega>-||>2\<close> or equivalently as the set of partial functions
-\<^term>\<open>Fn(\<omega>,\<omega>,2)\<close>, ie the set of partial functions bounded by \<^term>\<open>\<omega>\<close>.
+\<^term>\<open>Fn(\<omega>,\<omega>,2)\<close>, i.e. the set of partial functions bounded by \<^term>\<open>\<omega>\<close>.
 
-The relation of the poset is that of being less defined as functions
+The order relation of the poset is that of being less defined as functions
 (cf. \<^term>\<open>Fnlerel(A\<^bsup><\<omega>\<^esup>)\<close>), so it could be surprising that we have not used
 \<^term>\<open>Fn(\<omega>,\<omega>,2)\<close> for the set. The only reason why we keep this alternative
-definition is because we can prove  \<^term>\<open>Fnlerel(A\<^bsup><\<omega>\<^esup>) \<in> M\<close> using only
-one instance of replacement.\<close>
+definition is because we can prove \<^term>\<open>A\<^bsup><\<omega>\<^esup> \<in> M\<close> (and therefore
+\<^term>\<open>Fnlerel(A\<^bsup><\<omega>\<^esup>) \<in> M\<close>) using only one instance of replacement.\<close>
 
 sublocale M_ZF2_trans \<subseteq> M_seqspace "##M"
   by (unfold_locales, simp add:replacement_omega_funspace)
