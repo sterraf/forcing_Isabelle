@@ -11,6 +11,8 @@ session "Independence_CH" (AFP) =  "Transitive_Models" +
   "  
   options [timeout=300, document = pdf, document_output = "output",
   	   document_variants = "document:outline=/proof,/ML"]
+  sessions
+    "Transitive_Models"
   theories
     "Definitions_Main"
     "Demonstrations"
