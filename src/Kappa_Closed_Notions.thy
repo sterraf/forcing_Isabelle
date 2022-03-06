@@ -374,7 +374,8 @@ proof (intro equalityI; clarsimp simp add:
   fix f
   assume "f \<in> A \<rightarrow> B" "f \<in> M[G]"
   moreover from this
-  obtain \<tau> where "val(P,G,\<tau>) = f" "\<tau> \<in> M" using GenExtD by force
+  obtain \<tau> where "val(P,G,\<tau>) = f" "\<tau> \<in> M"
+    using GenExtD by force
   moreover from calculation and \<open>A\<in>M\<close> \<open>B\<in>M\<close>
   obtain r where "r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [\<tau>, A\<^sup>v, B\<^sup>v]" "r\<in>G"
     using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[\<tau>, A\<^sup>v, B\<^sup>v]"] generic
@@ -393,7 +394,8 @@ proof (intro equalityI; clarsimp simp add:
     using generic_inter_dense_below[of ?D G r, OF _ generic] by blast
   note \<open>q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]\<close> \<open>\<tau>\<in>M\<close> \<open>h\<in>A \<rightarrow>\<^bsup>M\<^esup> B\<close> \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>q\<in>G\<close>
   moreover from this
-  have "map(val(P, G), [\<tau>, h\<^sup>v]) \<in> list(M[G])" "h\<in>M" by (auto dest:transM)
+  have "map(val(P, G), [\<tau>, h\<^sup>v]) \<in> list(M[G])" "h\<in>M"
+    by (auto dest:transM)
   ultimately
   have "h = f"
     using truth_lemma[of "\<cdot>0=1\<cdot>" G "[\<tau>, h\<^sup>v]"] generic valcheck[OF one_in_G one_in_P]
@@ -406,8 +408,7 @@ subsection\<open>$(\omega+1)$-Closed notions preserve countable sequences\<close
 
 \<comment> \<open>Kunen IV.7.15, only for countable sequences\<close>
 lemma succ_omega_closed_imp_no_new_nat_sequences:
-  assumes "succ(\<omega>)-closed\<^bsup>M\<^esup>(P,leq)" "f : \<omega> \<rightarrow> B" "f\<in>M[G]"
-    "B\<in>M"
+  assumes "succ(\<omega>)-closed\<^bsup>M\<^esup>(P,leq)" "f : \<omega> \<rightarrow> B" "f\<in>M[G]" "B\<in>M"
   shows "f\<in>M"
 proof -
   (* Nice jEdit folding level to read this: 7 *)
@@ -419,8 +420,8 @@ proof -
     let ?subp="{q\<in>P. q \<preceq> p}"
     from \<open>p\<in>P\<close>
     have "?subp \<in> M"
-      using first_section_closed[of P p "converse(leq)"] leq_in_M
-        P_in_M by (auto dest:transM)
+      using first_section_closed[of P p "converse(leq)"] leq_in_M P_in_M
+      by (auto dest:transM)
     define S where "S \<equiv> \<lambda>n\<in>nat.
     {\<langle>q,r\<rangle> \<in> ?subp\<times>?subp. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, (\<Union>(n))\<^sup>v, b\<^sup>v])}"
       (is "S \<equiv> \<lambda>n\<in>nat. ?Y(n)")
@@ -428,11 +429,13 @@ proof -
     {\<langle>q,r\<rangle> \<in> ?subp\<times>?subp. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, (pred(n))\<^sup>v, b\<^sup>v])}"
       \<comment> \<open>Towards proving \<^term>\<open>S\<in>M\<close>.\<close>
     moreover
-    have "S = S'" unfolding S_def S'_def using pred_nat_eq lam_cong by auto
+    have "S = S'"
+      unfolding S_def S'_def using pred_nat_eq lam_cong by auto
     moreover from \<open>B\<in>M\<close> \<open>?subp\<in>M\<close> \<open>f_dot\<in>M\<close>
     have "{r \<in> ?subp. \<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, (\<Union>(n))\<^sup>v, b\<^sup>v]} \<in> M" (is "?X(n) \<in> M")
       if "n\<in>\<omega>" for n
-      using that separation_check_snd_aux nat_into_M ord_simp_union arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm
+      using that separation_check_snd_aux nat_into_M ord_simp_union
+        arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm
       by(rule_tac separation_closed[OF separation_bex,simplified], simp_all)
     moreover
     have "?Y(n) = (?subp \<times> ?X(n)) \<inter> converse(leq)" for n
@@ -440,7 +443,8 @@ proof -
     moreover
     note \<open>?subp \<in> M\<close> \<open>B\<in>M\<close> \<open>p\<in>P\<close> \<open>f_dot\<in>M\<close>
     moreover from calculation
-    have "n \<in> \<omega> \<Longrightarrow> ?Y(n) \<in> M" for n using nat_into_M leq_in_M by simp
+    have "n \<in> \<omega> \<Longrightarrow> ?Y(n) \<in> M" for n
+      using nat_into_M leq_in_M by simp
     moreover from calculation
     have "S \<in> M"
       using separation_ball_leq_and_forces_apply_aux separation_leq_and_forces_apply_aux
@@ -448,7 +452,8 @@ proof -
       unfolding S_def split_def
       by(rule_tac lam_replacement_Collect[THEN lam_replacement_imp_lam_closed,simplified], simp_all)
     ultimately
-    have "S' \<in> M" by simp
+    have "S' \<in> M"
+      by simp
     from \<open>p\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close> \<open>B\<in>M\<close>
     have exr:"\<exists>r\<in>P. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])"
       if "q \<preceq> p" "q\<in>P" "n\<in>\<omega>" for q n
@@ -495,7 +500,8 @@ proof -
     obtain r where "r\<in>P" "r\<in>M" "\<forall>n\<in>\<omega>. r \<preceq> g`n"
       using nat_into_M by auto
     with \<open>g`0 = p\<close>
-    have "r \<preceq> p" by blast
+    have "r \<preceq> p"
+      by blast
     let ?h="{\<langle>n,b\<rangle> \<in> \<omega> \<times> B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]}"
     have "function(?h)"
     proof (rule_tac functionI, rule_tac ccontr, auto simp del: app_Cons)
@@ -506,7 +512,8 @@ proof -
       moreover
       note \<open>r \<in> P\<close>
       moreover from this
-      have "\<not> r \<bottom> r" by (auto intro!:refl_leq)
+      have "\<not> r \<bottom> r"
+        by (auto intro!:refl_leq)
       moreover
       note \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
       ultimately
@@ -515,7 +522,8 @@ proof -
           transM[of _ B] by (auto dest:transM)
     qed
     moreover
-    have "range(?h) \<subseteq> B" by auto
+    have "range(?h) \<subseteq> B"
+      by auto
     moreover
     have "domain(?h) = \<omega>"
     proof -
@@ -523,12 +531,14 @@ proof -
         fix n
         assume "n \<in> \<omega>"
         moreover from this
-        have 1:"(\<Union>(n)) = pred(n)" using pred_nat_eq by simp
+        have 1:"(\<Union>(n)) = pred(n)"
+          using pred_nat_eq by simp
         moreover from calculation and \<open>\<forall>n \<in> nat. \<langle>g`n,g`succ(n)\<rangle>\<in>S'`succ(n)\<close>
         obtain b where "g`(succ(n)) \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]" "b\<in>B"
           unfolding S'_def by auto
         moreover from \<open>B\<in>M\<close> and calculation
-        have "b \<in> M" "n \<in> M" by (auto dest:transM)
+        have "b \<in> M" "n \<in> M"
+          by (auto dest:transM)
         moreover
         note \<open>g : \<omega> \<rightarrow> P\<close> \<open>\<forall>n\<in>\<omega>. r \<preceq> g`n\<close> \<open>r\<in>P\<close> \<open>f_dot\<in>M\<close>
         moreover from calculation
@@ -537,13 +547,16 @@ proof -
             strengthening_lemma[of "g`succ(n)" "\<cdot>0`1 is 2\<cdot>" r "[f_dot, n\<^sup>v, b\<^sup>v]"]
           by (simp add: union_abs2 union_abs1)
         ultimately
-        have "\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]" by auto
+        have "\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]"
+          by auto
       }
       then
-      show ?thesis by force
+      show ?thesis
+        by force
     qed
     moreover
-    have "relation(?h)" unfolding relation_def by simp
+    have "relation(?h)"
+      unfolding relation_def by simp
     moreover from \<open>f_dot\<in>M\<close> \<open>r\<in>M\<close> \<open>B\<in>M\<close>
     have "?h \<in> M"
       using separation_closed_forces_apply_aux by simp
@@ -574,19 +587,23 @@ proof -
         by unfold_locales simp
       note \<open>r\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
       moreover from this
-      have "map(val(P, G), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[G])" by simp
+      have "map(val(P, G), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[G])"
+        by simp
       moreover from calculation and \<open>r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close>
-      have "?f : \<omega> \<rightarrow> B" using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[f_dot, \<omega>\<^sup>v, B\<^sup>v]"]
-          typed_function_type arity_typed_function_fm valcheck[OF one_in_G one_in_P]
+      have "?f : \<omega> \<rightarrow> B"
+        using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[f_dot, \<omega>\<^sup>v, B\<^sup>v]"] one_in_G one_in_P
+          typed_function_type arity_typed_function_fm valcheck
         by (auto simp: union_abs2 union_abs1)
       moreover
       have "?h`n = ?f`n" if "n \<in> \<omega>" for n
       proof -
         note \<open>n \<in> \<omega>\<close> \<open>domain(?h) = \<omega>\<close>
         moreover from this
-        have "n\<in>domain(?h)" by simp
+        have "n\<in>domain(?h)"
+          by simp
         moreover from this
-        obtain b where "r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]" "b\<in>B" by force
+        obtain b where "r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]" "b\<in>B"
+          by force
         moreover
         note \<open>function(?h)\<close>
         moreover from calculation
@@ -595,7 +612,8 @@ proof -
         moreover
         note \<open>B \<in> M\<close>
         moreover from calculation
-        have "?h`n \<in> M" by (auto dest:transM)
+        have "?h`n \<in> M"
+          by (auto dest:transM)
         moreover
         note \<open>f_dot \<in> M\<close> \<open>r \<in> P\<close> \<open>M_generic(G) \<and> r \<in> G\<close> \<open>map(val(P, G), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[G])\<close>
         moreover from calculation
@@ -618,7 +636,8 @@ proof -
         using valcheck one_in_G one_in_P generic by simp
     qed
     ultimately
-    have "\<exists>r\<in>P. \<exists>h\<in>\<omega> \<rightarrow>\<^bsup>M\<^esup> B. r \<preceq> p \<and> r \<tturnstile> \<cdot>0 = 1\<cdot> [f_dot, h\<^sup>v]" by blast
+    have "\<exists>r\<in>P. \<exists>h\<in>\<omega> \<rightarrow>\<^bsup>M\<^esup> B. r \<preceq> p \<and> r \<tturnstile> \<cdot>0 = 1\<cdot> [f_dot, h\<^sup>v]"
+      by blast
   }
   moreover
   note \<open>B \<in> M\<close> assms
@@ -627,7 +646,8 @@ proof -
     using kunen_IV_6_9_function_space_rel_eq function_space_rel_char
       ext.mem_function_space_rel_abs by auto
   ultimately
-  show ?thesis by (auto dest:transM)
+  show ?thesis
+    by (auto dest:transM)
 qed
 
 declare mono_seqspace_rel_closed[rule del]
