@@ -80,6 +80,8 @@ definition instances1_fms where "instances1_fms \<equiv>
     formula_repl1_intf_fm,
     eclose_repl1_intf_fm }"
 
+txt\<open>This set has 17 internalized formulas.\<close>
+
 lemmas replacement_instances1_defs = tl_repl_intf_fm_def formula_repl1_intf_fm_def
   eclose_repl1_intf_fm_def wfrec_Hfrc_at_fm_def
   list_repl1_intf_fm_def list_repl2_intf_fm_def formula_repl2_intf_fm_def

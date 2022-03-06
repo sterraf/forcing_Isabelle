@@ -144,6 +144,7 @@ interpretation sp:forcing_notion "2\<^bsup><\<omega>\<^esup>" "seqle" "0"
 
 notation sp.Leq (infixl "\<preceq>s" 50)
 notation sp.Incompatible (infixl "\<bottom>s" 50)
+notation sp.GenExt_at_P ("_\<^bsup>s\<^esup>[_]" [71,1])
 
 lemma seqspace_separative:
   assumes "f\<in>2\<^bsup><\<omega>\<^esup>"

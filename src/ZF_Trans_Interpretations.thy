@@ -30,6 +30,8 @@ definition instances3_fms where "instances3_fms \<equiv>
     Lambda_in_M_fm(ccc_fun_closed_lemma_fm,6),
     LambdaPair_in_M_fm(is_inj_fm(0,1,2),0) }"
 
+txt\<open>This set has 7 internalized formulas.\<close>
+
 lemmas replacement_instances3_defs =
   replacement_is_order_body_fm_def wfrec_replacement_order_pred_fm_def
   replacement_is_jump_cardinal_body_fm_def
@@ -379,8 +381,14 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(Lambda_in_M_fm(is_converse_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)) }"
 
+txt\<open>This set has 49 internalized formulas, corresponding to the total count
+of previous replacement instances.\<close>
+
 definition overhead where
   "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union> instances4_fms"
+
+txt\<open>Hence, the “overhead” to force $\CH$ and its negation consists
+of 98 replacement instances.\<close>
 
 lemma instances3_fms_type[TC] : "instances3_fms \<subseteq> formula"
   unfolding instances3_fms_def replacement_is_order_body_fm_def
@@ -396,21 +404,6 @@ lemma overhead_type: "overhead \<subseteq> formula"
   using ground_repl_fm_type Lambda_in_M_fm_type
   by (auto simp del: Lambda_in_M_fm_def
       ccc_fun_closed_lemma_aux2_fm_def ccc_fun_closed_lemma_fm_def)
-
-(*
-axiomatization
-  card :: "i\<Rightarrow>i" where
-  card_0 [simp]: "card(0) = 0" and
-  card_cons [simp]: "card(cons(x,y)) = succ(card(y))"
-
-schematic_goal
-  "card(instances1_fms) = ?n" (* 17 *)
-  "card(instances2_fms) = ?m" (* 25 *)
-  "card(instances3_fms) = ?o" (*  7 *)
-  "card(instances4_fms) = ?p" (* 49 *)
-  unfolding instances1_fms_def instances2_fms_def instances3_fms_def instances4_fms_def
-  by simp_all
-*)
 
 locale M_ZF4_trans = M_ZF3_trans + M_ZF4
 
