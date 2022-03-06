@@ -11,10 +11,13 @@ appropriate to do the following using the relative \<^term>\<open>Fn_rel\<close>
 out, the present theory was developed prior to having \<^term>\<open>Fn\<close> relativized!
 
 We also note that \<^term>\<open>Fn(\<omega>,\<kappa>\<times>\<omega>,2)\<close> is separative, i.e. each \<^term>\<open>X \<in> Fn(\<omega>,\<kappa>\<times>\<omega>,2)\<close>
-has two incompatible proper extensions; therefore we can get a proper extension of
-the ground model using the poset to force \<not>CH. Instead we take advantage
-of \<^theory>\<open>Draft.Succession_Poset\<close> to first have a proper extension and use that
-model as the ground model for forcing \<not>CH.\<close>
+has two incompatible extensions; therefore we may recover part of our previous theorem
+@{thm [source] extensions_of_ctms_ZF}. But that result also included the possibility
+of not having $\AC$ in the ground model, which would not be sensible in a context
+where the cardinality of the continuum is under discussion. It is also the case that
+@{thm [source] extensions_of_ctms_ZF} was historically our first formalized result
+(with a different proof) that showed the forcing machinery had all of its elements
+in place.\<close>
 
 abbreviation
   Add_subs :: "i \<Rightarrow> i" where
