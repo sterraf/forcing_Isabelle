@@ -5,12 +5,6 @@ theory Cardinal_Preservation
     Forcing_Main
 begin
 
-(* MOVE THIS to an appropriate place *)
-lemma (in M_basic) pred_nat_closed: "(M)(a) \<Longrightarrow> (M)(pred(a))"
-  using nat_case_closed
-  unfolding pred_def
-  by auto
-
 context forcing_notion
 begin
 
@@ -24,32 +18,18 @@ definition
 
 end \<comment> \<open>\<^locale>\<open>forcing_notion\<close>\<close>
 
-locale M_trivial_notion = M_trivial + forcing_notion
-begin
+context forcing_data1
 
+begin
 abbreviation
   antichain_r' :: "i \<Rightarrow> o" where
-  "antichain_r'(A) \<equiv> antichain_rel(M,P,leq,A)"
+  "antichain_r'(A) \<equiv> antichain_rel(##M,P,leq,A)"
 
 lemma antichain_abs' [absolut]:
-  "\<lbrakk> M(A); M(P); M(leq) \<rbrakk> \<Longrightarrow> antichain_r'(A) \<longleftrightarrow> antichain(A)"
+  "\<lbrakk> A\<in>M \<rbrakk> \<Longrightarrow> antichain_r'(A) \<longleftrightarrow> antichain(A)"
   unfolding antichain_rel_def antichain_def compat_def
-  by (simp add:absolut)
-
-end \<comment> \<open>\<^locale>\<open>M_trivial_notion\<close>\<close>
-
-(* MOVE THIS to an appropriate place *)
-text\<open>The following interpretation makes the simplifications from the
-locales \<open>M_trans\<close>, \<open>M_trivial\<close>, etc., available for \<open>M[G]\<close>\<close>
-sublocale forcing_data1 \<subseteq> M_trivial_notion "##M" ..
-
-context forcing_data1
-begin
-
-lemma antichain_abs'' [absolut]: "A\<in>M \<Longrightarrow> antichain_r'(A) \<longleftrightarrow> antichain(A)"
-  using P_in_M leq_in_M
-  unfolding antichain_rel_def antichain_def compat_def
-  by (auto simp add:absolut transitivity)
+  using P_in_M leq_in_M transitivity[of _ A]
+  by (auto simp add:absolut)
 
 lemma (in forcing_notion) Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
   using refl_leq by blast
@@ -110,7 +90,7 @@ proof -
     then
     interpret G_generic1 _ _ _ _ _ G by unfold_locales
     include G_generic1_lemmas
-      (* NOTE: might be useful to have a locale containg two \<open>M_ZF1_trans\<close> 
+      (* NOTE: might be useful to have a locale containg two \<open>M_ZF1_trans\<close>
          instances, one for \<^term>\<open>M\<close> and one for \<^term>\<open>M[G]\<close> *)
     assume "q\<in>G"
     with assms \<open>M_generic(G)\<close>
@@ -270,6 +250,9 @@ qed
 
 subsection\<open>Preservation by ccc forcing notions\<close>
 
+\<comment> \<open>This definition has the arguments in the expected order by most of the lemmas:
+first the parameters, the only argument in the penultimate place and the result in
+the last place.\<close>
 definition check_fm' where
   "check_fm'(ofm,arg,res) \<equiv> check_fm(arg,ofm,res)"
 
@@ -320,11 +303,10 @@ proof -
     using lam_replacement_imp_lam_closed lam_replacement_Collect
       separation_conj separation_in separation_forces separation_ball separation_iff'
       lam_replacement_Pair[THEN [5] lam_replacement_hcomp2] lam_replacement_identity
-    lam_replacement_constant lam_replacement_snd lam_replacement_fst lam_replacement_hcomp
-    ccc_fun_closed_lemma_aux
-    arity_fun_apply_fm union_abs1
-    transitivity[of _ B] leq_in_M assms
-  by simp
+      lam_replacement_constant lam_replacement_snd lam_replacement_fst lam_replacement_hcomp
+      ccc_fun_closed_lemma_aux arity_fun_apply_fm union_abs1
+      transitivity[of _ B] leq_in_M assms
+    by simp
 qed
 
 lemma ccc_fun_closed_lemma:
@@ -342,7 +324,7 @@ proof -
       using arity_fun_apply_fm union_abs1 arity_forces[of "\<cdot>0`1 is 2\<cdot> "] by simp
     moreover
     have "?f_fm \<in> formula" "arity(?f_fm) \<le> 6" "?g_fm \<in> formula" "arity(?g_fm) \<le> 7"
-     "?h_fm \<in> formula" "arity(?h_fm) \<le> 8"
+      "?h_fm \<in> formula" "arity(?h_fm) \<le> 8"
       using ord_simp_union
       unfolding hcomp_fm_def check_fm'_def
       by (simp_all add:arity)
@@ -459,8 +441,8 @@ proof -
       using Pi_replacement1[OF _ 3] lam_replacement_Sigfun[OF 4]
         lam_replacement_imp_strong_replacement
         ccc_fun_closed_lemma_aux[OF \<open>f_dot\<in>M\<close> \<open>p\<in>M\<close> \<open>a\<in>M\<close>]
-        lam_replacement_product
-        lam_replacement_hcomp2[OF lam_replacement_constant 4 _ _ lam_replacement_minimum,unfolded lam_replacement_def]
+        lam_replacement_hcomp2[OF lam_replacement_constant 4 _ _
+          lam_replacement_minimum,unfolded lam_replacement_def]
       by unfold_locales simp_all
     from \<open>F`a \<in> M\<close>
     interpret M_Pi_assumptions2 "##M" "F`a" ?Q "\<lambda>_ . P"
