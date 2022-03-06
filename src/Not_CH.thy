@@ -8,7 +8,15 @@ begin
 txt\<open>We are taking advantage that the poset of finite functions is absolute,
 and thus we work with the unrelativized \<^term>\<open>Fn\<close>. But it would have been more
 appropriate to do the following using the relative \<^term>\<open>Fn_rel\<close>. As it turns
-out, the present theory was developed prior to having \<^term>\<open>Fn\<close> relativized!\<close>
+out, the present theory was developed prior to having \<^term>\<open>Fn\<close> relativized!
+Moreover, some results about \<^term>\<open>Fn_rel\<close> depends on some relativized notion
+of AC, therefore we have this results in a weaker setting.
+
+We also note that \<^term>\<open>Fn(\<omega>,\<kappa>\<times>\<omega>,2)\<close> is separative, i.e. each \<^term>\<open>X \<in> Fn(\<omega>,\<kappa>\<times>\<omega>,2)\<close>
+has two incompatible proper extensions; therefore we can get a proper extension of
+the ground model using the poset to force \<not>CH. Instead we take advantage
+of \<^theory>\<open>Draft.Succession_Poset\<close> to first have a proper extension and use that
+model as the ground model for forcing \<not>CH.\<close>
 
 abbreviation
   Add_subs :: "i \<Rightarrow> i" where
