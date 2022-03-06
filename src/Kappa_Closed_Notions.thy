@@ -246,6 +246,10 @@ lemma separation_leq_and_forces_apply_aux:
   shows "\<forall>n\<in>M. separation(##M, \<lambda>x. snd(x) \<preceq> fst(x) \<and>
           (\<exists>b\<in>B. M, [snd(x), P, leq, \<one>, f_dot, (\<Union>(n))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> )))"
 proof -
+  have pred_nat_closed: "pred(n)\<in>M" if "n\<in>M" for n
+    using nat_case_closed that
+    unfolding pred_def
+    by auto
   have "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, \<one>, f_dot, \<tau>, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
     if "\<chi>\<in>formula" "arity(\<chi>) \<le> 7" "\<tau>\<in>M" for \<chi> \<tau>
   proof -
