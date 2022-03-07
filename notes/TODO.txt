@@ -17,6 +17,8 @@ Unaddressed issues in Transitive_Models
 
 - Enable more "mem_model" patterns for iff_sats.
 
+- Many pred(pred(pred(...))) in Arities
+
 
 General Tasks
 =============
