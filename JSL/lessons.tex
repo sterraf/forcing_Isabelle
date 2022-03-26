@@ -1,0 +1,95 @@
+\section{Lessons}\label{sec:lessons}
+
+\subsection{Ask about your project}
+\url{https://mathoverflow.net/q/265435/66044}
+
+Disclaimer: It may be useless.
+
+\subsection{Read about what is done}
+\begin{enumerate}
+\item Related work at that moment.
+\item Precise enumeration of what \session{ZF-Constructible} had.
+\end{enumerate}
+
+\subsection{Read the fine print}
+\begin{enumerate}
+\item Foundations of your proof assistant.
+\end{enumerate}
+
+\subsection{Plan before formalizing}
+\begin{enumerate}
+\item We should had better used predicates for the forcing posets'
+  order relations (the way DSL is written), and go for class forcing
+  (with $\PP$ a definable subset of $M$). The latter change seems to be
+  easy, but the former doesn't.
+  
+  “Sometimes it felt like sculpting on marble: The fear of having
+  carved too deep and hence needing to change the whole stone!”
+\end{enumerate}
+
+\subsection{In case of doubt, formalize it}
+\begin{enumerate}
+\item Example: the abstract of the CLAM2021 talk.
+\end{enumerate}
+
+\subsection{Control your bureaucracy. Automate early}
+\begin{enumerate}
+\item Bureaucracy vs ML programming.
+\item The “math” was already formalized on 22 November 2020.
+  We finished the last goal on 22 August 2021.
+  (Update: 20 November 2021 \& 28 November 2021, for CH)
+\item Missing: automation of closure of models under operations.
+\item Missing: basic arithmetic for dealing with arities.
+\end{enumerate}
+
+\subsection{Beware of scale factors}
+\begin{enumerate}
+\item It is extremely misleading when automatic tools (\isatt{simp}, \isatt{auto}, etc)
+  stop working just because of the sheer size of the goal. Oftentimes,
+  in math, we disregard scale issues but they must always be taken
+  into account in CS.
+\item Example: $\forceisa(0\in 1)$ is expandable,
+  $\forceisa(\neg\neg  0\in 1)$ is not.
+\item Example: Synthesis of $\forceisa$; could have been fully synthesized,
+  but that was dirty “strategy”.
+\item The know-how of computer scientists on this kind of engineering is
+  very important
+\end{enumerate}
+
+\subsection{You might have formalized it, and still be wrong}
+\begin{enumerate}
+\item Example: restriction of relations.
+\item Pollack, “Pollack consistency” by Wiedijk. Opacity of automated
+  proofs.
+\item Plot twist: You can be right without knowing. Intuition may drive proofs
+  even if we are not working on what we believe we are.
+\end{enumerate}
+
+\subsection{Beware of the “Code fever”}
+\begin{enumerate}
+\item “We know that doing math is fun---formalization is like DRUGS”
+\item Feeling of accomplishment after seeing your writings
+  validated beyond reasonable doubt.
+\item One easily forgets about the “Power of the Board.”
+\end{enumerate}
+
+\subsection{The Devil's on the shortcuts}
+\begin{enumerate}
+\item
+  Our proofs of the "definition of forces" (and many
+  consequences) and of the lemma for "forcing a value" of function
+  depend on the countability of the ground model. 
+\item
+  Density arguments (look for "TODO", "general versions").
+\end{enumerate}
+
+\subsection{Document your project}
+\begin{enumerate}
+\item \theory{Definitions\_Main}, thanks to Vidnyánszky.
+\end{enumerate}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "independence_ch_isabelle"
+%%% ispell-local-dictionary: "american"
+%%% End: 

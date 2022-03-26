@@ -1,0 +1,86 @@
+\section{Introduction}
+\label{sec:introduction}
+
+\subsection{Formalized mathematics}
+There is a growing trend in the use of computers to assist in the
+\emph{formal verification} of mathematics. Note, for instance, the forthcoming
+\href{https://web.archive.org/web/20211220044218/https://icm2022.org/plenary-lectures#Kevin-Buzzard}{ICM2022
+  plenary lecture} by Kevin Buzzard.
+
+Several venues devoted to the communication of formalized mathematics;
+today, mainly CS conferences: ITP, IJCAR, CPP, CICM, and others.
+
+Many proof assistants, each with a different flavour and underlying
+foundations: Naproche (Koepke, mainly FOL + ATP), Mizar,
+Isabelle/HOL, Lean, \dots, Coq, Agda,\dots.
+
+These assistants provide several dialects, among which we single out:
+\begin{enumerate}
+\item Procedural: Useful for exploration/research.
+\item Declarative: Only one that can be read by humans!
+\end{enumerate}
+
+Before we start an in-depth discussion, a point should be made clear:
+A formalized proof is not the same as an \emph{automatic proof}. The
+reader surely understands the aside from trivial results, no current
+technology allows us to state a reasonable (and correct) theorem
+statement and expect to obtain a proof after hitting ``Enter'', at
+least not after a humanly feasible wait. On the other hand, it is
+quite possible that the same reader has some mental image that
+formalizing a proof requires making each application of Modus Ponens
+explicit.
+
+The fact is that proof assistants are designed for the human prover to
+be able to decompose a statement to be proved into smaller subgoals
+which can actually be fed to some automatic tool. The balance between
+what these tools are able to handle is not  easily appreciated by
+intuition: Sometimes, ``trivial'' steps are not solved by them, which
+can result in obvious frustration; but they would quickly solve some
+goals that do not look like a ``mere calculation.''
+
+The same happens to the extent of mathematics formalizable (or even,
+which has \emph{already} been formalized): The community seems not to
+be fully aware of the potential of the technology. A recent discussion
+at the FOM mailing list shows this state of affairs within our fellow
+logicians. Major formalization projects include the Four Color Theorem
+\cite{MR2463991}, the odd order theorem
+\cite{10.1007/978-3-642-39634-2_14}, and the proof the Kepler's
+Conjecture \cite{MR3659768}. There is a vast mathematical corpus at
+the Archive of Formal Proofs based on Isabelle, and formalizations of
+brand new and complex objects like the definition of perfectoid spaces
+and the Liquid Tensor Project on Lean.
+
+\subsection{Our achievements}
+We formalized a model-theoretic rendition of forcing.
+\begin{itemize}
+\item Proper extensions of ctms of $\ZF$.
+\item The construction of ctms of $\ZFC + \neg\CH$ and of $\ZFC + \CH$ given one of
+  $\ZFC$.
+\end{itemize}
+
+In order to do so, we extended the treatment of relativization of
+set-theoretical concepts. 
+\begin{itemize}
+\item We redesigned Isabelle/ZF results on non-absolute concepts to work
+  relative to a class.
+\item We provided missing results (from basic ones involving cardinal
+  successors, countable sets, \dots)
+\end{itemize}
+No meta-theoretic issues (consistency, FOL calculi, etc) were formalized.
+
+One added value that is obtained from the present formalization is
+that we identified which instances of  Replacement are
+needed to set the forcing machinery up (Separation is a bit more
+complicated).
+%% A verification that no choice  is needed at the level of the
+%%  object logic.
+The eagerness to obtain this level of detail might be a consequence of
+“an unnatural tendency to investigate, for the most part, trivial
+minutiae of the formalism”, as it was put by Cohen
+\cite{zbMATH02012060}, but we were also drove by curiosity.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "independence_ch_isabelle"
+%%% ispell-local-dictionary: "american"
+%%% End: 

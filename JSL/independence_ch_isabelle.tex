@@ -1,0 +1,125 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage[utf8]{inputenc}
+\usepackage{isabelle_indepCH,isabellesym_indepCH}
+\input{header-indepCH}
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+\hypersetup{
+  colorlinks,
+  urlcolor={blue},
+  linkcolor={blue!50!black},
+  citecolor={blue!50!black},
+}
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\begin{document}
+%
+\title{Some lessons after the formalization of the ctm approach to forcing%
+  \thanks{Supported by Secyt-UNC project 33620180100465CB and Conicet.}%
+}
+%
+\titlerunning{Lessons after formalizing ctm forcing}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Emmanuel Gunther\inst{1} \and
+Miguel Pagano\inst{1} \and \\
+Pedro Sánchez Terraf\inst{1,2}%\orcidID{0000-0003-3928-6942}
+\and
+Matías Steinberg\inst{1}
+}
+%
+\authorrunning{E.~Gunther, M.~Pagano, P.~Sánchez Terraf, M.~Steinberg}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Universidad Nacional de C\'ordoba. 
+  \\  Facultad de Matem\'atica, Astronom\'{\i}a,  F\'{\i}sica y
+  Computaci\'on.
+  \and
+    Centro de Investigaci\'on y Estudios de Matem\'atica (CIEM-FaMAF),
+    Conicet. C\'ordoba. Argentina. \\
+    \email{\{gunther,pagano,sterraf\}@famaf.unc.edu.ar\\
+        matias.steinberg@mi.unc.edu.ar}
+}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+  We'll discuss some highlights of our computer-verified
+  proof of the construction, given a countable transitive set model $M$
+  of $\ZFC$, of generic extensions  satisfying $\ZFC+\neg\CH$ and $\ZFC+\CH$.
+  In particular,
+  we isolated a set $\Delta$ of 39 instances
+  of Axiom of Replacement and a function $F$
+  such that such that for any finite fragment $\Phi\sbq\ZFC$,
+  $F(\Phi)\sbq\ZFC$ is also finite and if
+  $M\models F(\Phi) + \Delta$ then $M[G]\models \Phi + \neg \CH$.
+  We also obtained the formulas yielded by the Forcing Definability Theorem
+  explicitly.
+
+  To achieve this, we worked in the proof assistant \emph{Isabelle},
+  basing our development on the theory Isabelle/ZF by L.~Paulson and
+  others.
+
+  %% The vantage point of the talk will be that of a mathematician but
+  %% elements from the computer science perspective will be
+  %% present. Perhaps some myths regarding what can effectively be done
+  %% using  proof assistants/checkers will
+  %% be dispelled.
+
+  We'll also compare our formalization with the recent one by Jesse
+  M.~Han and Floris van Doorn in the proof assistant \emph{Lean}.
+
+  \keywords{forcing \and Isabelle/ZF \and countable transitive models
+    \and absoluteness \and generic extension \and constructibility.}
+\end{abstract}
+%
+%
+%
+\input{intro}
+%% 
+%% \input{isabelle_metatheory}
+%% 
+%% \input{absoluteness}
+%% 
+%% \input{forces_definition}
+%% 
+%% \input{forcing_theorems}
+%% 
+%% \input{proper_extension}
+%% 
+%% \input{replacement_choice}
+%% 
+\input{random}
+
+\input{related}
+
+\input{lessons}
+%%
+%% \input{conclusion}
+%
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+%\bibliographystyle{splncs04}
+\bibliographystyle{mi-estilo-else}
+\bibliography{independence_ch_isabelle,clam2021}
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% ispell-local-dictionary: "american"
+%%% End: 
