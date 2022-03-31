@@ -1,0 +1,45 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
+\section{Forcing}
+\label{sec:forcing}
+
+Prerequisite: a set $\formula$ of codes for first order formulas, and
+the (recursive) definition of the Tarski satisfaction relation in $\ZF$. 
+
+Let $\lb \PP, {\preceq} ,\1\rb \in M$ be a forcing notion. Given $G\sbq \PP$, we have
+$M[G]\defi \{ \val(\PP,G,\punto{a}) : \punto{a}\in M \}$.
+
+The following form of the Forcing Theorems  is the one
+that we formalized.
+\begin{theorem}
+  There exists a function  $\forceisa: \formula \to  \formula$
+  such that for every
+  $\phi$ and $\punto{a}_0,\dots,\punto{a}_n\in M$,
+  \begin{enumerate}
+  \item (Truth Lemma) for every $M$-generic $G$,
+    \[
+      M[G], [\val(\PP,G,\punto{a}_0),\dots,\val(\PP,G,\punto{a}_n)]
+      \models \phi
+    \]
+    is equivalent to 
+    \[
+      \exists p\in G.\ \; M, [p,\PP,\preceq,\1, \punto{a}_0,\dots,\punto{a}_n]  \models
+      \forceisa(\phi).\]
+
+    We use the notation $p \forces
+    \phi\ [\punto{a}_0,\dots,\punto{a}_n]$ for this last assertion.
+  \item (Density Lemma) $p \forces \phi\ [\punto{a}_0,\dots,\punto{a}_n]$
+    if and only if 
+    $\{q\in \PP :  q \forces \phi\ [\punto{a}_0,\dots,\punto{a}_n]\}$
+    is dense below $p$.
+  \end{enumerate}
+\end{theorem}
+
+Note: $\forceisa$ was formalized as a class-function (i.e., of type
+$\tyi\Rightarrow\tyi$), to take advantage of the Isabelle's
+conveniences for primitive recursion.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "independence_ch_isabelle"
+%%% ispell-local-dictionary: "american"
+%%% End: 
