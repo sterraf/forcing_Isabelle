@@ -743,8 +743,6 @@ proof -
     by (auto simp add:components_abs,blast)
 qed
 
-subsection\<open>Forcing for general formulas\<close>
-
 lemma leq_abs:
   "\<lbrakk> l\<in>M ; q\<in>M ; p\<in>M \<rbrakk> \<Longrightarrow> is_leq(##M,l,q,p) \<longleftrightarrow> \<langle>q,p\<rangle>\<in>l"
   unfolding is_leq_def using pair_in_M_iff by simp

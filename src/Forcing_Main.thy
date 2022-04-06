@@ -169,7 +169,7 @@ proof -
   obtain G where "M_generic(G)" "M \<noteq> M\<^bsup>s\<^esup>[G]"
     using cohen_extension_is_proper
     by blast
-  txt\<open>Recall that \<^term>\<open>M\<^bsup>s\<^esup>[G]\<close> denotes the generic extension \<^term>\<open>M\<^bsup>2\<^bsup><\<omega>\<^esup>\<^esup>[G]\<close>
+  text\<open>Recall that \<^term>\<open>M\<^bsup>s\<^esup>[G]\<close> denotes the generic extension
   of \<^term>\<open>M\<close> using the poset of sequences \<^term>\<open>2\<^bsup><\<omega>\<^esup>\<close>.\<close>
   then
   interpret G_generic1 "2\<^bsup><\<omega>\<^esup>" seqle 0 _ enum G by unfold_locales

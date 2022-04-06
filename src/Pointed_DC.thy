@@ -2,7 +2,7 @@ section\<open>A pointed version of DC\<close>
 theory Pointed_DC imports ZF.AC
 
 begin
-txt\<open>This proof of DC is from Moschovakis "Notes on Set Theory"\<close>
+text\<open>This proof of DC is from Moschovakis “Notes on Set Theory”\<close>
 
 consts dc_witness :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i"
 primrec

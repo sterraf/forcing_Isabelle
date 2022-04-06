@@ -113,9 +113,9 @@ lemma (in forcing_data4) forcing_a_value:
   assumes "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]" "a \<in> A"
     "q \<preceq> p" "q \<in> P" "p\<in>P" "f_dot \<in> M" "A\<in>M" "B\<in>M"
   shows "\<exists>d\<in>P. \<exists>b\<in>B. d \<preceq> q \<and> d \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]"
-    \<comment> \<open>Old neater version, but harder to use
+    (* \<comment> \<open>Old neater version, but harder to use
     (without the assumptions on \<^term>\<open>q\<close>):\<close>
-    (* "dense_below({q \<in> P. \<exists>b\<in>B. q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]}, p)" *)
+    "dense_below({q \<in> P. \<exists>b\<in>B. q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]}, p)" *)
 proof -
   from assms
   have "q \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]"
@@ -412,7 +412,7 @@ lemma succ_omega_closed_imp_no_new_nat_sequences:
   shows "f\<in>M"
 proof -
   (* Nice jEdit folding level to read this: 7 *)
-  txt\<open>The next long block proves that the assumptions of Lemma
+  text\<open>The next long block proves that the assumptions of Lemma
   @{thm [source] kunen_IV_6_9_function_space_rel_eq} are satisfied.\<close>
   {
     fix p f_dot

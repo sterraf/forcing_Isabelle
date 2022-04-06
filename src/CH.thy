@@ -94,7 +94,7 @@ proof -
                   (\<exists>q\<in>M. q \<in> Coll \<and> (\<forall>\<alpha>\<in>M. \<alpha> \<in> \<omega> \<longrightarrow> \<langle>q, f ` \<alpha>\<rangle> \<in> Colleq))"
   proof(intro ballI impI)
     fix f
-    let ?G="f``\<omega>"
+    let ?rnf="f``\<omega>"
     assume "f\<in>M" "f \<in> \<omega> \<^sub><\<rightarrow>\<^bsup>M\<^esup> (Coll,converse(Colleq))"
     moreover from this
     have "f\<in>\<omega> \<^sub><\<rightarrow> (Coll,converse(Colleq))" "f\<in>\<omega> \<rightarrow> Coll"
@@ -105,24 +105,24 @@ proof -
       using that Fn_rel_is_function countable_iff_lesspoll_rel_Aleph_rel_one
       by auto
     moreover from calculation
-    have "?G \<in> M" "f\<subseteq>\<omega>\<times>Coll"
+    have "?rnf \<in> M" "f\<subseteq>\<omega>\<times>Coll"
       using nat_in_M image_closed Pi_iff
       by simp_all
     moreover from calculation
-    have 1:"\<exists>d\<in>?G. d \<supseteq> h \<and> d \<supseteq> g" if "h \<in> ?G" "g \<in> ?G" for h g
+    have 1:"\<exists>d\<in>?rnf. d \<supseteq> h \<and> d \<supseteq> g" if "h \<in> ?rnf" "g \<in> ?rnf" for h g
     proof -
       from calculation
-      have "?G={f`x . x\<in>\<omega>}"
+      have "?rnf={f`x . x\<in>\<omega>}"
         using  image_function[of f \<omega>] Pi_iff domain_of_fun
         by auto
-      from \<open>?G=_\<close> that
+      from \<open>?rnf=_\<close> that
       obtain m n where eq:"h=f`m" "g=f`n" "n\<in>\<omega>" "m\<in>\<omega>"
         by auto
       then
       have "m\<union>n\<in>\<omega>" "m\<le>m\<union>n" "n\<le>m\<union>n"
         using Un_upper1_le Un_upper2_le nat_into_Ord by simp_all
-      with calculation eq \<open>?G=_\<close>
-      have "f`(m\<union>n)\<in>?G" "f`(m\<union>n) \<supseteq> h" "f`(m\<union>n) \<supseteq> g"
+      with calculation eq \<open>?rnf=_\<close>
+      have "f`(m\<union>n)\<in>?rnf" "f`(m\<union>n) \<supseteq> h" "f`(m\<union>n) \<supseteq> g"
         using Fnle_relD mono_map_lt_le_is_mono converse_refl[OF Colleq_refl]
         by auto
       then
@@ -130,26 +130,26 @@ proof -
         by auto
     qed
     moreover from calculation
-    have "?G \<subseteq> (\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (nat \<rightarrow>\<^bsup>M\<^esup> 2))"
+    have "?rnf \<subseteq> (\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (nat \<rightarrow>\<^bsup>M\<^esup> 2))"
       using subset_trans[OF image_subset[OF \<open>f\<subseteq>_\<close>,of \<omega>] Fn_rel_subset_PFun_rel]
       by simp
     moreover
-    have "\<Union> ?G \<in> (\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (nat \<rightarrow>\<^bsup>M\<^esup> 2))"
-      using pfun_Un_filter_closed'[OF \<open>?G\<subseteq>_\<close> 1]  \<open>?G\<in>M\<close>
+    have "\<Union> ?rnf \<in> (\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (nat \<rightarrow>\<^bsup>M\<^esup> 2))"
+      using pfun_Un_filter_closed'[OF \<open>?rnf\<subseteq>_\<close> 1]  \<open>?rnf\<in>M\<close>
       by simp
     moreover from calculation
-    have "\<Union>?G \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
+    have "\<Union>?rnf \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
       using countable_fun_imp_countable_image[of f]
         mem_function_space_rel_abs[simplified,OF nat_in_M Coll_in_M \<open>f\<in>M\<close>]
         countableI[OF lepoll_rel_refl]
-        countable_iff_lesspoll_rel_Aleph_rel_one[of "\<Union>?G"]
+        countable_iff_lesspoll_rel_Aleph_rel_one[of "\<Union>?rnf"]
       by auto
     moreover from calculation
-    have "\<Union>?G\<in>Coll"
+    have "\<Union>?rnf\<in>Coll"
       unfolding Fn_rel_def
       by simp
     moreover from calculation
-    have "\<Union>?G \<supseteq> f ` \<alpha> " if "\<alpha>\<in>\<omega>" for \<alpha>
+    have "\<Union>?rnf \<supseteq> f ` \<alpha> " if "\<alpha>\<in>\<omega>" for \<alpha>
       using that image_function[OF fun_is_function] domain_of_fun
       by auto
     ultimately

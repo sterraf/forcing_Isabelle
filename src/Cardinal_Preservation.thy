@@ -115,7 +115,8 @@ qed
 context M_ctm3_AC
 begin
 
-\<comment> \<open>Simplifying simp rules (because of the occurrence of "\#\#")\<close>
+\<comment> \<open>Simplifying simp rules (because of the occurrence of
+   \<^term>\<open>setclass\<close>)\<close>
 lemmas sharp_simps = Card_rel_Union Card_rel_cardinal_rel Collect_abs
   Cons_abs Cons_in_M_iff Diff_closed Equal_abs Equal_in_M_iff Finite_abs
   Forall_abs Forall_in_M_iff Inl_abs Inl_in_M_iff Inr_abs Inr_in_M_iff

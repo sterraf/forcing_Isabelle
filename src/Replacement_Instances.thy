@@ -397,7 +397,7 @@ definition instances2_fms where "instances2_fms \<equiv>
     LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0),
     LambdaPair_in_M_fm(composition_fm(0,1,2),0) }"
 
-txt\<open>This set has 22 internalized formulas.\<close>
+text\<open>This set has 22 internalized formulas.\<close>
 
 lemmas replacement_instances2_defs =
   replacement_is_omega_funspace_fm_def

@@ -5,7 +5,7 @@ theory Not_CH
     Cardinal_Preservation
 begin
 
-txt\<open>We are taking advantage that the poset of finite functions is absolute,
+text\<open>We are taking advantage that the poset of finite functions is absolute,
 and thus we work with the unrelativized \<^term>\<open>Fn\<close>. But it would have been more
 appropriate to do the following using the relative \<^term>\<open>Fn_rel\<close>. As it turns
 out, the present theory was developed prior to having \<^term>\<open>Fn\<close> relativized!
@@ -501,7 +501,7 @@ lemma h_G_in_MG[simp]:
   using ext.lam_apply_replacement ext.apply_replacement2
     ext.lam_apply_replacement[unfolded lam_replacement_def]
     ext.Union_closed[simplified, OF G_in_MG]
-    \<comment> \<open>The "simplified" here is because of
+    \<comment> \<open>The “simplified” here is because of
         the \<^term>\<open>setclass\<close> ocurrences\<close>
     ext.nat_into_M
   unfolding h_G_def

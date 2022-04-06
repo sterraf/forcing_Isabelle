@@ -5,7 +5,7 @@ theory Demonstrations
     Definitions_Main
 begin
 
-txt\<open>The following theory is only intended to explore some details of the
+text\<open>The following theory is only intended to explore some details of the
 formalization and to show the appearance of relevant internalized formulas.
 It is \<^bold>\<open>not\<close> intended as the entry point of the session. For that purpose,
 consult \<^theory>\<open>Independence_CH.Definitions_Main\<close>\<close>
@@ -18,7 +18,7 @@ locale Demo = M_trivial + M_AC +
     power_infty: "power_ax(M)" "M(\<omega>)"
 begin
 
-txt\<open>The next fake lemma is intended to explore the instances of the axiom
+text\<open>The next fake lemma is intended to explore the instances of the axiom
 schemes that are needed to build our forcing models. They are categorized as
 plain replacements (using \<^term>\<open>strong_replacement\<close>), “lambda-replacements” with
 using a higher order function, replacements  to perform

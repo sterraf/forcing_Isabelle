@@ -24,7 +24,7 @@ definition instances3_fms where "instances3_fms \<equiv>
     replacement_is_aleph_fm,
     LambdaPair_in_M_fm(is_inj_fm(0,1,2),0) }"
 
-txt\<open>This set has 5 internalized formulas.\<close>
+text\<open>This set has 5 internalized formulas.\<close>
 
 lemmas replacement_instances3_defs =
   replacement_is_order_body_fm_def wfrec_replacement_order_pred_fm_def
@@ -365,13 +365,13 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(Lambda_in_M_fm(is_converse_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)) }"
 
-txt\<open>This set has 44 internalized formulas, corresponding to the total count
+text\<open>This set has 44 internalized formulas, corresponding to the total count
 of previous replacement instances.\<close>
 
 definition overhead where
   "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union> instances4_fms"
 
-txt\<open>Hence, the “overhead” to force $\CH$ and its negation consists
+text\<open>Hence, the “overhead” to force $\CH$ and its negation consists
 of 88 replacement instances.\<close>
 
 lemma instances3_fms_type[TC] : "instances3_fms \<subseteq> formula"

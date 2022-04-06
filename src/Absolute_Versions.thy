@@ -109,7 +109,7 @@ proof -
   show ?thesis .
 qed
 
-txt\<open>Example of absolute lemmas obtained from the relative versions.
+text\<open>Example of absolute lemmas obtained from the relative versions.
     Note the \<^emph>\<open>only\<close> declarations\<close>
 lemma Ord_cardinal_idem': "Ord(A) \<Longrightarrow> ||A|| = |A|"
   using V.Ord_cardinal_rel_idem by (simp only:V_simps)
@@ -117,7 +117,7 @@ lemma Ord_cardinal_idem': "Ord(A) \<Longrightarrow> ||A|| = |A|"
 lemma Aleph_succ': "Ord(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>succ(\<alpha>)\<^esub> = \<aleph>\<^bsub>\<alpha>\<^esub>\<^sup>+"
   using V.Aleph_rel_succ by (simp only:V_simps)
 
-txt\<open>These two results are new, first obtained in relative form
+text\<open>These two results are new, first obtained in relative form
     (not ported).\<close>
 lemma csucc_cardinal:
   assumes "Ord(\<kappa>)" shows "|\<kappa>|\<^sup>+ = \<kappa>\<^sup>+"
@@ -127,7 +127,7 @@ lemma csucc_le_mono:
   assumes "\<kappa> \<le> \<nu>"  shows "\<kappa>\<^sup>+ \<le> \<nu>\<^sup>+"
   using assms V.csucc_rel_le_mono by (simp add:V_simps)
 
-txt\<open>Example of transferring results from a transitive model to \<^term>\<open>\<V>\<close>\<close>
+text\<open>Example of transferring results from a transitive model to \<^term>\<open>\<V>\<close>\<close>
 lemma (in M_Perm) eqpoll_rel_transfer_absolute:
   assumes "M(A)" "M(B)" "A \<approx>\<^bsup>M\<^esup> B"
   shows "A \<approx> B"
@@ -139,7 +139,7 @@ proof -
     by (simp only:V_simps)
 qed
 
-txt\<open>The “relationalized” $\CH$ with respect to \<^term>\<open>\<V>\<close> corresponds
+text\<open>The “relationalized” $\CH$ with respect to \<^term>\<open>\<V>\<close> corresponds
     to the real $\CH$.\<close>
 lemma is_ContHyp_iff_CH: "is_ContHyp(\<V>) \<longleftrightarrow> ContHyp"
   using V.is_ContHyp_iff

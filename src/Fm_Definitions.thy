@@ -6,7 +6,7 @@ theory Fm_Definitions
     FrecR_Arities
 begin
 
-txt\<open>In this theory we put every concept that should be synthesized in a formula
+text\<open>In this theory we put every concept that should be synthesized in a formula
 to have an instance of replacement.
 
 The automatic synthesis of a concept /foo/ requires that every concept used to
@@ -25,7 +25,7 @@ on its theory.
 declare arity_subset_fm [simp del] arity_ordinal_fm[simp del, arity] arity_transset_fm[simp del]
   FOL_arities[simp del]
 
-txt\<open>Formulas for particular replacement instances\<close>
+text\<open>Formulas for particular replacement instances\<close>
 
 text\<open>Now we introduce some definitions used in the definition of check; which
 is defined by well-founded recursion using replacement in the recursive call.\<close>
@@ -257,8 +257,8 @@ arity_theorem for "is_tuple_fm"
 subsection\<open>Definition of Forces\<close>
 
 subsubsection\<open>Definition of \<^term>\<open>forces\<close> for equality and membership\<close>
-text\<open>$p\forces \tau = \theta$ if every $q\leqslant p$ both $q\forces \sigma \in \tau$
-and $q\forces \sigma \in \theta$ for every $\sigma \in \dom(\tau)\cup \dom(\theta)$.\<close>
+text\<open>$p\forces \tau = \theta$ if for every $q\leqslant p$ both $q\forces \sigma \in \tau$
+and $q\forces \sigma \in \theta$ hold for all $\sigma \in \dom(\tau)\cup \dom(\theta)$.\<close>
 definition
   eq_case :: "[i,i,i,i,i,i] \<Rightarrow> o" where
   "eq_case(\<tau>,\<theta>,p,P,leq,f) \<equiv> \<forall>\<sigma>. \<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<longrightarrow>
@@ -268,7 +268,7 @@ relativize "eq_case" "is_eq_case"
 synthesize "eq_case" from_definition "is_eq_case"
 
 text\<open>$p\forces \tau \in \theta$ if for every $v\leqslant p$
-  there exists $q$, $r$, and $\sigma$ such that
+  there exist $q$, $r$, and $\sigma$ such that
   $v\leqslant q$, $q\leqslant r$, $\langle \sigma,r\rangle \in \tau$, and
   $q\forces \pi = \sigma$.\<close>
 definition

@@ -19,8 +19,8 @@ locale M_ctm1_AC = M_ctm1 + M_ZFC1_trans
 
 subsection\<open>A forcing locale and generic filters\<close>
 
-txt\<open>Ideally, countability should be separated from the assumption of this locale.
-The fact is that our present proofs of the "definition of forces" (and many
+text\<open>Ideally, countability should be separated from the assumption of this locale.
+The fact is that our present proofs of the “definition of forces” (and many
 consequences) and of the lemma for “forcing a value” of function
 unnecessarily depend on the countability of the ground model. \<close>
 

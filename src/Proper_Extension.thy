@@ -65,7 +65,7 @@ proof
   ultimately
   show "False"
     using filter_complement_dense[of G] M_generic_denseD[of G "P-G"]
-      M_generic_def by simp \<comment> \<open>need to put generic ==> filter in claset\<close>
+      M_generic_def by simp (*TODO: put generic ==> filter in claset ?*)
 qed
 
 theorem proper_extension:
