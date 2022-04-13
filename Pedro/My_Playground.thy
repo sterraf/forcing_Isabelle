@@ -675,14 +675,47 @@ term "Trueprop(False)"
 
 lemma "TERM (A::prop)" .
 
+text\<open>Note: each occurrence of \<^typ>\<open>dummy\<close> results in a different type variable:\<close>
+definition hfunc'
+  where "hfunc'(P::dummy, Q::dummy) \<equiv> P"
+
 definition values
   where "values(PROP P, Q) \<equiv> P = Q"
+
+text\<open>The following does not work because function types are not of “term”,
+and actually the next lemma does proves the required statement but it is
+not enough. Some other stuff is going on with the “instance” command.\<close>
+
+lemma OFCLASS_term: "PROP term_class(TYPE ('a\<Rightarrow>'b))"
+  by (rule IFOL.class.IFOL.term.of_class.intro)
 
 definition hfunc
   where "hfunc(P::i\<Rightarrow>o, Q) \<equiv> P = Q"
 
-definition hfunc'
-  where "hfunc'(P::dummy, Q::dummy) \<equiv> P"
+instance "fun" :: ("term","term") "term"
+  by (rule OFCLASS_term)
+
+text\<open>It seems that after this trick I'd be able to quantify over higher order
+functions! Indeed:\<close>
+
+term \<open>\<forall>k\<in>nat. \<exists>f. \<forall>k\<in>nat. f(k) = k #+ n\<close>
+
+text\<open>In this hacked context, every real is given by a “formula”\<close>
+
+lemma assumes "f:nat \<rightarrow> nat" shows "\<exists>F. \<forall>n\<in>nat. F(n) = f`n" by auto
+
+text\<open>Neither \<^typ>\<open>o\<close> is of sort “term”, so the former definition
+doesn't get through yet:\<close>
+
+definition hfunc
+  where "hfunc(P::i\<Rightarrow>o, Q) \<equiv> P = Q"
+
+instance o :: "term" .. \<comment> \<open>rule IFOL.class.IFOL.term.of_class.intro\<close>
+
+text\<open>Now it does:\<close>
+
+definition hfunc
+  where "hfunc(P::i\<Rightarrow>o, Q) \<equiv> P = Q"
 
 find_consts "_\<Rightarrow> o"
 

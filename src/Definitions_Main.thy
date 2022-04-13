@@ -432,7 +432,7 @@ lemma cardinalities_defs:
 context M_aleph
 begin
 
-text\<open>As in the previous Lemma @{thm [source] eqpoll_def'}, we are now under
+text\<open>Analogous to the previous Lemma @{thm [source] eqpoll_def'}, we are now under
     the assumptions of the locale \<^term>\<open>M_aleph\<close>. The axiom instances
     included are sufficient to state and prove the defining
     properties of the relativized \<^term>\<open>Aleph\<close> function
@@ -480,7 +480,7 @@ text\<open>@{thm [display] is_ContHyp_iff_sats}\<close>
 subsection\<open>Forcing \label{sec:def-main-forcing}\<close>
 
 text\<open>Our first milestone was to obtain a proper extension using forcing.
-It's original proof didn't required the previous developments involving
+Its original proof didn't required the previous developments involving
 the relativization of material on cardinal arithmetic. Now it is
 derived from a stronger result, namely @{thm [source] extensions_of_ctms}
 below.\<close>

@@ -132,7 +132,7 @@ proof -
   show ?thesis .
 qed
 
-text\<open>The next lemma provides the usual recursive expresion for the definition of term\<open>val\<close>.\<close>
+text\<open>The next lemma provides the usual recursive expresion for the definition of \<^term>\<open>val\<close>.\<close>
 
 lemma def_val:  "val(P,G,x) = {z . t\<in>domain(x) , (\<exists>p\<in>P .  \<langle>t,p\<rangle>\<in>x \<and> p \<in> G) \<and> z=val(P,G,t)}"
 proof -
