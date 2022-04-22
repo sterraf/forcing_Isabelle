@@ -682,18 +682,37 @@ definition hfunc'
 definition values
   where "values(PROP P, Q) \<equiv> P = Q"
 
-text\<open>The following does not work because function types are not of “term”,
-and actually the next lemma does proves the required statement but it is
-not enough. Some other stuff is going on with the “instance” command.\<close>
-
 lemma OFCLASS_term: "PROP term_class(TYPE ('a\<Rightarrow>'b))"
   by (rule IFOL.class.IFOL.term.of_class.intro)
+
+text\<open>The following definition does not work because function types are not of “term”,
+and actually the previous lemma does proves the required statement but it is
+not enough. Some other stuff is going on with the “instance” command.\<close>
 
 definition hfunc
   where "hfunc(P::i\<Rightarrow>o, Q) \<equiv> P = Q"
 
+print_classes
+(*
+class term:
+  supersort: {}
+  instances:
+    i :: term
+*)
+
+text\<open>Note: Below, occurrences of \<open>\<^class>\<open>term\<close>\<close> are shortcuts for \<open>\<^sort>\<open>{term}\<close>\<close>.\<close>
+
 instance "fun" :: ("term","term") "term"
   by (rule OFCLASS_term)
+
+print_classes
+(*
+class term:
+  supersort: {}
+  instances:
+    fun :: (term, term) term
+    i :: term
+*)
 
 text\<open>It seems that after this trick I'd be able to quantify over higher order
 functions! Indeed:\<close>
@@ -704,13 +723,23 @@ text\<open>In this hacked context, every real is given by a “formula”\<close
 
 lemma assumes "f:nat \<rightarrow> nat" shows "\<exists>F. \<forall>n\<in>nat. F(n) = f`n" by auto
 
-text\<open>Neither \<^typ>\<open>o\<close> is of sort “term”, so the former definition
+text\<open>Neither \<^typ>\<open>o\<close> is of sort “term”, so the next definition
 doesn't get through yet:\<close>
 
 definition hfunc
   where "hfunc(P::i\<Rightarrow>o, Q) \<equiv> P = Q"
 
 instance o :: "term" .. \<comment> \<open>rule IFOL.class.IFOL.term.of_class.intro\<close>
+
+print_classes
+(*
+class term:
+  supersort: {}
+  instances:
+    fun :: (term, term) term
+    i :: term
+    o :: term
+*)
 
 text\<open>Now it does:\<close>
 
