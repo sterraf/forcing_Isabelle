@@ -1,0 +1,51 @@
+\section{Proof assistants and Isabelle/ZF}
+\label{sec:proof-assist-isabelle}
+
+Proof assistants provide diverse aids for the task
+of formalizing a piece of mathematics. They are usually implemented
+using a typed programming language; rigor is enforced by defining a
+type of ``theorems'', whose members can only be constructed using
+operations stipulated in a small \emph{kernel} which encodes the
+underlying foundation of the assistant. Further developments interact
+with the type of theorems only through the kernel, and thus the latter
+is the only ``trusted'' part of the assistant's code.
+
+Several of the more established assistants (HOL Light, Coq, Isabelle)
+are programmed in some variant of the ML language (which was
+originally designed for this purpose); the newer Lean, on the other
+hand, was originally conceived as a standalone functional programming
+language with all the features of a standard assistant.
+
+\subsection{Four layers}
+
+In the case of Isabelle, Standard ML is the deeper layer of the
+assistant, in which the kernel is written. 
+
+%% Isabelle \cite{Isabelle,DBLP:books/sp/Paulson94} is a general proof
+%% assistant based on fragment of higher-order logic called
+%% \emph{Pure}. 
+%% The results presented in this work are theorems of a
+%% version of $\ZF$ set theory (without the Axiom of Choice, $\AC$) 
+%% called \emph{Isabelle/ZF}, which is one of the
+%% ``object logics'' that can be defined on top of Pure (which is then
+%% used as a language to define rules). Isabelle/ZF defines types
+%% \isatt{i} and \isatt{o} for sets and Booleans, resp., and the $\ZF$
+%% axioms are written down as terms of type \isatt{o}.
+%% 
+%% It should be noted that Pure is a very weak framework and has no
+%% induction/recursion capabilities. So the only way to define functions
+%% by recursion is inside the object logic. (This works the same for
+%% Isabelle/HOL.) For this reason, to define the relation of forcing, we
+%% needed to resort to \emph{internalized} first-order formulas: they
+%% form a recursively defined set \isatt{formula}. For example, the
+%% predicate of satisfaction
+%% \isatt{sats::i{\isasymRightarrow}i{\isasymRightarrow}i{\isasymRightarrow}o}
+%% (written $M,\mathit{ms}\models\phi$ for a set $M$,
+%% $\mathit{ms}\in\isatt{list}(M)$ and $\phi\in\formula$)
+%% had already been defined by recursion in Paulson~\cite{paulson_2003}.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "independence_ch_isabelle"
+%%% ispell-local-dictionary: "american"
+%%% End: 

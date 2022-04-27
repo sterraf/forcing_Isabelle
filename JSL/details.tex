@@ -1,0 +1,69 @@
+\section{Details of the formalization}
+
+\subsection{35 replacement instances to rule them all}
+We isolated 35 instances of Replacement that are needed to force
+$\CH$/$\neg\CH$. The first 14 instances are needed to set up
+cardinal arithmetic in $M$.
+
+\begin{itemize}
+\item 7 instances for iteration of operations.
+  \begin{itemize}
+  \item Fixpoints: lists
+    \isatt{list{\uscore}repl1{\uscore}intf{\uscore}fm},
+    \isatt{list{\uscore}repl2{\uscore}intf{\uscore}fm}; formulas
+    \isatt{formula{\uscore}repl1{\uscore}intf{\uscore}fm},
+    \isatt{formula{\uscore}repl1{\uscore}intf{\uscore}fm}.
+  \item Transitive closure \isatt{eclose{\uscore}repl1{\uscore}intf{\uscore}fm},
+    \isatt{eclose{\uscore}repl2{\uscore}intf{\uscore}fm} (iteration of $\union$).
+  \item $n$th element of a list \isatt{tl{\uscore}repl{\uscore}intf{\uscore}fm} (iteration of the tail operation; fake?).
+  \end{itemize}
+  
+\item 4 instances for definitions by well-founded recursion.
+  \begin{itemize}
+  \item Ordertypes \isatt{wfrec{\uscore}replacement{\uscore}order{\uscore}pred{\uscore}fm}.
+  \item Rank \isatt{wfrec{\uscore}rank{\uscore}fm}.
+  \item Cumulative hierarchy \isatt{trans{\uscore}repl{\uscore}HVFrom{\uscore}fm} (rank initial segments).
+  \item Aleph \isatt{replacement{\uscore}HAleph{\uscore}wfrec{\uscore}repl{\uscore}body{\uscore}fm}.
+  \end{itemize}
+  
+\item 3 other replacements.
+  \begin{itemize}
+  \item Definition of ordertypes \isatt{replacement{\uscore}is{\uscore}order{\uscore}body{\uscore}fm},
+    \isatt{}.
+  \item Definition of cardinal successor \isatt{replacement{\uscore}is{\uscore}jump{\uscore}cardinal{\uscore}body{\uscore}fm}.
+  \end{itemize}
+\end{itemize}
+
+We also need a one extra replacement instance $\psi$ on $M$ for each
+$\phi$ of the
+previous ones to have them in $M[G]$.
+\[
+  \psi(x,\alpha,y_1,\dots,y_n) \defi \quine{\alpha = \min \bigl\{
+    \beta \mid \exists\tau\in V_\beta.\  \mathit{snd}(x) \forces
+    \phi\ [\mathit{fst}(x),\tau,y_1,\dots,y_n]\bigr\}}
+\]
+That makes 28 instances up to now. For the setup of forcing, we
+require the following 7 instances (the first two needed for the $\Delta$-system Lemma):
+
+\begin{itemize}
+%\verb|replacement_ax2(6)| \verb|replacement_transrec_apply_image_body_fm| seems fake!
+\item Recursive construction of sets using a choice function
+  \isatt{replacement{\uscore}is{\uscore}trans{\uscore}apply{\uscore}image{\uscore}fm}.
+% \item Replacement through  $x\mapsto \check{x}$ \isatt{check{\uscore}replacement{\uscore}fm}.
+\item $x\mapsto |x|^M$
+  \isatt{Lambda{\uscore}in{\uscore}M{\uscore}fm(is{\uscore}cardinal{\uscore}fm(0,1),0)}.
+\item 2 instances for definitions by well-founded recursion \isatt{wfrec{\uscore}Hcheck{\uscore}fm} (check
+  names) and \isatt{wfrec{\uscore}Hfrc{\uscore}at{\uscore}fm} (forcing for atomic formulas).
+\item Replacement through $x\mapsto \lb\check{x},x\rb$
+  \isatt{G{\uscore}dot{\uscore}in{\uscore}M{\uscore}fm} (for the
+  definition of $\punto{G}$).
+% \item Name of choice functions in $M[G]$ \isatt{repl{\uscore}opname{\uscore}check{\uscore}fm}.
+\item 2 instances for the slalom needed for cardinal preservation
+  by ccc forcing.
+\end{itemize}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "independence_ch_isabelle"
+%%% ispell-local-dictionary: "american"
+%%% End: 
