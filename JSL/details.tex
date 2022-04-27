@@ -1,7 +1,7 @@
 \section{Details of the formalization}
 
-\subsection{35 replacement instances to rule them all}
-We isolated 35 instances of Replacement that are needed to force
+\subsection{33 replacement instances to rule them all}
+We isolated 33 instances of Replacement that are needed to force
 $\CH$/$\neg\CH$. The first 14 instances are needed to set up
 cardinal arithmetic in $M$.
 
@@ -20,17 +20,22 @@ cardinal arithmetic in $M$.
   
 \item 4 instances for definitions by well-founded recursion.
   \begin{itemize}
-  \item Ordertypes \isatt{wfrec{\uscore}replacement{\uscore}order{\uscore}pred{\uscore}fm}.
+  \item Ordertypes
+    \isatt{wfrec{\uscore}replacement{\uscore}order{\uscore}pred{\uscore}fm}.
   \item Rank \isatt{wfrec{\uscore}rank{\uscore}fm}.
   \item Cumulative hierarchy \isatt{trans{\uscore}repl{\uscore}HVFrom{\uscore}fm} (rank initial segments).
   \item Aleph \isatt{replacement{\uscore}HAleph{\uscore}wfrec{\uscore}repl{\uscore}body{\uscore}fm}.
   \end{itemize}
   
-\item 3 other replacements.
+\item 2 instances for definition of ordertypes.
   \begin{itemize}
-  \item Definition of ordertypes \isatt{replacement{\uscore}is{\uscore}order{\uscore}body{\uscore}fm},
-    \isatt{}.
-  \item Definition of cardinal successor \isatt{replacement{\uscore}is{\uscore}jump{\uscore}cardinal{\uscore}body{\uscore}fm}.
+  \item \isatt{replacement{\uscore}is{\uscore}order{\uscore}body{\uscore}fm}.
+  \item \isatt{replacement{\uscore}is{\uscore}order{\uscore}eq{\uscore}map{\uscore}fm}.
+  \end{itemize}
+\item 1 instance for definition of cardinal successor.
+  \begin{itemize}
+  \item
+    \isatt{replacement{\uscore}is{\uscore}jump{\uscore}cardinal{\uscore}body{\uscore}fm}.
   \end{itemize}
 \end{itemize}
 
@@ -43,7 +48,7 @@ previous ones to have them in $M[G]$.
     \phi\ [\mathit{fst}(x),\tau,y_1,\dots,y_n]\bigr\}}
 \]
 That makes 28 instances up to now. For the setup of forcing, we
-require the following 7 instances (the first two needed for the $\Delta$-system Lemma):
+require the following 5 instances (the first two needed for the $\Delta$-system Lemma):
 
 \begin{itemize}
 %\verb|replacement_ax2(6)| \verb|replacement_transrec_apply_image_body_fm| seems fake!
@@ -58,8 +63,7 @@ require the following 7 instances (the first two needed for the $\Delta$-system 
   \isatt{G{\uscore}dot{\uscore}in{\uscore}M{\uscore}fm} (for the
   definition of $\punto{G}$).
 % \item Name of choice functions in $M[G]$ \isatt{repl{\uscore}opname{\uscore}check{\uscore}fm}.
-\item 2 instances for the slalom needed for cardinal preservation
-  by ccc forcing.
+% \item 2 instances for the slalom needed for cardinal preservation by ccc forcing.
 \end{itemize}
 
 %%% Local Variables: 
