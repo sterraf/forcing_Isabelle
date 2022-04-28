@@ -7,8 +7,7 @@ begin
 
 text\<open>The following instances are mostly the same repetitive task; and we just
 copied and pasted, tweaking some lemmas if needed (for example, we might have
-needed to use some closedness results).
-\<close>
+needed to use some closure results).\<close>
 
 definition radd_body :: "[i,i,i] \<Rightarrow> o" where
   "radd_body(R,S) \<equiv> \<lambda>z. (\<exists>x y. z = \<langle>Inl(x), Inr(y)\<rangle>) \<or>

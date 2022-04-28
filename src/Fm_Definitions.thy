@@ -840,55 +840,6 @@ proof -
     by(simp only: Un_commute, subst Un_commute, simp add:ord_simp_union,force)
 qed
 
-simple_rename "ren_F" src "[x_P, x_leq, x_o, x_f, y_c, x_bc, p, x, b]"
-  tgt "[x_bc, y_c,b,x, x_P, x_leq, x_o, x_f, p]"
-
-simple_rename "ren_G" src "[x,x_P, x_leq, x_one, x_f,x_p,y,x_B]"
-  tgt "[x,y,x_P, x_leq, x_one, x_f,x_p,x_B]"
-
-simple_rename "ren_F_aux" src "[q,x_P, x_leq, x_one, f_dot, x_a, x_bc,x_p,x_b]"
-  tgt "[x_bc, q, x_b, x_P, x_leq, x_one, f_dot,x_a,x_p]"
-
-simple_rename "ren_G_aux" src "[ x_b, x_P, x_leq, x_one, f_dot,x_a,x_p,y]"
-  tgt "[ x_b, y, x_P, x_leq, x_one, f_dot,x_a,x_p]"
-
-definition ccc_fun_closed_lemma_aux2_fm where [simp]:
-  "ccc_fun_closed_lemma_aux2_fm \<equiv> ren(Collect_fm(1, (\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v5 is 0\<cdot> \<and> ren(\<cdot>\<cdot>0\<preceq>\<^bsup>2\<^esup>7\<cdot>
-  \<and> forces(\<cdot>0`1 is 2\<cdot> ) \<cdot> ) ` 9 ` 9 ` ren_F_aux_fn\<cdot>\<cdot>), 7)) ` 8 ` 8 ` ren_G_aux_fn"
-
-lemma ccc_fun_closed_lemma_aux2_fm_type [TC] :
-  "ccc_fun_closed_lemma_aux2_fm \<in> formula"
-proof -
-  let ?\<psi>="\<cdot>\<cdot>0\<preceq>\<^bsup>2\<^esup>7\<cdot>  \<and> forces(\<cdot>0`1 is 2\<cdot> ) \<cdot> "
-  let ?G="(\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v5 is 0\<cdot> \<and> ren(?\<psi>) ` 9 ` 9 ` ren_F_aux_fn\<cdot>\<cdot>)"
-  have "ren(?\<psi>)`9`9`ren_F_aux_fn \<in> formula"
-    using ren_tc ren_F_aux_thm check_fm_type is_leq_fm_type ren_F_aux_fn_def pred_le
-    by simp_all
-  then
-  show ?thesis
-    using ren_tc ren_G_aux_thm ren_G_aux_fn_def
-    by simp
-qed
-
-definition ccc_fun_closed_lemma_fm where [simp]:
-  "ccc_fun_closed_lemma_fm \<equiv> ren(Collect_fm(7, (\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v5 is 0\<cdot> \<and> (\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v6 is 0\<cdot> \<and>
-   ren((\<cdot>\<exists>\<cdot>\<cdot>0 \<in> 1\<cdot> \<and> \<cdot>\<cdot>0\<preceq>\<^bsup>2\<^esup>7\<cdot> \<and> forces(\<cdot>0`1 is 2\<cdot> ) \<cdot>\<cdot>\<cdot>)) ` 9 ` 9 ` ren_F_fn\<cdot>\<cdot>)\<cdot>\<cdot>), 6))
-   ` 8 ` 8 ` ren_G_fn"
-
-lemma ccc_fun_closed_lemma_fm_type [TC] :
-  "ccc_fun_closed_lemma_fm \<in> formula"
-proof -
-  let ?\<psi>="(\<cdot>\<exists>\<cdot>\<cdot>0 \<in> 1\<cdot> \<and> \<cdot> \<cdot>0 \<preceq>\<^bsup>2\<^esup> 7\<cdot> \<and> forces(\<cdot>0`1 is 2\<cdot> ) \<cdot>\<cdot>\<cdot>)"
-  let ?G="(\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v5 is 0\<cdot> \<and> (\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v6 is 0\<cdot> \<and> ren(?\<psi>) ` 9 ` 9 ` ren_F_fn\<cdot>\<cdot>)\<cdot>\<cdot>)"
-  have "ren(?\<psi>)`9`9`ren_F_fn \<in> formula"
-    using ren_tc ren_F_thm check_fm_type is_leq_fm_type ren_F_fn_def pred_le
-    by simp_all
-  then
-  show ?thesis
-    using ren_tc ren_G_thm ren_G_fn_def
-    by simp
-qed
-
 definition is_order_body
   where "is_order_body(M,X,x,z) \<equiv> \<exists>A[M]. cartprod(M,X,X,A) \<and> subset(M,x,A) \<and> M(z) \<and> M(x) \<and>
            is_well_ord(M,X, x) \<and> is_ordertype(M,X, x,z)"

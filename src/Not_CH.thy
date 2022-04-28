@@ -37,10 +37,13 @@ locale M_master = M_cohen + M_library_DC +
 
 subsection\<open>Non-absolute concepts between extensions\<close>
 
-locale M_master_sub = M_master + N:M_master N for N +
+locale M_master_sub = M_master + N:M_aleph N for N +
   assumes
     M_imp_N: "M(x) \<Longrightarrow> N(x)" and
     Ord_iff: "Ord(x) \<Longrightarrow> M(x) \<longleftrightarrow> N(x)"
+(* TODO: update ground replacement assms in M_ZF4: those stemming from
+  M_DC, M_cardinal_library, and M_seqspace should no longer be needed
+  (5 total). *)
 
 sublocale M_master_sub \<subseteq> M_N_Perm
   using M_imp_N by unfold_locales

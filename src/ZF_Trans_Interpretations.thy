@@ -12,7 +12,6 @@ locale M_ZF3 = M_ZF2 +
     "replacement_assm(M,env,replacement_is_order_body_fm)"
     "replacement_assm(M,env,wfrec_replacement_order_pred_fm)"
     "replacement_assm(M,env,replacement_is_jump_cardinal_body_fm)"
-    "replacement_assm(M,env,replacement_is_aleph_fm)"
     and
     LambdaPair_in_M_replacement3:
     "replacement_assm(M,env,LambdaPair_in_M_fm(is_inj_fm(0,1,2),0))"
@@ -21,10 +20,9 @@ definition instances3_fms where "instances3_fms \<equiv>
   { replacement_is_order_body_fm,
     wfrec_replacement_order_pred_fm,
     replacement_is_jump_cardinal_body_fm,
-    replacement_is_aleph_fm,
     LambdaPair_in_M_fm(is_inj_fm(0,1,2),0) }"
 
-text\<open>This set has 5 internalized formulas.\<close>
+text\<open>This set has 4 internalized formulas.\<close>
 
 lemmas replacement_instances3_defs =
   replacement_is_order_body_fm_def wfrec_replacement_order_pred_fm_def
@@ -224,30 +222,78 @@ lemma arity_is_HAleph_fm: "arity(is_HAleph_fm(2, 1, 0)) = 3"
     pred_Un_distrib ord_simp_union
   by (simp add:FOL_arities)
 
-lemma arity_is_Aleph: "arity(is_Aleph_fm(0, 1)) = 2"
+lemma arity_is_Aleph[arity]: "arity(is_Aleph_fm(0, 1)) = 2"
   unfolding is_Aleph_fm_def
   using arity_transrec_fm[OF _ _ _ _ arity_is_HAleph_fm] ord_simp_union
   by simp
 
-lemma (in M_ZF3_trans) replacement_is_aleph:
-  "strong_replacement(##M, \<lambda>x y. Ord(x) \<and> is_Aleph(##M,x,y))"
-  apply(rule_tac strong_replacement_cong[
-        where P="\<lambda> x y. M,[x,y] \<Turnstile> And(ordinal_fm(0),is_Aleph_fm(0,1))",THEN iffD1])
-   apply (auto simp add: ordinal_iff_sats[where env="[_,_]",symmetric])
-    apply(rule_tac is_Aleph_iff_sats[where env="[_,_]",THEN iffD2],simp_all add:zero_in_M)
-   apply(rule_tac is_Aleph_iff_sats[where env="[_,_]",THEN iffD1],simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax3(4)[unfolded replacement_assm_def, rule_format, where env="[]",simplified])
-   apply(simp_all add:arity_is_Aleph FOL_arities arity_ordinal_fm ord_simp_union is_Aleph_fm_type)
-  done
+definition bex_Aleph_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> o" where
+  "bex_Aleph_rel(M,x) \<equiv> \<lambda>y. \<exists>z\<in>x. y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"
 
-lemma (in M_ZF3_trans) replacement_aleph_rel:
-  shows  "strong_replacement(##M, \<lambda>x y. Ord(x) \<and> y = \<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>)"
-  using strong_replacement_cong[THEN iffD2,OF _ replacement_is_aleph,where P1="\<lambda>x y . Ord(x) \<and> y=Aleph_rel(##M,x)"]
-    is_Aleph_iff
-  by auto
+relationalize "bex_Aleph_rel" "is_bex_Aleph"
+
+schematic_goal sats_is_bex_Aleph_fm_auto:
+  "a \<in> nat \<Longrightarrow> c \<in> nat \<Longrightarrow> env \<in> list(A) \<Longrightarrow>
+  a < length(env) \<Longrightarrow> c < length(env) \<Longrightarrow> 0 \<in> A \<Longrightarrow>
+  is_bex_Aleph(##A, nth(a, env), nth(c, env)) \<longleftrightarrow> A, env \<Turnstile> ?fm(a, c)"
+  unfolding is_bex_Aleph_def
+  by (rule iff_sats | simp)+
+
+synthesize_notc "is_bex_Aleph" from_schematic
+
+lemma is_bex_Aleph_fm_type [TC]:
+    "x \<in> \<omega> \<Longrightarrow> z \<in> \<omega> \<Longrightarrow> is_bex_Aleph_fm(x, z) \<in> formula"
+  unfolding is_bex_Aleph_fm_def by simp
+
+lemma sats_is_bex_Aleph_fm:
+    "x \<in> \<omega> \<Longrightarrow>
+    z \<in> \<omega> \<Longrightarrow> x < length(env) \<Longrightarrow> z < length(env) \<Longrightarrow>
+    env \<in> list(Aa) \<Longrightarrow>
+    0 \<in> Aa \<Longrightarrow>
+    (Aa, env \<Turnstile> is_bex_Aleph_fm(x, z)) \<longleftrightarrow>
+    is_bex_Aleph(##Aa,nth(x, env), nth(z, env))"
+  using sats_is_bex_Aleph_fm_auto unfolding is_bex_Aleph_def is_bex_Aleph_fm_def
+  by simp
+
+lemma is_bex_Aleph_iff_sats [iff_sats]:
+    "nth(x, env) = xa \<Longrightarrow>
+    nth(z, env) = za \<Longrightarrow>
+    x \<in> \<omega> \<Longrightarrow>
+    z \<in> \<omega> \<Longrightarrow> x < length(env) \<Longrightarrow> z < length(env) \<Longrightarrow>
+    env \<in> list(Aa) \<Longrightarrow>
+    0 \<in> Aa \<Longrightarrow>
+    is_bex_Aleph(##Aa, xa, za) \<longleftrightarrow>
+    Aa, env \<Turnstile> is_bex_Aleph_fm(x, z)"
+  using sats_is_bex_Aleph_fm by simp
+
+arity_theorem for "is_bex_Aleph_fm"
+
+lemma (in M_ZF1_trans) separation_is_bex_Aleph:
+  assumes "(##M)(A)"
+  shows "separation(##M,is_bex_Aleph(##M, A))"
+  using assms separation_in_ctm[where env="[A]" and \<phi>="is_bex_Aleph_fm(1,0)",
+      OF _ _ _ is_bex_Aleph_iff_sats[symmetric],
+      of "\<lambda>_.A"]
+    nonempty arity_is_bex_Aleph_fm is_bex_Aleph_fm_type
+  by (simp add:ord_simp_union)
+
+lemma (in M_pre_aleph) bex_Aleph_rel_abs:
+  assumes "Ord(u)" "M(u)" "M(v)"
+  shows "is_bex_Aleph(M, u, v) \<longleftrightarrow> bex_Aleph_rel(M,u,v)"
+  unfolding is_bex_Aleph_def bex_Aleph_rel_def
+  using assms is_Aleph_iff transM[of _ u] Ord_in_Ord
+  by simp
+
+lemma (in M_ZF3_trans) separation_bex_Aleph_rel:
+  "Ord(x) \<Longrightarrow> (##M)(x) \<Longrightarrow> separation(##M, bex_Aleph_rel(##M,x))"
+  using separation_is_bex_Aleph bex_Aleph_rel_abs
+    separation_cong[where P="is_bex_Aleph(##M,x)" and M="##M",THEN iffD1]
+  unfolding bex_Aleph_rel_def
+  by simp
 
 sublocale M_ZF3_trans \<subseteq> M_aleph "##M"
-  by (unfold_locales,simp add: replacement_aleph_rel)
+  using separation_bex_Aleph_rel[unfolded bex_Aleph_rel_def]
+  by unfold_locales
 
 sublocale M_ZF2_trans \<subseteq> M_FiniteFun "##M"
   using separation_cons_like_rel separation_is_function
@@ -277,7 +323,6 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,replacement_is_order_body_fm)"
     "ground_replacement_assm(M,env,wfrec_replacement_order_pred_fm)"
     "ground_replacement_assm(M,env,replacement_is_jump_cardinal_body_fm)"
-    "ground_replacement_assm(M,env,replacement_is_aleph_fm)"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(is_inj_fm(0,1,2),0))"
     "ground_replacement_assm(M,env,wfrec_Hfrc_at_fm)"
     "ground_replacement_assm(M,env,list_repl1_intf_fm)"
@@ -323,7 +368,6 @@ definition instances4_fms where "instances4_fms \<equiv>
   { ground_repl_fm(replacement_is_order_body_fm),
     ground_repl_fm(wfrec_replacement_order_pred_fm),
     ground_repl_fm(replacement_is_jump_cardinal_body_fm),
-    ground_repl_fm(replacement_is_aleph_fm),
     ground_repl_fm(LambdaPair_in_M_fm(is_inj_fm(0,1,2),0)),
     ground_repl_fm(wfrec_Hfrc_at_fm),
     ground_repl_fm(list_repl1_intf_fm),
@@ -365,29 +409,27 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(Lambda_in_M_fm(is_converse_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)) }"
 
-text\<open>This set has 44 internalized formulas, corresponding to the total count
+text\<open>This set has 43 internalized formulas, corresponding to the total count
 of previous replacement instances.\<close>
 
 definition overhead where
   "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union> instances4_fms"
 
 text\<open>Hence, the “overhead” to force $\CH$ and its negation consists
-of 88 replacement instances.\<close>
+of 86 replacement instances.\<close>
 
 lemma instances3_fms_type[TC] : "instances3_fms \<subseteq> formula"
   unfolding instances3_fms_def replacement_is_order_body_fm_def
     wfrec_replacement_order_pred_fm_def replacement_is_jump_cardinal_body_fm_def
     replacement_is_aleph_fm_def
-  by (auto simp del: Lambda_in_M_fm_def
-      ccc_fun_closed_lemma_aux2_fm_def ccc_fun_closed_lemma_fm_def)
+  by (auto simp del: Lambda_in_M_fm_def)
 
 lemma overhead_type: "overhead \<subseteq> formula"
   using instances1_fms_type instances2_fms_type
   unfolding overhead_def instances3_fms_def instances4_fms_def
     replacement_instances1_defs replacement_instances2_defs replacement_instances3_defs
   using ground_repl_fm_type Lambda_in_M_fm_type
-  by (auto simp del: Lambda_in_M_fm_def
-      ccc_fun_closed_lemma_aux2_fm_def ccc_fun_closed_lemma_fm_def)
+  by (auto simp del: Lambda_in_M_fm_def)
 
 locale M_ZF4_trans = M_ZF3_trans + M_ZF4
 
