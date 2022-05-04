@@ -1,0 +1,46 @@
+\section{Relative versions of non-absolute concepts}
+\label{sec:relat-vers-non-absol}
+
+The treatment of relativization/internalization described in the
+previous section was enough for the Paulson's treatment of
+constructibility. This is the case because essentially all the
+concepts in the way of proving the consistency of $\AC$ are
+absolute, and treatment of relational versions and relativized notions
+could be minimized after proving the relevant absoluteness results:
+For example, the lemma \isatt{Union{\uscore}abs},
+\[
+  M(A) \implies M(z) \implies \isatt{big{\uscore}union}(M, A, z) \longleftrightarrow z = \union
+  A
+\]
+proved under the assumption that $M$ is transitive nonempty. Working in this
+way with powersets, cardinalities, and the like would be
+unfeasible.
+
+In order to cope with this, we added the missing step from the
+literature consisting of relative versions of the various non-absolute
+functions and limited automatic facilities that define, state, and
+prove the needed concepts. For instance, the 
+$\isatt{cardinal}::\tyi \fun \tyi$ function is defined in
+\session{Isabelle/ZF}, and the commands
+\begin{isabelle}
+  \isacommand{relativize}\isamarkupfalse%
+  \ \isakeyword{functional}\ {\isachardoublequoteopen}cardinal{\isachardoublequoteclose}\ {\isachardoublequoteopen}cardinal{\isacharunderscore}{\kern0pt}rel{\isachardoublequoteclose}\ \isakeyword{external}\isanewline
+  \isacommand{relationalize}\isamarkupfalse%
+  \ {\isachardoublequoteopen}cardinal{\isacharunderscore}{\kern0pt}rel{\isachardoublequoteclose}\ {\isachardoublequoteopen}is{\isacharunderscore}{\kern0pt}cardinal{\isachardoublequoteclose}\isanewline
+  \isacommand{synthesize}\isamarkupfalse%
+  \ {\isachardoublequoteopen}is{\isacharunderscore}{\kern0pt}cardinal{\isachardoublequoteclose}\ \isakeyword{from{\isacharunderscore}{\kern0pt}definition}\ \isakeyword{assuming}\ {\isachardoublequoteopen}nonempty{\isachardoublequoteclose}%
+\end{isabelle}
+define the relative cardinal function
+$\isatt{cardinal{\uscore}rel}::(\tyi \fun \tyo) \fun \tyi \fun\tyi$,
+its relational version $\isatt{is{\uscore}cardinal}$ that encodes the
+statement $|x|^M = z$, the
+internalized formula \isatt{is{\uscore}cardinal{\uscore}fm} whose
+satisfaction by a set is equivalent to the relational version, and the
+proof of the previous statements.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "independence_ch_isabelle"
+%%% ispell-local-dictionary: "american"
+%%% End: 
