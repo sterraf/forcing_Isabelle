@@ -12,14 +12,64 @@ is the only ``trusted'' part of the assistant's code.
 
 Several of the more established assistants (HOL Light, Coq, Isabelle)
 are programmed in some variant of the ML language (which was
-originally designed for this purpose); the newer Lean, on the other
+designed for this purpose); the newer Lean, on the other
 hand, was originally conceived as a standalone functional programming
 language with all the features of a standard assistant.
 
 \subsection{Four layers}
 
 In the case of Isabelle, Standard ML is the deeper layer of the
-assistant, in which the kernel is written. 
+assistant, in which the kernel is written.
+
+The logical foundation of Isabelle is an intuitionistic fragment of
+higher-order logic (or simple type theory) called $\Meta$;
+original version was described in \cite{Paulson1989}, and the addition
+of  sorts appears in \cite{Nipkow-LF-91}.
+
+The only predefined type is $\prop$ (“propositions”); new base types
+can be postulated when defining objects logics. Types of higher order can be
+assembled using the function space constructor $\fun$.
+
+The type of propositions $\prop$ equipped with a binary operation
+$\implies$ (“meta-implication”) that is used to represent the object
+logic rules. As an example, the axiomatization of first-order logic
+postulates a type $\tyo$ of booleans, and Modus Ponens
+% https://isabelle.in.tum.de/dist/library/FOL/FOL/IFOL.html#IFOL.mp|axiom
+is written as
+\[
+  [P\limp Q] \implies ([P] \implies [Q]).
+\]
+The square brackets represent an injection from $\tyo$ into
+$\prop$. % ($[P]$ can be read as “$P$ holds”)
+A consequence of this representation is that every
+formula of the object logic appears as atomic for $\Meta$.
+
+%% Quantification is handled in the meta-level using a functional $\ALL$
+%% with polymorphic type $(\alpha \fun \prop) \fun \prop$. 
+Types in Isabelle are organized into \emph{classes} and \emph{sorts};
+for ease of exposition, we will omit the former.  The axiomatization
+of first-order logic postulates a sort $\type{term}$ (of
+“individuals”, or elements of a first-order universe of discourse) and
+stipulates that every further type variable $\alpha$ must be of that
+sort. In particular, Isabelle/ZF only postulates one new type $\tyi$
+(“sets”) of sort $\type{term}$. Hence, from the type of the universal
+quantifier functional $\forall :: (\alpha \fun \tyo) \fun \tyo$ it
+follows that it may only be applied to predicates with a variable of
+type $\tyi$. This ensures that the object logic is effectively
+first-order.
+
+Paulson  \cite{Paulson1989} carried out a proof that the encoding
+$\Meta_{\mathrm{IFOL}}$ of
+intuitionistic first-order logic without equality in the original $\Meta$ is
+conservative (there is a correspondence between provable $\phi$ in
+IFOL and provable $[\phi]$ in $\Meta_{\mathrm{IFOL}}$) by putting
+$\Meta_{\mathrm{IFOL}}$ proofs in \emph{expanded normal form}
+\cite{MR0387024}. Passing to classical logic does not presents
+difficulties, but the treatment of meta-equality differs between the
+original and the present incarnation of $\Meta$; details are
+exhaustively expounded in the recent formalization by Nipkow and
+Roßkof \cite{10.1007/978-3-030-79876-5_6}.
+
 
 %% Isabelle \cite{Isabelle,DBLP:books/sp/Paulson94} is a general proof
 %% assistant based on fragment of higher-order logic called
