@@ -22,6 +22,7 @@ of proofs is coded in ML, sometimes as a substitute for induction on
 formulas, as the next section explains.
 
 \subsection{Isabelle metalogic $\Meta$}
+\label{sec:isabelle-metalogic-meta}
 
 The second layer of Isabelle is an
 intuitionistic fragment of higher-order logic (or simple type theory)
@@ -33,19 +34,20 @@ can be postulated when defining objects logics. Types of higher order can be
 assembled using the function space constructor $\fun$.
 
 The type of propositions $\prop$ equipped with a binary operation
-$\implies$ (“meta-implication”) that is used to represent the object
+$\implies$ (“meta-implication”) and a universal “meta-quantifier”
+$\ALL$, that are used to represent the object
 logic rules. As an example, the axiomatization of first-order logic
 postulates a type $\tyo$ of booleans, and Modus Ponens
 % https://isabelle.in.tum.de/dist/library/FOL/FOL/IFOL.html#IFOL.mp|axiom
 is written as
 \[
-  [P\limp Q] \implies ([P] \implies [Q]).
+  \ALL P\,Q.\ \ [P\limp Q] \implies ([P] \implies [Q]).
 \]
 The square brackets (which are omitted in Isabelle theories) represent
 an injection from $\tyo$ into $\prop$. % ($[P]$ can be read as “$P$
 % holds”)
 A consequence of this representation is that every formula of
-the object logic appears as atomic for $\Meta$.
+the object logic appears atomic to $\Meta$.
 
 %% Quantification is handled in the meta-level using a functional $\ALL$
 %% with polymorphic type $(\alpha \fun \prop) \fun \prop$. 
@@ -56,7 +58,7 @@ of first-order logic postulates a sort $\{\type{term}\}$ (of
 stipulates that every further type variable $\alpha$ must be of that
 sort. In particular, Isabelle/ZF only postulates one new type $\tyi$
 (“sets”) of sort $\{\type{term}\}$. Hence, from the type of the universal
-quantifier functional $\forall :: (\alpha \fun \tyo) \fun \tyo$ it
+quantifier functional $\forall :: (\alpha \fun \tyo) \fun \tyo$, it
 follows that it may only be applied to predicates with a variable of
 type $\tyi$. This ensures that the object logic is effectively
 first-order.
@@ -93,6 +95,7 @@ that is the way the Definition of Forcing is implemented in our
 formalization.
 
 \subsection{Isabelle/ZF}
+\label{sec:isabellezf}
 
 For the most part, the development of set theory in Isabelle is
 carried out using its ZF object logic
@@ -126,8 +129,7 @@ which contains the development of $L$, the proof that it satisfies
 $\AC$, and a version of the Reflection Principle. The latter was
 actually encoded as a series of instructions to Isabelle automatic
 proof tools that would prove each particular instance of reflection:
-This is an example of what was said at the end of the previous
-section.
+This is an example of what was said at the end of Section~\ref{sec:isabelle-metalogic-meta}.
 
 The development of relativization and absoluteness for classes $C::
 \isatt{i} \fun \isatt{o}$ follows the same pattern. Each particular
@@ -158,18 +160,21 @@ $L$ requires working with set models and satisfaction, which is
 defined for codes of formulas.
 
 \subsection{Internalized formulas}
+\label{sec:internalized-formulas}
 
 \session{ZF-Constructible} defines the set $\formula$ of codes for
 first-order formulas. These, alongside with lists, are instances of
-Isabelle/ZF treatment of inductively defined datatypes; induction
-and recursion theorems for them are proved automatically.
+Isabelle/ZF treatment of inductively defined (internal) datatypes; induction
+and recursion theorems for them are proved automatically (this is in
+constrast to general well-founded recursion, for which one has to work
+with the fundamental recursor $\isatt{wfrec}$).
 
 To avoid problems related to the binding of variables, de Bruijn
-indices are used instead. The satisfaction predicate
+indices \cite{MR0321704} are used instead. The satisfaction predicate
 $\isatt{sats}::\tyi\fun\tyi\fun\tyi\fun\tyo$ takes as arguments a set $M$, a list
-$\mathit{ms}\in\isatt{list}(M)$ for the assignment of free indices,
+$\mathit{env}\in\isatt{list}(M)$ for the assignment of free indices,
 and $\phi\in\formula$, and it is written
-$M,\mathit{ms}\models\phi$ in our formalization. This completes the
+$M,\mathit{env}\models\phi$ in our formalization. This completes the
 description of the fourth and last formal layer of the development.
 
 Internalized formulas for most (but not all) of the relational
@@ -184,19 +189,20 @@ internalized by hand; this is the case for union,
 %% \end{multline*}
 for which we have the following satisfaction lemma:
 % https://isabelle.in.tum.de/dist/library/ZF/ZF-Constructible/L_axioms.html#L_axioms.sats_big_union_fm|fact
-\begin{multline*}
+\begin{multline}\label{eq:sats_big_union_fm}
   x \in \omega \implies y \in \omega \implies \mathit{env} \in \isatt{list}(A)
   \implies \\
-  (A, \mathit{env} \models \isatt{big{\uscore}union{\uscore}fm}(x,y)%\cdot\union x \isatt{ is } y\cdot
-  ) \longleftrightarrow  \isatt{big{\uscore}union}(\isatt{\#\#} A, \isatt{nth}(x,
+  A, \mathit{env} \models \isatt{big{\uscore}union{\uscore}fm}(x,y)%\cdot\union x \isatt{ is } y\cdot
+  \longleftrightarrow \\
+  \isatt{big{\uscore}union}(\isatt{\#\#} A, \isatt{nth}(x,
   \mathit{env}), \isatt{nth}(y, \mathit{env}))
-\end{multline*}
+\end{multline}
 Note that $x$ and $y$ above are de Bruijn indices,
 $\isatt{nth}(x,\mathit{env})$ is the $x$th element of $\mathit{env}$
 and $\isatt{\#\#}A::\tyi\fun \tyo$ is the class corresponding to the
 set $A::\tyi$.
 
-%%% Local Variables: 
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "independence_ch_isabelle"
 %%% ispell-local-dictionary: "american"

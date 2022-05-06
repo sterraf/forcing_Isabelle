@@ -243,15 +243,16 @@
 \newcommand{\dB}[1]{\mathbf{#1}}
 \newcommand{\ed}{\mathrel{\isatt{ed}}}
 \newcommand{\frecR}{\mathrel{\isatt{frecR}}}
-\newcommand{\forceseq}{\mathop{\isatt{forces{\isacharunderscore}eq}}}
-\newcommand{\forcesmem}{\mathop{\isatt{forces{\isacharunderscore}mem}}}
-\newcommand{\forcesat}{\mathop{\isatt{forces{\isacharunderscore}at}}}
+\newcommand{\uscore}{\isacharunderscore}
+\newcommand{\forceseq}{\mathop{\isatt{forces{\uscore}eq}}}
+\newcommand{\forcesmem}{\mathop{\isatt{forces{\uscore}mem}}}
+\newcommand{\forcesat}{\mathop{\isatt{forces{\uscore}at}}}
+\newcommand{\frcat}{\mathop{\isatt{frc{\uscore}at}}}
 \newcommand{\pleq}{\preceq}
 %\renewcommand{\isacharunderscorekeyword}{\mbox{\_}}
 %\renewcommand{\isacharunderscore}{\mbox{\_}}
 \renewcommand{\isasymtturnstile}{\isamath{\Vdash}}
 \renewcommand{\isacharminus}{-}
-\newcommand{\uscore}{\isacharunderscore}
 \newcommand{\session}[1]{\textit{#1}}
 \newcommand{\theory}[1]{\texttt{#1}}
 \newcommand{\punto}[1]{\overset{\tikz\draw[fill=black] (0,0) circle (0.6pt);}{#1}}
@@ -261,7 +262,7 @@
 \newcommand{\tyo}{\type{o}}
 \newcommand{\prop}{\type{prop}}
 \newcommand{\fun}{\Rightarrow}
-\newcommand{\ALL}{\bigwedge}
+\newcommand{\ALL}{\textstyle\bigwedge}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Variant aleph, beth, etc

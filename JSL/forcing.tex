@@ -7,10 +7,11 @@ $M[G]\defi \{ \val(\PP,G,\punto{a}) : \punto{a}\in M \}$.
 The following form of the Forcing Theorems  is the one
 that we formalized.
 \begin{theorem}
-  There exists a function  $\forceisa: \formula \to  \formula$
+  There exists a function  $\forceisa:: \tyi \fun  \tyi$
   such that for every
-  $\phi$ and $\punto{a}_0,\dots,\punto{a}_n\in M$,
+  $\phi\in\formula$ and $\punto{a}_0,\dots,\punto{a}_n\in M$,
   \begin{enumerate}
+  \item (Definability) $\forceisa(\phi)\in\formula$;
   \item (Truth Lemma) for every $M$-generic $G$,
     \[
       M[G], [\val(\PP,G,\punto{a}_0),\dots,\val(\PP,G,\punto{a}_n)]
@@ -30,9 +31,31 @@ that we formalized.
   \end{enumerate}
 \end{theorem}
 
-Note: $\forceisa$ was formalized as a class-function (i.e., of type
-$\tyi\Rightarrow\tyi$), to take advantage of the Isabelle's
-conveniences for primitive recursion.
+We followed the new Kunen's book to define
+$\forceisa$.  Forcing for atomic formulas is described as a mutual
+recursion
+%% \begin{multline*}
+%%   \forceseq (p,t_1,t_2) \defi 
+%%   \forall s\in\dom(t_1)\cup\dom(t_2).\ \forall q\pleq p .\\
+%%   \forcesmem(q,s,t_1)\lsii \forcesmem(q,s,t_2)
+%% \end{multline*}
+%% \begin{multline*}
+%%   \forcesmem(p,t_1,t_2) \defi  \forall v\pleq p. \ \exists q\pleq v.\\  
+%%   \exists s.\ \exists r\in \PP .\ \lb s,r\rb \in  t_2 \land q
+%%   \pleq r \land \forceseq(q,t_1,s)
+%% \end{multline*}
+but then \cite[p.~257]{kunen2011set} it is cast as a single
+recursively defined function $\frcat$ over the wellfounded relation
+$\isatt{frecR}$ on tuples $\lb \mathit{ft},t_1,t_2,p\rb$ (where
+$\mathit{ft}\in\{0,1\}$ indicates the type of the atomic formula being
+forced). Forcing for general formulas is defined by recursion on the
+datatype $\formula$. Details on the implementation and proofs of the
+Forcing Theorems have been spelled out in our
+\cite{2020arXiv200109715G}.
+
+
+It is to be noted that application of the Forcing theorems do not
+require any extra Replacement instances on $M$.
 
 %%% Local Variables: 
 %%% mode: latex
