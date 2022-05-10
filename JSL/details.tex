@@ -3,31 +3,34 @@
 \subsection{33 replacement instances to rule them all}
 We isolated 33 instances of Replacement that are needed to force
 $\CH$/$\neg\CH$. The first 14 instances are needed to set up
-cardinal arithmetic in $M$.
+cardinal arithmetic in $M$. Many of these were already present in
+relational form in the \session{ZF-Constructible} library.
 
 \begin{itemize}
-\item 7 instances for iteration of operations.
+\item 7 instances for iteration of operations. For each construct,
+  Paulson used one replacement instance in order to have absoluteness,
+  and a second one to obtain closure.
   \begin{itemize}
-  \item Fixpoints: lists
+  \item
+    Lists
     \isatt{list{\uscore}repl1{\uscore}intf{\uscore}fm},
-    \isatt{list{\uscore}repl2{\uscore}intf{\uscore}fm}; formulas
+    \isatt{list{\uscore}repl2{\uscore}intf{\uscore}fm}.
+  \item
+    Formulas
     \isatt{formula{\uscore}repl1{\uscore}intf{\uscore}fm},
     \isatt{formula{\uscore}repl1{\uscore}intf{\uscore}fm}.
-  \item Transitive closure \isatt{eclose{\uscore}repl1{\uscore}intf{\uscore}fm},
-    \isatt{eclose{\uscore}repl2{\uscore}intf{\uscore}fm} (iteration of $\union$).
-  \item $n$th element of a list \isatt{tl{\uscore}repl{\uscore}intf{\uscore}fm} (iteration of the tail operation; fake?).
+  \item
+    Transitive closure (iteration of $\union$)
+    \isatt{eclose{\uscore}repl1{\uscore}intf{\uscore}fm},
+    \isatt{eclose{\uscore}repl2{\uscore}intf{\uscore}fm}.
+  \item
+    $n$th element of a list (iteration of the tail operation)
+    \isatt{tl{\uscore}repl{\uscore}intf{\uscore}fm}. By transitivity,
+    we do not need an instance for closure; the only instance was required
+    for absoluteness.
   \end{itemize}
-  
-\item 4 instances for definitions by well-founded recursion.
-  \begin{itemize}
-  \item Ordertypes
-    \isatt{wfrec{\uscore}replacement{\uscore}order{\uscore}pred{\uscore}fm}.
-  \item Rank \isatt{wfrec{\uscore}rank{\uscore}fm}.
-  \item Cumulative hierarchy \isatt{trans{\uscore}repl{\uscore}HVFrom{\uscore}fm} (rank initial segments).
-  \item Aleph \isatt{replacement{\uscore}HAleph{\uscore}wfrec{\uscore}repl{\uscore}body{\uscore}fm}.
-  \end{itemize}
-  
-\item 2 instances for definition of ordertypes.
+\item
+  2 instances for definition of ordertypes.
   \begin{itemize}
   \item \isatt{replacement{\uscore}is{\uscore}order{\uscore}body{\uscore}fm}.
   \item \isatt{replacement{\uscore}is{\uscore}order{\uscore}eq{\uscore}map{\uscore}fm}.
@@ -36,6 +39,15 @@ cardinal arithmetic in $M$.
   \begin{itemize}
   \item
     \isatt{replacement{\uscore}is{\uscore}jump{\uscore}cardinal{\uscore}body{\uscore}fm}.
+  \end{itemize}
+\item
+  4 instances for definitions by well-founded recursion.
+  \begin{itemize}
+  \item Ordertypes
+    \isatt{wfrec{\uscore}replacement{\uscore}order{\uscore}pred{\uscore}fm}.
+  \item Rank \isatt{wfrec{\uscore}rank{\uscore}fm}.
+  \item Cumulative hierarchy (rank initial segments) \isatt{trans{\uscore}repl{\uscore}HVFrom{\uscore}fm}.
+  \item Aleph \isatt{replacement{\uscore}HAleph{\uscore}wfrec{\uscore}repl{\uscore}body{\uscore}fm}.
   \end{itemize}
 \end{itemize}
 
@@ -47,6 +59,9 @@ previous ones to have them in $M[G]$.
     \beta \mid \exists\tau\in V_\beta.\  \mathit{snd}(x) \forces
     \phi\ [\mathit{fst}(x),\tau,y_1,\dots,y_n]\bigr\}}
 \]
+In our development, the mapping $\phi\mapsto\psi$ is given by the
+$\isatt{ground{\uscore}repl{\uscore}fm}$ function.
+
 That makes 28 instances up to now. For the setup of forcing, we
 require the following 5 instances (the first two are  needed for the $\Delta$-system Lemma):
 
