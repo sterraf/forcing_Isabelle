@@ -1,37 +1,133 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%          
-\section{Forcing}
+\section{Set models and forcing}
 \label{sec:forcing}
-Let $\lb \PP, {\preceq} ,\1\rb \in M$ be a forcing notion. Given $G\sbq \PP$, we have
+
+\subsection{The $\ZFC$ axioms as locales}
+The description of set models of fragments of $\ZFC$ was performed
+using Isabelle contexts (\emph{locales}) that fix a variable $M::\tyi$
+and pack assumptions stating that $\lb M, \in\rb$ satisfy some
+axioms. For example, the locale \isatt{M{\uscore}Z{\uscore}basic}
+states that Zermelo set theory holds in $M$. The Union Axiom (\isatt{Union{\uscore}ax}), for
+instance, is defined as follows:
+\[
+\forall x[\isatt{\#\#}M].\ \exists z[\isatt{\#\#}M].\ \isatt{big{\uscore}union}(\isatt{\#\#}M,x,z)
+\]
+%% % Same a above
+%% \begin{isabelle}%
+%% {\isasymforall}x{\isacharbrackleft}{\kern0pt}{\isacharhash}{\kern0pt}{\isacharhash}{\kern0pt}M{\isacharbrackright}{\kern0pt}{\isachardot}{\kern0pt}\ {\isasymexists}z{\isacharbrackleft}{\kern0pt}{\isacharhash}{\kern0pt}{\isacharhash}{\kern0pt}M{\isacharbrackright}{\kern0pt}{\isachardot}{\kern0pt}\ big{\isacharunderscore}{\kern0pt}union{\isacharparenleft}{\kern0pt}{\isacharhash}{\kern0pt}{\isacharhash}{\kern0pt}M{\isacharcomma}{\kern0pt}\ x{\isacharcomma}{\kern0pt}\ z{\isacharparenright}{\kern0pt}%
+%% \end{isabelle}%
+using relativized, relational versions of the axioms of Isabelle/ZF
+since the interaction with \session{ZF-Constructible} was smoother
+that way and, as it was mentioned in Section~\ref{sec:isabellezf},
+this third layer of the formalization has more tools at our
+disposal. Later, an equivalent statement “in the codes” (our fourth
+layer) is obtained,
+\[
+  \isatt{Union{\uscore}ax}(\isatt{\#\#}M) \lsii A, [\,]\models \isatt{{\isasymcdot}Union\ Ax{\isasymcdot}}
+\]
+%% % Same a above
+%% \begin{isabelle}
+%% Union{\isacharunderscore}{\kern0pt}ax{\isacharparenleft}{\kern0pt}{\isacharhash}{\kern0pt}{\isacharhash}{\kern0pt}A{\isacharparenright}{\kern0pt}\ {\isasymlongleftrightarrow}\ A{\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymcdot}Union\ Ax{\isasymcdot}\isasep
+%% \end{isabelle}
+where \isatt{{\isasymcdot}Union\ Ax{\isasymcdot}} is the $\formula$ code for the
+Union axiom. For the axiom schemes, \session{ZF-Constructible} defines
+the expressions
+\[
+  \isatt{separation}(N,Q)
+  \text{ and }
+  \isatt{strong{\uscore}replacement}(N,R)
+\]
+that consume a class $N$ and predicates $Q::\tyi\fun\tyo$ and $R::\tyi\fun\tyi\fun\tyo$, and state that $N$
+satisfies the $Q$-instance of Separation and the $R$-instance of
+Replacement, respectively. In the statement of the Separation Axiom in
+\isatt{M{\uscore}Z{\uscore}basic} and
+the many replacement instances, predicates $Q$ and $R$ are actually
+defined as the of formulas of the appropriate arity; we can only show
+that this form of the axioms hold in generic extensions. 
+
+Further locales gather the assumption of transitivity of $M$ and
+particular replacement instances expressed by means of the
+\isatt{replacement{\uscore}assm(M,\isasymphi)} predicate:
+\begin{multline}\label{eq:replacement_assm_def}
+\varphi \in \formula  \limp \mathit{env} \in \isatt{list}(M) \limp \isatt{arity}(\varphi) \leq 2+ \isatt{length}(\mathit{env}) \limp \\
+ \isatt{strong{\uscore}replacement}(\isatt{\#\#} M, \lambda x\, y.\ (M, [x,y]
+\mathbin{@} \mathit{env}  \models \varphi))
+\end{multline}
+%% % Same as above
+%% \begin{isabelle}
+%% {\isasymphi}\;{\isasymin}\;formula\ {\isasymlongrightarrow}\ env\;{\isasymin}\;list{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow} arity{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}\;{\isasymle}\;{\isadigit{2}}\ {\isacharplus}{\kern0pt}\isactrlsub {\isasymomega}\ length{\isacharparenleft}{\kern0pt}env{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\isanewline
+%% \ \ \ \ strong{\isacharunderscore}{\kern0pt}replacement{\isacharparenleft}{\kern0pt}{\isacharhash}{\kern0pt}{\isacharhash}{\kern0pt}M{\isacharcomma}{\kern0pt}{\isasymlambda}x\ y{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}M\ {\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}x{\isacharcomma}{\kern0pt}y{\isacharbrackright}{\kern0pt}{\isacharat}{\kern0pt}env\ {\isasymTurnstile}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}
+%% \end{isabelle}
+Some of those instances, which were assumed in the locales of
+\session{ZF-Constructible} and we included for simplicity of design,
+are actually “fake” instances in that they can be obtained from
+Powerset. An example of this is the sole instance of the
+\isatt{M{\uscore}basic} locale; we managed to eliminate it but in
+doing so we had to reprove many lemmas from
+\session{ZF-Constructible} in the weakened context. Our locales
+\isatt{M{\uscore}ZF1} through \isatt{M{\uscore}ZF4} list a total of 86
+replacement instances, from which we identified 53 fake ones (see
+Section~\ref{sec:33-repl-inst-rule}).
+
+\subsection{The fundamental theorems}
+Now let $\lb \PP, {\preceq} ,\1\rb \in M$ be a forcing notion. Given $G\sbq \PP$, we have
 $M[G]\defi \{ \val(\PP,G,\punto{a}) : \punto{a}\in M \}$.
 
 The following form of the Forcing Theorems  is the one
 that we formalized.
-\begin{theorem}
+\begin{theorem}\label{th:forcing-thms}
   There exists a function  $\forceisa:: \tyi \fun  \tyi$
   such that for every
   $\phi\in\formula$ and $\punto{a}_0,\dots,\punto{a}_n\in M$,
   \begin{enumerate}
-  \item (Definability) $\forceisa(\phi)\in\formula$;
-  \item (Truth Lemma) for every $M$-generic $G$,
+  \item\label{item:definability} (Definability)
+    $\forceisa(\phi)\in\formula$,
+  \end{enumerate}
+  and if
+  “$p \forces \phi\ [\punto{a}_0,\dots,\punto{a}_n]$”
+  denotes
+  “$M, [p,\PP,\preceq,\1, \punto{a}_0,\dots,\punto{a}_n]  \models
+  \forceisa(\phi)$”, we have:
+  \begin{enumerate}
+    \setcounter{enumi}{1}
+  \item\label{item:truth-lemma} (Truth Lemma) for every $M$-generic $G$,
     \[
-      M[G], [\val(\PP,G,\punto{a}_0),\dots,\val(\PP,G,\punto{a}_n)]
-      \models \phi
+      \exists p\in G.\ \; p \forces \phi\ [\punto{a}_0,\dots,\punto{a}_n]
     \]
     is equivalent to 
     \[
-      \exists p\in G.\ \; M, [p,\PP,\preceq,\1, \punto{a}_0,\dots,\punto{a}_n]  \models
-      \forceisa(\phi).\]
-
-    We use the notation $p \forces
-    \phi\ [\punto{a}_0,\dots,\punto{a}_n]$ for this last assertion.
-  \item (Density Lemma) $p \forces \phi\ [\punto{a}_0,\dots,\punto{a}_n]$
+      M[G], [\val(\PP,G,\punto{a}_0),\dots,\val(\PP,G,\punto{a}_n)]
+      \models \phi.
+    \]
+  \item \label{item:density-lemma} (Density Lemma) $p \forces \phi\ [\punto{a}_0,\dots,\punto{a}_n]$
     if and only if 
     $\{q\in \PP :  q \forces \phi\ [\punto{a}_0,\dots,\punto{a}_n]\}$
     is dense below $p$.
   \end{enumerate}
 \end{theorem}
+The statements appear as three separated items in
+\theory{Forcing{\uscore}Theorems.thy} in the \session{Independence\_CH} session,
+and benefit from the $\isatt{map}$ function that applies a function to
+each element of a list. For instance, the Truth Lemma is stated as
+follows:
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ truth{\isacharunderscore}{\kern0pt}lemma{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}M{\isacharunderscore}{\kern0pt}generic{\isacharparenleft}{\kern0pt}G{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ {\isachardoublequoteopen}env{\isasymin}list{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isasymle}length{\isacharparenleft}{\kern0pt}env{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isasymexists}p{\isasymin}G{\isachardot}{\kern0pt}\ p\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}{\kern0pt}\ \ \ {\isasymlongleftrightarrow}\ \ \ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isacharcomma}{\kern0pt}\ map{\isacharparenleft}{\kern0pt}val{\isacharparenleft}{\kern0pt}P{\isacharcomma}{\kern0pt}G{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}env{\isacharparenright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymphi}{\isachardoublequoteclose}
+\end{isabelle}
+where the $\forces$ notation had already been set up in the theory
+\theory{Forces{\uscore}Definition} as follows:
+\begin{isabelle}
+\isacommand{abbreviation}\isamarkupfalse%
+\ Forces\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharbrackleft}{\kern0pt}i{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ i{\isacharbrackright}{\kern0pt}\ {\isasymRightarrow}\ o{\isachardoublequoteclose}\ \ {\isacharparenleft}{\kern0pt}{\isachardoublequoteopen}{\isacharunderscore}{\kern0pt}\ {\isasymtturnstile}\ {\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}{\isachardoublequoteclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{3}}{\isadigit{6}}{\isacharcomma}{\kern0pt}{\isadigit{3}}{\isadigit{6}}{\isacharcomma}{\kern0pt}{\isadigit{3}}{\isadigit{6}}{\isacharbrackright}{\kern0pt}\ {\isadigit{6}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\ \isakeyword{where}\isanewline
+\ \ {\isachardoublequoteopen}p\ {\isasymtturnstile}\ {\isasymphi}\ env\ \ \ {\isasymequiv}\ \ \ M{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isacharbrackleft}{\kern0pt}p{\isacharcomma}{\kern0pt}P{\isacharcomma}{\kern0pt}leq{\isacharcomma}{\kern0pt}{\isasymone}{\isacharbrackright}{\kern0pt}\ {\isacharat}{\kern0pt}\ env{\isacharparenright}{\kern0pt}\ {\isasymTurnstile}\ forces{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\end{isabelle}
 
-We followed the new Kunen's book to define
+We followed Kunen's new \textit{Set Theory} \cite{kunen2011set} to define
 $\forceisa$.  Forcing for atomic formulas is described as a mutual
 recursion
 %% \begin{multline*}
@@ -52,10 +148,6 @@ forced). Forcing for general formulas is defined by recursion on the
 datatype $\formula$. Details on the implementation and proofs of the
 Forcing Theorems have been spelled out in our
 \cite{2020arXiv200109715G}.
-
-
-It is to be noted that application of the Forcing theorems do not
-require any extra Replacement instances on $M$.
 
 %%% Local Variables: 
 %%% mode: latex

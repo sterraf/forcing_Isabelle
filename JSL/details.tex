@@ -1,7 +1,9 @@
 \section{Details of the formalization}
 
 \subsection{33 replacement instances to rule them all}
-We isolated 33 instances of Replacement that are needed to force
+\label{sec:33-repl-inst-rule}
+
+We isolated 33 instances of Replacement that are sufficient to force
 $\CH$/$\neg\CH$. The first 14 instances are needed to set up
 cardinal arithmetic in $M$. Many of these were already present in
 relational form in the \session{ZF-Constructible} library.
@@ -20,7 +22,7 @@ relational form in the \session{ZF-Constructible} library.
     \isatt{formula{\uscore}repl1{\uscore}intf{\uscore}fm},
     \isatt{formula{\uscore}repl1{\uscore}intf{\uscore}fm}.
   \item
-    Transitive closure (iteration of $\union$)
+    Transitive closure %(iteration of $\union$)
     \isatt{eclose{\uscore}repl1{\uscore}intf{\uscore}fm},
     \isatt{eclose{\uscore}repl2{\uscore}intf{\uscore}fm}.
   \item
@@ -59,8 +61,12 @@ previous ones to have them in $M[G]$.
     \beta \mid \exists\tau\in V_\beta.\  \mathit{snd}(x) \forces
     \phi\ [\mathit{fst}(x),\tau,y_1,\dots,y_n]\bigr\}}
 \]
-In our development, the mapping $\phi\mapsto\psi$ is given by the
-$\isatt{ground{\uscore}repl{\uscore}fm}$ function.
+In our development, the mapping $\phi\mapsto\psi$ defined above is given by the
+$\isatt{ground{\uscore}repl{\uscore}fm}$ function, and all ground replacement
+instances appear in the locale \isatt{M{\uscore}ZF4}. These are expressed using
+the \isatt{ground{\uscore}replacement{\uscore}assm(M,\isasymphi)} predicate
+obtained by replacing $\phi$ by
+$\isatt{ground{\uscore}repl{\uscore}fm}(\phi)$ in Eq.~(\ref{eq:replacement_assm_def}).
 
 That makes 28 instances up to now. For the setup of forcing, we
 require the following 5 instances (the first two are  needed for the $\Delta$-system Lemma):
@@ -72,14 +78,32 @@ require the following 5 instances (the first two are  needed for the $\Delta$-sy
 % \item Replacement through  $x\mapsto \check{x}$ \isatt{check{\uscore}replacement{\uscore}fm}.
 \item $x\mapsto |x|^M$
   \isatt{Lambda{\uscore}in{\uscore}M{\uscore}fm(is{\uscore}cardinal{\uscore}fm(0,1),0)}.
-\item 2 instances for definitions by well-founded recursion \isatt{wfrec{\uscore}Hcheck{\uscore}fm} (check
-  names) and \isatt{wfrec{\uscore}Hfrc{\uscore}at{\uscore}fm} (forcing for atomic formulas).
-\item Replacement through $x\mapsto \lb\check{x},x\rb$
-  \isatt{G{\uscore}dot{\uscore}in{\uscore}M{\uscore}fm} (for the
-  definition of $\punto{G}$).
+\item 2 instances for definitions by well-founded recursion.
+  \begin{itemize}
+  \item
+    Check names
+    \isatt{wfrec{\uscore}Hcheck{\uscore}fm}.
+  \item Forcing for atomic formulas
+    \isatt{wfrec{\uscore}Hfrc{\uscore}at{\uscore}fm}.
+  \end{itemize}
+\item Replacement through $x\mapsto \lb\check{x},x\rb$ (for the
+  definition of $\punto{G}$)
+  \isatt{G{\uscore}dot{\uscore}in{\uscore}M{\uscore}fm}.
 % \item Name of choice functions in $M[G]$ \isatt{repl{\uscore}opname{\uscore}check{\uscore}fm}.
 % \item 2 instances for the slalom needed for cardinal preservation by ccc forcing.
 \end{itemize}
+
+It is to be noted that application of the Forcing Theorems do not
+require any extra Replacement instances on $M$ (independently of the
+formula $\phi$ for which they are invoked). This is not the case for
+Separation, at least from our formalization: More instances are needed
+as the complexity of $\phi$ grows. One point where this is apparent is
+in the proof of Theorem~\ref{th:forcing-thms}(\ref{item:truth-lemma}),
+that appears as the \isatt{truth{\uscore}lemma} in our development; it
+depends on \isatt{truth{\uscore}lemma'} and
+\isatt{truth{\uscore}lemma{\uscore}Neg} which explicitly invoke
+\isatt{separation{\uscore}ax}.
+
 
 %%% Local Variables: 
 %%% mode: latex

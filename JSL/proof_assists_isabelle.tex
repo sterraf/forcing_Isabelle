@@ -70,7 +70,8 @@ conservative (there is a correspondence between provable $\phi$ in
 IFOL and provable $[\phi]$ in $\Meta_{\mathrm{IFOL}}$) by putting
 $\Meta_{\mathrm{IFOL}}$ proofs in \emph{expanded normal form}
 \cite{MR0387024}. Passing to classical logic does not present
-difficulties, but the treatment of meta-equality differs between the
+difficulties, but the addition of meta-equality must be taken care of.
+Even more so, since the treatment of equality differs between the
 original and the present incarnation of $\Meta$; details for the
 latter are exhaustively expounded in the recent formalization by
 Nipkow and Roßkof \cite{10.1007/978-3-030-79876-5_6}.
@@ -99,7 +100,10 @@ formalization.
 
 For the most part, the development of set theory in Isabelle is
 carried out using its ZF object logic
-\cite{DBLP:journals/jar/PaulsonG96}. Apart from the type and sort
+\cite{DBLP:journals/jar/PaulsonG96}, which is the third logical layer
+of the formalization and the most versatile one, since 
+Isabelle's native automation is available at this level. Apart from
+the type and sort
 declarations detailed above, it features a finite axiomatization,
 % https://isabelle.in.tum.de/dist/library/FOL/FOL/IFOL.html#ZF_Base.mem|const
 with a predicate for membership, constants for the empty set and an
@@ -123,7 +127,7 @@ use $\AC$ for demonstration purposes.
 Isabelle/ZF reaches Hessenberg's $|A|\cdot|A| = |A|$. Our decision
 (during 2017) to
 use this assistant was triggered by its constructibility
-library \citep{paulson_2003},
+library, \session{ZF-Constructible} \citep{paulson_2003},
 % https://isabelle.in.tum.de/dist/library/ZF/ZF-Constructible/
 which contains the development of $L$, the proof that it satisfies
 $\AC$, and a version of the Reflection Principle. The latter was
