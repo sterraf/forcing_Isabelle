@@ -104,6 +104,173 @@ depends on \isatt{truth{\uscore}lemma'} and
 \isatt{truth{\uscore}lemma{\uscore}Neg} which explicitly invoke
 \isatt{separation{\uscore}ax}.
 
+\subsection{A sample formal proof}
+\label{sec:sample-formal-proof}
+
+We present a fragment of the formal version of Kunen's proof that the
+Powerset Axiom holds in a generic extension. We quote the relevant
+paragraph of \cite[Thm.~IV.2.27]{kunen2011set}:
+\begin{quote}
+  For Power Set (similarly to Union above), it is sufficient to prove
+  that whenever $a \in M[G]$, there is a $b \in M[G]$ such that
+  $\mathcal{P}(a) \cap M[G] \subseteq b$. Fix $\tau \in
+  M^{\mathbb{P}}$ such that $\tau_{G}=a$. Let
+  $Q=(\mathcal{P}(\operatorname{dom}(\tau) \times
+  \mathbb{P}))^{M}$. This is the set of all names $\vartheta \in
+  M^{\mathcal{P}}$ such that $\operatorname{dom}(\vartheta) \subseteq
+  \operatorname{dom}(\tau)$. Let $\pi=Q \times\{\1\}$ and let
+  $b=\pi_{G}=$ $\left\{\vartheta_{G}: \vartheta \in Q\right\}$. Now,
+  consider any $c \in \mathcal{P}(a) \cap M[G]$; we need to show that
+  $c \in b$. Fix $\varkappa \in M^{\mathbb{P}}$ such that
+  $\varkappa_{G}=c$, and let $\vartheta=\{\langle\sigma, p\rangle:
+  \sigma \in \operatorname{dom}(\tau) \wedge p \Vdash \sigma \in
+  \varkappa\}$; $\vartheta \in M$ by the Definability Lemma. Since
+  $\vartheta \in Q$, we are done if we can show that
+  $\vartheta_{G}=c$.
+\end{quote}
+The assumption $a\in M[G]$ appears in the lemma statement, and the
+goal involving $b$ in the first sentence will appear below (page \pageref{goal-on-b}); formalized
+material necessarily tends to be much more linear than usual prose. In
+what follows, we
+will intersperse the relevant passages of the proof.
+\begin{isabelle}
+\isacommand{lemma}\isamarkupfalse%
+\ Pow{\isacharunderscore}{\kern0pt}inter{\isacharunderscore}{\kern0pt}MG{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ {\isachardoublequoteopen}a{\isasymin}M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\ {\isachardoublequoteopen}Pow{\isacharparenleft}{\kern0pt}a{\isacharparenright}{\kern0pt}\ {\isasyminter}\ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}\ {\isasymin}\ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isacommand{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}
+\end{isabelle}
+\textit{Fix $\tau \in  M^{\mathbb{P}}$ such that $\tau_{G}=a$.}
+\begin{isabelle}
+\ \ \isacommand{from}\isamarkupfalse%
+\ assms\isanewline
+\ \ \isacommand{obtain}\isamarkupfalse%
+\ {\isasymtau}\ \isakeyword{where}\ {\isachardoublequoteopen}{\isasymtau}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}P{\isacharcomma}{\kern0pt}G{\isacharcomma}{\kern0pt}\ {\isasymtau}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ a{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ GenExtD\ \isacommand{by}\isamarkupfalse%
+\ auto
+\end{isabelle}
+\textit{Let
+  $Q=(\mathcal{P}(\operatorname{dom}(\tau) \times
+  \mathbb{P}))^{M}$.}
+\begin{isabelle}
+\ \ \isacommand{let}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}Q{\isacharequal}{\kern0pt}{\isachardoublequoteopen}Pow{\isacharparenleft}{\kern0pt}domain{\isacharparenleft}{\kern0pt}{\isasymtau}{\isacharparenright}{\kern0pt}{\isasymtimes}P{\isacharparenright}{\kern0pt}\ {\isasyminter}\ M{\isachardoublequoteclose}
+\end{isabelle}
+\textit{This is the set of all names $\vartheta \in
+  M^{\mathcal{P}}$\dots}---it is pretty laborious to show that things
+are in $M$; it takes 17 more lines of code (not shown below) that
+apply further previously proved lemmas.
+\begin{isabelle}
+\ \ \isacommand{from}\isamarkupfalse%
+\ {\isacartoucheopen}{\isasymtau}{\isasymin}M{\isacartoucheclose}\isanewline
+\ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}domain{\isacharparenleft}{\kern0pt}{\isasymtau}{\isacharparenright}{\kern0pt}{\isasymtimes}P\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}domain{\isacharparenleft}{\kern0pt}{\isasymtau}{\isacharparenright}{\kern0pt}\ {\isasymin}\ M{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isacommand{using}\isamarkupfalse%
+\ domain{\isacharunderscore}{\kern0pt}closed\ cartprod{\isacharunderscore}{\kern0pt}closed\ P{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}M\isanewline
+\ \ \ \ \isacommand{by}\isamarkupfalse%
+\ simp{\isacharunderscore}{\kern0pt}all\isanewline
+\ \ \isacommand{then}\isamarkupfalse%
+\isanewline
+\ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharquery}{\kern0pt}Q\ {\isasymin}\ M{\isachardoublequoteclose}
+\end{isabelle}
+[\dots]\textit{ Let $\pi=Q \times\{\1\}$ and let
+  $b=\pi_{G}=$ $\left\{\vartheta_{G}: \vartheta \in Q\right\}$.}
+\begin{isabelle}
+\ \ \isacommand{let}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}{\isasympi}{\isacharequal}{\kern0pt}{\isachardoublequoteopen}{\isacharquery}{\kern0pt}Q{\isasymtimes}{\isacharbraceleft}{\kern0pt}{\isasymone}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \isacommand{let}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}b{\isacharequal}{\kern0pt}{\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}P{\isacharcomma}{\kern0pt}G{\isacharcomma}{\kern0pt}{\isacharquery}{\kern0pt}{\isasympi}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}%% \isanewline
+%% \ \ \isacommand{from}\isamarkupfalse%
+%% \ {\isacartoucheopen}{\isacharquery}{\kern0pt}Q{\isasymin}M{\isacartoucheclose}\isanewline
+%% \ \ \isacommand{have}\isamarkupfalse%
+%% \ {\isachardoublequoteopen}{\isacharquery}{\kern0pt}{\isasympi}{\isasymin}M{\isachardoublequoteclose}\isanewline
+%% \ \ \ \ \isacommand{using}\isamarkupfalse%
+%% \ one{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}P\ P{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}M\ transitivity\isanewline
+%% \ \ \ \ \isacommand{by}\isamarkupfalse%
+%% \ {\isacharparenleft}{\kern0pt}simp\ flip{\isacharcolon}{\kern0pt}\ setclass{\isacharunderscore}{\kern0pt}iff{\isacharparenright}{\kern0pt}\isanewline
+%% \ \ \isacommand{then}\isamarkupfalse%
+%% \isanewline
+%% \ \ \isacommand{have}\isamarkupfalse%
+%% \ {\isachardoublequoteopen}{\isacharquery}{\kern0pt}b\ {\isasymin}\ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%% \ \ \ \ \isacommand{using}\isamarkupfalse%
+%% \ GenExtI\ \isacommand{by}\isamarkupfalse%
+%% \ simp
+\end{isabelle}
+\textit{Now,
+  consider any $c \in \mathcal{P}(a) \cap M[G]$; we need to show that
+  $c \in b$.}
+\begin{isabelle}
+  \label{goal-on-b}
+\ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}Pow{\isacharparenleft}{\kern0pt}a{\isacharparenright}{\kern0pt}\ {\isasyminter}\ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}\ {\isasymsubseteq}\ {\isacharquery}{\kern0pt}b{\isachardoublequoteclose}\isanewline
+\ \ \isacommand{proof}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{fix}\isamarkupfalse%
+\ c\isanewline
+\ \ \ \ \isacommand{assume}\isamarkupfalse%
+\ {\isachardoublequoteopen}c\ {\isasymin}\ Pow{\isacharparenleft}{\kern0pt}a{\isacharparenright}{\kern0pt}\ {\isasyminter}\ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isachardoublequoteclose}
+\end{isabelle}
+\textit{Fix $\varkappa \in M^{\mathbb{P}}$ such that
+  $\varkappa_{G}=c$,}
+\begin{isabelle}
+\ \ \ \ \isacommand{then}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{obtain}\isamarkupfalse%
+\ {\isasymchi}\ \isakeyword{where}\ {\isachardoublequoteopen}c{\isasymin}M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymchi}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}P{\isacharcomma}{\kern0pt}G{\isacharcomma}{\kern0pt}{\isasymchi}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ c{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ GenExt{\isacharunderscore}{\kern0pt}iff\ \isacommand{by}\isamarkupfalse%
+\ auto
+\end{isabelle}
+\textit{and let $\vartheta=\{\langle\sigma, p\rangle:
+  \sigma \in \operatorname{dom}(\tau) \wedge p \Vdash \sigma \in
+  \varkappa\}$;}
+\begin{isabelle}
+\ \ \ \ \isacommand{let}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}{\isasymtheta}{\isacharequal}{\kern0pt}{\isachardoublequoteopen}{\isacharbraceleft}{\kern0pt}{\isasymlangle}{\isasymsigma}{\isacharcomma}{\kern0pt}p{\isasymrangle}\ {\isasymin}domain{\isacharparenleft}{\kern0pt}{\isasymtau}{\isacharparenright}{\kern0pt}{\isasymtimes}P\ {\isachardot}{\kern0pt}\ p\ {\isasymtturnstile}\ {\isasymcdot}{\isadigit{0}}\ {\isasymin}\ {\isadigit{1}}{\isasymcdot}\ {\isacharbrackleft}{\kern0pt}{\isasymsigma}{\isacharcomma}{\kern0pt}{\isasymchi}{\isacharbrackright}{\kern0pt}\ {\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}
+\end{isabelle}
+\textit{$\vartheta \in M$ by the Definability Lemma.}
+\begin{isabelle}
+\ \ \ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}arity{\isacharparenleft}{\kern0pt}forces{\isacharparenleft}{\kern0pt}Member{\isacharparenleft}{\kern0pt}{\isadigit{0}}{\isacharcomma}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isadigit{6}}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ arity{\isacharunderscore}{\kern0pt}forces{\isacharunderscore}{\kern0pt}at\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isacommand{with}\isamarkupfalse%
+\ {\isacartoucheopen}domain{\isacharparenleft}{\kern0pt}{\isasymtau}{\isacharparenright}{\kern0pt}\ {\isasymin}\ M{\isacartoucheclose}\ {\isacartoucheopen}{\isasymchi}\ {\isasymin}\ M{\isacartoucheclose}\isanewline
+\ \ \ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharquery}{\kern0pt}{\isasymtheta}\ {\isasymin}\ M{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ P{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}M\ one{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}M\ leq{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}M\ sats{\isacharunderscore}{\kern0pt}fst{\isacharunderscore}{\kern0pt}snd{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}M\isanewline
+\ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
+\ simp
+\end{isabelle}
+\textit{Since
+  $\vartheta \in Q$,}
+\begin{isabelle}
+\ \ \ \ \isacommand{then}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharquery}{\kern0pt}{\isasymtheta}\ {\isasymin}\ {\isacharquery}{\kern0pt}Q{\isachardoublequoteclose}\ \isacommand{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isacommand{then}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}P{\isacharcomma}{\kern0pt}G{\isacharcomma}{\kern0pt}{\isacharquery}{\kern0pt}{\isasymtheta}{\isacharparenright}{\kern0pt}\ {\isasymin}\ {\isacharquery}{\kern0pt}b{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
+\ one{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}G\ one{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}P\ generic\ val{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}elem\ {\isacharbrackleft}{\kern0pt}of\ {\isacharquery}{\kern0pt}{\isasymtheta}\ {\isasymone}\ {\isacharquery}{\kern0pt}{\isasympi}\ G{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
+\ auto
+\end{isabelle}
+\textit{we are done if we can show that
+  $\vartheta_{G}=c$.}
+\begin{isabelle}
+\ \ \ \ \isacommand{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}P{\isacharcomma}{\kern0pt}G{\isacharcomma}{\kern0pt}{\isacharquery}{\kern0pt}{\isasymtheta}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ c{\isachardoublequoteclose}
+\end{isabelle}
 
 %%% Local Variables: 
 %%% mode: latex
