@@ -47,7 +47,8 @@ that this form of the axioms hold in generic extensions.
 
 Further locales gather the assumption of transitivity of $M$ and
 particular replacement instances expressed by means of the
-\isatt{replacement{\uscore}assm(M,\isasymphi)} predicate:
+\isatt{replacement{\uscore}assm(M,\isasymphi)} predicate ($@$ denotes
+list concatenation):
 \begin{multline}\label{eq:replacement_assm_def}
 \varphi \in \formula  \limp \mathit{env} \in \isatt{list}(M) \limp \isatt{arity}(\varphi) \leq 2+ \isatt{length}(\mathit{env}) \limp \\
  \isatt{strong{\uscore}replacement}(\isatt{\#\#} M, \lambda x\, y.\ (M, [x,y]
@@ -66,7 +67,7 @@ Powerset. An example of this is the sole instance of the
 doing so we had to reprove many lemmas from
 \session{ZF-Constructible} in the weakened context. Our locales
 \isatt{M{\uscore}ZF1} through \isatt{M{\uscore}ZF4} list a total of 86
-replacement instances, from which we identified 53 fake ones (see
+replacement instances, from which there are at least 53 fake ones (see
 Section~\ref{sec:33-repl-inst-rule}).
 
 \subsection{The fundamental theorems}
@@ -81,9 +82,10 @@ that we formalized.
   $\phi\in\formula$ and $\punto{a}_0,\dots,\punto{a}_n\in M$,
   \begin{enumerate}
   \item\label{item:definability} (Definability)
-    $\forceisa(\phi)\in\formula$,
+    $\forceisa(\phi)\in\formula$, 
   \end{enumerate}
-  and if
+  where the 
+  arity of $\forceisa(\phi)$ is at most $\isatt{arity}(\phi) + 4$; and if
   “$p \forces \phi\ [\punto{a}_0,\dots,\punto{a}_n]$”
   denotes
   “$M, [p,\PP,\preceq,\1, \punto{a}_0,\dots,\punto{a}_n]  \models
@@ -145,7 +147,7 @@ recursively defined function $\frcat$ over the wellfounded relation
 $\isatt{frecR}$ on tuples $\lb \mathit{ft},t_1,t_2,p\rb$ (where
 $\mathit{ft}\in\{0,1\}$ indicates the type of the atomic formula being
 forced). Forcing for general formulas is defined by recursion on the
-datatype $\formula$. Details on the implementation and proofs of the
+datatype $\formula$. Technical details on the implementation and proofs of the
 Forcing Theorems have been spelled out in our
 \cite{2020arXiv200109715G}.
 

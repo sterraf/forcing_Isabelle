@@ -176,7 +176,8 @@ with the fundamental recursor $\isatt{wfrec}$).
 To avoid problems related to the binding of variables, de Bruijn
 indices \cite{MR0321704} are used instead. The satisfaction predicate
 $\isatt{sats}::\tyi\fun\tyi\fun\tyi\fun\tyo$ takes as arguments a set $M$, a list
-$\mathit{env}\in\isatt{list}(M)$ for the assignment of free indices,
+$\mathit{env}\in\isatt{list}(M)$ for the assignment of free indices
+(which are counted by the \isatt{arity} function),
 and $\phi\in\formula$, and it is written
 $M,\mathit{env}\models\phi$ in our formalization. This completes the
 description of the fourth and last formal layer of the development.
