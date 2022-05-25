@@ -1,25 +1,60 @@
-\section{Lessons}\label{sec:lessons}
+\section{Some lessons}\label{sec:lessons}
 
-\subsection{Plan before formalizing}
-\begin{enumerate}
-\item Ask about your project
-  \url{https://mathoverflow.net/q/265435/66044}
+We want to finish this report by gathering some of the conclusions we
+reached after the experience of formalizing the basics of forcing in a
+proof assistant.
 
-  Disclaimer: It may be useless.
-\item We should had better used predicates for the forcing posets'
-  order relations (the way DSL is written), and go for class forcing
-  (with $\PP$ a definable subset of $M$). The latter change seems to be
-  easy, but the former doesn't.
-  
-  “Sometimes it felt like sculpting on marble: The fear of having
-  carved too deep and hence needing to change the whole stone!”
+\subsection{Aims of a formalization and planning}
 
-  Note: This is in direct contradiction with “code fever”
-  (\ref{sec:beware-code-fever} below).
-\item Read the fine print: Foundations of your proof assistant.
-\end{enumerate}
+We believe that in every project of formalization of mathematics,
+there is a tension between the haste to verify the target results and
+the need to obtain a readable, albeit extremely detailed, corpus of
+statements and proofs. This tension is mirrored in two differents
+purposes of formalization: Developing new mathematics from scratch and
+producing verified results en route to this, versus verifying and
+documenting material that has already been produced on paper.
 
-\subsection{Control your bureaucracy. Automate early}
+Our present project clearly belongs to the second category, so we
+prioritized trying to obtain formal proofs that mimicked standard
+prose (the highlight being the sample proof in
+Section~\ref{sec:sample-formal-proof}). We feel that the Isar language
+provided with Isabelle has the right balance between elegance and
+efficacy. Another crucial aspect to achieve this goal is the level of
+detail of the blueprint for the formalization. We must however confess
+that we learned many of the subtleties of Isabelle in the making, and
+many engineering decisions were also taken before it was clear the
+precise way things would develop in the future.
+
+A similar experience, but on an opposite side of the formalization
+spectrum happened to the Liquid Tensor Project as described by Scholze
+in \cite{LTE2021}. People involved in the formalization simply pushed
+their way to reach the summit, formalizing lemma after lemma. They
+actually wrote the blueprint for that formalization \emph{afterwards}
+it was complete! From time to time, we were also frenziedly trying to
+get the results formalized, going beyond what we had planned.
+
+As a result from this, some design choices that seemed reasonable at
+first were proved to be inconvenient. For instance, we should had
+better used predicates (of type $\tyi\fun\tyi\fun\tyo$) for the
+forcing posets' order relations; this is the way they
+are presented in the \session{Delta\_System\_Lemma} session. A similar
+problem is that we require the forcing poset to be an element of $M$,
+so the present infrastructure does not allow class forcing out of the
+box. (The latter change seems to be rather straightforward, but the
+former does not.)
+
+Nearly the final stage of the project, we decided to go for the minimal
+set of definitions and versions of lemmas that were needed to obtain
+our target results. For example, we only proved the Delta System Lemma
+for $\aleph_1$-sized families (thus limiting us to the plain ccc) and
+showed preservation of sequences by considering countably closed
+forcings (in fact, we formalized the bare minimum requirement of being
+$(<\omega+1)$-closed). In doing this we went against the tried and
+true advice that one should formalize the most general version of the
+results available.
+
+\subsection{Bureaucracy and scale factors}
+
 \begin{enumerate}
 \item Bureaucracy vs ML programming.
 \item The “math” was already formalized on 22 November 2020.
@@ -29,7 +64,6 @@
 \item Missing: basic arithmetic for dealing with arities.
 \end{enumerate}
 
-\subsection{Beware of scale factors}
 \begin{enumerate}
 \item It is extremely misleading when automatic tools (\isatt{simp}, \isatt{auto}, etc)
   stop working just because of the sheer size of the goal. Oftentimes,
@@ -46,8 +80,9 @@
 \subsection{You might have formalized it, and still be wrong}
 \begin{enumerate}
 \item Example: restriction of relations.
-\item Pollack, “Pollack consistency” by Wiedijk. Opacity of automated
-  proofs.
+\item Pollack, “Pollack consistency” by
+  Wiedijk. Cf. \theory{Definitions\_Main} (thanks to discussions with
+  Vidnyánszky). Opacity of automated proofs. 
 \item Plot twist: You can be right without knowing. Intuition may drive proofs
   even if we are not working on what we believe we are.
 \end{enumerate}
@@ -71,9 +106,6 @@
   Density arguments (look for “TODO”, “general versions”).
 \end{enumerate}
 
-\subsection{Document your project}
-\begin{enumerate}
-\item \theory{Definitions\_Main}, thanks to Vidnyánszky.
 \end{enumerate}
 
 %%% Local Variables: 

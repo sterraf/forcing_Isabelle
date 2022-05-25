@@ -42,7 +42,7 @@ satisfies the $Q$-instance of Separation and the $R$-instance of
 Replacement, respectively. In the statement of the Separation Axiom in
 \isatt{M{\uscore}Z{\uscore}basic} and
 the many replacement instances, predicates $Q$ and $R$ are actually
-defined as the of formulas of the appropriate arity; we can only show
+defined as the satisfaction of formulas of the appropriate arity; we can only show
 that this form of the axioms hold in generic extensions. 
 
 Further locales gather the assumption of transitivity of $M$ and
@@ -61,7 +61,8 @@ list concatenation):
 %% \end{isabelle}
 Some of those instances, which we included for simplicity of design,
 are actually “fake” instances in that they can be obtained from
-Powerset. An example of this is the sole instance of the
+Powerset, or from other replacement instances already available in the
+respective context. An example of this is the sole instance of the
 \isatt{M{\uscore}basic} locale, originally from
 \session{ZF-Constructible}; we managed to eliminate it but in
 doing so we had to reprove many lemmas from
@@ -121,8 +122,8 @@ follows:
 \ \ \isakeyword{shows}\isanewline
 \ \ \ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isasymexists}p{\isasymin}G{\isachardot}{\kern0pt}\ p\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}{\kern0pt}\ \ \ {\isasymlongleftrightarrow}\ \ \ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isacharcomma}{\kern0pt}\ map{\isacharparenleft}{\kern0pt}val{\isacharparenleft}{\kern0pt}P{\isacharcomma}{\kern0pt}G{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}env{\isacharparenright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymphi}{\isachardoublequoteclose}
 \end{isabelle}
-where the $\forces$ notation had already been set up in the theory
-\theory{Forces{\uscore}Definition} as follows:
+where the $\forces$ notation had already been set up in the
+\theory{Forces{\uscore}Definition} theory as follows:
 \begin{isabelle}
 \isacommand{abbreviation}\isamarkupfalse%
 \ Forces\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharbrackleft}{\kern0pt}i{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ i{\isacharbrackright}{\kern0pt}\ {\isasymRightarrow}\ o{\isachardoublequoteclose}\ \ {\isacharparenleft}{\kern0pt}{\isachardoublequoteopen}{\isacharunderscore}{\kern0pt}\ {\isasymtturnstile}\ {\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}{\isachardoublequoteclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{3}}{\isadigit{6}}{\isacharcomma}{\kern0pt}{\isadigit{3}}{\isadigit{6}}{\isacharcomma}{\kern0pt}{\isadigit{3}}{\isadigit{6}}{\isacharbrackright}{\kern0pt}\ {\isadigit{6}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\ \isakeyword{where}\isanewline
@@ -145,8 +146,8 @@ recursion
 but then \cite[p.~257]{kunen2011set} it is cast as a single
 recursively defined function $\frcat$ over the wellfounded relation
 $\isatt{frecR}$ on tuples $\lb \mathit{ft},t_1,t_2,p\rb$ (where
-$\mathit{ft}\in\{0,1\}$ indicates the type of the atomic formula being
-forced). Forcing for general formulas is defined by recursion on the
+$\mathit{ft}\in\{0,1\}$ indicates whether the atomic formula being
+forced is an equality or a membership, respectively). Forcing for general formulas is defined by recursion on the
 datatype $\formula$. Technical details on the implementation and proofs of the
 Forcing Theorems have been spelled out in our
 \cite{2020arXiv200109715G}.
