@@ -45,66 +45,108 @@ former does not.)
 
 Nearly the final stage of the project, we decided to go for the minimal
 set of definitions and versions of lemmas that were needed to obtain
-our target results. For example, we only proved the Delta System Lemma
-for $\aleph_1$-sized families (thus limiting us to the plain ccc) and
-showed preservation of sequences by considering countably closed
-forcings (in fact, we formalized the bare minimum requirement of being
-$(<\omega+1)$-closed). In doing this we went against the tried and
+our target results. For example,
+\begin{itemize}
+\item
+  we only proved the Delta System Lemma for $\aleph_1$-sized families
+  (thus limiting us to the plain ccc);
+\item we showed preservation of sequences by considering countably
+  closed forcings (in fact, we formalized the bare minimum requirement
+  of being $(<\omega+1)$-closed); and
+\item we proved that appropriate subsets were dense only for Cohen posets
+  relevant for the arguments at hand, but could have been done in general.
+\end{itemize}
+In doing this we went against the tried and
 true advice that one should formalize the most general version of the
-results available.
+results available. Another shortcut we took was to
+simplify some proofs by appealing to the countability of the ground
+model; this is the case of
+\isatt{definition{\uscore}of{\uscore}forces} and the result on forcing
+values of a function.
+
+\subsection{How to believe in the formalization}
+This is a rather tricky question, that was addressed by Pollack in his
+\cite{MR1686867}. There is little point to discuss that, after an
+assistant has accepted some input successfully, \emph{some
+mathematics} has been formally verified. What might not be apparent is
+if the claimed theorems are indeed the results that have been
+checked. One key aspect of this is the logical foundation of the
+assistant (Section~\ref{sec:isabelle-metalogic-meta}). But the weakest
+link in the chain is the laying down of definitions building up to the
+concepts needed to state the target results. (Another related aspect,
+concerning the way results are printed and parsed by assistant versus
+there internal meaning, was studied by Wiedijk \cite{zbMATH06319597}.)
+
+We took care of this matter by providing, as an entry point for our
+whole development, the theory \theory{Definitions\_Main} in which a
+path from some the fundamental concepts from Isabelle/ZF reaching to our main theorems
+is expounded. Cross-references to major milestones (which can be
+navigated by using Isabelle) are provided there. It
+corresponds roughly to less than seven journal pages.
+
+Frequently, we formalized material by directly typing the proof we
+new by heart, and in doing so we assumed that some definitions
+accommodated some of our preconceptions.
+It is significant that in a few such occasions, we were doubly
+surprised by the fact that some supposedly trivial lemma would not go
+through, because the definitions addressed something different (think
+of \emph{restriction} of a function to a set versus that of a
+relation), and also that we were able to proved the previous
+results. The takeaway is that intuition may drive proofs
+even if you are not working on what we believe we are.
+
+A final aspect on this topic concerns automated methods. As it was
+mentioned in the Introduction, some proofs can actually be
+\emph{obscured} by automation, simply because one has to take
+complicated opaque computations “on faith.”
 
 \subsection{Bureaucracy and scale factors}
 
-\begin{enumerate}
-\item Bureaucracy vs ML programming.
-\item The “math” was already formalized on 22 November 2020.
-  We finished the last goal on 22 August 2021.
-  (Update: 20 November 2021 \& 28 November 2021, for CH)
-\item Missing: automation of closure of models under operations.
-\item Missing: basic arithmetic for dealing with arities.
-\end{enumerate}
+It is noteworthy that although the “math” of the construction of a
+model of $\ZFC+\neg\CH$ was already in place by the end of November
+2020, it was only 9 months later that we were able to finish the
+formalization of that result. The missing pieces were essentially
+bureacracy. Some of the material filed under this category comprises:
+\begin{itemize}
+\item calculation of arities of internalized formulas;
+\item proving that certain constructions belong to the relevant
+  models;
+\item (required for the above) showing that particular instances of
+  separation and replacement hold in the ground model;
+\item etc.
+\end{itemize}
 
-\begin{enumerate}
-\item It is extremely misleading when automatic tools (\isatt{simp}, \isatt{auto}, etc)
-  stop working just because of the sheer size of the goal. Oftentimes,
-  in math, we disregard scale issues but they must always be taken
-  into account in CS.
-\item Example: $\forceisa(0\in 1)$ is expandable,
-  $\forceisa(\neg\neg  0\in 1)$ is not.
-\item Example: Synthesis of $\forceisa$; could have been fully synthesized,
-  but that was dirty “strategy”.
-\item The know-how of computer scientists on this kind of engineering is
-  very important
-\end{enumerate}
+Some of those proofs were almost copypasted once and again with minor
+variants; this would usually be relegated to some function in the
+meta-language, but we were unable to do this due to our limitations in
+programming Isabelle/ML\footnote{%
+  On the other hand, our inability to automate proofs of replacement
+  instances paved the way for identifying which were the ones needed for
+  forcing! ($\leftarrow$\textbf{put somewhere, don't know if this is the right
+    place}).}
+and  (an ML style having several quirks and which
+is not very well document).
 
-\subsection{You might have formalized it, and still be wrong}
-\begin{enumerate}
-\item Example: restriction of relations.
-\item Pollack, “Pollack consistency” by
-  Wiedijk. Cf. \theory{Definitions\_Main} (thanks to discussions with
-  Vidnyánszky). Opacity of automated proofs. 
-\item Plot twist: You can be right without knowing. Intuition may drive proofs
-  even if we are not working on what we believe we are.
-\end{enumerate}
+Nevertheless, the experience of the CS members of the team (and
+community) is invaluable for the kind of engineering that is needed in
+a large project like the present one. For example, it is
+(mathematically) misleading when automatic tools (\isatt{simp},
+\isatt{auto}, etc) stop working just because of the sheer size of the
+goal (v.g., the same statement with 7 variables succeed but with 8
+variables doesn't). Scale issues are very easily diregarded in the
+abstract; for example, the formula $\forceisa({\cdot}0\in 1{\cdot})$
+can be explicitly printed by Isabelle (it spans nearly 20k symbols), but
+$\forceisa({\cdot}\neg{\cdot}\neg{\cdot}0\in 1{\cdot}{\cdot}{\cdot})$
+can not.
 
-\subsection{Beware of the “Code fever”}\label{sec:beware-code-fever}
-\begin{enumerate}
-\item “We know that doing math is fun---formalization is like DRUGS”
-\item Feeling of accomplishment after seeing your writings
-  validated beyond reasonable doubt (v.g. cofinality).
-
-\item One easily forgets about the “Power of the Board.”
-\end{enumerate}
-
-\subsection{The Devil's on the shortcuts}
-\begin{enumerate}
-\item
-  Our proofs of the “definition of forces” (and many
-  consequences) and of the lemma for “forcing a value” of function
-  depend on the countability of the ground model. 
-\item
-  Density arguments (look for “TODO”, “general versions”).
-\end{enumerate}
+Another example concerns the very definition of $\forceisa$. As a
+proof of concept, one of us tried to obtain its definition by
+exclusively using formula synthesis, which was supposed to be trivial,
+since it is mathematically. But in fact, some early minor mistake
+rendered the whole effort useless. We then turned to a more
+informed programming discipline, which involved decomposing the
+definition in stages, each of which was checked for correctness, and
+in that way we were able to reach our objective.
 
 %%% Local Variables: 
 %%% mode: latex
