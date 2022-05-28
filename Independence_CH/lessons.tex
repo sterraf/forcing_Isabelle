@@ -9,7 +9,7 @@ proof assistant.
 We believe that in every project of formalization of mathematics,
 there is a tension between the haste to verify the target results and
 the need to obtain a readable, albeit extremely detailed, corpus of
-statements and proofs. This tension is mirrored in two differents
+statements and proofs. This tension is mirrored in two different
 purposes of formalization: Developing new mathematics from scratch and
 producing verified results en route to this, versus verifying and
 documenting material that has already been produced on paper.
@@ -106,7 +106,7 @@ It is noteworthy that although the “math” of the construction of a
 model of $\ZFC+\neg\CH$ was already in place by the end of November
 2020, it was only 9 months later that we were able to finish the
 formalization of that result. The missing pieces were essentially
-bureacracy. Some of the material filed under this category comprises:
+bureaucracy. Some of the material filed under this category comprises:
 \begin{itemize}
 \item calculation of arities of internalized formulas;
 \item proving that certain constructions belong to the relevant
@@ -116,7 +116,7 @@ bureacracy. Some of the material filed under this category comprises:
 \item etc.
 \end{itemize}
 
-Some of those proofs were almost copypasted once and again with minor
+Some of those proofs were almost copy-pasted once and again with minor
 variants; this would usually be relegated to some function in the
 meta-language, but we were unable to do this due to our limitations in
 programming Isabelle/ML\footnote{%
@@ -133,7 +133,7 @@ a large project like the present one. For example, it is
 (mathematically) misleading when automatic tools (\isatt{simp},
 \isatt{auto}, etc) stop working just because of the sheer size of the
 goal (v.g., the same statement with 7 variables succeed but with 8
-variables doesn't). Scale issues are very easily diregarded in the
+variables doesn't). Scale issues are very easily disregarded in the
 abstract; for example, the formula $\forceisa({\cdot}0\in 1{\cdot})$
 can be explicitly printed by Isabelle (it spans nearly 20k symbols), but
 $\forceisa({\cdot}\neg{\cdot}\neg{\cdot}0\in 1{\cdot}{\cdot}{\cdot})$
