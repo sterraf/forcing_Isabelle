@@ -1,6 +1,35 @@
 \section{Proof assistants and Isabelle/ZF}
 \label{sec:proof-assist-isabelle}
 
+Let us briefly introduce Isabelle in the large landscape of proof
+assistans (or ITPs for interactive theorem provers); we refer to the
+excelent chapter by \citet{DBLP:series/hhl/HarrisonUW14} for a more
+thorough reconstruction of the history of ITPs.
+
+It is expected that an ITP assists the human user while mechanizing
+some piece of mathematics; the interaction varies from system to
+system, but a common interface consists on the system showing the
+current goal and context. The user instructs the ITP to modify the
+goal/context by means of tactics; a forward rule changes the context
+with the intention of having in the new context a hypothesis closer to
+the goal. A backward rule represents a deduction whose conclusion is
+the goal, thus the new goal corresponds to the premises of the rule. A
+proof is completed when the (current) goal is an instance of the
+hypothesis (in the current context).
+
+In that dialog, the user produces a script of tactics that can be
+later reproduced step-by-step by the system (to check, for example,
+that an imported theory is correct) or by the user to understand
+the proof.\footnote{As we will see there are more declaratives
+proof languages that aims to have intelligible proof scripts.}
+
+To have any value at all, the system should be able to say if a tactic
+makes sense (for instance, it must be forbidden to use the backward
+tactic \textit{conjI} when the main connective is a
+disjunction). Moreover one should be able to ascertain the validity of
+the reaction of an ITP (be its rejection or its acceptance of some
+alleged logical step). % Here I would merge the next paragraph.
+
 Proof assistants provide diverse aids for the task
 of formalizing a piece of mathematics. They are usually implemented
 using a typed programming language; rigor is enforced by defining a
