@@ -48,31 +48,32 @@ some major formalization projects, such as the Four Color Theorem
 \cite{10.1007/978-3-642-39634-2_14}, and the proof the Kepler's
 Conjecture \cite{MR3659768}. There is a vast mathematical corpus at
 the Archive of Formal Proofs based on Isabelle, and formalizations of
-brand new and complex objects like the definition of perfectoid spaces
-and the Liquid Tensor Project \cite{LTE2020,LTE2021} on Lean.
+brand new and complex objects like the definition of perfectoid spaces \cite{10.1145/3372885.3373830}
+and the Liquid Tensor Experiment \cite{LTE2020,LTE2021} on Lean.
 
 \subsection{Our achievements}
-We formalized a model-theoretic rendition of forcing.
-\begin{itemize}
-\item Proper extensions of ctms of $\ZF$.
-\item The construction of ctms of $\ZFC + \neg\CH$ and of $\ZFC + \CH$ given one of
-  $\ZFC$.
-\end{itemize}
+We formalized a model-theoretic rendition of forcing (Section~\ref{sec:forcing}), showing how to
+construct proper extension of ctms of $\ZF$ (respectively, with
+$\AC$), and we formalized the basic forcing notions required to obtain
+ctms of $\ZFC + \neg\CH$ and of $\ZFC + \CH$. No meta-theoretic issues
+(consistency, FOL calculi, etc) were formalized, so we were merely
+concerned with the mathematics of forcing. Nevertheless, by inspecting
+the foundations underlying our proof assistant Isabelle
+(Section~\ref{sec:isabelle-metalogic-meta}) it can be stated that our
+formalization is closest to a proof in $\ZF$ of the previous
+implications.
 
-In order to do so, we extended the treatment of relativization of
-set-theoretical concepts. 
-\begin{itemize}
-\item We redesigned Isabelle/ZF results on non-absolute concepts to work
-  relative to a class.
-\item We provided missing results (from basic ones involving cardinal
-  successors, countable sets, \dots)
-\end{itemize}
-No meta-theoretic issues (consistency, FOL calculi, etc) were formalized.
+In order to reach our goals, we provided missing results, from basic ones
+involving cardinal successors, countable sets, etc
+(Section~\ref{sec:extension-isabellezf}); we extended the treatment of relativization of
+set-theoretical concepts (Section~\ref{sec:tools-relativization}).
+%% We redesigned Isabelle/ZF results on non-absolute concepts to work
+%% relative to a class.
 
 One added value that is obtained from the present formalization is
-that we identified which instances of  Replacement are
-needed to set the forcing machinery up (Separation is a bit more
-complicated).
+that we identified a handfull of instances of Replacement which are
+sufficient to set the forcing machinery up (Section~\ref{sec:33-repl-inst-rule}).
+%% (Separation is a bit more complicated).
 %% A verification that no choice  is needed at the level of the
 %%  object logic.
 The eagerness to obtain this level of detail might be a consequence of
