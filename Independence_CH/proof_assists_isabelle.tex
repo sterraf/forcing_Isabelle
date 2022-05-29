@@ -35,25 +35,48 @@ constructs proofs in response to user scripts. The rest of the system
 can interact with the kernel via an interface that exposes functions
 guaranteeing the validity of the proofs.
 
-Proof assistants provide diverse aids for the task
-of formalizing a piece of mathematics. They are usually implemented
-using a typed programming language; rigor is enforced by defining a
-type of ``theorems,'' whose members can only be constructed using
-operations stipulated in a small \emph{kernel} which encodes the
-underlying foundation of the assistant. Further developments interact
-with the type of theorems only through the kernel, and thus the latter
-is the only ``trusted'' part of the assistant's code.
+The core of Isabelle, as well as LCF, is based on higher-order logic;
+another heritage of LCF is the possibility for the user to define
+\emph{tactics} to encapsulate common patterns used to solve goals. In
+fact, this is the origin of the ML family of languages: a
+Meta-Language for programming tactics. In contrast with LCF, Isabelle
+was designed~\cite{Paulson1990} as a generic theorem for several
+logics. Isabelle still offers a programmable interface (in ML) that
+allows the user, for instance, to define a tactic solving a statement
+about a natural number $n$ by doing cases on whether $n=0$ or
+$n\neq 0$.  Moreover one can define functions that manipulate terms
+(in the usual sense) or even formulas.
 
-Several of the more established assistants (HOL Light, Coq, Isabelle)
-are programmed in some variant of the ML language (which was
-designed for this purpose); the newer Lean, on the other
-hand, was originally conceived as a standalone functional programming
-language with all the features of a standard assistant.
+In contrast with LCF, some of the more prominent ITPs of today are
+based on some type theory. Both Coq~\cite{coq} and
+lean~\cite{DBLP:conf/cade/Moura021} are based on the Calculus of
+Inductive Constructions
+\cite{DBLP:conf/mfps/PfenningP89,DBLP:journals/iandc/CoquandH88},
+while Agda~\cite{agda} is an extension of Martin-Löf type
+theory~\cite{DBLP:books/daglib/0000395}. The oldest ITP still
+still used today is Mizar~\cite{mizar} is far away both in terms
+of foundations and architecture; it inspired, though, the Isar
+dialect used in nowadays Isabelle.
 
-In the case of Isabelle, Standard ML is the first of the four layers
-in which we work in this assistant. Both the kernel and automation
-of proofs is coded in ML, sometimes as a substitute for induction on
-formulas, as the next section explains.
+% Proof assistants provide diverse aids for the task
+% of formalizing a piece of mathematics. They are usually implemented
+% using a typed programming language; rigor is enforced by defining a
+% type of ``theorems,'' whose members can only be constructed using
+% operations stipulated in a small \emph{kernel} which encodes the
+% underlying foundation of the assistant. Further developments interact
+% with the type of theorems only through the kernel, and thus the latter
+% is the only ``trusted'' part of the assistant's code.
+
+% Several of the more established assistants (HOL Light, Coq, Isabelle)
+% are programmed in some variant of the ML language (which was
+% designed for this purpose); the newer Lean, on the other
+% hand, was originally conceived as a standalone functional programming
+% language with all the features of a standard assistant.
+
+% In the case of Isabelle, Standard ML is the first of the four layers
+% in which we work in this assistant. Both the kernel and automation
+% of proofs is coded in ML, sometimes as a substitute for induction on
+% formulas, as the next section explains.
 
 \subsection{Isabelle metalogic $\Meta$}
 \label{sec:isabelle-metalogic-meta}
@@ -68,7 +91,7 @@ can be postulated when defining objects logics. Types of higher order can be
 assembled using the function space constructor $\fun$.
 
 The type of propositions $\prop$ is equipped with a binary operation
-$\implies$ (“meta-implication”) and a universal “meta-quantifier”
+${\implies}$ (“meta-implication”) and a universal “meta-quantifier”
 $\ALL$, that are used to represent the object
 logic rules. As an example, the axiomatization of first-order logic
 postulates a type $\tyo$ of booleans, and Modus Ponens
@@ -126,8 +149,8 @@ object-logic formulas (which are construed as terms of type $\tyi \fun
 \end{enumerate}
 
 For recursive definitions, only the second option is available, and
-that is the way the Definition of Forcing is implemented in our
-formalization.
+that is the way the definition of the forcing relation is implemented
+in our formalization.
 
 \subsection{Isabelle/ZF}
 \label{sec:isabellezf}
