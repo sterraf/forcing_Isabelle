@@ -4,7 +4,7 @@
 Let us briefly introduce Isabelle in the large landscape of proof
 assistans (or ITPs for interactive theorem provers); we refer to the
 excelent chapter by \citet{DBLP:series/hhl/HarrisonUW14} for a more
-thorough recollection of the history of ITPs.
+thorough reconstruction of the history of ITPs.
 
 It is expected that an ITP assists the human user while mechanizing
 some piece of mathematics; the interaction varies from system to
@@ -14,7 +14,7 @@ goal/context by means of tactics; a forward rule changes the context
 with the intention of having in the new context a hypothesis closer to
 the goal. A backward rule represents a deduction whose conclusion is
 the goal, thus the new goal corresponds to the premises of the rule. A
-proof is completed when the (current) goal is an instance of the
+proof is completed when the (current) goal is an instance of a
 hypothesis (in the current context).
 
 In that dialog, the user produces a script of tactics that can be
@@ -28,7 +28,12 @@ makes sense (for instance, it must be forbidden to use the backward
 tactic \textit{conjI} when the main connective is a
 disjunction). Moreover one should be able to ascertain the validity of
 the reaction of an ITP (be its rejection or its acceptance of some
-alleged logical step). % Here I would merge the next paragraph.
+alleged logical step). Edinburgh LCF~\cite{Gordon1979-qm} was an
+influential proof assistant where that verification could be achieved
+by checking a small \emph{kernel}; this is the only module that
+constructs proofs in response to user scripts. The rest of the system
+can interact with the kernel via an interface that exposes functions
+guaranteeing the validity of the proofs.
 
 Proof assistants provide diverse aids for the task
 of formalizing a piece of mathematics. They are usually implemented
