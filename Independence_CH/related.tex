@@ -1,37 +1,78 @@
 \section{Related work}
 \label{sec:related-work}
 
-\paragraph*{Question} How do they overcome Tarski's undefinability of truth?
+There is another formalization of forcing in Lean by Han and van
+Doorn, under the name \emph{Flypitch} \cite{han_et_al:LIPIcs:2019:11074,DBLP:conf/cpp/HanD20}. When our project started, we
+were unaware of this initiative, and the same as them, we were deeply
+influenced by Wiedijk's list of 100 theorems \cite{Formalizing100}.
 
-In some sense, their presentation is mathematically more "mature",
-but the type-theoretic machinery might be a bit alien to most
-set-theorists.
+Many aspects make their formalization different from ours. Their
+presentation of the mathematics is somewhat more elegant and cohesive,
+since they go for the Boolean valued approach and this is closer to
+obtain proofs of relative consistency; they actually set up the
+calculus of first-order logic, and \emph{en route} to forcing they
+formalized the basic model theory of Boolean valued models and Gödel's
+Completeness Theorem. They also provided the treatment of the regular
+open algebra, and the general version of the Delta System
+Lemma. Putting this together they readily obtain a proof that
+(*) $\Con(\ZFC)$ implies 
+$\ZFC\nvdash \CH$ \cite{han_et_al:LIPIcs:2019:11074} and after
+formalizing collapse forcing they show  $\ZFC\nvdash \neg\CH$
+\cite{DBLP:conf/cpp/HanD20}.
 
-Quoting Flypitch-CPP,
-\begin{quote}
-  The types of cardinals and ordinals in mathlib, which
-  are defined as equivalence classes of (well-ordered) types, live one
-  universe level higher than the types used to construct them
-\end{quote}
+It should be emphasized, however, that the Flypitch project was
+carried out assuming a rather strong meta-theory. 
+Carneiro \cite{carneiro-ms-thesis} reports that Werner's results in
+\cite{10.5555/645869.668660} can be adapted to show that the base
+logic  of Lean (restricted to $n$
+type universes) proves the consistency of $\ZFC$ plus $n$
+inaccessibles. Han and van Doorn did used universes in their
+implementation; for instance, ordinals are “defined as equivalence
+classes of (well-ordered) types, live one
+universe level higher than the types used to construct them”
+\cite{han_et_al:LIPIcs:2019:11074}. It is not clear to us if they are
+able to avoid strength (even for the proof of the finitary implication
+(*)).
 
-\paragraph*{Questions} How do they handle recursions? Are these all
-\emph{external}? Does this has any impact on their (non?)ability of
-identifying replacement instances used by their approach?
+On a lesser note, in order to prove $\AC$ in the generic extension,
+Flypitch requires choice in the metatheory
+\cite[p.~11]{han_et_al:LIPIcs:2019:11074}. Our formalization works
+entirely in $\ZF$, and only import the Isabelle theory postulating
+$\AC$ for demostration purposes.
 
-They seem to require $\AC$ in their meta-theory.
+We believe that our alternative formalization using the ctm approach
+over Isabelle/ZF might be more appealing to set-theorists, because the
+type-theoretic machinery used in Flypitch might be a bit alien, and
+since absoluteness grant us extra naturality. This last point may also
+be illustrated by the treatment of ordinals; in our formalization, as
+it is expected intuitively, the following are equivalent for every $x$
+in a ctm $M$:
+\begin{itemize}
+\item $\isatt{Ord}(x)$,
+\item $\isatt{ordinal}(\isatt{\#\#}M,x)$ (the relational
+  definition relativized to $M$),
+\item
+  $M,[x] \models {\cdot}0\isatt{ is ordinal}{\cdot}$,
+\item
+  $M[G], [x] \models {\cdot}0\isatt{ is ordinal}{\cdot}$ for every generic $G$,
+\end{itemize}
+where ${\cdot}n\isatt{ is ordinal}{\cdot}$ is the code for the
+appropriate first-order formula  ($0$ is a de
+Bruijn index above!). In contrast, Han and van Doorn require an
+injection from the ordinals of the corresponding type universe into
+their encoding of a model of $\ZF$, and a further necessary injection into the Boolean
+valued model using checks---this last step obviously appears in our
+presentation, but the $\val$ function used to construct will turn
+check-names into the corresponding set in the generic extension, as expected.
 
-\subsection{Random comments}
+This faithfulness to set-theoretical practices does not come for
+free. Recursive constructions and inductive definitions are far easier
+to perform in the Calculus of Inductive Constructions on which Lean
+(and Coq) are based, and in Isabelle/ZF are (still) rather
+cumbersome. Also, a typed discipline provides aid to write succintly
+and many assumptions are satisfied by mere notation.
 
-\begin{enumerate}
-\item  \textbf{Pros and cons of an untyped environment}: Closer to the
-  set-theoretic point of view/prone to the most stupid errors.
-\item \textbf{“Pros” and cons of lack of automation}: we had to be extremely
-  detailed, which provides explicit information / the formalization
-  work was pain in the neck and much lower.
-\item In order to extract information concerning the proof, the need for a
-  proof assistant with a more computational flavour (Agda, Coq)
-  arises! As a second thought, obviously.
-\end{enumerate}
+%% Comment on ZFC_in_HOL
 
 %%% Local Variables: 
 %%% mode: latex
