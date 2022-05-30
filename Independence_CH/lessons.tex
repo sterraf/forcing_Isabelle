@@ -11,7 +11,7 @@ there is a tension between the haste to verify the target results and
 the need to obtain a readable, albeit extremely detailed, corpus of
 statements and proofs. This tension is mirrored in two different
 purposes of formalization: Developing new mathematics from scratch and
-producing verified results en route to this, versus verifying and
+producing verified results on the way, versus verifying and
 documenting material that has already been produced on paper.
 
 Our present project clearly belongs to the second category, so we
@@ -26,7 +26,7 @@ many engineering decisions were also taken before it was clear the
 precise way things would develop in the future.
 
 A similar experience, but on an opposite side of the formalization
-spectrum happened to the Liquid Tensor Project as described by Scholze
+spectrum happened to the Liquid Tensor Experiment as described by Scholze
 in \cite{LTE2021}. People involved in the formalization simply pushed
 their way to reach the summit, formalizing lemma after lemma. They
 actually wrote the blueprint for that formalization \emph{afterwards}
@@ -75,7 +75,7 @@ assistant (Section~\ref{sec:isabelle-metalogic-meta}). But the weakest
 link in the chain is the laying down of definitions building up to the
 concepts needed to state the target results. (Another related aspect,
 concerning the way results are printed and parsed by assistant versus
-there internal meaning, was studied by Wiedijk \cite{zbMATH06319597}.)
+their internal meaning, was studied by Wiedijk \cite{zbMATH06319597}.)
 
 We took care of this matter by providing, as an entry point for our
 whole development, the theory \theory{Definitions\_Main} in which a
@@ -85,15 +85,15 @@ navigated by using Isabelle) are provided there. It
 corresponds roughly to less than seven journal pages.
 
 Frequently, we formalized material by directly typing the proof we
-new by heart, and in doing so we assumed that some definitions
+knew by heart, and in doing so we assumed that some definitions
 accommodated some of our preconceptions.
 It is significant that in a few such occasions, we were doubly
 surprised by the fact that some supposedly trivial lemma would not go
 through, because the definitions addressed something different (think
 of \emph{restriction} of a function to a set versus that of a
-relation), and also that we were able to proved the previous
+relation), and also that we were able to prove the adjacent
 results. The takeaway is that intuition may drive proofs
-even if you are not working on what we believe we are.
+even if you are not working on what you believe we are.
 
 A final aspect on this topic concerns automated methods. As it was
 mentioned in the Introduction, some proofs can actually be
@@ -124,7 +124,7 @@ programming Isabelle/ML\footnote{%
   instances paved the way for identifying which were the ones needed for
   forcing! ($\leftarrow$\textbf{put somewhere, don't know if this is the right
     place}).}
-and  (an ML style having several quirks and which
+(an ML style having several quirks and which
 is not very well document).
 
 Nevertheless, the experience of the CS members of the team (and
@@ -134,14 +134,15 @@ a large project like the present one. For example, it is
 \isatt{auto}, etc) stop working just because of the sheer size of the
 goal (v.g., the same statement with 7 variables succeed but with 8
 variables doesn't). Scale issues are very easily disregarded in the
-abstract; for example, the formula $\forceisa({\cdot}0\in 1{\cdot})$
+abstract but, as an example, the formula $\forceisa({\cdot}0\in 1{\cdot})$
 can be explicitly printed by Isabelle (it spans nearly 20k symbols), but
 $\forceisa({\cdot}\neg{\cdot}\neg{\cdot}0\in 1{\cdot}{\cdot}{\cdot})$
 can not.
 
-Another example concerns the very definition of $\forceisa$. As a
+Another point where CS expertise was a prime asset was
+the very definition of $\forceisa$. As a
 proof of concept, one of us tried to obtain its definition by
-exclusively using formula synthesis, which was supposed to be trivial,
+using formula synthesis exclusively, which was supposed to be trivial,
 since it is mathematically (as in the case of
 Equation~(\ref{eq:sats_big_union_fm})).
 But in fact, some early minor mistake
