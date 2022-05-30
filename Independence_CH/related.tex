@@ -26,9 +26,9 @@ Carneiro \cite{carneiro-ms-thesis} reports that Werner's results in
 \cite{10.5555/645869.668660} can be adapted to show that the base
 logic  of Lean (restricted to $n$
 type universes) proves the consistency of $\ZFC$ plus $n$
-inaccessibles. Han and van Doorn did used universes in their
+inaccessibles. Han and van Doorn did use universes in their
 implementation; for instance, ordinals are “defined as equivalence
-classes of (well-ordered) types, live one
+classes of (well-ordered) types, [\dots] one
 universe level higher than the types used to construct them”
 \cite{han_et_al:LIPIcs:2019:11074}. It is not clear to us if they are
 able to avoid strength (even for the proof of the finitary implication
@@ -41,8 +41,8 @@ entirely in $\ZF$, and only import the Isabelle theory postulating
 $\AC$ for demostration purposes.
 
 We believe that our alternative formalization using the ctm approach
-over Isabelle/ZF might be more appealing to set-theorists, because the
-type-theoretic machinery used in Flypitch might be a bit alien, and
+over Isabelle/ZF might be more appealing to set-theorists because of the
+type-theoretic machinery used in Flypitch, and % might be a bit alien
 since absoluteness grant us extra naturality. This last point may also
 be illustrated by the treatment of ordinals; in our formalization, as
 it is expected intuitively, the following are equivalent for every $x$
@@ -62,10 +62,10 @@ Bruijn index above!). In contrast, Han and van Doorn require an
 injection from the ordinals of the corresponding type universe into
 their encoding of a model of $\ZF$, and a further necessary injection into the Boolean
 valued model using checks---this last step obviously appears in our
-presentation, but the $\val$ function used to construct will turn
-check-names into the corresponding set in the generic extension, as expected.
+presentation, but the $\val$ function used to construct $M[G]$ will turn
+check-names into the corresponding argument, as expected.
 
-This faithfulness to set-theoretical practices does not come for
+This faithfulness to set-theoretical practice does not come for
 free. Recursive constructions and inductive definitions are far easier
 to perform in the Calculus of Inductive Constructions on which Lean
 (and Coq) are based, and in Isabelle/ZF are (still) rather
