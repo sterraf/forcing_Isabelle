@@ -97,10 +97,11 @@ logic rules. As an example, the axiomatization of first-order logic
 postulates a type $\tyo$ of booleans, and Modus Ponens
 % https://isabelle.in.tum.de/dist/library/FOL/FOL/IFOL.html#IFOL.mp|axiom
 is written as
-\[
+\begin{equation}\label{eq:modus-ponens}
   \ALL P\,Q.\ \ [P\limp Q] \implies ([P] \implies [Q]).
-\]
-The square brackets (which are omitted in Isabelle theories) represent
+\end{equation}
+The square brackets (which are omitted in Isabelle theories, as well
+as the outermost universal quantifiers) represent
 an injection from $\tyo$ into $\prop$. % ($[P]$ can be read as “$P$
 % holds”)
 A consequence of this representation is that every formula of
@@ -126,7 +127,8 @@ intuitionistic first-order logic IFOL without equality  in the original $\Meta$ 
 conservative (there is a correspondence between provable $\phi$ in
 IFOL and provable $[\phi]$ in $\Meta_{\mathrm{IFOL}}$) by putting
 $\Meta_{\mathrm{IFOL}}$ proofs in \emph{expanded normal form}
-\cite{MR0387024}. Passing to classical logic does not present
+\cite{MR0387024}; atomicity as stated after
+Equation~(\ref{eq:modus-ponens}) plays a role in this argument. Passing to classical logic does not present
 difficulties, but the addition of meta-equality must be taken care of.
 Even more so, since the treatment of equality differs between the
 original and the present incarnation of $\Meta$; details for the
@@ -178,8 +180,9 @@ has a free predicate variable $P$: % $P ::\tyi\fun\tyi\fun\tyo$:
 \end{multline*}
 The restrictions on sorts described above ensure that it is not
 possible that higher-order quantification gets used in $P$. The
-statement of $\AC$ also has a higher-order free variable, but we only
-use $\AC$ for demonstration purposes.
+statement of $\AC$, also uses a free higher-order variable to denote
+an indexed family of nonempty sets. % but we only
+% use $\AC$ for demonstration purposes.
 
 Isabelle/ZF reaches Hessenberg's $|A|\cdot|A| = |A|$. Our decision
 (during 2017) to
@@ -199,26 +202,27 @@ Here, the contrast between the usual way one regards $\ZF$ as
 first-order theory in the language $\{\in \}$ and the mathematical
 practice of freely using defined concepts comes to the
 forefront. Assistants have refined mechanisms to cope with defined
-concepts (which also make their foundations a more complicated
-than plain first-order logic), and this is the only that  nontrivial
+concepts and the introduction of new notation (which also make their foundations more complicated
+than plain first-order logic), and this is the only way that nontrivial
 mathematics can be formalized. But when studying relative interpretations, one
 usually assumes a spartan syntax and defines relativization by
 induction of formulas of the more succinct language. The approach
 taken in \session{ZF-Constructible} is to consider relativizations of
-the formulas (of type $\tyo$) that define each concept. For instance,
+the formulas that define each concept. For instance,
 in the case of unions, we find a relativization
+%https://isabelle.in.tum.de/dist/library/ZF/ZF-Constructible/Relative.html#Relative.big_union_def_raw|axiom
 $\isatt{big{\uscore}union}:: (\isatt{i} \fun \isatt{o}) \fun \isatt{i}
 \fun \isatt{i} \fun \isatt{o}$ of the statement
 “$\union A = z$”:
 \[
- \isatt{big{\uscore}union}(M,A,Z) \equiv \forall x[M].\ x \in z
+ \isatt{big{\uscore}union}(M,A,z) \equiv \forall x[M].\ x \in z
  \longleftrightarrow (\exists y[M].\ y \in A \land x \in y)
 \]
 where $\forall x[M]\dots$ stands for $\forall x.\ M(x)\limp \dots$,
 etc. The need to work with \emph{relational} presentations of defined
 concepts stems from the fact that the model-theoretic definition of
 $L$ requires working with set models and satisfaction, which is
-defined for codes of formulas.
+defined for codes of formulas in the language $\{\in\}$.
 
 \subsection{Internalized formulas}
 \label{sec:internalized-formulas}
