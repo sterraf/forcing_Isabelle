@@ -25,6 +25,8 @@ ENTRY
     series
     title
     type
+    url
+    version
     volume
     year
   }
@@ -58,12 +60,42 @@ FUNCTION {output.nonnull}
   if$
   s
 }
+
 FUNCTION {output}
 { duplicate$ empty$
     'pop$
     'output.nonnull
   if$
 }
+
+FUNCTION {output.nonnull.space}
+{ 's :=
+  output.state mid.sentence =
+    { " " * write$ }
+    { output.state after.block =
+        { add.period$ write$
+          newline$
+          "\newblock " write$
+        }
+        { output.state before.all =
+            'write$
+            { add.period$ " " * write$ }
+          if$
+        }
+      if$
+      mid.sentence 'output.state :=
+    }
+  if$
+  s
+}
+
+FUNCTION {output.space}
+{ duplicate$ empty$
+    'pop$
+    'output.nonnull.space
+  if$
+}
+
 FUNCTION {output.check}
 { 't :=
   duplicate$ empty$
@@ -192,6 +224,9 @@ FUNCTION {bbl.edby}
 FUNCTION {bbl.edition}
 { "edition" }
 
+FUNCTION {bbl.version}
+{ "version" }
+
 FUNCTION {bbl.volume}
 { "volume" }
 
@@ -308,6 +343,15 @@ FUNCTION {bibinfo.check}
     }
   if$
 }
+
+% From splncs04.bst
+FUNCTION {format.url}
+{ url empty$
+    { "" }
+    { "\url{" url * "}" * }
+  if$
+}
+
 FUNCTION {bibinfo.warn}
 { swap$
   duplicate$ missing$
@@ -648,6 +692,19 @@ FUNCTION {format.edition}
       if$ change.case$
       "edition" bibinfo.check
       " " * bbl.edition *
+    }
+  if$
+}
+
+FUNCTION {format.version}
+{ version empty$ 'skip$
+    {
+      output.state mid.sentence =
+        { "l" }
+        { "t" }
+      if$ change.case$
+      "version" bibinfo.check
+      bbl.version " " version * *
     }
   if$
 }
@@ -1089,6 +1146,22 @@ FUNCTION {misc}
   format.note output
   fin.entry
 }
+
+FUNCTION {software}
+{ "%Type = Software" write$
+  output.bibitem
+  format.authors output
+  author format.key output
+  format.btitle output
+  howpublished "howpublished" bibinfo.check output
+  format.version "version" output.check
+  format.date output.space
+  new.sentence
+  format.url output
+  format.note output
+  fin.entry
+}
+
 FUNCTION {phdthesis}
 { "%Type = Phdthesis" write$
   output.bibitem
