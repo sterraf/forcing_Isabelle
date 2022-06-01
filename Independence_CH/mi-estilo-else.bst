@@ -1012,14 +1012,16 @@ FUNCTION {inbook}
       editor format.key output
     }
     { format.authors output.nonnull
-  format.title "title" output.check
+      format.title "title" output.check
       crossref missing$
-        { "author and editor" editor either.or.check }
+	% by pedro (swapped next two lines)
         'skip$
+        { "author and editor" editor either.or.check }
       if$
     }
   if$
-  format.btitle "title" output.check
+  % by pedro
+  % format.btitle "title" output.check
   crossref missing$
     {
       format.bvolume output
@@ -1074,7 +1076,10 @@ FUNCTION {inproceedings}
     {
       journal
       "journal" bibinfo.check
-      "journal" output.check
+      empty$
+	{ skip$ }
+	{ "journal" output }
+      if$
       format.in.ed.booktitle "booktitle" output.check
       format.bvolume output
       format.number.series output
