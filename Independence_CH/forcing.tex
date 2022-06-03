@@ -77,6 +77,7 @@ $M[G]\defi \{ \val(\PP,G,\punto{a}) : \punto{a}\in M \}$.
 
 The following form of the Forcing Theorems  is the one
 that we formalized.
+% Is the existential quantification here confusing?
 \begin{theorem}\label{th:forcing-thms}
   There exists a function  $\forceisa:: \tyi \fun  \tyi$
   such that for every
@@ -108,6 +109,10 @@ that we formalized.
     is dense below $p$.
   \end{enumerate}
 \end{theorem}
+% Describe differences between Kunen's and our approach.
+% We can do everything using "internal forcing" (vs. forcing with
+% formulas in the metatheory).
+
 The statements appear as three separated items in
 \theory{Forcing{\uscore}Theorems.thy} in the
 \session{Independence\_CH} session \cite{Independence_CH-AFP},
