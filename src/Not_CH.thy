@@ -319,13 +319,8 @@ lemma Aleph_rel_nats_MG_eq_Aleph_rel_nats_M:
   using assms
 proof (induct)
   case 0
-  have "\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup> = \<omega>"
-    using ext.Aleph_rel_zero .
-  also
-  have "\<omega> = \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>"
-    using Aleph_rel_zero by simp
-  finally
-  show ?case .
+  show ?case
+    by(rule trans[OF ext.Aleph_rel_zero Aleph_rel_zero[symmetric]])
 next
   case (succ z)
   then
@@ -348,35 +343,6 @@ abbreviation
   f_G :: "i" (\<open>f\<^bsub>G\<^esub>\<close>) where
   "f\<^bsub>G\<^esub> \<equiv> \<Union>G"
 
-abbreviation
-  dom_dense :: "i\<Rightarrow>i" where
-  "dom_dense(x) \<equiv> { p\<in>Add . x \<in> domain(p) }"
-
-(* TODO: write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close> *)
-lemma dense_dom_dense: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> dense(dom_dense(x))"
-proof
-  fix p
-  assume "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" "p \<in> Add"
-  show "\<exists>d\<in>dom_dense(x). d \<preceq> p"
-  proof (cases "x \<in> domain(p)")
-    case True
-    with \<open>x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>\<close> \<open>p \<in> Add\<close>
-    show ?thesis using refl_leq by auto
-  next
-    case False
-    note \<open>p \<in> Add\<close>
-    moreover from this and False and \<open>x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>\<close>
-    have "cons(\<langle>x,0\<rangle>, p) \<in> Add"
-      using FiniteFun.consI[of x "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 0 2 p]
-        Fn_nat_eq_FiniteFun by auto
-    moreover from \<open>p \<in> Add\<close>
-    have "x\<in>domain(cons(\<langle>x,0\<rangle>, p))" by simp
-    ultimately
-    show ?thesis
-      by (fastforce del:FnD)
-  qed
-qed
-
 declare (in M_ctm3_AC) Fn_nat_closed[simplified setclass_iff, simp, intro]
 declare (in M_ctm3_AC) Fnle_nat_closed[simp del, rule del,
     simplified setclass_iff, simp, intro]
@@ -391,7 +357,7 @@ lemma domain_f_G: assumes "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "
   shows "\<langle>x, y\<rangle> \<in> domain(f\<^bsub>G\<^esub>)"
 proof -
   from assms
-  have "dense(dom_dense(\<langle>x, y\<rangle>))" using dense_dom_dense by simp
+  have "dense(dom_dense(\<langle>x, y\<rangle>))" using dense_dom_dense by force
   with assms
   obtain p where "p\<in>dom_dense(\<langle>x, y\<rangle>)" "p\<in>G"
     using generic[THEN M_generic_denseD, of "dom_dense(\<langle>x, y\<rangle>)"]
@@ -403,64 +369,15 @@ qed
 lemma f_G_funtype:
   includes G_generic1_lemmas
   shows "f\<^bsub>G\<^esub> : \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<rightarrow> 2"
-  using generic domain_f_G
-  unfolding Pi_def
+  using generic domain_f_G Pi_iff Un_filter_is_function generic
+    unfolding M_generic_def
 proof (auto)
   show "x \<in> B \<Longrightarrow> B \<in> G \<Longrightarrow> x \<in> (\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>) \<times> 2" for B x
     using Fn_nat_subset_Pow by blast
-  show "function(f\<^bsub>G\<^esub>)"
-    using Un_filter_is_function generic
-    unfolding M_generic_def by fast
-qed
-
-abbreviation
-  inj_dense :: "i\<Rightarrow>i\<Rightarrow>i" where
-  "inj_dense(w,x) \<equiv>
-    { p\<in>Add . (\<exists>n\<in>\<omega>. \<langle>\<langle>w,n\<rangle>,1\<rangle> \<in> p \<and> \<langle>\<langle>x,n\<rangle>,0\<rangle> \<in> p) }"
-
-(* TODO write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close> *)
-lemma dense_inj_dense:
-  assumes "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "w \<noteq> x"
-  shows "dense(inj_dense(w,x))"
-proof
-  fix p
-  assume "p \<in> Add"
-  then
-  obtain n where "\<langle>w,n\<rangle> \<notin> domain(p)" "\<langle>x,n\<rangle> \<notin> domain(p)" "n \<in> \<omega>"
-  proof -
-    {
-      assume "\<langle>w,n\<rangle> \<in> domain(p) \<or> \<langle>x,n\<rangle> \<in> domain(p)" if "n \<in> \<omega>" for n
-      then
-      have "\<omega> \<subseteq> range(domain(p))" by blast
-      then
-      have "\<not> Finite(p)"
-        using Finite_range Finite_domain subset_Finite nat_not_Finite
-        by auto
-      with \<open>p \<in> Add\<close>
-      have False
-        using Fn_nat_eq_FiniteFun FiniteFun.dom_subset[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 2]
-          Fin_into_Finite by auto
-    }
-    with that\<comment> \<open>the shape of the goal puts assumptions in this variable\<close>
-    show ?thesis by auto
-  qed
-  moreover
-  note \<open>p \<in> Add\<close> assms
-  moreover from calculation
-  have "cons(\<langle>\<langle>x,n\<rangle>,0\<rangle>, p) \<in> Add"
-    using FiniteFun.consI[of "\<langle>x,n\<rangle>" "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 0 2 p]
-      Fn_nat_eq_FiniteFun by auto
-  ultimately
-  have "cons(\<langle>\<langle>w,n\<rangle>,1\<rangle>, cons(\<langle>\<langle>x,n\<rangle>,0\<rangle>, p) ) \<in> Add"
-    using FiniteFun.consI[of "\<langle>w,n\<rangle>" "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 1 2 "cons(\<langle>\<langle>x,n\<rangle>,0\<rangle>, p)"]
-      Fn_nat_eq_FiniteFun by auto
-  with \<open>n \<in> \<omega>\<close>
-  show "\<exists>d\<in>inj_dense(w,x). d \<preceq> p"
-    using \<open>p \<in> Add\<close> by (intro bexI) auto
 qed
 
 lemma inj_dense_closed[intro,simp]:
-  "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> inj_dense(w,x) \<in> M"
+  "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> inj_dense(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>,2,w,x) \<in> M"
   using transM[OF _ Aleph_rel2_closed] separation_conj separation_bex
     lam_replacement_hcomp2[OF _ _  _ _ lam_replacement_Pair]
     separation_in lam_replacement_fst lam_replacement_snd lam_replacement_constant
@@ -472,11 +389,13 @@ lemma Aleph_rel2_new_reals:
   assumes "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "w \<noteq> x"
   shows "(\<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub> ` \<langle>w, n\<rangle>) \<noteq> (\<lambda>n\<in>\<omega>. f\<^bsub>G\<^esub> ` \<langle>x, n\<rangle>)"
 proof -
-  from assms
-  have "dense(inj_dense(w,x))" using dense_inj_dense by simp
+  have "0\<in>2" by auto
   with assms
-  obtain p where "p\<in>inj_dense(w,x)" "p\<in>G"
-    using generic[THEN M_generic_denseD, of "inj_dense(w,x)"]
+  have "dense(inj_dense(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>,2,w,x))"
+    unfolding dense_def using dense_inj_dense by auto
+  with assms
+  obtain p where "p\<in>inj_dense(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>,2,w,x)" "p\<in>G"
+    using generic[THEN M_generic_denseD, of "inj_dense(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>,2,w,x)"]
     by blast
   then
   obtain n where "n \<in> \<omega>" "\<langle>\<langle>w, n\<rangle>, 1\<rangle> \<in> p" "\<langle>\<langle>x, n\<rangle>, 0\<rangle> \<in> p"
@@ -533,28 +452,27 @@ proof (intro ext.mem_inj_abs[THEN iffD2])
   qed
 qed simp_all
 
+
 lemma Aleph2_extension_le_continuum_rel:
   includes G_generic1_lemmas
   shows "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
 proof -
-  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<in> M[G]" "Ord(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
-    using Card_rel_is_Ord by auto
-  moreover from this
-  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<lesssim>\<^bsup>M[G]\<^esup> \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
+  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<lesssim>\<^bsup>M[G]\<^esup> \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
     using ext.def_lepoll_rel[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"]
-      h_G_inj_Aleph_rel2_reals by auto
+      h_G_inj_Aleph_rel2_reals Aleph_rel_nats_MG_eq_Aleph_rel_nats_M
+    by auto
   moreover from calculation
-  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<lesssim>\<^bsup>M[G]\<^esup> |\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2|\<^bsup>M[G]\<^esup>"
+  have "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<lesssim>\<^bsup>M[G]\<^esup> |\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2|\<^bsup>M[G]\<^esup>"
     using ext.lepoll_rel_imp_lepoll_rel_cardinal_rel by simp
   ultimately
-  have "|\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>|\<^bsup>M[G]\<^esup> \<le> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
-    using ext.lepoll_rel_imp_cardinal_rel_le[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2",
+  have "|\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup>|\<^bsup>M[G]\<^esup> \<le> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
+    using ext.lepoll_rel_imp_cardinal_rel_le[of "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup>" "\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2",
         OF _ _ ext.function_space_rel_closed]
-      ext.Aleph_rel_zero Aleph_rel_nats_MG_eq_Aleph_rel_nats_M
+      ext.Aleph_rel_zero
     unfolding cexp_rel_def by simp
   then
   show "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
-    using Aleph_rel_nats_MG_eq_Aleph_rel_nats_M
+    using
       ext.Card_rel_Aleph_rel[of 2, THEN ext.Card_rel_cardinal_rel_eq]
     by simp
 qed

@@ -14,7 +14,80 @@ begin
 
 lemmas zero_lesspoll_kappa = zero_lesspoll[OF zero_lt_kappa]
 
+abbreviation  dom_dense :: "i\<Rightarrow>i" where
+  "dom_dense(x) \<equiv> { p\<in>Fn(\<omega>,I,J) . x \<in> domain(p) }"
+
+lemma dense_dom_dense:
+  assumes "x \<in> I" "0\<in>J" "p\<in>Fn(\<omega>,I,J)"
+  shows "\<exists>d\<in>dom_dense(x). \<langle>d ,p\<rangle> \<in> Fnle(\<omega>,I,J)"
+proof (cases "x \<in> domain(p)")
+  case True
+  with \<open>x \<in> I\<close> \<open>p \<in> Fn(\<omega>,I,J)\<close>
+  show ?thesis
+    by auto
+next
+  case False
+  note \<open>p \<in> _\<close>
+  moreover from this and False and \<open>x \<in> I\<close> and \<open>0\<in>J\<close>
+  have "cons(\<langle>x,0\<rangle>, p) \<in> Fn(\<omega>,I,J)"
+    using FiniteFun.consI[of x I 0 J p]
+      Fn_nat_eq_FiniteFun by auto
+  moreover from \<open>p \<in> _\<close>
+  have "x\<in>domain(cons(\<langle>x,0\<rangle>, p))" by simp
+  ultimately
+  show ?thesis
+    by(fastforce del:FnD)
+qed
+
 end \<comment> \<open>\<^locale>\<open>cohen_data\<close>\<close>
+
+context forcing_notion
+begin
+
+abbreviation
+  inj_dense :: "[i,i,i,i]\<Rightarrow>i" where
+  "inj_dense(I,J,w,x) \<equiv>
+    { p\<in>Fn(\<omega>,I\<times>\<omega>,J) . (\<exists>n\<in>\<omega>. \<langle>\<langle>w,n\<rangle>,1\<rangle> \<in> p \<and> \<langle>\<langle>x,n\<rangle>,0\<rangle> \<in> p) }"
+
+(* TODO write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close> *)
+lemma dense_inj_dense:
+  assumes "w \<in> I" "x \<in> I" "w \<noteq> x" "p\<in>Fn(\<omega>,I\<times>\<omega>,J)" "0\<in>J" "1\<in>J"
+  shows "\<exists>d\<in>inj_dense(I,J,w,x). \<langle>d ,p\<rangle> \<in> Fnle(\<omega>,I\<times>\<omega>,J)"
+proof -
+  obtain n where "\<langle>w,n\<rangle> \<notin> domain(p)" "\<langle>x,n\<rangle> \<notin> domain(p)" "n \<in> \<omega>"
+  proof -
+    {
+      assume "\<langle>w,n\<rangle> \<in> domain(p) \<or> \<langle>x,n\<rangle> \<in> domain(p)" if "n \<in> \<omega>" for n
+      then
+      have "\<omega> \<subseteq> range(domain(p))" by blast
+      then
+      have "\<not> Finite(p)"
+        using Finite_range Finite_domain subset_Finite nat_not_Finite
+        by auto
+      with \<open>p \<in> _\<close>
+      have False
+        using Fn_nat_eq_FiniteFun FiniteFun.dom_subset[of "I\<times>\<omega>" J]
+          Fin_into_Finite by auto
+    }
+    with that\<comment> \<open>the shape of the goal puts assumptions in this variable\<close>
+    show ?thesis by auto
+  qed
+  moreover
+  note \<open>p \<in> _\<close> assms
+  moreover from calculation
+  have "cons(\<langle>\<langle>x,n\<rangle>,0\<rangle>, p) \<in> Fn(\<omega>,I\<times>\<omega>,J)"
+    using FiniteFun.consI[of "\<langle>x,n\<rangle>" "I\<times>\<omega>" 0 J p]
+      Fn_nat_eq_FiniteFun by auto
+  ultimately
+  have "cons(\<langle>\<langle>w,n\<rangle>,1\<rangle>, cons(\<langle>\<langle>x,n\<rangle>,0\<rangle>, p) ) \<in> Fn(\<omega>,I\<times>\<omega>,J)"
+    using FiniteFun.consI[of "\<langle>w,n\<rangle>" "I \<times> \<omega>" 1 J "cons(\<langle>\<langle>x,n\<rangle>,0\<rangle>, p)"]
+      Fn_nat_eq_FiniteFun by auto
+  with \<open>n \<in> \<omega>\<close>
+  show ?thesis
+    using \<open>p \<in> _\<close> by (intro bexI) auto
+qed
+
+end
 
 locale add_reals = cohen_data nat _ 2
 
@@ -34,8 +107,10 @@ next
     by blast
 qed
 
+
 context cohen_data
 begin
+
 
 lemma compat_imp_Un_is_function:
   assumes "G \<subseteq> Fn(\<kappa>, I, J)" "\<And>p q. p \<in> G \<Longrightarrow> q \<in> G \<Longrightarrow> compat(p,q)"

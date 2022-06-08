@@ -260,19 +260,12 @@ definition check_fm' where
 lemma ccc_fun_closed_lemma_aux:
   assumes "f_dot\<in>M" "p\<in>M" "a\<in>M" "b\<in>M"
   shows "{q \<in> P . q \<preceq> p \<and> (M, [q, P, leq, \<one>, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))} \<in> M"
-proof -
-  have "\<cdot>0`1 is 2\<cdot> \<in> formula" "arity(\<cdot>0`1 is 2\<cdot> ) = 3"
-    using arity_fun_apply_fm union_abs1
-    by simp_all
-  then
-  show ?thesis
-    using separation_forces[where env="[f_dot, a\<^sup>v, b\<^sup>v]" and \<phi>="\<cdot>0`1 is 2\<cdot>",simplified]
-      assms G_subset_M[THEN subsetD] generic one_in_M P_in_M
-      separation_in lam_replacement_constant lam_replacement_identity
-      lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M check_in_M
-      separation_conj separation_forces
-    by simp_all
-qed
+  using separation_forces[where env="[f_dot, a\<^sup>v, b\<^sup>v]" and \<phi>="\<cdot>0`1 is 2\<cdot>",simplified]
+    assms G_subset_M[THEN subsetD] generic one_in_M P_in_M
+    separation_in lam_replacement_constant lam_replacement_identity
+    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M check_in_M
+    separation_conj arity_fun_apply_fm union_abs1
+  by simp_all
 
 lemma ccc_fun_closed_lemma_aux2:
   assumes "B\<in>M" "f_dot\<in>M" "p\<in>M" "a\<in>M"

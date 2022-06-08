@@ -311,7 +311,7 @@ proof -
     unfolding M_generic_def by fast
   ultimately
   show ?thesis
-    using generic domain_f_G unfolding Pi_def by auto
+    using generic domain_f_G Pi_iff by auto
 qed
 
 abbreviation
