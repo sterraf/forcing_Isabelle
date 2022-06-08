@@ -169,21 +169,34 @@ Simplified versions of true replacement instances
 ========== ======== == ==== =========== =========
 
 list_replacement1: "M(A) ==> iterates_replacement(M, is_list_functor(M,A), 0)"
-list_replacement2: "M(A) ==> strong_replacement(M, λn y. n∈nat & is_iterates(M, is_list_functor(M,A), 0, n, y))"
+list_replacement2: "M(A) ==> strong_replacement(M, λn. (λX. {0} + A × X)^n (0))" (n∈nat)
+
 formula_replacement1: "iterates_replacement(M, is_formula_functor(M), 0)"
-formula_replacement2: "strong_replacement(M, λn y. n∈nat & is_iterates(M, is_formula_functor(M), 0, n, y))"
+formula_replacement2: "strong_replacement(M, λn. (λX. (ω × ω + ω × ω) + X × X + X)^n (0))" (n∈nat)
+
 nth_replacement: "M(l) ==> iterates_replacement(M, is_tl(M), l)"
+
 eclose_replacement1: "M(A) ==> iterates_replacement(M, big_union(M), A)" (* transitive closure *)
-eclose_replacement2: "M(A) ==> strong_replacement(M, λn y. n∈nat & is_iterates(M, big_union(M), A, n, y))"
+eclose_replacement2: "M(A) ==> strong_replacement(M, λn. \union^n (A))" (n∈nat)
+
 is_Hrank_replacement : "M(x) ⟹ wfrec_replacement(M,is_Hrank(M),rrank(x))" (* rank *)
+
 HVfrom_replacement: "⟦ M(i) ; M(A) ⟧ ⟹ transrec_replacement(M,is_HVfrom(M,A),i)" (* Vset, cumulative hierarchy *)
-ordertype_replacement: "M(X) ⟹ strong_replacement(M,λ x z . M(z) ∧ M(x) ∧ x∈Pow_rel(M,X×X) ∧ well_ord(X, x) ∧ z=ordertype(X,x))"
+
+ordertype_replacement: "M(X) ⟹ strong_replacement(M,λ x z. z=ordertype(X,x))" (M(z) ∧ M(x) ∧ x∈Pow_rel(M,X×X) ∧ well_ord(X, x))
+
 omap_replacement: "⟦M(A);M(r)⟧ ⟹strong_replacement(M, λa z. ∃x[M]. Ord(x) ∧ z = ⟨a, x⟩ ∧ (∃g[M]. g ∈ ⟨Order.pred(A, a, r), r⟩ ≅ ⟨x, Memrel(x)⟩))"
+
 wfrec_pred_replacement:"M(A) ⟹ M(r) ⟹ wfrec_replacement(M, λx f z. z = f `` Order.pred(A, x, r), r)" (* ordertypes *)
+
 strong_replacement_jc_body: "strong_replacement(M,λ x z . M(z) ∧ M(x) ∧ z = jump_cardinal_body(M,x))" (* cardinal successor *)
+
 haleph_transrec_replacement: "M(a) ⟹ transrec_replacement(M,is_HAleph(M),a)" (* Aleph *)
+
 cardinal_lib_assms6: "M(f) ⟹ M(β) ⟹ Ord(β) ⟹ strong_replacement(M, λx y. x∈β ∧ y = ⟨x, transrec(x, λa g. f ` (g `` a))⟩)" (* recursive constructions *)
+
 aleph_rel_replacement: "strong_replacement(M, λx y. Ord(x) ∧ y = ℵ⇘x⇙⇗M⇖)"
+
 cardinal_replacement:"strong_replacement(M, λA y. y = ⟨A, |A|⇗M⇖⟩)"
 
 

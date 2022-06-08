@@ -2125,4 +2125,39 @@ lemmas replacements = Pair_diff_replacement id_replacement tag_replacement
 
 end \<comment> \<open>\<^locale>\<open>M_replacement_extra\<close>\<close>
 
+subsection\<open>Some basic replacement lemmas\<close>
+
+lemma (in M_trans) strong_replacement_conj:
+  assumes "\<And>A. M(A) \<Longrightarrow> univalent(M,A,P)" "strong_replacement(M,P)"
+    "separation(M, \<lambda>x. \<exists>b[M]. Q(x,b) \<and> P(x,b))"
+  shows "strong_replacement(M, \<lambda>x z. Q(x,z) \<and> P(x,z))"
+proof -
+  {
+    fix A
+    assume "M(A)"
+    with \<open>separation(M, \<lambda>x. \<exists>b[M]. Q(x,b) \<and> P(x,b))\<close>
+    have "M({x\<in>A. \<exists>b[M]. Q(x,b) \<and> P(x,b)})"
+      by simp
+    with \<open>M(_) \<Longrightarrow> univalent(M,{x\<in>A. \<exists>b[M]. Q(x,b) \<and> P(x,b)}, P)\<close> \<open>strong_replacement(M, P)\<close>
+    have "\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>x[M]. x \<in> {x\<in>A. \<exists>b[M]. Q(x,b) \<and> P(x,b)} \<and> P(x, b))"
+      unfolding strong_replacement_def by blast
+    then
+    obtain Y where "\<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>x[M]. x \<in> {x\<in>A. \<exists>b[M]. Q(x,b) \<and> P(x,b)} \<and> P(x, b))" "M(Y)"
+      by blast
+    with \<open>M(A)\<close> \<open>M(A) \<Longrightarrow> univalent(M,A,P)\<close>
+    have "\<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> Q(x, b) \<and> P(x, b))"
+      unfolding univalent_def by auto
+    with \<open>M(Y)\<close>
+    have "\<exists>Y[M]. \<forall>b[M]. b \<in> Y \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> Q(x, b) \<and> P(x, b))"
+      by auto
+  }
+  then
+  show ?thesis
+    unfolding strong_replacement_def by simp
+qed
+
+lemma strong_replacement_iff_bounded_M:
+  "strong_replacement(M,P) \<longleftrightarrow> strong_replacement(M,\<lambda> x z . M(z) \<and> M(x) \<and> P(x,z))"
+  unfolding strong_replacement_def by auto
+
 end

@@ -57,6 +57,23 @@ locale M_cardinal_arith = M_pre_cardinal_arith +
     strong_replacement_jc_body :
     "strong_replacement(M,\<lambda> x z . M(z) \<and> M(x) \<and> z = jump_cardinal_body(M,x))"
 
+text\<open>Our @{thm M_cardinal_arith.ordertype_replacement} follows from a much simpler
+  replacement instance (modulo absoluteness) and a separation one.\<close>
+lemma (in M_trans) ordertype_replacement':
+  assumes
+    "M(X)" "strong_replacement(M,\<lambda> x z . z=ordertype(X,x))"
+    "separation(M, \<lambda>x. x \<in> Pow\<^bsup>M\<^esup>(X \<times> X) \<and> well_ord(X, x) \<and> M(ordertype(X, x)))"
+  shows
+    "strong_replacement(M,\<lambda> x z . M(z) \<and> M(x) \<and> x\<in>Pow_rel(M,X\<times>X) \<and> well_ord(X, x) \<and> z=ordertype(X,x))"
+proof -
+  from assms
+  have "strong_replacement(M, \<lambda>x z. (x \<in> Pow\<^bsup>M\<^esup>(X \<times> X) \<and> well_ord(X, x)) \<and> z = ordertype(X, x))"
+    by (rule_tac strong_replacement_conj) auto
+  then
+  show ?thesis
+    by (rule_tac strong_replacement_iff_bounded_M[THEN iffD1]) auto
+qed
+
 lemmas (in M_cardinal_arith) surj_imp_inj_replacement =
   surj_imp_inj_replacement1 surj_imp_inj_replacement2 surj_imp_inj_replacement4
   lam_replacement_vimage_sing_fun[THEN lam_replacement_imp_strong_replacement]
