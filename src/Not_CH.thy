@@ -223,11 +223,9 @@ proof (rule ccontr)
       then
       have "x \<in> domain(F)"
         using apply_0 by auto
-      with \<open>F:\<alpha>\<rightarrow>Pow\<^bsup>M\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close>
-      have "x \<in> \<alpha>"
-        using domain_of_fun by simp
-      with \<open>\<alpha> \<in> M\<close>
-      show "x \<in> M" by (auto dest:transM)
+      with \<open>F:\<alpha>\<rightarrow>Pow\<^bsup>M\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close> \<open>\<alpha> \<in> M\<close>
+      show "x \<in> M" using domain_of_fun
+        by (auto dest:transM)
     qed
     with \<open>\<alpha> \<in> M\<close> \<open>F:\<alpha>\<rightarrow>Pow\<^bsup>M\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close> \<open>F\<in>M\<close>
   interpret M_cardinal_UN_lepoll "##M" "\<lambda>\<beta>. F`\<beta>" \<alpha>
@@ -242,17 +240,15 @@ proof (rule ccontr)
       by (rule_tac lam_Least_assumption_general[where U="domain", OF _ mem_F_bound5])
         simp_all
   qed
-  from \<open>\<alpha> < \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>\<close> \<open>\<alpha> \<in> M\<close> assms
+  from \<open>\<alpha> < \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>\<close> \<open>\<alpha> \<in> M\<close> \<open>Ord(z)\<close> \<open>z\<in>M\<close>
   have "\<alpha> \<lesssim>\<^bsup>M\<^esup> \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"
     using
-      Aleph_rel_zero
       cardinal_rel_lt_csucc_rel_iff[of "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>" \<alpha>]
       le_Card_rel_iff[of "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>" \<alpha>]
       Aleph_rel_succ[of z] Card_rel_lt_iff[of \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"]
       lt_Ord[of \<alpha> "\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>"]
       Card_rel_csucc_rel[of "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"]
-      Aleph_rel_closed[of z]
-      Card_rel_Aleph_rel[THEN Card_rel_is_Ord, OF _ _ Aleph_rel_closed]
+      Card_rel_Aleph_rel[THEN Card_rel_is_Ord]
     by simp
   with \<open>\<alpha> < \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>\<close> \<open>\<forall>\<beta>\<in>\<alpha>. |F`\<beta>|\<^bsup>M\<^esup> \<le> \<omega>\<close> \<open>\<alpha> \<in> M\<close> assms
   have "|\<Union>\<beta>\<in>\<alpha>. F`\<beta>|\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"
@@ -432,25 +428,23 @@ lemma h_G_in_MG[simp]:
 
 lemma h_G_inj_Aleph_rel2_reals: "h\<^bsub>G\<^esub> \<in> inj\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2)"
   using Aleph_rel_sub_closed
-proof (intro ext.mem_inj_abs[THEN iffD2])
+proof (intro ext.mem_inj_abs[THEN iffD2],simp_all)
   show "h\<^bsub>G\<^esub> \<in> inj(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2)"
     unfolding inj_def
-  proof (intro ballI CollectI impI)
+   proof (intro ballI CollectI impI)
     show "h\<^bsub>G\<^esub> \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<rightarrow> \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
       using f_G_funtype G_in_MG ext.nat_into_M
-      unfolding h_G_def
-      apply (intro lam_type ext.mem_function_space_rel_abs[THEN iffD2], simp_all)
-      apply (rule_tac ext.lam_closed[simplified], simp_all)
-       apply (rule ext.apply_replacement2)
-        apply (auto dest:ext.transM[OF _ Aleph_rel_sub_closed])
-      done
+        ext.transM[OF _ Aleph_rel_sub_closed] ext.lam_closed[simplified,OF ext.apply_replacement2]
+       unfolding h_G_def
+       by (intro lam_type ext.mem_function_space_rel_abs[THEN iffD2], auto)
+   next
     fix w x
     assume "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "h\<^bsub>G\<^esub> ` w = h\<^bsub>G\<^esub> ` x"
     then
     show "w = x"
       unfolding h_G_def using Aleph_rel2_new_reals by auto
   qed
-qed simp_all
+qed
 
 
 lemma Aleph2_extension_le_continuum_rel:
@@ -472,8 +466,7 @@ proof -
     unfolding cexp_rel_def by simp
   then
   show "\<aleph>\<^bsub>2\<^esub>\<^bsup>M[G]\<^esup> \<le> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
-    using
-      ext.Card_rel_Aleph_rel[of 2, THEN ext.Card_rel_cardinal_rel_eq]
+    using ext.Card_rel_Aleph_rel[of 2, THEN ext.Card_rel_cardinal_rel_eq]
     by simp
 qed
 
