@@ -204,31 +204,6 @@ proof -
     by simp
 qed
 
-(* TODO: Should be more general, cf. @{thm add_generic.dense_dom_dense} *)
-lemma dense_dom_dense: "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> dense(dom_dense(x))"
-proof
-  fix p
-  assume "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "p \<in> Coll"
-  show "\<exists>d\<in>dom_dense(x). d \<preceq> p"
-  proof (cases "x \<in> domain(p)")
-    case True
-    with \<open>x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close> \<open>p \<in> Coll\<close>
-    show ?thesis using refl_leq by auto
-  next
-    case False
-    note \<open>p \<in> Coll\<close>
-    moreover from this and False and \<open>x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>\<close>
-    have "cons(\<langle>x,\<lambda>n\<in>\<omega>. 0\<rangle>, p) \<in> Coll" "x\<in>M"
-      using function_space_rel_char
-        function_space_rel_closed lam_replacement_constant
-        lam_replacement_iff_lam_closed InfCard_rel_Aleph_rel
-      by (auto intro!: cons_in_Fn_rel dest:transM intro:function_space_nonempty)
-    ultimately
-    show ?thesis
-      using Fn_relD by blast
-  qed
-qed
-
 lemma dom_dense_closed[intro,simp]: "x\<in>M \<Longrightarrow> dom_dense(x) \<in> M"
   using separation_in_domain[of x]
   by simp
@@ -236,11 +211,15 @@ lemma dom_dense_closed[intro,simp]: "x\<in>M \<Longrightarrow> dom_dense(x) \<in
 lemma domain_f_G: assumes "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
   shows "x \<in> domain(f\<^bsub>G\<^esub>)"
 proof -
-  from assms
+  have "(\<lambda>n\<in>\<omega>. 0) \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2"
+    using function_space_rel_nonempty[of 0 2 \<omega>]
+    by auto
+  with assms
   have "dense(dom_dense(x))" "x\<in>M"
-    using dense_dom_dense transitivity[OF _
-        Aleph_rel_closed[of 1,THEN setclass_iff[THEN iffD1]]]
-    by simp_all
+    using dense_dom_dense InfCard_rel_Aleph_rel[of 1] transitivity[OF _
+       Aleph_rel_closed[of 1,THEN setclass_iff[THEN iffD1]]]
+    unfolding dense_def
+     by auto
   with assms
   obtain p where "p\<in>dom_dense(x)" "p\<in>G"
     using generic[THEN M_generic_denseD, of "dom_dense(x)"]

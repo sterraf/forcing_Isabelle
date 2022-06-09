@@ -339,6 +339,10 @@ abbreviation
   f_G :: "i" (\<open>f\<^bsub>G\<^esub>\<close>) where
   "f\<^bsub>G\<^esub> \<equiv> \<Union>G"
 
+abbreviation
+  dom_dense :: "i \<Rightarrow> i" where
+  "dom_dense(x) \<equiv> {p \<in> Add . x \<in> domain(p) }"
+
 declare (in M_ctm3_AC) Fn_nat_closed[simplified setclass_iff, simp, intro]
 declare (in M_ctm3_AC) Fnle_nat_closed[simp del, rule del,
     simplified setclass_iff, simp, intro]
@@ -353,7 +357,15 @@ lemma domain_f_G: assumes "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "
   shows "\<langle>x, y\<rangle> \<in> domain(f\<^bsub>G\<^esub>)"
 proof -
   from assms
-  have "dense(dom_dense(\<langle>x, y\<rangle>))" using dense_dom_dense by force
+  have "Add = Fn\<^bsup>M\<^esup>(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>\<times>\<omega>,2)"
+    using Fn_nat_abs  by auto
+  moreover from this
+  have "Fnle(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>\<times>\<omega>,2) = Fnle\<^bsup>M\<^esup>(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>\<times>\<omega>,2)"
+    unfolding Fnle_rel_def Fnle_def by auto
+  moreover from calculation assms
+  have "dense(dom_dense(\<langle>x, y\<rangle>))"
+    using dense_dom_dense[of "\<langle>x,y\<rangle>" "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>\<times>\<omega>" \<omega>  2] InfCard_rel_nat
+    unfolding dense_def by auto
   with assms
   obtain p where "p\<in>dom_dense(\<langle>x, y\<rangle>)" "p\<in>G"
     using generic[THEN M_generic_denseD, of "dom_dense(\<langle>x, y\<rangle>)"]
