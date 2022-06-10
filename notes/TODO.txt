@@ -25,6 +25,9 @@ Unaddressed issues in Transitive_Models
 
 - Many pred(pred(pred(...))) in Arities
 
+- ...replacement_un --> ...replacement_Un (and variants!)
+
+- separation_pair --> separation_Pair (?)
 
 General Tasks
 =============
