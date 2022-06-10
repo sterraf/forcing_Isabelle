@@ -184,8 +184,10 @@ is_Hrank_replacement : "M(x) ⟹ wfrec_replacement(M,is_Hrank(M),rrank(x))" (* r
 HVfrom_replacement: "⟦ M(i) ; M(A) ⟧ ⟹ transrec_replacement(M,is_HVfrom(M,A),i)" (* Vset, cumulative hierarchy *)
 
 ordertype_replacement: "M(X) ⟹ strong_replacement(M,λ x z. z=ordertype(X,x))" (M(z) ∧ M(x) ∧ x∈Pow_rel(M,X×X) ∧ well_ord(X, x))
+replacement_is_order_body_fm
 
 omap_replacement: "⟦M(A);M(r)⟧ ⟹strong_replacement(M, λa z. ∃x[M]. Ord(x) ∧ z = ⟨a, x⟩ ∧ (∃g[M]. g ∈ ⟨Order.pred(A, a, r), r⟩ ≅ ⟨x, Memrel(x)⟩))"
+replacement_is_order_eq_map_fm
 
 wfrec_pred_replacement:"M(A) ⟹ M(r) ⟹ wfrec_replacement(M, λx f z. z = f `` Order.pred(A, x, r), r)" (* ordertypes *)
 
