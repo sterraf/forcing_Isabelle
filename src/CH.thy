@@ -188,22 +188,6 @@ abbreviation
   dom_dense :: "i\<Rightarrow>i" where
   "dom_dense(x) \<equiv> { p\<in>Coll . x \<in> domain(p) }"
 
-lemma Coll_into_countable_rel: "p \<in> Coll \<Longrightarrow> countable\<^bsup>M\<^esup>(p)"
-proof -
-  assume "p\<in>Coll"
-  then
-  have "p \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "p\<in>M"
-    using Fn_rel_is_function by simp_all
-  moreover from this
-  have "p \<lesssim>\<^bsup>M\<^esup> \<omega>"
-    using lesspoll_rel_Aleph_rel_succ[of 0] Aleph_rel_zero
-    by simp
-  ultimately
-  show ?thesis
-    using countableI eqpoll_rel_imp_lepoll_rel eqpoll_rel_sym cardinal_rel_eqpoll_rel
-    by simp
-qed
-
 lemma dom_dense_closed[intro,simp]: "x\<in>M \<Longrightarrow> dom_dense(x) \<in> M"
   using separation_in_domain[of x]
   by simp
