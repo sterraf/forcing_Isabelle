@@ -228,10 +228,6 @@ proof -
   show "x \<in> domain(f\<^bsub>G\<^esub>)" by blast
 qed
 
-lemma rex_mono : assumes "\<exists> d \<in> A . P(d)" "A\<subseteq>B"
-  shows "\<exists> d \<in> B. P(d)"
-  using assms by auto
-
 lemma Un_filter_is_function:
   assumes "filter(G)"
   shows "function(\<Union>G)"

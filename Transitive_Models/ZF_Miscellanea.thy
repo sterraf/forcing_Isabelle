@@ -6,6 +6,11 @@ theory ZF_Miscellanea
     Nat_Miscellanea
 begin
 
+lemma rex_mono :
+  assumes "\<exists> d \<in> A . P(d)" "A\<subseteq>B"
+  shows "\<exists> d \<in> B. P(d)"
+  using assms by auto
+
 lemma function_subset:
   "function(f) \<Longrightarrow> g\<subseteq>f \<Longrightarrow> function(g)"
   unfolding function_def subset_def by auto
