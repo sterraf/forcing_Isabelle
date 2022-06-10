@@ -734,7 +734,7 @@ proof(induct rule:trans_induct)
     by auto
   moreover from assms this step \<open>M(\<beta>)\<close> \<open>Ord(\<beta>)\<close>
   have "M({y . x \<in> \<beta>, y=<x,rec_constr(f, x)>})" (is "M(?Z)")
-    using strong_replacement_closed[OF cardinal_lib_assms6(1),of f \<beta> \<beta>,OF _ _ _ _
+    using strong_replacement_closed[OF cardinal_lib_assms6,of f \<beta> \<beta>,OF _ _ _ _
         univalent_conjI2[where P="\<lambda>x _ . x\<in>\<beta>",OF univalent_triv]]
       transM[OF _ \<open>M(\<beta>)\<close>] transM[OF step(2) \<open>M(G)\<close>] Ord_in_Ord
     unfolding rec_constr_def
@@ -784,7 +784,7 @@ lemma rec_constr_closed :
 lemma lambda_rec_constr_closed :
   assumes "Ord(\<gamma>)" "M(\<gamma>)" "M(f)" "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "M(G)"
   shows "M(\<lambda>\<alpha>\<in>\<gamma> . rec_constr(f,\<alpha>))"
-  using lam_closed2[OF cardinal_lib_assms6(1),unfolded rec_constr_def[symmetric],of f \<gamma>]
+  using lam_closed2[OF cardinal_lib_assms6,unfolded rec_constr_def[symmetric],of f \<gamma>]
     rec_constr_type[OF \<open>f\<in>_\<close> Ord_in_Ord[of \<gamma>]] transM[OF _ \<open>M(G)\<close>] assms
   by simp
 
@@ -954,7 +954,7 @@ proof
   assume "Infinite(Z)" "M(Z)"
   moreover from calculation
   have "M(Distinct)"
-    using cardinal_lib_assms6 separation_dist by simp
+    using separation_dist by simp
   from \<open>Infinite(Z)\<close> \<open>M(Z)\<close>
   obtain b where "b\<in>Z"
     using Infinite_not_empty by auto
