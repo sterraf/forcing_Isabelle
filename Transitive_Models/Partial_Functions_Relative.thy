@@ -810,23 +810,6 @@ proof -
     by auto
 qed
 
-lemma (in M_cardinal_library) Coll_into_countable_rel:
-  "p \<in> Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,I,J) \<Longrightarrow> countable\<^bsup>M\<^esup>(p)"
-proof -
-  assume "p\<in>Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,I,J)"
-  then
-  have "p \<prec>\<^bsup>M\<^esup> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "M(p)"
-    using Fn_rel_is_function by simp_all
-  moreover from this
-  have "p \<lesssim>\<^bsup>M\<^esup> \<omega>"
-    using lesspoll_rel_Aleph_rel_succ[of 0] Aleph_rel_zero
-    by simp
-  ultimately
-  show ?thesis
-    using countableI eqpoll_rel_imp_lepoll_rel eqpoll_rel_sym cardinal_rel_eqpoll_rel
-    by simp
-qed
-
 lemma restrict_eq_imp_compat_rel:
   assumes "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>, I, J)" "q \<in> Fn\<^bsup>M\<^esup>(\<kappa>, I, J)" "InfCard\<^bsup>M\<^esup>(\<kappa>)" "M(J)" "M(\<kappa>)"
     "restrict(p, domain(p) \<inter> domain(q)) = restrict(q, domain(p) \<inter> domain(q))"
