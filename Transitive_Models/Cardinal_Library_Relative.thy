@@ -885,7 +885,7 @@ proof -
     using lambda_rec_constr_closed
     by simp
   moreover
-  have "\<forall>\<alpha>\<in>\<gamma>. \<forall>\<beta>\<in>\<gamma>. \<alpha> < \<beta> \<longrightarrow> <S ` \<alpha>, S ` \<beta>>\<in>Q"
+  have "\<forall>\<alpha>\<in>\<gamma>. \<forall>\<beta>\<in>\<gamma>. \<alpha> < \<beta> \<longrightarrow> \<langle>S`\<alpha>, S`\<beta>\<rangle> \<in> Q"
   proof (intro ballI impI)
     fix \<alpha> \<beta>
     assume "\<beta>\<in>\<gamma>"
@@ -932,7 +932,7 @@ proof -
     moreover
     note \<open>\<beta>\<in>\<gamma>\<close> \<open>Cb \<in> Pow_rel(M,G)-?cdlt\<gamma> \<rightarrow> G\<close>
     ultimately
-    show "<S ` \<alpha>, S ` \<beta>>\<in>Q"
+    show "\<langle>S`\<alpha>, S`\<beta>\<rangle>\<in>Q"
       using fun_disjoint_apply1[of "{S`x . x \<in> \<beta>}" Cb f]
         domain_of_fun[of Cb] ltD[of \<alpha> \<beta>]
       by (subst (2) S_def, auto) (subst rec_constr_unfold, auto)

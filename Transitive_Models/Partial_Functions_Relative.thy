@@ -21,12 +21,15 @@ lemma domain_function_lepoll :
   assumes "function(r)"
   shows "domain(r) \<lesssim> r"
 proof -
-  let ?f="\<lambda>x\<in>domain(r) . <x,THE y . <x,y> \<in> r>"
-  have 1:"\<And>x. x \<in> domain(r) \<Longrightarrow> \<exists>!y. <x,y> \<in> r"
-    using assms unfolding domain_def function_def by auto
+  let ?f="\<lambda>x\<in>domain(r) . \<langle>x,r`x\<rangle>"
+  have "\<langle>x, r ` x\<rangle> \<in> r" if "\<langle>x, y\<rangle> \<in> r" for x y
+  proof -
+    have "x\<in>domain(r)" using that by auto
+    with assms
+    show ?thesis using function_apply_Pair by auto
+  qed
   then
   have "?f \<in> inj(domain(r), r)"
-    using theI[OF 1]
     by(rule_tac lam_injective,auto)
   then
   show ?thesis unfolding lepoll_def
@@ -39,19 +42,13 @@ lemma function_lepoll:
 proof -
   let ?f="\<lambda>x\<in>r . fst(x)"
   note assms Pi_iff[THEN iffD1,OF assms]
-  moreover from this
-  have 1:"\<And>x. x \<in> domain(r) \<Longrightarrow> \<exists>!y. <x,y> \<in> r"
-    unfolding function_def by auto
   moreover from calculation
-  have "(THE u . <fst(x),u> \<in> r) = snd(x)" if "x\<in>r" for x
-    using that subsetD[of r "d\<times>J" x] theI[OF 1]
-    by(auto,rule_tac the_equality2[OF 1],auto)
-  moreover from calculation
-  have "\<And>x. x \<in>r \<Longrightarrow> <fst(x),THE y . <fst(x),y> \<in> r> = x"
+  have "r`fst(x) = snd(x)" if "x\<in>r" for x
+    using that apply_equality
     by auto
   ultimately
   have "?f\<in>inj(r,d)"
-    by(rule_tac d= "\<lambda>u . <u,THE y . <u,y> \<in> r>" in lam_injective,force,simp)
+    by(rule_tac d= "\<lambda>u . \<langle>u, r`u\<rangle>" in lam_injective,auto)
   then
   show ?thesis
     unfolding lepoll_def
@@ -230,6 +227,18 @@ lemma (in M_library) PFun_Space_closed :
   using assms PFun_Space_subset_Powrel separation_is_function
   by auto
 
+lemma pfun_is_function :
+  "f \<in> A\<rightharpoonup>\<^bsup>M\<^esup> B \<Longrightarrow> function(f)"
+  unfolding PFun_Space_Rel_def by simp
+
+lemma pfun_range :
+  "f \<in> A \<rightharpoonup>\<^bsup>M\<^esup> B \<Longrightarrow> range(f) \<subseteq> B"
+  unfolding PFun_Space_Rel_def by auto
+
+lemma pfun_domain :
+  "f \<in> A \<rightharpoonup>\<^bsup>M\<^esup> B \<Longrightarrow> domain(f) \<subseteq> A"
+  unfolding PFun_Space_Rel_def by auto
+
 lemma Un_filter_fun_space_closed:
   assumes "G \<subseteq> I \<rightarrow> J" "\<And> f g . f\<in>G \<Longrightarrow> g\<in>G \<Longrightarrow> \<exists>d\<in>I\<rightarrow> J . d \<supseteq> f \<and> d \<supseteq> g"
   shows "\<Union>G \<in> Pow(I\<times>J)" "function(\<Union>G)"
@@ -314,10 +323,6 @@ lemma pfun_subsetI :
   using assms function_subset
   unfolding PFun_Space_Rel_def
   by auto
-
-lemma pfun_is_function :
-  "f \<in> A\<rightharpoonup>\<^bsup>M\<^esup> B \<Longrightarrow> function(f)"
-  unfolding PFun_Space_Rel_def by simp
 
 lemma pfun_Un_filter_closed:
   assumes "G \<subseteq>I\<rightharpoonup>\<^bsup>M\<^esup> J" "\<And> f g . f\<in>G \<Longrightarrow> g\<in>G \<Longrightarrow> \<exists>d\<in>I\<rightharpoonup>\<^bsup>M\<^esup> J . d\<supseteq>f \<and> d\<supseteq>g"
@@ -648,12 +653,12 @@ begin
 
 lemma Fnle_relI[intro]:
   assumes "p \<in> Fn_rel(M,\<kappa>,I,J)" "q \<in> Fn_rel(M,\<kappa>,I,J)" "p \<supseteq> q"
-  shows "<p,q> \<in> Fnle_rel(M,\<kappa>,I,J)"
+  shows "\<langle>p, q\<rangle> \<in> Fnle_rel(M,\<kappa>,I,J)"
   using assms unfolding Fnlerel_def Fnle_rel_def FnleR_def Rrel_def
   by auto
 
 lemma Fnle_relD[dest]:
-  assumes "<p,q> \<in> Fnle_rel(M,\<kappa>,I,J)"
+  assumes "\<langle>p, q\<rangle> \<in> Fnle_rel(M,\<kappa>,I,J)"
   shows "p \<in> Fn_rel(M,\<kappa>,I,J)" "q \<in> Fn_rel(M,\<kappa>,I,J)" "p \<supseteq> q"
   using assms unfolding Fnlerel_def Fnle_rel_def FnleR_def Rrel_def
   by auto
@@ -805,7 +810,8 @@ proof -
     by auto
 qed
 
-lemma (in M_cardinal_library) Coll_into_countable_rel: "p \<in> Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,I,J) \<Longrightarrow> countable\<^bsup>M\<^esup>(p)"
+lemma (in M_cardinal_library) Coll_into_countable_rel:
+  "p \<in> Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,I,J) \<Longrightarrow> countable\<^bsup>M\<^esup>(p)"
 proof -
   assume "p\<in>Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>,I,J)"
   then
@@ -879,6 +885,72 @@ next
     using cons_in_Fn_rel by (auto dest:transM)
   ultimately
   show ?thesis using Fn_relD by blast
+qed
+
+lemma domain_lepoll_rel :
+  assumes "function(r)" "M(r)"
+  shows "domain(r) \<lesssim>\<^bsup>M\<^esup> r"
+proof -
+  let ?f="\<lambda>x\<in>domain(r) . \<langle>x,r`x\<rangle>"
+  have "\<langle>x, r ` x\<rangle> \<in> r" if "\<langle>x, y\<rangle> \<in> r" for x y
+  proof -
+    have "x\<in>domain(r)" using that by auto
+    with assms
+    show ?thesis using function_apply_Pair by auto
+  qed
+  then
+  have "?f \<in> inj(domain(r), r)"
+    by(rule_tac lam_injective,auto)
+  moreover note assms
+  moreover from calculation
+  have "M(?f)"
+    using lam_replacement_constant[of r] lam_replacement_identity assms
+      lam_replacement_apply lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
+    by(rule_tac lam_replacement_imp_lam_closed,auto dest:transM[of _ r])
+  ultimately
+  have "?f \<in> inj\<^bsup>M\<^esup>(domain(r),r)" using inj_rel_char
+    by auto
+  with \<open>M(?f)\<close>
+  show ?thesis
+    using lepoll_relI by simp
+qed
+
+lemma dense_surj_dense:
+  assumes "x \<in> J" "InfCard\<^bsup>M\<^esup>(\<kappa>)" "M(I)" "M(J)" "M(\<kappa>)" "p\<in>Fn\<^bsup>M\<^esup>(\<kappa>, I, J)" "\<kappa> \<lesssim>\<^bsup>M\<^esup> I"
+  shows "\<exists>d\<in>{ p \<in> Fn\<^bsup>M\<^esup>(\<kappa>, I, J) . x \<in> range(p) }. \<langle>d,p\<rangle> \<in> Fnle\<^bsup>M\<^esup>(\<kappa>, I, J)"
+proof -
+  from \<open>p \<in> _\<close> \<open>M(J)\<close> \<open>x\<in>_\<close> lesspoll_rel_def
+  have "domain(p) \<subseteq> I" "M(p)" "p \<prec>\<^bsup>M\<^esup> \<kappa>" "M(x)" "function(p)"
+    using pfun_domain[OF Fn_rel_is_function(4)] Fn_rel_is_function transM[of x J]
+    by simp_all
+  moreover from calculation assms
+  have 1:"domain(p) \<prec>\<^bsup>M\<^esup> \<kappa>" "M(domain(p))" "domain(p) \<prec>\<^bsup>M\<^esup> I"
+    using domain_lepoll_rel lesspoll_rel_trans1[of "domain(p)" p \<kappa>] lesspoll_rel_trans2
+    by auto
+  with calculation \<open>\<kappa> \<lesssim>\<^bsup>M\<^esup> I\<close> \<open>M(I)\<close> \<open>M(\<kappa>)\<close>
+  have "domain(p) \<noteq> I"
+  proof -
+    {assume "domain(p) = I"
+      with 1
+      have "domain(p) \<prec>\<^bsup>M\<^esup> domain(p)"
+        by auto
+      with \<open>M(domain(p))\<close>
+      have False
+        using lesspoll_rel_irrefl[of "domain(p)"] by simp
+    }
+    then show ?thesis by auto
+  qed
+  ultimately
+  obtain \<alpha> where "\<alpha> \<notin> domain(p)" "\<alpha>\<in>I"
+    by force
+  moreover note assms
+  moreover from calculation
+  have "cons(\<langle>\<alpha>,x\<rangle>, p) \<in> Fn\<^bsup>M\<^esup>(\<kappa>, I, J)"
+    using InfCard_rel_Aleph_rel cons_in_Fn_rel[of \<alpha> p \<kappa> I J x]
+    by auto
+  ultimately
+  show ?thesis
+    using Fnle_relI by blast
 qed
 
 end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>

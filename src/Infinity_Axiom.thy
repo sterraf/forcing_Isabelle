@@ -1,6 +1,6 @@
 section\<open>The Axiom of Infinity in $M[G]$\<close>
 theory Infinity_Axiom
-  imports Separation_Axiom Union_Axiom Pairing_Axiom
+  imports Union_Axiom Pairing_Axiom
 begin
 
 context G_generic1 begin

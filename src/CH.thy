@@ -297,52 +297,6 @@ abbreviation
   surj_dense :: "i\<Rightarrow>i" where
   "surj_dense(x) \<equiv> { p\<in>Coll . x \<in> range(p) }"
 
-(* TODO: write general versions of this for \<^term>\<open>Fn\<^bsup>M\<^esup>(\<kappa>,I,J)\<close> *)
-lemma dense_surj_dense:
-  assumes "x \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2"
-  shows "dense(surj_dense(x))"
-proof
-  fix p
-  assume "p \<in> Coll"
-  then
-  have "countable\<^bsup>M\<^esup>(p)" using Coll_into_countable_rel by simp
-  show "\<exists>d\<in>surj_dense(x). d \<preceq> p"
-  proof -
-    from \<open>p \<in> Coll\<close>
-    have "domain(p) \<subseteq> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "p\<in>M"
-      using transM[of _ Coll] domain_of_fun
-      by (auto del:Fn_relD dest!:Fn_relD del:domainE)
-    moreover from \<open>countable\<^bsup>M\<^esup>(p)\<close>
-    have "domain(p) \<subseteq> {fst(x) . x \<in> p }" by (auto intro!: rev_bexI)
-    moreover from calculation
-    have "{ fst(x) . x \<in> p } \<in> M"
-      using lam_replacement_fst[THEN lam_replacement_imp_strong_replacement]
-      by (auto simp flip:setclass_iff intro!:RepFun_closed dest:transM)
-    moreover from calculation and \<open>countable\<^bsup>M\<^esup>(p)\<close>
-    have "countable\<^bsup>M\<^esup>({fst(x) . x \<in> p })"
-      using cardinal_rel_RepFun_le lam_replacement_fst
-        countable_rel_iff_cardinal_rel_le_nat[THEN iffD1, THEN [2] le_trans, of _ p]
-      by (rule_tac countable_rel_iff_cardinal_rel_le_nat[THEN iffD2]) simp_all
-    moreover from calculation
-    have "countable\<^bsup>M\<^esup>(domain(p))"
-      using uncountable_rel_not_subset_countable_rel[of "{fst(x) . x \<in> p }" "domain(p)"]
-      by auto
-    ultimately
-    obtain \<alpha> where "\<alpha> \<notin> domain(p)" "\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"
-      using lt_cardinal_rel_imp_not_subset[of "domain(p)" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>"]
-        Ord_Aleph_rel countable_iff_le_rel_Aleph_rel_one[THEN iffD1,
-          THEN lesspoll_cardinal_lt_rel, of "domain(p)"]
-        cardinal_rel_idem by auto
-    moreover note assms
-    moreover from calculation and \<open>p \<in> Coll\<close>
-    have "cons(\<langle>\<alpha>,x\<rangle>, p) \<in> Coll" "x\<in>M" "cons(\<langle>\<alpha>,x\<rangle>, p) \<preceq> p"
-      using InfCard_rel_Aleph_rel
-      by (auto del:Fnle_relI intro!: cons_in_Fn_rel Fnle_relI dest:transM)
-    ultimately
-    show ?thesis by blast
-  qed
-qed
-
 lemma surj_dense_closed[intro,simp]:
   "x \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2 \<Longrightarrow> surj_dense(x) \<in> M"
   using separation_in_range transM[of x] by simp
@@ -352,7 +306,10 @@ lemma reals_sub_image_f_G:
   shows "\<exists>\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>. f\<^bsub>G\<^esub> ` \<alpha> = x"
 proof -
   from assms
-  have "dense(surj_dense(x))" using dense_surj_dense by simp
+  have "dense(surj_dense(x))"
+    using dense_surj_dense lepoll_rel_refl InfCard_rel_Aleph_rel
+    unfolding dense_def
+    by auto
   with \<open>x \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2\<close>
   obtain p where "p\<in>surj_dense(x)" "p\<in>G"
     using generic[THEN M_generic_denseD, of "surj_dense(x)"]
