@@ -1,9 +1,9 @@
 \section{Details of the formalization}
 
-\subsection{32 replacement instances to rule them all}
+\subsection{33 replacement instances to rule them all}
 \label{sec:repl-instances}
 
-We isolated 32 instances of Replacement that are sufficient to force
+We isolated 33 instances of Replacement that are sufficient to force
 $\CH$/$\neg\CH$. The first 14 instances are needed to set up
 cardinal arithmetic in $M$. Many of these were already present in
 relational form in the \session{ZF-Constructible} library.
@@ -69,15 +69,16 @@ obtained by replacing $\phi$ by
 $\isatt{ground{\uscore}repl{\uscore}fm}(\phi)$ in Eq.~(\ref{eq:replacement_assm_def}).
 
 That makes 28 instances up to now. For the setup of forcing, we
-require the following 4 instances:
+require the following 5 instances (the first two are needed for the $\Delta$-system Lemma):
 
 \begin{itemize}
 %\verb|replacement_ax2(6)| \verb|replacement_transrec_apply_image_body_fm| seems fake!
-\item Recursive construction of sets using a choice function (for the $\Delta$-system Lemma)
+\item Recursive construction of sets using a choice function
   \isatt{replacement{\uscore}is{\uscore}trans{\uscore}apply{\uscore}image{\uscore}fm}.
 % \item Replacement through  $x\mapsto \check{x}$ \isatt{check{\uscore}replacement{\uscore}fm}.
 %\item $x\mapsto |x|^M$
 %  \isatt{Lambda{\uscore}in{\uscore}M{\uscore}fm(is{\uscore}cardinal{\uscore}fm(0,1),0)}. % fake since the image is known
+\item Absoluteness of the previous construction \isatt{replacement{\uscore}transrec{\uscore}apply{\uscore}image{\uscore}body{\uscore}fm}.
 \item 2 instances for definitions by well-founded recursion.
   \begin{itemize}
   \item
